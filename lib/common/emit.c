@@ -399,6 +399,11 @@ static void setup_page(GVC_t * gvc, graph_t * g)
     job->pageBox.UR.x = job->pageBox.LL.x + job->pageSize.x;
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
+    /* increase pageBox to include margins so that overlapping nodes and edges
+	are drawn in the margins of each page */
+    job->pageBox.LL = sub_pointfs(job->pageBox.LL,job->margin);
+    job->pageBox.UR = add_pointfs(job->pageBox.UR,job->margin);
+
     /* establish pageOffset to be applied, in graph coordinates */
     if (job->rotation == 0) {
 	job->pageOffset.x =  -(job->pagesArrayElem.x)    * job->pageSize.x;
