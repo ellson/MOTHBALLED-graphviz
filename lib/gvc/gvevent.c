@@ -34,8 +34,6 @@
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
-#if 0
-
 typedef int (*key_callback_t) (gvrender_job_t * job);
 
 typedef struct key_binding {
@@ -299,5 +297,3 @@ static int toggle_fit_cb(gvrender_job_t * job)
     }
     return 0;
 }
-
-#endif

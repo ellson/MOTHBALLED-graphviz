@@ -40,7 +40,7 @@ api_t gvplugin_api(char *str)
 
     for (api = 0; api < ARRAY_SIZE(apis); api++) {
 	if (strcmp(str, apis[api]) == 0)
-	    return api;
+	    return (api_t)api;
     }
     return -1;			/* invalid api */
 }

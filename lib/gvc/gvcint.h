@@ -106,24 +106,9 @@ extern "C" {
 	int layer;
 	int nLayers;
 
-	void *window;			/* display-specific data for gvrender plugin */
+	boolean fit_mode, needs_refresh, click, active, has_grown;
 
-#if 0
-	Display *dpy;
-	int scr;
-	Window win;
-	unsigned long event_mask;
-	Pixmap pix;
-	GC gc;
-	Visual *visual;
-	Colormap cmap;
-	int depth;
-	double oldx, oldy; /* old pointer position in pixels */
-	
-	int needs_refresh, fit_mode, click, active, has_grown;
-	
-	Atom wm_delete_window_atom;
-#endif
+	void *window;		/* display-specific data for gvrender plugin */
     };
 
 /* gv_plugin_t is a descriptor for available plugins; gvplugin_t is for installed plugins */
@@ -156,7 +141,7 @@ extern "C" {
 	gv_plugin_t *api[ APIS ];  /* array of current plugins per api */
 #undef ELEM
 
-	void *display;			/* display-specific data for gvdisplay plugin */
+	void *display;		/* display-specific data for gvdisplay plugin */
 	gvdisplay_engine_t *display_engine; /* current display engine */
 
 	gvtext_engine_t *text_engine;	/* current text_layout engine */
