@@ -417,10 +417,18 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = graph \
-                         cdt \
-                         dotneato \
-                         pathplan
+INPUT                  = cmd/dot \
+	lib/cdt \
+	lib/circogen \
+	lib/common \
+	lib/dotgen \
+	lib/fdpgen \
+	lib/graph \
+	lib/gvc \
+	lib/neatogen \
+	lib/pack \
+	lib/pathplan \
+	lib/twopigen
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
