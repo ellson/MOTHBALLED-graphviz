@@ -327,7 +327,7 @@ void gvrender_begin_page(GVC_t * gvc, double scale, int rot, point offset)
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_page)
-	    cg->begin_page(gvc->g, job->pagesArrayElem, scale, rot, offset);
+	    cg->begin_page(gvc->g, job->pagesArrayElem, 1.0, rot, offset);
     }
 #endif
 }
