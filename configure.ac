@@ -352,13 +352,27 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON
 
 AC_CHECK_PROG(PYTHON,python,python)
-AM_CONDITIONAL(WITH_PYTHON, [test "x$PYTHON" != "x"])
-if test "x$PYTHON" = "x"; then
-  HAVE_PYTHON=0
-else
-  HAVE_PYTHON=1
-  PYTHON_INCLUDES=-I/usr/include/python2.4
-  PYTHON_LIBS=-lpython2.4
+HAVE_PYTHON=1
+if test "x$PYTHON" != "x"; then
+  PYTHON_VERSION=`swig -version 2>&1 | grep Version | cut -d ' ' -f 3`
+  PYTHON_VERSION_MAJOR=`echo $PYTHON_VERSION | cut -d '.' -f 1`
+  PYTHON_VERSION_MINOR=`echo $PYTHON_VERSION | cut -d '.' -f 2`
+  if test $PYTHON_VERSION_MAJOR -lt 3; then
+    if test $PYTHON_VERSION_MAJOR -lt 2; then
+	HAVE_PYTHON=0
+    else
+      if test $PYTHON_VERSION_MINOR -lt 4; then
+	HAVE_PYTHON=0
+      fi
+    fi
+  fi
+fi
+AC_SUBST(PYTHON_VERSION)
+AC_SUBST(HAVE_PYTHON)
+AM_CONDITIONAL(WITH_PYTHON, [test "x$HAVE_PYTHON" = "x1"])
+if test "x$HAVE_PYTHON" = "x1"; then
+  PYTHON_INCLUDES=-I/usr/include/python$PYTHON_VERSION
+  PYTHON_LIBS=-lpython$PYTHON_VERSION
 fi
 AC_SUBST(HAVE_PYTHON)
 AC_SUBST(PYTHON_INCLUDES)
