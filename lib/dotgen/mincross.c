@@ -67,6 +67,7 @@ static edge_t **TE_list;
 static int *TI_list;
 static boolean ReMincross;
 
+#ifdef DEBUG
 static void
 dumpRanks (graph_t * g)
 {
@@ -83,6 +84,7 @@ dumpRanks (graph_t * g)
 	fprintf (stderr, "\n");
     }
 }
+#endif
 
 void dot_mincross(graph_t * g)
 {
@@ -118,7 +120,10 @@ void dot_mincross(graph_t * g)
 #endif
     }
     cleanup2(g, nc);
+
+#ifdef DEBUG
     dumpRanks (g);
+#endif
 }
 
 static adjmatrix_t *new_matrix(int i, int j)
