@@ -368,10 +368,10 @@ static void emit_background(GVC_t * gvc, graph_t *g)
 		&& str[0]
 		&& strcmp(str, "white") != 0
 		&& strcmp(str, "transparent") != 0) {
-	AF[0].x = AF[1].x = job->boundingBox.LL.x;
-	AF[2].x = AF[3].x = job->boundingBox.UR.x;
-	AF[1].y = AF[2].y = job->boundingBox.UR.y;
-	AF[3].y = AF[0].y = job->boundingBox.LL.y;
+	AF[0].x = AF[1].x = job->pageBox.LL.x;
+	AF[2].x = AF[3].x = job->pageBox.UR.x;
+	AF[1].y = AF[2].y = job->pageBox.UR.y;
+	AF[3].y = AF[0].y = job->pageBox.LL.y;
 	for (i = 0; i < 4; i++) {
 	    PF2P(AF[i],A[i]);
 	}
