@@ -23,13 +23,14 @@ extern void
 find_intersection(struct vertex *l,
 		  struct vertex *m,
 		  struct intersection ilist[], struct data *input);
+static int gt(struct vertex **i, struct vertex **j);
 
 void
 find_ints(struct vertex vertex_list[],
 	  struct polygon polygon_list[],
 	  struct data *input, struct intersection ilist[])
 {
-    int i, j, k, gt();
+    int i, j, k;
     struct active_edge_list all;
     struct active_edge *new, *tempa;
     struct vertex *pt1, *pt2, *templ, **pvertex;
@@ -44,7 +45,8 @@ find_ints(struct vertex vertex_list[],
 	pvertex[i] = vertex_list + i;
 
 /* sort vertices by x coordinate	*/
-    qsort(pvertex, input->nvertices, sizeof(struct vertex *), gt);
+    qsort(pvertex, input->nvertices, sizeof(struct vertex *),
+    	  (int (*)(const void *, const void *))gt);
 
 /* walk through the vertices in order of increasing x coordinate	*/
     for (i = 0; i < input->nvertices; i++) {
@@ -108,8 +110,7 @@ find_ints(struct vertex vertex_list[],
     }				/* end i for loop       */
 }
 
-int gt(i, j)
-struct vertex **i, **j;
+static int gt(struct vertex **i, struct vertex **j)
 {				/* i > j if i.x > j.x or i.x = j.x and i.y > j.y  */
     double t;
     if ((t = (*i)->pos.x - (*j)->pos.x) != 0.)
