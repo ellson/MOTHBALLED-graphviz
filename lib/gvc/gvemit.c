@@ -288,7 +288,6 @@ static void win_grow_pixmap(win_t * win)
 					CAIRO_FORMAT_ARGB32, win->cmap);
     cairo_set_target_surface(win->cr, surface);
     cairo_surface_destroy(surface);
-    win->needs_refresh = 1;
 }
 
 static void win_handle_button_press(win_t *win, XButtonEvent *bev)
@@ -330,7 +329,7 @@ static void win_handle_motion(win_t *win, XMotionEvent *mev)
     int dx = mev->x - win->oldx;
     int dy = mev->y - win->oldy;
 
-    if (dx == 0 && dy == 0)
+    if (dx == 0 && dy == 0)  /* ignore motion events with no motion */
 	return;
     switch (win->active) {
     case 0: /* drag with no button - */
@@ -374,10 +373,15 @@ static void win_reconfigure_normal(win_t * win, unsigned int width,
 
     if (width > win->gvc->width || height > win->gvc->height)
 	has_grown = 1;
+//    win->gvc->focus.x +=  ((double)(width - win->gvc->width))
+//		/ (2. * win->gvc->zoom);
+//    win->gvc->focus.y += -((double)(height - win->gvc->height))
+//		/ (2. * win->gvc->zoom);
     win->gvc->width = width;
     win->gvc->height = height;
     if (has_grown)
 	win_grow_pixmap(win);
+    win->needs_refresh = 1;
 }
 
 static void
@@ -385,21 +389,14 @@ win_reconfigure_fit_mode(win_t * win, unsigned int width,
 			 unsigned int height)
 {
     int dflt_width, dflt_height;
-    int has_grown = 0;
 
-    if (width > win->gvc->width || height > win->gvc->width)
-	has_grown = 1;
     dflt_width = win->gvc->width;
     dflt_height = win->gvc->height;
     win->gvc->zoom =
 	MIN((double) width / (double) dflt_width,
 	    (double) height / (double) dflt_height);
 
-    win->gvc->width = width;
-    win->gvc->height = height;
-    win->needs_refresh = 1;
-    if (has_grown)
-	win_grow_pixmap(win);
+    win_reconfigure_normal(win, width, height);
 }
 
 static void win_handle_configure(win_t * win, XConfigureEvent * cev)
