@@ -354,7 +354,7 @@ dnl INCLUDES and LIBS for PYTHON
 AC_CHECK_PROG(PYTHON,python,python)
 HAVE_PYTHON=1
 if test "x$PYTHON" != "x"; then
-  PYTHON_VERSION=`swig -version 2>&1 | grep Version | cut -d ' ' -f 3`
+  PYTHON_VERSION=`python -V 2>&1 | grep Version | cut -d ' ' -f 3`
   PYTHON_VERSION_MAJOR=`echo $PYTHON_VERSION | cut -d '.' -f 1`
   PYTHON_VERSION_MINOR=`echo $PYTHON_VERSION | cut -d '.' -f 2`
   if test $PYTHON_VERSION_MAJOR -lt 3; then
