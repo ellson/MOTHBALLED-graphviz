@@ -127,14 +127,18 @@ static void endPoints(splines * spl, point * p, point * q)
 #define MAXLABELWD  (POINTS_PER_INCH/4.0)
 
 /* addEdgeLabels:
- * p and q are the port points of the tail and head node.
+ * rp and rq are the port points of the tail and head node.
  * Adds label, headlabel and taillabel.
  * The use of 2 and 4 in computing ld.x and ld.y are fudge factors, to
  * introduce a bit of spacing.
  * Updates bounding box.
+ * We try to use the actual endpoints of the spline, as they may differ
+ * significantly from rp and rq, but if the spline is degenerate (e.g.,
+ * the nodes overlap), we use rp and rq.
  */
-static void addEdgeLabels(edge_t * e, point p, point q)
+static void addEdgeLabels(edge_t * e, point rp, point rq)
 {
+    point p, q;
     point d;			/* midpoint of segment p-q */
     point ld;
     point sp;
@@ -143,6 +147,10 @@ static void addEdgeLabels(edge_t * e, point p, point q)
     int leftOf;
 
     endPoints(ED_spl(e), &p, &q);
+    if ((p.x == q.x) && (p.y == q.y)) { /* degenerate spline */
+	p = rp;
+	q = rq;
+    }
     if (ED_label(e) && !ED_label(e)->set) {
 	d.x = (q.x + p.x) / 2;
 	d.y = (p.y + q.y) / 2;
