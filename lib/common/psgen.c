@@ -149,6 +149,7 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
     fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    0, 0, sz.x, sz.y);
     fprintf(Output_file, "%d %d %d beginpage\n", page.x, page.y, N_pages);
+    fprintf(Output_file, "%d %d translate\n", -offset.x, -offset.y);
     fprintf(Output_file, "%.4f set_scale\n", scale);
     if (rot)
         fprintf(Output_file, "%d rotate %d %d translate\n",

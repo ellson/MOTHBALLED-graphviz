@@ -164,7 +164,7 @@ void gvrender_begin_job(GVC_t * gvc)
     else {
 	codegen_t *cg = job->codegen;
 
-	if (cg && cg->begin_job && job->pageNum <= 1)
+	if (cg && cg->begin_job)
 	    cg->begin_job(job->output_file, job->g, gvc->lib, gvc->user,
 			  gvc->info, job->pagesArraySize);
     }
@@ -344,9 +344,12 @@ void gvrender_begin_page(GVC_t * gvc)
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
+	point offset;
 
+	PF2P(job->pageOffset, offset);
 	if (cg && cg->begin_page)
-	    cg->begin_page(job->g, job->pagesArrayElem, job->zoom, job->rotation, job->boundingBox.LL);
+	    cg->begin_page(job->g, job->pagesArrayElem,
+		job->zoom, job->rotation, offset);
     }
 #endif
 }

@@ -98,7 +98,6 @@ extern "C" {
 	point	pagesArrayMinor; /* 2D minor increment */
 	point	pagesArrayElem;  /* 2D coord of current page - 0,0 based */
         int	numPages;	 /* number of pages */
-        int	pageNum;	 /* current page - 1 based */
 
         unsigned int width;     /* device width in device units */
         unsigned int height;    /* device height in device units */
@@ -177,6 +176,7 @@ extern "C" {
 	char **layerIDs;	/* array of layer names */
 	int numLayers;		/* number of layers */
 	int layerNum;		/* current layer - 1 based*/
+        int pageNum;	        /* current page - 1 based counts pages in all layers*/
 
 	/* default font */
 	char *defaultfontname;

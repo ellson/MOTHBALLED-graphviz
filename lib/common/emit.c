@@ -304,7 +304,6 @@ static void firstpage(GVC_t *gvc)
     gvrender_job_t *job = gvc->job;
 
     job->pagesArrayElem = job->pagesArrayFirst;
-    job->pageNum = 1;
 }
 
 static boolean validpage(GVC_t *gvc)
@@ -329,7 +328,6 @@ static void nextpage(GVC_t *gvc)
 	    job->pagesArrayElem.y = job->pagesArrayFirst.y;
 	job->pagesArrayElem = add_points(job->pagesArrayElem, job->pagesArrayMajor);
     }
-    job->pageNum = job->pagesArrayElem.x + job->pagesArrayElem.y * job->pagesArraySize.x + 1;
 }
 
 static boolean write_edge_test(Agraph_t * g, Agedge_t * e)
@@ -411,6 +409,13 @@ static void setup_page(GVC_t * gvc, graph_t * g)
 	job->pageOffset.y = -(job->pagesArrayElem.x)     * job->pageSize.x;
     }
 
+#if 0
+fprintf(stderr,"pagesArrayElem = %d,%d pageSize = %g,%g pageOffset = %g,%g\n",
+	job->pagesArrayElem.x, job->pagesArrayElem.y,
+	job->pageSize.x, job->pageSize.y,
+	job->pageOffset.x, job->pageOffset.y);
+#endif
+
     gvrender_begin_page(gvc);
     emit_background(gvc, g);
     emit_defaults(gvc);
@@ -420,6 +425,12 @@ static boolean node_in_pageBox(GVC_t *gvc, node_t * n)
 {
     gvrender_job_t *job = gvc->job;
     boxf nb;
+
+#if 0
+fprintf(stderr,"pageBox = %g,%g,%g,%g\n",
+	job->pageBox.LL.x, job->pageBox.LL.y,
+	job->pageBox.UR.x, job->pageBox.UR.y);
+#endif
 
     if (job->numPages == 1)
 	return TRUE;
@@ -559,8 +570,16 @@ static void emit_node(GVC_t * gvc, node_t * n)
 
     if (ND_shape(n) == NULL)
 	return;
+#if 0
+fprintf(stderr,"node_in_layer %s node_in_pageBox %s state %s\n",
+	node_in_layer(gvc, n->graph, n)?"true":"false",
+	node_in_pageBox(gvc, n)?"true":"false",
+	(ND_state(n) != gvc->pageNum)?"true":"false");
+#endif
 
-    if (node_in_layer(gvc, n->graph, n) && node_in_pageBox(gvc, n) && (ND_state(n) != gvc->layerNum)) {
+    if (node_in_layer(gvc, n->graph, n)
+	    && node_in_pageBox(gvc, n)
+	    && (ND_state(n) != gvc->pageNum)) {
 	gvrender_begin_node(gvc, n);
 	if (((s = agget(n, "href")) && s[0])
 	    || ((s = agget(n, "URL")) && s[0])) {
@@ -575,7 +594,7 @@ static void emit_node(GVC_t * gvc, node_t * n)
 	}
 	gvrender_begin_context(gvc);
 	ND_shape(n)->fns->codefn(gvc, n);
-	ND_state(n) = gvc->layerNum;
+	ND_state(n) = gvc->pageNum;
 	gvrender_end_context(gvc);
 	if (url) {
 	    gvrender_end_anchor(gvc);
@@ -709,8 +728,13 @@ static void emit_edge(GVC_t * gvc, edge_t * e)
 
 #define SEP 2.0
 
-    if ((edge_in_pageBox(gvc, e) == FALSE)
-	|| (edge_in_layer(gvc, e->head->graph, e) == FALSE))
+#if 0
+fprintf(stderr,"edge_in_layer %s edge_in_pageBox %s\n",
+        edge_in_layer(gvc, e->head->graph, e)?"true":"false",
+        edge_in_pageBox(gvc, e)?"true":"false");
+#endif
+
+    if (! edge_in_pageBox(gvc, e) || ! edge_in_layer(gvc, e->head->graph, e))
 	return;
 
     gvrender_begin_edge(gvc, e);
@@ -1027,17 +1051,11 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
 static void emit_init_job(GVC_t * gvc, graph_t * g)
 {
     init_gvc_from_graph(gvc, g);
-
     init_layering(gvc, g);
-
     init_job_flags(gvc->job, g);
-
     init_job_margin(gvc);
-
     init_job_viewport(gvc, g);
-
     init_job_pagination(gvc, g);
-
     gvrender_begin_job(gvc);
 }
 
@@ -1098,7 +1116,8 @@ void emit_graph(GVC_t * gvc, graph_t * g)
 	}
     }
 
-    /* reset layerNum state - records the last layer that contained the node */
+    /* reset pageNum state - records the last page that contained the node */
+    gvc->pageNum = 0;  /* incremented for each page in each layer */
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	ND_state(n) = 0;
     /* iterate layers */
@@ -1108,6 +1127,11 @@ void emit_graph(GVC_t * gvc, graph_t * g)
 
 	/* iterate pages */
 	for (firstpage(gvc); validpage(gvc); nextpage(gvc)) {
+	    gvc->pageNum++;
+#if 0
+fprintf(stderr,"pageNum = %d pagesArrayElem = %d,%d\n",
+	gvc->pageNum, gvc->job->pagesArrayElem.x, gvc->job->pagesArrayElem.y);
+#endif
     	    setup_page(gvc, g);
 	    Obj = NONE;
 	    if (((s = agget(g, "href")) && s[0])
@@ -1265,7 +1289,7 @@ void emit_jobs_eof(GVC_t * gvc)
 
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
         if (job->output_file) {
-	    if (gvc->job->pageNum > 0) {
+	    if (gvc->pageNum > 0) {
 		emit_deinit_job(gvc);
 		emit_once_reset();
 	    }
