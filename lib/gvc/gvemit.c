@@ -32,7 +32,7 @@
 
 #include "gvc.h"
 
-extern void emit_graph(GVC_t * gvc, graph_t * g, int flags);
+extern void emit_graph(GVC_t * gvc, graph_t * g);
 
 //#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER) && defined(HAVE_CAIRO)
 #if 0
@@ -250,7 +250,7 @@ static void win_refresh(gvrender_job_t * job)
     XFillRectangle(job->dpy, job->pix, job->gc, 0, 0,
 		job->width, job->height);
 
-    emit_graph(job->gvc, job->g, job->flags);
+    emit_graph(job->gvc, job->g);
 
     XCopyArea(job->dpy, job->pix, job->win, job->gc,
 	      0, 0, job->width, job->height, 0, 0);
@@ -515,15 +515,12 @@ static int toggle_fit_cb(gvrender_job_t * job)
 #endif /* CAIRO_HAS_XLIB_SURFACE */
 #endif /* X_DISPLAY_MISSING */
 
-void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
+void gvemit_graph(GVC_t * gvc, graph_t * g)
 {
     gvrender_job_t *job = gvc->job;
+    int flags = gvc->job->flags;
 
-    job->gvc = gvc;
-    job->g = g;
-    job->flags = flags;
-
-   if (flags & GVRENDER_X11_EVENTS) {
+    if (flags & GVRENDER_X11_EVENTS) {
 //#ifdef CAIRO_HAS_XLIB_SURFACE
 #if 0
 
@@ -550,6 +547,6 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
 #endif
    }
    else {
-	emit_graph(job->gvc, job->g, job->flags);
+	emit_graph(job->gvc, job->g);
    }
 }

@@ -31,8 +31,6 @@
 
 #define MAX_CODEGENS 100
 
-#define PAGINATIONBUG 1
-
 char *BaseLineStyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 int Obj;
 static double Deffontsize;
@@ -94,6 +92,60 @@ static int parse_layers(GVC_t *gvc, graph_t * g, char *p)
     }
 
     return ntok;
+}
+
+/* chkOrder:
+ * Determine order of output.
+ * Output usually in breadth first graph walk order
+ */
+static int chkOrder(graph_t * g)
+{
+    char *p = agget(g, "outputorder");
+    if (p) {
+        char c = *p;
+        if ((c == 'n') && !strcmp(p + 1, "odesfirst"))
+            return EMIT_SORTED;
+        if ((c == 'e') && !strcmp(p + 1, "dgesfirst"))
+            return EMIT_EDGE_SORTED;
+    }
+    return 0;
+}
+
+static void init_job_flags(gvrender_job_t * job, graph_t * g)
+{
+    switch (job->output_lang) {
+    case GVRENDER_PLUGIN:
+        job->flags = chkOrder(g) | job->render_features->flags;
+        break;
+    case POSTSCRIPT:
+        job->flags = chkOrder(g) | GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES;
+        break;
+    case ISMAP: case IMAP: case CMAP: case CMAPX:
+        /* output in breadth first graph walk order, but
+         * with nodes edges and nested clusters before
+         * clusters */
+        job->flags = EMIT_CLUSTERS_LAST;
+        break;
+    case FIG:
+        /* output color definition objects first */
+        job->flags = EMIT_COLORS;
+        break;
+    case VTX:
+        /* output sorted, i.e. all nodes then all edges */
+        job->flags = EMIT_SORTED;
+        break;
+    case DIA:
+        /* output in preorder traversal of the graph */
+        job->flags = EMIT_PREORDER;
+        break;
+    case EXTENDED_DOT: case ATTRIBUTED_DOT: case CANONICAL_DOT:
+    case PLAIN: case PLAIN_EXT:
+        job->flags = 0;
+        break;
+    default:
+        job->flags = chkOrder(g);
+        break;
+    }
 }
 
 static void init_layering(GVC_t * gvc, graph_t * g)
@@ -211,12 +263,9 @@ static void init_job_pagination(GVC_t * gvc, graph_t * g)
 	job->numPages = job->pagesArraySize.x * job->pagesArraySize.y;
 
 	/* find the drawable size in device coords */
-#ifdef PAGINATIONBUG
-	tp = GD_drawing(g)->size;
-#else
 	tp.x = job->width;
 	tp.y = job->height;
-#endif
+
 	if (GD_drawing(g)->landscape)
 	    tp = exch_xy(tp);
 	DS.x = MIN(tp.x, PFCLM.x);
@@ -230,12 +279,8 @@ static void init_job_pagination(GVC_t * gvc, graph_t * g)
 	job->pageSizeCentered.y = DEFAULT_PAGEHT;
 	PFCLM.x = job->pageSizeCentered.x - 2 * job->pageBox.LL.x;
 	PFCLM.y = job->pageSizeCentered.y - 2 * job->pageBox.LL.y;
-#ifdef PAGINATIONBUG
-	P2PF(GD_drawing(g)->size, DS);
-#else
 	DS.x = job->width;
 	DS.y = job->height;
-#endif
 	if (GD_drawing(g)->landscape)
 	    DS = exch_xyf(DS);
 	job->pagesArraySize.x = job->pagesArraySize.y = job->numPages = 1;
@@ -253,7 +298,10 @@ static void init_job_pagination(GVC_t * gvc, graph_t * g)
 	job->pageBox.LL.x += extra.x / 2;
 	job->pageBox.LL.y += extra.y / 2;
     }
-    job->pageBox.UR = add_pointfs(job->pageBox.LL, DS);
+    /* FIXME - this is used by begin_graph, but overwritten by setup_page
+		so it will be wrong if two PS outputs generated from same graph.
+		Perhaps it should be "pageBoundingBox" or somesuch ? */
+    job->pageBox.UR = add_pointfs(job->pageBox.LL, job->pageSize);
 }
 
 static void firstpage(GVC_t *gvc)
@@ -330,19 +378,24 @@ void emit_reset(GVC_t * gvc, graph_t * g)
 
 static void emit_background(GVC_t * gvc, graph_t *g, boxf pageBox)
 {
+    gvrender_job_t * job = gvc->job;
     char *str;
+    pointf AF[4];
     point A[4];
-    box PB;
+    int i;
 
     if (((str = agget(g, "bgcolor")) != 0)
-	&& str[0]
-	&& strcmp(str, "white") != 0 && strcmp(str, "transparent") != 0) {
+		&& str[0]
+		&& strcmp(str, "white") != 0
+		&& strcmp(str, "transparent") != 0) {
 	/* increment to cover int rounding errors */
-	BF2B(pageBox, PB);
-	A[0].x = A[1].x = PB.LL.x - GD_drawing(g)->margin.x - 1;
-	A[2].x = A[3].x = PB.UR.x + GD_drawing(g)->margin.x + 1;
-	A[1].y = A[2].y = PB.UR.y + GD_drawing(g)->margin.y + 1;
-	A[3].y = A[0].y = PB.LL.y - GD_drawing(g)->margin.y - 1;
+	AF[0].x = AF[1].x = job->pageBox.LL.x - job->margin.x - 1;
+	AF[2].x = AF[3].x = job->pageBox.UR.x + job->margin.x + 1;
+	AF[1].y = AF[2].y = job->pageBox.UR.y + job->margin.y + 1;
+	AF[3].y = AF[0].y = job->pageBox.LL.y - job->margin.y - 1;
+	for (i = 0; i < 4; i++) {
+	    PF2P(AF[i],A[i]);
+	}
 	gvrender_set_fillcolor(gvc, str);
 	gvrender_set_pencolor(gvc, str);
 	gvrender_polygon(gvc, A, 4, TRUE);	/* filled */
@@ -375,7 +428,7 @@ static void setup_page(GVC_t * gvc, graph_t * g)
 	job->offset.y = -(job->pagesArrayElem.x) * job->pageSize.x;
     }
 
-    gvrender_begin_page(gvc, g);
+    gvrender_begin_page(gvc);
     emit_background(gvc, g, job->pageBox);
     emit_defaults(gvc);
 }
@@ -847,100 +900,6 @@ static void emit_edge(GVC_t * gvc, edge_t * e)
     gvrender_end_edge(gvc);
 }
 
-#ifdef PAGINATIONBUG
-static double setScale(graph_t * g)
-{
-    double xscale, yscale, scale;
-
-    xscale = ((double) GD_drawing(g)->size.x) / GD_bb(g).UR.x;
-    yscale = ((double) GD_drawing(g)->size.y) / GD_bb(g).UR.y;
-    scale = MIN(xscale, yscale);
-    GD_drawing(g)->scale = scale;
-    GD_drawing(g)->size.x = scale * GD_bb(g).UR.x;
-    GD_drawing(g)->size.y = scale * GD_bb(g).UR.y;
-    return scale;
-}
-#endif
-
-
-/* emit_init
- *   - called just once per output device
- *     (where emit_graph can be called many times for refresh callbacks)
- */
-void emit_init(GVC_t * gvc, graph_t * g)
-{
-    char *str;
-    double X, Y, Z, x, y;
-    point size = GD_drawing(g)->size;
-    point UR = GD_bb(g).UR;
-#ifdef PAGINATIONBUG
-    double scale;
-#endif
-
-    assert((GD_bb(g).LL.x == 0) && (GD_bb(g).LL.y == 0));
-
-    /* determine final drawing size and scale to apply. */
-    /* N.B. size given by user is not rotated by landscape mode */
-    /* start with "natural" size of layout */
-#ifdef PAGINATIONBUG
-    /* FIXME - this version still needed by psgen.c*/
-    scale = GD_drawing(g)->scale = 1.0;
-    if (GD_drawing(g)->size.x > 0) {    /* was given by user... */
-        if ((GD_drawing(g)->size.x < GD_bb(g).UR.x)     /* drawing is too big... */
-            ||(GD_drawing(g)->size.y < GD_bb(g).UR.y)) {
-            scale = setScale(g);
-        }
-	else if (GD_drawing(g)->filled) {
-            if ((GD_drawing(g)->size.x > GD_bb(g).UR.x) /* drawing is too small... */
-                &&(GD_drawing(g)->size.y > GD_bb(g).UR.y)) {
-               scale = setScale(g);
-            }
-        }
-	else {
-            GD_drawing(g)->size = GD_bb(g).UR;
-	}
-    }
-    else {
-        GD_drawing(g)->size = GD_bb(g).UR;
-    }
-#endif
-
-    Z = 1.0;
-    if (size.x > 0) {	/* was given by user... */
-	if ((size.x < UR.x) || (size.y < UR.y) /* drawing is too big... */
-	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
-		&& (size.x > UR.x) && (size.y > UR.y))) /* drawing is too small... */
-	    Z = MIN(((double)size.x)/UR.x, ((double)size.y)/UR.y);
-    }
-    X = Z * (double)(GD_bb(g).UR.x + 2 * GD_drawing(g)->margin.x + 2);
-    Y = Z * (double)(GD_bb(g).UR.y + 2 * GD_drawing(g)->margin.y + 2);
-    x = (double)(GD_bb(g).UR.x) / 2.;
-    y = (double)(GD_bb(g).UR.y) / 2.;
-
-    if ((str = agget(g, "viewport")))
-	sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
-
-    G_peripheries = agfindattr(g, "peripheries");
-
-    Deffontname = late_nnstring(g->proto->n, N_fontname, DEFAULT_FONTNAME);
-    Deffontsize =
-	late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
-		    MIN_FONTSIZE);
-
-    gvc->graphname = g->name;
-
-    init_layering(gvc, g);
-
-    init_job_pagination(gvc, g);
-
-    gvrender_begin_job(gvc, g, Lib, X, Y, Z, x, y, GD_drawing(g)->dpi);
-}
-
-void emit_deinit(GVC_t * gvc)
-{
-    gvrender_end_job(gvc);
-}
-
 static void init_job_margin(GVC_t *gvc)
 {
     gvrender_job_t *job = gvc->job;
@@ -950,7 +909,7 @@ static void init_job_margin(GVC_t *gvc)
     }
     else {
         /* set default margins depending on format */
-        switch (gvc->job->output_lang) {
+        switch (job->output_lang) {
         case GVRENDER_PLUGIN:
             job->margin.x = job->margin.y = job->render_features->default_margin;
             break;
@@ -969,7 +928,129 @@ static void init_job_margin(GVC_t *gvc)
     }
 }
 
-void emit_graph(GVC_t * gvc, graph_t * g, int flags)
+static void init_job_viewport(GVC_t * gvc, graph_t * g)
+{
+    gvrender_job_t * job = gvc->job;
+    pointf UR, size;
+    char *str;
+    double X, Y, Z, x, y;
+    int dpi;
+
+    assert((GD_bb(g).LL.x == 0) && (GD_bb(g).LL.y == 0));
+
+    P2PF(GD_bb(g).UR, UR);
+
+    /* determine final drawing size and scale to apply. */
+    /* N.B. size given by user is not rotated by landscape mode */
+    /* start with "natural" size of layout */
+
+    Z = 1.0;
+    if (GD_drawing(g)->size.x > 0) {	/* was given by user... */
+	P2PF(GD_drawing(g)->size, size);
+	if ((size.x < UR.x) || (size.y < UR.y) /* drawing is too big... */
+	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
+		&& (size.x > UR.x) && (size.y > UR.y))) /* drawing is too small... */
+	    Z = MIN(size.x/UR.x, size.y/UR.y);
+    }
+    X = Z * (UR.x + 2 * job->margin.x + 2);
+    Y = Z * (UR.y + 2 * job->margin.y + 2);
+    x = UR.x / 2.;
+    y = UR.y / 2.;
+
+    if ((str = agget(g, "viewport")))
+	sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
+
+    dpi = GD_drawing(g)->dpi;
+    if (dpi == 0) {
+        if (job->render_engine)
+            dpi = job->render_features->default_dpi;
+        else
+            dpi = DEFAULT_DPI;
+    }
+    job->dpi = dpi;
+    job->width = ROUND(X * dpi / POINTS_PER_INCH);
+    job->height = ROUND(Y * dpi / POINTS_PER_INCH);
+    job->zoom = Z;              /* scaling factor */
+    job->focus.x = x;           /* graph coord of focus - points */
+    job->focus.y = y;
+    job->rotation = gvc->rotation;
+}
+
+static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
+{
+    double xf, yf;
+    char *p;
+    int i;
+
+    /* margins */
+    gvc->graph_sets_margin = FALSE;
+    if ((p = agget(g, "margin"))) {
+        i = sscanf(p, "%lf,%lf", &xf, &yf);
+        if (i > 0) {
+            gvc->margin.x = gvc->margin.y = xf * POINTS_PER_INCH;
+            if (i > 1)
+                gvc->margin.y = yf * POINTS_PER_INCH;
+            gvc->graph_sets_margin = TRUE;
+        }
+    }
+
+    /* pagesize */
+    gvc->graph_sets_pageSize = FALSE;
+    P2PF(GD_drawing(g)->page, gvc->pageSize);
+    if ((GD_drawing(g)->page.x > 0) && (GD_drawing(g)->page.y > 0)) {
+        gvc->graph_sets_pageSize = TRUE;
+    }
+
+    /* bounding box */
+    B2BF(GD_bb(g),gvc->bb);
+
+    /* rotation */
+    gvc->rotation = GD_drawing(g)->landscape ? 90 : 0;
+
+    /* FIXME - what is this ? */
+    G_peripheries = agfindattr(g, "peripheries");
+
+    /* FIXME - why is this ? */
+    Deffontname = late_nnstring(g->proto->n, N_fontname, DEFAULT_FONTNAME);
+    Deffontsize =
+	late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
+		    MIN_FONTSIZE);
+
+    gvc->graphname = g->name;
+    gvc->lib = Lib;
+}
+
+
+/* emit_init
+ *   - called just once per output device
+ *     (where emit_graph can be called many times for refresh callbacks)
+ */
+void emit_init(GVC_t * gvc, graph_t * g)
+{
+    init_gvc_from_graph(gvc, g);
+
+    init_layering(gvc, g);
+
+    gvc->job->gvc = gvc;
+    gvc->job->g = g;
+
+    init_job_flags(gvc->job, g);
+
+    init_job_margin(gvc);
+
+    init_job_viewport(gvc, g);
+
+    init_job_pagination(gvc, g);
+
+    gvrender_begin_job(gvc);
+}
+
+void emit_deinit(GVC_t * gvc)
+{
+    gvrender_end_job(gvc);
+}
+
+void emit_graph(GVC_t * gvc, graph_t * g)
 {
     graph_t *sg;
     node_t *n;
@@ -977,10 +1058,7 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
     int c;
     char *str, *colors;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
-
-    init_job_margin(gvc);
-
-    init_job_pagination(gvc, g);
+    int flags = gvc->job->flags;
 
     gvrender_begin_graph(gvc, g);
     if (flags & EMIT_COLORS) {

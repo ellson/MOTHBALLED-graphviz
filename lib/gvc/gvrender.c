@@ -121,28 +121,11 @@ void gvrender_reset(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_job(GVC_t * gvc, graph_t *g, char **lib, double X, double Y, double Z, double x, double y, int dpi)
+void gvrender_begin_job(GVC_t * gvc)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
-    job->gvc = gvc;
-
-    gvc->lib = lib;
-    /* establish viewport and scaling */
-    if (dpi == 0) {
-	if (gvre)
-	    dpi = job->render_features->default_dpi;
-	else
-	    dpi = DEFAULT_DPI;
-    }
-    job->dpi = dpi;
-    job->width = ROUND(X * dpi / POINTS_PER_INCH);
-    job->height = ROUND(Y * dpi / POINTS_PER_INCH);
-    job->zoom = Z;              /* scaling factor */
-    job->focus.x = x;           /* graph coord of focus - points */
-    job->focus.y = y;
-    job->rotation = gvc->rotation;
     if (gvre) {
         if (gvre->begin_job)
 	    gvre->begin_job(job);
@@ -152,7 +135,7 @@ void gvrender_begin_job(GVC_t * gvc, graph_t *g, char **lib, double X, double Y,
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_job && job->pageNum <= 1)
-	    cg->begin_job(gvc->job->output_file, g, lib, gvc->user,
+	    cg->begin_job(job->output_file, job->g, gvc->lib, gvc->user,
 			  gvc->info, job->pagesArraySize);
     }
 #endif
@@ -304,7 +287,7 @@ void gvrender_end_graph(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_page(GVC_t * gvc, graph_t * g)
+void gvrender_begin_page(GVC_t * gvc)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
@@ -317,7 +300,7 @@ void gvrender_begin_page(GVC_t * gvc, graph_t * g)
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_page)
-	    cg->begin_page(g, job->pagesArrayElem, job->zoom, job->rotation, job->offset);
+	    cg->begin_page(job->g, job->pagesArrayElem, job->zoom, job->rotation, job->offset);
     }
 #endif
 }

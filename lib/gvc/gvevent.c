@@ -70,7 +70,7 @@ static key_binding_t key_binding[] = {
 
 void gvevent_refresh(gvrender_job_t * job)
 {
-    emit_graph(job->gvc, job->g, job->flags);
+    emit_graph(job->gvc, job->g);
 }
 
 #if 0

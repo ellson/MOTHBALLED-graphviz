@@ -79,7 +79,7 @@ extern "C" {
     extern void emit_attachment(GVC_t * gvc, textlabel_t *, splines *);
     extern void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags);
     extern void emit_eof(GVC_t * gvc);
-    extern void emit_graph(GVC_t * gvc, graph_t * g, int flags);
+    extern void emit_graph(GVC_t * gvc, graph_t * g);
     extern void emit_label(GVC_t * gvc, textlabel_t *, void *obj);
     extern int emit_once(char *message);
     extern void emit_once_reset();

@@ -38,38 +38,6 @@ static attrsym_t *g_l_draw;
 #define Y(y) (y_invert ? (y_off - (y)) : (y))
 #define YF(y) (y_invert ? (yf_off - (y)) : (y))
 
-static void graph_settings(GVC_t * gvc, graph_t * g)
-{
-    double xf, yf;
-    char *p;
-    int i;
-
-    /* margins */
-    gvc->graph_sets_margin = FALSE;
-    if ((p = agget(g, "margin"))) {
-        i = sscanf(p, "%lf,%lf", &xf, &yf);
-        if (i > 0) {
-            gvc->margin.x = gvc->margin.y = xf * POINTS_PER_INCH;
-            if (i > 1)
-                gvc->margin.y = yf * POINTS_PER_INCH;
-            gvc->graph_sets_margin = TRUE;
-        }
-    }
-
-    /* pagesize */
-    gvc->graph_sets_pageSize = FALSE;
-    P2PF(GD_drawing(g)->page, gvc->pageSize);
-    if ((GD_drawing(g)->page.x > 0) && (GD_drawing(g)->page.y > 0)) {
-	gvc->graph_sets_pageSize = TRUE;
-    }
-
-    /* bounding box */
-    B2BF(GD_bb(g),gvc->bb);
-
-    /* rotation */
-    gvc->rotation = GD_drawing(g)->landscape ? 90 : 0;
-}
-
 static void printptf(FILE * f, point pt)
 {
     fprintf(f, " %.3f %.3f", PS2INCH(pt.x), PS2INCH(Y(pt.y)));
@@ -428,90 +396,30 @@ static void extend_attrs(GVC_t * gvc, graph_t *g)
     agxbfree(&charbuf);
 }
 
-/* chkOrder:
- * Determine order of output.
- * Output usually in breadth first graph walk order
- */
-static int chkOrder(graph_t * g)
-{
-    char *p = agget(g, "outputorder");
-    if (p) {
-	char c = *p;
-	if ((c == 'n') && !strcmp(p + 1, "odesfirst"))
-	    return EMIT_SORTED;
-	if ((c == 'e') && !strcmp(p + 1, "dgesfirst"))
-	    return EMIT_EDGE_SORTED;
-    }
-    return 0;
-}
-
-static int lang_sets_flags(gvrender_job_t * job, graph_t * g)
-{
-    int flags;
-
-    switch (job->output_lang) {
-    case GVRENDER_PLUGIN:
-	flags = chkOrder(g) | job->render_features->flags;
-	break;
-    case POSTSCRIPT:
-        flags = chkOrder(g) | GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES;
-	break;
-    case ISMAP: case IMAP: case CMAP: case CMAPX:
-	/* output in breadth first graph walk order, but 
-	 * with nodes edges and nested clusters before
-	 * clusters */
-	flags = EMIT_CLUSTERS_LAST;
-	break;
-    case FIG:
-	/* output color definition objects first */
-	flags = EMIT_COLORS;
-	break;
-    case VTX:
-	/* output sorted, i.e. all nodes then all edges */
-	flags = EMIT_SORTED;
-	break;
-    case DIA:
-	/* output in preorder traversal of the graph */
-	flags = EMIT_PREORDER;
-	break;
-    case EXTENDED_DOT: case ATTRIBUTED_DOT: case CANONICAL_DOT:
-    case PLAIN: case PLAIN_EXT:
-	flags = 0;
-	break;
-    default:
-	flags = chkOrder(g);
-	break;
-    }
-    return flags;
-}
-
 void dotneato_write_one(GVC_t * gvc, graph_t * g)
 {
     gvrender_job_t *job = gvc->job;
-    int flags;
 
 #ifndef DISABLE_CODEGENS
     Output_file = job->output_file;
     Output_lang = job->output_lang;
 #endif
 
-    graph_settings(gvc, g);
-    flags = lang_sets_flags(job, g);
     emit_init(gvc, g);
 
-    if (! (flags & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES))
+    if (! (job->flags & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES))
 	emit_reset(gvc, g);  /* FIXME - split into emit_init & page reset */
 
     switch (gvc->job->output_lang) {
     case GVRENDER_PLUGIN:
-	gvemit_graph(gvc, g, flags);
+	gvemit_graph(gvc, g);
 	break;
     case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
     case PIC_format: case GIF: case PNG: case JPEG: case WBMP:
     case GD: case memGD: case GD2: case VRML: case METAPOST:
     case TK: case SVG: case SVGZ: case QPDF: case QEPDF: case ISMAP:
     case IMAP: case CMAP: case CMAPX: case FIG: case VTX: case DIA:
-	emit_graph(gvc, g, flags);
+	emit_graph(gvc, g);
 	break;
     case EXTENDED_DOT:
 	attach_attrs(g);
@@ -536,7 +444,7 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
     default:
 	if (gvc->job->output_lang >= QBM_FIRST
 	    && gvc->job->output_lang < QBM_LAST)
-	    emit_graph(gvc, g, flags);
+	    emit_graph(gvc, g);
 	break;
     }
 
