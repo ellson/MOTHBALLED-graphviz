@@ -25,7 +25,7 @@ extern "C" {
 
 #include "site.h"
 
-    extern void voronoi(int, Site * (*)());
+    extern void voronoi(int, Site * (*)(void));
 
 #endif
 

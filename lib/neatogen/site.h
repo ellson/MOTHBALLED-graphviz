@@ -35,8 +35,8 @@ extern "C" {
     extern int siteidx;
     extern Site *bottomsite;
 
-    extern void siteinit();
-    extern Site *getsite();
+    extern void siteinit(void);
+    extern Site *getsite(void);
     extern double dist(Site *, Site *);	/* Distance between two sites */
     extern void deref(Site *);	/* Increment refcnt of site  */
     extern void ref(Site *);	/* Decrement refcnt of site  */

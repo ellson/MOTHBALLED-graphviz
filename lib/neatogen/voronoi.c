@@ -22,7 +22,7 @@
 #include "voronoi.h"
 
 
-void voronoi(int triangulate, Site * (*nextsite) ())
+void voronoi(int triangulate, Site * (*nextsite) (void))
 {
     Site *newsite, *bot, *top, *temp, *p;
     Site *v;
