@@ -23,7 +23,6 @@
 
 #include "dot.h"
 #include "neato.h"
-#include "fdp.h"
 #include "tlayout.h"
 #include "circular.h"
 #include "circle.h"
@@ -144,44 +143,36 @@ setAttr (char* arg)
 {
   switch (*arg++) {
   case 'g' :
-    fdp_tvals.useGrid = 0;
+    fdp_parms.useGrid = 0;
     break;
   case 'O' :
-    fdp_tvals.useNew = 0;
+    fdp_parms.useNew = 0;
     break;
   case 'n' :
-    if (setInt (&fdp_numIters, arg)) return 1;
-    break;
-  case 't' :
-    if (setInt (&fdp_Tries, arg)) return 1;
+    if (setInt (&fdp_parms.numIters, arg)) return 1;
     break;
   case 'M' :
-    if (setInt (&fdp_tvals.maxIter, arg)) return 1;
+    if (setInt (&fdp_parms.maxIters, arg)) return 1;
     break;
   case 'U' :
-    if (setInt (&fdp_tvals.unscaled, arg)) return 1;
+    if (setInt (&fdp_parms.unscaled, arg)) return 1;
     break;
   case 'C' :
-    if (setDouble (&fdp_tvals.C, arg)) return 1;
+    if (setDouble (&fdp_parms.C, arg)) return 1;
     break;
-#if 0
-  case 's' :
-    if (setDouble (&Scale, arg)) return 1;
-    break;
-#endif
   case 'K' :
-    if (setDouble (&fdp_K, arg)) return 1;
+    if (setDouble (&fdp_parms.K, arg)) return 1;
+    break;
+  case 't' :
+    if (setInt (&fdp_parms.tries, arg)) return 1;
     break;
   case 'T' :
     if (*arg == '*') {
-      if (setDouble (&fdp_tvals.Tfact, arg+1)) return 1;
+      if (setDouble (&fdp_parms.Tfact, arg+1)) return 1;
     }
     else {
-      if (setDouble (&fdp_T0, arg)) return 1;
+      if (setDouble (&fdp_parms.T0, arg)) return 1;
     }
-    break;
-  case 'S' :
-    fdp_seedarg = arg;
     break;
   default :
     agerr (AGWARN, "unknown flag -L%s - ignored\n", arg-1);
@@ -202,12 +193,6 @@ fdp_extra_args (GVC_t *gvc, int argc, char** argv)
   char*  arg;
   int    cnt = 1;
 
-  fdp_numIters = -1;
-  fdp_K = -1.0;
-  fdp_T0 = -1.0;
-  fdp_seedarg = NULL;
-  fdp_smode = seed_unset;
-  
   for (i = 1; i < argc; i++) {
     arg = argv[i];
     if (arg && (*arg == '-') && (*(arg+1) == 'L')) {
