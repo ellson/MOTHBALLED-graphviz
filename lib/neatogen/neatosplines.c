@@ -125,7 +125,7 @@ static void endPoints(splines * spl, point * p, point * q)
 }
 
 #define LEFTOF(a,b,c) (((a.y - b.y)*(c.x - b.x) - (c.y - b.y)*(a.x - b.x)) > 0)
-#define MAXLABELWD  (POINTS_PER_INCH/4.0)
+#define MAXLABELWD  (POINTS_PER_INCH/2.0)
 
 /* addEdgeLabels:
  * rp and rq are the port points of the tail and head node.
@@ -144,44 +144,48 @@ static void addEdgeLabels(edge_t * e, point rp, point rq)
     point ld;
     point sp;
     point del;
-    double ht, wd;
+    pointf spf;
+    double f, ht, wd, dist2;
     int leftOf;
 
-    endPoints(ED_spl(e), &p, &q);
-    if ((p.x == q.x) && (p.y == q.y)) { /* degenerate spline */
-	p = rp;
-	q = rq;
-    }
     if (ED_label(e) && !ED_label(e)->set) {
+	endPoints(ED_spl(e), &p, &q);
+	if ((p.x == q.x) && (p.y == q.y)) { /* degenerate spline */
+	    p = rp;
+	    q = rq;
+	}
 	d.x = (q.x + p.x) / 2;
 	d.y = (p.y + q.y) / 2;
 	del.x = q.x - p.x;
 	del.y = q.y - p.y;
-	sp = dotneato_closest(ED_spl(e), d);
-	ht = ED_label(e)->dimen.y;
-	wd = ED_label(e)->dimen.x;
-	leftOf = LEFTOF(p, q, sp);
-	if (abs(del.x) < abs(del.y)) {	/* vertical edge */
-	    ld.y = 0;
-	    ld.x = fabs((ht * del.x) / (2.0 * del.y)) + (4 + wd) / 2.0;
-	    if ((leftOf && (del.y > 0)) || (!leftOf && (del.y < 0)))
-		ld.x *= -1;
-	} 
-	else if (del.x) { /* horizontal edge */
-	    /* prevent label from moving too far */
-	    wd = MIN(wd, MAXLABELWD);
-	    ld.x = 0;
-	    ld.y = fabs((wd * del.y) / (2.0 * del.x)) + (2 + ht) / 2.0;
-	    if ((!leftOf && (del.x > 0)) || (leftOf && (del.x < 0)))
-		ld.y *= -1;
+	dist2 = del.x*del.x + del.y*del.y;
+	if (dist2) {
+	    sp = dotneato_closest(ED_spl(e), d);
+	    spf.x = sp.x;
+	    spf.y = sp.y;
+	    ht = (ED_label(e)->dimen.y + 2)/2.0;
+	    wd = (MIN(ED_label(e)->dimen.x + 2, MAXLABELWD))/2.0;
+	    leftOf = LEFTOF(p, q, sp);
+	    if ((leftOf && (del.y >= 0)) || (!leftOf && (del.y < 0))) {
+		if (del.x*del.y >= 0)
+		    ht *= -1;
+	    }
+	    else {
+		wd *= -1;
+		if (del.x*del.y < 0)
+		    ht *= -1;
+	    }
+	    f = (del.y*wd - del.x*ht)/dist2;
+	    ld.x = -f*del.y;
+	    ld.y = f*del.x;
 	}
 	else {    /* end points the same */
 	    ld.x = 0;
 	    ld.y = -(2 + ht)/2.0;
 	}
 
-	ED_label(e)->p.x = sp.x + ld.x;
-	ED_label(e)->p.y = sp.y + ld.y;
+	ED_label(e)->p.x = spf.x + ld.x;
+	ED_label(e)->p.y = spf.y + ld.y;
 	ED_label(e)->set = TRUE;
 	updateBB(e->tail->graph, ED_label(e));
     }
