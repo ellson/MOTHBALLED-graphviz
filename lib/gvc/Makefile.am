@@ -13,7 +13,7 @@ AM_CPPFLAGS = \
 
 LIBS = @LIBLTDL@
 
-pkginclude_HEADERS = gvrender.h gvrenderint.h gvplugin_render.h \
+pkginclude_HEADERS = gvc.h gvcint.h gvplugin_render.h \
 	gvplugin_layout.h gvplugin.h
 pkglib_LTLIBRARIES = libgvc.la
 pkgconfig_DATA = libgvc.pc
