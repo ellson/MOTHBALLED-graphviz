@@ -939,7 +939,7 @@ void fdp_init_graph(Agraph_t * g)
     UseRankdir = FALSE;
 
     graph_init(g);
-    GD_drawing(g)->engine = FDP;
+//    GD_drawing(g)->engine = FDP;
     g->u.ndim = late_int(g, agfindattr(g, "dim"), 2, 2);
     Ndim = g->u.ndim = MIN(g->u.ndim, MAXDIM);
 

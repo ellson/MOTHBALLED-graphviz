@@ -133,7 +133,6 @@ extern "C" {
 	point size;		/* viewport size (pixels) */
 	double zoom;		/* viewport zoom factor */
 	pointf focus;		/* viewport focus in graph units */
-	double scale;		/* graph scale */
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	int rot;		/* rotation */
 

@@ -230,13 +230,13 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     gvc->bb = bb;
     gvc->pb = pb;
     dpi = gvc->dpi = GD_drawing(g)->dpi;
-    gvc->scale = GD_drawing(g)->scale;
     gvc->margin = GD_drawing(g)->margin;
 
     if (gvre) {
 	/* establish viewport and scaling */
 	if (dpi < 1.0)
 	    dpi = gvc->render_features->default_dpi;
+#if 0
 	if (gvc->size.x == 0) {
 	    gvc->size.x =
 		(gvc->bb.UR.x - gvc->bb.LL.x +
@@ -248,7 +248,8 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 	    gvc->focus.y = (GD_bb(gvc->g).UR.y - GD_bb(gvc->g).LL.y) / 2.;
 	    gvc->zoom = 1.0;
 	}
-	gvc->compscale.x = gvc->zoom * gvc->scale * dpi / POINTS_PER_INCH;
+#endif
+	gvc->compscale.x = gvc->zoom * dpi / POINTS_PER_INCH;
 	gvc->compscale.y =
 	    gvc->compscale.x *
 	    ((gvc->render_features->flags & GVRENDER_Y_GOES_DOWN) ? -1.0 : 1.0);
@@ -311,7 +312,7 @@ void gvrender_begin_page(GVC_t * gvc, point page, double scale, int rot,
     gvrender_engine_t *gvre = gvc->render_engine;
 
     gvc->page = page;
-    gvc->scale = scale;
+//    gvc->scale = scale;
     gvc->rot = rot;
 //    gvc->offset = offset;
     gvc->page_number = page.x + page.y * gvc->pages.x + 1;

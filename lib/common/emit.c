@@ -268,32 +268,13 @@ static void set_pagedir(graph_t * g)
     }
 }
 
-static double setScale(graph_t * g)
+static void setup_layers(GVC_t * gvc, graph_t * g)
 {
-    double xscale, yscale, scale;
+    char *str;
 
-    xscale = ((double) GD_drawing(g)->size.x) / GD_bb(g).UR.x;
-    yscale = ((double) GD_drawing(g)->size.y) / GD_bb(g).UR.y;
-    scale = MIN(xscale, yscale);
-    GD_drawing(g)->scale = scale;
-    GD_drawing(g)->size.x = scale * GD_bb(g).UR.x;
-    GD_drawing(g)->size.y = scale * GD_bb(g).UR.y;
-    return scale;
-}
-
-/* this isn't a pretty sight... */
-void setup_graph(GVC_t * gvc, graph_t * g)
-{
-    double scale;
-    char *p;
-    point PFCLM;		/* page for centering less margins */
-    point DS;			/* device drawable region for a page of the graph */
-
-    assert((GD_bb(g).LL.x == 0) && (GD_bb(g).LL.y == 0));
-
-    if ((p = agget(g, "layers")) != 0) {
+    if ((str = agget(g, "layers")) != 0) {
 	if (gvrender_features(gvc) & GVRENDER_DOES_LAYERS) {
-	    Nlayers = parse_layers(g, p);
+	    Nlayers = parse_layers(g, str);
 	}
 #ifndef DISABLE_CODEGENS
 	else {
@@ -306,24 +287,12 @@ void setup_graph(GVC_t * gvc, graph_t * g)
 	LayerID = NULL;
 	Nlayers = 0;
     }
+}
 
-    /* determine final drawing size and scale to apply. */
-    /* N.B. size given by user is not rotated by landscape mode */
-    /* start with "natural" size of layout */
-    scale = GD_drawing(g)->scale = 1.0;
-    if (GD_drawing(g)->size.x > 0) {	/* was given by user... */
-	if ((GD_drawing(g)->size.x < GD_bb(g).UR.x)	/* drawing is too big... */
-	    ||(GD_drawing(g)->size.y < GD_bb(g).UR.y)) {
-	    scale = setScale(g);
-	} else if (GD_drawing(g)->filled) {
-	    if ((GD_drawing(g)->size.x > GD_bb(g).UR.x)	/* drawing is too small... */
-		&&(GD_drawing(g)->size.y > GD_bb(g).UR.y)) {
-		scale = setScale(g);
-	    }
-	} else
-	    GD_drawing(g)->size = GD_bb(g).UR;
-    } else
-	GD_drawing(g)->size = GD_bb(g).UR;
+static void setup_pagination(GVC_t * gvc, graph_t * g)
+{
+    point PFCLM;		/* page for centering less margins */
+    point DS;			/* device drawable region for a page of the graph */
 
     /* determine pagination */
     PB.LL = GD_drawing(g)->margin;
@@ -337,8 +306,8 @@ void setup_graph(GVC_t * gvc, graph_t * g)
 	GP.y = PFCLM.y;		/* convert to double */
 	if (GD_drawing(g)->landscape)
 	    GP = exch_xyf(GP);
-	GP.x = GP.x / scale;
-	GP.y = GP.y / scale;
+	GP.x = GP.x / GD_drawing(g)->scale;
+	GP.y = GP.y / GD_drawing(g)->scale;
 	/* we don't want graph page to exceed its bounding box */
 	GP.x = MIN(GP.x, GD_bb(g).UR.x);
 	GP.y = MIN(GP.y, GD_bb(g).UR.y);
@@ -368,6 +337,7 @@ void setup_graph(GVC_t * gvc, graph_t * g)
     }
 
     set_pagedir(g);
+
     /* determine page box including centering */
     if (GD_drawing(g)->centered) {
 	point extra;
@@ -379,6 +349,15 @@ void setup_graph(GVC_t * gvc, graph_t * g)
 	PB.LL.y += extra.y / 2;
     }
     PB.UR = add_points(PB.LL, DS);
+}
+
+/* this isn't a pretty sight... */
+void setup_graph(GVC_t * gvc, graph_t * g)
+{
+    setup_layers(gvc, g);
+
+    setup_pagination(gvc, g);
+
     Deffontname = late_nnstring(g->proto->n, N_fontname, DEFAULT_FONTNAME);
     Deffontsize =
 	late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
@@ -652,17 +631,53 @@ void emit_edge(GVC_t * gvc, edge_t * e)
     gvrender_end_edge(gvc);
 }
 
+static void setup_size_scale(graph_t * g)
+{
+    double xscale, yscale, scale = 1.0;
+
+    assert((GD_bb(g).LL.x == 0) && (GD_bb(g).LL.y == 0));
+
+    /* determine final drawing size and scale to apply. */
+    /* N.B. size given by user is not rotated by landscape mode */
+    /* start with "natural" size of layout */
+    if (GD_drawing(g)->size.x > 0) {	/* was given by user... */
+	if ((GD_drawing(g)->size.x < GD_bb(g).UR.x)	/* drawing is too big... */
+	    ||(GD_drawing(g)->size.y < GD_bb(g).UR.y)) {
+	    xscale = ((double) GD_drawing(g)->size.x) / GD_bb(g).UR.x;
+	    yscale = ((double) GD_drawing(g)->size.y) / GD_bb(g).UR.y;
+	    scale = MIN(xscale, yscale);
+	}
+	else if (GD_drawing(g)->filled) {
+	    if ((GD_drawing(g)->size.x > GD_bb(g).UR.x)	/* drawing is too small... */
+		&&(GD_drawing(g)->size.y > GD_bb(g).UR.y)) {
+		xscale = ((double) GD_drawing(g)->size.x) / GD_bb(g).UR.x;
+		yscale = ((double) GD_drawing(g)->size.y) / GD_bb(g).UR.y;
+		scale = MIN(xscale, yscale);
+	    }
+	}
+    }
+    GD_drawing(g)->scale = scale;
+    GD_drawing(g)->size.x = scale * GD_bb(g).UR.x;
+    GD_drawing(g)->size.y = scale * GD_bb(g).UR.y;
+}
+
 void emit_init(GVC_t * gvc, graph_t * g)
 {
     char *str;
-    double X = 400.0, Y = 400.0, Z = 0.0, x = 0.0, y = 0.0;
+    double X, Y, Z, x, y;
 
-/* FIXME - init viewport to graph dimensions */
+    setup_size_scale(g);
+    X = (double)(GD_drawing(g)->size.x);
+    Y = (double)(GD_drawing(g)->size.y);
+    Z = GD_drawing(g)->scale;
+    x = (double)(GD_bb(g).UR.x) / 2.;
+    y = (double)(GD_bb(g).UR.y) / 2.;
 
     if ((str = agget(g, "viewport")))
 	sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
     gvc->size.x = ROUND(X);
     gvc->size.y = ROUND(Y);
+    gvc->zoom = Z;		/* scaling factor */
     gvc->zoom = Z;		/* scaling factor */
     gvc->focus.x = x;		/* graph coord of focus - points */
     gvc->focus.y = y;
