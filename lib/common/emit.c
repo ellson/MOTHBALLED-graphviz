@@ -295,7 +295,7 @@ static void firstpage(GVC_t *gvc)
     job->pageNum = 1;
 }
 
-static int validpage(GVC_t *gvc)
+static boolean validpage(GVC_t *gvc)
 {
     gvrender_job_t *job = gvc->job;
 
@@ -320,7 +320,7 @@ static void nextpage(GVC_t *gvc)
     job->pageNum = job->pagesArrayElem.x + job->pagesArrayElem.y * job->pagesArraySize.x + 1;
 }
 
-static int write_edge_test(Agraph_t * g, Agedge_t * e)
+static boolean write_edge_test(Agraph_t * g, Agedge_t * e)
 {
     Agraph_t *sg;
     int c;
@@ -333,7 +333,7 @@ static int write_edge_test(Agraph_t * g, Agedge_t * e)
     return TRUE;
 }
 
-static int write_node_test(Agraph_t * g, Agnode_t * n)
+static boolean write_node_test(Agraph_t * g, Agnode_t * n)
 {
     Agraph_t *sg;
     int c;
@@ -430,9 +430,10 @@ static boolean node_in_pageBox(GVC_t *gvc, node_t * n)
     return boxf_overlap(job->pageBox, nb);
 }
 
-static int is_natural_number(char *sstr)
+static boolean is_natural_number(char *sstr)
 {
     unsigned char *str = (unsigned char *) sstr;
+
     while (*str)
 	if (NOT(isdigit(*str++)))
 	    return FALSE;
@@ -454,13 +455,13 @@ static int layer_index(GVC_t *gvc, char *str, int all)
     return -1;
 }
 
-static int selectedlayer(GVC_t *gvc, char *spec)
+static boolean selectedlayer(GVC_t *gvc, char *spec)
 {
     int n0, n1;
     unsigned char buf[SMALLBUF];
     char *w0, *w1;
     agxbuf xb;
-    int rval = FALSE;
+    boolean rval = FALSE;
 
     agxbinit(&xb, SMALLBUF, buf);
     agxbput(&xb, spec);
@@ -492,7 +493,7 @@ static int selectedlayer(GVC_t *gvc, char *spec)
     return rval;
 }
 
-static int node_in_layer(GVC_t *gvc, graph_t * g, node_t * n)
+static boolean node_in_layer(GVC_t *gvc, graph_t * g, node_t * n)
 {
     char *pn, *pe;
     edge_t *e;
@@ -514,7 +515,7 @@ static int node_in_layer(GVC_t *gvc, graph_t * g, node_t * n)
     return FALSE;
 }
 
-static int edge_in_layer(GVC_t *gvc, graph_t * g, edge_t * e)
+static boolean edge_in_layer(GVC_t *gvc, graph_t * g, edge_t * e)
 {
     char *pe, *pn;
     int cnt;
@@ -534,7 +535,7 @@ static int edge_in_layer(GVC_t *gvc, graph_t * g, edge_t * e)
     return FALSE;
 }
 
-static int clust_in_layer(GVC_t *gvc, graph_t * sg)
+static boolean clust_in_layer(GVC_t *gvc, graph_t * sg)
 {
     char *pg;
     node_t *n;
@@ -1358,7 +1359,7 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
     }
 }
 
-static int style_delim(int c)
+static boolean is_style_delim(int c)
 {
     switch (c) {
     case '(':
@@ -1391,7 +1392,7 @@ static int style_token(char **s, agxbuf * xb)
 	break;
     default:
 	token = SID;
-	while (!style_delim(c = *p)) {
+	while (!is_style_delim(c = *p)) {
 	    agxbputc(xb, c);
 	    p++;
 	}
@@ -1412,7 +1413,7 @@ static void cleanup()
 char **parse_style(char *s)
 {
     static char *parse[FUNLIMIT];
-    static int first = 1;
+    static boolean is_first = TRUE;
     int fun = 0;
     boolean in_parens = FALSE;
     unsigned char buf[SMALLBUF];
@@ -1420,10 +1421,10 @@ char **parse_style(char *s)
     int c;
     agxbuf xb;
 
-    if (first) {
+    if (is_first) {
 	agxbinit(&ps_xb, SMALLBUF, outbuf);
 	atexit(cleanup);
-	first = 0;
+	is_first = FALSE;
     }
 
     agxbinit(&xb, SMALLBUF, buf);
@@ -1544,11 +1545,11 @@ codegen_info_t *next_codegen(codegen_info_t * p)
     ++p;
 
 #ifdef QUARTZ_RENDER
-    static int unscanned = 1;
+    static boolean unscanned = TRUE;
     if (!p->name && unscanned) {
 	/* reached end of codegens but haven't yet scanned for Quicktime codegens... */
 
-	unscanned = 0;		/* don't scan again */
+	unscanned = FALSE;		/* don't scan again */
 
 	ComponentDescription criteria;
 	criteria.componentType = GraphicsExporterComponentType;
