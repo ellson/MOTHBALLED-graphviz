@@ -259,7 +259,7 @@ if test "x$RUBY" = "x"; then
   HAVE_RUBY=0
 else
   HAVE_RUBY=1
-  RUBY_INCLUDES=-I`ruby config_ruby.rb INCLUDES`
+  RUBY_INCLUDES=-I`ruby $(top_srcdir)/config_ruby.rb INCLUDES`
   RUBY_LIBS=-lruby
 fi
 AC_SUBST(HAVE_RUBY)
