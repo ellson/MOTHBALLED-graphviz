@@ -923,6 +923,12 @@ int common_init_edge(edge_t * e)
     return r;
 }
 
+/* flip_ptf:
+ * Transform point =>
+ *  LR - rotate ccw by 90
+ *  BT - reflect across x axis
+ *  RL - TB o LR
+ */
 point flip_pt(point p, int rankdir)
 {
     int x = p.x, y = p.y;
@@ -945,6 +951,9 @@ point flip_pt(point p, int rankdir)
     return p;
 }
 
+/* flip_ptf:
+ * flip_pt for pointf type.
+ */
 pointf flip_ptf(pointf p, int rankdir)
 {
     double x = p.x, y = p.y;
@@ -967,6 +976,13 @@ pointf flip_ptf(pointf p, int rankdir)
     return p;
 }
 
+/* invflip_ptf:
+ * Transform point =>
+ *  LR - rotate cw by 90
+ *  BT - reflect across x axis
+ *  RL - TB o LR
+ * Note that flip and invflip only differ on LR
+ */
 point invflip_pt(point p, int rankdir)
 {
     int x = p.x, y = p.y;
