@@ -195,11 +195,11 @@ static void tk_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 	dpi = DEFAULT_DPI;
     DevScale = dpi / POINTS_PER_INCH;
 
-    Viewport.x = gvc->width;
-    Viewport.y = gvc->height;
+    Viewport.x = gvc->job->width;
+    Viewport.y = gvc->job->height;
     if (Viewport.x) {
-	Zoom = gvc->zoom;
-	GraphFocus = gvc->focus;
+	Zoom = gvc->job->zoom;
+	GraphFocus = gvc->job->focus;
     } else {
 	Viewport.x =
 	    (bb.UR.x - bb.LL.x + 2 * GD_drawing(g)->margin.x) * DevScale +

@@ -1120,7 +1120,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	Output_lang = gvc->job->output_lang;
 	Output_file = gvc->job->output_file;
 #endif
-	gvc->codegen = &TK_CodeGen;
+	gvc->job->codegen = &TK_CodeGen;
 	/* emit graph in sorted order, all nodes then all edges */
 	emit_graph(gvc, g, EMIT_SORTED);
 	gvrender_delete_jobs(gvc);
@@ -1163,7 +1163,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	/* set default margins for current output format */
 	dotneato_set_margins(gvc, g);
 	/* render graph to open GD structure */
-	gvc->codegen = &memGD_CodeGen;
+	gvc->job->codegen = &memGD_CodeGen;
 	/* emit graph in sorted order, all nodes then all edges */
 	emit_graph(gvc, g, 1);
 	gvrender_delete_jobs(gvc);
