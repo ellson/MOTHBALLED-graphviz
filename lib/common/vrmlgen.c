@@ -505,7 +505,7 @@ idist2 (point p0, point p1)
 static double 
 interpolate_zcoord(pointf p1, point fst, double fstz, point snd, double sndz)
 {
-    pointf p;
+    /* pointf p; */
     double len, d, rv;
 
     if (fstz == sndz)
@@ -520,8 +520,8 @@ interpolate_zcoord(pointf p1, point fst, double fstz, point snd, double sndz)
     } else
 #endif
     len = sqrt(idist2(fst, snd));
-    p.x = fst.x;
-    p.y = fst.y;
+    /* p.x = fst.x; */
+    /* p.y = fst.y; */
     d = sqrt(DIST2(p1, fst))/len;
     rv = fstz + d*(sndz - fstz);
     return rv;
@@ -605,8 +605,8 @@ vrml_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
     cp = &(cstk[SP]);
     if (cp->pen == P_NONE)
 	return;
-    Fstz = late_double(Curedge->tail, N_z, 0.0, -1000.0);
-    Sndz = late_double(Curedge->head, N_z, 0.0, -MAXFLOAT);
+    fstz = Fstz = late_double(Curedge->tail, N_z, 0.0, -1000.0);
+    sndz = Sndz = late_double(Curedge->head, N_z, 0.0, -MAXFLOAT);
     if (straight(A,n)) {
 	doSegment (A, ND_coord_i(Curedge->tail),Fstz,ND_coord_i(Curedge->head),Sndz);
 	return;
