@@ -77,13 +77,13 @@ void PQdelete(Halfedge * he)
 }
 
 
-int PQempty()
+int PQempty(void)
 {
     return (PQcount == 0);
 }
 
 
-Point PQ_min()
+Point PQ_min(void)
 {
     Point answer;
 
@@ -95,7 +95,7 @@ Point PQ_min()
     return (answer);
 }
 
-Halfedge *PQextractmin()
+Halfedge *PQextractmin(void)
 {
     Halfedge *curr;
 
@@ -105,13 +105,13 @@ Halfedge *PQextractmin()
     return (curr);
 }
 
-void PQcleanup()
+void PQcleanup(void)
 {
     free(PQhash);
     PQhash = NULL;
 }
 
-void PQinitialize()
+void PQinitialize(void)
 {
     int i;
 
@@ -132,7 +132,7 @@ static void PQdumphe(Halfedge * p)
 	   p->ystar);
 }
 
-void PQdump()
+void PQdump(void)
 {
     int i;
     Halfedge *p;

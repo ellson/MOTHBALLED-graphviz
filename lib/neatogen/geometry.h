@@ -35,7 +35,7 @@ extern "C" {
     extern int nsites;		/* Number of sites */
     extern int sqrt_nsites;
 
-    extern void geominit();
+    extern void geominit(void);
     extern double dist_2(Point *, Point *);	/* Distance squared between two points */
     extern void subPt(Point * a, Point b, Point c);
     extern void addPt(Point * a, Point b, Point c);

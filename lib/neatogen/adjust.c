@@ -61,7 +61,7 @@ static void setBoundBox(Point * ll, Point * ur)
  /* freeNodes:
   * Free node resources.
   */
-static void freeNodes()
+static void freeNodes(void)
 {
     int i;
     Info_t *ip = nodeInfo;
@@ -191,7 +191,7 @@ static int scomp(const void *S1, const void *S2)
  /* sortSites:
   * Fill array of pointer to sites and sort the sites using scomp
   */
-static void sortSites()
+static void sortSites(void)
 {
     int i;
     Site **sp;
@@ -242,8 +242,7 @@ static void geomUpdate(int doSort)
     deltax = xmax - xmin;
 }
 
-static
-Site *nextOne()
+static Site *nextOne(void)
 {
     Site *s;
 
@@ -258,7 +257,7 @@ Site *nextOne()
  * Check for nodes with identical positions and tweak
  * the positions.
  */
-static void rmEquality()
+static void rmEquality(void)
 {
     int i, cnt;
     Site **ip;
@@ -343,7 +342,7 @@ static int countOverlap(int iter)
     return count;
 }
 
-static void increaseBoundBox()
+static void increaseBoundBox(void)
 {
     double ydelta, xdelta;
     Point ll, ur;
@@ -425,7 +424,7 @@ static void newpos(Info_t * ip)
   * Add corners of clipping window to appropriate sites.
   * A site gets a corner if it is the closest site to that corner.
   */
-static void addCorners()
+static void addCorners(void)
 {
     Info_t *ip = nodeInfo;
     Info_t *sws = ip;
@@ -478,7 +477,7 @@ static void addCorners()
   * We first add the corner of the clipping windows to the
   * vertex lists of the appropriate sites.
   */
-static void newPos()
+static void newPos(void)
 {
     int i;
     Info_t *ip = nodeInfo;
@@ -499,7 +498,7 @@ static void newPos()
  * This could be optimized, over multiple components or
  * even multiple graphs, but probably not worth it.
  */
-static void cleanup()
+static void cleanup(void)
 {
     PQcleanup();
     ELcleanup();
@@ -507,7 +506,7 @@ static void cleanup()
     edgeinit();			/* free memory */
 }
 
-static int vAdjust()
+static int vAdjust(void)
 {
     int iterCnt = 0;
     int overlapCnt = 0;
@@ -584,7 +583,7 @@ static double rePos(Point c)
     return f;
 }
 
-static int sAdjust()
+static int sAdjust(void)
 {
     int iterCnt = 0;
     int overlapCnt = 0;
