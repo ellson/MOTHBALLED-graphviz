@@ -17,7 +17,7 @@ HDRS = gvc.h gvcint.h gvplugin_render.h \
 	gvplugin_layout.h gvplugin.h
 
 OBJS = gvrender.o gvlayout.o gvcontext.o gvjobs.o \
-	gvemit.o gvplugin.o gvconfig.o
+	gvemit.o gvplugin.o gvconfig.o gvdisplay.o  gvevent.o gvtext.o
 
 libgvc.a : $(OBJS)
 	$(RM) libgvc.a
