@@ -52,18 +52,14 @@ void gvlayout_layout(GVC_t * gvc, graph_t * g)
 {
     gvlayout_engine_t *gvle = gvc->layout_engine;
 
-    if (gvle && gvle->layout) {
-	gvc->g = g;
+    if (gvle && gvle->layout)
 	gvle->layout(g);
-    }
 }
 
 void gvlayout_cleanup(GVC_t * gvc, graph_t * g)
 {
     gvlayout_engine_t *gvle = gvc->layout_engine;
 
-    if (gvle && gvle->cleanup) {
+    if (gvle && gvle->cleanup)
 	gvle->cleanup(g);
-	gvc->g = NULL;
-    }
 }

@@ -328,11 +328,10 @@ void emit_reset(GVC_t * gvc, graph_t * g)
     gvrender_reset(gvc);
 }
 
-static void emit_background(GVC_t * gvc, boxf pageBox)
+static void emit_background(GVC_t * gvc, graph_t *g, boxf pageBox)
 {
     char *str;
     point A[4];
-    graph_t *g = gvc->g;
     box PB;
 
     if (((str = agget(g, "bgcolor")) != 0)
@@ -358,12 +357,9 @@ static void emit_defaults(GVC_t * gvc)
 
 
 /* even if this makes you cringe, at least it's short */
-static void setup_page(GVC_t * gvc)
+static void setup_page(GVC_t * gvc, graph_t * g)
 {
     gvrender_job_t *job = gvc->job;
-    point offset;
-    int rot;
-    graph_t *g = gvc->g;
 
     /* establish current box in graph coordinates */
     job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x;
@@ -372,16 +368,15 @@ static void setup_page(GVC_t * gvc)
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
     /* establish offset to be applied, in graph coordinates */
-    if (GD_drawing(g)->landscape == FALSE)
-	offset = pointof(-job->pageBox.LL.x, -job->pageBox.LL.y);
+    if (job->rotation == 0)
+	job->offset = pointof(-job->pageBox.LL.x, -job->pageBox.LL.y);
     else {
-	offset.x = (job->pagesArrayElem.y + 1) * job->pageSize.y;
-	offset.y = -(job->pagesArrayElem.x) * job->pageSize.x;
+	job->offset.x = (job->pagesArrayElem.y + 1) * job->pageSize.y;
+	job->offset.y = -(job->pagesArrayElem.x) * job->pageSize.x;
     }
-    rot = GD_drawing(g)->landscape ? 90 : 0;
 
-    gvrender_begin_page(gvc, job->zoom, rot, offset);
-    emit_background(gvc, job->pageBox);
+    gvrender_begin_page(gvc, g);
+    emit_background(gvc, g, job->pageBox);
     emit_defaults(gvc);
 }
 
@@ -932,11 +927,13 @@ void emit_init(GVC_t * gvc, graph_t * g)
 	late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
 		    MIN_FONTSIZE);
 
+    gvc->graphname = g->name;
+
     init_layering(gvc, g);
 
     init_job_pagination(gvc, g);
 
-    gvrender_begin_job(gvc, Lib, X, Y, Z, x, y, GD_drawing(g)->dpi);
+    gvrender_begin_job(gvc, g, Lib, X, Y, Z, x, y, GD_drawing(g)->dpi);
 }
 
 void emit_deinit(GVC_t * gvc)
@@ -1031,7 +1028,7 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
 	if (gvc->numLayers > 1)
 	    gvrender_begin_layer(gvc);
 	for (firstpage(gvc); validpage(gvc); nextpage(gvc)) {
-    	    setup_page(gvc);
+    	    setup_page(gvc, g);
 	    Obj = NONE;
 	    if (((s = agget(g, "href")) && s[0])
 		|| ((s = agget(g, "URL")) && s[0])) {

@@ -28,14 +28,17 @@ static int y_off;		/* ymin + ymax */
 static double yf_off;		/* y_off in inches */
 static int e_arrows;		/* graph has edges with end arrows */
 static int s_arrows;		/* graph has edges with start arrows */
+static Agraph_t *cluster_g;
+static agxbuf outbuf;
+static agxbuf charbuf;
+static attrsym_t *g_draw;
+static attrsym_t *g_l_draw;
 
-static void extend_attrs(GVC_t * gvc);
-
-  /* macros for inverting the y coordinate with the bounding box */
+/* macros for inverting the y coordinate with the bounding box */
 #define Y(y) (y_invert ? (y_off - (y)) : (y))
 #define YF(y) (y_invert ? (yf_off - (y)) : (y))
 
-static void graph_sets_margin(GVC_t * gvc, graph_t * g)
+static void graph_settings(GVC_t * gvc, graph_t * g)
 {
     double xf, yf;
     char *p;
@@ -52,17 +55,377 @@ static void graph_sets_margin(GVC_t * gvc, graph_t * g)
             gvc->graph_sets_margin = TRUE;
         }
     }
-}
 
-static void graph_sets_pageSize(GVC_t * gvc, graph_t * g)
-{
+    /* pagesize */
     gvc->graph_sets_pageSize = FALSE;
     P2PF(GD_drawing(g)->page, gvc->pageSize);
     if ((GD_drawing(g)->page.x > 0) && (GD_drawing(g)->page.y > 0)) {
 	gvc->graph_sets_pageSize = TRUE;
     }
 
+    /* bounding box */
     B2BF(GD_bb(g),gvc->bb);
+
+    /* rotation */
+    gvc->rotation = GD_drawing(g)->landscape ? 90 : 0;
+}
+
+static void printptf(FILE * f, point pt)
+{
+    fprintf(f, " %.3f %.3f", PS2INCH(pt.x), PS2INCH(Y(pt.y)));
+}
+
+/* setYInvert:
+ * Set parameters used to flip coordinate system (y=0 at top).
+ * Values do not need to be unset, since if y_invert is set, it's
+ * set for * all graphs during current run, so each will 
+ * reinitialize the values for its bbox.
+ */
+static void setYInvert(graph_t * g)
+{
+    if (y_invert) {
+	y_off = GD_bb(g).UR.y + GD_bb(g).LL.y;
+	yf_off = PS2INCH(y_off);
+    }
+}
+
+static char *getoutputbuffer(char *str)
+{
+    static char *rv;
+    static int len;
+    int req;
+
+    req = MAX(2 * strlen(str) + 2, BUFSIZ);
+    if (req > len) {
+	rv = ALLOC(req, rv, char);
+	len = req;
+    }
+    return rv;
+}
+
+static char *canonical(char *str)
+{
+    return agstrcanon(str, getoutputbuffer(str));
+}
+
+static void writenodeandport(FILE * fp, node_t * node, char *port)
+{
+    char *name;
+    if (IS_CLUST_NODE(node))
+	name = strchr(node->name, ':') + 1;
+    else
+	name = node->name;
+    fprintf(fp, "%s", canonical(name));	/* slimey i know */
+    if (port && *port)
+	fprintf(fp, ":%s", canonical(port));
+}
+
+/* FIXME - there must be a proper way to get port info - these are 
+ * supposed to be private to libgraph - from libgraph.h */
+#define TAILX 1
+#define HEADX 2
+
+/* _write_plain:
+ */
+static void _write_plain(GVC_t * gvc, graph_t * g, FILE * f, boolean extend)
+{
+    int i, j, splinePoints;
+    char *tport, *hport;
+    node_t *n;
+    edge_t *e;
+    bezier bz;
+    point pt;
+    char *lbl;
+
+//    setup_graph(gvc, g);
+    setYInvert(g);
+    pt = GD_bb(g).UR;
+    fprintf(f, "graph %.3f %.3f %.3f\n", gvc->job->zoom, PS2INCH(pt.x), PS2INCH(pt.y));
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	if (IS_CLUST_NODE(n))
+	    continue;
+	fprintf(f, "node %s ", canonical(n->name));
+	printptf(f, ND_coord_i(n));
+	if (ND_label(n)->html)   /* if html, get original text */
+	    lbl = agxget(n, N_label->index);
+	else
+	    lbl = ND_label(n)->text;
+	if (lbl)
+	    lbl = canonical(lbl);
+	else
+	    lbl = "\"\"";
+	fprintf(f, " %.3f %.3f %s %s %s %s %s\n",
+		ND_width(n), ND_height(n), lbl,
+		late_nnstring(n, N_style, "solid"),
+		ND_shape(n)->name,
+		late_nnstring(n, N_color, DEFAULT_COLOR),
+		late_nnstring(n, N_fillcolor, DEFAULT_FILL));
+    }
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    if (extend && e->attr) {
+		tport = e->attr[TAILX];
+		hport = e->attr[HEADX];
+	    } else
+		tport = hport = "";
+	    if (ED_spl(e)) {
+		splinePoints = 0;
+		for (i = 0; i < ED_spl(e)->size; i++) {
+		    bz = ED_spl(e)->list[i];
+		    splinePoints += bz.size;
+		}
+		fprintf(f, "edge ");
+		writenodeandport(f, e->tail, tport);
+		fprintf(f, " ");
+		writenodeandport(f, e->head, hport);
+		fprintf(f, " %d", splinePoints);
+		for (i = 0; i < ED_spl(e)->size; i++) {
+		    bz = ED_spl(e)->list[i];
+		    for (j = 0; j < bz.size; j++)
+			printptf(f, bz.list[j]);
+		}
+	    }
+	    if (ED_label(e)) {
+		fprintf(f, " %s", canonical(ED_label(e)->text));
+		printptf(f, ED_label(e)->p);
+	    }
+	    fprintf(f, " %s %s\n", late_nnstring(e, E_style, "solid"),
+		    late_nnstring(e, E_color, DEFAULT_COLOR));
+	}
+    }
+    fprintf(f, "stop\n");
+}
+
+static void write_plain(GVC_t * gvc, graph_t * g, FILE * f)
+{
+    _write_plain(gvc, g, f, FALSE);
+}
+
+static void write_plain_ext(GVC_t * gvc, graph_t * g, FILE * f)
+{
+    _write_plain(gvc, g, f, TRUE);
+}
+
+static attrsym_t *safe_dcl(graph_t * g, void *obj, char *name, char *def,
+			   attrsym_t * (*fun) (Agraph_t *, char *, char *))
+{
+    attrsym_t *a = agfindattr(obj, name);
+    if (a == NULL)
+	a = fun(g, name, def);
+    return a;
+}
+
+static int isInvis(char *style)
+{
+    char **styles = 0;
+    char **sp;
+    char *p;
+
+    if (style[0]) {
+	styles = parse_style(style);
+	sp = styles;
+	while ((p = *sp++)) {
+	    if (streq(p, "invis"))
+		return 1;
+	}
+    }
+    return 0;
+}
+
+static void xd_textline(point p, textline_t * line)
+{
+    char buf[BUFSIZ];
+    int j;
+
+    agxbputc(&charbuf, 'T');
+    switch (line->just) {
+    case 'l':
+	j = -1;
+	break;
+    case 'r':
+	j = 1;
+	break;
+    default:
+    case 'n':
+	j = 0;
+	break;
+    }
+    sprintf(buf, " %d %d %d %d %d -", p.x, Y(p.y), j,
+	    (int) line->width, (int) strlen(line->str));
+    agxbput(&charbuf, buf);
+    agxbput(&charbuf, line->str);
+    agxbputc(&charbuf, ' ');
+}
+
+static void xd_ellipse(point p, int rx, int ry, int filled)
+{
+    char buf[BUFSIZ];
+
+    agxbputc(&outbuf, (filled ? 'E' : 'e'));
+    sprintf(buf, " %d %d %d %d ", p.x, Y(p.y), rx, ry);
+    agxbput(&outbuf, buf);
+}
+
+static void points(char c, point * A, int n)
+{
+    char buf[BUFSIZ];
+    int i;
+    point p;
+
+    agxbputc(&outbuf, c);
+    sprintf(buf, " %d ", n);
+    agxbput(&outbuf, buf);
+    for (i = 0; i < n; i++) {
+	p = A[i];
+	sprintf(buf, "%d %d ", p.x, Y(p.y));
+	agxbput(&outbuf, buf);
+    }
+}
+
+static void xd_polygon(point * A, int n, int filled)
+{
+    points((filled ? 'P' : 'p'), A, n);
+}
+
+static void
+xd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
+{
+    points('B', A, n);
+}
+
+static void xd_polyline(point * A, int n)
+{
+    points('L', A, n);
+}
+
+static void xd_begin_cluster(Agraph_t * sg)
+{
+    cluster_g = sg;
+}
+
+static void xd_end_cluster()
+{
+    agxset(cluster_g, g_draw->index, agxbuse(&outbuf));
+    if (GD_label(cluster_g))
+	agxset(cluster_g, g_l_draw->index, agxbuse(&charbuf));
+}
+
+/* 
+ * John M. suggests:
+ * You might want to add four more:
+ *
+ * _ohdraw_ (optional head-end arrow for edges)
+ * _ohldraw_ (optional head-end label for edges)
+ * _otdraw_ (optional tail-end arrow for edges)
+ * _otldraw_ (optional tail-end label for edges)
+ * 
+ * that would be generated when an additional option is supplied to 
+ * dot, etc. and 
+ * these would be the arrow/label positions to use if a user want to flip the 
+ * direction of an edge (as sometimes is there want).
+ */
+static void extend_attrs(GVC_t * gvc, graph_t *g)
+{
+    int i;
+    bezier bz = { 0, 0, 0, 0 };
+    double scale;
+    node_t *n;
+    edge_t *e;
+    attrsym_t *n_draw = NULL;
+    attrsym_t *n_l_draw = NULL;
+    attrsym_t *e_draw = NULL;
+    attrsym_t *h_draw = NULL;
+    attrsym_t *t_draw = NULL;
+    attrsym_t *e_l_draw = NULL;
+    attrsym_t *hl_draw = NULL;
+    attrsym_t *tl_draw = NULL;
+    unsigned char buf[BUFSIZ];
+    unsigned char cbuf[BUFSIZ];
+
+    if (GD_has_labels(g) & GRAPH_LABEL)
+	g_l_draw = safe_dcl(g, g, "_ldraw_", "", agraphattr);
+    if (GD_n_cluster(g))
+	g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
+
+    n_draw = safe_dcl(g, g->proto->n, "_draw_", "", agnodeattr);
+    n_l_draw = safe_dcl(g, g->proto->n, "_ldraw_", "", agnodeattr);
+
+    e_draw = safe_dcl(g, g->proto->e, "_draw_", "", agedgeattr);
+    if (e_arrows)
+	h_draw = safe_dcl(g, g->proto->e, "_hdraw_", "", agedgeattr);
+    if (s_arrows)
+	t_draw = safe_dcl(g, g->proto->e, "_tdraw_", "", agedgeattr);
+    if (GD_has_labels(g) & EDGE_LABEL)
+	e_l_draw = safe_dcl(g, g->proto->e, "_ldraw_", "", agedgeattr);
+    if (GD_has_labels(g) & HEAD_LABEL)
+	hl_draw = safe_dcl(g, g->proto->e, "_hldraw_", "", agedgeattr);
+    if (GD_has_labels(g) & TAIL_LABEL)
+	tl_draw = safe_dcl(g, g->proto->e, "_tldraw_", "", agedgeattr);
+
+    agxbinit(&outbuf, BUFSIZ, buf);
+    agxbinit(&charbuf, BUFSIZ, cbuf);
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	if (ND_shape(n) && !isInvis(late_string(n, N_style, ""))) {
+	    ND_shape(n)->fns->codefn(gvc, n);
+	    agxset(n, n_draw->index, agxbuse(&outbuf));
+	    agxset(n, n_l_draw->index, agxbuse(&charbuf));
+	}
+	if (State < GVSPLINES)
+	    continue;
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    if (ED_edge_type(e) == IGNORED)
+		continue;
+	    if (isInvis(late_string(e, E_style, "")))
+		continue;
+	    if (ED_spl(e) == NULL)
+		continue;
+
+	    scale = late_double(e, E_arrowsz, 1.0, 0.0);
+	    for (i = 0; i < ED_spl(e)->size; i++) {
+		bz = ED_spl(e)->list[i];
+#ifndef DISABLE_CODEGENS
+/* FIXME - why is this here? */
+		xd_bezier(bz.list, bz.size, FALSE, FALSE);
+#endif
+	    }
+	    agxset(e, e_draw->index, agxbuse(&outbuf));
+	    for (i = 0; i < ED_spl(e)->size; i++) {
+		if (bz.sflag) {
+		    arrow_gen(gvc, bz.sp, bz.list[0], scale, bz.sflag);
+		    agxset(e, t_draw->index, agxbuse(&outbuf));
+		}
+		if (bz.eflag) {
+		    arrow_gen(gvc, bz.ep, bz.list[bz.size - 1], scale,
+			      bz.eflag);
+		    agxset(e, h_draw->index, agxbuse(&outbuf));
+		}
+	    }
+	    if (ED_label(e)) {
+		emit_label(gvc, ED_label(e), (void *) e);
+		if (mapbool(late_string(e, E_decorate, "false"))
+		    && ED_spl(e)) {
+		    emit_attachment(gvc, ED_label(e), ED_spl(e));
+		    agxbput(&charbuf, agxbuse(&outbuf));
+		}
+		agxset(e, e_l_draw->index, agxbuse(&charbuf));
+	    }
+	    if (ED_head_label(e)) {
+		emit_label(gvc, ED_head_label(e), (void *) e);
+		agxset(e, hl_draw->index, agxbuse(&charbuf));
+	    }
+	    if (ED_tail_label(e)) {
+		emit_label(gvc, ED_tail_label(e), (void *) e);
+		agxset(e, tl_draw->index, agxbuse(&charbuf));
+	    }
+	}
+    }
+    if (GD_label(g)) {
+	emit_label(gvc, GD_label(g), (void *) g);
+	agxset(g, g_l_draw->index, agxbuse(&charbuf));
+    }
+    emit_clusters(gvc, g, 0);
+    agxbfree(&outbuf);
+    agxbfree(&charbuf);
 }
 
 /* chkOrder:
@@ -127,14 +490,12 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
     gvrender_job_t *job = gvc->job;
     int flags;
 
-    gvc->g = g;
 #ifndef DISABLE_CODEGENS
     Output_file = job->output_file;
     Output_lang = job->output_lang;
 #endif
 
-    graph_sets_margin(gvc, g);
-    graph_sets_pageSize(gvc, g);
+    graph_settings(gvc, g);
     flags = lang_sets_flags(job, g);
     emit_init(gvc, g);
 
@@ -154,7 +515,7 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
 	break;
     case EXTENDED_DOT:
 	attach_attrs(g);
-	extend_attrs(gvc);
+	extend_attrs(gvc, g);
 	agwrite(g, gvc->job->output_file);
 	break;
     case ATTRIBUTED_DOT:
@@ -167,10 +528,10 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
 	agwrite(g, gvc->job->output_file);
 	break;
     case PLAIN:
-	write_plain(gvc, gvc->job->output_file);
+	write_plain(gvc, g, gvc->job->output_file);
 	break;
     case PLAIN_EXT:
-	write_plain_ext(gvc, gvc->job->output_file);
+	write_plain_ext(gvc, g, gvc->job->output_file);
 	break;
     default:
 	if (gvc->job->output_lang >= QBM_FIRST
@@ -245,29 +606,6 @@ static void set_record_rects(node_t * n, field_t * f, agxbuf * xb)
     }
     for (i = 0; i < f->n_flds; i++)
 	set_record_rects(n, f->fld[i], xb);
-}
-
-static attrsym_t *safe_dcl(graph_t * g, void *obj, char *name, char *def,
-			   attrsym_t * (*fun) (Agraph_t *, char *, char *))
-{
-    attrsym_t *a = agfindattr(obj, name);
-    if (a == NULL)
-	a = fun(g, name, def);
-    return a;
-}
-
-/* setYInvert:
- * Set parameters used to flip coordinate system (y=0 at top).
- * Values do not need to be unset, since if y_invert is set, it's
- * set for * all graphs during current run, so each will 
- * reinitialize the values for its bbox.
- */
-static void setYInvert(graph_t * g)
-{
-    if (y_invert) {
-	y_off = GD_bb(g).UR.y + GD_bb(g).LL.y;
-	yf_off = PS2INCH(y_off);
-    }
 }
 
 void attach_attrs(graph_t * g)
@@ -423,216 +761,7 @@ void rec_attach_bb(graph_t * g)
 	rec_attach_bb(GD_clust(g)[c]);
 }
 
-static char *getoutputbuffer(char *str)
-{
-    static char *rv;
-    static int len;
-    int req;
-
-    req = MAX(2 * strlen(str) + 2, BUFSIZ);
-    if (req > len) {
-	rv = ALLOC(req, rv, char);
-	len = req;
-    }
-    return rv;
-}
-
-
-static char *canonical(char *str)
-{
-    return agstrcanon(str, getoutputbuffer(str));
-}
-
-static void writenodeandport(FILE * fp, node_t * node, char *port)
-{
-    char *name;
-    if (IS_CLUST_NODE(node))
-	name = strchr(node->name, ':') + 1;
-    else
-	name = node->name;
-    fprintf(fp, "%s", canonical(name));	/* slimey i know */
-    if (port && *port)
-	fprintf(fp, ":%s", canonical(port));
-}
-
-/* FIXME - there must be a proper way to get port info - these are 
- * supposed to be private to libgraph - from libgraph.h */
-#define TAILX 1
-#define HEADX 2
-
-/* _write_plain:
- */
-void _write_plain(GVC_t * gvc, FILE * f, boolean extend)
-{
-    int i, j, splinePoints;
-    char *tport, *hport;
-    node_t *n;
-    edge_t *e;
-    bezier bz;
-    point pt;
-    graph_t *g = gvc->g;
-    char *lbl;
-
-//    setup_graph(gvc, g);
-    setYInvert(g);
-    pt = GD_bb(g).UR;
-    fprintf(f, "graph %.3f %.3f %.3f\n", gvc->job->zoom, PS2INCH(pt.x), PS2INCH(pt.y));
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (IS_CLUST_NODE(n))
-	    continue;
-	fprintf(f, "node %s ", canonical(n->name));
-	printptf(f, ND_coord_i(n));
-	if (ND_label(n)->html)   /* if html, get original text */
-	    lbl = agxget(n, N_label->index);
-	else
-	    lbl = ND_label(n)->text;
-	if (lbl)
-	    lbl = canonical(lbl);
-	else
-	    lbl = "\"\"";
-	fprintf(f, " %.3f %.3f %s %s %s %s %s\n",
-		ND_width(n), ND_height(n), lbl,
-		late_nnstring(n, N_style, "solid"),
-		ND_shape(n)->name,
-		late_nnstring(n, N_color, DEFAULT_COLOR),
-		late_nnstring(n, N_fillcolor, DEFAULT_FILL));
-    }
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    if (extend && e->attr) {
-		tport = e->attr[TAILX];
-		hport = e->attr[HEADX];
-	    } else
-		tport = hport = "";
-	    if (ED_spl(e)) {
-		splinePoints = 0;
-		for (i = 0; i < ED_spl(e)->size; i++) {
-		    bz = ED_spl(e)->list[i];
-		    splinePoints += bz.size;
-		}
-		fprintf(f, "edge ");
-		writenodeandport(f, e->tail, tport);
-		fprintf(f, " ");
-		writenodeandport(f, e->head, hport);
-		fprintf(f, " %d", splinePoints);
-		for (i = 0; i < ED_spl(e)->size; i++) {
-		    bz = ED_spl(e)->list[i];
-		    for (j = 0; j < bz.size; j++)
-			printptf(f, bz.list[j]);
-		}
-	    }
-	    if (ED_label(e)) {
-		fprintf(f, " %s", canonical(ED_label(e)->text));
-		printptf(f, ED_label(e)->p);
-	    }
-	    fprintf(f, " %s %s\n", late_nnstring(e, E_style, "solid"),
-		    late_nnstring(e, E_color, DEFAULT_COLOR));
-	}
-    }
-    fprintf(f, "stop\n");
-}
-
-void write_plain(GVC_t * gvc, FILE * f)
-{
-    _write_plain(gvc, f, FALSE);
-}
-
-void write_plain_ext(GVC_t * gvc, FILE * f)
-{
-    _write_plain(gvc, f, TRUE);
-}
-
-void printptf(FILE * f, point pt)
-{
-    fprintf(f, " %.3f %.3f", PS2INCH(pt.x), PS2INCH(Y(pt.y)));
-}
-
-static agxbuf outbuf;
-static agxbuf charbuf;
-static attrsym_t *g_draw;
-static attrsym_t *g_l_draw;
-
 #ifndef DISABLE_CODEGENS
-
-static void xd_textline(point p, textline_t * line)
-{
-    char buf[BUFSIZ];
-    int j;
-
-    agxbputc(&charbuf, 'T');
-    switch (line->just) {
-    case 'l':
-	j = -1;
-	break;
-    case 'r':
-	j = 1;
-	break;
-    default:
-    case 'n':
-	j = 0;
-	break;
-    }
-    sprintf(buf, " %d %d %d %d %d -", p.x, Y(p.y), j,
-	    (int) line->width, (int) strlen(line->str));
-    agxbput(&charbuf, buf);
-    agxbput(&charbuf, line->str);
-    agxbputc(&charbuf, ' ');
-}
-
-static void xd_ellipse(point p, int rx, int ry, int filled)
-{
-    char buf[BUFSIZ];
-
-    agxbputc(&outbuf, (filled ? 'E' : 'e'));
-    sprintf(buf, " %d %d %d %d ", p.x, Y(p.y), rx, ry);
-    agxbput(&outbuf, buf);
-}
-
-static void points(char c, point * A, int n)
-{
-    char buf[BUFSIZ];
-    int i;
-    point p;
-
-    agxbputc(&outbuf, c);
-    sprintf(buf, " %d ", n);
-    agxbput(&outbuf, buf);
-    for (i = 0; i < n; i++) {
-	p = A[i];
-	sprintf(buf, "%d %d ", p.x, Y(p.y));
-	agxbput(&outbuf, buf);
-    }
-}
-
-static void xd_polygon(point * A, int n, int filled)
-{
-    points((filled ? 'P' : 'p'), A, n);
-}
-
-static void
-xd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
-{
-    points('B', A, n);
-}
-
-static void xd_polyline(point * A, int n)
-{
-    points('L', A, n);
-}
-
-static Agraph_t *cluster_g;
-
-static void xd_begin_cluster(Agraph_t * sg)
-{
-    cluster_g = sg;
-}
-
-static void xd_end_cluster()
-{
-    agxset(cluster_g, g_draw->index, agxbuse(&outbuf));
-    if (GD_label(cluster_g))
-	agxset(cluster_g, g_l_draw->index, agxbuse(&charbuf));
-}
 
 codegen_t XDot_CodeGen = {
     0,				/* xd_reset */
@@ -656,139 +785,3 @@ codegen_t XDot_CodeGen = {
 };
 
 #endif
-
-static int isInvis(char *style)
-{
-    char **styles = 0;
-    char **sp;
-    char *p;
-
-    if (style[0]) {
-	styles = parse_style(style);
-	sp = styles;
-	while ((p = *sp++)) {
-	    if (streq(p, "invis"))
-		return 1;
-	}
-    }
-    return 0;
-}
-
-/* 
- * John M. suggests:
- * You might want to add four more:
- *
- * _ohdraw_ (optional head-end arrow for edges)
- * _ohldraw_ (optional head-end label for edges)
- * _otdraw_ (optional tail-end arrow for edges)
- * _otldraw_ (optional tail-end label for edges)
- * 
- * that would be generated when an additional option is supplied to 
- * dot, etc. and 
- * these would be the arrow/label positions to use if a user want to flip the 
- * direction of an edge (as sometimes is there want).
- */
-static void extend_attrs(GVC_t * gvc)
-{
-    int i;
-    bezier bz = { 0, 0, 0, 0 };
-    double scale;
-    node_t *n;
-    edge_t *e;
-    attrsym_t *n_draw = NULL;
-    attrsym_t *n_l_draw = NULL;
-    attrsym_t *e_draw = NULL;
-    attrsym_t *h_draw = NULL;
-    attrsym_t *t_draw = NULL;
-    attrsym_t *e_l_draw = NULL;
-    attrsym_t *hl_draw = NULL;
-    attrsym_t *tl_draw = NULL;
-    unsigned char buf[BUFSIZ];
-    unsigned char cbuf[BUFSIZ];
-    graph_t *g = gvc->g;
-
-    if (GD_has_labels(g) & GRAPH_LABEL)
-	g_l_draw = safe_dcl(g, g, "_ldraw_", "", agraphattr);
-    if (GD_n_cluster(g))
-	g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
-
-    n_draw = safe_dcl(g, g->proto->n, "_draw_", "", agnodeattr);
-    n_l_draw = safe_dcl(g, g->proto->n, "_ldraw_", "", agnodeattr);
-
-    e_draw = safe_dcl(g, g->proto->e, "_draw_", "", agedgeattr);
-    if (e_arrows)
-	h_draw = safe_dcl(g, g->proto->e, "_hdraw_", "", agedgeattr);
-    if (s_arrows)
-	t_draw = safe_dcl(g, g->proto->e, "_tdraw_", "", agedgeattr);
-    if (GD_has_labels(g) & EDGE_LABEL)
-	e_l_draw = safe_dcl(g, g->proto->e, "_ldraw_", "", agedgeattr);
-    if (GD_has_labels(g) & HEAD_LABEL)
-	hl_draw = safe_dcl(g, g->proto->e, "_hldraw_", "", agedgeattr);
-    if (GD_has_labels(g) & TAIL_LABEL)
-	tl_draw = safe_dcl(g, g->proto->e, "_tldraw_", "", agedgeattr);
-
-    agxbinit(&outbuf, BUFSIZ, buf);
-    agxbinit(&charbuf, BUFSIZ, cbuf);
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (ND_shape(n) && !isInvis(late_string(n, N_style, ""))) {
-	    ND_shape(n)->fns->codefn(gvc, n);
-	    agxset(n, n_draw->index, agxbuse(&outbuf));
-	    agxset(n, n_l_draw->index, agxbuse(&charbuf));
-	}
-	if (State < GVSPLINES)
-	    continue;
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    if (ED_edge_type(e) == IGNORED)
-		continue;
-	    if (isInvis(late_string(e, E_style, "")))
-		continue;
-	    if (ED_spl(e) == NULL)
-		continue;
-
-	    scale = late_double(e, E_arrowsz, 1.0, 0.0);
-	    for (i = 0; i < ED_spl(e)->size; i++) {
-		bz = ED_spl(e)->list[i];
-#ifndef DISABLE_CODEGENS
-/* FIXME - why is this here? */
-		xd_bezier(bz.list, bz.size, FALSE, FALSE);
-#endif
-	    }
-	    agxset(e, e_draw->index, agxbuse(&outbuf));
-	    for (i = 0; i < ED_spl(e)->size; i++) {
-		if (bz.sflag) {
-		    arrow_gen(gvc, bz.sp, bz.list[0], scale, bz.sflag);
-		    agxset(e, t_draw->index, agxbuse(&outbuf));
-		}
-		if (bz.eflag) {
-		    arrow_gen(gvc, bz.ep, bz.list[bz.size - 1], scale,
-			      bz.eflag);
-		    agxset(e, h_draw->index, agxbuse(&outbuf));
-		}
-	    }
-	    if (ED_label(e)) {
-		emit_label(gvc, ED_label(e), (void *) e);
-		if (mapbool(late_string(e, E_decorate, "false"))
-		    && ED_spl(e)) {
-		    emit_attachment(gvc, ED_label(e), ED_spl(e));
-		    agxbput(&charbuf, agxbuse(&outbuf));
-		}
-		agxset(e, e_l_draw->index, agxbuse(&charbuf));
-	    }
-	    if (ED_head_label(e)) {
-		emit_label(gvc, ED_head_label(e), (void *) e);
-		agxset(e, hl_draw->index, agxbuse(&charbuf));
-	    }
-	    if (ED_tail_label(e)) {
-		emit_label(gvc, ED_tail_label(e), (void *) e);
-		agxset(e, tl_draw->index, agxbuse(&charbuf));
-	    }
-	}
-    }
-    if (GD_label(g)) {
-	emit_label(gvc, GD_label(g), (void *) g);
-	agxset(g, g_l_draw->index, agxbuse(&charbuf));
-    }
-    emit_clusters(gvc, g, 0);
-    agxbfree(&outbuf);
-    agxbfree(&charbuf);
-}

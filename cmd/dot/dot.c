@@ -49,14 +49,15 @@ char *Info[] = {
     BUILDDATE			/* Build Date */
 };
 
-static GVC_t *gvc;
+static GVC_t *Gvc;
+static graph_t * G;
 
 #ifndef MSWIN32
 static void intr(int s)
 {
-    if (gvc->g)
-	dotneato_write(gvc, gvc->g);
-    dotneato_terminate(gvc);
+    if (G)
+	dotneato_write(Gvc, G);
+    dotneato_terminate(Gvc);
     exit(1);
 }
 
@@ -135,10 +136,10 @@ static graph_t *create_test_graph(void)
 
 int main(int argc, char **argv)
 {
-    graph_t *g, *prev = NULL;
+    graph_t *prev = NULL;
 
-    gvc = gvNEWcontext(Info, username());
-    parse_args(gvc, argc, argv);
+    Gvc = gvNEWcontext(Info, username());
+    parse_args(Gvc, argc, argv);
 
 #ifndef MSWIN32
     signal(SIGUSR1, toggle);
@@ -149,27 +150,27 @@ int main(int argc, char **argv)
     if (MemTest) {
 	while (1) {
 	    /* Create a test graph */
-	    g = create_test_graph();
+	    G = create_test_graph();
 
 	    /* Perform layout and cleanup */
-	    gvlayout_layout(gvc, g);
-	    gvlayout_cleanup(gvc, g);
+	    gvlayout_layout(Gvc, G);
+	    gvlayout_cleanup(Gvc, G);
 
 	    /* Delete graph */
-	    agclose(g);
+	    agclose(G);
 	}
 	assert(0);		/* should never exit loop */
     } else {
-	while ((g = next_input_graph())) {
+	while ((G = next_input_graph())) {
 	    if (prev) {
-		gvlayout_cleanup(gvc, prev);
+		gvlayout_cleanup(Gvc, prev);
 		agclose(prev);
 	    }
-	    gvlayout_layout(gvc, g);
-	    dotneato_write(gvc, g);
-	    prev = g;
+	    gvlayout_layout(Gvc, G);
+	    dotneato_write(Gvc, G);
+	    prev = G;
 	}
     }
-    dotneato_terminate(gvc);
+    dotneato_terminate(Gvc);
     return 1;
 }

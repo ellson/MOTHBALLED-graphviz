@@ -75,12 +75,12 @@ extern "C" {
     extern int gvrender_select(GVC_t * gvc, char *lang);
     extern int gvrender_features(GVC_t * gvc);
     extern void gvrender_reset(GVC_t * gvc);
-    extern void gvrender_begin_job(GVC_t * gvc, char **lib, double X, double Y, double Z,
+    extern void gvrender_begin_job(GVC_t * gvc, graph_t *g, char **lib, double X, double Y, double Z,
 				   double x, double y, int dpi);
     extern void gvrender_end_job(GVC_t * gvc);
     extern void gvrender_begin_graph(GVC_t * gvc, graph_t * g);
     extern void gvrender_end_graph(GVC_t * gvc);
-    extern void gvrender_begin_page(GVC_t * gvc, double scale, int rot, point offset);
+    extern void gvrender_begin_page(GVC_t * gvc, graph_t * g);
     extern void gvrender_end_page(GVC_t * gvc);
     extern void gvrender_begin_layer(GVC_t * gvc);
     extern void gvrender_end_layer(GVC_t * gvc);

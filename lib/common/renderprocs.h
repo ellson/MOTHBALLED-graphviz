@@ -147,7 +147,6 @@ extern "C" {
     extern void place_graph_label(Agraph_t *);
     extern void place_portlabel(edge_t * e, boolean head_p);
     extern point pointof(int, int);
-    extern void printptf(FILE *, point);
     extern int processClusterEdges(graph_t * g);
     extern char *ps_string(char *s);
     extern void rank(graph_t * g, int balance, int maxiter);
@@ -175,8 +174,6 @@ extern "C" {
     extern void use_library(char *);
     extern char *username();
     extern point user_shape_size(node_t * n, char *shapefile);
-    extern void write_plain(GVC_t * gvc, FILE *);
-    extern void write_plain_ext(GVC_t * gvc, FILE *);
     extern void *zmalloc(size_t);
     extern void *zrealloc(void *, size_t, size_t, size_t);
     extern void *gmalloc(size_t);

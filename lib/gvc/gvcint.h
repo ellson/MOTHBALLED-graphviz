@@ -87,6 +87,7 @@ extern "C" {
         int flags;		/* emit_graph flags */
 
         pointf margin;		 /* job-specific margin */
+	int rotation;		 /* job-specific page rotation */
 
 	boxf	pageBox;	 /* drawable region in device coords */
 				 /* basically width*height - margins */
@@ -99,18 +100,17 @@ extern "C" {
 	point	pagesArrayElem;  /* 2D coord of current page - 0,0 based */
         int	numPages;	 /* number of pages */
         int	pageNum;	 /* current page - 1 based */
+	point	offset;		 /* offset for current page */
 
         unsigned int width;     /* width in pixels */
         unsigned int height;    /* height in pixels */
 	int dpi;		/* resolution pixels-per-inch */
-	int rot;		/* rotation */
 	double zoom;		/* viewport zoom factor */
 	pointf focus;		/* viewport focus in graph units */
 #if 0
 	pointf pointer;		/* pointer position in graph units */
 #endif
 	boxf clip;		/* clip region in graph units */
-	point offset;
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	
 	boolean fit_mode, needs_refresh, click, active, has_grown;
@@ -157,6 +157,7 @@ extern "C" {
 	char *layout_type;      /* string name of layout type */
 	gvlayout_engine_t *layout_engine;	/* current layout engine */
 	int layout_id;		/* internal id of current layout */
+	char *graphname;	/* name from graph */
 
 	char **lib;
 
@@ -165,7 +166,8 @@ extern "C" {
 	pointf pageSize;	/* pageSize in graph units, not including margins */
 	point pb;		/* page size - including margins (inches) */
 	boxf bb;		/* graph bb in graph units, not including margins */
-	boolean graph_sets_margin, graph_sets_pageSize;
+	int rotation;		/* rotation - 0 = portrait, 90 = landscape */
+	boolean graph_sets_margin, graph_sets_pageSize, graph_sets_rotation;
 
 	/* layers */
 	char *layerDelims;	/* delimiters in layer names */
@@ -173,10 +175,6 @@ extern "C" {
 	char **layerIDs;	/* array of layer names */
 	int numLayers;		/* number of layers */
 	int layerNum;		/* current layer - 1 based*/
-
-	/* gvrender_begin_graph() */
-	graph_t *g;
-
 
 	gvstyle_t styles[MAXNEST]; /* style stack - reused by each job */
 	int SP;

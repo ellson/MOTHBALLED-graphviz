@@ -1112,7 +1112,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	gvc->job->output_file = (FILE *) & tkgendata;
 
 	/* make sure that layout is done */
-	gvc->g = g = g->root;
+	g = g->root;
 	if (!GD_drawing(g) || argc > 3)
 	    tcldot_layout(g, (argc > 3) ? argv[3] : (char *) NULL);
 
@@ -1139,7 +1139,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 
 	/* make sure that layout is done */
-	gvc->g = g = g->root;
+	g = g->root;
 	if (!GD_drawing(g) || argc > 4)
 	    tcldot_layout(g, (argc > 4) ? argv[4] : (char *) NULL);
 	
@@ -1364,9 +1364,6 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
     *gp = g;
     g->handle = id;
 
-    /* link graph to context */
-    gvc->g = g;
-
 #ifndef TCLOBJ
     Tcl_CreateCommand(interp, interp->result, graphcmd,
 		      (ClientData) gvc, (Tcl_CmdDeleteProc *) NULL);
@@ -1387,9 +1384,9 @@ static int dotnew(ClientData clientData, Tcl_Interp * interp,
  * it to create the handles and tcl commands for each 
  * graph, subgraph, node, and edge.
  */
-static int tcldot_fixup(Tcl_Interp * interp, GVC_t * gvc)
+static int tcldot_fixup(Tcl_Interp * interp, GVC_t * gvc, graph_t * g)
 {
-    Agraph_t **gp, *sg, **sgp, *g = gvc->g;
+    Agraph_t **gp, *sg, **sgp;
     Agnode_t *n, **np;
     Agedge_t *e, **ep;
     char buf[16];
@@ -1595,10 +1592,7 @@ static int dotread(ClientData clientData, Tcl_Interp * interp,
      * so we make sure that it is initialized to "not done" */
     GD_drawing(g) = NULL;
 
-    /* link graph to context */
-    gvc->g = g;
-
-    return (tcldot_fixup(interp, gvc));
+    return (tcldot_fixup(interp, gvc, g));
 }
 
 static int dotstring(ClientData clientData, Tcl_Interp * interp,
@@ -1637,9 +1631,8 @@ static int dotstring(ClientData clientData, Tcl_Interp * interp,
 
     /* link graph to context */
     gvc = (GVC_t *) clientData;
-    gvc->g = g;
 
-    return (tcldot_fixup(interp, gvc));
+    return (tcldot_fixup(interp, gvc, g));
 }
 
 #if defined(_BLD_tcldot) && defined(_DLL)

@@ -121,7 +121,7 @@ void gvrender_reset(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_job(GVC_t * gvc, char **lib, double X, double Y, double Z, double x, double y, int dpi)
+void gvrender_begin_job(GVC_t * gvc, graph_t *g, char **lib, double X, double Y, double Z, double x, double y, int dpi)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
@@ -142,6 +142,7 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, double X, double Y, double Z, d
     job->zoom = Z;              /* scaling factor */
     job->focus.x = x;           /* graph coord of focus - points */
     job->focus.y = y;
+    job->rotation = gvc->rotation;
     if (gvre) {
         if (gvre->begin_job)
 	    gvre->begin_job(job);
@@ -151,7 +152,7 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, double X, double Y, double Z, d
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_job && job->pageNum <= 1)
-	    cg->begin_job(gvc->job->output_file, gvc->g, lib, gvc->user,
+	    cg->begin_job(gvc->job->output_file, g, lib, gvc->user,
 			  gvc->info, job->pagesArraySize);
     }
 #endif
@@ -185,7 +186,7 @@ static pointf gvrender_ptf(GVC_t * gvc, pointf p)
     gvrender_job_t *job = gvc->job;
     pointf rv;
 
-    if (job->rot == 0) {
+    if (job->rotation == 0) {
 	rv.x = (p.x - job->focus.x) * job->compscale.x + job->width / 2.;
 	rv.y = (p.y - job->focus.y) * job->compscale.y + job->height / 2.;
     } else {
@@ -200,7 +201,7 @@ static pointf gvrender_pt(GVC_t * gvc, point p)
     gvrender_job_t *job = gvc->job;
     pointf rv;
 
-    if (job->rot == 0) {
+    if (job->rotation == 0) {
 	rv.x = ((double) p.x - job->focus.x) * job->compscale.x + job->width / 2.;
 	rv.y = ((double) p.y - job->focus.y) * job->compscale.y + job->height / 2.;
     } else {
@@ -237,8 +238,6 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g)
     char *str;
     double sx, sy;
 
-    gvc->g = g;
-
     if (gvre) {
 	job->compscale.x = job->zoom * job->dpi / POINTS_PER_INCH;
 	job->compscale.y = job->compscale.x *
@@ -253,7 +252,7 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g)
 
 	/* render specific init */
 	if (gvre->begin_graph)
-	    gvre->begin_graph(job, g->name);
+	    gvre->begin_graph(job, gvc->graphname);
 
 	/* background color */
 	if (((str = agget(g, "bgcolor")) != 0) && str[0]) {
@@ -305,22 +304,20 @@ void gvrender_end_graph(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_page(GVC_t * gvc, double scale, int rot, point offset)
+void gvrender_begin_page(GVC_t * gvc, graph_t * g)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
-    job->rot = rot;
     if (gvre && gvre->begin_page)
-	gvre->begin_page(job, gvc->g->name,
-                         job->pagesArrayElem, job->pageNum, job->numPages);
+	gvre->begin_page(job);
 
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_page)
-	    cg->begin_page(gvc->g, job->pagesArrayElem, job->zoom, rot, offset);
+	    cg->begin_page(g, job->pagesArrayElem, job->zoom, job->rotation, job->offset);
     }
 #endif
 }
@@ -331,7 +328,7 @@ void gvrender_end_page(GVC_t * gvc)
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_page)
-	gvre->end_page(job, job->pagesArrayElem, job->pageNum, job->numPages);
+	gvre->end_page(job);
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
