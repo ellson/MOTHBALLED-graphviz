@@ -89,6 +89,13 @@ gv_ruby.cpp: gv.i
 gv_tcl.cpp: gv.i
 	$(SWIG) -c++ -tcl -namespace -outdir tcl -o gv_tcl.cpp gv.i
 
+if WITH_TCL
+all-local: pkgIndex.tcl
+
+pkgIndex.tcl: libgv_tcl.la
+        sh $(top_srcdir)/tclpkg/mkpkgindex.sh libgv_tcl.la gv $(VERSION)
+endif
+
 test: test_java test_perl test_python test_ruby test_tcl
 
 test_java:
@@ -119,8 +126,10 @@ test_tcl:
 
 EXTRA_DIST = gv.i java/test.java perl/test.pl python/test.py ruby/test.rb tcl/test.tcl
 
-CLEANFILES = gv_java.cpp gv_perl.cpp gv.pm gv_python.cpp gv.py gv.pyc gv_ruby.cpp gv_tcl.cpp \
-	java/SWIG*.java java/gv*.java java/*.class java/*.so java/*.dot java/*.png \
+CLEANFILES = gv_java.cpp gv_perl.cpp gv.pm gv_python.cpp gv.py gv.pyc \
+	gv_ruby.cpp gv_tcl.cpp pkgIndex.tcl \
+	java/SWIG*.java java/gv*.java java/*.class java/*.so \
+	java/*.dot java/*.png \
 	perl/gv.pm perl/gv.so perl/*.dot perl/*.png \
 	python/gv.py python/gv.pyc python/_gv.so python/*.dot python/*.png \
 	ruby/gv.so ruby/*.dot ruby/*.png \

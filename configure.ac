@@ -384,10 +384,8 @@ if test "$HAVE_TCL" = "1"; then
 fi
 
 if test "$HAVE_TCL" = "1"; then
-    TCL_SUBDIRS="tclstubs tclhandle gdtclft tcldot tclpathplan"
-    TCL_PKGINDEX="gdtclft/pkgIndex.tcl tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl"
+    TCL_PKGINDEX="gdtclft/pkgIndex.tcl tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl gv/pkgIndex.tcl"
 else
-    TCL_SUBDIRS=""
     TCL_PKGINDEX=""
 fi
 AC_SUBST(HAVE_TCL)
