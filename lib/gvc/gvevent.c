@@ -73,8 +73,11 @@ void gvevent_refresh(gvrender_job_t * job)
     emit_graph(job->gvc, job->g, job->flags);
 }
 
+#if 0
+
 void gvevent_grow_pixmap(gvrender_job_t * job)
 {
+
     Pixmap new;
 #if 0
     cairo_surface_t *surface;
@@ -223,6 +226,7 @@ void gvevent_client_message(gvrender_job_t * job, XClientMessageEvent * cmev)
 	&& (Atom) cmev->data.l[0] == job->wm_delete_window_atom)
 	exit(0);
 }
+#endif
 
 static int quit_cb(gvrender_job_t * job)
 {
