@@ -1060,7 +1060,7 @@ else
 if test -f "/usr/local/include/tclInt.h"; then
 TCLINT_INCLUDES="-I/usr/local/include"
 else
-TCLINT_INCLUDES="-I$TOP_DIR/tclstubs"
+TCLINT_INCLUDES="-I$TOP_DIR/tclpkg/tclstubs"
 fi
 fi
 fi
@@ -1077,7 +1077,7 @@ else
 if test -f "/usr/local/include/tkInt.h"; then
 TKINT_INCLUDES="-I/usr/local/include"
 else
-TKINT_INCLUDES="-I$TOP_DIR/tkstubs"
+TKINT_INCLUDES="-I$TOP_DIR/tclpkg/tkstubs"
 fi
 fi
 fi
