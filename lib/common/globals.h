@@ -102,7 +102,6 @@ extern "C" {
     EXTERN double yf_off;               /* y_off in inches */
     EXTERN attrsym_t *g_draw;
     EXTERN attrsym_t *g_l_draw;
-    external char *BaseLineStyle[];	/* solid, width = 1 */
 
     EXTERN attrsym_t
 	* N_height, *N_width, *N_shape, *N_color, *N_fillcolor,

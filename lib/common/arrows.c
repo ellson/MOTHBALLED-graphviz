@@ -516,7 +516,7 @@ void arrow_newgen(GVC_t * gvc, pointf p, pointf u, double scale, int flag)
     /* Dotted and dashed styles on the arrowhead are ugly (dds) */
     /* linewidth needs to be reset */
     gvrender_begin_context(gvc);
-    gvrender_set_style(gvc, BaseLineStyle);
+    gvrender_set_style(gvc, gvc->defaultlinestyle);
 
     /* generate arrowhead vector */
     u.x -= p.x;

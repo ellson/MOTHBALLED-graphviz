@@ -180,6 +180,9 @@ extern "C" {
 	char *defaultfontname;
 	double defaultfontsize;
 
+	/* default line style */
+	char **defaultlinestyle;
+
 	gvstyle_t styles[MAXNEST]; /* style stack - reused by each job */
 	int SP;
 

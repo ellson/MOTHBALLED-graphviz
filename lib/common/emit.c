@@ -31,7 +31,7 @@
 
 #define MAX_CODEGENS 100
 
-char *BaseLineStyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
+static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 int Obj;
 static attrsym_t *G_peripheries;
 
@@ -659,7 +659,7 @@ void emit_attachment(GVC_t * gvc, textlabel_t * lp, splines * spl)
     A[1] = pointof(A[0].x - sz.x, A[0].y);
     A[2] = dotneato_closest(spl, lp->p);
     /* Don't use edge style to draw attachment */
-    gvrender_set_style(gvc, BaseLineStyle);
+    gvrender_set_style(gvc, gvc->defaultlinestyle);
     /* Use font color to draw attachment
        - need something unambiguous in case of multicolored parallel edges
        - defaults to black for html-like labels
@@ -1014,6 +1014,9 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
     gvc->defaultfontname = late_nnstring(g->proto->n, N_fontname, DEFAULT_FONTNAME);
     gvc->defaultfontsize = late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
 		    MIN_FONTSIZE);
+
+    /* default line style */
+    gvc->defaultlinestyle = defaultlinestyle;
 
     gvc->graphname = g->name;
     gvc->lib = Lib;
