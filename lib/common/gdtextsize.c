@@ -44,8 +44,9 @@ char *gd_alternate_fontlist(char *font)
 
     fontlist = fontbuf;
     if ((strcasecmp(font, "times-bold") == 0)
+	|| (strcasecmp(fontbuf, "timesbd") == 0)
 	|| (strcasecmp(fontbuf, "timesb") == 0))
-	fontlist = "timesb;Timesb;TIMESB";
+	fontlist = "timesbd;Timesbd;TIMESBD;timesb;Timesb;TIMESB";
 
     else if ((strcasecmp(font, "times-italic") == 0)
 	     || (strcasecmp(fontbuf, "timesi") == 0))
