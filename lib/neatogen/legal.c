@@ -74,7 +74,7 @@ int Plegal_arrangement(Ppoly_t ** polys, int n_polys)
 		((vsd.x == avsd.x) &&
 		 !EQ_PT(vsd, ilist[i]) && !EQ_PT(avsd, ilist[i]))) {
 		rv = 0;
-		if (Verbose) {
+		if (Verbose > 1) {
 		    fprintf(stderr, "\nintersection %d at %.3f %.3f\n",
 			    i, ilist[i].x, ilist[i].y);
 		    fprintf(stderr, "seg#1 : (%.3f, %.3f) (%.3f, %.3f)\n",
