@@ -99,6 +99,15 @@ extern "C" {
 
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	
+	/* gvrender_begin_page() */
+	point page;
+	int page_number;
+	point offset;
+
+	/* gvrender_begin_layer() */
+	int layer;
+	int nLayers;
+
 #if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER)
 	Display *dpy;
 	int scr;
@@ -165,15 +174,6 @@ extern "C" {
 
 	/* render defaults set from graph */
 	color_t bgcolor;	/* background color */
-
-	/* gvrender_begin_page() */
-	point page;
-	point offset;
-	int page_number;
-
-	/* gvrender_begin_layer() */
-	int layer;
-	int nLayers;
     };
 
 #ifdef __cplusplus

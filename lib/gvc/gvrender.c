@@ -129,6 +129,8 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, point pages, double X, double Y
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
+    job->gvc = gvc;
+
     gvc->lib = lib;
     gvc->pages = pages;
     /* establish viewport and scaling */
@@ -152,7 +154,7 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, point pages, double X, double Y
     else {
 	codegen_t *cg = job->codegen;
 
-	if (cg && cg->begin_job && gvc->page_number == 0)
+	if (cg && cg->begin_job && job->page_number == 0)
 	    cg->begin_job(gvc->job->output_file, gvc->g, lib, gvc->user,
 			  gvc->info, pages);
     }
@@ -308,11 +310,11 @@ void gvrender_begin_page(GVC_t * gvc, point page, double scale, int rot,
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
-    gvc->page = page;
+    job->page = page;
 //    gvc->scale = scale;
     job->rot = rot;
 //    gvc->offset = offset;
-    gvc->page_number = page.x + page.y * gvc->pages.x + 1;
+    job->page_number = page.x + page.y * gvc->pages.x + 1;
     if (gvre && gvre->begin_page)
 	gvre->begin_page(job, gvc->g->name);
 #ifndef DISABLE_CODEGENS
@@ -348,8 +350,8 @@ void gvrender_begin_layer(GVC_t * gvc, char *layername, int layer,
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
-    gvc->layer = layer;
-    gvc->nLayers = nLayers;
+    job->layer = layer;
+    job->nLayers = nLayers;
     if (gvre && gvre->begin_layer)
 	gvre->begin_layer(job, layername);
 #ifndef DISABLE_CODEGENS
@@ -377,8 +379,8 @@ void gvrender_end_layer(GVC_t * gvc)
 	    cg->end_layer();
     }
 #endif
-    gvc->layer = 0;
-    gvc->nLayers = 0;
+    job->layer = 0;
+    job->nLayers = 0;
 }
 
 void gvrender_begin_cluster(GVC_t * gvc, graph_t * sg)
