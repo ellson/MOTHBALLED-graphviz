@@ -151,20 +151,11 @@ setAttr (char* arg)
   case 'n' :
     if (setInt (&fdp_parms.numIters, arg)) return 1;
     break;
-  case 'M' :
-    if (setInt (&fdp_parms.maxIters, arg)) return 1;
-    break;
   case 'U' :
     if (setInt (&fdp_parms.unscaled, arg)) return 1;
     break;
   case 'C' :
     if (setDouble (&fdp_parms.C, arg)) return 1;
-    break;
-  case 'K' :
-    if (setDouble (&fdp_parms.K, arg)) return 1;
-    break;
-  case 't' :
-    if (setInt (&fdp_parms.tries, arg)) return 1;
     break;
   case 'T' :
     if (*arg == '*') {
