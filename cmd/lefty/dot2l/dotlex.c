@@ -113,12 +113,15 @@ int yylex(void)
     return token;
 }
 
-void yyerror(char *fmt, char *s)
+void yyerror(const char *fmt, ...)
 {
+    va_list args;
     if (Syntax_errors++)
 	return;
     fprintf(stderr, "graph parser: ");
-    fprintf(stderr, fmt, s);
+    va_start(args, fmt);
+    vfprintf(stderr, fmt, args);
+    va_end(args);
     fprintf(stderr, " near line %d\n", Line_number);
     error_context();
 }
