@@ -170,6 +170,7 @@ static void addEdgeLabels(edge_t * e, point rp, point rq)
 	else if (del.x) { /* horizontal edge */
 	    /* prevent label from moving too far */
 	    wd = MIN(wd, MAXLABELWD);
+	    ld.x = 0;
 	    ld.y = fabs((wd * del.y) / (2.0 * del.x)) + (2 + ht) / 2.0;
 	    if ((!leftOf && (del.x > 0)) || (leftOf && (del.x < 0)))
 		ld.y *= -1;
