@@ -299,10 +299,12 @@ flat_edges(graph_t * g)
 		    }
 		}
 	    }
+		/* look for other flat edges with labels */
 	    for (j = 0; j < ND_other(n).size; j++) {
 		edge_t* le;
 		e = ND_other(n).list[j];
 		if (ND_rank(e->tail) != ND_rank(e->head)) continue;
+		if (e->tail == e->head) continue; /* skip loops */
 		le = e;
 		while (ED_to_virt(le)) le = ED_to_virt(le);
 		ED_adjacent(e) = ED_adjacent(le); 
