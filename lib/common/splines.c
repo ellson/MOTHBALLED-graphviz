@@ -21,6 +21,35 @@
 
 #include <render.h>
 
+static int debugleveln(edge_t* e, int i)
+{
+    return (GD_showboxes(e->head->graph) == i ||
+	    GD_showboxes(e->tail->graph) == i ||
+	    ED_showboxes(e) == i ||
+	    ND_showboxes(e->head) == i ||
+	    ND_showboxes(e->tail) == i);
+}
+
+static void showPoints(point ps[], int pn)
+{
+    char buf[BUFSIZ];
+    int newcnt = Show_cnt + pn + 3;
+    int bi, li;
+
+    Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
+    li = Show_cnt+1;
+    Show_boxes[li++] = strdup ("%% self list");
+    Show_boxes[li++] = strdup ("dbgstart");
+    for (bi = 0; bi < pn; bi++) {
+	sprintf(buf, "%d %d point", ps[bi].x, ps[bi].y);
+	Show_boxes[li++] = strdup (buf);
+    }
+    Show_boxes[li++] = strdup ("grestore");
+
+    Show_cnt = newcnt;
+    Show_boxes[Show_cnt+1] = NULL;
+}
+
 /* arrow_clip:
  * Clip arrow to node boundary.
  * The real work is done elsewhere. Here we get the real edge,
@@ -35,10 +64,8 @@ arrow_clip(edge_t * fe, edge_t * le,
 {
     edge_t *e;
     int i, j, sflag, eflag;
-    inside_t inside_context;
 
     for (e = fe; ED_to_orig(e); e = ED_to_orig(e));
-    inside_context.e = e;
 
     j = info->swapEnds(e);
     arrow_flags(e, &sflag, &eflag);
@@ -54,18 +81,19 @@ arrow_clip(edge_t * fe, edge_t * le,
     /* swap the two ends */
     if (sflag)
 	*startp =
-	    arrowStartClip(&inside_context, ps, *startp, *endp, spl,
-			   sflag);
+	    arrowStartClip(e, ps, *startp, *endp, spl, sflag);
     if (eflag)
 	*endp =
-	    arrowEndClip(&inside_context, ps, *startp, *endp, spl, eflag);
+	    arrowEndClip(e, ps, *startp, *endp, spl, eflag);
 }
 
 /* bezier_clip
  * Clip bezier to shape using binary search.
  * The details of the shape are passed in the inside_context;
  * The function providing the inside test is passed as a parameter.
- * left_inside specifies that sp[0] is inside the node, else * sp[3] is taken as inside.
+ * left_inside specifies that sp[0] is inside the node, 
+ * else sp[3] is taken as inside.
+ * The points p are in node coordinates.
  */
 void bezier_clip(inside_t * inside_context,
 		 boolean(*inside) (inside_t * inside_context, pointf p),
@@ -155,7 +183,7 @@ shape_clip0(inside_t * inside_context, node_t * n, point curve[4],
  * The edge e is used to provide a port box. If NULL, the spline is
  * clipped to the node shape.
  */
-void shape_clip(node_t * n, point curve[4], edge_t * e)
+void shape_clip(node_t * n, point curve[4])
 {
     int save_real_size;
     boolean left_inside;
@@ -165,8 +193,8 @@ void shape_clip(node_t * n, point curve[4], edge_t * e)
     if (ND_shape(n) == NULL || ND_shape(n)->fns->insidefn == NULL)
 	return;
 
-    inside_context.n = n;
-    inside_context.e = e;
+    inside_context.s.n = n;
+    inside_context.s.bp = NULL;
     save_real_size = ND_rw_i(n);
     c.x = curve[0].x - ND_coord_i(n).x;
     c.y = curve[0].y - ND_coord_i(n).y;
@@ -245,8 +273,8 @@ clip_and_install(edge_t * fe, edge_t * le, point * ps, int pn,
 
     /* spline may be interior to node */
     if(ED_tail_port(orig).clip && ND_shape(tn) && ND_shape(tn)->fns->insidefn) {
-	inside_context.n = tn;
-	inside_context.e = fe;
+	inside_context.s.n = tn;
+	inside_context.s.bp = ED_tail_port(orig).bp;
 	for (start = 0; start < pn - 4; start += 3) {
 	    p2.x = ps[start + 3].x - ND_coord_i(tn).x;
 	    p2.y = ps[start + 3].y - ND_coord_i(tn).y;
@@ -257,8 +285,8 @@ clip_and_install(edge_t * fe, edge_t * le, point * ps, int pn,
     } else
 	start = 0;
     if(ED_head_port(orig).clip && ND_shape(hn) && ND_shape(hn)->fns->insidefn) {
-	inside_context.n = hn;
-	inside_context.e = le;
+	inside_context.s.n = hn;
+	inside_context.s.bp = ED_head_port(orig).bp;
 	for (end = pn - 4; end > 0; end -= 3) {
 	    p2.x = ps[end].x - ND_coord_i(hn).x;
 	    p2.y = ps[end].y - ND_coord_i(hn).y;
@@ -308,16 +336,32 @@ conc_slope(node_t* n)
 
 void add_box(path * P, box b)
 {
-    P->boxes[P->nbox++] = b;
+    if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
+	P->boxes[P->nbox++] = b;
 }
 
 /* beginpath:
  * Set up boxes near the tail node.
+ * For regular nodes, the result should be a list of continguous rectangles 
+ * such that the last one ends has the smallest LL.y and its LL.y is above
+ * the bottom of the rank (rank.ht1).
+ * 
+ * FIX: Creating the initial boxes only really works for rankdir=TB and
+ * rankdir=LR. For the others, we rely on compassPort flipping the side
+ * and then assume that the node shape has top-bottom symmetry. Since we
+ * at present only put compass points on the bounding box, this works.
+ * If we attempt to implement compass points on actual node perimeters,
+ * something major will probably be necessary. Doing the coordinate
+ * flip (postprocess) before spline routing will be too disruptive. The
+ * correct solution is probably to have beginpath/endpath create the
+ * boxes assuming an inverted node. Note that compassPort already does
+ * some flipping. Even better would be to allow the *_path function
+ * to provide a polygon.
  */
 void
 beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 {
-    int side, mask;
+    int flag, side, mask;
     node_t *n;
     int (*pboxfn) (node_t * n, edge_t * e, int, box *, int *);
 
@@ -399,31 +443,88 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	endp->sidemask = side;
 	return;
     }
-    /* FIXME: check that record_path returns a good path */
+
+#ifdef IMPL
+    if ((et == FLATEDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_tail_port(e).side))) {
+	switch (side) {
+	case LEFT:
+	    b.UR.x = P->start.p.x;
+	    b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+	    b.UR.y = P->start.p.y;
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    break;
+	case RIGHT:
+	    b.LL.x = P->start.p.x;
+	    b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+	    b.UR.y = P->start.p.y;
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    break;
+	case TOP:
+	    if (ND_coord_i(e->head).x < 2*ND_coord_i(n).x - endp->np.x) {
+		b0.LL.x = b.LL.x - 1;
+		b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b0.UR.x = P->start.p.x;
+		b0.UR.y = b0.LL.y + GD_ranksep(n->graph)/2;
+		b.UR.x = ND_coord_i(n).x - ND_lw_i(n) - 2;
+		b.UR.y = b0.LL.y;
+		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.LL.x -= 1;
+		endp->boxes[0] = b0;
+		endp->boxes[1] = b;
+	    }
+	    else {
+		b0.LL.x = P->start.p.x;
+		b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b0.UR.x = b.UR.x+1;
+		b0.UR.y = b0.LL.y + GD_ranksep(n->graph)/2;
+		b.LL.x = ND_coord_i(n).x + ND_rw_i(n) + 2;
+		b.UR.y = b0.LL.y;
+		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.UR.x += 1;
+		endp->boxes[0] = b0;
+		endp->boxes[1] = b;
+	    } 
+	    endp->boxn = 2;
+	    break;
+	case BOTTOM:
+	    b.UR.y = MAX(b.UR.y,P->start.p.y);
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    break;
+	}
+	endp->sidemask = side;
+	return;
+    }
+#endif
+
+    /* flag = (et == REGULAREDGE) ? 1 : et; */
+    flag = 1;
     if (pboxfn
-	&& (mask = (*pboxfn) (n, e, 1, &endp->boxes[0], &endp->boxn)))
+	&& (mask = (*pboxfn) (n, e, flag, &endp->boxes[0], &endp->boxn)))
 	endp->sidemask = mask;
     else {
 	endp->boxes[0] = endp->nb;
 	endp->boxn = 1;
-    }
-    switch (et) {
-    case SELFEDGE:
+    }    
+	switch (et) {
+	case SELFEDGE:
 	/* moving the box UR.y by + 1 avoids colinearity between
 	   port point and box that confuses Proutespline().  it's
 	   a bug in Proutespline() but this is the easiest fix. */
-	endp->boxes[0].UR.y = P->start.p.y - 1;
-	endp->sidemask = BOTTOM;
-	break;
-    case FLATEDGE:
-	endp->boxes[0].LL.y = P->start.p.y;
-	endp->sidemask = TOP;
-	break;
-    case REGULAREDGE:
-	endp->boxes[0].UR.y = P->start.p.y;
-	endp->sidemask = BOTTOM;
-	break;
-    }
+	    endp->boxes[0].UR.y = P->start.p.y - 1;
+	    endp->sidemask = BOTTOM;
+	    break;
+	case FLATEDGE:
+	    endp->boxes[0].LL.y = P->start.p.y;
+	    endp->sidemask = TOP;
+	    break;
+	case REGULAREDGE:
+	    endp->boxes[0].UR.y = P->start.p.y;
+	    endp->sidemask = BOTTOM;
+	    break;
+	}    
 }
 
 void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
@@ -534,6 +635,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     }
 }
 
+#ifdef OLD
 /* self edges */
 #define ANYW  0			/* could go either way */
 
@@ -715,64 +817,348 @@ completeselfpath(path * P, pathend_t * tendp, pathend_t * hendp,
     for (i = hendp->boxn - 1; i >= 0; i--)
 	add_box(P, hendp->boxes[i]);
 }
+#endif
 
+static void
+selfBottom (edge_t* edges[], int ind, int cnt, int stepy, splineInfo* sinfo) 
+{
+    int sgn, hy, ty;
+    point tp, hp;
+    node_t *n;
+    edge_t *e;
+    int i, stepx, dx, dy;
+    double width, height; 
+    point points[1000];
+    int pointn;
+    point np;
+
+    e = edges[ind];
+    n = e->tail;
+
+    /* stepx = (ND_rw_i(n)) / cnt; */
+    stepx = stepy;
+    pointn = 0;
+    np = ND_coord_i(n);
+    tp = ED_tail_port(e).p;
+    tp.x += np.x;
+    tp.y += np.y;
+    hp = ED_head_port(e).p;
+    hp.x += np.x;
+    hp.y += np.y;
+    if (tp.x >= hp.x) sgn = 1;
+    else sgn = -1;
+    dy = ND_ht_i(n)/2, dx = 0;
+    ty = MIN(dy, 3*(tp.y + dy - np.y));
+    hy = MIN(dy, 3*(hp.y + dy - np.y));
+    for (i = 0; i < cnt; i++) {
+	e = edges[ind++];
+	dy += stepy, ty += stepy, hy += stepy, dx += sgn*stepx;
+	pointn = 0;
+	points[pointn++] = tp;
+	points[pointn++] = pointof(tp.x + dx, tp.y - ty / 3);
+	points[pointn++] = pointof(tp.x + dx, np.y - dy);
+	points[pointn++] = pointof((tp.x+hp.x)/2, np.y - dy);
+	points[pointn++] = pointof(hp.x - dx, np.y - dy);
+	points[pointn++] = pointof(hp.x - dx, hp.y - hy / 3);
+	points[pointn++] = hp;
+	if (ED_label(e)) {
+	    if (GD_flip(e->tail->graph)) {
+		width = ED_label(e)->dimen.y;
+		height = ED_label(e)->dimen.x;
+	    } else {
+		width = ED_label(e)->dimen.x;
+		height = ED_label(e)->dimen.y;
+	    }
+	    ED_label(e)->p.y = ND_coord_i(n).y - dy - height / 2.0;
+	    ED_label(e)->p.x = ND_coord_i(n).x;
+	    ED_label(e)->set = TRUE;
+	    if (height > stepy)
+		dy += height - stepy;
+	    if (dx + stepx < width)
+		dx += width - stepx;
+	}
+	clip_and_install(e, e, points, pointn, sinfo);
+	if (debugleveln(e,1))
+	    showPoints (points, pointn);
+    }
+}
+
+static void
+selfTop (edge_t* edges[], int ind, int cnt, int stepy, splineInfo* sinfo) 
+{
+    int sgn, hy, ty;
+    point tp, hp;
+    node_t *n;
+    edge_t *e;
+    int i, stepx, dx, dy;
+    double width, height; 
+    point points[1000];
+    int pointn;
+    point np;
+
+    e = edges[ind];
+    n = e->tail;
+
+    /* stepx = (ND_rw_i(n)) / cnt; */
+    stepx = stepy;
+    pointn = 0;
+    np = ND_coord_i(n);
+    tp = ED_tail_port(e).p;
+    tp.x += np.x;
+    tp.y += np.y;
+    hp = ED_head_port(e).p;
+    hp.x += np.x;
+    hp.y += np.y;
+    if (tp.x >= hp.x) sgn = 1;
+    else sgn = -1;
+    dy = ND_ht_i(n)/2, dx = 0;
+    ty = MIN(dy, 3*(tp.y + dy - np.y));
+    hy = MIN(dy, 3*(hp.y + dy - np.y));
+    for (i = 0; i < cnt; i++) {
+	e = edges[ind++];
+	dy += stepy, ty += stepy, hy += stepy, dx += sgn*stepx;
+	pointn = 0;
+	points[pointn++] = tp;
+	points[pointn++] = pointof(tp.x + dx, tp.y + ty / 3);
+	points[pointn++] = pointof(tp.x + dx, np.y + dy);
+	points[pointn++] = pointof((tp.x+hp.x)/2, np.y + dy);
+	points[pointn++] = pointof(hp.x - dx, np.y + dy);
+	points[pointn++] = pointof(hp.x - dx, hp.y + hy / 3);
+	points[pointn++] = hp;
+	if (ED_label(e)) {
+	    if (GD_flip(e->tail->graph)) {
+		width = ED_label(e)->dimen.y;
+		height = ED_label(e)->dimen.x;
+	    } else {
+		width = ED_label(e)->dimen.x;
+		height = ED_label(e)->dimen.y;
+	    }
+	    ED_label(e)->p.y = ND_coord_i(n).y + dy + height / 2.0;
+	    ED_label(e)->p.x = ND_coord_i(n).x;
+	    ED_label(e)->set = TRUE;
+	    if (height > stepy)
+		dy += height - stepy;
+	    if (dx + stepx < width)
+		dx += width - stepx;
+	}
+	clip_and_install(e, e, points, pointn, sinfo);
+	if (debugleveln(e,1))
+	    showPoints (points, pointn);
+    }
+}
+
+static void
+selfRight (edge_t* edges[], int ind, int cnt, int stepx, splineInfo* sinfo) 
+{
+    int hx, tx, sgn;
+    point tp, hp;
+    node_t *n;
+    edge_t *e;
+    int i, stepy, dx, dy;
+    double width, height; 
+    point points[1000];
+    int pointn;
+    point np;
+
+    e = edges[ind];
+    n = e->tail;
+
+    stepy = (ND_ht_i(n) / 2) / cnt;
+    pointn = 0;
+    np = ND_coord_i(n);
+    tp  = ED_tail_port(e).p;
+    tp.x += np.x;
+    tp.y += np.y;
+    hp  = ED_head_port(e).p;
+    hp.x += np.x;
+    hp.y += np.y;
+    if (tp.y >= hp.y) sgn = 1;
+    else sgn = -1;
+    dx = ND_rw_i(n), dy = 0;
+    tx = MIN(dx, 3*(np.x + dx - tp.x));
+    hx = MIN(dx, 3*(np.x + dx - hp.x));
+    for (i = 0; i < cnt; i++) {
+        e = edges[ind++];
+        dx += stepx, tx += stepx, hx += stepx, dy += sgn*stepy;
+        pointn = 0;
+        points[pointn++] = tp;
+        points[pointn++] = pointof(tp.x + tx / 3, tp.y + dy);
+        points[pointn++] = pointof(np.x + dx, tp.y + dy);
+        points[pointn++] = pointof(np.x + dx, (tp.y+hp.y)/2);
+        points[pointn++] = pointof(np.x + dx, hp.y - dy);
+        points[pointn++] = pointof(hp.x + hx / 3, hp.y - dy);
+        points[pointn++] = hp;
+        if (ED_label(e)) {
+	    if (GD_flip(e->tail->graph)) {
+		width = ED_label(e)->dimen.y;
+		height = ED_label(e)->dimen.x;
+	    } else {
+		width = ED_label(e)->dimen.x;
+		height = ED_label(e)->dimen.y;
+	    }
+	    ED_label(e)->p.x = ND_coord_i(n).x + dx + width / 2.0;
+	    ED_label(e)->p.y = ND_coord_i(n).y;
+	    ED_label(e)->set = TRUE;
+	    if (width > stepx)
+		dx += width - stepx;
+	    if (dy + stepy < height)
+		dy += height - stepy;
+        }
+        clip_and_install(e, e, points, pointn, sinfo);
+        if (debugleveln(e,1))
+	    showPoints (points, pointn);
+    }
+    return;
+}
+
+static void
+selfLeft (edge_t* edges[], int ind, int cnt, int stepx, splineInfo* sinfo) 
+{
+    int hx, tx, sgn;
+    point tp, hp;
+    node_t *n;
+    edge_t *e;
+    int i, stepy, dx, dy;
+    double width, height; 
+    point points[1000];
+    int pointn;
+    point np;
+
+    e = edges[ind];
+    n = e->tail;
+
+    stepy = (ND_ht_i(n) / 2) / cnt;
+    pointn = 0;
+    np = ND_coord_i(n);
+    tp = ED_tail_port(e).p;
+    tp.x += np.x;
+    tp.y += np.y;
+    hp = ED_head_port(e).p;
+    hp.x += np.x;
+    hp.y += np.y;
+    if (tp.y >= hp.y) sgn = 1;
+    else sgn = -1;
+    dx = ND_lw_i(n), dy = 0;
+    tx = MIN(dx, 3*(tp.x + dx - np.x));
+    hx = MIN(dx, 3*(hp.x + dx - np.x));
+    for (i = 0; i < cnt; i++) {
+        e = edges[ind++];
+        dx += stepx, tx += stepx, hx += stepx, dy += sgn*stepy;
+        pointn = 0;
+        points[pointn++] = tp;
+        points[pointn++] = pointof(tp.x - tx / 3, tp.y + dy);
+        points[pointn++] = pointof(np.x - dx, tp.y + dy);
+        points[pointn++] = pointof(np.x - dx, (tp.y+hp.y)/2);
+        points[pointn++] = pointof(np.x - dx, hp.y - dy);
+        points[pointn++] = pointof(hp.x - hx / 3, hp.y - dy);
+        points[pointn++] = hp;
+        if (ED_label(e)) {
+    	if (GD_flip(e->tail->graph)) {
+    	    width = ED_label(e)->dimen.y;
+    	    height = ED_label(e)->dimen.x;
+    	} else {
+    	    width = ED_label(e)->dimen.x;
+    	    height = ED_label(e)->dimen.y;
+    	}
+    	ED_label(e)->p.x = ND_coord_i(n).x - dx - width / 2.0;
+    	ED_label(e)->p.y = ND_coord_i(n).y;
+    	ED_label(e)->set = TRUE;
+    	if (width > stepx)
+    	    dx += width - stepx;
+    	if (dy + stepy < height)
+    	    dy += height - stepy;
+        }
+        clip_and_install(e, e, points, pointn, sinfo);
+        if (debugleveln(e,1))
+	    showPoints (points, pointn);
+    }
+}
+
+/* selfRightSpace:
+ * Assume e is self-edge.
+ * Return extra space necessary on the right for this edge.
+ * If the edge does not go on the right, return 0.
+ */
+int
+selfRightSpace (edge_t* e)
+{
+    int sw;
+    double label_width;
+    textlabel_t* l = ED_label(e);
+
+    if (((!ED_tail_port(e).defined) && (!ED_head_port(e).defined)) ||
+        (!(ED_tail_port(e).side & LEFT) && 
+         !(ED_head_port(e).side & LEFT) &&
+          ((ED_tail_port(e).side != ED_head_port(e).side) || 
+          (!(ED_tail_port(e).side & (TOP|BOTTOM)))))) {
+	sw = SELF_EDGE_SIZE;
+	if (l) {
+	    label_width = GD_flip(e->head->graph) ? l->dimen.y : l->dimen.x;
+	    sw += label_width;
+	}
+    }
+    else sw = 0;
+    return sw;
+}
+
+/* makeSelfEdge:
+ * The routing is biased towards the right side because this is what
+ * dot supports, and leaves room for.
+ * FIX: With this bias, labels tend to be placed on top of each other.
+ * Perhaps for self-edges, the label should be centered.
+ */
 void
 makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, int stepx,
 	     splineInfo * sinfo)
 {
-    node_t *n;
     edge_t *e;
+#ifdef OLD
+    node_t *n;
     point *ps, np;
     pathend_t tend, hend;
     int i, j, maxx, stepy, dx, dy, tside, hside, dir, pn;
     double width, height;
     point points[1000];
     int pointn;
+#endif
 
     e = edges[ind];
-    n = e->tail;
 
-    /* self edge without ports */
-
-    if ((!ED_tail_port(e).defined) && (!ED_head_port(e).defined)) {
-	stepy = (ND_ht_i(n) / 2) / cnt;
-	pointn = 0;
-	np = ND_coord_i(n);
-	dx = ND_rw_i(n), dy = 0;
-	for (i = 0; i < cnt; i++) {
-	    e = edges[ind++];
-	    dx += stepx, dy += stepy;
-	    pointn = 0;
-	    points[pointn++] = np;
-	    points[pointn++] = pointof(np.x + dx / 3, np.y - dy);
-	    points[pointn++] = pointof(np.x + dx, np.y - dy);
-	    points[pointn++] = pointof(np.x + dx, np.y);
-	    points[pointn++] = pointof(np.x + dx, np.y + dy);
-	    points[pointn++] = pointof(np.x + dx / 3, np.y + dy);
-	    points[pointn++] = np;
-	    if (ED_label(e)) {
-		if (GD_flip(e->tail->graph)) {
-		    width = ED_label(e)->dimen.y;
-		    height = ED_label(e)->dimen.x;
-		} else {
-		    width = ED_label(e)->dimen.x;
-		    height = ED_label(e)->dimen.y;
-		}
-		ED_label(e)->p.x = ND_coord_i(n).x + dx + width / 2.0;
-		ED_label(e)->p.y = ND_coord_i(n).y;
-		ED_label(e)->set = TRUE;
-		if (width > stepx)
-		    dx += width - stepx;
-		if (dy + stepy < height)
-		    dy += height - stepy;
-	    }
-	    clip_and_install(e, e, points, pointn, sinfo);
-	}
-	return;
+    /* self edge without ports or
+     * self edge with all ports inside, on the right, or at most 1 on top 
+     * and at most 1 on bottom 
+     */
+    if (((!ED_tail_port(e).defined) && (!ED_head_port(e).defined)) ||
+        (!(ED_tail_port(e).side & LEFT) && 
+         !(ED_head_port(e).side & LEFT) &&
+          ((ED_tail_port(e).side != ED_head_port(e).side) || 
+          (!(ED_tail_port(e).side & (TOP|BOTTOM)))))) {
+	selfRight(edges, ind, cnt, stepx, sinfo);
     }
 
-    /* self edge with ports */
+    /* self edge with port on left side */
+    else if ((ED_tail_port(e).side & LEFT) || (ED_head_port(e).side & LEFT)) {
 
+	/* handle L-R specially */
+	if ((ED_tail_port(e).side & RIGHT) || (ED_head_port(e).side & RIGHT)) {
+	    selfTop(edges, ind, cnt, stepx, sinfo);
+	}
+	else {
+	    selfLeft(edges, ind, cnt, stepx, sinfo);
+	}
+    }
+
+    /* self edge with both ports on top side */
+    else if (ED_tail_port(e).side & TOP) {
+	selfTop(edges, ind, cnt, stepx, sinfo);
+    }
+    else if (ED_tail_port(e).side & BOTTOM) {
+	selfBottom(edges, ind, cnt, stepx, sinfo);
+    }
+
+    else assert(0);
+
+#ifdef OLD
     tend.nb =
 	boxof(ND_coord_i(n).x - ND_lw_i(n),
 	      ND_coord_i(n).y - ND_ht_i(n) / 2,
@@ -815,6 +1201,7 @@ makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, int stepx,
 	}
 	clip_and_install(e, e, ps, pn, sinfo);
     }
+#endif
 }
 
 /* vladimir */
