@@ -205,8 +205,12 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	N_pages = Pages.x * Pages.y;
 
 	/* find the drawable size in device coords */
+#if 1
+	tp = GD_drawing(g)->size;
+#else
 	tp.x = gvc->job->width;
 	tp.y = gvc->job->height;
+#endif
 	if (GD_drawing(g)->landscape)
 	    tp = exch_xy(tp);
 	DS.x = MIN(tp.x, PFCLM.x);
@@ -220,14 +224,19 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	PFC.y = DEFAULT_PAGEHT;
 	PFCLM.x = PFC.x - 2 * PB.LL.x;
 	PFCLM.y = PFC.y - 2 * PB.LL.y;
+#if 1
+	DS = GD_drawing(g)->size;
+#else
 	DS.x = gvc->job->width;
 	DS.y = gvc->job->height;
+#endif
 	if (GD_drawing(g)->landscape)
 	    DS = exch_xy(DS);
 	Pages.x = Pages.y = N_pages = 1;
     }
 
     set_pagedir(g);
+fprintf(stderr,"width=%d height=%d zoom=%g\n", gvc->job->width, gvc->job->height, gvc->job->zoom);
 
     /* determine page box including centering */
     if (GD_drawing(g)->centered) {
@@ -239,6 +248,7 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	PB.LL.x += extra.x / 2;
 	PB.LL.y += extra.y / 2;
     }
+fprintf(stderr,"PB.LL=%d,%d DS=%d,%d dpi=%d\n",PB.LL.x, PB.LL.y, DS.x, DS.y, gvc->job->dpi);
     PB.UR = add_points(PB.LL, DS);
 }
 
@@ -646,6 +656,20 @@ static void emit_edge(GVC_t * gvc, edge_t * e)
     gvrender_end_edge(gvc);
 }
 
+static double setScale(graph_t * g)
+{
+    double xscale, yscale, scale;
+
+    xscale = ((double) GD_drawing(g)->size.x) / GD_bb(g).UR.x;
+    yscale = ((double) GD_drawing(g)->size.y) / GD_bb(g).UR.y;
+    scale = MIN(xscale, yscale);
+    GD_drawing(g)->scale = scale;
+    GD_drawing(g)->size.x = scale * GD_bb(g).UR.x;
+    GD_drawing(g)->size.y = scale * GD_bb(g).UR.y;
+    return scale;
+}
+
+
 /* emit_init
  *   - called just once per output device
  *     (where emit_graph can be called many times for refresh callbacks)
@@ -653,15 +677,37 @@ static void emit_edge(GVC_t * gvc, edge_t * e)
 void emit_init(GVC_t * gvc, graph_t * g)
 {
     char *str;
-    double X, Y, Z = 1.0, x, y;
+    double X, Y, Z, x, y;
     point size = GD_drawing(g)->size;
     point UR = GD_bb(g).UR;
+#if 1
+    double scale;
+#endif
 
     assert((GD_bb(g).LL.x == 0) && (GD_bb(g).LL.y == 0));
 
     /* determine final drawing size and scale to apply. */
     /* N.B. size given by user is not rotated by landscape mode */
     /* start with "natural" size of layout */
+#if 1
+    /* FIXME - this version still needed by psgen.c*/
+    scale = GD_drawing(g)->scale = 1.0;
+    if (GD_drawing(g)->size.x > 0) {    /* was given by user... */
+        if ((GD_drawing(g)->size.x < GD_bb(g).UR.x)     /* drawing is too big... */
+            ||(GD_drawing(g)->size.y < GD_bb(g).UR.y)) {
+            scale = setScale(g);
+        } else if (GD_drawing(g)->filled) {
+            if ((GD_drawing(g)->size.x > GD_bb(g).UR.x) /* drawing is too small... */
+                &&(GD_drawing(g)->size.y > GD_bb(g).UR.y)) {
+                scale = setScale(g);
+            }
+        } else
+            GD_drawing(g)->size = GD_bb(g).UR;
+    } else
+        GD_drawing(g)->size = GD_bb(g).UR;
+#endif
+
+    Z = 1.0;
     if (size.x > 0) {	/* was given by user... */
 	if ((size.x < UR.x) || (size.y < UR.y) /* drawing is too big... */
 	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
