@@ -22,10 +22,13 @@
     Sometime in the future it may become the basis for a thread.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include        <stdio.h>
 #include        <stdlib.h>
 
-#include	"config.h"
 #include	"types.h"
 #include	"macros.h"
 #include	"graph.h"

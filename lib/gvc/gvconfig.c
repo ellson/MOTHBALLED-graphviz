@@ -14,6 +14,10 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<string.h>
@@ -24,7 +28,6 @@
 #include	<glob.h>
 #endif
 
-#include        "config.h"
 #include        "types.h"
 #include        "macros.h"
 #include        "gvc.h"
