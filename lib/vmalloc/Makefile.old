@@ -1,8 +1,9 @@
 #	libvmalloc.a old make makefile
 #	Written by Kiem-Phong Vo (03/18/1998)
 
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 LOC_LIBDIR=	../lib
 LOC_INCDIR=	../include
@@ -29,15 +30,15 @@ $(OBJS) : ast_common.h
 #ast_common.h : features/common
 #	../../iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run features/common > ast_common.h
 
-ast_common.h : ../../cdt/ast_common.h
+ast_common.h : ../cdt/ast_common.h
 	rm -f ast_common.h
-	$(LN) ../../cdt/ast_common.h .
+	$(LN) ../cdt/ast_common.h .
 
-../../cdt/ast_common.h : ../../cdt/features/common
-	(cd ../../cdt; make ast_common.h)
+../cdt/ast_common.h : ../cdt/features/common
+	(cd ../cdt; make ast_common.h)
 
 FEATURE/vmalloc : features/vmalloc
-	../../iffe set cc $(CC) $(CCMODE) $(CXFLAGS) : run features/vmalloc
+	$(ROOT)/iffe set cc $(CC) $(CCMODE) $(CXFLAGS) : run features/vmalloc
 
 loc_install : libvmalloc.a
 	$(MKPATH) $(LOC_INCDIR)
