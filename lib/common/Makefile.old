@@ -58,8 +58,8 @@ emit.o mapgen.o utils.o htmllex.o htmltable.o htmlparse.o : htmltable.h
 htmllex.o : htmlparse.h
 htmlparse.o htmllex.o : htmllex.h
 
-ps.h : ps.txt
-	$(AWK) -f $(AWKDIR)/stringize.awk ps.txt > ps.h
+#ps.h : ps.txt
+#	$(AWK) -f $(AWKDIR)/stringize.awk ps.txt > ps.h
 
 colortbl.h : color_names
 	$(SED) s/_//g color_names | LC_COLLATE=C $(SORT) > color_lib
@@ -67,7 +67,7 @@ colortbl.h : color_names
 	$(RM) color_lib
 
 clean:
-	$(RM) core *.o htmlparse.c htmlparse.h colortbl.h ps.h y.output
+	$(RM) core *.o htmlparse.c htmlparse.h colortbl.h y.output
 
 distclean: clean
 	$(RM) *.a
