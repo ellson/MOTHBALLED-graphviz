@@ -4,9 +4,9 @@ pdfdir = $(pkgdatadir)/doc/pdf
 
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
-        -I$(top_srcdir)/tools/src \
-	-I$(top_srcdir)/agraph \
-	-I$(top_srcdir)/cdt
+        -I$(top_srcdir)/lib/ingraphs \
+	-I$(top_srcdir)/lib/agraph \
+	-I$(top_srcdir)/lib/cdt
 
 bin_PROGRAMS = prune
 noinst_HEADERS = generic_list.h
@@ -15,9 +15,9 @@ pdf_DATA = prune.pdf
 
 prune_SOURCES = generic_list.c prune.c
 
-prune_LDADD = $(top_builddir)/tools/src/libingraphs.la \
-	$(top_builddir)/agraph/libagraph.la \
-	$(top_builddir)/cdt/libcdt.la
+prune_LDADD = $(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/agraph/libagraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la
 
 .1.pdf:
 	groff -Tps -man $< | ps2pdf - - >$@

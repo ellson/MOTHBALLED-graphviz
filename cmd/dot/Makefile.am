@@ -75,6 +75,6 @@ dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 dotneato-config.pdf: $(top_srcdir)/cmd/dot/dotneato-config.1
 	groff -Tps -man $(top_srcdir)/cmd/dot/dotneato-config.1 | ps2pdf - - >$@
 
-EXTRA_DIST = XFIG_FORMAT3.2.txt Makefile.old dot.1 dotneato-config.1 dot.pdf dotneato-config.pdf dotneato-config.in awk
+EXTRA_DIST = Makefile.old dot.1 dotneato-config.1 dot.pdf dotneato-config.pdf dotneato-config.in
 
 DISTCLEANFILES = dot.pdf dotneato-config.pdf
