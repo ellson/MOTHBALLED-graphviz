@@ -20,6 +20,7 @@
 #include "htmlparse.h"
 #include "htmllex.h"
 #include "utils.h"
+#include "entities.h"
 #include <ctype.h>
 
 #ifdef HAVE_LIBEXPAT
@@ -34,9 +35,10 @@ typedef struct {
 #ifdef HAVE_LIBEXPAT
     XML_Parser parser;
 #endif
-    char *ptr;			/* input source */
+    char* ptr;			/* input source */
     int tok;			/* token type   */
-    agxbuf *xb;			/* buffer to gather T_string data */
+    agxbuf* xb;			/* buffer to gather T_string data */
+    agxbuf  lb;			/* buffer for translating lexical data */
     char warn;			/* set if warning given */
     char error;			/* set if error given */
     char inCell;		/* set if in TD to allow T_string */
@@ -548,6 +550,7 @@ void initHTMLlexer(char *src, agxbuf * xb)
 {
 #ifdef HAVE_LIBEXPAT
     state.xb = xb;
+    agxbinit (&state.lb, SMALLBUF, NULL);
     state.ptr = src;
     state.mode = 0;
     state.warn = 0;
@@ -575,6 +578,7 @@ int clearHTMLlexer()
 #ifdef HAVE_LIBEXPAT
     int rv = state.warn;
     XML_ParserFree(state.parser);
+    agxbfree (&state.lb);
     return rv;
 #else
     return 1;
@@ -611,13 +615,52 @@ static char *eatComment(char *p)
     return s;
 }
 
+#define MAXENTLEN 8
+
+static int 
+comp_entities(const void *e1, const void *e2) {
+  struct entities_s *en1 = (struct entities_s *) e1;
+  struct entities_s *en2 = (struct entities_s *) e2;
+  return strcmp(en1->name, en2->name);
+}
+
+/* scanEntity:
+ * Scan non-numeric entity, convert to &#...; form and store in xbuf.
+ * t points to first char after '&'. Return after final semicolon.
+ * If unknown, we return t and let libexpat flag the error.
+ */
+static char*
+scanEntity (char* t, agxbuf* xb)
+{
+    char*  endp = strchr (t, ';');
+    struct entities_s key, *res;
+    int    len;
+    char   buf[MAXENTLEN+1];
+
+    agxbputc(xb, '&');
+    if (!endp) return t;
+    if (((len = endp-t) > MAXENTLEN) || (len < 2)) return t;
+    strncpy (buf, t, len);
+    buf[len] = '\0';
+    key.name =  buf;
+    res = bsearch(&key, entities, NR_OF_ENTITIES,
+	sizeof(entities[0]), comp_entities);
+    if (!res) return t;
+    sprintf (buf, "%d", res->value);
+    agxbputc(xb, '#');
+    agxbput(xb, buf);
+    agxbputc(xb, ';');
+    return (endp+1); 
+}
+
 /* findNext:
  * Return next XML unit. This is either <..>, an HTML 
  * comment <!-- ... -->, or characters up to next <.
  */
-static char *findNext(char *s)
+static char *findNext(char *s, agxbuf* xb)
 {
-    char *t = s + 1;
+    char* t = s + 1;
+    char c;
 
     if (*s == '<') {
 	if ((*t == '!') && !strncmp(t + 1, "--", 2))
@@ -631,8 +674,16 @@ static char *findNext(char *s)
 	} else
 	    t++;
     } else {
-	while (*t && (*t != '<'))
-	    t++;
+	agxbputc(xb, *s);
+	while ((c = *t) && (c != '<')) {
+	    if ((c == '&') && (*(t+1) != '#')) {
+		t = scanEntity(t + 1, xb);
+	    }
+	    else {
+		agxbputc(xb, c);
+		t++;
+	    }
+	}
     }
     return t;
 }
@@ -722,7 +773,7 @@ int htmllex()
 
     char *s;
     char *endp = 0;
-    int len;
+    int len, llen;
     int rv;
 
     state.tok = 0;
@@ -741,7 +792,7 @@ int htmllex()
 		s = end_html;
 		len = strlen(s);
 	    } else {
-		endp = findNext(s);
+		endp = findNext(s,&state.lb);
 		len = endp - s;
 	    }
 	}
@@ -749,7 +800,10 @@ int htmllex()
 	state.prevtoklen = state.currtoklen;
 	state.currtok = s;
 	state.currtoklen = len;
-	rv = XML_Parse(state.parser, s, len, (len ? 0 : 1));
+	if ((llen = agxblen(&state.lb)))
+	    rv = XML_Parse(state.parser, agxbuse(&state.lb),llen, 0);
+	else
+	    rv = XML_Parse(state.parser, s, len, (len ? 0 : 1));
 	if (rv == XML_STATUS_ERROR) {
 	    if (!state.error) {
 		agerr(AGERR, "%s in line %d \n",
