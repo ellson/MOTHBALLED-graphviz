@@ -276,6 +276,13 @@ fprintf(stderr,"graph_sets_pageSize\n");
     job->boundingBox.UR.y = job->boundingBox.LL.y + ROUND(size.y + 1);
 
 #if 0
+    /* reset pageNum state - records the last page that contained the node */
+    /* FIXME - this fails for multiple graphs in same file - rely on new gvc setting to 0 and reset in emit_jobs_eof() */
+    /* should probably be initialized in gvrender_initialize() - output device initialization */
+    gvc->pageNum = 0;  /* incremented for each page in each layer in each graph in the job */
+#endif
+
+#if 0
 fprintf(stderr,"bb = %g,%g %g,%g (graph units)\n",
 	gvc->bb.LL.x,
 	gvc->bb.LL.y,
@@ -1070,7 +1077,6 @@ static void emit_init_job(GVC_t * gvc, graph_t * g)
     init_job_dpi(gvc, g);
     init_job_viewport(gvc, g);
     init_job_pagination(gvc, g);
-    gvrender_begin_job(gvc);
 }
 
 static void emit_deinit_job(GVC_t * gvc)
@@ -1088,6 +1094,8 @@ void emit_graph(GVC_t * gvc, graph_t * g)
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
     int flags = gvc->job->flags;
 
+    if (gvc->pageNum == 0)
+        gvrender_begin_job(gvc);
     gvrender_begin_graph(gvc, g);
     if (flags & EMIT_COLORS) {
 	gvrender_set_fillcolor(gvc, DEFAULT_FILL);
@@ -1130,8 +1138,6 @@ void emit_graph(GVC_t * gvc, graph_t * g)
 	}
     }
 
-    /* reset pageNum state - records the last page that contained the node */
-    gvc->pageNum = 0;  /* incremented for each page in each layer */
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	ND_state(n) = 0;
     /* iterate layers */
@@ -1306,6 +1312,7 @@ void emit_jobs_eof(GVC_t * gvc)
 	    if (gvc->pageNum > 0) {
 		emit_deinit_job(gvc);
 		emit_once_reset();
+		gvc->pageNum = 0;
 	    }
             fclose(job->output_file);
             job->output_file = NULL;
