@@ -49,7 +49,34 @@ Summary:	Tcl extension tools for %{name}
 Requires:	%{name} = %{version}-%{release} tcl >= 0:8.3 tk
 
 %description tcl
-The %{name}-tcl package contains the various tcl packages (extensions)
+The %{name}-tcl package contains various tcl packages (extensions)
+for version %{version} of the %{name} tools.
+
+%package perl
+Group:		Applications/Multimedia
+Summary:	Perl extension tools for %{name}
+Requires:	%{name} = %{version}-%{release} perl
+
+%description perl
+The %{name}-perl package contains a perl module (extension)
+for version %{version} of the %{name} tools.
+
+%package python
+Group:		Applications/Multimedia
+Summary:	Perl extension tools for %{name}
+Requires:	%{name} = %{version}-%{release} python
+
+%description python
+The %{name}-python package contains a python module (extension)
+for version %{version} of the %{name} tools.
+
+%package ruby
+Group:		Applications/Multimedia
+Summary:	Perl extension tools for %{name}
+Requires:	%{name} = %{version}-%{release} ruby
+
+%description ruby
+The %{name}-ruby package contains a ruby module (extension)
 for version %{version} of the %{name} tools.
 
 %package devel
@@ -119,6 +146,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/lefty
 %exclude %{_libdir}/%{name}/lib*tcl*.so.*
 %exclude %{_libdir}/%{name}/libtk*.so.*
+%exclude %{_libdir}/%{name}/lib*perl.so.*
+%exclude %{_libdir}/%{name}/lib*python.so.*
+%exclude %{_libdir}/%{name}/lib*ruby.so.*
 %exclude %{_bindir}/dotneato-config
 %exclude %{_mandir}/man1/dotneato-config.1*
 
@@ -129,6 +159,20 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/pkgIndex.tcl
 %{_datadir}/%{name}/demo
 %{_mandir}/mann/* 
+
+%files perl
+%defattr(-,root,root,-)
+%{_libdir}/%{name}/lib*perl*.so.*.*.*
+%{_libdir}/%{name}/gv.pm
+
+%files python
+%defattr(-,root,root,-)
+%{_libdir}/%{name}/lib*python*.so.*.*.*
+%{_libdir}/%{name}/gv.py
+
+%files ruby
+%defattr(-,root,root,-)
+%{_libdir}/%{name}/lib*ruby*.so.*.*.*
 
 %files devel
 %defattr(-,root,root,-)
@@ -141,6 +185,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/*.3*
 %exclude %{_libdir}/%{name}/lib*tcl*.*
 %exclude %{_libdir}/%{name}/libtk*.*
+%exclude %{_libdir}/%{name}/lib_perl*.*
+%exclude %{_libdir}/%{name}/lib_python*.*
+%exclude %{_libdir}/%{name}/lib_ruby*.*
 
 %files graphs
 %defattr(-,root,root,-)
