@@ -209,7 +209,7 @@ static void init_job_pagination(GVC_t * gvc, graph_t * g)
     gvrender_job_t *job = gvc->job;
     pointf pageSizeCenteredLessMargins;	 /* page for centering less margins - graph units*/
     pointf deviceSize;			/* device size for a page of the graph - graph units */
-    pointf extra;
+    pointf extra, size;
 
     /* determine desired device size in graph units */
     deviceSize.x = job->width * POINTS_PER_INCH / job->dpi;
@@ -268,14 +268,12 @@ fprintf(stderr,"graph_sets_pageSize\n");
 
     job->boundingBox.LL.x = ROUND((job->margin.x + extra.x) * job->dpi / POINTS_PER_INCH);
     job->boundingBox.LL.y = ROUND((job->margin.y + extra.y) * job->dpi / POINTS_PER_INCH);
-    job->size.x = ROUND(job->pageSize.x * job->dpi / POINTS_PER_INCH);
-    job->size.y = ROUND(job->pageSize.y * job->dpi / POINTS_PER_INCH);
+    size.x = job->pageSize.x * job->dpi / POINTS_PER_INCH;
+    size.y = job->pageSize.y * job->dpi / POINTS_PER_INCH;
     if (GD_drawing(g)->landscape)
-	job->size = exch_xy(job->size);
-    job->boundingBox.UR.x = job->boundingBox.LL.x + job->size.x;
-    job->boundingBox.UR.y = job->boundingBox.LL.y + job->size.y;
-    job->offset.x = job->boundingBox.LL.x;
-    job->offset.y = job->boundingBox.LL.y;
+	size = exch_xyf(size);
+    job->boundingBox.UR.x = job->boundingBox.LL.x + ROUND(size.x + 1);
+    job->boundingBox.UR.y = job->boundingBox.LL.y + ROUND(size.y + 1);
 
 #if 0
 fprintf(stderr,"bb = %g,%g %g,%g (graph units)\n",
@@ -295,13 +293,9 @@ fprintf(stderr,"boundingBox = %d,%d %d,%d (device units)\n",
         job->boundingBox.LL.y,
         job->boundingBox.UR.x,
         job->boundingBox.UR.y);
-fprintf(stderr,"width,height = %d,%d size = %d,%d offset = %d,%d (device units)\n",
+fprintf(stderr,"width,height = %d,%d (device units)\n",
         job->width,
-        job->height,
-        job->size.x,
-        job->size.y,
-        job->offset.x,
-        job->offset.y);
+        job->height);
 #endif
 }
 

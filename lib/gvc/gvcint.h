@@ -108,8 +108,6 @@ extern "C" {
 	pointf focus;		/* viewport focus in graph units */
 	box	boundingBox;	/* drawable region in device units */
 
-	point	offset;		 /* offset into device in device coords */
-	point	size;		 /* size of device in device coords */
 #if 0
 	pointf pointer;		/* pointer position in graph units */
 #endif

@@ -346,7 +346,7 @@ void gvrender_begin_page(GVC_t * gvc)
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_page)
-	    cg->begin_page(job->g, job->pagesArrayElem, job->zoom, job->rotation, job->offset);
+	    cg->begin_page(job->g, job->pagesArrayElem, job->zoom, job->rotation, job->boundingBox.LL);
     }
 #endif
 }
