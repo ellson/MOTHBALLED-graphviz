@@ -857,7 +857,7 @@ extern "C" {
 	Sfdouble_t sf_neg10[SF_MAXEXP10];	/* negative powers of 10        */
 	uchar sf_dec[200];	/* ascii reps of values < 100   */
 	char *sf_digits;	/* digits for general bases     */
-	int (*sf_cvinitf) ();	/* initialization function      */
+	int (*sf_cvinitf) (void);	/* initialization function      */
 	int sf_cvinit;		/* initialization state         */
 	Fmtpos_t *(*sf_fmtposf)
 	    _ARG_((Sfio_t *, const char *, va_list, int));
