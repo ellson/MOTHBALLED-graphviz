@@ -1,0 +1,3 @@
+The files: iconv.m4 lib-ld.m4  lib-link.m4  lib-prefix.m4
+were obtained from gettext-0.11.4-5 sources and are used in graphviz
+to define AM_ICONV without requiring that gettext be installed.

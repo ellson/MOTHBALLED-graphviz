@@ -1,0 +1,96 @@
+\chapter{Language Specification}
+\label{appgrammar}
+In the formal specification of the language below, keywords are shown in
+typewriter font, alternatives are separated by vertical bars, parentheses
+indicate grouping, optional clauses are indicated by brackets, and optional
+repetition is indicated by braces.
+
+\def\bar{$|$\ }
+\vbox{
+\begin{tabbing}
+xxxx\= \kill
+\>xxxx\= \kill
+{\it expression}:\\
+\>{\it scalar-constant}\\
+\>{\it variable} [ \verb+=+ {\it expression} ]\\
+\>{\it expression} ( \verb+|+ \bar \verb+&+ ) {\it expression}\\
+\>{\it expression} ( \verb+==+ \bar \verb+~=+ \bar \verb+<+ \bar \verb+<=+ \bar \verb+>+ \bar \verb+>=+ ) {\it expression}\\
+\>{\it expression} ( \verb-+- \bar \verb+-+ \bar \verb+*+ \bar \verb+/+ \bar \verb+%+ ) {\it expression}\\
+\>{\it function-declaration}\\
+\>{\tt [} \{ {\it expression} {\tt =} {\it expression} {\tt ;} \} {\tt ]}\\
+\>{\it variable} {\tt (} [ {\it expression} \{ {\tt ,} {\it expression} \} ] {\tt )}\\
+\>{\tt (} {\it expression} {\tt )}\\
+\\
+{\it variable}:\\
+\>{\it identifier}\\
+\>{\it variable} {\tt .} {\it identifier}\\
+\>{\it variable} {\tt [} {\it expression} {\tt ]}\\
+\\
+{\it function-declaration}:\\
+\>{\tt function} {\it identifier} {\tt (} [ {\it identifier} \{ {\tt ,} {\it identifier} \} ] {\tt )} \verb+{+\\
+\>\>\{ {\tt local} [ {\it identifier} \{ {\tt ,} {\it identifier} \} ] {\tt ;} \}\\
+\>\>\{ {\it statement} \}\\
+\>\verb+}+\\
+\\
+{\it statement}:\\
+\>{\it expression} {\tt ;}\\
+\>\verb+{+ \{ {\it statement} \} \verb+}+\\
+\>{\tt if} {\tt (} {\it expression} {\tt )} {\it statement} [ {\tt else} {\it statement} ]\\
+\>{\tt while} {\tt (} {\it expression} {\tt )} {\it statement}\\
+\>{\tt for} {\tt (} {\it expression} {\tt ;} {\it expression} {\tt ;} {\it expression} {\tt )} {\it statement}\\
+\>{\tt for} {\tt (} {\it variable} {\tt in} {\it expression} {\tt )} {\it statement}\\
+\>{\tt break} {\tt ;}\\
+\>{\tt continue} {\tt ;}\\
+\>{\tt return} [ {\it expression} ] {\tt ;}\\
+\end{tabbing}
+\vspace{-12pt}
+\vspace{-12pt}
+}
+
+A scalar constant is a number or a quoted character string. The language does
+not separate integer and real types; all numbers are reals.
+
+The dot syntax {\it variable} \verb+.+ {\it identifier} is just a shorthand for
+{\it variable} {\tt [ "} {\it identifier} {\tt " ]}.
+
+Assignment evaluates the right-hand side expression and assigns the resulting
+value to the variable on the left-hand side. If evaluation of the right-hand
+side expression returns no value, the left-hand side variable retains its
+previous value. Only the last component of the left-hand side variable may be
+undefined, otherwise the assignment fails. For example,
+\verb+a.b.c = 10+ succeeds if at least {\tt a.b} is defined.
+
+Assignment of tables is by reference. For example, if {\tt b} holds a table,
+\verb+a = b+ results in {\tt a} pointing to the same table.
+
+The order of evaluation for \verb+&+ and \verb+|+ is left-to-right and
+evaluation terminates once the result is determined. For example, evaluation of
+the expression:
+
+\vbox{
+\begin{verbatim}
+0 == 1 | 1 == 1 | a ()
+\end{verbatim}
+\vspace{-12pt}
+}
+
+\noindent
+begins by evaluating \verb+0 == 1+. This is false, so execution proceeds with
+\verb+1 == 1+. Since this comparison is true, the whole expression is true,
+so evaluation terminates. {\tt a} is never called.
+
+If the two sides of a comparison have different types, the result is false.
+
+For arithmetic operations, if any of the expressions is not a number,
+evaluation aborts. For {\tt \%}, the two expressions must have no fractional
+part.
+
+For table construction, each of the left-hand side expressions must evaluate to
+a scalar.
+
+Functions are stored as scalars. There are also built-in functions; they
+provide functionality that cannot be written in the language itself.
+Section~\ref{secbuiltins} describes the built-in functions.
+
+For function calls, if the evaluation of an argument returns no value, the
+function body is not executed.

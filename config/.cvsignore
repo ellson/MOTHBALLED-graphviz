@@ -1,0 +1,9 @@
+config.guess
+config.sub
+config.rpath
+depcomp
+install-sh
+ltmain.sh
+missing
+mkinstalldirs
+ylwrap

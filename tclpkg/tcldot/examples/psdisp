@@ -1,0 +1,26 @@
+#!/bin/sh
+# next line is a comment in tcl \
+exec tclsh "$0" ${1+"$@"}
+
+package require Tkspline
+package require Tcldot
+
+# psdisp - display a dot file using ghostview - John.Ellson@att.com 
+#
+# Usage: psdisp <file.dot>
+#
+
+if {[llength $argv] == 0} {
+    puts "No dot file specified. Assuming demo."
+    set argv "data/poly.dot"
+}
+if {[llength $argv] > 1} {puts "Too many args."; exit}
+if {[catch {open $argv r} f]} {puts "unable to open dot file"; exit}
+set g [dotread $f]
+close $f
+
+$g layout
+
+if {[catch {open "| ghostview -" w} f]} {puts "unable to open output pipe to ghostview"; exit}
+$g write $f ps
+close $f

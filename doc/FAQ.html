@@ -1,0 +1,716 @@
+<HTML><HEAD><TITLE>Graphviz FAQ 2004-12-15</TITLE>
+</HEAD><BODY>
+<H1>Graphviz FAQ 2004-12-15</H1>
+
+<A HREF="mailto:north@graphviz.org">Stephen North</A>,
+<A HREF="mailto:erg@graphviz.org">Emden Gansner</A>,
+<A HREF="mailto:ellson@graphviz.org">John Ellson</A>
+<p>
+<b>Note</b>:
+This is not a tutorial; to understand the following, you should
+know how to use the basic features of the tools and
+languages involved. Please see the
+<A HREF="http://www.graphviz.org/Documentation.php">
+user guides and documentation</A> for further information or the
+<A HREF="http://www.graphviz.org/Resources.php">resources page</A>
+for a partial list of compatible tools and packages.
+
+<h2>General</h2>
+
+<B>Q. Where can I see a list of all the attributes
+that control dot or neato?</B>
+<P>
+See <A HREF="http://www.research.att.com/~erg/graphviz/info/attrs.html">
+Graph Attributes</A>. There is also information on
+<A HREF="http://www.research.att.com/~erg/graphviz/info/command.html">
+command-line usage</A> and
+<A HREF="http://www.research.att.com/~erg/graphviz/info/output.html">
+output formats</A>.
+<p>
+<a name="mailinglist"></a>
+<B>Q. Where can I discuss Graphviz?</B>
+<p>
+We run a mailing list.
+<p>
+To subscribe or unsubscribe, visit the
+<A HREF="https://mailman.research.att.com/mailman/listinfo/graphviz-interest">graphviz-interest</A> <em>mailman</em> control page.  See also the general
+<A HREF="http://www.list.org/mailman-member/index.html">
+instructions</A> for mailman.
+<p>
+You can also see the
+<A HREF="https://mailman.research.att.com/pipermail/graphviz-interest/">
+archive</A>.
+<p>
+You may wish to use a Yahoo or Hotmail account if you're concerned
+about spam. We also run anti-spam filters, and rewrite <tt>@</tt>
+as <tt>at</tt> to keep verbatim addresses out of the archive.
+<p>
+Please, please, please, do not torment the mailing list with beginner's
+questions or software build problems.  First, check this FAQ and the
+<A HREF="https://mailman.research.att.com/pipermail/graphviz-interest/">
+message archive</A> carefully.
+Because Graphviz software is made available without charge,
+our resources for routine support are very limited.  If you are desperate,
+please contact ellson, erg, or north@research.att.com.
+<p>
+Also, if a program crashes or you get an abort or something strange occurs
+and you are fairly comfortable using the tools:
+<BL>
+<LI>
+Check the 
+<A HREF="http://www.research.att.com/~erg/graphviz/bugs/openbugs.html"> open
+bug list</A> to see if a similar bug has already been reported. You might
+also consider checking the
+<A HREF="http://www.research.att.com/~erg/graphviz/bugs/buglist.html"> full
+bug list</A>, since your bug may have been reported and fixed in the working
+version.
+<LI>
+Submit a <A HREF="http://www.research.att.com/~erg/graphviz/bugform.html">bug 
+report</A>. If you prefer, you can download a 
+<A HREF="http://www.research.att.com/~erg/graphviz/bugform.txt">report in
+text form</A>, fill in the fields, and email it to 
+<a href="mailto:gviz-bugs@research.att.com">gviz-bugs@research.att.com</a>.
+</BL>
+<p>
+<B>Q. I'm trying to make a layout larger. How?</B>
+<p>
+There are various ways to increase the size of a layout. In doing this,
+one has to decide if the sizes of the nodes and text should be 
+increased as well.
+<p>
+One approach is to adjust individual
+parameters such as <tt>fontsize, nodesep</tt> and <tt>ranksep</tt>.
+For example,
+<pre>
+           digraph G {
+                graph [fontsize=24];
+                edge  [fontsize=24];
+                node  [fontsize=24];
+                ranksep = 1.5;
+                nodesep = .25;
+                edge [style="setlinewidth(3)"];
+                a -&gt; b -&gt; c;
+           }
+</pre>
+If you do this, make sure you are not fighting a conflicting graph
+size setting, like <tt>size="6,6"</tt>, which will then scale
+everything back down.
+<p>
+If you are using fdp or neato, increasing the edge len will tend to
+expand the layout.
+<pre>
+        graph G {
+           edge [len=3]
+           a -- { b c d }
+        }
+</pre>
+For twopi and circo, there are other parameters such as
+<tt>ranksep</tt> which can be used. See the 
+<A HREF="http://www.research.att.com/~erg/graphviz/info/attrs.html">
+graph attributes</A>.
+<p>
+You can also use the <tt>ratio</tt> attribute. If you set the <tt>size</tt>
+attribute to the desired drawing size, and then set <tt>ratio=fill</tt>, node
+positions are scaled separately in x and y until the drawing fills the
+specified <tt>size</tt>. Note that node sizes stay the same. If, instead,
+you set <tt>ratio=expand</tt>, the layout is uniformly scaled up in x and y
+until at least one dimension fits <tt>size</tt>.
+<p>
+If you specify the <tt>size</tt> attribute but end it with an exclamation
+mark (!), the final drawing will be scaled up uniformly in x and y 
+until at least one dimension fits <tt>size</tt>. Note that everything is
+scaled up, including text and node sizes.
+<p>
+If you're using Postscript, you can just scale up the output by
+manually adding a command such as <tt>2 2 scale</tt> where the
+Postscript environment is set up.  Make sure to adjust the
+<tt>BoundingBox</tt> too if your tools look at this header.
+<p>
+<B>Q. How can I join or merge certain edge routes in dot?</B>
+<p>
+You can try running <tt>dot -Gconcentrate=true</tt> or you can
+introduce your own virtual nodes drawn as tiny circles where
+you want to split or join edges:
+
+<pre>
+digraph G {
+  yourvirtualnode [shape=circle,width=.01,height=.01,label=""];
+  a -&gt; yourvirtualnode [arrowhead=none]
+  yourvirtualnode -&gt; {b;c}
+}
+</pre>
+
+<p>
+<P>
+<b>Q. How can I generate graph layouts in PDF?</b>
+<P>
+First, create Postscript output, then use an external converter from
+Postscript to PDF.
+For example,<BR>
+<tt>dot -Tps | epsf2pdf -o file.pdf</tt><br>
+Note that URL tags are respected, to allow clickable PDF objects.
+<P>
+If your intention is to use the figure as PDF in some document preparation 
+system, such as pdflatex, it is very important to use -Tps2 rather than
+-Tps. In general, if you really want PDF output, that is, you would like
+to have a -Tpdf flag, use -Tps2 before converting to PDF. 
+<P>
+<b>Q. How can I make duplicate nodes?</b>
+<P>
+Make unique nodes with duplicate labels.
+<pre>
+      digraph G {
+            node001 [label = "A"];
+            node002 [label = "A"];
+			node001 -&gt; node002;
+	  }
+</pre>
+<P>
+<b>Q. How can I set a graph or cluster label without its propagating to all sub-clusters?</b>
+<P>
+Set the label at the end of the graph (before the closing brace), after all
+its contents have been defined. (We admit it seems desirable to define some
+special syntax for non-inherited attribute settings.)
+<p>
+<B>Q. How can I draw multiple parallel edges in neato?</B>
+<p>
+This is possible when the <tt>splines</tt> attribute is false, which
+is the default. When <tt>splines=true</tt>, we have no good answer but
+we are working on it. One trick which is sometimes sufficient is to 
+specify multiple colors for the edge. This will a produce set of tightly
+parallel splines, each in its specified color. Read about the
+<A HREF="http://www.research.att.com/~erg/graphviz/info/attrs.html#d:color">color
+attribute</A> for more information.
+
+<h2>Clusters</h2>
+
+<b>Q. How can I create edges between cluster boxes?</b>
+<p>
+This only works in Graphviz version 1.7 and higher.
+To make edges between clusters, first set the
+graph attribute <tt>compound=true</tt>.
+Then, you can specify a cluster by name as
+a <i>logical head or tail</i> to an edge. This will
+cause the edge joining the two nodes to be
+clipped to the exterior of the box around the
+given cluster.
+<p>
+For example,
+ 
+<pre>
+      digraph G {
+        compound=true;
+        nodesep=1.0;
+        subgraph cluster_A {
+          a -&gt; b;
+          a -&gt; c;
+        }
+        subgraph cluster_B {
+          d -&gt; e;
+          f -&gt; e;
+        }
+        a -&gt; e [ ltail=cluster_A,
+                 lhead=cluster_B ];
+      }
+</pre>
+
+has an edge going from <tt>cluster_A</tt> to
+<tt>cluster_B</tt>. If, instead, you say
+ 
+<pre>
+        a -&gt; e [ltail=cluster_A];
+</pre>
+ 
+this gives you an edge from <tt>cluster_A</tt> to node
+<tt>e</tt>. Or you could just specify
+an <tt>lhead</tt> attribute.
+ 
+The program warns if a cluster specified as a
+logical node is not defined.
+Also, if a cluster is specified as a logical
+head for an edge, the real
+head must be contained in the cluster, and
+the real tail must not be.
+A similar check is done for logical tails. In
+these cases, the edge
+is drawn between the real nodes as usual.
+<p>
+<B>Q. Clusters are hard to see.</B>
+<P>
+Set </tt>bgcolor=grey</tt>
+(or some other color)
+in the cluster.
+<P>
+<B>Q. How can I symmetrize (balance) tree layouts?</B>
+<P>
+When a tree node has an even number of children, it isn't necessarily
+centered above the two middle ones.  If you know the order of the children,
+a simple hack is to introduce new, invisible middle nodes to re-balance
+the layout. The connecting edges should also be invisible. For example:
+<pre>
+digraph G {
+a -&gt; b0;
+xb [label="",width=.1,style=invis]
+a -&gt; xb [style=invis];
+a -&gt; b1;
+{rank=same b0 -&gt;  xb -&gt; b1 [style=invis]}
+b0 -&gt; c0;
+xc [label="",width=.1,style=invis]
+b0 -&gt; xc [style=invis];
+b0 -&gt; c1;
+{rank=same c0 -&gt;  xc -&gt; c1 [style=invis]}
+}
+</pre>
+This trick really ought to be build into our solver (and made
+independent of the order of the children, and available for
+layouts other than trees, too).
+
+<H2>Output features</H2>
+
+<B>Q. I can only get 11x17 output.</B>
+<P>
+It's not us!  It's probably your printer setup.  If you don't
+believe this, run <tt>dot -Tps</tt> and look at the
+<tt>BoundingBox</tt> header.  The coords are in 1/72ths of an inch.
+ 
+<P>
+<B>Q. How do I create special symbols and accents in labels?</B>
+<P>
+The following solution only works with the
+raster drivers that load Truetype or Type1
+fonts!  (That means, <tt>-Tgif, -Tpng, -Tjpeg</tt>, and possibly
+<tt>-Tbmp</tt> or <tt>-Txbm</tt> if enabled). 
+ 
+Use UTF8 coding, <i>e.g.</i> <verb>&#165;</verb> for the Yen
+currency symbol.  Example:
+ 
+      graph G {
+            yen [label="&#165;"]
+      }
+<P>
+You can look up other examples in this
+handy <A HREF="http://www.research.att.com/sw/tools/graphviz/doc/char.html">
+character set reference</A> .
+<P>
+<B>Q. How do I get font and color changes in record labels or other labels?</B>
+<P>
+This is not possible in record shapes. However, you can do this using
+<A HREF="http://www.research.att.com/%7Eerg/graphviz/info/shapes.html#html">
+HTML-like labels</A>. The granularity of changes is still at the cell level,
+but by playing with cell spacing and padding, you can get pretty much
+the effect you want. The intention is to support arbitrary font changes
+within running text in the not-too-distant future.
+ 
+<P>
+<B>Q. In plain format, splines do not touch the nodes (arrowheads are missing).</B>
+<P>
+Edges are specified as the main spline and, if necessary, arrowheads
+which actually abut the node. If the arrowheads are not given, drawing
+the edge spline will leave a gap between the edge and the node.
+This is a bug which has now solidified into a feature. 
+A workaround is to set
+       
+<pre>
+      edge [dir=none]
+</pre>
+Since the edges have no arrowheads, the spline specification will go
+all the way to both nodes. 
+<P>
+<B>Q. Record nodes are drawn differently in dot and neato when rankdir=LR.</B>
+<P>
+It's true.  dot -Grankdir=LR rotates record nodes so that their top level
+fields are still listed across levels.  rankdir=LR has no effect in neato.
+One workaround is
+<A HREF="http://www.graphviz.org/cvs/doc/info/shapes.html#html">
+HTML-like records</A> (they don't rotate; the downside is that
+you have to write in XML). Another workaround is to enclose
+record labels in { } to rotate/unrotate the record contents. See also,
+<A HREF="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnhfact/html/hfactor8_5.asp">How To Avoid Foolish Consistency</A>
+by Scott Berkun (Microsoft Corp.)
+<P>
+<B>Q. How can I print a big graph on multiple pages?</B>
+<P>
+The <tt>page</tt> attribute, if set, tells Graphviz to print the
+graph as an array of pages of the given size. Thus, the graph
+<pre>
+digraph G {
+  page="8.5,11";
+  ...
+}
+</pre>
+will be emitted as 8.5 by 11 inch pages. When printed, the
+pages can be tiled to make a drawing of the entire graph.
+At present, the feature only works with PostScript output.
+<P>
+Alternatively, there are various tools and viewers which will take
+a large picture and allow you to extract page-size pieces, which can
+then be printed.
+<P>
+<B>Q. When I have a red edge it shows up as a
+solid red in PNG and GIF formats, but has a
+black border when rendered to JPEG.  </B>
+<P>
+This is an artifact of JPEG's lossy
+compression algorithm.  JPEG isn't very good
+for line drawings.  PNG is bitmap format of
+choice.  John Ellson wants to deprecate and
+eventually remove the JPEG driver, but North
+is reluctant to change anything that people
+might already rely on.
+<P>
+<B>Q. How can I get custom shapes or images in my graph?</B>
+<P>
+Please see the
+<A HREF="http://www.research.att.com/sw/tools/graphviz/shapehowto.html">
+Shape HowTo</A> for some approaches.  There is no easy way to create
+custom shapes that work with dot/neato, dotty
+(Unix or MS-Windows) and Grappa (the Java
+front end), because they don't share any universal back end structure.
+We're thinking about it.
+<P>
+<B>Q. Sometimes in dotty, right mouse click shows the global menu
+but none of the items can be selected.</B>
+<P>
+Check that the NUMLOCK key is off.  It's a
+<A HREF="http://www.research.att.com/~erg/graphviz/bugs/b524.html">
+known bug</A>.
+<P>
+<B>Q. How can I get some display feature (such
+as bold lines) in dotty?</B>
+<P>
+Dotty has not really changed for many years. Therefore, there are
+myriad features available in Graphviz which it cannot handle.
+In some cases, you can use 
+<A HREF="http://www.research.att.com/~john/Grappa">Grappa</A> 
+or <A HREF="http://www.graphviz.org/webdot">webdot</A> 
+for display instead of dotty.  
+For example, Grappa has generalized polygons 
+(<tt>node [shape=polygon]</tt>) that dotty lacks.
+There are additional interactive viewers available. For example, see
+<A HREF="http://www.graphviz.org/Resources.php">Graphical Interfaces</A>
+and <A HREF="http://www.graphviz.org/About.php">Viewers</A>. If you
+are using MacOSX, the <A HREF="http://www.pixelglow.com/graphviz/">Mac
+version</A> of Graphviz has a highly recommended GUI.
+<P>
+If the display attribute that you need isn't there already, in dotty,
+there's probably no easy way to do it except by rolling up
+your sleeves and hacking the dotty code (a lefty script) that
+interprets and renders graphical attributes.  This is problematic
+for the same reason as above: there's no universal low-level driver
+layer shared across all the Graphviz tools.  We recently added an
+intermediate rendering language to the layout tools, but the
+various front ends don't use it yet.  This would be a good project
+for someone who wants to get involved here (along with porting
+dotty to GTK.)
+<P>
+<B>Q. How can I get rid of the little circles on
+edges ("edge handles") in dotty?</B>
+<P> 
+Edit the file dotty.lefty and change the
+line that says: 'edgehandles' = 1; to 'edgehandles' = 0;
+it's around line 110.
+<P>
+<B>Q. I already have all the coordinates for the
+nodes and edges of my graph and just want to
+use dot, neato, or dotty to render it.  How?</B>
+<P>
+Put the graph with layout attributes into a dot
+file. 
+
+Then run <tt>neato -s -n2</tt>. For example:
+<pre>
+neato -s -n2 -Tgif file.dot -o file.gif
+</pre>
+Note that if an edge does not have a <TT>pos</TT> attribute
+defined, neato will perform whatever edge routing it would
+normally do. All of the usual backend attributes (<TT>size</TT>,
+<TT>overlap</TT>, <TT>page</TT>, etc.) are available.
+<P>
+<B>Q. I already have all the coordinates for the
+nodes, and I want dot or neato to route the edges.</B>
+<P>
+It's not really too convenient to use dot for this.
+It is possible to use neato for this,
+running neato -s -n For example:
+<pre>
+neato -s -n -Tgif file.dot -o file.gif
+</pre>
+neato will use the node positions, but use its technique
+for routing the edges. There are several things to note. First,
+the neato edge router is different from dot's. Without the built-in
+top-down bias, it doesn't do as good a job of avoiding edge overlaps
+and, at present, it doesn't handle spline multi-edges at all. Second, by
+default, neato uses straight lines as edges. To get spline routing,
+you have to specify -Gsplines=true. And this will only work if none of
+the nodes overlap. Since the input graph supplies fixed node positions,
+it is the user's task to insure this.
+<P>
+<B>Q. I already have all the coordinates for the
+nodes and edges of my graph and just want to
+use dotty to render it.  How?</B>
+<P>
+Just run dotty on it. Dotty will use the given pos attributes.
+<P>
+<B>Q. Same as above, but I have only node coords, not edges.</B>
+<P>
+<tt>neato -n -s</tt> is some help, but neato doesn't handle
+spline-based parallel edges. 
+<P>
+<B>Q. How can I make client-side image maps?</B>
+<P>
+Use the -Tcmap command line option (only version 1.8.9 and beyond!)
+<P>
+<B>Q. Why aren't my server-side maps being recognized? I've checked the HTML!</B>
+<P>
+Make sure that your server has map files enabled. For example, if running
+apache, check that httpd.conf has a line like the following:
+<pre>
+AddHandler imap-file map
+</pre>
+and that it is not commented out!
+<P>
+<B>Q. I've installed Debian Graphviz and it works just fine on the command line,
+but when I execute a Perl/CGI script through Apache, no output is generated.
+For example, the code
+<pre>
+system("/usr/local/bin/dot -Tpng /tmp/tree.dot -o /tmp/tree.png");
+</pre>
+produces no file <tt>/tmp/tree.png</tt>.</B>
+<P>
+As best as we can tell, dot dies with no stdout or stderr messages on Debian 
+systems when run from an Apache cgi program
+with no HOME set. The workaround is to provide a HOME directory in the 
+Apache userid's environment.
+<P>
+Someone has also suggested using the 
+<A HREF="http://search.cpan.org/search?query=graphviz&mode=all">
+Perl module for Graphviz</A>.
+<P>
+<B>Q. How can I get 3D output?</B>
+<P>
+The Graphviz authors have qualms about the gratuitous use of 3D.
+<p>
+Nonetheless, dot -Tvrml generates VRML files.  There's no Z coordinate
+layout - you specify Z coords yourself in the <tt>z</tt> attribute of nodes,
+and the Z coordinates of edges are interpolated.   If someone
+contributes a driver for a newer, more useful format (OpenGL Performer
+scene graphs? Open Scene Graphs? Java3D programs?) we'd like to try it.
+<p>
+neato internally supports layouts in higher dimensions through the <tt>dim</tt>
+attribute, e.g. <tt>neato -Gdim=7</tt> but there's no way to get the output
+unless you invoke neato as a library and inspect <verb>ND_pos(n)[i]</verb>
+where <verb>n</verb> is a pointer to the relevant node.
+This would need some (minor) driver work and a good 7-dimensional viewer. Well,
+<tt>dim=3</tt> ought to be possible.
+
+<H2>Problems</H2>
+<B>Q. How can I avoid node overlaps in neato?</B>
+<P>
+Use the graph attribute <A HREF="http://www.research.att.com/%7Eerg/graphviz/info/attrs.html#d:overlap"><tt>overlap</tt></A>.
+<P>
+<B>Q. How can I avoid node-edge overlaps in neato?</B>
+<P>
+Use the <tt>overlap</tt> attribute to leave room among the nodes, then
+use <tt>-Gsplines=true</tt>.
+<pre>
+neato -Goverlap=... -Gsplines=true -Gsep=.1
+</pre>
+<P>
+The <tt>sep</tt> argument is the node-edge separation as
+a ratio of a node's bounding box. That is, <tt>sep=.1</tt> means
+each node is treated as though it is 1.1 times larger than it is.
+The actual value may require some tinkering.
+(Don't ask why this isn't just a constant!)  Note that this option really
+slows down neato, so should be used sparingly and only
+with modest-sized graphs.
+<P>
+<B>Q. Neato runs forever on a certain example.</B>
+<P>
+First, how big is your graph? Neato is a quadratic algorithm, roughly
+equivalent to statistical multidimensional scaling. If you
+feed it a graph with thousands of nodes and edges, it can easily take
+hours or days. The first thing to check is to run <tt>neato -v</tt> to
+get a trace of the output. If the numbers you see are generally
+getting smaller, the layout is just taking a long time. You can set
+certain parameters, such as <tt>epsilon</tt> or <tt>maxiter</tt> to
+shorten the layout time, at the expense of layout quality. But if your
+graph is big, who's going to notice?
+<P>
+If you see
+the numbers repeating, or fluctuating up and down, then neato is
+cycling, especially if your graph is small.
+This should never happen by default for versions later than 1.13. If it
+does, please report it as a bug.
+<P>
+If you are using an earlier version of neato, or you used <tt>mode=KK</tt>,
+cycling is indeed possible. This cycling is very sensitive to the
+initial layout. By using the <tt>start</tt> attribute, for example,
+<pre>
+neato -Gstart=3
+neato -Gstart=rand
+</pre>
+the cycling will most likely disappear. Or you can employ the parameters used
+for large graphs to stop the layout earlier:
+<pre>
+neato -Gepsilon=.01
+neato -Gmaxiter=500
+</pre>
+<P>
+Note that, if you have a large graph, the generation of edges as splines
+is a cubic algorithm, so you would do well to avoid using <tt>splines=true</tt>.
+<P>
+<B>Q. Edge label placement in neato is bad.</b>
+<p>
+Difficult problem.  We're working on it.
+If anyone has some general
+label placement code (e.g. a simulated annealer based on the Marks et al.
+technique in <I>Graphics Gems IV</I>, please get in touch.
+<P>
+<B>Q. Dot runs forever on a certain example.</B>
+<p>
+Try dot -v to observe its progress.
+<p>
+Note that it's possible to make graphs whose layout or even parsing
+is quadratic in the input size. For example, in dot, 
+
+<pre>
+digraph G {
+    a -&gt; b -&gt; c -&gt; .... -&gt; x -&gt; y -&gt; z
+    a -&gt; z
+    b -&gt; z
+    c -&gt; z
+    /* and so on... */
+	x -&gt; z
+}
+</pre>
+
+The total edge length (therefore the layout time) of
+this as a ranked graph is quadratic in the number of nodes.
+
+
+You probably won't encounter the following, but it is also possible
+to construct graphs whose parsing takes quadratic time, by appending
+attributes to nodes and edges after the graph has been loaded.
+For example:
+
+<pre>
+digraph G {
+    /* really big graph goes here... */
+    n0 -&gt; n1 -&gt; ... -&gt; n999999999;
+
+    n0 [attr0="whatever"]
+    n0 [attr1="something else"]
+    /* and so on with many more attributes */
+}
+</pre>
+The addition of <tt>attr0</tt> touches every node of the graph.
+Then the addition of <tt>attr1</tt> touches every node again, and so on.
+<P>
+Q. <B> Neato has unnecessary edge crossings, or has missed an
+obvious change to make a much nicer layout.</B>
+<P>
+Neato and all similar virtual physical model algorithms rely
+on heuristic solutions of optimization problems. The better
+the solution, the longer it takes to find. Unfortunately, it
+is also possible for these heuristics to get stuck in local
+minima. Also, it is heavily influenced by the initial position
+of the nodes. It is quite possible that if you run neato again,
+but with a different random seed value,
+or more iterations, you'll get a better layout.  For example: <P>
+<pre>
+neato -Gstart=5 file.dot -Tps -o file.ps
+neato -Gepsilon=.0000001 file.dot -Tps -o file.ps
+</pre>
+<P>
+In particular, note that there are no guarantees that neato will produce
+a planar layout of a planar graph, or expose all or most of a graph's
+symmetries.
+<P>
+Q. <B> Webdot doesn't work.</B>
+<P>
+We assume you're using Apache and have <A HREF="http://www.tcl.tk">TCL</A> installed.
+If you don't, it's probably better to just use the
+<A HREF="http://www.research.att.com/sw/tools/graphviz/webdot.cgi.pl">
+webdot perl script</A>.
+<P>
+To debug webdot, first test whether <tt>tclsh</tt> can load the
+Tcldot shared library.  Try:
+<pre>
+$ tclsh
+% load <b>$prefix</b>/lib/graphviz/libtcldot.so.0
+%
+</pre>
+where <b>$prefix</b> is the installation prefix for graphviz; usually /usr
+or /usr/local.
+<p>
+Then test whether webdot runs from a shell command.  (With webdot we provide
+a helper script scaffold.tcl or scaffold.sh that sets up an environment
+like the one Apache provides.)  For example
+<pre>
+$ scaffold.tcl >out.gif
+can't read "LIBTCLDOT": no such variable
+    while executing
+"file mtime $LIBTCLDOT"
+    invoked from within
+"set t1 [file mtime $LIBTCLDOT]"
+    (file "cgi-bin/webdot" line 67)
+    invoked from within
+"source cgi-bin/webdot
+"
+    (file "scaffold.tcl" line 22)
+</pre>
+The above is a strong clue that webdot is not configured properly properly. 
+<P>
+Finally, test whether webdot runs as a cgi-bin program.
+It may help to examine the cgi-bin environment using a
+simple cgi-bin tcl script like:
+<pre>
+	#!/bin/env tclsh
+	puts "Content-type: text/plain"
+	puts ""
+	foreach e [lsort [array names env]] {puts "$e: $env($e)"}
+</pre>
+Save this script as .../cgi-bin/test.tcl, make it executable, then
+loook at: <a href="http://localhost/cgi-bin/test.tcl">http://localhost/cgi-bin/test.tcl</a>
+<P>
+Q. <B> I have "Font not found" errors, or text labels missing in webdot.</B>
+<P>
+Firstly, recent versions of graphviz will use fontconfig if it is available
+on your platform.  With fontconfig, this error should not occur, so you
+may want to see if an upgrade to graphviz is available, or if a rebuild
+will add fontconfig support.
+<p>
+If fontconfig is not available then graphviz tries to resolve fontnames
+to fontpaths itself, and uses DOTFONTPATH (or GDFONTPATH) to indicate where it should look.
+<p>
+For copyright reasons, Graphviz doesn't come with its own fonts.
+On a Windows machine, it knows to search in <tt>C:\Windows\Fonts</tt>.
+On a Unix machine, you need to set up a directory that contains
+Truetype fonts. You can get a copy of some fonts
+<A HREF="http://www.graphviz.org/pub/graphviz/webfonts-1.0-5.noarch.rpm">here</A>.
+<P>
+The default DOTFONTPATH is:
+<pre>
+#define DEFAULT_FONTPATH "/usr/X11R6/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/truetype:/usr/X11R6/lib/X11/fonts/TTF:/usr/share/fonts/TrueType:/usr/share/fonts/truetype:/usr/openwin/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/Type1"
+</pre>
+If your fonts are somewhere else, then you must set that directory in
+the webdot script, or recompile Graphviz with the correct DEFAULT_FONTPATH
+(or set <tt>fontpath="/your/font/directory" in every graph you lay out,
+but that's pretty clumsy.)
+<P>
+Q. <B> My browser doesn't recognize SVG.</B>
+<P>
+The correct MIME type for svg images is: <tt>image/svg+xml</tt>   (note "+" not "-").
+<P>
+SVG is not built into all browsers; you can get
+<A HREF="http://www.adobe.com/svg/viewer/install/main.html">plugins</A>
+from Adobe for Windows, Linux and some other operating systems.
+The <A HREF="http://www.w3.org/Amaya/">Amaya</A> browser from W3C
+is said to have builtin SVG.
+<A HREF="http://xml.apache.org/batik/">Batik</A> is an SVG
+renderer in Java and can be run as a stand-alone program.
+<P>
+For help with embedding SVG in HTML pages, see 
+<A HREF="http://www.graphviz.org/webdot/svgembed.html">here</A>.
+</BODY>
+</HTML>

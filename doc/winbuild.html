@@ -1,0 +1,98 @@
+<html>
+<head>
+<title>Graphviz Build Instructions for Windows</title>
+</head>
+<body bgcolor=#ffffff>
+<h2>Graphviz Build Instructions for Windows</h2>
+<P>
+Currently we build Graphviz on Windows using the MS Visual C++ compiler only.
+The simplest way to build the software from source on Windows is as follows:
+<OL>
+<LI>
+Download the Windows source package:<BR>Go to
+<A HREF=http://www.graphviz.org/Download_windows.html>http://www.graphviz.org/Download_windows.html</A>
+and copy over either the release or development source package. 
+At present, these can also be found as
+<A HREF=http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-win.tgz>http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-win.tgz</A> and
+<A HREF=http://www.graphviz.org/pub/graphviz/CURRENT/graphviz-win.tgz>http://www.graphviz.org/pub/graphviz/CURRENT/graphviz-win.tgz</A>, respectively.
+</LI>
+<SPACER TYPE=VERTICAL SIZE=10>
+<LI>
+Unwrap the package:<BR>
+If you have Unix tools available, you can use
+<SPACER TYPE=VERTICAL SIZE=10>
+<TT>gunzip < graphviz-win.tgz | tar xf -</TT><BR>
+<SPACER TYPE=VERTICAL SIZE=10>
+If not, double click on the file and WinZip should start up and let you
+store all of the files into a directory.<BR>
+Let <TT>$ROOT</TT> be the root directory for the Graphviz software.
+</LI>
+<SPACER TYPE=VERTICAL SIZE=10>
+<LI>
+Add the third-party libraries:  
+<SPACER TYPE=VERTICAL SIZE=10>
+<UL TYPE=DISC>
+<LI>
+zlib 1.1.3 <A HREF=http://www.gzip.org/zlib/>http://www.gzip.org/zlib/</A>
+<LI>
+libpng 1.0.6 <A HREF=http://www.libpng.org/pub/png>http://www.libpng.org/pub/png</A> 
+<LI>
+jpeg-6b 62 <A HREF=http://www.ijg.org/>http://www.ijg.org/</A>
+<LI>
+freetype 2.1.7 <A HREF=http://freetype.sourceforge.net/>http://freetype.sourceforge.net/</A>
+<LI>
+expat <A HREF=http://expat.sourceforge.net/>http://expat.sourceforge.net/</A>
+</UL>
+<SPACER TYPE=VERTICAL SIZE=10>
+The versions should be at least the ones indicated.
+You can download the files from 
+<a href=http://www.research.att.com/sw/tools/graphviz/dist/third-party.zip>http://www.research.att.com/sw/tools/graphviz/dist/third-party.zip</a>.
+Unzip the package in the <TT>$ROOT</TT> directory; this will create a subdirectory called
+<TT>third-party</TT>.
+Or you can obtain the libraries yourself, and install 
+them in <TT>$ROOT\third-party</TT>
+</LI>
+<SPACER TYPE=VERTICAL SIZE=10>
+<LI>
+Build the software in one of the following ways:<BR>  
+<UL TYPE=DISC>
+<LI> Run the script <TT>$ROOT\build.bat</TT>. You'll first want to check
+that the <TT>vc</TT> variable points to your local installation of visual C.
+Obviously, this should be run in a DOS command window.
+<LI> The file <TT>$ROOT\makearch\win32\static\graphviz.dsw</TT> 
+is the main workspace for the Graphviz libraries and graph drawing programs.
+The file
+<TT>$ROOT\makearch\win32\static\tools.dsw</TT> provides the workspace for the
+additional Graphviz tools. Double-clicking on these files will open the
+workspaces using the MS Visual Studio, from which you can use the Build
+menu item to create the various libraries and programs. 
+<LI> If you have a Unix environment, with a real ksh, run the script 
+<TT>$ROOT\wmake.sh</TT>
+after setting the PATH, LIB and INCLUDE shell variables to the paths where
+the Visual C programs are installed on your machine, and the associated
+library and include file directories.
+<LI> Execute the <TT>$ROOT\winmake.wsf</TT> file by double-clicking on the 
+file within Windows Explorer. This is a Javascript program. 
+We have found that this build can fail
+in strange ways.</li>
+</UL>
+</OL>
+<P> Once built, all of the libraries and programs will be found in
+<TT>$ROOT\makearch\win32\static\Release</TT>. If you wish to install
+the software somewhere, edit the file <TT>$ROOT\install.bat</TT> to
+set the variable <TT>root</TT> to be the absolute pathname of the
+directory where you want
+the sotware installed, and then run the script <TT>$ROOT\install.bat</TT>.
+<P>
+We have avoided all dependency files, and dependencies in make files,
+because we found they tended to include absolute pathnames.
+If necessary, follow the order used in <TT>build.bat</TT> to be safe.
+<P>
+If you want to change source files, you can just do it and rebuild.
+If, however, you want to add new files or projects, you will
+have to redo the makefiles or scripts.
+<P>
+If you have problems or questions, please contact us at
+<A href=mailto:erg@research.att.com>erg@research.att.com</A>.
+</body>
+</html>

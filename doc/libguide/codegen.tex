@@ -1,0 +1,418 @@
+\section{Graphics code generators}
+\label{sec:codegen}
+
+Except for the simple text output formats ({\tt dot}, 
+{\tt xdot}, {\tt plain} and {\tt plain-ext}),
+all graph output done in \gviz\ goes through a driver specified
+by the type {\tt codegen\_t}.
+In addition to the drivers built into the library, an application
+can provide its own, allowing it to specialize or control the output
+as necessary. If an application has defined a value of type
+{\tt codegen\_t}, it can set {\tt gvc->codegen} to point to it
+and then call
+\begin{verbatim}
+    emit_graph (g, flags);
+\end{verbatim}
+where {\tt g} is the root graph. This will traverse the graph structure,
+emitting instructions for drawing nodes, edges and clusters using the
+operations supplied in {\tt gvc->codegen}. The {\tt flags} parameter 
+can be used to control in what order certain aspects of the
+drawing are done. It is the bitwise-or of the flags
+\begin{description}
+\item[EMIT\_SORTED] If set, first all nodes are drawn, then all edges.
+\item[EMIT\_EDGE\_SORTED] If set, first all edges are drawn, then all nodes.
+\item[EMIT\_COLORS] If set, before any drawing starts, the generator
+registers all colors used in the graph by calls to {\tt set\_fillcolor} and
+{\tt set\_pencolor}.
+\item[EMIT\_CLUSTERS\_LAST] If set, the generator emits clusters (i.e,,
+the cluster's bounding rectangle and optional label) only after all
+nodes and edges are drawn. By default, clusters are emitted before
+any of the nodes or edges.
+\end{description}
+The flags take into account the various idiosyncracies of some
+graphics formats. Obviously, only one of {\tt EMIT\_SORTED} or
+{\tt EMIT\_EDGE\_SORTED} should be set. If neither is set,
+the output intermingles the drawing of nodes and edges using
+a breadth-first search.
+
+Before describing the code generator functions in detail, it may be helpful
+to give an overview of how output is done. Output can be viewed as a hierarchy
+of components. At the highest level is the job, representing 
+an output format and target. Bound to a job might be multiple graphs,
+each embedded in some universal space. Each graph may be partitioned
+into multiple layers. Each layer is divided into a 2-dimensional array
+of pages. A page will then contain nodes, edges, and clusters. Each of
+these may be contain an anchor. They will all construct a local graphics
+context before doing an rendering. During code generation, each component
+is reflected in paired calls to its corresponding {\tt begin\_...} and
+{\tt end\_...} functions. The layer and anchor components are omitted if
+there is only a single layer or the enclosing component has no browser
+information. 
+
+Rendering is defined by a small
+collection of graphics primitives and a few functions for setting graphics
+attributes.
+
+Table~\ref{table:codegen} lists the names and type signatures of
+the fields of {\tt codegen\_t}, which are used to emit the components
+described above.
+\begin{table*}[htbp]
+\centering
+\begin{tabular}{|l|} \hline
+void reset() \\
+void begin\_job(FILE*, graph\_t*, char**, char*, char**, point) \\
+void end\_job() \\
+void begin\_graph(graph\_t*, box, point) \\
+void end\_graph() \\
+void begin\_page(graph\_t*, point, double, int, point) \\
+void end\_page(); \\
+void begin\_layer(char*, int, int) \\
+void end\_layer() \\
+void begin\_cluster(graph\_t*) \\
+void end\_cluster() \\
+void begin\_nodes() \\
+void end\_nodes() \\
+void begin\_edges() \\
+void end\_edges() \\
+void begin\_node(node\_t*) \\
+void end\_node() \\
+void begin\_edge(edge\_t*) \\
+void end\_edge() \\
+void begin\_anchor(char*, char*, char*) \\
+void end\_anchor() \\
+void begin\_context() \\
+void end\_context() \\
+void set\_font(char*, double) \\
+void textline(point, textline\_t*) \\
+void set\_pencolor(char*) \\
+void set\_fillcolor(char*) \\
+void set\_style(char**) \\
+void ellipse(point, int, int, int) \\
+void polygon(point*, int, int) \\
+void beziercurve(point*, int, int, int) \\
+void polyline(point*,int) \\
+boolean bezier\_has\_arrows \\
+void user\_shape(char*, point*, int, int) \\
+void comment(void*, attrsym\_t*) \\
+point textsize(char*, char*, double) \\
+point usershapesize(node\_t*, char*) \\ \hline
+
+\end{tabular}
+\caption{Interface for a code generator}
+\label{table:codegen}
+\end{table*}
+In the following, we describe the functions in more detail, though
+many are self-explanatory. 
+All positions and sizes are in points.
+\begin{description}
+\item[{\tt reset}]
+Reinitialize code generator; called between jobs.
+\item[{\tt begin\_job(ofp, g, lib, user, info, pages)}]
+Called at the beginning of all graphics output for a graph, following a call
+to {\tt emit\_graph} or {\tt dotneato\_write}. 
+This is needed in addition to {\tt begin\_graph}
+because the graph may be drawn using multiple pages.
+The code generator should use the open file
+pointer {\tt ofp} for output. 
+Note that this parameter is not passed as an
+argument to any other functions, so the generator must store this value. 
+The parameter {\tt g} indicates the graph to be drawn. 
+The {\tt user} argument gives identifying information, 
+usually including the login ID, of the owner of the process. 
+The {\tt info} argument gives name and version information about the 
+drawing program (cf. Section~\ref{sec:info}).
+
+The graph will be printed in an array of {\tt size} pages. 
+If {\tt pages.x} or {\tt pages.y} is greater than one, this indicates that a
+page size was set and the graph drawing is too large to be printed on a
+single page.
+
+The {\tt lib} argument
+is a null-terminated array of strings which can pass user or
+application code or information to the code generator.
+The use of {\tt lib} is output-specific. For example, the PostScript generator
+uses it to extend or override the standard PostScript functions
+with ones supplied by the user.
+\item[{\tt end\_job()}]
+Called at the end of all graphics output for graph. The output stream
+is still open, so the code generator can append any final information
+to the output.
+\item[{\tt begin\_graph(g, bb, pb)}]
+Called at the beginning of drawing graph {\tt g}.
+The device or format specific output space is the rectangle whose corners
+are the origin and the point {\tt pb}. Within this space,
+the parameter {\tt bb} gives the bounding box of the drawing.
+The origin in layout space should map to {\tt bb.LL} in format or device
+space.
+\item[{\tt end\_graph()}]
+Called when the drawing of a graph is complete.
+\item[{\tt begin\_page(g, page, scale, rot, offset)}] 
+Called at the beginning of a new output page.
+The page will contain part of the drawing of graph {\tt g}.
+The point {\tt page} is the index of the page in the array of pages. 
+Thus, page (0,0) is the page containing the bottom, lefthand corner
+of the graph drawing; page (1,0) will contain that part of the graph
+drawing to the right of page (0,0); etc. 
+
+The remaining parameters instruct the code generator in additional
+coordinate transformations it is responsible for. {\tt rot} gives
+the angle, in degrees, through which the drawing should be rotated. At present,
+{\tt rot} is either 0 or 90, representing portrait or landscape modes.
+The parameters {\tt scale} and {\tt offset} indicate how layout
+coordinates should be scaled and translated. Scaling is always uniform
+in x and y, with {\tt scale == 1.0} indicating no scaling.
+\item[{\tt end\_page()}] 
+Called when the drawing of a current page is complete.
+\item[{\tt begin\_layer(layerName,n,nLayers)}]
+Called at the beginning of each layer, only if ${\tt nLayers} > 0$.
+The {\tt layerName} parameter is the logical layer name given in
+the {\tt layers} attribute. The layer has index {\tt n} out of
+{\tt nLayers}.
+\item[{\tt end\_layer()}] 
+Called at the end of drawing the current layer.
+\item[{\tt begin\_cluster(g)}]
+Called at the beginning of drawing cluster subgraph {\tt g}.
+\item[{\tt end\_cluster()}]
+Called at the end of drawing the current subgraph.
+\item[{\tt begin\_nodes()}]
+Called at the beginning of drawing the nodes on the current page.
+Only called if the {\tt flags} parameter to {\tt emit\_graph} has
+{\tt EMIT\_SORTED} or {\tt EMIT\_EDGE\_SORTED} set.
+\item[{\tt end\_nodes()}]
+Called when all nodes on a page have been drawn.
+Only called if the {\tt flags} parameter to {\tt emit\_graph} has
+{\tt EMIT\_SORTED} or {\tt EMIT\_EDGE\_SORTED} set.
+\item[{\tt begin\_edges()}]
+Called at the beginning of drawing the edges on the current page.
+Only called if the {\tt flags} parameter to {\tt emit\_graph} has
+{\tt EMIT\_SORTED} or {\tt EMIT\_EDGE\_SORTED} set.
+\item[{\tt end\_edges()}]
+Called when all edges on the current page are drawn.
+Only called if the {\tt flags} parameter to {\tt emit\_graph} has
+{\tt EMIT\_SORTED} or {\tt EMIT\_EDGE\_SORTED} set.
+\item[{\tt begin\_node(n)}]
+Called at the start of drawing node {\tt n}.
+\item[{\tt end\_node()}]
+Called at the end of drawing the current node.
+\item[{\tt begin\_edge(e)}]
+Called at the start of drawing edge {\tt e}.
+\item[{\tt end\_edge()}]
+Called at the end of drawing the current edge.
+\item[{\tt begin\_anchor(href,tooltip,target)}]
+Called at the start of an anchor context associated
+with the current node, edge, or graph, assuming the graph
+object has a {\tt URL} or {\tt href} attribute. The
+{\tt href} parameter gives the associated href, while
+{\tt tooltip} and {\tt target} supply any tooltip or target information.
+If the object has no tooltip, its label will be used. 
+If the object has no target attribute, this parameter will be {\tt NULL}.
+\item[{\tt end\_anchor()}]
+Called at the end of the current anchor context.
+\item[{\tt begin\_context()}]
+Called at the start of a new graphics context or state. The context
+encapsulates the graphics attributes drawing or pen color, fill color,
+font (face and size), and supported styles. The context is defined
+by the various set routines below. Contexts should be kept in a stack.
+If an attribute has not been set in the current context, its value
+should be looked up further down the stack.
+\item[{\tt end\_context()}]
+Called at the end of the current graphics context. The context should be
+removed, and the previous context now becomes the current one.
+\item[{\tt set\_font(fontname, fontsize)}]
+Set the context so that text will be drawn using font {\tt fontname}
+of size {\tt fontsize} points. The {\tt fontname} parameter is usually
+a short, common name representing a font face such as {\tt "Times-Roman"},
+which is the default font in \gviz. The interpretation of the font name,
+whether mapped to a font predefined in the format or to a file,
+is format specific.
+\item[{\tt set\_pencolor(name)}]
+Set the color for line or text drawing to {\tt name}.
+See Section~\ref{sec:color} for the possible values and meanings 
+for {\tt name}.
+\item[{\tt set\_fillcolor(name)}]
+Set the color for area filling to {\tt name}.
+See Section~\ref{sec:color} for the possible values and meanings 
+for {\tt name}.
+\item[{\tt set\_style(s)}]
+Set the style of the node or edge. The argument {\tt s} is a
+null-terminated array of
+strings specifying style features such as {\tt "invis"}, {\tt "dashed"}
+or {\tt "filled"}.
+Although some style attributes are almost universally supported,
+styles are format-dependent.
+See Section~\ref{sec:style} for information on how to parse the array.
+\item[{\tt textsize(str, fontname, fontsz)}]
+Returns the size, in points,
+of the bounding rectangle for the text string {\tt str} if
+drawn using font {\tt fontname} with point size {\tt fontsz}.
+If the function is not defined, the library will attempt to
+estimate the size.
+\item[{\tt textline(p, txt)}]
+Draw text at point {\tt p} using the current font and fontsize and color. 
+The {\tt txt} argument provides the text string {\tt txt.str},
+a calculated width of the string {\tt txt.width} and 
+the horizontal alignment {\tt txt.just} of the string in relation to {\tt p}.
+
+The base line of the text is given by {\tt p.y}. The interpretation
+of {\tt p.x} depends upon the value of {\tt txt.just}. Basically,
+{\tt p.x} provides the anchor point for the alignment.
+\begin{center}
+\begin{tabular}{ll}
+{\tt txt.just} & {\tt p.x} \\ \hline
+{\tt 'n'} & Center of text \\
+{\tt 'l'} & Left edge of text \\
+{\tt 'r'} & Right edge of text \\
+\end{tabular}
+\end{center}
+The leftmost x coordinate of the text, the parameter most graphics
+systems use for text placement, is given by 
+{\tt p.x + {\em j} * txt.width}, where {\em j} is 0.0 (-0.5,-1.0)
+if {\tt txt.just} is {\tt 'l'}({\tt 'n'},{\tt 'r'}), respectively.
+This representation allows the code generator to accurately compute
+the point for text placement that is appropriate for its format, as
+well as use its own mechanism for computing the width of the string.
+\item[{\tt ellipse(p, rx, ry, filled)}]
+Draw an ellipse with center at {\tt p}, with horizontal and vertical 
+half-axes {\tt rx} and {\tt ry} using the current pen color and line style.
+If {\tt filled} is non-zero, the ellipse should be filled with the current
+fill color.
+\item[{\tt polygon(A, n, filled)}]
+Draw a polygon with the {\tt n} vertices given in the array {\tt A}, 
+using the current pen color and line style.
+If {\tt filled} is non-zero, the ellipse should be filled with the current
+fill color.
+\item[{\tt beziercurve(A, n, arrow\_at\_start, arrow\_at\_end)}]
+Draw a B-spline with the {\tt n} control points given in {\tt A}. This will
+consist of $(n - 1)/3$ cubic Bezier curves. The spline should be drawn
+using the current pen color and line style.
+If {\tt  bezier\_has\_arrows} is false, the parameters 
+{\tt arrow\_at\_start} and {\tt arrow\_at\_end}
+will both be 0. Otherwise, if {\tt arrow\_at\_start} ({\tt arrow\_at\_end}) 
+is true, the function should draw an arrowhead at the 
+first (last) point of {\tt A}.
+\item[{\tt polyline(A,n)}]
+Draw a polyline with the {\tt n} vertices given in the array {\tt A}, 
+using the current pen color and line style.
+\item[{\tt bezier\_has\_arrows}]
+This should be set to true if the function {\tt beziercurve} will generate
+the appropriate arrowheads. If false, the \gviz\ drawing routines will emit
+graphics code to draw the arrowhead.
+\item[{\tt comment(obj, sym)}]
+Unused
+\item[{\tt user\_shape(name, A, n, filled)}]
+Called by the library to draw a node of shape {\tt name}
+whose contents are user-defined using a format-dependent mechanism.
+Some formats require the node's {\tt shapefile} attribute to define
+a file or URL containing the node's content.
+Note that if the generator needs additional information or attributes
+from the node being drawn, it should store the node pointer when its
+{\tt begin\_node} function is called.
+
+The region allocated for the node is a polygon with {\tt n} sides,
+whose vertices are given by the array {\tt A}. (At present, the polygon
+is always a rectangle.) If {\tt filled} is non-zero,
+the node should be filled with the current fill color.
+
+This function should always attempt to honor the
+area specified by {\tt A}, perhaps scaling the node contents to 
+fit the region, even if a {\tt usershapesize} function is
+available to provide the library with the exact size. The reason
+for this is that the node might have its {\tt fixedsize} attribute set to true.
+\item[{\tt usershapesize(n, name)}]
+If defined, called by the library to ascertain the size of a 
+user-defined shape. If the shape of a node is
+not recognized, the library assumes this is a user-defined shape
+and will use this function to determine its size. The parameter
+{\tt n} is the node involved, and {\tt name} is the value of the
+node's {\tt shape} attribute. A user-defined node is always taken
+to be rectangular.
+
+A code generator need not supply a {\tt usershapesize} function to
+support user-defined nodes. If the function is not available, the
+library will set the node size using the usual mechanism, taking into
+account the {\tt label}, {\tt width} and {\tt height} attributes of
+the node. 
+\end{description}
+
+\subsection{Style information}
+\label{sec:style}
+
+One of the functions in the {\tt codegen\_t} interface is the
+{\tt set\_style} function, which takes a null-terminated array {\tt s}
+of character pointers, each specifying a style attribute. Usually, a
+style will consist of a single, null-terminated string of
+characters, specifying a style operand such as {\tt "bold"}.
+More generally, the operand may be followed by one or more
+null-terminated strings, specifying arguments to the operand.
+The entire style specification is terminated by a null character.
+For example, {\tt s[0]} might point to the string
+\verb+"setlinewidth\0004\000"+, which could be used get more
+flexibility with line thicknesses beyond a simple {\tt "bold"} style. 
+Note that the character array ends in two
+null characters, one ending the argument {\tt "4"}, the other terminating
+the style specification.
+
+As noted above, the interpretation and use of styles depends on the
+code generator.
+
+\subsection{Color information}
+\label{sec:color}
+
+There are four ways a color can be specified in \gviz: RGB,
+RGB + alpha, HSV and color name, where color names are those supplied
+with the X library. Each of these has its own string representation,
+and the core part of \gviz\ keeps them as strings. It is up to each
+code generator to interpret what color is denoted by a string.
+
+In most cases, this can be done using the function
+\begin{verbatim}
+    void colorxlate(char*, color_t*, color_type);
+\end{verbatim}
+supplied by the library. If invoked as 
+\begin{verbatim}
+    colorxlate(str, color, target_type)
+\end{verbatim}
+the {\tt str} argument is the string
+representation of a color which would come from an attribute such
+as {\tt fontcolor}. The {\tt target\_type} specifies which
+machine-level representation is desired. Possible values of
+{\tt target\_type} are:
+\begin{description}
+\item[HSV\_DOUBLE] HSV format represented as 3 doubles from 0 to 255.0.
+\item[RGBA\_BYTE] RGB + alpha format represented as 4 bytes from 0 to 255.
+\item[CMYK\_BYTE] CMYK format represented as 4 bytes from 0 to 255.
+\item[RGBA\_WORD] RGB + alpha format represented as 4 bytes from 0 to 65535.
+\end{description}
+The result is stored into the {\tt color\_t} value pointed to by {\tt color}.
+The {\tt color\_t} type is simply a union of the four machine-level
+representations supported.
+
+\subsection{Using {\tt codegen\_t} to draw nodes and edges}
+\label{sec:applcodegen}
+
+An application can use a call \verb+emit_graph+ after setting its
+own {\tt codegen\_t} to generate the entire graph using its rendering.
+In certain cases, especially interactive applications, it may be desirable
+to have finer control. This can be done by using calls to {\tt emit\_node}
+and {\tt emit\_edge} instead of calling \verb+emit_graph+.  
+
+The application still needs to define and install its {\tt codegen\_t}.
+For node drawing, the library uses just a subset of the these functions.
+These are:
+\begin{itemize}
+\item {\tt begin\_node}, {\tt begin\_anchor}, {\tt begin\_context},
+{\tt end\_context}, {\tt end\_anchor}, {\tt end\_node}, 
+{\tt set\_style}, {\tt set\_pencolor}, {\tt set\_fillcolor}, {\tt set\_font}, 
+{\tt textline} {\tt ellipse}, {\tt polygon}
+\end{itemize}
+For edge drawing, the required functions are:
+\begin{itemize}
+\item {\tt begin\_edge}, {\tt begin\_anchor}, {\tt begin\_context},
+{\tt end\_context}, {\tt end\_anchor}, {\tt end\_edge}, 
+{\tt set\_style}, {\tt set\_pencolor}, {\tt set\_font},
+{\tt textline}, {\tt beziercurve}, {\tt polyline}
+\end{itemize}
+The last function is only used if an edge has its {\tt ornament}
+attribute set. The functions {\tt set\_font} and {\tt textline} are
+only used if an edge has labels.
+

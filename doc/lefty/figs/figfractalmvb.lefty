@@ -1,0 +1,6 @@
+load ('fractal.lefty');
+maxlevel = 2;
+drawfractal ();
+transformfractal (['x' = 200; 'y' = 50;], ['x' = 250; 'y' = 100;]);
+drawfractal ();
+dops ();

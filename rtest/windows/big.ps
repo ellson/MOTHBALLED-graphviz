@@ -1,0 +1,1368 @@
+%!PS-Adobe-2.0
+%%Creator: dot version 1.14 (Mon Aug 30 22:33:14 UTC 2004)
+%%For: Bill Gates
+%%Title: structs
+%%Pages: (atend)
+%%BoundingBox: 35 35 693 4261
+%%EndComments
+save
+%%BeginProlog
+/DotDict 200 dict def
+DotDict begin
+
+/setupLatin1 {
+mark
+/EncodingVector 256 array def
+ EncodingVector 0
+
+ISOLatin1Encoding 0 255 getinterval putinterval
+
+EncodingVector
+  dup 306 /AE
+  dup 301 /Aacute
+  dup 302 /Acircumflex
+  dup 304 /Adieresis
+  dup 300 /Agrave
+  dup 305 /Aring
+  dup 303 /Atilde
+  dup 307 /Ccedilla
+  dup 311 /Eacute
+  dup 312 /Ecircumflex
+  dup 313 /Edieresis
+  dup 310 /Egrave
+  dup 315 /Iacute
+  dup 316 /Icircumflex
+  dup 317 /Idieresis
+  dup 314 /Igrave
+  dup 334 /Udieresis
+  dup 335 /Yacute
+  dup 376 /thorn
+  dup 337 /germandbls
+  dup 341 /aacute
+  dup 342 /acircumflex
+  dup 344 /adieresis
+  dup 346 /ae
+  dup 340 /agrave
+  dup 345 /aring
+  dup 347 /ccedilla
+  dup 351 /eacute
+  dup 352 /ecircumflex
+  dup 353 /edieresis
+  dup 350 /egrave
+  dup 355 /iacute
+  dup 356 /icircumflex
+  dup 357 /idieresis
+  dup 354 /igrave
+  dup 360 /dcroat
+  dup 361 /ntilde
+  dup 363 /oacute
+  dup 364 /ocircumflex
+  dup 366 /odieresis
+  dup 362 /ograve
+  dup 365 /otilde
+  dup 370 /oslash
+  dup 372 /uacute
+  dup 373 /ucircumflex
+  dup 374 /udieresis
+  dup 371 /ugrave
+  dup 375 /yacute
+  dup 377 /ydieresis  
+
+% Set up ISO Latin 1 character encoding
+/starnetISO {
+        dup dup findfont dup length dict begin
+        { 1 index /FID ne { def }{ pop pop } ifelse
+        } forall
+        /Encoding EncodingVector def
+        currentdict end definefont
+} def
+/Times-Roman starnetISO def
+/Times-Italic starnetISO def
+/Times-Bold starnetISO def
+/Times-BoldItalic starnetISO def
+/Helvetica starnetISO def
+/Helvetica-Oblique starnetISO def
+/Helvetica-Bold starnetISO def
+/Helvetica-BoldOblique starnetISO def
+/Courier starnetISO def
+/Courier-Oblique starnetISO def
+/Courier-Bold starnetISO def
+/Courier-BoldOblique starnetISO def
+cleartomark
+} bind def
+
+%%BeginResource: procset graphviz 0 0
+/coord-font-family /Times-Roman def
+/default-font-family /Times-Roman def
+/coordfont coord-font-family findfont 8 scalefont def
+
+/InvScaleFactor 1.0 def
+/set_scale {
+	dup 1 exch div /InvScaleFactor exch def
+	dup scale
+} bind def
+
+% styles
+/solid { [] 0 setdash } bind def
+/dashed { [9 InvScaleFactor mul dup ] 0 setdash } bind def
+/dotted { [1 InvScaleFactor mul 6 InvScaleFactor mul] 0 setdash } bind def
+/invis {/fill {newpath} def /stroke {newpath} def /show {pop newpath} def} bind def
+/bold { 2 setlinewidth } bind def
+/filled { } bind def
+/unfilled { } bind def
+/rounded { } bind def
+/diagonals { } bind def
+
+% hooks for setting color 
+/nodecolor { sethsbcolor } bind def
+/edgecolor { sethsbcolor } bind def
+/graphcolor { sethsbcolor } bind def
+/nopcolor {pop pop pop} bind def
+
+/beginpage {	% i j npages
+	/npages exch def
+	/j exch def
+	/i exch def
+	/str 10 string def
+	npages 1 gt {
+		gsave
+			coordfont setfont
+			0 0 moveto
+			(\() show i str cvs show (,) show j str cvs show (\)) show
+		grestore
+	} if
+} bind def
+
+/set_font {
+	findfont exch
+	scalefont setfont
+} def
+
+% draw aligned label in bounding box aligned to current point
+/alignedtext {			% width adj text
+	/text exch def
+	/adj exch def
+	/width exch def
+	gsave
+		width 0 gt {
+			text stringwidth pop adj mul 0 rmoveto
+		} if
+		[] 0 setdash
+		text show
+	grestore
+} def
+
+/boxprim {				% xcorner ycorner xsize ysize
+		4 2 roll
+		moveto
+		2 copy
+		exch 0 rlineto
+		0 exch rlineto
+		pop neg 0 rlineto
+		closepath
+} bind def
+
+/ellipse_path {
+	/ry exch def
+	/rx exch def
+	/y exch def
+	/x exch def
+	matrix currentmatrix
+	newpath
+	x y translate
+	rx ry scale
+	0 0 1 0 360 arc
+	setmatrix
+} bind def
+
+/endpage { showpage } bind def
+/showpage { } def
+
+/layercolorseq
+	[	% layer color sequence - darkest to lightest
+		[0 0 0]
+		[.2 .8 .8]
+		[.4 .8 .8]
+		[.6 .8 .8]
+		[.8 .8 .8]
+	]
+def
+
+/layerlen layercolorseq length def
+
+/setlayer {/maxlayer exch def /curlayer exch def
+	layercolorseq curlayer 1 sub layerlen mod get
+	aload pop sethsbcolor
+	/nodecolor {nopcolor} def
+	/edgecolor {nopcolor} def
+	/graphcolor {nopcolor} def
+} bind def
+
+/onlayer { curlayer ne {invis} if } def
+
+/onlayers {
+	/myupper exch def
+	/mylower exch def
+	curlayer mylower lt
+	curlayer myupper gt
+	or
+	{invis} if
+} def
+
+/curlayer 0 def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+14 default-font-family set_font
+1 setmiterlimit
+% /arrowlength 10 def
+% /arrowwidth 5 def
+
+% make sure pdfmark is harmless for PS-interpreters other than Distiller
+/pdfmark where {pop} {userdict /pdfmark /cleartomark load put} ifelse
+% make '<<' and '>>' safe on PS Level 1 devices
+/languagelevel where {pop languagelevel}{1} ifelse
+2 lt {
+    userdict (<<) cvn ([) cvn load put
+    userdict (>>) cvn ([) cvn load put
+} if
+
+%%EndSetup
+%%Page: 1 1
+%%PageBoundingBox: 36 36 693 4261
+%%PageOrientation: Portrait
+gsave
+35 35 658 4226 boxprim clip newpath
+36 36 translate
+0 0 1 beginpage
+0 0 translate 0 rotate
+0.000 0.000 0.000 graphcolor
+14.00 /Times-Roman set_font
+
+%	struct1
+gsave 10 dict begin
+newpath 209 4188 moveto
+342 4188 lineto
+342 4224 lineto
+209 4224 lineto
+closepath
+stroke
+gsave 10 dict begin
+216 4201 moveto
+(left)
+[3.6 6.24 4.32 3.84]
+xshow
+end grestore
+newpath 244 4188 moveto
+244 4224 lineto
+stroke
+gsave 10 dict begin
+251 4201 moveto
+(middle)
+[10.32 3.6 6.96 6.96 3.6 6.24]
+xshow
+end grestore
+newpath 299 4188 moveto
+299 4224 lineto
+stroke
+gsave 10 dict begin
+306 4201 moveto
+(right)
+[4.56 3.6 6.72 6.72 3.84]
+xshow
+end grestore
+end grestore
+
+%	struct2
+gsave 10 dict begin
+newpath 0 2058 moveto
+76 2058 lineto
+76 2094 lineto
+0 2094 lineto
+closepath
+stroke
+gsave 10 dict begin
+7 2071 moveto
+(one)
+[6.96 6.72 6.24]
+xshow
+end grestore
+newpath 37 2058 moveto
+37 2094 lineto
+stroke
+gsave 10 dict begin
+44 2071 moveto
+(two)
+[3.84 10.08 6.96]
+xshow
+end grestore
+end grestore
+
+%	struct1 -> struct2
+newpath 244 4188 moveto
+157 4154 98 4223 37 4152 curveto
+3 4111 17 2351 19 2104 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 23 2104 moveto
+19 2094 lineto
+16 2104 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 23 2104 moveto
+19 2094 lineto
+16 2104 lineto
+closepath
+stroke
+end grestore
+
+%	struct3
+gsave 10 dict begin
+newpath 94 0 moveto
+656 0 lineto
+656 4152 lineto
+94 4152 lineto
+closepath
+stroke
+gsave 10 dict begin
+104 2087 moveto
+(hello)
+[6.72 6.24 3.6 3.6 6.96]
+xshow
+102 2071 moveto
+(world)
+[10.08 6.96 4.56 3.6 6.96]
+xshow
+108 2055 moveto
+(and)
+[6.24 6.72 6.96]
+xshow
+end grestore
+newpath 144 0 moveto
+144 4152 lineto
+stroke
+gsave 10 dict begin
+153 3455 moveto
+(Thats the reason)
+[8.4 6.72 6.24 3.84 5.52 3.6 3.84 6.72 6.24 3.6 4.56 6.24 6.24 5.52 6.96 6.72]
+xshow
+end grestore
+newpath 144 2768 moveto
+255 2768 lineto
+stroke
+gsave 10 dict begin
+151 2071 moveto
+(post-menopausal)
+[6.96 6.96 5.52 3.84 4.56 10.32 6.24 6.72 6.96 6.96 6.24 6.72 5.52 6.24 3.6]
+xshow
+end grestore
+newpath 144 1384 moveto
+255 1384 lineto
+stroke
+gsave 10 dict begin
+175 687 moveto
+(estrogen)
+[6.24 5.52 3.84 4.56 6.96 6.72 6.24 6.72]
+xshow
+end grestore
+newpath 255 0 moveto
+255 4152 lineto
+stroke
+gsave 10 dict begin
+392 4135 moveto
+(is)
+[3.6 5.52]
+xshow
+276 4119 moveto
+(given together with another hormone called)
+[6.72 3.6 6.72 6.24 6.72 3.6 3.84 6.96 6.72 6.24 3.84 6.72 6.24 4.56 3.6 10.08 3.6 3.84 6.72 3.6 6.24 6.72 6.96 3.84 6.72 6.24 4.56 3.6 6.72 6.96 4.56 10.32 6.96 6.72 6.24 3.6 6.24 6.24 3.6 3.6 6.24 6.96]
+xshow
+270 4103 moveto
+(progestin: The combination lowers the risk of)
+[6.96 4.56 6.96 6.72 6.24 5.52 3.84 3.6 6.72 3.6 3.36 8.4 6.72 6.24 3.6 6.24 6.96 10.32 6.96 3.6 6.72 6.24 3.84 3.6 6.96 6.72 3.6 3.6 6.96 10.08 6.24 4.56 5.52 3.6 3.84 6.72 6.24 3.6 4.56 3.6 5.52 6.96 3.6 6.96 4.32]
+xshow
+342 4087 moveto
+(endometrial cancer.)
+[6.24 6.72 6.96 6.96 10.32 6.24 3.84 4.56 3.6 6.24 3.6 3.6 6.24 6.24 6.72 6.24 6.24 3.84 3.6]
+xshow
+397 4071 moveto 0.0 -0.5 () alignedtext
+294 4055 moveto
+(But the NTP advisers said putting all)
+[9.12 6.72 3.84 3.6 3.84 6.72 6.24 3.6 10.08 8.4 7.2 3.6 6.24 6.96 6.72 3.6 5.52 6.24 4.56 5.52 3.6 5.52 6.24 3.6 6.96 3.6 6.96 6.72 3.84 3.84 3.6 6.72 6.72 3.6 6.24 3.6 3.6]
+xshow
+288 4039 moveto
+(estrogens on the federal list would help)
+[6.24 5.52 3.84 4.56 6.96 6.72 6.24 6.72 5.52 3.6 6.96 6.72 3.6 3.84 6.72 6.24 3.6 4.32 6.24 6.96 6.24 4.56 6.24 3.6 3.6 3.6 3.6 5.52 3.84 3.6 10.08 6.96 6.72 3.6 6.96 3.6 6.72 6.24 3.6 6.96]
+xshow
+282 4023 moveto
+(women trying to balance the benefits and)
+[10.08 6.96 10.32 6.24 6.72 3.6 3.84 4.56 6.72 3.6 6.72 6.72 3.6 3.84 6.96 3.6 6.96 6.24 3.6 6.24 6.72 6.24 6.24 3.6 3.84 6.72 6.24 3.6 6.96 6.24 6.72 6.24 4.32 3.6 3.84 5.52 3.6 6.24 6.72 6.96]
+xshow
+290 4007 moveto
+(risks when choosing hormone therapy.)
+[4.56 3.6 5.52 6.96 5.52 3.6 10.08 6.72 6.24 6.72 3.6 6.24 6.72 6.96 6.96 5.52 3.6 6.72 6.72 3.6 6.72 6.96 4.56 10.32 6.96 6.72 6.24 3.6 3.84 6.72 6.24 4.56 6.24 6.96 5.76 3.6]
+xshow
+277 3991 moveto
+(Physicians never discuss any of these risks)
+[7.68 6.72 6.72 5.52 3.6 6.24 3.6 6.24 6.72 5.52 3.6 6.72 6.24 6.72 6.24 4.56 3.6 6.96 3.6 5.52 6.24 6.72 5.52 5.52 3.6 6.24 6.72 6.72 3.6 6.96 4.32 3.6 3.84 6.72 6.24 5.52 6.24 3.6 4.56 3.6 5.52 6.96 5.52]
+xshow
+274 3975 moveto
+(when they are prescribing hormone therapy.)
+[10.08 6.72 6.24 6.72 3.6 3.84 6.72 6.24 6.72 3.6 6.24 4.56 6.24 3.6 6.96 4.56 6.24 5.52 6.24 4.56 3.6 6.96 3.6 6.72 6.72 3.6 6.72 6.96 4.56 10.32 6.96 6.72 6.24 3.6 3.84 6.72 6.24 4.56 6.24 6.96 5.76 3.6]
+xshow
+283 3959 moveto
+(They only discuss benefits. Listing might)
+[8.4 6.72 6.24 6.72 3.6 6.96 6.72 3.6 6.72 3.6 6.96 3.6 5.52 6.24 6.72 5.52 5.52 3.6 6.96 6.24 6.72 6.24 4.32 3.6 3.84 5.52 3.6 3.6 8.16 3.6 5.52 3.84 3.6 6.72 6.72 3.6 10.32 3.6 6.72 6.72 3.84]
+xshow
+279 3943 moveto
+(force it on the table, Michelle Medinsky, a)
+[4.32 6.96 4.56 6.24 6.24 3.6 3.6 3.84 3.6 6.96 6.72 3.6 3.84 6.72 6.24 3.6 3.84 6.24 6.96 3.6 6.24 3.6 3.6 12.48 3.6 6.24 6.72 6.24 3.6 3.6 6.24 3.6 12.48 6.24 6.96 3.6 6.72 5.52 6.96 5.76 3.6 3.6 6.24]
+xshow
+273 3927 moveto
+(toxicologist from Durham, N.C., said before)
+[3.84 6.96 6.72 3.6 6.24 6.96 3.6 6.96 6.72 3.6 5.52 3.84 3.6 4.32 4.56 6.96 10.32 3.6 10.08 6.72 4.56 6.72 6.24 10.32 3.6 3.6 10.08 3.6 9.36 3.6 3.6 3.6 5.52 6.24 3.6 6.96 3.6 6.96 6.24 4.32 6.96 4.56 6.24]
+xshow
+372 3911 moveto
+(the vote.)
+[3.84 6.72 6.24 3.6 6.72 6.96 3.84 6.24 3.6]
+xshow
+397 3895 moveto 0.0 -0.5 () alignedtext
+272 3879 moveto
+(The committee of scientists advises the NTP,)
+[8.4 6.72 6.24 3.6 6.24 6.96 10.32 10.32 3.6 3.84 3.84 6.24 6.24 3.6 6.96 4.32 3.6 5.52 6.24 3.6 6.24 6.72 3.84 3.6 5.52 3.84 5.52 3.6 6.24 6.96 6.72 3.6 5.52 6.24 5.52 3.6 3.84 6.72 6.24 3.6 10.08 8.4 6.24 3.6]
+xshow
+275 3863 moveto
+(a branch of the National Institutes of Health)
+[6.24 3.6 6.96 4.56 6.24 6.72 6.24 6.72 3.6 6.96 4.32 3.6 3.84 6.72 6.24 3.6 10.08 6.24 3.84 3.6 6.96 6.72 6.24 3.6 3.6 4.56 6.72 5.52 3.84 3.6 3.84 6.72 3.84 6.24 5.52 3.6 6.96 4.32 3.6 9.84 6.24 6.24 3.6 3.84 6.72]
+xshow
+275 3847 moveto
+(that every two years updates the federal list)
+[3.84 6.72 6.24 3.84 3.6 6.24 6.72 6.24 4.56 6.72 3.6 3.84 10.08 6.96 3.6 6.72 6.24 6.24 4.56 5.52 3.6 6.72 6.96 6.96 6.24 3.84 6.24 5.52 3.6 3.84 6.72 6.24 3.6 4.32 6.24 6.96 6.24 4.56 6.24 3.6 3.6 3.6 3.6 5.52 3.84]
+xshow
+286 3831 moveto
+(of proven and suspected cancer-causing)
+[6.96 4.32 3.6 6.96 4.56 6.96 6.72 6.24 6.72 3.6 6.24 6.72 6.96 3.6 5.52 6.72 5.52 6.96 6.24 6.24 3.84 6.24 6.96 3.6 6.24 6.24 6.72 6.24 6.24 4.32 4.56 6.24 6.24 6.72 5.52 3.6 6.72 6.72]
+xshow
+365 3815 moveto
+(substances.)
+[5.52 6.72 6.96 5.52 3.84 6.24 6.72 6.24 6.24 5.52 3.6]
+xshow
+397 3799 moveto 0.0 -0.5 () alignedtext
+290 3783 moveto
+(The NTP typically follows its advisers)
+[8.4 6.72 6.24 3.6 10.08 8.4 7.2 3.6 3.84 6.72 6.96 3.6 6.24 6.24 3.6 3.6 6.72 3.6 4.32 6.96 3.6 3.6 6.96 10.08 5.52 3.6 3.6 3.84 5.52 3.6 6.24 6.96 6.72 3.6 5.52 6.24 4.56 5.52]
+xshow
+276 3767 moveto
+(recommendations, but an officially updated)
+[4.56 6.24 6.24 6.96 10.32 10.32 6.24 6.72 6.96 6.24 3.84 3.6 6.96 6.72 5.52 3.6 3.6 6.96 6.72 3.84 3.6 6.24 6.72 3.6 6.96 4.08 4.32 3.6 6.24 3.6 6.24 3.6 3.6 6.72 3.6 6.72 6.96 6.96 6.24 3.84 6.24 6.96]
+xshow
+286 3751 moveto
+(carcinogen list isnt expected until 2002.)
+[6.24 6.24 4.56 6.24 3.6 6.72 6.96 6.72 6.24 6.72 3.6 3.6 3.6 5.52 3.84 3.6 3.6 5.52 6.72 3.84 3.6 6.24 6.72 6.96 6.24 6.24 3.84 6.24 6.96 3.6 6.72 6.72 3.84 3.6 3.6 3.6 6.96 6.96 6.96 6.96 3.6]
+xshow
+397 3735 moveto 0.0 -0.5 () alignedtext
+277 3719 moveto
+(Thursday, after a daylong debate, the panel)
+[8.4 6.72 6.72 4.56 5.52 6.96 6.24 5.76 3.6 3.6 6.24 4.32 3.84 6.24 4.56 3.6 6.24 3.6 6.96 6.24 6.72 3.6 6.96 6.72 6.72 3.6 6.96 6.24 6.96 6.24 3.84 6.24 3.6 3.6 3.84 6.72 6.24 3.6 6.96 6.24 6.72 6.24 3.6]
+xshow
+290 3703 moveto
+(declined to add talc powder to the list,)
+[6.96 6.24 6.24 3.6 3.6 6.72 6.24 6.96 3.6 3.84 6.96 3.6 6.24 6.96 6.96 3.6 3.84 6.24 3.6 6.24 3.6 6.96 6.96 10.08 6.96 6.24 4.56 3.6 3.84 6.96 3.6 3.84 6.72 6.24 3.6 3.6 3.6 5.52 3.84 3.6]
+xshow
+276 3687 moveto
+(saying there wasnt enough evidence linking)
+[5.52 6.24 6.72 3.6 6.72 6.72 3.6 3.84 6.72 6.24 4.56 6.24 3.6 10.08 6.24 5.52 6.72 3.84 3.6 6.24 6.72 6.96 6.72 6.72 6.72 3.6 6.24 6.72 3.6 6.96 6.24 6.72 6.24 6.24 3.6 3.6 3.6 6.72 6.96 3.6 6.72 6.72]
+xshow
+290 3671 moveto
+(its use in feminine hygiene products to)
+[3.6 3.84 5.52 3.6 6.72 5.52 6.24 3.6 3.6 6.72 3.6 4.32 6.24 10.32 3.6 6.72 3.6 6.72 6.24 3.6 6.72 6.72 6.72 3.6 6.24 6.72 6.24 3.6 6.96 4.56 6.96 6.96 6.72 6.24 3.84 5.52 3.6 3.84 6.96]
+xshow
+278 3655 moveto
+(ovarian cancer. The panel deadlocked over)
+[6.96 6.72 6.24 4.56 3.6 6.24 6.72 3.6 6.24 6.24 6.72 6.24 6.24 3.84 3.6 3.36 8.4 6.72 6.24 3.6 6.96 6.24 6.72 6.24 3.6 3.6 6.96 6.24 6.24 6.96 3.6 6.96 6.24 6.96 6.24 6.96 3.6 6.96 6.72 6.24 4.56]
+xshow
+284 3639 moveto
+(whether to a second type of talc, fibrous)
+[10.08 6.72 6.24 3.84 6.72 6.24 4.56 3.6 3.84 6.96 3.6 6.24 3.6 5.52 6.24 6.24 6.96 6.72 6.96 3.6 3.84 6.72 6.96 6.24 3.6 6.96 4.32 3.6 3.84 6.24 3.6 6.24 3.6 3.6 4.32 3.6 6.96 4.56 6.96 6.72 5.52]
+xshow
+282 3623 moveto
+(talc that some studies have linked to lung)
+[3.84 6.24 3.6 6.24 3.6 3.84 6.72 6.24 3.84 3.6 5.52 6.96 10.32 6.24 3.6 5.52 3.84 6.72 6.96 3.6 6.24 5.52 3.6 6.72 6.24 6.72 6.24 3.6 3.6 3.6 6.72 6.96 6.24 6.96 3.6 3.84 6.96 3.6 3.6 6.72 6.72 6.72]
+xshow
+337 3607 moveto
+(cancer in talc miners.)
+[6.24 6.24 6.72 6.24 6.24 4.56 3.6 3.6 6.72 3.6 3.84 6.24 3.6 6.24 3.6 10.32 3.6 6.72 6.24 4.56 5.52 3.6]
+xshow
+397 3591 moveto 0.0 -0.5 () alignedtext
+290 3575 moveto
+(On Wednesday, the panel voted to add)
+[10.08 6.72 3.36 12 6.24 6.96 6.72 6.24 5.52 6.96 6.24 5.76 3.6 3.6 3.84 6.72 6.24 3.6 6.96 6.24 6.72 6.24 3.6 3.6 6.72 6.96 3.84 6.24 6.96 3.6 3.84 6.96 3.6 6.24 6.96 6.96]
+xshow
+319 3559 moveto
+(ultraviolet radiation -- those)
+[6.72 3.6 3.84 4.56 6.24 6.72 3.6 6.96 3.6 6.24 3.84 3.6 4.56 6.24 6.96 3.6 6.24 3.84 3.6 6.96 6.72 3.6 4.56 4.56 3.6 3.84 6.72 6.96 5.52 6.24]
+xshow
+266 3543 moveto
+(sunburn-causing rays long known to cause skin)
+[5.52 6.72 6.72 6.96 6.72 4.56 6.72 4.56 6.24 6.24 6.72 5.52 3.6 6.72 6.72 3.6 4.56 6.24 6.72 5.52 3.6 3.6 6.96 6.72 6.72 3.6 6.96 6.72 6.96 10.08 6.72 3.6 3.84 6.96 3.6 6.24 6.24 6.72 5.52 6.24 3.6 5.52 6.96 3.6 6.72]
+xshow
+289 3527 moveto
+(cancer -- to the official carcinogen list.)
+[6.24 6.24 6.72 6.24 6.24 4.56 3.6 4.56 4.56 3.6 3.84 6.96 3.6 3.84 6.72 6.24 3.6 6.96 4.08 4.32 3.6 6.24 3.6 6.24 3.6 3.6 6.24 6.24 4.56 6.24 3.6 6.72 6.96 6.72 6.24 6.72 3.6 3.6 3.6 5.52 3.84 3.6]
+xshow
+397 3511 moveto 0.0 -0.5 () alignedtext
+278 3495 moveto
+(The panel on Friday continued debating an)
+[8.4 6.72 6.24 3.6 6.96 6.24 6.72 6.24 3.6 3.6 6.96 6.72 3.6 7.44 4.56 3.6 6.96 6.24 6.72 3.6 6.24 6.96 6.72 3.84 3.6 6.72 6.72 6.24 6.96 3.6 6.96 6.24 6.96 6.24 3.84 3.6 6.72 6.72 3.6 6.24 6.72]
+xshow
+274 3479 moveto
+(association between cancers of the nose and)
+[6.24 5.52 5.52 6.96 6.24 3.6 6.24 3.84 3.6 6.96 6.72 3.6 6.96 6.24 3.84 10.08 6.24 6.24 6.72 3.6 6.24 6.24 6.72 6.24 6.24 4.56 5.52 3.6 6.96 4.32 3.6 3.84 6.72 6.24 3.6 6.72 6.96 5.52 6.24 3.6 6.24 6.72 6.96]
+xshow
+284 3463 moveto
+(sinuses with industrial exposure to wood)
+[5.52 3.6 6.72 6.72 5.52 6.24 5.52 3.6 10.08 3.6 3.84 6.72 3.6 3.6 6.72 6.96 6.72 5.52 3.84 4.56 3.6 6.24 3.6 3.6 6.24 6.72 6.96 6.96 5.52 6.72 4.56 6.24 3.6 3.84 6.96 3.6 10.08 6.96 6.96 6.96]
+xshow
+383 3447 moveto
+(dust.)
+[6.96 6.72 5.52 3.84 3.6]
+xshow
+397 3431 moveto 0.0 -0.5 () alignedtext
+287 3415 moveto
+(Talc has long been controversial. When)
+[7.44 6.24 3.6 6.24 3.6 6.72 6.24 5.52 3.6 3.6 6.96 6.72 6.72 3.6 6.96 6.24 6.24 6.72 3.6 6.24 6.96 6.72 3.84 4.56 6.96 6.72 6.24 4.56 5.52 3.6 6.24 3.6 3.6 3.36 13.2 6.72 6.24 6.72]
+xshow
+275 3399 moveto
+(studies first appeared suggesting it migrated)
+[5.52 3.84 6.72 6.96 3.6 6.24 5.52 3.6 4.32 3.6 4.56 5.52 3.84 3.6 6.24 6.96 6.96 6.24 6.24 4.56 6.24 6.96 3.6 5.52 6.72 6.72 6.72 6.24 5.52 3.84 3.6 6.72 6.72 3.6 3.6 3.84 3.6 10.32 3.6 6.72 4.56 6.24 3.84 6.24 6.96]
+xshow
+290 3383 moveto
+(into the ovaries to cause tumors, many)
+[3.6 6.72 3.84 6.96 3.6 3.84 6.72 6.24 3.6 6.96 6.72 6.24 4.56 3.6 6.24 5.52 3.6 3.84 6.96 3.6 6.24 6.24 6.72 5.52 6.24 3.6 3.84 6.72 10.32 6.96 4.56 5.52 3.6 3.6 10.32 6.24 6.72 6.72]
+xshow
+272 3367 moveto
+(feminine hygiene products replaced talc with)
+[4.32 6.24 10.32 3.6 6.72 3.6 6.72 6.24 3.6 6.72 6.72 6.72 3.6 6.24 6.72 6.24 3.6 6.96 4.56 6.96 6.96 6.72 6.24 3.84 5.52 3.6 4.56 6.24 6.96 3.6 6.24 6.24 6.24 6.96 3.6 3.84 6.24 3.6 6.24 3.6 10.08 3.6 3.84 6.72]
+xshow
+366 3351 moveto
+(cornstarch.)
+[6.24 6.96 4.56 6.72 5.52 3.84 6.24 4.56 6.24 6.72 3.6]
+xshow
+397 3335 moveto 0.0 -0.5 () alignedtext
+268 3319 moveto
+(Panelist Medinsky said she had been prepared)
+[7.68 6.24 6.72 6.24 3.6 3.6 5.52 3.84 3.6 12.48 6.24 6.96 3.6 6.72 5.52 6.96 6.72 3.6 5.52 6.24 3.6 6.96 3.6 5.52 6.72 6.24 3.6 6.72 6.24 6.96 3.6 6.96 6.24 6.24 6.72 3.6 6.96 4.56 6.24 6.96 6.24 4.56 6.24 6.96]
+xshow
+281 3303 moveto
+(to list talc powder as reasonably believed)
+[3.84 6.96 3.6 3.6 3.6 5.52 3.84 3.6 3.84 6.24 3.6 6.24 3.6 6.96 6.96 10.08 6.96 6.24 4.56 3.6 6.24 5.52 3.6 4.56 6.24 6.24 5.52 6.96 6.72 6.24 6.96 3.6 6.72 3.6 6.96 6.24 3.6 3.6 6.24 6.72 6.24 6.96]
+xshow
+293 3287 moveto
+(to cause cancer. But after listening to)
+[3.84 6.96 3.6 6.24 6.24 6.72 5.52 6.24 3.6 6.24 6.24 6.72 6.24 6.24 3.84 3.6 3.6 9.12 6.72 3.84 3.6 6.24 4.32 3.84 6.24 4.56 3.6 3.6 3.6 5.52 3.84 6.24 6.72 3.6 6.72 6.72 3.6 3.84 6.96]
+xshow
+285 3271 moveto
+(hours of industry attacks on the science,)
+[6.72 6.96 6.72 4.56 5.52 3.6 6.96 4.32 3.6 3.6 6.72 6.96 6.72 5.52 3.84 4.56 6.72 3.6 6.24 3.84 3.84 6.24 6.24 6.96 5.52 3.6 6.96 6.72 3.6 3.84 6.72 6.24 3.6 5.52 6.24 3.6 6.24 6.72 6.24 6.24 3.6]
+xshow
+286 3255 moveto
+(the evidence has knocked me out of the)
+[3.84 6.72 6.24 3.6 6.24 6.72 3.6 6.96 6.24 6.72 6.24 6.24 3.6 6.72 6.24 5.52 3.6 6.96 6.72 6.96 6.24 6.96 6.24 6.96 3.6 10.32 6.24 3.6 6.96 6.72 3.84 3.6 6.96 4.32 3.6 3.84 6.72 6.24]
+xshow
+294 3239 moveto
+(reasonably category into not list, she)
+[4.56 6.24 6.24 5.52 6.96 6.72 6.24 6.96 3.6 6.72 3.6 6.24 6.24 3.84 6.24 6.72 6.96 4.56 6.72 3.6 3.6 6.72 3.84 6.96 3.6 6.72 6.96 3.84 3.6 3.6 3.6 5.52 3.84 3.6 3.6 5.52 6.72 6.24]
+xshow
+289 3223 moveto
+(said before the panel voted 7-3 against)
+[5.52 6.24 3.6 6.96 3.6 6.96 6.24 4.32 6.96 4.56 6.24 3.6 3.84 6.72 6.24 3.6 6.96 6.24 6.72 6.24 3.6 3.6 6.72 6.96 3.84 6.24 6.96 3.6 6.96 4.56 6.96 3.6 6.24 6.72 6.24 3.6 6.72 5.52 3.84]
+xshow
+366 3207 moveto
+(listing talc.)
+[3.6 3.6 5.52 3.84 3.6 6.72 6.72 3.6 3.84 6.24 3.6 6.24 3.6]
+xshow
+397 3191 moveto 0.0 -0.5 () alignedtext
+287 3175 moveto
+(Talc has long been controversial. When)
+[7.44 6.24 3.6 6.24 3.6 6.72 6.24 5.52 3.6 3.6 6.96 6.72 6.72 3.6 6.96 6.24 6.24 6.72 3.6 6.24 6.96 6.72 3.84 4.56 6.96 6.72 6.24 4.56 5.52 3.6 6.24 3.6 3.6 3.36 13.2 6.72 6.24 6.72]
+xshow
+275 3159 moveto
+(studies first appeared suggesting it migrated)
+[5.52 3.84 6.72 6.96 3.6 6.24 5.52 3.6 4.32 3.6 4.56 5.52 3.84 3.6 6.24 6.96 6.96 6.24 6.24 4.56 6.24 6.96 3.6 5.52 6.72 6.72 6.72 6.24 5.52 3.84 3.6 6.72 6.72 3.6 3.6 3.84 3.6 10.32 3.6 6.72 4.56 6.24 3.84 6.24 6.96]
+xshow
+290 3143 moveto
+(into the ovaries to cause tumors, many)
+[3.6 6.72 3.84 6.96 3.6 3.84 6.72 6.24 3.6 6.96 6.72 6.24 4.56 3.6 6.24 5.52 3.6 3.84 6.96 3.6 6.24 6.24 6.72 5.52 6.24 3.6 3.84 6.72 10.32 6.96 4.56 5.52 3.6 3.6 10.32 6.24 6.72 6.72]
+xshow
+272 3127 moveto
+(feminine hygiene products replaced talc with)
+[4.32 6.24 10.32 3.6 6.72 3.6 6.72 6.24 3.6 6.72 6.72 6.72 3.6 6.24 6.72 6.24 3.6 6.96 4.56 6.96 6.96 6.72 6.24 3.84 5.52 3.6 4.56 6.24 6.96 3.6 6.24 6.24 6.24 6.96 3.6 3.84 6.24 3.6 6.24 3.6 10.08 3.6 3.84 6.72]
+xshow
+366 3111 moveto
+(cornstarch.)
+[6.24 6.96 4.56 6.72 5.52 3.84 6.24 4.56 6.24 6.72 3.6]
+xshow
+397 3095 moveto 0.0 -0.5 () alignedtext
+268 3079 moveto
+(Panelist Medinsky said she had been prepared)
+[7.68 6.24 6.72 6.24 3.6 3.6 5.52 3.84 3.6 12.48 6.24 6.96 3.6 6.72 5.52 6.96 6.72 3.6 5.52 6.24 3.6 6.96 3.6 5.52 6.72 6.24 3.6 6.72 6.24 6.96 3.6 6.96 6.24 6.24 6.72 3.6 6.96 4.56 6.24 6.96 6.24 4.56 6.24 6.96]
+xshow
+281 3063 moveto
+(to list talc powder as reasonably believed)
+[3.84 6.96 3.6 3.6 3.6 5.52 3.84 3.6 3.84 6.24 3.6 6.24 3.6 6.96 6.96 10.08 6.96 6.24 4.56 3.6 6.24 5.52 3.6 4.56 6.24 6.24 5.52 6.96 6.72 6.24 6.96 3.6 6.72 3.6 6.96 6.24 3.6 3.6 6.24 6.72 6.24 6.96]
+xshow
+293 3047 moveto
+(to cause cancer. But after listening to)
+[3.84 6.96 3.6 6.24 6.24 6.72 5.52 6.24 3.6 6.24 6.24 6.72 6.24 6.24 3.84 3.6 3.6 9.12 6.72 3.84 3.6 6.24 4.32 3.84 6.24 4.56 3.6 3.6 3.6 5.52 3.84 6.24 6.72 3.6 6.72 6.72 3.6 3.84 6.96]
+xshow
+285 3031 moveto
+(hours of industry attacks on the science,)
+[6.72 6.96 6.72 4.56 5.52 3.6 6.96 4.32 3.6 3.6 6.72 6.96 6.72 5.52 3.84 4.56 6.72 3.6 6.24 3.84 3.84 6.24 6.24 6.96 5.52 3.6 6.96 6.72 3.6 3.84 6.72 6.24 3.6 5.52 6.24 3.6 6.24 6.72 6.24 6.24 3.6]
+xshow
+286 3015 moveto
+(the evidence has knocked me out of the)
+[3.84 6.72 6.24 3.6 6.24 6.72 3.6 6.96 6.24 6.72 6.24 6.24 3.6 6.72 6.24 5.52 3.6 6.96 6.72 6.96 6.24 6.96 6.24 6.96 3.6 10.32 6.24 3.6 6.96 6.72 3.84 3.6 6.96 4.32 3.6 3.84 6.72 6.24]
+xshow
+294 2999 moveto
+(reasonably category into not list, she)
+[4.56 6.24 6.24 5.52 6.96 6.72 6.24 6.96 3.6 6.72 3.6 6.24 6.24 3.84 6.24 6.72 6.96 4.56 6.72 3.6 3.6 6.72 3.84 6.96 3.6 6.72 6.96 3.84 3.6 3.6 3.6 5.52 3.84 3.6 3.6 5.52 6.72 6.24]
+xshow
+289 2983 moveto
+(said before the panel voted 7-3 against)
+[5.52 6.24 3.6 6.96 3.6 6.96 6.24 4.32 6.96 4.56 6.24 3.6 3.84 6.72 6.24 3.6 6.96 6.24 6.72 6.24 3.6 3.6 6.72 6.96 3.84 6.24 6.96 3.6 6.96 4.56 6.96 3.6 6.24 6.72 6.24 3.6 6.72 5.52 3.84]
+xshow
+366 2967 moveto
+(listing talc.)
+[3.6 3.6 5.52 3.84 3.6 6.72 6.72 3.6 3.84 6.24 3.6 6.24 3.6]
+xshow
+397 2951 moveto 0.0 -0.5 () alignedtext
+273 2935 moveto
+(Talc in one form or the other can be found in)
+[7.44 6.24 3.6 6.24 3.6 3.6 6.72 3.6 6.96 6.72 6.24 3.6 4.32 6.96 4.56 10.32 3.6 6.96 4.56 3.6 3.84 6.72 6.24 3.6 6.96 3.84 6.72 6.24 4.56 3.6 6.24 6.24 6.72 3.6 6.96 6.24 3.6 4.32 6.96 6.72 6.72 6.96 3.6 3.6 6.72]
+xshow
+267 2919 moveto
+(many papers, paints, ceramics, food wrappers,)
+[10.32 6.24 6.72 6.72 3.6 6.96 6.24 6.96 6.24 4.56 5.52 3.6 3.6 6.96 6.24 3.6 6.72 3.84 5.52 3.6 3.6 6.24 6.24 4.56 6.24 10.32 3.6 6.24 5.52 3.6 3.6 4.32 6.96 6.96 6.96 3.6 10.08 4.56 6.24 6.96 6.96 6.24 4.56 5.52 3.6]
+xshow
+267 2903 moveto
+(hard candy, chewing gum, cosmetics and pills.)
+[6.72 6.24 4.56 6.96 3.6 6.24 6.24 6.72 6.96 5.76 3.6 3.6 6.24 6.72 6.24 10.08 3.6 6.72 6.72 3.6 6.72 6.72 10.32 3.6 3.6 6.24 6.96 5.52 10.32 6.24 3.84 3.6 6.24 5.52 3.6 6.24 6.72 6.96 3.6 6.96 3.6 3.6 3.6 5.52 3.6]
+xshow
+273 2887 moveto
+(Most people are familiar with talc as a loose)
+[12.48 6.96 5.52 3.84 3.6 6.96 6.24 6.96 6.96 3.6 6.24 3.6 6.24 4.56 6.24 3.6 4.32 6.24 10.32 3.6 3.6 3.6 6.24 4.56 3.6 10.08 3.6 3.84 6.72 3.6 3.84 6.24 3.6 6.24 3.6 6.24 5.52 3.6 6.24 3.6 3.6 6.96 6.96 5.52 6.24]
+xshow
+280 2871 moveto
+(powder used in cosmetics and as a drying)
+[6.96 6.96 10.08 6.96 6.24 4.56 3.6 6.72 5.52 6.24 6.96 3.6 3.6 6.72 3.6 6.24 6.96 5.52 10.32 6.24 3.84 3.6 6.24 5.52 3.6 6.24 6.72 6.96 3.6 6.24 5.52 3.6 6.24 3.6 6.96 4.56 6.72 3.6 6.72 6.72]
+xshow
+374 2855 moveto
+(powder.)
+[6.96 6.96 10.08 6.96 6.24 3.84 3.6]
+xshow
+397 2839 moveto 0.0 -0.5 () alignedtext
+278 2823 moveto
+(Industry officials also attacked studies that)
+[4.56 6.72 6.96 6.72 5.52 3.84 4.56 6.72 3.6 6.96 4.08 4.32 3.6 6.24 3.6 6.24 3.6 5.52 3.6 6.24 3.6 5.52 6.96 3.6 6.24 3.84 3.84 6.24 6.24 6.96 6.24 6.96 3.6 5.52 3.84 6.72 6.96 3.6 6.24 5.52 3.6 3.84 6.72 6.24 3.84]
+xshow
+274 2807 moveto
+(showed increased lung cancer in talc miners)
+[5.52 6.72 6.96 10.08 6.24 6.96 3.6 3.6 6.72 6.24 4.56 6.24 6.24 5.52 6.24 6.96 3.6 3.6 6.72 6.72 6.72 3.6 6.24 6.24 6.72 6.24 6.24 4.56 3.6 3.6 6.72 3.6 3.84 6.24 3.6 6.24 3.6 10.32 3.6 6.72 6.24 4.56 5.52]
+xshow
+293 2791 moveto
+(in New York State and questioned an)
+[3.6 6.72 3.6 10.08 6.24 10.08 3.12 8.64 6.96 4.56 6.96 3.6 7.68 3.84 6.24 3.84 6.24 3.6 6.24 6.72 6.96 3.6 6.96 6.72 6.24 5.52 3.84 3.6 6.96 6.72 6.24 6.96 3.6 6.24 6.72]
+xshow
+279 2775 moveto
+(experiment that showed that rats breathing)
+[6.24 6.72 6.96 6.24 4.56 3.6 10.32 6.24 6.72 3.84 3.6 3.84 6.72 6.24 3.84 3.6 5.52 6.72 6.96 10.08 6.24 6.96 3.6 3.84 6.72 6.24 3.84 3.6 4.56 6.24 3.84 5.52 3.6 6.96 4.56 6.24 6.24 3.84 6.72 3.6 6.72 6.72]
+xshow
+277 2759 moveto
+(high concentrations of talc got lung cancer.)
+[6.72 3.6 6.72 6.72 3.6 6.24 6.96 6.72 6.24 6.24 6.72 3.84 4.56 6.24 3.84 3.6 6.96 6.72 5.52 3.6 6.96 4.32 3.6 3.84 6.24 3.6 6.24 3.6 6.72 6.96 3.84 3.6 3.6 6.72 6.72 6.72 3.6 6.24 6.24 6.72 6.24 6.24 3.84 3.6]
+xshow
+397 2743 moveto 0.0 -0.5 () alignedtext
+275 2727 moveto
+(Higher lung-cancer rates in talc miners may)
+[9.84 3.6 6.72 6.72 6.24 4.56 3.6 3.6 6.72 6.72 6.72 4.56 6.24 6.24 6.72 6.24 6.24 4.56 3.6 4.56 6.24 3.84 6.24 5.52 3.6 3.6 6.72 3.6 3.84 6.24 3.6 6.24 3.6 10.32 3.6 6.72 6.24 4.56 5.52 3.6 10.32 6.24 6.72]
+xshow
+272 2711 moveto
+(have resulted from their smoking or from the)
+[6.72 6.24 6.72 6.24 3.6 4.56 6.24 5.52 6.72 3.6 3.84 6.24 6.96 3.6 4.32 4.56 6.96 10.32 3.6 3.84 6.72 6.24 3.6 4.56 3.6 5.52 10.32 6.96 6.96 3.6 6.72 6.72 3.6 6.96 4.56 3.6 4.32 4.56 6.96 10.32 3.6 3.84 6.72 6.24]
+xshow
+293 2695 moveto
+(presence of radon gas in the mines or)
+[6.96 4.56 6.24 5.52 6.24 6.72 6.24 6.24 3.6 6.96 4.32 3.6 4.56 6.24 6.96 6.96 6.72 3.6 6.72 6.24 5.52 3.6 3.6 6.72 3.6 3.84 6.72 6.24 3.6 10.32 3.6 6.72 6.24 5.52 3.6 6.96 4.56]
+xshow
+282 2679 moveto
+(asbestos in soils nearby, industry officials)
+[6.24 5.52 6.96 6.24 5.52 3.84 6.96 5.52 3.6 3.6 6.72 3.6 5.52 6.96 3.6 3.6 5.52 3.6 6.72 6.24 6.24 4.56 6.96 5.76 3.6 3.6 3.6 6.72 6.96 6.72 5.52 3.84 4.56 6.72 3.6 6.96 4.08 4.32 3.6 6.24 3.6 6.24 3.6 5.52]
+xshow
+383 2663 moveto
+(said.)
+[5.52 6.24 3.6 6.96 3.6]
+xshow
+397 2647 moveto 0.0 -0.5 () alignedtext
+279 2631 moveto
+(The scientific advisers then deadlocked on)
+[8.4 6.72 6.24 3.6 5.52 6.24 3.6 6.24 6.72 3.84 3.6 4.32 3.6 6.24 3.6 6.24 6.96 6.72 3.6 5.52 6.24 4.56 5.52 3.6 3.84 6.72 6.24 6.72 3.6 6.96 6.24 6.24 6.96 3.6 6.96 6.24 6.96 6.24 6.96 3.6 6.96 6.72]
+xshow
+285 2615 moveto
+(whether this second type of talc, fibrous)
+[10.08 6.72 6.24 3.84 6.72 6.24 4.56 3.6 3.84 6.72 3.6 5.52 3.6 5.52 6.24 6.24 6.96 6.72 6.96 3.6 3.84 6.72 6.96 6.24 3.6 6.96 4.32 3.6 3.84 6.24 3.6 6.24 3.6 3.6 4.32 3.6 6.96 4.56 6.96 6.72 5.52]
+xshow
+289 2599 moveto
+(talc, caused lung cancer, voting 5-5 on)
+[3.84 6.24 3.6 6.24 3.6 3.6 6.24 6.24 6.72 5.52 6.24 6.96 3.6 3.6 6.72 6.72 6.72 3.6 6.24 6.24 6.72 6.24 6.24 4.08 3.6 3.6 6.72 6.96 3.84 3.6 6.72 6.72 3.6 6.96 4.56 6.96 3.6 6.96 6.72]
+xshow
+311 2583 moveto
+(adding it to the carcinogen list.)
+[6.24 6.96 6.96 3.6 6.72 6.72 3.6 3.6 3.84 3.6 3.84 6.96 3.6 3.84 6.72 6.24 3.6 6.24 6.24 4.56 6.24 3.6 6.72 6.96 6.72 6.24 6.72 3.6 3.6 3.6 5.52 3.84 3.6]
+xshow
+397 2567 moveto 0.0 -0.5 () alignedtext
+275 2551 moveto
+(UV light, however, was a no-brainer for the)
+[10.08 9.84 3.6 3.6 3.6 6.72 6.72 3.84 3.6 3.6 6.72 6.96 10.08 6.24 6.72 6.24 4.08 3.6 3.6 10.08 6.24 5.52 3.6 6.24 3.6 6.72 6.96 4.56 6.96 4.56 6.24 3.6 6.72 6.24 4.56 3.6 4.32 6.96 4.56 3.6 3.84 6.72 6.24]
+xshow
+271 2535 moveto
+(panel, which voted unanimously that it was a)
+[6.96 6.24 6.72 6.24 3.6 3.6 3.6 10.08 6.72 3.6 6.24 6.72 3.6 6.72 6.96 3.84 6.24 6.96 3.6 6.72 6.72 6.24 6.72 3.6 10.32 6.96 6.72 5.52 3.6 6.72 3.6 3.84 6.72 6.24 3.84 3.6 3.6 3.84 3.6 10.08 6.24 5.52 3.6 6.24]
+xshow
+323 2519 moveto
+(known human carcinogen.)
+[6.96 6.72 6.96 10.08 6.72 3.6 6.72 6.72 10.32 6.24 6.72 3.6 6.24 6.24 4.56 6.24 3.6 6.72 6.96 6.72 6.24 6.72 3.6]
+xshow
+397 2503 moveto 0.0 -0.5 () alignedtext
+288 2487 moveto
+(UV radiation is not visible, but it is felt)
+[10.08 9.84 3.6 4.56 6.24 6.96 3.6 6.24 3.84 3.6 6.96 6.72 3.6 3.6 5.52 3.6 6.72 6.96 3.84 3.6 6.72 3.6 5.52 3.6 6.96 3.6 6.24 3.6 3.6 6.96 6.72 3.84 3.6 3.6 3.84 3.6 3.6 5.52 3.6 4.32 6.24 3.6 3.84]
+xshow
+273 2471 moveto
+(as heat and can damage the eyes and skin. It)
+[6.24 5.52 3.6 6.72 6.24 6.24 3.84 3.6 6.24 6.72 6.96 3.6 6.24 6.24 6.72 3.6 6.96 6.24 10.32 6.24 6.72 6.24 3.6 3.84 6.72 6.24 3.6 6.24 6.72 6.24 5.52 3.6 6.24 6.72 6.96 3.6 5.52 6.96 3.6 6.72 3.6 3.6 4.56 3.84]
+xshow
+289 2455 moveto
+(comes in three forms, ranging from the)
+[6.24 6.96 10.32 6.24 5.52 3.6 3.6 6.72 3.6 3.84 6.72 4.56 6.24 6.24 3.6 4.32 6.96 4.56 10.32 5.52 3.6 3.6 4.56 6.24 6.72 6.72 3.6 6.72 6.72 3.6 4.32 4.56 6.96 10.32 3.6 3.84 6.72 6.24]
+xshow
+289 2439 moveto
+(relatively long-wavelength UVA to the)
+[4.56 6.24 3.6 6.24 3.84 3.6 6.72 6.24 3.6 6.72 3.6 3.6 6.96 6.72 6.72 4.56 10.08 6.24 6.72 6.24 3.6 6.24 6.72 6.72 3.84 6.72 3.6 10.08 8.4 9.12 3.6 3.84 6.96 3.6 3.84 6.72 6.24]
+xshow
+271 2423 moveto
+(shortest wavelength UVC. UVA accounts for)
+[5.52 6.72 6.96 4.56 3.84 6.24 5.52 3.84 3.6 10.08 6.24 6.72 6.24 3.6 6.24 6.72 6.72 3.84 6.72 3.6 10.08 10.08 9.36 3.6 3.6 10.08 8.4 9.12 3.6 6.24 6.24 6.24 6.96 6.72 6.72 3.84 5.52 3.6 4.32 6.96 4.56]
+xshow
+276 2407 moveto
+(most of the solar UV radiation because it is)
+[10.32 6.96 5.52 3.84 3.6 6.96 4.32 3.6 3.84 6.72 6.24 3.6 5.52 6.96 3.6 6.24 4.56 3.6 10.08 9.84 3.6 4.56 6.24 6.96 3.6 6.24 3.84 3.6 6.96 6.72 3.6 6.96 6.24 6.24 6.24 6.72 5.52 6.24 3.6 3.6 3.84 3.6 3.6 5.52]
+xshow
+263 2391 moveto
+(not absorbed by the atmosphere. UVB is mostly)
+[6.72 6.96 3.84 3.6 6.24 6.96 5.52 6.96 4.56 6.96 6.24 6.96 3.6 6.96 6.72 3.6 3.84 6.72 6.24 3.6 6.24 3.84 10.32 6.96 5.52 6.96 6.72 6.24 4.56 6.24 3.6 3.6 10.08 10.08 9.12 3.6 3.6 5.52 3.6 10.32 6.96 5.52 3.84 3.6 6.72]
+xshow
+284 2375 moveto
+(absorbed by the ozone layer and UVC is)
+[6.24 6.96 5.52 6.96 4.56 6.96 6.24 6.96 3.6 6.96 6.72 3.6 3.84 6.72 6.24 3.6 6.96 6.24 6.96 6.72 6.24 3.6 3.6 6.24 6.72 6.24 4.56 3.6 6.24 6.72 6.96 3.6 10.08 10.08 9.36 3.6 3.6 5.52]
+xshow
+350 2359 moveto
+(totally absorbed.)
+[3.84 6.96 3.84 6.24 3.6 3.6 6.72 3.6 6.24 6.96 5.52 6.96 4.56 6.96 6.24 6.96 3.6]
+xshow
+397 2343 moveto 0.0 -0.5 () alignedtext
+279 2327 moveto
+(All three are produced by mercury arc sun)
+[9.84 3.6 3.6 3.6 3.84 6.72 4.56 6.24 6.24 3.6 6.24 4.56 6.24 3.6 6.96 4.56 6.96 6.96 6.72 6.24 6.24 6.96 3.6 6.96 6.72 3.6 10.32 6.24 4.56 6.24 6.72 4.56 6.72 3.6 6.24 4.56 6.24 3.6 5.52 6.72 6.72]
+xshow
+290 2311 moveto
+(lamps, while other lamps that simulate)
+[3.6 6.24 10.32 6.96 5.52 3.6 3.6 10.08 6.72 3.6 3.6 6.24 3.6 6.96 3.84 6.72 6.24 4.56 3.6 3.6 6.24 10.32 6.96 5.52 3.6 3.84 6.72 6.24 3.84 3.6 5.52 3.6 10.32 6.72 3.6 6.24 3.84 6.24]
+xshow
+306 2295 moveto
+(sunlight produce primarily UVA.)
+[5.52 6.72 6.72 3.6 3.6 6.72 6.72 3.84 3.6 6.96 4.56 6.96 6.96 6.72 6.24 6.24 3.6 6.96 4.56 3.6 10.32 6.24 4.56 3.6 3.6 6.72 3.6 10.08 8.4 9.84 3.6]
+xshow
+397 2279 moveto 0.0 -0.5 () alignedtext
+277 2263 moveto
+(SYDNEY, Australia \(AP\) -- Botanists have)
+[7.68 10.08 10.08 10.08 8.4 8.4 3.6 2.88 9.84 6.72 5.52 3.84 4.56 6.24 3.6 3.6 6.24 3.6 4.56 9.84 7.68 4.56 3.6 4.56 4.56 3.6 9.12 6.96 3.84 6.24 6.72 3.6 5.52 3.84 5.52 3.6 6.72 6.24 6.72 6.24]
+xshow
+288 2247 moveto
+(found a stand of living fossil trees from)
+[4.32 6.96 6.72 6.72 6.96 3.6 6.24 3.6 5.52 3.84 6.24 6.72 6.96 3.6 6.96 4.32 3.6 3.6 3.6 6.72 3.6 6.72 6.72 3.6 4.32 6.96 5.52 5.52 3.6 3.6 3.6 3.84 4.56 6.24 6.24 5.52 3.6 4.32 4.56 6.96 10.32]
+xshow
+275 2231 moveto
+(a species dating back to prehistoric times in)
+[6.24 3.6 5.52 6.96 6.24 6.24 3.6 6.24 5.52 3.6 6.96 6.24 3.84 3.6 6.72 6.72 3.6 6.96 6.24 6.24 6.96 3.6 3.84 6.96 3.6 6.96 4.56 6.24 6.72 3.6 5.52 3.84 6.96 4.56 3.6 6.24 3.6 3.84 3.6 10.32 6.24 5.52 3.6 3.6 6.72]
+xshow
+292 2215 moveto
+(the dense rainforests north of Sydney,)
+[3.84 6.72 6.24 3.6 6.96 6.24 6.72 5.52 6.24 3.6 4.56 6.24 3.6 6.72 4.32 6.96 4.56 6.24 5.52 3.84 5.52 3.6 6.72 6.96 4.56 3.84 6.72 3.6 6.96 4.32 3.6 7.68 6.72 6.96 6.72 6.24 5.76 3.6]
+xshow
+334 2199 moveto
+(authorities said Friday.)
+[6.24 6.72 3.84 6.72 6.96 4.56 3.6 3.84 3.6 6.24 5.52 3.6 5.52 6.24 3.6 6.96 3.6 7.44 4.56 3.6 6.96 6.24 5.76 3.6]
+xshow
+397 2183 moveto 0.0 -0.5 () alignedtext
+272 2167 moveto
+(About 20 mature trees found in the Nightcap)
+[9.84 6.96 6.96 6.72 3.84 3.6 6.96 6.96 3.6 10.32 6.24 3.84 6.72 4.56 6.24 3.6 3.84 4.56 6.24 6.24 5.52 3.6 4.32 6.96 6.72 6.72 6.96 3.6 3.6 6.72 3.6 3.84 6.72 6.24 3.6 10.08 3.6 6.72 6.72 3.84 6.24 6.24 6.96]
+xshow
+272 2151 moveto
+(Range about 400 miles north of Sydney bear)
+[9.36 6.24 6.72 6.72 6.24 3.6 6.24 6.96 6.96 6.72 3.84 3.6 6.96 6.96 6.96 3.6 10.32 3.6 3.6 6.24 5.52 3.6 6.72 6.96 4.56 3.84 6.72 3.6 6.96 4.32 3.6 7.68 6.72 6.96 6.72 6.24 6.72 3.6 6.96 6.24 6.24 4.56]
+xshow
+275 2135 moveto
+(nuts similar in structure to those discovered)
+[6.72 6.72 3.84 5.52 3.6 5.52 3.6 10.32 3.6 3.6 6.24 4.56 3.6 3.6 6.72 3.6 5.52 3.84 4.56 6.72 6.24 3.84 6.72 4.56 6.24 3.6 3.84 6.96 3.6 3.84 6.72 6.96 5.52 6.24 3.6 6.96 3.6 5.52 6.24 6.96 6.72 6.24 4.56 6.24 6.96]
+xshow
+274 2119 moveto
+(in fossilized form in 1875 by botanist Baron)
+[3.6 6.72 3.6 4.32 6.96 5.52 5.52 3.6 3.6 3.6 6.24 6.24 6.96 3.6 4.32 6.96 4.56 10.32 3.6 3.6 6.72 3.6 6.96 6.96 6.96 6.96 3.6 6.96 6.72 3.6 6.96 6.96 3.84 6.24 6.72 3.6 5.52 3.84 3.6 9.12 6.24 4.56 6.96 6.72]
+xshow
+331 2103 moveto
+(Ferdinand von Mueller.)
+[7.44 6.24 4.56 6.96 3.6 6.72 6.24 6.72 6.96 3.6 6.72 6.96 6.72 3.6 12.48 6.72 6.24 3.6 3.6 6.24 3.84 3.6]
+xshow
+397 2087 moveto 0.0 -0.5 () alignedtext
+287 2071 moveto
+(It gives us another small paragraph or a)
+[4.56 3.84 3.6 6.72 3.6 6.72 6.24 5.52 3.6 6.72 5.52 3.6 6.24 6.72 6.96 3.84 6.72 6.24 4.56 3.6 5.52 10.32 6.24 3.6 3.6 3.6 6.96 6.24 4.56 6.24 6.72 4.56 6.24 6.96 6.72 3.6 6.96 4.56 3.6 6.24]
+xshow
+287 2055 moveto
+(page of the insight into the evolution of)
+[6.96 6.24 6.72 6.24 3.6 6.96 4.32 3.6 3.84 6.72 6.24 3.6 3.6 6.72 5.52 3.6 6.72 6.72 3.84 3.6 3.6 6.72 3.84 6.96 3.6 3.84 6.72 6.24 3.6 6.24 6.72 6.96 3.6 6.72 3.84 3.6 6.96 6.72 3.6 6.96 4.32]
+xshow
+275 2039 moveto
+(flowering plants and the incredible changes )
+[4.32 3.6 6.96 10.08 6.24 4.56 3.6 6.72 6.72 3.6 6.96 3.6 6.24 6.72 3.84 5.52 3.6 6.24 6.72 6.96 3.6 3.84 6.72 6.24 3.6 3.6 6.72 6.24 4.56 6.24 6.96 3.6 6.96 3.6 6.24 3.6 6.24 6.72 6.24 6.72 6.72 6.24 5.52 3.6]
+xshow
+274 2023 moveto
+(that have occurred on this continent through)
+[3.84 6.72 6.24 3.84 3.6 6.72 6.24 6.72 6.24 3.6 6.96 6.24 6.24 6.72 4.56 4.56 6.24 6.96 3.6 6.96 6.72 3.6 3.84 6.72 3.6 5.52 3.6 6.24 6.96 6.72 3.84 3.6 6.72 6.24 6.72 3.84 3.6 3.84 6.72 4.56 6.96 6.72 6.72 6.72]
+xshow
+287 2007 moveto
+(enormous periods of time, said botanist)
+[6.24 6.72 6.96 4.56 10.32 6.96 6.72 5.52 3.6 6.96 6.24 4.56 3.6 6.96 6.96 5.52 3.6 6.96 4.32 3.6 3.84 3.6 10.32 6.24 3.6 3.6 5.52 6.24 3.6 6.96 3.6 6.96 6.96 3.84 6.24 6.72 3.6 5.52 3.84]
+xshow
+273 1991 moveto
+(Peter Kooyman, who discovered the trees in)
+[7.68 6.24 3.84 6.24 4.56 3.6 9.84 6.96 6.96 6.72 10.32 6.24 6.72 3.6 3.6 10.08 6.72 6.96 3.6 6.96 3.6 5.52 6.24 6.96 6.72 6.24 4.56 6.24 6.96 3.6 3.84 6.72 6.24 3.6 3.84 4.56 6.24 6.24 5.52 3.6 3.6 6.72]
+xshow
+374 1975 moveto
+(August.)
+[9.84 6.72 6.72 6.72 5.52 3.84 3.6]
+xshow
+397 1959 moveto 0.0 -0.5 () alignedtext
+283 1943 moveto
+(The exact location is being kept secret to)
+[8.4 6.72 6.24 3.6 6.24 6.72 6.24 6.24 3.84 3.6 3.6 6.96 6.24 6.24 3.84 3.6 6.96 6.72 3.6 3.6 5.52 3.6 6.96 6.24 3.6 6.72 6.72 3.6 6.96 6.24 6.96 3.84 3.6 5.52 6.24 6.24 4.56 6.24 3.84 3.6 3.84 6.96]
+xshow
+275 1927 moveto
+(protect the trees, state environment minister)
+[6.96 4.56 6.96 3.84 6.24 6.24 3.84 3.6 3.84 6.72 6.24 3.6 3.84 4.56 6.24 6.24 5.52 3.6 3.6 5.52 3.84 6.24 3.84 6.24 3.6 6.24 6.72 6.72 3.6 4.56 6.96 6.72 10.32 6.24 6.72 3.84 3.6 10.32 3.6 6.72 3.6 5.52 3.84 6.24 4.56]
+xshow
+350 1911 moveto
+(Bob Debus said.)
+[9.12 6.96 6.96 3.6 10.08 6.24 6.96 6.72 5.52 3.6 5.52 6.24 3.6 6.96 3.6]
+xshow
+397 1895 moveto 0.0 -0.5 () alignedtext
+274 1879 moveto
+(Kooyman sent details of his find to Sydneys)
+[9.84 6.96 6.96 6.72 10.32 6.24 6.72 3.6 5.52 6.24 6.72 3.84 3.6 6.96 6.24 3.84 6.24 3.6 3.6 5.52 3.6 6.96 4.32 3.6 6.72 3.6 5.52 3.6 4.32 3.6 6.72 6.96 3.6 3.84 6.96 3.6 7.68 6.72 6.96 6.72 6.24 6.72 5.52]
+xshow
+273 1863 moveto
+(Royal Botanic Gardens, which identified the)
+[9.36 6.96 6.72 6.24 3.6 3.6 9.12 6.96 3.84 6.24 6.72 3.6 6.24 3.6 10.08 6.24 4.56 6.96 6.24 6.72 5.52 3.6 3.6 10.08 6.72 3.6 6.24 6.72 3.6 3.6 6.96 6.24 6.72 3.84 3.6 4.32 3.6 6.24 6.96 3.6 3.84 6.72 6.24]
+xshow
+276 1847 moveto
+(rainforests which once covered the ancient )
+[4.56 6.24 3.6 6.72 4.32 6.96 4.56 6.24 5.52 3.84 5.52 3.6 10.08 6.72 3.6 6.24 6.72 3.6 6.96 6.72 6.24 6.24 3.6 6.24 6.96 6.72 6.24 4.56 6.24 6.96 3.6 3.84 6.72 6.24 3.6 6.24 6.72 6.24 3.6 6.24 6.72 3.84 3.6]
+xshow
+283 1831 moveto
+(super-continent of Gondwanaland -- now)
+[5.52 6.72 6.96 6.24 4.32 4.56 6.24 6.96 6.72 3.84 3.6 6.72 6.24 6.72 3.84 3.6 6.96 4.32 3.6 10.08 6.96 6.72 6.96 10.08 6.24 6.72 6.24 3.6 6.24 6.72 6.96 3.6 4.56 4.56 3.6 6.72 6.96 10.08]
+xshow
+279 1815 moveto
+(Australia, Africa, South America and New)
+[9.84 6.72 5.52 3.84 4.56 6.24 3.6 3.6 6.24 3.6 2.88 9.84 4.32 4.56 3.6 6.24 6.24 3.6 3.6 7.68 6.96 6.72 3.84 6.72 2.88 9.84 10.32 6.24 4.56 3.6 6.24 6.24 3.6 6.24 6.72 6.96 3.6 10.08 6.24 10.08]
+xshow
+338 1799 moveto
+(Zealand, Debus said.)
+[8.4 6.24 6.24 3.6 6.24 6.72 6.96 3.6 3.6 10.08 6.24 6.96 6.72 5.52 3.6 5.52 6.24 3.6 6.96 3.6]
+xshow
+397 1783 moveto 0.0 -0.5 () alignedtext
+275 1767 moveto
+(The biggest of the newly discovered trees is)
+[8.4 6.72 6.24 3.6 6.96 3.6 6.72 6.72 6.24 5.52 3.84 3.6 6.96 4.32 3.6 3.84 6.72 6.24 3.6 6.72 6.24 10.08 3.6 6.72 3.6 6.96 3.6 5.52 6.24 6.96 6.72 6.24 4.56 6.24 6.96 3.6 3.84 4.56 6.24 6.24 5.52 3.6 3.6 5.52]
+xshow
+291 1751 moveto
+(at least 120 feet tall and has beautiful,)
+[6.24 3.84 3.6 3.6 6.24 6.24 5.52 3.84 3.6 6.96 6.96 6.96 3.6 4.32 6.24 6.24 3.84 3.6 3.84 6.24 3.6 3.6 3.6 6.24 6.72 6.96 3.6 6.72 6.24 5.52 3.6 6.96 6.24 6.24 6.72 3.84 3.6 4.32 6.72 3.6 3.6]
+xshow
+283 1735 moveto
+(primitive and messy flowers with a scent)
+[6.96 4.56 3.6 10.32 3.6 3.84 3.6 6.72 6.24 3.6 6.24 6.72 6.96 3.6 10.32 6.24 5.52 5.52 6.72 3.6 4.32 3.6 6.96 10.08 6.24 4.56 5.52 3.6 10.08 3.6 3.84 6.72 3.6 6.24 3.6 5.52 6.24 6.24 6.72 3.84]
+xshow
+302 1719 moveto
+(similar to aniseed, Kooyman said.)
+[5.52 3.6 10.32 3.6 3.6 6.24 4.56 3.6 3.84 6.96 3.6 6.24 6.72 3.6 5.52 6.24 6.24 6.96 3.6 3.6 9.84 6.96 6.96 6.72 10.32 6.24 6.72 3.6 5.52 6.24 3.6 6.96 3.6]
+xshow
+397 1703 moveto 0.0 -0.5 () alignedtext
+281 1687 moveto
+(A similar discovery was made in the Blue)
+[9.12 3.6 5.52 3.6 10.32 3.6 3.6 6.24 4.56 3.6 6.96 3.6 5.52 6.24 6.96 6.72 6.24 4.56 6.72 3.6 10.08 6.24 5.52 3.6 10.32 6.24 6.96 6.24 3.6 3.6 6.72 3.6 3.84 6.72 6.24 3.6 9.12 3.6 6.72 6.24]
+xshow
+281 1671 moveto
+(Mountains west of Sydney in 1994, when)
+[12.48 6.96 6.72 6.72 3.84 6.24 3.6 6.72 5.52 3.6 10.08 6.24 5.52 3.84 3.6 6.96 4.32 3.6 7.68 6.72 6.96 6.72 6.24 6.72 3.6 3.6 6.72 3.6 6.96 6.96 6.96 6.96 3.6 3.6 10.08 6.72 6.24 6.72]
+xshow
+277 1655 moveto
+(botanists discovered a stand of living fossil)
+[6.96 6.96 3.84 6.24 6.72 3.6 5.52 3.84 5.52 3.6 6.96 3.6 5.52 6.24 6.96 6.72 6.24 4.56 6.24 6.96 3.6 6.24 3.6 5.52 3.84 6.24 6.72 6.96 3.6 6.96 4.32 3.6 3.6 3.6 6.72 3.6 6.72 6.72 3.6 4.32 6.96 5.52 5.52 3.6 3.6]
+xshow
+301 1639 moveto
+(trees known as the Wollemi Pines.)
+[3.84 4.56 6.24 6.24 5.52 3.6 6.96 6.72 6.96 10.08 6.72 3.6 6.24 5.52 3.6 3.84 6.72 6.24 3.36 12 6.96 3.6 3.6 6.24 10.32 3.6 3.6 7.68 3.6 6.72 6.24 5.52 3.6]
+xshow
+397 1623 moveto 0.0 -0.5 () alignedtext
+339 1607 moveto
+(provocative Turkish )
+[6.96 4.56 6.96 6.72 6.96 6.24 6.24 3.84 3.6 6.72 6.24 3.36 7.92 6.72 4.56 6.96 3.6 5.52 6.72 3.6]
+xshow
+342 1591 moveto
+(study suggests that )
+[5.52 3.84 6.72 6.96 6.72 3.6 5.52 6.72 6.72 6.72 6.24 5.52 3.84 5.52 3.6 3.84 6.72 6.24 3.84 3.6]
+xshow
+345 1575 moveto
+(using honey as an )
+[6.72 5.52 3.6 6.72 6.72 3.6 6.72 6.96 6.72 6.24 6.72 3.6 6.24 5.52 3.6 6.24 6.72 3.6]
+xshow
+346 1559 moveto
+(ointment during a )
+[6.96 3.6 6.72 3.84 10.32 6.24 6.72 3.84 3.6 6.96 6.72 4.56 3.6 6.72 6.72 3.6 6.24 3.6]
+xshow
+355 1543 moveto
+(certain type of )
+[6.24 6.24 4.56 3.84 6.24 3.6 6.72 3.6 3.84 6.72 6.96 6.24 3.6 6.96 4.32 3.6]
+xshow
+338 1527 moveto
+(colon-cancer surgery)
+[6.24 6.96 3.6 6.96 6.72 4.56 6.24 6.24 6.72 6.24 6.24 4.56 3.6 5.52 6.72 4.32 6.72 6.24 4.56 6.72]
+xshow
+328 1511 moveto
+(can help prevent tumors )
+[6.24 6.24 6.72 3.6 6.72 6.24 3.6 6.96 3.6 6.96 4.56 6.24 6.72 6.24 6.72 3.84 3.6 3.84 6.72 10.32 6.96 4.56 5.52 3.6]
+xshow
+353 1495 moveto
+(from recurring. )
+[4.32 4.56 6.96 10.32 3.6 4.56 6.24 6.24 6.72 4.56 4.56 3.6 6.72 6.72 3.6 3.6]
+xshow
+397 1479 moveto 0.0 -0.5 () alignedtext
+329 1463 moveto
+(While the research was )
+[13.2 6.72 3.6 3.6 6.24 3.6 3.84 6.72 6.24 3.6 4.56 6.24 5.52 6.24 6.24 4.56 6.24 6.72 3.6 10.08 6.24 5.52 3.6]
+xshow
+327 1447 moveto
+(done in mice and no one )
+[6.96 6.96 6.72 6.24 3.6 3.6 6.72 3.6 10.32 3.6 6.24 6.24 3.6 6.24 6.72 6.96 3.6 6.72 6.96 3.6 6.96 6.72 6.24 3.6]
+xshow
+345 1431 moveto
+(expects hospitals t)
+[6.24 6.72 6.96 6.24 6.24 3.84 5.52 3.6 6.72 6.96 5.52 6.96 3.6 3.84 6.24 3.6 5.52 3.6 3.84]
+xshow
+357 1415 moveto
+(start stocking )
+[5.52 3.84 6.24 4.56 3.84 3.6 5.52 3.84 6.96 6.24 6.96 3.6 6.72 6.72 3.6]
+xshow
+336 1399 moveto
+(operating rooms with )
+[6.96 6.96 6.24 4.56 6.24 3.84 3.6 6.72 6.72 3.6 4.56 6.96 6.96 10.32 5.52 3.6 10.08 3.6 3.84 6.72 3.6]
+xshow
+334 1383 moveto
+(honey jars, honey has )
+[6.72 6.96 6.72 6.24 6.72 3.6 3.84 6.24 4.56 5.52 3.6 3.6 6.72 6.96 6.72 6.24 6.72 3.6 6.72 6.24 5.52 3.6]
+xshow
+341 1367 moveto
+(been used as a folk )
+[6.96 6.24 6.24 6.72 3.6 6.72 5.52 6.24 6.96 3.6 6.24 5.52 3.6 6.24 3.6 4.32 6.96 3.6 6.96 3.6]
+xshow
+342 1351 moveto
+(remedy for healing )
+[4.56 6.24 10.32 6.24 6.96 6.72 3.6 4.32 6.96 4.56 3.6 6.72 6.24 6.24 3.6 3.6 6.72 6.72 3.6]
+xshow
+343 1335 moveto
+(since biblical times)
+[5.52 3.6 6.72 6.24 6.24 3.6 6.96 3.6 6.96 3.6 3.6 6.24 6.24 3.6 3.6 3.84 3.6 10.32 6.24 5.52]
+xshow
+397 1319 moveto 0.0 -0.5 () alignedtext
+341 1303 moveto
+(And a Mayo Clinic )
+[9.84 6.72 6.96 3.6 6.24 3.6 12.48 6.24 6.72 6.96 3.6 9.36 3.6 3.6 6.72 3.6 6.24 3.6]
+xshow
+334 1287 moveto
+(cancer expert said the )
+[6.24 6.24 6.72 6.24 6.24 4.56 3.6 6.24 6.72 6.96 6.24 4.56 3.84 3.6 5.52 6.24 3.6 6.96 3.6 3.84 6.72 6.24 3.6]
+xshow
+354 1271 moveto
+(results, though )
+[4.56 6.24 5.52 6.72 3.6 3.84 5.52 3.6 3.6 3.84 6.72 6.96 6.72 6.72 6.72 3.6]
+xshow
+340 1255 moveto
+(preliminary, are too )
+[6.96 4.56 6.24 3.6 3.6 10.32 3.6 6.72 6.24 4.56 5.76 3.6 3.6 6.24 4.56 6.24 3.6 3.84 6.96 6.96 3.6]
+xshow
+349 1239 moveto
+(fascinating to be )
+[4.32 6.24 5.52 6.24 3.6 6.72 6.24 3.84 3.6 6.72 6.72 3.6 3.84 6.96 3.6 6.96 6.24 3.6]
+xshow
+366 1223 moveto
+(dismissed. )
+[6.96 3.6 5.52 10.32 3.6 5.52 5.52 6.24 6.96 3.6 3.6]
+xshow
+397 1207 moveto 0.0 -0.5 () alignedtext
+328 1191 moveto
+(The research was aimed )
+[8.4 6.72 6.24 3.6 4.56 6.24 5.52 6.24 6.24 4.56 6.24 6.72 3.6 10.08 6.24 5.52 3.6 6.24 3.6 10.32 6.24 6.96 3.6]
+xshow
+331 1175 moveto
+(at improving the safety )
+[6.24 3.84 3.6 3.6 10.32 6.96 4.56 6.96 6.72 3.6 6.72 6.72 3.6 3.84 6.72 6.24 3.6 5.52 6.24 4.32 6.24 3.84 6.72 3.6]
+xshow
+352 1159 moveto
+(of laparoscopic )
+[6.96 4.32 3.6 3.6 6.24 6.96 6.24 4.56 6.96 5.52 6.24 6.96 6.96 3.6 6.24 3.6]
+xshow
+366 1143 moveto
+(surgery, an)
+[5.52 6.72 4.32 6.72 6.24 4.56 5.76 3.6 3.6 6.24 6.72]
+xshow
+275 1127 moveto
+(increasingly popular technique that involves)
+[3.6 6.72 6.24 4.56 6.24 6.24 5.52 3.6 6.72 6.72 3.6 6.72 3.6 6.96 6.96 6.96 6.72 3.6 6.24 4.56 3.6 3.84 6.24 6.24 6.72 6.72 3.6 6.96 6.72 6.24 3.6 3.84 6.72 6.24 3.84 3.6 3.6 6.72 6.72 6.96 3.6 6.72 6.24 5.52]
+xshow
+304 1111 moveto
+(tiny keyhole incisions and skinny)
+[3.84 3.6 6.72 6.72 3.6 6.96 6.24 6.72 6.72 6.96 3.6 6.24 3.6 3.6 6.72 6.24 3.6 5.52 3.6 6.96 6.72 5.52 3.6 6.24 6.72 6.96 3.6 5.52 6.96 3.6 6.72 6.72 6.72]
+xshow
+363 1095 moveto
+(instruments.)
+[3.6 6.72 5.52 3.84 4.56 6.72 10.32 6.24 6.72 3.84 5.52 3.6]
+xshow
+397 1079 moveto 0.0 -0.5 () alignedtext
+290 1063 moveto
+(Enthusiasm for the technique has been)
+[8.4 6.72 3.84 6.72 6.72 5.52 3.6 6.24 5.52 10.32 3.6 4.32 6.96 4.56 3.6 3.84 6.72 6.24 3.6 3.84 6.24 6.24 6.72 6.72 3.6 6.96 6.72 6.24 3.6 6.72 6.24 5.52 3.6 6.96 6.24 6.24 6.72]
+xshow
+267 1047 moveto
+(tempered by some reports that laparoscopy for)
+[3.84 6.24 10.32 6.96 6.24 4.56 6.24 6.96 3.6 6.96 6.72 3.6 5.52 6.96 10.32 6.24 3.6 4.56 6.24 6.96 6.96 4.56 3.84 5.52 3.6 3.84 6.72 6.24 3.84 3.6 3.6 6.24 6.96 6.24 4.56 6.96 5.52 6.24 6.96 6.96 6.72 3.6 4.32 6.96 4.56]
+xshow
+289 1031 moveto
+(colon cancer can itself cause tumors to)
+[6.24 6.96 3.6 6.96 6.72 3.6 6.24 6.24 6.72 6.24 6.24 4.56 3.6 6.24 6.24 6.72 3.6 3.6 3.84 5.52 6.24 3.6 4.32 3.6 6.24 6.24 6.72 5.52 6.24 3.6 3.84 6.72 10.32 6.96 4.56 5.52 3.6 3.84 6.96]
+xshow
+270 1015 moveto
+(develop in the abdominal wall, along the path)
+[6.96 6.24 6.72 6.24 3.6 6.96 6.96 3.6 3.6 6.72 3.6 3.84 6.72 6.24 3.6 6.24 6.96 6.96 6.96 10.32 3.6 6.72 6.24 3.6 3.6 10.08 6.24 3.6 3.6 3.6 3.6 6.24 3.6 6.96 6.72 6.72 3.6 3.84 6.72 6.24 3.6 6.96 6.24 3.84 6.72]
+xshow
+314 999 moveto
+(the surgical instruments took.)
+[3.84 6.72 6.24 3.6 5.52 6.72 4.32 6.72 3.6 6.24 6.24 3.6 3.6 3.6 6.72 5.52 3.84 4.56 6.72 10.32 6.24 6.72 3.84 5.52 3.6 3.84 6.96 6.96 6.96 3.6]
+xshow
+397 983 moveto 0.0 -0.5 () alignedtext
+271 967 moveto
+(The Turkish researchers suggest honey might)
+[8.4 6.72 6.24 3.36 7.92 6.72 4.56 6.96 3.6 5.52 6.72 3.6 4.56 6.24 5.52 6.24 6.24 4.56 6.24 6.72 6.24 4.56 5.52 3.6 5.52 6.72 6.72 6.72 6.24 5.52 3.84 3.6 6.72 6.96 6.72 6.24 6.72 3.6 10.32 3.6 6.72 6.72 3.84]
+xshow
+280 951 moveto
+(work as a barrier to tumor cells when it is)
+[10.08 6.96 4.56 6.96 3.6 6.24 5.52 3.6 6.24 3.6 6.96 6.24 4.56 4.56 3.6 6.24 4.56 3.6 3.84 6.96 3.6 3.84 6.72 10.32 6.96 4.56 3.6 6.24 6.24 3.6 3.6 5.52 3.6 10.08 6.72 6.24 6.72 3.6 3.6 3.84 3.6 3.6 5.52]
+xshow
+277 935 moveto
+(spread in the incisions. The findings, based)
+[5.52 6.96 4.56 6.24 6.24 6.96 3.6 3.6 6.72 3.6 3.84 6.72 6.24 3.6 3.6 6.72 6.24 3.6 5.52 3.6 6.96 6.72 5.52 3.6 3.36 8.4 6.72 6.24 3.6 4.32 3.6 6.72 6.96 3.6 6.72 6.72 5.52 3.6 3.6 6.96 6.24 5.52 6.24 6.96]
+xshow
+284 919 moveto
+(on a study of 60 mice, were published in)
+[6.96 6.72 3.6 6.24 3.6 5.52 3.84 6.72 6.96 6.72 3.6 6.96 4.32 3.6 6.96 6.96 3.6 10.32 3.6 6.24 6.24 3.6 3.6 10.08 6.24 4.56 6.24 3.6 6.96 6.72 6.96 3.6 3.6 5.52 6.72 6.24 6.96 3.6 3.6 6.72]
+xshow
+273 903 moveto
+(Decembers issue of the Archives of Surgery.)
+[10.08 6.24 6.24 6.24 10.32 6.96 6.24 4.56 5.52 3.6 3.6 5.52 5.52 6.72 6.24 3.6 6.96 4.32 3.6 3.84 6.72 6.24 2.88 9.84 4.56 6.24 6.72 3.6 6.72 6.24 5.52 3.6 6.96 4.32 3.6 7.68 6.72 4.32 6.72 6.24 4.56 5.76 3.6]
+xshow
+397 887 moveto 0.0 -0.5 () alignedtext
+264 871 moveto
+(Dr. Tonia Young-Fadok, a Mayo Clinic surgeon)
+[10.08 3.84 3.6 3.36 7.44 6.96 6.72 3.6 6.24 3.12 8.64 6.96 6.72 6.72 6.72 4.56 7.44 6.24 6.96 6.96 6.96 3.6 3.6 6.24 3.6 12.48 6.24 6.72 6.96 3.6 9.36 3.6 3.6 6.72 3.6 6.24 3.6 5.52 6.72 4.32 6.72 6.24 6.96 6.72]
+xshow
+286 855 moveto
+(participating in a U.S. study on whether)
+[6.96 6.24 4.56 3.84 3.6 6.24 3.6 6.96 6.24 3.84 3.6 6.72 6.72 3.6 3.6 6.72 3.6 6.24 3.6 10.08 3.6 7.68 3.6 3.6 5.52 3.84 6.72 6.96 6.72 3.6 6.96 6.72 3.6 10.08 6.72 6.24 3.84 6.72 6.24 4.56]
+xshow
+281 839 moveto
+(laparoscopic surgery for colon cancer can)
+[3.6 6.24 6.96 6.24 4.56 6.96 5.52 6.24 6.96 6.96 3.6 6.24 3.6 5.52 6.72 4.32 6.72 6.24 4.56 6.72 3.6 4.32 6.96 4.56 3.6 6.24 6.96 3.6 6.96 6.72 3.6 6.24 6.24 6.72 6.24 6.24 4.56 3.6 6.24 6.24 6.72]
+xshow
+275 823 moveto
+(cause new tumors, said substances in honey)
+[6.24 6.24 6.72 5.52 6.24 3.6 6.72 6.24 10.08 3.6 3.84 6.72 10.32 6.96 4.56 5.52 3.6 3.6 5.52 6.24 3.6 6.96 3.6 5.52 6.72 6.96 5.52 3.84 6.24 6.72 6.24 6.24 5.52 3.6 3.6 6.72 3.6 6.72 6.96 6.72 6.24 6.72]
+xshow
+285 807 moveto
+(might actually help dissolve tumor cells.)
+[10.32 3.6 6.72 6.72 3.84 3.6 6.24 6.24 3.84 6.72 6.24 3.6 3.6 6.72 3.6 6.72 6.24 3.6 6.96 3.6 6.96 3.6 5.52 5.52 6.96 3.6 6.72 6.24 3.6 3.84 6.72 10.32 6.96 4.56 3.6 6.24 6.24 3.6 3.6 5.52 3.6]
+xshow
+397 791 moveto 0.0 -0.5 () alignedtext
+285 775 moveto
+(Its not clear what the power of honey is,)
+[4.56 3.84 5.52 3.6 6.72 6.96 3.84 3.6 6.24 3.6 6.24 6.24 4.56 3.6 10.08 6.72 6.24 3.84 3.6 3.84 6.72 6.24 3.6 6.96 6.96 10.08 6.24 4.56 3.6 6.96 4.32 3.6 6.72 6.96 6.72 6.24 6.72 3.6 3.6 5.52 3.6]
+xshow
+284 759 moveto
+(but theres certainly something here thats)
+[6.96 6.72 3.84 3.6 3.84 6.72 6.24 4.56 6.24 5.52 3.6 6.24 6.24 4.56 3.84 6.24 3.6 6.72 3.6 6.72 3.6 5.52 6.96 10.32 6.24 3.84 6.72 3.6 6.72 6.72 3.6 6.72 6.24 4.56 6.24 3.6 3.84 6.72 6.24 3.84 5.52]
+xshow
+313 743 moveto
+(of interest, Young-Fadok said.)
+[6.96 4.32 3.6 3.6 6.72 3.84 6.24 4.56 6.24 5.52 3.84 3.6 3.12 8.64 6.96 6.72 6.72 6.72 4.56 7.44 6.24 6.96 6.96 6.96 3.6 5.52 6.24 3.6 6.96 3.6]
+xshow
+397 727 moveto 0.0 -0.5 () alignedtext
+272 711 moveto
+(Laparoscopies are being used increasingly to)
+[8.16 6.24 6.96 6.24 4.56 6.96 5.52 6.24 6.96 6.96 3.6 6.24 5.52 3.6 6.24 4.56 6.24 3.6 6.96 6.24 3.6 6.72 6.72 3.6 6.72 5.52 6.24 6.96 3.6 3.6 6.72 6.24 4.56 6.24 6.24 5.52 3.6 6.72 6.72 3.6 6.72 3.6 3.84 6.96]
+xshow
+282 695 moveto
+(treat a variety of conditions that formerly)
+[3.84 4.56 6.24 6.24 3.84 3.6 6.24 3.6 6.72 6.24 4.56 3.6 6.24 3.84 6.72 3.6 6.96 4.32 3.6 6.24 6.96 6.72 6.96 3.6 3.84 3.6 6.96 6.72 5.52 3.6 3.84 6.72 6.24 3.84 3.6 4.32 6.96 4.56 10.32 6.24 4.56 3.6 6.72]
+xshow
+268 679 moveto
+(required major operations. Skinny instruments)
+[4.56 6.24 6.96 6.72 3.6 4.56 6.24 6.96 3.6 10.32 6.24 3.84 6.96 4.56 3.6 6.96 6.96 6.24 4.56 6.24 3.84 3.6 6.96 6.72 5.52 3.6 3.6 7.68 6.96 3.6 6.72 6.72 6.72 3.6 3.6 6.72 5.52 3.84 4.56 6.72 10.32 6.24 6.72 3.84 5.52]
+xshow
+299 663 moveto
+(and a slender viewing tube called a)
+[6.24 6.72 6.96 3.6 6.24 3.6 5.52 3.6 6.24 6.72 6.96 6.24 4.56 3.6 6.72 3.6 6.24 10.08 3.6 6.72 6.72 3.6 3.84 6.72 6.96 6.24 3.6 6.24 6.24 3.6 3.6 6.24 6.96 3.6 6.24]
+xshow
+294 647 moveto
+(laparoscope are inserted through tiny)
+[3.6 6.24 6.96 6.24 4.56 6.96 5.52 6.24 6.96 6.96 6.24 3.6 6.24 4.56 6.24 3.6 3.6 6.72 5.52 6.24 4.56 3.84 6.24 6.96 3.6 3.84 6.72 4.56 6.96 6.72 6.72 6.72 3.6 3.84 3.6 6.72 6.72]
+xshow
+285 631 moveto
+(incisions. Carbon dioxide gas is injected)
+[3.6 6.72 6.24 3.6 5.52 3.6 6.96 6.72 5.52 3.6 3.6 9.36 6.24 4.56 6.96 6.96 6.72 3.6 6.96 3.6 6.96 6.72 3.6 6.96 6.24 3.6 6.72 6.24 5.52 3.6 3.6 5.52 3.6 3.6 6.72 3.84 6.24 6.24 3.84 6.24 6.96]
+xshow
+272 615 moveto
+(into the body cavity to cause the abdomen to)
+[3.6 6.72 3.84 6.96 3.6 3.84 6.72 6.24 3.6 6.96 6.96 6.96 6.72 3.6 6.24 6.24 6.72 3.6 3.84 6.72 3.6 3.84 6.96 3.6 6.24 6.24 6.72 5.52 6.24 3.6 3.84 6.72 6.24 3.6 6.24 6.96 6.96 6.96 10.32 6.24 6.72 3.6 3.84 6.96]
+xshow
+280 599 moveto
+(swell, creating a work space for surgeons.)
+[5.52 10.08 6.24 3.6 3.6 3.6 3.6 6.24 4.56 6.24 6.24 3.84 3.6 6.72 6.72 3.6 6.24 3.6 10.08 6.96 4.56 6.96 3.6 5.52 6.96 6.24 6.24 6.24 3.6 4.32 6.96 4.56 3.6 5.52 6.72 4.32 6.72 6.24 6.96 6.72 5.52 3.6]
+xshow
+397 583 moveto 0.0 -0.5 () alignedtext
+272 567 moveto
+(Colon tumors are essentially the only type of)
+[9.36 6.96 3.6 6.96 6.72 3.6 3.84 6.72 10.32 6.96 4.56 5.52 3.6 6.24 4.56 6.24 3.6 6.24 5.52 5.52 6.24 6.72 3.84 3.6 6.24 3.6 3.6 6.72 3.6 3.84 6.72 6.24 3.6 6.96 6.72 3.6 6.72 3.6 3.84 6.72 6.96 6.24 3.6 6.96 4.32]
+xshow
+280 551 moveto
+(cancer for which doctors use laparoscopy.)
+[6.24 6.24 6.72 6.24 6.24 4.56 3.6 4.32 6.96 4.56 3.6 10.08 6.72 3.6 6.24 6.72 3.6 6.96 6.96 6.24 3.84 6.96 4.56 5.52 3.6 6.72 5.52 6.24 3.6 3.6 6.24 6.96 6.24 4.56 6.96 5.52 6.24 6.96 6.96 5.76 3.6]
+xshow
+397 535 moveto 0.0 -0.5 () alignedtext
+269 519 moveto
+(Some theorize that the gas might cause cancer)
+[7.68 6.96 10.32 6.24 3.6 3.84 6.72 6.24 6.96 4.56 3.6 6.24 6.24 3.6 3.84 6.72 6.24 3.84 3.6 3.84 6.72 6.24 3.6 6.72 6.24 5.52 3.6 10.32 3.6 6.72 6.72 3.84 3.6 6.24 6.24 6.72 5.52 6.24 3.6 6.24 6.24 6.72 6.24 6.24 4.56]
+xshow
+289 503 moveto
+(cells to shift location and form tumors.)
+[6.24 6.24 3.6 3.6 5.52 3.6 3.84 6.96 3.6 5.52 6.72 3.6 4.32 3.84 3.6 3.6 6.96 6.24 6.24 3.84 3.6 6.96 6.72 3.6 6.24 6.72 6.96 3.6 4.32 6.96 4.56 10.32 3.6 3.84 6.72 10.32 6.96 4.56 5.52 3.6]
+xshow
+277 487 moveto
+(Others suggest that inexperienced surgeons)
+[10.08 3.84 6.72 6.24 4.56 5.52 3.6 5.52 6.72 6.72 6.72 6.24 5.52 3.84 3.6 3.84 6.72 6.24 3.84 3.6 3.6 6.72 6.24 6.72 6.96 6.24 4.56 3.6 6.24 6.72 6.24 6.24 6.96 3.6 5.52 6.72 4.32 6.72 6.24 6.96 6.72 5.52]
+xshow
+275 471 moveto
+(might inadvertently cause malignant cells to)
+[10.32 3.6 6.72 6.72 3.84 3.6 3.6 6.72 6.24 6.96 6.72 6.24 4.56 3.84 6.24 6.72 3.84 3.6 6.72 3.6 6.24 6.24 6.72 5.52 6.24 3.6 10.32 6.24 3.6 3.6 6.72 6.72 6.24 6.72 3.84 3.6 6.24 6.24 3.6 3.6 5.52 3.6 3.84 6.96]
+xshow
+304 455 moveto
+(implant as they extract the tumor.)
+[3.6 10.32 6.96 3.6 6.24 6.72 3.84 3.6 6.24 5.52 3.6 3.84 6.72 6.24 6.72 3.6 6.24 6.72 3.84 4.56 6.24 6.24 3.84 3.6 3.84 6.72 6.24 3.6 3.84 6.72 10.32 6.96 3.84 3.6]
+xshow
+397 439 moveto 0.0 -0.5 () alignedtext
+264 423 moveto
+(Young-Fadok said some research has found that)
+[8.64 6.96 6.72 6.72 6.72 4.56 7.44 6.24 6.96 6.96 6.96 3.6 5.52 6.24 3.6 6.96 3.6 5.52 6.96 10.32 6.24 3.6 4.56 6.24 5.52 6.24 6.24 4.56 6.24 6.72 3.6 6.72 6.24 5.52 3.6 4.32 6.96 6.72 6.72 6.96 3.6 3.84 6.72 6.24 3.84]
+xshow
+275 407 moveto
+(tumors occur in less than 1 percent of cases)
+[3.84 6.72 10.32 6.96 4.56 5.52 3.6 6.96 6.24 6.24 6.72 4.56 3.6 3.6 6.72 3.6 3.6 6.24 5.52 5.52 3.6 3.84 6.72 6.24 6.72 3.6 6.96 3.6 6.96 6.24 4.56 6.24 6.24 6.72 3.84 3.6 6.96 4.32 3.6 6.24 6.24 5.52 6.24 5.52]
+xshow
+282 391 moveto
+(and that when the laparoscopy is done by)
+[6.24 6.72 6.96 3.6 3.84 6.72 6.24 3.84 3.6 10.08 6.72 6.24 6.72 3.6 3.84 6.72 6.24 3.6 3.6 6.24 6.96 6.24 4.56 6.96 5.52 6.24 6.96 6.96 6.72 3.6 3.6 5.52 3.6 6.96 6.96 6.72 6.24 3.6 6.96 6.72]
+xshow
+275 375 moveto
+(experienced surgeons, the risk is essentially)
+[6.24 6.72 6.96 6.24 4.56 3.6 6.24 6.72 6.24 6.24 6.96 3.6 5.52 6.72 4.32 6.72 6.24 6.96 6.72 5.52 3.6 3.6 3.84 6.72 6.24 3.6 4.56 3.6 5.52 6.96 3.6 3.6 5.52 3.6 6.24 5.52 5.52 6.24 6.72 3.84 3.6 6.24 3.6 3.6 6.72]
+xshow
+383 359 moveto
+(zero.)
+[6.24 6.24 4.56 6.96 3.6]
+xshow
+397 343 moveto 0.0 -0.5 () alignedtext
+292 327 moveto
+(In the Turkish study, led by Dr. Ismail)
+[4.56 6.72 3.6 3.84 6.72 6.24 3.36 7.92 6.72 4.56 6.96 3.6 5.52 6.72 3.6 5.52 3.84 6.72 6.96 5.76 3.6 3.6 3.6 6.24 6.96 3.6 6.96 6.72 3.6 10.08 3.84 3.6 3.6 4.56 5.52 10.32 6.24 3.6 3.6]
+xshow
+268 311 moveto
+(Hamzaoglu of Istanbul University, researchers)
+[9.84 6.24 10.32 6.24 6.24 6.96 6.72 3.6 6.72 3.6 6.96 4.32 3.6 4.56 5.52 3.84 6.24 6.72 6.96 6.72 3.6 3.6 10.08 6.72 3.6 6.72 6.24 4.56 5.52 3.6 3.84 5.76 3.6 3.6 4.56 6.24 5.52 6.24 6.24 4.56 6.24 6.72 6.24 4.56 5.52]
+xshow
+293 295 moveto
+(injected the mice with air, made neck)
+[3.6 6.72 3.84 6.24 6.24 3.84 6.24 6.96 3.6 3.84 6.72 6.24 3.6 10.32 3.6 6.24 6.24 3.6 10.08 3.6 3.84 6.72 3.6 6.24 3.6 4.08 3.6 3.6 10.32 6.24 6.96 6.24 3.6 6.72 6.24 6.24 6.96]
+xshow
+271 279 moveto
+(incisions and injected the animals with tumor)
+[3.6 6.72 6.24 3.6 5.52 3.6 6.96 6.72 5.52 3.6 6.24 6.72 6.96 3.6 3.6 6.72 3.84 6.24 6.24 3.84 6.24 6.96 3.6 3.84 6.72 6.24 3.6 6.24 6.72 3.6 10.32 6.24 3.6 5.52 3.6 10.08 3.6 3.84 6.72 3.6 3.84 6.72 10.32 6.96 4.56]
+xshow
+280 263 moveto
+(cells. The researchers spread honey inside)
+[6.24 6.24 3.6 3.6 5.52 3.6 3.36 8.4 6.72 6.24 3.6 4.56 6.24 5.52 6.24 6.24 4.56 6.24 6.72 6.24 4.56 5.52 3.6 5.52 6.96 4.56 6.24 6.24 6.96 3.6 6.72 6.96 6.72 6.24 6.72 3.6 3.6 6.72 5.52 3.6 6.96 6.24]
+xshow
+271 247 moveto
+(the incisions in one group of mice before and)
+[3.84 6.72 6.24 3.6 3.6 6.72 6.24 3.6 5.52 3.6 6.96 6.72 5.52 3.6 3.6 6.72 3.6 6.96 6.72 6.24 3.6 6.72 4.56 6.96 6.72 6.96 3.6 6.96 4.32 3.6 10.32 3.6 6.24 6.24 3.6 6.96 6.24 4.32 6.96 4.56 6.24 3.6 6.24 6.72 6.96]
+xshow
+343 231 moveto
+(after the injections.)
+[6.24 4.32 3.84 6.24 4.56 3.6 3.84 6.72 6.24 3.6 3.6 6.72 3.84 6.24 6.24 3.84 3.6 6.96 6.72 5.52 3.6]
+xshow
+397 215 moveto 0.0 -0.5 () alignedtext
+269 199 moveto
+(All 30 mice without honey developed tumors,)
+[9.84 3.6 3.6 3.6 6.96 6.96 3.6 10.32 3.6 6.24 6.24 3.6 10.08 3.6 3.84 6.72 6.96 6.72 3.84 3.6 6.72 6.96 6.72 6.24 6.72 3.6 6.96 6.24 6.72 6.24 3.6 6.96 6.96 6.24 6.96 3.6 3.84 6.72 10.32 6.96 4.56 5.52 3.6]
+xshow
+299 183 moveto
+(compared with only eight of the 30)
+[6.24 6.96 10.32 6.96 6.24 4.56 6.24 6.96 3.6 10.08 3.6 3.84 6.72 3.6 6.96 6.72 3.6 6.72 3.6 6.24 3.6 6.72 6.72 3.84 3.6 6.96 4.32 3.6 3.84 6.72 6.24 3.6 6.96 6.96]
+xshow
+341 167 moveto
+(honey-treated mice.)
+[6.72 6.96 6.72 6.24 6.72 4.56 3.84 4.56 6.24 6.24 3.84 6.24 6.96 3.6 10.32 3.6 6.24 6.24 3.6]
+xshow
+397 151 moveto 0.0 -0.5 () alignedtext
+280 135 moveto
+(In a commentary accompanying the study,)
+[4.56 6.72 3.6 6.24 3.6 6.24 6.96 10.32 10.32 6.24 6.72 3.84 6.24 4.56 6.72 3.6 6.24 6.24 6.24 6.96 10.32 6.96 6.24 6.72 6.72 3.6 6.72 6.72 3.6 3.84 6.72 6.24 3.6 5.52 3.84 6.72 6.96 5.76 3.6]
+xshow
+273 119 moveto
+(Chicago plastic surgeon Dr. Thomas Mustoe)
+[9.36 6.72 3.6 6.24 6.24 6.72 6.96 3.6 6.96 3.6 6.24 5.52 3.84 3.6 6.24 3.6 5.52 6.72 4.32 6.72 6.24 6.96 6.72 3.6 10.08 3.84 3.6 3.36 8.4 6.72 6.96 10.32 6.24 5.52 3.6 12.48 6.72 5.52 3.84 6.96 6.24]
+xshow
+269 103 moveto
+(noted that other research has suggested honey)
+[6.72 6.96 3.84 6.24 6.96 3.6 3.84 6.72 6.24 3.84 3.6 6.96 3.84 6.72 6.24 4.56 3.6 4.56 6.24 5.52 6.24 6.24 4.56 6.24 6.72 3.6 6.72 6.24 5.52 3.6 5.52 6.72 6.72 6.72 6.24 5.52 3.84 6.24 6.96 3.6 6.72 6.96 6.72 6.24 6.72]
+xshow
+277 87 moveto
+(has anti-bacterial properties and may be an)
+[6.72 6.24 5.52 3.6 6.24 6.72 3.84 3.6 4.56 6.96 6.24 6.24 3.84 6.24 4.56 3.6 6.24 3.6 3.6 6.96 4.56 6.96 6.96 6.24 4.56 3.84 3.6 6.24 5.52 3.6 6.24 6.72 6.96 3.6 10.32 6.24 6.72 3.6 6.96 6.24 3.6 6.24 6.72]
+xshow
+316 71 moveto
+(effective treatment for burns.)
+[6.24 4.08 4.32 6.24 6.24 3.84 3.6 6.72 6.24 3.6 3.84 4.56 6.24 6.24 3.84 10.32 6.24 6.72 3.84 3.6 4.32 6.96 4.56 3.6 6.96 6.72 4.56 6.72 5.52 3.6]
+xshow
+397 55 moveto 0.0 -0.5 () alignedtext
+292 39 moveto
+(The study highlights another potential)
+[8.4 6.72 6.24 3.6 5.52 3.84 6.72 6.96 6.72 3.6 6.72 3.6 6.72 6.72 3.6 3.6 6.72 6.72 3.84 5.52 3.6 6.24 6.72 6.96 3.84 6.72 6.24 4.56 3.6 6.96 6.96 3.84 6.24 6.72 3.84 3.6 6.24 3.6]
+xshow
+347 23 moveto
+(use, Mustoe said.)
+[6.72 5.52 6.24 3.6 3.6 12.48 6.72 5.52 3.84 6.96 6.24 3.6 5.52 6.24 3.6 6.96 3.6]
+xshow
+383 7 moveto
+(abde)
+[6.24 6.96 6.96 6.24]
+xshow
+end grestore
+newpath 539 0 moveto
+539 4152 lineto
+stroke
+gsave 10 dict begin
+574 3455 moveto 9.0 -0.5 (b) alignedtext
+end grestore
+newpath 539 2768 moveto
+609 2768 lineto
+stroke
+gsave 10 dict begin
+550 2071 moveto 7.0 -0.5 (c) alignedtext
+end grestore
+newpath 562 1384 moveto
+562 2768 lineto
+stroke
+gsave 10 dict begin
+574 2071 moveto 8.0 -0.5 (d) alignedtext
+end grestore
+newpath 586 1384 moveto
+586 2768 lineto
+stroke
+gsave 10 dict begin
+597 2071 moveto 7.0 -0.5 (e) alignedtext
+end grestore
+newpath 539 1384 moveto
+609 1384 lineto
+stroke
+gsave 10 dict begin
+574 687 moveto 5.0 -0.5 (f) alignedtext
+end grestore
+newpath 609 0 moveto
+609 4152 lineto
+stroke
+gsave 10 dict begin
+620 2071 moveto 7.0 -0.5 (g) alignedtext
+end grestore
+newpath 632 0 moveto
+632 4152 lineto
+stroke
+gsave 10 dict begin
+644 2071 moveto 8.0 -0.5 (h) alignedtext
+end grestore
+end grestore
+
+%	struct1 -> struct3
+newpath 342 4188 moveto
+422 4150 481 4219 539 4152 curveto
+584 4099 587 3360 583 2778 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 587 2778 moveto
+583 2768 lineto
+580 2778 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 587 2778 moveto
+583 2768 lineto
+580 2778 lineto
+closepath
+stroke
+end grestore
+endpage
+showpage
+grestore
+%%PageTrailer
+%%EndPage: 1
+%%Trailer
+%%Pages: 1
+end
+restore
+%%EOF

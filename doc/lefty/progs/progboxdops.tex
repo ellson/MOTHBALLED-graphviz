@@ -1,0 +1,11 @@
+\begin{verbatim}
+dops = function () {
+    local s;
+    s = ['x' = 8 * 300; 'y' = 10.5 * 300;];
+    canvas = createwidget (-1, ['type' = 'ps'; 'size' = s;]);
+    setwidgetattr (canvas, ['window' = wrect;]);
+    redraw (canvas);
+    destroywidget (canvas);
+    canvas = defcanvas;
+};
+\end{verbatim}

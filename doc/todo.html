@@ -1,0 +1,78 @@
+<html>
+<head>
+<title>graphviz todo list 27-Aug-2004</title>
+</head>
+<body bgcolor=#ffffff>
+
+<h1>graphviz todo list 27-August-2004</h1>
+
+Please <A HREF="mailto:north@graphviz.org">
+contact us</A> if you'd like to help.
+<P>
+The 4 categories give a rough time as to when a task should be done, 
+and reflect an assessment of the task's ease multiplied by its importance. 
+Thus, multiple edges is extremely important but not easy, so it falls into 
+category 2. The following denote owners:<br>
+ERG=<A HREF=mailto:erg@graphviz.org>Emden Gansner</A><br>
+JCE=<A HREF=mailto:ellson@graphviz.org>John Ellson</A><br>
+SCN=<A HREF=mailto:ellson@graphviz.org>Stephen North</A><br>
+
+<hr align=left width=66>
+<H2>Category 0</H2>
+<pre>
+SCN/ERG - Fix cluster and port models in dot
+JCE - Write HTML page on using UTF
+JCE - Fix shape model so that parallelogram angle is fixed for varying text lengths; add new parallelogram shape
+JCE - Revise GV_FILE_PATH to work as directory list; remove loose ends
+SCN - Review new open source license - ongoing
+JCE - Allow edges as line segments and polylines
+<hr align=left width=66>
+<H2>Category 1</H2>
+</pre>
+<pre>
+JCE - Create graph editor using Cairo + scripting language;
+      deprecate use of lefty.
+ERG - Modify John's parallel edges to work with multiedges
+SCN - Modify libgraph to integrate desirable libagraph features
+SCN - Check about using old orthogonal routing code
+</pre>
+<hr align=left width=66>
+<H2>Category 2</H2>
+<pre>
+JCE/SCN - Move layouts to floating point
+ERG - Constrained optimization for node overlap removal
+SCN - Fix edge routing and loop bugs
+ERG/JCE - New text labels with font elements &lt;FONT&gt;, &lt;B&gt;, &lt;I&gt;, &lt;TT&gt;, etc.
+JCE - SVG grammar to specify node and arrow shapes
+JCE - Extend codegen model for line thickness and styles, filled Beziers
+Multiple edges
+ERG - Support for Latin-* and Unicode in postscript
+</pre>
+<hr align=left width=66>
+<H2>Category 3</H2>
+<pre>
+Generic label placement, with and without modifying the graph layout
+Modifications to Voronoi node overlap adjustment
+ - eliminate the nonlinear adjustment
+ - use convex hull or other boundary rather than bounding box
+Node overlap adjustment strategies sensitive to edges
+Make drivers dynamic
+Edge routing variations: line segments, orthogonal, polyline, splines
+Generalized port/spline routing
+Orthogonal layouts
+User-defined nodes in all code generators
+New dot techniques: 
+  symmetrize layouts
+  speed up edge crossing counting
+  Built-in support for better aspect ratios
+  Ulrik's improvements with network simplex
+  Better aspect ratio
+Spline router improvement (Gordon's improvements, alpha adjustments, less
+  inflection points)
+Graph language improvements
+  local name spaces
+  subclassing
+  graph databases
+</pre>
+</body>
+</html>

@@ -1,0 +1,13 @@
+*.la
+*.lo
+.deps
+.libs
+Makefile
+Makefile.in
+exop.h
+exparse.c
+exparse.h
+y.output
+y.tab.c
+y.tab.h
+*.pdf

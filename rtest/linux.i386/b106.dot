@@ -1,0 +1,565 @@
+digraph inheritance {
+	node [label="\N"];
+	graph [bb="0,0,6289,3809"];
+	Node1295 [label=cn_mmmcdeal, shape=box, fontsize=10, height="0.26", width="1.14", fontname=Helvetica, color=black, style=filled, fontcolor=white, pos="5234,383"];
+	Node1296 [label=cn_bulkdeal, shape=box, fontsize=10, height="0.26", width="0.97", fontname=Helvetica, color=black, URL="$classcn__bulkdeal.html", pos="5234,451"];
+	Node1297 [label=cn_edit, shape=box, fontsize=10, height="0.26", width="0.67", fontname=Helvetica, color=black, URL="$classcn__edit.html", pos="4337,539"];
+	Node1298 [label=cn_disp, shape=box, fontsize=10, height="0.26", width="0.69", fontname=Helvetica, color=black, URL="$classcn__disp.html", pos="3886,652"];
+	Node1299 [label=cn_data, shape=box, fontsize=10, height="0.26", width="0.72", fontname=Helvetica, color=black, URL="$classcn__data.html", pos="3756,875"];
+	Node1300 [label=cn_global, shape=box, fontsize=10, height="0.26", width="0.81", fontname=Helvetica, color=black, URL="$classcn__global.html", pos="4244,1511"];
+	Node1301 [label=cn_base, shape=box, fontsize=10, height="0.26", width="0.75", fontname=Helvetica, color=black, URL="$classcn__base.html", pos="4628,2990"];
+	Node1302 [label="unsigned long", shape=box, fontsize=10, height="0.26", width="1.08", fontname=Helvetica, color=grey75, pos="2085,3473"];
+	Node1303 [label=strng, shape=box, fontsize=10, height="0.26", width="0.53", fontname=Helvetica, color=black, URL="$classstrng.html", pos="5690,2990"];
+	Node1304 [label=strdf, shape=box, fontsize=10, height="0.26", width="0.50", fontname=Helvetica, color=black, URL="$classstrdf.html", pos="4640,3721"];
+	Node1305 [label=friend, shape=box, fontsize=10, height="0.26", width="0.58", fontname=Helvetica, color=grey75, pos="5766,3799"];
+	Node1306 [label="char *", shape=box, fontsize=10, height="0.26", width="0.58", fontname=Helvetica, color=grey75, pos="1372,3473"];
+	Node1307 [label=cn_global_data, shape=box, fontsize=10, height="0.26", width="1.17", fontname=Helvetica, color=grey75, pos="4102,2990"];
+	Node1308 [label=int, shape=box, fontsize=10, height="0.26", width="0.39", fontname=Helvetica, color=grey75, pos="1556,3575"];
+	Node1309 [label=bool, shape=box, fontsize=10, height="0.26", width="0.47", fontname=Helvetica, color=grey75, pos="2737,3473"];
+	Node1310 [label=cn_global_data_charge, shape=box, fontsize=10, height="0.26", width="1.67", fontname=Helvetica, color=grey75, pos="4222,2990"];
+	Node1311 [label=cn_global_data_multiple, shape=box, fontsize=10, height="0.26", width="1.72", fontname=Helvetica, color=grey75, pos="4362,2990"];
+	Node1312 [label=srb, shape=box, fontsize=10, height="0.26", width="0.42", fontname=Helvetica, color=black, URL="$classsrb.html", pos="1556,2990"];
+	Node1313 [label="char **", shape=box, fontsize=10, height="0.26", width="0.64", fontname=Helvetica, color=grey75, pos="1268,3473"];
+	Node1314 [label="int *", shape=box, fontsize=10, height="0.26", width="0.47", fontname=Helvetica, color=grey75, pos="1737,3473"];
+	Node1315 [label=sdb, shape=box, fontsize=10, height="0.26", width="0.44", fontname=Helvetica, color=black, URL="$classsdb.html", pos="1420,652"];
+	Node1316 [label=sdb_ident, shape=box, fontsize=10, height="0.26", width="0.83", fontname=Helvetica, color=black, URL="$classsdb__ident.html", pos="2110,875"];
+	Node1317 [label="const char *", shape=box, fontsize=10, height="0.26", width="0.97", fontname=Helvetica, color=grey75, pos="1356,1511"];
+	Node1318 [label=fldndx, shape=box, fontsize=10, height="0.26", width="0.58", fontname=Helvetica, color=grey75, pos="2041,875"];
+	Node1319 [label=sio, shape=box, fontsize=10, height="0.26", width="0.39", fontname=Helvetica, color=black, URL="$classsio.html", pos="848,875"];
+	Node1320 [label=ffile, shape=box, fontsize=10, height="0.26", width="0.44", fontname=Helvetica, color=black, URL="$classffile.html", pos="717,1511"];
+	Node1321 [label=hfile, shape=box, fontsize=10, height="0.26", width="0.47", fontname=Helvetica, color=black, URL="$classhfile.html", pos="443,2990"];
+	Node1322 [label=critsect, shape=box, fontsize=10, height="0.26", width="0.67", fontname=Helvetica, color=black, URL="$classcritsect.html", pos="207,3473"];
+	Node1323 [label="void *", shape=box, fontsize=10, height="0.26", width="0.58", fontname=Helvetica, color=grey75, pos="199,3575"];
+	Node1324 [label=fname, shape=box, fontsize=10, height="0.26", width="0.61", fontname=Helvetica, color=black, URL="$classfname.html", pos="143,3473"];
+	Node1325 [label="strsz< FILENAME_MAX >", shape=box, fontsize=10, height="0.26", width="1.83", fontname=Helvetica, color=black, URL="$classstrsz.html", pos="94,3575"];
+	Node1326 [label=umemory, shape=box, fontsize=10, height="0.26", width="0.81", fontname=Helvetica, color=grey75, pos="89,3721"];
+	Node1327 [label=size_t, shape=box, fontsize=10, height="0.26", width="0.58", fontname=Helvetica, color=grey75, pos="181,3721"];
+	Node1328 [label="strsz< SIZE >", shape=box, fontsize=10, height="0.26", width="1.08", fontname=Helvetica, color=black, URL="$classstrsz.html", pos="220,3653"];
+	Node1329 [label=unsigned, shape=box, fontsize=10, height="0.26", width="0.78", fontname=Helvetica, color=grey75, pos="386,3473"];
+	Node1330 [label="FILE *", shape=box, fontsize=10, height="0.26", width="0.61", fontname=Helvetica, color=grey75, pos="828,2990"];
+	Node1331 [label=def_extra_setup, shape=box, fontsize=10, height="0.26", width="1.22", fontname=Helvetica, color=grey75, pos="1626,875"];
+	Node1332 [label=audit_file, shape=box, fontsize=10, height="0.26", width="0.78", fontname=Helvetica, color=black, URL="$classaudit__file.html", pos="1420,539"];
+	Node1333 [label=audit_lock, shape=box, fontsize=10, height="0.26", width="0.86", fontname=Helvetica, color=black, URL="$classaudit__lock.html", pos="1800,736"];
+	Node1334 [label=long, shape=box, fontsize=10, height="0.26", width="0.47", fontname=Helvetica, color=grey75, pos="1988,1511"];
+	Node1335 [label=audit_head, shape=box, fontsize=10, height="0.26", width="0.92", fontname=Helvetica, color=black, URL="$classaudit__head.html", pos="3047,875"];
+	Node1336 [label=char, shape=box, fontsize=10, height="0.26", width="0.50", fontname=Helvetica, color=grey75, pos="3693,3473"];
+	Node1337 [label=short, shape=box, fontsize=10, height="0.26", width="0.53", fontname=Helvetica, color=grey75, pos="2978,1511"];
+	Node1338 [label=cdate, shape=box, fontsize=10, height="0.26", width="0.56", fontname=Helvetica, color=grey75, pos="5384,1511"];
+	Node1339 [label=record_buf, shape=box, fontsize=10, height="0.26", width="0.89", fontname=Helvetica, color=black, URL="$classrecord__buf.html", pos="1629,1511"];
+	Node1340 [label=record_data, shape=box, fontsize=10, height="0.26", width="0.97", fontname=Helvetica, color=black, URL="$classrecord__data.html", pos="1627,2990"];
+	Node1341 [label=field_def, shape=box, fontsize=10, height="0.26", width="0.75", fontname=Helvetica, color=black, URL="$classfield__def.html", pos="2308,539"];
+	Node1342 [label=def_extra_unsetup, shape=box, fontsize=10, height="0.26", width="1.36", fontname=Helvetica, color=grey75, pos="1737,875"];
+	Node1343 [label="unsigned long *", shape=box, fontsize=10, height="0.26", width="1.17", fontname=Helvetica, color=grey75, pos="1846,875"];
+	Node1344 [label=field_set, shape=box, fontsize=10, height="0.26", width="0.75", fontname=Helvetica, color=black, URL="$classfield__set.html", pos="1002,875"];
+	Node1345 [label=fldval, shape=box, fontsize=10, height="0.26", width="0.56", fontname=Helvetica, color=grey75, pos="1054,1511"];
+	Node1346 [label="fldndx *", shape=box, fontsize=10, height="0.26", width="0.69", fontname=Helvetica, color=grey75, pos="977,1511"];
+	Node1347 [label=layout, shape=box, fontsize=10, height="0.26", width="0.58", fontname=Helvetica, color=black, URL="$classlayout.html", pos="1558,1511"];
+	Node1348 [label=layout_elem, shape=box, fontsize=10, height="0.26", width="0.97", fontname=Helvetica, color=black, URL="$classlayout__elem.html", pos="657,3473"];
+	Node1349 [label=layout_type, shape=box, fontsize=10, height="0.26", width="0.92", fontname=Helvetica, color=grey75, pos="561,3575"];
+	Node1350 [label=udata, shape=box, fontsize=10, height="0.26", width="0.58", fontname=Helvetica, color=grey75, pos="633,3575"];
+	Node1351 [label=layout_fs, shape=box, fontsize=10, height="0.26", width="0.78", fontname=Helvetica, color=grey75, pos="700,3575"];
+	Node1352 [label=label_t, shape=box, fontsize=10, height="0.26", width="0.64", fontname=Helvetica, color=black, URL="$classlabel__t.html", pos="1099,875"];
+	Node1353 [label=fdb_equation, shape=box, fontsize=10, height="0.26", width="1.03", fontname=Helvetica, color=black, URL="$classfdb__equation.html", pos="1140,1511"];
+	Node1354 [label="var_list< fdb_elem >", shape=box, fontsize=10, height="0.26", width="1.47", fontname=Helvetica, color=black, URL="$classvar__list.html", pos="659,2990"];
+	Node1355 [label=fdb_elem, shape=box, fontsize=10, height="0.26", width="0.81", fontname=Helvetica, color=black, URL="$classfdb__elem.html", pos="461,3473"];
+	Node1356 [label=fdb_func, shape=box, fontsize=10, height="0.26", width="0.75", fontname=Helvetica, color=grey75, pos="437,3575"];
+	Node1357 [label=fdb_elem_data, shape=box, fontsize=10, height="0.26", width="1.14", fontname=Helvetica, color=grey75, pos="279,3575"];
+	Node1358 [label=fdb_eval, shape=box, fontsize=10, height="0.26", width="0.75", fontname=Helvetica, color=grey75, pos="365,3575"];
+	Node1359 [label="var_list< T >", shape=box, fontsize=10, height="0.26", width="1.00", fontname=Helvetica, color=black, URL="$classvar__list.html", pos="567,3473"];
+	Node1360 [label=T, shape=box, fontsize=10, height="0.26", width="0.39", fontname=Helvetica, color=grey75, pos="496,3575"];
+	Node1361 [label=fdb, shape=box, fontsize=10, height="0.26", width="0.42", fontname=Helvetica, color=black, URL="$classfdb.html", pos="2720,451"];
+	Node1362 [label=fdb_filt, shape=box, fontsize=10, height="0.26", width="0.64", fontname=Helvetica, color=black, URL="$classfdb__filt.html", pos="2193,539"];
+	Node1363 [label=fdb_type, shape=box, fontsize=10, height="0.26", width="0.75", fontname=Helvetica, color=grey75, pos="2668,539"];
+	Node1364 [label=slookup, shape=box, fontsize=10, height="0.26", width="0.69", fontname=Helvetica, color=black, URL="$classslookup.html", pos="1152,2990"];
+	Node1365 [label=e_accrued, shape=box, fontsize=10, height="0.26", width="0.86", fontname=Helvetica, color=grey75, pos="3884,1511"];
+	Node1366 [label=e_mt, shape=box, fontsize=10, height="0.26", width="0.53", fontname=Helvetica, color=grey75, pos="3414,1511"];
+	Node1367 [label=cn_stamp_scale, shape=box, fontsize=10, height="0.26", width="1.22", fontname=Helvetica, color=black, URL="$classcn__stamp__scale.html", pos="4903,1511"];
+	Node1368 [label=double, shape=box, fontsize=10, height="0.26", width="0.64", fontname=Helvetica, color=grey75, pos="5455,3473"];
+	Node1369 [label=chrgdes, shape=box, fontsize=10, height="0.26", width="0.72", fontname=Helvetica, color=grey75, pos="4757,2990"];
+	Node1370 [label=cur_data, shape=box, fontsize=10, height="0.26", width="0.78", fontname=Helvetica, color=black, URL="$classcur__data.html", pos="5057,2990"];
+	Node1371 [label="double *", shape=box, fontsize=10, height="0.26", width="0.72", fontname=Helvetica, color=grey75, pos="5122,3473"];
+	Node1372 [label=e_disp_cd, shape=box, fontsize=10, height="0.26", width="0.86", fontname=Helvetica, color=grey75, pos="3535,1511"];
+	Node1373 [label=e_dls_cc, shape=box, fontsize=10, height="0.26", width="0.78", fontname=Helvetica, color=grey75, pos="3622,1511"];
+	Node1374 [label=money, shape=box, fontsize=10, height="0.26", width="0.64", fontname=Helvetica, color=black, URL="$classmoney.html", pos="5808,1511"];
+	Node1375 [label=e_tt, shape=box, fontsize=10, height="0.26", width="0.44", fontname=Helvetica, color=grey75, pos="3745,1511"];
+	Node1376 [label=fdate, shape=box, fontsize=10, height="0.26", width="0.53", fontname=Helvetica, color=grey75, pos="3816,1511"];
+	Node1377 [label=e_prin, shape=box, fontsize=10, height="0.26", width="0.61", fontname=Helvetica, color=grey75, pos="5127,652"];
+	Node1378 [label=cn_nw_bgn, shape=box, fontsize=10, height="0.26", width="0.94", fontname=Helvetica, color=black, URL="$classcn__nw__bgn.html", pos="3184,2990"];
+	Node1379 [label="bool *", shape=box, fontsize=10, height="0.26", width="0.58", fontname=Helvetica, color=grey75, pos="4307,652"];
+	Node1380 [label=e_pm, shape=box, fontsize=10, height="0.26", width="0.58", fontname=Helvetica, color=grey75, pos="4367,652"];
+	Node1381 [label=hold_txn_id, shape=box, fontsize=10, height="0.26", width="0.94", fontname=Helvetica, color=black, URL="$classhold__txn__id.html", pos="2873,2990"];
+	Node1382 [label=e_sc, shape=box, fontsize=10, height="0.26", width="0.53", fontname=Helvetica, color=grey75, pos="4485,652"];
+	Node1383 [label=e_pc, shape=box, fontsize=10, height="0.26", width="0.53", fontname=Helvetica, color=grey75, pos="4621,652"];
+	Node1384 [label=e_pt, shape=box, fontsize=10, height="0.26", width="0.50", fontname=Helvetica, color=grey75, pos="4738,652"];
+	Node1385 [label=e_tea, shape=box, fontsize=10, height="0.26", width="0.56", fontname=Helvetica, color=grey75, pos="4218,652"];
+	Node1386 [label=bd_header, shape=box, fontsize=10, height="0.26", width="0.89", fontname=Helvetica, color=black, URL="$classbd__header.html", pos="5165,875"];
+	Node1387 [label=mc_sup_info_add_deal_data, shape=box, fontsize=10, height="0.26", width="2.00", fontname=Helvetica, color=black, URL="$classmc__sup__info__add__deal__data.html", pos="3830,2990"];
+	Node1388 [label=mc_cli_charge_totals_data, shape=box, fontsize=10, height="0.26", width="1.86", fontname=Helvetica, color=black, URL="$classmc__cli__charge__totals__data.html", pos="5549,601"];
+	Node1389 [label="var_list< mc_cli_line >", shape=box, fontsize=10, height="0.26", width="1.61", fontname=Helvetica, color=black, URL="$classvar__list.html", pos="1245,179"];
+	Node1390 [label=mc_cli_line, shape=box, fontsize=10, height="0.26", width="0.92", fontname=Helvetica, color=black, URL="$classmc__cli__line.html", pos="2078,247"];
+	Node1391 [label=mc_common_details, shape=box, fontsize=10, height="0.26", width="1.50", fontname=Helvetica, color=black, URL="$classmc__common__details.html", pos="3772,315"];
+	Node1392 [label=mc_fixed_internal_flags, shape=box, fontsize=10, height="0.26", width="1.67", fontname=Helvetica, color=black, URL="$classmc__fixed__internal__flags.html", pos="2520,2245"];
+	Node1393 [label=mc_add_deal_data, shape=box, fontsize=10, height="0.26", width="1.39", fontname=Helvetica, color=black, URL="$classmc__add__deal__data.html", pos="4119,1179"];
+	Node1394 [label="var_list< mc_mkt_line >", shape=box, fontsize=10, height="0.26", width="1.69", fontname=Helvetica, color=black, URL="$classvar__list.html", pos="5527,179"];
+	Node1395 [label=mc_mkt_line, shape=box, fontsize=10, height="0.26", width="1.00", fontname=Helvetica, color=black, URL="$classmc__mkt__line.html", pos="4784,247"];
+	Node1396 [label=mc_screen_types, shape=box, fontsize=10, height="0.26", width="1.31", fontname=Helvetica, color=grey75, pos="5675,451"];
+	Node1397 [label=mc_val_import_flags, shape=box, fontsize=10, height="0.26", width="1.50", fontname=Helvetica, color=black, URL="$classmc__val__import__flags.html", pos="5177,489"];
+	Node1398 [label=mc_calculated_vals, shape=box, fontsize=10, height="0.26", width="1.42", fontname=Helvetica, color=black, URL="$classmc__calculated__vals.html", pos="5577,875"];
+	Node1296 -> Node1295 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,5234,441 5234,431 5234,418 5234,402 5234,393"];
+	Node1297 -> Node1296 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,4361,537 4371,536 4528,521 5174,462 5185,461 5189,460 5194,459 5199,458"];
+	Node1298 -> Node1297 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,3911,650 3921,649 3965,644 4037,634 4061,623 4088,610 4084,591 4109,579 4145,561 4262,547 4313,541"];
+	Node1299 -> Node1298 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,3762,865 3767,856 3793,812 3860,696 3880,662"];
+	Node1300 -> Node1299 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,4244,1501 4244,1491 4247,1402 4252,1038 4178,959 4124,900 3866,881 3782,876"];
+	Node1301 -> Node1300 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=db, pos="s,4622,2980 4617,2972 4602,2948 4579,2906 4567,2867 4406,2333 4698,2098 4407,1623 4375,1570 4308,1536 4270,1521", lp="4576,2245"];
+	Node1302 -> Node1300 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=bar_Record, pos="s,2124,3471 2134,3470 2223,3465 2403,3451 2424,3433 2534,3335 2389,3207 2500,3113 2540,3078 2697,3129 2736,3095 2808,3031 2705,2\
+946 2777,2885 2825,2844 3295,2910 3340,2867 3540,2674 3227,1814 3426,1623 3436,1613 3900,1609 3913,1609 3918,1608 4088,1606 4092\
+,1605 4152,1588 4210,1541 4233,1521", lp="2804,2990"];
+	Node1303 -> Node1300 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=bar_Ref, pos="s,5671,2987 5661,2985 5650,2984 5639,2981 5628,2979 5463,2943 5426,2911 5260,2885 5229,2880 5006,2888 4985,2867 4888,2768 5020,1\
+726 4929,1623 4918,1610 4403,1534 4273,1515", lp="5005,2245"];
+	Node1304 -> Node1303 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,4658,3721 4668,3721 4817,3717 5506,3692 5646,3547 5725,3465 5696,3067 5691,3000"];
+	Node1305 -> Node1304 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="strng\nfname", pos="s,5745,3798 5735,3797 5567,3786 4787,3731 4658,3722", lp="5383,3760"];
+	Node1306 -> Node1303 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=mem, pos="s,1393,3472 1403,3471 1403,3471 1403,3471 1403,3471 1462,3464 1476,3455 1534,3451 1667,3440 3788,3457 3918,3433 4310,3359 4365,3\
+192 4755,3113 4975,3068 5037,3125 5260,3095 5421,3073 5611,3015 5671,2996", lp="4767,3273"];
+	Node1305 -> Node1303 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=strdf, pos="s,5779,3789 5787,3782 5803,3768 5822,3746 5822,3721 5822,3721 5822,3721 5822,3473 5822,3297 5752,3265 5711,3095 5702,3060 5695,3\
+018 5692,3000", lp="5832,3614"];
+	Node1307 -> Node1300 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="bar_ProdProvRef\nbar_ContComm\nbar_CommValue\nbar_SetsBargain\nbar_Barg3\nbar_SendTal\nbar_StampValue\nbar_ProdProvComm\nbar_Bar\
+g4\nbar_Notedate\nbar_VAT\nbar_Notified\nbar_DRSImported\nbar_Charge\nbar_TranPrn\nbar_ImpVals\nbar_ImpCust\nbar_DaysI\nbar_SFla\
+g\nbar_Client\nbar_Acclet\nbar_Broker\nbar_TotalValue\nbar_Remarks\nbar_Location\nbar_CrestStamp\nbar_ContConsidCcy\nbar_ContCom\
+mCcy\nbar_ModifiedStatus\nbar_CashDocs\nbar_NextDate\nbar_AverageRec\nbar_AccountingPeriod\nbar_Currency\nbar_TxnRepMa\nbar_Thir\
+dParty\nbar_NextRec\nbar_Message\nbar_ContConsid\nbar_NotePrn\nbar_VatValue\nbar_ThirdPartyCharge\nbar_TFormNote\nbar_StockCommS\
+cale\nbar_Nominee\nbar_EuroPTM\nbar_Type\nbar_ImpMon\nbar_Stamp\nbar_PriType\nbar_VatType\nbar_Category\nbar_Parent\nbar_ExportT\
+oOMR\nbar_DRSImport\nbar_Interest\nbar_Stock\nbar_PtmValue\nbar_Exchange\nbar_AddChargeCurrency\nbar_PTM\nbar_Price\nbar_UTI\nba\
+r_IrishPTM\nbar_Comment\nbar_MultiBargain\nbar_RSBMktMaker\nbar_CrestClearanceAcc\nbar_ClientCommScale\nbar_BulkRec\nbar_Updated\
+By\nbar_Refnum\nbar_VatCurrency\nbar_Link\nbar_AddChargeValue\nbar_StampToGBPExrate\nbar_Riskless\nbar_PtmFlag\nbar_OmsReference\
+\nbar_ExecutiveCode\nbar_Duedate\nbar_ThirdPartyPercent\nbar_StockAddnScale\nbar_PtmCurrency\nbar_Order\nbar_Fund\nbar_CopyToRSB\
+\nbar_CommCurrency\nbar_ClientAddnScale\nbar_Agent\nbar_TotalCurrency\nbar_PrevDate\nbar_OneBargOrd\nbar_MktConsideration\nbar_C\
+liToGBPExrate\nbar_Aggregate\nbar_Total\nbar_PostAcc\nbar_DealCode\nbar_SundryTxnInfo\nbar_StampCurrency\nbar_CustodyOverRide\nb\
+ar_EntryDate\nbar_Barg1\nbar_NoteReq\nbar_Time\nbar_PrevRec\nbar_OasysAffirmed\nbar_MktToGBPExrate\nbar_OperatorID\nbar_Barg2\nb\
+ar_Comm\nbar_Amount", pos="s,4100,2980 4097,2970 4089,2947 4074,2908 4046,2885 4025,2867 4003,2889 3986,2867 3945,2811 3940,1673 3986,1623 4013,1593 4126,1\
+610 4165,1607 4169,1606 4191,1606 4193,1605 4209,1595 4231,1543 4240,1521", lp="4045,2245"];
+	Node1308 -> Node1300 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="bar_index\nbar_Deals\nbar_Hits", pos="s,1570,3575 1580,3575 1818,3574 3704,3563 3952,3547 4162,3533 4751,3590 4890,3433 4901,3419 4902,3125 4890,3113 4867,3088 4622,3\
+110 4592,3095 4489,3039 4521,2963 4433,2885 4422,2874 4411,2880 4403,2867 4369,2807 4414,1685 4383,1623 4370,1595 4292,1542 4259\
+,1521", lp="4921,3273"];
+	Node1309 -> Node1300 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=bought, pos="s,2754,3472 2764,3472 2783,3471 2810,3470 2833,3469 2860,3467 3286,3451 3304,3433 3355,3382 3279,3168 3324,3113 3344,3088 3367,3\
+112 3392,3095 3496,3024 3515,2984 3557,2867 3605,2736 3545,1719 3644,1623 3653,1615 4035,1607 4046,1607 4053,1606 4096,1606 4101\
+,1605 4113,1601 4183,1564 4211,1543 4220,1536 4229,1527 4235,1521", lp="3567,2990"];
+	Node1310 -> Node1300 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="bar_ChargePercent\nbar_ChargeCurrency\nbar_ChargeAccount\nbar_ChargeText\nbar_ChargeCurValue\nbar_ChargeValue", pos="s,4215,2980 4209,2972 4190,2943 4152,2889 4146,2867 4109,2734 4065,1734 4146,1623 4162,1602 4182,1622 4201,1605 4228,1582 4239,1\
+540 4242,1521", lp="4196,2245"];
+	Node1311 -> Node1300 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="bar_CopyToRSBs\nbar_RSBMktMakers\nbar_Amounts\nbar_UTIs\nbar_Prices\nbar_MktConsiderations\nbar_Refnums\nbar_Barg4s\nbar_Interes\
+ts\nbar_Barg3s\nbar_Barg2s\nbar_Brokers\nbar_Times\nbar_Barg1s\nbar_SundryTxnInfos", pos="s,4356,2980 4350,2971 4337,2950 4314,2914 4291,2885 4285,2876 4280,2876 4276,2867 4251,2800 4245,1638 4244,1521", lp="4331,2245"];
+	Node1312 -> Node1300 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="agent_rb\nfund_rb\norder_rb\nclient_rb\npartner_rb\nstock_rb", pos="s,1555,2980 1555,2970 1555,2946 1558,2905 1583,2885 1627,2850 2547,2903 2589,2867 3011,2499 2360,1989 2782,1623 2796,1611 4062,1\
+609 4079,1605 4088,1603 4188,1544 4228,1521", lp="2806,2245"];
+	Node1313 -> Node1312 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=buffer, pos="s,1272,3463 1275,3454 1278,3447 1280,3440 1282,3433 1322,3292 1269,3231 1352,3113 1402,3043 1503,3006 1541,2994", lp="1365,3273"];
+	Node1302 -> Node1312 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=buffer_record, pos="s,2046,3472 2036,3471 2035,3471 2035,3471 2034,3471 1955,3463 1808,3453 1786,3433 1680,3333 1823,3211 1716,3113 1673,3072 1629,3\
+134 1584,3095 1582,3093 1565,3025 1558,3000", lp="1822,3273"];
+	Node1314 -> Node1312 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=field_option, pos="s,1720,3470 1710,3468 1678,3460 1629,3447 1616,3433 1610,3424 1565,3064 1557,3000", lp="1646,3273"];
+	Node1308 -> Node1312 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=option, pos="s,1556,3565 1556,3555 1556,3461 1556,3066 1556,3000", lp="1570,3473"];
+	Node1309 -> Node1312 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=last_read, pos="s,2720,3472 2710,3472 2612,3468 2283,3452 2240,3433 2062,3348 2112,3196 1933,3113 1886,3091 1752,3099 1700,3097 1697,3096 1594,3\
+096 1591,3095 1583,3088 1567,3012 1562,3002 1562,3001 1561,3001 1561,3000", lp="2271,3273"];
+	Node1315 -> Node1312 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=db, pos="s,1404,654 1394,656 1368,660 1351,656 1333,681 1266,775 1252,854 1329,941 1354,968 1469,932 1493,959 1503,969 1552,2828 1556,298\
+0", lp="1518,1179"];
+	Node1316 -> Node1315 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,2111,865 2112,855 2116,815 2116,724 2063,681 2037,658 1786,665 1751,663 1727,660 1722,659 1697,657 1691,656 1690,656 1683,656 \
+1669,655 1666,654 1651,654 1609,652 1482,652 1436,652"];
+	Node1303 -> Node1316 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=file_prefix, pos="s,5675,2980 5666,2975 5626,2949 5547,2896 5533,2867 5501,2805 5547,1672 5499,1623 5472,1595 5186,1628 5157,1605 5088,1550 5168,1\
+473 5102,1417 5050,1373 4999,1446 4950,1399 4807,1262 5028,1087 4878,959 4853,938 2591,943 2558,941 2400,928 2212,894 2140,881", lp="5182,1511"];
+	Node1317 -> Node1316 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=ident, pos="s,1358,1501 1360,1491 1366,1469 1379,1433 1405,1417 1454,1385 1620,1432 1667,1399 1843,1276 1691,1083 1865,959 1903,932 2033,965\
+ 2071,941 2092,927 2103,900 2107,885", lp="1876,1179"];
+	Node1302 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=max_record, pos="s,2046,3465 2036,3463 2006,3456 1973,3445 1963,3433 1919,3377 1937,3184 1929,3113 1928,3098 1711,969 1700,959 1669,927 1535,970 \
+1502,941 1458,900 1497,865 1477,809 1475,800 1471,799 1468,791 1453,743 1470,725 1447,681 1444,674 1438,667 1432,662", lp="1802,1511"];
+	Node1313 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=buffer, pos="s,1268,3463 1268,3453 1265,3260 1248,1696 1310,1623 1337,1591 1375,1636 1400,1605 1453,1540 1403,1500 1400,1417 1399,1366 1404,9\
+97 1370,959 1342,926 1302,974 1274,941 1238,896 1242,726 1277,681 1292,662 1358,659 1381,656 1389,655 1397,654 1404,653", lp="1439,1511"];
+	Node1318 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=record_access_field, pos="s,2033,865 2026,857 2013,842 1992,821 1968,809 1933,791 1911,816 1881,791 1842,757 1881,713 1840,681 1823,667 1667,657 1645,655 \
+1639,654 1637,654 1630,654 1593,652 1478,652 1436,652", lp="1932,736"];
+	Node1319 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=rb, pos="s,852,865 856,856 874,815 922,722 994,681 1054,646 1232,655 1300,654 1338,653 1381,652 1404,652", lp="999,736"];
+	Node1312 -> Node1319 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,1550,2980 1545,2972 1530,2948 1507,2906 1495,2867 1415,2600 1547,1812 1342,1623 1310,1592 977,1634 943,1605 831,1503 845,964 8\
+48,885"];
+	Node1320 -> Node1319 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=stream, pos="s,716,1501 715,1491 709,1404 688,1054 737,959 759,918 809,892 834,881", lp="753,1179"];
+	Node1321 -> Node1320 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,454,2980 461,2973 484,2951 523,2911 541,2867 653,2603 710,1628 716,1521"];
+	Node1308 -> Node1321 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="m_open_mode\nm_handle", pos="s,1542,3575 1532,3575 1515,3574 1493,3574 1473,3574 1439,3573 886,3562 855,3547 837,3537 843,3523 825,3513 796,3495 781,3510 750\
+,3495 725,3481 725,3468 701,3451 689,3441 680,3445 670,3433 580,3316 660,3238 581,3113 549,3061 488,3018 459,3000", lp="791,3473"];
+	Node1322 -> Node1321 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_critsect, pos="s,231,3468 241,3465 259,3459 279,3449 291,3433 378,3317 283,3244 342,3113 365,3064 411,3019 432,3000", lp="365,3273"];
+	Node1323 -> Node1322 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=handle, pos="s,200,3565 201,3555 203,3533 205,3499 206,3483", lp="220,3530"];
+	Node1324 -> Node1321 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_filename, pos="s,149,3463 154,3454 158,3447 162,3440 165,3433 217,3296 150,3230 235,3113 285,3044 385,3007 426,2995", lp="261,3273"];
+	Node1325 -> Node1324 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,99,3565 103,3556 114,3534 130,3499 138,3483"];
+	Node1304 -> Node1325 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,4622,3721 4612,3721 4256,3712 640,3624 169,3585 166,3585 163,3584 160,3584"];
+	Node1326 -> Node1325 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=mem, pos="s,87,3711 85,3701 83,3690 80,3676 79,3663 77,3634 86,3601 91,3585", lp="94,3653"];
+	Node1327 -> Node1325 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=llength, pos="s,160,3712 151,3707 145,3703 139,3698 134,3693 120,3675 103,3610 96,3585", lp="137,3653"];
+	Node1328 -> Node1325 [dir=back, color=orange, fontsize=10, style=dashed, fontname=Helvetica, label="< FILENAME_MAX >", pos="s,205,3643 196,3638 171,3623 131,3598 110,3585", lp="224,3614"];
+	Node1304 -> Node1328 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,4622,3721 4612,3721 4256,3715 675,3660 259,3654"];
+	Node1326 -> Node1328 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=mem, pos="s,105,3711 114,3706 135,3695 167,3677 197,3663", lp="169,3687"];
+	Node1327 -> Node1328 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=llength, pos="s,187,3711 192,3702 199,3689 208,3673 214,3663", lp="219,3687"];
+	Node1329 -> Node1321 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_rec_len, pos="s,387,3463 388,3453 398,3371 435,3059 442,3000", lp="453,3273"];
+	Node1330 -> Node1320 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_file, pos="s,827,2980 826,2970 814,2802 727,1639 718,1521", lp="834,2245"];
+	Node1314 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="rec_len\nfields", pos="s,1737,3463 1737,3453 1734,3221 1714,1006 1669,959 1640,927 1509,969 1476,941 1455,921 1427,709 1421,662", lp="1726,1511"];
+	Node1331 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=extra_setup, pos="s,1616,865 1609,857 1594,841 1571,816 1556,791 1529,745 1550,716 1510,681 1490,662 1456,655 1436,653", lp="1586,736"];
+	Node1332 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=audit, pos="s,1415,549 1411,559 1409,565 1406,572 1405,579 1402,598 1401,603 1405,623 1407,630 1411,637 1414,642", lp="1419,601"];
+	Node1333 -> Node1332 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="seq\npos", pos="s,1797,726 1793,717 1787,705 1779,690 1767,681 1669,596 1512,557 1448,544", lp="1757,652"];
+	Node1334 -> Node1333 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="sequence\nappend_pos", pos="s,1984,1501 1979,1492 1977,1488 1975,1484 1973,1480 1953,1442 1936,1439 1923,1399 1904,1336 1938,860 1897,809 1880,786 1859,807 \
+1836,791 1820,779 1809,758 1804,746", lp="1954,1179"];
+	Node1309 -> Node1332 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="loaded\nlocked\nis_current", pos="s,2720,3471 2710,3470 2682,3466 2673,3464 2642,3461 2635,3460 2364,3438 2358,3433 2305,3376 2256,693 2198,641 2170,615 1892,631 \
+1854,623 1806,611 1800,592 1751,579 1646,550 1617,560 1508,547 1491,544 1486,543 1468,542 1462,541 1455,541 1448,540", lp="2278,1179"];
+	Node1315 -> Node1332 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=db, pos="s,1425,642 1429,633 1430,630 1431,626 1431,623 1435,603 1434,598 1431,579 1430,568 1426,557 1424,549", lp="1441,601"];
+	Node1334 -> Node1332 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=sfile_sequence, pos="s,1989,1501 1989,1491 1995,1371 2024,747 1974,681 1952,650 1684,588 1647,579 1562,557 1540,554 1452,542 1451,542 1450,541 1448,5\
+41", lp="2032,736"];
+	Node1320 -> Node1332 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=sfile, pos="s,714,1501 711,1491 682,1388 559,897 809,681 900,602 1284,554 1392,542", lp="818,736"];
+	Node1335 -> Node1332 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=head, pos="s,3042,865 3037,856 3029,842 3015,823 3000,809 2919,733 2892,713 2785,681 2714,659 2526,669 2451,663 2375,656 2356,649 2279,641 \
+2230,635 2102,644 2057,623 2033,611 2039,590 2014,579 1962,555 1559,543 1448,540", lp="2510,652"];
+	Node1336 -> Node1335 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=ident, pos="s,3675,3472 3665,3471 3664,3471 3664,3471 3663,3471 3629,3465 3535,3459 3512,3433 3434,3339 3556,2975 3473,2885 3441,2849 3399,2\
+902 3366,2867 3181,2661 3463,1833 3282,1623 3259,1595 3232,1626 3202,1605 3118,1542 3118,1499 3087,1399 3085,1393 3053,956 3048,\
+885", lp="3380,2245"];
+	Node1337 -> Node1335 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="data_version\nsequence", pos="s,2976,1501 2974,1491 2963,1418 2929,1158 2991,959 2996,942 3025,903 3039,885", lp="3020,1179"];
+	Node1338 -> Node1335 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="previous_date\ndate", pos="s,5379,1501 5376,1491 5369,1469 5356,1421 5349,1417 5281,1368 4668,1443 4597,1399 4413,1281 4563,1076 4378,959 4348,939 3758,943\
+ 3721,941 3475,925 3178,891 3080,879", lp="5293,1179"];
+	Node1324 -> Node1332 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=filename, pos="s,142,3463 141,3453 122,3275 0,1941 354,959 419,779 399,689 554,579 580,560 664,563 695,561 911,545 965,545 1180,542 1257,541 13\
+47,540 1392,539", lp="373,1179"];
+	Node1306 -> Node1332 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=record_buf, pos="s,1351,3472 1341,3471 1341,3471 1341,3471 1341,3471 1322,3465 1320,3456 1300,3451 1240,3434 1070,3469 1018,3433 893,3343 1003,32\
+11 883,3113 853,3088 825,3122 797,3095 730,3027 810,2962 754,2885 745,2872 732,2880 723,2867 374,2313 631,2053 604,1399 597,1203\
+ 566,1150 604,959 631,827 628,778 719,681 792,604 831,606 932,579 1021,555 1301,543 1392,540", lp="628,1179"];
+	Node1321 -> Node1332 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=file, pos="s,443,2980 443,2970 437,2751 393,742 587,579 619,552 1249,542 1392,539", lp="515,875"];
+	Node1339 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=store, pos="s,1626,1501 1623,1491 1616,1469 1605,1432 1599,1399 1591,1350 1600,994 1566,959 1520,910 1462,990 1415,941 1376,898 1394,737 140\
+6,681 1408,674 1411,667 1414,662", lp="1549,875"];
+	Node1308 -> Node1339 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="size\nused", pos="s,1568,3565 1576,3559 1604,3535 1653,3486 1672,3433 1720,3299 1673,3255 1672,3113 1671,2450 1728,2281 1653,1623 1649,1584 1637,1\
+540 1632,1521", lp="1706,3273"];
+	Node1340 -> Node1339 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=data, pos="s,1627,2980 1627,2970 1627,2802 1629,1639 1629,1521", lp="1639,2245"];
+	Node1302 -> Node1340 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="record\ntime", pos="s,2046,3470 2036,3469 1987,3463 1915,3453 1896,3433 1798,3328 1932,3231 1850,3113 1805,3047 1713,3013 1662,2999", lp="1915,3273"];
+	Node1306 -> Node1340 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=buffer, pos="s,1393,3468 1403,3466 1432,3458 1473,3446 1484,3433 1578,3322 1456,3228 1543,3113 1555,3098 1568,3108 1580,3095 1608,3067 1621,3\
+020 1625,3000", lp="1556,3273"];
+	Node1341 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=field_defs, pos="s,2293,549 2284,554 2279,556 2273,559 2267,561 2228,575 2214,565 2174,579 2135,592 2131,612 2090,623 2075,627 1537,647 1436,651", lp="2196,601"];
+	Node1302 -> Node1341 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=record, pos="s,2085,3463 2085,3453 2086,3399 2087,3242 2090,3113 2093,2993 2095,1054 2166,959 2182,938 2203,959 2220,941 2330,821 2314,598 23\
+09,549", lp="2181,1179"];
+	Node1318 -> Node1341 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=field, pos="s,2043,865 2046,855 2051,841 2059,822 2071,809 2082,797 2089,800 2101,791 2143,758 2239,666 2269,623 2287,598 2299,565 2305,549", lp="2266,652"];
+	Node1336 -> Node1341 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="key\nident\nlabel", pos="s,3675,3471 3665,3469 3632,3463 3571,3452 3556,3433 3481,3336 3586,2975 3503,2885 3476,2854 3439,2898 3412,2867 3368,2813 3438,1\
+675 3392,1623 3357,1582 3314,1640 3273,1605 3201,1542 3236,1491 3212,1399 3147,1139 3209,1048 3089,809 3029,687 3011,639 2889,57\
+9 2889,578 2450,549 2335,541", lp="3226,1179"];
+	Node1315 -> Node1341 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=db, pos="s,1436,652 1446,652 1478,651 1532,649 1579,648 1652,645 1671,643 1743,641 1797,638 2175,648 2221,623 2243,611 2236,596 2253,579 \
+2254,578 2279,560 2295,549", lp="2259,601"];
+	Node1342 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=extra_unsetup, pos="s,1730,865 1724,857 1714,843 1697,823 1679,809 1666,798 1656,804 1645,791 1613,751 1652,714 1613,681 1587,658 1478,653 1436,652", lp="1680,736"];
+	Node1343 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=num, pos="s,1841,865 1836,856 1827,841 1813,821 1795,809 1774,794 1758,809 1740,791 1706,754 1751,714 1713,681 1679,649 1551,657 1504,654 \
+1492,653 1457,652 1436,652", lp="1753,736"];
+	Node1344 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=keys, pos="s,1002,865 1002,855 1002,815 1009,726 1061,681 1088,659 1337,653 1404,652", lp="1072,736"];
+	Node1345 -> Node1344 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=valid_type, pos="s,1051,1501 1048,1492 1040,1472 1027,1441 1011,1417 1006,1408 999,1409 995,1399 958,1300 994,947 1001,885", lp="1021,1179"];
+	Node1346 -> Node1344 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=field, pos="s,973,1501 970,1492 962,1470 950,1433 946,1399 920,1205 890,1146 946,959 956,929 980,900 993,885", lp="956,1179"];
+	Node1308 -> Node1344 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="min_len\nmax_len", pos="s,1542,3575 1532,3574 1524,3574 1516,3574 1509,3574 1481,3573 1474,3572 1446,3571 1425,3569 1085,3556 1066,3547 940,3481 900,318\
+2 886,3095 882,3064 874,3076 896,1623 901,1327 791,1228 911,959 927,924 963,898 985,885", lp="908,2990"];
+	Node1317 -> Node1344 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=name, pos="s,1352,1501 1349,1492 1341,1469 1327,1432 1316,1399 1254,1205 1341,1092 1187,959 1147,923 1116,965 1067,941 1041,927 1019,900 10\
+09,885", lp="1332,1179"];
+	Node1334 -> Node1344 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=optional, pos="s,1975,1501 1967,1494 1945,1474 1882,1419 1876,1417 1833,1399 1491,1428 1454,1399 1299,1271 1502,1090 1349,959 1319,932 1210,945\
+ 1169,943 1164,942 1080,943 1075,941 1063,935 1065,928 1055,919 1039,902 1033,898 1015,885", lp="1478,1179"];
+	Node1322 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=crit_sect, pos="s,205,3463 203,3453 201,3447 200,3439 199,3433 185,3291 190,3254 199,3113 267,2148 259,1894 503,959 506,950 508,949 510,941 532,\
+882 520,859 556,809 610,734 635,717 719,681 797,648 823,664 906,655 911,654 912,654 916,654 941,652 1320,652 1404,652", lp="411,1511"];
+	Node1347 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=layout, pos="s,1559,1501 1560,1491 1569,1401 1602,1036 1527,959 1501,930 1379,970 1352,941 1314,898 1336,728 1368,681 1376,669 1392,661 1404,\
+657", lp="1370,875"];
+	Node1348 -> Node1347 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=elem, pos="s,671,3463 679,3457 689,3450 698,3441 706,3433 827,3299 859,3260 928,3095 966,3006 917,2961 974,2885 985,2871 998,2880 1008,2867\
+ 1352,2416 862,1999 1284,1623 1313,1597 1422,1620 1457,1605 1500,1585 1536,1541 1551,1521", lp="985,2990"];
+	Node1349 -> Node1348 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=type, pos="s,563,3565 566,3555 571,3542 578,3526 588,3513 590,3511 616,3493 631,3483", lp="598,3530"];
+	Node1308 -> Node1348 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="attr\nrow\ncol", pos="s,1542,3575 1532,3575 1411,3575 874,3571 804,3547 781,3538 781,3524 758,3513 737,3501 729,3504 706,3495 697,3491 686,3487 677,34\
+83", lp="824,3530"];
+	Node1350 -> Node1348 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=data, pos="s,625,3565 619,3557 617,3554 616,3551 615,3547 611,3532 610,3526 615,3513 621,3500 632,3490 642,3483", lp="628,3530"];
+	Node1351 -> Node1348 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=fs, pos="s,687,3565 680,3558 676,3555 673,3551 671,3547 660,3526 658,3497 657,3483", lp="679,3530"];
+	Node1303 -> Node1347 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="title\nname", pos="s,5671,2988 5661,2987 5644,2985 5623,2982 5605,2979 5535,2965 5523,2965 5296,2897 5279,2892 5276,2887 5260,2885 5226,2879 4678,2\
+890 4653,2867 4455,2673 4784,1813 4583,1623 4553,1594 1622,1629 1588,1605 1561,1585 1558,1541 1558,1521", lp="4674,2245"];
+	Node1308 -> Node1347 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="num\nsbattr\nfixed_lines\nfbattr", pos="s,1542,3574 1532,3574 1532,3574 1532,3574 1532,3574 1464,3569 1290,3568 1224,3547 1141,3519 1100,3512 1061,3433 999,3305 1018,32\
+48 1061,3113 1065,3103 1071,3104 1074,3095 1113,3007 1047,2948 1118,2885 1156,2851 1306,2900 1342,2867 1448,2768 1547,1638 1557,\
+1521", lp="1088,3273"];
+	Node1309 -> Node1347 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="exist\nblink", pos="s,2720,3472 2710,3471 2709,3471 2709,3471 2708,3471 2689,3469 2684,3468 2664,3466 2645,3463 2334,3446 2320,3433 2270,3382 2330,3\
+169 2286,3113 2273,3095 2256,3110 2240,3095 1741,2598 2139,2133 1653,1623 1626,1593 1599,1613 1570,1585 1553,1568 1555,1536 1556\
+,1521", lp="2257,2990"];
+	Node1317 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="compile_time\nsource_version\ntime_stamp\ncompile_date\ntotal_filename\ndata_filename\nname\nkey_filename\nsource_file", pos="s,1357,1501 1358,1491 1368,1401 1406,1037 1332,959 1284,906 1220,994 1172,941 1133,897 1158,865 1172,809 1188,746 1188,718 1240,\
+681 1266,662 1365,655 1404,653", lp="1342,875"];
+	Node1334 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=option, pos="s,1981,1501 1975,1493 1956,1466 1922,1418 1914,1399 1880,1306 1926,1025 1853,959 1803,912 1599,983 1545,941 1499,903 1510,728 14\
+72,681 1463,669 1448,662 1436,657", lp="1819,875"];
+	Node1352 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=setup, pos="s,1096,865 1094,855 1085,816 1072,728 1119,681 1139,661 1344,654 1404,652", lp="1132,736"];
+	Node1345 -> Node1352 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=valid_type, pos="s,1053,1501 1052,1491 1047,1418 1031,1164 1069,959 1075,931 1088,900 1095,885", lp="1092,1179"];
+	Node1336 -> Node1352 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=label, pos="s,3675,3472 3665,3471 3662,3471 3659,3471 3656,3471 3632,3468 3626,3467 3601,3464 3548,3455 3518,3474 3482,3433 3389,3324 3543,3\
+213 3440,3113 3413,3086 3299,3120 3270,3095 3200,3030 3300,2946 3227,2885 3196,2857 2879,2897 2849,2867 2825,2842 2857,1648 2833\
+,1623 2809,1596 2706,1617 2672,1605 2513,1548 2447,1538 2352,1399 2241,1234 2419,1087 2266,959 2250,944 1493,943 1470,943 1466,9\
+42 1160,942 1156,941 1127,926 1132,908 1110,885", lp="2865,2245"];
+	Node1353 -> Node1352 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=equation, pos="s,1140,1501 1140,1491 1143,1420 1147,1166 1119,959 1115,931 1107,900 1102,885", lp="1164,1179"];
+	Node1354 -> Node1353 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="m_elem\nm_stack", pos="s,669,2980 677,2973 702,2951 750,2910 797,2885 820,2873 836,2886 851,2867 1024,2649 776,1825 966,1623 1003,1584 1040,1634 1083,1\
+605 1114,1584 1131,1540 1137,1521", lp="985,2245"];
+	Node1355 -> Node1354 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=list, pos="s,466,3463 471,3454 475,3447 478,3440 480,3433 531,3294 500,3244 564,3113 588,3066 630,3019 649,3000", lp="571,3273"];
+	Node1356 -> Node1355 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=func, pos="s,439,3565 442,3555 447,3533 455,3499 459,3483", lp="462,3530"];
+	Node1357 -> Node1355 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=data, pos="s,290,3565 298,3559 316,3545 342,3526 368,3513 392,3501 400,3506 423,3495 432,3491 436,3486 441,3483", lp="378,3530"];
+	Node1358 -> Node1355 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=eval, pos="s,374,3565 381,3558 393,3545 409,3528 423,3513 433,3503 444,3491 452,3483", lp="432,3530"];
+	Node1308 -> Node1354 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="used\nmax_elems", pos="s,1542,3575 1532,3575 1416,3571 927,3560 897,3547 868,3533 863,3522 845,3495 748,3342 770,3282 706,3113 691,3070 671,3020 663,30\
+00", lp="874,3473"];
+	Node1359 -> Node1354 [dir=back, color=orange, fontsize=10, style=dashed, fontname=Helvetica, label="< fdb_elem >", pos="s,571,3463 575,3454 577,3447 580,3440 581,3433 626,3262 652,3048 658,3000", lp="673,3273"];
+	Node1308 -> Node1359 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="used\nmax_elems", pos="s,1542,3575 1532,3575 1497,3575 1434,3574 1378,3574 1196,3572 1150,3575 968,3565 928,3562 918,3561 878,3559 800,3553 768,3589 70\
+2,3547 688,3537 698,3523 684,3513 659,3492 644,3506 613,3495 604,3491 594,3487 585,3483", lp="734,3530"];
+	Node1360 -> Node1359 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=list, pos="s,496,3565 497,3555 499,3542 502,3525 510,3513 519,3500 534,3489 546,3483", lp="517,3530"];
+	Node1308 -> Node1352 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="defaults\noffset\nfield_length\nsame_line\ndefinition\nvalid_index", pos="s,1542,3574 1532,3574 1527,3574 1522,3574 1517,3574 1509,3573 1376,3567 1367,3567 1202,3556 1075,3589 1018,3433 977,3318 1011,30\
+06 1018,2885 1056,2312 1148,2177 1186,1605 1196,1465 1203,987 1187,959 1170,926 1142,940 1118,912 1112,903 1106,892 1103,885", lp="1044,2990"];
+	Node1334 -> Node1352 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=option, pos="s,1980,1501 1974,1493 1955,1471 1918,1433 1876,1417 1826,1396 1674,1434 1632,1399 1479,1268 1682,1087 1527,959 1494,931 1173,963\
+ 1136,941 1112,925 1119,909 1105,885", lp="1651,1179"];
+	Node1306 -> Node1352 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=prompt, pos="s,1351,3464 1342,3459 1332,3452 1322,3444 1316,3433 1313,3425 1314,965 1308,959 1282,927 1160,951 1126,927 1113,916 1105,896 110\
+1,885", lp="1332,2245"];
+	Node1361 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=filt, pos="s,2705,452 2695,452 2610,457 2337,474 2261,517 2239,529 2248,548 2225,561 2171,591 2145,558 2086,579 2051,591 2050,611 2014,623 \
+2011,624 1497,647 1493,648 1472,649 1467,649 1445,651 1442,651 1439,651 1436,651", lp="2267,539"];
+	Node1303 -> Node1361 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="m_title\nm_ext\nm_name", pos="s,5690,2980 5690,2970 5691,2948 5696,2911 5711,2885 5716,2875 5724,2877 5729,2867 5759,2792 5779,1478 5728,1417 5700,1383 5660,1\
+431 5632,1399 5566,1326 5662,1033 5598,959 5573,931 5543,967 5517,941 5474,898 5533,848 5488,809 5443,770 5277,815 5224,791 5150\
+,757 5127,736 5096,663 5081,628 5119,606 5094,579 5066,549 4411,519 4370,517 3693,474 2857,454 2735,451", lp="5452,736"];
+	Node1309 -> Node1361 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_valid, pos="s,2737,3463 2737,3453 2735,3386 2729,3171 2694,3113 2688,3101 2677,3106 2670,3095 2611,2981 2585,919 2582,791 2582,742 2555,721 \
+2582,681 2595,663 2611,676 2627,663 2662,634 2653,612 2682,579 2691,569 2698,571 2704,561 2723,527 2722,481 2721,461", lp="2604,875"];
+	Node1362 -> Node1361 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_filter, pos="s,2192,529 2192,519 2192,505 2194,488 2205,479 2225,462 2622,453 2705,451", lp="2222,489"];
+	Node1315 -> Node1362 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_db, pos="s,1436,650 1446,649 1644,623 1698,609 1904,579 2003,564 2121,549 2170,542", lp="1917,601"];
+	Node1363 -> Node1361 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_type, pos="s,2667,529 2666,519 2666,506 2667,491 2675,479 2682,468 2695,461 2705,456", lp="2692,489"];
+	Node1364 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=lookup, pos="s,1153,2980 1154,2970 1161,2817 1206,1824 1008,1623 965,1578 917,1645 870,1605 799,1542 826,1493 812,1399 777,1139 757,1062 825,\
+809 842,748 835,717 886,681 954,631 990,666 1073,657 1085,655 1088,654 1100,654 1115,652 1341,652 1404,652", lp="830,1179"];
+	Node1313 -> Node1364 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=desc, pos="s,1245,3471 1235,3469 1212,3464 1184,3455 1168,3433 1117,3360 1145,3058 1151,3000", lp="1182,3273"];
+	Node1308 -> Node1364 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="num_letters\noption\ndesc_length", pos="s,1542,3573 1532,3572 1458,3563 1242,3532 1182,3495 1153,3476 1147,3465 1135,3433 1080,3268 1136,3048 1149,3000", lp="1215,3473"];
+	Node1306 -> Node1364 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="title\nletters", pos="s,1351,3466 1341,3463 1311,3453 1269,3438 1264,3433 1169,3323 1234,3253 1194,3113 1182,3070 1164,3020 1156,3000", lp="1283,3273"];
+	Node1321 -> Node1315 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="total_file\ndata_file", pos="s,444,2980 445,2970 449,2946 454,2903 457,2867 466,2761 498,1055 541,959 542,957 826,681 827,681 868,658 882,660 927,654 939,652\
+ 1320,652 1404,652", lp="560,1179"];
+	Node1306 -> Node1312 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="prv_buffer\nread_buffer", pos="s,1375,3463 1377,3453 1379,3447 1381,3439 1382,3433 1410,3292 1363,3240 1428,3113 1456,3060 1513,3018 1541,3000", lp="1454,3273"];
+	Node1365 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=sto_accrued, pos="s,3890,1501 3895,1492 3907,1471 3925,1434 3932,1399 3952,1303 3997,1032 3932,959 3923,948 3817,948 3804,941 3792,932 3774,898 37\
+64,885", lp="3996,1179"];
+	Node1366 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="dls_message_type\ndls_comment_type", pos="s,3413,1501 3412,1491 3400,1403 3358,1045 3422,959 3491,866 3556,903 3669,883 3690,879 3713,877 3730,876", lp="3465,1179"];
+	Node1367 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=sto_stamp_scale, pos="s,4859,1509 4849,1509 4714,1502 4372,1477 4295,1399 4158,1257 4351,1113 4227,959 4146,858 4075,895 3946,883 3915,879 3827,877 37\
+82,876", lp="4336,1179"];
+	Node1368 -> Node1367 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="accuracy\ns_ncust\nb_ncust\ns_cust\nb_cust", pos="s,5432,3466 5423,3463 5414,3460 5406,3458 5397,3456 5394,3455 5291,3435 5289,3433 5241,3379 5277,3180 5255,3113 5251,3104 5247,3\
+103 5244,3095 5203,2998 5202,2970 5186,2867 5164,2730 5194,1725 5101,1623 5086,1606 5025,1609 5004,1607 4997,1606 4980,1607 4974\
+,1605 4937,1587 4915,1541 4907,1521", lp="5264,2990"];
+	Node1303 -> Node1367 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=scale, pos="s,5671,2986 5661,2983 5612,2970 5514,2937 5471,2867 5398,2748 5522,1720 5425,1623 5422,1620 4971,1606 4969,1605 4964,1602 4925,1\
+544 4909,1521", lp="5483,2245"];
+	Node1336 -> Node1367 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=rounding, pos="s,3711,3472 3721,3472 3889,3467 4744,3442 4753,3433 4806,3384 4745,3170 4787,3113 4799,3096 4813,3107 4828,3095 4917,3022 4903,2\
+970 4981,2885 4989,2876 4996,2877 5001,2867 5015,2835 5019,1652 5001,1623 4986,1599 4967,1611 4945,1595 4940,1591 4939,1589 4936\
+,1585 4922,1567 4919,1563 4912,1543 4909,1536 4906,1527 4905,1521", lp="5000,2990"];
+	Node1369 -> Node1367 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=description, pos="s,4761,2980 4764,2971 4772,2947 4786,2904 4792,2867 4887,2321 4793,2170 4876,1623 4881,1584 4894,1540 4900,1521", lp="4900,2245"];
+	Node1370 -> Node1367 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=currency, pos="s,5057,2980 5057,2970 5058,2805 5068,1679 5025,1623 5006,1599 4984,1622 4961,1605 4931,1582 4913,1540 4906,1521", lp="5077,2245"];
+	Node1368 -> Node1370 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="exchange_rate\ncomparison\neuro_rate", pos="s,5432,3467 5422,3465 5402,3460 5377,3454 5354,3451 5316,3444 5212,3459 5185,3433 5133,3383 5164,3180 5139,3113 5121,3066 5083,3\
+019 5066,3000", lp="5221,3273"];
+	Node1371 -> Node1370 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=cross_rate, pos="s,5105,3463 5096,3458 5082,3449 5067,3440 5064,3433 4982,3279 5040,3050 5054,3000", lp="5087,3273"];
+	Node1336 -> Node1370 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="ledger\nsymbol\ndescription\nabbrv", pos="s,3711,3473 3721,3473 3892,3469 4771,3451 4791,3433 4897,3336 4736,3214 4837,3113 4876,3073 4911,3120 4960,3095 5004,3072 5038,3\
+021 5051,3000", lp="4861,3273"];
+	Node1308 -> Node1370 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="price_decimal_places\ndecimal_places\nindex\ncross_index", pos="s,1570,3575 1580,3575 1883,3575 4885,3573 4922,3547 4964,3515 4945,3484 4958,3433 4992,3292 4978,3252 5015,3113 5026,3070 5045,3\
+020 5053,3000", lp="5001,3473"];
+	Node1309 -> Node1370 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="euro_currency\nispence\naccessable", pos="s,2754,3473 2764,3473 2920,3472 3687,3467 3721,3433 3772,3382 3688,3162 3739,3113 3743,3110 4948,3096 4952,3095 4964,3089 4962,3\
+081 4972,3072 4998,3044 5030,3015 5046,3000", lp="3772,3273"];
+	Node1370 -> Node1370 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=ledger_currency, pos="s,5085,2983 5095,2984 5100,2985 5103,2987 5103,2990 5103,2995 5095,2997 5085,2997", lp="5139,2990"];
+	Node1305 -> Node1370 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="sdb_cur\nmoney", pos="s,5749,3789 5740,3784 5623,3718 5144,3448 5135,3433 5097,3372 5132,3182 5115,3113 5103,3068 5075,3020 5063,3000", lp="5478,3614"];
+	Node1302 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="sto_stock\ncli_client", pos="s,2116,3463 2125,3459 2137,3453 2149,3444 2156,3433 2196,3373 2140,3163 2190,3113 2214,3089 2307,3105 2338,3095 2518,3035 2528,2\
+942 2708,2885 2744,2873 2851,2894 2877,2867 3068,2666 2777,1840 2947,1623 2964,1601 2986,1623 3006,1605 3072,1543 3013,1478 3078\
+,1417 3098,1398 3119,1419 3135,1399 3196,1322 3115,1040 3169,959 3204,907 3235,917 3293,897 3319,888 3326,886 3352,883 3390,878 \
+3647,876 3730,875", lp="2969,2245"];
+	Node1368 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="sto_stamp_rate\nval_amounts\ncli_vatrate\nval_total_amount\ncli_commission_discount\nsto_accrued_rate\nval_pay_exchange_rate", pos="s,5432,3463 5423,3459 5405,3451 5386,3441 5381,3433 5309,3332 5372,2975 5289,2885 5266,2861 5238,2892 5218,2867 5130,2759 5232,1\
+738 5157,1623 5147,1608 5131,1619 5121,1605 5097,1570 5131,1445 5101,1417 5065,1383 4696,1433 4660,1399 4590,1330 4691,1033 4626\
+,959 4527,844 4444,901 4293,883 4242,876 3883,875 3782,875", lp="5273,2245"];
+	Node1303 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="sto_commission_scale\ndls_tradopt_price\nsto_status\nsto_category\ncli_addn_charge_scale\nsto_addn_charge_scale\nsto_yield\ncli_\
+commission_scale\nsto_stamp_duty\nsto_ptm_levy\nsto_location\nsto_name\nsto_class\nsto_sector\ncli_override_safecustody\nsto_sed\
+ol\ncli_nominee", pos="s,5690,2980 5690,2970 5694,2808 5718,1722 5619,1623 5589,1593 5276,1631 5245,1605 5179,1549 5268,1473 5204,1417 5167,1385 5021,1\
+433 4988,1399 4918,1329 5022,1029 4954,959 4851,852 4441,892 4293,883 4192,876 3876,875 3782,875", lp="5303,1511"];
+	Node1336 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="nominee\nbs\ncli_default_nominee", pos="s,3675,3471 3665,3469 3643,3464 3614,3454 3599,3433 3515,3308 3590,3245 3587,3095 3586,3013 3531,1682 3587,1623 3613,1595 3897,1\
+630 3924,1605 3987,1548 3896,1479 3953,1417 3976,1392 4007,1425 4027,1399 4058,1360 4057,998 4027,959 4013,938 3847,897 3782,881\
+", lp="3632,2245"];
+	Node1372 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=cur_display, pos="s,3534,1501 3533,1491 3521,1402 3484,1047 3544,959 3587,896 3683,880 3730,876", lp="3570,1179"];
+	Node1369 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="text_charge1\ntext_ptm_levy\ntext_vat\ntext_stampduty", pos="s,4752,2980 4747,2971 4732,2947 4703,2904 4664,2885 4628,2866 4508,2896 4479,2867 4286,2668 4588,1813 4386,1623 4343,1582 3364,1\
+643 3318,1605 3262,1556 3248,1008 3283,959 3345,873 3404,901 3507,883 3529,879 3671,876 3730,875", lp="3359,1511"];
+	Node1373 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=dls_cross_currency, pos="s,3620,1501 3618,1491 3605,1417 3565,1146 3658,959 3676,924 3714,898 3737,885", lp="3702,1179"];
+	Node1308 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="sto_contracts\nactindex\nsto_unit_value\nsto_days_per_annum", pos="s,1570,3575 1580,3575 1776,3572 3072,3555 3187,3433 3236,3380 3186,3179 3212,3113 3216,3103 3223,3104 3227,3095 3273,3009 3214,2\
+946 3289,2885 3332,2850 3496,2906 3533,2867 3557,2841 3557,1648 3533,1623 3494,1580 3314,1646 3273,1605 3239,1570 3218,1047 3261\
+,959 3275,931 3349,889 3379,883 3397,879 3647,876 3730,875", lp="3337,2990"];
+	Node1374 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="val_stampduty\nval_consids\nval_pay_vat\nval_vat\nval_pay_commission\nval_prices\nval_cur_charges\nval_pay_ptm\nsto_charge\nval_\
+pay_net_total\nval_total_consid\nval_ptm\nval_charge\nval_default_ptm\nval_commission\nval_third_party_charge\nval_pconsid\nval_\
+pay_charge\nval_interest\nval_charges\nval_pay_stampduty\nval_net_total\ncli_charge\nval_pcomm", pos="s,5800,1501 5794,1493 5774,1471 5737,1433 5695,1417 5633,1393 5151,1440 5100,1399 4943,1272 5144,1090 4992,959 4849,836 4340,893\
+ 4152,883 4080,879 3858,876 3782,875", lp="5154,1179"];
+	Node1368 -> Node1374 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_value, pos="s,5478,3470 5488,3468 5513,3463 5546,3453 5569,3433 5689,3321 5658,3248 5718,3095 5753,3003 5720,2955 5789,2885 5805,2868 5824,2\
+886 5838,2867 5996,2640 5874,1897 5838,1623 5833,1584 5818,1540 5811,1521", lp="5808,2990"];
+	Node1370 -> Node1374 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_cd, pos="s,5065,2980 5072,2973 5095,2948 5142,2903 5193,2885 5237,2868 5583,2898 5619,2867 5832,2673 5811,1632 5808,1521", lp="5821,2245"];
+	Node1309 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="dls_tradopt\nvls_internal_commission\nvls_fixed_pay_commission\nsup_any_charges\nvls_internal_stampduty\nvls_internal_charges\nv\
+ls_fixed_pay_vat\nvls_fixed_pay_stampduty\nsup_charges_account\ndls_cross_currency_pay\nsup_pay_net_total\nsup_pay_vat\nsup_char\
+ges_percent\nsup_charges\nsup_previous_consid\ndls_closing\nvls_fixed_charge\ndls_can_be_nominee\ndls_bb\nsup_pay_commission\nsu\
+p_pay_ptm\nsup_charges_text\nsup_previous_comm\nvls_fixed_pay_ptm\nvls_fixed_stampduty\nvls_fixed_pay_charge\ncli_charge_present\
+\nsto_charge_present\ndls_continuation\nsup_pay_charge\nsto_irish_ptm\nvls_internal_ptm\nvls_fixed_pay_net_total\nsup_third_part\
+y_charge\nfund_valid\nvls_internal_charge\ndls_opening\nvls_fixed_interest\nsup_pay_stampduty\nsup_charges_currency\nsto_accrued\
+_in_price\nsto_euro_ptm\ndls_principal\nvls_fixed_commission\nfund_required", pos="s,2754,3471 2764,3470 2818,3463 2937,3446 2949,3433 3034,3339 2987,2992 2994,2867 2999,2797 3001,1680 3040,1623 3052,1606 3068,1\
+619 3082,1605 3154,1534 3148,1495 3173,1399 3199,1304 3166,1040 3221,959 3264,897 3299,899 3372,883 3390,879 3646,876 3730,875", lp="3100,2245"];
+	Node1375 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=dls_tradoptype, pos="s,3745,1501 3745,1491 3748,1392 3755,954 3756,885", lp="3789,1179"];
+	Node1370 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="val_pay_exchange_cd\nsto_ledger_currency\ncli_currency\nsto_currency\ncur_market\ncur_ledger", pos="s,5062,2980 5066,2971 5077,2947 5094,2905 5101,2867 5124,2730 5190,1728 5101,1623 5070,1587 5030,1637 4997,1605 4935,1545 5021,1\
+471 4956,1417 4908,1377 4440,1442 4395,1399 4361,1364 4405,998 4375,959 4313,875 4256,901 4152,883 4116,876 3865,875 3782,875", lp="5048,1511"];
+	Node1376 -> Node1299 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=dls_tradopt_date, pos="s,3818,1501 3819,1491 3831,1404 3880,1052 3826,959 3819,945 3808,951 3796,941 3779,924 3766,898 3760,885", lp="3891,1179"];
+	Node1302 -> Node1298 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="opt_hilite\nopt_disable_display", pos="s,2096,3463 2103,3456 2109,3449 2115,3441 2118,3433 2146,3367 2103,3164 2152,3113 2189,3074 2234,3133 2271,3095 2501,2858 2363,1\
+940 2451,1623 2538,1311 2492,1155 2748,959 2789,927 2821,970 2862,941 2917,902 2879,847 2932,809 3088,697 3726,660 3861,653", lp="2543,1511"];
+	Node1336 -> Node1298 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="atrs\natrb\natrt\natrh\natri", pos="s,3693,3463 3693,3453 3692,3399 3694,3242 3715,3113 3717,3104 3719,3103 3720,3095 3740,3002 3724,2975 3749,2885 3752,2876 3755,2\
+875 3757,2867 3829,2598 3694,1823 3886,1623 3926,1581 3969,1641 4013,1605 4082,1548 4012,1474 4079,1417 4114,1387 4150,1433 4178\
+,1399 4241,1323 4215,1049 4178,959 4120,812 3953,695 3901,662", lp="4088,1511"];
+	Node1302 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="opt_excl_in_net_total\nopt_global\nopt_disable_calc\nopt_disable_edit", pos="s,2088,3463 2090,3453 2092,3447 2093,3439 2094,3433 2115,3291 2098,3254 2114,3113 2171,2628 2191,1299 2540,959 2566,933 2590,961\
+ 2619,941 2677,900 2649,849 2706,809 2736,788 2754,808 2785,791 2845,757 2839,722 2893,681 2923,658 2932,651 2967,641 3234,562 4\
+152,542 4313,539", lp="2587,1179"];
+	Node1377 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="cli_principal_client\ndls_deal_as_principal", pos="s,5105,645 5095,642 5094,642 5093,641 5091,641 5064,632 5057,633 5032,623 4993,607 4988,591 4948,579 4765,524 4711,546 4520,542 \
+4463,541 4396,540 4361,539", lp="5086,601"];
+	Node1378 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=nw_bgn, pos="s,3192,2980 3199,2972 3217,2950 3247,2908 3258,2867 3268,2833 3282,1648 3258,1623 3211,1573 2998,1654 2950,1605 2890,1540 2910,8\
+73 2970,809 3107,663 3655,670 3852,641 3890,635 3990,641 4023,623 4045,610 4036,591 4057,579 4100,553 4253,543 4313,540", lp="2988,875"];
+	Node1336 -> Node1378 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="bs\nprice\namount\nset_ccy\nbroker\nclient\nmkt_ccy\ntype_s\nex_rate\nstock", pos="s,3675,3472 3665,3472 3579,3468 3328,3456 3300,3433 3162,3314 3178,3053 3183,3000", lp="3325,3273"];
+	Node1309 -> Node1378 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=flag_set, pos="s,2754,3472 2764,3471 2834,3466 3013,3451 3031,3433 3133,3331 3018,3243 3077,3113 3100,3063 3149,3019 3172,3000", lp="3095,3273"];
+	Node1368 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="val_comm_adjustment\nsto_round_amount\nwarn_quantity\nsto_decimal_value", pos="s,5478,3472 5488,3471 5488,3471 5488,3471 5488,3471 5492,3470 5493,3469 5497,3469 5565,3453 5594,3475 5650,3433 5785,3329 5769,3\
+253 5831,3095 5868,2997 5876,2970 5889,2867 5917,2640 5955,1001 5831,809 5770,716 5723,712 5618,681 5506,648 5209,687 5096,663 5\
+071,657 5067,648 5043,641 5000,628 4982,646 4944,623 4923,610 4931,593 4911,579 4886,562 4814,544 4784,542 4763,539 4451,539 436\
+1,539", lp="5957,1179"];
+	Node1379 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=print, pos="s,4309,642 4311,632 4313,617 4318,597 4323,579 4326,568 4330,557 4333,549", lp="4333,601"];
+	Node1303 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="dls_barg_conds\ncli_xfer\nopt_stock_cscale\ncli_crest_id\nopt_stock_addch_scale\ncli_stampduty_status\nrestrict_partner\nopt_cli\
+ent_addch_scale\nopt_client_cscale\nrestrict_branch\nsto_settlement_system\nsto_price", pos="s,5690,2980 5690,2970 5690,2948 5691,2912 5692,2881 5693,2718 5797,1543 5695,1417 5670,1386 5634,1428 5608,1399 5475,1253 5699,1\
+097 5560,959 5531,930 5413,961 5379,941 5318,904 5350,847 5291,809 5252,783 5231,805 5188,791 5111,765 4929,674 4868,623 4849,60\
+7 4855,591 4834,579 4774,543 4591,543 4520,542 4463,541 4396,540 4361,539", lp="5435,875"];
+	Node1336 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="edt_help_file\nval_qp", pos="s,3711,3472 3721,3471 3765,3469 3851,3460 3918,3433 4172,3330 4303,3335 4433,3095 4443,3077 4435,1642 4441,1623 4475,1516 4504,1\
+494 4584,1417 4595,1406 4605,1411 4612,1399 4706,1227 4659,1149 4612,959 4580,823 4586,757 4469,681 4417,646 4232,708 4189,663 4\
+165,637 4198,602 4224,579 4257,550 4273,553 4313,543", lp="4697,1179"];
+	Node1380 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="dls_print_mandate\ncli_print_mandate\ndef_print_mandate", pos="s,4364,642 4362,632 4355,608 4344,567 4340,549", lp="4403,601"];
+	Node1374 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="val_min_commission\nsto_price_value", pos="s,5807,1501 5806,1491 5804,1476 5800,1455 5794,1438 5790,1427 5787,1426 5782,1417 5776,1408 5772,1408 5769,1399 5752,1352 5780,9\
+96 5749,959 5724,930 5692,967 5666,941 5623,898 5680,850 5637,809 5597,772 5562,820 5517,791 5468,759 5497,710 5447,681 5410,659\
+ 5105,669 5063,663 4997,652 4977,655 4920,623 4894,608 4898,591 4872,579 4755,525 4713,553 4584,544 4542,540 4415,539 4361,539", lp="5567,736"];
+	Node1308 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="atrcur\nnew_field\ndls_deal\nsto_ex_code\nsto_decimal_places\ncli_share_commission\nsto_settle_days", pos="s,1570,3575 1580,3575 1743,3575 2654,3574 2713,3574 2731,3573 2736,3573 2753,3573 2871,3571 3163,3572 3280,3572 3358,3571 3377,3\
+571 3454,3571 3556,3570 3582,3570 3683,3570 3793,3569 3820,3569 3929,3569 4151,3567 4206,3568 4427,3565 4629,3562 4680,3564 4881\
+,3553 5016,3545 5386,3585 5487,3495 5698,3304 5587,3150 5616,2867 5643,2591 5739,1870 5616,1623 5610,1611 5599,1616 5592,1605 54\
+28,1358 5652,1155 5431,959 5382,916 5341,975 5287,941 5229,903 5264,844 5206,809 5158,779 5003,817 4954,791 4927,776 4816,593 47\
+90,579 4754,558 4558,555 4374,542 4370,541 4365,541 4361,541", lp="5641,1511"];
+	Node1309 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="first_entry\nnew_prod_prov_info\nnew_set_agent_dealer\nnew_calc_total\nval_vatable\nnew_set_settlement\nnew_disp_stock\nnew_disp\
+_num_deals\nnew_set_stock\ndls_maintain\ncli_dematerialised\nnew_data_share_commission\ndls_need_complete\nnew_set_conds\nnew_se\
+t_principal\nnew_calc_values\nnew_disp_fund\ndls_verify_principal\nnew_redisplay\nnew_set_compliance_charge\nnew_set_barg_con\nn\
+ew_set_nominee\nnew_set_exchange\nnew_set_deals\nnew_set_settledate\ndls_saveable\nsto_cannot_deal\nnew_data_message\nnew_invcal\
+c\nnew_data_stock\ncli_default_comment\nflag_bargain_is_parent\nnew_set_client\ndls_partpost\nnew_data_fund\ndls_is_bulkdeal\ndl\
+s_complete\nnew_data_client\nnew_set_currency\ncli_cannot_deal", pos="s,2754,3470 2764,3468 2801,3462 2863,3449 2878,3433 2957,3339 2933,3005 2916,2885 2915,2876 2913,2875 2911,2867 2871,2593 2927,1\
+895 2880,1623 2864,1528 2877,1489 2814,1417 2803,1403 2788,1414 2778,1399 2727,1315 2714,1032 2778,959 2815,916 2862,979 2903,94\
+1 2947,900 2914,866 2932,809 2951,750 2936,716 2986,681 3013,662 3532,642 3564,641 3608,638 3918,637 3959,623 3991,611 3989,592 \
+4019,579 4088,549 4110,557 4184,549 4228,544 4239,544 4282,542 4292,541 4303,541 4313,540", lp="2848,1179"];
+	Node1381 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=warn_hold_id, pos="s,2869,2980 2865,2970 2854,2938 2831,2877 2829,2867 2779,2595 2805,1899 2795,1623 2792,1531 2837,1493 2786,1417 2776,1401 2758,1\
+414 2748,1399 2644,1233 2696,1147 2748,959 2769,883 2778,856 2839,809 2862,791 2879,809 2899,791 2939,755 2906,714 2947,681 3026\
+,618 3070,651 3169,641 3251,632 3830,643 3909,623 3951,612 3955,592 3995,579 4098,545 4129,552 4236,544 4262,542 4293,540 4313,5\
+40", lp="2869,875"];
+	Node1302 -> Node1381 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="client\nstock", pos="s,2124,3472 2134,3472 2265,3470 2614,3461 2656,3433 2820,3324 2864,3054 2872,3000", lp="2862,3273"];
+	Node1336 -> Node1381 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="nominee\nfund\naccount", pos="s,3675,3473 3665,3473 3650,3472 3631,3472 3614,3471 3597,3470 3593,3470 3575,3469 3527,3466 3174,3467 3139,3433 3090,3382 3157,3\
+172 3117,3113 3068,3039 2962,3008 2907,2996", lp="3164,3273"];
+	Node1382 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="dls_send_to_checking\ndef_send_to_checking", pos="s,4483,642 4480,632 4475,616 4465,593 4449,579 4424,556 4386,546 4361,542", lp="4528,601"];
+	Node1334 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=atracc, pos="s,1994,1501 1999,1492 2012,1471 2033,1433 2044,1399 2109,1210 2000,1109 2130,959 2147,940 2160,951 2182,941 2325,874 2637,622 27\
+87,579 2864,556 4122,541 4313,539", lp="2602,736"];
+	Node1383 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="dls_print_contract\ndef_print_contract", pos="s,4619,642 4616,632 4611,615 4600,591 4582,579 4547,553 4416,543 4361,540", lp="4656,601"];
+	Node1384 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="cli_print_trf\ndef_print_trf\ndls_print_trf\nsto_print_trf", pos="s,4736,642 4733,632 4728,615 4718,591 4700,579 4648,541 4479,545 4414,542 4396,541 4376,540 4361,540", lp="4759,601"];
+	Node1385 -> Node1297 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=exec_or_adv, pos="s,4220,642 4223,632 4229,616 4238,594 4253,579 4270,562 4295,551 4313,545", lp="4282,601"];
+	Node1386 -> Node1296 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=header, pos="s,5163,865 5161,855 5154,817 5145,731 5188,681 5206,659 5232,685 5249,663 5254,655 5249,650 5249,641 5246,568 5249,550 5240,479 \
+5239,473 5238,466 5236,461", lp="5262,601"];
+	Node1302 -> Node1386 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=stock_record, pos="s,2124,3471 2134,3470 2179,3464 2269,3456 2296,3433 2412,3333 2302,3208 2420,3113 2460,3081 2488,3118 2532,3095 2647,3034 2615,2\
+938 2732,2885 2776,2865 3130,2900 3164,2867 3263,2769 3122,1719 3220,1623 3248,1595 3890,1624 3924,1605 4011,1556 3958,1466 4043\
+,1417 4076,1398 4351,1424 4378,1399 4523,1264 4293,1097 4433,959 4446,946 4993,892 5133,878", lp="3249,2245"];
+	Node1368 -> Node1386 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="total_cli_qty\nexchange_rate\nshares\ntotal_mkt_qty", pos="s,5453,3463 5451,3453 5434,3378 5374,3100 5355,2867 5349,2798 5314,1678 5355,1623 5371,1601 5396,1626 5413,1605 5462,1537 5415,1\
+500 5413,1417 5406,1213 5522,1109 5384,959 5365,938 5288,950 5263,941 5228,927 5193,900 5176,885", lp="5388,2245"];
+	Node1336 -> Node1386 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="impmon\naffirmed_flag\nexchange\nbs\nbranch_group\nchargeI\nptmI\nnoteprn\ndealcode\nprice\ncalc_on_load\nsettletype\nseparator\\
+ns_parent\ncashdocs\nfund\npritype\nvattype\ncli_ccy\ns_link\nsflag\nprin_agent\nstampI\nbroker\nuse_clearance_acc\nstock_comm_s\
+cale\nacclet\nsedol\ncommI\ncurrency\ns_comment\nconds\ntype\nsendtal\nnotereq\ntranprn\nimpcust\ns_message\nsource\nshortname\n\
+postacc\ndaysI\nsrc_bgnref\nimpvals\nswtch\ntime\nagent", pos="s,3711,3472 3721,3472 3872,3465 4567,3434 4569,3433 4692,3335 4641,3249 4664,3095 4715,2771 4640,1941 4715,1623 4739,1525 4726,1\
+473 4809,1417 4842,1394 5141,1428 5169,1399 5242,1321 5178,949 5167,885", lp="4759,2245"];
+	Node1308 -> Node1386 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=swtch_num, pos="s,1570,3575 1580,3575 1730,3575 2519,3574 2761,3574 2802,3573 5612,3569 5646,3547 6135,3213 5915,1706 5838,1623 5797,1579 5615,1\
+644 5570,1605 5347,1412 5639,1165 5431,959 5405,933 5387,947 5352,943 5343,941 5279,943 5271,941 5260,937 5200,895 5184,885", lp="5958,2990"];
+	Node1309 -> Node1386 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="fixed_ptm_levy\nswitched", pos="s,2754,3472 2764,3471 2767,3471 2769,3471 2771,3471 2796,3468 2973,3451 2989,3433 3038,3380 3007,3181 3027,3113 3060,3004 3047,2\
+947 3141,2885 3189,2853 3355,2906 3395,2867 3592,2671 3286,1814 3486,1623 3535,1576 4032,1641 4087,1605 4164,1554 4097,1467 4173\
+,1417 4219,1387 5106,1436 5145,1399 5163,1380 5165,954 5165,885", lp="3520,2245"];
+	Node1338 -> Node1386 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="tradedate\nswtch_date\nsettledate\nsrc_date\nbardate", pos="s,5382,1501 5380,1491 5376,1471 5366,1440 5350,1417 5343,1406 5335,1409 5329,1399 5220,1227 5279,1148 5207,959 5196,931 5179,900\
+ 5171,885", lp="5354,1179"];
+	Node1334 -> Node1386 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=num_records, pos="s,2005,1508 2015,1506 2107,1491 2415,1439 2672,1417 2698,1414 3114,1413 3135,1399 3311,1278 3150,1079 3325,959 3347,944 3766,942\
+ 3791,941 4328,917 4982,884 5133,877", lp="3355,1179"];
+	Node1387 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="Cli_Sup_Info\nMkt_Sup_Info", pos="s,3831,2980 3832,2970 3840,2804 3908,1648 3932,1623 3959,1595 4075,1631 4101,1605 4131,1575 4091,1445 4121,1417 4156,1384 4517,1\
+433 4550,1399 4567,1381 4566,978 4550,959 4527,929 4502,956 4467,941 4275,855 4179,850 4083,663 4053,603 3883,716 4117,441 4177,\
+371 4850,387 4942,386 5031,384 5136,383 5193,383", lp="4118,652"];
+	Node1336 -> Node1387 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="nominee\nremark\nsundry_txn_info\nuti\ntransfer_note\ncrest_stamp\ntxn_rep_marker\nlocation", pos="s,3711,3469 3721,3467 3751,3459 3796,3446 3807,3433 3861,3362 3836,3058 3831,3000", lp="3879,3273"];
+	Node1309 -> Node1387 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=is_certificated, pos="s,2754,3473 2764,3473 2874,3469 3277,3456 3328,3433 3514,3349 3483,3220 3655,3113 3676,3100 3686,3106 3706,3095 3754,3067 3802,3\
+020 3821,3000", lp="3686,3273"];
+	Node1301 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=base, pos="s,4630,2980 4632,2970 4635,2946 4642,2904 4645,2867 4690,2315 4615,2172 4676,1623 4687,1530 4648,1479 4717,1417 4775,1364 4833,1\
+451 4892,1399 5041,1265 4915,1145 4988,959 5039,825 5052,785 5150,681 5159,670 5166,673 5176,663 5242,587 5254,558 5278,461 5280\
+,452 5280,449 5278,441 5271,421 5255,403 5245,393", lp="5203,652"];
+	Node1300 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=cn, pos="s,4260,1501 4269,1496 4306,1475 4378,1436 4443,1417 4472,1408 4555,1421 4574,1399 4607,1362 4592,1004 4574,959 4545,881 4397,719\
+ 4323,681 4266,651 4235,695 4178,663 4149,645 4131,635 4131,601 4131,601 4131,601 4131,451 4131,396 4993,385 5193,383", lp="4143,601"];
+	Node1368 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=MC_Mkt_Price_Tolerance, pos="s,5478,3472 5488,3472 5555,3469 5704,3459 5747,3433 5902,3336 5924,3268 5981,3095 6017,2982 6073,1060 6012,959 6002,944 5990,951\
+ 5977,941 5916,893 5915,865 5863,809 5853,798 5685,635 5677,623 5638,565 5666,528 5618,479 5604,465 5477,417 5459,411 5432,401 5\
+425,401 5398,395 5373,389 5366,390 5342,388 5331,386 5328,386 5318,386 5304,385 5289,384 5275,384", lp="5901,736"];
+	Node1336 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="MC_Config_Dummy_Client\nMC_Disp_Clearance_ACC_Prompt\nTmp_CN_Warn_On_Hold\nm_config_principal_message\nMC_Dummy_Mkt_Maker\nm_pri\
+ncipal_account\nMC_Dummy_Client\nMC_Clearance_Account\nMC_Disp_Branch_Prompt\nMC_Disp_Affirmed_Flag", pos="s,3711,3473 3721,3473 3740,3472 3765,3472 3787,3471 3814,3470 3882,3466 3908,3466 3936,3464 3944,3465 3971,3464 4000,3462 4007,3\
+462 4035,3461 4109,3457 4128,3457 4201,3454 4336,3447 4369,3445 4503,3439 4528,3437 4595,3447 4615,3433 4742,3344 4640,3222 4749\
+,3113 4764,3098 4780,3111 4792,3095 4846,3018 4782,1480 4850,1417 4906,1364 5141,1452 5197,1399 5268,1331 5228,1056 5241,959 525\
+0,884 5258,866 5268,791 5277,716 5276,697 5282,623 5287,542 5306,520 5291,441 5288,426 5287,422 5279,411 5272,402 5267,397 5261,\
+393", lp="5355,736"];
+	Node1377 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_dealing_capacity, pos="s,5128,642 5128,632 5129,616 5127,595 5118,579 5089,525 4997,533 5025,479 5063,402 5108,401 5193,385", lp="5069,489"];
+	Node1388 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=MC_Cli_Charge_Totals, pos="s,5547,591 5544,581 5532,542 5500,451 5437,411 5411,394 5327,387 5275,385", lp="5562,489"];
+	Node1374 -> Node1388 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="total_cli_VAT\ntotal_cli_3rd_pty_charge\ntotal_cli_comm\ntotal_cli_extra_charges\ntotal_cli_addn_charge", pos="s,5809,1501 5810,1491 5816,1402 5839,1043 5773,959 5756,938 5735,959 5716,941 5671,897 5692,866 5670,809 5647,751 5647,733 5615,\
+681 5597,653 5572,625 5558,611", lp="5772,875"];
+	Node1308 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="m_bd_number\nMC_BD_Number", pos="s,1570,3575 1580,3575 1759,3575 2885,3574 3225,3574 4097,3571 4315,3575 5186,3563 5292,3561 5566,3584 5667,3547 5752,3515 5777,3\
+501 5838,3433 6012,3232 6013,3132 6033,2867 6064,2444 6100,1378 6039,959 6020,832 6055,769 5963,681 5879,600 5797,696 5708,623 5\
+688,606 5672,540 5661,517 5652,499 5653,492 5640,479 5616,455 5605,455 5576,441 5474,393 5441,390 5329,385 5311,384 5292,384 527\
+5,383", lp="6074,875"];
+	Node1389 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=MC_All_Clients, pos="s,1303,181 1313,181 2431,227 2713,246 3835,305 4372,333 5024,371 5193,381", lp="3564,281"];
+	Node1390 -> Node1389 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=list, pos="s,2045,244 2035,243 1895,232 1461,197 1303,184", lp="1744,213"];
+	Node1391 -> Node1390 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,3718,313 3708,313 3427,301 2318,257 2111,248"];
+	Node1297 -> Node1391 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,4313,535 4303,533 4214,518 3973,466 3807,355 3795,346 3785,333 3779,325"];
+	Node1302 -> Node1391 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="cn_rec_no\nbd_rec_no", pos="s,2085,3463 2084,3453 2084,3446 2084,3439 2083,3433 2080,3290 2083,3255 2083,3113 2085,2450 2074,2285 2089,1623 2097,1327 1966,1\
+211 2118,959 2127,945 2141,954 2149,941 2227,821 2176,764 2183,623 2185,603 2192,596 2183,579 2178,567 2167,572 2161,561 2153,54\
+3 2155,535 2161,517 2226,330 2258,407 2635,343 2812,312 3262,319 3440,317 3493,316 3638,315 3718,315", lp="2208,652"];
+	Node1303 -> Node1391 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="m_del_reference\nconsid\nm_del_amount", pos="s,5691,2980 5692,2970 5694,2943 5700,2896 5712,2885 5753,2846 5798,2907 5838,2867 5989,2713 6066,1156 6080,941 6083,882 6097,865\
+ 6080,809 6050,713 5985,717 5954,623 5935,566 5948,548 5948,489 5948,489 5948,489 5948,383 5948,293 5635,348 5546,343 5199,321 4\
+086,316 3826,315", lp="5991,601"];
+	Node1374 -> Node1391 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="price\nconsideration\nm_del_consideration\nm_del_price", pos="s,5810,1501 5811,1491 5811,1484 5811,1479 5812,1470 5813,1441 5813,1433 5815,1405 5822,1198 5825,1147 5829,941 5829,882 5829,867\
+ 5829,809 5828,688 5827,659 5827,539 5827,539 5827,539 5827,383 5827,331 4151,317 3826,315", lp="5873,539"];
+	Node1295 -> Node1391 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_whole_deal, pos="s,5193,383 5183,383 4938,382 3898,376 3832,355 3813,349 3794,334 3783,325", lp="3881,349"];
+	Node1309 -> Node1391 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="m_force_calculation\nm_marked_deleted", pos="s,2720,3471 2710,3470 2683,3465 2621,3456 2611,3454 2587,3449 2517,3451 2500,3433 2331,3245 2462,3119 2451,2867 2428,2314 2409,2\
+174 2451,1623 2459,1522 2478,1499 2486,1399 2488,1378 2484,657 2496,641 2514,618 2539,644 2557,623 2582,594 2567,576 2567,539 25\
+67,539 2567,539 2567,383 2567,324 3483,316 3718,315", lp="2541,652"];
+	Node1392 -> Node1391 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=fi_flgs, pos="s,2520,2235 2520,2225 2516,2053 2494,825 2566,681 2572,669 2582,673 2589,663 2628,607 2600,576 2632,517 2653,478 2659,464 2696,4\
+41 2741,412 2759,420 2810,411 3152,349 3571,324 3718,317", lp="2630,601"];
+	Node1309 -> Node1392 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="vls_internal_commission\nvls_fixed_pay_commission\nsup_any_charges\nvls_internal_stampduty\nsup_charges_account\nvls_fixed_pay_v\
+at\nvls_fixed_pay_stampduty\nsup_previous_consid\nsup_charges_percent\nsup_charges\nsup_pay_net_total\nsup_pay_vat\nvls_fixed_ch\
+arge\nsup_previous_comm\nsup_charges_text\nsup_pay_commission\nsup_pay_ptm\nvls_fixed_pay_ptm\nvls_fixed_stampduty\nvls_fixed_pa\
+y_charge\nsup_pay_charge\nvls_fixed_pay_net_total\nsup_third_party_charge\nvls_internal_ptm\nvls_internal_charge\nsup_charges_cu\
+rrency\nsup_pay_stampduty\nvls_fixed_interest\nvls_fixed_commission", pos="s,2720,3471 2710,3469 2659,3462 2556,3445 2546,3433 2467,3337 2514,2363 2519,2255", lp="2611,3273"];
+	Node1302 -> Node1390 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=client_record, pos="s,2082,3463 2081,3453 2081,3447 2080,3442 2079,3433 2023,2985 2119,1765 1832,1417 1816,1397 1793,1419 1777,1399 1749,1359 1746,9\
+96 1777,959 1813,918 1850,967 1897,941 1965,903 1947,851 2011,809 2034,794 2053,812 2069,791 2098,751 2090,725 2069,681 2052,644\
+ 2025,654 1999,623 1972,590 1952,581 1952,539 1952,539 1952,539 1952,315 1952,273 2008,256 2045,250", lp="2031,601"];
+	Node1309 -> Node1390 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_is_certificated, pos="s,2720,3471 2710,3470 2686,3467 2678,3465 2651,3461 2636,3458 2633,3457 2617,3456 2606,3454 2418,3441 2410,3433 2334,3350 2341,1\
+512 2338,1399 2335,1203 2318,1153 2338,959 2353,825 2388,796 2402,663 2404,653 2406,650 2402,641 2399,630 2392,632 2386,623 2360\
+,579 2372,559 2344,517 2268,398 2133,289 2091,257", lp="2427,601"];
+	Node1308 -> Node1389 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="used\nmax_elems", pos="s,1542,3575 1532,3574 1522,3574 1510,3574 1500,3574 1484,3573 1481,3572 1464,3572 1440,3570 1045,3556 1022,3547 1021,3546 880,34\
+34 879,3433 794,3310 860,3235 773,3113 766,3102 757,3106 750,3095 704,3013 789,2950 721,2885 692,2856 564,2896 535,2867 514,2844\
+ 413,682 413,652 413,652 413,652 413,247 413,208 998,186 1187,181", lp="439,601"];
+	Node1359 -> Node1389 [dir=back, color=orange, fontsize=10, style=dashed, fontname=Helvetica, label="< mc_cli_line >", pos="s,541,3463 531,3460 521,3457 509,3453 499,3451 459,3440 435,3464 407,3433 384,3406 398,3146 387,3113 385,3104 379,3103 376,3095 \
+346,2998 366,2968 361,2867 358,2786 370,1481 321,1417 306,1396 281,1419 265,1399 126,1212 255,1107 255,875 255,875 255,875 255,2\
+47 255,180 334,217 399,207 476,195 1008,183 1187,180", lp="289,539"];
+	Node1309 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="m_saved_all_changes\nm_now_editing\nm_can_edit\nMC_Stock_Accrued", pos="s,2720,3463 2712,3457 2704,3451 2695,3443 2690,3433 2674,3399 2672,3132 2670,3095 2651,2620 2529,1421 2634,959 2666,819 2684,771\
+ 2794,681 2839,644 2978,596 3032,579 3384,465 3477,443 3842,397 3869,393 3875,395 3901,395 3933,393 3941,392 3972,392 4017,390 4\
+029,390 4073,390 4096,389 4102,389 4124,389 4162,388 4256,387 4293,387 4331,386 4424,385 4461,385 4606,383 5055,383 5193,383", lp="2844,736"];
+	Node1393 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=MC_Add_Deal_Flags, pos="s,4118,1169 4117,1159 4111,1119 4095,1025 4053,959 3976,834 3810,882 3810,736 3810,736 3810,736 3810,451 3810,383 3890,420 3957,\
+411 4020,401 4981,387 5193,384", lp="3858,601"];
+	Node1336 -> Node1393 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="add_sto_scale\nadd_cli_scale\nadd_contract_data\nsets_order\ncomm_calc\nadd_charge_source\ncomm_cli_scale\nselected_dealer\nmand\
+ate_print_status\nreport_only\noverride_agent\nsingle_market\nselected_agent\ncomm_sto_scale\nprint_client_details\nforce_certif\
+icated\ncnote_print_status\noverride_dealer\ndealing_message", pos="s,3689,3463 3686,3454 3683,3447 3681,3440 3679,3433 3648,3314 3539,2976 3619,2885 3661,2837 3717,2912 3759,2867 3949,2664 3651,1\
+827 3838,1623 3875,1583 3915,1637 3957,1605 4031,1549 3999,1497 4043,1417 4048,1408 4051,1407 4055,1399 4091,1321 4112,1220 4117\
+,1189", lp="3668,2990"];
+	Node1334 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="m_no_of_recs\nm_total_recs", pos="s,1991,1501 1994,1491 2000,1469 2010,1432 2014,1399 2022,1350 2008,995 2040,959 2073,922 2114,974 2149,941 2193,899 2143,857 217\
+8,809 2258,702 2345,756 2440,663 2471,632 2460,610 2489,579 2565,498 2596,486 2696,441 2846,373 2900,406 3064,403 3641,390 3786,\
+392 4362,388 4682,385 5068,383 5193,383", lp="2521,601"];
+	Node1338 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="MC_BD_Date\nm_bd_date", pos="s,5388,1501 5391,1491 5418,1415 5507,1130 5384,959 5368,938 5344,961 5329,941 5294,893 5288,851 5329,809 5373,762 5566,830 5618,\
+791 5682,741 5768,513 5731,441 5697,375 5476,387 5403,385 5379,384 5317,383 5275,383", lp="5755,601"];
+	Node1394 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=MC_All_Mkts, pos="s,5513,189 5505,195 5447,235 5295,341 5248,373", lp="5417,281"];
+	Node1308 -> Node1394 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="used\nmax_elems", pos="s,1570,3575 1580,3575 1807,3575 3547,3574 3777,3574 3968,3573 4016,3573 4206,3572 4397,3570 4445,3570 4635,3569 4844,3567 4896,3\
+567 5106,3565 5241,3563 5583,3583 5714,3547 5820,3517 5864,3518 5934,3433 6098,3233 6038,3123 6064,2867 6118,2315 6100,2175 6140\
+,1623 6163,1290 6200,1208 6200,875 6200,875 6200,875 6200,247 6200,216 5754,190 5588,182", lp="6226,601"];
+	Node1395 -> Node1394 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=list, pos="s,4820,244 4830,243 4960,231 5321,198 5466,185", lp="5205,213"];
+	Node1391 -> Node1395 [dir=back, color=midnightblue, fontsize=10, style=solid, fontname=Helvetica, pos="s,3826,311 3836,310 4029,298 4599,260 4748,249"];
+	Node1374 -> Node1395 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=full_consid, pos="s,5811,1501 5813,1491 5823,1454 5827,1440 5834,1399 5866,1204 5829,1148 5883,959 5905,879 5930,866 5963,791 6006,690 6032,668 60\
+53,561 6072,457 6049,400 5962,343 5864,278 5008,253 4820,248", lp="6083,489"];
+	Node1309 -> Node1395 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_is_certificated, pos="s,2737,3463 2737,3453 2737,3446 2738,3439 2737,3433 2736,3290 2742,3254 2730,3113 2721,3002 2704,2977 2694,2867 2639,2224 2640,2\
+061 2658,1417 2665,1213 2638,1157 2685,959 2702,888 2693,853 2750,809 2795,774 2839,833 2875,791 2908,754 2882,729 2875,681 2860\
+,558 2736,509 2810,411 2943,235 3069,307 3286,275 3435,252 4534,248 4748,247", lp="2899,601"];
+	Node1359 -> Node1394 [dir=back, color=orange, fontsize=10, style=dashed, fontname=Helvetica, label="< mc_mkt_line >", pos="s,567,3463 568,3453 571,3381 580,3138 557,3113 515,3066 459,3141 417,3095 371,3042 347,633 391,579 863,0 1294,319 2036,237 2390,\
+198 5029,182 5466,179", lp="482,539"];
+	Node1396 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=m_screen, pos="s,5664,441 5656,435 5644,426 5629,416 5614,411 5552,389 5360,384 5275,383", lp="5662,417"];
+	Node1361 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=filt, pos="s,2735,446 2745,443 2778,433 2837,417 2888,411 3007,396 4888,385 5193,383", lp="2894,417"];
+	Node1397 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=MC_Import_Flags, pos="s,5134,479 5125,474 5119,471 5114,466 5110,461 5105,453 5105,448 5110,441 5128,412 5164,397 5193,390", lp="5150,451"];
+	Node1336 -> Node1397 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="ptm_charge\nmkt_mon_flag\ncli_only_deal_send_to\ncli_mon_flag\ncli_deal_send_to\ncli_only_sc_flag\nstamp_charge\ncli_val_flag\nm\
+kt_sc_flag\ncli_only_mon_flag\ncli_acc_flag\nmkt_val_flag\ncli_sc_flag\ncli_only_val_flag\nmkt_acc_flag\nmkt_deal_send_to", pos="s,3711,3473 3721,3472 3734,3472 3748,3472 3761,3471 3792,3469 3799,3467 3829,3466 4049,3452 4104,3452 4324,3443 4325,3442 4545,3\
+433 4545,3433 4581,3396 4569,1672 4579,1623 4600,1525 4592,1482 4666,1417 4688,1397 4710,1421 4729,1399 4858,1249 4715,1141 4789\
+,959 4846,816 4861,757 4995,681 5026,662 5132,688 5158,663 5203,617 5186,528 5179,499", lp="4838,1179"];
+	Node1305 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="mc_cli_line\nmc_mkt_line", pos="s,5787,3798 5797,3797 5892,3788 6162,3803 6162,3721 6162,3721 6162,3721 6162,1511 6162,1092 6289,909 6033,579 5905,414 5814,402 \
+5607,385 5590,383 5369,383 5275,383", lp="6190,2245"];
+	Node1398 -> Node1295 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=MC_Mkt_Cli_Vals, pos="s,5581,865 5585,855 5600,818 5625,736 5591,681 5560,631 5516,662 5473,623 5392,549 5436,476 5349,411 5337,402 5303,395 5275,389", lp="5468,539"];
+	Node1368 -> Node1398 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="total_cli_qty\ntotal_mkt_qty", pos="s,5456,3463 5457,3453 5463,3377 5486,3097 5499,2867 5545,2030 5574,995 5577,885", lp="5582,2245"];
+	Node1374 -> Node1398 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label="mkt_charge\nmkt_comm\nmkt_ptm\naverage_price\nmkt_stamp", pos="s,5807,1501 5806,1491 5802,1469 5793,1435 5771,1417 5740,1391 5709,1428 5682,1399 5615,1326 5670,1051 5636,959 5625,929 5600,900\
+ 5587,885", lp="5713,1179"];
+	Node1308 -> Node1398 [dir=back, color=darkorchid3, fontsize=10, style=dashed, fontname=Helvetica, label=override_average_price, pos="s,1570,3575 1580,3575 1609,3575 1659,3574 1701,3574 1742,3573 1752,3573 1792,3573 1893,3571 1918,3569 2017,3567 2229,3560 3792,3\
+602 3918,3433 3979,3352 3906,1713 3950,1623 4015,1491 4069,1466 4206,1417 4257,1398 5123,1432 5165,1399 5323,1273 5124,1089 5279\
+,959 5315,928 5447,958 5492,941 5524,928 5554,900 5568,885", lp="3997,2990"];
+}

@@ -1,0 +1,63 @@
+\documentstyle[11pt,draft,titlepage]{report}
+\input{epsf}
+% \epsfverbosetrue
+
+\catcode`@=11
+\def\@makechapterhead#1{
+    {
+        \parindent \z@ \raggedright \reset@font
+        \ifnum \c@secnumdepth >\m@ne
+            \Large\bfseries \@chapapp{} \thechapter . #1
+            \par\nobreak
+            \vskip 20\p@
+        \fi
+        \interlinepenalty\@M
+    }
+}
+\catcode`@=12
+
+\newcommand{\FEY}{{\sl fey}}
+\newcommand{\YEAST}{{\sl yeast}}
+\newcommand{\DOT}{{\sl dot}}
+\newcommand{\LEFTY}{{\sl lefty}}
+\newcommand{\DOTTY}{{\sl dotty}}
+\newcommand{\LDBX}{{\sl ldbx}}
+
+\title{Editing graphs with {\DOTTY}}
+\author{Eleftherios Koutsofios\\
+Stephen C. North}
+\newcommand{\lastedited}{96c (09-24-96)}
+\date{\lastedited}
+
+\renewcommand{\textfraction}{0.01}
+\setlength\oddsidemargin{0.00pt}
+\setlength\evensidemargin{0.00pt}
+\setlength{\topmargin}{0pt}
+\setlength{\headheight}{0pt}
+\setlength{\headsep}{0pt}
+%\setlength{\footheight}{0pt}
+%\setlength{\footskip}{0pt}
+\setlength{\textheight}{8.5in}
+\setlength{\textwidth}{6.5in}
+\begin{document}
+\maketitle
+\begin{abstract}
+{\DOTTY} is a graph editor for the X Window System.  It may be run as a
+standalone editor, or as a front end for applications that use graphs.  It can
+control multiple windows viewing different graphs.
+
+{\DOTTY} is written on top of {\DOT} and {\LEFTY}.  {\LEFTY} is a
+general-purpose programmable editor for technical pictures.  It has an
+interpretive programming language similar to AWK and C.  The user interface and
+graph editing operations of {\DOTTY} are written as {\LEFTY} functions.
+Programmer-defined graph operations may be loaded as well.  Graph layouts are
+made by {\DOT}, which runs as a separate process that communicates with
+{\LEFTY} through pipes.
+
+The screen dump below shows a snapshot of a typical {\DOTTY} session.
+
+\vspace{0.1in}
+\centerline{\hbox{\epsfxsize=6in \epsffile{figs/dotty.ps}}}
+\end{abstract}
+
+\bibliographystyle{alpha}

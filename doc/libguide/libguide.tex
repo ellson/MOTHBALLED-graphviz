@@ -1,0 +1,67 @@
+\documentclass[11pt]{article}
+%\usepackage{graphicx}
+\usepackage{times}
+
+%\addtolength{\oddsidemargin}{-0.5in}
+%\addtolength{\evensidemargin}{-0.5in}
+%\addtolength{\textheight}{2.0in}
+%\addtolength{\topmargin}{-0.75in}
+\addtolength{\topmargin}{-0.75in}
+\addtolength{\textheight}{1.5in}
+\addtolength{\oddsidemargin}{-0.75in}
+\addtolength{\evensidemargin}{-0.75in}
+\addtolength{\textwidth}{1.5in}
+
+\pagestyle{myheadings}
+
+\def\dot{{\it dot}}
+\def\DOT{{\it DOT}}
+\def\neato{{\it neato}}
+\def\fdp{{\it fdp}}
+\def\twopi{{\it twopi}}
+\def\circo{{\it circo}}
+\def\gviz{{\it Graphviz}}
+\def\graph{{\tt libgraph}}
+\def\agraph{{\tt libagraph}}
+\def\pack{{\tt libpack}}
+
+\newcommand{\lastedited}{22 November 2004}
+\date{\lastedited}
+\newcommand{\mymark}{\gviz Drawing Library Manual, \lastedited \hfil }
+\markboth{\mymark}{\mymark}
+
+\begin{document}
+\bibliographystyle{alpha}
+\author{Emden R. Gansner}
+\title{Drawing graphs with \gviz}
+\maketitle
+
+\newpage
+\tableofcontents
+\newpage
+\input{intro}
+
+\input{basic}
+
+\input{layouts}
+
+\input{drivers}
+
+\input{codegen}
+
+\input{unconnect}
+
+%\input{overlap}
+
+%\input{paths}
+
+\clearpage
+\bibliography{graphdraw}
+
+\appendix
+\clearpage
+\input{build}
+\input{samples}
+\input{types}
+
+\end{document}

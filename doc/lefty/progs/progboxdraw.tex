@@ -1,0 +1,11 @@
+\begin{verbatim}
+drawbox = function (obj, color) {
+    box (canvas, obj, obj.rect, ['color' = color;]);
+};
+redrawboxes = function () {
+    local i;
+    clear (canvas);
+    for (i = 0; i < objnum; i = i + 1)
+        drawbox (objarray[i], 1);
+};
+\end{verbatim}

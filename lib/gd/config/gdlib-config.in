@@ -1,0 +1,96 @@
+#!/bin/sh
+#
+# Return information about the local GD library installation
+#
+# Modeled after pdflib-config
+
+# installation directories
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+bindir=@bindir@
+
+usage()
+{
+	cat <<EOF
+Print information on GD library's version, configuration, and use.
+Usage: gdlib-config [options]
+Options:
+	--libdir          # directory where GD library is installed
+	--includedir      # directory where GD library headers are installed
+	--version         # complete GD library version string
+	--majorversion    # GD library major version number
+	--minorversion    # GD library minor version number
+	--revision        # GD library revision version number
+	--ldflags         # options required for linking against GD library
+	--libs            # libs required for linking against GD library
+	--cflags          # options required for compiling GD library apps
+	--includes        # same as --cflags
+	--features        # lists optional features compiled into gd, separated
+                          # by spaces. Currently (as of 2.0.26) the optional
+                          # features are GD_PNG, GD_JPEG, GD_XPM, and
+                          # GD_FREETYPE. When these features are reported by
+                          # --features, it is safe to include calls to the
+                          # related functions in your code.
+	--all             # print a summary of all GD library configure options
+EOF
+	exit $1
+}
+
+if test $# -eq 0; then
+	usage 1 1>&2
+fi
+
+while test $# -gt 0; do
+    case "$1" in
+    -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+    *) optarg= ;;
+    esac
+
+    case $1 in
+    --libdir)
+	echo $libdir
+	;;
+    --includedir)
+	echo $includedir
+	;;
+    --version)
+	echo @VERSION@
+	;;
+    --majorversion)
+	echo @GDLIB_MAJOR@
+	;;
+    --minorversion)
+	echo @GDLIB_MINOR@
+	;;
+    --revision)
+	echo @GDLIB_REVISION@
+	;;
+    --ldflags)
+	echo @LDFLAGS@
+	;;
+    --libs)
+	echo @LIBS@
+	;;
+    --cflags|--includes)
+	echo -I@includedir@
+	;;
+    --features)
+	echo @FEATURES@
+	;;
+    --all)
+	echo "GD library  @VERSION@"
+	echo "includedir: $includedir"
+	echo "cflags:     -I@includedir@"
+	echo "ldflags:    @LDFLAGS@"
+	echo "libs:       @LIBS@"
+	echo "libdir:     $libdir"
+	echo "features:   @FEATURES@"
+	;;
+    *)
+	usage 1 1>&2
+	;;
+    esac
+    shift
+done

@@ -1,0 +1,5 @@
+load ('dotty.lefty');
+dotty.init ();
+gvt = dotty.createviewandgraph ('train11.dot', 'file', null, null);
+dotty.protogt.printorsave (gvt.gt, gvt.vt, 'file', 'figdag.ps',
+        'portrait', '8.5x11');

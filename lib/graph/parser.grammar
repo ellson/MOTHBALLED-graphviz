@@ -1,0 +1,756 @@
+
+state 0
+	$accept : _file $end 
+	file : _    (4)
+
+	$end  reduce 4
+	error  shift 3
+	T_graph  shift 4
+	T_digraph  shift 6
+	T_strict  shift 5
+	.  error
+
+	file  goto 1
+	graph_type  goto 2
+
+state 1
+	$accept :  file_$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	file :  graph_type_T_symbol $$1 { stmt_list } 
+
+	T_symbol  shift 7
+	.  error
+
+
+state 3
+	file :  error_    (3)
+
+	.  reduce 3
+
+
+state 4
+	graph_type :  T_graph_    (5)
+
+	.  reduce 5
+
+
+state 5
+	graph_type :  T_strict_T_graph 
+	graph_type :  T_strict_T_digraph 
+
+	T_graph  shift 8
+	T_digraph  shift 9
+	.  error
+
+
+state 6
+	graph_type :  T_digraph_    (7)
+
+	.  reduce 7
+
+
+state 7
+	file :  graph_type T_symbol_$$1 { stmt_list } 
+	$$1 : _    (1)
+
+	.  reduce 1
+
+	$$1  goto 10
+
+state 8
+	graph_type :  T_strict T_graph_    (6)
+
+	.  reduce 6
+
+
+state 9
+	graph_type :  T_strict T_digraph_    (8)
+
+	.  reduce 8
+
+
+state 10
+	file :  graph_type T_symbol $$1_{ stmt_list } 
+
+	{  shift 11
+	.  error
+
+
+state 11
+	file :  graph_type T_symbol $$1 {_stmt_list } 
+	stmt_list : _    (23)
+
+	error  shift 16
+	T_graph  shift 27
+	T_node  shift 28
+	T_edge  shift 29
+	T_symbol  shift 30
+	T_subgraph  shift 31
+	{  shift 25
+	}  reduce 23
+	.  error
+
+	node_name  goto 26
+	node_id  goto 21
+	subg_stmt  goto 20
+	stmt_list  goto 12
+	attr_class  goto 22
+	attr_set  goto 23
+	stmt_list1  goto 13
+	stmt  goto 14
+	stmt1  goto 15
+	node_stmt  goto 17
+	edge_stmt  goto 18
+	attr_stmt  goto 19
+	subg_hdr  goto 24
+
+state 12
+	file :  graph_type T_symbol $$1 { stmt_list_} 
+
+	}  shift 32
+	.  error
+
+
+state 13
+	stmt_list :  stmt_list1_    (22)
+	stmt_list1 :  stmt_list1_stmt 
+
+	error  shift 16
+	T_graph  shift 27
+	T_node  shift 28
+	T_edge  shift 29
+	T_symbol  shift 30
+	T_subgraph  shift 31
+	{  shift 25
+	}  reduce 22
+	.  error
+
+	node_name  goto 26
+	node_id  goto 21
+	subg_stmt  goto 20
+	attr_class  goto 22
+	attr_set  goto 23
+	stmt  goto 33
+	stmt1  goto 15
+	node_stmt  goto 17
+	edge_stmt  goto 18
+	attr_stmt  goto 19
+	subg_hdr  goto 24
+
+state 14
+	stmt_list1 :  stmt_    (24)
+
+	.  reduce 24
+
+
+state 15
+	stmt :  stmt1_    (26)
+	stmt :  stmt1_; 
+
+	;  shift 34
+	.  reduce 26
+
+
+state 16
+	stmt :  error_    (28)
+
+	.  reduce 28
+
+
+state 17
+	stmt1 :  node_stmt_    (29)
+
+	.  reduce 29
+
+
+state 18
+	stmt1 :  edge_stmt_    (30)
+
+	.  reduce 30
+
+
+state 19
+	stmt1 :  attr_stmt_    (31)
+
+	.  reduce 31
+
+
+state 20
+	stmt1 :  subg_stmt_    (32)
+	edge_stmt :  subg_stmt_$$51 edgeRHS $$52 opt_attr_list 
+	$$51 : _    (51)
+
+	T_edgeop  reduce 51
+	.  reduce 32
+
+	$$51  goto 35
+
+state 21
+	node_stmt :  node_id_$$46 opt_attr_list 
+	edge_stmt :  node_id_$$48 edgeRHS $$49 opt_attr_list 
+	$$46 : _    (46)
+	$$48 : _    (48)
+
+	T_edgeop  reduce 48
+	.  reduce 46
+
+	$$46  goto 36
+	$$48  goto 37
+
+state 22
+	attr_stmt :  attr_class_attr_list 
+
+	[  shift 39
+	.  error
+
+	attr_list  goto 38
+
+state 23
+	attr_stmt :  attr_set_    (34)
+
+	.  reduce 34
+
+
+state 24
+	subg_stmt :  subg_hdr_{ stmt_list } 
+	subg_stmt :  subg_hdr_    (63)
+
+	{  shift 40
+	.  reduce 63
+
+
+state 25
+	subg_stmt :  {_$$61 stmt_list } 
+	$$61 : _    (61)
+
+	.  reduce 61
+
+	$$61  goto 41
+
+state 26
+	node_id :  node_name_node_port 
+	node_port : _    (37)
+
+	:  shift 45
+	@  shift 46
+	.  reduce 37
+
+	node_port  goto 42
+	port_location  goto 43
+	port_angle  goto 44
+
+state 27
+	attr_class :  T_graph_    (9)
+
+	.  reduce 9
+
+
+state 28
+	attr_class :  T_node_    (10)
+
+	.  reduce 10
+
+
+state 29
+	attr_class :  T_edge_    (11)
+
+	.  reduce 11
+
+
+state 30
+	attr_set :  T_symbol_$$20 = T_symbol 
+	node_name :  T_symbol_    (36)
+	$$20 : _    (20)
+
+	=  reduce 20
+	.  reduce 36
+
+	$$20  goto 47
+
+state 31
+	subg_hdr :  T_subgraph_T_symbol 
+
+	T_symbol  shift 48
+	.  error
+
+
+state 32
+	file :  graph_type T_symbol $$1 { stmt_list }_    (2)
+
+	.  reduce 2
+
+
+state 33
+	stmt_list1 :  stmt_list1 stmt_    (25)
+
+	.  reduce 25
+
+
+state 34
+	stmt :  stmt1 ;_    (27)
+
+	.  reduce 27
+
+
+state 35
+	edge_stmt :  subg_stmt $$51_edgeRHS $$52 opt_attr_list 
+
+	T_edgeop  shift 50
+	.  error
+
+	edgeRHS  goto 49
+
+state 36
+	node_stmt :  node_id $$46_opt_attr_list 
+	rec_attr_list : _    (18)
+
+	.  reduce 18
+
+	rec_attr_list  goto 52
+	opt_attr_list  goto 51
+
+state 37
+	edge_stmt :  node_id $$48_edgeRHS $$49 opt_attr_list 
+
+	T_edgeop  shift 50
+	.  error
+
+	edgeRHS  goto 53
+
+state 38
+	attr_stmt :  attr_class attr_list_    (33)
+
+	.  reduce 33
+
+
+state 39
+	attr_list :  [_inside_attr_list ] 
+	inside_attr_list : _    (13)
+
+	T_symbol  shift 56
+	.  reduce 13
+
+	inside_attr_list  goto 54
+	attr_set  goto 55
+
+state 40
+	subg_stmt :  subg_hdr {_stmt_list } 
+	stmt_list : _    (23)
+
+	error  shift 16
+	T_graph  shift 27
+	T_node  shift 28
+	T_edge  shift 29
+	T_symbol  shift 30
+	T_subgraph  shift 31
+	{  shift 25
+	}  reduce 23
+	.  error
+
+	node_name  goto 26
+	node_id  goto 21
+	subg_stmt  goto 20
+	stmt_list  goto 57
+	attr_class  goto 22
+	attr_set  goto 23
+	stmt_list1  goto 13
+	stmt  goto 14
+	stmt1  goto 15
+	node_stmt  goto 17
+	edge_stmt  goto 18
+	attr_stmt  goto 19
+	subg_hdr  goto 24
+
+state 41
+	subg_stmt :  { $$61_stmt_list } 
+	stmt_list : _    (23)
+
+	error  shift 16
+	T_graph  shift 27
+	T_node  shift 28
+	T_edge  shift 29
+	T_symbol  shift 30
+	T_subgraph  shift 31
+	{  shift 25
+	}  reduce 23
+	.  error
+
+	node_name  goto 26
+	node_id  goto 21
+	subg_stmt  goto 20
+	stmt_list  goto 58
+	attr_class  goto 22
+	attr_set  goto 23
+	stmt_list1  goto 13
+	stmt  goto 14
+	stmt1  goto 15
+	node_stmt  goto 17
+	edge_stmt  goto 18
+	attr_stmt  goto 19
+	subg_hdr  goto 24
+
+state 42
+	node_id :  node_name node_port_    (35)
+
+	.  reduce 35
+
+
+state 43
+	node_port :  port_location_    (38)
+	node_port :  port_location_port_angle 
+
+	@  shift 46
+	.  reduce 38
+
+	port_angle  goto 59
+
+state 44
+	node_port :  port_angle_    (39)
+	node_port :  port_angle_port_location 
+
+	:  shift 45
+	.  reduce 39
+
+	port_location  goto 60
+
+state 45
+	port_location :  :_T_symbol 
+	port_location :  :_( T_symbol $$43 , T_symbol ) 
+
+	T_symbol  shift 61
+	(  shift 62
+	.  error
+
+
+state 46
+	port_angle :  @_T_symbol 
+
+	T_symbol  shift 63
+	.  error
+
+
+state 47
+	attr_set :  T_symbol $$20_= T_symbol 
+
+	=  shift 64
+	.  error
+
+
+state 48
+	subg_hdr :  T_subgraph T_symbol_    (64)
+
+	.  reduce 64
+
+
+state 49
+	edge_stmt :  subg_stmt $$51 edgeRHS_$$52 opt_attr_list 
+	$$52 : _    (52)
+
+	.  reduce 52
+
+	$$52  goto 65
+
+state 50
+	edgeRHS :  T_edgeop_node_id 
+	edgeRHS :  T_edgeop_node_id $$55 edgeRHS 
+	edgeRHS :  T_edgeop_subg_stmt 
+	edgeRHS :  T_edgeop_subg_stmt $$58 edgeRHS 
+
+	T_symbol  shift 68
+	T_subgraph  shift 31
+	{  shift 25
+	.  error
+
+	node_name  goto 26
+	node_id  goto 66
+	subg_stmt  goto 67
+	subg_hdr  goto 24
+
+state 51
+	node_stmt :  node_id $$46 opt_attr_list_    (47)
+
+	.  reduce 47
+
+
+state 52
+	rec_attr_list :  rec_attr_list_attr_list 
+	opt_attr_list :  rec_attr_list_    (19)
+
+	[  shift 39
+	.  reduce 19
+
+	attr_list  goto 69
+
+state 53
+	edge_stmt :  node_id $$48 edgeRHS_$$49 opt_attr_list 
+	$$49 : _    (49)
+
+	.  reduce 49
+
+	$$49  goto 70
+
+state 54
+	attr_list :  [ inside_attr_list_] 
+
+	]  shift 71
+	.  error
+
+
+state 55
+	inside_attr_list :  attr_set_optcomma inside_attr_list 
+	optcomma : _    (14)
+
+	,  shift 73
+	.  reduce 14
+
+	optcomma  goto 72
+
+state 56
+	attr_set :  T_symbol_$$20 = T_symbol 
+	$$20 : _    (20)
+
+	.  reduce 20
+
+	$$20  goto 47
+
+state 57
+	subg_stmt :  subg_hdr { stmt_list_} 
+
+	}  shift 74
+	.  error
+
+
+state 58
+	subg_stmt :  { $$61 stmt_list_} 
+
+	}  shift 75
+	.  error
+
+
+state 59
+	node_port :  port_location port_angle_    (41)
+
+	.  reduce 41
+
+
+state 60
+	node_port :  port_angle port_location_    (40)
+
+	.  reduce 40
+
+
+state 61
+	port_location :  : T_symbol_    (42)
+
+	.  reduce 42
+
+
+state 62
+	port_location :  : (_T_symbol $$43 , T_symbol ) 
+
+	T_symbol  shift 76
+	.  error
+
+
+state 63
+	port_angle :  @ T_symbol_    (45)
+
+	.  reduce 45
+
+
+state 64
+	attr_set :  T_symbol $$20 =_T_symbol 
+
+	T_symbol  shift 77
+	.  error
+
+
+state 65
+	edge_stmt :  subg_stmt $$51 edgeRHS $$52_opt_attr_list 
+	rec_attr_list : _    (18)
+
+	.  reduce 18
+
+	rec_attr_list  goto 52
+	opt_attr_list  goto 78
+
+state 66
+	edgeRHS :  T_edgeop node_id_    (54)
+	edgeRHS :  T_edgeop node_id_$$55 edgeRHS 
+	$$55 : _    (55)
+
+	T_edgeop  reduce 55
+	.  reduce 54
+
+	$$55  goto 79
+
+state 67
+	edgeRHS :  T_edgeop subg_stmt_    (57)
+	edgeRHS :  T_edgeop subg_stmt_$$58 edgeRHS 
+	$$58 : _    (58)
+
+	T_edgeop  reduce 58
+	.  reduce 57
+
+	$$58  goto 80
+
+state 68
+	node_name :  T_symbol_    (36)
+
+	.  reduce 36
+
+
+state 69
+	rec_attr_list :  rec_attr_list attr_list_    (17)
+
+	.  reduce 17
+
+
+state 70
+	edge_stmt :  node_id $$48 edgeRHS $$49_opt_attr_list 
+	rec_attr_list : _    (18)
+
+	.  reduce 18
+
+	rec_attr_list  goto 52
+	opt_attr_list  goto 81
+
+state 71
+	attr_list :  [ inside_attr_list ]_    (16)
+
+	.  reduce 16
+
+
+state 72
+	inside_attr_list :  attr_set optcomma_inside_attr_list 
+	inside_attr_list : _    (13)
+
+	T_symbol  shift 56
+	.  reduce 13
+
+	inside_attr_list  goto 82
+	attr_set  goto 55
+
+state 73
+	optcomma :  ,_    (15)
+
+	.  reduce 15
+
+
+state 74
+	subg_stmt :  subg_hdr { stmt_list }_    (60)
+
+	.  reduce 60
+
+
+state 75
+	subg_stmt :  { $$61 stmt_list }_    (62)
+
+	.  reduce 62
+
+
+state 76
+	port_location :  : ( T_symbol_$$43 , T_symbol ) 
+	$$43 : _    (43)
+
+	.  reduce 43
+
+	$$43  goto 83
+
+state 77
+	attr_set :  T_symbol $$20 = T_symbol_    (21)
+
+	.  reduce 21
+
+
+state 78
+	edge_stmt :  subg_stmt $$51 edgeRHS $$52 opt_attr_list_    (53)
+
+	.  reduce 53
+
+
+state 79
+	edgeRHS :  T_edgeop node_id $$55_edgeRHS 
+
+	T_edgeop  shift 50
+	.  error
+
+	edgeRHS  goto 84
+
+state 80
+	edgeRHS :  T_edgeop subg_stmt $$58_edgeRHS 
+
+	T_edgeop  shift 50
+	.  error
+
+	edgeRHS  goto 85
+
+state 81
+	edge_stmt :  node_id $$48 edgeRHS $$49 opt_attr_list_    (50)
+
+	.  reduce 50
+
+
+state 82
+	inside_attr_list :  attr_set optcomma inside_attr_list_    (12)
+
+	.  reduce 12
+
+
+state 83
+	port_location :  : ( T_symbol $$43_, T_symbol ) 
+
+	,  shift 86
+	.  error
+
+
+state 84
+	edgeRHS :  T_edgeop node_id $$55 edgeRHS_    (56)
+
+	.  reduce 56
+
+
+state 85
+	edgeRHS :  T_edgeop subg_stmt $$58 edgeRHS_    (59)
+
+	.  reduce 59
+
+
+state 86
+	port_location :  : ( T_symbol $$43 ,_T_symbol ) 
+
+	T_symbol  shift 87
+	.  error
+
+
+state 87
+	port_location :  : ( T_symbol $$43 , T_symbol_) 
+
+	)  shift 88
+	.  error
+
+
+state 88
+	port_location :  : ( T_symbol $$43 , T_symbol )_    (44)
+
+	.  reduce 44
+
+
+21/600 terminals, 35/2000 nonterminals
+65/1200 grammar rules, 89/1500 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+35/2001 working sets used
+memory: states,etc. 233/48000, parser 102/24000
+32/2001 distinct lookahead sets
+8 extra closures
+68 shift entries, 11 exceptions
+51 goto entries
+39 entries saved by goto default
+Optimizer space used: input 205/48000, output 225/24000
+225 table entries, 132 zero
+Maximum spread: 264, maximum offset: 263

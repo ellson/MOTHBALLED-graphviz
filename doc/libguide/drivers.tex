@@ -1,0 +1,89 @@
+\section{Using the output drivers}
+\label{sec:drivers}
+
+If an application decides to avail itself of the code generators
+in the \gviz\ libraries, the simplest way is to pass a graph
+which has been laid out to the function \verb+dotneato_write+.
+This will generate and write the appropriate graphics instructions.
+
+The \gviz\ architecture uses a data structure {\tt GVC\_t} to
+define a rendering environment or context. Among other parameters,
+this specifies what output formats are created and in which files.
+A single {\tt GVC\_t} value can be used with multiple graphs.
+An instance of an environment can be created by a call to
+\begin{verbatim}
+    extern GVC_t *gvNEWcontext(char **info, char *user);
+\end{verbatim}
+The first argument is an array of 3 character pointers
+providing version information; see Appendix~\ref{sec:info} for a
+description of this data. The second argument is a string giving a
+name for the user. If desired, the application can call the library
+function {\tt username} to obtain this value.
+
+For convenience, the \gviz\ library provides a simple way to 
+create an environment:
+\begin{verbatim}
+    extern GVC_t *gvContext();
+\end{verbatim}
+This uses the {\tt Info} created when \gviz\ was built, plus
+an empty string for the user's name.
+
+To initialize the environment, the application should
+call the function \verb+dotneato_initialize+ :
+\begin{verbatim}
+  extern void dotneato_initialize(GVC_t* gvc, int argc, char* argv[]);
+\end{verbatim}
+This function takes the environment value, plus an array of strings.
+It calls {\tt aginit} to initialize the \graph\ library, and then
+uses the values in {\tt argv} to set the appropriate values in {\tt gvc}.
+These strings should be the flags commonly accepted by the various
+\gviz\ programs such as {\tt "-T"} and {\tt "-o"}.
+
+For example, the application can use a synthetic argument list
+\begin{verbatim}
+    GVC_t* gvc = gcContext();
+    char* args[] = {
+        "command",
+        "-Tgif",       /* gif output */
+        "-oabc.gif"    /* output  to file abc.gif */
+    };
+    dotneato_initialize (gvc, sizeof(args)/sizeof(char*), args);
+\end{verbatim}
+to specify {\tt GIF} output written to the file {\tt abc.gif}.
+Another approach is to use the program's actual argument list, 
+after removing flags not handled by \gviz.
+ 
+Most of the information is stored in {\tt gvc} for use later. However,
+if the {\tt argv} array contains non-flag arguments, these are taken
+to be input files and are stored in {\tt char* Files[]}. This is a
+{\tt NULL}-terminated array of all the non-flag values.
+
+Sometime before calling \verb+dotneato_write+, the application
+needs to bind the environment and graph together. For this, it uses
+the function:
+\begin{verbatim}
+  extern void gvBindContext(GVC_t* gvc, Agraph_t* g);
+\end{verbatim}
+ 
+With this setup, and after a call to a layout algorithm, the
+application can generate output by calling \verb+dotneato_write+:
+\begin{verbatim}
+  extern void dotneato_write (GVC_t *gvc);
+\end{verbatim}
+This function relies on a variety of implicit parameters which
+are used to control the concrete representation. Most of these are
+specified as graph attributes. These are noted in 
+Tables~\ref{tab:nattr_geom}, \ref{tab:eattr_geom} and
+\ref{tab:gattr_geom}.
+
+If an application uses \verb+dotneato_write+,
+it should afterwards call \verb+dotneato_eof+. 
+This tells the code generator
+that output is finished, so it can emit any needed trailers.
+If appropriate, this can be achieved by a call to \verb+dotneato_terminate+,
+which invokes \verb+dotneato_eof+ and then exits with an exit value reflecting
+any errors that arose in using the \gviz\ libraries. 
+
+The Appendices~\ref{sec:simple}, \ref{sec:dot}, and \ref{sec:demo}
+show how all of these pieces fit together.
+

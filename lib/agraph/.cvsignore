@@ -1,0 +1,12 @@
+*.la
+*.lo
+*.pc
+.deps
+.libs
+Makefile
+Makefile.in
+scan.c
+grammar.[ch]
+y.output
+y.tab.[ch]
+*.pdf

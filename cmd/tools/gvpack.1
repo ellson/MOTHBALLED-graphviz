@@ -1,0 +1,101 @@
+.TH GVPACK 1 "8 April 2003"
+.SH NAME
+gvpack \- merge and pack disjoint graphs
+.SH SYNOPSIS
+.B gvpack
+[
+.B \-nguv?
+]
+[
+.BI -m margin
+]
+[
+.BI -o outfile
+]
+[
+.BI -G name\fB=\fPvalue
+]
+[ 
+.I files
+]
+.SH DESCRIPTION
+.B gvpack
+reads in a stream of graphs, combines the graphs into a single
+layout, and produces a single graph serving as the union of the
+input graphs. The input graphs must be in dot format, and must have
+all necessary layout information. Acceptable input is produced
+by applying a Graphviz layout program, such as \fBdot\fP or \fBneato\fP, 
+with no \fB-T\fP flag.
+.P
+By default, the packing is done at the cluster level. Thus, parts of
+one graph will not intrude into any top-level clusters or overlap
+any nodes or edges of another.
+.P
+The output of \fBgvpack\fP can be used to produce concrete output
+by applying \fBneato -s -n2\fP with the desired \fB-T\fP flag.
+.SH OPTIONS
+The following options are supported:
+.TP
+.B \-g
+Combines the graphs at the graph level. This uses more space, but prevents
+parts of one graph from occurring between parts of another. 
+.TP
+.BI \-G "name\fB=\fPvalue"
+Specifies attributes to be added to the resulting union graph. For
+example, this can be used to specify a graph label.
+.TP
+.BI \-m "margin"
+Packs the graphs allowing a margin of \fIoutput\fP points around
+the parts.
+.TP
+.B \-n
+Combines the graphs at the node level. Clusters are ignored in the packing.
+.TP
+.BI \-o "output"
+Prints output to the file \fIoutput\fP. If not given, \fBgvpack\fP
+uses stdout.
+.TP
+.B \-u
+Don't pack the graphs. Just combine them into a single graph.
+.TP
+.B \-v
+Verbose mode.
+.TP
+.B \-?
+Prints usage information and exit.
+.SH OPERANDS
+The following operand is supported:
+.TP 8
+.I files
+Names of files containing 1 or more graphs in dot format.
+If no
+.I files
+operand is specified,
+the standard input will be used.
+.SH RETURN CODES
+.B gvpack
+returns
+.B 0
+if there were no problems, and non-zero otherwise.
+.SH EXAMPLES
+.EX
+ccomps -x abc.dot | dot | gvpack | neato -s -n2 -Tps
+.EE
+This pipeline decomposes the graph in \fIabc.dot\fP into its
+connected components, lays out each using \fBdot\fP, packs them all together
+again, and produces the final drawing in PostScript. Of course, 
+there is nothing to prevent one from using different layouts for
+each component.
+.SH "BUGS"
+All the input graphs must be directed or undirected.
+.P
+An input graph should not have a label, since this will be used in its
+layout. Since \fBgvpack\fP ignores root graph labels, resulting layout
+may contain some extra space.
+.P
+\fBgvpack\fP unsets the bounding box attribute of all non-cluster
+subgraphs.
+.SH AUTHORS
+Emden R. Gansner <erg@research.att.com>
+.SH "SEE ALSO"
+gvpr(1), dot(1), neato(1), twopi(1), ccomps(1), libpack(3)

@@ -1,0 +1,5 @@
+digraph G {
+ node [shape=record];
+ node [label="{1|2|3}|2|{31|32}"];
+ record;
+}

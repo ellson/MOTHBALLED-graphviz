@@ -1,0 +1,17 @@
+strict graph ip_map {
+size="5,3";
+start=12;
+edge [len=1.5];
+	ALC -- MV -- AN;
+	HO1 -- CB -- IH1 -- IHC;
+	HO1 -- {HO3 HR HV};
+	HO3 -- {IH1 MT};
+	IH1 -- {IHP IW IH2 IH4};
+	IH2 -- {MLM HV IHP IW IH1 IH4};
+	IH4 -- {MLM HV IHP IW IH1 IH2};
+	IHP -- {IW IH1 IH2 IH4 };
+	LZ -- FL;
+	MH -- {ERC ALC WH1 HO1 IH1};
+	MT -- {DR; ER; FJ; LZ};
+	MV -- HO3 -- WH1;
+}

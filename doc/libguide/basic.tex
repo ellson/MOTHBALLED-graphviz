@@ -1,0 +1,729 @@
+\section{Basic graph drawing}
+Figure~\ref{fig:basic} gives a template for the basic library use of \gviz,
+in this instance using the \dot\ hierarchichal layout.
+Basically, the program creates a graph using the \graph\
+library\footnote{As noted in the previous section, we intend to move
+the layout algorithms to the \agraph\ library, at which time, an 
+application will use that library for manipulating graphs. To a large
+extent, \agraph\ is upward-compatible with \graph\, so the discussion
+that follows will be largely unchanged}, setting node and edge 
+attributes to affect how the graph is
+to be drawn; calls the layout code; and then uses the position information
+attached to the nodes and edges to render the graph. The remainder of
+this section explores these steps in more detail.
+
+\begin{figure}[hbt]
+\begin{verbatim}
+    Agraph_t* G;
+
+    G = createGraph ();
+
+    dot_layout (G);    /* library function */
+    drawGraph (G);
+    dot_cleanup (G);   /* library function */
+    agclose (G);       /* library function */
+\end{verbatim}
+\caption{Basic use}
+\label{fig:basic}
+\end{figure}
+
+\subsection{Creating the graph}
+The first step in drawing a graph is to create it. To use the \gviz\
+layout software, the graph must be created using the \graph\ library. 
+Before any function in \graph\ is called, an application must
+call the library initialization function {\tt aginit}\footnote{This
+function is called by {\tt dotneato\_initialize}, so if this latter routine
+is used, no additional call to {\tt aginit} is necessary.
+Also, it is safe to make multiple calls to {\tt aginit}.}.
+We can create a graph in one of two ways, using {\tt agread} or {\tt agopen}.
+The former function takes a {\tt FILE*} pointer to a file open for reading.
+It is assumed the file contains the description of graphs using the
+\DOT\ language. The {\tt agread} function parses one graph at a time, 
+returning a pointer to an attributed graph generated from the input,
+or {\tt NULL} if there are not more graphs or an error occurred.
+
+The alternative technique is to call {\tt agopen}. 
+\begin{verbatim}
+    char*     name;
+    int       type;
+    Agraph_t* G = agopen(name, type);
+\end{verbatim}
+The first argument is
+the name of the graph; the second argument describes the type of graph
+to be created. A graph can be directed or undirected. In
+addition, a graph can be strict, i.e., have at most one edge between
+any pair of nodes, or non-strict, allowing an arbitrary number of edges
+between two nodes. If the graph is directed, the pair of nodes is ordered,
+so the graph can have edges from node {\tt A} to node {\tt B} as well
+as edges from {\tt B} to {\tt A}. These four combinations are specified
+by the values in Table~\ref{table:types}.
+The return value is a new graph, with no nodes or edges.
+\begin{table*}[h]
+\centering
+\begin{tabular}{|l|l|} \hline
+Graph Type & Graph \\ \hline
+AGRAPH & Non-strict, undirected graph \\
+AGRAPHSTRICT & Strict, undirected graph \\
+AGDIGRAPH & Non-strict, directed graph \\
+AGDIGRAPHSTRICT & Strict, directed graph \\ \hline
+\end{tabular}
+\caption{Graph types}
+\label{table:types}
+\end{table*}
+
+Nodes and edges are created by the functions {\tt agnode} and
+{\tt agedge}, respectively.
+\begin{verbatim}
+    Agnode_t *agnode(Agraph_t*, char*);
+    Agedge_t *agedge(Agraph_t*,  Agnode_t*,  Agnode_t*);
+\end{verbatim}
+The first argument is the graph containing the node or edge. Note
+that if this is a subgraph, the node or edge will also belong to
+all containing graphs. The second argument to {\tt agnode} is the
+node's name. This is a key for the node within the graph. If
+{\tt agnode} is called twice with the same name, the second invocation
+will not create a new node but simply return a pointer to the previously
+created node with the given name. For directed graphs, the first and
+second node arguments to {\tt agedge} are taken to be the tail and head
+nodes, respectively.
+
+As suggested above, a graph can also contain subgraphs. These are
+created using {\tt agsubg}:
+\begin{verbatim}
+    Agraph_t *agsubg(Agraph_t*,  char*);
+\end{verbatim}
+The first argument is the immediate parent graph; the second argument
+is the name of the subgraph. 
+
+Subgraphs play three roles in \gviz.
+First, a subgraph can be used to represent graph structure, indicating that
+certain nodes and edges should be grouped together. This is the usual
+role for subgraphs and typically specifies semantic information about
+the graph components. In this generality, the drawing software makes
+no use of subgraphs, but maintains the structure for use elsewhere
+within an application. 
+
+In the second role, a subgraph can provide a context for setting 
+attribute. In \gviz, these are often attributes used by the layout
+and rendering functions.
+For example, the application could specify that {\tt blue}
+is the default color for nodes. Then, every node within the subgraph will
+have color blue. In the context of graph drawing, a more interesting
+example is:
+\begin{verbatim}
+    subgraph {
+      rank = same; A; B; C;
+    }
+\end{verbatim}
+This (anonymous) subgraph specifies that the nodes {\tt A}, {\tt B} and {\tt C} 
+should all be placed on the same rank if drawn using \dot.
+
+The third role for subgraphs combines the previous two. If the name of
+the subgraph begins with {\tt "cluster"}, \gviz\ identifies the subgraph
+as a special {\em cluster} subgraph. The drawing software\footnote{if
+supported} will do the layout of the graph so that the nodes belonging
+to the cluster are drawn together, with the entire drawing of the cluster
+contained within a bounding rectangle.
+
+\subsubsection{Attributes}
+\label{sec:attributes}
+In addition to the abstract graph structure provided by nodes, edges and
+subgraphs, the \gviz\ libraries also support graph attributes. These
+are simply string-valued name/value pairs. Attributes are used to specify
+any additional information which cannot be encoded in the abstract graph.
+In particular, the attributes are heavily used by the drawing software to
+tailor the various geometric and visual aspects of the drawing.
+
+Reading attributes is easily done. The function {\tt agget} takes a pointer
+to a graph component (node, edge or graph) and an attribute name, and
+returns the value of the attribute for the given component. Note that the
+function may return either {\tt NULL} or a pointer to the empty string.
+The first value indicates that the given attribute has not been defined for
+any component in the graph of the given kind. Thus, if {\tt abc} is a
+pointer to a node and {\tt agget(abc,"color")} returns {\tt NULL}, then
+no node in the root graph has a color attribute. If the function returns
+the empty string, this usually indicates that the attribute has been 
+defined but the attribute value associated with the specified object is the
+default for the application. So, if {\tt agget(abc,"color")} 
+now returns {\tt ""}, the node is taken to have the default color. In
+practical terms, these two cases appear very similar. Using our example,
+whether the attribute value is {\tt NULL} or {\tt ""}, the drawing code
+will still need to pick a color for drawing and will probably use the
+default in both cases.
+
+Setting attributes is a bit more complex. Before attaching an attribute
+to a graph component, the code must first set up the default case. This
+is accomplished by a call to {\tt agraphattr}, {\tt agnodeattr} or 
+{\tt agedgeattr} for graph, node or edge attributes, respectively.
+The types of the 3 functions are identical. They all take a graph and
+two strings as arguments, and return a representation of the attribute.
+The first string gives the name of the attribute; the second supplies
+the default value, which must not be {\tt NULL}. 
+The graph must be the root graph.
+
+Once the attribute has been initialized, the attribute can be set for
+a specific component by calling {\tt agset} with a pointer to the component,
+the name of the attribute and the value to which it should be set.
+The attribute value must not be {\tt NULL}.
+
+When an attribute is assigned a value, the graph library replicates the
+string. This means the application can use a temporary string as the
+argument; it does not have to keep the string throughout the application.
+Each node, edge, and graph maintains its own attribute 
+values. Obviously, many of these are the same strings, so to save
+memory, the graph library uses a reference counting mechanism to 
+share strings. An application can employ this mechanism by using
+the {\tt agstrdup()} function. If it does, it must also use the
+{\tt agstrfree()} function if it wishes to release the string.
+\gviz\ supports HTML-like tables as labels. To allow these to be handled
+transparently, the library uses a special version of reference counted
+strings. To create one of these, one uses {\tt agstrdup\_html()}
+rather than {\tt agstrdup()}. The {\tt agstrfree()} is still used to
+release the string.
+
+Note that some attributes are replicated in the graph, appearing once
+as the usual string-valued attribute, and also in an internal machine
+format such an {\tt int}, {\tt double} or some more structured type.
+In general, an application should only set attributes
+using strings and {\tt agset}. The implementation of the layout algorithm
+may change the machine-level representation or may change when it does
+the conversion from a string value. Hence, the low-level
+interface cannot be relied on by the application. Also note that there
+is not a one-to-one correspondence between a string-valued
+attributes and internal attributes. A given string attribute might be
+encoded as part of some data structure, might be represented via 
+multiple fields, or may have no internal representation at all. 
+
+In order to expedite the reading and writing of attributes for large
+graphs, \gviz\ provides a lower-level mechanism for manipulating attributes
+which can avoid hashing a string.
+Attributes have a representation of type \verb+Agsym_t+. This is basically the
+value returned by the initialization functions {\tt agraphattr}, etc.
+It can also be obtained by a call to {\tt agfindattr}, which takes
+a graph component and an attribute name. If the attribute has been defined,
+the function returns the corresponding \verb+Agsym_t+ value. 
+This can be used to directly access the corresponding attribute value,
+using the functions {\tt agxget} and {\tt agxset}. These are identical to 
+{\tt agget} and {\tt agset}, respectively, except that instead of
+taking the attribute name as the second argument, they use 
+the {\tt index} field of the \verb+Agsym_t+ value to extract the attribute
+value from an array.
+
+Due to the nature of the implementation of attributes in \gviz, if
+possible, an application should attempt to define and initialize all
+attributes before creating nodes and edges.
+
+The drawing algorithms in \gviz\ use a large collection of attributes,
+giving the application a great deal of control over the appearance of the
+drawing. For more detailed information on what the attributes mean, the
+reader should consult the manual {\bf Drawing graphs with \dot}.
+
+We can divide the attributes into those that affect the placement
+of nodes, edges and clusters in the layout and those, such as color, 
+which do not. 
+Table~\ref{tab:nattr_geom} gives the node attributes which have the potential
+to change the layout. This is followed by Tables~\ref{tab:eattr_geom},
+\ref{tab:gattr_geom} and \ref{tab:cattr_geom}, which do the same for 
+edges, graphs, and clusters.
+\begin{table}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|l|p{2.5in}|} \hline
+\multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Default} & \multicolumn{1}{c|}{Use} \\ \hline
+{\tt bottomlabel} & & auxiliary label for nodes of {\tt shape} M* \\
+{\tt distortion} & {\tt 0.0} & node distortion for {\tt shape=polygon} \\
+{\tt fixedsize} & false & label text has no affect on node size \\
+{\tt fontname} & {\tt Times-Roman} & font family \\
+{\tt fontsize} & {\tt 14} & point size of label \\
+{\tt group} &  & name of node's group \\
+{\tt height} & {\tt .5} & height in inches \\
+{\tt label} & node name & any string \\
+{\tt margin} &  0.11,0.055 & space between node label and boundary \\
+{\tt orientation} & {\tt 0.0} & node rotation angle \\
+{\tt peripheries} & {\tt shape-dependent} & number of node boundaries \\
+{\tt pin} & false & fix node at its {\tt pos} attribute \\
+{\tt regular} & false & force polygon to be regular \\
+{\tt root} & & indicates node should be used as root of a layout \\
+{\tt shape} & {\tt ellipse} & node shape \\
+{\tt shapefile} & & $\dagger$ external EPSF or SVG custom shape file\\
+{\tt sides} & {\tt 4} & number of sides for {\tt shape=polygon} \\
+{\tt skew} & {\tt 0.0} & skewing of node for {\tt shape=polygon} \\
+{\tt toplabel} & & auxiliary label for nodes of {\tt shape} M* \\
+{\tt width} & {\tt .75} & width in inches \\
+{\tt z} & {\tt 0.0} & $\dagger$ z coordinate for VRML output \\
+\hline
+\end{tabular}
+\caption{Geometric node attributes}
+\label{tab:nattr_geom}
+\end{table}
+\begin{table}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|l|p{2.5in}|} \hline
+\multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Default} & \multicolumn{1}{c|}{Use} \\ \hline
+{\tt constraint} & true & use edge to affect node ranking \\
+{\tt fontname} & {\tt Times-Roman} & font family \\
+{\tt fontsize} & {\tt 14} & point size of label \\
+{\tt headclip} & true & clip head end to node boundary \\
+{\tt headport} & center & position where edge attaches to head node \\
+{\tt label} & & edge label \\
+{\tt len} & 1.0 & preferred edge length \\
+{\tt lhead} & & name of cluster to use as head of edge \\
+{\tt ltail} & & name of cluster to use as tail of edge \\
+{\tt minlen} & {\tt 1} & minimum rank distance between head and tail \\
+{\tt samehead} & & tag for head node; edge heads with the same tag are merged
+ onto the same port \\
+{\tt sametail} & & tag for tail node; edge tails with the same tag are merged
+ onto the same port \\
+{\tt tailport} & center & position where edge attaches to tail node \\
+{\tt weight} & {\tt 1} & importance of edge \\
+\hline
+\end{tabular}
+\caption{Geometric edge attributes}
+\label{tab:eattr_geom}
+\end{table}
+\begin{table}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|l|p{2.5in}|} \hline
+\multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Default} & \multicolumn{1}{c|}{Use} \\ \hline
+{\tt center} & false & $\dagger$ center drawing on {\tt page} \\ 
+{\tt clusterrank} & {\tt local} & may be {\tt global} or {\tt none} \\
+{\tt compound} & false & allow edges between clusters \\
+{\tt concentrate} & false & enables edge concentrators  \\
+{\tt defaultdist} & $1+(\sum_{e \in E} len)/|E|\sqrt{|V|}$  & separation between nodes in different components \\
+{\tt dim} & $2$ & dimension of layout  \\
+{\tt dpi} & $96/0$ & dimension of layout  \\
+{\tt epsilon} & $.0001 |V|$ or $.0001$ & termination condition  \\
+{\tt fontname} & {\tt Times-Roman} & font family \\
+{\tt fontpath} &  & list of directories to such for fonts \\
+{\tt fontsize} & $14$ & point size of label \\
+{\tt label} & & $\dagger$ any string \\
+{\tt margin} & & $\dagger$ space placed around drawing \\
+{\tt mclimit} & $1.0$ & scale factor for mincross iterations \\
+{\tt mindist} & $1.0$ & minimum distance between nodes \\
+{\tt mode} & {\tt major} & variation of layout \\
+{\tt model} & {\tt shortpath} & model used for distance matrix \\
+{\tt nodesep} & $.25$ & separation between nodes, in inches \\
+{\tt nslimit} & & if set to {\it f}, bounds network simplex iterations by {\it (f)(number of nodes)} when setting x-coordinates \\
+{\tt ordering} &  & specify out or in edge ordering \\
+{\tt orientation} & {\tt portrait} & $\dagger$ use landscape orientation if {\tt rotate} is not used and the value is {\tt landscape} \\
+{\tt pack} &  & do components separately, then pack \\
+{\tt packmode} & {\tt node} & granularity of packing \\
+{\tt page} & & $\dagger$ unit of pagination, {\it e.g.} {\tt "8.5,11"} \\
+{\tt quantum} &  & if ${\tt quantum} > 0.0$, node label dimensions will be rounded to integral multiples of {\tt quantum} \\
+{\tt rank} & & {\tt same}, {\tt min}, {\tt max}, {\tt source} or {\tt sink} \\
+{\tt rankdir} & {\tt TB} & sense of layout, i.e, top to bottom, left to right, etc. \\
+{\tt ranksep} & {\tt .75} & separation between ranks, in inches. \\
+{\tt ratio} & & approximate aspect ratio desired, {\tt fill} or {\tt auto} \\
+{\tt remincross} & & If true and there are multiple clusters, re-run crossing minimization \\
+{\tt root} & & specifies node to be used as root of a layout \\ 
+{\tt rotate} & & $\dagger$ If 90, set orientation to landscape \\
+{\tt searchsize} & {\tt 30} & maximum edges with negative cut values to
+check when looking for a minimum one during network simplex \\
+{\tt sep} & $0.01$ & factor to increase nodes when removing overlap \\
+{\tt size} & & maximum drawing size, in inches \\
+{\tt splines} &  & render edges using splines \\
+{\tt start} & {\tt random} & manner of initial node placement \\
+{\tt voro\_margin} & $0.05$ & factor to increase bounding box when more space is necessary during Voronoi adjustment \\
+{\tt viewport} & & $\dagger$Clipping window \\
+\hline
+\end{tabular}
+\caption{Geometric graph attributes}
+\label{tab:gattr_geom}
+\end{table}
+\begin{table}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|l|p{2.5in}|} \hline
+\multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Default} & \multicolumn{1}{c|}{Use} \\ \hline
+{\tt fontname} & {\tt Times-Roman} & font family \\
+{\tt fontsize} & {\tt 14} & point size of label \\
+{\tt label} & & edge label \\
+{\tt peripheries} & $1$ & number of cluster boundaries \\
+\hline
+\end{tabular}
+\caption{Geometric cluster attributes}
+\label{tab:cattr_geom}
+\end{table}
+Note that in some cases, the effect is indirect. An example of this is the
+{\tt nslimit} attribute, which potentially reduces the effort spent on
+network simplex algorithms to position nodes, thereby changing the layout.
+Some of these attributes affect the initial layout of the graph in universal
+coordinates. Others only play a role if the application uses the \gviz\
+code generators (cf. Section~\ref{sec:drivers}), 
+which map the drawing into device-specific coordinates related to a
+concrete output format.
+For example, \gviz\ only uses the {\tt center} attribute, which specifies
+that the graph drawing should be centered within its page, when the library
+generates a concrete representation.
+The tables distinguish these device-specific attributes by
+a $\dagger$ symbol at the start of the Use column.
+
+Tables~\ref{tab:nattr_dec}, \ref{tab:eattr_dec}, \ref{tab:gattr_dec} and
+\ref{tab:cattr_dec} list the node, edge, graph and cluster 
+attributes, respectively,
+that do not effect the placement of components.
+Obviously, the values of these attributes are not reflected in the
+position information of the graph after layout. If the application
+handles the actual drawing of the graph, it must decide if it wishes
+to use these attributes or not.
+\begin{table}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|l|p{2.5in}|} \hline
+\multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Default} & \multicolumn{1}{c|}{Use} \\ \hline
+{\tt color} & {\tt black} & node shape color \\
+{\tt fillcolor} & {\tt lightgrey} & node fill color \\
+{\tt fontcolor} & {\tt black} & text color \\
+{\tt layer} & overlay range & {\tt all}, {\it id} or {\it id:id} \\
+{\tt nojustify} & false & context for justifying multiple lines of text \\
+{\tt style} & & style options, e.g. {\tt bold, dotted, filled}; \\ 
+\hline
+\end{tabular}
+\caption{Decorative node attributes}
+\label{tab:nattr_dec}
+\end{table}
+\begin{table}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|l|p{2.5in}|} \hline
+\multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Default} & \multicolumn{1}{c|}{Use} \\ \hline
+{\tt arrowhead} & normal & style of arrowhead at head end \\
+{\tt arrowsize} & {\tt 1.0} & scaling factor for arrowheads \\
+{\tt arrowtail} & normal & style of arrowhead at tail end \\
+{\tt color} & {\tt black} & edge stroke color \\
+{\tt decorate} & & if set, draws a line connecting labels with their edges \\
+{\tt dir} & {\tt forward} & {\tt forward}, {\tt back}, {\tt both}, or {\tt none} \\ 
+{\tt fontcolor} & {\tt black} & type face color \\
+{\tt headlabel} & & label placed near head of edge \\
+{\tt labelangle} & {\tt -25.0} & angle in degrees which head or tail label
+is rotated off edge \\
+{\tt labeldistance} & {\tt 1.0} & scaling factor for distance of head or tail label from node \\
+{\tt labelfloat} & false & lessen constraints on edge label placement \\
+{\tt labelfontcolor} & {\tt black} & type face color for head and tail labels\\
+{\tt labelfontname} & {\tt Times-Roman} & font family for head and tail labels\\
+{\tt labelfontsize} & {\tt 14} & point size for head and tail labels \\
+{\tt layer} & overlay range & {\tt all}, {\it id} or {\it id:id} \\
+{\tt nojustify} & false & context for justifying multiple lines of text \\
+{\tt style} & & drawing attributes such as {\tt bold}, {\tt dotted}, or {\tt filled} \\ 
+{\tt taillabel} & & label placed near tail of edge \\
+\hline
+\end{tabular}
+\caption{Decorative edge attributes}
+\label{tab:eattr_dec}
+\end{table}
+\begin{table}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|l|p{2.5in}|} \hline
+\multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Default} & \multicolumn{1}{c|}{Use} \\ \hline
+{\tt bgcolor} &  & background color for drawing, plus initial fill color \\
+{\tt fontcolor} & {\tt black} & type face color \\ 
+{\tt labeljust} & left-justified & "r" for right-justified cluster labels \\
+{\tt labelloc} & top & "r" for right-justified cluster labels \\
+{\tt layers} & & names for output layers \\
+{\tt layersep} & {\tt " \t:"} & separator characters used in layer specification \\
+{\tt nojustify} & false & context for justifying multiple lines of text \\
+{\tt pagedir} & {\tt BL} & traversal order of pages \\
+{\tt samplepoints} & {\tt 8} & number of points used to represent ellipses
+and circles on output \\
+{\tt stylesheet} & & XML stylesheet \\
+\hline
+\end{tabular}
+\caption{Decorative graph attributes}
+\label{tab:gattr_dec}
+\end{table}
+\begin{table}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|l|p{2.5in}|} \hline
+\multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Default} & \multicolumn{1}{c|}{Use} \\ \hline
+{\tt bgcolor} &  & background color for cluster \\
+{\tt color} & {\tt black} & cluster boundary color \\
+{\tt fillcolor} & {\tt black} & cluster fill color \\
+{\tt fontcolor} & {\tt black} & text color \\
+{\tt labeljust} & left-justified & "r" for right-justified cluster labels \\
+{\tt labelloc} & top & "r" for right-justified cluster labels \\
+{\tt nojustify} & false & context for justifying multiple lines of text \\
+{\tt pencolor} & {\tt black} & cluster boundary color \\
+{\tt style} & & style options, e.g. {\tt bold, dotted, filled}; \\ 
+\hline
+\end{tabular}
+\caption{Decorative cluster attributes}
+\label{tab:cattr_dec}
+\end{table}
+
+Among these attributes, some are used more frequently than others.
+A graph drawing typically needs to encode various application-dependent
+properties in the representations of the nodes. This can be done 
+with text, using the {\tt label}, {\tt fontname} and {\tt fontsize} 
+attributes; with color, using the {\tt color}, {\tt fontcolor}, 
+{\tt fillcolor} and {\tt bgcolor} attributes; or with
+shapes, the most common attributes being {\tt shape}, {\tt height},
+{\tt width}, {\tt style}, {\tt fixedsize}, {\tt peripheries} and {\tt regular},
+
+Edges often display additional semantic information with the
+{\tt color} and {\tt style} attributes. If the edge is directed,
+the {\tt arrowhead}, {\tt arrowsize}, {\tt arrowtail} and {\tt dir}
+attributes can play a role. Using splines rather than line segments
+for edges, as determined by the {\tt splines} attribute, is done
+for aesthetics or clarity rather than to convey more information.
+
+There are also a number of frequently used attributes which affect
+the layout geometry of the nodes and edges. These include
+{\tt compound}, {\tt len}, {\tt lhead}, {\tt ltail}, {\tt minlen},
+{\tt nodesep}, {\tt pin}, {\tt pos}, {\tt rank}, {\tt rankdir}, {\tt ranksep}
+and {\tt weight}. Within this category, we should also mention the
+{\tt pack} and {\tt overlap} attributes, though they have a somewhat
+different flavor.
+
+The attributes described thus far are used as input to the layout algorithms.
+There is a collection of attributes, displayed in Table~\ref{tab:write}, 
+which, by convention, \gviz\ uses to specify the geometry of a layout. 
+\begin{table}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|p{3.5in}|} \hline
+\multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Use} \\ \hline
+{\tt bb} &  bounding box of drawing or cluster \\
+{\tt lp} & position of graph, cluster or edge label \\
+{\tt pos} & position of node or edge control points \\
+{\tt rects} & rectangles used in records \\
+{\tt vertices} & points defining node's boundary \\
+\hline
+\end{tabular}
+\caption{Output position attributes}
+\label{tab:write}
+\end{table}
+After an application has used \gviz\ to determine position information, 
+if it wants to write out the graph in \DOT\ with this information, it should
+use the same attributes.
+ 
+In addition to the attributes described above which have visual effect,
+there is a collection of attributes used to supply identification
+information or web actions. Table~\ref{tab:web} lists these.
+\begin{table}[htbp]\footnotesize
+\centering
+\begin{tabular}[t]{|l|p{3.5in}|} \hline
+\multicolumn{1}{|c|}{Name} & \multicolumn{1}{c|}{Use} \\ \hline
+{\tt URL} & hyperlink associated with node, edge, graph or cluster \\
+{\tt comment} & comments inserted into output \\
+{\tt headURL} & URL attached to head label \\
+{\tt headhref} & synonym for {\tt headURL} \\
+{\tt headtarget} & browser window associated with {\tt headURL} \\
+{\tt headtooltip} & tooltip associated with {\tt headURL} \\
+{\tt href} & synonym for {\tt URL} \\
+{\tt tailURL} & URL attached to tail label \\
+{\tt tailhref} & synonym for {\tt tailURL} \\
+{\tt tailtarget} & browser window associated with {\tt tailURL} \\
+{\tt tailtooltip} & tooltip associated with {\tt tailURL} \\
+{\tt target} & browser window associated with {\tt URL} \\
+{\tt tooltip} & tooltip associated with {\tt URL} \\
+\hline
+\end{tabular}
+\caption{Miscellaneous attributes}
+\label{tab:web}
+\end{table}
+
+\subsubsection{Cleaning up a graph}
+\label{sec:clean}
+
+Once all layout information is obtained from the graph, the resources
+should be reclaimed.
+This is a two-step process. First, the application should call
+the cleanup routine associated with the layout algorithm used to
+draw the graph. The names all have the same form. Thus, the cleanup
+routine for \dot\ is \verb+dot_cleanup+. Second, the generic graph
+resources are reclaimed by closing the graph using {\tt agclose}.
+
+The example of Figure~\ref{fig:basic}
+handles the case where the application is drawing a single graph.
+The example given in Appendix~\ref{sec:dot}
+shows how cleanup might be done when processing multiple graphs.
+
+The application can determine best when it should clean up. The example
+in the appendix
+performs this just before a new graph is drawn, but the application could
+have done this much earlier, for example, immediately after the graph
+is drawn using {\tt drawGraph}. Note, though, that layout information
+will be destroyed during cleanup. If the application needs to reuse this
+data, for example, to refresh the display, it should avoid calling the
+cleanup function, or arrange to copy the layout data elsewhere.
+Also, in the simplest case where the application just draws one graph
+and exits, there is no need to do cleanup at all.
+
+If a given graph is to be laid out multiple times, there is no need to
+reconstruct the graph. The application, however, should call the layout's
+cleanup function before invoking the same or a new layout function.
+
+\subsection{Laying out the graph}
+
+Once the graph exists and the attributes are set, the application can
+pass the graph to one of the \gviz\ layout functions:
+\begin{itemize}
+\item \verb+dot_layout+
+\item \verb+neato_layout+
+\item \verb+fdp_layout+
+\item \verb+twopi_layout+
+\item \verb+circo_layout+
+\end{itemize}
+These will assign node positions,
+represent edges as splines\footnote{
+Line segments are represented as degenerate splines.
+}, handle the special case of an unconnected
+graph, plus deal with various technical features such as preventing
+node overlaps.
+
+For some applications, however, even these functions do more than
+what is desired. In that case, the application will want to consider
+each step in a layout and decide whether it is appropriate.
+Section~\ref{sec:layouts} describes in detail the steps used by each 
+algorithm.
+
+\subsection{Getting layout information}
+Once the layout is done, the graph data structures contain
+the position information for drawing the graph. 
+An application-supplied
+drawing routine such as {\tt drawGraph} can then read this information,
+map it to display coordinates, and call the device-specific routines to
+render the drawing.
+If the
+application chose to avoid the high-level \gviz\ layout functions, 
+and applied the
+steps individually, certain position information might be missing.
+
+In this section, we describe in reasonable detail various data structures
+used by \gviz\ to specify how to draw the graph. An application can
+use these values directly to guide its drawing. In some cases, for example,
+with arrowheads attached to {\tt bezier} values, a complete description
+of how to interpret the data is beyond the current scope of this manual.
+For this reason as well as simplicity, 
+if an application wishes to provide all of the
+graphics features while avoiding the low-level details of the data
+structures, we suggest using the approach described in 
+Sections~\ref{sec:applcodegen}.
+
+In general,
+the \graph\ library allows an application to define specific data fields 
+which are 
+compiled into the node, edge and graph structures. These have the names
+\begin{itemize}
+\item \verb+Agnodeinfo_t+
+\item \verb+Agedgeinfo_t+
+\item \verb+Agraphinfo_t+
+\end{itemize}
+respectively. The \gviz\ layout algorithms rely on a specific set of fields
+to record position and drawing information, and therefore provide 
+definitions for the three fields. Thus, the definitions
+of the information fields are fixed by the layout library and
+cannot be altered by the application.\footnote{This is a limitation
+of the \graph\ library. We plan to remove this restriction by moving to
+a mechanism similar to the one used in
+\agraph\, which allows arbitrary dynamic extensions to the
+node, edge and graph structures. Meanwhile, if the application requires
+the addition of extra fields, it can define its own structures, which
+should be extensions of the components or the information types, with
+the additional fields attached at the end. Then, instead of calling
+{\tt aginit()}, it can use the more general {\tt aginitlib()}, and
+supply the sizes of its nodes, edges and graphs. This will ensure
+that these components will have the correct sizes and alignments. 
+The application can then cast the generic \graph\ types to the
+types it defined, and access the additional fields.}
+
+These information structures occur as the field named {\tt u} in the
+node, edge and graph structure. The definition of the information
+structures as defined by the layout code is given in {\tt types.h},
+along with various auxiliary types such as {\tt point} or {\tt bezier}.
+This file also provides macro expressions for accessing these
+fields. Thus, if {\tt np} is a node pointer, the width field can
+be read using {\tt np->u.width} or \verb+ND_width(np)+.
+Edge and graph attributes follow the same convention, with
+prefixes \verb+ED_+ and \verb+GD_+, respectively.
+We strongly deprecate the former access method, especially in light of
+the transition of the drawing algorithms to an extension of \graph\.
+By using the macro access, source code will not be affected by this
+change.
+
+Each node has {\tt ND\_coord}, {\tt ND\_width} and {\tt ND\_height} 
+attributes. The value
+of {\tt ND\_coord} gives the position of the center of the node, in points.
+The {\tt ND\_width} and {\tt ND\_height} attributes specify the size of the
+bounding box of the node, in inches.
+
+Edges, even if a line segment, are represented as B-splines or
+piecewise Bezier curves.
+The {\tt spl} attribute of the edge stores this spline information.
+It has a pointer to an array of 1 or more {\tt bezier} structures. Each
+of these describes a single piecewise Bezier curve as well as associated
+arrowhead information. Normally, a single {\tt bezier} structure is
+sufficient to represent an edge. If, however, the {\tt concentrate}
+attribute is set, whereby mostly parallel edges are represented by a
+shared spline, the edge may need multiple {\tt bezier} parts.
+Of course, the application always has the possibility of drawing a line
+segment connecting the centers of edge's nodes.
+
+If a subgraph is specified as a cluster, the nodes of the cluster
+will be drawn together and the entire subgraph is contained within
+a rectangle containing no other nodes. The rectangle is specified by
+the {\tt bb} attribute of the subgraph, the coordinates in points in
+the global coordinate system.
+
+\subsection{Drawing nodes and edges}
+\label{sec:nodes}
+
+With the position and size information described above, an application 
+can draw the nodes and edges of a graph. It could just use rectangles 
+or circles for nodes, and represent edges as line segments or splines.
+However, nodes and edges typically have a variety of other attributes,
+such as color or line style, which an application can read from the
+appropriate
+fields in {\tt Agnodeinfo\_t} and {\tt Agedgeinfo\_t} and use
+in its rendering.
+
+Additional drawing information about the node depends mostly on the shape
+of the node. 
+For record-type nodes, where \verb+ND_shape(n)->name+ is {\tt "record"} or 
+{\tt "Mrecord"}, the node consists of a packed collection
+of rectangles. In this case, \verb+ND_shape_info(n)+ can be cast to
+\verb+field_t*+, which describes the recursive partition of the node
+into rectangles. The value {\tt b} of \verb+field_t+
+gives the bounding rectangle of the field, in points in the coordinate
+system of the node, i.e., where the center of the node is at the
+origin. 
+
+If \verb+ND_shape(n)->usershape+ is true, the shape
+is specified by the user. Typically, this is format dependent, e.g.,
+the node might be specified by a GIF image, and we ignore this case
+for the present. 
+
+The final node class are those with polygonal shape\footnote{This
+is not quite true but close enough for now.}, which includes the limiting
+cases of circles and ellipses. In this case,
+\verb+ND_shape_info(n)+ can be cast to \verb+polygon_t*+, which specifies
+the many parameters (number of sides, skew and distortions, etc.)
+used to describe polygons, as well as the points used as vertices. 
+Note that the vertices are in inches, and are in the coordinate system
+of the node.
+
+To honor a node's shape, an application has three basic choices. It
+can implement the geometry for each of the different shapes.
+Thus, it could see that \verb+ND_shape(n)->name+ is {\tt "box"}, and
+use the {\tt ND\_coord}, {\tt ND\_width} and {\tt ND\_height} attributes to draw
+rectangle at the given position with the given width and  height.
+Another second would be
+to use the specification of the shape as stored internally in the
+{\tt shape\_info} field of the node. For example, given a polygonal node,
+its fi\verb+ND_shape_info(n)+ field contains a {\tt vertices} field,
+mentioned above, which is an ordered list of all the vertices used
+to draw the appropriate polygon, taking into account multiple peripheries. 
+Finally, there is a third possibility available in \gviz. 
+Given a node pointer {\tt n}, it is possible for an application to draw 
+this node by calling the library function \verb+emit_node+.
+This will automatically handle
+all the geometric details as well the additional node attributes such
+as color and fonts. This technique also works for edges, using
+{\tt emit\_edge}. The details of the approach are described in 
+Section~\ref{sec:applcodegen}.
+
+The label field (\verb+ND_label(n)+, \verb+ED_label(e)+,
+\verb+GD_label(g)+) encodes any text label associated with a graph object.
+Edges, graphs and clusters will occasionally have labels; nodes
+almost always have a label, since the default label is the node's name.
+The basic label string is stored in the {\tt text} field, while the
+{\tt fontname }, {\tt fontcolor} and {\tt fontsize} fields describe
+the basic font characteristics.
+In many cases, the basic label string is further parsed, either into
+multiple, justified text lines, or as a nested box structure for
+HTML-like labels or nodes of record shape.

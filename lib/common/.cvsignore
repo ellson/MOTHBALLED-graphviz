@@ -1,0 +1,12 @@
+*.la
+*.lo
+*.pc
+.deps
+.libs
+Makefile
+Makefile.in
+color_lib
+colortbl.h
+htmlparse.[ch]
+y.output
+y.tab.[ch]

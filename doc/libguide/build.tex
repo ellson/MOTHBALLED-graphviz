@@ -1,0 +1,177 @@
+\section{Compiling and linking}
+\label{sec:build}
+All of the necessary include files and libraries are available
+in the {\tt include} and {\tt lib} directories where \gviz\
+is installed. At the simplest level, all an application needs
+to do to use the layout algorithms is to include {\tt dotneato.h},
+which declares all of the \gviz\ types and functions,
+compile the code,
+and link the program with the necessary libraries.
+
+By convention, for the Windows environment, the libraries and include files
+are found in the {\tt lib} and {\tt include} directories,
+respectively. On Unix systems, they will occur in  {\tt graphviz/lib} 
+and {\tt graphviz/include}. Depending on the what settings are used,
+however, these files may occur elsewhere.
+
+For linking, the application should use the \gviz\ libraries 
+\begin{itemize}
+\item {\tt dotneato}
+\item {\tt dotgen}
+\item {\tt neatogen}
+\item {\tt fdpgen}
+\item {\tt twopigen}
+\item {\tt circogen}
+\item {\tt pack}
+\item {\tt common}
+\item {\tt gvrender}
+\item {\tt pathplan}
+\item {\tt gd}\footnote{
+As of version 1.14, the {\tt gd} library provided by \gviz\ is essentially
+the same as the standard version. Whether or not the \gviz\ version is built
+depends on how the software is configured at build time. Also, the \gviz\
+version may be named {\tt gvgd}.
+}
+\item {\tt graph}
+\item {\tt cdt}
+\end{itemize}
+In addition, the following additional libraries should be linked in:
+\begin{itemize}
+\item {\tt freetype2}
+\item {\tt jpeg}
+\item {\tt png}
+\item {\tt z}
+\end{itemize}
+For Windows, the \gviz\ binary package provides these latter libraries as
+{\tt ft.lib libexpat.lib libexpatw.lib jpeg.lib png.lib z.lib}.
+Also, in some environments, it may be necessary to link
+in the standard C math library.
+
+If \gviz\ is built and installed with the GNU build tools, 
+there is a {\tt dotneato-config} script created in the {\tt bin} 
+directory which can be used
+to obtain the include file and library information for 
+a given installation.
+If GNU {\tt make} is used, a sample {\tt Makefile} for building the
+programs {\tt dot} and {\tt demo} could have the form:
+
+\begin{verbatim}
+COMPILE=libtool --tag=CC --mode=compile ${CC} -c
+LINK=libtool --tag=CC --mode=link ${CC}
+
+CFLAGS=`dotneato-config --cflags`
+LDFLAGS=`dotneato-config --libtool`
+
+all: simple dot demo
+
+simple: simple.lo
+    ${LINK} ${LDFLAGS} -o $@ simple.lo
+
+simple.lo: simple.c
+    ${COMPILE} ${CFLAGS} -o $@ simple.c
+
+dot: dot.lo
+    ${LINK} ${LDFLAGS} -o $@ dot.lo
+
+dot.lo: dot.c
+    ${COMPILE} ${CFLAGS} -o $@ dot.c
+
+demo: demo.lo
+    ${LINK} ${LDFLAGS} -o $@ demo.lo
+
+demo.lo: demo.c
+    ${COMPILE} ${CFLAGS} -o $@ demo.c
+
+clean:
+    rm -rf .libs simple dot demo *.o *.lo
+\end{verbatim}
+
+The code for {\tt simple.c}, {\tt dot.c}, and {\tt demo.c} are given in 
+Appendices~\ref{sec:simple}, \ref{sec:dot}, and \ref{sec:demo}.\footnote{They
+can also be found, along with the {\tt Makefile}, in the
+{\tt dot.demo} directory of the \gviz\ source.} They provide three
+typical examples of the use of \gviz.
+
+\subsection{Finer-grained usage}
+
+On occasion, the programmer may wish to be more precise as to which \gviz\
+include files and libraries are used. For example, the application may need
+a function from another library whose name conflicts with a function in an
+unused \gviz\ library.
+The complete interface is provided by:
+\begin{verbatim}
+    #include <render.h>
+    #include <dotprocs.h>
+    #include <neatoprocs.h>
+    #include <adjust.h>
+    #include <circle.h>
+    #include <circo.h>
+    #include <fdp.h>
+    #include <pack.h>
+\end{verbatim}
+The file {\tt render.h} provides the basic types and the common
+functions, as well as the entry points for format-dependent output.
+The files {\tt dotprocs.h}, {\tt neatoprocs.h}, {\tt circle.h},
+{\tt circo.h}, and {\tt fdp.h}
+define the drawing routines specific to \dot, \neato,
+\twopi, \circo, and \fdp, respectively.
+The entry points for removing node overlaps is given by {\tt adjust.h}.
+Finally, {\tt pack.h} declares the functions for splitting graphs into
+connected components, and packing individual layouts together.
+
+Concerning libraries, the {\tt dotgen}, {\tt neatogen}, 
+{\tt fdpgen}, {\tt circogen}, and {\tt twopigen} libraries provide the functions
+specific to the corresponding layout algorithms.
+Note, though, that the \twopi, \circo, and \fdp\ layouts also require the
+{\tt neatogen} library.
+The {\tt pack} library provides the code for
+handling disconnected graphs.
+It is not necessary if only the \dot\ algorithm is used.
+The {\tt common} library defines
+the many shared functions used in all of the algorithms. It requires
+the {\tt graph} library, which in turn relies on the {\tt cdt} library.
+The {\tt gvrender} library provides an functions for hooking in the
+renderers and plug-in libraries.
+The {\tt dotneato} library provides the array \verb+char* Info[3];+
+which identifies the \gviz\ version and can be used as an argument
+when creating a {\tt GVC\_t} value.
+Finally, the {\tt pathplan} and {\tt gd} libraries define functions
+for edge routing and bitmap rendering. At present, these are usually required
+even if the application does not appear to use these features.
+
+Obviously, depending on what is used in the application, various of
+the include files and libraries will not be needed.
+In particular,
+if an application does not plan to use any of the concrete code generators
+supplied by \gviz, the software can be built without any of the
+optional libraries {\tt jpeg}, {\tt png}, {\tt z},
+or {\tt freetype}, and these can be avoided in linking. 
+On the other hand, if \gviz\ was built with
+some or all of these libraries, linking will have to use
+the appropriate libraries.
+The {\tt expat} library is used by {\tt common}, though it is possible to
+build \gviz\ without this. 
+
+\subsection{Application-specific data}
+\label{sec:info}
+
+When possible, the code generators in the library log how an image file
+was created in the output file. To do this, they rely on 
+the application providing an array 
+\begin{verbatim}
+    extern char* Info[3];
+\end{verbatim}
+giving the desired version information.
+The three strings should be the name of the application, the version
+of the application, and a build date. For example, \dot\ might provide
+\begin{verbatim}
+    char *Info[] = {
+        "dot",              /* Program */
+        "1.8.10",           /* Version */
+        "6 Dec 2002"        /* Build Date */
+    };
+\end{verbatim}
+A default definition for {\tt Info} is provided in the auxiliary library
+{\tt dotneato}, so an
+application need only load this library if desired.
+

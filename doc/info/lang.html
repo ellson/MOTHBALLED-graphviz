@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML VERSION="2.0">
+<HEAD>
+<TITLE>The DOT Language</TITLE>
+</HEAD>
+<BODY BGCOLOR=white>
+<A NAME="top"></A>
+<H1 ALIGN=CENTER>The DOT Language</H1>
+<HR>
+The following is an abstract grammar defining the DOT language.
+Terminals are shown in bold font and nonterminals in italics.
+Literal characters are given in single quotes.
+Parentheses ( and ) indicate grouping when needed.
+Square brackets [ and ] enclose optional items.
+Vertical bars | separate alternatives.
+<TABLE>
+<TR>
+  <TD ALIGN=RIGHT><I>graph</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT>[ <B>strict</B> ] (<B>graph</B> | <B>digraph</B>) [ <I>ID</I> ] <B>'{'</B> <I>stmt_list</I> <B>'}'</B></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>stmt_list</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT>[ <I>stmt</I> [ <B>';'</B> ] [ <I>stmt_list</I> ] ]</TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>stmt</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT><I>node_stmt</I></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><I>edge_stmt</I></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><I>attr_stmt</I></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><I>ID</I> <B>'='</B> <I>ID</I></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><I>subgraph</I></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>attr_stmt</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT>(<B>graph</B> | <B>node</B> | <B>edge</B>) <I>attr_list</I></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>attr_list</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT><B>'['</B> [ <I>a_list</I> ] <B>']'</B> [ <I>attr_list</I> ]</TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>a_list</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT><I>ID</I> [ <B>'='</B> <I>ID</I> ] [ <B>','</B> ] [ <I>a_list</I> ]</TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>edge_stmt</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT>(<I>node_id</I> | <I>subgraph</I>) <I>edgeRHS</I> [ <I>attr_list</I> ]</TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>edgeRHS</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT><I>edgeop</I> (<I>node_id</I> | <I>subgraph</I>) [ <I>edgeRHS</I> ]</TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>node_stmt</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT><I>node_id</I> [ <I>attr_list</I> ]</TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>node_id</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT><I>ID</I> [ <I>port</I> ]</TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>port</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT><B>':'</B> <I>ID</I> [ <B>':'</B> <I>compass_pt</I> ]</TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><B>':'</B> <I>compass_pt</I></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>subgraph</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT>[ <B>subgraph</B> [ <I>ID</I> ] ] <B>'{'</B> <I>stmt_list</I> <B>'}'</B></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><B>subgraph</B> <I>ID</I></TD>
+</TR>
+<TR>
+  <TD ALIGN=RIGHT><I>compass_pt</I></TD>
+  <TD ALIGN=LEFT>:</TD>
+  <TD ALIGN=LEFT>(<B>n</B> | <B>ne</B> | <B>e</B> | <B>se</B> | <B>s</B> | <B>sw</B> | <B>w</B> | <B>nw</B>)</TD>
+</TR>
+</TABLE>
+<P>
+The keywords <B>node</B>, <B>edge</B>, <B>graph</B>, <B>digraph</B>,
+<B>subgraph</B>, and <B>strict</B> are case-independent.
+<P>
+An <I>ID</I> is one of the following: 
+<MENU>
+<LI> Any string of alphabetic characters, underscores or
+digits, not beginning with a digit;
+<LI> a number [<tt>-</tt>]<sup>?</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>+</sup>  | [<tt>0</tt>-<tt>9</tt>]<sup>+</sup>(<tt>.</tt>[<tt>0</tt>-<tt>9</tt>]<sup>*</sup>)<sup>?</sup> ); 
+<LI> any double-quoted string (&quot;...&quot;) possibly containing escaped 
+quotes (\&quot;);
+<LI> an <A NAME=html>HTML string</A> (&lt;...&gt;).
+</MENU>
+Note that in HTML strings, angle
+brackets must occur in matched pairs, and unescaped newlines are allowed.
+In addition, the content must be legal XML, so that the special XML
+escape sequences for &quot;, &amp;, &lt;, and &gt; may be necessary
+in order to embed these characters in attribute values or raw text.
+<P>
+Both quoted strings and HTML strings are scanned as a unit, so
+any embedded comments will be treated as part of the strings.
+<P>
+An <I>edgeop</I> is <TT>-></TT> in directed graphs and <TT>--</TT> in
+undirected graphs.
+<P>
+An <I>a_list</I> clause of the form <I>ID</I> is equivalent to
+<I>ID</I><TT>=true</TT>.
+<P>
+The language supports C++-style comments: <TT>/* */</TT> and <TT>//</TT>.
+In addition, a line beginning with a '#' character is considered a line
+output from a C preprocessor (e.g., #  34 to indicate line 34 ) and discarded.
+<P>
+Semicolons aid readability but are not required except in the rare case
+that a named subgraph with no body immediately preceeds an anonymous
+subgraph, since the precedence rules cause this sequence to be parsed as
+a subgraph with a heading and a body.
+<P>
+As another aid for readability, dot allows single logical lines to
+span multiple physical lines using the standard C convention of a
+backslash immediately preceding a newline character. In addition, 
+double-quoted strings can be concatenated using a '+' operator.
+As HTML strings can contain newline characters, they do not support the
+concatenation operator.
+<H2>Semantic Notes</H2>
+If a default attribute is
+defined using a <B>node</B>,  <B>edge</B>, or  <B>graph</B> statement,
+or by an attribute assignment not attached to a node or edge, any object of the
+appropriate type defined afterwards will inherit this attribute value.
+This holds until the default attribute is set to a new value, from which
+point the new value is used. Objects defined before a default attribute
+is set will have an empty string value attached to the attribute once
+the default attribute definition is made.
+<P>
+Note, in particular, that a subgraph receives the attribute settings of
+its parent graph at the time of its definition. This can be useful; for
+example, one can assign a font to the root graph and all subgraphs will
+also use the font. For some attributes, however, this property is
+undesirable. If one attaches a label to the root graph, it is probably
+not the desired effect to have the label used by all subgraphs. Rather
+than listing the graph attribute at the top of the graph, and the
+resetting the attribute as needed in the subgraphs, one can simple defer
+the attribute definition if the graph until the appropriate subgraphs
+have been defined.
+</BODY>
+</HTML>

@@ -1,0 +1,6 @@
+digraph G {
+ node [style=filled,shape=polygon];
+ node [label=""];
+ node [sides=7]; 
+ polygon;
+}

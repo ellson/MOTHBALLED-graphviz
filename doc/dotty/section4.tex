@@ -1,0 +1,27 @@
+\chapter{Related Work}
+The first interactive graph browser as such appears to be the GRAB system
+created by Messinger, Rowe, et al at U.C. Berkeley~\cite{grab}.  GRAB can read
+command files or scripts but has no provision for customization.  Newbery's
+EDGE and Himsolt's GRAPHED are more recent designs.  EDGE~\cite{edge}, written
+in C++, is customized by deriving new classes from EDGE classes.
+GRAPHED~\cite{graphed}, a large C program, is customized by linking in
+user-defined event handlers.  GRAPHED contains a rich set of data structures
+for base graphs, layouts, and graph grammars, as well as its representations of
+commands and events.  Its orientation seems to be graph layout algorithms, not
+user interface, thus almost all the user-contributed applications distributed
+with the system are a thousand lines of code or more.
+
+The advantage of {\DOTTY} as compared to programming with a C or C++ graph
+display library is that {\DOTTY} ({\LEFTY}) is higher level and thus seems more
+appropriate for graphical user interface customization.  In our experience, the
+graph algorithms or interaction techniques that users want to add to the base
+graph viewer are generally straightforward.  We feel that designing these as
+{\LEFTY} scripts is a good alternative to trying to compile and link a modest
+piece of C code into a much larger existing program.  The limitation here is
+that to some extent the programmer must accept the user interface model
+supported by {\LEFTY}.  For example, at this time popup windows are supported;
+pulldown menu bars are not.  On the other hand, though arbitrary C code can be
+compiled into EDGE or GraphEd, care would be needed to program these widgets in
+a way that is compatible with the base editor.  For these reasons we feel
+{\DOTTY} is a good alternative to using class libraries to create customized
+graph browsers.

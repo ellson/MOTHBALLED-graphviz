@@ -1,0 +1,779 @@
+\chapter{System Components}
+\label{secsyscomp}
+This section presents the components of the editor.
+
+\section{The Language}
+\label{subseclang}
+Since {\LEFTY} is interactive, the language is designed to allow for fast
+parsing and execution. The language was inspired by {\it EZ} \cite{drh-ez}.
+Appendix~\ref{appgrammar} specifies the language in detail.
+
+The language supports {\it scalars} and {\it tables}. A scalar is a number or a
+character string of arbitrary length. A table is a one-dimensional array
+indexed by numbers or strings.
+
+For example, {\tt objarray} in Figure~\ref{progboxdsinitial} is a two-entry
+table indexed by {\tt 0} and {\tt 1}. Each of these entries is a table with
+entries for the center and the size of each box and an {\tt id} for each box.
+
+Variables are either global, i.e., part of a global name table, or local to a
+function. Expressions may or may not return a value. For example, {\tt a + b}
+does not return a value when either {\tt a} or {\tt b} are not defined.
+
+The smallest program unit is the expression. User actions on the WYSIWYG view
+result in the execution of expressions. User-typed text in the program view is
+a sequence of expressions. Each user action results in the immediate evaluation
+of an expression. For example, if the user enters \verb+num = sqrt (4);+ in the
+program view, {\tt sqrt} is called and its return value, {\tt 2}, is assigned
+to {\tt num}. Once executed, the input is discarded; the only change in the
+program's state is that it now contains {\tt num}. To specify code that is
+meant to be executed later, the user must define a function, e.g.,
+
+\vbox{
+\begin{verbatim}
+afunction = function (n) {
+    num = sqrt (n);
+};
+\end{verbatim}
+}
+
+\noindent
+``Executing'' a function declaration adds the name of the function to the
+global name table. Calling {\tt afunction} assigns a value to {\tt num}, e.g.,
+\verb+afunction (4);+ assigns {\tt 2} to {\tt num}.
+
+Assignment is done either by value (scalars), or by reference (tables). For
+example, after the sequence \verb+a = 1; b = a;+, {\tt a} and {\tt b} point to
+two different values, while the sequence \verb+a = [ ]; b = a;+ results in both
+{\tt a} and {\tt b} pointing to the same table. Functions are stored and
+treated like scalars.
+
+\section{The Program View}
+The program view is a textual representation of the picture state. It displays
+the name and value of each global object.
+
+The textual representation can be long, so the editor presents an abbreviated
+view by default: each name, value pair is displayed on a line.
+Figure~\ref{figpviews}a shows a few of the entries in the program view for the
+picture in Figure~\ref{figboxinitial}. Only the value for {\tt objnum} is
+displayed, as it can fit in a single line. Other variables have an abstract
+representation, which indicates whether they are functions or tables.
+
+\begin{figure}[htb]
+\begin{verbatim}
+'delete' = function (...) { ... };    'delete' = function (...) { ... };
+'drawbox' = function (...) { ... };   'drawbox' = function (...) { ... };
+'leftdown' = function (...) { ... };  'leftdown' = function (...) { ... };
+'leftmove' = function (...) { ... };  'leftmove' = function (...) { ... };
+'leftup' = function (...) { ... };    'leftup' = function (...) { ... };
+'move' = function (...) { ... };      'move' = function (...) { ... };
+'new' = function (...) { ... };       'new' = function (...) { ... };
+'objarray' = [ ... ];                 'objarray' = [
+'objnum' = 2;                             0 = [ ... ];
+'redraw' = function (...) { ... };        1 = [ ... ];
+'reshape' = function (...) { ... };   ];
+                                      'objnum' = 2;
+                                      'redraw' = function (...) { ... };
+                                      'reshape' = function (...) { ... };
+\end{verbatim}
+
+\hfil(a) All entries closed\hfil\hfil(b) Opening entry {\tt objarray}\hfil
+
+\begin{verbatim}
+'delete' = function (...) { ... };    'delete' = function (...) { ... };
+'drawbox' = function (...) { ... };   'drawbox' = function (...) { ... };
+'leftdown' = function (...) { ... };  'leftdown' = function (...) { ... };
+'leftmove' = function (...) { ... };  'leftmove' = function (...) { ... };
+'leftup' = function (...) { ... };    'leftup' = function (...) { ... };
+'move' = function (...) { ... };      'move' = function (...) { ... };
+'new' = function (...) { ... };       'new' = function (...) { ... };
+'objarray' = [                        'objarray' = [
+    0 = [                                 0 = [
+        'id' = 0;                             'id' = 0;
+        'rect' = [ ... ];                     'rect' = [ ... ];
+    ];                                    ];
+    1 = [ ... ];                          1 = [ ... ];
+];                                    ];
+'objnum' = 2;                         'objnum' = 2;
+'redraw' = function (...) { ... };    'redraw' = function (...) { ... };
+'reshape' = function (...) { ... };   'reshape' = function (obj, rect) {
+                                          obj.rect = rect;
+                                          return obj;
+                                      };
+                                      'zarray' = objarray;
+\end{verbatim}
+
+\hfil(c) Opening entry {\tt objarray[0]}\hfil\hfil(d) Opening entry {\tt reshape}\hfil\hfil
+
+\caption{Various levels of abstraction on the program view}
+\label{figpviews}
+\end{figure}
+
+For a more detailed view of an object, the user clicks on the line describing
+the object. For example, clicking on the line for {\tt objarray} causes the
+editor to expand it, as shown in Figure~\ref{figpviews}b, to show that {\tt
+objarray} has two entries indexed by {\tt 0} and {\tt 1}. Clicking on the {\tt
+0} entry of {\tt objarray} causes the editor to expand that entry as shown in
+Figure~\ref{figpviews}c. Entry {\tt 1} remains the same, but entry {\tt 0} is
+expanded. Function entries behave similarly: clicking on a function displays
+the function's body. Clicking on {\tt reshape}, for example, results in the
+display shown in Figure~\ref{figpviews}d.
+
+Clicking on an expanded entry replaces that entry with its abstracted version.
+
+If an entry points to the same value as another entry, the second entry is
+shown differently. Rather than showing the same value twice, the editor shows
+the duplication. For example, if we execute \verb+zarray=objarray;+,
+\verb+zarray+ will be shown as in Figure~\ref{figpviews}d. This display
+semantic makes it clear how much unique information is available.
+
+Unlike in the WYSIWYG view, where changes are controlled by the program that
+describes the picture, the user can do anything in the program view, including
+getting the program into an inconsistent state. All the functions and tables
+are visible and can be edited. This flexibility is necessary, since a
+conceptual change to the program or the data usually requires a sequence of
+modifications to the text of the program. Although the sequence of
+modifications leaves the editor in a consistent state, individual modifications
+can put the editor in an inconsistent state temporarily. For example, the user
+can add a box to Figure~\ref{figboxinitial} by typing in the sequence of
+commands executed by function {\tt new} in Figure~\ref{progboxedit}. After the
+user has typed in the assignment for \verb+objarray[objnum]+, the program is
+inconsistent: {\tt objarray} has three entries, but the value for {\tt objnum}
+is still {\tt 2}. The program becomes consistent after the user types in the
+command to increment {\tt objnum}.
+
+\section{The WYSIWYG View}
+The WYSIWYG view is the graphical representation of the picture. The program
+that describes a picture controls the WYSIWYG view; all the objects are drawn
+by the program, and all user actions are handled by the program. The WYSIWYG
+view can consist of one or more widgets, such as drawing areas, buttons, lists,
+text areas, and scrollable widgets.
+
+Widgets can be manipulated using built-in functions. When a new widget is
+created, {\LEFTY} adds an entry to a global table called {\tt widgets}. Each of
+these entries is a table that can be used to customize the behavior of the
+widget. When the user generates an event, e.g. clicks a mouse button, {\LEFTY}
+searches the corresponding entry in {\tt widgets} for the appropriate callback
+function. If the function cannot be found in that table, {\LEFTY} then searches
+for it in the global namespace.
+
+The most interesting type of widget in {\LEFTY} is the drawing area. Drawing
+inside such a widget is handled by a set of built-in functions. The supported
+graphical primitives are lines, polygons, splinegons, elliptic arcs, and text.
+Each drawing area maintains its own graphics state. The built-in functions and
+state variables are described in Section~\ref{secbuiltins}
+
+When an event occurs inside a drawing area, for example, a mouse button is
+pressed or released, the editor checks if a function corresponding to this
+event exists. The possibilities are:
+
+\vbox{
+\begin{verbatim}
+leftdown      leftmove      leftup
+middledown    middlemove    middleup
+rightdown     rightmove     rightup
+keydown                     keyup
+\end{verbatim}
+}
+
+\noindent
+There is no restriction on what these functions do. The programmer must define
+them as appropriate for the current picture. {\LEFTY} searches for these
+functions first in the drawing area's entry in {\tt widgets}, then in the
+global namespace. If a function is found, it is called with a single argument.
+This argument is a table that contains information about the event. It has the
+following fields.
+
+\begin{list}{}{\renewcommand{\leftmargin}{50pt}\renewcommand{\labelwidth}{40pt}\renewcommand{\makelabel}[1]{#1\hfil}}
+\item[\tt obj]
+the object that the user selected with this event, or {\tt null} if no such
+object could be found
+\item[\tt pos]
+a table with two entries, {\tt x} and {\tt y}, that hold the mouse coordinates
+at the time of this event
+\item[\tt pobj]
+(only for {\tt move} and {\tt up} events) the object selected by the preceding
+{\tt down} event.
+\item[\tt ppos]
+(only for {\tt move} and {\tt up} events) the mouse coordinates at the time of
+the preceding {\tt down} event
+\item[\tt widget]
+the widget id of the drawing area where this event occurred
+\item[\tt key]
+(only for {\tt key} events) the ascii character of the key
+\end{list}
+
+Determining the selected object at a button press or release has two phases.
+The editor determines if the mouse coordinates select a graphical primitive.
+Closed shapes, for example, boxes and ellipses, are selected if the mouse
+coordinates lie inside the shape. If such a primitive can be found, the editor
+finds the {\LEFTY} data object associated with it.
+
+Finding the selected graphical primitive is straightforward. The editor
+maintains a data structure of all the graphical primitives in the WYSIWYG view.
+When an event is received, the coordinates are used to search through this data
+structure for the selected primitive. The only complication is when two or more
+primitives overlap. In the box example in Section~\ref{secoverview}, boxes
+could overlap. The editor does not resolve these kinds of ambiguities. One
+solution would be to allow the user to rotate through all the objects that
+could potentially be selected. The editor does provide a way to resolve
+ambiguities created by design, such as when an object is drawn using more than
+one graphical primitives. In the tree figure in Section~\ref{secintro}, a tree
+node is drawn as a rectangle enclosing a label.
+
+Finding the data object that corresponds to the selected primitive is slightly
+more complex. The data object must be specified as an argument to the rendering
+primitive. All rendering functions take as their second argument the object to
+associate with the primitive they draw. This argument can also be {\tt null},
+which effectively makes the primitive unselectable. For the tree example, the
+text label of a node could be associated with {\tt null} and that would leave
+the node's box as the only selectable primitive occupying that area of the
+display. The box would have to be associated with the table that represents the
+corresponding node of the tree. The mapping between objects and graphical
+primitives is manipulated with two functions:
+
+\vbox{
+\begin{tabbing}
+{\tt clearpick ({\it canvas}, {\it object})}\\
+{\tt setpick ({\it canvas}, {\it object}, {\it rectangle})}\\
+\end{tabbing}
+\vspace{-16pt}
+}
+
+\noindent
+{\tt clearpick} removes {\it object} from the mapping, and {\tt setpick}
+associates the rectangular area {\it rectangle} with {\it object}. Finally,
+clearing the WYSIWYG view clears the mapping.
+
+When a drawing area is resized, or when its window is redrawn, {\LEFTY}
+searches for a function called {\tt redraw}. If such a function is found in
+{\tt widgets} or in the global namespace, it is called with a table as an
+argument. This table contains an entry {\tt widget} which is the widget id
+of the drawing area.
+
+The label widget can display a piece of text in its rectangular area.
+It provides a subset of the user-interface functions provided by the
+drawing area; it provides all the {\tt up} and {\tt down} functions
+mentioned above, but does not provide the {\tt move} functions. The table
+passed as argument to these functions contains the {\tt widget} entry
+and---for the {\tt keyup} and {\tt keydown} functions---the {\tt key}
+entry.
+
+The button widget provides a single function, {\tt pressed}. It is called
+when the user clicks on the button. If such a function is found it is called
+with just one entry, {\tt widget}.
+
+When the user presses {\tt CR} in an input text widget, {\LEFTY} looks for a
+function called {\tt oneline}. This function, if found, is called with two
+arguments, {\tt widget} and {\tt text}. {\tt text} contains the line of text
+that the user just entered.
+
+For array widgets, {\LEFTY} tries to call a function named {\tt resize}
+whenever their size changes (either through user actions, or program control).
+This function is called with two arguments, {\tt widget} and {\tt size}.  {\tt
+size} is an (x,y) table containing the new size of the widget. This function is
+expected to return an array containing new sizes for all of the widget's
+children. This array must be indexed by the widget ids of the children, and
+each element must be an (x,y) table containing the size of a child.
+
+{\LEFTY} can monitor open file descriptors. Built-in function {\tt
+monitor} takes as an argument the id of an input channel (generated by {\tt
+openio}), and adds it to the list of file descriptors being monitored. When
+there is something to read from that file descriptor, {\LEFTY} searches the
+global namespace for a function called {\tt monitorfile}. If such a function is
+found, it is called with a table as an argument. This table contains an entry
+{\tt fd} which is the file descriptor that is ready for reading.
+
+Finally, when there are no X or file I/O events to handle, {\LEFTY} can
+optionally execute a function called {\tt idle}. This feature can be turned
+on or off using the {\tt idlerun} built-in.
+
+\section{Inter-process Communication}
+{\LEFTY} provides built-ins for communicating with other processes. This
+capability can be used in several ways.
+
+\begin{list}{}{}
+\item[]
+Purely for output. A process can use the editor to display some data
+structures; the process does not need any code for graphical layout.
+\item[]
+For both input and output. The editor can be used to specify the input and to
+display the result of some processing of that input. Debugging is an example;
+instead of printing data structures as text or writing code to draw them, the
+process being debugged simply connects to the editing server and sends the data
+structures to the server for display.
+\item[]
+As an extension to the editor itself. There are tools displaying trees
+\cite{tamassia-diagrams}, DAGs \cite{dag-spe}, delaunay triangulations
+\cite{guibas}, and VLSI layouts \cite{magic}. These tools are usually large
+software packages, and duplicating their functionality in the editor is a major
+undertaking. Instead, the editor communicates with these tools as separate
+processes. Whenever some aspect of a layout needs to be updated, the editor
+sends a message asking for instructions on how to perform the update to the
+appropriate process.
+\end{list}
+
+{\LEFTY} communicates with other processes by exchanging ASCII strings. This
+allows {\LEFTY} to communicate with many existing tools, without having to
+modify these tools at all. For example, the layout for the tree in
+Figure~\ref{fig2tp}b is generated by a call to {\tt complayout}. This function
+does all the calculations. If the layout were to be generated by a separate
+process this function could be rewritten as follows.
+
+\vbox{
+\begin{verbatim}
+complayout = function () {
+    ...
+    writeline (treefd, 'compute layout');
+    while ((s = readline (treefd)) ~= '') {
+        t = split (s, ' ');
+        nodearray[ston (t[0])] = ['x' = ston (t[0]); 'y' = ston (t[0]);];
+    }
+    ...
+};
+\end{verbatim}
+\vspace{-12pt}
+}
+
+\noindent
+{\tt complayout} sends a message to the external process, using {\tt
+writeline}, requesting a new layout. The {\tt while} loop reads back the
+response from the process. Each line would consist of 3 numbers: the id of a
+node and its x and y coordinates. The process must send an empty line at the
+end of the transmission. {\tt treefd} is the file descriptor for communicating
+with the other process.
+
+The response from a process can also be a {\LEFTY} expression. The {\tt while}
+loop above could be replaced with the following loop.
+
+\vbox{
+\begin{verbatim}
+complayout = function () {
+    ...
+    while ((s = readline (treefd)) ~= '')
+        run (s);
+    ...
+};
+\end{verbatim}
+\vspace{-12pt}
+}
+
+\noindent
+{\tt run} is a built-in. It parses and execute the {\LEFTY} expression
+specified by the string {\tt s}. A sample string could be {\tt nodearray[i].p =
+['x' = 10; 'y' = 20;];}.
+
+This form of remote procedure call gives processes access to {\LEFTY} functions
+and data structures and should help minimize the amount of work needed to
+interface a process with {\LEFTY}.
+
+The technique of communicating by sending programs has been used in several
+other systems, most notably in window systems \cite{blit,news}.
+
+\section{Built-in Functions}
+\label{secbuiltins}
+
+{\LEFTY} built-ins can be used to perform window system / graphics operations
+and to access various system resources such as files. Built-ins differ from
+functions written in {\LEFTY}'s language in that they can take a variable
+number of arguments. Built-in functions that are not supposed to return a
+value as part of their specification, return 1 when they succeed and nothing
+when they fail. This makes it possible to check whether a built-in performed
+its intended function with an {\tt if}-statement.
+
+\vbox{
+\begin{verbatim}
+if (~setwidgetattr (wid, ['text' = 'some text';]))
+    echo ('setwidgetattr failed');
+\end{verbatim}
+\vspace{-12pt}
+}
+
+\noindent
+Built-ins that are supposed to return specific values, also
+return nothing to indicate failure.
+
+\subsubsection{Widget Functions}
+
+\begin{flushleft}
+\it widgetid \tt = createwidget (\it parentid, attr\tt )\\
+\tt setwidgetattr (\it widgetid, attr\tt )\\
+\it attr \tt = getwidgetattr (\it widgetid, keys\tt )\\
+\tt destroywidget (\it widgetid\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+These functions are used to create, modify, and destroy widgets.  {\tt
+createwidget} creates a new widget and returns its id. This id is a small
+integer. {\tt createwidget} creates a new table, indexed by {\it widgetid},
+under the {\tt widgets} global table. {\it parentid} is the id of the parent
+widget. {\it attr} is a table of attributes, such as type, size, name, etc.
+Attribute {\tt type} must be specified, but if some other attributes are not
+set, default values are used instead. {\tt setwidgetattr} sets one or more
+attributes for the specified widget (except for {\tt type}). {\tt
+getwidgetattr} returns the current values of the attributes specified by {\it
+keys}.  {\it keys} is an indexed array of attribute names. For example, if {\it
+keys} is set to {\tt [0 = 'name'; 1 = 'size';]}, the returned {\it attr} table
+will contain two entries, {\tt ['name' = ...; 'size' = ...;]}. {\tt
+destroywidget} destroys the specified widget and any children that it might
+have.
+
+Tables~\ref{tabwidgets1} and ~\ref{tabwidgets2} show the available widgets.
+
+\begin{table}[htb]
+\begin{tabular}{|l|p{0.9in}p{1.1in}|p{2.8in}|} \hline
+Type&Attributes&Attr. type&Description\\ \hline
+
+\tt view&\tt origin\newline size\newline name\newline zorder&
+table of (x, y)\newline table of (x, y)\newline string\newline string&
+A top level window. It may contain exactly one child. {\tt zorder} can be used
+to push / pop the view (values {\tt "top"}, {\tt "bottom"}).\\ \hline
+
+\tt text&\tt size\newline borderwidth\newline text\newline mode\newline appendtext&
+table of (x, y)\newline integer\newline string\newline string\newline string&
+A widget that can display (and optionally edit) text. {\tt mode} can be one of
+{\tt "oneline"}, {\tt "input"}, or {\tt "output"}. For mode {\tt line},
+{\LEFTY} tries to execute the {\tt func} callback whenever \verb+CR+ is
+pressed. {\tt appendtext} appends a string to the string already displayed by
+the widget.\\ \hline
+
+\tt scroll&\tt size\newline borderwidth\newline childcenter\newline mode&
+table of (x, y)\newline integer\newline table of (x, y)\newline string&
+A widget that can contain a---potentially larger---child widget and let the
+user scroll through it. {\tt childcenter} may not be specified until the scroll
+widget has a child widget. {\tt childcenter} aligns the child so that the
+child's {\tt childcenter} coordinates are at the center of the scroll
+widget. {\tt mode} can be set to {\tt "forcebars"} to make scrollbars appear
+even when the child widget is small enough to fit inside the scroll widget.\\
+\hline
+
+\tt array&\tt size\newline borderwidth\newline mode\newline layout&
+table of (x, y)\newline integer\newline string\newline string&
+A widget that can take a list of children widgets and display them either as a
+horizontal or a vertical list. {\tt mode} can be one of {\tt "horizontal"}, or
+{\tt "vertical"}. {\tt layout} controls whether the widget rearranges its
+children every time there is some change. If set to {\tt "off"} the widget will
+stop rearranging its children until {\tt layout} is set to {\tt "on"} again.\\
+\hline
+\end{tabular}
+\caption{Widget types part 1}
+\label{tabwidgets1}
+\end{table}
+
+\begin{table}[htb]
+\begin{tabular}{|l|p{0.9in}p{1.1in}|p{2.8in}|} \hline
+Type&Attributes&Attr. type&Description\\ \hline
+
+\tt button&\tt size\newline borderwidth\newline text&
+table of (x, y)\newline integer\newline string&
+A widget that can display a text label and execute the callback {\tt pressed}
+when it is selected.\\ \hline
+
+\tt canvas&\tt size\newline borderwidth\newline cursor\newline color\newline\newline viewport\newline window&
+table of (x, y)\newline integer\newline string\newline array of (r, g, b)\newline and strings\newline table of (x, y)\newline 2 tables of (x, y)&
+A drawing area. {\tt cursor} must be the name of a cursor bitmap,
+e.g. \verb+"watch"+ or \verb+"default"+. {\tt color} is an array of RGB values
+and color names. Colors {\tt 0} and {\tt 1} are predefined to be the background
+and foreground colors. {\tt viewport} sets the size in pixels of the drawing
+area. {\tt window} sets the mapping between drawing coordinates and pixel
+coordinates. The default value for {\tt window} is (0,0) - (1,1). The origin is
+at the lower left side.\\ \hline
+
+\tt label&\tt size\newline borderwidth\newline text&
+table of (x, y)\newline integer\newline string&
+A widget that can display a text label and execute several callbacks depending
+on the mouse or keyboard buttons used.\\ \hline
+
+\tt ps&\tt origin\newline size\newline name\newline mode\newline color\newline window&
+table of (x, y)\newline table of (x, y)\newline string\newline string\newline array of (r, g, b)\newline 2 tables of (x, y)&
+A postscript file. {\tt name} is the file name. {\tt mode} can be {\tt
+"landscape"}.\\ \hline
+\end{tabular}
+\caption{Widget types part 2}
+\label{tabwidgets2}
+\end{table}
+
+\subsubsection{Graphics Functions}
+
+\begin{flushleft}
+\tt clear (\it canvasid\tt )\\
+\tt clearpick (\it canvasid, object\tt )\\
+\tt setpick (\it canvasid, object, rect\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt clear} clears the drawing area whose id is {\it canvasid} and the table
+that contains the mapping between data objects and graphical objects.  {\tt
+clearpick} removes {\it object} from the mapping table, and {\tt setpick} maps
+the rectangular area specified by {\it rect} to {\it object}.
+
+\begin{flushleft}
+\it item = \tt displaymenu (\it widgetid, menu\tt)\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt displaymenu} pops up the menu specified by {\it menu} inside the widget
+specified by {\it widgetid} (which must be either a canvas or a label
+widget). {\it menu} must be a table of number-string pairs. When the user
+selects one of the string entries {\tt displaymenu} returns the number
+associated with that string. If the user dismisses the menu, {\tt -1} is
+returned.
+
+\begin{flushleft}
+\it reply \tt = ask (\it prompt [, type, args]\tt)\\
+\end{flushleft}\vspace{-2\itemsep}
+Prompts the user for information; it displays the {\it prompt} string in a
+dialog box and waits for the user to type or select a reply, which is returned
+as the value of {\tt ask}. If {\it type} is the string {\tt "file"}, the dialog
+box shows the contents of the directory specified in {\it args}. If
+{\it type} is {\tt "choice"}, {\it args} must be a string of the form
+{\tt "<choice a>|<choice b>|..."}. Each choice string appears as a button
+that the user can click to select. If {\it type} is {\tt string}, the dialog
+box has a text field that the user can type in. {\it args} in this case
+is the initial value of the text field. Finally, if {\it type} is not
+specified, {\tt "string"} is assumed.
+
+\begin{flushleft}
+\tt setgfxattr (\it canvasid, attr\tt )\\
+\it attr \tt = getgfxattr (\it canvasid, keys\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt setgfxattr} sets attributes in the graphics state. Each drawing area has
+its own state variables. {\tt setgfxattr} sets these attributes
+permanently. These attributes can also be set on a per rendering call
+basis. {\tt getgfxattr} returns the current values of the attributes specified
+by keys. {\it keys} is an indexed array of attribute names. For example, if
+{\it keys} is set to {\tt [0 = 'mode'; 1 = 'width';]}, the returned {\it attr}
+table will contain two entries, {\tt ['mode' = ...; 'width' = ...;]}.
+
+The graphics state consists of the variables shown in Table~\ref{tabgattr}.
+
+\begin{table}[htb]
+\begin{tabular}{|l|l|p{0.7in}|l|p{3in}|} \hline
+Name&Type&Range&Default&Description\\ \hline
+\tt color&integer&{\tt 0-255}&\tt 1&
+The current drawing color.\\
+\tt width&integer&{\tt >= 0}&\tt 0&
+The current line width.\\
+\tt mode&string&{\tt 'src'}\newline {\tt 'xor'}&\tt 'src'&
+The current drawing mode.\\
+\tt fill&string&{\tt 'on'}\newline {\tt 'off}&\tt 'off'&
+Whether polygons and arcs should be drawn filled or outlined.\\
+\tt style&string&{\tt 'solid'}\newline {\tt 'dashed'}\newline {\tt 'dotted'}&\tt 'solid'&
+The current line style.\\
+\hline
+\end{tabular}
+\caption{Graphics state}
+\label{tabgattr}
+\end{table}
+
+\begin{flushleft}
+\tt arrow (\it canvasid, object, p1, p2 [, attr]\/\tt )\\
+\tt line (\it canvasid, object, p1, p2 [, attr]\/\tt )\\
+\tt box (\it canvasid, object, rect [, attr]\/\tt )\\
+\tt polygon (\it canvasid, object, pointarray [, attr]\/\tt )\\
+\tt splinegon (\it canvasid, object, pointarray [, attr]\/\tt )\\
+\tt arc (\it canvasid, object, center, size [, attr]\/\tt )\\
+\tt text (\it canvasid, object, pos, string, fontname, fontsize, just [,attr]\/\tt )\\
+\it size \tt = textsize (\it canvasid, object, fontname, fontsize\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+The final argument in most of these functions can be used to change the
+graphics state for the execution of that function. {\tt splinegon} draws a
+piecewise bezier spline curve. {\tt fontname} must be an X font name or a
+postscript font name. For ISO style font names, if the name contains the
+sequence {\tt \%d}, this sequence will be replaced by the appropriate font
+size.  {\tt just} is a two letter string that controls the justification of the
+string. The first letter may be {\tt l}, {\tt c}, or {\tt r} for left, center,
+or right justified strings. The second letter specifies the vertical
+justification and can be one of {\tt u}, {\tt c}, {\tt d}.
+
+\subsubsection{Bitmap Functions}
+
+\begin{flushleft}
+\it bitmapid \tt = createbitmap (\it widgetid, size\tt )\\
+\tt destroybitmap (\it bitmapid\tt )\\
+\it bitmapid \tt = readbitmap (\it widgetid, fileid\tt )\\
+\tt writebitmap (\it fileid, bitmapid\tt )\\
+\tt bitblt (\it canvasid, object, point, origin, bitmapid, mode\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+These functions are used to create, modify, and destroy bitmaps.  {\tt
+createbitmap} creates a new bitmap and returns its id. This id is a small
+integer. {\tt createbitmap} creates a new table, indexed by {\it bitmapid},
+under the {\tt bitmaps} global table. {\it widgetid} is the id of the canvas
+widget associated with the bitmap. A bitmap can only be displayed in its
+associated canvas. {\it size} is the size of the bitmap.
+{\tt destroybitmap} destroys the specified bitmap. {\tt readbitmap}
+reads a bitmap from file descriptor {\it fileid} and returns a new bitmap
+id. The bitmap is assumed to be in PPM format. {\tt savebitmap} writes
+the specified bitmap to file descriptor {\it fileid}. {\tt bitblt} copies
+pixels between canvas {\it canvasid} and bitmap {\it bitmapid}. If {\it mode}
+is {\tt 'c2b'} pixels are copied from the canvas to the bitmap. If {\it mode}
+is {\tt 'b2c'} pixels are copied from the bitmap to the canvas. Pixels
+are copied from the source (bitmap or canvas) starting at point {\it point}
+to the destination starting at the origin of the {\it rect} rectangle.
+The size of the rectangle specifies the amount of pixels to copy.
+
+Bitmap are scaled when copied to / from canvases. For example, if the
+canvas window to viewport ratio is 2.0, a bitmap drawn in the canvas will
+be scaled to 0.5 of its size.
+
+\subsubsection{Input / Output functions}
+
+\begin{flushleft}
+\it id \tt= openio (\it type, name, mode [, format]\/\tt )\\
+\tt closeio (\it id [, flag]\/\tt )\\
+\it string \tt = readline (\it id\tt )\\
+\it string \tt = read (\it id\tt )\\
+\tt writeline (\it id, string\tt )\\
+\it table \tt = readgraph (\it id\tt )\\
+\tt writegraph (\it id, table, flag\tt )\\
+\it table \tt = parsegraphlabel (\it label, rects\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+These functions handle input and output for a variety of connections, such as
+regular files, pipes, and sockets. {\it type} is a string whose value can be
+one of {\tt 'file'}, {\tt 'pipe'}, {\tt 'socket'}, or {\tt 'cs'}. For regular
+files, file {\it name} is opened for reading or writing, depending on {\it
+mode}.  {\it mode} can be one of {\tt 'r'}, {\tt 'w'}, or {\tt 'w+'}. For pipes
+and sockets, {\it name} is the name of an executable. If the name does not
+begin with {\tt /}, or {\tt .}, the executable is searched, first in the path
+defined by the environment variable {\tt LEFTYPATH}, then in {\tt
+PATH}. Finally, if {\it format} is specified, it customizes the way an
+executable is invoked. In {\it format}, a {\tt \%} followed by a letter
+specifies a formatting directive. The following directives are currently
+recognized.
+
+\begin{list}{}{}
+\item[\tt \%e]
+the full path name for the executable.
+\item[\tt \%i]
+the input file descriptor (for pipes).
+\item[\tt \%o]
+the output file descriptor (for pipes).
+\item[\tt \%h]
+the hostname (for sockets).
+\end{list}
+
+An arbitrary shell command can be executed by calling {\tt openio} with {\it
+name} set to {\tt "ksh"} (or any other shell) and {\it format} set to {\tt
+concat ('\%e -c "', {\it cmd}, '"')}, where {\it cmd} is the shell command.
+For sockets, {\LEFTY} creates an internet socket, starts up the executable,
+then waits for the executable to connect to that socket. The executable must
+try to connect to the host and port specified by {\tt \%h} and {\tt \%i}.
+{\tt 'cs'} can be used
+to establish a {\it libcs}-style connection. {\tt name} in this case is the
+{\it libcs} name for a service. The optional {\tt flag} parameter can be set to
+{\tt "kill"} to make {\LEFTY} send the kill signal to the child process (if
+such exists) after it has closed the file descriptor.  {\tt readline} reads a
+full line and returns it (stripping the newline character). {\tt readgraph}
+reads a graph in {\DOT}'s language and returns it as a table. {\tt writegraph}
+writes out the graph {\it table}. If {\it flag} is set to {\tt 1} {\LEFTY}
+will attach extra attributes to edges to help identify them when this graph
+is read back in. This is used when {\LEFTY} communicates with {\DOT}. {\tt
+parsegraphlabel} takes a {\DOT}-style record label and the corresponding string
+of coordinates for the record fields and returns a hierachical table.  Each
+entry in this table contains either the text and coordinates of a field, or a
+sub-table of fields.
+
+\subsubsection{Math Functions}
+
+\begin{flushleft}\tt
+\it value \tt = atan (\it y, x\tt )\\
+\it value \tt = cos (\it angle\tt )\\
+\it value \tt = sin (\it angle\tt )\\
+\it value \tt = sqrt (\it number\tt )\\
+\it value \tt = random (\it number\tt )\\
+\it integer \tt = toint (\it number\tt )
+\end{flushleft}\vspace{-2\itemsep}
+{\tt angle} is assumed to be in degrees. {\tt toint} truncates the decimal part
+of {\it number}.
+
+\subsubsection{Miscellaneous Functions}
+
+\begin{flushleft}
+\tt dump (\it ...\tt )\\
+\tt echo (\it arg1, ...\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt echo} prints out each arguments by appending them one after the other in
+the same line. {\tt echo} does not handle tables or functions. {\tt dump}
+prints its arguments separated by newlines. It can handle any type of {\LEFTY}
+object. If {\tt dump} is called with no arguments, it prints the entire
+namespace.
+
+\begin{flushleft}
+\it object2 \tt = copy (\it object1\tt )\\
+\tt remove (\it key [, table]\/\tt )\\
+\it size \tt = tablesize (\it table\tt )\\
+\it size \tt = strlen (\it string\tt )\\
+\it table \tt = split (\it string, delimiter\tt )\\
+\it string \tt = concat (\it arg1 [, ...]\/\tt )\\
+\it string \tt = ntos (\it number\tt )\\
+\it number \tt = ston (\it string\tt )\\
+\it string \tt = quote (\it scalar [, qset [, qchar]]\/\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt copy} makes a complete copy of {\it object1}. This is useful for assigning
+tables by value. {\tt remove} removes {\it key}, either from {\it table}, or
+from the global namespace. {\tt tablesize} returns the number of entries in a
+table. {\tt strlen} returns the number of characters in {\it string}.  {\tt
+split} splits {\it string} in words and returns a table (indexed from 0 and
+up), where each entry is a word. {\it delimiter} is a one character string that
+is used to break {\it string} into words. Each occurance of {\it delimiter}
+separates two words. The only exception is when {\it delimiter} is the space
+character; all leading and trailing spaces are ignored and multiple spaces are
+treated as a single space. {\tt concat} concatenates all its arguments into one
+string. {\tt ntos} converts a number to a string. {\tt ston} converts a
+string to a number. {\tt quote} returns a string representation of the input
+{\it scalar}. When a character in {\it scalar} is in the {\it qset} string it
+is escaped by prepending the backquote character. If {\it qset} is
+not specified, the default \verb+'"+ is used. If {\it qchar} is specified,
+a {\it qchar} is added at the beginning and the end of the output string.
+
+\begin{flushleft}
+\tt load (\it string\tt )\\
+\tt run (\it string\tt )\\
+\tt exit ()\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt load} parses and executes {\LEFTY} statements from the file specified by
+{\it string}. If the file does not start with {\tt /} or {\tt .}, it is
+searched in the path specified by the environment variable {\tt LEFTYPATH}.
+{\tt run} parses and executes the {\LEFTY} statements in {\it string}.  {\tt
+exit} quits the editor.
+
+\begin{flushleft}
+\tt txtview (\it mode\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt txtview} turns the program view on or off. {\it mode} can be one of {\tt
+'on'} or {\tt 'off'}.
+
+\begin{flushleft}
+\tt monitor (\it fileid, mode\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt monitor} turns on or off the monitoring of a file for input. {\it mode}
+can be one of {\tt 'on'} or {\tt 'off'}. {\it fileid} is an id returned from
+{\tt openio}. When a file descriptor becomes ready for reading, {\LEFTY} calls
+the {\tt monitorfile} callback.
+
+\begin{flushleft}
+\tt idlerun (\it mode\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt idlerun} can be used to control what {\LEFTY} does when there are no
+events to handle. {\it mode}
+can be one of {\tt 'on'} or {\tt 'off'}. The default mode if {\tt 'off'}.
+Setting {\tt mode} to {\tt 'on'}, instructs {\LEFTY} to keep running the
+{\tt idle} callback unless there are X or file events to handle.
+Setting {\tt mode} to {\tt 'off'}, instructs {\LEFTY} to just block waiting
+for events to handle.
+
+\begin{flushleft}
+\tt sleep (\it useconds\tt )\\
+\it useconds \tt = time ()\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt sleep} pauses execution for {\it useconds} microseconds.
+{\tt time} returns the time of day in microseconds.
+
+\begin{flushleft}
+\tt system (\it string\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt system} executes {\it string} as a shell command. It waits until the
+command finishes.
+
+\begin{flushleft}
+\it value \tt = getenv (\it name\tt )\\
+\tt putenv (\it name, value\tt )\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt getenv} returns the value associated with the environment variable
+{\it name}. {\tt putenv} sets the value for the environment variable
+{\it name} to value {\it value}. Appendix~\ref{apprunning} describes the
+{\LEFTY}-specific environment variables.

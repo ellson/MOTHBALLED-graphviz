@@ -1,0 +1,36 @@
+.\" Process this file with
+.\" groff -man -Tascii dotneato-config.1
+.\"
+.TH dotneato-config 1 "FEBRUARY 1999" "Library Configuration" "User Manuals"
+.SH NAME
+dotneato-config \- Display Dotneato Library Configuration
+.SH SYNOPSIS
+.B dotneato-config 
+.I OPTION 
+.B [
+.I OPTION
+.B ... ]
+.SH DESCRIPTION
+.B dotneato-config
+is a script that is used to display the compiler and linker flags that are 
+required for building applications that link to the dotneato libraries
+from GraphViz.
+
+.SH OPTIONS
+.IP --version
+dotneato version information
+.IP --prefix
+displays prefix of directory where dotneato was installed.
+.IP --exec-prefix
+displays exec-prefix of the directory where architecture-specific parts
+of dotneato were installed.
+.IP --cflags
+C pre-processor and compiler flags for use with dotneato.
+.IP --libs
+dotneato library linking information
+.IP --libtool
+dotneato libtool information
+.SH "SEE ALSO"
+.BR dot (1)
+.SH AUTHOR
+John Ellson <ellson@graphviz.org>

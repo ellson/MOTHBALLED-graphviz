@@ -1,0 +1,24 @@
+#!/bin/sh
+# next line is a comment in tcl \
+exec wish "$0" ${1+"$@"}
+
+package require Tkspline
+package require Tcldot
+
+set c .c
+pack [canvas $c]
+for {} {1} {} {
+    set g [dotnew digraph]
+    set n [$g addnode]
+    for {set i 0} {$i < 5} {incr i} {
+        set m $n
+        set n [$g addnode]
+        $n addedge $m
+        $g layout
+        eval [$g render]
+        update
+        after 1000
+        $c delete all
+    }
+    $g delete
+}

@@ -1,0 +1,41 @@
+\chapter{Conclusions}
+\label{secconc}
+A unique feature of {\LEFTY} is the use of a single language to describe all
+aspects of picture handling. Editing operations and layout algorithms are not
+hardwired in the editor; they are part of the picture specification. This
+allows the editor to handle a variety of pictures and still provide, for each
+type of picture, functionality comparable to that of dedicated tools.
+
+Providing two views, each of which presents information at a different level of
+abstraction, gives users more flexibility in editing a picture. Some changes
+are easier to describe in one view than in another. Also, users have
+preferences; some prefer describing operations with programs, while others
+prefer using the mouse.
+
+The editor's ability to communicate with external processes allows it to make
+use of existing tools whose functionality would be difficult to duplicate. This
+extensibility also makes it possible to edit pictures for which the editor's
+procedural description is not desirable. For example, a constraint-based
+editing environment can be implemented as an external process. Such a process
+can display both the picture and the constraints and allow the user to edit
+both. This arrangement simplifies the implementation of a constraint-based
+system because the editor already provides support for the user interface, and
+allows the constraint solver to be written in any language.
+
+Using {\LEFTY} to construct graphical front ends for existing tools is fast and
+convenient since the existing tools do not need to be modified. {\LEFTY},
+however, can also be used for building new applications. This can be a good
+alternative to building applications by integrating the user interface with the
+main application into a single program.  Implementing the user interface as a
+separate process helps make it clear what functionality belongs to the user
+interface and what belongs to the main application.  Having a programmable
+front end makes it easier to experiment with different approaches. Debugging is
+also easier, since the main application can be driven by a text file. In an
+integrated application one would have to perform the sequence of mouse and
+keyboard events that lead to the problem, and this can be tedious and
+error-prone.  The speed disadvantage of an interpreted system, and the cost of
+inter-process communication can---in some case---be prohibitive. In most cases,
+however, these disadvantages do not affect the response time, which is
+dominated by window system operations. In fact, having separate processes can
+improve performance, since the processes can execute to some extent in
+parallel.

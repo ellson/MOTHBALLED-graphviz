@@ -1,0 +1,329 @@
+\chapter{Customizing {\DOTTY}}
+An important aspect of {\DOTTY} is that it can readily be customized to handle
+application-specific graphs. A simple type of customization is to change the
+user interface functions such as {\tt leftup} to do something different.  More
+complex customizations could involve adding new editing operations and setting
+up communication channels with other processes.
+
+The rest of this section provides some general guidelines for customizing
+{\DOTTY} and some examples.
+
+\section{General Guidelines}
+The scripts in the {\tt dotty*.lefty} files do not perform any actions (besides
+loading several functions and data structures).  Therefore, it should not be
+necessary to change these files. The simplest approach is to create a new
+{\LEFTY} script, say {\tt new.lefty}.  This script could load {\tt
+dotty.lefty}, define new functions and overide predefined functions, and
+finally start up the main event loop:
+
+\vbox{
+\begin{verbatim}
+load ('dotty.lefty');
+new.protogt = [
+    'actions' = copy (dotty.protogt.actions);
+    # new actions are added later in this file
+];
+new.protovt = [
+    'name' = 'NEW';
+    'type' = 'normal';
+    # other entries are added later in the file
+];
+new.protogt.actions.general['play fwd'] = function (gt, vt, data) {
+    while (new.next (gt))
+        ;
+};
+new.protovt.uifuncs.leftup = function (data) {
+    local gt;
+    gt = dotty.graphs[dotty.views[data.widget].gtid];
+    if (new.next (gt) == 0)
+        echo ('at end of log');
+};
+new.main = function () {
+    dotty.init ();
+    dotty.createviewandgraph (null, 'file', new.protogt, new.protovt);
+    ...
+};
+new.main ();
+\end{verbatim}
+}
+
+{\DOTTY} uses the \verb"LEFTYPATH" environment variable to find files to load.
+This is a colon separated list (like \verb"PATH"). Thus, any files you use for
+customization should be in directories pointed to by \verb+LEFTYPATH+.
+
+In general, data structures can be read directly.  For example,
+
+\begin{verbatim}
+a = dotty.views[10].colors.blue;
+\end{verbatim}
+
+\noindent
+assigns the color id that is mapped to 'blue' to variable \verb'a'.  Updating
+values, however, must be done through functions.  For example, to make a new
+color mapping, one should call
+
+\begin{verbatim}
+gt.getcolor ([10 = dotty.views[10];], 'pink');
+\end{verbatim}
+
+\noindent
+instead of doing the assignment
+
+\begin{verbatim}
+dotty.views[10].colors['pink'] = 13;
+\end{verbatim}
+
+\noindent
+since more is required than just adding another entry to the \verb'colors'
+table.
+
+A graph contains the following fields.
+
+\begin{verbatim}
+graphattr = [ ... ];
+graphdict = [ ... ];
+graphs = [ ... ];
+edgeattr = [ ... ];
+edgedict = [ ... ];
+edges = [ ... ];
+nodeattr = [ ... ];
+nodedict = [ ... ];
+nodes = [ ... ];
+\end{verbatim}
+
+\noindent
+The structure of these fields is very similar to that of {\DOT}. \verb"graphs"
+is an array of subgraphs. \verb"nodes" is an array of the nodes in the graph.
+\verb"edges" is the array of edges. Each node contains an \verb"edges" table
+that holds all the edges attached to the node.
+
+Node- or edge-specific information can be added to one of two places:
+
+\begin{obeylines}
+	under the object's attr table, e.g. \verb"node.attr.state = 'NJ';"
+	under the object's main table, e.g. \verb"node.state = 'NJ';"
+\end{obeylines}
+
+\noindent
+Information added to the \verb"attr" table is sent to {\DOT} when the graph is
+drawn, and is also saved in the graph file.  This means that one should not
+store table objects in \verb"attr" since {\DOT} does not understand them.
+
+If an attribute has to be mapped in some way (between {\DOT}'s representation,
+and {\DOTTY}'s internal values) the mapping is stored in the node's main table.
+For example, if \verb"node.attr.color" is \verb"'blue'", \verb"node.color" may
+contain the internal color index \verb"2".
+
+\section{Examples}
+Appendix~\ref{listings} contains the complete source for the first
+example.
+
+\subsection{Finite Automaton Simulator}
+In this tool, an automaton is displayed as a directed graph. A sequence of
+state transitions can be loaded in and animated either in single step or in
+continuous mode, forwards or backwards. If the graph does not fit in the
+window, the window is scrolled to always keep the current node visible.
+Figure~\ref{figfa} shows two consecutive snapshots.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+\begin{tabular}[b]{c@{\hspace{.1in}}c}
+{\epsfxsize=2.5in \epsffile{figs/fa1.ps}}&
+{\epsfxsize=2.5in \epsffile{figs/fa2.ps}}\\
+(a) & (b)
+\end{tabular}
+}}
+\caption{Finite Automaton Simulator}
+\label{figfa}
+\end{figure}
+
+After loading the graph that represents an automaton, {\tt fa.lefty} also loads
+a sequence of state transitions from a file.
+
+\vbox{
+\begin{verbatim}
+fa.loadtrans = function (filename) {
+    local fd, i;
+    if (~((fd = openio ('file', filename, 'r')) >= 0)) {
+        echo ('cannot open transition file: ', filename);
+        return;
+    }
+    echo ('reading transition file');
+    i = 0;
+    while ((fa.trans[i] = readline (fd)))
+        i = i + 1;
+    closeio (fd);
+    fa.trani = 0;
+    fa.states[0] = fa.currstate;
+    fa.currstate.count = 1;
+};
+\end{verbatim}
+\vspace{-12pt}
+}
+
+Array {\tt fa.states} stores all the states the automaton goes through while
+executing the specified transitions.  {\tt fa.next} executes the {\it next}
+transition (pointed to by {\tt fa.transi}).  First, it finds the edge in the
+graph that corresponds to the transition. If such an edge exists, the node at
+the head of the edge becomes the {\it current} node and is highlighted. Any
+nodes that the automaton has been through also use a distinctive color. All
+other nodes are white.
+
+\vbox{
+\begin{verbatim}
+fa.next = function (gt) {
+    local label, eid, edge, tran;
+    if (~(label = fa.trans[fa.trani]))
+        return 0;
+    for (eid in fa.currstate.edges) {
+        edge = fa.currstate.edges[eid];
+        if (edge.attr.label == label & edge.tail == fa.currstate) {
+            tran = edge;
+            break;
+        }
+    }
+    if (tran) {
+        fa.trani = fa.trani + 1;
+        fa.setcolor (gt, fa.currstate);
+        fa.currstate = (fa.states[fa.trani] = tran.head);
+        if (fa.currstate.count)
+            fa.currstate.count = fa.currstate.count + 1;
+        else
+            fa.currstate.count = 1;
+        fa.setcurrcolor (gt, fa.currstate);
+        if (fa.trackcur)
+            fa.focuson (gt, fa.currstate);
+    }
+    return 1;
+};
+\end{verbatim}
+\vspace{-12pt}
+}
+
+{\tt fa.prev} moves backwards through the transition sequence. {\tt fa.leftup}
+advances one step forward in the transition log by calling {\tt fa.next}.  {\tt
+fa.middleup} moves one step backwards.
+
+\vbox{
+\begin{verbatim}
+fa.protovt.uifuncs.leftup = function (data) {
+    local gt;
+    gt = dotty.graphs[dotty.views[data.widget].gtid];
+    if (fa.next (gt) == 0)
+        echo ('at end of log');
+};
+\end{verbatim}
+\vspace{-12pt}
+}
+
+{\tt fa.setcolor} sets the color of the node that used to be the current
+node. {\tt node.count} keeps track how many times the node has been visited and
+sets its color accordingly.
+
+\vbox{
+\begin{verbatim}
+fa.setcolor = function (gt, node) {
+    if (node.count) {
+        node.attr.style = 'filled';
+        node.attr.color = fa.highlightcolor;
+    } else {
+        gt.undrawnode (gt, gt.views, node);
+        remove ('style', node.attr);
+        node.attr.color = fa.normalcolor;
+    }
+    gt.unpacknodeattr (gt, node);
+    gt.drawnode (gt, gt.views, node);
+};
+\end{verbatim}
+\vspace{-12pt}
+}
+
+{\tt fa.setcurrcolor} sets the color of the current node.  {\tt fa.focuson}
+adjusts the graph window so that {\tt node} appears at the center.
+
+\vbox{
+\begin{verbatim}
+fa.focuson = function (gt, node) {
+    gt.setviewcenter (gt.views, node.pos);
+};
+\end{verbatim}
+\vspace{-12pt}
+}
+
+\subsection{{\LDBX}: Graphical Display of Data Structures}
+
+{\LDBX} is a prototype two-view debugger built by combining {\it dotty} with
+{\it dbx}, the system's standard debugger. In {\LDBX}, the user can access {\it
+dbx} by typing commands as usual. At the same time, the user can also ask
+{\DOTTY} to display the value of a variable graphically. Figure~\ref{figldbx}
+shows a snapshot of {\LDBX}. The top window is a {\DOTTY} window. The bottom
+window is an {\tt xterm} window. The user has typed several debugger commands
+in the bottom window. Some of these commands displayed values of variables. In
+the {\DOTTY} window, the user has asked {\LDBX} to print the value of {\tt
+result} (the root of the graph).  The user has then clicked over the boxes that
+contain pointer values (the dots) to show the structure the pointer was
+pointing to.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+{\epsfxsize=6in \epsffile{figs/ldbx.ps}}
+}}
+\caption{Visual Display of Data Structures}
+\label{figldbx}
+\end{figure}
+
+{\LDBX} runs the system debugger as a separate process. A multiplexing process
+allows both the user and {\DOTTY} to communicate with the debugger.  When the
+user types a command in the window on the right, the multiplexor sends it to
+{\it dbx} and displays the response in the same window.  When {\DOTTY} sends a
+message, the multiplexor sends the message to {\it dbx} and collects the
+response. It parses the response and generates a graph. It then sends this
+graph to {\DOTTY}, in the form of {\LEFTY} statements.  {\tt ldbx.doquery}
+handles the communication with the multiplexing process.
+
+\vbox{
+\vspace{-12pt}
+\begin{verbatim}
+ldbx.doquery = function (var) {
+    ...
+    if (var) {
+        writeline (ldbx.mpfd, concat ('print ', var));
+        ldbx.gt.graph = ldbx.gt.erasegraph (ldbx.gt,
+                ldbx.protogt, ldbx.protovt);
+        ldbx.nodes = [];
+        while ((s = readline (ldbx.mpfd)) ~= '')
+            run (s);
+        ldbx.gt.unpackattr (ldbx.gt);
+        ldbx.gt.layoutgraph (ldbx.gt);
+    }
+};
+\end{verbatim}
+}
+
+{\DOTTY} sends the message {\tt print} {\it variable} and then processes any
+response. The response is a sequence of {\LEFTY} statements, such as calls to
+{\tt ldbx.insertnode} and {\tt ldbx.insertedge}.
+
+\vbox{
+\begin{verbatim}
+ldbx.insertnode = function (ident, data) {
+    local node;
+    if (~(node = ldbx.nodes[ident]))
+        node = ldbx.gt.insertnode (ldbx.gt, null, null, null,
+                ['ident' = ident;], 0);
+    node.data = data;
+    node.attr.label = concat ('{', ldbx.makelabel (node, node.data), '}');
+    ldbx.nodes[ident] = node;
+};
+ldbx.insertedge = function (identa, portida, identb, portidb) {
+    if (~ldbx.nodes[identa])
+        ldbx.nodes[identa] = ldbx.gt.insertnode (ldbx.gt, null, null, null,
+                ['ident' = identa;], 0);
+    if (~ldbx.nodes[identb])
+        ldbx.nodes[identb] = ldbx.gt.insertnode (ldbx.gt, null, null, null,
+                ['ident' = identb;], 0);
+    ldbx.gt.insertedge (ldbx.gt, ldbx.nodes[identa], concat ('f', portida),
+            ldbx.nodes[identb], concat ('f', portidb), null, 0);
+};
+\end{verbatim}
+}

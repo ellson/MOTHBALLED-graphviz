@@ -1,0 +1,72 @@
+digraph "Sample Graph"
+{
+	label="Sample Graph";
+	rankdir="TD";
+	/* size="11, 7" */
+
+	node [fontname="Helvetica", shape="record", fontsize="12", style="filled", color="lightblue"];
+
+	edge [style="normal", fontsize="10", color="black"];
+
+	subgraph "cluster_anonymous"
+	{
+	two [
+		label="Second Node\nFirst Node in Cluster",
+		fontname="Helvetica",
+		shape="record",
+		fontsize="12",
+		style="filled",
+		color="lightblue"];
+	three [
+		label="Third Node\nSecond Node in Cluster",
+		fontname="Helvetica",
+		shape="record",
+		fontsize="12",
+		style="filled",
+		color="lightblue"];
+	}
+	start [
+		label="Start Node",
+		fontname="Helvetica",
+		shape="record",
+		fontsize="12",
+		style="filled",
+		color="lightblue"];
+	one [
+		label="First Node",
+		fontname="Helvetica",
+		shape="record",
+		fontsize="12",
+		style="filled",
+		color="lightblue"];
+	four [
+		label="Fourth Node",
+		color="red"];
+	five [
+		label="Fifth Node",
+		fontname="Helvetica",
+		shape="record",
+		fontsize="12",
+		style="filled",
+		color="lightblue"];
+	start -> one [
+		style="normal",
+		fontsize="10",
+		color="black"];
+	one -> two [
+		style="normal",
+		fontsize="10",
+		color="black"];
+	two -> three [
+		style="normal",
+		fontsize="10",
+		color="black"];
+	three -> four [
+		style="normal",
+		fontsize="10",
+		color="black"];
+	four -> five [
+		style="normal",
+		fontsize="10",
+		color="black"];
+}

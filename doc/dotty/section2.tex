@@ -1,0 +1,657 @@
+\chapter{System Description}
+The user can perform actions from either the WYSIWYG view or the program view.
+The WYSIWYG view is more intuitive. The program view is more useful for making
+global changes and for customizing {\DOTTY}. Customizations can be done online,
+by typing {\LEFTY} expressions at the program view, or by creating a {\LEFTY}
+script in a file and loading it in.
+
+\section{Graphical Interface}
+\label{gi}
+{\DOTTY} supports multiple types of WYSIWYG views. Each type of view can have
+its own way of displaying a graph and its own set of mappings from user actions
+to graph / picture operations. By default, {\DOTTY} provides two types of
+views: a normal view and a bird's-eye view.
+
+A normal view displays the graph at 1:1 scale (1 {\DOT} point to 1 pixel).  The
+widget containing the graph grows or shrinks as the graph grows or shrinks. The
+user can use the scrollbars of the outer widget to navigate through the
+graph. The user can also change the scale ratio to zoom in or out.
+
+A bird's-eye view keeps adjusting the scale ratio so that the graph always fits
+entirely inside the outer widget. As the graph grows or shrinks the scale ratio
+changes too. When the user clicks on a location on this view {\DOTTY} adjusts
+the viewing position of all the other views of the same graph to center them on
+that location.
+
+\subsection{Normal View}
+{\DOTTY} implements the following mouse and keyboard actions for the normal
+view.
+
+\begin{description}
+\item[{\em left button}.]
+If the button is pressed over a node, that node moves to track the mouse.  If
+the mouse is over white space (not a node or edge) a new node is created at
+that position.
+
+\item[{\em middle button}.]
+If the down event occurs over a node, a rubber-band line is displayed while the
+mouse tracks over the picture.  If the up event occurs when the mouse is over a
+node, a new edge is created between the two nodes.
+
+\item[{\em right button}.]
+This activates one of the next two menus, depending on the selection under the
+mouse.
+
+\item[{\em global menu}.]
+This menu is activated when the right mouse button is pressed over white space.
+
+\begin{list}{}{
+\renewcommand{\leftmargin}{1.1in}
+\renewcommand{\labelwidth}{1.1in}
+\renewcommand{\makelabel}[1]{#1\hfil}
+}
+\item[{\parbox[b]{1.1in}{\tt undo}}]  
+undo the last insert / delete operation.
+
+\item[{\parbox[b]{1.1in}{\tt paste}}]  
+merge the subgraph previously constructed through the {\tt cut} and {\tt copy}
+operations with the current graph, centering it at the current position.
+
+\item[{\parbox[b]{1.1in}{\tt do layout}}]  
+generate a new graph layout through {\DOT}.
+
+\item[{\parbox[b]{1.1in}{\tt cancel layout}}]  
+abort the current graph layout operation. Works only if {\tt layoutmode}
+is set to {\tt async} for the current graph.
+
+\item[{\parbox[b]{1.1in}{\tt redraw}}]
+clear the window and redraw the graph.
+
+\item[{\parbox[b]{1.1in}{\tt new graph}}]
+erase the current graph.
+
+\item[{\parbox[b]{1.1in}{\tt load graph}}]
+load a graph from a {\DOT} file.  A requester is displayed, asking for the
+file name.
+
+\item[{\parbox[b]{1.1in}{\tt reload graph}}]
+reload the current graph from its associated file.
+
+\item[{\parbox[b]{1.1in}{\tt save graph}}]
+save a graph in its associated {\DOT} file.
+
+\item[{\parbox[b]{1.1in}{\tt save graph as}}]
+save a graph in a {\DOT} file.  A requester is displayed, asking for the
+file name.
+
+\item[{\parbox[b]{1.1in}{\tt open view\newline copy view\newline clone view\newline birdseye view\newline close view}}]
+create or destroy views. {\tt open} creates a new---empty---view, while {\tt
+close} closes the current view. {\tt copy} and {\tt clone} make copies of the
+current view. Views created with {\tt clone} share a single graph; changing the
+graph from any view results in all views being updated. {\tt birdseye view} is
+similar to clone, except that the new view is of type bird's-eye.
+
+\item[{\parbox[b]{1.1in}{\tt zoom in\newline zoom out}}]
+make the graph picture bigger or smaller.  If the X server supports scalable
+fonts, the node and edge labels are also scaled appropriately. Otherwise, a
+font close in size to the desired one is chosen.  If the picture does not fit
+in the window, scrollbars appear to let the user pan on the graph.
+
+\item[{\parbox[b]{1.1in}{\tt find node}}]
+find a node by name. A requester is displayed, asking for the node's name.  If
+a node is found, whose label attribute matches the user response, the graph is
+redrawn so that this node {\em appears} centered.
+
+\item[{\parbox[b]{1.1in}{\tt print graph}}]
+prints or stores in a file a printable form of the current graph.  Under UNIX,
+if the user selects to store a file, the file is saved in PostScript
+format. Under MS Windows, the graph is stored in the metafile format. As a
+side-effect, the graph is also pasted on the Clipboard.
+
+\item[{\parbox[b]{1.1in}{\tt text view}}]
+toggle the display of the {\LEFTY} text view.
+
+\item[{\parbox[b]{1.1in}{\tt quit}}]
+terminate {\DOTTY}.
+\end{list}
+
+\item[{\em node/edge-specific menu}.] \
+\begin{list}{}{\renewcommand{\leftmargin}{1.1in}\renewcommand{\labelwidth}{1in}\renewcommand{\makelabel}[1]{#1\hfil}}
+\item[{\parbox[b]{1in}{\tt cut\newline Cut\newline copy\newline Copy}}]
+the lowercase versions of these commands cut or copy the selected node or edge.
+The uppercase versions cut or copy the selected node or edge and recursively
+any other nodes and edges connected to the selected one. For example, if there
+is the path: {\tt A -> B -> C} and the user selects Copy on node {\tt B},
+{\DOTTY} will construct a clip graph that contains nodes {\tt B} and {\tt C}
+and edge {\tt B -> C}.
+
+\item[{\parbox[b]{1in}{\tt group\newline Group}}]
+both of these commands ask for an attribute name. If the selected node does not
+have that attribute, nothing happens. If it does, then {\tt group} replaces all
+the nodes that have that attribute and also have the same value assigned to
+that attribute with a single node. All the edges starting or terminating on one
+of the nodes to replace, are replaced by edges that start or terminate on the
+new node.
+
+\item[{\parbox[b]{1in}{\tt delete\newline Delete\newline remove\newline Remove}}]
+{\tt delete} removes the seleced node or edge. {\tt remove} asks for an
+attribute name. If the selected node does not have that attribute, nothing
+happens. If it does, then all the nodes that have the same attribute / value
+pair are removed. The uppercase versions of the commands recursively remove all
+objects that are only connected to the selected objects.
+
+\item[{\parbox[b]{1in}{\tt set attr}}]
+set an attribute for a node or an edge.  Refer to the {\DOT} manual for a list
+of its attributes.  {\DOTTY} understands most but not all of {\DOT}'s picture
+specific attributes.  For example, {\DOTTY} understands \verb"shape="{\it box}
+but not \verb"shape"={\it polygon}.
+
+\item[{\parbox[b]{1in}{\tt print attr}}]
+print on {\tt stdout} all the attributes associated with the selected object.
+\end{list}
+
+\item[{\em keyboard events}.]
+Several keys are bound to actions.  Currently, all of them are programmed as
+short-cuts to menu actions. Similarly to menus, some keys work when pressed
+with the mouse positioned over a node or edge while other work anywhere.
+
+\begin{list}{}{\renewcommand{\leftmargin}{1.1in}\renewcommand{\labelwidth}{1in}\renewcommand{\makelabel}[1]{#1\hfil}}
+\item[{\parbox[b]{1in}{\tt u}}]
+{\tt undo}
+
+\item[{\parbox[b]{1in}{\tt p}}]
+{\tt paste}
+
+\item[{\parbox[b]{1in}{\tt l}}]
+{\tt do layout}
+
+\item[{\parbox[b]{1in}{\tt k}}]
+{\tt cancel layout}
+
+\item[{\parbox[b]{1in}{\tt space}}]
+{\tt redraw}
+
+\item[{\parbox[b]{1in}{\tt L}}]
+{\tt reload graph}
+
+\item[{\parbox[b]{1in}{\tt s}}]
+{\tt save graph}
+
+\item[{\parbox[b]{1in}{{\tt z} or {\tt Z}}}]
+{\tt zoom in} or {\tt zoom out} but at a slower rate than the menu commands. 
+
+\item[{\parbox[b]{1in}{{\tt c} or {\tt C}}}]
+{\tt copy} or {\tt Copy}
+
+\item[{\parbox[b]{1in}{{\tt g} or {\tt G}}}]
+{\tt group} or {\tt Group}
+
+\item[{\parbox[b]{1in}{{\tt d} or {\tt D}}}]
+{\tt delete} or {\tt Delete}
+
+\item[{\parbox[b]{1in}{{\tt r} or {\tt R}}}]
+{\tt remove} or {\tt Remove}
+
+\item[{\parbox[b]{1in}{\tt a}}]
+{\tt set attr}
+\end{list}
+\end{description}
+
+Resizing a \verb+DOTTY+ window resizes the window frame only; the layout within
+maintains its size.
+
+\section{Programming Language Interface}
+
+The {\LEFTY} program that controls {\DOTTY} is contained in several files.
+These scripts define a set of functions and a set of data structures.  All
+functions and variables are stored under a table called {\tt dotty}.
+
+\subsection{Data Structures}
+{\DOTTY} provides two main classes of objects, graphs and views.  All graphs
+are stored in table {\tt dotty.graphs} and all views in table {\tt
+dotty.views}.
+
+\begin{flushleft}\tt
+protogt\\
+graphs\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt protogt} contains the default prototype graph. It is a table. One of its
+fields is {\tt graph} which contains default values for graph, node, and edge
+attributes.  {\tt protogt} also contains all the functions that operate on the
+graph, such as {\tt insertnode}. {\tt protogt} is used as an argument to the
+{\tt creategraph} function. The graph that this function creates uses the graph
+attribute values specified in {\tt protogt.graph}. All operations on the new
+graph are performed through the functions specified in {\tt protogt}. {\DOTTY}
+provides one prototype graph. The programmer can create new prototype graphs as
+well as partial prototypes that simply override some functions or data values.
+{\tt graphs} is a table that contains all the currently active graphs. The
+naming convention we use is that each sub-table in {\tt graphs} is called {\tt
+gt}. This is done to distinguish the table containing all the graph data and
+functions from {\tt gt.graph}, the table that contains just the graph data.
+
+\begin{flushleft}\tt
+protovt\\
+views\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt protovt} contains the default prototype view. Like {\tt protogt}, this
+table contains both the data and the functions that manage a view. For example,
+one of the data items is {\tt vsize}. This is a table that contains the x,y
+size of the view in pixels. One of the function items is {\tt leftdown} that is
+the function called when the user presses the left mouse button inside the
+view. {\tt protovt} is used in function {\tt createview} to specify the size,
+position, and display characteristics of the new view. {\DOTTY} provides two
+prototype views, {\tt dotty.protovt.normal} and {\tt dotty.protovt.birdseye}.
+The programmer can create new prototype views as well as partial prototypes
+that simply override some functions or data values.  {\tt views} is a table
+that contains all the currently active views for all graphs. The naming
+convention we use is that each sub-table in {\tt views} is called {\tt vt}.
+
+\vspace{10pt}
+\noindent
+{\tt gt.graph} contains several tables. The three most imprortant are:
+
+\begin{flushleft}\tt
+nodedict\\
+nodes\\
+edges\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt nodedict} contains a mapping of node names to node ids. {\tt nodes} is the
+global table of nodes, indexed by node id. {\tt edges} is the global table of
+edges, indexed by edge id. Node and edge ids are small unique integers.  Each
+node and edge entry is a table. Each entry has a subtable called {\tt attr}
+that contain all the key-value attribute pairs. Each node table has an edges
+sub-table containing all the edges that start or terminate on that node.  Each
+edge table has two entries called {\tt tail} and {\tt head} that are references
+to the two nodes that this edge connects.
+
+\subsection{Graph Functions}
+
+\begin{flushleft}\tt
+dotty.init function ()\\
+\end{flushleft}\vspace{-2\itemsep}
+Initializes {\DOTTY}.
+
+\begin{flushleft}\tt
+gt.creategraph (protogt)\\
+gt.copygraph (ogt)\\
+gt.destroygraph (gt)\\
+gt.loadgraph (gt, name, type, protograph, layoutflag)\\
+gt.savegraph (gt, name, type, savecoord)\\
+gt.setgraph (gt, graph)\\
+gt.erasegraph (gt, protogt, protovt)\\
+gt.layoutgraph (gt)\\
+dotty.monitorfile (data)\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt creategraph} creates and returns a new graph based on the {\tt protogt}
+prototype graph. If {\tt protogt} is {\tt null}, {\tt dotty.protogt} is used
+instead. If {\tt protogt.mode} is set to {\tt 'replace'}, then {\tt protogt}
+must contain all the entries for a prototype graph. Otherwise, any entries not
+specified in {\tt protogt} are taken from {\tt dotty.protogt}.  {\tt copygraph}
+creates and returns a new graph by copying an older graph ({\tt ogt}). {\tt
+destroygraph} removes a graph and all its views.  {\tt loadgraph} reads in a
+graph. {\tt type} specifies whether to read the graph from a file (value {\tt
+'file'}) or a pipe ({\tt 'pipe'}).  {\tt protograph} is a prototype for the
+graph data. If set to {\tt null}, {\tt dotty.protogt.graph} is used. If {\tt
+layoutflag} is {\tt 1} then this function runs {\tt gt.layoutgraph (gt)} before
+returning. {\tt savegraph} saves a graph to a file or pipe. If {\tt savecoord}
+is {\tt 1}, the node and edge coordinates are saved in the graph.  {\tt
+setgraph} sets the graph data of {\tt gt} to {\tt graph}. {\tt erasegraph}
+replaces the graph data of {\tt gt} with {\tt protogt.graph} and resets all the
+views for {\tt gt} to the values of {\tt protovt}. {\tt layoutgraph} initiates
+a graph layout for graph {\tt gt}.  This involves writing out the graph to a
+pipe connected to a graph layout process, usually {\DOT}.  If {\tt
+gt.layoutmode} is set to {\tt 'sync'}, the function waits for the {\DOT}
+process to return the layout information, updates the graph coordinates and
+redraws the graph in all its views.  If {\tt gt.layoutmode} is set to {\tt
+'async'} then the function returns.  To complete the layout, function {\tt
+dotty.monitorfile} must be called.  By default, {\DOTTY} assigns {\tt
+dotty.monitorfile} to {\tt monitorfile}.  This instructs {\LEFTY} to call this
+function whenever there is input from a registered file descriptor. {\tt
+layoutgraph} registers the file descriptor of the {\DOT} pipe. If {\DOTTY} is
+used in another application this application must arrange for the same
+effect. If the application needs to have its own {\tt monitorfile}, it must
+arrange for that function to call {\tt dotty.monitorfile} if the file
+descriptor is a {\DOT} file descriptor.  {\tt dotty.monitorfile} returns {\tt
+1} if it was one of the file descriptors it handles, {\tt 0} otherwise.
+
+\begin{flushleft}\tt
+gt.createview (gt, protovt)\\
+gt.destroyview (gt, vt)\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt createview} creates and returns a new view based on the {\tt protovt}
+prototype view. If {\tt protovt.mode} is {\tt null}, {\tt dotty.protovt} is
+used instead. If {\tt protovt.mode} is set to {\tt 'replace'}, then {\tt
+protovt} must contain all the entries for a prototype view. Otherwise, any
+entries not specified in {\tt protovt} are taken from {\tt dotty.protovt}.
+{\tt destroyview} destroys a view.
+
+\begin{flushleft}\tt
+gt.zoom (gt, vt, factor, pos)\\
+\end{flushleft}\vspace{-2\itemsep}
+zooms in or out in a view. If {\tt factor} is less than {\tt 1}, the graph
+becomes larger. If {\tt factor} is greater than {\tt 1} the graph becomes
+smaller.
+
+\begin{flushleft}\tt
+gt.findnode (gt, vt)\\
+\end{flushleft}\vspace{-2\itemsep}
+asks for a node name or label. If such a node exists, the view is repositioned
+so that this node appears at the center.
+
+\begin{flushleft}\tt
+gt.setattr (gt, obj)\\
+gt.getattr (gt, node)\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt setattr} asks for a {\tt key=val} response from the user then sets the
+object's attribute {\tt key} to {\tt val}. {\tt obj} must be a node or edge
+object. {\tt getattr} asks for a {\tt key} name. If the specified node has an
+attribute called {\tt key}, this function returns a table with two fields, {\tt
+key} and {\tt val}.
+
+\begin{flushleft}\tt
+dotty.createviewandgraph (name, type, protogt, protovt)\\
+dotty.simple (file)\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt createviewandgraph} is a utility function that calls {\tt creategraph},
+{\tt createview}, and {\tt loadgraph}. {\tt simple} calls {\tt
+createviewandgraph} with arguments {\tt (file, 'file', null, null)}.
+
+\begin{flushleft}\tt
+dotty.pushbusy (gt, views)\\
+dotty.popbusy (gt, views)\\
+\end{flushleft}\vspace{-2\itemsep}
+These functions implement a stack. As long as there is something on the stack,
+the shape of the mouse pointer is the hourglass icon. When the stack becomes
+empty, the pointer reverts to its default icon.
+
+\begin{flushleft}\tt
+gt.printorsave (gt, vt, otype, name, mode, ptype)\\
+\end{flushleft}\vspace{-2\itemsep}
+This function prints out a graph or saves it in a file. {\tt otype} can be {\tt
+printer} or {\tt file}. If it is {\tt file}, the UNIX version of {\DOTTY} will
+generate a PostScript file. The MS Windows version will generate a Metafile and
+also post the picture to the Clipboard. {\tt name} is the name of the file when
+{\tt otype} is {\tt file}, otherwise it's ignored.  {\tt mode} can be {\tt
+portrait}, {\tt landscape}, or {\tt best fit}, to specify the orientation of
+the drawing. {\tt ptype} can be {\tt 8.5x11}, {\tt 11x17}, or {\tt 36x50} to
+select the paper size. All arguments after {\tt vt} may be {\tt null} in which
+case {\DOTTY} will prompt the user for values.
+
+\begin{flushleft}\tt
+gt.getnodesbyattr (gt, key, val)\\
+gt.reachablenodes (gt, node)\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt getnodesbyattr} return a table of nodes that contain the {\tt key=val}
+attribute pair. This table is indexed by node id. {\tt reachablenodes} returns
+a table of nodes that are reachable through one or more levels of edges from
+{\tt node}.
+
+\begin{flushleft}\tt
+gt.insertsgraph (gt, name, attr, show)\\
+gt.removesgraph (gt, sgraph)\\
+gt.mergegraph (gt, graph, show)\\
+gt.insertnode (gt, pos, size, name, attr, show)\\
+gt.removenode (gt, node)\\
+gt.insertedge (gt, nodea, porta, nodeb, portb, attr, show)\\
+gt.removeedge (gt, edge)\\
+gt.swapedgeids (gt, edge1, edge2)\\
+gt.removesubtree (gt, obj)\\
+gt.removenodesbyattr (gt, key, val)\\
+gt.removesubtreesbyattr (gt, key, val)\\
+gt.groupnodes (gt, nlist, gnode, pos, size, attr, keepmulti, show)\\
+gt.groupnodesbyattr (gt, key, val, attr, keepmulti, show)\\
+gt.cut (gt, obj, set, mode, op)\\
+gt.paste (gt, pos, show)\\
+gt.undo (gt, show)\\
+gt.startadd2undo (gt)\\
+gt.endadd2undo (gt)\\
+\end{flushleft}\vspace{-2\itemsep}
+These functions manipulate the graph structure. {\tt insertsgraph} inserts a
+subgraph in graph {\tt gt}. {\tt removesgraph} removes a subgraph.  {\tt
+mergegraph} merges {\tt graph} into {\tt gt.graph}. Each pair of nodes with the
+same name in both graphs are merged into a single node. {\tt insertnode}
+inserts a new node at position {\tt pos} with size {\tt size}. {\tt pos} and
+{\tt size} may be {\tt null}. {\tt removenode} removes a node. {\tt insertedge}
+inserts an edge between the two nodes referenced by {\tt nodea} and {\tt
+nodeb}.  {\tt porta} and {\tt portb} are strings that correspond to {\DOT} edge
+ports.  {\tt removeedge} removes an edge. {\tt swapedgeids} swaps the edge ids
+of the edges referenced by {\tt edge1} and {\tt edge2}. Nodes and edges are
+sent to {\DOT} sorted by their ids. {\tt removesubtree} removes the node or
+edge referenced by {\tt obj} and recursively all nodes that are only connected
+to nodes deleted in the previous phase. For example, if we call {\tt
+removesubtree} on node {\tt A} in the graph {\tt A -> B -> C, D -> C}, it will
+delete nodes {\tt A} and {\tt B} but not {\tt C} because {\tt C} is also
+connected to {\tt D}. {\tt removenodesbyattr} and {\tt removesubtreebyattr}
+remove all nodes (or all nodes and their connected subtrees) that contain the
+{\tt key=val} attribute pair. {\tt groupnodes} replaces the list of nodes in
+table {\tt nlist} with a single node. This node is {\tt gnode} if not {\tt
+null}, or a new node created by {\tt groupnodes}. {\tt keepmulti} may be {\tt
+0} or {\tt 1} to indicated whether to eliminate multiple edges to and from the
+group node. With {\tt keepmulti} set to {\tt 1}, if we group nodes {\tt B} and
+{\tt C} together in the graph {\tt A -> B, A -> C} we get the graph {\tt A ->
+NEW, A -> NEW}. {\tt groupnodesbyattr} calls {\tt groupnodes} with {\tt nlist}
+set to the list of nodes that contain the {\tt key=val} attribute pair. {\tt
+cut} cuts or copies pieces of a graph to the clipgraph. {\tt obj} is a
+reference to a node or edge. {\tt set} may be {\tt one} or {\tt reachable} to
+select just the object, or the object and its reachable set. {\tt mode} can be
+{\tt support} or {\tt normal}. If set to {\tt support}, the selection will
+include edges that have only one of their endpoints attached to a node in the
+selection (by default only edges with both endpoints in the selection are
+included). To accomplish this, new {\em support} nodes are created to replace
+the nodes not in the selection. {\tt op} may be {\tt 'cut'} or {\tt 'copy'}.
+{\tt paste} merges the current clipgraph with graph {\tt gt}. {\tt undo} undoes
+the most recent insertion or deletion of nodes or edges. {\DOTTY} keeps an undo
+list per graph going back to the last major operation, such as {\tt
+loadgraph}. {\tt startadd2undo} and {\tt endadd2undo} can be used to group
+multiple insert and delete operations in one undo entry. For example, {\tt
+removesubtree} calls {\tt startadd2undo} before removing any nodes and {\tt
+endadd2undo} afterwards. When undo is called to undo the subtree removal, all
+the nodes and edges of the subtree will be re-inserted at once. The {\tt attr}
+argument in all these functions is a list of key-value pairs to be attached to
+the node or edge specified in the call. {\tt show} can be {\tt 0} or {\tt 1} to
+indicate that the inserted object must be displayed at once or not. Removed
+objects are immediately removed from the display.
+
+\begin{flushleft}\tt
+gt.startlayout (gt)\\
+gt.finishlayout (gt)\\
+gt.cancellayout (gt)\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt startlayout} sends a graph to a layout process, usually {\DOT}.  {\tt
+finishlayout} receives the layout results and updates the positions and sizes
+of the nodes and edges. It does not redraw the graph. If {\tt gt.layoutmode} is
+{\tt 'sync'}, {\tt gt.layoutgraph} calls {\tt startlayout} and then {\tt
+finishlayout}. If the mode is {\tt 'async'} {\tt gt.layoutgraph} calls just
+{\tt startlayout} and {\tt finishedlayout} is called from {\tt
+dotty.monitorfile}. {\tt cancellayout} cancels the layout pending for the
+graph. This is only possible when {\tt gt.layoutmode} is {\tt 'async'}.
+
+\begin{flushleft}\tt
+gt.drawgraph (gt, views)\\
+gt.redrawgraph (gt, views)\\
+gt.setviewsize (views, r)\\
+gt.setviewscale (views, factor)\\
+gt.setviewcenter (views, center)\\
+gt.getcolor (views, name)\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt drawgraph} draws the graph in all the {\tt views}. {\tt views} is a table
+of views. It can be {\tt gt.views}, i.e. all the views that this graph has, or
+a subset of them. {\tt redrawgraph} first clears the canvases then draws the
+graph. {\tt setviewsize} sets the size of the canvases that contain the
+graph. {\tt finishlayout} calls this function to adjust the size of the
+canvases after a layout is complete. {\tt setviewscale} sets the scale factor
+of the views.  {\tt setviewcenter} adjusts the relative position of the
+canvases to their outer widgets so that point {\tt center} appears in the
+middle of the outer widget. {\tt getcolor} returns a color id corresponding to
+the color {\tt name}. {\tt name} is a string. It may contain a color name such
+as {\tt blue}, or a triplet of HSV values.  If such a color was used before in
+a graph, {\tt getcolor} simply returns the color id assigned to the color,
+otherwise it allocates a new id, sets its color value to {\tt name} and returns
+the id.
+
+\begin{flushleft}\tt
+gt.drawsgraph (gt, views, sgraph)\\
+gt.undrawsgraph (gt, views, sgraph)\\
+gt.drawnode (gt, views, node)\\
+gt.undrawnode (gt, views, node)\\
+gt.movenode (gt, node, pos)\\
+gt.drawedge (gt, views, edge)\\
+gt.undrawedge (gt, views, edge)\\
+\end{flushleft}\vspace{-2\itemsep}
+{\tt drawsgraph} and {\tt undrawsgraph} draw or erase subgraph {\tt sgraph} in
+all the {\tt views}.  Only cluster subgraphs are currently drawn. {\tt
+drawnode} and {\tt undrawnode} draw or erase {\tt node} in {\tt views}. They
+use the node's {\tt shape} attribute to select a function in {\tt
+gt.shapefunc}.  {\tt movenode} repositions {\tt node} to location {\tt
+pos}. All the edges attached to the node move too. {\tt drawedge} and {\tt
+undrawedge} draw or erase {\tt edge}.
+
+\begin{flushleft}\tt
+gt.shapefunc.record (gt, canvas, node)\\
+gt.shapefunc.plaintext (gt, canvas, node)\\
+gt.shapefunc.box (gt, canvas, node)\\
+gt.shapefunc.Msquare (gt, canvas, node)\\
+gt.shapefunc.ellipse (gt, canvas, node)\\
+gt.shapefunc.circle (gt, canvas, node)\\
+gt.shapefunc.doublecircle (gt, canvas, node)\\
+gt.shapefunc.diamond (gt, canvas, node)\\
+gt.shapefunc.parallelogram (gt, canvas, node)\\
+gt.shapefunc.trapezium (gt, canvas, node)\\
+gt.shapefunc.triangle (gt, canvas, node)\\
+\end{flushleft}\vspace{-2\itemsep}
+These are the shape functions provided by {\DOTTY}. {\tt canvas} is the widget
+id of the canvas widget to draw in. The programmer can replace any or all of
+these functions with different versions. The programmer could also add
+functions for new shapes. In this case, however, the programmer needs to
+arrange for {\DOT} to recognise these shapes.
+
+\begin{flushleft}\tt
+gt.unpacksgraphattr (gt, sgraph)\\
+gt.unpacknodeattr (gt, node)\\
+gt.unpackedgeattr (gt, edge)\\
+gt.unpackattr (gt)\\
+\end{flushleft}\vspace{-2\itemsep}
+These functions convert attributes from their string representations in the
+{\tt attr} sub-table of the graph objects, to values that can be used by
+{\LEFTY}. Some attributes such as {\tt fontsize} are just converted from
+strings to integers. Other need more complex translations. For example,
+function {\tt getcolor} is used on all {\tt color} and {\tt fontcolor}
+attributes. The first three functions operate on a single object, while the
+fourth operates on all the objects of the graph. {\tt unpackattr} is called by
+{\tt loadgraph} after a graph is read in. The first three functions are usually
+called to change the appearance of an object after one of its attributes has
+changed. This is done with a sequence like: {\tt gt.undrawnode (gt, node);
+node.attr.color = 'blue'; gt.unpacknodeattr (gt, node); gt.drawnode (gt,
+node);}. These functions are not used to convert layout information received
+from a layout process, which is also received as {\DOT} string attributes. {\tt
+finishlayout} does that immediately.
+
+\begin{flushleft}\tt
+gt.doaction (data, s)\\
+\end{flushleft}\vspace{-2\itemsep}
+This function takes a string specifying an action ({\tt s}) and a table ({\tt
+data}) specifying the graph object and a screen location. If the object {\tt
+data.obj} is a node or an edge, {\tt doaction} calls the appropriate action
+function with arguments: {\tt (gt, vt, data.obj, data)}.  If {\tt data.obj} is
+{\tt null}, it calls a global action function with arguments {\tt (gt, vt,
+data)}. Each graph contains a table {\tt gt.actions} with three sub-tables:
+{\tt general}, {\tt node}, and {\tt edge}.  Each sub-table contains key-value
+pairs where the key is the name of an action and the value is the corresponding
+function.
+
+\begin{flushleft}\tt
+gt.actions.general["undo"] (gt, vt, data)\\
+gt.actions.general["paste"] (gt, vt, data)\\
+gt.actions.general["do layout"] (gt, vt, data)\\
+gt.actions.general["cancel layout"] (gt, vt, data)\\
+gt.actions.general["redraw"] (gt, vt, data)\\
+gt.actions.general["new graph"] (gt, vt, data)\\
+gt.actions.general["load graph"] (gt, vt, data)\\
+gt.actions.general["reload graph"] (gt, vt, data)\\
+gt.actions.general["save graph"] (gt, vt, data)\\
+gt.actions.general["save graph as"] (gt, vt, data)\\
+gt.actions.general["open view"] (gt, vt, data)\\
+gt.actions.general["copy view"] (gt, vt, data)\\
+gt.actions.general["birdseye view"] (gt, vt, data)\\
+gt.actions.general["clone view"] (gt, vt, data)\\
+gt.actions.general["close view"] (gt, vt, data)\\
+gt.actions.general["zoom in"] (gt, vt, data)\\
+gt.actions.general["zoom out"] (gt, vt, data)\\
+gt.actions.general["zoom in slowly"] (gt, vt, data)\\
+gt.actions.general["zoom out slowly"] (gt, vt, data)\\
+gt.actions.general["find node"] (gt, vt, data)\\
+gt.actions.general["print graph"] (gt, vt, data)\\
+gt.actions.general["text view"] (gt, vt, data)\\
+gt.actions.general["quit"] (gt, vt, data)\\
+\end{flushleft}\vspace{-2\itemsep}
+These are the default global actions. They are invoked by the default global
+menu and key bindings, but the programmer can also call them directly.
+
+\begin{flushleft}\tt
+gt.actions.node["cut"] (gt, vt, obj, data)\\
+gt.actions.node["Cut"] (gt, vt, obj, data)\\
+gt.actions.node["copy"] (gt, vt, obj, data)\\
+gt.actions.node["Copy"] (gt, vt, obj, data)\\
+gt.actions.node["group"] (gt, vt, obj, data)\\
+gt.actions.node["Group"] (gt, vt, obj, data)\\
+gt.actions.node["delete"] (gt, vt, obj, data)\\
+gt.actions.node["Delete"] (gt, vt, obj, data)\\
+gt.actions.node["remove"] (gt, vt, obj, data)\\
+gt.actions.node["Remove"] (gt, vt, obj, data)\\
+gt.actions.node["set attr"] (gt, vt, obj, data)\\
+gt.actions.node["print attr"] (gt, vt, obj, data)\\
+\end{flushleft}\vspace{-2\itemsep}
+These are the default node actions. They are invoked by the default
+node-specific menu and key bindings, but the programmer can also call them
+directly.
+
+\begin{flushleft}\tt
+gt.actions.edge["cut"] (gt, vt, obj, data)\\
+gt.actions.edge["Cut"] (gt, vt, obj, data)\\
+gt.actions.edge["copy"] (gt, vt, obj, data)\\
+gt.actions.edge["Copy"] (gt, vt, obj, data)\\
+gt.actions.edge["group"] (gt, vt, obj, data)\\
+gt.actions.edge["Group"] (gt, vt, obj, data)\\
+gt.actions.edge["delete"] (gt, vt, obj, data)\\
+gt.actions.edge["Delete"] (gt, vt, obj, data)\\
+gt.actions.edge["set attr"] (gt, vt, obj, data)\\
+gt.actions.edge["print attr"] (gt, vt, obj, data)\\
+\end{flushleft}\vspace{-2\itemsep}
+These are the default edge actions. They are invoked by the default
+edge-specific menu and key bindings, but the programmer can also call them
+directly.
+
+\subsection{View Functions}
+
+A view table contains a set of user interface functions. These are called with
+argument {\tt data}, which is the standard {\LEFTY} table passed to a user
+interface function. It contains subfields {\tt widget}, {\tt obj}, and {\tt
+pos}. If the user event is a mouse button or keyboard key up event, the table
+also contains {\tt pobj} and {\tt ppos}, corresponding to the fields {\tt obj}
+and {\tt pos} of the matching down event. {\DOTTY} provides two set of
+functions, one for the normal view and one for the bird's-eye view.
+
+\begin{flushleft}\tt
+vt.uifuncs['leftdown'] (data)\\
+vt.uifuncs['leftmove'] (data)\\
+vt.uifuncs['leftup'] (data)\\
+vt.uifuncs['middledown'] (data)\\
+vt.uifuncs['middlemove'] (data)\\
+vt.uifuncs['middleup'] (data)\\
+vt.uifuncs['rightdown'] (data)\\
+vt.uifuncs['keyup'] (data)\\
+vt.uifuncs['redraw'] (data)\\
+vt.uifuncs['closeview'] (data)\\
+\end{flushleft}\vspace{-2\itemsep}
+Both the normal and the bird's-eye view sets contain these functions.  The {\tt
+left*} functions perform different operations in the two sets but the rest are
+identical.  All but the last two functions perform the operations described at
+the beginning of this chapter. {\tt redraw} is called by {\LEFTY} when it
+receives a re-paint event from the window system. {\tt closeview} is called
+when {\LEFTY} receives an event to close one of its top-level widget. If this
+function does not exist, {\LEFTY} will exit when the user tries to close one of
+the views. This function needs to call the {\tt destroyview} function if it
+decides to allow the closing.  Function {\tt rightdown} uses the table {\tt
+vt.menus} to construct a menu to display. {\tt vt.menus} has three sub-tables
+called {\tt general}, {\tt node}, and {\tt edge}. Function {\tt keyup} uses a
+similar table ({\tt vt.keys}) to map keys to actions.

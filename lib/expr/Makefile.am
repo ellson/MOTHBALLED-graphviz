@@ -1,0 +1,54 @@
+## Process this file with automake to produce Makefile.in
+
+pdfdir = $(pkgdatadir)/doc/pdf
+
+AM_CPPFLAGS = \
+        -I$(top_srcdir) \
+        -I$(top_srcdir)/lib/vmalloc \
+	-I$(top_srcdir)/lib/sfio \
+	-I$(top_srcdir)/lib/ast \
+	-I$(top_srcdir)/lib/cdt
+
+pkginclude_HEADERS = exgram.h exlib.h expr.h
+pkglib_LTLIBRARIES = libexpr.la
+#noinst_LTLIBRARIES = libexprconvenience.la
+man_MANS = expr.3
+pdf_DATA = expr.pdf
+
+libexpr_la_SOURCES = excc.c excontext.c exdata.c exerror.c \
+	exeval.c exexpr.c exlexname.c exopen.c exrewind.c extoken.c \
+	extype.c exzero.c exparse.y
+
+#libexprconvenience_la_SOURCES = $(libexpr_la_SOURCES)
+
+#$(libexprconvenience_la_OBJECTS): exparse.h exparse.c exgram.h exop.h
+
+y.output: $(top_srcdir)/lib/expr/exparse.y
+	@YACC@ -dtv $(top_srcdir)/lib/expr/exparse.y
+
+exparse.c: y.output 
+	@SED@ "s/yy/ex/g" <y.tab.c | \
+		@SED@ "s/YY/EX/g" | \
+		@SED@ "s/fprintf/sfprintf/g" | \
+		@SED@ "s/FILE/Sfio_t/g" | \
+		@SED@ "s/stderr/sfstderr/g" > exparse.c
+
+exparse.h: y.output
+	echo "#ifndef _EXPARSE_H" > exparse.h
+	echo "#define _EXPARSE_H" >> exparse.h
+	@SED@ "s/yy/ex/g" < y.tab.h | @SED@ "s/YY/EX/g" >> exparse.h
+	echo "#endif /* _EXPARSE_H */" >> exparse.h
+
+exop.h: exparse.h
+	echo "static const char* exop[] = {" > exop.h
+	@SED@ -e '/^[ 	]*#[ 	]*define[ 	][ 	]*[A-Z]/!d' -e 's/^[ 	]*#[ 	]*define[ 	]*\([A-Z0-9_]*\).*/	"\1",/' < exparse.h >> exop.h
+	echo "};" >> exop.h
+
+.3.pdf:
+	groff -Tps -man $< | ps2pdf - - >$@
+
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) RELEASE \
+	Makefile.nmake Makefile.orig Makefile.old \
+	exparse.c exparse.h exop.h y.output
+
+DISTCLEANFILES = $(pdf_DATA) exparse.[ch] exop.h y.tab.[ch] y.output

@@ -1,0 +1,481 @@
+.de P0
+.nf
+\f5
+..
+.de P1
+\fP
+.fi
+..
+.de Ss
+.fl
+.ne 2
+.SS "\\$1"
+..
+.TH LIBAGRAPH 3 "8 MARCH 1996"
+.SH "NAME"
+\fBAgraph\fR \- abstract graph library
+.SH "SYNOPSIS"
+."ta .75i 1.5i 2.25i 3i 3.75i 4.5i 5.25i 6i
+.PP
+.nf
+.P0
+#include <graphviz/agraph.h>
+.P1
+.Ss "TYPES"
+.P0
+Agraph_t;
+Agnode_t;
+Agedge_t;
+Agdesc_t;
+Agdisc_t;
+Agsym_t;
+.P1
+.Ss "GRAPHS"
+.P0
+Agraph_t        *agopen(char *name, Agdesc_t kind, Agdisc_t *disc);
+int             agclose(Agraph_t *g);
+Agraph_t        *agread(void *file, Agdisc_t *);
+Agraph_t		*agconcat(Agraph_t *g, void *chan, Agdisc_t *disc)
+int             agwrite(Agraph_t *g, void *file);
+int				agnnodes(Agraph_t *g),agnedges(Agraph_t *g);
+.Ss "SUBGRAPHS"
+.P0
+Agraph_t        *agsubg(Agraph_t *g, char *name, int createflag);
+Agraph_t        *agfstsubg(Agraph_t *g), agnxtsubg(Agraph_t *);
+Agraph_t        *agparent(Agraph_t *g),*agroot(Agraph_t *g);
+.P1
+.Ss "NODES"
+.P0
+Agnode_t        *agnode(Agraph_t *g, char *name, int createflag);
+Agnode_t        *agidnode(Agraph_t *g, ulong id, int createflag);
+Agnode_t        *agsubnode(Agraph_t *g, Agnode_t *n, int createflag);
+Agnode_t        *agfstnode(Agraph_t *g);
+Agnode_t        *agnxtnode(Agnode_t *n);
+int             agdelnode(Agraph_t *g, Agnode_t *n);
+int             agrename(Agraph_t *g, Agnode_t *n, char *newname);
+int				agdegree(Agnode_t *n, int use_inedges, int use_outedges);
+.P1
+.Ss "EDGES"
+.P0
+Agedge_t        *agedge(Agnode_t *t, Agnode_t *h, char *name, int createflag);
+Agedge_t        *agsubedge(Agraph_t *g, Agedge_t *e, int createflag);
+int             agdeledge(Agraph_t *g, Agedge_t *e);
+
+Agnode_t        *aghead(Agedge_t *e), *agtail(Agedge_t *e);
+Agedge_t        *agfstedge(Agnode_t *n);
+Agedge_t        *agnxtedge(Agedge_t *e, Agnode_t *n);
+Agedge_t        *agfstin(Agnode_t *n);
+Agedge_t        *agnxtin(Agedge_t *e);
+Agedge_t        *agfstout(Agnode_t *n);
+Agedge_t        *agnxtout(Agedge_t *e);
+.Ss "FLATTENED LISTS"
+.P0
+int             agflatten(Agraph_t *graph, int flag);
+Agnode_t        *agfstn(Agraph_t *g), *agnxtn(Agnode_t *n);
+Agedge_t        *agfout(Agnode_t *n), *agfin(Agnode_t *n), *agnxte(Agedge_t *e);
+.P1
+.Ss "STRING ATTRIBUTES"
+.P0
+Agsym_t     *agattr(Agraph_t *g, int kind, char *name, char *value);
+Agsym_t     *agattrnxt(Agraph_t *g, int kind, Agsym_t *attr);
+
+char        *agget(void *obj, char *name);
+char        *agxget(void *obj, Agsym_t *sym);
+int         agset(void *obj, char *name, char *value);
+int         agxset(void *obj, Agsym_t *sym, char *value);
+.P1
+.Ss "RECORDS"
+.P0
+void        *agnewrec(Agraph_t *g, void *obj, char *name, unsigned int size);
+Agrec_t     *aggetrec(void *obj, char *name, int move_to_front);
+int         agdelrec(Agraph_t *g, void *obj, char *name);
+.P1
+.Ss "CALLBACKS"
+.P0
+Agcbdisc_t    *agpopdisc(Agraph_t *g);
+void        agpushdisc(Agraph_t *g, Agcbdisc_t *disc);
+void        agmethod(Agraph_t *g, void *obj, Agcbdisc_t *disc, int initflag);
+.P1
+.Ss "MEMORY"
+.P0
+void		*agalloc(Agraph_t *g, size_t request);
+void		*agrealloc(Agraph_t *g, void *ptr, size_t oldsize, size_t newsize);
+void		agfree(Agraph_t *g, void *ptr);
+.P1
+.Ss "GENERIC OBJECTS"
+.P0
+Agraph_t	*agraphof(void*);
+char		*agnameof(void*);
+int			agisarootobj(void*);
+Agrec_t		*AGDATA(void *obj);
+ulong		AGID(void *obj);
+int			AGTYPE(void *obj);
+.P1
+.SH "DESCRIPTION"
+Libagraph supports graph programming by maintaining graphs in memory
+and reading and writing graph files.  Graphs, nodes and edges
+may be attributed with programmer-defined records and string
+name-value pairs.
+Graphs are composed of nodes, edges, and nested subgraphs.
+Internally, Libagraph depends extensively on Libcdt (formerly
+Libdict) for set representation.
+.PP
+All of Libagraph's global symbols have the prefix \fBag\fR (case varying).
+.SH "GRAPHS"
+.PP
+A ``main'' or ``root'' graph defines a namespace for a collection of
+graph objects (subgraphs, nodes, edges) and their attributes.
+Objects may be named by unique strings or by 32-bit IDs.
+By default \fBdata\fP points to runtime records containing
+application-dependent data, keyed by name (see Attributes).
+\fBdesc\fP records if a graph is directed or undirected, and if it is strict
+or allows multi-edges and self-arcs.
+.PP
+\fBagopen\fP creates a new graph with the given name and graph kind
+descriptor (global values are \fBAgdirected\fP, \fBAgundirected\fP,
+\fBAgstrictdirected\fP, and \fBAgstrictundirected\fP).
+\fBagclose\fP deletes a graph, freeing all its associated
+storage.  \fBagread\fP and \fBagwrite\fP perform file I/O 
+(see Graph File Language bellow).  \fBagsubg\fP creates a new subgraph,
+which always inherits the graph kind of its parent.  The new subgraph is
+initially empty.  Nested subgraph trees may be created.  The name of
+a subgraph is interpreted only relative to the given parent graph.
+\fBagsubglist\fP returns a list (possibly empty) of subgraphs of
+a given graph.
+.PP
+By default, nodes are kept in ordered sets in \fBn_dict\fP,
+allowing efficient random access to insert, find, and delete nodes.
+Similarly the edges of each node are kept in ordered sets.
+The sets are maintained as splay tree dictionaries.
+\fBagflatten\fP allows flattening trees into linked lists,
+which may thereafter be traversed very quickly without function
+calls for low overhead in critical sections of code.
+In this mode, sets are locked to prevent updates or random access searches,
+though it is still legal to call Libagraph to scan lists sequentially.
+The flag argument requests flattening and locking (if boolean true),
+or unlocking (if false).  
+In-line functions or macros for list traversal are given below
+under Nodes and Edges.  Note that flattening a graph does not
+automatically flatten its subgraphs.
+.PP
+\fBagnnodes\fP, \fBagnedges\fP, and \fBagdegree\fP return the
+cardinalities of node and edge sets.  The latter takes flags
+to select in-edges, out-edges, or both.
+.PP
+\fBAgdisc_t\fP specifies callbacks invoked when initializing,
+modifying, or finalizinf graph objects.  (Casual users can ignore 
+the following.) Disciplines are kept on a stack.  Libagraph automatically
+calls the methods on the stack, top-down.  A method can obtain its
+data (closure) via \f5aggetuserptr\fP.
+.PP
+When Libagraph is compiled with Vmalloc, each graph has its own heap.
+Programmers may allocate application-dependent data within the
+same heap as the rest of the graph.  The advantage is that
+a graph can be deleted by atomically freeing its entire heap
+without scanning each individual node and edge.
+.SH "NODES"
+A node is identified uniquely by name and graph pointer.
+Node pointers are not unique\(em separate node structs are created
+per subgraph.  Name pointers are unique, though, because each
+graph has its own shared string pool.
+.PP
+\fBagnode\fP searches in a graph or subgraph for a node
+with the given name, and returns it if found.
+If not found, if \fBcreateflag\fP is boolean true
+a new node is created and returned, otherwise a nil
+pointer is returned.
+\fBagsubnode\fP takes an existing node as a template,
+usually to find or insert a node in a subgraph.
+
+The default ordering of nodes is by order of creation (sequence).
+Internally, Libagraph switches between ID searching and sequence
+ordering as necessary.  \fBagfstnode\fP and
+\fBagnxtnode\fP are the usual functions for scanning
+node lists.  When node sets are flattened it is permissible to
+call \fBagfstnode\fP and \fBagnxtnode\fP, but conflicting
+attempts to insert, delete, or search for nodes cause a runtime error.
+.SH "EDGES"
+.PP
+An abstract edge is represented by two edge structs.
+There is one pointing to each terminal node, and 
+residing in an edge list of the opposite node.
+The object tag distinguishes between these otherwise
+symmetric records, to allow obtaining head and tail.
+If a graph has multi-edges between the same nodes,
+the name field serves as a secondary key.
+
+\fBagedge\fP searches in a graph of subgraph for an
+edge between the given endpoints (with an optional
+multi-edge selector name) and returns it if found.
+Otherwise, if \fBcreateflag\fP is boolean true,
+a new edge is created and returned: otherwise
+a nil pointer is returned.  If the \fBname\fP 
+is \f5(char*)0\fP then an anonymous internal
+value is generated.
+\fBagfstin\fP, \fBagnxtint\fP, \fBagfstout\fP, and 
+\fBagnxtout\fP visit directed in- and out- edge lists,
+and ordinarily apply only in directed graphs.
+\fBagfstedge\fP and \fBagnxtedge\fP visit all edges
+incident to a node.  In traversing lists, \f5e->node\fP
+always points to the ``other'' node of the edge,
+To resolve ambiguity between in- and out-edge structs,
+\fBaghead\fP and \fBagtail\fP are macros or inline
+functions to find endpoints by checking object tags.
+\fBagopp\fP returns the ``opposite'' edge struct.
+Similarly \fBagfout\fP, \fBagfin\fP, and \fBagnedge\fP 
+operate on flattened edge lists.
+
+.SH "STRING ATTRIBUTES"
+Programmer-defined values may be dynamically
+attached to graphs, subgraphs, nodes, and edges.  Such
+values are either uninterpreted binary records
+(for implementing efficient algorithms)
+or character string data (for I/O).
+String attributes are handled automatically in reading
+and writing graph files.  Uninterpreted records are
+ignored; any desired conversion must be coded
+explicitly by application programmers.
+
+A string attribute is identified by name and by
+an internal symbol table entry (\fBAgsym_t\fP) created by Libagraph.
+Attributes of nodes, edges, and graphs (with their subgraphs)
+have separate namespaces.  The contents of an \fBAgsym_t\fP
+is listed below, followed by primitives to operate on string
+attributes.
+.P0
+typedef struct Agsym_s {        /* symbol in one of the above dictionaries */
+    Dtlink_t        link;
+    char            *name;      /* attribute's name */
+    char            *defval;    /* its default value for initialization */
+    int             id;         /* its index in attr[] */
+} Agsym_t;
+.P1
+.PP
+\fBagattr\fP creates or looks up attributes.
+\fBkind\fP may be \fBAGRAPH\fP, \fBAGNODE\fP, or \fBAGEDGE\fP.
+If \fBvalue\fP is \fB(char*)0)\fP, the request is to search
+for an existing attribute of the given kind and name.
+Otherwise, if the attribute already exists, its default
+for creating new objects is set to the given value;
+if it does not exist, a new attribute is created with the
+given default, and the default is applied to all pre-existing
+objects of the given kind.
+
+\fBagdictof\fP returns a Libdict set of all the attributes
+of a given kind.  \fBagdictsym\fP is a utility function that
+finds an entry in one of these dictionary sets.
+
+\fBagget\fP and \fBagset\fP read and update string attributes.
+The first argument should be a graph, node, or edge struct pointer.
+\fBagxset\fP and \fBagxset\fP take a symbol table entry reference
+instead of a name, to avoid the cost of looking up attribute names
+inside loops.
+Note that Libagraph performs its own storage management of strings.
+The calling program does not need to dynamically allocate storage.
+
+.SH "RECORDS"
+Uninterpreted records may be attached to graphs (subgraphs), nodes,
+and edges for efficient operations on values such as marks, weights,
+counts, and pointers needed by algorithms.  Application programmers
+define the fields of these records, but they have a common header
+as shown below.
+.P0
+typedef struct Agrec_s {
+    char                *name;
+    struct Agrec_s      *next;
+    /* programmer-defined follows */
+} Agrec_t;
+.P1
+Records are created and managed by Libagraph.  In each graph, node,
+or edge, \fBdata\fR points to a circular list of records.
+The \fBname\fP field distinguishes various types of records, and is
+programmer defined (Libagraph reserves the prefix \fB_ag\fR).
+\fBnext\fP stores the list pointers. 
+The remainder of a record may contain application-dependent fields.
+\fBagnewrec\fP creates one new record of the given size and attaches
+it to the given object (graph, node, or edge).  \fBagdelrec\fP
+is the corresponding function to delete records.  \fBaggetrec\fP
+finds a record with the given name. 
+
+To allow referencing application-dependent data without function
+calls or linear search, Libagraph allows setting and locking the
+\fBdata\fP field of a graph, node, or edge on a particular record.
+The \fBmove_to_front\fP flag may be \fBAG_MTF_FALSE\fP,
+\fBAG_MTF_SOFT\fP, or \fBAG_MTF_HARD\fP accordingly.
+The \fBAG_MTF_SOFT\fP field is only a hint that decreases
+overhead in subsequent calls of \fBaggetrec\fP;
+\fBAG_MTF_HARD\fP guarantees that a lock was obtained.
+To release locks, use \fBAG_MTF_SOFT\fP or \fBAG_MTF_FALSE\fP.
+Use of this feature implies cooperation or at least isolation
+from other functions also using the move-to-front convention.
+
+A cast (generally using a macro or inline function)
+is then needed to convert the \fBdata\fP pointer to
+an appropriate programmer-defined type.
+
+.SH "DISCIPLINES"
+Programmer-defined disciplines customize certain resources-
+ID namespace, memory, and I/O - needed by Libagraph.
+A discipline struct (or NIL) is passed at graph creation time.
+.P0
+struct Agdisc_s {			/* user's discipline */
+	Agmemdisc_t			*mem;
+	Agiddisc_t			*id;
+	Agiodisc_t			*io;
+} ;
+.P1
+A default discipline is supplied when NIL is given for
+any of these fields.
+
+An ID allocator discipline allows a client to control assignment
+of IDs (uninterpreted 32-bit values) to objects, and possibly how
+they are mapped to and from strings.
+
+.P0
+struct Agiddisc_s {		/* object ID allocator */
+	void	*(*open)(Agraph_t *g);	/* associated with a graph */
+	int		(*map)(void *state, int objtype, char *str, ulong *id, int createflag);
+	int		(*alloc)(void *state, int objtype, ulong id);
+	void	(*free)(void *state, int objtype, ulong id);
+	char	*(*print)(void *state, int objtype, ulong id);
+	void	(*close)(void *state);
+} ;
+.P1
+
+\f5open\fP permits the ID discipline to initialize any data
+structures that maintains per individual graph.
+Its return value is then passed as the first argument to
+all subsequent ID manager calls.
+
+\f5alloc\fP informs the ID manager that Libagraph is attempting
+to create an object with a specific ID that was given by a client.
+The ID manager should return TRUE (nonzero) if the ID can be
+allocated, or FALSE (which aborts the operation).
+
+\f5free\fP is called to inform the ID manager that the
+object labeled with the given ID is about to go out of existence.
+
+\f5map\fP is called to create or look-up IDs by string name
+(if supported by the ID manager).  Returning TRUE (nonzero)
+in all cases means that the request succeeded (with a valid
+ID stored through \f5result\fP.  There are four cases:
+.PP
+\f5name != NULL\fP and \f5createflag == 1\fP:
+This requests mapping a string (e.g. a name in a graph file) into a new ID.
+If the ID manager can comply, then it stores the result and returns TRUE.
+It is then also responsible for being able to \f5print\fP the ID again
+as a string.  Otherwise the ID manager may return FALSE but it must
+implement the following (at least for graph file reading and writing to work):
+.PP
+\f5name == NULL\fP and \f5createflag == 1\fP:
+The ID manager creates a unique new ID of its own choosing. 
+Although it may return FALSE if it does not support anonymous objects,
+but this is strongly discouraged (to support "local names" in graph files.)
+.PP
+\f5name != NULL\fP and \f5createflag == 0\fP:
+This is a namespace probe.  If the name was previously mapped into
+an allocated ID by the ID manager, then the manager must return this ID.
+Otherwise, the ID manager may either return FALSE, or may store
+any unallocated ID into result. (This is convenient, for example,
+if names are known to be digit strings that are directly converted into 32 bit values.)
+.PP
+\f5name == NULL\fP and \f5createflag == 0\fP: forbidden.
+.PP
+\f5print\fP should return 
+\f5print\fP is allowed to return a pointer to a static buffer;
+a caller must copy its value if needed past subsequent calls.
+\f5NULL\fP should be returned by ID managers that do not map names.
+.PP
+The \f5map\fP and \f5alloc\fP calls do not pass a pointer to the
+newly allocated object.  If a client needs to install object
+pointers in a handle table, it can obtain them via 
+new object callbacks.
+.P0
+struct Agiodisc_s {
+	int		(*fread)(void *chan, char *buf, int bufsize);
+	int		(*putstr)(void *chan, char *str);
+	int		(*flush)(void *chan);	/* sync */
+	/* error messages? */
+} ;
+
+struct Agmemdisc_s {	/* memory allocator */
+	void	*(*open)(void);		/* independent of other resources */
+	void	*(*alloc)(void *state, size_t req);
+	void	*(*resize)(void *state, void *ptr, size_t old, size_t req);
+	void	(*free)(void *state, void *ptr);
+	void	(*close)(void *state);
+} ;
+.P1
+
+.SH "EXAMPLE PROGRAM"
+.P0
+#include <graphviz/agraph.h>
+typedef struct mydata_s {int x,y,z;} mydata;
+
+main(int argc, char **argv)
+{
+    Agraph_t    *g;
+    Agnode_t    *v;
+    Agedge_t    *e;
+    Agsym_t     *attr;
+    Dict_t      *d
+    int         cnt;
+    mydata      *p;
+
+    if (g = agread(stdin,NIL(Agdisc_t*))) {
+            /* dtsize() is a Libdict primitive */
+        fprintf(stderr,"%s has %d node attributes\n",
+            dtsize(agdictof(g,AGNODE)));
+        attr = agattr(g,AGNODE,"color","blue");
+
+        /* create a new graph */
+        h = agopen("tmp",g->desc);
+
+        /* this is a way of counting all the edges of the graph */
+        cnt = 0;
+        for (v = agfstnode(g); v; v = agnxtnode(g,v))
+            for (e = agfstout(g,v); e; e = agnxtout(g,e))
+                cnt++;
+
+        /* using inline functions or macros, attach records to edges */
+        agflatten(g);
+        for (v = agfstn(g); v; v = agnxtn(v))
+            for (e = agfout(v); e; e; = agnxte(e)) {
+                p = (mydata*) agnewrec(g,e,"mydata",sizeof(mydata));
+                p->x = 27;  /* meaningless example */
+        }
+    }
+}
+.P1
+.SH "EXAMPLE GRAPH FILES"
+.P0
+digraph G {
+    a -> b;
+    c [shape=box];
+    a -> c [weight=29,label="some text];
+    subgraph anything {
+        /* the following affects only x,y,z */
+        node [shape=circle];
+        a; x; y -> z; y -> z;  /* multiple edges */
+    }
+}
+
+strict graph H {
+    n0 -- n1 -- n2 -- n0;  /* a cycle */
+    n0 -- {a b c d};       /* a star */
+    n0 -- n3;
+    n0 -- n3 [weight=1];   /* same edge because graph is strict */
+}
+.P1
+.SH "SEE ALSO"
+Libcdt(3)
+
+.SH "BUGS"
+The root graph \fBname\fP is treated as a comment.
+
+There is no way to delete string attributes or modify edge keys.
+
+Strings and uninterpreted records could be treatly more uniformly.
+
+.SH "AUTHOR"
+Stephen North, north@research.att.com, AT&T Research.

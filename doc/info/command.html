@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML VERSION="2.0">
+<HEAD>
+<TITLE>Command-line Usage</TITLE>
+</HEAD>
+<BODY BGCOLOR=white>
+<A NAME="top"></A>
+<H1 ALIGN=CENTER>Command-line Invocation</H1>
+<HR>
+All GraphViz programs have a similar invocation:<BR>
+<TABLE><TR><TD>
+<CODE><I>cmd</I> [ <I>flags</I> ] [ <I>input files</I> ]<CODE>
+</TR></TABLE>
+If no input files are supplied, the program reads from <STRONG>stdin</STRONG>.
+<H3>Flags</H3>
+<DL>
+<DT><STRONG>-G</STRONG><I>name</I>[=<I>value</I>]
+<DD>Set a graph attribute, with default <I>value</I> = <TT>true</TT>.
+<DT><STRONG>-N</STRONG><I>name</I>[=<I>value</I>]
+<DD>Set a default node attribute, with default <I>value</I> = <TT>true</TT>.
+<DT><STRONG>-E</STRONG><I>name</I>[=<I>value</I>]
+<DD>Set a default edge attribute, with default <I>value</I> = <TT>true</TT>.
+<DT><STRONG>-T</STRONG><I>format</I>       
+<DD>Set output language to one of the <A HREF=output.html>supported formats</A>.
+By default, <A HREF=output.html#d:dot>attributed dot</A> is produced.
+<DT><STRONG>-V</STRONG>             
+<DD>Emit version information and exit.
+<DT><STRONG>-l</STRONG><I>library</I>
+<DD>User-supplied, device-dependent library text. Multiple flags may
+be given. These strings are passed to the code generator at the
+beginning of output. 
+<P>For PostScript output, they are treated as file names
+whose content will be included in the preamble after the standard preamble.
+If <I>library</I> is the empty string <TT>""</TT>, the standard preamble
+is not emitted.
+<DT><STRONG>-n</STRONG>[<I>num</I>]      
+<DD>Sets no-op flag in <STRONG>neato</STRONG>. 
+If set, <STRONG>neato</STRONG> assumes nodes have already been 
+positioned and all nodes have a <A HREF=attrs.html#d:pos>pos</A>
+attribute giving
+the positions. It then performs an optional adjustment to remove node-node
+overlap, depending on the value of the 
+<A HREF=attrs.html#d:overlap>overlap</A> attribute, computes the edge 
+layouts, depending on the value of the 
+<A HREF=attrs.html#d:splines>splines</A> attribute, and
+emits the graph in the appropriate format. If <I>num</I> is supplied,
+the following actions occur:
+<DL>
+<DT><I>num</I> = 1
+<DD>Equivalent to <STRONG>-n</STRONG>.
+<DT><I>num</I> > 1
+<DD>Use node positions as specified, with no adjustment to
+remove node-node overlaps, and use any edge layouts already specified
+by the <A HREF=attrs.html#d:pos>pos</A> attribute. <STRONG>neato</STRONG>
+computes an edge layout for any edge that does not have a <B>pos</B> attribute.
+As usual, edge layout is guided by the 
+<A HREF=attrs.html#d:splines>splines</A> attribute.
+</DL>
+<DT><STRONG>-o</STRONG><I>outfile</I>    
+<DD>Write output to file <I>outfile</I>. By default, output goes to
+<STRONG>stdout</STRONG>.
+<DT><STRONG>-q</STRONG>
+<DD>Suppress warning messages.
+<DT><A NAME=d:s><STRONG>-s</STRONG></A>[<I>scale</I>]
+<DD>Set input scale to <I>scale</I>. If this value is omitted,
+72.0 is used. This number is used to convert the point coordinate
+units used in the <A HREF=attrs.html#d:pos>pos</A> attribute 
+into inches. For example, <CODE>dot -Tdot</CODE> produces pos
+values in points, with 72 per inch. Thus, to use this output 
+as input to <CODE>neato -n</CODE>, one
+needs <CODE>-s</CODE> (equivalently, <CODE>-s72</CODE>).
+<DT><STRONG>-v</STRONG>             
+<DD>Verbose mode
+<DT><STRONG>-x</STRONG>             
+<DD>In <STRONG>neato</STRONG>, on input, prune isolated nodes and peninsulas.
+This removes uninteresting graph structure and produces a less cluttered
+drawing.
+<DT><STRONG>-y</STRONG>             
+<DD>By default, the coordinate system used in generic output formats, 
+such as <A HREF=output.html#d:dot>attributed dot</A>,
+<A HREF=output.html#d:xdot>extended dot</A>,
+<A HREF=output.html#d:plain>plain</A> and
+<A HREF=output.html#d:plain-ext>plain-ext</A>,
+is the standard cartesian system with the origin in the lower left corner, 
+and with increasing y coordinates as points move from bottom to top.
+If the <CODE>-y</CODE> flag is used, the coordinate system is inverted,
+so that increasing values of y correspond to movement from top to bottom.
+<DT><STRONG>-?</STRONG>             
+<DD>Print usage information, then exit.
+</DL>
+If multiple <STRONG>-T</STRONG> flags are given, drawings of the graph
+are emitted in each of the specified formats. Multiple <STRONG>-o</STRONG>
+flags can be used to specify the output file for each format. If there
+are more formats than files, the remaining formats are written to
+<STRONG>stdout</STRONG>.
+<P>
+Note that the <STRONG>-G</STRONG>, 
+<STRONG>-N</STRONG> and
+<STRONG>-E</STRONG> flags override any initial attribute declarations
+in the input graph,
+i.e., those attribute statements appearing before any node, edge or
+subgraph definitions.
+In addition, these flags cause the related attributes to be permanently
+attached to the graph. Thus, if attributed dot is used for
+output, the graph will have these attributes.
+<H3>Environment Variables</H3>
+<DL>
+<DT><STRONG>GDFONTPATH</STRONG>
+List of pathnames giving directories which a program should search for fonts.
+Overridden by <A HREF=#d:DOTFONTPATH>DOTFONTPATH</A>.
+<DD>
+<DT><A NAME=d:DOTFONTPATH><STRONG>DOTFONTPATH</STRONG></A>
+List of pathnames giving directories which a program should search for fonts.
+Overridden by <A HREF=attrs.html#d:fontpath><STRONG>fontpath</STRONG></A>.
+<DD>
+</DL>
+</BODY>
+</HTML>

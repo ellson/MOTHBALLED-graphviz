@@ -1,0 +1,115 @@
+load ('tree.lefty');
+fontsize=10;
+inode1 = function (p, name) {
+    local i, nnum, size;
+    nnum = nodenum;
+    if (~name)
+        name = "";
+    nodearray[nnum].ch = [];
+    nodearray[nnum].chn = 0;
+    nodearray[nnum].name = name;
+    size = nodesize (nodearray[nnum]);
+    nodearray[nnum].rect[0] = p;
+    nodearray[nnum].rect[1] = ['x' = p.x + size.x; 'y' = p.y + size.y;];
+    nodenum = nodenum + 1;
+    if (~tree) {
+        tree = nodearray[nnum];
+        tree.depth = 0;
+    }
+    return nodearray[nnum];
+};
+iedge1 = function (node1, node2) {
+     node1.ch[node1.chn] = node2;
+     node1.chn = node1.chn + 1;
+     node2.depth = node1.depth + 1;
+};
+inode1 ([], null);
+inode1 ([], null);
+iedge1 (nodearray[0], nodearray[1]);
+inode1 ([], null);
+iedge1 (nodearray[1], nodearray[2]);
+inode1 ([], null);
+iedge1 (nodearray[2], nodearray[3]);
+inode1 ([], 'A');
+iedge1 (nodearray[3], nodearray[4]);
+inode1 ([], 'B');
+iedge1 (nodearray[3], nodearray[5]);
+inode1 ([], null);
+iedge1 (nodearray[2], nodearray[6]);
+inode1 ([], 'E');
+iedge1 (nodearray[6], nodearray[7]);
+inode1 ([], 'G');
+iedge1 (nodearray[6], nodearray[8]);
+inode1 ([], null);
+iedge1 (nodearray[1], nodearray[9]);
+inode1 ([], null);
+iedge1 (nodearray[9], nodearray[10]);
+inode1 ([], null);
+iedge1 (nodearray[10], nodearray[11]);
+inode1 ([], 'H');
+iedge1 (nodearray[11], nodearray[12]);
+inode1 ([], 'I');
+iedge1 (nodearray[11], nodearray[13]);
+inode1 ([], null);
+iedge1 (nodearray[10], nodearray[14]);
+inode1 ([], null);
+iedge1 (nodearray[9], nodearray[15]);
+inode1 ([], null);
+iedge1 (nodearray[15], nodearray[16]);
+inode1 ([], 'L');
+iedge1 (nodearray[16], nodearray[17]);
+inode1 ([], 'M');
+iedge1 (nodearray[16], nodearray[18]);
+inode1 ([], 'N');
+iedge1 (nodearray[15], nodearray[19]);
+inode1 ([], null);
+iedge1 (nodearray[0], nodearray[20]);
+inode1 ([], null);
+iedge1 (nodearray[20], nodearray[21]);
+inode1 ([], null);
+iedge1 (nodearray[21], nodearray[22]);
+inode1 ([], 'P');
+iedge1 (nodearray[22], nodearray[23]);
+inode1 ([], null);
+iedge1 (nodearray[22], nodearray[24]);
+inode1 ([], 'R');
+iedge1 (nodearray[24], nodearray[25]);
+inode1 ([], 'S');
+iedge1 (nodearray[24], nodearray[26]);
+inode1 ([], null);
+iedge1 (nodearray[21], nodearray[27]);
+inode1 ([], 'X');
+iedge1 (nodearray[20], nodearray[28]);
+dist = ['x' = 10; 'y' = 40;];
+dolayout = function (node, pary) {
+    local cr, r, n, size;
+    size = nodesize (node);
+    if (node.chn > 0) {
+        if (node.chn >= 2) {
+            cr = dolayout (node.ch[0], pary - size.y - dist.y);
+            r[0].x = cr[1].x + dist.x / 2 - size.x / 2;
+            cr = dolayout (node.ch[1], pary - size.y - dist.y);
+        } else {
+            cr = dolayout (node.ch[0], pary - size.y - dist.y);
+            r[0].x = (cr[1].x + cr[0].x) / 2 - size.x / 2;
+        }
+        r[0].y = pary;
+        r[1].x = r[0].x + size.x;
+        r[1].y = r[0].y + size.y;
+        node.rect = r;
+        return cr;
+    } else {
+        r[0].x = leafx;
+        r[0].y = pary;
+        r[1].x = r[0].x + size.x;
+        r[1].y = r[0].y + size.y;
+        leafx = r[1].x + dist.x;
+        node.rect = r;
+        return r;
+    }
+};
+complayout ();
+wrect = [0 = ['x' = 0; 'y' = 200;]; 1 = ['x' = 450; 'y' = 550;];];
+setwidgetattr (canvas, ['window' = wrect;]);
+redraw (canvas);
+dops ();

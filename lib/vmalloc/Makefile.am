@@ -1,0 +1,22 @@
+## Process this file with automake to produce Makefile.in
+
+AM_CPPFLAGS = -I$(top_srcdir)/lib/ast \
+	-I$(top_srcdir)/lib/sfio
+
+noinst_HEADERS = vmalloc.h vmhdr.h
+noinst_LTLIBRARIES = libvmalloc.la
+
+libvmalloc_la_SOURCES = malloc.c vmbest.c vmclear.c vmclose.c vmdcheap.c \
+	vmdebug.c vmdisc.c vmexit.c vmlast.c vmopen.c vmpool.c vmprivate.c \
+	vmprofile.c vmregion.c vmsegment.c vmset.c vmstat.c vmstrdup.c \
+	vmtrace.c vmwalk.c
+
+${top_builddir}/FEATURE/vmalloc: ${top_srcdir}/lib/vmalloc/features/vmalloc
+	mkdir -p ${top_builddir}/FEATURE
+	@KSH@ ${top_srcdir}/iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run ${top_srcdir}/lib/vmalloc/features/vmalloc > $@
+
+$(libvmalloc_la_OBJECTS): ${top_builddir}/FEATURE/vmalloc
+
+DISTCLEANFILES = ${top_builddir}/FEATURE/vmalloc
+
+EXTRA_DIST = README Makefile.old features

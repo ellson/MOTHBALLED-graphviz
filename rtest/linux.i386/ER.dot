@@ -1,0 +1,39 @@
+graph ER {
+	node [label="\N", shape=box];
+	graph [label="\n\nEntity Relation Diagram\ndrawn by NEATO",
+		fontsize=20,
+		lp="165,50",
+		bb="0,0,331,686"];
+	{
+		graph [label="",
+			fontsize="",
+			lp="",
+			bb=""];
+		node [label=name,
+			shape=ellipse];
+		name0 [pos="231,668", width="0.78", height="0.50"];
+		name1 [pos="112,312", width="0.78", height="0.50"];
+		name2 [pos="28,124", width="0.78", height="0.50"];
+	}
+	course [pos="267,594", width="0.75", height="0.50"];
+	institute [pos="188,406", width="0.86", height="0.50"];
+	student [pos="184,218", width="0.78", height="0.50"];
+	code [shape=ellipse, pos="304,668", width="0.75", height="0.50"];
+	grade [shape=ellipse, pos="103,124", width="0.81", height="0.50"];
+	number [shape=ellipse, pos="184,124", width="0.94", height="0.50"];
+	"C-I" [shape=diamond, style=filled, color=lightgrey, pos="204,500", width="0.89", height="0.67"];
+	"S-C" [shape=diamond, style=filled, color=lightgrey, pos="270,124", width="0.94", height="0.67"];
+	"S-I" [shape=diamond, style=filled, color=lightgrey, pos="188,312", width="0.83", height="0.67"];
+	name0 -- course [pos="240,650 245,639 253,624 258,612"];
+	code -- course [pos="295,651 289,639 282,624 276,612"];
+	course -- "C-I" [label=n, len="1.00", pos="255,576 244,559 226,533 215,516", lp="248,550"];
+	"C-I" -- institute [label=1, len="1.00", pos="200,479 198,462 194,440 191,424", lp="202,450"];
+	institute -- name1 [pos="173,388 159,371 138,345 125,328"];
+	institute -- "S-I" [label=1, len="1.00", pos="188,388 188,373 188,352 188,336", lp="192,362"];
+	"S-I" -- student [label=n, len="1.00", pos="187,289 186,273 185,251 185,236", lp="192,262"];
+	student -- grade [pos="168,200 153,183 131,157 117,140"];
+	student -- name2 [pos="156,211 112,191 68,158 45,139"];
+	student -- number [pos="184,200 184,184 184,159 184,142"];
+	student -- "S-C" [label=m, len="1.00", pos="201,200 217,182 242,155 257,139", lp="238,174"];
+	"S-C" -- course [label=n, len="1.00", pos="270,148 269,167 269,194 269,218 269,500 269,500 269,500 269,526 268,557 268,576", lp="273,362"];
+}

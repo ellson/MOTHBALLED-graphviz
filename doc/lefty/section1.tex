@@ -1,0 +1,71 @@
+\chapter{Introduction}
+\label{secintro}
+{\LEFTY} is an editor designed to handle technical pictures. Technical pictures
+are pictures used in technical contexts, e.g. program call graphs, binary
+search trees, fractals, and networks. Although there are many different types
+of technical pictures, they all share several properties.
+
+One such property is accuracy. Since the reason for drawing a technical picture
+is to display some abstract object in a way that is easy to understand, it is
+very important that the positions, sizes, and other graphical attributes of the
+graphical primitives in a picture follow strict rules. Figure~\ref{fig2tp}
+shows two technical pictures. The fractal in Figure~\ref{fig2tp}a consists of
+equal-size line segments arranged in a path that is computed using a simple
+recursive function. The binary tree in Figure~\ref{fig2tp}b consists of nodes
+and edges. All nodes of the same depth are drawn along the same horizontal line
+and parent nodes are centered over their children nodes.
+
+\begin{figure}[htb]
+\centerline{\hbox{
+\begin{tabular}[b]{c@{\hspace{.1in}}c}
+{\epsfxsize=2.5in \epsffile{figs/fig2tpa.ps}}&
+{\epsfxsize=2.5in \epsffile{figs/fig2tpb.ps}}\\
+(a) & (b)
+\end{tabular}
+}}
+\caption{Two technical pictures}
+\label{fig2tp}
+\end{figure}
+
+Accuracy, however, is just the end result of the more fundamental property {\it
+structure}. In Figure~\ref{fig2tp}b, the hierarchy of the tree constrains the
+graphical representation. {\tt F} and {\tt G} are both children of {\tt C}; if
+{\tt C} is moved to the right, {\tt F} and {\tt G} must also move to the right
+to preserve the symmetry. Other parts of the tree also have to move.
+
+Most graphics editors provide ways for drawing pictures accurately, but very
+few provide ways to maintain the consistency of technical pictures. If the user
+moves {\tt C} to the right, the editor could move {\tt F} and {\tt G}
+automatically. Most existing editors, however, do not provide this kind of
+functionality. {\LEFTY}, on the other hand, was designed with this kind of
+functionality in mind.
+
+{\LEFTY} implements a procedural programming language. This language can be
+used to specify all aspects of picture editing: how to draw the picture, how to
+edit it, and how to bind user actions to editing operations. Essentially, a
+picture is treated as an object that contains methods for operating on it. For
+example, for the tree in Figure~\ref{fig2tp}b this program would include
+functions to draw nodes and edges, functions to insert nodes and edges, and
+finally functions to bind mouse actions to editing operations. If the tree is
+supposed to have some specific semantics then the functions that insert nodes
+and edges may be modified to perform consistency checks. For example, the
+function for inserting edges may check if adding an edge would violate the
+semantics of the picture and if so print an error message. By having a
+language, {\LEFTY} can be programmed to handle many different kinds of
+pictures, and at the same time provide in-depth support for each kind of
+picture.
+
+A picture in {\LEFTY} is shown in two ways. One view is the usual ``what you
+see is what you get view'' (WYSIWYG). The other view is a textual view of the
+program that controls the picture. Users can perform operations on either view.
+The WYSIWYG view is more intuitive, while the program view is more functional.
+
+Another way in which {\LEFTY} differs from other editors is in the way it can
+be used. {\LEFTY} can be used as a standalone editor, to prepare pictures for
+printing, but it can also communicate with other processes. This allows
+{\LEFTY} to act as a graphical front end for other processes. In this mode a
+picture becomes a user interface object. For example, as some system changes
+state, its picture may change, but at the same time the system can be changed
+by changing the picture. {\LEFTY}'s programmability makes building graphical
+front ends for other tools easy. In many cases, these front ends perform better
+than tools that implement all the functionality in a single program.

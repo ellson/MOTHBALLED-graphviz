@@ -1,0 +1,59 @@
+\chapter{Running {\LEFTY}}
+\label{apprunning}
+{\LEFTY} can be started by issuing the command:
+
+\vspace{-0.2in}
+\begin{verbatim}
+lefty [options] [file]
+\end{verbatim}
+\vspace{-0.2in}
+
+\noindent
+The file name is optional. It may be {\tt -}, for reading from standard input.
+{\LEFTY} uses two environment variables, {\tt LEFTYPATH} and {\tt
+LEFTYOPTIONS}.  {\tt LEFTYPATH} is a colon separated list of directories. When
+{\LEFTY} tries to open a file, it searches that path for the file. When
+{\LEFTY} tries to start up another process, it searches {\tt LEFTYPATH} first,
+then the standard {\tt PATH} variable.  {\tt LEFTYOPTIONS} can be used to set
+specific options.  Options specified on the command line override options set
+through this variable. Table~\ref{taboptions} shows the supported options. Upon
+startup, {\LEFTY} sets the environment variable {\tt LEFTYWINSYS} to either
+{\tt "X11"} or {\tt "mswin"}.
+
+\begin{table}[htb]
+\begin{tabular}{|l|p{0.45in}|l|p{3.4in}|} \hline
+Option&Range&Default&Description\\ \hline
+\tt -x&&&
+Instructs the editor to exit after processing {\tt file}.\\ \hline
+\tt -e <expr>&{\LEFTY}\newline expr.&&
+{\tt expression} is parsed and executed.\\ \hline
+\tt -el <num>&\tt 0-5&\tt 0&
+Set error reporting level. {\tt 0} never prints any messages. {\tt 1} prints
+severe errors, such as trying to {\tt return} from a non function. {\tt 2} is
+the most useful: it reports function calls that cannot be executed, either
+because there is no function, or because of argument mismatches. {\tt 3} also
+warns about bad variable names. {\tt 4,5} warn about expressions that do not
+return a value. Only level {\tt 1} messages are real errors. The rest arise
+from legal {\LEFTY} statements, but may be cased by some logic errors.\\ \hline
+\tt -sd <num>&\tt 0-2&\tt 2&
+Specifies how much of the stack to show, when an error message is to be
+printed. With {\tt 0}, no part of the stack is shown. With {\tt 1}, only the
+top stack frame is printed. With {\tt 2}, the full stack is printed.\\ \hline
+\tt -sb <num>&\tt 0-2&\tt 2&
+Specifies how much of each function in the stack to show, when an error message
+is to be printed. With {\tt 0}, no part of the function is shown. With {\tt
+1}, only the line around the error is printed. With {\tt 2}, the full function
+body is printed.\\ \hline
+\tt -df <string>&&\tt ""&
+Sets the default font. This font is used whenever a requested font cannot be
+found. The string must be a legal X font. If string is {\tt ""}, {\LEFTY} will
+draw small boxes instead of text.\\ \hline
+\tt -ps <file>&&\tt out.ps&
+Specifies a default file name for postscript files. This name is used when no
+name is specified in the {\tt createwidget} call.\\ \hline
+\tt -V&&&
+Prints the version in {\tt stderr}\\ \hline
+\end{tabular}
+\caption{Command line options}
+\label{taboptions}
+\end{table}

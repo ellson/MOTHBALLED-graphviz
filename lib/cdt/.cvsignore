@@ -1,0 +1,9 @@
+*.la
+*.lo
+*.pc
+.deps
+.libs
+Makefile
+Makefile.in
+ast_common.h
+*.pdf

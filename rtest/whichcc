@@ -1,0 +1,27 @@
+#!/bin/ksh
+
+CC=${CC:-cc}
+UNAME_SYSTEM=$(uname -s)
+CMDNAME_CC=${CC%% *}
+BASENAME_CC=${CC##*/}
+
+case $UNAME_SYSTEM:$BASENAME_CC in
+    Linux:cc*)   C=gcc    ;;
+    Linux:gcc*)  C=gcc    ;;
+    Linux:icc*)  C=icc    ;;
+    IRIX64:cc*)  C=sgi_cc ;;
+    IRIX64:gcc*) C=gcc    ;;
+    SunOS:cc*)   C=sun_cc ;;
+    SunOS:gcc*)  C=gcc    ;;
+    FreeBSD:cc)  C=gcc    ;;
+    FreeBSD:gcc) C=gcc    ;;
+    *)           C=cc     ;;
+esac
+ 
+case $C in
+   gcc)         V=`$CMDNAME_CC -dumpversion` ;;
+   icc)         V=`$CMDNAME_CC --version`    ;;
+   *)           V=                           ;;
+esac
+ 
+echo $C$V

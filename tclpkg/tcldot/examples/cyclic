@@ -1,0 +1,60 @@
+#!/bin/sh
+# next line is a comment in tcl \
+exec wish "$0" ${1+"$@"}
+
+package require Tkspline
+package require Tcldot
+
+while {1} { 
+	set c [canvas .c]
+	pack $c
+
+	set g [dotnew graph]
+
+	$g setnodeattribute style filled color white
+
+	set n0 [$g addnode]
+	set n1 [$g addnode]
+	set n2 [$g addnode]
+	set n3 [$g addnode]
+	set n4 [$g addnode]
+	
+	set e0 [$n0 addedge $n1]
+	set e1 [$n1 addedge $n2]
+	set e2 [$n2 addedge $n3]
+	set e3 [$n3 addedge $n4]
+
+	$g layout
+
+	eval [$g render]
+	update
+
+	destroy .c
+	$g delete
+	after 20
+
+	set c [canvas .c]
+	pack $c
+
+	set g [dotnew graph]
+
+	$g setnodeattribute style filled color lightblue
+
+	set n0 [$g addnode]
+	set n1 [$g addnode]
+	set n2 [$g addnode]
+	
+	set e0 [$n0 addedge $n1]
+	set e1 [$n0 addedge $n2]
+	set e2 [$n1 addedge $n2]
+	set e3 [$n1 addedge $n2]
+
+	$g layout
+
+	eval [$g render]
+
+	update
+	after 20 
+	destroy .c
+	$g delete
+}

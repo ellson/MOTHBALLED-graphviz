@@ -1,0 +1,4 @@
+load ('fractal.lefty');
+maxlevel = 2;
+drawfractal ();
+dops ();

@@ -1,0 +1,120 @@
+digraph asde91 {
+ranksep=.75;
+size = "7.5,7.5";
+	{
+		node [shape=plaintext, fontsize=16];
+
+		/* the time-line graph */
+		past -> 1978 -> 1980 -> 1982 -> 1983 -> 1985 -> 1986 ->
+				1987 -> 1988 -> 1989 -> 1990 -> "future";
+
+		/* ancestor programs */
+
+		"Bourne sh"; "make"; "SCCS"; "yacc"; "cron"; "Reiser cpp";
+		"Cshell"; "emacs"; "build"; "vi"; "<curses>"; "RCS"; "C*";
+	}
+
+	{ rank = same;
+		"Software IS"; "Configuration Mgt"; "Architecture & Libraries";
+		"Process";
+	};
+
+	node [shape=box];
+
+	{ rank = same; "past"; "SCCS"; "make"; "Bourne sh"; "yacc"; "cron"; }
+	{ rank = same; 1978; "Reiser cpp"; "Cshell"; }
+	{ rank = same; 1980; "build"; "emacs"; "vi"; }
+	{ rank = same; 1982; "RCS"; "<curses>"; "IMX"; "SYNED"; }
+	{ rank = same; 1983; "ksh"; "IFS"; "TTU"; }
+	{ rank = same; 1985; "nmake"; "Peggy"; }
+	{ rank = same; 1986; "C*"; "ncpp"; "ksh-i"; "<curses-i>"; "PG2"; }
+	{ rank = same; 1987; "Ansi cpp"; "nmake 2.0"; "3D File System"; "fdelta";
+		"DAG"; "CSAS";}
+	{ rank = same; 1988; "CIA"; "SBCS"; "ksh-88"; "PEGASUS/PML"; "PAX";
+		"backtalk"; }
+	{ rank = same; 1989; "CIA++"; "APP"; "SHIP"; "DataShare"; "ryacc";
+		"Mosaic"; }
+	{ rank = same; 1990; "libft"; "CoShell"; "DIA"; "IFS-i"; "kyacc"; "sfio";
+		"yeast"; "ML-X"; "DOT";  }
+	{ rank = same; "future"; "Adv. Software Technology"; }
+
+	"PEGASUS/PML" -> "ML-X";
+	"SCCS" -> "nmake";
+	"SCCS" -> "3D File System";
+	"SCCS" -> "RCS";
+	"make" -> "nmake";
+	"make" -> "build";
+	"Bourne sh" -> "Cshell";
+	"Bourne sh" -> "ksh";
+	"Reiser cpp" -> "ncpp";
+	"Cshell" -> "ksh";
+	"build" -> "nmake 2.0";
+	"emacs" -> "ksh";
+	"vi" -> "ksh";
+	"vi" -> "<curses>";
+	"IFS" -> "<curses-i>";
+	"IFS" -> "IFS-i";
+	"IFS" -> "sfio";
+	"<curses>" -> "<curses-i>";
+	"<curses-i>" -> "fdelta";
+	"RCS" -> "SBCS";
+	"RCS" -> "fdelta";
+	"ksh" -> "nmake";
+	"ksh" -> "ksh-i";
+	"ksh" -> "ksh-88";
+	"ksh-i" -> "ksh-88";
+	"nmake" -> "ksh";
+	"nmake" -> "ncpp";
+	"nmake" -> "3D File System";
+	"nmake" -> "nmake 2.0";
+	"ncpp" -> "Ansi cpp";
+	"C*" -> "CSAS";
+	"fdelta" -> "SBCS";
+	"CSAS" -> "CIA";
+	"ksh-88" -> "sfio";
+	"ksh-88" -> "Configuration Mgt";
+	"ksh-88" -> "Architecture & Libraries";
+	"IFS-i" -> "Architecture & Libraries";
+	"SYNED" -> "Peggy";
+	"Peggy" -> "PEGASUS/PML";
+	"Peggy" -> "ryacc";
+	"PEGASUS/PML" -> "Architecture & Libraries";
+	"yacc" -> "ryacc";
+	"ryacc" -> "kyacc";
+	"kyacc" -> "Architecture & Libraries";
+	"ML-X" -> "Architecture & Libraries";
+	"APP" -> "Software IS";
+	"SBCS" -> "Configuration Mgt";
+	"DAG" -> "Software IS";
+	"DAG" -> "DOT";
+	"CIA++" -> "Software IS";
+	"Ansi cpp" -> "Configuration Mgt";
+	"nmake 2.0" -> "Configuration Mgt";
+	"3D File System" -> "Configuration Mgt";
+	"CIA" -> "CIA++";
+	"IMX" -> "TTU";
+	"TTU" -> "PG2";
+	"PG2" -> "backtalk";
+	"backtalk" -> "DataShare";
+	"DataShare" -> "Architecture & Libraries";
+	"nmake 2.0" -> "CoShell";
+	"CIA" -> "DIA";
+	"APP" -> "DIA";
+	"DAG" -> "DIA";
+	"fdelta" -> "PAX";
+	"PAX" -> "SHIP";
+	"SHIP" -> "Configuration Mgt";
+	"DIA" -> "Software IS";
+	"DOT" -> "Software IS";
+	"libft" -> "Software IS";
+	"sfio" -> "Architecture & Libraries";
+	"CoShell" -> "Configuration Mgt";
+	"CoShell" -> "Architecture & Libraries";
+	"Mosaic" -> "Process";
+	"cron" -> "yeast";
+	"yeast" -> "Process";
+	"Software IS" -> "Adv. Software Technology";
+	"Configuration Mgt" -> "Adv. Software Technology";
+	"Architecture & Libraries" -> "Adv. Software Technology";
+	"Process" -> "Adv. Software Technology";
+}

@@ -1,0 +1,539 @@
+%!PS-Adobe-2.0
+%%Creator: circo version 1.14 (Mon Aug 30 22:33:14 UTC 2004)
+%%For: Bill Gates
+%%Title: G
+%%Pages: (atend)
+%%BoundingBox: 35 35 815 790
+%%EndComments
+save
+%%BeginProlog
+/DotDict 200 dict def
+DotDict begin
+
+/setupLatin1 {
+mark
+/EncodingVector 256 array def
+ EncodingVector 0
+
+ISOLatin1Encoding 0 255 getinterval putinterval
+
+EncodingVector
+  dup 306 /AE
+  dup 301 /Aacute
+  dup 302 /Acircumflex
+  dup 304 /Adieresis
+  dup 300 /Agrave
+  dup 305 /Aring
+  dup 303 /Atilde
+  dup 307 /Ccedilla
+  dup 311 /Eacute
+  dup 312 /Ecircumflex
+  dup 313 /Edieresis
+  dup 310 /Egrave
+  dup 315 /Iacute
+  dup 316 /Icircumflex
+  dup 317 /Idieresis
+  dup 314 /Igrave
+  dup 334 /Udieresis
+  dup 335 /Yacute
+  dup 376 /thorn
+  dup 337 /germandbls
+  dup 341 /aacute
+  dup 342 /acircumflex
+  dup 344 /adieresis
+  dup 346 /ae
+  dup 340 /agrave
+  dup 345 /aring
+  dup 347 /ccedilla
+  dup 351 /eacute
+  dup 352 /ecircumflex
+  dup 353 /edieresis
+  dup 350 /egrave
+  dup 355 /iacute
+  dup 356 /icircumflex
+  dup 357 /idieresis
+  dup 354 /igrave
+  dup 360 /dcroat
+  dup 361 /ntilde
+  dup 363 /oacute
+  dup 364 /ocircumflex
+  dup 366 /odieresis
+  dup 362 /ograve
+  dup 365 /otilde
+  dup 370 /oslash
+  dup 372 /uacute
+  dup 373 /ucircumflex
+  dup 374 /udieresis
+  dup 371 /ugrave
+  dup 375 /yacute
+  dup 377 /ydieresis  
+
+% Set up ISO Latin 1 character encoding
+/starnetISO {
+        dup dup findfont dup length dict begin
+        { 1 index /FID ne { def }{ pop pop } ifelse
+        } forall
+        /Encoding EncodingVector def
+        currentdict end definefont
+} def
+/Times-Roman starnetISO def
+/Times-Italic starnetISO def
+/Times-Bold starnetISO def
+/Times-BoldItalic starnetISO def
+/Helvetica starnetISO def
+/Helvetica-Oblique starnetISO def
+/Helvetica-Bold starnetISO def
+/Helvetica-BoldOblique starnetISO def
+/Courier starnetISO def
+/Courier-Oblique starnetISO def
+/Courier-Bold starnetISO def
+/Courier-BoldOblique starnetISO def
+cleartomark
+} bind def
+
+%%BeginResource: procset graphviz 0 0
+/coord-font-family /Times-Roman def
+/default-font-family /Times-Roman def
+/coordfont coord-font-family findfont 8 scalefont def
+
+/InvScaleFactor 1.0 def
+/set_scale {
+	dup 1 exch div /InvScaleFactor exch def
+	dup scale
+} bind def
+
+% styles
+/solid { [] 0 setdash } bind def
+/dashed { [9 InvScaleFactor mul dup ] 0 setdash } bind def
+/dotted { [1 InvScaleFactor mul 6 InvScaleFactor mul] 0 setdash } bind def
+/invis {/fill {newpath} def /stroke {newpath} def /show {pop newpath} def} bind def
+/bold { 2 setlinewidth } bind def
+/filled { } bind def
+/unfilled { } bind def
+/rounded { } bind def
+/diagonals { } bind def
+
+% hooks for setting color 
+/nodecolor { sethsbcolor } bind def
+/edgecolor { sethsbcolor } bind def
+/graphcolor { sethsbcolor } bind def
+/nopcolor {pop pop pop} bind def
+
+/beginpage {	% i j npages
+	/npages exch def
+	/j exch def
+	/i exch def
+	/str 10 string def
+	npages 1 gt {
+		gsave
+			coordfont setfont
+			0 0 moveto
+			(\() show i str cvs show (,) show j str cvs show (\)) show
+		grestore
+	} if
+} bind def
+
+/set_font {
+	findfont exch
+	scalefont setfont
+} def
+
+% draw aligned label in bounding box aligned to current point
+/alignedtext {			% width adj text
+	/text exch def
+	/adj exch def
+	/width exch def
+	gsave
+		width 0 gt {
+			text stringwidth pop adj mul 0 rmoveto
+		} if
+		[] 0 setdash
+		text show
+	grestore
+} def
+
+/boxprim {				% xcorner ycorner xsize ysize
+		4 2 roll
+		moveto
+		2 copy
+		exch 0 rlineto
+		0 exch rlineto
+		pop neg 0 rlineto
+		closepath
+} bind def
+
+/ellipse_path {
+	/ry exch def
+	/rx exch def
+	/y exch def
+	/x exch def
+	matrix currentmatrix
+	newpath
+	x y translate
+	rx ry scale
+	0 0 1 0 360 arc
+	setmatrix
+} bind def
+
+/endpage { showpage } bind def
+/showpage { } def
+
+/layercolorseq
+	[	% layer color sequence - darkest to lightest
+		[0 0 0]
+		[.2 .8 .8]
+		[.4 .8 .8]
+		[.6 .8 .8]
+		[.8 .8 .8]
+	]
+def
+
+/layerlen layercolorseq length def
+
+/setlayer {/maxlayer exch def /curlayer exch def
+	layercolorseq curlayer 1 sub layerlen mod get
+	aload pop sethsbcolor
+	/nodecolor {nopcolor} def
+	/edgecolor {nopcolor} def
+	/graphcolor {nopcolor} def
+} bind def
+
+/onlayer { curlayer ne {invis} if } def
+
+/onlayers {
+	/myupper exch def
+	/mylower exch def
+	curlayer mylower lt
+	curlayer myupper gt
+	or
+	{invis} if
+} def
+
+/curlayer 0 def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+14 default-font-family set_font
+1 setmiterlimit
+% /arrowlength 10 def
+% /arrowwidth 5 def
+
+% make sure pdfmark is harmless for PS-interpreters other than Distiller
+/pdfmark where {pop} {userdict /pdfmark /cleartomark load put} ifelse
+% make '<<' and '>>' safe on PS Level 1 devices
+/languagelevel where {pop languagelevel}{1} ifelse
+2 lt {
+    userdict (<<) cvn ([) cvn load put
+    userdict (>>) cvn ([) cvn load put
+} if
+
+%%EndSetup
+%%Page: 1 1
+%%PageBoundingBox: 36 36 815 790
+%%PageOrientation: Portrait
+gsave
+35 35 780 755 boxprim clip newpath
+36 36 translate
+0 0 1 beginpage
+0 0 translate 0 rotate
+0.000 0.000 0.000 graphcolor
+14.00 /Times-Roman set_font
+
+%	run
+gsave 10 dict begin
+121 368 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+111 363 moveto
+(run)
+[4.56 6.72 6.72]
+xshow
+end grestore
+end grestore
+
+%	intr
+gsave 10 dict begin
+29 315 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+19 310 moveto
+(intr)
+[3.6 6.72 3.84 4.56]
+xshow
+end grestore
+end grestore
+
+%	run -> intr
+newpath 100 356 moveto
+84 346 66 336 50 327 curveto
+stroke
+
+%	kernel
+gsave 10 dict begin
+535 296 31 18 ellipse_path
+stroke
+gsave 10 dict begin
+517 291 moveto
+(kernel)
+[6.96 6.24 4.56 6.72 6.24 3.6]
+xshow
+end grestore
+end grestore
+
+%	run -> kernel
+newpath 147 363 moveto
+267 343 386 322 505 301 curveto
+stroke
+
+%	runbl
+gsave 10 dict begin
+29 421 28 18 ellipse_path
+stroke
+gsave 10 dict begin
+14 416 moveto
+(runbl)
+[4.56 6.72 6.72 6.96 3.6]
+xshow
+end grestore
+end grestore
+
+%	intr -> runbl
+newpath 29 333 moveto
+29 356 29 380 29 403 curveto
+stroke
+
+%	runbl -> run
+newpath 50 409 moveto
+67 399 84 389 100 380 curveto
+stroke
+
+%	zombie
+gsave 10 dict begin
+549 385 33 18 ellipse_path
+stroke
+gsave 10 dict begin
+528 380 moveto
+(zombie)
+[6.24 6.96 10.32 6.96 3.6 6.24]
+xshow
+end grestore
+end grestore
+
+%	kernel -> zombie
+newpath 538 314 moveto
+540 332 544 350 546 367 curveto
+stroke
+
+%	sleep
+gsave 10 dict begin
+645 209 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+630 204 moveto
+(sleep)
+[5.52 3.6 6.24 6.24 6.96]
+xshow
+end grestore
+end grestore
+
+%	kernel -> sleep
+newpath 553 281 moveto
+578 262 603 242 627 223 curveto
+stroke
+
+%	runmem
+gsave 10 dict begin
+405 245 36 18 ellipse_path
+stroke
+gsave 10 dict begin
+381 240 moveto
+(runmem)
+[4.56 6.72 6.72 10.32 6.24 10.32]
+xshow
+end grestore
+end grestore
+
+%	kernel -> runmem
+newpath 509 286 moveto
+484 276 459 266 433 256 curveto
+stroke
+
+%	1
+gsave 10 dict begin
+433 455 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+433 450 moveto 8.0 -0.5 (1) alignedtext
+end grestore
+end grestore
+
+%	zombie -> 1
+newpath 527 399 moveto
+502 413 477 428 453 443 curveto
+stroke
+
+%	sleep -> runmem
+newpath 618 213 moveto
+559 222 499 231 440 240 curveto
+stroke
+
+%	swap
+gsave 10 dict begin
+624 70 28 18 ellipse_path
+stroke
+gsave 10 dict begin
+609 65 moveto
+(swap)
+[5.52 10.08 6.24 6.96]
+xshow
+end grestore
+end grestore
+
+%	sleep -> swap
+newpath 642 191 moveto
+637 157 632 122 627 88 curveto
+stroke
+
+%	runswap
+gsave 10 dict begin
+493 19 37 18 ellipse_path
+stroke
+gsave 10 dict begin
+468 14 moveto
+(runswap)
+[4.56 6.72 6.72 5.52 10.08 6.24 6.96]
+xshow
+end grestore
+end grestore
+
+%	swap -> runswap
+newpath 600 61 moveto
+574 51 548 41 522 30 curveto
+stroke
+
+%	runswap -> runmem
+newpath 486 37 moveto
+461 100 437 164 412 227 curveto
+stroke
+
+%	new
+gsave 10 dict begin
+384 106 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+371 101 moveto
+(new)
+[6.72 6.24 10.08]
+xshow
+end grestore
+end grestore
+
+%	runswap -> new
+newpath 474 35 moveto
+450 54 426 73 402 92 curveto
+stroke
+
+%	new -> runmem
+newpath 387 124 moveto
+392 158 397 193 402 227 curveto
+stroke
+
+%	2
+gsave 10 dict begin
+400 586 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+400 581 moveto 8.0 -0.5 (2) alignedtext
+end grestore
+end grestore
+
+%	1 -> 2
+newpath 428 473 moveto
+420 504 412 537 404 568 curveto
+stroke
+
+%	4
+gsave 10 dict begin
+470 702 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+470 697 moveto 8.0 -0.5 (4) alignedtext
+end grestore
+end grestore
+
+%	2 -> 4
+newpath 410 603 moveto
+427 630 443 658 460 685 curveto
+stroke
+
+%	5
+gsave 10 dict begin
+601 734 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+601 729 moveto 8.0 -0.5 (5) alignedtext
+end grestore
+end grestore
+
+%	4 -> 5
+newpath 496 708 moveto
+522 715 549 722 575 728 curveto
+stroke
+
+%	6
+gsave 10 dict begin
+717 665 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+717 660 moveto 8.0 -0.5 (6) alignedtext
+end grestore
+end grestore
+
+%	5 -> 6
+newpath 621 722 moveto
+646 707 672 692 697 677 curveto
+stroke
+
+%	7
+gsave 10 dict begin
+750 533 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+750 528 moveto 8.0 -0.5 (7) alignedtext
+end grestore
+end grestore
+
+%	6 -> 7
+newpath 721 647 moveto
+729 615 737 583 745 551 curveto
+stroke
+
+%	8
+gsave 10 dict begin
+680 417 27 18 ellipse_path
+stroke
+gsave 10 dict begin
+680 412 moveto 8.0 -0.5 (8) alignedtext
+end grestore
+end grestore
+
+%	7 -> 8
+newpath 740 516 moveto
+723 489 707 461 690 434 curveto
+stroke
+
+%	8 -> zombie
+newpath 654 411 moveto
+629 405 604 398 579 392 curveto
+stroke
+endpage
+showpage
+grestore
+%%PageTrailer
+%%EndPage: 1
+%%Trailer
+%%Pages: 1
+end
+restore
+%%EOF
