@@ -40,7 +40,7 @@ if DISABLE_GVRENDER
 dot_LDADD = \
         $(top_builddir)/lib/common/libcommon.la \
         $(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/plugin/layout/libgvplugin_layout.la
+	$(top_builddir)/plugin/layout/libgvplugin_layout.la @LIBGEN_LIBS@
 else
 dot_LDADD = \
 	$(top_builddir)/lib/common/libcommon.la \
@@ -48,7 +48,7 @@ dot_LDADD = \
         $(top_builddir)/plugin/cairo/libgvplugin_cairo.la \
         $(top_builddir)/plugin/gd/libgvplugin_gd.la \
         $(top_builddir)/plugin/text/libgvplugin_text.la \
-        $(top_builddir)/plugin/layout/libgvplugin_layout.la @CAIRO_LIBS@
+        $(top_builddir)/plugin/layout/libgvplugin_layout.la @CAIRO_LIBS@ @LIBGEN_LIBS@
 endif
 
 install-data-hook:

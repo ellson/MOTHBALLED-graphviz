@@ -980,6 +980,20 @@ fi
 AC_SUBST(CAIRO_CFLAGS)
 AC_SUBST(CAIRO_LIBS)
 
+dnl -----------------------------------
+dnl INCLUDES and LIBS for libgen (provides basename function)
+
+save_CPPFLAGS=$CPPFLAGS
+save_LDFLAGS=$LDFLAGS
+AC_CHECK_HEADER(libgen.h,
+        AC_CHECK_LIB(gen,basename,
+                [LIBGEN_LIBS="-lgen"
+                AC_DEFINE_UNQUOTED(HAVE_LIBGEN,1,[Define if the LIBGEN library has the basename feature])]),
+        AC_MSG_WARN(libgen.h header not available))
+LDFLAGS=$save_LDFLAGS
+CPPFLAGS=$save_CPPFLAGS
+AC_SUBST(LIBGEN_LIBS)
+
 # -----------------------------------
 
 # Checks for library functions
