@@ -105,6 +105,7 @@ This package provides some example graphs for %{name}.
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/graphs
 
+%{?fc3
 %package java
 Group:		Applications/Multimedia
 Summary:	Java extension tools for %{name}
@@ -118,7 +119,9 @@ for version %{version} of the %{name} tools.
 %defattr(-,root,root,-)
 %{_libdir}/%{name}/lib*_java*.so.*.*.*
 %{_libdir}/%{name}/*.java
+}
 
+%{?fc3
 %package perl
 Group:		Applications/Multimedia
 Summary:	Perl extension tools for %{name}
@@ -132,7 +135,9 @@ for version %{version} of the %{name} tools.
 %defattr(-,root,root,-)
 %{_libdir}/%{name}/lib*_perl*.so.*.*.*
 %{_libdir}/%{name}/*.pm
+}
 
+%{?fc3
 %package python
 Group:		Applications/Multimedia
 Summary:	Perl extension tools for %{name}
@@ -146,7 +151,9 @@ for version %{version} of the %{name} tools.
 %defattr(-,root,root,-)
 %{_libdir}/%{name}/lib*_python*.so.*.*.*
 %{_libdir}/%{name}/*.py
+}
 
+%{?fc3
 %package ruby
 Group:		Applications/Multimedia
 Summary:	Perl extension tools for %{name}
@@ -159,6 +166,7 @@ for version %{version} of the %{name} tools.
 %files ruby
 %defattr(-,root,root,-)
 %{_libdir}/%{name}/lib*_ruby*.so.*.*.*
+}
 
 %package tcl
 Group:		Applications/Multimedia
