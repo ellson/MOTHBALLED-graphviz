@@ -562,18 +562,23 @@ static void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine)
     reset_layout(gvc, g);		/* in case previously drawn */
 
 /* support old behaviors if engine isn't specified*/
-    if (!engine || engine[0] == '\0') {
+    if (!engine || *engine == '\0') {
 	if (AG_IS_DIRECTED(g))
-	    gvlayout_select(gvc, "dot");
+	    rc = gvlayout_select(gvc, "dot");
 	else
-	    gvlayout_select(gvc, "neato");
+	    rc = gvlayout_select(gvc, "neato");
     }
     else {
 	rc = gvlayout_select(gvc, engine);
 	if (rc == NO_SUPPORT)
-	    gvlayout_select(gvc, "dot");
-	gvlayout_layout(gvc, g);
+	    rc = gvlayout_select(gvc, "dot");
     }
+    if (rc == NO_SUPPORT) {
+        fprintf(stderr, "Layout type: \"%s\" not recognized. Use one of:%s\n",
+                engine, gvplugin_list(gvc, API_layout, engine));
+        return;
+    }
+    gvlayout_layout(gvc, g);
 
 /* set bb attribute for basic layout.
  * doesn't yet include margins, scaling or page sizes because
@@ -1088,20 +1093,24 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 'r') && (strncmp(argv[1], "rendergd", length) == 0)) {
+	void *hdl;
+	int *im;
+
 	if (argc < 3) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
 			     " rendergd gdhandle ?DOT|NEATO|TWOPI|FDP|CIRCO?\"",
 			     (char *) NULL);
 	    return TCL_ERROR;
 	}
-	gvrender_output_langname_job(gvc, "memGD");
-	gvc->job->output_lang = memGD;
-	gvc->job->codegen = &memGD_CodeGen;
-	if (!  (gvc->job->output_file =
-	     (FILE *) tclhandleXlate(GDHandleTable, argv[2]))) {
+	gvrender_output_langname_job(gvc, "gd");
+	if (!  (hdl = tclhandleXlate(GDHandleTable, argv[2]))) {
 	    Tcl_AppendResult(interp, "GD Image not found.", (char *) NULL);
 	    return TCL_ERROR;
 	}
+	/* FIXME - this is gross! */
+        im = *(int **)hdl;
+	gvc->job->output_file = (FILE *) im;
+	gvc->job->external_surface = TRUE;
 
 	/* make sure that layout is done */
 	g = g->root;
@@ -1219,11 +1228,6 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	      (char *) NULL);
 	    return TCL_ERROR;
 	}
-
-	/* configure codegens */
-//	config_codegen_builtins(gvc);
-//	gvplugin_builtins(gvc);
-//	gvconfig(gvc, CONFIG);
 
 	/* process lang first to create job */
 	if (argc < 4) {
@@ -1606,7 +1610,6 @@ __EXPORT__
 int Tcldot_Init(Tcl_Interp * interp)
 {
     GVC_t *gvc;
-    char *user;
 
 #ifdef USE_TCL_STUBS
     if (Tcl_InitStubs(interp, TCL_VERSION, 0) == NULL) {
@@ -1628,8 +1631,12 @@ int Tcldot_Init(Tcl_Interp * interp)
     agnodeattr(NULL, "label", NODENAME_ESC);
 
     /* create a GraphViz Context and pass a pointer to it in clientdata */
-    user = username();
-    gvc = gvNEWcontext(Info, user);
+    gvc = gvNEWcontext(Info, username());
+
+    /* configure codegens */
+    config_codegen_builtins(gvc);
+    gvplugin_builtins(gvc);
+//    gvconfig(gvc, CONFIG);
 
 #ifndef TCLOBJ
     Tcl_CreateCommand(interp, "dotnew", dotnew,
