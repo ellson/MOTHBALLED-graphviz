@@ -3,15 +3,21 @@ AC_INIT(graphviz, 2.3)
 AC_CONFIG_SRCDIR(configure.ac)
 AC_CONFIG_AUX_DIR(config)
 
-AC_CONFIG_SUBDIRS(libltdl)
-AC_LIBTOOL_DLOPEN
-AC_LIBLTDL_CONVENIENCE
+dnl -----------------------------------
+dnl libtool ltdl on-demand plugin loading
 
-HAVE_LTDL=1
+AC_ARG_ENABLE(ltdl,
+  [AC_HELP_STRING([--disable-ltdl], [don't support on-demand plugin loading])])
+if test "x$enable_ltdl" = "xno"; then
+  AC_DEFINE(DISABLE_LTDL,1,[Define if you don't want on-demand plugin loading])
+else
+  AC_CONFIG_SUBDIRS(libltdl)
+  AC_LIBTOOL_DLOPEN
+  AC_LIBLTDL_CONVENIENCE
+fi
+AM_CONDITIONAL(DISABLE_LTDL, [test "x$enable_ltdl" = "xno"])
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
-AC_DEFINE_UNQUOTED(HAVE_LTDL,$HAVE_LTDL,Define if to use libltdl dynamic loading of plugins.)
-AM_CONDITIONAL(ENABLE_LTDL, [test "x$HAVE_LTDL" = "x1"])
 
 # Checks for system type
 AC_CANONICAL_TARGET

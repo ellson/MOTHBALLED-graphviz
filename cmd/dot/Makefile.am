@@ -32,16 +32,16 @@ libdotneato_la_LIBADD = \
 
 dot_SOURCES = dot.c args.c
 
-if ENABLE_LTDL
-dot_LDADD = \
-        $(top_builddir)/lib/graph/libgraph.la \
-        $(top_builddir)/lib/common/libcommon.la \
-        $(top_builddir)/lib/gvc/libgvc.la  @LIBGEN_LIBS@
-else
+if DISABLE_LTDL
 dot_LDADD = \
         $(top_builddir)/lib/common/libcommon.la \
         $(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/plugin/libplugins.la
+else
+dot_LDADD = \
+        $(top_builddir)/lib/graph/libgraph.la \
+        $(top_builddir)/lib/common/libcommon.la \
+        $(top_builddir)/lib/gvc/libgvc.la  @LIBGEN_LIBS@
 endif
 
 install-data-hook:

@@ -23,7 +23,7 @@
 #include        "macros.h"
 #include        "gvc.h"
 
-#if HAVE_LTDL
+#ifndef DISABLE_LTDL
 #include	<ltdl.h>
 #endif
 
@@ -93,7 +93,7 @@ boolean gvplugin_install(GVC_t * gvc, api_t api,
 
 gvplugin_library_t *gvplugin_library_load(char *path)
 {
-#if HAVE_LTDL
+#ifndef DISABLE_LTDL
     lt_dlhandle hndl;
     lt_ptr ptr;
     char *s, *sym;
@@ -289,13 +289,13 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
     return buf;
 }
 
-#ifndef HAVE_LTDL
+#ifdef DISABLE_LTDL
 extern gvplugin_library_t *builtins[];
 #endif
 
 void gvplugin_builtins(GVC_t * gvc)
 {
-#ifndef HAVE_LTDL
+#ifdef DISABLE_LTDL
     gvplugin_library_t **library;
     gvplugin_api_t *apis;
     gvplugin_type_t *types;
