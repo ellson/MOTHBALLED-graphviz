@@ -1394,7 +1394,7 @@ point closest(splines * spl, point p)
 	pt2 = Bezier(c, 3, t, NULL, NULL);
 	if (fabs(dlow2 - dhigh2) < 1.0)
 	    break;
-	if (high - low < .00001)
+	if (fabs(high - low) < .00001)
 	    break;
 	if (dlow2 < dhigh2) {
 	    high = t;

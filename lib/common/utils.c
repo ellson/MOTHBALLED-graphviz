@@ -25,7 +25,7 @@
 
 
 /* local funcs */
-static double dist(pointf, pointf);
+static double dist2(pointf, pointf);
 
 void *zmalloc(size_t nbytes)
 {
@@ -633,26 +633,26 @@ int mapbool(char *p)
     return atoi(p);
 }
 
-static double dist(p, q)
+static double dist2(p, q) /* return square of dist between p and q */
 pointf p, q;
 {
     double d0, d1;
     d0 = p.x - q.x;
     d1 = p.y - q.y;
-    return sqrt(d0 * d0 + d1 * d1);
+    return (d0 * d0 + d1 * d1);
 }
 
 point dotneato_closest(splines * spl, point p)
 {
     int i, j, k, besti, bestj;
-    double bestdist, d, dlow, dhigh;
+    double bestdist2, d2, dlow2, dhigh2;
     double low, high, t;
     pointf c[4], pt2, pt;
     point rv;
     bezier bz;
 
     besti = bestj = -1;
-    bestdist = 1e+38;
+    bestdist2 = 1e+38;
     pt.x = p.x;
     pt.y = p.y;
     for (i = 0; i < spl->size; i++) {
@@ -662,11 +662,11 @@ point dotneato_closest(splines * spl, point p)
 
 	    b.x = bz.list[j].x;
 	    b.y = bz.list[j].y;
-	    d = dist(b, pt);
-	    if ((bestj == -1) || (d < bestdist)) {
+	    d2 = dist2(b, pt);
+	    if ((bestj == -1) || (d2 < bestdist2)) {
 		besti = i;
 		bestj = j;
-		bestdist = d;
+		bestdist2 = d2;
 	    }
 	}
     }
@@ -681,21 +681,21 @@ point dotneato_closest(splines * spl, point p)
     }
     low = 0.0;
     high = 1.0;
-    dlow = dist(c[0], pt);
-    dhigh = dist(c[3], pt);
+    dlow2 = dist2(c[0], pt);
+    dhigh2 = dist2(c[3], pt);
     do {
 	t = (low + high) / 2.0;
 	pt2 = Bezier(c, 3, t, NULL, NULL);
-	if (fabs(dlow - dhigh) < 1.0)
+	if (fabs(dlow2 - dhigh2) < 1.0)
 	    break;
-	if (low == high)
+	if (fabs(high - low) < .00001)
 	    break;
-	if (dlow < dhigh) {
+	if (dlow2 < dhigh2) {
 	    high = t;
-	    dhigh = dist(pt2, pt);
+	    dhigh2 = dist2(pt2, pt);
 	} else {
 	    low = t;
-	    dlow = dist(pt2, pt);
+	    dlow2 = dist2(pt2, pt);
 	}
     } while (1);
     rv.x = pt2.x;
