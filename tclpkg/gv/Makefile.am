@@ -10,20 +10,10 @@ AM_CPPFLAGS = \
 
 LIBS =  @LIBS@ -lc
 
-if DISABLE_GVRENDER
 BASELIBS = \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/plugin/layout/libgvplugin_layout.la @LIBGEN_LIBS@
-else
-BASELIBS = \
-	$(top_builddir)/lib/common/libcommon.la \
-	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/plugin/cairo/libgvplugin_cairo.la \
-	$(top_builddir)/plugin/gd/libgvplugin_gd.la \
-	$(top_builddir)/plugin/text/libgvplugin_text.la \
-	$(top_builddir)/plugin/layout/libgvplugin_layout.la @CAIRO_LIBS@ @LIBGEN_LIBS@
-endif
+	$(top_builddir)/plugin/libplugins.la @LIBGEN_LIBS@
 
 noinst_HEADERS = gv.h
 
@@ -58,31 +48,31 @@ pkglib_LTLIBRARIES += libgv_tcl.la
 endif
 endif
 
-libgv_csharp_la_SOURCES = gv.cpp gv_csharp.cpp plugins.c 
+libgv_csharp_la_SOURCES = gv.cpp gv_csharp.cpp
 libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@
 
-libgv_guile_la_SOURCES = gv.cpp gv_guile.cpp plugins.c 
+libgv_guile_la_SOURCES = gv.cpp gv_guile.cpp
 libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
 
-#libgv_io_la_SOURCES = gv.cpp gv_io.cpp plugins.c 
+#libgv_io_la_SOURCES = gv.cpp gv_io.cpp
 #libgv_io_la_LIBADD = $(BASELIBS) @IO_LIBS@
 
-libgv_java_la_SOURCES = gv.cpp gv_java.cpp plugins.c 
+libgv_java_la_SOURCES = gv.cpp gv_java.cpp
 libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
 
-libgv_perl_la_SOURCES = gv.cpp gv_perl.cpp plugins.c 
+libgv_perl_la_SOURCES = gv.cpp gv_perl.cpp
 libgv_perl_la_LIBADD = $(BASELIBS) @PERL_LIBS@
 
-libgv_php_la_SOURCES = gv.cpp gv_php.cpp plugins.c 
+libgv_php_la_SOURCES = gv.cpp gv_php.cpp
 libgv_php_la_LIBADD = $(BASELIBS) @PHP_LIBS@
 
-libgv_python_la_SOURCES = gv.cpp gv_python.cpp plugins.c 
+libgv_python_la_SOURCES = gv.cpp gv_python.cpp
 libgv_python_la_LIBADD = $(BASELIBS) @PYTHON_LIBS@
 
-libgv_ruby_la_SOURCES = gv.cpp gv_ruby.cpp plugins.c 
+libgv_ruby_la_SOURCES = gv.cpp gv_ruby.cpp
 libgv_ruby_la_LIBADD = $(BASELIBS) @RUBY_LIBS@
 
-libgv_tcl_la_SOURCES = gv.cpp gv_tcl.cpp plugins.c 
+libgv_tcl_la_SOURCES = gv.cpp gv_tcl.cpp
 libgv_tcl_la_LIBADD = $(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
 				$(BASELIBS) @TCL_LIBS@
 

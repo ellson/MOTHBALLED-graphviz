@@ -30,26 +30,14 @@ pdf_DATA = $(pdf)
 html_DATA = $(html)
 endif
 
-libtcldot_la_SOURCES = tcldot.c tkgen.c plugins.c $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
+libtcldot_la_SOURCES = tcldot.c tkgen.c $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
 
-if DISABLE_GVRENDER
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/plugin/layout/libgvplugin_layout.la @LIBGEN_LIBS@
-else
-libtcldot_la_LIBADD = \
-        $(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
-        $(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
-        $(top_builddir)/lib/common/libcommon.la \
-        $(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/plugin/cairo/libgvplugin_cairo.la \
-        $(top_builddir)/plugin/gd/libgvplugin_gd.la \
-        $(top_builddir)/plugin/text/libgvplugin_text.la \
-        $(top_builddir)/plugin/layout/libgvplugin_layout.la @CAIRO_LIBS@ @LIBGEN_LIBS@
-endif
+	$(top_builddir)/plugin/libplugins.la @LIBGEN_LIBS@
 
 if WITH_TCL
 all-local: pkgIndex.tcl

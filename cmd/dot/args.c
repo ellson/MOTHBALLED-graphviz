@@ -27,11 +27,8 @@
 #include "config.h"
 #endif
 
-#include "dot.h"
-#include "neato.h"
+#include "render.h"
 #include "tlayout.h"
-#include "circular.h"
-#include "circle.h"
 
 static int
 neato_extra_args(GVC_t *gvc, int argc, char** argv)

@@ -17,11 +17,7 @@
 #ifndef DOTNEATO_H
 #define DOTNEATO_H
 
-#include <dot.h>
-#include <neato.h>
-#include <circle.h>
-#include <fdp.h>
-#include <circo.h>
+#include "render.h"
 
 #ifdef __cplusplus
 extern "C" {

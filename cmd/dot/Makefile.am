@@ -11,15 +11,11 @@ AM_CPPFLAGS = \
         -I$(top_srcdir) \
         -I$(top_srcdir)/lib/common \
         -I$(top_srcdir)/lib/gvc \
-	-I$(top_srcdir)/lib/dotgen \
-	-I$(top_srcdir)/lib/neatogen \
-	-I$(top_srcdir)/lib/twopigen \
-	-I$(top_srcdir)/lib/fdpgen \
-	-I$(top_srcdir)/lib/circogen \
 	-I$(top_srcdir)/lib/pack \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/graph \
-	-I$(top_srcdir)/lib/cdt
+	-I$(top_srcdir)/lib/cdt \
+	-I$(top_srcdir)/lib/fdpgen
 
 pkginclude_HEADERS = dotneato.h
 pkglib_LTLIBRARIES = libdotneato.la
@@ -34,22 +30,12 @@ libdotneato_la_LIBADD = \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/gvc/libgvc.la
 
-dot_SOURCES = dot.c args.c plugins.c
+dot_SOURCES = dot.c args.c
 
-if DISABLE_GVRENDER
 dot_LDADD = \
         $(top_builddir)/lib/common/libcommon.la \
         $(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/plugin/layout/libgvplugin_layout.la @LIBGEN_LIBS@
-else
-dot_LDADD = \
-	$(top_builddir)/lib/common/libcommon.la \
-        $(top_builddir)/lib/gvc/libgvc.la \
-        $(top_builddir)/plugin/cairo/libgvplugin_cairo.la \
-        $(top_builddir)/plugin/gd/libgvplugin_gd.la \
-        $(top_builddir)/plugin/text/libgvplugin_text.la \
-        $(top_builddir)/plugin/layout/libgvplugin_layout.la @CAIRO_LIBS@ @LIBGEN_LIBS@
-endif
+	$(top_builddir)/plugin/libplugins.la @LIBGEN_LIBS@
 
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); for i in $(linkedman); do rm -f $$i; $(LN_S) dot.1 $$i; done;)
