@@ -67,7 +67,7 @@ COORD area2(Ppoint_t a, Ppoint_t b, Ppoint_t c)
  * Returns 1, 0, -1 if the points abc are counterclockwise,
  * collinear, or clockwise.
  */
-static int wind(Ppoint_t a, Ppoint_t b, Ppoint_t c)
+int wind(Ppoint_t a, Ppoint_t b, Ppoint_t c)
 {
     COORD w;
 

@@ -24,7 +24,9 @@
 extern "C" {
 #endif
 
+#ifndef NOT
 #define NOT(x)	(!(x))
+#endif
 #ifndef FALSE
 #define FALSE	0
 #define TRUE	(NOT(FALSE))
@@ -32,6 +34,7 @@ extern "C" {
 
     typedef double COORD;
     extern COORD area2(Ppoint_t, Ppoint_t, Ppoint_t);
+    extern int wind(Ppoint_t a, Ppoint_t b, Ppoint_t c);
     extern COORD dist2(Ppoint_t, Ppoint_t);
     extern int intersect(Ppoint_t a, Ppoint_t b, Ppoint_t c, Ppoint_t d);
 
