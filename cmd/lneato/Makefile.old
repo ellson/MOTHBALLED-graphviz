@@ -1,7 +1,7 @@
 all : lneato
-
-include ../Config.mk
-include ../makearch/$(ARCH)
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 BIN_SCRIPTS = lneato
 
