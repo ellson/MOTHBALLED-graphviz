@@ -42,25 +42,6 @@ static void setYInvert(graph_t * g)
     }
 }
 
-static char *getoutputbuffer(char *str)
-{
-    static char *rv;
-    static int len;
-    int req;
-
-    req = MAX(2 * strlen(str) + 2, BUFSIZ);
-    if (req > len) {
-	rv = ALLOC(req, rv, char);
-	len = req;
-    }
-    return rv;
-}
-
-static char *canonical(char *str)
-{
-    return agstrcanon(str, getoutputbuffer(str));
-}
-
 static void writenodeandport(FILE * fp, node_t * node, char *port)
 {
     char *name;
@@ -68,9 +49,9 @@ static void writenodeandport(FILE * fp, node_t * node, char *port)
 	name = strchr(node->name, ':') + 1;
     else
 	name = node->name;
-    fprintf(fp, "%s", canonical(name));	/* slimey i know */
+    fprintf(fp, "%s", agcanonical(name));	/* slimey i know */
     if (port && *port)
-	fprintf(fp, ":%s", canonical(port));
+	fprintf(fp, ":%s", agcanonical(port));
 }
 
 /* FIXME - there must be a proper way to get port info - these are 
@@ -97,14 +78,14 @@ static void _write_plain(GVC_t * gvc, graph_t * g, FILE * f, boolean extend)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n))
 	    continue;
-	fprintf(f, "node %s ", canonical(n->name));
+	fprintf(f, "node %s ", agcanonical(n->name));
 	printptf(f, ND_coord_i(n));
 	if (ND_label(n)->html)   /* if html, get original text */
 	    lbl = agxget(n, N_label->index);
 	else
 	    lbl = ND_label(n)->text;
 	if (lbl)
-	    lbl = canonical(lbl);
+	    lbl = agcanonical(lbl);
 	else
 	    lbl = "\"\"";
 	fprintf(f, " %.3f %.3f %s %s %s %s %s\n",
@@ -139,7 +120,7 @@ static void _write_plain(GVC_t * gvc, graph_t * g, FILE * f, boolean extend)
 		}
 	    }
 	    if (ED_label(e)) {
-		fprintf(f, " %s", canonical(ED_label(e)->text));
+		fprintf(f, " %s", agcanonical(ED_label(e)->text));
 		printptf(f, ED_label(e)->p);
 	    }
 	    fprintf(f, " %s %s\n", late_nnstring(e, E_style, "solid"),

@@ -20,6 +20,7 @@
 #include "aghdr.h"
 
 #define EMPTY(s)		((s == 0) || (s)[0] == '\0')
+#define MAX(a,b)     ((a)>(b)?(a):(b))
 
 typedef void iochan_t;
 
@@ -42,8 +43,10 @@ static void indent(Agraph_t * g, iochan_t * ofile)
 
 /* _agcanonstr:
  * Canonicalize ordinary strings. 
+ * Assumes buf is large enough to hold output.
  */
-char *_agcanonstr(char *arg, char *buf)
+static char*
+_agcanonstr(char *arg, char *buf)
 {
     char *s, *p;
     unsigned char uc;
@@ -115,8 +118,10 @@ static char *agcanonhtmlstr(char *arg, char *buf)
 /*
  * canonicalize a string for printing.
  * must agree with strings in scan.l
+ * Unsafe if buffer is not large enough.
  */
-char *agcanonstr(char *arg, char *buf)
+char*
+agcanonstr(char *arg, char *buf)
 {
     if (aghtmlstr(arg))
 	return agcanonhtmlstr(arg, buf);
@@ -124,26 +129,40 @@ char *agcanonstr(char *arg, char *buf)
 	return _agcanonstr(arg, buf);
 }
 
+static char *getoutputbuffer(char *str)
+{
+    static char *rv;
+    static int len;
+    int req;
+
+    req = MAX(2 * strlen(str) + 2, BUFSIZ);
+    if (req > len) {
+	if (rv)
+	    rv = realloc(rv, req);
+	else
+	    rv = malloc(req);
+	len = req;
+    }
+    return rv;
+}
+
+/*
+ * canonicalize a string for printing.
+ * must agree with strings in scan.l
+ */
+char*
+agcanonStr(char *str)
+{
+    return agcanonstr(str, getoutputbuffer(str));
+}
+
 static void _write_canonstr(Agraph_t * g, iochan_t * ofile, char *str, int chk)
 {
-    static char *buf;
-    static long bufsiz;
-    char *p;
-    long len;
-
-    len = strlen(str) + 10;
-    if (len > bufsiz) {
-	bufsiz = len;
-	if (buf == NIL(char *))
-	     buf = malloc((unsigned) bufsiz);
-	else
-	    buf = realloc(buf, (unsigned) bufsiz);
-    }
     if (chk)
-	p = agcanonstr(str, buf);
+	str = agcanonStr(str);
     else
-	p = _agcanonstr(str, buf);
-    ioput(g, ofile, p);
+	str = _agcanonstr(str, getoutputbuffer(str));
+    ioput(g, ofile, str);
 }
 
 static void write_canonstr(Agraph_t * g, iochan_t * ofile, char *str)

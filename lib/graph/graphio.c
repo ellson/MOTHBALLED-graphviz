@@ -95,7 +95,8 @@ int agerrors(void)
 /* _agstrcanon:
  * Canonicalize an ordinary string if necessary.
  */
-char* _agstrcanon (char* arg, char* buf)
+static char* 
+_agstrcanon (char* arg, char* buf)
 {
     char *s = arg;
     unsigned char uc;
@@ -144,6 +145,7 @@ char* _agstrcanon (char* arg, char* buf)
  * canonicalize a string for printing.
  * changes to the semantics of this function
  * also involve the string scanner in lexer.c
+ * Unsafe if buf is not large enough.
  */
 char *agstrcanon(char *arg, char *buf)
 {
@@ -161,6 +163,7 @@ char *agstrcanon(char *arg, char *buf)
     else
 	return (_agstrcanon(arg, buf));
 }
+
 
 static void tabover(FILE * fp, int tab)
 {
@@ -185,7 +188,11 @@ static char *getoutputbuffer(char *str)
     return rv;
 }
 
-static char *canonical(char *str)
+/* agcanonical:
+ * Safe version of agstrcanon.
+ */
+char*
+agcanonical(char *str)
 {
     return agstrcanon(str, getoutputbuffer(str));
 }
@@ -202,7 +209,7 @@ static void write_dict(Agdict_t * dict, FILE * fp)
 		fprintf(fp, "\t%s [", dict->name);
 	    else
 		fprintf(fp, ", ");
-	    fprintf(fp, "%s=%s", a->name, canonical(a->value));
+	    fprintf(fp, "%s=%s", a->name, agcanonical(a->value));
 	}
     }
     if (cnt > 0)
@@ -234,8 +241,8 @@ static void write_diffattr(FILE * fp, int indent, void *obj, void *par,
 		fprintf(fp, ",\n");
 		tabover(fp, indent + 1);
 	    }
-	    fprintf(fp, "%s=", canonical(a->name));
-	    fprintf(fp, "%s", canonical(p));
+	    fprintf(fp, "%s=", agcanonical(a->name));
+	    fprintf(fp, "%s", agcanonical(p));
 	}
     }
     if (cnt > 0)
@@ -245,8 +252,8 @@ static void write_diffattr(FILE * fp, int indent, void *obj, void *par,
 static void writeattr(FILE * fp, int *npp, char *name, char *val)
 {
     fprintf(fp, ++(*npp) > 1 ? ", " : " [");
-    fprintf(fp, "%s=", canonical(name));
-    fprintf(fp, "%s", canonical(val));
+    fprintf(fp, "%s=", agcanonical(name));
+    fprintf(fp, "%s", agcanonical(val));
 }
 
 void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
@@ -270,7 +277,7 @@ void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
 	    if (strcmp(defval, myval)) {
 		if (didwrite == FALSE) {
 		    tabover(fp, indent);
-		    fprintf(fp, "%s", canonical(n->name));
+		    fprintf(fp, "%s", agcanonical(n->name));
 		    didwrite = TRUE;
 		}
 		writeattr(fp, &nprint, a->name, myval);
@@ -283,7 +290,7 @@ void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
     }
     if ((agfstout(g, n) == NULL) && (agfstin(g, n) == NULL)) {
 	tabover(fp, indent);
-	fprintf(fp, "%s;\n", canonical(n->name));
+	fprintf(fp, "%s;\n", agcanonical(n->name));
     }
 }
 
@@ -292,7 +299,7 @@ void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
 static void writenodeandport(FILE * fp, char *node, char *port)
 {
     char *ss;
-    fprintf(fp, "%s", canonical(node));	/* slimey i know */
+    fprintf(fp, "%s", agcanonical(node));	/* slimey i know */
     if (port && *port) {
 	if (aghtmlstr(port)) {
 	    fprintf(fp, ":%s", agstrcanon(port, getoutputbuffer(port)));
@@ -375,7 +382,7 @@ write_subg(Agraph_t * g, FILE * fp, Agraph_t * par, int indent,
 	tabover(fp, indent++);
 	if (dtsearch(state->subgleft, g->meta_node)) {
 	    if (strncmp(g->name, "_anonymous", 10))
-		fprintf(fp, "subgraph %s {\n", canonical(g->name));
+		fprintf(fp, "subgraph %s {\n", agcanonical(g->name));
 	    else
 		fprintf(fp, "{\n");	/* no name printed for anonymous subg */
 	    write_diffattr(fp, indent, g, par, g->univ->globattr);
@@ -394,7 +401,7 @@ write_subg(Agraph_t * g, FILE * fp, Agraph_t * par, int indent,
 	    write_diffattr(fp, indent, g->proto->e, pe, g->univ->edgeattr);
 	    dtdelete(state->subgleft, g->meta_node);
 	} else {
-	    fprintf(fp, "subgraph %s;\n", canonical(g->name));
+	    fprintf(fp, "subgraph %s;\n", agcanonical(g->name));
 	    return;
 	}
     } else
@@ -494,7 +501,7 @@ int agwrite(Agraph_t * g, FILE * fp)
     t0 = (AG_IS_STRICT(g)) ? "strict " : "";
     t1 = (AG_IS_DIRECTED(g)) ? "digraph" : "graph";
     if (strncmp(g->name, "_anonymous", 10))
-	fprintf(fp, "%s%s %s {\n", t0, t1, canonical(g->name));
+	fprintf(fp, "%s%s %s {\n", t0, t1, agcanonical(g->name));
     else
 	fprintf(fp, "%s%s {\n", t0, t1);
 

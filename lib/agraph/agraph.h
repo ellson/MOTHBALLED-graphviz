@@ -296,6 +296,7 @@ for the name. */
     extern char *agstrbind(Agraph_t * g, char *);
     extern int agstrfree(Agraph_t *, char *);
     extern char *agcanonstr(char *, char *);
+    extern char *agcanonStr(char*);
 
 /* definitions for dynamic string attributes */
     struct Agattr_s {		/* dynamic string attributes */

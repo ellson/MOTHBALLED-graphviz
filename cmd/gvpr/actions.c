@@ -647,17 +647,11 @@ int compare(Agobj_t * l, Agobj_t * r)
  */
 char *canon(Expr_t * pgm, char *arg)
 {
-    int sz;
-    char *buf;
     char *p;
 
-    sz = strlen(arg) + 10;	/* upper bound for bytes needed */
-    buf = exstralloc(pgm, 0, sz);
-    p = agcanonstr(arg, buf);
-    if (p == arg)
-	exstrfree(pgm, buf);
-    else
-	p = exstralloc(pgm, buf, strlen(buf) + 1);
+    p = agcanonStr(arg);
+    if (p != arg)
+	p = exstring(pgm, p);
 
     return p;
 }
