@@ -57,6 +57,59 @@ dumpNS (graph_t * g)
 }
 #endif
 
+/* connectGraph:
+ * When source and/or sink nodes are defined, it is possible that
+ * after the auxiliary edges are added, the graph may still have 2 or
+ * 3 components. To fix this, we put trivial constraints connecting the
+ * first items of each rank.
+ */
+static void
+connectGraph (graph_t* g)
+{
+    int i, j, r, found;
+    node_t* tp;
+    node_t* hp;
+    node_t* sn;
+    edge_t* e;
+    rank_t* rp;
+
+    for (r = GD_minrank(g); r < GD_maxrank(g); r++) {
+	rp = GD_rank(g)+r;
+	found =FALSE;
+        tp = NULL;
+	for (i = 0; i < rp->n; i++) {
+	    tp = rp->v[i];
+	    if (ND_save_out(tp).list) {
+        	for (j = 0; (e = ND_save_out(tp).list[j]); j++) {
+		    if ((ND_rank(e->head) > r) || (ND_rank(e->tail) > r)) {
+			found = TRUE;
+			break;
+		    }
+        	}
+		if (found) break;
+	    }
+	    if (ND_save_in(tp).list) {
+        	for (j = 0; (e = ND_save_in(tp).list[j]); j++) {
+		    if ((ND_rank(e->tail) > r) || (ND_rank(e->head) > r)) {
+			found = TRUE;
+			break;
+		    }
+        	}
+		if (found) break;
+	    }
+	}
+	if (found || !tp) continue;
+	tp = rp->v[0];
+	hp = (rp+1)->v[0];
+	assert (hp);
+	sn = virtual_node(g);
+	ND_node_type(sn) = SLACKNODE;
+	make_aux_edge(sn, tp, 0, 0);
+	make_aux_edge(sn, hp, 0, 0);
+	ND_rank(sn) = MIN(ND_rank(tp), ND_rank(hp));
+    }
+}
+
 void dot_position(graph_t * g)
 {
     if (GD_nlist(g) == NULL)
@@ -69,7 +122,10 @@ void dot_position(graph_t * g)
     if (flat_edges(g))
 	set_ycoords(g);
     create_aux_edges(g);
-    rank(g, 2, nsiter2(g));	/* LR balance == 2 */
+    if (rank(g, 2, nsiter2(g))) { /* LR balance == 2 */
+	connectGraph (g);
+	assert(rank(g, 2, nsiter2(g)) == 0);
+    }
     set_xcoords(g);
     set_aspect(g);
     remove_aux_edges(g);	/* must come after set_aspect since we now
@@ -87,7 +143,6 @@ static int nsiter2(graph_t * g)
     return maxiter;
 }
 
-static int searchcnt;
 static int go(node_t * u, node_t * v)
 {
     int i;
@@ -104,8 +159,6 @@ static int go(node_t * u, node_t * v)
 
 static int canreach(node_t * u, node_t * v)
 {
-    if (++searchcnt == 0)
-	searchcnt = 1;
     return go(u, v);
 }
 
@@ -139,20 +192,33 @@ static void allocate_aux_edges(graph_t * g)
     }
 }
 
-static void make_LR_constraints(graph_t * g)
+/* make_LR_constraints:
+ */
+static void 
+make_LR_constraints(graph_t * g)
 {
     int i, j, k;
     int sw;			/* self width */
     int m0, m1;
-    int width;
-    edge_t *e, *e0, *e1, *f, *ff;
+    int width, sep[2];
+    int nodesep;      /* separation between nodes on same rank */
+    edge_t *e, *e0, *e1, *ff;
     node_t *u, *v, *t0, *h0;
     rank_t *rank = GD_rank(g);
 
+    /* Use smaller separation on odd ranks if g has edge labels */
+    if (GD_has_labels(g) & EDGE_LABEL) {
+	sep[0] = GD_nodesep(g);
+	sep[1] = 5;
+    }
+    else {
+	sep[1] = sep[0] = GD_nodesep(g);
+    }
     /* make edges to constrain left-to-right ordering */
     for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
 	int last;
 	last = rank[i].v[0]->u.rank = 0;
+	nodesep = sep[i & 1];
 	for (j = 0; j < rank[i].n; j++) {
 	    u = rank[i].v[j];
 	    ND_mval(u) = ND_rw_i(u);	/* keep it somewhere safe */
@@ -175,15 +241,36 @@ static void make_LR_constraints(graph_t * g)
 	    }
 	    v = rank[i].v[j + 1];
 	    if (v) {
-		width = ND_rw_i(u) + ND_lw_i(v) + GD_nodesep(g);
+		width = ND_rw_i(u) + ND_lw_i(v) + nodesep;
 		e0 = make_aux_edge(u, v, width, 0);
 		last = (ND_rank(v) = last + width);
+	    }
+
+	    /* constraints from labels of flat edges on previous rank */
+	    if ((e = (edge_t*)ND_alg(u))) {
+		e0 = ND_save_out(u).list[0];
+		e1 = ND_save_out(u).list[1];
+		if (ND_order(e0->head) > ND_order(e1->head)) {
+		    ff = e0;
+		    e0 = e1;
+		    e1 = ff;
+		}
+		m0 = (ED_minlen(e) * GD_nodesep(g)) / 2;
+		m1 = m0 + ND_rw_i(e0->head) + ND_lw_i(e0->tail);
+		/* these guards are needed because the flat edges
+		 * work very poorly with cluster layout */
+		if (canreach(e0->tail, e0->head) == FALSE)
+		    make_aux_edge(e0->head, e0->tail, m1,
+			ED_weight(e));
+		m1 = m0 + ND_rw_i(e1->tail) + ND_lw_i(e1->head);
+		if (canreach(e1->head, e1->tail) == FALSE)
+		    make_aux_edge(e1->tail, e1->head, m1,
+			ED_weight(e));
 	    }
 
 	    /* position flat edge endpoints */
 	    for (k = 0; k < ND_flat_out(u).size; k++) {
 		e = ND_flat_out(u).list[k];
-		v = e->head;
 		if (ND_order(e->tail) < ND_order(e->head)) {
 		    t0 = e->tail;
 		    h0 = e->head;
@@ -192,40 +279,26 @@ static void make_LR_constraints(graph_t * g)
 		    h0 = e->tail;
 		}
 
-		/* case 1: flat edge with a label */
-		if ((f = ED_to_virt(e))) {
-		    while (ED_to_virt(f))
-			f = ED_to_virt(f);
-		    e0 = ND_save_out(f->tail).list[0];
-		    e1 = ND_save_out(f->tail).list[1];
-		    if (ND_order(e0->head) > ND_order(e1->head)) {
-			ff = e0;
-			e0 = e1;
-			e1 = ff;
-		    }
-		    m0 = (ED_minlen(e) * GD_nodesep(g)) / 2;
-		    m1 = m0 + ND_rw_i(e0->head) + ND_lw_i(e0->tail);
-		    /* these guards are needed because the flat edges
-		       work very poorly with cluster layout */
-		    if (canreach(e0->tail, e0->head) == FALSE)
-			make_aux_edge(e0->head, e0->tail, m1,
-				      ED_weight(e));
-		    m1 = m0 + ND_rw_i(e1->tail) + ND_lw_i(e1->head);
-		    if (canreach(e1->head, e1->tail) == FALSE)
-			make_aux_edge(e1->tail, e1->head, m1,
-				      ED_weight(e));
-		    continue;
-		}
+		width = ND_rw_i(t0) + ND_lw_i(h0);
+		m0 = ED_minlen(e) * GD_nodesep(g) + width;
 
-		m0 = ED_minlen(e) * GD_nodesep(g) + ND_rw_i(t0) +
-		    ND_lw_i(h0);
-
-		if ((e0 = find_fast_edge(t0, h0)))
-		    /* case 2: flat edge between neighbors */
+		if ((e0 = find_fast_edge(t0, h0))) {
+		    /* flat edge between adjacent neighbors 
+                     * ED_dist contains the largest label width.
+                     */
+		    m0 = MAX(m0, width + GD_nodesep(g) + ROUND(ED_dist(e)));
 		    ED_minlen(e0) = MAX(ED_minlen(e0), m0);
-		else
-		    /* case 3: flat edge between non-neighbors */
+		}
+		else if (!ED_label(e)) {
+		    /* unlabeled flat edge between non-neighbors 
+		     * ED_minlen(e) is max of ED_minlen of all equivalent 
+                     * edges.
+                     */
 		    make_aux_edge(t0, h0, m0, ED_weight(e));
+		}
+		/* labeled flat edges between non-neighbors have already
+                 * been constrained by the label above. 
+                 */ 
 	    }
 	}
     }
@@ -472,7 +545,11 @@ static void remove_aux_edges(graph_t * g)
     GD_nlist(g)->u.prev = NULL;
 }
 
-static void set_xcoords(graph_t * g)
+/* set_xcoords:
+ * Set x coords of nodes.
+ */
+static void 
+set_xcoords(graph_t * g)
 {
     int i, j;
     node_t *v;

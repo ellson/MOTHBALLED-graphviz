@@ -129,7 +129,14 @@ static int flat_limits(graph_t * g, edge_t * e)
     return pos;
 }
 
-static void flat_node(edge_t * e)
+/* flat_node:
+ * Create virtual node representing edge label between
+ * actual ends of edge e. 
+ * This node is characterized by being virtual and having a non-NULL
+ * ND_alg pointing to e.
+ */
+static void 
+flat_node(edge_t * e)
 {
     int r, place, ypos, h2;
     graph_t *g;
@@ -145,10 +152,10 @@ static void flat_node(edge_t * e)
     place = flat_limits(g, e);
     /* grab ypos = LL.y of label box before make_vn_slot() */
     if ((n = GD_rank(g)[r - 1].v[0]))
-	ypos = ND_coord_i(n).y - GD_rank(g)[r - 1].ht2;
+	ypos = ND_coord_i(n).y - GD_rank(g)[r - 1].ht1;
     else {
 	n = GD_rank(g)[r].v[0];
-	ypos = ND_coord_i(n).y + GD_rank(g)[r].ht1 + GD_ranksep(g);
+	ypos = ND_coord_i(n).y + GD_rank(g)[r].ht2 + GD_ranksep(g);
     }
     vn = make_vn_slot(g, r - 1, place);
     dimen = ED_label(e)->dimen;
@@ -175,6 +182,8 @@ static void flat_node(edge_t * e)
 	GD_rank(g)[r - 1].ht1 = h2;
     if (GD_rank(g)[r - 1].ht2 < h2)
 	GD_rank(g)[r - 1].ht2 = h2;
+    ND_alg(vn) = e;
+    ED_alg(e) = vn;
 }
 
 static void abomination(graph_t * g)
@@ -197,32 +206,120 @@ static void abomination(graph_t * g)
     GD_minrank(g)--;
 }
 
-int flat_edges(graph_t * g)
+/* flatAdjacent:
+ * Return true if tn and hn are adjacent. 
+ * Assume e is flat.
+ */
+static int
+flatAdjacent (edge_t* e)
+{
+    node_t* tn = e->tail;
+    node_t* hn = e->head;
+    int i, lo, hi;
+    node_t* n;
+    rank_t *rank;
+
+    if (ND_order(tn) < ND_order(hn)) {
+	lo = ND_order(tn);
+	hi = ND_order(hn);
+    }
+    else {
+	lo = ND_order(hn);
+	hi = ND_order(tn);
+    }
+    rank = &(GD_rank(tn->graph)[ND_rank(tn)]);
+    for (i = lo + 1; i < hi; i++) {
+	n = rank->v[i];
+	if ((ND_node_type(n) == VIRTUAL && ND_label(n)) || 
+             ND_node_type(n) == NORMAL)
+	    break;
+    }
+    return (i == hi);
+}
+ 
+/* flat_edges:
+ * Process flat edges.
+ * First, mark flat edges as having adjacent endpoints or not.
+ *
+ * Second, if there are edge labels, nodes are placed on ranks 0,2,4,...
+ * If we have a labeled flat edge on rank 0, add a rank -1.
+ *
+ * Finally, create label information. Add a virtual label node in the 
+ * previous rank for each labeled, non-adjacent flat edge. If this is 
+ * done for any edge, return true, so that main code will reset y coords.
+ * For labeled adjacent flat edges, store label width in representative edge.
+ * FIX: We should take into account any extra height needed for the latter
+ * labels.
+ * 
+ * We leave equivalent flat edges in ND_other. Their ED_virt field should
+ * still point to the class representative.
+ */
+int 
+flat_edges(graph_t * g)
 {
     int i, j, reset = FALSE;
     node_t *n;
     edge_t *e;
+    int found = FALSE;
+
+    for (n = GD_nlist(g); n; n = ND_next(n)) {
+	if (!ND_flat_out(n).list) continue; 
+	for (j = 0; (e = ND_flat_out(n).list[j]); j++) {
+	    if (flatAdjacent (e)) ED_adjacent(e) = 1;
+	}
+    }
 
     if ((GD_rank(g)[0].flat) || (GD_n_cluster(g) > 0)) {
 	for (i = 0; (n = GD_rank(g)[0].v[i]); i++) {
 	    for (j = 0; (e = ND_flat_in(n).list[j]); j++) {
-		if (ED_label(e)) {
+		if ((ED_label(e)) && !ED_adjacent(e)) {
 		    abomination(g);
+		    found = TRUE;
 		    break;
 		}
 	    }
-	    if (e)
+	    if (found)
 		break;
 	}
     }
 
     rec_save_vlists(g);
     for (n = GD_nlist(g); n; n = ND_next(n)) {
-	if (ND_flat_out(n).list)
+          /* if n is the tail of any flat edge, one will be in flat_out */
+	if (ND_flat_out(n).list) {
 	    for (i = 0; (e = ND_flat_out(n).list[i]); i++) {
-		reset = TRUE;
-		flat_node(e);
+		if (ED_label(e)) {
+		    if (ED_adjacent(e)) {
+			if (GD_flip(g)) ED_dist(e) = ED_label(e)->dimen.y;
+			else ED_dist(e) = ED_label(e)->dimen.x; 
+		    }
+		    else {
+			reset = TRUE;
+			flat_node(e);
+		    }
+		}
 	    }
+	    for (j = 0; j < ND_other(n).size; j++) {
+		edge_t* le;
+		e = ND_other(n).list[j];
+		if (ND_rank(e->tail) != ND_rank(e->head)) continue;
+		le = e;
+		while (ED_to_virt(le)) le = ED_to_virt(le);
+		ED_adjacent(e) = ED_adjacent(le); 
+		if (ED_label(e)) {
+		    if (ED_adjacent(e)) {
+			double lw;
+			if (GD_flip(g)) lw = ED_label(e)->dimen.y;
+			else lw = ED_label(e)->dimen.x; 
+			ED_dist(le) = MAX(lw,ED_dist(le));
+		    }
+		    else {
+			reset = TRUE;
+			flat_node(e);
+		    }
+		}
+	    }
+	}
     }
     if (reset)
 	rec_reset_vlists(g);
