@@ -888,11 +888,6 @@ item: Install File
   Flags=0000000010000010
 end
 item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\gvplugin_display.h
-  Destination=%MAINDIR%\Graphviz\include\gvplugin_display.h
-  Flags=0000000010000010
-end
-item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\include\gvplugin.h
   Destination=%MAINDIR%\Graphviz\include\gvplugin.h
   Flags=0000000010000010

@@ -251,7 +251,6 @@ function Install
 	do
 	  finstall $d.lib
 	done
-	exit $WISEFLAG
 }
 
 function Package 
@@ -316,7 +315,6 @@ function Package
         finstall gvc.h 
         finstall gvcint.h 
         finstall gvplugin.h 
-        finstall gvplugin_display.h 
         finstall gvplugin_layout.h 
         finstall gvplugin_render.h 
         finstall gvplugin_text.h 
