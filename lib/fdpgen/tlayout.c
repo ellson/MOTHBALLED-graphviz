@@ -239,7 +239,6 @@ static int fdp_setSeed(seedMode * sm, char *arg)
 
 /* fdp_initParams:
  * Initialize parameters based on root graph attributes.
- * Return K value.
  */
 void fdp_initParams(graph_t * g)
 {
