@@ -206,9 +206,10 @@ EXTRA_DIST = gv.i \
 	gv.pm \
 	gv.php php_gv.h \
 	gv.py \
-	gv.ml gv.mli \
 	demo/*
-	
+
+#	gv.ml gv.mli \
+#	
 
 CLEANFILES = csharp/SWIG*.cs csharp/gv*.cs csharp/*.dot csharp/*.png csharp/*.so \
 	java/*.dot java/*.png java/SWIG*.java java/gv*.java java/*.class java/*.so \
