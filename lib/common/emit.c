@@ -401,8 +401,8 @@ static void setup_page(GVC_t * gvc, graph_t * g)
 
     /* establish pageOffset to be applied, in graph coordinates */
     if (job->rotation == 0) {
-	job->pageOffset.x =  (job->pagesArrayElem.x)     * job->pageSize.x;
-	job->pageOffset.y =  (job->pagesArrayElem.y)     * job->pageSize.y;
+	job->pageOffset.x =  -(job->pagesArrayElem.x)    * job->pageSize.x;
+	job->pageOffset.y =  -(job->pagesArrayElem.y)    * job->pageSize.y;
     }
     else {
 	job->pageOffset.x =  (job->pagesArrayElem.y + 1) * job->pageSize.y;
