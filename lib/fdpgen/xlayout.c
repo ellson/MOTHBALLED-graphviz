@@ -22,6 +22,11 @@
  * sizes.
  */
 
+#ifdef FIX
+Allow sep to be absolute additive (margin of n points)
+Increase less between tries
+#endif
+
 /* uses PRIVATE interface */
 #define FDP_PRIVATE 1
 
@@ -33,21 +38,14 @@
 /* #define MS */
 /* Use alternate force function */
 /* #define ALT      */
+/* Add repulsive force even if nodes don't overlap */
+/* #define ORIG      */
 #define BOX	/* Use bbox to determine overlap, else use circles */
-/* #define OFF 0.0 */
-#define OFF PS2INCH(8)
 
 #define DFLT_overlap   "scale"    /* default overlap value */
 
-#define WD2(n) (ND_width(n)/2.0 + OFF)
-#define HT2(n) (ND_height(n)/2.0 + OFF)
-
-static double RAD(Agnode_t * n)
-{
-    double w = ND_width(n) / 2.0;
-    double h = ND_height(n) / 2.0;
-    return sqrt(w * w + h * h);
-}
+#define WD2(n) ((ND_width(n))*X_fact)
+#define HT2(n) ((ND_height(n))*X_fact)
 
 static xparams xParams = {
     60,				/* numIters */
@@ -57,11 +55,21 @@ static xparams xParams = {
     0				/* loopcnt */
 };
 static double K2;
+static double X_fact;
+static double X_nonov;
+static double X_ov;
 
-/* init_params:
+static double RAD(Agnode_t * n)
+{
+    double w = WD2(n);
+    double h = HT2(n);
+    return sqrt(w * w + h * h);
+}
+
+/* xinit_params:
  * Initialize local parameters
  */
-static void init_params(graph_t* g, int n, xparams * xpms)
+static void xinit_params(graph_t* g, int n, xparams * xpms)
 {
     xParams.K = xpms->K;
     xParams.numIters = xpms->numIters;
@@ -117,8 +125,8 @@ static double dist(pointf p, pointf q)
  */
 static void bBox(node_t * p, pointf * ll, pointf * ur)
 {
-    double w2 = (ND_width(p)) / 2;
-    double h2 = (ND_height(p)) / 2;
+    double w2 = WD2(p);
+    double h2 = HT2(p);
 
     ur->x = ND_pos(p)[0] + w2;
     ur->y = ND_pos(p)[1] + h2;
@@ -200,6 +208,7 @@ static int overlap(node_t * p, node_t * q)
 {
 #if defined(BOX)
     double xdelta, ydelta;
+    int    ret;
 
     xdelta = ND_pos(q)[0] - ND_pos(p)[0];
     if (xdelta < 0)
@@ -207,8 +216,8 @@ static int overlap(node_t * p, node_t * q)
     ydelta = ND_pos(q)[1] - ND_pos(p)[1];
     if (ydelta < 0)
 	ydelta = -ydelta;
-    return ((xdelta <= (WD2(p) + WD2(q)))
-	    && (ydelta <= (HT2(p) + HT2(q))));
+    ret = ((xdelta <= (WD2(p) + WD2(q))) && (ydelta <= (HT2(p) + HT2(q))));
+    return ret;
 #else
     double dist2, xdelta, ydelta;
     double din;
@@ -247,7 +256,7 @@ doRep(node_t * p, node_t * q, double xdelta, double ydelta, double dist2)
     int ov;
     double force;
     /* double dout, din; */
-#if defined(MS) || defined(ALT)
+#if defined(DEBUG) || defined(MS) || defined(ALT)
     double dist;
 #endif
     /* double factor; */
@@ -277,10 +286,15 @@ doRep(node_t * p, node_t * q, double xdelta, double ydelta, double dist2)
 	    factor = 0.0;
     }
     force *= factor;
-#else
+#elif defined(ORIG)
     force = K2 / dist2;
     if ((ov = overlap(p, q)))
 	force *= X_C;
+#else
+    if ((ov = overlap(p, q)))
+	force = X_ov / dist2;
+    else
+	force = X_nonov / dist2;
 #endif
 #ifdef DEBUG
     if (Verbose == 4) {
@@ -430,8 +444,11 @@ static int adjust(Agraph_t * g, double temp)
  * g may have ports. At present, we do not use ports in the layout
  * at this stage.
  * Returns non-zero if overlaps still exist.
+ * TODO (possible):
+ *  Allow X_T0 independent of T_TO or percentage of, so the cooling would
+ * be piecewise linear. This would allow longer, cooler expansion.
+ *  In tries > 1, increase X_T0 and/or lengthen cooling
  */
-
 static int x_layout(graph_t * g, xparams * pxpms, int tries)
 {
     int i;
@@ -439,10 +456,14 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
     int ov;
     double temp;
     int nnodes = agnnodes(g);
+    int nedges = agnedges(g);
     double K;
     xparams xpms;
+    double marg;
 
-    ov = cntOverlaps(g);;
+    marg = expFactor (g);
+    X_fact = marg*0.5;
+    ov = cntOverlaps(g);
     if (ov == 0)
 	return 0;
 
@@ -450,7 +471,9 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
     xpms = *pxpms;
     K = xpms.K;
     while (ov && (try < tries)) {
-
+	xinit_params(g, nnodes, &xpms);
+	X_ov = X_C * K2;
+	X_nonov = (nedges*X_ov*2.0)/(nnodes*(nnodes-1));
 #ifdef DEBUG
 	if (Verbose) {
 	    prIndent();
@@ -459,7 +482,6 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
 	}
 #endif
 
-	init_params(g, nnodes, &xpms);
 	for (i = 0; i < X_loopcnt; i++) {
 	    temp = cool(i);
 	    if (temp <= 0.0)
