@@ -116,7 +116,7 @@ else
     case "${CC}" in
 	*icc* )
 	    # -Wall causes relocation errors with icc
-	    CFLAGS="${CFLAGS} -wd269"
+	    CFLAGS="${CFLAGS} -wd269 -i_dynamic"
 	    # icc doesn't like -pipe
 	    CFLAGS=`echo ${CFLAGS} | sed 's/ -pipe//'`
 	    # icc doesn't like -ffast-math
