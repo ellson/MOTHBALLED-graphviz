@@ -649,7 +649,12 @@ static void updateGraph(Agraph_t * graph)
     }
 }
 
-static void normalize(graph_t * g)
+/* normalize:
+ * If normalize is set, move first node to origin, then
+ * rotate graph so that first edge is horizontal.
+ * FIX: Generalize to allow rotation determined by graph shape.
+ */
+void normalize(graph_t * g)
 {
     node_t *v;
     edge_t *e;
@@ -723,7 +728,7 @@ static adjust_data *getAdjustMode(char *s)
 	return adjustMode + 1;
 }
 
-void adjustNodes(graph_t * G)
+void removeOverlap(graph_t * G)
 {
     /* int          userWindow = 0; */
     char *flag;
@@ -736,7 +741,6 @@ void adjustNodes(graph_t * G)
 
     if (agnnodes(G) < 2)
 	return;
-    normalize(G);
     flag = agget(G, "overlap");
     if (flag == NULL)
 	return;
@@ -800,3 +804,12 @@ void adjustNodes(graph_t * G)
 /* fprintf (stderr, "old scale %.4f sec\n", elapsed_sec()); */
 
 }
+
+void adjustNodes(graph_t * G)
+{
+    if (agnnodes(G) < 2)
+	return;
+    normalize(G);
+    removeOverlap (G);
+}
+

@@ -24,6 +24,8 @@ extern "C" {
 #endif
 
     extern void adjustNodes(graph_t * G);
+    extern void normalize(graph_t * g);
+    extern void removeOverlap(graph_t * G);
 
 #ifdef __cplusplus
 }
