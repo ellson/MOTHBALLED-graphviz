@@ -2,14 +2,15 @@
 #   Written by Emden R. Gansner (1 Mar 2001)
 ALL = gvpr
 all : $(ALL)
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+LOC_LIB=$(ROOT)/lib
+LOC_INCDIR=$(LOC_LIB)/include
+LOC_LIBDIR=$(LOC_LIB)/lib
 
-LOC_INCDIR=../include
-LOC_LIBDIR=../lib
-
-INCS = -I. -I../.. -I$(LOC_INCDIR) -I../../agraph -I../../cdt
+INCS = -I. -I$(ROOT) -I$(LOC_INCDIR) -I$(LOC_LIB)/agraph -I$(LOC_LIB)/cdt
 
 DEFINES = -DHAVE_CONFIG_H
 
@@ -23,7 +24,7 @@ gdefs.h : gprdata mkdefs
 mkdefs : mkdefs.o
 	$(CC) $(LDFLAGS) mkdefs.o -o $@
 
-GLIBS = -L../../agraph -L../../cdt -lagraph -lcdt
+GLIBS = -L$(LOC_LIB)/agraph -L$(LOC_LIB)/cdt -lagraph -lcdt
 LIBS = -L$(LOC_LIBDIR) -lexpr -last -lvmalloc -lsfio -lingraphs $(GLIBS) -lm
 
 gvpr : $(OBJS) $(LOC_LIBDIR)/libexpr.a
