@@ -1,11 +1,13 @@
+/* $Id$ $Revision$ */
+/* vim:set shiftwidth=4 ts=8: */
 /*
-    This software may only be used by you under license from AT&T Corp.
-    ("AT&T").  A copy of AT&T's Source Code Agreement is available at
-    AT&T's Internet website having the URL:
-    <http://www.research.att.com/sw/tools/graphviz/license/source.html>
-    If you received this software without first entering into a license
-    with AT&T, you have an infringing copy of this software and cannot use
-    it without violating AT&T's intellectual property rights.
+ This software is part of the graphviz package
+ Copyright (c) 1995-2004 AT&T Corp.
+ Licensed under the Common Public License, Version 1.0 (the "License")
+ Any use, reproduction or distribution of this software constitutes
+ acceptance of the License.  A copy of the License is available at:
+     http://www.research.att.com/sw/license/cpl-1.0.html
+ (with md5 checksum 201a9e4ba08a96f5d9677315d8ce1463)
 */
 
 /* File - TrieFA.ins.c
@@ -18,13 +20,13 @@
 
 #ifdef UNDERLINE
 static long CharMask[28] = {
-	0x0000001,	0x0000000,	0x0000004,	0x0000008,	
-	0x0000010,	0x0000020,	0x0000040,	0x0000080,
-	0x0000100,	0x0000200,	0x0000400,	0x0000800,
-	0x0001000,	0x0002000,	0x0004000,	0x0008000,
-	0x0010000,	0x0020000,	0x0040000,	0x0080000,
-	0x0100000,	0x0200000,	0x0400000,	0x0800000,
-	0x1000000,	0x2000000,  0x4000000,  0x8000000,
+    0x0000001, 0x0000000, 0x0000004, 0x0000008,
+    0x0000010, 0x0000020, 0x0000040, 0x0000080,
+    0x0000100, 0x0000200, 0x0000400, 0x0000800,
+    0x0001000, 0x0002000, 0x0004000, 0x0008000,
+    0x0010000, 0x0020000, 0x0040000, 0x0080000,
+    0x0100000, 0x0200000, 0x0400000, 0x0800000,
+    0x1000000, 0x2000000, 0x4000000, 0x8000000,
 };
 
 #define IN_MASK_RANGE(C)	(islower(C) || ((C) == '_'))
@@ -32,13 +34,13 @@ static long CharMask[28] = {
 
 #else
 static long CharMask[26] = {
-	0x0000001,	0x0000002,	0x0000004,	0x0000008,	
-	0x0000010,	0x0000020,	0x0000040,	0x0000080,
-	0x0000100,	0x0000200,	0x0000400,	0x0000800,
-	0x0001000,	0x0002000,	0x0004000,	0x0008000,
-	0x0010000,	0x0020000,	0x0040000,	0x0080000,
-	0x0100000,	0x0200000,	0x0400000,	0x0800000,
-	0x1000000,	0x2000000						
+    0x0000001, 0x0000002, 0x0000004, 0x0000008,
+    0x0000010, 0x0000020, 0x0000040, 0x0000080,
+    0x0000100, 0x0000200, 0x0000400, 0x0000800,
+    0x0001000, 0x0002000, 0x0004000, 0x0008000,
+    0x0010000, 0x0020000, 0x0040000, 0x0080000,
+    0x0100000, 0x0200000, 0x0400000, 0x0800000,
+    0x1000000, 0x2000000
 };
 
 #define IN_MASK_RANGE(C)	islower(C)
@@ -46,7 +48,7 @@ static long CharMask[26] = {
 
 #endif
 
-static short		TFA_State;
+static short TFA_State;
 
 /* TFA_Init:
  *
@@ -78,7 +80,7 @@ static short		TFA_State;
 			TFA_State = -1;															\
 	}																				\
   TFA_done:;																		\
-} /* end of TFA_Advance. */
+}				/* end of TFA_Advance. */
 
 /* TFA_Definition:
  *
