@@ -7,11 +7,6 @@ htmldir = $(pkgdatadir)/doc/html
 
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
-        -I$(top_srcdir)/lib/dotgen \
-	-I$(top_srcdir)/lib/neatogen \
-	-I$(top_srcdir)/lib/twopigen \
-	-I$(top_srcdir)/lib/fdpgen \
-	-I$(top_srcdir)/lib/circogen \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/graph \

@@ -24,16 +24,6 @@
 #define USE_NON_CONST
 
 #include "tcldot.h"
-#include "tclhandle.h"
-#include "neatoprocs.h"
-#include "circle.h"
-#include "fdp.h"
-#include "circo.h"
-#include "gvc.h"
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
 
 char *Info[] = {
     "tcldot",			/* Program */
@@ -71,30 +61,12 @@ extern int Gdtclft_Init(Tcl_Interp *);
 static void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
 static tkgendata_t tkgendata;
 
-static void reset_layout(Agraph_t * sg)
+static void reset_layout(GVC_t *gvc, Agraph_t * sg)
 {
     Agraph_t *g = sg->root;
 
     if (GD_drawing(g)) {	/* only cleanup once between layouts */
-	switch (GD_drawing(g)->engine) {
-	case DOT:
-	    dot_cleanup(g);
-	    break;
-	case NEATO:
-	    neato_cleanup(g);
-	    break;
-	case TWOPI:
-	    twopi_cleanup(g);
-	    break;
-	case FDP:
-	    fdp_cleanup(g);
-	    break;
-	case CIRCULAR:
-	    circo_cleanup(g);
-	    break;
-	default:
-	    break;
-	}
+	gvlayout_cleanup(gvc, g);
 	GD_drawing(g) = NULL;
     }
 }
@@ -221,9 +193,7 @@ static int edgecmd(ClientData clientData, Tcl_Interp * interp,
     Agraph_t *g;
     Agedge_t **ep, *e;
     Agsym_t *a;
-#if 0				/* not used */
     GVC_t *gvc = (GVC_t *) clientData;
-#endif
 
     if (argc < 2) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"",
@@ -245,7 +215,7 @@ static int edgecmd(ClientData clientData, Tcl_Interp * interp,
 	tclhandleFreeIndex(edgeTblPtr, e->handle);
 	Tcl_DeleteCommand(interp, argv[0]);
 	agdelete(g, e);
-	reset_layout(g);
+	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'l')
@@ -332,7 +302,7 @@ static int edgecmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	    setedgeattributes(g->root, e, &argv[2], argc - 2);
 	}
-	reset_layout(g);
+	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 's') && (strncmp(argv[1], "showname", length) == 0)) {
@@ -432,7 +402,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	    tclhandleString(edgeTblPtr, interp->result, e->handle);
 	}
 	setedgeattributes(g->root, e, &argv[3], argc - 3);
-	reset_layout(g);
+	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'd') && (strncmp(argv[1], "delete", length) == 0)) {
@@ -440,7 +410,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	tclhandleFreeIndex(nodeTblPtr, n->handle);
 	Tcl_DeleteCommand(interp, argv[0]);
 	agdelete(g, n);
-	reset_layout(g);
+	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'f') && (strncmp(argv[1], "findedge", length) == 0)) {
@@ -566,7 +536,7 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	    setnodeattributes(g, n, &argv[2], argc - 2);
 	}
-	reset_layout(g);
+	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 's') && (strncmp(argv[1], "showname", length) == 0)) {
@@ -583,32 +553,27 @@ static int nodecmd(ClientData clientData, Tcl_Interp * interp,
     }
 }
 
-static void tcldot_layout(Agraph_t * g, char *engine)
+static void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine)
 {
     char buf[256];
     Agsym_t *a;
+    int rc;
 
-    reset_layout(g);		/* in case previously drawn */
+    reset_layout(gvc, g);		/* in case previously drawn */
 
-    if (engine && strcasecmp(engine, "dot") == 0)
-	dot_layout(g);
-    else if (engine && strcasecmp(engine, "neato") == 0)
-	neato_layout(g);
-    else if (engine && strcasecmp(engine, "nop") == 0) {
-	Nop = 2;
-	PSinputscale = POINTS_PER_INCH;
-	neato_layout(g);
-    } else if (engine && strcasecmp(engine, "twopi") == 0)
-	twopi_layout(g);
-    else if (engine && strcasecmp(engine, "fdp") == 0)
-	fdp_layout(g);
-    else if (engine && strcasecmp(engine, "circo") == 0)
-	circo_layout(g);
 /* support old behaviors if engine isn't specified*/
-    else if (AG_IS_DIRECTED(g))
-	dot_layout(g);
-    else
-	neato_layout(g);
+    if (!engine || engine[0] == '\0') {
+	if (AG_IS_DIRECTED(g))
+	    gvlayout_select(gvc, "dot");
+	else
+	    gvlayout_select(gvc, "neato");
+    }
+    else {
+	rc = gvlayout_select(gvc, engine);
+	if (rc == NO_SUPPORT)
+	    gvlayout_select(gvc, "dot");
+	gvlayout_layout(gvc, g);
+    }
 
 /* set bb attribute for basic layout.
  * doesn't yet include margins, scaling or page sizes because
@@ -717,7 +682,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    tclhandleString(edgeTblPtr, interp->result, e->handle);
 	}
 	setedgeattributes(g->root, e, &argv[4], argc - 4);
-	reset_layout(g);
+	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'a') && (strncmp(argv[1], "addnode", length) == 0)) {
@@ -764,7 +729,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 #endif				/* TCLOBJ */
 	}
 	setnodeattributes(g->root, n, &argv[i], argc - i);
-	reset_layout(g);
+	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'a')
@@ -820,7 +785,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 #endif				/* TCLOBJ */
 	}
 	setgraphattributes(sg, &argv[i], argc - i);
-	reset_layout(g);
+	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 'c') && (strncmp(argv[1], "countnodes", length) == 0)) {
@@ -834,7 +799,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 'd') && (strncmp(argv[1], "delete", length) == 0)) {
-	reset_layout(g);
+	reset_layout(gvc, g);
 	deleteNodes(interp, g);
 	deleteGraph(interp, g);
 	return TCL_OK;
@@ -886,14 +851,14 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	       && (strncmp(argv[1], "layoutedges", length) == 0)) {
 	g = g->root;
 	if (!GD_drawing(g))
-	    tcldot_layout(g, (argc > 2) ? argv[2] : (char *) NULL);
+	    tcldot_layout(gvc, g, (argc > 2) ? argv[2] : (char *) NULL);
 	return TCL_OK;
 
     } else if ((c == 'l')
 	       && (strncmp(argv[1], "layoutnodes", length) == 0)) {
 	g = g->root;
 	if (!GD_drawing(g))
-	    tcldot_layout(g, (argc > 2) ? argv[2] : (char *) NULL);
+	    tcldot_layout(gvc, g, (argc > 2) ? argv[2] : (char *) NULL);
 	return TCL_OK;
 
     } else if ((c == 'l')
@@ -1114,7 +1079,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	/* make sure that layout is done */
 	g = g->root;
 	if (!GD_drawing(g) || argc > 3)
-	    tcldot_layout(g, (argc > 3) ? argv[3] : (char *) NULL);
+	    tcldot_layout (gvc, g, (argc > 3) ? argv[3] : (char *) NULL);
 
 	/* render graph TK canvas commands */
 	emit_jobs(gvc, g);
@@ -1141,7 +1106,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	/* make sure that layout is done */
 	g = g->root;
 	if (!GD_drawing(g) || argc > 4)
-	    tcldot_layout(g, (argc > 4) ? argv[4] : (char *) NULL);
+	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : (char *) NULL);
 	
 	emit_jobs(gvc, g);
 
@@ -1166,7 +1131,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	    setgraphattributes(g, argv2, argc2);
 	    Tcl_Free((char *) argv2);
-	    reset_layout(g);
+	    reset_layout(gvc, g);
 	}
 	if (argc == 4 && strcmp(argv[2], "viewport") == 0) {
 	    /* special case to allow viewport to be set without resetting layout */
@@ -1180,7 +1145,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		return TCL_ERROR;
 	    }
 	    setgraphattributes(g, &argv[2], argc - 2);
-	    reset_layout(g);
+	    reset_layout(gvc, g);
 	}
 	return TCL_OK;
 
@@ -1210,7 +1175,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	    setedgeattributes(g, g->proto->e, &argv[2], argc - 2);
 	}
-	reset_layout(g);
+	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 's')
@@ -1239,7 +1204,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	    setnodeattributes(g, g->proto->n, &argv[2], argc - 2);
 	}
-	reset_layout(g);
+	reset_layout(gvc, g);
 	return TCL_OK;
 
     } else if ((c == 's') && (strncmp(argv[1], "showname", length) == 0)) {
@@ -1283,7 +1248,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	/* make sure that layout is done  - unless canonical output */
 	if ((!GD_drawing(g) || argc > 4)
 	    && gvc->job->output_lang != CANONICAL_DOT) {
-	    tcldot_layout(g, (argc > 4) ? argv[4] : (char *) NULL);
+	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : (char *) NULL);
 	}
 
 	emit_jobs(gvc, g);
