@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 cairo.lib gdplug.lib layout.lib text.lib pack.lib pathplan.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"..\..\plugin\lib\Release" /libpath:"..\..\lib\lib\Release" /libpath:"..\..\third-party\lib"
+# ADD LINK32 pack.lib cairo.lib gdplug.lib layout.lib text.lib pathplan.lib plugin.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"..\..\plugin\Release" /libpath:"..\..\plugin\lib\Release" /libpath:"..\..\lib\lib\Release" /libpath:"..\..\third-party\lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "dot - Win32 Debug"
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 pack.lib cairo.lib gdplug.lib layout.lib text.lib pathplan.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /profile /debug /machine:I386 /libpath:"..\..\lib\lib\Debug" /libpath:"..\..\plugin\lib\Debug" /libpath:"..\..\third-party\lib"
+# ADD LINK32 pack.lib cairo.lib gdplug.lib layout.lib text.lib pathplan.lib plugin.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /profile /debug /machine:I386 /libpath:"..\..\plugin\Debug" /libpath:"..\..\lib\lib\Debug" /libpath:"..\..\plugin\lib\Debug" /libpath:"..\..\third-party\lib"
 
 !ENDIF 
 
@@ -98,10 +98,6 @@ SOURCE=args.c
 # Begin Source File
 
 SOURCE=dot.c
-# End Source File
-# Begin Source File
-
-SOURCE=plugins.c
 # End Source File
 # End Group
 # Begin Group "Header Files"

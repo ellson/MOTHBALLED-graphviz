@@ -43,7 +43,6 @@ ALL : "$(OUTDIR)\dot.exe"
 CLEAN :
 	-@erase "$(INTDIR)\args.obj"
 	-@erase "$(INTDIR)\dot.obj"
-	-@erase "$(INTDIR)\plugins.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(OUTDIR)\dot.exe"
 
@@ -57,11 +56,10 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\dot.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=cairo.lib gdplug.lib layout.lib text.lib pack.lib pathplan.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\dot.pdb" /machine:I386 /out:"$(OUTDIR)\dot.exe" /libpath:"..\..\plugin\lib\Release" /libpath:"..\..\lib\lib\Release" /libpath:"..\..\third-party\lib" 
+LINK32_FLAGS=pack.lib cairo.lib gdplug.lib layout.lib text.lib pathplan.lib plugin.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\dot.pdb" /machine:I386 /out:"$(OUTDIR)\dot.exe" /libpath:"..\..\plugin\Release" /libpath:"..\..\plugin\lib\Release" /libpath:"..\..\lib\lib\Release" /libpath:"..\..\third-party\lib" 
 LINK32_OBJS= \
 	"$(INTDIR)\args.obj" \
-	"$(INTDIR)\dot.obj" \
-	"$(INTDIR)\plugins.obj"
+	"$(INTDIR)\dot.obj"
 
 "$(OUTDIR)\dot.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -82,7 +80,6 @@ ALL : "$(OUTDIR)\dot.exe"
 CLEAN :
 	-@erase "$(INTDIR)\args.obj"
 	-@erase "$(INTDIR)\dot.obj"
-	-@erase "$(INTDIR)\plugins.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
 	-@erase "$(OUTDIR)\dot.exe"
@@ -97,11 +94,10 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\dot.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=pack.lib cairo.lib gdplug.lib layout.lib text.lib pathplan.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /profile /debug /machine:I386 /out:"$(OUTDIR)\dot.exe" /libpath:"..\..\lib\lib\Debug" /libpath:"..\..\plugin\lib\Debug" /libpath:"..\..\third-party\lib" 
+LINK32_FLAGS=pack.lib cairo.lib gdplug.lib layout.lib text.lib pathplan.lib plugin.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /profile /debug /machine:I386 /out:"$(OUTDIR)\dot.exe" /libpath:"..\..\plugin\Debug" /libpath:"..\..\lib\lib\Debug" /libpath:"..\..\plugin\lib\Debug" /libpath:"..\..\third-party\lib" 
 LINK32_OBJS= \
 	"$(INTDIR)\args.obj" \
-	"$(INTDIR)\dot.obj" \
-	"$(INTDIR)\plugins.obj"
+	"$(INTDIR)\dot.obj"
 
 "$(OUTDIR)\dot.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -159,11 +155,6 @@ SOURCE=args.c
 SOURCE=dot.c
 
 "$(INTDIR)\dot.obj" : $(SOURCE) "$(INTDIR)"
-
-
-SOURCE=plugins.c
-
-"$(INTDIR)\plugins.obj" : $(SOURCE) "$(INTDIR)"
 
 
 

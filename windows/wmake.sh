@@ -76,6 +76,7 @@ done
 cd gd
 doComp gdplug
 cd ..
+doComp plugin
 cd ..
 
 # process commands
