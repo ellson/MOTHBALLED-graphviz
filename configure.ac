@@ -354,15 +354,19 @@ dnl INCLUDES and LIBS for PYTHON
 AC_CHECK_PROG(PYTHON,python,python)
 HAVE_PYTHON=1
 if test "x$PYTHON" != "x"; then
-  PYTHON_VERSION=`python -V 2>&1 | cut -d ' ' -f 2`
-  PYTHON_VERSION_MAJOR=`echo $PYTHON_VERSION | cut -d '.' -f 1`
-  PYTHON_VERSION_MINOR=`echo $PYTHON_VERSION | cut -d '.' -f 2`
-  if test $PYTHON_VERSION_MAJOR -lt 3; then
-    if test $PYTHON_VERSION_MAJOR -lt 2; then
+  PYTHON_VERSION=`python -V 2>&1 | grep Python | cut -d ' ' -f 2`
+  if test "x$PYTHON_VERSION" = "x"; then
+    HAVE_PYTHON=0
+  else
+    PYTHON_VERSION_MAJOR=`echo $PYTHON_VERSION | cut -d '.' -f 1`
+    PYTHON_VERSION_MINOR=`echo $PYTHON_VERSION | cut -d '.' -f 2`
+    if test $PYTHON_VERSION_MAJOR -lt 3; then
+      if test $PYTHON_VERSION_MAJOR -lt 2; then
 	HAVE_PYTHON=0
-    else
-      if test $PYTHON_VERSION_MINOR -lt 4; then
-	HAVE_PYTHON=0
+      else
+        if test $PYTHON_VERSION_MINOR -lt 4; then
+	  HAVE_PYTHON=0
+        fi
       fi
     fi
   fi
