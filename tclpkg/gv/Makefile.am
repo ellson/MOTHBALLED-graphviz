@@ -6,7 +6,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
-	-I$(top_srcdir)/lib/pathplan $(PERL_INCLUDES) $(PHP_INCLUDES) $(PYTHON_INCLUDES) $(RUBY_INCLUDES) $(TCL_INCLUDES) 
+	-I$(top_srcdir)/lib/pathplan $(PERL_INCLUDES) $(PHP_INCLUDES) $(PYTHON_INCLUDES) $(RUBY_INCLUDES) $(TCL_INCLUDES)
 
 LIBS =  @LIBS@ -lc
 
@@ -83,7 +83,8 @@ libgv_ruby_la_SOURCES = gv.cpp gv_ruby.cpp plugins.c
 libgv_ruby_la_LIBADD = $(BASELIBS) @RUBY_LIBS@
 
 libgv_tcl_la_SOURCES = gv.cpp gv_tcl.cpp plugins.c 
-libgv_tcl_la_LIBADD = $(BASELIBS) @TCL_LIBS@
+libgv_tcl_la_LIBADD = $(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
+				$(BASELIBS) @TCL_LIBS@
 
 gv_csharp.cpp: gv.i
 	$(SWIG) -c++ -csharp -o gv_csharp.cpp gv.i
