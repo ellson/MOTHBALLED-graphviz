@@ -1,0 +1,127 @@
+ALL_BIN = gc gvcolor acyclic nop ccomps sccmap tred unflatten gxl2dot \
+          dot2gxl dijkstra gvpack bcomps
+ALL_LIB = libingraphs.a
+ALL = $(ALL_LIB) $(ALL_BIN) dot2gxl.1
+
+all : $(ALL)
+
+include ../../Config.mk
+include ../../makearch/$(ARCH)
+
+LOC_INCDIR=../include
+LOC_LIBDIR=../lib
+
+DEFINES = -DHAVE_CONFIG_H
+
+INCS =  -I. -I../.. -I../../agraph -I../../graph -I../../cdt
+DNINCS = -I../../dotneato/pack -I../../dotneato/neatogen  \
+         -I../../dotneato/gvrender \
+         -I../../dotneato/common -I../../pathplan
+
+LIBS =  -L../../graph -lgraph -L../../cdt -lcdt
+DNLIBS = -L../../dotneato/neatogen -lneato \
+         -L../../dotneato/pack -lpack \
+         -L../../dotneato/common -lcommon \
+         -L../../dotneato/gvrender -lgvrender \
+         -L../../pathplan -lpathplan \
+         -L../../gd -lgd \
+         $(LIBS) \
+         $(EXTLIB_LIB) $(EXPAT_LIB) -lm
+
+ALIBS = -L../../agraph -lagraph -L../../cdt -lcdt
+
+ACYCLICOBJS = acyclic.o
+NOPOBJS = nop.o
+COLOROBJS = gvcolor.o colxlate.o
+UNFLATOBJS = unflatten.o
+GCOBJS = gc.o
+TOBJS = tred.o
+CCOBJS = ccomps.o
+SCCOBJS = sccmap.o
+GXLOBJS = cvtgxl.o   dot2gxl.o  gxl2dot.o
+GVPOBJS = gvpack.o
+BCCOBJS = bcomps.o
+MANS = acyclic.1 gvcolor.1 nop.1 tred.1 ccomps.1 gc.1 sccmap.1 \
+	unflatten.1 gxl2dot.1 dot2gxl.1 gvpack.1 bcomps.1
+
+gvpack : $(GVPOBJS) $(ALL_LIB)
+	$(CSLD) $(LDFLAGS) $(GVPOBJS) $(ALL_LIB) $(DNLIBS) -o $@
+
+gvpack.o : gvpack.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) gvpack.c
+
+dijkstra : dijkstra.o
+	$(CSLD) $(LDFLAGS) dijkstra.o -L. -lingraphs $(ALIBS) -o $@
+
+dijkstra.o : dijkstra.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) dijkstra.c
+
+gxl2dot : $(GXLOBJS) $(ALL_LIB)
+	$(CSLD) $(LDFLAGS) $(GXLOBJS) $(ALL_LIB) $(ALIBS) -L../../graph -lgraph $(EXPAT_LIB) -o $@
+
+dot2gxl : gxl2dot
+	$(RM) -f $@
+	$(LN) -s $? $@
+
+cvtgxl.o : cvtgxl.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $(EXPAT_INC) cvtgxl.c
+
+dot2gxl.o : dot2gxl.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $(EXPAT_INC) dot2gxl.c
+
+gxl2dot.o : gxl2dot.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $(EXPAT_INC) gxl2dot.c
+
+sccmap : $(SCCOBJS) $(ALL_LIB)
+	$(CSLD) $(LDFLAGS) $(SCCOBJS) $(ALL_LIB) $(ALIBS) -o $@
+
+ccomps : $(CCOBJS) $(ALL_LIB)
+	$(CSLD) $(LDFLAGS) $(CCOBJS) $(ALL_LIB) $(LIBS) -o $@
+
+tred : $(TOBJS) $(ALL_LIB)
+	$(CSLD) $(LDFLAGS) $(TOBJS) $(ALL_LIB) $(LIBS) -o $@
+
+unflatten : $(UNFLATOBJS)
+	$(CSLD) $(LDFLAGS) $(UNFLATOBJS) $(ALL_LIB) $(ALIBS) -o $@
+
+acyclic : $(ACYCLICOBJS)
+	$(CSLD) $(LDFLAGS) $(ACYCLICOBJS) $(LIBS) -o $@
+
+nop : $(NOPOBJS) $(ALL_LIB)
+	$(CSLD) $(LDFLAGS) $(NOPOBJS) $(ALL_LIB) $(ALIBS) -o $@
+
+gvcolor : $(COLOROBJS) $(ALL_LIB)
+	$(CSLD) $(LDFLAGS) $(COLOROBJS) $(ALL_LIB) $(LIBS) -o $@
+
+gc : $(GCOBJS) $(ALL_LIB)
+	$(CSLD) $(LDFLAGS) $(GCOBJS) $(ALL_LIB) $(LIBS) -o $@
+
+bcomps : $(BCCOBJS) $(ALL_LIB)
+	$(CSLD) $(LDFLAGS) $(BCCOBJS) $(ALL_LIB) $(LIBS) -o $@
+
+dot2gxl.1: gxl2dot.1
+	$(RM) -f $@
+	$(LN) -s $? $@
+
+libingraphs.a : ingraphs.o
+	$(AR) cr $@ ingraphs.o
+	$(MKPATH) $(LOC_INCDIR)
+	cp ingraphs.h $(LOC_INCDIR)
+	$(MKPATH) $(LOC_LIBDIR)
+	cp libingraphs.a $(LOC_LIBDIR)
+
+install : $(ALL)
+	$(MKPATH) $(INCDIR)
+	cp ingraphs.h $(INCDIR)
+	$(MKPATH) $(LIBDIR)
+	cp $(ALL_LIB) $(LIBDIR)
+	$(MKPATH) $(BINDIR)
+	cp $(ALL_BIN) $(BINDIR)
+	$(MKPATH) $(MANDIR)
+	$(INSTALL) $(MANS) $(MANDIR)
+
+clean :
+	$(RM) *.o 
+
+distclean : clean
+	$(RM) $(ALL)

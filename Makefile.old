@@ -1,0 +1,4 @@
+SUBDIRS = lib cmd doc
+
+all clean distclean install:
+	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)       

@@ -1,0 +1,44 @@
+#   gvpr make file
+#   Written by Emden R. Gansner (1 Mar 2001)
+ALL = gvpr
+all : $(ALL)
+
+include ../../Config.mk
+include ../../makearch/$(ARCH)
+
+LOC_INCDIR=../include
+LOC_LIBDIR=../lib
+
+INCS = -I. -I../.. -I$(LOC_INCDIR) -I../../agraph -I../../cdt
+
+DEFINES = -DHAVE_CONFIG_H
+
+OBJS = gvpr.o parse.o compile.o gprstate.o actions.o queue.o
+
+compile.o : gdefs.h
+
+gdefs.h : gprdata mkdefs
+	mkdefs gdefs.h < gprdata
+
+mkdefs : mkdefs.o
+	$(CC) $(LDFLAGS) mkdefs.o -o $@
+
+GLIBS = -L../../agraph -L../../cdt -lagraph -lcdt
+LIBS = -L$(LOC_LIBDIR) -lexpr -last -lvmalloc -lsfio -lingraphs $(GLIBS) -lm
+
+gvpr : $(OBJS) $(LOC_LIBDIR)/libexpr.a
+	$(CSLD) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
+
+$(OBJS) : gdefs.h
+
+install : all
+	$(MKPATH) $(BINDIR)
+	$(CP) gvpr $(BINDIR)
+	$(MKPATH) $(MANDIR)
+	$(INSTALL) gvpr.1 $(MANDIR)
+
+clean :
+	$(RM) core gdefs.h *.o 
+
+distclean : clean
+	$(RM) mkdefs $(ALL)
