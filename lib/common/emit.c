@@ -749,6 +749,9 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
     char *str, *colors;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
 
+/* FIXME - shouldn't need this again */
+    setup_pagination(gvc, g);
+
 #if 0
 /* FIXME - apparently zoom is not set yet */
     gvc->clip.UR.x = ROUND(gvc->focus.x + (gvc->width+1) / (gvc->zoom * 2.));
