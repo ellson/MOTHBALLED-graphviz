@@ -67,6 +67,7 @@ int user_pos(attrsym_t * posptr, attrsym_t * pinptr, node_t * np, int nG)
 {
     double *pvec;
     char *p, c;
+    double z;
 
     if (posptr == NULL)
 	return FALSE;
@@ -81,8 +82,19 @@ int user_pos(attrsym_t * posptr, attrsym_t * pinptr, node_t * np, int nG)
 		for (i = 0; i < Ndim; i++)
 		    pvec[i] = pvec[i] / PSinputscale;
 	    }
-	    if (Ndim > 2)
-		jitter3d(np, nG);
+	    if (Ndim > 2) {
+		if (N_z && (p = agxget(np, N_z->index)) && 
+                           (sscanf(p,"%lf",&z) == 1)) { 
+		    if (PSinputscale > 0.0) {
+			pvec[2] = z / PSinputscale;
+		    }
+		    else
+			pvec[2] = z;
+		    jitter_d(np, nG, 3);
+		}
+		else
+		    jitter3d(np, nG);
+	    }
 	    if ((c == '!')
 		|| (pinptr && mapbool(agxget(np, pinptr->index))))
 		ND_pinned(np) = P_PIN;
@@ -1004,6 +1016,24 @@ void neatoLayout(Agraph_t * g, int layoutMode, int layoutModel)
 	kkNeato(g, nG, layoutModel);
 }
 
+/* addZ;
+ * If dimension == 3 and z attribute is declared, 
+ * attach z value to nodes if not defined.
+ */
+static void
+addZ (Agraph_t* g)
+{
+    node_t* n;
+    char    buf[BUFSIZ];
+
+    if ((Ndim >= 3) && N_z) { 
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	    sprintf(buf, "%d", POINTS(ND_pos(n)[2]));
+	    agxset(n, N_z->index, buf);
+	}
+    }
+}
+
 /* neato_layout:
  */
 void neato_layout(Agraph_t * g)
@@ -1011,6 +1041,7 @@ void neato_layout(Agraph_t * g)
 
     neato_init_graph(g);
     if (Nop) {
+	addZ (g);
 	if (init_nop(g)) {
 	    agerr(AGPREV, "as required by the -n flag\n");
 	    exit(1);
@@ -1062,6 +1093,7 @@ void neato_layout(Agraph_t * g)
 		    free(bp);
 	    }
 	    compute_bb(g);
+	    addZ (g);
 	    spline_edges(g);
 
 	    /* cleanup and remove component subgraphs */
@@ -1073,6 +1105,7 @@ void neato_layout(Agraph_t * g)
 	} else {
 	    neatoLayout(g, layoutMode, model);
 	    adjustNodes(g);
+	    addZ (g);
 	    spline_edges(g);
 	}
     }

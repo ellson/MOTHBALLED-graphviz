@@ -40,6 +40,7 @@ extern "C" {
     extern void initial_positions(graph_t *, int);
     extern int init_port(Agnode_t *, Agedge_t *, char *, boolean);
     extern void jitter3d(Agnode_t *, int);
+    extern void jitter_d(Agnode_t *, int, int);
     extern Ppoly_t *makeObstacle(node_t * n, double SEP);
     extern void makeSelfArcs(path * P, edge_t * e, int stepx);
     extern void makeSpline(edge_t *, Ppoly_t **, int, boolean);

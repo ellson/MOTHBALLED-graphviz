@@ -299,11 +299,16 @@ void free_scan_graph(graph_t * g)
     }
 }
 
-void jitter3d(node_t * np, int nG)
+void jitter_d(node_t * np, int nG, int n)
 {
     int k;
-    for (k = 2; k < Ndim; k++)
+    for (k = n; k < Ndim; k++)
 	ND_pos(np)[k] = nG * drand48();
+}
+
+void jitter3d(node_t * np, int nG)
+{
+    jitter_d(np, nG, 2);
 }
 
 void randompos(node_t * np, int nG)
