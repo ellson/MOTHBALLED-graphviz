@@ -236,7 +236,6 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
     }
 
     set_pagedir(g);
-fprintf(stderr,"width=%d height=%d zoom=%g\n", gvc->job->width, gvc->job->height, gvc->job->zoom);
 
     /* determine page box including centering */
     if (GD_drawing(g)->centered) {
@@ -248,7 +247,6 @@ fprintf(stderr,"width=%d height=%d zoom=%g\n", gvc->job->width, gvc->job->height
 	PB.LL.x += extra.x / 2;
 	PB.LL.y += extra.y / 2;
     }
-fprintf(stderr,"PB.LL=%d,%d DS=%d,%d dpi=%d\n",PB.LL.x, PB.LL.y, DS.x, DS.y, gvc->job->dpi);
     PB.UR = add_points(PB.LL, DS);
 }
 
