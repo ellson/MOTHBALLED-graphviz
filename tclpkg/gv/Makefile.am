@@ -18,33 +18,43 @@ BASELIBS = \
 noinst_HEADERS = gv.h
 
 pkglib_LTLIBRARIES = 
+TESTS =
 if WITH_SWIG
 if WITH_CSHARP
 pkglib_LTLIBRARIES += libgv_csharp.la
+TESTS += test_csharp
 endif
 if WITH_GUILE
 pkglib_LTLIBRARIES += libgv_guile.la
+TESTS += test_guile
 endif
 #if WITH_IO
 #pkglib_LTLIBRARIES += libgv_io.la
+#TESTS += test_io
 #endif
 if WITH_JAVA
 pkglib_LTLIBRARIES += libgv_java.la
+TESTS += test_java
 endif
 if WITH_PERL
 pkglib_LTLIBRARIES += libgv_perl.la
+TESTS += test_perl
 endif
 if WITH_PHP
 pkglib_LTLIBRARIES += libgv_php.la
+TESTS += test_php
 endif
 if WITH_PYTHON
 pkglib_LTLIBRARIES += libgv_python.la
+TESTS += test_python
 endif
 if WITH_RUBY
 pkglib_LTLIBRARIES += libgv_ruby.la
+TESTS += test_ruby
 endif
 if WITH_TCL
 pkglib_LTLIBRARIES += libgv_tcl.la
+TESTS += test_tcl
 endif
 endif
 
@@ -82,14 +92,14 @@ gv_csharp.cpp: gv.i
 gv_guile.cpp: gv.i
 	$(SWIG) -c++ -guile -o gv_guile.cpp gv.i
 
-#gv_io.cpp: gv.i
-#	$(SWIG) -c++ -io -o gv_io.cpp gv.i
+gv_io.cpp: gv.i
+	$(SWIG) -c++ -io -o gv_io.cpp gv.i
 
 gv_java.cpp: gv.i
 	$(SWIG) -c++ -java -o gv_java.cpp gv.i
 
-#gv_ocaml.cpp: gv.i
-#	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp gv.i
+gv_ocaml.cpp: gv.i
+	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp gv.i
 
 gv_perl.cpp: gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp gv.i
@@ -123,29 +133,26 @@ pkgIndex.tcl: libgv_tcl.la
 	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libgv_tcl.la gv $(VERSION)
 endif
 
-test: test_csharp test_guile test_java test_ocaml \
-	test_perl test_php test_python test_ruby test_tcl
+test: $(TESTS)
 
 test_csharp: libgv_csharp.la
 	(cd csharp; \
 		ln -fs ../.libs/libgv_csharp.so libgv.so; \
-		cp -f ../*.csharp .; \
-		$(CSHARP) *.csharp; \
-		LD_LIBRARY_PATH=. csharp test)
+		cp -f ../*.cs .; \
+		$(CSHARP) *.cs; \
+		LD_LIBRARY_PATH=. $(CSHARP) test)
 
 test_guile: libgv_guile.la
 	(cd guile; \
 		ln -fs ../.libs/libgv_guile.so libgv.so; \
-		cp -f ../*.guile .; \
-		guilec *.guile; \
-		LD_LIBRARY_PATH=. guile test)
+		$(GUILE) -s test.guile)
 
-#test_io: libgv_io.la
-#	(cd io; \
-#		ln -fs ../.libs/libgv_io.so libgv.so; \
-#		cp -f ../*.io .; \
-#		ioc *.io; \
-#		LD_LIBRARY_PATH=. io test)
+test_io: libgv_io.la
+	(cd io; \
+		ln -fs ../.libs/libgv_io.so libgv.so; \
+		cp -f ../*.io .; \
+		ioc *.io; \
+		LD_LIBRARY_PATH=. io test)
 
 test_java: libgv_java.la
 	(cd java; \
@@ -154,42 +161,40 @@ test_java: libgv_java.la
 		javac *.java; \
 		LD_LIBRARY_PATH=. java test)
 
-#test_ocaml: libgv_ocaml.la
-#	(cd ocaml; \
-#		ln -fs ../.libs/libgv_ocaml.so libgv.so; \
-#		cp -f ../*.ocaml .; \
-#		ocamlc *.ocaml; \
-#		LD_LIBRARY_PATH=. ocaml test)
+test_ocaml: libgv_ocaml.la
+	(cd ocaml; \
+		ln -fs ../.libs/libgv_ocaml.so libgv.so; \
+		cp -f ../*.ocaml .; \
+		ocamlc *.ocaml; \
+		LD_LIBRARY_PATH=. ocaml test)
 
 test_perl: libgv_perl.la
 	(cd perl; \
 		ln -fs ../.libs/libgv_perl.so gv.so; \
-		cp -f ../*.pl ../*.pm .; \
-		./test.pl)
+		cp -f ../*.pm .; \
+		$(PERL) ./test.pl)
 
 test_php: libgv_php.la
 	(cd php; \
 		ln -fs ../.libs/libgv_php.so libgv.so; \
 		cp -f ../*.php .; \
-		./test.php)
+		$(PHP) ./test.php)
 
 test_python: libgv_python.la
 	(cd python; \
 		ln -fs ../.libs/libgv_python.so _gv.so; \
 		cp -f ../*.py .; \
-		PYTHONPATH=. $PYTHON test.py)
+		PYTHONPATH=. $(PYTHON) test.py)
 
 test_ruby: libgv_ruby.la
 	(cd ruby; \
 		ln -fs ../.libs/libgv_ruby.so gv.so; \
-		cp -f ../*.rb .; \
-		./test.rb)
+		$(RUBY) test.rb)
 
 test_tcl: libgv_tcl.la
 	(cd tcl; \
 		ln -fs ../.libs/libgv_tcl.so libgv_tcl.so; \
-		cp -f ../*.tcl .; \
-		./test.tcl)
+		$(TCLSH) ./test.tcl)
 
 EXTRA_DIST = gv.i \
 	gv.cs gvPINVOKE.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agraph_t.cs \
