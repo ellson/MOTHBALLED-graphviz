@@ -730,69 +730,54 @@ static void poly_free(node_t * n)
 static boolean poly_inside(inside_t * inside_context, pointf p)
 {
     static node_t *lastn;	/* last node argument */
-    static edge_t *laste;	/* last edge argument */
-    static node_t *datan;	/* node used for cached data */
     static polygon_t *poly;
     static int last, outp, sides;
     static pointf O;		/* point (0,0) */
     static pointf *vertex;
     static double xsize, ysize, scalex, scaley, box_URx, box_URy;
-    static box *bp;
 
     int i, i1, j, s;
     pointf P, Q, R;
-    edge_t *f;
-    edge_t *e = inside_context->e;
-    node_t *n = inside_context->n;
+    box *bp = inside_context->s.bp;
+    node_t *n = inside_context->s.n;
 
     P = flip_ptf(p, GD_rankdir(n->graph));
-    if (e) {
-	for (f = e; ED_edge_type(f) != NORMAL; f = ED_to_orig(f));
-	e = f;
-    }
-
-    if ((n != lastn) || (e != laste)) {
-	if (e) bp = GET_PORT_BOX(n, e);
-	else bp = NULL;
-
-	if ((bp == NULL) && (n != datan)) {
-	    datan = n;
-	    poly = (polygon_t *) ND_shape_info(n);
-	    vertex = poly->vertices;
-	    sides = poly->sides;
-
-	    /* get point and node size adjusted for rankdir=LR */
-	    if (GD_flip(n->graph)) {
-		ysize = ND_lw_i(n) + ND_rw_i(n);
-		xsize = ND_ht_i(n);
-	    } else {
-		xsize = ND_lw_i(n) + ND_rw_i(n);
-		ysize = ND_ht_i(n);
-	    }
-
-	    /* scale */
-	    if (xsize == 0.0)
-		xsize = 1.0;
-	    if (ysize == 0.0)
-		ysize = 1.0;
-	    scalex = POINTS(ND_width(n)) / xsize;
-	    scaley = POINTS(ND_height(n)) / ysize;
-	    box_URx = POINTS(ND_width(n)) / 2.0;
-	    box_URy = POINTS(ND_height(n)) / 2.0;
-
-	    /* index to outer-periphery */
-	    outp = (poly->peripheries - 1) * sides;
-	    if (outp < 0)
-		outp = 0;
-	}
-	lastn = n;
-	laste = e;
-    }
 
     /* Quick test if port rectangle is target */
     if (bp) {
 	box bbox = *bp;
 	return INSIDE(P, bbox);
+    }
+
+    if (n != lastn) {
+	poly = (polygon_t *) ND_shape_info(n);
+	vertex = poly->vertices;
+	sides = poly->sides;
+
+	/* get point and node size adjusted for rankdir=LR */
+	if (GD_flip(n->graph)) {
+	    ysize = ND_lw_i(n) + ND_rw_i(n);
+	    xsize = ND_ht_i(n);
+	} else {
+	    xsize = ND_lw_i(n) + ND_rw_i(n);
+	    ysize = ND_ht_i(n);
+	}
+
+	/* scale */
+	if (xsize == 0.0)
+	    xsize = 1.0;
+	if (ysize == 0.0)
+	    ysize = 1.0;
+	scalex = POINTS(ND_width(n)) / xsize;
+	scaley = POINTS(ND_height(n)) / ysize;
+	box_URx = POINTS(ND_width(n)) / 2.0;
+	box_URy = POINTS(ND_height(n)) / 2.0;
+
+	/* index to outer-periphery */
+	outp = (poly->peripheries - 1) * sides;
+	if (outp < 0)
+	    outp = 0;
+	lastn = n;
     }
 
     /* scale */
@@ -833,6 +818,9 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
     return TRUE;
 }
 
+/* poly_path:
+ * Generate box path from port to border.
+ */
 static int poly_path(node_t * n, edge_t * e, int pt, box rv[], int *kptr)
 {
     int side = 0;
@@ -937,6 +925,44 @@ static double invflip_angle (double angle, int rankdir)
     return angle;
 }
 
+/* would like = 0, but spline router croaks
+ * Basically, if the point is actually on a box, the curve fitter
+ * may, at some point, compute a curve which lies entirely outside
+ * the polygon except at the two endpoints. Thus, by guaranteeing that
+ * the point lies in the interior, such bad cases can't happen.
+ */
+#define MARGIN  1
+
+/* compassPoint:
+ * Compute compass points for non-trivial shapes.
+ * It finds where the ray ((0,0),(x,y)) hits the boundary and
+ * return it.
+ * Assumes ictxt and ictxt->n are non-NULL.
+ */
+static point 
+compassPoint(inside_t* ictxt, double y, double x)
+{
+    point  p;
+    pointf curve[4];  /* bezier control points for a straight line */
+    node_t* n = ictxt->s.n;
+
+    curve[0].x = 0;
+    curve[0].y = 0;
+    curve[1].x = x/3;
+    curve[1].y = y/3;
+    curve[2].x = 2*x/3;
+    curve[2].y = 2*y/3;
+    curve[3].x = x;
+    curve[3].y = y;
+
+    bezier_clip(ictxt, ND_shape(n)->fns->insidefn, curve, 1);
+
+    p.x = ROUND(curve[0].x);
+    p.y = ROUND(curve[0].y);
+
+    return p;
+}
+
 /* compassPort:
  * Attach a compass point to a port pp, and fill in remaining fields.
  * n is the corresponding node; bp is the bounding box of the port.
@@ -948,9 +974,12 @@ static double invflip_angle (double angle, int rankdir)
  * The sides value gives the set of sides shared by the port. This
  * is used with a compass point to indicate if the port is exposed, to
  * set the port's side value.
+ * 
+ * FIX: For purposes, of rankdir=BT or RL, this assumes nodes are up-down
+ * symmetric, left-right symmetric, and convex.
  */
 static int 
-compassPort(node_t* n, box* bp, port* pp, char* compass, int sides)
+compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ictxt)
 {
     box b;
     point p, ctr;
@@ -959,10 +988,12 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides)
     int constrain = 0;
     int side = 0;
     int clip = TRUE;
+    int defined;
 
     if (bp) {
 	b = *bp;
 	p = pointof((b.LL.x + b.UR.x) / 2, (b.LL.y + b.UR.y) / 2);
+	defined = TRUE;
     } else {
 	p.x = p.y = 0;
 	if (GD_flip(n->graph)) {
@@ -976,34 +1007,40 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides)
 	    b.UR.x = ND_lw_i(n);
 	    b.LL.x = -b.UR.x;
 	}
+	defined = FALSE;
     }
     ctr = p;
     if (compass && *compass) {
-	int margin = 1;		/* would like = 0, but spline router croaks */
 	switch (*compass++) {
 	case 'e':
-	    p.x = b.UR.x + margin;
+	    p.x = b.UR.x + MARGIN;
 	    theta = 0.0;
 	    constrain = 1;
+	    defined = TRUE;
 	    clip = FALSE;
 	    side = sides & RIGHT;
 	    break;
 	case 's':
-	    p.y = b.LL.y - margin;
+	    p.y = b.LL.y - MARGIN;
 	    constrain = 1;
 	    clip = FALSE;
 	    side = sides & BOTTOM;
 	    switch (*compass) {
 	    case '\0':
 		theta = -PI * 0.5;
+		defined = TRUE;
 		break;
 	    case 'e':
 		theta = -PI * 0.25;
-		p.x = b.UR.x - margin;
+		defined = TRUE;
+		if (ictxt) p = compassPoint (ictxt, -MAXINT, MAXINT);
+		else p.x = b.UR.x + MARGIN;
 		break;
 	    case 'w':
 		theta = -PI * 0.75;
-		p.x = b.LL.x + margin;
+		defined = TRUE;
+		if (ictxt) p = compassPoint (ictxt, -MAXINT, -MAXINT);
+		else p.x = b.LL.x - MARGIN;
 		break;
 	    default:
 		p.y = ctr.y;
@@ -1014,28 +1051,34 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides)
 	    }
 	    break;
 	case 'w':
-	    p.x = b.LL.x - margin;
+	    p.x = b.LL.x - MARGIN;
 	    theta = PI;
 	    constrain = 1;
+	    defined = TRUE;
 	    clip = FALSE;
 	    side = sides & LEFT;
 	    break;
 	case 'n':
-	    p.y = b.UR.y + margin;
+	    p.y = b.UR.y + MARGIN;
 	    constrain = 1;
 	    clip = FALSE;
 	    side = sides & TOP;
 	    switch (*compass) {
 	    case '\0':
+		defined = TRUE;
 		theta = PI * 0.5;
 		break;
 	    case 'e':
+		defined = TRUE;
 		theta = PI * 0.25;
-		p.x = b.UR.x - margin;
+		if (ictxt) p = compassPoint (ictxt, MAXINT, MAXINT);
+		else p.x = b.UR.x + MARGIN;
 		break;
 	    case 'w':
+		defined = TRUE;
 		theta = PI * 0.75;
-		p.x = b.LL.x + margin;
+		if (ictxt) p = compassPoint (ictxt, MAXINT, -MAXINT);
+		else p.x = b.LL.x - MARGIN;
 		break;
 	    default:
 		p.y = ctr.y;
@@ -1064,7 +1107,7 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides)
 	pp->order = (int)((MC_SCALE * angle) / 2*PI);
     }
     pp->constrained = constrain;
-    pp->defined = TRUE;
+    pp->defined = defined;
     pp->clip = clip;
     return rv;
 }
@@ -1079,18 +1122,20 @@ static port poly_port(node_t * n, char *portname, char *compass)
 	return Center;
 
     sides = BOTTOM | RIGHT | TOP | LEFT; 
-    if ((ND_label(n)->html)) {
-	if ((bp = html_port(n, portname, &sides))) {
-	    if (compassPort(n, bp, &rv, compass, sides)) {
-		agerr(AGWARN,
-		      "node %s, port %s, unrecognized compass point '%s' - ignored\n",
+    if ((ND_label(n)->html) && (bp = html_port(n, portname, &sides))) {
+	if (compassPort(n, bp, &rv, compass, sides, NULL)) {
+	    agerr(AGWARN,
+		"node %s, port %s, unrecognized compass point '%s' - ignored\n",
 		      n->name, portname, compass);
-	    }
-	} else if (compassPort(n, NULL, &rv, portname, sides)) {
-	    unrecognized(n, portname);
 	}
-    } else if (compassPort(n, NULL, &rv, portname, sides)) {
-	unrecognized(n, portname);
+    } 
+    else {
+	inside_t ictxt;
+
+	ictxt.s.n = n;
+	ictxt.s.bp = NULL;
+	if (compassPort(n, NULL, &rv, portname, sides, &ictxt))
+	    unrecognized(n, portname);
     }
 
     return rv;
@@ -1616,57 +1661,47 @@ static port record_port(node_t * n, char *portname, char *compass)
     sides = BOTTOM | RIGHT | TOP | LEFT; 
     f = (field_t *) ND_shape_info(n);
     if ((subf = map_rec_port(f, portname))) {
-	if (compassPort(n, &subf->b, &rv, compass, subf->sides)) {
+	if (compassPort(n, &subf->b, &rv, compass, subf->sides, NULL)) {
 	    agerr(AGWARN,
 	      "node %s, port %s, unrecognized compass point '%s' - ignored\n",
 	      n->name, portname, compass);
 	}
-    } else if (compassPort(n, &f->b, &rv, portname, sides)) {
+    } else if (compassPort(n, &f->b, &rv, portname, sides, NULL)) {
 	unrecognized(n, portname);
     }
 
     return rv;
 }
 
-static boolean record_inside(inside_t * inside_context, pointf p)
+/* record_inside:
+ * Note that this does not handle Mrecords correctly. It assumes 
+ * everything is a rectangle.
+ */
+static boolean
+record_inside(inside_t * inside_context, pointf p)
 {
 
-    edge_t *f;
     field_t *fld0;
-    static edge_t *last_e;
-    static node_t *last_n;
-    static box bbox;
-    edge_t *e = inside_context->e;
-    node_t *n = inside_context->n;
+    box *bp = inside_context->s.bp;
+    node_t *n = inside_context->s.n;
+    box bbox;
 
     /* convert point to node coordinate system */
     p = flip_ptf(p, GD_rankdir(n->graph));
 
-    if (e == NULL) {
+    if (bp == NULL) {
 	fld0 = (field_t *) ND_shape_info(n);
-	return INSIDE(p, fld0->b);
+	bbox = fld0->b;
     }
-
-    /* find real edge */
-    for (f = e; ED_edge_type(f) != NORMAL; f = ED_to_orig(f));
-    e = f;
-
-    if ((e != last_e) || (n != last_n)) {
-	box *bp;
-	last_e = e;
-	last_n = n;
-	bp = GET_PORT_BOX(n, e);
-	if (bp)
-	    bbox = *bp;
-	else {
-	    fld0 = (field_t *) ND_shape_info(n);
-	    bbox = fld0->b;
-	}
-    }
+    else bbox = *bp;
 
     return INSIDE(p, bbox);
 }
 
+/* record_path:
+ * Generate box path from port to border.
+ * See poly_path for constraints.
+ */
 static int record_path(node_t * n, edge_t * e, int pt, box rv[], int *kptr)
 {
     int i, side, ls, rs;
@@ -1844,7 +1879,7 @@ static boolean epsf_inside(inside_t * inside_context, pointf p)
 {
     pointf P;
     double x2;
-    node_t *n = inside_context->n;
+    node_t *n = inside_context->s.n;
 
     P = flip_ptf(p, GD_rankdir(n->graph));
     x2 = ND_ht_i(n) / 2;
