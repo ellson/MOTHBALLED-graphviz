@@ -49,7 +49,7 @@ extern "C" {
     typedef struct {
 	int flags;
 	int default_margin;
-	double default_dpi;
+	int default_dpi;
 	char **knowncolors;
 	int sz_knowncolors;
 	color_type_t color_type;
@@ -131,7 +131,7 @@ extern "C" {
 	color_t bgcolor;	/* background color */
         unsigned int width;
         unsigned int height;
-	double dpi;		/* resolution dots-per-inch */
+	int dpi;		/* resolution dots-per-inch */
 	int rot;		/* rotation */
 
 	double zoom;		/* viewport zoom factor */

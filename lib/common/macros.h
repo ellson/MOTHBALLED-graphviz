@@ -89,9 +89,9 @@
 #define RADIANS(deg)	((deg)/180.0 * PI)
 #define DEGREES(rad)	((rad)/PI * 180.0)
 #define DIST(x1,y1,x2,y2) (sqrt(((x1) - (x2))*((x1) - (x2)) + ((y1) - (y2))*((y1) - (y2))))
-#define POINTS_PER_INCH	72.0
+#define POINTS_PER_INCH	72
 #define POINTS(f_inch)	(ROUND((f_inch)*POINTS_PER_INCH))
-#define PS2INCH(ps)		((ps)/POINTS_PER_INCH)
+#define PS2INCH(ps)		((ps)/(double)POINTS_PER_INCH)
 
 #define isPinned(n)     (ND_pinned(n) == P_PIN)
 #define hasPos(n)       (ND_pinned(n) > 0)

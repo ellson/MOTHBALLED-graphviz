@@ -127,16 +127,20 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, point pages, double X, double Y
 
     gvc->lib = lib;
     gvc->pages = pages;
-    if (gvre) {
-	/* establish viewport and scaling */
-	if (dpi < 1.0)
+    /* establish viewport and scaling */
+    if (dpi == 0) {
+	if (gvre)
 	    dpi = gvc->render_features->default_dpi;
-        gvc->dpi = dpi;
-	gvc->width = ROUND(X * dpi / POINTS_PER_INCH);
-	gvc->height = ROUND(Y * dpi / POINTS_PER_INCH);
-	gvc->zoom = Z;              /* scaling factor */
-	gvc->focus.x = x;           /* graph coord of focus - points */
-	gvc->focus.y = y;
+	else
+	    dpi = DEFAULT_DPI;
+    }
+    gvc->dpi = dpi;
+    gvc->width = ROUND(X * dpi / POINTS_PER_INCH);
+    gvc->height = ROUND(Y * dpi / POINTS_PER_INCH);
+    gvc->zoom = Z;              /* scaling factor */
+    gvc->focus.x = x;           /* graph coord of focus - points */
+    gvc->focus.y = y;
+    if (gvre) {
         if (gvre->begin_job)
 	    gvre->begin_job(gvc);
     }

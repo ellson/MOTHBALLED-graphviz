@@ -1138,7 +1138,8 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 /* FIXME - nasty hack because memGD is not a language available from command line */
 #if 0
 	gvc->job->output_lang =
-	    lang_select(gvc, gvc->job->output_langname, 0);
+            gvrender_select(gvc, gvc->job->output_langname);
+
 #else
 	gvc->job->output_lang = memGD;
 #endif
@@ -1283,7 +1284,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 	/* populate new job struct with output language and output file data */
 	gvc->job->output_lang =
-	    lang_select(gvc, gvc->job->output_langname, 0);
+            gvrender_select(gvc, gvc->job->output_langname);
 	if (Tcl_GetOpenFile
 	    (interp, argv[2], 1, 1,
 	     (ClientData *) & (gvc->job->output_file)) != TCL_OK)
