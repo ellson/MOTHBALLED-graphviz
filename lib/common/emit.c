@@ -1516,10 +1516,9 @@ static void emit_job(GVC_t * gvc, graph_t * g)
         break;
     }
 
-#if 0
+    /* Flush is necessary because we may be writing to a pipe. */
     if (gvc->job->output_lang != TK)
         fflush(gvc->job->output_file);
-#endif
 #if 0
     emit_deinit(gvc);
 #endif
