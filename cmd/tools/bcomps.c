@@ -331,7 +331,7 @@ static void init(int argc, char *argv[])
     int c;
 
     aginit();
-    while ((c = getopt(argc, argv, ":o:xstv?")) != -1) {
+    while ((c = getopt(argc, argv, ":o:xstv")) != -1) {
 	switch (c) {
 	case 'o':
 	    outfile = optarg;

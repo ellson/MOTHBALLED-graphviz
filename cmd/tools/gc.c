@@ -95,11 +95,11 @@ static void usage(int v)
 
 static void init(int argc, char *argv[])
 {
-    int c;
+    unsigned int c;
 
     aginit();
 
-    while ((c = getopt(argc, argv, ":?necCaDUrsv")) != -1) {
+    while ((c = getopt(argc, argv, ":necCaDUrsv")) != -1) {
 	switch (c) {
 	case 'e':
 	    flags |= EDGES;

@@ -322,7 +322,7 @@ static void scanArgs(int argc, char **argv)
     int c;
 
     CmdName = argv[0];
-    while ((c = getopt(argc, argv, ":?sdv")) != EOF) {
+    while ((c = getopt(argc, argv, ":sdv")) != EOF) {
 	switch (c) {
 	case 's':
 	    Silent = 1;
