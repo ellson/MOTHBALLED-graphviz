@@ -218,7 +218,9 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
 
     }
     fflush(gvc->job->output_file);
+#if 0
     emit_deinit(gvc);
+#endif
 }
 
 static FILE *file_select(char *str)

@@ -729,6 +729,8 @@ void emit_init(GVC_t * gvc, graph_t * g)
 
     setup_layering(gvc, g);
 
+    setup_pagination(gvc, g);
+
     gvrender_begin_job(gvc, Lib, Pages, X, Y, Z, x, y, GD_drawing(g)->dpi);
 }
 
@@ -746,9 +748,6 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
     int c;
     char *str, *colors;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
-
-    /* FIXME - some of setup_pagination should be in emit_init() */
-    setup_pagination(gvc, g);
 
 #if 0
 /* FIXME - apparently zoom is not set yet */
