@@ -1,0 +1,39 @@
+all:	libtwopi.a
+
+include ../../Config.mk
+include ../../makearch/$(ARCH)
+
+INCS =	-I. -I../.. \
+	-I../common \
+	-I../neatogen \
+	-I../pack \
+	-I../gvrender \
+	-I../../pathplan \
+	-I../../graph \
+	-I../../cdt \
+	-I../../gd
+
+DEFINES = -DHAVE_CONFIG_H
+
+OBJS = twopiinit.o circle.o 
+
+HFILES = circle.h 
+
+libtwopi.a : $(OBJS)
+	$(RM) libtwopi.a
+	$(AR) cr libtwopi.a $(OBJS)
+	$(RANLIB) libtwopi.a
+
+$(OBJS) : $(HFILES)
+
+install: libtwopi.a
+	$(MKPATH) $(INCDIR)
+	$(INSTALL) circle.h $(INCDIR)
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) libtwopi.a $(LIBDIR)
+
+clean:
+	$(RM) *.o core
+
+distclean: clean
+	$(RM) *.a twopi lib*.so.*
