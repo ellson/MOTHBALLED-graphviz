@@ -132,7 +132,7 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %files doc
 %defattr(-,root,root)
 %doc AUTHORS COPYING
-%doc CPL.html
+%doc cpl1.0.txt
 %{_datadir}/%{name}/doc
 
 %clean
