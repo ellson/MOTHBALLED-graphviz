@@ -75,7 +75,22 @@ int user_pos(attrsym_t * posptr, attrsym_t * pinptr, node_t * np, int nG)
     p = agxget(np, posptr->index);
     if (p[0]) {
 	c = '\0';
-	if (sscanf(p, "%lf,%lf%c", pvec, pvec + 1, &c) >= 2) {
+	if ((Ndim >= 3) && 
+            (sscanf(p, "%lf,%lf,%lf%c", pvec, pvec+1, pvec+2, &c) >= 3)){
+	    ND_pinned(np) = P_SET;
+	    if (PSinputscale > 0.0) {
+		int i;
+		for (i = 0; i < Ndim; i++)
+		    pvec[i] = pvec[i] / PSinputscale;
+	    }
+	    if (Ndim > 3)
+		jitter_d(np, nG, 3);
+	    if ((c == '!')
+		|| (pinptr && mapbool(agxget(np, pinptr->index))))
+		ND_pinned(np) = P_PIN;
+	    return TRUE;
+	}
+	else if (sscanf(p, "%lf,%lf%c", pvec, pvec + 1, &c) >= 2) {
 	    ND_pinned(np) = P_SET;
 	    if (PSinputscale > 0.0) {
 		int i;
