@@ -216,21 +216,24 @@ dnl -----------------------------------
 dnl check for SWIG - needed for script-language bindings
 
 AC_CHECK_PROG(SWIG,swig,swig)
+HAVE_SWIG=1
 if test "x$SWIG" != "x"; then
-  SWIG_VERSION=`swig -version 2>&1 | grep Version | cur -d ' ' -f 3`
+  SWIG_VERSION=`swig -version 2>&1 | grep Version | cut -d ' ' -f 3`
   SWIG_VERSION_MAJOR=`echo $SWIG_VERSION | cut -d '.' -f 1`
   SWIG_VERSION_MINOR=`echo $SWIG_VERSION | cut -d '.' -f 2`
-  if $SWIG_VERSION_MAJOR < 2; then
-    if $SWIG_VERSION_MAJOR < 1; then
-	SWIG=
+  if test $SWIG_VERSION_MAJOR -lt 2; then
+    if test $SWIG_VERSION_MAJOR -lt 1; then
+	HAVE_SWIG=0
     else
-      if $SWIG_VERSION_MINOR < 3; then
-	SWIG=
+      if test $SWIG_VERSION_MINOR -lt 3; then
+	HAVE_SWIG=0
       fi
     fi
   fi
 fi
-AM_CONDITIONAL(WITH_SWIG, [test "x$SWIG" != "x"])
+AC_SUBST(SWIG_VERSION)
+AC_SUBST(HAVE_SWIG)
+AM_CONDITIONAL(WITH_SWIG, [test "x$HAVE_SWIG" = "x1"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for JAVA
