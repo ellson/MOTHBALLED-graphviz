@@ -74,9 +74,8 @@ The %{name}-doc package provides some additional PDF and HTML documentation for 
 %setup -q
 
 %build
-%ifarch %ix86
-%define optflags -DNDEBUG -O3 -march=%{_target_cpu} -mcpu=i686 -ffast-math
-%endif
+# XXX ix86 only used to have -ffast-math, let's use everywhere
+%{expand: %%define optflags %{optflags} -ffast-math}
 # %%configure is broken in RH7.3 rpmbuild - even in comments!
 # need unreleased changes to gd, so use --with-mylibgd for now.
 CFLAGS="$RPM_OPT_FLAGS" \

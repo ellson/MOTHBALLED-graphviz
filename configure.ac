@@ -122,7 +122,7 @@ else
 	            CFLAGS="${CFLAGS} -fno-common -Wall"
 	            ;;
 	        * )
-	            CFLAGS="${CFLAGS} -Wall"
+	            CFLAGS="${CFLAGS} -Wall -ffast-math"
 	            ;;
             esac
 	    ;;
@@ -1002,8 +1002,8 @@ AC_SUBST(LIBGEN_LIBS)
 AC_FUNC_ALLOCA
 
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
-	__freadable _sysconf getrusage strerror \
-	cbrt lsqrt vsnprintf strtoul strtoll strtoull feenableexcept])
+	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
+	strtoul strtoll strtoull feenableexcept fesetenv])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp])
 

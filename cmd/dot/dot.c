@@ -83,7 +83,9 @@ static void fpinit()
 # endif
     feenableexcept(exc);
 
+#ifdef HAVE_FESETENV
     fesetenv (FE_NONIEEE_ENV);
+#endif
 
 #elif  HAVE_FPU_CONTROL_H
     /* On s390-ibm-linux, the header exists, but the definitions
