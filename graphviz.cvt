@@ -1,0 +1,929 @@
+/*
+ * this makefile copies and converts a standard automake/configure graphviz
+ * source package hierarchy to an ast nmake/iffe package hierarchy
+ *
+ * the ast hierarchy splits library components into separate directories
+ * and clearly delineates library private vs. installed headers and archives
+ *
+ * to convert:
+ *
+ *	cd $PACKAGEROOT
+ *	nmake -I lib/package -f original-graphviz-package-directory/graphviz.cvt
+ *
+ * to build:
+ *
+ *	cd $PACKAGEROOT
+ *	PACKAGEROOT=$PWD package make
+ */
+
+graphviz :CONVERT: graphviz.spec.in
+
+:OMIT:	CVS|?([Nn])[Mm]akefile?(.am|.in)
+
+:EDIT:	-		*.[chly] <<!
+s/<config\.h>/"config.h"/g
+s/\<config\.h\>/gvconfig.h/g
+s/\([[:space:]]\)configure\([[:space:]]\)/\1gvconfig.iffe\2/g
+!
+
+:EDIT:	-		*.[ch] <<!
+1i
+#pragma prototyped
+.
+!
+
+:COPY:	.		INITgraphviz	AUTHORS COPYING ChangeLog doc/FAQ.html FAQ.txt INSTALL CPL.html Makefile.am NEWS configure.ac
+
+:COPY:	dotneato	dot
+	:MOVE:		neato		neato.c neatomemtest.c neato.1
+	:MOVE:		twopi		twopi.c twopimemtest.c twopi.1
+	:MOVE:		circo		circo.c circo.1
+	:MOVE:		fdp		fdp.c fdp.1 fdpmemtest.c
+	:MOVE:		libdotneato	common/ gvrender/ pack/ awk/colortbl.awk awk/stringize.awk dotneato.c dotneato.h dotneato-config.1 dotneato-config.in neatogen/neato.h neatogen/neatoprocs.h dotgen/dot.h dotgen/dotprocs.h neatogen/adjust.h
+	:MOVE:		libdot		dotgen/
+	:MOVE:		libneato	neatogen/
+	:MOVE:		libtwopi	twopigen/
+	:MOVE:		libfdp		fdpgen/
+	:MOVE:		libcirco	circogen/
+
+:COPY:	gd		libgd
+:COPY:	graph		libgraph
+:COPY:	pathplan	libpathplan
+
+:FILE:	../lib/package	graphviz.pkg <<!
+graphviz :PACKAGE: \
+	INITgraphviz \
+	circo dot dotty fdp lefty lneato neato twopi \
+	libcirco libdot libdotneato libfdp libgd libgraph \
+	libneato libpathplan libtwopi
+
+:REQUIRES: ast-base
+
+:INDEX: AT&T Graph Visualization commands and libraries.
+
+:DESCRIPTION:
+	The AT&T Labs Research ast-graphviz package is a collection
+	of commands and libraries for the manipulation and layout of
+	graphs (as in nodes and edges, not as in barcharts).
+!
+
+:FILE:	INITgraphviz	Makefile <<!
+:PACKAGE: graphviz
+
+dontcare -lgraphviz
+
+all : pkg-graphviz.mk gvconfig.h
+
+pkg-graphviz.mk : gvconfig.h configure.ac
+	{
+	sed -e '/^AM_INIT_AUTOMAKE(graphviz,/!d' -e 's/^AM_INIT_AUTOMAKE(graphviz,[ 	]*\([^ 	]*\)).*/PACKAGE_graphviz_VERSION = \1/' $(*:N=*.in)
+	cat <<'!'
+	PACKAGE_graphviz_DATE = $(*:N=*.in:T=SR:T=R%Y-%m-%d)
+	HAVE_CONFIG_H == 1
+	GRAPHVIZ_VERSION == "$$(PACKAGE_graphviz_VERSION)"
+	GRAPHVIZ_DATE == "$$(PACKAGE_graphviz_DATE)"
+	TCLROOT = $(INSTALLROOT)
+	if ! "$$(_hosttype_:N=win32.*)" || ! "$$(CC:N=ncc|*/ncc)"
+	:PACKAGE: - ast
+	end
+	dontcare -lgraphviz
+	!
+	sed -e '/^#define[ 	][ 	]*[A-Z]/!d' -e 's/^#define[ 	][ 	]*\([^ 	]*\)[ 	][ 	]*\([^ 	]*\).*/\1 = \2/' $(*:N=*.h)
+	} > $(<)
+
+$(INCLUDEDIR) :INSTALLDIR: gvconfig.h
+
+$(LIBDIR)/make :INSTALLDIR: pkg-graphviz.mk
+
+:: AUTHORS COPYING ChangeLog FAQ.html FAQ.txt INSTALL \
+	CPL.html Makefile.am NEWS \
+	README graphviz.mk CONVERT.mk
+!
+
+:FILE:	INITgraphviz	gvconfig.iffe <<!
+set	config
+
+hdr	dirent,errno,fenv,fpu_control,iconv,malloc,stdarg,termio,termios
+
+hdr	jpeglib -ljpeg
+hdr	png -lpng
+hdr	ttf -lttf
+hdr	xpm -lxpm
+hdr	zlib -lz
+hdr	freetype -lfreetype
+hdr	expat -lexpat
+
+sys	fpu,resource
+
+lib	cbrt,lsqrt,sincos math.h
+lib	drand48,lrand48,srand48
+lib	feenableexcept fenv.h
+lib	vfork vfork.h
+lib	getrusage,setenv,setmode
+
+typ	boolean
+
+mem	FILE._IO_read_end,FILE._IO_read_ptr,FILE._next,FILE._endb stdio.h
+mem	FILE._cnt,FILE._r stdio.h
+
+exp	HAVE_LIBJPEG	HAVE_JPEGLIB_H & HAVE_JPEG_LIB & HAVE_ZLIB
+exp	HAVE_LIBPNG	HAVE_PNG_H & HAVE_PNG_LIB & HAVE_ZLIB
+exp	HAVE_LIBTTF	HAVE_TTF_H & HAVE_TTF_LIB
+exp	HAVE_LIBXPM	HAVE_XPM_H & HAVE_XPM_LIB
+exp	HAVE_LIBZ	HAVE_ZLIB_H & HAVE_Z_LIB
+exp	HAVE_LIBEXPATBROKEN	HAVE_EXPAT_H & HAVE_EXPAT_LIB
+
+exp	HAVE_LIBFREETYPESUCKS	HAVE_FREETYPE_H
+
+cat{
+	#if _PACKAGE_ast
+	#include <ast.h>
+	#undef	HAVE__CNT_IN_FILE
+	#undef	HAVE__ENDB_IN_FILE
+	#undef	HAVE__IO_READ_END_IN_FILE
+	#undef	HAVE__IO_READ_PTR_IN_FILE
+	#undef	HAVE__NEXT_IN_FILE
+	#undef	HAVE__R_IN_FILE
+	#define	HAVE_ICONV		1
+	#define	HAVE_ICONV_T_DEF	1
+	#define HAVE__ENDB_IN_FILE	1
+	#define HAVE__NEXT_IN_FILE	1
+	#define HAVE_STRERROR		1
+	#define HAVE_STRCASECMP		1
+	#define HAVE_STRNCASECMP	1
+	#define HAVE_VSNPRINTF		1
+	#define HAVE_ERRNO_DECL		1
+	#define ENABLE_CODEGENS		1
+	#define WITH_GIF		1
+	#endif
+}end
+!
+
+:FILE:	dot		Makefile <<!
+:PACKAGE: graphviz
+
+dot :: dot.1 dot.c -ldot
+!
+
+:EDIT:	dot		dot.c dotmemtest.c <<!
+g/\<\(BUILD\)*\(DATE\|VERSION\)\>/s//GRAPHVIZ_\2/g
+!
+
+:FILE:	neato		Makefile <<!
+:PACKAGE: graphviz
+
+neato :: neato.1 neato.c -lneato
+!
+
+:EDIT:	neato		neato.c neatomemtest.c <<!
+g/\<\(BUILD\)*\(DATE\|VERSION\)\>/s//GRAPHVIZ_\2/g
+!
+
+:FILE:	twopi		Makefile <<!
+:PACKAGE: graphviz
+
+twopi :: twopi.1 twopi.c -ltwopi
+!
+
+:EDIT:	twopi		twopi.c twopimemtest.c <<!
+g/\<\(BUILD\)*\(DATE\|VERSION\)\>/s//GRAPHVIZ_\2/g
+!
+
+:FILE:	fdp		Makefile <<!
+:PACKAGE: graphviz
+
+fdp :: fdp.1 fdp.c -lfdp -lneato
+!
+
+:EDIT:	fdp		fdp.c fdpmemtest.c <<!
+g/\<\(BUILD\)*\(DATE\|VERSION\)\>/s//GRAPHVIZ_\2/g
+!
+
+:FILE:	circo		Makefile <<!
+:PACKAGE: graphviz
+
+circo :: circo.1 circo.c -lcirco
+!
+
+:EDIT:	circo		circo.c <<!
+g/\<\(BUILD\)*\(DATE\|VERSION\)\>/s//GRAPHVIZ_\2/g
+!
+
+:FILE:	libdot		Makefile <<!
+:PACKAGE: graphviz
+
+dot :LIBRARY: acyclic.c class1.c class2.c cluster.c compound.c conc.c \
+	decomp.c dotinit.c dotsplines.c fastgr.c flat.c mincross.c \
+	position.c rank.c sameport.c \
+	-ldotneato
+!
+
+:FILE:	libdotneato	Makefile <<!
+:PACKAGE: graphviz
+
+dotneato :LIBRARY: arrows.c ccomps.c colxlate.c diagen.c dotneato.c emit.c \
+	figgen.c fontmetrics.c gdgen.c globals.c gvconfig.c gvcontext.c \
+	gvjobs.c gvlang.c gvrender.c hpglgen.c htmllex.c htmlparse.c htmltable.c \
+	input.c labels.c mapgen.c mifgen.c mpgen.c ns.c output.c pack.c picgen.c \
+	pointset.c postproc.c psgen.c routespl.c shapes.c splines.c strcasecmp.c \
+	strncasecmp.c svggen.c timing.c utils.c vrmlgen.c vtxgen.c \
+	-lpathplan -lgd -lgraph
+
+colortbl.h : color_names colortbl.awk
+	$(SED) "s/_//g" $(*:O=1) | LC_COLLATE=C sort > color_lib
+	$(NAWK) -f $(*:O=2) color_lib > colortbl.h
+	$(RM) color_lib
+
+ps.h : ps.txt stringize.awk
+	$(NAWK) -f $(*:O=2) $(*:O=1) > ps.h
+
+$(INCLUDEDIR) :INSTALLDIR: \
+	adjust.h colortbl.h const.h dot.h dotprocs.h globals.h macros.h \
+	neato.h neatoprocs.h pack.h ps.h render.h renderprocs.h types.h \
+	utils.h gvrender.h gvrenderint.h pointset.h
+!
+
+:EDIT:	libdotneato	globals.h renderprocs.h <<!
+/defined(_DLL)/s//defined(__EXPORT__)/
+!
+
+:EDIT:	libdotneato	dotneato.c ptest.c <<!
+g/\<\(BUILD\)*\(DATE\|VERSION\)\>/s//GRAPHVIZ_\2/g
+!
+
+:EDIT:	libdotneato	dotneato.h <<!
+1,$c
+#include <dot.h>
+#include <neato.h>
+.
+!
+
+:FILE:	libgd		Makefile <<!
+:PACKAGE: graphviz X11
+
+gd 1.0 :LIBRARY: gd.c gd_gd.c gd_gd2.c gd_io.c gd_io_dp.c gd_io_file.c \
+        gd_ss.c gd_io_ss.c gd_gif_in.c gd_gif_out.c gd_jpeg.c gd_png.c gdcache.c \
+        gdfontg.c gdfontl.c gdfontmb.c gdfonts.c gdfontt.c gdhelpers.c \
+        gdkanji.c gdtables.c gdft.c gdxpm.c wbmp.c gd_security.c gd_wbmp.c gd_topal.c \
+	-lX11 -lXpm -ljpeg -lpng -lttf -lz -lm
+
+$(INCLUDEDIR) :INSTALLDIR: gd.h gd_io.h
+!
+
+:EDIT:	libgd		gd.c gd_gd.c gd_io.c gd_io_dp.c gd_io_file.c gd_ss.c gd_io_ss.c gd_gif.c gd_jpeg.c gd_png.c gdft.c gdxpm.c wbmp.c <<!
+/#include "gd.h"/m/#include </-1
+!
+
+:EDIT:	libgd		gd_gd2.c <<!
+/#include "gd.h"/m/#include </-1
+!
+
+:EDIT:	libgd		gdkanji.c <<!
+/#include "gd.h"/m/#include </-1
+/EILSEQ/i
+#ifdef EILSEQ
+.
+/error/a
+#endif
+.
+!
+
+:FILE:	libgraph	Makefile <<!
+:PACKAGE: graphviz
+
+:YYPREFIX: ag ast.h parser.y
+
+graph $(VERSION) :LIBRARY: graph.3 \
+	attribs.c agxbuf.c edge.c graph.c node.c graphio.c lexer.c node.c \
+	parser.y refstr.c trie.c
+
+$(INCLUDEDIR) :INSTALLDIR: graph.h agxbuf.h
+!
+
+:FILE:	libneato	Makefile <<!
+:PACKAGE: graphviz
+
+neato :LIBRARY: adjust.c circuit.c edges.c find_ints.c geometry.c \
+	heap.c hedges.c info.c neatoinit.c intersect.c legal.c lu.c matinv.c \
+	memory.c poly.c printvis.c site.c solve.c neatosplines.c stuff.c \
+	voronoi.c \
+	stress.c kkutils.c matrix_ops.c embed_graph.c dijkstra.c conjgrad.c \
+	pca.c closest.c bfs.c constraint.c \
+	-ldotneato
+
+if CC.HOSTTYPE == "win32.*"  || "$(-mam)" == "static*"
+neatosplines.o : .CC.NOOPTIMIZE
+end
+!
+
+:FILE:	libfdp		Makefile <<!
+:PACKAGE: graphviz
+
+fdp :LIBRARY: comp.c dbg.c grid.c init.c layout.c options.c tlayout.c \
+	xlayout.c \
+	-ldotneato
+
+$(INCLUDEDIR) :INSTALLDIR: fdp.h options.h
+!
+
+:FILE:	libcirco	Makefile <<!
+:PACKAGE: graphviz
+
+circo :LIBRARY: circularinit.c nodelist.c block.c edgelist.c \
+	stack.c circular.c deglist.c blocktree.c blockpath.c \
+	circpos.c nodeset.c \
+	-lneato -ldotneato
+
+$(INCLUDEDIR) :INSTALLDIR: circo.h circular.h block.h nodelist.h stack.h
+!
+
+:FILE:	libpathplan	Makefile <<!
+:PACKAGE: graphviz
+
+pathplan $(VERSION) :LIBRARY: pathplan.3 \
+	cvt.c inpoly.c route.c shortest.c shortestpth.c solvers.c triang.c \
+	util.c visibility.c \
+	-lm
+
+$(INCLUDEDIR) :INSTALLDIR: pathplan.h pathgeom.h pathutil.h vispath.h vis.h
+
+:: path.lefty
+!
+
+:EDIT:	libpathplan	pathplan.h vispath.h <<!
+/defined(_DLL)/s//defined(__EXPORT__)/
+!
+
+:EDIT:	libpathplan	solvers.c <<!
+/<math.h>/m/"gvconfig.h"/
+!
+
+:FILE:	libtwopi	Makefile <<!
+:PACKAGE: graphviz
+
+twopi :LIBRARY: circle.c twopiinit.c -lneato
+
+$(INCLUDEDIR) :INSTALLDIR: circle.h
+!
+
+:FILE:	../lib/package	graphviz.lic <<!
+#
+# graphviz default license info
+#
+
+message_set=3
+
+contributor=(
+	[dpd]="David Dobkin <dpd@cs.princeton.edu>"
+	[ellson]="John Ellson  <ellson@lucent.com>"
+	[erg]="Emden Gansner <erg@research.att.com>"
+	[ek]="Eleftherios Koutsofios <ek@research.att.com>"
+	[north]="Stephen North <north@research.att.com>"
+	[kpv]="Kiem-Phong Vo <kpv@research.att.com>"
+	[gmcw]="Gordon Woodhull <gmcw@worldnet.att.net>"
+)
+
+license=(
+	type=open
+	package=graphviz
+	since=1995
+	author=ek+erg+north
+
+	organization="Software and Systems Research"
+
+	domain=research.att.com
+	corporation="AT&T"
+	company="Labs Research"
+	location="Florham Park NJ"
+
+	url=http://www.${license.domain}/sw/license/${license.package}-${license.type}.html
+	bin=http://www.${license.domain}/sw/license/${license.package}-${license.type}-bin.html
+
+	notice='
+This product contains certain software code or other
+information ("AT&T Software") proprietary to AT&T Corp.
+("AT&T"). The AT&T Software is provided to you "AS IS". YOU
+ASSUME TOTAL RESPONSIBILITY AND RISK FOR USE OF THE AT&T
+SOFTWARE. AT&T DOES NOT MAKE, AND EXPRESSLY DISCLAIMS, ANY
+EXPRESS OR IMPLIED WARRANTIES OF ANY KIND WHATSOEVER,
+INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE,
+WARRANTIES OF TITLE OR NON-INFRINGEMENT OF ANY INTELLECTUAL
+PROPERTY RIGHTS, ANY WARRANTIES ARISING BY USAGE OF TRADE,
+COURSE OF DEALING OR COURSE OF PERFORMANCE, OR ANY WARRANTY
+THAT THE AT&T SOFTWARE IS "ERROR FREE" OR WILL MEET YOUR
+REQUIREMENTS.
+
+Unless you accept a license to use the AT&T Software, you
+shall not reverse compile, disassemble or otherwise reverse
+engineer this product to ascertain the source code for any
+AT&T Software.
+
+Copyright (c) AT&T Corp.
+All rights reserved.
+AT&T is a registered trademark of AT&T Corp.
+'
+)
+!
+
+:FILE:	../lib/package/LICENSES	graphviz <<!
++------------------------------------------------------------------------------+
+|          This license covers all software that refers to the URL             |
+|         http://www.research.att.com/sw/license/graphviz-open.html            |
++------------------------------------------------------------------------------+
+
+                            SOURCE CODE AGREEMENT
+                                 Version 1.1
+
+PLEASE READ THIS AGREEMENT CAREFULLY.  By accessing and using the
+Source Code, you accept this Agreement in its entirety and agree to
+only use the Source Code in accordance with the following terms and
+conditions.  If you do not wish to be bound by these terms and
+conditions, do not access or use the Source Code. 
+
+ARTICLE 1.0 -  YOUR REPRESENTATIONS
+
+1.1. You represent and warrant that:  (a) If you are an entity, or an
+individual other than the person accepting this Agreement, the person
+accepting this Agreement on your behalf is your legally authorized
+representative, duly authorized to accept agreements of this type on
+your behalf and obligate you to comply with its provisions; (b) You
+have read and fully understand this Agreement in its entirety; (c) Your
+Build Materials are either original or do not include any Software
+obtained under a license that conflicts with the obligations contained
+in this Agreement; (d) To the best of your knowledge, your Build
+Materials do not infringe or misappropriate the rights of any person or
+entity; and, (e) You will regularly monitor the Website for any
+notices.
+
+ARTICLE 2.0 -  DEFINITIONS AND INTERPRETATION
+
+2.1. For purposes of this Agreement, certain terms have been defined
+below and elsewhere in this Agreement to encompass meanings that may
+differ from, or be in addition to, the normal connotation of the
+defined word.  (a) "Additional Code" means Software in source code form
+which does not contain any (i) of the Source Code, or (ii) derivative
+work (such term having the same meaning in this Agreement as under U.S.
+Copyright Law) of the Source Code.  (b) "AT&T Patent Claims" means
+those claims of patents (i) owned by AT&T and (ii) licensable without
+restriction or obligation, which, absent a license, are necessarily and
+unavoidably infringed by the use of the functionality of the Source
+Code.  (c) "Build Materials" means, with reference to a Derived
+Product, the Patch and Additional Code, if any, used in the preparation
+of such Derived Product, together with written instructions that
+describe, in reasonable detail, such preparation.  (d) "Capsule" means
+the computer file having the name graphviz_1_x.tar.gz, which will be
+downloaded after accepting, or was opened to access, this Agreement.
+(e) "Derived Product" means a Software Product which is a derivative
+work of the Source Code.  (f) "IPR" means all rights protectable under
+intellectual property law anywhere throughout the world, including
+rights protectable under patent, copyright and trade secret laws, but
+not trademark rights.  (g) "Patch" means Software for changing all or
+any portion of the Source Code.  (h) "Proprietary Notice" means the
+following statement:  "This product contains certain software code or
+other information ("AT&T Software") proprietary to AT&T Corp. ("AT&T").
+The AT&T Software is provided to you "AS IS".  YOU ASSUME TOTAL
+RESPONSIBILITY AND RISK FOR USE OF THE AT&T SOFTWARE.  AT&T DOES NOT
+MAKE, AND EXPRESSLY DISCLAIMS, ANY EXPRESS OR IMPLIED WARRANTIES OF ANY
+KIND WHATSOEVER, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, WARRANTIES OF
+TITLE OR NON-INFRINGEMENT OF ANY INTELLECTUAL PROPERTY RIGHTS, ANY
+WARRANTIES ARISING BY USAGE OF TRADE, COURSE OF DEALING OR COURSE OF
+PERFORMANCE, OR ANY WARRANTY THAT THE AT&T SOFTWARE IS "ERROR FREE" OR
+WILL MEET YOUR REQUIREMENTS.  You have the right to obtain from the
+person or entity who furnished this product to you support and
+maintenance for the AT&T Software substantially similar to the support
+and maintenance offered by such person or entity with respect to the
+rest of this product and/or any other reasonably comparable products
+the person or entity distributes.  Unless you accept a license to use
+the AT&T Software, you shall not reverse compile, disassemble or
+otherwise reverse engineer this product to ascertain the source code
+for any AT&T Software.  (c) AT&T Corp. All rights reserved.  AT&T is a
+registered trademark of AT&T Corp." (i) "Software" means, as the
+context may require, source or object code instructions for controlling
+the operation of a central processing unit or computer, and computer
+files containing data or text.  (j) "Software Product" means a
+collection of computer files containing Software in object code form
+only, which, taken together, reasonably comprise a product, regardless
+of whether such product is intended for internal use or commercial
+exploitation.  A single computer file can comprise a Software Product.
+(k) "Source Code" means the Software contained in compressed form in
+the Capsule.  (l) "Website" means the Internet website having the URL
+http://www.research.att.com/sw/tools/graphviz.  AT&T may change the
+content or URL of the Website, or remove it from the Internet
+altogether.
+
+2.2. By way of clarification only, the terms Capsule, Proprietary
+Notice and Source Code when used in this Agreement shall mean the
+materials and information defined by such terms without any change,
+enhancement, amendment, alteration or modification (collectively,
+"change").
+
+ARTICLE 3.0 -  GRANT OF RIGHTS
+
+3.1. Subject to third party intellectual property claims, if any, and
+the terms and conditions of this Agreement, AT&T grants to you under:
+(a) the AT&T Patent Claims and AT&T's copyright rights in the Source
+Code, a non-exclusive, fully paid-up license to:  (i) Reproduce and
+distribute the Capsule; (ii) Compile the Source Code and execute the
+resultant binary Software on a computer; (iii) Prepare a Derived
+Product solely by compiling Additional Code, if any, together with the
+code resulting from operating a Patch on the Source Code; and, (iv)
+Execute on a computer and distribute to others Derived Products, except
+that, with respect to the AT&T Patent Claims, the license rights
+granted in clauses (iii) and (iv) above shall only extend, and be
+limited, to that portion of a Derived Product which is Software
+compiled from some portion, without change, of the Source Code; and,
+(b) AT&T's copyright rights in the Source Code, a non-exclusive, fully
+paid-up license to prepare and distribute Patches for the Source Code.
+
+3.2. Subject to the terms and conditions of this Agreement, you may
+create a hyperlink between an Internet website owned and controlled by
+you and the Website, which hyperlink describes in a fair and good faith
+manner where the Capsule and Source Code may be obtained, provided
+that, you do not frame the Website or otherwise give the false
+impression that AT&T is somehow associated with, or otherwise endorses
+or sponsors your website.  Any goodwill associated with such hyperlink
+shall inure to the sole benefit of AT&T.  Other than the creation of
+such hyperlink, nothing in this Agreement shall be construed as
+conferring upon you any right to use any reference to AT&T, its trade
+names, trademarks, service marks or any other indicia of origin owned
+by AT&T, or to indicate that your products or services are in any way
+sponsored, approved or endorsed by, or affiliated with, AT&T.  3.2.
+Subject to the terms and conditions of this Agreement, you may create a
+hyperlink between an Internet website owned and controlled by you and
+the Website, which hyperlink describes in a fair and good faith manner
+where the Capsule and Source Code may be obtained, provided that, you
+do not frame the Website or otherwise give the false impression that
+AT&T is somehow associated with, or otherwise endorses or sponsors your
+website.  Any goodwill associated with such hyperlink shall inure to
+the sole benefit of AT&T.  Other than the creation of such hyperlink,
+nothing in this Agreement shall be construed as conferring upon you any
+right to use any reference to AT&T, its trade names, trademarks,
+service marks or any other indicia of origin owned by AT&T, or to
+indicate that your products or services are in any way sponsored,
+approved or endorsed by, or affiliated with, AT&T.  3.3. Except as
+expressly set forth in Section 3.1 above, no other rights or licenses
+under any of AT&T's IPR are granted or, by implication, estoppel or
+otherwise, conferred.  By way of example only, no rights or licenses
+under any of AT&T's patents are granted or, by implication, estoppel or
+otherwise, conferred with respect to any portion of a Derived Product
+which is not Software compiled from some portion, without change, of
+the Source Code.  3.3. Except as expressly set forth in Section 3.1
+above, no other rights or licenses under any of AT&T's IPR are granted
+or, by implication, estoppel or otherwise, conferred.  By way of
+example only, no rights or licenses under any of AT&T's patents are
+granted or, by implication, estoppel or otherwise, conferred with
+respect to any portion of a Derived Product which is not Software
+compiled from some portion, without change, of the Source Code.
+ARTICLE 4.0 -  YOUR OBLIGATIONS
+
+4.1. You shall only distribute the Capsule and Build Materials free of
+charge, without any form of compensation.  However, you may charge for
+bona fide maintenance and support of the Software resulting from the
+Build Materials and, if you furnish the Capsule or Build Materials on
+any physical media, you may charge for your out-of-pocket expense for
+both the media and shipping.  You may distribute Derived Products for a
+fair and reasonable fee.  4.1. You shall only distribute the Capsule
+and Build Materials free of charge, without any form of compensation.
+However, you may charge for bona fide maintenance and support of the
+Software resulting from the Build Materials and, if you furnish the
+Capsule or Build Materials on any physical media, you may charge for
+your out-of-pocket expense for both the media and shipping.  You may
+distribute Derived Products for a fair and reasonable fee.  4.2. If you
+distribute Build Materials (including if you are required to do so
+pursuant to this Agreement), you shall ensure that the recipient enters
+into and duly accepts a written agreement with you which includes the
+minimum terms set forth in Appendix A (completed to indicate you as the
+LICENSOR) and no other provisions which, in AT&T's opinion, conflict
+with your obligations under, or the intent of, this Agreement.  If any
+Additional Code contained in your Build Materials includes Software you
+obtained under license, the written agreement shall also include
+complete details concerning the license and any restrictions or
+obligations associated with such Software.  The written agreement
+required under this Section 4.2 may be in electronic form.
+
+4.3. If you prepare a Derived Product that you distribute to a third
+party, or if you distribute to a third party any Build Materials for a
+Derived Product, you shall make available to such third party support
+and maintenance for at least that portion of such Derived Product or
+Build Materials which is, or is a derivative work of, the Source Code.
+Such support and maintenance shall be substantially similar to the
+support and maintenance offered by you with respect to any other
+reasonably comparable products that you distribute.  In no event shall
+you or anyone acting for you, in any way, indicate to any person or
+entity that AT&T will support or maintain any Software and you shall
+indemnify AT&T for any expenses, including legal fees, incurred by AT&T
+as a result of a breach of this Section 4.3.
+
+4.4. If you prepare a Patch which you distribute to anyone else, you
+shall:  (a) Contact AT&T, as may be provided on the Website or in a
+text file included with the Source Code, and describe for AT&T such
+Patch; and, (b) Provide AT&T with a copy of such Patch as directed by
+AT&T, unless you make it generally available on your Internet website,
+in which case, you shall provide AT&T with the URL of your website and
+hereby grant to AT&T a non-exclusive, fully-paid up right to create a
+hyperlink between your website and a page associated with the Website.
+
+4.5. If you prepare a Derived Product, such product shall conspicuously
+display to users, and any corresponding documentation and license
+agreement shall include as a provision, the Proprietary Notice.
+
+ARTICLE 5.0 -  YOUR GRANT OF RIGHTS TO AT&T
+
+5.1. You grant to AT&T under any IPR owned or licensable by you which
+in any way relates to your Patches, a non-exclusive, perpetual,
+worldwide, fully paid-up, unrestricted, irrevocable license, along with
+the right to sublicense others, to (a) make, have made, use, offer to
+sell, sell and import any products, services or any combination of
+products or services, and (b) reproduce, distribute, prepare derivative
+works based on, perform, display and transmit your Patches in any media
+whether now known or in the future developed.  5.1. You grant to AT&T
+under any IPR owned or licensable by you which in any way relates to
+your Patches, a non-exclusive, perpetual, worldwide, fully paid-up,
+unrestricted, irrevocable license, along with the right to sublicense
+others, to (a) make, have made, use, offer to sell, sell and import any
+products, services or any combination of products or services, and (b)
+reproduce, distribute, prepare derivative works based on, perform,
+display and transmit your Patches in any media whether now known or in
+the future developed.  ARTICLE 6.0 -  AS IS CLAUSE / LIMITATION OF
+LIABILITY
+
+6.1. The Source Code and Capsule are provided to you "AS IS".  YOU
+ASSUME TOTAL RESPONSIBILITY AND RISK FOR YOUR USE OF THEM INCLUDING THE
+RISK OF ANY DEFECTS OR INACCURACIES THEREIN.  AT&T DOES NOT MAKE, AND
+EXPRESSLY DISCLAIMS, ANY EXPRESS OR IMPLIED WARRANTIES OF ANY KIND
+WHATSOEVER, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, WARRANTIES OF
+TITLE OR NON-INFRINGEMENT OF ANY IPR OR TRADEMARK RIGHTS, ANY
+WARRANTIES ARISING BY USAGE OF TRADE, COURSE OF DEALING OR COURSE OF
+PERFORMANCE, OR ANY WARRANTY THAT THE SOURCE CODE OR CAPSULE ARE "ERROR
+FREE" OR WILL MEET YOUR REQUIREMENTS.  6.1. The Source Code and Capsule
+are provided to you "AS IS".  YOU ASSUME TOTAL RESPONSIBILITY AND RISK
+FOR YOUR USE OF THEM INCLUDING THE RISK OF ANY DEFECTS OR INACCURACIES
+THEREIN.  AT&T DOES NOT MAKE, AND EXPRESSLY DISCLAIMS, ANY EXPRESS OR
+IMPLIED WARRANTIES OF ANY KIND WHATSOEVER, INCLUDING, WITHOUT
+LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A
+PARTICULAR PURPOSE, WARRANTIES OF TITLE OR NON-INFRINGEMENT OF ANY IPR
+OR TRADEMARK RIGHTS, ANY WARRANTIES ARISING BY USAGE OF TRADE, COURSE
+OF DEALING OR COURSE OF PERFORMANCE, OR ANY WARRANTY THAT THE SOURCE
+CODE OR CAPSULE ARE "ERROR FREE" OR WILL MEET YOUR REQUIREMENTS.  6.2.
+IN NO EVENT SHALL AT&T BE LIABLE FOR (a) ANY INCIDENTAL, CONSEQUENTIAL,
+OR INDIRECT DAMAGES (INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF
+PROFITS, BUSINESS INTERRUPTION, LOSS OF PROGRAMS OR INFORMATION, AND
+THE LIKE) ARISING OUT OF THE USE OF OR INABILITY TO USE THE SOURCE CODE
+OR CAPSULE, EVEN IF AT&T OR ANY OF ITS AUTHORIZED REPRESENTATIVES HAS
+BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES, (b) ANY CLAIM
+ATTRIBUTABLE TO ERRORS, OMISSIONS, OR OTHER INACCURACIES IN THE SOURCE
+CODE OR CAPSULE, OR (c) ANY CLAIM BY ANY THIRD PARTY.
+
+6.3. BECAUSE SOME STATES DO NOT ALLOW THE EXCLUSION OR LIMITATION OF
+LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, THE ABOVE
+LIMITATIONS MAY NOT APPLY TO YOU.  IN THE EVENT THAT APPLICABLE LAW
+DOES NOT ALLOW THE COMPLETE EXCLUSION OR LIMITATION OF LIABILITY OF
+CLAIMS AND DAMAGES AS SET FORTH IN THIS AGREEMENT, AT&T'S LIABILITY IS
+LIMITED TO THE GREATEST EXTENT PERMITTED BY LAW.
+
+ARTICLE 7.0 -  INDEMNIFICATION
+
+7.1. You shall indemnify and hold harmless AT&T, its affiliates and
+authorized representatives against any claims, suits or proceedings
+asserted or commenced by any third party and arising out of, or
+relating to, your use of the Source Code.  This obligation shall
+include indemnifying against all damages, losses, costs and expenses
+(including attorneys' fees) incurred by AT&T, its affiliates and
+authorized representatives as a result of any such claims, suits or
+proceedings, including any costs or expenses incurred in defending
+against any such claims, suits, or proceedings.
+
+ARTICLE 8.0 -  GENERAL
+
+8.1. You shall not assert against AT&T, its affiliates or authorized
+representatives any claim for infringement or misappropriation of any
+IPR or trademark rights in any way relating to the Source Code,
+including any such claims relating to any Patches.  8.1. You shall not
+assert against AT&T, its affiliates or authorized representatives any
+claim for infringement or misappropriation of any IPR or trademark
+rights in any way relating to the Source Code, including any such
+claims relating to any Patches.  8.2. In the event that any provision
+of this Agreement is deemed illegal or unenforceable, this Agreement
+shall automatically terminate.  AT&T may, but is not obligated to, post
+on the Website a new version of this Agreement which, in AT&T's
+opinion, reasonably preserves the intent of this Agreement.  8.2. In
+the event that any provision of this Agreement is deemed illegal or
+unenforceable, this Agreement shall automatically terminate.  AT&T may,
+but is not obligated to, post on the Website a new version of this
+Agreement which, in AT&T's opinion, reasonably preserves the intent of
+this Agreement.  8.3. Your rights and license (but not any of your
+obligations) under this Agreement shall terminate automatically in the
+event that (a) notice of a non-frivolous claim by a third party
+relating to the Source Code or Capsule is posted on the Website, (b)
+you have knowledge of any such claim, (c) any of your representations
+or warranties in Article 1.0 or Section 8.4 are false or inaccurate,
+(d) you exceed the rights and license granted to you or (e) you fail to
+fully comply with any provision of this Agreement.  8.3. Your rights
+and license (but not any of your obligations) under this Agreement
+shall terminate automatically in the event that (a) notice of a
+non-frivolous claim by a third party relating to the Source Code or
+Capsule is posted on the Website, (b) you have knowledge of any such
+claim, (c) any of your representations or warranties in Article 1.0 or
+Section 8.4 are false or inaccurate, (d) you exceed the rights and
+license granted to you or (e) you fail to fully comply with any
+provision of this Agreement.  8.4. You acknowledge that the Source Code
+and Capsule are subject to U.S. export laws and regulations and that
+any use thereof must be authorized under those laws and regulations.
+You hereby assures AT&T that you will not, directly or indirectly,
+"export" or "reexport" the Source Code or Capsule to any country, or
+national of any country, to which, or to whom, "export" or "reexport"
+is prohibited under U.S. export laws and regulations.  For purposes of
+this Section 8.4, "export" and "reexport" mean transferring or
+releasing to another country or to a national of another country
+(wherever that person is located) by any means, including physical,
+electronic, or otherwise.  You represent and warrant that you are not
+located in or a national of any such country.  8.4. You acknowledge
+that the Source Code and Capsule are subject to U.S. export laws and
+regulations and that any use thereof must be authorized under those
+laws and regulations.  You hereby assures AT&T that you will not,
+directly or indirectly, "export" or "reexport" the Source Code or
+Capsule to any country, or national of any country, to which, or to
+whom, "export" or "reexport" is prohibited under U.S. export laws and
+regulations.  For purposes of this Section 8.4, "export" and "reexport"
+mean transferring or releasing to another country or to a national of
+another country (wherever that person is located) by any means,
+including physical, electronic, or otherwise.  You represent and
+warrant that you are not located in or a national of any such country.
+8.5. Without limiting any of AT&T's rights under this Agreement or at
+law or in equity, or otherwise expanding the scope of the license and
+rights granted hereunder, if you fail to perform any of your
+obligations under this Agreement with respect to any of your Patches or
+Derived Products, or if you do any act which exceeds the scope of the
+license and rights granted herein, then such Patches, Derived Products
+and acts are not licensed or otherwise authorized under this Agreement
+and such failure shall also be deemed a breach of this Agreement.  In
+addition to all other relief available to it for any breach of your
+obligations under this Agreement, AT&T shall be entitled to an
+injunction requiring you to perform such obligations.
+
+8.6. This Agreement shall be governed by and construed in accordance
+with the laws of the State of New York, USA, without regard to its
+conflicts of law rules. This Agreement shall be fairly interpreted in
+accordance with its terms and without any strict construction in favor
+of or against either AT&T or you.  Any suit or proceeding you bring
+relating to this Agreement shall be brought and prosecuted only in New
+York, New York, USA.
+
+--------------------------
+Appendix A - Minimum Terms
+--------------------------
+
+The minimum terms are available at the Internet website having the URL
+http://www.research.att.com/sw/tools/graphviz/license/minterms.html or
+accessed by opening the computer file having the name MINTERMS.txt.
+
+LICENSOR: ______________
+
+LICENSE AGREEMENT
+
+This License Agreement (the "Agreement") provides the terms and
+conditions pursuant to which you ("LICENSEE") are granted by LICENSOR a
+non-exclusive license to exploit the Build Materials (as defined
+below).  PLEASE READ THIS AGREEMENT CAREFULLY.  This License Agreement
+(the "Agreement") provides the terms and conditions pursuant to which
+you ("LICENSEE") are granted by LICENSOR a non-exclusive license to
+exploit the Build Materials (as defined below).  PLEASE READ THIS
+AGREEMENT CAREFULLY.  ARTICLE 1.0 -  REPRESENTATIONS
+
+1.1. LICENSEE represents and warrants that:  (a) If LICENSEE is an
+entity, or an individual other than the person accepting this
+Agreement, the person accepting this Agreement on LICENSEE's behalf is
+a legally authorized representative, duly authorized to accept
+agreements of this type on LICENSEE's behalf and obligate LICENSEE to
+comply with its provisions; (b) LICENSEE has read and fully understand
+this Agreement in its entirety; and, (c) LICENSEE's Build Materials are
+either original or do not include any Software obtained under a license
+that conflicts with the obligations contained in this Agreement; (c)
+LICENSEE's Build Materials are either original or do not include any
+Software obtained under a license that conflicts with the obligations
+contained in this Agreement; ARTICLE 2.0 -  DEFINITIONS
+
+2.1. "AT&T Source Code Agreement" means the agreement available at the
+Internet website having the URL
+http://www.research.att.com/sw/tools/graphviz/license/source.html, or
+accessed by opening the computer file having the name LICENSE.txt, if
+such file is furnished to LICENSEE.
+
+2.2. "AT&T Source Code Release" means the computer files owned by AT&T
+which can be obtained under license at the Internet website having the
+URL http://www.research.att.com/sw/tools/graphviz, or by opening the
+computer file having the name graphviz15.tgz or graphviz15.zip, if such
+file is furnished to LICENSEE.
+
+2.3. "Build Materials" means the compilation script, Patch files and
+other source code files, if any, furnished by LICENSOR to LICENSEE
+pursuant to this Agreement.  THE BUILD MATERIALS INCLUDE SOFTWARE OR
+OTHER INFORMATION PROPRIETARY TO AT&T.  LICENSEE'S EXERCISE OF ONE OR
+MORE OF THE RIGHTS GRANTED IN SECTION 3.1 OF THIS AGREEMENT WITHOUT (a)
+FIRST ENTERING INTO THE AT&T SOURCE CODE AGREEMENT, AND (b) ABIDING BY
+THE TERMS AND CONDITIONS OF SUCH AGREEMENT MAY (AND IF LICENSEE HAS
+USED ANY PATCH, LICENSEE WILL) INFRINGE OR MISAPPROPRIATE IPR OWNED OR
+CONTROLLED BY AT&T.
+
+2.4. "IPR" means all rights protectable under intellectual property law
+anywhere throughout the world, including rights protectable under
+patent, copyright and trade secret laws, but not trademark rights.
+
+2.5. "Patch" means Software for changing all or any portions of any
+Software contained in the AT&T Source Code Release.
+
+2.6. "Software" means any source or object code instructions for
+controlling the operation of a central processing unit or computer, or
+computer files containing data or text.  2.6. "Software" means any
+source or object code instructions for controlling the operation of a
+central processing unit or computer, or computer files containing data
+or text.  ARTICLE 3.0 -  GRANT OF RIGHTS TO LICENSEE
+
+3.1. Subject to the terms and conditions of this Agreement, LICENSOR
+grants to LICENSEE under any IPR owned or licensable by LICENSOR which
+relates to the Build Materials, a non-exclusive license, with the right
+to sublicense others, to (a) make, have made, use, sell and import, any
+products or services; and (b) reproduce, distribute, perform and
+display all or any portion of the Build Materials, and prepare
+derivative works based on the Build Materials and reproduce,
+distribute, perform and display such derivative works.
+
+ARTICLE 4.0 -  LICENSEE'S DISTRIBUTION OBLIGATIONS
+
+4.1. If LICENSEE distributes any products licensed pursuant to this
+Agreement or source code required pursuant to Section 4.2(b), LICENSEE
+shall ensure that the recipient enters into and duly accepts a written
+agreement with LICENSEE which includes the minimum terms set forth in
+this Agreement and no other provisions which conflict with the
+obligations under, or the intent of, this Agreement.
+
+ARTICLE 5.0 -  AS IS CLAUSE / LIMITATION OF LIABILITY
+
+5.1. The Build Materials contain certain software or other information
+("AT&T Software") proprietary to AT&T.  The AT&T Software is provided
+to LICENSEE "AS IS".  LICENSEE ASSUMES TOTAL RESPONSIBILITY AND RISK
+FOR USE OF THE AT&T SOFTWARE.  AT&T DOES NOT MAKE, AND EXPRESSLY
+DISCLAIMS, ANY EXPRESS OR IMPLIED WARRANTIES OF ANY KIND WHATSOEVER,
+INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
+MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, WARRANTIES OF
+TITLE OR NON-INFRINGEMENT OF ANY IPR or TRADEMARK RIGHTS, ANY
+WARRANTIES ARISING BY USAGE OF TRADE, COURSE OF DEALING OR COURSE OF
+PERFORMANCE, OR ANY WARRANTY THAT THE AT&T SOFTWARE IS "ERROR FREE" OR
+WILL MEET LICENSEE'S REQUIREMENTS.
+
+5.2. IN NO EVENT SHALL AT&T BE LIABLE FOR (a) ANY INCIDENTAL,
+CONSEQUENTIAL, OR INDIRECT DAMAGES (INCLUDING, WITHOUT LIMITATION,
+DAMAGES FOR LOSS OF PROFITS, BUSINESS INTERRUPTION, LOSS OF PROGRAMS OR
+INFORMATION, AND THE LIKE) ARISING OUT OF THE USE OF OR INABILITY TO
+USE THE AT&T SOFTWARE, EVEN IF AT&T OR ANY OF ITS AUTHORIZED
+REPRESENTATIVES HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES,
+(a) ANY CLAIM ATTRIBUTABLE TO ERRORS, OMISSIONS, OR OTHER INACCURACIES
+IN THE AT&T SOFTWARE, OR (c) ANY CLAIM BY ANY THIRD PARTY.
+
+5.3. BECAUSE SOME STATES DO NOT ALLOW THE EXCLUSION OR LIMITATION OF
+LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, THE ABOVE
+LIMITATIONS MAY NOT APPLY TO YOU.  IN THE EVENT THAT APPLICABLE LAW
+DOES NOT ALLOW THE COMPLETE EXCLUSION OR LIMITATION OF LIABILITY OF
+CLAIMS AND DAMAGES AS SET FORTH IN THIS AGREEMENT, AT&T'S LIABILITY IS
+LIMITED TO THE GREATEST EXTENT PERMITTED BY LAW.
+
+ARTICLE 6.0 -  GENERAL
+
+6.1. LICENSEE shall not assert against AT&T or any of its affiliated
+companies any claim for infringement or misappropriation of any IPR or
+trademark rights in any way relating to the AT&T Source Code Release.
+6.1. LICENSEE shall not assert against AT&T or any of its affiliated
+companies any claim for infringement or misappropriation of any IPR or
+trademark rights in any way relating to the AT&T Source Code Release.
+6.2. LICENSEE'S rights and license (but not any of LICENSEE'S
+obligations) under this Agreement shall terminate automatically in the
+event that (a) any of LICENSEE'S representations or warranties in
+Article 1.0 are false or inaccurate, (b) LICENSEE exceed the rights and
+license granted to LICENSEE or (c) LICENSEE fails to fully comply with
+any provision of this Agreement.  6.2. LICENSEE'S rights and license
+(but not any of LICENSEE'S obligations) under this Agreement shall
+terminate automatically in the event that (a) any of LICENSEE'S
+representations or warranties in Article 1.0 are false or inaccurate,
+(b) LICENSEE exceed the rights and license granted to LICENSEE or (c)
+LICENSEE fails to fully comply with any provision of this Agreement.
+6.3. AT&T shall be entitled, in its own name and without joining
+LICENSOR as a party, to enforce against LICENSEE in an action for
+breach of contract, any provision of this Agreement which protects,
+limits the liability of, or otherwise benefits AT&T.  In addition to
+all other relief available to AT&T in any such action, AT&T shall be
+entitled to an injunction requiring LICENSEE to comply with any such
+provision.
+
+6.4. This Agreement shall be governed by and construed in accordance
+with the laws of the State of New York, USA, without regard to its
+conflicts of law rules. This Agreement shall be fairly interpreted in
+accordance with its terms and without any strict construction in favor
+of or against either party.  Any suit or proceeding relating to this
+Agreement shall be brought and prosecuted only in New York, New York,
+USA.
+
+END OF MINIMUM TERMS
+!
