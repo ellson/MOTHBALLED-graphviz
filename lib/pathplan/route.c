@@ -505,9 +505,11 @@ static Pvector_t normv(Pvector_t v)
 {
     double d;
 
-    d = sqrt(v.x * v.x + v.y * v.y);
-    if (d != 0)
+    d = v.x * v.x + v.y * v.y;
+    if (d > 1e-6) {
+	d = sqrt(d);
 	v.x /= d, v.y /= d;
+    }
     return v;
 }
 
