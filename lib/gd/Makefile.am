@@ -22,7 +22,7 @@ libgvgd_la_SOURCES = gd.c gdfx.c gd_security.c gd_gd.c gd_gd2.c gd_io.c gd_io_dp
 	gd_ss.c gd_topal.c gd_wbmp.c gdcache.c gdfontg.c gdfontl.c gdfontmb.c \
 	gdfonts.c gdfontt.c gdft.c gdhelpers.c gdkanji.c gdtables.c gdxpm.c wbmp.c
 
-libgvgd_la_LIBADD = @ICONV_LIBS@ @FT_LIBS@ @FC_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
+libgvgd_la_LIBADD = @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
 
 libgvgd_la_LDFLAGS = -version-info 2:0:0
 
