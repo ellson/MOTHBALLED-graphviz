@@ -48,9 +48,6 @@ extern void colorxlate(char *str, color_t * color,
 		       color_type_t target_type);
 extern char *canontoken(char *str);
 
-static point p0 = { 0, 0 };
-static box b0 = { {0, 0}, {0, 0} };
-
 int gvrender_select(GVC_t * gvc, char *str)
 {
     gvrender_job_t *job = gvc->job;
@@ -153,7 +150,7 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, double X, double Y, double Z, d
     else {
 	codegen_t *cg = job->codegen;
 
-	if (cg && cg->begin_job && job->pageNum == 1)
+	if (cg && cg->begin_job && job->pageNum <= 1)
 	    cg->begin_job(gvc->job->output_file, gvc->g, lib, gvc->user,
 			  gvc->info, job->pagesArraySize);
     }
@@ -282,10 +279,8 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g)
     else {
 	codegen_t *cg = job->codegen;
 	box bb;
-	point pb;
 	
-	PF2P(gvc->bb.LL,bb.LL);
-	PF2P(gvc->bb.UR,bb.UR);
+	BF2B(job->pageBox, bb);
 
 	if (cg && cg->begin_graph)
 	    cg->begin_graph(gvc, g, bb, gvc->pb);
