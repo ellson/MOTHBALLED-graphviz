@@ -54,7 +54,7 @@ extern "C" {
 
     typedef struct {
 	int flags;
-	double default_margin; /* points */
+	double default_margin; /* graph units */
 	int default_dpi;
 	char **knowncolors;
 	int sz_knowncolors;
@@ -87,15 +87,11 @@ extern "C" {
         graph_t *g;		/* parent graph */
         int flags;		/* emit_graph flags */
 
-        pointf margin;		 /* job-specific margin */
-	int rotation;		 /* job-specific page rotation */
-	point	offset;		 /* offset into device in device coords */
-	point	size;		 /* size of device in device coords */
+        pointf margin;		 /* job-specific margin - graph units */
 
-	box	boundingBox;	 /* drawable region in device coords */
-	boxf	pageBox;	 /* drawable region in graph coords */
-	pointf	pageSize;	 /* page size in graph coords */
-	pointf	pageSizeCentered; /* device page box for centering */
+	boxf	pageBox;	 /* current page in graph coords */
+	pointf	pageOffset;	 /* offset for current page in graph coords */
+	pointf	pageSize;	 /* page size in graph units */
 	point 	pagesArraySize;  /* 2D size of page array */
 	point	pagesArrayFirst; /* 2D starting corner in */
 	point	pagesArrayMajor; /* 2D major increment */
@@ -103,13 +99,17 @@ extern "C" {
 	point	pagesArrayElem;  /* 2D coord of current page - 0,0 based */
         int	numPages;	 /* number of pages */
         int	pageNum;	 /* current page - 1 based */
-	point	pageOffset;	 /* offset for current page in graph coords */
 
-        unsigned int width;     /* width in pixels */
-        unsigned int height;    /* height in pixels */
-	int dpi;		/* resolution pixels-per-inch */
+        unsigned int width;     /* device width in device units */
+        unsigned int height;    /* device height in device units */
+	int dpi;		/* device resolution device-units-per-inch */
 	double zoom;		/* viewport zoom factor */
+	int rotation;		/* viewport rotation  0=portrait, 1=landscape */
 	pointf focus;		/* viewport focus in graph units */
+	box	boundingBox;	/* drawable region in device units */
+
+	point	offset;		 /* offset into device in device coords */
+	point	size;		 /* size of device in device coords */
 #if 0
 	pointf pointer;		/* pointer position in graph units */
 #endif

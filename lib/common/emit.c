@@ -207,19 +207,26 @@ static void set_pagedir(GVC_t *gvc, graph_t * g)
 static void init_job_pagination(GVC_t * gvc, graph_t * g)
 {
     gvrender_job_t *job = gvc->job;
-    pointf PFCLM;		/* page for centering less margins */
-    pointf DS;			/* device drawable region for a page of the graph */
+    pointf pageSizeCenteredLessMargins;	 /* page for centering less margins - graph units*/
+    pointf deviceSize;			/* device size for a page of the graph - graph units */
+    pointf extra;
+
+    /* determine desired device size in graph units */
+    deviceSize.x = job->width * POINTS_PER_INCH / job->dpi;
+    deviceSize.y = job->height * POINTS_PER_INCH / job->dpi;
+    if (GD_drawing(g)->landscape)
+	deviceSize = exch_xyf(deviceSize);
 
     /* determine pagination */
-    job->pageBox.LL = job->margin;
     if (gvc->graph_sets_pageSize) {
 	/* page was set by user */
-	point tp;
-	job->pageSizeCentered = gvc->pageSize;
-	PFCLM.x = job->pageSizeCentered.x - 2 * job->pageBox.LL.x;
-	PFCLM.y = job->pageSizeCentered.y - 2 * job->pageBox.LL.y;
-	job->pageSize.x = PFCLM.x;
-	job->pageSize.y = PFCLM.y;		/* convert to double */
+#if 0
+fprintf(stderr,"graph_sets_pageSize\n");
+#endif
+	pageSizeCenteredLessMargins.x = gvc->pageSize.x - 2 * job->margin.x;
+	pageSizeCenteredLessMargins.y = gvc->pageSize.y - 2 * job->margin.y;
+	job->pageSize.x = pageSizeCenteredLessMargins.x;
+	job->pageSize.y = pageSizeCenteredLessMargins.y;
 	if (GD_drawing(g)->landscape)
 	    job->pageSize = exch_xyf(job->pageSize);
 	job->pageSize.x /= job->zoom;
@@ -233,77 +240,69 @@ static void init_job_pagination(GVC_t * gvc, graph_t * g)
 	    (job->pageSize.y > 0) ? ceil((gvc->bb.UR.y) / job->pageSize.y) : 1;
 	job->numPages = job->pagesArraySize.x * job->pagesArraySize.y;
 
-	/* find the drawable size in device coords */
-	tp.x = job->width;
-	tp.y = job->height;
-
-	if (GD_drawing(g)->landscape)
-	    tp = exch_xy(tp);
-	DS.x = MIN(tp.x, PFCLM.x);
-	DS.y = MIN(tp.y, PFCLM.y);
+	/* find the drawable size in graph coords */
+	deviceSize.x = MIN(deviceSize.x, pageSizeCenteredLessMargins.x);
+	deviceSize.y = MIN(deviceSize.y, pageSizeCenteredLessMargins.y);
     } else {
 	/* page not set by user, assume default when centering,
 	   but allow infinite page for any other interpretation */
 	job->pageSize.x = gvc->bb.UR.x;
 	job->pageSize.y = gvc->bb.UR.y;
-	job->pageSizeCentered.x = DEFAULT_PAGEWD;
-	job->pageSizeCentered.y = DEFAULT_PAGEHT;
-	PFCLM.x = job->pageSizeCentered.x - 2 * job->pageBox.LL.x;
-	PFCLM.y = job->pageSizeCentered.y - 2 * job->pageBox.LL.y;
-	DS.x = job->width;
-	DS.y = job->height;
-	if (GD_drawing(g)->landscape)
-	    DS = exch_xyf(DS);
+	pageSizeCenteredLessMargins.x = DEFAULT_PAGEWD - 2 * job->margin.x;
+	pageSizeCenteredLessMargins.y = DEFAULT_PAGEHT - 2 * job->margin.y;
 	job->pagesArraySize.x = job->pagesArraySize.y = job->numPages = 1;
     }
 
     set_pagedir(gvc, g);
 
     /* determine page box including centering */
+    extra.x = extra.y = 0.;
     if (GD_drawing(g)->centered) {
-	point extra;
-	if ((extra.x = PFCLM.x - DS.x) < 0)
-	    extra.x = 0;
-	if ((extra.y = PFCLM.y - DS.y) < 0)
-	    extra.y = 0;
-	job->pageBox.LL.x += extra.x / 2;
-	job->pageBox.LL.y += extra.y / 2;
+	if ((extra.x = pageSizeCenteredLessMargins.x - deviceSize.x) < 0)
+	    extra.x = 0.;
+	if ((extra.y = pageSizeCenteredLessMargins.y - deviceSize.y) < 0)
+	    extra.y = 0.;
+	extra.x /= 2.;
+	extra.y /= 2.;
     }
 
-fprintf(stderr,"pageBox = %g,%g %g,%g\n",
-	job->pageBox.LL.x,
-	job->pageBox.LL.y,
-	job->pageBox.UR.x,
-	job->pageBox.UR.y);
-fprintf(stderr,"DS = %g,%g\n",
-	DS.x,
-	DS.y);
-fprintf(stderr,"zoom = %g\n",
-        job->zoom);
+    job->boundingBox.LL.x = ROUND((job->margin.x + extra.x) * job->dpi / POINTS_PER_INCH);
+    job->boundingBox.LL.y = ROUND((job->margin.y + extra.y) * job->dpi / POINTS_PER_INCH);
+    job->size.x = ROUND(job->pageSize.x * job->dpi / POINTS_PER_INCH);
+    job->size.y = ROUND(job->pageSize.y * job->dpi / POINTS_PER_INCH);
+    if (GD_drawing(g)->landscape)
+	job->size = exch_xy(job->size);
+    job->boundingBox.UR.x = job->boundingBox.LL.x + job->size.x;
+    job->boundingBox.UR.y = job->boundingBox.LL.y + job->size.y;
+    job->offset.x = job->boundingBox.LL.x;
+    job->offset.y = job->boundingBox.LL.y;
 
-    PF2P(job->pageBox.LL,job->boundingBox.LL);
-    if (GD_drawing(g)->landscape) {
-        job->boundingBox.UR.x = job->height;
-        job->boundingBox.UR.y = job->width;
-	job->offset.x = job->boundingBox.UR.y;
-	job->offset.y = job->boundingBox.LL.x;
-	job->size.x = job->boundingBox.UR.x;
-	job->size.y = job->boundingBox.UR.y;
-    }
-    else {
-        job->boundingBox.UR.x = job->width;
-        job->boundingBox.UR.y = job->height;
-	job->offset.x = job->boundingBox.LL.x;
-        job->offset.y = job->boundingBox.LL.y;
-	job->size.x = job->boundingBox.UR.x;
-	job->size.y = job->boundingBox.UR.y;
-    }
-
-fprintf(stderr,"boundingBox = %d,%d %d,%d\n",
+#if 0
+fprintf(stderr,"bb = %g,%g %g,%g (graph units)\n",
+	gvc->bb.LL.x,
+	gvc->bb.LL.y,
+	gvc->bb.UR.x,
+	gvc->bb.UR.y);
+fprintf(stderr,"margin = %g,%g deviceSize = %g,%g (graph units)\n",
+	job->margin.x, job->margin.y,
+	deviceSize.x, deviceSize.y);
+fprintf(stderr,"pageSizeCenteredLessMargins = %g,%g (graph units)\n",
+	pageSizeCenteredLessMargins.x, pageSizeCenteredLessMargins.y);
+fprintf(stderr,"dpi = %d zoom = %g rotation = %d\n",
+        job->dpi, job->zoom, job->rotation);
+fprintf(stderr,"boundingBox = %d,%d %d,%d (device units)\n",
         job->boundingBox.LL.x,
         job->boundingBox.LL.y,
         job->boundingBox.UR.x,
         job->boundingBox.UR.y);
+fprintf(stderr,"width,height = %d,%d size = %d,%d offset = %d,%d (device units)\n",
+        job->width,
+        job->height,
+        job->size.x,
+        job->size.y,
+        job->offset.x,
+        job->offset.y);
+#endif
 }
 
 static void firstpage(GVC_t *gvc)
@@ -365,7 +364,7 @@ static boolean write_node_test(Agraph_t * g, Agnode_t * n)
     return TRUE;
 }
 
-static void emit_background(GVC_t * gvc, graph_t *g, boxf pageBox)
+static void emit_background(GVC_t * gvc, graph_t *g)
 {
     gvrender_job_t * job = gvc->job;
     char *str;
@@ -377,11 +376,10 @@ static void emit_background(GVC_t * gvc, graph_t *g, boxf pageBox)
 		&& str[0]
 		&& strcmp(str, "white") != 0
 		&& strcmp(str, "transparent") != 0) {
-	/* increment to cover int rounding errors */
-	AF[0].x = AF[1].x = job->pageBox.LL.x - job->margin.x - 1;
-	AF[2].x = AF[3].x = job->pageBox.UR.x + job->margin.x + 1;
-	AF[1].y = AF[2].y = job->pageBox.UR.y + job->margin.y + 1;
-	AF[3].y = AF[0].y = job->pageBox.LL.y - job->margin.y - 1;
+	AF[0].x = AF[1].x = job->boundingBox.LL.x;
+	AF[2].x = AF[3].x = job->boundingBox.UR.x;
+	AF[1].y = AF[2].y = job->boundingBox.UR.y;
+	AF[3].y = AF[0].y = job->boundingBox.LL.y;
 	for (i = 0; i < 4; i++) {
 	    PF2P(AF[i],A[i]);
 	}
@@ -410,15 +408,17 @@ static void setup_page(GVC_t * gvc, graph_t * g)
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
     /* establish pageOffset to be applied, in graph coordinates */
-    if (job->rotation == 0)
-	job->pageOffset = pointof(-job->pageBox.LL.x, -job->pageBox.LL.y);
+    if (job->rotation == 0) {
+	job->pageOffset.x =  (job->pagesArrayElem.x)     * job->pageSize.x;
+	job->pageOffset.y =  (job->pagesArrayElem.y)     * job->pageSize.y;
+    }
     else {
-	job->pageOffset.x = (job->pagesArrayElem.y + 1) * job->pageSize.y;
-	job->pageOffset.y = -(job->pagesArrayElem.x) * job->pageSize.x;
+	job->pageOffset.x =  (job->pagesArrayElem.y + 1) * job->pageSize.y;
+	job->pageOffset.y = -(job->pagesArrayElem.x)     * job->pageSize.x;
     }
 
     gvrender_begin_page(gvc);
-    emit_background(gvc, g, job->pageBox);
+    emit_background(gvc, g);
     emit_defaults(gvc);
 }
 
@@ -942,24 +942,37 @@ static void init_job_viewport(GVC_t * gvc, graph_t * g)
 		&& (size.x > UR.x) && (size.y > UR.y))) /* drawing is too small... */
 	    Z = MIN(size.x/UR.x, size.y/UR.y);
     }
-    X = Z * (UR.x + 2 * job->margin.x + 2);
-    Y = Z * (UR.y + 2 * job->margin.y + 2);
-    x = UR.x / 2.;
-    y = UR.y / 2.;
-
-    if ((str = agget(g, "viewport")))
-	sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
-
+    
     dpi = GD_drawing(g)->dpi;
     if (dpi == 0) {
         if (job->render_engine)
             dpi = job->render_features->default_dpi;
-        else
-            dpi = DEFAULT_DPI;
+        else {
+            /* WARNING - nasty hack to avoid modifying old codegens */
+    	    codegen_t *cg = job->codegen;
+            if (cg == &PS_CodeGen)
+		dpi = POINTS_PER_INCH;
+	    else
+                dpi = DEFAULT_DPI;
+	}
     }
     job->dpi = dpi;
-    job->width = ROUND(X * dpi / POINTS_PER_INCH);
-    job->height = ROUND(Y * dpi / POINTS_PER_INCH);
+
+    /* default focus, in graph units = center of bb */
+    x = UR.x / 2.;
+    y = UR.y / 2.;
+
+    /* rotate and scale bb to give default device width and height */
+    if (GD_drawing(g)->landscape)
+	UR = exch_xyf(UR);
+    X = Z * (UR.x + 2 * job->margin.x) * dpi / POINTS_PER_INCH;
+    Y = Z * (UR.y + 2 * job->margin.y) * dpi / POINTS_PER_INCH;
+
+    /* user can override */
+    if ((str = agget(g, "viewport")))
+	sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
+    job->width = ROUND(X + 1); 
+    job->height = ROUND(Y + 1);
     job->zoom = Z;              /* scaling factor */
     job->focus.x = x;           /* graph coord of focus - points */
     job->focus.y = y;

@@ -102,11 +102,13 @@ static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     char *s;
     static char setupLatin1 = FALSE;
+    point sz;
 
     PB = bb;
+    sz = add_points(PB.LL, PB.UR);
     if (onetime) {
 	fprintf(Output_file, "%%%%BoundingBox: %d %d %d %d\n",
-		bb.LL.x - 1, bb.LL.y - 1, bb.UR.x + 1, bb.UR.y + 1);
+		0, 0, sz.x, sz.y);
 	ps_comment(g, agfindattr(g, "comment"));
 	fprintf(Output_file, "%%%%EndComments\nsave\n");
 	cat_libfile(Output_file, U_lib, ps_txt);
@@ -137,39 +139,50 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 {
     point sz;
 
+    sz = add_points(PB.LL, PB.UR);
     Cur_page++;
-    sz = sub_points(PB.UR, PB.LL);
     fprintf(Output_file, "%%%%Page: %d %d\n", Cur_page, Cur_page);
     fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
-	    PB.LL.x, PB.LL.y, PB.UR.x + 1, PB.UR.y + 1);
+	    PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
     fprintf(Output_file, "%%%%PageOrientation: %s\n",
 	    (rot ? "Landscape" : "Portrait"));
     fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
-	    PB.LL.x - 1, PB.LL.y - 1, sz.x + 2, sz.y + 2);
+	    0, 0, sz.x, sz.y);
+#if 0
     fprintf(Output_file, "%d %d translate\n", PB.LL.x, PB.LL.y);
+#endif
+#if 0
     if (rot)
 	fprintf(Output_file, "gsave %d %d translate %d rotate\n",
 		PB.UR.x - PB.LL.x, 0, rot);
+#endif
     fprintf(Output_file, "%d %d %d beginpage\n", page.x, page.y, N_pages);
+#if 0
     if (rot)
 	fprintf(Output_file, "grestore\n");
-    if (scale != 1.0)
-	fprintf(Output_file, "%.4f set_scale\n", scale);
-    fprintf(Output_file, "%d %d translate %d rotate\n", offset.x, offset.y,
-	    rot);
+#endif
+#if 0
+    fprintf(Output_file, "%.4f set_scale %d %d translate %d rotate\n", 
+	scale, PB.LL.x, PB.LL.y, rot);
+#endif
+    fprintf(Output_file, "%.4f set_scale\n", scale);
+    if (rot)
+        fprintf(Output_file, "%d rotate %d %d translate\n", rot, PB.LL.x, PB.LL.y);
+    else
+        fprintf(Output_file, "%d %d translate\n", PB.LL.x, PB.LL.y);
     assert(SP == 0);
     S[SP].font = S[SP].pencolor = S[SP].fillcolor = "";
     S[SP].size = 0.0;
 
     /*  Define the size of the PS canvas  */
     if (Output_lang == PDF) {
-	if (PB.UR.x >= PDFMAX || PB.UR.y >= PDFMAX)
+	if (sz.x > PDFMAX || sz.y > PDFMAX)
 	    agerr(AGWARN,
 		  "canvas size (%d,%d) exceeds PDF limit (%d)\n"
 		  "\t(suggest setting a bounding box size, see dot(1))\n",
-		  PB.UR.x, PB.UR.y, PDFMAX);
+		  sz.x, sz.y, PDFMAX);
 	fprintf(Output_file, "[ /CropBox [%d %d %d %d] /PAGES pdfmark\n",
-		PB.LL.x, PB.LL.y, PB.UR.x + 1, PB.UR.y + 1);
+		0, 0, sz.x, sz.y);
     }
 }
 
