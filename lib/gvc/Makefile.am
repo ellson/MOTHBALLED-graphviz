@@ -9,9 +9,11 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/graph \
-	-I$(top_srcdir)/lib/cdt @INCLTDL@ @CAIRO_CFLAGS@
+	-I$(top_srcdir)/lib/cdt @CAIRO_CFLAGS@
 
-LIBS = @LIBLTDL@
+#@INCLTDL@
+
+#LIBS = @LIBLTDL@
 
 pkginclude_HEADERS = gvc.h gvcint.h gvplugin_render.h \
 	gvplugin_layout.h gvplugin.h

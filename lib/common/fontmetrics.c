@@ -17,7 +17,8 @@
 #include "render.h"
 #include "utils.h"
 
-#ifdef HAVE_CAIRO
+/* #ifdef HAVE_CAIRO */
+#if 0
 #include <cairo.h>
 #else
 
@@ -195,7 +196,8 @@ estimate_textsize(textline_t * textline, char *fontname, double fontsz,
 double textwidth(textline_t * textline, char *fontname, double fontsize)
 {
     char *fontpath = NULL;
-#ifdef HAVE_CAIRO
+/* #ifdef HAVE_CAIRO */
+#if 0
     cairo_t *cr;
     cairo_text_extents_t extents;
 

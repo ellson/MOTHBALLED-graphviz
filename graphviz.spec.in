@@ -98,6 +98,7 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %doc AUTHORS COPYING ChangeLog NEWS
 %{_bindir}/*
 %dir %{_datadir}/%{name}
+%{_datadir}/%{name}/lefty
 %{_mandir}/man1/*
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/lib*.so.*
