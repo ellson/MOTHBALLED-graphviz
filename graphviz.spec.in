@@ -74,10 +74,6 @@ using version %{version} of the %{name} libraries.
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man1/dotneato-config.1*
 %{_mandir}/man3/*.3*
-%exclude %{_libdir}/%{name}/lib*_java.*
-%exclude %{_libdir}/%{name}/lib*_perl.*
-%exclude %{_libdir}/%{name}/lib*_python.*
-%exclude %{_libdir}/%{name}/lib*_ruby.*
 %exclude %{_libdir}/%{name}/lib*tcl*.*
 %exclude %{_libdir}/%{name}/libtk*.*
 

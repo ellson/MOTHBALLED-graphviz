@@ -124,7 +124,19 @@ test_tcl:
 		ln -fs ../.libs/libgv_tcl.so libgv_tcl.so; \
 		./test.tcl)
 
-EXTRA_DIST = gv.i java/test.java perl/test.pl python/test.py ruby/test.rb tcl/test.tcl
+EXTRA_DIST = gv.i \
+	java/test.java 
+	perl/test.pl \
+	python/test.py \
+	ruby/test.rb \
+	tcl/test.tcl \
+        java/SWIGTYPE_p_Agraph_t.java \
+        java/SWIGTYPE_p_Agnode_t.java \
+        java/SWIGTYPE_p_Agedge_t.java \
+        java/gv.java \
+	java/gvJNI.java \
+	perl/gv.pm \
+	python/gv.py
 
 CLEANFILES = gv_java.cpp gv_perl.cpp gv.pm gv_python.cpp gv.py gv.pyc \
 	gv_ruby.cpp gv_tcl.cpp pkgIndex.tcl \
