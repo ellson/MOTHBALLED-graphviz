@@ -49,13 +49,13 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /ML /W3 /GX /O2 /I "../.." /I "." /I "../../lib/agraph" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /Fp"$(INTDIR)\gxl2dot.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /ML /W3 /GX /O2 /I "../.." /I "." /I "../../lib/agraph" /I "../../lib/ingraphs" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /Fp"$(INTDIR)\gxl2dot.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\gxl2dot.bsc" 
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib agraph.lib cdt.lib common.lib graph.lib ingraphs.lib libexpat.lib libexpatw.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\gxl2dot.pdb" /machine:I386 /out:"$(OUTDIR)\gxl2dot.exe" /libpath:"../../third-party/lib" /libpath:"../../lib/lib/release" 
+LINK32_FLAGS=agraph.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib cdt.lib common.lib graph.lib ingraphs.lib libexpat.lib libexpatw.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\gxl2dot.pdb" /machine:I386 /out:"$(OUTDIR)\gxl2dot.exe" /libpath:"../../third-party/lib" /libpath:"../../lib/lib/release" 
 LINK32_OBJS= \
 	"$(INTDIR)\cvtgxl.obj" \
 	"$(INTDIR)\dot2gxl.obj" \
@@ -90,13 +90,13 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "../.." /I "." /I "../../lib/agraph" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /Fp"$(INTDIR)\gxl2dot.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "../.." /I "." /I "../../lib/agraph" /I "../../lib/ingraphs" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /Fp"$(INTDIR)\gxl2dot.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\gxl2dot.bsc" 
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib agraph.lib cdt.lib common.lib graph.lib ingraphs.lib libexpat.lib libexpatw.lib /nologo /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\gxl2dot.pdb" /debug /machine:I386 /out:"$(OUTDIR)\gxl2dot.exe" /pdbtype:sept /libpath:"../../third-party/lib" /libpath:"../../lib/lib/debug" 
+LINK32_FLAGS=agraph.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib cdt.lib common.lib graph.lib ingraphs.lib libexpat.lib libexpatw.lib /nologo /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\gxl2dot.pdb" /debug /machine:I386 /out:"$(OUTDIR)\gxl2dot.exe" /pdbtype:sept /libpath:"../../third-party/lib" /libpath:"../../lib/lib/debug" 
 LINK32_OBJS= \
 	"$(INTDIR)\cvtgxl.obj" \
 	"$(INTDIR)\dot2gxl.obj" \
