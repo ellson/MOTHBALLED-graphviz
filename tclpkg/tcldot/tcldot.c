@@ -29,7 +29,7 @@
 #include "circle.h"
 #include "fdp.h"
 #include "circo.h"
-#include "gvrender.h"
+#include "gvc.h"
 
 #ifdef DMALLOC
 #include "dmalloc.h"
