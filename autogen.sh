@@ -16,7 +16,4 @@ patch -N -p0 <ltmain.sh.patch
 rm -f COPYING
 cp cpl1.0.txt COPYING
 
-#./configure "$@"
-
-echo
-echo "Now type './configure'"
+./configure "$@"
