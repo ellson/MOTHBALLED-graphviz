@@ -386,6 +386,15 @@ int GCsetwidgetattr(Gwidget_t * widget, int attrn, Gwattr_t * attrp)
 	    }
 	    /* XAllocColor may change the rgb values */
 	    cp->red = r, cp->green = g, cp->blue = b;
+            if (color == 0) {
+                XSetBackground (Gdisplay, GC, WCU->colors[0].color.pixel);
+                ADD2ARGS (XtNbackground, WCU->colors[0].color.pixel);
+            } else if (color == 1) {
+                XSetForeground (Gdisplay, GC, WCU->colors[1].color.pixel);
+                ADD2ARGS (XtNforeground, WCU->colors[1].color.pixel);
+            }
+            XtSetValues (widget->w, argp, argn);
+            RESETARGS;
 	    if (color == WCU->gattr.color)
 		WCU->gattr.color = -1;
 	    break;

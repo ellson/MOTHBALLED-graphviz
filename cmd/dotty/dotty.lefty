@@ -317,9 +317,9 @@ dotty.protogt.savegraph = function (gt, name, type, savecoord) {
                     graph.rect[1].y = node.pos.y + node.size.y / 2;
             }
         }
-            graph.graphattr.bb = concat (graph.rect[0].x, ',',
-                    graph.rect[0].y, ',', graph.rect[1].x, ',',
-                    graph.rect[1].y);
+        graph.graphattr.bb = concat (graph.rect[0].x, ',',
+                graph.rect[0].y, ',', graph.rect[1].x, ',',
+                graph.rect[1].y);
         if (graph.lp & tablesize (graph.lp) > 0)
             graph.graphattr.lp = concat (graph.lp.x, ',', graph.lp.y);
     } else
@@ -465,7 +465,9 @@ dotty.protogt.createview = function (gt, protovt) {
         dotty.views[vt.view] = vt;
     if (protovt.colors & tablesize (protovt.colors) > 0) {
         for (id in protovt.colors)
-            if (setwidgetattr (vt.canvas, ['color' = [
+            if (id == '_bgcolor_')
+                setwidgetattr (vt.canvas, ['color' = [0 = protovt.colors[id];];]);
+            else if (setwidgetattr (vt.canvas, ['color' = [
                 protovt.colors[id] = id;
             ];]) ~= 1) {
                 t = split (id, ' ');
@@ -486,7 +488,9 @@ dotty.protogt.createview = function (gt, protovt) {
                 break;
         ovt = gt.views[id];
         for (id in ovt.colors)
-            if (setwidgetattr (vt.canvas, ['color' = [
+            if (id == '_bgcolor_')
+                setwidgetattr (vt.canvas, ['color' = [0 = ovt.colors[id];];]);
+            else if (setwidgetattr (vt.canvas, ['color' = [
                 ovt.colors[id] = id;
             ];]) ~= 1) {
                 t = split (id, ' ');
@@ -729,7 +733,9 @@ dotty.protogt.printorsave = function (gt, vt, otype, name, mode, ptype) {
     }
     for (cname in vt.colors) {
         cid = vt.colors[cname];
-        if (setwidgetattr (pscanvas, ['color' = [cid = cname;];]) ~= 1) {
+        if (cname == '_bgcolor_')
+            setwidgetattr (pscanvas, ['color' = [0 = cid;];]);
+        else if (setwidgetattr (pscanvas, ['color' = [cid = cname;];]) ~= 1) {
             t = split (cname, ' ');
             if (tablesize (t) ~= 3 |
                     setwidgetattr (pscanvas, ['color' = [cid = [
@@ -762,8 +768,8 @@ dotty.protogt.printorsave = function (gt, vt, otype, name, mode, ptype) {
         sgraph.fontname = fontmap[sgraph.graphattr.fontname];
         gt.drawsgraph (gt, [0 = vt;], sgraph);
     }
-	graph.fontname = fontmap[graph.graphattr.fontname];
-	gt.drawsgraph (gt, [0 = vt;], graph);
+    graph.fontname = fontmap[graph.graphattr.fontname];
+    gt.drawsgraph (gt, [0 = vt;], graph);
     gt.edgehandles = edgehandles;
     vt.canvas = canvas;
     destroywidget (pscanvas);

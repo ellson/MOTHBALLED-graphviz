@@ -6,6 +6,7 @@ dotty.protogt.doaction = function (data, s) {
 
     vt = dotty.views[data.widget];
     gt = dotty.graphs[vt.gtid];
+    data.menuitem = s;
     if (data.obj.nid >= 0) {
         if (gt.actions.node[s]) {
             gt.actions.node[s] (gt, vt, data.obj, data);

@@ -649,6 +649,24 @@ dotty.protogt.getcolor = function (views, name) {
     }
     return color;
 };
+dotty.protogt.setbgcolor = function (views, name) {
+    local vid, vt, t;
+
+    for (vid in views) {
+        vt = views[vid];
+        if (setwidgetattr (vt.canvas, ['color' = [0 = name;];]) ~= 1) {
+            t = split (name, ' ');
+            if (tablesize (t) ~= 3 |
+                    setwidgetattr (vt.canvas, ['color' = [0 = [
+                        'h' = ston (t[0]); 's' = ston (t[1]); 'v' = ston (t[2]);
+                    ];];]) ~= 1) {
+                dotty.message (0, concat ('unknown bgcolor ', name));
+                return;
+            }
+        }
+        vt.colors['_bgcolor_'] = name;
+    }
+};
 dotty.protogt.unpacksgraphattr = function (gt, sgraph) {
     local attr;
 
@@ -721,6 +739,8 @@ dotty.protogt.unpackattr = function (gt) {
         graph[dotty.keys.color] = gt.getcolor (gt.views, 'grey');
     else
         graph[dotty.keys.color] = gt.getcolor (gt.views, attr.color);
+    if (attr.bgcolor ~= '')
+        gt.setbgcolor (gt.views, attr.bgcolor);
     for (gid in graph.graphdict) {
         sgraph = graph.graphs[graph.graphdict[gid]];
         attr = sgraph.graphattr;
