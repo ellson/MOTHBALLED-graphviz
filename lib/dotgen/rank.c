@@ -459,6 +459,7 @@ merge_leaves(graph_t * g, node_t * cur, node_t * new)
     return rv;
 }
 
+#ifdef OBSOLETE
 static void 
 potential_leaf(graph_t * g, edge_t * e, node_t * leaf)
 {
@@ -476,7 +477,6 @@ potential_leaf(graph_t * g, edge_t * e, node_t * leaf)
 	GD_inleaf(par) = merge_leaves(g, GD_inleaf(par), leaf);
 }
 
-#ifdef OBSOLETE
 static void 
 collapse_leaves(graph_t * g)
 {

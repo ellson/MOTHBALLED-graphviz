@@ -305,7 +305,7 @@ static int feasible_tree(void)
     edge_t *e, *f;
 
     if (N_nodes <= 1)
-	return;
+	return 0;
     while (tight_tree() < N_nodes) {
 	e = NULL;
 	for (n = GD_nlist(G); n; n = ND_next(n)) {
@@ -581,7 +581,7 @@ int rank(graph_t * g, int balance, int maxiter)
     if (!feasible)
 	init_rank();
     if (maxiter <= 0)
-	return;
+	return 0;
 
     if ((s = agget(g, "searchsize")))
 	Search_size = atoi(s);
