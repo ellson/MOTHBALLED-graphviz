@@ -89,9 +89,9 @@ extern "C" {
         pointf margin;		 /* job-specific margin */
 	int rotation;		 /* job-specific page rotation */
 
-	boxf	pageBox;	 /* drawable region in device coords */
-				 /* basically width*height - margins */
-	pointf	pageSize;	 /* device page size */
+	box	boundingBox;	 /* drawable region in device coords */
+	boxf	pageBox;	 /* drawable region in graph coords */
+	pointf	pageSize;	 /* page size in graph coords */
 	pointf	pageSizeCentered; /* device page box for centering */
 	point 	pagesArraySize;  /* 2D size of page array */
 	point	pagesArrayFirst; /* 2D starting corner in */
@@ -100,7 +100,7 @@ extern "C" {
 	point	pagesArrayElem;  /* 2D coord of current page - 0,0 based */
         int	numPages;	 /* number of pages */
         int	pageNum;	 /* current page - 1 based */
-	point	offset;		 /* offset for current page */
+	point	pageOffset;	 /* offset for current page in graph coords */
 
         unsigned int width;     /* width in pixels */
         unsigned int height;    /* height in pixels */

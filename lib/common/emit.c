@@ -298,10 +298,12 @@ static void init_job_pagination(GVC_t * gvc, graph_t * g)
 	job->pageBox.LL.x += extra.x / 2;
 	job->pageBox.LL.y += extra.y / 2;
     }
-    /* FIXME - this is used by begin_graph, but overwritten by setup_page
-		so it will be wrong if two PS outputs generated from same graph.
-		Perhaps it should be "pageBoundingBox" or somesuch ? */
-    job->pageBox.UR = add_pointfs(job->pageBox.LL, job->pageSize);
+
+    /* FIXME, the treatment of margins doesn't look right.  are margins
+	in device coords or graph coords ?  what happens to margins under zooming */
+    PF2P(job->pageBox.LL,job->boundingBox.LL);
+    job->boundingBox.UR.x = ROUND(job->pageBox.LL.x + job->pageSize.x * job->zoom);
+    job->boundingBox.UR.y = ROUND(job->pageBox.LL.y + job->pageSize.y * job->zoom);
 }
 
 static void firstpage(GVC_t *gvc)
@@ -420,12 +422,12 @@ static void setup_page(GVC_t * gvc, graph_t * g)
     job->pageBox.UR.x = job->pageBox.LL.x + job->pageSize.x;
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
-    /* establish offset to be applied, in graph coordinates */
+    /* establish pageOffset to be applied, in graph coordinates */
     if (job->rotation == 0)
-	job->offset = pointof(-job->pageBox.LL.x, -job->pageBox.LL.y);
+	job->pageOffset = pointof(-job->pageBox.LL.x, -job->pageBox.LL.y);
     else {
-	job->offset.x = (job->pagesArrayElem.y + 1) * job->pageSize.y;
-	job->offset.y = -(job->pagesArrayElem.x) * job->pageSize.x;
+	job->pageOffset.x = (job->pagesArrayElem.y + 1) * job->pageSize.y;
+	job->pageOffset.y = -(job->pagesArrayElem.x) * job->pageSize.x;
     }
 
     gvrender_begin_page(gvc);

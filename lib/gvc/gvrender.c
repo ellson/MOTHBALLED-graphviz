@@ -260,12 +260,9 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g)
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
-	box bb;
 	
-	BF2B(job->pageBox, bb);
-
 	if (cg && cg->begin_graph)
-	    cg->begin_graph(gvc, g, bb, gvc->pb);
+	    cg->begin_graph(gvc, g, job->boundingBox, gvc->pb);
     }
 #endif
 }
@@ -300,7 +297,7 @@ void gvrender_begin_page(GVC_t * gvc)
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_page)
-	    cg->begin_page(job->g, job->pagesArrayElem, job->zoom, job->rotation, job->offset);
+	    cg->begin_page(job->g, job->pagesArrayElem, job->zoom, job->rotation, job->pageOffset);
     }
 #endif
 }
