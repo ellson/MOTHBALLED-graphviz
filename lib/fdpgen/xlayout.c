@@ -469,9 +469,11 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
 	try++;
 	xpms.K += K;		/* increase distance */
     }
+#ifdef DEBUG
     if (Verbose && ov)
 	fprintf(stderr, "Warning: %d overlaps remain on %s(%s)\n", ov,
 		g->name, GORIG(g->root)->name);
+#endif
 
     return ov;
 }
