@@ -62,6 +62,9 @@ extern "C" {
 			    int filled);
     };
 
+/* callbacks */
+    extern void gvevent_refresh(gvrender_job_t * job);
+
 #ifdef __cplusplus
 }
 #endif

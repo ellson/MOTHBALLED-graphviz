@@ -1496,16 +1496,6 @@ static void emit_job(GVC_t * gvc, graph_t * g)
         emit_reset(gvc, g);  /* FIXME - split into emit_init & page reset */
 
     switch (gvc->job->output_lang) {
-    case GVRENDER_PLUGIN:
-        gvemit_graph(gvc, g);
-        break;
-    case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
-    case PIC_format: case GIF: case PNG: case JPEG: case WBMP:
-    case GD: case memGD: case GD2: case VRML: case METAPOST:
-    case TK: case SVG: case SVGZ: case QPDF: case QEPDF: case ISMAP:
-    case IMAP: case CMAP: case CMAPX: case FIG: case VTX: case DIA:
-        emit_graph(gvc, g);
-        break;
     case EXTENDED_DOT:
         write_extended_dot(gvc, g, gvc->job->output_file);
         break;
@@ -1522,9 +1512,7 @@ static void emit_job(GVC_t * gvc, graph_t * g)
         write_plain_ext(gvc, g, gvc->job->output_file);
         break;
     default:
-        if (gvc->job->output_lang >= QBM_FIRST
-            && gvc->job->output_lang < QBM_LAST)
-            emit_graph(gvc, g);
+        emit_graph(gvc, g);
         break;
     }
 
