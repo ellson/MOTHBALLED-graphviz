@@ -206,32 +206,30 @@ void gvrender_end_job(GVC_t * gvc)
 #define BOLD    1
 #define ITALIC  2
 
-static pointf gvrender_ptf(GVC_t * gvc, pointf p)
+static pointf gvrender_ptf(gvrender_job_t *job, pointf p)
 {
-    gvrender_job_t *job = gvc->job;
     pointf rv;
 
-    if (job->rotation == 0) {
-	rv.x = (p.x - job->focus.x) * job->compscale.x + job->width / 2.;
-	rv.y = (p.y - job->focus.y) * job->compscale.y + job->height / 2.;
-    } else {
+    if (job->rotation) {
 	rv.x = -(p.y - job->focus.y) * job->compscale.x + job->width / 2.;
 	rv.y = (p.x - job->focus.x) * job->compscale.y + job->height / 2.;
+    } else {
+	rv.x = (p.x - job->focus.x) * job->compscale.x + job->width / 2.;
+	rv.y = (p.y - job->focus.y) * job->compscale.y + job->height / 2.;
     }
     return rv;
 }
 
-static pointf gvrender_pt(GVC_t * gvc, point p)
+static pointf gvrender_pt(gvrender_job_t *job, point p)
 {
-    gvrender_job_t *job = gvc->job;
     pointf rv;
 
-    if (job->rotation == 0) {
-	rv.x = ((double) p.x - job->focus.x) * job->compscale.x + job->width / 2.;
-	rv.y = ((double) p.y - job->focus.y) * job->compscale.y + job->height / 2.;
-    } else {
+    if (job->rotation) {
 	rv.x = -((double) p.y - job->focus.y) * job->compscale.x + job->width / 2.;
 	rv.y = ((double) p.x - job->focus.x) * job->compscale.y + job->height / 2.;
+    } else {
+	rv.x = ((double) p.x - job->focus.x) * job->compscale.x + job->width / 2.;
+	rv.y = ((double) p.y - job->focus.y) * job->compscale.y + job->height / 2.;
     }
     return rv;
 }
@@ -683,7 +681,7 @@ void gvrender_textline(GVC_t * gvc, pointf p, textline_t * line)
     if (line->str && line->str[0]) {
 	if (gvre && gvre->textline) {
 	    if (job->style->pen != PEN_NONE) {
-		gvre->textline(job, gvrender_ptf(gvc, p), line);
+		gvre->textline(job, gvrender_ptf(job, p), line);
 	    }
 	}
 #ifndef DISABLE_CODEGENS
@@ -764,7 +762,7 @@ void gvrender_set_style(GVC_t * gvc, char **s)
 		while (*p)
 		    p++;
 		p++;
-		style->penwidth = atol(p);
+		style->penwidth = atof(p);
 	    } else if (streq(line, "filled"))
 		style->fill = FILL_SOLID;
 	    else if (streq(line, "unfilled"))
@@ -805,7 +803,7 @@ void gvrender_ellipse(GVC_t * gvc, point p, int rx, int ry, int filled)
 	    AF[1].y = (double) (p.y + ry);
 /* end hack */
 	    for (i = 0; i < 2; i++)
-		AF[i] = gvrender_ptf(gvc, AF[i]);
+		AF[i] = gvrender_ptf(job, AF[i]);
 	    gvre->ellipse(job, AF, filled);
 	}
     }
@@ -835,7 +833,7 @@ void gvrender_polygon(GVC_t * gvc, point * A, int n, int filled)
 		AF = realloc(AF, n * sizeof(pointf));
 /* end hack */
 	    for (i = 0; i < n; i++)
-		AF[i] = gvrender_pt(gvc, A[i]);
+		AF[i] = gvrender_pt(job, A[i]);
 	    gvre->polygon(job, AF, n, filled);
 	}
     }
@@ -858,13 +856,15 @@ void gvrender_beziercurve(GVC_t * gvc, pointf * AF, int n,
     if (gvre && gvre->beziercurve) {
 	if (job->style->pen != PEN_NONE) {
 	    static pointf *AF2;
-	    static int sizeAF2;
+	    static int szAF2;
 	    int i;
 
-	    if (sizeAF2 < n)
+	    if (szAF2 < n) {
 		AF2 = realloc(AF2, n * sizeof(pointf));
+		szAF2 = n;
+	    }
 	    for (i = 0; i < n; i++)
-		AF2[i] = gvrender_ptf(gvc, AF[i]);
+		AF2[i] = gvrender_ptf(job, AF[i]);
 	    gvre->beziercurve(job, AF2, n, arrow_at_start, arrow_at_end);
 	}
     }
@@ -873,11 +873,13 @@ void gvrender_beziercurve(GVC_t * gvc, pointf * AF, int n,
 	codegen_t *cg = job->codegen;
 	/* hack for old codegen int API */
 	static point *A;
-	static int sizeA;
+	static int szA;
 	int i;
 
-	if (sizeA < n)
+	if (szA < n) {
 	    A = realloc(A, n * sizeof(point));
+	    szA = n;
+	}
 	for (i = 0; i < n; i++)
 	    PF2P(AF[i], A[i]);
 	/* end hack */
@@ -896,13 +898,15 @@ void gvrender_polyline(GVC_t * gvc, point * A, int n)
     if (gvre && gvre->polyline) {
 	if (job->style->pen != PEN_NONE) {
 	    static pointf *AF;
-	    static int sizeAF;
+	    static int szAF;
 	    int i;
 
-	    if (sizeAF < n)
+	    if (szAF < n) {
 		AF = realloc(AF, n * sizeof(pointf));
+		szAF = n;
+	    }
 	    for (i = 0; i < n; i++)
-		AF[i] = gvrender_pt(gvc, A[i]);
+		AF[i] = gvrender_pt(job, A[i]);
 	    gvre->polyline(job, AF, n);
 	}
     }
@@ -943,11 +947,13 @@ void gvrender_user_shape(GVC_t * gvc, char *name, point * A, int n,
 
 /* temporary hack until client API is FP */
     static pointf *AF;
-    static int sizeAF;
+    static int szAF;
     int i;
 
-    if (sizeAF < n)
+    if (szAF < n) {
 	AF = realloc(AF, n * sizeof(pointf));
+	szAF = n;
+    }
     for (i = 0; i < n; i++)
 	P2PF(A[i], AF[i]);
 /* end hack */

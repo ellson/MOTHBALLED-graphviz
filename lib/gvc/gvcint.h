@@ -33,15 +33,15 @@ extern "C" {
     typedef enum { PEN_NONE, PEN_DASHED, PEN_DOTTED, PEN_SOLID } pen_type;
     typedef enum { FILL_NONE, FILL_SOLID } fill_type;
     typedef enum { FONT_REGULAR, FONT_BOLD, FONT_ITALIC } font_type;
-#define PENWIDTH_NORMAL 1
-#define PENWIDTH_BOLD 2
+#define PENWIDTH_NORMAL 1.
+#define PENWIDTH_BOLD 2.
 
     typedef struct {
 	char *fontfam, fontopt;
 	color_t pencolor, fillcolor;
 	pen_type pen;
 	fill_type fill;
-	int penwidth;
+	double penwidth;
 	double fontsz;
     } gvstyle_t;
 
