@@ -23,26 +23,22 @@ static int s_arrows;		/* graph has edges with start arrows */
 static agxbuf outbuf;
 static agxbuf charbuf;
 
-/* macros for inverting the y coordinate with the bounding box */
-#define Y(y) (y_invert ? (y_off - (y)) : (y))
-#define YF(y) (y_invert ? (yf_off - (y)) : (y))
-
 static void printptf(FILE * f, point pt)
 {
-    fprintf(f, " %.3f %.3f", PS2INCH(pt.x), PS2INCH(Y(pt.y)));
+    fprintf(f, " %.3f %.3f", PS2INCH(pt.x), PS2INCH(YDIR(pt.y)));
 }
 
 /* setYInvert:
  * Set parameters used to flip coordinate system (y=0 at top).
- * Values do not need to be unset, since if y_invert is set, it's
+ * Values do not need to be unset, since if Y_invert is set, it's
  * set for * all graphs during current run, so each will 
  * reinitialize the values for its bbox.
  */
 static void setYInvert(graph_t * g)
 {
-    if (y_invert) {
-	y_off = GD_bb(g).UR.y + GD_bb(g).LL.y;
-	yf_off = PS2INCH(y_off);
+    if (Y_invert) {
+	Y_off = GD_bb(g).UR.y + GD_bb(g).LL.y;
+	YF_off = PS2INCH(Y_off);
     }
 }
 
@@ -339,9 +335,9 @@ static void set_record_rects(node_t * n, field_t * f, agxbuf * xb)
     if (f->n_flds == 0) {
 	sprintf(buf, "%d,%d,%d,%d ",
 		f->b.LL.x + ND_coord_i(n).x,
-		Y(f->b.LL.y + ND_coord_i(n).y),
+		YDIR(f->b.LL.y + ND_coord_i(n).y),
 		f->b.UR.x + ND_coord_i(n).x,
-		Y(f->b.UR.y + ND_coord_i(n).y));
+		YDIR(f->b.UR.y + ND_coord_i(n).y));
 	agxbput(xb, buf);
     }
     for (i = 0; i < f->n_flds; i++)
@@ -354,12 +350,12 @@ static void rec_attach_bb(graph_t * g)
     char buf[32];
     point pt;
 
-    sprintf(buf, "%d,%d,%d,%d", GD_bb(g).LL.x, Y(GD_bb(g).LL.y),
-	    GD_bb(g).UR.x, Y(GD_bb(g).UR.y));
+    sprintf(buf, "%d,%d,%d,%d", GD_bb(g).LL.x, YDIR(GD_bb(g).LL.y),
+	    GD_bb(g).UR.x, YDIR(GD_bb(g).UR.y));
     agset(g, "bb", buf);
     if (GD_label(g) && GD_label(g)->text[0]) {
 	pt = GD_label(g)->p;
-	sprintf(buf, "%d,%d", pt.x, Y(pt.y));
+	sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
 	agset(g, "lp", buf);
     }
     for (c = 1; c <= GD_n_cluster(g); c++)
@@ -394,13 +390,13 @@ void attach_attrs(graph_t * g)
 	safe_dcl(g, g, "lp", "", agraphattr);
 	if (GD_label(g)->text[0]) {
 	    pt = GD_label(g)->p;
-	    sprintf(buf, "%d,%d", pt.x, Y(pt.y));
+	    sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
 	    agset(g, "lp", buf);
 	}
     }
     safe_dcl(g, g, "bb", "", agraphattr);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	sprintf(buf, "%d,%d", ND_coord_i(n).x, Y(ND_coord_i(n).y));
+	sprintf(buf, "%d,%d", ND_coord_i(n).x, YDIR(ND_coord_i(n).y));
 	agset(n, "pos", buf);
 	sprintf(buf, "%.2f", PS2INCH(ND_ht_i(n)));
 	agxset(n, N_height->index, buf);
@@ -431,13 +427,13 @@ void attach_attrs(graph_t * g)
 		    if (poly->sides >= 3)
 			sprintf(buf, "%.3f %.3f",
 				PS2INCH(poly->vertices[i].x),
-				YF(PS2INCH(poly->vertices[i].y)));
+				YFDIR(PS2INCH(poly->vertices[i].y)));
 		    else
 			sprintf(buf, "%.3f %.3f",
 				ND_width(n) / 2.0 * cos(i /
 							(double) sides *
 							PI * 2.0),
-				YF(ND_height(n) / 2.0 *
+				YFDIR(ND_height(n) / 2.0 *
 				   sin(i / (double) sides * PI * 2.0)));
 		    agxbput(&xb, buf);
 		}
@@ -457,38 +453,38 @@ void attach_attrs(graph_t * g)
 			s_arrows = 1;
 			sprintf(buf, "s,%d,%d ",
 				ED_spl(e)->list[i].sp.x,
-				Y(ED_spl(e)->list[i].sp.y));
+				YDIR(ED_spl(e)->list[i].sp.y));
 			agxbput(&xb, buf);
 		    }
 		    if (ED_spl(e)->list[i].eflag) {
 			e_arrows = 1;
 			sprintf(buf, "e,%d,%d ",
 				ED_spl(e)->list[i].ep.x,
-				Y(ED_spl(e)->list[i].ep.y));
+				YDIR(ED_spl(e)->list[i].ep.y));
 			agxbput(&xb, buf);
 		    }
 		    for (j = 0; j < ED_spl(e)->list[i].size; j++) {
 			if (j > 0)
 			    agxbputc(&xb, ' ');
 			pt = ED_spl(e)->list[i].list[j];
-			sprintf(buf, "%d,%d", pt.x, Y(pt.y));
+			sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
 			agxbput(&xb, buf);
 		    }
 		}
 		agset(e, "pos", agxbuse(&xb));
 		if (ED_label(e)) {
 		    pt = ED_label(e)->p;
-		    sprintf(buf, "%d,%d", pt.x, Y(pt.y));
+		    sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
 		    agset(e, "lp", buf);
 		}
 		if (ED_head_label(e)) {
 		    pt = ED_head_label(e)->p;
-		    sprintf(buf, "%d,%d", pt.x, Y(pt.y));
+		    sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
 		    agset(e, "head_lp", buf);
 		}
 		if (ED_tail_label(e)) {
 		    pt = ED_tail_label(e)->p;
-		    sprintf(buf, "%d,%d", pt.x, Y(pt.y));
+		    sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
 		    agset(e, "tail_lp", buf);
 		}
 	    }

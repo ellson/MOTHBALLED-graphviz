@@ -18,14 +18,11 @@
  *  graphics code generator
  */
 
-#include	"render.h"
-#include	"agxbuf.h"
-#include	"utils.h"
-#include	"htmltable.h"
-#include	"gvc.h"
 #include	<ctype.h>
 
-static attrsym_t *G_peripheries;
+#include	"render.h"
+#include	"agxbuf.h"
+#include	"gvc.h"
 
 static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 

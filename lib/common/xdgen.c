@@ -18,9 +18,6 @@
 #include	"gvc.h"
 #include	"agxbuf.h"
 
-/* macros for inverting the y coordinate with the bounding box */
-#define Y(y) (y_invert ? (y_off - (y)) : (y))
-
 static agxbuf charbuf;
 static agxbuf outbuf;
 static Agraph_t *cluster_g;
@@ -43,7 +40,7 @@ static void xd_textline(point p, textline_t * line)
 	j = 0;
 	break;
     }
-    sprintf(buf, " %d %d %d %d %d -", p.x, Y(p.y), j,
+    sprintf(buf, " %d %d %d %d %d -", p.x, YDIR(p.y), j,
 	    (int) line->width, (int) strlen(line->str));
     agxbput(&charbuf, buf);
     agxbput(&charbuf, line->str);
@@ -55,7 +52,7 @@ static void xd_ellipse(point p, int rx, int ry, int filled)
     char buf[BUFSIZ];
 
     agxbputc(&outbuf, (filled ? 'E' : 'e'));
-    sprintf(buf, " %d %d %d %d ", p.x, Y(p.y), rx, ry);
+    sprintf(buf, " %d %d %d %d ", p.x, YDIR(p.y), rx, ry);
     agxbput(&outbuf, buf);
 }
 
@@ -70,7 +67,7 @@ static void xd_points(char c, point * A, int n)
     agxbput(&outbuf, buf);
     for (i = 0; i < n; i++) {
 	p = A[i];
-	sprintf(buf, "%d %d ", p.x, Y(p.y));
+	sprintf(buf, "%d %d ", p.x, YDIR(p.y));
 	agxbput(&outbuf, buf);
     }
 }

@@ -57,7 +57,6 @@ extern "C" {
     EXTERN char *specificFlags;
     EXTERN char *specificItems;
     external char *Gvfilepath;	/* Path of files allowed in 'shapefile' attrib  (also ps libs) */
-    external int y_invert;	/* invert y in dot & plain output */
 
 #ifndef DISABLE_CODEGENS
     EXTERN int Output_lang;	/* POSTSCRIPT, DOT, etc. */
@@ -71,7 +70,6 @@ extern "C" {
 #ifdef QUARTZ_RENDER
     extern codegen_t QPDF_CodeGen, QEPDF_CodeGen, QBM_CodeGen;
 #endif
-
 #endif
 
     EXTERN boolean Verbose, Reduce, UseRankdir, MemTest;
@@ -97,36 +95,34 @@ extern "C" {
     EXTERN int State;		/* last finished phase */
     EXTERN double Initial_dist;
     EXTERN double Damping;
-    EXTERN int y_invert;                       /* invert y in bounding box */
-    EXTERN int y_off;               /* ymin + ymax */
-    EXTERN double yf_off;               /* y_off in inches */
+    EXTERN int Y_invert;	/* invert y in dot & plain output */
+    EXTERN int Y_off;           /* ymin + ymax */
+    EXTERN double YF_off;       /* Y_off in inches */
     EXTERN attrsym_t *g_draw;
     EXTERN attrsym_t *g_l_draw;
 
     EXTERN attrsym_t
-	* N_height, *N_width, *N_shape, *N_color, *N_fillcolor,
+	*G_peripheries;
+    EXTERN attrsym_t
+	*N_height, *N_width, *N_shape, *N_color, *N_fillcolor,
 	*N_fontsize, *N_fontname, *N_fontcolor,
 	*N_label, *N_nojustify, *N_style, *N_showboxes,
 	*N_sides, *N_peripheries, *N_orientation,
 	*N_skew, *N_distortion, *N_fixed, *N_layer,
 	*N_group, *N_comment, *N_vertices, *N_z;
-
-    EXTERN attrsym_t *E_weight, *E_minlen, *E_color,
+    EXTERN attrsym_t
+	*E_weight, *E_minlen, *E_color,
 	*E_fontsize, *E_fontname, *E_fontcolor,
 	*E_label, *E_dir, *E_style, *E_decorate,
 	*E_showboxes, *E_arrowsz, *E_constr, *E_layer,
-	*E_comment, *E_label_float;
-/* vladimir */
-    EXTERN attrsym_t *E_samehead, *E_sametail,
+	*E_comment, *E_label_float,
+	*E_samehead, *E_sametail,
 	*E_arrowhead, *E_arrowtail,
 	*E_headlabel, *E_taillabel,
 	*E_labelfontsize, *E_labelfontname, *E_labelfontcolor,
-	*E_labeldistance, *E_labelangle;
-
-/* north */
-    EXTERN attrsym_t *E_tailclip, *E_headclip;
+	*E_labeldistance, *E_labelangle,
+	*E_tailclip, *E_headclip;
 #undef external
-
 
 #ifdef __cplusplus
 }

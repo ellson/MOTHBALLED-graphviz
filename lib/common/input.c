@@ -294,7 +294,7 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
 		Reduce = TRUE;
 		break;
 	    case 'y':
-		y_invert = TRUE;
+		Y_invert = TRUE;
 		break;
 	    case '?':
 		dotneato_usage(0);
