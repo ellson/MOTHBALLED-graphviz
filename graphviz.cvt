@@ -221,12 +221,14 @@ dot :LIBRARY: acyclic.c class1.c class2.c cluster.c compound.c conc.c \
 :FILE:	libdotneato	Makefile <<!
 :PACKAGE: graphviz
 
-dotneato :LIBRARY: arrows.c ccomps.c colxlate.c diagen.c dotneato.c emit.c \
-	figgen.c fontmetrics.c gdgen.c globals.c gvconfig.c gvcontext.c \
-	gvjobs.c gvlang.c gvrender.c hpglgen.c htmllex.c htmlparse.c htmltable.c \
+dotneato :LIBRARY: arrows.c colxlate.c diagen.c dotneato.c emit.c \
+	figgen.c fontmetrics.c gdgen.c globals.c gvconfig.c gvcontext.c gvemit.c \
+	gvplugin.c \
+	gvjobs.c gvlayout.c gvrender.c hpglgen.c htmllex.c htmlparse.c htmltable.c \
 	input.c labels.c mapgen.c mifgen.c mpgen.c ns.c output.c pack.c picgen.c \
 	pointset.c postproc.c psgen.c routespl.c shapes.c splines.c strcasecmp.c \
 	strncasecmp.c svggen.c timing.c utils.c vrmlgen.c vtxgen.c \
+    gdusershape.c  svgusershape.c psusershape.c gdtextsize.c \
 	-lpathplan -lgd -lgraph
 
 colortbl.h : color_names colortbl.awk
@@ -261,7 +263,7 @@ g/\<\(BUILD\)*\(DATE\|VERSION\)\>/s//GRAPHVIZ_\2/g
 :FILE:	libgd		Makefile <<!
 :PACKAGE: graphviz X11
 
-gd 1.0 :LIBRARY: gd.c gd_gd.c gd_gd2.c gd_io.c gd_io_dp.c gd_io_file.c \
+gd 1.0 :LIBRARY: gd.c gdfx.c gd_gd.c gd_gd2.c gd_io.c gd_io_dp.c gd_io_file.c \
         gd_ss.c gd_io_ss.c gd_gif_in.c gd_gif_out.c gd_jpeg.c gd_png.c gdcache.c \
         gdfontg.c gdfontl.c gdfontmb.c gdfonts.c gdfontt.c gdhelpers.c \
         gdkanji.c gdtables.c gdft.c gdxpm.c wbmp.c gd_security.c gd_wbmp.c gd_topal.c \
@@ -319,7 +321,7 @@ end
 :FILE:	libfdp		Makefile <<!
 :PACKAGE: graphviz
 
-fdp :LIBRARY: comp.c dbg.c grid.c init.c layout.c options.c tlayout.c \
+fdp :LIBRARY: comp.c dbg.c grid.c fdpinit.c layout.c tlayout.c \
 	xlayout.c \
 	-ldotneato
 
