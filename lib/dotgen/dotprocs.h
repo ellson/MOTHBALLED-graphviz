@@ -61,7 +61,6 @@ extern "C" {
     extern void other_edge(Agedge_t *);
     extern int portcmp(port p0, port p1);
     extern int ports_eq(edge_t *, edge_t *);
-    extern void rank(Agraph_t *, int, int);
     extern void rec_reset_vlists(Agraph_t *);
     extern void rec_save_vlists(Agraph_t *);
     extern void reverse_edge(Agedge_t *);
