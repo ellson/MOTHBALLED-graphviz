@@ -33,7 +33,7 @@ extern "C" {
 	int kind;
     } Poly;
 
-    extern void polyFree();
+    extern void polyFree(void);
     extern int polyOverlap(Point, Poly *, Point, Poly *);
     extern void makePoly(Poly *, Agnode_t *, double);
     extern void breakPoly(Poly *);
