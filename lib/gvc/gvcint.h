@@ -23,6 +23,21 @@
 extern "C" {
 #endif
 
+    typedef enum { PEN_NONE, PEN_DASHED, PEN_DOTTED, PEN_SOLID } pen_type;
+    typedef enum { FILL_NONE, FILL_SOLID } fill_type;
+    typedef enum { FONT_REGULAR, FONT_BOLD, FONT_ITALIC } font_type;
+#define PENWIDTH_NORMAL 1
+#define PENWIDTH_BOLD 2
+
+    typedef struct {
+	char *fontfam, fontopt;
+	color_t pencolor, fillcolor;
+	pen_type pen;
+	fill_type fill;
+	int penwidth;
+	double fontsz;
+    } gvstyle_t;
+
 #define EMIT_SORTED (1<<0)
 #define EMIT_COLORS (1<<1)
 #define EMIT_CLUSTERS_LAST (1<<2)
@@ -66,6 +81,8 @@ extern "C" {
 
 	void *surface;		/* gd or cairo surface */
 	boolean external_surface; /* surface belongs to caller */
+
+	gvstyle_t *style;       /* active style from gvc->styles[] */
 
 	GVC_t *gvc;		/* parent gvc */
         graph_t *g;		/* parent graph */
@@ -111,21 +128,6 @@ extern "C" {
 	gvplugin_type_t *typeptr;
     };
 
-    typedef enum { PEN_NONE, PEN_DASHED, PEN_DOTTED, PEN_SOLID } pen_type;
-    typedef enum { FILL_NONE, FILL_SOLID } fill_type;
-    typedef enum { FONT_REGULAR, FONT_BOLD, FONT_ITALIC } font_type;
-#define PENWIDTH_NORMAL 1
-#define PENWIDTH_BOLD 2
-
-    typedef struct {
-	char *fontfam, fontopt;
-	color_t pencolor, fillcolor;
-	pen_type pen;
-	fill_type fill;
-	int penwidth;
-	double fontsz;
-    } gvstyle_t;
-
 #define MAXNEST 4
 
     struct GVC_s {
@@ -160,7 +162,6 @@ extern "C" {
 
 	gvstyle_t styles[MAXNEST];	/* style stack */
 	int SP;
-	gvstyle_t *style;
 
 	/* render defaults set from graph */
 	color_t bgcolor;	/* background color */

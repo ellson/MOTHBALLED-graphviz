@@ -263,15 +263,15 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 
 	/* init stack */
 	gvc->SP = 0;
-	gvc->style = &(gvc->styles[0]);
+	job->style = &(gvc->styles[0]);
 	gvrender_set_pencolor(gvc, DEFAULT_COLOR);
 	gvrender_set_fillcolor(gvc, DEFAULT_FILL);
-	gvc->style->fontfam = DEFAULT_FONTNAME;
-	gvc->style->fontsz = DEFAULT_FONTSIZE;
-	gvc->style->fontopt = FONT_REGULAR;
-	gvc->style->pen = PEN_SOLID;
-	gvc->style->fill = PEN_NONE;
-	gvc->style->penwidth = PENWIDTH_NORMAL;
+	job->style->fontfam = DEFAULT_FONTNAME;
+	job->style->fontsz = DEFAULT_FONTSIZE;
+	job->style->fontopt = FONT_REGULAR;
+	job->style->pen = PEN_SOLID;
+	job->style->fill = PEN_NONE;
+	job->style->penwidth = PENWIDTH_NORMAL;
     }
 #ifndef DISABLE_CODEGENS
     else {
@@ -562,7 +562,7 @@ void gvrender_begin_context(GVC_t * gvc)
 	(gvc->SP)++;
 	assert((gvc->SP) < MAXNEST);
 	(gvc->styles)[gvc->SP] = (gvc->styles)[(gvc->SP) - 1];
-	gvc->style = &((gvc->styles)[gvc->SP]);
+	job->style = &((gvc->styles)[gvc->SP]);
     }
 #ifndef DISABLE_CODEGENS
     else {
@@ -582,7 +582,7 @@ void gvrender_end_context(GVC_t * gvc)
     if (gvre) {
 	gvc->SP--;
 	assert(gvc->SP >= 0);
-	gvc->style = &(gvc->styles[gvc->SP]);
+	job->style = &(gvc->styles[gvc->SP]);
     }
 #ifndef DISABLE_CODEGENS
     else {
@@ -635,8 +635,8 @@ void gvrender_set_font(GVC_t * gvc, char *fontname, double fontsize)
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre) {
-	gvc->style->fontfam = fontname;
-	gvc->style->fontsz = fontsize;
+	job->style->fontfam = fontname;
+	job->style->fontsz = fontsize;
     }
 #ifndef DISABLE_CODEGENS
     else {
@@ -655,7 +655,7 @@ void gvrender_textline(GVC_t * gvc, pointf p, textline_t * line)
 
     if (line->str && line->str[0]) {
 	if (gvre && gvre->textline) {
-	    if (gvc->style->pen != PEN_NONE) {
+	    if (job->style->pen != PEN_NONE) {
 		gvre->textline(gvc, gvrender_ptf(gvc, p), line);
 	    }
 	}
@@ -676,7 +676,7 @@ void gvrender_set_pencolor(GVC_t * gvc, char *name)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
-    color_t *color = &(gvc->style->pencolor);
+    color_t *color = &(job->style->pencolor);
 
     if (gvre) {
 	gvrender_resolve_color(job->render_features, name, color);
@@ -697,7 +697,7 @@ void gvrender_set_fillcolor(GVC_t * gvc, char *name)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
-    color_t *color = &(gvc->style->fillcolor);
+    color_t *color = &(job->style->fillcolor);
 
     if (gvre) {
 	gvrender_resolve_color(job->render_features, name, color);
@@ -719,7 +719,7 @@ void gvrender_set_style(GVC_t * gvc, char **s)
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
     char *line, *p;
-    gvstyle_t *style = gvc->style;
+    gvstyle_t *style = job->style;
 
     if (gvre) {
 	while ((p = line = *s++)) {
@@ -765,7 +765,7 @@ void gvrender_ellipse(GVC_t * gvc, point p, int rx, int ry, int filled)
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->ellipse) {
-	if (gvc->style->pen != PEN_NONE) {
+	if (job->style->pen != PEN_NONE) {
 /* temporary hack until client API is FP */
 	    pointf AF[2];
 	    int i;
@@ -799,7 +799,7 @@ void gvrender_polygon(GVC_t * gvc, point * A, int n, int filled)
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->polygon) {
-	if (gvc->style->pen != PEN_NONE) {
+	if (job->style->pen != PEN_NONE) {
 /* temporary hack until client API is FP */
 	    static pointf *AF;
 	    static int sizeAF;
@@ -830,7 +830,7 @@ void gvrender_beziercurve(GVC_t * gvc, pointf * AF, int n,
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->beziercurve) {
-	if (gvc->style->pen != PEN_NONE) {
+	if (job->style->pen != PEN_NONE) {
 	    static pointf *AF2;
 	    static int sizeAF2;
 	    int i;
@@ -868,7 +868,7 @@ void gvrender_polyline(GVC_t * gvc, point * A, int n)
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->polyline) {
-	if (gvc->style->pen != PEN_NONE) {
+	if (job->style->pen != PEN_NONE) {
 	    static pointf *AF;
 	    static int sizeAF;
 	    int i;
