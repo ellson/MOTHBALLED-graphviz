@@ -75,6 +75,9 @@ leader_of(graph_t * g, node_t * v)
     return rv;
 }
 
+/* make_chain:
+ * Create chain of dummy nodes for edge orig.
+ */
 static void 
 make_chain(graph_t * g, node_t * from, node_t * to, edge_t * orig)
 {
