@@ -23,9 +23,14 @@
 #include        "macros.h"
 #include        "gvc.h"
 
+#ifndef DISABLE_CODEGENS
+extern void config_codegen_builtins(GVC_t *gvc);
+#endif
+
 /*
     A config for gvrender is a text file containing a
-    tcl-like-syntax list of plugins and their capabilities.
+    list of plugins and their capabilities using a tcl-like
+    syntax
 
     Lines beginning with '#' are ignored as comments
 
@@ -119,33 +124,77 @@ static char *token(int *nest, char **tokens)
 /*
   gvconfig - parse a config file and install the identified plugins
  */
-void gvconfig(GVC_t * gvc, char *config)
+void gvconfig(GVC_t * gvc)
 {
     char *s, *path, *api, *type;
+    api_t gv_api;
     int quality;
     int nest = 0;
+    int sz, rc;
+    FILE *f;
+    char *config_path, *home, *config;
+    char *dot_graphviz_config = "/.graphviz/config";
 
-    s = strdup(config);
-    /* this copy is never free'd because the config uses pointers
-       into it for string values */
+#define SZ_CONFIG 1000
+    
+#ifndef DISABLE_CODEGENS
+    config_codegen_builtins(gvc);
+#endif
+    gvplugin_builtins(gvc);
 
+    home = getenv ("HOME");
+    if (!home) {
+	return;
+    }
+
+    config_path = malloc(strlen(home) + strlen(dot_graphviz_config) + 1);
+    strcpy(config_path, home);
+    strcat(config_path, dot_graphviz_config);
+
+    f = fopen(config_path,"r");
+    if (!f) {	/* if we fail to open it then it probably doesn't exists
+		   so just fail silently, clean up and return */
+	free(config_path);
+	return;
+    }
+    config = malloc(SZ_CONFIG);
+    config[0] = '\0';
+    sz = fread(config, 1, SZ_CONFIG, f);
+    if (sz == 0) {
+        fprintf(stderr,"%s is zero sized, or other read error.\n", config_path);
+	free(config_path);
+	free(config);
+	return;
+    }
+    if (sz == SZ_CONFIG) {
+        fprintf(stderr,"%s is bigger than I can handle.\n", config_path);
+	free(config_path);
+	free(config);
+	return;
+    }
+    fclose(f);
+    free(config_path); /* not needed now that we've slurped in the contents */
+
+    s = config;
     separator(&nest, &s);
     while (*s) {
 	path = token(&nest, &s);
 	do {
 	    api = token(&nest, &s);
+	    gv_api = gvplugin_api(api);
+	    if (gv_api == -1) {
+		fprintf(stderr, "invalid api in config: %s %s\n", path, api);
+		return;
+	    }
 	    do {
 		type = token(&nest, &s);
 		if (nest == 2)
 		    quality = atoi(token(&nest, &s));
 		else
 		    quality = 0;
-		if (!
-		    (gvplugin_install
-		     (gvc, gvplugin_api(api), type, quality, path,
-		      NULL))) {
-		    fprintf(stderr, "config error: %s %s %s\n", api, type,
-			    path);
+		rc = gvplugin_install (gvc, gv_api, type, quality, path, NULL);
+		if (!rc) {
+		    fprintf(stderr, "config error: %s %s %s\n", path, api, type);
 		    return;
 		}
 	    } while (nest == 2);

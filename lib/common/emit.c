@@ -1624,7 +1624,10 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
             }
         }
         job->output_lang = gvrender_select(gvc, job->output_langname);
-        assert(job->output_lang != NO_SUPPORT); /* should have been verified already */
+	if (job->output_lang == NO_SUPPORT) {
+	    fprintf(stderr,"renderer for %s is unavailable\n", job->output_langname);
+	    return;
+	}
 	if (strcmp(job->output_langname,prev_langname) != 0) {
 	    prev_langname = job->output_langname;
 	    gvrender_initialize(gvc);

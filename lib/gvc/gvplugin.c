@@ -17,12 +17,15 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<string.h>
-#include	<assert.h>
 
 #include        "config.h"
 #include        "types.h"
 #include        "macros.h"
 #include        "gvc.h"
+
+#if HAVE_LTDL
+#include	<ltdl.h>
+#endif
 
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
@@ -109,10 +112,41 @@ gv_plugin_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 	}
 	pnext = &((*pnext)->next);
     }
-    if ((*pnext)->typeptr == NULL) {
-	/* FIXME - load dll here */
-    }
     free(s);
+    if ((*pnext) && (*pnext)->typeptr == NULL) {
+
+#if HAVE_LTDL
+        /* dynamically load required plugin library */
+
+	lt_dlhandle hndl;
+	lt_ptr ptr;
+
+	if (lt_dlinit()) {
+	    fprintf(stderr,"failed to init libltdl\n");
+	    return NULL;
+	}
+	hndl = lt_dlopen ((*pnext)->path);
+	if (!hndl) {
+	    fprintf(stderr,"failed to dlopen %s\n", (*pnext)->path);
+	    return NULL;
+	}
+	ptr = lt_dlsym (hndl, "gvplugin_cairo_LTX_plugin");
+	if (!ptr) {
+	    fprintf(stderr,"failed to resolve %s in %s\n", "gvplugin_cairo_LTX_plugin", (*pnext)->path);
+	    return NULL;
+	}
+#if 0
+	/* FIXME */
+	(*pnext)->typeptr = 
+#else
+	fprintf(stderr,"dynamic loading not implemented\n");
+	return NULL;
+#endif
+#else
+	fprintf(stderr,"dynamic loading not available\n");
+	return NULL;
+#endif
+    }
     return (gvc->api[api] = *pnext);
 }
 
@@ -159,8 +193,8 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
     /* point to the beginning of the linked list of plugins for this api */
     plugin = &(gvc->apis[api]);
 
-    if (p) {			/* if str contains a ':', and if we find a match for the type,
-				   then just list teh alternative paths for the plugin */
+    if (p) {	/* if str contains a ':', and if we find a match for the type,
+		   then just list teh alternative paths for the plugin */
 	pnext = plugin;
 	while (*pnext) {
 	    /* list only the matching type */

@@ -29,12 +29,6 @@
 codegen_t *Output_codegen;
 #endif
 
-#if 0
-static char *CONFIG = "cairo {renderer {svg svgz x11 png ps}}";
-#else
-static char *CONFIG = "";
-#endif
-
 char *Gvfilepath;
 
 static char *usageFmt =
@@ -152,10 +146,8 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
     /* establish Gvfilepath, if any */
     Gvfilepath = getenv("GV_FILE_PATH");
 
-    /* configure codegens */
-    config_codegen_builtins(gvc);
-    gvplugin_builtins(gvc);
-    gvconfig(gvc, CONFIG);
+    /* configure for available plugins and codegens */
+    gvconfig(gvc);
 
     CmdName = basename(argv[0]);
     i = gvlayout_select(gvc, CmdName);

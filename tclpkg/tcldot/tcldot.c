@@ -1647,14 +1647,12 @@ int Tcldot_Init(Tcl_Interp * interp)
     /* create a GraphViz Context and pass a pointer to it in clientdata */
     gvc = gvNEWcontext(Info, username());
 
-    /* configure codegens */
-    config_codegen_builtins(gvc);
+    /* configure for available plugins and codegens */
+    gvconfig(gvc);
     /* additional codegens */
     for (p = cg; p->name; ++p)
         gvplugin_install(gvc, API_render, p->name, 0, "cg",
                          (gvplugin_type_t *) p);
-    gvplugin_builtins(gvc);
-//    gvconfig(gvc, CONFIG);
 
 #ifndef TCLOBJ
     Tcl_CreateCommand(interp, "dotnew", dotnew,

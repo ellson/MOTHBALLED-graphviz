@@ -33,7 +33,7 @@ extern "C" {
 
 /* configuration */
 
-    extern void gvconfig(GVC_t * gvc, char *config);
+    extern void gvconfig(GVC_t * gvc);
 
 /* plugins */
 

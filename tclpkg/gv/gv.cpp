@@ -30,10 +30,8 @@ static void gvinit()
     agnodeattr(NULL, "label", NODENAME_ESC);
     gvc = gvNEWcontext(Info, username());
 
-    /* configure codegens */
-    config_codegen_builtins(gvc);
-    gvplugin_builtins(gvc);
-//    gvconfig(gvc, CONFIG);
+    /* configure for available plugins and codegens */
+    gvconfig(gvc);
 }
 
 Agraph_t *digraph(char *name)
