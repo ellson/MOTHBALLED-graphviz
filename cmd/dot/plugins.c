@@ -19,7 +19,7 @@
 #include        "config.h"
 #include        "types.h"
 #include        "macros.h"
-#include        "gvrender.h"
+#include        "gvc.h"
 
 #ifndef DISABLE_GVRENDER
 extern gvplugin_t gvplugin_cairo_LTX_plugin,
