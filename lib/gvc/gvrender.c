@@ -152,6 +152,10 @@ void gvrender_begin_job(GVC_t * gvc)
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
+    /* insert job in active list */
+    job->next_active = gvc->active_jobs;
+    gvc->active_jobs = job;
+
     if (gvre) {
         if (gvre->begin_job)
 	    gvre->begin_job(job);
@@ -169,7 +173,7 @@ void gvrender_begin_job(GVC_t * gvc)
 
 void gvrender_end_job(GVC_t * gvc)
 {
-    gvrender_job_t *job = gvc->job;
+    gvrender_job_t **pjob, *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_job)
@@ -183,6 +187,15 @@ void gvrender_end_job(GVC_t * gvc)
     }
 #endif
     gvc->lib = NULL;
+
+    /* remove job from active list */
+    for (pjob = &(gvc->active_jobs); *pjob; pjob = &((*pjob)->next_active)) {
+	if (*pjob == job) {
+		*pjob = job->next_active;
+		job->next_active = NULL;
+		break;
+	}
+    }
 }
 
 /* font modifiers */

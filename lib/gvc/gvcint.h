@@ -64,7 +64,8 @@ extern "C" {
     typedef struct gvrender_job_s gvrender_job_t;
 
     struct gvrender_job_s {
-	gvrender_job_t *next;
+	gvrender_job_t *next;  /* linked list of jobs */
+	gvrender_job_t *next_active;   /* linked list of active jobs (e.g. multiple windows) */
 	char *output_filename;
 	char *output_langname;
 	FILE *output_file;
@@ -158,6 +159,7 @@ extern "C" {
 	gvlayout_engine_t *layout_engine;	/* current layout engine */
 	int layout_id;		/* internal id of current layout */
 	char *graphname;	/* name from graph */
+	gvrender_job_t *active_jobs;   /* linked list of active jobs */
 
 	char **lib;
 
