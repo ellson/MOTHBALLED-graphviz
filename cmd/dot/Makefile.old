@@ -24,15 +24,19 @@ PLUGS = -L$(LOC_PLUG)/cairo -lgvplugin_cairo \
         -L$(LOC_PLUG)/layout -lgvplugin_layout \
         -L$(LOC_PLUG)/gd -lgvplugin_gd -L$(LOC_PLUG)/text -lgvplugin_text
 
-LIBS = $(PLUGS) -L$(LOC_LIB)/neatogen -lneato \
-       -L$(LOC_LIB)/dotgen -ldot \
-       -L$(LOC_LIB)/circogen -lcirco \
-       -L$(LOC_LIB)/fdpgen -lfdp \
-       -L$(LOC_LIB)/twopigen -ltwopi \
+LIBS = $(PLUGS) -L$(LOC_LIB)/neatogen -lneatogen \
+       -L$(LOC_LIB)/dotgen -ldotgen \
+       -L$(LOC_LIB)/circogen -lcircogen \
+       -L$(LOC_LIB)/fdpgen -lfdpgen \
+       -L$(LOC_LIB)/twopigen -ltwopigen \
        -L$(LOC_LIB)/pack -lpack \
        -L$(LOC_LIB)/common -lcommon \
        -L$(LOC_LIB)/gvc -lgvc \
        $(XLIBS)
+DOTLIBS = ../../lib/common/libcommon.a ../../lib/dotgen/libdotgen.a \
+          ../../lib/neatogen/libneatogen.a ../../lib/fdpgen/libfdpgen.a \
+          ../../lib/twopigen/libtwopigen.a ../../lib/circogen/libcircogen.a
+
 
 LIBDOTNEATO = libdotneato.a
 OBJS = dot.o args.o plugins.o
@@ -40,7 +44,7 @@ SHLIBS = twopigen/libtwopi.a dotgen/libdot.a neatogen/libneato.a pack/libpack.a 
 
 all : dot $(LIBDOTNEATO)
 
-dot : $(OBJS)
+dot : $(OBJS) $(DOTLIBS)
 	$(CSLD) $(LDFLAGS) $(OBJS) $(LIBS) -o dot
 
 dot.o : dot.c
