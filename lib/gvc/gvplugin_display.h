@@ -32,8 +32,8 @@ extern "C" {
 
 /* event callbacks in gvevent.c */
 
-#if 0
     extern void gvevent_refresh(gvrender_job_t * job);
+#if 0
     extern void gvevent_button_press(gvrender_job_t * job, int button, double x, double y);
     extern void gvevent_motion(gvrender_job_t * job, double x, double y);
     extern void gvevent_button_release(gvrender_job_t *job, int button, double x,
