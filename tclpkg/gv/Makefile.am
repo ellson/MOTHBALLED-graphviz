@@ -26,24 +26,25 @@ endif
 
 noinst_HEADERS = gv.h
 
-pkglib_LTLIBRARIES = 
 pkglib_DATA =
-if WITH_SWIG
-if WITH_JAVA
-pkglib_LTLIBRARIES += libgv_java.la
 pkglib_DATA += \
 	java/SWIGTYPE_p_Agraph_t.java \
 	java/SWIGTYPE_p_Agnode_t.java \
 	java/SWIGTYPE_p_Agedge_t.java \
 	java/gv.java java/gvJNI.java
+pkglib_DATA += perl/gv.pm
+pkglib_DATA += python/gv.py
+
+pkglib_LTLIBRARIES = 
+if WITH_SWIG
+if WITH_JAVA
+pkglib_LTLIBRARIES += libgv_java.la
 endif
 if WITH_PERL
 pkglib_LTLIBRARIES += libgv_perl.la
-pkglib_DATA += perl/gv.pm
 endif
 if WITH_PYTHON
 pkglib_LTLIBRARIES += libgv_python.la
-pkglib_DATA += python/gv.py
 endif
 if WITH_RUBY
 pkglib_LTLIBRARIES += libgv_ruby.la
@@ -138,13 +139,12 @@ EXTRA_DIST = gv.i \
 	perl/gv.pm \
 	python/gv.py
 
-CLEANFILES = gv_java.cpp gv_perl.cpp gv.pm gv_python.cpp gv.py gv.pyc \
-	gv_ruby.cpp gv_tcl.cpp pkgIndex.tcl \
+CLEANFILES = gv_java.cpp gv_perl.cpp gv_python.cpp gv_ruby.cpp gv_tcl.cpp \
 	java/SWIG*.java java/gv*.java java/*.class java/*.so \
 	java/*.dot java/*.png \
 	perl/gv.pm perl/gv.so perl/*.dot perl/*.png \
 	python/gv.py python/gv.pyc python/_gv.so python/*.dot python/*.png \
 	ruby/gv.so ruby/*.dot ruby/*.png \
-	tcl/libgv_tcl.so tcl/*.dot tcl/*.png
+	tcl/libgv_tcl.so tcl/*.dot tcl/*.png pkgIndex.tcl
 
 DISTCLEANFILES =
