@@ -31,23 +31,19 @@
 #include "gvplugin_text.h"
 #include "gvc.h"
 
-#if 0
-int gvlayout_select(GVC_t * gvc, char *layout)
+int gvtext_select(GVC_t * gvc, char *text_layout)
 {
     gv_plugin_t *plugin;
     gvplugin_type_t *typeptr;
 
-    plugin = gvplugin_load(gvc, API_layout, layout);
+    plugin = gvplugin_load(gvc, API_text, text_layout);
     if (plugin) {
 	typeptr = plugin->typeptr;
-	gvc->layout_type = typeptr->type;
 	gvc->layout_engine = (gvlayout_engine_t *) (typeptr->engine);
-	gvc->layout_id = typeptr->id;
-	return GVRENDER_PLUGIN;
+	return GVRENDER_PLUGIN;  /* FIXME - need more suitable success code */
     }
     return NO_SUPPORT;
 }
-#endif
 
 double gvtext_width(GVC_t *gvc, textline_t *textline, char *fontname, double fontsize, char *fontpath)
 {

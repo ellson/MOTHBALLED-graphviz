@@ -56,12 +56,28 @@ extern "C" {
 /* emit */
     extern void gvemit_graph(GVC_t * gvc, graph_t * g, int emit_flags);
 
+/* text_layout */
+
+    extern int gvtext_select(GVC_t * gvc, char *text_layout);
+    extern double gvtext_width(GVC_t *gvc, textline_t *textline,
+			       char *fontname, double fontsize,
+			       char *fontpath);
+
+/* display */
+
+    extern int gvdisplay_select(GVC_t * gvc, char *display);
+    extern void gvdisplay_init(GVC_t *gvc);
+    extern void gvdisplay_process(GVC_t *gvc);
+    extern void gvdisplay_deinit(GVC_t *gvc);
+
 /* render */
 
     extern int gvrender_select(GVC_t * gvc, char *lang);
     extern int gvrender_features(GVC_t * gvc);
     extern void gvrender_reset(GVC_t * gvc);
-    extern void gvrender_begin_job(GVC_t * gvc, char **lib, point pages, double X, double Y, double Z, double x, double y, int dpi);
+    extern void gvrender_begin_job(GVC_t * gvc, char **lib, point pages,
+				   double X, double Y, double Z,
+				   double x, double y, int dpi);
     extern void gvrender_end_job(GVC_t * gvc);
     extern void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb,
 				     point pb);
