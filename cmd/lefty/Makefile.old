@@ -1,0 +1,158 @@
+all:	lefty
+
+include ../Config.mk
+include ../makearch/$(ARCH)
+
+DOT2L = dot2l
+WM = ws/x11
+OS = os/unix
+
+LEFTYLIBDIR= $(LIBDIR)/lefty
+DEFINES=-DLEFTYPATH=\"$(LEFTYLIBDIR)\" -DHAVEDOT -DHAVE_CONFIG_H
+
+INCS =	-I. -I.. \
+	-I$(DOT2L) \
+	-I$(X11INC) \
+	-I$(WM) \
+	-I$(WM)/libfilereq \
+	-I$(OS)
+
+DOT2LEFTYSRC = $(DOT2L)/dotparse.y $(DOT2L)/dot2l.c \
+	$(DOT2L)/dotlex.c $(DOT2L)/dottrie.c
+DOT2LEFTYOBJ = dotparse.o dot2l.o dotlex.o dottrie.o
+
+OSSRC = $(OS)/io.c
+OSOBJ = io.o
+
+SRCS = lefty.c gfxview.c txtview.c internal.c display.c str.c exec.c parse.c \
+	lex.c $(DOT2LEFTYSRC) tbl.c code.c
+
+OBJS = lefty.o gfxview.o txtview.o internal.o display.o str.o exec.o parse.o \
+	lex.o $(DOT2LEFTYOBJ) tbl.o code.o io.o
+
+GSRC = g.c gcommon.c garray.c gbutton.c gcanvas.c glabel.c gmenu.c \
+    gpcanvas.c gquery.c gscroll.c gtext.c gview.c mem.c common.c \
+    SelFile.c Draw.c Path.c Dir.c
+
+GSRC =  g.c $(WM)/gcommon.c $(WM)/garray.c $(WM)/gbutton.c $(WM)/gcanvas.c \
+		$(WM)/glabel.c $(WM)/gmenu.c $(WM)/gpcanvas.c $(WM)/gquery.c \
+		$(WM)/gscroll.c $(WM)/gtext.c $(WM)/gview.c mem.c common.c \
+		$(WM)/libfilereq/SelFile.c $(WM)/libfilereq/Draw.c \
+        $(WM)/libfilereq/Path.c $(WM)/libfilereq/Dir.c 
+
+GOBJS = g.o gcommon.o garray.o gbutton.o gcanvas.o glabel.o gmenu.o \
+    gpcanvas.o gquery.o gscroll.o gtext.o gview.o mem.o common.o \
+    SelFile.o Draw.o Path.o Dir.o
+
+lefty: $(OBJS) libgfx.a
+	$(CC) $(LDFLAGS) -L. -L$(X11LIB) $(OBJS) -lgfx -lXaw -lXmu -lXt -lXext -lX11 -lm  $(LEFTYLIBS) -o lefty
+
+libgfx.a : $(GOBJS)
+	$(AR) cr libgfx.a $(GOBJS)
+
+# lefty.static is not completely static because we don't want to
+# bind libc unnecessarily.  we mostly wanted to bind things like X11
+# and tcl that are likely to cause headaches when porting binaries.
+lefty.static : lefty.static.$(ARCH)
+
+lefty.static.linux: $(OBJS)
+	$(CC) -o lefty $(OBJS) \
+		$(X11LIB)/libXaw.a $(X11LIB)/libXmu.a $(X11LIB)/libXt.a \
+		$(X11LIB)/libXext.a $(X11LIB)/libX11.a $(X11LIB)/libSM.a \
+		$(X11LIB)/libICE.a -lm
+
+lefty.static.hp.pa: $(OBJS)
+	$(CC) $(LDFLAGS) -o lefty $(OBJS) \
+	$(HOME)/lib/libXaw.a $(HOME)/lib/libXmu.a $(X11LIB)/libXt.a \
+	$(X11LIB)/libXext.a $(X11LIB)/libX11.a -lm
+
+lefty.static.sol.sun4: $(OBJS)
+	$(CC) -o lefty $(OBJS) \
+		$(X11LIB)/libXaw.a $(X11LIB)/libXmu.a $(X11LIB)/libXt.a \
+		$(X11LIB)/libX11.a $(X11LIB)/libXext.a \
+		-ldl /lib/libsocket.a /lib/libnsl.a /lib/libw.a /lib/libintl.a -lm
+
+lefty.static.sun4: $(OBJS)
+	$(CC) -o lefty $(OBJS) \
+		$(X11LIB)/libXaw.a $(X11LIB)/libXmu.a $(X11LIB)/libXt.a \
+		$(X11LIB)/libX11.a $(X11LIB)/libXext.a -lm
+
+dot2l.o:	$(DOT2L)/dot2l.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+dotlex.o:	$(DOT2L)/dotlex.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+dottrie.o:	$(DOT2L)/dottrie.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+gcommon.o:	$(WM)/gcommon.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+garray.o:	$(WM)/garray.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+gbutton.o:	$(WM)/gbutton.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+gcanvas.o:	$(WM)/gcanvas.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+glabel.o:	$(WM)/glabel.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+gmenu.o:	$(WM)/gmenu.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+gpcanvas.o:	$(WM)/gpcanvas.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+gquery.o:	$(WM)/gquery.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+gscroll.o:	$(WM)/gscroll.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+gtext.o:	$(WM)/gtext.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+gview.o:	$(WM)/gview.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+Dir.o:	$(WM)/libfilereq/Dir.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+Draw.o:	$(WM)/libfilereq/Draw.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+Path.o:	$(WM)/libfilereq/Path.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+SelFile.o:	$(WM)/libfilereq/SelFile.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+io.o:	$(OS)/io.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+dotparse.c: $(DOT2L)/dotparse.y
+	$(YACC) -d $(DOT2L)/dotparse.y
+	$(MV) y.tab.c dotparse.c
+	$(MV) y.tab.h dotparse.h
+
+dotparse.o: dotparse.c
+
+install: lefty
+	$(MKPATH) $(BINDIR)
+	$(INSTALL) lefty $(BINDIR)
+	$(MKPATH) $(MANDIR)
+	$(INSTALL) lefty.1 $(MANDIR)
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) libgfx.a $(LIBDIR)
+	$(MKPATH) $(LIBDIR)/lefty
+	$(INSTALL) lefty.psp $(LIBDIR)/lefty
+
+clean:
+	$(RM) core *.o dotparse.[ch]
+
+distclean: clean
+	$(RM) lefty *.a
