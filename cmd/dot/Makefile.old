@@ -66,10 +66,10 @@ $(LIBDOTNEATO) : dotneato.o
 install: all
 	$(MKPATH) $(BINDIR)
 	$(INSTALL) dot $(BINDIR)
-	$(LN) -s $(BINDIR)/dot $(BINDIR)/neato
-	$(LN) -s $(BINDIR)/dot $(BINDIR)/fdp
-	$(LN) -s $(BINDIR)/dot $(BINDIR)/circo
-	$(LN) -s $(BINDIR)/dot $(BINDIR)/twopi
+	$(RM) $(BINDIR)/neato; $(LN) -s $(BINDIR)/dot $(BINDIR)/neato
+	$(RM) $(BINDIR)/fdp; $(LN) -s $(BINDIR)/dot $(BINDIR)/fdp
+	$(RM) $(BINDIR)/circo; $(LN) -s $(BINDIR)/dot $(BINDIR)/circo
+	$(RM) $(BINDIR)/twopi; $(LN) -s $(BINDIR)/dot $(BINDIR)/twopi
 	$(MKPATH) $(INCDIR)
 	$(INSTALL) dotneato.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
