@@ -1530,7 +1530,7 @@ static FILE *file_select(char *str)
 void emit_jobs (GVC_t * gvc, graph_t * g)
 {
     gvrender_job_t *job;
-    char *prev_langname = NULL;
+    char *prev_langname = "";
 
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
         if (!job->output_file) {        /* if not yet opened */
@@ -1540,10 +1540,10 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
                 job->output_file = file_select(job->output_filename);
             }
         }
-	if (job->output_langname != prev_langname) {
+        job->output_lang = gvrender_select(gvc, job->output_langname);
+        assert(job->output_lang != NO_SUPPORT); /* should have been verified already */
+	if (strcmp(job->output_langname,prev_langname) != 0) {
 	    prev_langname = job->output_langname;
-            job->output_lang = gvrender_select(gvc, job->output_langname);
-            assert(job->output_lang != NO_SUPPORT); /* should have been verified already */
 	    gvrender_initialize(gvc);
 	}
 
@@ -1552,7 +1552,7 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
 
         emit_job(gvc, g);
 
-	if (!job->next || job->next->output_langname != prev_langname)
+	if (!job->next || strcmp(job->next->output_langname,prev_langname) != 0)
 	    gvrender_finalize(gvc);
     }
 }
