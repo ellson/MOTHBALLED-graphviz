@@ -48,6 +48,7 @@
  *	written 3/2/79, revised and enhanced 8/9/83.
  */
 
+#include <math.h>
 #include <neato.h>
 
 static double *scales;
@@ -71,7 +72,6 @@ int lu_decompose(double **a, int n)
     register int i, j, k;
     int pivotindex = 0;
     double pivot, biggest, mult, tempf;
-    double fabs();
 
     if (lu)
 	free_array(lu);
