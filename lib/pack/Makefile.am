@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 pdfdir = $(pkgdatadir)/doc/pdf
-pkgconfigdir = $(pkglibdir)/pkgconfig
+pkgconfigdir = $(libdir)/pkgconfig
 
 AM_CPPFLAGS = -I$(top_srcdir) \
         -I$(top_srcdir)/lib/common \

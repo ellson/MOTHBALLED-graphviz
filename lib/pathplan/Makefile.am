@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 pdfdir = $(pkgdatadir)/doc/pdf
-pkgconfigdir = $(pkglibdir)/pkgconfig
+pkgconfigdir = $(libdir)/pkgconfig
 
 man = pathplan.3
 pdf = pathplan.pdf

@@ -124,8 +124,8 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %{_includedir}/%{name}
 %{_libdir}/%{name}/*.*a
 %{_libdir}/%{name}/*.so
-%dir %{_libdir}/%{name}/pkgconfig
-%{_libdir}/%{name}/pkgconfig/*.pc
+%dir %{_libdir}/pkgconfig
+%{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/*
 %exclude %{_libdir}/%{name}/lib*tcl*.*
 %exclude %{_libdir}/%{name}/libtk*.*

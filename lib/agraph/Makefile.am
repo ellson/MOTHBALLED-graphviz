@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 pdfdir = $(pkgdatadir)/doc/pdf
-pkgconfigdir = $(pkglibdir)/pkgconfig
+pkgconfigdir = $(libdir)/pkgconfig
 
 pdf = agraph.pdf
 man = agraph.3

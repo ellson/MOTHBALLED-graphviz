@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-pkgconfigdir = $(pkglibdir)/pkgconfig
+pkgconfigdir = $(libdir)/pkgconfig
 
 # FIXME - need to get cairo dependencies out of gvemit.c so that @CAIRO...@ can go from here
 

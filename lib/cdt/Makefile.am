@@ -2,7 +2,7 @@
 
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgextraincludedir = $(pkgincludedir)
-pkgconfigdir = $(pkglibdir)/pkgconfig
+pkgconfigdir = $(libdir)/pkgconfig
 
 man = cdt.3
 pdf = cdt.pdf

@@ -23,7 +23,7 @@ man_MANS = $(man)
 pdf_DATA = $(pdf)
 endif
 
-lefty_SCRIPTS = lefty.psp
+lefty_DATA = lefty.psp
 
 lefty_SOURCES = code.c common.c display.c exec.c g.c gfxview.c internal.c \
 	lefty.c lex.c mem.c parse.c str.c tbl.c txtview.c
@@ -42,7 +42,7 @@ lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 .1.pdf:
 	groff -Tps -man $< | ps2pdf - - >$@
 
-EXTRA_DIST = $(lefty_SCRIPTS) $(lefty_SOURCES) $(man) $(pdf) \
+EXTRA_DIST = $(man) $(pdf) \
 	colors.txt Makefile.old aix_mods
 
 DISTCLEANFILES = $(pdf)

@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 pdfdir = $(pkgdatadir)/doc/pdf
-pkgconfigdir = $(pkglibdir)/pkgconfig
+pkgconfigdir = $(libdir)/pkgconfig
 
 linkedman = neato.1 twopi.1 fdp.1 circo.1
 linkedpdf = neato.pdf twopi.pdf fdp.pdf circo.pdf
