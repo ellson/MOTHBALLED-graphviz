@@ -86,7 +86,9 @@ boolean gvrender_output_langname_job(GVC_t * gvc, char *name)
     output_langname_job->output_langname = name;
 
     /* load it now to check that it exists */
-    return ((boolean)gvplugin_load(gvc, API_render, name));
+    if (gvplugin_load(gvc, API_render, name))
+	return TRUE;
+    return FALSE;
 }
 
 #if 0

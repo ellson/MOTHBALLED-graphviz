@@ -23,6 +23,11 @@
 extern "C" {
 #endif
 
+#ifndef FALSE
+#define FALSE 0
+#define TRUE (! FALSE)
+#endif
+
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
     typedef enum { PEN_NONE, PEN_DASHED, PEN_DOTTED, PEN_SOLID } pen_type;
