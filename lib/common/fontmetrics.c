@@ -208,15 +208,7 @@ double textwidth(textline_t * textline, char *fontname, double fontsize)
     cairo_select_font(cr, fontname, 0, 0);
     cairo_scale_font(cr, fontsize);
     cairo_text_extents(cr, textline->str, &extents);
-#if 0
     cairo_destroy(cr);
-#else
-/* FIXME - adding this test mysteriously fixes the mysteriously destroyed cr problem */
-    if (cr)
-	cairo_destroy(cr);
-    else
-	fprintf(stderr,"fontmetrics.c:textwidth() - cr mysteriously destroyed already\n");
-#endif
 
     textline->width = extents.width;
     textline->xshow = NULL;
