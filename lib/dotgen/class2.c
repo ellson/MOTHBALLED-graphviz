@@ -19,6 +19,156 @@
 
 #include "dot.h"
 
+static node_t*
+label_vnode(graph_t * g, edge_t * orig)
+{
+    node_t *v;
+    pointf dimen;
+
+    dimen = ED_label(orig)->dimen;
+    v = virtual_node(g);
+    ND_label(v) = ED_label(orig);
+    ND_lw_i(v) = GD_nodesep(v->graph);
+    if (!ED_label_ontop(orig)) {
+	if (GD_flip(g)) {
+	    ND_ht_i(v) = dimen.x;
+	    ND_rw_i(v) = dimen.y;
+	} else {
+	    ND_ht_i(v) = dimen.y;
+	    ND_rw_i(v) = dimen.x;
+	}
+    }
+    return v;
+}
+
+static void 
+incr_width(graph_t * g, node_t * v)
+{
+    int width = GD_nodesep(g) / 2;
+    ND_lw_i(v) += width;
+    ND_rw_i(v) += width;
+}
+
+static node_t*
+plain_vnode(graph_t * g, edge_t * orig)
+{
+    node_t *v;
+    orig = orig;
+    v = virtual_node(g);
+    incr_width(g, v);
+    return v;
+}
+
+static node_t*
+leader_of(graph_t * g, node_t * v)
+{
+    graph_t *clust;
+    node_t *rv;
+
+    if (ND_ranktype(v) != CLUSTER) {
+	/*assert(v == UF_find(v));  could be leaf, so comment out */
+	rv = UF_find(v);
+    } else {
+	clust = ND_clust(v);
+	rv = GD_rankleader(clust)[ND_rank(v)];
+    }
+    return rv;
+}
+
+static void 
+make_chain(graph_t * g, node_t * from, node_t * to, edge_t * orig)
+{
+    int r, label_rank;
+    node_t *u, *v;
+    edge_t *e;
+
+    u = from;
+    if (ED_label(orig))
+	label_rank = (ND_rank(from) + ND_rank(to)) / 2;
+    else
+	label_rank = -1;
+    assert(ED_to_virt(orig) == NULL);
+    for (r = ND_rank(from) + 1; r <= ND_rank(to); r++) {
+	if (r < ND_rank(to)) {
+	    if (r == label_rank)
+		v = label_vnode(g, orig);
+	    else
+		v = plain_vnode(g, orig);
+	    ND_rank(v) = r;
+	} else
+	    v = to;
+	e = virtual_edge(u, v, orig);
+	virtual_weight(e);
+	u = v;
+    }
+    assert(ED_to_virt(orig) != NULL);
+}
+
+static void 
+interclrep(graph_t * g, edge_t * e)
+{
+    node_t *t, *h;
+    edge_t *ve;
+
+    t = leader_of(g, e->tail);
+    h = leader_of(g, e->head);
+    if (ND_rank(t) > ND_rank(h)) {
+	node_t *t0 = t;
+	t = h;
+	h = t0;
+    }
+    if (ND_clust(t) != ND_clust(h)) {
+	if ((ve = find_fast_edge(t, h))) {
+	    merge_chain(g, e, ve, TRUE);
+	    return;
+	}
+	if (ND_rank(t) == ND_rank(h))
+	    return;
+	make_chain(g, t, h, e);
+
+	/* mark as cluster edge */
+	for (ve = ED_to_virt(e); ve && (ND_rank(ve->head) <= ND_rank(h));
+	     ve = ND_out(ve->head).list[0])
+	    ED_edge_type(ve) = CLUSTER_EDGE;
+    }
+    /* else ignore intra-cluster edges at this point */
+}
+
+static int 
+is_cluster_edge(edge_t * e)
+{
+    return ((ND_ranktype(e->tail) == CLUSTER)
+	    || (ND_ranktype(e->head) == CLUSTER));
+}
+
+void merge_chain(graph_t * g, edge_t * e, edge_t * f, int flag)
+{
+    edge_t *rep;
+    int lastrank = MAX(ND_rank(e->tail), ND_rank(e->head));
+
+    assert(ED_to_virt(e) == NULL);
+    ED_to_virt(e) = f;
+    rep = f;
+    do {
+	/* interclust multi-edges are not counted now */
+	if (flag)
+	    ED_count(rep) += ED_count(e);
+	ED_xpenalty(rep) += ED_xpenalty(e);
+	ED_weight(rep) += ED_weight(e);
+	if (ND_rank(rep->head) == lastrank)
+	    break;
+	incr_width(g, rep->head);
+	rep = ND_out(rep->head).list[0];
+    } while (rep);
+}
+
+int mergeable(edge_t * e, edge_t * f)
+{
+    if (e && f && (e->tail == f->tail) && (e->head == f->head) &&
+	(ED_label(e) == ED_label(f)) && ports_eq(e, f))
+	return TRUE;
+    return FALSE;
+}
 
 void class2(graph_t * g)
 {
@@ -156,146 +306,3 @@ void class2(graph_t * g)
     }
 }
 
-node_t *label_vnode(graph_t * g, edge_t * orig)
-{
-    node_t *v;
-    pointf dimen;
-
-    dimen = ED_label(orig)->dimen;
-    v = virtual_node(g);
-    ND_label(v) = ED_label(orig);
-    ND_lw_i(v) = GD_nodesep(v->graph);
-    if (!ED_label_ontop(orig)) {
-	if (GD_flip(g)) {
-	    ND_ht_i(v) = dimen.x;
-	    ND_rw_i(v) = dimen.y;
-	} else {
-	    ND_ht_i(v) = dimen.y;
-	    ND_rw_i(v) = dimen.x;
-	}
-    }
-    return v;
-}
-
-node_t *plain_vnode(graph_t * g, edge_t * orig)
-{
-    node_t *v;
-    orig = orig;
-    v = virtual_node(g);
-    incr_width(g, v);
-    return v;
-}
-
-void incr_width(graph_t * g, node_t * v)
-{
-    int width = GD_nodesep(g) / 2;
-    ND_lw_i(v) += width;
-    ND_rw_i(v) += width;
-}
-
-void make_chain(graph_t * g, node_t * from, node_t * to, edge_t * orig)
-{
-    int r, label_rank;
-    node_t *u, *v;
-    edge_t *e;
-
-    u = from;
-    if (ED_label(orig))
-	label_rank = (ND_rank(from) + ND_rank(to)) / 2;
-    else
-	label_rank = -1;
-    assert(ED_to_virt(orig) == NULL);
-    for (r = ND_rank(from) + 1; r <= ND_rank(to); r++) {
-	if (r < ND_rank(to)) {
-	    if (r == label_rank)
-		v = label_vnode(g, orig);
-	    else
-		v = plain_vnode(g, orig);
-	    ND_rank(v) = r;
-	} else
-	    v = to;
-	e = virtual_edge(u, v, orig);
-	virtual_weight(e);
-	u = v;
-    }
-    assert(ED_to_virt(orig) != NULL);
-}
-
-void merge_chain(graph_t * g, edge_t * e, edge_t * f, int flag)
-{
-    edge_t *rep;
-    int lastrank = MAX(ND_rank(e->tail), ND_rank(e->head));
-
-    assert(ED_to_virt(e) == NULL);
-    ED_to_virt(e) = f;
-    rep = f;
-    do {
-	/* interclust multi-edges are not counted now */
-	if (flag)
-	    ED_count(rep) += ED_count(e);
-	ED_xpenalty(rep) += ED_xpenalty(e);
-	ED_weight(rep) += ED_weight(e);
-	if (ND_rank(rep->head) == lastrank)
-	    break;
-	incr_width(g, rep->head);
-	rep = ND_out(rep->head).list[0];
-    } while (rep);
-}
-
-node_t *leader_of(graph_t * g, node_t * v)
-{
-    graph_t *clust;
-    node_t *rv;
-
-    if (ND_ranktype(v) != CLUSTER) {
-	/*assert(v == UF_find(v));  could be leaf, so comment out */
-	rv = UF_find(v);
-    } else {
-	clust = ND_clust(v);
-	rv = GD_rankleader(clust)[ND_rank(v)];
-    }
-    return rv;
-}
-
-void interclrep(graph_t * g, edge_t * e)
-{
-    node_t *t, *h;
-    edge_t *ve;
-
-    t = leader_of(g, e->tail);
-    h = leader_of(g, e->head);
-    if (ND_rank(t) > ND_rank(h)) {
-	node_t *t0 = t;
-	t = h;
-	h = t0;
-    }
-    if (ND_clust(t) != ND_clust(h)) {
-	if ((ve = find_fast_edge(t, h))) {
-	    merge_chain(g, e, ve, TRUE);
-	    return;
-	}
-	if (ND_rank(t) == ND_rank(h))
-	    return;
-	make_chain(g, t, h, e);
-
-	/* mark as cluster edge */
-	for (ve = ED_to_virt(e); ve && (ND_rank(ve->head) <= ND_rank(h));
-	     ve = ND_out(ve->head).list[0])
-	    ED_edge_type(ve) = CLUSTER_EDGE;
-    }
-    /* else ignore intra-cluster edges at this point */
-}
-
-int is_cluster_edge(edge_t * e)
-{
-    return ((ND_ranktype(e->tail) == CLUSTER)
-	    || (ND_ranktype(e->head) == CLUSTER));
-}
-
-int mergeable(edge_t * e, edge_t * f)
-{
-    if (e && f && (e->tail == f->tail) && (e->head == f->head) &&
-	(ED_label(e) == ED_label(f)) && ports_eq(e, f))
-	return TRUE;
-    return FALSE;
-}

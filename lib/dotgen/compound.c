@@ -334,9 +334,6 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     point pts[4];
     point p;
     int fixed;
-    inside_t inside_context;
-
-    inside_context.e = e;
 
     /* find head and tail target clusters, if defined */
     lh = getCluster(g, agget(e, "lhead"));
@@ -396,7 +393,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 		    bez->list[2] = midPt(bez->list[1], p);
 		    if (bez->eflag)
 			endi =
-			    arrowEndClip(&inside_context, bez->list,
+			    arrowEndClip(e, bez->list,
 					 starti, 0, nbez, bez->eflag);
 		    endi += 3;
 		    fixed = 1;
@@ -412,7 +409,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 		} else {
 		    if (bez->eflag)
 			endi =
-			    arrowEndClip(&inside_context, bez->list,
+			    arrowEndClip(e, bez->list,
 					 starti, endi, nbez, bez->eflag);
 		    endi += 3;
 		}
@@ -460,7 +457,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 			midPt(bez->list[starti + 2], p);
 		    if (bez->sflag)
 			starti =
-			    arrowStartClip(&inside_context, bez->list,
+			    arrowStartClip(e, bez->list,
 					   starti, endi - 3, nbez,
 					   bez->sflag);
 		    fixed = 1;
@@ -483,7 +480,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 		    starti -= 3;
 		    if (bez->sflag)
 			starti =
-			    arrowStartClip(&inside_context, bez->list,
+			    arrowStartClip(e, bez->list,
 					   starti, endi - 3, nbez,
 					   bez->sflag);
 		}
