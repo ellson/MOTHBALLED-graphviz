@@ -17,10 +17,12 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<string.h>
+#ifndef DISABLE_LTDL
 #include	<sys/types.h>
 #include	<sys/stat.h>
 #include	<unistd.h>
 #include	<glob.h>
+#endif
 
 #include        "config.h"
 #include        "types.h"
@@ -125,36 +127,53 @@ static char *token(int *nest, char **tokens)
     return t;
 }
 
+#ifdef DISABLE_LTDL
+extern gvplugin_library_t *builtins[];
+#endif
+
 /*
   gvconfig - parse a config file and install the identified plugins
  */
 void gvconfig(GVC_t * gvc)
 {
+    gvplugin_library_t *library;
+    gvplugin_api_t *apis;
+    gvplugin_type_t *types;
+    int i
+#ifndef DISABLE_LTDL
     char *s, *path, *api, *type;
     api_t gv_api;
     int quality;
     int nest = 0;
-    int sz, rc, i, j;
+    int sz, rc, j;
     struct stat config_st, libdir_st;
     FILE *f;
     char *config_path, *config_glob, *home, *config_text;
     glob_t globbuf;
-    gvplugin_library_t *library;
-    gvplugin_api_t *apis;
-    gvplugin_type_t *types;
 
     char *dot_graphviz = "/.graphviz";
     char *libdir = GVLIBDIR;
     char *plugin_glob = "/libgvplugin*.so.0";
 
 #define MAX_SZ_CONFIG 100000
+#endif
     
 #ifndef DISABLE_CODEGENS
     config_codegen_builtins(gvc);
 #endif
-    gvplugin_builtins(gvc);
 
+#ifdef DISABLE_LTDL
+    for (library = builtins; *library; library++) {
+        for (apis = (*library)->apis; (types = apis->types); apis++) {
+            for (i = 0; types[i].type; i++) {
+                gvplugin_install(gvc, apis->api,
+                                 types[i].type, types[i].quality,
+                                 (*library)->name, &types[i]);
+            }
+        }
+    }
 
+#else
     /* see if there are any new plugins */
 
     rc = stat(libdir, &libdir_st);
@@ -268,4 +287,5 @@ void gvconfig(GVC_t * gvc)
 	    } while (nest == 2);
 	} while (nest == 1);
     }
+#endif
 }

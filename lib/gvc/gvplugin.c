@@ -288,27 +288,3 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
     free(s);
     return buf;
 }
-
-#ifdef DISABLE_LTDL
-extern gvplugin_library_t *builtins[];
-#endif
-
-void gvplugin_builtins(GVC_t * gvc)
-{
-#ifdef DISABLE_LTDL
-    gvplugin_library_t **library;
-    gvplugin_api_t *apis;
-    gvplugin_type_t *types;
-    int i;
-
-    for (library = builtins; *library; library++) {
-	for (apis = (*library)->apis; (types = apis->types); apis++) {
-	    for (i = 0; types[i].type; i++) {
-		gvplugin_install(gvc, apis->api,
-				 types[i].type, types[i].quality,
-				 (*library)->name, &types[i]);
-	    }
-	}
-    }
-#endif
-}

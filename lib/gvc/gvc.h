@@ -43,7 +43,6 @@ extern "C" {
     extern gv_plugin_t *gvplugin_load(GVC_t * gvc, api_t api, char *type);
     extern gvplugin_library_t *gvplugin_library_load(char *path);
     extern const char *gvplugin_list(GVC_t * gvc, api_t api, char *str);
-    extern void gvplugin_builtins(GVC_t * gvc);
     extern api_t gvplugin_api(char *str);
     extern char * gvplugin_api_name(api_t api);
 
