@@ -4,8 +4,9 @@ Summary:        Graph Visualization Tools
 Name:           graphviz
 Version:        @VERSION@
 Release:        1
-Group:          Applications/Graphics
-License:        CPL (see COPYING)
+Epoch:		0
+Group:          Applications/Multimedia
+License:        CPL
 URL:            http://www.graphviz.org/
 Source:		http://www.graphviz.org/pub/graphviz/ARCHIVE/%{name}-%{version}.tar.gz
 Packager:       John Ellson (ellson@graphviz.org)
@@ -34,16 +35,16 @@ A collection of tools and tcl packages for the manipulation and layout
 of graphs (as in nodes and edges, not as in barcharts).
 
 %package graphs
-Group:		Applications/Graphics
+Group:		Applications/Multimedia
 Summary:	Demo graphs for %{name}
 
 %description graphs
 This package provides some example graphs for %{name}.
 
 %package tcl
-Group:		Applications/Graphics
-Summary:	Tcl extension tools for version %{version} of %{name}
-Requires:	%{name} = %{version}-%{release}
+Group:		Applications/Multimedia
+Summary:	Tcl extension tools for %{name}
+Requires:	%{name} = %{epoch}:%{version}-%{release} tcl >= 0:8.3 tk
 
 %description tcl
 The %{name}-tcl package contains the various tcl packages (extensions)
@@ -75,8 +76,9 @@ The %{name}-doc package provides some additional PDF and HTML documentation for 
 %ifarch %ix86
 %define optflags -DNDEBUG -O3 -march=%{_target_cpu} -mcpu=i686 -ffast-math
 %endif
-# <percent>configure is broken in RH7.3 rpmbuild - even in comments!
-#<percent>configure --with-x
+# %%configure is broken in RH7.3 rpmbuild - even in comments!
+# need unreleased changes to gd, so use --with-mylibgd for now.
+CFLAGS="$RPM_OPT_FLAGS" \
 ./configure \
       --prefix=%{_prefix} \
       --bindir=%{_bindir} \
@@ -86,32 +88,42 @@ The %{name}-doc package provides some additional PDF and HTML documentation for 
       --mandir=%{_mandir} \
       --with-x \
       --disable-gvrender \
-      --with-mylibgd
+      --with-mylibgd \
+      --disable-dependency-tracking
 # need gd-2.0.29 commonly available in rpms before removing --enable-mylibgd
 %__make %{?_smp_mflags}
 
 %install
-make DESTDIR="$RPM_BUILD_ROOT" install
+rm -rf $RPM_BUILD_ROOT __doc
+make \
+    DESTDIR=$RPM_BUILD_ROOT \
+    docdir=$RPM_BUILD_ROOT%{_docdir}/%{name} \
+    pkgconfigdir=%{_libdir}/pkgconfig \
+    transform='s,x,x,' \
+	install
+chmod -x $RPM_BUILD_ROOT%{_datadir}/%{name}/lefty/*
+cp -a $RPM_BUILD_ROOT%{_datadir}/%{name}/doc __doc
+rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/doc
+
+%clean
+rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(-,root,root)
-%doc AUTHORS COPYING ChangeLog NEWS
+%defattr(-,root,root,-)
+%doc AUTHORS COPYING ChangeLog NEWS README
 %{_bindir}/*
+%dir %{_libdir}/%{name}
+%{_libdir}/%{name}/*.so.*
+%{_mandir}/man1/*.1*
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/lefty
-%{_mandir}/man1/*
-%dir %{_libdir}/%{name}
-%{_libdir}/%{name}/lib*.so.*
 %exclude %{_libdir}/%{name}/lib*tcl*.so.*
 %exclude %{_libdir}/%{name}/libtk*.so.*
-
-%files graphs
-%defattr(-,root,root)
-%{_datadir}/%{name}/graphs
+%exclude %{_bindir}/dotneato-config
+%exclude %{_mandir}/man1/dotneato-config.1*
 
 %files tcl
-%defattr(-,root,root)
-%doc AUTHORS COPYING ChangeLog
+%defattr(-,root,root,-)
 %{_libdir}/%{name}/lib*tcl*.so.*.*.*
 %{_libdir}/%{name}/libtk*.so.*.*.*
 %{_libdir}/%{name}/pkgIndex.tcl
@@ -119,22 +131,22 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %{_mandir}/mann/* 
 
 %files devel
-%defattr(-,root,root)
-%doc AUTHORS COPYING
+%defattr(-,root,root,-)
+%{_bindir}/dotneato-config
 %{_includedir}/%{name}
 %{_libdir}/%{name}/*.*a
 %{_libdir}/%{name}/*.so
-%dir %{_libdir}/pkgconfig
 %{_libdir}/pkgconfig/*.pc
-%{_mandir}/man3/*
+%{_mandir}/man1/dotneato-config.1*
+%{_mandir}/man3/*.3*
 %exclude %{_libdir}/%{name}/lib*tcl*.*
 %exclude %{_libdir}/%{name}/libtk*.*
 
-%files doc
-%defattr(-,root,root)
-%doc AUTHORS COPYING
-%doc cpl1.0.txt
-%{_datadir}/%{name}/doc
+%files graphs
+%defattr(-,root,root,-)
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/graphs
 
-%clean
-%__rm -rf "$RPM_BUILD_ROOT"
+%files doc
+%defattr(-,root,root,-)
+%doc __doc/*

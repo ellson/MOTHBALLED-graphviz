@@ -42,7 +42,7 @@ lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 .1.pdf:
 	groff -Tps -man $< | ps2pdf - - >$@
 
-EXTRA_DIST = $(man) $(pdf) \
+EXTRA_DIST = $(lefty_DATA) $(man) $(pdf) \
 	colors.txt Makefile.old aix_mods
 
 DISTCLEANFILES = $(pdf)

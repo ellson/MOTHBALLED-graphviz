@@ -19,7 +19,7 @@ dotty: $(top_srcdir)/cmd/dotty/dotty.sh
 .1.pdf:
 	groff -Tps -man $< | ps2pdf - - >$@
 
-EXTRA_DIST = $(man) $(pdf) \
+EXTRA_DIST = $(lefty_DATA) $(man) $(pdf) \
 	dotty.bsh dotty.ksh dotty.sh \
 	Makefile.old notes mswin32
 
