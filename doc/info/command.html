@@ -106,13 +106,24 @@ output, the graph will have these attributes.
 <H3>Environment Variables</H3>
 <DL>
 <DT><STRONG>GDFONTPATH</STRONG>
+<DD>
 List of pathnames giving directories which a program should search for fonts.
 Overridden by <A HREF=#d:DOTFONTPATH>DOTFONTPATH</A>.
-<DD>
+<IT>Used only if Graphviz is not built with the <TT>fontconfig</TT> library</IT>
 <DT><A NAME=d:DOTFONTPATH><STRONG>DOTFONTPATH</STRONG></A>
+<DD>
 List of pathnames giving directories which a program should search for fonts.
 Overridden by <A HREF=attrs.html#d:fontpath><STRONG>fontpath</STRONG></A>.
+<IT>Used only if Graphviz is not built with the <TT>fontconfig</TT> library</IT>
+<DT><A NAME=d:SERVER_NAME><STRONG>SERVER_NAME</STRONG></A>
 <DD>
+If defined, this indicates that the software is running as a web application,
+which restricts access to image files. See 
+<A HREF=d:GV_FILE_PATH>GV_FILE_PATH</A>.
+<DT><A NAME=d:GV_FILE_PATH><STRONG>GV_FILE_PATH</STRONG></A>
+<DD>
+If <A HREF=d:SERVER_NAME>SERVER_NAME</A> is defined, image files are
+restricted to the directory specified by <TT>GV_FILE_PATH</TT>.
 </DL>
 </BODY>
 </HTML>
