@@ -1,0 +1,10 @@
+The following packages are known to depend on or use graphviz:
+	webdot
+	doxygen
+	perl-Graph-Writer-GraphViz
+	perl-GraphViz
+	R
+	rpmDirectoryCheck,
+	libxml++
+	icu
+	taglib
