@@ -36,6 +36,7 @@ static void make_lrvn(graph_t * g);
 static void contain_nodes(graph_t * g);
 static int idealsize(graph_t * g, double);
 
+#ifdef DEBUG
 static void
 dumpNS (graph_t * g)
 {
@@ -54,6 +55,7 @@ dumpNS (graph_t * g)
 	n = ND_next(n); 
     }
 }
+#endif
 
 void dot_position(graph_t * g)
 {
@@ -67,7 +69,6 @@ void dot_position(graph_t * g)
     if (flat_edges(g))
 	set_ycoords(g);
     create_aux_edges(g);
-/* dumpNS (g); */
     rank(g, 2, nsiter2(g));	/* LR balance == 2 */
     set_xcoords(g);
     set_aspect(g);
