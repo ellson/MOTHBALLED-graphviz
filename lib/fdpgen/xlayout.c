@@ -42,7 +42,7 @@ Increase less between tries
 /* #define ORIG      */
 #define BOX	/* Use bbox to determine overlap, else use circles */
 
-#define DFLT_overlap   "scale"    /* default overlap value */
+#define DFLT_overlap   "9:ortho"    /* default overlap value */
 
 #define WD2(n) ((ND_width(n))*X_fact)
 #define HT2(n) ((ND_height(n))*X_fact)
@@ -98,7 +98,6 @@ static void xinit_params(graph_t* g, int n, xparams * xpms)
 #define X_loopcnt    xParams.loopcnt
 #define X_C          xParams.C
 
-#define DFLT_tries 9
 
 static double cool(int t)
 {
@@ -509,7 +508,8 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
  * x_layout to remove overlaps.
  * Thus,
  *  NULL or ""  => dflt overlap
- *  "mode"      => dflt tries, then removeOverlap with mode
+ *  "mode"      => "0:mode", i.e. removeOverlap with mode only
+ *  "true"      => "0:true", i.e., no overlap removal
  *  "n:"        => n tries only
  *  "n:mode"    => n tries, then removeOverlap with mode
  *  "0:"        => no overlap removal
@@ -537,7 +537,7 @@ void fdp_xLayout(graph_t * g, xparams * xpms)
       if (tries < 0) tries = 0;
     }
     else {
-      tries = DFLT_tries;
+      tries = 0;
       rest = ovlp;
     }
     if (Verbose) {

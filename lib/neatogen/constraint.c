@@ -22,7 +22,8 @@
 #include "neato.h"
 #include "adjust.h"
 
-#define SCALE 10
+/* For precision, scale up before algorithms, then scale down */
+#define SCALE 10   
 #define SCALE2 (SCALE/2)
 
 typedef struct nitem {
@@ -58,16 +59,6 @@ static Dtdisc_t constr = {
     NIL(Dtevent_f)
 };
 
-static int intersectY(nitem * p, nitem * q)
-{
-    return ((p->bb.LL.y <= q->bb.UR.y) && (q->bb.LL.y <= p->bb.UR.y));
-}
-
-static int intersectX(nitem * p, nitem * q)
-{
-    return ((p->bb.LL.x <= q->bb.UR.x) && (q->bb.LL.x <= p->bb.UR.x));
-}
-
 static int distY(box * b1, box * b2)
 {
     return ((b1->UR.y - b1->LL.y) + (b2->UR.y - b2->LL.y)) / 2;
@@ -78,6 +69,40 @@ static int distX(box * b1, box * b2)
     return ((b1->UR.x - b1->LL.x) + (b2->UR.x - b2->LL.x)) / 2;
 }
 
+/* intersectY0:
+ * Return true if boxes could overlap if shifted in x but don't,
+ * or if actually overlap and an x move is smallest to remove overlap.
+ * Otherwise (no y overlap or a y move is smaller), return false.
+ * Assume q pos to right of p pos.
+ */
+static int intersectY0(nitem * p, nitem * q)
+{
+    int xdelta, ydelta;
+    int v = ((p->bb.LL.y <= q->bb.UR.y) && (q->bb.LL.y <= p->bb.UR.y));
+    if (v == 0)  /* no y overlap */
+	return 0;
+    if (p->bb.UR.x < q->bb.LL.x) /* but boxes don't really overlap */
+	return 1;
+    xdelta = distX(&p->bb,&q->bb) - (q->pos.x - p->pos.x);
+    if (q->pos.y >= p->pos.y) 
+	ydelta = distY(&p->bb,&q->bb) - (q->pos.y - p->pos.y); 
+    else
+	ydelta = distY(&p->bb,&q->bb) - (p->pos.y - q->pos.y); 
+    return (xdelta <= ydelta);
+}
+
+static int intersectY(nitem * p, nitem * q)
+{
+    return ((p->bb.LL.y <= q->bb.UR.y) && (q->bb.LL.y <= p->bb.UR.y));
+}
+
+static int intersectX(nitem * p, nitem * q)
+{
+    return ((p->bb.LL.x <= q->bb.UR.x) && (q->bb.LL.x <= p->bb.UR.x));
+}
+
+/* mapGraphs:
+ */
 static void mapGraphs(graph_t * g, graph_t * cg, distfn dist)
 {
     node_t *n;
@@ -119,6 +144,8 @@ static node_t *newNode(graph_t * g)
 }
 #endif
 
+/* mkConstraintG:
+ */
 static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 			      intersectfn intersect, distfn dist)
 {
@@ -273,7 +300,12 @@ static void closeGraph(graph_t * cg)
     agclose(cg);
 }
 
-static void constrainX(graph_t * g, nitem * nlist, int nnodes)
+/* constrainX:
+ * Create the X constrains and solve. We use a linear objective function
+ * (absolute values rather than squares), so we can reuse network simplex.
+ * The constraints are encoded as a dag with edges having a minimum length.
+ */
+static void constrainX(graph_t * g, nitem * nlist, int nnodes, intersectfn ifn)
 {
     Dt_t *list = dtopen(&constr, Dtobag);
     nitem *p = nlist;
@@ -285,7 +317,7 @@ static void constrainX(graph_t * g, nitem * nlist, int nnodes)
 	dtinsert(list, p);
 	p++;
     }
-    cg = mkConstraintG(g, list, intersectY, distX);
+    cg = mkConstraintG(g, list, ifn, distX);
     rank(cg, 2, MAXINT);
 
     p = nlist;
@@ -304,7 +336,10 @@ static void constrainX(graph_t * g, nitem * nlist, int nnodes)
     dtclose(list);
 }
 
-static void constrainY(graph_t * g, nitem * nlist, int nnodes)
+/* constrainY:
+ * See constrainX.
+ */
+static void constrainY(graph_t * g, nitem * nlist, int nnodes, intersectfn ifn)
 {
     Dt_t *list = dtopen(&constr, Dtobag);
     nitem *p = nlist;
@@ -316,7 +351,7 @@ static void constrainY(graph_t * g, nitem * nlist, int nnodes)
 	dtinsert(list, p);
 	p++;
     }
-    cg = mkConstraintG(g, list, intersectX, distY);
+    cg = mkConstraintG(g, list, ifn, distY);
     rank(cg, 2, MAXINT);
 #ifdef DEBUG
     {
@@ -356,6 +391,8 @@ static void constrainY(graph_t * g, nitem * nlist, int nnodes)
   ((pb.LL.x <= qb.UR.x) && (qb.LL.x <= pb.UR.x) && \
           (pb.LL.y <= qb.UR.y) && (qb.LL.y <= pb.UR.y))
 
+/* overlaps:
+ */
 static int overlaps(nitem * p, int cnt)
 {
     int i, j;
@@ -374,6 +411,8 @@ static int overlaps(nitem * p, int cnt)
     return 0;
 }
 
+/* initItem:
+ */
 static void initItem(node_t * n, nitem * p, double margin)
 {
     int x = POINTS(SCALE * ND_pos(n)[0]);
@@ -401,8 +440,26 @@ static void initItem(node_t * n, nitem * p, double margin)
  *     constraint could move both x and y away, or the smallest, or some
  *     mixture.
  *  - follow by a scale down using actual shapes
+ * We use an optimization based on Marriott, Stuckey, Tam and He,
+ * "Removing Node Overlapping in Graph Layout Using Constrained Optimization",
+ * Constraints,8(2):143--172, 2003.
+ * We solve 2 constraint problem, one in X, one in Y. In each dimension,
+ * we require relative positions to remain the same. That is, if two nodes
+ * have the same x originally, they have the same x at the end, and if one
+ * node is to the left of another, it remains to the left. In addition, if
+ * two nodes could overlap by moving their X coordinates, we insert a constraint * to keep the two nodes sufficiently apart. Similarly, for Y.
+ * 
+ * mode = AM_ORTHOXY => first X, then Y
+ * mode = AM_ORTHOYX => first Y, then X
+ * mode = AM_ORTHO   => first X, then Y
+ * In the last case, relax the constraints as follows: during the X pass,
+ * if two nodes actually intersect and a smaller move in the Y direction
+ * will remove the overlap, we don't force the nodes apart in the X direction,
+ * but leave it for the Y pass to remove any remaining overlaps. Without this,
+ * the X pass will remove all overlaps, and the Y pass only compresses in the
+ * Y direction, causing a skewing of the aspect ratio.
  */
-void cAdjust(graph_t * g, int xy)
+void cAdjust(graph_t * g, int mode)
 {
     double margin;
     int i, nnodes = agnnodes(g);
@@ -420,12 +477,19 @@ void cAdjust(graph_t * g, int xy)
     if (overlaps(nlist, nnodes)) {
 	point pt;
 
-	if (xy) {
-	    constrainX(g, nlist, nnodes);
-	    constrainY(g, nlist, nnodes);
-	} else {
-	    constrainY(g, nlist, nnodes);
-	    constrainX(g, nlist, nnodes);
+	switch ((adjust_mode)mode) {
+	case AM_ORTHOXY:
+	    constrainX(g, nlist, nnodes, intersectY);
+	    constrainY(g, nlist, nnodes, intersectX);
+	    break;
+	case AM_ORTHOYX:
+	    constrainY(g, nlist, nnodes, intersectX);
+	    constrainX(g, nlist, nnodes, intersectY);
+	    break;
+	default :
+	    constrainX(g, nlist, nnodes, intersectY0);
+	    constrainY(g, nlist, nnodes, intersectX);
+	    break;
 	}
 	p = nlist;
 	for (i = 0; i < nnodes; i++) {
@@ -598,6 +662,16 @@ static double computeScale(pointf * aarr, int m)
     return sc;
 }
 
+/* scAdjust:
+ * Scale the layout.
+ * equal > 0  => scale uniformly in x and y to remove overlaps
+ * equal = 0  => scale separately in x and y to remove overlaps
+ * equal < 0  => scale down uniformly in x and y to remove excess space
+ * The last assumes there are no overlaps at present.
+ * Based on Marriott, Stuckey, Tam and He,
+ * "Removing Node Overlapping in Graph Layout Using Constrained Optimization",
+ * Constraints,8(2):143--172, 2003.
+ */
 void scAdjust(graph_t * g, int equal)
 {
     int nnodes = agnnodes(g);

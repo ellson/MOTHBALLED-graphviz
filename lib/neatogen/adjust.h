@@ -23,11 +23,18 @@
 extern "C" {
 #endif
 
+typedef enum {
+    AM_NONE, AM_VOR, AM_SCALE, AM_NSCALE, AM_SCALEXY, AM_PUSH, AM_PUSHPULL,
+    AM_ORTHO, AM_ORTHOXY, AM_ORTHOYX, AM_COMPRESS
+} adjust_mode;
+
     extern double expFactor(graph_t * G);
     extern void adjustNodes(graph_t * G);
     extern void normalize(graph_t * g);
     extern void removeOverlap(graph_t * G);
     extern void removeOverlapAs(graph_t*, char*);
+    extern void cAdjust(graph_t *, int);
+    extern void scAdjust(graph_t *, int);
 
 #ifdef __cplusplus
 }

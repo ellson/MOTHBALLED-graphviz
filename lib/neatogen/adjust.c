@@ -679,10 +679,6 @@ void normalize(graph_t * g)
     }
 }
 
-typedef enum {
-    AM_NONE, AM_VOR, AM_SCALE, AM_NSCALE, AM_SCALEXY, AM_PUSH, AM_PUSHPULL,
-    AM_ORTHOXY, AM_ORTHOYX, AM_COMPRESS
-} adjust_mode;
 typedef struct {
     adjust_mode mode;
     char *attrib;
@@ -696,6 +692,7 @@ static adjust_data adjustMode[] = {
     {AM_SCALEXY, "scalexy", "x and y scaling"},
     /* {AM_PUSH, "push", "push scan adjust"}, */
     /* {AM_PUSHPULL, "pushpull", "push-pull scan adjust"}, */
+    {AM_ORTHO, "ortho", "orthogonal constraints"},
     {AM_ORTHOXY, "orthoxy", "xy orthogonal constraints"},
     {AM_ORTHOYX, "orthoyx", "yx orthogonal constraints"},
     {AM_COMPRESS, "compress", "compress"},
@@ -730,8 +727,6 @@ removeOverlapAs(graph_t * G, char* flag)
 {
     /* int          userWindow = 0; */
     int ret;
-    extern void cAdjust(graph_t *, int);
-    extern void scAdjust(graph_t *, int);
     /* extern void  scanAdjust(graph_t*, int); */
 
     adjust_data *am;
@@ -763,11 +758,14 @@ removeOverlapAs(graph_t * G, char* flag)
 	case AM_PUSHPULL:
 	    /* scanAdjust (G, 0); */
 	    break;
+	case AM_ORTHO:
+	    cAdjust(G, AM_ORTHO);
+	    break;
 	case AM_ORTHOXY:
-	    cAdjust(G, 1);
+	    cAdjust(G, AM_ORTHOXY);
 	    break;
 	case AM_ORTHOYX:
-	    cAdjust(G, 0);
+	    cAdjust(G, AM_ORTHOYX);
 	    break;
 	case AM_COMPRESS:
 	    scAdjust(G, -1);
