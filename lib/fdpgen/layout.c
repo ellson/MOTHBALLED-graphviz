@@ -393,18 +393,14 @@ static void addEdge(edge_t * de, edge_t * e)
  */
 static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 {
-    graph_t *mg;
-    edge_t *me;
-    node_t *mn;
     graph_t *dg;
     node_t *dn;
     graph_t *subg;
     char name[100];
     bport_t *pp;
     node_t *n;
-    clist_t clist;
     edge_t *de;
-    int id = 0;
+    int i, id = 0;
 
     sprintf(name, "_dg_%d", infop->gid++);
     if (Verbose >= 2)
@@ -415,51 +411,42 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
     agraphattr(dg, "overlap", "scale");
 
     /* create derived nodes from clusters */
-    initCList(&clist);
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
-	subg = agusergraph(mn);
-	if (!strncmp(subg->name, "cluster", 7)) {
-	    pointf fix_LL = { 0, 0 };
-	    pointf fix_UR = { 0, 0 };
+    for (i = 1; i <= GD_n_cluster(g); i++) {
+	pointf fix_LL = { 0, 0 };
+	pointf fix_UR = { 0, 0 };
+	subg = GD_clust(g)[i];
 
-	    addCluster(&clist, subg);
-	    GD_alg(subg) = (void *) NEW(gdata);	/* freed in cleanup_subgs */
-	    GD_ndim(subg) = GD_ndim(g);
-	    LEVEL(subg) = LEVEL(g) + 1;
-	    GPARENT(subg) = g;
-	    do_graph_label(subg);
-	    dn = mkDeriveNode(dg, subg->name);
-	    ND_clust(dn) = subg;
-	    ND_id(dn) = id++;
-	    if (infop->G_coord)
+	GD_alg(subg) = (void *) NEW(gdata);	/* freed in cleanup_subgs */
+	GD_ndim(subg) = GD_ndim(g);
+	LEVEL(subg) = LEVEL(g) + 1;
+	GPARENT(subg) = g;
+	do_graph_label(subg);
+	dn = mkDeriveNode(dg, subg->name);
+	ND_clust(dn) = subg;
+	ND_id(dn) = id++;
+	if (infop->G_coord)
 		chkPos(subg, dn, infop->G_coord);
-	    for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
-		DNODE(n) = dn;
-		if (ND_pinned(n)) {
-		    if (ND_pinned(dn)) {
-			fix_LL.x = MIN(fix_LL.x, ND_pos(n)[0]);
-			fix_LL.y = MIN(fix_LL.y, ND_pos(n)[0]);
-			fix_UR.x = MIN(fix_UR.x, ND_pos(n)[0]);
-			fix_UR.y = MIN(fix_UR.y, ND_pos(n)[0]);
-			ND_pinned(dn) = MAX(ND_pinned(dn), ND_pinned(n));
-		    } else {
-			fix_LL.x = fix_UR.x = ND_pos(n)[0];
-			fix_LL.y = fix_UR.y = ND_pos(n)[1];
-			ND_pinned(dn) = ND_pinned(n);
-		    }
+	for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
+	    DNODE(n) = dn;
+	    if (ND_pinned(n)) {
+		if (ND_pinned(dn)) {
+		    fix_LL.x = MIN(fix_LL.x, ND_pos(n)[0]);
+		    fix_LL.y = MIN(fix_LL.y, ND_pos(n)[0]);
+		    fix_UR.x = MIN(fix_UR.x, ND_pos(n)[0]);
+		    fix_UR.y = MIN(fix_UR.y, ND_pos(n)[0]);
+		    ND_pinned(dn) = MAX(ND_pinned(dn), ND_pinned(n));
+	        } else {
+		    fix_LL.x = fix_UR.x = ND_pos(n)[0];
+		    fix_LL.y = fix_UR.y = ND_pos(n)[1];
+		    ND_pinned(dn) = ND_pinned(n);
 		}
 	    }
-	    if (ND_pinned(dn)) {
-		ND_pos(dn)[0] = (fix_LL.x + fix_UR.x) / 2;
-		ND_pos(dn)[1] = (fix_LL.y + fix_UR.y) / 2;
-	    }
+	}
+	if (ND_pinned(dn)) {
+	    ND_pos(dn)[0] = (fix_LL.x + fix_UR.x) / 2;
+	    ND_pos(dn)[1] = (fix_LL.y + fix_UR.y) / 2;
 	}
     }
-    GD_n_cluster(g) = clist.cnt;
-    if (clist.cnt)
-	GD_clust(g) = RALLOC(clist.cnt + 1, clist.cl, graph_t *);
 
     /* create derived nodes from remaining nodes */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
@@ -939,7 +926,7 @@ void fdp_init_graph(Agraph_t * g)
     UseRankdir = FALSE;
 
     graph_init(g);
-//    GD_drawing(g)->engine = FDP;
+    /* GD_drawing(g)->engine = FDP; */
     g->u.ndim = late_int(g, agfindattr(g, "dim"), 2, 2);
     Ndim = g->u.ndim = MIN(g->u.ndim, MAXDIM);
 
@@ -962,11 +949,54 @@ void init_info(graph_t * g, layout_info * infop)
     infop->pack.mode = getPackMode(g, l_node);
 }
 
+/* mkClusters:
+ * Attach list of immediate child clusters.
+ * NB: By convention, the indexing starts at 1.
+ * If pclist is NULL, the graph is the root graph or a cluster
+ * If pclist is non-NULL, we are recursively scanning a non-cluster
+ * subgraph for cluster children.
+ */
+static void
+mkClusters (graph_t * g, clist_t* pclist)
+{
+    node_t*  mn;
+    edge_t*  me;
+    graph_t* mg;
+    graph_t* subg;
+    clist_t  list;
+    clist_t* clist;
+
+    if (pclist == NULL) {
+	clist = &list;
+	initCList(clist);
+    }
+    else
+	clist = pclist;
+    mg = g->meta_node->graph;
+    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
+	mn = me->head;
+	subg = agusergraph(mn);
+	if (!strncmp(subg->name, "cluster", 7)) {
+	    addCluster(clist, subg);
+	    mkClusters(subg, NULL);
+	}
+	else {
+	    mkClusters(subg, clist);
+	}
+    }
+    if (pclist == NULL) {
+	GD_n_cluster(g) = list.cnt;
+	if (list.cnt)
+	    GD_clust(g) = RALLOC(list.cnt + 1, list.cl, graph_t*);
+    }
+}
+
 void fdpLayout(graph_t * g)
 {
     layout_info info;
 
     init_info(g, &info);
+    mkClusters (g, NULL);
     layout(g, &info);
     evalPositions(g);
 
