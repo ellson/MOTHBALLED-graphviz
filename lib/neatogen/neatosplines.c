@@ -20,6 +20,7 @@
 #endif
 
 #include "neato.h"
+#include "adjust.h"
 #include "pathplan.h"
 #include "vispath.h"
 #ifndef HAVE_DRAND48
@@ -672,13 +673,9 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, double, int),
     node_t *n;
     edge_t *e;
     double SEP;
-    char *str;
     Dt_t *map;
 
-    if ((str = agget(g, "sep"))) {
-	SEP = 1.0 + atof(str);
-    } else
-	SEP = 1.01;
+    SEP = expFactor (g);
     neato_set_aspect(g);
 
     /* find equivalent edges */
