@@ -1052,11 +1052,22 @@ if test -n "$FONTCONFIG_CONFIG"; then
 	if test "$fc_cflags" != "-I/usr/include" ; then
 		FC_INCLUDES="$fc_cflags"
 	fi
-	fc_exec_prefix=`$FONTCONFIG_CONFIG --exec-prefix`
-	if test "$fc_exec_prefix" != "/usr" ; then
-		FC_LIBS="-L${fc_exec_prefix}/lib"
+	fc_prefix=`$FONTCONFIG_CONFIG --prefix`
+	if test "$fc_prefix" != "/usr" ; then
+		FC_LIBS="-L${fc_prefix}/lib"
 	fi
 fi
+
+PKG_CHECK_MODULES(FONTCONFIG, fontconfig,
+	[AC_DEFINE_UNQUOTED(HAVE_FONTCONFIG,1,
+                 [Define if you have the fontconfig library])],
+	[AC_MSG_WARN(Optional fontconfig library not available)])
+
+if test "x$HAVE_FONTCONFIG" = "x1"; then
+	FC_INCLUDES=$(FONTCONFIG_INCLUDES)
+	FC_LIBS=$(FONTCONFIG_LIBS)
+fi
+
 AC_ARG_WITH(fontconfigincludedir,
 	[  --with-fontconfigincludedir=DIR use FONTCONFIG includes from DIR],
 	FC_INCLUDES="-I$withval")
