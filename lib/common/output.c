@@ -515,7 +515,10 @@ void _write_plain(GVC_t * gvc, FILE * f, boolean extend)
 	    continue;
 	fprintf(f, "node %s ", canonical(n->name));
 	printptf(f, ND_coord_i(n));
-	lbl = ND_label(n)->text;
+	if (ND_label(n)->html)   /* if html, get original text */
+	    lbl = agxget(n, N_label->index);
+	else
+	    lbl = ND_label(n)->text;
 	if (lbl)
 	    lbl = canonical(lbl);
 	else
