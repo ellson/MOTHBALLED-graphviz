@@ -23,6 +23,8 @@
 extern "C" {
 #endif
 
+#define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
+
     typedef enum { PEN_NONE, PEN_DASHED, PEN_DOTTED, PEN_SOLID } pen_type;
     typedef enum { FILL_NONE, FILL_SOLID } fill_type;
     typedef enum { FONT_REGULAR, FONT_BOLD, FONT_ITALIC } font_type;
@@ -150,8 +152,11 @@ extern "C" {
 	void (*errorfn) (char *fmt, ...);
 
 	/* plugins */
-	gv_plugin_t *apis[NUM_APIS];	/* array of linked lists of plugins for each api */
-	gv_plugin_t *api[NUM_APIS];	/* array of current plugins for each api */
+#define ELEM(x) +1
+	/* APIS expands to "+1 +1 ... +1" to give the number of APIs */
+	gv_plugin_t *apis[ APIS ]; /* array of linked-list of plugins per api */
+	gv_plugin_t *api[ APIS ];  /* array of current plugins per api */
+#undef ELEM
 
 	void *display; /* window display data for gvdisplay plugin */
 	gvdisplay_engine_t *display_engine; /* current display engine */

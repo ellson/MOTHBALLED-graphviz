@@ -31,11 +31,8 @@ extern "C" {
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined here.  The apis array is
  * inititialized in gvplugin.c by redefining ELEM and reinvoking APIS.
- *
- * NUM_APIS is the size of the array.
  */
 #define APIS ELEM(render) ELEM(layout) ELEM(display) ELEM(text)
-#define NUM_APIS 4
 
 #define ELEM(x) API_##x,
     typedef enum { APIS } api_t; /* API_render, API_layout, ... */

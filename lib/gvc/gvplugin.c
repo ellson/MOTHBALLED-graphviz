@@ -28,8 +28,6 @@
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined gvplugin.h.  The apis array is
  * inititialized here by redefining ELEM and reinvoking APIS.
- *
- * The NUM_APIS is the size of the array.
  */
 #define ELEM(x) #x,
 static char *apis[] = { APIS };	/* "render", "layout", ... */
@@ -40,7 +38,7 @@ api_t gvplugin_api(char *str)
 {
     int api;
 
-    for (api = 0; api < NUM_APIS; api++) {
+    for (api = 0; api < ARRAY_SIZE(apis); api++) {
 	if (strcmp(str, apis[api]) == 0)
 	    return api;
     }
