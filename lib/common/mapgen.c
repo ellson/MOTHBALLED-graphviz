@@ -298,7 +298,8 @@ static void map_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 	Dpi = DEFAULT_DPI;
     DevScale = Dpi / POINTS_PER_INCH;
 
-    Viewport = gvc->size;
+    Viewport.x = gvc->width;
+    Viewport.y = gvc->height;
     if (Viewport.x) {
 	Zoom = gvc->zoom;
 	GraphFocus = gvc->focus;

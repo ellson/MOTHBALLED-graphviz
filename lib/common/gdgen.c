@@ -143,17 +143,16 @@ static void init1_gd(GVC_t * gvc, graph_t * g, box bb, point pb)
 	Dpi = DEFAULT_DPI;
     DevScale = Dpi / POINTS_PER_INCH;
 
-    Viewport = gvc->size;
+    Viewport.x = gvc->width;
+    Viewport.y = gvc->height;
     if (Viewport.x) {
 	Zoom = gvc->zoom;
 	GraphFocus = gvc->focus;
     } else {
 	Viewport.x =
-	    (bb.UR.x - bb.LL.x + 2 * GD_drawing(g)->margin.x) * DevScale +
-	    2;
+	    (bb.UR.x - bb.LL.x + 2 * GD_drawing(g)->margin.x) * DevScale + 2;
 	Viewport.y =
-	    (bb.UR.y - bb.LL.y + 2 * GD_drawing(g)->margin.y) * DevScale +
-	    2;
+	    (bb.UR.y - bb.LL.y + 2 * GD_drawing(g)->margin.y) * DevScale + 2;
 	GraphFocus.x = (GD_bb(g).UR.x - GD_bb(g).LL.x) / 2.;
 	GraphFocus.y = (GD_bb(g).UR.y - GD_bb(g).LL.y) / 2.;
 	Zoom = 1.0;

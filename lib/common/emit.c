@@ -48,10 +48,6 @@ static char *Deffontname;
 static char *Layerdelims;
 static attrsym_t *G_peripheries;
 
-#ifndef DISABLE_CODEGENS
-static char *lang_name(int langID);
-#endif
-
 static int write_edge_test(Agraph_t * g, Agedge_t * e)
 {
     Agraph_t *sg;
@@ -64,7 +60,6 @@ static int write_edge_test(Agraph_t * g, Agedge_t * e)
     }
     return TRUE;
 }
-
 
 static int write_node_test(Agraph_t * g, Agnode_t * n)
 {
@@ -266,6 +261,18 @@ static void set_pagedir(graph_t * g)
     }
 }
 
+static char *lang_name(int langID)
+{
+#ifndef DISABLE_CODEGENS
+    codegen_info_t *p;
+    for (p = first_codegen(); p->name; p = next_codegen(p)) {
+	if (p->id == langID)
+	    return p->name;
+    }
+#endif
+    return "<unknown output format>";
+}
+
 static void setup_layers(GVC_t * gvc, graph_t * g)
 {
     char *str;
@@ -314,7 +321,8 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	N_pages = Pages.x * Pages.y;
 
 	/* find the drawable size in device coords */
-	tp = gvc->size;
+	tp.x = gvc->width;
+	tp.y = gvc->height;
 	if (GD_drawing(g)->landscape)
 	    tp = exch_xy(tp);
 	DS.x = MIN(tp.x, PFCLM.x);
@@ -328,7 +336,8 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	PFC.y = DEFAULT_PAGEHT;
 	PFCLM.x = PFC.x - 2 * PB.LL.x;
 	PFCLM.y = PFC.y - 2 * PB.LL.y;
-	DS = gvc->size;
+	DS.x = gvc->width;
+	DS.y = gvc->height;
 	if (GD_drawing(g)->landscape)
 	    DS = exch_xy(DS);
 	Pages.x = Pages.y = N_pages = 1;
@@ -347,19 +356,6 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	PB.LL.y += extra.y / 2;
     }
     PB.UR = add_points(PB.LL, DS);
-}
-
-/* this isn't a pretty sight... */
-void setup_graph(GVC_t * gvc, graph_t * g)
-{
-    setup_layers(gvc, g);
-
-    setup_pagination(gvc, g);
-
-    Deffontname = late_nnstring(g->proto->n, N_fontname, DEFAULT_FONTNAME);
-    Deffontsize =
-	late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
-		    MIN_FONTSIZE);
 }
 
 void emit_node(GVC_t * gvc, node_t * n)
@@ -660,12 +656,20 @@ void emit_init(GVC_t * gvc, graph_t * g)
 	sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
 
     G_peripheries = agfindattr(g, "peripheries");
-    setup_graph(gvc, g);
+
+    Deffontname = late_nnstring(g->proto->n, N_fontname, DEFAULT_FONTNAME);
+    Deffontsize =
+	late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
+		    MIN_FONTSIZE);
+
+    setup_layers(gvc, g);
+
     gvrender_begin_job(gvc, Lib, Pages, X, Y, Z, x, y, GD_drawing(g)->dpi);
 }
 
-void emit_deinit(GVC_t * gvc, graph_t * g)
+void emit_deinit(GVC_t * gvc)
 {
+    gvrender_end_job(gvc);
 }
 
 void emit_graph(GVC_t * gvc, graph_t * g, int flags)
@@ -678,8 +682,8 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
     char *str, *colors;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
 
-    /* FIXME - I don't understand why I need this again */
-    setup_graph(gvc, g);
+    /* FIXME - some of setup_pagination should be in emit_init() */
+    setup_pagination(gvc, g);
 
     gvrender_begin_graph(gvc, g, PB, PFC);
     if (flags & EMIT_COLORS) {
@@ -842,7 +846,7 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
 void emit_eof(GVC_t * gvc)
 {
     if (Page > 0) {
-	gvrender_end_job(gvc);
+        emit_deinit(gvc);
 	emit_once_reset();
     }
 }
@@ -1093,16 +1097,6 @@ int validpage(point page)
 	    && (page.y >= 0) && (page.y < Pages.y));
 }
 
-int layerindex(char *tok)
-{
-    int i;
-
-    for (i = 1; i <= Nlayers; i++)
-	if (streq(tok, LayerID[i]))
-	    return i;
-    return -1;
-}
-
 int is_natural_number(char *sstr)
 {
     unsigned char *str = (unsigned char *) sstr;
@@ -1112,7 +1106,7 @@ int is_natural_number(char *sstr)
     return TRUE;
 }
 
-int layer_index(char *str, int all)
+static int layer_index(char *str, int all)
 {
     int i;
 
@@ -1439,18 +1433,6 @@ int lang_select(GVC_t * gvc, char *str, int warn)
 	agerr(AGPREV, "%s\n", gvplugin_list(gvc, API_render, str));
     }
     return rv;
-}
-
-char *lang_name(int langID)
-{
-#ifndef DISABLE_CODEGENS
-    codegen_info_t *p;
-    for (p = first_codegen(); p->name; p = next_codegen(p)) {
-	if (p->id == langID)
-	    return p->name;
-    }
-#endif
-    return "<unknown output format>";
 }
 
 FILE *file_select(char *str)

@@ -76,7 +76,7 @@ extern "C" {
     extern void enqueue(queue *, Agnode_t *);
     extern void enqueue_neighbors(queue *, Agnode_t *, int);
     extern void emit_init(GVC_t * gvc, graph_t * g);
-    extern void emit_deinit(GVC_t * gvc, graph_t * g);
+    extern void emit_deinit(GVC_t * gvc);
     extern void emit_attachment(GVC_t * gvc, textlabel_t *, splines *);
     extern void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags);
     extern void emit_eof(GVC_t * gvc);
@@ -126,8 +126,6 @@ extern "C" {
     extern int late_int(void *, Agsym_t *, int, int);
     extern char *late_nnstring(void *, Agsym_t *, char *);
     extern char *late_string(void *, Agsym_t *, char *);
-    extern int layer_index(char *, int);
-    extern int layerindex(char *);
     extern char *strdup_and_subst_graph(char *str, Agraph_t * g);
     extern char *strdup_and_subst_node(char *str, Agnode_t * n);
     extern char *strdup_and_subst_edge(char *str, Agedge_t * e);

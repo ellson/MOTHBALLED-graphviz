@@ -58,7 +58,7 @@ typedef struct win {
 
     cairo_t *cr;
 
-    double tx, ty, zoom, oldx, oldy;
+    double tx, ty, oldx, oldy;
     int needs_refresh, fit_mode, click, active;
 
     Atom wm_delete_window_atom;
@@ -151,10 +151,6 @@ static void win_init(win_t * win, int argb, const char *geometry,
     win->scr = scr = DefaultScreen(dpy);
 
     win->fit_mode = 0;
-
-    win->tx = win->ty = 0.0;
-    win->zoom = 1.0;
-
     win->needs_refresh = 1;
 
     if (argb && (win->visual = find_argb_visual(dpy, scr))) {
@@ -178,14 +174,11 @@ static void win_init(win_t * win, int argb, const char *geometry,
 
     if (geometry) {
 	int x, y;
-	XParseGeometry(geometry, &x, &y, &win->width, &win->height);
-    } else {
-        win->width = win->gvc->size.x;
-        win->height = win->gvc->size.y;
+	XParseGeometry(geometry, &x, &y, &win->gvc->width, &win->gvc->height);
     }
 
     win->win = XCreateWindow(dpy, RootWindow(dpy, scr),
-			     0, 0, win->width, win->height, 0, win->depth,
+			     0, 0, win->gvc->width, win->gvc->height, 0, win->depth,
 			     InputOutput, win->visual,
 			     attributemask, &attributes);
 
@@ -197,8 +190,8 @@ static void win_init(win_t * win, int argb, const char *geometry,
     normalhints->flags = 0;
     normalhints->x = 0;
     normalhints->y = 0;
-    normalhints->width = win->width;
-    normalhints->height = win->height;
+    normalhints->width = win->gvc->width;
+    normalhints->height = win->gvc->height;
 
     classhint = XAllocClassHint();
     classhint->res_name = "graphviz";
@@ -216,13 +209,13 @@ static void win_init(win_t * win, int argb, const char *geometry,
     free(name);
 
     win->pix =
-	XCreatePixmap(dpy, win->win, win->width, win->height, win->depth);
+	XCreatePixmap(dpy, win->win, win->gvc->width, win->gvc->height, win->depth);
     if (argb)
 	gcv.foreground = 0;
     else
 	gcv.foreground = WhitePixel(dpy, scr);
     win->gc = XCreateGC(dpy, win->pix, GCForeground, &gcv);
-    XFillRectangle(dpy, win->pix, win->gc, 0, 0, win->width, win->height);
+    XFillRectangle(dpy, win->pix, win->gc, 0, 0, win->gvc->width, win->gvc->height);
 
     for (i = 0; i < ARRAY_SIZE(key_binding); i++) {
 	KeySym keysym;
@@ -233,7 +226,6 @@ static void win_init(win_t * win, int argb, const char *geometry,
 	else
 	    key_binding[i].keycode = XKeysymToKeycode(dpy, keysym);
     }
-//    win->cr = cairo_create();
     surface = cairo_xlib_surface_create(dpy, win->pix, win->visual,
 					CAIRO_FORMAT_ARGB32, win->cmap);
     cairo_set_target_surface(win->cr, surface);
@@ -245,7 +237,6 @@ static void win_init(win_t * win, int argb, const char *geometry,
     cairo_surface_destroy(surface);
     /* XXX: This probably doesn't need to be here (eventually) */
     cairo_set_rgb_color(win->cr, 1, 1, 1);
-//    svg_cairo_set_viewport_dimension(win->svgc, win->width, win->height);
     win->event_mask = (
           ButtonPressMask
         | ButtonReleaseMask
@@ -261,29 +252,31 @@ static void win_init(win_t * win, int argb, const char *geometry,
 
     win->click = 0;
     win->active = 0;
+    win->tx = 0.0;
+    win->ty = 0.0;
 }
 
 static void win_deinit(win_t * win)
 {
-//    cairo_destroy(win->cr);
-//    win->cr = NULL;
     XFreeGC(win->dpy, win->gc);
     XDestroyWindow(win->dpy, win->win);
 }
 
 static void win_refresh(win_t * win)
 {
-    XFillRectangle(win->dpy, win->pix, win->gc, 0, 0, win->width,
-		   win->height);
-    cairo_save(win->cr);
-    cairo_translate(win->cr, win->tx, win->ty);
-    cairo_scale(win->cr, win->zoom, win->zoom);
+    double Z = (win->gvc->zoom * win->gvc->dpi) / POINTS_PER_INCH;
+
+    XFillRectangle(win->dpy, win->pix, win->gc, 0, 0,
+		win->gvc->width, win->gvc->height);
+
+    /* FIXME - screen point ==> graph point transforms */
+    win->gvc->focus.x = -(win->tx) / Z; 
+    win->gvc->focus.y =  (win->ty) / Z;
 
     emit_graph(win->gvc, win->g, win->flags);
 
-    cairo_restore(win->cr);
     XCopyArea(win->dpy, win->pix, win->win, win->gc,
-	      0, 0, win->width, win->height, 0, 0);
+	      0, 0, win->gvc->width, win->gvc->height, 0, 0);
 }
 
 static void win_grow_pixmap(win_t * win)
@@ -291,11 +284,12 @@ static void win_grow_pixmap(win_t * win)
     Pixmap new;
     cairo_surface_t *surface;
 
-    new = XCreatePixmap(win->dpy, win->win, win->width, win->height,
+    new = XCreatePixmap(win->dpy, win->win, win->gvc->width, win->gvc->height,
 			win->depth);
-    XFillRectangle(win->dpy, new, win->gc, 0, 0, win->width, win->height);
-    XCopyArea(win->dpy, win->pix, new, win->gc, 0, 0, win->width,
-	      win->height, 0, 0);
+    XFillRectangle(win->dpy, new, win->gc, 0, 0,
+		win->gvc->width, win->gvc->height);
+    XCopyArea(win->dpy, win->pix, new, win->gc, 0, 0,
+		win->gvc->width, win->gvc->height, 0, 0);
     XFreePixmap(win->dpy, win->pix);
     win->pix = new;
     surface = cairo_xlib_surface_create(win->dpy, win->pix, win->visual,
@@ -318,24 +312,24 @@ static void win_handle_button_press(win_t *win, XButtonEvent *bev)
     case 4:
 	/* scrollwheel zoom in at current mouse x,y */
 	win->fit_mode = 0;
-	win->tx += bev->x * win->zoom;
-	win->ty += bev->y * win->zoom;
-	win->zoom *= ZOOMFACTOR;
+	win->tx += bev->x * win->gvc->zoom;
+	win->ty += bev->y * win->gvc->zoom;
+	win->gvc->zoom *= ZOOMFACTOR;
 	win->tx *= ZOOMFACTOR;
 	win->ty *= ZOOMFACTOR;
-	win->tx -= bev->x * win->zoom;
-	win->ty -= bev->y * win->zoom;
+	win->tx -= bev->x * win->gvc->zoom;
+	win->ty -= bev->y * win->gvc->zoom;
 	win->needs_refresh = 1;
 	break;
     case 5: /* scrollwheel zoom out at current mouse x,y */
 	win->fit_mode = 0;
-	win->tx += bev->x * win->zoom;
-	win->ty += bev->y * win->zoom;
-	win->zoom /= ZOOMFACTOR;
+	win->tx += bev->x * win->gvc->zoom;
+	win->ty += bev->y * win->gvc->zoom;
+	win->gvc->zoom /= ZOOMFACTOR;
 	win->tx /= ZOOMFACTOR;
 	win->ty /= ZOOMFACTOR;
-	win->tx -= bev->x * win->zoom;
-	win->ty -= bev->y * win->zoom;
+	win->tx -= bev->x * win->gvc->zoom;
+	win->ty -= bev->y * win->gvc->zoom;
 	win->needs_refresh = 1;
 	break;
     }
@@ -352,8 +346,8 @@ static void win_handle_motion(win_t *win, XMotionEvent *mev)
     case 1:
 	break;
     case 2: /* pan */
-	win->tx += (mev->x - win->oldx) * win->zoom;
-	win->ty += (mev->y - win->oldy) * win->zoom;
+	win->tx += (mev->x - win->oldx) * win->gvc->zoom;
+	win->ty += (mev->y - win->oldy) * win->gvc->zoom;
 	win->needs_refresh = 1;
 	break;
     case 3: /* unused */
@@ -373,8 +367,6 @@ static int win_handle_key_press(win_t * win, XKeyEvent * kev)
 {
     unsigned int i;
 
-// fprintf(stderr,"keycode = %d\n", kev->keycode);
-
     for (i = 0; i < ARRAY_SIZE(key_binding); i++)
 	if (key_binding[i].keycode == kev->keycode)
 	    return (key_binding[i].callback) (win);
@@ -386,11 +378,10 @@ static void win_reconfigure_normal(win_t * win, unsigned int width,
 {
     int has_grown = 0;
 
-    if (width > win->width || height > win->height)
+    if (width > win->gvc->width || height > win->gvc->height)
 	has_grown = 1;
-    win->width = width;
-    win->height = height;
-//    svg_cairo_set_viewport_dimension(win->svgc, win->width, win->height);
+    win->gvc->width = width;
+    win->gvc->height = height;
     if (has_grown)
 	win_grow_pixmap(win);
 }
@@ -402,18 +393,16 @@ win_reconfigure_fit_mode(win_t * win, unsigned int width,
     int dflt_width, dflt_height;
     int has_grown = 0;
 
-    if (width > win->width || height > win->height)
+    if (width > win->gvc->width || height > win->gvc->width)
 	has_grown = 1;
-//    svg_cairo_get_size(win->svgc, &dflt_width, &dflt_height);
-    dflt_width = win->gvc->size.x;
-    dflt_height = win->gvc->size.y;
-    win->zoom =
+    dflt_width = win->gvc->width;
+    dflt_height = win->gvc->height;
+    win->gvc->zoom =
 	MIN((double) width / (double) dflt_width,
 	    (double) height / (double) dflt_height);
 
-    win->width = width;
-    win->height = height;
-//    svg_cairo_set_viewport_dimension(win->svgc, win->width, win->height);
+    win->gvc->width = width;
+    win->gvc->height = height;
     win->needs_refresh = 1;
     if (has_grown)
 	win_grow_pixmap(win);
@@ -489,7 +478,7 @@ static int quit_cb(win_t * win)
 static int left_cb(win_t * win)
 {
     win->fit_mode = 0;
-    win->tx -= PANFACTOR * win->zoom;
+    win->tx -= PANFACTOR * win->gvc->zoom;
     win->needs_refresh = 1;
     return 0;
 }
@@ -497,7 +486,7 @@ static int left_cb(win_t * win)
 static int right_cb(win_t * win)
 {
     win->fit_mode = 0;
-    win->tx += PANFACTOR * win->zoom;
+    win->tx += PANFACTOR * win->gvc->zoom;
     win->needs_refresh = 1;
     return 0;
 }
@@ -505,7 +494,7 @@ static int right_cb(win_t * win)
 static int up_cb(win_t * win)
 {
     win->fit_mode = 0;
-    win->ty -= PANFACTOR * win->zoom;
+    win->ty -= PANFACTOR * win->gvc->zoom;
     win->needs_refresh = 1;
     return 0;
 }
@@ -513,7 +502,7 @@ static int up_cb(win_t * win)
 static int down_cb(win_t * win)
 {
     win->fit_mode = 0;
-    win->ty += PANFACTOR * win->zoom;
+    win->ty += PANFACTOR * win->gvc->zoom;
     win->needs_refresh = 1;
     return 0;
 }
@@ -521,13 +510,13 @@ static int down_cb(win_t * win)
 static int zoom_in_cb(win_t * win)
 {
     win->fit_mode = 0;
-    win->tx += win->width * win->zoom;
-    win->ty += win->height * win->zoom;
-    win->zoom *= ZOOMFACTOR;
+    win->tx += win->gvc->width * win->gvc->zoom;
+    win->ty += win->gvc->height * win->gvc->zoom;
+    win->gvc->zoom *= ZOOMFACTOR;
     win->tx *= ZOOMFACTOR;
     win->ty *= ZOOMFACTOR;
-    win->tx -= win->width * win->zoom;
-    win->ty -= win->height * win->zoom;
+    win->tx -= win->gvc->width * win->gvc->zoom;
+    win->ty -= win->gvc->height * win->gvc->zoom;
     win->needs_refresh = 1;
     return 0;
 }
@@ -535,13 +524,13 @@ static int zoom_in_cb(win_t * win)
 static int zoom_out_cb(win_t * win)
 {
     win->fit_mode = 0;
-    win->tx += win->width * win->zoom;
-    win->ty += win->height * win->zoom;
-    win->zoom /= ZOOMFACTOR;
+    win->tx += win->gvc->width * win->gvc->zoom;
+    win->ty += win->gvc->height * win->gvc->zoom;
+    win->gvc->zoom /= ZOOMFACTOR;
     win->tx /= ZOOMFACTOR;
     win->ty /= ZOOMFACTOR;
-    win->tx -= win->width * win->zoom;
-    win->ty -= win->height * win->zoom;
+    win->tx -= win->gvc->width * win->gvc->zoom;
+    win->ty -= win->gvc->height * win->gvc->zoom;
     win->needs_refresh = 1;
     return 0;
 }
@@ -551,11 +540,11 @@ static int toggle_fit_cb(win_t * win)
     win->fit_mode = !win->fit_mode;
     if (win->fit_mode) {
 	int dflt_width, dflt_height;
-	dflt_width = win->gvc->size.x;
-	dflt_height = win->gvc->size.y;
-	win->zoom =
-	    MIN((double) win->width / (double) dflt_width,
-		(double) win->height / (double) dflt_height);
+	dflt_width = win->gvc->width;
+	dflt_height = win->gvc->height;
+	win->gvc->zoom =
+	    MIN((double) win->gvc->width / (double) dflt_width,
+		(double) win->gvc->height / (double) dflt_height);
 	win->tx = 0.0;
 	win->ty = 0.0;
 	win->needs_refresh = 1;
@@ -602,4 +591,5 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
    else {
 	emit_graph(gvc, g, flags);
    }
+fprintf(stderr,"gvemit_graph\n");
 }

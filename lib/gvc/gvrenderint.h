@@ -122,19 +122,21 @@ extern "C" {
 	box bb;			/* graph bounding box (what units???) */
 	point pb;		/* page size - including margins (inches) */
 	point margin;		/* page margins (inches) */
-	double dpi;		/* resolution dots-per-inch */
-	color_t bgcolor;	/* background color */
 
 	gvstyle_t styles[MAXNEST];	/* style stack */
 	int SP;
 	gvstyle_t *style;
 
 	/* render defaults set from graph */
-	point size;		/* viewport size (pixels) */
+	color_t bgcolor;	/* background color */
+        unsigned int width;
+        unsigned int height;
+	double dpi;		/* resolution dots-per-inch */
+	int rot;		/* rotation */
+
 	double zoom;		/* viewport zoom factor */
 	pointf focus;		/* viewport focus in graph units */
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
-	int rot;		/* rotation */
 
 	/* gvrender_begin_page() */
 	point page;

@@ -132,9 +132,8 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, point pages, double X, double Y
 	if (dpi < 1.0)
 	    dpi = gvc->render_features->default_dpi;
         gvc->dpi = dpi;
-	gvc->size.x = ROUND(X * dpi / POINTS_PER_INCH);
-	gvc->size.y = ROUND(Y * dpi / POINTS_PER_INCH);
-	gvc->zoom = Z;              /* scaling factor */
+	gvc->width = ROUND(X * dpi / POINTS_PER_INCH);
+	gvc->height = ROUND(Y * dpi / POINTS_PER_INCH);
 	gvc->zoom = Z;              /* scaling factor */
 	gvc->focus.x = x;           /* graph coord of focus - points */
 	gvc->focus.y = y;
@@ -180,11 +179,11 @@ static pointf gvrender_ptf(GVC_t * gvc, pointf p)
     pointf rv;
 
     if (gvc->rot == 0) {
-	rv.x = (p.x - gvc->focus.x) * gvc->compscale.x + gvc->size.x / 2.;
-	rv.y = (p.y - gvc->focus.y) * gvc->compscale.y + gvc->size.y / 2.;
+	rv.x = (p.x - gvc->focus.x) * gvc->compscale.x + gvc->width / 2.;
+	rv.y = (p.y - gvc->focus.y) * gvc->compscale.y + gvc->height / 2.;
     } else {
-	rv.x = -(p.y - gvc->focus.y) * gvc->compscale.x + gvc->size.x / 2.;
-	rv.y = (p.x - gvc->focus.x) * gvc->compscale.y + gvc->size.y / 2.;
+	rv.x = -(p.y - gvc->focus.y) * gvc->compscale.x + gvc->width / 2.;
+	rv.y = (p.x - gvc->focus.x) * gvc->compscale.y + gvc->height / 2.;
     }
     return rv;
 }
@@ -194,19 +193,11 @@ static pointf gvrender_pt(GVC_t * gvc, point p)
     pointf rv;
 
     if (gvc->rot == 0) {
-	rv.x =
-	    ((double) p.x - gvc->focus.x) * gvc->compscale.x +
-	    gvc->size.x / 2.;
-	rv.y =
-	    ((double) p.y - gvc->focus.y) * gvc->compscale.y +
-	    gvc->size.y / 2.;
+	rv.x = ((double) p.x - gvc->focus.x) * gvc->compscale.x + gvc->width / 2.;
+	rv.y = ((double) p.y - gvc->focus.y) * gvc->compscale.y + gvc->height / 2.;
     } else {
-	rv.x =
-	    -((double) p.y - gvc->focus.y) * gvc->compscale.x +
-	    gvc->size.x / 2.;
-	rv.y =
-	    ((double) p.x - gvc->focus.x) * gvc->compscale.y +
-	    gvc->size.y / 2.;
+	rv.x = -((double) p.y - gvc->focus.y) * gvc->compscale.x + gvc->width / 2.;
+	rv.y = ((double) p.x - gvc->focus.x) * gvc->compscale.y + gvc->height / 2.;
     }
     return rv;
 }

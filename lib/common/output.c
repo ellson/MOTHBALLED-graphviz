@@ -213,7 +213,7 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
 
     }
     fflush(gvc->job->output_file);
-    emit_deinit(gvc, g);
+    emit_deinit(gvc);
 }
 
 void dotneato_write(GVC_t * gvc, graph_t * g)
@@ -493,7 +493,7 @@ void _write_plain(GVC_t * gvc, FILE * f, boolean extend)
     graph_t *g = gvc->g;
     char *lbl;
 
-    setup_graph(gvc, g);
+//    setup_graph(gvc, g);
     setYInvert(g);
     pt = GD_bb(g).UR;
     fprintf(f, "graph %.3f %.3f %.3f\n", gvc->zoom, PS2INCH(pt.x), PS2INCH(pt.y));
