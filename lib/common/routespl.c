@@ -157,12 +157,12 @@ point *routesplines(path * pp, int *npoints)
 	printboxes();
     if (debugleveln(3)) {
 	psprintinit(1);
-	/* psprintboxes(boxes, boxn); */
+	psprintboxes(boxes, boxn);
     }
 
     if (boxn * 8 > polypointn) {
 	polypoints = ALLOC(boxn * 8, polypoints, Ppoint_t);
-	polypointn = pp->nbox * 8;
+	polypointn = boxn * 8;
     }
 
     if (realedge->tail != realedge->head) {
@@ -186,7 +186,14 @@ point *routesplines(path * pp, int *npoints)
 		    polypoints[pi].x = boxes[bi].UR.x;
 		    polypoints[pi++].y = boxes[bi].UR.y;
 		}
-	    } else {
+	    }
+	    else if (prev == 0) { /* single box */
+		polypoints[pi].x = boxes[bi].LL.x;
+		polypoints[pi++].y = boxes[bi].UR.y;
+		polypoints[pi].x = boxes[bi].LL.x;
+		polypoints[pi++].y = boxes[bi].LL.y;
+	    } 
+	    else {
 		if (!(prev == -1 && next == -1))
 		    abort();
 	    }
@@ -198,7 +205,7 @@ point *routesplines(path * pp, int *npoints)
 	    if (bi > 0)
 		next = (boxes[bi - 1].LL.y > boxes[bi].LL.y) ? 1 : -1;
 	    if (prev != next) {
-		if (next == -1 || prev == 1) {
+		if (next == -1 || prev == 1 ) {
 		    polypoints[pi].x = boxes[bi].LL.x;
 		    polypoints[pi++].y = boxes[bi].UR.y;
 		    polypoints[pi].x = boxes[bi].LL.x;
@@ -209,7 +216,14 @@ point *routesplines(path * pp, int *npoints)
 		    polypoints[pi].x = boxes[bi].UR.x;
 		    polypoints[pi++].y = boxes[bi].UR.y;
 		}
-	    } else {
+	    } 
+	    else if (prev == 0) { /* single box */
+		polypoints[pi].x = boxes[bi].UR.x;
+		polypoints[pi++].y = boxes[bi].LL.y;
+		polypoints[pi].x = boxes[bi].UR.x;
+		polypoints[pi++].y = boxes[bi].UR.y;
+	    }
+	    else {
 		if (!(prev == -1 && next == -1)) {
 		    /* it went badly, e.g. degenerate box in boxlist */
 		    *npoints = 0;
