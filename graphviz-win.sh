@@ -39,7 +39,6 @@ rm -rf \
 	graphviz-win.sh
 
 find . -name "Make*" -exec rm -f {} \;
-find . -name "nmakefile" -exec rm -f {} \;
 
 # for now, lets try to fix these to be portable in the main tree
 # leaving: windows/config.h windows/cdt/ast_common.h
@@ -51,7 +50,7 @@ rm -f \
 	windows/lib/graph/parser.h \
 	windows/lib/common/colortbl.h \
 	windows/cmd/lefty/dot2l/dotparse.c \
-	windows/cmd.lefty/dot2l/dotparse.h
+	windows/cmd/lefty/dot2l/dotparse.h
 
 # Merge all the useful bits onto the main tree, then lose the windows dir
 cp -rp windows/* .
