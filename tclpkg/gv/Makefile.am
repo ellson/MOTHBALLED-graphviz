@@ -1,7 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 AM_CPPFLAGS = \
-        -I$(top_srcdir) \
+	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/graph \
@@ -12,16 +12,16 @@ LIBS =  @LIBS@ -lc
 
 if DISABLE_GVRENDER
 BASELIBS = \
-        $(top_builddir)/lib/common/libcommon.la \
-        $(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@
+	$(top_builddir)/lib/common/libcommon.la \
+	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@
 else
 BASELIBS = \
-        $(top_builddir)/lib/common/libcommon.la \
+	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
-        $(top_builddir)/plugin/cairo/libgvplugin_cairo.la \
-        $(top_builddir)/plugin/gd/libgvplugin_gd.la \
-        $(top_builddir)/plugin/text/libgvplugin_text.la \
-        $(top_builddir)/plugin/layout/libgvplugin_layout.la @CAIRO_LIBS@ @LIBGEN_LIBS@
+	$(top_builddir)/plugin/cairo/libgvplugin_cairo.la \
+	$(top_builddir)/plugin/gd/libgvplugin_gd.la \
+	$(top_builddir)/plugin/text/libgvplugin_text.la \
+	$(top_builddir)/plugin/layout/libgvplugin_layout.la @CAIRO_LIBS@ @LIBGEN_LIBS@
 endif
 
 noinst_HEADERS = gv.h
@@ -93,7 +93,7 @@ if WITH_TCL
 all-local: pkgIndex.tcl
 
 pkgIndex.tcl: libgv_tcl.la
-        sh $(top_srcdir)/tclpkg/mkpkgindex.sh libgv_tcl.la gv $(VERSION)
+	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libgv_tcl.la gv $(VERSION)
 endif
 
 test: test_java test_perl test_python test_ruby test_tcl
