@@ -38,7 +38,8 @@ exparse.h: y.output
 
 exop.h: exparse.h
 	echo "static const char* exop[] = {" > exop.h
-	@SED@ -e '/^[ 	]*#[ 	]*define[ 	][ 	]*[A-Z]/!d' -e 's/^[ 	]*#[ 	]*define[ 	]*\([A-Z0-9_]*\).*/	"\1",/' < exparse.h >> exop.h
+	echo "	\"MINTOKEN\"," >> exop.h
+	$(SED) -e '1,/MINTOKEN/d' -e '/^[ 	]*#[ 	]*define[ 	][ 	]*[A-Z]/!d' -e 's/^[ 	]*#[ 	]*define[ 	]*\([A-Z0-9_]*\).*/	"\1",/' < exparse.h >> exop.h
 	echo "};" >> exop.h
 
 .3.pdf:
