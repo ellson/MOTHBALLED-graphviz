@@ -361,9 +361,9 @@ void add_box(path * P, box b)
 void
 beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 {
-    int flag, side, mask;
+    int side, mask;
     node_t *n;
-    int (*pboxfn) (node_t * n, edge_t * e, int, box *, int *);
+    int (*pboxfn) (node_t*, port*, int, box*, int*);
 
     n = e->tail;
 
@@ -446,6 +446,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 
 #ifdef IMPL
     if ((et == FLATEDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_tail_port(e).side))) {
+	box b = endp->nb;
 	switch (side) {
 	case LEFT:
 	    b.UR.x = P->start.p.x;
@@ -499,20 +500,21 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     }
 #endif
 
-    /* flag = (et == REGULAREDGE) ? 1 : et; */
-    flag = 1;
+    if (et == REGULAREDGE) side = BOTTOM;
+    else side = TOP;  /* for flat edges */
     if (pboxfn
-	&& (mask = (*pboxfn) (n, e, flag, &endp->boxes[0], &endp->boxn)))
+	&& (mask = (*pboxfn) (n, &ED_tail_port(e), side, &endp->boxes[0], &endp->boxn)))
 	endp->sidemask = mask;
     else {
 	endp->boxes[0] = endp->nb;
 	endp->boxn = 1;
-    }    
+
 	switch (et) {
 	case SELFEDGE:
 	/* moving the box UR.y by + 1 avoids colinearity between
 	   port point and box that confuses Proutespline().  it's
 	   a bug in Proutespline() but this is the easiest fix. */
+	    assert(0);  /* at present, we don't use beginpath for selfedges */
 	    endp->boxes[0].UR.y = P->start.p.y - 1;
 	    endp->sidemask = BOTTOM;
 	    break;
@@ -525,13 +527,14 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    endp->sidemask = BOTTOM;
 	    break;
 	}    
+    }    
 }
 
 void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 {
     int side, mask;
     node_t *n;
-    int (*pboxfn) (node_t * n, edge_t * e, int, box *, int *);
+    int (*pboxfn) (node_t* n, port*, int, box*, int*);
 
     n = e->head;
 
@@ -609,29 +612,31 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	endp->sidemask = side;
 	return;
     }
+    side = TOP; 
     if (pboxfn
-	&& (mask = (*pboxfn) (n, e, 2, &endp->boxes[0], &endp->boxn)))
+	&& (mask = (*pboxfn) (n, &ED_head_port(e), side, &endp->boxes[0], &endp->boxn)))
 	endp->sidemask = mask;
     else {
 	endp->boxes[0] = endp->nb;
 	endp->boxn = 1;
-    }
-    switch (et) {
-    case SELFEDGE:
-	/* offset of -1 is symmetric w.r.t. beginpath() 
-	 * FIXME: is any of this right?  what if self-edge 
-	 * doesn't connect from BOTTOM to TOP??? */
-	endp->boxes[0].LL.y = P->end.p.y + 1;
-	endp->sidemask = TOP;
-	break;
-    case FLATEDGE:
-	endp->boxes[0].LL.y = P->end.p.y;
-	endp->sidemask = TOP;
-	break;
-    case REGULAREDGE:
-	endp->boxes[0].LL.y = P->end.p.y;
-	endp->sidemask = TOP;
-	break;
+	switch (et) {
+	case SELFEDGE:
+	    /* offset of -1 is symmetric w.r.t. beginpath() 
+	     * FIXME: is any of this right?  what if self-edge 
+	     * doesn't connect from BOTTOM to TOP??? */
+	    assert(0);  /* at present, we don't use endpath for selfedges */
+	    endp->boxes[0].LL.y = P->end.p.y + 1;
+	    endp->sidemask = TOP;
+	    break;
+	case FLATEDGE:
+	    endp->boxes[0].LL.y = P->end.p.y;
+	    endp->sidemask = TOP;
+	    break;
+	case REGULAREDGE:
+	    endp->boxes[0].LL.y = P->end.p.y;
+	    endp->sidemask = TOP;
+	    break;
+	}
     }
 }
 

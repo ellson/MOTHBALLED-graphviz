@@ -146,7 +146,7 @@ extern "C" {
     extern void free_html_text(htmltxt_t *);
 
     extern box *html_port(node_t * n, char *pname, int* sides);
-    extern int html_path(node_t * n, edge_t * e, int pt, box * rv, int *k);
+    extern int html_path(node_t * n, port* p, int side, box * rv, int *k);
     extern int html_inside(node_t * n, pointf p, edge_t * e);
 
 #endif

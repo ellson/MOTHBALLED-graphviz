@@ -52,15 +52,14 @@ static void poly_init(node_t * n);
 static void poly_free(node_t * n);
 static port poly_port(node_t * n, char *portname, char *);
 static boolean poly_inside(inside_t * inside_context, pointf p);
-static int poly_path(node_t * n, edge_t * e, int pt, box rv[], int *kptr);
+static int poly_path(node_t* n, port* p, int side, box rv[], int *kptr);
 static void poly_gencode(GVC_t * gvc, node_t * n);
 
 static void record_init(node_t * n);
 static void record_free(node_t * n);
 static port record_port(node_t * n, char *portname, char *);
 static boolean record_inside(inside_t * inside_context, pointf p);
-static int record_path(node_t * n, edge_t * e, int pt, box rv[],
-		       int *kptr);
+static int record_path(node_t* n, port* p, int side, box rv[], int *kptr);
 static void record_gencode(GVC_t * gvc, node_t * n);
 
 static void point_init(node_t * n);
@@ -820,17 +819,16 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
 
 /* poly_path:
  * Generate box path from port to border.
+ * Store boxes in rv and number of boxes in kptr.
+ * side gives preferred side of bounding box for last node.
+ * Return actual side. Returning 0 indicates nothing done.
  */
-static int poly_path(node_t * n, edge_t * e, int pt, box rv[], int *kptr)
+static int poly_path(node_t* n, port* p, int side, box rv[], int *kptr)
 {
-    int side = 0;
-    edge_t *f;
+    side = 0;
 
     if (ND_label(n)->html && ND_has_port(n)) {
-	for (f = e; ED_edge_type(f) != NORMAL; f = ED_to_orig(f));
-	e = f;
-	if (GET_PORT_BOX(n, e))
-	    side = html_path(n, e, pt, rv, kptr);
+	side = html_path(n, p, side, rv, kptr);
     }
     return side;
 }
@@ -1702,16 +1700,13 @@ record_inside(inside_t * inside_context, pointf p)
  * Generate box path from port to border.
  * See poly_path for constraints.
  */
-static int record_path(node_t * n, edge_t * e, int pt, box rv[], int *kptr)
+static int record_path(node_t* n, port* prt, int side, box rv[], int *kptr)
 {
-    int i, side, ls, rs;
+    int i, ls, rs;
     point p;
     field_t *info;
 
-    if (pt == 1)
-	p = ED_tail_port(e).p;
-    else
-	p = ED_head_port(e).p;
+    p = prt->p;
     info = (field_t *) ND_shape_info(n);
 
     for (i = 0; i < info->n_flds; i++) {
@@ -1726,36 +1721,16 @@ static int record_path(node_t * n, edge_t * e, int pt, box rv[], int *kptr)
 	    /* FIXME: I don't understand this code */
 	    if (GD_flip(n->graph)) {
 		rv[0] = flip_rec_box(info->fld[i]->b, ND_coord_i(n));
-#if 0
-		experiment for bigjoe record spline routing problem {
-		    int xc = (rv[0].UR.x + rv[0].LL.x)
-			/2;
-		     rv[0].UR.x = xc + 2;
-		     rv[0].LL.x = xc - 2;
-		}
-#endif
 	    } else {
 		rv[0].LL.x = ND_coord_i(n).x + ls;
 		rv[0].LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2;
 		rv[0].UR.x = ND_coord_i(n).x + rs;
 	    }
-#if 0
-	    s0 = (rv[0].UR.x - rv[0].LL.x) / 6;
-	    s0 = MIN(s0, n->GD_nodesep(graph));
-	    s1 = MIN(p.x - rv[0].LL.x, rv[0].UR.x - p.x) / 2;
-	    sep = MIN(s0, s1);
-	    rv[0].LL.x += sep;
-	    rv[0].UR.x -= sep;
-#endif
 	    rv[0].UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2;
 	    *kptr = 1;
 	    break;
 	}
     }
-    if (pt == 1)
-	side = BOTTOM;
-    else
-	side = TOP;
     return side;
 }
 

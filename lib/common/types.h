@@ -185,7 +185,7 @@ extern "C" {
 	void (*freefn) (node_t *);	/* frees  shape from node u.shape_info structure */
 	 port(*portfn) (node_t *, char *, char *);	/* finds aiming point and slope of port */
 	 boolean(*insidefn) (inside_t * inside_context, pointf);	/* clips incident gvc->e spline on shape of gvc->n */
-	int (*pboxfn) (node_t * n, edge_t * e, int, box *, int *);	/* finds box path to reach port */
+	int (*pboxfn)(node_t* n, port* p, int side, box rv[], int *kptr); /* finds box path to reach port */
 	void (*codefn) (GVC_t * gvc, node_t * n);	/* emits graphics code for node */
     } shape_functions;
 
@@ -545,6 +545,7 @@ extern "C" {
 	port tail_port, head_port;	/* might be used someday */
 	textlabel_t *label, *head_label, *tail_label;
 	char edge_type;
+	char adjacent;          /* true for flat edge with adjacent nodes */
 	char label_ontop;
 	edge_t *to_orig;	/* for dot's shapes.c    */
 	void *alg;
@@ -572,6 +573,7 @@ extern "C" {
 #define ED_cutvalue(e) (e)->u.cutvalue
 #define ED_dist(e) (e)->u.dist
 #define ED_edge_type(e) (e)->u.edge_type
+#define ED_adjacent(e) (e)->u.adjacent
 #define ED_factor(e) (e)->u.factor
 #define ED_head_label(e) (e)->u.head_label
 #define ED_head_port(e) (e)->u.head_port

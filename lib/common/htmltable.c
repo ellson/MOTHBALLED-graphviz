@@ -553,7 +553,7 @@ box *html_port(node_t * n, char *pname, int* sides)
  * At present, unimplemented, since the label may be inside a
  * non-box node and we need to figure out what this means.
  */
-int html_path(node_t * n, edge_t * e, int pt, box * rv, int *k)
+int html_path(node_t * n, port* p, int side, box * rv, int *k)
 {
 #ifdef UNIMPL
     point p;
