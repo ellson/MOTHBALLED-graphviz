@@ -4,7 +4,6 @@ Summary:        Graph Visualization Tools
 Name:           graphviz
 Version:        @VERSION@
 Release:        1
-Epoch:		0
 Group:          Applications/Multimedia
 License:        CPL
 URL:            http://www.graphviz.org/
@@ -18,9 +17,11 @@ Vendor:         http://www.graphviz.org/
 
 BuildRequires: /bin/ksh tcl >= 0:8.3 tk expat expat-devel libjpeg
 Buildrequires: libjpeg-devel libpng libpng-devel zlib zlib-devel
+%{?fc4:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
 %{?fc3:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
 %{?fc2:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
 %{?fc1:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
+%{?el4:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel}
 %{?el3:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
 %{?rh9:BuildRequires: freetype >= 2 freetype-devel XFree86-devel}
 %{?rh8:BuildRequires: freetype >= 2 freetype-devel XFree86-devel}
@@ -45,7 +46,7 @@ This package provides some example graphs for %{name}.
 %package tcl
 Group:		Applications/Multimedia
 Summary:	Tcl extension tools for %{name}
-Requires:	%{name} = %{epoch}:%{version}-%{release} tcl >= 0:8.3 tk
+Requires:	%{name} = %{version}-%{release} tcl >= 0:8.3 tk
 
 %description tcl
 The %{name}-tcl package contains the various tcl packages (extensions)
