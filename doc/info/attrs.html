@@ -70,6 +70,8 @@ This field indicates which graph component uses the attribute.
 <TR><TH>Name</TH><TH><A HREF=#h:uses>Used By</A></TH><TH>Type</TH><TH>Default</TH><TH>Minimum</TH><TH>Notes</TH></TR>
  <TR><TD><A NAME=a:Damping HREF=#d:Damping>Damping</A>
 </TD><TD>G</TD><TD>double</TD><TD>0.99</TD><TD>0.0</TD><TD>neato only</TD> </TR>
+ <TR><TD><A NAME=a:K HREF=#d:K>K</A>
+</TD><TD>GC</TD><TD>double</TD><TD>0.3</TD><TD>0</TD><TD>fdp only</TD> </TR>
  <TR><TD><A NAME=a:URL HREF=#d:URL>URL</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:escString>escString</A>
 <BR>string</TD><TD><none></TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
@@ -382,6 +384,13 @@ This field indicates which graph component uses the attribute.
 <DD>  Factor damping force motions. On each iteration, a nodes movement
   is limited to this factor of its potential motion. By being less than
   1.0, the system tends to ``cool'', thereby preventing cycling.
+
+<DT><A NAME=d:K HREF=#a:K><STRONG>K</STRONG></A>
+<DD>  Spring constant used in virtual physical model. It roughly corresponds
+  to an ideal edge length (in inches), in that increasing K tends to 
+  increase the distance between nodes.
+  Note that the edge attribute <A HREF=#d:len>len</A> can be used to
+  override this value for adjacent nodes.
 
 <DT><A NAME=d:URL HREF=#a:URL><STRONG>URL</STRONG></A>
 <DD>  Hyperlinks incorporated into device-dependent output. 
@@ -811,17 +820,33 @@ This field indicates which graph component uses the attribute.
 <DD>  Specify order in which nodes and edges are drawn.
 
 <DT><A NAME=d:overlap HREF=#a:overlap><STRONG>overlap</STRONG></A>
-<DD>  Determines if and how node overlaps should be removed. If "true"
-  (the default), overlaps are retained.
+<DD>  Determines if and how node overlaps should be removed. Nodes are first
+  enlarged using the <A HREF=#d:sep><B>sep</B></A> attribute. 
+  If "true" , overlaps are retained.
   If the value is "scale", overlaps are removed by uniformly scaling in x and y.
   If the value converts to "false", node overlaps are removed by a 
-  Voronoi-based technique. If the value is "scalexy", x and y are separately
-  scaled to remove overlaps. If the value is "orthoxy" or "orthoyx", overlaps
+  Voronoi-based technique. 
+  If the value is "scalexy", x and y are separately
+  scaled to remove overlaps. 
+  If the value is "orthoxy" or "orthoyx", overlaps
   are moved by optimizing two constraint problems, one for the x axis and
   one for the y. The suffix indicates which axis is processed first.
+  If the value is "ortho", the technique is similar to "orthoxy" except a
+  heuristic is used to reduce the bias between the two passes.
   <P>
   If the value is "compress", the layout will be scaled down as much as
-  possible without introducing any overlaps.
+  possible without introducing any overlaps, obviously assuming there are
+  none to begin with.
+  <P>
+  Except for fdp, the layouts assume <TT>overlap="true"</TT> as the default. 
+  Fdp first uses a number of passes using built-in, force-directed technique
+  to remove overlaps. Thus, fdp accepts <B>overlap</B> with an integer
+  prefix followed by a colon, specifying the number of tries. If there is
+  no prefix, no initial tries will be performed. If there is nothing following
+  a colon, none of the above methods will be attempted. By default, fdp
+  uses <TT>overlap="9:ortho"</TT>. Note that <TT>overlap="true"</TT>,
+  <TT>overlap="0:true"</TT> and <TT>overlap="0:"</TT> all turn off all overlap
+  removal.
   <P>
   Except for the Voronoi method, all of these transforms preserve the
   orthogonal ordering of the original layout. That is, if the x coordinates
@@ -830,7 +855,7 @@ This field indicates which graph component uses the attribute.
   another, this relation will still hold in the transformed layout. The
   similar properties hold for the y coordinates.
   <P>
-  <B>NOTE</B>The methods related to "orthoxy" and "orthoyx" are still evolving. The
+  <B>NOTE</B>The methods "orthoxy" and "orthoyx" are still evolving. The
   semantics of these may change, or these methods may disappear altogether.
 
 <DT><A NAME=d:pack HREF=#a:pack><STRONG>pack</STRONG></A>
