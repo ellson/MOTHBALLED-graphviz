@@ -15,7 +15,7 @@ Options:
  [--exec-prefix[=DIR]]
  [--version]
  [--cflags]
- [--ldlags]
+ [--ldflags]
  [--libs]
  [--rlibs]
  [--libtool]
