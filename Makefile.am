@@ -20,7 +20,7 @@ doxygen:
 dist-hook:
 	find $(distdir) -name CVS -type d -prune -exec rm -rf {} \;
 
-EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec graphviz.cvt \
+EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 	autogen.sh config/depcomp config/config.rpath ast_common.h.in \
 	Makefile.old Config.mk configure.old INSTALL.old \
 	Makeargs config.h.old compat_getopt.h iffe \
