@@ -150,7 +150,7 @@ static Dtdisc_t nameDisc = {
     NIL(Dtevent_f)
 };
 
-static userdata_t *genUserdata()
+static userdata_t *genUserdata(void)
 {
     userdata_t *user = NEW(userdata_t);
     agxbinit(&(user->xml_attr_name), NAMEBUF, 0);

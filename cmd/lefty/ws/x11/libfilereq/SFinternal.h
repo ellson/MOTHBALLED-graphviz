@@ -142,7 +142,7 @@ extern "C" {
     extern int SFworkProcAdded;
     extern XtWorkProcId SFworkProcId;
 
-    extern Boolean SFworkProc();
+    extern Boolean SFworkProc(void);
 
     extern XtAppContext SFapp;
 

@@ -172,11 +172,7 @@ static char *oneLineTextEditTranslations = "\
 ";
 
 /* ARGSUSED */
-static void SFexposeList(w, n, event, cont)
-Widget w;
-XtPointer n;
-XEvent *event;
-Boolean *cont;
+static void SFexposeList(Widget w, XtPointer n, XEvent *event, Boolean *cont)
 {
     if ((event->type == NoExpose) || event->xexpose.count) {
 	return;
@@ -186,11 +182,7 @@ Boolean *cont;
 }
 
 /* ARGSUSED */
-static void SFmodVerifyCallback(w, client_data, event, cont)
-Widget w;
-XtPointer client_data;
-XEvent *event;
-Boolean *cont;
+static void SFmodVerifyCallback(Widget w, XtPointer client_data, XEvent *event, Boolean *cont)
 {
     char buf[2];
 
@@ -204,9 +196,7 @@ Boolean *cont;
 }
 
 /* ARGSUSED */
-static void SFokCallback(w, cl, cd)
-Widget w;
-XtPointer cl, cd;
+static void SFokCallback(Widget w, XtPointer cl, XtPointer cd)
 {
     SFstatus = SEL_FILE_OK;
 }
@@ -217,9 +207,7 @@ static XtCallbackRec SFokSelect[] = {
 };
 
 /* ARGSUSED */
-static void SFcancelCallback(w, cl, cd)
-Widget w;
-XtPointer cl, cd;
+static void SFcancelCallback(Widget w, XtPointer cl, XtPointer cd)
 {
     SFstatus = SEL_FILE_CANCEL;
 }
@@ -230,11 +218,7 @@ static XtCallbackRec SFcancelSelect[] = {
 };
 
 /* ARGSUSED */
-static void SFdismissAction(w, event, params, num_params)
-Widget w;
-XEvent *event;
-String *params;
-Cardinal *num_params;
+static void SFdismissAction(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (event->type == ClientMessage &&
 	event->xclient.data.l[0] != SFwmDeleteWindow)
@@ -251,11 +235,7 @@ static XtActionsRec actions[] = {
     {"SelFileDismiss", SFdismissAction},
 };
 
-static void SFcreateWidgets(toplevel, prompt, ok, cancel)
-Widget toplevel;
-char *prompt;
-char *ok;
-char *cancel;
+static void SFcreateWidgets(Widget toplevel, char *prompt, char *ok, char *cancel)
 {
     Cardinal i;
     long n;
@@ -658,8 +638,7 @@ char *cancel;
 }
 
 /* position widget under the cursor */
-void SFpositionWidget(w)
-Widget w;
+void SFpositionWidget(Widget w)
 {
     Arg args[3];
     Cardinal num_args;
@@ -776,7 +755,7 @@ static char *SFgetText()
 }
 #endif
 
-static void SFprepareToReturn()
+static void SFprepareToReturn(void)
 {
     SFstatus = SEL_FILE_NULL;
     XtRemoveGrab(selFile);

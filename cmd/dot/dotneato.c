@@ -22,7 +22,7 @@ char *Info[] = {
     BUILDDATE			/* Build Date */
 };
 
-GVC_t *gvContext()
+GVC_t *gvContext(void)
 {
     return gvNEWcontext(Info, "");
 }

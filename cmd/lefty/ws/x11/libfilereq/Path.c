@@ -365,7 +365,7 @@ static int SFfindFile(SFDir *dir, char *str)
     return 0;
 }
 
-static void SFunselect()
+static void SFunselect(void)
 {
     SFDir *dir;
 
@@ -383,7 +383,7 @@ static int SFcompareLogins(const void *vp, const void *vq)
     return strcmp(p->name, q->name);
 }
 
-static void SFgetHomeDirs()
+static void SFgetHomeDirs(void)
 {
     struct passwd *pw;
     int alloc;

@@ -1707,7 +1707,7 @@ int usesGraph(comp_prog * p)
     return (walksGraph(p) || p->begg_stmt || p->endg_stmt);
 }
 
-void ptchk()
+void ptchk(void)
 {
     int i;
     for (i = 0; i <= LAST_M; i++)

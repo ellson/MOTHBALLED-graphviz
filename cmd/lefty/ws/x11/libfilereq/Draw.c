@@ -392,7 +392,7 @@ static void SFinvertEntry(int n)
 		   SFentryWidth, SFentryHeight);
 }
 
-static unsigned long SFscrollTimerInterval()
+static unsigned long SFscrollTimerInterval(void)
 {
     static int maxVal = 200;
     static int varyDist = 50;
@@ -783,7 +783,7 @@ void SFpathAreaSelectedCallback(Widget w, XtPointer client_data, int pnew)
     SFpathSliderMovedCallback(w, (XtPointer) NULL, &f);
 }
 
-Boolean SFworkProc()
+Boolean SFworkProc(void)
 {
     register SFDir *dir;
     register SFEntry *entry;

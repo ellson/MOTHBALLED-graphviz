@@ -210,7 +210,7 @@ static int nodeInduce(Agraph_t * g, Agraph_t * eg)
     return e_cnt;
 }
 
-static char *getName()
+static char *getName(void)
 {
     char *name;
     static char *buf = 0;

@@ -37,7 +37,7 @@ static char **Files;
 static mode act = Unset;
 
 #ifdef HAVE_LIBEXPAT
-static FILE *getFile()
+static FILE *getFile(void)
 {
     FILE *rv = NULL;
     static FILE *savef = NULL;
@@ -105,7 +105,7 @@ static char *cmdName(char *path)
     return sp;
 }
 
-static void checkInput()
+static void checkInput(void)
 {
     char *ep;
 
@@ -119,7 +119,7 @@ static void checkInput()
 	act = ToDot;
 }
 
-static void setAction()
+static void setAction(void)
 {
     switch (*CmdName) {
     case 'd':

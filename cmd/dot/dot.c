@@ -68,7 +68,7 @@ static void fperr(int s)
     exit(1);
 }
 
-static void fpinit()
+static void fpinit(void)
 {
 #if defined(HAVE_FENV_H) && defined(HAVE_FEENABLEEXCEPT)
     int exc = 0;

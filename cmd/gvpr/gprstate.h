@@ -51,7 +51,7 @@ extern "C" {
 	char **argv;
     } gpr_info;
 
-    extern Gpr_t *openGPRState();
+    extern Gpr_t *openGPRState(void);
     extern void initGPRState(Gpr_t *, Vmalloc_t *, gpr_info *);
     extern int validTVT(int);
 

@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-    extern GVC_t *gvContext();
+extern GVC_t *gvContext(void);
 
 #ifdef __cplusplus
 }
