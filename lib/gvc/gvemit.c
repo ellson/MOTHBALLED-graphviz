@@ -304,16 +304,20 @@ static void win_handle_button_press(win_t *win, XButtonEvent *bev)
     case 4:
 	/* scrollwheel zoom in at current mouse x,y */
 	win->fit_mode = 0;
-	win->gvc->focus.x +=  (bev->x - win->gvc->width / 2.) * win->gvc->zoom * (ZOOMFACTOR - 1.);
-	win->gvc->focus.y += -(bev->y - win->gvc->height / 2.) * win->gvc->zoom * (ZOOMFACTOR - 1.);
+	win->gvc->focus.x +=  (bev->x - win->gvc->width / 2.)
+		* (ZOOMFACTOR - 1.) / win->gvc->zoom;
+	win->gvc->focus.y += -(bev->y - win->gvc->height / 2.)
+		* (ZOOMFACTOR - 1.) / win->gvc->zoom;
 	win->gvc->zoom *= ZOOMFACTOR;
 	win->needs_refresh = 1;
 	break;
     case 5: /* scrollwheel zoom out at current mouse x,y */
 	win->fit_mode = 0;
 	win->gvc->zoom /= ZOOMFACTOR;
-	win->gvc->focus.x -=  (bev->x - win->gvc->width / 2.) * win->gvc->zoom * (ZOOMFACTOR - 1.);
-	win->gvc->focus.y -= -(bev->y - win->gvc->height / 2.) * win->gvc->zoom * (ZOOMFACTOR - 1.);
+	win->gvc->focus.x -=  (bev->x - win->gvc->width / 2.)
+		* (ZOOMFACTOR - 1.) / win->gvc->zoom;
+	win->gvc->focus.y -= -(bev->y - win->gvc->height / 2.)
+		* (ZOOMFACTOR - 1.) / win->gvc->zoom;
 	win->needs_refresh = 1;
 	break;
     }
@@ -331,8 +335,8 @@ static void win_handle_motion(win_t *win, XMotionEvent *mev)
 	/* FIXME - to be implemented */
 	break;
     case 2: /* drag with button 2 - pan graph */
-	win->gvc->focus.x -=  (mev->x - win->oldx) * win->gvc->zoom;
-	win->gvc->focus.y -= -(mev->y - win->oldy) * win->gvc->zoom;
+	win->gvc->focus.x -=  (mev->x - win->oldx) / win->gvc->zoom;
+	win->gvc->focus.y -= -(mev->y - win->oldy) / win->gvc->zoom;
 	win->needs_refresh = 1;
 	break;
     case 3: /* drag with button 3 - unused */
@@ -463,7 +467,7 @@ static int quit_cb(win_t * win)
 static int left_cb(win_t * win)
 {
     win->fit_mode = 0;
-    win->gvc->focus.x += PANFACTOR * win->gvc->zoom;
+    win->gvc->focus.x += PANFACTOR / win->gvc->zoom;
     win->needs_refresh = 1;
     return 0;
 }
@@ -471,7 +475,7 @@ static int left_cb(win_t * win)
 static int right_cb(win_t * win)
 {
     win->fit_mode = 0;
-    win->gvc->focus.x -= PANFACTOR * win->gvc->zoom;
+    win->gvc->focus.x -= PANFACTOR / win->gvc->zoom;
     win->needs_refresh = 1;
     return 0;
 }
@@ -479,7 +483,7 @@ static int right_cb(win_t * win)
 static int up_cb(win_t * win)
 {
     win->fit_mode = 0;
-    win->gvc->focus.y += -(PANFACTOR * win->gvc->zoom);
+    win->gvc->focus.y += -(PANFACTOR / win->gvc->zoom);
     win->needs_refresh = 1;
     return 0;
 }
@@ -487,7 +491,7 @@ static int up_cb(win_t * win)
 static int down_cb(win_t * win)
 {
     win->fit_mode = 0;
-    win->gvc->focus.y -= -(PANFACTOR * win->gvc->zoom);
+    win->gvc->focus.y -= -(PANFACTOR / win->gvc->zoom);
     win->needs_refresh = 1;
     return 0;
 }
