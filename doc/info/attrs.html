@@ -1250,18 +1250,36 @@ the given types.
 <DD>"local","global","none"
 
 <DT><A NAME=k:color><STRONG>color</STRONG></A>
-<DD><TABLE><TR><TD>"#%2x%2x%2x"<TD>RGB</TR>
-         <TR><TD>"#%2x%2x%2x%2x"<TD>RGBA</TR>
-         <TR><TD>H[, ]+S[, ]+V<TD>0.0 <= H,S,V <= 1.0</TR>
+<DD>Colors can be specified using one of four formats.
+         <TABLE><TR><TD>"#%2x%2x%2x"<TD>Red-Green-Blue (RGB)</TR>
+         <TR><TD>"#%2x%2x%2x%2x"<TD>Red-Green-Blue-Alpha (RGBA)</TR>
+         <TR><TD>H[,&#160;]+S[,&#160;]+V<TD>Hue-Saturation-Value (HSV) 0.0 <= H,S,V <= 1.0</TR>
          <TR><TD>string<TD><A HREF=colors.html>color name</A></TR>
          <TR><TD>"transparent"<TD>No color</TR></TABLE>
+   The specification for the RGB and RGBA formats is the format string used by
+   <TT>sscanf</TT> to scan the color value. Thus, these values have the form
+   "#RGB" or "#RGBA", where R,G,B, and A each consist of 2 hexidecimal
+   digits, and can be separated by whitespace. HSV colors have the form of 3
+   numbers between 0 and 1, separated by whitespace or commas.
+  <P>
+  Examples:<BR>
+    <TABLE>
+      <TR><TH>Color<TH>RGB<TH>HSV<TH>String</TR>
+      <TR><TD bgcolor=#111111>White<TD>#111111<TD>HSV<TD>white</TR>
+      <TR><TD bgcolor=#000000><font color=white>Black</font><TD>#000000<TD>HSV<TD>black</TR>
+      <TR><TD bgcolor=#ff0000>Red<TD>#ff0000<TD>HSV<TD>red</TR>
+      <TR><TD bgcolor=#f08080>Light Coral<TD>#f08080<TD>HSV<TD>lightcoral</TR>
+    </TABLE>
+  <P>
    Note that some output formats, e.g., <A HREF="output.html#a:mif">mif</A>, 
    only support a limited number of specific colors.
   <P>
    The color <B>transparent</B> is only available in the output formats
-   svg, dia, vmrl, and the bitmap formats. It can be used whenever a
+   ps, svg, fig, vmrl, and the bitmap formats. It can be used whenever a
    color is needed but is most useful with 
    the <A HREF=#d:bgcolor>bgcolor</A> attribute.
+   Usually, the same effect can be achieved by setting 
+   <A HREF=#d:style>style</A> to <TT>invis</TT>.
 
 <DT><A NAME=k:colorList><STRONG>colorList</STRONG></A>
 <DD>A colon-separated list of color values: <I>C</I>(:<I>C</I>)*
