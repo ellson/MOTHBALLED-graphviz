@@ -81,6 +81,9 @@ static void fpinit()
     exc |= FE_INVALID;
 # endif
     feenableexcept(exc);
+
+    fesetenv (FE_NONIEEE_ENV);
+
 #elif  HAVE_FPU_CONTROL_H
     /* On s390-ibm-linux, the header exists, but the definitions
      * of the masks do not.  I assume this is temporary, but until
