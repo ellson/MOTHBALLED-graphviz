@@ -3,10 +3,11 @@ LIBNAME = libagraph.a
 
 all:	$(LIBNAME)
 
-include ../Config.mk
-include ../makearch/$(ARCH)
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
-INCS =	-I. -I../cdt -I..
+INCS =	-I. -I../cdt -I$(ROOT)
 
 DEFINES = -DHAVE_CONFIG_H
 

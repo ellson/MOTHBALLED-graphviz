@@ -1,13 +1,14 @@
 #   libast.a (short version) make file
 #   Written by Emden R. Gansner (1 Mar 2001)
 
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 LOC_INCDIR=../include
 LOC_LIBDIR=../lib
 
-INCS= -I. -I../sfio -I../..
+INCS= -I. -I../sfio -I$(ROOT)
 
 DEFINES = -DHAVE_CONFIG_H
 
