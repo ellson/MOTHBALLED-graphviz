@@ -236,7 +236,7 @@ static void attr_set(char *name, char *value)
 			ap = agfindattr(G->proto->e,name);
 			if (ap == NULL)
 				ap = agedgeattr(AG.parsed_g,name,defval);
-            else if (ap->fixed && In_decl)
+            else if (ap->fixed && In_decl && (G->root == G))
               return;
 			agxset(E,ap->index,value);
 			break;
