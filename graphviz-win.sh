@@ -57,10 +57,10 @@ cp -rp windows/* .
 rm -rf windows
 
 # Provide a VERSION and BUILDDATE
-( head -16 config.h
+( head -23 config.h
   echo "#define VERSION \"$VERSION\""
   echo "#define BUILDDATE \"$BUILDDATE\""
-  tail +17 config.h ) > t
+  tail +24 config.h ) > t
 mv t config.h
 
 # package the result
