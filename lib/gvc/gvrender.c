@@ -272,7 +272,7 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 	job->style->fontsz = DEFAULT_FONTSIZE;
 	job->style->fontopt = FONT_REGULAR;
 	job->style->pen = PEN_SOLID;
-	job->style->fill = PEN_NONE;
+	job->style->fill = FILL_NONE;
 	job->style->penwidth = PENWIDTH_NORMAL;
     }
 #ifndef DISABLE_CODEGENS
