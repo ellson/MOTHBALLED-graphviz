@@ -53,7 +53,7 @@ void dotneato_set_margins(GVC_t * gvc, graph_t * g)
 	switch (gvc->job->output_lang) {
 	case GVRENDER_PLUGIN:
 	    GD_drawing(g)->margin.x = GD_drawing(g)->margin.y =
-		gvc->render_features->default_margin;
+		gvc->job->render_features->default_margin;
 	    break;
 	case GIF:
 	case PNG:
@@ -120,21 +120,22 @@ static int chkOrder(graph_t * g)
 
 void dotneato_write_one(GVC_t * gvc, graph_t * g)
 {
+    gvrender_job_t *job = gvc->job;
     int flags;
 
     gvc->g = g;
 #ifndef DISABLE_CODEGENS
-    Output_file = gvc->job->output_file;
-    Output_lang = gvc->job->output_lang;
+    Output_file = job->output_file;
+    Output_lang = job->output_lang;
 #endif
     dotneato_set_margins(gvc, g);
     emit_init(gvc, g);
     if (NOT(gvrender_features(gvc) & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES)
 #ifndef DISABLE_CODEGENS
 /* FIXME - bad hack until feaures supported in codegens */
-	&& gvc->codegen != &PS_CodeGen
+	&& job->codegen != &PS_CodeGen
 #ifdef QUARTZ_RENDER
-	&& gvc->codegen != &QPDF_CodeGen && gvc->codegen != &QEPDF_CodeGen
+	&& job->codegen != &QPDF_CodeGen && job->codegen != &QEPDF_CodeGen
 #endif
 #endif
 	)
@@ -142,7 +143,7 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
     switch (gvc->job->output_lang) {
     case GVRENDER_PLUGIN:
 	flags = chkOrder(g);
-	flags |= gvc->render_features->flags;
+	flags |= job->render_features->flags;
 	gvemit_graph(gvc, g, flags);
 	break;
     case POSTSCRIPT:

@@ -23,6 +23,27 @@
 extern "C" {
 #endif
 
+#define EMIT_SORTED (1<<0)
+#define EMIT_COLORS (1<<1)
+#define EMIT_CLUSTERS_LAST (1<<2)
+#define EMIT_PREORDER (1<<3)
+#define EMIT_EDGE_SORTED (1<<4)
+#define GVRENDER_DOES_ARROWS (1<<5)
+#define GVRENDER_DOES_LAYERS (1<<6)
+#define GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES (1<<7)
+#define GVRENDER_DOES_TRUECOLOR (1<<8)
+#define GVRENDER_Y_GOES_DOWN (1<<9)
+#define GVRENDER_X11_EVENTS (1<<10)
+
+    typedef struct {
+	int flags;
+	int default_margin;
+	int default_dpi;
+	char **knowncolors;
+	int sz_knowncolors;
+	color_type_t color_type;
+    } gvrender_features_t;
+
     typedef struct gvrender_job_s gvrender_job_t;
 
 #if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER)
@@ -36,7 +57,12 @@ extern "C" {
 	FILE *output_file;
 	int output_lang;
 
-	int render_id;		/* internal id of current render */
+	gvrender_engine_t *render_engine;	/* current render engine */
+	int render_id;		/* internal id of current render engine within plugin */
+	gvrender_features_t *render_features;	/* features of current render */
+#ifndef DISABLE_CODEGENS
+	codegen_t *codegen;	/* current  codegen */
+#endif
 
 	void *surface;		/* gd or cairo surface */
 	boolean external_surface; /* surface belongs to caller */
@@ -73,28 +99,6 @@ extern "C" {
 	Atom wm_delete_window_atom;
 #endif
     };
-
-#define EMIT_SORTED (1<<0)
-#define EMIT_COLORS (1<<1)
-#define EMIT_CLUSTERS_LAST (1<<2)
-#define EMIT_PREORDER (1<<3)
-#define EMIT_EDGE_SORTED (1<<4)
-#define GVRENDER_DOES_ARROWS (1<<5)
-#define GVRENDER_DOES_LAYERS (1<<6)
-#define GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES (1<<7)
-#define GVRENDER_DOES_TRUECOLOR (1<<8)
-#define GVRENDER_Y_GOES_DOWN (1<<9)
-#define GVRENDER_X11_EVENTS (1<<10)
-
-    typedef struct {
-	int flags;
-	int default_margin;
-	int default_dpi;
-	char **knowncolors;
-	int sz_knowncolors;
-	color_type_t color_type;
-    } gvrender_features_t;
-
 
 /* gv_plugin_t is a descriptor for available plugins; gvplugin_t is for installed plugins */
     typedef struct gv_plugin_s gv_plugin_t;
@@ -139,12 +143,6 @@ extern "C" {
 	gv_plugin_t *api[NUM_APIS];	/* array of current plugins for each api */
 
 	/* gvrender_begin_job() */
-	gvrender_engine_t *render_engine;	/* current render engine */
-	gvrender_features_t *render_features;	/* features of current render */
-#ifndef DISABLE_CODEGENS
-	codegen_t *codegen;
-#endif
-
 	char *layout_type;      /* string name of layout type */
 	gvlayout_engine_t *layout_engine;	/* current layout engine */
 	int layout_id;		/* internal id of current layout */

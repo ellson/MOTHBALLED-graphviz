@@ -1005,7 +1005,7 @@ static void poly_gencode(GVC_t * gvc, node_t * n)
 
 #if !defined(DISABLE_CODEGENS) && defined(HAVE_GD_PNG)
     /* this is bad, but it's because of how the VRML driver works */
-    if ((gvc->codegen == &VRML_CodeGen) && (peripheries == 0)) {
+    if ((gvc->job->codegen == &VRML_CodeGen) && (peripheries == 0)) {
 	peripheries = 1;
     }
 #endif
