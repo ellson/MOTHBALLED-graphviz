@@ -54,15 +54,15 @@ static void graph_sets_margin(GVC_t * gvc, graph_t * g)
     }
 }
 
-static void graph_sets_page(GVC_t * gvc, graph_t * g)
+static void graph_sets_pageSize(GVC_t * gvc, graph_t * g)
 {
-    gvc->graph_sets_page = FALSE;
-    P2PF(GD_drawing(g)->page, gvc->page);
-    P2PF(GD_bb(g).LL,gvc->bb.LL);
-    P2PF(GD_bb(g).UR,gvc->bb.UR);
+    gvc->graph_sets_pageSize = FALSE;
+    P2PF(GD_drawing(g)->page, gvc->pageSize);
     if ((GD_drawing(g)->page.x > 0) && (GD_drawing(g)->page.y > 0)) {
-	gvc->graph_sets_page = TRUE;
+	gvc->graph_sets_pageSize = TRUE;
     }
+
+    B2BF(GD_bb(g),gvc->bb);
 }
 
 /* chkOrder:
@@ -134,7 +134,7 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
 #endif
 
     graph_sets_margin(gvc, g);
-    graph_sets_page(gvc, g);
+    graph_sets_pageSize(gvc, g);
     flags = lang_sets_flags(job, g);
     emit_init(gvc, g);
 

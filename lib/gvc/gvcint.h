@@ -53,8 +53,8 @@ extern "C" {
 #define GVRENDER_X11_EVENTS (1<<10)
 
     typedef struct {
-	double default_margin; /* points */
 	int flags;
+	double default_margin; /* points */
 	int default_dpi;
 	char **knowncolors;
 	int sz_knowncolors;
@@ -86,10 +86,19 @@ extern "C" {
         graph_t *g;		/* parent graph */
         int flags;		/* emit_graph flags */
 
-        pointf margin;		/* job-specific margin */
-	boxf pageBox;		/* drawable region in device coords */
-				/* basically width*height - margins */
-	pointf pageBoxCentered;	/* device page box for centering */
+        pointf margin;		 /* job-specific margin */
+
+	boxf	pageBox;	 /* drawable region in device coords */
+				 /* basically width*height - margins */
+	pointf	pageSize;	 /* device page size */
+	pointf	pageSizeCentered; /* device page box for centering */
+	point 	pagesArraySize;  /* 2D size of page array */
+	point	pagesArrayFirst; /* 2D starting corner in */
+	point	pagesArrayMajor; /* 2D major increment */
+	point	pagesArrayMinor; /* 2D minor increment */
+	point	pagesArrayElem;  /* 2D coord of current page - 0,0 based */
+        int	numPages;	 /* number of pages */
+        int	pageNum;	 /* current page - 1 based */
 
         unsigned int width;     /* width in pixels */
         unsigned int height;    /* height in pixels */
@@ -151,20 +160,12 @@ extern "C" {
 
 	char **lib;
 
-	pointf margin, page;
-	boxf bb;
-	boolean graph_sets_margin, graph_sets_page;
-
-        /* pagination */
-	point 	pagesArraySize;  /* 2D size of page array */
-	point	pagesArrayFirst; /* 2D starting corner in */
-	point	pagesArrayMajor; /* 2D major increment */
-	point	pagesArrayMinor; /* 2D minor increment */
-	point	pagesArrayElem;  /* 2D coord of current page - 0,0 based */
-        int	numPages;	 /* number of pages */
-        int	pageNum;	 /* current page - 1 based */
-	pointf	pageSize;	 /* page size in graph coords */
-	boxf	pageBox;	 /* page box in graph coords */
+	/* pagination */
+	pointf margin;		/* margins in graph units */
+	pointf pageSize;	/* pageSize in graph units, not including margins */
+	point pb;		/* page size - including margins (inches) */
+	boxf bb;		/* graph bb in graph units, not including margins */
+	boolean graph_sets_margin, graph_sets_pageSize;
 
 	/* layers */
 	char *layerDelims;	/* delimiters in layer names */
@@ -176,7 +177,6 @@ extern "C" {
 	/* gvrender_begin_graph() */
 	graph_t *g;
 
-	point pb;		/* page size - including margins (inches) */
 
 	gvstyle_t styles[MAXNEST]; /* style stack - reused by each job */
 	int SP;

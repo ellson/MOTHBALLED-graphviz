@@ -136,13 +136,13 @@ static void nextlayer(GVC_t *gvc)
     gvc->layerNum++;
 }
 
-static point pagecode(GVC_t *gvc, char c)
+static point pagecode(gvrender_job_t *job, char c)
 {
     point rv;
     rv.x = rv.y = 0;
     switch (c) {
     case 'T':
-	gvc->pagesArrayFirst.y = gvc->pagesArraySize.y - 1;
+	job->pagesArrayFirst.y = job->pagesArraySize.y - 1;
 	rv.y = -1;
 	break;
     case 'B':
@@ -152,7 +152,7 @@ static point pagecode(GVC_t *gvc, char c)
 	rv.x = 1;
 	break;
     case 'R':
-	gvc->pagesArrayFirst.x = gvc->pagesArraySize.x - 1;
+	job->pagesArrayFirst.x = job->pagesArraySize.x - 1;
 	rv.x = -1;
 	break;
     }
@@ -161,20 +161,21 @@ static point pagecode(GVC_t *gvc, char c)
 
 static void set_pagedir(GVC_t *gvc, graph_t * g)
 {
+    gvrender_job_t *job = gvc->job;
     char *str;
 
-    gvc->pagesArrayMajor.x = gvc->pagesArrayMajor.y 
-		= gvc->pagesArrayMinor.x = gvc->pagesArrayMinor.y = 0;
-    gvc->pagesArrayFirst.x = gvc->pagesArrayFirst.y = 0;
+    job->pagesArrayMajor.x = job->pagesArrayMajor.y 
+		= job->pagesArrayMinor.x = job->pagesArrayMinor.y = 0;
+    job->pagesArrayFirst.x = job->pagesArrayFirst.y = 0;
     str = agget(g, "pagedir");
     if (str && str[0]) {
-	gvc->pagesArrayMajor = pagecode(gvc, str[0]);
-	gvc->pagesArrayMinor = pagecode(gvc, str[1]);
+	job->pagesArrayMajor = pagecode(job, str[0]);
+	job->pagesArrayMinor = pagecode(job, str[1]);
     }
-    if ((abs(gvc->pagesArrayMajor.x + gvc->pagesArrayMinor.x) != 1)
-     || (abs(gvc->pagesArrayMajor.y + gvc->pagesArrayMinor.y) != 1)) {
-	gvc->pagesArrayMajor = pagecode(gvc, 'B');
-	gvc->pagesArrayMinor = pagecode(gvc, 'L');
+    if ((abs(job->pagesArrayMajor.x + job->pagesArrayMinor.x) != 1)
+     || (abs(job->pagesArrayMajor.y + job->pagesArrayMinor.y) != 1)) {
+	job->pagesArrayMajor = pagecode(job, 'B');
+	job->pagesArrayMinor = pagecode(job, 'L');
 	if (str)
 	    agerr(AGWARN, "pagedir=%s ignored\n", str);
     }
@@ -188,33 +189,33 @@ static void init_job_pagination(GVC_t * gvc, graph_t * g)
 
     /* determine pagination */
     job->pageBox.LL = job->margin;
-    if (gvc->graph_sets_page) {
+    if (gvc->graph_sets_pageSize) {
 	/* page was set by user */
 	point tp;
-	job->pageBoxCentered = gvc->page;
-	PFCLM.x = job->pageBoxCentered.x - 2 * job->pageBox.LL.x;
-	PFCLM.y = job->pageBoxCentered.y - 2 * job->pageBox.LL.y;
-	gvc->pageSize.x = PFCLM.x;
-	gvc->pageSize.y = PFCLM.y;		/* convert to double */
+	job->pageSizeCentered = gvc->pageSize;
+	PFCLM.x = job->pageSizeCentered.x - 2 * job->pageBox.LL.x;
+	PFCLM.y = job->pageSizeCentered.y - 2 * job->pageBox.LL.y;
+	job->pageSize.x = PFCLM.x;
+	job->pageSize.y = PFCLM.y;		/* convert to double */
 	if (GD_drawing(g)->landscape)
-	    gvc->pageSize = exch_xyf(gvc->pageSize);
-	gvc->pageSize.x /= gvc->job->zoom;
-	gvc->pageSize.y /= gvc->job->zoom;
+	    job->pageSize = exch_xyf(job->pageSize);
+	job->pageSize.x /= job->zoom;
+	job->pageSize.y /= job->zoom;
 	/* we don't want graph page to exceed its bounding box */
-	gvc->pageSize.x = MIN(gvc->pageSize.x, gvc->bb.UR.x);
-	gvc->pageSize.y = MIN(gvc->pageSize.y, gvc->bb.UR.y);
-	gvc->pagesArraySize.x =
-	    (gvc->pageSize.x > 0) ? ceil((gvc->bb.UR.x) / gvc->pageSize.x) : 1;
-	gvc->pagesArraySize.y =
-	    (gvc->pageSize.y > 0) ? ceil((gvc->bb.UR.y) / gvc->pageSize.y) : 1;
-	gvc->numPages = gvc->pagesArraySize.x * gvc->pagesArraySize.y;
+	job->pageSize.x = MIN(job->pageSize.x, gvc->bb.UR.x);
+	job->pageSize.y = MIN(job->pageSize.y, gvc->bb.UR.y);
+	job->pagesArraySize.x =
+	    (job->pageSize.x > 0) ? ceil((gvc->bb.UR.x) / job->pageSize.x) : 1;
+	job->pagesArraySize.y =
+	    (job->pageSize.y > 0) ? ceil((gvc->bb.UR.y) / job->pageSize.y) : 1;
+	job->numPages = job->pagesArraySize.x * job->pagesArraySize.y;
 
 	/* find the drawable size in device coords */
 #ifdef PAGINATIONBUG
 	tp = GD_drawing(g)->size;
 #else
-	tp.x = gvc->job->width;
-	tp.y = gvc->job->height;
+	tp.x = job->width;
+	tp.y = job->height;
 #endif
 	if (GD_drawing(g)->landscape)
 	    tp = exch_xy(tp);
@@ -223,21 +224,21 @@ static void init_job_pagination(GVC_t * gvc, graph_t * g)
     } else {
 	/* page not set by user, assume default when centering,
 	   but allow infinite page for any other interpretation */
-	gvc->pageSize.x = gvc->bb.UR.x;
-	gvc->pageSize.y = gvc->bb.UR.y;
-	job->pageBoxCentered.x = DEFAULT_PAGEWD;
-	job->pageBoxCentered.y = DEFAULT_PAGEHT;
-	PFCLM.x = job->pageBoxCentered.x - 2 * job->pageBox.LL.x;
-	PFCLM.y = job->pageBoxCentered.y - 2 * job->pageBox.LL.y;
+	job->pageSize.x = gvc->bb.UR.x;
+	job->pageSize.y = gvc->bb.UR.y;
+	job->pageSizeCentered.x = DEFAULT_PAGEWD;
+	job->pageSizeCentered.y = DEFAULT_PAGEHT;
+	PFCLM.x = job->pageSizeCentered.x - 2 * job->pageBox.LL.x;
+	PFCLM.y = job->pageSizeCentered.y - 2 * job->pageBox.LL.y;
 #ifdef PAGINATIONBUG
 	P2PF(GD_drawing(g)->size, DS);
 #else
-	DS.x = gvc->job->width;
-	DS.y = gvc->job->height;
+	DS.x = job->width;
+	DS.y = job->height;
 #endif
 	if (GD_drawing(g)->landscape)
 	    DS = exch_xyf(DS);
-	gvc->pagesArraySize.x = gvc->pagesArraySize.y = gvc->numPages = 1;
+	job->pagesArraySize.x = job->pagesArraySize.y = job->numPages = 1;
     }
 
     set_pagedir(gvc, g);
@@ -257,29 +258,35 @@ static void init_job_pagination(GVC_t * gvc, graph_t * g)
 
 static void firstpage(GVC_t *gvc)
 {
-    gvc->pagesArrayElem = gvc->pagesArrayFirst;
-    gvc->pageNum = 1;
+    gvrender_job_t *job = gvc->job;
+
+    job->pagesArrayElem = job->pagesArrayFirst;
+    job->pageNum = 1;
 }
 
 static int validpage(GVC_t *gvc)
 {
-    return ((gvc->pagesArrayElem.x >= 0)
-	 && (gvc->pagesArrayElem.x < gvc->pagesArraySize.x)
-	 && (gvc->pagesArrayElem.y >= 0)
-	 && (gvc->pagesArrayElem.y < gvc->pagesArraySize.y));
+    gvrender_job_t *job = gvc->job;
+
+    return ((job->pagesArrayElem.x >= 0)
+	 && (job->pagesArrayElem.x < job->pagesArraySize.x)
+	 && (job->pagesArrayElem.y >= 0)
+	 && (job->pagesArrayElem.y < job->pagesArraySize.y));
 }
 
 static void nextpage(GVC_t *gvc)
 {
-    gvc->pagesArrayElem = add_points(gvc->pagesArrayElem, gvc->pagesArrayMinor);
+    gvrender_job_t *job = gvc->job;
+
+    job->pagesArrayElem = add_points(job->pagesArrayElem, job->pagesArrayMinor);
     if (validpage(gvc) == FALSE) {
-	if (gvc->pagesArrayMajor.y)
-	    gvc->pagesArrayElem.x = gvc->pagesArrayFirst.x;
+	if (job->pagesArrayMajor.y)
+	    job->pagesArrayElem.x = job->pagesArrayFirst.x;
 	else
-	    gvc->pagesArrayElem.y = gvc->pagesArrayFirst.y;
-	gvc->pagesArrayElem = add_points(gvc->pagesArrayElem, gvc->pagesArrayMajor);
+	    job->pagesArrayElem.y = job->pagesArrayFirst.y;
+	job->pagesArrayElem = add_points(job->pagesArrayElem, job->pagesArrayMajor);
     }
-    gvc->pageNum = gvc->pagesArrayElem.x + gvc->pagesArrayElem.y * gvc->pagesArraySize.x + 1;
+    job->pageNum = job->pagesArrayElem.x + job->pagesArrayElem.y * job->pagesArraySize.x + 1;
 }
 
 static int write_edge_test(Agraph_t * g, Agedge_t * e)
@@ -353,41 +360,43 @@ static void emit_defaults(GVC_t * gvc)
 /* even if this makes you cringe, at least it's short */
 static void setup_page(GVC_t * gvc)
 {
+    gvrender_job_t *job = gvc->job;
     point offset;
     int rot;
     graph_t *g = gvc->g;
 
     /* establish current box in graph coordinates */
-    gvc->pageBox.LL.x = gvc->pagesArrayElem.x * gvc->pageSize.x;
-    gvc->pageBox.LL.y = gvc->pagesArrayElem.y * gvc->pageSize.y;
-    gvc->pageBox.UR.x = gvc->pageBox.LL.x + gvc->pageSize.x;
-    gvc->pageBox.UR.y = gvc->pageBox.LL.y + gvc->pageSize.y;
+    job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x;
+    job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y;
+    job->pageBox.UR.x = job->pageBox.LL.x + job->pageSize.x;
+    job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
     /* establish offset to be applied, in graph coordinates */
     if (GD_drawing(g)->landscape == FALSE)
-	offset = pointof(-gvc->pageBox.LL.x, -gvc->pageBox.LL.y);
+	offset = pointof(-job->pageBox.LL.x, -job->pageBox.LL.y);
     else {
-	offset.x = (gvc->pagesArrayElem.y + 1) * gvc->pageSize.y;
-	offset.y = -(gvc->pagesArrayElem.x) * gvc->pageSize.x;
+	offset.x = (job->pagesArrayElem.y + 1) * job->pageSize.y;
+	offset.y = -(job->pagesArrayElem.x) * job->pageSize.x;
     }
     rot = GD_drawing(g)->landscape ? 90 : 0;
 
-    gvrender_begin_page(gvc, gvc->job->zoom, rot, offset);
-    emit_background(gvc, gvc->pageBox);
+    gvrender_begin_page(gvc, job->zoom, rot, offset);
+    emit_background(gvc, job->pageBox);
     emit_defaults(gvc);
 }
 
 static boolean node_in_pageBox(GVC_t *gvc, node_t * n)
 {
+    gvrender_job_t *job = gvc->job;
     boxf nb;
 
-    if (gvc->numPages == 1)
+    if (job->numPages == 1)
 	return TRUE;
     nb.LL.x = ND_coord_i(n).x - ND_lw_i(n);
     nb.LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
     nb.UR.x = ND_coord_i(n).x + ND_rw_i(n);
     nb.UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
-    return boxf_overlap(gvc->pageBox, nb);
+    return boxf_overlap(job->pageBox, nb);
 }
 
 static int is_natural_number(char *sstr)
@@ -514,11 +523,12 @@ static int clust_in_layer(GVC_t *gvc, graph_t * sg)
 
 static void emit_node(GVC_t * gvc, node_t * n)
 {
+    gvrender_job_t *job = gvc->job;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
 
     if (ND_shape(n) == NULL)
 	return;
-    if (node_in_layer(gvc, n->graph, n) && node_in_pageBox(gvc, n) && (ND_state(n) != gvc->pageNum)) {
+    if (node_in_layer(gvc, n->graph, n) && node_in_pageBox(gvc, n) && (ND_state(n) != job->pageNum)) {
 	gvrender_begin_node(gvc, n);
 	if (((s = agget(n, "href")) && s[0])
 	    || ((s = agget(n, "URL")) && s[0])) {
@@ -533,7 +543,7 @@ static void emit_node(GVC_t * gvc, node_t * n)
 	}
 	gvrender_begin_context(gvc);
 	ND_shape(n)->fns->codefn(gvc, n);
-	ND_state(n) = gvc->pageNum;
+	ND_state(n) = job->pageNum;
 	gvrender_end_context(gvc);
 	if (url) {
 	    gvrender_end_anchor(gvc);
@@ -612,6 +622,7 @@ void emit_attachment(GVC_t * gvc, textlabel_t * lp, splines * spl)
 
 static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
 {
+    gvrender_job_t *job = gvc->job;
     int i, j, np;
     bezier bz;
     point *p;
@@ -620,7 +631,7 @@ static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
     boxf b;
     textlabel_t *lp;
 
-    if (gvc->numPages == 1)
+    if (job->numPages == 1)
 	return TRUE;
     if (ED_spl(e) == NULL)
 	return FALSE;
@@ -631,7 +642,7 @@ static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
 	P2PF(p[0],pp);
 	for (j = 0; j < np; j++) {
 	    P2PF(p[j],pn);
-	    if (boxf_overlap(gvc->pageBox, mkboxf(pp, pn)))
+	    if (boxf_overlap(job->pageBox, mkboxf(pp, pn)))
 		return TRUE;
 	    pp = pn;
 	}
@@ -644,7 +655,7 @@ static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
     b.UR.x = lp->p.x + sx;
     b.LL.y = lp->p.y - sy;
     b.UR.y = lp->p.y + sy;
-    return boxf_overlap(gvc->pageBox, b);
+    return boxf_overlap(job->pageBox, b);
 }
 
 static void emit_edge(GVC_t * gvc, edge_t * e)
@@ -1131,7 +1142,7 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
 
 void emit_eof(GVC_t * gvc)
 {
-    if (gvc->pageNum > 0) {
+    if (gvc->job->pageNum > 0) {
         emit_deinit(gvc);
 	emit_once_reset();
     }

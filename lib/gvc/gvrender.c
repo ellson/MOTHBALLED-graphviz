@@ -153,9 +153,9 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, double X, double Y, double Z, d
     else {
 	codegen_t *cg = job->codegen;
 
-	if (cg && cg->begin_job && gvc->pageNum == 1)
+	if (cg && cg->begin_job && job->pageNum == 1)
 	    cg->begin_job(gvc->job->output_file, gvc->g, lib, gvc->user,
-			  gvc->info, gvc->pagesArraySize);
+			  gvc->info, job->pagesArraySize);
     }
 #endif
 }
@@ -320,14 +320,14 @@ void gvrender_begin_page(GVC_t * gvc, double scale, int rot, point offset)
 //    gvc->offset = offset;
     if (gvre && gvre->begin_page)
 	gvre->begin_page(job, gvc->g->name,
-                         gvc->pagesArrayElem, gvc->pageNum, gvc->numPages);
+                         job->pagesArrayElem, job->pageNum, job->numPages);
 
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_page)
-	    cg->begin_page(gvc->g, gvc->pagesArrayElem, scale, rot, offset);
+	    cg->begin_page(gvc->g, job->pagesArrayElem, scale, rot, offset);
     }
 #endif
 }
@@ -338,7 +338,7 @@ void gvrender_end_page(GVC_t * gvc)
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_page)
-	gvre->end_page(job, gvc->pagesArrayElem, gvc->pageNum, gvc->numPages);
+	gvre->end_page(job, job->pagesArrayElem, job->pageNum, job->numPages);
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
