@@ -169,10 +169,30 @@ Reference
           Draw the outline of (resp. fill) a rectangle in color <color_idx>
           with corners at (x1,y1) and (x2,y2).
           
-   gd arc <gdhandle> <color_idx> <cx> <cy> <width> <height> <start> <end>
-          Draw an arc in color <color_idx>, centered at (cx,cy) in a rectangle width
-          x height, starting at start degrees and ending at end degrees.
-          start must be > end.
+   gd arc       <gdhandle> <color_idx> <cx> <cy> <width> <height> <start> <end>
+   gd fillarc   <gdhandle> <color_idx> <cx> <cy> <width> <height> <start> <end>
+   gd openarc   <gdhandle> <color_idx> <cx> <cy> <width> <height> <start> <end>
+   gd chord     <gdhandle> <color_idx> <cx> <cy> <width> <height> <start> <end>
+   gd fillchord <gdhandle> <color_idx> <cx> <cy> <width> <height> <start> <end>
+   gd openchord <gdhandle> <color_idx> <cx> <cy> <width> <height> <start> <end>
+   gd pie       <gdhandle> <color_idx> <cx> <cy> <width> <height> <start> <end>
+   gd fillpie   <gdhandle> <color_idx> <cx> <cy> <width> <height> <start> <end>
+   gd openpie   <gdhandle> <color_idx> <cx> <cy> <width> <height> <start> <end>
+          All describe an arc based shape in color <color_idx>, centered at (cx,cy)
+	  in a rectangle width x height, starting at start degrees and ending
+	  at end degrees.
+
+	  arc       - Just the curved line.
+	  fillarc   - (Intented to be a fill between the curve and chord,
+		      but gd doesn't do that) - Same as pie.
+	  openarc   - Outline shape with curve and chord.
+	  chord     - Straight line chord between the ends of the curve,
+		      but without showing the curve.
+	  fillchord - Filled triangle between chord and center.
+	  openchord - Outline triangle between chord and center.
+	  pie       - Filled pie segment between curve and center.
+	  fillpie   - Same as pie.
+	  openpie   - Outline pie segment between curve and center.
           
    gd polygon <gdhandle> <color_idx> <x1> <y1> ...
           
