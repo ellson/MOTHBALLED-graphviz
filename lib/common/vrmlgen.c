@@ -60,7 +60,8 @@ typedef struct {
 /* static point	Pages; */
 static double Scale;
 static int Rot;
-/* static box	PB; */
+static box BB;
+static double MinZ;
 /* static int	onetime = TRUE; */
 static int Saw_skycolor;
 
@@ -243,19 +244,12 @@ static void vrml_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
 
 static void vrml_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
-    double d, z;
     g = g;
 
     Saw_skycolor = FALSE;
-    d = MAX(bb.UR.x - bb.LL.x,bb.UR.y - bb.LL.y);
-    /* Roughly fill 3/4 view assuming FOV angle of PI/4.
-     * Small graphs and non-square aspect ratios will upset this.
-     */
-    z = (0.6667*d)/tan(PI/8.0);  /* fill 3/4 of view */
+    MinZ = MAXDOUBLE;
+    BB = bb;
     fprintf(Output_file, "Group { children [\n");
-    fprintf(Output_file, "  Viewpoint {position %.3f %.3f %.3f}\n",
-	    .0278 * (bb.UR.x + bb.LL.x) / 2.0,
-	    .0278 * (bb.UR.y + bb.LL.y) / 2.0, .0278 * z);
     fprintf(Output_file, "  Transform {\n");
     fprintf(Output_file, "    scale %.3f %.3f %.3f\n",
 	    .0278, .0278, .0278);
@@ -272,9 +266,21 @@ static void vrml_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 
 static void vrml_end_graph(void)
 {
+    double d, z;
+    box bb = BB;
+
+    d = MAX(bb.UR.x - bb.LL.x,bb.UR.y - bb.LL.y);
+    /* Roughly fill 3/4 view assuming FOV angle of PI/4.
+     * Small graphs and non-square aspect ratios will upset this.
+     */
+    z = (0.6667*d)/tan(PI/8.0) + MinZ;  /* fill 3/4 of view */
+
     if (!Saw_skycolor)
 	fprintf(Output_file, " Background { skyColor 1 1 1 }\n");
     fprintf(Output_file, "  ] }\n");
+    fprintf(Output_file, "  Viewpoint {position %.3f %.3f %.3f}\n",
+	    .0278 * (bb.UR.x + bb.LL.x) / 2.0,
+	    .0278 * (bb.UR.y + bb.LL.y) / 2.0, .0278 * z);
     fprintf(Output_file, "] }\n");
 }
 
@@ -292,8 +298,11 @@ static void vrml_begin_page(graph_t * g, point page, double scale, int rot,
 static void vrml_begin_node(node_t * n)
 {
     int width, height;
+    double z;
 
     fprintf(Output_file, "# node %s\n", n->name);
+    z = late_double(n, N_z, 0.0, -MAXFLOAT);
+    if (z < MinZ) MinZ = z;
     if (shapeOf(n) != SH_POINT) {
 	PNGfile = nodefile(n);
 	width = (ND_lw_i(n) + ND_rw_i(n)) * Scale + 3;
