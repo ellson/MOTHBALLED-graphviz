@@ -505,25 +505,21 @@ idist2 (point p0, point p1)
 static double 
 interpolate_zcoord(pointf p1, point fst, double fstz, point snd, double sndz)
 {
-    /* pointf p; */
     double len, d, rv;
 
     if (fstz == sndz)
 	return fstz;
-#define FIX 1		/* i wonder why wasn't this enabled? scn 9/15/2002 */
-#ifdef FIX
     if (ND_rank(Curedge->tail) != ND_rank(Curedge->head)) {
 	if (snd.y == fst.y)
 	    rv = (fstz + sndz) / 2.0;
 	else
 	    rv = fstz + (sndz - fstz) * (p1.y - fst.y) / (snd.y - fst.y);
-    } else
-#endif
-    len = sqrt(idist2(fst, snd));
-    /* p.x = fst.x; */
-    /* p.y = fst.y; */
-    d = sqrt(DIST2(p1, fst))/len;
-    rv = fstz + d*(sndz - fstz);
+    } 
+    else {
+	len = sqrt(idist2(fst, snd));
+	d = sqrt(DIST2(p1, fst))/len;
+	rv = fstz + d*(sndz - fstz);
+    }
     return rv;
 }
 
