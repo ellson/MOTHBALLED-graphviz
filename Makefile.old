@@ -1,4 +1,4 @@
-SUBDIRS = lib cmd doc
+SUBDIRS = lib plugin cmd
 
-all clean distclean install:
+all install clean distclean :
 	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)       
