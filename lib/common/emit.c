@@ -48,110 +48,22 @@ static char *Deffontname;
 static char *Layerdelims;
 static attrsym_t *G_peripheries;
 
-static int write_edge_test(Agraph_t * g, Agedge_t * e)
+static point exch_xy(point p)
 {
-    Agraph_t *sg;
-    int c;
-
-    for (c = 1; c <= GD_n_cluster(g); c++) {
-	sg = GD_clust(g)[c];
-	if (agcontains(sg, e))
-	    return FALSE;
-    }
-    return TRUE;
+    int t;
+    t = p.x;
+    p.x = p.y;
+    p.y = t;
+    return p;
 }
 
-static int write_node_test(Agraph_t * g, Agnode_t * n)
+static pointf exch_xyf(pointf p)
 {
-    Agraph_t *sg;
-    int c;
-
-    for (c = 1; c <= GD_n_cluster(g); c++) {
-	sg = GD_clust(g)[c];
-	if (agcontains(sg, n))
-	    return FALSE;
-    }
-    return TRUE;
-}
-
-
-void emit_reset(GVC_t * gvc, graph_t * g)
-{
-    Agnode_t *n;
-
-    N_pages = 1;
-    Page = 0;
-    Layer = Nlayers = 0;
-    LayerID = (char **) 0;
-    First.x = First.y = 0;
-    Major.x = Major.y = 0;
-    Minor.x = Minor.y = 0;
-    Pages.x = Pages.y = 0;
-    PB.LL.x = PB.LL.y = PB.UR.x = PB.UR.y = 0;
-    GP.x = GP.y = 0;
-    CB.LL.x = CB.LL.y = CB.UR.x = CB.UR.y = 0;
-    PFC.x = PFC.y = 0;
-
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	ND_state(n) = 0;
-    }
-
-    gvrender_reset(gvc);
-}
-
-static void emit_background(GVC_t * gvc, point LL, point UR)
-{
-    char *str;
-    point A[4];
-    graph_t *g = gvc->g;
-
-    if (((str = agget(g, "bgcolor")) != 0)
-	&& str[0]
-	&& strcmp(str, "white") != 0 && strcmp(str, "transparent") != 0) {
-	/* increment to cover int rounding errors */
-	A[0].x = A[1].x = LL.x - GD_drawing(g)->margin.x - 1;
-	A[2].x = A[3].x = UR.x + GD_drawing(g)->margin.x + 1;
-	A[1].y = A[2].y = UR.y + GD_drawing(g)->margin.y + 1;
-	A[3].y = A[0].y = LL.y - GD_drawing(g)->margin.y - 1;
-	gvrender_set_fillcolor(gvc, str);
-	gvrender_set_pencolor(gvc, str);
-	gvrender_polygon(gvc, A, 4, TRUE);	/* filled */
-    }
-}
-
-static void emit_defaults(GVC_t * gvc)
-{
-    gvrender_set_pencolor(gvc, DEFAULT_COLOR);
-    gvrender_set_font(gvc, Deffontname, Deffontsize);
-}
-
-
-/* even if this makes you cringe, at least it's short */
-static void setup_page(GVC_t * gvc, point page)
-{
-    point offset;
-    int rot;
-    graph_t *g = gvc->g;
-
-    Page++;
-
-    /* establish current box in graph coordinates */
-    CB.LL.x = page.x * GP.x;
-    CB.LL.y = page.y * GP.y;
-    CB.UR.x = CB.LL.x + GP.x;
-    CB.UR.y = CB.LL.y + GP.y;
-
-    /* establish offset to be applied, in graph coordinates */
-    if (GD_drawing(g)->landscape == FALSE)
-	offset = pointof(-CB.LL.x, -CB.LL.y);
-    else {
-	offset.x = (page.y + 1) * GP.y;
-	offset.y = -page.x * GP.x;
-    }
-    rot = GD_drawing(g)->landscape ? 90 : 0;
-    gvrender_begin_page(gvc, page, gvc->job->zoom, rot, offset);
-    emit_background(gvc, CB.LL, CB.UR);
-    emit_defaults(gvc);
+    double t;
+    t = p.x;
+    p.x = p.y;
+    p.y = t;
+    return p;
 }
 
 /* parse_layers:
@@ -197,22 +109,29 @@ static int parse_layers(graph_t * g, char *p)
     return ntok;
 }
 
-static point exch_xy(point p)
+static void setup_layering(GVC_t * gvc, graph_t * g)
 {
-    int t;
-    t = p.x;
-    p.x = p.y;
-    p.y = t;
-    return p;
+    char *str;
+
+    if ((str = agget(g, "layers")) != 0) {
+	if (gvrender_features(gvc) & GVRENDER_DOES_LAYERS) {
+	    Nlayers = parse_layers(g, str);
+	}
+	else {
+	    agerr(AGWARN, "layers not supported in %s output\n",
+		  gvc->job->output_langname);
+	    Nlayers = 0;
+	}
+    } else {
+	LayerID = NULL;
+	Nlayers = 0;
+    }
 }
 
-static pointf exch_xyf(pointf p)
+static void reset_layering(GVC_t * gvc, graph_t * g)
 {
-    double t;
-    t = p.x;
-    p.x = p.y;
-    p.y = t;
-    return p;
+    Layer = Nlayers = 0;
+    LayerID = NULL;   /* FIXME - poss leak of array of layer names? */
 }
 
 static point pagecode(char c)
@@ -256,39 +175,6 @@ static void set_pagedir(graph_t * g)
 	First.x = First.y = 0;
 	if (str)
 	    agerr(AGWARN, "pagedir=%s ignored\n", str);
-    }
-}
-
-static char *lang_name(int langID)
-{
-#ifndef DISABLE_CODEGENS
-    codegen_info_t *p;
-    for (p = first_codegen(); p->name; p = next_codegen(p)) {
-	if (p->id == langID)
-	    return p->name;
-    }
-#endif
-    return "<unknown output format>";
-}
-
-static void setup_layers(GVC_t * gvc, graph_t * g)
-{
-    char *str;
-
-    if ((str = agget(g, "layers")) != 0) {
-	if (gvrender_features(gvc) & GVRENDER_DOES_LAYERS) {
-	    Nlayers = parse_layers(g, str);
-	}
-#ifndef DISABLE_CODEGENS
-	else {
-	    agerr(AGWARN, "layers not supported in %s output\n",
-		  lang_name(Output_lang));
-	    Nlayers = 0;
-	}
-#endif
-    } else {
-	LayerID = NULL;
-	Nlayers = 0;
     }
 }
 
@@ -354,6 +240,118 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	PB.LL.y += extra.y / 2;
     }
     PB.UR = add_points(PB.LL, DS);
+}
+
+static void reset_pagination(GVC_t * gvc, graph_t * g)
+{
+    N_pages = 1;
+    Page = 0;
+    First.x = First.y = 0;
+    Major.x = Major.y = 0;
+    Minor.x = Minor.y = 0;
+    Pages.x = Pages.y = 0;
+    PB.LL.x = PB.LL.y = PB.UR.x = PB.UR.y = 0;
+    GP.x = GP.y = 0;
+    CB.LL.x = CB.LL.y = CB.UR.x = CB.UR.y = 0;
+    PFC.x = PFC.y = 0;
+}
+
+static int write_edge_test(Agraph_t * g, Agedge_t * e)
+{
+    Agraph_t *sg;
+    int c;
+
+    for (c = 1; c <= GD_n_cluster(g); c++) {
+	sg = GD_clust(g)[c];
+	if (agcontains(sg, e))
+	    return FALSE;
+    }
+    return TRUE;
+}
+
+static int write_node_test(Agraph_t * g, Agnode_t * n)
+{
+    Agraph_t *sg;
+    int c;
+
+    for (c = 1; c <= GD_n_cluster(g); c++) {
+	sg = GD_clust(g)[c];
+	if (agcontains(sg, n))
+	    return FALSE;
+    }
+    return TRUE;
+}
+
+void emit_reset(GVC_t * gvc, graph_t * g)
+{
+    Agnode_t *n;
+
+    reset_layering(gvc, g);
+
+    reset_pagination(gvc, g);
+
+    /* reset state */
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	ND_state(n) = 0;
+    }
+
+    /* reset renderer */
+    gvrender_reset(gvc);
+}
+
+static void emit_background(GVC_t * gvc, point LL, point UR)
+{
+    char *str;
+    point A[4];
+    graph_t *g = gvc->g;
+
+    if (((str = agget(g, "bgcolor")) != 0)
+	&& str[0]
+	&& strcmp(str, "white") != 0 && strcmp(str, "transparent") != 0) {
+	/* increment to cover int rounding errors */
+	A[0].x = A[1].x = LL.x - GD_drawing(g)->margin.x - 1;
+	A[2].x = A[3].x = UR.x + GD_drawing(g)->margin.x + 1;
+	A[1].y = A[2].y = UR.y + GD_drawing(g)->margin.y + 1;
+	A[3].y = A[0].y = LL.y - GD_drawing(g)->margin.y - 1;
+	gvrender_set_fillcolor(gvc, str);
+	gvrender_set_pencolor(gvc, str);
+	gvrender_polygon(gvc, A, 4, TRUE);	/* filled */
+    }
+}
+
+static void emit_defaults(GVC_t * gvc)
+{
+    gvrender_set_pencolor(gvc, DEFAULT_COLOR);
+    gvrender_set_font(gvc, Deffontname, Deffontsize);
+}
+
+
+/* even if this makes you cringe, at least it's short */
+static void setup_page(GVC_t * gvc, point page)
+{
+    point offset;
+    int rot;
+    graph_t *g = gvc->g;
+
+    Page++;
+
+    /* establish current box in graph coordinates */
+    CB.LL.x = page.x * GP.x;
+    CB.LL.y = page.y * GP.y;
+    CB.UR.x = CB.LL.x + GP.x;
+    CB.UR.y = CB.LL.y + GP.y;
+
+    /* establish offset to be applied, in graph coordinates */
+    if (GD_drawing(g)->landscape == FALSE)
+	offset = pointof(-CB.LL.x, -CB.LL.y);
+    else {
+	offset.x = (page.y + 1) * GP.y;
+	offset.y = -page.x * GP.x;
+    }
+    rot = GD_drawing(g)->landscape ? 90 : 0;
+    gvrender_begin_page(gvc, page, gvc->job->zoom, rot, offset);
+    emit_background(gvc, CB.LL, CB.UR);
+    emit_defaults(gvc);
 }
 
 static void emit_node(GVC_t * gvc, node_t * n)
@@ -685,7 +683,7 @@ void emit_init(GVC_t * gvc, graph_t * g)
 	late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
 		    MIN_FONTSIZE);
 
-    setup_layers(gvc, g);
+    setup_layering(gvc, g);
 
     gvrender_begin_job(gvc, Lib, Pages, X, Y, Z, x, y, GD_drawing(g)->dpi);
 }

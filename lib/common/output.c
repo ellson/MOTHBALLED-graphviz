@@ -123,6 +123,10 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
     int flags;
 
     gvc->g = g;
+#ifndef DISABLE_CODEGENS
+    Output_file = gvc->job->output_file;
+    Output_lang = gvc->job->output_lang;
+#endif
     dotneato_set_margins(gvc, g);
     emit_init(gvc, g);
     if (NOT(gvrender_features(gvc) & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES)
@@ -241,10 +245,6 @@ void dotneato_write(GVC_t * gvc, graph_t * g)
 	    job->output_lang = gvrender_select(gvc, job->output_langname);
 	    assert(job->output_lang != NO_SUPPORT); /* should have been verified already */
 	}
-#ifndef DISABLE_CODEGENS
-	Output_file = job->output_file;
-	Output_lang = job->output_lang;
-#endif
 	dotneato_write_one(gvc, g);
     }
 }

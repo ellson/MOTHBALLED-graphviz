@@ -32,7 +32,6 @@ extern void emit_graph(GVC_t * gvc, graph_t * g, int flags);
 
 #include <cairo.h>
 
-
 #define PANFACTOR 10
 #define ZOOMFACTOR 1.1
 
@@ -123,6 +122,8 @@ static void win_init(gvrender_job_t * job, int argb, const char *geometry,
     win_t *win = job->win;
 
     win->job = job;
+    job->surface = cairo_create();
+    job->external_surface = TRUE;
 
     dpy = win->dpy;
     win->scr = scr = DefaultScreen(dpy);
@@ -233,6 +234,8 @@ static void win_deinit(gvrender_job_t * job)
 
     XFreeGC(win->dpy, win->gc);
     XDestroyWindow(win->dpy, win->win);
+    cairo_destroy(job->surface);
+    job->external_surface = FALSE;
 }
 
 static void win_refresh(win_t * win)
@@ -548,9 +551,10 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
 	const char *geometry=NULL;
 
 	job->win = malloc(sizeof(win_t));
-
-	job->surface = cairo_create();;
-	job->external_surface = TRUE;
+        if (! job->win) {
+	    fprintf(stderr,"Failed to malloc(sizeof(win_t))\n");
+	    return;
+        }
 
 	job->win->dpy = XOpenDisplay(display);
 	if (job->win->dpy == NULL) {
@@ -563,13 +567,10 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
 
 	win_handle_events(job->win);
 
-	cairo_destroy(job->surface);
 	win_deinit(job);
 
 	XCloseDisplay(job->win->dpy);
-
 	free(job->win);
-	job->external_surface = FALSE;
 #else
 	fprintf(stderr,"No X11 support available\n");
 #endif
