@@ -1,0 +1,70 @@
+all:	libcommon.a
+
+include ../../Config.mk
+include ../../makearch/$(ARCH)
+
+INCS =  -I. \
+        -I../.. \
+        -I../../cdt \
+        -I../../pathplan \
+	-I../../gd \
+	-I../../graph \
+	-I../gvrender \
+	$(EXTLIB_INC)
+
+DEFINES = -DHAVE_CONFIG_H
+
+AWKDIR = ../awk
+
+HDRS = colortbl.h const.h globals.h macros.h ps.h render.h \
+       renderprocs.h types.h utils.h
+
+OBJS = arrows.o colxlate.o emit.o diagen.o figgen.o fontmetrics.o \
+    gdgen.o globals.o hpglgen.o htmlparse.o htmllex.o htmltable.o \
+    labels.o ns.o strcasecmp.o strncasecmp.o \
+    mapgen.o input.o mifgen.o mpgen.o output.o pointset.o postproc.o \
+    picgen.o psgen.o shapes.o routespl.o splines.o svggen.o \
+    timing.o utils.o vrmlgen.o vtxgen.o
+
+libcommon.a : $(OBJS)
+	$(RM) libcommon.a
+	$(AR) cr libcommon.a $(OBJS)
+	$(RANLIB) libcommon.a
+
+htmllex.o : htmlparse.c
+
+htmlparse.h htmlparse.c : htmlparse.y
+	$(YACC) -dv htmlparse.y
+	if test $(ARCH) != "netbsd.i386"; then $(SED) 1s/#include.*// < y.tab.c | $(SED) "s/yy/html/g" > htmlparse.c; else $(SED) "s/yy/html/g" < y.tab.c > htmlparse.c; fi
+	$(SED) "s/yy/html/g" < y.tab.h > htmlparse.h
+	$(RM) y.tab.c y.tab.h
+
+htmllex.o : htmllex.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) $(EXPAT_INC) htmllex.c
+
+install: libcommon.a 
+	$(MKPATH) $(INCDIR)
+	$(INSTALL) const.h globals.h macros.h render.h renderprocs.h types.h $(INCDIR)
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) libcommon.a $(LIBDIR)
+
+$(OBJS) : $(HDRS)
+colxlate.o : colortbl.h
+psgen.o : ps.h
+emit.o mapgen.o utils.o htmllex.o htmltable.o htmlparse.o : htmltable.h
+htmllex.o : htmlparse.h
+htmlparse.o htmllex.o : htmllex.h
+
+ps.h : ps.txt
+	$(AWK) -f $(AWKDIR)/stringize.awk ps.txt > ps.h
+
+colortbl.h : color_names
+	$(SED) s/_//g color_names | LC_COLLATE=C $(SORT) > color_lib
+	$(AWK) -f $(AWKDIR)/colortbl.awk color_lib > colortbl.h
+	$(RM) color_lib
+
+clean:
+	$(RM) core *.o htmlparse.c htmlparse.h colortbl.h ps.h y.output
+
+distclean: clean
+	$(RM) *.a

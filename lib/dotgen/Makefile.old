@@ -1,0 +1,39 @@
+all:	libdot.a
+
+include ../../Config.mk
+include ../../makearch/$(ARCH)
+
+INCS =	-I. -I../.. \
+	-I../common \
+	-I../gvrender \
+	-I../../pathplan \
+	-I../../graph \
+	-I../../cdt \
+	-I../../gd
+
+DEFINES = -DHAVE_CONFIG_H
+
+OBJS = acyclic.o compound.o flat.o sameport.o class1.o conc.o \
+       position.o dotsplines.o class2.o decomp.o dotinit.o rank.o \
+       cluster.o fastgr.o mincross.o 
+
+HFILES = dot.h dotprocs.h
+
+libdot.a : $(OBJS)
+	$(RM) libdot.a
+	$(AR) cr libdot.a $(OBJS)
+	$(RANLIB) libdot.a
+
+$(OBJS) : $(HFILES)
+
+install: libdot.a
+	$(MKPATH) $(INCDIR)
+	$(INSTALL) $(HFILES) $(INCDIR)
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) libdot.a $(LIBDIR)
+
+clean:
+	$(RM) *.o core
+
+distclean: clean
+	$(RM) *.a dot lib*.so.*

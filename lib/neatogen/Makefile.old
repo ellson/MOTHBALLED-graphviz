@@ -1,0 +1,55 @@
+all:	libneato.a
+
+include ../../Config.mk
+include ../../makearch/$(ARCH)
+
+INCS =  -I. -I../.. \
+        -I../common \
+        -I../pack \
+        -I../gvrender \
+        -I../../cdt \
+        -I../../pathplan \
+		-I../../gd \
+		-I../../graph
+
+DEFINES = -DHAVE_CONFIG_H
+
+HDRS = adjust.h edges.h geometry.h heap.h hedges.h info.h mem.h \
+       neato.h neatoprocs.h poly.h simple.h site.h voronoi.h
+
+NOBJS  = stress.o kkutils.o pca.o matrix_ops.o embed_graph.o dijkstra.o \
+       conjgrad.o closest.o bfs.o 
+OBJS = adjust.o circuit.o edges.o find_ints.o geometry.o heap.o hedges.o \
+       info.o neatoinit.o intersect.o legal.o lu.o matinv.o memory.o poly.o \
+       printvis.o site.o solve.o neatosplines.o stuff.o voronoi.o \
+       $(NOBJS) constraint.o
+
+libneato.a : $(OBJS)
+	$(RM) libneato.a
+	$(AR) cr libneato.a $(OBJS)
+	$(RANLIB) libneato.a
+
+$(NOBJS) : defs.h
+bfs.o dijkstra.o embed_graph.o kkutils.o stress.o : bfs.h
+pca.o closest.o : closest.h
+stress.o conjgrad.o : conjgrad.h
+dijkstra.o embed_graph.o kkutils.o stress.o : dijkstra.h
+embed_graph.o stress.o : embed_graph.h
+kkutils.o stress.o closest.o : kkutils.h
+stress.o pca.o conjgrad.o matrix_ops.o : matrix_ops.h
+stress.o pca.o : pca.h
+stress.o : stress.h
+
+install: libneato.a 
+	$(MKPATH) $(INCDIR)
+	$(INSTALL) neato.h adjust.h neatoprocs.h $(INCDIR)
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) libneato.a $(LIBDIR)
+
+$(OBJS) : $(HDRS)
+
+clean:
+	$(RM) core *.o
+
+distclean: clean
+	$(RM) *.a

@@ -1,0 +1,9 @@
+SUBDIRS = cdt graph agraph gd pathplan ast sfio vmalloc circogen \
+	dotgen fdpgen neatogen pack twopigen common gvc ingraphs
+
+all install clean :
+	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)       
+
+distclean :
+	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)       
+	rm -rf lib include
