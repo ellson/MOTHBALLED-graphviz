@@ -25,7 +25,7 @@ LIBS =  -L$(LOC_LIB)/graph -lgraph -L$(LOC_LIB)/cdt -lcdt
 PLUGLIBS = -L$(LOC_PLUG)/cairo -lgvplugin_cairo \
            -L$(LOC_PLUG)/layout -lgvplugin_layout \
           -L$(LOC_PLUG)/gd -lgvplugin_gd -L$(LOC_PLUG)/text -lgvplugin_text
-DNLIBS = -L$(LOC_LIB)/neatogen -lneato \
+DNLIBS = -L$(LOC_LIB)/neatogen -lneatogen \
          -L$(LOC_LIB)/pack -lpack \
          -L$(LOC_LIB)/common -lcommon \
          -L$(LOC_LIB)/gvc -lgvc \
