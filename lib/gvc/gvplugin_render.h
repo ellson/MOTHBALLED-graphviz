@@ -25,7 +25,7 @@ extern "C" {
 #endif
 
     struct gvrender_engine_s {
-	void (*initialize) (GVC_t * gvc);
+	void (*initialize) (GVC_t * gvc, gvevent_key_binding_t *keys, int numkeys);
 	void (*finalize) (GVC_t * gvc);
 	void (*begin_job) (gvrender_job_t * job);
 	void (*end_job) (gvrender_job_t * job);

@@ -106,6 +106,9 @@ int gvrender_features(GVC_t * gvc)
     return features;
 }
 
+extern gvevent_key_binding_t *gvevent_key_binding;
+extern int gvevent_key_binding_size;
+
 void gvrender_initialize(GVC_t * gvc)
 {
     gvrender_job_t *job = gvc->job;
@@ -113,7 +116,7 @@ void gvrender_initialize(GVC_t * gvc)
 
     if (gvre) {
 	if (gvre->initialize)
-	    gvre->initialize(gvc);
+	    gvre->initialize(gvc, gvevent_key_binding, gvevent_key_binding_size);
     }
 #if 0 
 /* codegens don't have this entry point */

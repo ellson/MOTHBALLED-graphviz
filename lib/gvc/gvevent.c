@@ -190,3 +190,5 @@ gvevent_key_binding_t gvevent_key_binding[] = {
     {"KP_Subtract", zoom_out_cb},
     {"F", toggle_fit_cb},
 };
+
+int gvevent_key_binding_size = ARRAY_SIZE(gvevent_key_binding);
