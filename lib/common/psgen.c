@@ -148,26 +148,11 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 	    (rot ? "Landscape" : "Portrait"));
     fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    0, 0, sz.x, sz.y);
-#if 0
-    fprintf(Output_file, "%d %d translate\n", PB.LL.x, PB.LL.y);
-#endif
-#if 0
-    if (rot)
-	fprintf(Output_file, "gsave %d %d translate %d rotate\n",
-		PB.UR.x - PB.LL.x, 0, rot);
-#endif
     fprintf(Output_file, "%d %d %d beginpage\n", page.x, page.y, N_pages);
-#if 0
-    if (rot)
-	fprintf(Output_file, "grestore\n");
-#endif
-#if 0
-    fprintf(Output_file, "%.4f set_scale %d %d translate %d rotate\n", 
-	scale, PB.LL.x, PB.LL.y, rot);
-#endif
     fprintf(Output_file, "%.4f set_scale\n", scale);
     if (rot)
-        fprintf(Output_file, "%d rotate %d %d translate\n", rot, PB.LL.x, PB.LL.y);
+        fprintf(Output_file, "%d rotate %d %d translate\n",
+		rot, PB.LL.x, PB.LL.y - (PB.UR.x + PB.LL.x));
     else
         fprintf(Output_file, "%d %d translate\n", PB.LL.x, PB.LL.y);
     assert(SP == 0);
