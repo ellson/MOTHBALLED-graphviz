@@ -124,6 +124,12 @@ which restricts access to image files. See
 <DD>
 If <A HREF=d:SERVER_NAME>SERVER_NAME</A> is defined, image files are
 restricted to the directory specified by <TT>GV_FILE_PATH</TT>.
+Note that sometimes, when using one of the layout programs in a web
+script, it is not enough to use an export command but rather the
+variables should be set when the command is run, for example,<BR>
+<CODE>
+SERVER_NAME=xxx GV_FILE_PATH="images/" dot -Tjpg -o x.jpg x.dot
+</CODE>
 </DL>
 </BODY>
 </HTML>
