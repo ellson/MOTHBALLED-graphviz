@@ -48,7 +48,7 @@ int gvtext_select(GVC_t * gvc, char *text_layout)
 double gvtext_width(GVC_t *gvc, textline_t *textline, char *fontname, double fontsize, char *fontpath)
 {
     gvtext_engine_t *gvte = gvc->text_engine;
-    int rc;
+    boolean rc;
 
     if (gvte && gvte->width) {
 	rc = gvte->width(textline, fontname, fontsize, fontpath);
