@@ -109,6 +109,8 @@ else
 	    CFLAGS="${CFLAGS} -wd269"
 	    # icc doesn't like -pipe
 	    CFLAGS=`echo ${CFLAGS} | sed 's/ -pipe//'`
+	    # icc doesn't like -ffast-math
+	    CFLAGS=`echo ${CFLAGS} | sed 's/ -ffast-math//'`
 	    ;;
         * )
             case "${build}" in
