@@ -9,3 +9,5 @@ noinst_HEADERS = ingraphs.h
 noinst_LTLIBRARIES = libingraphs.la
 
 libingraphs_la_SOURCES = ingraphs.c
+
+EXTRA_DIST = Makefile.old
