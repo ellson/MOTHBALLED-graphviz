@@ -159,7 +159,7 @@ void gvconfig(GVC_t * gvc)
 
     rc = stat(libdir, &libdir_st);
     if (rc == -1) {	/* if we fail to stat it then it probably doesn't exist
-		   so just fail silently, clean up and return */
+		   so just fail silently */
 	return;
     }
 
@@ -187,7 +187,6 @@ void gvconfig(GVC_t * gvc)
 	strcat(config_glob, plugin_glob);
 
 	rc = glob(config_glob, GLOB_NOSORT, NULL, &globbuf);
-
         if (rc == 0) {
 	    for (j = 0; j < globbuf.gl_pathc; j++) {
 		library = gvplugin_library_load(globbuf.gl_pathv[j]);
@@ -202,7 +201,6 @@ void gvconfig(GVC_t * gvc)
 			    /* might as well install it since its already loaded */
 			    gvplugin_install(gvc, apis->api, types[i].type,
                                 types[i].quality, library->name, &types[i]);
-
 			    fprintf(f, "\t\t%s %d\n",
 				types[i].type, types[i].quality);
 			}
