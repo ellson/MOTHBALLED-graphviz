@@ -327,6 +327,11 @@ static void win_handle_button_press(win_t *win, XButtonEvent *bev)
 
 static void win_handle_motion(win_t *win, XMotionEvent *mev)
 {
+    int dx = mev->x - win->oldx;
+    int dy = mev->y - win->oldy;
+
+    if (dx == 0 && dy == 0)
+	return;
     switch (win->active) {
     case 0: /* drag with no button - */
 	return;
@@ -335,8 +340,8 @@ static void win_handle_motion(win_t *win, XMotionEvent *mev)
 	/* FIXME - to be implemented */
 	break;
     case 2: /* drag with button 2 - pan graph */
-	win->gvc->focus.x -=  (mev->x - win->oldx) / win->gvc->zoom;
-	win->gvc->focus.y -= -(mev->y - win->oldy) / win->gvc->zoom;
+	win->gvc->focus.x -=  dx / win->gvc->zoom;
+	win->gvc->focus.y -= -dy / win->gvc->zoom;
 	win->needs_refresh = 1;
 	break;
     case 3: /* drag with button 3 - unused */
