@@ -1,16 +1,16 @@
 all:	libpack.a
-
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 INCS =  -I. \
-	    -I../.. \
-	    -I../gvrender \
+	    -I$(ROOT) \
+	    -I../gvc \
 	    -I../common \
 	    -I../neatogen \
-	    -I../../graph \
-	    -I../../cdt \
-	    -I../../pathplan
+	    -I../graph \
+	    -I../cdt \
+	    -I../pathplan
 
 DEFINES = -DHAVE_CONFIG_H
 
@@ -35,10 +35,10 @@ pack.o : pack.h
 ccomps.o : pack.h
 
 TESTLIBS =  -L../neatogen -lneato -L../common -ldotneato \
-            -L../../pathplan -lpathplan \
-            -L../../graph -lgraph \
-            -L../../cdt -lcdt \
-            -L../../gd -lgd \
+            -L../pathplan -lpathplan \
+            -L../graph -lgraph \
+            -L../cdt -lcdt \
+            -L../gd -lgd \
             $(EXTLIB_LIB) -lm
 
 ptest : ptest.o libpack.a
