@@ -27,7 +27,7 @@ extern "C" {
 
     typedef Dt_t deglist_t;
 
-    extern deglist_t *mkDeglist();
+    extern deglist_t *mkDeglist(void);
     extern void freeDeglist(deglist_t * list);
     extern void insertDeglist(deglist_t * list, Agnode_t * n);
     extern void removeDeglist(deglist_t * list, Agnode_t * n);

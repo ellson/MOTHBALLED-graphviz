@@ -28,7 +28,7 @@ extern "C" {
 	int sz;
     } nstack_t;
 
-    extern nstack_t *mkStack();
+    extern nstack_t *mkStack(void);
     extern void stackPush(nstack_t * s, Agnode_t * n);
     extern Agnode_t *stackPop(nstack_t * s);
     extern int stackSize(nstack_t * s);

@@ -37,7 +37,7 @@ extern "C" {
 	int sz;
     } nodelist_t;
 
-    extern nodelist_t *mkNodelist();
+    extern nodelist_t *mkNodelist(void);
     extern void freeNodelist(nodelist_t *);
     extern int sizeNodelist(nodelist_t * list);
 

@@ -30,7 +30,7 @@ extern "C" {
 
     typedef Dt_t edgelist;
 
-    extern edgelist *init_edgelist();
+    extern edgelist *init_edgelist(void);
     extern void add_edge(edgelist * list, Agedge_t * e);
     extern void remove_edge(edgelist * list, Agedge_t * e);
     extern void free_edgelist(edgelist * list);

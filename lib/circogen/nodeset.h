@@ -30,7 +30,7 @@ extern "C" {
 
     typedef Dt_t nodeset_t;
 
-    extern nodeset_t *mkNodeset();
+    extern nodeset_t *mkNodeset(void);
     extern void freeNodeset(nodeset_t *);
     extern void clearNodeset(nodeset_t *);
     extern void insertNodeset(nodeset_t * ns, Agnode_t * n);

@@ -65,7 +65,7 @@ static Dtdisc_t nodeDisc = {
 /* mkDeglist:
  * Create an empty list of nodes.
  */
-deglist_t *mkDeglist()
+deglist_t *mkDeglist(void)
 {
     deglist_t *s = dtopen(&nodeDisc, Dtoset);
     return s;
