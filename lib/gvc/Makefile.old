@@ -1,32 +1,34 @@
-all:	libgvrender.a
-
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+all:	libgvc.a
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 INCS =  -I. \
-        -I../.. \
-        -I../../cdt \
-        -I../../pathplan \
-	-I../../graph \
+        -I$(ROOT) \
+        -I../cdt \
+        -I../pathplan \
+	-I../graph \
 	-I../common \
 	$(EXTLIB_INC)
 
 DEFINES = -DHAVE_CONFIG_H
 
-HDRS = gvrender.h gvrenderint.h
+HDRS = gvc.h gvcint.h gvplugin_render.h \
+	gvplugin_layout.h gvplugin.h
 
-OBJS = gvrender.o gvcontext.o gvjobs.o gvlang.o gvconfig.o
+OBJS = gvrender.o gvlayout.o gvcontext.o gvjobs.o \
+	gvemit.o gvplugin.o gvconfig.o
 
-libgvrender.a : $(OBJS)
-	$(RM) libgvrender.a
-	$(AR) cr libgvrender.a $(OBJS)
-	$(RANLIB) libgvrender.a
+libgvc.a : $(OBJS)
+	$(RM) libgvc.a
+	$(AR) cr libgvc.a $(OBJS)
+	$(RANLIB) libgvc.a
 
-install: libgvrender.a 
+install: libgvc.a 
 	$(MKPATH) $(INCDIR)
-	$(INSTALL) gvrender.h gvrenderint.h $(INCDIR)
+	$(INSTALL) gvc.h gvc.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
-	$(INSTALL) libgvrender.a $(LIBDIR)
+	$(INSTALL) libgvc.a $(LIBDIR)
 
 $(OBJS) : $(HDRS)
 

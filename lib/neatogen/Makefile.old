@@ -1,16 +1,16 @@
 all:	libneato.a
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
-include ../../Config.mk
-include ../../makearch/$(ARCH)
-
-INCS =  -I. -I../.. \
+INCS =  -I. -I$(ROOT) \
         -I../common \
         -I../pack \
-        -I../gvrender \
-        -I../../cdt \
-        -I../../pathplan \
-		-I../../gd \
-		-I../../graph
+        -I../gvc \
+        -I../cdt \
+        -I../pathplan \
+		-I../gd \
+		-I../graph
 
 DEFINES = -DHAVE_CONFIG_H
 

@@ -1,9 +1,9 @@
 all:	libgd.a
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
-include ../Config.mk
-include ../makearch/$(ARCH)
-
-INCS =	-I. -I.. $(EXTLIB_INC) -I$(X11INC)
+INCS =	-I. -I$(ROOT) $(EXTLIB_INC) -I$(X11INC)
 
 DEFINES = -DHAVE_CONFIG_H
 

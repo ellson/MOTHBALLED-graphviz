@@ -1,21 +1,21 @@
 all:	libfdp.a
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
-include ../../Config.mk
-include ../../makearch/$(ARCH)
-
-INCS =  -I. -I../.. \
+INCS =  -I. -I$(ROOT) \
     -I../common \
     -I../neatogen \
     -I../pack \
-    -I../gvrender \
-    -I../../pathplan \
-    -I../../graph \
-    -I../../cdt \
-    -I../../gd
+    -I../gvc \
+    -I../pathplan \
+    -I../graph \
+    -I../cdt \
+    -I../gd
 
 DEFINES = -DDEBUG -DHAVE_CONFIG_H
 
-OBJS = layout.o fdpinit.o comp.o tlayout.o xlayout.o dbg.o options.o grid.o \
+OBJS = layout.o fdpinit.o comp.o tlayout.o xlayout.o dbg.o grid.o \
        clusteredges.o
 
 HFILES = fdp.h 
