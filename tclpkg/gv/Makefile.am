@@ -20,10 +20,10 @@ noinst_HEADERS = gv.h
 pkglib_LTLIBRARIES = 
 TESTS =
 if WITH_SWIG
-if WITH_CSHARP
-pkglib_LTLIBRARIES += libgv_csharp.la
-TESTS += test_csharp
-endif
+#if WITH_CSHARP
+#pkglib_LTLIBRARIES += libgv_csharp.la
+#TESTS += test_csharp
+#endif
 if WITH_GUILE
 pkglib_LTLIBRARIES += libgv_guile.la
 TESTS += test_guile
@@ -58,8 +58,8 @@ TESTS += test_tcl
 endif
 endif
 
-libgv_csharp_la_SOURCES = gv.cpp gv_csharp.cpp
-libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@
+#libgv_csharp_la_SOURCES = gv.cpp gv_csharp.cpp
+#libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@
 
 libgv_guile_la_SOURCES = gv.cpp gv_guile.cpp
 libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
@@ -117,12 +117,13 @@ gv_tcl.cpp: gv.i
 	$(SWIG) -c++ -tcl -namespace -o gv_tcl.cpp gv.i
 
 install-exec-hook:
-	cp $(top_srcdir)/tclpkg/gv/*.cs $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/*.java $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/*.php $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/php_gv.h $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/*.pm $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/*.py $(DESTDIR)/$(libdir)/@PACKAGE@/
+
+#	cp $(top_srcdir)/tclpkg/gv/*.cs $(DESTDIR)/$(libdir)/@PACKAGE@/
 #	cp $(top_srcdir)/tclpkg/gv/*.ml $(DESTDIR)/$(libdir)/@PACKAGE@/
 #	cp $(top_srcdir)/tclpkg/gv/*.mli $(DESTDIR)/$(libdir)/@PACKAGE@/
 	
@@ -197,13 +198,13 @@ test_tcl: libgv_tcl.la
 		$(TCLSH) ./test.tcl)
 
 EXTRA_DIST = gv.i \
-	gv.cs gvPINVOKE.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agraph_t.cs \
 	gv.java gvJNI.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agraph_t.java \
 	gv.pm \
 	gv.php php_gv.h \
 	gv.py \
 	demo/*
 
+#	gv.cs gvPINVOKE.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agraph_t.cs \
 #	gv.ml gv.mli \
 #	
 
