@@ -385,7 +385,7 @@ static void vtx_set_font(char *name, double size)
     vtx_font(&cstk[SP]);
 }
 
-static void vtx_style()
+static void vtx_style(void)
 {
     context_t *cp;
 
@@ -404,7 +404,7 @@ static void vtx_style()
 	    cp->color_r, cp->color_g, cp->color_b, cp->penwidth);
 }
 
-static void vtx_node_style()
+static void vtx_node_style(void)
 {
     fprintf(Output_file, "    (rotation 0)\n" "    (locked F)\n");
     vtx_style();

@@ -28,7 +28,7 @@ extern "C" {
     typedef Dict_t PointSet;
     typedef Dict_t PointMap;
 
-    extern PointSet *newPS();
+    extern PointSet *newPS(void);
     extern void freePS(PointSet *);
     extern void insertPS(PointSet *, point);
     extern void addPS(PointSet *, int, int);
@@ -37,7 +37,7 @@ extern "C" {
     extern int sizeOf(PointSet *);
     extern point *pointsOf(PointSet *);
 
-    extern PointMap *newPM();
+    extern PointMap *newPM(void);
     extern void clearPM(PointMap *);
     extern void freePM(PointMap *);
     extern int insertPM(PointMap *, int, int, int);

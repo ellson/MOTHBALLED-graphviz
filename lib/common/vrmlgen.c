@@ -332,7 +332,7 @@ static void vrml_begin_edge(edge_t * e)
 }
 
 static void
-finishSegment ()
+finishSegment (void)
 {
     point p0 = ND_coord_i(Curedge->tail);
     point p1 = ND_coord_i(Curedge->head);

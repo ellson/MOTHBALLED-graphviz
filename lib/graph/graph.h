@@ -151,7 +151,7 @@ extern "C" {
     extern Agraph_t *agmemread(char *);
     extern int agwrite(Agraph_t *, FILE *);
     extern int agerrors(void);
-    extern Agraph_t *agprotograph();
+    extern Agraph_t *agprotograph(void);
     extern Agraph_t *agusergraph(Agnode_t *);
     extern int agnnodes(Agraph_t *);
     extern int agnedges(Agraph_t *);
@@ -186,7 +186,7 @@ extern "C" {
     typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
     extern agerrlevel_t agerrno;
     extern void agseterr(agerrlevel_t);
-    extern char *aglasterr();
+    extern char *aglasterr(void);
     extern int agerr(agerrlevel_t level, char *fmt, ...);
     extern void agerrorf(char *fmt, ...);
     extern void agwarningf(char *fmt, ...);

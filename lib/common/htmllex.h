@@ -24,9 +24,9 @@ extern "C" {
 #include <agxbuf.h>
 
     extern int initHTMLlexer(char *, agxbuf *);
-    extern int htmllex();
-    extern int htmllineno();
-    extern int clearHTMLlexer();
+    extern int htmllex(void);
+    extern int htmllineno(void);
+    extern int clearHTMLlexer(void);
     void htmlerror(const char *);
 
 #endif

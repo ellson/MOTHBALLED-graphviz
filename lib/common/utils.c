@@ -416,7 +416,7 @@ edge_t *debug_getedge(graph_t * g, char *s0, char *s1)
 static unsigned char userbuf[SMALLBUF];
 static agxbuf xb;
 
-static void cleanup()
+static void cleanup(void)
 {
     agxbfree(&xb);
 }

@@ -161,6 +161,8 @@ static void sameport(node_t * u, elist * l, double arr_len)
 	(MC_SCALE * (ND_lw_i(u) + prt.p.x)) / (ND_lw_i(u) + ND_rw_i(u));
     prt.constrained = FALSE;
     prt.defined = TRUE;
+    prt.clip = 0;
+    prt.theta = 0;
 
     /* compute ARR_PORT at a distance ARR_LEN away from the boundary */
     if ((arr_prt.defined = arr_len && TRUE)) {

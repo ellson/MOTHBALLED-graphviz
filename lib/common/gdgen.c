@@ -23,7 +23,7 @@
 #endif
 
 extern gdImagePtr gd_getshapeimage(char *name);
-extern void gd_freeusershapes();
+extern void gd_freeusershapes(void);
 
 static gdImagePtr im;
 
@@ -407,7 +407,7 @@ static void gd_begin_node(node_t * n)
     Curnode = n;
 }
 
-static void gd_end_node()
+static void gd_end_node(void)
 {
     Curnode = NULL;
 }

@@ -169,7 +169,7 @@ extern "C" {
     extern void update(edge_t * e, edge_t * f);
     extern void updateBB(graph_t * g, textlabel_t * lp);
     extern void use_library(char *);
-    extern char *username();
+    extern char *username(void);
     extern point user_shape_size(node_t * n, char *shapefile);
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
@@ -188,7 +188,7 @@ extern "C" {
     extern pointf sub_pointfs(pointf, pointf);
 
     extern void toggle(int);
-    extern int test_toggle();
+    extern int test_toggle(void);
 
 #ifndef DISABLE_CODEGENS
 #ifndef HAVE_GD_FREETYPE
@@ -197,8 +197,8 @@ extern "C" {
     extern int builtinFontHt(double fontsz);
     extern int builtinFontWd(double fontsz);
 #endif
-    extern codegen_info_t *first_codegen();
-    extern codegen_info_t *next_codegen();
+    extern codegen_info_t *first_codegen(void);
+    extern codegen_info_t *next_codegen(codegen_info_t * p);
 #endif
 
 #undef extern

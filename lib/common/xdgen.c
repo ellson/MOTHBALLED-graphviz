@@ -93,7 +93,7 @@ static void xd_begin_cluster(Agraph_t * sg)
     cluster_g = sg;
 }
 
-static void xd_end_cluster()
+static void xd_end_cluster(void)
 {
     agxset(cluster_g, g_draw->index, agxbuse(&outbuf));
     if (GD_label(cluster_g))

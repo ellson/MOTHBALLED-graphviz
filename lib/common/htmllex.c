@@ -53,7 +53,7 @@ static lexstate_t state;
 /* error_context:
  * Print the last 2 "token"s seen.
  */
-static void error_context()
+static void error_context(void)
 {
     agxbclear(state.xb);
     if (state.prevtoklen > 0)

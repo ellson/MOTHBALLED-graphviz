@@ -57,7 +57,7 @@ Dtdisc_t intPairDisc = {
     0
 };
 
-PointSet *newPS()
+PointSet *newPS(void)
 {
     return (dtopen(&intPairDisc, Dtoset));
 }
@@ -159,7 +159,7 @@ Dtdisc_t intMPairDisc = {
     0
 };
 
-PointMap *newPM()
+PointMap *newPM(void)
 {
     MPairDisc *dp = GNEW(MPairDisc);
 

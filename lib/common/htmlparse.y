@@ -20,7 +20,7 @@
 #include "htmltable.h"
 #include "htmllex.h"
 
-extern int yyparse();
+extern int yyparse(void);
 
 static struct {
   htmllabel_t* lbl;       /* Generated label */
@@ -184,8 +184,7 @@ mkText (const char* lastl)
 /* addRow:
  * Add new cell row to current table.
  */
-static void
-addRow ()
+static void addRow (void)
 {
   Dt_t*      dp = dtopen(&cellDisc, Dtqueue);
   htmltbl_t* tbl = HTMLstate.tblstack;
@@ -198,8 +197,7 @@ addRow ()
 /* setCell:
  * Set cell body and type and attach to row
  */
-static void
-setCell (htmlcell_t* cp, void* obj, int kind)
+static void setCell (htmlcell_t* cp, void* obj, int kind)
 {
   pitem*     sp = NEW(pitem);
   htmltbl_t* tbl = HTMLstate.tblstack;
@@ -224,8 +222,7 @@ setCell (htmlcell_t* cp, void* obj, int kind)
  * the inmost value is the one used, we only use a new value
  * if the attribute has not already been assigned.
  */
-static htmlfont_t*
-setFont (htmlfont_t* fp, htmlfont_t*  curf)
+static htmlfont_t* setFont (htmlfont_t* fp, htmlfont_t*  curf)
 {
   if (curf) {
     if (curf->size < 0.0) curf->size = fp->size;
@@ -244,8 +241,7 @@ setFont (htmlfont_t* fp, htmlfont_t*  curf)
 /* fontText:
  * Attach font information to text.
  */
-static void
-fontText (htmlfont_t* fp, htmltxt_t* cp)
+static void fontText (htmlfont_t* fp, htmltxt_t* cp)
 {
   cp->font = setFont (fp, cp->font);
 }
@@ -253,8 +249,7 @@ fontText (htmlfont_t* fp, htmltxt_t* cp)
 /* fontTable:
  * Attach font information to table.
  */
-static void
-fontTable (htmlfont_t* fp, htmltbl_t* cp)
+static void fontTable (htmlfont_t* fp, htmltbl_t* cp)
 {
   cp->font = setFont (fp, cp->font);
 }
@@ -262,8 +257,7 @@ fontTable (htmlfont_t* fp, htmltbl_t* cp)
 /* mkLabel:
  * Create label, given body and type.
  */
-static htmllabel_t*
-mkLabel (void* obj, int kind)
+static htmllabel_t* mkLabel (void* obj, int kind)
 {
   htmllabel_t* lp = NEW(htmllabel_t);
 
@@ -282,8 +276,7 @@ mkLabel (void* obj, int kind)
  * tables. Note that we use the free_citem function to actually
  * free cells.
  */
-static void
-cleanup ()
+static void cleanup (void)
 {
   htmltbl_t* tp = HTMLstate.tblstack;
   htmltbl_t* next;
@@ -304,8 +297,7 @@ cleanup ()
 /* nonSpace:
  * Return 1 if s contains a non-space character.
  */
-static int
-nonSpace (char* s)
+static int nonSpace (char* s)
 {
   char   c;
 

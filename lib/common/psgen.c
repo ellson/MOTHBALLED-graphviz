@@ -34,7 +34,7 @@
 #include <stdio.h>
 
 extern void epsf_define(FILE * of);
-extern void ps_freeusershapes();
+extern void ps_freeusershapes(void);
 extern ps_image_t *ps_usershape(char *shapeimagefile);
 
 static int N_pages, Cur_page;

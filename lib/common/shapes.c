@@ -14,6 +14,9 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+/* for sincos */
+#define _GNU_SOURCE 1
+
 #include	"render.h"
 #include	"gvc.h"
 #include	"htmltable.h"
@@ -27,15 +30,10 @@
 #define RBCONST 12
 #define RBCURVE .5
 
-#ifndef HAVE_SINCOS
-void sincos(x, s, c)
-double x, *s, *c;
-{
-    *s = sin(x);
-    *c = cos(x);
-}
-#else
+#ifdef HAVE_SINCOS
 extern void sincos(double x, double *s, double *c);
+#else
+# define sincos(x,s,c) *s = sin(x); *c = cos(x)
 #endif
 
 static port Center = { {0, 0}, -1, 0, 0, 0, 0 };

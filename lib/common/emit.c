@@ -1213,7 +1213,7 @@ int emit_once(char *str)
     return FALSE;
 }
 
-static void emit_once_reset()
+static void emit_once_reset(void)
 {
     if (strings) {
 	dtclose(strings);
@@ -1391,7 +1391,7 @@ static int style_token(char **s, agxbuf * xb)
 static unsigned char outbuf[SMALLBUF];
 static agxbuf ps_xb;
 
-static void cleanup()
+static void cleanup(void)
 {
     agxbfree(&ps_xb);
 }

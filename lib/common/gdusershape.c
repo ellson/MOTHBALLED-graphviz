@@ -113,7 +113,7 @@ gdImagePtr gd_getshapeimage(char *name)
     return val->im;
 }
 
-void gd_freeusershapes()
+void gd_freeusershapes(void)
 {
     if (ImageDict) {
 	dtclose(ImageDict);
