@@ -158,7 +158,7 @@ extern "C" {
 	long l, *lp;
 	double d, *dp, ***dppp[8];
 	size_t s, *sp;
-	void (*fn) ();
+	void (*fn) (void);
 	union _align_u *align;
 	Head_t *head;
 	Body_t *body;

@@ -94,7 +94,7 @@ static void tkgen_start_item(char *item)
     tkgen_append_string(item);
 }
 
-static void tkgen_end_item()
+static void tkgen_end_item(void)
 {
     tkgen_append_string("\n");
 }
