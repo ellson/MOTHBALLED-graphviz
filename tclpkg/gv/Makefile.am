@@ -10,10 +10,18 @@ AM_CPPFLAGS = \
 
 LIBS =  @LIBS@ -lc
 
+if DISABLE_LTDL
 BASELIBS = \
+	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/plugin/libplugins.la @LIBGEN_LIBS@
+	$(top_builddir)/plugin/libplugins.la
+else
+BASELIBS = \
+	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/common/libcommon.la \
+	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@
+endif
 
 noinst_HEADERS = gv.h
 
@@ -160,7 +168,7 @@ test_java: libgv_java.la
 		ln -fs ../.libs/libgv_java.so libgv.so; \
 		cp -f ../*.java .; \
 		javac *.java; \
-		LD_LIBRARY_PATH=. java test)
+		LD_LIBRARY_PATH=. CLASSPATH=. java test)
 
 test_ocaml: libgv_ocaml.la
 	(cd ocaml; \
