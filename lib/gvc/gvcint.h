@@ -154,7 +154,9 @@ extern "C" {
 	gv_plugin_t *api[NUM_APIS];	/* array of current plugins for each api */
 
 	void *display; /* window display data for gvdisplay plugin */
-	gvtext_engine_t *text_engine;	/* current text layout engine */
+	gvdisplay_engine_t *display_engine; /* current display engine */
+
+	gvtext_engine_t *text_engine;	/* current text_layout engine */
 
 	/* gvrender_begin_job() */
 	char *layout_type;      /* string name of layout type */
