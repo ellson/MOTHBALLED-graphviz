@@ -51,21 +51,21 @@
 
 static int flatsidemap[16][6] = {
     {BOTTOM, BOTTOM, BOTTOM, CCW, CCW, FALSE},
-    {TOP, TOP, TOP, CW, CW, FALSE},
-    {RIGHT, LEFT, BOTTOM, CW, CW, TRUE},
-    {BOTTOM, TOP, RIGHT, CCW, CW, TRUE},
-    {TOP, BOTTOM, RIGHT, CW, CCW, TRUE},
-    {RIGHT, TOP, RIGHT, CCW, CW, TRUE},
-    {RIGHT, BOTTOM, RIGHT, CW, CCW, TRUE},
-    {TOP, LEFT, TOP, CW, CCW, TRUE},
-    {BOTTOM, LEFT, BOTTOM, CCW, CW, TRUE},
-    {RIGHT, RIGHT, BOTTOM, CW, CCW, TRUE},
-    {LEFT, LEFT, BOTTOM, CCW, CW, TRUE},
-    {LEFT, BOTTOM, BOTTOM, CCW, CCW, FALSE},
-    {TOP, RIGHT, TOP, CW, CW, FALSE},
-    {LEFT, TOP, TOP, CW, CW, FALSE},
-    {BOTTOM, RIGHT, BOTTOM, CCW, CCW, FALSE},
-    {LEFT, RIGHT, BOTTOM, CCW, CCW, FALSE},
+    {TOP,    TOP,    TOP,    CW,  CW,  FALSE},
+    {RIGHT,  LEFT,   BOTTOM, CW,  CW,  TRUE},
+    {BOTTOM, TOP,    RIGHT,  CCW, CW,  TRUE},
+    {TOP,    BOTTOM, RIGHT,  CW,  CCW, TRUE},
+    {RIGHT,  TOP,    RIGHT,  CCW, CW,  TRUE},
+    {RIGHT,  BOTTOM, RIGHT,  CW,  CCW, TRUE},
+    {TOP,    LEFT,   TOP,    CW,  CCW, TRUE},
+    {BOTTOM, LEFT,   BOTTOM, CCW, CW,  TRUE},
+    {RIGHT,  RIGHT,  BOTTOM, CW,  CCW, TRUE},
+    {LEFT,   LEFT,   BOTTOM, CCW, CW,  TRUE},
+    {LEFT,   BOTTOM, BOTTOM, CCW, CCW, FALSE},
+    {TOP,    RIGHT,  TOP,    CW,  CW,  FALSE},
+    {LEFT,   TOP,    TOP,    CW,  CW,  FALSE},
+    {BOTTOM, RIGHT,  BOTTOM, CCW, CCW, FALSE},
+    {LEFT,   RIGHT,  BOTTOM, CCW, CCW, FALSE},
 };
 
 #define AVG(a, b) ((a + b) / 2)
@@ -315,7 +315,6 @@ void dot_splines(graph_t * g)
 	for (cnt = 1; i < n_edges; cnt++, i++) {
 	    if (le0 != (le1 = getmainedge((e1 = edges[i]))))
 		break;
-	    if (ED_adjacent(e0)) continue; /* all flat adjacent edges at once */
 	    eb = (ED_tail_port(e1).defined
 		  || ED_head_port(e1).defined) ? e1 : le1;
 	    if (ED_tree_index(eb) & BWDEDGE) {
@@ -492,115 +491,54 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
     return (e0->id - e1->id);
 }
 
-/* fledgecmp:
- * Sort edges by mid y value of ports.
- * If this is the same, and all y values are the same,
- * check if one segment lies within the other.
+/* make_flat_edge:
+ * Construct flat edges edges[ind...ind+cnt-1]
+ * In some cases, we can do all of them. 
  */
-static int 
-fledgecmp(edge_t** ptr0, edge_t** ptr1)
+static void 
+make_flat_edge(path * P, edge_t ** edges, int ind, int cnt)
 {
-    edge_t *e0, *e1;
-    point tp0, tp1, hp0, hp1;
-    int y0, y1;
-
-    e0 = *ptr0;
-    e1 = *ptr1;
-    tp0 = ED_tail_port(e0).p;
-    hp0 = ED_head_port(e0).p;
-    tp1 = ED_tail_port(e1).p;
-    hp1 = ED_head_port(e1).p;
-    y0 = (tp0.y + hp0.y)/2;
-    y1 = (tp1.y + hp1.y)/2;
-    if (y0 != y1) return (y0-y1);
-    if ((tp0.y == hp0.y) && (tp1.y == hp1.y)) {
-	if ((tp0.x <= tp1.x) && (hp0.x >= hp1.x)) {
-	    if (tp0.y <= 0) return -1;
-	    else return 1;
-	}
-	else if ((tp0.x >= tp1.x) && (hp0.x <= hp1.x)) {
-	    if (tp0.y <= 0) return 1;
-	    else return -1;
-	}
-    }
-    return (e0->id - e1->id);
-
-}
-
-#define LABEL_SPACE 8
-
-/* setFlatAdjPos:
- * Create middle boxes for routing using ordered list of edges going from
- * bottom to top.
- * Also, set label positions.
- */
-static void
-setFlatAdjPos (edge_t** edges, int n_edges, int flip, box* boxes, edge_t* e0)
-{
-    int r, i, x, boxw, availht;
-    edge_t* e;
-    double  y, wd, ht, totalht = 0;
-    textlabel_t* lbl;
-    node_t *tn, *hn;
-    graph_t* g;
-
-assert(0);
-    tn = e0->tail, hn = e0->head;
-    g = tn->graph;
-    x = (ND_coord_i(tn).x + ND_coord_i(hn).x)/2;
-    y = ND_coord_i(tn).y;
-    r = ND_rank(tn);
-    availht = GD_rank(g)[r].ht2 + GD_rank(g)[r].ht1 + GD_ranksep(g);
-    boxw = (ND_coord_i(hn).x - ND_coord_i(tn).x - ND_rw_i(tn) - ND_lw_i(hn))/3;
-    for (i = 0; i < n_edges; i++) {
-	if (!((lbl = ED_label(e)))) continue;
-	if (flip) {
-	    ht = lbl->dimen.x;
-	    wd = lbl->dimen.y;
-	}
-	else {
-	    ht = lbl->dimen.y; 
-	    wd = lbl->dimen.x; 
-	}
-	totalht += ht;
-        boxw = MAX(boxw, wd);
-    }
-    for (i = 0; i < n_edges; i++) {
-	e = edges[i];
-	lbl = ED_label(e);
-	if (GD_flip(g)) ht = lbl->dimen.x;
-	else ht = lbl->dimen.y; 
-	lbl->p.x = x;
-	lbl->p.y = ROUND(y - ht/2);
-	y -= ht + LABEL_SPACE;
-    }
-}
- 
-/* make_flat_adj_edges:
- */
-static void
-make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
-{
-    node_t *tn, *hn;
-    edge_t* e;
-    int labels = 0, ports = 0;
+    node_t *tn, *hn, *n;
+    edge_t fwdedge, *e;
+    int i, stepx, stepy, /* dx, */ dy, ht1, ht2;
+    int tside, hside, mside, tdir, hdir, cross, pn;
+    point *ps;
     point tp, hp;
-    int i, stepy, dy;
-    graph_t* g;
-    box* boxes;
-    int pointn;
+    pathend_t tend, hend;
+    box lb, rb, wlb, wrb;
+    rank_t *rank;
     point points[1000];
+    int blockingNode, pointn;
 
-    g = e0->tail->graph;
-    tn = e0->tail, hn = e0->head;
-    for (i = 0; i < cnt; i++) {
-	e = edges[ind + i];
-	if (ND_label(e)) labels++;
-	if (ED_tail_port(e).defined || ED_head_port(e).defined) ports = 1;
+    /* dx = 0; */
+    e = edges[ind];
+    if (ED_tree_index(e) & BWDEDGE) {
+	MAKEFWDEDGE(&fwdedge, e);
+	e = &fwdedge;
+    }
+    tn = e->tail, hn = e->head;
+
+    /* flat edge without ports that can go straight left to right */
+
+    if (ED_label(e)) {
+	edge_t *f;
+	for (f = ED_to_virt(e); ED_to_virt(f); f = ED_to_virt(f));
+	ED_label(e)->p = ND_coord_i(f->tail);
     }
 
-    /* flat edges without ports and labels can go straight left to right */
-    if ((labels == 0) && (ports == 0)) {
+    rank = &(GD_rank(tn->graph)[ND_rank(tn)]);
+    for (i = ND_order(tn) + 1; i < ND_order(hn); i++) {
+	n = rank->v[i];
+	if ((ND_node_type(n) == VIRTUAL && ND_label(n)) || 
+             ND_node_type(n) == NORMAL)
+	    break;
+    }
+    if (i != ND_order(hn))
+	blockingNode = 1;
+    else
+	blockingNode = 0;
+
+    if (!blockingNode && !ED_tail_port(e).defined && !ED_head_port(e).defined){
 	stepy = (cnt > 1) ? ND_ht_i(tn) / (cnt - 1) : 0;
 	tp = ND_coord_i(tn);
 	hp = ND_coord_i(hn);
@@ -612,73 +550,33 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
 	    points[pointn++] = pointof((2 * tp.x + hp.x) / 3, dy);
 	    points[pointn++] = pointof((2 * hp.x + tp.x) / 3, dy);
 	    points[pointn++] = hp;
+#ifdef OBSOLETE
+	    if (ED_label(e)) {	/* FIXME: fix label positioning */
+		labelw = ED_label(e)->dimen.x;
+		ED_label(e)->p = pointof(tp.x + labelw / 2, tp.y);
+		/* dx += labelw; */
+	    }
+#endif
 	    dy += stepy;
 	    clip_and_install(e, e, points, pointn, &sinfo);
 	}
 	return;
     }
 
-    if (cnt > 2) qsort((char *) &edges[ind], cnt, sizeof(edges[0]),
-	  (qsort_cmpf) fledgecmp);
-    
+    /* !(flat edge without ports that can go straight left to right) */
 
-    if (ports == 0) {
-	boxes = N_GNEW(cnt, box);
-	setFlatAdjPos (&edges[ind], cnt, GD_flip(g), boxes, e0);
-	free (boxes);
-    }
-    if (labels == 0) {
-    }
-    if (cnt == 1) {
-    }
-    /* General case: multiple edges with labels and ports
-     * use network simplex a la position?
-     */
-}
-
-/* make_flat_edge:
- * Construct flat edges edges[ind...ind+cnt-1]
- * There are 3 main cases:
- *  - all edges between a and b where a and b are adjacent 
- *  - all non-labeled edges with identical ports between non-adjacent a and b 
- *  - one labeled edge
- */
-static void
-make_flat_edge(path * P, edge_t ** edges, int ind, int cnt)
-{
-    node_t *tn, *hn;
-    edge_t fwdedge, *e;
-    int i, stepx, stepy, ht1, ht2;
-    int tside, hside, mside, tdir, hdir, cross, pn;
-    point *ps;
-    pathend_t tend, hend;
-    box lb, rb, wlb, wrb;
-    graph_t* g;
-
-    e = edges[ind];
-    if (ED_tree_index(e) & BWDEDGE) {
-	MAKEFWDEDGE(&fwdedge, e);
-	e = &fwdedge;
-    }
-    if (ED_adjacent(edges[ind])) {
-	make_flat_adj_edges (P, edges, ind, cnt, e);
-	return;
-    }
-
-    tn = e->tail, hn = e->head;
-    g = tn->graph;
     tend.nb =
 	boxof(ND_coord_i(tn).x - ND_lw_i(tn),
-	      ND_coord_i(tn).y - ND_ht_i(tn)/2,
+	      ND_coord_i(tn).y - ND_ht_i(tn) / 2,
 	      ND_coord_i(tn).x + ND_rw_i(tn),
-	      ND_coord_i(tn).y + ND_ht_i(tn)/2);
+	      ND_coord_i(tn).y + ND_ht_i(tn) / 2);
     hend.nb =
 	boxof(ND_coord_i(hn).x - ND_lw_i(hn),
-	      ND_coord_i(hn).y - ND_ht_i(hn)/2,
+	      ND_coord_i(hn).y - ND_ht_i(hn) / 2,
 	      ND_coord_i(hn).x + ND_rw_i(hn),
-	      ND_coord_i(hn).y + ND_ht_i(hn)/2);
-    ht1 = GD_rank(g)[ND_rank(tn)].pht1;
-    ht2 = GD_rank(g)[ND_rank(tn)].pht2;
+	      ND_coord_i(hn).y + ND_ht_i(hn) / 2);
+    ht1 = GD_rank(tn->graph)[ND_rank(tn)].pht1;
+    ht2 = GD_rank(tn->graph)[ND_rank(tn)].pht2;
     stepx = Multisep / cnt, stepy = ht2 / cnt;
     lb = boxof(ND_coord_i(tn).x - ND_lw_i(tn), ND_coord_i(tn).y - ht1,
 	       ND_coord_i(tn).x + ND_rw_i(tn), ND_coord_i(tn).y + ht2);
@@ -699,16 +597,19 @@ make_flat_edge(path * P, edge_t ** edges, int ind, int cnt)
 
 	chooseflatsides(&tend, &hend, &tside, &hside, &mside,
 			&tdir, &hdir, &cross);
-	if (ED_label(e)) {  /* edges with labels aren't multi-edges */
-	    node_t* ln = (node_t*)ED_alg(e);
+	if (ED_label(e)) {	/* edges with labels aren't multi-edges */
+	    edge_t *le;
+	    node_t *ln;
+	    for (le = e; ED_to_virt(le); le = ED_to_virt(le));
+	    ln = le->tail;   /* ln is virtual node containing label */
 	    wlb.LL.x = lb.LL.x;
 	    wlb.LL.y = lb.LL.y;
 	    wlb.UR.x = lb.UR.x;
-	    wlb.UR.y = ND_coord_i(ln).y - ND_ht_i(ln)/2;
+	    wlb.UR.y = ND_coord_i(ln).y - ND_ht_i(ln) / 2;
 	    wrb.LL.x = rb.LL.x;
 	    wrb.LL.y = rb.LL.y;
 	    wrb.UR.x = rb.UR.x;
-	    wrb.UR.y = ND_coord_i(ln).y - ND_ht_i(ln)/2;
+	    wrb.UR.y = ND_coord_i(ln).y - ND_ht_i(ln) / 2;
 	} else {
 	    wlb.LL.x = lb.LL.x - (i + 1) * stepx;
 	    wlb.LL.y = lb.LL.y - (i + 1) * stepy;
