@@ -14,8 +14,8 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifndef GVLAYOUT_PLUGIN_H
-#define GVLAYOUT_PLUGIN_H
+#ifndef GVDISPLAY_PLUGIN_H
+#define GVDISPLAY_PLUGIN_H
 
 #include "gvplugin.h"
 #include "gvcint.h"
@@ -24,12 +24,13 @@
 extern "C" {
 #endif
 
-    struct gvlayout_engine_s {
-	void (*layout) (graph_t * g);
-	void (*cleanup) (graph_t * g);
+    struct gvdisplay_engine_s {
+	void (*init) (GVC_t * gvc);
+	void (*process) (GVC_t * gvc);
+	void (*deinit) (GVC_t * gvc);
     };
 
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVLAYOUT_PLUGIN_H */
+#endif				/* GVDISPLAY_PLUGIN_H */

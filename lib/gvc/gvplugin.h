@@ -23,6 +23,10 @@
 extern "C" {
 #endif
 
+#ifndef NULL
+#define NULL (void *)0
+#endif
+
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined here.  The apis array is
@@ -31,7 +35,7 @@ extern "C" {
  * The last enum is NUM_APIS which is the size of the array.
  */
 // #define APIS ELEM(render) ELEM(layout) ELEM(parser) ELEM(scripter) ...
-#define APIS ELEM(render) ELEM(layout)
+#define APIS ELEM(render) ELEM(layout) ELEM(display)
 
 #define ELEM(x) API_##x,
     typedef enum { APIS NUM_APIS } api_t;	/* API_render, API_layout, ... */

@@ -14,8 +14,6 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-/* This is the public header for the libgvre_* plugins */
-
 #ifndef GVRENDER_PLUGIN_H
 #define GVRENDER_PLUGIN_H
 

@@ -533,7 +533,6 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
 	win_deinit(job);
 
 	XCloseDisplay(job->dpy);
-	free(job->win);
 #else
 	fprintf(stderr,"No X11 support available\n");
 #endif
