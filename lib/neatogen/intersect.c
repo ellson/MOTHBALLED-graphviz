@@ -17,13 +17,10 @@
 #include "neato.h"
 #include "simple.h"
 
-
-static void sgnarea(l, m, i)
-struct vertex *l, *m;
-int i[];
-	/* find the sign of the area of each of the triangles
-	   formed by adding a vertex of m to l  
-	   also find the sign of their product  */
+/* find the sign of the area of each of the triangles
+    formed by adding a vertex of m to l  
+    also find the sign of their product  */
+static void sgnarea(struct vertex *l, struct vertex *m, int i[])
 {
     double a, b, c, d, e, f, g, h, t;
     a = l->pos.x;
@@ -41,17 +38,16 @@ int i[];
     i[2] = i[0] * i[1];
 }
 
-static int between(f, g, h)	/* determine if g lies between f and h      */
-double f, g, h;
+/* determine if g lies between f and h      */
+static int between(double f, double g, double h)
 {
     if ((f == g) || (g == h))
 	return (0);
     return ((f < g) ? (g < h ? 1 : -1) : (h < g ? 1 : -1));
 }
 
-static int online(l, m, i)	/* determine if vertex i of line m is on line l     */
-struct vertex *l, *m;
-int i;
+/* determine if vertex i of line m is on line l     */
+static int online(struct vertex *l, struct vertex *m, int i)
 {
     struct position a, b, c;
     a = l->pos;
@@ -64,10 +60,8 @@ int i;
 								   b.x));
 }
 
-static int intpoint(l, m, x, y, cond)
-struct vertex *l, *m;
-double *x, *y;
-int cond;			/* determine point of detected intersections  */
+/* determine point of detected intersections  */
+static int intpoint(struct vertex *l, struct vertex *m, double *x, double *y, int cond)
 {
     struct position ls, le, ms, me, pt1, pt2;
     double m1, m2, c1, c2;
@@ -133,9 +127,8 @@ int cond;			/* determine point of detected intersections  */
     return (1);
 }
 
-  /*detect whether lines l and m intersect      */
-void
-find_intersection(struct vertex *l,
+/*detect whether lines l and m intersect      */
+void find_intersection(struct vertex *l,
 		  struct vertex *m,
 		  struct intersection ilist[], struct data *input)
 {
