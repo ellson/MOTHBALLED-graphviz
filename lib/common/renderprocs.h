@@ -85,6 +85,8 @@ extern "C" {
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
     extern void epsf_gencode(GVC_t * gvc, node_t * n);
+    extern point exch_xy(point p);
+    extern pointf exch_xyf(pointf p);
     extern shape_desc *find_user_shape(char *);
     extern box flip_rec_box(box b, point p);
     extern point flip_pt(point p, int rankdir);

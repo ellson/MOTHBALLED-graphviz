@@ -342,6 +342,24 @@ pointf sub_pointfs(pointf p0, pointf p1)
     return p0;
 }
 
+point exch_xy(point p)
+{
+    int t;
+    t = p.x;
+    p.x = p.y;
+    p.y = t;
+    return p;
+}
+
+pointf exch_xyf(pointf p)
+{
+    double t;
+    t = p.x;
+    p.x = p.y;
+    p.y = t;
+    return p;
+}
+
 /* from Glassner's Graphics Gems */
 #define W_DEGREE 5
 

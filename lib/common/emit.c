@@ -31,27 +31,10 @@
 
 #define MAX_CODEGENS 100
 
-static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 int Obj;
 static attrsym_t *G_peripheries;
 
-static point exch_xy(point p)
-{
-    int t;
-    t = p.x;
-    p.x = p.y;
-    p.y = t;
-    return p;
-}
-
-static pointf exch_xyf(pointf p)
-{
-    double t;
-    t = p.x;
-    p.x = p.y;
-    p.y = t;
-    return p;
-}
+static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 
 /* parse_layers:
  * Split input string into tokens, with separators specified by
