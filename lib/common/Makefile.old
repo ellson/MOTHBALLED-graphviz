@@ -1,30 +1,33 @@
 all:	libcommon.a
-
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 INCS =  -I. \
-        -I../.. \
-        -I../../cdt \
-        -I../../pathplan \
-	-I../../gd \
-	-I../../graph \
-	-I../gvrender \
+        -I$(ROOT) \
+        -I../cdt \
+        -I../pathplan \
+	-I../gd \
+	-I../graph \
+	-I../gvc \
 	$(EXTLIB_INC)
 
 DEFINES = -DHAVE_CONFIG_H
 
-AWKDIR = ../awk
+AWKDIR = $(ROOT)/awk
 
 HDRS = colortbl.h const.h globals.h macros.h ps.h render.h \
        renderprocs.h types.h utils.h
 
-OBJS = arrows.o colxlate.o emit.o diagen.o figgen.o fontmetrics.o \
-    gdgen.o globals.o hpglgen.o htmlparse.o htmllex.o htmltable.o \
-    labels.o ns.o strcasecmp.o strncasecmp.o \
-    mapgen.o input.o mifgen.o mpgen.o output.o pointset.o postproc.o \
-    picgen.o psgen.o shapes.o routespl.o splines.o svggen.o \
-    timing.o utils.o vrmlgen.o vtxgen.o
+OBJS = arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
+       colxlate.o globals.o mifgen.o psusershape.o timing.o \
+       diagen.o hpglgen.o mpgen.o routespl.o utils.o \
+       emit.o htmllex.o ns.o shapes.o vrmlgen.o \
+       figgen.o htmlparse.o output.o splines.o vtxgen.o \
+       fontmetrics.o htmltable.o picgen.o strcasecmp.o \
+       gdgen.o input.o pointset.o strncasecmp.o \
+       gdtextsize.o labels.o postproc.o svggen.o
+
 
 libcommon.a : $(OBJS)
 	$(RM) libcommon.a

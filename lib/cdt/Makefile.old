@@ -2,8 +2,10 @@
 #	Written by Kiem-Phong Vo (03/18/1998)
 #   Modified for graphviz by erg (5 Oct 2000)
 
-include ../Config.mk
-include ../makearch/$(ARCH)
+ROOT=../..
+
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 CXFLAGS=
 CCMODE= -O
@@ -36,7 +38,7 @@ hsearch.o : Cdt_p/hsearch.c
 	$(CC) -c $(DEFINES) Cdt_p/hsearch.c
 
 ast_common.h : features/common
-	../iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run features/common > ast_common.h
+	$(ROOT)/iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run features/common > ast_common.h
 
 $(OBJS) : ast_common.h
 

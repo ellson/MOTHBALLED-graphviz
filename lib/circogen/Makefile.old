@@ -1,18 +1,18 @@
 all:	libcirco.a
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
-include ../../Config.mk
-include ../../makearch/$(ARCH)
-
-INCS =	-I. -I../.. \
+INCS =	-I. -I$(ROOT) \
 	-I../common \
 	-I../neatogen \
 	-I../dotgen \
 	-I../pack \
-	-I../gvrender \
-	-I../../pathplan \
-	-I../../graph \
-	-I../../cdt \
-	-I../../gd
+	-I../gvc \
+	-I../pathplan \
+	-I../graph \
+	-I../cdt \
+	-I../gd
 
 DEFINES = -DHAVE_CONFIG_H
 
