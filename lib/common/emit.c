@@ -33,8 +33,6 @@
 
 char *BaseLineStyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 int Obj;
-static double Deffontsize;
-static char *Deffontname;
 static attrsym_t *G_peripheries;
 
 static point exch_xy(point p)
@@ -407,7 +405,7 @@ static void emit_background(GVC_t * gvc, graph_t *g, boxf pageBox)
 static void emit_defaults(GVC_t * gvc)
 {
     gvrender_set_pencolor(gvc, DEFAULT_COLOR);
-    gvrender_set_font(gvc, Deffontname, Deffontsize);
+    gvrender_set_font(gvc, gvc->defaultfontname, gvc->defaultfontsize);
 }
 
 
@@ -1009,13 +1007,12 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
     /* rotation */
     gvc->rotation = GD_drawing(g)->landscape ? 90 : 0;
 
-    /* FIXME - what is this ? */
+    /* clusters have peripheries */
     G_peripheries = agfindattr(g, "peripheries");
 
-    /* FIXME - why is this ? */
-    Deffontname = late_nnstring(g->proto->n, N_fontname, DEFAULT_FONTNAME);
-    Deffontsize =
-	late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
+    /* default font */
+    gvc->defaultfontname = late_nnstring(g->proto->n, N_fontname, DEFAULT_FONTNAME);
+    gvc->defaultfontsize = late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
 		    MIN_FONTSIZE);
 
     gvc->graphname = g->name;

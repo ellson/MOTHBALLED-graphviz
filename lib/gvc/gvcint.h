@@ -176,6 +176,10 @@ extern "C" {
 	int numLayers;		/* number of layers */
 	int layerNum;		/* current layer - 1 based*/
 
+	/* default font */
+	char *defaultfontname;
+	double defaultfontsize;
+
 	gvstyle_t styles[MAXNEST]; /* style stack - reused by each job */
 	int SP;
 
