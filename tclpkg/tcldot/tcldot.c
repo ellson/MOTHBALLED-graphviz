@@ -49,7 +49,7 @@ Tcl_GetString(Tcl_Obj *obj) {
 #if defined(_BLD_tcldot) && defined(_DLL)
 extern codegen_t TK_CodeGen;
 #else
-extern codegen_t memGD_CodeGen, TK_CodeGen;
+extern codegen_t TK_CodeGen;
 #if ENABLE_CODEGENS
 extern FILE *Output_file;
 extern int Output_lang;
@@ -57,6 +57,9 @@ extern int Output_lang;
 #endif
 extern void *GDHandleTable;
 extern int Gdtclft_Init(Tcl_Interp *);
+
+static codegen_info_t cg[] = { {&TK_CodeGen, "tk", TK},
+				{NULL, NULL, 0}, };
 
 static void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
 static tkgendata_t tkgendata;
@@ -611,7 +614,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
     Agedge_t **ep, *e;
     Agsym_t *a;
     char c, buf[256], **argv2;
-    int i, j, length, argc2;
+    int i, j, length, argc2, rc;
     unsigned long id;
     GVC_t *gvc = (GVC_t *) clientData;
 
@@ -1076,10 +1079,15 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 	tkgendata.interp = interp;
 
-	gvrender_output_langname_job(gvc, "TK");
-	gvc->job->output_lang = TK;
-	gvc->job->codegen = &TK_CodeGen;
+        rc = gvrender_output_langname_job(gvc, "tk");
+	if (rc == NO_SUPPORT) {
+	    Tcl_AppendResult(interp, " Renderer type: \"tk\" not recognized.\n",
+                                     (char *) 0);
+	    return TCL_ERROR;
+	}
+
 	gvc->job->output_file = (FILE *) & tkgendata;
+	gvc->job->external_surface = TRUE;
 
 	/* make sure that layout is done */
 	g = g->root;
@@ -1102,7 +1110,12 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 			     (char *) NULL);
 	    return TCL_ERROR;
 	}
-	gvrender_output_langname_job(gvc, "gd");
+	rc = gvrender_output_langname_job(gvc, "gd");
+	if (rc == NO_SUPPORT) {
+	    Tcl_AppendResult(interp, " Renderer type: \"gd\" not recognized.\n",
+                                     (char *) 0);
+	    return TCL_ERROR;
+	}
 	if (!  (hdl = tclhandleXlate(GDHandleTable, argv[2]))) {
 	    Tcl_AppendResult(interp, "GD Image not found.", (char *) NULL);
 	    return TCL_ERROR;
@@ -1610,6 +1623,7 @@ __EXPORT__
 int Tcldot_Init(Tcl_Interp * interp)
 {
     GVC_t *gvc;
+    codegen_info_t *p;
 
 #ifdef USE_TCL_STUBS
     if (Tcl_InitStubs(interp, TCL_VERSION, 0) == NULL) {
@@ -1635,6 +1649,10 @@ int Tcldot_Init(Tcl_Interp * interp)
 
     /* configure codegens */
     config_codegen_builtins(gvc);
+    /* additional codegens */
+    for (p = cg; p->name; ++p)
+        gvplugin_install(gvc, API_render, p->name, 0, "cg",
+                         (gvplugin_type_t *) p);
     gvplugin_builtins(gvc);
 //    gvconfig(gvc, CONFIG);
 
