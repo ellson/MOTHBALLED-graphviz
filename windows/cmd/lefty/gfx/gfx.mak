@@ -25,6 +25,9 @@ NULL=
 NULL=nul
 !ENDIF 
 
+CPP=cl.exe
+RSC=rc.exe
+
 !IF  "$(CFG)" == "gfx - Win32 Release"
 
 OUTDIR=.\Release
@@ -50,6 +53,7 @@ CLEAN :
 	-@erase "$(INTDIR)\gscroll.obj"
 	-@erase "$(INTDIR)\gtext.obj"
 	-@erase "$(INTDIR)\gview.obj"
+	-@erase "$(INTDIR)\lefty.res"
 	-@erase "$(INTDIR)\mem.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(OUTDIR)\gfx.lib"
@@ -57,40 +61,8 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP=cl.exe
 CPP_PROJ=/nologo /ML /W3 /GX /O2 /I ".." /I "..\ws\mswin32" /I "..\..\.." /D "NDEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "MSWIN32" /D "HAVE_CONFIG_H" /Fp"$(INTDIR)\gfx.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
-
-.c{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.c{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-RSC=rc.exe
+RSC_PROJ=/l 0x409 /fo"$(INTDIR)\lefty.res" /d "NDEBUG" 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\gfx.bsc" 
 BSC32_SBRS= \
@@ -111,22 +83,13 @@ LIB32_OBJS= \
 	"$(INTDIR)\gscroll.obj" \
 	"$(INTDIR)\gtext.obj" \
 	"$(INTDIR)\gview.obj" \
-	"$(INTDIR)\mem.obj"
+	"$(INTDIR)\mem.obj" \
+	"$(INTDIR)\lefty.res"
 
 "$(OUTDIR)\gfx.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
   $(LIB32_FLAGS) $(DEF_FLAGS) $(LIB32_OBJS)
 <<
-
-SOURCE="$(InputPath)"
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Release
-# End Custom Macros
-
 
 !ELSEIF  "$(CFG)" == "gfx - Win32 Debug"
 
@@ -166,6 +129,7 @@ CLEAN :
 	-@erase "$(INTDIR)\gtext.sbr"
 	-@erase "$(INTDIR)\gview.obj"
 	-@erase "$(INTDIR)\gview.sbr"
+	-@erase "$(INTDIR)\lefty.res"
 	-@erase "$(INTDIR)\mem.obj"
 	-@erase "$(INTDIR)\mem.sbr"
 	-@erase "$(INTDIR)\vc60.idb"
@@ -176,40 +140,8 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP=cl.exe
 CPP_PROJ=/nologo /MLd /W3 /Gm /GX /ZI /Od /I ".." /I "..\ws\mswin32" /I "..\..\.." /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "MSWIN32" /D "HAVE_CONFIG_H" /FR"$(INTDIR)\\" /Fp"$(INTDIR)\gfx.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
-
-.c{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.obj::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.c{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cpp{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-.cxx{$(INTDIR)}.sbr::
-   $(CPP) @<<
-   $(CPP_PROJ) $< 
-<<
-
-RSC=rc.exe
+RSC_PROJ=/l 0x409 /fo"$(INTDIR)\lefty.res" /d "_DEBUG" 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\gfx.bsc" 
 BSC32_SBRS= \
@@ -249,24 +181,45 @@ LIB32_OBJS= \
 	"$(INTDIR)\gscroll.obj" \
 	"$(INTDIR)\gtext.obj" \
 	"$(INTDIR)\gview.obj" \
-	"$(INTDIR)\mem.obj"
+	"$(INTDIR)\mem.obj" \
+	"$(INTDIR)\lefty.res"
 
 "$(OUTDIR)\gfx.lib" : "$(OUTDIR)" $(DEF_FILE) $(LIB32_OBJS)
     $(LIB32) @<<
   $(LIB32_FLAGS) $(DEF_FLAGS) $(LIB32_OBJS)
 <<
 
-SOURCE="$(InputPath)"
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Debug
-# End Custom Macros
-
-
 !ENDIF 
+
+.c{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.c{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
 
 
 !IF "$(NO_EXTERNAL_DEPS)" != "1"
@@ -527,6 +480,24 @@ SOURCE=..\mem.c
 
 "$(INTDIR)\mem.obj"	"$(INTDIR)\mem.sbr" : $(SOURCE) "$(INTDIR)"
 	$(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ENDIF 
+
+SOURCE=..\ws\mswin32\lefty.rc
+
+!IF  "$(CFG)" == "gfx - Win32 Release"
+
+
+"$(INTDIR)\lefty.res" : $(SOURCE) "$(INTDIR)"
+	$(RSC) /l 0x409 /fo"$(INTDIR)\lefty.res" /i "\graphvizCVS\builddaemon\graphviz-win\cmd\lefty\ws\mswin32" /d "NDEBUG" $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "gfx - Win32 Debug"
+
+
+"$(INTDIR)\lefty.res" : $(SOURCE) "$(INTDIR)"
+	$(RSC) /l 0x409 /fo"$(INTDIR)\lefty.res" /i "\graphvizCVS\builddaemon\graphviz-win\cmd\lefty\ws\mswin32" /d "_DEBUG" $(SOURCE)
 
 
 !ENDIF 
