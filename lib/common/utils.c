@@ -861,20 +861,20 @@ initFontLabelEdgeAttr(edge_t * e, struct fontinfo *fi,
     lfi->fontcolor = late_nnstring(e, E_labelfontcolor, fi->fontcolor);
 }
 
-/* wantClip:
- * Return true if head/tail end of edge should be clipped
+/* noClip:
+ * Return true if head/tail end of edge should not be clipped
  * to node.
  */
 static boolean 
-wantClip(edge_t *e, attrsym_t* sym)
+noClip(edge_t *e, attrsym_t* sym)
 {
     char		*str;
-    boolean		rv = TRUE;
+    boolean		rv = FALSE;
 
     if (sym) {	/* mapbool isn't a good fit, because we want "" to mean TRUE */
 	str = agxget(e,sym->index);
-	if (str && str[0]) rv = mapbool(str);
-	else rv = TRUE;
+	if (str && str[0]) rv = !mapbool(str);
+	else rv = FALSE;
     }
     return rv;
 }
@@ -969,12 +969,14 @@ int common_init_edge(edge_t * e)
     if (s[0])
 	ND_has_port(e->tail) = TRUE;
     ED_tail_port(e) = chkPort (ND_shape(e->tail)->fns->portfn,e->tail, s);
-    ED_tail_port(e).clip = wantClip (e, E_tailclip);
+    if (noClip(e, E_tailclip))
+	ED_tail_port(e).clip = FALSE;
     s = agget(e, HEAD_ID);
     if (s[0])
 	ND_has_port(e->head) = TRUE;
     ED_head_port(e) = chkPort(ND_shape(e->head)->fns->portfn,e->head, s);
-    ED_head_port(e).clip = wantClip (e, E_headclip);
+    if (noClip(e, E_headclip))
+	ED_head_port(e).clip = FALSE;
 
     return r;
 }
