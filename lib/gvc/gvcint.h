@@ -114,6 +114,7 @@ extern "C" {
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	
 	boolean fit_mode, needs_refresh, click, active, has_grown;
+	double oldx, oldy;	/* old pointer position in pixels */
 
 	void *window;		/* display-specific data for gvrender plugin */
     };
@@ -128,6 +129,13 @@ extern "C" {
 	char *path;
 	gvplugin_type_t *typeptr;
     };
+
+    typedef int (*gvevent_key_callback_t) (gvrender_job_t * job);
+
+    typedef struct gvevent_key_binding_s {
+	char *keystring;
+	gvevent_key_callback_t callback;
+    } gvevent_key_binding_t;
 
 #define MAXNEST 4
 
