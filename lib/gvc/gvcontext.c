@@ -29,7 +29,7 @@
 #include	"types.h"
 #include	"macros.h"
 #include	"graph.h"
-#include	"gvrender.h"
+#include	"gvc.h"
 
 /* from common/utils.c */
 extern void *zmalloc(size_t);

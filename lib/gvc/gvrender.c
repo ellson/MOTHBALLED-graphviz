@@ -41,7 +41,7 @@
 #include "cdt.h"
 
 #include "gvplugin_render.h"
-#include "gvrender.h"
+#include "gvc.h"
 
 /* FIXME - need these but without rest of crap in common/ */
 extern void colorxlate(char *str, color_t * color,

@@ -30,7 +30,7 @@
 #include "macros.h"
 
 #include "gvplugin_layout.h"
-#include "gvrender.h"
+#include "gvc.h"
 
 int gvlayout_select(GVC_t * gvc, char *layout)
 {

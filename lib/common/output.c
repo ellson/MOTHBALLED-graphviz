@@ -15,7 +15,7 @@
 **********************************************************/
 
 #include	"render.h"
-#include	"gvrender.h"
+#include	"gvc.h"
 #include	"agxbuf.h"
 
 #ifndef DISABLE_CODEGENS

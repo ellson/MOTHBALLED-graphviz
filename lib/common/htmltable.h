@@ -22,7 +22,7 @@ extern "C" {
 #define TABLE_H
 
 #include "render.h"
-#include "gvrender.h"
+#include "gvc.h"
 
 #define FIXED_FLAG 1
 #define HALIGN_RIGHT (1 << 1)

@@ -22,7 +22,7 @@
 #include	"agxbuf.h"
 #include	"utils.h"
 #include	"htmltable.h"
-#include	"gvrender.h"
+#include	"gvc.h"
 #include	<ctype.h>
 
 #ifdef QUARTZ_RENDER

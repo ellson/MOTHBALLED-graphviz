@@ -20,7 +20,7 @@
 #define GVRENDER_PLUGIN_H
 
 #include "gvplugin.h"
-#include "gvrenderint.h"
+#include "gvcint.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -22,7 +22,7 @@
 #include        "config.h"
 #include        "types.h"
 #include        "macros.h"
-#include        "gvrender.h"
+#include        "gvc.h"
 
 /*
  * Define an apis array of name strings using an enumerated api_t as index.

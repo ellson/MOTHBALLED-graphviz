@@ -16,7 +16,7 @@
 
 
 #include	"render.h"
-#include	"gvrender.h"
+#include	"gvc.h"
 #include	"htmltable.h"
 #include	<limits.h>
 

@@ -16,7 +16,7 @@
 
 
 #include	"render.h"
-#include	"gvrender.h"
+#include	"gvc.h"
 
 #define sqr(a) ((double) (a) * (a))
 #define dstsq(a, b) (sqr (a.x - b.x) + sqr (a.y - b.y))

@@ -28,7 +28,7 @@
 #include "types.h"
 #include "macros.h"
 
-#include "gvrender.h"
+#include "gvc.h"
 
 extern void emit_graph(GVC_t * gvc, graph_t * g, int flags);
 

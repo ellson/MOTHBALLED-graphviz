@@ -20,7 +20,7 @@
 
 #include	"config.h"
 #include	"types.h"
-#include	"gvrender.h"
+#include	"gvc.h"
 
 /* from common/utils.c */
 extern void *zmalloc(size_t);

@@ -21,7 +21,7 @@
 #include        "config.h"
 #include        "types.h"
 #include        "macros.h"
-#include        "gvrender.h"
+#include        "gvc.h"
 
 /*
     A config for gvrender is a text file containing a
