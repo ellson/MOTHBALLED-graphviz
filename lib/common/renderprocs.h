@@ -67,7 +67,6 @@ extern "C" {
     extern void dotneato_usage(int);
     extern void dotneato_postprocess(Agraph_t *, nodesizefn_t);
     extern void dotneato_set_margins(GVC_t * gvc, Agraph_t *);
-    extern void dotneato_eof(GVC_t * gvc);
     extern void dotneato_terminate(GVC_t * gvc);
     extern void dotneato_write(GVC_t * gvc, graph_t *g);
     extern void dotneato_write_one(GVC_t * gvc, graph_t *g);
@@ -76,11 +75,11 @@ extern "C" {
     extern void enqueue_neighbors(queue *, Agnode_t *, int);
     extern void emit_attachment(GVC_t * gvc, textlabel_t *, splines *);
     extern void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags);
-    extern void emit_eof(GVC_t * gvc);
     extern void emit_graph(GVC_t * gvc, graph_t * g);
     extern void emit_label(GVC_t * gvc, textlabel_t *, void *obj);
     extern int emit_once(char *message);
     extern void emit_jobs(GVC_t * gvc, graph_t *g);
+    extern void emit_jobs_eof(GVC_t * gvc);
     extern void endpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
@@ -149,7 +148,6 @@ extern "C" {
     extern int processClusterEdges(graph_t * g);
     extern char *ps_string(char *s);
     extern void rank(graph_t * g, int balance, int maxiter);
-    extern void rec_attach_bb(Agraph_t *);
     extern void routesplinesinit(void);
     extern point *routesplines(path *, int *);
     extern void routesplinesterm(void);

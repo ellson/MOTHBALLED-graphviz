@@ -60,9 +60,9 @@ extern "C" {
     external int y_invert;	/* invert y in dot & plain output */
 
 #ifndef DISABLE_CODEGENS
-    external int Output_lang;	/* POSTSCRIPT, DOT, etc. */
-    external FILE *Output_file;
-    external int Obj;
+    EXTERN int Output_lang;	/* POSTSCRIPT, DOT, etc. */
+    EXTERN FILE *Output_file;
+    EXTERN int Obj;
 
     extern codegen_t FIG_CodeGen, HPGL_CodeGen, MAP_CodeGen,
 	MIF_CodeGen, XDot_CodeGen, MP_CodeGen, PIC_CodeGen,

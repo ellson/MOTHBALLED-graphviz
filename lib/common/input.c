@@ -698,7 +698,7 @@ void do_graph_label(graph_t * sg)
 
 void dotneato_terminate(GVC_t * gvc)
 {
-    dotneato_eof(gvc);
+    emit_jobs_eof(gvc);
     exit(graphviz_errors + agerrors());
 }
 

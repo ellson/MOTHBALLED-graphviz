@@ -18,11 +18,6 @@
 #include	"gvc.h"
 #include	"agxbuf.h"
 
-#ifndef DISABLE_CODEGENS
-FILE *Output_file;
-int Output_lang;
-#endif
-
 static int e_arrows;		/* graph has edges with end arrows */
 static int s_arrows;		/* graph has edges with start arrows */
 static agxbuf outbuf;
@@ -336,19 +331,6 @@ void write_canonical_dot(graph_t *g, FILE *f)
 	agwrite(g, f);
 }
 
-void dotneato_eof(GVC_t * gvc)
-{
-    gvrender_job_t *job;
-
-    for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
-	if (job->output_file) {
-	    emit_eof(gvc);
-	    fclose(job->output_file);
-	    job->output_file = NULL;
-	}
-    }
-}
-
 static void set_record_rects(node_t * n, field_t * f, agxbuf * xb)
 {
     int i;
@@ -364,6 +346,24 @@ static void set_record_rects(node_t * n, field_t * f, agxbuf * xb)
     }
     for (i = 0; i < f->n_flds; i++)
 	set_record_rects(n, f->fld[i], xb);
+}
+
+static void rec_attach_bb(graph_t * g)
+{
+    int c;
+    char buf[32];
+    point pt;
+
+    sprintf(buf, "%d,%d,%d,%d", GD_bb(g).LL.x, Y(GD_bb(g).LL.y),
+	    GD_bb(g).UR.x, Y(GD_bb(g).UR.y));
+    agset(g, "bb", buf);
+    if (GD_label(g) && GD_label(g)->text[0]) {
+	pt = GD_label(g)->p;
+	sprintf(buf, "%d,%d", pt.x, Y(pt.y));
+	agset(g, "lp", buf);
+    }
+    for (c = 1; c <= GD_n_cluster(g); c++)
+	rec_attach_bb(GD_clust(g)[c]);
 }
 
 void attach_attrs(graph_t * g)
@@ -499,22 +499,4 @@ void attach_attrs(graph_t * g)
 
     if (HAS_CLUST_EDGE(g))
 	undoClusterEdges(g);
-}
-
-void rec_attach_bb(graph_t * g)
-{
-    int c;
-    char buf[32];
-    point pt;
-
-    sprintf(buf, "%d,%d,%d,%d", GD_bb(g).LL.x, Y(GD_bb(g).LL.y),
-	    GD_bb(g).UR.x, Y(GD_bb(g).UR.y));
-    agset(g, "bb", buf);
-    if (GD_label(g) && GD_label(g)->text[0]) {
-	pt = GD_label(g)->p;
-	sprintf(buf, "%d,%d", pt.x, Y(pt.y));
-	agset(g, "lp", buf);
-    }
-    for (c = 1; c <= GD_n_cluster(g); c++)
-	rec_attach_bb(GD_clust(g)[c]);
 }

@@ -25,7 +25,6 @@
 #include	"gvc.h"
 #include	<ctype.h>
 
-int Obj;
 static attrsym_t *G_peripheries;
 
 static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
@@ -1237,11 +1236,19 @@ static void emit_once_reset()
     }
 }
 
-void emit_eof(GVC_t * gvc)
+void emit_jobs_eof(GVC_t * gvc)
 {
-    if (gvc->job->pageNum > 0) {
-        emit_deinit_job(gvc);
-	emit_once_reset();
+    gvrender_job_t *job;
+
+    for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
+        if (job->output_file) {
+	    if (gvc->job->pageNum > 0) {
+		emit_deinit_job(gvc);
+		emit_once_reset();
+	    }
+            fclose(job->output_file);
+            job->output_file = NULL;
+        }
     }
 }
 
