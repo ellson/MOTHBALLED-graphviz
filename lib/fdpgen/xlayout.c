@@ -33,9 +33,11 @@
 /* #define MS */
 /* Use alternate force function */
 /* #define ALT      */
-#define BOX			/* Use bbox to determine overlap, else use circles */
+#define BOX	/* Use bbox to determine overlap, else use circles */
 /* #define OFF 0.0 */
 #define OFF PS2INCH(8)
+
+#define DFLT_overlap   "scale"    /* default overlap value */
 
 #define WD2(n) (ND_width(n)/2.0 + OFF)
 #define HT2(n) (ND_height(n)/2.0 + OFF)
@@ -59,7 +61,7 @@ static double K2;
 /* init_params:
  * Initialize local parameters
  */
-static void init_params(char *name, int n, xparams * xpms)
+static void init_params(graph_t* g, int n, xparams * xpms)
 {
     xParams.K = xpms->K;
     xParams.numIters = xpms->numIters;
@@ -74,22 +76,25 @@ static void init_params(char *name, int n, xparams * xpms)
     if (Verbose) {
 	prIndent();
 	fprintf(stderr,
-		"xLayout %s : n = %d K = %f T0 = %f loop %d C %f\n", name,
+		"xLayout %s(%s) : n = %d K = %f T0 = %f loop %d C %f\n", 
+		g->name, GORIG(g->root)->name,
 		xParams.numIters, xParams.K, xParams.T0, xParams.loopcnt,
 		xParams.C);
     }
 #endif
 }
 
-#define T0 xParams.T0
-#define K xParams.K
-#define numIters xParams.numIters
-#define loopcnt xParams.loopcnt
-#define C xParams.C
+#define X_T0         xParams.T0
+#define X_K          xParams.K
+#define X_numIters   xParams.numIters
+#define X_loopcnt    xParams.loopcnt
+#define X_C          xParams.C
+
+#define DFLT_tries 9
 
 static double cool(int t)
 {
-    return (T0 * (numIters - t)) / numIters;
+    return (X_T0 * (X_numIters - t)) / X_numIters;
 }
 
 #define EPSILON 0.01
@@ -261,11 +266,11 @@ doRep(node_t * p, node_t * q, double xdelta, double ydelta, double dist2)
     dist = sqrt(dist2);
     din = RAD(p) + RAD(q);
     if (ov = overlap(p, q)) {
-	factor = C;
+	factor = X_C;
     } else {
 	ov = 0;
-	if (dist <= din + K)
-	    factor = C * (K - (dist - din)) / K;
+	if (dist <= din + X_K)
+	    factor = X_C * (X_K - (dist - din)) / X_K;
 	else
 	    factor = 0.0;
     }
@@ -273,12 +278,15 @@ doRep(node_t * p, node_t * q, double xdelta, double ydelta, double dist2)
 #else
     force = K2 / dist2;
     if ((ov = overlap(p, q)))
-	force *= C;
+	force *= X_C;
 #endif
+#ifdef DEBUG
     if (Verbose == 4) {
+	prIndent();
 	dist = sqrt(dist2);
 	fprintf(stderr, " ov Fr %f dist %f\n", force * dist, dist);
     }
+#endif
     DISP(q)[0] += xdelta * force;
     DISP(q)[1] += ydelta * force;
     DISP(p)[0] -= xdelta * force;
@@ -314,20 +322,24 @@ static void applyAttr(Agnode_t * p, Agnode_t * q)
     xdelta = ND_pos(q)[0] - ND_pos(p)[0];
     ydelta = ND_pos(q)[1] - ND_pos(p)[1];
     dist = sqrt(xdelta * xdelta + ydelta * ydelta);
-    force = (dout * dout) / (K * dist);
+    force = (dout * dout) / (X_K * dist);
 #elif defined(ALT)
     xdelta = ND_pos(q)[0] - ND_pos(p)[0];
     ydelta = ND_pos(q)[1] - ND_pos(p)[1];
     dist = sqrt(xdelta * xdelta + ydelta * ydelta);
     din = RAD(p) + RAD(q);
-    if (dist < K + din)
+    if (dist < X_K + din)
 	return;
     dout = dist - din;
-    force = (dout * dout) / ((K + din) * dist);
+    force = (dout * dout) / ((X_K + din) * dist);
 #else
     if (overlap(p, q)) {
-	if (Verbose == 4)
+#ifdef DEBUG
+	if (Verbose == 4) {
+	    prIndent();
 	    fprintf(stderr, "ov 1 Fa 0 din %f\n", RAD(p) + RAD(q));
+	}
+#endif
 	return;
     }
     xdelta = ND_pos(q)[0] - ND_pos(p)[0];
@@ -335,10 +347,14 @@ static void applyAttr(Agnode_t * p, Agnode_t * q)
     dist = sqrt(xdelta * xdelta + ydelta * ydelta);
     din = RAD(p) + RAD(q);
     dout = dist - din;
-    force = (dout * dout) / ((K + din) * dist);
+    force = (dout * dout) / ((X_K + din) * dist);
 #endif
-    if (Verbose == 4)
+#ifdef DEBUG
+    if (Verbose == 4) {
+	prIndent();
 	fprintf(stderr, " ov 0 Fa %f din %f \n", force * dist, din);
+    }
+#endif
     DISP(q)[0] -= xdelta * force;
     DISP(q)[1] -= ydelta * force;
     DISP(p)[0] += xdelta * force;
@@ -360,8 +376,10 @@ static int adjust(Agraph_t * g, double temp)
     double disp[NDIM];		/* incremental displacement */
     int overlaps = 0;
 
+#ifdef DEBUG
     if (Verbose == 4)
 	fprintf(stderr, "=================\n");
+#endif
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	DISP(n)[0] = DISP(n)[1] = 0;
@@ -411,7 +429,6 @@ static int adjust(Agraph_t * g, double temp)
  * at this stage.
  * Returns non-zero if overlaps still exist.
  */
-#undef K
 
 static int x_layout(graph_t * g, xparams * pxpms, int tries)
 {
@@ -423,7 +440,6 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
     double K;
     xparams xpms;
 
-
     ov = cntOverlaps(g);;
     if (ov == 0)
 	return 0;
@@ -432,13 +448,17 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
     xpms = *pxpms;
     K = xpms.K;
     while (ov && (try < tries)) {
-	if (Verbose) {
-	    fprintf(stderr, "try %d (%d): %d overlaps on %s \n", try, tries, ov,
-		    g->name);
-	}
 
-	init_params(g->name, nnodes, &xpms);
-	for (i = 0; i < loopcnt; i++) {
+#ifdef DEBUG
+	if (Verbose) {
+	    prIndent();
+	    fprintf(stderr, "try %d (%d): %d overlaps on %s(%s) \n", try, tries, ov,
+		    g->name, GORIG(g->root)->name);
+	}
+#endif
+
+	init_params(g, nnodes, &xpms);
+	for (i = 0; i < X_loopcnt; i++) {
 	    temp = cool(i);
 	    if (temp <= 0.0)
 		break;
@@ -450,29 +470,58 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
 	xpms.K += K;		/* increase distance */
     }
     if (Verbose && ov)
-	fprintf(stderr, "Warning: %d overlaps remain on %s\n", ov,
-		g->name);
+	fprintf(stderr, "Warning: %d overlaps remain on %s(%s)\n", ov,
+		g->name, GORIG(g->root)->name);
 
     return ov;
 }
 
-/* set shape of derived cluster nodes as boxes before calling
- * adjustNodes
+/* fdp_xLayout:
+ * Use overlap parameter to determine if and how to remove overlaps.
+ * In addition to the usual values accepted by removeOverlap, overlap
+ * can begin with "n:" to indicate the given number of tries using
+ * x_layout to remove overlaps.
+ * Thus,
+ *  NULL or ""  => dflt overlap
+ *  "mode"      => dflt tries, then removeOverlap with mode
+ *  "n:"        => n tries only
+ *  "n:mode"    => n tries, then removeOverlap with mode
+ *  "0:"        => no overlap removal
  */
 void fdp_xLayout(graph_t * g, xparams * xpms)
 {
-    int tries = xpms->tries;
+    int   tries;
+    char* ovlp = agget (g, "overlap");
+    char* cp;
+    char* rest;
 
-    if (tries == 0)		/* No overlap removal */
-	return;	
-    else if (tries == 1) {	/* No expansion, just adjust */
-	removeOverlap(g);
-    } 
-    else if (tries > 1) {	/* Try expansion tries times, then adjust */
-	if (x_layout(g, xpms, tries - 1))
-	    removeOverlap(g);
-    } 
-    else {			/* Try expansion -tries times; no adjust */
-	x_layout(g, xpms, -1 * tries);
+    if (Verbose) {
+#ifdef DEBUG
+	prIndent();
+#endif
+        fprintf (stderr, "xLayout ");
     }
+    if (!ovlp || (*ovlp == '\0')) {
+	ovlp = DFLT_overlap;
+    }
+    if ((cp = strchr(ovlp, ':'))) {
+      cp++;
+      rest = cp;
+      tries = atoi (ovlp);
+      if (tries < 0) tries = 0;
+    }
+    else {
+      tries = DFLT_tries;
+      rest = ovlp;
+    }
+    if (Verbose) {
+#ifdef DEBUG
+	prIndent();
+#endif
+        fprintf (stderr, "tries = %d, mode = %s\n", tries, rest);
+    }
+    if (tries && !x_layout(g, xpms, tries))
+	return;
+    removeOverlapAs(g, rest);
+
 }

@@ -41,6 +41,9 @@ typedef struct {
     int flags;
     int level;			/* depth in graph hierarchy */
     graph_t *parent;		/* smallest containing cluster */
+#ifdef DEBUG
+    graph_t *orig;		/* original of derived graph */
+#endif
 } gdata;
 
 #define GDATA(g)    ((gdata*)(GD_alg(g)))
@@ -49,6 +52,9 @@ typedef struct {
 #define NPORTS(g)   (GDATA(g)->nports)
 #define LEVEL(g)    (GDATA(g)->level)
 #define GPARENT(g)  (GDATA(g)->parent)
+#ifdef DEBUG
+#define GORIG(g)    (GDATA(g)->orig)
+#endif
 
 /* ndata is attached to nodes in real graphs.
  * Real nodes also use "builtin" fields:

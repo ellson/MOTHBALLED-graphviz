@@ -53,8 +53,6 @@
 #include <clusteredges.h>
 #include <dbg.h>
 
-#define DFLT_overlap   "scale"    /* default overlap value */
-
 typedef struct {
     attrsym_t *G_coord;
     attrsym_t *G_width;
@@ -385,6 +383,25 @@ static void addEdge(edge_t * de, edge_t * e)
     ED_count(de)++;
 }
 
+/* copyAttr:
+ * Copy given attribute from g to dg.
+ */
+static void
+copyAttr (graph_t* g, graph_t* dg, char* attr)
+{
+    char*     ov_val;
+    Agsym_t*  ov;
+
+    if ((ov = agfindattr(g, attr))) {
+	ov_val = agxget(g,ov->index);
+	ov = agfindattr(dg, attr);
+	if (ov)
+	    agxset (dg, ov->index, ov_val);
+	else
+	    agraphattr(dg, attr, ov_val);
+    }
+}
+
 /* deriveGraph:
  * Create derived graph of g by collapsing clusters into
  * nodes. An edge is created between nodes if there is
@@ -408,20 +425,15 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 	fprintf(stderr, "derive graph %s of %s\n", name, g->name);
     dg = agopen(name, AGRAPHSTRICT);
     GD_alg(dg) = (void *) NEW(gdata);	/* freed in freeDeriveGraph */
+#ifdef DEBUG
+    GORIG(dg) = g;
+#endif
     GD_ndim(dg) = GD_ndim(g);
 
-    /* Set up overlap value in case needed.
-     * If already set, probably came from command line.
-     * Otherwise, if set in the graph, use it.
-     * Else, use default.
+    /* Copy attributes from g.
      */
-    if (!agfindattr(dg, "overlap")) {
-	Agsym_t* ov;
-	if ((ov = agfindattr(g, "overlap")))
-	    agraphattr(dg, "overlap", agxget(g,ov->index));
-	else
-	    agraphattr(dg, "overlap", DFLT_overlap);
-    }
+    copyAttr(g,dg,"overlap");
+    copyAttr(g,dg,"sep");
 
     /* create derived nodes from clusters */
     for (i = 1; i <= GD_n_cluster(g); i++) {
@@ -838,6 +850,15 @@ setClustNodes(graph_t* root)
     int pinned;
     xparams xpms;
 
+#ifdef DEBUG
+    incInd();
+#endif
+    if (Verbose) {
+#ifdef DEBUG
+	prIndent();
+#endif
+	fprintf (stderr, "layout %s\n", g->name);
+    }
     /* initialize derived node pointers */
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	DNODE(n) = 0;
@@ -930,6 +951,15 @@ setClustNodes(graph_t* root)
     /* clean up temp graphs */
     freeDerivedGraph(dg, cc);
     free(cc);
+    if (Verbose) {
+#ifdef DEBUG
+	prIndent ();
+#endif
+	fprintf (stderr, "end %s\n", g->name);
+    }
+#ifdef DEBUG
+    decInd();
+#endif
 }
 
 /* setBB;
