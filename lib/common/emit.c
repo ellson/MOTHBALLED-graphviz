@@ -1016,6 +1016,7 @@ static void init_job_viewport(GVC_t * gvc, graph_t * g)
     pointf UR, size;
     char *str;
     double X, Y, Z, x, y;
+    int rv;
 
     assert((GD_bb(g).LL.x == 0) && (GD_bb(g).LL.y == 0));
 
@@ -1046,7 +1047,8 @@ static void init_job_viewport(GVC_t * gvc, graph_t * g)
 
     /* user can override */
     if ((str = agget(g, "viewport")))
-	sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
+	rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
+    /* rv is ignored since args retain previous values if not scanned */
     job->width = ROUND(X + 1); 
     job->height = ROUND(Y + 1);
     job->zoom = Z;              /* scaling factor */
