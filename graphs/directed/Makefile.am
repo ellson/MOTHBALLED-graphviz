@@ -21,7 +21,7 @@ CLEANFILES = core *.dot.* *.png .xvpics/*
 test:
 	for i in $(GRAPHS); do \
 		echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot \
+		$(top_builddir)/cmd/dot/dot \
 			-Tcanon -o$$i.canon \
 			-Tcmap -o$$i.cmap \
 			-Tcmapx -o$$i.cmapx \
@@ -55,112 +55,112 @@ test:
 
 canon:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tcanon -o$$i.canon $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tcanon -o$$i.canon $(top_srcdir)/graphs/directed/$$i; done
 
 cmap:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tcmap -o$$i.cmap $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tcmap -o$$i.cmap $(top_srcdir)/graphs/directed/$$i; done
 
 cmapx:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tcmapx -o$$i.cmapx $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tcmapx -o$$i.cmapx $(top_srcdir)/graphs/directed/$$i; done
 
 dia:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tdia -o$$i.dia $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tdia -o$$i.dia $(top_srcdir)/graphs/directed/$$i; done
 
 dot:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tdot -o$$i.dot $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tdot -o$$i.dot $(top_srcdir)/graphs/directed/$$i; done
 
 fig:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tfig -o$$i.fig $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tfig -o$$i.fig $(top_srcdir)/graphs/directed/$$i; done
 
 gd:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tgd -o$$i.gd $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tgd -o$$i.gd $(top_srcdir)/graphs/directed/$$i; done
 
 gd2:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tgd2 -o$$i.gd2 $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tgd2 -o$$i.gd2 $(top_srcdir)/graphs/directed/$$i; done
 
 gif:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tgif -o$$i.gif $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tgif -o$$i.gif $(top_srcdir)/graphs/directed/$$i; done
 
 hpgl:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Thpgl -o$$i.hpgl $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Thpgl -o$$i.hpgl $(top_srcdir)/graphs/directed/$$i; done
 
 ismap:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tismap -o$$i.ismap $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tismap -o$$i.ismap $(top_srcdir)/graphs/directed/$$i; done
 
 imap:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Timap -o$$i.imap $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Timap -o$$i.imap $(top_srcdir)/graphs/directed/$$i; done
 
 jpg:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tjpg -o$$i.jpg $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tjpg -o$$i.jpg $(top_srcdir)/graphs/directed/$$i; done
 
 mif:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tmif -o$$i.mif $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tmif -o$$i.mif $(top_srcdir)/graphs/directed/$$i; done
 
 mp:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tmp -o$$i.mp $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tmp -o$$i.mp $(top_srcdir)/graphs/directed/$$i; done
 
 pcl:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tpcl -o$$i.pcl $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tpcl -o$$i.pcl $(top_srcdir)/graphs/directed/$$i; done
 
 pic:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tpic -o$$i.pic $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tpic -o$$i.pic $(top_srcdir)/graphs/directed/$$i; done
 
 plain:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tplain -o$$i.plain $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tplain -o$$i.plain $(top_srcdir)/graphs/directed/$$i; done
 
 plain-ext:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tplain-ext -o$$i.plain-ext $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tplain-ext -o$$i.plain-ext $(top_srcdir)/graphs/directed/$$i; done
 
 png:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tpng -o$$i.png $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tpng -o$$i.png $(top_srcdir)/graphs/directed/$$i; done
 
 ps:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tps -o$$i.ps $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tps -o$$i.ps $(top_srcdir)/graphs/directed/$$i; done
 
 ps2:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tps2 -o$$i.ps2 $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tps2 -o$$i.ps2 $(top_srcdir)/graphs/directed/$$i; done
 
 svg:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tsvg -o$$i.svg $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tsvg -o$$i.svg $(top_srcdir)/graphs/directed/$$i; done
 
 svgz:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tsvgz -o$$i.svgz $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tsvgz -o$$i.svgz $(top_srcdir)/graphs/directed/$$i; done
 
 wbmp:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Twbmp -o$$i.wbmp $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Twbmp -o$$i.wbmp $(top_srcdir)/graphs/directed/$$i; done
 
 vrml:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tvrml -o$$i.vrml $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tvrml -o$$i.vrml $(top_srcdir)/graphs/directed/$$i; done
 
 vtx:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Tvtx -o$$i.vtx $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tvtx -o$$i.vtx $(top_srcdir)/graphs/directed/$$i; done
 
 xdot:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/dotneato/dot -Txdot -o$$i.xdot $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Txdot -o$$i.xdot $(top_srcdir)/graphs/directed/$$i; done
