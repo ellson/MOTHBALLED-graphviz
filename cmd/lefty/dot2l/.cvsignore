@@ -7,3 +7,6 @@ Makefile.in
 dotparse.c
 dotparse.h
 dotparse.output
+y.tab.h
+y.tab.c
+y.output
