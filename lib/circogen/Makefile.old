@@ -40,6 +40,7 @@ edgelist.o : edgelist.h
 nodelist.o : $(BASEH)
 nodeset.o : nodeset.h
 stack.o : $(BASEH)
+$(OBJS) : ../common/types.h
 
 install: libcircogen.a
 	$(MKPATH) $(INCDIR)

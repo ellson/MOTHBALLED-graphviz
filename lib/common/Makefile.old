@@ -28,7 +28,6 @@ OBJS = arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
        gdgen.o input.o pointset.o strncasecmp.o \
        gdtextsize.o labels.o postproc.o svggen.o xdgen.o
 
-
 libcommon.a : $(OBJS)
 	$(RM) libcommon.a
 	$(AR) cr libcommon.a $(OBJS)
@@ -57,6 +56,12 @@ psgen.o : ps.h
 emit.o mapgen.o utils.o htmllex.o htmltable.o htmlparse.o : htmltable.h
 htmllex.o : htmlparse.h
 htmlparse.o htmllex.o : htmllex.h
+arrows.o colxlate.o diagen.o emit.o figgen.o fontmetrics.o gdgen.o \
+gdtextsize.o gdusershape.o globals.o hpglgen.o htmllex.o htmlparse.o \
+htmltable.o input.o labels.o mapgen.o mifgen.o mpgen.o ns.o output.o \
+picgen.o pointset.o postproc.o psgen.o psusershape.o routespl.o shapes.o \
+splines.o svggen.o svgusershape.o timing.o utils.o vrmlgen.o vtxgen.o \
+xdgen.o : types.h
 
 #ps.h : ps.txt
 #	$(AWK) -f $(AWKDIR)/stringize.awk ps.txt > ps.h

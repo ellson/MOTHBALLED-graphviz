@@ -39,6 +39,7 @@ kkutils.o stress.o closest.o : kkutils.h
 stress.o pca.o conjgrad.o matrix_ops.o : matrix_ops.h
 stress.o pca.o : pca.h
 stress.o : stress.h
+$(OBJS) : ../common/types.h
 
 install: libneatogen.a 
 	$(MKPATH) $(INCDIR)

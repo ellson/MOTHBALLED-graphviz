@@ -24,7 +24,7 @@ libdotgen.a : $(OBJS)
 	$(AR) cr libdotgen.a $(OBJS)
 	$(RANLIB) libdotgen.a
 
-$(OBJS) : $(HFILES)
+$(OBJS) : $(HFILES) ../common/types.h
 
 install: libdotgen.a
 	$(MKPATH) $(INCDIR)

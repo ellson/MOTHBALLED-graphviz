@@ -24,7 +24,7 @@ libtwopigen.a : $(OBJS)
 	$(AR) cr libtwopigen.a $(OBJS)
 	$(RANLIB) libtwopigen.a
 
-$(OBJS) : $(HFILES)
+$(OBJS) : $(HFILES) ../common/types.h
 
 install: libtwopigen.a
 	$(MKPATH) $(INCDIR)
