@@ -20,21 +20,7 @@
 #include        "types.h"
 #include        "macros.h"
 #include        "gvc.h"
-
-#ifndef DISABLE_GVRENDER
-extern gvplugin_t gvplugin_cairo_LTX_plugin,
-    gvplugin_gd_LTX_plugin,
-    gvplugin_text_LTX_plugin;
-#endif
-extern gvplugin_t gvplugin_layout_LTX_plugin;
-
 gvplugin_t *builtins[] = {
-#ifndef DISABLE_GVRENDER
-    &gvplugin_cairo_LTX_plugin,
-    &gvplugin_gd_LTX_plugin,
-    &gvplugin_text_LTX_plugin,
-#endif
-    &gvplugin_layout_LTX_plugin,
     NULL
 };
 
