@@ -19,7 +19,7 @@ BuildRequires: tcl tk expat expat-devel libjpeg libjpeg-devel libpng libpng-deve
 %{?fc3:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
 %{?fc2:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
 %{?fc1:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
-%{?el3:BuildRequires: freetype >= 2 freetype-devel XFree86-devel}
+%{?el3:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
 %{?rh9:BuildRequires: freetype >= 2 freetype-devel XFree86-devel}
 %{?rh8:BuildRequires: freetype >= 2 freetype-devel XFree86-devel}
 %{?rh7:BuildRequires: freetype >= 2 freetype-devel XFree86-devel}
