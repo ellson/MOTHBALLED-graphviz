@@ -908,95 +908,6 @@ fprintf(stderr,"edge_in_layer %s edge_in_pageBox %s\n",
     gvrender_end_edge(gvc);
 }
 
-static void init_job_margin(GVC_t *gvc)
-{
-    gvrender_job_t *job = gvc->job;
-    
-    if (gvc->graph_sets_margin) {
-	job->margin = gvc->margin;
-    }
-    else {
-        /* set default margins depending on format */
-        switch (job->output_lang) {
-        case GVRENDER_PLUGIN:
-            job->margin.x = job->margin.y = job->render_features->default_margin;
-            break;
-        case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
-        case METAPOST: case FIG: case VTX: case ATTRIBUTED_DOT:
-        case PLAIN: case PLAIN_EXT: case QPDF:
-            job->margin.x = job->margin.y = DEFAULT_MARGIN;
-            break;
-        case CANONICAL_DOT:
-            job->margin.x = job->margin.y = 0;
-            break;
-        default:
-            job->margin.x = job->margin.y = DEFAULT_EMBED_MARGIN;
-            break;
-        }
-    }
-}
-
-static void init_job_viewport(GVC_t * gvc, graph_t * g)
-{
-    gvrender_job_t * job = gvc->job;
-    pointf UR, size;
-    char *str;
-    double X, Y, Z, x, y;
-    int dpi;
-
-    assert((GD_bb(g).LL.x == 0) && (GD_bb(g).LL.y == 0));
-
-    P2PF(GD_bb(g).UR, UR);
-
-    /* determine final drawing size and scale to apply. */
-    /* N.B. size given by user is not rotated by landscape mode */
-    /* start with "natural" size of layout */
-
-    Z = 1.0;
-    if (GD_drawing(g)->size.x > 0) {	/* was given by user... */
-	P2PF(GD_drawing(g)->size, size);
-	if ((size.x < UR.x) || (size.y < UR.y) /* drawing is too big... */
-	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
-		&& (size.x > UR.x) && (size.y > UR.y))) /* drawing is too small... */
-	    Z = MIN(size.x/UR.x, size.y/UR.y);
-    }
-    
-    dpi = GD_drawing(g)->dpi;
-    if (dpi == 0) {
-        if (job->render_engine)
-            dpi = job->render_features->default_dpi;
-        else {
-            /* WARNING - nasty hack to avoid modifying old codegens */
-    	    codegen_t *cg = job->codegen;
-            if (cg == &PS_CodeGen)
-		dpi = POINTS_PER_INCH;
-	    else
-                dpi = DEFAULT_DPI;
-	}
-    }
-    job->dpi = dpi;
-
-    /* default focus, in graph units = center of bb */
-    x = UR.x / 2.;
-    y = UR.y / 2.;
-
-    /* rotate and scale bb to give default device width and height */
-    if (GD_drawing(g)->landscape)
-	UR = exch_xyf(UR);
-    X = Z * (UR.x + 2 * job->margin.x) * dpi / POINTS_PER_INCH;
-    Y = Z * (UR.y + 2 * job->margin.y) * dpi / POINTS_PER_INCH;
-
-    /* user can override */
-    if ((str = agget(g, "viewport")))
-	sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
-    job->width = ROUND(X + 1); 
-    job->height = ROUND(Y + 1);
-    job->zoom = Z;              /* scaling factor */
-    job->focus.x = x;           /* graph coord of focus - points */
-    job->focus.y = y;
-    job->rotation = gvc->rotation;
-}
-
 static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
 {
     double xf, yf;
@@ -1032,9 +943,10 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
     G_peripheries = agfindattr(g, "peripheries");
 
     /* default font */
-    gvc->defaultfontname = late_nnstring(g->proto->n, N_fontname, DEFAULT_FONTNAME);
-    gvc->defaultfontsize = late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
-		    MIN_FONTSIZE);
+    gvc->defaultfontname = late_nnstring(g->proto->n,
+		N_fontname, DEFAULT_FONTNAME);
+    gvc->defaultfontsize = late_double(g->proto->n,
+		N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
 
     /* default line style */
     gvc->defaultlinestyle = defaultlinestyle;
@@ -1043,6 +955,100 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
     gvc->lib = Lib;
 }
 
+
+static void init_job_margin(GVC_t *gvc)
+{
+    gvrender_job_t *job = gvc->job;
+    
+    if (gvc->graph_sets_margin) {
+	job->margin = gvc->margin;
+    }
+    else {
+        /* set default margins depending on format */
+        switch (job->output_lang) {
+        case GVRENDER_PLUGIN:
+            job->margin.x = job->margin.y = job->render_features->default_margin;
+            break;
+        case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
+        case METAPOST: case FIG: case VTX: case ATTRIBUTED_DOT:
+        case PLAIN: case PLAIN_EXT: case QPDF:
+            job->margin.x = job->margin.y = DEFAULT_MARGIN;
+            break;
+        case CANONICAL_DOT:
+            job->margin.x = job->margin.y = 0;
+            break;
+        default:
+            job->margin.x = job->margin.y = DEFAULT_EMBED_MARGIN;
+            break;
+        }
+    }
+}
+
+static void init_job_dpi(GVC_t *gvc, graph_t *g)
+{
+    gvrender_job_t *job = gvc->job;
+    
+    job->dpi = GD_drawing(g)->dpi;
+    if (job->dpi == 0) {
+        /* set default margins depending on format */
+        switch (job->output_lang) {
+        case GVRENDER_PLUGIN:
+            job->dpi = job->render_features->default_dpi;
+            break;
+        case POSTSCRIPT:
+	    job->dpi = POINTS_PER_INCH;
+            break;
+        default:
+            job->dpi = DEFAULT_DPI;
+            break;
+        }
+    }
+}
+
+static void init_job_viewport(GVC_t * gvc, graph_t * g)
+{
+    gvrender_job_t * job = gvc->job;
+    pointf UR, size;
+    char *str;
+    double X, Y, Z, x, y;
+
+    assert((GD_bb(g).LL.x == 0) && (GD_bb(g).LL.y == 0));
+
+    P2PF(GD_bb(g).UR, UR);
+
+    /* determine final drawing size and scale to apply. */
+    /* N.B. size given by user is not rotated by landscape mode */
+    /* start with "natural" size of layout */
+
+    Z = 1.0;
+    if (GD_drawing(g)->size.x > 0) {	/* was given by user... */
+	P2PF(GD_drawing(g)->size, size);
+	if ((size.x < UR.x) || (size.y < UR.y) /* drawing is too big... */
+	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
+		&& (size.x > UR.x) && (size.y > UR.y))) /* drawing is too small... */
+	    Z = MIN(size.x/UR.x, size.y/UR.y);
+    }
+    
+    /* default focus, in graph units = center of bb */
+    x = UR.x / 2.;
+    y = UR.y / 2.;
+
+    /* rotate and scale bb to give default device width and height */
+    if (GD_drawing(g)->landscape)
+	UR = exch_xyf(UR);
+    X = Z * (UR.x + 2 * job->margin.x) * job->dpi / POINTS_PER_INCH;
+    Y = Z * (UR.y + 2 * job->margin.y) * job->dpi / POINTS_PER_INCH;
+
+    /* user can override */
+    if ((str = agget(g, "viewport")))
+	sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
+    job->width = ROUND(X + 1); 
+    job->height = ROUND(Y + 1);
+    job->zoom = Z;              /* scaling factor */
+    job->focus.x = x;           /* graph coord of focus - points */
+    job->focus.y = y;
+    job->rotation = gvc->rotation;
+}
 
 /* emit_init
  *   - called just once per output device
@@ -1054,6 +1060,7 @@ static void emit_init_job(GVC_t * gvc, graph_t * g)
     init_layering(gvc, g);
     init_job_flags(gvc->job, g);
     init_job_margin(gvc);
+    init_job_dpi(gvc, g);
     init_job_viewport(gvc, g);
     init_job_pagination(gvc, g);
     gvrender_begin_job(gvc);
