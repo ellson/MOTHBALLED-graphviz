@@ -58,7 +58,7 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /ML /W3 /GX /O2 /I "." /I "../../.." /I "../../lib/agraph" /I "../../lib/cdt" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /Fp"$(INTDIR)\dijkstra.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /ML /W3 /GX /O2 /I "." /I "../.." /I "../../lib/agraph" /I "../../lib/cdt" /I "../../lib/ingraphs" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /Fp"$(INTDIR)\dijkstra.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\dijkstra.bsc" 
 BSC32_SBRS= \
@@ -67,22 +67,12 @@ LINK32=link.exe
 LINK32_FLAGS=agraph.lib cdt.lib common.lib ingraphs.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\dijkstra.pdb" /machine:I386 /out:"$(OUTDIR)\dijkstra.exe" /libpath:"../../lib/lib/Release" 
 LINK32_OBJS= \
 	"$(INTDIR)\dijkstra.obj" \
-	"$(OUTDIR)\ingraphs.lib"
+	"..\..\lib\ingraphs\Release\ingraphs.lib"
 
 "$(OUTDIR)\dijkstra.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
-
-SOURCE="$(InputPath)"
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Release
-# End Custom Macros
-
 
 !ELSEIF  "$(CFG)" == "dijkstra - Win32 Debug"
 
@@ -117,7 +107,7 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "." /I "../../.." /I "../../lib/agraph" /I "../../lib/cdt" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /Fp"$(INTDIR)\dijkstra.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "." /I "../.." /I "../../lib/agraph" /I "../../lib/cdt" /I "../../lib/ingraphs" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "HAVE_CONFIG_H" /Fp"$(INTDIR)\dijkstra.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\dijkstra.bsc" 
 BSC32_SBRS= \
@@ -126,22 +116,12 @@ LINK32=link.exe
 LINK32_FLAGS=agraph.lib cdt.lib common.lib ingraphs.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\dijkstra.pdb" /debug /machine:I386 /out:"$(OUTDIR)\dijkstra.exe" /pdbtype:sept /libpath:"../../lib/lib/Debug" 
 LINK32_OBJS= \
 	"$(INTDIR)\dijkstra.obj" \
-	"$(OUTDIR)\ingraphs.lib"
+	"..\..\lib\ingraphs\Debug\ingraphs.lib"
 
 "$(OUTDIR)\dijkstra.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
-
-SOURCE="$(InputPath)"
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Debug
-# End Custom Macros
-
 
 !ENDIF 
 
@@ -186,35 +166,34 @@ OutDir=.\Debug
 
 
 !IF "$(CFG)" == "dijkstra - Win32 Release" || "$(CFG)" == "dijkstra - Win32 Debug"
-SOURCE=..\src\dijkstra.c
+SOURCE=.\dijkstra.c
 
 "$(INTDIR)\dijkstra.obj" : $(SOURCE) "$(INTDIR)"
-	$(CPP) $(CPP_PROJ) $(SOURCE)
 
 
 !IF  "$(CFG)" == "dijkstra - Win32 Release"
 
 "ingraphs - Win32 Release" : 
-   cd "."
+   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
    $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Release" 
-   cd "."
+   cd "..\..\cmd\tools"
 
 "ingraphs - Win32 ReleaseCLEAN" : 
-   cd "."
+   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
    $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Release" RECURSE=1 CLEAN 
-   cd "."
+   cd "..\..\cmd\tools"
 
 !ELSEIF  "$(CFG)" == "dijkstra - Win32 Debug"
 
 "ingraphs - Win32 Debug" : 
-   cd "."
+   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
    $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Debug" 
-   cd "."
+   cd "..\..\cmd\tools"
 
 "ingraphs - Win32 DebugCLEAN" : 
-   cd "."
+   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
    $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Debug" RECURSE=1 CLEAN 
-   cd "."
+   cd "..\..\cmd\tools"
 
 !ENDIF 
 
