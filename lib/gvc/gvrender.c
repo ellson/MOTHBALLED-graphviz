@@ -794,13 +794,12 @@ void gvrender_ellipse(GVC_t * gvc, point p, int rx, int ry, int filled)
 	    pointf AF[2];
 	    int i;
 
-	    /* left */
-	    AF[0].x = (double) (p.x - rx);
+	    /* center */
+	    AF[0].x = (double) p.x;
 	    AF[0].y = (double) p.y;
-	    /* top */
-	    AF[1].x = (double) p.x;
-	    AF[1].y = (double) (p.y - ry);
-
+	    /* corner */
+	    AF[1].x = (double) (p.x + rx);
+	    AF[1].y = (double) (p.y + ry);
 /* end hack */
 	    for (i = 0; i < 2; i++)
 		AF[i] = gvrender_ptf(gvc, AF[i]);
