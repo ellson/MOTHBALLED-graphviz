@@ -33,7 +33,7 @@
  * inititialized here by redefining ELEM and reinvoking APIS.
  */
 #define ELEM(x) #x,
-static char *apis[] = { APIS };	/* "render", "layout", ... */
+static char *api_names[] = { APIS };	/* "render", "layout", ... */
 #undef ELEM
 
 /* translate a string api name to its type, or -1 on error */
@@ -41,11 +41,19 @@ api_t gvplugin_api(char *str)
 {
     int api;
 
-    for (api = 0; api < ARRAY_SIZE(apis); api++) {
-	if (strcmp(str, apis[api]) == 0)
+    for (api = 0; api < ARRAY_SIZE(api_names); api++) {
+	if (strcmp(str, api_names[api]) == 0)
 	    return (api_t)api;
     }
     return -1;			/* invalid api */
+}
+
+/* translate api_t into string name, or NULL */
+char *gvplugin_api_name(api_t api)
+{
+    if (api < 0 || api >= ARRAY_SIZE(api_names))
+	return NULL;
+    return api_names[api];
 }
 
 /* install a plugin description into the list of available plugins */
@@ -83,18 +91,60 @@ boolean gvplugin_install(GVC_t * gvc, api_t api,
     return TRUE;
 }
 
+gvplugin_library_t *gvplugin_library_load(char *path)
+{
+#if HAVE_LTDL
+    lt_dlhandle hndl;
+    lt_ptr ptr;
+    char *s, *sym;
+
+    char *suffix = "_LTX_library";
+
+    if (lt_dlinit()) {
+        fprintf(stderr,"failed to init libltdl\n");
+        return NULL;
+    }
+    hndl = lt_dlopen (path);
+    if (!hndl) {
+        fprintf(stderr,"failed to dlopen %s\n", path);
+        return NULL;
+    }
+
+    s = strrchr(path, '/');
+    sym = malloc(strlen(s) + strlen(suffix) + 1);
+    strcpy(sym, s+4);         /* strip leading "/lib" */
+    s = strchr(sym, '.');     /* strip trailing ".so" */
+    strcpy(s,"_LTX_library"); /* append "_LTX_library" */
+
+    ptr = lt_dlsym (hndl, sym);
+    if (!ptr) {
+        fprintf(stderr,"failed to resolve %s in %s\n", sym, path);
+	free(sym);
+        return NULL;
+    }
+    free(sym);
+    return (gvplugin_library_t *)(ptr);
+#else
+    fprintf(stderr,"dynamic loading not available\n");
+    return NULL;
+#endif
+}
+
+
 /* load a plugin of type=str where str can optionally contain a ":path" modifier */
 gv_plugin_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 {
-    gv_plugin_t **pnext;
+    gv_plugin_t **pnext, *rv;
+    gvplugin_library_t *library;
+    gvplugin_api_t *apis;
+    gvplugin_type_t *types;
     char *s, *p;
+    int i;
+
 
     /* check for valid apis[] index */
     if (api < 0)
 	return NULL;
-
-    /* point to the beginning of the linked list of plugins for this api */
-    pnext = &(gvc->apis[api]);
 
     /* does str have a :path modifier? */
     s = strdup(str);
@@ -102,52 +152,64 @@ gv_plugin_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
     if (p)
 	*p++ = '\0';
 
+    /* point to the beginning of the linked list of plugins for this api */
+    pnext = &(gvc->apis[api]);
+
     while (*pnext) {
 	if (strcmp(s, (*pnext)->typestr) == 0) {
 	    if (p) {
 		if (strcmp(p, (*pnext)->path) == 0)
 		    break;
-	    } else
+	    }
+	    else
 		break;
 	}
 	pnext = &((*pnext)->next);
     }
-    free(s);
+
+    rv = *pnext;
     if ((*pnext) && (*pnext)->typeptr == NULL) {
+        rv = NULL;
+	library = gvplugin_library_load((*pnext)->path);
+	if (library) {
 
-#if HAVE_LTDL
-        /* dynamically load required plugin library */
+	    /*
+	     * FIXME - would be cleaner to here remove the entries from the
+	     * config data for the uninstalled library - i.e. the entries
+	     * without type ptrs.   It works without because the real library
+	     * data is inserted ahead of, and so supercedes, the config data.
+	     */
 
-	lt_dlhandle hndl;
-	lt_ptr ptr;
-
-	if (lt_dlinit()) {
-	    fprintf(stderr,"failed to init libltdl\n");
-	    return NULL;
-	}
-	hndl = lt_dlopen ((*pnext)->path);
-	if (!hndl) {
-	    fprintf(stderr,"failed to dlopen %s\n", (*pnext)->path);
-	    return NULL;
-	}
-	ptr = lt_dlsym (hndl, "gvplugin_cairo_LTX_plugin");
-	if (!ptr) {
-	    fprintf(stderr,"failed to resolve %s in %s\n", "gvplugin_cairo_LTX_plugin", (*pnext)->path);
-	    return NULL;
-	}
-#if 0
-	/* FIXME */
-	(*pnext)->typeptr = 
-#else
-	fprintf(stderr,"dynamic loading not implemented\n");
-	return NULL;
-#endif
-#else
-	fprintf(stderr,"dynamic loading not available\n");
-	return NULL;
-#endif
+            /* Now reinsert the library with real type ptrs */
+            for (apis = library->apis; (types = apis->types); apis++) {
+		for (i = 0; types[i].type; i++) {
+                    gvplugin_install(gvc, apis->api, types[i].type,
+				types[i].quality, library->name, &types[i]);
+		}
+            }
+	    
+	    /* Now search again for the specific plugin type */
+	    pnext = &(gvc->apis[api]);
+	    while (*pnext) {
+		if (strcmp(s, (*pnext)->typestr) == 0) {
+		    if (p) {
+			if (strcmp(p, (*pnext)->path) == 0)
+			    break;
+		    }
+		    else
+			break;
+		}
+		pnext = &((*pnext)->next);
+	    }
+	    rv = *pnext;
+        }
     }
-    return (gvc->api[api] = *pnext);
+    /* one last check for succesfull load */
+    if ((*pnext) && (*pnext)->typeptr == NULL)
+	rv = NULL;
+    free(s);
+    gvc->api[api] = rv;
+    return rv;
 }
 
 /* string buffer management - FIXME - must have 20 solutions for this same thing */
@@ -227,22 +289,26 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
     return buf;
 }
 
-extern gvplugin_t *builtins[];
+#ifndef HAVE_LTDL
+extern gvplugin_library_t *builtins[];
+#endif
 
 void gvplugin_builtins(GVC_t * gvc)
 {
-    gvplugin_t **plugin;
+#ifndef HAVE_LTDL
+    gvplugin_library_t **library;
     gvplugin_api_t *apis;
     gvplugin_type_t *types;
     int i;
 
-    for (plugin = builtins; *plugin; plugin++) {
-	for (apis = (*plugin)->apis; (types = apis->types); apis++) {
+    for (library = builtins; *library; library++) {
+	for (apis = (*library)->apis; (types = apis->types); apis++) {
 	    for (i = 0; types[i].type; i++) {
 		gvplugin_install(gvc, apis->api,
 				 types[i].type, types[i].quality,
-				 (*plugin)->name, &types[i]);
+				 (*library)->name, &types[i]);
 	    }
 	}
     }
+#endif
 }

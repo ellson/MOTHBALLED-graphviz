@@ -59,18 +59,6 @@ extern double drand48(void);
 #include "tlayout.h"
 #include "globals.h"
 
-  /* Default layout values, possibly set via command line; -1 indicates unset */
-fdpParms_t fdp_parms = {
-    1,				/* useGrid */
-    1,				/* useNew */
-    -1,				/* numIters */
-    50,				/* unscaled */
-    0.0,			/* C */
-    1.0,			/* Tfact */
-    -1.0,			/* K - set in initParams; used in init_edge */
-    -1.0,			/* T0 */
-};
-
 #define D_useGrid   (fdp_parms.useGrid)
 #define D_useNew    (fdp_parms.useNew)
 #define D_numIters  (fdp_parms.numIters)

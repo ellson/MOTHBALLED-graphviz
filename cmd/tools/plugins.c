@@ -20,7 +20,7 @@
 #include        "types.h"
 #include        "macros.h"
 #include        "gvc.h"
-gvplugin_t *builtins[] = {
+gvplugin_library_t *builtins[] = {
     NULL
 };
 

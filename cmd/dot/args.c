@@ -30,6 +30,19 @@
 #include "render.h"
 #include "tlayout.h"
 
+/* Default layout values, possibly set via command line; -1 indicates unset */
+fdpParms_t fdp_parms_default = {
+    1,                          /* useGrid */
+    1,                          /* useNew */
+    -1,                         /* numIters */
+    50,                         /* unscaled */
+    0.0,                        /* C */
+    1.0,                        /* Tfact */
+    -1.0,                       /* K - set in initParams; used in init_edge */
+    -1.0,                       /* T0 */
+};
+
+
 static int
 neato_extra_args(GVC_t *gvc, int argc, char** argv)
 {
@@ -186,6 +199,8 @@ fdp_extra_args (GVC_t *gvc, int argc, char** argv)
   int    i;
   char*  arg;
   int    cnt = 1;
+
+  fdp_parms = fdp_parms_default;
 
   for (i = 1; i < argc; i++) {
     arg = argv[i];

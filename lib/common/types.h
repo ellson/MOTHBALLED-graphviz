@@ -591,6 +591,17 @@ extern "C" {
 #define ED_weight(e) (e)->u.weight
 #define ED_xpenalty(e) (e)->u.xpenalty
 
+    typedef struct {
+        int useGrid;            /* use grid for speed up */
+        int useNew;             /* encode x-K into attractive force */
+        int numIters;           /* actual iterations in layout */
+        int unscaled;           /* % of iterations used in pass 1 */
+        double C;               /* Repulsion factor in xLayout */
+        double Tfact;           /* scale temp from default expression */
+        double K;               /* spring constant; ideal distance */
+        double T0;              /* initial temperature */
+    } fdpParms_t;
+
 #ifdef __cplusplus
 }
 #endif

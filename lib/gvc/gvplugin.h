@@ -53,9 +53,9 @@ extern "C" {
 
     typedef struct {
 	char *name;		/* used instead of a file pathname
-					when this plugin is builtin */
+					when this plugin is loaded */
 	gvplugin_api_t *apis;
-    } gvplugin_t;
+    } gvplugin_library_t;
 
 #ifdef __cplusplus
 }

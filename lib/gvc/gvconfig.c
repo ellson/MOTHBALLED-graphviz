@@ -17,6 +17,10 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<string.h>
+#include	<sys/types.h>
+#include	<sys/stat.h>
+#include	<unistd.h>
+#include	<glob.h>
 
 #include        "config.h"
 #include        "types.h"
@@ -130,10 +134,17 @@ void gvconfig(GVC_t * gvc)
     api_t gv_api;
     int quality;
     int nest = 0;
-    int sz, rc;
+    int sz, rc, i, j;
+    struct stat config_st, libdir_st;
     FILE *f;
     char *config_path, *home, *config;
-    char *dot_graphviz_config = "/.graphviz/config";
+    glob_t globbuf;
+    gvplugin_library_t *library;
+    gvplugin_api_t *apis;
+    gvplugin_type_t *types;
+
+    char *dot_graphviz = "/.graphviz";
+    char *libdir = GVLIBDIR;
 
 #define SZ_CONFIG 1000
     
@@ -142,14 +153,68 @@ void gvconfig(GVC_t * gvc)
 #endif
     gvplugin_builtins(gvc);
 
+
+    /* see if there are any new plugins */
+
+    rc = stat(libdir, &libdir_st);
+    if (rc == -1) {	/* if we fail to stat it then it probably doesn't exist
+		   so just fail silently, clean up and return */
+	return;
+    }
+
     home = getenv ("HOME");
     if (!home) {
 	return;
     }
 
-    config_path = malloc(strlen(home) + strlen(dot_graphviz_config) + 1);
+    config_path = malloc(strlen(home) + strlen(dot_graphviz) + 1);
     strcpy(config_path, home);
-    strcat(config_path, dot_graphviz_config);
+    strcat(config_path, dot_graphviz);
+
+    rc = stat(config_path, &config_st);
+
+    if (rc == -1 || libdir_st.st_mtime > config_st.st_mtime) {
+	f = fopen(config_path,"w");
+	if (!f) {
+            fprintf(stderr,"failed to open %s for write.\n", config_path);
+	    free(config_path);
+	    return;
+	}
+
+	rc = glob("/home/ellson/FIX/Linux.x86_64/lib/graphviz/libgvplugin*.so",
+		GLOB_NOSORT, NULL, &globbuf);
+
+        if (rc == 0) {
+	    for (j = 0; j < globbuf.gl_pathc; j++) {
+		library = gvplugin_library_load(globbuf.gl_pathv[j]);
+		if (library) {
+		    fputs (globbuf.gl_pathv[j], f);
+		    fputs (" {\n", f);
+		    for (apis = library->apis; (types = apis->types); apis++) {
+			fputs ("\t", f);
+			fputs (gvplugin_api_name(apis->api), f);
+			fputs (" {\n", f);
+			for (i = 0; types[i].type; i++) {
+			    /* might as well install it since its already loaded */
+			    gvplugin_install(gvc, apis->api, types[i].type,
+                                types[i].quality, library->name, &types[i]);
+
+			    fprintf(f, "\t\t%s %d\n",
+				types[i].type, types[i].quality);
+			}
+		        fputs ("\t}\n", f);
+		    }
+		    fputs ("}\n", f);
+		}
+	    }
+	}
+	globfree(&globbuf);
+
+	fclose(f);
+	return;     /* all plugins have been installed */
+    }
+
+    /* load in the cached plugin library data */
 
     f = fopen(config_path,"r");
     if (!f) {	/* if we fail to open it then it probably doesn't exists

@@ -118,6 +118,9 @@ extern "C" {
 	*E_labelfontsize, *E_labelfontname, *E_labelfontcolor,
 	*E_labeldistance, *E_labelangle,
 	*E_tailclip, *E_headclip;
+
+    EXTERN fdpParms_t fdp_parms;
+
 #undef external
 
 #ifdef __cplusplus

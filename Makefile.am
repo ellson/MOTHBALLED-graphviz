@@ -11,8 +11,8 @@ html =
 txt_DATA = $(txt)
 html_DATA = $(html)
 
-#SUBDIRS = libltdl lib plugin cmd tclpkg doc contrib graphs
-SUBDIRS = lib plugin cmd tclpkg doc contrib graphs
+# $(subdirs) contains the list from: AC_CONFIG_SUBDIRS
+SUBDIRS = $(subdirs) lib plugin cmd tclpkg doc contrib graphs
 
 doxygen:
 	doxygen

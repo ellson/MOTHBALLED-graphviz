@@ -28,17 +28,6 @@ typedef enum {
   seed_unset, seed_val, seed_time, seed_regular
 } seedMode;
 
-    typedef struct {
-	int useGrid;		/* use grid for speed up */
-	int useNew;		/* encode x-K into attractive force */
-	int numIters;		/* actual iterations in layout */
-	int unscaled;		/* % of iterations used in pass 1 */
-	double C;		/* Repulsion factor in xLayout */
-	double Tfact;		/* scale temp from default expression */
-	double K;		/* spring constant; ideal distance */
-	double T0;              /* initial temperature */
-    } fdpParms_t;
-
     extern fdpParms_t fdp_parms;
 
     extern void fdp_initParams(graph_t *);
