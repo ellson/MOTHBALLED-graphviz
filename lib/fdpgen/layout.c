@@ -432,6 +432,7 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
      */
     copyAttr(g,dg,"overlap");
     copyAttr(g,dg,"sep");
+    copyAttr(g,dg,"K");
 
     /* create derived nodes from clusters */
     for (i = 1; i <= GD_n_cluster(g); i++) {
