@@ -10,9 +10,9 @@
 # Written by Kiem-Phong Vo
 
 all : install_ut
-
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 DEFINES=
 LIBTYPE=
@@ -129,14 +129,14 @@ $(OBJS) : ast_common.h
 
 # the make goals below are common to both uni&multi-threaded versions
 FEATURE/sfio: features/sfio
-	../../iffe set cc $(CC) $(CCFLAGS) : run features/sfio
+	$(ROOT)/iffe set cc $(CC) $(CCFLAGS) : run features/sfio
 
-ast_common.h : ../../cdt/ast_common.h
+ast_common.h : ../cdt/ast_common.h
 	rm -f ast_common.h
-	$(LN) ../../cdt/ast_common.h .
+	$(LN) ../cdt/ast_common.h .
 
-../../cdt/ast_common.h : ../../cdt/features/common
-	(cd ../../cdt; make ast_common.h)
+../cdt/ast_common.h : ../cdt/features/common
+	(cd ../cdt; make ast_common.h)
 
 #ast_common.h: features/common
 #	../iffe - set cc $(CC) $(CCFLAGS) : run features/common > ast_common.h

@@ -1,7 +1,7 @@
 all:	libpathplan.a
-
-include ../Config.mk
-include ../makearch/$(ARCH)
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 INCS =	-I. -I..
 
