@@ -23,9 +23,11 @@
 extern "C" {
 #endif
 
+    extern double expFactor(graph_t * G);
     extern void adjustNodes(graph_t * G);
     extern void normalize(graph_t * g);
     extern void removeOverlap(graph_t * G);
+    extern void removeOverlapAs(graph_t*, char*);
 
 #ifdef __cplusplus
 }

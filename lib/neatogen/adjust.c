@@ -145,7 +145,6 @@ static void makeInfo(Agraph_t * graph)
     Agnode_t *node;
     int i;
     Info_t *ip;
-    char *marg;
 
     nsites = agnnodes(graph);
     geominit();
@@ -155,18 +154,7 @@ static void makeInfo(Agraph_t * graph)
     node = agfstnode(graph);
     ip = nodeInfo;
 
-#ifdef OLD
-    marg = agget(graph, "voro_pmargin");
-    if (marg && (*marg != '\0')) {
-	pmargin = atof(marg);
-    }
-#else
-    if ((marg = agget(graph, "sep"))) {
-	pmargin = 1.0 + atof(marg);
-    } else
-	pmargin = 1.01;
-#endif
-
+    pmargin = expFactor (graph);
     for (i = 0; i < nsites; i++) {
 	ip->site.coord.x = ND_pos(node)[0];
 	ip->site.coord.y = ND_pos(node)[1];
@@ -602,7 +590,7 @@ static int sAdjust()
     int overlapCnt = 0;
     int cnt;
     Point center;
-    double sc;
+    /* double sc; */
 
     if (!useIter || (iterations > 0))
 	overlapCnt = countOverlap(iterCnt);
@@ -614,7 +602,7 @@ static int sAdjust()
     center.x = (pxmin + pxmax) / 2.0;
     center.y = (pymin + pymax) / 2.0;
     while (1) {
-	sc = rePos(center);
+	/* sc = */ rePos(center);
 	iterCnt++;
 
 	if (useIter && (iterCnt == iterations))
@@ -714,9 +702,14 @@ static adjust_data adjustMode[] = {
     {AM_NONE, 0, 0}
 };
 
+/* getAdjustMode:
+ * Convert string value to internal value of adjustment mode.
+ * Assume s != NULL.
+ */
 static adjust_data *getAdjustMode(char *s)
 {
     adjust_data *ap = adjustMode + 2;
+    if (*s == '\0') return adjustMode;
     while (ap->attrib) {
 	if (!strcasecmp(s, ap->attrib))
 	    return ap;
@@ -728,10 +721,14 @@ static adjust_data *getAdjustMode(char *s)
 	return adjustMode + 1;
 }
 
-void removeOverlap(graph_t * G)
+/* removeOverlapAs:
+ * Use flag value to determine if and how to remove
+ * node overlaps.
+ */
+void 
+removeOverlapAs(graph_t * G, char* flag)
 {
     /* int          userWindow = 0; */
-    char *flag;
     int ret;
     extern void cAdjust(graph_t *, int);
     extern void scAdjust(graph_t *, int);
@@ -741,7 +738,6 @@ void removeOverlap(graph_t * G)
 
     if (agnnodes(G) < 2)
 	return;
-    flag = agget(G, "overlap");
     if (flag == NULL)
 	return;
 
@@ -750,7 +746,7 @@ void removeOverlap(graph_t * G)
 	return;
 
     if (Verbose)
-	fprintf(stderr, "Adjusting nodes using %s\n", am->print);
+	fprintf(stderr, "Adjusting %s using %s\n", G->name, am->print);
 
     if (am->mode > AM_SCALE) {
 /* start_timer(); */
@@ -805,11 +801,35 @@ void removeOverlap(graph_t * G)
 
 }
 
+/* removeOverlap:
+ */
+void 
+removeOverlap(graph_t * G)
+{
+    removeOverlapAs(G, agget(G, "overlap"));
+}
+
 void adjustNodes(graph_t * G)
 {
     if (agnnodes(G) < 2)
 	return;
     normalize(G);
     removeOverlap (G);
+}
+
+/* expFactor:
+ * Return factor by which to scale up nodes.
+ */
+double 
+expFactor(graph_t* g)
+{
+    double pmargin;
+    char*  marg;
+
+    if ((marg = agget(g, "sep"))) {
+	pmargin = 1.0 + atof(marg);
+    } else
+	pmargin = 1.01;
+    return pmargin;
 }
 

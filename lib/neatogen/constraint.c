@@ -20,7 +20,7 @@
 #endif
 
 #include "neato.h"
-/* #include "utils.h" */
+#include "adjust.h"
 
 #define SCALE 10
 #define SCALE2 (SCALE/2)
@@ -133,7 +133,9 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
     edge_t *e;
     int lcnt, cnt;
     int oldval = -MAXINT;
+#ifdef OLD
     double root_val;
+#endif
     node_t *lastn = NULL;
 
     /* count distinct nodes */
@@ -161,7 +163,9 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 		lastn = n;
 	    } else {
 		root = n;
+#ifdef OLD
 		root_val = p->val;
+#endif
 		lastn = GD_nlist(cg) = n;
 	    }
 	    alloc_elist(lcnt, ND_in(n));
@@ -400,21 +404,13 @@ static void initItem(node_t * n, nitem * p, double margin)
  */
 void cAdjust(graph_t * g, int xy)
 {
-    char *marg;
-    double margin = 0;
+    double margin;
     int i, nnodes = agnnodes(g);
     nitem *nlist = N_GNEW(nnodes, nitem);
     nitem *p = nlist;
     node_t *n;
 
-    marg = agget(g, "sep");
-    if (marg && *marg) {
-	margin = atof(marg);
-	if (margin > 0)
-	    margin += 1.0;
-    }
-    if (margin == 0.0)
-	margin = 1.01;
+    margin = expFactor (g);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	initItem(n, p, margin);
@@ -610,19 +606,11 @@ void scAdjust(graph_t * g, int equal)
     node_t *n;
     pointf s;
     int i;
-    char *marg;
-    double margin = 0;
+    double margin;
     pointf *aarr;
     int m;
 
-    marg = agget(g, "sep");
-    if (marg && *marg) {
-	margin = atof(marg);
-	if (margin > 0)
-	    margin += 1.0;
-    }
-    if (margin == 0.0)
-	margin = 1.02;
+    margin = expFactor (g);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	double w2 = margin * ND_width(n) / 2.0;
