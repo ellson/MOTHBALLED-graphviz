@@ -1,0 +1,9 @@
+*.la
+*.lo
+.deps
+.libs
+Makefile
+Makefile.in
+dotparse.c
+dotparse.h
+dotparse.output
