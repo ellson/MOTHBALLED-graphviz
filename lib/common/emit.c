@@ -137,7 +137,6 @@ static void emit_defaults(GVC_t * gvc)
 static void setup_page(GVC_t * gvc, point page)
 {
     point offset;
-    double scale;
     int rot;
     graph_t *g = gvc->g;
 
@@ -156,9 +155,8 @@ static void setup_page(GVC_t * gvc, point page)
 	offset.x = (page.y + 1) * GP.y;
 	offset.y = -page.x * GP.x;
     }
-    scale = GD_drawing(g)->scale;
     rot = GD_drawing(g)->landscape ? 90 : 0;
-    gvrender_begin_page(gvc, page, scale, rot, offset);
+    gvrender_begin_page(gvc, page, gvc->zoom, rot, offset);
     emit_background(gvc, CB.LL, CB.UR);
     emit_defaults(gvc);
 }
@@ -306,8 +304,8 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	GP.y = PFCLM.y;		/* convert to double */
 	if (GD_drawing(g)->landscape)
 	    GP = exch_xyf(GP);
-	GP.x = GP.x / GD_drawing(g)->scale;
-	GP.y = GP.y / GD_drawing(g)->scale;
+	GP.x = GP.x / gvc->zoom;
+	GP.y = GP.y / gvc->zoom;
 	/* we don't want graph page to exceed its bounding box */
 	GP.x = MIN(GP.x, GD_bb(g).UR.x);
 	GP.y = MIN(GP.y, GD_bb(g).UR.y);
@@ -316,7 +314,7 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	N_pages = Pages.x * Pages.y;
 
 	/* find the drawable size in device coords */
-	tp = GD_drawing(g)->size;
+	tp = gvc->size;
 	if (GD_drawing(g)->landscape)
 	    tp = exch_xy(tp);
 	DS.x = MIN(tp.x, PFCLM.x);
@@ -330,7 +328,7 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	PFC.y = DEFAULT_PAGEHT;
 	PFCLM.x = PFC.x - 2 * PB.LL.x;
 	PFCLM.y = PFC.y - 2 * PB.LL.y;
-	DS = GD_drawing(g)->size;
+	DS = gvc->size;
 	if (GD_drawing(g)->landscape)
 	    DS = exch_xy(DS);
 	Pages.x = Pages.y = N_pages = 1;
@@ -631,60 +629,39 @@ void emit_edge(GVC_t * gvc, edge_t * e)
     gvrender_end_edge(gvc);
 }
 
-static void setup_size_scale(graph_t * g)
+/* emit_init
+ *   - called just once per output device
+ *     (where emit_graph can be called many times for refresh callbacks)
+ */
+void emit_init(GVC_t * gvc, graph_t * g)
 {
-    double xscale, yscale, scale = 1.0;
+    char *str;
+    double X, Y, Z = 1.0, x, y;
+    point size = GD_drawing(g)->size;
+    point UR = GD_bb(g).UR;
 
     assert((GD_bb(g).LL.x == 0) && (GD_bb(g).LL.y == 0));
 
     /* determine final drawing size and scale to apply. */
     /* N.B. size given by user is not rotated by landscape mode */
     /* start with "natural" size of layout */
-    if (GD_drawing(g)->size.x > 0) {	/* was given by user... */
-	if ((GD_drawing(g)->size.x < GD_bb(g).UR.x)	/* drawing is too big... */
-	    ||(GD_drawing(g)->size.y < GD_bb(g).UR.y)) {
-	    xscale = ((double) GD_drawing(g)->size.x) / GD_bb(g).UR.x;
-	    yscale = ((double) GD_drawing(g)->size.y) / GD_bb(g).UR.y;
-	    scale = MIN(xscale, yscale);
-	}
-	else if (GD_drawing(g)->filled) {
-	    if ((GD_drawing(g)->size.x > GD_bb(g).UR.x)	/* drawing is too small... */
-		&&(GD_drawing(g)->size.y > GD_bb(g).UR.y)) {
-		xscale = ((double) GD_drawing(g)->size.x) / GD_bb(g).UR.x;
-		yscale = ((double) GD_drawing(g)->size.y) / GD_bb(g).UR.y;
-		scale = MIN(xscale, yscale);
-	    }
-	}
+    if (size.x > 0) {	/* was given by user... */
+	if ((size.x < UR.x) || (size.y < UR.y) /* drawing is too big... */
+	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
+		&& (size.x > UR.x) && (size.y > UR.y))) /* drawing is too small... */
+	    Z = MIN(((double)size.x)/UR.x, ((double)size.y)/UR.y);
     }
-    GD_drawing(g)->scale = scale;
-    GD_drawing(g)->size.x = scale * GD_bb(g).UR.x;
-    GD_drawing(g)->size.y = scale * GD_bb(g).UR.y;
-}
-
-void emit_init(GVC_t * gvc, graph_t * g)
-{
-    char *str;
-    double X, Y, Z, x, y;
-
-    setup_size_scale(g);
-    X = (double)(GD_drawing(g)->size.x);
-    Y = (double)(GD_drawing(g)->size.y);
-    Z = GD_drawing(g)->scale;
+    X = Z * (double)(GD_bb(g).UR.x + 2 * GD_drawing(g)->margin.x + 2);
+    Y = Z * (double)(GD_bb(g).UR.y + 2 * GD_drawing(g)->margin.y + 2);
     x = (double)(GD_bb(g).UR.x) / 2.;
     y = (double)(GD_bb(g).UR.y) / 2.;
 
     if ((str = agget(g, "viewport")))
 	sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
-    gvc->size.x = ROUND(X);
-    gvc->size.y = ROUND(Y);
-    gvc->zoom = Z;		/* scaling factor */
-    gvc->zoom = Z;		/* scaling factor */
-    gvc->focus.x = x;		/* graph coord of focus - points */
-    gvc->focus.y = y;
 
     G_peripheries = agfindattr(g, "peripheries");
     setup_graph(gvc, g);
-    gvrender_begin_job(gvc, Lib, Pages);
+    gvrender_begin_job(gvc, Lib, Pages, X, Y, Z, x, y, GD_drawing(g)->dpi);
 }
 
 void emit_deinit(GVC_t * gvc, graph_t * g)

@@ -121,15 +121,26 @@ void gvrender_reset(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_job(GVC_t * gvc, char **lib, point pages)
+void gvrender_begin_job(GVC_t * gvc, char **lib, point pages, double X, double Y, double Z, double x, double y, int dpi)
 {
     gvrender_engine_t *gvre = gvc->render_engine;
 
     gvc->lib = lib;
     gvc->pages = pages;
-    if (gvre && gvre->begin_job)
-//      gvre->begin_job(gvc, agget(g, "stylesheet"));
-	gvre->begin_job(gvc);
+    if (gvre) {
+	/* establish viewport and scaling */
+	if (dpi < 1.0)
+	    dpi = gvc->render_features->default_dpi;
+        gvc->dpi = dpi;
+	gvc->size.x = ROUND(X * dpi / POINTS_PER_INCH);
+	gvc->size.y = ROUND(Y * dpi / POINTS_PER_INCH);
+	gvc->zoom = Z;              /* scaling factor */
+	gvc->zoom = Z;              /* scaling factor */
+	gvc->focus.x = x;           /* graph coord of focus - points */
+	gvc->focus.y = y;
+        if (gvre->begin_job)
+	    gvre->begin_job(gvc);
+    }
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
@@ -223,33 +234,14 @@ static void gvrender_resolve_color(gvrender_features_t * features,
 void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     gvrender_engine_t *gvre = gvc->render_engine;
-    double dpi;
     char *str;
 
     gvc->g = g;
     gvc->bb = bb;
     gvc->pb = pb;
-    dpi = gvc->dpi = GD_drawing(g)->dpi;
-    gvc->margin = GD_drawing(g)->margin;
 
     if (gvre) {
-	/* establish viewport and scaling */
-	if (dpi < 1.0)
-	    dpi = gvc->render_features->default_dpi;
-#if 0
-	if (gvc->size.x == 0) {
-	    gvc->size.x =
-		(gvc->bb.UR.x - gvc->bb.LL.x +
-		 2 * gvc->margin.x) * dpi / POINTS_PER_INCH + 2;
-	    gvc->size.y =
-		(gvc->bb.UR.y - gvc->bb.LL.y +
-		 2 * gvc->margin.y) * dpi / POINTS_PER_INCH + 2;
-	    gvc->focus.x = (GD_bb(gvc->g).UR.x - GD_bb(gvc->g).LL.x) / 2.;
-	    gvc->focus.y = (GD_bb(gvc->g).UR.y - GD_bb(gvc->g).LL.y) / 2.;
-	    gvc->zoom = 1.0;
-	}
-#endif
-	gvc->compscale.x = gvc->zoom * dpi / POINTS_PER_INCH;
+	gvc->compscale.x = gvc->zoom * gvc->dpi / POINTS_PER_INCH;
 	gvc->compscale.y =
 	    gvc->compscale.x *
 	    ((gvc->render_features->flags & GVRENDER_Y_GOES_DOWN) ? -1.0 : 1.0);

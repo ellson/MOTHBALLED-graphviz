@@ -271,7 +271,7 @@ extern "C" {
 	    0, R_VALUE, R_FILL, R_COMPRESS, R_AUTO, R_EXPAND } ratio_t;
 
     typedef struct layout_t {
-	double quantum, scale;
+	double quantum;
 	double ratio;		/* set only if ratio_kind == R_VALUE */
 	double dpi;
 	point margin, page, size;
