@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I "../../.." /I "." /I "../../lib/agraph" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I "../.." /I "." /I "../../lib/agraph" /I "../../lib/ingraphs" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /YX /FD /c
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -52,9 +52,6 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib agraph.lib cdt.lib common.lib graph.lib ingraphs.lib libexpat.lib libexpatw.lib /nologo /subsystem:console /machine:I386 /libpath:"../../third-party/lib" /libpath:"../../lib/lib/release"
 # SUBTRACT LINK32 /pdb:none
-# Begin Special Build Tool
-SOURCE="$(InputPath)"
-# End Special Build Tool
 
 !ELSEIF  "$(CFG)" == "dot2gxl - Win32 Debug"
 
@@ -70,7 +67,7 @@ SOURCE="$(InputPath)"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "../../.." /I "." /I "../../lib/agraph" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "../.." /I "." /I "../../lib/agraph" /I "../../lib/ingraphs" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -80,9 +77,6 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib agraph.lib cdt.lib common.lib graph.lib ingraphs.lib libexpat.lib libexpatw.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"../../third-party/lib" /libpath:"../../lib/lib/debug"
 # SUBTRACT LINK32 /pdb:none
-# Begin Special Build Tool
-SOURCE="$(InputPath)"
-# End Special Build Tool
 
 !ENDIF 
 
@@ -95,15 +89,15 @@ SOURCE="$(InputPath)"
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\src\cvtgxl.c
+SOURCE=.\cvtgxl.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\dot2gxl.c
+SOURCE=.\dot2gxl.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\gxl2dot.c
+SOURCE=.\gxl2dot.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -111,7 +105,7 @@ SOURCE=..\src\gxl2dot.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\src\convert.h
+SOURCE=.\convert.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

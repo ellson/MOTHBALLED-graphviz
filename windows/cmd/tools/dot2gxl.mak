@@ -49,7 +49,7 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /ML /W3 /GX /O2 /I "../../.." /I "." /I "../../lib/agraph" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /Fp"$(INTDIR)\dot2gxl.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /ML /W3 /GX /O2 /I "../.." /I "." /I "../../lib/agraph" /I "../../lib/ingraphs" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /Fp"$(INTDIR)\dot2gxl.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\dot2gxl.bsc" 
 BSC32_SBRS= \
@@ -65,16 +65,6 @@ LINK32_OBJS= \
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
-
-SOURCE="$(InputPath)"
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Release
-# End Custom Macros
-
 
 !ELSEIF  "$(CFG)" == "dot2gxl - Win32 Debug"
 
@@ -100,7 +90,7 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "../../.." /I "." /I "../../lib/agraph" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /Fp"$(INTDIR)\dot2gxl.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "../.." /I "." /I "../../lib/agraph" /I "../../lib/ingraphs" /I "../../lib/cdt" /I "../../lib/graph" /I "../../third-party/include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "HAVE_LIBEXPAT" /Fp"$(INTDIR)\dot2gxl.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 BSC32=bscmake.exe
 BSC32_FLAGS=/nologo /o"$(OUTDIR)\dot2gxl.bsc" 
 BSC32_SBRS= \
@@ -116,16 +106,6 @@ LINK32_OBJS= \
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
-
-SOURCE="$(InputPath)"
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Debug
-# End Custom Macros
-
 
 !ENDIF 
 
@@ -170,22 +150,19 @@ OutDir=.\Debug
 
 
 !IF "$(CFG)" == "dot2gxl - Win32 Release" || "$(CFG)" == "dot2gxl - Win32 Debug"
-SOURCE=..\src\cvtgxl.c
+SOURCE=.\cvtgxl.c
 
 "$(INTDIR)\cvtgxl.obj" : $(SOURCE) "$(INTDIR)"
-	$(CPP) $(CPP_PROJ) $(SOURCE)
 
 
-SOURCE=..\src\dot2gxl.c
+SOURCE=.\dot2gxl.c
 
 "$(INTDIR)\dot2gxl.obj" : $(SOURCE) "$(INTDIR)"
-	$(CPP) $(CPP_PROJ) $(SOURCE)
 
 
-SOURCE=..\src\gxl2dot.c
+SOURCE=.\gxl2dot.c
 
 "$(INTDIR)\gxl2dot.obj" : $(SOURCE) "$(INTDIR)"
-	$(CPP) $(CPP_PROJ) $(SOURCE)
 
 
 
