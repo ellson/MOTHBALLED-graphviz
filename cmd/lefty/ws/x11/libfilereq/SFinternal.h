@@ -49,6 +49,8 @@ extern "C" {
 #include <X11/Xos.h>
 #include <X11/Xaw/Text.h>
 #include <X11/Xaw/AsciiText.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #define SEL_FILE_CANCEL		-1
 #define SEL_FILE_OK		0
@@ -107,18 +109,19 @@ extern "C" {
 
     extern XawTextPosition SFtextPos;
 
-    extern void
-     SFenterList(),
-	SFleaveList(),
-	SFmotionList(), SFbuttonPressList(), SFbuttonReleaseList();
+    extern void SFenterList(Widget w, int n, XEnterWindowEvent *event);
+    extern void SFleaveList(Widget w, int n, XEvent *event);
+    extern void SFmotionList(Widget w, int n, XMotionEvent *event);
+    extern void SFbuttonPressList(Widget w, int n, XButtonPressedEvent *event);
+    extern void SFbuttonReleaseList(Widget w, int n, XButtonReleasedEvent *event);
 
-    extern void
-     SFvSliderMovedCallback(),
-	SFvFloatSliderMovedCallback(),
-	SFhSliderMovedCallback(),
-	SFpathSliderMovedCallback(),
-	SFvAreaSelectedCallback(),
-	SFhAreaSelectedCallback(), SFpathAreaSelectedCallback();
+    extern void SFvSliderMovedCallback(Widget w, int n, int fnew);
+    extern void SFvFloatSliderMovedCallback(Widget w, int n, float *new);
+    extern void SFhSliderMovedCallback(Widget w, int n, float *new);
+    extern void SFpathSliderMovedCallback(Widget w, XtPointer client_data, float *new);
+    extern void SFvAreaSelectedCallback(Widget w, int n, int pnew);
+    extern void SFhAreaSelectedCallback(Widget w, int n, int pnew);
+    extern void SFpathAreaSelectedCallback(Widget w, XtPointer client_data, int pnew);
 
     extern int SFupperX, SFlowerY, SFupperY;
 
@@ -149,15 +152,15 @@ extern "C" {
 
     extern int SFbuttonPressed;
 
-    extern int SFcompareEntries();
+    extern int SFcompareEntries(const void *vp, const void *vq);
 
-    extern void SFdirModTimer();
+    extern void SFdirModTimer(XtPointer cl, XtIntervalId *id);
 
-    extern char SFstatChar();
+    extern char SFstatChar(struct stat *statBuf);
 
     extern XtIntervalId SFdirModTimerId;
 
-    extern int (*SFfunc) ();
+    extern int (*SFfunc) (char *, char **, struct stat *);
 
 #ifdef __cplusplus
 }

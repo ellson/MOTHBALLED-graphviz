@@ -541,7 +541,7 @@ dnl INCLUDES and LIBS for EXPAT
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
 AC_PATH_PROG(EXPAT_CONFIG,expat-config)
-if [ test -n "$EXPAT_CONFIG" ]; then
+if test -n "$EXPAT_CONFIG"; then
 	EXPAT_INCLUDES=`$EXPAT_CONFIG --cflags`
 	EXPAT_PREFIX=`$EXPAT_CONFIG --prefix`
 	if test "${EXPAT_PREFIX}/lib" != "/usr/lib" ; then
@@ -559,11 +559,11 @@ EXPAT_LIBDIR="/usr/lib"
 AC_ARG_WITH(expatlibdir,
 	[  --with-expatlibdir=DIR  use EXPAT libraries from DIR],
 	[EXPAT_LIBDIR="$withval"])
-if [ test "$EXPAT_LIBDIR" != "/usr/lib" ]; then
+if test "$EXPAT_LIBDIR" != "/usr/lib"; then
 	EXPAT_LIBS="-L$EXPAT_LIBDIR"
 	LDFLAGS="$LDFLAGS $EXPAT_LIBS"
 fi
-if [ test -f "$EXPAT_LIBDIR/libexpat.la" ]; then
+if test -f "$EXPAT_LIBDIR/libexpat.la"; then
 	EXPAT_LIBS="$EXPAT_LIBDIR/libexpat.la"
 fi
 AC_CHECK_HEADER(expat.h,
@@ -647,10 +647,10 @@ AC_ARG_WITH(zlibdir,
 	[Z_LIBS="-L$withval"])
 LDFLAGS="$LDFLAGS $Z_LIBS"
 AC_CHECK_HEADER(zlib.h,
-	AC_CHECK_LIB(z,main,
+	[AC_CHECK_LIB(z,main,
 		[Z_LIBS="$Z_LIBS -lz"
 		AC_DEFINE_UNQUOTED(HAVE_LIBZ,1,[Define if you have the Z library])],
-			AC_MSG_WARN(Optional z library not available)),
+			AC_MSG_WARN(Optional z library not available))],
 	AC_MSG_WARN(Optional z library not available - no zlib.h))
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
@@ -664,9 +664,9 @@ AC_ARG_WITH(mylibgd,
   [AC_HELP_STRING([--with-mylibgd],
                   [use internal gd library in preference to any installed libgd])])
 
-if [ test "x$with_mylibgd" != "xyes" ]; then
+if test "x$with_mylibgd" != "xyes"; then
     AC_PATH_PROG(GDLIB_CONFIG,gdlib-config)
-    if [ test -n "$GDLIB_CONFIG" ]; then
+    if test -n "$GDLIB_CONFIG"; then
         GD_INCLUDES=`$GDLIB_CONFIG --includes`
         GD_LDFLAGS=`$GDLIB_CONFIG --ldflags`
         GD_LIBS=`$GDLIB_CONFIG --libs`
@@ -681,22 +681,22 @@ if [ test "x$with_mylibgd" != "xyes" ]; then
         REQ_GD_MAJORVERSION=2
         REQ_GD_MINORVERSION=0
         REQ_GD_REVISION=33
-        if [ test $GD_MAJORVERSION -lt $REQ_GD_MAJORVERSION ]; then
+        if test $GD_MAJORVERSION -lt $REQ_GD_MAJORVERSION; then
 	    with_mylibgd=yes
         else
-            if [ test $GD_MAJORVERSION -eq $REQ_GD_MAJORVERSION ]; then
-                if [ test $GD_MINORVERSION -lt $REQ_GD_MINORVERSION ]; then
+            if test $GD_MAJORVERSION -eq $REQ_GD_MAJORVERSION; then
+                if test $GD_MINORVERSION -lt $REQ_GD_MINORVERSION; then
 	            with_mylibgd=yes
 	        else
-                    if [ test $GD_MINORVERSION -eq $REQ_GD_MINORVERSION ]; then
-		        if [ test $GD_REVISION -lt $REQ_GD_REVISION ]; then
+                    if test $GD_MINORVERSION -eq $REQ_GD_MINORVERSION; then
+		        if test $GD_REVISION -lt $REQ_GD_REVISION; then
 		            with_mylibgd=yes
 		        fi
 	            fi
 	        fi
             fi
         fi
-        if [ test "x$with_mylibgd" = "xyes" ]; then
+        if test "x$with_mylibgd" = "xyes"; then
             AC_MSG_WARN(GD library version < $REQ_GD_MAJORVERSION.$REQ_GD_MINORVERSION.$REQ_GD_REVISION)
         fi
     else
@@ -705,7 +705,7 @@ if [ test "x$with_mylibgd" != "xyes" ]; then
     fi
 fi
 
-if [ test "x$with_mylibgd" != "xyes" ]; then
+if test "x$with_mylibgd" != "xyes"; then
 # see if we can use the external gd lib
     save_CPPFLAGS=$CPPFLAGS
     save_LDFLAGS=$LDFLAGS
@@ -741,7 +741,7 @@ AM_CONDITIONAL(WITH_MYLIBGD, [test "x$with_mylibgd" = "xyes"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for ICONV (only with mylibgd)
 
-if [ test "x$with_mylibgd" = "xyes" ]; then
+if test "x$with_mylibgd" = "xyes"; then
 
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
@@ -780,7 +780,7 @@ fi
 dnl ----------------------------------
 dnl INCLUDES and LIBS for FREETYPE (only with mylibgd)
 
-if [ test "x$with_mylibgd" = "xyes" ]; then
+if test "x$with_mylibgd" = "xyes"; then
 
   dnl FreeType configure tests snarfed from libgd ..from libwmf ..
   FREETYPE_DIR="yes" 
@@ -788,25 +788,25 @@ if [ test "x$with_mylibgd" = "xyes" ]; then
   [  --with-freetype=DIR     where to find the freetype 2.x library],
          FREETYPE_DIR=$withval)
 
-  if [ test "x$FREETYPE_DIR" = "xno" ]; then
+  if test "x$FREETYPE_DIR" = "xno"; then
     AC_MSG_WARN(Optional FREETYPE2 library disabled)
   else
                                                                                 
-    if [ test "x$FREETYPE_DIR" != "xyes" ]; then
+    if test "x$FREETYPE_DIR" != "xyes"; then
       AC_PATH_PROG(FREETYPE_CONFIG,freetype-config,,[$FREETYPE_DIR/bin:$PATH])
     else
       AC_PATH_PROG(FREETYPE_CONFIG,freetype-config)
     fi
 
-    if [ test -n "$FREETYPE_CONFIG" ]; then
-      if [ test "x$FREETYPE_DIR" != "xyes" ]; then
+    if test -n "$FREETYPE_CONFIG"; then
+      if test "x$FREETYPE_DIR" != "xyes"; then
         FT_INCLUDES="`$FREETYPE_CONFIG --cflags` -I$FREETYPE_DIR/include"
       else
         FT_INCLUDES=`$FREETYPE_CONFIG --cflags`
       fi
       ft_libtool=`$FREETYPE_CONFIG --libtool`
       # check that it really exists (FreeBSD apparently forgot to insttall it!)
-      if [ test -f "$ft_libtool" ]; then
+      if test -f "$ft_libtool"; then
 	FT_LIBTOOL="$ft_libtool"
       else
 	FT_LIBTOOL=""
@@ -814,7 +814,7 @@ if [ test "x$with_mylibgd" = "xyes" ]; then
       FT_LIBS=`$FREETYPE_CONFIG --libs`
       FT_LDFLAGS=`echo " $FT_LIBS" |sed 's/ -l[[^ ]][[^ ]]*//g'`
     else
-      if [ test "x$FREETYPE_DIR" != "xyes" ]; then
+      if test "x$FREETYPE_DIR" != "xyes"; then
         FT_INCLUDES="-I$FREETYPE_DIR/include/freetype2 -I$FREETYPE_DIR/include"
         FT_LDFLAGS="-L$FREETYPE_DIR/lib"
         FT_LIBS="-lfreetype"
@@ -850,14 +850,14 @@ fi
 dnl ----------------------------------
 dnl INCLUDES and LIBS for FONTCONFIG (only with mylibgd)
 
-if [ test "x$with_mylibgd" = "xyes" ]; then
+if test "x$with_mylibgd" = "xyes"; then
 
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
 FC_INCLUDES=""
 FC_LIBS=""
 AC_PATH_PROG(FONTCONFIG_CONFIG,fontconfig-config)
-if [ test -n "$FONTCONFIG_CONFIG" ]; then
+if test -n "$FONTCONFIG_CONFIG"; then
         fc_cflags=`$FONTCONFIG_CONFIG --cflags`
 	if test "$fc_cflags" != "-I/usr/include" ; then
 		FC_INCLUDES="$fc_cflags"
@@ -896,12 +896,12 @@ fi
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PNG (only with mylibgd)
 
-if [ test "x$with_mylibgd" = "xyes" ]; then
+if test "x$with_mylibgd" = "xyes"; then
 
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
 AC_PATH_PROG(LIBPNG_CONFIG,libpng-config)
-if [ test -n "$LIBPNG_CONFIG" ]; then
+if test -n "$LIBPNG_CONFIG"; then
         PNG_INCLUDES=`$LIBPNG_CONFIG --cflags`
         PNG_PREFIX=`$LIBPNG_CONFIG --prefix`
 	if test "${PNG_PREFIX}/lib" != "/usr/lib" ; then
@@ -936,7 +936,7 @@ fi
 dnl -----------------------------------
 dnl INCLUDES and LIBS for JPEG (only with mylibgd)
 
-if [ test "x$with_mylibgd" = "xyes" ]; then
+if test "x$with_mylibgd" = "xyes"; then
 
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
@@ -948,11 +948,11 @@ JPEG_LIBDIR="/usr/lib"
 AC_ARG_WITH(jpeglibdir,
 	[  --with-jpeglibdir=DIR   use JPEG libraries from DIR],
 	[JPEG_LIBDIR="$withval"])
-if [ test "$JPEG_LIBDIR" != "/usr/lib" ]; then
+if test "$JPEG_LIBDIR" != "/usr/lib"; then
 	JPEG_LIBS="-L$JPEG_LIBDIR"
 	LDFLAGS="$LDFLAGS $JPEG_LIBS"
 fi
-if [ test -f "$JPEG_LIBDIR/libjpeg.la" ]; then
+if test -f "$JPEG_LIBDIR/libjpeg.la"; then
         JPEG_LIBS="$JPEG_LIBDIR/libjpeg.la"
 fi
 AC_CHECK_HEADER(jpeglib.h,
@@ -972,7 +972,7 @@ fi
 dnl -----------------------------------
 dnl INCLUDES and LIBS for cairo
 
-if [ test "x$enable_gvrender" != "xno" ]; then
+if test "x$enable_gvrender" != "xno"; then
 	PKG_CHECK_MODULES(CAIRO, cairo >= 0.1.3,
 		[AC_DEFINE_UNQUOTED(HAVE_CAIRO,1,
 			[Define if you have the cairo library [EXPERIMENTAL]])],

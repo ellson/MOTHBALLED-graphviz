@@ -99,9 +99,13 @@ extern char *sys_errlist[];
 
 #include "SFDecls.h"
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#else
 #if !defined(SVR4) && !defined(SYSV) && !defined(USG)
 extern char *getwd();
-#endif				/* !defined(SVR4) && !defined(SYSV) && !defined(USG) */
+#endif /* !defined(SVR4) && !defined(SYSV) && !defined(USG) */
+#endif /* !HAVE_UNISTD_H */
 
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
@@ -160,7 +164,7 @@ char SFtextBuffer[MAXPATHLEN];
 
 XtIntervalId SFdirModTimerId;
 
-int (*SFfunc) ();
+int (*SFfunc) (char *, char **, struct stat *);
 
 static char *oneLineTextEditTranslations = "\
 	<Key>Return:	redraw-display()\n\
@@ -785,18 +789,10 @@ static void SFprepareToReturn()
 }
 
 int
-XsraSelFile(toplevel, prompt, ok, cancel, failed,
-	    init_path, mode, show_entry, name_return, name_size)
-Widget toplevel;
-char *prompt;
-char *ok;
-char *cancel;
-char *failed;
-char *init_path;
-char *mode;
-int (*show_entry) ();
-char *name_return;
-int name_size;
+XsraSelFile(Widget toplevel, char *prompt, char *ok, char *cancel, char *failed,
+	    char *init_path, char *mode,
+	    int (*show_entry) (char *, char **, struct stat *),
+	    char *name_return, int name_size)
 {
     static int firstTime = 1;
     Cardinal i;

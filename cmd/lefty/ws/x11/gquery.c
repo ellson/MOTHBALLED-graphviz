@@ -169,9 +169,10 @@ int GQdestroywidget(Gwidget_t * widget)
     return 0;
 }
 
-int XsraSelFile(Widget toplevel, char *prompt, char *ok, char *cancel,
+extern int XsraSelFile(Widget toplevel, char *prompt, char *ok, char *cancel,
 		char *failed, char *init_path, char *mode,
-		int (*show_entry) (), char *name_return, int name_size);
+		int (*show_entry) (char *, char **, struct stat *),
+		char *name_return, int name_size);
 
 int GQqueryask(Gwidget_t * widget, char *prompt, char *args,
 	       char *responsep, int responsen)

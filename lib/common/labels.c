@@ -134,8 +134,8 @@ static void free_textline(textline_t * tl)
     if (tl) {
 	if (tl->str)
 	    free(tl->str);
-	if (tl->xshow);
-	free(tl->xshow);
+	if (tl->xshow)
+	    free(tl->xshow);
 	free(tl);
     }
 }
