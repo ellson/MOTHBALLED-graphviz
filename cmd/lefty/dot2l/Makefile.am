@@ -13,9 +13,14 @@ libdot2l_la_SOURCES = dot2l.c dotlex.c dotparse.y dottrie.c
 
 dotlex.o dotlex.lo : dotparse.h
 
-dotparse.c : dotparse.y
+dotparse.c : y.output
+	cat < y.tab.c > dotparse.c
 
-dotparse.h : dotparse.c
+dotparse.h : y.output
+	cat < y.tab.h > dotparse.h
+
+y.output: $(top_srcdir)/cmd/lefty/dot2l/dotparse.y
+	@YACC@ -dv $(top_srcdir)/cmd/lefty/dot2l/dotparse.y
 
 # this is a home-made tool
 # trie.c : trie_input
