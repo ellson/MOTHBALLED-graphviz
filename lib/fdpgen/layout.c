@@ -1014,6 +1014,7 @@ void fdp_layout(graph_t * g)
     char *str;
     int trySplines = 0;
 
+    State = 0;   /* initialize state */
     fdp_init_graph(g);
     fdpLayout(g);
 
