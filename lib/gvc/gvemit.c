@@ -34,7 +34,8 @@
 
 extern void emit_graph(GVC_t * gvc, graph_t * g, int flags);
 
-#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER) && defined(HAVE_CAIRO)
+//#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER) && defined(HAVE_CAIRO)
+#if 0
 
 #include <cairo.h>
 
@@ -523,7 +524,8 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
     job->flags = flags;
 
    if (flags & GVRENDER_X11_EVENTS) {
-#ifdef CAIRO_HAS_XLIB_SURFACE
+//#ifdef CAIRO_HAS_XLIB_SURFACE
+#if 0
 
 	const char *display=NULL;
 	int argb=0;

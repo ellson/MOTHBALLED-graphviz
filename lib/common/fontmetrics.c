@@ -17,7 +17,8 @@
 #include "render.h"
 #include "utils.h"
 
-#ifdef HAVE_CAIRO
+//#ifdef HAVE_CAIRO
+#if 0
 #include <cairo.h>
 #else
 

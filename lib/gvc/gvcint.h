@@ -63,10 +63,6 @@ extern "C" {
 
     typedef struct gvrender_job_s gvrender_job_t;
 
-#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER)
-#include <X11/Xlib.h>
-#endif
-
     struct gvrender_job_s {
 	gvrender_job_t *next;
 	char *output_filename;
@@ -110,7 +106,9 @@ extern "C" {
 	int layer;
 	int nLayers;
 
-#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER)
+	void *window;			/* display-specific data for gvrender plugin */
+
+#if 0
 	Display *dpy;
 	int scr;
 	Window win;
@@ -158,7 +156,7 @@ extern "C" {
 	gv_plugin_t *api[ APIS ];  /* array of current plugins per api */
 #undef ELEM
 
-	void *display; /* window display data for gvdisplay plugin */
+	void *display;			/* display-specific data for gvdisplay plugin */
 	gvdisplay_engine_t *display_engine; /* current display engine */
 
 	gvtext_engine_t *text_engine;	/* current text_layout engine */
