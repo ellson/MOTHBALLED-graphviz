@@ -23,7 +23,7 @@ extern "C" {
 
 #include <agxbuf.h>
 
-    extern void initHTMLlexer(char *, agxbuf *);
+    extern int initHTMLlexer(char *, agxbuf *);
     extern int htmllex();
     extern int htmllineno();
     extern int clearHTMLlexer();

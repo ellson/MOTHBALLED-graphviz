@@ -134,6 +134,7 @@ extern "C" {
     } pitem;
 
     extern htmllabel_t *parseHTML(char *, int *);
+    extern htmllabel_t *simpleHTML(char *);
 
     extern int make_html_label(textlabel_t * lp, void *obj);
     extern void emit_html_label(GVC_t * gvc, htmllabel_t * lp,

@@ -176,7 +176,7 @@ mkText (const char* lastl)
     lp->just = 'n';
   }
 
-  dtclear (lines);
+  if (lines) dtclear (lines);
 
   return tp;
 }
@@ -428,10 +428,23 @@ image  : T_img T_end_img { $$ = $1; }
 %%
 
 htmllabel_t*
+simpleHTML (char* txt)
+{
+  htmltxt_t*   tobj = mkText (txt);
+  htmllabel_t* l = mkLabel(tobj,HTML_TEXT);
+  return l;
+}
+
+/* parseHTML:
+ * Return parsed label or NULL if failure.
+ * Set warn to 0 on success; 1 for warning message; 2 if no expat.
+ */
+htmllabel_t*
 parseHTML (char* txt, int* warn)
 {
   unsigned char buf[SMALLBUF];
   agxbuf        str;
+  htmllabel_t*  l;
 
   HTMLstate.tblstack = 0;
   HTMLstate.lbl = 0;
@@ -439,13 +452,20 @@ parseHTML (char* txt, int* warn)
   agxbinit (&str, SMALLBUF, buf);
   HTMLstate.str = &str;
   
-  initHTMLlexer (txt, &str);
-  yyparse();
-  *warn = clearHTMLlexer ();
+  if (initHTMLlexer (txt, &str)) {/* failed: no libexpat - give up */
+    *warn = 2;
+    l = NULL;
+  }
+  else {
+    yyparse();
+    *warn = clearHTMLlexer ();
+    l = HTMLstate.lbl;
+  }
 
   dtclose (HTMLstate.lines);
+  HTMLstate.lines = NULL;
   agxbfree (&str);
 
-  return HTMLstate.lbl;
+  return l;
 }
 

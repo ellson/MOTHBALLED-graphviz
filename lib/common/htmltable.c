@@ -1418,7 +1418,7 @@ static char *getPenColor(void *obj)
 }
 
 /* make_html_label:
- * Return 1 if problem parsing HTML. In this case, use object name.
+ * Return non-zero if problem parsing HTML. In this case, use object name.
  */
 int make_html_label(textlabel_t * lp, void *obj)
 {
@@ -1432,9 +1432,7 @@ int make_html_label(textlabel_t * lp, void *obj)
 	agxbuf xb;
 	unsigned char buf[SMALLBUF];
 	agxbinit(&xb, SMALLBUF, buf);
-	lbl = parseHTML(nameOf(obj, &xb), &rv);
-	assert(lbl);
-	rv = 1;
+	lbl = simpleHTML(nameOf(obj, &xb));
 	agxbfree(&xb);
     }
 

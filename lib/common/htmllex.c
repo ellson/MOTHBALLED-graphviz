@@ -546,7 +546,7 @@ static void characterData(void *user, const char *s, int length)
 }
 #endif
 
-void initHTMLlexer(char *src, agxbuf * xb)
+int initHTMLlexer(char *src, agxbuf * xb)
 {
 #ifdef HAVE_LIBEXPAT
     state.xb = xb;
@@ -563,13 +563,15 @@ void initHTMLlexer(char *src, agxbuf * xb)
 			  (XML_StartElementHandler) startElement,
 			  endElement);
     XML_SetCharacterDataHandler(state.parser, characterData);
+    return 0;
 #else
     static int first;
-    if (first) {
+    if (!first) {
 	agerr(AGWARN,
 	      "Not built with libexpat. Table formatting is not available.\n");
 	first++;
     }
+    return 1;
 #endif
 }
 

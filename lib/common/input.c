@@ -647,7 +647,7 @@ void do_graph_label(graph_t * sg)
 							   "fontcolor"),
 						DEFAULT_COLOR), sg);
 	if (html) {
-	    if (make_html_label(GD_label(sg), sg))
+	    if (make_html_label(GD_label(sg), sg) == 1)
 		agerr(AGPREV, "in label of graph %s\n", sg->name);
 	}
 

@@ -814,7 +814,7 @@ void common_init_node(node_t * n)
 			     late_nnstring(n, N_fontcolor, DEFAULT_COLOR),
 			     n->graph);
     if (html) {
-	if (make_html_label(ND_label(n), n))
+	if (make_html_label(ND_label(n), n) == 1)
 	    agerr(AGPREV, "in label of node %s\n", n->name);
     }
     ND_shape(n) =
@@ -868,15 +868,15 @@ initFontLabelEdgeAttr(edge_t * e, struct fontinfo *fi,
 static boolean 
 wantClip(edge_t *e, attrsym_t* sym)
 {
-	char		*str;
-	boolean		rv = TRUE;
+    char		*str;
+    boolean		rv = TRUE;
 
-	if (sym) {	/* mapbool isn't a good fit, because we want "" to mean TRUE */
-		str = agxget(e,sym->index);
-		if (str && str[0]) rv = mapbool(str);
-		else rv = TRUE;
-	}
-	return rv;
+    if (sym) {	/* mapbool isn't a good fit, because we want "" to mean TRUE */
+	str = agxget(e,sym->index);
+	if (str && str[0]) rv = mapbool(str);
+	else rv = TRUE;
+    }
+    return rv;
 }
 
 /*chkPort:
@@ -919,7 +919,7 @@ int common_init_edge(edge_t * e)
 				 fi.fontsize, fi.fontname, fi.fontcolor,
 				 e->tail->graph);
 	if (html) {
-	    if (make_html_label(ED_label(e), e))
+	    if (make_html_label(ED_label(e), e) == 1)
 		edgeError(e, "label");
 	}
 	GD_has_labels(e->tail->graph) |= EDGE_LABEL;
@@ -940,7 +940,7 @@ int common_init_edge(edge_t * e)
 				      lfi.fontsize, lfi.fontname,
 				      lfi.fontcolor, e->tail->graph);
 	if (html) {
-	    if (make_html_label(ED_head_label(e), e))
+	    if (make_html_label(ED_head_label(e), e) == 1)
 		edgeError(e, "head label");
 	}
 	GD_has_labels(e->tail->graph) |= HEAD_LABEL;
@@ -957,7 +957,7 @@ int common_init_edge(edge_t * e)
 				      lfi.fontsize, lfi.fontname,
 				      lfi.fontcolor, e->tail->graph);
 	if (html) {
-	    if (make_html_label(ED_tail_label(e), e))
+	    if (make_html_label(ED_tail_label(e), e) == 1)
 		edgeError(e, "tail label");
 	}
 	GD_has_labels(e->tail->graph) |= TAIL_LABEL;
@@ -1032,7 +1032,7 @@ pointf flip_ptf(pointf p, int rankdir)
     return p;
 }
 
-/* invflip_ptf:
+/* invflip_pt:
  * Transform point =>
  *  LR - rotate cw by 90
  *  BT - reflect across x axis
