@@ -109,8 +109,12 @@ static void sameport(node_t * u, elist * l, double arr_len)
     edge_t *e, *f;
     int i;
     double x = 0, y = 0, x1, y1, x2, y2, r;
-    port prt, arr_prt;
-    int sflag, eflag, ht;
+    port prt;
+    int sflag, eflag;
+#ifdef OLD
+    int ht;
+    port arr_prt;
+#endif
 
     /* Compute the direction vector (x,y) of the average direction. We compute
        with direction vectors instead of angles because else we have to first
@@ -165,6 +169,17 @@ static void sameport(node_t * u, elist * l, double arr_len)
     prt.theta = 0;
     prt.side = 0;
 
+#ifdef OLD
+This code appears obsolete and wrong. First, we don't use arr_prt
+anymore, as we have previously ifdef'ed out the code below where it
+is used. In addition, it resets the rank height. But we've already
+positioned the nodes, so it can cause the new ht2, when added to a
+node's y coordinate to give a value in the middle of the rank above.
+This causes havoc when constructing box for spline routing.
+See bug 419.
+If we really want to make room for arrowheads, this should be done in
+the general case that the user sets a small ranksep, and requires repositioning
+nodes and maintaining equal separation when specified
     /* compute ARR_PORT at a distance ARR_LEN away from the boundary */
     if ((arr_prt.defined = arr_len && TRUE)) {
 	arr_prt.p.x = ROUND(x1 + x * arr_len);
@@ -187,6 +202,7 @@ static void sameport(node_t * u, elist * l, double arr_len)
 		GD_rank(u->graph)[ND_rank(u)].ht1 = ht;
 	}
     }
+#endif
 
     /* assign one of the ports to every edge */
     for (i = 0; i < l->size; i++) {
