@@ -522,9 +522,11 @@ char *safefile(char *filename)
 	    return NULL;
 	}
 
-	/* allocate a buffer that we are sure is big enough */
+	/* allocate a buffer that we are sure is big enough
+         * +1 for null character.
+         */
 	safefilename = realloc(safefilename,
-			       (strlen(Gvfilepath) + strlen(filename)));
+			       (strlen(Gvfilepath) + strlen(filename) + 1));
 
 	strcpy(safefilename, Gvfilepath);
 	str = filename;
