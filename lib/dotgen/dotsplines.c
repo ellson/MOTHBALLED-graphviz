@@ -87,7 +87,10 @@ static void completeflatpath(path *, pathend_t *, pathend_t *, int, int,
 			     int, int, int, box *, box *, int, int);
 static void completeregularpath(path *, Agedge_t *, Agedge_t *,
 				pathend_t *, pathend_t *, box *, int, int);
+#if 0
 static double dist(pointf, pointf);
+#endif
+static double dist2(pointf, pointf);
 static int edgecmp(Agedge_t **, Agedge_t **);
 static Agedge_t *getmainedge(Agedge_t *);
 static box makeflatcomponent(box, box, int, int, int, int, int);
@@ -1325,7 +1328,17 @@ static edge_t *bot_bound(edge_t * e, int side)
     return ans;
 }
 
-static double dist(p, q)
+static double dist2(p, q) /* square of scalar distance between p and q */
+pointf p, q;
+{
+    double d0, d1;
+    d0 = p.x - q.x;
+    d1 = p.y - q.y;
+    return (d0 * d0 + d1 * d1);
+}
+
+#if 0
+static double dist(p, q) /* scalar distance between p and q */
 pointf p, q;
 {
     double d0, d1;
@@ -1333,18 +1346,19 @@ pointf p, q;
     d1 = p.y - q.y;
     return sqrt(d0 * d0 + d1 * d1);
 }
+#endif
 
 point closest(splines * spl, point p)
 {
     int i, j, k, besti, bestj;
-    double bestdist, d, dlow, dhigh;
+    double bestdist2, d2, dlow2, dhigh2;
     double low, high, t;
     pointf c[4], pt2, pt;
     point rv;
     bezier bz;
 
     besti = bestj = -1;
-    bestdist = 1e+38;
+    bestdist2 = 1e+38;
     pt.x = p.x;
     pt.y = p.y;
     for (i = 0; i < spl->size; i++) {
@@ -1354,11 +1368,11 @@ point closest(splines * spl, point p)
 
 	    b.x = bz.list[j].x;
 	    b.y = bz.list[j].y;
-	    d = dist(b, pt);
-	    if ((bestj == -1) || (d < bestdist)) {
+	    d2 = dist2(b, pt);
+	    if ((bestj == -1) || (d2 < bestdist2)) {
 		besti = i;
 		bestj = j;
-		bestdist = d;
+		bestdist2 = d2;
 	    }
 	}
     }
@@ -1373,21 +1387,21 @@ point closest(splines * spl, point p)
     }
     low = 0.0;
     high = 1.0;
-    dlow = dist(c[0], pt);
-    dhigh = dist(c[3], pt);
+    dlow2 = dist2(c[0], pt);
+    dhigh2 = dist2(c[3], pt);
     do {
 	t = (low + high) / 2.0;
 	pt2 = Bezier(c, 3, t, NULL, NULL);
-	if (fabs(dlow - dhigh) < 1.0)
+	if (fabs(dlow2 - dhigh2) < 1.0)
 	    break;
-	if (low == high)
+	if (high - low < .00001)
 	    break;
-	if (dlow < dhigh) {
+	if (dlow2 < dhigh2) {
 	    high = t;
-	    dhigh = dist(pt2, pt);
+	    dhigh2 = dist2(pt2, pt);
 	} else {
 	    low = t;
-	    dlow = dist(pt2, pt);
+	    dlow2 = dist2(pt2, pt);
 	}
     } while (1);
     rv.x = pt2.x;
