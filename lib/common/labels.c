@@ -20,6 +20,10 @@
 #include	"htmltable.h"
 #include	<limits.h>
 
+#ifndef DISABLE_CODEGENS
+extern codegen_t *Output_codegen;
+#endif
+
 static void storeline(textlabel_t * lp, char *line, char terminator,
 		      graph_t * g)
 {
