@@ -555,12 +555,12 @@ static boolean clust_in_layer(GVC_t *gvc, graph_t * sg)
 
 static void emit_node(GVC_t * gvc, node_t * n)
 {
-    gvrender_job_t *job = gvc->job;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
 
     if (ND_shape(n) == NULL)
 	return;
-    if (node_in_layer(gvc, n->graph, n) && node_in_pageBox(gvc, n) && (ND_state(n) != job->pageNum)) {
+
+    if (node_in_layer(gvc, n->graph, n) && node_in_pageBox(gvc, n) && (ND_state(n) != gvc->layerNum)) {
 	gvrender_begin_node(gvc, n);
 	if (((s = agget(n, "href")) && s[0])
 	    || ((s = agget(n, "URL")) && s[0])) {
@@ -575,7 +575,7 @@ static void emit_node(GVC_t * gvc, node_t * n)
 	}
 	gvrender_begin_context(gvc);
 	ND_shape(n)->fns->codefn(gvc, n);
-	ND_state(n) = job->pageNum;
+	ND_state(n) = gvc->layerNum;
 	gvrender_end_context(gvc);
 	if (url) {
 	    gvrender_end_anchor(gvc);
@@ -1056,10 +1056,6 @@ void emit_graph(GVC_t * gvc, graph_t * g)
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
     int flags = gvc->job->flags;
 
-    /* reset pagenum state */
-    for (n = agfstnode(g); n; n = agnxtnode(g, n))
-	ND_state(n) = 0;
-
     gvrender_begin_graph(gvc, g);
     if (flags & EMIT_COLORS) {
 	gvrender_set_fillcolor(gvc, DEFAULT_FILL);
@@ -1102,9 +1098,15 @@ void emit_graph(GVC_t * gvc, graph_t * g)
 	}
     }
 
+    /* reset layerNum state - records the last layer that contained the node */
+    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	ND_state(n) = 0;
+    /* iterate layers */
     for (firstlayer(gvc); validlayer(gvc); nextlayer(gvc)) {
 	if (gvc->numLayers > 1)
 	    gvrender_begin_layer(gvc);
+
+	/* iterate pages */
 	for (firstpage(gvc); validpage(gvc); nextpage(gvc)) {
     	    setup_page(gvc, g);
 	    Obj = NONE;
@@ -1208,10 +1210,10 @@ void emit_graph(GVC_t * gvc, graph_t * g)
 		}
 	    }
 	    gvrender_end_page(gvc);
-	}
+	} /* pages */
 	if (gvc->numLayers > 1)
 	    gvrender_end_layer(gvc);
-    }
+    } /* layers */
     gvrender_end_graph(gvc);
 }
 
