@@ -38,8 +38,8 @@ extern "C" {
 
     extern Halfedge *ELleftend, *ELrightend;
 
-    extern void ELinitialize();
-    extern void ELcleanup();
+    extern void ELinitialize(void);
+    extern void ELcleanup(void);
     extern int right_of(Halfedge *, Point *);
     extern Site *hintersect(Halfedge *, Halfedge *);
     extern Halfedge *HEcreate(Edge *, char);

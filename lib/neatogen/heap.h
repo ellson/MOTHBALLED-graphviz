@@ -25,11 +25,11 @@ extern "C" {
 
 #include "hedges.h"
 
-    extern void PQinitialize();
-    extern void PQcleanup();
-    extern Halfedge *PQextractmin();
-    extern Point PQ_min();
-    extern int PQempty();
+    extern void PQinitialize(void);
+    extern void PQcleanup(void);
+    extern Halfedge *PQextractmin(void);
+    extern Point PQ_min(void);
+    extern int PQempty(void);
     extern void PQdelete(Halfedge *);
     extern void PQinsert(Halfedge *, Site *, double);
 
