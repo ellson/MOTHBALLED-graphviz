@@ -362,15 +362,24 @@ static void makeStraightEdge(graph_t * g, edge_t * e)
     e0 = e;
     perp.x = dumb[0].y - dumb[3].y;
     perp.y = dumb[3].x - dumb[0].x;
-    l_perp = sqrt(perp.x * perp.x + perp.y * perp.y);
-    xstep = GD_nodesep(g);
-    dx = xstep * (e_cnt - 1) / 2;
-    dumb[1].x = dumb[0].x + (dx * perp.x) / l_perp;
-    dumb[1].y = dumb[0].y + (dx * perp.y) / l_perp;
-    dumb[2].x = dumb[3].x + (dx * perp.x) / l_perp;
-    dumb[2].y = dumb[3].y + (dx * perp.y) / l_perp;
-    del.x = -xstep * perp.x / l_perp;
-    del.y = -xstep * perp.y / l_perp;
+    if ((perp.x == 0) && (perp.y == 0)) { 
+	/* degenerate case */
+	dumb[1] = dumb[0];
+	dumb[2] = dumb[3];
+	del.x = 0;
+	del.y = 0;
+    }
+    else {
+	l_perp = sqrt(perp.x * perp.x + perp.y * perp.y);
+	xstep = GD_nodesep(g);
+	dx = xstep * (e_cnt - 1) / 2;
+	dumb[1].x = dumb[0].x + (dx * perp.x) / l_perp;
+	dumb[1].y = dumb[0].y + (dx * perp.y) / l_perp;
+	dumb[2].x = dumb[3].x + (dx * perp.x) / l_perp;
+	dumb[2].y = dumb[3].y + (dx * perp.y) / l_perp;
+	del.x = -xstep * perp.x / l_perp;
+	del.y = -xstep * perp.y / l_perp;
+    }
 
     for (i = 0; i < e_cnt; i++) {
 	if (e0->head == head) {
