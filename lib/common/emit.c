@@ -336,16 +336,6 @@ static boolean write_node_test(Agraph_t * g, Agnode_t * n)
     return TRUE;
 }
 
-static void emit_reset(GVC_t * gvc, graph_t * g)
-{
-    Agnode_t *n;
-
-    /* reset state */
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	ND_state(n) = 0;
-    }
-}
-
 static void emit_background(GVC_t * gvc, graph_t *g, boxf pageBox)
 {
     gvrender_job_t * job = gvc->job;
@@ -1030,6 +1020,10 @@ void emit_graph(GVC_t * gvc, graph_t * g)
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
     int flags = gvc->job->flags;
 
+    /* reset pagenum state */
+    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	ND_state(n) = 0;
+
     gvrender_begin_graph(gvc, g);
     if (flags & EMIT_COLORS) {
 	gvrender_set_fillcolor(gvc, DEFAULT_FILL);
@@ -1492,9 +1486,6 @@ static void emit_job(GVC_t * gvc, graph_t * g)
 
     emit_init_job(gvc, g);
 
-    if (! (job->flags & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES))
-        emit_reset(gvc, g);  /* FIXME - split into emit_init & page reset */
-
     switch (gvc->job->output_lang) {
     case EXTENDED_DOT:
         write_extended_dot(gvc, g, gvc->job->output_file);
@@ -1512,7 +1503,8 @@ static void emit_job(GVC_t * gvc, graph_t * g)
         write_plain_ext(gvc, g, gvc->job->output_file);
         break;
     default:
-        emit_graph(gvc, g);
+	if (! (job->flags & GVRENDER_X11_EVENTS))
+            emit_graph(gvc, g);
         break;
     }
 
