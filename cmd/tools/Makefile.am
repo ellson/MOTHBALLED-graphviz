@@ -38,7 +38,8 @@ gxl2dot_SOURCES = cvtgxl.c dot2gxl.c gxl2dot.c
 
 gxl2dot_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs.la \
-	$(top_builddir)/lib/agraph/libagraph.la @EXPAT_LIBS@
+	$(top_builddir)/lib/agraph/libagraph.la @EXPAT_LIBS@ \
+	$(top_builddir)/lib/graph/libgraph.la
 
 sccmap_SOURCES = sccmap.c
 
@@ -49,12 +50,14 @@ sccmap_LDADD = \
 ccomps_SOURCES = ccomps.c
 
 ccomps_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la
+	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/graph/libgraph.la
 
 tred_SOURCES = tred.c
 
 tred_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la
+	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/graph/libgraph.la
 
 unflatten_SOURCES = unflatten.c
 
@@ -65,28 +68,32 @@ unflatten_LDADD = \
 acyclic_SOURCES = acyclic.c
 
 acyclic_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la
+	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/graph/libgraph.la
 
 nop_SOURCES = nop.c
 
 nop_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs.la \
-	$(top_builddir)/lib/agraph/libagraph.la
+	$(top_builddir)/lib/graph/libgraph.la
 
 gvcolor_SOURCES = gvcolor.c colxlate.c colortbl.h
 
 gvcolor_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la
+	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/graph/libgraph.la
 
 bcomps_SOURCES = bcomps.c
 
 bcomps_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la
+	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/graph/libgraph.la
 
 gc_SOURCES = gc.c
 
 gc_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la
+	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/graph/libgraph.la
 
 gvpack_SOURCES = gvpack.c plugins.c
 
@@ -95,12 +102,14 @@ gvpack_LDADD = \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/plugin/layout/libgvplugin_layout.la
 else
 gvpack_LDADD = \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/plugin/cairo/libgvplugin_cairo.la \
         $(top_builddir)/plugin/gd/libgvplugin_gd.la \
         $(top_builddir)/plugin/text/libgvplugin_text.la \

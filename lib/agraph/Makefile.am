@@ -21,6 +21,8 @@ libagraph_la_SOURCES = agerror.c apply.c attr.c \
 	mem.c node.c obj.c pend.c rec.c refstr.c scan.l subg.c \
 	utils.c write.c
 
+libagraph_la_LIBADD = $(top_builddir)/lib/cdt/libcdt.la
+
 scan.o scan.lo: scan.c grammar.h
 
 scan.c: $(top_srcdir)/lib/agraph/scan.l

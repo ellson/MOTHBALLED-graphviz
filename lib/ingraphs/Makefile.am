@@ -9,5 +9,3 @@ noinst_HEADERS = ingraphs.h
 noinst_LTLIBRARIES = libingraphs.la
 
 libingraphs_la_SOURCES = ingraphs.c
-
-libingraphs_la_LIBADD = $(top_builddir)/lib/graph/libgraph.la
