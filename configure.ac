@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script
-AC_INIT(graphviz, 2.1)
+AC_INIT(graphviz, 2.3)
 AC_CONFIG_SRCDIR(configure.ac)
 AC_CONFIG_AUX_DIR(config)
 
