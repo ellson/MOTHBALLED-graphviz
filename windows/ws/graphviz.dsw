@@ -87,7 +87,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "dotty"="..\cmddotty\dotty.dsp" - Package Owner=<4>
+Project: "dotty"="..\cmd\dotty\dotty.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{

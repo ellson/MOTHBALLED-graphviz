@@ -13,6 +13,8 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
+#define VERSION "2.3.20050120.2005"
+#define BUILDDATE "Thu Jan 20 21:35:05 GMT 2005"
 
 #ifdef __cplusplus
 extern "C" {
@@ -230,6 +232,9 @@ extern "C" {
 #  endif
 # endif
 #endif
+
+/* No X display on Windows */
+#define X_DISPLAY_MISSING 1
 
 /* Define to 1 if you have the ANSI C header files. */
 /* <stdlib.h> <stdarg.h> <string.h> <float.h> */
