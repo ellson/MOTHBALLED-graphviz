@@ -107,6 +107,8 @@ else
 	*icc* )
 	    # -Wall causes relocation errors with icc
 	    CFLAGS="${CFLAGS} -wd269"
+	    # icc doesn't like -pipe
+	    CFLAGS=`echo ${CFLAGS} | sed 's/ -pipe//'`
 	    ;;
         * )
             case "${build}" in
