@@ -21,7 +21,7 @@
 #include        "macros.h"
 #include        "gvrender.h"
 
-#if ENABLE_GVRENDER
+#ifndef DISABLE_GVRENDER
 extern gvplugin_t gvplugin_cairo_LTX_plugin,
     gvplugin_gd_LTX_plugin,
     gvplugin_text_LTX_plugin,
@@ -29,7 +29,7 @@ extern gvplugin_t gvplugin_cairo_LTX_plugin,
 #endif
 
 gvplugin_t *builtins[] = {
-#if ENABLE_GVRENDER
+#ifndef DISABLE_GVRENDER
     &gvplugin_cairo_LTX_plugin,
     &gvplugin_gd_LTX_plugin,
     &gvplugin_text_LTX_plugin,

@@ -19,7 +19,10 @@
 #endif
 
 #include <stdio.h>
+
+#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER)
 #include <cairo.h>
+#endif
 
 #include "const.h"
 #include "types.h"
@@ -29,7 +32,7 @@
 
 extern void emit_graph(GVC_t * gvc, graph_t * g, int flags);
 
-#ifndef X_DISPLAY_MISSING
+#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER)
 
 #define PANFACTOR 10
 #define ZOOMFACTOR 1.1
@@ -567,7 +570,7 @@ static int toggle_fit_cb(win_t * win)
 void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
 {
    if (flags & GVRENDER_X11_EVENTS) {
-#ifndef X_DISPLAY_MISSING
+#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER)
 	win_t win;
 	const char *display=NULL;
 	int argb=0;
