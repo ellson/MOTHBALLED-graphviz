@@ -85,6 +85,7 @@ The %{name}-doc package provides some additional PDF and HTML documentation for 
       --datadir=%{_datadir} \
       --mandir=%{_mandir} \
       --with-x \
+      --enable-gvrender \
       --with-mylibgd
 # need gd-2.0.29 commonly available in rpms before removing --enable-mylibgd
 %__make %{?_smp_mflags}
