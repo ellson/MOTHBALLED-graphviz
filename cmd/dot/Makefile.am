@@ -40,13 +40,7 @@ if DISABLE_GVRENDER
 dot_LDADD = \
         $(top_builddir)/lib/common/libcommon.la \
         $(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/fdpgen/libfdpgen.la \
-	$(top_builddir)/lib/twopigen/libtwopigen.la \
-	$(top_builddir)/lib/circogen/libcircogen.la \
-	$(top_builddir)/lib/neatogen/libneatogen.la \
-	$(top_builddir)/lib/dotgen/libdotgen.la \
-        $(top_builddir)/lib/pathplan/libpathplan.la \
-        $(top_builddir)/lib/graph/libgraph.la
+	$(top_builddir)/plugin/layout/libgvplugin_layout.la
 else
 dot_LDADD = \
 	$(top_builddir)/lib/common/libcommon.la \

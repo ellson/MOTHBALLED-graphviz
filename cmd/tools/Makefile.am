@@ -92,20 +92,15 @@ gvpack_SOURCES = gvpack.c plugins.c
 
 if DISABLE_GVRENDER
 gvpack_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
-	$(top_builddir)/lib/neatogen/libneatogen.la \
-	$(top_builddir)/lib/pack/libpack.la \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la
+	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/plugin/layout/libgvplugin_layout.la
 else
 gvpack_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
-	$(top_builddir)/lib/neatogen/libneatogen.la \
-	$(top_builddir)/lib/pack/libpack.la \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la \
+	$(top_builddir)/lib/ingraphs/libingraphs.la \
 	$(top_builddir)/plugin/cairo/libgvplugin_cairo.la \
         $(top_builddir)/plugin/gd/libgvplugin_gd.la \
         $(top_builddir)/plugin/text/libgvplugin_text.la \

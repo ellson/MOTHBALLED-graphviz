@@ -216,6 +216,17 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
     emit_deinit(gvc);
 }
 
+static FILE *file_select(char *str)
+{
+    FILE *rv;
+    rv = fopen(str, "wb");
+    if (rv == NULL) {
+        perror(str);
+        exit(1);
+    }
+    return rv;
+}
+
 void dotneato_write(GVC_t * gvc, graph_t * g)
 {
     gvrender_job_t *job;
@@ -227,7 +238,8 @@ void dotneato_write(GVC_t * gvc, graph_t * g)
 	    } else {
 		job->output_file = file_select(job->output_filename);
 	    }
-	    job->output_lang = lang_select(gvc, job->output_langname, 1);
+	    job->output_lang = gvrender_select(gvc, job->output_langname);
+	    assert(job->output_lang != NO_SUPPORT); /* should have been verified already */
 	}
 #ifndef DISABLE_CODEGENS
 	Output_file = job->output_file;

@@ -91,7 +91,6 @@ extern "C" {
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
     extern void epsf_gencode(GVC_t * gvc, node_t * n);
-    extern FILE *file_select(char *);
     extern shape_desc *find_user_shape(char *);
     extern box flip_rec_box(box b, point p);
     extern point flip_pt(point p, int rankdir);
@@ -196,7 +195,6 @@ extern "C" {
 #   define extern __EXPORT__
 #endif
     extern point sub_points(point, point);
-    extern int lang_select(GVC_t * gvc, char *, int);
 
     extern void toggle(int);
     extern int test_toggle();

@@ -684,10 +684,13 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
     /* FIXME - some of setup_pagination should be in emit_init() */
     setup_pagination(gvc, g);
 
+#if 0
+/* FIXME - apparently zoom is not set yet */
     gvc->clip.UR.x = ROUND(gvc->focus.x + (gvc->width+1) / (gvc->zoom * 2.));
     gvc->clip.UR.y = ROUND(gvc->focus.y + (gvc->height+1) / (gvc->zoom * 2.));
     gvc->clip.LL.x = ROUND(gvc->focus.x - (gvc->width+1) / (gvc->zoom * 2.));
     gvc->clip.LL.y = ROUND(gvc->focus.y - (gvc->height+1) / (gvc->zoom * 2.));
+#endif
 
     gvrender_begin_graph(gvc, g, PB, PFC);
     if (flags & EMIT_COLORS) {
@@ -1423,29 +1426,6 @@ void config_codegen_builtins(GVC_t * gvc)
 	gvplugin_install(gvc, API_render, p->name, 0, "cg",
 			 (gvplugin_type_t *) p);
 #endif
-}
-
-int lang_select(GVC_t * gvc, char *str, int warn)
-{
-    int rv = gvrender_select(gvc, str);
-
-    if (rv == NO_SUPPORT && warn) {
-	agerr(AGERR, "Renderer type \"%s\" not recognized, use one of:",
-	      str);
-	agerr(AGPREV, "%s\n", gvplugin_list(gvc, API_render, str));
-    }
-    return rv;
-}
-
-FILE *file_select(char *str)
-{
-    FILE *rv;
-    rv = fopen(str, "wb");
-    if (rv == NULL) {
-	perror(str);
-	exit(1);
-    }
-    return rv;
 }
 
 void use_library(char *name)

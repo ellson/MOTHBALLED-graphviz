@@ -28,7 +28,7 @@ libcommon_la_SOURCES = arrows.c colxlate.c fontmetrics.c gdtextsize.c \
 	output.c emit.c $(CODEGENS)
 
 libcommon_la_LIBADD = \
-	@GD_LIBS@ @EXPAT_LIBS@ @CAIRO_LIBS@ @Z_LIBS@
+	@GD_LIBS@ @CAIRO_LIBS@ @EXPAT_LIBS@ @Z_LIBS@
 
 psgen.o psgen.lo : ps.h
 

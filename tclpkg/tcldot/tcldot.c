@@ -1114,7 +1114,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 
 	/* render graph TK canvas commands */
 	gvc->job->output_lang =
-	    lang_select(gvc, gvc->job->output_langname, 0);
+	    gvrender_select(gvc, gvc->job->output_langname);
 	gvc->job->output_file = (FILE *) & tkgendata;
 #if ENABLE_CODEGENS
 	Output_lang = gvc->job->output_lang;
