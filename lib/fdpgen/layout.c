@@ -416,10 +416,6 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 	pointf fix_UR = { 0, 0 };
 	subg = GD_clust(g)[i];
 
-	GD_alg(subg) = (void *) NEW(gdata);	/* freed in cleanup_subgs */
-	GD_ndim(subg) = GD_ndim(g);
-	LEVEL(subg) = LEVEL(g) + 1;
-	GPARENT(subg) = g;
 	do_graph_label(subg);
 	dn = mkDeriveNode(dg, subg->name);
 	ND_clust(dn) = subg;
@@ -728,52 +724,63 @@ static graph_t *expandCluster(node_t * n, graph_t * cg)
 }
 
 /* setClustNodes:
- * Set coordinates of clust nodes at center of bbox. 
+ * At present, cluster nodes are not assigned a position during layout,
+ * but positioned in the center of its associated cluster. Because the
+ * dummy edge associated with a cluster node may not occur at a sufficient
+ * level of cluster, the edge may not be used during layout and we cannot
+ * therefore rely find these nodes via ports.
+ *
+ * In this implementation, we just do a linear pass over all nodes in the
+ * root graph. At some point, we may use a better method, like having each
+ * cluster contain its list of cluster nodes, or have the graph keep a list.
+ * 
+ * As nodes, we need to assign cluster nodes the coordinates in the
+ * coordinates of its cluster p. Note that p's bbox is in its parent's
+ * coordinates. 
+ * 
  * If routing, we may decide to place on cluster boundary,
  * and use polyline.
  */
-static void setClustNodes(graph_t * g)
+static void 
+setClustNodes(graph_t* root)
 {
-    boxf bb = BB(g);
+    boxf bb;
+    graph_t* p;
     pointf ctr;
-    bport_t *pp;
     node_t *n;
     double w, h;
     int h2, w2, h_i;
     pointf *vertices;
 
-    pp = PORTS(g);
-    if (!pp)
-	return;
-    ctr.x = (bb.UR.x + bb.LL.x) / 2.0;
-    ctr.y = (bb.UR.y + bb.LL.y) / 2.0;
-    w = bb.UR.x - bb.LL.x;
-    h = bb.UR.y - bb.LL.y;
-    w2 = POINTS(w / 2.0);
-    h2 = POINTS(h / 2.0);
-    h_i = POINTS(h);
-    while (pp->e) {
-	if (IS_CLUST_NODE(pp->n) && (PARENT(pp->n) == g)) {
-	    n = pp->n;
-	    ND_pos(n)[0] = ctr.x;
-	    ND_pos(n)[1] = ctr.y;
-	    ND_width(n) = w;
-	    ND_height(n) = h;
-	    ND_xsize(n) = POINTS(w);
-	    ND_lw_i(n) = ND_rw_i(n) = w2;
-	    ND_ht_i(n) = ND_ysize(n) = h_i;
+    for (n = agfstnode(root); n; n = agnxtnode(root, n)) {
+	if (!IS_CLUST_NODE(n)) continue;
 
-	    vertices = ((polygon_t *) ND_shape_info(n))->vertices;
-	    vertices[0].x = ND_rw_i(n);
-	    vertices[0].y = h2;
-	    vertices[1].x = -ND_lw_i(n);
-	    vertices[1].y = h2;
-	    vertices[2].x = -ND_lw_i(n);
-	    vertices[2].y = -h2;
-	    vertices[3].x = ND_rw_i(n);
-	    vertices[3].y = -h2;
-	}
-	pp++;
+	p = PARENT(n);
+	bb = BB(p);  /* bbox in parent cluster's coordinates */
+	w = bb.UR.x - bb.LL.x;
+	h = bb.UR.y - bb.LL.y;
+	ctr.x = w / 2.0;
+	ctr.y = h / 2.0;
+	w2 = POINTS(w / 2.0);
+	h2 = POINTS(h / 2.0);
+	h_i = POINTS(h);
+	ND_pos(n)[0] = ctr.x;
+	ND_pos(n)[1] = ctr.y;
+	ND_width(n) = w;
+	ND_height(n) = h;
+	ND_xsize(n) = POINTS(w);
+	ND_lw_i(n) = ND_rw_i(n) = w2;
+	ND_ht_i(n) = ND_ysize(n) = h_i;
+
+	vertices = ((polygon_t *) ND_shape_info(n))->vertices;
+	vertices[0].x = ND_rw_i(n);
+	vertices[0].y = h2;
+	vertices[1].x = -ND_lw_i(n);
+	vertices[1].y = h2;
+	vertices[2].x = -ND_lw_i(n);
+	vertices[2].y = -h2;
+	vertices[3].x = ND_rw_i(n);
+	vertices[3].y = -h2;
     }
 }
 
@@ -897,7 +904,6 @@ static void setClustNodes(graph_t * g)
 	}
     }
     BB(g) = BB(dg);
-    setClustNodes(g);
 #ifdef DEBUG
     if (g == g->root)
 	dump(g, 1, 0);
@@ -919,19 +925,6 @@ static void setBB(graph_t * g)
     for (i = 1; i <= GD_n_cluster(g); i++) {
 	setBB(GD_clust(g)[i]);
     }
-}
-
-void fdp_init_graph(Agraph_t * g)
-{
-    UseRankdir = FALSE;
-
-    graph_init(g);
-    /* GD_drawing(g)->engine = FDP; */
-    g->u.ndim = late_int(g, agfindattr(g, "dim"), 2, 2);
-    Ndim = g->u.ndim = MIN(g->u.ndim, MAXDIM);
-
-    fdp_initParams(g);
-    fdp_init_node_edge(g);
 }
 
 /* init_info:
@@ -957,7 +950,7 @@ void init_info(graph_t * g, layout_info * infop)
  * subgraph for cluster children.
  */
 static void
-mkClusters (graph_t * g, clist_t* pclist)
+mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 {
     node_t*  mn;
     edge_t*  me;
@@ -977,11 +970,15 @@ mkClusters (graph_t * g, clist_t* pclist)
 	mn = me->head;
 	subg = agusergraph(mn);
 	if (!strncmp(subg->name, "cluster", 7)) {
+	    GD_alg(subg) = (void *) NEW(gdata);	/* freed in cleanup_subgs */
+	    GD_ndim(subg) = GD_ndim(parent);
+	    LEVEL(subg) = LEVEL(parent) + 1;
+	    GPARENT(subg) = parent;
 	    addCluster(clist, subg);
-	    mkClusters(subg, NULL);
+	    mkClusters(subg, NULL, subg);
 	}
 	else {
-	    mkClusters(subg, clist);
+	    mkClusters(subg, clist, parent);
 	}
     }
     if (pclist == NULL) {
@@ -991,13 +988,28 @@ mkClusters (graph_t * g, clist_t* pclist)
     }
 }
 
+void fdp_init_graph(Agraph_t * g)
+{
+    UseRankdir = FALSE;
+
+    graph_init(g);
+    GD_alg(g) = (void *) NEW(gdata);	/* freed in cleanup_graph */
+    /* GD_drawing(g)->engine = FDP; */
+    g->u.ndim = late_int(g, agfindattr(g, "dim"), 2, 2);
+    Ndim = g->u.ndim = MIN(g->u.ndim, MAXDIM);
+
+    mkClusters (g, NULL, g);
+    fdp_initParams(g);
+    fdp_init_node_edge(g);
+}
+
 void fdpLayout(graph_t * g)
 {
     layout_info info;
 
     init_info(g, &info);
-    mkClusters (g, NULL);
     layout(g, &info);
+    setClustNodes(g);
     evalPositions(g);
 
     /* Set bbox info for g and all clusters. This is needed for

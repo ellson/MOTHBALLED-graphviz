@@ -64,7 +64,7 @@ static void dumpBB(graph_t * g)
 	    b.UR.x, b.UR.y);
 }
 
-static void dumpSG(graph_t * g, int indent)
+static void dumpSG(graph_t * g)
 {
     graph_t *subg;
     int i;
@@ -79,7 +79,9 @@ static void dumpSG(graph_t * g, int indent)
 	fprintf(stderr, "  subgraph %s : %d nodes\n", subg->name,
 		agnnodes(subg));
 	dumpBB(subg);
-	dumpSG(subg, indent + 1);
+	incInd ();
+	dumpSG(subg);
+	decInd ();
     }
     prIndent();
     fprintf(stderr, "  }\n");
@@ -149,7 +151,9 @@ void dump(graph_t * g, int level, int doBB)
     fprintf(stderr, "Graph %s : %d nodes\n", g->name, agnnodes(g));
     dumpBB(g);
     if (Verbose > level) {
-	dumpSG(g, 1);
+	incInd();
+	dumpSG(g);
+	decInd();
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    pos.x = ND_pos(n)[0];
 	    pos.y = ND_pos(n)[1];

@@ -106,7 +106,6 @@ void fdp_init_node_edge(graph_t * g)
 
     nn = agnnodes(g);
     GD_neato_nlist(g) = N_NEW(nn + 1, node_t *);
-    GD_alg(g) = (void *) NEW(gdata);	/* freed in cleanup_graph */
 
     for (i = 0, n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	init_node(n);
