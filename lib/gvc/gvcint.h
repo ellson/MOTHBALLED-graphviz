@@ -53,8 +53,8 @@ extern "C" {
 #define GVRENDER_X11_EVENTS (1<<10)
 
     typedef struct {
+	double default_margin; /* points */
 	int flags;
-	int default_margin;
 	int default_dpi;
 	char **knowncolors;
 	int sz_knowncolors;
@@ -86,26 +86,24 @@ extern "C" {
         graph_t *g;		/* parent graph */
         int flags;		/* emit_graph flags */
 
+        pointf margin;		/* job-specific margin */
+	boxf pageBox;		/* drawable region in device coords */
+				/* basically width*height - margins */
+	pointf pageBoxCentered;	/* device page box for centering */
+
         unsigned int width;     /* width in pixels */
         unsigned int height;    /* height in pixels */
 	int dpi;		/* resolution pixels-per-inch */
 	int rot;		/* rotation */
 	double zoom;		/* viewport zoom factor */
 	pointf focus;		/* viewport focus in graph units */
-//	pointf pointer;		/* pointer position in graph units */
-//	boxf clip;		/* clip region in graph units */
-
+#if 0
+	pointf pointer;		/* pointer position in graph units */
+#endif
+	boxf clip;		/* clip region in graph units */
+	point offset;
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	
-        /* gvrender_begin_page */
-	point pagesArrayElem;	/* 2D coord of current page - 0,0 based */
-        int   pagesElem;	/* 1D index of current page - 0 based */
-	point offset;
-
-	/* gvrender_begin_layer() */
-	int layer;
-	int nLayers;
-
 	boolean fit_mode, needs_refresh, click, active, has_grown;
 
 	void *window;		/* display-specific data for gvrender plugin */
@@ -153,19 +151,32 @@ extern "C" {
 
 	char **lib;
 
+	pointf margin, page;
+	boxf bb;
+	boolean graph_sets_margin, graph_sets_page;
+
         /* pagination */
-	point pagesArraySize;	/* 2D size of page array */
-	point pagesArrayFirst;  /* 2D starting corner in */
-	point pagesArrayMajor;	/* 2D major increment */
-	point pagesArrayMinor;	/* 2D minor increment */
-        int   pagesSize;	/* 1D size of page array */
+	point 	pagesArraySize;  /* 2D size of page array */
+	point	pagesArrayFirst; /* 2D starting corner in */
+	point	pagesArrayMajor; /* 2D major increment */
+	point	pagesArrayMinor; /* 2D minor increment */
+	point	pagesArrayElem;  /* 2D coord of current page - 0,0 based */
+        int	numPages;	 /* number of pages */
+        int	pageNum;	 /* current page - 1 based */
+	pointf	pageSize;	 /* page size in graph coords */
+	boxf	pageBox;	 /* page box in graph coords */
+
+	/* layers */
+	char *layerDelims;	/* delimiters in layer names */
+	char *layers;		/* null delimited list of layer names */
+	char **layerIDs;	/* array of layer names */
+	int numLayers;		/* number of layers */
+	int layerNum;		/* current layer - 1 based*/
 
 	/* gvrender_begin_graph() */
 	graph_t *g;
 
-	box bb;			/* graph bounding box (what units???) */
 	point pb;		/* page size - including margins (inches) */
-	point margin;		/* page margins (inches) */
 
 	gvstyle_t styles[MAXNEST]; /* style stack - reused by each job */
 	int SP;

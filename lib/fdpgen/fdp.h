@@ -27,10 +27,6 @@ typedef enum {
 
 #define NDIM     2
 
-typedef struct {
-    pointf LL, UR;
-} boxf;
-
 typedef struct bport_s {
     edge_t *e;
     node_t *n;

@@ -29,9 +29,10 @@ extern "C" {
 	void (*end_job) (gvrender_job_t * job);
 	void (*begin_graph) (gvrender_job_t * job, char *graphname);
 	void (*end_graph) (gvrender_job_t * job);
-	void (*begin_page) (gvrender_job_t * job, char *pagename);
-	void (*end_page) (gvrender_job_t * job);
-	void (*begin_layer) (gvrender_job_t * job, char *layername);
+	void (*begin_page) (gvrender_job_t * job, char *pagename, point pagesArrayElem, int pageNum, int numPages);
+	void (*end_page) (gvrender_job_t * job, point pagesArrayElem, int pageNum, int numPages);
+	void (*begin_layer) (gvrender_job_t * job, char *layername,
+			     int layerNum, int numLayers);
 	void (*end_layer) (gvrender_job_t * job);
 	void (*begin_cluster) (gvrender_job_t * job, char *clustername, long id);
 	void (*end_cluster) (gvrender_job_t * job);

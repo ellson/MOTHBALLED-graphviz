@@ -35,69 +35,33 @@ static void extend_attrs(GVC_t * gvc);
 #define Y(y) (y_invert ? (y_off - (y)) : (y))
 #define YF(y) (y_invert ? (yf_off - (y)) : (y))
 
-void dotneato_set_margins(GVC_t * gvc, graph_t * g)
+static void graph_sets_margin(GVC_t * gvc, graph_t * g)
 {
     double xf, yf;
     char *p;
     int i;
 
     /* margins */
+    gvc->graph_sets_margin = FALSE;
     if ((p = agget(g, "margin"))) {
-	i = sscanf(p, "%lf,%lf", &xf, &yf);
-	if (i > 0)
-	    GD_drawing(g)->margin.x = GD_drawing(g)->margin.y = POINTS(xf);
-	if (i > 1)
-	    GD_drawing(g)->margin.y = POINTS(yf);
-    } else {
-	/* set default margins depending on format */
-	switch (gvc->job->output_lang) {
-	case GVRENDER_PLUGIN:
-	    GD_drawing(g)->margin.x = GD_drawing(g)->margin.y =
-		gvc->job->render_features->default_margin;
-	    break;
-	case GIF:
-	case PNG:
-	case JPEG:
-	case WBMP:
-	case GD:
-	case memGD:
-	case GD2:
-	case ISMAP:
-	case IMAP:
-	case CMAP:
-	case CMAPX:
-	case VRML:
-	case DIA:
-	case SVG:
-	case SVGZ:
-	case QEPDF:
-	    GD_drawing(g)->margin.x = GD_drawing(g)->margin.y =
-		DEFAULT_EMBED_MARGIN;
-	    break;
-	case POSTSCRIPT:
-	case PDF:
-	case HPGL:
-	case PCL:
-	case MIF:
-	case METAPOST:
-	case FIG:
-	case VTX:
-	case ATTRIBUTED_DOT:
-	case PLAIN:
-	case PLAIN_EXT:
-	case QPDF:
-	    GD_drawing(g)->margin.x = GD_drawing(g)->margin.y =
-		DEFAULT_MARGIN;
-	    break;
-	case CANONICAL_DOT:
-	    break;
-	default:
-	    if (gvc->job->output_lang >= QBM_FIRST
-		&& gvc->job->output_lang < QBM_LAST)
-		GD_drawing(g)->margin.x = GD_drawing(g)->margin.y =
-		    DEFAULT_EMBED_MARGIN;
-	    break;
-	}
+        i = sscanf(p, "%lf,%lf", &xf, &yf);
+        if (i > 0) {
+            gvc->margin.x = gvc->margin.y = xf * POINTS_PER_INCH;
+            if (i > 1)
+                gvc->margin.y = yf * POINTS_PER_INCH;
+            gvc->graph_sets_margin = TRUE;
+        }
+    }
+}
+
+static void graph_sets_page(GVC_t * gvc, graph_t * g)
+{
+    gvc->graph_sets_page = FALSE;
+    P2PF(GD_drawing(g)->page, gvc->page);
+    P2PF(GD_bb(g).LL,gvc->bb.LL);
+    P2PF(GD_bb(g).UR,gvc->bb.UR);
+    if ((GD_drawing(g)->page.x > 0) && (GD_drawing(g)->page.y > 0)) {
+	gvc->graph_sets_page = TRUE;
     }
 }
 
@@ -118,6 +82,46 @@ static int chkOrder(graph_t * g)
     return 0;
 }
 
+static int lang_sets_flags(gvrender_job_t * job, graph_t * g)
+{
+    int flags;
+
+    switch (job->output_lang) {
+    case GVRENDER_PLUGIN:
+	flags = chkOrder(g) | job->render_features->flags;
+	break;
+    case POSTSCRIPT:
+        flags = chkOrder(g) | GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES;
+	break;
+    case ISMAP: case IMAP: case CMAP: case CMAPX:
+	/* output in breadth first graph walk order, but 
+	 * with nodes edges and nested clusters before
+	 * clusters */
+	flags = EMIT_CLUSTERS_LAST;
+	break;
+    case FIG:
+	/* output color definition objects first */
+	flags = EMIT_COLORS;
+	break;
+    case VTX:
+	/* output sorted, i.e. all nodes then all edges */
+	flags = EMIT_SORTED;
+	break;
+    case DIA:
+	/* output in preorder traversal of the graph */
+	flags = EMIT_PREORDER;
+	break;
+    case EXTENDED_DOT: case ATTRIBUTED_DOT: case CANONICAL_DOT:
+    case PLAIN: case PLAIN_EXT:
+	flags = 0;
+	break;
+    default:
+	flags = chkOrder(g);
+	break;
+    }
+    return flags;
+}
+
 void dotneato_write_one(GVC_t * gvc, graph_t * g)
 {
     gvrender_job_t *job = gvc->job;
@@ -128,65 +132,25 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
     Output_file = job->output_file;
     Output_lang = job->output_lang;
 #endif
-    dotneato_set_margins(gvc, g);
+
+    graph_sets_margin(gvc, g);
+    graph_sets_page(gvc, g);
+    flags = lang_sets_flags(job, g);
     emit_init(gvc, g);
-    if (NOT(gvrender_features(gvc) & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES)
-#ifndef DISABLE_CODEGENS
-/* FIXME - bad hack until feaures supported in codegens */
-	&& job->codegen != &PS_CodeGen
-#ifdef QUARTZ_RENDER
-	&& job->codegen != &QPDF_CodeGen && job->codegen != &QEPDF_CodeGen
-#endif
-#endif
-	)
+
+    if (! (flags & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES))
 	emit_reset(gvc, g);  /* FIXME - split into emit_init & page reset */
+
     switch (gvc->job->output_lang) {
     case GVRENDER_PLUGIN:
-	flags = chkOrder(g);
-	flags |= job->render_features->flags;
 	gvemit_graph(gvc, g, flags);
 	break;
-    case POSTSCRIPT:
-    case PDF:
-    case HPGL:
-    case PCL:
-    case MIF:
-    case PIC_format:
-    case GIF:
-    case PNG:
-    case JPEG:
-    case WBMP:
-    case GD:
-    case memGD:
-    case GD2:
-    case VRML:
-    case METAPOST:
-    case SVG:
-    case SVGZ:
-    case QPDF:
-    case QEPDF:
-	emit_graph(gvc, g, chkOrder(g));
-	break;
-    case ISMAP:
-    case IMAP:
-    case CMAP:
-    case CMAPX:
-	/* output in breadth first graph walk order, but 
-	 * with nodes edges and nested clusters before
-	 * clusters */
-	emit_graph(gvc, g, EMIT_CLUSTERS_LAST);
-	break;
-    case FIG:
-	/* output color definition objects first */
-	emit_graph(gvc, g, EMIT_COLORS);
-	break;
-    case VTX:
-	/* output sorted, i.e. all nodes then all edges */
-	emit_graph(gvc, g, EMIT_SORTED);
-	break;
-    case DIA:
-	/* output in preorder traversal of the graph */
-	emit_graph(gvc, g, EMIT_PREORDER);
+    case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
+    case PIC_format: case GIF: case PNG: case JPEG: case WBMP:
+    case GD: case memGD: case GD2: case VRML: case METAPOST:
+    case SVG: case SVGZ: case QPDF: case QEPDF: case ISMAP:
+    case IMAP: case CMAP: case CMAPX: case FIG: case VTX: case DIA:
+	emit_graph(gvc, g, flags);
 	break;
     case EXTENDED_DOT:
 	attach_attrs(g);
@@ -203,20 +167,18 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
 	agwrite(g, gvc->job->output_file);
 	break;
     case PLAIN:
-	/* attach_attrs(g);  */
 	write_plain(gvc, gvc->job->output_file);
 	break;
     case PLAIN_EXT:
-	/* attach_attrs(g);  */
 	write_plain_ext(gvc, gvc->job->output_file);
 	break;
     default:
 	if (gvc->job->output_lang >= QBM_FIRST
 	    && gvc->job->output_lang < QBM_LAST)
-	    emit_graph(gvc, g, chkOrder(g));
+	    emit_graph(gvc, g, flags);
 	break;
-
     }
+
     fflush(gvc->job->output_file);
 #if 0
     emit_deinit(gvc);

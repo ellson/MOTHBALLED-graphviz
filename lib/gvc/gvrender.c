@@ -153,7 +153,7 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, double X, double Y, double Z, d
     else {
 	codegen_t *cg = job->codegen;
 
-	if (cg && cg->begin_job && job->pagesElem == 0)
+	if (cg && cg->begin_job && gvc->pageNum == 1)
 	    cg->begin_job(gvc->job->output_file, gvc->g, lib, gvc->user,
 			  gvc->info, gvc->pagesArraySize);
     }
@@ -233,21 +233,26 @@ static void gvrender_resolve_color(gvrender_features_t * features,
     }
 }
 
-void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
+void gvrender_begin_graph(GVC_t * gvc, graph_t * g)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
     char *str;
+    double sx, sy;
 
     gvc->g = g;
-    gvc->bb = bb;
-    gvc->pb = pb;
 
     if (gvre) {
 	job->compscale.x = job->zoom * job->dpi / POINTS_PER_INCH;
-	job->compscale.y =
-	    job->compscale.x *
+	job->compscale.y = job->compscale.x *
 	    ((job->render_features->flags & GVRENDER_Y_GOES_DOWN) ? -1.0 : 1.0);
+
+        sx = job->width / (job->zoom * 2.);
+        sy = job->height / (job->zoom * 2.);
+	job->clip.UR.x = job->focus.x + sx;
+	job->clip.UR.y = job->focus.y + sy;
+	job->clip.LL.x = job->focus.x - sx;
+	job->clip.LL.y = job->focus.y - sy;
 
 	/* render specific init */
 	if (gvre->begin_graph)
@@ -276,9 +281,14 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
+	box bb;
+	point pb;
+	
+	PF2P(gvc->bb.LL,bb.LL);
+	PF2P(gvc->bb.UR,bb.UR);
 
 	if (cg && cg->begin_graph)
-	    cg->begin_graph(gvc, g, bb, pb);
+	    cg->begin_graph(gvc, g, bb, gvc->pb);
     }
 #endif
 }
@@ -298,30 +308,26 @@ void gvrender_end_graph(GVC_t * gvc)
 	    cg->end_graph();
     }
 #endif
-    gvc->bb = b0;
-    gvc->pb = p0;
 }
 
-void gvrender_begin_page(GVC_t * gvc, point page, double scale, int rot,
-			 point offset)
+void gvrender_begin_page(GVC_t * gvc, double scale, int rot, point offset)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
-
-    job->pagesArrayElem = page;
-    job->pagesElem = page.x + page.y * gvc->pagesArraySize.x + 1;
 
 //    gvc->scale = scale;
     job->rot = rot;
 //    gvc->offset = offset;
     if (gvre && gvre->begin_page)
-	gvre->begin_page(job, gvc->g->name);
+	gvre->begin_page(job, gvc->g->name,
+                         gvc->pagesArrayElem, gvc->pageNum, gvc->numPages);
+
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_page)
-	    cg->begin_page(gvc->g, page, scale, rot, offset);
+	    cg->begin_page(gvc->g, gvc->pagesArrayElem, scale, rot, offset);
     }
 #endif
 }
@@ -332,7 +338,7 @@ void gvrender_end_page(GVC_t * gvc)
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_page)
-	gvre->end_page(job);
+	gvre->end_page(job, gvc->pagesArrayElem, gvc->pageNum, gvc->numPages);
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -343,22 +349,19 @@ void gvrender_end_page(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_layer(GVC_t * gvc, char *layername, int layer,
-			  int nLayers)
+void gvrender_begin_layer(GVC_t * gvc)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
-    job->layer = layer;
-    job->nLayers = nLayers;
     if (gvre && gvre->begin_layer)
-	gvre->begin_layer(job, layername);
+	gvre->begin_layer(job, gvc->layerIDs[gvc->layerNum], gvc->layerNum, gvc->numLayers);
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_layer)
-	    cg->begin_layer(layername, layer, nLayers);
+	    cg->begin_layer(gvc->layerIDs[gvc->layerNum], gvc->layerNum, gvc->numLayers);
     }
 #endif
 }
@@ -378,8 +381,6 @@ void gvrender_end_layer(GVC_t * gvc)
 	    cg->end_layer();
     }
 #endif
-    job->layer = 0;
-    job->nLayers = 0;
 }
 
 void gvrender_begin_cluster(GVC_t * gvc, graph_t * sg)

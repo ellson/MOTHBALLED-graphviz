@@ -41,9 +41,21 @@ extern "C" {
 
     typedef struct htmllabel_t htmllabel_t;
 
+    typedef struct point {
+	int x, y;
+    } point;
+
     typedef struct pointf {
 	double x, y;
     } pointf;
+
+    typedef struct box {
+	point LL, UR;
+    } box;
+
+    typedef struct boxf {
+	pointf LL, UR;
+    } boxf;
 
     typedef struct inside_t {
 	pointf *p;
@@ -51,14 +63,6 @@ extern "C" {
 	node_t *n;
 	edge_t *e;
     } inside_t;
-
-    typedef struct point {
-	int x, y;
-    } point;
-
-    typedef struct box {
-	point LL, UR;
-    } box;
 
     typedef struct port {	/* internal edge endpoint specification */
 	point p;		/* aiming point */

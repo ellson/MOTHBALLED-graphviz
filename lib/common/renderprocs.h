@@ -25,6 +25,7 @@ extern "C" {
 
     extern void add_box(path *, box);
     extern point add_points(point, point);
+    extern pointf add_pointfs(pointf, pointf);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
     extern void arrow_gen(GVC_t * gvc, point p, point u, double scale,
 			  int flag);
@@ -43,10 +44,11 @@ extern "C" {
 			    boolean left_inside);
     extern shape_desc *bind_shape(char *name, node_t *);
     extern box boxof(int, int, int, int);
+    extern boolean box_overlap(box, box);
+    extern boolean boxf_overlap(boxf, boxf);
     extern void cat_libfile(FILE *, char **, char **);
     extern void clip_and_install(edge_t *, edge_t *, point *, int,
 				 splineInfo *);
-    extern int clust_in_layer(Agraph_t *);
     extern char *canontoken(char *str);
     extern void colorxlate(char *str, color_t * color,
 			   color_type_t target_type);
@@ -69,7 +71,6 @@ extern "C" {
     extern void dotneato_terminate(GVC_t * gvc);
     extern void dotneato_write(GVC_t * gvc, graph_t *g);
     extern void dotneato_write_one(GVC_t * gvc, graph_t *g);
-    extern int edge_in_layer(Agraph_t *, Agedge_t *);
     extern double elapsed_sec(void);
     extern void enqueue(queue *, Agnode_t *);
     extern void enqueue_neighbors(queue *, Agnode_t *, int);
@@ -113,7 +114,6 @@ extern "C" {
     extern point image_size(graph_t * g, char *shapefile);
     extern void init_ugraph(graph_t * g);
     extern point invflip_pt(point p, int rankdir);
-    extern int is_natural_number(char *);
     extern boolean isPolygon(node_t *);
     extern int late_attr(void *, char *);
     extern int late_bool(void *, Agsym_t *, int);
@@ -137,11 +137,11 @@ extern "C" {
     extern void map_edge(Agedge_t *);
     extern point map_point(point);
     extern box mkbox(point, point);
+    extern boxf mkboxf(pointf, pointf);
     extern point neato_closest(splines * spl, point p);
     extern bezier *new_spline(edge_t * e, int sz);
     extern queue *new_queue(int);
     extern Agraph_t *next_input_graph(void);
-    extern int node_in_layer(Agraph_t *, node_t *);
     extern void osize_label(textlabel_t *, int *, int *, int *, int *);
     extern char **parse_style(char *s);
     extern void place_graph_label(Agraph_t *);
@@ -152,12 +152,10 @@ extern "C" {
     extern char *ps_string(char *s);
     extern void rank(graph_t * g, int balance, int maxiter);
     extern void rec_attach_bb(Agraph_t *);
-    extern int rect_overlap(box, box);
     extern void routesplinesinit(void);
     extern point *routesplines(path *, int *);
     extern void routesplinesterm(void);
     extern char *safefile(char *shapefilename);
-    extern int selectedlayer(char *);
     extern void setup_graph(GVC_t * gvc, graph_t * g);
     extern shape_kind shapeOf(node_t *);
     extern void shape_clip(node_t * n, point curve[4], edge_t * e);
@@ -188,6 +186,7 @@ extern "C" {
 #   define extern __EXPORT__
 #endif
     extern point sub_points(point, point);
+    extern pointf sub_pointfs(pointf, pointf);
 
     extern void toggle(int);
     extern int test_toggle();

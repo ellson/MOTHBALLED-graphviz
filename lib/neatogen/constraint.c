@@ -444,10 +444,6 @@ void cAdjust(graph_t * g, int xy)
 }
 
 typedef struct {
-    pointf LL;
-    pointf UR;
-} boxf;
-typedef struct {
     pointf pos;			/* position for sorting */
     boxf bb;
     double wd2;

@@ -293,6 +293,27 @@ box mkbox(point p0, point p1)
     return rv;
 }
 
+boxf mkboxf(pointf p0, pointf p1)
+{
+    boxf rv;
+
+    if (p0.x < p1.x) {
+	rv.LL.x = p0.x;
+	rv.UR.x = p1.x;
+    } else {
+	rv.LL.x = p1.x;
+	rv.UR.x = p0.x;
+    }
+    if (p0.y < p1.y) {
+	rv.LL.y = p0.y;
+	rv.UR.y = p1.y;
+    } else {
+	rv.LL.y = p1.y;
+	rv.UR.y = p0.y;
+    }
+    return rv;
+}
+
 point add_points(point p0, point p1)
 {
     p0.x += p1.x;
@@ -301,6 +322,20 @@ point add_points(point p0, point p1)
 }
 
 point sub_points(point p0, point p1)
+{
+    p0.x -= p1.x;
+    p0.y -= p1.y;
+    return p0;
+}
+
+pointf add_pointfs(pointf p0, pointf p1)
+{
+    p0.x += p1.x;
+    p0.y += p1.y;
+    return p0;
+}
+
+pointf sub_pointfs(pointf p0, pointf p1)
 {
     p0.x -= p1.x;
     p0.y -= p1.y;
@@ -542,7 +577,15 @@ void cat_libfile(FILE * ofp, char **arglib, char **stdlib)
     }
 }
 
-int rect_overlap(box b0, box b1)
+boolean box_overlap(box b0, box b1)
+{
+    if ((b0.UR.x < b1.LL.x) || (b1.UR.x < b0.LL.x)
+	|| (b0.UR.y < b1.LL.y) || (b1.UR.y < b0.LL.y))
+	return FALSE;
+    return TRUE;
+}
+
+boolean boxf_overlap(boxf b0, boxf b1)
 {
     if ((b0.UR.x < b1.LL.x) || (b1.UR.x < b0.LL.x)
 	|| (b0.UR.y < b1.LL.y) || (b1.UR.y < b0.LL.y))

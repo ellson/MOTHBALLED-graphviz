@@ -108,6 +108,8 @@
 
 #define P2PF(p, pf) (pf.x = p.x, pf.y = p.y)
 #define PF2P(pf, p) (p.x = ROUND (pf.x), p.y = ROUND (pf.y))
+#define B2BF(b, bf) (bf.LL.x = b.LL.x, bf.LL.y = b.LL.y, bf.UR.x = b.UR.x, bf.UR.y = b.UR.y)
+#define BF2B(bf, b) (b.LL.x = ROUND (bf.LL.x), b.LL.y = ROUND (bf.LL.y), b.UR.x = ROUND (bf.UR.x), b.UR.y = ROUND (bf.UR.y))
 
 #define XPAD(d) ((d).x += 4*GAP)
 #define YPAD(d) ((d).y += 2*GAP)

@@ -31,18 +31,12 @@
 
 #define MAX_CODEGENS 100
 
+#define PAGINATIONBUG 1
+
 char *BaseLineStyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 int Obj;
-static int Page;		/* w.r.t. unrotated coords */
-static int Layer, Nlayers;
-static char **LayerID;
-static box PB;			/* drawable region in device coords */
-static pointf GP;		/* graph page size, in graph coords */
-static box CB;			/* current page box, in graph coords */
-static point PFC;		/* device page box for centering */
 static double Deffontsize;
 static char *Deffontname;
-static char *Layerdelims;
 static attrsym_t *G_peripheries;
 
 static point exch_xy(point p)
@@ -65,70 +59,81 @@ static pointf exch_xyf(pointf p)
 
 /* parse_layers:
  * Split input string into tokens, with separators specified by
- * the layersep attribute. Store the values in the LayerID array,
+ * the layersep attribute. Store the values in the gvc->layerIDs array,
  * starting at index 1, and return the count.
  * Free previously stored list. Note that there is no mechanism
  * to free the memory before exit.
  */
-static int parse_layers(graph_t * g, char *p)
+static int parse_layers(GVC_t *gvc, graph_t * g, char *p)
 {
     int ntok;
-    char *pcopy;
     char *tok;
     int sz;
 
-    Layerdelims = agget(g, "layersep");
-    if (!Layerdelims)
-	Layerdelims = DEFAULT_LAYERSEP;
+    gvc->layerDelims = agget(g, "layersep");
+    if (!gvc->layerDelims)
+	gvc->layerDelims = DEFAULT_LAYERSEP;
 
     ntok = 0;
     sz = 0;
-    pcopy = strdup(p);
+    gvc->layers = strdup(p);
 
-    if (LayerID)
-	free(LayerID);
-    LayerID = 0;
-    for (tok = strtok(pcopy, Layerdelims); tok;
-	 tok = strtok(NULL, Layerdelims)) {
+    for (tok = strtok(gvc->layers, gvc->layerDelims); tok;
+	 tok = strtok(NULL, gvc->layerDelims)) {
 	ntok++;
 	if (ntok > sz) {
 	    sz += SMALLBUF;
-	    LayerID = ALLOC(sz, LayerID, char *);
+	    gvc->layerIDs = ALLOC(sz, gvc->layerIDs, char *);
 	}
-	LayerID[ntok] = tok;
+	gvc->layerIDs[ntok] = tok;
     }
     if (ntok) {
-	LayerID = RALLOC(ntok + 2, LayerID, char *);	/* shrink to minimum size */
-	LayerID[0] = NULL;
-	LayerID[ntok + 1] = NULL;
+	gvc->layerIDs = RALLOC(ntok + 2, gvc->layerIDs, char *);	/* shrink to minimum size */
+	gvc->layerIDs[0] = NULL;
+	gvc->layerIDs[ntok + 1] = NULL;
     }
 
     return ntok;
 }
 
-static void setup_layering(GVC_t * gvc, graph_t * g)
+static void init_layering(GVC_t * gvc, graph_t * g)
 {
     char *str;
 
+    /* free layer strings and pointers from previous graph */
+    if (gvc->layers)
+	free(gvc->layers);
+    if (gvc->layerIDs)
+	free(gvc->layerIDs);
+
     if ((str = agget(g, "layers")) != 0) {
 	if (gvrender_features(gvc) & GVRENDER_DOES_LAYERS) {
-	    Nlayers = parse_layers(g, str);
+	    gvc->numLayers = parse_layers(gvc, g, str);
 	}
 	else {
 	    agerr(AGWARN, "layers not supported in %s output\n",
 		  gvc->job->output_langname);
-	    Nlayers = 0;
+	    gvc->numLayers = 1;
 	}
     } else {
-	LayerID = NULL;
-	Nlayers = 0;
+	gvc->layerIDs = NULL;
+	gvc->numLayers = 1;
     }
 }
 
-static void reset_layering(GVC_t * gvc, graph_t * g)
+static void firstlayer(GVC_t *gvc)
 {
-    Layer = Nlayers = 0;
-    LayerID = NULL;   /* FIXME - poss leak of array of layer names? */
+    gvc->layerNum = 1;
+}
+
+static boolean validlayer(GVC_t *gvc)
+{
+    return (gvc->layerNum <= gvc->numLayers);
+}
+
+static void nextlayer(GVC_t *gvc)
+{
+    gvc->layerNum++;
 }
 
 static point pagecode(GVC_t *gvc, char c)
@@ -160,6 +165,7 @@ static void set_pagedir(GVC_t *gvc, graph_t * g)
 
     gvc->pagesArrayMajor.x = gvc->pagesArrayMajor.y 
 		= gvc->pagesArrayMinor.x = gvc->pagesArrayMinor.y = 0;
+    gvc->pagesArrayFirst.x = gvc->pagesArrayFirst.y = 0;
     str = agget(g, "pagedir");
     if (str && str[0]) {
 	gvc->pagesArrayMajor = pagecode(gvc, str[0]);
@@ -167,44 +173,44 @@ static void set_pagedir(GVC_t *gvc, graph_t * g)
     }
     if ((abs(gvc->pagesArrayMajor.x + gvc->pagesArrayMinor.x) != 1)
      || (abs(gvc->pagesArrayMajor.y + gvc->pagesArrayMinor.y) != 1)) {
-	gvc->pagesArrayMajor.x = 0;
-	gvc->pagesArrayMajor.y = 1;
-	gvc->pagesArrayMinor.x = 1;
-	gvc->pagesArrayMinor.y = 0;
-	gvc->pagesArrayFirst.x = gvc->pagesArrayFirst.y = 0;
+	gvc->pagesArrayMajor = pagecode(gvc, 'B');
+	gvc->pagesArrayMinor = pagecode(gvc, 'L');
 	if (str)
 	    agerr(AGWARN, "pagedir=%s ignored\n", str);
     }
 }
 
-static void setup_pagination(GVC_t * gvc, graph_t * g)
+static void init_job_pagination(GVC_t * gvc, graph_t * g)
 {
-    point PFCLM;		/* page for centering less margins */
-    point DS;			/* device drawable region for a page of the graph */
+    gvrender_job_t *job = gvc->job;
+    pointf PFCLM;		/* page for centering less margins */
+    pointf DS;			/* device drawable region for a page of the graph */
 
     /* determine pagination */
-    PB.LL = GD_drawing(g)->margin;
-    if ((GD_drawing(g)->page.x > 0) && (GD_drawing(g)->page.y > 0)) {
+    job->pageBox.LL = job->margin;
+    if (gvc->graph_sets_page) {
 	/* page was set by user */
 	point tp;
-	PFC = GD_drawing(g)->page;
-	PFCLM.x = PFC.x - 2 * PB.LL.x;
-	PFCLM.y = PFC.y - 2 * PB.LL.y;
-	GP.x = PFCLM.x;
-	GP.y = PFCLM.y;		/* convert to double */
+	job->pageBoxCentered = gvc->page;
+	PFCLM.x = job->pageBoxCentered.x - 2 * job->pageBox.LL.x;
+	PFCLM.y = job->pageBoxCentered.y - 2 * job->pageBox.LL.y;
+	gvc->pageSize.x = PFCLM.x;
+	gvc->pageSize.y = PFCLM.y;		/* convert to double */
 	if (GD_drawing(g)->landscape)
-	    GP = exch_xyf(GP);
-	GP.x = GP.x / gvc->job->zoom;
-	GP.y = GP.y / gvc->job->zoom;
+	    gvc->pageSize = exch_xyf(gvc->pageSize);
+	gvc->pageSize.x /= gvc->job->zoom;
+	gvc->pageSize.y /= gvc->job->zoom;
 	/* we don't want graph page to exceed its bounding box */
-	GP.x = MIN(GP.x, GD_bb(g).UR.x);
-	GP.y = MIN(GP.y, GD_bb(g).UR.y);
-	gvc->pagesArraySize.x = (GP.x > 0) ? ceil(((double) GD_bb(g).UR.x) / GP.x) : 1;
-	gvc->pagesArraySize.y = (GP.y > 0) ? ceil(((double) GD_bb(g).UR.y) / GP.y) : 1;
-	gvc->pagesSize = gvc->pagesArraySize.x * gvc->pagesArraySize.y;
+	gvc->pageSize.x = MIN(gvc->pageSize.x, gvc->bb.UR.x);
+	gvc->pageSize.y = MIN(gvc->pageSize.y, gvc->bb.UR.y);
+	gvc->pagesArraySize.x =
+	    (gvc->pageSize.x > 0) ? ceil((gvc->bb.UR.x) / gvc->pageSize.x) : 1;
+	gvc->pagesArraySize.y =
+	    (gvc->pageSize.y > 0) ? ceil((gvc->bb.UR.y) / gvc->pageSize.y) : 1;
+	gvc->numPages = gvc->pagesArraySize.x * gvc->pagesArraySize.y;
 
 	/* find the drawable size in device coords */
-#if 1
+#ifdef PAGINATIONBUG
 	tp = GD_drawing(g)->size;
 #else
 	tp.x = gvc->job->width;
@@ -217,21 +223,21 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
     } else {
 	/* page not set by user, assume default when centering,
 	   but allow infinite page for any other interpretation */
-	GP.x = GD_bb(g).UR.x;
-	GP.y = GD_bb(g).UR.y;
-	PFC.x = DEFAULT_PAGEWD;
-	PFC.y = DEFAULT_PAGEHT;
-	PFCLM.x = PFC.x - 2 * PB.LL.x;
-	PFCLM.y = PFC.y - 2 * PB.LL.y;
-#if 1
-	DS = GD_drawing(g)->size;
+	gvc->pageSize.x = gvc->bb.UR.x;
+	gvc->pageSize.y = gvc->bb.UR.y;
+	job->pageBoxCentered.x = DEFAULT_PAGEWD;
+	job->pageBoxCentered.y = DEFAULT_PAGEHT;
+	PFCLM.x = job->pageBoxCentered.x - 2 * job->pageBox.LL.x;
+	PFCLM.y = job->pageBoxCentered.y - 2 * job->pageBox.LL.y;
+#ifdef PAGINATIONBUG
+	P2PF(GD_drawing(g)->size, DS);
 #else
 	DS.x = gvc->job->width;
 	DS.y = gvc->job->height;
 #endif
 	if (GD_drawing(g)->landscape)
-	    DS = exch_xy(DS);
-	gvc->pagesArraySize.x = gvc->pagesArraySize.y = gvc->pagesSize = 1;
+	    DS = exch_xyf(DS);
+	gvc->pagesArraySize.x = gvc->pagesArraySize.y = gvc->numPages = 1;
     }
 
     set_pagedir(gvc, g);
@@ -243,23 +249,37 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	    extra.x = 0;
 	if ((extra.y = PFCLM.y - DS.y) < 0)
 	    extra.y = 0;
-	PB.LL.x += extra.x / 2;
-	PB.LL.y += extra.y / 2;
+	job->pageBox.LL.x += extra.x / 2;
+	job->pageBox.LL.y += extra.y / 2;
     }
-    PB.UR = add_points(PB.LL, DS);
+    job->pageBox.UR = add_pointfs(job->pageBox.LL, DS);
 }
 
-static void reset_pagination(GVC_t * gvc, graph_t * g)
+static void firstpage(GVC_t *gvc)
 {
-    Page = 0;
-    gvc->pagesArrayFirst.x = gvc->pagesArrayFirst.y = 0;
-    gvc->pagesArrayMajor.x = gvc->pagesArrayMajor.y = 0;
-    gvc->pagesArrayMinor.x = gvc->pagesArrayMinor.y = 0;
-    gvc->pagesArraySize.x = gvc->pagesArraySize.y = gvc->pagesSize = 1;
-    PB.LL.x = PB.LL.y = PB.UR.x = PB.UR.y = 0;
-    GP.x = GP.y = 0;
-    CB.LL.x = CB.LL.y = CB.UR.x = CB.UR.y = 0;
-    PFC.x = PFC.y = 0;
+    gvc->pagesArrayElem = gvc->pagesArrayFirst;
+    gvc->pageNum = 1;
+}
+
+static int validpage(GVC_t *gvc)
+{
+    return ((gvc->pagesArrayElem.x >= 0)
+	 && (gvc->pagesArrayElem.x < gvc->pagesArraySize.x)
+	 && (gvc->pagesArrayElem.y >= 0)
+	 && (gvc->pagesArrayElem.y < gvc->pagesArraySize.y));
+}
+
+static void nextpage(GVC_t *gvc)
+{
+    gvc->pagesArrayElem = add_points(gvc->pagesArrayElem, gvc->pagesArrayMinor);
+    if (validpage(gvc) == FALSE) {
+	if (gvc->pagesArrayMajor.y)
+	    gvc->pagesArrayElem.x = gvc->pagesArrayFirst.x;
+	else
+	    gvc->pagesArrayElem.y = gvc->pagesArrayFirst.y;
+	gvc->pagesArrayElem = add_points(gvc->pagesArrayElem, gvc->pagesArrayMajor);
+    }
+    gvc->pageNum = gvc->pagesArrayElem.x + gvc->pagesArrayElem.y * gvc->pagesArraySize.x + 1;
 }
 
 static int write_edge_test(Agraph_t * g, Agedge_t * e)
@@ -292,10 +312,6 @@ void emit_reset(GVC_t * gvc, graph_t * g)
 {
     Agnode_t *n;
 
-    reset_layering(gvc, g);
-
-    reset_pagination(gvc, g);
-
     /* reset state */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_state(n) = 0;
@@ -305,20 +321,22 @@ void emit_reset(GVC_t * gvc, graph_t * g)
     gvrender_reset(gvc);
 }
 
-static void emit_background(GVC_t * gvc, point LL, point UR)
+static void emit_background(GVC_t * gvc, boxf pageBox)
 {
     char *str;
     point A[4];
     graph_t *g = gvc->g;
+    box PB;
 
     if (((str = agget(g, "bgcolor")) != 0)
 	&& str[0]
 	&& strcmp(str, "white") != 0 && strcmp(str, "transparent") != 0) {
 	/* increment to cover int rounding errors */
-	A[0].x = A[1].x = LL.x - GD_drawing(g)->margin.x - 1;
-	A[2].x = A[3].x = UR.x + GD_drawing(g)->margin.x + 1;
-	A[1].y = A[2].y = UR.y + GD_drawing(g)->margin.y + 1;
-	A[3].y = A[0].y = LL.y - GD_drawing(g)->margin.y - 1;
+	BF2B(pageBox, PB);
+	A[0].x = A[1].x = PB.LL.x - GD_drawing(g)->margin.x - 1;
+	A[2].x = A[3].x = PB.UR.x + GD_drawing(g)->margin.x + 1;
+	A[1].y = A[2].y = PB.UR.y + GD_drawing(g)->margin.y + 1;
+	A[3].y = A[0].y = PB.LL.y - GD_drawing(g)->margin.y - 1;
 	gvrender_set_fillcolor(gvc, str);
 	gvrender_set_pencolor(gvc, str);
 	gvrender_polygon(gvc, A, 4, TRUE);	/* filled */
@@ -333,45 +351,165 @@ static void emit_defaults(GVC_t * gvc)
 
 
 /* even if this makes you cringe, at least it's short */
-static void setup_page(GVC_t * gvc, point page)
+static void setup_page(GVC_t * gvc)
 {
     point offset;
     int rot;
     graph_t *g = gvc->g;
 
-    Page++;
-
     /* establish current box in graph coordinates */
-    CB.LL.x = page.x * GP.x;
-    CB.LL.y = page.y * GP.y;
-    CB.UR.x = CB.LL.x + GP.x;
-    CB.UR.y = CB.LL.y + GP.y;
+    gvc->pageBox.LL.x = gvc->pagesArrayElem.x * gvc->pageSize.x;
+    gvc->pageBox.LL.y = gvc->pagesArrayElem.y * gvc->pageSize.y;
+    gvc->pageBox.UR.x = gvc->pageBox.LL.x + gvc->pageSize.x;
+    gvc->pageBox.UR.y = gvc->pageBox.LL.y + gvc->pageSize.y;
 
     /* establish offset to be applied, in graph coordinates */
     if (GD_drawing(g)->landscape == FALSE)
-	offset = pointof(-CB.LL.x, -CB.LL.y);
+	offset = pointof(-gvc->pageBox.LL.x, -gvc->pageBox.LL.y);
     else {
-	offset.x = (page.y + 1) * GP.y;
-	offset.y = -page.x * GP.x;
+	offset.x = (gvc->pagesArrayElem.y + 1) * gvc->pageSize.y;
+	offset.y = -(gvc->pagesArrayElem.x) * gvc->pageSize.x;
     }
     rot = GD_drawing(g)->landscape ? 90 : 0;
 
-    gvrender_begin_page(gvc, page, gvc->job->zoom, rot, offset);
-    emit_background(gvc, CB.LL, CB.UR);
+    gvrender_begin_page(gvc, gvc->job->zoom, rot, offset);
+    emit_background(gvc, gvc->pageBox);
     emit_defaults(gvc);
 }
 
-static int node_in_CB(GVC_t *gvc, node_t * n)
+static boolean node_in_pageBox(GVC_t *gvc, node_t * n)
 {
-    box nb;
+    boxf nb;
 
-    if (gvc->pagesSize == 1)
+    if (gvc->numPages == 1)
 	return TRUE;
     nb.LL.x = ND_coord_i(n).x - ND_lw_i(n);
-    nb.LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2;
+    nb.LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
     nb.UR.x = ND_coord_i(n).x + ND_rw_i(n);
-    nb.UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2;
-    return rect_overlap(CB, nb);
+    nb.UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
+    return boxf_overlap(gvc->pageBox, nb);
+}
+
+static int is_natural_number(char *sstr)
+{
+    unsigned char *str = (unsigned char *) sstr;
+    while (*str)
+	if (NOT(isdigit(*str++)))
+	    return FALSE;
+    return TRUE;
+}
+
+static int layer_index(GVC_t *gvc, char *str, int all)
+{
+    int i;
+
+    if (streq(str, "all"))
+	return all;
+    if (is_natural_number(str))
+	return atoi(str);
+    if (gvc->layerIDs)
+	for (i = 1; i <= gvc->numLayers; i++)
+	    if (streq(str, gvc->layerIDs[i]))
+		return i;
+    return -1;
+}
+
+static int selectedlayer(GVC_t *gvc, char *spec)
+{
+    int n0, n1;
+    unsigned char buf[SMALLBUF];
+    char *w0, *w1;
+    agxbuf xb;
+    int rval = FALSE;
+
+    agxbinit(&xb, SMALLBUF, buf);
+    agxbput(&xb, spec);
+    w1 = w0 = strtok(agxbuse(&xb), gvc->layerDelims);
+    if (w0)
+	w1 = strtok(NULL, gvc->layerDelims);
+    switch ((w0 != NULL) + (w1 != NULL)) {
+    case 0:
+	rval = FALSE;
+	break;
+    case 1:
+	n0 = layer_index(gvc, w0, gvc->layerNum);
+	rval = (n0 == gvc->layerNum);
+	break;
+    case 2:
+	n0 = layer_index(gvc, w0, 0);
+	n1 = layer_index(gvc, w1, gvc->numLayers);
+	if ((n0 < 0) || (n1 < 0))
+	    rval = TRUE;
+	else if (n0 > n1) {
+	    int t = n0;
+	    n0 = n1;
+	    n1 = t;
+	}
+	rval = BETWEEN(n0, gvc->layerNum, n1);
+	break;
+    }
+    agxbfree(&xb);
+    return rval;
+}
+
+static int node_in_layer(GVC_t *gvc, graph_t * g, node_t * n)
+{
+    char *pn, *pe;
+    edge_t *e;
+
+    if (gvc->numLayers <= 1)
+	return TRUE;
+    pn = late_string(n, N_layer, "");
+    if (selectedlayer(gvc, pn))
+	return TRUE;
+    if (pn[0])
+	return FALSE;		/* Only check edges if pn = "" */
+    if ((e = agfstedge(g, n)) == NULL)
+	return TRUE;
+    for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
+	pe = late_string(e, E_layer, "");
+	if ((pe[0] == '\0') || selectedlayer(gvc, pe))
+	    return TRUE;
+    }
+    return FALSE;
+}
+
+static int edge_in_layer(GVC_t *gvc, graph_t * g, edge_t * e)
+{
+    char *pe, *pn;
+    int cnt;
+
+    if (gvc->numLayers <= 1)
+	return TRUE;
+    pe = late_string(e, E_layer, "");
+    if (selectedlayer(gvc, pe))
+	return TRUE;
+    if (pe[0])
+	return FALSE;
+    for (cnt = 0; cnt < 2; cnt++) {
+	pn = late_string(cnt < 1 ? e->tail : e->head, N_layer, "");
+	if ((pn[0] == '\0') || selectedlayer(gvc, pn))
+	    return TRUE;
+    }
+    return FALSE;
+}
+
+static int clust_in_layer(GVC_t *gvc, graph_t * sg)
+{
+    char *pg;
+    node_t *n;
+
+    if (gvc->numLayers <= 1)
+	return TRUE;
+    pg = late_string(sg, agfindattr(sg, "layer"), "");
+    if (selectedlayer(gvc, pg))
+	return TRUE;
+    if (pg[0])
+	return FALSE;
+    for (n = agfstnode(sg); n; n = agnxtnode(sg, n))
+	if (node_in_layer(gvc, sg, n))
+	    return TRUE;
+    return FALSE;
 }
 
 static void emit_node(GVC_t * gvc, node_t * n)
@@ -380,7 +518,7 @@ static void emit_node(GVC_t * gvc, node_t * n)
 
     if (ND_shape(n) == NULL)
 	return;
-    if (node_in_layer(n->graph, n) && node_in_CB(gvc, n) && (ND_state(n) != Page)) {
+    if (node_in_layer(gvc, n->graph, n) && node_in_pageBox(gvc, n) && (ND_state(n) != gvc->pageNum)) {
 	gvrender_begin_node(gvc, n);
 	if (((s = agget(n, "href")) && s[0])
 	    || ((s = agget(n, "URL")) && s[0])) {
@@ -395,7 +533,7 @@ static void emit_node(GVC_t * gvc, node_t * n)
 	}
 	gvrender_begin_context(gvc);
 	ND_shape(n)->fns->codefn(gvc, n);
-	ND_state(n) = Page;
+	ND_state(n) = gvc->pageNum;
 	gvrender_end_context(gvc);
 	if (url) {
 	    gvrender_end_anchor(gvc);
@@ -472,15 +610,17 @@ void emit_attachment(GVC_t * gvc, textlabel_t * lp, splines * spl)
     gvrender_polyline(gvc, A, 3);
 }
 
-static int edge_in_CB(GVC_t *gvc, edge_t * e)
+static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
 {
     int i, j, np;
     bezier bz;
-    point *p, pp, sz;
-    box b;
+    point *p;
+    pointf pp, pn;
+    double sx, sy;
+    boxf b;
     textlabel_t *lp;
 
-    if (gvc->pagesSize == 1)
+    if (gvc->numPages == 1)
 	return TRUE;
     if (ED_spl(e) == NULL)
 	return FALSE;
@@ -488,21 +628,23 @@ static int edge_in_CB(GVC_t *gvc, edge_t * e)
 	bz = ED_spl(e)->list[i];
 	np = bz.size;
 	p = bz.list;
-	pp = p[0];
+	P2PF(p[0],pp);
 	for (j = 0; j < np; j++) {
-	    if (rect_overlap(CB, mkbox(pp, p[j])))
+	    P2PF(p[j],pn);
+	    if (boxf_overlap(gvc->pageBox, mkboxf(pp, pn)))
 		return TRUE;
-	    pp = p[j];
+	    pp = pn;
 	}
     }
     if ((lp = ED_label(e)) == NULL)
 	return FALSE;
-    PF2P(lp->dimen, sz);
-    b.LL.x = lp->p.x - sz.x / 2;
-    b.UR.x = lp->p.x + sz.x / 2;
-    b.LL.y = lp->p.y - sz.y / 2;
-    b.UR.y = lp->p.y + sz.y / 2;
-    return rect_overlap(CB, b);
+    sx = lp->dimen.x / 2.;
+    sy = lp->dimen.y / 2.;
+    b.LL.x = lp->p.x - sx;
+    b.UR.x = lp->p.x + sx;
+    b.LL.y = lp->p.y - sy;
+    b.UR.y = lp->p.y + sy;
+    return boxf_overlap(gvc->pageBox, b);
 }
 
 static void emit_edge(GVC_t * gvc, edge_t * e)
@@ -524,8 +666,8 @@ static void emit_edge(GVC_t * gvc, edge_t * e)
 
 #define SEP 2.0
 
-    if ((edge_in_CB(gvc, e) == FALSE)
-	|| (edge_in_layer(e->head->graph, e) == FALSE))
+    if ((edge_in_pageBox(gvc, e) == FALSE)
+	|| (edge_in_layer(gvc, e->head->graph, e) == FALSE))
 	return;
 
     gvrender_begin_edge(gvc, e);
@@ -699,6 +841,7 @@ static void emit_edge(GVC_t * gvc, edge_t * e)
     gvrender_end_edge(gvc);
 }
 
+#ifdef PAGINATIONBUG
 static double setScale(graph_t * g)
 {
     double xscale, yscale, scale;
@@ -711,6 +854,7 @@ static double setScale(graph_t * g)
     GD_drawing(g)->size.y = scale * GD_bb(g).UR.y;
     return scale;
 }
+#endif
 
 
 /* emit_init
@@ -723,7 +867,7 @@ void emit_init(GVC_t * gvc, graph_t * g)
     double X, Y, Z, x, y;
     point size = GD_drawing(g)->size;
     point UR = GD_bb(g).UR;
-#if 1
+#ifdef PAGINATIONBUG
     double scale;
 #endif
 
@@ -732,22 +876,27 @@ void emit_init(GVC_t * gvc, graph_t * g)
     /* determine final drawing size and scale to apply. */
     /* N.B. size given by user is not rotated by landscape mode */
     /* start with "natural" size of layout */
-#if 1
+#ifdef PAGINATIONBUG
     /* FIXME - this version still needed by psgen.c*/
     scale = GD_drawing(g)->scale = 1.0;
     if (GD_drawing(g)->size.x > 0) {    /* was given by user... */
         if ((GD_drawing(g)->size.x < GD_bb(g).UR.x)     /* drawing is too big... */
             ||(GD_drawing(g)->size.y < GD_bb(g).UR.y)) {
             scale = setScale(g);
-        } else if (GD_drawing(g)->filled) {
+        }
+	else if (GD_drawing(g)->filled) {
             if ((GD_drawing(g)->size.x > GD_bb(g).UR.x) /* drawing is too small... */
                 &&(GD_drawing(g)->size.y > GD_bb(g).UR.y)) {
-                scale = setScale(g);
+               scale = setScale(g);
             }
-        } else
+        }
+	else {
             GD_drawing(g)->size = GD_bb(g).UR;
-    } else
+	}
+    }
+    else {
         GD_drawing(g)->size = GD_bb(g).UR;
+    }
 #endif
 
     Z = 1.0;
@@ -772,9 +921,9 @@ void emit_init(GVC_t * gvc, graph_t * g)
 	late_double(g->proto->n, N_fontsize, DEFAULT_FONTSIZE,
 		    MIN_FONTSIZE);
 
-    setup_layering(gvc, g);
+    init_layering(gvc, g);
 
-    setup_pagination(gvc, g);
+    init_job_pagination(gvc, g);
 
     gvrender_begin_job(gvc, Lib, X, Y, Z, x, y, GD_drawing(g)->dpi);
 }
@@ -784,28 +933,36 @@ void emit_deinit(GVC_t * gvc)
     gvrender_end_job(gvc);
 }
 
-static int validpage(GVC_t *gvc, point page)
+static void init_job_margin(GVC_t *gvc)
 {
-    return ((page.x >= 0) && (page.x < gvc->pagesArraySize.x)
-	    && (page.y >= 0) && (page.y < gvc->pagesArraySize.y));
-}
-
-static point pageincr(GVC_t *gvc, point page)
-{
-    page = add_points(page, gvc->pagesArrayMinor);
-    if (validpage(gvc, page) == FALSE) {
-	if (gvc->pagesArrayMajor.y)
-	    page.x = gvc->pagesArrayFirst.x;
-	else
-	    page.y = gvc->pagesArrayFirst.y;
-	page = add_points(page, gvc->pagesArrayMajor);
+    gvrender_job_t *job = gvc->job;
+    
+    if (gvc->graph_sets_margin) {
+	job->margin = gvc->margin;
     }
-    return page;
+    else {
+        /* set default margins depending on format */
+        switch (gvc->job->output_lang) {
+        case GVRENDER_PLUGIN:
+            job->margin.x = job->margin.y = job->render_features->default_margin;
+            break;
+        case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
+        case METAPOST: case FIG: case VTX: case ATTRIBUTED_DOT:
+        case PLAIN: case PLAIN_EXT: case QPDF:
+            job->margin.x = job->margin.y = DEFAULT_MARGIN;
+            break;
+        case CANONICAL_DOT:
+            job->margin.x = job->margin.y = 0;
+            break;
+        default:
+            job->margin.x = job->margin.y = DEFAULT_EMBED_MARGIN;
+            break;
+        }
+    }
 }
 
 void emit_graph(GVC_t * gvc, graph_t * g, int flags)
 {
-    point curpage;
     graph_t *sg;
     node_t *n;
     edge_t *e;
@@ -813,18 +970,11 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
     char *str, *colors;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
 
-/* FIXME - shouldn't need this again */
-    setup_pagination(gvc, g);
+    init_job_margin(gvc);
 
-#if 0
-/* FIXME - apparently zoom is not set yet */
-    gvc->clip.UR.x = ROUND(gvc->focus.x + (gvc->width+1) / (gvc->zoom * 2.));
-    gvc->clip.UR.y = ROUND(gvc->focus.y + (gvc->height+1) / (gvc->zoom * 2.));
-    gvc->clip.LL.x = ROUND(gvc->focus.x - (gvc->width+1) / (gvc->zoom * 2.));
-    gvc->clip.LL.y = ROUND(gvc->focus.y - (gvc->height+1) / (gvc->zoom * 2.));
-#endif
+    init_job_pagination(gvc, g);
 
-    gvrender_begin_graph(gvc, g, PB, PFC);
+    gvrender_begin_graph(gvc, g);
     if (flags & EMIT_COLORS) {
 	gvrender_set_fillcolor(gvc, DEFAULT_FILL);
 	if (((str = agget(g, "bgcolor")) != 0) && str[0])
@@ -866,14 +1016,12 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
 	}
     }
 
-    Layer = 1;
-    do {
-	if (Nlayers > 0)
-	    gvrender_begin_layer(gvc, LayerID[Layer], Layer, Nlayers);
-	for (curpage = gvc->pagesArrayFirst; validpage(gvc, curpage);
-	     curpage = pageincr(gvc, curpage)) {
+    for (firstlayer(gvc); validlayer(gvc); nextlayer(gvc)) {
+	if (gvc->numLayers > 1)
+	    gvrender_begin_layer(gvc);
+	for (firstpage(gvc); validpage(gvc); nextpage(gvc)) {
+    	    setup_page(gvc);
 	    Obj = NONE;
-	    setup_page(gvc, curpage);
 	    if (((s = agget(g, "href")) && s[0])
 		|| ((s = agget(g, "URL")) && s[0])) {
 		url = strdup_and_subst_graph(s, g);
@@ -975,16 +1123,15 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
 	    }
 	    gvrender_end_page(gvc);
 	}
-	if (Nlayers > 0)
+	if (gvc->numLayers > 1)
 	    gvrender_end_layer(gvc);
-	Layer++;
-    } while (Layer <= Nlayers);
+    }
     gvrender_end_graph(gvc);
 }
 
 void emit_eof(GVC_t * gvc)
 {
-    if (Page > 0) {
+    if (gvc->pageNum > 0) {
         emit_deinit(gvc);
 	emit_once_reset();
     }
@@ -1002,7 +1149,7 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
 
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
-	if (clust_in_layer(sg) == FALSE)
+	if (clust_in_layer(gvc, sg) == FALSE)
 	    continue;
 	/* when mapping, detect events on clusters after sub_clusters */
 	if (flags & EMIT_CLUSTERS_LAST) {
@@ -1096,128 +1243,6 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
 	    emit_clusters(gvc, sg, flags);
 	}
     }
-}
-
-int node_in_layer(graph_t * g, node_t * n)
-{
-    char *pn, *pe;
-    edge_t *e;
-
-    if (Nlayers <= 0)
-	return TRUE;
-    pn = late_string(n, N_layer, "");
-    if (selectedlayer(pn))
-	return TRUE;
-    if (pn[0])
-	return FALSE;		/* Only check edges if pn = "" */
-    if ((e = agfstedge(g, n)) == NULL)
-	return TRUE;
-    for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	pe = late_string(e, E_layer, "");
-	if ((pe[0] == '\0') || selectedlayer(pe))
-	    return TRUE;
-    }
-    return FALSE;
-}
-
-int edge_in_layer(graph_t * g, edge_t * e)
-{
-    char *pe, *pn;
-    int cnt;
-
-    if (Nlayers <= 0)
-	return TRUE;
-    pe = late_string(e, E_layer, "");
-    if (selectedlayer(pe))
-	return TRUE;
-    if (pe[0])
-	return FALSE;
-    for (cnt = 0; cnt < 2; cnt++) {
-	pn = late_string(cnt < 1 ? e->tail : e->head, N_layer, "");
-	if ((pn[0] == '\0') || selectedlayer(pn))
-	    return TRUE;
-    }
-    return FALSE;
-}
-
-int clust_in_layer(graph_t * sg)
-{
-    char *pg;
-    node_t *n;
-
-    if (Nlayers <= 0)
-	return TRUE;
-    pg = late_string(sg, agfindattr(sg, "layer"), "");
-    if (selectedlayer(pg))
-	return TRUE;
-    if (pg[0])
-	return FALSE;
-    for (n = agfstnode(sg); n; n = agnxtnode(sg, n))
-	if (node_in_layer(sg, n))
-	    return TRUE;
-    return FALSE;
-}
-
-int is_natural_number(char *sstr)
-{
-    unsigned char *str = (unsigned char *) sstr;
-    while (*str)
-	if (NOT(isdigit(*str++)))
-	    return FALSE;
-    return TRUE;
-}
-
-static int layer_index(char *str, int all)
-{
-    int i;
-
-    if (streq(str, "all"))
-	return all;
-    if (is_natural_number(str))
-	return atoi(str);
-    if (LayerID)
-	for (i = 1; i <= Nlayers; i++)
-	    if (streq(str, LayerID[i]))
-		return i;
-    return -1;
-}
-
-int selectedlayer(char *spec)
-{
-    int n0, n1;
-    unsigned char buf[SMALLBUF];
-    char *w0, *w1;
-    agxbuf xb;
-    int rval = FALSE;
-
-    agxbinit(&xb, SMALLBUF, buf);
-    agxbput(&xb, spec);
-    w1 = w0 = strtok(agxbuse(&xb), Layerdelims);
-    if (w0)
-	w1 = strtok(NULL, Layerdelims);
-    switch ((w0 != NULL) + (w1 != NULL)) {
-    case 0:
-	rval = FALSE;
-	break;
-    case 1:
-	n0 = layer_index(w0, Layer);
-	rval = (n0 == Layer);
-	break;
-    case 2:
-	n0 = layer_index(w0, 0);
-	n1 = layer_index(w1, Nlayers);
-	if ((n0 < 0) || (n1 < 0))
-	    rval = TRUE;
-	else if (n0 > n1) {
-	    int t = n0;
-	    n0 = n1;
-	    n1 = t;
-	}
-	rval = BETWEEN(n0, Layer, n1);
-	break;
-    }
-    agxbfree(&xb);
-    return rval;
 }
 
 static int style_delim(int c)

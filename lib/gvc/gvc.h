@@ -78,14 +78,11 @@ extern "C" {
     extern void gvrender_begin_job(GVC_t * gvc, char **lib, double X, double Y, double Z,
 				   double x, double y, int dpi);
     extern void gvrender_end_job(GVC_t * gvc);
-    extern void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb,
-				     point pb);
+    extern void gvrender_begin_graph(GVC_t * gvc, graph_t * g);
     extern void gvrender_end_graph(GVC_t * gvc);
-    extern void gvrender_begin_page(GVC_t * gvc, point page, double scale,
-				    int rot, point offset);
+    extern void gvrender_begin_page(GVC_t * gvc, double scale, int rot, point offset);
     extern void gvrender_end_page(GVC_t * gvc);
-    extern void gvrender_begin_layer(GVC_t * gvc, char *layerName, int n,
-				     int nLayers);
+    extern void gvrender_begin_layer(GVC_t * gvc);
     extern void gvrender_end_layer(GVC_t * gvc);
     extern void gvrender_begin_cluster(GVC_t * gvc, graph_t * sg);
     extern void gvrender_end_cluster(GVC_t * gvc);
