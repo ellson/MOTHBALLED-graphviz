@@ -1256,25 +1256,26 @@ the given types.
          <TR><TD>H[,&#160;]+S[,&#160;]+V<TD>Hue-Saturation-Value (HSV) 0.0 <= H,S,V <= 1.0</TR>
          <TR><TD>string<TD><A HREF=colors.html>color name</A></TR>
          <TR><TD>"transparent"<TD>No color</TR></TABLE>
-   The specification for the RGB and RGBA formats is the format string used by
+   The specification for the RGB and RGBA formats are the format strings used by
    <TT>sscanf</TT> to scan the color value. Thus, these values have the form
-   "#RGB" or "#RGBA", where R,G,B, and A each consist of 2 hexidecimal
+   "#RGB" or "#RGBA", where R, G, B, and A each consist of 2 hexidecimal
    digits, and can be separated by whitespace. HSV colors have the form of 3
    numbers between 0 and 1, separated by whitespace or commas.
   <P>
   Examples:<BR>
-    <TABLE>
+    <TABLE border=1>
       <TR><TH>Color<TH>RGB<TH>HSV<TH>String</TR>
-      <TR><TD bgcolor=#111111>White<TD>#111111<TD>HSV<TD>white</TR>
-      <TR><TD bgcolor=#000000><font color=white>Black</font><TD>#000000<TD>HSV<TD>black</TR>
-      <TR><TD bgcolor=#ff0000>Red<TD>#ff0000<TD>HSV<TD>red</TR>
-      <TR><TD bgcolor=#f08080>Light Coral<TD>#f08080<TD>HSV<TD>lightcoral</TR>
+      <TR><TD align=center bgcolor=#ffffff>White<TD>"#ffffff"<TD>"0.000 0.000 1.000"<TD>"white"</TR>
+      <TR><TD align=center bgcolor=#000000><font color=white>Black</font><TD>"#000000"<TD>"0.000 0.000 0.000"<TD>"black"</TR>
+      <TR><TD align=center bgcolor=#ff0000>Red<TD>"#ff0000"<TD>"0.000 1.000 1.000"<TD>"red"</TR>
+      <TR><TD align=center bgcolor=#40e0d0>Turquoise<TD>"#40e0d0"<TD>"0.482 0.714 0.878"<TD>"turquoise"</TR>
+      <TR><TD align=center bgcolor=#a0522d>Sienna<TD>"#a0522d"<TD>"0.051 0.718 0.627"<TD>"sienna"</TR>
     </TABLE>
   <P>
    Note that some output formats, e.g., <A HREF="output.html#a:mif">mif</A>, 
    only support a limited number of specific colors.
   <P>
-   The color <B>transparent</B> is only available in the output formats
+   The color <TT>transparent</TT> is only available in the output formats
    ps, svg, fig, vmrl, and the bitmap formats. It can be used whenever a
    color is needed but is most useful with 
    the <A HREF=#d:bgcolor>bgcolor</A> attribute.
