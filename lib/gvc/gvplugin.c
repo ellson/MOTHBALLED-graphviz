@@ -29,17 +29,16 @@
  * The enumerated type is defined gvplugin.h.  The apis array is
  * inititialized here by redefining ELEM and reinvoking APIS.
  *
- * The last enum is NUM_APIS which is the size of the array.
+ * The NUM_APIS is the size of the array.
  */
 #define ELEM(x) #x,
-static char *apis[] = { APIS };	/* "renderer", "scripter", ... */
-
+static char *apis[] = { APIS };	/* "render", "layout", ... */
 #undef ELEM
 
 /* translate a string api name to its type, or -1 on error */
 api_t gvplugin_api(char *str)
 {
-    api_t api;
+    int api;
 
     for (api = 0; api < NUM_APIS; api++) {
 	if (strcmp(str, apis[api]) == 0)

@@ -124,6 +124,10 @@ static double courFontWidth[] = {
     0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999,	/* רשתû     */
 };
 
+#ifdef CAIRO_HAS_FT_FONT
+#include <cairo-ft.h>
+#endif
+
 #if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
 extern codegen_t *Output_codegen;
 
@@ -195,7 +199,7 @@ estimate_textsize(textline_t * textline, char *fontname, double fontsz,
 double textwidth(textline_t * textline, char *fontname, double fontsize)
 {
     char *fontpath = NULL;
-#ifdef HAVE_CAIRO
+#ifdef CAIRO_HAS_FT_FONT
     cairo_t *cr;
     cairo_text_extents_t extents;
 

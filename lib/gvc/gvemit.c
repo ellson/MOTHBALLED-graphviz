@@ -19,6 +19,12 @@
 #endif
 
 #include <stdio.h>
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #include "const.h"
 #include "types.h"
@@ -31,6 +37,9 @@ extern void emit_graph(GVC_t * gvc, graph_t * g, int flags);
 #if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER) && defined(HAVE_CAIRO)
 
 #include <cairo.h>
+
+#ifdef CAIRO_HAS_XLIB_SURFACE
+#include <cairo-xlib.h>
 
 #define PANFACTOR 10
 #define ZOOMFACTOR 1.1
@@ -502,6 +511,7 @@ static int toggle_fit_cb(gvrender_job_t * job)
     }
     return 0;
 }
+#endif /* CAIRO_HAS_XLIB_SURFACE */
 #endif /* X_DISPLAY_MISSING */
 
 void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
@@ -513,7 +523,7 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
     job->flags = flags;
 
    if (flags & GVRENDER_X11_EVENTS) {
-#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER) && defined(HAVE_CAIRO)
+#ifdef CAIRO_HAS_XLIB_SURFACE
 
 	const char *display=NULL;
 	int argb=0;

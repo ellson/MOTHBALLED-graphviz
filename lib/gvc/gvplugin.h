@@ -32,13 +32,13 @@ extern "C" {
  * The enumerated type is defined here.  The apis array is
  * inititialized in gvplugin.c by redefining ELEM and reinvoking APIS.
  *
- * The last enum is NUM_APIS which is the size of the array.
+ * NUM_APIS is the size of the array.
  */
-// #define APIS ELEM(render) ELEM(layout) ELEM(parser) ELEM(scripter) ...
-#define APIS ELEM(render) ELEM(layout) ELEM(display)
+#define APIS ELEM(render) ELEM(layout) ELEM(display) ELEM(text)
+#define NUM_APIS 4
 
 #define ELEM(x) API_##x,
-    typedef enum { APIS NUM_APIS } api_t;	/* API_render, API_layout, ... */
+    typedef enum { APIS } api_t; /* API_render, API_layout, ... */
 #undef ELEM
 
     typedef struct {
@@ -55,7 +55,8 @@ extern "C" {
     } gvplugin_api_t;
 
     typedef struct {
-	char *name;		/* used instead of a file pathname when this plugin is builtin */
+	char *name;		/* used instead of a file pathname
+					when this plugin is builtin */
 	gvplugin_api_t *apis;
     } gvplugin_t;
 

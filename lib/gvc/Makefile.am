@@ -15,12 +15,13 @@ AM_CPPFLAGS = \
 
 #LIBS = @LIBLTDL@
 
-pkginclude_HEADERS = gvc.h gvcint.h gvplugin_render.h \
-	gvplugin_layout.h gvplugin_display.h gvplugin.h
+pkginclude_HEADERS = gvc.h gvcint.h gvplugin.h \
+	gvplugin_render.h gvplugin_layout.h \
+	gvplugin_text.h gvplugin_display.h
 pkglib_LTLIBRARIES = libgvc.la
 pkgconfig_DATA = libgvc.pc
 
-libgvc_la_SOURCES = gvrender.c gvlayout.c gvcontext.c gvjobs.c \
+libgvc_la_SOURCES = gvrender.c gvlayout.c gvtext.c gvcontext.c gvjobs.c \
 	gvemit.c gvplugin.c gvconfig.c
 
 EXTRA_DIST = Makefile.old
