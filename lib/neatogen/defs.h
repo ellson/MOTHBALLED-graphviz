@@ -69,6 +69,7 @@ extern "C" {
 	    return x == other.x && y == other.y;
     }};
 #else
+#undef inline
 #define inline
 #define NOTUSED(var)      (void) var
 
