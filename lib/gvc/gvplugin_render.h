@@ -27,37 +27,37 @@ extern "C" {
 #endif
 
     struct gvrender_engine_s {
-	void (*begin_job) (GVC_t * gvc);
-	void (*end_job) (GVC_t * gvc);
-	void (*begin_graph) (GVC_t * gvc, char *graphname);
-	void (*end_graph) (GVC_t * gvc);
-	void (*begin_page) (GVC_t * gvc, char *pagename);
-	void (*end_page) (GVC_t * gvc);
-	void (*begin_layer) (GVC_t * gvc, char *layername);
-	void (*end_layer) (GVC_t * gvc);
-	void (*begin_cluster) (GVC_t * gvc, char *clustername, long id);
-	void (*end_cluster) (GVC_t * gvc);
-	void (*begin_nodes) (GVC_t * gvc);
-	void (*end_nodes) (GVC_t * gvc);
-	void (*begin_edges) (GVC_t * gvc);
-	void (*end_edges) (GVC_t * gvc);
-	void (*begin_node) (GVC_t * gvc, char *nodename, long id);
-	void (*end_node) (GVC_t * gvc);
-	void (*begin_edge) (GVC_t * gvc, char *tailname, boolean directed,
+	void (*begin_job) (gvrender_job_t * job);
+	void (*end_job) (gvrender_job_t * job);
+	void (*begin_graph) (gvrender_job_t * job, char *graphname);
+	void (*end_graph) (gvrender_job_t * job);
+	void (*begin_page) (gvrender_job_t * job, char *pagename);
+	void (*end_page) (gvrender_job_t * job);
+	void (*begin_layer) (gvrender_job_t * job, char *layername);
+	void (*end_layer) (gvrender_job_t * job);
+	void (*begin_cluster) (gvrender_job_t * job, char *clustername, long id);
+	void (*end_cluster) (gvrender_job_t * job);
+	void (*begin_nodes) (gvrender_job_t * job);
+	void (*end_nodes) (gvrender_job_t * job);
+	void (*begin_edges) (gvrender_job_t * job);
+	void (*end_edges) (gvrender_job_t * job);
+	void (*begin_node) (gvrender_job_t * job, char *nodename, long id);
+	void (*end_node) (gvrender_job_t * job);
+	void (*begin_edge) (gvrender_job_t * job, char *tailname, boolean directed,
 			    char *headname, long id);
-	void (*end_edge) (GVC_t * gvc);
-	void (*begin_anchor) (GVC_t * gvc, char *href, char *tooltip,
+	void (*end_edge) (gvrender_job_t * job);
+	void (*begin_anchor) (gvrender_job_t * job, char *href, char *tooltip,
 			      char *target);
-	void (*end_anchor) (GVC_t * gvc);
-	void (*textline) (GVC_t * gvc, pointf p, textline_t * str);
-	void (*resolve_color) (GVC_t * gvc, color_t * color);
-	void (*ellipse) (GVC_t * gvc, pointf * A, int filled);
-	void (*polygon) (GVC_t * gvc, pointf * A, int n, int filled);
-	void (*beziercurve) (GVC_t * gvc, pointf * A, int n,
+	void (*end_anchor) (gvrender_job_t * job);
+	void (*textline) (gvrender_job_t * job, pointf p, textline_t * str);
+	void (*resolve_color) (gvrender_job_t * job, color_t * color);
+	void (*ellipse) (gvrender_job_t * job, pointf * A, int filled);
+	void (*polygon) (gvrender_job_t * job, pointf * A, int n, int filled);
+	void (*beziercurve) (gvrender_job_t * job, pointf * A, int n,
 			     int arrow_at_start, int arrow_at_end);
-	void (*polyline) (GVC_t * gvc, pointf * A, int n);
-	void (*comment) (GVC_t * gvc, char *comment);
-	void (*user_shape) (GVC_t * gvc, char *name, pointf * A, int sides,
+	void (*polyline) (gvrender_job_t * job, pointf * A, int n);
+	void (*comment) (gvrender_job_t * job, char *comment);
+	void (*user_shape) (gvrender_job_t * job, char *name, pointf * A, int sides,
 			    int filled);
     };
 
