@@ -36,7 +36,11 @@ libdotneato_la_LIBADD = \
 
 dot_SOURCES = dot.c args.c plugins.c
 
-if ENABLE_GVRENDER
+if DISABLE_GVRENDER
+dot_LDADD = \
+        $(top_builddir)/lib/common/libcommon.la \
+        $(top_builddir)/lib/gvc/libgvc.la
+else
 dot_LDADD = \
 	$(top_builddir)/lib/common/libcommon.la \
         $(top_builddir)/lib/gvc/libgvc.la \
@@ -44,10 +48,6 @@ dot_LDADD = \
         $(top_builddir)/plugin/gd/libgvplugin_gd.la \
         $(top_builddir)/plugin/text/libgvplugin_text.la \
         $(top_builddir)/plugin/layout/libgvplugin_layout.la @CAIRO_LIBS@
-else
-dot_LDADD = \
-        $(top_builddir)/lib/common/libcommon.la \
-        $(top_builddir)/lib/gvc/libgvc.la
 endif
 
 install-data-hook:

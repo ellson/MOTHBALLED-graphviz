@@ -190,8 +190,7 @@ extern "C" {
 	boolean usershape;
     } shape_desc;
 
-#if ENABLE_CODEGENS
-
+#ifndef DISABLE_CODEGENS
     typedef struct codegen_t {
 	void (*reset) (void);
 	void (*begin_job) (FILE * ofp, graph_t * g, char **lib, char *user,

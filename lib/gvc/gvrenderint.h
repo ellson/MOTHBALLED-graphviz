@@ -102,7 +102,7 @@ extern "C" {
 	gvrender_engine_t *render_engine;	/* current render engine */
 	gvrender_features_t *render_features;	/* features of current render */
 	int render_id;		/* internal id of current render */
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 	codegen_t *codegen;
 #endif
 

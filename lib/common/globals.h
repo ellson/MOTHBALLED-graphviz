@@ -59,7 +59,7 @@ extern "C" {
     external char *Gvfilepath;	/* Path of files allowed in 'shapefile' attrib  (also ps libs) */
     external int y_invert;	/* invert y in dot & plain output */
 
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     external int Output_lang;	/* POSTSCRIPT, DOT, etc. */
     external FILE *Output_file;
     external int Obj;

@@ -168,43 +168,24 @@ AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 
 dnl -----------------------------------
-dnl dynagraph requires C++ support beyond RedHat 7.2
+dnl old codegens
 
-AC_ARG_ENABLE(dynagraph,
-  [AC_HELP_STRING([--enable-dynagraph],
-                  [build dynagraph code])])
-AM_CONDITIONAL(ENABLE_DYNAGRAPH, [test "x$enable_dynagraph" = "xyes"])
+AC_ARG_ENABLE(codegens,
+  [AC_HELP_STRING([--disable-codegens], [don't build old codegens])])
+if test "x$enable_codegens" = "xno"; then
+  AC_DEFINE(DISABLE_CODEGENS,1,[Define if you don't want the old codegens])
+fi
+AM_CONDITIONAL(DISABLE_CODEGENS, [test "x$enable_codegens" = "xno"])
 
 dnl -----------------------------------
 dnl gvrender plugins
 
 AC_ARG_ENABLE(gvrender,
-  [AC_HELP_STRING([--enable-gvrender],
-                  [build gvrender plugins (EXPERIMENTAL)])])
-if test "x$enable_gvrender" = "xyes"; then
-  AC_DEFINE(ENABLE_GVRENDER,1,[Set to 1 if you want the new gvrender codegens])
-else
-  AC_DEFINE(ENABLE_GVRENDER,0,[Set to 1 if you want the new gvrender codegens])
+  [AC_HELP_STRING([--disable-gvrender], [don't build gvrender plugins])])
+if test "x$enable_gvrender" = "xno"; then
+  AC_DEFINE(DISABLE_GVRENDER,1,[Define if you don't want the new gvrender codegens])
 fi
-AM_CONDITIONAL(ENABLE_GVRENDER, [test "x$enable_gvrender" = "xyes"])
-
-dnl -----------------------------------
-dnl gd_render   -  currently unconditionally true 
-
-AC_DEFINE(GD_RENDER,1,[Define if you  want the gd renderers (png, gif, etc )])
-
-dnl -----------------------------------
-dnl old codegens
-
-AC_ARG_ENABLE(codegens,
-  [AC_HELP_STRING([--disable-codegens],
-                  [don't build old codegens])])
-if test "x$enable_codegens" = "xno"; then
-  AC_DEFINE(ENABLE_CODEGENS,0,[Set to 0 if you don't want the old codegens])
-else
-  AC_DEFINE(ENABLE_CODEGENS,1,[Set to 0 if you don't want the old codegens])
-fi
-AM_CONDITIONAL(ENABLE_CODEGENS, [test "x$enable_codegens" != "xno"])
+AM_CONDITIONAL(DISABLE_GVRENDER, [test "x$enable_gvrender" = "xno"])
 
 dnl -----------------------------------
 dnl ElectricFence support for debugging
@@ -987,7 +968,7 @@ fi
 dnl -----------------------------------
 dnl INCLUDES and LIBS for cairo
 
-if [ test "x$enable_gvrender" = "xyes" ]; then
+if [ test "x$enable_gvrender" != "xno" ]; then
 	PKG_CHECK_MODULES(CAIRO, cairo >= 0.1.3,
 		[AC_DEFINE_UNQUOTED(HAVE_CAIRO,1,
 			[Define if you have the cairo library [EXPERIMENTAL]])],

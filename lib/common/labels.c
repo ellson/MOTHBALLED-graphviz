@@ -37,7 +37,7 @@ static void storeline(textlabel_t * lp, char *line, char terminator,
     if (lp->dimen.x < width)
 	lp->dimen.x = width;
     /* recalculate total height */
-#if ENABLE_CODEGENS && !defined(HAVE_GD_FREETYPE)
+#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
     if (Output_codegen == &GD_CodeGen)
 	lp->dimen.y = textheight(lp->u.txt.nlines, lp->fontsize);
     else

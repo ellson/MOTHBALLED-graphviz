@@ -202,14 +202,13 @@ extern "C" {
     extern void toggle(int);
     extern int test_toggle();
 
-#if ENABLE_CODEGENS && !defined(HAVE_GD_FREETYPE)
+#ifndef DISABLE_CODEGENS
+#ifndef HAVE_GD_FREETYPE
     extern void initDPI(graph_t *);
     extern double textheight(int nlines, double fontsz);
     extern int builtinFontHt(double fontsz);
     extern int builtinFontWd(double fontsz);
 #endif
-
-#if ENABLE_CODEGENS
     extern codegen_info_t *first_codegen();
     extern codegen_info_t *next_codegen();
 #endif

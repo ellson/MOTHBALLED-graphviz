@@ -55,13 +55,13 @@ int gvrender_select(GVC_t * gvc, char *str)
 {
     gv_plugin_t *plugin;
     gvplugin_type_t *typeptr;
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     codegen_info_t *cg_info;
 #endif
 
     plugin = gvplugin_load(gvc, API_render, str);
     if (plugin) {
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 	if (strcmp(plugin->path, "cg") == 0) {
 	    cg_info = (codegen_info_t *) (plugin->typeptr);
 	    gvc->codegen = cg_info->cg;
@@ -74,7 +74,7 @@ int gvrender_select(GVC_t * gvc, char *str)
 		(gvrender_features_t *) (typeptr->features);
 	    gvc->render_id = typeptr->id;
 	    return GVRENDER_PLUGIN;
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 	}
 #endif
     }
@@ -89,7 +89,7 @@ int gvrender_features(GVC_t * gvc)
     if (gvre) {
 	features = gvc->render_features->flags;
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -109,7 +109,7 @@ int gvrender_features(GVC_t * gvc)
 
 void gvrender_reset(GVC_t * gvc)
 {
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     gvrender_engine_t *gvre = gvc->render_engine;
 
     if (!gvre) {
@@ -130,7 +130,7 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, point pages)
     if (gvre && gvre->begin_job)
 //      gvre->begin_job(gvc, agget(g, "stylesheet"));
 	gvre->begin_job(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -147,7 +147,7 @@ void gvrender_end_job(GVC_t * gvc)
 
     if (gvre && gvre->end_job)
 	gvre->end_job(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -277,7 +277,7 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 	gvc->style->fill = PEN_NONE;
 	gvc->style->penwidth = PENWIDTH_NORMAL;
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -293,7 +293,7 @@ void gvrender_end_graph(GVC_t * gvc)
 
     if (gvre && gvre->end_graph)
 	gvre->end_graph(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -317,7 +317,7 @@ void gvrender_begin_page(GVC_t * gvc, point page, double scale, int rot,
     gvc->page_number = page.x + page.y * gvc->pages.x + 1;
     if (gvre && gvre->begin_page)
 	gvre->begin_page(gvc, gvc->g->name);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -333,7 +333,7 @@ void gvrender_end_page(GVC_t * gvc)
 
     if (gvre && gvre->end_page)
 	gvre->end_page(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -352,7 +352,7 @@ void gvrender_begin_layer(GVC_t * gvc, char *layername, int layer,
     gvc->nLayers = nLayers;
     if (gvre && gvre->begin_layer)
 	gvre->begin_layer(gvc, layername);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -368,7 +368,7 @@ void gvrender_end_layer(GVC_t * gvc)
 
     if (gvre && gvre->end_layer)
 	gvre->end_layer(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -386,7 +386,7 @@ void gvrender_begin_cluster(GVC_t * gvc, graph_t * sg)
 
     if (gvre && gvre->begin_cluster)
 	gvre->begin_cluster(gvc, sg->name, sg->meta_node->id);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -402,7 +402,7 @@ void gvrender_end_cluster(GVC_t * gvc)
 
     if (gvre && gvre->end_cluster)
 	gvre->end_cluster(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -418,7 +418,7 @@ void gvrender_begin_nodes(GVC_t * gvc)
 
     if (gvre && gvre->begin_nodes)
 	gvre->begin_nodes(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -434,7 +434,7 @@ void gvrender_end_nodes(GVC_t * gvc)
 
     if (gvre && gvre->end_nodes)
 	gvre->end_nodes(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -450,7 +450,7 @@ void gvrender_begin_edges(GVC_t * gvc)
 
     if (gvre && gvre->begin_edges)
 	gvre->begin_edges(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -466,7 +466,7 @@ void gvrender_end_edges(GVC_t * gvc)
 
     if (gvre && gvre->end_edges)
 	gvre->end_edges(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -482,7 +482,7 @@ void gvrender_begin_node(GVC_t * gvc, node_t * n)
 
     if (gvre && gvre->begin_node)
 	gvre->begin_node(gvc, n->name, n->id);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -498,7 +498,7 @@ void gvrender_end_node(GVC_t * gvc)
 
     if (gvre && gvre->end_node)
 	gvre->end_node(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -516,7 +516,7 @@ void gvrender_begin_edge(GVC_t * gvc, edge_t * e)
 	gvre->begin_edge(gvc, e->tail->name,
 			 e->tail->graph->root->kind & AGFLAG_DIRECTED,
 			 e->head->name, e->id);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -532,7 +532,7 @@ void gvrender_end_edge(GVC_t * gvc)
 
     if (gvre && gvre->end_edge)
 	gvre->end_edge(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -552,7 +552,7 @@ void gvrender_begin_context(GVC_t * gvc)
 	(gvc->styles)[gvc->SP] = (gvc->styles)[(gvc->SP) - 1];
 	gvc->style = &((gvc->styles)[gvc->SP]);
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -571,7 +571,7 @@ void gvrender_end_context(GVC_t * gvc)
 	assert(gvc->SP >= 0);
 	gvc->style = &(gvc->styles[gvc->SP]);
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -588,7 +588,7 @@ void gvrender_begin_anchor(GVC_t * gvc, char *href, char *tooltip,
 
     if (gvre && gvre->begin_anchor)
 	gvre->begin_anchor(gvc, href, tooltip, target);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -604,7 +604,7 @@ void gvrender_end_anchor(GVC_t * gvc)
 
     if (gvre && gvre->end_anchor)
 	gvre->end_anchor(gvc);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -622,7 +622,7 @@ void gvrender_set_font(GVC_t * gvc, char *fontname, double fontsize)
 	gvc->style->fontfam = fontname;
 	gvc->style->fontsz = fontsize;
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -642,7 +642,7 @@ void gvrender_textline(GVC_t * gvc, pointf p, textline_t * line)
 		gvre->textline(gvc, gvrender_ptf(gvc, p), line);
 	    }
 	}
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 	else {
 	    codegen_t *cg = gvc->codegen;
 	    point P;
@@ -665,7 +665,7 @@ void gvrender_set_pencolor(GVC_t * gvc, char *name)
 	if (gvre->resolve_color)
 	    gvre->resolve_color(gvc, color);
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -685,7 +685,7 @@ void gvrender_set_fillcolor(GVC_t * gvc, char *name)
 	if (gvre->resolve_color)
 	    gvre->resolve_color(gvc, color);
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -729,7 +729,7 @@ void gvrender_set_style(GVC_t * gvc, char **s)
 	    }
 	}
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -762,7 +762,7 @@ void gvrender_ellipse(GVC_t * gvc, point p, int rx, int ry, int filled)
 	    gvre->ellipse(gvc, AF, filled);
 	}
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -791,7 +791,7 @@ void gvrender_polygon(GVC_t * gvc, point * A, int n, int filled)
 	    gvre->polygon(gvc, AF, n, filled);
 	}
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -819,7 +819,7 @@ void gvrender_beziercurve(GVC_t * gvc, pointf * AF, int n,
 	    gvre->beziercurve(gvc, AF2, n, arrow_at_start, arrow_at_end);
 	}
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 	/* hack for old codegen int API */
@@ -856,7 +856,7 @@ void gvrender_polyline(GVC_t * gvc, point * A, int n)
 	    gvre->polyline(gvc, AF, n);
 	}
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -874,7 +874,7 @@ void gvrender_comment(GVC_t * gvc, void *obj, attrsym_t * sym)
 	if (sym)
 	    gvre->comment(gvc, agxget(obj, sym->index));
     }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 
@@ -902,7 +902,7 @@ void gvrender_user_shape(GVC_t * gvc, char *name, point * A, int n,
 
     if (gvre && gvre->user_shape)
 	gvre->user_shape(gvc, name, AF, n, filled);
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = gvc->codegen;
 

@@ -124,7 +124,7 @@ static double courFontWidth[] = {
     0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999,	/* רשתû     */
 };
 
-#if ENABLE_CODEGENS && !defined(HAVE_GD_FREETYPE)
+#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
 extern codegen_t *Output_codegen;
 
 double _dpi;
@@ -160,7 +160,7 @@ estimate_textsize(textline_t * textline, char *fontname, double fontsz,
 
     textline->width = 0.0;
     textline->xshow = NULL;
-#if ENABLE_CODEGENS && !defined(HAVE_GD_FREETYPE)
+#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
     if (Output_codegen == &GD_CodeGen) {
 	int cwidth;
 	double fsize = (fontsz * _dpi) / POINTS_PER_INCH;	/* in pixels */

@@ -18,7 +18,7 @@
 #include	"gvrender.h"
 #include	"agxbuf.h"
 
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 FILE *Output_file;
 int Output_lang;
 #endif
@@ -123,7 +123,7 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
     int flags;
 
     if (NOT(gvrender_features(gvc) & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES)
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 /* FIXME - bad hack until feaures supported in codegens */
 	&& gvc->codegen != &PS_CodeGen
 #ifdef QUARTZ_RENDER
@@ -227,7 +227,7 @@ void dotneato_write(GVC_t * gvc)
 	    }
 	    job->output_lang = lang_select(gvc, job->output_langname, 1);
 	}
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 	Output_file = job->output_file;
 	Output_lang = job->output_lang;
 #endif
@@ -568,7 +568,7 @@ static agxbuf charbuf;
 static attrsym_t *g_draw;
 static attrsym_t *g_l_draw;
 
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 
 static void xd_textline(point p, textline_t * line)
 {
@@ -764,7 +764,7 @@ static void extend_attrs(GVC_t * gvc)
 	    scale = late_double(e, E_arrowsz, 1.0, 0.0);
 	    for (i = 0; i < ED_spl(e)->size; i++) {
 		bz = ED_spl(e)->list[i];
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 /* FIXME - why is this here? */
 		xd_bezier(bz.list, bz.size, FALSE, FALSE);
 #endif

@@ -249,7 +249,7 @@ char *findFill(node_t * n)
 	    if (ND_shape(n) == point_desc) {
 		color = "black";
 	    }
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 	    else {
 		color = (Output_lang == MIF ? "black" : DEFAULT_FILL);
 	    }
@@ -1003,13 +1003,11 @@ static void poly_gencode(GVC_t * gvc, node_t * n)
     xsize = (16.0 * (ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n)));
     ysize = (16.0 * ND_ht_i(n) / POINTS(ND_height(n)));
 
-#if ENABLE_CODEGENS
-#ifdef HAVE_GD_PNG
+#if !defined(DISABLE_CODEGENS) && defined(HAVE_GD_PNG)
     /* this is bad, but it's because of how the VRML driver works */
     if ((gvc->codegen == &VRML_CodeGen) && (peripheries == 0)) {
 	peripheries = 1;
     }
-#endif
 #endif
 
     if (ND_shape(n) == point_desc) {

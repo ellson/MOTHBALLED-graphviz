@@ -18,7 +18,7 @@
 #include	"htmltable.h"
 #include	<ctype.h>
 
-#if ENABLE_CODEGENS && !defined(HAVE_GD_FREETYPE)
+#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
 codegen_t *Output_codegen;
 #endif
 
@@ -271,7 +271,7 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
     gvplugin_builtins(gvc);
     gvconfig(gvc, CONFIG);
 
-#if ENABLE_CODEGENS && !defined(HAVE_GD_FREETYPE)
+#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
     Output_codegen = gvc->codegen;
 #endif
 
@@ -372,7 +372,7 @@ graph_t *next_input_graph(void)
 
 void graph_init(graph_t * g)
 {
-#if ENABLE_CODEGENS && !defined(HAVE_GD_FREETYPE)
+#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
     initDPI(g);
 #endif
     /* initialize the graph */

@@ -15,7 +15,7 @@ pkginclude_HEADERS = const.h globals.h htmllex.h htmltable.h macros.h \
 pkglib_LTLIBRARIES = libcommon.la
 pkgconfig_DATA = libcommon.pc
 
-if ENABLE_CODEGENS
+if !DISABLE_CODEGENS
 CODEGENS = diagen.c figgen.c gdgen.c hpglgen.c mapgen.c mifgen.c mpgen.c \
 	picgen.c psgen.c svggen.c vrmlgen.c vtxgen.c ps.txt color_names
 endif

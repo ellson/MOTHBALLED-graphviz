@@ -23,14 +23,6 @@
 #include <fdp.h>
 #include <circo.h>
 
-/* FIXME - these shouldn't be needed */
-#ifndef ENABLE_CODEGENS
-#define ENABLE_CODEGENS 1
-#endif
-#ifndef GD_RENDER
-#define GD_RENDER 1
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -48,7 +48,7 @@ static char *Deffontname;
 static char *Layerdelims;
 static attrsym_t *G_peripheries;
 
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 static char *lang_name(int langID);
 #endif
 
@@ -296,7 +296,7 @@ void setup_graph(GVC_t * gvc, graph_t * g)
 	if (gvrender_features(gvc) & GVRENDER_DOES_LAYERS) {
 	    Nlayers = parse_layers(g, p);
 	}
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 	else {
 	    agerr(AGWARN, "layers not supported in %s output\n",
 		  lang_name(Output_lang));
@@ -1294,7 +1294,7 @@ char **parse_style(char *s)
     return parse;
 }
 
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
 static codegen_info_t cg[MAX_CODEGENS] = {
     {&PS_CodeGen, "ps", POSTSCRIPT},
     {&PS_CodeGen, "ps2", PDF},
@@ -1416,7 +1416,7 @@ codegen_info_t *next_codegen(codegen_info_t * p)
 
 void config_codegen_builtins(GVC_t * gvc)
 {
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     codegen_info_t *p;
 
     for (p = cg; p->name; ++p)
@@ -1439,7 +1439,7 @@ int lang_select(GVC_t * gvc, char *str, int warn)
 
 char *lang_name(int langID)
 {
-#if ENABLE_CODEGENS
+#ifndef DISABLE_CODEGENS
     codegen_info_t *p;
     for (p = first_codegen(); p->name; p = next_codegen(p)) {
 	if (p->id == langID)
