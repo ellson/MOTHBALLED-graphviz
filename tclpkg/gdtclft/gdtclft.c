@@ -148,15 +148,17 @@ static cmdOptions subcmdVec[] = {
      "gdhandle color cx cy width height start end"},
     {"openarc", tclGdArcCmd, 8, 8, 0, 1,
      "gdhandle color cx cy width height start end"},
-    {"fillpie", tclGdArcCmd, 8, 8, 0, 1,
-     "gdhandle color cx cy width height start end"},
-    {"openpie", tclGdArcCmd, 8, 8, 0, 1,
-     "gdhandle color cx cy width height start end"},
     {"chord", tclGdArcCmd, 8, 8, 0, 1,
      "gdhandle color cx cy width height start end"},
     {"fillchord", tclGdArcCmd, 8, 8, 0, 1,
      "gdhandle color cx cy width height start end"},
     {"openchord", tclGdArcCmd, 8, 8, 0, 1,
+     "gdhandle color cx cy width height start end"},
+    {"pie", tclGdArcCmd, 8, 8, 0, 1,
+     "gdhandle color cx cy width height start end"},
+    {"fillpie", tclGdArcCmd, 8, 8, 0, 1,
+     "gdhandle color cx cy width height start end"},
+    {"openpie", tclGdArcCmd, 8, 8, 0, 1,
      "gdhandle color cx cy width height start end"},
     {"polygon", tclGdPolygonCmd, 2, 999, 0, 1,
      "gdhandle color x1 y1 x2 y2 x3 y3 ..."},
@@ -1053,7 +1055,7 @@ tclGdArcCmd(Tcl_Interp * interp, GdData * gdData,
 	gdImageFilledArc(im, cx, cy, width, height, start, end, color, gdChord);
     else if (cmd[0] == 'o' && cmd[4] == 'c')  /* open chord */
 	gdImageFilledArc(im, cx, cy, width, height, start, end, color, gdChord | gdEdged | gdNoFill);
-    else if (cmd[0] == 'f' && cmd[4] == 'p')  /* fill pie */
+    else if (cmd[0] == 'p' || (cmd[0] == 'f' && cmd[4] == 'p'))  /* pie or fill pie */
 	gdImageFilledArc(im, cx, cy, width, height, start, end, color, gdPie);
     else if (cmd[0] == 'o' && cmd[4] == 'p')  /* open pie */
 	gdImageFilledArc(im, cx, cy, width, height, start, end, color, gdPie | gdEdged | gdNoFill);
