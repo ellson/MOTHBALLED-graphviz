@@ -4,7 +4,7 @@
 SUBDIRS = info
 
 pdf = dotguide.pdf dottyguide.pdf leftyguide.pdf neatoguide.pdf
-html = build.html FAQ.html binlicense.htm
+html = build.html FAQ.html index.html
 txt = Dot.ref latex_suggestions.txt
 
 pdfdir = $(pkgdatadir)/doc/pdf
