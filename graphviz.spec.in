@@ -15,19 +15,20 @@ Vendor:         http://www.graphviz.org/
 # norootforbuild
 # neededforbuild  expat freetype2 freetype2-devel gcc libjpeg libpng-devel-packages tcl tcl-devel tk tk-devel x-devel-packages
 
-BuildRequires: /bin/ksh tcl >= 0:8.3 tk expat expat-devel libjpeg
-Buildrequires: libjpeg-devel libpng libpng-devel zlib zlib-devel
-%{?fc4:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
-%{?fc3:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
-%{?fc2:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
-%{?fc1:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
-%{?el4:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel}
-%{?el3:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
-%{?rh9:BuildRequires: freetype >= 2 freetype-devel XFree86-devel}
-%{?rh8:BuildRequires: freetype >= 2 freetype-devel XFree86-devel}
-%{?rh7:BuildRequires: freetype >= 2 freetype-devel XFree86-devel}
-%{?el2:BuildRequires: freetype >= 2 freetype-devel XFree86-devel}
-%{?rh6:BuildRequires: freetype >= 2 freetype-devel XFree86-devel}
+BuildRequires: /bin/ksh ghostscript
+BuildRequires: tcl >= 0:8.3 tk expat expat-devel freetype >= 2 freetype-devel
+Buildrequires: libjpeg libjpeg-devel libpng libpng-devel zlib zlib-devel
+%{?fc4:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
+%{?fc3:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
+%{?fc2:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
+%{?fc1:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
+%{?el4:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel}
+%{?el3:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
+%{?rh9:BuildRequires: XFree86-devel}
+%{?rh8:BuildRequires: XFree86-devel}
+%{?rh7:BuildRequires: XFree86-devel}
+%{?el2:BuildRequires: XFree86-devel}
+%{?rh6:BuildRequires: XFree86-devel}
 
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Prefix:         %{_prefix}
