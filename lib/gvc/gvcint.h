@@ -36,6 +36,8 @@ extern "C" {
 	FILE *output_file;
 	int output_lang;
 
+	int render_id;		/* internal id of current render */
+
 	void *surface;		/* gd or cairo surface */
 	boolean external_surface; /* surface belongs to caller */
 
@@ -139,7 +141,6 @@ extern "C" {
 	/* gvrender_begin_job() */
 	gvrender_engine_t *render_engine;	/* current render engine */
 	gvrender_features_t *render_features;	/* features of current render */
-	int render_id;		/* internal id of current render */
 #ifndef DISABLE_CODEGENS
 	codegen_t *codegen;
 #endif

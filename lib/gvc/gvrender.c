@@ -72,7 +72,7 @@ int gvrender_select(GVC_t * gvc, char *str)
 	    gvc->render_engine = (gvrender_engine_t *) (typeptr->engine);
 	    gvc->render_features =
 		(gvrender_features_t *) (typeptr->features);
-	    gvc->render_id = typeptr->id;
+	    gvc->job->render_id = typeptr->id;
 	    return GVRENDER_PLUGIN;
 #ifndef DISABLE_CODEGENS
 	}

@@ -34,6 +34,7 @@ extern void emit_graph(GVC_t * gvc, graph_t * g, int flags);
 
 #define PANFACTOR 10
 #define ZOOMFACTOR 1.1
+#define EPSILON .0001
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
@@ -297,8 +298,6 @@ static void win_handle_button_press(gvrender_job_t * job, XButtonEvent *bev)
     job->oldx = bev->x;
     job->oldy = bev->y;
 }
-
-#define EPSILON .0001
 
 static void win_handle_motion(gvrender_job_t * job, XMotionEvent *mev)
 {
