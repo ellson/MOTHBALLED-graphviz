@@ -42,12 +42,12 @@ ALL : "$(OUTDIR)\Acyclic.exe"
 
 !ELSE 
 
-ALL : "ToolsSupport - Win32 Release" "$(OUTDIR)\Acyclic.exe"
+ALL : "ingraphs - Win32 Release" "$(OUTDIR)\Acyclic.exe"
 
 !ENDIF 
 
 !IF "$(RECURSE)" == "1" 
-CLEAN :"ToolsSupport - Win32 ReleaseCLEAN" 
+CLEAN :"ingraphs - Win32 ReleaseCLEAN" 
 !ELSE 
 CLEAN :
 !ENDIF 
@@ -64,25 +64,15 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\Acyclic.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=graph.lib cdt.lib ToolsSupport.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\Acyclic.pdb" /machine:I386 /out:"$(OUTDIR)\Acyclic.exe" /libpath:"../../lib/lib/Release" 
+LINK32_FLAGS=graph.lib cdt.lib ingraphs.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\Acyclic.pdb" /machine:I386 /out:"$(OUTDIR)\Acyclic.exe" /libpath:"../../lib/lib/Release" 
 LINK32_OBJS= \
 	"$(INTDIR)\acyclic.obj" \
-	"$(OUTDIR)\ToolsSupport.lib"
+	"..\..\lib\ingraphs\Release\ingraphs.lib"
 
 "$(OUTDIR)\Acyclic.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
-
-SOURCE="$(InputPath)"
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Release
-# End Custom Macros
-
 
 !ELSEIF  "$(CFG)" == "Acyclic - Win32 Debug"
 
@@ -98,12 +88,12 @@ ALL : "$(OUTDIR)\Acyclic.exe"
 
 !ELSE 
 
-ALL : "ToolsSupport - Win32 Debug" "$(OUTDIR)\Acyclic.exe"
+ALL : "ingraphs - Win32 Debug" "$(OUTDIR)\Acyclic.exe"
 
 !ENDIF 
 
 !IF "$(RECURSE)" == "1" 
-CLEAN :"ToolsSupport - Win32 DebugCLEAN" 
+CLEAN :"ingraphs - Win32 DebugCLEAN" 
 !ELSE 
 CLEAN :
 !ENDIF 
@@ -123,25 +113,15 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\Acyclic.bsc"
 BSC32_SBRS= \
 	
 LINK32=link.exe
-LINK32_FLAGS=graph.lib cdt.lib ToolsSupport.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\Acyclic.pdb" /debug /machine:I386 /out:"$(OUTDIR)\Acyclic.exe" /pdbtype:sept /libpath:"../../lib/lib/Debug" 
+LINK32_FLAGS=graph.lib cdt.lib ingraphs.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\Acyclic.pdb" /debug /machine:I386 /out:"$(OUTDIR)\Acyclic.exe" /pdbtype:sept /libpath:"../../lib/lib/Debug" 
 LINK32_OBJS= \
 	"$(INTDIR)\acyclic.obj" \
-	"$(OUTDIR)\ToolsSupport.lib"
+	"..\..\lib\ingraphs\Debug\ingraphs.lib"
 
 "$(OUTDIR)\Acyclic.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
-
-SOURCE="$(InputPath)"
-DS_POSTBUILD_DEP=$(INTDIR)\postbld.dep
-
-ALL : $(DS_POSTBUILD_DEP)
-
-# Begin Custom Macros
-OutDir=.\Debug
-# End Custom Macros
-
 
 !ENDIF 
 
@@ -186,35 +166,34 @@ OutDir=.\Debug
 
 
 !IF "$(CFG)" == "Acyclic - Win32 Release" || "$(CFG)" == "Acyclic - Win32 Debug"
-SOURCE=..\src\acyclic.c
+SOURCE=.\acyclic.c
 
 "$(INTDIR)\acyclic.obj" : $(SOURCE) "$(INTDIR)"
-	$(CPP) $(CPP_PROJ) $(SOURCE)
 
 
 !IF  "$(CFG)" == "Acyclic - Win32 Release"
 
-"ToolsSupport - Win32 Release" : 
-   cd "."
-   $(MAKE) /$(MAKEFLAGS) /F ".\ToolsSupport.mak" CFG="ToolsSupport - Win32 Release" 
-   cd "."
+"ingraphs - Win32 Release" : 
+   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
+   $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Release" 
+   cd "..\..\cmd\tools"
 
-"ToolsSupport - Win32 ReleaseCLEAN" : 
-   cd "."
-   $(MAKE) /$(MAKEFLAGS) /F ".\ToolsSupport.mak" CFG="ToolsSupport - Win32 Release" RECURSE=1 CLEAN 
-   cd "."
+"ingraphs - Win32 ReleaseCLEAN" : 
+   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
+   $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Release" RECURSE=1 CLEAN 
+   cd "..\..\cmd\tools"
 
 !ELSEIF  "$(CFG)" == "Acyclic - Win32 Debug"
 
-"ToolsSupport - Win32 Debug" : 
-   cd "."
-   $(MAKE) /$(MAKEFLAGS) /F ".\ToolsSupport.mak" CFG="ToolsSupport - Win32 Debug" 
-   cd "."
+"ingraphs - Win32 Debug" : 
+   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
+   $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Debug" 
+   cd "..\..\cmd\tools"
 
-"ToolsSupport - Win32 DebugCLEAN" : 
-   cd "."
-   $(MAKE) /$(MAKEFLAGS) /F ".\ToolsSupport.mak" CFG="ToolsSupport - Win32 Debug" RECURSE=1 CLEAN 
-   cd "."
+"ingraphs - Win32 DebugCLEAN" : 
+   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
+   $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Debug" RECURSE=1 CLEAN 
+   cd "..\..\cmd\tools"
 
 !ENDIF 
 
