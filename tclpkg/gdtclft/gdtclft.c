@@ -146,6 +146,18 @@ static cmdOptions subcmdVec[] = {
      "gdhandle color cx cy width height start end"},
     {"fillarc", tclGdArcCmd, 8, 8, 0, 1,
      "gdhandle color cx cy width height start end"},
+    {"openarc", tclGdArcCmd, 8, 8, 0, 1,
+     "gdhandle color cx cy width height start end"},
+    {"fillpie", tclGdArcCmd, 8, 8, 0, 1,
+     "gdhandle color cx cy width height start end"},
+    {"openpie", tclGdArcCmd, 8, 8, 0, 1,
+     "gdhandle color cx cy width height start end"},
+    {"chord", tclGdArcCmd, 8, 8, 0, 1,
+     "gdhandle color cx cy width height start end"},
+    {"fillchord", tclGdArcCmd, 8, 8, 0, 1,
+     "gdhandle color cx cy width height start end"},
+    {"openchord", tclGdArcCmd, 8, 8, 0, 1,
+     "gdhandle color cx cy width height start end"},
     {"polygon", tclGdPolygonCmd, 2, 999, 0, 1,
      "gdhandle color x1 y1 x2 y2 x3 y3 ..."},
     {"fillpolygon", tclGdPolygonCmd, 3, 999, 0, 1,
@@ -1024,14 +1036,27 @@ tclGdArcCmd(Tcl_Interp * interp, GdData * gdData,
 
     /* Call the appropriate arc function. */
     cmd = Tcl_GetString(objv[1]);
-    if (cmd[0] == 'a')
+    if (cmd[0] == 'a')                        /* arc */
 	gdImageArc(im, cx, cy, width, height, start, end, color);
-    else {
-/*		gdImageFilledArc(im, cx, cy, width, height, start, end, color); */
-	Tcl_SetResult(interp, "gdImageFilledArc not supported in gd1.2",
-		      TCL_STATIC);
-	return TCL_ERROR;
+/* This one is not really useful as gd renderers it the same as fillpie */
+/* It would be more useful if gd provided fill between arc and chord */
+    else if (cmd[0] == 'f' && cmd[4] == 'a')  /* fill arc */
+	gdImageFilledArc(im, cx, cy, width, height, start, end, color, gdArc);
+/* this one is a kludge */
+    else if (cmd[0] == 'o' && cmd[4] == 'a')  { /* open arc */
+	gdImageArc(im, cx, cy, width, height, start, end, color);
+	gdImageFilledArc(im, cx, cy, width, height, start, end, color, gdChord | gdNoFill);
     }
+    else if (cmd[0] == 'c')                   /* chord */
+	gdImageFilledArc(im, cx, cy, width, height, start, end, color, gdChord | gdNoFill);
+    else if (cmd[0] == 'f' && cmd[4] == 'c')  /* fill chord */
+	gdImageFilledArc(im, cx, cy, width, height, start, end, color, gdChord);
+    else if (cmd[0] == 'o' && cmd[4] == 'c')  /* open chord */
+	gdImageFilledArc(im, cx, cy, width, height, start, end, color, gdChord | gdEdged | gdNoFill);
+    else if (cmd[0] == 'f' && cmd[4] == 'p')  /* fill pie */
+	gdImageFilledArc(im, cx, cy, width, height, start, end, color, gdPie);
+    else if (cmd[0] == 'o' && cmd[4] == 'p')  /* open pie */
+	gdImageFilledArc(im, cx, cy, width, height, start, end, color, gdPie | gdEdged | gdNoFill);
 
     return TCL_OK;
 }
