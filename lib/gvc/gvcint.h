@@ -160,7 +160,7 @@ extern "C" {
 	point pb;		/* page size - including margins (inches) */
 	point margin;		/* page margins (inches) */
 
-	gvstyle_t styles[MAXNEST];	/* style stack */
+	gvstyle_t styles[MAXNEST]; /* style stack - reused by each job */
 	int SP;
 
 	/* render defaults set from graph */
