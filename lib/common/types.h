@@ -63,7 +63,7 @@ extern "C" {
     } inside_t;
 
     typedef struct port {	/* internal edge endpoint specification */
-	point p;		/* aiming point */
+	point p;		/* aiming point relative to node center */
 	double theta;		/* slope in radians */
 	box *bp;		/* if not null, points to bbox of 
 				 * rectangular area that is port target
@@ -72,6 +72,7 @@ extern "C" {
 	boolean	constrained;    /* if true, constraints such as theta are set */
 	boolean clip;           /* if true, clip end to node/port shape */
 	unsigned char order;	/* for mincross */
+	unsigned char side;	/* if port is on perimeter of node */
     } port;
 
     typedef struct {
@@ -258,15 +259,15 @@ extern "C" {
     } adjmatrix_t;
 
     typedef struct rank_t {
-	int n;			/* number of nodes in this rank                 */
-	node_t **v;		/* ordered list of nodes in rank                */
+	int n;			/* number of nodes in this rank  */
+	node_t **v;		/* ordered list of nodes in rank    */
 	int an;			/* globally allocated number of nodes   */
-	node_t **av;		/* allocated list of nodes in rank              */
-	int ht1, ht2;		/* height below/above centerline                */
+	node_t **av;		/* allocated list of nodes in rank  */
+	int ht1, ht2;		/* height below/above centerline    */
 	int pht1, pht2;		/* as above, but only primitive nodes   */
-	boolean candidate;	/* for transpose ()                                             */
+	boolean candidate;	/* for transpose () */
 	boolean valid;
-	int cache_nc;		/* caches number of crossings                   */
+	int cache_nc;		/* caches number of crossings */
 	adjmatrix_t *flat;
     } rank_t;
 
@@ -291,8 +292,9 @@ extern "C" {
 	int n_flds;
 	textlabel_t *lp;	/* n_flds == 0 */
 	struct field_t **fld;	/* n_flds > 0 */
-	int LR;			/* if box list is horizontal (left to right) */
 	char *id;		/* user's identifier */
+	unsigned char LR;	/* if box list is horizontal (left to right) */
+	unsigned char sides;    /* sides of node exposed to field */
     } field_t;
 
     typedef struct hsbcolor_t {

@@ -36,7 +36,7 @@ extern void sincos(double x, double *s, double *c);
 # define sincos(x,s,c) *s = sin(x); *c = cos(x)
 #endif
 
-static port Center = { {0, 0}, -1, 0, 0, 0, 0 };
+static port Center = { {0, 0}, -1, 0, 0, 0, 1, 0, 0 };
 
 #define ATTR_SET(a,n) ((a) && (*(agxget(n,a->index)) != '\0'))
 #define DEF_POINT 0.05
@@ -746,11 +746,14 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
     node_t *n = inside_context->n;
 
     P = flip_ptf(p, GD_rankdir(n->graph));
-    for (f = e; ED_edge_type(f) != NORMAL; f = ED_to_orig(f));
-    e = f;
+    if (e) {
+	for (f = e; ED_edge_type(f) != NORMAL; f = ED_to_orig(f));
+	e = f;
+    }
 
     if ((n != lastn) || (e != laste)) {
-	bp = GET_PORT_BOX(n, e);
+	if (e) bp = GET_PORT_BOX(n, e);
+	else bp = NULL;
 
 	if ((bp == NULL) && (n != datan)) {
 	    datan = n;
@@ -844,22 +847,118 @@ static int poly_path(node_t * n, edge_t * e, int pt, box rv[], int *kptr)
     return side;
 }
 
+/* invflip_side:
+ */
+static int invflip_side (int side, int rankdir)
+{
+    switch (rankdir) {
+    case RANKDIR_TB:
+	break;
+    case RANKDIR_BT:
+	switch (side) {
+	case TOP:
+	    side = BOTTOM;
+	    break;
+	case BOTTOM:
+	    side = TOP;
+	    break;
+	default:
+	    break;
+	}
+	break;
+    case RANKDIR_LR:
+	switch (side) {
+	case TOP:
+	    side = RIGHT;
+	    break;
+	case BOTTOM:
+	    side = LEFT;
+	    break;
+	case LEFT:
+	    side = TOP;
+	    break;
+	case RIGHT:
+	    side = BOTTOM;
+	    break;
+	}
+	break;
+    case RANKDIR_RL:
+	switch (side) {
+	case TOP:
+	    side = RIGHT;
+	    break;
+	case BOTTOM:
+	    side = LEFT;
+	    break;
+	case LEFT:
+	    side = BOTTOM;
+	    break;
+	case RIGHT:
+	    side = TOP;
+	    break;
+	}
+	break;
+    }
+    return side;
+}
+
+/* invflip_angle:
+ */
+static double invflip_angle (double angle, int rankdir)
+{
+    switch (rankdir) {
+    case RANKDIR_TB:
+	break;
+    case RANKDIR_BT:
+	angle *= -1; 
+	break;
+    case RANKDIR_LR:
+	angle -= PI * 0.5;
+	break;
+    case RANKDIR_RL:
+	if (angle == PI)
+	    angle = -0.5 * PI;
+	else if (angle == PI * 0.75)
+	    angle = -0.25 * PI;
+	else if (angle == PI * 0.5)
+	    angle = 0;
+	else if (angle == PI * 0.25)
+	    angle = angle;
+	else if (angle == 0)
+	    angle = PI * 0.5;
+	else if (angle == PI * -0.25)
+	    angle = PI * 0.75;
+	else if (angle == PI * -0.5)
+	    angle = PI;
+	else if (angle == PI * -0.75)
+	    angle = angle;
+	break;
+    }
+    return angle;
+}
+
 /* compassPort:
  * Attach a compass point to a port pp, and fill in remaining fields.
  * n is the corresponding node; bp is the bounding box of the port.
  * compass is the compass point
  * Return 1 if unrecognized compass point, in which case we
  * use the center.
- * This function also finishes initialized the port structure,
+ * This function also finishes initializing the port structure,
  * even if no compass point is involved.
+ * The sides value gives the set of sides shared by the port. This
+ * is used with a compass point to indicate if the port is exposed, to
+ * set the port's side value.
  */
-static int compassPort(node_t * n, box * bp, port * pp, char *compass)
+static int 
+compassPort(node_t* n, box* bp, port* pp, char* compass, int sides)
 {
     box b;
     point p, ctr;
     int rv = 0;
     double theta = 0.0;
     int constrain = 0;
+    int side = 0;
+    int clip = TRUE;
 
     if (bp) {
 	b = *bp;
@@ -883,13 +982,17 @@ static int compassPort(node_t * n, box * bp, port * pp, char *compass)
 	int margin = 1;		/* would like = 0, but spline router croaks */
 	switch (*compass++) {
 	case 'e':
-	    p.x = b.UR.x - margin;
+	    p.x = b.UR.x + margin;
 	    theta = 0.0;
 	    constrain = 1;
+	    clip = FALSE;
+	    side = sides & RIGHT;
 	    break;
 	case 's':
-	    p.y = b.LL.y + margin;
+	    p.y = b.LL.y - margin;
 	    constrain = 1;
+	    clip = FALSE;
+	    side = sides & BOTTOM;
 	    switch (*compass) {
 	    case '\0':
 		theta = -PI * 0.5;
@@ -905,18 +1008,23 @@ static int compassPort(node_t * n, box * bp, port * pp, char *compass)
 	    default:
 		p.y = ctr.y;
 		constrain = 0;
+		clip = TRUE;
 		rv = 1;
 		break;
 	    }
 	    break;
 	case 'w':
-	    p.x = b.LL.x + margin;
+	    p.x = b.LL.x - margin;
 	    theta = PI;
 	    constrain = 1;
+	    clip = FALSE;
+	    side = sides & LEFT;
 	    break;
 	case 'n':
-	    p.y = b.UR.y - margin;
+	    p.y = b.UR.y + margin;
 	    constrain = 1;
+	    clip = FALSE;
+	    side = sides & TOP;
 	    switch (*compass) {
 	    case '\0':
 		theta = PI * 0.5;
@@ -932,6 +1040,7 @@ static int compassPort(node_t * n, box * bp, port * pp, char *compass)
 	    default:
 		p.y = ctr.y;
 		constrain = 0;
+		clip = TRUE;
 		rv = 1;
 		break;
 	    }
@@ -942,12 +1051,21 @@ static int compassPort(node_t * n, box * bp, port * pp, char *compass)
 	}
     }
     p = invflip_pt(p, GD_rankdir(n->graph));
+    pp->side = invflip_side(side, GD_rankdir(n->graph));
     pp->bp = bp;
     pp->p = p;
-    pp->theta = theta;
-    pp->order =
-	(MC_SCALE * (ND_lw_i(n) + p.x)) / (ND_lw_i(n) + ND_rw_i(n));
+    pp->theta = invflip_angle(theta, GD_rankdir(n->graph));
+    if ((p.x == 0) && (p.y == 0))
+	pp->order = MC_SCALE/2;
+    else {
+	/* compute angle with 0 at north pole, increasing CCW */
+	double angle = atan2(p.y,p.x) + 1.5*PI;
+	if (angle >= 2*PI) angle -= 2*PI;
+	pp->order = (int)((MC_SCALE * angle) / 2*PI);
+    }
     pp->constrained = constrain;
+    pp->defined = TRUE;
+    pp->clip = clip;
     return rv;
 }
 
@@ -955,21 +1073,23 @@ static port poly_port(node_t * n, char *portname, char *compass)
 {
     port rv;
     box *bp;
+    int  sides;    /* bitmap of which sides the port lies along */
 
     if (portname[0] == '\0')
 	return Center;
 
+    sides = BOTTOM | RIGHT | TOP | LEFT; 
     if ((ND_label(n)->html)) {
-	if ((bp = html_port(n, portname))) {
-	    if (compassPort(n, bp, &rv, compass)) {
+	if ((bp = html_port(n, portname, &sides))) {
+	    if (compassPort(n, bp, &rv, compass, sides)) {
 		agerr(AGWARN,
 		      "node %s, port %s, unrecognized compass point '%s' - ignored\n",
 		      n->name, portname, compass);
 	    }
-	} else if (compassPort(n, NULL, &rv, portname)) {
+	} else if (compassPort(n, NULL, &rv, portname, sides)) {
 	    unrecognized(n, portname);
 	}
-    } else if (compassPort(n, NULL, &rv, portname)) {
+    } else if (compassPort(n, NULL, &rv, portname, sides)) {
 	unrecognized(n, portname);
     }
 
@@ -1138,7 +1258,8 @@ static void point_init(node_t * n)
 
 static char *reclblp;
 
-static field_t *parse_reclbl(node_t * n, int LR, int flag, char *text)
+static field_t*
+parse_reclbl(node_t * n, int LR, int flag, char *text)
 {
     field_t *fp, *rv = NEW(field_t);
     char *tsp, *psp, *hstsp, *hspsp, *sp;
@@ -1347,14 +1468,40 @@ static void resize_reclbl(field_t * f, point sz, int nojustify_p)
     }
 }
 
-static void pos_reclbl(field_t * f, point ul)
+/* pos_reclbl:
+ * Assign position info for each field. Also, set
+ * the sides attribute, which indicates which sides of the
+ * record are accessible to the field.
+ */
+static void pos_reclbl(field_t * f, point ul, int sides)
 {
-    int i;
+    int i, last, mask;
 
+    f->sides = sides;
     f->b.LL = pointof(ul.x, ul.y - f->size.y);
     f->b.UR = pointof(ul.x + f->size.x, ul.y);
-    for (i = 0; i < f->n_flds; i++) {
-	pos_reclbl(f->fld[i], ul);
+    last = f->n_flds - 1;
+    for (i = 0; i <= last; i++) {
+	if (sides) {
+	    if (f->LR) {
+		if (i == 0) {
+		    if (i == last) mask = TOP | BOTTOM | RIGHT | LEFT;
+		    else mask = TOP | BOTTOM | LEFT;
+		}
+		else if (i == last) mask = TOP | BOTTOM | RIGHT;
+		else mask = TOP | BOTTOM;
+	    }
+	    else {
+		if (i == 0) {
+		    if (i == last) mask = TOP | BOTTOM | RIGHT | LEFT;
+		    else mask = TOP | RIGHT | LEFT;
+		}
+		else if (i == last) mask = LEFT | BOTTOM | RIGHT;
+		else mask = LEFT | RIGHT;
+	    }
+	}
+	else mask = 0;
+	pos_reclbl(f->fld[i], ul, sides & mask);
 	if (f->LR)
 	    ul.x = ul.x + f->fld[i]->size.x;
 	else
@@ -1400,11 +1547,12 @@ static void record_init(node_t * n)
     point ul, sz;
     int len;
     char *textbuf;		/* temp buffer for storing labels */
+    int sides = BOTTOM | RIGHT | TOP | LEFT; 
 
     reclblp = ND_label(n)->text;
     len = strlen(reclblp);
     textbuf = N_NEW(len + 1, char);
-    if (!(info = parse_reclbl(n, NOT(GD_flip(n->graph)), TRUE, textbuf))) {
+    if (!(info = parse_reclbl(n,NOT(GD_flip(n->graph)), TRUE, textbuf))) {
 	agerr(AGERR, "bad label format %s\n", ND_label(n)->text);
 	reclblp = "\\N";
 	info = parse_reclbl(n, NOT(GD_flip(n->graph)), TRUE, textbuf);
@@ -1427,7 +1575,7 @@ static void record_init(node_t * n)
     }
     resize_reclbl(info, sz, mapbool(late_string(n, N_nojustify, "false")));
     ul = pointof(-sz.x / 2, sz.y / 2);
-    pos_reclbl(info, ul);
+    pos_reclbl(info, ul, sides);
     ND_width(n) = PS2INCH(info->size.x);
     ND_height(n) = PS2INCH(info->size.y);
     ND_shape_info(n) = (void *) info;
@@ -1461,17 +1609,19 @@ static port record_port(node_t * n, char *portname, char *compass)
     field_t *f;
     field_t *subf;
     port rv;
+    int  sides;    /* bitmap of which sides the port lies along */
 
     if (portname[0] == '\0')
 	return Center;
+    sides = BOTTOM | RIGHT | TOP | LEFT; 
     f = (field_t *) ND_shape_info(n);
     if ((subf = map_rec_port(f, portname))) {
-	if (compassPort(n, &subf->b, &rv, compass)) {
+	if (compassPort(n, &subf->b, &rv, compass, subf->sides)) {
 	    agerr(AGWARN,
 	      "node %s, port %s, unrecognized compass point '%s' - ignored\n",
 	      n->name, portname, compass);
 	}
-    } else if (compassPort(n, &f->b, &rv, portname)) {
+    } else if (compassPort(n, &f->b, &rv, portname, sides)) {
 	unrecognized(n, portname);
     }
 
@@ -1491,6 +1641,12 @@ static boolean record_inside(inside_t * inside_context, pointf p)
 
     /* convert point to node coordinate system */
     p = flip_ptf(p, GD_rankdir(n->graph));
+
+    if (e == NULL) {
+	fld0 = (field_t *) ND_shape_info(n);
+	return INSIDE(p, fld0->b);
+    }
+
     /* find real edge */
     for (f = e; ED_edge_type(f) != NORMAL; f = ED_to_orig(f));
     e = f;

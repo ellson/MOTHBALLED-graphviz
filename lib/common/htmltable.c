@@ -475,14 +475,14 @@ void free_html_label(htmllabel_t * lp, int root)
 	free(lp);
 }
 
-static box *portToTbl(htmltbl_t *, char *);	/* forward declaration */
+static htmldata_t* portToTbl(htmltbl_t *, char *);  /* forward declaration */
 
-static box *portToCell(htmlcell_t * cp, char *id)
+static htmldata_t* portToCell(htmlcell_t * cp, char *id)
 {
-    box *rv;
+    htmldata_t* rv;
 
     if (cp->data.port && (strcasecmp(cp->data.port, id) == 0))
-	rv = &cp->data.box;
+	rv = &cp->data;
     else if (cp->child.kind == HTML_TBL)
 	rv = portToTbl(cp->child.u.tbl, id);
     else
@@ -495,14 +495,15 @@ static box *portToCell(htmlcell_t * cp, char *id)
  * See if tp or any of its child cells has the given port id.
  * If true, return corresponding box.
  */
-static box *portToTbl(htmltbl_t * tp, char *id)
+static htmldata_t* 
+portToTbl(htmltbl_t* tp, char* id)
 {
-    box *rv;
-    htmlcell_t **cells;
-    htmlcell_t *cp;
+    htmldata_t*  rv;
+    htmlcell_t** cells;
+    htmlcell_t*  cp;
 
     if (tp->data.port && (strcasecmp(tp->data.port, id) == 0))
-	rv = &tp->data.box;
+	rv = &tp->data;
     else {
 	rv = NULL;
 	cells = tp->u.n.cells;
@@ -521,14 +522,22 @@ static box *portToTbl(htmltbl_t * tp, char *id)
  * If successful, return pointer to port's box.
  * Else return NULL.
  */
-box *html_port(node_t * n, char *pname)
+box *html_port(node_t * n, char *pname, int* sides)
 {
-    htmllabel_t *lbl = ND_label(n)->u.html;
+    htmldata_t*   tp; 
+    htmllabel_t* lbl = ND_label(n)->u.html;
+    box*         rv = NULL;
 
     if (lbl->kind == HTML_TEXT)
 	return NULL;
 
-    return portToTbl(lbl->u.tbl, pname);
+    tp = portToTbl(lbl->u.tbl, pname);
+    if (tp) {
+	rv = &tp->box;
+	*sides = tp->sides;
+    }
+    return rv;
+
 }
 
 /* html_path:
@@ -1037,14 +1046,14 @@ void sizeArray(htmltbl_t * tbl)
     closeGraphs(rowg, colg);
 }
 
-static void pos_html_tbl(htmltbl_t *, box);	/* forward declaration */
+static void pos_html_tbl(htmltbl_t *, box, int);  /* forward declaration */
 
 static void pos_html_img(htmlimg_t * cp, box pos)
 {
     cp->box = pos;
 }
 
-static void pos_html_cell(htmlcell_t * cp, box pos)
+static void pos_html_cell(htmlcell_t * cp, box pos, int sides)
 {
     int delx, dely;
     point oldsz;
@@ -1087,6 +1096,7 @@ static void pos_html_cell(htmlcell_t * cp, box pos)
 	}
     }
     cp->data.box = pos;
+    cp->data.sides = sides;
 
     /* set up child's position */
     cbox.LL.x = pos.LL.x + cp->data.border + cp->data.pad;
@@ -1095,7 +1105,7 @@ static void pos_html_cell(htmlcell_t * cp, box pos)
     cbox.UR.y = pos.UR.y - cp->data.border - cp->data.pad;
 
     if (cp->child.kind == HTML_TBL) {
-	pos_html_tbl(cp->child.u.tbl, cbox);
+	pos_html_tbl(cp->child.u.tbl, cbox, sides);
     } else if (cp->child.kind == HTML_IMAGE) {
 	pos_html_img(cp->child.u.img, cbox);
     } else {
@@ -1136,9 +1146,11 @@ static void pos_html_cell(htmlcell_t * cp, box pos)
 
 /* pos_html_tbl:
  * Position table given its box, then calculate
- * the position of each cell.
+ * the position of each cell. In addition, set the sides
+ * attribute indicating which external sides of the node
+ * are accessible to the table.
  */
-static void pos_html_tbl(htmltbl_t * tbl, box pos)
+static void pos_html_tbl(htmltbl_t * tbl, box pos, int sides)
 {
     int x, y, delx, dely;
     int i, plus, extra, oldsz;
@@ -1208,13 +1220,21 @@ static void pos_html_tbl(htmltbl_t * tbl, box pos)
     }
 
     while ((cp = *cells++)) {
+	int mask = 0;
+	if (sides) {
+	    if (cp->col == 0) mask |= LEFT;
+	    if (cp->row == 0) mask |= TOP;
+	    if (cp->col + cp->cspan == tbl->cc) mask |= RIGHT;
+	    if (cp->row + cp->rspan == tbl->rc) mask |= BOTTOM;
+	}
 	cbox.LL.x = tbl->widths[cp->col];
 	cbox.UR.x = tbl->widths[cp->col + cp->cspan] - tbl->data.space;
 	cbox.UR.y = tbl->heights[cp->row];
 	cbox.LL.y = tbl->heights[cp->row + cp->rspan] + tbl->data.space;
-	pos_html_cell(cp, cbox);
+	pos_html_cell(cp, cbox, sides & mask);
     }
 
+    tbl->data.sides = sides;
     tbl->data.box = pos;
 }
 
@@ -1455,7 +1475,7 @@ int make_html_label(textlabel_t * lp, void *obj)
 	wd2 = (lbl->u.tbl->data.box.UR.x + 1) / 2;
 	ht2 = (lbl->u.tbl->data.box.UR.y + 1) / 2;
 	box = boxof(-wd2, -ht2, wd2, ht2);
-	pos_html_tbl(lbl->u.tbl, box);
+	pos_html_tbl(lbl->u.tbl, box, BOTTOM | RIGHT | TOP | LEFT);
 	lp->dimen.x = box.UR.x - box.LL.x;
 	lp->dimen.y = box.UR.y - box.LL.y;
     } else {

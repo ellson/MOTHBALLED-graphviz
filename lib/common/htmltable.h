@@ -71,6 +71,7 @@ extern "C" {
 	unsigned short width;
 	unsigned short height;
 	box box;		/* its geometric placement in points */
+	unsigned char sides;    /* set of sides exposed to field */
     } htmldata_t;
 
 #define HTML_UNSET 0
@@ -144,7 +145,7 @@ extern "C" {
     extern void free_html_data(htmldata_t *);
     extern void free_html_text(htmltxt_t *);
 
-    extern box *html_port(node_t * n, char *pname);
+    extern box *html_port(node_t * n, char *pname, int* sides);
     extern int html_path(node_t * n, edge_t * e, int pt, box * rv, int *k);
     extern int html_inside(node_t * n, pointf p, edge_t * e);
 

@@ -93,7 +93,7 @@ static box makeflatcomponent(box, box, int, int, int, int, int);
 static void make_flat_edge(path *, Agedge_t **, int, int);
 static box makeflatend(box, int, int, box);
 static void make_regular_edge(path *, Agedge_t **, int, int);
-static void makeregularend(box, int, int, box *);
+static box makeregularend(box, int, int);
 static void make_self_edge(path *, Agedge_t **, int, int);
 static box maximal_bbox(Agnode_t *, Agedge_t *, Agedge_t *);
 static Agnode_t *neighbor(Agnode_t *, Agedge_t *, Agedge_t *, int);
@@ -231,6 +231,8 @@ void dot_splines(graph_t * g)
 	    LeftBound = MIN(LeftBound, (ND_coord_i(n).x - ND_lw_i(n)));
 	if (GD_rank(g)[i].n && (n = GD_rank(g)[i].v[GD_rank(g)[i].n - 1]))
 	    RightBound = MAX(RightBound, (ND_coord_i(n).x + ND_rw_i(n)));
+	LeftBound -= MINW;
+	RightBound += MINW;
 
 	for (j = 0; j < GD_rank(g)[i].n; j++) {
 	    n = GD_rank(g)[i].v[j];
@@ -646,11 +648,12 @@ static void make_regular_edge(path * P, edge_t ** edges, int ind, int cnt)
     g = e->tail->graph;
     tn = e->tail;
     hn = e->head;
-    tend.nb = maximal_bbox(tn, NULL, e);
+    b = tend.nb = maximal_bbox(tn, NULL, e);
     beginpath(P, e, REGULAREDGE, &tend, spline_merge(e->tail));
-    makeregularend(tend.boxes[tend.boxn - 1], BOTTOM,
-		   ND_coord_i(tn).y - GD_rank(tn->graph)[ND_rank(tn)].ht1,
-		   &b);
+    b.UR.y = tend.boxes[tend.boxn - 1].UR.y;
+    b.LL.y = tend.boxes[tend.boxn - 1].LL.y;
+    b = makeregularend(b, BOTTOM,
+		   ND_coord_i(tn).y - GD_rank(tn->graph)[ND_rank(tn)].ht1);
     if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
 	tend.boxes[tend.boxn++] = b;
     longedge = 0;
@@ -674,9 +677,8 @@ static void make_regular_edge(path * P, edge_t ** edges, int ind, int cnt)
 	}
 	hend.nb = maximal_bbox(hn, e, ND_out(hn).list[0]);
 	endpath(P, e, REGULAREDGE, &hend, spline_merge(e->head));
-	makeregularend(hend.boxes[hend.boxn - 1], TOP,
-		       ND_coord_i(hn).y +
-		       GD_rank(hn->graph)[ND_rank(hn)].ht2, &b);
+	b = makeregularend(hend.boxes[hend.boxn - 1], TOP,
+		       ND_coord_i(hn).y + GD_rank(hn->graph)[ND_rank(hn)].ht2);
 	if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
 	    hend.boxes[hend.boxn++] = b;
 	P->end.theta = PI / 2, P->end.constrained = TRUE;
@@ -694,21 +696,21 @@ static void make_regular_edge(path * P, edge_t ** edges, int ind, int cnt)
 	boxn = 0;
 	tend.nb = maximal_bbox(tn, ND_in(tn).list[0], e);
 	beginpath(P, e, REGULAREDGE, &tend, spline_merge(e->tail));
-	makeregularend(tend.boxes[tend.boxn - 1], BOTTOM,
-		       ND_coord_i(tn).y -
-		       GD_rank(tn->graph)[ND_rank(tn)].ht1, &b);
+	b = makeregularend(tend.boxes[tend.boxn - 1], BOTTOM,
+		       ND_coord_i(tn).y - GD_rank(tn->graph)[ND_rank(tn)].ht1);
 	if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
 	    tend.boxes[tend.boxn++] = b;
 	P->start.theta = -PI / 2, P->start.constrained = TRUE;
 	smode = FALSE;
     }
     boxes[boxn++] = rank_box(g, ND_rank(tn));
-    hend.nb = maximal_bbox(hn, e, NULL);
+    b = hend.nb = maximal_bbox(hn, e, NULL);
     endpath(P, hackflag ? &fwdedgeb : e, REGULAREDGE, &hend,
 	    spline_merge(e->head));
-    makeregularend(hend.boxes[hend.boxn - 1], TOP,
-		   ND_coord_i(hn).y + GD_rank(hn->graph)[ND_rank(hn)].ht2,
-		   &b);
+    b.UR.y = hend.boxes[hend.boxn - 1].UR.y;
+    b.LL.y = hend.boxes[hend.boxn - 1].LL.y;
+    b = makeregularend(b, TOP,
+		   ND_coord_i(hn).y + GD_rank(hn->graph)[ND_rank(hn)].ht2);
     if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
 	hend.boxes[hend.boxn++] = b;
     completeregularpath(P, segfirst, e, &tend, &hend, boxes, boxn,
@@ -916,6 +918,7 @@ int side, mode, dir, w, h;
 
 /* regular edges */
 
+#define DONT_WANT_ANY_ENDPOINT_PATH_REFINEMENT
 #ifdef DONT_WANT_ANY_ENDPOINT_PATH_REFINEMENT
 static void
 completeregularpath(path * P, edge_t * first, edge_t * last,
@@ -1034,17 +1037,23 @@ completeregularpath(path * P, edge_t * first, edge_t * last,
 }
 #endif
 
-/* for now, regular edges always go from top to bottom */
-static void makeregularend(box b, int side, int y, box * bp)
+/* makeregularend:
+ * Add box to fill between node and interrank space. Needed because
+ * nodes in a given rank can differ in height.
+ * for now, regular edges always go from top to bottom 
+ */
+static box makeregularend(box b, int side, int y)
 {
+    box newb;
     switch (side) {
     case BOTTOM:
-	*bp = boxof(b.LL.x, y, b.UR.x, b.LL.y);
+	newb = boxof(b.LL.x, y, b.UR.x, b.LL.y);
 	break;
     case TOP:
-	*bp = boxof(b.LL.x, b.UR.y, b.UR.x, y);
+	newb = boxof(b.LL.x, b.UR.y, b.UR.x, y);
 	break;
     }
+    return newb;
 }
 
 #ifndef DONT_WANT_ANY_ENDPOINT_PATH_REFINEMENT
@@ -1147,12 +1156,28 @@ int *boxnp;
 }
 #endif
 
+/* adjustregularpath:
+ * make sure the path is wide enough.
+ * the % 2 was so that in rank boxes would only be grown if
+ * they were == 0 while inter-rank boxes could be stretched to a min
+ * width.
+ * The list of boxes has three parts: tail boxes, path boxes, and head
+ * boxes. (Note that because of back edges, the tail boxes might actually
+ * belong to the head node, and vice versa.) fb is the index of the
+ * first interrank path box and lb is the last interrank path box.
+ * If fb > lb, there are none.
+ *
+ * The second for loop was added by ek long ago, and apparently is intended
+ * to guarantee an overlap between adjacent boxes of at least MINW.
+ * It doesn't do this, and the ifdef'ed part has the potential of moving 
+ * a box within a node for more complex paths.
+ */
 static void adjustregularpath(path * P, int fb, int lb)
 {
     box *bp1, *bp2;
     int i, x;
 
-    for (i = 0; i < P->nbox; i++) {
+    for (i = fb-1; i < lb+1; i++) {
 	bp1 = &P->boxes[i];
 	if ((i - fb) % 2 == 0) {
 	    if (bp1->LL.x >= bp1->UR.x) {
@@ -1178,7 +1203,9 @@ static void adjustregularpath(path * P, int fb, int lb)
 		bp1->LL.x = bp2->UR.x - MINW;
 	    if (bp1->UR.x - MINW < bp2->LL.x)
 		bp1->UR.x = bp2->LL.x + MINW;
-	} else {
+	} 
+#ifdef OLD
+	else {
 	    if (bp1->LL.x + MINW > bp2->UR.x) {
 		x = (bp1->LL.x + bp2->UR.x) / 2;
 		bp1->LL.x = x - HALFMINW;
@@ -1190,6 +1217,7 @@ static void adjustregularpath(path * P, int fb, int lb)
 		bp2->LL.x = x - HALFMINW;
 	    }
 	}
+#endif
     }
 }
 
@@ -1444,9 +1472,12 @@ node_t *n, *adj;
     return rv;
 }
 
-static box maximal_bbox(vn, ie, oe)
-node_t *vn;
-edge_t *ie, *oe;
+/* maximal_bbox:
+ * Return an initial bounding box to be used for building the
+ * beginning or ending of the path of boxes.
+ * Height reflects height of tallest node on rank.
+ */
+static box maximal_bbox(node_t* vn, edge_t* ie, edge_t* oe)
 {
     int nb, b;
     graph_t *g = vn->graph, *left_cl, *right_cl;

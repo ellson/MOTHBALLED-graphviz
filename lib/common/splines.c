@@ -21,30 +21,6 @@
 
 #include <render.h>
 
-/* wantclip:
- * Return false if head/tail end of edge should not be clipped
- * to node.
- */
-static boolean wantclip(edge_t * e, node_t * n)
-{
-    char *str;
-    attrsym_t *sym = 0;
-    boolean rv = TRUE;
-
-    if (n == e->tail)
-	sym = E_tailclip;
-    if (n == e->head)
-	sym = E_headclip;
-    if (sym) {			/* mapbool isn't a good fit, because we want "" to mean TRUE */
-	str = agxget(e, sym->index);
-	if (str && str[0])
-	    rv = mapbool(str);
-	else
-	    rv = TRUE;
-    }
-    return rv;
-}
-
 /* arrow_clip:
  * Clip arrow to node boundary.
  * The real work is done elsewhere. Here we get the real edge,
@@ -176,6 +152,8 @@ shape_clip0(inside_t * inside_context, node_t * n, point curve[4],
  * fed back to shape_clip, it will again assume left_inside is true.
  * To be safe, shape_clip0 should guarantee that the computed boundary
  * point fails insidefn.
+ * The edge e is used to provide a port box. If NULL, the spline is
+ * clipped to the node shape.
  */
 void shape_clip(node_t * n, point curve[4], edge_t * e)
 {
@@ -266,7 +244,7 @@ clip_and_install(edge_t * fe, edge_t * le, point * ps, int pn,
     }
 
     /* spline may be interior to node */
-    if (wantclip(orig, tn) && ND_shape(tn) && ND_shape(tn)->fns->insidefn) {
+    if(ED_tail_port(orig).clip && ND_shape(tn) && ND_shape(tn)->fns->insidefn) {
 	inside_context.n = tn;
 	inside_context.e = fe;
 	for (start = 0; start < pn - 4; start += 3) {
@@ -278,7 +256,7 @@ clip_and_install(edge_t * fe, edge_t * le, point * ps, int pn,
 	shape_clip0(&inside_context, tn, &ps[start], TRUE);
     } else
 	start = 0;
-    if (wantclip(orig, hn) && ND_shape(hn) && ND_shape(hn)->fns->insidefn) {
+    if(ED_head_port(orig).clip && ND_shape(hn) && ND_shape(hn)->fns->insidefn) {
 	inside_context.n = hn;
 	inside_context.e = le;
 	for (end = pn - 4; end > 0; end -= 3) {
@@ -306,7 +284,8 @@ clip_and_install(edge_t * fe, edge_t * le, point * ps, int pn,
     newspl->size = end - start + 4;
 }
 
-static double conc_slope(node_t * n)
+static double 
+conc_slope(node_t* n)
 {
     double s_in, s_out, m_in, m_out;
     int cnt_in, cnt_out;
@@ -338,7 +317,7 @@ void add_box(path * P, box b)
 void
 beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 {
-    int mask;
+    int side, mask;
     node_t *n;
     int (*pboxfn) (node_t * n, edge_t * e, int, box *, int *);
 
@@ -364,6 +343,62 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     P->nbox = 0;
     P->data = (void *) e;
     endp->np = P->start.p;
+    if ((et == REGULAREDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_tail_port(e).side))) {
+	edge_t* orig;
+	box b0, b = endp->nb;
+	switch (side) {
+	case LEFT:
+	    b.UR.x = P->start.p.x;
+	    b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+	    b.UR.y = P->start.p.y;
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    break;
+	case RIGHT:
+	    b.LL.x = P->start.p.x;
+	    b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+	    b.UR.y = P->start.p.y;
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    break;
+	case TOP:
+	    if (ND_coord_i(e->head).x < 2*ND_coord_i(n).x - endp->np.x) {
+		b0.LL.x = b.LL.x - 1;
+		b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b0.UR.x = P->start.p.x;
+		b0.UR.y = b0.LL.y + GD_ranksep(n->graph)/2;
+		b.UR.x = ND_coord_i(n).x - ND_lw_i(n) - 2;
+		b.UR.y = b0.LL.y;
+		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.LL.x -= 1;
+		endp->boxes[0] = b0;
+		endp->boxes[1] = b;
+	    }
+	    else {
+		b0.LL.x = P->start.p.x;
+		b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b0.UR.x = b.UR.x+1;
+		b0.UR.y = b0.LL.y + GD_ranksep(n->graph)/2;
+		b.LL.x = ND_coord_i(n).x + ND_rw_i(n) + 2;
+		b.UR.y = b0.LL.y;
+		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.UR.x += 1;
+		endp->boxes[0] = b0;
+		endp->boxes[1] = b;
+	    } 
+	    endp->boxn = 2;
+	    break;
+	case BOTTOM:
+	    b.UR.y = MAX(b.UR.y,P->start.p.y);
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    break;
+	}
+	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
+	ED_tail_port(orig).clip = FALSE;
+	endp->sidemask = side;
+	return;
+    }
     /* FIXME: check that record_path returns a good path */
     if (pboxfn
 	&& (mask = (*pboxfn) (n, e, 1, &endp->boxes[0], &endp->boxn)))
@@ -393,7 +428,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 
 void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 {
-    int mask;
+    int side, mask;
     node_t *n;
     int (*pboxfn) (node_t * n, edge_t * e, int, box *, int *);
 
@@ -417,6 +452,62 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    P->end.constrained = FALSE;
     }
     endp->np = P->end.p;
+    if ((et == REGULAREDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_head_port(e).side))) {
+	edge_t* orig;
+	box b0, b = endp->nb;
+	switch (side) {
+	case LEFT:
+	    b.UR.x = P->end.p.x;
+	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+	    b.LL.y = P->end.p.y;
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    break;
+	case RIGHT:
+	    b.LL.x = P->end.p.x;
+	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+	    b.LL.y = P->end.p.y;
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    break;
+	case BOTTOM:
+	    if (ND_coord_i(e->tail).x < 2*ND_coord_i(n).x - endp->np.x) {
+		b0.LL.x = b.LL.x-1;
+		b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b0.UR.x = P->end.p.x;
+		b0.LL.y = b0.UR.y - GD_ranksep(n->graph)/2;
+		b.UR.x = ND_coord_i(n).x - ND_lw_i(n) - 2;
+		b.LL.y = b0.UR.y;
+		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.LL.x -= 1;
+		endp->boxes[0] = b0;
+		endp->boxes[1] = b;
+	    }
+	    else {
+		b0.LL.x = P->end.p.x;
+		b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b0.UR.x = b.UR.x+1;
+		b0.LL.y = b0.UR.y - GD_ranksep(n->graph)/2;
+		b.LL.x = ND_coord_i(n).x + ND_rw_i(n) + 2;
+		b.LL.y = b0.UR.y;
+		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.UR.x += 1;
+		endp->boxes[0] = b0;
+		endp->boxes[1] = b;
+	    } 
+	    endp->boxn = 2;
+	    break;
+	case TOP:
+	    b.LL.y = MIN(b.LL.y,P->end.p.y);
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    break;
+	}
+	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
+	ED_head_port(orig).clip = FALSE;
+	endp->sidemask = side;
+	return;
+    }
     if (pboxfn
 	&& (mask = (*pboxfn) (n, e, 2, &endp->boxes[0], &endp->boxn)))
 	endp->sidemask = mask;
