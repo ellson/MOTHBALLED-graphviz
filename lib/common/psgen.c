@@ -139,6 +139,11 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 {
     point sz;
 
+#if 0
+fprintf(stderr,"PB = %d,%d,%d,%d\n", PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
+fprintf(stderr,"offset = %d,%d\n", offset.x, offset.y);
+#endif
+
     sz = add_points(PB.LL, PB.UR);
     Cur_page++;
     fprintf(Output_file, "%%%%Page: %d %d\n", Cur_page, Cur_page);
@@ -148,14 +153,16 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 	    (rot ? "Landscape" : "Portrait"));
     fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    0, 0, sz.x, sz.y);
-    fprintf(Output_file, "%d %d %d beginpage\n", page.x, page.y, N_pages);
-    fprintf(Output_file, "%d %d translate\n", -offset.x, -offset.y);
-    fprintf(Output_file, "%.4f set_scale\n", scale);
+    fprintf(Output_file, "%d %d translate\n", PB.LL.x, PB.LL.y);
     if (rot)
-        fprintf(Output_file, "%d rotate %d %d translate\n",
-		rot, PB.LL.x, PB.LL.y - (PB.UR.x + PB.LL.x));
-    else
-        fprintf(Output_file, "%d %d translate\n", PB.LL.x, PB.LL.y);
+        fprintf(Output_file, "gsave %d %d translate %d rotate\n",
+                PB.UR.x - PB.LL.x, 0, rot);
+    fprintf(Output_file, "%d %d %d beginpage\n", page.x, page.y, N_pages);
+    if (rot)
+        fprintf(Output_file, "grestore\n");
+    fprintf(Output_file, "%.4f set_scale\n", scale);
+    fprintf(Output_file, "%d %d translate %d rotate\n",
+	    offset.x, offset.y, rot);
     assert(SP == 0);
     S[SP].font = S[SP].pencolor = S[SP].fillcolor = "";
     S[SP].size = 0.0;
