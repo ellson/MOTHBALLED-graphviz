@@ -89,6 +89,8 @@ extern "C" {
 
         pointf margin;		 /* job-specific margin */
 	int rotation;		 /* job-specific page rotation */
+	point	offset;		 /* offset into device in device coords */
+	point	size;		 /* size of device in device coords */
 
 	box	boundingBox;	 /* drawable region in device coords */
 	boxf	pageBox;	 /* drawable region in graph coords */

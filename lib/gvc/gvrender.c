@@ -300,6 +300,15 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g)
     else {
 	codegen_t *cg = job->codegen;
 	
+fprintf(stderr,"boundingBox = %d,%d %d,%d\n",
+        job->boundingBox.LL.x,
+        job->boundingBox.LL.y,
+        job->boundingBox.UR.x,
+        job->boundingBox.UR.y);
+fprintf(stderr,"pb = %d,%d %d,%d\n",
+        gvc->pb.x,
+        gvc->pb.y);
+
 	if (cg && cg->begin_graph)
 	    cg->begin_graph(gvc, g, job->boundingBox, gvc->pb);
     }
@@ -336,7 +345,7 @@ void gvrender_begin_page(GVC_t * gvc)
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_page)
-	    cg->begin_page(job->g, job->pagesArrayElem, job->zoom, job->rotation, job->pageOffset);
+	    cg->begin_page(job->g, job->pagesArrayElem, job->zoom, job->rotation, job->offset);
     }
 #endif
 }

@@ -270,11 +270,40 @@ static void init_job_pagination(GVC_t * gvc, graph_t * g)
 	job->pageBox.LL.y += extra.y / 2;
     }
 
-    /* FIXME, the treatment of margins doesn't look right.  are margins
-	in device coords or graph coords ?  what happens to margins under zooming */
+fprintf(stderr,"pageBox = %g,%g %g,%g\n",
+	job->pageBox.LL.x,
+	job->pageBox.LL.y,
+	job->pageBox.UR.x,
+	job->pageBox.UR.y);
+fprintf(stderr,"DS = %g,%g\n",
+	DS.x,
+	DS.y);
+fprintf(stderr,"zoom = %g\n",
+        job->zoom);
+
     PF2P(job->pageBox.LL,job->boundingBox.LL);
-    job->boundingBox.UR.x = ROUND(job->pageBox.LL.x + job->pageSize.x * job->zoom);
-    job->boundingBox.UR.y = ROUND(job->pageBox.LL.y + job->pageSize.y * job->zoom);
+    if (GD_drawing(g)->landscape) {
+        job->boundingBox.UR.x = job->height;
+        job->boundingBox.UR.y = job->width;
+	job->offset.x = job->boundingBox.UR.y;
+	job->offset.y = job->boundingBox.LL.x;
+	job->size.x = job->boundingBox.UR.x;
+	job->size.y = job->boundingBox.UR.y;
+    }
+    else {
+        job->boundingBox.UR.x = job->width;
+        job->boundingBox.UR.y = job->height;
+	job->offset.x = job->boundingBox.LL.x;
+        job->offset.y = job->boundingBox.LL.y;
+	job->size.x = job->boundingBox.UR.x;
+	job->size.y = job->boundingBox.UR.y;
+    }
+
+fprintf(stderr,"boundingBox = %d,%d %d,%d\n",
+        job->boundingBox.LL.x,
+        job->boundingBox.LL.y,
+        job->boundingBox.UR.x,
+        job->boundingBox.UR.y);
 }
 
 static void firstpage(GVC_t *gvc)

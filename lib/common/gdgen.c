@@ -142,8 +142,7 @@ static void init1_gd(GVC_t * gvc, graph_t * g, box bb, point pb)
 	Dpi = DEFAULT_DPI;
     DevScale = Dpi / POINTS_PER_INCH;
 
-    Viewport.x = gvc->job->width;
-    Viewport.y = gvc->job->height;
+    Viewport = gvc->job->size;
     if (Viewport.x) {
 	Zoom = gvc->job->zoom;
 	GraphFocus = gvc->job->focus;
