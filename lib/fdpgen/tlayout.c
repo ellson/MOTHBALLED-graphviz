@@ -59,55 +59,101 @@ extern double drand48(void);
 #include "tlayout.h"
 #include "globals.h"
 
-  /* Default layout values; -1 indicates unset */
-tParms_t fdp_tvals = {
+  /* Default layout values, possibly set via command line; -1 indicates unset */
+fdpParms_t fdp_parms = {
     1,				/* useGrid */
     1,				/* useNew */
     1,				/* seed */
+    -1,				/* numIters */
     -1,				/* maxIter */
     50,				/* unscaled */
     0.0,			/* C */
     1.0,			/* Tfact */
     -1.0,			/* K */
+    -1.0,			/* T0 */
+    seed_val,                   /* seed mode */
+    10,                         /* overlap removal mode */
 };
 
-#define T_useGrid   (fdp_tvals.useGrid)
-#define T_useNew    (fdp_tvals.useNew)
-#define T_seed      (fdp_tvals.seed)
-#define T_maxIter   (fdp_tvals.maxIter)
-#define T_unscaled  (fdp_tvals.unscaled)
-#define T_C         (fdp_tvals.C)
-#define T_Tfact     (fdp_tvals.Tfact)
-#define T_K         (fdp_tvals.K)
+#define D_useGrid   (fdp_parms.useGrid)
+#define D_useNew    (fdp_parms.useNew)
+#define D_seed      (fdp_parms.seed)
+#define D_numIters  (fdp_parms.numIters)
+#define D_maxIters  (fdp_parms.maxIters)
+#define D_unscaled  (fdp_parms.unscaled)
+#define D_C         (fdp_parms.C)
+#define D_Tfact     (fdp_parms.Tfact)
+#define D_K         (fdp_parms.K)
+#define D_T0        (fdp_parms.T0)
+#define D_smode     (fdp_parms.smode)
+#define D_tries     (fdp_parms.tries)
 
-static int numIters = -1;	/* number of total iterations */
-static double T0 = -1.0;	/* temperature of system */
-static double Cell = 0.0;	/* grid cell size */
-static double Cell2;		/* Cell*Cell */
-static double K2;		/* K*K */
-static double Wd;		/* half-width of boundary */
-static double Ht;		/* half-height of boundary */
-static double Wd2;		/* Wd*Wd */
-static double Ht2;		/* Ht*Ht */
-static double expFactor = 1.2;	/* factor to increase radius */
-static seedMode smode;		/* seed mode */
-static int pass1;		/* iterations used in pass 1 */
-static int loopcnt;		/* actual iterations in this pass */
+  /* Actual parameters used; initialized using fdp_parms, then possibly
+   * updated with graph-specific values.
+   */
+typedef struct {
+    int useGrid;	/* use grid for speed up */
+    int useNew;		/* encode x-K into attractive force */
+    long seed;		/* seed for position RNG */
+    int numIters;	/* actual iterations in layout */
+    int maxIters;	/* max iterations in layout */
+    int unscaled;	/* % of iterations used in pass 1 */
+    double C;		/* Repulsion factor in xLayout */
+    double Tfact;	/* scale temp from default expression */
+    double K;		/* spring constant; ideal distance */
+    double T0;          /* initial temperature */
+    seedMode smode;     /* seed mode */
+    int tries;          /* overlap removal mode */
+    double Cell;	/* grid cell size */
+    double Cell2;	/* Cell*Cell */
+    double K2;		/* K*K */
+    double Wd;		/* half-width of boundary */
+    double Ht;		/* half-height of boundary */
+    double Wd2;		/* Wd*Wd */
+    double Ht2;		/* Ht*Ht */
+    int pass1;		/* iterations used in pass 1 */
+    int loopcnt;        /* actual iterations in this pass */
+} parms_t;
 
-static int dflt_numIters = 600;
-static double dflt_K = 0.3;
-static seedMode dflt_smode = seed_val;
+static parms_t parms;
+
+#define T_useGrid   (parms.useGrid)
+#define T_useNew    (parms.useNew)
+#define T_seed      (parms.seed)
+#define T_numIters  (parms.numIters)
+#define T_maxIters  (parms.maxIters)
+#define T_unscaled  (parms.unscaled)
+#define T_C         (parms.C)
+#define T_Tfact     (parms.Tfact)
+#define T_K         (parms.K)
+#define T_T0        (parms.T0)
+#define T_smode     (parms.smode)
+#define T_Cell      (parms.Cell)
+#define T_Cell2     (parms.Cell2)
+#define T_K2        (parms.K2)
+#define T_Wd        (parms.Wd)
+#define T_Ht        (parms.Ht)
+#define T_Wd2       (parms.Wd2)
+#define T_Ht2       (parms.Ht2)
+#define T_pass1     (parms.pass1)
+#define T_loopcnt   (parms.loopcnt)
+#define T_tries     (parms.tries)
+
+#define EXPFACTOR  1.2
+#define DFLT_maxIters 600
+#define DFLT_K  0.3
+#define DFLT_Cell  0.0
 
 static double cool(double temp, int t)
 {
-    return (T0 * (numIters - t)) / numIters;
+    return (T_T0 * (T_maxIters - t)) / T_maxIters;
 }
 
 /* reset_params:
  */
 static void reset_params(void)
 {
-    T0 = -1.0;
+    T_T0 = -1.0;
 }
 
 /* init_params:
@@ -121,34 +167,35 @@ static int init_params(graph_t * g, xparams * xpms)
 {
     int ret = 0;
 
-    if (T0 == -1.0) {
+    if (T_T0 == -1.0) {
 	int nnodes = agnnodes(g);
 
-	T0 = T_Tfact * T_K * sqrt(nnodes) / 5;
+	T_T0 = T_Tfact * T_K * sqrt(nnodes) / 5;
 #ifdef DEBUG
 	if (Verbose) {
 	    prIndent();
-	    fprintf(stderr, "tlayout %s : T0 %f\n", g->name, T0);
+	    fprintf(stderr, "tlayout %s : T0 %f\n", g->name, T_T0);
 	}
 #endif
 	ret = 1;
     }
 
-    xpms->T0 = cool(T0, pass1);
+    xpms->T0 = cool(T_T0, T_pass1);
     xpms->K = T_K;
     xpms->C = T_C;
-    xpms->numIters = numIters - pass1;
+    xpms->tries = T_tries;
+    xpms->numIters = T_maxIters - T_pass1;
 
-    if (T_maxIter >= 0) {
-	if (T_maxIter <= pass1) {
-	    loopcnt = T_maxIter;
+    if (T_numIters >= 0) {
+	if (T_numIters <= T_pass1) {
+	    T_loopcnt = T_numIters;
 	    xpms->loopcnt = 0;
-	} else if (T_maxIter <= numIters) {
-	    loopcnt = pass1;
-	    xpms->loopcnt = T_maxIter - pass1;
+	} else if (T_numIters <= T_maxIters) {
+	    T_loopcnt = T_pass1;
+	    xpms->loopcnt = T_numIters - T_pass1;
 	}
     } else {
-	loopcnt = pass1;
+	T_loopcnt = T_pass1;
 	xpms->loopcnt = xpms->numIters;
     }
     return ret;
@@ -189,7 +236,7 @@ static int fdp_setSeed(seedMode * sm, char *arg)
     if (isdigit(*arg)) {
 	if (!setInt(&v, arg)) {
 	    *sm = seed_val;
-	    fdp_tvals.seed = v;
+	    T_seed = v;
 	}
     } else if (!strcmp(arg, "regular")) {
 	*sm = seed_regular;
@@ -201,41 +248,46 @@ static int fdp_setSeed(seedMode * sm, char *arg)
 
 /* fdp_initParams:
  * Initialize parameters based on root graph attributes.
- * Should K be a function of nnodes?
  */
 void fdp_initParams(graph_t * g)
 {
-    if (fdp_numIters == -1)
-	numIters = late_int(g, agfindattr(g, "maxiter"), dflt_numIters, 0);
+    T_useGrid = D_useGrid;
+    T_useNew = D_useNew;
+    T_tries = D_tries;
+    T_numIters = D_numIters;
+    T_unscaled = D_unscaled;
+    T_Cell = DFLT_Cell;
+    T_C = D_C;
+    T_Tfact = D_Tfact;
+    if (D_maxIters == -1)
+	T_maxIters = late_int(g, agfindattr(g, "maxiter"), DFLT_maxIters, 0);
     else
-	numIters = fdp_numIters;
-    if (fdp_K == -1.0)
-	T_K = late_double(g, agfindattr(g, "K"), dflt_K, 0.0);
+	T_maxIters = D_maxIters;
+    if (D_K == -1.0)
+	T_K = late_double(g, agfindattr(g, "K"), DFLT_K, 0.0);
     else
-	T_K = fdp_K;
-    if (fdp_T0 == -1.0) {
-	T0 = late_double(g, agfindattr(g, "T0"), -1.0, 0.0);
+	T_K = D_K;
+    if (D_T0 == -1.0) {
+	T_T0 = late_double(g, agfindattr(g, "T0"), -1.0, 0.0);
     } else
-	T0 = fdp_T0;
-    if (fdp_smode == seed_unset) {
-	if (fdp_setSeed(&smode, agget(g, "start"))) {
-	    smode = dflt_smode;
-	}
-    } else
-	smode = fdp_smode;
+	T_T0 = D_T0;
+    if (fdp_setSeed(&T_smode, agget(g, "start"))) {
+	T_smode = D_smode;
+	T_seed = D_seed;
+    }
 
-    pass1 = (T_unscaled * numIters) / 100;
-    K2 = T_K * T_K;
+    T_pass1 = (T_unscaled * T_maxIters) / 100;
+    T_K2 = T_K * T_K;
 
     if (T_useGrid) {
-	if (Cell <= 0.0)
-	    Cell = 3 * T_K;
-	Cell2 = Cell * Cell;
+	if (T_Cell <= 0.0)
+	    T_Cell = 3 * T_K;
+	T_Cell2 = T_Cell * T_Cell;
     }
     if (Verbose) {
 	fprintf(stderr,
-		"Params: K %f T0 %f Tfact %f numIters %d unscaled %d\n",
-		T_K, T0, T_Tfact, numIters, T_unscaled);
+		"Params %s: K %f T0 %f Tfact %f maxIters %d unscaled %d\n",
+		g->name, T_K, T_T0, T_Tfact, T_maxIters, T_unscaled);
     }
 }
 
@@ -252,9 +304,9 @@ doRep(node_t * p, node_t * q, double xdelta, double ydelta, double dist2)
     }
     if (T_useNew) {
 	dist = sqrt(dist2);
-	force = K2 / (dist * dist2);
+	force = T_K2 / (dist * dist2);
     } else
-	force = K2 / dist2;
+	force = T_K2 / dist2;
     if (IS_PORT(p) && IS_PORT(q))
 	force *= 10.0;
     DISP(q)[0] += xdelta * force;
@@ -296,7 +348,7 @@ static void doNeighbor(Grid * grid, int i, int j, node_list * nodes)
 		xdelta = q->u.pos[0] - p->u.pos[0];
 		ydelta = q->u.pos[1] - p->u.pos[1];
 		dist2 = xdelta * xdelta + ydelta * ydelta;
-		if (dist2 < Cell2)
+		if (dist2 < T_Cell2)
 		    doRep(p, q, xdelta, ydelta, dist2);
 	    }
 	}
@@ -391,7 +443,7 @@ static void updatePos(Agraph_t * g, double temp, bport_t * pp)
 
 	/* if ports, limit by boundary */
 	if (pp) {
-	    d = sqrt((x * x) / Wd2 + (y * y) / Ht2);
+	    d = sqrt((x * x) / T_Wd2 + (y * y) / T_Ht2);
 	    if (IS_PORT(n)) {
 		ND_pos(n)[0] = x / d;
 		ND_pos(n)[1] = y / d;
@@ -425,7 +477,7 @@ static void gAdjust(Agraph_t * g, double temp, bport_t * pp, Grid * grid)
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	DISP(n)[0] = DISP(n)[1] = 0;
-	addGrid(grid, FLOOR(n->u.pos[0] / Cell), FLOOR(n->u.pos[1] / Cell),
+	addGrid(grid, FLOOR(n->u.pos[0] / T_Cell), FLOOR(n->u.pos[1] / T_Cell),
 		n);
     }
 
@@ -501,7 +553,7 @@ static pointf initPositions(graph_t * g, bport_t * pp)
     }
 
     size = T_K * (sqrt((double) nG) + 1.0);
-    Wd = Ht = expFactor * (size / 2.0);
+    T_Wd = T_Ht = EXPFACTOR * (size / 2.0);
     if (n_pos == 1) {
 	ctr.x = bb.LL.x;
 	ctr.y = bb.LL.y;
@@ -509,26 +561,26 @@ static pointf initPositions(graph_t * g, bport_t * pp)
 	double alpha, area, width, height, quot;
 	ctr.x = (bb.LL.x + bb.UR.x) / 2.0;
 	ctr.y = (bb.LL.y + bb.UR.y) / 2.0;
-	width = expFactor * (bb.UR.x - bb.LL.x);
-	height = expFactor * (bb.UR.y - bb.LL.y);
-	area = 4.0 * Wd * Ht;
+	width = EXPFACTOR * (bb.UR.x - bb.LL.x);
+	height = EXPFACTOR * (bb.UR.y - bb.LL.y);
+	area = 4.0 * T_Wd * T_Ht;
 	quot = (width * height) / area;
 	if (quot >= 1.0) {	/* If bbox has large enough area, use it */
-	    Wd = width / 2.0;
-	    Ht = height / 2.0;
+	    T_Wd = width / 2.0;
+	    T_Ht = height / 2.0;
 	} else if (quot > 0.0) {	/* else scale up to have enough area */
 	    quot = 2.0 * sqrt(quot);
-	    Wd = width / quot;
-	    Ht = height / quot;
+	    T_Wd = width / quot;
+	    T_Ht = height / quot;
 	} else {		/* either width or height is 0 */
 	    if (width > 0) {
 		height = area / width;
-		Wd = width / 2.0;
-		Ht = height / 2.0;
+		T_Wd = width / 2.0;
+		T_Ht = height / 2.0;
 	    } else if (height > 0) {
 		width = area / height;
-		Wd = width / 2.0;
-		Ht = height / 2.0;
+		T_Wd = width / 2.0;
+		T_Ht = height / 2.0;
 	    }
 	    /* If width = height = 0, use Wd and Ht as defined above for
 	     * the case the n_pos == 0.
@@ -536,17 +588,17 @@ static pointf initPositions(graph_t * g, bport_t * pp)
 	}
 
 	/* Construct enclosing ellipse */
-	alpha = atan2(Ht, Wd);
-	Wd = Wd / cos(alpha);
-	Ht = Ht / sin(alpha);
+	alpha = atan2(T_Ht, T_Wd);
+	T_Wd = T_Wd / cos(alpha);
+	T_Ht = T_Ht / sin(alpha);
     } else {
 	ctr.x = ctr.y = 0;
     }
-    Wd2 = Wd * Wd;
-    Ht2 = Ht * Ht;
+    T_Wd2 = T_Wd * T_Wd;
+    T_Ht2 = T_Ht * T_Ht;
 
     /* Set seed value */
-    if (smode == seed_val)
+    if (T_smode == seed_val)
 	local_seed = T_seed;
     else {
 #ifdef MSWIN32
@@ -570,8 +622,8 @@ static pointf initPositions(graph_t * g, bport_t * pp)
 /* fprintf (stderr, "initPos %s ctr (%g,%g) Wd %g Ht %g\n", g->name, ctr.x, ctr.y, Wd, Ht); */
 	while (pp->e) {		/* position ports on ellipse */
 	    np = pp->n;
-	    ND_pos(np)[0] = Wd * cos(pp->alpha) + ctr.x;
-	    ND_pos(np)[1] = Ht * sin(pp->alpha) + ctr.y;
+	    ND_pos(np)[0] = T_Wd * cos(pp->alpha) + ctr.x;
+	    ND_pos(np)[1] = T_Ht * sin(pp->alpha) + ctr.y;
 	    ND_pinned(np) = P_SET;
 /* fprintf (stderr, "%s pt (%g,%g) %g\n", np->name, ND_pos(np)[0], ND_pos(np)[1], pp->alpha); */
 	    pp++;
@@ -613,8 +665,8 @@ static pointf initPositions(graph_t * g, bport_t * pp)
 		} else {
 		    double angle = PItimes2 * drand48();
 		    double radius = 0.9 * drand48();
-		    ND_pos(np)[0] = radius * Wd * cos(angle);
-		    ND_pos(np)[1] = radius * Ht * sin(angle);
+		    ND_pos(np)[0] = radius * T_Wd * cos(angle);
+		    ND_pos(np)[1] = radius * T_Ht * sin(angle);
 /* fprintf (stderr, "%s 0 (%g,%g)\n", np->name, ND_pos(np)[0], ND_pos(np)[1]); */
 		}
 		ND_pinned(np) = P_SET;
@@ -627,14 +679,14 @@ static pointf initPositions(graph_t * g, bport_t * pp)
 		    ND_pos(np)[0] -= ctr.x;
 		    ND_pos(np)[1] -= ctr.y;
 		} else {
-		    ND_pos(np)[0] = Wd * (2.0 * drand48() - 1.0);
-		    ND_pos(np)[1] = Ht * (2.0 * drand48() - 1.0);
+		    ND_pos(np)[0] = T_Wd * (2.0 * drand48() - 1.0);
+		    ND_pos(np)[1] = T_Ht * (2.0 * drand48() - 1.0);
 		}
 	    }
 	} else {		/* No ports or positions; place randomly */
 	    for (np = agfstnode(g); np; np = agnxtnode(g, np)) {
-		ND_pos(np)[0] = Wd * (2.0 * drand48() - 1.0);
-		ND_pos(np)[1] = Ht * (2.0 * drand48() - 1.0);
+		ND_pos(np)[0] = T_Wd * (2.0 * drand48() - 1.0);
+		ND_pos(np)[1] = T_Ht * (2.0 * drand48() - 1.0);
 	    }
 	}
     }
@@ -684,20 +736,20 @@ void fdp_tLayout(graph_t * g, xparams * xpms)
     Agnode_t *n;
 
     reset = init_params(g, xpms);
-    temp = T0;
+    temp = T_T0;
 
     ctr = initPositions(g, pp);
 
     if (T_useGrid) {
 	grid = mkGrid(agnnodes(g));
 	adjustGrid(grid, agnnodes(g));
-	for (i = 0; i < loopcnt; i++) {
+	for (i = 0; i < T_loopcnt; i++) {
 	    temp = cool(temp, i);
 	    gAdjust(g, temp, pp, grid);
 	}
 	delGrid(grid);
     } else {
-	for (i = 0; i < loopcnt; i++) {
+	for (i = 0; i < T_loopcnt; i++) {
 	    temp = cool(temp, i);
 	    adjust(g, temp, pp);
 	}

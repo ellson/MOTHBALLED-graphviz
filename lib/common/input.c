@@ -61,17 +61,15 @@ static char *neatoItems = "\n\
  -x          - Reduce graph\n";
 
 static char *fdpFlags =
-    "(additional options for fdp)      [-L(gN)] [-L(nMUvSKsT)<val>]\n";
+    "(additional options for fdp)      [-L(gO)] [-L(nMUCKtT)<val>]\n";
 static char *fdpItems = "\n\
  -Lg         - Don't use grid\n\
  -LO         - Use old attractive force\n\
  -Ln<i>      - Set number of iterations to i\n\
  -LM<i>      - Set max. number of iterations to i\n\
  -LU<i>      - Set unscaled factor to i\n\
- -LS<i>      - Set seed to i\n\
  -LC<v>      - Set overlap expansion factor to v\n\
  -LK<v>      - Set desired edge length to v\n\
- -Ls<v>      - Set PS output scale to v\n\
  -Lt<i>      - Set number of tries to remove overlaps to i\n\
  -LT[*]<v>   - Set temperature (temperature factor) to v\n";
 

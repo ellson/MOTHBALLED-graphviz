@@ -24,18 +24,26 @@ extern "C" {
 #include "fdp.h"
 #include "xlayout.h"
 
+typedef enum {
+  seed_unset, seed_val, seed_time, seed_regular
+} seedMode;
+
     typedef struct {
 	int useGrid;		/* use grid for speed up */
 	int useNew;		/* encode x-K into attractive force */
 	long seed;		/* seed for position RNG */
-	int maxIter;		/* actual iterations in layout */
+	int numIters;		/* actual iterations in layout */
+	int maxIters;		/* max iterations in layout */
 	int unscaled;		/* % of iterations used in pass 1 */
 	double C;		/* Repulsion factor in xLayout */
 	double Tfact;		/* scale temp from default expression */
 	double K;		/* spring constant; ideal distance */
-    } tParms_t;
+	double T0;              /* initial temperature */
+	int smode;              /* seed mode */
+	int tries;              /* overlap removal */
+    } fdpParms_t;
 
-    extern tParms_t fdp_tvals;
+    extern fdpParms_t fdp_parms;
 
     extern void fdp_initParams(graph_t *);
     extern void fdp_tLayout(graph_t *, xparams *);

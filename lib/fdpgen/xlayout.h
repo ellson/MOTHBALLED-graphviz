@@ -29,10 +29,10 @@ extern "C" {
 	double K;
 	double C;
 	int loopcnt;
+        int tries;
     } xparams;
 
     extern void fdp_xLayout(graph_t *, xparams *);
-    extern int fdp_Tries;
 
 #endif
 

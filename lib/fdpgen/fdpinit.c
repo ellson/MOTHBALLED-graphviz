@@ -24,10 +24,9 @@
 /* uses PRIVATE interface */
 #define FDP_PRIVATE 1
 
-#include    "fdp.h"
 #include    "tlayout.h"
 #include    "neatoprocs.h"
-#include	"agxbuf.h"
+#include    "agxbuf.h"
 
 static void initialPositions(graph_t * g)
 {
@@ -86,7 +85,7 @@ static int init_edge(edge_t * e, attrsym_t * E_len)
     int r;
 
     ED_factor(e) = late_double(e, E_weight, 1.0, 0.0);
-    ED_dist(e) = late_double(e, E_len, fdp_tvals.K, 0.0);
+    ED_dist(e) = late_double(e, E_len, fdp_parms.K, 0.0);
 
     /* initialize labels and set r TRUE if edge has one */
     r = common_init_edge(e);

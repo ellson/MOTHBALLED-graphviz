@@ -44,15 +44,16 @@
 #include <values.h>
 #endif
 #endif
-#include <fdp.h>
+#include <tlayout.h>
 #include <neatoprocs.h>
+#include <adjust.h>
 #include <comp.h>
 #include <pack.h>
 #include <assert.h>
-#include <xlayout.h>
-#include <tlayout.h>
 #include <clusteredges.h>
 #include <dbg.h>
+
+#define DFLT_overlap   "scale"    /* default overlap value */
 
 typedef struct {
     attrsym_t *G_coord;
@@ -408,7 +409,19 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
     dg = agopen(name, AGRAPHSTRICT);
     GD_alg(dg) = (void *) NEW(gdata);	/* freed in freeDeriveGraph */
     GD_ndim(dg) = GD_ndim(g);
-    agraphattr(dg, "overlap", "scale");
+
+    /* Set up overlap value in case needed.
+     * If already set, probably came from command line.
+     * Otherwise, if set in the graph, use it.
+     * Else, use default.
+     */
+    if (!agfindattr(dg, "overlap")) {
+	Agsym_t* ov;
+	if ((ov = agfindattr(g, "overlap")))
+	    agraphattr(dg, "overlap", agxget(g,ov->index));
+	else
+	    agraphattr(dg, "overlap", DFLT_overlap);
+    }
 
     /* create derived nodes from clusters */
     for (i = 1; i <= GD_n_cluster(g); i++) {
@@ -853,8 +866,13 @@ setClustNodes(graph_t* root)
 	    } else if (IS_PORT(n))
 		agdelete(cg, n);	/* remove ports from component */
 	}
-	if (agnnodes(cg) >= 2)
+
+	/* Remove overlaps */
+	if (agnnodes(cg) >= 2) {
+	    if (g == g->root)
+		normalize (cg);
 	    fdp_xLayout(cg, &xpms);
+	}
 	/* set bounding box but don't use ports */
 	/* setBB (cg); */
     }

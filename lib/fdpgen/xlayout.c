@@ -40,9 +40,6 @@
 #define WD2(n) (ND_width(n)/2.0 + OFF)
 #define HT2(n) (ND_height(n)/2.0 + OFF)
 
-int fdp_Tries = 10;
-/* int fdp_Tries = 1; */
-
 static double RAD(Agnode_t * n)
 {
     double w = ND_width(n) / 2.0;
@@ -436,7 +433,7 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
     K = xpms.K;
     while (ov && (try < tries)) {
 	if (Verbose) {
-	    fprintf(stderr, "try %d: %d overlaps on %s \n", try, ov,
+	    fprintf(stderr, "try %d (%d): %d overlaps on %s \n", try, tries, ov,
 		    g->name);
 	}
 
@@ -464,14 +461,18 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
  */
 void fdp_xLayout(graph_t * g, xparams * xpms)
 {
-    if (fdp_Tries == 0)
-	return;			/* No overlap removal */
-    if (fdp_Tries == 1) {	/* No expansion, just adjust */
-	adjustNodes(g);
-    } else if (fdp_Tries > 1) {	/* Try expansion fdp_Tries times, then adjust */
-	if (x_layout(g, xpms, fdp_Tries - 1))
-	    adjustNodes(g);
-    } else {			/* Try expansion -fdp_Tries times; no adjust */
-	x_layout(g, xpms, -1 * fdp_Tries);
+    int tries = xpms->tries;
+
+    if (tries == 0)		/* No overlap removal */
+	return;	
+    else if (tries == 1) {	/* No expansion, just adjust */
+	removeOverlap(g);
+    } 
+    else if (tries > 1) {	/* Try expansion tries times, then adjust */
+	if (x_layout(g, xpms, tries - 1))
+	    removeOverlap(g);
+    } 
+    else {			/* Try expansion -tries times; no adjust */
+	x_layout(g, xpms, -1 * tries);
     }
 }

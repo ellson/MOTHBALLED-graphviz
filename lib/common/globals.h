@@ -77,11 +77,6 @@ extern "C" {
     EXTERN char *Output_file_name;
     EXTERN int graphviz_errors;
     EXTERN int Nop;
-    EXTERN int fdp_numIters;
-    EXTERN double fdp_K;
-    EXTERN double fdp_T0;
-    EXTERN char *fdp_seedarg;
-    EXTERN int fdp_smode;
     EXTERN double PSinputscale;
     EXTERN int Syntax_errors;
     EXTERN int Show_boxes;	/* emit code for correct box coordinates */

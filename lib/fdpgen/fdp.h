@@ -19,10 +19,6 @@
 
 #include <render.h>
 
-typedef enum {
-  seed_unset, seed_val, seed_time, seed_regular
-} seedMode;
-
 #ifdef FDP_PRIVATE
 
 #define NDIM     2
