@@ -144,7 +144,7 @@ extern "C" {
     extern point pointof(int, int);
     extern int processClusterEdges(graph_t * g);
     extern char *ps_string(char *s);
-    extern void rank(graph_t * g, int balance, int maxiter);
+    extern int rank(graph_t * g, int balance, int maxiter);
     extern void routesplinesinit(void);
     extern point *routesplines(path *, int *);
     extern void routesplinesterm(void);

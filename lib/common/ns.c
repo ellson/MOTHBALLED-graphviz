@@ -298,7 +298,7 @@ static void init_cutvalues(void)
     dfs_cutval(GD_nlist(G), NULL);
 }
 
-static void feasible_tree(void)
+static int feasible_tree(void)
 {
     int i, delta;
     node_t *n;
@@ -337,10 +337,11 @@ static void feasible_tree(void)
 		    fprintf(stderr, "\t%s\n", n->name);
 	    }
 #endif
-	    abort();
+	    return 1;
 	}
     }
     init_cutvalues();
+    return 0;
 }
 
 /* walk up from v to LCA(v,w), setting new cutvalues. */
@@ -565,8 +566,10 @@ static int init_graph(graph_t * g)
  *   Out and in edges lists stored in ND_out and ND_in, even if the node
  *  doesn't have any out or in edges.
  * The node rank values are stored in ND_rank.
+ * Returns 0 if successful; returns 1 if not, the latter indicating that
+ * the graph was not connected.
  */
-void rank(graph_t * g, int balance, int maxiter)
+int rank(graph_t * g, int balance, int maxiter)
 {
     int iter = 0, feasible;
     char *s, *ns = "network simplex: ";
@@ -585,7 +588,7 @@ void rank(graph_t * g, int balance, int maxiter)
     else
 	Search_size = SEARCHSIZE;
 
-    feasible_tree();
+    if (feasible_tree()) return 1;
     while ((e = leave_edge())) {
 	f = enter_edge(e);
 	update(e, f);
@@ -617,6 +620,7 @@ void rank(graph_t * g, int balance, int maxiter)
 	fprintf(stderr, "%s%d nodes %d edges %d iter %.2f sec\n",
 		ns, N_nodes, N_edges, iter, elapsed_sec());
     }
+    return 0;
 }
 
 /* set cut value of f, assuming values of edges on one side were already set */
