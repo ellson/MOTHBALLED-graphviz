@@ -247,7 +247,9 @@ doRep(node_t * p, node_t * q, double xdelta, double ydelta, double dist2)
     int ov;
     double force;
     /* double dout, din; */
+#if defined(MS) || defined(ALT)
     double dist;
+#endif
     /* double factor; */
 
     while (dist2 == 0.0) {
