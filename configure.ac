@@ -229,7 +229,7 @@ else
   HAVE_PERL=1
   PERL_ARCHLIB=`perl -e 'use Config; print $Config{archlib};'`
   PERL_INCLUDES=-I$PERL_ARCHLIB/CORE
-  PERL_LIBS=-L$PERL_ARCHLIB/CORE -lperl
+  PERL_LIBS="-L$PERL_ARCHLIB/CORE -lperl"
 fi
 AC_SUBST(HAVE_PERL)
 AC_SUBST(PERL_INCLUDES)
@@ -259,7 +259,7 @@ if test "x$RUBY" = "x"; then
   HAVE_RUBY=0
 else
   HAVE_RUBY=1
-  RUBY_INCLUDES=-I`ruby $(top_srcdir)/config_ruby.rb INCLUDES`
+  RUBY_INCLUDES=-I`ruby $TOP_DIR/config_ruby.rb INCLUDES`
   RUBY_LIBS=-lruby
 fi
 AC_SUBST(HAVE_RUBY)
@@ -1349,7 +1349,6 @@ AC_CONFIG_FILES(Makefile
 	lib/ingraphs/Makefile
 	lib/gvc/Makefile
 	lib/gvc/libgvc.pc
-	lib/gvapi/Makefile
 	plugin/Makefile
 	plugin/cairo/Makefile
 	plugin/gd/Makefile
@@ -1385,6 +1384,7 @@ AC_CONFIG_FILES(Makefile
 	tclpkg/tclpathplan/demo/pathplan_data/Makefile
 	tclpkg/tkspline/Makefile
 	tclpkg/tkspline/demo/Makefile
+	tclpkg/gv/Makefile
 	graphviz.spec
 	ast_common.h
 	)

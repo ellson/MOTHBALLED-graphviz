@@ -3,7 +3,7 @@
 pkgindexdir = $(libdir)/@PACKAGE@
 pkgindex_DATA = pkgIndex.tcl
 
-SUBDIRS = tclstubs tkstubs tclhandle gdtclft tcldot tclpathplan tkspline
+SUBDIRS = tclstubs tkstubs tclhandle gdtclft tcldot tclpathplan tkspline gv
 
 pkgIndex.tcl: @TCL_PKGINDEX@ @TK_PKGINDEX@
 	echo "# end" >end
