@@ -105,13 +105,18 @@ Agraph_t *readgraph(char *filename)
     return g;
 }
 
+/* create a subgraph of an existing graph */
 Agraph_t *graph(Agraph_t *g, char *name)
 {
+    if (!gvc)
+	return NULL;
     return agsubg(g, name);
 }
 
 Agnode_t *node(Agraph_t *g, char *name)
 {
+    if (!gvc)
+	return NULL;
     return agnode(g, name);
 }
 

@@ -236,6 +236,54 @@ AC_SUBST(HAVE_SWIG)
 AM_CONDITIONAL(WITH_SWIG, [test "x$HAVE_SWIG" = "x1"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for CSHARP
+
+AC_CHECK_PROG(CSHARP,mcs,mcs)
+AM_CONDITIONAL(WITH_CSHARP, [test "x$CSHARP" != "x"])
+if test "x$CSHARP" = "x"; then
+  HAVE_CSHARP=0
+else
+  HAVE_CSHARP=1
+  CSHARP_INCLUDES=
+  CSHARP_LIBS=
+fi
+AC_SUBST(HAVE_CSHARP)
+AC_SUBST(CSHARP_INCLUDES)
+AC_SUBST(CSHARP_LIBS)
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for GUILE
+
+AC_CHECK_PROG(GUILE,guile,guile)
+AM_CONDITIONAL(WITH_GUILE, [test "x$GUILE" != "x"])
+if test "x$GUILE" = "x"; then
+  HAVE_GUILE=0
+else
+  HAVE_GUILE=1
+  GUILE_INCLUDES=
+  GUILE_LIBS=
+fi
+AC_SUBST(HAVE_GUILE)
+AC_SUBST(GUILE_INCLUDES)
+AC_SUBST(GUILE_LIBS)
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for IO
+
+AC_CHECK_PROG(IO,io,io)
+AM_CONDITIONAL(WITH_IO, [test "x$IO" != "x"])
+if test "x$IO" = "x"; then
+  HAVE_IO=0
+else
+  HAVE_IO=1
+  IO_INCLUDES=
+  IO_LIBS=
+fi
+AC_SUBST(HAVE_IO)
+AC_SUBST(IO_INCLUDES)
+AC_SUBST(IO_LIBS)
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for JAVA
 
 AC_CHECK_PROG(JAVA,java,java)
@@ -250,6 +298,22 @@ fi
 AC_SUBST(HAVE_JAVA)
 AC_SUBST(JAVA_INCLUDES)
 AC_SUBST(JAVA_LIBS)
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for OCAML
+
+AC_CHECK_PROG(OCAML,ocaml,ocaml)
+AM_CONDITIONAL(WITH_OCAML, [test "x$OCAML" != "x"])
+if test "x$OCAML" = "x"; then
+  HAVE_OCAML=0
+else
+  HAVE_OCAML=1
+  OCAML_INCLUDES=
+  OCAML_LIBS=
+fi
+AC_SUBST(HAVE_OCAML)
+AC_SUBST(OCAML_INCLUDES)
+AC_SUBST(OCAML_LIBS)
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PERL
@@ -267,6 +331,22 @@ fi
 AC_SUBST(HAVE_PERL)
 AC_SUBST(PERL_INCLUDES)
 AC_SUBST(PERL_LIBS)
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for PHP
+
+AC_CHECK_PROG(PHP,php,php)
+AM_CONDITIONAL(WITH_PHP, [test "x$PHP" != "x"])
+if test "x$PHP" = "x"; then
+  HAVE_PHP=0
+else
+  HAVE_PHP=1
+  PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
+  PHP_LIBS=
+fi
+AC_SUBST(HAVE_PHP)
+AC_SUBST(PHP_INCLUDES)
+AC_SUBST(PHP_LIBS)
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON

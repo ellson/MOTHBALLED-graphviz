@@ -43,8 +43,12 @@ of graphs (as in nodes and edges, not as in barcharts).
 %{_bindir}/*
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/*.so.*
-%{_libdir}/%{name}/*.py
-%{_libdir}/%{name}/*.pm
+%{_libdir}/%{name}/gv.ml
+%{_libdir}/%{name}/gv.mli
+%{_libdir}/%{name}/gv.php
+%{_libdir}/%{name}/php_gv.h
+%{_libdir}/%{name}/gv.pm
+%{_libdir}/%{name}/gv.py
 %{_libdir}/%{name}/*.java
 %{_mandir}/man1/*.1*
 %dir %{_datadir}/%{name}

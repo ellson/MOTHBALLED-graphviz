@@ -6,7 +6,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
-	-I$(top_srcdir)/lib/pathplan @PERL_INCLUDES@ @PYTHON_INCLUDES@ @RUBY_INCLUDES@ @TCL_INCLUDES@ 
+	-I$(top_srcdir)/lib/pathplan $(PERL_INCLUDES) $(PHP_INCLUDES) $(PYTHON_INCLUDES) $(RUBY_INCLUDES) $(TCL_INCLUDES) 
 
 LIBS =  @LIBS@ -lc
 
@@ -28,11 +28,24 @@ endif
 noinst_HEADERS = gv.h
 
 pkglib_LTLIBRARIES = 
+if WITH_SWIG
+if WITH_CSHARP
+pkglib_LTLIBRARIES += libgv_csharp.la
+endif
+if WITH_GUILE
+pkglib_LTLIBRARIES += libgv_guile.la
+endif
+#if WITH_IO
+#pkglib_LTLIBRARIES += libgv_io.la
+#endif
 if WITH_JAVA
 pkglib_LTLIBRARIES += libgv_java.la
 endif
 if WITH_PERL
 pkglib_LTLIBRARIES += libgv_perl.la
+endif
+if WITH_PHP
+pkglib_LTLIBRARIES += libgv_php.la
 endif
 if WITH_PYTHON
 pkglib_LTLIBRARIES += libgv_python.la
@@ -43,12 +56,25 @@ endif
 if WITH_TCL
 pkglib_LTLIBRARIES += libgv_tcl.la
 endif
+endif
+
+libgv_csharp_la_SOURCES = gv.cpp gv_csharp.cpp plugins.c 
+libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@
+
+libgv_guile_la_SOURCES = gv.cpp gv_guile.cpp plugins.c 
+libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
+
+#libgv_io_la_SOURCES = gv.cpp gv_io.cpp plugins.c 
+#libgv_io_la_LIBADD = $(BASELIBS) @IO_LIBS@
 
 libgv_java_la_SOURCES = gv.cpp gv_java.cpp plugins.c 
 libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
 
 libgv_perl_la_SOURCES = gv.cpp gv_perl.cpp plugins.c 
 libgv_perl_la_LIBADD = $(BASELIBS) @PERL_LIBS@
+
+libgv_php_la_SOURCES = gv.cpp gv_php.cpp plugins.c 
+libgv_php_la_LIBADD = $(BASELIBS) @PHP_LIBS@
 
 libgv_python_la_SOURCES = gv.cpp gv_python.cpp plugins.c 
 libgv_python_la_LIBADD = $(BASELIBS) @PYTHON_LIBS@
@@ -59,11 +85,26 @@ libgv_ruby_la_LIBADD = $(BASELIBS) @RUBY_LIBS@
 libgv_tcl_la_SOURCES = gv.cpp gv_tcl.cpp plugins.c 
 libgv_tcl_la_LIBADD = $(BASELIBS) @TCL_LIBS@
 
+gv_csharp.cpp: gv.i
+	$(SWIG) -c++ -csharp -o gv_csharp.cpp gv.i
+
+gv_guile.cpp: gv.i
+	$(SWIG) -c++ -guile -o gv_guile.cpp gv.i
+
+#gv_io.cpp: gv.i
+#	$(SWIG) -c++ -io -o gv_io.cpp gv.i
+
 gv_java.cpp: gv.i
 	$(SWIG) -c++ -java -o gv_java.cpp gv.i
 
+gv_ocaml.cpp: gv.i
+	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp gv.i
+
 gv_perl.cpp: gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp gv.i
+
+gv_php.cpp: gv.i
+	$(SWIG) -c++ -php -o gv_php.cpp gv.i
 
 gv_python.cpp: gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp gv.i
@@ -76,6 +117,10 @@ gv_tcl.cpp: gv.i
 
 install-exec-hook:
 	cp $(top_srcdir)/tclpkg/gv/*.java $(DESTDIR)/$(libdir)/@PACKAGE@/
+	cp $(top_srcdir)/tclpkg/gv/*.ml $(DESTDIR)/$(libdir)/@PACKAGE@/
+	cp $(top_srcdir)/tclpkg/gv/*.mli $(DESTDIR)/$(libdir)/@PACKAGE@/
+	cp $(top_srcdir)/tclpkg/gv/*.php $(DESTDIR)/$(libdir)/@PACKAGE@/
+	cp $(top_srcdir)/tclpkg/gv/php_gv.h $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/*.pm $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/*.py $(DESTDIR)/$(libdir)/@PACKAGE@/
 	
@@ -86,7 +131,29 @@ pkgIndex.tcl: libgv_tcl.la
 	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libgv_tcl.la gv $(VERSION)
 endif
 
-test: test_java test_perl test_python test_ruby test_tcl
+test: test_csharp test_guile test_java test_ocaml \
+	test_perl test_php test_python test_ruby test_tcl
+
+test_csharp: libgv_csharp.la
+	(cd csharp; \
+		ln -fs ../.libs/libgv_csharp.so libgv.so; \
+		cp -f ../*.csharp .; \
+		$(CSHARP) *.csharp; \
+		LD_LIBRARY_PATH=. csharp test)
+
+test_guile: libgv_guile.la
+	(cd guile; \
+		ln -fs ../.libs/libgv_guile.so libgv.so; \
+		cp -f ../*.guile .; \
+		guilec *.guile; \
+		LD_LIBRARY_PATH=. guile test)
+
+#test_io: libgv_io.la
+#	(cd io; \
+#		ln -fs ../.libs/libgv_io.so libgv.so; \
+#		cp -f ../*.io .; \
+#		ioc *.io; \
+#		LD_LIBRARY_PATH=. io test)
 
 test_java: libgv_java.la
 	(cd java; \
@@ -95,17 +162,31 @@ test_java: libgv_java.la
 		javac *.java; \
 		LD_LIBRARY_PATH=. java test)
 
+test_ocaml: libgv_ocaml.la
+	(cd ocaml; \
+		ln -fs ../.libs/libgv_ocaml.so libgv.so; \
+		cp -f ../*.ocaml .; \
+		ocamlc *.ocaml; \
+		LD_LIBRARY_PATH=. ocaml test)
+
 test_perl: libgv_perl.la
 	(cd perl; \
 		ln -fs ../.libs/libgv_perl.so gv.so; \
 		cp -f ../*.pl ../*.pm .; \
 		./test.pl)
 
+test_php: libgv_php.la
+	(cd php; \
+		ln -fs ../.libs/libgv_php.so libgv.so; \
+		cp -f ../*.php .; \
+		$(PHP) *.php; \
+		php test)
+
 test_python: libgv_python.la
 	(cd python; \
 		ln -fs ../.libs/libgv_python.so _gv.so; \
 		cp -f ../*.py .; \
-		PYTHONPATH=. ./test.py)
+		PYTHONPATH=. $PYTHON test.py)
 
 test_ruby: libgv_ruby.la
 	(cd ruby; \
@@ -120,8 +201,11 @@ test_tcl: libgv_tcl.la
 		./test.tcl)
 
 EXTRA_DIST = gv.i \
-	SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java \
-	gv.java gvJNI.java gv.pm gv.py
+	SWIG*.java gv.java gvJNI.java \
+	gv.pm \
+	gv.php php_gv.h \
+	gv.py \
+	gv.ml gv.mli
 	
 
 CLEANFILES = java/*.dot java/*.png java/SWIG*.java java/gv*.java java/*.class java/*.so \
@@ -130,5 +214,10 @@ CLEANFILES = java/*.dot java/*.png java/SWIG*.java java/gv*.java java/*.class ja
 	ruby/gv.so ruby/*.dot ruby/*.png \
 	tcl/libgv_tcl.so tcl/*.dot tcl/*.png pkgIndex.tcl
 
-DISTCLEANFILES = gv_java.cpp gv_perl.cpp gv_python.cpp gv_ruby.cpp gv_tcl.cpp \
-	SWIG*.java gv.java gvJNI.java gv.pm gv.py
+DISTCLEANFILES = gv_java.cpp SWIG*.java gv.java gvJNI.java \
+	gv_perl.cpp gv.pm \
+	gv_php.cpp gv.php php_gv.h \
+	gv_python.cpp gv.py \
+	gv.ml gv.mli \
+	gv_ruby.cpp \
+	gv_tcl.cpp
