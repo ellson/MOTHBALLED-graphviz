@@ -356,7 +356,7 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
     PB.UR = add_points(PB.LL, DS);
 }
 
-void emit_node(GVC_t * gvc, node_t * n)
+static void emit_node(GVC_t * gvc, node_t * n)
 {
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
 
@@ -428,7 +428,33 @@ static pointf computeoffset_qr(pointf p, pointf q, pointf r, pointf s,
     return res;
 }
 
-void emit_edge(GVC_t * gvc, edge_t * e)
+void emit_attachment(GVC_t * gvc, textlabel_t * lp, splines * spl)
+{
+    point sz, A[3];
+    unsigned char *s;
+
+    for (s = (unsigned char *) (lp->text); *s; s++) {
+	if (isspace(*s) == FALSE)
+	    break;
+    }
+    if (*s == 0)
+	return;
+
+    PF2P(lp->dimen, sz);
+    A[0] = pointof(lp->p.x + sz.x / 2, lp->p.y - sz.y / 2);
+    A[1] = pointof(A[0].x - sz.x, A[0].y);
+    A[2] = dotneato_closest(spl, lp->p);
+    /* Don't use edge style to draw attachment */
+    gvrender_set_style(gvc, BaseLineStyle);
+    /* Use font color to draw attachment
+       - need something unambiguous in case of multicolored parallel edges
+       - defaults to black for html-like labels
+     */
+    gvrender_set_pencolor(gvc, lp->fontcolor);
+    gvrender_polyline(gvc, A, 3);
+}
+
+static void emit_edge(GVC_t * gvc, edge_t * e)
 {
     int i, j, cnum, numc = 0;
     char *color, *style;
@@ -1068,32 +1094,6 @@ int edge_in_CB(edge_t * e)
     b.LL.y = lp->p.y - sz.y / 2;
     b.UR.y = lp->p.y + sz.y / 2;
     return rect_overlap(CB, b);
-}
-
-void emit_attachment(GVC_t * gvc, textlabel_t * lp, splines * spl)
-{
-    point sz, A[3];
-    unsigned char *s;
-
-    for (s = (unsigned char *) (lp->text); *s; s++) {
-	if (isspace(*s) == FALSE)
-	    break;
-    }
-    if (*s == 0)
-	return;
-
-    PF2P(lp->dimen, sz);
-    A[0] = pointof(lp->p.x + sz.x / 2, lp->p.y - sz.y / 2);
-    A[1] = pointof(A[0].x - sz.x, A[0].y);
-    A[2] = dotneato_closest(spl, lp->p);
-    /* Don't use edge style to draw attachment */
-    gvrender_set_style(gvc, BaseLineStyle);
-    /* Use font color to draw attachment
-       - need something unambiguous in case of multicolored parallel edges
-       - defaults to black for html-like labels
-     */
-    gvrender_set_pencolor(gvc, lp->fontcolor);
-    gvrender_polyline(gvc, A, 3);
 }
 
 int validpage(point page)

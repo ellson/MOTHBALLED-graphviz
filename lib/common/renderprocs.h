@@ -80,8 +80,6 @@ extern "C" {
     extern void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags);
     extern void emit_eof(GVC_t * gvc);
     extern void emit_graph(GVC_t * gvc, graph_t * g, int flags);
-    extern void emit_edge(GVC_t * gvc, edge_t * e);
-    extern void emit_node(GVC_t * gvc, node_t * n);
     extern void emit_label(GVC_t * gvc, textlabel_t *, void *obj);
     extern int emit_once(char *message);
     extern void emit_once_reset();
