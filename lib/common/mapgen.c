@@ -52,7 +52,6 @@ static context_t cstk[MAXNEST];
 static int SP;
 #endif
 
-static double Scale;
 static double Dpi;
 static double DevScale;
 static double CompScale;
@@ -314,6 +313,7 @@ static void map_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 	GraphFocus.y = (GD_bb(g).UR.y - GD_bb(g).LL.y) / 2.;
 	Zoom = 1.0;
     }
+    CompScale = Zoom * DevScale;
 
     if (onetime) {
 	init_imap();
@@ -330,8 +330,6 @@ map_begin_page(graph_t * g, point page, double scale, int rot,
 {
     char *url;
 
-    Scale = scale;
-    CompScale = Zoom * Scale * DevScale;
     Rot = rot;
 
     if (Output_lang == CMAPX) {

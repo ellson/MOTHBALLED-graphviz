@@ -62,7 +62,6 @@ static gdImagePtr im;
 
 /* static int	N_pages; */
 /* static point	Pages; */
-static double Scale;
 static double Dpi;
 static double DevScale;
 static double CompScale;
@@ -157,6 +156,7 @@ static void init1_gd(GVC_t * gvc, graph_t * g, box bb, point pb)
 	GraphFocus.y = (GD_bb(g).UR.y - GD_bb(g).LL.y) / 2.;
 	Zoom = 1.0;
     }
+    CompScale = Zoom * DevScale;
 }
 
 static void init2_gd(gdImagePtr im)
@@ -384,8 +384,6 @@ gd_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 /*	int		page_number; */
 /*	point		sz; */
 
-    Scale = scale;
-    CompScale = Zoom * Scale * DevScale;
     Rot = rot;
 
 /*	page_number = page.x + page.y * Pages.x + 1; */
@@ -572,7 +570,7 @@ static void gd_textline(point p, textline_t * line)
 	return;
 
     strex.flags = gdFTEX_RESOLUTION;
-    strex.hdpi = strex.vdpi = Dpi * Zoom * Scale;
+    strex.hdpi = strex.vdpi = Dpi * Zoom;
 
     if (cstk[SP].pen == P_NONE)
 	return;
@@ -604,9 +602,9 @@ static void gd_textline(point p, textline_t * line)
     ep.x = mp.x + line->width;
 
     mp = gdpt(mp);
-    if (fontsz * Zoom * Scale <= FONTSIZE_MUCH_TOO_SMALL) {
+    if (fontsz * Zoom <= FONTSIZE_MUCH_TOO_SMALL) {
 	/* ignore entirely */
-    } else if (fontsz * Zoom * Scale <= FONTSIZE_TOO_SMALL) {
+    } else if (fontsz * Zoom <= FONTSIZE_TOO_SMALL) {
 	/* draw line in place of text */
 	ep = gdpt(ep);
 	gdImageLine(im, ROUND(mp.x), ROUND(mp.y),

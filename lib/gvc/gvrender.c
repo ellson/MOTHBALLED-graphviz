@@ -315,9 +315,7 @@ void gvrender_begin_page(GVC_t * gvc, double scale, int rot, point offset)
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
-//    gvc->scale = scale;
     job->rot = rot;
-//    gvc->offset = offset;
     if (gvre && gvre->begin_page)
 	gvre->begin_page(job, gvc->g->name,
                          job->pagesArrayElem, job->pageNum, job->numPages);
@@ -327,7 +325,7 @@ void gvrender_begin_page(GVC_t * gvc, double scale, int rot, point offset)
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_page)
-	    cg->begin_page(gvc->g, job->pagesArrayElem, 1.0, rot, offset);
+	    cg->begin_page(gvc->g, job->pagesArrayElem, job->zoom, rot, offset);
     }
 #endif
 }
