@@ -151,12 +151,13 @@
 #define		DIA		24	/* dia drawing tool */
 #define		SVG		25	/* Structured Vector Graphics */
 #define		SVGZ		26	/* compressed SVG */
-#define		CANONICAL_DOT	27	/* wanted for tcl/tk version */
-#define		PDF		28
-#define		EXTENDED_DOT	29	/* dot with drawing info */
+#define		TK		27	/* TK canvas */
+#define		CANONICAL_DOT	28	/* wanted for tcl/tk version */
+#define		PDF		29
+#define		EXTENDED_DOT	30	/* dot with drawing info */
 
-#define		QPDF		30	/* Quartz paged PDF */
-#define		QEPDF		31	/* Quartz embedded PDF */
+#define		QPDF		31	/* Quartz paged PDF */
+#define		QEPDF		32	/* Quartz embedded PDF */
 
 #define		QBM_FIRST 100	/* first Quartz bitmap format, inclusive */
 #define		QBM_LAST 200	/* last Quartz bitmap format, exclusive */

@@ -148,7 +148,7 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
     case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
     case PIC_format: case GIF: case PNG: case JPEG: case WBMP:
     case GD: case memGD: case GD2: case VRML: case METAPOST:
-    case SVG: case SVGZ: case QPDF: case QEPDF: case ISMAP:
+    case TK: case SVG: case SVGZ: case QPDF: case QEPDF: case ISMAP:
     case IMAP: case CMAP: case CMAPX: case FIG: case VTX: case DIA:
 	emit_graph(gvc, g, flags);
 	break;
@@ -179,7 +179,10 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
 	break;
     }
 
-    fflush(gvc->job->output_file);
+#if 0
+    if (gvc->job->output_lang != TK)
+	fflush(gvc->job->output_file);
+#endif
 #if 0
     emit_deinit(gvc);
 #endif

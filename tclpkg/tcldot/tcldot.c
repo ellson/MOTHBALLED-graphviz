@@ -1107,22 +1107,18 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	tkgendata.interp = interp;
 
 	gvrender_output_langname_job(gvc, "TK");
+	gvc->job->output_lang = TK;
+	gvc->job->codegen = &TK_CodeGen;
+	gvc->job->output_file = (FILE *) & tkgendata;
+
 	/* make sure that layout is done */
 	gvc->g = g = g->root;
 	if (!GD_drawing(g) || argc > 3)
 	    tcldot_layout(g, (argc > 3) ? argv[3] : (char *) NULL);
 
 	/* render graph TK canvas commands */
-	gvc->job->output_lang =
-	    gvrender_select(gvc, gvc->job->output_langname);
-	gvc->job->output_file = (FILE *) & tkgendata;
-#if ENABLE_CODEGENS
-	Output_lang = gvc->job->output_lang;
-	Output_file = gvc->job->output_file;
-#endif
-	gvc->job->codegen = &TK_CodeGen;
-	/* emit graph in sorted order, all nodes then all edges */
-	emit_graph(gvc, g, EMIT_SORTED);
+	dotneato_write_one(gvc, g);
+
 	gvrender_delete_jobs(gvc);
 	return TCL_OK;
 
@@ -1134,38 +1130,21 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    return TCL_ERROR;
 	}
 	gvrender_output_langname_job(gvc, "memGD");
-
-/* FIXME - nasty hack because memGD is not a language available from command line */
-#if 0
-	gvc->job->output_lang =
-            gvrender_select(gvc, gvc->job->output_langname);
-
-#else
 	gvc->job->output_lang = memGD;
-#endif
-
-	if (!
-	    (gvc->job->output_file =
+	gvc->job->codegen = &memGD_CodeGen;
+	if (!  (gvc->job->output_file =
 	     (FILE *) tclhandleXlate(GDHandleTable, argv[2]))) {
 	    Tcl_AppendResult(interp, "GD Image not found.", (char *) NULL);
 	    return TCL_ERROR;
 	}
-#if ENABLE_CODEGENS
-	Output_lang = gvc->job->output_lang;
-	Output_file = gvc->job->output_file;
-#endif
 
 	/* make sure that layout is done */
 	gvc->g = g = g->root;
 	if (!GD_drawing(g) || argc > 4)
 	    tcldot_layout(g, (argc > 4) ? argv[4] : (char *) NULL);
+	
+	dotneato_write_one(gvc, g);
 
-	/* set default margins for current output format */
-	dotneato_set_margins(gvc, g);
-	/* render graph to open GD structure */
-	gvc->job->codegen = &memGD_CodeGen;
-	/* emit graph in sorted order, all nodes then all edges */
-	emit_graph(gvc, g, 1);
 	gvrender_delete_jobs(gvc);
 	Tcl_AppendResult(interp, argv[2], (char *) NULL);
 	return TCL_OK;
@@ -1270,51 +1249,58 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
     } else if ((c == 'w') && (strncmp(argv[1], "write", length) == 0)) {
 	g = g->root;
 	if (argc < 3) {
-	    Tcl_AppendResult(interp, "wrong # args: should be \"",
-			     argv[0],
-			     " write fileHandle ?language ?DOT|NEATO|TWOPI|FDP|CIRCO|NOP??\"",
-			     (char *) NULL);
+	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
+	      " write fileHandle ?language ?DOT|NEATO|TWOPI|FDP|CIRCO|NOP??\"",
+	      (char *) NULL);
 	    return TCL_ERROR;
 	}
+
+	/* configure codegens */
+//	config_codegen_builtins(gvc);
+//	gvplugin_builtins(gvc);
+//	gvconfig(gvc, CONFIG);
+
 	/* process lang first to create job */
 	if (argc < 4) {
-	    gvrender_output_langname_job(gvc, "dot");
+	    i = gvrender_output_langname_job(gvc, "dot");
 	} else {
-	    gvrender_output_langname_job(gvc, argv[3]);
+	    i = gvrender_output_langname_job(gvc, argv[3]);
+	}
+	if (i == NO_SUPPORT) {
+	    const char *s = gvplugin_list(gvc, API_render, argv[3]);
+	    Tcl_AppendResult(interp, "Bad langname: \"", argv[3],
+		"\". Use one of:", s, (char *)NULL);
+	    return TCL_ERROR;
 	}
 	/* populate new job struct with output language and output file data */
 	gvc->job->output_lang =
             gvrender_select(gvc, gvc->job->output_langname);
-	if (Tcl_GetOpenFile
-	    (interp, argv[2], 1, 1,
-	     (ClientData *) & (gvc->job->output_file)) != TCL_OK)
+
+	if (Tcl_GetOpenFile (interp, argv[2], 1, 1,
+	     (ClientData *) &(gvc->job->output_file)) != TCL_OK)
 	    return TCL_ERROR;
-#if ENABLE_CODEGENS
-	/* old codegens use globals */
-	Output_lang = gvc->job->output_lang;
-	Output_file = gvc->job->output_file;
-#endif
+
 	/* make sure that layout is done  - unless canonical output */
 	if ((!GD_drawing(g) || argc > 4)
 	    && gvc->job->output_lang != CANONICAL_DOT) {
 	    tcldot_layout(g, (argc > 4) ? argv[4] : (char *) NULL);
 	}
 
-	emit_reset(gvc, g);	/* reset page numbers in postscript */
 	dotneato_write_one(gvc, g);
+
 	gvrender_delete_jobs(gvc);
 	return TCL_OK;
 
     } else {
 	Tcl_AppendResult(interp, "bad option \"", argv[1],
-			 "\": must be one of:",
-			 "\n\taddedge, addnode, addsubgraph, countedges, countnodes,",
-			 "\n\tlayout, listattributes, listedgeattributes, listnodeattributes,",
-			 "\n\tlistedges, listnodes, listsubgraphs, render, rendergd,",
-			 "\n\tqueryattributes, queryedgeattributes, querynodeattributes,",
-			 "\n\tqueryattributevalues, queryedgeattributevalues, querynodeattributevalues,",
-			 "\n\tsetattributes, setedgeattributes, setnodeattributes,",
-			 "\n\tshowname, write.", (char *) NULL);
+	 "\": must be one of:",
+	 "\n\taddedge, addnode, addsubgraph, countedges, countnodes,",
+	 "\n\tlayout, listattributes, listedgeattributes, listnodeattributes,",
+	 "\n\tlistedges, listnodes, listsubgraphs, render, rendergd,",
+	 "\n\tqueryattributes, queryedgeattributes, querynodeattributes,",
+	 "\n\tqueryattributevalues, queryedgeattributevalues, querynodeattributevalues,",
+	 "\n\tsetattributes, setedgeattributes, setnodeattributes,",
+	 "\n\tshowname, write.", (char *) NULL);
 	return TCL_ERROR;
     }
 }				/* graphcmd */
