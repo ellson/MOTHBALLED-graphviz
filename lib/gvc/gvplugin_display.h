@@ -30,6 +30,19 @@ extern "C" {
 	void (*deinit) (GVC_t * gvc);
     };
 
+/* event callbacks in gvevent.c */
+
+    extern void gvevent_refresh(gvrender_job_t * job);
+    extern void gvevent_button_press(gvrender_job_t * job, XButtonEvent *bev);
+    extern void gvevent_motion(gvrender_job_t * job, XMotionEvent *mev);
+    extern void gvevent_button_release(gvrender_job_t *job, XButtonEvent *bev);
+    extern int gvevent_key_press(gvrender_job_t * job, XKeyEvent * kev);
+    extern void gvevent_reconfigure_normal(gvrender_job_t * job, unsigned int width, unsigned int height);
+    extern void gvevent_reconfigure_fit_mode(gvrender_job_t * job, unsigned int width, unsigned int height);
+    extern void gvevent_configure(gvrender_job_t * job, XConfigureEvent * cev);
+    extern void gvevent_expose(gvrender_job_t * job, XExposeEvent * eev);
+    extern void gvevent_client_message(gvrender_job_t * job, XClientMessageEvent * cmev);
+
 #ifdef __cplusplus
 }
 #endif

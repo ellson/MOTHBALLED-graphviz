@@ -120,7 +120,7 @@ extern "C" {
 	int depth;
 	double oldx, oldy; /* old pointer position in pixels */
 	
-	int needs_refresh, fit_mode, click, active;
+	int needs_refresh, fit_mode, click, active, has_grown;
 	
 	Atom wm_delete_window_atom;
 #endif
