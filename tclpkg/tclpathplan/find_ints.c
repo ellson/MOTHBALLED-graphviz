@@ -22,11 +22,10 @@ void find_intersection(struct vertex *l, struct vertex *m,
 		       struct intersection ilist[], struct data *input);
 static int gt(struct vertex **i, struct vertex **j);
 
-void find_ints(vertex_list, polygon_list, input, ilist)
-struct vertex vertex_list[];
-struct polygon polygon_list[];
-struct data *input;
-struct intersection ilist[];
+void find_ints(struct vertex vertex_list[],
+	struct polygon polygon_list[],
+	struct data *input,
+	struct intersection ilist[])
 {
     int i, j, k;
     struct active_edge_list all;
