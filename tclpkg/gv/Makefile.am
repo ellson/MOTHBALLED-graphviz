@@ -179,8 +179,7 @@ test_php: libgv_php.la
 	(cd php; \
 		ln -fs ../.libs/libgv_php.so libgv.so; \
 		cp -f ../*.php .; \
-		$(PHP) *.php; \
-		php test)
+		./test.php)
 
 test_python: libgv_python.la
 	(cd python; \
