@@ -124,7 +124,7 @@ else
 	            CFLAGS="${CFLAGS} -fno-common -Wall"
 	            ;;
 	        * )
-	            CFLAGS="${CFLAGS} -Wall -ffast-math"
+	            CFLAGS="${CFLAGS} -Wno-unused-parameter -Wno-unknown-pragmas -Wstrict-prototypes -Wpointer-arith -Wall -ffast-math"
 	            ;;
             esac
 	    ;;
@@ -1239,9 +1239,7 @@ AC_MSG_CHECKING(if assert needs __eprintf)
 cat > conftest.$ac_ext <<EOF
 #include "confdefs.h"
 #include "assert.h"
-int main(argc)
-    int argc;
-{
+int main(int argc, char **argv) {
 assert(argc);
 ; return 0; }
 EOF
