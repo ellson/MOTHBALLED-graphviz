@@ -161,20 +161,22 @@ static void addEdgeLabels(edge_t * e, point rp, point rq)
 	ht = ED_label(e)->dimen.y;
 	wd = ED_label(e)->dimen.x;
 	leftOf = LEFTOF(p, q, sp);
-	if (fabs(del.x) < fabs(del.y)) {	/* vertical edge */
+	if (abs(del.x) < abs(del.y)) {	/* vertical edge */
 	    ld.y = 0;
-	    assert(del.y);
 	    ld.x = fabs((ht * del.x) / (2.0 * del.y)) + (4 + wd) / 2.0;
 	    if ((leftOf && (del.y > 0)) || (!leftOf && (del.y < 0)))
 		ld.x *= -1;
-	} else {		/* horizontal edge */
-	    ld.x = 0;
-	    assert(del.x);
+	} 
+	else if (del.x) { /* horizontal edge */
 	    /* prevent label from moving too far */
 	    wd = MIN(wd, MAXLABELWD);
 	    ld.y = fabs((wd * del.y) / (2.0 * del.x)) + (2 + ht) / 2.0;
 	    if ((!leftOf && (del.x > 0)) || (leftOf && (del.x < 0)))
 		ld.y *= -1;
+	}
+	else {    /* end points the same */
+	    ld.x = 0;
+	    ld.y = -(2 + ht)/2.0;
 	}
 
 	ED_label(e)->p.x = sp.x + ld.x;
