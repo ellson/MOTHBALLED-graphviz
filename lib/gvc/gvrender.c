@@ -246,7 +246,7 @@ static void gvrender_resolve_color(gvrender_features_t * features,
     color->u.string = name;
     color->type = COLOR_STRING;
     tok = canontoken(name);
-    if ((bsearch(&tok, features->knowncolors, features->sz_knowncolors,
+    if (!features->knowncolors || (bsearch(&tok, features->knowncolors, features->sz_knowncolors,
 		 sizeof(char *), gvrender_comparestr)) == NULL) {
 	/* if tok was not found in known_colors */
 	colorxlate(name, color, features->color_type);
