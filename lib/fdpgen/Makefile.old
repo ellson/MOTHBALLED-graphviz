@@ -1,4 +1,4 @@
-all:	libfdp.a
+all:	libfdpgen.a
 ROOT=../..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
@@ -20,16 +20,18 @@ OBJS = layout.o fdpinit.o comp.o tlayout.o xlayout.o dbg.o grid.o \
 
 HFILES = fdp.h 
 
-libfdp.a : $(OBJS)
-	$(RM) libfdp.a
-	$(AR) cr libfdp.a $(OBJS)
-	$(RANLIB) libfdp.a
+libfdpgen.a : $(OBJS)
+	$(RM) libfdpgen.a
+	$(AR) cr libfdpgen.a $(OBJS)
+	$(RANLIB) libfdpgen.a
 
 $(OBJS) : $(HFILES)
 
-install: libfdp.a
+install: libfdpgen.a
+	$(MKPATH) $(INCDIR)
+	$(INSTALL) $(HFILES) $(INCDIR)
 	$(MKPATH) $(LIBDIR)
-	$(INSTALL) libfdp.a $(LIBDIR)
+	$(INSTALL) libfdpgen.a $(LIBDIR)
 
 clean:
 	$(RM) *.o core *.a

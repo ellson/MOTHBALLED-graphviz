@@ -1,4 +1,4 @@
-all:	libneato.a
+all:	libneatogen.a
 ROOT=../..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
@@ -24,10 +24,10 @@ OBJS = adjust.o circuit.o edges.o find_ints.o geometry.o heap.o hedges.o \
        printvis.o site.o solve.o neatosplines.o stuff.o voronoi.o \
        $(NOBJS) constraint.o
 
-libneato.a : $(OBJS)
-	$(RM) libneato.a
-	$(AR) cr libneato.a $(OBJS)
-	$(RANLIB) libneato.a
+libneatogen.a : $(OBJS)
+	$(RM) libneatogen.a
+	$(AR) cr libneatogen.a $(OBJS)
+	$(RANLIB) libneatogen.a
 
 $(NOBJS) : defs.h
 bfs.o dijkstra.o embed_graph.o kkutils.o stress.o : bfs.h
@@ -40,11 +40,11 @@ stress.o pca.o conjgrad.o matrix_ops.o : matrix_ops.h
 stress.o pca.o : pca.h
 stress.o : stress.h
 
-install: libneato.a 
+install: libneatogen.a 
 	$(MKPATH) $(INCDIR)
 	$(INSTALL) neato.h adjust.h neatoprocs.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
-	$(INSTALL) libneato.a $(LIBDIR)
+	$(INSTALL) libneatogen.a $(LIBDIR)
 
 $(OBJS) : $(HDRS)
 

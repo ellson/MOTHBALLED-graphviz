@@ -1,4 +1,4 @@
-all:	libtwopi.a
+all:	libtwopigen.a
 ROOT=../..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
@@ -19,18 +19,18 @@ OBJS = twopiinit.o circle.o
 
 HFILES = circle.h 
 
-libtwopi.a : $(OBJS)
-	$(RM) libtwopi.a
-	$(AR) cr libtwopi.a $(OBJS)
-	$(RANLIB) libtwopi.a
+libtwopigen.a : $(OBJS)
+	$(RM) libtwopigen.a
+	$(AR) cr libtwopigen.a $(OBJS)
+	$(RANLIB) libtwopigen.a
 
 $(OBJS) : $(HFILES)
 
-install: libtwopi.a
+install: libtwopigen.a
 	$(MKPATH) $(INCDIR)
 	$(INSTALL) circle.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
-	$(INSTALL) libtwopi.a $(LIBDIR)
+	$(INSTALL) libtwopigen.a $(LIBDIR)
 
 clean:
 	$(RM) *.o core

@@ -1,4 +1,4 @@
-all:	libdot.a
+all:	libdotgen.a
 ROOT=../..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
@@ -19,18 +19,18 @@ OBJS = acyclic.o compound.o flat.o sameport.o class1.o conc.o \
 
 HFILES = dot.h dotprocs.h
 
-libdot.a : $(OBJS)
-	$(RM) libdot.a
-	$(AR) cr libdot.a $(OBJS)
-	$(RANLIB) libdot.a
+libdotgen.a : $(OBJS)
+	$(RM) libdotgen.a
+	$(AR) cr libdotgen.a $(OBJS)
+	$(RANLIB) libdotgen.a
 
 $(OBJS) : $(HFILES)
 
-install: libdot.a
+install: libdotgen.a
 	$(MKPATH) $(INCDIR)
 	$(INSTALL) $(HFILES) $(INCDIR)
 	$(MKPATH) $(LIBDIR)
-	$(INSTALL) libdot.a $(LIBDIR)
+	$(INSTALL) libdotgen.a $(LIBDIR)
 
 clean:
 	$(RM) *.o core

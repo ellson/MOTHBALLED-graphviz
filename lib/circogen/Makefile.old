@@ -1,4 +1,4 @@
-all:	libcirco.a
+all:	libcircogen.a
 ROOT=../..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
@@ -22,10 +22,10 @@ OBJS = circularinit.o nodelist.o block.o edgelist.o stack.o circular.o \
 HFILES = circular.h nodelist.h edgelist.h deglist.h stack.h \
          block.h
 
-libcirco.a : $(OBJS)
-	$(RM) libcirco.a
-	$(AR) cr libcirco.a $(OBJS)
-	$(RANLIB) libcirco.a
+libcircogen.a : $(OBJS)
+	$(RM) libcircogen.a
+	$(AR) cr libcircogen.a $(OBJS)
+	$(RANLIB) libcircogen.a
 
 BASEH = circular.h nodelist.h block.h stack.h
 
@@ -41,11 +41,11 @@ nodelist.o : $(BASEH)
 nodeset.o : nodeset.h
 stack.o : $(BASEH)
 
-install: libcirco.a
+install: libcircogen.a
 	$(MKPATH) $(INCDIR)
 	$(INSTALL) circo.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
-	$(INSTALL) libcirco.a $(LIBDIR)
+	$(INSTALL) libcircogen.a $(LIBDIR)
 
 clean:
 	$(RM) *.o core
