@@ -29,6 +29,7 @@ static int maxbn = 0;
 static point *ps = NULL;
 static int pn;
 static int maxpn = 0;
+static int psstrcnt = 0;
 #define PINC 300
 
 static box *boxes;
@@ -51,12 +52,14 @@ static Pedge_t *edges;
 static int edgen;
 
 static void checkpath(void);
-static void printboxes(void);
 static void mkspacep(int size);
 static void printpath(path * pp);
+static void printboxes(void);
+static void psprintinit (int);
 static void psprintboxes(box * b, int bn);
 static void psprintspline(Ppolyline_t);
 static void psprintline(Ppolyline_t);
+static void psprintpoly(Ppoly_t p);
 static int debugleveln(int i)
 {
     return (GD_showboxes(realedge->head->graph) == i ||
@@ -96,7 +99,14 @@ void routesplinesinit(void)
     maxpn = PINC;
     minbbox.LL.x = minbbox.LL.y = INT_MAX;
     minbbox.UR.x = minbbox.UR.y = INT_MIN;
-    Show_boxes = FALSE;
+    if (Show_boxes) {
+	int i;
+        for (i = 0; Show_boxes[i]; i++)
+	    free (Show_boxes[i]);
+	free (Show_boxes);
+	Show_boxes = NULL;
+	psstrcnt = 0;
+    }
     if (Verbose)
 	start_timer();
 }
@@ -145,8 +155,10 @@ point *routesplines(path * pp, int *npoints)
 
     if (debugleveln(1))
 	printboxes();
-    if (debugleveln(3))
-	psprintboxes(boxes, boxn);
+    if (debugleveln(3)) {
+	psprintinit(1);
+	/* psprintboxes(boxes, boxn); */
+    }
 
     if (boxn * 8 > polypointn) {
 	polypoints = ALLOC(boxn * 8, polypoints, Ppoint_t);
@@ -254,8 +266,10 @@ point *routesplines(path * pp, int *npoints)
     eps[1].x = pp->end.p.x, eps[1].y = pp->end.p.y;
     if (Pshortestpath(&poly, eps, &pl) == -1)
 	abort();
-    if (debugleveln(3))
+    if (debugleveln(3)) {
+	psprintpoly(poly);
 	psprintline(pl);
+    }
     if (poly.pn > edgen) {
 	edges = ALLOC(poly.pn, edges, Pedge_t);
 	edgen = poly.pn;
@@ -277,8 +291,10 @@ point *routesplines(path * pp, int *npoints)
 
     if (Proutespline(edges, poly.pn, pl, evs, &spl) == -1)
 	abort();
-    if (debugleveln(3))
+    if (debugleveln(3)) {
 	psprintspline(spl);
+	psprintinit(0);
+    }
     mkspacep(spl.pn);
     for (bi = 0; bi <= boxn; bi++)
 	boxes[bi].LL.x = minbbox.LL.x, boxes[bi].UR.x = minbbox.UR.x;
@@ -693,12 +709,17 @@ static void printboxes(void)
 {
     point ll, ur;
     int bi;
+    char buf[BUFSIZ];
+    int newcnt = psstrcnt + boxn;
 
-    Show_boxes = TRUE;
+    Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
     for (bi = 0; bi < boxn; bi++) {
 	ll = boxes[bi].LL, ur = boxes[bi].UR;
-	fprintf(stderr, "%d %d %d %d pathbox\n", ll.x, ll.y, ur.x, ur.y);
+	sprintf(buf, "%d %d %d %d pathbox", ll.x, ll.y, ur.x, ur.y);
+	Show_boxes[bi+1+psstrcnt] = strdup (buf);
     }
+    psstrcnt = newcnt;
+    Show_boxes[psstrcnt+1] = NULL;
 }
 
 #ifdef DEBUG
@@ -729,44 +750,109 @@ static void psprintpoint(point p)
 
 static void psprintspline(Ppolyline_t spl)
 {
-    int i;
-    fprintf(stderr, "%%!\n");
-    fprintf(stderr, "%% spline\n");
-    fprintf(stderr, "gsave 1 0 0 setrgbcolor newpath\n");
+    char buf[BUFSIZ];
+    int newcnt = psstrcnt + spl.pn + 4;
+    int li, i;
+
+    Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
+    li = psstrcnt+1;
+    Show_boxes[li++] = strdup ("%%!");
+    Show_boxes[li++] = strdup ("%% spline");
+    Show_boxes[li++] = strdup ("gsave 1 0 0 setrgbcolor newpath");
     for (i = 0; i < spl.pn; i++) {
-	fprintf(stderr, "%f %f\n", spl.ps[i].x, spl.ps[i].y);
-	if (i == 0)
-	    fprintf(stderr, "moveto\n");
-	else if (i % 3 == 0)
-	    fprintf(stderr, "curveto\n");
+	sprintf(buf, "%f %f %s", spl.ps[i].x, spl.ps[i].y,
+	  (i == 0) ?  "moveto" : ((i % 3 == 0) ? "curveto" : ""));
+	Show_boxes[li++] = strdup (buf);
     }
-    fprintf(stderr, "stroke grestore\n");
+    Show_boxes[li++] = strdup ("stroke grestore");
+    psstrcnt = newcnt;
+    Show_boxes[psstrcnt+1] = NULL;
 }
 static void psprintline(Ppolyline_t pl)
 {
-    int i;
-    fprintf(stderr, "%%!\n");
-    fprintf(stderr, "%% line\n");
-    fprintf(stderr, "gsave 0 0 1 setrgbcolor newpath\n");
+    char buf[BUFSIZ];
+    int newcnt = psstrcnt + pl.pn + 4;
+    int i, li;
+
+    Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
+    li = psstrcnt+1;
+    Show_boxes[li++] = strdup ("%%!");
+    Show_boxes[li++] = strdup ("%% line");
+    Show_boxes[li++] = strdup ("gsave 0 0 1 setrgbcolor newpath");
     for (i = 0; i < pl.pn; i++) {
-	fprintf(stderr, "%f %f %s\n", pl.ps[i].x, pl.ps[i].y,
+	sprintf(buf, "%f %f %s", pl.ps[i].x, pl.ps[i].y,
 		(i == 0 ? "moveto" : "lineto"));
+	Show_boxes[li++] = strdup (buf);
     }
-    fprintf(stderr, "stroke grestore\n");
+    Show_boxes[li++] = strdup ("stroke grestore");
+    psstrcnt = newcnt;
+    Show_boxes[psstrcnt+1] = NULL;
+}
+static void psprintpoly(Ppoly_t p)
+{
+    char buf[BUFSIZ];
+    int newcnt = psstrcnt + p.pn + 3;
+    point tl, hd;
+    int bi, li;
+    char*  pfx;
+
+    Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
+    li = psstrcnt+1;
+    Show_boxes[li++] = strdup ("%% poly list");
+    Show_boxes[li++] = strdup ("gsave 0 1 0 setrgbcolor");
+    for (bi = 0; bi < p.pn; bi++) {
+	tl.x = (int)p.ps[bi].x;
+	tl.y = (int)p.ps[bi].y;
+	hd.x = (int)p.ps[(bi+1) % p.pn].x;
+	hd.y = (int)p.ps[(bi+1) % p.pn].y;
+	if ((tl.x == hd.x) && (tl.y == hd.y)) pfx = "%%";
+	else pfx ="";
+	sprintf(buf, "%s%d %d %d %d makevec", pfx, tl.x, tl.y, hd.x, hd.y);
+	Show_boxes[li++] = strdup (buf);
+    }
+    Show_boxes[li++] = strdup ("grestore");
+
+    psstrcnt = newcnt;
+    Show_boxes[psstrcnt+1] = NULL;
 }
 static void psprintboxes(box * b, int bn)
 {
+    char buf[BUFSIZ];
+    int newcnt = psstrcnt + 5*bn + 3;
     point ll, ur;
-    int bi;
-    fprintf(stderr, "%% box list\n");
-    fprintf(stderr, "gsave 0 1 0 setrgbcolor\n");
+    int bi, li;
+
+    Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
+    li = psstrcnt+1;
+    Show_boxes[li++] = strdup ("%% box list");
+    Show_boxes[li++] = strdup ("gsave 0 1 0 setrgbcolor");
     for (bi = 0; bi < boxn; bi++) {
 	ll = boxes[bi].LL, ur = boxes[bi].UR;
-	fprintf(stderr, "newpath\n%d %d moveto\n", ll.x, ll.y);
-	fprintf(stderr, "%d %d lineto\n", ll.x, ur.y);
-	fprintf(stderr, "%d %d lineto\n", ur.x, ur.y);
-	fprintf(stderr, "%d %d lineto\n", ur.x, ll.y);
-	fprintf(stderr, "closepath stroke\n");
+	sprintf(buf, "newpath\n%d %d moveto", ll.x, ll.y);
+	Show_boxes[li++] = strdup (buf);
+	sprintf(buf, "%d %d lineto", ll.x, ur.y);
+	Show_boxes[li++] = strdup (buf);
+	sprintf(buf, "%d %d lineto", ur.x, ur.y);
+	Show_boxes[li++] = strdup (buf);
+	sprintf(buf, "%d %d lineto", ur.x, ll.y);
+	Show_boxes[li++] = strdup (buf);
+	Show_boxes[li++] = strdup ("closepath stroke");
     }
-    fprintf(stderr, "grestore\n");
+    Show_boxes[li++] = strdup ("grestore");
+
+    psstrcnt = newcnt;
+    Show_boxes[psstrcnt+1] = NULL;
 }
+static void psprintinit (int begin)
+{
+    int newcnt = psstrcnt + 1;
+
+    Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
+    if (begin)
+	Show_boxes[1+psstrcnt] = strdup ("dbgstart");
+    else
+	Show_boxes[1+psstrcnt] = strdup ("grestore");
+    psstrcnt = newcnt;
+    Show_boxes[psstrcnt+1] = NULL;
+}
+

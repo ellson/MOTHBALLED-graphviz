@@ -107,12 +107,19 @@ static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     PB = bb;
     sz = add_points(PB.LL, PB.UR);
     if (onetime) {
-	fprintf(Output_file, "%%%%BoundingBox: %d %d %d %d\n",
+	if (Show_boxes == NULL)
+	    fprintf(Output_file, "%%%%BoundingBox: %d %d %d %d\n",
 		0, 0, sz.x, sz.y);
 	ps_comment(g, agfindattr(g, "comment"));
 	fprintf(Output_file, "%%%%EndComments\nsave\n");
 	cat_libfile(Output_file, U_lib, ps_txt);
 	epsf_define(Output_file);
+ 	if (Show_boxes) {
+	    char* args[2];
+	    args[0] = Show_boxes[0];
+	    args[1] = NULL;
+	    cat_libfile(Output_file, NULL, args);
+        }
 
 	/*  Set base URL for relative links (for Distiller >= 3.0)  */
 	if (((s = agget(g, "href")) && s[0])
@@ -147,11 +154,13 @@ fprintf(stderr,"offset = %d,%d\n", offset.x, offset.y);
     sz = add_points(PB.LL, PB.UR);
     Cur_page++;
     fprintf(Output_file, "%%%%Page: %d %d\n", Cur_page, Cur_page);
-    fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
+    if (Show_boxes == NULL)
+	fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
 	    PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
     fprintf(Output_file, "%%%%PageOrientation: %s\n",
 	    (rot ? "Landscape" : "Portrait"));
-    fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
+    if (Show_boxes == NULL)
+	fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    0, 0, sz.x, sz.y);
     fprintf(Output_file, "%d %d translate\n", PB.LL.x, PB.LL.y);
     if (rot)
@@ -181,6 +190,9 @@ fprintf(stderr,"offset = %d,%d\n", offset.x, offset.y);
 
 static void ps_end_page(void)
 {
+    if (Show_boxes)
+	cat_libfile(Output_file, NULL, Show_boxes+1);
+
     /* the showpage is really a no-op, but at least one PS processor
      * out there needs to see this literal token.  endpage does the real work.
      */

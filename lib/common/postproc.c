@@ -25,9 +25,9 @@ static point Offset;
 static void place_flip_graph_label(graph_t * g);
 
 #define M1 \
-	"/pathbox { /Y exch %d sub def /X exch %d sub def /y exch %d sub def /x exch %d sub def newpath x y moveto X y lineto X Y lineto x Y lineto closepath stroke } def\n"
+	"/pathbox { /Y exch %d sub def /X exch %d sub def /y exch %d sub def /x exch %d sub def newpath x y moveto X y lineto X Y lineto x Y lineto closepath stroke } def\n/dbgstart { gsave %d %d translate } def\n/arrowlength 10 def\n/arrowwidth arrowlength 2 div def\n/arrowhead {\n    gsave\n rotate\n currentpoint\n newpath\n moveto\n arrowlength arrowwidth 2 div rlineto\n 0 arrowwidth neg rlineto\n closepath fill\n grestore\n } bind def\n /makearrow {\n currentpoint exch pop sub exch currentpoint pop sub atan\n arrowhead\n } bind def\n /makevec {\n /Y exch def\n /X exch def\n /y exch def\n /x exch def\n newpath x y moveto\n X Y lineto stroke\n X Y moveto\n x y makearrow\n } def"
 #define M2 \
-	"/pathbox { /X exch neg %d sub def /Y exch %d sub def /x exch neg %d sub def /y exch %d sub def newpath x y moveto X y lineto X Y lineto x Y lineto closepath stroke } def\n"
+	"/pathbox { /X exch neg %d sub def /Y exch %d sub def /x exch neg %d sub def /y exch %d sub def newpath x y moveto X y lineto X Y lineto x Y lineto closepath stroke } def"
 
 point map_point(point p)
 {
@@ -204,10 +204,13 @@ void dotneato_postprocess(Agraph_t * g, nodesizefn_t ns)
 	place_root_label(g, d);
 
     if (Show_boxes) {
+	char buf[BUFSIZ];
 	if (Flip)
-	    fprintf(stderr, M2, Offset.x, Offset.y, Offset.x, Offset.y);
+	    sprintf(buf, M2, Offset.x, Offset.y, Offset.x, Offset.y);
 	else
-	    fprintf(stderr, M1, Offset.y, Offset.x, Offset.y, Offset.x);
+	    sprintf(buf, M1, Offset.y, Offset.x, Offset.y, Offset.x, 
+                 -Offset.x, -Offset.y);
+	Show_boxes[0] = strdup(buf);
     }
 }
 
