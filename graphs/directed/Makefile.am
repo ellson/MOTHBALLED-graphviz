@@ -133,6 +133,10 @@ png:
 	for i in $(GRAPHS); do echo "dot $$i"; \
 		$(top_builddir)/cmd/dot/dot -Tpng -o$$i.png $(top_srcdir)/graphs/directed/$$i; done
 
+png_cg:
+	for i in $(GRAPHS); do echo "dot $$i"; \
+		$(top_builddir)/cmd/dot/dot -Tpng:cg -o$$i.png_cg $(top_srcdir)/graphs/directed/$$i; done
+
 ps:
 	for i in $(GRAPHS); do echo "dot $$i"; \
 		$(top_builddir)/cmd/dot/dot -Tps -o$$i.ps $(top_srcdir)/graphs/directed/$$i; done

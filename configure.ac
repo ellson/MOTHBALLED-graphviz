@@ -255,7 +255,6 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for GUILE
 
 AC_CHECK_PROG(GUILE,guile,guile)
-AM_CONDITIONAL(WITH_GUILE, [test "x$GUILE" != "x"])
 if test "x$GUILE" = "x"; then
   HAVE_GUILE=0
 else
@@ -263,6 +262,10 @@ else
   GUILE_INCLUDES=
   GUILE_LIBS=
 fi
+AC_CHECK_HEADER(libguile.h,,[
+  AC_MSG_WARN([Unable to find header libguile.h. The Guile packages will not be built])
+  HAVE_GUILE=0])
+AM_CONDITIONAL(WITH_GUILE, [test "x$HAVE_GUILE" = "x1"])
 AC_SUBST(HAVE_GUILE)
 AC_SUBST(GUILE_INCLUDES)
 AC_SUBST(GUILE_LIBS)
@@ -352,8 +355,10 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON
 
 AC_CHECK_PROG(PYTHON,python,python)
-HAVE_PYTHON=1
-if test "x$PYTHON" != "x"; then
+if test "x$PYTHON" = "x"; then
+  HAVE_PYTHON=0
+else
+  HAVE_PYTHON=1
   PYTHON_VERSION=`python -V 2>&1 | grep Python | cut -d ' ' -f 2`
   if test "x$PYTHON_VERSION" = "x"; then
     HAVE_PYTHON=0

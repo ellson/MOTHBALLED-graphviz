@@ -215,7 +215,7 @@ EXTRA_DIST = gv.i \
 CLEANFILES = csharp/SWIG*.cs csharp/gv*.cs csharp/*.dot csharp/*.png csharp/*.so \
 	java/*.dot java/*.png java/SWIG*.java java/gv*.java java/*.class java/*.so \
 	perl/gv.pm perl/*.so perl/*.dot perl/*.png \
-	php/gv.php php/php_gv.h php/*.so
+	php/gv.php php/php_gv.h php/*.so \
 	python/gv.py python/gv.pyc python/*.so python/*.dot python/*.png \
 	ruby/*.so ruby/*.dot ruby/*.png \
 	tcl/*.so tcl/*.dot tcl/*.png pkgIndex.tcl
