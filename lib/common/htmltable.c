@@ -1470,5 +1470,14 @@ int make_html_label(textlabel_t * lp, void *obj)
 	lp->dimen.y = box.UR.y - box.LL.y;
     }
     lp->u.html = lbl;
+
+    /* If the label is a table, replace label text because this may
+     * be used for the title and alt fields in image maps.
+     */
+    if (lbl->kind == HTML_TBL) {
+	free (lp->text);
+	lp->text = strdup ("<TABLE>");
+    }
+
     return rv;
 }
