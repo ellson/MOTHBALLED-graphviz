@@ -148,7 +148,7 @@ static void sameport(node_t * u, elist * l, double arr_len)
 	curve[3].x = ROUND(x2);
 	curve[3].y = ROUND(y2);
 
-	shape_clip(u, curve, l->list[0]);
+	shape_clip(u, curve, 0);
 	x1 = curve[0].x - ND_coord_i(u).x;
 	y1 = curve[0].y - ND_coord_i(u).y;
     }
@@ -163,12 +163,14 @@ static void sameport(node_t * u, elist * l, double arr_len)
     prt.defined = TRUE;
     prt.clip = 0;
     prt.theta = 0;
+    prt.side = 0;
 
     /* compute ARR_PORT at a distance ARR_LEN away from the boundary */
     if ((arr_prt.defined = arr_len && TRUE)) {
 	arr_prt.p.x = ROUND(x1 + x * arr_len);
 	arr_prt.p.y = ROUND(y1 + y * arr_len);
 	arr_prt.bp = 0;
+	arr_prt.side = 0;
 	arr_prt.constrained = FALSE;
 	arr_prt.order =
 	    (MC_SCALE * (ND_lw_i(u) + arr_prt.p.x)) / (ND_lw_i(u) +
