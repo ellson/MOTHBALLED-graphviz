@@ -48,7 +48,7 @@ extern "C" {
 /* job */
 
     extern void gvrender_output_filename_job(GVC_t * gvc, char *name);
-    extern int gvrender_output_langname_job(GVC_t * gvc, char *name);
+    extern boolean gvrender_output_langname_job(GVC_t * gvc, char *name);
     extern gvrender_job_t *gvrender_first_job(GVC_t * gvc);
     extern gvrender_job_t *gvrender_next_job(GVC_t * gvc);
     extern void gvrender_delete_jobs(GVC_t * gvc);

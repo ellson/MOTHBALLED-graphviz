@@ -67,7 +67,7 @@ void gvrender_output_filename_job(GVC_t * gvc, char *name)
 }
 
 /* -T switches */
-int gvrender_output_langname_job(GVC_t * gvc, char *name)
+boolean gvrender_output_langname_job(GVC_t * gvc, char *name)
 {
     if (!gvc->jobs) {
 	output_langname_job = gvc->job = gvc->jobs =
@@ -85,8 +85,8 @@ int gvrender_output_langname_job(GVC_t * gvc, char *name)
     }
     output_langname_job->output_langname = name;
 
-    /* select it now to check that it exists */
-    return (gvrender_select(gvc, name));
+    /* load it now to check that it exists */
+    return ((boolean)gvplugin_load(gvc, API_render, name));
 }
 
 #if 0
