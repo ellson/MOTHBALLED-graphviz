@@ -29,7 +29,13 @@ int overflow2(int a, int b);
 
 /* 2.0.16: portable mutex support for thread safety. */
 
-#ifdef USE_THREADS
+#ifdef DISABLE_THREADS
+#  define gdMutexDeclare(x)
+#  define gdMutexSetup(x)
+#  define gdMutexShutdown(x)
+#  define gdMutexLock(x)
+#  define gdMutexUnlock(x)
+#else
 #  ifdef WIN32
 /* 2.0.18: must include windows.h to get CRITICAL_SECTION. */
 #    include <windows.h>
@@ -54,13 +60,7 @@ int overflow2(int a, int b);
 #      define gdMutexUnlock(x) 
 #    endif /* HAVE_PTHREAD */
 #  endif /* WIN32 */
-#else
-#  define gdMutexDeclare(x)
-#  define gdMutexSetup(x)
-#  define gdMutexShutdown(x)
-#  define gdMutexLock(x)
-#  define gdMutexUnlock(x)
-#endif /* USE_THREADS */
+#endif /* DISABLE_THREADS */
 
 #endif /* GDHELPERS_H */
 

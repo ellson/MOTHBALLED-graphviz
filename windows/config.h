@@ -250,6 +250,10 @@ extern "C" {
 /* Default DPI. */
 #define DEFAULT_DPI 96
 
+/* Defines for GD */
+#define NONDLL 1
+#define DISABLE_THREADS 1
+
 #endif
 
 #ifdef __cplusplus

@@ -21,8 +21,6 @@ extern "C" {
 
 #ifndef WIN32
 #define NONDLL 1
-#else
-#define NONDLL 1
 #endif /* WIN32 */
 
 #ifdef NONDLL
