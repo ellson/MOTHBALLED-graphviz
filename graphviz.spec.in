@@ -15,7 +15,7 @@ Vendor:         http://www.graphviz.org/
 # norootforbuild
 # neededforbuild  expat freetype2 freetype2-devel gcc libjpeg libpng-devel-packages tcl tcl-devel tk tk-devel x-devel-packages
 
-BuildRequires: /bin/ksh ghostscript
+BuildRequires: /bin/ksh groff ghostscript
 BuildRequires: tcl >= 0:8.3 tk expat expat-devel freetype >= 2 freetype-devel
 Buildrequires: libjpeg libjpeg-devel libpng libpng-devel zlib zlib-devel
 %{?fc4:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
