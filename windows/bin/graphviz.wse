@@ -868,6 +868,11 @@ item: Include Script
   Pathname=%_WISE_%\INCLUDE\uninstal.wse
 end
 item: Install File
+  Source=c:\graphvizCVS\builddaemon\package\source\lib\gvc.lib
+  Destination=%MAINDIR%\Graphviz\lib\gvc.lib
+  Flags=0000000010000010
+end
+item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\include\gvplugin_text.h
   Destination=%MAINDIR%\Graphviz\include\gvplugin_text.h
   Flags=0000000010000010
@@ -1065,11 +1070,6 @@ end
 item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\lib\neatogen.lib
   Destination=%MAINDIR%\Graphviz\lib\neatogen.lib
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\lib\gvrender.lib
-  Destination=%MAINDIR%\Graphviz\lib\gvrender.lib
   Flags=0000000010000010
 end
 item: Install File
