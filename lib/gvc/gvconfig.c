@@ -136,11 +136,13 @@ extern gvplugin_library_t *builtins[];
  */
 void gvconfig(GVC_t * gvc)
 {
-    gvplugin_library_t *library;
     gvplugin_api_t *apis;
     gvplugin_type_t *types;
     int i;
-#ifndef DISABLE_LTDL
+#ifdef DISABLE_LTDL
+    gvplugin_library_t **libraryp;
+#else
+    gvplugin_library_t *library;
     char *s, *path, *api, *type;
     api_t gv_api;
     int quality;
@@ -163,12 +165,12 @@ void gvconfig(GVC_t * gvc)
 #endif
 
 #ifdef DISABLE_LTDL
-    for (library = builtins; *library; library++) {
-        for (apis = (*library)->apis; (types = apis->types); apis++) {
+    for (libraryp = builtins; *libraryp; libraryp++) {
+        for (apis = (*libraryp)->apis; (types = apis->types); apis++) {
             for (i = 0; types[i].type; i++) {
                 gvplugin_install(gvc, apis->api,
                                  types[i].type, types[i].quality,
-                                 (*library)->name, &types[i]);
+                                 (*libraryp)->name, &types[i]);
             }
         }
     }
