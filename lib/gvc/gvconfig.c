@@ -139,7 +139,7 @@ void gvconfig(GVC_t * gvc)
     gvplugin_library_t *library;
     gvplugin_api_t *apis;
     gvplugin_type_t *types;
-    int i
+    int i;
 #ifndef DISABLE_LTDL
     char *s, *path, *api, *type;
     api_t gv_api;
