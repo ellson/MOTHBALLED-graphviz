@@ -137,7 +137,7 @@ void gvconfig(GVC_t * gvc)
     int sz, rc, i, j;
     struct stat config_st, libdir_st;
     FILE *f;
-    char *config_path, *config_glob, *home, *config;
+    char *config_path, *config_glob, *home, *config_text;
     glob_t globbuf;
     gvplugin_library_t *library;
     gvplugin_api_t *apis;
@@ -147,7 +147,7 @@ void gvconfig(GVC_t * gvc)
     char *libdir = GVLIBDIR;
     char *plugin_glob = "/libgvplugin*.so.0";
 
-#define SZ_CONFIG 1000
+#define MAX_SZ_CONFIG 100000
     
 #ifndef DISABLE_CODEGENS
     config_codegen_builtins(gvc);
@@ -218,31 +218,32 @@ void gvconfig(GVC_t * gvc)
 
     /* load in the cached plugin library data */
 
+    if (config_st.st_size > MAX_SZ_CONFIG) {
+        fprintf(stderr,"%s is bigger than I can handle.\n", config_path);
+	free(config_path);
+	return;
+    }
     f = fopen(config_path,"r");
     if (!f) {	/* if we fail to open it then it probably doesn't exists
 		   so just fail silently, clean up and return */
 	free(config_path);
 	return;
     }
-    config = malloc(SZ_CONFIG);
-    config[0] = '\0';
-    sz = fread(config, 1, SZ_CONFIG, f);
+    config_text = malloc(config_st.st_size + 1);
+    config_text[0] = '\0';
+    sz = fread(config_text, 1, config_st.st_size, f);
     if (sz == 0) {
         fprintf(stderr,"%s is zero sized, or other read error.\n", config_path);
 	free(config_path);
-	free(config);
-	return;
-    }
-    if (sz == SZ_CONFIG) {
-        fprintf(stderr,"%s is bigger than I can handle.\n", config_path);
-	free(config_path);
-	free(config);
+	free(config_text);
 	return;
     }
     fclose(f);
     free(config_path); /* not needed now that we've slurped in the contents */
 
-    s = config;
+    config_text[config_st.st_size] = '\0';  /* make input into a null terminated string */
+
+    s = config_text;
     separator(&nest, &s);
     while (*s) {
 	path = token(&nest, &s);
