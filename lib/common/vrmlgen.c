@@ -18,6 +18,7 @@
 #include		"render.h"
 #include		"gd.h"
 #include		"utils.h"
+#include		"pathutil.h"
 
 
 extern char *get_ttf_fontpath(char *fontreq, int warn);
@@ -67,12 +68,17 @@ static gdImagePtr im;
 static FILE *PNGfile;
 static node_t *Curnode;
 static edge_t *Curedge;
+static int    IsSegment;   /* set true if edge is line segment */
+static double CylHt;       /* height of cylinder part of edge */
+static double EdgeLen;     /* length between centers of endpoints */
+static double HeadHt, TailHt;  /* height of arrows */
+static double Fstz, Sndz;  /* z values of tail and head points */
 
 typedef struct context_t {
     unsigned char pencolor_ix, fillcolor_ix;
     char *pencolor, *fillcolor;
     char *fontfam, fontopt, font_was_set;
-    double r, g, b;
+    double r, g, b;     /* fill color values */
     char pen, fill, penwidth;
     double fontsz;
 } context_t;
@@ -81,11 +87,12 @@ typedef struct context_t {
 static context_t cstk[MAXNEST];
 static int SP;
 
-static double dist2(pointf p, point q)
+static double DIST2(pointf p, point q)
 {
-    return ((p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y));
+    double delx = p.x - q.x;
+    double dely = p.y - q.y;
+    return (delx*delx + dely*dely);
 }
-
 
 static char *nodeURL(node_t * n, char *buf)
 {
@@ -174,7 +181,12 @@ static void vrml_set_pencolor(char *name)
 
 static void vrml_set_fillcolor(char *name)
 {
+    color_t color;
     cstk[SP].fillcolor = name;
+    colorxlate(name, &color, RGBA_BYTE);
+    cstk[SP].r = (double) color.u.rgba[0] / 255.0;
+    cstk[SP].g = (double) color.u.rgba[1] / 255.0;
+    cstk[SP].b = (double) color.u.rgba[2] / 255.0;
 }
 
 static void init_png(gdImagePtr im)
@@ -231,13 +243,19 @@ static void vrml_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
 
 static void vrml_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
+    double d, z;
     g = g;
 
     Saw_skycolor = FALSE;
+    d = MAX(bb.UR.x - bb.LL.x,bb.UR.y - bb.LL.y);
+    /* Roughly fill 3/4 view assuming FOV angle of PI/4.
+     * Small graphs and non-square aspect ratios will upset this.
+     */
+    z = (0.6667*d)/tan(PI/8.0);  /* fill 3/4 of view */
     fprintf(Output_file, "Group { children [\n");
-    fprintf(Output_file, "  Viewpoint {position %.3f %.3f 10}\n",
+    fprintf(Output_file, "  Viewpoint {position %.3f %.3f %.3f}\n",
 	    .0278 * (bb.UR.x + bb.LL.x) / 2.0,
-	    .0278 * (bb.UR.y + bb.LL.y) / 2.0);
+	    .0278 * (bb.UR.y + bb.LL.y) / 2.0, .0278 * z);
     fprintf(Output_file, "  Transform {\n");
     fprintf(Output_file, "    scale %.3f %.3f %.3f\n",
 	    .0278, .0278, .0278);
@@ -275,30 +293,82 @@ static void vrml_begin_node(node_t * n)
 {
     int width, height;
 
-    PNGfile = nodefile(n);
-    width = (ND_lw_i(n) + ND_rw_i(n)) * Scale + 3;
-    height = (ND_ht_i(n)) * Scale + 3;
-    im = gdImageCreate(width, height);
-    init_png(im);
+    fprintf(Output_file, "# node %s\n", n->name);
+    if (shapeOf(n) != SH_POINT) {
+	PNGfile = nodefile(n);
+	width = (ND_lw_i(n) + ND_rw_i(n)) * Scale + 3;
+	height = (ND_ht_i(n)) * Scale + 3;
+	im = gdImageCreate(width, height);
+	init_png(im);
+    }
     Curnode = n;
 }
 
 static void vrml_end_node(void)
 {
-    gdImagePng(im, PNGfile);
-    gdImageDestroy(im);
-    im = 0;
-    fclose(PNGfile);
+    if (shapeOf(Curnode) != SH_POINT) {
+	gdImagePng(im, PNGfile);
+	gdImageDestroy(im);
+	im = 0;
+	fclose(PNGfile);
+    }
 }
 
 static void vrml_begin_edge(edge_t * e)
 {
     Curedge = e;
+    IsSegment = 0;
+    fprintf(Output_file, "# edge %s -> %s\n", e->tail->name, e->head->name);
     fprintf(Output_file, " Group { children [\n");
+}
+
+static void
+finishSegment ()
+{
+    point p0 = ND_coord_i(Curedge->tail);
+    point p1 = ND_coord_i(Curedge->head);
+    double o_x, o_y, o_z;
+    double x, y, y0, z, theta;
+
+    o_x = ((double)(p0.x + p1.x))/2;
+    o_y = ((double)(p0.y + p1.y))/2;
+    o_z = (Fstz + Sndz)/2;
+    /* Compute rotation */
+    /* Pick end point with highest y */
+    if (p0.y > p1.y) {
+	x = p0.x;
+	y = p0.y;
+        z = Fstz;
+    }
+    else {
+	x = p1.x;
+	y = p1.y;
+        z = Sndz;
+    }
+    /* Translate center to the origin */
+    x -= o_x;
+    y -= o_y;
+    z -= o_z;
+    if (p0.y > p1.y)
+	theta = acos(2*y/EdgeLen) + PI;
+    else
+	theta = acos(2*y/EdgeLen);
+    if (!x && !z)   /* parallel  to y-axis */
+	x = 1;
+
+    y0 = (HeadHt-TailHt)/2.0;
+    fprintf(Output_file, "      ]\n");
+    fprintf(Output_file, "      center 0 %f 0\n", y0);
+    fprintf(Output_file, "      rotation %f 0 %f   %f\n", -z, x, -theta);
+    fprintf(Output_file, "      translation %.3f %.3f %.3f\n", o_x, o_y - y0, o_z);
+    fprintf(Output_file, "    }\n");
 }
 
 static void vrml_end_edge(void)
 {
+    if (IsSegment) {
+	finishSegment();
+    }
     fprintf(Output_file, "] }\n");
 }
 
@@ -361,7 +431,7 @@ static void vrml_set_style(char **s)
 	else if (streq(line, "unfilled"))
 	    cp->fill = P_NONE;
 	else {
-	    agerr(AGERR,
+	    agerr(AGWARN,
 		  "vrml_set_style: unsupported style %s - ignoring\n",
 		  line);
 	}
@@ -405,14 +475,33 @@ static void vrml_textline(point p, textline_t * line)
     }
 }
 
-static double interpolate_zcoord(pointf p1, point fst, double fstz,
-				 point snd, double sndz)
+static double
+idist2 (point p0, point p1)
 {
-    double rv;
+    double delx, dely;
+
+    delx = p0.x - p1.x;
+    dely = p0.y - p1.y;
+    return (delx*delx + dely*dely);
+}
+
+/* interpolate_zcoord:
+ * Given 2 points in 3D p = (fst.x,fst.y,fstz) and q = (snd.x, snd.y, sndz),
+ * and a point p1 in the xy plane lying on the line segment connecting 
+ * the projections of the p and q, find the z coordinate of p1 when it
+ * is projected up onto the segment (p,q) in 3-space. 
+ *
+ * Why the special case for ranks? Is the arithmetic really correct?
+ */
+static double 
+interpolate_zcoord(pointf p1, point fst, double fstz, point snd, double sndz)
+{
+    pointf p;
+    double len, d, rv;
 
     if (fstz == sndz)
 	return fstz;
-#define FIX 1			/* i wonder why wasn't this enabled? scn 9/15/2002 */
+#define FIX 1		/* i wonder why wasn't this enabled? scn 9/15/2002 */
 #ifdef FIX
     if (ND_rank(Curedge->tail) != ND_rank(Curedge->head)) {
 	if (snd.y == fst.y)
@@ -421,11 +510,77 @@ static double interpolate_zcoord(pointf p1, point fst, double fstz,
 	    rv = fstz + (sndz - fstz) * (p1.y - fst.y) / (snd.y - fst.y);
     } else
 #endif
-    if (snd.x == fst.x)
-	rv = (fstz + sndz) / 2.0;
-    else
-	rv = fstz + (sndz - fstz) * (p1.x - fst.x) / (snd.x - fst.x);
+    len = sqrt(idist2(fst, snd));
+    p.x = fst.x;
+    p.y = fst.y;
+    d = sqrt(DIST2(p1, fst))/len;
+    rv = fstz + d*(sndz - fstz);
     return rv;
+}
+
+/* collinear:
+ * Return true if the 3 points starting at A are collinear.
+ */
+static int
+collinear (point * A)
+{
+    Ppoint_t a, b, c;
+    double w;
+
+    a.x = A->x;
+    a.y = A->y;
+    A++;
+    b.x = A->x;
+    b.y = A->y;
+    A++;
+    c.x = A->x;
+    c.y = A->y;
+
+    w = wind(a,b,c);
+    return (fabs(w) <= 1);
+}
+
+/* straight:
+ * Return true if bezier points are collinear
+ * At present, just check with 4 points, the common case.
+ */
+static int
+straight (point * A, int n)
+{
+    if (n != 4) return 0;
+    return (collinear(A) && collinear(A+1));
+}
+
+static void
+doSegment (point* A, point p0, double z0, point p1, double z1)
+{
+    double d1, d0;
+    double delx, dely, delz;
+
+    delx = p0.x - p1.x;
+    dely = p0.y - p1.y;
+    delz = z0 - z1;
+    EdgeLen = sqrt(delx*delx + dely*dely + delz*delz);
+    d0 = sqrt(idist2(A[0],p0));
+    d1 = sqrt(idist2(A[3],p1));
+    CylHt = EdgeLen - d0 - d1;
+    TailHt = HeadHt = 0;
+
+    IsSegment = 1;
+    fprintf(Output_file, "Transform {\n");
+    fprintf(Output_file, "  children [\n");
+    fprintf(Output_file, "    Shape {\n");
+    fprintf(Output_file, "      geometry Cylinder {\n"); 
+    fprintf(Output_file, "        bottom FALSE top FALSE\n"); 
+    fprintf(Output_file, "        height %f radius %d }\n", CylHt, cstk[SP].penwidth);
+    fprintf(Output_file, "      appearance Appearance {\n");
+    fprintf(Output_file, "        material Material {\n");
+    fprintf(Output_file, "          ambientIntensity 0.33\n");
+    fprintf(Output_file, "          diffuseColor %f %f %f\n", 
+	cstk[SP].r,cstk[SP].g,cstk[SP].b);
+    fprintf(Output_file, "        }\n");
+    fprintf(Output_file, "      }\n");
+    fprintf(Output_file, "    }\n");
 }
 
 static void
@@ -441,8 +596,13 @@ vrml_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
     cp = &(cstk[SP]);
     if (cp->pen == P_NONE)
 	return;
-    fstz = late_double(Curedge->tail, N_z, 0.0, -1000.0);
-    sndz = late_double(Curedge->head, N_z, 0.0, -MAXFLOAT);
+    Fstz = late_double(Curedge->tail, N_z, 0.0, -1000.0);
+    Sndz = late_double(Curedge->head, N_z, 0.0, -MAXFLOAT);
+    if (straight(A,n)) {
+	doSegment (A, ND_coord_i(Curedge->tail),Fstz,ND_coord_i(Curedge->head),Sndz);
+	return;
+    }
+
     fprintf(Output_file, "Shape { geometry Extrusion  {\n");
     fprintf(Output_file, "  spine [");
     V[3].x = A[0].x;
@@ -474,6 +634,50 @@ vrml_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
 	    cstk[SP].r, cstk[SP].g, cstk[SP].b);
     fprintf(Output_file, "   }\n");
     fprintf(Output_file, " }\n");
+    fprintf(Output_file, "}\n");
+}
+
+/* doArrowhead:
+ * If edge is straight, we attach a cone to the edge as a group.
+ */
+static void
+doArrowhead (point* A)
+{
+    double rad, ht, y;
+    pointf p0;      /* center of triangle base */
+    point  tp,hp;
+
+    p0.x = (A[0].x + A[2].x)/2.0;
+    p0.y = (A[0].y + A[2].y)/2.0;
+    rad = sqrt(idist2(A[0],A[2]))/2.0;
+    ht = sqrt(DIST2(p0,A[1]));
+
+    y = (CylHt + ht)/2.0;
+
+    tp = ND_coord_i(Curedge->tail);
+    hp = ND_coord_i(Curedge->head);
+    fprintf(Output_file, "Transform {\n");
+    if (idist2(A[1], tp) < idist2(A[1], hp)) {
+	TailHt = ht;
+	fprintf(Output_file, "  translation 0 -%.3f 0\n", y);
+	fprintf(Output_file, "  rotation 0 0 1 %.3f\n", PI);
+    }
+    else {
+	HeadHt = ht;
+	fprintf(Output_file, "  translation 0 %.3f 0\n", y);
+    }
+    fprintf(Output_file, "  children [\n");
+    fprintf(Output_file, "    Shape {\n");
+    fprintf(Output_file, "      geometry Cone {bottomRadius %.3f height %.3f }\n",
+	rad, ht);
+    fprintf(Output_file, "      appearance Appearance {\n");
+    fprintf(Output_file, "        material Material {\n");
+    fprintf(Output_file, "          ambientIntensity 0.33\n");
+    fprintf(Output_file, "          diffuseColor %f %f %f\n", cstk[SP].r,cstk[SP].g,cstk[SP].b);
+    fprintf(Output_file, "        }\n");
+    fprintf(Output_file, "      }\n");
+    fprintf(Output_file, "    }\n");
+    fprintf(Output_file, "  ]\n");
     fprintf(Output_file, "}\n");
 }
 
@@ -576,6 +780,18 @@ static void vrml_polygon(point * A, int n, int filled)
     case EDGE:
 	if (cstk[SP].pen == P_NONE)
 	    return;
+	if (n != 3) {
+	    static int flag;
+	    if (!flag) {
+		flag++;
+		agerr(AGWARN,
+		  "vrml_polygon: non-triangle arrowheads not supported - ignoring\n");
+	    }
+	}
+	if (IsSegment) {
+	    doArrowhead (A);
+	    return;
+	}
 	p.x = p.y = 0.0;
 	for (i = 0; i < n; i++) {
 	    p.x += A[i].x;
@@ -591,8 +807,8 @@ static void vrml_polygon(point * A, int n, int filled)
 
 
 	/* this is gruesome, but how else can we get z coord */
-	if (dist2(p, ND_coord_i(Curedge->tail)) <
-	    dist2(p, ND_coord_i(Curedge->head)))
+	if (DIST2(p, ND_coord_i(Curedge->tail)) <
+	    DIST2(p, ND_coord_i(Curedge->head)))
 	    endp = Curedge->tail;
 	else
 	    endp = Curedge->head;
@@ -623,6 +839,48 @@ static void vrml_polygon(point * A, int n, int filled)
     }
 }
 
+/* doSphere:
+ * Output sphere in VRML for point nodes.
+ */
+static void 
+doSphere (point p, int rx, int ry)
+{
+    pointf  mp;
+    double  z;
+
+    if (!(strcmp(cstk[SP].fillcolor, "transparent"))) {
+	return;
+    }
+ 
+    mp.x = ND_coord_i(Curnode).x;
+    mp.y = ND_coord_i(Curnode).y;
+
+    z = late_double(Curnode, N_z, 0.0, -MAXFLOAT);
+
+    fprintf(Output_file, "Transform {\n");
+    fprintf(Output_file, "  translation %.3f %.3f %.3f\n", mp.x, mp.y,
+    	z);
+    fprintf(Output_file, "  scale %d %d %d\n", rx, rx, rx);
+    fprintf(Output_file, "  children [\n");
+    fprintf(Output_file, "    Transform {\n");
+    fprintf(Output_file, "      children [\n");
+    fprintf(Output_file, "        Shape {\n");
+    fprintf(Output_file,
+    	"          geometry Sphere { radius 1.0 }\n");
+    fprintf(Output_file, "          appearance Appearance {\n");
+    fprintf(Output_file, "            material Material {\n");
+    fprintf(Output_file, "              ambientIntensity 0.33\n");
+    fprintf(Output_file, "              diffuseColor %f %f %f\n", 
+	cstk[SP].r,cstk[SP].g,cstk[SP].b);
+    fprintf(Output_file, "            }\n");
+    fprintf(Output_file, "          }\n");
+    fprintf(Output_file, "        }\n");
+    fprintf(Output_file, "      ]\n");
+    fprintf(Output_file, "    }\n");
+    fprintf(Output_file, "  ]\n");
+    fprintf(Output_file, "}\n");
+}
+
 static void vrml_ellipse(point p, int rx, int ry, int filled)
 {
     pointf mp;
@@ -636,6 +894,10 @@ static void vrml_ellipse(point p, int rx, int ry, int filled)
 
     switch (Obj) {
     case NODE:
+	if (shapeOf(Curnode) == SH_POINT) {
+	    doSphere (p, rx, ry);
+	    return;
+	}
 	cstk[SP].pencolor_ix = vrml_resolve_color(cstk[SP].pencolor);
 	cstk[SP].fillcolor_ix = vrml_resolve_color(cstk[SP].fillcolor);
 	if (cstk[SP].pen != P_NONE) {
@@ -688,6 +950,7 @@ static void vrml_ellipse(point p, int rx, int ry, int filled)
 	mp.y = ND_coord_i(Curnode).y;
 
 	z = late_double(Curnode, N_z, 0.0, -MAXFLOAT);
+
 	fprintf(Output_file, "Transform {\n");
 	fprintf(Output_file, "  translation %.3f %.3f %.3f\n", mp.x, mp.y,
 		z);
@@ -720,12 +983,13 @@ static void vrml_ellipse(point p, int rx, int ry, int filled)
 	mp.x = (double) p.x;
 	mp.y = (double) p.y;
 	/* this is gruesome, but how else can we get z coord */
-	if (dist2(mp, ND_coord_i(Curedge->tail)) <
-	    dist2(mp, ND_coord_i(Curedge->head)))
+	if (DIST2(mp, ND_coord_i(Curedge->tail)) <
+	    DIST2(mp, ND_coord_i(Curedge->head)))
 	    endp = Curedge->tail;
 	else
 	    endp = Curedge->head;
 	z = late_double(endp, N_z, 0.0, -MAXFLOAT);
+
 	fprintf(Output_file, "Transform {\n");
 	fprintf(Output_file, "  translation %.3f %.3f %.3f\n", mp.x, mp.y,
 		z);
