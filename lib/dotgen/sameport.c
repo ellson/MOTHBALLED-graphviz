@@ -170,6 +170,7 @@ static void sameport(node_t * u, elist * l, double arr_len)
     prt.side = 0;
 
 #ifdef OBSOLETE
+/* This is commented because a version of gcc cannot handle it otherwise.
 This code appears obsolete and wrong. First, we don't use arr_prt
 anymore, as we have previously ifdef'ed out the code below where it
 is used. In addition, it resets the rank height. But we've already
@@ -180,6 +181,7 @@ See bug 419.
 If we really want to make room for arrowheads, this should be done in
 the general case that the user sets a small ranksep, and requires repositioning
 nodes and maintaining equal separation when specified
+*/
     /* compute ARR_PORT at a distance ARR_LEN away from the boundary */
     if ((arr_prt.defined = arr_len && TRUE)) {
 	arr_prt.p.x = ROUND(x1 + x * arr_len);
