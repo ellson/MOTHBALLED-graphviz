@@ -15,7 +15,6 @@
 **********************************************************/
 
 #include	<ctype.h>
-#include	<libgen.h>
 
 #include	"render.h"
 #include	"htmltable.h"
@@ -119,6 +118,26 @@ static char *getFlagOpt(int argc, char **argv, int *idx)
 	}
     }
     return 0;
+}
+
+/* basename:
+ * Partial implementation of real basename.
+ * Skip over any trailing slashes or backslashes; then
+ * find next (back)slash moving left; return string to the right.
+ * If no next slash is found, return the whole string.
+ */
+static char* basename (char* path)
+{
+    char* s = path;
+    if (*s == '\0') return path; /* empty string */
+    while (*s) s++; s--;
+    /* skip over trailing slashes, nulling out as we go */
+    while ((s > path) && ((*s == '/') || (*s == '\\')))
+	*s-- = '\0';
+    if (s == path) return path;
+    while ((s > path) && ((*s != '/') && (*s != '\\'))) s--;
+    if ((*s == '/') || (*s == '\\')) return (s+1);
+    else return path;
 }
 
 void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
