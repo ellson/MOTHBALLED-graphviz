@@ -1,0 +1,49 @@
+.TH DOTTY 1
+.SH NAME
+dotty \- A Customizable Graph Editor
+.SH SYNOPSIS
+.B dotty
+[
+.B -V
+] [
+.I file
+]
+.SH DESCRIPTION
+.B dotty
+is a graph editor for the X Window System.  It may be run as a standalone
+editor, or as a front end for applications that use graphs.  It can control
+multiple windows viewing different graphs.
+
+.B dotty
+is written on top of
+.B dot
+and
+.BR lefty .
+.B lefty
+is a general-purpose programmable editor for technical pictures.  It has an
+interpretive programming language similar to AWK and C.  The user interface and
+graph editing operations of
+.B dotty
+are written as
+.B lefty
+functions.
+Programmer-defined graph operations may be loaded as well.  Graph layouts are
+made by
+.BR dot ,
+which runs as a separate process that communicates with
+.B lefty
+through pipes.
+.SH USAGE
+The file name is optional. If present, the graph contained in that file is
+displayed in the
+.B dotty
+window.
+.SH OPTIONS
+.TP
+.B -V
+Prints the version.
+.SH SEE ALSO
+dot(1), lefty(1)
+.br
+.I dotty
+user guide.
