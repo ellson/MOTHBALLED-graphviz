@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-struct entities_s {
+static struct entities_s {
 	char	*name;
 	int	value;
 } entities[] = {
