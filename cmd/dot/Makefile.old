@@ -1,120 +1,56 @@
+ROOT=../..
 
-include ../Config.mk
-include ../makearch/$(ARCH)
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
-SUBDIRS = dotgen neatogen twopigen circogen pack common gvrender
+LOC_LIB = $(ROOT)/lib
+LOC_PLUG=$(ROOT)/plugin
 
-INCS =  \
-	-Igvrender \
-	-Icommon \
-        -I.. \
-	-I../cdt \
-        -I../pathplan \
-        -I../gd \
-        -I../graph
+INCS =  -I$(LOC_LIB)/gvc -I$(LOC_LIB)/common -I$(ROOT) -I$(LOC_LIB)/cdt \
+        -I$(LOC_LIB)/pathplan -I$(LOC_LIB)/gd -I$(LOC_LIB)/graph
 
-ALLINCS = -Idotgen -Ineatogen -Itwopigen -Icircogen -Ifdpgen $(INCS)
+ALLINCS = -I$(LOC_LIB)/dotgen -I$(LOC_LIB)/neatogen -I$(LOC_LIB)/twopigen \
+          -I$(LOC_LIB)/circogen -I$(LOC_LIB)/fdpgen $(INCS)
 
 DEFINES = -DHAVE_CONFIG_H
 
-XLIBS = -L../pathplan -lpathplan \
-        -L../graph -lgraph \
-        -L../cdt -lcdt \
-        -L../gd -lgd \
+XLIBS = -L$(LOC_LIB)/pathplan -lpathplan \
+        -L$(LOC_LIB)/graph -lgraph \
+        -L$(LOC_LIB)/cdt -lcdt \
+        -L$(LOC_LIB)/gd -lgd \
         $(EXTLIB_LIB) $(EXPAT_LIB) -lm
 
-LIBS =  -Lcommon -lcommon -Lgvrender -lgvrender $(XLIBS)
-LOCAL_LIBS = libcommon.a libgvrender.a
-XLOCAL_LIBS = libneato.a libpack.a $(LOCAL_LIBS)
+PLUGS = -L$(LOC_PLUG)/cairo -lgvplugin_cairo \
+        -L$(LOC_PLUG)/layout -lgvplugin_layout \
+        -L$(LOC_PLUG)/gd -lgvplugin_gd -L$(LOC_PLUG)/text -lgvplugin_text
 
-LIB_LIST = libpack.a libneato.a libcommon.a libdot.a libtwopi.a
+LIBS = $(PLUGS) -L$(LOC_LIB)/neatogen -lneato \
+       -L$(LOC_LIB)/dotgen -ldot \
+       -L$(LOC_LIB)/circogen -lcirco \
+       -L$(LOC_LIB)/fdpgen -lfdp \
+       -L$(LOC_LIB)/twopigen -ltwopi \
+       -L$(LOC_LIB)/pack -lpack \
+       -L$(LOC_LIB)/common -lcommon \
+       -L$(LOC_LIB)/gvc -lgvc \
+       $(XLIBS)
+
 LIBDOTNEATO = libdotneato.a
-OBJS = dotneato.o
+OBJS = dot.o args.o plugins.o
 SHLIBS = twopigen/libtwopi.a dotgen/libdot.a neatogen/libneato.a pack/libpack.a gvrender/libgvrender.a common/libcommon.a
 
-MANS = dot.1 neato.1 twopi.1 circo.1
-PROGS = dot neato twopi circo fdp
+all : dot $(LIBDOTNEATO)
 
-all : $(PROGS)
-allmem : dotmemtest neatomemtest twopimemtest circomemtest
-
-dot : dot.o libdot.a $(LOCAL_LIBS)
-	$(CSLD) $(LDFLAGS) dot.o -Ldotgen -ldot $(LIBS) -o dot
+dot : $(OBJS)
+	$(CSLD) $(LDFLAGS) $(OBJS) $(LIBS) -o dot
 
 dot.o : dot.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) -Idotgen $(INCS) dot.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) dot.c
 
-dotmemtest : dotmemtest.o libdot.a $(LOCAL_LIBS)
-	$(CSLD) $(LDFLAGS) dotmemtest.o -Ldotgen -ldot $(LIBS) -o dotmemtest
+args.o : args.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(ALLINCS) args.c
 
-dotmemtest.o : dotmemtest.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) -Idotgen $(INCS) dotmemtest.c
-
-neato : neato.o $(XLOCAL_LIBS)
-	$(CSLD) $(LDFLAGS) neato.o -Lneatogen -lneato -Lpack -lpack $(LIBS) -o neato
-
-neato.o : neato.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) -Ineatogen $(INCS) neato.c
-
-neatomemtest : neatomemtest.o $(XLOCAL_LIBS)
-	$(CSLD) $(LDFLAGS) neatomemtest.o -Lneatogen -lneato -Lpack -lpack $(LIBS) -o neatomemtest
-
-neatomemtest.o : neatomemtest.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) -Ineatogen $(INCS) neatomemtest.c
-
-twopi : twopi.o libtwopi.a $(XLOCAL_LIBS)
-	$(CSLD) $(LDFLAGS) twopi.o -Ltwopigen -ltwopi -Lpack -lpack -Lneatogen -lneato $(LIBS) -o twopi
-
-twopi.o : twopi.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) -Itwopigen $(INCS) twopi.c
-
-twopimemtest : twopimemtest.o libtwopi.a $(XLOCAL_LIBS)
-	$(CSLD) $(LDFLAGS) twopimemtest.o -Ltwopigen -ltwopi -Lpack -lpack -Lneatogen -lneato $(LIBS) -o twopimemtest
-
-twopimemtest.o : twopimemtest.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) -Itwopigen $(INCS) twopimemtest.c
-
-fdp : fdp.o libfdp.a $(XLOCAL_LIBS)
-	$(CSLD) $(LDFLAGS) fdp.o -Lfdpgen -lfdp -Lpack -lpack -Lneatogen -lneato $(LIBS) -o fdp
-
-fdp.o : fdp.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) -Ifdpgen $(INCS) fdp.c
-
-fdpmemtest : fdpmemtest.o libfdp.a $(XLOCAL_LIBS)
-	$(CSLD) $(LDFLAGS) fdpmemtest.o -Lfdpgen -lfdp -Lpack -lpack -Lneatogen -lneato $(LIBS) -o fdpmemtest
-
-fdpmemtest.o : fdpmemtest.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) -Ifdpgen $(INCS) fdpmemtest.c
-
-circo : circo.o libcirco.a $(XLOCAL_LIBS)
-	$(CSLD) $(LDFLAGS) circo.o -Lcircogen -lcirco -Lpack -lpack -Lneatogen -lneato $(LIBS) -o circo
-
-circo.o : circo.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) -Icircogen $(INCS) circo.c
-
-libdot.a :
-	(cd dotgen; make)
-
-libcirco.a :
-	(cd circogen; make)
-
-libneato.a :
-	(cd neatogen; make)
-
-libtwopi.a :
-	(cd twopigen; make)
-
-libfdp.a :
-	(cd fdpgen; make)
-
-libpack.a :
-	(cd pack; make)
-
-libgvrender.a :
-	(cd gvrender; make)
-
-libcommon.a :
-	(cd common; make)
+plugins.o : plugins.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(ALLINCS) plugins.c
 
 dotneato.o : dotneato.c
 	$(CC) -I. -c $(CCFLAGS) $(DEFINES) $(ALLINCS) dotneato.c
@@ -123,10 +59,13 @@ $(LIBDOTNEATO) : dotneato.o
 	$(AR) cr libdotneato.a dotneato.o
 	$(RANLIB) libdotneato.a
 	
-install: all $(LIBDOTNEATO)
+install: all
 	$(MKPATH) $(BINDIR)
-	$(INSTALL) $(PROGS) $(BINDIR)
-	(for i in ${SUBDIRS}; do (cd $$i; make install); done)       
+	$(INSTALL) dot $(BINDIR)
+	$(LN) -s $(BINDIR)/dot $(BINDIR)/neato
+	$(LN) -s $(BINDIR)/dot $(BINDIR)/fdp
+	$(LN) -s $(BINDIR)/dot $(BINDIR)/circo
+	$(LN) -s $(BINDIR)/dot $(BINDIR)/twopi
 	$(MKPATH) $(INCDIR)
 	$(INSTALL) dotneato.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
@@ -134,9 +73,12 @@ install: all $(LIBDOTNEATO)
 	$(RM) -rf $(LIBDIR)/$(LIBDOTNEATO)
 	$(LN) -s $(LIBDOTNEATO).$(VERSION) $(LIBDIR)/$(LIBDOTNEATO)
 	$(MKPATH) $(MANDIR)
-	$(INSTALL) $(MANS) $(MANDIR)
+	$(INSTALL) dot.1 $(MANDIR)
+	$(LN) -s $(MANDIR)/dot.1 $(MANDIR)/neato.1
+	$(LN) -s $(MANDIR)/dot.1 $(MANDIR)/fdp.1
+	$(LN) -s $(MANDIR)/dot.1 $(MANDIR)/circo.1
+	$(LN) -s $(MANDIR)/dot.1 $(MANDIR)/twopi.1
 
 distclean clean:
-	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)       
-	$(RM) *.o core $(all) $(allmem)
+	$(RM) *.o core $(all)
 
