@@ -2,7 +2,7 @@
 
 SUBDIRS = libfilereq
 
-AM_CPPFLAGS = -I$(top_srcdir)/lefty @XAW_INCLUDES@
+AM_CPPFLAGS = -I$(top_srcdir)/cmd/lefty @XAW_INCLUDES@
 
 AM_CFLAGS =  @X_CFLAGS@
 

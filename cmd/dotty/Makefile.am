@@ -14,8 +14,8 @@ pdf_DATA = $(pdf)
 bin_SCRIPTS = dotty
 lefty_SCRIPTS = $(DOTTYSCRIPTS)
 
-dotty: $(top_srcdir)/dotty/dotty.sh
-	cp $(top_srcdir)/dotty/dotty.sh dotty
+dotty: $(top_srcdir)/cmd/dotty/dotty.sh
+	cp $(top_srcdir)/cmd/dotty/dotty.sh dotty
 	chmod +x dotty
 
 .1.pdf:

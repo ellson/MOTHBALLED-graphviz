@@ -9,8 +9,8 @@ man_MANS = $(man)
 pdf_DATA = $(pdf)
 bin_SCRIPTS = lneato
 
-lneato: ${top_srcdir}/lneato/lneato.sh
-	cp ${top_srcdir}/lneato/lneato.sh lneato
+lneato: ${top_srcdir}/cmd/lneato/lneato.sh
+	cp ${top_srcdir}/cmd/lneato/lneato.sh lneato
 	chmod +x lneato
 
 .1.pdf:

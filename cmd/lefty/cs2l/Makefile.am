@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-AM_CPPFLAGS = -I${top_srcdir}/lefty
+AM_CPPFLAGS = -I$(top_srcdir)/cmd/lefty
 
 noinst_HEADERS = cs2l.h
 # noinst_LTLIBRARIES = libcs2l.la

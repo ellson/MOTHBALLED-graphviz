@@ -3,9 +3,9 @@
 SUBDIRS = ws os cs2l dot2l examples
 
 AM_CPPFLAGS = \
-	-I$(top_srcdir)/lefty/ws/x11 \
-	-I$(top_srcdir)/lefty/os/unix \
-	-I$(top_srcdir)/lefty/dot2l @XAW_INCLUDES@
+	-I$(top_srcdir)/cmd/lefty/ws/x11 \
+	-I$(top_srcdir)/cmd/lefty/os/unix \
+	-I$(top_srcdir)/cmd/lefty/dot2l @XAW_INCLUDES@
 
 man = lefty.1
 pdf = lefty.pdf
