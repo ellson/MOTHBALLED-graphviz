@@ -677,10 +677,10 @@ if test "x$with_mylibgd" != "xyes"; then
                 AC_DEFINE_UNQUOTED(HAVE_$f,1,[Define if the GD library has the $f feature])
         done
 
-        # version check >= 2.0.33  else revert to --with-mylibgd
+        # GD version check >= 2.0.34  else revert to --with-mylibgd
         REQ_GD_MAJORVERSION=2
         REQ_GD_MINORVERSION=0
-        REQ_GD_REVISION=33
+        REQ_GD_REVISION=34
         if test $GD_MAJORVERSION -lt $REQ_GD_MAJORVERSION; then
 	    with_mylibgd=yes
         else
