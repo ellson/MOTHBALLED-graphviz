@@ -33,12 +33,9 @@
 
 char *BaseLineStyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 int Obj;
-static int N_pages = 1;		/* w.r.t. unrotated coords */
 static int Page;		/* w.r.t. unrotated coords */
 static int Layer, Nlayers;
 static char **LayerID;
-static point First, Major, Minor;
-static point Pages;
 static box PB;			/* drawable region in device coords */
 static pointf GP;		/* graph page size, in graph coords */
 static box CB;			/* current page box, in graph coords */
@@ -134,13 +131,13 @@ static void reset_layering(GVC_t * gvc, graph_t * g)
     LayerID = NULL;   /* FIXME - poss leak of array of layer names? */
 }
 
-static point pagecode(char c)
+static point pagecode(GVC_t *gvc, char c)
 {
     point rv;
     rv.x = rv.y = 0;
     switch (c) {
     case 'T':
-	First.y = Pages.y - 1;
+	gvc->pagesArrayFirst.y = gvc->pagesArraySize.y - 1;
 	rv.y = -1;
 	break;
     case 'B':
@@ -150,29 +147,31 @@ static point pagecode(char c)
 	rv.x = 1;
 	break;
     case 'R':
-	First.x = Pages.x - 1;
+	gvc->pagesArrayFirst.x = gvc->pagesArraySize.x - 1;
 	rv.x = -1;
 	break;
     }
     return rv;
 }
 
-static void set_pagedir(graph_t * g)
+static void set_pagedir(GVC_t *gvc, graph_t * g)
 {
     char *str;
 
-    Major.x = Major.y = Minor.x = Minor.y = 0;
+    gvc->pagesArrayMajor.x = gvc->pagesArrayMajor.y 
+		= gvc->pagesArrayMinor.x = gvc->pagesArrayMinor.y = 0;
     str = agget(g, "pagedir");
     if (str && str[0]) {
-	Major = pagecode(str[0]);
-	Minor = pagecode(str[1]);
+	gvc->pagesArrayMajor = pagecode(gvc, str[0]);
+	gvc->pagesArrayMinor = pagecode(gvc, str[1]);
     }
-    if ((abs(Major.x + Minor.x) != 1) || (abs(Major.y + Minor.y) != 1)) {
-	Major.x = 0;
-	Major.y = 1;
-	Minor.x = 1;
-	Minor.y = 0;
-	First.x = First.y = 0;
+    if ((abs(gvc->pagesArrayMajor.x + gvc->pagesArrayMinor.x) != 1)
+     || (abs(gvc->pagesArrayMajor.y + gvc->pagesArrayMinor.y) != 1)) {
+	gvc->pagesArrayMajor.x = 0;
+	gvc->pagesArrayMajor.y = 1;
+	gvc->pagesArrayMinor.x = 1;
+	gvc->pagesArrayMinor.y = 0;
+	gvc->pagesArrayFirst.x = gvc->pagesArrayFirst.y = 0;
 	if (str)
 	    agerr(AGWARN, "pagedir=%s ignored\n", str);
     }
@@ -200,9 +199,9 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	/* we don't want graph page to exceed its bounding box */
 	GP.x = MIN(GP.x, GD_bb(g).UR.x);
 	GP.y = MIN(GP.y, GD_bb(g).UR.y);
-	Pages.x = (GP.x > 0) ? ceil(((double) GD_bb(g).UR.x) / GP.x) : 1;
-	Pages.y = (GP.y > 0) ? ceil(((double) GD_bb(g).UR.y) / GP.y) : 1;
-	N_pages = Pages.x * Pages.y;
+	gvc->pagesArraySize.x = (GP.x > 0) ? ceil(((double) GD_bb(g).UR.x) / GP.x) : 1;
+	gvc->pagesArraySize.y = (GP.y > 0) ? ceil(((double) GD_bb(g).UR.y) / GP.y) : 1;
+	gvc->pagesSize = gvc->pagesArraySize.x * gvc->pagesArraySize.y;
 
 	/* find the drawable size in device coords */
 #if 1
@@ -232,10 +231,10 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 #endif
 	if (GD_drawing(g)->landscape)
 	    DS = exch_xy(DS);
-	Pages.x = Pages.y = N_pages = 1;
+	gvc->pagesArraySize.x = gvc->pagesArraySize.y = gvc->pagesSize = 1;
     }
 
-    set_pagedir(g);
+    set_pagedir(gvc, g);
 
     /* determine page box including centering */
     if (GD_drawing(g)->centered) {
@@ -252,12 +251,11 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 
 static void reset_pagination(GVC_t * gvc, graph_t * g)
 {
-    N_pages = 1;
     Page = 0;
-    First.x = First.y = 0;
-    Major.x = Major.y = 0;
-    Minor.x = Minor.y = 0;
-    Pages.x = Pages.y = 0;
+    gvc->pagesArrayFirst.x = gvc->pagesArrayFirst.y = 0;
+    gvc->pagesArrayMajor.x = gvc->pagesArrayMajor.y = 0;
+    gvc->pagesArrayMinor.x = gvc->pagesArrayMinor.y = 0;
+    gvc->pagesArraySize.x = gvc->pagesArraySize.y = gvc->pagesSize = 1;
     PB.LL.x = PB.LL.y = PB.UR.x = PB.UR.y = 0;
     GP.x = GP.y = 0;
     CB.LL.x = CB.LL.y = CB.UR.x = CB.UR.y = 0;
@@ -357,9 +355,23 @@ static void setup_page(GVC_t * gvc, point page)
 	offset.y = -page.x * GP.x;
     }
     rot = GD_drawing(g)->landscape ? 90 : 0;
+
     gvrender_begin_page(gvc, page, gvc->job->zoom, rot, offset);
     emit_background(gvc, CB.LL, CB.UR);
     emit_defaults(gvc);
+}
+
+static int node_in_CB(GVC_t *gvc, node_t * n)
+{
+    box nb;
+
+    if (gvc->pagesSize == 1)
+	return TRUE;
+    nb.LL.x = ND_coord_i(n).x - ND_lw_i(n);
+    nb.LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2;
+    nb.UR.x = ND_coord_i(n).x + ND_rw_i(n);
+    nb.UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2;
+    return rect_overlap(CB, nb);
 }
 
 static void emit_node(GVC_t * gvc, node_t * n)
@@ -368,7 +380,7 @@ static void emit_node(GVC_t * gvc, node_t * n)
 
     if (ND_shape(n) == NULL)
 	return;
-    if (node_in_layer(n->graph, n) && node_in_CB(n) && (ND_state(n) != Page)) {
+    if (node_in_layer(n->graph, n) && node_in_CB(gvc, n) && (ND_state(n) != Page)) {
 	gvrender_begin_node(gvc, n);
 	if (((s = agget(n, "href")) && s[0])
 	    || ((s = agget(n, "URL")) && s[0])) {
@@ -460,6 +472,39 @@ void emit_attachment(GVC_t * gvc, textlabel_t * lp, splines * spl)
     gvrender_polyline(gvc, A, 3);
 }
 
+static int edge_in_CB(GVC_t *gvc, edge_t * e)
+{
+    int i, j, np;
+    bezier bz;
+    point *p, pp, sz;
+    box b;
+    textlabel_t *lp;
+
+    if (gvc->pagesSize == 1)
+	return TRUE;
+    if (ED_spl(e) == NULL)
+	return FALSE;
+    for (i = 0; i < ED_spl(e)->size; i++) {
+	bz = ED_spl(e)->list[i];
+	np = bz.size;
+	p = bz.list;
+	pp = p[0];
+	for (j = 0; j < np; j++) {
+	    if (rect_overlap(CB, mkbox(pp, p[j])))
+		return TRUE;
+	    pp = p[j];
+	}
+    }
+    if ((lp = ED_label(e)) == NULL)
+	return FALSE;
+    PF2P(lp->dimen, sz);
+    b.LL.x = lp->p.x - sz.x / 2;
+    b.UR.x = lp->p.x + sz.x / 2;
+    b.LL.y = lp->p.y - sz.y / 2;
+    b.UR.y = lp->p.y + sz.y / 2;
+    return rect_overlap(CB, b);
+}
+
 static void emit_edge(GVC_t * gvc, edge_t * e)
 {
     int i, j, cnum, numc = 0;
@@ -479,7 +524,7 @@ static void emit_edge(GVC_t * gvc, edge_t * e)
 
 #define SEP 2.0
 
-    if ((edge_in_CB(e) == FALSE)
+    if ((edge_in_CB(gvc, e) == FALSE)
 	|| (edge_in_layer(e->head->graph, e) == FALSE))
 	return;
 
@@ -731,12 +776,31 @@ void emit_init(GVC_t * gvc, graph_t * g)
 
     setup_pagination(gvc, g);
 
-    gvrender_begin_job(gvc, Lib, Pages, X, Y, Z, x, y, GD_drawing(g)->dpi);
+    gvrender_begin_job(gvc, Lib, X, Y, Z, x, y, GD_drawing(g)->dpi);
 }
 
 void emit_deinit(GVC_t * gvc)
 {
     gvrender_end_job(gvc);
+}
+
+static int validpage(GVC_t *gvc, point page)
+{
+    return ((page.x >= 0) && (page.x < gvc->pagesArraySize.x)
+	    && (page.y >= 0) && (page.y < gvc->pagesArraySize.y));
+}
+
+static point pageincr(GVC_t *gvc, point page)
+{
+    page = add_points(page, gvc->pagesArrayMinor);
+    if (validpage(gvc, page) == FALSE) {
+	if (gvc->pagesArrayMajor.y)
+	    page.x = gvc->pagesArrayFirst.x;
+	else
+	    page.y = gvc->pagesArrayFirst.y;
+	page = add_points(page, gvc->pagesArrayMajor);
+    }
+    return page;
 }
 
 void emit_graph(GVC_t * gvc, graph_t * g, int flags)
@@ -806,8 +870,8 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
     do {
 	if (Nlayers > 0)
 	    gvrender_begin_layer(gvc, LayerID[Layer], Layer, Nlayers);
-	for (curpage = First; validpage(curpage);
-	     curpage = pageincr(curpage)) {
+	for (curpage = gvc->pagesArrayFirst; validpage(gvc, curpage);
+	     curpage = pageincr(gvc, curpage)) {
 	    Obj = NONE;
 	    setup_page(gvc, curpage);
 	    if (((s = agget(g, "href")) && s[0])
@@ -1034,19 +1098,6 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
     }
 }
 
-int node_in_CB(node_t * n)
-{
-    box nb;
-
-    if (N_pages == 1)
-	return TRUE;
-    nb.LL.x = ND_coord_i(n).x - ND_lw_i(n);
-    nb.LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2;
-    nb.UR.x = ND_coord_i(n).x + ND_rw_i(n);
-    nb.UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2;
-    return rect_overlap(CB, nb);
-}
-
 int node_in_layer(graph_t * g, node_t * n)
 {
     char *pn, *pe;
@@ -1105,45 +1156,6 @@ int clust_in_layer(graph_t * sg)
 	if (node_in_layer(sg, n))
 	    return TRUE;
     return FALSE;
-}
-
-int edge_in_CB(edge_t * e)
-{
-    int i, j, np;
-    bezier bz;
-    point *p, pp, sz;
-    box b;
-    textlabel_t *lp;
-
-    if (N_pages == 1)
-	return TRUE;
-    if (ED_spl(e) == NULL)
-	return FALSE;
-    for (i = 0; i < ED_spl(e)->size; i++) {
-	bz = ED_spl(e)->list[i];
-	np = bz.size;
-	p = bz.list;
-	pp = p[0];
-	for (j = 0; j < np; j++) {
-	    if (rect_overlap(CB, mkbox(pp, p[j])))
-		return TRUE;
-	    pp = p[j];
-	}
-    }
-    if ((lp = ED_label(e)) == NULL)
-	return FALSE;
-    PF2P(lp->dimen, sz);
-    b.LL.x = lp->p.x - sz.x / 2;
-    b.UR.x = lp->p.x + sz.x / 2;
-    b.LL.y = lp->p.y - sz.y / 2;
-    b.UR.y = lp->p.y + sz.y / 2;
-    return rect_overlap(CB, b);
-}
-
-int validpage(point page)
-{
-    return ((page.x >= 0) && (page.x < Pages.x)
-	    && (page.y >= 0) && (page.y < Pages.y));
 }
 
 int is_natural_number(char *sstr)
@@ -1206,19 +1218,6 @@ int selectedlayer(char *spec)
     }
     agxbfree(&xb);
     return rval;
-}
-
-point pageincr(point page)
-{
-    page = add_points(page, Minor);
-    if (validpage(page) == FALSE) {
-	if (Major.y)
-	    page.x = First.x;
-	else
-	    page.y = First.y;
-	page = add_points(page, Major);
-    }
-    return page;
 }
 
 static int style_delim(int c)

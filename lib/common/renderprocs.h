@@ -69,7 +69,6 @@ extern "C" {
     extern void dotneato_terminate(GVC_t * gvc);
     extern void dotneato_write(GVC_t * gvc, graph_t *g);
     extern void dotneato_write_one(GVC_t * gvc, graph_t *g);
-    extern int edge_in_CB(Agedge_t *);
     extern int edge_in_layer(Agraph_t *, Agedge_t *);
     extern double elapsed_sec(void);
     extern void enqueue(queue *, Agnode_t *);
@@ -142,10 +141,8 @@ extern "C" {
     extern bezier *new_spline(edge_t * e, int sz);
     extern queue *new_queue(int);
     extern Agraph_t *next_input_graph(void);
-    extern int node_in_CB(node_t *);
     extern int node_in_layer(Agraph_t *, node_t *);
     extern void osize_label(textlabel_t *, int *, int *, int *, int *);
-    extern point pageincr(point);
     extern char **parse_style(char *s);
     extern void place_graph_label(Agraph_t *);
     extern void place_portlabel(edge_t * e, boolean head_p);
@@ -180,7 +177,6 @@ extern "C" {
     extern void use_library(char *);
     extern char *username();
     extern point user_shape_size(node_t * n, char *shapefile);
-    extern int validpage(point);
     extern void write_plain(GVC_t * gvc, FILE *);
     extern void write_plain_ext(GVC_t * gvc, FILE *);
     extern void *zmalloc(size_t);

@@ -124,7 +124,7 @@ void gvrender_reset(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_job(GVC_t * gvc, char **lib, point pages, double X, double Y, double Z, double x, double y, int dpi)
+void gvrender_begin_job(GVC_t * gvc, char **lib, double X, double Y, double Z, double x, double y, int dpi)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
@@ -132,7 +132,6 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, point pages, double X, double Y
     job->gvc = gvc;
 
     gvc->lib = lib;
-    gvc->pages = pages;
     /* establish viewport and scaling */
     if (dpi == 0) {
 	if (gvre)
@@ -154,9 +153,9 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, point pages, double X, double Y
     else {
 	codegen_t *cg = job->codegen;
 
-	if (cg && cg->begin_job && job->page_number == 0)
+	if (cg && cg->begin_job && job->pagesElem == 0)
 	    cg->begin_job(gvc->job->output_file, gvc->g, lib, gvc->user,
-			  gvc->info, pages);
+			  gvc->info, gvc->pagesArraySize);
     }
 #endif
 }
@@ -177,7 +176,6 @@ void gvrender_end_job(GVC_t * gvc)
     }
 #endif
     gvc->lib = NULL;
-    gvc->pages = p0;
 }
 
 /* font modifiers */
@@ -310,11 +308,12 @@ void gvrender_begin_page(GVC_t * gvc, point page, double scale, int rot,
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
-    job->page = page;
+    job->pagesArrayElem = page;
+    job->pagesElem = page.x + page.y * gvc->pagesArraySize.x + 1;
+
 //    gvc->scale = scale;
     job->rot = rot;
 //    gvc->offset = offset;
-    job->page_number = page.x + page.y * gvc->pages.x + 1;
     if (gvre && gvre->begin_page)
 	gvre->begin_page(job, gvc->g->name);
 #ifndef DISABLE_CODEGENS

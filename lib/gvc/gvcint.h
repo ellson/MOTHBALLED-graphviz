@@ -97,9 +97,9 @@ extern "C" {
 
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	
-	/* gvrender_begin_page() */
-	point page;
-	int page_number;
+        /* gvrender_begin_page */
+	point pagesArrayElem;	/* 2D coord of current page - 0,0 based */
+        int   pagesElem;	/* 1D index of current page - 0 based */
 	point offset;
 
 	/* gvrender_begin_layer() */
@@ -152,8 +152,13 @@ extern "C" {
 	int layout_id;		/* internal id of current layout */
 
 	char **lib;
-	point pages;
-	int nPages;
+
+        /* pagination */
+	point pagesArraySize;	/* 2D size of page array */
+	point pagesArrayFirst;  /* 2D starting corner in */
+	point pagesArrayMajor;	/* 2D major increment */
+	point pagesArrayMinor;	/* 2D minor increment */
+        int   pagesSize;	/* 1D size of page array */
 
 	/* gvrender_begin_graph() */
 	graph_t *g;
