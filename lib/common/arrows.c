@@ -233,16 +233,17 @@ double arrow_length(edge_t * e, int flag)
 /* inside function for calls to bezier_clip */
 static boolean inside(inside_t * inside_context, pointf p)
 {
-    return dstsq(p, inside_context->p[0]) <= inside_context->r[0];
+    return dstsq(p, inside_context->a.p[0]) <= inside_context->a.r[0];
 }
 
-int arrowEndClip(inside_t * inside_context, point * ps, int startp,
+int arrowEndClip(edge_t* e, point * ps, int startp,
 		 int endp, bezier * spl, int eflag)
 {
+    inside_t inside_context;
     pointf sp[4];
     double elen, elen2;
 
-    elen = arrow_length(inside_context->e, eflag);
+    elen = arrow_length(e, eflag);
     elen2 = elen * elen;
     spl->eflag = eflag, spl->ep = ps[endp + 3];
     if (endp > startp && dstsq(ps[endp], ps[endp + 3]) < elen2) {
@@ -253,9 +254,9 @@ int arrowEndClip(inside_t * inside_context, point * ps, int startp,
     P2PF(ps[endp + 2], sp[1]);
     P2PF(spl->ep, sp[0]);	/* ensure endpoint starts inside */
 
-    inside_context->p = &sp[0];
-    inside_context->r = &elen2;
-    bezier_clip(inside_context, inside, sp, TRUE);
+    inside_context.a.p = &sp[0];
+    inside_context.a.r = &elen2;
+    bezier_clip(&inside_context, inside, sp, TRUE);
 
     PF2P(sp[3], ps[endp]);
     PF2P(sp[2], ps[endp + 1]);
@@ -264,13 +265,14 @@ int arrowEndClip(inside_t * inside_context, point * ps, int startp,
     return endp;
 }
 
-int arrowStartClip(inside_t * inside_context, point * ps, int startp,
+int arrowStartClip(edge_t* e, point * ps, int startp,
 		   int endp, bezier * spl, int sflag)
 {
+    inside_t inside_context;
     pointf sp[4];
     double slen, slen2;
 
-    slen = arrow_length(inside_context->e, sflag);
+    slen = arrow_length(e, sflag);
     slen2 = slen * slen;
     spl->sflag = sflag, spl->sp = ps[startp];
     if (endp > startp && dstsq(ps[startp], ps[startp + 3]) < slen2) {
@@ -281,9 +283,9 @@ int arrowStartClip(inside_t * inside_context, point * ps, int startp,
     P2PF(ps[startp + 1], sp[2]);
     P2PF(spl->sp, sp[3]);	/* ensure endpoint starts inside */
 
-    inside_context->p = &sp[3];
-    inside_context->r = &slen2;
-    bezier_clip(inside_context, inside, sp, FALSE);
+    inside_context.a.p = &sp[3];
+    inside_context.a.r = &slen2;
+    bezier_clip(&inside_context, inside, sp, FALSE);
 
     PF2P(sp[3], ps[startp]);
     PF2P(sp[2], ps[startp + 1]);

@@ -30,11 +30,8 @@ extern "C" {
     extern void arrow_gen(GVC_t * gvc, point p, point u, double scale,
 			  int flag);
     extern double arrow_length(edge_t * e, int flag);
-    extern int arrowEndClip(inside_t * inside_context, point * ps,
-			    int startp, int endp, bezier * spl, int eflag);
-    extern int arrowStartClip(inside_t * inside_context, point * ps,
-			      int startp, int endp, bezier * spl,
-			      int sflag);
+    extern int arrowEndClip(edge_t*, point*, int, int , bezier*, int eflag);
+    extern int arrowStartClip(edge_t*, point* ps, int, int, bezier*, int sflag);
     extern void attach_attrs(Agraph_t *);
     extern void beginpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern pointf Bezier(pointf *, int, double, pointf *, pointf *);
@@ -152,9 +149,10 @@ extern "C" {
     extern point *routesplines(path *, int *);
     extern void routesplinesterm(void);
     extern char *safefile(char *shapefilename);
+    extern int selfRightSpace (edge_t* e);
     extern void setup_graph(GVC_t * gvc, graph_t * g);
     extern shape_kind shapeOf(node_t *);
-    extern void shape_clip(node_t * n, point curve[4], edge_t * e);
+    extern void shape_clip(node_t * n, point curve[4]);
     extern point spline_at_y(splines * spl, int y);
     extern void start_timer(void);
     extern double textwidth(textline_t * textline, char *fontname,
@@ -166,7 +164,6 @@ extern "C" {
     extern void UF_singleton(Agnode_t *);
     extern Agnode_t *UF_union(Agnode_t *, Agnode_t *);
     extern void undoClusterEdges(graph_t * g);
-    extern void update(edge_t * e, edge_t * f);
     extern void updateBB(graph_t * g, textlabel_t * lp);
     extern void use_library(char *);
     extern char *username(void);

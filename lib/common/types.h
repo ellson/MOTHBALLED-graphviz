@@ -55,11 +55,15 @@ extern "C" {
 	pointf LL, UR;
     } boxf;
 
-    typedef struct inside_t {
-	pointf *p;
-	double *r;
-	node_t *n;
-	edge_t *e;
+    typedef union inside_t {
+	struct {
+	    pointf* p;
+	    double* r;
+	} a;
+	struct {
+	    node_t* n;
+	    box*    bp;
+	} s;
     } inside_t;
 
     typedef struct port {	/* internal edge endpoint specification */

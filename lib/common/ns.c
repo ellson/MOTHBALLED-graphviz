@@ -384,7 +384,8 @@ static void rerank(node_t * v, int delta)
 /* e is the tree edge that is leaving and f is the nontree edge that
  * is entering.  compute new cut values, ranks, and exchange e and f.
  */
-void update(edge_t * e, edge_t * f)
+static void 
+update(edge_t * e, edge_t * f)
 {
     int cutvalue, delta;
     node_t *lca;
