@@ -11,7 +11,7 @@ INCS =  -I. \
 	-I../common \
 	$(EXTLIB_INC)
 
-DEFINES = -DHAVE_CONFIG_H
+DEFINES = -DHAVE_CONFIG_H -DGVLIBDIR=$(LIBDIR)
 
 HDRS = gvc.h gvcint.h gvplugin_render.h \
 	gvplugin_layout.h gvplugin_text.h gvplugin.h
