@@ -14,10 +14,10 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-/* This is the public header for the callers of libgvrender */
+/* This is the public header for the callers of libgvc */
 
-#ifndef GVRENDER_H
-#define GVRENDER_H
+#ifndef GVC_H
+#define GVC_H
 
 #include "gvplugin.h"
 #include "gvcint.h"
@@ -113,4 +113,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVLAYOUT_H */
+#endif				/* GVC_H */

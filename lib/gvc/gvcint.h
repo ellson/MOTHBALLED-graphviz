@@ -16,8 +16,8 @@
 
 /* Common header used by both clients and plugins */
 
-#ifndef GVRENDERINT_H
-#define GVRENDERINT_H
+#ifndef GVCINT_H
+#define GVCINT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -152,4 +152,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVRENDERINT_H */
+#endif				/* GVCINT_H */
