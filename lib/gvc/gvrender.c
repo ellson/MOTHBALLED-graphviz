@@ -106,7 +106,7 @@ int gvrender_features(GVC_t * gvc)
     return features;
 }
 
-extern gvevent_key_binding_t *gvevent_key_binding;
+extern gvevent_key_binding_t gvevent_key_binding[];
 extern int gvevent_key_binding_size;
 
 void gvrender_initialize(GVC_t * gvc)
