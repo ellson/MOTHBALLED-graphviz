@@ -97,8 +97,8 @@ gv_guile.cpp: gv.i
 gv_java.cpp: gv.i
 	$(SWIG) -c++ -java -o gv_java.cpp gv.i
 
-gv_ocaml.cpp: gv.i
-	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp gv.i
+#gv_ocaml.cpp: gv.i
+#	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp gv.i
 
 gv_perl.cpp: gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp gv.i
@@ -118,12 +118,12 @@ gv_tcl.cpp: gv.i
 install-exec-hook:
 	cp $(top_srcdir)/tclpkg/gv/*.cs $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/*.java $(DESTDIR)/$(libdir)/@PACKAGE@/
-	cp $(top_srcdir)/tclpkg/gv/*.ml $(DESTDIR)/$(libdir)/@PACKAGE@/
-	cp $(top_srcdir)/tclpkg/gv/*.mli $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/*.php $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/php_gv.h $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/*.pm $(DESTDIR)/$(libdir)/@PACKAGE@/
 	cp $(top_srcdir)/tclpkg/gv/*.py $(DESTDIR)/$(libdir)/@PACKAGE@/
+#	cp $(top_srcdir)/tclpkg/gv/*.ml $(DESTDIR)/$(libdir)/@PACKAGE@/
+#	cp $(top_srcdir)/tclpkg/gv/*.mli $(DESTDIR)/$(libdir)/@PACKAGE@/
 	
 if WITH_TCL
 all-local: pkgIndex.tcl
@@ -163,12 +163,12 @@ test_java: libgv_java.la
 		javac *.java; \
 		LD_LIBRARY_PATH=. java test)
 
-test_ocaml: libgv_ocaml.la
-	(cd ocaml; \
-		ln -fs ../.libs/libgv_ocaml.so libgv.so; \
-		cp -f ../*.ocaml .; \
-		ocamlc *.ocaml; \
-		LD_LIBRARY_PATH=. ocaml test)
+#test_ocaml: libgv_ocaml.la
+#	(cd ocaml; \
+#		ln -fs ../.libs/libgv_ocaml.so libgv.so; \
+#		cp -f ../*.ocaml .; \
+#		ocamlc *.ocaml; \
+#		LD_LIBRARY_PATH=. ocaml test)
 
 test_perl: libgv_perl.la
 	(cd perl; \
@@ -206,7 +206,8 @@ EXTRA_DIST = gv.i \
 	gv.pm \
 	gv.php php_gv.h \
 	gv.py \
-	gv.ml gv.mli
+	gv.ml gv.mli \
+	demo/*
 	
 
 CLEANFILES = csharp/SWIG*.cs csharp/gv*.cs csharp/*.dot csharp/*.png csharp/*.so \
