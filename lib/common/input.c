@@ -415,9 +415,6 @@ graph_t *next_input_graph(void)
 
 void graph_init(graph_t * g)
 {
-#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
-    initDPI(g);
-#endif
     /* initialize the graph */
     init_ugraph(g);
 
@@ -557,7 +554,6 @@ void init_ugraph(graph_t * g)
 	else if (streq(p, "RL"))
 	    GD_rankdir(g) = RANKDIR_RL;
     }
-    do_graph_label(g);
     xf = late_double(g, agfindattr(g, "nodesep"), DEFAULT_NODESEP,
 		     MIN_NODESEP);
     GD_nodesep(g) = POINTS(xf);
@@ -602,6 +598,13 @@ void init_ugraph(graph_t * g)
     if (((p = agget(g, "dpi")) && p[0])
 	|| ((p = agget(g, "resolution")) && p[0]))
 	GD_drawing(g)->dpi = atof(p);
+
+    /* The following two functions rely on dpi being set */
+#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
+    if (GD_drawing(g)->dpi < 1.0) GD_drawing(g)->dpi = DEFAULT_DPI;
+    initDPI(g);
+#endif
+    do_graph_label(g);
 
     Nodesep = 1.0;
     Nodefactor = 1.0;
