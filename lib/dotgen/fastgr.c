@@ -47,7 +47,8 @@ edge_t *find_fast_edge(node_t * u, node_t * v)
     return ffe(u, ND_out(u), v, ND_in(v));
 }
 
-node_t *find_fast_node(graph_t * g, node_t * n)
+static node_t*
+find_fast_node(graph_t * g, node_t * n)
 {
     node_t *v;
     for (v = GD_nlist(g); v; v = ND_next(v))
@@ -62,7 +63,8 @@ edge_t *find_flat_edge(node_t * u, node_t * v)
 }
 
 /* safe_list_append - append e to list L only if e not already a member */
-void safe_list_append(edge_t * e, elist * L)
+static void 
+safe_list_append(edge_t * e, elist * L)
 {
     int i;
 
@@ -120,7 +122,8 @@ void delete_fast_edge(edge_t * e)
     zapinlist(&(ND_in(e->head)), e);
 }
 
-void safe_delete_fast_edge(edge_t * e)
+static void 
+safe_delete_fast_edge(edge_t * e)
 {
     int i;
     edge_t *f;
@@ -144,11 +147,14 @@ void safe_other_edge(edge_t * e)
     safe_list_append(e, &(ND_other(e->tail)));
 }
 
-void delete_other_edge(edge_t * e)
+#ifdef OBSOLETET
+static void 
+delete_other_edge(edge_t * e)
 {
     assert(e != NULL);
     zapinlist(&(ND_other(e->tail)), e);
 }
+#endif
 
 /* orig might be an input edge, reverse of an input edge, or virtual edge */
 edge_t *new_virtual_edge(node_t * u, node_t * v, edge_t * orig)
@@ -302,18 +308,8 @@ void fastgr(graph_t * g)
 }
 #endif
 
-void merge_oneway(edge_t * e, edge_t * rep)
-{
-    if (rep == ED_to_virt(e)) {
-	agerr(AGWARN, "merge_oneway glitch\n");
-	return;
-    }
-    assert(ED_to_virt(e) == NULL);
-    ED_to_virt(e) = rep;
-    basic_merge(e, rep);
-}
-
-void basic_merge(edge_t * e, edge_t * rep)
+static void 
+basic_merge(edge_t * e, edge_t * rep)
 {
     if (ED_minlen(rep) < ED_minlen(e))
 	ED_minlen(rep) = ED_minlen(e);
@@ -325,7 +321,20 @@ void basic_merge(edge_t * e, edge_t * rep)
     }
 }
 
-static void unrep(edge_t * rep, edge_t * e)
+void 
+merge_oneway(edge_t * e, edge_t * rep)
+{
+    if (rep == ED_to_virt(e)) {
+	agerr(AGWARN, "merge_oneway glitch\n");
+	return;
+    }
+    assert(ED_to_virt(e) == NULL);
+    ED_to_virt(e) = rep;
+    basic_merge(e, rep);
+}
+
+static void 
+unrep(edge_t * rep, edge_t * e)
 {
     ED_count(rep) -= ED_count(e);
     ED_xpenalty(rep) -= ED_xpenalty(e);
@@ -352,7 +361,9 @@ void unmerge_oneway(edge_t * e)
     ED_to_virt(e) = NULL;
 }
 
-int is_fast_node(graph_t * g, node_t * v)
+#ifdef OBSOLETET
+static int 
+is_fast_node(graph_t * g, node_t * v)
 {
     node_t *n;
 
@@ -361,3 +372,4 @@ int is_fast_node(graph_t * g, node_t * v)
 	    return TRUE;
     return FALSE;
 }
+#endif

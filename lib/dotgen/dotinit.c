@@ -37,7 +37,8 @@ void dot_nodesize(node_t * n, boolean flip)
     ND_ht_i(n) = POINTS(y);
 }
 
-void dot_init_node(node_t * n)
+static void 
+dot_init_node(node_t * n)
 {
     common_init_node(n);
     dot_nodesize(n, GD_flip(n->graph));
@@ -49,7 +50,8 @@ void dot_init_node(node_t * n)
     ND_UF_size(n) = 1;
 }
 
-void dot_init_edge(edge_t * e)
+static void 
+dot_init_edge(edge_t * e)
 {
     char *tailgroup, *headgroup;
 
@@ -72,7 +74,8 @@ void dot_init_edge(edge_t * e)
     ED_minlen(e) = late_int(e, E_minlen, 1, 0);
 }
 
-void dot_init_node_edge(graph_t * g)
+static void 
+dot_init_node_edge(graph_t * g)
 {
     node_t *n;
     edge_t *e;
@@ -98,7 +101,8 @@ static void free_edge_list(elist L)
 }
 #endif
 
-void dot_cleanup_node(node_t * n)
+static void 
+dot_cleanup_node(node_t * n)
 {
     free_list(ND_in(n));
     free_list(ND_out(n));
@@ -111,7 +115,8 @@ void dot_cleanup_node(node_t * n)
     memset(&(n->u), 0, sizeof(Agnodeinfo_t));
 }
 
-void dot_free_splines(edge_t * e)
+static void 
+dot_free_splines(edge_t * e)
 {
     int i;
     if (ED_spl(e)) {
@@ -123,7 +128,8 @@ void dot_free_splines(edge_t * e)
     ED_spl(e) = NULL;
 }
 
-void dot_cleanup_edge(edge_t * e)
+static void 
+dot_cleanup_edge(edge_t * e)
 {
     dot_free_splines(e);
     free_label(ED_label(e));
@@ -163,7 +169,8 @@ static void free_virtual_node_list(node_t * vn)
     }
 }
 
-void dot_cleanup_graph(graph_t * g)
+static void 
+dot_cleanup_graph(graph_t * g)
 {
     int i, c;
     graph_t *clust;
@@ -200,7 +207,8 @@ void dot_cleanup(graph_t * g)
     dot_cleanup_graph(g);
 }
 
-void dot_init_graph(Agraph_t * g)
+static void 
+dot_init_graph(Agraph_t * g)
 {
     UseRankdir = TRUE;
     graph_init(g);

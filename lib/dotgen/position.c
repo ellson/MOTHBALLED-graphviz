@@ -36,6 +36,25 @@ static void make_lrvn(graph_t * g);
 static void contain_nodes(graph_t * g);
 static int idealsize(graph_t * g, double);
 
+static void
+dumpNS (graph_t * g)
+{
+    node_t* n = GD_nlist(g);
+    elist el;
+    edge_t* e;
+    int i;
+
+    while (n) {
+	el = ND_out(n);
+	for (i = 0; i < el.size; i++) {
+	    e = el.list[i];
+	    fprintf (stderr, "%s(%x) -> %s(%x) : %d\n", e->tail->name,e->tail, e->head->name, e->head,
+		ED_minlen(e));
+	}
+	n = ND_next(n); 
+    }
+}
+
 void dot_position(graph_t * g)
 {
     if (GD_nlist(g) == NULL)
@@ -48,6 +67,7 @@ void dot_position(graph_t * g)
     if (flat_edges(g))
 	set_ycoords(g);
     create_aux_edges(g);
+/* dumpNS (g); */
     rank(g, 2, nsiter2(g));	/* LR balance == 2 */
     set_xcoords(g);
     set_aspect(g);
@@ -136,17 +156,18 @@ static void make_LR_constraints(graph_t * g)
 	    u = rank[i].v[j];
 	    ND_mval(u) = ND_rw_i(u);	/* keep it somewhere safe */
 	    if (ND_other(u).size > 0) {	/* compute self size */
+		/* FIX: dot assumes all self-edges go to the right. This
+                 * is no longer true, though makeSelfEdge still attempts to
+                 * put as many as reasonable on the right. The dot code
+                 * should be modified to allow a box reflecting the placement
+                 * of all self-edges, and use that to reposition the nodes.
+                 * Note that this would not only affect left and right
+                 * positioning but may also affect interrank spacing.
+                 */
 		sw = 0;
 		for (k = 0; (e = ND_other(u).list[k]); k++) {
 		    if (e->tail == e->head) {
-			sw += SELF_EDGE_SIZE;
-			if (ED_label(e)) {
-			    double label_width;
-			    label_width =
-				GD_flip(g) ? ED_label(e)->dimen.
-				y : ED_label(e)->dimen.x;
-			    sw += label_width;
-			}
+			sw += selfRightSpace (e);
 		    }
 		}
 		ND_rw_i(u) += sw;	/* increment to include self edges */

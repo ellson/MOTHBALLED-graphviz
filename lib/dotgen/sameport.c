@@ -152,7 +152,7 @@ static void sameport(node_t * u, elist * l, double arr_len)
 	curve[3].x = ROUND(x2);
 	curve[3].y = ROUND(y2);
 
-	shape_clip(u, curve, 0);
+	shape_clip(u, curve);
 	x1 = curve[0].x - ND_coord_i(u).x;
 	y1 = curve[0].y - ND_coord_i(u).y;
     }
@@ -169,7 +169,7 @@ static void sameport(node_t * u, elist * l, double arr_len)
     prt.theta = 0;
     prt.side = 0;
 
-#ifdef OLD
+#ifdef OBSOLETE
 This code appears obsolete and wrong. First, we don't use arr_prt
 anymore, as we have previously ifdef'ed out the code below where it
 is used. In addition, it resets the rank height. But we've already
@@ -208,7 +208,7 @@ nodes and maintaining equal separation when specified
     for (i = 0; i < l->size; i++) {
 	e = l->list[i];
 	arrow_flags(e, &sflag, &eflag);
-#ifndef OLD
+#ifndef OBSOLETE
 	for (; e; e = ED_to_virt(e)) {	/* assign to all virt edges of e */
 	    for (f = e; f;
 		 f = ED_edge_type(f) == VIRTUAL &&

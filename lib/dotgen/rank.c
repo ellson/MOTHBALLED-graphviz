@@ -31,26 +31,62 @@
 
 #include	"dot.h"
 
-
-void dot_rank(graph_t * g)
+static void 
+renewlist(elist * L)
 {
-    edgelabel_ranks(g);
-    collapse_sets(g);
-    /*collapse_leaves(g); */
-    class1(g);
-    minmax_edges(g);
-    decompose(g, 0);
-    acyclic(g);
-    rank1(g);
-    expand_ranksets(g);
-    cleanup1(g);
+    int i;
+    for (i = L->size; i >= 0; i--)
+	L->list[i] = NULL;
+    L->size = 0;
+}
+
+static void 
+cleanup1(graph_t * g)
+{
+    node_t *n;
+    edge_t *e, *f;
+    int c;
+
+    for (c = 0; c < GD_comp(g).size; c++) {
+	GD_nlist(g) = GD_comp(g).list[c];
+	for (n = GD_nlist(g); n; n = ND_next(n)) {
+	    renewlist(&ND_in(n));
+	    renewlist(&ND_out(n));
+	    ND_mark(n) = FALSE;
+	}
+    }
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    f = ED_to_virt(e);
+	    if (f && (e == ED_to_orig(f))) {
+		/* Null out any other references to f to make sure we don't handle it
+		 * a second time. For example, parallel multiedges share a virtual edge.
+		 */
+		edge_t *e1, *f1;
+		for (e1 = agfstout(g, n); e1; e1 = agnxtout(g, e1)) {
+		    if (e != e1) {
+			f1 = ED_to_virt(e1);
+			if (f1 && (f == f1)) {
+			    ED_to_virt(e1) = NULL;
+			}
+		    }
+		}
+		free(f);
+	    }
+	    ED_to_virt(e) = NULL;
+	}
+    }
+    free(GD_comp(g).list);
+    GD_comp(g).list = NULL;
+    GD_comp(g).size = 0;
 }
 
 /* When there are edge labels, extra ranks are reserved here for the virtual
  * nodes of the labels.  This is done by doubling the input edge lengths.
  * The input rank separation is adjusted to compensate.
  */
-void edgelabel_ranks(graph_t * g)
+static void 
+edgelabel_ranks(graph_t * g)
 {
     node_t *n;
     edge_t *e;
@@ -63,70 +99,9 @@ void edgelabel_ranks(graph_t * g)
     }
 }
 
-/* Run the network simplex algorithm on each component. */
-void rank1(graph_t * g)
-{
-    int maxiter = MAXINT;
-    int c;
-    char *s;
-
-    if ((s = agget(g, "nslimit1")))
-	maxiter = atof(s) * agnnodes(g);
-    for (c = 0; c < GD_comp(g).size; c++) {
-	GD_nlist(g) = GD_comp(g).list[c];
-	rank(g, (GD_n_cluster(g) == 0 ? 1 : 0), maxiter);	/* TB balance */
-    }
-}
-
-int is_cluster(graph_t * g)
-{
-    return (strncmp(g->name, "cluster", 7) == 0);
-}
-
-int rank_set_class(graph_t * g)
-{
-    static char *name[] = { "same", "min", "source", "max", "sink", NULL };
-    static int class[] =
-	{ SAMERANK, MINRANK, SOURCERANK, MAXRANK, SINKRANK, 0 };
-    int val;
-
-    if (is_cluster(g))
-	return CLUSTER;
-    val = maptoken(agget(g, "rank"), name, class);
-    GD_set_type(g) = val;
-    return val;
-}
-
-/* Execute union commands for "same rank" subgraphs and clusters. */
-void collapse_sets(graph_t * g)
-{
-    int c;
-    graph_t *mg, *subg;
-    node_t *mn, *n;
-    edge_t *me;
-
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
-	subg = agusergraph(mn);
-
-	c = rank_set_class(subg);
-	if (c) {
-	    if ((c == CLUSTER) && CL_type == LOCAL)
-		collapse_cluster(g, subg);
-	    else
-		collapse_rankset(g, subg, c);
-	}
-
-	/* mark nodes with ordered edges so their leaves are not collapsed */
-	if (agget(subg, "ordering"))
-	    for (n = agfstnode(subg); n; n = agnxtnode(subg, n))
-		ND_order(n) = 1;
-    }
-}
-
 /* Merge the nodes of a min, max, or same rank set. */
-void collapse_rankset(graph_t * g, graph_t * subg, int kind)
+static void 
+collapse_rankset(graph_t * g, graph_t * subg, int kind)
 {
     node_t *u, *v;
 
@@ -164,66 +139,193 @@ void collapse_rankset(graph_t * g, graph_t * subg, int kind)
     }
 }
 
-node_t *merge_leaves(graph_t * g, node_t * cur, node_t * new)
+static int 
+rank_set_class(graph_t * g)
 {
-    node_t *rv;
+    static char *name[] = { "same", "min", "source", "max", "sink", NULL };
+    static int class[] =
+	{ SAMERANK, MINRANK, SOURCERANK, MAXRANK, SINKRANK, 0 };
+    int val;
 
-    if (cur == NULL)
-	rv = new;
-    else {
-	rv = UF_union(cur, new);
-	ND_ht_i(rv) = MAX(ND_ht_i(cur), ND_ht_i(new));
-	ND_lw_i(rv) = ND_lw_i(cur) + ND_lw_i(new) + GD_nodesep(g) / 2;
-	ND_rw_i(rv) = ND_rw_i(cur) + ND_rw_i(new) + GD_nodesep(g) / 2;
-    }
-    return rv;
+    if (is_cluster(g))
+	return CLUSTER;
+    val = maptoken(agget(g, "rank"), name, class);
+    GD_set_type(g) = val;
+    return val;
 }
 
-void potential_leaf(graph_t * g, edge_t * e, node_t * leaf)
+static int 
+make_new_cluster(graph_t * g, graph_t * subg)
 {
-    node_t *par;
-
-    if ((ED_tail_port(e).p.x) || (ED_head_port(e).p.x))
-	return;
-    if ((ED_minlen(e) != 1) || (ND_order(e->tail) > 0))
-	return;
-    par = ((leaf != e->head) ? e->head : e->tail);
-    ND_ranktype(leaf) = LEAFSET;
-    if (par == e->tail)
-	GD_outleaf(par) = merge_leaves(g, GD_outleaf(par), leaf);
-    else
-	GD_inleaf(par) = merge_leaves(g, GD_inleaf(par), leaf);
+    int cno;
+    cno = ++(GD_n_cluster(g));
+    GD_clust(g) = ZALLOC(cno + 1, GD_clust(g), graph_t *, GD_n_cluster(g));
+    GD_clust(g)[cno] = subg;
+    do_graph_label(subg);
+    return cno;
 }
 
-void collapse_leaves(graph_t * g)
+static void 
+node_induce(graph_t * par, graph_t * g)
 {
-    node_t *n;
+    node_t *n, *nn;
     edge_t *e;
+    int i;
+
+    /* enforce that a node is in at most one cluster at this level */
+    for (n = agfstnode(g); n; n = nn) {
+	nn = agnxtnode(g, n);
+	if (ND_ranktype(n)) {
+	    agdelete(g, n);
+	    continue;
+	}
+	for (i = 1; i < GD_n_cluster(par); i++)
+	    if (agcontains(GD_clust(par)[i], n))
+		break;
+	if (i < GD_n_cluster(par))
+	    agdelete(g, n);
+	ND_clust(n) = NULL;
+    }
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-
-	/* consider n as a potential leaf of some other node. */
-	if ((ND_ranktype(n) != NOCMD) || (ND_order(n)))
-	    continue;
-	if (agfstout(g, n) == NULL) {
-	    if ((e = agfstin(g, n)) && (agnxtin(g, e) == NULL)) {
-		potential_leaf(g, e, n);
-		continue;
-	    }
-	}
-	if (agfstin(g, n) == NULL) {
-	    if ((e = agfstout(g, n)) && (agnxtout(g, e) == NULL)) {
-		potential_leaf(g, e, n);
-		continue;
-	    }
+	for (e = agfstout(g->root, n); e; e = agnxtout(g->root, e)) {
+	    if (agcontains(g, e->head))
+		aginsert(g, e);
 	}
     }
+}
+
+static void 
+scan_ranks(graph_t * g)
+{
+    node_t *n, *leader = NULL;
+    GD_minrank(g) = MAXSHORT;
+    GD_maxrank(g) = -1;
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	if (GD_maxrank(g) < ND_rank(n))
+	    GD_maxrank(g) = ND_rank(n);
+	if (GD_minrank(g) > ND_rank(n))
+	    GD_minrank(g) = ND_rank(n);
+	if (leader == NULL)
+	    leader = n;
+	else {
+	    if (ND_rank(n) < ND_rank(leader))
+		leader = n;
+	}
+    }
+    GD_leader(g) = leader;
+}
+
+static void
+cluster_leader(graph_t * clust)
+{
+    node_t *leader, *n;
+    int maxrank = 0;
+
+    /* find number of ranks and select a leader */
+    leader = NULL;
+    for (n = GD_nlist(clust); n; n = ND_next(n)) {
+	if ((ND_rank(n) == 0) && (ND_node_type(n) == NORMAL))
+	    leader = n;
+	if (maxrank < ND_rank(n))
+	    maxrank = ND_rank(n);
+    }
+    assert(leader != NULL);
+    GD_leader(clust) = leader;
+
+    for (n = agfstnode(clust); n; n = agnxtnode(clust, n)) {
+	assert((ND_UF_size(n) <= 1) || (n == leader));
+	UF_union(n, leader);
+	ND_ranktype(n) = CLUSTER;
+    }
+}
+
+/*
+ * A cluster is collapsed in three steps.
+ * 1) The nodes of the cluster are ranked locally.
+ * 2) The cluster is collapsed into one node on the least rank.
+ * 3) In class1(), any inter-cluster edges are converted using
+ *    the "virtual node + 2 edges" trick.
+ */
+static void 
+collapse_cluster(graph_t * g, graph_t * subg)
+{
+    if (GD_cluster_was_collapsed(subg))
+	return;
+    GD_cluster_was_collapsed(subg) = TRUE;
+    node_induce(g, subg);
+    if (agfstnode(subg) == NULL)
+	return;
+    make_new_cluster(g, subg);
+    if (CL_type == LOCAL) {
+	dot_rank(subg);
+	cluster_leader(subg);
+    } else
+	scan_ranks(subg);
+}
+
+/* Execute union commands for "same rank" subgraphs and clusters. */
+static void 
+collapse_sets(graph_t * g)
+{
+    int c;
+    graph_t *mg, *subg;
+    node_t *mn, *n;
+    edge_t *me;
+
+    mg = g->meta_node->graph;
+    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
+	mn = me->head;
+	subg = agusergraph(mn);
+
+	c = rank_set_class(subg);
+	if (c) {
+	    if ((c == CLUSTER) && CL_type == LOCAL)
+		collapse_cluster(g, subg);
+	    else
+		collapse_rankset(g, subg, c);
+	}
+
+	/* mark nodes with ordered edges so their leaves are not collapsed */
+	if (agget(subg, "ordering"))
+	    for (n = agfstnode(subg); n; n = agnxtnode(subg, n))
+		ND_order(n) = 1;
+    }
+}
+
+static void 
+find_clusters(graph_t * g)
+{
+    graph_t *mg, *subg;
+    node_t *mn;
+    edge_t *me;
+
+    mg = g->meta_node->graph;
+    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
+	mn = me->head;
+	subg = agusergraph(mn);
+
+	if (GD_set_type(subg) == CLUSTER)
+	    collapse_cluster(g, subg);
+    }
+}
+
+static void 
+set_minmax(graph_t * g)
+{
+    int c;
+
+    GD_minrank(g) += GD_leader(g)->u.rank;
+    GD_maxrank(g) += GD_leader(g)->u.rank;
+    for (c = 1; c <= GD_n_cluster(g); c++)
+	set_minmax(GD_clust(g)[c]);
 }
 
 /* To ensure that min and max rank nodes always have the intended rank
  * assignment, reverse any incompatible edges.
  */
-void minmax_edges(graph_t * g)
+static void 
+minmax_edges(graph_t * g)
 {
     node_t *n;
     edge_t *e;
@@ -262,88 +364,19 @@ void minmax_edges(graph_t * g)
     }
 }
 
-/*
- * A cluster is collapsed in three steps.
- * 1) The nodes of the cluster are ranked locally.
- * 2) The cluster is collapsed into one node on the least rank.
- * 3) In class1(), any inter-cluster edges are converted using
- *    the "virtual node + 2 edges" trick.
- */
-void collapse_cluster(graph_t * g, graph_t * subg)
+/* Run the network simplex algorithm on each component. */
+static void 
+rank1(graph_t * g)
 {
-    if (GD_cluster_was_collapsed(subg))
-	return;
-    GD_cluster_was_collapsed(subg) = TRUE;
-    node_induce(g, subg);
-    if (agfstnode(subg) == NULL)
-	return;
-    make_new_cluster(g, subg);
-    if (CL_type == LOCAL) {
-	dot_rank(subg);
-	cluster_leader(subg);
-    } else
-	scan_ranks(subg);
-}
+    int maxiter = MAXINT;
+    int c;
+    char *s;
 
-int make_new_cluster(graph_t * g, graph_t * subg)
-{
-    int cno;
-    cno = ++(GD_n_cluster(g));
-    GD_clust(g) = ZALLOC(cno + 1, GD_clust(g), graph_t *, GD_n_cluster(g));
-    GD_clust(g)[cno] = subg;
-    do_graph_label(subg);
-    return cno;
-}
-
-void node_induce(graph_t * par, graph_t * g)
-{
-    node_t *n, *nn;
-    edge_t *e;
-    int i;
-
-    /* enforce that a node is in at most one cluster at this level */
-    for (n = agfstnode(g); n; n = nn) {
-	nn = agnxtnode(g, n);
-	if (ND_ranktype(n)) {
-	    agdelete(g, n);
-	    continue;
-	}
-	for (i = 1; i < GD_n_cluster(par); i++)
-	    if (agcontains(GD_clust(par)[i], n))
-		break;
-	if (i < GD_n_cluster(par))
-	    agdelete(g, n);
-	ND_clust(n) = NULL;
-    }
-
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	for (e = agfstout(g->root, n); e; e = agnxtout(g->root, e)) {
-	    if (agcontains(g, e->head))
-		aginsert(g, e);
-	}
-    }
-}
-
-void cluster_leader(graph_t * clust)
-{
-    node_t *leader, *n;
-    int maxrank = 0;
-
-    /* find number of ranks and select a leader */
-    leader = NULL;
-    for (n = GD_nlist(clust); n; n = ND_next(n)) {
-	if ((ND_rank(n) == 0) && (ND_node_type(n) == NORMAL))
-	    leader = n;
-	if (maxrank < ND_rank(n))
-	    maxrank = ND_rank(n);
-    }
-    assert(leader != NULL);
-    GD_leader(clust) = leader;
-
-    for (n = agfstnode(clust); n; n = agnxtnode(clust, n)) {
-	assert((ND_UF_size(n) <= 1) || (n == leader));
-	UF_union(n, leader);
-	ND_ranktype(n) = CLUSTER;
+    if ((s = agget(g, "nslimit1")))
+	maxiter = atof(s) * agnnodes(g);
+    for (c = 0; c < GD_comp(g).size; c++) {
+	GD_nlist(g) = GD_comp(g).list[c];
+	rank(g, (GD_n_cluster(g) == 0 ? 1 : 0), maxiter);	/* TB balance */
     }
 }
 
@@ -391,96 +424,83 @@ void expand_ranksets(graph_t * g)
     }
 }
 
-void renewlist(elist * L)
+void dot_rank(graph_t * g)
 {
-    int i;
-    for (i = L->size; i >= 0; i--)
-	L->list[i] = NULL;
-    L->size = 0;
+    edgelabel_ranks(g);
+    collapse_sets(g);
+    /*collapse_leaves(g); */
+    class1(g);
+    minmax_edges(g);
+    decompose(g, 0);
+    acyclic(g);
+    rank1(g);
+    expand_ranksets(g);
+    cleanup1(g);
 }
 
-void cleanup1(graph_t * g)
+int is_cluster(graph_t * g)
+{
+    return (strncmp(g->name, "cluster", 7) == 0);
+}
+
+static node_t*
+merge_leaves(graph_t * g, node_t * cur, node_t * new)
+{
+    node_t *rv;
+
+    if (cur == NULL)
+	rv = new;
+    else {
+	rv = UF_union(cur, new);
+	ND_ht_i(rv) = MAX(ND_ht_i(cur), ND_ht_i(new));
+	ND_lw_i(rv) = ND_lw_i(cur) + ND_lw_i(new) + GD_nodesep(g) / 2;
+	ND_rw_i(rv) = ND_rw_i(cur) + ND_rw_i(new) + GD_nodesep(g) / 2;
+    }
+    return rv;
+}
+
+static void 
+potential_leaf(graph_t * g, edge_t * e, node_t * leaf)
+{
+    node_t *par;
+
+    if ((ED_tail_port(e).p.x) || (ED_head_port(e).p.x))
+	return;
+    if ((ED_minlen(e) != 1) || (ND_order(e->tail) > 0))
+	return;
+    par = ((leaf != e->head) ? e->head : e->tail);
+    ND_ranktype(leaf) = LEAFSET;
+    if (par == e->tail)
+	GD_outleaf(par) = merge_leaves(g, GD_outleaf(par), leaf);
+    else
+	GD_inleaf(par) = merge_leaves(g, GD_inleaf(par), leaf);
+}
+
+#ifdef OBSOLETE
+static void 
+collapse_leaves(graph_t * g)
 {
     node_t *n;
-    edge_t *e, *f;
-    int c;
+    edge_t *e;
 
-    for (c = 0; c < GD_comp(g).size; c++) {
-	GD_nlist(g) = GD_comp(g).list[c];
-	for (n = GD_nlist(g); n; n = ND_next(n)) {
-	    renewlist(&ND_in(n));
-	    renewlist(&ND_out(n));
-	    ND_mark(n) = FALSE;
-	}
-    }
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    f = ED_to_virt(e);
-	    if (f && (e == ED_to_orig(f))) {
-		/* Null out any other references to f to make sure we don't handle it
-		 * a second time. For example, parallel multiedges share a virtual edge.
-		 */
-		edge_t *e1, *f1;
-		for (e1 = agfstout(g, n); e1; e1 = agnxtout(g, e1)) {
-		    if (e != e1) {
-			f1 = ED_to_virt(e1);
-			if (f1 && (f == f1)) {
-			    ED_to_virt(e1) = NULL;
-			}
-		    }
-		}
-		free(f);
+
+	/* consider n as a potential leaf of some other node. */
+	if ((ND_ranktype(n) != NOCMD) || (ND_order(n)))
+	    continue;
+	if (agfstout(g, n) == NULL) {
+	    if ((e = agfstin(g, n)) && (agnxtin(g, e) == NULL)) {
+		potential_leaf(g, e, n);
+		continue;
 	    }
-	    ED_to_virt(e) = NULL;
+	}
+	if (agfstin(g, n) == NULL) {
+	    if ((e = agfstout(g, n)) && (agnxtout(g, e) == NULL)) {
+		potential_leaf(g, e, n);
+		continue;
+	    }
 	}
     }
-    free(GD_comp(g).list);
-    GD_comp(g).list = NULL;
-    GD_comp(g).size = 0;
 }
+#endif
 
-void set_minmax(graph_t * g)
-{
-    int c;
-
-    GD_minrank(g) += GD_leader(g)->u.rank;
-    GD_maxrank(g) += GD_leader(g)->u.rank;
-    for (c = 1; c <= GD_n_cluster(g); c++)
-	set_minmax(GD_clust(g)[c]);
-}
-
-void scan_ranks(graph_t * g)
-{
-    node_t *n, *leader = NULL;
-    GD_minrank(g) = MAXSHORT;
-    GD_maxrank(g) = -1;
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (GD_maxrank(g) < ND_rank(n))
-	    GD_maxrank(g) = ND_rank(n);
-	if (GD_minrank(g) > ND_rank(n))
-	    GD_minrank(g) = ND_rank(n);
-	if (leader == NULL)
-	    leader = n;
-	else {
-	    if (ND_rank(n) < ND_rank(leader))
-		leader = n;
-	}
-    }
-    GD_leader(g) = leader;
-}
-
-void find_clusters(graph_t * g)
-{
-    graph_t *mg, *subg;
-    node_t *mn;
-    edge_t *me;
-
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
-	subg = agusergraph(mn);
-
-	if (GD_set_type(subg) == CLUSTER)
-	    collapse_cluster(g, subg);
-    }
-}
