@@ -21,22 +21,19 @@
 
 #include "dot.h"
 
-
-void acyclic(graph_t * g)
+void reverse_edge(edge_t * e)
 {
-    int c;
-    node_t *n;
+    edge_t *f;
 
-    for (c = 0; c < GD_comp(g).size; c++) {
-	GD_nlist(g) = GD_comp(g).list[c];
-	for (n = GD_nlist(g); n; n = ND_next(n))
-	    ND_mark(n) = FALSE;
-	for (n = GD_nlist(g); n; n = ND_next(n))
-	    dfs(n);
-    }
+    delete_fast_edge(e);
+    if ((f = find_fast_edge(e->head, e->tail)))
+	merge_oneway(e, f);
+    else
+	virtual_edge(e->head, e->tail, e);
 }
 
-void dfs(node_t * n)
+static void 
+dfs(node_t * n)
 {
     int i;
     edge_t *e;
@@ -59,13 +56,18 @@ void dfs(node_t * n)
     ND_onstack(n) = FALSE;
 }
 
-void reverse_edge(edge_t * e)
-{
-    edge_t *f;
 
-    delete_fast_edge(e);
-    if ((f = find_fast_edge(e->head, e->tail)))
-	merge_oneway(e, f);
-    else
-	virtual_edge(e->head, e->tail, e);
+void acyclic(graph_t * g)
+{
+    int c;
+    node_t *n;
+
+    for (c = 0; c < GD_comp(g).size; c++) {
+	GD_nlist(g) = GD_comp(g).list[c];
+	for (n = GD_nlist(g); n; n = ND_next(n))
+	    ND_mark(n) = FALSE;
+	for (n = GD_nlist(g); n; n = ND_next(n))
+	    dfs(n);
+    }
 }
+

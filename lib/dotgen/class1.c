@@ -34,6 +34,38 @@ int nonconstraint_edge(edge_t * e)
     return FALSE;
 }
 
+static void 
+interclust1(graph_t * g, node_t * t, node_t * h, edge_t * e)
+{
+    node_t *v, *t0, *h0;
+    int offset, t_len, h_len, t_rank, h_rank;
+    edge_t *rt, *rh;
+
+    if (ND_clust(e->tail))
+	t_rank = ND_rank(e->tail) - ND_rank(GD_leader(ND_clust(e->tail)));
+    else
+	t_rank = 0;
+    if (ND_clust(e->head))
+	h_rank = ND_rank(e->head) - ND_rank(GD_leader(ND_clust(e->head)));
+    else
+	h_rank = 0;
+    offset = ED_minlen(e) + t_rank - h_rank;
+    if (offset > 0) {
+	t_len = 0;
+	h_len = offset;
+    } else {
+	t_len = -offset;
+	h_len = 0;
+    }
+
+    v = virtual_node(g);
+    ND_node_type(v) = SLACKNODE;
+    t0 = UF_find(t);
+    h0 = UF_find(h);
+    rt = make_aux_edge(v, t0, t_len, CL_BACK * ED_weight(e));
+    rh = make_aux_edge(v, h0, h_len, ED_weight(e));
+    ED_to_orig(rt) = ED_to_orig(rh) = e;
+}
 void class1(graph_t * g)
 {
     node_t *n, *t, *h;
@@ -92,34 +124,3 @@ void class1(graph_t * g)
     }
 }
 
-void interclust1(graph_t * g, node_t * t, node_t * h, edge_t * e)
-{
-    node_t *v, *t0, *h0;
-    int offset, t_len, h_len, t_rank, h_rank;
-    edge_t *rt, *rh;
-
-    if (ND_clust(e->tail))
-	t_rank = ND_rank(e->tail) - ND_rank(GD_leader(ND_clust(e->tail)));
-    else
-	t_rank = 0;
-    if (ND_clust(e->head))
-	h_rank = ND_rank(e->head) - ND_rank(GD_leader(ND_clust(e->head)));
-    else
-	h_rank = 0;
-    offset = ED_minlen(e) + t_rank - h_rank;
-    if (offset > 0) {
-	t_len = 0;
-	h_len = offset;
-    } else {
-	t_len = -offset;
-	h_len = 0;
-    }
-
-    v = virtual_node(g);
-    ND_node_type(v) = SLACKNODE;
-    t0 = UF_find(t);
-    h0 = UF_find(h);
-    rt = make_aux_edge(v, t0, t_len, CL_BACK * ED_weight(e));
-    rh = make_aux_edge(v, h0, h_len, ED_weight(e));
-    ED_to_orig(rt) = ED_to_orig(rh) = e;
-}
