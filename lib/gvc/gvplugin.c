@@ -113,7 +113,7 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     s = strrchr(path, '/');
     sym = malloc(strlen(s) + strlen(suffix) + 1);
     strcpy(sym, s+4);         /* strip leading "/lib" */
-    s = strchr(sym, '.');     /* strip trailing ".so" */
+    s = strchr(sym, '.');     /* strip trailing ".so.0" */
     strcpy(s,"_LTX_library"); /* append "_LTX_library" */
 
     ptr = lt_dlsym (hndl, sym);

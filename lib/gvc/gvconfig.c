@@ -137,7 +137,7 @@ void gvconfig(GVC_t * gvc)
     int sz, rc, i, j;
     struct stat config_st, libdir_st;
     FILE *f;
-    char *config_path, *home, *config;
+    char *config_path, *config_glob, *home, *config;
     glob_t globbuf;
     gvplugin_library_t *library;
     gvplugin_api_t *apis;
@@ -145,6 +145,7 @@ void gvconfig(GVC_t * gvc)
 
     char *dot_graphviz = "/.graphviz";
     char *libdir = GVLIBDIR;
+    char *plugin_glob = "/libgvplugin*.so.0";
 
 #define SZ_CONFIG 1000
     
@@ -181,8 +182,11 @@ void gvconfig(GVC_t * gvc)
 	    return;
 	}
 
-	rc = glob("/home/ellson/FIX/Linux.x86_64/lib/graphviz/libgvplugin*.so",
-		GLOB_NOSORT, NULL, &globbuf);
+	config_glob = malloc(strlen(libdir) + strlen(plugin_glob) + 1);
+	strcpy(config_glob, libdir);
+	strcat(config_glob, plugin_glob);
+
+	rc = glob(config_glob, GLOB_NOSORT, NULL, &globbuf);
 
         if (rc == 0) {
 	    for (j = 0; j < globbuf.gl_pathc; j++) {
@@ -209,7 +213,7 @@ void gvconfig(GVC_t * gvc)
 	    }
 	}
 	globfree(&globbuf);
-
+        free(config_glob);
 	fclose(f);
 	return;     /* all plugins have been installed */
     }
