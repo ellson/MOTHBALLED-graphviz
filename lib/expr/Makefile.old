@@ -1,13 +1,13 @@
 #   libexpr.a (short version) make file
 #   Written by Emden R. Gansner (1 Mar 2001)
-
-include ../../Config.mk
-include ../../makearch/$(ARCH)
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 LOC_INCDIR=../include
 LOC_LIBDIR=../lib
 
-INCS = -I. -I$(LOC_INCDIR) -I../.. -I../../cdt
+INCS = -I. -I$(LOC_INCDIR) -I$(ROOT) -I../cdt
 
 DEFINES = -DHAVE_CONFIG_H
 
@@ -44,7 +44,8 @@ exparse.c exparse.h : exparse.y
 
 exop.h : exparse.h
 	echo "static const char* exop[] = {" > exop.h
-	$(SED) -e '/^[ 	]*#[ 	]*define[ 	][ 	]*[A-Z]/!d' -e 's/^[ 	]*#[ 	]*define[ 	]*\([A-Z0-9_]*\).*/	"\1",/' < exparse.h >> exop.h
+	echo "	\"MINTOKEN\"," >> exop.h
+	$(SED) -e '1,/MINTOKEN/d' -e '/^[ 	]*#[ 	]*define[ 	][ 	]*[A-Z]/!d' -e 's/^[ 	]*#[ 	]*define[ 	]*\([A-Z0-9_]*\).*/	"\1",/' < exparse.h >> exop.h
 	echo "};" >> exop.h
 
 clean : 
