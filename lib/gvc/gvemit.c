@@ -373,6 +373,8 @@ static void win_reconfigure_normal(win_t * win, unsigned int width,
 
     if (width > win->gvc->width || height > win->gvc->height)
 	has_grown = 1;
+/* Adjust focus to keep image fixed during window resizing */
+/* FIXME - causes FP error on size reduction */
 //    win->gvc->focus.x +=  ((double)(width - win->gvc->width))
 //		/ (2. * win->gvc->zoom);
 //    win->gvc->focus.y += -((double)(height - win->gvc->height))
@@ -570,5 +572,4 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
    else {
 	emit_graph(gvc, g, flags);
    }
-fprintf(stderr,"gvemit_graph\n");
 }
