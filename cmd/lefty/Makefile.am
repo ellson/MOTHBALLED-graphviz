@@ -32,10 +32,10 @@ lefty_SOURCES = code.c common.c display.c exec.c g.c gfxview.c internal.c \
 # NB. -lXaw must be before -lXt or strange inability-to-get-mouse-focus
 # problems can occur on some systems.
 #
-lefty_LDADD = $(top_builddir)/lefty/dot2l/libdot2l.la \
-	$(top_builddir)/lefty/ws/x11/libws.la \
-	$(top_builddir)/lefty/ws/x11/libfilereq/libfilereq.la \
-	$(top_builddir)/lefty/os/unix/libos.la \
+lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
+	$(top_builddir)/cmd/lefty/ws/x11/libws.la \
+	$(top_builddir)/cmd/lefty/ws/x11/libfilereq/libfilereq.la \
+	$(top_builddir)/cmd/lefty/os/unix/libos.la \
 	@X_LIBS@ @XAW_LIBS@ @X_PRE_LIBS@ @XPM_LIBS@ \
 	-lXt -lXmu -lXext -lX11 @SOCKET_LIBS@ @MATH_LIBS@
 
