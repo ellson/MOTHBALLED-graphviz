@@ -688,7 +688,12 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, double, int),
     double SEP;
     Dt_t *map;
 
-    SEP = expFactor (g);
+    /* This value should be independent of the sep value used to expand
+     * nodes during adjustment. If not, when the adjustment pass produces
+     * a fairly tight layout, the spline code will find that some nodes
+     * still overlap.
+     */
+    SEP = 1.01;
     neato_set_aspect(g);
 
     /* find equivalent edges */
