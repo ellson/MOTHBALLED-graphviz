@@ -39,7 +39,7 @@ typedef enum {
 	double Tfact;		/* scale temp from default expression */
 	double K;		/* spring constant; ideal distance */
 	double T0;              /* initial temperature */
-	int smode;              /* seed mode */
+	seedMode smode;         /* seed mode */
 	int tries;              /* overlap removal */
     } fdpParms_t;
 
