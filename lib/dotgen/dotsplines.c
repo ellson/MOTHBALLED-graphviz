@@ -500,15 +500,18 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
 static int 
 fledgecmp(edge_t** ptr0, edge_t** ptr1)
 {
-    edge_t* e0 = *ptr0;
-    edge_t* e1 = *ptr1;
+    edge_t *e0, *e1;
     point tp0, tp1, hp0, hp1;
+    int y0, y1;
+
+    e0 = *ptr0;
+    e1 = *ptr1;
     tp0 = ED_tail_port(e0).p;
     hp0 = ED_head_port(e0).p;
     tp1 = ED_tail_port(e1).p;
     hp1 = ED_head_port(e1).p;
-    int y0 = (tp0.y + hp0.y)/2;
-    int y1 = (tp1.y + hp1.y)/2;
+    y0 = (tp0.y + hp0.y)/2;
+    y1 = (tp1.y + hp1.y)/2;
     if (y0 != y1) return (y0-y1);
     if ((tp0.y == hp0.y) && (tp1.y == hp1.y)) {
 	if ((tp0.x <= tp1.x) && (hp0.x >= hp1.x)) {
