@@ -45,9 +45,7 @@ extern "C" {
 	int x, y;
     } point;
 
-    typedef struct pointf {
-	double x, y;
-    } pointf;
+    typedef Ppoint_t pointf;
 
     typedef struct box {
 	point LL, UR;
