@@ -268,8 +268,8 @@ fprintf(stderr,"graph_sets_pageSize\n");
 
     job->boundingBox.LL.x = ROUND((job->margin.x + extra.x) * job->dpi / POINTS_PER_INCH);
     job->boundingBox.LL.y = ROUND((job->margin.y + extra.y) * job->dpi / POINTS_PER_INCH);
-    size.x = job->pageSize.x * job->dpi / POINTS_PER_INCH;
-    size.y = job->pageSize.y * job->dpi / POINTS_PER_INCH;
+    size.x = job->pageSize.x * job->zoom * job->dpi / POINTS_PER_INCH;
+    size.y = job->pageSize.y * job->zoom * job->dpi / POINTS_PER_INCH;
     if (GD_drawing(g)->landscape)
 	size = exch_xyf(size);
     job->boundingBox.UR.x = job->boundingBox.LL.x + ROUND(size.x + 1);
