@@ -90,11 +90,10 @@ static void completeregularpath(path *, Agedge_t *, Agedge_t *,
 static int edgecmp(Agedge_t **, Agedge_t **);
 static Agedge_t *getmainedge(Agedge_t *);
 static box makeflatcomponent(box, box, int, int, int, int, int);
-static void make_flat_edge(path *, Agedge_t **, int, int);
+static int make_flat_edge(path *, Agedge_t **, int, int);
 static box makeflatend(box, int, int, box);
 static void make_regular_edge(path *, Agedge_t **, int, int);
 static box makeregularend(box, int, int);
-static void make_self_edge(path *, Agedge_t **, int, int);
 static box maximal_bbox(Agnode_t *, Agedge_t *, Agedge_t *);
 static Agnode_t *neighbor(Agnode_t *, Agedge_t *, Agedge_t *, int);
 static void place_vnlabel(Agnode_t *);
@@ -255,16 +254,33 @@ void dot_splines(graph_t * g)
 		    if (n_edges % CHUNK == 0)
 			GROWEDGES;
 		}
-	    if (ND_other(n).list)
+	    if (ND_other(n).list) {
+		/* In position, each node has its rw stored in mval and,
+                 * if a node is part of a loop, rw may be increased to
+                 * reflect the loops and associated labels. We restore
+                 * the original value here. 
+                 */
+		if (ND_node_type(n) == NORMAL) {
+		    int tmp = ND_rw_i(n);
+		    ND_rw_i(n) = ND_mval(n);
+		    ND_mval(n) = tmp;
+		}
 		for (k = 0; (e = ND_other(n).list[k]); k++) {
 		    setflags(e, 0, 0, AUXGRAPH);
 		    edges[n_edges++] = e;
 		    if (n_edges % CHUNK == 0)
 			GROWEDGES;
 		}
+	    }
 	}
     }
 
+    /* Sort so that equivalent edges are contiguous. 
+     * Equivalence should basically mean that 2 edges has the
+     * same set {(tailnode,tailport),(headnode,headport)}, or
+     * alternatively, the edges would be routed identically if
+     * routed separately.
+     */
     qsort((char *) &edges[0], n_edges, sizeof(edges[0]),
 	  (qsort_cmpf) edgecmp);
 
@@ -294,16 +310,22 @@ void dot_splines(graph_t * g)
 		break;
 	    if (portcmp(ED_head_port(ea), ED_head_port(eb)))
 		break;
+/* #ifdef OBSOLETE */
 	    if ((ED_tree_index(e0) & EDGETYPEMASK) == FLATEDGE
 		&& ED_label(e0) != ED_label(e1))
 		break;
+/* #endif */
 	    if (ED_tree_index(edges[i]) & MAINGRAPH)	/* Aha! -C is on */
 		break;
 	}
 	if (e0->tail == e0->head)
-	    make_self_edge(P, edges, ind, cnt);
-	else if (ND_rank(e0->tail) == ND_rank(e0->head))
-	    make_flat_edge(P, edges, ind, cnt);
+	    makeSelfEdge(P, edges, ind, cnt, Multisep, &sinfo);
+	else if (ND_rank(e0->tail) == ND_rank(e0->head)) {
+	    int end_index = ind+cnt;
+	    while (ind < end_index) {
+		ind = make_flat_edge(P, edges, ind, cnt);
+	    }
+	}
 	else
 	    make_regular_edge(P, edges, ind, cnt);
     }
@@ -397,6 +419,17 @@ int hint1, hint2, f3;
     ED_tree_index(e) = (f1 | f2 | f3);
 }
 
+/* edgecmp:
+ * lexicographically order edges by
+ *  - edge type
+ *  - |rank difference of nodes|
+ *  - |x difference of nodes|
+ *  - id of original edge (How is this defined?)
+ *  - port comparison
+ *  - graph type
+ *  - labels if flat edges
+ *  - edge id
+ */
 static int edgecmp(ptr0, ptr1)
 edge_t **ptr0, **ptr1;
 {
@@ -444,20 +477,12 @@ edge_t **ptr0, **ptr1;
     return (e0->id - e1->id);
 }
 
-static void make_self_edge(path * P, edge_t * edges[], int ind, int cnt)
-{
-    node_t *n;
-    edge_t *e;
-    int tmp;
-
-    e = edges[ind];
-    n = e->tail;
-    tmp = ND_rw_i(n), ND_rw_i(n) = ND_mval(n), ND_mval(n) = tmp;	/* recover original size */
-
-    makeSelfEdge(P, edges, ind, cnt, Multisep, &sinfo);
-}
-
-static void make_flat_edge(path * P, edge_t ** edges, int ind, int cnt)
+/* make_flat_edge:
+ * Construct flat edges edges[ind...ind+cnt-1]
+ * In some cases, we can do all of them. 
+ */
+static int 
+make_flat_edge(path * P, edge_t ** edges, int ind, int cnt)
 {
     node_t *tn, *hn, *n;
     edge_t fwdedge, *e;
@@ -469,7 +494,7 @@ static void make_flat_edge(path * P, edge_t ** edges, int ind, int cnt)
     box lb, rb, wlb, wrb;
     rank_t *rank;
     point points[1000];
-    int pointn;
+    int blockingNode, pointn;
 
     /* dx = 0; */
     e = edges[ind];
@@ -487,17 +512,19 @@ static void make_flat_edge(path * P, edge_t ** edges, int ind, int cnt)
 	ED_label(e)->p = ND_coord_i(f->tail);
     }
 
-    if ((!ED_tail_port(e).defined) && (!ED_head_port(e).defined)) {
-	rank = &(GD_rank(tn->graph)[ND_rank(tn)]);
-	for (i = ND_order(tn) + 1; i < ND_order(hn); i++) {
-	    n = rank->v[i];
-	    if ((ND_node_type(n) == VIRTUAL && ND_label(n)) ||
-		ND_node_type(n) == NORMAL)
-		break;
-	}
-	if (i != ND_order(hn))
-	    goto flatnostraight;
+    rank = &(GD_rank(tn->graph)[ND_rank(tn)]);
+    for (i = ND_order(tn) + 1; i < ND_order(hn); i++) {
+	n = rank->v[i];
+	if ((ND_node_type(n) == VIRTUAL && ND_label(n)) || 
+             ND_node_type(n) == NORMAL)
+	    break;
+    }
+    if (i != ND_order(hn))
+	blockingNode = 1;
+    else
+	blockingNode = 0;
 
+    if (!blockingNode && !ED_tail_port(e).defined && !ED_head_port(e).defined){
 	stepy = (cnt > 1) ? ND_ht_i(tn) / (cnt - 1) : 0;
 	tp = ND_coord_i(tn);
 	hp = ND_coord_i(hn);
@@ -519,12 +546,11 @@ static void make_flat_edge(path * P, edge_t ** edges, int ind, int cnt)
 	    dy += stepy;
 	    clip_and_install(e, e, points, pointn, &sinfo);
 	}
-	return;
+	return (ind+cnt);
     }
 
     /* !(flat edge without ports that can go straight left to right) */
 
-  flatnostraight:
     tend.nb =
 	boxof(ND_coord_i(tn).x - ND_lw_i(tn),
 	      ND_coord_i(tn).y - ND_ht_i(tn) / 2,
@@ -561,7 +587,7 @@ static void make_flat_edge(path * P, edge_t ** edges, int ind, int cnt)
 	    edge_t *le;
 	    node_t *ln;
 	    for (le = e; ED_to_virt(le); le = ED_to_virt(le));
-	    ln = le->tail;
+	    ln = le->tail;   /* ln is virtual node containing label */
 	    wlb.LL.x = lb.LL.x;
 	    wlb.LL.y = lb.LL.y;
 	    wlb.UR.x = lb.UR.x;
@@ -592,9 +618,10 @@ static void make_flat_edge(path * P, edge_t ** edges, int ind, int cnt)
 
 	ps = routesplines(P, &pn);
 	if (pn == 0)
-	    return;
+	    return (ind+1+1);
 	clip_and_install(e, e, ps, pn, &sinfo);
     }
+    return (ind+cnt);
 }
 
 static void make_regular_edge(path * P, edge_t ** edges, int ind, int cnt)
@@ -752,10 +779,10 @@ static void make_regular_edge(path * P, edge_t ** edges, int ind, int cnt)
 
 /* flat edges */
 
-static void chooseflatsides(tendp, hendp,
-			    tsidep, hsidep, msidep, tdirp, hdirp, crossp)
-pathend_t *tendp, *hendp;
-int *tsidep, *hsidep, *tdirp, *hdirp, *msidep, *crossp;
+static void 
+chooseflatsides(pathend_t* tendp, pathend_t *hendp,
+                int* tsidep, int* hsidep, int* msidep, int* tdirp, 
+                int* hdirp, int* crossp)
 {
     int i;
 
@@ -818,10 +845,8 @@ completeflatpath(path * P,
 	add_box(P, hendp->boxes[i]);
 }
 
-static box makeflatend(b, side, dir, bb)
-box b;
-int side, dir;
-box bb;
+static box 
+makeflatend(box b, int side, int dir, box bb)
 {
     box eb = { {0, 0}, {0, 0} };
 
@@ -1476,6 +1501,7 @@ node_t *n, *adj;
  * Return an initial bounding box to be used for building the
  * beginning or ending of the path of boxes.
  * Height reflects height of tallest node on rank.
+ * At present, used only in make_regular_edge.
  */
 static box maximal_bbox(node_t* vn, edge_t* ie, edge_t* oe)
 {
