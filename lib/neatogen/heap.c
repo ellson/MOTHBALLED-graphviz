@@ -31,12 +31,15 @@ static int PQmin;
 static int PQbucket(Halfedge * he)
 {
     int bucket;
+    double b;
 
-    bucket = (he->ystar - ymin) / deltay * PQhashsize;
-    if (bucket < 0)
+    b = (he->ystar - ymin) / deltay * PQhashsize;
+    if (b < 0)
 	bucket = 0;
-    if (bucket >= PQhashsize)
+    else if (b >= PQhashsize)
 	bucket = PQhashsize - 1;
+    else
+	bucket = b;
     if (bucket < PQmin)
 	PQmin = bucket;
     return (bucket);
