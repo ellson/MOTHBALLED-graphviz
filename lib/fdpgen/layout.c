@@ -318,19 +318,18 @@ static char *portName(graph_t * g, bport_t * p)
 }
 
 /* chkPos:
- * If cluster has coord attribute, use to supply initial position
+ * If cluster has coords attribute, use to supply initial position
  * of derived node.
  * Only called if G_coord is defined.
  * We also look at the parent graph's G_coord attribute. If this
  * is identical to the child graph, we have to assume the child
  * inherited it.
  */
-static void chkPos(graph_t * g, node_t * n, attrsym_t * G_coord)
+static void chkPos(graph_t* g, node_t* n, attrsym_t* G_coord, boxf* bbp)
 {
     char *p;
     char *pp;
     boxf bb;
-    double x, y;
     char c;
     graph_t *parent;
 
@@ -347,20 +346,19 @@ static void chkPos(graph_t * g, node_t * n, attrsym_t * G_coord)
 	c = '\0';
 	if (sscanf(p, "%lf,%lf,%lf,%lf%c",
 		   &bb.LL.x, &bb.LL.y, &bb.UR.x, &bb.UR.y, &c) >= 4) {
-	    x = (bb.LL.x + bb.UR.x) / 2.0;
-	    y = (bb.LL.y + bb.UR.y) / 2.0;
 	    if (PSinputscale > 0.0) {
-		x /= PSinputscale;
-		y /= PSinputscale;
+		bb.LL.x /= PSinputscale;
+		bb.LL.y /= PSinputscale;
+		bb.UR.x /= PSinputscale;
+		bb.UR.y /= PSinputscale;
 	    }
-	    ND_pos(n)[0] = x;
-	    ND_pos(n)[1] = y;
 	    if (c == '!')
 		ND_pinned(n) = P_PIN;
 	    else if (c == '?')
 		ND_pinned(n) = P_FIX;
 	    else
 		ND_pinned(n) = P_SET;
+	    *bbp = bb;
 	} else
 	    agerr(AGWARN, "graph %s, coord %s, expected four doubles\n",
 		  g->name, p);
@@ -437,8 +435,7 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 
     /* create derived nodes from clusters */
     for (i = 1; i <= GD_n_cluster(g); i++) {
-	pointf fix_LL = { 0, 0 };
-	pointf fix_UR = { 0, 0 };
+	boxf fix_bb = {{ MAXDOUBLE, MAXDOUBLE },{ -MAXDOUBLE, -MAXDOUBLE }};
 	subg = GD_clust(g)[i];
 
 	do_graph_label(subg);
@@ -446,26 +443,27 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 	ND_clust(dn) = subg;
 	ND_id(dn) = id++;
 	if (infop->G_coord)
-		chkPos(subg, dn, infop->G_coord);
+		chkPos(subg, dn, infop->G_coord, &fix_bb);
 	for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 	    DNODE(n) = dn;
+#ifdef UNIMPLEMENTED
+/* This code starts the implementation of supporting pinned nodes
+ * within clusters. This needs more work. In particular, we may need
+ * a separate notion of pinning related to contained nodes, which will
+ * allow the cluster itself to wiggle.
+ */
 	    if (ND_pinned(n)) {
-		if (ND_pinned(dn)) {
-		    fix_LL.x = MIN(fix_LL.x, ND_pos(n)[0]);
-		    fix_LL.y = MIN(fix_LL.y, ND_pos(n)[0]);
-		    fix_UR.x = MIN(fix_UR.x, ND_pos(n)[0]);
-		    fix_UR.y = MIN(fix_UR.y, ND_pos(n)[0]);
-		    ND_pinned(dn) = MAX(ND_pinned(dn), ND_pinned(n));
-	        } else {
-		    fix_LL.x = fix_UR.x = ND_pos(n)[0];
-		    fix_LL.y = fix_UR.y = ND_pos(n)[1];
-		    ND_pinned(dn) = ND_pinned(n);
-		}
+		fix_bb.LL.x = MIN(fix_bb.LL.x, ND_pos(n)[0]);
+		fix_bb.LL.y = MIN(fix_bb.LL.y, ND_pos(n)[1]);
+		fix_bb.UR.x = MAX(fix_bb.UR.x, ND_pos(n)[0]);
+		fix_bb.UR.y = MAX(fix_bb.UR.y, ND_pos(n)[1]);
+		ND_pinned(dn) = MAX(ND_pinned(dn), ND_pinned(n));
 	    }
+#endif
 	}
 	if (ND_pinned(dn)) {
-	    ND_pos(dn)[0] = (fix_LL.x + fix_UR.x) / 2;
-	    ND_pos(dn)[1] = (fix_LL.y + fix_UR.y) / 2;
+	    ND_pos(dn)[0] = (fix_bb.LL.x + fix_bb.UR.x) / 2;
+	    ND_pos(dn)[1] = (fix_bb.LL.y + fix_bb.UR.y) / 2;
 	}
     }
 
@@ -879,11 +877,6 @@ setClustNodes(graph_t* root)
 		pt = cvt2pt(BB(sg).UR);
 		ND_xsize(n) = pt.x;
 		ND_ysize(n) = pt.y;
-		if (ND_pinned(n) == P_PIN) {
-		    /* FIX: guarantee preserve topology? */
-		    ND_pos(n)[0] = (BB(sg).LL.x + BB(sg).UR.x) / 2.0;
-		    ND_pos(n)[1] = (BB(sg).LL.y + BB(sg).UR.y) / 2.0;
-		}
 	    } else if (IS_PORT(n))
 		agdelete(cg, n);	/* remove ports from component */
 	}
