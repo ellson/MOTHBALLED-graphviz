@@ -43,7 +43,7 @@ extern "C" {
 
     extern Info_t *nodeInfo;	/* Array of node info */
 
-    extern void infoinit();
+    extern void infoinit(void);
     /* Insert vertex into sorted list */
     extern void addVertex(Site *, double, double);
 #endif
