@@ -24,9 +24,6 @@
 #endif
 
 
-/* local funcs */
-static double dist2(pointf, pointf);
-
 void *zmalloc(size_t nbytes)
 {
     char *rv = malloc(nbytes);
@@ -633,10 +630,10 @@ int mapbool(char *p)
     return atoi(p);
 }
 
-static double dist2(p, q) /* return square of dist between p and q */
-pointf p, q;
+static double dist2(pointf p, pointf q) /* return square of dist between p and q */
 {
     double d0, d1;
+
     d0 = p.x - q.x;
     d1 = p.y - q.y;
     return (d0 * d0 + d1 * d1);
@@ -645,7 +642,7 @@ pointf p, q;
 point dotneato_closest(splines * spl, point p)
 {
     int i, j, k, besti, bestj;
-    double bestdist2, d2, dlow2, dhigh2;
+    double bestdist2, d2, dlow2, dhigh2; /* squares of distances */
     double low, high, t;
     pointf c[4], pt2, pt;
     point rv;
@@ -653,8 +650,7 @@ point dotneato_closest(splines * spl, point p)
 
     besti = bestj = -1;
     bestdist2 = 1e+38;
-    pt.x = p.x;
-    pt.y = p.y;
+    P2PF(p, pt);
     for (i = 0; i < spl->size; i++) {
 	bz = spl->list[i];
 	for (j = 0; j < bz.size; j++) {
@@ -698,8 +694,7 @@ point dotneato_closest(splines * spl, point p)
 	    dlow2 = dist2(pt2, pt);
 	}
     } while (1);
-    rv.x = pt2.x;
-    rv.y = pt2.y;
+    PF2P(pt2, rv);
     return rv;
 }
 
