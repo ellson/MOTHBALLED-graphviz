@@ -134,7 +134,7 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
 #endif
 #endif
 	)
-	emit_reset(gvc, g);
+	emit_reset(gvc, g);  /* FIXME - split into emit_init & page reset */
     switch (gvc->job->output_lang) {
     case GVRENDER_PLUGIN:
 	flags = chkOrder(g);

@@ -23,7 +23,6 @@
 #endif
 
 #include <stdio.h>
-#include <libgen.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -134,18 +133,8 @@ static graph_t *create_test_graph(void)
 int main(int argc, char **argv)
 {
     graph_t *g, *prev = NULL;
-    int rv;
-    char *str;
 
     gvc = gvNEWcontext(Info, username());
-
-    setCmdName(argv[0]);
-
-    str = basename(argv[0]);
-    rv = gvlayout_select(gvc, str);
-    if (rv == NO_SUPPORT)
-	gvlayout_select(gvc, "dot");
-
     parse_args(gvc, argc, argv);
 
 #ifndef MSWIN32

@@ -14,9 +14,11 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#include	<ctype.h>
+#include	<libgen.h>
+
 #include	"render.h"
 #include	"htmltable.h"
-#include	<ctype.h>
 
 #if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
 codegen_t *Output_codegen;
@@ -94,16 +96,6 @@ void dotneato_usage(int exval)
 	exit(exval);
 }
 
-void setCmdName(char *s)
-{
-    char *n = strrchr(s, '/');
-
-    if (n)
-	CmdName = n + 1;
-    else
-	CmdName = s;
-}
-
 /* getFlagOpt:
  * Look for flag parameter. idx is index of current argument.
  * We assume argv[*idx] has the form "-x..." If there are characters 
@@ -145,6 +137,11 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
     gvplugin_builtins(gvc);
     gvconfig(gvc, CONFIG);
 
+    CmdName = basename(argv[0]);
+    i = gvlayout_select(gvc, CmdName);
+    if (i == NO_SUPPORT)
+	gvlayout_select(gvc, "dot");
+
     aginit();
     nfiles = 0;
     for (i = 1; i < argc; i++)
@@ -152,8 +149,6 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
 	    nfiles++;
     Files = N_NEW(nfiles + 1, char *);
     nfiles = 0;
-    if (!CmdName)
-	setCmdName(argv[0]);
     for (i = 1; i < argc; i++) {
 	if (argv[i] && argv[i][0] == '-') {
 	    rest = &(argv[i][2]);

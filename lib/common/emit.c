@@ -91,8 +91,6 @@ void emit_reset(GVC_t * gvc, graph_t * g)
     GP.x = GP.y = 0;
     CB.LL.x = CB.LL.y = CB.UR.x = CB.UR.y = 0;
     PFC.x = PFC.y = 0;
-    Deffontsize = 0;
-    Deffontname = (char *) 0;
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_state(n) = 0;
