@@ -37,7 +37,7 @@ extern void emit_graph(GVC_t * gvc, graph_t * g, int flags);
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
-typedef int (*key_callback_t) (win_t * win);
+typedef int (*key_callback_t) (gvrender_job_t * job);
 
 typedef struct key_binding {
     char *key;
@@ -47,14 +47,14 @@ typedef struct key_binding {
 } key_binding_t;
 
 /* callbacks */
-static int quit_cb(win_t * win);
-static int left_cb(win_t * win);
-static int right_cb(win_t * win);
-static int up_cb(win_t * win);
-static int down_cb(win_t * win);
-static int zoom_in_cb(win_t * win);
-static int zoom_out_cb(win_t * win);
-static int toggle_fit_cb(win_t * win);
+static int quit_cb(gvrender_job_t * job);
+static int left_cb(gvrender_job_t * job);
+static int right_cb(gvrender_job_t * job);
+static int up_cb(gvrender_job_t * job);
+static int down_cb(gvrender_job_t * job);
+static int zoom_in_cb(gvrender_job_t * job);
+static int zoom_out_cb(gvrender_job_t * job);
+static int toggle_fit_cb(gvrender_job_t * job);
 
 static key_binding_t key_binding[] = {
     /* Keysym, Alias, Keycode, callback */
@@ -119,35 +119,33 @@ static void win_init(gvrender_job_t * job, int argb, const char *geometry,
     char *name;
     Display *dpy;
     int scr;
-    win_t *win = job->win;
 
-    win->job = job;
     job->surface = cairo_create();
     job->external_surface = TRUE;
 
-    dpy = win->dpy;
-    win->scr = scr = DefaultScreen(dpy);
+    dpy = job->dpy;
+    job->scr = scr = DefaultScreen(dpy);
 
-    win->fit_mode = 0;
-    win->needs_refresh = 1;
+    job->fit_mode = 0;
+    job->needs_refresh = 1;
 
-    if (argb && (win->visual = find_argb_visual(dpy, scr))) {
-	win->cmap = XCreateColormap(dpy, RootWindow(dpy, scr),
-				    win->visual, AllocNone);
+    if (argb && (job->visual = find_argb_visual(dpy, scr))) {
+	job->cmap = XCreateColormap(dpy, RootWindow(dpy, scr),
+				    job->visual, AllocNone);
 	attributes.override_redirect = False;
 	attributes.background_pixel = 0;
 	attributes.border_pixel = 0;
-	attributes.colormap = win->cmap;
+	attributes.colormap = job->cmap;
 	attributemask = (CWBackPixel |
 			 CWBorderPixel | CWOverrideRedirect | CWColormap);
-	win->depth = 32;
+	job->depth = 32;
     } else {
-	win->cmap = DefaultColormap(dpy, scr);
-	win->visual = DefaultVisual(dpy, scr);
+	job->cmap = DefaultColormap(dpy, scr);
+	job->visual = DefaultVisual(dpy, scr);
 	attributes.background_pixel = WhitePixel(dpy, scr);
 	attributes.border_pixel = BlackPixel(dpy, scr);
 	attributemask = (CWBackPixel | CWBorderPixel);
-	win->depth = DefaultDepth(dpy, scr);
+	job->depth = DefaultDepth(dpy, scr);
     }
 
     if (geometry) {
@@ -155,9 +153,9 @@ static void win_init(gvrender_job_t * job, int argb, const char *geometry,
 	XParseGeometry(geometry, &x, &y, &job->width, &job->height);
     }
 
-    win->win = XCreateWindow(dpy, RootWindow(dpy, scr),
-			     0, 0, job->width, job->height, 0, win->depth,
-			     InputOutput, win->visual,
+    job->win = XCreateWindow(dpy, RootWindow(dpy, scr),
+			     0, 0, job->width, job->height, 0, job->depth,
+			     InputOutput, job->visual,
 			     attributemask, &attributes);
 
     name = malloc(strlen("graphviz: ") + strlen(base) + 1);
@@ -179,21 +177,21 @@ static void win_init(gvrender_job_t * job, int argb, const char *geometry,
     wmhints->flags = InputHint;
     wmhints->input = True;
 
-    Xutf8SetWMProperties(dpy, win->win, name, base, 0, 0,
+    Xutf8SetWMProperties(dpy, job->win, name, base, 0, 0,
 			 normalhints, wmhints, classhint);
     XFree(wmhints);
     XFree(classhint);
     XFree(normalhints);
     free(name);
 
-    win->pix =
-	XCreatePixmap(dpy, win->win, job->width, job->height, win->depth);
+    job->pix =
+	XCreatePixmap(dpy, job->win, job->width, job->height, job->depth);
     if (argb)
 	gcv.foreground = 0;
     else
 	gcv.foreground = WhitePixel(dpy, scr);
-    win->gc = XCreateGC(dpy, win->pix, GCForeground, &gcv);
-    XFillRectangle(dpy, win->pix, win->gc, 0, 0, job->width, job->height);
+    job->gc = XCreateGC(dpy, job->pix, GCForeground, &gcv);
+    XFillRectangle(dpy, job->pix, job->gc, 0, 0, job->width, job->height);
 
     for (i = 0; i < ARRAY_SIZE(key_binding); i++) {
 	KeySym keysym;
@@ -204,121 +202,113 @@ static void win_init(gvrender_job_t * job, int argb, const char *geometry,
 	else
 	    key_binding[i].keycode = XKeysymToKeycode(dpy, keysym);
     }
-    surface = cairo_xlib_surface_create(dpy, win->pix, win->visual,
-					CAIRO_FORMAT_ARGB32, win->cmap);
+    surface = cairo_xlib_surface_create(dpy, job->pix, job->visual,
+					CAIRO_FORMAT_ARGB32, job->cmap);
     cairo_set_target_surface(job->surface, surface);
     cairo_surface_destroy(surface);
 
     /* XXX: This probably doesn't need to be here (eventually) */
     cairo_set_rgb_color(job->surface, 1, 1, 1);
-    win->event_mask = (
+    job->event_mask = (
           ButtonPressMask
         | ButtonReleaseMask
         | PointerMotionMask
         | KeyPressMask
 	| StructureNotifyMask
 	| ExposureMask);
-    XSelectInput(dpy, win->win, win->event_mask);
-    win->wm_delete_window_atom =
+    XSelectInput(dpy, job->win, job->event_mask);
+    job->wm_delete_window_atom =
 	XInternAtom(dpy, "WM_DELETE_WINDOW", False);
-    XSetWMProtocols(dpy, win->win, &win->wm_delete_window_atom, 1);
-    XMapWindow(dpy, win->win);
+    XSetWMProtocols(dpy, job->win, &job->wm_delete_window_atom, 1);
+    XMapWindow(dpy, job->win);
 
-    win->click = 0;
-    win->active = 0;
+    job->click = 0;
+    job->active = 0;
 }
 
 static void win_deinit(gvrender_job_t * job)
 {
-    win_t *win = job->win;
-
-    XFreeGC(win->dpy, win->gc);
-    XDestroyWindow(win->dpy, win->win);
+    XFreeGC(job->dpy, job->gc);
+    XDestroyWindow(job->dpy, job->win);
     cairo_destroy(job->surface);
     job->external_surface = FALSE;
 }
 
-static void win_refresh(win_t * win)
+static void win_refresh(gvrender_job_t * job)
 {
-    gvrender_job_t *job = win->job;
-
-    XFillRectangle(win->dpy, win->pix, win->gc, 0, 0,
+    XFillRectangle(job->dpy, job->pix, job->gc, 0, 0,
 		job->width, job->height);
 
     emit_graph(job->gvc, job->g, job->flags);
 
-    XCopyArea(win->dpy, win->pix, win->win, win->gc,
+    XCopyArea(job->dpy, job->pix, job->win, job->gc,
 	      0, 0, job->width, job->height, 0, 0);
 }
 
-static void win_grow_pixmap(win_t * win)
+static void win_grow_pixmap(gvrender_job_t * job)
 {
     Pixmap new;
     cairo_surface_t *surface;
-    gvrender_job_t *job = win->job;
 
-    new = XCreatePixmap(win->dpy, win->win, job->width, job->height,
-			win->depth);
-    XFillRectangle(win->dpy, new, win->gc, 0, 0,
+    new = XCreatePixmap(job->dpy, job->win, job->width, job->height,
+			job->depth);
+    XFillRectangle(job->dpy, new, job->gc, 0, 0,
 		job->width, job->height);
-    XCopyArea(win->dpy, win->pix, new, win->gc, 0, 0,
+    XCopyArea(job->dpy, job->pix, new, job->gc, 0, 0,
 		job->width, job->height, 0, 0);
-    XFreePixmap(win->dpy, win->pix);
-    win->pix = new;
-    surface = cairo_xlib_surface_create(win->dpy, win->pix, win->visual,
-					CAIRO_FORMAT_ARGB32, win->cmap);
+    XFreePixmap(job->dpy, job->pix);
+    job->pix = new;
+    surface = cairo_xlib_surface_create(job->dpy, job->pix, job->visual,
+					CAIRO_FORMAT_ARGB32, job->cmap);
     cairo_set_target_surface(job->surface, surface);
     cairo_surface_destroy(surface);
 }
 
-static void win_handle_button_press(win_t *win, XButtonEvent *bev)
+static void win_handle_button_press(gvrender_job_t * job, XButtonEvent *bev)
 {
-    gvrender_job_t *job = win->job;
-
     switch (bev->button) {
     case 1: /* select / create in edit mode */
     case 2: /* pan */
     case 3: /*        / delete in edit mode */
-        win->click = 1;
-	win->active = bev->button;
-	win->needs_refresh = 1;
+        job->click = 1;
+	job->active = bev->button;
+	job->needs_refresh = 1;
 	break;
     case 4:
 	/* scrollwheel zoom in at current mouse x,y */
-	win->fit_mode = 0;
+	job->fit_mode = 0;
 	job->focus.x +=  (bev->x - job->width / 2.)
 		* (ZOOMFACTOR - 1.) / job->zoom;
 	job->focus.y += -(bev->y - job->height / 2.)
 		* (ZOOMFACTOR - 1.) / job->zoom;
 	job->zoom *= ZOOMFACTOR;
-	win->needs_refresh = 1;
+	job->needs_refresh = 1;
 	break;
     case 5: /* scrollwheel zoom out at current mouse x,y */
-	win->fit_mode = 0;
+	job->fit_mode = 0;
 	job->zoom /= ZOOMFACTOR;
 	job->focus.x -=  (bev->x - job->width / 2.)
 		* (ZOOMFACTOR - 1.) / job->zoom;
 	job->focus.y -= -(bev->y - job->height / 2.)
 		* (ZOOMFACTOR - 1.) / job->zoom;
-	win->needs_refresh = 1;
+	job->needs_refresh = 1;
 	break;
     }
-    win->oldx = bev->x;
-    win->oldy = bev->y;
+    job->oldx = bev->x;
+    job->oldy = bev->y;
 }
 
 #define EPSILON .0001
 
-static void win_handle_motion(win_t *win, XMotionEvent *mev)
+static void win_handle_motion(gvrender_job_t * job, XMotionEvent *mev)
 {
-    gvrender_job_t *job = win->job;
-    double dx = mev->x - win->oldx;
-    double dy = mev->y - win->oldy;
+    double dx = mev->x - job->oldx;
+    double dy = mev->y - job->oldy;
 
     if (abs(dx) < EPSILON && abs(dy) < EPSILON)  /* ignore motion events with no motion */
 	return;
 
-    switch (win->active) {
+    switch (job->active) {
     case 0: /* drag with no button - */
 	return;
 	break;
@@ -328,56 +318,50 @@ static void win_handle_motion(win_t *win, XMotionEvent *mev)
     case 2: /* drag with button 2 - pan graph */
 	job->focus.x -=  dx / job->zoom;
 	job->focus.y -= -dy / job->zoom;
-	win->needs_refresh = 1;
+	job->needs_refresh = 1;
 	break;
     case 3: /* drag with button 3 - unused */
 	break;
     }
-    win->oldx = mev->x;
-    win->oldy = mev->y;
+    job->oldx = mev->x;
+    job->oldy = mev->y;
 }
 
-static void win_handle_button_release(win_t *win, XButtonEvent *bev)
+static void win_handle_button_release(gvrender_job_t *job, XButtonEvent *bev)
 {
-    win->click = 0;
-    win->active = 0;
+    job->click = 0;
+    job->active = 0;
 }
 
-static int win_handle_key_press(win_t * win, XKeyEvent * kev)
+static int win_handle_key_press(gvrender_job_t * job, XKeyEvent * kev)
 {
     unsigned int i;
 
     for (i = 0; i < ARRAY_SIZE(key_binding); i++)
 	if (key_binding[i].keycode == kev->keycode)
-	    return (key_binding[i].callback) (win);
+	    return (key_binding[i].callback) (job);
     return 0;
 }
 
-static void win_reconfigure_normal(win_t * win, unsigned int width,
+static void win_reconfigure_normal(gvrender_job_t * job, unsigned int width,
 		       unsigned int height)
 {
     int has_grown = 0;
-    gvrender_job_t *job = win->job;
 
     if (width > job->width || height > job->height)
 	has_grown = 1;
-/* Adjust focus to keep image fixed during window resizing */
-/* FIXME - causes FP error on size reduction */
-//    job->focus.x +=  ((double)(width - job->width)) / (2. * job->zoom);
-//    job->focus.y += -((double)(height - job->height))	/ (2. * job->zoom);
     job->width = width;
     job->height = height;
     if (has_grown)
-	win_grow_pixmap(win);
-    win->needs_refresh = 1;
+	win_grow_pixmap(job);
+    job->needs_refresh = 1;
 }
 
 static void
-win_reconfigure_fit_mode(win_t * win, unsigned int width,
+win_reconfigure_fit_mode(gvrender_job_t * job, unsigned int width,
 			 unsigned int height)
 {
     int dflt_width, dflt_height;
-    gvrender_job_t *job = win->job;
 
     dflt_width = job->width;
     dflt_height = job->height;
@@ -385,142 +369,128 @@ win_reconfigure_fit_mode(win_t * win, unsigned int width,
 	MIN((double) width / (double) dflt_width,
 	    (double) height / (double) dflt_height);
 
-    win_reconfigure_normal(win, width, height);
+    win_reconfigure_normal(job, width, height);
 }
 
-static void win_handle_configure(win_t * win, XConfigureEvent * cev)
+static void win_handle_configure(gvrender_job_t * job, XConfigureEvent * cev)
 {
-    if (win->fit_mode)
-	win_reconfigure_fit_mode(win, cev->width, cev->height);
+    if (job->fit_mode)
+	win_reconfigure_fit_mode(job, cev->width, cev->height);
     else
-	win_reconfigure_normal(win, cev->width, cev->height);
+	win_reconfigure_normal(job, cev->width, cev->height);
 }
 
-static void win_handle_expose(win_t * win, XExposeEvent * eev)
+static void win_handle_expose(gvrender_job_t * job, XExposeEvent * eev)
 {
-    XCopyArea(win->dpy, win->pix, win->win, win->gc,
+    XCopyArea(job->dpy, job->pix, job->win, job->gc,
 	      eev->x, eev->y, eev->width, eev->height, eev->x, eev->y);
 }
 
-static void win_handle_client_message(win_t * win, XClientMessageEvent * cmev)
+static void win_handle_client_message(gvrender_job_t * job, XClientMessageEvent * cmev)
 {
     if (cmev->format == 32
-	&& (Atom) cmev->data.l[0] == win->wm_delete_window_atom)
+	&& (Atom) cmev->data.l[0] == job->wm_delete_window_atom)
 	exit(0);
 }
 
-static void win_handle_events(win_t * win)
+static void win_handle_events(gvrender_job_t *job)
 {
     int done;
     XEvent xev;
 
     while (1) {
-	if (!XPending(win->dpy) && win->needs_refresh) {
-	    win_refresh(win);
-	    win->needs_refresh = 0;
+	if (!XPending(job->dpy) && job->needs_refresh) {
+	    win_refresh(job);
+	    job->needs_refresh = 0;
 	}
 
-	XNextEvent(win->dpy, &xev);
+	XNextEvent(job->dpy, &xev);
 
 	switch (xev.xany.type) {
 	case ButtonPress:
-            win_handle_button_press(win, &xev.xbutton);
+            win_handle_button_press(job, &xev.xbutton);
             break;
         case MotionNotify:
-            win_handle_motion(win, &xev.xmotion);
+            win_handle_motion(job, &xev.xmotion);
             break;
         case ButtonRelease:
-            win_handle_button_release(win, &xev.xbutton);
+            win_handle_button_release(job, &xev.xbutton);
             break;
 	case KeyPress:
-	    done = win_handle_key_press(win, &xev.xkey);
+	    done = win_handle_key_press(job, &xev.xkey);
 	    if (done)
 		return;
 	    break;
 	case ConfigureNotify:
-	    win_handle_configure(win, &xev.xconfigure);
+	    win_handle_configure(job, &xev.xconfigure);
 	    break;
 	case Expose:
-	    win_handle_expose(win, &xev.xexpose);
+	    win_handle_expose(job, &xev.xexpose);
 	    break;
 	case ClientMessage:
-	    win_handle_client_message(win, &xev.xclient);
+	    win_handle_client_message(job, &xev.xclient);
 	    break;
 	}
     }
 }
 
-static int quit_cb(win_t * win)
+static int quit_cb(gvrender_job_t * job)
 {
     return 1;
 }
 
-static int left_cb(win_t * win)
+static int left_cb(gvrender_job_t * job)
 {
-    gvrender_job_t *job = win->job;
-
-    win->fit_mode = 0;
+    job->fit_mode = 0;
     job->focus.x += PANFACTOR / job->zoom;
-    win->needs_refresh = 1;
+    job->needs_refresh = 1;
     return 0;
 }
 
-static int right_cb(win_t * win)
+static int right_cb(gvrender_job_t * job)
 {
-    gvrender_job_t *job = win->job;
-
-    win->fit_mode = 0;
+    job->fit_mode = 0;
     job->focus.x -= PANFACTOR / job->zoom;
-    win->needs_refresh = 1;
+    job->needs_refresh = 1;
     return 0;
 }
 
-static int up_cb(win_t * win)
+static int up_cb(gvrender_job_t * job)
 {
-    gvrender_job_t *job = win->job;
-
-    win->fit_mode = 0;
+    job->fit_mode = 0;
     job->focus.y += -(PANFACTOR / job->zoom);
-    win->needs_refresh = 1;
+    job->needs_refresh = 1;
     return 0;
 }
 
-static int down_cb(win_t * win)
+static int down_cb(gvrender_job_t * job)
 {
-    gvrender_job_t *job = win->job;
-
-    win->fit_mode = 0;
+    job->fit_mode = 0;
     job->focus.y -= -(PANFACTOR / job->zoom);
-    win->needs_refresh = 1;
+    job->needs_refresh = 1;
     return 0;
 }
 
-static int zoom_in_cb(win_t * win)
+static int zoom_in_cb(gvrender_job_t * job)
 {
-    gvrender_job_t *job = win->job;
-
-    win->fit_mode = 0;
+    job->fit_mode = 0;
     job->zoom *= ZOOMFACTOR;
-    win->needs_refresh = 1;
+    job->needs_refresh = 1;
     return 0;
 }
 
-static int zoom_out_cb(win_t * win)
+static int zoom_out_cb(gvrender_job_t * job)
 {
-    gvrender_job_t *job = win->job;
-
-    win->fit_mode = 0;
+    job->fit_mode = 0;
     job->zoom /= ZOOMFACTOR;
-    win->needs_refresh = 1;
+    job->needs_refresh = 1;
     return 0;
 }
 
-static int toggle_fit_cb(win_t * win)
+static int toggle_fit_cb(gvrender_job_t * job)
 {
-    gvrender_job_t *job = win->job;
-
-    win->fit_mode = !win->fit_mode;
-    if (win->fit_mode) {
+    job->fit_mode = !job->fit_mode;
+    if (job->fit_mode) {
 	int dflt_width, dflt_height;
 	dflt_width = job->width;
 	dflt_height = job->height;
@@ -529,7 +499,7 @@ static int toggle_fit_cb(win_t * win)
 		(double) job->height / (double) dflt_height);
 	job->focus.x = 0.0;
 	job->focus.y = 0.0;
-	win->needs_refresh = 1;
+	job->needs_refresh = 1;
     }
     return 0;
 }
@@ -550,14 +520,8 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
 	int argb=0;
 	const char *geometry=NULL;
 
-	job->win = malloc(sizeof(win_t));
-        if (! job->win) {
-	    fprintf(stderr,"Failed to malloc(sizeof(win_t))\n");
-	    return;
-        }
-
-	job->win->dpy = XOpenDisplay(display);
-	if (job->win->dpy == NULL) {
+	job->dpy = XOpenDisplay(display);
+	if (job->dpy == NULL) {
 	    fprintf(stderr, "Failed to open display: %s\n",
 		    XDisplayName(display));
 	    return;
@@ -565,11 +529,11 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
 
 	win_init(job, argb, geometry, gvc->layout_type);
 
-	win_handle_events(job->win);
+	win_handle_events(job);
 
 	win_deinit(job);
 
-	XCloseDisplay(job->win->dpy);
+	XCloseDisplay(job->dpy);
 	free(job->win);
 #else
 	fprintf(stderr,"No X11 support available\n");

@@ -27,25 +27,6 @@ extern "C" {
 
 #if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER)
 #include <X11/Xlib.h>
-
-    typedef struct win {
-	Display *dpy;
-	int scr;
-	Window win;
-	unsigned long event_mask;
-	Pixmap pix;
-	GC gc;
-	Visual *visual;
-	Colormap cmap;
-	int depth;
-	double oldx, oldy; /* old pointer position in pixels */
-	
-        gvrender_job_t *job;
-	
-	int needs_refresh, fit_mode, click, active;
-	
-	Atom wm_delete_window_atom;
-    } win_t;
 #endif
 
     struct gvrender_job_s {
@@ -73,8 +54,21 @@ extern "C" {
 
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	
-#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER) && defined(HAVE_CAIRO)
-        win_t *win;
+#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER)
+	Display *dpy;
+	int scr;
+	Window win;
+	unsigned long event_mask;
+	Pixmap pix;
+	GC gc;
+	Visual *visual;
+	Colormap cmap;
+	int depth;
+	double oldx, oldy; /* old pointer position in pixels */
+	
+	int needs_refresh, fit_mode, click, active;
+	
+	Atom wm_delete_window_atom;
 #endif
     };
 
