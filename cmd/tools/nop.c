@@ -54,7 +54,7 @@ static void init(int argc, char *argv[])
 	    if (optopt == '?')
 		usage(0);
 	    else
-		fprintf(stderr, "gc: option -%c unrecognized - ignored\n",
+		fprintf(stderr, "nop: option -%c unrecognized - ignored\n",
 			c);
 	    break;
 	}
