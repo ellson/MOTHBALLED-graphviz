@@ -42,13 +42,12 @@ of graphs (as in nodes and edges, not as in barcharts).
 %{_bindir}/*
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/*.so.*
+%{_libdir}/%{name}/*.py
+%{_libdir}/%{name}/*.pm
+%{_libdir}/%{name}/*.java
 %{_mandir}/man1/*.1*
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/lefty
-%exclude %{_libdir}/%{name}/lib*_java.so.*
-%exclude %{_libdir}/%{name}/lib*_perl.so.*
-%exclude %{_libdir}/%{name}/lib*_python.so.*
-%exclude %{_libdir}/%{name}/lib*_ruby.so.*
 %exclude %{_libdir}/%{name}/lib*tcl*.so.*
 %exclude %{_libdir}/%{name}/libtk*.so.*
 %exclude %{_bindir}/dotneato-config
@@ -104,69 +103,6 @@ This package provides some example graphs for %{name}.
 %defattr(-,root,root,-)
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/graphs
-
-%{?fc3
-%package java
-Group:		Applications/Multimedia
-Summary:	Java extension tools for %{name}
-Requires:	%{name} = %{version}-%{release} java
-
-%description java
-The %{name}-java package contains a java module (extension)
-for version %{version} of the %{name} tools.
-
-%files java
-%defattr(-,root,root,-)
-%{_libdir}/%{name}/lib*_java*.so.*.*.*
-%{_libdir}/%{name}/*.java
-}
-
-%{?fc3
-%package perl
-Group:		Applications/Multimedia
-Summary:	Perl extension tools for %{name}
-Requires:	%{name} = %{version}-%{release} perl
-
-%description perl
-The %{name}-perl package contains a perl module (extension)
-for version %{version} of the %{name} tools.
-
-%files perl
-%defattr(-,root,root,-)
-%{_libdir}/%{name}/lib*_perl*.so.*.*.*
-%{_libdir}/%{name}/*.pm
-}
-
-%{?fc3
-%package python
-Group:		Applications/Multimedia
-Summary:	Perl extension tools for %{name}
-Requires:	%{name} = %{version}-%{release} python
-
-%description python
-The %{name}-python package contains a python module (extension)
-for version %{version} of the %{name} tools.
-
-%files python
-%defattr(-,root,root,-)
-%{_libdir}/%{name}/lib*_python*.so.*.*.*
-%{_libdir}/%{name}/*.py
-}
-
-%{?fc3
-%package ruby
-Group:		Applications/Multimedia
-Summary:	Perl extension tools for %{name}
-Requires:	%{name} = %{version}-%{release} ruby
-
-%description ruby
-The %{name}-ruby package contains a ruby module (extension)
-for version %{version} of the %{name} tools.
-
-%files ruby
-%defattr(-,root,root,-)
-%{_libdir}/%{name}/lib*_ruby*.so.*.*.*
-}
 
 %package tcl
 Group:		Applications/Multimedia
