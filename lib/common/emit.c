@@ -1305,7 +1305,6 @@ static codegen_info_t cg[MAX_CODEGENS] = {
     {&MIF_CodeGen, "mif", MIF},
     {&PIC_CodeGen, "pic", PIC_format},
 
-#ifdef GD_RENDER
     {&GD_CodeGen, "gd", GD},
 #ifdef HAVE_LIBZ
     {&GD_CodeGen, "gd2", GD2},
@@ -1326,7 +1325,6 @@ static codegen_info_t cg[MAX_CODEGENS] = {
     {&GD_CodeGen, "xbm", XBM},
     {&GD_CodeGen, "xpm", XBM},
 #endif
-#endif				/* GD_RENDER */
 
 #ifdef QUARTZ_RENDER
     {&QPDF_CodeGen, "pdf", QPDF},

@@ -139,6 +139,11 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
     /* establish Gvfilepath, if any */
     Gvfilepath = getenv("GV_FILE_PATH");
 
+    /* configure codegens */
+    config_codegen_builtins(gvc);
+    gvplugin_builtins(gvc);
+    gvconfig(gvc, CONFIG);
+
     aginit();
     nfiles = 0;
     for (i = 1; i < argc; i++)
@@ -181,8 +186,14 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
 		if (!val) {
 		    fprintf(stderr, "Missing argument for -T flag\n");
 		    dotneato_usage(1);
+		    exit(1);
 		}
-		gvrender_output_langname_job(gvc, val);
+		v = gvrender_output_langname_job(gvc, val);
+		if (v == NO_SUPPORT) {
+		    fprintf(stderr, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
+			val, gvplugin_list(gvc, API_render, val));
+		    exit(1);
+		}
 		break;
 	    case 'V':
 		fprintf(stderr, "%s version %s (%s)\n",
@@ -264,12 +275,9 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
 
     /* if no -Txxx, then set default format */
     if (!gvc->jobs || !gvc->jobs->output_langname) {
-	gvrender_output_langname_job(gvc, "dot");
+	v = gvrender_output_langname_job(gvc, "dot");
+	assert(v != NO_SUPPORT);
     }
-
-    config_codegen_builtins(gvc);
-    gvplugin_builtins(gvc);
-    gvconfig(gvc, CONFIG);
 
 #if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
     Output_codegen = gvc->codegen;
@@ -328,7 +336,7 @@ void getdouble(graph_t * g, char *name, double *result)
     }
 }
 
-FILE *next_input_file(void)
+static FILE *next_input_file(void)
 {
     static int ctr = 0;
     FILE *rv = NULL;

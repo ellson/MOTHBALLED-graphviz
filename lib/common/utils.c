@@ -1038,7 +1038,6 @@ point user_shape_size(node_t * n, char *shapefile)
 	suffix = shapefile;
     else
 	suffix++;
-#ifdef GD_RENDER
     if (!strcasecmp(suffix, "wbmp")
 #ifdef HAVE_GD_GIF
 	|| !strcasecmp(suffix, "gif")
@@ -1056,7 +1055,6 @@ point user_shape_size(node_t * n, char *shapefile)
 	) {
 	rv = gd_user_shape_size(n, shapefile);
     } else
-#endif
 #ifdef QUARTZ_RENDER
     if (Output_lang == QPDF || Output_lang == QEPDF ||
 	    (Output_lang >= QBM_FIRST && Output_lang <= QBM_LAST))
@@ -1099,7 +1097,6 @@ point image_size(graph_t * g, char *shapefile)
 	suffix = shapefile;
     else
 	suffix++;
-#ifdef GD_RENDER
     if (!strcasecmp(suffix, "wbmp")
 #ifdef HAVE_GD_GIF
 	|| !strcasecmp(suffix, "gif")
@@ -1117,7 +1114,6 @@ point image_size(graph_t * g, char *shapefile)
 	) {
 	rv = gd_image_size(g, shapefile);
     } else
-#endif
 #ifdef QUARTZ_RENDER
     if (Output_lang == QPDF || Output_lang == QEPDF ||
 	    (Output_lang >= QBM_FIRST && Output_lang <= QBM_LAST))

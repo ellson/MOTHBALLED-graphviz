@@ -145,7 +145,6 @@ extern "C" {
     extern point neato_closest(splines * spl, point p);
     extern bezier *new_spline(edge_t * e, int sz);
     extern queue *new_queue(int);
-    extern FILE *next_input_file(void);
     extern Agraph_t *next_input_graph(void);
     extern int node_in_CB(node_t *);
     extern int node_in_layer(Agraph_t *, node_t *);
