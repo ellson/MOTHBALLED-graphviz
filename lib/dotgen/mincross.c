@@ -67,25 +67,11 @@ static edge_t **TE_list;
 static int *TI_list;
 static boolean ReMincross;
 
-#ifdef DEBUG
-static void
-dumpRanks (graph_t * g)
-{
-    int i, j;
-    node_t* u;
-    rank_t *rank = GD_rank(g);
-    for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
-	fprintf (stderr, "[%d] :", i);
-	for (j = 0; j < rank[i].n; j++) {
-	    u = rank[i].v[j];
-	    fprintf (stderr, " %s", u->name);
-      
-        }
-	fprintf (stderr, "\n");
-    }
-}
-#endif
-
+/* dot_mincross:
+ * Minimize edge crossings
+ * Note that nodes are not placed into GD_rank(g) until mincross()
+ * is called.
+ */
 void dot_mincross(graph_t * g)
 {
     int c, nc;
@@ -120,10 +106,6 @@ void dot_mincross(graph_t * g)
 #endif
     }
     cleanup2(g, nc);
-
-#ifdef DEBUG
-    dumpRanks (g);
-#endif
 }
 
 static adjmatrix_t *new_matrix(int i, int j)
@@ -210,6 +192,9 @@ do_ordering(graph_t * g, int outflag)
     }
 }
 
+/* ordered_edges:
+ * handle case where graph specifies edge ordering
+ */
 static void 
 ordered_edges(graph_t * g)
 {
@@ -755,8 +740,8 @@ static void flat_search(graph_t * g, node_t * v)
 		    elist_append(e, ND_other(e->tail));
 		} else {
 		    rev = new_virtual_edge(e->head, e->tail, e);
-		    rev->u.label = e->u.label;	/* SCN hack */
 		    ED_edge_type(rev) = REVERSED;
+		    ED_label(rev) = ED_label(e);
 		    flat_edge(g, rev);
 		}
 	    } else {
@@ -797,7 +782,12 @@ static void flat_breakcycles(graph_t * g)
     }
 }
 
-void allocate_ranks(graph_t * g)
+/* allocate_ranks:
+ * Allocate rank structure, determining number of nodes per rank.
+ * Note that no nodes are put into the structure yet.
+ */
+void 
+allocate_ranks(graph_t * g)
 {
     int r, low, high, *cn;
     node_t *n;
