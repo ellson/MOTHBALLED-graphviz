@@ -56,7 +56,7 @@ static GVC_t *gvc;
 static void intr(int s)
 {
     if (gvc->g)
-	dotneato_write(gvc);
+	dotneato_write(gvc, gvc->g);
     dotneato_terminate(gvc);
     exit(1);
 }
@@ -174,7 +174,7 @@ int main(int argc, char **argv)
 		agclose(prev);
 	    }
 	    gvlayout_layout(gvc, g);
-	    dotneato_write(gvc);
+	    dotneato_write(gvc, g);
 	    prev = g;
 	}
     }

@@ -80,9 +80,8 @@ static int write_node_test(Agraph_t * g, Agnode_t * n)
 }
 
 
-void emit_reset(GVC_t * gvc)
+void emit_reset(GVC_t * gvc, graph_t * g)
 {
-    Agraph_t *g = gvc->g;
     Agnode_t *n;
 
     N_pages = 1;
@@ -653,18 +652,13 @@ void emit_edge(GVC_t * gvc, edge_t * e)
     gvrender_end_edge(gvc);
 }
 
-void emit_graph(GVC_t * gvc, graph_t * g, int flags)
+void emit_init(GVC_t * gvc, graph_t * g)
 {
-    point curpage;
-    graph_t *sg;
-    node_t *n;
-    edge_t *e;
-    int c;
-    char *str, *colors;
-    double X, Y, Z, x, y;
-    char *s, *url = NULL, *tooltip = NULL, *target = NULL;
+    char *str;
+    double X = 400.0, Y = 400.0, Z = 0.0, x = 0.0, y = 0.0;
 
-    X = Y = Z = x = y = 0.0;
+/* FIXME - init viewport to graph dimensions */
+
     if ((str = agget(g, "viewport")))
 	sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
     gvc->size.x = ROUND(X);
@@ -675,8 +669,26 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
 
     G_peripheries = agfindattr(g, "peripheries");
     setup_graph(gvc, g);
-    if (Page == 0)
-	gvrender_begin_job(gvc, Lib, Pages);
+    gvrender_begin_job(gvc, Lib, Pages);
+}
+
+void emit_deinit(GVC_t * gvc, graph_t * g)
+{
+}
+
+void emit_graph(GVC_t * gvc, graph_t * g, int flags)
+{
+    point curpage;
+    graph_t *sg;
+    node_t *n;
+    edge_t *e;
+    int c;
+    char *str, *colors;
+    char *s, *url = NULL, *tooltip = NULL, *target = NULL;
+
+    /* FIXME - I don't understand why I need this again */
+    setup_graph(gvc, g);
+
     gvrender_begin_graph(gvc, g, PB, PFC);
     if (flags & EMIT_COLORS) {
 	gvrender_set_fillcolor(gvc, DEFAULT_FILL);

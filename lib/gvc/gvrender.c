@@ -134,7 +134,7 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, point pages)
     else {
 	codegen_t *cg = gvc->codegen;
 
-	if (cg && cg->begin_job)
+	if (cg && cg->begin_job && gvc->page_number == 0)
 	    cg->begin_job(gvc->job->output_file, gvc->g, lib, gvc->user,
 			  gvc->info, pages);
     }

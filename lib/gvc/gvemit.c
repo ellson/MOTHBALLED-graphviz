@@ -52,8 +52,11 @@ typedef struct win {
 
     unsigned int width, height;
 
-    cairo_t *cr;
     GVC_t *gvc;
+    graph_t *g;
+    int flags;
+
+    cairo_t *cr;
 
     double tx, ty, zoom, oldx, oldy;
     int needs_refresh, fit_mode, click, active;
@@ -177,8 +180,6 @@ static void win_init(win_t * win, int argb, const char *geometry,
 	int x, y;
 	XParseGeometry(geometry, &x, &y, &win->width, &win->height);
     } else {
-/* FIXME - gvc->size is 0,0 at this time.  need to set viewport and transform earlier */
-//	svg_cairo_get_size(win->svgc, &win->width, &win->height);
         win->width = win->gvc->size.x;
         win->height = win->gvc->size.y;
     }
@@ -232,7 +233,7 @@ static void win_init(win_t * win, int argb, const char *geometry,
 	else
 	    key_binding[i].keycode = XKeysymToKeycode(dpy, keysym);
     }
-    win->cr = cairo_create();
+//    win->cr = cairo_create();
     surface = cairo_xlib_surface_create(dpy, win->pix, win->visual,
 					CAIRO_FORMAT_ARGB32, win->cmap);
     cairo_set_target_surface(win->cr, surface);
@@ -264,8 +265,8 @@ static void win_init(win_t * win, int argb, const char *geometry,
 
 static void win_deinit(win_t * win)
 {
-    cairo_destroy(win->cr);
-    win->cr = NULL;
+//    cairo_destroy(win->cr);
+//    win->cr = NULL;
     XFreeGC(win->dpy, win->gc);
     XDestroyWindow(win->dpy, win->win);
 }
@@ -278,9 +279,7 @@ static void win_refresh(win_t * win)
     cairo_translate(win->cr, win->tx, win->ty);
     cairo_scale(win->cr, win->zoom, win->zoom);
 
-//    svg_cairo_render(win->svgc, win->cr);
-// FIXME:  flags = chkOrder(g) | gvc->render_features->flags;
-    emit_graph(win->gvc, win->gvc->g, win->gvc->render_features->flags);
+    emit_graph(win->gvc, win->g, win->flags);
 
     cairo_restore(win->cr);
     XCopyArea(win->dpy, win->pix, win->win, win->gc,
@@ -552,7 +551,6 @@ static int toggle_fit_cb(win_t * win)
     win->fit_mode = !win->fit_mode;
     if (win->fit_mode) {
 	int dflt_width, dflt_height;
-//	svg_cairo_get_size(win->svgc, &dflt_width, &dflt_height);
 	dflt_width = win->gvc->size.x;
 	dflt_height = win->gvc->size.y;
 	win->zoom =
@@ -566,7 +564,6 @@ static int toggle_fit_cb(win_t * win)
 }
 #endif /* X_DISPLAY_MISSING */
 
-
 void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
 {
    if (flags & GVRENDER_X11_EVENTS) {
@@ -574,9 +571,14 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
 	win_t win;
 	const char *display=NULL;
 	int argb=0;
-	const char *geometry="200x200";
+	const char *geometry=NULL;
 
 	win.gvc = gvc;
+	win.g = g;
+	win.flags = flags;
+
+	gvc->surface = win.cr = cairo_create();;
+	gvc->external_surface = TRUE;
 
 	win.dpy = XOpenDisplay(display);
 	if (win.dpy == NULL) {
@@ -589,6 +591,7 @@ void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
 
 	win_handle_events(&win);
 
+	cairo_destroy(win.cr);
 	win_deinit(&win);
 
 	XCloseDisplay(win.dpy);

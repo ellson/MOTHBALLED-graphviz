@@ -68,13 +68,15 @@ extern "C" {
     extern void dotneato_set_margins(GVC_t * gvc, Agraph_t *);
     extern void dotneato_eof(GVC_t * gvc);
     extern void dotneato_terminate(GVC_t * gvc);
-    extern void dotneato_write(GVC_t * gvc);
-    extern void dotneato_write_one(GVC_t * gvc, graph_t * g);
+    extern void dotneato_write(GVC_t * gvc, graph_t *g);
+    extern void dotneato_write_one(GVC_t * gvc, graph_t *g);
     extern int edge_in_CB(Agedge_t *);
     extern int edge_in_layer(Agraph_t *, Agedge_t *);
     extern double elapsed_sec(void);
     extern void enqueue(queue *, Agnode_t *);
     extern void enqueue_neighbors(queue *, Agnode_t *, int);
+    extern void emit_init(GVC_t * gvc, graph_t * g);
+    extern void emit_deinit(GVC_t * gvc, graph_t * g);
     extern void emit_attachment(GVC_t * gvc, textlabel_t *, splines *);
     extern void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags);
     extern void emit_eof(GVC_t * gvc);
@@ -84,7 +86,7 @@ extern "C" {
     extern void emit_label(GVC_t * gvc, textlabel_t *, void *obj);
     extern int emit_once(char *message);
     extern void emit_once_reset();
-    extern void emit_reset(GVC_t * gvc);
+    extern void emit_reset(GVC_t * gvc, graph_t * g);
     extern void endpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);

@@ -122,6 +122,9 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
 {
     int flags;
 
+    gvc->g = g;
+    dotneato_set_margins(gvc, g);
+    emit_init(gvc, g);
     if (NOT(gvrender_features(gvc) & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES)
 #ifndef DISABLE_CODEGENS
 /* FIXME - bad hack until feaures supported in codegens */
@@ -131,8 +134,7 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
 #endif
 #endif
 	)
-	emit_reset(gvc);
-    dotneato_set_margins(gvc, g);
+	emit_reset(gvc, g);
     switch (gvc->job->output_lang) {
     case GVRENDER_PLUGIN:
 	flags = chkOrder(g);
@@ -211,11 +213,11 @@ void dotneato_write_one(GVC_t * gvc, graph_t * g)
 
     }
     fflush(gvc->job->output_file);
+    emit_deinit(gvc, g);
 }
 
-void dotneato_write(GVC_t * gvc)
+void dotneato_write(GVC_t * gvc, graph_t * g)
 {
-    graph_t *g = gvc->g;
     gvrender_job_t *job;
 
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {

@@ -1267,7 +1267,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 'w') && (strncmp(argv[1], "write", length) == 0)) {
-	gvc->g = g = g->root;
+	g = g->root;
 	if (argc < 3) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"",
 			     argv[0],
@@ -1299,7 +1299,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    tcldot_layout(g, (argc > 4) ? argv[4] : (char *) NULL);
 	}
 
-	emit_reset(gvc);	/* reset page numbers in postscript */
+	emit_reset(gvc, g);	/* reset page numbers in postscript */
 	dotneato_write_one(gvc, g);
 	gvrender_delete_jobs(gvc);
 	return TCL_OK;
