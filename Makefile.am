@@ -11,7 +11,7 @@ html = CPL.html
 txt_DATA = $(txt)
 html_DATA = $(html)
 
-SUBDIRS = libltdl lib plugin cmd doc
+SUBDIRS = libltdl lib plugin cmd tclpkg doc 
 
 doxygen:
 	doxygen

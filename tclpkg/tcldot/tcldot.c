@@ -1122,7 +1122,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 #endif
 	gvc->codegen = &TK_CodeGen;
 	/* emit graph in sorted order, all nodes then all edges */
-	emit_graph(gvc, EMIT_SORTED);
+	emit_graph(gvc, g, EMIT_SORTED);
 	gvrender_delete_jobs(gvc);
 	return TCL_OK;
 
@@ -1164,7 +1164,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	/* render graph to open GD structure */
 	gvc->codegen = &memGD_CodeGen;
 	/* emit graph in sorted order, all nodes then all edges */
-	emit_graph(gvc, 1);
+	emit_graph(gvc, g, 1);
 	gvrender_delete_jobs(gvc);
 	Tcl_AppendResult(interp, argv[2], (char *) NULL);
 	return TCL_OK;
@@ -1300,7 +1300,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 
 	emit_reset(gvc);	/* reset page numbers in postscript */
-	dotneato_write_one(gvc);
+	dotneato_write_one(gvc, g);
 	gvrender_delete_jobs(gvc);
 	return TCL_OK;
 

@@ -25,7 +25,7 @@ if WITH_TCL
 all-local: pkgIndex.tcl
 
 pkgIndex.tcl: libtclplan.la
-	sh $(top_srcdir)/mkpkgindex.sh libtclplan.la Tclpathplan $(VERSION)
+	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libtclplan.la Tclpathplan $(VERSION)
 endif
 
 CLEANFILES = pkgIndex.tcl

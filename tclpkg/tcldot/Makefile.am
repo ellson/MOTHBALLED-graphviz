@@ -7,17 +7,17 @@ htmldir = $(pkgdatadir)/doc/html
 
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
-        -I$(top_srcdir)/dotneato/dotgen \
-	-I$(top_srcdir)/dotneato/neatogen \
-	-I$(top_srcdir)/dotneato/twopigen \
-	-I$(top_srcdir)/dotneato/fdpgen \
-	-I$(top_srcdir)/dotneato/circogen \
-	-I$(top_srcdir)/dotneato/gvrender \
-	-I$(top_srcdir)/dotneato/common \
-	-I$(top_srcdir)/graph \
-	-I$(top_srcdir)/cdt \
-	-I$(top_srcdir)/pathplan \
-	-I$(top_srcdir)/tclhandle @GD_INCLUDES@ @TCL_INCLUDES@
+        -I$(top_srcdir)/lib/dotgen \
+	-I$(top_srcdir)/lib/neatogen \
+	-I$(top_srcdir)/lib/twopigen \
+	-I$(top_srcdir)/lib/fdpgen \
+	-I$(top_srcdir)/lib/circogen \
+	-I$(top_srcdir)/lib/gvc \
+	-I$(top_srcdir)/lib/common \
+	-I$(top_srcdir)/lib/graph \
+	-I$(top_srcdir)/lib/cdt \
+	-I$(top_srcdir)/lib/pathplan \
+	-I$(top_srcdir)/tclpkg/tclhandle @GD_INCLUDES@ @TCL_INCLUDES@
 
 LIBS =  @LIBS@ -lc
 
@@ -35,17 +35,17 @@ pdf_DATA = $(pdf)
 html_DATA = $(html)
 endif
 
-libtcldot_la_SOURCES = tcldot.c tkgen.c $(top_srcdir)/gdtclft/gdtclft.c
+libtcldot_la_SOURCES = tcldot.c tkgen.c $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
 
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
-	$(top_builddir)/dotneato/gvrender/libgvrender.la \
-        $(top_builddir)/dotneato/dotgen/libdotgen.la \
-        $(top_builddir)/dotneato/neatogen/libneatogen.la \
-        $(top_builddir)/dotneato/twopigen/libtwopigen.la \
-        $(top_builddir)/dotneato/fdpgen/libfdpgen.la \
-        $(top_builddir)/dotneato/circogen/libcircogen.la
+	$(top_builddir)/lib/gvc/libgvc.la \
+        $(top_builddir)/lib/dotgen/libdotgen.la \
+        $(top_builddir)/lib/neatogen/libneatogen.la \
+        $(top_builddir)/lib/twopigen/libtwopigen.la \
+        $(top_builddir)/lib/fdpgen/libfdpgen.la \
+        $(top_builddir)/lib/circogen/libcircogen.la
 
 if WITH_TCL
 all-local: pkgIndex.tcl

@@ -11,7 +11,6 @@ AM_CPPFLAGS = \
 
 pkginclude_HEADERS = exgram.h exlib.h expr.h
 pkglib_LTLIBRARIES = libexpr.la
-#noinst_LTLIBRARIES = libexprconvenience.la
 man_MANS = expr.3
 pdf_DATA = expr.pdf
 
@@ -19,9 +18,7 @@ libexpr_la_SOURCES = excc.c excontext.c exdata.c exerror.c \
 	exeval.c exexpr.c exlexname.c exopen.c exrewind.c extoken.c \
 	extype.c exzero.c exparse.y
 
-#libexprconvenience_la_SOURCES = $(libexpr_la_SOURCES)
-
-#$(libexprconvenience_la_OBJECTS): exparse.h exparse.c exgram.h exop.h
+$(libexpr_la_OBJECTS): exparse.h exparse.c exgram.h exop.h
 
 y.output: $(top_srcdir)/lib/expr/exparse.y
 	@YACC@ -dtv $(top_srcdir)/lib/expr/exparse.y
