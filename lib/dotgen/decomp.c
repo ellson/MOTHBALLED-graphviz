@@ -30,12 +30,14 @@ static graph_t *G;
 static node_t *Last_node;
 static char Cmark;
 
-void begin_component(void)
+static void 
+begin_component(void)
 {
     Last_node = GD_nlist(G) = NULL;
 }
 
-void add_to_component(node_t * n)
+static void 
+add_to_component(node_t * n)
 {
     GD_n_nodes(G)++;
     ND_mark(n) = Cmark;
@@ -50,7 +52,8 @@ void add_to_component(node_t * n)
     ND_next(n) = NULL;
 }
 
-void end_component(void)
+static void 
+end_component(void)
 {
     int i;
 
@@ -59,7 +62,8 @@ void end_component(void)
     GD_comp(G).list[i] = GD_nlist(G);
 }
 
-void search_component(graph_t * g, node_t * n)
+static void
+search_component(graph_t * g, node_t * n)
 {
     int c, i;
     elist vec[4];
