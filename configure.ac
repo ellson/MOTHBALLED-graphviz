@@ -138,8 +138,6 @@ AC_ISC_POSIX
 AM_PROG_LEX
 AC_PROG_YACC
 AC_PROG_AWK
-# AM_PROG_LIBTOOL includes check for ranlib and supercedes AC_CHECK_RANLIB
-# AC_PROG_RANLIB
 AM_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_PROG_LN_S
@@ -213,6 +211,60 @@ if test "X$no_x" = Xyes; then
   X_SUBDIRS=""
 fi
 AM_CONDITIONAL(WITH_X, [test "X$no_x" != "Xyes"])
+
+dnl -----------------------------------
+dnl check for SWIG - needed for script-language bindings
+
+AC_CHECK_PROG(SWIG,swig,swig)
+AM_CONDITIONAL(WITH_SWIG, [test "x$SWIG" != "x"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for PERL
+
+AC_CHECK_PROG(PERL,perl,perl)
+AM_CONDITIONAL(WITH_PERL, [test "x$PERL" != "x"])
+if test "x$PERL" = "x"; then
+  HAVE_PERL=0
+else
+  HAVE_PERL=1
+  PERL_ARCHLIB=`perl -e 'use Config; print $Config{archlib};'`
+  PERL_INCLUDES=-I$PERL_ARCHLIB/CORE
+  PERL_LIBS=-L$PERL_ARCHLIB/CORE -lperl
+fi
+AC_SUBST(HAVE_PERL)
+AC_SUBST(PERL_INCLUDES)
+AC_SUBST(PERL_LIBS)
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for PYTHON
+
+AC_CHECK_PROG(PYTHON,python,python)
+AM_CONDITIONAL(WITH_PYTHON, [test "x$PYTHON" != "x"])
+if test "x$PYTHON" = "x"; then
+  HAVE_PYTHON=0
+else
+  HAVE_PYTHON=1
+  PYTHON_INCLUDES=-I/usr/include/python2.4
+  PYTHON_LIBS=-lpython2.4
+fi
+AC_SUBST(HAVE_PYTHON)
+AC_SUBST(PYTHON_INCLUDES)
+AC_SUBST(PYTHON_LIBS)
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for RUBY
+AC_CHECK_PROG(RUBY,ruby,ruby)
+AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
+if test "x$RUBY" = "x"; then
+  HAVE_RUBY=0
+else
+  HAVE_RUBY=1
+  RUBY_INCLUDES=-I`ruby config_ruby.rb INCLUDES`
+  RUBY_LIBS=-lruby
+fi
+AC_SUBST(HAVE_RUBY)
+AC_SUBST(RUBY_INCLUDES)
+AC_SUBST(RUBY_LIBS)
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for TCL
@@ -1297,6 +1349,7 @@ AC_CONFIG_FILES(Makefile
 	lib/ingraphs/Makefile
 	lib/gvc/Makefile
 	lib/gvc/libgvc.pc
+	lib/gvapi/Makefile
 	plugin/Makefile
 	plugin/cairo/Makefile
 	plugin/gd/Makefile
@@ -1335,25 +1388,5 @@ AC_CONFIG_FILES(Makefile
 	graphviz.spec
 	ast_common.h
 	)
-
-#	ns/Makefile
-#	dynagraph/Makefile
-#	dynagraph/common/Makefile
-#	dynagraph/dynadag/Makefile
-#	dynagraph/incrface/Makefile
-#	dynagraph/fdp/Makefile
-#	dynagraph/shortspline/Makefile
-#	dynagraph/graphsearch/Makefile
-#	dynagraph/voronoi/Makefile
-#	dag/Makefile
-#	fdp/Makefile
-#	geo/Makefile
-#	grid/Makefile
-#	incr/Makefile
-#	shape/Makefile
-#	tcldgr/Makefile
-#	tcldgr/demo/Makefile
-#	tcldgl/Makefile
-#	tcldgl/demo/Makefile
 
 AC_OUTPUT

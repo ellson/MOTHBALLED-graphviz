@@ -803,6 +803,7 @@ fprintf(stderr,"edge_in_layer %s edge_in_pageBox %s\n",
 	    numc2 = (2 + numc) / 2.0;
 	    for (i = 0; i < offspl.size; i++) {
 		bz = ED_spl(e)->list[i];
+fprintf(stderr,"bz.size %d\n",bz.size);
 		tmpspl.list[i].size = offspl.list[i].size = bz.size;
 		offlist = offspl.list[i].list =
 		    malloc(sizeof(pointf) * bz.size);
