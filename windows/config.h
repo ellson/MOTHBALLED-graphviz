@@ -13,8 +13,6 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
-#define VERSION "2.3.20050120.2005"
-#define BUILDDATE "Thu Jan 20 21:35:05 GMT 2005"
 
 #ifdef __cplusplus
 extern "C" {

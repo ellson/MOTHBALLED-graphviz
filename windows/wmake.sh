@@ -85,7 +85,7 @@ do
   cd $d
   p=${d##*/}
   doComp $p
-  cd $GVIZ\cmd
+  cd $GVIZ/cmd
 done
 cd ..
 
