@@ -1268,26 +1268,38 @@ AC_CONFIG_FILES(Makefile
 	graphs/undirected/Makefile
 	lib/Makefile
 	lib/cdt/Makefile
-	lib/graph/Makefile
+	lib/cdt/libcdt.pc
 	lib/agraph/Makefile
+	lib/agraph/libagraph.pc
+	lib/graph/Makefile
+	lib/graph/libgraph.pc
 	lib/agutil/Makefile
 	lib/gd/Makefile
 	lib/pathplan/Makefile
+	lib/pathplan/libpathplan.pc
 	lib/ast/Makefile
 	lib/sfio/Makefile
 	lib/sfio/Sfio_dc/Makefile
 	lib/sfio/Sfio_f/Makefile
 	lib/vmalloc/Makefile
-	lib/circogen/Makefile
 	lib/dotgen/Makefile
-	lib/fdpgen/Makefile
+	lib/dotgen/libdotgen.pc
 	lib/neatogen/Makefile
+	lib/neatogen/libneatogen.pc
+	lib/fdpgen/Makefile
+	lib/fdpgen/libfdpgen.pc
+	lib/circogen/Makefile
+	lib/circogen/libcircogen.pc
 	lib/twopigen/Makefile
+	lib/twopigen/libtwopigen.pc
 	lib/pack/Makefile
+	lib/pack/libpack.pc
 	lib/expr/Makefile
 	lib/common/Makefile
+	lib/common/libcommon.pc
 	lib/ingraphs/Makefile
 	lib/gvc/Makefile
+	lib/gvc/libgvc.pc
 	plugin/Makefile
 	plugin/cairo/Makefile
 	plugin/gd/Makefile
@@ -1295,6 +1307,8 @@ AC_CONFIG_FILES(Makefile
 	plugin/layout/Makefile
 	cmd/Makefile
 	cmd/dot/Makefile
+	cmd/dot/dotneato-config
+	cmd/dot/libdotneato.pc
 	cmd/tools/Makefile
 	cmd/gvpr/Makefile
 	tclpkg/Makefile
@@ -1314,19 +1328,6 @@ AC_CONFIG_FILES(Makefile
 	ast_common.h
 	)
 
-#	cdt/libcdt.pc
-#	agraph/libagraph.pc
-#	graph/libgraph.pc
-#	pathplan/libpathplan.pc
-#	dotneato/dotgen/libdotgen.pc
-#	dotneato/neatogen/libneatogen.pc
-#	dotneato/twopigen/libtwopigen.pc
-#	dotneato/fdpgen/libfdpgen.pc
-#	dotneato/circogen/libcircogen.pc
-#	dotneato/gvrender/libgvrender.pc
-#	dotneato/pack/libpack.pc
-#	dotneato/dotneato-config
-#	dotneato/libdotneato.pc
 #	ns/Makefile
 #	dynagraph/Makefile
 #	dynagraph/common/Makefile

@@ -16,7 +16,7 @@ LIBS = @LIBLTDL@
 pkginclude_HEADERS = gvrender.h gvrenderint.h gvplugin_render.h \
 	gvplugin_layout.h gvplugin.h
 pkglib_LTLIBRARIES = libgvc.la
-#pkgconfig_DATA = libgvc.pc
+pkgconfig_DATA = libgvc.pc
 
 libgvc_la_SOURCES = gvrender.c gvlayout.c gvcontext.c gvjobs.c \
 	gvemit.c gvplugin.c gvconfig.c
