@@ -49,6 +49,10 @@
   #define ORIGINAL_LIB_JPEG_REVERSE_ODD_ROWS
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <string.h>
 #include "gd.h"
 #include "gdhelpers.h"
