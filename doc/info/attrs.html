@@ -891,7 +891,7 @@ This field indicates which graph component uses the attribute.
 
 <DT><A NAME=d:pos HREF=#a:pos><STRONG>pos</STRONG></A>
 <DD>  Position of node, or spline control points, in points.
-  In neato, pos can be used to set initial position of a node.
+  In neato and fdp, pos can be used to set initial position of a node.
   Concerning this, see the <A HREF=command.html#d:s>-s</A> command line flag.
 
 <DT><A NAME=d:quantum HREF=#a:quantum><STRONG>quantum</STRONG></A>
@@ -1169,7 +1169,20 @@ This field indicates which graph component uses the attribute.
   value given to <B>width</B> will be the final value.
 
 <DT><A NAME=d:z HREF=#a:z><STRONG>z</STRONG></A>
-<DD>  Provides z coordinate for the node when output format is VRML.
+<DD>  Provides z coordinate value for 3D layouts and displays. If the
+  graph has <A HREF=#d:dim><B>dim</B></A> set to 3 (or more), 
+  neato will use a node's <B>z</B> value
+  for the z coordinate of its initial position if 
+  its <A HREF=#d:pos><B>pos</B></A> attribute is also defined.
+  <P>
+  Even if no <B>z</B> values are specified in the input, it is necessary to
+  declare a <B>z</B> attribute for nodes, e.g, using <TT>node[z=""]</TT>
+  in order to get z values on output.
+  Thus, setting <TT>dim=3</TT> but not declaring <B>z</B> will 
+  cause <TT>neato -Tvrml</TT> to
+  layout the graph in 3D but project the layout onto the xy-plane
+  for the rendering. If the <B>z</B> attribute is declared, the final rendering
+  will be in 3D.
 
 </DL>
 <HR>
@@ -1318,9 +1331,12 @@ the given types.
   until the topmost row is traversed.
 
 <DT><A NAME=k:point><STRONG>point</STRONG></A>
-<DD>"%d,%d"('!') representing the point (x,y). The 
+<DD>"%f,%f"('!') representing the point (x,y). The 
   optional '!' indicates the 
   node position should not change (input-only).
+  <P>
+  If <A HREF=#d:dim>dim</A> is 3 or more, <B>point</B> may also have
+  the format "%f,%f,%f"('!') to represent the point (x,y,z).
 
 <DT><A NAME=k:pointf><STRONG>pointf</STRONG></A>
 <DD>"%lf,%lf" representing the point (x,y).
