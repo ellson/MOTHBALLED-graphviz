@@ -251,7 +251,7 @@ static void doFill(GVC_t * gvc, char *color, box pts)
 
 static void doAnchorStart(GVC_t * gvc, htmldata_t * data, void *obj)
 {
-    gvrender_begin_anchor(gvc, data->href, "", data->target);
+    gvrender_begin_anchor(gvc, data->href, data->title, data->target);
 }
 
 static void doAnchorEnd(GVC_t * gvc)
@@ -402,6 +402,7 @@ void free_html_data(htmldata_t * dp)
     free(dp->href);
     free(dp->port);
     free(dp->target);
+    free(dp->title);
     free(dp->bgcolor);
 }
 

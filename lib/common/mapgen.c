@@ -215,8 +215,9 @@ static void init_imap(void)
 
 static void doHTMLdata(htmldata_t * dp, point p, void *obj)
 {
-    char *url, *target;
+    char *url, *target, *title;
     pointf p1, p2;
+    int havetitle=0;
 
     if ((url = dp->href) && url[0]) {
 
@@ -234,13 +235,32 @@ static void doHTMLdata(htmldata_t * dp, point p, void *obj)
 	if (!(target = dp->target) || !target[0]) {
 	    target = "";
 	}
+	if ((title = dp->title) && title[0]) {
+	    havetitle++;
+	    switch (agobjkind(obj)) {
+	    case AGGRAPH:
+	        title = strdup_and_subst_graph(title, (graph_t *) obj);
+	        break;
+	    case AGNODE:
+	        title = strdup_and_subst_node(title, (node_t *) obj);
+	        break;
+	    case AGEDGE:
+	        title = strdup_and_subst_edge(title, (edge_t *) obj);
+	        break;
+	    }
+	}
+	else {
+	    title = "";
+	}
 
 	p1.x = p.x + dp->box.LL.x;
 	p1.y = p.y + dp->box.LL.y;
 	p2.x = p.x + dp->box.UR.x;
 	p2.y = p.y + dp->box.UR.y;
-	map_output_rect(p1, p2, url, target, "", 0);
+	map_output_rect(p1, p2, url, target, "", title);
 	free(url);
+	if (havetitle)
+	    free(title);
     }
 }
 

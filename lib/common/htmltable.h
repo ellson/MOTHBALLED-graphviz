@@ -62,6 +62,7 @@ extern "C" {
 	char *href;		/* pointer to an external resource */
 	char *port;
 	char *target;
+	char *title;
 	char *bgcolor;
 	char *pencolor;
 	signed char space;

@@ -122,6 +122,12 @@ static int hreffn(htmldata_t * p, char *v)
     return 0;
 }
 
+static int titlefn(htmldata_t * p, char *v)
+{
+    p->title = strdup(v);
+    return 0;
+}
+
 static int portfn(htmldata_t * p, char *v)
 {
     p->port = strdup(v);
@@ -350,6 +356,8 @@ static attr_item tbl_items[] = {
     {"href", (attrFn) hreffn},
     {"port", (attrFn) portfn},
     {"target", (attrFn) targetfn},
+    {"title", (attrFn) titlefn},
+    {"tooltip", (attrFn) titlefn},
     {"valign", (attrFn) valignfn},
     {"width", (attrFn) widthfn},
 };
@@ -367,6 +375,8 @@ static attr_item cell_items[] = {
     {"port", (attrFn) portfn},
     {"rowspan", (attrFn) rowspanfn},
     {"target", (attrFn) targetfn},
+    {"title", (attrFn) titlefn},
+    {"tooltip", (attrFn) titlefn},
     {"valign", (attrFn) valignfn},
     {"width", (attrFn) widthfn},
 };
