@@ -25,13 +25,57 @@ extern "C" {
 
     typedef struct gvrender_job_s gvrender_job_t;
 
+#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER)
+#include <X11/Xlib.h>
+
+    typedef struct win {
+	Display *dpy;
+	int scr;
+	Window win;
+	unsigned long event_mask;
+	Pixmap pix;
+	GC gc;
+	Visual *visual;
+	Colormap cmap;
+	int depth;
+	double oldx, oldy; /* old pointer position in pixels */
+	
+        gvrender_job_t *job;
+	
+	int needs_refresh, fit_mode, click, active;
+	
+	Atom wm_delete_window_atom;
+    } win_t;
+#endif
+
     struct gvrender_job_s {
 	gvrender_job_t *next;
 	char *output_filename;
 	char *output_langname;
 	FILE *output_file;
-	void *interim_output;
 	int output_lang;
+
+	void *surface;		/* gd or cairo surface */
+	boolean external_surface; /* surface belongs to caller */
+
+	GVC_t *gvc;		/* parent gvc */
+        graph_t *g;		/* parent graph */
+        int flags;		/* emit_graph flags */
+
+        unsigned int width;     /* width in pixels */
+        unsigned int height;    /* height in pixels */
+	int dpi;		/* resolution pixels-per-inch */
+	int rot;		/* rotation */
+	double zoom;		/* viewport zoom factor */
+	pointf focus;		/* viewport focus in graph units */
+//	pointf pointer;		/* pointer position in graph units */
+//	boxf clip;		/* clip region in graph units */
+
+	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
+	
+#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER) && defined(HAVE_CAIRO)
+        win_t *win;
+#endif
     };
 
 #define EMIT_SORTED (1<<0)
@@ -116,8 +160,6 @@ extern "C" {
 
 	/* gvrender_begin_graph() */
 	graph_t *g;
-	void *surface;		/* gd or cairo surface */
-	boolean external_surface;	/* surface belongs to caller */
 
 	box bb;			/* graph bounding box (what units???) */
 	point pb;		/* page size - including margins (inches) */
@@ -129,15 +171,6 @@ extern "C" {
 
 	/* render defaults set from graph */
 	color_t bgcolor;	/* background color */
-        unsigned int width;
-        unsigned int height;
-	int dpi;		/* resolution dots-per-inch */
-	int rot;		/* rotation */
-
-	double zoom;		/* viewport zoom factor */
-	pointf focus;		/* viewport focus in graph units */
-	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
-	box clip;		/* clip region in graph units */
 
 	/* gvrender_begin_page() */
 	point page;

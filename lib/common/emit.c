@@ -149,7 +149,7 @@ static void setup_page(GVC_t * gvc, point page)
 	offset.y = -page.x * GP.x;
     }
     rot = GD_drawing(g)->landscape ? 90 : 0;
-    gvrender_begin_page(gvc, page, gvc->zoom, rot, offset);
+    gvrender_begin_page(gvc, page, gvc->job->zoom, rot, offset);
     emit_background(gvc, CB.LL, CB.UR);
     emit_defaults(gvc);
 }
@@ -309,8 +309,8 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	GP.y = PFCLM.y;		/* convert to double */
 	if (GD_drawing(g)->landscape)
 	    GP = exch_xyf(GP);
-	GP.x = GP.x / gvc->zoom;
-	GP.y = GP.y / gvc->zoom;
+	GP.x = GP.x / gvc->job->zoom;
+	GP.y = GP.y / gvc->job->zoom;
 	/* we don't want graph page to exceed its bounding box */
 	GP.x = MIN(GP.x, GD_bb(g).UR.x);
 	GP.y = MIN(GP.y, GD_bb(g).UR.y);
@@ -319,8 +319,8 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	N_pages = Pages.x * Pages.y;
 
 	/* find the drawable size in device coords */
-	tp.x = gvc->width;
-	tp.y = gvc->height;
+	tp.x = gvc->job->width;
+	tp.y = gvc->job->height;
 	if (GD_drawing(g)->landscape)
 	    tp = exch_xy(tp);
 	DS.x = MIN(tp.x, PFCLM.x);
@@ -334,8 +334,8 @@ static void setup_pagination(GVC_t * gvc, graph_t * g)
 	PFC.y = DEFAULT_PAGEHT;
 	PFCLM.x = PFC.x - 2 * PB.LL.x;
 	PFCLM.y = PFC.y - 2 * PB.LL.y;
-	DS.x = gvc->width;
-	DS.y = gvc->height;
+	DS.x = gvc->job->width;
+	DS.y = gvc->job->height;
 	if (GD_drawing(g)->landscape)
 	    DS = exch_xy(DS);
 	Pages.x = Pages.y = N_pages = 1;

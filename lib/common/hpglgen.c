@@ -164,14 +164,14 @@ static Color black = { 0, 0, 0 };
 static Color white = { 255, 255, 255 };
 static Color *colorlist;
 
-typedef struct _gc {
+typedef struct GC_s {
     int bold;
     int style;
     Color color;
     FontInfo font;
-    struct _gc *prev;
-} GC;
-static GC *curGC;
+    struct GC_s *prev;
+} GC_t;
+static GC_t *curGC;
 
 static void set_color(Color * cp)
 {
@@ -282,10 +282,10 @@ static void set_line_style(int sty)
     output(buffer);
 }
 
-static GC *makeGC(GC * old)
+static GC_t *makeGC(GC_t * old)
 {
-    GC *newGC;
-    newGC = GNEW(GC);
+    GC_t *newGC;
+    newGC = GNEW(GC_t);
     if (old)
 	*newGC = *old;
     else {
@@ -313,7 +313,7 @@ static void initGC(void)
 
 static void destroyGC(void)
 {
-    GC *gc, *gc1;
+    GC_t *gc, *gc1;
     for (gc = curGC; gc; gc = gc1) {
 	gc1 = gc->prev;
 	free(gc);
@@ -327,7 +327,7 @@ static void destroyGC(void)
 
 static void saveGC(void)
 {
-    GC *newGC;
+    GC_t *newGC;
     newGC = makeGC(curGC);
     newGC->prev = curGC;
     curGC = newGC;
@@ -335,7 +335,7 @@ static void saveGC(void)
 
 static void restoreGC(void)
 {
-    GC *gc, *newGC;
+    GC_t *gc, *newGC;
     gc = curGC;
     newGC = gc->prev;
     if (gc->bold != newGC->bold)

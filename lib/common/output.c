@@ -508,7 +508,7 @@ void _write_plain(GVC_t * gvc, FILE * f, boolean extend)
 //    setup_graph(gvc, g);
     setYInvert(g);
     pt = GD_bb(g).UR;
-    fprintf(f, "graph %.3f %.3f %.3f\n", gvc->zoom, PS2INCH(pt.x), PS2INCH(pt.y));
+    fprintf(f, "graph %.3f %.3f %.3f\n", gvc->job->zoom, PS2INCH(pt.x), PS2INCH(pt.y));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n))
 	    continue;

@@ -124,6 +124,7 @@ void gvrender_reset(GVC_t * gvc)
 void gvrender_begin_job(GVC_t * gvc, char **lib, point pages, double X, double Y, double Z, double x, double y, int dpi)
 {
     gvrender_engine_t *gvre = gvc->render_engine;
+    gvrender_job_t *job = gvc->job;
 
     gvc->lib = lib;
     gvc->pages = pages;
@@ -134,12 +135,12 @@ void gvrender_begin_job(GVC_t * gvc, char **lib, point pages, double X, double Y
 	else
 	    dpi = DEFAULT_DPI;
     }
-    gvc->dpi = dpi;
-    gvc->width = ROUND(X * dpi / POINTS_PER_INCH);
-    gvc->height = ROUND(Y * dpi / POINTS_PER_INCH);
-    gvc->zoom = Z;              /* scaling factor */
-    gvc->focus.x = x;           /* graph coord of focus - points */
-    gvc->focus.y = y;
+    job->dpi = dpi;
+    job->width = ROUND(X * dpi / POINTS_PER_INCH);
+    job->height = ROUND(Y * dpi / POINTS_PER_INCH);
+    job->zoom = Z;              /* scaling factor */
+    job->focus.x = x;           /* graph coord of focus - points */
+    job->focus.y = y;
     if (gvre) {
         if (gvre->begin_job)
 	    gvre->begin_job(gvc);
@@ -180,28 +181,30 @@ void gvrender_end_job(GVC_t * gvc)
 
 static pointf gvrender_ptf(GVC_t * gvc, pointf p)
 {
+    gvrender_job_t *job = gvc->job;
     pointf rv;
 
-    if (gvc->rot == 0) {
-	rv.x = (p.x - gvc->focus.x) * gvc->compscale.x + gvc->width / 2.;
-	rv.y = (p.y - gvc->focus.y) * gvc->compscale.y + gvc->height / 2.;
+    if (job->rot == 0) {
+	rv.x = (p.x - job->focus.x) * job->compscale.x + job->width / 2.;
+	rv.y = (p.y - job->focus.y) * job->compscale.y + job->height / 2.;
     } else {
-	rv.x = -(p.y - gvc->focus.y) * gvc->compscale.x + gvc->width / 2.;
-	rv.y = (p.x - gvc->focus.x) * gvc->compscale.y + gvc->height / 2.;
+	rv.x = -(p.y - job->focus.y) * job->compscale.x + job->width / 2.;
+	rv.y = (p.x - job->focus.x) * job->compscale.y + job->height / 2.;
     }
     return rv;
 }
 
 static pointf gvrender_pt(GVC_t * gvc, point p)
 {
+    gvrender_job_t *job = gvc->job;
     pointf rv;
 
-    if (gvc->rot == 0) {
-	rv.x = ((double) p.x - gvc->focus.x) * gvc->compscale.x + gvc->width / 2.;
-	rv.y = ((double) p.y - gvc->focus.y) * gvc->compscale.y + gvc->height / 2.;
+    if (job->rot == 0) {
+	rv.x = ((double) p.x - job->focus.x) * job->compscale.x + job->width / 2.;
+	rv.y = ((double) p.y - job->focus.y) * job->compscale.y + job->height / 2.;
     } else {
-	rv.x = -((double) p.y - gvc->focus.y) * gvc->compscale.x + gvc->width / 2.;
-	rv.y = ((double) p.x - gvc->focus.x) * gvc->compscale.y + gvc->height / 2.;
+	rv.x = -((double) p.y - job->focus.y) * job->compscale.x + job->width / 2.;
+	rv.y = ((double) p.x - job->focus.x) * job->compscale.y + job->height / 2.;
     }
     return rv;
 }
@@ -229,6 +232,7 @@ static void gvrender_resolve_color(gvrender_features_t * features,
 void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     gvrender_engine_t *gvre = gvc->render_engine;
+    gvrender_job_t *job = gvc->job;
     char *str;
 
     gvc->g = g;
@@ -236,9 +240,9 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     gvc->pb = pb;
 
     if (gvre) {
-	gvc->compscale.x = gvc->zoom * gvc->dpi / POINTS_PER_INCH;
-	gvc->compscale.y =
-	    gvc->compscale.x *
+	job->compscale.x = job->zoom * job->dpi / POINTS_PER_INCH;
+	job->compscale.y =
+	    job->compscale.x *
 	    ((gvc->render_features->flags & GVRENDER_Y_GOES_DOWN) ? -1.0 : 1.0);
 
 	/* render specific init */
@@ -297,10 +301,11 @@ void gvrender_begin_page(GVC_t * gvc, point page, double scale, int rot,
 			 point offset)
 {
     gvrender_engine_t *gvre = gvc->render_engine;
+    gvrender_job_t *job = gvc->job;
 
     gvc->page = page;
 //    gvc->scale = scale;
-    gvc->rot = rot;
+    job->rot = rot;
 //    gvc->offset = offset;
     gvc->page_number = page.x + page.y * gvc->pages.x + 1;
     if (gvre && gvre->begin_page)

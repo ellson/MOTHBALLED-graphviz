@@ -20,10 +20,6 @@
 
 #include <stdio.h>
 
-#if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER) && defined(HAVE_CAIRO)
-#include <cairo.h>
-#endif
-
 #include "const.h"
 #include "types.h"
 #include "macros.h"
@@ -34,36 +30,13 @@ extern void emit_graph(GVC_t * gvc, graph_t * g, int flags);
 
 #if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER) && defined(HAVE_CAIRO)
 
+#include <cairo.h>
+
 
 #define PANFACTOR 10
 #define ZOOMFACTOR 1.1
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
-
-typedef struct win {
-    Display *dpy;
-    int scr;
-    Window win;
-    unsigned long event_mask;
-    Pixmap pix;
-    GC gc;
-    Visual *visual;
-    Colormap cmap;
-    int depth;
-
-    unsigned int width, height;
-
-    GVC_t *gvc;
-    graph_t *g;
-    int flags;
-
-    cairo_t *cr;
-
-    double oldx, oldy;
-    int needs_refresh, fit_mode, click, active;
-
-    Atom wm_delete_window_atom;
-} win_t;
 
 typedef int (*key_callback_t) (win_t * win);
 
@@ -133,7 +106,7 @@ static Visual *find_argb_visual(Display * dpy, int scr)
     return visual;
 }
 
-static void win_init(win_t * win, int argb, const char *geometry,
+static void win_init(gvrender_job_t * job, int argb, const char *geometry,
 	 const char *base)
 {
     unsigned int i;
@@ -147,6 +120,9 @@ static void win_init(win_t * win, int argb, const char *geometry,
     char *name;
     Display *dpy;
     int scr;
+    win_t *win = job->win;
+
+    win->job = job;
 
     dpy = win->dpy;
     win->scr = scr = DefaultScreen(dpy);
@@ -175,11 +151,11 @@ static void win_init(win_t * win, int argb, const char *geometry,
 
     if (geometry) {
 	int x, y;
-	XParseGeometry(geometry, &x, &y, &win->gvc->width, &win->gvc->height);
+	XParseGeometry(geometry, &x, &y, &job->width, &job->height);
     }
 
     win->win = XCreateWindow(dpy, RootWindow(dpy, scr),
-			     0, 0, win->gvc->width, win->gvc->height, 0, win->depth,
+			     0, 0, job->width, job->height, 0, win->depth,
 			     InputOutput, win->visual,
 			     attributemask, &attributes);
 
@@ -191,8 +167,8 @@ static void win_init(win_t * win, int argb, const char *geometry,
     normalhints->flags = 0;
     normalhints->x = 0;
     normalhints->y = 0;
-    normalhints->width = win->gvc->width;
-    normalhints->height = win->gvc->height;
+    normalhints->width = job->width;
+    normalhints->height = job->height;
 
     classhint = XAllocClassHint();
     classhint->res_name = "graphviz";
@@ -210,13 +186,13 @@ static void win_init(win_t * win, int argb, const char *geometry,
     free(name);
 
     win->pix =
-	XCreatePixmap(dpy, win->win, win->gvc->width, win->gvc->height, win->depth);
+	XCreatePixmap(dpy, win->win, job->width, job->height, win->depth);
     if (argb)
 	gcv.foreground = 0;
     else
 	gcv.foreground = WhitePixel(dpy, scr);
     win->gc = XCreateGC(dpy, win->pix, GCForeground, &gcv);
-    XFillRectangle(dpy, win->pix, win->gc, 0, 0, win->gvc->width, win->gvc->height);
+    XFillRectangle(dpy, win->pix, win->gc, 0, 0, job->width, job->height);
 
     for (i = 0; i < ARRAY_SIZE(key_binding); i++) {
 	KeySym keysym;
@@ -229,15 +205,11 @@ static void win_init(win_t * win, int argb, const char *geometry,
     }
     surface = cairo_xlib_surface_create(dpy, win->pix, win->visual,
 					CAIRO_FORMAT_ARGB32, win->cmap);
-    cairo_set_target_surface(win->cr, surface);
-
-// FIXME - messy win + gvc structs
-    win->gvc->surface = win->cr;
-     win->gvc->external_surface = TRUE;    /* FIXME - who clears this? */
-
+    cairo_set_target_surface(job->surface, surface);
     cairo_surface_destroy(surface);
+
     /* XXX: This probably doesn't need to be here (eventually) */
-    cairo_set_rgb_color(win->cr, 1, 1, 1);
+    cairo_set_rgb_color(job->surface, 1, 1, 1);
     win->event_mask = (
           ButtonPressMask
         | ButtonReleaseMask
@@ -255,44 +227,51 @@ static void win_init(win_t * win, int argb, const char *geometry,
     win->active = 0;
 }
 
-static void win_deinit(win_t * win)
+static void win_deinit(gvrender_job_t * job)
 {
+    win_t *win = job->win;
+
     XFreeGC(win->dpy, win->gc);
     XDestroyWindow(win->dpy, win->win);
 }
 
 static void win_refresh(win_t * win)
 {
-    XFillRectangle(win->dpy, win->pix, win->gc, 0, 0,
-		win->gvc->width, win->gvc->height);
+    gvrender_job_t *job = win->job;
 
-    emit_graph(win->gvc, win->g, win->flags);
+    XFillRectangle(win->dpy, win->pix, win->gc, 0, 0,
+		job->width, job->height);
+
+    emit_graph(job->gvc, job->g, job->flags);
 
     XCopyArea(win->dpy, win->pix, win->win, win->gc,
-	      0, 0, win->gvc->width, win->gvc->height, 0, 0);
+	      0, 0, job->width, job->height, 0, 0);
 }
 
 static void win_grow_pixmap(win_t * win)
 {
     Pixmap new;
     cairo_surface_t *surface;
+    gvrender_job_t *job = win->job;
 
-    new = XCreatePixmap(win->dpy, win->win, win->gvc->width, win->gvc->height,
+    new = XCreatePixmap(win->dpy, win->win, job->width, job->height,
 			win->depth);
     XFillRectangle(win->dpy, new, win->gc, 0, 0,
-		win->gvc->width, win->gvc->height);
+		job->width, job->height);
     XCopyArea(win->dpy, win->pix, new, win->gc, 0, 0,
-		win->gvc->width, win->gvc->height, 0, 0);
+		job->width, job->height, 0, 0);
     XFreePixmap(win->dpy, win->pix);
     win->pix = new;
     surface = cairo_xlib_surface_create(win->dpy, win->pix, win->visual,
 					CAIRO_FORMAT_ARGB32, win->cmap);
-    cairo_set_target_surface(win->cr, surface);
+    cairo_set_target_surface(job->surface, surface);
     cairo_surface_destroy(surface);
 }
 
 static void win_handle_button_press(win_t *win, XButtonEvent *bev)
 {
+    gvrender_job_t *job = win->job;
+
     switch (bev->button) {
     case 1: /* select / create in edit mode */
     case 2: /* pan */
@@ -304,20 +283,20 @@ static void win_handle_button_press(win_t *win, XButtonEvent *bev)
     case 4:
 	/* scrollwheel zoom in at current mouse x,y */
 	win->fit_mode = 0;
-	win->gvc->focus.x +=  (bev->x - win->gvc->width / 2.)
-		* (ZOOMFACTOR - 1.) / win->gvc->zoom;
-	win->gvc->focus.y += -(bev->y - win->gvc->height / 2.)
-		* (ZOOMFACTOR - 1.) / win->gvc->zoom;
-	win->gvc->zoom *= ZOOMFACTOR;
+	job->focus.x +=  (bev->x - job->width / 2.)
+		* (ZOOMFACTOR - 1.) / job->zoom;
+	job->focus.y += -(bev->y - job->height / 2.)
+		* (ZOOMFACTOR - 1.) / job->zoom;
+	job->zoom *= ZOOMFACTOR;
 	win->needs_refresh = 1;
 	break;
     case 5: /* scrollwheel zoom out at current mouse x,y */
 	win->fit_mode = 0;
-	win->gvc->zoom /= ZOOMFACTOR;
-	win->gvc->focus.x -=  (bev->x - win->gvc->width / 2.)
-		* (ZOOMFACTOR - 1.) / win->gvc->zoom;
-	win->gvc->focus.y -= -(bev->y - win->gvc->height / 2.)
-		* (ZOOMFACTOR - 1.) / win->gvc->zoom;
+	job->zoom /= ZOOMFACTOR;
+	job->focus.x -=  (bev->x - job->width / 2.)
+		* (ZOOMFACTOR - 1.) / job->zoom;
+	job->focus.y -= -(bev->y - job->height / 2.)
+		* (ZOOMFACTOR - 1.) / job->zoom;
 	win->needs_refresh = 1;
 	break;
     }
@@ -325,13 +304,17 @@ static void win_handle_button_press(win_t *win, XButtonEvent *bev)
     win->oldy = bev->y;
 }
 
+#define EPSILON .0001
+
 static void win_handle_motion(win_t *win, XMotionEvent *mev)
 {
-    int dx = mev->x - win->oldx;
-    int dy = mev->y - win->oldy;
+    gvrender_job_t *job = win->job;
+    double dx = mev->x - win->oldx;
+    double dy = mev->y - win->oldy;
 
-    if (dx == 0 && dy == 0)  /* ignore motion events with no motion */
+    if (abs(dx) < EPSILON && abs(dy) < EPSILON)  /* ignore motion events with no motion */
 	return;
+
     switch (win->active) {
     case 0: /* drag with no button - */
 	return;
@@ -340,8 +323,8 @@ static void win_handle_motion(win_t *win, XMotionEvent *mev)
 	/* FIXME - to be implemented */
 	break;
     case 2: /* drag with button 2 - pan graph */
-	win->gvc->focus.x -=  dx / win->gvc->zoom;
-	win->gvc->focus.y -= -dy / win->gvc->zoom;
+	job->focus.x -=  dx / job->zoom;
+	job->focus.y -= -dy / job->zoom;
 	win->needs_refresh = 1;
 	break;
     case 3: /* drag with button 3 - unused */
@@ -371,17 +354,16 @@ static void win_reconfigure_normal(win_t * win, unsigned int width,
 		       unsigned int height)
 {
     int has_grown = 0;
+    gvrender_job_t *job = win->job;
 
-    if (width > win->gvc->width || height > win->gvc->height)
+    if (width > job->width || height > job->height)
 	has_grown = 1;
 /* Adjust focus to keep image fixed during window resizing */
 /* FIXME - causes FP error on size reduction */
-//    win->gvc->focus.x +=  ((double)(width - win->gvc->width))
-//		/ (2. * win->gvc->zoom);
-//    win->gvc->focus.y += -((double)(height - win->gvc->height))
-//		/ (2. * win->gvc->zoom);
-    win->gvc->width = width;
-    win->gvc->height = height;
+//    job->focus.x +=  ((double)(width - job->width)) / (2. * job->zoom);
+//    job->focus.y += -((double)(height - job->height))	/ (2. * job->zoom);
+    job->width = width;
+    job->height = height;
     if (has_grown)
 	win_grow_pixmap(win);
     win->needs_refresh = 1;
@@ -392,10 +374,11 @@ win_reconfigure_fit_mode(win_t * win, unsigned int width,
 			 unsigned int height)
 {
     int dflt_width, dflt_height;
+    gvrender_job_t *job = win->job;
 
-    dflt_width = win->gvc->width;
-    dflt_height = win->gvc->height;
-    win->gvc->zoom =
+    dflt_width = job->width;
+    dflt_height = job->height;
+    job->zoom =
 	MIN((double) width / (double) dflt_width,
 	    (double) height / (double) dflt_height);
 
@@ -471,64 +454,78 @@ static int quit_cb(win_t * win)
 
 static int left_cb(win_t * win)
 {
+    gvrender_job_t *job = win->job;
+
     win->fit_mode = 0;
-    win->gvc->focus.x += PANFACTOR / win->gvc->zoom;
+    job->focus.x += PANFACTOR / job->zoom;
     win->needs_refresh = 1;
     return 0;
 }
 
 static int right_cb(win_t * win)
 {
+    gvrender_job_t *job = win->job;
+
     win->fit_mode = 0;
-    win->gvc->focus.x -= PANFACTOR / win->gvc->zoom;
+    job->focus.x -= PANFACTOR / job->zoom;
     win->needs_refresh = 1;
     return 0;
 }
 
 static int up_cb(win_t * win)
 {
+    gvrender_job_t *job = win->job;
+
     win->fit_mode = 0;
-    win->gvc->focus.y += -(PANFACTOR / win->gvc->zoom);
+    job->focus.y += -(PANFACTOR / job->zoom);
     win->needs_refresh = 1;
     return 0;
 }
 
 static int down_cb(win_t * win)
 {
+    gvrender_job_t *job = win->job;
+
     win->fit_mode = 0;
-    win->gvc->focus.y -= -(PANFACTOR / win->gvc->zoom);
+    job->focus.y -= -(PANFACTOR / job->zoom);
     win->needs_refresh = 1;
     return 0;
 }
 
 static int zoom_in_cb(win_t * win)
 {
+    gvrender_job_t *job = win->job;
+
     win->fit_mode = 0;
-    win->gvc->zoom *= ZOOMFACTOR;
+    job->zoom *= ZOOMFACTOR;
     win->needs_refresh = 1;
     return 0;
 }
 
 static int zoom_out_cb(win_t * win)
 {
+    gvrender_job_t *job = win->job;
+
     win->fit_mode = 0;
-    win->gvc->zoom /= ZOOMFACTOR;
+    job->zoom /= ZOOMFACTOR;
     win->needs_refresh = 1;
     return 0;
 }
 
 static int toggle_fit_cb(win_t * win)
 {
+    gvrender_job_t *job = win->job;
+
     win->fit_mode = !win->fit_mode;
     if (win->fit_mode) {
 	int dflt_width, dflt_height;
-	dflt_width = win->gvc->width;
-	dflt_height = win->gvc->height;
-	win->gvc->zoom =
-	    MIN((double) win->gvc->width / (double) dflt_width,
-		(double) win->gvc->height / (double) dflt_height);
-	win->gvc->focus.x = 0.0;
-	win->gvc->focus.y = 0.0;
+	dflt_width = job->width;
+	dflt_height = job->height;
+	job->zoom =
+	    MIN((double) job->width / (double) dflt_width,
+		(double) job->height / (double) dflt_height);
+	job->focus.x = 0.0;
+	job->focus.y = 0.0;
 	win->needs_refresh = 1;
     }
     return 0;
@@ -537,41 +534,47 @@ static int toggle_fit_cb(win_t * win)
 
 void gvemit_graph(GVC_t * gvc, graph_t * g, int flags)
 {
+    gvrender_job_t *job = gvc->job;
+
+    job->gvc = gvc;
+    job->g = g;
+    job->flags = flags;
+
    if (flags & GVRENDER_X11_EVENTS) {
 #if !defined(X_DISPLAY_MISSING) && !defined(DISABLE_GVRENDER) && defined(HAVE_CAIRO)
 
-	win_t win;
 	const char *display=NULL;
 	int argb=0;
 	const char *geometry=NULL;
 
-	win.gvc = gvc;
-	win.g = g;
-	win.flags = flags;
+	job->win = malloc(sizeof(win_t));
 
-	gvc->surface = win.cr = cairo_create();;
-	gvc->external_surface = TRUE;
+	job->surface = cairo_create();;
+	job->external_surface = TRUE;
 
-	win.dpy = XOpenDisplay(display);
-	if (win.dpy == NULL) {
+	job->win->dpy = XOpenDisplay(display);
+	if (job->win->dpy == NULL) {
 	    fprintf(stderr, "Failed to open display: %s\n",
 		    XDisplayName(display));
 	    return;
 	}
 
-	win_init(&win, argb, geometry, gvc->layout_type);
+	win_init(job, argb, geometry, gvc->layout_type);
 
-	win_handle_events(&win);
+	win_handle_events(job->win);
 
-	cairo_destroy(win.cr);
-	win_deinit(&win);
+	cairo_destroy(job->surface);
+	win_deinit(job);
 
-	XCloseDisplay(win.dpy);
+	XCloseDisplay(job->win->dpy);
+
+	free(job->win);
+	job->external_surface = FALSE;
 #else
 	fprintf(stderr,"No X11 support available\n");
 #endif
    }
    else {
-	emit_graph(gvc, g, flags);
+	emit_graph(job->gvc, job->g, job->flags);
    }
 }
