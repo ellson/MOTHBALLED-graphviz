@@ -632,7 +632,8 @@ static int _spline_edges(graph_t * g, double SEP, int splines)
 			      add_points(ND_coord_i(n), ED_tail_port(e).p),
 			      add_points(ND_coord_i(head),
 					 ED_head_port(e).p));
-	    } else if ((n == head) && ED_count(e)) {	/* self arc */
+	    } else if (n == head) {    /* self arc */
+		if (ED_count(e) == 0) continue;   /* only do representative */
 		if (!P) {
 		    P = NEW(path);
 		    P->boxes = N_NEW(agnnodes(g) + 20 * 2 * 9, box);
