@@ -23,16 +23,10 @@ FILE *Output_file;
 int Output_lang;
 #endif
 
-int y_invert;			/* invert y in bounding box */
-static int y_off;		/* ymin + ymax */
-static double yf_off;		/* y_off in inches */
 static int e_arrows;		/* graph has edges with end arrows */
 static int s_arrows;		/* graph has edges with start arrows */
-static Agraph_t *cluster_g;
 static agxbuf outbuf;
 static agxbuf charbuf;
-static attrsym_t *g_draw;
-static attrsym_t *g_l_draw;
 
 /* macros for inverting the y coordinate with the bounding box */
 #define Y(y) (y_invert ? (y_off - (y)) : (y))
@@ -164,12 +158,12 @@ static void _write_plain(GVC_t * gvc, graph_t * g, FILE * f, boolean extend)
     fprintf(f, "stop\n");
 }
 
-static void write_plain(GVC_t * gvc, graph_t * g, FILE * f)
+void write_plain(GVC_t * gvc, graph_t * g, FILE * f)
 {
     _write_plain(gvc, g, f, FALSE);
 }
 
-static void write_plain_ext(GVC_t * gvc, graph_t * g, FILE * f)
+void write_plain_ext(GVC_t * gvc, graph_t * g, FILE * f)
 {
     _write_plain(gvc, g, f, TRUE);
 }
@@ -200,84 +194,6 @@ static int isInvis(char *style)
     return 0;
 }
 
-static void xd_textline(point p, textline_t * line)
-{
-    char buf[BUFSIZ];
-    int j;
-
-    agxbputc(&charbuf, 'T');
-    switch (line->just) {
-    case 'l':
-	j = -1;
-	break;
-    case 'r':
-	j = 1;
-	break;
-    default:
-    case 'n':
-	j = 0;
-	break;
-    }
-    sprintf(buf, " %d %d %d %d %d -", p.x, Y(p.y), j,
-	    (int) line->width, (int) strlen(line->str));
-    agxbput(&charbuf, buf);
-    agxbput(&charbuf, line->str);
-    agxbputc(&charbuf, ' ');
-}
-
-static void xd_ellipse(point p, int rx, int ry, int filled)
-{
-    char buf[BUFSIZ];
-
-    agxbputc(&outbuf, (filled ? 'E' : 'e'));
-    sprintf(buf, " %d %d %d %d ", p.x, Y(p.y), rx, ry);
-    agxbput(&outbuf, buf);
-}
-
-static void points(char c, point * A, int n)
-{
-    char buf[BUFSIZ];
-    int i;
-    point p;
-
-    agxbputc(&outbuf, c);
-    sprintf(buf, " %d ", n);
-    agxbput(&outbuf, buf);
-    for (i = 0; i < n; i++) {
-	p = A[i];
-	sprintf(buf, "%d %d ", p.x, Y(p.y));
-	agxbput(&outbuf, buf);
-    }
-}
-
-static void xd_polygon(point * A, int n, int filled)
-{
-    points((filled ? 'P' : 'p'), A, n);
-}
-
-static void
-xd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
-{
-    points('B', A, n);
-}
-
-static void xd_polyline(point * A, int n)
-{
-    points('L', A, n);
-}
-
-static void xd_begin_cluster(Agraph_t * sg)
-{
-    cluster_g = sg;
-}
-
-static void xd_end_cluster()
-{
-    agxset(cluster_g, g_draw->index, agxbuse(&outbuf));
-    if (GD_label(cluster_g))
-	agxset(cluster_g, g_l_draw->index, agxbuse(&charbuf));
-}
-
 /* 
  * John M. suggests:
  * You might want to add four more:
@@ -294,8 +210,9 @@ static void xd_end_cluster()
  */
 static void extend_attrs(GVC_t * gvc, graph_t *g)
 {
-    int i;
+    int i, j;
     bezier bz = { 0, 0, 0, 0 };
+    bezierf bzf;
     double scale;
     node_t *n;
     edge_t *e;
@@ -351,10 +268,13 @@ static void extend_attrs(GVC_t * gvc, graph_t *g)
 	    scale = late_double(e, E_arrowsz, 1.0, 0.0);
 	    for (i = 0; i < ED_spl(e)->size; i++) {
 		bz = ED_spl(e)->list[i];
-#ifndef DISABLE_CODEGENS
-/* FIXME - why is this here? */
-		xd_bezier(bz.list, bz.size, FALSE, FALSE);
-#endif
+	        /* convert points to pointf for gvrender api */
+	        bzf.size = bz.size;
+	        bzf.list = malloc(sizeof(pointf) * bzf.size);
+	        for (j = 0; j < bz.size; j++)
+                    P2PF(bz.list[j], bzf.list[j]);
+                gvrender_beziercurve(gvc, bzf.list, bz.size, FALSE, FALSE);
+	        free(bzf.list);
 	    }
 	    agxset(e, e_draw->index, agxbuse(&outbuf));
 	    for (i = 0; i < ED_spl(e)->size; i++) {
@@ -396,94 +316,24 @@ static void extend_attrs(GVC_t * gvc, graph_t *g)
     agxbfree(&charbuf);
 }
 
-void dotneato_write_one(GVC_t * gvc, graph_t * g)
+void write_extended_dot(GVC_t *gvc, graph_t *g, FILE *f)
 {
-    gvrender_job_t *job = gvc->job;
-
-#ifndef DISABLE_CODEGENS
-    Output_file = job->output_file;
-    Output_lang = job->output_lang;
-#endif
-
-    emit_init(gvc, g);
-
-    if (! (job->flags & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES))
-	emit_reset(gvc, g);  /* FIXME - split into emit_init & page reset */
-
-    switch (gvc->job->output_lang) {
-    case GVRENDER_PLUGIN:
-	gvemit_graph(gvc, g);
-	break;
-    case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
-    case PIC_format: case GIF: case PNG: case JPEG: case WBMP:
-    case GD: case memGD: case GD2: case VRML: case METAPOST:
-    case TK: case SVG: case SVGZ: case QPDF: case QEPDF: case ISMAP:
-    case IMAP: case CMAP: case CMAPX: case FIG: case VTX: case DIA:
-	emit_graph(gvc, g);
-	break;
-    case EXTENDED_DOT:
 	attach_attrs(g);
 	extend_attrs(gvc, g);
-	agwrite(g, gvc->job->output_file);
-	break;
-    case ATTRIBUTED_DOT:
+	agwrite(g, f);
+}
+
+void write_attributed_dot(graph_t *g, FILE *f)
+{
 	attach_attrs(g);
-	agwrite(g, gvc->job->output_file);
-	break;
-    case CANONICAL_DOT:
+	agwrite(g, f);
+}
+
+void write_canonical_dot(graph_t *g, FILE *f)
+{
 	if (HAS_CLUST_EDGE(g))
 	    undoClusterEdges(g);
-	agwrite(g, gvc->job->output_file);
-	break;
-    case PLAIN:
-	write_plain(gvc, g, gvc->job->output_file);
-	break;
-    case PLAIN_EXT:
-	write_plain_ext(gvc, g, gvc->job->output_file);
-	break;
-    default:
-	if (gvc->job->output_lang >= QBM_FIRST
-	    && gvc->job->output_lang < QBM_LAST)
-	    emit_graph(gvc, g);
-	break;
-    }
-
-#if 0
-    if (gvc->job->output_lang != TK)
-	fflush(gvc->job->output_file);
-#endif
-#if 0
-    emit_deinit(gvc);
-#endif
-}
-
-static FILE *file_select(char *str)
-{
-    FILE *rv;
-    rv = fopen(str, "wb");
-    if (rv == NULL) {
-        perror(str);
-        exit(1);
-    }
-    return rv;
-}
-
-void dotneato_write(GVC_t * gvc, graph_t * g)
-{
-    gvrender_job_t *job;
-
-    for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
-	if (!job->output_file) {	/* if not yet opened */
-	    if (job->output_filename == NULL) {
-		job->output_file = stdout;
-	    } else {
-		job->output_file = file_select(job->output_filename);
-	    }
-	    job->output_lang = gvrender_select(gvc, job->output_langname);
-	    assert(job->output_lang != NO_SUPPORT); /* should have been verified already */
-	}
-	dotneato_write_one(gvc, g);
-    }
+	agwrite(g, f);
 }
 
 void dotneato_eof(GVC_t * gvc)
@@ -668,28 +518,3 @@ void rec_attach_bb(graph_t * g)
     for (c = 1; c <= GD_n_cluster(g); c++)
 	rec_attach_bb(GD_clust(g)[c]);
 }
-
-#ifndef DISABLE_CODEGENS
-
-codegen_t XDot_CodeGen = {
-    0,				/* xd_reset */
-    0, /* xd_begin_job */ 0,	/* xd_end_job */
-    0, /* xd_begin_graph */ 0,	/* xd_end_graph */
-    0, /* xd_begin_page */ 0,	/* xd_end_page */
-    0, /* xd_begin_layer */ 0,	/* xd_end_layer */
-    xd_begin_cluster, xd_end_cluster,
-    0, /* xd_begin_nodes */ 0,	/* xd_end_nodes */
-    0, /* xd_begin_edges */ 0,	/* xd_end_edges */
-    0, /* xd_begin_node */ 0,	/* xd_node */
-    0, /* xd_begin_edge */ 0,	/* xd_edge */
-    0, /* xd_begin_context */ 0,	/* xd_context */
-    0, /* xd_begin_anchor */ 0,	/* xd_anchor */
-    0, /* xd_set_font */ xd_textline,
-    0, /* xd_set_pencolor */ 0, /* xd_set_fillcolor */ 0,	/* xd_set_style */
-    xd_ellipse, xd_polygon,
-    xd_bezier, xd_polyline,
-    0, /* xd_has_arrows */ 0,	/* xd_comment */
-    0, /* xd_textsize */ 0, /* xd_user_shape */ 0	/* xd_usershapesize */
-};
-
-#endif

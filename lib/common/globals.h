@@ -97,6 +97,11 @@ extern "C" {
     EXTERN int State;		/* last finished phase */
     EXTERN double Initial_dist;
     EXTERN double Damping;
+    EXTERN int y_invert;                       /* invert y in bounding box */
+    EXTERN int y_off;               /* ymin + ymax */
+    EXTERN double yf_off;               /* y_off in inches */
+    EXTERN attrsym_t *g_draw;
+    EXTERN attrsym_t *g_l_draw;
     external char *BaseLineStyle[];	/* solid, width = 1 */
 
     EXTERN attrsym_t

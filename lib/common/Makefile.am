@@ -14,7 +14,7 @@ pkglib_LTLIBRARIES = libcommon.la
 
 if !DISABLE_CODEGENS
 CODEGENS = diagen.c figgen.c gdgen.c hpglgen.c mapgen.c mifgen.c mpgen.c \
-	picgen.c psgen.c svggen.c vrmlgen.c vtxgen.c ps.txt color_names
+	picgen.c psgen.c svggen.c vrmlgen.c vtxgen.c ps.txt xdgen.c color_names
 endif
 
 

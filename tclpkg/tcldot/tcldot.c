@@ -1117,7 +1117,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    tcldot_layout(g, (argc > 3) ? argv[3] : (char *) NULL);
 
 	/* render graph TK canvas commands */
-	dotneato_write_one(gvc, g);
+	emit_jobs(gvc, g);
 
 	gvrender_delete_jobs(gvc);
 	return TCL_OK;
@@ -1143,7 +1143,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	if (!GD_drawing(g) || argc > 4)
 	    tcldot_layout(g, (argc > 4) ? argv[4] : (char *) NULL);
 	
-	dotneato_write_one(gvc, g);
+	emit_jobs(gvc, g);
 
 	gvrender_delete_jobs(gvc);
 	Tcl_AppendResult(interp, argv[2], (char *) NULL);
@@ -1286,7 +1286,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    tcldot_layout(g, (argc > 4) ? argv[4] : (char *) NULL);
 	}
 
-	dotneato_write_one(gvc, g);
+	emit_jobs(gvc, g);
 
 	gvrender_delete_jobs(gvc);
 	return TCL_OK;

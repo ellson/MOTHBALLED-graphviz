@@ -56,7 +56,7 @@ static graph_t * G;
 static void intr(int s)
 {
     if (G)
-	dotneato_write(Gvc, G);
+	emit_jobs(Gvc, G);
     dotneato_terminate(Gvc);
     exit(1);
 }
@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 		agclose(prev);
 	    }
 	    gvlayout_layout(Gvc, G);
-	    dotneato_write(Gvc, G);
+	    emit_jobs(Gvc, G);
 	    prev = G;
 	}
     }

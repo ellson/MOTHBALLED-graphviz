@@ -1080,18 +1080,6 @@ static void poly_gencode(GVC_t * gvc, node_t * n)
     }
 
     emit_label(gvc, ND_label(n), (void *) n);
-
-#if 0
-    A[0].x = ROUND(ND_coord_i(n).x - ND_label(n)->dimen.x / 2);
-    A[0].y = ROUND(ND_coord_i(n).y - ND_label(n)->dimen.y / 2);
-    A[1].x = ROUND(ND_coord_i(n).x - ND_label(n)->dimen.x / 2);
-    A[1].y = ROUND(ND_coord_i(n).y + ND_label(n)->dimen.y / 2);
-    A[2].x = ROUND(ND_coord_i(n).x + ND_label(n)->dimen.x / 2);
-    A[2].y = ROUND(ND_coord_i(n).y + ND_label(n)->dimen.y / 2);
-    A[3].x = ROUND(ND_coord_i(n).x + ND_label(n)->dimen.x / 2);
-    A[3].y = ROUND(ND_coord_i(n).y - ND_label(n)->dimen.y / 2);
-    gvrender_polygon(gvc, A, 4, 0);
-#endif
 }
 
 /*=======================end poly======================================*/

@@ -363,7 +363,7 @@ static int write_node_test(Agraph_t * g, Agnode_t * n)
     return TRUE;
 }
 
-void emit_reset(GVC_t * gvc, graph_t * g)
+static void emit_reset(GVC_t * gvc, graph_t * g)
 {
     Agnode_t *n;
 
@@ -1025,7 +1025,7 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
  *   - called just once per output device
  *     (where emit_graph can be called many times for refresh callbacks)
  */
-void emit_init(GVC_t * gvc, graph_t * g)
+static void emit_init_job(GVC_t * gvc, graph_t * g)
 {
     init_gvc_from_graph(gvc, g);
 
@@ -1045,7 +1045,7 @@ void emit_init(GVC_t * gvc, graph_t * g)
     gvrender_begin_job(gvc);
 }
 
-void emit_deinit(GVC_t * gvc)
+static void emit_deinit_job(GVC_t * gvc)
 {
     gvrender_end_job(gvc);
 }
@@ -1215,10 +1215,52 @@ void emit_graph(GVC_t * gvc, graph_t * g)
     gvrender_end_graph(gvc);
 }
 
+/* support for stderr_once */
+/* #include "libgraph.h"		to get agstrdup, agstrfree */
+extern char *agstrdup(char *);
+extern void agstrfree(char *);
+
+static void free_string_entry(Dict_t * dict, char *key, Dtdisc_t * disc)
+{
+    agstrfree(key);
+}
+
+static Dict_t *strings;
+static Dtdisc_t stringdict = {
+    0,				/* key  - the object itself */
+    0,				/* size - null-terminated string */
+    -1,				/* link - allocate separate holder objects  */
+    NIL(Dtmake_f),
+    (Dtfree_f) free_string_entry,
+    NIL(Dtcompar_f),
+    NIL(Dthash_f),
+    NIL(Dtmemory_f),
+    NIL(Dtevent_f)
+};
+
+int emit_once(char *str)
+{
+    if (strings == 0)
+	strings = dtopen(&stringdict, Dtoset);
+    if (!dtsearch(strings, str)) {
+	dtinsert(strings, agstrdup(str));
+	return TRUE;
+    }
+    return FALSE;
+}
+
+static void emit_once_reset()
+{
+    if (strings) {
+	dtclose(strings);
+	strings = 0;
+    }
+}
+
 void emit_eof(GVC_t * gvc)
 {
     if (gvc->job->pageNum > 0) {
-        emit_deinit(gvc);
+        emit_deinit_job(gvc);
 	emit_once_reset();
     }
 }
@@ -1590,44 +1632,87 @@ void use_library(char *name)
     }
 }
 
-/* support for stderr_once */
-/* #include "libgraph.h"		to get agstrdup, agstrfree */
-extern char *agstrdup(char *);
-extern void agstrfree(char *);
-
-static void free_string_entry(Dict_t * dict, char *key, Dtdisc_t * disc)
+static void emit_job(GVC_t * gvc, graph_t * g)
 {
-    agstrfree(key);
-}
+    gvrender_job_t *job = gvc->job;
 
-static Dict_t *strings;
-static Dtdisc_t stringdict = {
-    0,				/* key  - the object itself */
-    0,				/* size - null-terminated string */
-    -1,				/* link - allocate separate holder objects  */
-    NIL(Dtmake_f),
-    (Dtfree_f) free_string_entry,
-    NIL(Dtcompar_f),
-    NIL(Dthash_f),
-    NIL(Dtmemory_f),
-    NIL(Dtevent_f)
-};
+#ifndef DISABLE_CODEGENS
+    Output_file = job->output_file;
+    Output_lang = job->output_lang;
+#endif
 
-int emit_once(char *str)
-{
-    if (strings == 0)
-	strings = dtopen(&stringdict, Dtoset);
-    if (!dtsearch(strings, str)) {
-	dtinsert(strings, agstrdup(str));
-	return TRUE;
+    emit_init_job(gvc, g);
+
+    if (! (job->flags & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES))
+        emit_reset(gvc, g);  /* FIXME - split into emit_init & page reset */
+
+    switch (gvc->job->output_lang) {
+    case GVRENDER_PLUGIN:
+        gvemit_graph(gvc, g);
+        break;
+    case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
+    case PIC_format: case GIF: case PNG: case JPEG: case WBMP:
+    case GD: case memGD: case GD2: case VRML: case METAPOST:
+    case TK: case SVG: case SVGZ: case QPDF: case QEPDF: case ISMAP:
+    case IMAP: case CMAP: case CMAPX: case FIG: case VTX: case DIA:
+        emit_graph(gvc, g);
+        break;
+    case EXTENDED_DOT:
+        write_extended_dot(gvc, g, gvc->job->output_file);
+        break;
+    case ATTRIBUTED_DOT:
+        write_attributed_dot(g, gvc->job->output_file);
+        break;
+    case CANONICAL_DOT:
+        write_canonical_dot(g, gvc->job->output_file);
+        break;
+    case PLAIN:
+        write_plain(gvc, g, gvc->job->output_file);
+        break;
+    case PLAIN_EXT:
+        write_plain_ext(gvc, g, gvc->job->output_file);
+        break;
+    default:
+        if (gvc->job->output_lang >= QBM_FIRST
+            && gvc->job->output_lang < QBM_LAST)
+            emit_graph(gvc, g);
+        break;
     }
-    return FALSE;
+
+#if 0
+    if (gvc->job->output_lang != TK)
+        fflush(gvc->job->output_file);
+#endif
+#if 0
+    emit_deinit(gvc);
+#endif
 }
 
-void emit_once_reset()
+static FILE *file_select(char *str)
 {
-    if (strings) {
-	dtclose(strings);
-	strings = 0;
+    FILE *rv;
+    rv = fopen(str, "wb");
+    if (rv == NULL) {
+        perror(str);
+        exit(1);
+    }
+    return rv;
+}
+
+void emit_jobs (GVC_t * gvc, graph_t * g)
+{
+    gvrender_job_t *job;
+
+    for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
+        if (!job->output_file) {        /* if not yet opened */
+            if (job->output_filename == NULL) {
+                job->output_file = stdout;
+            } else {
+                job->output_file = file_select(job->output_filename);
+            }
+            job->output_lang = gvrender_select(gvc, job->output_langname);
+            assert(job->output_lang != NO_SUPPORT); /* should have been verified already */
+        }
+        emit_job(gvc, g);
     }
 }
