@@ -17,8 +17,7 @@
 #include "render.h"
 #include "utils.h"
 
-/* #ifdef HAVE_CAIRO */
-#if 0
+#ifdef HAVE_CAIRO
 #include <cairo.h>
 #else
 
@@ -196,22 +195,27 @@ estimate_textsize(textline_t * textline, char *fontname, double fontsz,
 double textwidth(textline_t * textline, char *fontname, double fontsize)
 {
     char *fontpath = NULL;
-/* #ifdef HAVE_CAIRO */
-#if 0
+#ifdef HAVE_CAIRO
     cairo_t *cr;
     cairo_text_extents_t extents;
 
     cr = cairo_create();
-
     cairo_select_font(cr, fontname, 0, 0);
     cairo_scale_font(cr, fontsize);
-
     cairo_text_extents(cr, textline->str, &extents);
+#if 0
+    cairo_destroy(cr);
+#else
+/* FIXME - adding this test mysteriously fixes the mysteriously destroyed cr problem */
+    if (cr)
+	cairo_destroy(cr);
+    else
+	fprintf(stderr,"fontmetrics.c:textwidth() - cr mysteriously destroyed already\n");
+#endif
 
     textline->width = extents.width;
     textline->xshow = NULL;
     fontpath = "[cairo]";
-    cairo_destroy(cr);
 #else
     if (gd_textsize(textline, fontname, fontsize, &fontpath))
 	estimate_textsize(textline, fontname, fontsize, &fontpath);
