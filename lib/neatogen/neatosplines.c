@@ -159,11 +159,11 @@ static void addEdgeLabels(edge_t * e, point rp, point rq)
 	del.x = q.x - p.x;
 	del.y = q.y - p.y;
 	dist2 = del.x*del.x + del.y*del.y;
+	ht = (ED_label(e)->dimen.y + 2)/2.0;
+	sp = dotneato_closest(ED_spl(e), d);
+	spf.x = sp.x;
+	spf.y = sp.y;
 	if (dist2) {
-	    sp = dotneato_closest(ED_spl(e), d);
-	    spf.x = sp.x;
-	    spf.y = sp.y;
-	    ht = (ED_label(e)->dimen.y + 2)/2.0;
 	    wd = (MIN(ED_label(e)->dimen.x + 2, MAXLABELWD))/2.0;
 	    leftOf = LEFTOF(p, q, sp);
 	    if ((leftOf && (del.y >= 0)) || (!leftOf && (del.y < 0))) {
@@ -181,7 +181,7 @@ static void addEdgeLabels(edge_t * e, point rp, point rq)
 	}
 	else {    /* end points the same */
 	    ld.x = 0;
-	    ld.y = -(2 + ht)/2.0;
+	    ld.y = -ht;
 	}
 
 	ED_label(e)->p.x = spf.x + ld.x;
