@@ -344,9 +344,6 @@ static void emit_reset(GVC_t * gvc, graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_state(n) = 0;
     }
-
-    /* reset renderer */
-    gvrender_reset(gvc);
 }
 
 static void emit_background(GVC_t * gvc, graph_t *g, boxf pageBox)
@@ -1007,9 +1004,6 @@ static void emit_init_job(GVC_t * gvc, graph_t * g)
 
     init_layering(gvc, g);
 
-    gvc->job->gvc = gvc;
-    gvc->job->g = g;
-
     init_job_flags(gvc->job, g);
 
     init_job_margin(gvc);
@@ -1557,6 +1551,7 @@ static FILE *file_select(char *str)
 void emit_jobs (GVC_t * gvc, graph_t * g)
 {
     gvrender_job_t *job;
+    char *prev_langname = NULL;
 
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
         if (!job->output_file) {        /* if not yet opened */
@@ -1565,9 +1560,20 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
             } else {
                 job->output_file = file_select(job->output_filename);
             }
+        }
+	if (job->output_langname != prev_langname) {
+	    prev_langname = job->output_langname;
             job->output_lang = gvrender_select(gvc, job->output_langname);
             assert(job->output_lang != NO_SUPPORT); /* should have been verified already */
-        }
+	    gvrender_initialize(gvc);
+	}
+
+	job->gvc = gvc;
+	job->g = g;
+
         emit_job(gvc, g);
+
+	if (!job->next || job->next->output_langname != prev_langname)
+	    gvrender_finalize(gvc);
     }
 }

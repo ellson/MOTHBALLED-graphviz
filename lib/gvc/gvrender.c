@@ -106,13 +106,39 @@ int gvrender_features(GVC_t * gvc)
     return features;
 }
 
-void gvrender_reset(GVC_t * gvc)
+void gvrender_initialize(GVC_t * gvc)
 {
-#ifndef DISABLE_CODEGENS
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
-    if (!gvre) {
+    if (gvre) {
+	if (gvre->initialize)
+	    gvre->initialize(gvc);
+    }
+#if 0 
+/* codegens don't have this entry point */
+#ifndef DISABLE_CODEGENS
+    else {
+	codegen_t *cg = job->codegen;
+
+	if (cg && cg->init)
+	    cg->init();
+    }
+#endif
+#endif
+}
+
+void gvrender_finalize(GVC_t * gvc)
+{
+    gvrender_job_t *job = gvc->job;
+    gvrender_engine_t *gvre = job->render_engine;
+
+    if (gvre) {
+	if (gvre->finalize)
+	    gvre->finalize(gvc);
+    }
+#ifndef DISABLE_CODEGENS
+    else {
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->reset)

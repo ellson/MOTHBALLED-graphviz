@@ -15,10 +15,10 @@ AM_CPPFLAGS = \
 
 pkginclude_HEADERS = gvc.h gvcint.h gvplugin.h \
 	gvplugin_render.h gvplugin_layout.h \
-	gvplugin_text.h gvplugin_display.h
+	gvplugin_text.h 
 pkglib_LTLIBRARIES = libgvc.la
 
-libgvc_la_SOURCES = gvrender.c gvlayout.c gvdisplay.c gvtext.c gvcontext.c \
+libgvc_la_SOURCES = gvrender.c gvlayout.c gvtext.c gvcontext.c \
 	gvjobs.c gvevent.c gvemit.c gvplugin.c gvconfig.c
 
 EXTRA_DIST = Makefile.old

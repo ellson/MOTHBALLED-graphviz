@@ -63,18 +63,12 @@ extern "C" {
 			       char *fontname, double fontsize,
 			       char *fontpath);
 
-/* display */
-
-    extern int gvdisplay_select(GVC_t * gvc, char *display);
-    extern void gvdisplay_init(GVC_t *gvc);
-    extern void gvdisplay_process(GVC_t *gvc);
-    extern void gvdisplay_deinit(GVC_t *gvc);
-
 /* render */
 
     extern int gvrender_select(GVC_t * gvc, char *lang);
     extern int gvrender_features(GVC_t * gvc);
-    extern void gvrender_reset(GVC_t * gvc);
+    extern void gvrender_initialize(GVC_t * gvc);
+    extern void gvrender_finalize(GVC_t * gvc);
     extern void gvrender_begin_job(GVC_t * gvc);
     extern void gvrender_end_job(GVC_t * gvc);
     extern void gvrender_begin_graph(GVC_t * gvc, graph_t * g);

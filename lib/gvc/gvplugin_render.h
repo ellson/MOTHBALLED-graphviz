@@ -25,6 +25,8 @@ extern "C" {
 #endif
 
     struct gvrender_engine_s {
+	void (*initialize) (GVC_t * gvc);
+	void (*finalize) (GVC_t * gvc);
 	void (*begin_job) (gvrender_job_t * job);
 	void (*end_job) (gvrender_job_t * job);
 	void (*begin_graph) (gvrender_job_t * job, char *graphname);
