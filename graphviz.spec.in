@@ -101,7 +101,6 @@ make \
     pkgconfigdir=%{_libdir}/pkgconfig \
     transform='s,x,x,' \
 	install
-chmod -x $RPM_BUILD_ROOT%{_datadir}/%{name}/lefty/*
 cp -a $RPM_BUILD_ROOT%{_datadir}/%{name}/doc __doc
 rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/doc
 

@@ -1,7 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-pkgconfigdir = $(libdir)/pkgconfig
-
 # FIXME - need to get cairo dependencies out of gvemit.c so that @CAIRO...@ can go from here
 
 AM_CPPFLAGS = \
@@ -19,7 +17,6 @@ pkginclude_HEADERS = gvc.h gvcint.h gvplugin.h \
 	gvplugin_render.h gvplugin_layout.h \
 	gvplugin_text.h gvplugin_display.h
 pkglib_LTLIBRARIES = libgvc.la
-pkgconfig_DATA = libgvc.pc
 
 libgvc_la_SOURCES = gvrender.c gvlayout.c gvdisplay.c gvtext.c gvcontext.c \
 	gvjobs.c gvevent.c gvemit.c gvplugin.c gvconfig.c

@@ -1,7 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-pkgconfigdir = $(libdir)/pkgconfig
-
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
@@ -13,7 +11,6 @@ AM_CPPFLAGS = \
 pkginclude_HEADERS = const.h globals.h htmllex.h htmltable.h macros.h \
 	pointset.h render.h renderprocs.h types.h utils.h colortbl.h
 pkglib_LTLIBRARIES = libcommon.la
-pkgconfig_DATA = libcommon.pc
 
 if !DISABLE_CODEGENS
 CODEGENS = diagen.c figgen.c gdgen.c hpglgen.c mapgen.c mifgen.c mpgen.c \
