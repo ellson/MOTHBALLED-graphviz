@@ -25,6 +25,6 @@ EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec graphviz.cvt \
 	Makefile.old Config.mk configure.old INSTALL.old \
 	Makeargs config.h.old compat_getopt.h iffe \
 	m4/README m4/iconv.m4 m4/lib-ld.m4 m4/lib-link.m4 m4/lib-prefix.m4 \
-	makearch features awk windows
+	makearch features awk windows config_ruby.rb
 
 DISTCLEANFILES = ast_common.h FEATURE/* graphviz-@VERSION@*
