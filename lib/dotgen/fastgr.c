@@ -147,8 +147,8 @@ void safe_other_edge(edge_t * e)
     safe_list_append(e, &(ND_other(e->tail)));
 }
 
-#ifdef OBSOLETET
-static void 
+#ifdef OBSOLETE
+void 
 delete_other_edge(edge_t * e)
 {
     assert(e != NULL);
@@ -156,7 +156,12 @@ delete_other_edge(edge_t * e)
 }
 #endif
 
-/* orig might be an input edge, reverse of an input edge, or virtual edge */
+/* new_virtual_edge:
+ * Create and return a new virtual edge e attached to orig.
+ * ED_to_orig(e) = orig
+ * ED_to_virt(orig) = e if e is the first virtual edge attached.
+ * orig might be an input edge, reverse of an input edge, or virtual edge
+ */
 edge_t *new_virtual_edge(node_t * u, node_t * v, edge_t * orig)
 {
     edge_t *e;
@@ -320,7 +325,7 @@ basic_merge(edge_t * e, edge_t * rep)
 	rep = ED_to_virt(rep);
     }
 }
-
+	
 void 
 merge_oneway(edge_t * e, edge_t * rep)
 {
