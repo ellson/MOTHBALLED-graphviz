@@ -22,7 +22,7 @@ HDRS = colortbl.h const.h globals.h macros.h ps.h render.h \
 OBJS = arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
        colxlate.o globals.o mifgen.o psusershape.o timing.o \
        diagen.o hpglgen.o mpgen.o routespl.o utils.o \
-       emit.o htmllex.o ns.o shapes.o vrmlgen.o \
+       emit.o htmllex.o ns.o shapes.o vrmlgen.o xdgen.o \
        figgen.o htmlparse.o output.o splines.o vtxgen.o \
        fontmetrics.o htmltable.o picgen.o strcasecmp.o \
        gdgen.o input.o pointset.o strncasecmp.o \
