@@ -31,7 +31,7 @@ static char *CONFIG = "";
 char *Gvfilepath;
 
 static char *usageFmt =
-    "Usage: %s [-Vv?] [-(GNE)name=val] [-(Tlso)<val>] <dot files>\n";
+    "Usage: %s [-Vv?] [-(GNE)name=val] [-(KTlso)<val>] <dot files>\n";
 
 static char *genericItems = "\n\
  -V          - Print version and exit\n\
@@ -40,6 +40,7 @@ static char *genericItems = "\n\
  -Nname=val  - Set node attribute 'name' to 'val'\n\
  -Ename=val  - Set edge attribute 'name' to 'val'\n\
  -Tv         - Set output format to 'v'\n\
+ -Kv         - Set layout engine to 'v' (overrides default based on command name)\n\
  -lv         - Use external library 'v'\n\
  -ofile      - Write output to 'file'\n\
  -q[l]       - Set level of message suppression (=1)\n\
@@ -194,6 +195,20 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
 			val, gvplugin_list(gvc, API_render, val));
 		    exit(1);
 		}
+		break;
+	    case 'K':
+		val = getFlagOpt(argc, argv, &i);
+		if (!val) {
+                    fprintf(stderr, "Missing argument for -K flag\n");
+                    dotneato_usage(1);
+                    exit(1);
+                }
+                v = gvlayout_select(gvc, val);
+                if (v == NO_SUPPORT) {
+                    fprintf(stderr, "Layout type: \"%s\" not recognized. Use one of:%s\n",
+                        val, gvplugin_list(gvc, API_layout, val));
+                    exit(1);
+                }
 		break;
 	    case 'V':
 		fprintf(stderr, "%s version %s (%s)\n",

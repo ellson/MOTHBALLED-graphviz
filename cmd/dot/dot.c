@@ -141,12 +141,12 @@ int main(int argc, char **argv)
 
     setCmdName(argv[0]);
 
-    parse_args(gvc, argc, argv);
-
     str = basename(argv[0]);
     rv = gvlayout_select(gvc, str);
     if (rv == NO_SUPPORT)
 	gvlayout_select(gvc, "dot");
+
+    parse_args(gvc, argc, argv);
 
 #ifndef MSWIN32
     signal(SIGUSR1, toggle);
