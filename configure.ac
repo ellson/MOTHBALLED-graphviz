@@ -199,6 +199,18 @@ if test "x${EFENCE}" != "x"; then
 fi
 
 dnl -----------------------------------
+dnl Don't compile X programs (and emit a warning message)
+dnl if X isn't available.
+dnl Checks for X header files.
+
+AC_PATH_XTRA
+if test "X$no_x" = Xyes; then
+  AC_MSG_WARN([X11 not available.])
+  X_SUBDIRS=""
+fi
+AM_CONDITIONAL(WITH_X, [test "X$no_x" != "Xyes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for TCL
 
 # start by assuming we have it
@@ -518,18 +530,6 @@ AC_CHECK_FUNC(gethostbyname, , [AC_CHECK_LIB(nsl, main, [LIBS="$LIBS -lnsl"])])
 SOCKET_LIBS=$LIBS
 AC_SUBST(SOCKET_LIBS)
 LIBS=$save_LIBS
-
-dnl -----------------------------------
-dnl Don't compile X programs (and emit a warning message)
-dnl if X isn't available.
-dnl Checks for X header files.
-
-AC_PATH_XTRA
-if test "X$no_x" = Xyes; then
-  AC_MSG_WARN([X11 not available.])
-  X_SUBDIRS=""
-fi
-AM_CONDITIONAL(WITH_X, [test "X$no_x" != "Xyes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for EXPAT
