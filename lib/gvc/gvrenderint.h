@@ -137,6 +137,7 @@ extern "C" {
 	double zoom;		/* viewport zoom factor */
 	pointf focus;		/* viewport focus in graph units */
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
+	box clip;		/* clip region in graph units */
 
 	/* gvrender_begin_page() */
 	point page;

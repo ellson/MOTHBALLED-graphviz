@@ -364,8 +364,7 @@ void emit_node(GVC_t * gvc, node_t * n)
 
     if (ND_shape(n) == NULL)
 	return;
-    if (node_in_layer(n->graph, n) && node_in_CB(n)
-	&& (ND_state(n) != Page)) {
+    if (node_in_layer(n->graph, n) && node_in_CB(n) && (ND_state(n) != Page)) {
 	gvrender_begin_node(gvc, n);
 	if (((s = agget(n, "href")) && s[0])
 	    || ((s = agget(n, "URL")) && s[0])) {
@@ -684,6 +683,11 @@ void emit_graph(GVC_t * gvc, graph_t * g, int flags)
 
     /* FIXME - some of setup_pagination should be in emit_init() */
     setup_pagination(gvc, g);
+
+    gvc->clip.UR.x = ROUND(gvc->focus.x + (gvc->width+1) / (gvc->zoom * 2.));
+    gvc->clip.UR.y = ROUND(gvc->focus.y + (gvc->height+1) / (gvc->zoom * 2.));
+    gvc->clip.LL.x = ROUND(gvc->focus.x - (gvc->width+1) / (gvc->zoom * 2.));
+    gvc->clip.LL.y = ROUND(gvc->focus.y - (gvc->height+1) / (gvc->zoom * 2.));
 
     gvrender_begin_graph(gvc, g, PB, PFC);
     if (flags & EMIT_COLORS) {
