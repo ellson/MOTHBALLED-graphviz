@@ -200,20 +200,24 @@ test_tcl: libgv_tcl.la
 		./test.tcl)
 
 EXTRA_DIST = gv.i \
-	SWIG*.java gv.java gvJNI.java \
+	gv.cs gvPINVOKE.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agraph_t.cs \
+	gv.java gvJNI.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agraph_t.java \
 	gv.pm \
 	gv.php php_gv.h \
 	gv.py \
 	gv.ml gv.mli
 	
 
-CLEANFILES = java/*.dot java/*.png java/SWIG*.java java/gv*.java java/*.class java/*.so \
-	perl/gv.pm perl/gv.so perl/*.dot perl/*.png \
-	python/gv.py python/gv.pyc python/_gv.so python/*.dot python/*.png \
-	ruby/gv.so ruby/*.dot ruby/*.png \
-	tcl/libgv_tcl.so tcl/*.dot tcl/*.png pkgIndex.tcl
+CLEANFILES = csharp/SWIG*.cs csharp/gv*.cs csharp/*.dot csharp/*.png csharp/*.so \
+	java/*.dot java/*.png java/SWIG*.java java/gv*.java java/*.class java/*.so \
+	perl/gv.pm perl/*.so perl/*.dot perl/*.png \
+	php/gv.php php/php_gv.h php/*.so
+	python/gv.py python/gv.pyc python/*.so python/*.dot python/*.png \
+	ruby/*.so ruby/*.dot ruby/*.png \
+	tcl/*.so tcl/*.dot tcl/*.png pkgIndex.tcl
 
-DISTCLEANFILES = gv_java.cpp SWIG*.java gv.java gvJNI.java \
+DISTCLEANFILES = gv_csharp.cpp SWIG*.cs gv*.cs \
+	gv_java.cpp SWIG*.java gv.java gvJNI.java \
 	gv_perl.cpp gv.pm \
 	gv_php.cpp gv.php php_gv.h \
 	gv_python.cpp gv.py \
