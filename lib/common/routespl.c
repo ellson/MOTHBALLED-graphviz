@@ -29,7 +29,6 @@ static int maxbn = 0;
 static point *ps = NULL;
 static int pn;
 static int maxpn = 0;
-static int psstrcnt = 0;
 #define PINC 300
 
 static box *boxes;
@@ -105,7 +104,7 @@ void routesplinesinit(void)
 	    free (Show_boxes[i]);
 	free (Show_boxes);
 	Show_boxes = NULL;
-	psstrcnt = 0;
+	Show_cnt = 0;
     }
     if (Verbose)
 	start_timer();
@@ -724,16 +723,16 @@ static void printboxes(void)
     point ll, ur;
     int bi;
     char buf[BUFSIZ];
-    int newcnt = psstrcnt + boxn;
+    int newcnt = Show_cnt + boxn;
 
     Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
     for (bi = 0; bi < boxn; bi++) {
 	ll = boxes[bi].LL, ur = boxes[bi].UR;
 	sprintf(buf, "%d %d %d %d pathbox", ll.x, ll.y, ur.x, ur.y);
-	Show_boxes[bi+1+psstrcnt] = strdup (buf);
+	Show_boxes[bi+1+Show_cnt] = strdup (buf);
     }
-    psstrcnt = newcnt;
-    Show_boxes[psstrcnt+1] = NULL;
+    Show_cnt = newcnt;
+    Show_boxes[Show_cnt+1] = NULL;
 }
 
 #ifdef DEBUG
@@ -765,11 +764,11 @@ static void psprintpoint(point p)
 static void psprintspline(Ppolyline_t spl)
 {
     char buf[BUFSIZ];
-    int newcnt = psstrcnt + spl.pn + 4;
+    int newcnt = Show_cnt + spl.pn + 4;
     int li, i;
 
     Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
-    li = psstrcnt+1;
+    li = Show_cnt+1;
     Show_boxes[li++] = strdup ("%%!");
     Show_boxes[li++] = strdup ("%% spline");
     Show_boxes[li++] = strdup ("gsave 1 0 0 setrgbcolor newpath");
@@ -779,17 +778,17 @@ static void psprintspline(Ppolyline_t spl)
 	Show_boxes[li++] = strdup (buf);
     }
     Show_boxes[li++] = strdup ("stroke grestore");
-    psstrcnt = newcnt;
-    Show_boxes[psstrcnt+1] = NULL;
+    Show_cnt = newcnt;
+    Show_boxes[Show_cnt+1] = NULL;
 }
 static void psprintline(Ppolyline_t pl)
 {
     char buf[BUFSIZ];
-    int newcnt = psstrcnt + pl.pn + 4;
+    int newcnt = Show_cnt + pl.pn + 4;
     int i, li;
 
     Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
-    li = psstrcnt+1;
+    li = Show_cnt+1;
     Show_boxes[li++] = strdup ("%%!");
     Show_boxes[li++] = strdup ("%% line");
     Show_boxes[li++] = strdup ("gsave 0 0 1 setrgbcolor newpath");
@@ -799,19 +798,19 @@ static void psprintline(Ppolyline_t pl)
 	Show_boxes[li++] = strdup (buf);
     }
     Show_boxes[li++] = strdup ("stroke grestore");
-    psstrcnt = newcnt;
-    Show_boxes[psstrcnt+1] = NULL;
+    Show_cnt = newcnt;
+    Show_boxes[Show_cnt+1] = NULL;
 }
 static void psprintpoly(Ppoly_t p)
 {
     char buf[BUFSIZ];
-    int newcnt = psstrcnt + p.pn + 3;
+    int newcnt = Show_cnt + p.pn + 3;
     point tl, hd;
     int bi, li;
     char*  pfx;
 
     Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
-    li = psstrcnt+1;
+    li = Show_cnt+1;
     Show_boxes[li++] = strdup ("%% poly list");
     Show_boxes[li++] = strdup ("gsave 0 1 0 setrgbcolor");
     for (bi = 0; bi < p.pn; bi++) {
@@ -826,18 +825,18 @@ static void psprintpoly(Ppoly_t p)
     }
     Show_boxes[li++] = strdup ("grestore");
 
-    psstrcnt = newcnt;
-    Show_boxes[psstrcnt+1] = NULL;
+    Show_cnt = newcnt;
+    Show_boxes[Show_cnt+1] = NULL;
 }
 static void psprintboxes(box * b, int bn)
 {
     char buf[BUFSIZ];
-    int newcnt = psstrcnt + 5*bn + 3;
+    int newcnt = Show_cnt + 5*bn + 3;
     point ll, ur;
     int bi, li;
 
     Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
-    li = psstrcnt+1;
+    li = Show_cnt+1;
     Show_boxes[li++] = strdup ("%% box list");
     Show_boxes[li++] = strdup ("gsave 0 1 0 setrgbcolor");
     for (bi = 0; bi < boxn; bi++) {
@@ -854,19 +853,19 @@ static void psprintboxes(box * b, int bn)
     }
     Show_boxes[li++] = strdup ("grestore");
 
-    psstrcnt = newcnt;
-    Show_boxes[psstrcnt+1] = NULL;
+    Show_cnt = newcnt;
+    Show_boxes[Show_cnt+1] = NULL;
 }
 static void psprintinit (int begin)
 {
-    int newcnt = psstrcnt + 1;
+    int newcnt = Show_cnt + 1;
 
     Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
     if (begin)
-	Show_boxes[1+psstrcnt] = strdup ("dbgstart");
+	Show_boxes[1+Show_cnt] = strdup ("dbgstart");
     else
-	Show_boxes[1+psstrcnt] = strdup ("grestore");
-    psstrcnt = newcnt;
-    Show_boxes[psstrcnt+1] = NULL;
+	Show_boxes[1+Show_cnt] = strdup ("grestore");
+    Show_cnt = newcnt;
+    Show_boxes[Show_cnt+1] = NULL;
 }
 

@@ -79,6 +79,7 @@ extern "C" {
     EXTERN int Nop;
     EXTERN double PSinputscale;
     EXTERN int Syntax_errors;
+    EXTERN int Show_cnt;
     EXTERN char** Show_boxes;	/* emit code for correct box coordinates */
     EXTERN int CL_type;		/* NONE, LOCAL, GLOBAL */
     EXTERN boolean Concentrate;	/* if parallel edges should be merged */
