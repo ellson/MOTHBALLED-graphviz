@@ -109,7 +109,7 @@ extern "C" {
     extern int vtkill _ARG_((Vthread_t *));
     extern int vtwait _ARG_((Vthread_t *));
 
-    extern int vtonce _ARG_((Vtonce_t *, void (*)()));
+/*    extern int vtonce _ARG_((Vtonce_t *, void (*)())); */
 
     extern Vtmutex_t *vtmtxopen _ARG_((Vtmutex_t *, int));
     extern int vtmtxclose _ARG_((Vtmutex_t *));
