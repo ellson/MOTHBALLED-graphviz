@@ -26,7 +26,7 @@ OBJS = arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
        figgen.o htmlparse.o output.o splines.o vtxgen.o \
        fontmetrics.o htmltable.o picgen.o strcasecmp.o \
        gdgen.o input.o pointset.o strncasecmp.o \
-       gdtextsize.o labels.o postproc.o svggen.o
+       gdtextsize.o labels.o postproc.o svggen.o xdgen.o
 
 
 libcommon.a : $(OBJS)
