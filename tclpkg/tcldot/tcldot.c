@@ -66,7 +66,7 @@ extern int Output_lang;
 #endif
 #endif
 extern void *GDHandleTable;
-extern int Gdtclft_Init();
+extern int Gdtclft_Init(Tcl_Interp *);
 
 static void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
 static tkgendata_t tkgendata;

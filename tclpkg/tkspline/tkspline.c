@@ -184,7 +184,7 @@ int numSteps;			/* Not Used */
 
     /* if the number of points is invalid, use the old function */
     if ((numPoints < 4) || (numPoints % 3 != 1)) {
-#if (TK_MAJOR_VERSION < 8) || ((TK_MAJOR_VERSION == 8) && (TK_MAJOR_VERSION < 3))
+#if (TK_MAJOR_VERSION < 8) || ((TK_MAJOR_VERSION == 8) && (TK_MINOR_VERSION < 3))
 	TkMakeBezierPostscript(interp, canvas, pointPtr, numPoints,
 			       numSteps);
 #else

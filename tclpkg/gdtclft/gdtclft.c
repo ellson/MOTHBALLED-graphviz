@@ -39,23 +39,54 @@ typedef struct {
     tblHeader_pt handleTbl;
 } GdData;
 
-static int tclGdCreateCmd(), tclGdDestroyCmd(), tclGdWriteCmd(),
-tclGdColorCmd(), tclGdInterlaceCmd(), tclGdSetCmd(), tclGdLineCmd(),
-tclGdRectCmd(), tclGdArcCmd(), tclGdFillCmd(), tclGdSizeCmd(),
-tclGdTextCmd(), tclGdCopyCmd(), tclGdGetCmd(),
-tclGdBrushCmd(), tclGdStyleCmd(), tclGdTileCmd(), tclGdPolygonCmd(),
-tclGdColorNewCmd(), tclGdColorExactCmd(), tclGdColorClosestCmd(),
-tclGdColorResolveCmd(), tclGdColorFreeCmd(), tclGdColorTranspCmd(),
-tclGdColorGetCmd(), tclGdWriteBufCmd();
+typedef int (CmdFunc)(Tcl_Interp *, GdData *, int, Tcl_Obj *CONST []);
+typedef int (ColCmdFunc)(Tcl_Interp *, gdImagePtr, int, int[]);
+
+static CmdFunc tclGdCreateCmd;
+static CmdFunc tclGdDestroyCmd;
+static CmdFunc tclGdWriteCmd;
+static CmdFunc tclGdColorCmd;
+static CmdFunc tclGdInterlaceCmd;
+static CmdFunc tclGdSetCmd;
+static CmdFunc tclGdLineCmd;
+static CmdFunc tclGdRectCmd;
+static CmdFunc tclGdArcCmd;
+static CmdFunc tclGdFillCmd;
+static CmdFunc tclGdSizeCmd;
+static CmdFunc tclGdTextCmd;
+static CmdFunc tclGdCopyCmd;
+static CmdFunc tclGdGetCmd;
+static CmdFunc tclGdBrushCmd;
+static CmdFunc tclGdStyleCmd;
+static CmdFunc tclGdTileCmd;
+static CmdFunc tclGdPolygonCmd;
+static CmdFunc tclGdWriteBufCmd;
+
+static ColCmdFunc tclGdColorNewCmd;
+static ColCmdFunc tclGdColorExactCmd;
+static ColCmdFunc tclGdColorClosestCmd;
+static ColCmdFunc tclGdColorResolveCmd;
+static ColCmdFunc tclGdColorFreeCmd;
+static ColCmdFunc tclGdColorTranspCmd;
+static ColCmdFunc tclGdColorGetCmd;
 
 typedef struct {
     char *cmd;
-    int (*f) ();
+    CmdFunc *f;
     int minargs, maxargs;
     int subcmds;
     int ishandle;
     char *usage;
 } cmdOptions;
+
+typedef struct {
+    char *cmd;
+    ColCmdFunc *f;
+    int minargs, maxargs;
+    int subcmds;
+    int ishandle;
+    char *usage;
+} colCmdOptions;
 
 typedef struct {
     char *buf;
@@ -183,7 +214,7 @@ static cmdOptions subcmdVec[] = {
      "gdhandle"},
 };
 
-static cmdOptions colorCmdVec[] = {
+static colCmdOptions colorCmdVec[] = {
     {"new", tclGdColorNewCmd, 5, 5, 1, 1,
      "gdhandle red green blue"},
     {"exact", tclGdColorExactCmd, 5, 5, 1, 1,

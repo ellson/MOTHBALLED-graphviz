@@ -94,7 +94,7 @@ typedef void *Tobj;
 
 static char portstr[SMALLBUF];
 
-extern void yyerror(char *);
+extern void yyerror(const char *fmt, ...);
 
 
 /* Enabling traces.  */
