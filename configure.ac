@@ -219,6 +219,22 @@ AC_CHECK_PROG(SWIG,swig,swig)
 AM_CONDITIONAL(WITH_SWIG, [test "x$SWIG" != "x"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for JAVA
+
+AC_CHECK_PROG(JAVA,java,java)
+AM_CONDITIONAL(WITH_JAVA, [test "x$JAVA" != "x"])
+if test "x$JAVA" = "x"; then
+  HAVE_JAVA=0
+else
+  HAVE_JAVA=1
+  JAVA_INCLUDES=
+  JAVA_LIBS=
+fi
+AC_SUBST(HAVE_JAVA)
+AC_SUBST(JAVA_INCLUDES)
+AC_SUBST(JAVA_LIBS)
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for PERL
 
 AC_CHECK_PROG(PERL,perl,perl)

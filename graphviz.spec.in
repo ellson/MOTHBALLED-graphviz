@@ -17,6 +17,7 @@ Vendor:         http://www.graphviz.org/
 
 BuildRequires: /bin/ksh tcl >= 0:8.3 tk expat expat-devel libjpeg
 Buildrequires: libjpeg-devel libpng libpng-devel zlib zlib-devel
+Buildrequires: java java-devel perl python python-devel ruby ruby-devel
 %{?fc4:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
 %{?fc3:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
 %{?fc2:BuildRequires: freetype >= 2 freetype-devel fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
@@ -36,6 +37,25 @@ Prefix:         %{_prefix}
 A collection of tools and tcl packages for the manipulation and layout
 of graphs (as in nodes and edges, not as in barcharts).
 
+%package devel
+Group:		Development/Libraries
+Summary:	Development tools for using the %{name} libraries.
+Requires:	%{name} = %{version}-%{release} %{name}-tcl = %{version}-%{release}
+# The following doesn't work on RH9 or RHE where there is no tcl-devel
+#Requires: tcl-devel tk-devel
+
+%description devel
+The %{name}-devel package contains the header files
+and man3 pages necessary for developing programs
+using version %{version} of the %{name} libraries.
+
+%package doc
+Group:          Documentation
+Summary:        PDF and HTML documents for %{name}
+
+%description doc
+The %{name}-doc package provides some additional PDF and HTML documentation for %{name}.
+
 %package graphs
 Group:		Applications/Multimedia
 Summary:	Demo graphs for %{name}
@@ -43,13 +63,13 @@ Summary:	Demo graphs for %{name}
 %description graphs
 This package provides some example graphs for %{name}.
 
-%package tcl
+%package java
 Group:		Applications/Multimedia
-Summary:	Tcl extension tools for %{name}
-Requires:	%{name} = %{version}-%{release} tcl >= 0:8.3 tk
+Summary:	Java extension tools for %{name}
+Requires:	%{name} = %{version}-%{release} java
 
-%description tcl
-The %{name}-tcl package contains various tcl packages (extensions)
+%description java
+The %{name}-java package contains a java module (extension)
 for version %{version} of the %{name} tools.
 
 %package perl
@@ -79,24 +99,14 @@ Requires:	%{name} = %{version}-%{release} ruby
 The %{name}-ruby package contains a ruby module (extension)
 for version %{version} of the %{name} tools.
 
-%package devel
-Group:		Development/Libraries
-Summary:	Development tools for using the %{name} libraries.
-Requires:	%{name} = %{version}-%{release} %{name}-tcl = %{version}-%{release}
-# The following doesn't work on RH9 or RHE where there is no tcl-devel
-#Requires: tcl-devel tk-devel
+%package tcl
+Group:		Applications/Multimedia
+Summary:	Tcl extension tools for %{name}
+Requires:	%{name} = %{version}-%{release} tcl >= 0:8.3 tk
 
-%description devel
-The %{name}-devel package contains the header files
-and man3 pages necessary for developing programs
-using version %{version} of the %{name} libraries.
-
-%package doc
-Group:          Documentation
-Summary:        PDF and HTML documents for %{name}
-
-%description doc
-The %{name}-doc package provides some additional PDF and HTML documentation for %{name}.
+%description tcl
+The %{name}-tcl package contains various tcl packages (extensions)
+for version %{version} of the %{name} tools.
 
 %prep
 %setup -q
@@ -144,35 +154,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/*.1*
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/lefty
+%exclude %{_libdir}/%{name}/lib*_java.so.*
+%exclude %{_libdir}/%{name}/lib*_perl.so.*
+%exclude %{_libdir}/%{name}/lib*_python.so.*
+%exclude %{_libdir}/%{name}/lib*_ruby.so.*
 %exclude %{_libdir}/%{name}/lib*tcl*.so.*
 %exclude %{_libdir}/%{name}/libtk*.so.*
-%exclude %{_libdir}/%{name}/lib*perl.so.*
-%exclude %{_libdir}/%{name}/lib*python.so.*
-%exclude %{_libdir}/%{name}/lib*ruby.so.*
 %exclude %{_bindir}/dotneato-config
 %exclude %{_mandir}/man1/dotneato-config.1*
-
-%files tcl
-%defattr(-,root,root,-)
-%{_libdir}/%{name}/lib*tcl*.so.*.*.*
-%{_libdir}/%{name}/libtk*.so.*.*.*
-%{_libdir}/%{name}/pkgIndex.tcl
-%{_datadir}/%{name}/demo
-%{_mandir}/mann/* 
-
-%files perl
-%defattr(-,root,root,-)
-%{_libdir}/%{name}/lib*perl*.so.*.*.*
-%{_libdir}/%{name}/gv.pm
-
-%files python
-%defattr(-,root,root,-)
-%{_libdir}/%{name}/lib*python*.so.*.*.*
-%{_libdir}/%{name}/gv.py
-
-%files ruby
-%defattr(-,root,root,-)
-%{_libdir}/%{name}/lib*ruby*.so.*.*.*
 
 %files devel
 %defattr(-,root,root,-)
@@ -185,15 +174,42 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/*.3*
 %exclude %{_libdir}/%{name}/lib*tcl*.*
 %exclude %{_libdir}/%{name}/libtk*.*
-%exclude %{_libdir}/%{name}/lib_perl*.*
-%exclude %{_libdir}/%{name}/lib_python*.*
-%exclude %{_libdir}/%{name}/lib_ruby*.*
+%exclude %{_libdir}/%{name}/lib*_perl*.*
+%exclude %{_libdir}/%{name}/lib*_python*.*
+%exclude %{_libdir}/%{name}/lib*_ruby*.*
+
+%files doc
+%defattr(-,root,root,-)
+%doc __doc/*
 
 %files graphs
 %defattr(-,root,root,-)
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/graphs
 
-%files doc
+%files java
 %defattr(-,root,root,-)
-%doc __doc/*
+%{_libdir}/%{name}/lib*_java*.so.*.*.*
+%{_libdir}/%{name}/*.java
+
+%files perl
+%defattr(-,root,root,-)
+%{_libdir}/%{name}/lib*_perl*.so.*.*.*
+%{_libdir}/%{name}/gv.pm
+
+%files python
+%defattr(-,root,root,-)
+%{_libdir}/%{name}/lib*_python*.so.*.*.*
+%{_libdir}/%{name}/gv.py
+
+%files ruby
+%defattr(-,root,root,-)
+%{_libdir}/%{name}/lib*_ruby*.so.*.*.*
+
+%files tcl
+%defattr(-,root,root,-)
+%{_libdir}/%{name}/lib*tcl*.so.*.*.*
+%{_libdir}/%{name}/libtk*.so.*.*.*
+%{_libdir}/%{name}/pkgIndex.tcl
+%{_datadir}/%{name}/demo
+%{_mandir}/mann/* 

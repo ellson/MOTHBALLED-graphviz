@@ -19,13 +19,6 @@
 #include "gv.h"
 %}
 
-extern void gvinit();
-
-%init
-%{
-    gvinit();
-%}
-
 /* new graph objects */
 extern Agraph_t *stringgraph(char *string);		/* from dot-formatted string */
 extern Agraph_t *readgraph(char *filename);		/* from dot-formatted file */

@@ -24,7 +24,7 @@ char *Info[] = {
     BUILDDATE
 };
 
-void gvinit()
+static void gvinit()
 {
     aginit();
     agnodeattr(NULL, "label", NODENAME_ESC);
@@ -40,6 +40,8 @@ Agraph_t *digraph(char *name)
 {
     Agraph_t *g;
 
+    if (!gvc)
+	gvinit();
     g = agopen(name, AGDIGRAPH);
     GD_drawing(g) = NULL;
     return g;
@@ -49,6 +51,8 @@ Agraph_t *digraphstrict(char *name)
 {
     Agraph_t *g;
 
+    if (!gvc)
+	gvinit();
     g = agopen(name, AGDIGRAPHSTRICT);
     GD_drawing(g) = NULL;
     return g;
@@ -58,6 +62,8 @@ Agraph_t *graph(char *name)
 {
     Agraph_t *g;
 
+    if (!gvc)
+	gvinit();
     g = agopen(name, AGRAPH);
     GD_drawing(g) = NULL;
     return g;
@@ -67,6 +73,8 @@ Agraph_t *graphstrict(char *name)
 {
     Agraph_t *g;
 
+    if (!gvc)
+	gvinit();
     g = agopen(name, AGRAPHSTRICT);
     GD_drawing(g) = NULL;
     return g;
@@ -76,6 +84,8 @@ Agraph_t *stringgraph(char *string)
 {
     Agraph_t *g;
 
+    if (!gvc)
+	gvinit();
     g = agmemread(string);
     GD_drawing(g) = NULL;
     return g;
@@ -86,6 +96,8 @@ Agraph_t *readgraph(char *filename)
     FILE *f;
     Agraph_t *g;
 
+    if (!gvc)
+	gvinit();
     f = fopen(filename, "r");
     g = agread(f);
     fclose(f);
