@@ -408,7 +408,7 @@ int type;
 
 
 /* function to initialize conversion tables */
-static int sfcvinit()
+static int sfcvinit(void)
 {
     reg int d, l;
 
