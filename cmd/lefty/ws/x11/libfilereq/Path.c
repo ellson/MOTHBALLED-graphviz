@@ -95,8 +95,7 @@ static int SFtwiddle = 0;
 
 void SFsetText(char *path);
 
-int SFchdir(path)
-char *path;
+int SFchdir(char *path)
 {
     int result;
 
@@ -112,8 +111,7 @@ char *path;
     return result;
 }
 
-static void SFfree(i)
-int i;
+static void SFfree(int i)
 {
     register SFDir *dir;
     register int j;
@@ -134,15 +132,12 @@ int i;
     dir->dir = NULL;
 }
 
-static void SFstrdup(s1, s2)
-char **s1;
-char *s2;
+static void SFstrdup(char **s1, char *s2)
 {
     *s1 = strcpy(XtMalloc((unsigned) (strlen(s2) + 1)), s2);
 }
 
-static void SFunreadableDir(dir)
-SFDir *dir;
+static void SFunreadableDir(SFDir *dir)
 {
     char *cannotOpen = "<cannot open> ";
 
@@ -155,9 +150,7 @@ SFDir *dir;
 }
 
 #ifdef SEL_FILE_IGNORE_CASE
-static SFstrncmp(p, q, n)
-register char *p, *q;
-register int n;
+static SFstrncmp(char *p, char *q, int n)
 {
     register char c1, c2;
     char *psave, *qsave;
@@ -198,9 +191,7 @@ register int n;
 }
 #endif				/* def SEL_FILE_IGNORE_CASE */
 
-static void SFreplaceText(dir, str)
-SFDir *dir;
-char *str;
+static void SFreplaceText(SFDir *dir, char *str)
 {
     int len;
 
@@ -220,8 +211,7 @@ char *str;
     SFtextChanged();
 }
 
-static void SFexpand(str)
-char *str;
+static void SFexpand(char *str)
 {
     int len;
     int cmp;
@@ -270,9 +260,7 @@ char *str;
     XtFree(growing);
 }
 
-static int SFfindFile(dir, str)
-SFDir *dir;
-register char *str;
+static int SFfindFile(SFDir *dir, char *str)
 {
     register int i, last, max;
     register char *name, save;
@@ -473,8 +461,7 @@ static void SFgetHomeDirs()
     }
 }
 
-static int SFfindHomeDir(begin, end)
-char *begin, *end;
+static int SFfindHomeDir(char *begin, char *end)
 {
     char save;
     char *theRest;
@@ -684,8 +671,7 @@ void SFupdatePath()
     }
 }
 
-void SFsetText(path)
-char *path;
+void SFsetText(char *path)
 {
     XawTextBlock text;
 
@@ -699,19 +685,13 @@ char *path;
 }
 
 /* ARGSUSED */
-void SFbuttonPressList(w, n, event)
-Widget w;
-int n;
-XButtonPressedEvent *event;
+void SFbuttonPressList(Widget w, int n, XButtonPressedEvent *event)
 {
     SFbuttonPressed = 1;
 }
 
 /* ARGSUSED */
-void SFbuttonReleaseList(w, n, event)
-Widget w;
-int n;
-XButtonReleasedEvent *event;
+void SFbuttonReleaseList(Widget w, int n, XButtonReleasedEvent *event)
 {
     SFDir *dir;
 
@@ -723,16 +703,13 @@ XButtonReleasedEvent *event;
 	}
 	SFdoNotTouchVorigin = 1;
 	dir = &(SFdirs[SFdirPtr + n]);
-	SFreplaceText(dir,
-		      dir->entries[dir->vOrigin +
+	SFreplaceText(dir, dir->entries[dir->vOrigin +
 				   SFcurrentInvert[n]].shown);
 	SFmotionList(w, n, event);
     }
 }
 
-static int SFcheckDir(n, dir)
-int n;
-SFDir *dir;
+static int SFcheckDir(int n, SFDir *dir)
 {
     struct stat statBuf;
     int i;
@@ -793,8 +770,7 @@ SFDir *dir;
     return 0;
 }
 
-static int SFcheckFiles(dir)
-SFDir *dir;
+static int SFcheckFiles(SFDir *dir)
 {
     int from, to;
     int result;
@@ -831,9 +807,7 @@ SFDir *dir;
     return result;
 }
 
-void SFdirModTimer(cl, id)
-XtPointer cl;
-XtIntervalId *id;
+void SFdirModTimer(XtPointer cl, XtIntervalId *id)
 {
     static int n = -1;
     static int f = 0;
@@ -876,8 +850,7 @@ XtIntervalId *id;
 
 /* Return a single character describing what kind of file STATBUF is.  */
 
-char SFstatChar(statBuf)
-struct stat *statBuf;
+char SFstatChar(struct stat *statBuf)
 {
     if (S_ISDIR(statBuf->st_mode)) {
 	return '/';
