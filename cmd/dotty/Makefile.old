@@ -1,7 +1,7 @@
 all:	dotty
-
-include ../Config.mk
-include ../makearch/$(ARCH)
+ROOT=../..
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
 
 PACKAGE=lefty
 LIB_SCRIPTS = dotty.lefty dotty_draw.lefty dotty_edit.lefty \
