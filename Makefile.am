@@ -5,8 +5,8 @@ ACLOCAL_AMFLAGS = -I m4
 txtdir = $(pkgdatadir)/doc
 htmldir = $(pkgdatadir)/doc/html
 
-txt = AUTHORS COPYING ChangeLog NEWS
-html = CPL.html
+txt = AUTHORS COPYING ChangeLog NEWS cpl1.0.txt
+html =
 
 txt_DATA = $(txt)
 html_DATA = $(html)

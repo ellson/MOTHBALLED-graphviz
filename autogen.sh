@@ -11,9 +11,10 @@ touch config/config.rpath
 
 patch -N -p0 <ltmain.sh.patch
                                                                                 
-# ensure COPYING is based on LICENSE.html
+# ensure COPYING is based on cpl1.0.txt
+#   cpl1.0.txt was obtained from: http://www.opensource.org/licenses/cpl1.0.txt
 rm -f COPYING
-lynx -dump CPL.html >COPYING
+cp cpl1.0.txt COPYING
 
 #./configure "$@"
 
