@@ -419,6 +419,8 @@ static void makeStraightEdge(graph_t * g, edge_t * e)
  * Returns the constructed polygon on success, NULL on failure.
  * Failure means the node shape is not supported. 
  *
+ * The polygon has its vertices in CW order.
+ * 
  * N.B. Point, epsf and user shapes are not handled. Point should
  * be easy, and user shapes are boxes. FIX
  */
@@ -485,9 +487,9 @@ Ppoly_t *makeObstacle(node_t * n, double SEP)
  * Construct the shortest path from one endpoint of e to the other.
  * The obstacles and their number are given by obs and npoly.
  * vconfig is a precomputed data structure to help in the computation.
- * If chkPts is true, the function checks if one or both of the endpoints 
- * is on or inside one of the obstacles and, if so, tells the shortest path
- * computation to ignore them. 
+ * If chkPts is true, the function finds the polygons, if any, containing
+ * the endpoints and tells the shortest path computation to ignore them. 
+ * Assumes this info is set in ND_lim, usually from _spline_edges.
  * Returns the shortest path.
  */
 Ppolyline_t
@@ -495,7 +497,7 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
 	int npoly)
 {
     Ppolyline_t line;
-    int i, pp, qp;
+    int pp, qp;
     Ppoint_t p, q;
     point p1, q1;
 
@@ -506,13 +508,18 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
 
     /* determine the polygons (if any) that contain the endpoints */
     pp = qp = POLYID_NONE;
-    if (chkPts)
+    if (chkPts) {
+	pp = ND_lim(e->tail);
+	qp = ND_lim(e->head);
+/*
 	for (i = 0; i < npoly; i++) {
 	    if ((pp == POLYID_NONE) && in_poly(*obs[i], p))
 		pp = i;
 	    if ((qp == POLYID_NONE) && in_poly(*obs[i], q))
 		qp = i;
 	}
+*/
+    }
     Pobspath(vconfig, p, pp, q, qp, &line);
     return line;
 }
@@ -596,8 +603,12 @@ static int _spline_edges(graph_t * g, double SEP, int splines)
 	obs = N_NEW(agnnodes(g), Ppoly_t *);
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    obp = makeObstacle(n, SEP);
-	    if (obp)
+	    if (obp) {
+		ND_lim(n) = i; 
 		obs[i++] = obp;
+	    }
+	    else
+		ND_lim(n) = POLYID_NONE; 
 	}
     } else {
 	obs = 0;
