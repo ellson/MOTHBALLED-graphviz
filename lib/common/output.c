@@ -20,8 +20,8 @@
 
 static int e_arrows;		/* graph has edges with end arrows */
 static int s_arrows;		/* graph has edges with start arrows */
-static agxbuf outbuf;
-static agxbuf charbuf;
+agxbuf outbuf;
+agxbuf charbuf;
 
 static void printptf(FILE * f, point pt)
 {

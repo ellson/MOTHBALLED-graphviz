@@ -18,8 +18,8 @@
 #include	"gvc.h"
 #include	"agxbuf.h"
 
-static agxbuf charbuf;
-static agxbuf outbuf;
+extern agxbuf charbuf;
+extern agxbuf outbuf;
 static Agraph_t *cluster_g;
 
 static void xd_textline(point p, textline_t * line)

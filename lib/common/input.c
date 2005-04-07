@@ -739,12 +739,12 @@ static codegen_info_t cg[MAX_CODEGENS] = {
     {&SVG_CodeGen, "svgz", SVGZ},
     {&DIA_CodeGen, "dia", DIA},
 #endif
-#define DUMMY_Codegen XDot_CodeGen
-    {&DUMMY_Codegen, "dot", ATTRIBUTED_DOT},
-    {&DUMMY_Codegen, "canon", CANONICAL_DOT},
-    {&DUMMY_Codegen, "plain", PLAIN},
-    {&DUMMY_Codegen, "plain-ext", PLAIN_EXT},
-    {&XDot_CodeGen, "xdot", EXTENDED_DOT},
+#define DUMMY_CodeGen XDot_CodeGen
+    {&DUMMY_CodeGen, "dot", ATTRIBUTED_DOT},
+    {&DUMMY_CodeGen, "canon", CANONICAL_DOT},
+    {&DUMMY_CodeGen, "plain", PLAIN},
+    {&DUMMY_CodeGen, "plain-ext", PLAIN_EXT},
+    {&DUMMY_CodeGen, "xdot", EXTENDED_DOT},
     {NULL, NULL, 0}
 };
 
