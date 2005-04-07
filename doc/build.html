@@ -273,6 +273,9 @@ binding the lib/lib/z that goes with /usr/lib/z.lib).
 We haven't tried to build tcldot or webdot in win32.
 </li>
 <h2>Unix platform-specific build notes</h2>
+<h2>AIX</h2>
+Matt Fago tells us that "--enable-shared=no" is required or the
+executables segfault after seemingly correct compiles.  (Bug #421)
 <h2>SGI</h2>
 The default Irix libjpeg is obsolescent.  We need at least
 version 62.  It wasn't at all clear to me where to get sources for
