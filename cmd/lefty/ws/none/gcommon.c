@@ -14,7 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-/* Lefteris Koutsofios - AT&T Bell Laboratories */
+/* Lefteris Koutsofios - AT&T Labs Research */
 
 #include "common.h"
 #include "g.h"
@@ -28,27 +28,22 @@ int Gpopdownflag;
 int Gscreenn;
 int Gdepth;
 
-int Ginitgraphics(void)
-{
+int Ginitgraphics (void) {
     return 0;
 }
 
-int Gtermgraphics(void)
-{
+int Gtermgraphics (void) {
     return 0;
 }
 
-int Gsync(void)
-{
+int Gsync (void) {
     return 0;
 }
 
-int Gresetbstate(int wi)
-{
+int Gresetbstate (int wi) {
     return 0;
 }
 
-int Gprocessevents(int waitflag, Geventmode_t mode)
-{
+int Gprocessevents (int waitflag, int mode) {
     return 0;
 }

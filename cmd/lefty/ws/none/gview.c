@@ -14,29 +14,26 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-/* Lefteris Koutsofios - AT&T Bell Laboratories */
+/* Lefteris Koutsofios - AT&T Labs Research */
 
 #include "common.h"
 #include "g.h"
 #include "gcommon.h"
 
-int GVcreatewidget(Gwidget_t * parent, Gwidget_t * widget,
-		   int attrn, Gwattr_t * attrp)
-{
+int GVcreatewidget (
+    Gwidget_t *parent, Gwidget_t *widget, int attrn, Gwattr_t *attrp
+) {
     return -1;
 }
 
-int GVsetwidgetattr(Gwidget_t * widget, int attrn, Gwattr_t * attrp)
-{
+int GVsetwidgetattr (Gwidget_t *widget, int attrn, Gwattr_t *attrp) {
     return 0;
 }
 
-int GVgetwidgetattr(Gwidget_t * widget, int attrn, Gwattr_t * attrp)
-{
+int GVgetwidgetattr (Gwidget_t *widget, int attrn, Gwattr_t *attrp) {
     return 0;
 }
 
-int GVdestroywidget(Gwidget_t * widget)
-{
+int GVdestroywidget (Gwidget_t *widget) {
     return 0;
 }
