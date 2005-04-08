@@ -1,98 +1,107 @@
-#!/bin/sh
+
 FILES=""
 MLEVEL="0"
 LMODE="async"
 
-usage="echo usage: lneato [-V] [-lm (sync|async)] [-el (0|1)] <filename>"
+function usage {
+    print "usage: lneato [-V] [-lm (sync|async)] [-el (0|1)] <filename>"
+}
 
-if test "x$DOTTYOPTIONS" != "x"
-then
-    options=$DOTTYOPTIONS
-else
-    options="$@"
+function processoptions {
+    while [[ $# > 0 ]] do
+        case $1 in
+        -V)
+            print "lneato version 96c (09-24-96)"
+            shift
+            ;;
+        -f)
+            shift
+            loadfile=$1
+            shift
+            ;;
+        -lm)
+            shift
+            LMODE=$1
+            if [[ $LMODE != 'sync' && $LMODE != 'async' ]] then
+                usage
+                exit 1
+            fi
+            shift
+            ;;
+        -el)
+            shift
+            MLEVEL=$1
+            if [[ $MLEVEL != '0' && $MLEVEL != '1' ]] then
+                usage
+                exit 1
+            fi
+            shift
+            ;;
+        -)
+            FILES=$(print $FILES "'"$1"'")
+            shift
+            ;;
+        -*)
+            usage
+            exit 1
+            ;;
+        *)
+            FILES=$(print $FILES "'"$1"'")
+            shift
+            ;;
+        esac
+    done
+}
+
+if [[ $DOTTYOPTIONS != '' ]] then
+    processoptions $DOTTYOPTIONS
+fi
+processoptions "$@"
+
+if [[ $DOTTYPATH != '' ]] then
+    export LEFTYPATH="$DOTTYPATH:$LEFTYPATH"
 fi
 
-set -- $options
+CMDS=""
 
-for i in "$@"
-do
-	if test "x$i" = "x$1"
-	then
-		case $i in
-		-V)
-			shift
-			echo "lneato version 95 (04-18-95)"
-			;;
-		-lm)
-			shift
-			LMODE="$1"
-			shift
-			if test "x$LMODE" != "xsync" -a "x$LMODE" != "xasync"
-			then
-				$usage
-				exit 1
-			fi
-			;;
-		-el)
-			shift
-			MLEVEL="$1"
-			shift
-			if test "x$MLEVEL" != "x0" -a "x$MLEVEL" != "x1"
-			then
-				$usage
-				exit 1
-			fi
-			;;
-		-?*)
-			$usage
-			exit 1
-			;;
-		*)
-			FILES="$FILES '"$1"'"
-			shift
-			;;
-		esac
-	fi
-done
+CMDS="dotty.protogt.layoutmode = '$LMODE';"
 
-if test "x$MLEVEL" != "x0"
-then
-	echo "FILES  = $FILES"
-	echo "MLEVEL = $MLEVEL"
-	echo "LMODE  = $LMODE"
+CMDS=$(print $CMDS dotty.mlevel = $MLEVEL";")
+
+if [[ $loadfile != '' ]] then
+    CMDS=$(print $CMDS load \("'"$loadfile"'"\)";")
 fi
 
-if test "x$DOTTYPATH" != "x"
-then
-    LEFTYPATH="$DOTTYPATH:$LEFTYPATH"
-fi
-
-CMDS="dotty.layoutmode = '$LMODE';"
-CMDS="$CMDS dotty.mlevel = $MLEVEL; dot.mlevel =  $MLEVEL;"
-
-if test "x$FILES" = "x"
-then
+if [[ $FILES = '' ]] then
     FILES=null
 fi
-for i in $FILES
-do
-	CMDS="$CMDS dotty.createviewandgraph($i,'file',null,null);"
+FUNC="dotty.createviewandgraph"
+for i in $FILES; do
+    CMDS=$(print $CMDS $FUNC \($i, "'"file"'", null, null\)";")
 done
 
-lefty -e "
-load ('dotty.lefty');
+leftypath=$(whence -p lefty)
+if [[ $leftypath == '' ]] then
+    print -u2 "lneato: cannot locate the lefty program"
+    print -u2 "       make sure that your path includes"
+    print -u2 "       the directory containing lneato and lefty"
+    exit 1
+fi
 
+$leftypath -e "
+load ('dotty.lefty');
+dotty.protogt.lserver = 'neato';
 checkpath = function () {
-	if (tablesize(dotty) > 0);	# because tablesize(undef) returns "" not 0
-	else {
-		echo('You must set LEFTYPATH to the lefty lib directory path name.');
-		exit();
-	}
+    if (tablesize (dotty) > 0)
+        remove ('checkpath');
+    else {
+        echo ('lneato: cannot locate the dotty scripts');
+        echo ('       make sure that the environment variable LEFTYPATH');
+        echo ('       is set to the directory containing dotty.lefty');
+        exit ();
+    }
 };
 checkpath ();
-
-dotty.protogt.lserver = 'neato';
-dotty.protogt.graph.type = 'graph';
 dotty.init ();
 monitorfile = dotty.monitorfile;
 $CMDS
