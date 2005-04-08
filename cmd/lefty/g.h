@@ -18,8 +18,7 @@
 extern "C" {
 #endif
 
-
-/* Lefteris Koutsofios - AT&T Bell Laboratories */
+/* Lefteris Koutsofios - AT&T Labs Research */
 
 #ifndef _G_H
 #define _G_H
@@ -46,67 +45,57 @@ extern "C" {
 #endif
 #endif
 
-#ifdef FEATURE_GTK
-#include <gtk/gtk.h>
-#ifdef FEATURE_GMAP
-#ifdef FEATURE_MESAGL
-#include <GL/GLwDrawA.h>
-#endif
-#include <Performer/pf.h>
-#endif
-#endif
-
-
 /* general coordinate structures */
 
-    typedef struct Gxy_t {
-	double x, y;
-    } Gxy_t;
-    typedef Gxy_t Gpoint_t;
-    typedef Gxy_t Gsize_t;
-    typedef struct Grect_t {
-	Gxy_t o, c;
-    } Grect_t;
+typedef struct Gxy_t {
+    double x, y;
+} Gxy_t;
+typedef Gxy_t Gpoint_t;
+typedef Gxy_t Gsize_t;
+typedef struct Grect_t {
+    Gxy_t o, c;
+} Grect_t;
 
 /* textline structure */
-    typedef struct Gtextline_t {
-	char *p;
-	int n, j;
-	int w, h;
-    } Gtextline_t;
+typedef struct Gtextline_t {
+    char *p;
+    int n, j;
+    int w, h;
+} Gtextline_t;
 
 /* Color structure */
 
-    typedef struct Gcolor_t {
-	int index;
-	int r, g, b;
-    } Gcolor_t;
+typedef struct Gcolor_t {
+    int index;
+    int r, g, b;
+} Gcolor_t;
 #define G_MAXCOLORS 256
 
 /* event structures */
 
 /* event consumption modes */
-    typedef enum {
-	G_ONEEVENT, G_MANYEVENTS
-    } Geventmode_t;
+#define G_ONEEVENT   0
+#define G_MANYEVENTS 1
 
 /* event types and main structure */
-    typedef enum {
-	G_MOUSE, G_KEYBD
-    } Getype_t;
+#define G_MOUSE 0
+#define G_KEYBD 1
+
 #define G_DOWN 0
 #define G_UP   1
 #define G_MOVE 2
-#define G_LEFT   0
-#define G_MIDDLE 1
-#define G_RIGHT  2
-    typedef struct Gevent_t {
-	Getype_t type;
-	int wi;
-	int code;
-	int data;
-	Gpoint_t p;
-    } Gevent_t;
+#define G_LEFT    0
+#define G_MIDDLE  1
+#define G_RIGHT   2
+#define G_BUTTON3 3
+#define G_BUTTON4 4
+typedef struct Gevent_t {
+    int type;
+    int wi;
+    int code;
+    int data;
+    Gpoint_t p;
+} Gevent_t;
 
 /* Widgets */
 
@@ -130,14 +119,9 @@ extern "C" {
 #define G_SHORTDASHED 4
 
 /* drawing modes */
-#if defined(FEATURE_X11) || defined(FEATURE_GTK)
-#ifdef FEATURE_GTK
-#define G_SRC GDK_COPY
-#define G_XOR GDK_XOR
-#else
+#ifdef FEATURE_X11
 #define G_SRC GXcopy
 #define G_XOR GXxor
-#endif
 #else
 #ifdef FEATURE_WIN32
 #define G_SRC R2_COPYPEN
@@ -149,56 +133,61 @@ extern "C" {
 #endif
 
 /* gfx attributes and the attribute structure */
-    typedef enum {
-	G_GATTRCOLOR = 1, G_GATTRWIDTH = 2, G_GATTRMODE = 4,
-	G_GATTRFILL = 8, G_GATTRSTYLE = 16
-    } Ggattrflags_t;
-    typedef struct Ggattr_t {
-	Ggattrflags_t flags;
-	int color;
-	int width;
-	int mode;
-	int fill;
-	int style;
-    } Ggattr_t;
+#define G_GATTRCOLOR  1
+#define G_GATTRWIDTH  2
+#define G_GATTRMODE   4
+#define G_GATTRFILL   8
+#define G_GATTRSTYLE 16
+
+typedef struct Ggattr_t {
+    int flags;
+    int color;
+    int width;
+    int mode;
+    int fill;
+    int style;
+} Ggattr_t;
 
 /* widget attributes structures */
 
-    typedef enum {
-	G_ATTRTYPEINT, G_ATTRTYPELONG,
-	G_ATTRTYPEFLOAT, G_ATTRTYPEDOUBLE,
-	G_ATTRTYPETEXT,
-	G_ATTRTYPEPOINT, G_ATTRTYPESIZE, G_ATTRTYPERECT,
-	G_ATTRTYPECOLOR,
-	G_ATTRTYPEFUNC,
-	G_ATTRTYPEULONG
-    } Gwattrtype_t;
-    typedef struct Gwattrmap_t {
-	int id;
-	Gwattrtype_t type;
-	char *name;
-    } Gwattrmap_t;
-    typedef struct Gwattr_t {
-	int id;
-	union {
-	    int i;
-	    long l;
-	    float f;
-	    double d;
-	    char *t;
-	    Gpoint_t p;
-	    Gsize_t s;
-	    Grect_t r;
-	    Gcolor_t c;
-	    void *func;
-	    unsigned long u;
-	} u;
-    } Gwattr_t;
-    typedef struct Gwlist_t {
-	int wid;
-	char *wname;
-	int *attrid;
-    } Gwlist_t;
+#define G_ATTRTYPEINT     0
+#define G_ATTRTYPELONG    1
+#define G_ATTRTYPEFLOAT   2
+#define G_ATTRTYPEDOUBLE  3
+#define G_ATTRTYPETEXT    4
+#define G_ATTRTYPEPOINT   5
+#define G_ATTRTYPESIZE    6
+#define G_ATTRTYPERECT    7
+#define G_ATTRTYPECOLOR   8
+#define G_ATTRTYPEFUNC    9
+#define G_ATTRTYPEULONG  10
+
+typedef struct Gwattrmap_t {
+    int id;
+    int type;
+    char *name;
+} Gwattrmap_t;
+typedef struct Gwattr_t {
+    int id;
+    union {
+        int i;
+        long l;
+        float f;
+        double d;
+        char *t;
+        Gpoint_t p;
+        Gsize_t s;
+        Grect_t r;
+        Gcolor_t c;
+        void *func;
+        unsigned long u;
+    } u;
+} Gwattr_t;
+typedef struct Gwlist_t {
+    int wid;
+    char *wname;
+    int *attrid;
+} Gwlist_t;
 
 /* attribute ids */
 #define G_ATTRORIGIN       0
@@ -224,52 +213,48 @@ extern "C" {
 #define G_ATTRUSERDATA    20
 
 /* array widget structs */
-    typedef struct Gawcarray_t {
-#if defined(FEATURE_X11) || defined(FEATURE_GTK)
-#ifdef FEATURE_GTK
-	GtkWidget *w;
-#else
-	Widget w;
-#endif
+typedef struct Gawcarray_t {
+#ifdef FEATURE_X11
+    Widget w;
 #else
 #ifdef FEATURE_WIN32
-	HWND w;
+    HWND w;
 #else
-	int w;
+    int w;
 #endif
 #endif
-	int flag;
-	int ox, oy, sx, sy, bs;
-    } Gawcarray_t;
+    int flag;
+    int ox, oy, sx, sy, bs;
+} Gawcarray_t;
 #define AWCARRAYINCR 10
 #define AWCARRAYSIZE sizeof (Gawcarray_t)
 
 #define G_AWHARRAY 1
 #define G_AWVARRAY 2
-    typedef struct Gawdata_t {
-	int type;
-	int sx, sy;
-	Gawcarray_t *carray;
-	int cj, cn;
+typedef struct Gawdata_t {
+    int type;
+    int sx, sy;
+    Gawcarray_t *carray;
+    int cj, cn;
 #ifdef FEATURE_WIN32
-	int batchmode, working;
+    int batchmode, working;
 #endif
-    } Gawdata_t;
+} Gawdata_t;
 
 /* query widget macros */
-#define G_QWSTRING 1		/* string query */
-#define G_QWFILE   2		/* file query */
-#define G_QWCHOICE 3		/* choose 1 query */
-#define G_QWMODES 3		/* total number of modes */
+#define G_QWSTRING 1 /* string query */
+#define G_QWFILE   2 /* file query */
+#define G_QWCHOICE 3 /* choose 1 query */
+#define G_QWMODES 3 /* total number of modes */
 
 /* widget callbacks */
-    typedef void (*Gtwnewlinecb) (int, char *);
-    typedef void (*Gbuttoncb) (int, void *);
-    typedef void (*Glabelcb) (Gevent_t *);
-    typedef void (*Gcanvascb) (Gevent_t *);
-    typedef void (*Gawordercb) (void *, Gawdata_t *);
-    typedef void (*Gawcoordscb) (int, Gawdata_t *);
-    typedef void (*Gviewcb) (Gevent_t *);
+typedef void (*Gtwnewlinecb) (int, char *);
+typedef void (*Gbuttoncb) (int, void *);
+typedef void (*Glabelcb) (Gevent_t *);
+typedef void (*Gcanvascb) (Gevent_t *);
+typedef void (*Gawordercb) (void *, Gawdata_t *);
+typedef void (*Gawcoordscb) (int, Gawdata_t *);
+typedef void (*Gviewcb) (Gevent_t *);
 
 #define G_ARRAYWIDGET    0
 #define G_BUTTONWIDGET   1
@@ -286,296 +271,264 @@ extern "C" {
 /* predefined widgets */
 
 /* --- array --- */
-    typedef struct Gaw_t {
-	Gawcoordscb func;
-	int mode;
+typedef struct Gaw_t {
+    Gawcoordscb func;
+    int mode;
 #ifdef FEATURE_WIN32
-	Gawdata_t data;
+    Gawdata_t data;
 #endif
-    } Gaw_t;
+} Gaw_t;
 #define AWSIZE sizeof (Gaw_t)
 
 /* --- button --- */
-    typedef struct Gbw_t {
-	Gbuttoncb func;
-    } Gbw_t;
+typedef struct Gbw_t {
+    Gbuttoncb func;
+} Gbw_t;
 #define BWSIZE sizeof (Gbw_t)
 
 /* --- canvas --- */
-    typedef struct Gcw_t {
-	int needredraw;
-	int buttonsdown;
-	char bstate[3];
-	struct Gcwcolor_t {
-	    int inuse;
-#if defined(FEATURE_X11) || defined(FEATURE_GTK)
-#ifdef FEATURE_GTK
-	    GdkColor color;
-#else
-	    XColor color;
-#endif
+typedef struct Gcw_t {
+    int needredraw;
+    int buttonsdown;
+    char bstate[5];
+    struct Gcwcolor_t {
+        int inuse;
+#ifdef FEATURE_X11
+        XColor color;
 #else
 #ifdef FEATURE_WIN32
-	    PALETTEENTRY color;
+        PALETTEENTRY color;
 #endif
 #endif
-	} colors[G_MAXCOLORS];
-	char allocedcolor[2];
-	Ggattr_t gattr, defgattr;
-	Grect_t wrect;
-	Gsize_t vsize;
-	Grect_t clip;
-	Gcanvascb func;
-#if defined(FEATURE_X11) || defined(FEATURE_GTK)
-#ifdef FEATURE_GTK
-	GtkWindow window;
-	GdkColormap *cmap;
-	GdkGC *gc;
-	GdkPixmap grays[17];
-	GdkFont *font;
-#else
-	Window window;
-	Colormap cmap;
-	GC gc;
-	Pixmap grays[17];
-	XFontStruct *font;
-#endif
+    } colors[G_MAXCOLORS];
+    char allocedcolor[2];
+    Ggattr_t gattr, defgattr;
+    Grect_t wrect;
+    Gsize_t vsize;
+    Grect_t clip;
+    Gcanvascb func;
+#ifdef FEATURE_X11
+    Window window;
+    Colormap cmap;
+    GC gc;
+    Pixmap grays[17];
+    XFontStruct *font;
 #else
 #ifdef FEATURE_WIN32
-	HPALETTE cmap;
-	HDC gc;
-	HBRUSH grays[17];
-	HFONT font;
-	int ncolor;
+    HPALETTE cmap;
+    HDC gc;
+    HBRUSH grays[17];
+    HFONT font;
+    int ncolor;
 #endif
 #endif
 #ifdef FEATURE_GMAP
-	int gmapmode;
+    int gmapmode;
 #endif
-    } Gcw_t;
+} Gcw_t;
 #define CWSIZE sizeof (Gcw_t)
 
 /* --- label --- */
-    typedef struct Glw_t {
-	Glabelcb func;
-    } Glw_t;
+typedef struct Glw_t {
+    Glabelcb func;
+} Glw_t;
 #define LWSIZE sizeof (Glw_t)
 
 /* --- menu --- */
-    typedef struct Gmw_t {
-#ifdef FEATURE_GTK
-	glong count;
-#else
-	long count;
-#endif
-    } Gmw_t;
+typedef struct Gmw_t {
+    long count;
+} Gmw_t;
 #define MWSIZE sizeof (Gmw_t)
 
 /* --- postscript --- */
-    typedef struct Gpw_t {
-#if defined(FEATURE_X11) || defined(FEATURE_GTK)
-	FILE *fp;
-	struct Gpwcolor_t {
-	    int inuse;
-	    int r, g, b;
-	    double nr, ng, nb;
-	} colors[G_MAXCOLORS];
-	Ggattr_t gattr, defgattr;
-	Grect_t wrect;
-	Gsize_t vsize;
+typedef struct Gpw_t {
+#ifdef FEATURE_X11
+    FILE *fp;
+    struct Gpwcolor_t {
+        int inuse;
+        int r, g, b;
+        double nr, ng, nb;
+    } colors[G_MAXCOLORS];
+    Ggattr_t gattr, defgattr;
+    Grect_t wrect;
+    Gsize_t vsize;
 #else
 #ifdef FEATURE_WIN32
-	struct Gpwcolor_t {
-	    int inuse;
-	    PALETTEENTRY color;
-	} colors[G_MAXCOLORS];
-	Ggattr_t gattr, defgattr;
-	Grect_t wrect;
-	Gsize_t vsize;
-	HPALETTE cmap;
-	HDC gc;
-	HBRUSH grays[17];
-	HFONT font;
-	int ncolor, mode;
+    struct Gpwcolor_t {
+        int inuse;
+        PALETTEENTRY color;
+    } colors[G_MAXCOLORS];
+    Ggattr_t gattr, defgattr;
+    Grect_t wrect;
+    Gsize_t vsize;
+    HPALETTE cmap;
+    HDC gc;
+    HBRUSH grays[17];
+    HFONT font;
+    int ncolor, mode;
 #else
-	int dummy;
+    int dummy;
 #endif
 #endif
-    } Gpw_t;
+} Gpw_t;
 #define PWSIZE sizeof (Gpw_t)
 
 /* --- query --- */
-    typedef struct Gqw_t {
-#if defined(FEATURE_X11) || defined(FEATURE_GTK)
-#ifdef FEATURE_GTK
-	GtkWidget *w;
-#else
-	Widget w;
-#endif
+typedef struct Gqw_t {
+#ifdef FEATURE_X11
+    Widget w;
 #else
 #ifdef FEATURE_WIN32
-	HWND w;
+    HWND w;
 #endif
 #endif
-	int mode;
-	int state, button;
-    } Gqw_t;
+    int mode;
+    int state, button;
+} Gqw_t;
 #define QWSIZE sizeof (Gqw_t)
 
 /* --- scroll --- */
-    typedef struct Gsw_t {
-	int dummy;
-    } Gsw_t;
+typedef struct Gsw_t {
+    int dummy;
+} Gsw_t;
 #define SWSIZE sizeof (Gsw_t)
 
 /* --- text --- */
-    typedef struct Gtw_t {
-	Gtwnewlinecb func;
-    } Gtw_t;
+typedef struct Gtw_t {
+    Gtwnewlinecb func;
+} Gtw_t;
 #define TWSIZE sizeof (Gtw_t)
 
 /* --- view --- */
-    typedef struct Gvw_t {
-	Gviewcb func;
-	int closing;
-    } Gvw_t;
+typedef struct Gvw_t {
+    Gviewcb func;
+    int closing;
+} Gvw_t;
 #define VWSIZE sizeof (Gvw_t)
 
 /* the main widget structure */
-    typedef struct Gwidget_t {
-	int type;
-	int inuse;
-	int pwi;
-#if defined(FEATURE_X11) || defined(FEATURE_GTK)
-#ifdef FEATURE_GTK
-	GtkWidget *w;
-#else
-	Widget w;
-#endif
+typedef struct Gwidget_t {
+    int type;
+    int inuse;
+    int pwi;
+#ifdef FEATURE_X11
+    Widget w;
 #else
 #ifdef FEATURE_WIN32
-	HWND w;
+    HWND w;
 #else
-	int w;
+    int w;
 #endif
 #endif
-	union {
-	    Gaw_t *a;
-	    Gbw_t *b;
-	    Gcw_t *c;
-	    Glw_t *l;
-	    Gmw_t *m;
-	    Gpw_t *p;
-	    Gqw_t *q;
-	    Gsw_t *s;
-	    Gtw_t *t;
-	    Gvw_t *v;
-	} u;
-	unsigned long udata;
-    } Gwidget_t;
+    union {
+        Gaw_t *a;
+        Gbw_t *b;
+        Gcw_t *c;
+        Glw_t *l;
+        Gmw_t *m;
+        Gpw_t *p;
+        Gqw_t *q;
+        Gsw_t *s;
+        Gtw_t *t;
+        Gvw_t *v;
+    } u;
+    unsigned long udata;
+} Gwidget_t;
 #define WIDGETINCR 20
 #define WIDGETSIZE sizeof (Gwidget_t)
 
 /* bitmap data structure */
-    typedef struct Gbitmap_t {
-	int inuse;
-	int canvas;
-	int ctype;		/* type of canvas, eg. G_CANVASWIDGET */
-	Gsize_t size;
-	Gsize_t scale;
-	union {
-	    struct {
-#if defined(FEATURE_X11) || defined(FEATURE_GTK)
-#ifdef FEATURE_GTK
-		GdkPixmap orig, scaled;
-#else
-		Pixmap orig, scaled;
-#endif
+typedef struct Gbitmap_t {
+    int inuse;
+    int canvas;
+    int ctype; /* type of canvas, eg. G_CANVASWIDGET */
+    Gsize_t size;
+    Gsize_t scale;
+    union {
+        struct {
+#ifdef FEATURE_X11
+            Pixmap orig, scaled;
 #else
 #ifdef FEATURE_WIN32
-		HBITMAP orig, scaled;
+            HBITMAP orig, scaled;
 #else
-		int dummy;
+            int dummy;
 #endif
 #endif
-	    } bmap;
-	    unsigned char *bits;
-	} u;
-    } Gbitmap_t;
+        } bmap;
+        unsigned char *bits;
+    } u;
+} Gbitmap_t;
 
-    extern Gbitmap_t *Gbitmaps;
-    extern int Gbitmapn;
+extern Gbitmap_t *Gbitmaps;
+extern int Gbitmapn;
 
 /* global array of widgets */
-    extern Gwidget_t *Gwidgets;
-    extern int Gwidgetn;
+extern Gwidget_t *Gwidgets;
+extern int Gwidgetn;
 
-    extern Gwlist_t Gwlist[];
-    extern Gwattrmap_t Gwattrmap[];
+extern Gwlist_t Gwlist[];
+extern Gwattrmap_t Gwattrmap[];
 
-    extern char *Gdefaultfont;
-    extern int Gneedredraw;
-    extern int Gbuttonsdown;
-    extern int Gerrflag;
-    extern char *Gpscanvasname;
+extern char *Gdefaultfont;
+extern int Gneedredraw;
+extern int Gbuttonsdown;
+extern int Gerrflag;
+extern char *Gpscanvasname;
 
-    extern int Gxfd;
+extern int Gxfd;
 
-#ifdef FEATURE_GTK
-    static int Gnocallbacks;
-#else
 #ifdef FEATURE_WIN32
-    extern int Gnocallbacks;
-#endif
+extern int Gnocallbacks;
 #endif
 
 /* functions returning an int
-   return -1 if there's an error and
-   also set the Gerrno variable
+    return -1 if there's an error and
+    also set the Gerrno variable
 
-   the rendering functions may return +1
-   if the graphical object is completely hidden
+    the rendering functions may return +1
+    if the graphical object is completely hidden
 */
-    int Ginit(void);
-    int Gterm(void);
-    int Gcreatewidget(int, int, int, Gwattr_t *);
-    int Gsetwidgetattr(int, int, Gwattr_t *);
-    int Ggetwidgetattr(int, int, Gwattr_t *);
-    int Gdestroywidget(int);
-    int Gqueryask(int, char *, char *, char *, int);
-    int Gmenuaddentries(int, int, char **);
-    int Gmenudisplay(int, int);
-    int Gsync(void);
-    int Gresetbstate(int);
-    int Gcanvasclear(int);
-    int Gsetgfxattr(int, Ggattr_t *);
-    int Ggetgfxattr(int, Ggattr_t *);
-    int Garrow(int, Gpoint_t, Gpoint_t, Ggattr_t *);
-    int Gline(int, Gpoint_t, Gpoint_t, Ggattr_t *);
-    int Gbox(int, Grect_t, Ggattr_t *);
-    int Gpolygon(int, int, Gpoint_t *, Ggattr_t *);
-    int Gsplinegon(int, int, Gpoint_t *, Ggattr_t *);
-    int Garc(int, Gpoint_t, Gsize_t, double, double, Ggattr_t *);
-    int Gtext(int, char *, Gpoint_t, char *, double, char *, Ggattr_t *);
-    int Ggettextsize(int, char *, char *, double, Gsize_t *);
-    int Gcreatebitmap(int, Gsize_t);
-    int Gdestroybitmap(int);
-    int Greadbitmap(int, FILE *);
-    int Gwritebitmap(FILE *, int);
-    int Gbitblt(int, Gpoint_t, Grect_t, int, char *, Ggattr_t *);
-    int Ggetmousecoords(int, Gpoint_t *, int *);
+int Ginit (void);
+int Gterm (void);
+int Gcreatewidget (int, int, int, Gwattr_t *);
+int Gsetwidgetattr (int, int, Gwattr_t *);
+int Ggetwidgetattr (int, int, Gwattr_t *);
+int Gdestroywidget (int);
+int Gqueryask (int, char *, char *, char *, int);
+int Gmenuaddentries (int, int, char **);
+int Gmenudisplay (int, int);
+int Gsync (void);
+int Gresetbstate (int);
+int Gcanvasclear (int);
+int Gsetgfxattr (int, Ggattr_t *);
+int Ggetgfxattr (int, Ggattr_t *);
+int Garrow (int, Gpoint_t, Gpoint_t, Ggattr_t *);
+int Gline (int, Gpoint_t, Gpoint_t, Ggattr_t *);
+int Gbox (int, Grect_t, Ggattr_t *);
+int Gpolygon (int, int, Gpoint_t *, Ggattr_t *);
+int Gsplinegon (int, int, Gpoint_t *, Ggattr_t *);
+int Garc (int, Gpoint_t, Gsize_t, double, double, Ggattr_t *);
+int Gtext (int, char *, Gpoint_t, char *, double, char *, Ggattr_t *);
+int Ggettextsize (int, char *, char *, double, Gsize_t *);
+int Gcreatebitmap (int, Gsize_t);
+int Gdestroybitmap (int);
+int Greadbitmap (int, FILE *);
+int Gwritebitmap (FILE *, int);
+int Gbitblt (int, Gpoint_t, Grect_t, int, char *, Ggattr_t *);
+int Ggetmousecoords (int, Gpoint_t *, int *);
 
-    int Gprocessevents(int, Geventmode_t);
+int Gprocessevents (int, int);
 
-    int Gaworder(Gwidget_t *, void *, Gawordercb);
-    int Gawsetmode(Gwidget_t *, int);
-    int Gawgetmode(Gwidget_t *);
-    void Gawdefcoordscb(int, Gawdata_t *);
+int Gaworder (Gwidget_t *, void *, Gawordercb);
+int Gawsetmode (Gwidget_t *, int);
+int Gawgetmode (Gwidget_t *);
+void Gawdefcoordscb (int, Gawdata_t *);
 
-    Gwidget_t *newwidget(int);
-    Gwidget_t *findwidget(unsigned long, int);
-    Gbitmap_t *newbitmap(void);
-    void Gerr(char *, int, int, ...);
+Gwidget_t *newwidget (int);
+Gwidget_t *findwidget (unsigned long, int);
+Gbitmap_t *newbitmap (void);
+void Gerr (char *, int, int, ...);
 
 /* error messages */
 #define G_ERRBADATTRID           1
@@ -601,9 +554,10 @@ extern "C" {
 #define G_ERRNOBITMAP           21
 #define G_ERRCANNOTREADBITMAP   22
 
-    extern int Gerrno;
-#endif				/* _G_H */
+extern int Gerrno;
+#endif /* _G_H */
 
 #ifdef __cplusplus
 }
 #endif
+
