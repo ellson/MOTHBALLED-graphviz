@@ -15,18 +15,20 @@
 **********************************************************/
 
 %{
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#if _PACKAGE_ast
+#include <ast.h>
 #endif
-
 #include <stdio.h>
+
 typedef void *Tobj;
 
+#include "config.h"
 #include "dot2l.h"
 
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
+
 #include <string.h>
 
 static char portstr[SMALLBUF];

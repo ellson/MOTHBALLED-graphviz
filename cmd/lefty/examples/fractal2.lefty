@@ -112,10 +112,12 @@ transformfractal = function (prevpoint, currpoint) {
     prevtan = atan (prevpoint.y - center.y, prevpoint.x - center.x);
     currtan = atan (currpoint.y - center.y, currpoint.x - center.x);
     fractalangle = fractalangle + (currtan - prevtan);
-    prevradius = sqrt (sq (prevpoint.y - center.y) +
-                       sq (prevpoint.x - center.x));
-    currradius = sqrt (sq (currpoint.y - center.y) +
-                       sq (currpoint.x - center.x));
+    prevradius = sqrt (
+        sq (prevpoint.y - center.y) + sq (prevpoint.x - center.x)
+    );
+    currradius = sqrt (
+        sq (currpoint.y - center.y) + sq (currpoint.x - center.x)
+    );
     radius = radius / prevradius * currradius;
     length = radius / 2 * sqrt (12);
 };

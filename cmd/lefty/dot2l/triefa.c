@@ -14,11 +14,10 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-/* File - TrieFA.ins.c
- *
- *    This file contains code to be included in the scanner file using a
- *    generated trie-based FA.
- */
+/*  File - TrieFA.ins.c
+    This file contains code to be included in the scanner file using a
+    generated trie-based FA.
+*/
 
 #include "triefa.h"
 
@@ -54,18 +53,16 @@ static long CharMask[26] = {
 
 static short TFA_State;
 
-/* TFA_Init:
- *
- *    Initialize the trie FA.
- */
+/*  TFA_Init:
+    Initialize the trie FA.
+*/
 #define TFA_Init() TFA_State = 0
 
-/* TFA_Advance:
- *
- * Advance to the next state (or -1) on the lowercase letter c.
- * This should be an inline routine, but the C++ implementation
- * isn't advanced enough so we use a macro.
- */
+/*  TFA_Advance:
+    Advance to the next state (or -1) on the lowercase letter c.
+    This should be an inline routine, but the C++ implementation
+    isn't advanced enough so we use a macro.
+*/
 #define TFA_Advance(C) { \
     char c = C; \
     if (TFA_State >= 0) { \
@@ -84,12 +81,11 @@ static short TFA_State;
         else \
             TFA_State = -1; \
     } \
-  TFA_done:; \
-}				/* end of TFA_Advance. */
+TFA_done:; \
+} /* end of TFA_Advance. */
 
-/* TFA_Definition:
- *
- *    Return the definition (if any) associated with the current state.
- */
+/*  TFA_Definition:
+    Return the definition (if any) associated with the current state.
+*/
 #define TFA_Definition() \
     ((TFA_State < 0) ? -1 : TrieStateTbl[TFA_State].def)

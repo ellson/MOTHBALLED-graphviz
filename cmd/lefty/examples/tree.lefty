@@ -135,12 +135,12 @@ inode = function (point, name) {
     return nodearray[nnum];
 };
 iedge = function (node1, node2) {
-     node1.ch[node1.chn] = node2;
-     node1.chn = node1.chn + 1;
-     node2.depth = node1.depth + 1;
-     complayout ();
-     clear (canvas);
-     drawtree (tree);
+    node1.ch[node1.chn] = node2;
+    node1.chn = node1.chn + 1;
+    node2.depth = node1.depth + 1;
+    complayout ();
+    clear (canvas);
+    drawtree (tree);
 };
 fix = function (node, op, np) {
     if (node.depth ~= 0)
