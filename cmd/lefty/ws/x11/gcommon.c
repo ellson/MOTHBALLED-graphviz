@@ -12,9 +12,8 @@
 *                                                         *
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
-**********************************************************/
-
-/* Lefteris Koutsofios - AT&T Bell Laboratories */
+***********************************************************/
+/* Lefteris Koutsofios - AT&T Labs Research */
 
 #include "common.h"
 #include "g.h"
@@ -44,13 +43,13 @@ int argn;
 
 /* action and translation tables */
 static XtActionsRec actiontable[] = {
-    {"cwbut", Gcwbutaction},
-    {"cwkey", Gcwkeyaction},
-    {"lwbut", Glwbutaction},
-    {"lwkey", Glwkeyaction},
-    {"tweol", Gtweolaction},
-    {"qwpop", Gqwpopaction},
-    {"wmdel", Gwmdelaction},
+    { "cwbut", Gcwbutaction },
+    { "cwkey", Gcwkeyaction },
+    { "lwbut", Glwbutaction },
+    { "lwkey", Glwkeyaction },
+    { "tweol", Gtweolaction },
+    { "qwpop", Gqwpopaction },
+    { "wmdel", Gwmdelaction },
 };
 static char defcwanytrans[] = "\
     <BtnDown>: cwbut()\n\
@@ -62,8 +61,7 @@ static char deflwanytrans[] = "\
     <BtnUp>: lwbut()\n\
     <KeyDown>: lwkey()\n\
     <KeyUp>: lwkey()";
-static char deftweoltrans[] =
-    "<Key>Return: newline()\n<KeyUp>Return: tweol()";
+static char deftweoltrans[] = "<Key>Return: newline()\n<KeyUp>Return: tweol()";
 static char defqwpoptrans[] = "<KeyDown>Return:\n<KeyUp>Return: qwpop()";
 static char defwmdeltrans[] = "<Message>WM_PROTOCOLS: wmdel()\n";
 XtTranslations Gtweoltable;
@@ -159,161 +157,161 @@ static char *props[] = {
 #endif
 #endif
 
-int Ginitgraphics(void)
-{
+int Ginitgraphics (void) {
     argn = 0;
 #if defined(FEATURE_NEXTAW) || defined(FEATURE_XAW3D)
-    if (!(Groot = XtAppInitialize(&appcontext, "LEFTY", NULL, 0,
-				  &argn, NULL, props, NULL, 0)))
+    if (!(Groot = XtAppInitialize (
+        &appcontext, "LEFTY", NULL, 0, &argn, NULL, props, NULL, 0
+    )))
 #else
-    if (!(Groot = XtAppInitialize(&appcontext, "LEFTY", NULL, 0,
-				  &argn, NULL, NULL, NULL, 0)))
+    if (!(Groot = XtAppInitialize (
+        &appcontext, "LEFTY", NULL, 0, &argn, NULL, NULL, NULL, 0
+    )))
 #endif
-	Gerr(POS, G_ERRINITFAILED);
-    XtAppAddActions(appcontext, actiontable, XtNumber(actiontable));
-    Gtweoltable = XtParseTranslationTable(deftweoltrans);
-    Gqwpoptable = XtParseTranslationTable(defqwpoptrans);
-    Glwanytable = XtParseTranslationTable(deflwanytrans);
-    Gcwanytable = XtParseTranslationTable(defcwanytrans);
-    Gwmdeltable = XtParseTranslationTable(defwmdeltrans);
-    XtRegisterGrabAction(Glwbutaction, True,
-			 ButtonPressMask | ButtonReleaseMask,
-			 GrabModeAsync, GrabModeAsync);
-    XtRegisterGrabAction(Gcwbutaction, True,
-			 ButtonPressMask | ButtonReleaseMask,
-			 GrabModeAsync, GrabModeAsync);
-    Gdisplay = XtDisplay(Groot);
-    Gscreenn = DefaultScreen(Gdisplay);
-    Gdepth = DefaultDepth(Gdisplay, Gscreenn);
-    deffont = XLoadQueryFont(Gdisplay, "fixed");
-    Gxfd = ConnectionNumber(Gdisplay);
-    Gwmdelatom = XInternAtom(Gdisplay, "WM_DELETE_WINDOW", False);
+        Gerr (POS, G_ERRINITFAILED);
+    XtAppAddActions (appcontext, actiontable, XtNumber (actiontable));
+    Gtweoltable = XtParseTranslationTable (deftweoltrans);
+    Gqwpoptable = XtParseTranslationTable (defqwpoptrans);
+    Glwanytable = XtParseTranslationTable (deflwanytrans);
+    Gcwanytable = XtParseTranslationTable (defcwanytrans);
+    Gwmdeltable = XtParseTranslationTable (defwmdeltrans);
+    XtRegisterGrabAction (
+        Glwbutaction, True,
+        ButtonPressMask | ButtonReleaseMask, GrabModeAsync, GrabModeAsync
+    );
+    XtRegisterGrabAction (
+        Gcwbutaction, True,
+        ButtonPressMask | ButtonReleaseMask, GrabModeAsync, GrabModeAsync
+    );
+    Gdisplay = XtDisplay (Groot);
+    Gscreenn = DefaultScreen (Gdisplay);
+    Gdepth = DefaultDepth (Gdisplay, Gscreenn);
+    deffont = XLoadQueryFont (Gdisplay, "fixed");
+    Gxfd = ConnectionNumber (Gdisplay);
+    Gwmdelatom = XInternAtom (Gdisplay, "WM_DELETE_WINDOW", False);
     Gpopdownflag = FALSE;
-    Glazyq.flag = LAZYUNDEF;
-    Gbufp = Marrayalloc((long) BUFINCR * BUFSIZE);
+    Glazyq.flag = 0;
+    Gbufp = Marrayalloc ((long) BUFINCR * BUFSIZE);
     Gbufn = BUFINCR;
-    Gppp = Marrayalloc((long) PPINCR * PPSIZE);
+    Gppp = Marrayalloc ((long) PPINCR * PPSIZE);
     Gppn = PPINCR;
-    Gfontp = Marrayalloc((long) FONTSIZE);
+    Gfontp = Marrayalloc ((long) FONTSIZE);
     Gfontn = 1;
-    Gfontp[0].name = strdup("default");
+    Gfontp[0].name = strdup ("default");
     if (!Gdefaultfont)
-	Gfontp[0].font = deffont;
+        Gfontp[0].font = deffont;
     else if (Gdefaultfont[0] != '\000')
-	Gfontp[0].font = XLoadQueryFont(Gdisplay, Gdefaultfont);
+        Gfontp[0].font = XLoadQueryFont (Gdisplay, Gdefaultfont);
     else
-	Gfontp[0].font = NULL;
+        Gfontp[0].font = NULL;
     return 0;
 }
 
-int Gtermgraphics(void)
-{
+int Gtermgraphics (void) {
     int fi;
 
     for (fi = 0; fi < Gfontn; fi++)
-	free(Gfontp[fi].name);
-    Marrayfree(Gfontp), Gfontp = NULL, Gfontn = 0;
-    Marrayfree(Gppp), Gppp = NULL, Gppn = 0;
-    Marrayfree(Gbufp), Gbufp = NULL, Gbufn = 0;
-    XtDestroyWidget(Groot);
+        free (Gfontp[fi].name);
+    Marrayfree (Gfontp), Gfontp = NULL, Gfontn = 0;
+    Marrayfree (Gppp), Gppp = NULL, Gppn = 0;
+    Marrayfree (Gbufp), Gbufp = NULL, Gbufn = 0;
+    XtDestroyWidget (Groot);
     return 0;
 }
 
-void Gflushlazyq(void)
-{
+void Gflushlazyq (void) {
     if (Glazyq.flag & LAZYMANAGE) {
-	XtManageChildren(Glazyq.mws, Glazyq.mwn);
-	Glazyq.flag &= ~LAZYMANAGE;
+        XtManageChildren (Glazyq.mws, Glazyq.mwn);
+        Glazyq.flag &= ~LAZYMANAGE;
     }
     if (Glazyq.flag & LAZYREALIZE) {
-	XtRealizeWidget(Glazyq.rw);
-	if (Glazyq.flag & LAZYRHINTS)
-	    XSetWMNormalHints(Gdisplay, XtWindow(Glazyq.rw),
-			      &Glazyq.hints);
-	XSetWMProtocols(Gdisplay, XtWindow(Glazyq.rw), &Gwmdelatom, 1);
-	XtOverrideTranslations(Glazyq.rw, Gwmdeltable);
-	Glazyq.flag &= ~LAZYRHINTS;
-	Glazyq.flag &= ~LAZYREALIZE;
+        XtRealizeWidget (Glazyq.rw);
+        if (Glazyq.flag & LAZYRHINTS)
+            XSetWMNormalHints (Gdisplay, XtWindow (Glazyq.rw), &Glazyq.hints);
+        XSetWMProtocols (Gdisplay, XtWindow (Glazyq.rw), &Gwmdelatom, 1);
+        XtOverrideTranslations (Glazyq.rw, Gwmdeltable);
+        Glazyq.flag &= ~LAZYRHINTS;
+        Glazyq.flag &= ~LAZYREALIZE;
     }
 }
 
-void Glazyrealize(Widget w, int hintsflag, XSizeHints * hintsp)
-{
+void Glazyrealize (Widget w, int hintsflag, XSizeHints *hintsp) {
     if (Glazyq.flag & LAZYREALIZE) {
-	XtRealizeWidget(Glazyq.rw);
-	if (Glazyq.flag & LAZYRHINTS)
-	    XSetWMNormalHints(Gdisplay, XtWindow(Glazyq.rw),
-			      &Glazyq.hints);
-	XSetWMProtocols(Gdisplay, XtWindow(Glazyq.rw), &Gwmdelatom, 1);
-	XtOverrideTranslations(Glazyq.rw, Gwmdeltable);
+        XtRealizeWidget (Glazyq.rw);
+        if (Glazyq.flag & LAZYRHINTS)
+            XSetWMNormalHints (Gdisplay, XtWindow (Glazyq.rw), &Glazyq.hints);
+        XSetWMProtocols (Gdisplay, XtWindow (Glazyq.rw), &Gwmdelatom, 1);
+        XtOverrideTranslations (Glazyq.rw, Gwmdeltable);
     } else
-	Glazyq.flag |= LAZYREALIZE;
+        Glazyq.flag |= LAZYREALIZE;
     Glazyq.rw = w;
     if (hintsflag) {
-	Glazyq.flag |= LAZYRHINTS;
-	Glazyq.hints = *hintsp;
+        Glazyq.flag |= LAZYRHINTS;
+        Glazyq.hints = *hintsp;
     } else
-	Glazyq.flag &= ~LAZYRHINTS;
+        Glazyq.flag &= ~LAZYRHINTS;
 }
 
-void Glazymanage(Widget w)
-{
+void Glazymanage (Widget w) {
     if (Glazyq.flag & LAZYMANAGE) {
-	if (XtParent(Glazyq.mws[Glazyq.mwn - 1]) != XtParent(w) ||
-	    Glazyq.mwn >= LAZYQNUM) {
-	    XtManageChildren(Glazyq.mws, Glazyq.mwn);
-	    Glazyq.mwn = 0;
-	}
+        if (
+            XtParent (Glazyq.mws[Glazyq.mwn - 1]) != XtParent (w) ||
+            Glazyq.mwn >= LAZYQNUM
+        ) {
+            XtManageChildren (Glazyq.mws, Glazyq.mwn);
+            Glazyq.mwn = 0;
+        }
     } else {
-	Glazyq.flag |= LAZYMANAGE;
-	Glazyq.mwn = 0;
+        Glazyq.flag |= LAZYMANAGE;
+        Glazyq.mwn = 0;
     }
     Glazyq.mws[Glazyq.mwn++] = w;
 }
 
-int Gsync(void)
-{
+int Gsync (void) {
     if (Glazyq.flag)
-	Gflushlazyq();
-    XFlush(Gdisplay);
+        Gflushlazyq ();
+    XFlush (Gdisplay);
     return 0;
 }
 
-int Gresetbstate(int wi)
-{
+int Gresetbstate (int wi) {
     Gcw_t *cw;
     int bn;
 
     cw = Gwidgets[wi].u.c;
-    bn = cw->bstate[0] + cw->bstate[1] + cw->bstate[2];
+    bn = (
+        cw->bstate[0] + cw->bstate[1] + cw->bstate[2] +
+        cw->bstate[3] + cw->bstate[4]
+    );
     cw->bstate[0] = cw->bstate[1] = cw->bstate[2] = 0;
+    cw->bstate[3] = cw->bstate[4] = 0;
     cw->buttonsdown -= bn;
     Gbuttonsdown -= bn;
     return 0;
 }
 
-int Gprocessevents(int waitflag, Geventmode_t mode)
-{
+int Gprocessevents (int waitflag, int mode) {
     int rtn;
 
     if (Glazyq.flag)
-	Gflushlazyq();
+        Gflushlazyq ();
     rtn = 0;
     switch (waitflag) {
     case TRUE:
-	XtAppProcessEvent(appcontext, XtIMAll);
-	if (mode == G_ONEEVENT)
-	    return 1;
-	rtn = 1;
-	/* FALL THROUGH */
+        XtAppProcessEvent (appcontext, XtIMAll);
+        if (mode == G_ONEEVENT)
+            return 1;
+        rtn = 1;
+        /* FALL THROUGH */
     case FALSE:
-	while (XtAppPending(appcontext)) {
-	    XtAppProcessEvent(appcontext, XtIMAll);
-	    if (mode == G_ONEEVENT)
-		return 1;
-	    rtn = 1;
-	}
-	break;
+        while (XtAppPending (appcontext)) {
+            XtAppProcessEvent (appcontext, XtIMAll);
+            if (mode == G_ONEEVENT)
+                return 1;
+            rtn = 1;
+        }
+        break;
     }
     return rtn;
 }
