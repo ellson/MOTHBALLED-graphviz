@@ -3,42 +3,47 @@ ROOT=../..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
+# lefty build parameters
+#not useful / old:
+#  FEATURE_CS          coshell support
+#  FEATURE_NETSCAPE    build lefty as a netscape plugin
+#  FEATURE_RUSAGE      print rusage stats on exit
+#  FEATURE_VFORK       use vfork instead of fork
+#  FEATURE_GMAP        build performer version of lefty (source in lefty3d)
+#  FEATURE_MESAGL      assume MesaGL instead of SGI's OpenGL for GMAP
+# FEATURE_MINTSIZE     use int instead of short to hold object sizes.
+#                      allows for larger objects (strings, hash tables, etc.)
+# FEATURE_MS           assume windows system calls (as opposed to UNIX)
+#                      to use when building on ms windows without UWIN
+# FEATURE_X11          assume X11 graphics calls
+# FEATURE_BACKINGSTORE ask X server to use backing store for canvas
+# FEATURE_NEXTAW       when linking with -lnextaw a widget lib ala NeXT
+# FEATURE_XAW3D        when linking with -lXaw3d a nicer looking widget lib
+# FEATURE_WIN32        assume WIN32 graphics calls
+# FEATURE_DOT          when linking in the dot2l code, a graph parser
+
 DOT2L = dot2l
 WM = ws/x11
 OS = os/unix
 
 LEFTYLIBDIR= $(LIBDIR)/lefty
-DEFINES=-DLEFTYPATH=\"$(LEFTYLIBDIR)\" -DHAVEDOT -DHAVE_CONFIG_H
+DEFINES=-DLEFTYPATH=\"$(LEFTYLIBDIR)\" -DHAVE_CONFIG_H \
+        -DFEATURE_MINTSIZE -DFEATURE_DOT -DFEATURE_X11
 
 INCS =	-I. -I$(ROOT) \
 	-I$(DOT2L) \
+	-I$(CS2L) \
 	-I$(X11INC) \
 	-I$(WM) \
 	-I$(WM)/libfilereq \
 	-I$(OS)
 
-DOT2LEFTYSRC = $(DOT2L)/dotparse.y $(DOT2L)/dot2l.c \
-	$(DOT2L)/dotlex.c $(DOT2L)/dottrie.c
 DOT2LEFTYOBJ = dotparse.o dot2l.o dotlex.o dottrie.o
 
-OSSRC = $(OS)/io.c
 OSOBJ = io.o
 
-SRCS = lefty.c gfxview.c txtview.c internal.c display.c str.c exec.c parse.c \
-	lex.c $(DOT2LEFTYSRC) tbl.c code.c
-
 OBJS = lefty.o gfxview.o txtview.o internal.o display.o str.o exec.o parse.o \
-	lex.o $(DOT2LEFTYOBJ) tbl.o code.o io.o
-
-GSRC = g.c gcommon.c garray.c gbutton.c gcanvas.c glabel.c gmenu.c \
-    gpcanvas.c gquery.c gscroll.c gtext.c gview.c mem.c common.c \
-    SelFile.c Draw.c Path.c Dir.c
-
-GSRC =  g.c $(WM)/gcommon.c $(WM)/garray.c $(WM)/gbutton.c $(WM)/gcanvas.c \
-		$(WM)/glabel.c $(WM)/gmenu.c $(WM)/gpcanvas.c $(WM)/gquery.c \
-		$(WM)/gscroll.c $(WM)/gtext.c $(WM)/gview.c mem.c common.c \
-		$(WM)/libfilereq/SelFile.c $(WM)/libfilereq/Draw.c \
-        $(WM)/libfilereq/Path.c $(WM)/libfilereq/Dir.c 
+	lex.o tbl.o code.o $(DOT2LEFTYOBJ) $(OSOBJ)
 
 GOBJS = g.o gcommon.o garray.o gbutton.o gcanvas.o glabel.o gmenu.o \
     gpcanvas.o gquery.o gscroll.o gtext.o gview.o mem.o common.o \
@@ -50,33 +55,6 @@ lefty: $(OBJS) libgfx.a
 libgfx.a : $(GOBJS)
 	$(AR) cr libgfx.a $(GOBJS)
 
-# lefty.static is not completely static because we don't want to
-# bind libc unnecessarily.  we mostly wanted to bind things like X11
-# and tcl that are likely to cause headaches when porting binaries.
-lefty.static : lefty.static.$(ARCH)
-
-lefty.static.linux: $(OBJS)
-	$(CC) -o lefty $(OBJS) \
-		$(X11LIB)/libXaw.a $(X11LIB)/libXmu.a $(X11LIB)/libXt.a \
-		$(X11LIB)/libXext.a $(X11LIB)/libX11.a $(X11LIB)/libSM.a \
-		$(X11LIB)/libICE.a -lm
-
-lefty.static.hp.pa: $(OBJS)
-	$(CC) $(LDFLAGS) -o lefty $(OBJS) \
-	$(HOME)/lib/libXaw.a $(HOME)/lib/libXmu.a $(X11LIB)/libXt.a \
-	$(X11LIB)/libXext.a $(X11LIB)/libX11.a -lm
-
-lefty.static.sol.sun4: $(OBJS)
-	$(CC) -o lefty $(OBJS) \
-		$(X11LIB)/libXaw.a $(X11LIB)/libXmu.a $(X11LIB)/libXt.a \
-		$(X11LIB)/libX11.a $(X11LIB)/libXext.a \
-		-ldl /lib/libsocket.a /lib/libnsl.a /lib/libw.a /lib/libintl.a -lm
-
-lefty.static.sun4: $(OBJS)
-	$(CC) -o lefty $(OBJS) \
-		$(X11LIB)/libXaw.a $(X11LIB)/libXmu.a $(X11LIB)/libXt.a \
-		$(X11LIB)/libX11.a $(X11LIB)/libXext.a -lm
-
 dot2l.o:	$(DOT2L)/dot2l.c
 	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
 
@@ -84,6 +62,9 @@ dotlex.o:	$(DOT2L)/dotlex.c
 	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
 
 dottrie.o:	$(DOT2L)/dottrie.c
+	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
+
+cs2l.o:	$(CS2L)/cs2l.c
 	$(CC) -c $(CCFLAGS) $(INCS) $(DEFINES) $?
 
 gcommon.o:	$(WM)/gcommon.c
@@ -149,7 +130,7 @@ install: lefty
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libgfx.a $(LIBDIR)
 	$(MKPATH) $(LIBDIR)/lefty
-	$(INSTALL) lefty.psp $(LIBDIR)/lefty
+	$(INSTALL) examples/def.lefty examples/fractal.lefty examples/tree.lefty lefty.psp $(LIBDIR)/lefty
 
 clean:
 	$(RM) core *.o dotparse.[ch]
