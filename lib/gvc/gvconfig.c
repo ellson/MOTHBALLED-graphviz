@@ -130,7 +130,7 @@ static char *token(int *nest, char **tokens)
     return t;
 }
 
-static void gvconfig_library_install_from_config(GVC_t * gvc, char *s)
+static void gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 {
     char *path, *api, *type;
     api_t gv_api;
@@ -163,7 +163,7 @@ static void gvconfig_library_install_from_config(GVC_t * gvc, char *s)
     }
 }
 
-static void gvconfig_library_install_from_struct(GVC_t * gvc, gvplugin_library_t *library)
+static void gvconfig_plugin_install_from_library(GVC_t * gvc, gvplugin_library_t *library)
 {
     gvplugin_api_t *apis;
     gvplugin_type_t *types;
@@ -212,8 +212,9 @@ void gvconfig(GVC_t * gvc)
     gvplugin_library_t *library;
     int sz, rc, i;
     struct stat config_st, libdir_st;
-    FILE *f;
-    char *config_path, *config_glob, *home, *config_text;
+    FILE *f = NULL;
+    char *config_path = NULL, *config_text = NULL;
+    char *config_glob, *home;
     glob_t globbuf;
 
     char *dot_graphviz = "/.graphviz";
@@ -229,7 +230,7 @@ void gvconfig(GVC_t * gvc)
 
 #ifdef DISABLE_LTDL
     for (libraryp = builtins; *libraryp; libraryp++) {
-	gvconfig_library_install_from_struct(gvc, *libraryp);
+	gvconfig_plugin_install_from_library(gvc, *libraryp);
     }
 #else
     /* see if there are any new plugins */
@@ -241,20 +242,24 @@ void gvconfig(GVC_t * gvc)
     }
 
     home = getenv ("HOME");
-    if (!home) {
-	return;
+    if (home) {
+        config_path = malloc(strlen(home) + strlen(dot_graphviz) + 1);
+        strcpy(config_path, home);
+        strcat(config_path, dot_graphviz);
+
+        rc = stat(config_path, &config_st);
+	if (rc == -1) {
+	    free(config_path);
+	    config_path = NULL;
+	}
     }
-
-    config_path = malloc(strlen(home) + strlen(dot_graphviz) + 1);
-    strcpy(config_path, home);
-    strcat(config_path, dot_graphviz);
-
-    rc = stat(config_path, &config_st);
-
-    if (rc == -1 || libdir_st.st_mtime > config_st.st_mtime) {
-	f = fopen(config_path,"w");
-	if (!f) {
-            fprintf(stderr,"failed to open %s for write.\n", config_path);
+	
+    if (! config_path || libdir_st.st_mtime > config_st.st_mtime) {
+	if (config_path) {
+		f = fopen(config_path,"w");
+		if (!f) {
+		    fprintf(stderr,"failed to open %s for write.\n", config_path);
+		}
 	}
 	/* load all libraries even if can't save config */
 
@@ -267,7 +272,7 @@ void gvconfig(GVC_t * gvc)
 	    for (i = 0; i < globbuf.gl_pathc; i++) {
 		library = gvplugin_library_load(globbuf.gl_pathv[i]);
 		if (library) {
-		    gvconfig_library_install_from_struct(gvc, library);
+		    gvconfig_plugin_install_from_library(gvc, library);
 		    if (f) {
 			gvconfig_write_library_config(globbuf.gl_pathv[i], library, f);
 		    }
@@ -276,38 +281,36 @@ void gvconfig(GVC_t * gvc)
 	}
 	globfree(&globbuf);
         free(config_glob);
-	if (f)
-	    fclose(f);
     }
     else {
 	/* load in the cached plugin library data */
 
 	if (config_st.st_size > MAX_SZ_CONFIG) {
 	    fprintf(stderr,"%s is bigger than I can handle.\n", config_path);
-	    free(config_path);
-	    return;
 	}
-	f = fopen(config_path,"r");
-	if (!f) {	/* if we fail to open it then it probably doesn't exists
-			so just fail silently, clean up and return */
-	    free(config_path);
-	    return;
+	else {
+	    f = fopen(config_path,"r");
+	    if (!f) {
+	        fprintf(stderr,"failed to open %s for read.\n", config_path);
+	    }
+	    else {
+	        config_text = malloc(config_st.st_size + 1);
+	        sz = fread(config_text, 1, config_st.st_size, f);
+	        if (sz == 0) {
+		    fprintf(stderr,"%s is zero sized, or other read error.\n", config_path);
+		    free(config_text);
+	        }
+		else {
+	            config_text[sz] = '\0';  /* make input into a null terminated string */
+	            gvconfig_plugin_install_from_config(gvc, config_text);
+		    /* NB. config_text not freed becasue we retain char* into it */
+		}
+	    }
 	}
-	config_text = malloc(config_st.st_size + 1);
-	config_text[0] = '\0';
-	sz = fread(config_text, 1, config_st.st_size, f);
-	if (sz == 0) {
-	    fprintf(stderr,"%s is zero sized, or other read error.\n", config_path);
-	    free(config_path);
-	    free(config_text);
-	    return;
-	}
-	fclose(f);
-	free(config_path); /* not needed now that we've slurped in the contents */
-
-	config_text[config_st.st_size] = '\0';  /* make input into a null terminated string */
-
-	gvconfig_library_install_from_config(gvc, config_text);
     }
+    if (config_path)
+	free(config_path);
+    if (f)
+	fclose(f);
 #endif
 }
