@@ -1,6 +1,6 @@
 /* $Id$ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
-
+    
 /**********************************************************
 *      This software is part of the graphviz package      *
 *                http://www.graphviz.org/                 *
@@ -13,30 +13,30 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
-
+    
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-/* Lefteris Koutsofios - AT&T Bell Laboratories */
+/* Lefteris Koutsofios - AT&T Labs Research */
 
 #ifndef _INTERNAL_H
 #define _INTERNAL_H
-    typedef struct Ifunc_t {
-	char *name;
-	int (*func) (int, Tonm_t *);
-	int min, max;
-    } Ifunc_t;
+typedef struct Ifunc_t {
+    char *name;
+    int (*func) (int, Tonm_t *);
+    int min, max;
+} Ifunc_t;
 
-    void Iinit(void);
-    void Iterm(void);
-    int Igetfunc(char *);
+void Iinit (void);
+void Iterm (void);
+int Igetfunc (char *);
 
-    extern Ifunc_t Ifuncs[];
-    extern int Ifuncn;
-#endif				/* _INTERNAL_H */
+extern Ifunc_t Ifuncs[];
+extern int Ifuncn;
+#endif /* _INTERNAL_H */
 
 #ifdef __cplusplus
 }
 #endif
+
