@@ -60,8 +60,10 @@ dotty.protogt.mergegraph = function (gt, graph, show) {
         tnode = gt.graph.nodes[gt.graph.nodedict[oedge.tail.name]];
         hnode = gt.graph.nodes[gt.graph.nodedict[oedge.head.name]];
         for (eid2 in tnode.edges)
-            if (tnode.edges[eid2].tail == tnode &
-                    tnode.edges[eid2].head == hnode) {
+            if (
+                tnode.edges[eid2].tail == tnode &
+                tnode.edges[eid2].head == hnode
+            ) {
                 oedge = null;
                 break;
             }
@@ -145,6 +147,11 @@ dotty.protogt.insertnode = function (gt, pos, size, name, attr, show) {
     if (size.x == 0)
         size.x = 30;
     node[dotty.keys.size] = copy (size);
+    node[dotty.keys.rect] = [
+        0 = ['x' = pos.x - size.x / 2; 'y' = pos.y - size.y / 2;];
+        1 = ['x' = pos.x + size.x / 2; 'y' = pos.y + size.y / 2;];
+    ];
+    node.draws = gt.simplenodedraw (node, pos, size);
     if (show)
         gt.drawnode (gt, gt.views, node);
     if (~gt.noundo) {
@@ -173,8 +180,9 @@ dotty.protogt.removenode = function (gt, node) {
         gt.endadd2undo (gt);
     }
 };
-dotty.protogt.insertedge =
-        function (gt, nodea, porta, nodeb, portb, attr, show) {
+dotty.protogt.insertedge = function (
+    gt, nodea, porta, nodeb, portb, attr, show
+) {
     local eid, edge, aid, tport, hport;
 
     if (~nodea | ~nodeb)
@@ -202,13 +210,8 @@ dotty.protogt.insertedge =
         edge.attr[aid] = attr[aid];
     nodea.edges[eid] = edge;
     nodeb.edges[eid] = edge;
-    edge[dotty.keys.points] = [
-        0 = copy (nodea.pos);
-        1 = copy (nodea.pos);
-        2 = copy (nodeb.pos);
-        3 = copy (nodeb.pos);
-    ];
     gt.unpackedgeattr (gt, edge);
+    edge.draws = gt.simpleedgedraw (edge, nodea.pos, nodeb.pos);
     if (show)
         gt.drawedge (gt, gt.views, edge);
     if (~gt.noundo) {
@@ -344,8 +347,9 @@ dotty.protogt.removesubtreesbyattr = function (gt, key, val) {
     if (~gt.noundo)
         gt.endadd2undo (gt);
 };
-dotty.protogt.groupnodes = function (gt, nlist, gnode, pos, size, attr,
-        keepmulti, show) {
+dotty.protogt.groupnodes = function (
+    gt, nlist, gnode, pos, size, attr, keepmulti, show
+) {
     local nid, node, elist, eid, edge, nodea, nodeb, inlist, outlist;
 
     if (~nlist | tablesize (nlist) == 0)
@@ -397,8 +401,9 @@ dotty.protogt.groupnodes = function (gt, nlist, gnode, pos, size, attr,
         gt.endadd2undo (gt);
     return gnode;
 };
-dotty.protogt.groupnodesbyattr =
-        function (gt, key, val, attr, keepmulti, show) {
+dotty.protogt.groupnodesbyattr = function (
+    gt, key, val, attr, keepmulti, show
+) {
     local nlist, nid, pos, size;
 
     pos = null;
@@ -467,8 +472,10 @@ dotty.protogt.cut = function (gt, obj, set, mode, op) {
         edge = list.edges[eid];
         if (~list.nodes[edge.tail.nid] | ~list.nodes[edge.head.nid])
             continue;
-        gt.insertedge (clipgt, list.clipnodes[edge.tail.nid], null,
-                list.clipnodes[edge.head.nid], null, edge.attr, 0);
+        gt.insertedge (
+            clipgt, list.clipnodes[edge.tail.nid], null,
+            list.clipnodes[edge.head.nid], null, edge.attr, 0
+        );
     }
     if (op ~= 'cut')
         return;
@@ -519,16 +526,19 @@ dotty.protogt.paste = function (gt, pos, show) {
     }
     for (eid = 0; clipgt.graph.edges[eid]; eid = eid + 1) {
         edge = clipgt.graph.edges[eid];
-        gt.insertedge (gt, nodes[edge.tail.nid], null,
-                nodes[edge.head.nid], null, edge.attr, show);
+        gt.insertedge (
+            gt, nodes[edge.tail.nid], null,
+            nodes[edge.head.nid], null, edge.attr, show
+        );
     }
     if (~gt.noundo)
         gt.endadd2undo (gt);
 };
 dotty.protogt.startadd2undo = function (gt) {
     if (~gt.undoarray.level)
-        gt.currundo =
-                (gt.undoarray.entries[tablesize (gt.undoarray.entries)] = []);
+        gt.currundo = (
+            gt.undoarray.entries[tablesize (gt.undoarray.entries)] = []
+        );
     gt.undoarray.level = gt.undoarray.level + 1;
 };
 dotty.protogt.endadd2undo = function (gt) {
