@@ -46,44 +46,43 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-
 #include <stdio.h>
 
 #ifdef SEL_FILE_IGNORE_CASE
 #include <ctype.h>
-#endif				/* def SEL_FILE_IGNORE_CASE */
+#endif /* def SEL_FILE_IGNORE_CASE */
 
 #include "SFinternal.h"
 
 #if HAVE_DIRENT_H
-#  include <dirent.h>
-#  define DIRENT_DONE
+#include <dirent.h>
+#define DIRENT_DONE
 #else
-#  define dirent direct
+#define dirent direct
 #  if HAVE_SYS_NDIR_H
-#    include <sys/ndir.h>
-#    define DIRENT_DONE
+#  include <sys/ndir.h>
+#  define DIRENT_DONE
 #  endif
 #  if HAVE_NDIR_H
-#    include <ndir.h>
-#    define DIRENT_DONE
+#  include <ndir.h>
+#  define DIRENT_DONE
 #  endif
 #endif
 
 #ifndef DIRENT_DONE
-#if defined(SVR4) || defined(SYSV) || defined(USG) || defined(__osf__) || defined (__svr4__) || defined (__FreeBSD__) || defined(SCO)
+#if defined (SVR4) || defined (SYSV) || defined (USG) || defined (__osf__) || defined (__svr4__) || defined (__FreeBSD__) || defined (SCO)
 #include <dirent.h>
-#else				/* defined(SVR4) || defined(SYSV) || defined(USG) */
+#else /* defined (SVR4) || defined (SYSV) || defined (USG) */
 #include <sys/dir.h>
 #define dirent direct
-#endif				/* defined(SVR4) || defined(SYSV) || defined(USG) */
+#endif /* defined (SVR4) || defined (SYSV) || defined (USG) */
 #endif
 
 #include <sys/stat.h>
 
-#if defined(SVR4) || defined(SYSV) || defined(USG)
-extern void qsort();
-#endif				/* defined(SVR4) || defined(SYSV) || defined(USG) */
+#if defined (SVR4) || defined (SYSV) || defined (USG)
+extern void qsort ();
+#endif /* defined (SVR4) || defined (SYSV) || defined (USG) */
 
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
@@ -92,115 +91,101 @@ extern void qsort();
 #include "SFDecls.h"
 
 #ifdef SEL_FILE_IGNORE_CASE
-int SFcompareEntries(const void *vp, const void *vq)
-{
+int SFcompareEntries (const void *vp, const void *vq) {
     SFEntry *p = (SFEntry *) vp, *q = (SFEntry *) vq;
-    register char *r, *s;
-    register char c1, c2;
+    char *r, *s;
+    char c1, c2;
 
     r = p->real;
     s = q->real;
-
     c1 = *r++;
-    if (islower(c1)) {
-	c1 = toupper(c1);
+    if (islower (c1)) {
+        c1 = toupper (c1);
     }
     c2 = *s++;
-    if (islower(c2)) {
-	c2 = toupper(c2);
+    if (islower (c2)) {
+        c2 = toupper (c2);
     }
-
     while (c1 == c2) {
-	if (!c1) {
-	    return strcmp(p->real, q->real);
-	}
-	c1 = *r++;
-	if (islower(c1)) {
-	    c1 = toupper(c1);
-	}
-	c2 = *s++;
-	if (islower(c2)) {
-	    c2 = toupper(c2);
-	}
+        if (!c1) {
+            return strcmp (p->real, q->real);
+        }
+        c1 = *r++;
+        if (islower (c1)) {
+            c1 = toupper (c1);
+        }
+        c2 = *s++;
+        if (islower (c2)) {
+            c2 = toupper (c2);
+        }
     }
-
     return c1 - c2;
 }
-#else				/* def SEL_FILE_IGNORE_CASE */
-int SFcompareEntries(const void *vp, const void *vq)
-{
+#else /* def SEL_FILE_IGNORE_CASE */
+int SFcompareEntries (const void *vp, const void *vq) {
     SFEntry *p = (SFEntry *) vp, *q = (SFEntry *) vq;
-    return strcmp(p->real, q->real);
+
+    return strcmp (p->real, q->real);
 }
-#endif				/* def SEL_FILE_IGNORE_CASE */
+#endif /* def SEL_FILE_IGNORE_CASE */
 
-int SFgetDir(dir)
-SFDir *dir;
-{
-    SFEntry *result = NULL;
-    int alloc = 0;
-    int i;
-    DIR *dirp;
+int SFgetDir (SFDir *dir) {
+    SFEntry       *result = NULL;
+    int           alloc = 0;
+    int           i;
+    DIR           *dirp;
     struct dirent *dp;
-    char *str;
-    int len;
-    int maxChars;
-    struct stat statBuf;
+    char          *str;
+    int           len;
+    int           maxChars;
+    struct stat   statBuf;
 
-    maxChars = strlen(dir->dir) - 1;
-
+    maxChars = strlen (dir->dir) - 1;
     dir->entries = NULL;
     dir->nEntries = 0;
     dir->nChars = 0;
-
     result = NULL;
     i = 0;
-
-    dirp = opendir(".");
+    dirp = opendir (".");
     if (!dirp) {
-	return 1;
+        return 1;
     }
-
-    (void) stat(".", &statBuf);
+    stat (".", &statBuf);
     dir->mtime = statBuf.st_mtime;
-
-    (void) readdir(dirp);	/* throw away "." */
+    readdir (dirp);    /* throw away "." */
 
 #ifndef S_IFLNK
-    (void) readdir(dirp);	/* throw away ".." */
-#endif				/* ndef S_IFLNK */
+    readdir (dirp);    /* throw away ".." */
+#endif /* ndef S_IFLNK */
 
-    while ((dp = readdir(dirp))) {
-	if (i >= alloc) {
-	    alloc = 2 * (alloc + 1);
-	    result = (SFEntry *) XtRealloc((char *) result,
-					   (unsigned) (alloc *
-						       sizeof(SFEntry)));
-	}
-	result[i].statDone = 0;
-	str = dp->d_name;
-	len = strlen(str);
-	result[i].real = XtMalloc((unsigned) (len + 2));
-	(void) strcat(strcpy(result[i].real, str), " ");
-	if (len > maxChars) {
-	    maxChars = len;
-	}
-	result[i].shown = result[i].real;
-	i++;
+    while ((dp = readdir (dirp))) {
+        if (i >= alloc) {
+            alloc = 2 * (alloc + 1);
+            result = (SFEntry *) XtRealloc (
+                (char *) result, (unsigned) (alloc * sizeof (SFEntry))
+            );
+        }
+        result[i].statDone = 0;
+        str = dp->d_name;
+        len = strlen (str);
+        result[i].real = XtMalloc ((unsigned) (len + 2));
+        strcat (strcpy (result[i].real, str), " ");
+        if (len > maxChars) {
+            maxChars = len;
+        }
+        result[i].shown = result[i].real;
+        i++;
     }
 
-#if defined(SVR4) || defined(SYSV) || defined(USG)
-    qsort((char *) result, (unsigned) i, sizeof(SFEntry),
-	  SFcompareEntries);
-#else				/* defined(SVR4) || defined(SYSV) || defined(USG) */
-    qsort((char *) result, i, sizeof(SFEntry), SFcompareEntries);
-#endif				/* defined(SVR4) || defined(SYSV) || defined(USG) */
+#if defined (SVR4) || defined (SYSV) || defined (USG)
+    qsort ((char *) result, (unsigned) i, sizeof (SFEntry), SFcompareEntries);
+#else /* defined (SVR4) || defined (SYSV) || defined (USG) */
+    qsort ((char *) result, i, sizeof (SFEntry), SFcompareEntries);
+#endif /* defined (SVR4) || defined (SYSV) || defined (USG) */
 
     dir->entries = result;
     dir->nEntries = i;
     dir->nChars = maxChars + 1;
-
-    closedir(dirp);
-
+    closedir (dirp);
     return 0;
 }
