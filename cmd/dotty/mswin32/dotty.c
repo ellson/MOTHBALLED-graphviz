@@ -29,12 +29,18 @@ static char *shellpath;
 static char *buildpath (char *);
 static void panic (char *, int, char *, char *, ...);
 
-int PASCAL WinMain (HANDLE hInstance, HANDLE hPrevInstance,
-        LPSTR lpCmdLine, int nCmdShow) {
-    HANDLE handle;
+int PASCAL WinMain (
+    HANDLE hInstance, HANDLE hPrevInstance, LPSTR lpCmdLine, int nCmdShow
+) {
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
     char cmd[256];
     char *path;
     char *s;
+
+    ZeroMemory (&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory (&pi, sizeof(pi));
 
     shellpath = getenv ("PATH");
     if (!shellpath || !(path = buildpath ("lefty"))) {
@@ -47,12 +53,27 @@ int PASCAL WinMain (HANDLE hInstance, HANDLE hPrevInstance,
             exit (1);
     }
     if (lpCmdLine[0] == 0)
-        sprintf (cmd, "%s -e \"load('dotty.lefty');dotty.simple(null);\"",
-                path);
+        sprintf (
+            cmd, "%s -e \"load('dotty.lefty');dotty.simple(null);\"", path
+        );
     else
-        sprintf (cmd, "%s -e \"load('dotty.lefty');dotty.simple('%Ns');\"",
-                path, lpCmdLine);
-    handle = WinExec (cmd, SW_SHOW);
+        sprintf (
+            cmd, "%s -e \"load('dotty.lefty');dotty.simple('%Ns');\"",
+            path, lpCmdLine
+        );
+
+    CreateProcess (
+        NULL,   // No module name (use command line). 
+        cmd, // Command line. 
+        NULL,             // Process handle not inheritable. 
+        NULL,             // Thread handle not inheritable. 
+        FALSE,            // Set handle inheritance to FALSE. 
+        0,                // No creation flags. 
+        NULL,             // Use parent's environment block. 
+        NULL,             // Use parent's starting directory. 
+        &si,              // Pointer to STARTUPINFO structure.
+        &pi             // Pointer to PROCESS_INFORMATION structure.
+    );
     exit (0);
 }
 
@@ -63,7 +84,7 @@ static char pathbuf[1024];
 static char commandbuf[1024];
 
 static char *buildpath (char *file) {
-    struct stat statbuf;
+    struct _stat statbuf;
     char *s1, *s2;
     int mode, pathi;
 
