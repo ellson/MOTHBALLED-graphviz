@@ -47,10 +47,10 @@ dotty.protogt.actions.general = [
         gt.loadgraph (gt, gt.name, gt.type, gt.graph, 1);
     };
     "save graph" = function (gt, vt, data) {
-        gt.savegraph (gt, gt.name, gt.type, 1);
+        gt.savegraph (gt, gt.name, gt.type);
     };
     "save graph as" = function (gt, vt, data) {
-        gt.savegraph (gt, null, 'file', 1);
+        gt.savegraph (gt, null, 'file');
     };
     "open view" = function (gt, vt, data) {
         gt = dotty.protogt.creategraph (null);
@@ -91,6 +91,12 @@ dotty.protogt.actions.general = [
     };
     "zoom out slowly" = function (gt, vt, data) {
         gt.zoom (gt, vt, 1.1, data.pos);
+    };
+    "scroll horizontally" = function (gt, vt, data) {
+        vt.scrollmode = 'h';
+    };
+    "scroll vertically" = function (gt, vt, data) {
+        vt.scrollmode = 'v';
     };
     "find node" = function (gt, vt, data) {
         gt.findnode (gt, vt);
@@ -234,6 +240,8 @@ dotty.protovt.normal.keys = [
         's' = "save graph";
         'Z' = "zoom in slowly";
         'z' = "zoom out slowly";
+        'h' = "scroll horizontally";
+        'v' = "scroll vertically";
     ];
     'node' = [
         'c' = "copy";
@@ -271,8 +279,9 @@ dotty.protovt.normal.uifuncs = [
         local gt;
 
         gt = dotty.graphs[dotty.views[data.widget].gtid];
-        if (dotty.node2move &
-                (dotty.rp2.x ~= data.pos.x | dotty.rp2.y ~= data.pos.y)) {
+        if (dotty.node2move & (
+            dotty.rp2.x ~= data.pos.x | dotty.rp2.y ~= data.pos.y
+        )) {
             gt.movenode (gt, dotty.node2move, data.pos);
             dotty.rp2 = data.pos;
         }
@@ -299,8 +308,9 @@ dotty.protovt.normal.uifuncs = [
         line (data.widget, null, dotty.rp1, dotty.rp2, ['color' = 1;]);
     };
     'middlemove' = function (data) {
-        if (dotty.rubberband ~= 1 |
-                (dotty.rp2.x == data.pos.x & dotty.rp2.y == data.pos.y))
+        if (dotty.rubberband ~= 1 | (
+            dotty.rp2.x == data.pos.x & dotty.rp2.y == data.pos.y
+        ))
             return;
         line (data.widget, null, dotty.rp1, dotty.rp2, ['color' = 1;]);
         dotty.rp2 = data.pos;
@@ -315,8 +325,9 @@ dotty.protovt.normal.uifuncs = [
         dotty.rubberband = 0;
         line (dotty.movewidget, null, dotty.rp1, dotty.rp2, ['color' = 1;]);
         setgfxattr (dotty.movewidget, ['mode' = 'src';]);
-        if (dotty.movewidget ~= data.widget |
-                ~(data.pobj.nid >= 0) | ~(data.obj.nid >= 0))
+        if (dotty.movewidget ~= data.widget | ~(
+            data.pobj.nid >= 0) | ~(data.obj.nid >= 0
+        ))
             return;
         if (data.pobj.attr.support)
             gt.groupnodes (gt, [
@@ -344,6 +355,28 @@ dotty.protovt.normal.uifuncs = [
             menu = vt.menus.edge;
         if ((i = displaymenu (data.widget, menu)) >= 0)
             gt.doaction (data, menu[i]);
+    };
+    'button3up' = function (data) {
+        local vt, attr;
+
+        vt = dotty.views[data.widget];
+        attr = getwidgetattr (vt.scroll, [0 = 'childcenter';]);
+        if (vt.scrollmode == 'h')
+            attr.childcenter.x = attr.childcenter.x - 40;
+        else
+            attr.childcenter.y = attr.childcenter.y - 40;
+        setwidgetattr (vt.scroll, ['childcenter' = attr.childcenter;]);
+    };
+    'button4up' = function (data) {
+        local vt, attr;
+
+        vt = dotty.views[data.widget];
+        attr = getwidgetattr (vt.scroll, [0 = 'childcenter';]);
+        if (vt.scrollmode == 'h')
+            attr.childcenter.x = attr.childcenter.x + 40;
+        else
+            attr.childcenter.y = attr.childcenter.y + 40;
+        setwidgetattr (vt.scroll, ['childcenter' = attr.childcenter;]);
     };
     'keyup' = function (data) {
         local vt, gt, action;
