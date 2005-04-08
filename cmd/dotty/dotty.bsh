@@ -84,7 +84,7 @@ if [ ! -f "$leftypath" ]; then
     exit 1
 fi
 
-exec $leftypath -e "
+$leftypath -e "
 load ('dotty.lefty');
 checkpath = function () {
     if (tablesize (dotty) > 0)
