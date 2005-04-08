@@ -366,13 +366,13 @@ function Package
       ErrorEx "windows install failure"
 	fi
 	# copy commands separately
-	DSTDIR=$PACKAGE_HOME/source/bin
-	echo "uploading commands" >> $LFILE
-	putFile $DSTDIR/dot.exe
-	putFile $DSTDIR/neato.exe
-	putFile $DSTDIR/twopi.exe
-	putFile $DSTDIR/circo.exe
-	putFile $DSTDIR/fdp.exe
+#	DSTDIR=$PACKAGE_HOME/source/bin
+#	echo "uploading commands" >> $LFILE
+#	putFile $DSTDIR/dot.exe
+#	putFile $DSTDIR/neato.exe
+#	putFile $DSTDIR/twopi.exe
+#	putFile $DSTDIR/circo.exe
+#	putFile $DSTDIR/fdp.exe
 
 
 }
