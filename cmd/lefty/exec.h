@@ -1,4 +1,4 @@
-/* $Id$ $Revision$ */
+/* $Id$ $Revision$ */ 
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -13,29 +13,29 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
-
+    
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-/* Lefteris Koutsofios - AT&T Bell Laboratories */
+/* Lefteris Koutsofios - AT&T Labs Research */
 
 #ifndef _EXEC_H
 #define _EXEC_H
-    typedef struct Tonm_t lvar_t;
+typedef struct Tonm_t lvar_t;
 
-    extern Tobj root, null;
-    extern Tobj rtno;
-    extern int Erun;
-    extern int Eerrlevel, Estackdepth, Eshowbody, Eshowcalls, Eoktorun;
+extern Tobj root, null;
+extern Tobj rtno;
+extern int Erun;
+extern int Eerrlevel, Estackdepth, Eshowbody, Eshowcalls, Eoktorun;
 
-    void Einit(void);
-    void Eterm(void);
-    Tobj Eunit(Tobj);
-    Tobj Efunction(Tobj, char *);
-#endif				/* _EXEC_H */
+void Einit (void);
+void Eterm (void);
+Tobj Eunit (Tobj);
+Tobj Efunction (Tobj, char *);
+#endif /* _EXEC_H */
 
 #ifdef __cplusplus
 }
 #endif
+
