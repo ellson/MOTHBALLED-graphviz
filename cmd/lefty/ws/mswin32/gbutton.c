@@ -14,7 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-/* Lefteris Koutsofios - AT&T Bell Laboratories */
+/* Lefteris Koutsofios - AT&T Labs Research */
 
 #include "common.h"
 #include "g.h"
@@ -23,64 +23,63 @@
 
 #define WBU widget->u.b
 
-int GBcreatewidget(Gwidget_t * parent, Gwidget_t * widget,
-		   int attrn, Gwattr_t * attrp)
-{
+int GBcreatewidget (
+    Gwidget_t *parent, Gwidget_t *widget, int attrn, Gwattr_t *attrp
+) {
     PIXsize_t ps;
     DWORD wflags;
     char *s;
     int ai;
 
     if (!parent) {
-	Gerr(POS, G_ERRNOPARENTWIDGET);
-	return -1;
+        Gerr (POS, G_ERRNOPARENTWIDGET);
+        return -1;
     }
     wflags = WS_CHILDWINDOW | BS_PUSHBUTTON;
     WBU->func = NULL;
     ps.x = ps.y = MINBWSIZE;
     s = "button";
     for (ai = 0; ai < attrn; ai++) {
-	switch (attrp[ai].id) {
-	case G_ATTRSIZE:
-	    GETSIZE(attrp[ai].u.s, ps, MINBWSIZE);
-	    break;
-	case G_ATTRBORDERWIDTH:
-	    wflags |= WS_BORDER;
-	    break;
-	case G_ATTRTEXT:
-	    s = attrp[ai].u.t;
-	    break;
-	case G_ATTRWINDOWID:
-	    Gerr(POS, G_ERRCANNOTSETATTR1, "windowid");
-	    return -1;
-	case G_ATTRBUTTONCB:
-	    WBU->func = attrp[ai].u.func;
-	    break;
-	case G_ATTRUSERDATA:
-	    widget->udata = attrp[ai].u.u;
-	    break;
-	default:
-	    Gerr(POS, G_ERRBADATTRID, attrp[ai].id);
-	    return -1;
-	}
+        switch (attrp[ai].id) {
+        case G_ATTRSIZE:
+            GETSIZE (attrp[ai].u.s, ps, MINBWSIZE);
+            break;
+        case G_ATTRBORDERWIDTH:
+            wflags |= WS_BORDER;
+            break;
+        case G_ATTRTEXT:
+            s = attrp[ai].u.t;
+            break;
+        case G_ATTRWINDOWID:
+            Gerr (POS, G_ERRCANNOTSETATTR1, "windowid");
+            return -1;
+        case G_ATTRBUTTONCB:
+            WBU->func = attrp[ai].u.func;
+            break;
+        case G_ATTRUSERDATA:
+            widget->udata = attrp[ai].u.u;
+            break;
+        default:
+            Gerr (POS, G_ERRBADATTRID, attrp[ai].id);
+            return -1;
+        }
     }
-    Gadjustwrect(parent, &ps);
-    if (!(widget->w = CreateWindow("BUTTON", s, wflags, 0, 0, ps.x, ps.y,
-				   parent->w,
-				   (HMENU) (widget - &Gwidgets[0]),
-				   hinstance, NULL))) {
-	Gerr(POS, G_ERRCANNOTCREATEWIDGET);
-	return -1;
+    Gadjustwrect (parent, &ps);
+    if (!(widget->w = CreateWindow (
+        "BUTTON", s, wflags, 0, 0, ps.x, ps.y,
+        parent->w, (HMENU) (widget - &Gwidgets[0]), hinstance, NULL
+    ))) {
+        Gerr (POS, G_ERRCANNOTCREATEWIDGET);
+        return -1;
     }
-    ShowWindow(widget->w, SW_SHOW);
-    UpdateWindow(widget->w);
+    ShowWindow (widget->w, SW_SHOW);
+    UpdateWindow (widget->w);
     if (parent && parent->type == G_ARRAYWIDGET)
-	Gawinsertchild(parent, widget);
+        Gawinsertchild (parent, widget);
     return 0;
 }
 
-int GBsetwidgetattr(Gwidget_t * widget, int attrn, Gwattr_t * attrp)
-{
+int GBsetwidgetattr (Gwidget_t *widget, int attrn, Gwattr_t *attrp) {
     Gwidget_t *parent;
     PIXsize_t ps;
     DWORD wflags1;
@@ -89,80 +88,77 @@ int GBsetwidgetattr(Gwidget_t * widget, int attrn, Gwattr_t * attrp)
     parent = (widget->pwi == -1) ? NULL : &Gwidgets[widget->pwi];
     wflags1 = SWP_NOMOVE | SWP_NOZORDER;
     for (ai = 0; ai < attrn; ai++) {
-	switch (attrp[ai].id) {
-	case G_ATTRSIZE:
-	    GETSIZE(attrp[ai].u.s, ps, MINBWSIZE);
-	    Gadjustwrect(parent, &ps);
-	    SetWindowPos(widget->w, (HWND) NULL, 0, 0, ps.x, ps.y,
-			 wflags1);
-	    break;
-	case G_ATTRBORDERWIDTH:
-	    Gerr(POS, G_ERRCANNOTSETATTR2, "borderwidth");
-	    return -1;
-	case G_ATTRTEXT:
-	    SetWindowText(widget->w, attrp[ai].u.t);
-	    break;
-	case G_ATTRWINDOWID:
-	    Gerr(POS, G_ERRCANNOTSETATTR2, "windowid");
-	    return -1;
-	case G_ATTRBUTTONCB:
-	    WBU->func = attrp[ai].u.func;
-	    break;
-	case G_ATTRUSERDATA:
-	    widget->udata = attrp[ai].u.u;
-	    break;
-	default:
-	    Gerr(POS, G_ERRBADATTRID, attrp[ai].id);
-	    return -1;
-	}
+        switch (attrp[ai].id) {
+        case G_ATTRSIZE:
+            GETSIZE (attrp[ai].u.s, ps, MINBWSIZE);
+            Gadjustwrect (parent, &ps);
+            SetWindowPos (widget->w, (HWND) NULL, 0, 0, ps.x, ps.y, wflags1);
+            break;
+        case G_ATTRBORDERWIDTH:
+            Gerr (POS, G_ERRCANNOTSETATTR2, "borderwidth");
+            return -1;
+        case G_ATTRTEXT:
+            SetWindowText (widget->w, attrp[ai].u.t);
+            break;
+        case G_ATTRWINDOWID:
+            Gerr (POS, G_ERRCANNOTSETATTR2, "windowid");
+            return -1;
+        case G_ATTRBUTTONCB:
+            WBU->func = attrp[ai].u.func;
+            break;
+        case G_ATTRUSERDATA:
+            widget->udata = attrp[ai].u.u;
+            break;
+        default:
+            Gerr (POS, G_ERRBADATTRID, attrp[ai].id);
+            return -1;
+        }
     }
     return 0;
 }
 
-int GBgetwidgetattr(Gwidget_t * widget, int attrn, Gwattr_t * attrp)
-{
+int GBgetwidgetattr (Gwidget_t *widget, int attrn, Gwattr_t *attrp) {
     RECT r;
     int ai;
 
     for (ai = 0; ai < attrn; ai++) {
-	switch (attrp[ai].id) {
-	case G_ATTRSIZE:
-	    GetWindowRect(widget->w, &r);
-	    attrp[ai].u.s.x = r.right - r.left;
-	    attrp[ai].u.s.y = r.bottom - r.top;
-	    break;
-	case G_ATTRBORDERWIDTH:
-	    Gerr(POS, G_ERRCANNOTGETATTR, "borderwidth");
-	    return -1;
-	case G_ATTRTEXT:
-	    GetWindowText(widget->w, &Gbufp[0], Gbufn);
-	    attrp[ai].u.t = &Gbufp[0];
-	    break;
-	case G_ATTRWINDOWID:
-	    sprintf(&Gbufp[0], "0x%lx", widget->w);
-	    attrp[ai].u.t = &Gbufp[0];
-	    break;
-	case G_ATTRBUTTONCB:
-	    attrp[ai].u.func = WBU->func;
-	    break;
-	case G_ATTRUSERDATA:
-	    attrp[ai].u.u = widget->udata;
-	    break;
-	default:
-	    Gerr(POS, G_ERRBADATTRID, attrp[ai].id);
-	    return -1;
-	}
+        switch (attrp[ai].id) {
+        case G_ATTRSIZE:
+            GetWindowRect (widget->w, &r);
+            attrp[ai].u.s.x = r.right - r.left;
+            attrp[ai].u.s.y = r.bottom - r.top;
+            break;
+        case G_ATTRBORDERWIDTH:
+            Gerr (POS, G_ERRCANNOTGETATTR, "borderwidth");
+            return -1;
+        case G_ATTRTEXT:
+            GetWindowText (widget->w, &Gbufp[0], Gbufn);
+            attrp[ai].u.t = &Gbufp[0];
+            break;
+        case G_ATTRWINDOWID:
+            sprintf (&Gbufp[0], "0x%lx", widget->w);
+            attrp[ai].u.t = &Gbufp[0];
+            break;
+        case G_ATTRBUTTONCB:
+            attrp[ai].u.func = WBU->func;
+            break;
+        case G_ATTRUSERDATA:
+            attrp[ai].u.u = widget->udata;
+            break;
+        default:
+            Gerr (POS, G_ERRBADATTRID, attrp[ai].id);
+            return -1;
+        }
     }
     return 0;
 }
 
-int GBdestroywidget(Gwidget_t * widget)
-{
+int GBdestroywidget (Gwidget_t *widget) {
     Gwidget_t *parent;
 
     parent = (widget->pwi == -1) ? NULL : &Gwidgets[widget->pwi];
     if (parent && parent->type == G_ARRAYWIDGET)
-	Gawdeletechild(parent, widget);
-    DestroyWindow(widget->w);
+        Gawdeletechild (parent, widget);
+    DestroyWindow (widget->w);
     return 0;
 }
