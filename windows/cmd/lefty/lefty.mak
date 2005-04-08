@@ -65,7 +65,7 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /ML /W3 /GX /O2 /I "." /I "..\.." /I ".\dot2l" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "MSWIN32" /D "FEATURE_DOT" /D "HAVE_CONFIG_H" /Fp"$(INTDIR)\lefty.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /ML /W3 /GX /O2 /I "." /I "..\.." /I ".\dot2l" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "MSWIN32" /D "FEATURE_DOT" /D "HAVE_CONFIG_H" /D "FEATURE_MS" /D "FEATURE_WIN32" /D "FEATURE_MINTSIZE" /Fp"$(INTDIR)\lefty.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
 MTL_PROJ=/nologo /D "NDEBUG" /mktyplib203 /win32 
 RSC_PROJ=/l 0x409 /fo"$(INTDIR)\lefty.res" /d "NDEBUG" 
 BSC32=bscmake.exe
@@ -138,7 +138,7 @@ CLEAN :
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
-CPP_PROJ=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "." /I "..\.." /I ".\dot2l" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "MSWIN32" /D "FEATURE_DOT" /D "HAVE_CONFIG_H" /Fp"$(INTDIR)\lefty.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MLd /W3 /Gm /GX /ZI /Od /I "." /I "..\.." /I ".\dot2l" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "MSWIN32" /D "FEATURE_DOT" /D "HAVE_CONFIG_H" /D "FEATURE_MS" /D "FEATURE_WIN32" /D "FEATURE_MINTSIZE" /Fp"$(INTDIR)\lefty.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
 MTL_PROJ=/nologo /D "_DEBUG" /mktyplib203 /win32 
 RSC_PROJ=/l 0x409 /fo"$(INTDIR)\lefty.res" /d "_DEBUG" 
 BSC32=bscmake.exe
