@@ -52,116 +52,110 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#define SEL_FILE_CANCEL		-1
-#define SEL_FILE_OK		0
-#define SEL_FILE_NULL		1
-#define SEL_FILE_TEXT		2
+#define SEL_FILE_CANCEL -1
+#define SEL_FILE_OK      0
+#define SEL_FILE_NULL    1
+#define SEL_FILE_TEXT    2
 
-#define SF_DO_SCROLL		1
-#define SF_DO_NOT_SCROLL	0
+#define SF_DO_SCROLL     1
+#define SF_DO_NOT_SCROLL 0
 
-    typedef struct {
-	int statDone;
-	char *real;
-	char *shown;
-    } SFEntry;
+typedef struct {
+    int  statDone;
+    char *real;
+    char *shown;
+} SFEntry;
 
-    typedef struct {
-	char *dir;
-	char *path;
-	SFEntry *entries;
-	int nEntries;
-	int vOrigin;
-	int nChars;
-	int hOrigin;
-	int changed;
-	int beginSelection;
-	int endSelection;
-	time_t mtime;
-    } SFDir;
+typedef struct {
+    char    *dir;
+    char    *path;
+    SFEntry *entries;
+    int     nEntries;
+    int     vOrigin;
+    int     nChars;
+    int     hOrigin;
+    int     changed;
+    int     beginSelection;
+    int     endSelection;
+    time_t  mtime;
+} SFDir;
 
-    extern int SFstatus;
+extern int SFstatus;
 
-    extern char SFcurrentPath[], SFstartDir[], SFcurrentDir[];
+extern char SFcurrentPath[], SFstartDir[], SFcurrentDir[];
 
-    extern Widget
-	selFile,
-	selFileCancel,
-	selFileField,
-	selFileForm,
-	selFileHScroll,
-	selFileHScrolls[],
-	selFileLists[], selFileOK, selFilePrompt, selFileVScrolls[];
+extern Widget selFile, selFileCancel, selFileField, selFileForm;
+extern Widget selFileHScroll, selFileHScrolls[], selFileLists[];
+extern Widget selFileOK, selFilePrompt, selFileVScrolls[];
 
-    extern Display *SFdisplay;
+extern Display *SFdisplay;
 
-    extern int SFcharWidth, SFcharHeight, SFcharAscent;
+extern int SFcharWidth, SFcharHeight, SFcharAscent;
 
-    extern SFDir *SFdirs;
+extern SFDir *SFdirs;
 
-    extern int SFdirEnd, SFdirPtr;
+extern int SFdirEnd, SFdirPtr;
 
-    extern Pixel SFfore, SFback;
+extern Pixel SFfore, SFback;
 
-    extern Atom SFwmDeleteWindow;
+extern Atom SFwmDeleteWindow;
 
-    extern XSegment SFsegs[], SFcompletionSegs[];
+extern XSegment SFsegs[], SFcompletionSegs[];
 
-    extern XawTextPosition SFtextPos;
+extern XawTextPosition SFtextPos;
 
-    extern void SFenterList(Widget w, int n, XEnterWindowEvent *event);
-    extern void SFleaveList(Widget w, int n, XEvent *event);
-    extern void SFmotionList(Widget w, int n, XMotionEvent *event);
-    extern void SFbuttonPressList(Widget w, int n, XButtonPressedEvent *event);
-    extern void SFbuttonReleaseList(Widget w, int n, XButtonReleasedEvent *event);
+void SFenterList (Widget, XtPointer, XEvent *, Boolean *);
+void SFleaveList (Widget, XtPointer, XEvent *, Boolean *);
+void SFmotionList (Widget, XtPointer, XEvent *, Boolean *);
 
-    extern void SFvSliderMovedCallback(Widget w, int n, int fnew);
-    extern void SFvFloatSliderMovedCallback(Widget w, int n, float *new);
-    extern void SFhSliderMovedCallback(Widget w, int n, float *new);
-    extern void SFpathSliderMovedCallback(Widget w, XtPointer client_data, float *new);
-    extern void SFvAreaSelectedCallback(Widget w, int n, int pnew);
-    extern void SFhAreaSelectedCallback(Widget w, int n, int pnew);
-    extern void SFpathAreaSelectedCallback(Widget w, XtPointer client_data, int pnew);
+void SFvFloatSliderMovedCallback (Widget, XtPointer, XtPointer);
+void SFvSliderMovedCallback (Widget, XtPointer, XtPointer);
+void SFvAreaSelectedCallback (Widget, XtPointer, XtPointer);
+void SFhSliderMovedCallback (Widget, XtPointer, XtPointer);
+void SFhAreaSelectedCallback (Widget, XtPointer, XtPointer);
+void SFpathSliderMovedCallback (Widget, XtPointer, XtPointer);
+void SFpathAreaSelectedCallback (Widget, XtPointer, XtPointer);
 
-    extern int SFupperX, SFlowerY, SFupperY;
+void SFbuttonPressList (Widget, XtPointer, XEvent *, Boolean *);
+void SFbuttonReleaseList (Widget, XtPointer, XEvent *, Boolean *);
 
-    extern int SFtextX, SFtextYoffset;
+extern int SFupperX, SFlowerY, SFupperY;
 
-    extern int SFentryWidth, SFentryHeight;
+extern int SFtextX, SFtextYoffset;
 
-    extern int SFlineToTextH, SFlineToTextV;
+extern int SFentryWidth, SFentryHeight;
 
-    extern int SFbesideText, SFaboveAndBelowText;
+extern int SFlineToTextH, SFlineToTextV;
 
-    extern int SFcharsPerEntry;
+extern int SFbesideText, SFaboveAndBelowText;
 
-    extern int SFlistSize;
+extern int SFcharsPerEntry;
 
-    extern int SFcurrentInvert[];
+extern int SFlistSize;
 
-    extern int SFworkProcAdded;
-    extern XtWorkProcId SFworkProcId;
+extern int SFcurrentInvert[];
 
-    extern Boolean SFworkProc(void);
+extern int SFworkProcAdded;
+extern XtWorkProcId SFworkProcId;
 
-    extern XtAppContext SFapp;
+extern Boolean SFworkProc (XtPointer);
 
-    extern int SFpathScrollWidth, SFvScrollHeight, SFhScrollWidth;
+extern XtAppContext SFapp;
 
-    extern char SFtextBuffer[];
+extern int SFpathScrollWidth, SFvScrollHeight, SFhScrollWidth;
 
-    extern int SFbuttonPressed;
+extern char SFtextBuffer[];
 
-    extern int SFcompareEntries(const void *vp, const void *vq);
+extern int SFbuttonPressed;
 
-    extern void SFdirModTimer(XtPointer cl, XtIntervalId *id);
+void SFdirModTimer (XtPointer cl, XtIntervalId *id);
+char SFstatChar (struct stat *);
 
-    extern char SFstatChar(struct stat *statBuf);
+extern XtIntervalId SFdirModTimerId;
 
-    extern XtIntervalId SFdirModTimerId;
-
-    extern int (*SFfunc) (char *, char **, struct stat *);
+extern int (*SFfunc) (char *, char **, struct stat *);
 
 #ifdef __cplusplus
 }
 #endif
+
