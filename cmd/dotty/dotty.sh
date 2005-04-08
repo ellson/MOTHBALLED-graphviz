@@ -1,90 +1,103 @@
-#!/bin/sh
 
-FILES=""
+set -A FILES
 MLEVEL="0"
 LMODE="async"
 
-usage='echo "usage: dotty [-V] [-lm (sync|async)] [-el (0|1)] <filename>"'
+function usage {
+    print "usage: dotty [-V] [-lm (sync|async)] [-el (0|1)] <filename>"
+}
 
-if [ "x$DOTTYOPTIONS" != "x" ]; then
-    set -- $DOTTYOPTIONS $*
+function processoptions {
+    while [[ $# > 0 ]] do
+        case $1 in
+        -V)
+            print "dotty version 96c (09-24-96)"
+            shift
+            ;;
+        -f)
+            shift
+            loadfile=$1
+            shift
+            ;;
+        -lt)
+            shift
+            layouttool=$1
+            shift
+            ;;
+        -lm)
+            shift
+            LMODE=$1
+            if [[ $LMODE != 'sync' && $LMODE != 'async' ]] then
+                usage
+                exit 1
+            fi
+            shift
+            ;;
+        -el)
+            shift
+            MLEVEL=$1
+            if [[ $MLEVEL != '0' && $MLEVEL != '1' ]] then
+                usage
+                exit 1
+            fi
+            shift
+            ;;
+        -)
+            FILES[${#FILES[@]}]="'"$1"'"
+            shift
+            ;;
+        -*)
+            usage
+            exit 1
+            ;;
+        *)
+            FILES[${#FILES[@]}]="'"$1"'"
+            shift
+            ;;
+        esac
+    done
+}
+
+if [[ $DOTTYOPTIONS != '' ]] then
+    processoptions $DOTTYOPTIONS
 fi
+processoptions "$@"
 
-while [ "x$1" != 'x' ]; do
-    case $1 in
-    -V)
-        echo "dotty version 96c (09-24-96)"
-        shift
-        ;;
-    -f)
-        shift
-        loadfile=$1
-        shift
-        ;;
-    -lm)
-        shift
-        LMODE=$1
-        if [ "x$LMODE" != 'xsync' -a "x$LMODE" != 'xasync' ]; then
-            $usage
-            exit 1
-        fi
-        shift
-        ;;
-    -el)
-        shift
-        MLEVEL=$1
-        if [ "x$MLEVEL" != 'x0' -a "x$MLEVEL" != 'x1' ]; then
-            $usage
-            exit 1
-        fi
-        shift
-        ;;
-    -)
-        FILES=`echo $FILES \"$1\"`
-        shift
-        ;;
-    -*)
-        $usage
-        exit 1
-        ;;
-    *)
-        FILES=`echo $FILES \"$1\"`
-        shift
-        ;;
-    esac
-done
-
-if [ "x$DOTTYPATH" != 'x' ]; then
-    LEFTYPATH="$DOTTYPATH:$LEFTYPATH"
+if [[ $DOTTYPATH != '' ]] then
+    export LEFTYPATH="$DOTTYPATH:$LEFTYPATH"
 fi
 
 CMDS=""
 
 CMDS="dotty.protogt.layoutmode = '$LMODE';"
 
-CMDS=`echo $CMDS dotty.mlevel = $MLEVEL";"`
+CMDS=$(print $CMDS dotty.mlevel = $MLEVEL";")
 
-if [ "x$loadfile" != 'x' ]; then
-    CMDS=`echo $CMDS load \("'"$loadfile"'"\)";"`
+if [[ $loadfile != '' ]] then
+    CMDS=$(print $CMDS load \("'"$loadfile"'"\)";")
 fi
 
-if [ "x$FILES" = 'x' ]; then
+if [[ $layouttool != '' ]] then
+    CMDS=$(print $CMDS dotty.protogt.lserver = "'$layouttool';")
+fi
+
+if [[ $FILES = '' ]] then
     FILES=null
 fi
 FUNC="dotty.createviewandgraph"
-for i in $FILES; do
-    CMDS=`echo $CMDS $FUNC \($i, "'"file"'", null, null\)";"`
+for i in "${FILES[@]}"; do
+    CMDS=$(print $CMDS $FUNC \($i, "'"file"'", null, null\)";")
 done
 
-leftypath=`which lefty`
-if [ ! -f "$leftypath" ]; then
-    echo "dotty: cannot locate the lefty program"
-    echo "       make sure that your path includes"
-    echo "       the directory containing dotty and lefty"
+leftypath=$(whence -p lefty)
+if [[ $leftypath == '' ]] then
+    print -u2 "dotty: cannot locate the lefty program"
+    print -u2 "       make sure that your path includes"
+    print -u2 "       the directory containing dotty and lefty"
     exit 1
 fi
 
-exec $leftypath -e "
+$leftypath -e "
 load ('dotty.lefty');
 checkpath = function () {
     if (tablesize (dotty) > 0)

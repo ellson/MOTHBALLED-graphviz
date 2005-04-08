@@ -18,7 +18,7 @@ dotty = [
         'hport'  = 'hport';
         'pos'    = 'pos';
         'size'   = 'size';
-        'points' = 'points';
+        'rect'   = 'rect';
         'fname'  = 'fontname';
         'fsize'  = 'fontsize';
         'fcolor' = 'fontcolor';
@@ -27,20 +27,17 @@ dotty = [
     'maps' = [
         'X11' = [
             'fontmap' = [
-                'Times-Roman' =
-                        '-*-times-medium-r-*--%d-*-*-*-*-*-*-1';
-                'Times-Italic' =
-                        '-*-times-medium-i-*--%d-*-*-*-*-*-*-1';
-                'Times-Bold' =
-                        '-*-times-bold-r-*--%d-*-*-*-*-*-*-1';
-                'Courier' =
-                        '-*-courier-bold-r-*--%d-*-*-*-*-*-*-1';
-                'Courier-Bold' =
-                        '-*-courier-bold-r-*--%d-*-*-*-*-*-*-1';
-                'Helvetica' =
-                        '-*-helvetica-medium-r-normal--%d-*-*-*-p-*-iso8859-1';
-                'Helvetica-Bold' =
-                        '-*-helvetica-bold-r-normal--%d-*-*-*-p-*-iso8859-1';
+                'Times-Roman'    = '-*-times-medium-r-*--%d-*-*-*-*-*-*-1';
+                'Times-Italic'   = '-*-times-medium-i-*--%d-*-*-*-*-*-*-1';
+                'Times-Bold'     = '-*-times-bold-r-*--%d-*-*-*-*-*-*-1';
+                'Courier'        = '-*-courier-bold-r-*--%d-*-*-*-*-*-*-1';
+                'Courier-Bold'   = '-*-courier-bold-r-*--%d-*-*-*-*-*-*-1';
+                'Helvetica'      = (
+                     '-*-helvetica-medium-r-normal--%d-*-*-*-p-*-iso8859-1'
+                );
+                'Helvetica-Bold' = (
+                    '-*-helvetica-bold-r-normal--%d-*-*-*-p-*-iso8859-1'
+                );
             ];
             'psfontmap' = [
                 'Times-Roman'    = 'Times-Roman';
@@ -87,12 +84,14 @@ dotty = [
                 'fontname' = 'Times-Roman';
                 'fontcolor' = 'black';
                 'color' = 'black';
+                'style' = 'solid';
             ];
             'edgeattr' = [
                 'fontsize' = '14';
                 'fontname' = 'Times-Roman';
                 'fontcolor' = 'black';
                 'color' = 'black';
+                'style' = 'solid';
             ];
             'graphdict' = [];
             'nodedict' = [];
@@ -212,7 +211,7 @@ dotty.protogt.destroygraph = function (gt) {
     remove (gt.gtid, dotty.graphs);
 };
 dotty.protogt.loadgraph = function (gt, name, type, protograph, layoutflag) {
-    local vid, vt, fd, graph, nid, eid, gid;
+    local fd, vid, vt, graph, nid, eid, gid;
 
     if (gt.layoutpending > 0)
         gt.cancellayout (gt);
@@ -223,8 +222,10 @@ dotty.protogt.loadgraph = function (gt, name, type, protograph, layoutflag) {
     dotty.message (1, 'loading');
     if (~protograph)
         protograph = dotty.protogt.graph;
-    if (~((fd = dotty.openio (name, type, 'r')) >= 0) |
-            ~(graph = readgraph (fd, protograph))) {
+    if (
+        ~((fd = dotty.openio (name, type, 'r')) >= 0) |
+        ~(graph = readgraph (fd, protograph))
+    ) {
         dotty.message (0, 'cannot load graph');
         dotty.popbusy (gt, gt.views);
         return;
@@ -257,97 +258,21 @@ dotty.protogt.loadgraph = function (gt, name, type, protograph, layoutflag) {
     dotty.popbusy (gt, gt.views);
     return gt.graph;
 };
-dotty.protogt.savegraph = function (gt, name, type, savecoord) {
-    local fd, graph, gid, sgraph, nid, node, eid, edge, pointi, attr;
+dotty.protogt.savegraph = function (gt, name, type) {
+    local fd;
 
     if (~name)
         if (~(name = ask ('file name:', 'file', '')))
             return;
-    if (savecoord) {
-        graph = copy (gt.graph);
-        for (gid in graph.graphs) {
-            sgraph = graph.graphs[gid];
-            if (sgraph.rect)
-                sgraph.graphattr.bb = concat (sgraph.rect[0].x, ',',
-                        sgraph.rect[0].y, ',', sgraph.rect[1].x, ',',
-                        sgraph.rect[1].y);
-            if (sgraph.lp & tablesize (sgraph.lp) > 0)
-                sgraph.graphattr.lp = concat (sgraph.lp.x, ',', sgraph.lp.y);
-            else if (sgraph.lp)
-                sgraph.graphattr.lp = "";
-        }
-        for (nid in graph.nodes) {
-            node = graph.nodes[nid];
-            if (~node.attr.label)
-                node.attr.label = '\N';
-            if (node.pos)
-                node.attr.pos = concat (node.pos.x, ',', node.pos.y);
-            if (node.size) {
-                node.attr.width = node.size.x / 72;
-                node.attr.height = node.size.y / 72;
-            }
-            if (node.fields)
-                node.attr.rects = gt.packrecordfields (gt, node.fields);
-        }
-        for (eid in graph.edges) {
-            edge = graph.edges[eid];
-            if (edge.points) {
-                attr = '';
-                if (edge.sp)
-                    attr = concat ('s,', edge.sp.x, ',', edge.sp.y, ' ');
-                if (edge.ep)
-                    attr = concat (attr, 'e,', edge.ep.x, ',', edge.ep.y, ' ');
-                for (pointi = 0; edge.points[pointi]; pointi = pointi + 1)
-                    attr = concat (attr, ' ', edge.points[pointi].x, ',',
-                        edge.points[pointi].y);
-                edge.attr.pos = attr;
-            }
-            if (edge.lp)
-                edge.attr.lp = concat (edge.lp.x, ',', edge.lp.y);
-        }
-        if (~graph.rect) {
-            graph.rect = [
-                0 = ['x' = 0; 'y' = 0; ]; 1 = ['x' = 1; 'y' = 1; ];
-            ];
-            for (nid in graph.nodes) {
-                node = graph.nodes[nid];
-                if (graph.rect[1].x < node.pos.x + node.size.x / 2)
-                    graph.rect[1].x = node.pos.x + node.size.x / 2;
-                if (graph.rect[1].y < node.pos.y + node.size.y / 2)
-                    graph.rect[1].y = node.pos.y + node.size.y / 2;
-            }
-        }
-        graph.graphattr.bb = concat (graph.rect[0].x, ',',
-                graph.rect[0].y, ',', graph.rect[1].x, ',',
-                graph.rect[1].y);
-        if (graph.lp & tablesize (graph.lp) > 0)
-            graph.graphattr.lp = concat (graph.lp.x, ',', graph.lp.y);
-    } else
-        graph = gt.graph;
-    if (~((fd = dotty.openio (name, type, 'w')) >= 0) |
-            ~writegraph (fd, graph, 0)) {
+    if (
+        ~((fd = dotty.openio (name, type, 'w')) >= 0) |
+        ~writegraph (fd, gt.graph, 0)
+    ) {
         dotty.message (0, 'cannot save graph');
         return;
     }
     if (~(type == 'file' & name == '-'))
         closeio (fd);
-};
-dotty.protogt.packrecordfields = function (gt, fields) {
-    local attrs, attr, fid, field;
-
-    for (fid = 0; fields[fid]; fid = fid + 1) {
-        field = fields[fid];
-        if (field.fields)
-            attr = gt.packrecordfields (gt, field.fields);
-        else
-            attr = concat (field.rect[0].x, ',', field.rect[0].y,
-                    ',', field.rect[1].x, ',', field.rect[1].y);
-        if (attrs)
-            attrs = concat (attrs, ' ', attr);
-        else
-            attrs = attr;
-    }
-    return attrs;
 };
 dotty.protogt.setgraph = function (gt, graph) {
     local vid, vt, nid, eid, gid;
@@ -466,7 +391,9 @@ dotty.protogt.createview = function (gt, protovt) {
     if (protovt.colors & tablesize (protovt.colors) > 0) {
         for (id in protovt.colors)
             if (id == '_bgcolor_')
-                setwidgetattr (vt.canvas, ['color' = [0 = protovt.colors[id];];]);
+                setwidgetattr (vt.canvas, [
+                    'color' = [0 = protovt.colors[id];];
+                ]);
             else if (setwidgetattr (vt.canvas, ['color' = [
                 protovt.colors[id] = id;
             ];]) ~= 1) {
@@ -476,8 +403,9 @@ dotty.protogt.createview = function (gt, protovt) {
                         'h' = ston (t[0]); 's' = ston (t[1]); 'v' = ston (t[2]);
                     ];];
                 ]) ~= 1) {
-                    dotty.message (0,
-                            concat ('unknown color ', id, ' using #1'));
+                    dotty.message (
+                        0, concat ('unknown color ', id, ' using #1')
+                    );
                 }
             }
         vt.colors = copy (protovt.colors);
@@ -499,8 +427,9 @@ dotty.protogt.createview = function (gt, protovt) {
                         'h' = ston (t[0]); 's' = ston (t[1]); 'v' = ston (t[2]);
                     ];];
                 ]) ~= 1) {
-                    dotty.message (0,
-                            concat ('unknown color ', id, ' using #1'));
+                    dotty.message (
+                        0, concat ('unknown color ', id, ' using #1')
+                    );
                 }
             }
         vt.colors = copy (ovt.colors);
@@ -632,8 +561,9 @@ dotty.openio = function (name, type, mode) {
             return null;
         }
     } else if (type == 'pipe') {
-        if (~((fd = openio ('pipe', 'ksh', mode,
-                concat ("%e ", name))) >= 0)) {
+        if (~((fd = openio (
+            'pipe', 'ksh', mode, concat ("%e ", name)
+        )) >= 0)) {
             dotty.message (0, concat ('cannot run command: ', name));
             return null;
         }
@@ -737,12 +667,14 @@ dotty.protogt.printorsave = function (gt, vt, otype, name, mode, ptype) {
             setwidgetattr (pscanvas, ['color' = [0 = cid;];]);
         else if (setwidgetattr (pscanvas, ['color' = [cid = cname;];]) ~= 1) {
             t = split (cname, ' ');
-            if (tablesize (t) ~= 3 |
-                    setwidgetattr (pscanvas, ['color' = [cid = [
-                        'h' = ston (t[0]); 's' = ston (t[1]); 'v' = ston (t[2]);
-                    ];];]) ~= 1) {
-                dotty.message (0, concat ('unknown color ',
-                        cname, ' using #1'));
+            if (tablesize (t) ~= 3 | setwidgetattr (pscanvas, [
+                'color' = [cid = [
+                    'h' = ston (t[0]); 's' = ston (t[1]); 'v' = ston (t[2]);
+                ];];
+            ]) ~= 1) {
+                dotty.message (
+                    0, concat ('unknown color ', cname, ' using #1')
+                );
             }
         }
     }
