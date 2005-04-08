@@ -38,14 +38,14 @@ extern void config_codegen_builtins(GVC_t *gvc);
 
 /*
     A config for gvrender is a text file containing a
-    list of plugins and their capabilities using a tcl-like
+    list of plugin librariess and their capabilities using a tcl-like
     syntax
 
     Lines beginning with '#' are ignored as comments
 
     Blank lines are allowed and ignored.
 
-    plugin_path {
+    plugin_library_path {
 	plugin_api {
 	    plugin_type plugin_quality
 	    ...
@@ -55,8 +55,8 @@ extern void config_codegen_builtins(GVC_t *gvc);
 
     e.g.
 
-	/usr/lib/graphviz/cairo.so {renderer {x 0 png 10 ps -10}}
-	/usr/lib/graphviz/gdgen.so {renderer {png 0 gif 0 jpg 0}}
+	/usr/lib/graphviz/libgvplugin_cairo.so {renderer {x 0 png 10 ps -10}}
+	/usr/lib/graphviz/libgvplugin_gdgen.so {renderer {png 0 gif 0 jpg 0}}
 
     Internally the config is maintained as lists of plugin_types for each plugin_api.
     If multiple plugins of the same type are found then the highest quality wins.
@@ -130,6 +130,73 @@ static char *token(int *nest, char **tokens)
     return t;
 }
 
+static void gvconfig_library_install_from_config(GVC_t * gvc, char *s)
+{
+    char *path, *api, *type;
+    api_t gv_api;
+    int quality, rc;
+    int nest = 0;
+
+    separator(&nest, &s);
+    while (*s) {
+	path = token(&nest, &s);
+	do {
+	    api = token(&nest, &s);
+	    gv_api = gvplugin_api(api);
+	    if (gv_api == -1) {
+		fprintf(stderr, "invalid api in config: %s %s\n", path, api);
+		return;
+	    }
+	    do {
+		type = token(&nest, &s);
+		if (nest == 2)
+		    quality = atoi(token(&nest, &s));
+		else
+		    quality = 0;
+		rc = gvplugin_install (gvc, gv_api, type, quality, path, NULL);
+		if (!rc) {
+		    fprintf(stderr, "config error: %s %s %s\n", path, api, type);
+		    return;
+		}
+	    } while (nest == 2);
+	} while (nest == 1);
+    }
+}
+
+static void gvconfig_library_install_from_struct(GVC_t * gvc, gvplugin_library_t *library)
+{
+    gvplugin_api_t *apis;
+    gvplugin_type_t *types;
+    int i;
+
+    for (apis = library->apis; (types = apis->types); apis++) {
+	for (i = 0; types[i].type; i++) {
+	    gvplugin_install(gvc, apis->api, types[i].type,
+			types[i].quality, library->name, &types[i]);
+        }
+    }
+}
+
+static void gvconfig_write_library_config(char *path, gvplugin_library_t *library, FILE *f)
+{
+    gvplugin_api_t *apis;
+    gvplugin_type_t *types;
+    int i;
+
+    fputs (path, f);
+    fputs (" {\n", f);
+    for (apis = library->apis; (types = apis->types); apis++) {
+	fputs ("\t", f);
+	fputs (gvplugin_api_name(apis->api), f);
+	fputs (" {\n", f);
+	for (i = 0; types[i].type; i++) {
+	    fprintf(f, "\t\t%s %d\n", types[i].type, types[i].quality);
+	}
+	fputs ("\t}\n", f);
+    }
+    fputs ("}\n", f);
+}
+
 #ifdef DISABLE_LTDL
 extern gvplugin_library_t *builtins[];
 #endif
@@ -139,18 +206,11 @@ extern gvplugin_library_t *builtins[];
  */
 void gvconfig(GVC_t * gvc)
 {
-    gvplugin_api_t *apis;
-    gvplugin_type_t *types;
-    int i;
 #ifdef DISABLE_LTDL
     gvplugin_library_t **libraryp;
 #else
     gvplugin_library_t *library;
-    char *s, *path, *api, *type;
-    api_t gv_api;
-    int quality;
-    int nest = 0;
-    int sz, rc, j;
+    int sz, rc, i;
     struct stat config_st, libdir_st;
     FILE *f;
     char *config_path, *config_glob, *home, *config_text;
@@ -169,15 +229,8 @@ void gvconfig(GVC_t * gvc)
 
 #ifdef DISABLE_LTDL
     for (libraryp = builtins; *libraryp; libraryp++) {
-        for (apis = (*libraryp)->apis; (types = apis->types); apis++) {
-            for (i = 0; types[i].type; i++) {
-                gvplugin_install(gvc, apis->api,
-                                 types[i].type, types[i].quality,
-                                 (*libraryp)->name, &types[i]);
-            }
-        }
+	gvconfig_library_install_from_struct(gvc, *libraryp);
     }
-
 #else
     /* see if there are any new plugins */
 
@@ -202,9 +255,8 @@ void gvconfig(GVC_t * gvc)
 	f = fopen(config_path,"w");
 	if (!f) {
             fprintf(stderr,"failed to open %s for write.\n", config_path);
-	    free(config_path);
-	    return;
 	}
+	/* load all libraries even if can't save config */
 
 	config_glob = malloc(strlen(libdir) + strlen(plugin_glob) + 1);
 	strcpy(config_glob, libdir);
@@ -212,85 +264,50 @@ void gvconfig(GVC_t * gvc)
 
 	rc = glob(config_glob, GLOB_NOSORT, NULL, &globbuf);
         if (rc == 0) {
-	    for (j = 0; j < globbuf.gl_pathc; j++) {
-		library = gvplugin_library_load(globbuf.gl_pathv[j]);
+	    for (i = 0; i < globbuf.gl_pathc; i++) {
+		library = gvplugin_library_load(globbuf.gl_pathv[i]);
 		if (library) {
-		    fputs (globbuf.gl_pathv[j], f);
-		    fputs (" {\n", f);
-		    for (apis = library->apis; (types = apis->types); apis++) {
-			fputs ("\t", f);
-			fputs (gvplugin_api_name(apis->api), f);
-			fputs (" {\n", f);
-			for (i = 0; types[i].type; i++) {
-			    /* might as well install it since its already loaded */
-			    gvplugin_install(gvc, apis->api, types[i].type,
-                                types[i].quality, library->name, &types[i]);
-			    fprintf(f, "\t\t%s %d\n",
-				types[i].type, types[i].quality);
-			}
-		        fputs ("\t}\n", f);
+		    gvconfig_library_install_from_struct(gvc, library);
+		    if (f) {
+			gvconfig_write_library_config(globbuf.gl_pathv[i], library, f);
 		    }
-		    fputs ("}\n", f);
 		}
 	    }
 	}
 	globfree(&globbuf);
         free(config_glob);
+	if (f)
+	    fclose(f);
+    }
+    else {
+	/* load in the cached plugin library data */
+
+	if (config_st.st_size > MAX_SZ_CONFIG) {
+	    fprintf(stderr,"%s is bigger than I can handle.\n", config_path);
+	    free(config_path);
+	    return;
+	}
+	f = fopen(config_path,"r");
+	if (!f) {	/* if we fail to open it then it probably doesn't exists
+			so just fail silently, clean up and return */
+	    free(config_path);
+	    return;
+	}
+	config_text = malloc(config_st.st_size + 1);
+	config_text[0] = '\0';
+	sz = fread(config_text, 1, config_st.st_size, f);
+	if (sz == 0) {
+	    fprintf(stderr,"%s is zero sized, or other read error.\n", config_path);
+	    free(config_path);
+	    free(config_text);
+	    return;
+	}
 	fclose(f);
-	return;     /* all plugins have been installed */
-    }
+	free(config_path); /* not needed now that we've slurped in the contents */
 
-    /* load in the cached plugin library data */
+	config_text[config_st.st_size] = '\0';  /* make input into a null terminated string */
 
-    if (config_st.st_size > MAX_SZ_CONFIG) {
-        fprintf(stderr,"%s is bigger than I can handle.\n", config_path);
-	free(config_path);
-	return;
-    }
-    f = fopen(config_path,"r");
-    if (!f) {	/* if we fail to open it then it probably doesn't exists
-		   so just fail silently, clean up and return */
-	free(config_path);
-	return;
-    }
-    config_text = malloc(config_st.st_size + 1);
-    config_text[0] = '\0';
-    sz = fread(config_text, 1, config_st.st_size, f);
-    if (sz == 0) {
-        fprintf(stderr,"%s is zero sized, or other read error.\n", config_path);
-	free(config_path);
-	free(config_text);
-	return;
-    }
-    fclose(f);
-    free(config_path); /* not needed now that we've slurped in the contents */
-
-    config_text[config_st.st_size] = '\0';  /* make input into a null terminated string */
-
-    s = config_text;
-    separator(&nest, &s);
-    while (*s) {
-	path = token(&nest, &s);
-	do {
-	    api = token(&nest, &s);
-	    gv_api = gvplugin_api(api);
-	    if (gv_api == -1) {
-		fprintf(stderr, "invalid api in config: %s %s\n", path, api);
-		return;
-	    }
-	    do {
-		type = token(&nest, &s);
-		if (nest == 2)
-		    quality = atoi(token(&nest, &s));
-		else
-		    quality = 0;
-		rc = gvplugin_install (gvc, gv_api, type, quality, path, NULL);
-		if (!rc) {
-		    fprintf(stderr, "config error: %s %s %s\n", path, api, type);
-		    return;
-		}
-	    } while (nest == 2);
-	} while (nest == 1);
+	gvconfig_library_install_from_config(gvc, config_text);
     }
 #endif
 }
