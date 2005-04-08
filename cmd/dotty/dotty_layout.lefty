@@ -5,7 +5,7 @@ dotty.grablserver = function (lserver) {
     local fd;
 
     if (~dotty.lservers[lserver] | tablesize (dotty.lservers[lserver]) == 0) {
-        if (~((fd = openio ('pipe', lserver, 'r+')) >= 0)) {
+        if (~((fd = openio ('pipe', lserver, 'r+', '%e -Txdot')) >= 0)) {
             dotty.message (0, concat ('cannot start ', lserver));
             return null;
         }
@@ -15,8 +15,9 @@ dotty.grablserver = function (lserver) {
         ];
     }
     for (fd in dotty.lservers[lserver]) {
-        dotty.lservers[lserver][fd].count =
-                dotty.lservers[lserver][fd].count + 1;
+        dotty.lservers[lserver][fd].count = dotty.lservers[
+            lserver
+        ][fd].count + 1;
         dotty.lservers.inuse[fd] = dotty.lservers[lserver][fd];
         remove (fd, dotty.lservers[lserver]);
         return fd;
@@ -74,20 +75,27 @@ dotty.protogt.finishlayout = function (gt) {
             if ((fd = openio ('file', 'dottybug.dot', 'w+')) >= 0) {
                 writegraph (fd, gt.graph, 0);
                 closeio (fd);
-                dotty.message (0,
-                        concat ('graph that causes ', gt.lserver));
-                dotty.message (0,
-                        'to fail has been saved in file dottybug.dot');
-                dotty.message (0,
-                        'please fill out a bug report at http://www.research.att.com/~erg/graphviz/bugform.html');
+                dotty.message (
+                    0, concat ('graph that causes ', gt.lserver)
+                );
+                dotty.message (
+                    0, 'to fail has been saved in file dottybug.dot'
+                );
+                dotty.message (
+                    0, 'please fill out a bug report at'
+                );
+                dotty.message (
+                    0, 'http://www.research.att.com/~erg/graphviz/bugform.html'
+                );
             }
             dotty.popbusy (gt, gt.views);
             gt.layoutpending = 0;
             gt.haveinput = 0;
             return 1;
         }
-        dotty.message (1,
-                concat ('lost connection to ', gt.lserver, ', restarting...'));
+        dotty.message (
+            1, concat ('lost connection to ', gt.lserver, ', restarting...')
+        );
         lpt.fd = dotty.grablserver (gt.lserver);
         writegraph (lpt.fd, gt.graph, 1);
         if (gt.layoutmode == 'async')
@@ -121,39 +129,33 @@ dotty.protogt.cancellayout = function (gt) {
     }
 };
 dotty.protogt.unpacklayout = function (gt, graph2) {
-    local graph, gid, sgraph1, sgraph2, nid, node1, node2;
-    local t1, t2, t3, n2, i, j, k, l, m, eid, edge1, edge2, points;
-    local pa1, pa2, pb1, pb2, la, lb;
+    local graph, gid, sgraph1, sgraph2, nid, node1, node2, eid, edge1, edge2;
+    local t1, pos, size;
 
     graph = gt.graph;
     for (gid in graph2.graphdict) {
         if (~(sgraph1 = graph.graphs[graph.graphdict[gid]]))
             continue;
         sgraph2 = graph2.graphs[graph2.graphdict[gid]];
-        if (sgraph2.graphattr.bb & sgraph2.graphattr.bb ~= '') {
-            t1 = split (sgraph2.graphattr.bb, ',');
-            sgraph1.rect = [
-                0 = ['x' = ston (t1[0]); 'y' = ston (t1[1]);];
-                1 = ['x' = ston (t1[2]); 'y' = ston (t1[3]);];
-            ];
-        } else
-            sgraph1.rect = [];
-        if (sgraph2.graphattr.lp & sgraph2.graphattr.lp ~= '') {
-            t1 = split (sgraph2.graphattr.lp, ',');
-            sgraph1.lp = ['x' = ston (t1[0]); 'y' = ston (t1[1]);];
-        } else
-            sgraph1.lp = [];
+        sgraph1.draws = gt.unpackalldraw (gt, sgraph2.graphattr);
     }
     for (nid in graph2.nodedict) {
         if (~(node1 = graph.nodes[graph.nodedict[nid]]))
             continue;
         node2 = graph2.nodes[graph2.nodedict[nid]];
+        node1.draws = gt.unpackalldraw (gt, node2.attr);
         t1 = split (node2.attr.pos, ',');
-        node1.pos = ['x' = ston (t1[0]); 'y' = ston (t1[1]);];
-        node1.size.x = ston (node2.attr.width) * 72;
-        node1.size.y = ston (node2.attr.height) * 72;
-        if (node2.attr.rects)
-            node1.fields = parsegraphlabel (node2.attr.label, node2.attr.rects);
+        pos = ['x' = ston (t1[0]); 'y' = ston (t1[1]);];
+        size = [
+            'x' = ston (node2.attr.width) * 72;
+            'y' = ston (node2.attr.height) * 72;
+        ];
+        node1.pos = pos;
+        node1.size = size;
+        node1.rect = [
+            0 = ['x' = pos.x - size.x / 2; 'y' = pos.y - size.y / 2;];
+            1 = ['x' = pos.x + size.x / 2; 'y' = pos.y + size.y / 2;];
+        ];
     }
     for (eid in graph2.edges) {
         edge2 = graph2.edges[eid];
@@ -162,97 +164,26 @@ dotty.protogt.unpacklayout = function (gt, graph2) {
                 continue;
         } else if (graph == graph2)
             edge1 = edge2;
-        if (edge2.attr.pos) {
-            points = [];
-            remove ('sp', edge1);
-            remove ('ep', edge1);
-            t2 = split (edge2.attr.pos, ';');
-            for (k = 0; t2[k]; k = k + 1) {
-                t3 = split (t2[k], ' ');
-                n2 = tablesize (t3);
-                j = 0;
-            i = 0;
-                t1 = split (t3[0], ',');
-            while (t1[0] == 's' | t1[0] == 'e') {
-                if (t1[0] == 's')
-                    edge1.sp = ['x' = ston (t1[1]); 'y' = ston (t1[2]);];
-                else # (t1[0] == 'e')
-                    edge1.ep = ['x' = ston (t1[1]); 'y' = ston (t1[2]);];
-                i = i + 1;
-                    t1 = split (t3[i], ',');
-            }
-                points[k][j] = ['x' = ston (t1[0]); 'y' = ston (t1[1]);];
-            i = i + 1;
-                j = j + 1;
-            while (i < n2) {
-                    t1 = split (t3[i], ',');
-                    points[k][j] = ['x' = ston (t1[0]); 'y' = ston (t1[1]);];
-                j = j + 1;
-                i = i + 1;
-            }
-        }
-            if (k > 1) { # concentrators
-                l = k;
-                while (l > 1) {
-                    la = tablesize (points[0]);
-                    pa1 = points[0][0];
-                    pa2 = points[0][la - 1];
-                    for (k = 1; points[k]; k = k + 1) {
-                        lb = tablesize (points[k]);
-                        pb1 = points[k][0];
-                        pb2 = points[k][lb - 1];
-                        if (pa1.x == pb2.x & pa1.y == pb2.y) {
-                            for (m = 1; m < la; m = m + 1) {
-                                points[k][lb] = points[0][m];
-                                lb = lb + 1;
-                            }
-                            points[0] = points[l - 1];
-                            remove (l - 1, points);
-                            break;
-                        } else if (pa2.x == pb1.x & pa2.y == pb1.y) {
-                            for (m = 1; m < lb; m = m + 1) {
-                                points[0][la] = points[k][m];
-                                la = la + 1;
-                            }
-                            points[k] = points[l - 1];
-                            remove (l - 1, points);
-                            break;
-                        }
-                    }
-                    if (points[l - 1]) {
-                        dotty.message (1, 'failed to match edge points');
-                        break;
-                    }
-                    l = l - 1;
-                }
-            }
-            edge1.points = points[0];
-        }
-        if (edge2.attr.lp) {
-            t1 = split (edge2.attr.lp, ',');
-            edge1.lp = ['x' = ston (t1[0]); 'y' = ston (t1[1]);];
-        }
+        edge1.draws = gt.unpackalldraw (gt, edge2.attr);
     }
+    graph.draws = gt.unpackalldraw (gt, graph2.graphattr);
     t1 = split (graph2.graphattr.bb, ',');
     graph.rect[0].x = ston (t1[0]);
     graph.rect[0].y = ston (t1[1]);
     graph.rect[1].x = ston (t1[2]);
     graph.rect[1].y = ston (t1[3]);
-    if (graph2.graphattr.lp & graph2.graphattr.lp ~= '') {
-        t1 = split (graph2.graphattr.lp, ',');
-        graph.lp = ['x' = ston (t1[0]); 'y' = ston (t1[1]);];
-    } else
-        graph.lp = [];
     if (gt.graph ~= graph2)
         return;
     # strip position and size info from the attributes
     for (gid in graph2.graphdict) {
         sgraph2 = graph2.graphs[graph2.graphdict[gid]];
+        gt.removealldraw (gt, sgraph2.graphattr);
         if (sgraph2.graphattr.bb)
             remove ('bb', sgraph2.graphattr);
     }
     for (nid in graph2.nodedict) {
         node2 = graph2.nodes[graph2.nodedict[nid]];
+        gt.removealldraw (gt, node2.attr);
         if (node2.attr.rects)
             remove ('rects', node2.attr);
         remove ('pos', node2.attr);
@@ -261,12 +192,158 @@ dotty.protogt.unpacklayout = function (gt, graph2) {
     }
     for (eid in graph2.edges) {
         edge2 = graph2.edges[eid];
+        gt.removealldraw (gt, edge2.attr);
         if (edge2.attr.pos)
             remove ('pos', edge2.attr);
         if (edge2.attr.lp)
             remove ('lp', edge2.attr);
     }
+    gt.removealldraw (gt, graph2.graphattr);
     remove ('bb', graph2.graphattr);
     if (graph2.graphattr.lp)
         remove ('lp', graph2.graphattr);
+};
+#
+# draw directive parsing
+#
+dotty.protogt.unpackalldraw = function (gt, attr) {
+    local o, did;
+
+    o = [];
+    if (attr._draw_)
+        o._draw_ = gt.unpackdraw (attr._draw_);
+    if (attr._ldraw_)
+        o._ldraw_ = gt.unpackdraw (attr._ldraw_);
+    if (attr._hdraw_)
+        o._hdraw_ = gt.unpackdraw (attr._hdraw_);
+    if (attr._tdraw_)
+        o._tdraw_ = gt.unpackdraw (attr._tdraw_);
+    if (attr._hldraw_)
+        o._hldraw_ = gt.unpackdraw (attr._hldraw_);
+    if (attr._tldraw_)
+        o._tldraw_ = gt.unpackdraw (attr._tldraw_);
+    for (did in o)
+        if (o[did].ep) {
+            o.ep = o[did].ep;
+            break;
+        }
+    return o;
+};
+dotty.protogt.removealldraw = function (gt, attr) {
+    if (attr._draw_)
+        remove ('_draw_', attr);
+    if (attr._ldraw_)
+        remove ('_ldraw_', attr);
+    if (attr._hdraw_)
+        remove ('_hdraw_', attr);
+    if (attr._tdraw_)
+        remove ('_tdraw_', attr);
+    if (attr._hldraw_)
+        remove ('_hldraw_', attr);
+    if (attr._tldraw_)
+        remove ('_tldraw_', attr);
+};
+dotty.protogt.unpackdraw = function (attr) {
+    local oo, o, tt, t, n, i, j, s, l, ep;
+
+    oo = [];
+    t = split (attr, ' ', 0);
+    n = tablesize (t);
+    if (t[n - 1] == '') {
+        remove (n - 1, t);
+        n = n - 1;
+    }
+    i = 0;
+    while (i < n) {
+        o = [];
+        if (t[i] == 'E') {
+            o.type = t[i];
+            o.c.x = ston (t[i + 1]);
+            o.c.y = ston (t[i + 2]);
+            o.s.x = ston (t[i + 3]);
+            o.s.y = ston (t[i + 4]);
+            i = i + 5;
+        } else if (t[i] == 'e') {
+            o.type = t[i];
+            o.c.x = ston (t[i + 1]);
+            o.c.y = ston (t[i + 2]);
+            o.s.x = ston (t[i + 3]);
+            o.s.y = ston (t[i + 4]);
+            i = i + 5;
+        } else if (t[i] == 'P') {
+            o.type = t[i];
+            o.n = ston (t[i + 1]);
+            for (j = 0; j < o.n; j = j + 1) {
+                o.ps[j].x = ston (t[i + 2 + j * 2]);
+                o.ps[j].y = ston (t[i + 2 + j * 2 + 1]);
+            }
+            i = i + 2 + o.n * 2;
+            o.ps[o.n] = o.ps[0];
+            o.n = o.n + 1; 
+        } else if (t[i] == 'p') {
+            o.type = t[i];
+            o.n = ston (t[i + 1]);
+            for (j = 0; j < o.n; j = j + 1) {
+                o.ps[j].x = ston (t[i + 2 + j * 2]);
+                o.ps[j].y = ston (t[i + 2 + j * 2 + 1]);
+            }
+            i = i + 2 + o.n * 2;
+            o.ps[o.n] = o.ps[0];
+            o.n = o.n + 1; 
+        } else if (t[i] == 'L') {
+            o.type = t[i];
+            o.n = ston (t[i + 1]);
+            for (j = 0; j < o.n; j = j + 1) {
+                o.ps[j].x = ston (t[i + 2 + j * 2]);
+                o.ps[j].y = ston (t[i + 2 + j * 2 + 1]);
+            }
+            i = i + 2 + o.n * 2;
+            if (~ep)
+                ep = copy (o.ps[1]);
+        } else if (t[i] == 'B') {
+            o.type = t[i];
+            o.n = ston (t[i + 1]);
+            for (j = 0; j < o.n; j = j + 1) {
+                o.ps[j].x = ston (t[i + 2 + j * 2]);
+                o.ps[j].y = ston (t[i + 2 + j * 2 + 1]);
+            }
+            i = i + 2 + o.n * 2;
+            if (~ep)
+                ep = copy (o.ps[1]);
+        } else if (t[i] == 'T') {
+            o.type = t[i];
+            o.p.x = ston (t[i + 1]);
+            o.p.y = ston (t[i + 2]);
+            o.j = ston (t[i + 3]);
+            if (o.j == -1)
+                o.j = 'lb';
+            else if (o.j == 1)
+                o.j = 'rb';
+            else if (o.j == 0)
+                o.j = 'cb';
+            o.w = ston (t[i + 4]);
+            o.n = ston (t[i + 5]);
+            i = i + 6;
+            s = t[i];
+            i = i + 1;
+            l = strlen (s) - 1;
+            while (l < o.n) {
+                s = concat (s, ' ', t[i]);
+                l = l + 1 + strlen (t[i]);
+                i = i + 1;
+            }
+            tt = split (s, '');
+            l = tablesize (tt);
+            s = '';
+            for (j = 1; j < l; j = j + 1)
+                s = concat (s, tt[j]);
+            o.s = s;
+        } else {
+            dotty.message (0, concat ('draw language parser error: ', t[i]));
+            return null;
+        }
+        oo[tablesize (oo)] = o;
+    }
+    oo.ep = ep;
+    return oo;
 };
