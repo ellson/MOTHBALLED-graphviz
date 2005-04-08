@@ -18,65 +18,68 @@
 extern "C" {
 #endif
 
-
-/* Lefteris Koutsofios - AT&T Bell Laboratories */
+/* Lefteris Koutsofios - AT&T Labs Research */
 
 #ifndef _TBL_H
 #define _TBL_H
-    typedef enum {
-	T_INTEGER = 1, T_REAL, T_STRING, T_CODE, T_TABLE, T_SIZE
-    } Ttype_t;
 
-    typedef struct Tinteger_t {
-	Mheader_t head;
-	long i;
-    } Tinteger_t;
+#define T_INTEGER 1
+#define T_REAL    2
+#define T_STRING  3
+#define T_CODE    4
+#define T_TABLE   5
+#define T_SIZE    6
+
+typedef struct Tinteger_t {
+    Mheader_t head;
+    long i;
+} Tinteger_t;
 #define T_INTEGERSIZE sizeof (Tinteger_t)
-    typedef struct Treal_t {
-	Mheader_t head;
-	double d;
-    } Treal_t;
+typedef struct Treal_t {
+    Mheader_t head;
+    double d;
+} Treal_t;
 #define T_REALSIZE sizeof (Treal_t)
-    typedef struct Tstring_t {
-	Mheader_t head;
-	char s[1];
-    } Tstring_t;
+typedef struct Tstring_t {
+    Mheader_t head;
+    char s[1];
+} Tstring_t;
 #define T_STRINGSIZE(l) (l + Tstringoffset)
-    typedef struct Tcode_t {
-	Mheader_t head;
-	Code_t c[1];
-    } Tcode_t;
+typedef struct Tcode_t {
+    Mheader_t head;
+    Code_t c[1];
+} Tcode_t;
 #define T_CODESIZE(l) (l * C_CODESIZE + Tcodeoffset)
-    typedef struct Tkv_t {
-	void *ko;
-	void *vo;
-    } Tkv_t;
+typedef struct Tkv_t {
+    void *ko;
+    void *vo;
+} Tkv_t;
 #define T_KVSIZE sizeof (Tkv_t)
-    typedef struct Tkvlist_t {
-	long i, n;
-	Tkv_t kv[1];
-    } Tkvlist_t;
+typedef struct Tkvlist_t {
+    long i, n;
+    Tkv_t kv[1];
+} Tkvlist_t;
 #define T_KVLISTSIZE(l) (l * T_KVSIZE + Tkvoffset)
 #define T_KVLISTPTRSIZE sizeof (Tkvlist_t *)
-    typedef struct Ttable_t {
-	Mheader_t head;
-	long n, ln;
-	long time;
-	Tkvlist_t **lp;
-    } Ttable_t;
+typedef struct Ttable_t {
+    Mheader_t head;
+    long n, ln;
+    long time;
+    Tkvlist_t **lp;
+} Ttable_t;
 #define T_TABLESIZE sizeof (Ttable_t)
-    typedef struct Tkvindex_t {
-	Ttable_t *tp;
-	Tkv_t *kvp;
-	long i, j;
-    } Tkvindex_t;
+typedef struct Tkvindex_t {
+    Ttable_t *tp;
+    Tkv_t *kvp;
+    long i, j;
+} Tkvindex_t;
 
-    typedef void *Tobj;
+typedef void *Tobj;
 
-    typedef struct Tonm_t {	/* Object aNd Mark */
-	Tobj o;
-	long m;
-    } Tonm_t;
+typedef struct Tonm_t { /* Object aNd Mark */
+    Tobj o;
+    long m;
+} Tonm_t;
 
 #define T_ISSTRING(o)  (M_TYPEOF (o) == T_STRING)
 #define T_ISTABLE(o)   (M_TYPEOF (o) == T_TABLE)
@@ -84,7 +87,7 @@ extern "C" {
 #define T_ISREAL(o)    (M_TYPEOF (o) == T_REAL)
 #define T_ISNUMBER(o)  (M_TYPEOF (o) == T_REAL || M_TYPEOF (o) == T_INTEGER)
 
-#define Tgettype(p)    ((Ttype_t)(((Mheader_t *) p)->type))
+#define Tgettype(p)    (((Mheader_t *) p)->type)
 #define Tgettablen(p)  (((Ttable_t *) p)->n)
 #define Tgettime(p)    (((Ttable_t *) p)->time)
 #define Tgetstring(p)  (char *) &(((Tstring_t *) p)->s[0])
@@ -102,35 +105,35 @@ extern "C" {
 #define TCgetnext(p, off)    ((Tgetcode (p) + off)->next)
 #define TCgetaddr(p, off)    (Tgetcode (p) + off)
 
-    extern long Ttime;
-    extern int Tstringoffset, Tcodeoffset, Tkvoffset;
-    extern Tobj Ttrue, Tfalse;
+extern long Ttime;
+extern int Tstringoffset, Tcodeoffset, Tkvoffset;
+extern Tobj Ttrue, Tfalse;
 
-    void Tinit(void);
-    void Tterm(void);
-    void Tgchelper(void *);
-    void Tfreehelper(void *);
-    Tobj Tinteger(long);
-    Tobj Treal(double);
-    Tobj Tstring(char *);
-    Tobj Tcode(Code_t *, int, int);
-    Tobj Ttable(long);
-    void Tinsi(Tobj, long, Tobj);
-    void Tinsr(Tobj, double, Tobj);
-    void Tinss(Tobj, char *, Tobj);
-    void Tinso(Tobj, Tobj, Tobj);
-    Tobj Tfindi(Tobj, long);
-    Tobj Tfindr(Tobj, double);
-    Tobj Tfinds(Tobj, char *);
-    Tobj Tfindo(Tobj, Tobj);
-    void Tdeli(Tobj, long);
-    void Tdelr(Tobj, double);
-    void Tdels(Tobj, char *);
-    void Tdelo(Tobj, Tobj);
-    Tobj Tcopy(Tobj);
-    void Tgetfirst(Tobj, Tkvindex_t *);
-    void Tgetnext(Tkvindex_t *);
-#endif				/* _TBL_H */
+void Tinit (void);
+void Tterm (void);
+void Tgchelper (void *);
+void Tfreehelper (void *);
+Tobj Tinteger (long);
+Tobj Treal (double);
+Tobj Tstring (char *);
+Tobj Tcode (Code_t *, int, int);
+Tobj Ttable (long);
+void Tinsi (Tobj, long, Tobj);
+void Tinsr (Tobj, double, Tobj);
+void Tinss (Tobj, char *, Tobj);
+void Tinso (Tobj, Tobj, Tobj);
+Tobj Tfindi (Tobj, long);
+Tobj Tfindr (Tobj, double);
+Tobj Tfinds (Tobj, char *);
+Tobj Tfindo (Tobj, Tobj);
+void Tdeli (Tobj, long);
+void Tdelr (Tobj, double);
+void Tdels (Tobj, char *);
+void Tdelo (Tobj, Tobj);
+Tobj Tcopy (Tobj);
+void Tgetfirst (Tobj, Tkvindex_t *);
+void Tgetnext (Tkvindex_t *);
+#endif /* _TBL_H */
 
 #ifdef __cplusplus
 }
