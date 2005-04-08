@@ -651,4 +651,5 @@ colorname_t colornames[] = {
 {"yellow3",205,205,0},
 {"yellow4",139,139,0},
 {"yellowgreen",154,205,50},
+{"pastelblue",153,153,255},
 };

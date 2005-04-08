@@ -14,8 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-
-/* Lefteris Koutsofios - AT&T Bell Laboratories */
+/* Lefteris Koutsofios - AT&T Labs Research */
 
 #include "common.h"
 #include "code.h"
@@ -28,36 +27,32 @@ int cbufn, cbufi;
 
 static int Cstringoffset;
 
-void Cinit(void)
-{
+void Cinit (void) {
     Code_t c;
 
-    cbufp = Marrayalloc((long) CBUFINCR * CBUFSIZE);
+    cbufp = Marrayalloc ((long) CBUFINCR * CBUFSIZE);
     cbufn = CBUFINCR;
     cbufi = 0;
     Cstringoffset = (char *) &c.u.s[0] - (char *) &c + 1;
     /* the + 1 above accounts for the null character */
 }
 
-void Cterm(void)
-{
-    Marrayfree(cbufp);
+void Cterm (void) {
+    Marrayfree (cbufp);
     cbufp = NULL;
     cbufn = cbufi = 0;
 }
 
-void Creset(void)
-{
+void Creset (void) {
     cbufi = 0;
 }
 
-int Cnew(Ctype_t ctype)
-{
+int Cnew (int ctype) {
     int i;
 
     if (cbufi >= cbufn) {
-	cbufp = Marraygrow(cbufp, (long) (cbufn + CBUFINCR) * CBUFSIZE);
-	cbufn += CBUFINCR;
+        cbufp = Marraygrow (cbufp, (long) (cbufn + CBUFINCR) * CBUFSIZE);
+        cbufn += CBUFINCR;
     }
     i = cbufi++;
     cbufp[i].ctype = ctype;
@@ -65,13 +60,12 @@ int Cnew(Ctype_t ctype)
     return i;
 }
 
-int Cinteger(long i)
-{
+int Cinteger (long i) {
     int j;
 
     if (cbufi >= cbufn) {
-	cbufp = Marraygrow(cbufp, (long) (cbufn + CBUFINCR) * CBUFSIZE);
-	cbufn += CBUFINCR;
+        cbufp = Marraygrow (cbufp, (long) (cbufn + CBUFINCR) * CBUFSIZE);
+        cbufn += CBUFINCR;
     }
     j = cbufi++;
     cbufp[j].ctype = C_INTEGER;
@@ -80,13 +74,12 @@ int Cinteger(long i)
     return j;
 }
 
-int Creal(double d)
-{
+int Creal (double d) {
     int i;
 
     if (cbufi >= cbufn) {
-	cbufp = Marraygrow(cbufp, (long) (cbufn + CBUFINCR) * CBUFSIZE);
-	cbufn += CBUFINCR;
+        cbufp = Marraygrow (cbufp, (long) (cbufn + CBUFINCR) * CBUFSIZE);
+        cbufn += CBUFINCR;
     }
     i = cbufi++;
     cbufp[i].ctype = C_REAL;
@@ -95,19 +88,18 @@ int Creal(double d)
     return i;
 }
 
-int Cstring(char *s)
-{
+int Cstring (char *s) {
     int i, size, incr;
 
-    size = (strlen(s) + Cstringoffset + CBUFSIZE - 1) / CBUFSIZE;
+    size = (strlen (s) + Cstringoffset + CBUFSIZE - 1) / CBUFSIZE;
     if (cbufi + size > cbufn) {
-	incr = size > CBUFINCR ? size : CBUFINCR;
-	cbufp = Marraygrow(cbufp, (long) (cbufn + incr) * CBUFSIZE);
-	cbufn += incr;
+        incr = size > CBUFINCR ? size : CBUFINCR;
+        cbufp = Marraygrow (cbufp, (long) (cbufn + incr) * CBUFSIZE);
+        cbufn += incr;
     }
     i = cbufi, cbufi += size;
     cbufp[i].ctype = C_STRING;
-    strcpy((char *) &cbufp[i].u.s[0], s);
+    strcpy ((char *) &cbufp[i].u.s[0], s);
     cbufp[i].next = C_NULL;
     return i;
 }
