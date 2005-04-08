@@ -23,6 +23,8 @@ XLIBS = -L$(LOC_LIB)/pathplan -lpathplan \
 PLUGS = -L$(LOC_PLUG) -lplugins -L$(LOC_PLUG)/cairo -lgvplugin_cairo -L$(LOC_PLUG)/layout -lgvplugin_layout -L$(LOC_PLUG)/gd -lgvplugin_gd  -L$(LOC_PLUG)/text -lgvplugin_text
 
 LIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
+       -L$(LOC_LIB)/common -lcommon \
+       -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
        -L$(LOC_LIB)/neatogen -lneatogen \
        -L$(LOC_LIB)/dotgen -ldotgen \
        -L$(LOC_LIB)/circogen -lcircogen \
@@ -30,7 +32,6 @@ LIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
        -L$(LOC_LIB)/twopigen -ltwopigen \
        -L$(LOC_LIB)/pack -lpack \
        -L$(LOC_LIB)/common -lcommon \
-       -L$(LOC_LIB)/gvc -lgvc \
        $(XLIBS)
 
 DOTLIBS = ../../lib/common/libcommon.a ../../lib/dotgen/libdotgen.a \
