@@ -308,6 +308,9 @@ else
   JAVA_INCLUDES=
   JAVA_LIBS=
 fi
+AC_CHECK_HEADER(jni.h,,[
+  AC_MSG_WARN([Unable to find header jni.h. The Java packages will not be built])
+  HAVE_JAVA=0])
 AC_SUBST(HAVE_JAVA)
 AC_SUBST(JAVA_INCLUDES)
 AC_SUBST(JAVA_LIBS)
