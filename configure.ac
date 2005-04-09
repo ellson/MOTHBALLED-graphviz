@@ -378,6 +378,7 @@ else
   else
     PYTHON_VERSION_MAJOR=`echo $PYTHON_VERSION | cut -d '.' -f 1`
     PYTHON_VERSION_MINOR=`echo $PYTHON_VERSION | cut -d '.' -f 2`
+    PYTHON_VERSION_SHORT=$PYTHON_VERSION_MAJOR.$PYTHON_VERSION_MINOR
     if test $PYTHON_VERSION_MAJOR -lt 3; then
       if test $PYTHON_VERSION_MAJOR -lt 2; then
 	HAVE_PYTHON=0
@@ -389,12 +390,15 @@ else
     fi
   fi
 fi
+AC_CHECK_HEADER(python$PYTHON_VERSION_SHORT/Python.h,,[
+  AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
+  HAVE_PYTHON=0])
 AC_SUBST(PYTHON_VERSION)
 AC_SUBST(HAVE_PYTHON)
 AM_CONDITIONAL(WITH_PYTHON, [test "x$HAVE_PYTHON" = "x1"])
 if test "x$HAVE_PYTHON" = "x1"; then
-  PYTHON_INCLUDES=-I/usr/include/python$PYTHON_VERSION
-  PYTHON_LIBS=-lpython$PYTHON_VERSION
+  PYTHON_INCLUDES=-I/usr/include/python$PYTHON_VERSION_SHORT
+  PYTHON_LIBS=-lpython$PYTHON_VERSION_SHORT
 fi
 AC_SUBST(HAVE_PYTHON)
 AC_SUBST(PYTHON_INCLUDES)
