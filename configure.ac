@@ -13,7 +13,7 @@ if test "x$enable_ltdl" = "xno"; then
 else
   AC_CONFIG_SUBDIRS(libltdl)
   AC_LIBTOOL_DLOPEN
-  AC_LIBLTDL_CONVENIENCE
+  AC_LIBLTDL_INSTALLABLE
 fi
 AM_CONDITIONAL(DISABLE_LTDL, [test "x$enable_ltdl" = "xno"])
 AC_SUBST(INCLTDL)
