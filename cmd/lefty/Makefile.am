@@ -1,6 +1,6 @@
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = ws os cs2l dot2l examples
+SUBDIRS = ws os dot2l examples
 
 # lefty build parameters
 #not useful / old:
@@ -21,10 +21,6 @@ SUBDIRS = ws os cs2l dot2l examples
 # FEATURE_WIN32        assume WIN32 graphics calls
 # FEATURE_DOT          when linking in the dot2l code, a graph parser
 
-DOT2L = dot2l
-WM = ws/x11
-OS = os/unix
-
 leftydir = $(pkgdatadir)/lefty
 pdfdir = $(pkgdatadir)/doc/pdf
 
@@ -34,7 +30,6 @@ DEFINES=-DLEFTYPATH=\"$(LEFTYLIBDIR)\" -DHAVE_CONFIG_H \
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/cmd/lefty/ws/x11 \
 	-I$(top_srcdir)/cmd/lefty/os/unix \
-	-I$(top_srcdir)/cmd/lefty/cs2l \
 	-I$(top_srcdir)/cmd/lefty/dot2l @XAW_INCLUDES@
 
 AM_CFLAGS = $(DEFINES) @X_CFLAGS@
@@ -71,6 +66,6 @@ lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 	groff -Tps -man $< | ps2pdf - - >$@
 
 EXTRA_DIST = $(lefty_DATA) $(man) $(pdf) \
-	colors.txt Makefile.old aix_mods
+	colors.txt Makefile.old aix_mods cs2l/*
 
 DISTCLEANFILES = $(pdf)

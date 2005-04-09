@@ -1524,13 +1524,10 @@ AC_CONFIG_FILES(Makefile
 	cmd/gvpr/Makefile
         cmd/lefty/ws/x11/libfilereq/Makefile
         cmd/lefty/ws/x11/Makefile
-        cmd/lefty/ws/gtk/Makefile
-        cmd/lefty/ws/none/Makefile
         cmd/lefty/ws/Makefile
         cmd/lefty/os/unix/Makefile
         cmd/lefty/os/Makefile
         cmd/lefty/dot2l/Makefile
-        cmd/lefty/cs2l/Makefile
         cmd/lefty/examples/Makefile
         cmd/lefty/Makefile
         cmd/lneato/Makefile

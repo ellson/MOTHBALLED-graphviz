@@ -19,7 +19,15 @@
 #include "common.h"
 #include "g.h"
 #include "gcommon.h"
+
+#if 0
 #include "SF.h"
+#else
+extern int XsraSelFile(Widget toplevel, char *prompt, char *ok, char *cancel,
+                char *failed, char *init_path, char *mode,
+                int (*show_entry) (char *, char **, struct stat *),
+                char *name_return, int name_size);
+#endif
 
 #define WQU widget->u.q
 
