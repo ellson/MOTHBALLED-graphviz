@@ -1551,6 +1551,7 @@ AC_CONFIG_FILES(Makefile
 	tclpkg/tkspline/demo/Makefile
 	tclpkg/gv/Makefile
 	graphviz.spec
+	Doxyfile
 	ast_common.h
 	)
 
