@@ -219,7 +219,7 @@ void gvconfig(GVC_t * gvc)
 
     char *dot_graphviz = "/.graphviz";
     char *libdir = GVLIBDIR;
-    char *plugin_glob = "/libgvplugin*.so.0";
+    char *plugin_glob = "/libgvplugin*.so.?";
 
 #define MAX_SZ_CONFIG 100000
 #endif
