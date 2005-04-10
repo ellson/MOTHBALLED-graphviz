@@ -2,7 +2,9 @@
 
 SUBDIRS = libfilereq
 
-AM_CPPFLAGS = -I$(top_srcdir)/cmd/lefty -DFEATURE_X11 @XAW_INCLUDES@ @X_CFLAGS@
+AM_CPPFLAGS = -I$(top_srcdir)/cmd/lefty \
+	-I$(top_srcdir)/cmd/lefty/ws/x11/libfilereq \
+	-DFEATURE_X11 @XAW_INCLUDES@ @X_CFLAGS@
 
 noinst_HEADERS = gcommon.h
 if WITH_X
