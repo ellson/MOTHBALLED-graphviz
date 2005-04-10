@@ -3,7 +3,7 @@
 AM_CPPFLAGS = @X_CFLAGS@ \
 	$(XAW_INCLUDES)
 
-noinst_HEADERS = SFinternal.h SFDecls.h xstat.h
+noinst_HEADERS = SFinternal.h SFDecls.h xstat.h SF.h
 if WITH_X
 noinst_LTLIBRARIES = libfilereq.la
 endif
