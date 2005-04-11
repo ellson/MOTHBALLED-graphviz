@@ -378,7 +378,7 @@ static void allocbuffer (long size) {
 
     if (size >= freen) {
         if (size > M_SIZEMAX)
-            panic (POS, "allocbuffer", "size is too big");
+            panic (POS, "allocbuffer", "size %d > max size %d: try rebuilding using -DMINTSIZE", size, M_SIZEMAX);
         freearray = Marraygrow (freearray, (long) (size + 1) * FREESIZE);
         for (i = freen; i < size + 1; i++)
             freearray[i] = NULL;
