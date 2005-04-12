@@ -360,6 +360,12 @@ else
   PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
   PHP_LIBS=
 fi
+save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS $PHP_INCLUDES"
+AC_CHECK_HEADER(zend.h,,[
+  AC_MSG_WARN([Unable to find header zend.h. The PHP packages will not be built])
+  HAVE_PHP=0])
+CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(HAVE_PHP)
 AC_SUBST(PHP_INCLUDES)
 AC_SUBST(PHP_LIBS)
