@@ -22,13 +22,13 @@
 #include	<stdlib.h>
 #include	<string.h>
 
-#include        "types.h"
-#include        "macros.h"
-#include        "gvc.h"
-
 #ifndef DISABLE_LTDL
 #include	<ltdl.h>
 #endif
+
+#include        "types.h"
+#include        "macros.h"
+#include        "gvc.h"
 
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
