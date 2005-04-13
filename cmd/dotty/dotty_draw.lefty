@@ -43,17 +43,19 @@ dotty.protogt.setviewsize = function (views, r) {
         }
         w2v = vt.w2v;
         vt.vsize = [
-            'x' = (vt.wrect[1].x - vt.wrect[0].x) / w2v;
-            'y' = (vt.wrect[1].y - vt.wrect[0].y) / w2v;
+            'x' = toint ((vt.wrect[1].x - vt.wrect[0].x) / w2v);
+            'y' = toint ((vt.wrect[1].y - vt.wrect[0].y) / w2v);
         ];
         setwidgetattr (vt.canvas, [
             'window' = vt.wrect;
             'viewport' = vt.vsize;
         ]);
+        attr = getwidgetattr (vt.canvas, [0 = 'viewport';]);
+        vt.vsize = copy (attr.viewport);
     }
 };
 dotty.protogt.setviewscale = function (views, factor) {
-    local vid, vt, w2v;
+    local vid, vt, w2v, attr;
 
     for (vid in views) {
         vt = views[vid];
@@ -67,6 +69,8 @@ dotty.protogt.setviewscale = function (views, factor) {
             'y' = (vt.wrect[1].y - vt.wrect[0].y) / w2v;
         ];
         setwidgetattr (vt.canvas, ['viewport' = vt.vsize;]);
+        attr = getwidgetattr (vt.canvas, [0 = 'viewport';]);
+        vt.vsize = copy (attr.viewport);
     }
 };
 dotty.protogt.setviewcenter = function (views, center) {
@@ -92,10 +96,10 @@ dotty.protogt.drawsgraph = function (gt, views, sgraph) {
     if (~sgraph.draws)
         return;
     gt.execalldraw (gt, views, null, sgraph.draws, [
-        'fontname' = node.fontname;
-        'fontsize' = node.fontsize;
-        'fontcolor' = node.fontcolor;
-        'color' = node.color;
+        'fontname' = sgraph.fontname;
+        'fontsize' = sgraph.fontsize;
+        'fontcolor' = sgraph.fontcolor;
+        'color' = sgraph.color;
         'outlinecolor' = dotty.outlinecolor;
     ]);
 };
@@ -104,10 +108,10 @@ dotty.protogt.undrawsgraph = function (gt, views, sgraph) {
     if (~sgraph.draws)
         return;
     gt.execalldraw (gt, views, null, sgraph.draws, [
-        'fontname' = node.fontname;
-        'fontsize' = node.fontsize;
-        'fontcolor' = node.fontcolor;
-        'color' = node.color;
+        'fontname' = sgraph.fontname;
+        'fontsize' = sgraph.fontsize;
+        'fontcolor' = sgraph.fontcolor;
+        'color' = sgraph.color;
         'outlinecolor' = 0;
     ]);
 };
