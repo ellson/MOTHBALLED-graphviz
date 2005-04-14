@@ -242,24 +242,23 @@ void gvconfig(GVC_t * gvc)
     }
 
     home = getenv ("HOME");
-    if (home) {
+    if (!home) {
+	rc = -1;
+    }
+    else {
         config_path = malloc(strlen(home) + strlen(dot_graphviz) + 1);
         strcpy(config_path, home);
         strcat(config_path, dot_graphviz);
 
         rc = stat(config_path, &config_st);
-	if (rc == -1) {
-	    free(config_path);
-	    config_path = NULL;
-	}
     }
 	
-    if (! config_path || libdir_st.st_mtime > config_st.st_mtime) {
+    if (rc == -1 || libdir_st.st_mtime > config_st.st_mtime) {
 	if (config_path) {
-		f = fopen(config_path,"w");
-		if (!f) {
-		    fprintf(stderr,"failed to open %s for write.\n", config_path);
-		}
+	    f = fopen(config_path,"w");
+	    if (!f) {
+	        fprintf(stderr,"failed to open %s for write.\n", config_path);
+	    }
 	}
 	/* load all libraries even if can't save config */
 
