@@ -197,7 +197,7 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
 		    exit(1);
 		}
 		v = gvrender_output_langname_job(gvc, val);
-		if (v == NO_SUPPORT) {
+		if (!v) {
 		    fprintf(stderr, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
 			val, gvplugin_list(gvc, API_render, val));
 		    exit(1);
@@ -298,7 +298,7 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
     /* if no -Txxx, then set default format */
     if (!gvc->jobs || !gvc->jobs->output_langname) {
 	v = gvrender_output_langname_job(gvc, "dot");
-	assert(v != NO_SUPPORT);
+	assert(v);  /* "dot" should always be available as an output format */
     }
 
 #if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
