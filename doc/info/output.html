@@ -149,20 +149,34 @@ formats need to be interpreted in this manner.
     n characters following '-'. The text should be left-aligned (centered,
     right-aligned) on the point if j is -1 (0, 1), respectively. The value
     w gives the width of the text as computed by the library.
+  <TR><TD>C n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
+    <TD>Set fill color. The color value consists of the
+    n characters following '-'.
+  <TR><TD>c n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
+    <TD>Set pen color. The color value consists of the
+    n characters following '-'.
+  <TR><TD>F s n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
+    <TD>Set font. The font size is s points. The font name consists of the
+    n characters following '-'.
+  <TR><TD>S n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
+    <TD>Set style attribute. The style value consists of the
+    n characters following '-'. The syntax of the value is the same as
+    specified for a <B>styleItem</B> in <A HREF=attrs.html#k:style>style</A>.
   </TABLE>
   <SPACER TYPE=VERTICAL size=10>
   In handling alignment, the application may want to recompute the
   string width using its own rendering primitives.
   <P>
   The text operation is only used in the label attributes. Normally,
-  the non-text operations are only used in the non-label attributes;
-  if, however, the <A HREF=attrs.html#d:decorate>decorate</A>
+  the non-text operations are only used in the non-label attributes.
+  If, however, the <A HREF=attrs.html#d:decorate>decorate</A>
   attribute is set on an edge, its label
   attribute will also contain a polyline operation.
+  In addition, if a label is a complex, HTML-like label, it will also
+  contain non-text operations.
   <P>
-  All coordinates and sizes are in points. Additional information
-  such a line style, fill color, font name or size must be gleaned from
-  the corresponding attributes of the component. Note though that if
+  All coordinates and sizes are in points.
+  Note though that if
   an edge or node is invisible, no drawing operations are attached to it.
 
 <DT><A NAME=d:cmap HREF=#a:cmap><STRONG>cmap</STRONG></A>
