@@ -1562,6 +1562,11 @@ static void emit_job(GVC_t * gvc, graph_t * g)
 {
     gvrender_job_t *job = gvc->job;
 
+    if (!GD_drawing(g)) {
+	fprintf (stderr,"layout was not done\n");
+	return;
+    }
+
 #ifndef DISABLE_CODEGENS
     Output_file = job->output_file;
     Output_lang = job->output_lang;
