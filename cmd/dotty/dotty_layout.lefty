@@ -338,6 +338,18 @@ dotty.protogt.unpackdraw = function (attr) {
             for (j = 1; j < l; j = j + 1)
                 s = concat (s, tt[j]);
             o.s = s;
+        } else if (t[i] == 'C') {
+            i = i + 3;
+            continue;
+        } else if (t[i] == 'c') {
+            i = i + 3;
+            continue;
+        } else if (t[i] == 'F') {
+            i = i + 4;
+            continue;
+        } else if (t[i] == 'S') {
+            i = i + 3;
+            continue;
         } else {
             dotty.message (0, concat ('draw language parser error: ', t[i]));
             return null;

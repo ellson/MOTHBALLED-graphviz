@@ -71,7 +71,9 @@ extern "C" {
     extern void enqueue(queue *, Agnode_t *);
     extern void enqueue_neighbors(queue *, Agnode_t *, int);
     extern void emit_attachment(GVC_t * gvc, textlabel_t *, splines *);
+    extern void emit_background(GVC_t * gvc, graph_t *g);
     extern void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags);
+    extern void emit_edge_graphics(GVC_t * gvc, edge_t * e);
     extern void emit_graph(GVC_t * gvc, graph_t * g);
     extern void emit_label(GVC_t * gvc, textlabel_t *, void *obj);
     extern int emit_once(char *message);
@@ -83,6 +85,7 @@ extern "C" {
     extern void epsf_gencode(GVC_t * gvc, node_t * n);
     extern point exch_xy(point p);
     extern pointf exch_xyf(pointf p);
+    extern void extend_attrs(GVC_t *, graph_t*, int, int);
     extern shape_desc *find_user_shape(char *);
     extern box flip_rec_box(box b, point p);
     extern point flip_pt(point p, int rankdir);
@@ -149,6 +152,8 @@ extern "C" {
     extern point *routesplines(path *, int *);
     extern void routesplinesterm(void);
     extern char *safefile(char *shapefilename);
+    extern attrsym_t* safe_dcl(graph_t*, void*, char*, char*,
+         attrsym_t * (*fun) (Agraph_t *, char *, char *));
     extern int selfRightSpace (edge_t* e);
     extern void setup_graph(GVC_t * gvc, graph_t * g);
     extern shape_kind shapeOf(node_t *);

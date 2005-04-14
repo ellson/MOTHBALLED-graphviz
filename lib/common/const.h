@@ -213,6 +213,14 @@
 #define RANKDIR_BT	2
 #define RANKDIR_RL	3
 
+/* values specifying emit state */
+#define EMIT_DRAW	0
+#define EMIT_LABEL	1
+#define EMIT_TDRAW	2
+#define EMIT_HDRAW	3
+#define EMIT_TLABEL	4
+#define EMIT_HLABEL	5
+
 /* user-specified node position: ND_pinned */
 #define P_SET    1		/* position supplied by user */
 #define P_FIX    2		/* position fixed during topological layout */

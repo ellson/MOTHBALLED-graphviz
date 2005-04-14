@@ -1149,7 +1149,9 @@ static void poly_gencode(GVC_t * gvc, node_t * n)
     static point *A;
     static int A_size;
     int filled;
+    extern int xdemitState;
 
+    xdemitState = EMIT_DRAW;
     poly = (polygon_t *) ND_shape_info(n);
     vertices = poly->vertices;
     sides = poly->sides;
@@ -1240,6 +1242,7 @@ static void poly_gencode(GVC_t * gvc, node_t * n)
 	filled = 0;
     }
 
+    xdemitState = EMIT_LABEL;
     emit_label(gvc, ND_label(n), (void *) n);
 }
 
@@ -1771,7 +1774,9 @@ static void record_gencode(GVC_t * gvc, node_t * n)
     point A[4];
     int i, style;
     field_t *f;
+    extern int xdemitState;
 
+    xdemitState = EMIT_DRAW;
     f = (field_t *) ND_shape_info(n);
     A[0] = f->b.LL;
     A[2] = f->b.UR;
@@ -1791,6 +1796,7 @@ static void record_gencode(GVC_t * gvc, node_t * n)
 	round_corners(gvc, n, A, 4, ROUNDED);
     else
 	gvrender_polygon(gvc, A, 4, style & FILLED);
+    xdemitState = EMIT_LABEL;
     gen_fields(gvc, n, f);
 }
 

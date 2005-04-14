@@ -20,8 +20,6 @@
 
 static int e_arrows;		/* graph has edges with end arrows */
 static int s_arrows;		/* graph has edges with start arrows */
-agxbuf outbuf;
-agxbuf charbuf;
 
 static void printptf(FILE * f, point pt)
 {
@@ -140,158 +138,11 @@ void write_plain_ext(GVC_t * gvc, graph_t * g, FILE * f)
     _write_plain(gvc, g, f, TRUE);
 }
 
-static attrsym_t *safe_dcl(graph_t * g, void *obj, char *name, char *def,
-			   attrsym_t * (*fun) (Agraph_t *, char *, char *))
-{
-    attrsym_t *a = agfindattr(obj, name);
-    if (a == NULL)
-	a = fun(g, name, def);
-    return a;
-}
-
-static int isInvis(char *style)
-{
-    char **styles = 0;
-    char **sp;
-    char *p;
-
-    if (style[0]) {
-	styles = parse_style(style);
-	sp = styles;
-	while ((p = *sp++)) {
-	    if (streq(p, "invis"))
-		return 1;
-	}
-    }
-    return 0;
-}
-
-/* 
- * John M. suggests:
- * You might want to add four more:
- *
- * _ohdraw_ (optional head-end arrow for edges)
- * _ohldraw_ (optional head-end label for edges)
- * _otdraw_ (optional tail-end arrow for edges)
- * _otldraw_ (optional tail-end label for edges)
- * 
- * that would be generated when an additional option is supplied to 
- * dot, etc. and 
- * these would be the arrow/label positions to use if a user want to flip the 
- * direction of an edge (as sometimes is there want).
- */
-static void extend_attrs(GVC_t * gvc, graph_t *g)
-{
-    int i, j;
-    bezier bz = { 0, 0, 0, 0 };
-    bezierf bzf;
-    double scale;
-    node_t *n;
-    edge_t *e;
-    attrsym_t *n_draw = NULL;
-    attrsym_t *n_l_draw = NULL;
-    attrsym_t *e_draw = NULL;
-    attrsym_t *h_draw = NULL;
-    attrsym_t *t_draw = NULL;
-    attrsym_t *e_l_draw = NULL;
-    attrsym_t *hl_draw = NULL;
-    attrsym_t *tl_draw = NULL;
-    unsigned char buf[BUFSIZ];
-    unsigned char cbuf[BUFSIZ];
-
-    if (GD_has_labels(g) & GRAPH_LABEL)
-	g_l_draw = safe_dcl(g, g, "_ldraw_", "", agraphattr);
-    if (GD_n_cluster(g))
-	g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
-
-    n_draw = safe_dcl(g, g->proto->n, "_draw_", "", agnodeattr);
-    n_l_draw = safe_dcl(g, g->proto->n, "_ldraw_", "", agnodeattr);
-
-    e_draw = safe_dcl(g, g->proto->e, "_draw_", "", agedgeattr);
-    if (e_arrows)
-	h_draw = safe_dcl(g, g->proto->e, "_hdraw_", "", agedgeattr);
-    if (s_arrows)
-	t_draw = safe_dcl(g, g->proto->e, "_tdraw_", "", agedgeattr);
-    if (GD_has_labels(g) & EDGE_LABEL)
-	e_l_draw = safe_dcl(g, g->proto->e, "_ldraw_", "", agedgeattr);
-    if (GD_has_labels(g) & HEAD_LABEL)
-	hl_draw = safe_dcl(g, g->proto->e, "_hldraw_", "", agedgeattr);
-    if (GD_has_labels(g) & TAIL_LABEL)
-	tl_draw = safe_dcl(g, g->proto->e, "_tldraw_", "", agedgeattr);
-
-    agxbinit(&outbuf, BUFSIZ, buf);
-    agxbinit(&charbuf, BUFSIZ, cbuf);
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (ND_shape(n) && !isInvis(late_string(n, N_style, ""))) {
-	    ND_shape(n)->fns->codefn(gvc, n);
-	    agxset(n, n_draw->index, agxbuse(&outbuf));
-	    agxset(n, n_l_draw->index, agxbuse(&charbuf));
-	}
-	if (State < GVSPLINES)
-	    continue;
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    if (ED_edge_type(e) == IGNORED)
-		continue;
-	    if (isInvis(late_string(e, E_style, "")))
-		continue;
-	    if (ED_spl(e) == NULL)
-		continue;
-
-	    scale = late_double(e, E_arrowsz, 1.0, 0.0);
-	    for (i = 0; i < ED_spl(e)->size; i++) {
-		bz = ED_spl(e)->list[i];
-	        /* convert points to pointf for gvrender api */
-	        bzf.size = bz.size;
-	        bzf.list = malloc(sizeof(pointf) * bzf.size);
-	        for (j = 0; j < bz.size; j++)
-                    P2PF(bz.list[j], bzf.list[j]);
-                gvrender_beziercurve(gvc, bzf.list, bz.size, FALSE, FALSE);
-	        free(bzf.list);
-	    }
-	    agxset(e, e_draw->index, agxbuse(&outbuf));
-	    for (i = 0; i < ED_spl(e)->size; i++) {
-		if (bz.sflag) {
-		    arrow_gen(gvc, bz.sp, bz.list[0], scale, bz.sflag);
-		    agxset(e, t_draw->index, agxbuse(&outbuf));
-		}
-		if (bz.eflag) {
-		    arrow_gen(gvc, bz.ep, bz.list[bz.size - 1], scale,
-			      bz.eflag);
-		    agxset(e, h_draw->index, agxbuse(&outbuf));
-		}
-	    }
-	    if (ED_label(e)) {
-		emit_label(gvc, ED_label(e), (void *) e);
-		if (mapbool(late_string(e, E_decorate, "false"))
-		    && ED_spl(e)) {
-		    emit_attachment(gvc, ED_label(e), ED_spl(e));
-		    agxbput(&charbuf, agxbuse(&outbuf));
-		}
-		agxset(e, e_l_draw->index, agxbuse(&charbuf));
-	    }
-	    if (ED_head_label(e)) {
-		emit_label(gvc, ED_head_label(e), (void *) e);
-		agxset(e, hl_draw->index, agxbuse(&charbuf));
-	    }
-	    if (ED_tail_label(e)) {
-		emit_label(gvc, ED_tail_label(e), (void *) e);
-		agxset(e, tl_draw->index, agxbuse(&charbuf));
-	    }
-	}
-    }
-    if (GD_label(g)) {
-	emit_label(gvc, GD_label(g), (void *) g);
-	agxset(g, g_l_draw->index, agxbuse(&charbuf));
-    }
-    emit_clusters(gvc, g, 0);
-    agxbfree(&outbuf);
-    agxbfree(&charbuf);
-}
 
 void write_extended_dot(GVC_t *gvc, graph_t *g, FILE *f)
 {
 	attach_attrs(g);
-	extend_attrs(gvc, g);
+	extend_attrs(gvc, g, s_arrows, e_arrows);
 	agwrite(g, f);
 }
 

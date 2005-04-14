@@ -25,6 +25,7 @@
 #include	"gvc.h"
 
 static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
+int    emitState;
 
 /* parse_layers:
  * Split input string into tokens, with separators specified by
@@ -363,7 +364,7 @@ static boolean write_node_test(Agraph_t * g, Agnode_t * n)
     return TRUE;
 }
 
-static void emit_background(GVC_t * gvc, graph_t *g)
+void emit_background(GVC_t * gvc, graph_t *g)
 {
     gvrender_job_t * job = gvc->job;
     char *str;
@@ -721,7 +722,7 @@ static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
     return boxf_overlap(job->pageBox, b);
 }
 
-static void emit_edge(GVC_t * gvc, edge_t * e)
+void emit_edge_graphics(GVC_t * gvc, edge_t * e)
 {
     int i, j, cnum, numc = 0;
     char *color, *style;
@@ -735,35 +736,10 @@ static void emit_edge(GVC_t * gvc, edge_t * e)
     boolean saved = FALSE;
     double scale, numc2;
     char *p;
-    char *s, *url = NULL, *label = NULL, *tooltip = NULL, *target = NULL;
-    textlabel_t *lab = NULL;
+    extern int xdemitState;
 
 #define SEP 2.0
 
-#if 0
-fprintf(stderr,"edge_in_layer %s edge_in_pageBox %s\n",
-        edge_in_layer(gvc, e->head->graph, e)?"true":"false",
-        edge_in_pageBox(gvc, e)?"true":"false");
-#endif
-
-    if (! edge_in_pageBox(gvc, e) || ! edge_in_layer(gvc, e->head->graph, e))
-	return;
-
-    gvrender_begin_edge(gvc, e);
-    if (((s = agget(e, "href")) && s[0])
-	|| ((s = agget(e, "URL")) && s[0])) {
-	url = strdup_and_subst_edge(s, e);
-	if ((lab = ED_label(e))) {
-	    label = lab->text;
-	}
-	if ((s = agget(e, "tooltip")) && s[0])
-	    tooltip = strdup_and_subst_edge(s, e);
-	else if (label)
-	    tooltip = strdup_and_subst_edge(label, e);
-	if ((s = agget(e, "target")) && s[0])
-	    target = strdup_and_subst_edge(s, e);
-	gvrender_begin_anchor(gvc, url, tooltip, target);
-    }
     style = late_string(e, E_style, "");
     /* We shortcircuit drawing an invisible edge because the arrowhead
      * code resets the style to solid, and most of the code generators
@@ -779,6 +755,7 @@ fprintf(stderr,"edge_in_layer %s edge_in_pageBox %s\n",
 	    }
 	}
     }
+    xdemitState = EMIT_DRAW;
     if (ED_spl(e)) {
 	scale = late_double(e, E_arrowsz, 1.0, 0.0);
 	color = late_string(e, E_color, "");
@@ -855,8 +832,10 @@ fprintf(stderr,"edge_in_layer %s edge_in_pageBox %s\n",
 					 FALSE, FALSE);
 		}
 	    }
+	    xdemitState = EMIT_TDRAW;
 	    if (bz.sflag)
 		arrow_gen(gvc, bz.sp, bz.list[0], scale, bz.sflag);
+	    xdemitState = EMIT_HDRAW;
 	    if (bz.eflag)
 		arrow_gen(gvc, bz.ep, bz.list[bz.size - 1], scale,
 			  bz.eflag);
@@ -887,8 +866,10 @@ fprintf(stderr,"edge_in_layer %s edge_in_pageBox %s\n",
 		} else {
 		    gvrender_beziercurve(gvc, bzf.list, bz.size, FALSE,
 					 FALSE);
+		    xdemitState = EMIT_TDRAW;
 		    if (bz.sflag)
 			arrow_gen(gvc, bz.sp, bz.list[0], scale, bz.sflag);
+		    xdemitState = EMIT_HDRAW;
 		    if (bz.eflag)
 			arrow_gen(gvc, bz.ep, bz.list[bz.size - 1], scale,
 				  bz.eflag);
@@ -897,18 +878,53 @@ fprintf(stderr,"edge_in_layer %s edge_in_pageBox %s\n",
 	    }
 	}
     }
+    xdemitState = EMIT_LABEL;
     if (ED_label(e)) {
 	emit_label(gvc, ED_label(e), (void *) e);
 	if (mapbool(late_string(e, E_decorate, "false")) && ED_spl(e))
 	    emit_attachment(gvc, ED_label(e), ED_spl(e));
     }
+    xdemitState = EMIT_HLABEL;
     if (ED_head_label(e))
 	emit_label(gvc, ED_head_label(e), (void *) e);	/* vladimir */
+    xdemitState = EMIT_TLABEL;
     if (ED_tail_label(e))
 	emit_label(gvc, ED_tail_label(e), (void *) e);	/* vladimir */
 
     if (saved)
 	gvrender_end_context(gvc);
+}
+
+static void emit_edge(GVC_t * gvc, edge_t * e)
+{
+    char *s, *url = NULL, *label = NULL, *tooltip = NULL, *target = NULL;
+    textlabel_t *lab = NULL;
+
+#if 0
+fprintf(stderr,"edge_in_layer %s edge_in_pageBox %s\n",
+        edge_in_layer(gvc, e->head->graph, e)?"true":"false",
+        edge_in_pageBox(gvc, e)?"true":"false");
+#endif
+
+    if (! edge_in_pageBox(gvc, e) || ! edge_in_layer(gvc, e->head->graph, e))
+	return;
+
+    gvrender_begin_edge(gvc, e);
+    if (((s = agget(e, "href")) && s[0])
+	|| ((s = agget(e, "URL")) && s[0])) {
+	url = strdup_and_subst_edge(s, e);
+	if ((lab = ED_label(e))) {
+	    label = lab->text;
+	}
+	if ((s = agget(e, "tooltip")) && s[0])
+	    tooltip = strdup_and_subst_edge(s, e);
+	else if (label)
+	    tooltip = strdup_and_subst_edge(label, e);
+	if ((s = agget(e, "target")) && s[0])
+	    target = strdup_and_subst_edge(s, e);
+	gvrender_begin_anchor(gvc, url, tooltip, target);
+    }
+    emit_edge_graphics (gvc, e);
     if (url) {
 	gvrender_end_anchor(gvc);
 	free(url);
@@ -1329,6 +1345,7 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
     node_t *n;
     edge_t *e;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
+    extern int xdemitState;
 
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
@@ -1353,6 +1370,7 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
 	}
 	gvrender_begin_context(gvc);
 	filled = FALSE;
+	xdemitState = EMIT_DRAW;
 	if (((str = agget(sg, "style")) != 0) && str[0]) {
 	    gvrender_set_style(gvc, (style = parse_style(str)));
 	    for (i = 0; style[i]; i++)
@@ -1391,6 +1409,7 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
 	    gvrender_set_pencolor(gvc, str);
 	    gvrender_polygon(gvc, A, 4, filled);
 	}
+	xdemitState = EMIT_DRAW;
 	if (GD_label(sg))
 	    emit_label(gvc, GD_label(sg), (void *) sg);
 

@@ -18,16 +18,159 @@
 #include	"gvc.h"
 #include	"agxbuf.h"
 
-extern agxbuf charbuf;
-extern agxbuf outbuf;
+int    xdemitState;
+static agxbuf xbuf0;
+static agxbuf xbuf1;
+static agxbuf xbuf2;
+static agxbuf xbuf3;
+static agxbuf xbuf4;
+static agxbuf xbuf5;
+static agxbuf* xbufs[6] = {
+  &xbuf0, &xbuf1,
+  &xbuf2, &xbuf3,
+  &xbuf4, &xbuf5,
+};
 static Agraph_t *cluster_g;
+
+static int isInvis(char *style)
+{
+    char **styles = 0;
+    char **sp;
+    char *p;
+
+    if (style[0]) {
+	styles = parse_style(style);
+	sp = styles;
+	while ((p = *sp++)) {
+	    if (streq(p, "invis"))
+		return 1;
+	}
+    }
+    return 0;
+}
+
+/* 
+ * John M. suggests:
+ * You might want to add four more:
+ *
+ * _ohdraw_ (optional head-end arrow for edges)
+ * _ohldraw_ (optional head-end label for edges)
+ * _otdraw_ (optional tail-end arrow for edges)
+ * _otldraw_ (optional tail-end label for edges)
+ * 
+ * that would be generated when an additional option is supplied to 
+ * dot, etc. and 
+ * these would be the arrow/label positions to use if a user want to flip the 
+ * direction of an edge (as sometimes is there want).
+ */
+void extend_attrs(GVC_t * gvc, graph_t *g, int s_arrows, int e_arrows)
+{
+    node_t *n;
+    edge_t *e;
+    attrsym_t *n_draw = NULL;
+    attrsym_t *n_l_draw = NULL;
+    attrsym_t *e_draw = NULL;
+    attrsym_t *h_draw = NULL;
+    attrsym_t *t_draw = NULL;
+    attrsym_t *e_l_draw = NULL;
+    attrsym_t *hl_draw = NULL;
+    attrsym_t *tl_draw = NULL;
+    unsigned char buf0[BUFSIZ];
+    unsigned char buf1[BUFSIZ];
+    unsigned char buf2[BUFSIZ];
+    unsigned char buf3[BUFSIZ];
+    unsigned char buf4[BUFSIZ];
+    unsigned char buf5[BUFSIZ];
+
+    if (GD_has_labels(g) & GRAPH_LABEL)
+	g_l_draw = safe_dcl(g, g, "_ldraw_", "", agraphattr);
+    if (GD_n_cluster(g))
+	g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
+
+    n_draw = safe_dcl(g, g->proto->n, "_draw_", "", agnodeattr);
+    n_l_draw = safe_dcl(g, g->proto->n, "_ldraw_", "", agnodeattr);
+
+    e_draw = safe_dcl(g, g->proto->e, "_draw_", "", agedgeattr);
+    if (e_arrows)
+	h_draw = safe_dcl(g, g->proto->e, "_hdraw_", "", agedgeattr);
+    if (s_arrows)
+	t_draw = safe_dcl(g, g->proto->e, "_tdraw_", "", agedgeattr);
+    if (GD_has_labels(g) & EDGE_LABEL)
+	e_l_draw = safe_dcl(g, g->proto->e, "_ldraw_", "", agedgeattr);
+    if (GD_has_labels(g) & HEAD_LABEL)
+	hl_draw = safe_dcl(g, g->proto->e, "_hldraw_", "", agedgeattr);
+    if (GD_has_labels(g) & TAIL_LABEL)
+	tl_draw = safe_dcl(g, g->proto->e, "_tldraw_", "", agedgeattr);
+
+    agxbinit(&xbuf0, BUFSIZ, buf0);
+    agxbinit(&xbuf1, BUFSIZ, buf1);
+    agxbinit(&xbuf2, BUFSIZ, buf2);
+    agxbinit(&xbuf3, BUFSIZ, buf3);
+    agxbinit(&xbuf4, BUFSIZ, buf4);
+    agxbinit(&xbuf5, BUFSIZ, buf5);
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	if (ND_shape(n) && !isInvis(late_string(n, N_style, ""))) {
+	    ND_shape(n)->fns->codefn(gvc, n);
+	    agxset(n, n_draw->index, agxbuse(xbufs[EMIT_DRAW]));
+	    agxset(n, n_l_draw->index, agxbuse(xbufs[EMIT_LABEL]));
+	}
+	if (State < GVSPLINES)
+	    continue;
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    if (ED_edge_type(e) == IGNORED)
+		continue;
+	    if (isInvis(late_string(e, E_style, "")))
+		continue;
+	    if (ED_spl(e) == NULL)
+		continue;
+
+	    emit_edge_graphics (gvc, e);
+	    agxset(e, e_draw->index, agxbuse(xbufs[EMIT_DRAW]));
+	    if (t_draw) agxset(e, t_draw->index, agxbuse(xbufs[EMIT_TDRAW]));
+	    if (h_draw) agxset(e, h_draw->index, agxbuse(xbufs[EMIT_HDRAW]));
+	    if (e_l_draw) agxset(e, e_l_draw->index,agxbuse(xbufs[EMIT_LABEL]));
+	    if (tl_draw) agxset(e, tl_draw->index, agxbuse(xbufs[EMIT_TLABEL]));
+	    if (hl_draw) agxset(e, hl_draw->index, agxbuse(xbufs[EMIT_HLABEL]));
+	}
+    }
+  
+    xdemitState = EMIT_DRAW;
+    emit_background(gvc, g);
+    if (agxblen(xbufs[EMIT_DRAW])) {
+	if (!g_draw)
+	    g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
+	agxset(g, g_draw->index, agxbuse(xbufs[EMIT_DRAW]));
+    }
+    xdemitState = EMIT_LABEL;
+    if (GD_label(g)) {
+	emit_label(gvc, GD_label(g), (void *) g);
+	agxset(g, g_l_draw->index, agxbuse(xbufs[EMIT_LABEL]));
+    }
+    emit_clusters(gvc, g, 0);
+    agxbfree(&xbuf0);
+    agxbfree(&xbuf1);
+    agxbfree(&xbuf2);
+    agxbfree(&xbuf3);
+    agxbfree(&xbuf4);
+    agxbfree(&xbuf5);
+}
+
+static void xd_str (char* pfx, char* s)
+{
+    char buf[BUFSIZ];
+
+    sprintf (buf, "%s%d -", pfx, strlen(s));
+    agxbput(xbufs[xdemitState], buf);
+    agxbput(xbufs[xdemitState], s);
+    agxbputc(xbufs[xdemitState], ' ');
+}
 
 static void xd_textline(point p, textline_t * line)
 {
     char buf[BUFSIZ];
     int j;
 
-    agxbputc(&charbuf, 'T');
     switch (line->just) {
     case 'l':
 	j = -1;
@@ -40,20 +183,18 @@ static void xd_textline(point p, textline_t * line)
 	j = 0;
 	break;
     }
-    sprintf(buf, " %d %d %d %d %d -", p.x, YDIR(p.y), j,
-	    (int) line->width, (int) strlen(line->str));
-    agxbput(&charbuf, buf);
-    agxbput(&charbuf, line->str);
-    agxbputc(&charbuf, ' ');
+    sprintf(buf, "T %d %d %d %d ", p.x, YDIR(p.y), j, (int) line->width);
+    agxbput(xbufs[xdemitState], buf);
+    xd_str ("", line->str);
 }
 
 static void xd_ellipse(point p, int rx, int ry, int filled)
 {
     char buf[BUFSIZ];
 
-    agxbputc(&outbuf, (filled ? 'E' : 'e'));
+    agxbputc(xbufs[xdemitState], (filled ? 'E' : 'e'));
     sprintf(buf, " %d %d %d %d ", p.x, YDIR(p.y), rx, ry);
-    agxbput(&outbuf, buf);
+    agxbput(xbufs[xdemitState], buf);
 }
 
 static void xd_points(char c, point * A, int n)
@@ -62,13 +203,13 @@ static void xd_points(char c, point * A, int n)
     int i;
     point p;
 
-    agxbputc(&outbuf, c);
+    agxbputc(xbufs[xdemitState], c);
     sprintf(buf, " %d ", n);
-    agxbput(&outbuf, buf);
+    agxbput(xbufs[xdemitState], buf);
     for (i = 0; i < n; i++) {
 	p = A[i];
 	sprintf(buf, "%d %d ", p.x, YDIR(p.y));
-	agxbput(&outbuf, buf);
+	agxbput(xbufs[xdemitState], buf);
     }
 }
 
@@ -88,6 +229,60 @@ static void xd_polyline(point * A, int n)
     xd_points('L', A, n);
 }
 
+static void 
+xd_set_font (char *fontname, double fontsize)
+{
+    char buf[BUFSIZ];
+
+    sprintf(buf, "F %f ", fontsize);
+    agxbput(xbufs[xdemitState], buf);
+    xd_str ("", fontname);
+}
+
+static void 
+xd_set_pencolor (char *name)
+{
+    xd_str ("c ", name);
+}
+
+static void 
+xd_set_fillcolor (char *name)
+{
+    xd_str ("C ", name);
+}
+
+static void 
+xd_set_style (char **s)
+{
+    char buf[BUFSIZ];
+    agxbuf xbuf;
+    char* p;
+    int more;
+
+    agxbinit(&xbuf, BUFSIZ, buf);
+    while ((p = *s++)) {
+	agxbput(&xbuf, p);
+	while (*p)
+	    p++;
+	p++;
+	if (*p) {  /* arguments */
+	    agxbputc(&xbuf, '(');
+            more = 0;
+	    while (*p) {
+		if (more)
+		    agxbputc(&xbuf, ',');
+		agxbput(&xbuf, p);
+	        while (*p) p++;
+		p++;
+		more++;
+	    }
+	    agxbputc(&xbuf, ')');
+	}
+	xd_str ("S ", agxbuse(&xbuf));
+    }
+    agxbfree(&xbuf);
+}
+
 static void xd_begin_cluster(Agraph_t * sg)
 {
     cluster_g = sg;
@@ -95,9 +290,9 @@ static void xd_begin_cluster(Agraph_t * sg)
 
 static void xd_end_cluster(void)
 {
-    agxset(cluster_g, g_draw->index, agxbuse(&outbuf));
+    agxset(cluster_g, g_draw->index, agxbuse(xbufs[EMIT_DRAW]));
     if (GD_label(cluster_g))
-	agxset(cluster_g, g_l_draw->index, agxbuse(&charbuf));
+	agxset(cluster_g, g_l_draw->index, agxbuse(xbufs[EMIT_LABEL]));
 }
 
 codegen_t XDot_CodeGen = {
@@ -109,12 +304,12 @@ codegen_t XDot_CodeGen = {
     xd_begin_cluster, xd_end_cluster,
     0, /* xd_begin_nodes */ 0,	/* xd_end_nodes */
     0, /* xd_begin_edges */ 0,	/* xd_end_edges */
-    0, /* xd_begin_node */ 0,	/* xd_node */
-    0, /* xd_begin_edge */ 0,	/* xd_edge */
+    0, /* xd_begin_node */ 0, /* xd_end_node */
+    0, /* xd_begin_edge */ 0, /* xd_end_edge */
     0, /* xd_begin_context */ 0,	/* xd_context */
     0, /* xd_begin_anchor */ 0,	/* xd_anchor */
-    0, /* xd_set_font */ xd_textline,
-    0, /* xd_set_pencolor */ 0, /* xd_set_fillcolor */ 0,	/* xd_set_style */
+    xd_set_font, xd_textline,
+    xd_set_pencolor, xd_set_fillcolor, xd_set_style,
     xd_ellipse, xd_polygon,
     xd_bezier, xd_polyline,
     0, /* xd_has_arrows */ 0,	/* xd_comment */

@@ -1661,3 +1661,19 @@ void undoClusterEdges(graph_t * g)
     }
     agclose(clg);
 }
+
+/* safe_dcl:
+ * Find the attribute belonging to graph g for objects like obj
+ * with given name. If one does not exist, create it with the
+ * supplied function fun with default value def.
+ */ 
+attrsym_t*
+safe_dcl(graph_t * g, void *obj, char *name, char *def,
+         attrsym_t * (*fun) (Agraph_t *, char *, char *))
+{
+    attrsym_t *a = agfindattr(obj, name);
+    if (a == NULL)
+	a = fun(g, name, def);
+    return a;
+}
+
