@@ -161,12 +161,9 @@ static void figptarray(point * A, int n, int close)
     fprintf(Output_file, "\n");
 }
 
-static void fig_comment(void *obj, attrsym_t * sym)
+static void fig_comment(char *str)
 {
-    char *str;
-    str = late_string(obj, sym, "");
-    if (str[0])
-	fprintf(Output_file, "# %s\n", str);
+    fprintf(Output_file, "# %s\n", str);
 }
 
 static void
@@ -206,7 +203,6 @@ static void fig_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 		PB.UR.y);
 #endif
 	init_fig();
-	fig_comment(g, agfindattr(g, "comment"));
 	onetime = FALSE;
     }
 }
@@ -224,19 +220,6 @@ fig_begin_page(graph_t * g, point page, double scale, int rot,
 	page_number =  page.x + page.y * Pages.x + 1;
 	sz = sub_points(PB.UR,PB.LL);
 */
-}
-
-static void fig_begin_node(node_t * n)
-{
-    fprintf(Output_file, "# %s\n", n->name);
-    fig_comment(n, N_comment);
-}
-
-
-static void fig_begin_edge(edge_t * e)
-{
-    fprintf(Output_file, "# %s -> %s\n", e->tail->name, e->head->name);
-    fig_comment(e, E_comment);
 }
 
 static void fig_begin_context(void)
@@ -621,12 +604,12 @@ codegen_t FIG_CodeGen = {
     fig_begin_job, fig_end_job,
     fig_begin_graph, 0,		/* fig_end_graph */
     fig_begin_page, 0,		/* fig_end_page */
-    0 /* fig_begin_layer */ , 0 /* fig_end_layer */ ,
-    0, /* fig_begin_cluster */ 0,	/* fig_end_cluster */
+    0, /* fig_begin_layer */ 0, /* fig_end_layer */
+    0, /* fig_begin_cluster */ 0, /* fig_end_cluster */
     0, /* fig_begin_nodes */ 0,	/* fig_end_nodes */
     0, /* fig_begin_edges */ 0,	/* fig_end_edges */
-    fig_begin_node, 0,		/* fig_end_node */
-    fig_begin_edge, 0,		/* fig_end_edge */
+    0, /* fig_begin_node */  0,	/* fig_end_node */
+    0, /* fig_begin_edge */  0,	/* fig_end_edge */
     fig_begin_context, fig_end_context,
     0, /* fig_begin_anchor */ 0,	/* fig_end_anchor */
     fig_set_font, fig_textline,
@@ -634,7 +617,7 @@ codegen_t FIG_CodeGen = {
     fig_ellipse, fig_polygon,
     fig_bezier, fig_polyline,
     0,				/* bezier_has_arrows */
-    0,				/* fig_comment */
+    fig_comment,
     0,				/* fig_textsize */
     fig_user_shape,
     0				/* fig_usershapesize */

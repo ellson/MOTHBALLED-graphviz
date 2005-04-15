@@ -90,12 +90,9 @@ static void ps_end_job(void)
     fprintf(Output_file, "%%%%EOF\n");
 }
 
-static void ps_comment(void *obj, attrsym_t * sym)
+static void ps_comment(char *str)
 {
-    char *str;
-    str = late_string(obj, sym, "");
-    if (str[0])
-	fprintf(Output_file, "%% %s\n", str);
+    fprintf(Output_file, "%% %s\n", str);
 }
 
 static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
@@ -110,7 +107,6 @@ static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 	if (Show_boxes == NULL)
 	    fprintf(Output_file, "%%%%BoundingBox: %d %d %d %d\n",
 		0, 0, sz.x, sz.y);
-	ps_comment(g, agfindattr(g, "comment"));
 	fprintf(Output_file, "%%%%EndComments\nsave\n");
 	cat_libfile(Output_file, U_lib, ps_txt);
 	epsf_define(Output_file);
@@ -218,8 +214,6 @@ static void ps_begin_cluster(graph_t * g)
 static void ps_begin_node(node_t * n)
 {
     Curnode = n;
-    fprintf(Output_file, "\n%%\t%s\n", n->name);
-    ps_comment(n, N_comment);
 
     /*  Embed information for Distiller to generate hyperlinked PDF  */
     map_begin_node(n);
@@ -227,9 +221,6 @@ static void ps_begin_node(node_t * n)
 
 static void ps_begin_edge(edge_t * e)
 {
-    fprintf(Output_file, "\n%%\t%s -> %s\n", e->tail->name, e->head->name);
-    ps_comment(e, E_comment);
-
     /*  Embed information for Distiller, so it can generate hyperactive PDF  */
     map_begin_edge(e);
 }

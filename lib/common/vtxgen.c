@@ -201,12 +201,9 @@ static void vtx_font(context_t * cp)
 */
 }
 
-static void vtx_comment(void *obj, attrsym_t * sym)
+static void vtx_comment(char *str)
 {
-    char *str;
-    str = late_string(obj, sym, "");
-    if (str[0])
-	fprintf(Output_file, "; %s\n", str);
+    fprintf(Output_file, "; %s\n", str);
 }
 
 static void
@@ -246,7 +243,6 @@ static void vtx_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     /* PB = bb; */
     if (onetime) {
 	init_vtx();
-	vtx_comment(g, agfindattr(g, "comment"));
 	onetime = FALSE;
     }
 }

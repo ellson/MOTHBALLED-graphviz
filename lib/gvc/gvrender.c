@@ -920,21 +920,23 @@ void gvrender_polyline(GVC_t * gvc, point * A, int n)
 #endif
 }
 
-void gvrender_comment(GVC_t * gvc, void *obj, attrsym_t * sym)
+void gvrender_comment(GVC_t * gvc, char *str)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
+    if (!str || !str[0])
+	return;
+
     if (gvre && gvre->comment) {
-	if (sym)
-	    gvre->comment(job, agxget(obj, sym->index));
+	gvre->comment(job, str);
     }
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->comment)
-	    cg->comment(obj, sym);
+	    cg->comment(str);
     }
 #endif
 }

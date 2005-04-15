@@ -591,13 +591,9 @@ static void pic_bezier(point * A, int n, int arrow_at_start,
 	fprintf(Output_file, "move to P%d; line attrs%d to P%d then to P%d\n", i, SP, i + 1, i + 2);	/* use line, as splines can't be dotted or dashed */
 }
 
-static void pic_comment(void *obj, attrsym_t * sym)
+static void pic_comment(char *str)
 {
-    char *str;
-
-    str = late_string(obj, sym, "");
-    if (str[0])
-	fprintf(Output_file, "'\\\" %s\n", str);
+    fprintf(Output_file, "'\\\" %s\n", str);
 }
 
 codegen_t PIC_CodeGen = {

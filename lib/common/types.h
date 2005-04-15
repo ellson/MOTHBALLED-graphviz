@@ -237,7 +237,7 @@ extern "C" {
 			     int arrow_at_end);
 	void (*polyline) (point * A, int n);
 	boolean bezier_has_arrows;
-	void (*comment) (void *obj, attrsym_t * sym);
+	void (*comment) (char *str);
 	void (*textsize) (void);	/* not used */
 	void (*user_shape) (char *name, point * A, int sides, int filled);
 	void (*usershapesize) (void);	/* not used */

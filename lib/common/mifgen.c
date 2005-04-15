@@ -144,12 +144,9 @@ static void mif_style(context_t * cp)
 	    cp->pen, cp->fill, cp->penwidth);
 }
 
-static void mif_comment(void *obj, attrsym_t * sym)
+static void mif_comment(char *str)
 {
-    char *str;
-    str = late_string(obj, sym, "");
-    if (str[0])
-	fprintf(Output_file, "# %s\n", str);
+    fprintf(Output_file, "# %s\n", str);
 }
 
 static void
@@ -323,7 +320,6 @@ static void mif_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 	fprintf(Output_file, "<BRect %d %d %d %d>\n",
 		PB.LL.x, PB.UR.y, PB.UR.x - PB.LL.x, PB.UR.y - PB.LL.y);
 	init_mif();
-	mif_comment(g, agfindattr(g, "comment"));
 	onetime = FALSE;
     }
 }
@@ -342,18 +338,6 @@ mif_begin_page(graph_t * g, point page, double scale, int rot,
     fprintf(Output_file,
 	    " <ArrowStyle <TipAngle 15> <BaseAngle 90> <Length %.1f> <HeadType Filled>>\n",
 	    14 * Scale);
-}
-
-static void mif_begin_node(node_t * n)
-{
-    fprintf(Output_file, "# %s\n", n->name);
-    mif_comment(n, N_comment);
-}
-
-static void mif_begin_edge(edge_t * e)
-{
-    fprintf(Output_file, "# %s -> %s\n", e->tail->name, e->head->name);
-    mif_comment(e, E_comment);
 }
 
 static void mif_begin_context(void)
@@ -580,11 +564,11 @@ codegen_t MIF_CodeGen = {
     mif_begin_graph, 0,		/* mif_end_graph */
     mif_begin_page, 0,		/* mif_end_page */
     0, /* mif_begin_layer */ 0,	/* mif_end_layer */
-    0, /* mif_begin_cluster */ 0,	/* mif_end_cluster */
+    0, /* mif_begin_cluster */ 0, /* mif_end_cluster */
     0, /* mif_begin_nodes */ 0,	/* mif_end_nodes */
     0, /* mif_begin_edges */ 0,	/* mif_end_edges */
-    mif_begin_node, 0,		/* mif_end_node */
-    mif_begin_edge, 0,		/* mif_end_edge */
+    0, /* mif_begin_node */  0,	/* mif_end_node */
+    0, /* mif_begin_edge */  0,	/* mif_end_edge */
     mif_begin_context, mif_end_context,
     0, /* mif_begin_anchor */ 0,	/* mif_end_anchor */
     mif_set_font, mif_textline,
@@ -592,7 +576,7 @@ codegen_t MIF_CodeGen = {
     mif_ellipse, mif_polygon,
     mif_bezier, mif_polyline,
     0,				/* bezier_has_arrows */
-    0,				/* mif_comment */
+    mif_comment,
     0,				/* mif_textsize */
     mif_user_shape,
     0				/* mif_usershapesize */

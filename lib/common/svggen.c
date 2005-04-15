@@ -346,14 +346,11 @@ static void svg_grstyle(context_t * cp, int filled)
     svg_fputs("\"");
 }
 
-static void svg_comment(void *obj, attrsym_t * sym)
+static void svg_comment(char *str)
 {
-    char *str = late_string(obj, sym, "");
-    if (str[0]) {
-	svg_fputs("<!-- ");
-	svg_fputs(xml_string(str));
-	svg_fputs(" -->\n");
-    }
+    svg_fputs("<!-- ");
+    svg_fputs(xml_string(str));
+    svg_fputs(" -->\n");
 }
 
 static void
@@ -446,7 +443,6 @@ static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 		PB.UR.y);
 #endif
 	init_svg();
-	svg_comment(g, agfindattr(g, "comment"));
 	onetime = FALSE;
     }
     if (dpi < 1.0)
@@ -553,10 +549,6 @@ static void svg_end_cluster(void)
 static void svg_begin_node(node_t * n)
 {
     Curnode = n;
-#if 0
-    svg_printf("<!-- %s -->\n", n->name);
-    svg_comment(n, N_comment);
-#endif
     svg_printf("<g id=\"%s%d\" class=\"node\">", op[Obj], n->id);
     svg_fputs("<title>");
     svg_fputs(xml_string(n->name));
@@ -926,7 +918,7 @@ codegen_t SVG_CodeGen = {
     svg_ellipse, svg_polygon,
     svg_bezier, svg_polyline,
     0,				/* bezier_has_arrows */
-    0,				/* svg_comment */
+    svg_comment,
     0,				/* svg_textsize */
     svg_user_shape,
     0				/* svg_usershape_size */

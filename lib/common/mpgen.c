@@ -75,12 +75,9 @@ static void mp_end_job(void)
     fprintf(Output_file, "%%  \n");
 }
 
-static void mp_comment(void *obj, attrsym_t * sym)
+static void mp_comment(char *str)
 {
-    char *str;
-    str = late_string(obj, sym, "");
-    if (str[0])
-	fprintf(Output_file, "%% %s\n", str);
+    fprintf(Output_file, "%% %s\n", str);
 }
 
 static void mp_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
@@ -89,7 +86,6 @@ static void mp_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     if (onetime) {
 	fprintf(Output_file, "%% BoundingBox: %d %d %d %d\n",
 		bb.LL.x, bb.LL.y, bb.UR.x + 1, bb.UR.y + 1);
-	mp_comment(g, agfindattr(g, "comment"));
 	/*      cat_libfile(Output_file,U_lib,mp_lib); */
 	onetime = FALSE;
     }
@@ -102,19 +98,6 @@ mp_begin_page(graph_t * g, point page, double scale, int rot, point offset)
     S[SP].font = "";
     S[SP].color = "black";
     S[SP].size = 0.0;
-}
-
-static void mp_begin_node(node_t * n)
-{
-    fprintf(Output_file, "%% GV node: \n%%  %s\n", n->name);
-    mp_comment(n, N_comment);
-}
-
-static void mp_begin_edge(edge_t * e)
-{
-    fprintf(Output_file, "%% GV edge: \n%%  %s -> %s\n", e->tail->name,
-	    e->head->name);
-    mp_comment(e, E_comment);
 }
 
 static void mp_begin_context(void)
@@ -283,8 +266,8 @@ codegen_t MP_CodeGen = {
     0, /* mp_begin_cluster */ 0,	/* mp_end_cluster */
     0, /* mp_begin_nodes */ 0,	/* mp_end_nodes */
     0, /* mp_begin_edges */ 0,	/* mp_end_edges */
-    mp_begin_node, 0,		/* mp_end_node */
-    mp_begin_edge, 0,		/* mp_end_edge */
+    0, /* mp_begin_node */  0,	/* mp_end_node */
+    0, /* mp_begin_edge */  0,	/* mp_end_edge */
     mp_begin_context, mp_end_context,
     0, /* mp_begin_anchor */ 0,	/* mp_end_anchor */
     mp_set_font, mp_textline,

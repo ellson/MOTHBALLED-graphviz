@@ -583,16 +583,17 @@ static void emit_node(GVC_t * gvc, node_t * n)
 
     if (ND_shape(n) == NULL)
 	return;
-#if 0
-fprintf(stderr,"node_in_layer %s node_in_pageBox %s state %s\n",
-	node_in_layer(gvc, n->graph, n)?"true":"false",
-	node_in_pageBox(gvc, n)?"true":"false",
-	(ND_state(n) != gvc->pageNum)?"true":"false");
-#endif
 
     if (node_in_layer(gvc, n->graph, n)
 	    && node_in_pageBox(gvc, n)
 	    && (ND_state(n) != gvc->pageNum)) {
+
+        gvrender_comment(gvc, n->name);
+
+	s = late_string(n, N_comment, "");
+	if (s[0])
+	    gvrender_comment(gvc, s);
+        
 	gvrender_begin_node(gvc, n);
 	if (((s = agget(n, "href")) && s[0])
 	    || ((s = agget(n, "URL")) && s[0])) {
@@ -900,14 +901,22 @@ static void emit_edge(GVC_t * gvc, edge_t * e)
     char *s, *url = NULL, *label = NULL, *tooltip = NULL, *target = NULL;
     textlabel_t *lab = NULL;
 
-#if 0
-fprintf(stderr,"edge_in_layer %s edge_in_pageBox %s\n",
-        edge_in_layer(gvc, e->head->graph, e)?"true":"false",
-        edge_in_pageBox(gvc, e)?"true":"false");
-#endif
-
     if (! edge_in_pageBox(gvc, e) || ! edge_in_layer(gvc, e->head->graph, e))
 	return;
+
+    s = malloc(strlen(e->tail->name) + 2 + strlen(e->head->name) + 1);
+    strcpy(s,e->tail->name);
+    if (AG_IS_DIRECTED(e->tail->graph))
+        strcat(s,"->");
+    else
+        strcat(s,"--");
+    strcat(s,e->head->name);
+    gvrender_comment(gvc, s);
+    free(s);
+
+    s = late_string(e, E_comment, "");
+    if (s[0])
+        gvrender_comment(gvc, s);
 
     gvrender_begin_edge(gvc, e);
     if (((s = agget(e, "href")) && s[0])
@@ -1112,6 +1121,10 @@ void emit_graph(GVC_t * gvc, graph_t * g)
 
     if (gvc->pageNum == 0)
         gvrender_begin_job(gvc);
+
+    s = late_string(g, agfindattr(g, "comment"), "");
+    gvrender_comment(gvc, s);
+
     gvrender_begin_graph(gvc, g);
     if (flags & EMIT_COLORS) {
 	gvrender_set_fillcolor(gvc, DEFAULT_FILL);

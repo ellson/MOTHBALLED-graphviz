@@ -220,15 +220,12 @@ static void dia_grstylefill(context_t * cp, int filled)
     }
 }
 
-static void dia_comment(void *obj, attrsym_t * sym)
+static void dia_comment(char *str)
 {
-    char *str = late_string(obj, sym, "");
-    if (str[0]) {
-	dia_fputs("<!-- ");
-	/* FIXME - should check for --> sequences in str */
-	dia_fputs(str);
-	dia_fputs(" -->\n");
-    }
+    dia_fputs("<!-- ");
+    /* FIXME - should check for --> sequences in str */
+    dia_fputs(str);
+    dia_fputs(" -->\n");
 }
 
 static void
@@ -282,7 +279,6 @@ static void dia_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     Offset.y = GD_drawing(g)->margin.y * SCALE;
     if (onetime) {
 	init_dia();
-	dia_comment(g, agfindattr(g, "comment"));
 	onetime = FALSE;
     }
     dia_fputs
@@ -961,7 +957,7 @@ codegen_t DIA_CodeGen = {
     dia_ellipse, dia_polygon,
     dia_bezier, dia_polyline,
     1,				/* bezier_has_arrows */
-    0,				/* dia_comment */
+    dia_comment,
     0,				/* dia_textsize */
     dia_user_shape,
     0				/* dia_usershapesize */

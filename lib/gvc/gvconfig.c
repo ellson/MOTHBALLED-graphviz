@@ -302,7 +302,7 @@ void gvconfig(GVC_t * gvc)
 		else {
 	            config_text[sz] = '\0';  /* make input into a null terminated string */
 	            gvconfig_plugin_install_from_config(gvc, config_text);
-		    /* NB. config_text not freed becasue we retain char* into it */
+		    /* NB. config_text not freed because we retain char* into it */
 		}
 	    }
 	}
