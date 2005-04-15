@@ -217,9 +217,10 @@ void gvconfig(GVC_t * gvc)
     char *config_glob, *home;
     glob_t globbuf;
 
-    char *dot_graphviz = "/.graphviz";
+    char *config_dir_name = ".graphviz";
     char *libdir = GVLIBDIR;
-    char *plugin_glob = "/libgvplugin*.so.?";
+    char *plugin_glob = "libgvplugin*.so.?";
+    char *s, *config_file_name;
 
 #define MAX_SZ_CONFIG 100000
 #endif
@@ -246,9 +247,25 @@ void gvconfig(GVC_t * gvc)
 	rc = -1;
     }
     else {
-        config_path = malloc(strlen(home) + strlen(dot_graphviz) + 1);
+        config_file_name = s = strdup(libdir);
+        while ((s = strchr(s,'/')))
+	    *s = '+';
+    
+        config_path = malloc(strlen(home) 
+				+ 1
+				+ strlen(config_dir_name)
+				+ 1
+				+ strlen(config_file_name)
+				+ 1);
         strcpy(config_path, home);
-        strcat(config_path, dot_graphviz);
+        strcat(config_path, "/");
+        strcat(config_path, config_dir_name);
+        rc = mkdir(config_path, 0700);
+
+        strcat(config_path, "/");
+        strcat(config_path, config_file_name);
+
+	free(config_file_name);
 
         rc = stat(config_path, &config_st);
     }
@@ -262,8 +279,12 @@ void gvconfig(GVC_t * gvc)
 	}
 	/* load all libraries even if can't save config */
 
-	config_glob = malloc(strlen(libdir) + strlen(plugin_glob) + 1);
+	config_glob = malloc(strlen(libdir)
+				+ 1
+				+ strlen(plugin_glob)
+				+ 1);
 	strcpy(config_glob, libdir);
+        strcat(config_glob, "/");
 	strcat(config_glob, plugin_glob);
 
 	rc = glob(config_glob, GLOB_NOSORT, NULL, &globbuf);
