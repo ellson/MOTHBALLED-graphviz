@@ -51,9 +51,10 @@ void *zrealloc(void *ptr, size_t size, size_t elt, size_t osize)
 
 void *gmalloc(size_t nbytes)
 {
-    char *rv = malloc(nbytes);
+    char *rv;
     if (nbytes == 0)
-	return 0;
+	return (char *)1; /* NB Return an invalid pointer - since nobody seems to check for NULL */
+    rv = malloc(nbytes);
     if (rv == NULL) {
 	fprintf(stderr, "out of memory\n");
 	abort();
