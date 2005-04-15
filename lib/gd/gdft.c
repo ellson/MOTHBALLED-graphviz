@@ -966,8 +966,8 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImage * im, int *brect, int fg, char *f
         }
     }
 
-  if (fg < 0)
-      render_mode |= FT_LOAD_MONOCHROME;
+//  if (fg < 0)
+//      render_mode |= FT_LOAD_MONOCHROME;
 
   /* find requested charmap */
   encodingfound = 0;
@@ -1214,6 +1214,8 @@ fprintf(stderr,"dpi=%d,%d metric_res=%d ptsize=%g\n",hdpi,vdpi,METRIC_RES,ptsize
 	  else if (xshow_pos + 20 > xshow_alloc) {
 		xshow_alloc += 100;
 		strex->xshow = realloc(strex->xshow, xshow_alloc);
+		if (! strex->xshow)
+	  	    return "Problem allocating memory with realloc";
 	}
 	  xshow_pos += sprintf(strex->xshow + xshow_pos, "%g ",
 		(double)(penf.x - oldpenf.x) * hdpi / (64 * METRIC_RES));
