@@ -75,6 +75,8 @@ static pointf label_size(char *str, textlabel_t * lp, graph_t * g)
 	    *lineptr++ = c;
 	    c = *p++;
 	    *lineptr++ = c;
+	    if (!c) /* NB. Protect against unexpected string end here */
+		break;
 	    /* Fix some Double Character error for Big5 (End) */
 	} else {
 	    if (c == '\\') {
