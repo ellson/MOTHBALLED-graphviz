@@ -34,6 +34,7 @@ extern "C" {
 /* configuration */
 
     extern void gvconfig(GVC_t * gvc);
+    extern char *gvhostname(void);
 
 /* plugins */
 

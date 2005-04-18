@@ -218,9 +218,10 @@ void gvconfig(GVC_t * gvc)
     glob_t globbuf;
 
     char *config_dir_name = ".graphviz";
+    char *config_file_name = "config";
     char *libdir = GVLIBDIR;
     char *plugin_glob = "libgvplugin*.so.?";
-    char *s, *config_file_name;
+    char *s;
 
 #define MAX_SZ_CONFIG 100000
 #endif
@@ -247,13 +248,12 @@ void gvconfig(GVC_t * gvc)
 	rc = -1;
     }
     else {
-        config_file_name = s = strdup(libdir);
-        while ((s = strchr(s,'/')))
-	    *s = '+';
-    
+	s = gvhostname();
         config_path = malloc(strlen(home) 
 				+ 1
 				+ strlen(config_dir_name)
+				+ 1
+				+ strlen(s)
 				+ 1
 				+ strlen(config_file_name)
 				+ 1);
@@ -263,9 +263,11 @@ void gvconfig(GVC_t * gvc)
         rc = mkdir(config_path, 0700);
 
         strcat(config_path, "/");
+	if (s[0]) {
+	    strcat(config_path, s);
+	    strcat(config_path, "_");
+	}
         strcat(config_path, config_file_name);
-
-	free(config_file_name);
 
         rc = stat(config_path, &config_st);
     }

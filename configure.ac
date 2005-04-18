@@ -1229,7 +1229,7 @@ AC_FUNC_ALLOCA
 
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
 	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
-	strtoul strtoll strtoull feenableexcept fesetenv])
+	strtoul strtoll strtoull feenableexcept fesetenv uname])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp])
 
