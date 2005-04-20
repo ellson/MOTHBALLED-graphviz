@@ -8,7 +8,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt $(INCLTDL) \
 	-DGVLIBDIR=\"$(pkglibdir)\"
 
-LIBS = $(LIBLTDL)
+LIBS = $(LIBLTDL) $(SOCKET_LIBS)
 
 pkginclude_HEADERS = gvc.h gvcint.h gvplugin.h \
 	gvplugin_render.h gvplugin_layout.h gvplugin_text.h 
