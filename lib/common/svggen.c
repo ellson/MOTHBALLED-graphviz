@@ -48,10 +48,10 @@ north@research.att.com
 #include	"utils.h"
 #ifdef HAVE_LIBZ
 #include	"zlib.h"
+#endif
 #ifdef MSWIN32
 #include	<io.h>
 #include	<stdarg.h>
-#endif
 #endif
 
 
