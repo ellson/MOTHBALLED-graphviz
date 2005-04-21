@@ -19,12 +19,14 @@
 
 #include "config.h"
 
+#include <string.h>
+#include <netdb.h>
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 #ifdef HAVE_UNAME
 #include <sys/utsname.h>
 #endif
-#include <netdb.h>
-
-#include <string.h>
 
 /*
  * There is no portable macro for the maximum length
