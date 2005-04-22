@@ -249,7 +249,6 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for CSHARP
 
 AC_CHECK_PROG(CSHARP,mcs,mcs)
-AM_CONDITIONAL(WITH_CSHARP, [test "x$CSHARP" != "x"])
 if test "x$CSHARP" = "x"; then
   HAVE_CSHARP=0
 else
@@ -257,6 +256,7 @@ else
   CSHARP_INCLUDES=
   CSHARP_LIBS=
 fi
+AM_CONDITIONAL(WITH_CSHARP, [test "x$HAVE_CSHARP" = "x1"])
 AC_SUBST(HAVE_CSHARP)
 AC_SUBST(CSHARP_INCLUDES)
 AC_SUBST(CSHARP_LIBS)
@@ -284,7 +284,6 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for IO
 
 AC_CHECK_PROG(IO,io,io)
-AM_CONDITIONAL(WITH_IO, [test "x$IO" != "x"])
 if test "x$IO" = "x"; then
   HAVE_IO=0
 else
@@ -292,6 +291,7 @@ else
   IO_INCLUDES=
   IO_LIBS=
 fi
+AM_CONDITIONAL(WITH_IO, [test "x$HAVE_IO" = "x1"])
 AC_SUBST(HAVE_IO)
 AC_SUBST(IO_INCLUDES)
 AC_SUBST(IO_LIBS)
@@ -300,7 +300,6 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for JAVA
 
 AC_CHECK_PROG(JAVA,java,java)
-AM_CONDITIONAL(WITH_JAVA, [test "x$JAVA" != "x"])
 if test "x$JAVA" = "x"; then
   HAVE_JAVA=0
 else
@@ -311,6 +310,7 @@ fi
 AC_CHECK_HEADER(jni.h,,[
   AC_MSG_WARN([Unable to find header jni.h. The Java packages will not be built])
   HAVE_JAVA=0])
+AM_CONDITIONAL(WITH_JAVA, [test "x$HAVE_JAVA" = "x1"])
 AC_SUBST(HAVE_JAVA)
 AC_SUBST(JAVA_INCLUDES)
 AC_SUBST(JAVA_LIBS)
@@ -319,7 +319,6 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for OCAML
 
 AC_CHECK_PROG(OCAML,ocaml,ocaml)
-AM_CONDITIONAL(WITH_OCAML, [test "x$OCAML" != "x"])
 if test "x$OCAML" = "x"; then
   HAVE_OCAML=0
 else
@@ -327,6 +326,7 @@ else
   OCAML_INCLUDES=
   OCAML_LIBS=
 fi
+AM_CONDITIONAL(WITH_OCAML, [test "x$HAVE_OCAML" = "x1"])
 AC_SUBST(HAVE_OCAML)
 AC_SUBST(OCAML_INCLUDES)
 AC_SUBST(OCAML_LIBS)
@@ -335,7 +335,6 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PERL
 
 AC_CHECK_PROG(PERL,perl,perl)
-AM_CONDITIONAL(WITH_PERL, [test "x$PERL" != "x"])
 if test "x$PERL" = "x"; then
   HAVE_PERL=0
 else
@@ -344,6 +343,13 @@ else
   PERL_INCLUDES=-I$PERL_ARCHLIB/CORE
   PERL_LIBS="-L$PERL_ARCHLIB/CORE -lperl"
 fi
+save_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS $PERL_INCLUDES"
+AC_CHECK_HEADER(perl.h,,[
+  AC_MSG_WARN([Unable to find header perl.h. The PERL packages will not be built])
+  HAVE_PERL=0])
+CPPFLAGS=$save_CPPFLAGS
+AM_CONDITIONAL(WITH_PERL, [test "x$HAVE_PERL" = "x1"])
 AC_SUBST(HAVE_PERL)
 AC_SUBST(PERL_INCLUDES)
 AC_SUBST(PERL_LIBS)
@@ -352,7 +358,6 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PHP
 
 AC_CHECK_PROG(PHP,php,php)
-AM_CONDITIONAL(WITH_PHP, [test "x$PHP" != "x"])
 if test "x$PHP" = "x"; then
   HAVE_PHP=0
 else
@@ -366,6 +371,7 @@ AC_CHECK_HEADER(zend.h,,[
   AC_MSG_WARN([Unable to find header zend.h. The PHP packages will not be built])
   HAVE_PHP=0])
 CPPFLAGS=$save_CPPFLAGS
+AM_CONDITIONAL(WITH_PHP, [test "x$HAVE_PHP" = "x1"])
 AC_SUBST(HAVE_PHP)
 AC_SUBST(PHP_INCLUDES)
 AC_SUBST(PHP_LIBS)
@@ -401,11 +407,11 @@ AC_CHECK_HEADER(python$PYTHON_VERSION_SHORT/Python.h,,[
   HAVE_PYTHON=0])
 AC_SUBST(PYTHON_VERSION)
 AC_SUBST(HAVE_PYTHON)
-AM_CONDITIONAL(WITH_PYTHON, [test "x$HAVE_PYTHON" = "x1"])
 if test "x$HAVE_PYTHON" = "x1"; then
   PYTHON_INCLUDES=-I/usr/include/python$PYTHON_VERSION_SHORT
   PYTHON_LIBS=-lpython$PYTHON_VERSION_SHORT
 fi
+AM_CONDITIONAL(WITH_PYTHON, [test "x$HAVE_PYTHON" = "x1"])
 AC_SUBST(HAVE_PYTHON)
 AC_SUBST(PYTHON_INCLUDES)
 AC_SUBST(PYTHON_LIBS)
@@ -413,7 +419,6 @@ AC_SUBST(PYTHON_LIBS)
 dnl -----------------------------------
 dnl INCLUDES and LIBS for RUBY
 AC_CHECK_PROG(RUBY,ruby,ruby)
-AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
 if test "x$RUBY" = "x"; then
   HAVE_RUBY=0
 else
@@ -421,6 +426,7 @@ else
   RUBY_INCLUDES=-I`ruby $TOP_DIR/config/config_ruby.rb INCLUDES`
   RUBY_LIBS=-lruby
 fi
+AM_CONDITIONAL(WITH_RUBY, [test "x$HAVE_RUBY" = "x1"])
 AC_SUBST(HAVE_RUBY)
 AC_SUBST(RUBY_INCLUDES)
 AC_SUBST(RUBY_LIBS)
