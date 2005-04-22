@@ -253,9 +253,9 @@ extern "C" {
 
 #endif
 
-    typedef struct queue {
+    typedef struct nodequeue {
 	node_t **store, **limit, **head, **tail;
-    } queue;
+    } nodequeue;
 
     typedef struct adjmatrix_t {
 	int nrows, ncols;

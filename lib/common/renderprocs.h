@@ -56,7 +56,7 @@ extern "C" {
     extern point coord(node_t * n);
     extern pointf cvt2ptf(point);
     extern point cvt2pt(pointf);
-    extern Agnode_t *dequeue(queue *);
+    extern Agnode_t *dequeue(nodequeue *);
     extern void do_graph_label(graph_t * sg);
     extern point dotneato_closest(splines * spl, point p);
     extern void graph_init(graph_t * g);
@@ -68,8 +68,8 @@ extern "C" {
     extern void dotneato_write(GVC_t * gvc, graph_t *g);
     extern void dotneato_write_one(GVC_t * gvc, graph_t *g);
     extern double elapsed_sec(void);
-    extern void enqueue(queue *, Agnode_t *);
-    extern void enqueue_neighbors(queue *, Agnode_t *, int);
+    extern void enqueue(nodequeue *, Agnode_t *);
+    extern void enqueue_neighbors(nodequeue *, Agnode_t *, int);
     extern void emit_attachment(GVC_t * gvc, textlabel_t *, splines *);
     extern void emit_background(GVC_t * gvc, graph_t *g);
     extern void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags);
@@ -92,7 +92,7 @@ extern "C" {
     extern pointf flip_ptf(pointf p, int rankdir);
     extern void free_line(textline_t *);
     extern void free_label(textlabel_t *);
-    extern void free_queue(queue *);
+    extern void free_queue(nodequeue *);
     extern void free_ugraph(graph_t *);
     extern char *gd_alternate_fontlist(char *font);
     extern char *gd_textsize(textline_t * textline, char *fontname,
@@ -138,7 +138,7 @@ extern "C" {
     extern boxf mkboxf(pointf, pointf);
     extern point neato_closest(splines * spl, point p);
     extern bezier *new_spline(edge_t * e, int sz);
-    extern queue *new_queue(int);
+    extern nodequeue *new_queue(int);
     extern Agraph_t *next_input_graph(void);
     extern void osize_label(textlabel_t *, int *, int *, int *, int *);
     extern char **parse_style(char *s);

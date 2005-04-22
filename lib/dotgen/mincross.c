@@ -860,7 +860,7 @@ void build_ranks(graph_t * g, int pass)
     int i, j;
     node_t *n, *n0;
     edge_t **otheredges;
-    queue *q;
+    nodequeue *q;
 
     q = new_queue(GD_n_nodes(g));
     for (n = GD_nlist(g); n; n = ND_next(n))
@@ -917,7 +917,7 @@ void build_ranks(graph_t * g, int pass)
     free_queue(q);
 }
 
-void enqueue_neighbors(queue * q, node_t * n0, int pass)
+void enqueue_neighbors(nodequeue * q, node_t * n0, int pass)
 {
     int i;
     edge_t *e;

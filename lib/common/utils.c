@@ -75,9 +75,9 @@ void *grealloc(void *ptr, size_t size)
 /*
  *  a queue of nodes
  */
-queue *new_queue(int sz)
+nodequeue *new_queue(int sz)
 {
-    queue *q = NEW(queue);
+    nodequeue *q = NEW(nodequeue);
 
     if (sz <= 1)
 	sz = 2;
@@ -86,20 +86,20 @@ queue *new_queue(int sz)
     return q;
 }
 
-void free_queue(queue * q)
+void free_queue(nodequeue * q)
 {
     free(q->store);
     free(q);
 }
 
-void enqueue(queue * q, node_t * n)
+void enqueue(nodequeue * q, node_t * n)
 {
     *(q->tail++) = n;
     if (q->tail >= q->limit)
 	q->tail = q->store;
 }
 
-node_t *dequeue(queue * q)
+node_t *dequeue(nodequeue * q)
 {
     node_t *n;
     if (q->head == q->tail)

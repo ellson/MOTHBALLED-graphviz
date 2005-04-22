@@ -101,7 +101,7 @@ static
 void init_rank(void)
 {
     int i, ctr;
-    queue *Q;
+    nodequeue *Q;
     node_t *v;
     edge_t *e;
 

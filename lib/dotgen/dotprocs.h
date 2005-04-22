@@ -45,7 +45,7 @@ extern "C" {
     extern Agedge_t *find_flat_edge(Agnode_t *, Agnode_t *);
     extern void flat_edge(Agraph_t *, Agedge_t *);
     extern int flat_edges(Agraph_t *);
-    extern void install_cluster(Agraph_t *, Agnode_t *, int, queue *);
+    extern void install_cluster(Agraph_t *, Agnode_t *, int, nodequeue *);
     extern void install_in_rank(Agraph_t *, Agnode_t *);
     extern int is_cluster(Agraph_t *);
     extern void dot_compoundEdges(Agraph_t *);
