@@ -219,8 +219,8 @@ fdp_extra_args (GVC_t *gvc, int argc, char** argv)
 
 void parse_args(GVC_t *gvc, int argc, char** argv)
 {
-        neato_extra_args(gvc, argc, argv);
-        fdp_extra_args(gvc, argc, argv);
-        memtest_extra_args(gvc, argc, argv);
-        dotneato_initialize(gvc, argc, argv);
+    argc = neato_extra_args(gvc, argc, argv);
+    argc = fdp_extra_args(gvc, argc, argv);
+    argc = memtest_extra_args(gvc, argc, argv);
+    dotneato_initialize(gvc, argc, argv);
 }
