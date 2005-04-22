@@ -345,9 +345,10 @@ else
 fi
 save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $PERL_INCLUDES"
-AC_CHECK_HEADER(perl.h,,[
-  AC_MSG_WARN([Unable to find header perl.h. The PERL packages will not be built])
-  HAVE_PERL=0])
+AC_CHECK_HEADER(EXTERN.h,,[
+  AC_MSG_WARN([Unable to find header EXTERN.h. The PERL packages will not be built])
+  HAVE_PERL=0]
+)
 CPPFLAGS=$save_CPPFLAGS
 AM_CONDITIONAL(WITH_PERL, [test "x$HAVE_PERL" = "x1"])
 AC_SUBST(HAVE_PERL)
