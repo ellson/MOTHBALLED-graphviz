@@ -418,7 +418,7 @@ node_port	:	/* empty */
 node_stmt	:	node_id
 				{Current_class = TAG_NODE; N = (Agnode_t*)($1.obj);}
 			opt_attr_list
-				{free($1.port);Current_class = TAG_GRAPH; /* reset */}
+				{agstrfree($1.port);Current_class = TAG_GRAPH; /* reset */}
 		;
 
 edge_stmt	:	node_id
@@ -476,6 +476,9 @@ qsymbol		:	T_qsymbol {$$ = $1; }
 #ifdef UNUSED
 /* grammar allowing port variants */
 /* at present, these are not used, so we remove them from the grammar */
+/* NOTE: If used, these should be rewritten to take into account the */
+/* move away from using ':' in the string and that symbols come from */
+/* agstrdup and need to be freed. */
 node_port	:	/* empty */
 		|	port_location 
 		|	port_angle 			/* undocumented */
