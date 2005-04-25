@@ -56,7 +56,7 @@ static ps_image_t *user_init(char *str)
     if (!EPSF_contents)
 	EPSF_contents = dtopen(&ImageDictDisc, Dtoset);
 
-    val = dtsearch(EPSF_contents, str);
+    val = dtmatch(EPSF_contents, str);
     if (val)
 	return val;
 
