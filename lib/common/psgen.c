@@ -480,27 +480,17 @@ static void ps_user_shape(char *name, point * A, int sides, int filled)
     if (streq(name, "custom")) {
 	shapeimagefile = agget(Curnode, "shapefile");
 	img = ps_usershape(shapeimagefile);
-	if (!img) {
-	    suffix = strrchr(shapeimagefile, '.');
-	    if (suffix) {
-		suffix++;
-		if (strcmp(suffix, "ps")) {
-		    agerr(AGERR,
-			  "image type \"%s\" not supported in PostScript output\n",
-			  suffix);
-		} else {
-		    agerr(AGERR, "Could not find image file \"%s\"\n",
-			  shapeimagefile);
-		}
-	    } else {
-		agerr(AGERR,
-		      "image file %s not supported in PostScript output\n",
-		      shapeimagefile);
-	    }
-	    return;
-	}
-    } 
-    if (!img)
+    }
+    else if (find_user_shape(name)) {
+	fprintf(Output_file, "[ ");
+	for (j = 0; j < sides; j++)
+	    fprintf(Output_file, "%d %d ", A[j].x, A[j].y);
+	fprintf(Output_file, "%d %d ", A[0].x, A[0].y);
+	fprintf(Output_file, "]  %d %s %s\n", sides,
+		(filled ? "true" : "false"), name);
+	return;
+    }
+    else
 	img = ps_usershape(name);
     if (img) {
 	ps_begin_context();
@@ -512,13 +502,23 @@ static void ps_user_shape(char *name, point * A, int sides, int filled)
 	ps_end_context();
     }
     else {
-	fprintf(Output_file, "[ ");
-	for (j = 0; j < sides; j++)
-	    fprintf(Output_file, "%d %d ", A[j].x, A[j].y);
-	fprintf(Output_file, "%d %d ", A[0].x, A[0].y);
-	fprintf(Output_file, "]  %d %s %s\n", sides,
-		(filled ? "true" : "false"), name);
-    }
+	suffix = strrchr(shapeimagefile, '.');
+	if (suffix) {
+	    suffix++;
+	    if (strcmp(suffix, "ps")) {
+		agerr(AGERR,
+		    "image type \"%s\" not supported in PostScript output\n",
+		    suffix);
+	    } else {
+		agerr(AGERR, "Could not find image file \"%s\"\n",
+		    shapeimagefile);
+	    }
+	} else {
+	    agerr(AGERR,
+		  "image file %s not supported in PostScript output\n",
+		  shapeimagefile);
+	}
+    } 
 }
 
 codegen_t PS_CodeGen = {
