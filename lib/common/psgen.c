@@ -458,7 +458,7 @@ static void ps_polyline(point * A, int n)
 static void ps_user_shape(char *name, point * A, int sides, int filled)
 {
     int j;
-    ps_image_t *img;
+    ps_image_t *img = 0;
     point offset;
     char *shapeimagefile;
     char *suffix;
@@ -467,15 +467,8 @@ static void ps_user_shape(char *name, point * A, int sides, int filled)
 	return;
     if (streq(name, "custom")) {
 	shapeimagefile = agget(Curnode, "shapefile");
-	if ((img = ps_usershape(shapeimagefile))) {
-	    ps_begin_context();
-	    offset.x = -img->origin.x - (img->size.x) / 2;
-	    offset.y = -img->origin.y - (img->size.y) / 2;
-	    fprintf(Output_file, "%d %d translate newpath user_shape_%d\n",
-		    ND_coord_i(Curnode).x + offset.x,
-		    ND_coord_i(Curnode).y + offset.y, img->macro_id);
-	    ps_end_context();
-	} else {
+	img = ps_usershape(shapeimagefile);
+	if (!img) {
 	    suffix = strrchr(shapeimagefile, '.');
 	    if (suffix) {
 		suffix++;
@@ -492,8 +485,21 @@ static void ps_user_shape(char *name, point * A, int sides, int filled)
 		      "image file %s not supported in PostScript output\n",
 		      shapeimagefile);
 	    }
+	    return;
 	}
-    } else {
+    } 
+    if (!img)
+	img = ps_usershape(name);
+    if (img) {
+	ps_begin_context();
+	offset.x = -img->origin.x - (img->size.x) / 2;
+	offset.y = -img->origin.y - (img->size.y) / 2;
+	fprintf(Output_file, "%d %d translate newpath user_shape_%d\n",
+		ND_coord_i(Curnode).x + offset.x,
+		ND_coord_i(Curnode).y + offset.y, img->macro_id);
+	ps_end_context();
+    }
+    else {
 	fprintf(Output_file, "[ ");
 	for (j = 0; j < sides; j++)
 	    fprintf(Output_file, "%d %d ", A[j].x, A[j].y);
