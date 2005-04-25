@@ -16,6 +16,10 @@
 
 /* Lefteris Koutsofios - AT&T Labs Research */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #define LEFTYVERSION "10 Mar 2005"
 
 #include "common.h"
@@ -438,8 +442,10 @@ static void processargs (int argc, char *argv[]) {
             warnflag = TRUE;
         else if (strcmp (argv[0], "-ps") == 0)
             Gpscanvasname = argv[1], argv++, argc--;
-        else if (strcmp (argv[0], "-V") == 0)
+        else if (strcmp (argv[0], "-V") == 0) {
             fprintf (stderr, "lefty version %s\n", LEFTYVERSION);
+            fprintf (stderr, "graphviz version %s (%s)\n", VERSION, BUILDDATE);
+	}
         else if (strcmp (argv[0], "-") == 0)
             fp = stdin;
         else {
