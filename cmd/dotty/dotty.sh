@@ -2,6 +2,7 @@
 set -A FILES
 MLEVEL="0"
 LMODE="async"
+FLAGS=
 
 function usage {
     print "usage: dotty [-V] [-lm (sync|async)] [-el (0|1)] <filename>"
@@ -12,6 +13,7 @@ function processoptions {
         case $1 in
         -V)
             print "dotty version 96c (09-24-96)"
+			FLAGS=$FLAGS" -V"
             shift
             ;;
         -f)
@@ -97,7 +99,7 @@ if [[ $leftypath == '' ]] then
     exit 1
 fi
 
-$leftypath -e "
+$leftypath $FLAGS -e "
 load ('dotty.lefty');
 checkpath = function () {
     if (tablesize (dotty) > 0)
