@@ -55,7 +55,7 @@ extern "C" {
 	void (*ellipse) (gvrender_job_t * job, pointf * A, int filled);
 	void (*polygon) (gvrender_job_t * job, pointf * A, int n, int filled);
 	void (*beziercurve) (gvrender_job_t * job, pointf * A, int n,
-			     int arrow_at_start, int arrow_at_end);
+			     int arrow_at_start, int arrow_at_end, int);
 	void (*polyline) (gvrender_job_t * job, pointf * A, int n);
 	void (*comment) (gvrender_job_t * job, char *comment);
 	void (*user_shape) (gvrender_job_t * job, char *name, pointf * A, int sides,

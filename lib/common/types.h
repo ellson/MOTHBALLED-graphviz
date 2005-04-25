@@ -234,7 +234,7 @@ extern "C" {
 	void (*ellipse) (point p, int rx, int ry, int filled);
 	void (*polygon) (point * A, int n, int filled);
 	void (*beziercurve) (point * A, int n, int arrow_at_start,
-			     int arrow_at_end);
+			     int arrow_at_end, int filled);
 	void (*polyline) (point * A, int n);
 	boolean bezier_has_arrows;
 	void (*comment) (char *str);

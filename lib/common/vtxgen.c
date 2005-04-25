@@ -529,7 +529,7 @@ static void vtx_textline(point p, textline_t * line)
 }
 
 static void vtx_bezier(point * A, int n, int arrow_at_start,
-		       int arrow_at_end)
+		       int arrow_at_end, int filled)
 {
     if (arrow_at_start) {
 	vtx_bzptarray(A, n - 2, 0);

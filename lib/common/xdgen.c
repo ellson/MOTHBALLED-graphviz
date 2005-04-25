@@ -219,9 +219,12 @@ static void xd_polygon(point * A, int n, int filled)
 }
 
 static void
-xd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
+xd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
-    xd_points('B', A, n);
+    if (filled)
+	xd_points('B', A, n);
+    else
+	xd_points('b', A, n);
 }
 
 static void xd_polyline(point * A, int n)

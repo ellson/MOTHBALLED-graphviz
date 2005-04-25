@@ -369,13 +369,32 @@ static void round_corners(GVC_t * gvc, node_t * n, point * A, int sides,
     B[i++] = B[2];
 
     if (mode == ROUNDED) {
+	if (style & FILLED) {
+	    int j = 0;
+	    char* fillc = findFill(n);
+	    point* pts = N_GNEW(2*sides,point);
+	    gvrender_set_pencolor (gvc, fillc);
+	    gvrender_set_fillcolor (gvc, fillc);
+	    for (seg = 0; seg < sides; seg++) {
+		pts[j++] = B[4 * seg + 1];
+		pts[j++] = B[4 * seg + 2];
+	    }
+	    gvrender_polygon(gvc, pts, 2*sides, TRUE);
+	    free (pts);
+	    for (seg = 0; seg < sides; seg++) {
+		for (i = 0; i < 4; i++)
+		    P2PF(B[4 * seg + 2 + i], BF[i]);
+		gvrender_beziercurve(gvc, BF, 4, FALSE, FALSE, TRUE);
+	    }
+	}
+	pencolor(gvc, n);
 	for (seg = 0; seg < sides; seg++) {
 	    gvrender_polyline(gvc, B + 4 * seg + 1, 2);
 
 	    /* convert to floats for gvrender api */
 	    for (i = 0; i < 4; i++)
 		P2PF(B[4 * seg + 2 + i], BF[i]);
-	    gvrender_beziercurve(gvc, BF, 4, FALSE, FALSE);
+	    gvrender_beziercurve(gvc, BF, 4, FALSE, FALSE, FALSE);
 	}
     } else {			/* diagonals are weird.  rewrite someday. */
 	pencolor(gvc, n);

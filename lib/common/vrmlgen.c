@@ -589,7 +589,7 @@ doSegment (point* A, point p0, double z0, point p1, double z1)
 }
 
 static void
-vrml_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
+vrml_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
     pointf p1, V[4];
     int i, j, step;

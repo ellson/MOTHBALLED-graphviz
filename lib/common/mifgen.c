@@ -510,7 +510,7 @@ static void mif_textline(point p, textline_t * line)
 }
 
 static void mif_bezier(point * A, int n, int arrow_at_start,
-		       int arrow_at_end)
+		       int arrow_at_end, int filled)
 {
     fprintf(Output_file,
 	    "<PolyLine <Fill 15> <Smoothed Yes> <HeadCap Square>\n");

@@ -378,11 +378,23 @@ static void ps_textline(point p, textline_t * line)
 }
 
 static void
-ps_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
+ps_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
     int j;
     if (S[SP].invis)
 	return;
+    if (filled && *S[SP].fillcolor) {
+	ps_set_color(S[SP].fillcolor);
+	fprintf(Output_file, Newpath_Moveto, A[0].x, A[0].y);
+	for (j = 1; j < n; j += 3)
+	    fprintf(Output_file, "%d %d %d %d %d %d curveto\n",
+		A[j].x, A[j].y, A[j + 1].x, A[j + 1].y, A[j + 2].x,
+		A[j + 2].y);
+	fprintf(Output_file, "closepath\n");
+	fprintf(Output_file, Fill);
+	if (*S[SP].pencolor)
+	    ps_set_color(S[SP].pencolor);
+    }
     if (*S[SP].pencolor == '\0')
 	return;
     if (arrow_at_start || arrow_at_end)

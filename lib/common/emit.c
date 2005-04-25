@@ -830,7 +830,7 @@ void emit_edge_graphics(GVC_t * gvc, edge_t * e)
 			tmplist[j].y += offlist[j].y;
 		    }
 		    gvrender_beziercurve(gvc, tmplist, tmpspl.list[i].size,
-					 FALSE, FALSE);
+					 FALSE, FALSE, FALSE);
 		}
 	    }
 	    xdemitState = EMIT_TDRAW;
@@ -863,10 +863,10 @@ void emit_edge_graphics(GVC_t * gvc, edge_t * e)
 		    P2PF(bz.list[j], bzf.list[j]);
 		if (gvrender_features(gvc) & GVRENDER_DOES_ARROWS) {
 		    gvrender_beziercurve(gvc, bzf.list, bz.size, bz.sflag,
-					 bz.eflag);
+					 bz.eflag, FALSE);
 		} else {
 		    gvrender_beziercurve(gvc, bzf.list, bz.size, FALSE,
-					 FALSE);
+					 FALSE, FALSE);
 		    xdemitState = EMIT_TDRAW;
 		    if (bz.sflag)
 			arrow_gen(gvc, bz.sp, bz.list[0], scale, bz.sflag);

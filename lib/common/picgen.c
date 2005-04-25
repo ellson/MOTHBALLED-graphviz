@@ -564,7 +564,7 @@ static void pic_user_shape(char *name, point * A, int sides, int filled)
 }
 
 static void pic_bezier(point * A, int n, int arrow_at_start,
-		       int arrow_at_end)
+		       int arrow_at_end, int filled)
 {
     pointf V[4], p;
     int i, j, m, step;

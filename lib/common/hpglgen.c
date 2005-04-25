@@ -708,7 +708,7 @@ static void Bzier(double x0, double y0, double x1, double y1, double x2,
 }
 
 static void hpgl_bezier(point * A, int n, int arrow_at_start,
-			int arrow_at_end)
+			int arrow_at_end, int filled)
 {
     char buffer[32];
     int j;

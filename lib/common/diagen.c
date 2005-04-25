@@ -698,7 +698,7 @@ int box_connection(node_t * n, pointf p)
 
 
 static void
-dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
+dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
     int i, conn_h, conn_t;
     pointf p, firstp = { 0, 0 }, llp = {

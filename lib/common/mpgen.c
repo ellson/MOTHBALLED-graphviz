@@ -196,7 +196,7 @@ static void mp_textline(point p, textline_t * line)
 }
 
 static void
-mp_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
+mp_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
     int j;
     if (arrow_at_start || arrow_at_end)

@@ -848,7 +848,7 @@ void gvrender_polygon(GVC_t * gvc, point * A, int n, int filled)
 }
 
 void gvrender_beziercurve(GVC_t * gvc, pointf * AF, int n,
-			  int arrow_at_start, int arrow_at_end)
+			  int arrow_at_start, int arrow_at_end, int filled)
 {
     gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
@@ -865,7 +865,7 @@ void gvrender_beziercurve(GVC_t * gvc, pointf * AF, int n,
 	    }
 	    for (i = 0; i < n; i++)
 		AF2[i] = gvrender_ptf(job, AF[i]);
-	    gvre->beziercurve(job, AF2, n, arrow_at_start, arrow_at_end);
+	    gvre->beziercurve(job, AF2, n, arrow_at_start, arrow_at_end,filled);
 	}
     }
 #ifndef DISABLE_CODEGENS
@@ -885,7 +885,7 @@ void gvrender_beziercurve(GVC_t * gvc, pointf * AF, int n,
 	/* end hack */
 
 	if (cg && cg->beziercurve)
-	    cg->beziercurve(A, n, arrow_at_start, arrow_at_end);
+	    cg->beziercurve(A, n, arrow_at_start, arrow_at_end, filled);
     }
 #endif
 }

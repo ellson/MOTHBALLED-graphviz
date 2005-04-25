@@ -790,7 +790,7 @@ static void svg_ellipse(point p, int rx, int ry, int filled)
 }
 
 static void
-svg_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
+svg_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
     if (cstk[SP].pen == P_NONE) {
 	/* its invisible, don't draw */

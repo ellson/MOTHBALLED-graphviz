@@ -661,13 +661,14 @@ static void gd_textline(point p, textline_t * line)
 }
 
 static void
-gd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
+gd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
-    pointf p0, p1, V[4];
+    pointf p, p0, p1, V[4];
     int i, j, step;
     int style[20];
     int pen, width;
     gdImagePtr brush = NULL;
+    gdPoint F[4];
 
     if (!im)
 	return;
@@ -708,6 +709,16 @@ gd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
 	width = cstk[SP].penwidth;
 	gdImageSetThickness(im, width);
 #endif
+	p.x = A[0].x;
+	p.y = A[0].y;
+	p = gdpt(p);
+	F[0].x = ROUND(p.x);
+	F[0].y = ROUND(p.y);
+	p.x = A[n-1].x;
+	p.y = A[n-1].y;
+	p = gdpt(p);
+	F[3].x = ROUND(p.x);
+	F[3].y = ROUND(p.y);
 	V[3].x = A[0].x;
 	V[3].y = A[0].y;
 	for (i = 0; i + 3 < n; i += 3) {
@@ -723,6 +734,13 @@ gd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
 			   NULL));
 		gdImageLine(im, ROUND(p0.x), ROUND(p0.y), ROUND(p1.x),
 			    ROUND(p1.y), pen);
+		if (filled) {
+    		    F[1].x = ROUND(p0.x);
+    		    F[1].y = ROUND(p0.y);
+    		    F[2].x = ROUND(p1.x);
+    		    F[2].y = ROUND(p1.y);
+		    gdImageFilledPolygon(im, F, 4, cstk[SP].fillcolor);
+		}
 		p0 = p1;
 	    }
 	}

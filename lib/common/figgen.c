@@ -416,7 +416,7 @@ static void fig_textline(point p, textline_t * line)
 }
 
 static void fig_bezier(point * A, int n, int arrow_at_start,
-		       int arrow_at_end)
+		       int arrow_at_end, int filled)
 {
     int object_code = 3;	/* always 3 for spline */
     int sub_type = 4;		/* always 4 for opened X-spline */
