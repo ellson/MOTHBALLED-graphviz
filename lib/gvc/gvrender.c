@@ -768,8 +768,8 @@ void gvrender_set_style(GVC_t * gvc, char **s)
 	    else if (streq(line, "unfilled"))
 		style->fill = FILL_NONE;
 	    else {
-		agerr(AGERR,
-		      "svggen_set_style: unsupported style %s - ignoring\n",
+		agerr(AGWARN,
+		      "gvrender_set_style: unsupported style %s - ignoring\n",
 		      line);
 	    }
 	}
