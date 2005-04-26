@@ -373,6 +373,7 @@ static void round_corners(GVC_t * gvc, node_t * n, point * A, int sides,
 	    int j = 0;
 	    char* fillc = findFill(n);
 	    point* pts = N_GNEW(2*sides,point);
+    	    gvrender_begin_context(gvc);
 	    gvrender_set_pencolor (gvc, fillc);
 	    gvrender_set_fillcolor (gvc, fillc);
 	    for (seg = 0; seg < sides; seg++) {
@@ -386,6 +387,7 @@ static void round_corners(GVC_t * gvc, node_t * n, point * A, int sides,
 		    P2PF(B[4 * seg + 2 + i], BF[i]);
 		gvrender_beziercurve(gvc, BF, 4, FALSE, FALSE, TRUE);
 	    }
+    	    gvrender_end_context(gvc);
 	}
 	pencolor(gvc, n);
 	for (seg = 0; seg < sides; seg++) {
