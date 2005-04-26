@@ -1511,6 +1511,14 @@ static void cleanup(void)
     agxbfree(&ps_xb);
 }
 
+/* parse_style:
+ * This is one of the worse internal designs in graphviz.
+ * The use of '\0' characters within strings seems cute but it
+ * makes all of the standard functions useless if not dangerous.
+ * Plus the function uses static memory for both the array and
+ * the character buffer. One hopes all of the values are used
+ * before the function is called again.
+ */
 char **parse_style(char *s)
 {
     static char *parse[FUNLIMIT];
