@@ -271,17 +271,31 @@ static char **checkStyle(node_t * n, int *flagp)
 
     style = late_nnstring(n, N_style, "");
     if (style[0]) {
-	int i;
-	pstyle = parse_style(style);
-	for (i = 0; pstyle[i]; i++) {
-	    if (strcmp(pstyle[i], "filled") == 0) {
+	char **pp;
+	char **qp;
+	char *p;
+	pp = pstyle = parse_style(style);
+	while ((p = *pp)) {
+	    if (strcmp(p, "filled") == 0) {
 		istyle |= FILLED;
-	    } else if (strcmp(pstyle[i], "rounded") == 0) {
+		pp++;
+	    } else if (strcmp(p, "rounded") == 0) {
 		istyle |= ROUNDED;
-	    } else if (strcmp(pstyle[i], "diagonals") == 0) {
+		qp = pp; /* remove rounded from list passed to renderer */
+		do {
+		    qp++;
+		    *(qp-1) = *qp;
+		} while (*qp);
+	    } else if (strcmp(p, "diagonals") == 0) {
 		istyle |= DIAGONALS;
-	    } else if (strcmp(pstyle[i], "invis") == 0) {
+		qp = pp; /* remove diagonals from list passed to renderer */
+		do {
+		    qp++;
+		    *(qp-1) = *qp;
+		} while (*qp);
+	    } else if (strcmp(p, "invis") == 0) {
 		istyle |= INVISIBLE;
+		pp++;
 	    }
 	}
     }
