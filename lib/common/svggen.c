@@ -797,7 +797,7 @@ svg_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 	return;
     }
     svg_fputs("<path");
-    svg_grstyle(&cstk[SP], 0);
+    svg_grstyle(&cstk[SP], filled);
     svg_fputs(" d=\"");
     svgbzptarray(A, n);
     svg_fputs("\"/>\n");
