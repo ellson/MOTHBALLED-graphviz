@@ -419,14 +419,14 @@ static void fig_bezier(point * A, int n, int arrow_at_start,
 		       int arrow_at_end, int filled)
 {
     int object_code = 3;	/* always 3 for spline */
-    int sub_type = 4;		/* always 4 for opened X-spline */
+    int sub_type;
     int line_style = cstk[SP].line_style;	/* solid, dotted, dashed */
     int thickness = cstk[SP].penwidth;
     int pen_color = cstk[SP].pencolor_ix;
-    int fill_color = 0;
+    int fill_color;
     int depth = 0;
     int pen_style = 0;		/* not used */
-    int area_fill = -1;
+    int area_fill;
     double style_val = cstk[SP].style_val;
     int cap_style = 0;
     int forward_arrow = 0;
@@ -447,6 +447,16 @@ static void fig_bezier(point * A, int n, int arrow_at_start,
 				1) * 20 * sizeof(char));
     buf = buffer;
 
+    if (filled) {
+	sub_type = 5;     /* closed X-spline */
+	area_fill = 20;   /* fully saturated color */
+	fill_color = cstk[SP].fillcolor_ix;
+    }
+    else {
+	sub_type = 4;     /* opened X-spline */
+	area_fill = -1;
+	fill_color = 0;
+    }
     V[3].x = A[0].x;
     V[3].y = A[0].y;
     /* Write first point in line */
