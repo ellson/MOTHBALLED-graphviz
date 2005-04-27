@@ -1089,26 +1089,6 @@ static void init_job_viewport(GVC_t * gvc, graph_t * g)
     job->rotation = gvc->rotation;
 }
 
-/* emit_init
- *   - called just once per output device
- *     (where emit_graph can be called many times for refresh callbacks)
- */
-static void emit_init_job(GVC_t * gvc, graph_t * g)
-{
-    init_gvc_from_graph(gvc, g);
-    init_layering(gvc, g);
-    init_job_flags(gvc->job, g);
-    init_job_margin(gvc);
-    init_job_dpi(gvc, g);
-    init_job_viewport(gvc, g);
-    init_job_pagination(gvc, g);
-}
-
-static void emit_deinit_job(GVC_t * gvc)
-{
-    gvrender_end_job(gvc);
-}
-
 void emit_graph(GVC_t * gvc, graph_t * g)
 {
     graph_t *sg;
@@ -1118,9 +1098,6 @@ void emit_graph(GVC_t * gvc, graph_t * g)
     char *str, *colors;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
     int flags = gvc->job->flags;
-
-    if (gvc->pageNum == 0)
-        gvrender_begin_job(gvc);
 
     s = late_string(g, agfindattr(g, "comment"), "");
     gvrender_comment(gvc, s);
@@ -1339,7 +1316,7 @@ void emit_jobs_eof(GVC_t * gvc)
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
         if (job->output_file) {
 	    if (gvc->pageNum > 0) {
-		emit_deinit_job(gvc);
+		gvrender_end_job(gvc);
 		emit_once_reset();
 		gvc->pageNum = 0;
 	    }
@@ -1612,7 +1589,15 @@ static void emit_job(GVC_t * gvc, graph_t * g)
     Output_lang = job->output_lang;
 #endif
 
-    emit_init_job(gvc, g);
+    init_gvc_from_graph(gvc, g);
+    init_layering(gvc, g);
+    init_job_flags(gvc->job, g);
+    init_job_margin(gvc);
+    init_job_dpi(gvc, g);
+    init_job_viewport(gvc, g);
+    init_job_pagination(gvc, g);
+
+    gvrender_begin_job(gvc);
 
     switch (gvc->job->output_lang) {
     case EXTENDED_DOT:
@@ -1639,9 +1624,6 @@ static void emit_job(GVC_t * gvc, graph_t * g)
     /* Flush is necessary because we may be writing to a pipe. */
     if (! gvc->job->external_surface && gvc->job->output_lang != TK)
         fflush(gvc->job->output_file);
-#if 0
-    emit_deinit(gvc);
-#endif
 }
 
 static FILE *file_select(char *str)
@@ -1660,6 +1642,7 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
     gvrender_job_t *job;
     char *prev_langname = "";
 
+    gvc->active_jobs = NULL;
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
         if (!job->output_file) {        /* if not yet opened */
             if (job->output_filename == NULL) {
@@ -1673,17 +1656,25 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
 	    fprintf(stderr,"renderer for %s is unavailable\n", job->output_langname);
 	    return;
 	}
+
+	job->gvc = gvc;
+	job->g = g;
+
+	/* insert job in active list */
+	job->next_active = gvc->active_jobs;
+	gvc->active_jobs = job;
+
 	if (strcmp(job->output_langname,prev_langname) != 0) {
 	    prev_langname = job->output_langname;
 	    gvrender_initialize(gvc);
 	}
 
-	job->gvc = gvc;
-	job->g = g;
-
         emit_job(gvc, g);
 
-	if (!job->next || strcmp(job->next->output_langname,prev_langname) != 0)
+	if (!job->next || strcmp(job->next->output_langname,prev_langname) != 0) {
 	    gvrender_finalize(gvc);
+	    /* clear active list */
+	    gvc->active_jobs = NULL;
+        }
     }
 }
