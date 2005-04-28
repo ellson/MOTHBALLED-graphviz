@@ -121,6 +121,7 @@ extern "C" {
 	
 	boolean fit_mode, needs_refresh, click, active, has_grown;
 	double oldx, oldy;	/* old pointer position in pixels */
+	void *current_obj;      /* graph object that pointer is in currrently */
 
 	void *window;		/* display-specific data for gvrender plugin */
     };

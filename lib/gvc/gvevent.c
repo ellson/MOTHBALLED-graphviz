@@ -37,12 +37,135 @@ void gvevent_refresh(GVJ_t * job)
     emit_graph(job, job->g);
 }
 
+static boolean inside_node_bb(node_t *n, pointf P)
+{
+    boxf bb;
+
+    bb.UR.x = ND_coord_i(n).x + ND_rw_i(n);
+    bb.UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
+    bb.LL.x = ND_coord_i(n).x - ND_lw_i(n);
+    bb.LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
+    return (INSIDE(P, bb));
+}
+
+static boolean inside_node(node_t *n, pointf p)
+{
+    inside_t ictxt;
+
+    ictxt.s.n = n;
+    ictxt.s.bp = NULL;
+
+//    return ND_shape(n)->fns->insidefn(&ictxt, p);
+    return TRUE;
+}
+
+static boolean inside_edge_bb(edge_t *e, pointf P)
+{
+    int i, j, k;
+    bezier bz;
+    boxf BB;
+    box bb;
+    
+    for (i = 0; i < ED_spl(e)->size; i++) {
+	bz = ED_spl(e)->list[i];
+	for (j = 0; j < bz.size -1; j += 3) {
+	    /* compute a bb for the bezier segment */
+	    bb.LL = bb.UR = bz.list[j];
+	    for (k = j+1; k < j+4; k++) {
+	        bb.LL.x = MIN(bb.LL.x,bz.list[k].x);
+	        bb.LL.y = MIN(bb.LL.y,bz.list[k].y);
+	        bb.UR.x = MAX(bb.UR.x,bz.list[k].x);
+	        bb.UR.y = MAX(bb.UR.y,bz.list[k].y);
+	    }
+	    B2BF(bb,BB);
+	    if (INSIDE(P,BB))
+		return TRUE;
+	}
+    }
+    return FALSE;
+}
+
+static boolean inside_edge(edge_t *n, pointf p)
+{
+    return TRUE;
+}
+
+static graph_t *gvevent_find_cluster(graph_t *g, pointf P)
+{
+    int i;
+    graph_t *sg;
+    boxf BB;
+
+    for (i = 1; i <= GD_n_cluster(g); i++) {
+	sg = gvevent_find_cluster(GD_clust(g)[i], P);
+	if (sg)
+	    return(sg);
+    }
+    B2BF(GD_bb(g), BB);
+    if (INSIDE(P, BB))
+	return g;
+    return NULL;
+}
+
+static void * gvevent_find_obj(GVJ_t * job, pointf p)
+{
+    graph_t *sg, *g = job->g;
+    node_t *n;
+    edge_t *e;
+    pointf P; /* point in graph coordinates */
+
+    /* convert point to graph coordinates */
+    if (job->rotation) {
+	P.x = job->focus.y - (p.y - job->height / 2.) / job->compscale.x;
+	P.y = (p.x - job->width / 2.) / job->compscale.y + job->focus.x;
+    }
+    else {
+	P.x = (p.x - job->width / 2.) / job->compscale.x + job->focus.x;
+	P.y = (p.y - job->height / 2.) / job->compscale.y + job->focus.y;
+    }
+
+    /* search graph backwards to get topmost node, in case of overlap */
+    for (n = aglstnode(g); n; n = agprvnode(g, n)) {
+	if (inside_node_bb(n, P) && inside_node(n, p))
+	    return (void *)n;
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    if (inside_edge_bb(e, P) && inside_edge(e, p))
+	        return (void *)e;
+	}
+    }
+    
+    /* search for innermost cluster */
+
+    sg = gvevent_find_cluster(g, P);
+    if (sg)
+	return (void *)sg;
+
+    /* otherwise - we're always in the graph */
+    return (void *)g;
+}
+
+static void gvevent_find_current_obj(GVJ_t * job, double x, double y)
+{
+    void *obj;
+    pointf p;
+
+    p.x = x;
+    p.y = y;
+    obj = gvevent_find_obj(job, p);
+    if (obj != job->current_obj) {
+	job->current_obj = obj;
+fprintf(stderr,"obj=%x kind=%d\n",obj,agobjkind(obj));
+    }
+}
+
 void gvevent_button_press(GVJ_t * job, int button, double x, double y)
 {
     switch (button) {
     case 1: /* select / create in edit mode */
+    case 3: /* insert node or edge */
+	gvevent_find_current_obj(job, x, y);
+        /* fall through */
     case 2: /* pan */
-    case 3: /*        / delete in edit mode */
         job->click = 1;
 	job->active = button;
 	job->needs_refresh = 1;
@@ -81,7 +204,7 @@ void gvevent_motion(GVJ_t * job, double x, double y)
 
     switch (job->active) {
     case 0: /* drag with no button - */
-	return;
+	gvevent_find_current_obj(job, x, y);
 	break;
     case 1: /* drag with button 1 - drag object */
 	/* FIXME - to be implemented */
@@ -91,7 +214,7 @@ void gvevent_motion(GVJ_t * job, double x, double y)
 	job->focus.y -= -dy / job->zoom;
 	job->needs_refresh = 1;
 	break;
-    case 3: /* drag with button 3 - unused */
+    case 3: /* drag with button 3 - drag inserted node or uncompleted edge */
 	break;
     }
     job->oldx = x;
