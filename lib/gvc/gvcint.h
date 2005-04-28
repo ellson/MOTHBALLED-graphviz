@@ -92,6 +92,9 @@ extern "C" {
 
         pointf margin;		 /* job-specific margin - graph units */
 
+	int numLayers;		/* number of layers */
+	int layerNum;		/* current layer - 1 based*/
+
 	boxf	pageBox;	 /* current page in graph coords */
 	pointf	pageOffset;	 /* offset for current page in graph coords */
 	pointf	pageSize;	 /* page size in graph units */
@@ -186,9 +189,8 @@ extern "C" {
 	char *layers;		/* null delimited list of layer names */
 	char **layerIDs;	/* array of layer names */
 	int numLayers;		/* number of layers */
-	int layerNum;		/* current layer - 1 based*/
-        int pageNum;	        /* current page - 1 based counts pages in all layers*/
 
+        int pageNum;	        /* current page - 1 based counts pages in all layers*/
 	/* default font */
 	char *defaultfontname;
 	double defaultfontsize;

@@ -355,17 +355,16 @@ void gvrender_end_page(GVJ_t * job)
 
 void gvrender_begin_layer(GVJ_t * job)
 {
-    GVC_t * gvc = job->gvc;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->begin_layer)
-	gvre->begin_layer(job, gvc->layerIDs[gvc->layerNum], gvc->layerNum, gvc->numLayers);
+	gvre->begin_layer(job, job->gvc->layerIDs[job->layerNum], job->layerNum, job->numLayers);
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_layer)
-	    cg->begin_layer(gvc->layerIDs[gvc->layerNum], gvc->layerNum, gvc->numLayers);
+	    cg->begin_layer(job->gvc->layerIDs[job->layerNum], job->layerNum, job->numLayers);
     }
 #endif
 }

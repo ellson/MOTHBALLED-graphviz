@@ -122,7 +122,6 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
 
 static void init_layering(GVC_t * gvc, graph_t * g)
 {
-    GVJ_t *job = gvc->job;
     char *str;
 
     /* free layer strings and pointers from previous graph */
@@ -132,33 +131,34 @@ static void init_layering(GVC_t * gvc, graph_t * g)
 	free(gvc->layerIDs);
 
     if ((str = agget(g, "layers")) != 0) {
-	if (gvrender_features(job) & GVRENDER_DOES_LAYERS) {
-	    gvc->numLayers = parse_layers(gvc, g, str);
-	}
-	else {
-	    agerr(AGWARN, "layers not supported in %s output\n",
-		  job->output_langname);
-	    gvc->numLayers = 1;
-	}
+	gvc->numLayers = parse_layers(gvc, g, str);
     } else {
 	gvc->layerIDs = NULL;
 	gvc->numLayers = 1;
     }
 }
 
-static void firstlayer(GVC_t *gvc)
+static void firstlayer(GVJ_t *job)
 {
-    gvc->layerNum = 1;
+    job->numLayers = job->gvc->numLayers;
+    if ((job->numLayers > 1)
+		&& (! (gvrender_features(job) & GVRENDER_DOES_LAYERS))) {
+	agerr(AGWARN, "layers not supported in %s output\n",
+		job->output_langname);
+	job->numLayers = 1;
+    }
+
+    job->layerNum = 1;
 }
 
-static boolean validlayer(GVC_t *gvc)
+static boolean validlayer(GVJ_t *job)
 {
-    return (gvc->layerNum <= gvc->numLayers);
+    return (job->layerNum <= job->numLayers);
 }
 
-static void nextlayer(GVC_t *gvc)
+static void nextlayer(GVJ_t *job)
 {
-    gvc->layerNum++;
+    job->layerNum++;
 }
 
 static point pagecode(GVJ_t *job, char c)
@@ -468,6 +468,7 @@ static boolean is_natural_number(char *sstr)
 
 static int layer_index(GVC_t *gvc, char *str, int all)
 {
+    GVJ_t *job = gvc->job;
     int i;
 
     if (streq(str, "all"))
@@ -475,7 +476,7 @@ static int layer_index(GVC_t *gvc, char *str, int all)
     if (is_natural_number(str))
 	return atoi(str);
     if (gvc->layerIDs)
-	for (i = 1; i <= gvc->numLayers; i++)
+	for (i = 1; i <= job->numLayers; i++)
 	    if (streq(str, gvc->layerIDs[i]))
 		return i;
     return -1;
@@ -483,6 +484,7 @@ static int layer_index(GVC_t *gvc, char *str, int all)
 
 static boolean selectedlayer(GVC_t *gvc, char *spec)
 {
+    GVJ_t *job = gvc->job;
     int n0, n1;
     unsigned char buf[SMALLBUF];
     char *w0, *w1;
@@ -499,12 +501,12 @@ static boolean selectedlayer(GVC_t *gvc, char *spec)
 	rval = FALSE;
 	break;
     case 1:
-	n0 = layer_index(gvc, w0, gvc->layerNum);
-	rval = (n0 == gvc->layerNum);
+	n0 = layer_index(gvc, w0, job->layerNum);
+	rval = (n0 == job->layerNum);
 	break;
     case 2:
 	n0 = layer_index(gvc, w0, 0);
-	n1 = layer_index(gvc, w1, gvc->numLayers);
+	n1 = layer_index(gvc, w1, job->numLayers);
 	if ((n0 < 0) || (n1 < 0))
 	    rval = TRUE;
 	else if (n0 > n1) {
@@ -512,7 +514,7 @@ static boolean selectedlayer(GVC_t *gvc, char *spec)
 	    n0 = n1;
 	    n1 = t;
 	}
-	rval = BETWEEN(n0, gvc->layerNum, n1);
+	rval = BETWEEN(n0, job->layerNum, n1);
 	break;
     }
     agxbfree(&xb);
@@ -521,10 +523,11 @@ static boolean selectedlayer(GVC_t *gvc, char *spec)
 
 static boolean node_in_layer(GVC_t *gvc, graph_t * g, node_t * n)
 {
+    GVJ_t *job = gvc->job;
     char *pn, *pe;
     edge_t *e;
 
-    if (gvc->numLayers <= 1)
+    if (job->numLayers <= 1)
 	return TRUE;
     pn = late_string(n, N_layer, "");
     if (selectedlayer(gvc, pn))
@@ -543,10 +546,11 @@ static boolean node_in_layer(GVC_t *gvc, graph_t * g, node_t * n)
 
 static boolean edge_in_layer(GVC_t *gvc, graph_t * g, edge_t * e)
 {
+    GVJ_t *job = gvc->job;
     char *pe, *pn;
     int cnt;
 
-    if (gvc->numLayers <= 1)
+    if (job->numLayers <= 1)
 	return TRUE;
     pe = late_string(e, E_layer, "");
     if (selectedlayer(gvc, pe))
@@ -563,10 +567,11 @@ static boolean edge_in_layer(GVC_t *gvc, graph_t * g, edge_t * e)
 
 static boolean clust_in_layer(GVC_t *gvc, graph_t * sg)
 {
+    GVJ_t *job = gvc->job;
     char *pg;
     node_t *n;
 
-    if (gvc->numLayers <= 1)
+    if (job->numLayers <= 1)
 	return TRUE;
     pg = late_string(sg, agfindattr(sg, "layer"), "");
     if (selectedlayer(gvc, pg))
@@ -1152,8 +1157,8 @@ void emit_graph(GVJ_t * job, graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	ND_state(n) = 0;
     /* iterate layers */
-    for (firstlayer(gvc); validlayer(gvc); nextlayer(gvc)) {
-	if (gvc->numLayers > 1)
+    for (firstlayer(job); validlayer(job); nextlayer(job)) {
+	if (job->numLayers > 1)
 	    gvrender_begin_layer(job);
 
 	/* iterate pages */
@@ -1266,7 +1271,7 @@ fprintf(stderr,"pageNum = %d pagesArrayElem = %d,%d\n",
 	    }
 	    gvrender_end_page(job);
 	} /* pages */
-	if (gvc->numLayers > 1)
+	if (job->numLayers > 1)
 	    gvrender_end_layer(job);
     } /* layers */
     gvrender_end_graph(job);
@@ -1594,8 +1599,6 @@ static void emit_job(GVJ_t * job, graph_t * g)
     Output_lang = job->output_lang;
 #endif
 
-    init_gvc_from_graph(gvc, g);
-    init_layering(gvc, g);
     init_job_flags(job, g);
     init_job_margin(gvc);
     init_job_dpi(gvc, g);
@@ -1646,6 +1649,9 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
 {
     GVJ_t *job;
     char *prev_langname = "";
+
+    init_gvc_from_graph(gvc, g);
+    init_layering(gvc, g);
 
     gvc->active_jobs = NULL;
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
