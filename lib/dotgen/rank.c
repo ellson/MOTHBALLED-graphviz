@@ -443,6 +443,7 @@ int is_cluster(graph_t * g)
     return (strncmp(g->name, "cluster", 7) == 0);
 }
 
+#ifdef OBSOLETE
 static node_t*
 merge_leaves(graph_t * g, node_t * cur, node_t * new)
 {
@@ -459,7 +460,6 @@ merge_leaves(graph_t * g, node_t * cur, node_t * new)
     return rv;
 }
 
-#ifdef OBSOLETE
 static void 
 potential_leaf(graph_t * g, edge_t * e, node_t * leaf)
 {
