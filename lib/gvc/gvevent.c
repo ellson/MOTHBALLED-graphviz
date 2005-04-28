@@ -133,9 +133,8 @@ static void * gvevent_find_obj(GVJ_t * job, pointf p)
 	        return (void *)e;
 	}
     }
-    
-    /* search for innermost cluster */
-
+    /* no node or edge found, so
+    	search for innermost cluster */
     sg = gvevent_find_cluster(g, P);
     if (sg)
 	return (void *)sg;
