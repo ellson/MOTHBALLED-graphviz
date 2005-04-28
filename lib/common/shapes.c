@@ -278,6 +278,7 @@ static char **checkStyle(node_t * n, int *flagp)
 	while ((p = *pp)) {
 	    if (strcmp(p, "filled") == 0) {
 		istyle |= FILLED;
+		pp++;
 	    } else if (strcmp(p, "rounded") == 0) {
 		istyle |= ROUNDED;
 		qp = pp; /* remove rounded from list passed to renderer */
@@ -294,8 +295,8 @@ static char **checkStyle(node_t * n, int *flagp)
 		} while (*qp);
 	    } else if (strcmp(p, "invis") == 0) {
 		istyle |= INVISIBLE;
+		pp++;
 	    }
-	    pp++;
 	}
     }
     if ((poly = ND_shape(n)->polygon))
