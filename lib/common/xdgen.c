@@ -160,7 +160,7 @@ static void xd_str (char* pfx, char* s)
 {
     char buf[BUFSIZ];
 
-    sprintf (buf, "%s%d -", pfx, strlen(s));
+    sprintf (buf, "%s%d -", pfx, (int)strlen(s));
     agxbput(xbufs[xdemitState], buf);
     agxbput(xbufs[xdemitState], s);
     agxbputc(xbufs[xdemitState], ' ');
