@@ -27,8 +27,8 @@
 /* from common/utils.c */
 extern void *zmalloc(size_t);
 
-static gvrender_job_t *output_filename_job;
-static gvrender_job_t *output_langname_job;
+static GVJ_t *output_filename_job;
+static GVJ_t *output_langname_job;
 
 /*
  * -T and -o can be specified in any order relative to the other, e.g.
@@ -53,14 +53,14 @@ void gvrender_output_filename_job(GVC_t * gvc, char *name)
 {
     if (!gvc->jobs) {
 	output_filename_job = gvc->job = gvc->jobs =
-	    zmalloc(sizeof(gvrender_job_t));
+	    zmalloc(sizeof(GVJ_t));
     } else {
 	if (!output_filename_job) {
 	    output_filename_job = gvc->jobs;
 	} else {
 	    if (!output_filename_job->next) {
 		output_filename_job->next =
-		    zmalloc(sizeof(gvrender_job_t));
+		    zmalloc(sizeof(GVJ_t));
 	    }
 	    output_filename_job = output_filename_job->next;
 	}
@@ -73,14 +73,14 @@ boolean gvrender_output_langname_job(GVC_t * gvc, char *name)
 {
     if (!gvc->jobs) {
 	output_langname_job = gvc->job = gvc->jobs =
-	    zmalloc(sizeof(gvrender_job_t));
+	    zmalloc(sizeof(GVJ_t));
     } else {
 	if (!output_langname_job) {
 	    output_langname_job = gvc->jobs;
 	} else {
 	    if (!output_langname_job->next) {
 		output_langname_job->next =
-		    zmalloc(sizeof(gvrender_job_t));
+		    zmalloc(sizeof(GVJ_t));
 	    }
 	    output_langname_job = output_langname_job->next;
 	}
@@ -100,14 +100,14 @@ void gvrender_output_option_job(GVC_t * gvc, char *name, char *value)
 }
 #endif
 
-gvrender_job_t *gvrender_first_job(GVC_t * gvc)
+GVJ_t *gvrender_first_job(GVC_t * gvc)
 {
     return (gvc->job = gvc->jobs);
 }
 
-gvrender_job_t *gvrender_next_job(GVC_t * gvc)
+GVJ_t *gvrender_next_job(GVC_t * gvc)
 {
-    gvrender_job_t *job = gvc->job->next;
+    GVJ_t *job = gvc->job->next;
 
     if (job) {
 	/* if langname not specified, then repeat previous value */
@@ -120,7 +120,7 @@ gvrender_job_t *gvrender_next_job(GVC_t * gvc)
 
 void gvrender_delete_jobs(GVC_t * gvc)
 {
-    gvrender_job_t *job, *j;
+    GVJ_t *job, *j;
 
     job = gvc->jobs;
     while ((j = job)) {

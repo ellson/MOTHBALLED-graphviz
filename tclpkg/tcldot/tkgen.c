@@ -415,7 +415,7 @@ static void tk_textline(point p, textline_t * line)
 }
 
 static void
-tk_bezier(point * A, int n, int arrow_at_start, int arrow_at_end)
+tk_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
     char buf[20];
 

@@ -303,7 +303,7 @@ void writegraph(Agraph_t *g, char *filename, char *format)
         return;
     }
 
-    gvc->job->output_lang = gvrender_select(gvc, gvc->job->output_langname);
+    gvc->job->output_lang = gvrender_select(gvc->job, gvc->job->output_langname);
     if (!GD_drawing(g) && gvc->job->output_lang != CANONICAL_DOT) {
         fprintf(stderr, "Layout was not done\n");
         return;

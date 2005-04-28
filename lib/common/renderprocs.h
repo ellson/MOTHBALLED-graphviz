@@ -27,7 +27,7 @@ extern "C" {
     extern point add_points(point, point);
     extern pointf add_pointfs(pointf, pointf);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
-    extern void arrow_gen(GVC_t * gvc, point p, point u, double scale,
+    extern void arrow_gen(GVJ_t * job, point p, point u, double scale,
 			  int flag);
     extern double arrow_length(edge_t * e, int flag);
     extern int arrowEndClip(edge_t*, point*, int, int , bezier*, int eflag);
@@ -70,22 +70,20 @@ extern "C" {
     extern double elapsed_sec(void);
     extern void enqueue(nodequeue *, Agnode_t *);
     extern void enqueue_neighbors(nodequeue *, Agnode_t *, int);
-    extern void emit_attachment(GVC_t * gvc, textlabel_t *, splines *);
-    extern void emit_background(GVC_t * gvc, graph_t *g);
-    extern void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags);
-    extern void emit_edge_graphics(GVC_t * gvc, edge_t * e);
-    extern void emit_graph(GVC_t * gvc, graph_t * g);
-    extern void emit_label(GVC_t * gvc, textlabel_t *, void *obj);
+    extern void emit_background(GVJ_t * job, graph_t *g);
+    extern void emit_clusters(GVJ_t * job, Agraph_t * g, int flags);
+    extern void emit_edge_graphics(GVJ_t * job, edge_t * e);
+    extern void emit_graph(GVJ_t * job, graph_t * g);
+    extern void emit_label(GVJ_t * job, textlabel_t *, void *obj);
     extern int emit_once(char *message);
     extern void emit_jobs(GVC_t * gvc, graph_t *g);
     extern void emit_jobs_eof(GVC_t * gvc);
     extern void endpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
-    extern void epsf_gencode(GVC_t * gvc, node_t * n);
     extern point exch_xy(point p);
     extern pointf exch_xyf(pointf p);
-    extern void extend_attrs(GVC_t *, graph_t*, int, int);
+    extern void extend_attrs(GVJ_t * job, graph_t *g, int s_arrows, int e_arrows);
     extern shape_desc *find_user_shape(char *);
     extern box flip_rec_box(box b, point p);
     extern point flip_pt(point p, int rankdir);

@@ -101,7 +101,7 @@ static void popFontInfo(htmlenv_t * env, htmlfont_t * savp)
 }
 
 static void
-emit_html_txt(GVC_t * gvc, htmltxt_t * tp, htmlenv_t * env, void *obj)
+emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env, void *obj)
 {
     int i, linespacing;
     double left_x, center_x, right_x;
@@ -145,9 +145,9 @@ emit_html_txt(GVC_t * gvc, htmltxt_t * tp, htmlenv_t * env, void *obj)
     p.y = env->p.y + (tp->box.UR.y + tp->box.LL.y) / 2 + (linespacing * (tp->nlines - 1) / 2)	/* cl of topline */
 	-fsize / 3.0;		/* cl to baseline */
 
-    gvrender_begin_context(gvc);
-    gvrender_set_pencolor(gvc, fcolor);
-    gvrender_set_font(gvc, fname, fsize);
+    gvrender_begin_context(job);
+    gvrender_set_pencolor(job, fcolor);
+    gvrender_set_font(job, fname, fsize);
 
     for (i = 0; i < tp->nlines; i++) {
 	switch (tp->line[i].just) {
@@ -162,16 +162,16 @@ emit_html_txt(GVC_t * gvc, htmltxt_t * tp, htmlenv_t * env, void *obj)
 	    p.x = center_x;
 	    break;
 	}
-	gvrender_textline(gvc, p, &(tp->line[i]));
+	gvrender_textline(job, p, &(tp->line[i]));
 
 	/* position for next line */
 	p.y -= linespacing;
     }
 
-    gvrender_end_context(gvc);
+    gvrender_end_context(job);
 }
 
-static void doSide(GVC_t * gvc, point p, int wd, int ht)
+static void doSide(GVJ_t * job, point p, int wd, int ht)
 {
     point A[4];
 
@@ -182,7 +182,7 @@ static void doSide(GVC_t * gvc, point p, int wd, int ht)
     A[2].x = p.x + wd;
     A[3].x = A[2].x;
     A[3].y = p.y;
-    gvrender_polygon(gvc, A, 4, 1);
+    gvrender_polygon(job, A, 4, 1);
 }
 
 /* doBorder:
@@ -195,17 +195,17 @@ static void doSide(GVC_t * gvc, point p, int wd, int ht)
  * from x to x+border will all pixels from x to x+border, and thus have
  * width border+1.
  */
-static void doBorder(GVC_t * gvc, char *color, int border, box pts)
+static void doBorder(GVJ_t * job, char *color, int border, box pts)
 {
     point pt;
     int wd, ht;
 
-    gvrender_begin_context(gvc);
+    gvrender_begin_context(job);
 
     if (!color)
 	color = "black";
-    gvrender_set_fillcolor(gvc, color);
-    gvrender_set_pencolor(gvc, color);
+    gvrender_set_fillcolor(job, color);
+    gvrender_set_pencolor(job, color);
 
     if (border == 1) {
 	point A[4];
@@ -216,55 +216,55 @@ static void doBorder(GVC_t * gvc, char *color, int border, box pts)
 	A[1].y = A[2].y;
 	A[3].x = A[2].x;
 	A[3].y = A[0].y;
-	gvrender_polygon(gvc, A, 4, 0);
+	gvrender_polygon(job, A, 4, 0);
     } else {
 	border--;
 	ht = pts.UR.y - pts.LL.y;
 	wd = pts.UR.x - pts.LL.x;
-	doSide(gvc, pts.LL, border, ht);
+	doSide(job, pts.LL, border, ht);
 	pt.x = pts.LL.x;
 	pt.y = pts.UR.y;
-	doSide(gvc, pt, wd, -border);
-	doSide(gvc, pts.UR, -border, -ht);
+	doSide(job, pt, wd, -border);
+	doSide(job, pts.UR, -border, -ht);
 	pt.x = pts.UR.x;
 	pt.y = pts.LL.y;
-	doSide(gvc, pt, -wd, border);
+	doSide(job, pt, -wd, border);
     }
 
-    gvrender_end_context(gvc);
+    gvrender_end_context(job);
 }
 
-static void doFill(GVC_t * gvc, char *color, box pts)
+static void doFill(GVJ_t * job, char *color, box pts)
 {
     point A[4];
 
-    gvrender_set_fillcolor(gvc, color);
-    gvrender_set_pencolor(gvc, color);
+    gvrender_set_fillcolor(job, color);
+    gvrender_set_pencolor(job, color);
     A[0] = pts.LL;
     A[1].x = pts.LL.x;
     A[1].y = pts.UR.y;
     A[2] = pts.UR;
     A[3].x = pts.UR.x;
     A[3].y = pts.LL.y;
-    gvrender_polygon(gvc, A, 4, 1);
+    gvrender_polygon(job, A, 4, 1);
 }
 
-static void doAnchorStart(GVC_t * gvc, htmldata_t * data, void *obj)
+static void doAnchorStart(GVJ_t * job, htmldata_t * data, void *obj)
 {
-    gvrender_begin_anchor(gvc, data->href, data->title, data->target);
+    gvrender_begin_anchor(job, data->href, data->title, data->target);
 }
 
-static void doAnchorEnd(GVC_t * gvc)
+static void doAnchorEnd(GVJ_t * job)
 {
-    gvrender_end_anchor(gvc);
+    gvrender_end_anchor(job);
 }
 
 /* forward declaration */
-static void emit_html_cell(GVC_t * gvc, htmlcell_t * cp, htmlenv_t * env,
-			   void *obj);
+static void emit_html_cell(GVJ_t * job, htmlcell_t * cp,
+			   htmlenv_t * env, void *obj);
 
 static void
-emit_html_tbl(GVC_t * gvc, htmltbl_t * tbl, htmlenv_t * env, void *obj)
+emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env, void *obj)
 {
     box pts = tbl->data.box;
     point p = env->p;
@@ -279,32 +279,32 @@ emit_html_tbl(GVC_t * gvc, htmltbl_t * tbl, htmlenv_t * env, void *obj)
     pts.LL.y += p.y;
     pts.UR.y += p.y;
 
-    /* gvrender_begin_context(gvc); */
+    /* gvrender_begin_context(job); */
 
     if (tbl->data.href)
-	doAnchorStart(gvc, &tbl->data, obj);
+	doAnchorStart(job, &tbl->data, obj);
 
     if (tbl->data.bgcolor)
-	doFill(gvc, tbl->data.bgcolor, pts);
+	doFill(job, tbl->data.bgcolor, pts);
 
     while (*cells) {
-	emit_html_cell(gvc, *cells, env, obj);
+	emit_html_cell(job, *cells, env, obj);
 	cells++;
     }
 
     if (tbl->data.border)
-	doBorder(gvc, NULL, tbl->data.border, pts);
+	doBorder(job, NULL, tbl->data.border, pts);
 
     if (tbl->data.href)
-	doAnchorEnd(gvc);
+	doAnchorEnd(job);
 
-    /* gvrender_end_context(gvc); */
+    /* gvrender_end_context(job); */
     if (tbl->font)
 	popFontInfo(env, &savef);
 }
 
 static void
-emit_html_img(GVC_t * gvc, htmlimg_t * cp, htmlenv_t * env, void *obj)
+emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env, void *obj)
 {
     point A[4];
     box bb = cp->box;
@@ -321,11 +321,11 @@ emit_html_img(GVC_t * gvc, htmlimg_t * cp, htmlenv_t * env, void *obj)
     A[3].x = bb.UR.x;
     A[3].y = bb.LL.y;
 
-    gvrender_user_shape(gvc, cp->src, A, 4, 1);
+    gvrender_user_shape(job, cp->src, A, 4, 1);
 }
 
 static void
-emit_html_cell(GVC_t * gvc, htmlcell_t * cp, htmlenv_t * env, void *obj)
+emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, void *obj)
 {
     box pts = cp->data.box;
     point p = env->p;
@@ -338,23 +338,23 @@ emit_html_cell(GVC_t * gvc, htmlcell_t * cp, htmlenv_t * env, void *obj)
     /* gvrender_begin_context(); */
 
     if (cp->data.href)
-	doAnchorStart(gvc, &cp->data, obj);
+	doAnchorStart(job, &cp->data, obj);
 
     if (cp->data.bgcolor)
-	doFill(gvc, cp->data.bgcolor, pts);
+	doFill(job, cp->data.bgcolor, pts);
 
     if (cp->child.kind == HTML_TBL)
-	emit_html_tbl(gvc, cp->child.u.tbl, env, obj);
+	emit_html_tbl(job, cp->child.u.tbl, env, obj);
     else if (cp->child.kind == HTML_IMAGE)
-	emit_html_img(gvc, cp->child.u.img, env, obj);
+	emit_html_img(job, cp->child.u.img, env, obj);
     else
-	emit_html_txt(gvc, cp->child.u.txt, env, obj);
+	emit_html_txt(job, cp->child.u.txt, env, obj);
 
     if (cp->data.border)
-	doBorder(gvc, NULL, cp->data.border, pts);
+	doBorder(job, NULL, cp->data.border, pts);
 
     if (cp->data.href)
-	doAnchorEnd(gvc);
+	doAnchorEnd(job);
 
     /* gvrender_end_context(); */
 }
@@ -362,7 +362,7 @@ emit_html_cell(GVC_t * gvc, htmlcell_t * cp, htmlenv_t * env, void *obj)
 /* emit_html_label:
  */
 void
-emit_html_label(GVC_t * gvc, htmllabel_t * lp, textlabel_t * tp, void *obj)
+emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp, void *obj)
 {
     htmlenv_t env;
 
@@ -374,17 +374,17 @@ emit_html_label(GVC_t * gvc, htmllabel_t * lp, textlabel_t * tp, void *obj)
 	htmltbl_t *tbl = lp->u.tbl;
 
 	/* set basic graphics context */
-	gvrender_begin_context(gvc);
+	gvrender_begin_context(job);
 	/* Need to override line style set by node. */
-	gvrender_set_style(gvc, gvc->defaultlinestyle);
+	gvrender_set_style(job, job->gvc->defaultlinestyle);
 	if (tbl->data.pencolor)
-	    gvrender_set_pencolor(gvc, tbl->data.pencolor);
+	    gvrender_set_pencolor(job, tbl->data.pencolor);
 	else
-	    gvrender_set_pencolor(gvc, DEFAULT_COLOR);
-	emit_html_tbl(gvc, tbl, &env, obj);
-	gvrender_end_context(gvc);
+	    gvrender_set_pencolor(job, DEFAULT_COLOR);
+	emit_html_tbl(job, tbl, &env, obj);
+	gvrender_end_context(job);
     } else {
-	emit_html_txt(gvc, lp->u.txt, &env, obj);
+	emit_html_txt(job, lp->u.txt, &env, obj);
     }
 }
 

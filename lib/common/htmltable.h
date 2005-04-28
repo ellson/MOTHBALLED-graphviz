@@ -139,7 +139,7 @@ extern "C" {
     extern htmllabel_t *simpleHTML(char *);
 
     extern int make_html_label(textlabel_t * lp, void *obj);
-    extern void emit_html_label(GVC_t * gvc, htmllabel_t * lp,
+    extern void emit_html_label(GVJ_t * job, htmllabel_t * lp,
 				textlabel_t *, void *obj);
 
     extern void free_html_label(htmllabel_t *, int);

@@ -51,8 +51,8 @@ extern "C" {
 
     extern void gvrender_output_filename_job(GVC_t * gvc, char *name);
     extern boolean gvrender_output_langname_job(GVC_t * gvc, char *name);
-    extern gvrender_job_t *gvrender_first_job(GVC_t * gvc);
-    extern gvrender_job_t *gvrender_next_job(GVC_t * gvc);
+    extern GVJ_t *gvrender_first_job(GVC_t * gvc);
+    extern GVJ_t *gvrender_next_job(GVC_t * gvc);
     extern void gvrender_delete_jobs(GVC_t * gvc);
 
 /* emit */
@@ -67,48 +67,49 @@ extern "C" {
 
 /* render */
 
-    extern int gvrender_select(GVC_t * gvc, char *lang);
-    extern int gvrender_features(GVC_t * gvc);
     extern void gvrender_initialize(GVC_t * gvc);
     extern void gvrender_finalize(GVC_t * gvc);
-    extern void gvrender_begin_job(GVC_t * gvc);
-    extern void gvrender_end_job(GVC_t * gvc);
-    extern void gvrender_begin_graph(GVC_t * gvc, graph_t * g);
-    extern void gvrender_end_graph(GVC_t * gvc);
-    extern void gvrender_begin_page(GVC_t * gvc);
-    extern void gvrender_end_page(GVC_t * gvc);
-    extern void gvrender_begin_layer(GVC_t * gvc);
-    extern void gvrender_end_layer(GVC_t * gvc);
-    extern void gvrender_begin_cluster(GVC_t * gvc, graph_t * sg);
-    extern void gvrender_end_cluster(GVC_t * gvc);
-    extern void gvrender_begin_nodes(GVC_t * gvc);
-    extern void gvrender_end_nodes(GVC_t * gvc);
-    extern void gvrender_begin_edges(GVC_t * gvc);
-    extern void gvrender_end_edges(GVC_t * gvc);
-    extern void gvrender_begin_node(GVC_t * gvc, node_t * n);
-    extern void gvrender_end_node(GVC_t * gvc);
-    extern void gvrender_begin_edge(GVC_t * gvc, edge_t * e);
-    extern void gvrender_end_edge(GVC_t * gvc);
-    extern void gvrender_begin_context(GVC_t * gvc);
-    extern void gvrender_end_context(GVC_t * gvc);
-    extern void gvrender_begin_anchor(GVC_t * gvc, char *href,
+
+    extern void gvrender_begin_job(GVJ_t * job);
+    extern void gvrender_end_job(GVJ_t * job);
+    extern int gvrender_select(GVJ_t * job, char *lang);
+    extern int gvrender_features(GVJ_t * job);
+    extern void gvrender_begin_graph(GVJ_t * job, graph_t * g);
+    extern void gvrender_end_graph(GVJ_t * job);
+    extern void gvrender_begin_page(GVJ_t * job);
+    extern void gvrender_end_page(GVJ_t * job);
+    extern void gvrender_begin_layer(GVJ_t * job);
+    extern void gvrender_end_layer(GVJ_t * job);
+    extern void gvrender_begin_cluster(GVJ_t * job, graph_t * sg);
+    extern void gvrender_end_cluster(GVJ_t * job);
+    extern void gvrender_begin_nodes(GVJ_t * job);
+    extern void gvrender_end_nodes(GVJ_t * job);
+    extern void gvrender_begin_edges(GVJ_t * job);
+    extern void gvrender_end_edges(GVJ_t * job);
+    extern void gvrender_begin_node(GVJ_t * job, node_t * n);
+    extern void gvrender_end_node(GVJ_t * job);
+    extern void gvrender_begin_edge(GVJ_t * job, edge_t * e);
+    extern void gvrender_end_edge(GVJ_t * job);
+    extern void gvrender_begin_context(GVJ_t * job);
+    extern void gvrender_end_context(GVJ_t * job);
+    extern void gvrender_begin_anchor(GVJ_t * job, char *href,
 				      char *tooltip, char *target);
-    extern void gvrender_end_anchor(GVC_t * gvc);
-    extern void gvrender_set_font(GVC_t * gvc, char *fontname,
+    extern void gvrender_end_anchor(GVJ_t * job);
+    extern void gvrender_set_font(GVJ_t * job, char *fontname,
 				  double fontsize);
-    extern void gvrender_textline(GVC_t * gvc, pointf p, textline_t * str);
-    extern void gvrender_set_pencolor(GVC_t * gvc, char *name);
-    extern void gvrender_set_fillcolor(GVC_t * gvc, char *name);
-    extern void gvrender_set_style(GVC_t * gvc, char **s);
-    extern void gvrender_ellipse(GVC_t * gvc, point p, int rx, int ry,
+    extern void gvrender_textline(GVJ_t * job, pointf p, textline_t * str);
+    extern void gvrender_set_pencolor(GVJ_t * job, char *name);
+    extern void gvrender_set_fillcolor(GVJ_t * job, char *name);
+    extern void gvrender_set_style(GVJ_t * job, char **s);
+    extern void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry,
 				 int filled);
-    extern void gvrender_polygon(GVC_t * gvc, point * A, int n,
+    extern void gvrender_polygon(GVJ_t * job, point * A, int n,
 				 int filled);
-    extern void gvrender_beziercurve(GVC_t * gvc, pointf * AF, int n,
+    extern void gvrender_beziercurve(GVJ_t * job, pointf * AF, int n,
 				     int arrow_at_start, int arrow_at_end, int);
-    extern void gvrender_polyline(GVC_t * gvc, point * A, int n);
-    extern void gvrender_comment(GVC_t * gvc, char *str);
-    extern void gvrender_user_shape(GVC_t * gvc, char *name, point * A,
+    extern void gvrender_polyline(GVJ_t * job, point * A, int n);
+    extern void gvrender_comment(GVJ_t * job, char *str);
+    extern void gvrender_user_shape(GVJ_t * job, char *name, point * A,
 				    int sides, int filled);
 
 /* layout */

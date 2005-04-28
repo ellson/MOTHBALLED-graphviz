@@ -155,14 +155,14 @@ void free_label(textlabel_t * p)
     }
 }
 
-void emit_label(GVC_t * gvc, textlabel_t * lp, void *obj)
+void emit_label(GVJ_t * job, textlabel_t * lp, void *obj)
 {
     int i, linespacing;
     double left_x, center_x, right_x, halfwidth_x;
     pointf p;
 
     if (lp->html) {
-	emit_html_label(gvc, lp->u.html, lp, obj);
+	emit_html_label(job, lp->u.html, lp, obj);
 	return;
     }
 
@@ -184,9 +184,9 @@ void emit_label(GVC_t * gvc, textlabel_t * lp, void *obj)
     p.y = lp->p.y + (linespacing * (lp->u.txt.nlines - 1) / 2)	/* cl of topline */
 	-lp->fontsize / 3.0;	/* cl to baseline */
 
-    gvrender_begin_context(gvc);
-    gvrender_set_pencolor(gvc, lp->fontcolor);
-    gvrender_set_font(gvc, lp->fontname, lp->fontsize);
+    gvrender_begin_context(job);
+    gvrender_set_pencolor(job, lp->fontcolor);
+    gvrender_set_font(job, lp->fontname, lp->fontsize);
 
     for (i = 0; i < lp->u.txt.nlines; i++) {
 	switch (lp->u.txt.line[i].just) {
@@ -201,13 +201,13 @@ void emit_label(GVC_t * gvc, textlabel_t * lp, void *obj)
 	    p.x = center_x;
 	    break;
 	}
-	gvrender_textline(gvc, p, &(lp->u.txt.line[i]));
+	gvrender_textline(job, p, &(lp->u.txt.line[i]));
 
 	/* position for next line */
 	p.y -= linespacing;
     }
 
-    gvrender_end_context(gvc);
+    gvrender_end_context(job);
 }
 
 

@@ -34,6 +34,7 @@ extern "C" {
     typedef struct Agsym_t attrsym_t;
 
     typedef struct GVC_s GVC_t;
+    typedef struct GVJ_s GVJ_t;
     typedef struct gvrender_engine_s gvrender_engine_t;
     typedef struct gvlayout_engine_s gvlayout_engine_t;
     typedef struct gvdisplay_engine_s gvdisplay_engine_t;
@@ -186,7 +187,7 @@ extern "C" {
 	 port(*portfn) (node_t *, char *, char *);	/* finds aiming point and slope of port */
 	 boolean(*insidefn) (inside_t * inside_context, pointf);	/* clips incident gvc->e spline on shape of gvc->n */
 	int (*pboxfn)(node_t* n, port* p, int side, box rv[], int *kptr); /* finds box path to reach port */
-	void (*codefn) (GVC_t * gvc, node_t * n);	/* emits graphics code for node */
+	void (*codefn) (GVJ_t * job, node_t * n);	/* emits graphics code for node */
     } shape_functions;
 
     typedef enum { SH_UNSET, SH_POLY, SH_RECORD, SH_POINT, SH_EPSF,

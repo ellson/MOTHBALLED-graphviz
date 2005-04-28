@@ -32,12 +32,12 @@
 #define ZOOMFACTOR 1.1
 #define EPSILON .0001
 
-void gvevent_refresh(gvrender_job_t * job)
+void gvevent_refresh(GVJ_t * job)
 {
-    emit_graph(job->gvc, job->g);
+    emit_graph(job, job->g);
 }
 
-void gvevent_button_press(gvrender_job_t * job, int button, double x, double y)
+void gvevent_button_press(GVJ_t * job, int button, double x, double y)
 {
     switch (button) {
     case 1: /* select / create in edit mode */
@@ -71,7 +71,7 @@ void gvevent_button_press(gvrender_job_t * job, int button, double x, double y)
     job->oldy = y;
 }
 
-void gvevent_motion(gvrender_job_t * job, double x, double y)
+void gvevent_motion(GVJ_t * job, double x, double y)
 {
     double dx = x - job->oldx;
     double dy = y - job->oldy;
@@ -98,18 +98,18 @@ void gvevent_motion(gvrender_job_t * job, double x, double y)
     job->oldy = y;
 }
 
-void gvevent_button_release(gvrender_job_t *job, int button, double x, double y)
+void gvevent_button_release(GVJ_t *job, int button, double x, double y)
 {
     job->click = 0;
     job->active = 0;
 }
 
-static int quit_cb(gvrender_job_t * job)
+static int quit_cb(GVJ_t * job)
 {
     return 1;
 }
 
-static int left_cb(gvrender_job_t * job)
+static int left_cb(GVJ_t * job)
 {
     job->fit_mode = 0;
     job->focus.x += PANFACTOR / job->zoom;
@@ -117,7 +117,7 @@ static int left_cb(gvrender_job_t * job)
     return 0;
 }
 
-static int right_cb(gvrender_job_t * job)
+static int right_cb(GVJ_t * job)
 {
     job->fit_mode = 0;
     job->focus.x -= PANFACTOR / job->zoom;
@@ -125,7 +125,7 @@ static int right_cb(gvrender_job_t * job)
     return 0;
 }
 
-static int up_cb(gvrender_job_t * job)
+static int up_cb(GVJ_t * job)
 {
     job->fit_mode = 0;
     job->focus.y += -(PANFACTOR / job->zoom);
@@ -133,7 +133,7 @@ static int up_cb(gvrender_job_t * job)
     return 0;
 }
 
-static int down_cb(gvrender_job_t * job)
+static int down_cb(GVJ_t * job)
 {
     job->fit_mode = 0;
     job->focus.y -= -(PANFACTOR / job->zoom);
@@ -141,7 +141,7 @@ static int down_cb(gvrender_job_t * job)
     return 0;
 }
 
-static int zoom_in_cb(gvrender_job_t * job)
+static int zoom_in_cb(GVJ_t * job)
 {
     job->fit_mode = 0;
     job->zoom *= ZOOMFACTOR;
@@ -149,7 +149,7 @@ static int zoom_in_cb(gvrender_job_t * job)
     return 0;
 }
 
-static int zoom_out_cb(gvrender_job_t * job)
+static int zoom_out_cb(GVJ_t * job)
 {
     job->fit_mode = 0;
     job->zoom /= ZOOMFACTOR;
@@ -157,7 +157,7 @@ static int zoom_out_cb(gvrender_job_t * job)
     return 0;
 }
 
-static int toggle_fit_cb(gvrender_job_t * job)
+static int toggle_fit_cb(GVJ_t * job)
 {
     job->fit_mode = !job->fit_mode;
     if (job->fit_mode) {

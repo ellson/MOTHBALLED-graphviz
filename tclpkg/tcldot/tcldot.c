@@ -1256,7 +1256,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 	/* populate new job struct with output language and output file data */
 	gvc->job->output_lang =
-            gvrender_select(gvc, gvc->job->output_langname);
+            gvrender_select(gvc->job, gvc->job->output_langname);
 
 	if (Tcl_GetOpenFile (interp, argv[2], 1, 1,
 	     (ClientData *) &(gvc->job->output_file)) != TCL_OK)

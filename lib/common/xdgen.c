@@ -63,7 +63,7 @@ static int isInvis(char *style)
  * these would be the arrow/label positions to use if a user want to flip the 
  * direction of an edge (as sometimes is there want).
  */
-void extend_attrs(GVC_t * gvc, graph_t *g, int s_arrows, int e_arrows)
+void extend_attrs(GVJ_t * job, graph_t *g, int s_arrows, int e_arrows)
 {
     node_t *n;
     edge_t *e;
@@ -111,7 +111,7 @@ void extend_attrs(GVC_t * gvc, graph_t *g, int s_arrows, int e_arrows)
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (ND_shape(n) && !isInvis(late_string(n, N_style, ""))) {
-	    ND_shape(n)->fns->codefn(gvc, n);
+	    ND_shape(n)->fns->codefn(job, n);
 	    agxset(n, n_draw->index, agxbuse(xbufs[EMIT_DRAW]));
 	    agxset(n, n_l_draw->index, agxbuse(xbufs[EMIT_LABEL]));
 	}
@@ -125,7 +125,7 @@ void extend_attrs(GVC_t * gvc, graph_t *g, int s_arrows, int e_arrows)
 	    if (ED_spl(e) == NULL)
 		continue;
 
-	    emit_edge_graphics (gvc, e);
+	    emit_edge_graphics (job, e);
 	    agxset(e, e_draw->index, agxbuse(xbufs[EMIT_DRAW]));
 	    if (t_draw) agxset(e, t_draw->index, agxbuse(xbufs[EMIT_TDRAW]));
 	    if (h_draw) agxset(e, h_draw->index, agxbuse(xbufs[EMIT_HDRAW]));
@@ -136,7 +136,7 @@ void extend_attrs(GVC_t * gvc, graph_t *g, int s_arrows, int e_arrows)
     }
   
     xdemitState = EMIT_DRAW;
-    emit_background(gvc, g);
+    emit_background(job, g);
     if (agxblen(xbufs[EMIT_DRAW])) {
 	if (!g_draw)
 	    g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
@@ -144,10 +144,10 @@ void extend_attrs(GVC_t * gvc, graph_t *g, int s_arrows, int e_arrows)
     }
     xdemitState = EMIT_LABEL;
     if (GD_label(g)) {
-	emit_label(gvc, GD_label(g), (void *) g);
+	emit_label(job, GD_label(g), (void *) g);
 	agxset(g, g_l_draw->index, agxbuse(xbufs[EMIT_LABEL]));
     }
-    emit_clusters(gvc, g, 0);
+    emit_clusters(job, g, 0);
     agxbfree(&xbuf0);
     agxbfree(&xbuf1);
     agxbfree(&xbuf2);
@@ -257,7 +257,7 @@ xd_set_fillcolor (char *name)
 static void 
 xd_set_style (char **s)
 {
-    char buf[BUFSIZ];
+    unsigned char buf[BUFSIZ];
     agxbuf xbuf;
     char* p;
     int more;

@@ -142,7 +142,7 @@ void write_plain_ext(GVC_t * gvc, graph_t * g, FILE * f)
 void write_extended_dot(GVC_t *gvc, graph_t *g, FILE *f)
 {
 	attach_attrs(g);
-	extend_attrs(gvc, g, s_arrows, e_arrows);
+	extend_attrs(gvc->job, g, s_arrows, e_arrows);
 	agwrite(g, f);
 }
 

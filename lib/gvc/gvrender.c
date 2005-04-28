@@ -48,9 +48,9 @@ extern void colorxlate(char *str, color_t * color,
 		       color_type_t target_type);
 extern char *canontoken(char *str);
 
-int gvrender_select(GVC_t * gvc, char *str)
+int gvrender_select(GVJ_t * job, char *str)
 {
-    gvrender_job_t *job = gvc->job;
+    GVC_t *gvc = job->gvc;
     gv_plugin_t *plugin;
     gvplugin_type_t *typeptr;
 #ifndef DISABLE_CODEGENS
@@ -79,9 +79,8 @@ int gvrender_select(GVC_t * gvc, char *str)
     return NO_SUPPORT;
 }
 
-int gvrender_features(GVC_t * gvc)
+int gvrender_features(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
     int features = 0;
 
@@ -111,7 +110,7 @@ extern int gvevent_key_binding_size;
 
 void gvrender_initialize(GVC_t * gvc)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre) {
@@ -133,7 +132,7 @@ void gvrender_initialize(GVC_t * gvc)
 
 void gvrender_finalize(GVC_t * gvc)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre) {
@@ -150,9 +149,8 @@ void gvrender_finalize(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_job(GVC_t * gvc)
+void gvrender_begin_job(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre) {
@@ -164,15 +162,14 @@ void gvrender_begin_job(GVC_t * gvc)
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_job)
-	    cg->begin_job(job->output_file, job->g, gvc->lib, gvc->user,
-			  gvc->info, job->pagesArraySize);
+	    cg->begin_job(job->output_file, job->g, job->gvc->lib, job->gvc->user,
+			  job->gvc->info, job->pagesArraySize);
     }
 #endif
 }
 
-void gvrender_end_job(GVC_t * gvc)
+void gvrender_end_job(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_job)
@@ -185,7 +182,7 @@ void gvrender_end_job(GVC_t * gvc)
 	    cg->end_job();
     }
 #endif
-    gvc->lib = NULL;
+    job->gvc->lib = NULL;
 }
 
 /* font modifiers */
@@ -193,7 +190,7 @@ void gvrender_end_job(GVC_t * gvc)
 #define BOLD    1
 #define ITALIC  2
 
-static pointf gvrender_ptf(gvrender_job_t *job, pointf p)
+static pointf gvrender_ptf(GVJ_t *job, pointf p)
 {
     pointf rv;
 
@@ -207,7 +204,7 @@ static pointf gvrender_ptf(gvrender_job_t *job, pointf p)
     return rv;
 }
 
-static pointf gvrender_pt(gvrender_job_t *job, point p)
+static pointf gvrender_pt(GVJ_t *job, point p)
 {
     pointf rv;
 
@@ -241,9 +238,9 @@ static void gvrender_resolve_color(gvrender_features_t * features,
     }
 }
 
-void gvrender_begin_graph(GVC_t * gvc, graph_t * g)
+void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 {
-    gvrender_job_t *job = gvc->job;
+    GVC_t *gvc = job->gvc;
     gvrender_engine_t *gvre = job->render_engine;
     char *str;
     double sx, sy;
@@ -275,8 +272,8 @@ void gvrender_begin_graph(GVC_t * gvc, graph_t * g)
 	/* init stack */
 	gvc->SP = 0;
 	job->style = &(gvc->styles[0]);
-	gvrender_set_pencolor(gvc, DEFAULT_COLOR);
-	gvrender_set_fillcolor(gvc, DEFAULT_FILL);
+	gvrender_set_pencolor(job, DEFAULT_COLOR);
+	gvrender_set_fillcolor(job, DEFAULT_FILL);
 	job->style->fontfam = DEFAULT_FONTNAME;
 	job->style->fontsz = DEFAULT_FONTSIZE;
 	job->style->fontopt = FONT_REGULAR;
@@ -304,9 +301,8 @@ fprintf(stderr,"pb = %d,%d %d,%d\n",
 #endif
 }
 
-void gvrender_end_graph(GVC_t * gvc)
+void gvrender_end_graph(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_graph)
@@ -321,9 +317,8 @@ void gvrender_end_graph(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_page(GVC_t * gvc)
+void gvrender_begin_page(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->begin_page)
@@ -342,9 +337,8 @@ void gvrender_begin_page(GVC_t * gvc)
 #endif
 }
 
-void gvrender_end_page(GVC_t * gvc)
+void gvrender_end_page(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_page)
@@ -359,9 +353,9 @@ void gvrender_end_page(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_layer(GVC_t * gvc)
+void gvrender_begin_layer(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
+    GVC_t * gvc = job->gvc;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->begin_layer)
@@ -376,9 +370,8 @@ void gvrender_begin_layer(GVC_t * gvc)
 #endif
 }
 
-void gvrender_end_layer(GVC_t * gvc)
+void gvrender_end_layer(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_layer)
@@ -393,9 +386,8 @@ void gvrender_end_layer(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_cluster(GVC_t * gvc, graph_t * sg)
+void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->begin_cluster)
@@ -410,9 +402,8 @@ void gvrender_begin_cluster(GVC_t * gvc, graph_t * sg)
 #endif
 }
 
-void gvrender_end_cluster(GVC_t * gvc)
+void gvrender_end_cluster(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_cluster)
@@ -427,9 +418,8 @@ void gvrender_end_cluster(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_nodes(GVC_t * gvc)
+void gvrender_begin_nodes(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->begin_nodes)
@@ -444,9 +434,8 @@ void gvrender_begin_nodes(GVC_t * gvc)
 #endif
 }
 
-void gvrender_end_nodes(GVC_t * gvc)
+void gvrender_end_nodes(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_nodes)
@@ -461,9 +450,8 @@ void gvrender_end_nodes(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_edges(GVC_t * gvc)
+void gvrender_begin_edges(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->begin_edges)
@@ -478,9 +466,8 @@ void gvrender_begin_edges(GVC_t * gvc)
 #endif
 }
 
-void gvrender_end_edges(GVC_t * gvc)
+void gvrender_end_edges(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_edges)
@@ -495,9 +482,8 @@ void gvrender_end_edges(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_node(GVC_t * gvc, node_t * n)
+void gvrender_begin_node(GVJ_t * job, node_t * n)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->begin_node)
@@ -512,9 +498,8 @@ void gvrender_begin_node(GVC_t * gvc, node_t * n)
 #endif
 }
 
-void gvrender_end_node(GVC_t * gvc)
+void gvrender_end_node(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_node)
@@ -529,9 +514,8 @@ void gvrender_end_node(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_edge(GVC_t * gvc, edge_t * e)
+void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->begin_edge)
@@ -548,9 +532,8 @@ void gvrender_begin_edge(GVC_t * gvc, edge_t * e)
 #endif
 }
 
-void gvrender_end_edge(GVC_t * gvc)
+void gvrender_end_edge(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_edge)
@@ -565,9 +548,9 @@ void gvrender_end_edge(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_context(GVC_t * gvc)
+void gvrender_begin_context(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
+    GVC_t *gvc = job->gvc;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre) {
@@ -586,9 +569,9 @@ void gvrender_begin_context(GVC_t * gvc)
 #endif
 }
 
-void gvrender_end_context(GVC_t * gvc)
+void gvrender_end_context(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
+    GVC_t *gvc = job->gvc;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre) {
@@ -606,10 +589,9 @@ void gvrender_end_context(GVC_t * gvc)
 #endif
 }
 
-void gvrender_begin_anchor(GVC_t * gvc, char *href, char *tooltip,
+void gvrender_begin_anchor(GVJ_t * job, char *href, char *tooltip,
 			   char *target)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->begin_anchor)
@@ -624,9 +606,8 @@ void gvrender_begin_anchor(GVC_t * gvc, char *href, char *tooltip,
 #endif
 }
 
-void gvrender_end_anchor(GVC_t * gvc)
+void gvrender_end_anchor(GVJ_t * job)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->end_anchor)
@@ -641,9 +622,8 @@ void gvrender_end_anchor(GVC_t * gvc)
 #endif
 }
 
-void gvrender_set_font(GVC_t * gvc, char *fontname, double fontsize)
+void gvrender_set_font(GVJ_t * job, char *fontname, double fontsize)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre) {
@@ -660,9 +640,8 @@ void gvrender_set_font(GVC_t * gvc, char *fontname, double fontsize)
 #endif
 }
 
-void gvrender_textline(GVC_t * gvc, pointf p, textline_t * line)
+void gvrender_textline(GVJ_t * job, pointf p, textline_t * line)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (line->str && line->str[0]) {
@@ -684,9 +663,8 @@ void gvrender_textline(GVC_t * gvc, pointf p, textline_t * line)
     }
 }
 
-void gvrender_set_pencolor(GVC_t * gvc, char *name)
+void gvrender_set_pencolor(GVJ_t * job, char *name)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
     color_t *color = &(job->style->pencolor);
 
@@ -705,9 +683,8 @@ void gvrender_set_pencolor(GVC_t * gvc, char *name)
 #endif
 }
 
-void gvrender_set_fillcolor(GVC_t * gvc, char *name)
+void gvrender_set_fillcolor(GVJ_t * job, char *name)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
     color_t *color = &(job->style->fillcolor);
 
@@ -726,9 +703,8 @@ void gvrender_set_fillcolor(GVC_t * gvc, char *name)
 #endif
 }
 
-void gvrender_set_style(GVC_t * gvc, char **s)
+void gvrender_set_style(GVJ_t * job, char **s)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
     char *line, *p;
     gvstyle_t *style = job->style;
@@ -771,9 +747,8 @@ void gvrender_set_style(GVC_t * gvc, char **s)
 #endif
 }
 
-void gvrender_ellipse(GVC_t * gvc, point p, int rx, int ry, int filled)
+void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry, int filled)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->ellipse) {
@@ -804,9 +779,8 @@ void gvrender_ellipse(GVC_t * gvc, point p, int rx, int ry, int filled)
 #endif
 }
 
-void gvrender_polygon(GVC_t * gvc, point * A, int n, int filled)
+void gvrender_polygon(GVJ_t * job, point * A, int n, int filled)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->polygon) {
@@ -834,10 +808,9 @@ void gvrender_polygon(GVC_t * gvc, point * A, int n, int filled)
 #endif
 }
 
-void gvrender_beziercurve(GVC_t * gvc, pointf * AF, int n,
+void gvrender_beziercurve(GVJ_t * job, pointf * AF, int n,
 			  int arrow_at_start, int arrow_at_end, int filled)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->beziercurve) {
@@ -877,9 +850,8 @@ void gvrender_beziercurve(GVC_t * gvc, pointf * AF, int n,
 #endif
 }
 
-void gvrender_polyline(GVC_t * gvc, point * A, int n)
+void gvrender_polyline(GVJ_t * job, point * A, int n)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre && gvre->polyline) {
@@ -907,9 +879,8 @@ void gvrender_polyline(GVC_t * gvc, point * A, int n)
 #endif
 }
 
-void gvrender_comment(GVC_t * gvc, char *str)
+void gvrender_comment(GVJ_t * job, char *str)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (!str || !str[0])
@@ -928,10 +899,9 @@ void gvrender_comment(GVC_t * gvc, char *str)
 #endif
 }
 
-void gvrender_user_shape(GVC_t * gvc, char *name, point * A, int n,
+void gvrender_user_shape(GVJ_t * job, char *name, point * A, int n,
 			 int filled)
 {
-    gvrender_job_t *job = gvc->job;
     gvrender_engine_t *gvre = job->render_engine;
 
 /* temporary hack until client API is FP */

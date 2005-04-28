@@ -83,7 +83,7 @@ static int chkOrder(graph_t * g)
     return 0;
 }
 
-static void init_job_flags(gvrender_job_t * job, graph_t * g)
+static void init_job_flags(GVJ_t * job, graph_t * g)
 {
     switch (job->output_lang) {
     case GVRENDER_PLUGIN:
@@ -122,6 +122,7 @@ static void init_job_flags(gvrender_job_t * job, graph_t * g)
 
 static void init_layering(GVC_t * gvc, graph_t * g)
 {
+    GVJ_t *job = gvc->job;
     char *str;
 
     /* free layer strings and pointers from previous graph */
@@ -131,12 +132,12 @@ static void init_layering(GVC_t * gvc, graph_t * g)
 	free(gvc->layerIDs);
 
     if ((str = agget(g, "layers")) != 0) {
-	if (gvrender_features(gvc) & GVRENDER_DOES_LAYERS) {
+	if (gvrender_features(job) & GVRENDER_DOES_LAYERS) {
 	    gvc->numLayers = parse_layers(gvc, g, str);
 	}
 	else {
 	    agerr(AGWARN, "layers not supported in %s output\n",
-		  gvc->job->output_langname);
+		  job->output_langname);
 	    gvc->numLayers = 1;
 	}
     } else {
@@ -160,7 +161,7 @@ static void nextlayer(GVC_t *gvc)
     gvc->layerNum++;
 }
 
-static point pagecode(gvrender_job_t *job, char c)
+static point pagecode(GVJ_t *job, char c)
 {
     point rv;
     rv.x = rv.y = 0;
@@ -185,7 +186,7 @@ static point pagecode(gvrender_job_t *job, char c)
 
 static void set_pagedir(GVC_t *gvc, graph_t * g)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
     char *str;
 
     job->pagesArrayMajor.x = job->pagesArrayMajor.y 
@@ -207,7 +208,7 @@ static void set_pagedir(GVC_t *gvc, graph_t * g)
 
 static void init_job_pagination(GVC_t * gvc, graph_t * g)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
     pointf pageSizeCenteredLessMargins;	 /* page for centering less margins - graph units*/
     pointf deviceSize;			/* device size for a page of the graph - graph units */
     pointf extra, size;
@@ -309,14 +310,14 @@ fprintf(stderr,"width,height = %d,%d (device units)\n",
 
 static void firstpage(GVC_t *gvc)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
 
     job->pagesArrayElem = job->pagesArrayFirst;
 }
 
 static boolean validpage(GVC_t *gvc)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
 
     return ((job->pagesArrayElem.x >= 0)
 	 && (job->pagesArrayElem.x < job->pagesArraySize.x)
@@ -326,7 +327,7 @@ static boolean validpage(GVC_t *gvc)
 
 static void nextpage(GVC_t *gvc)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
 
     job->pagesArrayElem = add_points(job->pagesArrayElem, job->pagesArrayMinor);
     if (validpage(gvc) == FALSE) {
@@ -364,9 +365,8 @@ static boolean write_node_test(Agraph_t * g, Agnode_t * n)
     return TRUE;
 }
 
-void emit_background(GVC_t * gvc, graph_t *g)
+void emit_background(GVJ_t * job, graph_t *g)
 {
-    gvrender_job_t * job = gvc->job;
     char *str;
     pointf AF[4];
     point A[4];
@@ -383,23 +383,25 @@ void emit_background(GVC_t * gvc, graph_t *g)
 	for (i = 0; i < 4; i++) {
 	    PF2P(AF[i],A[i]);
 	}
-	gvrender_set_fillcolor(gvc, str);
-	gvrender_set_pencolor(gvc, str);
-	gvrender_polygon(gvc, A, 4, TRUE);	/* filled */
+	gvrender_set_fillcolor(job, str);
+	gvrender_set_pencolor(job, str);
+	gvrender_polygon(job, A, 4, TRUE);	/* filled */
     }
 }
 
 static void emit_defaults(GVC_t * gvc)
 {
-    gvrender_set_pencolor(gvc, DEFAULT_COLOR);
-    gvrender_set_font(gvc, gvc->defaultfontname, gvc->defaultfontsize);
+    GVJ_t * job = gvc->job;
+
+    gvrender_set_pencolor(job, DEFAULT_COLOR);
+    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
 }
 
 
 /* even if this makes you cringe, at least it's short */
 static void setup_page(GVC_t * gvc, graph_t * g)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
 
     /* establish current box in graph coordinates */
     job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x;
@@ -429,14 +431,14 @@ fprintf(stderr,"pagesArrayElem = %d,%d pageSize = %g,%g pageOffset = %g,%g\n",
 	job->pageOffset.x, job->pageOffset.y);
 #endif
 
-    gvrender_begin_page(gvc);
-    emit_background(gvc, g);
+    gvrender_begin_page(job);
+    emit_background(job, g);
     emit_defaults(gvc);
 }
 
 static boolean node_in_pageBox(GVC_t *gvc, node_t * n)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
     boxf nb;
 
 #if 0
@@ -577,8 +579,9 @@ static boolean clust_in_layer(GVC_t *gvc, graph_t * sg)
     return FALSE;
 }
 
-static void emit_node(GVC_t * gvc, node_t * n)
+static void emit_node(GVJ_t * job, node_t * n)
 {
+    GVC_t *gvc = job->gvc;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
 
     if (ND_shape(n) == NULL)
@@ -588,13 +591,13 @@ static void emit_node(GVC_t * gvc, node_t * n)
 	    && node_in_pageBox(gvc, n)
 	    && (ND_state(n) != gvc->pageNum)) {
 
-        gvrender_comment(gvc, n->name);
+        gvrender_comment(job, n->name);
 
 	s = late_string(n, N_comment, "");
 	if (s[0])
-	    gvrender_comment(gvc, s);
+	    gvrender_comment(job, s);
         
-	gvrender_begin_node(gvc, n);
+	gvrender_begin_node(job, n);
 	if (((s = agget(n, "href")) && s[0])
 	    || ((s = agget(n, "URL")) && s[0])) {
 	    url = strdup_and_subst_node(s, n);
@@ -604,21 +607,21 @@ static void emit_node(GVC_t * gvc, node_t * n)
 		tooltip = strdup_and_subst_node(ND_label(n)->text, n);
 	    if ((s = agget(n, "target")) && s[0])
 		target = strdup_and_subst_node(s, n);
-	    gvrender_begin_anchor(gvc, url, tooltip, target);
+	    gvrender_begin_anchor(job, url, tooltip, target);
 	}
-	gvrender_begin_context(gvc);
-	ND_shape(n)->fns->codefn(gvc, n);
+	gvrender_begin_context(job);
+	ND_shape(n)->fns->codefn(job, n);
 	ND_state(n) = gvc->pageNum;
-	gvrender_end_context(gvc);
+	gvrender_end_context(job);
 	if (url) {
-	    gvrender_end_anchor(gvc);
+	    gvrender_end_anchor(job);
 	    free(url);
 	    if (tooltip)
 		free(tooltip);
 	    if (target)
 		free(target);
 	}
-	gvrender_end_node(gvc);
+	gvrender_end_node(job);
     }
 }
 
@@ -659,7 +662,7 @@ static pointf computeoffset_qr(pointf p, pointf q, pointf r, pointf s,
     return res;
 }
 
-void emit_attachment(GVC_t * gvc, textlabel_t * lp, splines * spl)
+static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
 {
     point sz, A[3];
     unsigned char *s;
@@ -676,18 +679,18 @@ void emit_attachment(GVC_t * gvc, textlabel_t * lp, splines * spl)
     A[1] = pointof(A[0].x - sz.x, A[0].y);
     A[2] = dotneato_closest(spl, lp->p);
     /* Don't use edge style to draw attachment */
-    gvrender_set_style(gvc, gvc->defaultlinestyle);
+    gvrender_set_style(job, job->gvc->defaultlinestyle);
     /* Use font color to draw attachment
        - need something unambiguous in case of multicolored parallel edges
        - defaults to black for html-like labels
      */
-    gvrender_set_pencolor(gvc, lp->fontcolor);
-    gvrender_polyline(gvc, A, 3);
+    gvrender_set_pencolor(job, lp->fontcolor);
+    gvrender_polyline(job, A, 3);
 }
 
 static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
     int i, j, np;
     bezier bz;
     point *p;
@@ -723,7 +726,7 @@ static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
     return boxf_overlap(job->pageBox, b);
 }
 
-void emit_edge_graphics(GVC_t * gvc, edge_t * e)
+void emit_edge_graphics(GVJ_t * job, edge_t * e)
 {
     int i, j, cnum, numc = 0;
     char *color, *style;
@@ -751,7 +754,7 @@ void emit_edge_graphics(GVC_t * gvc, edge_t * e)
 	sp = styles;
 	while ((p = *sp++)) {
 	    if (streq(p, "invis")) {
-		gvrender_end_edge(gvc);
+		gvrender_end_edge(job);
 		return;
 	    }
 	}
@@ -762,9 +765,9 @@ void emit_edge_graphics(GVC_t * gvc, edge_t * e)
 	color = late_string(e, E_color, "");
 
 	if (color[0] || styles) {
-	    gvrender_begin_context(gvc);
+	    gvrender_begin_context(job);
 	    if (styles)
-		gvrender_set_style(gvc, styles);
+		gvrender_set_style(job, styles);
 	    saved = TRUE;
 	}
 	/* need to know how many colors separated by ':' */
@@ -817,10 +820,10 @@ void emit_edge_graphics(GVC_t * gvc, edge_t * e)
 	    for (cnum = 0, color = strtok(colors, ":"); color;
 		 cnum++, color = strtok(0, ":")) {
 		if (color[0]) {
-		    gvrender_set_pencolor(gvc, color);
-		    gvrender_set_fillcolor(gvc, color);
+		    gvrender_set_pencolor(job, color);
+		    gvrender_set_fillcolor(job, color);
 		} else {
-		    gvrender_set_fillcolor(gvc, DEFAULT_COLOR);
+		    gvrender_set_fillcolor(job, DEFAULT_COLOR);
 		}
 		for (i = 0; i < tmpspl.size; i++) {
 		    tmplist = tmpspl.list[i].list;
@@ -829,16 +832,16 @@ void emit_edge_graphics(GVC_t * gvc, edge_t * e)
 			tmplist[j].x += offlist[j].x;
 			tmplist[j].y += offlist[j].y;
 		    }
-		    gvrender_beziercurve(gvc, tmplist, tmpspl.list[i].size,
+		    gvrender_beziercurve(job, tmplist, tmpspl.list[i].size,
 					 FALSE, FALSE, FALSE);
 		}
 	    }
 	    xdemitState = EMIT_TDRAW;
 	    if (bz.sflag)
-		arrow_gen(gvc, bz.sp, bz.list[0], scale, bz.sflag);
+		arrow_gen(job, bz.sp, bz.list[0], scale, bz.sflag);
 	    xdemitState = EMIT_HDRAW;
 	    if (bz.eflag)
-		arrow_gen(gvc, bz.ep, bz.list[bz.size - 1], scale,
+		arrow_gen(job, bz.ep, bz.list[bz.size - 1], scale,
 			  bz.eflag);
 	    free(colors);
 	    for (i = 0; i < offspl.size; i++) {
@@ -849,10 +852,10 @@ void emit_edge_graphics(GVC_t * gvc, edge_t * e)
 	    free(tmpspl.list);
 	} else {
 	    if (color[0]) {
-		gvrender_set_pencolor(gvc, color);
-		gvrender_set_fillcolor(gvc, color);
+		gvrender_set_pencolor(job, color);
+		gvrender_set_fillcolor(job, color);
 	    } else {
-		gvrender_set_fillcolor(gvc, DEFAULT_COLOR);
+		gvrender_set_fillcolor(job, DEFAULT_COLOR);
 	    }
 	    for (i = 0; i < ED_spl(e)->size; i++) {
 		bz = ED_spl(e)->list[i];
@@ -861,18 +864,18 @@ void emit_edge_graphics(GVC_t * gvc, edge_t * e)
 		bzf.list = malloc(sizeof(pointf) * bzf.size);
 		for (j = 0; j < bz.size; j++)
 		    P2PF(bz.list[j], bzf.list[j]);
-		if (gvrender_features(gvc) & GVRENDER_DOES_ARROWS) {
-		    gvrender_beziercurve(gvc, bzf.list, bz.size, bz.sflag,
+		if (gvrender_features(job) & GVRENDER_DOES_ARROWS) {
+		    gvrender_beziercurve(job, bzf.list, bz.size, bz.sflag,
 					 bz.eflag, FALSE);
 		} else {
-		    gvrender_beziercurve(gvc, bzf.list, bz.size, FALSE,
+		    gvrender_beziercurve(job, bzf.list, bz.size, FALSE,
 					 FALSE, FALSE);
 		    xdemitState = EMIT_TDRAW;
 		    if (bz.sflag)
-			arrow_gen(gvc, bz.sp, bz.list[0], scale, bz.sflag);
+			arrow_gen(job, bz.sp, bz.list[0], scale, bz.sflag);
 		    xdemitState = EMIT_HDRAW;
 		    if (bz.eflag)
-			arrow_gen(gvc, bz.ep, bz.list[bz.size - 1], scale,
+			arrow_gen(job, bz.ep, bz.list[bz.size - 1], scale,
 				  bz.eflag);
 		}
 		free(bzf.list);
@@ -881,23 +884,24 @@ void emit_edge_graphics(GVC_t * gvc, edge_t * e)
     }
     xdemitState = EMIT_LABEL;
     if (ED_label(e)) {
-	emit_label(gvc, ED_label(e), (void *) e);
+	emit_label(job, ED_label(e), (void *) e);
 	if (mapbool(late_string(e, E_decorate, "false")) && ED_spl(e))
-	    emit_attachment(gvc, ED_label(e), ED_spl(e));
+	    emit_attachment(job, ED_label(e), ED_spl(e));
     }
     xdemitState = EMIT_HLABEL;
     if (ED_head_label(e))
-	emit_label(gvc, ED_head_label(e), (void *) e);	/* vladimir */
+	emit_label(job, ED_head_label(e), (void *) e);	/* vladimir */
     xdemitState = EMIT_TLABEL;
     if (ED_tail_label(e))
-	emit_label(gvc, ED_tail_label(e), (void *) e);	/* vladimir */
+	emit_label(job, ED_tail_label(e), (void *) e);	/* vladimir */
 
     if (saved)
-	gvrender_end_context(gvc);
+	gvrender_end_context(job);
 }
 
-static void emit_edge(GVC_t * gvc, edge_t * e)
+static void emit_edge(GVJ_t * job, edge_t * e)
 {
+    GVC_t *gvc = job->gvc;
     char *s, *url = NULL, *label = NULL, *tooltip = NULL, *target = NULL;
     textlabel_t *lab = NULL;
 
@@ -911,14 +915,14 @@ static void emit_edge(GVC_t * gvc, edge_t * e)
     else
         strcat(s,"--");
     strcat(s,e->head->name);
-    gvrender_comment(gvc, s);
+    gvrender_comment(job, s);
     free(s);
 
     s = late_string(e, E_comment, "");
     if (s[0])
-        gvrender_comment(gvc, s);
+        gvrender_comment(job, s);
 
-    gvrender_begin_edge(gvc, e);
+    gvrender_begin_edge(job, e);
     if (((s = agget(e, "href")) && s[0])
 	|| ((s = agget(e, "URL")) && s[0])) {
 	url = strdup_and_subst_edge(s, e);
@@ -931,18 +935,18 @@ static void emit_edge(GVC_t * gvc, edge_t * e)
 	    tooltip = strdup_and_subst_edge(label, e);
 	if ((s = agget(e, "target")) && s[0])
 	    target = strdup_and_subst_edge(s, e);
-	gvrender_begin_anchor(gvc, url, tooltip, target);
+	gvrender_begin_anchor(job, url, tooltip, target);
     }
-    emit_edge_graphics (gvc, e);
+    emit_edge_graphics (job, e);
     if (url) {
-	gvrender_end_anchor(gvc);
+	gvrender_end_anchor(job);
 	free(url);
 	if (tooltip)
 	    free(tooltip);
 	if (target)
 	    free(target);
     }
-    gvrender_end_edge(gvc);
+    gvrender_end_edge(job);
 }
 
 static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
@@ -995,7 +999,7 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
 
 static void init_job_margin(GVC_t *gvc)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
     
     if (gvc->graph_sets_margin) {
 	job->margin = gvc->margin;
@@ -1023,7 +1027,7 @@ static void init_job_margin(GVC_t *gvc)
 
 static void init_job_dpi(GVC_t *gvc, graph_t *g)
 {
-    gvrender_job_t *job = gvc->job;
+    GVJ_t *job = gvc->job;
     
     job->dpi = GD_drawing(g)->dpi;
     if (job->dpi == 0) {
@@ -1044,7 +1048,7 @@ static void init_job_dpi(GVC_t *gvc, graph_t *g)
 
 static void init_job_viewport(GVC_t * gvc, graph_t * g)
 {
-    gvrender_job_t * job = gvc->job;
+    GVJ_t * job = gvc->job;
     pointf UR, size;
     char *str;
     double X, Y, Z, x, y;
@@ -1089,42 +1093,43 @@ static void init_job_viewport(GVC_t * gvc, graph_t * g)
     job->rotation = gvc->rotation;
 }
 
-void emit_graph(GVC_t * gvc, graph_t * g)
+void emit_graph(GVJ_t * job, graph_t * g)
 {
+    GVC_t * gvc = job->gvc;
     graph_t *sg;
     node_t *n;
     edge_t *e;
     int c;
     char *str, *colors;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
-    int flags = gvc->job->flags;
+    int flags = job->flags;
 
     s = late_string(g, agfindattr(g, "comment"), "");
-    gvrender_comment(gvc, s);
+    gvrender_comment(job, s);
 
-    gvrender_begin_graph(gvc, g);
+    gvrender_begin_graph(job, g);
     if (flags & EMIT_COLORS) {
-	gvrender_set_fillcolor(gvc, DEFAULT_FILL);
+	gvrender_set_fillcolor(job, DEFAULT_FILL);
 	if (((str = agget(g, "bgcolor")) != 0) && str[0])
-	    gvrender_set_fillcolor(gvc, str);
+	    gvrender_set_fillcolor(job, str);
 	if (((str = agget(g, "fontcolor")) != 0) && str[0])
-	    gvrender_set_pencolor(gvc, str);
+	    gvrender_set_pencolor(job, str);
 	for (c = 1; c <= GD_n_cluster(g); c++) {
 	    sg = GD_clust(g)[c];
 	    if (((str = agget(sg, "color")) != 0) && str[0])
-		gvrender_set_pencolor(gvc, str);
+		gvrender_set_pencolor(job, str);
 	    if (((str = agget(sg, "fillcolor")) != 0) && str[0])
-		gvrender_set_fillcolor(gvc, str);
+		gvrender_set_fillcolor(job, str);
 	    if (((str = agget(sg, "fontcolor")) != 0) && str[0])
-		gvrender_set_pencolor(gvc, str);
+		gvrender_set_pencolor(job, str);
 	}
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    if (((str = agget(n, "color")) != 0) && str[0])
-		gvrender_set_pencolor(gvc, str);
+		gvrender_set_pencolor(job, str);
 	    if (((str = agget(n, "fillcolor")) != 0) && str[0])
-		gvrender_set_fillcolor(gvc, str);
+		gvrender_set_fillcolor(job, str);
 	    if (((str = agget(n, "fontcolor")) != 0) && str[0])
-		gvrender_set_pencolor(gvc, str);
+		gvrender_set_pencolor(job, str);
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 		if (((str = agget(e, "color")) != 0) && str[0]) {
 		    if (strchr(str, ':')) {
@@ -1132,14 +1137,14 @@ void emit_graph(GVC_t * gvc, graph_t * g)
 			for (str = strtok(colors, ":"); str;
 			     str = strtok(0, ":")) {
 			    if (str[0])
-				gvrender_set_pencolor(gvc, str);
+				gvrender_set_pencolor(job, str);
 			}
 			free(colors);
 		    } else
-			gvrender_set_pencolor(gvc, str);
+			gvrender_set_pencolor(job, str);
 		}
 		if (((str = agget(e, "fontcolor")) != 0) && str[0])
-		    gvrender_set_pencolor(gvc, str);
+		    gvrender_set_pencolor(job, str);
 	    }
 	}
     }
@@ -1149,7 +1154,7 @@ void emit_graph(GVC_t * gvc, graph_t * g)
     /* iterate layers */
     for (firstlayer(gvc); validlayer(gvc); nextlayer(gvc)) {
 	if (gvc->numLayers > 1)
-	    gvrender_begin_layer(gvc);
+	    gvrender_begin_layer(job);
 
 	/* iterate pages */
 	for (firstpage(gvc); validpage(gvc); nextpage(gvc)) {
@@ -1169,85 +1174,85 @@ fprintf(stderr,"pageNum = %d pagesArrayElem = %d,%d\n",
 		    tooltip = strdup_and_subst_graph(s, g);
 		else if (GD_label(g))
 		    tooltip = strdup_and_subst_graph(GD_label(g)->text, g);
-		gvrender_begin_anchor(gvc, url, tooltip, target);
+		gvrender_begin_anchor(job, url, tooltip, target);
 	    }
 	    if (GD_label(g))
-		emit_label(gvc, GD_label(g), (void *) g);
+		emit_label(job, GD_label(g), (void *) g);
 	    Obj = CLST;
 	    /* when drawing, lay clusters down before nodes and edges */
 	    if (!(flags & EMIT_CLUSTERS_LAST)) {
-		emit_clusters(gvc, g, flags);
+		emit_clusters(job, g, flags);
 	    }
 	    if (flags & EMIT_SORTED) {
 		/* output all nodes, then all edges */
 		Obj = NODE;
-		gvrender_begin_nodes(gvc);
+		gvrender_begin_nodes(job);
 		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-		    emit_node(gvc, n);
+		    emit_node(job, n);
 		}
-		gvrender_end_nodes(gvc);
+		gvrender_end_nodes(job);
 		Obj = EDGE;
-		gvrender_begin_edges(gvc);
+		gvrender_begin_edges(job);
 		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 		    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-			emit_edge(gvc, e);
+			emit_edge(job, e);
 		    }
 		}
-		gvrender_end_edges(gvc);
+		gvrender_end_edges(job);
 	    } else if (flags & EMIT_EDGE_SORTED) {
 		/* output all edges, then all nodes */
 		Obj = EDGE;
-		gvrender_begin_edges(gvc);
+		gvrender_begin_edges(job);
 		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 		    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-			emit_edge(gvc, e);
+			emit_edge(job, e);
 		    }
 		}
-		gvrender_end_edges(gvc);
+		gvrender_end_edges(job);
 		Obj = NODE;
-		gvrender_begin_nodes(gvc);
+		gvrender_begin_nodes(job);
 		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-		    emit_node(gvc, n);
+		    emit_node(job, n);
 		}
-		gvrender_end_nodes(gvc);
+		gvrender_end_nodes(job);
 	    } else if (flags & EMIT_PREORDER) {
 		Obj = NODE;
-		gvrender_begin_nodes(gvc);
+		gvrender_begin_nodes(job);
 		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 		    if (write_node_test(g, n))
-			emit_node(gvc, n);
+			emit_node(job, n);
 		}
-		gvrender_end_nodes(gvc);
+		gvrender_end_nodes(job);
 		Obj = EDGE;
-		gvrender_begin_edges(gvc);
+		gvrender_begin_edges(job);
 
 		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 		    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 			if (write_edge_test(g, e))
-			    emit_edge(gvc, e);
+			    emit_edge(job, e);
 		    }
 		}
-		gvrender_end_edges(gvc);
+		gvrender_end_edges(job);
 	    } else {
 		/* output in breadth first graph walk order */
 		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 		    Obj = NODE;
-		    emit_node(gvc, n);
+		    emit_node(job, n);
 		    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 			Obj = NODE;
-			emit_node(gvc, e->head);
+			emit_node(job, e->head);
 			Obj = EDGE;
-			emit_edge(gvc, e);
+			emit_edge(job, e);
 		    }
 		}
 	    }
 	    /* when mapping, detect events on clusters after nodes and edges */
 	    if (flags & EMIT_CLUSTERS_LAST) {
-		emit_clusters(gvc, g, flags);
+		emit_clusters(job, g, flags);
 	    }
 	    Obj = NONE;
 	    if (url) {
-		gvrender_end_anchor(gvc);
+		gvrender_end_anchor(job);
 		free(url);
 		url = NULL;
 		if (tooltip) {
@@ -1259,12 +1264,12 @@ fprintf(stderr,"pageNum = %d pagesArrayElem = %d,%d\n",
 		    target = NULL;
 		}
 	    }
-	    gvrender_end_page(gvc);
+	    gvrender_end_page(job);
 	} /* pages */
 	if (gvc->numLayers > 1)
-	    gvrender_end_layer(gvc);
+	    gvrender_end_layer(job);
     } /* layers */
-    gvrender_end_graph(gvc);
+    gvrender_end_graph(job);
 }
 
 /* support for stderr_once */
@@ -1311,12 +1316,12 @@ static void emit_once_reset(void)
 
 void emit_jobs_eof(GVC_t * gvc)
 {
-    gvrender_job_t *job;
+    GVJ_t *job;
 
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
         if (job->output_file) {
 	    if (gvc->pageNum > 0) {
-		gvrender_end_job(gvc);
+		gvrender_end_job(job);
 		emit_once_reset();
 		gvc->pageNum = 0;
 	    }
@@ -1326,7 +1331,7 @@ void emit_jobs_eof(GVC_t * gvc)
     }
 }
 
-void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
+void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 {
     int i, c, filled;
     graph_t *sg;
@@ -1339,14 +1344,14 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
 
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
-	if (clust_in_layer(gvc, sg) == FALSE)
+	if (clust_in_layer(job->gvc, sg) == FALSE)
 	    continue;
 	/* when mapping, detect events on clusters after sub_clusters */
 	if (flags & EMIT_CLUSTERS_LAST) {
-	    emit_clusters(gvc, sg, flags);
+	    emit_clusters(job, sg, flags);
 	}
 	Obj = CLST;
-	gvrender_begin_cluster(gvc, sg);
+	gvrender_begin_cluster(job, sg);
 	if (((s = agget(sg, "href")) && s[0])
 	    || ((s = agget(sg, "URL")) && s[0])) {
 	    url = strdup_and_subst_graph(s, sg);
@@ -1356,13 +1361,13 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
 		tooltip = strdup_and_subst_graph(s, sg);
 	    else
 		tooltip = strdup_and_subst_graph(GD_label(sg)->text, sg);
-	    gvrender_begin_anchor(gvc, url, tooltip, target);
+	    gvrender_begin_anchor(job, url, tooltip, target);
 	}
-	gvrender_begin_context(gvc);
+	gvrender_begin_context(job);
 	filled = FALSE;
 	xdemitState = EMIT_DRAW;
 	if (((str = agget(sg, "style")) != 0) && str[0]) {
-	    gvrender_set_style(gvc, (style = parse_style(str)));
+	    gvrender_set_style(job, (style = parse_style(str)));
 	    for (i = 0; style[i]; i++)
 		if (strcmp(style[i], "filled") == 0) {
 		    filled = TRUE;
@@ -1370,22 +1375,22 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
 		}
 	}
 	if (((str = agget(sg, "pencolor")) != 0) && str[0])
-	    gvrender_set_pencolor(gvc, str);
+	    gvrender_set_pencolor(job, str);
 	else if (((str = agget(sg, "color")) != 0) && str[0])
-	    gvrender_set_pencolor(gvc, str);
+	    gvrender_set_pencolor(job, str);
 	/* bgcolor is supported for backward compatability */
 	else if (((str = agget(sg, "bgcolor")) != 0) && str[0])
-	    gvrender_set_pencolor(gvc, str);
+	    gvrender_set_pencolor(job, str);
 
 	str = 0;
 	if (((str = agget(sg, "fillcolor")) != 0) && str[0])
-	    gvrender_set_fillcolor(gvc, str);
+	    gvrender_set_fillcolor(job, str);
 	else if (((str = agget(sg, "color")) != 0) && str[0])
-	    gvrender_set_fillcolor(gvc, str);
+	    gvrender_set_fillcolor(job, str);
 	/* bgcolor is supported for backward compatability */
 	else if (((str = agget(sg, "bgcolor")) != 0) && str[0]) {
 	    filled = TRUE;
-	    gvrender_set_fillcolor(gvc, str);
+	    gvrender_set_fillcolor(job, str);
 	}
 	A[0] = GD_bb(sg).LL;
 	A[2] = GD_bb(sg).UR;
@@ -1394,30 +1399,30 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
 	A[3].x = A[0].x;
 	A[3].y = A[2].y;
 	if (late_int(sg, G_peripheries, 1, 0)) {
-	    gvrender_polygon(gvc, A, 4, filled);
+	    gvrender_polygon(job, A, 4, filled);
 	} else if (filled) {
-	    gvrender_set_pencolor(gvc, str);
-	    gvrender_polygon(gvc, A, 4, filled);
+	    gvrender_set_pencolor(job, str);
+	    gvrender_polygon(job, A, 4, filled);
 	}
 	xdemitState = EMIT_DRAW;
 	if (GD_label(sg))
-	    emit_label(gvc, GD_label(sg), (void *) sg);
+	    emit_label(job, GD_label(sg), (void *) sg);
 
 	if (flags & EMIT_PREORDER) {
 	    for (n = agfstnode(sg); n; n = agnxtnode(sg, n)) {
 		Obj = NODE;
-		emit_node(gvc, n);
+		emit_node(job, n);
 		for (e = agfstout(sg, n); e; e = agnxtout(sg, e)) {
 		    Obj = EDGE;
-		    emit_edge(gvc, e);
+		    emit_edge(job, e);
 		}
 	    }
 	    Obj = NONE;
 	}
 
-	gvrender_end_context(gvc);
+	gvrender_end_context(job);
 	if (url) {
-	    gvrender_end_anchor(gvc);
+	    gvrender_end_anchor(job);
 	    free(url);
 	    url = NULL;
 	    if (tooltip) {
@@ -1429,10 +1434,10 @@ void emit_clusters(GVC_t * gvc, Agraph_t * g, int flags)
 		target = NULL;
 	    }
 	}
-	gvrender_end_cluster(gvc);
+	gvrender_end_cluster(job);
 	/* when drawing, lay down clusters before sub_clusters */
 	if (!(flags & EMIT_CLUSTERS_LAST)) {
-	    emit_clusters(gvc, sg, flags);
+	    emit_clusters(job, sg, flags);
 	}
     }
 }
@@ -1575,9 +1580,9 @@ void use_library(char *name)
     }
 }
 
-static void emit_job(GVC_t * gvc, graph_t * g)
+static void emit_job(GVJ_t * job, graph_t * g)
 {
-    gvrender_job_t *job = gvc->job;
+    GVC_t *gvc = job->gvc;
 
     if (!GD_drawing(g)) {
 	fprintf (stderr,"layout was not done\n");
@@ -1591,39 +1596,39 @@ static void emit_job(GVC_t * gvc, graph_t * g)
 
     init_gvc_from_graph(gvc, g);
     init_layering(gvc, g);
-    init_job_flags(gvc->job, g);
+    init_job_flags(job, g);
     init_job_margin(gvc);
     init_job_dpi(gvc, g);
     init_job_viewport(gvc, g);
     init_job_pagination(gvc, g);
 
-    gvrender_begin_job(gvc);
+    gvrender_begin_job(job);
 
-    switch (gvc->job->output_lang) {
+    switch (job->output_lang) {
     case EXTENDED_DOT:
-        write_extended_dot(gvc, g, gvc->job->output_file);
+        write_extended_dot(gvc, g, job->output_file);
         break;
     case ATTRIBUTED_DOT:
-        write_attributed_dot(g, gvc->job->output_file);
+        write_attributed_dot(g, job->output_file);
         break;
     case CANONICAL_DOT:
-        write_canonical_dot(g, gvc->job->output_file);
+        write_canonical_dot(g, job->output_file);
         break;
     case PLAIN:
-        write_plain(gvc, g, gvc->job->output_file);
+        write_plain(gvc, g, job->output_file);
         break;
     case PLAIN_EXT:
-        write_plain_ext(gvc, g, gvc->job->output_file);
+        write_plain_ext(gvc, g, job->output_file);
         break;
     default:
 	if (! (job->flags & GVRENDER_X11_EVENTS))
-            emit_graph(gvc, g);
+            emit_graph(job, g);
         break;
     }
 
     /* Flush is necessary because we may be writing to a pipe. */
-    if (! gvc->job->external_surface && gvc->job->output_lang != TK)
-        fflush(gvc->job->output_file);
+    if (! job->external_surface && job->output_lang != TK)
+        fflush(job->output_file);
 }
 
 static FILE *file_select(char *str)
@@ -1639,11 +1644,14 @@ static FILE *file_select(char *str)
 
 void emit_jobs (GVC_t * gvc, graph_t * g)
 {
-    gvrender_job_t *job;
+    GVJ_t *job;
     char *prev_langname = "";
 
     gvc->active_jobs = NULL;
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
+	job->gvc = gvc;
+	job->g = g;
+
         if (!job->output_file) {        /* if not yet opened */
             if (job->output_filename == NULL) {
                 job->output_file = stdout;
@@ -1651,14 +1659,11 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
                 job->output_file = file_select(job->output_filename);
             }
         }
-        job->output_lang = gvrender_select(gvc, job->output_langname);
+        job->output_lang = gvrender_select(job, job->output_langname);
 	if (job->output_lang == NO_SUPPORT) {
 	    fprintf(stderr,"renderer for %s is unavailable\n", job->output_langname);
 	    return;
 	}
-
-	job->gvc = gvc;
-	job->g = g;
 
 	/* insert job in active list */
 	job->next_active = gvc->active_jobs;
@@ -1669,7 +1674,7 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
 	    gvrender_initialize(gvc);
 	}
 
-        emit_job(gvc, g);
+        emit_job(job, g);
 
 	if (!job->next || strcmp(job->next->output_langname,prev_langname) != 0) {
 	    gvrender_finalize(gvc);

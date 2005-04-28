@@ -66,11 +66,9 @@ extern "C" {
 	color_type_t color_type;
     } gvrender_features_t;
 
-    typedef struct gvrender_job_s gvrender_job_t;
-
-    struct gvrender_job_s {
-	gvrender_job_t *next;  /* linked list of jobs */
-	gvrender_job_t *next_active;   /* linked list of active jobs (e.g. multiple windows) */
+    struct GVJ_s {
+	GVJ_t *next;  /* linked list of jobs */
+	GVJ_t *next_active;   /* linked list of active jobs (e.g. multiple windows) */
 	char *output_filename;
 	char *output_langname;
 	FILE *output_file;
@@ -135,7 +133,7 @@ extern "C" {
 	gvplugin_type_t *typeptr;
     };
 
-    typedef int (*gvevent_key_callback_t) (gvrender_job_t * job);
+    typedef int (*gvevent_key_callback_t) (GVJ_t * job);
 
     typedef struct gvevent_key_binding_s {
 	char *keystring;
@@ -150,8 +148,8 @@ extern "C" {
 	char **info;
 
 	/* gvrender_config() */
-	gvrender_job_t *jobs;	/* linked list of jobs */
-	gvrender_job_t *job;	/* current job */
+	GVJ_t *jobs;	/* linked list of jobs */
+	GVJ_t *job;	/* current job */
 	void (*errorfn) (char *fmt, ...);
 
 	/* plugins */
@@ -171,7 +169,7 @@ extern "C" {
 	gvlayout_engine_t *layout_engine;	/* current layout engine */
 	int layout_id;		/* internal id of current layout */
 	char *graphname;	/* name from graph */
-	gvrender_job_t *active_jobs;   /* linked list of active jobs */
+	GVJ_t *active_jobs;   /* linked list of active jobs */
 
 	char **lib;
 

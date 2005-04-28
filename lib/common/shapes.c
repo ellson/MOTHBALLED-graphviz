@@ -53,18 +53,19 @@ static void poly_free(node_t * n);
 static port poly_port(node_t * n, char *portname, char *);
 static boolean poly_inside(inside_t * inside_context, pointf p);
 static int poly_path(node_t* n, port* p, int side, box rv[], int *kptr);
-static void poly_gencode(GVC_t * gvc, node_t * n);
+static void poly_gencode(GVJ_t * job, node_t * n);
 
 static void record_init(node_t * n);
 static void record_free(node_t * n);
 static port record_port(node_t * n, char *portname, char *);
 static boolean record_inside(inside_t * inside_context, pointf p);
 static int record_path(node_t* n, port* p, int side, box rv[], int *kptr);
-static void record_gencode(GVC_t * gvc, node_t * n);
+static void record_gencode(GVJ_t * job, node_t * n);
 
 static void point_init(node_t * n);
 
 static boolean epsf_inside(inside_t * inside_context, pointf p);
+static void epsf_gencode(GVJ_t * job, node_t * n);
 
 /* polygon descriptions.  "polygon" with 0 sides takes all user control */
 
@@ -118,7 +119,7 @@ static polygon_t p_Mcircle =
  * int		SHAPE_path(node *n, edge_t *e, int pt, box path[], int *nbox)
  *			create a path for the port of e that touches n,
  *			return side
- * void		SHAPE_gencode(GVC_t *gvc, node_t *n)
+ * void		SHAPE_gencode(GVJ_t *job, node_t *n)
  *			generate graphics code for a node.
  *
  * some shapes, polygons in particular, use additional shape control data *
@@ -224,13 +225,13 @@ static int same_side(pointf p0, pointf p1, pointf L0, pointf L1)
 }
 
 static
-void pencolor(GVC_t * gvc, node_t * n)
+void pencolor(GVJ_t * job, node_t * n)
 {
     char *color;
 
     color = late_nnstring(n, N_color, "");
     if (color[0])
-	gvrender_set_pencolor(gvc, color);
+	gvrender_set_pencolor(job, color);
 }
 
 static
@@ -256,10 +257,9 @@ char *findFill(node_t * n)
     return color;
 }
 
-static
-void fillcolor(GVC_t * gvc, node_t * n)
+static void fillcolor(GVJ_t * job, node_t * n)
 {
-    gvrender_set_fillcolor(gvc, findFill(n));
+    gvrender_set_fillcolor(job, findFill(n));
 }
 
 static char **checkStyle(node_t * n, int *flagp)
@@ -306,18 +306,17 @@ static char **checkStyle(node_t * n, int *flagp)
     return pstyle;
 }
 
-static
-int stylenode(GVC_t * gvc, node_t * n)
+static int stylenode(GVJ_t * job, node_t * n)
 {
     char **pstyle;
     int istyle;
 
     if ((pstyle = checkStyle(n, &istyle)))
-	gvrender_set_style(gvc, pstyle);
+	gvrender_set_style(job, pstyle);
     return istyle;
 }
 
-static void Mcircle_hack(GVC_t * gvc, node_t * n)
+static void Mcircle_hack(GVJ_t * job, node_t * n)
 {
     double x, y;
     point A[2], p;
@@ -330,10 +329,10 @@ static void Mcircle_hack(GVC_t * gvc, node_t * n)
     A[0] = add_points(p, ND_coord_i(n));
     A[1].y = A[0].y;
     A[1].x = A[0].x - 2 * p.x;
-    gvrender_polyline(gvc, A, 2);
+    gvrender_polyline(job, A, 2);
     A[0].y -= 2 * p.y;
     A[1].y = A[0].y;
-    gvrender_polyline(gvc, A, 2);
+    gvrender_polyline(job, A, 2);
 }
 
 static point interpolate(double t, point p0, point p1)
@@ -344,7 +343,7 @@ static point interpolate(double t, point p0, point p1)
     return rv;
 }
 
-static void round_corners(GVC_t * gvc, node_t * n, point * A, int sides,
+static void round_corners(GVJ_t * job, node_t * n, point * A, int sides,
 			  int style)
 {
     point *B, C[2], p0, p1;
@@ -387,45 +386,45 @@ static void round_corners(GVC_t * gvc, node_t * n, point * A, int sides,
 	    int j = 0;
 	    char* fillc = findFill(n);
 	    point* pts = N_GNEW(2*sides,point);
-    	    gvrender_begin_context(gvc);
-	    gvrender_set_pencolor (gvc, fillc);
-	    gvrender_set_fillcolor (gvc, fillc);
+    	    gvrender_begin_context(job);
+	    gvrender_set_pencolor (job, fillc);
+	    gvrender_set_fillcolor (job, fillc);
 	    for (seg = 0; seg < sides; seg++) {
 		pts[j++] = B[4 * seg + 1];
 		pts[j++] = B[4 * seg + 2];
 	    }
-	    gvrender_polygon(gvc, pts, 2*sides, TRUE);
+	    gvrender_polygon(job, pts, 2*sides, TRUE);
 	    free (pts);
 	    for (seg = 0; seg < sides; seg++) {
 		for (i = 0; i < 4; i++)
 		    P2PF(B[4 * seg + 2 + i], BF[i]);
-		gvrender_beziercurve(gvc, BF, 4, FALSE, FALSE, TRUE);
+		gvrender_beziercurve(job, BF, 4, FALSE, FALSE, TRUE);
 	    }
-    	    gvrender_end_context(gvc);
+    	    gvrender_end_context(job);
 	}
-	pencolor(gvc, n);
+	pencolor(job, n);
 	for (seg = 0; seg < sides; seg++) {
-	    gvrender_polyline(gvc, B + 4 * seg + 1, 2);
+	    gvrender_polyline(job, B + 4 * seg + 1, 2);
 
 	    /* convert to floats for gvrender api */
 	    for (i = 0; i < 4; i++)
 		P2PF(B[4 * seg + 2 + i], BF[i]);
-	    gvrender_beziercurve(gvc, BF, 4, FALSE, FALSE, FALSE);
+	    gvrender_beziercurve(job, BF, 4, FALSE, FALSE, FALSE);
 	}
     } else {			/* diagonals are weird.  rewrite someday. */
-	pencolor(gvc, n);
+	pencolor(job, n);
 	if (style & FILLED)
-	    fillcolor(gvc, n);	/* emit fill color */
-	gvrender_polygon(gvc, A, sides, style & FILLED);
+	    fillcolor(job, n);	/* emit fill color */
+	gvrender_polygon(job, A, sides, style & FILLED);
 	for (seg = 0; seg < sides; seg++) {
 #ifdef NOTDEF
 	    C[0] = B[3 * seg];
 	    C[1] = B[3 * seg + 3];
-	    gvrender_polyline(gvc, C, 2);
+	    gvrender_polyline(job, C, 2);
 #endif
 	    C[0] = B[3 * seg + 2];
 	    C[1] = B[3 * seg + 4];
-	    gvrender_polyline(gvc, C, 2);
+	    gvrender_polyline(job, C, 2);
 	}
     }
     free(B);
@@ -1175,7 +1174,7 @@ static port poly_port(node_t * n, char *portname, char *compass)
 }
 
 /* generic polygon gencode routine */
-static void poly_gencode(GVC_t * gvc, node_t * n)
+static void poly_gencode(GVJ_t * job, node_t * n)
 {
     polygon_t *poly;
     double xsize, ysize;
@@ -1203,7 +1202,7 @@ static void poly_gencode(GVC_t * gvc, node_t * n)
 
 #if !defined(DISABLE_CODEGENS) && defined(HAVE_GD_PNG)
     /* this is bad, but it's because of how the VRML driver works */
-    if ((gvc->job->codegen == &VRML_CodeGen) && (peripheries == 0)) {
+    if ((job->codegen == &VRML_CodeGen) && (peripheries == 0)) {
 	peripheries = 1;
     }
 #endif
@@ -1211,20 +1210,20 @@ static void poly_gencode(GVC_t * gvc, node_t * n)
     if (ND_shape(n) == point_desc) {
 	checkStyle(n, &style);
 	if (style & INVISIBLE)
-	    gvrender_set_style(gvc, point_style);
+	    gvrender_set_style(job, point_style);
 	else
-	    gvrender_set_style(gvc, &point_style[1]);
+	    gvrender_set_style(job, &point_style[1]);
 	style = FILLED;
     } else {
-	style = stylenode(gvc, n);
+	style = stylenode(job, n);
     }
     if (style & FILLED) {
-	fillcolor(gvc, n);	/* emit fill color */
+	fillcolor(job, n);	/* emit fill color */
 	filled = 1;
     } else {
 	filled = 0;
     }
-    pencolor(gvc, n);		/* emit pen color */
+    pencolor(job, n);		/* emit pen color */
 
     if (ND_shape(n)->usershape) {
 	for (i = 0; i < sides; i++) {
@@ -1239,7 +1238,7 @@ static void poly_gencode(GVC_t * gvc, node_t * n)
 		A[i].y += ND_coord_i(n).y;
 	    }
 	}
-	gvrender_user_shape(gvc, ND_shape(n)->name, A, sides, filled);
+	gvrender_user_shape(job, ND_shape(n)->name, A, sides, filled);
 	filled = 0;
     }
     /* if no boundary but filled, set boundary color to fill color */
@@ -1248,7 +1247,7 @@ static void poly_gencode(GVC_t * gvc, node_t * n)
 	peripheries = 1;
 	color = findFill(n);
 	if (color[0])
-	    gvrender_set_pencolor(gvc, color);
+	    gvrender_set_pencolor(job, color);
     }
     for (j = 0; j < peripheries; j++) {
 	for (i = 0; i < sides; i++) {
@@ -1264,21 +1263,21 @@ static void poly_gencode(GVC_t * gvc, node_t * n)
 	    }
 	}
 	if (sides <= 2) {
-	    gvrender_ellipse(gvc, ND_coord_i(n), A[0].x, A[0].y, filled);
+	    gvrender_ellipse(job, ND_coord_i(n), A[0].x, A[0].y, filled);
 	    if (style & DIAGONALS) {
-		Mcircle_hack(gvc, n);
+		Mcircle_hack(job, n);
 	    }
 	} else if (style & (ROUNDED | DIAGONALS)) {
-	    round_corners(gvc, n, A, sides, style);
+	    round_corners(job, n, A, sides, style);
 	} else {
-	    gvrender_polygon(gvc, A, sides, filled);
+	    gvrender_polygon(job, A, sides, filled);
 	}
 	/* fill innermost periphery only */
 	filled = 0;
     }
 
     xdemitState = EMIT_LABEL;
-    emit_label(gvc, ND_label(n), (void *) n);
+    emit_label(job, ND_label(n), (void *) n);
 }
 
 /*=======================end poly======================================*/
@@ -1772,7 +1771,7 @@ static int record_path(node_t* n, port* prt, int side, box rv[], int *kptr)
     return side;
 }
 
-static void gen_fields(GVC_t * gvc, node_t * n, field_t * f)
+static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
 {
     int i;
     double cx, cy;
@@ -1782,7 +1781,7 @@ static void gen_fields(GVC_t * gvc, node_t * n, field_t * f)
 	cx = (f->b.LL.x + f->b.UR.x) / 2.0 + ND_coord_i(n).x;
 	cy = (f->b.LL.y + f->b.UR.y) / 2.0 + ND_coord_i(n).y;
 	f->lp->p = pointof((int) cx, (int) cy);
-	emit_label(gvc, f->lp, (void *) n);
+	emit_label(job, f->lp, (void *) n);
     }
 
     for (i = 0; i < f->n_flds; i++) {
@@ -1798,13 +1797,13 @@ static void gen_fields(GVC_t * gvc, node_t * n, field_t * f)
 	    }
 	    A[0] = add_points(A[0], ND_coord_i(n));
 	    A[1] = add_points(A[1], ND_coord_i(n));
-	    gvrender_polyline(gvc, A, 2);
+	    gvrender_polyline(job, A, 2);
 	}
-	gen_fields(gvc, n, f->fld[i]);
+	gen_fields(job, n, f->fld[i]);
     }
 }
 
-static void record_gencode(GVC_t * gvc, node_t * n)
+static void record_gencode(GVJ_t * job, node_t * n)
 {
     point A[4];
     int i, style;
@@ -1821,18 +1820,18 @@ static void record_gencode(GVC_t * gvc, node_t * n)
     A[3].y = A[2].y;
     for (i = 0; i < 4; i++)
 	A[i] = add_points(A[i], ND_coord_i(n));
-    style = stylenode(gvc, n);
-    pencolor(gvc, n);
+    style = stylenode(job, n);
+    pencolor(job, n);
     if (style & FILLED)
-	fillcolor(gvc, n);	/* emit fill color */
+	fillcolor(job, n);	/* emit fill color */
     if (streq(ND_shape(n)->name, "Mrecord"))
 	style |= ROUNDED;
     if (style & (ROUNDED | DIAGONALS))
-	round_corners(gvc, n, A, 4, ROUNDED);
+	round_corners(job, n, A, 4, ROUNDED);
     else
-	gvrender_polygon(gvc, A, 4, style & FILLED);
+	gvrender_polygon(job, A, 4, style & FILLED);
     xdemitState = EMIT_LABEL;
-    gen_fields(gvc, n, f);
+    gen_fields(job, n, f);
 }
 
 static shape_desc **UserShape;
@@ -1903,20 +1902,20 @@ static boolean epsf_inside(inside_t * inside_context, pointf p)
 	    && (P.x <= ND_rw_i(n)));
 }
 
-void epsf_gencode(GVC_t * gvc, node_t * n)
+static void epsf_gencode(GVJ_t * job, node_t * n)
 {
     epsf_t *desc;
 
     desc = (epsf_t *) (ND_shape_info(n));
     if (!desc)
 	return;
-    gvrender_begin_context(gvc);
+    gvrender_begin_context(job);
     if (desc)
-	fprintf(gvc->job->output_file,
+	fprintf(job->output_file,
 		"%d %d translate newpath user_shape_%d\n",
 		ND_coord_i(n).x + desc->offset.x,
 		ND_coord_i(n).y + desc->offset.y, desc->macro_id);
     ND_label(n)->p = ND_coord_i(n);
-    gvrender_end_context(gvc);
-    emit_label(gvc, ND_label(n), (void *) n);
+    gvrender_end_context(job);
+    emit_label(job, ND_label(n), (void *) n);
 }
