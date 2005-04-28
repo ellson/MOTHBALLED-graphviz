@@ -278,13 +278,6 @@ fprintf(stderr,"graph_sets_pageSize\n");
     job->boundingBox.UR.y = job->boundingBox.LL.y + ROUND(size.y + 1);
 
 #if 0
-    /* reset pageNum state - records the last page that contained the node */
-    /* FIXME - this fails for multiple graphs in same file - rely on new gvc setting to 0 and reset in emit_jobs_eof() */
-    /* should probably be initialized in gvrender_initialize() - output device initialization */
-    gvc->pageNum = 0;  /* incremented for each page in each layer in each graph in the job */
-#endif
-
-#if 0
 fprintf(stderr,"bb = %g,%g %g,%g (graph units)\n",
 	gvc->bb.LL.x,
 	gvc->bb.LL.y,
@@ -308,29 +301,23 @@ fprintf(stderr,"width,height = %d,%d (device units)\n",
 #endif
 }
 
-static void firstpage(GVC_t *gvc)
+static void firstpage(GVJ_t *job)
 {
-    GVJ_t *job = gvc->job;
-
     job->pagesArrayElem = job->pagesArrayFirst;
 }
 
-static boolean validpage(GVC_t *gvc)
+static boolean validpage(GVJ_t *job)
 {
-    GVJ_t *job = gvc->job;
-
     return ((job->pagesArrayElem.x >= 0)
 	 && (job->pagesArrayElem.x < job->pagesArraySize.x)
 	 && (job->pagesArrayElem.y >= 0)
 	 && (job->pagesArrayElem.y < job->pagesArraySize.y));
 }
 
-static void nextpage(GVC_t *gvc)
+static void nextpage(GVJ_t *job)
 {
-    GVJ_t *job = gvc->job;
-
     job->pagesArrayElem = add_points(job->pagesArrayElem, job->pagesArrayMinor);
-    if (validpage(gvc) == FALSE) {
+    if (validpage(job) == FALSE) {
 	if (job->pagesArrayMajor.y)
 	    job->pagesArrayElem.x = job->pagesArrayFirst.x;
 	else
@@ -389,9 +376,9 @@ void emit_background(GVJ_t * job, graph_t *g)
     }
 }
 
-static void emit_defaults(GVC_t * gvc)
+static void emit_defaults(GVJ_t * job)
 {
-    GVJ_t * job = gvc->job;
+    GVC_t * gvc = job->gvc;
 
     gvrender_set_pencolor(job, DEFAULT_COLOR);
     gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
@@ -399,10 +386,8 @@ static void emit_defaults(GVC_t * gvc)
 
 
 /* even if this makes you cringe, at least it's short */
-static void setup_page(GVC_t * gvc, graph_t * g)
+static void setup_page(GVJ_t * job, graph_t * g)
 {
-    GVJ_t *job = gvc->job;
-
     /* establish current box in graph coordinates */
     job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x;
     job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y;
@@ -433,7 +418,7 @@ fprintf(stderr,"pagesArrayElem = %d,%d pageSize = %g,%g pageOffset = %g,%g\n",
 
     gvrender_begin_page(job);
     emit_background(job, g);
-    emit_defaults(gvc);
+    emit_defaults(job);
 }
 
 static boolean node_in_pageBox(GVC_t *gvc, node_t * n)
@@ -1159,13 +1144,13 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	    gvrender_begin_layer(job);
 
 	/* iterate pages */
-	for (firstpage(gvc); validpage(gvc); nextpage(gvc)) {
+	for (firstpage(job); validpage(job); nextpage(job)) {
 	    gvc->pageNum++;
 #if 0
 fprintf(stderr,"pageNum = %d pagesArrayElem = %d,%d\n",
-	gvc->pageNum, gvc->job->pagesArrayElem.x, gvc->job->pagesArrayElem.y);
+	gvc->pageNum, job->pagesArrayElem.x, job->pagesArrayElem.y);
 #endif
-    	    setup_page(gvc, g);
+    	    setup_page(job, g);
 	    Obj = NONE;
 	    if (((s = agget(g, "href")) && s[0])
 		|| ((s = agget(g, "URL")) && s[0])) {
