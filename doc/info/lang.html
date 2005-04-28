@@ -173,5 +173,30 @@ than listing the graph attribute at the top of the graph, and the
 resetting the attribute as needed in the subgraphs, one can simple defer
 the attribute definition if the graph until the appropriate subgraphs
 have been defined.
+<H2>Character encodings</H2>
+The DOT language assumes at least the ascii character set.
+Quoted strings, both ordinary and HTML-like, may contain non-ascii characters.
+In most cases, these strings are uninterpreted: they simply serve as
+unique identifiers or values passed through untouched. Labels, however,
+are meant to be displayed, which requires that the software be able to
+compute the size of the text and determine the appropriate glyphs. 
+For this, it needs to know what character encoding is used.
+<P>
+By default, DOT assumes the UTF-8 character encoding. It also accepts
+the Latin1 (ISO-8859-1) character set, assuming the input graph uses
+the <B><A NAME=d:charset HREF=#a:charset>charset</B> attribute to 
+specify this. For graphs using other
+character sets, there are usually programs, such as <TT>iconv</TT>, which
+will translate from one character set to another.
+<P>
+Another way to avoid non-ascii characters in labels is to use HTML entities
+for special characters. During label evaluation, these entities are
+translated into the underlying character. This
+<a HREF="http://www.research.att.com/sw/tools/graphviz/doc/char.html">
+table</a> shows the supported entities, with their Unicode value, a typical
+glyph, and the HTML entity name. Thus, to include a lower-case Greek beta
+into a string, one can use the ascii sequence <TT>&amp;beta;</TT>. 
+In general, one should only use entities that are allowed in the output
+character set, and for which there is a glyph in the font.
 </BODY>
 </HTML>

@@ -92,6 +92,8 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:center HREF=#d:center>center</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:charset HREF=#d:charset>charset</A>
+</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">"UTF-8"</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:clusterrank HREF=#d:clusterrank>clusterrank</A>
 </TD><TD>G</TD><TD><A HREF=#k:clusterMode>clusterMode</A>
 </TD><TD ALIGN="CENTER">local</TD><TD></TD><TD>dot only</TD> </TR>
@@ -449,6 +451,14 @@ This field indicates which graph component uses the attribute.
 
 <DT><A NAME=d:center HREF=#a:center><STRONG>center</STRONG></A>
 <DD>  If true, the drawing is centered in the output canvas.
+
+<DT><A NAME=d:charset HREF=#a:charset><STRONG>charset</STRONG></A>
+<DD>  Specifies the character encoding used when interpreting string input
+  as a text label. The other legal value is <TT>"iso-8859-1"</TT> or, 
+  equivalently,
+ <TT>"Latin1"</TT>. The <B>charset</B> attribute is case-insensitive.
+  Note that if the character encoding used in the input does not
+  match the <B>charset</B> value, the resulting output may be very strange.
 
 <DT><A NAME=d:clusterrank HREF=#a:clusterrank><STRONG>clusterrank</STRONG></A>
 <DD>  Mode used for handling clusters. If <B>clusterrank</B> is "local", a
