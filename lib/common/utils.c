@@ -1768,8 +1768,8 @@ latin1ToUTF8 (char* s)
 {
     char*  ns;
     agxbuf xb;
-    char   buf[BUFSIZ];
-    unsigned int v;
+    unsigned char buf[BUFSIZ];
+    unsigned int  v;
     
     agxbinit(&xb, BUFSIZ, buf);
 
@@ -1807,7 +1807,7 @@ utf8ToLatin1 (char* s)
 {
     char*  ns;
     agxbuf xb;
-    char   buf[BUFSIZ];
+    unsigned char buf[BUFSIZ];
     unsigned char c;
     unsigned char outc;
     
