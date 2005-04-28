@@ -397,6 +397,7 @@ static void dia_begin_edge(edge_t * e)
 
 static void dia_end_edge(void)
 {
+    Curedge = NULL;
 }
 
 static void dia_begin_context(void)
@@ -708,13 +709,6 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
     char *shape_t;
     pointf cp_h, cp_t;
 
-    conn_h = conn_t = -1;
-
-    head = Curedge->head;
-    tail = Curedge->tail;
-
-    shape_t = ND_shape(tail)->name;
-
     if (cstk[SP].pen == P_NONE) {
 	/* its invisible, don't draw */
 	return;
@@ -743,6 +737,14 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
     dia_printf("        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
 	       llp.x - .11, llp.y - .11, urp.x + .11, urp.y + .11);
     dia_fputs("      </dia:attribute>\n");
+    if (!Curedge) return;
+
+    conn_h = conn_t = -1;
+
+    head = Curedge->head;
+    tail = Curedge->tail;
+
+    shape_t = ND_shape(tail)->name;
 
     /* arrowheads */
     if (arrow_at_start) {
