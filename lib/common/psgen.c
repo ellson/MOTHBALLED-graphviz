@@ -472,7 +472,7 @@ static void ps_user_shape(char *name, point * A, int sides, int filled)
     int j;
     ps_image_t *img = 0;
     point offset;
-    char *shapeimagefile;
+    char *shapeimagefile = NULL;
     char *suffix;
 
     if (S[SP].invis)
