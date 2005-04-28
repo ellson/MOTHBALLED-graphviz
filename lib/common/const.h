@@ -221,6 +221,11 @@
 #define EMIT_TLABEL	4
 #define EMIT_HLABEL	5
 
+/* allowed charsets */
+#define CHAR_UTF8	0
+#define CHAR_LATIN1	1
+#define CHAR_BIG5	2
+
 /* user-specified node position: ND_pinned */
 #define P_SET    1		/* position supplied by user */
 #define P_FIX    2		/* position fixed during topological layout */

@@ -25,6 +25,7 @@
 #include	"gvc.h"
 #include	"ps.h"
 #include	"utils.h"
+#include	"agxbuf.h"
 
 #ifndef MSWIN32
 #include <unistd.h>
@@ -41,6 +42,8 @@ static int N_pages, Cur_page;
 /* static 	point	Pages; */
 static box PB;
 static int onetime = TRUE;
+static int isLatin1;
+static char setupLatin1;
 static node_t *Curnode;		/* for user shapes */
 
 static char *Fill = "fill\n";
@@ -88,6 +91,7 @@ static void ps_end_job(void)
     fprintf(Output_file, "%%%%Pages: %d\n", Cur_page);
     fprintf(Output_file, "end\nrestore\n");
     fprintf(Output_file, "%%%%EOF\n");
+    setupLatin1 = FALSE;
 }
 
 static void ps_comment(char *str)
@@ -98,7 +102,6 @@ static void ps_comment(char *str)
 static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     char *s;
-    static char setupLatin1 = FALSE;
     point sz;
 
     PB = bb;
@@ -125,7 +128,9 @@ static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 		    "/PUT pdfmark\n", s);
 	}
     }
-    if (GD_has_Latin1char(g) && !setupLatin1) {
+    
+    isLatin1 = (GD_charset(g) == CHAR_LATIN1);
+    if (isLatin1 && !setupLatin1) {
 	fprintf(Output_file, "setupLatin1\n");	/* as defined in ps header */
 	setupLatin1 = TRUE;
     }
@@ -304,37 +309,33 @@ static void ps_set_style(char **s)
     }
 }
 
-char *ps_string(char *s)
+static char    psbuf[BUFSIZ];
+
+char *ps_string(char *ins, int latin)
 {
-    static char *buf = NULL;
-    static int bufsize = 0;
-    int pos = 0;
-    char *p;
+    char *s;
+    char *base;
+    static agxbuf  xb;
 
-    if (!buf) {
-	bufsize = 64;
-	buf = N_GNEW(bufsize, char);
-    }
+    if (latin)
+	base = utf8ToLatin1 (ins);
+    else
+	base = ins;
 
-    p = buf;
-    *p++ = LPAREN;
-    pos++;
+    if (xb.buf == NULL)
+	agxbinit (&xb, BUFSIZ, psbuf);
+
+    agxbputc (&xb, LPAREN);
+    s = base;
     while (*s) {
-	if (pos > (bufsize - 8)) {
-	    bufsize *= 2;
-	    buf = grealloc(buf, bufsize);
-	    p = buf + pos;
-	}
 	if ((*s == LPAREN) || (*s == RPAREN) || (*s == '\\')) {
-	    *p++ = '\\';
-	    pos++;
+	    agxbputc (&xb, '\\');
 	}
-	*p++ = *s++;
-	pos++;
+	agxbputc (&xb, *s++);
     }
-    *p++ = RPAREN;
-    *p = '\0';
-    return buf;
+    agxbputc (&xb, RPAREN);
+    if (base != ins) free (base);
+    return agxbuse(&xb);
 }
 
 static void ps_textline(point p, textline_t * line)
@@ -358,7 +359,7 @@ static void ps_textline(point p, textline_t * line)
 	    break;
 	}
 	fprintf(Output_file, "%d %d moveto\n%s\n[%s]\nxshow\n",
-		p.x, p.y, ps_string(line->str), line->xshow);
+		p.x, p.y, ps_string(line->str,isLatin1), line->xshow);
     } else {
 	switch (line->just) {
 	case 'l':
@@ -373,7 +374,7 @@ static void ps_textline(point p, textline_t * line)
 	    break;
 	}
 	fprintf(Output_file, "%d %d moveto %.1f %.1f %s alignedtext\n",
-		p.x, p.y, line->width, adj, ps_string(line->str));
+		p.x, p.y, line->width, adj, ps_string(line->str,isLatin1));
     }
 }
 

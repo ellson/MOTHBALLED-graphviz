@@ -556,7 +556,7 @@ static void characterData(void *user, const char *s, int length)
 }
 #endif
 
-int initHTMLlexer(char *src, agxbuf * xb)
+int initHTMLlexer(char *src, agxbuf * xb, int charset)
 {
 #ifdef HAVE_LIBEXPAT
     state.xb = xb;
@@ -568,7 +568,7 @@ int initHTMLlexer(char *src, agxbuf * xb)
     state.currtoklen = 0;
     state.prevtoklen = 0;
     state.inCell = 1;
-    state.parser = XML_ParserCreate(NULL);
+    state.parser = XML_ParserCreate(charsetToStr(charset));
     XML_SetElementHandler(state.parser,
 			  (XML_StartElementHandler) startElement,
 			  endElement);

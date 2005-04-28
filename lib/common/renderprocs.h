@@ -47,6 +47,7 @@ extern "C" {
     extern void clip_and_install(edge_t *, edge_t *, point *, int,
 				 splineInfo *);
     extern char *canontoken(char *str);
+    extern char* charsetToStr (int c);
     extern void colorxlate(char *str, color_t * color,
 			   color_type_t target_type);
     extern void common_init_node(node_t * n);
@@ -78,6 +79,8 @@ extern "C" {
     extern int emit_once(char *message);
     extern void emit_jobs(GVC_t * gvc, graph_t *g);
     extern void emit_jobs_eof(GVC_t * gvc);
+    extern void emit_textlines(GVJ_t*, int, textline_t*, pointf,
+              double, char*, double, char*);
     extern void endpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
@@ -117,6 +120,7 @@ extern "C" {
     extern int late_int(void *, Agsym_t *, int, int);
     extern char *late_nnstring(void *, Agsym_t *, char *);
     extern char *late_string(void *, Agsym_t *, char *);
+    extern char *latin1ToUTF8(char *);
     extern char *strdup_and_subst_graph(char *str, Agraph_t * g);
     extern char *strdup_and_subst_node(char *str, Agnode_t * n);
     extern char *strdup_and_subst_edge(char *str, Agedge_t * e);
@@ -144,7 +148,7 @@ extern "C" {
     extern void place_portlabel(edge_t * e, boolean head_p);
     extern point pointof(int, int);
     extern int processClusterEdges(graph_t * g);
-    extern char *ps_string(char *s);
+    extern char *ps_string(char *s, int);
     extern int rank(graph_t * g, int balance, int maxiter);
     extern void routesplinesinit(void);
     extern point *routesplines(path *, int *);
@@ -171,6 +175,7 @@ extern "C" {
     extern void use_library(char *);
     extern char *username(void);
     extern point user_shape_size(node_t * n, char *shapefile);
+    extern char* utf8ToLatin1 (char* ins);
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
     extern void write_extended_dot(GVJ_t * job, graph_t *g, FILE *f);

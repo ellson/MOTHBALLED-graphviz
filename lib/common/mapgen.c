@@ -39,6 +39,7 @@
 /* static int        N_pages; */
 /* static point    Pages; */
 static int onetime = TRUE;
+static int isLatin1;
 
 typedef struct context_t {
     char color_ix, *fontfam, fontopt, font_was_set;
@@ -174,7 +175,7 @@ map_output_rect(pointf p1, pointf p2, char *url, char *target, char *label,
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-		pp1.x, pp1.y, pp2.x, pp2.y, ps_string(url));
+		pp1.x, pp1.y, pp2.x, pp2.y, ps_string(url, isLatin1));
     }
 #endif
 }
@@ -308,6 +309,7 @@ map_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
     } else if (Output_lang == POSTSCRIPT || Output_lang == PDF) {
 /*		fprintf(Output_file,"base referer\n"); */
     }
+    isLatin1 = (GD_charset(g) == CHAR_LATIN1);
 }
 
 static void map_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
