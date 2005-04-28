@@ -103,8 +103,7 @@ static void popFontInfo(htmlenv_t * env, htmlfont_t * savp)
 static void
 emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env, void *obj)
 {
-    int i, linespacing;
-    double left_x, center_x, right_x;
+    double halfwidth_x;
     pointf p;
     char *fname;
     char *fcolor;
@@ -133,42 +132,13 @@ emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env, void *obj)
 	fname = env->finfo.name;
 	fcolor = env->finfo.color;
     }
-    /* set x positions for label */
-    left_x = tp->box.LL.x + env->p.x;
-    right_x = tp->box.UR.x + env->p.x;
-    center_x = (left_x + right_x) / 2;
 
-    /* set linespacing */
-    linespacing = (int) (fsize * LINESPACING);
+    halfwidth_x = ((double)(tp->box.UR.x - tp->box.LL.x))/2.0;
+    p.x = env->p.x;
+    p.y = env->p.y + ((double)(tp->box.UR.y + tp->box.LL.y))/2.0;
 
-    /* position for first line */
-    p.y = env->p.y + (tp->box.UR.y + tp->box.LL.y) / 2 + (linespacing * (tp->nlines - 1) / 2)	/* cl of topline */
-	-fsize / 3.0;		/* cl to baseline */
-
-    gvrender_begin_context(job);
-    gvrender_set_pencolor(job, fcolor);
-    gvrender_set_font(job, fname, fsize);
-
-    for (i = 0; i < tp->nlines; i++) {
-	switch (tp->line[i].just) {
-	case 'l':
-	    p.x = left_x;
-	    break;
-	case 'r':
-	    p.x = right_x;
-	    break;
-	default:
-	case 'n':
-	    p.x = center_x;
-	    break;
-	}
-	gvrender_textline(job, p, &(tp->line[i]));
-
-	/* position for next line */
-	p.y -= linespacing;
-    }
-
-    gvrender_end_context(job);
+    emit_textlines(job, tp->nlines, tp->line, p,
+              halfwidth_x, fname, fsize, fcolor);
 }
 
 static void doSide(GVJ_t * job, point p, int wd, int ht)
@@ -599,7 +569,8 @@ int html_path(node_t * n, port* p, int side, box * rv, int *k)
     return 0;
 }
 
-int size_html_txt(htmltxt_t * txt, htmlenv_t * env)
+static int 
+size_html_txt(htmltxt_t * txt, htmlenv_t * env)
 {
     double xsize = 0.0;
     double fsize;
@@ -1446,16 +1417,8 @@ int make_html_label(textlabel_t * lp, void *obj)
     int rv;
     int wd2, ht2;
     box box;
-    htmllabel_t *lbl = parseHTML(lp->text, &rv);
+    htmllabel_t *lbl;
     htmlenv_t env;
-
-    if (!lbl) {
-	agxbuf xb;
-	unsigned char buf[SMALLBUF];
-	agxbinit(&xb, SMALLBUF, buf);
-	lbl = simpleHTML(nameOf(obj, &xb));
-	agxbfree(&xb);
-    }
 
     env.obj = obj;
     switch (agobjkind(obj)) {
@@ -1470,6 +1433,16 @@ int make_html_label(textlabel_t * lp, void *obj)
     env.finfo.size = lp->fontsize;
     env.finfo.name = lp->fontname;
     env.finfo.color = NULL;
+
+    lbl = parseHTML(lp->text, &rv, GD_charset(env.g));
+    if (!lbl) {
+	agxbuf xb;
+	unsigned char buf[SMALLBUF];
+	agxbinit(&xb, SMALLBUF, buf);
+	lbl = simpleHTML(nameOf(obj, &xb));
+	agxbfree(&xb);
+    }
+
     if (lbl->kind == HTML_TBL) {
 	lbl->u.tbl->data.pencolor = getPenColor(obj);
 	rv |= size_html_tbl(lbl->u.tbl, NULL, &env);

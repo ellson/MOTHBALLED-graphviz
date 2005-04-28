@@ -127,7 +127,7 @@ extern "C" {
     } splinesf;
 
     typedef struct textline_t {
-	char *str;
+	char *str;      /* stored in utf-8 */
 	char *xshow;
 	double width;
 	char just;
@@ -346,7 +346,8 @@ extern "C" {
 	textlabel_t *label;	/* if the cluster has a title */
 	box bb;			/* bounding box */
 	point border[4];	/* sizes of margins for graph labels */
-	boolean has_labels, has_images, has_Latin1char;
+	boolean has_labels, has_images;
+	unsigned char charset; /* input character set */
 	int rankdir;
 	int ht1, ht2;		/* below and above extremal ranks */
 	unsigned short flags;
@@ -405,7 +406,7 @@ extern "C" {
 #define GD_exact_ranksep(g) (g)->u.exact_ranksep
 #define GD_expanded(g) (g)->u.expanded
 #define GD_flags(g) (g)->u.flags
-#define GD_has_Latin1char(g) (g)->u.has_Latin1char
+#define GD_charset(g) (g)->u.charset
 #define GD_has_labels(g) (g)->u.has_labels
 #define GD_has_images(g) (g)->u.has_images
 #define GD_has_flat_edges(g) (g)->u.has_flat_edges

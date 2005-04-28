@@ -58,6 +58,7 @@ static pointf label_size(char *str, textlabel_t * lp, graph_t * g)
 {
     char c, *p, *line, *lineptr;
     unsigned char byte = 0x00;
+    int charset = GD_charset(g);
 
     if (*str == '\0')
 	return lp->dimen;
@@ -68,16 +69,17 @@ static pointf label_size(char *str, textlabel_t * lp, graph_t * g)
     *line = 0;
     while ((c = *p++)) {
 	byte = (unsigned int) c;
-	if (c & ~0x7f)
-	    GD_has_Latin1char(g) = TRUE;
-	/* Fix some Double Character error for Big5 (Start) */
-	if (0xA1 <= byte && byte <= 0xFE) {
+	/* wingraphviz allows a combination of ascii and big-5. The latter
+         * is a two-byte encoding, with the first byte in 0xA1-0xFE, and
+         * the second in 0x40-0x7e or 0xa1-0xfe. We assume that the input
+         * is well-formed, but check that we don't go past the ending '\0'.
+         */
+	if ((charset == CHAR_BIG5) && 0xA1 <= byte && byte <= 0xFE) {
 	    *lineptr++ = c;
 	    c = *p++;
 	    *lineptr++ = c;
 	    if (!c) /* NB. Protect against unexpected string end here */
 		break;
-	    /* Fix some Double Character error for Big5 (End) */
 	} else {
 	    if (c == '\\') {
 		switch (*p) {
@@ -120,12 +122,18 @@ textlabel_t *make_label(int html, char *str, double fontsize,
 			char *fontname, char *fontcolor, graph_t * g)
 {
     textlabel_t *rv = NEW(textlabel_t);
+
     rv->text = str;
     rv->fontname = fontname;
     rv->fontcolor = fontcolor;
     rv->fontsize = fontsize;
     if (html)
 	rv->html = TRUE;
+    else if (GD_charset(g) == CHAR_LATIN1) {
+	char* lstr = latin1ToUTF8(str);
+	label_size(lstr, rv, g);
+	free(lstr);
+    }
     else
 	label_size(str, rv, g);
     return rv;
@@ -155,41 +163,30 @@ void free_label(textlabel_t * p)
     }
 }
 
-void emit_label(GVJ_t * job, textlabel_t * lp, void *obj)
+void 
+emit_textlines(GVJ_t* job, int nlines, textline_t lines[], pointf p,
+              double halfwidth_x, char* fname, double fsize, char* fcolor)
 {
     int i, linespacing;
-    double left_x, center_x, right_x, halfwidth_x;
-    pointf p;
+    double center_x, left_x, right_x;
 
-    if (lp->html) {
-	emit_html_label(job, lp->u.html, lp, obj);
-	return;
-    }
-
-    /* make sure that there is something to do */
-    if (lp->u.txt.nlines < 1)
-	return;
-
-    /* dimensions of box for label, no padding, adjusted for resizing */
-    halfwidth_x = (lp->dimen.x + lp->d.x) / 2.0;
-
-    center_x = lp->p.x;
+    center_x = p.x;
     left_x = center_x - halfwidth_x;
     right_x = center_x + halfwidth_x;
 
     /* set linespacing to an exact no. of pixelrows */
-    linespacing = (int) (lp->fontsize * LINESPACING);
+    linespacing = (int) (fsize * LINESPACING);
 
     /* position for first line */
-    p.y = lp->p.y + (linespacing * (lp->u.txt.nlines - 1) / 2)	/* cl of topline */
-	-lp->fontsize / 3.0;	/* cl to baseline */
+    p.y += (linespacing * (nlines - 1) / 2)	/* cl of topline */
+	-fsize / 3.0;	/* cl to baseline */
 
     gvrender_begin_context(job);
-    gvrender_set_pencolor(job, lp->fontcolor);
-    gvrender_set_font(job, lp->fontname, lp->fontsize);
+    gvrender_set_pencolor(job, fcolor);
+    gvrender_set_font(job, fname, fsize);
 
-    for (i = 0; i < lp->u.txt.nlines; i++) {
-	switch (lp->u.txt.line[i].just) {
+    for (i = 0; i < nlines; i++) {
+	switch (lines[i].just) {
 	case 'l':
 	    p.x = left_x;
 	    break;
@@ -201,13 +198,37 @@ void emit_label(GVJ_t * job, textlabel_t * lp, void *obj)
 	    p.x = center_x;
 	    break;
 	}
-	gvrender_textline(job, p, &(lp->u.txt.line[i]));
+	gvrender_textline(job, p, &(lines[i]));
 
 	/* position for next line */
 	p.y -= linespacing;
     }
 
     gvrender_end_context(job);
+}
+
+void emit_label(GVJ_t * job, textlabel_t * lp, void *obj)
+{
+    double halfwidth_x;
+    pointf p;
+
+    if (lp->html) {
+	emit_html_label(job, lp->u.html, lp, obj);
+	return;
+    }
+
+    /* make sure that there is something to do */
+    if (lp->u.txt.nlines < 1)
+	return;
+
+    p.x = lp->p.x;
+    p.y = lp->p.y;
+
+    /* dimensions of box for label, no padding, adjusted for resizing */
+    halfwidth_x = (lp->dimen.x + lp->d.x) / 2.0;
+
+    emit_textlines(job, lp->u.txt.nlines, lp->u.txt.line, p,
+              halfwidth_x, lp->fontname, lp->fontsize, lp->fontcolor);
 }
 
 

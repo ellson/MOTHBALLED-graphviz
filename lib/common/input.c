@@ -500,6 +500,61 @@ static void setRatio(graph_t * g)
     }
 }
 
+/* charsetToStr:
+ * Given an internal charset value, return a canonical string
+ * representation.
+ */
+char*
+charsetToStr (int c)
+{
+   char* s;
+
+   switch (c) {
+   case CHAR_UTF8 :
+	s = "UTF-8";
+	break;
+   case CHAR_LATIN1 :
+	s = "ISO-8859-1";
+	break;
+   case CHAR_BIG5 :
+	s = "BIG-5";
+	break;
+   default :
+	agerr(AGERR, "Unsupported charset value %d\n", c);
+	s = "UTF-8";
+	break;
+   }
+   return s;
+}
+
+/* findCharset:
+ * Check if the charset attribute is defined for the graph and, if
+ * so, return the corresponding internal value. If undefined, return
+ * CHAR_UTF8
+ */
+static int
+findCharset (graph_t * g)
+{
+    int enc;
+    char* p;
+
+    p = late_nnstring(g,agfindattr(g,"charset"),"utf-8");
+    if (!strcasecmp(p,"latin1") || !strcasecmp(p,"ISO-8859-1") ||
+       !strcasecmp(p,"l1") || !strcasecmp(p,"ISO_8859-1") ||
+       !strcasecmp(p,"ISO8859-1") || !strcasecmp(p,"ISO-IR-100"))
+	enc = CHAR_LATIN1; 
+    else if (!strcasecmp(p,"big-5") || !strcasecmp(p,"big5")) 
+	enc = CHAR_BIG5; 
+    else if (!strcasecmp(p,"utf-8"))
+	enc = CHAR_UTF8; 
+    else {
+	agerr(AGWARN, "Unsupported charset \"%s\" - assuming utf-8\n", p);
+	enc = CHAR_UTF8; 
+    }
+
+    return enc;
+}
+
 void init_ugraph(graph_t * g)
 {
     char *p;
@@ -524,6 +579,8 @@ void init_ugraph(graph_t * g)
 	putenv(buf);
 #endif
     }
+
+    GD_charset(g) = findCharset (g);
 
     GD_drawing(g)->quantum =
 	late_double(g, agfindattr(g, "quantum"), 0.0, 0.0);

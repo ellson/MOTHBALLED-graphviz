@@ -45,7 +45,10 @@ extern "C" {
 	double size;
     } htmlfont_t;
 
-    /* lines of text within a cell */
+    /* lines of text within a cell
+     * NOTE: As required, the str field in line is utf-8.
+     * This translation is done when libexpat scans the input.
+     */
     typedef struct {
 	textline_t *line;
 	short nlines;
@@ -135,7 +138,7 @@ extern "C" {
 	} u;
     } pitem;
 
-    extern htmllabel_t *parseHTML(char *, int *);
+    extern htmllabel_t *parseHTML(char *, int *, int);
     extern htmllabel_t *simpleHTML(char *);
 
     extern int make_html_label(textlabel_t * lp, void *obj);

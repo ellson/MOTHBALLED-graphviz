@@ -1678,3 +1678,152 @@ safe_dcl(graph_t * g, void *obj, char *name, char *def,
     return a;
 }
 
+#include "entities.h"
+
+static int comp_entities(const void *e1, const void *e2) {
+  struct entities_s *en1 = (struct entities_s *) e1;
+  struct entities_s *en2 = (struct entities_s *) e2;
+  return strcmp(en1->name, en2->name);
+}
+
+/* htmlEntity:
+ * Check for an HTML entity for a special character.
+ * Assume *s points to first byte after '&'. 
+ * If successful, return the corresponding value and update s to
+ * point after the terminating ';'.
+ * On failure, return 0 and leave s unchanged.
+ */
+static int
+htmlEntity (char** s)
+{
+    char *p;
+    struct entities_s key, *res;
+    char entity_name_buf[ENTITY_NAME_LENGTH_MAX+1];
+    unsigned char* str = *(unsigned char**)s;
+    unsigned int byte;
+    int i, n = 0;
+
+    byte = *str;
+    if (byte == '#') {
+	byte = *(str + 1);
+	if (byte == 'x' || byte == 'X') {
+	    for (i = 2; i < 8; i++) {
+		byte = *(str + i);
+		if (byte >= 'A' && byte <= 'F')
+                    byte = byte - 'A' + 10;
+		else if (byte >= 'a' && byte <= 'f')
+                    byte = byte - 'a' + 10;
+		else if (byte >= '0' && byte <= '9')
+                    byte = byte - '0';
+		else
+                    break;
+		n = (n * 16) + byte;
+	    }
+	}
+	else {
+	    for (i = 1; i < 8; i++) {
+		byte = *(str + i);
+		if (byte >= '0' && byte <= '9')
+		    n = (n * 10) + (byte - '0');
+		else
+		    break;
+	    }
+	}
+	if (byte == ';') {
+	    str += i+1;
+	}
+	else {
+	    n = 0;
+	}
+    }
+    else {
+	key.name = p = entity_name_buf;
+	for (i = 0; i <  ENTITY_NAME_LENGTH_MAX; i++) {
+	    byte = *(str + i);
+	    if (byte == '\0') break;
+	    if (byte == ';') {
+		*p++ = '\0';
+		res = bsearch(&key, entities, NR_OF_ENTITIES,
+		    sizeof(entities[0]), *comp_entities);
+		if (res) {
+		    n = res->value;
+		    str += i+1;
+		}
+		break;
+	    }
+	    *p++ = byte;
+	}
+    }
+    *s = (char*)str;
+    return n;
+}
+
+/* latin1ToUTF8:
+ * Converts string from Latin1 encoding to utf8
+ * Also translates HTML entities.
+ *
+ */
+char*
+latin1ToUTF8 (char* s)
+{
+    char*  ns;
+    agxbuf xb;
+    char   buf[BUFSIZ];
+    unsigned int v;
+    
+    agxbinit(&xb, BUFSIZ, buf);
+
+    /* Values are either a byte (<= 256) or come from htmlEntity, whose
+     * values are all less than 0x07FF, so we need at most 3 bytes.
+     */
+    while ((v = *s++)) {
+	if (v == '&') {
+	    v = htmlEntity (&s);
+	    if (!v) v = '&';
+        }
+	if (v < 0x7F) agxbputc(&xb, v);
+	else if (v < 0x07FF) {
+	    agxbputc(&xb, (v >> 6) | 0xC0);
+	    agxbputc(&xb, (v & 0x3F) | 0x80);
+	}
+	else {
+	    agxbputc(&xb, (v >> 12) | 0xE0);
+	    agxbputc(&xb, ((v >> 6) & 0x3F) | 0x80);
+	    agxbputc(&xb, (v & 0x3F) | 0x80);
+	}
+    }
+    ns = strdup (agxbuse(&xb));
+    agxbfree(&xb);
+    return ns;
+}
+
+/* utf8ToLatin1:
+ * Converts string from utf8 encoding to Latin1
+ * Note that it does not attempt to reproduce HTML entities.
+ * We assume the input string comes from latin1ToUTF8.
+ */
+char*
+utf8ToLatin1 (char* s)
+{
+    char*  ns;
+    agxbuf xb;
+    char   buf[BUFSIZ];
+    unsigned char c;
+    unsigned char outc;
+    
+    agxbinit(&xb, BUFSIZ, buf);
+
+    while ((c = *s++)) {
+	if (c < 0x7F) agxbputc(&xb, c);
+	else {
+	    outc = (c & 0x03) << 6;
+	    c = *s++;
+	    outc = outc | (c & 0x3F);
+	    agxbputc(&xb, outc);
+	}
+    }
+    ns = strdup (agxbuse(&xb));
+    agxbfree(&xb);
+    return ns;
+}
+

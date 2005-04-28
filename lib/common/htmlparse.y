@@ -432,7 +432,7 @@ simpleHTML (char* txt)
  * Set warn to 0 on success; 1 for warning message; 2 if no expat.
  */
 htmllabel_t*
-parseHTML (char* txt, int* warn)
+parseHTML (char* txt, int* warn, int charset)
 {
   unsigned char buf[SMALLBUF];
   agxbuf        str;
@@ -444,7 +444,7 @@ parseHTML (char* txt, int* warn)
   agxbinit (&str, SMALLBUF, buf);
   HTMLstate.str = &str;
   
-  if (initHTMLlexer (txt, &str)) {/* failed: no libexpat - give up */
+  if (initHTMLlexer (txt, &str, charset)) {/* failed: no libexpat - give up */
     *warn = 2;
     l = NULL;
   }
