@@ -206,9 +206,9 @@ static void set_pagedir(GVC_t *gvc, graph_t * g)
     }
 }
 
-static void init_job_pagination(GVC_t * gvc, graph_t * g)
+static void init_job_pagination(GVJ_t * job, graph_t * g)
 {
-    GVJ_t *job = gvc->job;
+    GVC_t *gvc = job->gvc;
     pointf pageSizeCenteredLessMargins;	 /* page for centering less margins - graph units*/
     pointf deviceSize;			/* device size for a page of the graph - graph units */
     pointf extra, size;
@@ -1002,9 +1002,9 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
 }
 
 
-static void init_job_margin(GVC_t *gvc)
+static void init_job_margin(GVJ_t *job)
 {
-    GVJ_t *job = gvc->job;
+    GVC_t *gvc = job->gvc;
     
     if (gvc->graph_sets_margin) {
 	job->margin = gvc->margin;
@@ -1030,10 +1030,8 @@ static void init_job_margin(GVC_t *gvc)
     }
 }
 
-static void init_job_dpi(GVC_t *gvc, graph_t *g)
+static void init_job_dpi(GVJ_t *job, graph_t *g)
 {
-    GVJ_t *job = gvc->job;
-    
     job->dpi = GD_drawing(g)->dpi;
     if (job->dpi == 0) {
         /* set default margins depending on format */
@@ -1051,9 +1049,8 @@ static void init_job_dpi(GVC_t *gvc, graph_t *g)
     }
 }
 
-static void init_job_viewport(GVC_t * gvc, graph_t * g)
+static void init_job_viewport(GVJ_t * job, graph_t * g)
 {
-    GVJ_t * job = gvc->job;
     pointf UR, size;
     char *str;
     double X, Y, Z, x, y;
@@ -1095,7 +1092,7 @@ static void init_job_viewport(GVC_t * gvc, graph_t * g)
     job->zoom = Z;              /* scaling factor */
     job->focus.x = x;           /* graph coord of focus - points */
     job->focus.y = y;
-    job->rotation = gvc->rotation;
+    job->rotation = job->gvc->rotation;
 }
 
 void emit_graph(GVJ_t * job, graph_t * g)
@@ -1587,8 +1584,6 @@ void use_library(char *name)
 
 static void emit_job(GVJ_t * job, graph_t * g)
 {
-    GVC_t *gvc = job->gvc;
-
     if (!GD_drawing(g)) {
 	fprintf (stderr,"layout was not done\n");
 	return;
@@ -1600,16 +1595,16 @@ static void emit_job(GVJ_t * job, graph_t * g)
 #endif
 
     init_job_flags(job, g);
-    init_job_margin(gvc);
-    init_job_dpi(gvc, g);
-    init_job_viewport(gvc, g);
-    init_job_pagination(gvc, g);
+    init_job_margin(job);
+    init_job_dpi(job, g);
+    init_job_viewport(job, g);
+    init_job_pagination(job, g);
 
     gvrender_begin_job(job);
 
     switch (job->output_lang) {
     case EXTENDED_DOT:
-        write_extended_dot(gvc, g, job->output_file);
+        write_extended_dot(job, g, job->output_file);
         break;
     case ATTRIBUTED_DOT:
         write_attributed_dot(g, job->output_file);
@@ -1618,10 +1613,10 @@ static void emit_job(GVJ_t * job, graph_t * g)
         write_canonical_dot(g, job->output_file);
         break;
     case PLAIN:
-        write_plain(gvc, g, job->output_file);
+        write_plain(job, g, job->output_file);
         break;
     case PLAIN_EXT:
-        write_plain_ext(gvc, g, job->output_file);
+        write_plain_ext(job, g, job->output_file);
         break;
     default:
 	if (! (job->flags & GVRENDER_X11_EVENTS))

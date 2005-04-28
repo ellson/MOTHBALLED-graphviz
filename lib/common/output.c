@@ -59,7 +59,7 @@ static void writenodeandport(FILE * fp, node_t * node, char *port)
 
 /* _write_plain:
  */
-static void _write_plain(GVC_t * gvc, graph_t * g, FILE * f, boolean extend)
+static void _write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 {
     int i, j, splinePoints;
     char *tport, *hport;
@@ -69,10 +69,10 @@ static void _write_plain(GVC_t * gvc, graph_t * g, FILE * f, boolean extend)
     point pt;
     char *lbl;
 
-//    setup_graph(gvc, g);
+//    setup_graph(job, g);
     setYInvert(g);
     pt = GD_bb(g).UR;
-    fprintf(f, "graph %.3f %.3f %.3f\n", gvc->job->zoom, PS2INCH(pt.x), PS2INCH(pt.y));
+    fprintf(f, "graph %.3f %.3f %.3f\n", job->zoom, PS2INCH(pt.x), PS2INCH(pt.y));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n))
 	    continue;
@@ -128,21 +128,21 @@ static void _write_plain(GVC_t * gvc, graph_t * g, FILE * f, boolean extend)
     fprintf(f, "stop\n");
 }
 
-void write_plain(GVC_t * gvc, graph_t * g, FILE * f)
+void write_plain(GVJ_t * job, graph_t * g, FILE * f)
 {
-    _write_plain(gvc, g, f, FALSE);
+    _write_plain(job, g, f, FALSE);
 }
 
-void write_plain_ext(GVC_t * gvc, graph_t * g, FILE * f)
+void write_plain_ext(GVJ_t * job, graph_t * g, FILE * f)
 {
-    _write_plain(gvc, g, f, TRUE);
+    _write_plain(job, g, f, TRUE);
 }
 
 
-void write_extended_dot(GVC_t *gvc, graph_t *g, FILE *f)
+void write_extended_dot(GVJ_t *job, graph_t *g, FILE *f)
 {
 	attach_attrs(g);
-	extend_attrs(gvc->job, g, s_arrows, e_arrows);
+	extend_attrs(job, g, s_arrows, e_arrows);
 	agwrite(g, f);
 }
 
