@@ -88,6 +88,13 @@ extern "C" {
 
 	GVC_t *gvc;		/* parent gvc */
         graph_t *g;		/* parent graph */
+
+	/* current graph object during rendering 
+	 - only valid between gvrender_begin_xxx() and gvrender_end_xxx() */
+        graph_t *sg;		/* current graph or subgraph/cluster */
+        node_t *n;		/* current node */
+        edge_t *e;		/* current edge */
+
         int flags;		/* emit_graph flags */
 
         pointf margin;		 /* job-specific margin - graph units */
@@ -117,6 +124,8 @@ extern "C" {
 	pointf pointer;		/* pointer position in graph units */
 #endif
 	boxf clip;		/* clip region in graph units */
+	boxf pageBoxClip;       /* intersection of clip and pageBox */
+
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	
 	boolean fit_mode, needs_refresh, click, active, has_grown;
@@ -191,7 +200,8 @@ extern "C" {
 	char **layerIDs;	/* array of layer names */
 	int numLayers;		/* number of layers */
 
-        int pageNum;	        /* current page - 1 based counts pages in all layers*/
+        int viewNum;	        /* current view - 1 based count of views,
+					all pages in all layers */
 	/* default font */
 	char *defaultfontname;
 	double defaultfontsize;

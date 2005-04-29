@@ -523,13 +523,11 @@ static void svg_begin_layer(char *layerName, int n, int nLayers)
     svg_fputs("<g id=\"");
     svg_fputs(xml_string(layerName));
     svg_fputs("\" class=\"layer\">\n");
-    Obj = NONE;
 }
 
 static void svg_end_layer(void)
 {
     svg_fputs("</g>\n");
-    Obj = NONE;
 }
 
 static void svg_begin_cluster(graph_t * g)

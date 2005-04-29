@@ -309,7 +309,7 @@ static void ps_set_style(char **s)
     }
 }
 
-static char    psbuf[BUFSIZ];
+static unsigned char psbuf[BUFSIZ];
 
 char *ps_string(char *ins, int latin)
 {

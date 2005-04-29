@@ -81,7 +81,7 @@ extern "C" {
     extern void gvrender_begin_layer(GVJ_t * job);
     extern void gvrender_end_layer(GVJ_t * job);
     extern void gvrender_begin_cluster(GVJ_t * job, graph_t * sg);
-    extern void gvrender_end_cluster(GVJ_t * job);
+    extern void gvrender_end_cluster(GVJ_t * job, graph_t *g);
     extern void gvrender_begin_nodes(GVJ_t * job);
     extern void gvrender_end_nodes(GVJ_t * job);
     extern void gvrender_begin_edges(GVJ_t * job);

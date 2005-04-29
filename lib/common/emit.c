@@ -416,29 +416,29 @@ fprintf(stderr,"pagesArrayElem = %d,%d pageSize = %g,%g pageOffset = %g,%g\n",
 	job->pageOffset.x, job->pageOffset.y);
 #endif
 
+    
+    job->pageBoxClip.UR.x = MIN(job->clip.UR.x, job->pageBox.UR.x);
+    job->pageBoxClip.UR.y = MIN(job->clip.UR.y, job->pageBox.UR.y);
+    job->pageBoxClip.LL.x = MAX(job->clip.LL.x, job->pageBox.LL.x);
+    job->pageBoxClip.LL.y = MAX(job->clip.LL.y, job->pageBox.LL.y);
+
     gvrender_begin_page(job);
     emit_background(job, g);
     emit_defaults(job);
 }
 
-static boolean node_in_pageBox(GVC_t *gvc, node_t * n)
+static boolean node_in_view(GVJ_t *job, node_t * n)
 {
-    GVJ_t *job = gvc->job;
-    boxf nb;
+    boxf b;
 
-#if 0
-fprintf(stderr,"pageBox = %g,%g,%g,%g\n",
-	job->pageBox.LL.x, job->pageBox.LL.y,
-	job->pageBox.UR.x, job->pageBox.UR.y);
-#endif
-
-    if (job->numPages == 1)
+    if (boxf_contains(job->clip, job->pageBox) && job->numPages == 1)
 	return TRUE;
-    nb.LL.x = ND_coord_i(n).x - ND_lw_i(n);
-    nb.LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
-    nb.UR.x = ND_coord_i(n).x + ND_rw_i(n);
-    nb.UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
-    return boxf_overlap(job->pageBox, nb);
+    b.LL.x = ND_coord_i(n).x - ND_lw_i(n);
+    b.LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
+    b.UR.x = ND_coord_i(n).x + ND_rw_i(n);
+    b.UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
+
+    return boxf_overlap(job->pageBoxClip, b);
 }
 
 static boolean is_natural_number(char *sstr)
@@ -467,9 +467,9 @@ static int layer_index(GVC_t *gvc, char *str, int all)
     return -1;
 }
 
-static boolean selectedlayer(GVC_t *gvc, char *spec)
+static boolean selectedlayer(GVJ_t *job, char *spec)
 {
-    GVJ_t *job = gvc->job;
+    GVC_t *gvc = job->gvc;
     int n0, n1;
     unsigned char buf[SMALLBUF];
     char *w0, *w1;
@@ -506,16 +506,15 @@ static boolean selectedlayer(GVC_t *gvc, char *spec)
     return rval;
 }
 
-static boolean node_in_layer(GVC_t *gvc, graph_t * g, node_t * n)
+static boolean node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
 {
-    GVJ_t *job = gvc->job;
     char *pn, *pe;
     edge_t *e;
 
     if (job->numLayers <= 1)
 	return TRUE;
     pn = late_string(n, N_layer, "");
-    if (selectedlayer(gvc, pn))
+    if (selectedlayer(job, pn))
 	return TRUE;
     if (pn[0])
 	return FALSE;		/* Only check edges if pn = "" */
@@ -523,48 +522,46 @@ static boolean node_in_layer(GVC_t *gvc, graph_t * g, node_t * n)
 	return TRUE;
     for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
 	pe = late_string(e, E_layer, "");
-	if ((pe[0] == '\0') || selectedlayer(gvc, pe))
+	if ((pe[0] == '\0') || selectedlayer(job, pe))
 	    return TRUE;
     }
     return FALSE;
 }
 
-static boolean edge_in_layer(GVC_t *gvc, graph_t * g, edge_t * e)
+static boolean edge_in_layer(GVJ_t *job, graph_t * g, edge_t * e)
 {
-    GVJ_t *job = gvc->job;
     char *pe, *pn;
     int cnt;
 
     if (job->numLayers <= 1)
 	return TRUE;
     pe = late_string(e, E_layer, "");
-    if (selectedlayer(gvc, pe))
+    if (selectedlayer(job, pe))
 	return TRUE;
     if (pe[0])
 	return FALSE;
     for (cnt = 0; cnt < 2; cnt++) {
 	pn = late_string(cnt < 1 ? e->tail : e->head, N_layer, "");
-	if ((pn[0] == '\0') || selectedlayer(gvc, pn))
+	if ((pn[0] == '\0') || selectedlayer(job, pn))
 	    return TRUE;
     }
     return FALSE;
 }
 
-static boolean clust_in_layer(GVC_t *gvc, graph_t * sg)
+static boolean clust_in_layer(GVJ_t *job, graph_t * sg)
 {
-    GVJ_t *job = gvc->job;
     char *pg;
     node_t *n;
 
     if (job->numLayers <= 1)
 	return TRUE;
     pg = late_string(sg, agfindattr(sg, "layer"), "");
-    if (selectedlayer(gvc, pg))
+    if (selectedlayer(job, pg))
 	return TRUE;
     if (pg[0])
 	return FALSE;
     for (n = agfstnode(sg); n; n = agnxtnode(sg, n))
-	if (node_in_layer(gvc, sg, n))
+	if (node_in_layer(job, sg, n))
 	    return TRUE;
     return FALSE;
 }
@@ -577,9 +574,9 @@ static void emit_node(GVJ_t * job, node_t * n)
     if (ND_shape(n) == NULL)
 	return;
 
-    if (node_in_layer(gvc, n->graph, n)
-	    && node_in_pageBox(gvc, n)
-	    && (ND_state(n) != gvc->pageNum)) {
+    if (node_in_layer(job, n->graph, n)
+	    && node_in_view(job, n)
+	    && (ND_state(n) != gvc->viewNum)) {
 
         gvrender_comment(job, n->name);
 
@@ -601,7 +598,7 @@ static void emit_node(GVJ_t * job, node_t * n)
 	}
 	gvrender_begin_context(job);
 	ND_shape(n)->fns->codefn(job, n);
-	ND_state(n) = gvc->pageNum;
+	ND_state(n) = gvc->viewNum;
 	gvrender_end_context(job);
 	if (url) {
 	    gvrender_end_anchor(job);
@@ -678,9 +675,8 @@ static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
     gvrender_polyline(job, A, 3);
 }
 
-static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
+static boolean edge_in_view(GVJ_t *job, edge_t * e)
 {
-    GVJ_t *job = gvc->job;
     int i, j, np;
     bezier bz;
     point *p;
@@ -689,7 +685,7 @@ static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
     boxf b;
     textlabel_t *lp;
 
-    if (job->numPages == 1)
+    if (boxf_contains(job->clip, job->pageBox) && job->numPages == 1)
 	return TRUE;
     if (ED_spl(e) == NULL)
 	return FALSE;
@@ -700,7 +696,8 @@ static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
 	P2PF(p[0],pp);
 	for (j = 0; j < np; j++) {
 	    P2PF(p[j],pn);
-	    if (boxf_overlap(job->pageBox, mkboxf(pp, pn)))
+	    b = mkboxf(pp, pn);
+	    if (boxf_overlap(job->pageBoxClip, b))
 		return TRUE;
 	    pp = pn;
 	}
@@ -713,7 +710,7 @@ static boolean edge_in_pageBox(GVC_t *gvc, edge_t * e)
     b.UR.x = lp->p.x + sx;
     b.LL.y = lp->p.y - sy;
     b.UR.y = lp->p.y + sy;
-    return boxf_overlap(job->pageBox, b);
+    return boxf_overlap(job->pageBoxClip, b);
 }
 
 void emit_edge_graphics(GVJ_t * job, edge_t * e)
@@ -891,11 +888,10 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 
 static void emit_edge(GVJ_t * job, edge_t * e)
 {
-    GVC_t *gvc = job->gvc;
     char *s, *url = NULL, *label = NULL, *tooltip = NULL, *target = NULL;
     textlabel_t *lab = NULL;
 
-    if (! edge_in_pageBox(gvc, e) || ! edge_in_layer(gvc, e->head->graph, e))
+    if (! edge_in_view(job, e) || ! edge_in_layer(job, e->head->graph, e))
 	return;
 
     s = malloc(strlen(e->tail->name) + 2 + strlen(e->head->name) + 1);
@@ -1080,61 +1076,157 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     job->rotation = job->gvc->rotation;
 }
 
-void emit_graph(GVJ_t * job, graph_t * g)
+static void emit_colors(GVJ_t * job, graph_t * g)
 {
-    GVC_t * gvc = job->gvc;
     graph_t *sg;
     node_t *n;
     edge_t *e;
     int c;
     char *str, *colors;
+
+    gvrender_set_fillcolor(job, DEFAULT_FILL);
+    if (((str = agget(g, "bgcolor")) != 0) && str[0])
+	gvrender_set_fillcolor(job, str);
+    if (((str = agget(g, "fontcolor")) != 0) && str[0])
+	gvrender_set_pencolor(job, str);
+    for (c = 1; c <= GD_n_cluster(g); c++) {
+	sg = GD_clust(g)[c];
+	if (((str = agget(sg, "color")) != 0) && str[0])
+	    gvrender_set_pencolor(job, str);
+	if (((str = agget(sg, "fillcolor")) != 0) && str[0])
+	    gvrender_set_fillcolor(job, str);
+	if (((str = agget(sg, "fontcolor")) != 0) && str[0])
+	    gvrender_set_pencolor(job, str);
+    }
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	if (((str = agget(n, "color")) != 0) && str[0])
+	    gvrender_set_pencolor(job, str);
+	if (((str = agget(n, "fillcolor")) != 0) && str[0])
+	    gvrender_set_fillcolor(job, str);
+	if (((str = agget(n, "fontcolor")) != 0) && str[0])
+	    gvrender_set_pencolor(job, str);
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    if (((str = agget(e, "color")) != 0) && str[0]) {
+		if (strchr(str, ':')) {
+		    colors = strdup(str);
+		    for (str = strtok(colors, ":"); str;
+			str = strtok(0, ":")) {
+			if (str[0])
+			    gvrender_set_pencolor(job, str);
+		    }
+		    free(colors);
+		} else
+		    gvrender_set_pencolor(job, str);
+	    }
+	    if (((str = agget(e, "fontcolor")) != 0) && str[0])
+		gvrender_set_pencolor(job, str);
+	}
+    }
+}
+
+static void emit_view(GVJ_t * job, graph_t * g, int flags)
+{
+    GVC_t * gvc = job->gvc;
+    node_t *n;
+    edge_t *e;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
+
+    gvc->viewNum++;
+    if (((s = agget(g, "href")) && s[0])
+	|| ((s = agget(g, "URL")) && s[0])) {
+	url = strdup_and_subst_graph(s, g);
+	if ((s = agget(g, "target")) && s[0])
+	    target = strdup_and_subst_graph(s, g);
+	if ((s = agget(g, "tooltip")) && s[0])
+	    tooltip = strdup_and_subst_graph(s, g);
+	else if (GD_label(g))
+	    tooltip = strdup_and_subst_graph(GD_label(g)->text, g);
+	gvrender_begin_anchor(job, url, tooltip, target);
+    }
+    if (GD_label(g))
+	emit_label(job, GD_label(g), (void *) g);
+    /* when drawing, lay clusters down before nodes and edges */
+    if (!(flags & EMIT_CLUSTERS_LAST))
+	emit_clusters(job, g, flags);
+    if (flags & EMIT_SORTED) {
+	/* output all nodes, then all edges */
+	gvrender_begin_nodes(job);
+	for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	    emit_node(job, n);
+	gvrender_end_nodes(job);
+	gvrender_begin_edges(job);
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	    for (e = agfstout(g, n); e; e = agnxtout(g, e))
+		emit_edge(job, e);
+	}
+	gvrender_end_edges(job);
+    } else if (flags & EMIT_EDGE_SORTED) {
+	/* output all edges, then all nodes */
+	gvrender_begin_edges(job);
+	for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	    for (e = agfstout(g, n); e; e = agnxtout(g, e))
+		emit_edge(job, e);
+	gvrender_end_edges(job);
+	gvrender_begin_nodes(job);
+	for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	    emit_node(job, n);
+	gvrender_end_nodes(job);
+    } else if (flags & EMIT_PREORDER) {
+	gvrender_begin_nodes(job);
+	for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	    if (write_node_test(g, n))
+		emit_node(job, n);
+	gvrender_end_nodes(job);
+	gvrender_begin_edges(job);
+
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+		if (write_edge_test(g, e))
+		    emit_edge(job, e);
+	    }
+	}
+	gvrender_end_edges(job);
+    } else {
+	/* output in breadth first graph walk order */
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	    emit_node(job, n);
+	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+		emit_node(job, e->head);
+		emit_edge(job, e);
+	    }
+	}
+    }
+    /* when mapping, detect events on clusters after nodes and edges */
+    if (flags & EMIT_CLUSTERS_LAST)
+	emit_clusters(job, g, flags);
+    if (url) {
+	gvrender_end_anchor(job);
+	free(url);
+	url = NULL;
+	if (tooltip) {
+	    free(tooltip);
+	    tooltip = NULL;
+	}
+	if (target) {
+	    free(target);
+	    target = NULL;
+	}
+    }
+    gvrender_end_page(job);
+}
+
+void emit_graph(GVJ_t * job, graph_t * g)
+{
+    node_t *n;
+    char *s;
     int flags = job->flags;
 
     s = late_string(g, agfindattr(g, "comment"), "");
     gvrender_comment(job, s);
 
     gvrender_begin_graph(job, g);
-    if (flags & EMIT_COLORS) {
-	gvrender_set_fillcolor(job, DEFAULT_FILL);
-	if (((str = agget(g, "bgcolor")) != 0) && str[0])
-	    gvrender_set_fillcolor(job, str);
-	if (((str = agget(g, "fontcolor")) != 0) && str[0])
-	    gvrender_set_pencolor(job, str);
-	for (c = 1; c <= GD_n_cluster(g); c++) {
-	    sg = GD_clust(g)[c];
-	    if (((str = agget(sg, "color")) != 0) && str[0])
-		gvrender_set_pencolor(job, str);
-	    if (((str = agget(sg, "fillcolor")) != 0) && str[0])
-		gvrender_set_fillcolor(job, str);
-	    if (((str = agget(sg, "fontcolor")) != 0) && str[0])
-		gvrender_set_pencolor(job, str);
-	}
-	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    if (((str = agget(n, "color")) != 0) && str[0])
-		gvrender_set_pencolor(job, str);
-	    if (((str = agget(n, "fillcolor")) != 0) && str[0])
-		gvrender_set_fillcolor(job, str);
-	    if (((str = agget(n, "fontcolor")) != 0) && str[0])
-		gvrender_set_pencolor(job, str);
-	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-		if (((str = agget(e, "color")) != 0) && str[0]) {
-		    if (strchr(str, ':')) {
-			colors = strdup(str);
-			for (str = strtok(colors, ":"); str;
-			     str = strtok(0, ":")) {
-			    if (str[0])
-				gvrender_set_pencolor(job, str);
-			}
-			free(colors);
-		    } else
-			gvrender_set_pencolor(job, str);
-		}
-		if (((str = agget(e, "fontcolor")) != 0) && str[0])
-		    gvrender_set_pencolor(job, str);
-	    }
-	}
-    }
+    if (flags & EMIT_COLORS)
+	emit_colors(job,g);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	ND_state(n) = 0;
@@ -1145,117 +1237,14 @@ void emit_graph(GVJ_t * job, graph_t * g)
 
 	/* iterate pages */
 	for (firstpage(job); validpage(job); nextpage(job)) {
-	    gvc->pageNum++;
-#if 0
-fprintf(stderr,"pageNum = %d pagesArrayElem = %d,%d\n",
-	gvc->pageNum, job->pagesArrayElem.x, job->pagesArrayElem.y);
-#endif
     	    setup_page(job, g);
-	    Obj = NONE;
-	    if (((s = agget(g, "href")) && s[0])
-		|| ((s = agget(g, "URL")) && s[0])) {
-		url = strdup_and_subst_graph(s, g);
-		if ((s = agget(g, "target")) && s[0])
-		    target = strdup_and_subst_graph(s, g);
-		if ((s = agget(g, "tooltip")) && s[0])
-		    tooltip = strdup_and_subst_graph(s, g);
-		else if (GD_label(g))
-		    tooltip = strdup_and_subst_graph(GD_label(g)->text, g);
-		gvrender_begin_anchor(job, url, tooltip, target);
-	    }
-	    if (GD_label(g))
-		emit_label(job, GD_label(g), (void *) g);
-	    Obj = CLST;
-	    /* when drawing, lay clusters down before nodes and edges */
-	    if (!(flags & EMIT_CLUSTERS_LAST)) {
-		emit_clusters(job, g, flags);
-	    }
-	    if (flags & EMIT_SORTED) {
-		/* output all nodes, then all edges */
-		Obj = NODE;
-		gvrender_begin_nodes(job);
-		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-		    emit_node(job, n);
-		}
-		gvrender_end_nodes(job);
-		Obj = EDGE;
-		gvrender_begin_edges(job);
-		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-		    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-			emit_edge(job, e);
-		    }
-		}
-		gvrender_end_edges(job);
-	    } else if (flags & EMIT_EDGE_SORTED) {
-		/* output all edges, then all nodes */
-		Obj = EDGE;
-		gvrender_begin_edges(job);
-		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-		    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-			emit_edge(job, e);
-		    }
-		}
-		gvrender_end_edges(job);
-		Obj = NODE;
-		gvrender_begin_nodes(job);
-		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-		    emit_node(job, n);
-		}
-		gvrender_end_nodes(job);
-	    } else if (flags & EMIT_PREORDER) {
-		Obj = NODE;
-		gvrender_begin_nodes(job);
-		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-		    if (write_node_test(g, n))
-			emit_node(job, n);
-		}
-		gvrender_end_nodes(job);
-		Obj = EDGE;
-		gvrender_begin_edges(job);
+	    if (boxf_overlap(job->clip, job->pageBox))
+	        emit_view(job,g,flags);
+	} 
 
-		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-		    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-			if (write_edge_test(g, e))
-			    emit_edge(job, e);
-		    }
-		}
-		gvrender_end_edges(job);
-	    } else {
-		/* output in breadth first graph walk order */
-		for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-		    Obj = NODE;
-		    emit_node(job, n);
-		    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-			Obj = NODE;
-			emit_node(job, e->head);
-			Obj = EDGE;
-			emit_edge(job, e);
-		    }
-		}
-	    }
-	    /* when mapping, detect events on clusters after nodes and edges */
-	    if (flags & EMIT_CLUSTERS_LAST) {
-		emit_clusters(job, g, flags);
-	    }
-	    Obj = NONE;
-	    if (url) {
-		gvrender_end_anchor(job);
-		free(url);
-		url = NULL;
-		if (tooltip) {
-		    free(tooltip);
-		    tooltip = NULL;
-		}
-		if (target) {
-		    free(target);
-		    target = NULL;
-		}
-	    }
-	    gvrender_end_page(job);
-	} /* pages */
 	if (job->numLayers > 1)
 	    gvrender_end_layer(job);
-    } /* layers */
+    } 
     gvrender_end_graph(job);
 }
 
@@ -1307,10 +1296,10 @@ void emit_jobs_eof(GVC_t * gvc)
 
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
         if (job->output_file) {
-	    if (gvc->pageNum > 0) {
+	    if (gvc->viewNum > 0) {
 		gvrender_end_job(job);
 		emit_once_reset();
-		gvc->pageNum = 0;
+		gvc->viewNum = 0;
 	    }
             fclose(job->output_file);
             job->output_file = NULL;
@@ -1331,13 +1320,11 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
-	if (clust_in_layer(job->gvc, sg) == FALSE)
+	if (clust_in_layer(job, sg) == FALSE)
 	    continue;
 	/* when mapping, detect events on clusters after sub_clusters */
-	if (flags & EMIT_CLUSTERS_LAST) {
+	if (flags & EMIT_CLUSTERS_LAST)
 	    emit_clusters(job, sg, flags);
-	}
-	Obj = CLST;
 	gvrender_begin_cluster(job, sg);
 	if (((s = agget(sg, "href")) && s[0])
 	    || ((s = agget(sg, "URL")) && s[0])) {
@@ -1397,14 +1384,10 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 
 	if (flags & EMIT_PREORDER) {
 	    for (n = agfstnode(sg); n; n = agnxtnode(sg, n)) {
-		Obj = NODE;
 		emit_node(job, n);
-		for (e = agfstout(sg, n); e; e = agnxtout(sg, e)) {
-		    Obj = EDGE;
+		for (e = agfstout(sg, n); e; e = agnxtout(sg, e))
 		    emit_edge(job, e);
-		}
 	    }
-	    Obj = NONE;
 	}
 
 	gvrender_end_context(job);
@@ -1421,11 +1404,10 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		target = NULL;
 	    }
 	}
-	gvrender_end_cluster(job);
+	gvrender_end_cluster(job, g);
 	/* when drawing, lay down clusters before sub_clusters */
-	if (!(flags & EMIT_CLUSTERS_LAST)) {
+	if (!(flags & EMIT_CLUSTERS_LAST))
 	    emit_clusters(job, sg, flags);
-	}
     }
 }
 

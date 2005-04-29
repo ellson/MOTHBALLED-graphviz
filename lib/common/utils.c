@@ -611,6 +611,22 @@ boolean boxf_overlap(boxf b0, boxf b1)
     return TRUE;
 }
 
+boolean box_contains(box b0, box b1)
+{
+    if ((b0.UR.x >= b1.UR.x) && (b0.UR.y >= b1.UR.y)
+	&& (b0.LL.x <= b1.LL.x) && (b0.LL.y <= b1.LL.y))
+	return TRUE;
+    return FALSE;
+}
+
+boolean boxf_contains(boxf b0, boxf b1)
+{
+    if ((b0.UR.x >= b1.UR.x) && (b0.UR.y >= b1.UR.y)
+	&& (b0.LL.x <= b1.LL.x) && (b0.LL.y <= b1.LL.y))
+	return TRUE;
+    return FALSE;
+}
+
 int maptoken(char *p, char **name, int *val)
 {
     int i;

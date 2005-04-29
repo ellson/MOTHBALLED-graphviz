@@ -238,6 +238,8 @@ static void gvrender_resolve_color(gvrender_features_t * features,
     }
 }
 
+#define EPSILON .0001
+
 void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 {
     GVC_t *gvc = job->gvc;
@@ -245,6 +247,7 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     char *str;
     double sx, sy;
 
+    job->sg = g;  /* current subgraph/cluster */
     if (gvre) {
 	job->compscale.x = job->zoom * job->dpi / POINTS_PER_INCH;
 	job->compscale.y = job->compscale.x *
@@ -252,10 +255,10 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 
         sx = job->width / (job->zoom * 2.);
         sy = job->height / (job->zoom * 2.);
-	job->clip.UR.x = job->focus.x + sx;
-	job->clip.UR.y = job->focus.y + sy;
-	job->clip.LL.x = job->focus.x - sx;
-	job->clip.LL.y = job->focus.y - sy;
+	job->clip.UR.x = job->focus.x + sx + EPSILON;
+	job->clip.UR.y = job->focus.y + sy + EPSILON;
+	job->clip.LL.x = job->focus.x - sx - EPSILON;
+	job->clip.LL.y = job->focus.y - sy - EPSILON;
 
 	/* render specific init */
 	if (gvre->begin_graph)
@@ -315,6 +318,7 @@ void gvrender_end_graph(GVJ_t * job)
 	    cg->end_graph();
     }
 #endif
+    job->sg = NULL;
 }
 
 void gvrender_begin_page(GVJ_t * job)
@@ -389,6 +393,10 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 {
     gvrender_engine_t *gvre = job->render_engine;
 
+    job->sg = sg;  /* set current cluster graph object */
+#ifndef DISABLE_CODEGENS
+    Obj = CLST;
+#endif
     if (gvre && gvre->begin_cluster)
 	gvre->begin_cluster(job, sg->name, sg->meta_node->id);
 #ifndef DISABLE_CODEGENS
@@ -401,7 +409,7 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 #endif
 }
 
-void gvrender_end_cluster(GVJ_t * job)
+void gvrender_end_cluster(GVJ_t * job, graph_t *g)
 {
     gvrender_engine_t *gvre = job->render_engine;
 
@@ -414,7 +422,9 @@ void gvrender_end_cluster(GVJ_t * job)
 	if (cg && cg->end_cluster)
 	    cg->end_cluster();
     }
+    Obj = NONE;
 #endif
+    job->sg = g;  /* reset current cluster to parent graph or cluster */
 }
 
 void gvrender_begin_nodes(GVJ_t * job)
@@ -485,6 +495,10 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
 {
     gvrender_engine_t *gvre = job->render_engine;
 
+#ifndef DISABLE_CODEGENS
+    Obj = NODE;
+#endif
+    job->n = n; /* set current node */
     if (gvre && gvre->begin_node)
 	gvre->begin_node(job, n->name, n->id);
 #ifndef DISABLE_CODEGENS
@@ -510,13 +524,19 @@ void gvrender_end_node(GVJ_t * job)
 	if (cg && cg->end_node)
 	    cg->end_node();
     }
+    Obj = NONE;
 #endif
+    job->n = NULL; /* clear current node */
 }
 
 void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 {
     gvrender_engine_t *gvre = job->render_engine;
 
+#ifndef DISABLE_CODEGENS
+    Obj = EDGE;
+#endif
+    job->e = e; /* set current edge */
     if (gvre && gvre->begin_edge)
 	gvre->begin_edge(job, e->tail->name,
 			 e->tail->graph->root->kind & AGFLAG_DIRECTED,
@@ -544,7 +564,9 @@ void gvrender_end_edge(GVJ_t * job)
 	if (cg && cg->end_edge)
 	    cg->end_edge();
     }
+    Obj = NONE;
 #endif
+    job->e = NULL; /* clear current edge */
 }
 
 void gvrender_begin_context(GVJ_t * job)
