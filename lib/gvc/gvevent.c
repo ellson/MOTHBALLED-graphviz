@@ -69,13 +69,21 @@ static boolean inside_label(edge_t *e, pointf p)
     return INSIDE(p, bb);
 }
 
-static boolean inside_spline(splines *spl, pointf P, pointf p)
+static boolean inside_spline(edge_t *e, pointf P, pointf p)
 {
     int i, j, k;
     bezier bz;
     box bb;
     boxf bbf;
+    splines *spl;
     
+    spl = ED_spl(e);
+    if (spl == NULL)
+        return FALSE;
+    
+    if (! INSIDE(P, spl->bb))
+	return FALSE;
+
     for (i = 0; i < spl->size; i++) {
 	bz = spl->list[i];
 	for (j = 0; j < bz.size -1; j += 3) {
@@ -99,19 +107,13 @@ static boolean inside_spline(splines *spl, pointf P, pointf p)
 
 static boolean inside_edge(edge_t *e, pointf P, pointf p)
 {
-    splines *spl;
-    
-    spl = ED_spl(e);
-    if (spl == NULL)
-        return FALSE;
-    if (! INSIDE(P, spl->bb))
-        return FALSE;
-    if (inside_spline(spl, P, p))
+    if (inside_spline(e, P, p))
 	return TRUE;
 // FIXME
 //    if (inside_arrow(e))
 //	return TRUE;
-    return inside_label(e, p);
+
+    return inside_label(e, P);
 }
 
 static graph_t *gvevent_find_cluster(graph_t *g, pointf P)
