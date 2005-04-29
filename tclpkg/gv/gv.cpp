@@ -293,9 +293,11 @@ void layout(Agraph_t *g, char *engine)
 void writegraph(Agraph_t *g, char *filename, char *format)
 {
     int rc;
+    GVJ_t *job;
 
     g = g->root;
 
+    /* create a job for the required format */
     rc = gvrender_output_langname_job(gvc, format);
     if (rc == NO_SUPPORT) {
         fprintf(stderr, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
@@ -303,8 +305,9 @@ void writegraph(Agraph_t *g, char *filename, char *format)
         return;
     }
 
-    gvc->job->output_lang = gvrender_select(gvc->job, gvc->job->output_langname);
-    if (!GD_drawing(g) && gvc->job->output_lang != CANONICAL_DOT) {
+    job = gvc->job;
+    job->output_lang = gvrender_select(job, job->output_langname);
+    if (!GD_drawing(g) && job->output_lang != CANONICAL_DOT) {
         fprintf(stderr, "Layout was not done\n");
         return;
     }

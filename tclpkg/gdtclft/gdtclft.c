@@ -202,7 +202,7 @@ static cmdOptions subcmdVec[] = {
  * of text string, so the text command provides its own handle processing and checking
  */
     {"text", tclGdTextCmd, 8, 8, 0, 0,
-     "gdhandle color fontpathname size angle x y string"},
+     "gdhandle color fontname size angle x y string"},
 
 
     {"copy", tclGdCopyCmd, 8, 10, 0, 2,
@@ -1287,11 +1287,11 @@ static int
 tclGdTextCmd(Tcl_Interp * interp, GdData * gdData,
 	     int argc, Tcl_Obj * CONST objv[])
 {
-    /* gd gdhandle color fontpathname size angle x y string */
+    /* gd gdhandle color fontname size angle x y string */
     gdImagePtr im;
     int color, x, y;
     double ptsize, angle;
-    char *error, buf[32], *font, *handle;
+    char *error, buf[32], *fontname, *handle;
     int i, brect[8], len;
     char *str;
 
@@ -1328,10 +1328,10 @@ tclGdTextCmd(Tcl_Interp * interp, GdData * gdData,
     }
 
     str = Tcl_GetStringFromObj(objv[9], &len);
-    font = Tcl_GetString(objv[4]);
+    fontname = Tcl_GetString(objv[4]);
 
     error =
-	gdImageStringFT(im, brect, color, font, ptsize, angle, x, y, str);
+	gdImageStringFT(im, brect, color, fontname, ptsize, angle, x, y, str);
 
     if (error) {
 	Tcl_SetResult(interp, error, TCL_VOLATILE);

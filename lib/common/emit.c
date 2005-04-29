@@ -1635,7 +1635,6 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
 
     gvc->active_jobs = NULL;
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
-	job->gvc = gvc;
 	job->g = g;
 
         if (!job->output_file) {        /* if not yet opened */
