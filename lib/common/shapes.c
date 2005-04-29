@@ -297,6 +297,7 @@ static char **checkStyle(node_t * n, int *flagp)
 		istyle |= INVISIBLE;
 		pp++;
 	    }
+	    else pp++;
 	}
     }
     if ((poly = ND_shape(n)->polygon))
