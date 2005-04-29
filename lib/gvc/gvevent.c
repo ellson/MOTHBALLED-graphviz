@@ -37,20 +37,12 @@ void gvevent_refresh(GVJ_t * job)
     emit_graph(job, job->g);
 }
 
-static boolean inside_node_bb(node_t *n, pointf P)
-{
-    boxf bb;
-
-    bb.UR.x = ND_coord_i(n).x + ND_rw_i(n);
-    bb.UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
-    bb.LL.x = ND_coord_i(n).x - ND_lw_i(n);
-    bb.LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
-    return (INSIDE(P, bb));
-}
-
-static boolean inside_node(node_t *n, pointf p)
+static boolean inside_node(node_t *n, pointf P, pointf p)
 {
     inside_t ictxt;
+
+    if (! INSIDE(P, ND_bb(n)))
+	return FALSE;
 
     ictxt.s.n = n;
     ictxt.s.bp = NULL;
@@ -59,15 +51,33 @@ static boolean inside_node(node_t *n, pointf p)
     return TRUE;
 }
 
-static boolean inside_edge_bb(edge_t *e, pointf P)
+static boolean inside_label(edge_t *e, pointf p)
+{
+    textlabel_t *lp;
+    double sx, sy;
+    boxf bb;
+
+    lp = ED_label(e);
+    if (lp == NULL)
+        return FALSE;
+    sx = lp->dimen.x / 2.;
+    sy = lp->dimen.y / 2.;
+    bb.LL.x = lp->p.x - sx;
+    bb.UR.x = lp->p.x + sx;
+    bb.LL.y = lp->p.y - sy;
+    bb.UR.y = lp->p.y + sy;
+    return INSIDE(p, bb);
+}
+
+static boolean inside_spline(splines *spl, pointf P, pointf p)
 {
     int i, j, k;
     bezier bz;
-    boxf BB;
     box bb;
+    boxf bbf;
     
-    for (i = 0; i < ED_spl(e)->size; i++) {
-	bz = ED_spl(e)->list[i];
+    for (i = 0; i < spl->size; i++) {
+	bz = spl->list[i];
 	for (j = 0; j < bz.size -1; j += 3) {
 	    /* compute a bb for the bezier segment */
 	    bb.LL = bb.UR = bz.list[j];
@@ -77,17 +87,31 @@ static boolean inside_edge_bb(edge_t *e, pointf P)
 	        bb.UR.x = MAX(bb.UR.x,bz.list[k].x);
 	        bb.UR.y = MAX(bb.UR.y,bz.list[k].y);
 	    }
-	    B2BF(bb,BB);
-	    if (INSIDE(P,BB))
+	    B2BF(bb,bbf);
+	    if (INSIDE(P,bbf)) {
+		/* FIXME - check if really close enough to actual curve */
 		return TRUE;
+	    }
 	}
     }
     return FALSE;
 }
 
-static boolean inside_edge(edge_t *n, pointf p)
+static boolean inside_edge(edge_t *e, pointf P, pointf p)
 {
-    return TRUE;
+    splines *spl;
+    
+    spl = ED_spl(e);
+    if (spl == NULL)
+        return FALSE;
+    if (! INSIDE(P, spl->bb))
+        return FALSE;
+    if (inside_spline(spl, P, p))
+	return TRUE;
+// FIXME
+//    if (inside_arrow(e))
+//	return TRUE;
+    return inside_label(e, p);
 }
 
 static graph_t *gvevent_find_cluster(graph_t *g, pointf P)
@@ -107,34 +131,22 @@ static graph_t *gvevent_find_cluster(graph_t *g, pointf P)
     return NULL;
 }
 
-static void * gvevent_find_obj(GVJ_t * job, pointf p)
+static void * gvevent_find_obj(graph_t *g, pointf P, pointf p)
 {
-    graph_t *sg, *g = job->g;
+    graph_t *sg;
     node_t *n;
     edge_t *e;
-    pointf P; /* point in graph coordinates */
 
-    /* convert point to graph coordinates */
-    if (job->rotation) {
-	P.x = job->focus.y - (p.y - job->height / 2.) / job->compscale.x;
-	P.y = (p.x - job->width / 2.) / job->compscale.y + job->focus.x;
-    }
-    else {
-	P.x = (p.x - job->width / 2.) / job->compscale.x + job->focus.x;
-	P.y = (p.y - job->height / 2.) / job->compscale.y + job->focus.y;
-    }
-
-    /* search graph backwards to get topmost node, in case of overlap */
-    for (n = aglstnode(g); n; n = agprvnode(g, n)) {
-	if (inside_node_bb(n, P) && inside_node(n, p))
-	    return (void *)n;
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    if (inside_edge_bb(e, P) && inside_edge(e, p))
+    /* edges might overlap nodes, so search them first */
+    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	for (e = agfstout(g, n); e; e = agnxtout(g, e))
+	    if (inside_edge(e, P, p))
 	        return (void *)e;
-	}
-    }
-    /* no node or edge found, so
-    	search for innermost cluster */
+    /* search graph backwards to get topmost node, in case of overlap */
+    for (n = aglstnode(g); n; n = agprvnode(g, n))
+	if (inside_node(n, P, p))
+	    return (void *)n;
+    /* search for innermost cluster */
     sg = gvevent_find_cluster(g, P);
     if (sg)
 	return (void *)sg;
@@ -146,11 +158,22 @@ static void * gvevent_find_obj(GVJ_t * job, pointf p)
 static void gvevent_find_current_obj(GVJ_t * job, double x, double y)
 {
     void *obj;
-    pointf p;
+    pointf p, P;
 
     p.x = x;
     p.y = y;
-    obj = gvevent_find_obj(job, p);
+
+    /* convert point to graph coordinates */
+    if (job->rotation) {
+	P.x = job->focus.y - (p.y - job->height / 2.) / job->compscale.x;
+	P.y = (p.x - job->width / 2.) / job->compscale.y + job->focus.x;
+    }
+    else {
+	P.x = (p.x - job->width / 2.) / job->compscale.x + job->focus.x;
+	P.y = (p.y - job->height / 2.) / job->compscale.y + job->focus.y;
+    }
+
+    obj = gvevent_find_obj(job->g, P, p);
     if (obj != job->current_obj) {
 	job->current_obj = obj;
 fprintf(stderr,"obj=%x kind=%d\n",obj,agobjkind(obj));

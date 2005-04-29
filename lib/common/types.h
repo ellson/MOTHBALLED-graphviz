@@ -111,6 +111,7 @@ extern "C" {
     typedef struct splines {
 	bezier *list;
 	int size;
+	boxf bb;
     } splines;
 
 /* fp variants */
@@ -447,6 +448,7 @@ extern "C" {
 	void *shape_info;
 	point coord;
 	double width, height;
+	boxf bb;
 	int ht, lw, rw;
 	textlabel_t *label;
 	void *alg;
@@ -493,6 +495,7 @@ extern "C" {
 #define ND_UF_parent(n) (n)->u.UF_parent
 #define ND_UF_size(n) (n)->u.UF_size
 #define ND_alg(n) (n)->u.alg
+#define ND_bb(n) (n)->u.bb
 #define ND_clust(n) (n)->u.clust
 #define ND_coord_i(n) (n)->u.coord
 #define ND_dist(n) (n)->u.dist

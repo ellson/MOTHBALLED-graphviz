@@ -40,11 +40,14 @@ extern "C" {
 						pointf p), pointf * sp,
 			    boolean left_inside);
     extern shape_desc *bind_shape(char *name, node_t *);
-    extern box boxof(int, int, int, int);
+    extern box boxof(int llx, int lly, int urx, int ury);
+    extern boxf boxfof(double llx, double lly, double urx, double ury);
+    extern box box_bb(box, box);
+    extern boxf boxf_bb(boxf, boxf);
+    extern box box_intersect(box, box);
+    extern boxf boxf_intersect(boxf, boxf);
     extern boolean box_overlap(box, box);
     extern boolean boxf_overlap(boxf, boxf);
-    extern boolean box_contains(box, box);
-    extern boolean boxf_contains(boxf, boxf);
     extern void cat_libfile(FILE *, char **, char **);
     extern void clip_and_install(edge_t *, edge_t *, point *, int,
 				 splineInfo *);

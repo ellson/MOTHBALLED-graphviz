@@ -270,6 +270,15 @@ box boxof(int llx, int lly, int urx, int ury)
     return b;
 }
 
+boxf boxfof(double llx, double lly, double urx, double ury)
+{
+    boxf b;
+
+    b.LL.x = llx, b.LL.y = lly;
+    b.UR.x = urx, b.UR.y = ury;
+    return b;
+}
+
 box mkbox(point p0, point p1)
 {
     box rv;
@@ -595,6 +604,54 @@ void cat_libfile(FILE * ofp, char **arglib, char **stdlib)
     }
 }
 
+box box_bb(box b0, box b1)
+{
+    box b;
+
+    b.LL.x = MIN(b0.LL.x, b1.LL.x);
+    b.LL.y = MIN(b0.LL.y, b1.LL.y);
+    b.UR.x = MAX(b0.UR.x, b1.UR.x);
+    b.UR.y = MAX(b0.UR.y, b1.UR.y);
+
+    return b;
+}
+
+boxf boxf_bb(boxf b0, boxf b1)
+{
+    boxf b;
+
+    b.LL.x = MIN(b0.LL.x, b1.LL.x);
+    b.LL.y = MIN(b0.LL.y, b1.LL.y);
+    b.UR.x = MAX(b0.UR.x, b1.UR.x);
+    b.UR.y = MAX(b0.UR.y, b1.UR.y);
+
+    return b;
+}
+
+box box_intersect(box b0, box b1)
+{
+    box b;
+
+    b.LL.x = MAX(b0.LL.x, b1.LL.x);
+    b.LL.y = MAX(b0.LL.y, b1.LL.y);
+    b.UR.x = MIN(b0.UR.x, b1.UR.x);
+    b.UR.y = MIN(b0.UR.y, b1.UR.y);
+
+    return b;
+}
+
+boxf boxf_intersect(boxf b0, boxf b1)
+{
+    boxf b;
+
+    b.LL.x = MAX(b0.LL.x, b1.LL.x);
+    b.LL.y = MAX(b0.LL.y, b1.LL.y);
+    b.UR.x = MIN(b0.UR.x, b1.UR.x);
+    b.UR.y = MIN(b0.UR.y, b1.UR.y);
+
+    return b;
+}
+
 boolean box_overlap(box b0, box b1)
 {
     if ((b0.UR.x < b1.LL.x) || (b1.UR.x < b0.LL.x)
@@ -611,15 +668,7 @@ boolean boxf_overlap(boxf b0, boxf b1)
     return TRUE;
 }
 
-boolean box_contains(box b0, box b1)
-{
-    if ((b0.UR.x >= b1.UR.x) && (b0.UR.y >= b1.UR.y)
-	&& (b0.LL.x <= b1.LL.x) && (b0.LL.y <= b1.LL.y))
-	return TRUE;
-    return FALSE;
-}
-
-boolean boxf_contains(boxf b0, boxf b1)
+boolean boxf_contains_p(boxf b0, boxf b1)
 {
     if ((b0.UR.x >= b1.UR.x) && (b0.UR.y >= b1.UR.y)
 	&& (b0.LL.x <= b1.LL.x) && (b0.LL.y <= b1.LL.y))

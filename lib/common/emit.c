@@ -429,16 +429,7 @@ fprintf(stderr,"pagesArrayElem = %d,%d pageSize = %g,%g pageOffset = %g,%g\n",
 
 static boolean node_in_view(GVJ_t *job, node_t * n)
 {
-    boxf b;
-
-    if (boxf_contains(job->clip, job->pageBox) && job->numPages == 1)
-	return TRUE;
-    b.LL.x = ND_coord_i(n).x - ND_lw_i(n);
-    b.LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
-    b.UR.x = ND_coord_i(n).x + ND_rw_i(n);
-    b.UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
-
-    return boxf_overlap(job->pageBoxClip, b);
+    return boxf_overlap(job->pageBoxClip, ND_bb(n));
 }
 
 static boolean is_natural_number(char *sstr)
@@ -684,13 +675,15 @@ static boolean edge_in_view(GVJ_t *job, edge_t * e)
     double sx, sy;
     boxf b;
     textlabel_t *lp;
+    splines *spl;
 
-    if (boxf_contains(job->clip, job->pageBox) && job->numPages == 1)
-	return TRUE;
-    if (ED_spl(e) == NULL)
+    spl = ED_spl(e);
+    if (spl == NULL)
 	return FALSE;
-    for (i = 0; i < ED_spl(e)->size; i++) {
-	bz = ED_spl(e)->list[i];
+    if (! boxf_overlap(job->pageBoxClip, spl->bb))
+	return FALSE;
+    for (i = 0; i < spl->size; i++) {
+	bz = spl->list[i];
 	np = bz.size;
 	p = bz.list;
 	P2PF(p[0],pp);
@@ -1124,7 +1117,7 @@ static void emit_colors(GVJ_t * job, graph_t * g)
     }
 }
 
-static void emit_view(GVJ_t * job, graph_t * g, int flags)
+void emit_view(GVJ_t * job, graph_t * g, int flags)
 {
     GVC_t * gvc = job->gvc;
     node_t *n;
@@ -1607,6 +1600,58 @@ static FILE *file_select(char *str)
     return rv;
 }
 
+static void init_bb_node(node_t *n)
+{
+    ND_bb(n).LL.x = ND_coord_i(n).x - ND_lw_i(n);
+    ND_bb(n).LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
+    ND_bb(n).UR.x = ND_coord_i(n).x + ND_rw_i(n);
+    ND_bb(n).UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
+}
+
+static void init_bb_spl(splines *spl)
+{
+    int i, j;
+    bezier bz;
+    box bb;
+    boxf bbf;
+
+    for (i = 0; i < spl->size; i++) {
+	bz = spl->list[i];
+	bb.UR = bb.LL = bz.list[0];
+	for (j = 1; j < bz.size; j++) {
+	    bb.LL.x = MIN(bb.LL.x, bz.list[j].x);
+	    bb.LL.y = MIN(bb.LL.y, bz.list[j].y);
+	    bb.UR.x = MAX(bb.UR.x, bz.list[j].x);
+	    bb.UR.y = MAX(bb.UR.y, bz.list[j].y);
+	}
+	B2BF(bb, bbf);
+	if (i == 0)
+	    spl->bb = bbf;
+	else {
+	    spl->bb.LL.x = MIN(spl->bb.LL.x, bbf.LL.x);
+	    spl->bb.LL.y = MIN(spl->bb.LL.y, bbf.LL.y);
+	    spl->bb.UR.x = MAX(spl->bb.UR.x, bbf.UR.x);
+	    spl->bb.UR.y = MAX(spl->bb.UR.y, bbf.UR.y);
+	}
+    }
+}
+
+static void init_bb(graph_t *g)
+{
+    node_t *n;
+    edge_t *e;
+    splines *spl;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	init_bb_node(n);
+        for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    spl = ED_spl(e);
+	    if (spl)
+		init_bb_spl(spl);
+	}
+    }
+}
+
 void emit_jobs (GVC_t * gvc, graph_t * g)
 {
     GVJ_t *job;
@@ -1614,6 +1659,7 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
 
     init_gvc_from_graph(gvc, g);
     init_layering(gvc, g);
+    init_bb(g);
 
     gvc->active_jobs = NULL;
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
