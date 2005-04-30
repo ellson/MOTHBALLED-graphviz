@@ -48,6 +48,8 @@ extern "C" {
     extern boxf boxf_intersect(boxf, boxf);
     extern boolean box_overlap(box, box);
     extern boolean boxf_overlap(boxf, boxf);
+    extern boolean box_contains(box, box);
+    extern boolean boxf_contains(boxf, boxf);
     extern void cat_libfile(FILE *, char **, char **);
     extern void clip_and_install(edge_t *, edge_t *, point *, int,
 				 splineInfo *);

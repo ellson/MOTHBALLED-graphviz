@@ -37,11 +37,13 @@ void gvevent_refresh(GVJ_t * job)
     emit_graph(job, job->g);
 }
 
-static boolean inside_node(node_t *n, pointf p)
+static boolean inside_node(node_t *n, boxf b)
 {
+    boxf bb;
 //    inside_t ictxt;
 
-    if (! INSIDE(p, ND_bb(n)))
+    bb = ND_bb(n);
+    if (! OVERLAP(b, bb))
 	return FALSE;
 
 //    ictxt.s.n = n;
@@ -51,7 +53,7 @@ static boolean inside_node(node_t *n, pointf p)
     return TRUE;
 }
 
-static boolean inside_label(edge_t *e, pointf p)
+static boolean inside_label(edge_t *e, boxf b)
 {
     textlabel_t *lp;
     double sx, sy;
@@ -66,10 +68,10 @@ static boolean inside_label(edge_t *e, pointf p)
     bb.UR.x = lp->p.x + sx;
     bb.LL.y = lp->p.y - sy;
     bb.UR.y = lp->p.y + sy;
-    return INSIDE(p, bb);
+    return OVERLAP(b, bb);
 }
 
-static boolean inside_spline(edge_t *e, pointf p)
+static boolean inside_spline(edge_t *e, boxf b)
 {
     int i, j, k;
     bezier bz;
@@ -80,8 +82,9 @@ static boolean inside_spline(edge_t *e, pointf p)
     spl = ED_spl(e);
     if (spl == NULL)
         return FALSE;
-    
-    if (! INSIDE(p, spl->bb))
+
+    bbf = spl->bb;
+    if (! OVERLAP(b, bbf))
 	return FALSE;
 
     for (i = 0; i < spl->size; i++) {
@@ -95,8 +98,8 @@ static boolean inside_spline(edge_t *e, pointf p)
 	        bb.UR.x = MAX(bb.UR.x,bz.list[k].x);
 	        bb.UR.y = MAX(bb.UR.y,bz.list[k].y);
 	    }
-	    B2BF(bb,bbf);
-	    if (INSIDE(p,bbf)) {
+	    B2BF(bb, bbf);
+	    if (OVERLAP(b, bbf)) {
 		/* FIXME - check if really close enough to actual curve */
 		return TRUE;
 	    }
@@ -105,36 +108,36 @@ static boolean inside_spline(edge_t *e, pointf p)
     return FALSE;
 }
 
-static boolean inside_edge(edge_t *e, pointf p)
+static boolean inside_edge(edge_t *e, boxf b)
 {
-    if (inside_spline(e, p))
+    if (inside_spline(e, b))
 	return TRUE;
 // FIXME
 //    if (inside_arrow(e))
 //	return TRUE;
 
-    return inside_label(e, p);
+    return inside_label(e, b);
 }
 
 /* recursively find innermost cluster containing the point */
-static graph_t *gvevent_find_cluster(graph_t *g, pointf p)
+static graph_t *gvevent_find_cluster(graph_t *g, boxf b)
 {
     int i;
     graph_t *sg;
     boxf bb;
 
     for (i = 1; i <= GD_n_cluster(g); i++) {
-	sg = gvevent_find_cluster(GD_clust(g)[i], p);
+	sg = gvevent_find_cluster(GD_clust(g)[i], b);
 	if (sg)
 	    return(sg);
     }
     B2BF(GD_bb(g), bb);
-    if (INSIDE(p, bb))
+    if (OVERLAP(b, bb))
 	return g;
     return NULL;
 }
 
-static void * gvevent_find_obj(graph_t *g, pointf p)
+static void * gvevent_find_obj(graph_t *g, boxf b)
 {
     graph_t *sg;
     node_t *n;
@@ -143,14 +146,14 @@ static void * gvevent_find_obj(graph_t *g, pointf p)
     /* edges might overlap nodes, so search them first */
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	for (e = agfstout(g, n); e; e = agnxtout(g, e))
-	    if (inside_edge(e, p))
+	    if (inside_edge(e, b))
 	        return (void *)e;
     /* search graph backwards to get topmost node, in case of overlap */
     for (n = aglstnode(g); n; n = agprvnode(g, n))
-	if (inside_node(n, p))
+	if (inside_node(n, b))
 	    return (void *)n;
     /* search for innermost cluster */
-    sg = gvevent_find_cluster(g, p);
+    sg = gvevent_find_cluster(g, b);
     if (sg)
 	return (void *)sg;
 
@@ -158,10 +161,15 @@ static void * gvevent_find_obj(graph_t *g, pointf p)
     return (void *)g;
 }
 
+/* CLOSEENOUGH is in window units - probably should be a feature... */
+#define CLOSEENOUGH 1
+
 static void gvevent_find_current_obj(GVJ_t * job, double x, double y)
 {
     void *obj;
     pointf p;
+    boxf b;
+    double closeenough;
 
     /* convert window point to graph coordinates */
     if (job->rotation) {
@@ -172,8 +180,14 @@ static void gvevent_find_current_obj(GVJ_t * job, double x, double y)
 	p.x = job->focus.x + (x - job->width / 2.) / job->compscale.x;
 	p.y = job->focus.y + (y - job->height / 2.) / job->compscale.y;
     }
+    closeenough = CLOSEENOUGH / job->compscale.x;
 
-    obj = gvevent_find_obj(job->g, p);
+    b.UR.x = p.x + closeenough;
+    b.UR.y = p.y + closeenough;
+    b.LL.x = p.x - closeenough;
+    b.LL.y = p.y - closeenough;
+
+    obj = gvevent_find_obj(job->g, b);
     if (obj != job->current_obj) {
 	job->current_obj = obj;
 fprintf(stderr,"obj=%x kind=%d\n",obj,agobjkind(obj));

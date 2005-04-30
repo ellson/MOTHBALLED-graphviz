@@ -83,7 +83,9 @@
 #undef BETWEEN
 #endif
 #define BETWEEN(a,b,c)	(((a) <= (b)) && ((b) <= (c)))
-#define INSIDE(p,b)	(BETWEEN(b.LL.x,p.x,b.UR.x) && BETWEEN(b.LL.y,p.y,b.UR.y))
+#define INSIDE(p,b)	(BETWEEN((b).LL.x,(p).x,(b).UR.x) && BETWEEN((b).LL.y,(p).y,(b).UR.y))
+#define OVERLAP(b0,b1)	(((b0).UR.x >= (b1).LL.x) && ((b1).UR.x >= (b0).LL.x) && ((b0).UR.y >= (b1).LL.y) && ((b1).UR.y >= (b0).LL.y))
+#define CONTAINS(b0,b1)	(((b0).UR.x >= (b1).UR.x) && ((b0).UR.y >= (b1).UR.y) && ((b0).LL.x <= (b1).LL.x) && ((b0).LL.y <= (b1).LL.y))
 
 #define ROUND(f)        ((f>=0)?(int)(f + .5):(int)(f - .5))
 #define RADIANS(deg)	((deg)/180.0 * PI)
