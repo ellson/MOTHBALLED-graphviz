@@ -552,6 +552,11 @@ static boolean clust_in_layer(GVJ_t *job, graph_t * sg)
     return FALSE;
 }
 
+static boolean node_in_box(node_t *n, boxf b)
+{
+    return boxf_overlap(ND_bb(n), b);
+}
+
 static void emit_node(GVJ_t * job, node_t * n)
 {
     GVC_t *gvc = job->gvc;
@@ -561,7 +566,7 @@ static void emit_node(GVJ_t * job, node_t * n)
 	return;
 
     if (node_in_layer(job, n->graph, n)
-	    && overlap_node(n, job->pageBoxClip)
+	    && node_in_box(n, job->pageBoxClip)
 	    && (ND_state(n) != gvc->viewNum)) {
 
         gvrender_comment(job, n->name);
@@ -834,12 +839,28 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	gvrender_end_context(job);
 }
 
+static boolean edge_in_box(edge_t *e, boxf b)
+{
+    splines *spl;
+    textlabel_t *lp;
+
+    spl = ED_spl(e);
+    if (spl && boxf_overlap(spl->bb, b))
+        return TRUE;
+
+    lp = ED_label(e);
+    if (lp && overlap_label(lp, b))
+        return TRUE;
+
+    return FALSE;
+}
+
 static void emit_edge(GVJ_t * job, edge_t * e)
 {
     char *s, *url = NULL, *label = NULL, *tooltip = NULL, *target = NULL;
     textlabel_t *lab = NULL;
 
-    if (! overlap_edge(e, job->pageBoxClip)
+    if (! edge_in_box(e, job->pageBoxClip)
 	|| ! edge_in_layer(job, e->head->graph, e))
 		return;
 

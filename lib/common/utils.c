@@ -1903,7 +1903,7 @@ boolean overlap_node(node_t *n, boxf b)
     return TRUE;
 }
 
-static boolean overlap_label(textlabel_t *lp, boxf b)
+boolean overlap_label(textlabel_t *lp, boxf b)
 {
     double sx, sy;
     boxf bb;
@@ -1958,8 +1958,8 @@ boolean overlap_edge(edge_t *e, boxf b)
     }
 
     lp = ED_label(e);
-        if (lp && overlap_label(lp, b))
-            return TRUE;
+    if (lp && overlap_label(lp, b))
+        return TRUE;
 
     return FALSE;
 }

@@ -154,6 +154,7 @@ extern "C" {
     extern void osize_label(textlabel_t *, int *, int *, int *, int *);
     extern boolean overlap_edge(edge_t *e, boxf b);
     extern boolean overlap_node(node_t *n, boxf b);
+    extern boolean overlap_label(textlabel_t *lp, boxf b);
     extern char **parse_style(char *s);
     extern void place_graph_label(Agraph_t *);
     extern void place_portlabel(edge_t * e, boolean head_p);
