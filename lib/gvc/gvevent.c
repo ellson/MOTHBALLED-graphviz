@@ -37,88 +37,6 @@ void gvevent_refresh(GVJ_t * job)
     emit_graph(job, job->g);
 }
 
-static boolean inside_node(node_t *n, boxf b)
-{
-    boxf bb;
-//    inside_t ictxt;
-
-    bb = ND_bb(n);
-    if (! OVERLAP(b, bb))
-	return FALSE;
-
-//    ictxt.s.n = n;
-//    ictxt.s.bp = NULL;
-
-//    return ND_shape(n)->fns->insidefn(&ictxt, p);
-    return TRUE;
-}
-
-static boolean inside_label(edge_t *e, boxf b)
-{
-    textlabel_t *lp;
-    double sx, sy;
-    boxf bb;
-
-    lp = ED_label(e);
-    if (lp == NULL)
-        return FALSE;
-    sx = lp->dimen.x / 2.;
-    sy = lp->dimen.y / 2.;
-    bb.LL.x = lp->p.x - sx;
-    bb.UR.x = lp->p.x + sx;
-    bb.LL.y = lp->p.y - sy;
-    bb.UR.y = lp->p.y + sy;
-    return OVERLAP(b, bb);
-}
-
-static boolean inside_spline(edge_t *e, boxf b)
-{
-    int i, j, k;
-    bezier bz;
-    box bb;
-    boxf bbf;
-    splines *spl;
-    
-    spl = ED_spl(e);
-    if (spl == NULL)
-        return FALSE;
-
-    bbf = spl->bb;
-    if (! OVERLAP(b, bbf))
-	return FALSE;
-
-    for (i = 0; i < spl->size; i++) {
-	bz = spl->list[i];
-	for (j = 0; j < bz.size -1; j += 3) {
-	    /* compute a bb for the bezier segment */
-	    bb.LL = bb.UR = bz.list[j];
-	    for (k = j+1; k < j+4; k++) {
-	        bb.LL.x = MIN(bb.LL.x,bz.list[k].x);
-	        bb.LL.y = MIN(bb.LL.y,bz.list[k].y);
-	        bb.UR.x = MAX(bb.UR.x,bz.list[k].x);
-	        bb.UR.y = MAX(bb.UR.y,bz.list[k].y);
-	    }
-	    B2BF(bb, bbf);
-	    if (OVERLAP(b, bbf)) {
-		/* FIXME - check if really close enough to actual curve */
-		return TRUE;
-	    }
-	}
-    }
-    return FALSE;
-}
-
-static boolean inside_edge(edge_t *e, boxf b)
-{
-    if (inside_spline(e, b))
-	return TRUE;
-// FIXME
-//    if (inside_arrow(e))
-//	return TRUE;
-
-    return inside_label(e, b);
-}
-
 /* recursively find innermost cluster containing the point */
 static graph_t *gvevent_find_cluster(graph_t *g, boxf b)
 {
@@ -146,11 +64,11 @@ static void * gvevent_find_obj(graph_t *g, boxf b)
     /* edges might overlap nodes, so search them first */
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	for (e = agfstout(g, n); e; e = agnxtout(g, e))
-	    if (inside_edge(e, b))
+	    if (overlap_edge(e, b))
 	        return (void *)e;
     /* search graph backwards to get topmost node, in case of overlap */
     for (n = aglstnode(g); n; n = agprvnode(g, n))
-	if (inside_node(n, b))
+	if (overlap_node(n, b))
 	    return (void *)n;
     /* search for innermost cluster */
     sg = gvevent_find_cluster(g, b);

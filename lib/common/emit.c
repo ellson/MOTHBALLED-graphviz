@@ -427,11 +427,6 @@ fprintf(stderr,"pagesArrayElem = %d,%d pageSize = %g,%g pageOffset = %g,%g\n",
     emit_defaults(job);
 }
 
-static boolean node_in_view(GVJ_t *job, node_t * n)
-{
-    return boxf_overlap(job->pageBoxClip, ND_bb(n));
-}
-
 static boolean is_natural_number(char *sstr)
 {
     unsigned char *str = (unsigned char *) sstr;
@@ -566,7 +561,7 @@ static void emit_node(GVJ_t * job, node_t * n)
 	return;
 
     if (node_in_layer(job, n->graph, n)
-	    && node_in_view(job, n)
+	    && overlap_node(n, job->pageBoxClip)
 	    && (ND_state(n) != gvc->viewNum)) {
 
         gvrender_comment(job, n->name);
@@ -664,46 +659,6 @@ static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
      */
     gvrender_set_pencolor(job, lp->fontcolor);
     gvrender_polyline(job, A, 3);
-}
-
-static boolean edge_in_view(GVJ_t *job, edge_t * e)
-{
-    int i, j, np;
-    bezier bz;
-    point *p;
-    pointf pp, pn;
-    double sx, sy;
-    boxf b;
-    textlabel_t *lp;
-    splines *spl;
-
-    spl = ED_spl(e);
-    if (spl == NULL)
-	return FALSE;
-    if (! boxf_overlap(job->pageBoxClip, spl->bb))
-	return FALSE;
-    for (i = 0; i < spl->size; i++) {
-	bz = spl->list[i];
-	np = bz.size;
-	p = bz.list;
-	P2PF(p[0],pp);
-	for (j = 0; j < np; j++) {
-	    P2PF(p[j],pn);
-	    b = mkboxf(pp, pn);
-	    if (boxf_overlap(job->pageBoxClip, b))
-		return TRUE;
-	    pp = pn;
-	}
-    }
-    if ((lp = ED_label(e)) == NULL)
-	return FALSE;
-    sx = lp->dimen.x / 2.;
-    sy = lp->dimen.y / 2.;
-    b.LL.x = lp->p.x - sx;
-    b.UR.x = lp->p.x + sx;
-    b.LL.y = lp->p.y - sy;
-    b.UR.y = lp->p.y + sy;
-    return boxf_overlap(job->pageBoxClip, b);
 }
 
 void emit_edge_graphics(GVJ_t * job, edge_t * e)
@@ -884,8 +839,9 @@ static void emit_edge(GVJ_t * job, edge_t * e)
     char *s, *url = NULL, *label = NULL, *tooltip = NULL, *target = NULL;
     textlabel_t *lab = NULL;
 
-    if (! edge_in_view(job, e) || ! edge_in_layer(job, e->head->graph, e))
-	return;
+    if (! overlap_edge(e, job->pageBoxClip)
+	|| ! edge_in_layer(job, e->head->graph, e))
+		return;
 
     s = malloc(strlen(e->tail->name) + 2 + strlen(e->head->name) + 1);
     strcpy(s,e->tail->name);
@@ -1608,46 +1564,61 @@ static void init_bb_node(node_t *n)
     ND_bb(n).UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
 }
 
-static void init_bb_spl(splines *spl)
+static box bezier_bb(bezier bz)
 {
-    int i, j;
-    bezier bz;
+    int i;
     box bb;
-    boxf bbf;
 
-    for (i = 0; i < spl->size; i++) {
-	bz = spl->list[i];
-	bb.UR = bb.LL = bz.list[0];
-	for (j = 1; j < bz.size; j++) {
-	    bb.LL.x = MIN(bb.LL.x, bz.list[j].x);
-	    bb.LL.y = MIN(bb.LL.y, bz.list[j].y);
-	    bb.UR.x = MAX(bb.UR.x, bz.list[j].x);
-	    bb.UR.y = MAX(bb.UR.y, bz.list[j].y);
-	}
-	B2BF(bb, bbf);
-	if (i == 0)
-	    spl->bb = bbf;
-	else {
-	    spl->bb.LL.x = MIN(spl->bb.LL.x, bbf.LL.x);
-	    spl->bb.LL.y = MIN(spl->bb.LL.y, bbf.LL.y);
-	    spl->bb.UR.x = MAX(spl->bb.UR.x, bbf.UR.x);
-	    spl->bb.UR.y = MAX(spl->bb.UR.y, bbf.UR.y);
-	}
+    assert(bz.size > 0);
+    bb.LL = bb.UR = bz.list[0];
+    for (i = 1; i < bz.size; i++) {
+	bb.LL.x = MIN(bb.LL.x, bz.list[i].x);
+	bb.LL.y = MIN(bb.LL.y, bz.list[i].y);
+	bb.UR.x = MAX(bb.UR.x, bz.list[i].x);
+	bb.UR.y = MAX(bb.UR.y, bz.list[i].y);
     }
+    return bb;
+}
+
+static void init_splines_bb(splines *spl)
+{
+    int i;
+    box bb, b;
+
+    assert(spl->size > 0);
+    bb = bezier_bb(spl->list[0]);
+    for (i = 1; i < spl->size; i++) {
+        b = bezier_bb(spl->list[0]);
+	bb.LL.x = MIN(bb.LL.x, b.LL.x);
+	bb.LL.y = MIN(bb.LL.y, b.LL.y);
+	bb.UR.x = MAX(bb.UR.x, b.UR.x);
+	bb.UR.y = MAX(bb.UR.y, b.UR.y);
+    }
+    B2BF(bb,spl->bb);
+}
+
+static void init_bb_edge(edge_t *e)
+{
+    splines *spl;
+
+    spl = ED_spl(e);
+    if (spl)
+	init_splines_bb(spl);
+
+//    lp = ED_label(e);
+//    if (lp)
+//        {}
 }
 
 static void init_bb(graph_t *g)
 {
     node_t *n;
     edge_t *e;
-    splines *spl;
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	init_bb_node(n);
         for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    spl = ED_spl(e);
-	    if (spl)
-		init_bb_spl(spl);
+	    init_bb_edge(e);
 	}
     }
 }

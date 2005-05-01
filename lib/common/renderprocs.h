@@ -27,6 +27,8 @@ extern "C" {
     extern point add_points(point, point);
     extern pointf add_pointfs(pointf, pointf);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
+    extern boxf arrow_bb(GVJ_t * job, pointf p, pointf u, double scale,
+			  int flag);
     extern void arrow_gen(GVJ_t * job, point p, point u, double scale,
 			  int flag);
     extern double arrow_length(edge_t * e, int flag);
@@ -150,6 +152,8 @@ extern "C" {
     extern nodequeue *new_queue(int);
     extern Agraph_t *next_input_graph(void);
     extern void osize_label(textlabel_t *, int *, int *, int *, int *);
+    extern boolean overlap_edge(edge_t *e, boxf b);
+    extern boolean overlap_node(node_t *n, boxf b);
     extern char **parse_style(char *s);
     extern void place_graph_label(Agraph_t *);
     extern void place_portlabel(edge_t * e, boolean head_p);

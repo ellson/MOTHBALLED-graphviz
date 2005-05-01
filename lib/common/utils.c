@@ -1887,3 +1887,81 @@ utf8ToLatin1 (char* s)
     return ns;
 }
 
+boolean overlap_node(node_t *n, boxf b)
+{
+    boxf bb;
+//    inside_t ictxt;
+
+    bb = ND_bb(n);
+    if (! OVERLAP(b, bb))
+        return FALSE;
+
+//    ictxt.s.n = n;
+//    ictxt.s.bp = NULL;
+
+//    return ND_shape(n)->fns->insidefn(&ictxt, p);
+    return TRUE;
+}
+
+static boolean overlap_label(textlabel_t *lp, boxf b)
+{
+    double sx, sy;
+    boxf bb;
+
+    sx = lp->dimen.x / 2.;
+    sy = lp->dimen.y / 2.;
+    bb.LL.x = lp->p.x - sx;
+    bb.UR.x = lp->p.x + sx;
+    bb.LL.y = lp->p.y - sy;
+    bb.UR.y = lp->p.y + sy;
+    return OVERLAP(b, bb);
+}
+
+static boolean overlap_bezier(bezier bz, boxf b)
+{
+    int i, j;
+    box bb;
+    boxf bbf;
+
+    for (i = 0; i < bz.size -1; i += 3) {
+        /* compute a bb for the bezier segment */
+        bb.LL = bb.UR = bz.list[i];
+        for (j = i+1; j < i+4; j++) {
+            bb.LL.x = MIN(bb.LL.x,bz.list[j].x);
+            bb.LL.y = MIN(bb.LL.y,bz.list[j].y);
+            bb.UR.x = MAX(bb.UR.x,bz.list[j].x);
+            bb.UR.y = MAX(bb.UR.y,bz.list[j].y);
+        }
+        B2BF(bb, bbf);
+        if (OVERLAP(b, bbf)) {
+            /* FIXME - check if really close enough to actual curve */
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+boolean overlap_edge(edge_t *e, boxf b)
+{
+    int i;
+    splines *spl;
+    textlabel_t *lp;
+
+    spl = ED_spl(e);
+    if (spl && boxf_overlap(spl->bb, b)) {
+        for (i = 0; i < spl->size; i++)
+            if (overlap_bezier(spl->list[i], b))
+                return TRUE;
+
+//      if (inside_arrow(e))
+//          return TRUE;
+    }
+
+    lp = ED_label(e);
+        if (lp && overlap_label(lp, b))
+            return TRUE;
+
+    return FALSE;
+}
+
+

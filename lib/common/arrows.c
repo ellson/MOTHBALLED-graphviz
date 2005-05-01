@@ -510,6 +510,44 @@ static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, int flag)
     return p;
 }
 
+boxf arrow_bb(GVJ_t * job, pointf p, pointf u, double scale, int flag)
+{
+    double s;
+    boxf bb;
+    double ax,ay,bx,by,cx,cy,dx,dy;
+    double ux2, uy2;
+
+    /* generate arrowhead vector */
+    u.x -= p.x;
+    u.y -= p.y;
+    /* the EPSILONs are to keep this stable as length of u approaches 0.0 */
+    s = ARROW_LENGTH * scale / (sqrt(u.x * u.x + u.y * u.y) + EPSILON);
+    u.x += (u.x >= 0.0) ? EPSILON : -EPSILON;
+    u.y += (u.y >= 0.0) ? EPSILON : -EPSILON;
+    u.x *= s;
+    u.y *= s;
+
+    /* compute all 4 corners of rotated arrowhead bounding box */
+    ux2 = u.x / 2.;
+    uy2 = u.y / 2.;
+    ax = p.x - uy2;
+    ay = p.y - ux2;
+    bx = p.x + uy2;
+    by = p.y + ux2;
+    cx = ax + u.x;
+    cy = ay + u.y;
+    dx = bx + u.x;
+    dy = by + u.y;
+
+    /* compute a right bb */
+    bb.UR.x = MAX(ax, MAX(bx, MAX(cx, dx)));
+    bb.UR.y = MAX(ay, MAX(by, MAX(cy, dy)));
+    bb.LL.x = MIN(ax, MIN(bx, MIN(cx, dx)));
+    bb.LL.y = MIN(ay, MIN(by, MIN(cy, dy)));
+ 
+    return bb;
+}
+
 void arrow_newgen(GVJ_t * job, pointf p, pointf u, double scale, int flag)
 {
     double s;
