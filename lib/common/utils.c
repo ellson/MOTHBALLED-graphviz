@@ -1890,17 +1890,23 @@ utf8ToLatin1 (char* s)
 boolean overlap_node(node_t *n, boxf b)
 {
     boxf bb;
-//    inside_t ictxt;
+    inside_t ictxt;
+    pointf p;
 
     bb = ND_bb(n);
     if (! OVERLAP(b, bb))
         return FALSE;
 
-//    ictxt.s.n = n;
-//    ictxt.s.bp = NULL;
+    P2PF(ND_coord_i(n),p);
 
-//    return ND_shape(n)->fns->insidefn(&ictxt, p);
-    return TRUE;
+/*  FIXME - need to do something better about CLOSEENOUGH */
+    p.x -= (b.UR.x + b.LL.x) / 2.;
+    p.y -= (b.UR.y + b.LL.y) / 2.;
+
+    ictxt.s.n = n;
+    ictxt.s.bp = NULL;
+
+    return ND_shape(n)->fns->insidefn(&ictxt, p);
 }
 
 boolean overlap_label(textlabel_t *lp, boxf b)
