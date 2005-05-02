@@ -99,8 +99,8 @@ dotty.protogt.drawsgraph = function (gt, views, sgraph) {
         'fontname' = sgraph.fontname;
         'fontsize' = sgraph.fontsize;
         'fontcolor' = sgraph.fontcolor;
-        'color' = sgraph.color;
-        'outlinecolor' = dotty.outlinecolor;
+        'drawcolor' = sgraph.color;
+        'fillcolor' = sgraph.color;
     ]);
 };
 dotty.protogt.undrawsgraph = function (gt, views, sgraph) {
@@ -111,8 +111,8 @@ dotty.protogt.undrawsgraph = function (gt, views, sgraph) {
         'fontname' = sgraph.fontname;
         'fontsize' = sgraph.fontsize;
         'fontcolor' = sgraph.fontcolor;
-        'color' = sgraph.color;
-        'outlinecolor' = 0;
+        'drawcolor' = 0;
+        'fillcolor' = 0;
     ]);
 };
 dotty.protogt.drawnode = function (gt, views, node) {
@@ -125,8 +125,8 @@ dotty.protogt.drawnode = function (gt, views, node) {
         'fontname' = node.fontname;
         'fontsize' = node.fontsize;
         'fontcolor' = node.fontcolor;
-        'color' = node.color;
-        'outlinecolor' = dotty.outlinecolor;
+        'drawcolor' = node.color;
+        'fillcolor' = node.color;
     ]);
     for (vid in views)
         setpick (views[vid].canvas, node, node.rect);
@@ -140,11 +140,12 @@ dotty.protogt.undrawnode = function (gt, views, node) {
     if (~node.pos)
         return;
     gt.execalldraw (gt, views, node, node.draws, [
+        'nooverride' = 1;
         'fontname' = node.fontname;
         'fontsize' = node.fontsize;
         'fontcolor' = 0;
-        'color' = 0;
-        'outlinecolor' = 0;
+        'drawcolor' = 0;
+        'fillcolor' = 0;
     ]);
     for (vid in views)
         clearpick (views[vid].canvas, node);
@@ -172,22 +173,15 @@ dotty.protogt.drawedge = function (gt, views, edge) {
     edge.drawn = 1;
     if (~edge.draws)
         return;
-    for (vid in views) {
-        canvas = views[vid].canvas;
-        if (edge.attr.style == 'bold')
-            setgfxattr (canvas, ['width' = 3;]);
-    }
     gt.execalldraw (gt, views, edge, edge.draws, [
         'fontname' = edge.fontname;
         'fontsize' = edge.fontsize;
         'fontcolor' = edge.fontcolor;
-        'color' = edge.color;
-        'outlinecolor' = dotty.outlinecolor;
+        'drawcolor' = edge.color;
+        'fillcolor' = edge.color;
     ]);
     for (vid in views) {
         canvas = views[vid].canvas;
-        if (edge.attr.style == 'bold')
-            setgfxattr (canvas, ['width' = 0;]);
         if (gt.edgehandles == 0 | ~edge.draws.ep)
             continue;
         arc (canvas, edge, edge.draws.ep, ['x' = 5; 'y' = 5;], ['color' = 1;]);
@@ -201,22 +195,16 @@ dotty.protogt.undrawedge = function (gt, views, edge) {
     edge.drawn = 0;
     if (~edge.draws)
         return;
-    for (vid in views) {
-        canvas = views[vid].canvas;
-        if (edge.attr.style == 'bold')
-            setgfxattr (canvas, ['width' = 3;]);
-    }
     gt.execalldraw (gt, views, edge, edge.draws, [
+        'nooverride' = 1;
         'fontname' = edge.fontname;
         'fontsize' = edge.fontsize;
         'fontcolor' = 0;
-        'color' = 0;
-        'outlinecolor' = 0;
+        'drawcolor' = 0;
+        'fillcolor' = 0;
     ]);
     for (vid in views) {
         canvas = views[vid].canvas;
-        if (edge.attr.style == 'bold')
-            setgfxattr (canvas, ['width' = 0;]);
         if (gt.edgehandles == 0 | ~edge.draws.ep)
             continue;
         arc (canvas, edge, edge.draws.ep, ['x' = 5; 'y' = 5;], ['color' = 0;]);
@@ -242,29 +230,71 @@ dotty.protogt.execalldraw = function (gt, views, obj, draws, gc) {
     }
 };
 dotty.protogt.drawfunc.E = function (gt, canvas, obj, data, gc) {
-    arc (canvas, obj, data.c, data.s, ['color' = gc.color; 'fill' = 'on';]);
-    arc (canvas, obj, data.c, data.s, ['color' = gc.outlinecolor;]);
+    arc (canvas, obj, data.c, data.s, [
+        'color' = gc.fillcolor; 'style' = gc.style; 'width' = gc.width;
+        'fill' = 'on';
+    ]);
+    arc (canvas, obj, data.c, data.s, [
+        'color' = gc.drawcolor; 'style' = gc.style; 'width' = gc.width;
+    ]);
 };
 dotty.protogt.drawfunc.e = function (gt, canvas, obj, data, gc) {
-    arc (canvas, obj, data.c, data.s, ['color' = gc.color;]);
+    arc (canvas, obj, data.c, data.s, [
+        'color' = gc.drawcolor; 'style' = gc.style; 'width' = gc.width;
+    ]);
 };
 dotty.protogt.drawfunc.P = function (gt, canvas, obj, data, gc) {
-    polygon (canvas, obj, data.ps, ['color' = gc.color; 'fill' = 'on';]);
-    polygon (canvas, obj, data.ps, ['color' = gc.outlinecolor;]);
+    polygon (canvas, obj, data.ps, [
+        'color' = gc.fillcolor; 'style' = gc.style; 'width' = gc.width;
+        'fill' = 'on';
+    ]);
+    polygon (canvas, obj, data.ps, [
+        'color' = gc.drawcolor; 'style' = gc.style; 'width' = gc.width;
+    ]);
 };
 dotty.protogt.drawfunc.p = function (gt, canvas, obj, data, gc) {
-    polygon (canvas, obj, data.ps, ['color' = gc.color;]);
+    polygon (canvas, obj, data.ps, [
+        'color' = gc.drawcolor; 'style' = gc.style; 'width' = gc.width;
+    ]);
 };
 dotty.protogt.drawfunc.L = function (gt, canvas, obj, data, gc) {
-    polygon (canvas, obj, data.ps, ['color' = gc.color;]);
+    polygon (canvas, obj, data.ps, [
+        'color' = gc.drawcolor; 'style' = gc.style; 'width' = gc.width;
+    ]);
+};
+dotty.protogt.drawfunc.b = function (gt, canvas, obj, data, gc) {
+    splinegon (canvas, obj, data.ps, [
+        'color' = gc.fillcolor; 'style' = gc.style; 'width' = gc.width;
+        'fill' = 'on';
+    ]);
 };
 dotty.protogt.drawfunc.B = function (gt, canvas, obj, data, gc) {
-    splinegon (canvas, obj, data.ps, ['color' = gc.color;]);
+    splinegon (canvas, obj, data.ps, [
+        'color' = gc.drawcolor; 'style' = gc.style; 'width' = gc.width;
+    ]);
 };
 dotty.protogt.drawfunc.T = function (gt, canvas, obj, data, gc) {
     text (canvas, obj, data.p, data.s, gc.fontname, gc.fontsize, data.j, [
-        'color' = gc.fontcolor;
+        'color' = gc.fontcolor; 'style' = gc.style; 'width' = gc.width;
     ]);
+};
+dotty.protogt.drawfunc.C = function (gt, canvas, obj, data, gc) {
+    if (gc.nooverride ~= 1)
+        gc.fillcolor = data.fillcolor;
+};
+dotty.protogt.drawfunc.c = function (gt, canvas, obj, data, gc) {
+    if (gc.nooverride ~= 1) {
+        gc.drawcolor = data.drawcolor;
+        gc.fontcolor = data.drawcolor;
+    }
+};
+dotty.protogt.drawfunc.F = function (gt, canvas, obj, data, gc) {
+    gc.fontname = data.fn;
+    gc.fontsize = data.fs;
+};
+dotty.protogt.drawfunc.S = function (gt, canvas, obj, data, gc) {
+    gc.style = data.style;
+    gc.width = data.width;
 };
 dotty.protogt.movenodedraw = function (draws, dp) {
     local did, draw, i, j;

@@ -151,7 +151,6 @@ load ('dotty_ui.lefty');
 # initialization functions
 #
 dotty.init = function () {
-    dotty.outlinecolor = 1;
     dotty.fontmap = dotty.maps[getenv ('LEFTYWINSYS')].fontmap;
     dotty.clipgt = dotty.protogt.creategraph (['noundo' = 1;]);
     dotty.inited = 1;

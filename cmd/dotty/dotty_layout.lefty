@@ -211,17 +211,17 @@ dotty.protogt.unpackalldraw = function (gt, attr) {
 
     o = [];
     if (attr._draw_)
-        o._draw_ = gt.unpackdraw (attr._draw_);
+        o._draw_ = gt.unpackdraw (gt, attr._draw_);
     if (attr._ldraw_)
-        o._ldraw_ = gt.unpackdraw (attr._ldraw_);
+        o._ldraw_ = gt.unpackdraw (gt, attr._ldraw_);
     if (attr._hdraw_)
-        o._hdraw_ = gt.unpackdraw (attr._hdraw_);
+        o._hdraw_ = gt.unpackdraw (gt, attr._hdraw_);
     if (attr._tdraw_)
-        o._tdraw_ = gt.unpackdraw (attr._tdraw_);
+        o._tdraw_ = gt.unpackdraw (gt, attr._tdraw_);
     if (attr._hldraw_)
-        o._hldraw_ = gt.unpackdraw (attr._hldraw_);
+        o._hldraw_ = gt.unpackdraw (gt, attr._hldraw_);
     if (attr._tldraw_)
-        o._tldraw_ = gt.unpackdraw (attr._tldraw_);
+        o._tldraw_ = gt.unpackdraw (gt, attr._tldraw_);
     for (did in o)
         if (o[did].ep) {
             o.ep = o[did].ep;
@@ -243,7 +243,7 @@ dotty.protogt.removealldraw = function (gt, attr) {
     if (attr._tldraw_)
         remove ('_tldraw_', attr);
 };
-dotty.protogt.unpackdraw = function (attr) {
+dotty.protogt.unpackdraw = function (gt, attr) {
     local oo, o, tt, t, n, i, j, s, l, ep;
 
     oo = [];
@@ -279,7 +279,7 @@ dotty.protogt.unpackdraw = function (attr) {
             }
             i = i + 2 + o.n * 2;
             o.ps[o.n] = o.ps[0];
-            o.n = o.n + 1; 
+            o.n = o.n + 1;
         } else if (t[i] == 'p') {
             o.type = t[i];
             o.n = ston (t[i + 1]);
@@ -289,7 +289,7 @@ dotty.protogt.unpackdraw = function (attr) {
             }
             i = i + 2 + o.n * 2;
             o.ps[o.n] = o.ps[0];
-            o.n = o.n + 1; 
+            o.n = o.n + 1;
         } else if (t[i] == 'L') {
             o.type = t[i];
             o.n = ston (t[i + 1]);
@@ -301,6 +301,16 @@ dotty.protogt.unpackdraw = function (attr) {
             if (~ep)
                 ep = copy (o.ps[1]);
         } else if (t[i] == 'B') {
+            o.type = t[i];
+            o.n = ston (t[i + 1]);
+            for (j = 0; j < o.n; j = j + 1) {
+                o.ps[j].x = ston (t[i + 2 + j * 2]);
+                o.ps[j].y = ston (t[i + 2 + j * 2 + 1]);
+            }
+            i = i + 2 + o.n * 2;
+            if (~ep)
+                ep = copy (o.ps[1]);
+        } else if (t[i] == 'b') {
             o.type = t[i];
             o.n = ston (t[i + 1]);
             for (j = 0; j < o.n; j = j + 1) {
@@ -339,17 +349,92 @@ dotty.protogt.unpackdraw = function (attr) {
                 s = concat (s, tt[j]);
             o.s = s;
         } else if (t[i] == 'C') {
-            i = i + 3;
-            continue;
+            o.type = t[i];
+            o.n = ston (t[i + 1]);
+            i = i + 2;
+            s = t[i];
+            i = i + 1;
+            l = strlen (s) - 1;
+            while (l < o.n) {
+                s = concat (s, ' ', t[i]);
+                l = l + 1 + strlen (t[i]);
+                i = i + 1;
+            }
+            tt = split (s, '');
+            l = tablesize (tt);
+            s = '';
+            for (j = 1; j < l; j = j + 1)
+                s = concat (s, tt[j]);
+            o.fillcolor = gt.getcolor (gt.views, s);
         } else if (t[i] == 'c') {
-            i = i + 3;
-            continue;
+            o.type = t[i];
+            o.n = ston (t[i + 1]);
+            i = i + 2;
+            s = t[i];
+            i = i + 1;
+            l = strlen (s) - 1;
+            while (l < o.n) {
+                s = concat (s, ' ', t[i]);
+                l = l + 1 + strlen (t[i]);
+                i = i + 1;
+            }
+            tt = split (s, '');
+            l = tablesize (tt);
+            s = '';
+            for (j = 1; j < l; j = j + 1)
+                s = concat (s, tt[j]);
+            o.drawcolor = gt.getcolor (gt.views, s);
         } else if (t[i] == 'F') {
-            i = i + 4;
-            continue;
-        } else if (t[i] == 'S') {
+            o.type = t[i];
+            o.fs = ston (t[i + 1]);
+            o.n = ston (t[i + 2]);
             i = i + 3;
-            continue;
+            s = t[i];
+            i = i + 1;
+            l = strlen (s) - 1;
+            while (l < o.n) {
+                s = concat (s, ' ', t[i]);
+                l = l + 1 + strlen (t[i]);
+                i = i + 1;
+            }
+            tt = split (s, '');
+            l = tablesize (tt);
+            s = '';
+            for (j = 1; j < l; j = j + 1)
+                s = concat (s, tt[j]);
+            o.fn = dotty.fontmap[s];
+        } else if (t[i] == 'S') {
+            o.type = t[i];
+            o.n = ston (t[i + 1]);
+            i = i + 2;
+            s = t[i];
+            i = i + 1;
+            l = strlen (s) - 1;
+            while (l < o.n) {
+                s = concat (s, ' ', t[i]);
+                l = l + 1 + strlen (t[i]);
+                i = i + 1;
+            }
+            tt = split (s, '');
+            l = tablesize (tt);
+            s = '';
+            for (j = 1; j < l; j = j + 1)
+                s = concat (s, tt[j]);
+            if (
+                s == 'solid' | s == 'dashed' | s == 'dotted' |
+                s == 'longdashed' | s == 'shortdashed'
+            )
+                o.style = s;
+            else if (s == 'bold')
+                o.width = 3;
+            else {
+                tt = split (s, '(');
+                if (tt[0] == 'setlinewidth') {
+                    tt = split (tt[1], ')');
+                    o.width = ston (tt[0]);
+                } else
+                    continue;
+            }
         } else {
             dotty.message (0, concat ('draw language parser error: ', t[i]));
             return null;
