@@ -1351,7 +1351,7 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
     for (maxf = 1, cnt = 0, sp = reclblp; *sp; sp++) {
 	if (*sp == '\\') {
 	    sp++;
-	    if (*sp && (*sp == '{' || *sp == '}' || *sp == '|'))
+	    if (*sp && (*sp == '{' || *sp == '}' || *sp == '|' || *sp == '\\'))
 		continue;
 	}
 	if (*sp == '{')
@@ -1436,6 +1436,11 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
 	    if (*(reclblp + 1)) {
 		if (ISCTRL(*(reclblp + 1)))
 		    reclblp++;
+                else if (*reclblp == '\\') { /* handles escaped \ */
+                    *tsp++ = '\\';
+                    mode |= (INTEXT | HASTEXT);
+                    reclblp++;
+                }
 		else if (*(reclblp + 1) == ' ')
 		    ishardspace = TRUE, reclblp++;
 	    }
