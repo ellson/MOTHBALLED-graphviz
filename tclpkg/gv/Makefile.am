@@ -126,17 +126,17 @@ gv_tcl.cpp: gv.i
 
 install-exec-hook:
 if WITH_JAVA
-	cp $(top_srcdir)/tclpkg/gv/*.java $(DESTDIR)/$(libdir)/@PACKAGE@/
+#	cp $(top_srcdir)/tclpkg/gv/*.java $(DESTDIR)/$(libdir)/@PACKAGE@/
 endif
 if WITH_PERL
-	cp $(top_srcdir)/tclpkg/gv/*.pm $(DESTDIR)/$(libdir)/@PACKAGE@/
+#	cp $(top_srcdir)/tclpkg/gv/*.pm $(DESTDIR)/$(libdir)/@PACKAGE@/
 endif
 if WITH_PHP
-	cp $(top_srcdir)/tclpkg/gv/*.php $(DESTDIR)/$(libdir)/@PACKAGE@/
-	cp $(top_srcdir)/tclpkg/gv/php_gv.h $(DESTDIR)/$(libdir)/@PACKAGE@/
+#	cp $(top_srcdir)/tclpkg/gv/*.php $(DESTDIR)/$(libdir)/@PACKAGE@/
+#	cp $(top_srcdir)/tclpkg/gv/php_gv.h $(DESTDIR)/$(libdir)/@PACKAGE@/
 endif
 if WITH_PYTHON
-	cp $(top_srcdir)/tclpkg/gv/*.py $(DESTDIR)/$(libdir)/@PACKAGE@/
+#	cp $(top_srcdir)/tclpkg/gv/*.py $(DESTDIR)/$(libdir)/@PACKAGE@/
 endif
 #	cp $(top_srcdir)/tclpkg/gv/*.cs $(DESTDIR)/$(libdir)/@PACKAGE@/
 #	cp $(top_srcdir)/tclpkg/gv/*.ml $(DESTDIR)/$(libdir)/@PACKAGE@/
