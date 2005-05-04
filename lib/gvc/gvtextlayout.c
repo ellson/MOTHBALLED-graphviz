@@ -28,7 +28,7 @@
 #include "types.h"
 #include "macros.h"
 
-#include "gvplugin_text.h"
+#include "gvplugin_textlayout.h"
 #include "gvc.h"
 
 int gvtext_select(GVC_t * gvc, char *text_layout)
