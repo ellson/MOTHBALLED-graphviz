@@ -27,23 +27,41 @@ extern "C" {
 #define NULL (void *)0
 #endif
 
+
+/* 
+ * Terminology:
+ *
+ *    package         - e.g. libgvplugin_cairo.so, or table of codegen builtins.
+ *       api	      - e.g. render
+ *          type      - e.g. "png", "ps"
+ */
+
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined here.  The apis array is
  * inititialized in gvplugin.c by redefining ELEM and reinvoking APIS.
  */
-#define APIS ELEM(render) ELEM(layout) ELEM(display) ELEM(text)
+#define APIS ELEM(render) ELEM(layout) ELEM(textlayout)
 
 #define ELEM(x) API_##x,
     typedef enum { APIS } api_t; /* API_render, API_layout, ... */
 #undef ELEM
 
     typedef struct {
-	int id;
-	char *type;
-	int quality;
-	void *engine;
-	void *features;
+	int id;         /* an id that is only unique within a package 
+			of plugins of the same api.
+			A codegen id is unique in in the set of codegens.
+			A renderer-type such as "png" in the cairo package
+			has an id that is different from the "ps" type
+			in the same package */
+	char *type;	/* a string name, such as "png" or "ps" that
+			distinguishes different types withing the same
+			api (renderer in this case) */
+	int quality;    /* an arbitrary integer used for ordering plugins of
+			the same type from different packages */
+	void *engine;   /* pointer to the jump table for the plugin */
+	void *features; /* pointer to the feature description 
+				void* because type varies by api */
     } gvplugin_type_t;
 
     typedef struct {

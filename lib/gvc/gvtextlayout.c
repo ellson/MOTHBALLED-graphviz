@@ -36,7 +36,7 @@ int gvtext_select(GVC_t * gvc, char *text_layout)
     gv_plugin_t *plugin;
     gvplugin_type_t *typeptr;
 
-    plugin = gvplugin_load(gvc, API_text, text_layout);
+    plugin = gvplugin_load(gvc, API_textlayout, text_layout);
     if (plugin) {
 	typeptr = plugin->typeptr;
 	gvc->layout_engine = (gvlayout_engine_t *) (typeptr->engine);
