@@ -27,6 +27,9 @@
 #ifdef HAVE_UNAME
 #include <sys/utsname.h>
 #endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 /*
  * There is no portable macro for the maximum length
