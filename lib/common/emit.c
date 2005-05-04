@@ -427,6 +427,7 @@ fprintf(stderr,"pagesArrayElem = %d,%d pageSize = %g,%g pageOffset = %g,%g\n",
     emit_defaults(job);
 }
 
+#if 0
 static boolean node_in_view(GVJ_t *job, node_t * n)
 {
     boxf b;
@@ -440,6 +441,7 @@ static boolean node_in_view(GVJ_t *job, node_t * n)
 
     return boxf_overlap(job->pageBoxClip, b);
 }
+#endif
 
 static boolean is_natural_number(char *sstr)
 {
@@ -566,8 +568,7 @@ static boolean clust_in_layer(GVJ_t *job, graph_t * sg)
     return FALSE;
 }
 
-#if 0
-/* ND_bb(n) not set early enough to use in layout */
+#if 1
 static boolean node_in_box(node_t *n, boxf b)
 {
     return boxf_overlap(ND_bb(n), b);
@@ -583,7 +584,7 @@ static void emit_node(GVJ_t * job, node_t * n)
 	return;
 
     if (node_in_layer(job, n->graph, n)
-	    && node_in_view(job, n)
+	    && node_in_box(n, job->pageBoxClip)
 	    && (ND_state(n) != gvc->viewNum)) {
 
         gvrender_comment(job, n->name);
@@ -683,6 +684,7 @@ static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
     gvrender_polyline(job, A, 3);
 }
 
+#if 0
 static boolean edge_in_view(GVJ_t *job, edge_t * e)
 {
     int i, j, np;
@@ -720,6 +722,7 @@ static boolean edge_in_view(GVJ_t *job, edge_t * e)
     b.UR.y = lp->p.y + sy;
     return boxf_overlap(job->pageBoxClip, b);
 }
+#endif
 
 void emit_edge_graphics(GVJ_t * job, edge_t * e)
 {
@@ -894,8 +897,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	gvrender_end_context(job);
 }
 
-#if 0
-/* ED_spl(e).bb not set early enough to use in layout */
+#if 1
 static boolean edge_in_box(edge_t *e, boxf b)
 {
     splines *spl;
@@ -918,7 +920,7 @@ static void emit_edge(GVJ_t * job, edge_t * e)
     char *s, *url = NULL, *label = NULL, *tooltip = NULL, *target = NULL;
     textlabel_t *lab = NULL;
 
-    if (! edge_in_view(job, e) || ! edge_in_layer(job, e->head->graph, e))
+    if (! edge_in_box(e, job->pageBoxClip) || ! edge_in_layer(job, e->head->graph, e))
 	return;
 
     s = malloc(strlen(e->tail->name) + 2 + strlen(e->head->name) + 1);

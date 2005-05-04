@@ -247,18 +247,18 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     char *str;
     double sx, sy;
 
+    sx = job->width / (job->zoom * 2.);
+    sy = job->height / (job->zoom * 2.);
+    job->clip.UR.x = job->focus.x + sx + EPSILON;
+    job->clip.UR.y = job->focus.y + sy + EPSILON;
+    job->clip.LL.x = job->focus.x - sx - EPSILON;
+    job->clip.LL.y = job->focus.y - sy - EPSILON;
+
     job->sg = g;  /* current subgraph/cluster */
     if (gvre) {
 	job->compscale.x = job->zoom * job->dpi / POINTS_PER_INCH;
 	job->compscale.y = job->compscale.x *
 	    ((job->render_features->flags & GVRENDER_Y_GOES_DOWN) ? -1.0 : 1.0);
-
-        sx = job->width / (job->zoom * 2.);
-        sy = job->height / (job->zoom * 2.);
-	job->clip.UR.x = job->focus.x + sx + EPSILON;
-	job->clip.UR.y = job->focus.y + sy + EPSILON;
-	job->clip.LL.x = job->focus.x - sx - EPSILON;
-	job->clip.LL.y = job->focus.y - sy - EPSILON;
 
 	/* render specific init */
 	if (gvre->begin_graph)
