@@ -873,7 +873,12 @@ void config_codegen_builtins(GVC_t * gvc)
     codegen_info_t *p;
 
     for (p = cg; p->name; ++p)
-	gvplugin_install(gvc, API_render, p->name, 0, "cg",
-			 (gvplugin_type_t *) p);
+	gvplugin_install(gvc,
+			API_render,
+			p->name,
+			0,
+			"cg",
+			NULL,
+			(gvplugin_type_t *) p);
 #endif
 }

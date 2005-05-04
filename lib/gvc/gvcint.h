@@ -135,15 +135,21 @@ extern "C" {
 	void *window;		/* display-specific data for gvrender plugin */
     };
 
-/* gv_plugin_t is a descriptor for available plugins; gvplugin_t is for installed plugins */
+/* gv_plugin_t is a descriptor for available plugins;
+	gvplugin_t is for installed plugins */
     typedef struct gv_plugin_s gv_plugin_t;
 
     struct gv_plugin_s {
-	gv_plugin_t *next;
-	char *typestr;
-	int quality;
-	char *path;
-	gvplugin_type_t *typeptr;
+	gv_plugin_t *next;       /* next plugin in linked list, or NULL */
+	char *typestr;		 /* type string, e.g. "png" or "ps" */
+	int quality;             /* programmer assigned quality
+					ranking within type (+ve or -ve int)
+					- codegens have quality = 0 */
+	char *path;		 /* file path to library containing plugin,
+					or NULL if builtin */
+	char *packagename;	 /* package name */
+	gvplugin_type_t *typeptr;  /* pointer to jumptable for plugin,
+					or NULL if not yet loaded */
     };
 
     typedef int (*gvevent_key_callback_t) (GVJ_t * job);

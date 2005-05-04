@@ -132,7 +132,7 @@ static char *token(int *nest, char **tokens)
 
 static void gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 {
-    char *path, *api, *type;
+    char *path, *packagename, *api, *type;
     api_t gv_api;
     int quality, rc;
     int nest = 0;
@@ -140,6 +140,7 @@ static void gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
     separator(&nest, &s);
     while (*s) {
 	path = token(&nest, &s);
+	packagename = token(&nest, &s);
 	do {
 	    api = token(&nest, &s);
 	    gv_api = gvplugin_api(api);
@@ -153,7 +154,8 @@ static void gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 		    quality = atoi(token(&nest, &s));
 		else
 		    quality = 0;
-		rc = gvplugin_install (gvc, gv_api, type, quality, path, NULL);
+		rc = gvplugin_install (gvc, gv_api,
+				type, quality, packagename, path, NULL);
 		if (!rc) {
 		    fprintf(stderr, "config error: %s %s %s\n", path, api, type);
 		    return;
@@ -163,7 +165,7 @@ static void gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
     }
 }
 
-static void gvconfig_plugin_install_from_library(GVC_t * gvc, gvplugin_library_t *library)
+static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplugin_library_t *library)
 {
     gvplugin_api_t *apis;
     gvplugin_type_t *types;
@@ -172,7 +174,7 @@ static void gvconfig_plugin_install_from_library(GVC_t * gvc, gvplugin_library_t
     for (apis = library->apis; (types = apis->types); apis++) {
 	for (i = 0; types[i].type; i++) {
 	    gvplugin_install(gvc, apis->api, types[i].type,
-			types[i].quality, library->name, &types[i]);
+			types[i].quality, library->packagename, path, &types[i]);
         }
     }
 }
@@ -183,12 +185,9 @@ static void gvconfig_write_library_config(char *path, gvplugin_library_t *librar
     gvplugin_type_t *types;
     int i;
 
-    fputs (path, f);
-    fputs (" {\n", f);
+    fprintf(f, "%s %s {\n", path, library->packagename);
     for (apis = library->apis; (types = apis->types); apis++) {
-	fputs ("\t", f);
-	fputs (gvplugin_api_name(apis->api), f);
-	fputs (" {\n", f);
+        fprintf(f, "\t%s {\n", gvplugin_api_name(apis->api));
 	for (i = 0; types[i].type; i++) {
 	    fprintf(f, "\t\t%s %d\n", types[i].type, types[i].quality);
 	}
@@ -232,7 +231,7 @@ void gvconfig(GVC_t * gvc)
 
 #ifdef DISABLE_LTDL
     for (libraryp = builtins; *libraryp; libraryp++) {
-	gvconfig_plugin_install_from_library(gvc, *libraryp);
+	gvconfig_plugin_install_from_library(gvc, NULL, *libraryp);
     }
 #else
     /* see if there are any new plugins */
@@ -294,7 +293,7 @@ void gvconfig(GVC_t * gvc)
 	    for (i = 0; i < globbuf.gl_pathc; i++) {
 		library = gvplugin_library_load(globbuf.gl_pathv[i]);
 		if (library) {
-		    gvconfig_plugin_install_from_library(gvc, library);
+		    gvconfig_plugin_install_from_library(gvc, globbuf.gl_pathv[i], library);
 		    if (f) {
 			gvconfig_write_library_config(globbuf.gl_pathv[i], library, f);
 		    }

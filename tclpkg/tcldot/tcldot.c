@@ -1651,7 +1651,7 @@ int Tcldot_Init(Tcl_Interp * interp)
     gvconfig(gvc);
     /* additional codegens */
     for (p = cg; p->name; ++p)
-        gvplugin_install(gvc, API_render, p->name, 0, "cg",
+        gvplugin_install(gvc, API_render, p->name, 0, "cg", NULL,
                          (gvplugin_type_t *) p);
 
 #ifndef TCLOBJ

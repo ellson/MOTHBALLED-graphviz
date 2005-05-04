@@ -70,8 +70,8 @@ extern "C" {
     } gvplugin_api_t;
 
     typedef struct {
-	char *name;		/* used instead of a file pathname
-					when this plugin is loaded */
+	char *packagename;    /* used when this plugin is builtin and has
+					no pathname */
 	gvplugin_api_t *apis;
     } gvplugin_library_t;
 

@@ -63,8 +63,8 @@ char *gvplugin_api_name(api_t api)
 /* list is alpha sorted by type, the quality sorted within the type,
    then, if qualities are the same, last install wins */
 boolean gvplugin_install(GVC_t * gvc, api_t api,
-			 char *typestr, int quality, char *path,
-			 gvplugin_type_t * typeptr)
+		 char *typestr, int quality, char *packagename, char *path,
+		 gvplugin_type_t * typeptr)
 {
     gv_plugin_t *plugin, **pnext;
 
@@ -88,7 +88,8 @@ boolean gvplugin_install(GVC_t * gvc, api_t api,
     *pnext = plugin;
     plugin->typestr = typestr;
     plugin->quality = quality;
-    plugin->path = path;	/* filepath for .so, shortname for builtins */
+    plugin->packagename = packagename;	/* packagename,  all packages */
+    plugin->path = path;	/* filepath for .so, or NULL for builtins */
     plugin->typeptr = typeptr;	/* null if not loaded */
 
     return TRUE;
@@ -100,6 +101,7 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     lt_dlhandle hndl;
     lt_ptr ptr;
     char *s, *sym;
+    int len;
 
     char *suffix = "_LTX_library";
 
@@ -114,10 +116,15 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     }
 
     s = strrchr(path, '/');
-    sym = malloc(strlen(s) + strlen(suffix) + 1);
+    len = strlen(s); 
+    if (len < strlen("libgvplugin_x")) {
+	fprintf(stderr,"invalid plugin path \"%s\"\n", path);
+	return NULL;
+    }
+    sym = malloc(len + strlen(suffix) + 1);
     strcpy(sym, s+4);         /* strip leading "/lib" */
     s = strchr(sym, '.');     /* strip trailing ".so.0" */
-    strcpy(s,"_LTX_library"); /* append "_LTX_library" */
+    strcpy(s,suffix);         /* append "_LTX_library" */
 
     ptr = lt_dlsym (hndl, sym);
     if (!ptr) {
@@ -134,7 +141,8 @@ gvplugin_library_t *gvplugin_library_load(char *path)
 }
 
 
-/* load a plugin of type=str where str can optionally contain a ":path" modifier */
+/* load a plugin of type=str
+	where str can optionally contain a ":packagename" modifier */
 gv_plugin_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 {
     gv_plugin_t **pnext, *rv;
@@ -149,7 +157,7 @@ gv_plugin_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
     if (api < 0)
 	return NULL;
 
-    /* does str have a :path modifier? */
+    /* does str have a :packagename modifier? */
     s = strdup(str);
     p = strchr(s, ':');
     if (p)
@@ -161,7 +169,7 @@ gv_plugin_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
     while (*pnext) {
 	if (strcmp(s, (*pnext)->typestr) == 0) {
 	    if (p) {
-		if (strcmp(p, (*pnext)->path) == 0)
+		if (strcmp(p, (*pnext)->packagename) == 0)
 		    break;
 	    }
 	    else
@@ -186,8 +194,13 @@ gv_plugin_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
             /* Now reinsert the library with real type ptrs */
             for (apis = library->apis; (types = apis->types); apis++) {
 		for (i = 0; types[i].type; i++) {
-                    gvplugin_install(gvc, apis->api, types[i].type,
-				types[i].quality, library->name, &types[i]);
+                    gvplugin_install(gvc,
+				apis->api,
+				types[i].type,
+				types[i].quality,
+				library->packagename,
+				(*pnext)->path,
+				&types[i]);
 		}
             }
 	    
@@ -196,7 +209,7 @@ gv_plugin_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 	    while (*pnext) {
 		if (strcmp(s, (*pnext)->typestr) == 0) {
 		    if (p) {
-			if (strcmp(p, (*pnext)->path) == 0)
+			if (strcmp(p, (*pnext)->packagename) == 0)
 			    break;
 		    }
 		    else
@@ -215,7 +228,8 @@ gv_plugin_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
     return rv;
 }
 
-/* string buffer management - FIXME - must have 20 solutions for this same thing */
+/* string buffer management
+	- FIXME - must have 20 solutions for this same thing */
 static const char *append_buf(char sep, char *str, boolean new)
 {
     static char *buf;
@@ -266,7 +280,7 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
 	    if (strcmp(s, (*pnext)->typestr) == 0) {
 		/* list each member of the matching type as "type:path" */
 		append_buf(' ', (*pnext)->typestr, new);
-		buf = append_buf(':', (*pnext)->path, FALSE);
+		buf = append_buf(':', (*pnext)->packagename, FALSE);
 		new = FALSE;
 	    }
 	    pnext = &((*pnext)->next);

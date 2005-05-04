@@ -60,7 +60,7 @@ int gvrender_select(GVJ_t * job, char *str)
     plugin = gvplugin_load(gvc, API_render, str);
     if (plugin) {
 #ifndef DISABLE_CODEGENS
-	if (strcmp(plugin->path, "cg") == 0) {
+	if (strcmp(plugin->packagename, "cg") == 0) {
 	    cg_info = (codegen_info_t *) (plugin->typeptr);
 	    job->codegen = cg_info->cg;
 	    return cg_info->id;
