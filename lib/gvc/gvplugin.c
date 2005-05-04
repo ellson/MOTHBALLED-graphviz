@@ -80,7 +80,7 @@ boolean gvplugin_install(GVC_t * gvc, api_t api,
 	pnext = &((*pnext)->next);
 
     /* keep quality sorted within type and inster new duplicates ahead of old */
-    while (*pnext && quality < (*pnext)->quality)
+    while (*pnext && strcmp(typestr, (*pnext)->typestr) == 0 && quality < (*pnext)->quality)
 	pnext = &((*pnext)->next);
 
     plugin = malloc(sizeof(gv_plugin_t));
