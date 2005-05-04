@@ -1836,7 +1836,7 @@ latin1ToUTF8 (char* s)
     /* Values are either a byte (<= 256) or come from htmlEntity, whose
      * values are all less than 0x07FF, so we need at most 3 bytes.
      */
-    while ((v = *s++)) {
+    while ((v = *(unsigned char*)s++)) {
 	if (v == '&') {
 	    v = htmlEntity (&s);
 	    if (!v) v = '&';
@@ -1873,11 +1873,11 @@ utf8ToLatin1 (char* s)
     
     agxbinit(&xb, BUFSIZ, buf);
 
-    while ((c = *s++)) {
+    while ((c = *(unsigned char*)s++)) {
 	if (c < 0x7F) agxbputc(&xb, c);
 	else {
 	    outc = (c & 0x03) << 6;
-	    c = *s++;
+	    c = *(unsigned char*)s++;
 	    outc = outc | (c & 0x3F);
 	    agxbputc(&xb, outc);
 	}
