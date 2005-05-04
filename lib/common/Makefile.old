@@ -16,7 +16,7 @@ DEFINES = -DHAVE_CONFIG_H
 
 AWKDIR = $(ROOT)/awk
 
-HDRS = colortbl.h const.h globals.h macros.h ps.h render.h \
+HDRS = colortbl.h const.h globals.h macros.h render.h \
        renderprocs.h types.h utils.h
 
 OBJS = arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
