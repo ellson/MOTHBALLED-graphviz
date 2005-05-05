@@ -32,10 +32,12 @@
 #include        "macros.h"
 #include        "gvc.h"
 
-static char *libdir = GVLIBDIR;
-
 #ifndef DISABLE_CODEGENS
 extern void config_codegen_builtins(GVC_t *gvc);
+#endif
+
+#ifndef DISABLE_LTDL
+static char *libdir = GVLIBDIR;
 #endif
 
 /*
@@ -132,9 +134,10 @@ static char *token(int *nest, char **tokens)
     return t;
 }
 
+#ifndef DISABLE_LTDL
 static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 {
-    char *path, *packagename, *api, *type, *dir, *t;
+    char *path, *packagename, *api, *type;
     api_t gv_api;
     int quality, rc;
     int nest = 0;
@@ -176,6 +179,7 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
     }
     return 1;
 }
+#endif
 
 static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplugin_library_t *library)
 {
@@ -212,6 +216,7 @@ static void gvconfig_write_library_config(char *path, gvplugin_library_t *librar
 extern gvplugin_library_t *builtins[];
 #endif
 
+#ifndef DISABLE_LTDL
 static void config_rescan(GVC_t *gvc, char *config_path)
 {
     FILE *f = NULL;
@@ -254,6 +259,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     if (f)
 	fclose(f);
 }
+#endif
 
 /*
   gvconfig - parse a config file and install the identified plugins

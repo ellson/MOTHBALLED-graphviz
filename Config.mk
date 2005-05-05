@@ -20,7 +20,7 @@ EXPAT_LIB = -lexpat
 
 # specify where to find bitmap packages (See INSTALL file.)
 EXTLIB_INC=-I/usr/include/freetype2
-EXTLIB_LIB=-ljpeg -lpng -lfreetype -lz
+EXTLIB_LIB=-ljpeg -lpng -lfontconfig -lfreetype -lz
 
 ###################################################
 #  Typically, nothing below should be changed.    #
@@ -51,3 +51,10 @@ TK_LIBDIR=$(TKDIR)/lib
 # location of tk.h
 TK_INCDIR=$(TKDIR)/include
 
+VERSION=2.3
+VERSION=2.3
+VERSION=2.3
+VERSION=2.3
+VERSION=2.3
+VERSION=2.3
+VERSION=2.3
