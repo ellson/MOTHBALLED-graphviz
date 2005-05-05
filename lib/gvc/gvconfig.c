@@ -32,6 +32,8 @@
 #include        "macros.h"
 #include        "gvc.h"
 
+static char *libdir = GVLIBDIR;
+
 #ifndef DISABLE_CODEGENS
 extern void config_codegen_builtins(GVC_t *gvc);
 #endif
@@ -130,9 +132,9 @@ static char *token(int *nest, char **tokens)
     return t;
 }
 
-static void gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
+static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 {
-    char *path, *packagename, *api, *type;
+    char *path, *packagename, *api, *type, *dir, *t;
     api_t gv_api;
     int quality, rc;
     int nest = 0;
@@ -140,6 +142,11 @@ static void gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
     separator(&nest, &s);
     while (*s) {
 	path = token(&nest, &s);
+	rc = strncmp(path, libdir, strlen(libdir));
+        if(rc) {
+	    fprintf(stderr, "config contains invalid path\n");
+	    return 0;
+	}
 	if (nest == 0)
 	    packagename = token(&nest, &s);
         else
@@ -149,10 +156,11 @@ static void gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 	    gv_api = gvplugin_api(api);
 	    if (gv_api == -1) {
 		fprintf(stderr, "invalid api in config: %s %s\n", path, api);
-		return;
+		return 0;
 	    }
 	    do {
-		type = token(&nest, &s);
+		if (nest == 2)
+		    type = token(&nest, &s);
 		if (nest == 2)
 		    quality = atoi(token(&nest, &s));
 		else
@@ -161,11 +169,12 @@ static void gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 				type, quality, packagename, path, NULL);
 		if (!rc) {
 		    fprintf(stderr, "config error: %s %s %s\n", path, api, type);
-		    return;
+		    return 0;
 		}
 	    } while (nest == 2);
 	} while (nest == 1);
     }
+    return 1;
 }
 
 static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplugin_library_t *library)
@@ -203,6 +212,49 @@ static void gvconfig_write_library_config(char *path, gvplugin_library_t *librar
 extern gvplugin_library_t *builtins[];
 #endif
 
+static void config_rescan(GVC_t *gvc, char *config_path)
+{
+    FILE *f = NULL;
+    glob_t globbuf;
+    char *config_glob;
+    int i, rc;
+    gvplugin_library_t *library;
+    char *plugin_glob = "libgvplugin*.so.?";
+
+    if (config_path) {
+	f = fopen(config_path,"w");
+	if (!f) {
+	    fprintf(stderr,"failed to open %s for write.\n", config_path);
+	}
+    }
+
+    /* load all libraries even if can't save config */
+    config_glob = malloc(strlen(libdir)
+			    + 1
+			    + strlen(plugin_glob)
+			    + 1);
+    strcpy(config_glob, libdir);
+    strcat(config_glob, "/");
+    strcat(config_glob, plugin_glob);
+
+    rc = glob(config_glob, GLOB_NOSORT, NULL, &globbuf);
+    if (rc == 0) {
+	for (i = 0; i < globbuf.gl_pathc; i++) {
+	    library = gvplugin_library_load(globbuf.gl_pathv[i]);
+	    if (library) {
+		gvconfig_plugin_install_from_library(gvc, globbuf.gl_pathv[i], library);
+		if (f) {
+		    gvconfig_write_library_config(globbuf.gl_pathv[i], library, f);
+		}
+	    }
+	}
+    }
+    globfree(&globbuf);
+    free(config_glob);
+    if (f)
+	fclose(f);
+}
+
 /*
   gvconfig - parse a config file and install the identified plugins
  */
@@ -211,18 +263,14 @@ void gvconfig(GVC_t * gvc)
 #ifdef DISABLE_LTDL
     gvplugin_library_t **libraryp;
 #else
-    gvplugin_library_t *library;
-    int sz, rc, i;
+    int sz, rc;
     struct stat config_st, libdir_st;
     FILE *f = NULL;
     char *config_path = NULL, *config_text = NULL;
-    char *config_glob, *home;
-    glob_t globbuf;
+    char *home;
 
     char *config_dir_name = ".graphviz";
     char *config_file_name = "config";
-    char *libdir = GVLIBDIR;
-    char *plugin_glob = "libgvplugin*.so.?";
     char *s;
 
 #define MAX_SZ_CONFIG 100000
@@ -275,40 +323,12 @@ void gvconfig(GVC_t * gvc)
     }
 	
     if (rc == -1 || libdir_st.st_mtime > config_st.st_mtime) {
-	if (config_path) {
-	    f = fopen(config_path,"w");
-	    if (!f) {
-	        fprintf(stderr,"failed to open %s for write.\n", config_path);
-	    }
-	}
-	/* load all libraries even if can't save config */
-
-	config_glob = malloc(strlen(libdir)
-				+ 1
-				+ strlen(plugin_glob)
-				+ 1);
-	strcpy(config_glob, libdir);
-        strcat(config_glob, "/");
-	strcat(config_glob, plugin_glob);
-
-	rc = glob(config_glob, GLOB_NOSORT, NULL, &globbuf);
-        if (rc == 0) {
-	    for (i = 0; i < globbuf.gl_pathc; i++) {
-		library = gvplugin_library_load(globbuf.gl_pathv[i]);
-		if (library) {
-		    gvconfig_plugin_install_from_library(gvc, globbuf.gl_pathv[i], library);
-		    if (f) {
-			gvconfig_write_library_config(globbuf.gl_pathv[i], library, f);
-		    }
-		}
-	    }
-	}
-	globfree(&globbuf);
-        free(config_glob);
+	config_rescan(gvc, config_path);
     }
     else {
 	/* load in the cached plugin library data */
 
+	rc = 0;
 	if (config_st.st_size > MAX_SZ_CONFIG) {
 	    fprintf(stderr,"%s is bigger than I can handle.\n", config_path);
 	}
@@ -326,15 +346,19 @@ void gvconfig(GVC_t * gvc)
 	        }
 		else {
 	            config_text[sz] = '\0';  /* make input into a null terminated string */
-	            gvconfig_plugin_install_from_config(gvc, config_text);
+	            rc = gvconfig_plugin_install_from_config(gvc, config_text);
 		    /* NB. config_text not freed because we retain char* into it */
 		}
 	    }
+	    if (f)
+		fclose(f);
+	}
+	if (!rc) {
+	    fprintf(stderr,"rescanning for plugins\n");
+	    config_rescan(gvc, config_path);
 	}
     }
     if (config_path)
 	free(config_path);
-    if (f)
-	fclose(f);
 #endif
 }
