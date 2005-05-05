@@ -54,9 +54,7 @@ of graphs (as in nodes and edges, not as in barcharts).
 %package devel
 Group:		Development/Libraries
 Summary:	Development tools for using the %{name} libraries.
-Requires:	%{name} = %{version}-%{release} %{name}-tcl = %{version}-%{release}
-# The following doesn't work on RH9 or RHE where there is no tcl-devel
-#Requires: tcl-devel tk-devel
+Requires:	%{name} = %{version}-%{release}
 
 %description devel
 The %{name}-devel package contains the header files
