@@ -320,7 +320,7 @@ void makeSelfArcs(path * P, edge_t * e, int stepx)
     if (cnt == 1) {
 	edge_t *edges1[1];
 	edges1[0] = e;
-	makeSelfEdge(P, edges1, 0, 1, stepx, &sinfo);
+	makeSelfEdge(P, edges1, 0, 1, stepx, stepx, &sinfo);
 	if (ED_label(e))
 	    updateBB(e->tail->graph, ED_label(e));
 	makePortLabels(e);
@@ -331,7 +331,7 @@ void makeSelfArcs(path * P, edge_t * e, int stepx)
 	    edges[i] = e;
 	    e = ED_to_virt(e);
 	}
-	makeSelfEdge(P, edges, 0, cnt, stepx, &sinfo);
+	makeSelfEdge(P, edges, 0, cnt, stepx, stepx, &sinfo);
 	for (i = 0; i < cnt; i++) {
 	    e = edges[i];
 	    if (ED_label(e))

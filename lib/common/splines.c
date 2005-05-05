@@ -853,7 +853,7 @@ completeselfpath(path * P, pathend_t * tendp, pathend_t * hendp,
 #endif
 
 static void
-selfBottom (edge_t* edges[], int ind, int cnt, int stepy, splineInfo* sinfo) 
+selfBottom (edge_t* edges[], int ind, int cnt, int sizex, int stepy, splineInfo* sinfo) 
 {
     int sgn, hy, ty;
     point tp, hp;
@@ -868,8 +868,10 @@ selfBottom (edge_t* edges[], int ind, int cnt, int stepy, splineInfo* sinfo)
     e = edges[ind];
     n = e->tail;
 
-    /* stepx = (ND_rw_i(n)) / cnt; */
-    stepx = stepy;
+    stepy /= 2;
+    stepy = MAX(stepy, 2);
+    stepx = sizex / cnt;
+    stepx = MAX(stepx, 2);
     pointn = 0;
     np = ND_coord_i(n);
     tp = ED_tail_port(e).p;
@@ -917,7 +919,8 @@ selfBottom (edge_t* edges[], int ind, int cnt, int stepy, splineInfo* sinfo)
 }
 
 static void
-selfTop (edge_t* edges[], int ind, int cnt, int stepy, splineInfo* sinfo) 
+selfTop (edge_t* edges[], int ind, int cnt, int sizex, int stepy, 
+         splineInfo* sinfo) 
 {
     int sgn, hy, ty;
     point tp, hp;
@@ -932,8 +935,10 @@ selfTop (edge_t* edges[], int ind, int cnt, int stepy, splineInfo* sinfo)
     e = edges[ind];
     n = e->tail;
 
-    /* stepx = (ND_rw_i(n)) / cnt; */
-    stepx = stepy;
+    stepy /= 2;
+    stepy = MAX(stepy, 2);
+    stepx = sizex / cnt;
+    stepx = MAX(stepx, 2);
     pointn = 0;
     np = ND_coord_i(n);
     tp = ED_tail_port(e).p;
@@ -981,7 +986,8 @@ selfTop (edge_t* edges[], int ind, int cnt, int stepy, splineInfo* sinfo)
 }
 
 static void
-selfRight (edge_t* edges[], int ind, int cnt, int stepx, splineInfo* sinfo) 
+selfRight (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
+           splineInfo* sinfo) 
 {
     int hx, tx, sgn;
     point tp, hp;
@@ -996,7 +1002,8 @@ selfRight (edge_t* edges[], int ind, int cnt, int stepx, splineInfo* sinfo)
     e = edges[ind];
     n = e->tail;
 
-    stepy = (ND_ht_i(n) / 2) / cnt;
+    stepy = (sizey / 2) / cnt;
+    stepy = MAX(stepy, 2);
     pointn = 0;
     np = ND_coord_i(n);
     tp  = ED_tail_port(e).p;
@@ -1045,7 +1052,8 @@ selfRight (edge_t* edges[], int ind, int cnt, int stepx, splineInfo* sinfo)
 }
 
 static void
-selfLeft (edge_t* edges[], int ind, int cnt, int stepx, splineInfo* sinfo) 
+selfLeft (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
+          splineInfo* sinfo) 
 {
     int hx, tx, sgn;
     point tp, hp;
@@ -1060,7 +1068,8 @@ selfLeft (edge_t* edges[], int ind, int cnt, int stepx, splineInfo* sinfo)
     e = edges[ind];
     n = e->tail;
 
-    stepy = (ND_ht_i(n) / 2) / cnt;
+    stepy = (sizey / 2) / cnt;
+    stepy = MAX(stepy,2);
     pointn = 0;
     np = ND_coord_i(n);
     tp = ED_tail_port(e).p;
@@ -1111,6 +1120,9 @@ selfLeft (edge_t* edges[], int ind, int cnt, int stepx, splineInfo* sinfo)
  * Assume e is self-edge.
  * Return extra space necessary on the right for this edge.
  * If the edge does not go on the right, return 0.
+ * NOTE: the actual space is determined dynamically by GD_nodesep,
+ * so using the constant SELF_EDGE_SIZE is going to be wrong.
+ * Fortunately, the default nodesep is the same as SELF_EDGE_SIZE.
  */
 int
 selfRightSpace (edge_t* e)
@@ -1141,8 +1153,8 @@ selfRightSpace (edge_t* e)
  * Perhaps for self-edges, the label should be centered.
  */
 void
-makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, int stepx,
-	     splineInfo * sinfo)
+makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, int sizex,
+	     int sizey, splineInfo * sinfo)
 {
     edge_t *e;
 #ifdef OLD
@@ -1166,7 +1178,7 @@ makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, int stepx,
          !(ED_head_port(e).side & LEFT) &&
           ((ED_tail_port(e).side != ED_head_port(e).side) || 
           (!(ED_tail_port(e).side & (TOP|BOTTOM)))))) {
-	selfRight(edges, ind, cnt, stepx, sinfo);
+	selfRight(edges, ind, cnt, sizex, sizey, sinfo);
     }
 
     /* self edge with port on left side */
@@ -1174,19 +1186,19 @@ makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, int stepx,
 
 	/* handle L-R specially */
 	if ((ED_tail_port(e).side & RIGHT) || (ED_head_port(e).side & RIGHT)) {
-	    selfTop(edges, ind, cnt, stepx, sinfo);
+	    selfTop(edges, ind, cnt, sizex, sizey, sinfo);
 	}
 	else {
-	    selfLeft(edges, ind, cnt, stepx, sinfo);
+	    selfLeft(edges, ind, cnt, sizex, sizey, sinfo);
 	}
     }
 
     /* self edge with both ports on top side */
     else if (ED_tail_port(e).side & TOP) {
-	selfTop(edges, ind, cnt, stepx, sinfo);
+	selfTop(edges, ind, cnt, sizex, sizey, sinfo);
     }
     else if (ED_tail_port(e).side & BOTTOM) {
-	selfBottom(edges, ind, cnt, stepx, sinfo);
+	selfBottom(edges, ind, cnt, sizex, sizey, sinfo);
     }
 
     else assert(0);

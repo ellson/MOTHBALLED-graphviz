@@ -331,8 +331,23 @@ void dot_splines(graph_t * g)
 	    if (ED_tree_index(edges[i]) & MAINGRAPH)	/* Aha! -C is on */
 		break;
 	}
-	if (e0->tail == e0->head)
-	    makeSelfEdge(P, edges, ind, cnt, Multisep, &sinfo);
+	if (e0->tail == e0->head) {
+	    int sizey, r;
+	    n = e0->tail;
+	    r = ND_rank(n);
+	    if (r == GD_maxrank(g)) {
+		sizey = ND_coord_i(GD_rank(g)[r-1].v[0]).y - ND_coord_i(n).y;
+	    }
+	    else if (r == GD_minrank(g)) {
+		sizey = ND_coord_i(n).y - ND_coord_i(GD_rank(g)[r+1].v[0]).y;
+	    }
+	    else {
+		int upy = ND_coord_i(GD_rank(g)[r-1].v[0]).y - ND_coord_i(n).y;
+		int dwny = ND_coord_i(n).y - ND_coord_i(GD_rank(g)[r+1].v[0]).y;
+		sizey = MIN(upy, dwny);
+	    }
+	    makeSelfEdge(P, edges, ind, cnt, Multisep, sizey, &sinfo);
+	}
 	else if (ND_rank(e0->tail) == ND_rank(e0->head)) {
 	    make_flat_edge(P, edges, ind, cnt);
 	}

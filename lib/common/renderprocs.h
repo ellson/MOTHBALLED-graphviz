@@ -134,7 +134,7 @@ extern "C" {
     extern char *strdup_and_subst_node(char *str, Agnode_t * n);
     extern char *strdup_and_subst_edge(char *str, Agedge_t * e);
     extern char *xml_string(char *s);
-    extern void makeSelfEdge(path *, edge_t **, int, int, int,
+    extern void makeSelfEdge(path *, edge_t **, int, int, int, int,
 			     splineInfo *);
     extern textlabel_t *make_label(int, char *, double, char *, char *,
 				   graph_t *);
