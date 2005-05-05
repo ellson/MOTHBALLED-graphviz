@@ -29,6 +29,7 @@
 #include        "types.h"
 #include        "macros.h"
 #include        "gvc.h"
+#include        "graph.h"
 
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
@@ -106,19 +107,19 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     char *suffix = "_LTX_library";
 
     if (lt_dlinit()) {
-        fprintf(stderr,"failed to init libltdl\n");
+        agerr(AGERR, "failed to init libltdl\n");
         return NULL;
     }
     hndl = lt_dlopen (path);
     if (!hndl) {
-        fprintf(stderr,"failed to dlopen %s\n", path);
+        agerr(AGERR, "failed to dlopen %s\n", path);
         return NULL;
     }
 
     s = strrchr(path, '/');
     len = strlen(s); 
     if (len < strlen("libgvplugin_x")) {
-	fprintf(stderr,"invalid plugin path \"%s\"\n", path);
+	agerr (AGERR,"invalid plugin path \"%s\"\n", path);
 	return NULL;
     }
     sym = malloc(len + strlen(suffix) + 1);
@@ -128,14 +129,14 @@ gvplugin_library_t *gvplugin_library_load(char *path)
 
     ptr = lt_dlsym (hndl, sym);
     if (!ptr) {
-        fprintf(stderr,"failed to resolve %s in %s\n", sym, path);
+        agerr (AGERR,"failed to resolve %s in %s\n", sym, path);
 	free(sym);
         return NULL;
     }
     free(sym);
     return (gvplugin_library_t *)(ptr);
 #else
-    fprintf(stderr,"dynamic loading not available\n");
+    agerr (AGERR,"dynamic loading not available\n");
     return NULL;
 #endif
 }

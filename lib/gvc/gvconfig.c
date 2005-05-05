@@ -147,7 +147,7 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 	path = token(&nest, &s);
 	rc = strncmp(path, libdir, strlen(libdir));
         if(rc) {
-	    fprintf(stderr, "config contains invalid path\n");
+	    agerr (AGERR, "config contains invalid path\n");
 	    return 0;
 	}
 	if (nest == 0)
@@ -158,7 +158,7 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 	    api = token(&nest, &s);
 	    gv_api = gvplugin_api(api);
 	    if (gv_api == -1) {
-		fprintf(stderr, "invalid api in config: %s %s\n", path, api);
+		agerr(AGERR, "invalid api in config: %s %s\n", path, api);
 		return 0;
 	    }
 	    do {
@@ -171,7 +171,7 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 		rc = gvplugin_install (gvc, gv_api,
 				type, quality, packagename, path, NULL);
 		if (!rc) {
-		    fprintf(stderr, "config error: %s %s %s\n", path, api, type);
+		    agerr(AGERR, "config error: %s %s %s\n", path, api, type);
 		    return 0;
 		}
 	    } while (nest == 2);
@@ -229,7 +229,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     if (config_path) {
 	f = fopen(config_path,"w");
 	if (!f) {
-	    fprintf(stderr,"failed to open %s for write.\n", config_path);
+	    agerr(AGERR,"failed to open %s for write.\n", config_path);
 	}
     }
 
@@ -336,18 +336,18 @@ void gvconfig(GVC_t * gvc)
 
 	rc = 0;
 	if (config_st.st_size > MAX_SZ_CONFIG) {
-	    fprintf(stderr,"%s is bigger than I can handle.\n", config_path);
+	    agerr(AGERR,"%s is bigger than I can handle.\n", config_path);
 	}
 	else {
 	    f = fopen(config_path,"r");
 	    if (!f) {
-	        fprintf(stderr,"failed to open %s for read.\n", config_path);
+	        agerr (AGERR,"failed to open %s for read.\n", config_path);
 	    }
 	    else {
 	        config_text = malloc(config_st.st_size + 1);
 	        sz = fread(config_text, 1, config_st.st_size, f);
 	        if (sz == 0) {
-		    fprintf(stderr,"%s is zero sized, or other read error.\n", config_path);
+		    agerr(AGERR,"%s is zero sized, or other read error.\n", config_path);
 		    free(config_text);
 	        }
 		else {
@@ -360,7 +360,7 @@ void gvconfig(GVC_t * gvc)
 		fclose(f);
 	}
 	if (!rc) {
-	    fprintf(stderr,"rescanning for plugins\n");
+	    agerr(AGERR,"rescanning for plugins\n");
 	    config_rescan(gvc, config_path);
 	}
     }
