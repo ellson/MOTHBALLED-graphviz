@@ -131,7 +131,6 @@ CFLAGS="$RPM_OPT_FLAGS" \
       --datadir=%{_datadir} \
       --mandir=%{_mandir} \
       --with-x \
-      --disable-gvrender \
       --with-mylibgd \
       --disable-dependency-tracking
 # need gd-2.0.29 commonly available in rpms before removing --enable-mylibgd

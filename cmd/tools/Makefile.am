@@ -110,10 +110,8 @@ gvpack_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/ingraphs/libingraphs.la \
 	$(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/plugin/cairo/libgvplugin_cairo.la \
-        $(top_builddir)/plugin/gd/libgvplugin_gd.la \
         $(top_builddir)/plugin/text/libgvplugin_text.la \
-        $(top_builddir)/plugin/layout/libgvplugin_layout.la @CAIRO_LIBS@
+        $(top_builddir)/plugin/layout/libgvplugin_layout.la
 endif
 
 

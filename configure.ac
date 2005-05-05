@@ -1201,21 +1201,6 @@ AC_SUBST(JPEG_LIBS)
 fi
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for cairo
-
-if test "x$enable_gvrender" != "xno"; then
-	PKG_CHECK_MODULES(CAIRO, cairo >= 0.1.3,
-		[AC_DEFINE_UNQUOTED(HAVE_CAIRO,1,
-			[Define if you have the cairo library [EXPERIMENTAL]])],
-		[AC_MSG_WARN(Optional cairo library not available [EXPERIMENTAL])])
-else
-	CAIRO_CFLAGS=""
-	CAIRO_LIBS=""
-fi
-AC_SUBST(CAIRO_CFLAGS)
-AC_SUBST(CAIRO_LIBS)
-
-dnl -----------------------------------
 dnl INCLUDES and LIBS for libgen (provides basename function)
 
 save_CPPFLAGS=$CPPFLAGS
@@ -1529,8 +1514,6 @@ AC_CONFIG_FILES(Makefile
 	lib/gvc/Makefile
 	lib/gvc/libgvc.pc
 	plugin/Makefile
-	plugin/cairo/Makefile
-	plugin/gd/Makefile
 	plugin/text/Makefile
 	plugin/layout/Makefile
 	cmd/Makefile

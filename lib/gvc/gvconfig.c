@@ -45,7 +45,7 @@ extern void config_codegen_builtins(GVC_t *gvc);
 
     Blank lines are allowed and ignored.
 
-    plugin_library_path {
+    plugin_library_path packagename {
 	plugin_api {
 	    plugin_type plugin_quality
 	    ...
@@ -55,8 +55,8 @@ extern void config_codegen_builtins(GVC_t *gvc);
 
     e.g.
 
-	/usr/lib/graphviz/libgvplugin_cairo.so {renderer {x 0 png 10 ps -10}}
-	/usr/lib/graphviz/libgvplugin_gdgen.so {renderer {png 0 gif 0 jpg 0}}
+	/usr/lib/graphviz/libgvplugin_cairo.so cairo {renderer {x 0 png 10 ps -10}}
+	/usr/lib/graphviz/libgvplugin_gd.so gd {renderer {png 0 gif 0 jpg 0}}
 
     Internally the config is maintained as lists of plugin_types for each plugin_api.
     If multiple plugins of the same type are found then the highest quality wins.
@@ -140,7 +140,10 @@ static void gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
     separator(&nest, &s);
     while (*s) {
 	path = token(&nest, &s);
-	packagename = token(&nest, &s);
+	if (nest == 0)
+	    packagename = token(&nest, &s);
+        else
+	    packagename = "x";
 	do {
 	    api = token(&nest, &s);
 	    gv_api = gvplugin_api(api);
