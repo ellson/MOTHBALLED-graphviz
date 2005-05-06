@@ -31,6 +31,7 @@
 #include        "types.h"
 #include        "macros.h"
 #include        "gvc.h"
+#include        "graph.h"
 
 #ifndef DISABLE_CODEGENS
 extern void config_codegen_builtins(GVC_t *gvc);
@@ -162,17 +163,18 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 		return 0;
 	    }
 	    do {
-		if (nest == 2)
+		if (nest == 2) {
 		    type = token(&nest, &s);
-		if (nest == 2)
-		    quality = atoi(token(&nest, &s));
-		else
-		    quality = 0;
-		rc = gvplugin_install (gvc, gv_api,
-				type, quality, packagename, path, NULL);
-		if (!rc) {
-		    agerr(AGERR, "config error: %s %s %s\n", path, api, type);
-		    return 0;
+		    if (nest == 2)
+		        quality = atoi(token(&nest, &s));
+		    else
+		        quality = 0;
+		    rc = gvplugin_install (gvc, gv_api,
+				    type, quality, packagename, path, NULL);
+		    if (!rc) {
+		        agerr(AGERR, "config error: %s %s %s\n", path, api, type);
+		        return 0;
+		    }
 		}
 	    } while (nest == 2);
 	} while (nest == 1);
