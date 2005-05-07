@@ -190,16 +190,6 @@ fi
 AM_CONDITIONAL(DISABLE_CODEGENS, [test "x$enable_codegens" = "xno"])
 
 dnl -----------------------------------
-dnl gvrender plugins
-
-AC_ARG_ENABLE(gvrender,
-  [AC_HELP_STRING([--disable-gvrender], [don't build gvrender plugins])])
-if test "x$enable_gvrender" = "xno"; then
-  AC_DEFINE(DISABLE_GVRENDER,1,[Define if you don't want the new gvrender codegens])
-fi
-AM_CONDITIONAL(DISABLE_GVRENDER, [test "x$enable_gvrender" = "xno"])
-
-dnl -----------------------------------
 dnl ElectricFence support for debugging
 
 AC_ARG_WITH(efence,

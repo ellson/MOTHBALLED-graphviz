@@ -97,23 +97,12 @@ gc_LDADD = \
 
 gvpack_SOURCES = gvpack.c plugins.c
 
-if DISABLE_GVRENDER
 gvpack_LDADD = \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/ingraphs/libingraphs.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/plugin/layout/libgvplugin_layout.la
-else
-gvpack_LDADD = \
-	$(top_builddir)/lib/common/libcommon.la \
-	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
-	$(top_builddir)/lib/graph/libgraph.la \
-        $(top_builddir)/plugin/text/libgvplugin_text.la \
-        $(top_builddir)/plugin/layout/libgvplugin_layout.la
-endif
-
 
 dijkstra_SOURCES = dijkstra.c
 

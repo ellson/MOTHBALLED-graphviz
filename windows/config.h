@@ -241,9 +241,6 @@ extern "C" {
 /* Set to 0 if you don't want the old codegens */
 #define ENABLE_CODEGENS 1
 
-/* Set to 1 if you want the new gvrender codegens */
-#define ENABLE_GVRENDER 0
-
 /* Define if you don't want on-demand plugin loading */
 #define DISABLE_LTDL 1
 

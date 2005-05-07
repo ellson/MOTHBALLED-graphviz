@@ -117,9 +117,6 @@
 /* Define if you don't want on-demand plugin loading */
 #define DISABLE_LTDL 1
 
-/* Set if you want the new gvrender codegens */
-#define ENABLE_GVRENDER 1
-
 /* Define if you want the gd renderers (png, gif, etc ) */
 #define GD_RENDER 1
 
