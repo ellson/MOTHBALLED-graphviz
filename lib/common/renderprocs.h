@@ -27,8 +27,7 @@ extern "C" {
     extern point add_points(point, point);
     extern pointf add_pointfs(pointf, pointf);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
-    extern boxf arrow_bb(GVJ_t * job, pointf p, pointf u, double scale,
-			  int flag);
+    extern boxf arrow_bb(pointf p, pointf u, double scale, int flag);
     extern void arrow_gen(GVJ_t * job, point p, point u, double scale,
 			  int flag);
     extern double arrow_length(edge_t * e, int flag);

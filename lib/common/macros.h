@@ -83,9 +83,18 @@
 #undef BETWEEN
 #endif
 #define BETWEEN(a,b,c)	(((a) <= (b)) && ((b) <= (c)))
+
+/* true if point p is inside box b */
 #define INSIDE(p,b)	(BETWEEN((b).LL.x,(p).x,(b).UR.x) && BETWEEN((b).LL.y,(p).y,(b).UR.y))
+/* true if boxes b0 and b1 overlap */
 #define OVERLAP(b0,b1)	(((b0).UR.x >= (b1).LL.x) && ((b1).UR.x >= (b0).LL.x) && ((b0).UR.y >= (b1).LL.y) && ((b1).UR.y >= (b0).LL.y))
+/* true if box b0 completely contains b1*/
 #define CONTAINS(b0,b1)	(((b0).UR.x >= (b1).UR.x) && ((b0).UR.y >= (b1).UR.y) && ((b0).LL.x <= (b1).LL.x) && ((b0).LL.y <= (b1).LL.y))
+
+/* expand box b as needed to enclose point p */
+#define EXPANDBP(b, p)	(b.LL.x = MIN(b.LL.x, p.x), b.LL.y = MIN(b.LL.y, p.y), b.UR.x = MAX(b.UR.x, p.x), b.UR.y = MAX(b.UR.y, p.y))
+/* expand box b0 as needed to enclose box b1 */
+#define EXPANDBB(b0, b1) (b0.LL.x = MIN(b0.LL.x, b1.LL.x), b0.LL.y = MIN(b0.LL.y, b1.LL.y), b0.UR.x = MAX(b0.UR.x, b1.UR.x), b0.UR.y = MAX(b0.UR.y, b1.UR.y))
 
 #define ROUND(f)        ((f>=0)?(int)(f + .5):(int)(f - .5))
 #define RADIANS(deg)	((deg)/180.0 * PI)

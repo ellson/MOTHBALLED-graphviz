@@ -1636,45 +1636,53 @@ static FILE *file_select(char *str)
     return rv;
 }
 
-static void init_bb_node(node_t *n)
-{
-    ND_bb(n).LL.x = ND_coord_i(n).x - ND_lw_i(n);
-    ND_bb(n).LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
-    ND_bb(n).UR.x = ND_coord_i(n).x + ND_rw_i(n);
-    ND_bb(n).UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
-}
-
-static box bezier_bb(bezier bz)
+static boxf bezier_bb(bezier bz)
 {
     int i;
+    point p;
     box bb;
+    boxf bbf;
 
     assert(bz.size > 0);
     bb.LL = bb.UR = bz.list[0];
     for (i = 1; i < bz.size; i++) {
-	bb.LL.x = MIN(bb.LL.x, bz.list[i].x);
-	bb.LL.y = MIN(bb.LL.y, bz.list[i].y);
-	bb.UR.x = MAX(bb.UR.x, bz.list[i].x);
-	bb.UR.y = MAX(bb.UR.y, bz.list[i].y);
+        p=bz.list[i];
+	EXPANDBP(bb,p);
     }
-    return bb;
+    B2BF(bb, bbf);
+    return bbf;
 }
 
 static void init_splines_bb(splines *spl)
 {
     int i;
-    box bb, b;
+    bezier bz;
+    boxf bb, b;
+    pointf p, u;
 
     assert(spl->size > 0);
-    bb = bezier_bb(spl->list[0]);
-    for (i = 1; i < spl->size; i++) {
-        b = bezier_bb(spl->list[0]);
-	bb.LL.x = MIN(bb.LL.x, b.LL.x);
-	bb.LL.y = MIN(bb.LL.y, b.LL.y);
-	bb.UR.x = MAX(bb.UR.x, b.UR.x);
-	bb.UR.y = MAX(bb.UR.y, b.UR.y);
+    bz = spl->list[0];
+    bb = bezier_bb(bz);
+    for (i = 0; i < spl->size; i++) {
+        if (i > 0) {
+	    bz = spl->list[i];
+            b = bezier_bb(bz);
+	    EXPANDBB(bb, b);
+	}
+	if (bz.sflag) {
+	    P2PF(bz.sp, p);
+	    P2PF(bz.list[0], u);
+	    b = arrow_bb(p, u, 1, bz.sflag);
+	    EXPANDBB(bb, b);
+	}
+	if (bz.eflag) {
+	    P2PF(bz.ep, p);
+	    P2PF(bz.list[bz.size - 1], u);
+	    b = arrow_bb(p, u, 1, bz.eflag);
+	    EXPANDBB(bb, b);
+	}
     }
-    B2BF(bb,spl->bb);
+    spl->bb = bb;
 }
 
 static void init_bb_edge(edge_t *e)
@@ -1690,17 +1698,32 @@ static void init_bb_edge(edge_t *e)
 //        {}
 }
 
+static void init_bb_node(graph_t *g, node_t *n)
+{
+    edge_t *e;
+
+    ND_bb(n).LL.x = ND_coord_i(n).x - ND_lw_i(n);
+    ND_bb(n).LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
+    ND_bb(n).UR.x = ND_coord_i(n).x + ND_rw_i(n);
+    ND_bb(n).UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
+
+    for (e = agfstout(g, n); e; e = agnxtout(g, e))
+	init_bb_edge(e);
+
+    /* IDEA - could also save in the node the bb of the node and 
+    all of its outedges, then the scan time would be proportional
+    to just the number of nodes for many graphs.
+    Wouldn't work so well if the edges are sprawling all over the place
+    but it wouldn't add much to the cost to try before trying individual
+    nodes and edges. */
+}
+
 static void init_bb(graph_t *g)
 {
     node_t *n;
-    edge_t *e;
 
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	init_bb_node(n);
-        for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    init_bb_edge(e);
-	}
-    }
+    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+	init_bb_node(g, n);
 }
 
 void emit_jobs (GVC_t * gvc, graph_t * g)
