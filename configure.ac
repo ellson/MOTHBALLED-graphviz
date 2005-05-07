@@ -1514,7 +1514,6 @@ AC_CONFIG_FILES(Makefile
 	lib/gvc/Makefile
 	lib/gvc/libgvc.pc
 	plugin/Makefile
-	plugin/text/Makefile
 	plugin/layout/Makefile
 	cmd/Makefile
 	cmd/dot/Makefile

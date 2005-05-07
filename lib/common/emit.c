@@ -1714,7 +1714,8 @@ static void init_bb_node(graph_t *g, node_t *n)
     all of its outedges, then the scan time would be proportional
     to just the number of nodes for many graphs.
     Wouldn't work so well if the edges are sprawling all over the place
-    but it wouldn't add much to the cost to try before trying individual
+    because then the boxes would overlap a lot and require more tests,
+    but perhaps that wouldn't add much to the cost before trying individual
     nodes and edges. */
 }
 
