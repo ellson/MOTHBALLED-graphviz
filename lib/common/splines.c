@@ -254,6 +254,8 @@ clip_and_install(edge_t * fe, edge_t * le, point * ps, int pn,
     int start, end, i, clipTail, clipHead;
     graph_t *g;
     edge_t *orig;
+    box* tbox;
+    box* hbox;
     inside_t inside_context;
 
     tn = fe->tail;
@@ -273,16 +275,20 @@ clip_and_install(edge_t * fe, edge_t * le, point * ps, int pn,
     if (tn == orig->tail) {
 	clipTail = ED_tail_port(orig).clip;
 	clipHead = ED_head_port(orig).clip;
+	tbox = ED_tail_port(orig).bp;
+	hbox = ED_head_port(orig).bp;
     }
     else { /* fe and orig are reversed */
 	clipTail = ED_head_port(orig).clip;
 	clipHead = ED_tail_port(orig).clip;
+	hbox = ED_tail_port(orig).bp;
+	tbox = ED_head_port(orig).bp;
     }
 
     /* spline may be interior to node */
     if(clipTail && ND_shape(tn) && ND_shape(tn)->fns->insidefn) {
 	inside_context.s.n = tn;
-	inside_context.s.bp = ED_tail_port(orig).bp;
+	inside_context.s.bp = tbox;
 	for (start = 0; start < pn - 4; start += 3) {
 	    p2.x = ps[start + 3].x - ND_coord_i(tn).x;
 	    p2.y = ps[start + 3].y - ND_coord_i(tn).y;
@@ -294,7 +300,7 @@ clip_and_install(edge_t * fe, edge_t * le, point * ps, int pn,
 	start = 0;
     if(clipHead && ND_shape(hn) && ND_shape(hn)->fns->insidefn) {
 	inside_context.s.n = hn;
-	inside_context.s.bp = ED_head_port(orig).bp;
+	inside_context.s.bp = hbox;
 	for (end = pn - 4; end > 0; end -= 3) {
 	    p2.x = ps[end].x - ND_coord_i(hn).x;
 	    p2.y = ps[end].y - ND_coord_i(hn).y;
