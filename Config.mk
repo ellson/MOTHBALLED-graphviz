@@ -7,10 +7,10 @@ ARCH=linux.i386
 INSTALLROOT=/usr/local/graphviz
 
 # specify where to find tcl >= 8.0
-TCLDIR=/usr/common/tcl8.3.1
+TCLDIR=/usr/common/tcl8.3.3
 
 # specify where to find tk >= 8.0
-TKDIR=/usr/common/tcl8.3.1
+TKDIR=/usr/common/tcl8.3.3
 
 # specify where to find expat.h
 EXPAT_INC = 
@@ -51,10 +51,4 @@ TK_LIBDIR=$(TKDIR)/lib
 # location of tk.h
 TK_INCDIR=$(TKDIR)/include
 
-VERSION=2.3
-VERSION=2.3
-VERSION=2.3
-VERSION=2.3
-VERSION=2.3
-VERSION=2.3
 VERSION=2.3
