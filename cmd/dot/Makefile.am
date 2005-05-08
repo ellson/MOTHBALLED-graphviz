@@ -49,8 +49,11 @@ install-data-hook:
 	(cd $(DESTDIR)$(man1dir); for i in $(linkedman); do rm -f $$i; $(LN_S) dot.1 $$i; done;)
 	(cd $(DESTDIR)$(pdfdir); for i in $(linkedpdf); do rm -f $$i; $(LN_S) dot.pdf $$i; done;)
 
+# create "neato", "fdp" etc as soflinks to "dot"
+# run dot once, if possible, to create plugin config
 install-exec-hook:
 	(cd $(DESTDIR)$(bindir); for i in $(linkedprogram); do rm -f $$i; $(LN_S) dot $$i; done;)
+	if test "x$(DESTDIR)" = "x"; then (cd $(bindir); ./dot -V 2>/dev/null;); fi
 
 uninstall-hook:
 	(cd $(DESTDIR)$(man1dir); for i in $(linkedman); do rm -f $$i; done;)

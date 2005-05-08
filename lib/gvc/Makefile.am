@@ -15,6 +15,8 @@ pkginclude_HEADERS = gvc.h gvcint.h gvplugin.h \
 pkglib_LTLIBRARIES = libgvc.la
 
 libgvc_la_SOURCES = gvrender.c gvlayout.c gvtextlayout.c gvcontext.c \
-	gvjobs.c gvevent.c gvplugin.c gvconfig.c gvhostname.c
+	gvjobs.c gvevent.c gvplugin.c gvconfig.c
+
+# gvhostname.c
 
 EXTRA_DIST = Makefile.old
