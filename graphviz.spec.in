@@ -146,8 +146,7 @@ cp -a $RPM_BUILD_ROOT%{_datadir}/%{name}/doc __doc
 rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/doc
 
 %post
-echo -n "Running 'dot -V' to generate 'config' for plugins."
-%{_bindir}/dot -V
+%{_bindir}/dot -V 2>/dev/null
 
 %clean
 rm -rf $RPM_BUILD_ROOT
