@@ -1888,6 +1888,138 @@ utf8ToLatin1 (char* s)
     return ns;
 }
 
+/*
+ *--------------------------------------------------------------
+ *
+ * lineToBox --
+ *
+ *      Determine whether a line lies entirely inside, entirely
+ *      outside, or overlapping a given rectangular area.
+ *
+ * Results:
+ *      -1 is returned if the line given by p1 and p2
+ *      is entirely outside the rectangle given by b.
+ * 	0 is returned if the polygon overlaps the rectangle, and
+ *	1 is returned if the polygon is entirely inside the rectangle.
+ *
+ * Side effects:
+ *      None.
+ *
+ *--------------------------------------------------------------
+ */
+
+/* This code steals liberally from algorithms in tk/generic/tkTrig.c -- jce */
+
+static int lineToBox(pointf p1, pointf p2, boxf b)
+{
+    int inside1, inside2;
+
+    /*
+     * First check the two points individually to see whether they
+     * are inside the rectangle or not.
+     */
+
+    inside1 = (p1.x >= b.LL.x) && (p1.x <= b.UR.x)
+            && (p1.y >= b.LL.y) && (p1.y <= b.UR.y);
+    inside2 = (p2.x >= b.LL.x) && (p2.x <= b.UR.x)
+            && (p2.y >= b.LL.y) && (p2.y <= b.UR.y);
+    if (inside1 != inside2) {
+        return 0;
+    }
+    if (inside1 & inside2) {
+        return 1;
+    }
+
+    /*
+     * Both points are outside the rectangle, but still need to check
+     * for intersections between the line and the rectangle.  Horizontal
+     * and vertical lines are particularly easy, so handle them
+     * separately.
+     */
+
+    if (p1.x == p2.x) {
+        /*
+         * Vertical line.
+         */
+
+        if (((p1.y >= b.LL.y) ^ (p2.y >= b.LL.y))
+                && (p1.x >= b.LL.x)
+                && (p1.x <= b.UR.x)) {
+            return 0;
+        }
+    } else if (p1.y == p2.y) {
+        /*
+         * Horizontal line.
+         */
+        if (((p1.x >= b.LL.x) ^ (p2.x >= b.LL.x))
+                && (p1.y >= b.LL.y)
+                && (p1.y <= b.UR.y)) {
+            return 0;
+        }
+    } else {
+        double m, x, y, low, high;
+
+        /*
+         * Diagonal line.  Compute slope of line and use
+         * for intersection checks against each of the
+         * sides of the rectangle: left, right, bottom, top.
+         */
+
+        m = (p2.y - p1.y)/(p2.x - p1.x);
+        if (p1.x < p2.x) {
+            low = p1.x;  high = p2.x;
+        } else {
+            low = p2.x; high = p1.x;
+        }
+
+        /*
+         * Left edge.
+         */
+
+        y = p1.y + (b.LL.x - p1.x)*m;
+        if ((b.LL.x >= low) && (b.LL.x <= high)
+                && (y >= b.LL.y) && (y <= b.UR.y)) {
+            return 0;
+        }
+
+        /*
+         * Right edge.
+         */
+
+        y += (b.UR.x - b.LL.x)*m;
+        if ((y >= b.LL.y) && (y <= b.UR.y)
+                && (b.UR.x >= low) && (b.UR.x <= high)) {
+            return 0;
+        }
+
+        /*
+         * Bottom edge.
+         */
+
+        if (p1.y < p2.y) {
+            low = p1.y;  high = p2.y;
+        } else {
+            low = p2.y; high = p1.y;
+        }
+        x = p1.x + (b.LL.y - p1.y)/m;
+        if ((x >= b.LL.x) && (x <= b.UR.x)
+                && (b.LL.y >= low) && (b.LL.y <= high)) {
+            return 0;
+        }
+
+        /*
+         * Top edge.
+         */
+
+        x += (b.UR.y - b.LL.y)/m;
+        if ((x >= b.LL.x) && (x <= b.UR.x)
+                && (b.UR.y >= low) && (b.UR.y <= high)) {
+            return 0;
+        }
+    }
+    return -1;
+}
+
 boolean overlap_node(node_t *n, boxf b)
 {
     boxf bb;
@@ -1938,24 +2070,19 @@ static boolean overlap_arrow(pointf p, pointf u, double scale, int flag, boxf b)
 
 static boolean overlap_bezier(bezier bz, boxf b)
 {
-    int i, j;
+    int i;
     point pp;
-    box bb;
-    boxf bbf;
     pointf p, u;
 
-    for (i = 0; i < bz.size -1; i += 3) {
-        /* compute a bb for the bezier segment */
-        bb.LL = bb.UR = bz.list[i];
-        for (j = i+1; j < i+4; j++) {
-	    pp = bz.list[j];
-	    EXPANDBP(bb, pp);
-        }
-        B2BF(bb, bbf);
-        if (OVERLAP(b, bbf)) {
-            /* FIXME - check if really close enough to actual curve */
-            return TRUE;
-        }
+    assert(bz.size);
+    pp = bz.list[0];
+    P2PF(pp, u);
+    for (i = 1; i < bz.size; i++) {
+	pp = bz.list[i];
+	P2PF(pp, p);
+	if (lineToBox(p, u, b) != -1)
+	       return TRUE;
+	u = p;
     }
 
     /* check arrows */
