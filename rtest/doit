@@ -310,7 +310,7 @@ then
   exit 1
 fi
 
-TCLLIBPATH=$INSTALLROOT/lib
+export TCLLIBPATH=$INSTALLROOT/lib
 PATH=$BINDIR:$TCLDIR:$PATH
 echo doit: BINDIR=$BINDIR ARCHDIR=$ARCHDIR ARCHTYPE=$ARCHTYPE
 if [[ -n "$SHOWENV" ]]
@@ -657,10 +657,8 @@ if [[ -n "$TCLTESTS" ]]
 then
   if [[ -n "$VERBOSE" ]]
   then
-    echo export TCLLIBPATH=$INSTALLROOT/lib
     echo $TESTDIR/doted
   else
-    export TCLLIBPATH=$INSTALLROOT/lib
     $TESTDIR/doted
   fi
 fi
