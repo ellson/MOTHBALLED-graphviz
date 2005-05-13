@@ -206,16 +206,10 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 
 static pointf gvrender_pt(GVJ_t *job, point p)
 {
-    pointf rv;
+    pointf pf;
 
-    if (job->rotation) {
-	rv.x = -((double) p.y - job->focus.y) * job->compscale.x + job->width / 2.;
-	rv.y = ((double) p.x - job->focus.x) * job->compscale.y + job->height / 2.;
-    } else {
-	rv.x = ((double) p.x - job->focus.x) * job->compscale.x + job->width / 2.;
-	rv.y = ((double) p.y - job->focus.y) * job->compscale.y + job->height / 2.;
-    }
-    return rv;
+    P2PF(p, pf);
+    return gvrender_ptf(job, pf);
 }
 
 static int gvrender_comparestr(const void *s1, const void *s2)
@@ -255,10 +249,9 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     job->clip.LL.y = job->focus.y - sy - EPSILON;
 
     job->sg = g;  /* current subgraph/cluster */
+    job->compscale.y = job->compscale.x = job->zoom * job->dpi / POINTS_PER_INCH;
     if (gvre) {
-	job->compscale.x = job->zoom * job->dpi / POINTS_PER_INCH;
-	job->compscale.y = job->compscale.x *
-	    ((job->render_features->flags & GVRENDER_Y_GOES_DOWN) ? -1.0 : 1.0);
+	job->compscale.y *= (job->render_features->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
 
 	/* render specific init */
 	if (gvre->begin_graph)
