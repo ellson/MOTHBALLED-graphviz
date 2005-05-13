@@ -277,11 +277,6 @@ void gvconfig(GVC_t * gvc)
     char *config_path = NULL, *config_text = NULL;
 
     char *config_file_name = "config";
-#if 0
-    char *home;
-    char *config_dir_name = ".graphviz";
-    char *s;
-#endif
 
 #define MAX_SZ_CONFIG 100000
 #endif
@@ -303,42 +298,11 @@ void gvconfig(GVC_t * gvc)
 	return;
     }
 
-#if 0
-    home = getenv ("HOME");
-    if (!home) {
-	rc = -1;
-    }
-    else {
-	s = gvhostname();
-        config_path = malloc(strlen(home) 
-				+ 1
-				+ strlen(config_dir_name)
-				+ 1
-				+ strlen(s)
-				+ 1
-				+ strlen(config_file_name)
-				+ 1);
-        strcpy(config_path, home);
-        strcat(config_path, "/");
-        strcat(config_path, config_dir_name);
-        rc = mkdir(config_path, 0700);
-
-        strcat(config_path, "/");
-	if (s[0]) {
-	    strcat(config_path, s);
-	    strcat(config_path, "_");
-	}
-        strcat(config_path, config_file_name);
-
-        rc = stat(config_path, &config_st);
-    }
-#else
     config_path = malloc(strlen(GVLIBDIR) + 1 + strlen(config_file_name) + 1);
     strcpy(config_path, GVLIBDIR);
     strcat(config_path, "/");
     strcat(config_path, config_file_name);
     rc = stat(config_path, &config_st);
-#endif
 	
     if (rc == -1 || libdir_st.st_mtime > config_st.st_mtime) {
 	config_rescan(gvc, config_path);
