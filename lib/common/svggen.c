@@ -110,12 +110,11 @@ static char *sdotarray = "1,5";
 
 static int N_pages;
 /* static 	point	Pages; */
-static int Rot;
 static int onetime = TRUE;
 
-static int Dpi;
-static pointf CompScale;
 static int Rot;
+static pointf CompScale;
+static pointf Offset;
 
 static point Viewport;
 static pointf GraphFocus;
@@ -200,17 +199,24 @@ static void init_svg(void)
     cstk[0].penwidth = WIDTH_NORMAL;
 }
 
-/* can't hack a transform directly in SVG preamble, alas */
 static point svgpt(point p)
 {
     point rv;
 
     if (Rot) {
+#if 0
         rv.x = ROUND(-(p.y - GraphFocus.y) * CompScale.x + Viewport.x / 2.);
-        rv.y = ROUND((p.x - GraphFocus.x) * CompScale.y + Viewport.y / 2.);
+        rv.y = ROUND( (p.x - GraphFocus.x) * CompScale.y + Viewport.y / 2.);
     } else {
-        rv.x = ROUND((p.x - GraphFocus.x) * CompScale.x + Viewport.x / 2.);
-        rv.y = ROUND((p.y - GraphFocus.y) * CompScale.y + Viewport.y / 2.);
+        rv.x = ROUND( (p.x - GraphFocus.x) * CompScale.x + Viewport.x / 2.);
+        rv.y = ROUND( (p.y - GraphFocus.y) * CompScale.y + Viewport.y / 2.);
+#else
+        rv.x = ROUND(-p.y * CompScale.x + Offset.x);
+        rv.y = ROUND( p.x * CompScale.y + Offset.y);
+    } else {
+        rv.x = ROUND( p.x * CompScale.x + Offset.x);
+        rv.y = ROUND( p.y * CompScale.y + Offset.y);
+#endif
     }
     return rv;
 }
@@ -424,12 +430,14 @@ svg_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
 
 static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
-    Dpi = gvc->job->dpi;
+    int dpi = gvc->job->dpi;
+
     Viewport.x = gvc->job->width;
     Viewport.y = gvc->job->height;
     Zoom = gvc->job->zoom;
     GraphFocus = gvc->job->focus;
     CompScale = gvc->job->compscale;
+    Offset = gvc->job->offset;
 
     if (onetime) {
 	init_svg();
@@ -438,13 +446,13 @@ static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     svg_fputs("<!-- Title: ");
     svg_fputs(xml_string(g->name));
     svg_printf(" Pages: %d -->\n", N_pages);
-    if (Dpi == POINTS_PER_INCH) 
+    if (dpi == POINTS_PER_INCH) 
 	svg_printf("<svg width=\"%dpt\" height=\"%dpt\"\n",
 		   Viewport.x, Viewport.y);
     else
 	svg_printf("<svg width=\"%dpx\" height=\"%dpx\"\n",
-		   Dpi * Viewport.x / POINTS_PER_INCH,
-		   Dpi * Viewport.y / POINTS_PER_INCH);
+		   dpi * Viewport.x / POINTS_PER_INCH,
+		   dpi * Viewport.y / POINTS_PER_INCH);
     /* establish absolute units in points */
     svg_printf(" viewBox = \"%d %d %d %d\"\n", 0, 0, Viewport.x, Viewport.y);
     /* namespace of svg */
@@ -752,7 +760,9 @@ static void svg_ellipse(point p, int rx, int ry, int filled)
     mp.x = p.x;
     mp.y = p.y;
     mp = svgpt(mp);
-    svg_printf("<ellipse cx=\"%d\" cy=\"%d\"", mp.x, mp.y);
+    svg_fputs("<ellipse");
+    svg_grstyle(&cstk[SP], filled);
+    svg_printf(" cx=\"%d\" cy=\"%d\"", mp.x, mp.y);
     if (Rot) {
 	int t;
 	t = rx;
@@ -761,9 +771,7 @@ static void svg_ellipse(point p, int rx, int ry, int filled)
     }
     mp.x = rx;
     mp.y = ry;
-    svg_printf(" rx=\"%d\" ry=\"%d\"", mp.x, mp.y);
-    svg_grstyle(&cstk[SP], filled);
-    svg_fputs("/>\n");
+    svg_printf(" rx=\"%d\" ry=\"%d\"/>\n", mp.x, mp.y);
 }
 
 static void

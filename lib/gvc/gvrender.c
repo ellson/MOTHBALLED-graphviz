@@ -194,6 +194,7 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 {
     pointf rv;
 
+#if 0
     if (job->rotation) {
 	rv.x = -(p.y - job->focus.y) * job->compscale.x + job->width / 2.;
 	rv.y = (p.x - job->focus.x) * job->compscale.y + job->height / 2.;
@@ -201,6 +202,15 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 	rv.x = (p.x - job->focus.x) * job->compscale.x + job->width / 2.;
 	rv.y = (p.y - job->focus.y) * job->compscale.y + job->height / 2.;
     }
+#else
+    if (job->rotation) {
+	rv.x = -p.y * job->compscale.x + job->offset.x;
+	rv.y =  p.x * job->compscale.y + job->offset.y;
+    } else {
+	rv.x =  p.x * job->compscale.x + job->offset.x;
+	rv.y =  p.y * job->compscale.y + job->offset.y;
+    }
+#endif
     return rv;
 }
 
@@ -250,9 +260,16 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 
     job->sg = g;  /* current subgraph/cluster */
     job->compscale.y = job->compscale.x = job->zoom * job->dpi / POINTS_PER_INCH;
-    if (gvre) {
-	job->compscale.y *= (job->render_features->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
+    job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
+    if (job->rotation) {
+	job->offset.x = -job->focus.y * job->compscale.x + job->width / 2.;
+	job->offset.y = -job->focus.x * job->compscale.y + job->height / 2.;
+    } else {
+	job->offset.x = -job->focus.x * job->compscale.x + job->width / 2.;
+	job->offset.y = -job->focus.y * job->compscale.y + job->height / 2.;
+    }
 
+    if (gvre) {
 	/* render specific init */
 	if (gvre->begin_graph)
 	    gvre->begin_graph(job, gvc->graphname);

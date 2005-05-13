@@ -127,6 +127,7 @@ extern "C" {
 	boxf pageBoxClip;       /* intersection of clip and pageBox */
 
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
+	pointf offset;		/* composite translation */
 	
 	boolean fit_mode, needs_refresh, click, active, has_grown;
 	double oldx, oldy;	/* old pointer position in pixels */
