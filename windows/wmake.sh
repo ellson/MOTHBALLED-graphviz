@@ -33,7 +33,7 @@ done
 LIBS=(cdt graph agraph gd pathplan common gvc pack neatogen dotgen twopigen circogen fdpgen dotneato ingraphs)
 
 # plugins to be built
-PLUGINS=(cairo layout text)
+PLUGINS=(layout)
 
 # commands to be built
 CMDS=(dot lefty/gfx lefty dotty lneato)
@@ -73,9 +73,6 @@ do
   doComp $d
   cd ..
 done
-cd gd
-doComp gdplug
-cd ..
 doComp plugin
 cd ..
 
