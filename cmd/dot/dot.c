@@ -84,7 +84,9 @@ static void fpinit(void)
     feenableexcept(exc);
 
 #ifdef HAVE_FESETENV
+#ifdef FE_NONIEEE_ENV
     fesetenv (FE_NONIEEE_ENV);
+#endif
 #endif
 
 #elif  HAVE_FPU_CONTROL_H
