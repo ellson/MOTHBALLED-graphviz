@@ -718,14 +718,6 @@ AC_ARG_WITH(extralibdir,
   LDFLAGS="$LDFLAGS -L$withval",)
 
 dnl -----------------------------------
-dnl Checks for -lm library
-
-save_LIBS=$LIBS
-AC_CHECK_LIB(m, main, [MATH_LIBS="-lm"])
-AC_SUBST(MATH_LIBS)
-LIBS=$save_LIBS
-
-dnl -----------------------------------
 dnl ...borrow test for -lsocket -lnsl from tk8.3.3/unix/configure.in
 
 save_LIBS=$LIBS
@@ -1211,9 +1203,21 @@ AC_FUNC_ALLOCA
 
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
 	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
-	strtoul strtoll strtoull feenableexcept fesetenv uname])
+	strtoul strtoll strtoull uname])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp])
+
+dnl -----------------------------------
+dnl Checks for -lm library
+
+save_LIBS=$LIBS
+AC_CHECK_LIB(m, main, [MATH_LIBS="-lm"])
+AC_SUBST(MATH_LIBS)
+
+# Check for functions that might need -lm
+AC_CHECK_FUNCS([feenableexcept fesetenv])
+
+LIBS=$save_LIBS
 
 # Check for st_blksize in struct stat
 # AC_ST_BLKSIZE
