@@ -1070,7 +1070,7 @@ static tctype typeChk(tctype intype, Exid_t * sym)
 
     if (dom) {
 	if (!intype)
-	    intype = Y(E) | Y(V);	/* type of $ */
+	    intype = YALL;	/* type of $ */
 	if (!(dom & intype))
 	    rng = 0;
     } else if (intype)
