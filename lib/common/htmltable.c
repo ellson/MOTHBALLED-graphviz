@@ -51,6 +51,7 @@ typedef struct {
     graph_t *g;
 } htmlenv_t;
 
+#define DEBUG 1
 #ifdef DEBUG
 static void printCell(htmlcell_t * cp, int ind);
 #endif
@@ -134,7 +135,7 @@ emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env, void *obj)
     }
 
     halfwidth_x = ((double)(tp->box.UR.x - tp->box.LL.x))/2.0;
-    p.x = env->p.x;
+    p.x = env->p.x + ((double)(tp->box.UR.x + tp->box.LL.x))/2.0;
     p.y = env->p.y + ((double)(tp->box.UR.y + tp->box.LL.y))/2.0;
 
     emit_textlines(job, tp->nlines, tp->line, p,
@@ -1299,11 +1300,10 @@ void printBox(box b)
     fprintf(stderr, "(%d,%d)(%d,%d)", b.LL.x, b.LL.y, b.UR.x, b.UR.y);
 }
 
-void printImage(char *tp, int ind)
+void printImage(htmlimg_t *ip, int ind)
 {
-    int i;
     indent(ind);
-    fprintf(stderr, "img: %s\n", tp);
+    fprintf(stderr, "img: %s\n", ip->src);
 }
 
 void printTxt(htmltxt_t * tp, int ind)
