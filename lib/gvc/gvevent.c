@@ -20,9 +20,11 @@
 
 #include <stdio.h>
 
+/*
 #include "const.h"
 #include "types.h"
 #include "macros.h"
+*/
 
 #include "render.h"
 
@@ -79,6 +81,44 @@ static void * gvevent_find_obj(graph_t *g, boxf b)
     return (void *)g;
 }
 
+static void gvevent_leave_obj(GVJ_t * job)
+{
+    void *obj = job->current_obj;
+
+    if (obj) {
+        switch (agobjkind(obj)) {
+        case AGGRAPH:
+	    GD_active((graph_t*)obj) = FALSE;
+	    break;
+        case AGNODE:
+	    ND_active((node_t*)obj) = FALSE;
+	    break;
+        case AGEDGE:
+	    ED_active((edge_t*)obj) = FALSE;
+	    break;
+        }
+    }
+}
+
+static void gvevent_enter_obj(GVJ_t * job)
+{
+    void *obj = job->current_obj;
+
+    if (obj) {
+        switch (agobjkind(obj)) {
+        case AGGRAPH:
+	    GD_active((graph_t*)obj) = TRUE;
+	    break;
+        case AGNODE:
+	    ND_active((node_t*)obj) = TRUE;
+	    break;
+        case AGEDGE:
+	    ED_active((edge_t*)obj) = TRUE;
+	    break;
+        }
+    }
+}
+
 /* CLOSEENOUGH is in window units - probably should be a feature... */
 #define CLOSEENOUGH 1
 
@@ -107,8 +147,10 @@ static void gvevent_find_current_obj(GVJ_t * job, double x, double y)
 
     obj = gvevent_find_obj(job->g, b);
     if (obj != job->current_obj) {
+	gvevent_leave_obj(job);
 	job->current_obj = obj;
-fprintf(stderr,"obj=%x kind=%d\n",obj,agobjkind(obj));
+	gvevent_enter_obj(job);
+	job->needs_refresh = 1;
     }
 }
 

@@ -347,7 +347,7 @@ extern "C" {
 	textlabel_t *label;	/* if the cluster has a title */
 	box bb;			/* bounding box */
 	point border[4];	/* sizes of margins for graph labels */
-	boolean has_labels, has_images;
+	boolean has_labels, has_images, active;
 	unsigned char charset; /* input character set */
 	int rankdir;
 	int ht1, ht2;		/* below and above extremal ranks */
@@ -395,6 +395,7 @@ extern "C" {
 
     } Agraphinfo_t;
 
+#define GD_active(g) (g)->u.active
 #define GD_alg(g) (g)->u.alg
 #define GD_bb(g) (g)->u.bb
 #define GD_border(g) (g)->u.border
@@ -454,12 +455,13 @@ extern "C" {
 	void *alg;
 	char state;
 	boolean clustnode;
+	boolean  active;
 
 #ifndef DOT_ONLY
+	boolean pinned;
 	short xsize, ysize;
 	int id, heapindex, hops;
 	double *pos, dist;
-	boolean pinned;
 #endif
 #ifndef NEATO_ONLY
 	boolean showboxes, has_port;
@@ -494,6 +496,7 @@ extern "C" {
 
 #define ND_UF_parent(n) (n)->u.UF_parent
 #define ND_UF_size(n) (n)->u.UF_size
+#define ND_active(n) (n)->u.active
 #define ND_alg(n) (n)->u.alg
 #define ND_bb(n) (n)->u.bb
 #define ND_clust(n) (n)->u.clust
@@ -554,6 +557,7 @@ extern "C" {
 	char label_ontop;
 	edge_t *to_orig;	/* for dot's shapes.c    */
 	void *alg;
+	boolean active;
 
 #ifndef DOT_ONLY
 	double factor;
@@ -572,6 +576,7 @@ extern "C" {
 
     } Agedgeinfo_t;
 
+#define ED_active(e) (e)->u.active
 #define ED_alg(e) (e)->u.alg
 #define ED_conc_opp_flag(e) (e)->u.conc_opp_flag
 #define ED_count(e) (e)->u.count

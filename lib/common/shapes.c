@@ -225,6 +225,24 @@ static int same_side(pointf p0, pointf p1, pointf L0, pointf L1)
 }
 
 static
+void activepencolor(GVJ_t * job, node_t * n)
+{
+    char *color;
+
+    color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+    gvrender_set_pencolor(job, color);
+}
+
+static
+void activefillcolor(GVJ_t * job, node_t * n)
+{
+    char *color;
+
+    color = late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
+    gvrender_set_fillcolor(job, color);
+}
+
+static
 void pencolor(GVJ_t * job, node_t * n)
 {
     char *color;
@@ -1183,7 +1201,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     pointf P, *vertices;
     static point *A;
     static int A_size;
-    int filled;
+    boolean filled;
     extern int xdemitState;
 
     xdemitState = EMIT_DRAW;
@@ -1218,13 +1236,20 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     } else {
 	style = stylenode(job, n);
     }
-    if (style & FILLED) {
-	fillcolor(job, n);	/* emit fill color */
-	filled = 1;
-    } else {
-	filled = 0;
+    if (ND_active(n)) {
+	activefillcolor(job,n);
+	filled = TRUE;
+	activepencolor(job,n);
     }
-    pencolor(job, n);		/* emit pen color */
+    else {
+        if (style & FILLED) {
+	    fillcolor(job, n);	/* emit fill color */
+	    filled = TRUE;
+        } else {
+	    filled = FALSE;
+        }
+        pencolor(job, n);	/* emit pen color */
+    }
 
     if (ND_shape(n)->usershape) {
 	for (i = 0; i < sides; i++) {
@@ -1240,7 +1265,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    }
 	}
 	gvrender_user_shape(job, ND_shape(n)->name, A, sides, filled);
-	filled = 0;
+	filled = FALSE;
     }
     /* if no boundary but filled, set boundary color to fill color */
     if ((peripheries == 0) && filled) {
@@ -1274,7 +1299,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    gvrender_polygon(job, A, sides, filled);
 	}
 	/* fill innermost periphery only */
-	filled = 0;
+	filled = FALSE;
     }
 
     xdemitState = EMIT_LABEL;

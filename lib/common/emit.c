@@ -852,11 +852,19 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    free(offspl.list);
 	    free(tmpspl.list);
 	} else {
-	    if (color[0]) {
-		gvrender_set_pencolor(job, color);
-		gvrender_set_fillcolor(job, color);
-	    } else {
-		gvrender_set_fillcolor(job, DEFAULT_COLOR);
+	    if (ED_active(e)) {
+		    color = late_nnstring(e, E_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+    		    gvrender_set_pencolor(job, color);
+		    color = late_nnstring(e, E_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
+		    gvrender_set_fillcolor(job, color);
+	    }
+	    else {
+	        if (color[0]) {
+		    gvrender_set_pencolor(job, color);
+		    gvrender_set_fillcolor(job, color);
+	        } else {
+		    gvrender_set_fillcolor(job, DEFAULT_COLOR);
+	        }
 	    }
 	    for (i = 0; i < ED_spl(e)->size; i++) {
 		bz = ED_spl(e)->list[i];
@@ -1345,7 +1353,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     int i, c, filled;
     graph_t *sg;
     point A[4];
-    char *str, **style;
+    char *color, *str, **style;
     node_t *n;
     edge_t *e;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
@@ -1381,23 +1389,31 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		    break;
 		}
 	}
-	if (((str = agget(sg, "pencolor")) != 0) && str[0])
-	    gvrender_set_pencolor(job, str);
-	else if (((str = agget(sg, "color")) != 0) && str[0])
-	    gvrender_set_pencolor(job, str);
-	/* bgcolor is supported for backward compatability */
-	else if (((str = agget(sg, "bgcolor")) != 0) && str[0])
-	    gvrender_set_pencolor(job, str);
-
-	str = 0;
-	if (((str = agget(sg, "fillcolor")) != 0) && str[0])
-	    gvrender_set_fillcolor(job, str);
-	else if (((str = agget(sg, "color")) != 0) && str[0])
-	    gvrender_set_fillcolor(job, str);
-	/* bgcolor is supported for backward compatability */
-	else if (((str = agget(sg, "bgcolor")) != 0) && str[0]) {
-	    filled = TRUE;
-	    gvrender_set_fillcolor(job, str);
+	if (GD_active(sg)) {
+	    color = late_nnstring(sg, G_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+    	    gvrender_set_pencolor(job, color);
+	    color = late_nnstring(sg, G_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
+	    gvrender_set_fillcolor(job, color);
+	}
+	else {
+	    if (((color = agget(sg, "pencolor")) != 0) && color[0])
+	        gvrender_set_pencolor(job, color);
+	    else if (((color = agget(sg, "color")) != 0) && color[0])
+	        gvrender_set_pencolor(job, color);
+	    /* bgcolor is supported for backward compatability */
+	    else if (((color = agget(sg, "bgcolor")) != 0) && color[0])
+	        gvrender_set_pencolor(job, color);
+    
+	    color = 0;
+	    if (((color = agget(sg, "fillcolor")) != 0) && color[0])
+	        gvrender_set_fillcolor(job, color);
+	    else if (((color = agget(sg, "color")) != 0) && color[0])
+	        gvrender_set_fillcolor(job, color);
+	    /* bgcolor is supported for backward compatability */
+	    else if (((color = agget(sg, "bgcolor")) != 0) && color[0]) {
+	        filled = TRUE;
+	        gvrender_set_fillcolor(job, color);
+	    }
 	}
 	A[0] = GD_bb(sg).LL;
 	A[2] = GD_bb(sg).UR;
