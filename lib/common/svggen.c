@@ -836,6 +836,7 @@ static void svg_user_shape(char *name, point * A, int n, int filled)
     point sz;
     char *imagefile;
     int minx, miny;
+    int maxx, maxy;
 
     if (cstk[SP].pen == P_NONE) {
 	/* its invisible, don't draw */
@@ -849,19 +850,21 @@ static void svg_user_shape(char *name, point * A, int n, int filled)
 	svg_polygon(A, n, filled);
 	return;
     }
+/*
     p = ND_coord_i(Curnode);
     p.x -= ND_lw_i(Curnode);
     p.y += ND_ht_i(Curnode) / 2;
     p = svgpt(p);
     sz.x = ROUND((ND_lw_i(Curnode) + ND_rw_i(Curnode)));
     sz.y = ROUND(ND_ht_i(Curnode));
+*/
 
     svg_fputs("<clipPath id=\"mypath");
     svg_fputs(name);
     svg_fputs(Curnode->name);
     svg_fputs("\">\n<polygon points=\"");
-    minx = svgpt(A[0]).x;
-    miny = svgpt(A[0]).y;
+    maxx = minx = svgpt(A[0]).x;
+    maxy = miny = svgpt(A[0]).y;
     for (i = 0; i < n; i++) {
 	p = svgpt(A[i]);
 
@@ -869,9 +872,15 @@ static void svg_user_shape(char *name, point * A, int n, int filled)
 	    minx = p.x;
 	if (p.y < miny)
 	    miny = p.y;
+	if (p.x > maxx)
+	    maxx = p.x;
+	if (p.y > maxy)
+	    maxy = p.y;
 
 	svg_printf("%d,%d ", p.x, p.y);
     }
+    sz.x = maxx - minx;
+    sz.y = maxy - miny;
     /* because Adobe SVG is broken (?) */
     p = svgpt(A[0]);
     svg_printf("%d,%d ", p.x, p.y);
