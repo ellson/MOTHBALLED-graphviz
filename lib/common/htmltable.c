@@ -264,7 +264,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env, void *obj)
     }
 
     if (tbl->data.border)
-	doBorder(job, NULL, tbl->data.border, pts);
+	doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
 
     if (tbl->data.href)
 	doAnchorEnd(job);
@@ -322,7 +322,7 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, void *obj)
 	emit_html_txt(job, cp->child.u.txt, env, obj);
 
     if (cp->data.border)
-	doBorder(job, NULL, cp->data.border, pts);
+	doBorder(job, cp->data.pencolor, cp->data.border, pts);
 
     if (cp->data.href)
 	doAnchorEnd(job);
@@ -1032,6 +1032,9 @@ static void pos_html_cell(htmlcell_t * cp, box pos, int sides)
     point oldsz;
     box cbox;
 
+    if (!cp->data.pencolor)
+	cp->data.pencolor = cp->parent->data.pencolor;
+
     /* If fixed, align cell */
     if (cp->data.flags & FIXED_FLAG) {
 	oldsz = cp->data.box.UR;
@@ -1130,6 +1133,9 @@ static void pos_html_tbl(htmltbl_t * tbl, box pos, int sides)
     htmlcell_t **cells = tbl->u.n.cells;
     htmlcell_t *cp;
     box cbox;
+
+    if (tbl->u.n.parent && !tbl->data.pencolor)
+	tbl->data.pencolor = tbl->u.n.parent->data.pencolor;
 
     oldsz = tbl->data.box.UR.x;
     delx = (pos.UR.x - pos.LL.x) - oldsz;
