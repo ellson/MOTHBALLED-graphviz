@@ -776,6 +776,12 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    if (*p == ':')
 		numc++;
 
+	if (ED_active(e)) {
+	    color = late_nnstring(e, E_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+    	    gvrender_set_pencolor(job, color);
+	    color = late_nnstring(e, E_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
+	    gvrender_set_fillcolor(job, color);
+	}
 	/* if more than one color - then generate parallel beziers, one per color */
 	if (numc) {
 	    /* calculate and save offset vector spline and initialize first offset spline */
@@ -820,11 +826,13 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    colors = strdup(color);
 	    for (cnum = 0, color = strtok(colors, ":"); color;
 		 cnum++, color = strtok(0, ":")) {
-		if (color[0]) {
-		    gvrender_set_pencolor(job, color);
-		    gvrender_set_fillcolor(job, color);
-		} else {
-		    gvrender_set_fillcolor(job, DEFAULT_COLOR);
+	        if (! ED_active(e)) {
+		    if (color[0]) {
+		        gvrender_set_pencolor(job, color);
+		        gvrender_set_fillcolor(job, color);
+		    } else {
+		        gvrender_set_fillcolor(job, DEFAULT_COLOR);
+		    }
 		}
 		for (i = 0; i < tmpspl.size; i++) {
 		    tmplist = tmpspl.list[i].list;
@@ -852,13 +860,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    free(offspl.list);
 	    free(tmpspl.list);
 	} else {
-	    if (ED_active(e)) {
-		    color = late_nnstring(e, E_activepencolor, DEFAULT_ACTIVEPENCOLOR);
-    		    gvrender_set_pencolor(job, color);
-		    color = late_nnstring(e, E_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
-		    gvrender_set_fillcolor(job, color);
-	    }
-	    else {
+	    if (! ED_active(e)) {
 	        if (color[0]) {
 		    gvrender_set_pencolor(job, color);
 		    gvrender_set_fillcolor(job, color);
@@ -891,6 +893,10 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    }
 	}
     }
+    if (ED_active(e)) {
+	gvrender_set_pencolor(job, DEFAULT_COLOR);
+	gvrender_set_fillcolor(job, DEFAULT_COLOR);
+    }
     xdemitState = EMIT_LABEL;
     if (ED_label(e)) {
 	emit_label(job, ED_label(e), (void *) e);
@@ -908,7 +914,6 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	gvrender_end_context(job);
 }
 
-#if 1
 static boolean edge_in_box(edge_t *e, boxf b)
 {
     splines *spl;
@@ -924,7 +929,6 @@ static boolean edge_in_box(edge_t *e, boxf b)
 
     return FALSE;
 }
-#endif
 
 static void emit_edge(GVJ_t * job, edge_t * e)
 {
