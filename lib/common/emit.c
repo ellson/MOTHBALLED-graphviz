@@ -831,6 +831,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 		        gvrender_set_pencolor(job, color);
 		        gvrender_set_fillcolor(job, color);
 		    } else {
+		        gvrender_set_pencolor(job, DEFAULT_COLOR);
 		        gvrender_set_fillcolor(job, DEFAULT_COLOR);
 		    }
 		}
@@ -865,6 +866,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 		    gvrender_set_pencolor(job, color);
 		    gvrender_set_fillcolor(job, color);
 	        } else {
+		    gvrender_set_pencolor(job, DEFAULT_COLOR);
 		    gvrender_set_fillcolor(job, DEFAULT_COLOR);
 	        }
 	    }
@@ -892,10 +894,6 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 		free(bzf.list);
 	    }
 	}
-    }
-    if (ED_active(e)) {
-	gvrender_set_pencolor(job, DEFAULT_COLOR);
-	gvrender_set_fillcolor(job, DEFAULT_COLOR);
     }
     xdemitState = EMIT_LABEL;
     if (ED_label(e)) {

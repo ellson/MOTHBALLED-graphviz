@@ -250,6 +250,8 @@ void pencolor(GVJ_t * job, node_t * n)
     color = late_nnstring(n, N_color, "");
     if (color[0])
 	gvrender_set_pencolor(job, color);
+    else
+	gvrender_set_pencolor(job, DEFAULT_COLOR);
 }
 
 static
