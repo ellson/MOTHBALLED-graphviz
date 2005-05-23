@@ -1432,8 +1432,10 @@ int make_html_label(textlabel_t * lp, void *obj)
 	env.g = ((Agraph_t *) obj)->root;
 	break;
     case AGNODE:
-    case AGEDGE:
 	env.g = ((Agnode_t *) obj)->graph;
+	break;
+    case AGEDGE:
+	env.g = ((Agedge_t *) obj)->head->graph;
 	break;
     }
     env.finfo.size = lp->fontsize;
