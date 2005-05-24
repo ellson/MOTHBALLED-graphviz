@@ -253,18 +253,22 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 
     sx = job->width / (job->zoom * 2.);
     sy = job->height / (job->zoom * 2.);
-    job->clip.UR.x = job->focus.x + sx + EPSILON;
-    job->clip.UR.y = job->focus.y + sy + EPSILON;
-    job->clip.LL.x = job->focus.x - sx - EPSILON;
-    job->clip.LL.y = job->focus.y - sy - EPSILON;
 
     job->sg = g;  /* current subgraph/cluster */
     job->compscale.y = job->compscale.x = job->zoom * job->dpi / POINTS_PER_INCH;
     job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
     if (job->rotation) {
+        job->clip.UR.x = job->focus.x + sy + EPSILON;
+        job->clip.UR.y = job->focus.y + sx + EPSILON;
+        job->clip.LL.x = job->focus.x - sy - EPSILON;
+        job->clip.LL.y = job->focus.y - sx - EPSILON;
 	job->offset.x = -job->focus.y * job->compscale.x + job->width / 2.;
 	job->offset.y = -job->focus.x * job->compscale.y + job->height / 2.;
     } else {
+        job->clip.UR.x = job->focus.x + sx + EPSILON;
+        job->clip.UR.y = job->focus.y + sy + EPSILON;
+        job->clip.LL.x = job->focus.x - sx - EPSILON;
+        job->clip.LL.y = job->focus.y - sy - EPSILON;
 	job->offset.x = -job->focus.x * job->compscale.x + job->width / 2.;
 	job->offset.y = -job->focus.y * job->compscale.y + job->height / 2.;
     }
