@@ -51,7 +51,6 @@ typedef struct {
     graph_t *g;
 } htmlenv_t;
 
-#define DEBUG 1
 #ifdef DEBUG
 static void printCell(htmlcell_t * cp, int ind);
 #endif
