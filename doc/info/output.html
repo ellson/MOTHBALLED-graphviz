@@ -144,8 +144,6 @@ formats need to be interpreted in this manner.
     <TD>Polyline using the given n points
   <TR><TD>B n x<sub>1</sub> y<sub>1</sub> ... x<sub>n</sub> y<sub>n</sub>
     <TD>B-spline using the given n control points
-  <TR><TD>b n x<sub>1</sub> y<sub>1</sub> ... x<sub>n</sub> y<sub>n</sub>
-    <TD>Filled B-spline using the given n control points.
   <TR><TD>T x y j w n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
     <TD>Text drawn using the baseline point (x,y). The text consists of the
     n characters following '-'. The text should be left-aligned (centered,
@@ -344,11 +342,46 @@ formats need to be interpreted in this manner.
   The edge description is completed by the edge's 
   <A HREF=attrs.html#d:style>style</A> and <A HREF=attrs.html#d:color>color</A>.
   As with nodes, if a style is not defined, "solid" is used.
+  <P>
+  <B>Note:</B> The control points given in an edge statement define the
+  body of the edge. In particular, if the edge has an arrowhead to the
+  head or tail node,
+  there will be a gap between the last or first control points and the
+  boundary of the associated node. There are at least 3 possible ways
+  of handling this gap:
+  <UL>
+  <LI> Arrange that the input graph uses <TT>dir=none</TT>, 
+  <TT>arrowhead=none</TT>, or <TT>arrowtail=none</TT> for all edges.
+  In this case, the terminating control points will always touch the
+  <LI> Consider the line segment joining the control point and the center
+  of the node, and determine the point where the segment intersects the
+  node's boundary. Then use the control point and the intersection point
+  as the main axis of an arrowhead. The problem with this approach is 
+  that, if the edge has a port, the edge will not be pointing to the
+  center of the node. In this case, rather than use the control point
+  and center point, one can use the control point and its tangent.
+  <LI> Arrange that the input graph uses <TT>headclip=false</TT> or
+  <TT>tailclip=false</TT>. In this case, the edge will terminate at
+  the node's center rather than its boundary. If arrowheads are used,
+  there will still be a gap, but normally this will occur within the
+  node. The application will still need to clip the spline to the node
+  boundary. Also, as with the previous item, if the edge points to
+  a node port, this technique will fail. 
+  </UL>
   </DL>
   The output consists of one <STRONG>graph</STRONG> line, a sequence of
   <STRONG>node</STRONG> lines, one per node, a sequence of 
   <STRONG>edge</STRONG> lines, one per edge, and a final <STRONG>stop</STRONG>
   line. All units are in inches, represented by a floating point number.
+  <P>
+  Note that the plain formats provide minimal information, really giving not
+  much more than node positions and sizes, and edge spline control points.
+  These formats are usually most useful to applications wanting just this
+  geometric information, and willing to fill in all of the graphical details.
+  The only real advantage to these formats is their terseness and their
+  ease of parsing. In general, the <A HREF=#d:dot>dot</A> and
+  <A HREF=#d:xdot>xdot</A> are preferable in terms of the quantity of
+  information provided.
 
 <DT><A NAME=d:png HREF=#a:png><STRONG>png</STRONG></A>
 <DD>   Produces output in the PNG (Portable Network Graphics) format.
