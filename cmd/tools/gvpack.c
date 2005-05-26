@@ -76,6 +76,8 @@ static int G_cnt;		/* No. of -G arguments */
 static int G_sz;		/* Storage size for -G arguments */
 static attr_t *G_args;		/* Storage for -G arguments */
 
+#define NEWNODE(n) ((node_t*)ND_alg(n))
+
 static char *useString =
     "Usage: gvpack [-gnuv?] [-m<margin>] [-o<outf>] <files>\n\
   -n          - use node granularity\n\
@@ -507,16 +509,9 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 
     /* add remaining nodes */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (!agfindnode(ng, n->name)) {
-	    nn = agfindnode(ng->root, n->name);
-	    if (nn)
-		aginsert(ng, nn);
-	    else {
-		fprintf(stderr,
-			"Error: clone of node %s in subgraph %s of graph %s not found\n",
-			n->name, g->name, g->root->name);
-		exit(1);
-	    }
+	nn = NEWNODE(n);
+	if (!agfindnode(ng, nn->name)) {
+	    aginsert(ng, nn);
 	}
     }
 
@@ -527,10 +522,8 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    if (MARKED(e))
 		continue;
-	    nt = agfindnode(ng, e->tail->name);
-	    assert(nt);
-	    nh = agfindnode(ng, e->head->name);
-	    assert(nh);
+	    nt = NEWNODE(e->tail);
+	    nh = NEWNODE(e->head);
 	    ne = agedge(ng, nt, nh);
 	    cloneEdge(e, ne);
 	    MARK(e);
@@ -621,16 +614,17 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt)
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    if (doWarn && agfindnode(root, n->name)) {
 		fprintf(stderr,
-			"Warning: node %s in %dth graph %s already defined\n",
+			"Warning: node %s in graph[%d] %s already defined\n",
 			n->name, i, g->name);
 		fprintf(stderr, "Some nodes will be renamed.\n");
 		doWarn = FALSE;
 	    }
 	    np = agnode(root, xName(nnames, n->name));
+	    ND_alg(n) = np;
 	    cloneNode(n, np);
 	}
 
-	/* wrap the clone of g in a subgraph ov root */
+	/* wrap the clone of g in a subgraph of root */
 	subg = agsubg(root, xName(gnames, g->name));
 	cloneSubg(g, subg, G_bb, gnames);
     }
