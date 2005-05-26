@@ -79,6 +79,8 @@ F_yof       "yOf"       FUNCTION S|A(1,S)
 F_llof      "llOf"      FUNCTION S|A(1,S)
 F_urof      "urOf"      FUNCTION S|A(1,S)
 F_canon     "canon"     FUNCTION S|A(1,S)
+F_get       "aget"      FUNCTION S|A(1,O)|A(2,S)
+F_set       "aset"      FUNCTION I|A(1,O)|A(2,S)|A(3,S)
 C_flat      "TV_flat"   CONSTANT T_tvtyp
 C_dfs       "TV_dfs"    CONSTANT T_tvtyp
 C_fwd       "TV_fwd"    CONSTANT T_tvtyp

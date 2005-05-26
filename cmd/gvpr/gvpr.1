@@ -437,6 +437,15 @@ any attribute values \fItgt\fP may initially have.
 \fBinduce\fP(\fIg\fP : \fBgraph_t\fP) : \fBvoid\fP
 extends \fIg\fP to its node-induced subgraph extension in its root graph.
 .TP
+\fBaget\fP(\fIsrc\fP : \fBobj_t\fP, \fIname\fP : \fBstring\fP) : \fBstring\fP
+returns the value of attribute \fIname\fP in object \fIsrc\fP. This is
+useful for those cases when \fIname\fP conflicts with one of the keywords
+such as "head" or "root".
+.TP
+\fBaset\fP(\fIsrc\fP : \fBobj_t\fP, \fIname\fP : \fBstring\fP, \fIvalue\fP : \fBstring\fP) : \fBint\fP
+sets the value of attribute \fIname\fP in object \fIsrc\fP to \fIvalue\fP.
+Returns 0 on success, non-zero on failure. See \fBaget\fP above.
+.TP
 \fBcompOf\fP(\fIg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBgraph_t\fP
 returns the connected component of the graph \fIg\fP containing node \fIn\fP,
 as a subgraph of \fIg\fP. The subgraph only contains the nodes. One can

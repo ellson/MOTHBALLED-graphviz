@@ -808,6 +808,42 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_log:
 	    v.floating = log(args[0].floating);
 	    break;
+	case F_get:
+	    objp = INT2PTR(Agobj_t *, args[0].integer);
+	    if (!objp) {
+		error(ERROR_WARNING, "NULL object passed to aget()");
+		v.string = exstring(pgm, "");
+	    } else {
+		char* name = args[1].string;
+		if (name) v.string = agget(objp, name);
+		else {
+		    error(ERROR_WARNING, "NULL name passed to aget()");
+		    v.string = exstring(pgm, "");
+		}
+            }
+	    break;
+	case F_set:
+	    objp = INT2PTR(Agobj_t *, args[0].integer);
+	    if (!objp) {
+		error(ERROR_WARNING, "NULL object passed to aset()");
+		v.integer = 1;
+	    } else {
+		char* name = args[1].string;
+		char* value = args[2].string;
+		if (!name) {
+		    error(ERROR_WARNING, "NULL name passed to aset()");
+		    v.integer = 1;
+		}
+		else if (!value) {
+		    error(ERROR_WARNING, "NULL value passed to aset()");
+		    v.integer = 1;
+		}
+		else {
+		    agset(objp, name, value);
+		    v.integer = 0;
+        	}
+            }
+	    break;
 	case F_canon:
 	    v.string = canon(pgm, args[0].string);
 	    break;
