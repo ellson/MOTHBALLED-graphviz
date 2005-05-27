@@ -1752,13 +1752,12 @@ static void init_bb(graph_t *g)
 void emit_jobs (GVC_t * gvc, graph_t * g)
 {
     GVJ_t *job;
-    char *prev_langname = "";
 
     init_gvc_from_graph(gvc, g);
     init_layering(gvc, g);
     init_bb(g);
 
-    gvc->active_jobs = NULL;
+/*     gvc->active_jobs = NULL;  acive job sets can straddle multiple input graphs */
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
 	job->g = g;
 
@@ -1775,21 +1774,23 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
 	    return;
 	}
 
-	/* insert job in active list */
-	job->next_active = gvc->active_jobs;
-	gvc->active_jobs = job;
-
-	if (strcmp(job->output_langname,prev_langname) != 0) {
-	    prev_langname = job->output_langname;
-	    gvrender_initialize(gvc);
-	}
-
-        emit_job(job, g);
-
-	if (!job->next || strcmp(job->next->output_langname,prev_langname) != 0) {
+        
+	if (gvc->active_jobs && strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
+	    /* finalize previous jobs */
 	    gvrender_finalize(gvc);
 	    /* clear active list */
 	    gvc->active_jobs = NULL;
         }
+	if (! gvc->active_jobs)
+	    gvrender_initialize(gvc);
+
+	/* insert job in active list */
+	job->next_active = gvc->active_jobs;
+	gvc->active_jobs = job;
+
+        emit_job(job, g);
+
+	/* last job, after all input graphs are processed, is finalized from dotneato_terminate() */
+
     }
 }

@@ -74,13 +74,15 @@ ps_begin_job(FILE * ofp, graph_t * g, char **lib, char *user, char *info[],
     U_lib = lib;
     /* wrong when drawing more than one than one graph - use (atend) */
     N_pages = pages.x * pages.y;
-    Cur_page = 0;
-    fprintf(Output_file, "%%!PS-Adobe-2.0\n");
-    fprintf(Output_file, "%%%%Creator: %s version %s (%s)\n",
-	    info[0], info[1], info[2]);
-    fprintf(Output_file, "%%%%For: %s\n", user);
-    fprintf(Output_file, "%%%%Title: %s\n", g->name);
-    fprintf(Output_file, "%%%%Pages: (atend)\n");
+    if (onetime) {
+        Cur_page = 0;
+        fprintf(Output_file, "%%!PS-Adobe-2.0\n");
+        fprintf(Output_file, "%%%%Creator: %s version %s (%s)\n",
+	        info[0], info[1], info[2]);
+        fprintf(Output_file, "%%%%For: %s\n", user);
+        fprintf(Output_file, "%%%%Title: %s\n", g->name);
+        fprintf(Output_file, "%%%%Pages: (atend)\n");
+    }
 
     /* remainder is emitted by first begin_graph */
 }

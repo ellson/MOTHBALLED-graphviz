@@ -132,7 +132,7 @@ void gvrender_initialize(GVC_t * gvc)
 
 void gvrender_finalize(GVC_t * gvc)
 {
-    GVJ_t *job = gvc->job;
+    GVJ_t *job = gvc->active_jobs;
     gvrender_engine_t *gvre = job->render_engine;
 
     if (gvre) {
