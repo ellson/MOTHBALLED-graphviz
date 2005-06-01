@@ -1148,6 +1148,9 @@ refval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case C_dfs:
 	    v.integer = TV_dfs;
 	    break;
+	case C_bfs:
+	    v.integer = TV_bfs;
+	    break;
 	case C_flat:
 	    v.integer = TV_flat;
 	    break;
@@ -1333,6 +1336,9 @@ int stringOf(Expr_t * prog, register Exnode_t * x, int arg)
 	case TV_dfs:
 	    x->data.constant.value.string = "TV_dfs";
 	    break;
+	case TV_bfs:
+	    x->data.constant.value.string = "TV_bfs";
+	    break;
 	case TV_fwd:
 	    x->data.constant.value.string = "TV_fwd";
 	    break;
@@ -1419,6 +1425,9 @@ convert(Expr_t * prog, register Exnode_t * x, int type,
 		case TV_dfs:
 		    x->data.constant.value.string = "TV_dfs";
 		    break;
+		case TV_bfs:
+		    x->data.constant.value.string = "TV_bfs";
+		    break;
 		case TV_fwd:
 		    x->data.constant.value.string = "TV_fwd";
 		    break;
@@ -1448,6 +1457,7 @@ convert(Expr_t * prog, register Exnode_t * x, int type,
 	    switch (x->data.constant.value.integer) {
 	    case TV_flat:
 	    case TV_dfs:
+	    case TV_bfs:
 	    case TV_fwd:
 	    case TV_rev:
 		break;
@@ -1473,6 +1483,9 @@ convert(Expr_t * prog, register Exnode_t * x, int type,
 			ret = 0;
 		    } else if (!strcmp(s + 3, "dfs")) {
 			x->data.constant.value.integer = TV_dfs;
+			ret = 0;
+		    } else if (!strcmp(s + 3, "bfs")) {
+			x->data.constant.value.integer = TV_bfs;
 			ret = 0;
 		    } else if (!strcmp(s + 3, "fwd")) {
 			x->data.constant.value.integer = TV_fwd;
