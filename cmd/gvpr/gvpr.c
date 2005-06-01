@@ -324,17 +324,53 @@ static trav_fns DFSfns = { agfstedge, agnxtedge };
 static trav_fns FWDfns = { agfstout, (nxttedgefn_t) agnxtout };
 static trav_fns REVfns = { agfstin, (nxttedgefn_t) agnxtin };
 
+static void travBFS(Gpr_t * state, comp_prog * xprog)
+{
+    nodestream nodes;
+    queue *q;
+    ndata *nd;
+    Agnode_t *n;
+    Agedge_t *cure;
+
+    q = mkQueue();
+    nodes.oldroot = 0;
+    nodes.prev = 0;
+    while ((n = nextNode(state, &nodes))) {
+	nd = nData(n);
+	if (MARKED(nd))
+	    continue;
+	PUSH(nd);
+	push (q,n);
+	while ((n = pull(q))) {
+	    nd = nData(n);
+	    MARK(nd);
+ 	    POP(nd);
+	    evalNode(state, xprog, n);
+	    for (cure = agfstedge(n); cure; cure = agnxtedge(cure, n)) {
+		nd = nData(cure->node);
+		if (MARKED(nd)) continue;
+		evalEdge(state, xprog, cure);
+		if (!ONSTACK(nd)) {
+		    push(q, cure->node);
+		    PUSH(nd);
+		}
+	    }
+	}
+    }
+    freeQ (q);
+}
+
 static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 {
     Agnode_t *n;
     queue *stk;
-    Agedgepair_t seed;
     Agnode_t *curn;
     Agedge_t *cure;
     Agedge_t *entry;
     int more;
     ndata *nd;
     nodestream nodes;
+    Agedgepair_t seed;
 
     stk = mkStack();
     nodes.oldroot = 0;
@@ -386,6 +422,7 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 	    }
 	}
     }
+    freeQ (stk);
 }
 
 static void travNodes(Gpr_t * state, comp_prog * xprog)
@@ -443,6 +480,9 @@ static void traverse(Gpr_t * state, comp_prog * xprog)
     switch (state->tvt) {
     case TV_flat:
 	travFlat(state, xprog);
+	break;
+    case TV_bfs:
+	travBFS(state, xprog);
 	break;
     case TV_dfs:
 	travDFS(state, xprog, &DFSfns);

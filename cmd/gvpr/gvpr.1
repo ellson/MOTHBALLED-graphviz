@@ -687,7 +687,8 @@ The default value is \fBNULL\fP for each input graph.
 \fB$tvtype\fP : \fBtvtype_t\fP
 indicates how \fBgvpr\fP traverses a graph. At present, it can only take
 one of six values: \fBTV_flat\fP, \fBTV_dfs\fP, \fBTV_fwd\fP,
-\fBTV_ref\fP, \fBTV_ne\fP, and \fBTV_en\fP. \fBTV_flat\fP is the default.
+\fBTV_ref\fP, \fBTV_bfs\fP, \fBTV_ne\fP, and \fBTV_en\fP. 
+\fBTV_flat\fP is the default.
 The meaning of these values is discussed below.
 .TP
 \fBARGC\fP : \fBint\fP
@@ -733,6 +734,11 @@ if \fB$tvroot\fP is \fBNULL\fP, the traversal will stop. Note that using
 \fBTV_fwd\fR : \fItvtype_t\fR
 a traversal of the graph using a depth-first search on the
 graph following only forward arcs. In
+.TP
+\fBTV_bfs\fR : \fItvtype_t\fR
+a traversal of the graph using a bread-first search on the
+graph ignoring edge directions. See the item on \fBTV_dfs\fR above
+for the role of \fB$tvroot\fP.
 .IR libagraph (3),
 edges in undirected graphs are given an arbitrary direction, which is
 used for this traversal. The choice of roots for the traversal is the

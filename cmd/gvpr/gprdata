@@ -83,6 +83,7 @@ F_get       "aget"      FUNCTION S|A(1,O)|A(2,S)
 F_set       "aset"      FUNCTION I|A(1,O)|A(2,S)|A(3,S)
 C_flat      "TV_flat"   CONSTANT T_tvtyp
 C_dfs       "TV_dfs"    CONSTANT T_tvtyp
+C_bfs       "TV_bfs"    CONSTANT T_tvtyp
 C_fwd       "TV_fwd"    CONSTANT T_tvtyp
 C_rev       "TV_rev"    CONSTANT T_tvtyp
 C_ne        "TV_ne"     CONSTANT T_tvtyp

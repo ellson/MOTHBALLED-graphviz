@@ -26,7 +26,7 @@ extern "C" {
 #include <ast.h>
 #include <vmalloc.h>
 
-    typedef enum { TV_flat, TV_dfs, TV_fwd, TV_rev, TV_ne,
+    typedef enum { TV_flat, TV_bfs, TV_dfs, TV_fwd, TV_rev, TV_ne,
 	    TV_en } trav_type;
 
     typedef struct {
