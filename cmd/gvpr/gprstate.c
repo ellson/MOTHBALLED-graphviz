@@ -30,6 +30,7 @@ int validTVT(int c)
 
     switch (c) {
     case TV_flat:
+    case TV_bfs:
     case TV_dfs:
     case TV_fwd:
     case TV_rev:
