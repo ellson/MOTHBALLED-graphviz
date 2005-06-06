@@ -470,6 +470,15 @@ static void ps_polyline(point * A, int n)
     fprintf(Output_file, Stroke);
 }
 
+/* ps_user_shape:
+ * Images for postscript are complicated by the old epsf shape, as
+ * well as user-defined shapes using postscript code.
+ * If the name is custom, we look for the image stored in the
+ * current node's shapefile attribute.
+ * Else we see if name is a user-defined postscript function
+ * Else we assume name is the name of the image. This occurs when
+ * the image is part of an html label.
+ */
 static void ps_user_shape(char *name, point * A, int sides, int filled)
 {
     int j;
@@ -504,7 +513,7 @@ static void ps_user_shape(char *name, point * A, int sides, int filled)
 		ND_coord_i(Curnode).y + offset.y, img->macro_id);
 	ps_end_context();
     }
-    else {
+    else if (shapeimagefile) {
 	suffix = strrchr(shapeimagefile, '.');
 	if (suffix) {
 	    suffix++;
