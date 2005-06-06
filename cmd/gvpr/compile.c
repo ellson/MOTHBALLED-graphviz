@@ -288,6 +288,20 @@ static Agobj_t *deref(Expr_t * pgm, Exnode_t * x, Exref_t * ref,
 
 }
 
+/* setattr:
+ * Set object's attribute name to val.
+ * Initialize attribute if necessary.
+ */
+static int
+setattr (Agobj_t *objp, char* name, char* val)
+{
+    Agsym_t *gsym = agattrsym(objp, name);
+    if (!gsym) {
+	gsym = agattr(agroot(agraphof(objp)), AGTYPE(objp), name, "");
+    }
+    return agxset(objp, gsym, val);
+}
+
 /* lookup:
  * Apply symbol to get field value of objp
  * Assume objp != NULL
@@ -839,8 +853,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		    v.integer = 1;
 		}
 		else {
-		    agset(objp, name, value);
-		    v.integer = 0;
+		    v.integer = setattr(objp, name, value);
         	}
             }
 	    break;
@@ -1010,11 +1023,8 @@ setval(Expr_t * pgm, Exnode_t * x, Exid_t * sym, Exref_t * ref,
 		  deparse(pgm, x, state->tmp));
     }
 
-    gsym = agattrsym(objp, sym->name);
-    if (!gsym) {
-	gsym = agattr(agroot(agraphof(objp)), AGTYPE(objp), sym->name, "");
-    }
-    return agxset(objp, gsym, v.string);
+    
+    return setattr(objp, gsym->name, v.string);
 }
 
 static int codePhase;
