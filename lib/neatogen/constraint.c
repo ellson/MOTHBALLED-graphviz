@@ -69,6 +69,28 @@ static int distX(box * b1, box * b2)
     return ((b1->UR.x - b1->LL.x) + (b2->UR.x - b2->LL.x)) / 2;
 }
 
+/* intersectX0:
+ * Return true if boxes could overlap if shifted in y but don't,
+ * or if actually overlap and an y move is smallest to remove overlap.
+ * Otherwise (no x overlap or a x move is smaller), return false.
+ * Assume q pos to above of p pos.
+ */
+static int intersectX0(nitem * p, nitem * q)
+{
+    int xdelta, ydelta;
+    int v = ((p->bb.LL.x <= q->bb.UR.x) && (q->bb.LL.x <= p->bb.UR.x));
+    if (v == 0)  /* no x overlap */
+	return 0;
+    if (p->bb.UR.y < q->bb.LL.y) /* but boxes don't really overlap */
+	return 1;
+    ydelta = distY(&p->bb,&q->bb) - (q->pos.y - p->pos.y);
+    if (q->pos.x >= p->pos.x) 
+	xdelta = distX(&p->bb,&q->bb) - (q->pos.x - p->pos.x); 
+    else
+	xdelta = distX(&p->bb,&q->bb) - (p->pos.x - q->pos.x); 
+    return (ydelta <= xdelta);
+}
+
 /* intersectY0:
  * Return true if boxes could overlap if shifted in x but don't,
  * or if actually overlap and an x move is smallest to remove overlap.
@@ -122,6 +144,7 @@ static void mapGraphs(graph_t * g, graph_t * cg, distfn dist)
 	    delta = dist(&tp->bb, &hp->bb);
 	    h = hp->cnode;
 	    ce = agedge(cg, t, h);
+	    ED_weight(ce) = 1;
 	    if (ED_minlen(ce) < delta) {
 		if (ED_minlen(ce) == 0.0) {
 		    elist_append(ce, ND_out(t));
@@ -132,6 +155,51 @@ static void mapGraphs(graph_t * g, graph_t * cg, distfn dist)
 	}
     }
 }
+
+#ifdef DEBUG
+static int
+indegree (graph_t * g, node_t *n)
+{
+  edge_t *e;
+  int cnt = 0;
+  for (e = agfstin(g,n); e; e = agnxtin(g,e)) cnt++;
+  return cnt; 
+}
+
+static int
+outdegree (graph_t * g, node_t *n)
+{
+  edge_t *e;
+  int cnt = 0;
+  for (e = agfstout(g,n); e; e = agnxtout(g,e)) cnt++;
+  return cnt; 
+}
+
+static void
+validate(graph_t * g)
+{
+    node_t *n;
+    edge_t *e;
+    int    i, cnt;
+  
+    cnt = 0;
+    for (n = GD_nlist(g);n; n = ND_next(n)) {
+      assert(outdegree(g,n) == ND_out(n).size);
+      for (i = 0; (e = ND_out(n).list[i]); i++) {
+        assert(e->tail == n);
+        assert( e == agfindedge(g, n, e->head)); 
+      }
+      assert(indegree(g,n) == ND_in(n).size);
+      for (i = 0; (e = ND_in(n).list[i]); i++) {
+        assert(e->head == n);
+        assert( e == agfindedge(g, e->tail, n)); 
+      }
+      cnt++;
+    }
+
+    assert (agnnodes(g) == cnt); 
+}
+#endif
 
 #ifdef OLD
 static node_t *newNode(graph_t * g)
@@ -144,6 +212,85 @@ static node_t *newNode(graph_t * g)
 }
 #endif
 
+/* mkNConstraintG:
+ * Similar to mkConstraintG, except it doesn't enforce orthogonal
+ * ordering. If there is overlap, as defined by intersect, the
+ * nodes will kept/pushed apart in the current order. If not, no
+ * constraint is enforced. If a constraint edge is added, and it
+ * corresponds to a real edge, we increase the weight in an attempt
+ * to keep the resulting shift short. 
+ */
+static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
+			      intersectfn intersect, distfn dist)
+{
+    nitem *p;
+    nitem *nxp;
+    graph_t *cg = agopen("cg", AGDIGRAPHSTRICT);
+    node_t *n;
+    edge_t *e;
+    node_t *lastn = NULL;
+
+    for (p = (nitem *) dtflatten(list); p;
+	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
+	n = agnode(cg, p->np->name);	/* FIX */
+	ND_alg(n) = p;
+	p->cnode = n;
+	alloc_elist(0, ND_in(n));
+	alloc_elist(0, ND_out(n));
+	if (lastn) {
+	    ND_next(lastn) = n;
+	    lastn = n;
+	} else {
+	    lastn = GD_nlist(cg) = n;
+	}
+    }
+    for (p = (nitem *) dtflatten(list); p;
+	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
+	for (nxp = (nitem *) dtlink(link, (Dtlink_t *) p); nxp;
+	     nxp = (nitem *) dtlink(list, (Dtlink_t *) nxp)) {
+	    e = NULL;
+	    if (intersect(p, nxp)) {
+	        double delta = dist(&p->bb, &nxp->bb);
+	        e = agedge(cg, p->cnode, nxp->cnode);
+		assert (delta <= 0xFFFF);
+		ED_minlen(e) = delta;
+		ED_weight(e) = 1;
+	    }
+	    if (e && agfindedge(g,p->np, nxp->np)) {
+		ED_weight(e) = 100;
+            }
+#if 0
+	    if (agfindedge(g,p->np, nxp->np)) {
+		if (e == NULL)
+	            e = agedge(cg, p->cnode, nxp->cnode);
+		ED_weight(e) = 100;
+                /* If minlen < SCALE, the nodes can't conflict or there's
+                 * an overlap but it will be removed in the orthogonal pass.
+                 * So we just keep the node's basically where they are.
+                 */
+		if (SCALE > ED_minlen(e))
+		    ED_minlen(e) = SCALE;
+	    }
+#endif
+	}
+    }
+   
+    for (p = (nitem *) dtflatten(list); p;
+	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
+	n = p->cnode;
+	for (e = agfstout(cg,n); e; e = agnxtout(cg,e)) {
+	    elist_append(e, ND_out(n));
+	    elist_append(e, ND_in(e->head));
+	}
+    }
+
+    /* We could remove redundant constraints here. However, the cost of doing 
+     * this may be a good deal more than the time saved in network simplex. 
+     * Also, if the graph is changed, the ND_in and ND_out data has to be 
+     * updated.
+     */
+    return cg;
+}
 /* mkConstraintG:
  */
 static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
@@ -203,6 +350,7 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 		    alloc_elist(cnt - lcnt - 1, ND_out(prev));
 		e = agedge(cg, prev, n);
 		ED_minlen(e) = SCALE;
+		ED_weight(e) = 1;
 		elist_append(e, ND_out(prev));
 		elist_append(e, ND_in(n));
 	    }
@@ -250,6 +398,7 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
      * if the graph is changed, the ND_in and ND_out data has to be updated.
      */
     mapGraphs(vg, cg, dist);
+fprintf (stderr, "mkG %d nodes %d edges\n", agnnodes(cg), agnedges(cg));
     agclose(vg);
 
     /* add dummy constraints for absolute values and initial positions */
@@ -305,7 +454,8 @@ static void closeGraph(graph_t * cg)
  * (absolute values rather than squares), so we can reuse network simplex.
  * The constraints are encoded as a dag with edges having a minimum length.
  */
-static void constrainX(graph_t * g, nitem * nlist, int nnodes, intersectfn ifn)
+static void constrainX(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
+                       int ortho)
 {
     Dt_t *list = dtopen(&constr, Dtobag);
     nitem *p = nlist;
@@ -317,7 +467,10 @@ static void constrainX(graph_t * g, nitem * nlist, int nnodes, intersectfn ifn)
 	dtinsert(list, p);
 	p++;
     }
-    cg = mkConstraintG(g, list, ifn, distX);
+    if (ortho)
+	cg = mkConstraintG(g, list, ifn, distX);
+    else
+	cg = mkNConstraintG(g, list, ifn, distX);
     rank(cg, 2, MAXINT);
 
     p = nlist;
@@ -339,7 +492,8 @@ static void constrainX(graph_t * g, nitem * nlist, int nnodes, intersectfn ifn)
 /* constrainY:
  * See constrainX.
  */
-static void constrainY(graph_t * g, nitem * nlist, int nnodes, intersectfn ifn)
+static void constrainY(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
+                       int ortho)
 {
     Dt_t *list = dtopen(&constr, Dtobag);
     nitem *p = nlist;
@@ -351,7 +505,10 @@ static void constrainY(graph_t * g, nitem * nlist, int nnodes, intersectfn ifn)
 	dtinsert(list, p);
 	p++;
     }
-    cg = mkConstraintG(g, list, ifn, distY);
+    if (ortho)
+	cg = mkConstraintG(g, list, ifn, distY);
+    else
+	cg = mkNConstraintG(g, list, ifn, distY);
     rank(cg, 2, MAXINT);
 #ifdef DEBUG
     {
@@ -452,12 +609,18 @@ static void initItem(node_t * n, nitem * p, double margin)
  * mode = AM_ORTHOXY => first X, then Y
  * mode = AM_ORTHOYX => first Y, then X
  * mode = AM_ORTHO   => first X, then Y
- * In the last case, relax the constraints as follows: during the X pass,
+ * mode = AM_ORTHO_YX   => first Y, then X
+ * In the last 2 cases, relax the constraints as follows: during the X pass,
  * if two nodes actually intersect and a smaller move in the Y direction
  * will remove the overlap, we don't force the nodes apart in the X direction,
  * but leave it for the Y pass to remove any remaining overlaps. Without this,
  * the X pass will remove all overlaps, and the Y pass only compresses in the
  * Y direction, causing a skewing of the aspect ratio.
+ * 
+ * mode = AM_ORTHOXY => first X, then Y
+ * mode = AM_ORTHOYX => first Y, then X
+ * mode = AM_ORTHO   => first X, then Y
+ * mode = AM_ORTHO_YX   => first Y, then X
  */
 void cAdjust(graph_t * g, int mode)
 {
@@ -479,16 +642,35 @@ void cAdjust(graph_t * g, int mode)
 
 	switch ((adjust_mode)mode) {
 	case AM_ORTHOXY:
-	    constrainX(g, nlist, nnodes, intersectY);
-	    constrainY(g, nlist, nnodes, intersectX);
+	    constrainX(g, nlist, nnodes, intersectY, 1);
+	    constrainY(g, nlist, nnodes, intersectX, 1);
 	    break;
 	case AM_ORTHOYX:
-	    constrainY(g, nlist, nnodes, intersectX);
-	    constrainX(g, nlist, nnodes, intersectY);
+	    constrainY(g, nlist, nnodes, intersectX, 1);
+	    constrainX(g, nlist, nnodes, intersectY, 1);
 	    break;
+	case AM_ORTHO :
+	    constrainX(g, nlist, nnodes, intersectY0, 1);
+	    constrainY(g, nlist, nnodes, intersectX, 1);
+	case AM_ORTHO_YX :
+	    constrainY(g, nlist, nnodes, intersectX0, 1);
+	    constrainX(g, nlist, nnodes, intersectY, 1);
+	case AM_PORTHOXY:
+	    constrainX(g, nlist, nnodes, intersectY, 0);
+	    constrainY(g, nlist, nnodes, intersectX, 0);
+	    break;
+	case AM_PORTHOYX:
+	    constrainY(g, nlist, nnodes, intersectX, 0);
+	    constrainX(g, nlist, nnodes, intersectY, 0);
+	    break;
+	case AM_PORTHO_YX :
+	    constrainY(g, nlist, nnodes, intersectX0, 0);
+	    constrainX(g, nlist, nnodes, intersectY, 0);
+	    break;
+	case AM_PORTHO :
 	default :
-	    constrainX(g, nlist, nnodes, intersectY0);
-	    constrainY(g, nlist, nnodes, intersectX);
+	    constrainX(g, nlist, nnodes, intersectY0, 0);
+	    constrainY(g, nlist, nnodes, intersectX, 0);
 	    break;
 	}
 	p = nlist;

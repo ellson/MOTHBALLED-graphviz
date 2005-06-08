@@ -692,8 +692,13 @@ static adjust_data adjustMode[] = {
     /* {AM_PUSH, "push", "push scan adjust"}, */
     /* {AM_PUSHPULL, "pushpull", "push-pull scan adjust"}, */
     {AM_ORTHO, "ortho", "orthogonal constraints"},
+    {AM_ORTHO_YX, "ortho_yx", "orthogonal constraints"},
     {AM_ORTHOXY, "orthoxy", "xy orthogonal constraints"},
     {AM_ORTHOYX, "orthoyx", "yx orthogonal constraints"},
+    {AM_ORTHO, "portho", "pseudo-orthogonal constraints"},
+    {AM_ORTHO_YX, "portho_yx", "pseudo-orthogonal constraints"},
+    {AM_ORTHOXY, "porthoxy", "xy pseudo-orthogonal constraints"},
+    {AM_ORTHOYX, "porthoyx", "yx pseudo-orthogonal constraints"},
     {AM_COMPRESS, "compress", "compress"},
     {AM_NONE, 0, 0}
 };
@@ -757,14 +762,15 @@ removeOverlapAs(graph_t * G, char* flag)
 	case AM_PUSHPULL:
 	    /* scanAdjust (G, 0); */
 	    break;
+	case AM_PORTHO_YX:
+	case AM_PORTHO:
+	case AM_PORTHOXY:
+	case AM_PORTHOYX:
+	case AM_ORTHO_YX:
 	case AM_ORTHO:
-	    cAdjust(G, AM_ORTHO);
-	    break;
 	case AM_ORTHOXY:
-	    cAdjust(G, AM_ORTHOXY);
-	    break;
 	case AM_ORTHOYX:
-	    cAdjust(G, AM_ORTHOYX);
+	    cAdjust(G, am->mode);
 	    break;
 	case AM_COMPRESS:
 	    scAdjust(G, -1);
@@ -826,7 +832,7 @@ expFactor(graph_t* g)
     if ((marg = agget(g, "sep"))) {
 	pmargin = 1.0 + atof(marg);
     } else
-	pmargin = 1.01;
+	pmargin = 1.1;
     return pmargin;
 }
 

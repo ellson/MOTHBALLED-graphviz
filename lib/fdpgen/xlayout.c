@@ -42,7 +42,7 @@ Increase less between tries
 /* #define ORIG      */
 #define BOX	/* Use bbox to determine overlap, else use circles */
 
-#define DFLT_overlap   "9:ortho"    /* default overlap value */
+#define DFLT_overlap   "9:portho"    /* default overlap value */
 
 #define WD2(n) ((ND_width(n))*X_fact)
 #define HT2(n) ((ND_height(n))*X_fact)

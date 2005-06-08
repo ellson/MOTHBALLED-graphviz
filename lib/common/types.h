@@ -570,7 +570,8 @@ extern "C" {
 	short xpenalty;
 	int weight;
 	int cutvalue, tree_index;
-	short count, minlen;
+	short count;
+	unsigned short minlen;
 	edge_t *to_virt;
 #endif
 
