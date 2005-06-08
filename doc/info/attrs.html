@@ -844,6 +844,11 @@ This field indicates which graph component uses the attribute.
   one for the y. The suffix indicates which axis is processed first.
   If the value is "ortho", the technique is similar to "orthoxy" except a
   heuristic is used to reduce the bias between the two passes.
+  If the value is "ortho_yx", the technique is the same as "ortho", except
+  the roles of x and y are reversed.
+  The values "portho", "porthoxy", "porthoxy", and "portho_yx" are similar
+  to the previous four, except only pseudo-orthogonal ordering is
+  enforced.
   <P>
   If the value is "compress", the layout will be scaled down as much as
   possible without introducing any overlaps, obviously assuming there are
@@ -855,7 +860,7 @@ This field indicates which graph component uses the attribute.
   prefix followed by a colon, specifying the number of tries. If there is
   no prefix, no initial tries will be performed. If there is nothing following
   a colon, none of the above methods will be attempted. By default, fdp
-  uses <TT>overlap="9:ortho"</TT>. Note that <TT>overlap="true"</TT>,
+  uses <TT>overlap="9:portho"</TT>. Note that <TT>overlap="true"</TT>,
   <TT>overlap="0:true"</TT> and <TT>overlap="0:"</TT> all turn off all overlap
   removal.
   <P>
