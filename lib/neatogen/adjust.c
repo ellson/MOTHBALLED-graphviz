@@ -695,10 +695,10 @@ static adjust_data adjustMode[] = {
     {AM_ORTHO_YX, "ortho_yx", "orthogonal constraints"},
     {AM_ORTHOXY, "orthoxy", "xy orthogonal constraints"},
     {AM_ORTHOYX, "orthoyx", "yx orthogonal constraints"},
-    {AM_ORTHO, "portho", "pseudo-orthogonal constraints"},
-    {AM_ORTHO_YX, "portho_yx", "pseudo-orthogonal constraints"},
-    {AM_ORTHOXY, "porthoxy", "xy pseudo-orthogonal constraints"},
-    {AM_ORTHOYX, "porthoyx", "yx pseudo-orthogonal constraints"},
+    {AM_PORTHO, "portho", "pseudo-orthogonal constraints"},
+    {AM_PORTHO_YX, "portho_yx", "pseudo-orthogonal constraints"},
+    {AM_PORTHOXY, "porthoxy", "xy pseudo-orthogonal constraints"},
+    {AM_PORTHOYX, "porthoyx", "yx pseudo-orthogonal constraints"},
     {AM_COMPRESS, "compress", "compress"},
     {AM_NONE, 0, 0}
 };
