@@ -35,6 +35,7 @@
 #include <sfstr.h>
 #include <error.h>
 #include <string.h>
+#include <ctype.h>
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #else
@@ -82,10 +83,59 @@ static Sfio_t *openOut(char *name)
     return outs;
 }
 
+/* gettok:
+ * Return next argument token, returning NULL if none.
+ * sp is updated to point to next character to be processed.
+ */
+static char*
+gettok (char** sp)
+{
+    char* s = *sp;
+    char* ws = s;
+    char* rs = s;
+    char  c;
+    char  q = '\0';  /* if non-0, in quote mode with quote char q */
+
+    while (isspace(*rs)) rs++;
+    if ((c = *rs) == '\0') return NULL;
+    while ((c = *rs)) {
+        if (q && (q == c)) {  /* end quote */
+	    q = '\0';
+	}
+	else if (!q && ((c == '"') || (c == '\''))) { 
+	    q = c;
+	}
+        else if (c == '\\') {
+	    rs++;
+	    c = *rs;
+	    if (c) *ws++ = c;
+	    else {
+		error(ERROR_WARNING, 
+                  "backslash in argument followed by no character - ignored");
+		rs--;
+	    }
+	} 
+	else if (q || !isspace(c))
+	    *ws++ = c;
+	else break;
+        rs++;
+    }
+    *ws = '\0';
+    if (*rs) *rs++;
+    else if (q)
+	error(ERROR_WARNING, "no closing quote for argument %s", s);
+    *sp = rs;
+    return s;
+}
+
 #define NUM_ARGS 10
 
 /* parseArgs:
- * Tokenize a string.
+ * Tokenize a string. Tokens consist of either a non-empty string
+ * of non-space characters, or all characters between a pair of
+ * single or double quotes. As usual, we map 
+ *   \c -> c
+ * for all c
  */
 static void parseArgs(char *s, int *argc, char ***argv)
 {
@@ -93,12 +143,11 @@ static void parseArgs(char *s, int *argc, char ***argv)
     char *args[NUM_ARGS];
     char *t;
     char **av;
-    char *seps = " \t";
 
-    for (t = strtok(s, seps); t; t = strtok(0, seps)) {
+    while ((t = gettok(&s))) {
 	if (cnt == NUM_ARGS) {
 	    error(ERROR_WARNING,
-		  "most %d arguments allowed in -a flag - ignoring rest",
+		  "at most %d arguments allowed in -a flag - ignoring rest",
 		  NUM_ARGS);
 	    break;
 	}

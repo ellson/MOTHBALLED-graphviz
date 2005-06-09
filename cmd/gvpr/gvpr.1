@@ -61,6 +61,10 @@ The string \fIargs\fP is split into whitespace-separated tokens,
 with the individual tokens
 available as strings in the \fBgvpr\fP program 
 as \fBARGV[\fI0\fP],...,ARGV[ARGC-1]\fR.
+Whitespace characters within single or double quoted substrings, or
+preceded by a backslash, are ignored as separators. 
+In general, backslash character turns off any special meaning of the
+following character.
 .TP
 .B \-c
 Use the source graph as the output graph.
