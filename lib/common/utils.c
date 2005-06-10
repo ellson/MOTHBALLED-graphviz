@@ -1491,6 +1491,7 @@ static edge_t *cloneEdge(edge_t * e, node_t * ct, node_t * ch)
     edge_t *ce = agedge(g, ct, ch);
 
     while ((sym = *list++)) {
+	if (sym->index == 0) continue;
 	agxset(ce, sym->index, agxget(e, sym->index));
     }
 
