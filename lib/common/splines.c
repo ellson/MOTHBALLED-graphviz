@@ -453,7 +453,10 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    break;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
-	ED_tail_port(orig).clip = FALSE;
+	if (n == orig->tail)
+	    ED_tail_port(orig).clip = FALSE;
+	else
+	    ED_head_port(orig).clip = FALSE;
 	endp->sidemask = side;
 	return;
     }
@@ -603,7 +606,10 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    break;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
-	ED_head_port(orig).clip = FALSE;
+	if (n == orig->head)
+	    ED_head_port(orig).clip = FALSE;
+	else
+	    ED_tail_port(orig).clip = FALSE;
 	endp->sidemask = side;
 	return;
     }
