@@ -1776,6 +1776,7 @@ static int record_path(node_t* n, port* prt, int side, box rv[], int *kptr)
     point p;
     field_t *info;
 
+    if (!prt->defined) return 0;
     p = prt->p;
     info = (field_t *) ND_shape_info(n);
 
