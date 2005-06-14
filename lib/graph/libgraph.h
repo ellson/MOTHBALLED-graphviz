@@ -160,9 +160,7 @@ extern "C" {
     int agparse(void);
     void agpopproto(Agraph_t *);
     void agpushproto(Agraph_t *);
-    char *agstrdup(char *);
     char *agstrdup_html(char *s);
-    void agstrfree(char *);
     int agtoken(char *);
     void agwredge(Agraph_t *, FILE *, Agedge_t *, int);
     void agwrnode(Agraph_t *, FILE *, Agnode_t *, int, int);

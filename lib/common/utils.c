@@ -1483,17 +1483,9 @@ static Dtdisc_t mapDisc = {
  */
 static edge_t *cloneEdge(edge_t * e, node_t * ct, node_t * ch)
 {
-    extern Agdict_t *agdictof(void *);
-    Agdict_t *d = agdictof(e);
-    Agsym_t **list = d->list;
-    Agsym_t *sym;
     graph_t *g = ct->graph;
     edge_t *ce = agedge(g, ct, ch);
-
-    while ((sym = *list++)) {
-	if (sym->index == 0) continue;
-	agxset(ce, sym->index, agxget(e, sym->index));
-    }
+    agcopyattr(e, ce);
 
     return ce;
 }

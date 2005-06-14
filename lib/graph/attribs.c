@@ -326,3 +326,28 @@ int agxset(void *obj, int index, char *buf)
     } else
 	return -1;
 }
+
+/* agcopyattr:
+ * Assumes attributes have already been declared.
+ * Do not copy key attribute for edges, as this must be distinct.
+ * Returns non-zero on failure or if objects have different type.
+ */
+int agcopyattr(void *oldobj, void *newobj)
+{
+    Agdict_t *d = agdictof(oldobj);
+    Agsym_t **list = d->list;
+    Agsym_t *sym;
+    Agsym_t *newsym;
+    int r = 0;
+    int isEdge = (TAG_OF(oldobj) == TAG_EDGE);
+
+    if (TAG_OF(oldobj) != TAG_OF(newobj)) return 1;
+    while (!r && (sym = *list++)) {
+	if (isEdge && sym->index == KEYX) continue;
+        newsym = agfindattr(newobj,sym->name);
+	if (!newsym) return 1;
+	r = agxset(newobj, newsym->index, agxget(oldobj, sym->index));
+    }
+    return r;
+}
+

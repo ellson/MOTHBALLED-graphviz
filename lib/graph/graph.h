@@ -183,6 +183,7 @@ extern "C" {
     extern Agsym_t *agnodeattr(Agraph_t *, char *, char *);
     extern Agsym_t *agedgeattr(Agraph_t *, char *, char *);
     extern Agsym_t *agfindattr(void *, char *);
+    extern int      agcopyattr(void *, void *);
 
     typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
     extern agerrlevel_t agerrno;
@@ -191,6 +192,9 @@ extern "C" {
     extern int agerr(agerrlevel_t level, char *fmt, ...);
     extern void agerrorf(char *fmt, ...);
     extern void agwarningf(char *fmt, ...);
+
+    extern char *agstrdup(char *);
+    extern void agstrfree(char *);
 
     typedef enum { AGNODE = 1, AGEDGE, AGGRAPH } agobjkind_t;
 #define agobjkind(p)		((agobjkind_t)(((Agraph_t*)(p))->tag))

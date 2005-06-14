@@ -1292,10 +1292,6 @@ void emit_graph(GVJ_t * job, graph_t * g)
 }
 
 /* support for stderr_once */
-/* #include "libgraph.h"		to get agstrdup, agstrfree */
-extern char *agstrdup(char *);
-extern void agstrfree(char *);
-
 static void free_string_entry(Dict_t * dict, char *key, Dtdisc_t * disc)
 {
     agstrfree(key);
