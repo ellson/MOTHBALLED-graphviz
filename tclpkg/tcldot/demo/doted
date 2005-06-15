@@ -361,6 +361,11 @@ proc deleteobj {c o} {
 	$o delete
 }
 
+# open a requestor for object $o,
+#	deletable if $d is not null, 
+#	command to list attribute in $l
+#	command to query attributes in $q
+#	command to set attributes in $s
 proc setAttributesWidget {c o d l q s} {
 	set w .attributes
 	catch {destroy $w}
@@ -379,11 +384,12 @@ proc setAttributesWidget {c o d l q s} {
 		 button $w.buttons.delete -text Delete -command "deleteobj $c $o; destroy $w"
 		 pack $w.buttons.delete -side left -expand 1
 	}
-	button $w.buttons.dismiss -text Dismiss -command "destroy $w"
+	button $w.buttons.dismiss -text OK -command "destroy $w"
 	pack $w.buttons.dismiss -side left -expand 1
 	pack $w.buttons -side bottom -expand y -fill x -pady 2m
 }
 
+# open a requestor according to the type of graph object $obj, to allow the user to read and set attributions
 proc setAttributes {c obj} {
 	global g
 	if {$obj == {}} {
@@ -410,6 +416,7 @@ proc setAttributes {c obj} {
 	}
 }
 
+# unconditionally remove any old graph and canvas contents, the create a new graph of $type
 proc newGraphDontAsk {c type} {
 	global modified g graphtype
 	set graphtype $type
@@ -419,6 +426,7 @@ proc newGraphDontAsk {c type} {
 	set g [dotnew $type]
 }
 
+# upon confirmation, remove any old graph and canvas contents, the create a new graph of $type
 proc newGraph {c type} {
 	global modified
 	if {$modified} {
@@ -429,7 +437,9 @@ proc newGraph {c type} {
 	}
 }
 
-proc layout {c hs vs} {
+# generate a new graph layout and update rendering on the canvas
+#  this proc is attached to the green button to the lower right of the window
+proc layout {c} {
 	global g
 	$c delete all
 	$g layout
@@ -437,6 +447,7 @@ proc layout {c hs vs} {
 	$c configure -scrollregion [$c bbox all]
 }
 
+# generate a help window with $msg as the contents
 proc help {msg} {
 	set w .help
 	catch {destroy $w}
@@ -456,6 +467,7 @@ proc help {msg} {
 	pack $w.buttons.dismiss -side left -expand 1
 }
 
+# proc that supports zoom in/out events
 proc zoom {c fact} {
         upvar #0 $c data
         set x [$c canvasx [expr {[winfo pointerx $c] - [winfo rootx $c]}]]
@@ -466,6 +478,7 @@ proc zoom {c fact} {
         set data(idle) [after idle "zoomupdate $c"]
 }
 
+# update all text strings after zom operation is complete
 proc zoomupdate {c} {
         upvar #0 $c data
         # adjust fonts
@@ -551,12 +564,15 @@ corner of the window."
 
 #--------------------------------------------------------------------------
 
+#initialize some globals
 set startObj {}
 set saveFill {}
 set modified 0
 set fileName {no_name}
 set printCommand {lpr}
 set zfact 1.1
+
+# create main window
 wm title . "DotEd"
 wm iconname . "DotEd"
 wm minsize . 120 100
@@ -584,7 +600,7 @@ button .b.layout \
 	-foreground green \
 	-activeforeground green\
 	-bitmap @$tk_library/demos/images/gray25.bmp \
-	-command "layout $c .b.h .a.v"
+	-command "layout $c"
 
 # initialize zoom state
 set [set c](zdepth) 1.0
