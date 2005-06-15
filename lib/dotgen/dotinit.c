@@ -74,7 +74,7 @@ dot_init_edge(edge_t * e)
     ED_minlen(e) = late_int(e, E_minlen, 1, 0);
 }
 
-static void 
+void 
 dot_init_node_edge(graph_t * g)
 {
     node_t *n;
@@ -207,7 +207,7 @@ void dot_cleanup(graph_t * g)
     dot_cleanup_graph(g);
 }
 
-static void 
+void 
 dot_init_graph(Agraph_t * g)
 {
     UseRankdir = TRUE;

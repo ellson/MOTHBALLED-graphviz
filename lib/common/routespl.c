@@ -19,22 +19,25 @@
 #include	"render.h"
 #include	"pathplan.h"
 
-static box *bs = NULL;
 #ifdef UNUSED
+static box *bs = NULL;
 static int bn;
 static int maxbn = 0;
 #endif
 #define BINC 300
 
-static point *ps = NULL;
-static int pn;
-static int maxpn = 0;
+typedef struct {
+    point *ps;
+    int pn;
+    int maxpn;
+    box minbbox;
+} route_info_t;
+
 #define PINC 300
 
 static box *boxes;
 static int boxn;
 
-static box minbbox;
 
 #ifdef NOTNOW
 static edge_t *origedge;
@@ -51,7 +54,7 @@ static Pedge_t *edges;
 static int edgen;
 
 static void checkpath(void);
-static void mkspacep(int size);
+static void mkspacep(route_info_t*, int size);
 static void printpath(path * pp);
 static void printboxes(void);
 static void psprintinit (int);
@@ -67,7 +70,7 @@ static int debugleveln(int i)
 	    ND_showboxes(realedge->head) == i ||
 	    ND_showboxes(realedge->tail) == i);
 }
-static void append(path * path, int bi, point p0, point p1);
+static void append(route_info_t*, path * path, int bi, point p0, point p1);
 
 static point mkpt(int x, int y)
 {
@@ -82,22 +85,25 @@ static int pteq(point p, point q)
     return ((p.x == q.x) && (p.y == q.y));
 }
 
-void routesplinesinit(void)
+void*
+routesplinesinit()
 {
+    route_info_t* ri = NEW(route_info_t);
+#ifdef UNUSED
     if (!(bs = N_GNEW(BINC, box))) {
 	agerr(AGERR, "cannot allocate bs\n");
 	abort();
     }
-#ifdef UNUSED
     maxbn = BINC;
 #endif
-    if (!(ps = N_GNEW(PINC, point))) {
+    if (!(ri->ps = N_GNEW(PINC, point))) {
 	agerr(AGERR, "cannot allocate ps\n");
 	abort();
     }
-    maxpn = PINC;
-    minbbox.LL.x = minbbox.LL.y = INT_MAX;
-    minbbox.UR.x = minbbox.UR.y = INT_MIN;
+    ri->maxpn = PINC;
+    ri->pn = 0;
+    ri->minbbox.LL.x = ri->minbbox.LL.y = INT_MAX;
+    ri->minbbox.UR.x = ri->minbbox.UR.y = INT_MIN;
     if (Show_boxes) {
 	int i;
         for (i = 0; Show_boxes[i]; i++)
@@ -108,20 +114,26 @@ void routesplinesinit(void)
     }
     if (Verbose)
 	start_timer();
+    return ri;
 }
 
-void routesplinesterm(void)
+void routesplinesterm(void* x)
 {
-    free(ps), ps = NULL, maxpn = pn = 0;
+    route_info_t* ri = (route_info_t*)x;
+    free(ri->ps);
+    free(ri);
+#ifdef UNUSED
     free(bs), bs = NULL /*, maxbn = bn = 0 */ ;
+#endif
     if (Verbose)
 	fprintf(stderr,
 		"routesplines: %d edges, %d boxes, %d splines %.2f sec\n",
 		nedges, nboxes, nsplines, elapsed_sec());
 }
 
-point *routesplines(path * pp, int *npoints)
+point *routesplines(void* x, path * pp, int *npoints)
 {
+    route_info_t* ri = (route_info_t*)x;
     Ppoly_t poly;
     Ppolyline_t pl, spl;
     int splinepi;
@@ -227,7 +239,7 @@ point *routesplines(path * pp, int *npoints)
 		    /* it went badly, e.g. degenerate box in boxlist */
 		    *npoints = 0;
 		    abort();	/* for correctness sake, it's best to just stop */
-		    return ps;	/* could also be reported as a lost edge (no spline) */
+		    return ri->ps;	/* could also be reported as a lost edge (no spline) */
 		}
 		polypoints[pi].x = boxes[bi].UR.x;
 		polypoints[pi++].y = boxes[bi].LL.y;
@@ -268,7 +280,7 @@ point *routesplines(path * pp, int *npoints)
 	} else
 	    abort();
 	polysz = 0;
-	append(pp, 0, p0, p1);
+	append(ri, pp, 0, p0, p1);
 	pi = polysz;
     }
 
@@ -308,20 +320,20 @@ point *routesplines(path * pp, int *npoints)
 	psprintspline(spl);
 	psprintinit(0);
     }
-    mkspacep(spl.pn);
+    mkspacep(ri, spl.pn);
     for (bi = 0; bi <= boxn; bi++)
-	boxes[bi].LL.x = minbbox.LL.x, boxes[bi].UR.x = minbbox.UR.x;
+	boxes[bi].LL.x = ri->minbbox.LL.x, boxes[bi].UR.x = ri->minbbox.UR.x;
     for (splinepi = 0; splinepi < spl.pn; splinepi++) {
-	ps[splinepi].x = spl.ps[splinepi].x;
-	ps[splinepi].y = spl.ps[splinepi].y;
+	ri->ps[splinepi].x = spl.ps[splinepi].x;
+	ri->ps[splinepi].y = spl.ps[splinepi].y;
     }
     for (splinepi = 0; splinepi + 3 < spl.pn; splinepi += 3) {
 	for (si = 0; si <= 10 * boxn; si++) {
 	    t = si / (10.0 * boxn);
-	    sp[0] = ps[splinepi];
-	    sp[1] = ps[splinepi + 1];
-	    sp[2] = ps[splinepi + 2];
-	    sp[3] = ps[splinepi + 3];
+	    sp[0] = ri->ps[splinepi];
+	    sp[1] = ri->ps[splinepi + 1];
+	    sp[2] = ri->ps[splinepi + 2];
+	    sp[3] = ri->ps[splinepi + 3];
 	    sp[0].x = sp[0].x + t * (sp[1].x - sp[0].x);
 	    sp[0].y = sp[0].y + t * (sp[1].y - sp[0].y);
 	    sp[1].x = sp[1].x + t * (sp[2].x - sp[1].x);
@@ -353,7 +365,7 @@ point *routesplines(path * pp, int *npoints)
 	ND_showboxes(realedge->tail) == 2)
 	printboxes();
 
-    return ps;
+    return ri->ps;
 }
 
 static int overlap(int i0, int i1, int j0, int j1)
@@ -535,12 +547,12 @@ static void checkpath(void)
     }
 }
 
-static void mkspacep(int size)
+static void mkspacep(route_info_t* ri, int size)
 {
-    if (pn + size > maxpn) {
-	int newmax = maxpn + (size / PINC + 1) * PINC;
-	ps = RALLOC(newmax, ps, point);
-	maxpn = newmax;
+    if (ri->pn + size > ri->maxpn) {
+	int newmax = ri->maxpn + (size / PINC + 1) * PINC;
+	ri->ps = RALLOC(newmax, ri->ps, point);
+	ri->maxpn = newmax;
     }
 }
 
@@ -604,7 +616,7 @@ static int cmpf(const void *pp0, const void *pp1)
     return 0;			/* not reached */
 }
 
-void append(path * path, int bi, point p0, point p1)
+void append(route_info_t* ri, path * path, int bi, point p0, point p1)
 {
     point v[8];			/* worse case 4 corners + 2 segs * 2 points each */
     point w[8];
@@ -615,13 +627,13 @@ void append(path * path, int bi, point p0, point p1)
     0, 0}, r;
 
     /* v = 4 corners of b, p0 and p1 */
-    pn = 0;
-    v[pn++] = b.LL;
-    v[pn++] = mkpt(b.UR.x, b.LL.y);
-    v[pn++] = b.UR;
-    v[pn++] = mkpt(b.LL.x, b.UR.y);
-    v[pn++] = p0;
-    v[pn++] = p1;
+    ri->pn = 0;
+    v[ri->pn++] = b.LL;
+    v[ri->pn++] = mkpt(b.UR.x, b.LL.y);
+    v[ri->pn++] = b.UR;
+    v[ri->pn++] = mkpt(b.LL.x, b.UR.y);
+    v[ri->pn++] = p0;
+    v[ri->pn++] = p1;
 
     if (bi + 1 < path->nbox) {
 	bb = path->boxes[bi + 1];
@@ -644,19 +656,19 @@ void append(path * path, int bi, point p0, point p1)
 	    q1.x = MAX(b.LL.x, bb.LL.x);
 	} else
 	    abort();
-	v[pn++] = q0;
-	v[pn++] = q1;
+	v[ri->pn++] = q0;
+	v[ri->pn++] = q1;
     }
 
     /* sort v so that the cyclic order is p0, all other points, p1  */
     B = b;
-    qsort(v, pn, sizeof(v[0]), cmpf);
+    qsort(v, ri->pn, sizeof(v[0]), cmpf);
 
     /* eliminate duplicates and record i0 = index of p0 in w */
     w[0] = v[0];
     npw = 1;
     i0 = -1;
-    for (i = 0; i < pn; i++) {
+    for (i = 0; i < ri->pn; i++) {
 	if (pteq(w[npw - 1], p0))
 	    i0 = npw - 1;
 	if (!pteq(v[i], w[npw - 1]))
@@ -683,11 +695,11 @@ void append(path * path, int bi, point p0, point p1)
 	    break;
 	if (bi + 1 < path->nbox) {	/* recur when we hit the next box */
 	    if (pteq(r, q0)) {
-		append(path, bi + 1, q0, q1);
+		append(ri, path, bi + 1, q0, q1);
 		appendpt(q1);	/* assumes q1 != p0 and p1 */
 		i += delta;	/* skip q1 */
 	    } else if (pteq(r, q1)) {
-		append(path, bi + 1, q1, q0);
+		append(ri, path, bi + 1, q1, q0);
 		appendpt(q0);
 		i += delta;
 	    }

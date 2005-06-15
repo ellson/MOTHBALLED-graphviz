@@ -460,43 +460,52 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	endp->sidemask = side;
 	return;
     }
-#ifdef UNIMPL
     if ((et == FLATEDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_tail_port(e).side))) {
-	box b = endp->nb;
+	box b0, b = endp->nb;
+	edge_t* orig;
 	switch (side) {
 	case LEFT:
-	    b.LL.x = b.UR.x = P->start.p.x;
+	    b.UR.x = P->start.p.x;
 	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+	    b.UR.y = P->start.p.y;
 	    b.LL.y = P->start.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
 	    break;
 	case RIGHT:
-	    b.UR.x = b.LL.x = P->start.p.x;
+	    b.LL.x = P->start.p.x;
 	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
 	    b.LL.y = P->start.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
 	    break;
 	case TOP:
-	    b.LL.x = P->start.p.x;
-	    b.UR.x = ND_coord_i(n).x + ND_rw_i(n);
-	    b.UR.y = b.LL.y = P->start.p.y;
+	    b.LL.y = MIN(b.LL.y,P->end.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
 	    break;
 	case BOTTOM:
-	    b.LL.x = P->start.p.x;
-	    b.UR.x = ND_coord_i(n).x + ND_rw_i(n);
-	    b.UR.y = b.LL.y = P->start.p.y;
-	    endp->boxes[0] = b;
-	    endp->boxn = 1;
+	    b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+	    b0.UR.x = b.UR.x+1;
+	    b0.LL.x = P->start.p.x;
+	    b0.LL.y = b0.UR.y - GD_ranksep(n->graph)/2;
+	    b.LL.x = ND_coord_i(n).x + ND_rw_i(n) + 2;
+	    b.LL.y = b0.UR.y;
+	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+	    b.UR.x += 1;
+	    endp->boxes[0] = b0;
+	    endp->boxes[1] = b;
+	    endp->boxn = 2;
 	    break;
 	}
+	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
+	if (n == orig->tail)
+	    ED_tail_port(orig).clip = FALSE;
+	else
+	    ED_head_port(orig).clip = FALSE;
 	endp->sidemask = side;
 	return;
     }
-#endif
 
     if (et == REGULAREDGE) side = BOTTOM;
     else side = TOP;  /* for flat edges */
@@ -614,43 +623,50 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	return;
     }
 
-#ifdef UNIMPL
     if ((et == FLATEDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_head_port(e).side))) {
-	box b = endp->nb;
+	edge_t* orig;
+	box b0, b = endp->nb;
 	switch (side) {
 	case LEFT:
-	    b.LL.x = b.UR.x = P->end.p.x;
+	    b.UR.x = P->end.p.x;
 	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
 	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
 	    break;
 	case RIGHT:
-	    b.UR.x = b.LL.x = P->end.p.x;
+	    b.LL.x = P->end.p.x-1;
 	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
-	    b.LL.y = P->end.p.y;
+	    b.LL.y = P->end.p.y-1;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
 	    break;
 	case TOP:
-	    b.UR.x = P->end.p.x;
-	    b.LL.x = ND_coord_i(n).x - ND_lw_i(n);
-	    b.UR.y = b.LL.y = P->end.p.y;
+	    b.LL.y = MIN(b.LL.y,P->end.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
 	    break;
 	case BOTTOM:
-	    b.UR.x = P->end.p.x;
-	    b.LL.x = ND_coord_i(n).x - ND_lw_i(n);
-	    b.UR.y = b.LL.y = P->end.p.y;
-	    endp->boxes[0] = b;
-	    endp->boxn = 1;
+	    b0.LL.x = b.LL.x-1;
+	    b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+	    b0.UR.x = P->end.p.x;
+	    b0.LL.y = b0.UR.y - GD_ranksep(n->graph)/2;
+	    b.UR.x = ND_coord_i(n).x - ND_lw_i(n) - 2;
+	    b.LL.y = b0.UR.y;
+	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+	    b.LL.x -= 1;
+	    endp->boxes[0] = b0;
+	    endp->boxes[1] = b;
+	    endp->boxn = 2;
 	    break;
 	}
+	if (n == orig->head)
+	    ED_head_port(orig).clip = FALSE;
+	else
+	    ED_tail_port(orig).clip = FALSE;
 	endp->sidemask = side;
 	return;
     }
-#endif
 
     side = TOP; 
     if (pboxfn

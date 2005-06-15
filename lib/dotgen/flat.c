@@ -183,7 +183,6 @@ flat_node(edge_t * e)
     if (GD_rank(g)[r - 1].ht2 < h2)
 	GD_rank(g)[r - 1].ht2 = h2;
     ND_alg(vn) = e;
-    ED_alg(e) = vn;
 }
 
 static void abomination(graph_t * g)
