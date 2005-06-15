@@ -366,7 +366,7 @@ proc setAttributesWidget {c o d l q s} {
 	catch {destroy $w}
 	toplevel $w
 #	positionWindow $w
-	wm title $w "$o Attributes"
+	wm title $w "[$o showname] Attributes"
 	wm iconname $w "Attributes"
 	foreach a [eval $l] {
 		if {[catch {eval $q $a} v]} {set v {}}
