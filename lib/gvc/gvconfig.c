@@ -138,19 +138,26 @@ static char *token(int *nest, char **tokens)
 #ifndef DISABLE_LTDL
 static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 {
-    char *path, *packagename, *api, *type;
+    char *p, *path, *packagename, *api, *type;
     api_t gv_api;
     int quality, rc;
     int nest = 0;
 
     separator(&nest, &s);
     while (*s) {
-	path = token(&nest, &s);
-	rc = strncmp(path, libdir, strlen(libdir));
-        if(rc) {
-	    agerr (AGERR, "config contains invalid path\n");
-	    return 0;
+	p = token(&nest, &s);
+	if (p[0] == '/') {
+	    path = strdup(p);
+	} else {
+	    path = malloc(strlen(libdir)
+                            + 1
+                            + strlen(p)
+                            + 1);
+	    strcpy(path, libdir);
+	    strcat(path, "/");
+	    strcat(path, p);
 	}
+
 	if (nest == 0)
 	    packagename = token(&nest, &s);
         else
@@ -160,6 +167,7 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 	    gv_api = gvplugin_api(api);
 	    if (gv_api == -1) {
 		agerr(AGERR, "invalid api in config: %s %s\n", path, api);
+		free(path);
 		return 0;
 	    }
 	    do {
@@ -173,11 +181,13 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 				    type, quality, packagename, path, NULL);
 		    if (!rc) {
 		        agerr(AGERR, "config error: %s %s %s\n", path, api, type);
+			free(path);
 		        return 0;
 		    }
 		}
 	    } while (nest == 2);
 	} while (nest == 1);
+	free(path);
     }
     return 1;
 }
@@ -223,7 +233,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 {
     FILE *f = NULL;
     glob_t globbuf;
-    char *config_glob;
+    char *config_glob, *path;
     int i, rc;
     gvplugin_library_t *library;
     char *plugin_glob = "libgvplugin*.so.?";
@@ -250,8 +260,11 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 	    library = gvplugin_library_load(globbuf.gl_pathv[i]);
 	    if (library) {
 		gvconfig_plugin_install_from_library(gvc, globbuf.gl_pathv[i], library);
-		if (f) {
-		    gvconfig_write_library_config(globbuf.gl_pathv[i], library, f);
+		path = strrchr(globbuf.gl_pathv[i],'/');
+		if (path)
+		    path++;
+		if (f && path) {
+		    gvconfig_write_library_config(path, library, f);
 		}
 	    }
 	}
