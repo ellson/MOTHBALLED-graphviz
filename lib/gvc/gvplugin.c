@@ -106,13 +106,19 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     char *s, *sym;
     int len;
     static char *p;
+    static int lenp;
 
     char *suffix = "_LTX_library";
 
-    p = realloc(p,strlen(libdir)
-			+ 1
-			+ strlen(path)
-			+ 1);
+    len = strlen(libdir) + 1 + strlen(path) + 1;
+    if (len > lenp) {
+	lenp = len+20;
+	if (p)
+	    realloc(p, lenp);
+	else
+	    p = malloc(lenp);
+    }
+	
     if (path[0] == '/') {
 	strcpy(p, path);
     } else {
