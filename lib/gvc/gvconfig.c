@@ -138,26 +138,14 @@ static char *token(int *nest, char **tokens)
 #ifndef DISABLE_LTDL
 static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 {
-    char *p, *path, *packagename, *api, *type;
+    char *path, *packagename, *api, *type;
     api_t gv_api;
     int quality, rc;
     int nest = 0;
 
     separator(&nest, &s);
     while (*s) {
-	p = token(&nest, &s);
-	if (p[0] == '/') {
-	    path = strdup(p);
-	} else {
-	    path = malloc(strlen(libdir)
-                            + 1
-                            + strlen(p)
-                            + 1);
-	    strcpy(path, libdir);
-	    strcat(path, "/");
-	    strcat(path, p);
-	}
-
+	path = token(&nest, &s);
 	if (nest == 0)
 	    packagename = token(&nest, &s);
         else
@@ -167,7 +155,6 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 	    gv_api = gvplugin_api(api);
 	    if (gv_api == -1) {
 		agerr(AGERR, "invalid api in config: %s %s\n", path, api);
-		free(path);
 		return 0;
 	    }
 	    do {
@@ -181,13 +168,11 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 				    type, quality, packagename, path, NULL);
 		    if (!rc) {
 		        agerr(AGERR, "config error: %s %s %s\n", path, api, type);
-			free(path);
 		        return 0;
 		    }
 		}
 	    } while (nest == 2);
 	} while (nest == 1);
-	free(path);
     }
     return 1;
 }

@@ -31,6 +31,8 @@
 #include        "gvc.h"
 #include        "graph.h"
 
+static char *libdir = GVLIBDIR;
+
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined gvplugin.h.  The apis array is
@@ -103,23 +105,36 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     lt_ptr ptr;
     char *s, *sym;
     int len;
+    static char *p;
 
     char *suffix = "_LTX_library";
+
+    p = realloc(p,strlen(libdir)
+			+ 1
+			+ strlen(path)
+			+ 1);
+    if (path[0] == '/') {
+	strcpy(p, path);
+    } else {
+	strcpy(p, libdir);
+	strcat(p, "/");
+	strcat(p, path);
+    }
 
     if (lt_dlinit()) {
         agerr(AGERR, "failed to init libltdl\n");
         return NULL;
     }
-    hndl = lt_dlopen (path);
+    hndl = lt_dlopen (p);
     if (!hndl) {
-        agerr(AGERR, "failed to dlopen %s\n", path);
+        agerr(AGERR, "failed to dlopen %s\n", p);
         return NULL;
     }
 
-    s = strrchr(path, '/');
+    s = strrchr(p, '/');
     len = strlen(s); 
-    if (len < strlen("libgvplugin_x")) {
-	agerr (AGERR,"invalid plugin path \"%s\"\n", path);
+    if (len < strlen("/libgvplugin_x")) {
+	agerr (AGERR,"invalid plugin path \"%s\"\n", p);
 	return NULL;
     }
     sym = malloc(len + strlen(suffix) + 1);
@@ -129,7 +144,7 @@ gvplugin_library_t *gvplugin_library_load(char *path)
 
     ptr = lt_dlsym (hndl, sym);
     if (!ptr) {
-        agerr (AGERR,"failed to resolve %s in %s\n", sym, path);
+        agerr (AGERR,"failed to resolve %s in %s\n", sym, p);
 	free(sym);
         return NULL;
     }
