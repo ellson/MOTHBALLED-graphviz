@@ -491,7 +491,9 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    endp->boxn = 1;
 	    break;
 	case TOP:
-	    abort();
+	    b.LL.y = MIN(b.LL.y,P->end.p.y);
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
 	    break;
 	case BOTTOM:
 	    if (endp->sidemask == TOP) {
@@ -672,7 +674,9 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    endp->boxn = 1;
 	    break;
 	case TOP:
-	    abort();
+	    b.LL.y = MIN(b.LL.y,P->end.p.y);
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
 	    break;
 	case BOTTOM:
 	    if (endp->sidemask == TOP) {
