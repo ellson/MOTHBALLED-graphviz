@@ -14,8 +14,8 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifndef GVTEXTLAYOUT_PLUGIN_H
-#define GVTEXTLAYOUT_PLUGIN_H
+#ifndef GVDEVICE_PLUGIN_H
+#define GVDEVICE_PLUGIN_H
 
 #include "gvplugin.h"
 #include "gvcint.h"
@@ -24,11 +24,21 @@
 extern "C" {
 #endif
 
-    struct gvtextlayout_engine_s {
-	boolean (*width) (textline_t *textline, char *fontname, double fontsize, char* fontpath);
+    struct gvdevice_engine_s {
+	void (*initialize) (GVC_t * gvc, gvevent_key_binding_t *keybindings, int numkeys);
+	void (*finalize) (GVC_t * gvc);
+	void (*begin_job) (GVJ_t * job);
+        void (*end_job) (GVJ_t * job);
     };
+
+/* callbacks */
+    extern void gvevent_refresh(GVJ_t * job);
+    extern void gvevent_button_press(GVJ_t * job, int button, double x, double y);
+    extern void gvevent_button_release(GVJ_t * job, int button, double x, double y);
+    extern void gvevent_motion(GVJ_t * job, double x, double y);
+
 
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVTEXTLAYOUT_PLUGIN_H */
+#endif				/* GVDEVICE_PLUGIN_H */

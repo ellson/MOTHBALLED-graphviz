@@ -35,10 +35,10 @@ extern "C" {
 
     typedef struct GVC_s GVC_t;
     typedef struct GVJ_s GVJ_t;
+    typedef struct gvdevice_engine_s gvdevice_engine_t;
     typedef struct gvrender_engine_s gvrender_engine_t;
     typedef struct gvlayout_engine_s gvlayout_engine_t;
-    typedef struct gvdisplay_engine_s gvdisplay_engine_t;
-    typedef struct gvtext_engine_s gvtext_engine_t;
+    typedef struct gvtextlayout_engine_s gvtextlayout_engine_t;
 
     typedef struct htmllabel_t htmllabel_t;
 

@@ -17,11 +17,7 @@
 /*
  *  graphics code generator wrapper
  *
- *  This library will eventually form the socket for run-time loadable
- *  render plugins.   Initially it just provides wrapper functions
- *  to the old codegens so that the changes can be locallized away from all
- *  the various codegen callers.
- *
+ *  This library forms the socket for run-time loadable render plugins.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -53,6 +49,7 @@ int gvrender_select(GVJ_t * job, char *str)
     GVC_t *gvc = job->gvc;
     gv_plugin_t *plugin;
     gvplugin_type_t *typeptr;
+    char *device;
 #ifndef DISABLE_CODEGENS
     codegen_info_t *cg_info;
 #endif
@@ -71,6 +68,17 @@ int gvrender_select(GVJ_t * job, char *str)
 	    job->render_features =
 		(gvrender_features_t *) (typeptr->features);
 	    job->render_id = typeptr->id;
+	    device = job->render_features->device;
+	    if (device) {
+		plugin = gvplugin_load(gvc, API_device, device);
+		if (! plugin)
+		    return NO_SUPPORT;
+	        typeptr = plugin->typeptr;
+		job->device_engine = (gvdevice_engine_t *) (typeptr->engine);
+	        job->device_features =
+		    (gvdevice_features_t *) (typeptr->features);
+	        job->device_id = typeptr->id;
+	    }
 	    return GVRENDER_PLUGIN;
 #ifndef DISABLE_CODEGENS
 	}
@@ -103,50 +111,6 @@ int gvrender_features(GVJ_t * job)
     }
 #endif
     return features;
-}
-
-extern gvevent_key_binding_t gvevent_key_binding[];
-extern int gvevent_key_binding_size;
-
-void gvrender_initialize(GVC_t * gvc)
-{
-    GVJ_t *job = gvc->job;
-    gvrender_engine_t *gvre = job->render_engine;
-
-    if (gvre) {
-	if (gvre->initialize)
-	    gvre->initialize(gvc, gvevent_key_binding, gvevent_key_binding_size);
-    }
-#if 0 
-/* codegens don't have this entry point */
-#ifndef DISABLE_CODEGENS
-    else {
-	codegen_t *cg = job->codegen;
-
-	if (cg && cg->init)
-	    cg->init();
-    }
-#endif
-#endif
-}
-
-void gvrender_finalize(GVC_t * gvc)
-{
-    GVJ_t *job = gvc->active_jobs;
-    gvrender_engine_t *gvre = job->render_engine;
-
-    if (gvre) {
-	if (gvre->finalize)
-	    gvre->finalize(gvc);
-    }
-#ifndef DISABLE_CODEGENS
-    else {
-	codegen_t *cg = job->codegen;
-
-	if (cg && cg->reset)
-	    cg->reset();
-    }
-#endif
 }
 
 void gvrender_begin_job(GVJ_t * job)

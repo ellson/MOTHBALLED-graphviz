@@ -64,7 +64,12 @@ extern "C" {
 	char **knowncolors;
 	int sz_knowncolors;
 	color_type_t color_type;
+	char *device;
     } gvrender_features_t;
+
+    typedef struct {
+	int flags;
+    } gvdevice_features_t;
 
     struct GVJ_s {
 	GVJ_t *next;  /* linked list of jobs */
@@ -73,6 +78,10 @@ extern "C" {
 	char *output_langname;
 	FILE *output_file;
 	int output_lang;
+
+	gvdevice_engine_t *device_engine;	/* current device engine */
+	int device_id;		/* internal id of current device engine within plugin */
+	gvdevice_features_t *device_features;	/* features of current device */
 
 	gvrender_engine_t *render_engine;	/* current render engine */
 	int render_id;		/* internal id of current render engine within plugin */
@@ -180,9 +189,8 @@ extern "C" {
 #undef ELEM
 
 	void *display;		/* display-specific data for gvdisplay plugin */
-	gvdisplay_engine_t *display_engine; /* current display engine */
 
-	gvtext_engine_t *text_engine;	/* current text_layout engine */
+	gvtextlayout_engine_t *textlayout_engine;	/* current text_layout engine */
 
 	/* gvrender_begin_job() */
 	char *layout_type;      /* string name of layout type */

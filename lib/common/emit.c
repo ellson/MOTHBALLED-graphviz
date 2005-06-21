@@ -1337,6 +1337,7 @@ void emit_jobs_eof(GVC_t * gvc)
         if (job->output_file) {
 	    if (gvc->viewNum > 0) {
 		gvrender_end_job(job);
+		gvdevice_end_job(job);
 		emit_once_reset();
 		gvc->viewNum = 0;
 	    }
@@ -1614,6 +1615,7 @@ static void emit_job(GVJ_t * job, graph_t * g)
     init_job_viewport(job, g);
     init_job_pagination(job, g);
 
+    gvdevice_begin_job(job);
     gvrender_begin_job(job);
 
     switch (job->output_lang) {
@@ -1773,12 +1775,12 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
         
 	if (gvc->active_jobs && strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
 	    /* finalize previous jobs */
-	    gvrender_finalize(gvc);
+	    gvdevice_finalize(gvc);
 	    /* clear active list */
 	    gvc->active_jobs = NULL;
         }
 	if (! gvc->active_jobs)
-	    gvrender_initialize(gvc);
+	    gvdevice_initialize(gvc);
 
 	/* insert job in active list */
 	job->next_active = gvc->active_jobs;

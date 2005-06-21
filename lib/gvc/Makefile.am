@@ -11,10 +11,10 @@ AM_CPPFLAGS = \
 LIBS = $(LIBLTDL) $(SOCKET_LIBS)
 
 pkginclude_HEADERS = gvc.h gvcint.h gvplugin.h \
-	gvplugin_render.h gvplugin_layout.h gvplugin_textlayout.h 
+	gvplugin_render.h gvplugin_layout.h gvplugin_textlayout.h gvplugin_device.h
 pkglib_LTLIBRARIES = libgvc.la
 
-libgvc_la_SOURCES = gvrender.c gvlayout.c gvtextlayout.c gvcontext.c \
-	gvjobs.c gvevent.c gvplugin.c gvconfig.c
+libgvc_la_SOURCES = gvrender.c gvlayout.c gvtextlayout.c gvdevice.c \
+	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c
 
 EXTRA_DIST = Makefile.old

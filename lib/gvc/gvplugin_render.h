@@ -25,8 +25,6 @@ extern "C" {
 #endif
 
     struct gvrender_engine_s {
-	void (*initialize) (GVC_t * gvc, gvevent_key_binding_t *keys, int numkeys);
-	void (*finalize) (GVC_t * gvc);
 	void (*begin_job) (GVJ_t * job);
 	void (*end_job) (GVJ_t * job);
 	void (*begin_graph) (GVJ_t * job, char *graphname);
@@ -61,12 +59,6 @@ extern "C" {
 	void (*user_shape) (GVJ_t * job, char *name, pointf * A, int sides,
 			    int filled);
     };
-
-/* callbacks */
-    extern void gvevent_refresh(GVJ_t * job);
-    extern void gvevent_button_press(GVJ_t * job, int button, double x, double y);
-    extern void gvevent_button_release(GVJ_t * job, int button, double x, double y);
-    extern void gvevent_motion(GVJ_t * job, double x, double y);
 
 #ifdef __cplusplus
 }
