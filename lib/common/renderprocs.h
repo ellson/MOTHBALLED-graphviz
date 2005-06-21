@@ -161,9 +161,9 @@ extern "C" {
     extern int processClusterEdges(graph_t * g);
     extern char *ps_string(char *s, int);
     extern int rank(graph_t * g, int balance, int maxiter);
-    extern void* routesplinesinit(void);
-    extern point *routesplines(void*, path *, int *);
-    extern void routesplinesterm(void*);
+    extern void routesplinesinit(void);
+    extern point *routesplines(path *, int *);
+    extern void routesplinesterm(void);
     extern char *safefile(char *shapefilename);
     extern attrsym_t* safe_dcl(graph_t*, void*, char*, char*,
          attrsym_t * (*fun) (Agraph_t *, char *, char *));
