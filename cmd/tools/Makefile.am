@@ -102,7 +102,7 @@ gvpack_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/ingraphs/libingraphs.la \
 	$(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/plugin/layout/libgvplugin_layout.la
+	$(top_builddir)/plugin/layout/libgvplugin_neato_layout.la
 
 dijkstra_SOURCES = dijkstra.c
 
