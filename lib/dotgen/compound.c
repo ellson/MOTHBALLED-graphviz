@@ -340,6 +340,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     lt = getCluster(g, agget(e, "ltail"));
     if (!lt && !lh)
 	return;
+    if (!ED_spl(e)) return;
 
     /* at present, we only handle single spline case */
     if (ED_spl(e)->size > 1) {
