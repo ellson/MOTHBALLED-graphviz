@@ -25,10 +25,7 @@ extern "C" {
 #endif
 
     struct gvdevice_engine_s {
-	void (*initialize) (GVC_t * gvc, gvevent_key_binding_t *keybindings, int numkeys);
 	void (*finalize) (GVC_t * gvc);
-	void (*begin_job) (GVJ_t * job);
-        void (*end_job) (GVJ_t * job);
     };
 
 /* callbacks */

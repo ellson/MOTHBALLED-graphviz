@@ -1337,7 +1337,6 @@ void emit_jobs_eof(GVC_t * gvc)
         if (job->output_file) {
 	    if (gvc->viewNum > 0) {
 		gvrender_end_job(job);
-		gvdevice_end_job(job);
 		emit_once_reset();
 		gvc->viewNum = 0;
 	    }
@@ -1615,7 +1614,6 @@ static void emit_job(GVJ_t * job, graph_t * g)
     init_job_viewport(job, g);
     init_job_pagination(job, g);
 
-    gvdevice_begin_job(job);
     gvrender_begin_job(job);
 
     switch (job->output_lang) {
@@ -1747,6 +1745,9 @@ static void init_bb(graph_t *g)
 	init_bb_node(g, n);
 }
 
+extern gvevent_key_binding_t gvevent_key_binding[];
+extern int gvevent_key_binding_size;
+
 void emit_jobs (GVC_t * gvc, graph_t * g)
 {
     GVJ_t *job;
@@ -1754,6 +1755,9 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
     init_gvc_from_graph(gvc, g);
     init_layering(gvc, g);
     init_bb(g);
+
+    gvc->keybindings = gvevent_key_binding;
+    gvc->numkeys = gvevent_key_binding_size;
 
 /*     gvc->active_jobs = NULL;  acive job sets can straddle multiple input graphs */
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
@@ -1779,8 +1783,6 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
 	    /* clear active list */
 	    gvc->active_jobs = NULL;
         }
-	if (! gvc->active_jobs)
-	    gvdevice_initialize(gvc);
 
 	/* insert job in active list */
 	job->next_active = gvc->active_jobs;

@@ -188,8 +188,6 @@ extern "C" {
 	gv_plugin_t *api[ APIS ];  /* array of current plugins per api */
 #undef ELEM
 
-	void *display;		/* display-specific data for gvdisplay plugin */
-
 	gvtextlayout_engine_t *textlayout_engine;	/* current text_layout engine */
 
 	/* gvrender_begin_job() */
@@ -229,6 +227,11 @@ extern "C" {
 
 	/* render defaults set from graph */
 	color_t bgcolor;	/* background color */
+
+	/* keybindings for keyboard events */
+	gvevent_key_binding_t *keybindings;
+	int numkeys;
+	void *keycodes;
     };
 
 #ifdef __cplusplus

@@ -75,18 +75,6 @@ int gvdevice_features(GVJ_t * job)
     return features;
 }
 
-extern gvevent_key_binding_t gvevent_key_binding[];
-extern int gvevent_key_binding_size;
-
-void gvdevice_initialize(GVC_t * gvc)
-{
-    GVJ_t *job = gvc->job;
-    gvdevice_engine_t *gvde = job->device_engine;
-
-    if (gvde && gvde->initialize)
-	    gvde->initialize(gvc, gvevent_key_binding, gvevent_key_binding_size);
-}
-
 void gvdevice_finalize(GVC_t * gvc)
 {
     GVJ_t *job = gvc->active_jobs;
@@ -104,44 +92,4 @@ void gvdevice_finalize(GVC_t * gvc)
 	    cg->reset();
     }
 #endif
-}
-
-void gvdevice_begin_job(GVJ_t * job)
-{
-    gvdevice_engine_t *gvde = job->device_engine;
-
-    if (gvde) {
-        if (gvde->begin_job)
-            gvde->begin_job(job);
-    }
-#if 0
-#ifndef DISABLE_CODEGENS
-    else {
-        codegen_t *cg = job->codegen;
-
-        if (cg && cg->begin_job)
-            cg->begin_job(job->output_file, job->g, job->gvc->lib, job->gvc->user,
-                          job->gvc->info, job->pagesArraySize);
-    }
-#endif
-#endif
-}
-
-void gvdevice_end_job(GVJ_t * job)
-{
-    gvdevice_engine_t *gvde = job->device_engine;
-
-    if (gvde && gvde->end_job)
-        gvde->end_job(job);
-#if 0
-#ifndef DISABLE_CODEGENS
-    else {
-        codegen_t *cg = job->codegen;
-
-        if (cg && cg->end_job)
-            cg->end_job();
-    }
-#endif
-#endif
-    job->gvc->lib = NULL;
 }
