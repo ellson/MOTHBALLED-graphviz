@@ -955,7 +955,7 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e)
     for (i = 0; i < boxn; i++) add_box(P, boxes[i]);
     for (i = hend.boxn - 1; i >= 0; i--) add_box(P, hend.boxes[i]);
 
-    routesplines(P, &pn);
+    ps = routesplines(P, &pn);
     if (pn == 0) return;
     clip_and_install(e, e, ps, pn, &sinfo);
 }
