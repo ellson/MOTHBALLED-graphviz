@@ -696,7 +696,7 @@ cloneNode (graph_t* g, node_t* orign, int flipped)
 {
     node_t* n = agnode(g, orign->name);
     agcopyattr (orign, n);
-    if (flipped && shapeOf(orign) == SH_RECORD) {
+    if (shapeOf(orign) == SH_RECORD) {
 	int lbllen = strlen(ND_label(orign)->text);
         char* buf = N_GNEW(lbllen+3,char);
         sprintf (buf, "{%s}", ND_label(orign)->text);
@@ -726,7 +726,7 @@ transform (point p, point del, int flip)
     if (flip) {
 	int i = p.x;
 	p.x = p.y;
-	p.y = i;
+	p.y = -i;
     }
     return add_points(p, del);
 }
@@ -753,7 +753,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
     graph_t* subg;
     node_t *auxt, *auxh;
     edge_t* auxe;
-    int     i, j, midx, leftx, rightx;
+    int     i, j, midx, midy, leftx, rightx;
     point   del;
     edge_t* hvye = NULL;
 
@@ -804,7 +804,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
 	else
 	    auxe = cloneEdge (auxg, auxh, auxt, e);
 	ED_alg(e) = auxe;
-	if (!hvye && !ED_label(e)) {
+	if (!hvye && !ED_tail_port(e0).defined && !ED_head_port(e0).defined) {
 	    hvye = auxe;
 	    ED_alg(hvye) = e;
 	}
@@ -821,9 +821,16 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
     
     /* reposition */
     midx = (ND_coord_i(tn).x + ND_coord_i(hn).x)/2;
+    midy = (ND_coord_i(auxt).x + ND_coord_i(auxh).x)/2;
     for (n = GD_nlist(auxg); n; n = ND_next(n)) {
-	if (n == auxt) ND_coord_i(n).y = rightx;
-	else if (n == auxh) ND_coord_i(n).y = leftx;
+	if (n == auxt) {
+	    ND_coord_i(n).y = rightx;
+	    ND_coord_i(n).x = midy;
+	}
+	else if (n == auxh) {
+	    ND_coord_i(n).y = leftx;
+	    ND_coord_i(n).x = midy;
+	}
 	else ND_coord_i(n).y = midx;
     }
     dot_sameports(auxg);
@@ -833,7 +840,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
        /* copy splines */
     if (GD_flip(g)) {
 	del.x = ND_coord_i(tn).x - ND_coord_i(auxt).y;
-	del.y = ND_coord_i(tn).y - ND_coord_i(auxt).x;
+	del.y = ND_coord_i(tn).y + ND_coord_i(auxt).x;
     }
     else {
 	del.x = ND_coord_i(tn).x - ND_coord_i(auxt).x;
