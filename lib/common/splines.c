@@ -422,9 +422,10 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	case TOP:
 	    if (ND_coord_i(e->head).x < 2*ND_coord_i(n).x - endp->np.x) {
 		b0.LL.x = b.LL.x - 1;
-		b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		/* b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2; */
+		b0.LL.y = P->start.p.y;
 		b0.UR.x = P->start.p.x;
-		b0.UR.y = b0.LL.y + GD_ranksep(n->graph)/2;
+		b0.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2 + GD_ranksep(n->graph)/2;
 		b.UR.x = ND_coord_i(n).x - ND_lw_i(n) - 2;
 		b.UR.y = b0.LL.y;
 		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
@@ -434,9 +435,10 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    else {
 		b0.LL.x = P->start.p.x;
-		b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b0.LL.y = P->start.p.y;
+		/* b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2; */
 		b0.UR.x = b.UR.x+1;
-		b0.UR.y = b0.LL.y + GD_ranksep(n->graph)/2;
+		b0.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2 + GD_ranksep(n->graph)/2;
 		b.LL.x = ND_coord_i(n).x + ND_rw_i(n) + 2;
 		b.UR.y = b0.LL.y;
 		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
@@ -604,9 +606,10 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	case BOTTOM:
 	    if (ND_coord_i(e->tail).x < 2*ND_coord_i(n).x - endp->np.x) {
 		b0.LL.x = b.LL.x-1;
-		b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		/* b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2; */
+		b0.UR.y = P->end.p.y;
 		b0.UR.x = P->end.p.x;
-		b0.LL.y = b0.UR.y - GD_ranksep(n->graph)/2;
+		b0.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2 - GD_ranksep(n->graph)/2;
 		b.UR.x = ND_coord_i(n).x - ND_lw_i(n) - 2;
 		b.LL.y = b0.UR.y;
 		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
@@ -616,9 +619,10 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    }
 	    else {
 		b0.LL.x = P->end.p.x;
-		b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b0.UR.y = P->end.p.y;
+		/* b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2; */
 		b0.UR.x = b.UR.x+1;
-		b0.LL.y = b0.UR.y - GD_ranksep(n->graph)/2;
+		b0.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2 - GD_ranksep(n->graph)/2;
 		b.LL.x = ND_coord_i(n).x + ND_rw_i(n) + 2;
 		b.LL.y = b0.UR.y;
 		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
