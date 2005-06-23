@@ -46,7 +46,9 @@ static int edgen;             /* size of edges[] */
 static void checkpath(int, box*, path*);
 static void mkspacep(int size);
 static void printpath(path * pp);
+#ifdef OBSOLETE
 static int append(path * path, int bi, point p0, point p1, int);
+#endif
 #ifdef DEBUG
 static void printboxes(int boxn, box* boxes)
 {
@@ -207,6 +209,7 @@ static int debugleveln(edge_t* realedge, int i)
 }
 #endif
 
+#ifdef OBSOLETE
 static point mkpt(int x, int y)
 {
     point rv;
@@ -219,6 +222,7 @@ static int pteq(point p, point q)
 {
     return ((p.x == q.x) && (p.y == q.y));
 }
+#endif
 
 /* routesplinesinit:
  * Data initialized once until matching call to routeplineterm
@@ -401,7 +405,9 @@ point *routesplines(path * pp, int *npoints)
 		polypoints[pi++].y = boxes[bi].LL.y;
 	    }
 	}
-    } else {
+    } 
+    else {
+#ifdef OBSOLETE
 	/* new, more generalized approach for self-edges.  We do not
 	   assume any monotonicity about the box path, only that it
 	   is simply connected.  We build up the constraint poly by
@@ -430,7 +436,11 @@ point *routesplines(path * pp, int *npoints)
 	} else
 	    abort();
 	pi = append(pp, 0, p0, p1, 0);
+#else
+	abort();
+#endif
     }
+
 
     if (flip) {
 	int i;
@@ -723,6 +733,7 @@ static void mkspacep(int size)
     }
 }
 
+#ifdef OBSOLETE
 /* new code to create poly from box list
  * given that we entered the box b on segment p0,p1 (p0==p1 allowed) 
  * then add successive points to the constraint poly
@@ -876,6 +887,7 @@ append(path * path, int bi, point p0, point p1, int polysz)
     } while (i != i0);
     return polysz;
 }
+#endif
 
 static void printpath(path * pp)
 {
