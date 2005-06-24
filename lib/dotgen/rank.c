@@ -424,8 +424,30 @@ void expand_ranksets(graph_t * g)
     }
 }
 
+#ifdef ALLOW_LEVELS
+void
+setRanks (graph_t* g, attrsym_t* lsym)
+{
+    node_t* n;
+    char*   s;
+    char*   ep;
+    long    v;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
+	s = agxget (n, lsym->index);
+	v = strtol (s, &ep, 10);
+	if (ep == s)
+	    agerr(AGWARN, "no level attribute for node \"%s\"\n", n->name);
+	ND_rank(n) = v;
+    }
+}
+#endif
+
 void dot_rank(graph_t * g)
 {
+#ifdef ALLOW_LEVELS
+    attrsym_t* N_level;
+#endif
     edgelabel_ranks(g);
     collapse_sets(g);
     /*collapse_leaves(g); */
@@ -433,6 +455,11 @@ void dot_rank(graph_t * g)
     minmax_edges(g);
     decompose(g, 0);
     acyclic(g);
+#ifdef ALLOW_LEVELS
+    if ((N_level = agfindattr(g->proto->n, "level")))
+	setRanks(g, N_level);
+    else
+#endif
     rank1(g);
     expand_ranksets(g);
     cleanup1(g);
