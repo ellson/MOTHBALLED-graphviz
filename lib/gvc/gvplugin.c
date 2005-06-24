@@ -31,7 +31,9 @@
 #include        "gvc.h"
 #include        "graph.h"
 
+#ifndef DISABLE_LTDL
 static char *libdir = GVLIBDIR;
+#endif
 
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
