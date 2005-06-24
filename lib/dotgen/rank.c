@@ -324,43 +324,51 @@ set_minmax(graph_t * g)
 /* To ensure that min and max rank nodes always have the intended rank
  * assignment, reverse any incompatible edges.
  */
-static void 
+static point 
 minmax_edges(graph_t * g)
 {
     node_t *n;
     edge_t *e;
-    int srclen, sinklen;
+    point  slen;
 
-    srclen = sinklen = 0;
+    slen.x = slen.y = 0;
     if ((GD_maxset(g) == NULL) && (GD_minset(g) == NULL))
-	return;
+	return slen;
     if (GD_minset(g) != NULL)
 	GD_minset(g) = UF_find(GD_minset(g));
     if (GD_maxset(g) != NULL)
 	GD_maxset(g) = UF_find(GD_maxset(g));
 
     if ((n = GD_maxset(g))) {
-	sinklen = (GD_maxset(g)->u.ranktype == SINKRANK);
+	slen.y = (GD_maxset(g)->u.ranktype == SINKRANK);
 	while ((e = ND_out(n).list[0])) {
 	    assert(e->head == UF_find(e->head));
 	    reverse_edge(e);
 	}
     }
     if ((n = GD_minset(g))) {
-	srclen = (GD_minset(g)->u.ranktype == SOURCERANK);
+	slen.x = (GD_minset(g)->u.ranktype == SOURCERANK);
 	while ((e = ND_in(n).list[0])) {
 	    assert(e->tail == UF_find(e->tail));
 	    reverse_edge(e);
 	}
     }
+    return slen;
+}
+    
+static void 
+minmax_edges2(graph_t * g, point slen)
+{
+    node_t *n;
 
+    if ((GD_maxset(g) == NULL) && (GD_minset(g) == NULL)) return;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (n != UF_find(n))
 	    continue;
 	if ((ND_out(n).size == 0) && GD_maxset(g) && (n != GD_maxset(g)))
-	    virtual_edge(n, GD_maxset(g), NULL)->u.minlen = sinklen;
+	    virtual_edge(n, GD_maxset(g), NULL)->u.minlen = slen.y;
 	if ((ND_in(n).size == 0) && GD_minset(g) && (n != GD_minset(g)))
-	    virtual_edge(GD_minset(g), n, NULL)->u.minlen = srclen;
+	    virtual_edge(GD_minset(g), n, NULL)->u.minlen = slen.x;
     }
 }
 
@@ -445,6 +453,7 @@ setRanks (graph_t* g, attrsym_t* lsym)
 
 void dot_rank(graph_t * g)
 {
+    point p;
 #ifdef ALLOW_LEVELS
     attrsym_t* N_level;
 #endif
@@ -452,9 +461,10 @@ void dot_rank(graph_t * g)
     collapse_sets(g);
     /*collapse_leaves(g); */
     class1(g);
-    minmax_edges(g);
+    p = minmax_edges(g);
     decompose(g, 0);
     acyclic(g);
+    minmax_edges2(g, p);
 #ifdef ALLOW_LEVELS
     if ((N_level = agfindattr(g->proto->n, "level")))
 	setRanks(g, N_level);
