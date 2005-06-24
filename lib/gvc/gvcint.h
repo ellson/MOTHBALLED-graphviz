@@ -129,8 +129,6 @@ extern "C" {
 	pointf focus;		/* viewport focus in graph units */
 	box	boundingBox;	/* drawable region in device units */
 
-	pointf pointer;		/* pointer position in device units */
-
 	boxf clip;		/* clip region in graph units */
 	boxf pageBoxClip;       /* intersection of clip and pageBox */
 
@@ -138,8 +136,9 @@ extern "C" {
 	pointf offset;		/* composite translation */
 	
 	boolean fit_mode, needs_refresh, click, active, has_grown;
-	double oldx, oldy;	/* old pointer position in pixels */
-	void *current_obj;      /* graph object that pointer is in currrently */
+	pointf pointer;		/* pointer position in device units */
+	pointf oldpointer;	/* old pointer position in device units */
+	void *current_obj;      /* graph object that pointer is in currently */
 
 	void *window;		/* display-specific data for gvrender plugin */
     };

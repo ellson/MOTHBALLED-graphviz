@@ -30,9 +30,9 @@ extern "C" {
 
 /* callbacks */
     extern void gvevent_refresh(GVJ_t * job);
-    extern void gvevent_button_press(GVJ_t * job, int button, double x, double y);
-    extern void gvevent_button_release(GVJ_t * job, int button, double x, double y);
-    extern void gvevent_motion(GVJ_t * job, double x, double y);
+    extern void gvevent_button_press(GVJ_t * job, int button, pointf pointer);
+    extern void gvevent_button_release(GVJ_t * job, int button, pointf pointer);
+    extern void gvevent_motion(GVJ_t * job, pointf pointer);
 
 
 #ifdef __cplusplus

@@ -122,7 +122,7 @@ static void gvevent_enter_obj(GVJ_t * job)
 /* CLOSEENOUGH is in window units - probably should be a feature... */
 #define CLOSEENOUGH 1
 
-static void gvevent_find_current_obj(GVJ_t * job, double x, double y)
+static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
 {
     void *obj;
     pointf p;
@@ -131,12 +131,12 @@ static void gvevent_find_current_obj(GVJ_t * job, double x, double y)
 
     /* convert window point to graph coordinates */
     if (job->rotation) {
-	p.x = job->focus.y - (y - job->height / 2.) / job->compscale.x;
-	p.y = job->focus.x + (x - job->width / 2.) / job->compscale.y;
+	p.x = job->focus.y - (pointer.y - job->height / 2.) / job->compscale.x;
+	p.y = job->focus.x + (pointer.x - job->width / 2.) / job->compscale.y;
     }
     else {
-	p.x = job->focus.x + (x - job->width / 2.) / job->compscale.x;
-	p.y = job->focus.y + (y - job->height / 2.) / job->compscale.y;
+	p.x = job->focus.x + (pointer.x - job->width / 2.) / job->compscale.x;
+	p.y = job->focus.y + (pointer.y - job->height / 2.) / job->compscale.y;
     }
     closeenough = CLOSEENOUGH / job->compscale.x;
 
@@ -154,12 +154,12 @@ static void gvevent_find_current_obj(GVJ_t * job, double x, double y)
     }
 }
 
-void gvevent_button_press(GVJ_t * job, int button, double x, double y)
+void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
 {
     switch (button) {
     case 1: /* select / create in edit mode */
     case 3: /* insert node or edge */
-	gvevent_find_current_obj(job, x, y);
+	gvevent_find_current_obj(job, pointer);
         /* fall through */
     case 2: /* pan */
         job->click = 1;
@@ -169,9 +169,9 @@ void gvevent_button_press(GVJ_t * job, int button, double x, double y)
     case 4:
 	/* scrollwheel zoom in at current mouse x,y */
 	job->fit_mode = 0;
-	job->focus.x +=  (x - job->width / 2.)
+	job->focus.x +=  (pointer.x - job->width / 2.)
 		* (ZOOMFACTOR - 1.) / job->zoom;
-	job->focus.y += -(y - job->height / 2.)
+	job->focus.y += -(pointer.y - job->height / 2.)
 		* (ZOOMFACTOR - 1.) / job->zoom;
 	job->zoom *= ZOOMFACTOR;
 	job->needs_refresh = 1;
@@ -179,28 +179,27 @@ void gvevent_button_press(GVJ_t * job, int button, double x, double y)
     case 5: /* scrollwheel zoom out at current mouse x,y */
 	job->fit_mode = 0;
 	job->zoom /= ZOOMFACTOR;
-	job->focus.x -=  (x - job->width / 2.)
+	job->focus.x -=  (pointer.x - job->width / 2.)
 		* (ZOOMFACTOR - 1.) / job->zoom;
-	job->focus.y -= -(y - job->height / 2.)
+	job->focus.y -= -(pointer.y - job->height / 2.)
 		* (ZOOMFACTOR - 1.) / job->zoom;
 	job->needs_refresh = 1;
 	break;
     }
-    job->oldx = x;
-    job->oldy = y;
+    job->oldpointer = pointer;
 }
 
-void gvevent_motion(GVJ_t * job, double x, double y)
+void gvevent_motion(GVJ_t * job, pointf pointer)
 {
-    double dx = x - job->oldx;
-    double dy = y - job->oldy;
+    double dx = pointer.x - job->oldpointer.x;
+    double dy = pointer.y - job->oldpointer.y;
 
     if (abs(dx) < EPSILON && abs(dy) < EPSILON)  /* ignore motion events with no motion */
 	return;
 
     switch (job->active) {
     case 0: /* drag with no button - */
-	gvevent_find_current_obj(job, x, y);
+	gvevent_find_current_obj(job, pointer);
 	break;
     case 1: /* drag with button 1 - drag object */
 	/* FIXME - to be implemented */
@@ -213,11 +212,10 @@ void gvevent_motion(GVJ_t * job, double x, double y)
     case 3: /* drag with button 3 - drag inserted node or uncompleted edge */
 	break;
     }
-    job->oldx = x;
-    job->oldy = y;
+    job->oldpointer = pointer;
 }
 
-void gvevent_button_release(GVJ_t *job, int button, double x, double y)
+void gvevent_button_release(GVJ_t *job, int button, pointf pointer)
 {
     job->click = 0;
     job->active = 0;
