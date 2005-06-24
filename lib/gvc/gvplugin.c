@@ -114,7 +114,7 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     if (len > lenp) {
 	lenp = len+20;
 	if (p)
-	    realloc(p, lenp);
+	    p = realloc(p, lenp);
 	else
 	    p = malloc(lenp);
     }
