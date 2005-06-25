@@ -113,6 +113,7 @@ static int N_pages;
 static int onetime = TRUE;
 
 static int Rot;
+static double Scale;
 static pointf CompScale;
 static pointf Offset;
 
@@ -317,14 +318,15 @@ static void svg_font(context_t * cp)
 {
     char *color, buf[BUFSIZ];
     int needstyle = 0;
+    double fontsz = cp->fontsz * Scale;
 
     strcpy(buf, " style=\"");
     if (strcasecmp(cp->fontfam, DEFAULT_FONTNAME)) {
 	sprintf(buf + strlen(buf), "font-family:%s;", cp->fontfam);
 	needstyle++;
     }
-    if (cp->fontsz != DEFAULT_FONTSIZE) {
-	sprintf(buf + strlen(buf), "font-size:%.2f;", (cp->fontsz));
+    if (fontsz != DEFAULT_FONTSIZE) {
+	sprintf(buf + strlen(buf), "font-size:%.2f;", fontsz);
 	needstyle++;
     }
     color = svg_resolve_color(cp->pencolor, 1);
@@ -484,12 +486,15 @@ svg_begin_page(graph_t * g, point page, double scale, int rot,
 	       point offset)
 {
     Rot = rot;
+    Scale = scale;
 
     /* its really just a page of the graph, but its still a graph,
      * and it is the entire graph if we're not currently paging */
     svg_printf("<g id=\"%s0\" class=\"graph\"", op[Obj]);
+#if 0
     if (scale != 1.0)
 	svg_printf(" transform = \"scale(%f)\"\n", scale);
+#endif
     /* default style */
     svg_fputs(" style=\"font-family:");
     svg_fputs(cstk[0].fontfam);
