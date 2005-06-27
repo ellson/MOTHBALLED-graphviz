@@ -779,11 +779,11 @@ static void gd_polygon(point * A, int n, int filled)
 	} else {
 	    pen = cstk[SP].pencolor;
 	}
+	width = cstk[SP].penwidth * CompScale;
+	gdImageSetThickness(im, WIDTH_NORMAL);
 #if 1
 	/* use brush instead of Thickness to improve end butts */
-	gdImageSetThickness(im, WIDTH_NORMAL);
-	if (cstk[SP].penwidth != WIDTH_NORMAL) {
-	    width = cstk[SP].penwidth * CompScale;
+	if (width != WIDTH_NORMAL) {
 	    brush = gdImageCreate(width, width);
 	    gdImagePaletteCopy(brush, im);
 	    gdImageFilledRectangle(brush,
@@ -795,9 +795,6 @@ static void gd_polygon(point * A, int n, int filled)
 	    else
 		pen = gdBrushed;
 	}
-#else
-	width = cstk[SP].penwidth;
-	gdImageSetThickness(im, width);
 #endif
 	points = N_GNEW(n, gdPoint);
 	for (i = 0; i < n; i++) {
@@ -847,11 +844,11 @@ static void gd_ellipse(point p, int rx, int ry, int filled)
 	} else {
 	    pen = cstk[SP].pencolor;
 	}
+	width = cstk[SP].penwidth * CompScale;
+	gdImageSetThickness(im, width);
 #if 1
 	/* use brush instead of Thickness to improve outline appearance */
-	gdImageSetThickness(im, WIDTH_NORMAL);
-	if (cstk[SP].penwidth != WIDTH_NORMAL) {
-	    width = cstk[SP].penwidth;
+	if (width != WIDTH_NORMAL) {
 	    brush = gdImageCreate(width, width);
 	    gdImagePaletteCopy(brush, im);
 	    gdImageFilledRectangle(brush,
@@ -863,9 +860,6 @@ static void gd_ellipse(point p, int rx, int ry, int filled)
 	    else
 		pen = gdBrushed;
 	}
-#else
-	width = cstk[SP].penwidth;
-	gdImageSetThickness(im, width);
 #endif
 	if (Rot) {
 	    int t;
@@ -919,9 +913,10 @@ static void gd_polyline(point * A, int n)
 	} else {
 	    pen = cstk[SP].pencolor;
 	}
-#if 0
-	if (cstk[SP].penwidth != WIDTH_NORMAL) {
-	    width = cstk[SP].penwidth;
+	width = cstk[SP].penwidth * CompScale;
+	gdImageSetThickness(im, width);
+#if 1
+	if (width != WIDTH_NORMAL) {
 	    brush = gdImageCreate(width, width);
 	    gdImagePaletteCopy(brush, im);
 	    gdImageFilledRectangle(brush,
@@ -933,9 +928,6 @@ static void gd_polyline(point * A, int n)
 	    else
 		pen = gdBrushed;
 	}
-#else
-	width = cstk[SP].penwidth;
-	gdImageSetThickness(im, width);
 #endif
 	p.x = A[0].x;
 	p.y = A[0].y;

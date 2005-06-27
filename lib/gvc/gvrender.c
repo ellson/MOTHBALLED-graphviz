@@ -158,15 +158,9 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 {
     pointf rv;
 
-#if 0
-    if (job->rotation) {
-	rv.x = -(p.y - job->focus.y) * job->compscale.x + job->width / 2.;
-	rv.y = (p.x - job->focus.x) * job->compscale.y + job->height / 2.;
-    } else {
-	rv.x = (p.x - job->focus.x) * job->compscale.x + job->width / 2.;
-	rv.y = (p.y - job->focus.y) * job->compscale.y + job->height / 2.;
-    }
-#else
+    if (job->render_features->flags & GVRENDER_DOES_TRANSFORM)
+	return p;
+
     if (job->rotation) {
 	rv.x = -p.y * job->compscale.x + job->offset.x;
 	rv.y =  p.x * job->compscale.y + job->offset.y;
@@ -174,7 +168,6 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 	rv.x =  p.x * job->compscale.x + job->offset.x;
 	rv.y =  p.y * job->compscale.y + job->offset.y;
     }
-#endif
     return rv;
 }
 
@@ -228,6 +221,13 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
         job->clip.LL.y = job->focus.y - sx - EPSILON;
 	job->offset.x = -job->focus.y * job->compscale.x + job->width / 2.;
 	job->offset.y = -job->focus.x * job->compscale.y + job->height / 2.;
+
+	job->transform.xx = 0;
+	job->transform.yy = 0;
+	job->transform.xy = job->compscale.x;
+	job->transform.yx = job->compscale.y;
+	job->transform.x0 = job->offset.y;
+	job->transform.y0 = job->offset.x;
     } else {
         job->clip.UR.x = job->focus.x + sx + EPSILON;
         job->clip.UR.y = job->focus.y + sy + EPSILON;
@@ -235,6 +235,13 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
         job->clip.LL.y = job->focus.y - sy - EPSILON;
 	job->offset.x = -job->focus.x * job->compscale.x + job->width / 2.;
 	job->offset.y = -job->focus.y * job->compscale.y + job->height / 2.;
+
+	job->transform.xx = job->compscale.x;
+	job->transform.yy = job->compscale.y;
+	job->transform.xy = 0;
+	job->transform.yx = 0;
+	job->transform.x0 = job->offset.x;
+	job->transform.y0 = job->offset.y;
     }
 
     if (gvre) {

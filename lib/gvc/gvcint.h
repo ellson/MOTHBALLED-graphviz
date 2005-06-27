@@ -56,6 +56,7 @@ extern "C" {
 #define GVRENDER_DOES_TRUECOLOR (1<<8)
 #define GVRENDER_Y_GOES_DOWN (1<<9)
 #define GVRENDER_X11_EVENTS (1<<10)
+#define GVRENDER_DOES_TRANSFORM (1<<11)
 
     typedef struct {
 	int flags;
@@ -70,6 +71,18 @@ extern "C" {
     typedef struct {
 	int flags;
     } gvdevice_features_t;
+
+    /*
+     * gv_matrix_t:   (compat with cairo_matrix_t)
+     *
+     * A #gv_matrix_t holds an affine transformation, such as a scale,
+     * rotation, or shear, or a combination of those.
+     */
+    typedef struct gv_matrix_s {
+	double xx; double yx;
+	double xy; double yy;
+	double x0; double y0;
+    } gv_matrix_t;
 
     struct GVJ_s {
 	GVJ_t *next;  /* linked list of jobs */
@@ -132,6 +145,7 @@ extern "C" {
 	boxf clip;		/* clip region in graph units */
 	boxf pageBoxClip;       /* intersection of clip and pageBox */
 
+	gv_matrix_t transform;  /* transformation matrix for renderers that can use it */
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	pointf offset;		/* composite translation */
 	
