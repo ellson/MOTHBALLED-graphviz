@@ -23,13 +23,14 @@ typedef void *Tobj;
 #include "io.h"
 #include "triefa.c"
 
-static int Syntax_errors;
-static int Lexer_fd;
-#define LEXBUFSIZE 10240
-static char LexBuf[LEXBUFSIZE], *LexPtr;
-static int In_comment;
-static int Comment_start;
-int Line_number;
+static int syntax_errors;
+static int lexer_fd;
+#define LEXBUFSIZ 10240
+static char *lexbuf, *lexptr;
+static int lexsiz;
+static int in_comment;
+static int comment_start;
+int line_number;
 
 static char *lex_gets (int);
 static int lex_token (char *);
@@ -40,9 +41,15 @@ static char *scan_num (char *);
 static char *quoted_string (char *);
 static char *html_string (char *);
 
-void lex_begin (int ioi) {
-    Lexer_fd = ioi;
-    LexPtr = NULL;
+int lex_begin (int ioi) {
+    lexer_fd = ioi;
+    lexptr = NULL;
+    if (!(lexbuf = malloc (LEXBUFSIZ))) {
+        fprintf (stderr, "cannot allocate buffer\n");
+        return -1;
+    }
+    lexsiz = LEXBUFSIZ;
+    return 0;
 }
 
 int myyylex (void) {        /* for debugging */
@@ -66,56 +73,56 @@ int yylex (void) {
 
     /* get a nonempty lex buffer */
     do {
-        if ((LexPtr == NULL) || (LexPtr[0] == '\0'))
-            if ((LexPtr = lex_gets (0)) == NULL) {
-                if (In_comment)
+        if ((lexptr == NULL) || (lexptr[0] == '\0'))
+            if ((lexptr = lex_gets (0)) == NULL) {
+                if (in_comment)
                     fprintf (
                         stderr,
                         "warning, nonterminated comment in line %d\n",
-                        Comment_start
+                        comment_start
                     );
                 return EOF;
             }
-        LexPtr = skip_wscomments (LexPtr);
-    } while (LexPtr[0] == '\0');
+        lexptr = skip_wscomments (lexptr);
+    } while (lexptr[0] == '\0');
 
     /* scan quoted strings */
-    if (LexPtr[0] == '\"') {
-        LexPtr = quoted_string (LexPtr);
-        yylval.s = (char *) strdup (LexBuf);
+    if (lexptr[0] == '\"') {
+        lexptr = quoted_string (lexptr);
+        yylval.s = (char *) strdup (lexbuf);
         return T_id;
     }
 
     /* scan html strings */
-    if (LexPtr[0] == '<') {
-        LexPtr = html_string (LexPtr);
-        yylval.s = (char *) strdup (LexBuf);
+    if (lexptr[0] == '<') {
+        lexptr = html_string (lexptr);
+        yylval.s = (char *) strdup (lexbuf);
         return T_id;
     }
 
     /* scan edge operator */
-    if (etype && (strncmp (LexPtr, etype, strlen (etype)) == 0)) {
-        LexPtr += strlen (etype);
+    if (etype && (strncmp (lexptr, etype, strlen (etype)) == 0)) {
+        lexptr += strlen (etype);
         return T_edgeop;
     }
 
     /* scan numbers */
-    if ((p = scan_num (LexPtr))) {
-        LexPtr = p;
-        yylval.s =  strdup (LexBuf);
+    if ((p = scan_num (lexptr))) {
+        lexptr = p;
+        yylval.s =  strdup (lexbuf);
         return T_id;
     }
     else {
-        if (ispunct (LexPtr[0]) && (LexPtr[0] != '_'))
-            return *LexPtr++;
+        if (ispunct (lexptr[0]) && (lexptr[0] != '_'))
+            return *lexptr++;
         else
-            LexPtr = scan_token (LexPtr);
+            lexptr = scan_token (lexptr);
     }
 
     /* scan other tokens */
-    token = lex_token (LexBuf);
+    token = lex_token (lexbuf);
     if (token == -1) {
-        yylval.s = strdup (LexBuf);
+        yylval.s = strdup (lexbuf);
         token = T_id;
     }
     return token;
@@ -123,11 +130,11 @@ int yylex (void) {
 
 void
 yyerror (char *fmt, char *s) {
-    if (Syntax_errors++)
+    if (syntax_errors++)
         return;
     fprintf (stderr, "graph parser: ");
     fprintf (stderr, fmt, s);
-    fprintf (stderr, " near line %d\n", Line_number);
+    fprintf (stderr, " near line %d\n", line_number);
     error_context ();
 }
 
@@ -138,24 +145,24 @@ static char *lex_gets (int curlen) {
     do {
         /* off by one so we can back up in LineBuf */
         if (IOreadline (
-            Lexer_fd, LexBuf + curlen + 1, LEXBUFSIZE - curlen - 1
+            lexer_fd, lexbuf + curlen + 1, lexsiz - curlen - 1
         ) == -1)
             break;
-        clp = LexBuf + curlen + 1;
+        clp = lexbuf + curlen + 1;
         len = strlen (clp);
         clp[len++] = '\n';
         clp[len] = 0;
 
-        if (clp == LexBuf + 1 && clp[0] == '#') {
+        if (clp == lexbuf + 1 && clp[0] == '#') {
             /* comment line or cpp line sync */
-            if (sscanf (clp+1, "%d", &Line_number) == 0)
-                Line_number++;
+            if (sscanf (clp+1, "%d", &line_number) == 0)
+                line_number++;
             len = 0;
             clp[len] = 0;
             continue;
         }
 
-        Line_number++;
+        line_number++;
         if ((len = strlen (clp)) > 1) {
             if (clp[len - 2] == '\\') {
                 len = len - 2;
@@ -163,10 +170,17 @@ static char *lex_gets (int curlen) {
             }
         }
         curlen += len;
+        if (lexsiz - curlen - 1 < 1024) {
+            if (!(lexbuf = realloc (lexbuf, lexsiz * 2))) {
+                fprintf (stderr, "cannot grow buffer\n");
+                return NULL;
+            }
+            lexsiz *= 2;
+        }
     } while (clp[len - 1] != '\n');
 
     if (curlen > 0)
-        return LexBuf + 1;
+        return lexbuf + 1;
     else
         return NULL;
 }
@@ -182,18 +196,18 @@ static int lex_token (char *p) {
 static void error_context (void) {
     char *p, *q;
 
-    if (LexPtr == NULL)
+    if (lexptr == NULL)
         return;
     fprintf (stderr, "context: ");
-    for (p = LexPtr - 1; (p > LexBuf) && (isspace (*p) == FALSE); p--)
+    for (p = lexptr - 1; (p > lexbuf) && (isspace (*p) == FALSE); p--)
         ;
-    for (q = LexBuf; q < p; q++)
+    for (q = lexbuf; q < p; q++)
         fputc (*q, stderr);
     fputs (" >>> ", stderr);
-    for (; q < LexPtr; q++)
+    for (; q < lexptr; q++)
         fputc (*q, stderr);
     fputs (" <<< ", stderr);
-    fputs (LexPtr, stderr);
+    fputs (lexptr, stderr);
 }
 
 /* i wrote this and it still frightens me */
@@ -202,12 +216,12 @@ static char *skip_wscomments (char *p) {
     do {
         while (isspace (*p))
             p++;
-        while (In_comment && p[0]) {
+        while (in_comment && p[0]) {
             while (p[0] && (p[0] != '*'))
                 p++;
             if (p[0]) {
                 if (p[1] == '/') {
-                    In_comment = FALSE;
+                    in_comment = FALSE;
                     p += 2;
                     break;
                 } else
@@ -220,8 +234,8 @@ static char *skip_wscomments (char *p) {
                     p++;    /* skip to end of line */
             else {
                 if (p[1] == '*') {
-                    In_comment = TRUE;
-                    Comment_start = Line_number;
+                    in_comment = TRUE;
+                    comment_start = line_number;
                     p += 2;
                     continue;
                 }
@@ -240,7 +254,7 @@ static char *skip_wscomments (char *p) {
 static char *scan_token (char *p) {
     char *q;
 
-    q = LexBuf;
+    q = lexbuf;
     if (p == '\0')
         return NULL;
     while (isalnum (*p) || (*p == '_') || (!isascii (*p)))
@@ -255,7 +269,7 @@ static char *scan_num (char *p) {
     int saw_digit = FALSE;
 
     z = p;
-    q = LexBuf;
+    q = lexbuf;
     if (*z == '-')
         *q++ = *z++;
     if (*z == '.') {
@@ -276,7 +290,7 @@ static char *scan_num (char *p) {
     }
     *q = '\0';
     if (saw_digit && *z && (isalpha (*z)))
-        yyerror ("badly formed number %s", LexBuf);
+        yyerror ("badly formed number %s", lexbuf);
 
     if (saw_digit == FALSE)
         z = NULL;
@@ -288,7 +302,7 @@ static char *quoted_string (char *p) {
     char quote, *q;
 
     quote = *p++;
-    q = LexBuf;
+    q = lexbuf;
     while ((*p) && (*p != quote)) {
         if (*p == '\\') {
             if (*(p+1) == quote)
@@ -310,12 +324,12 @@ static char *quoted_string (char *p) {
 
 /* scan a html string and return the position after its terminator */
 static char *html_string (char *p) {
-    char *q;
+    char *q, *pbuf;
     int bal;
 
     p++;
     bal = 1;
-    q = LexBuf;
+    q = lexbuf;
     *q++ = '>';
     while (*p && *p != '<' && *p != '>')
         p++;
@@ -333,14 +347,17 @@ static char *html_string (char *p) {
             }
             *q++ = *p++;
         }
-        if ((LexPtr = lex_gets (p - LexBuf - 1)) == NULL) {
+        pbuf = lexbuf;
+        if ((lexptr = lex_gets (p - lexbuf - 1)) == NULL) {
             fprintf (
                 stderr,
-                "warning, nonterminated html label in line %d\n",
-                Line_number
+                "warning, unterminated html label in line %d\n",
+                line_number
             );
             return NULL;
         }
+        q += (lexbuf - pbuf);
+        p += (lexbuf - pbuf);
     }
     return NULL;
 }
