@@ -153,7 +153,7 @@ static void filllabeltable (Tobj to, int flag) {
                     lsp++;
                 else if (*(lsp + 1) == ' ')
                     ishardspace = TRUE, lsp++;
-	    }
+ 	    }
             /* falling through ... */
         default:
             if ((mode & HASTABLE) && *lsp != ' ')
@@ -497,7 +497,7 @@ static void writeattr (int ioi, Tobj to, char *buf) {
             if (!htmlflag)
                 *s2++ = '"', *s2 = 0;
             else
-                *(s2 - 1) = '>', *s2 = 0; 
+                *(s2 - 1) = '>', *s2 = 0;
             break;
         default:
             sprintf (s2, "\"\"");
@@ -513,15 +513,13 @@ static void quotestring (char *buf, Tobj so) {
 
     s1 = buf + strlen (buf);
     *s1++ = '"';
-    if (so && T_ISSTRING (so)) {
+    if (so && T_ISSTRING (so))
         for (s2 = Tgetstring (so); *s2; s2++) {
             if (*s2 == '"')
                 *s1++ = '\\', *s1++ = *s2;
             else
                 *s1++ = *s2;
-	
 	}
-    }
     *s1++ = '"', *s1 = 0;
 }
 
