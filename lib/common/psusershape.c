@@ -49,7 +49,7 @@ static ps_image_t *user_init(char *str)
     char line[BUFSIZ];
     FILE *fp;
     struct stat statbuf;
-    int saw_bb;
+    int saw_bb, must_inline;
     int lx, ly, ux, uy;
     ps_image_t *val;
 
@@ -65,14 +65,15 @@ static ps_image_t *user_init(char *str)
 	return NULL;
     }
     /* try to find size */
-    saw_bb = FALSE;
+    saw_bb = must_inline = FALSE;
     while (fgets(line, sizeof(line), fp)) {
 	if (sscanf
 	    (line, "%%%%BoundingBox: %d %d %d %d", &lx, &ly, &ux,
 	     &uy) == 4) {
 	    saw_bb = TRUE;
-	    break;
 	}
+	if ((line[0] != '%') && strstr(line,"read")) must_inline = TRUE;
+	if (saw_bb && must_inline) break;
     }
 
     if (saw_bb) {
@@ -90,6 +91,7 @@ static ps_image_t *user_init(char *str)
 	contents[statbuf.st_size] = '\0';
 	fclose(fp);
 	dtinsert(EPSF_contents, val);
+	val->must_inline = must_inline;
 	return val;
     } else {
 	agerr(AGWARN, "BoundingBox not found in epsf file %s\n", str);
@@ -127,50 +129,58 @@ void epsf_free(node_t * n)
 	free(ND_shape_info(n));
 }
 
+#define FILTER_EPSF 1
+#ifdef FILTER_EPSF
+/* this removes EPSF DSC comments that, when nested in another
+ * document, cause errors in Ghostview and other Postscript
+ * processors (although legal according to the Adobe EPSF spec).                 */
+void epsf_emit_body(ps_image_t *img, FILE *of)
+{
+	char *p;
+	p = img->contents;
+	while (*p) {
+		/* skip %%EOF lines */
+		if ((p[0] == '%') && (p[1] == '%')
+			&& (!strncasecmp(&p[2], "EOF", 3)
+			|| !strncasecmp(&p[2], "BEGIN", 5)
+			|| !strncasecmp(&p[2], "END", 3)
+			|| !strncasecmp(&p[2], "TRAILER", 7)
+		)) {
+			/* check for *p since last line might not end in '\n' */
+			while (*p && (*p++ != '\n'));
+			continue;
+		}
+		do {
+			fputc(*p, of);
+		} while (*p++ != '\n');
+	}
+}
+#else
+void epsf_emit_body(ps_image_t *img, FILE *of)
+{
+	if (fputs(img->contents, of) == EOF) {
+	    perror("epsf_define()->fputs");
+	    exit(EXIT_FAILURE);
+	}
+}
+#endif
+
 void epsf_define(FILE * of)
 {
-#define FILTER_EPSF 1
-#if FILTER_EPSF
-    char *p;
-#endif
     ps_image_t *img;
 
     if (!EPSF_contents)
 	return;
     for (img = dtfirst(EPSF_contents); img;
 	 img = dtnext(EPSF_contents, img)) {
+	 if (img->must_inline) continue;
 	fprintf(of, "/user_shape_%d {\n", img->macro_id);
 
 	if (fputs("%%BeginDocument:\n", of) == EOF) {
 	    perror("epsf_define()->fputs");
 	    exit(EXIT_FAILURE);
 	}
-#if FILTER_EPSF
-	/* this removes EPSF DSC comments that, when nested in another
-	 * document, cause errors in Ghostview and other Postscript
-	 * processors (although legal according to the Adobe EPSF spec).                 */
-	p = img->contents;
-	while (*p) {		/* skip %%EOF lines */
-	    if ((p[0] == '%') && (p[1] == '%')
-		&& (!strncasecmp(&p[2], "EOF", 3)
-		    || !strncasecmp(&p[2], "BEGIN", 5)
-		    || !strncasecmp(&p[2], "END", 3)
-		    || !strncasecmp(&p[2], "TRAILER", 7)
-		)) {
-		/* check for *p since last line might not end in '\n' */
-		while (*p && (*p++ != '\n'));
-		continue;
-	    }
-	    do {
-		fputc(*p, of);
-	    } while (*p++ != '\n');
-	}
-#else
-	if (fputs(img->contents, of) == EOF) {
-	    perror("epsf_define()->fputs");
-	    exit(EXIT_FAILURE);
-	}
-#endif
+	epsf_emit_body(img,of);
 
 	if (fputs("%%EndDocument\n", of) == EOF) {
 	    perror("epsf_define()->fputs");

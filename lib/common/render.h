@@ -69,6 +69,7 @@ typedef struct {
     point size;
     point origin;
     char *contents;
+    int	must_inline;
 } ps_image_t;
 
 

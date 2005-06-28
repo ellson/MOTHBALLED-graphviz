@@ -35,6 +35,7 @@
 #include <stdio.h>
 
 extern void epsf_define(FILE * of);
+void epsf_emit_body(ps_image_t *img, FILE *of);
 extern void ps_freeusershapes(void);
 extern ps_image_t *ps_usershape(char *shapeimagefile);
 
@@ -508,9 +509,11 @@ static void ps_user_shape(char *name, point * A, int sides, int filled)
 	ps_begin_context();
 	offset.x = -img->origin.x - (img->size.x) / 2;
 	offset.y = -img->origin.y - (img->size.y) / 2;
-	fprintf(Output_file, "%d %d translate newpath user_shape_%d\n",
+	fprintf(Output_file, "%d %d translate newpath\n",
 		ND_coord_i(Curnode).x + offset.x,
-		ND_coord_i(Curnode).y + offset.y, img->macro_id);
+		ND_coord_i(Curnode).y + offset.y);
+	if (img->must_inline) epsf_emit_body(img,Output_file);
+	else fprintf(Output_file,"user_shape_%d\n",img->macro_id);
 	ps_end_context();
     }
     else if (shapeimagefile) {
