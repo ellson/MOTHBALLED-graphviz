@@ -785,17 +785,17 @@ final drawing may be rotated by {\tt orientation} or {\tt rotate}.
 
 In graphs with time-lines, or in drawings that emphasize source and sink nodes,
 you may need to constrain rank assignments.
-The \verb"rank" of a subgraph may be set to {\tt samerank}, {\tt minrank}, 
-{\tt source}, {\tt maxrank} or {\tt sink}.
-A value {\tt samerank} causes all the nodes in the subgraph to occur
-on the same rank. If set to {\tt minrank}, all the nodes in the subgraph
+The \verb"rank" of a subgraph may be set to {\tt same}, {\tt min}, 
+{\tt source}, {\tt max} or {\tt sink}.
+A value {\tt same} causes all the nodes in the subgraph to occur
+on the same rank. If set to {\tt min}, all the nodes in the subgraph
 are guaranteed to be on a rank at least as small as any other node in the
 layout\footnote{Recall that the minimum rank occurs at the top of a drawing.}.
 This can be made strict by setting {\tt rank=source}, which
 forces the nodes in the subgraph to be on some rank strictly smaller
 than the rank of any other nodes (except those also specified by 
-{\tt minrank} or {\tt source} subgraphs).
-The values {\tt maxrank} or {\tt sink} play an analogous role for the
+{\tt min} or {\tt source} subgraphs).
+The values {\tt max} or {\tt sink} play an analogous role for the
 maximum rank.
 Note that these constraints induce equivalence classes of nodes. If one
 subgraph forces nodes {\tt A} and {\tt B} to be on the same rank, and
