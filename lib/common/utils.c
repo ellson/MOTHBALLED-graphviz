@@ -1199,7 +1199,8 @@ point user_shape_size(node_t * n, char *shapefile)
 	return quartz_user_shape_size(n, shapefile);
     else
 #endif
-    if (!strcasecmp(suffix, "ps")) {
+    if (!strcasecmp(suffix, "ps") || !strncasecmp(suffix, "eps", 3) ||
+	!strcasecmp(suffix, "epi")) {
 	rv = ps_user_shape_size(n, shapefile);
     } else if (!strcasecmp(suffix, "svg")) {
 	rv = svg_user_shape_size(n, shapefile);
