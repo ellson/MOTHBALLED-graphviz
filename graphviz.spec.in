@@ -19,7 +19,7 @@ Vendor:         http://www.graphviz.org/
 BuildRequires: /bin/ksh
 BuildRequires: tcl >= 0:8.3 tk expat expat-devel freetype >= 2 freetype-devel
 Buildrequires: libjpeg libjpeg-devel libpng libpng-devel zlib zlib-devel
-%{?fc4:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
+%{?fc4:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel libtool-ltdl-devel} 
 %{?fc3:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
 %{?fc2:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
 %{?fc1:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
