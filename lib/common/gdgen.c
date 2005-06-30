@@ -362,14 +362,6 @@ static void gd_end_graph(void)
 #endif
 }
 
-static void gd_end_graph_to_memory(void)
-{
-/* leave image in memory to be handled by Gdtclft output routines */
-#ifdef MYTRACE
-    fprintf(stderr, "gd_end_graph_to_memory\n");
-#endif
-}
-
 static void
 gd_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 {
