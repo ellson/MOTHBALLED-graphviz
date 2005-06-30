@@ -1,42 +1,120 @@
 # $Id$ $Revision$
 # @configure_input@
 
-Summary:        Graph Visualization Tools
-Name:           graphviz
-Version:        @VERSION@
-Release:        1
-Group:          Applications/Multimedia
-License:        CPL
-URL:            http://www.graphviz.org/
-Source:		http://www.graphviz.org/pub/graphviz/ARCHIVE/%{name}-%{version}.tar.gz
-Packager:       John Ellson (ellson@graphviz.org)
-Vendor:         http://www.graphviz.org/
+# Note: graphviz requires gd with gif support (and other fixes), hence use
+# internal one for now.
+
+Summary:	Graph Visualization Tools
+Name:		graphviz
+Version:	@VERSION@
+Release:	1
+
+Group:		Applications/Multimedia
+License:	CPL
+URL:		http://www.graphviz.org/
+Source:		http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
+
+Packager:	John Ellson (ellson@graphviz.org)
+Vendor:		http://www.graphviz.org/
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
 # neededforbuild  expat freetype2 freetype2-devel gcc libjpeg libpng-devel-packages tcl tcl-devel tk tk-devel x-devel-packages
 
-BuildRequires: /bin/ksh
-BuildRequires: tcl >= 0:8.3 tk expat expat-devel freetype >= 2 freetype-devel
-Buildrequires: libjpeg libjpeg-devel libpng libpng-devel zlib zlib-devel
-%{?fc4:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel libtool-ltdl-devel} 
-%{?fc3:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel} 
-%{?fc2:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
-%{?fc1:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
-%{?el4:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel xorg-x11-devel}
-%{?el3:BuildRequires: fontconfig fontconfig-devel tcl-devel tk-devel XFree86-devel}
+BuildRoot:	%{_tmppath}/%{name}-root
+BuildRequires:	zlib-devel libpng-devel libjpeg-devel expat-devel freetype-devel >= 2
+BuildRequires:	/bin/ksh bison m4 flex tk tcl >= 8.3
+BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
+%{?fc5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl-devel} 
+%{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl-devel} 
+%{?fc3:BuildRequires: fontconfig-devel xorg-x11-devel} 
+%{?fc2:BuildRequires: fontconfig-devel XFree86-devel}
+%{?fc1:BuildRequires: fontconfig-devel XFree86-devel}
+%{?el4:BuildRequires: fontconfig-devel xorg-x11-devel}
+%{?el3:BuildRequires: fontconfig-devel XFree86-devel}
+%{?el2:BuildRequires: XFree86-devel}
 %{?rh9:BuildRequires: XFree86-devel}
 %{?rh8:BuildRequires: XFree86-devel}
 %{?rh7:BuildRequires: XFree86-devel}
-%{?el2:BuildRequires: XFree86-devel}
 %{?rh6:BuildRequires: XFree86-devel}
 
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
-Prefix:         %{_prefix}
+%package tcl
+Group:		Applications/Multimedia
+Summary:	Tcl extension tools for %{name}
+Requires:	%{name} = %{version}-%{release} tcl >= 8.3 tk
+
+%package devel
+Group:		Development/Libraries
+Summary:	Development package for %{name}
+Requires:	%{name} = %{version}-%{release} pkgconfig
+
+%package doc
+Group:		Documentation
+Summary:	PDF and HTML documents for %{name}
+
+%package graphs
+Group:		Applications/Multimedia
+Summary:	Demo graphs for %{name}
+
 
 %description
-A collection of tools and tcl packages for the manipulation and layout
+A collection of tools for the manipulation and layout
 of graphs (as in nodes and edges, not as in barcharts).
+
+%description tcl
+Various tcl packages (extensions) for the %{name} tools.
+
+%description devel
+A collection of tools for the manipulation and layout
+of graphs (as in nodes and edges, not as in barcharts).
+This package contains development files for %{name}.
+
+%description doc
+Provides some additional PDF and HTML documentation for %{name}.
+
+%description graphs
+Some demo graphs for %{name}.
+
+
+%prep
+%setup -q
+
+
+%build
+# XXX ix86 only used to have -ffast-math, let's use everywhere
+%{expand: %%define optflags %{optflags} -ffast-math}
+# %%configure is broken in RH7.3 rpmbuild
+# need unreleased changes to gd, so use --with-mylibgd for now.
+CFLAGS="$RPM_OPT_FLAGS" \
+./configure \
+      --prefix=%{_prefix} \
+      --bindir=%{_bindir} \
+      --libdir=%{_libdir} \
+      --includedir=%{_includedir} \
+      --datadir=%{_datadir} \
+      --mandir=%{_mandir} \
+      --with-x \
+      --with-mylibgd \
+      --disable-dependency-tracking
+%__make %{?_smp_mflags}
+
+
+%install
+rm -rf $RPM_BUILD_ROOT __doc
+make \
+    DESTDIR=$RPM_BUILD_ROOT \
+    docdir=$RPM_BUILD_ROOT%{_docdir}/%{name} \
+    pkgconfigdir=%{_libdir}/pkgconfig \
+    transform='s,x,x,' \
+    install
+chmod -x $RPM_BUILD_ROOT%{_datadir}/%{name}/lefty/*
+cp -a $RPM_BUILD_ROOT%{_datadir}/%{name}/doc __doc
+rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/doc
+
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
 
 %files
 %defattr(-,root,root,-)
@@ -52,21 +130,19 @@ of graphs (as in nodes and edges, not as in barcharts).
 %exclude %{_bindir}/dotneato-config
 %exclude %{_mandir}/man1/dotneato-config.1*
 
-%package devel
-Group:		Development/Libraries
-Summary:	Development tools for using the %{name} libraries.
-Requires:	%{name} = %{version}-%{release}
-
-%description devel
-The %{name}-devel package contains the header files
-and man3 pages necessary for developing programs
-using version %{version} of the %{name} libraries.
+%files tcl
+%defattr(-,root,root,-)
+%{_libdir}/%{name}/lib*tcl*.so.*.*
+%{_libdir}/%{name}/libtk*.so.*.*
+%{_libdir}/%{name}/pkgIndex.tcl
+%{_datadir}/%{name}/demo
+%{_mandir}/mann/*.n* 
 
 %files devel
 %defattr(-,root,root,-)
 %{_bindir}/dotneato-config
 %{_includedir}/%{name}
-%{_libdir}/%{name}/*.*a
+%{_libdir}/%{name}/*.la
 %{_libdir}/%{name}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man1/dotneato-config.1*
@@ -74,81 +150,14 @@ using version %{version} of the %{name} libraries.
 %exclude %{_libdir}/%{name}/lib*tcl*.*
 %exclude %{_libdir}/%{name}/libtk*.*
 
-%package doc
-Group:          Documentation
-Summary:        PDF and HTML documents for %{name}
-
-%description doc
-The %{name}-doc package provides some additional PDF and HTML documentation for %{name}.
-
-%files doc
-%defattr(-,root,root,-)
-%doc __doc/*
-
-%package graphs
-Group:		Applications/Multimedia
-Summary:	Demo graphs for %{name}
-
-%description graphs
-This package provides some example graphs for %{name}.
-
 %files graphs
 %defattr(-,root,root,-)
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/graphs
 
-%package tcl
-Group:		Applications/Multimedia
-Summary:	Tcl extension tools for %{name}
-Requires:	%{name} = %{version}-%{release} tcl >= 0:8.3 tk
-
-%description tcl
-The %{name}-tcl package contains various tcl packages (extensions)
-for version %{version} of the %{name} tools.
-
-%files tcl
+%files doc
 %defattr(-,root,root,-)
-%{_libdir}/%{name}/lib*tcl*.so.*.*.*
-%{_libdir}/%{name}/libtk*.so.*.*.*
-%{_libdir}/%{name}/pkgIndex.tcl
-%{_datadir}/%{name}/demo
-%{_mandir}/mann/* 
-%prep
-%setup -q
-
-%build
-# XXX ix86 only used to have -ffast-math, let's use everywhere
-%{expand: %%define optflags %{optflags} -ffast-math}
-# %%configure is broken in RH7.3 rpmbuild - even in comments!
-# need unreleased changes to gd, so use --with-mylibgd for now.
-CFLAGS="$RPM_OPT_FLAGS" \
-./configure \
-      --prefix=%{_prefix} \
-      --bindir=%{_bindir} \
-      --libdir=%{_libdir} \
-      --includedir=%{_includedir} \
-      --datadir=%{_datadir} \
-      --mandir=%{_mandir} \
-      --with-x \
-      --with-mylibgd \
-      --disable-dependency-tracking
-# need gd-2.0.29 commonly available in rpms before removing --enable-mylibgd
-%__make %{?_smp_mflags}
-
-%install
-rm -rf $RPM_BUILD_ROOT __doc
-make \
-    DESTDIR=$RPM_BUILD_ROOT \
-    docdir=$RPM_BUILD_ROOT%{_docdir}/%{name} \
-    pkgconfigdir=%{_libdir}/pkgconfig \
-    transform='s,x,x,' \
-	install
-cp -a $RPM_BUILD_ROOT%{_datadir}/%{name}/doc __doc
-rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/doc
+%doc __doc/*
 
 %post
 %{_bindir}/dot -V 2>/dev/null
-
-%clean
-rm -rf $RPM_BUILD_ROOT
-
