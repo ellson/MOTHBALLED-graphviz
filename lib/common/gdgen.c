@@ -563,11 +563,10 @@ int builtinFontWd(double fontsz)
 
 static void gd_textline(point p, textline_t * line)
 {
-    char *fontlist, *err;
+    char *str, *fontlist, *err;
     pointf mp, ep;
     int brect[8];
-    char *str = line->str;
-    double fontsz = cstk[SP].fontsz;
+    double fontsz;
     gdFTStringExtra strex;
     int pencolor;
 
@@ -589,27 +588,29 @@ static void gd_textline(point p, textline_t * line)
     else
 	strex.flags |= gdFTEX_FONTCONFIG;
 
+    str = line->str;
     fontlist = gd_alternate_fontlist(cstk[SP].fontfam);
+    fontsz = cstk[SP].fontsz * CompScale;
 
     switch (line->just) {
     case 'l':
 	mp.x = p.x;
 	break;
     case 'r':
-	mp.x = p.x - line->width;
+	mp.x = p.x - line->width * Zoom;
 	break;
     default:
     case 'n':
-	mp.x = p.x - line->width / 2;
+	mp.x = p.x - line->width * Zoom / 2;
 	break;
     }
     ep.y = mp.y = p.y;
-    ep.x = mp.x + line->width;
+    ep.x = mp.x + line->width * Zoom;
 
     mp = gdpt(mp);
-    if (fontsz * Zoom <= FONTSIZE_MUCH_TOO_SMALL) {
+    if (fontsz <= FONTSIZE_MUCH_TOO_SMALL) {
 	/* ignore entirely */
-    } else if (fontsz * Zoom <= FONTSIZE_TOO_SMALL) {
+    } else if (fontsz <= FONTSIZE_TOO_SMALL) {
 	/* draw line in place of text */
 	ep = gdpt(ep);
 	gdImageLine(im, ROUND(mp.x), ROUND(mp.y),
@@ -631,7 +632,6 @@ static void gd_textline(point p, textline_t * line)
 	    /* revert to builtin fonts */
 	    gd_missingfont(err, cstk[SP].fontfam);
 #endif
-	    fontsz = (fontsz * Dpi) / POINTS_PER_INCH;
 	    mp.y += 2;
 	    if (fontsz <= 8.5) {
 		gdImageString(im, gdFontTiny,
@@ -691,9 +691,11 @@ gd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 	} else {
 	    pen = cstk[SP].pencolor;
 	}
-#if 0
-	if (cstk[SP].penwidth != WIDTH_NORMAL) {
-	    width = cstk[SP].penwidth;
+	width = cstk[SP].penwidth * CompScale;
+	if (width < WIDTH_NORMAL)
+	    width = WIDTH_NORMAL;  /* gd can't do thin lines */
+	gdImageSetThickness(im, width);
+	if (width > WIDTH_NORMAL) {
 	    brush = gdImageCreate(width, width);
 	    gdImagePaletteCopy(brush, im);
 	    gdImageFilledRectangle(brush,
@@ -705,10 +707,6 @@ gd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 	    else
 		pen = gdBrushed;
 	}
-#else
-	width = cstk[SP].penwidth;
-	gdImageSetThickness(im, width);
-#endif
 	p.x = A[0].x;
 	p.y = A[0].y;
 	p = gdpt(p);
@@ -780,10 +778,11 @@ static void gd_polygon(point * A, int n, int filled)
 	    pen = cstk[SP].pencolor;
 	}
 	width = cstk[SP].penwidth * CompScale;
-	gdImageSetThickness(im, WIDTH_NORMAL);
-#if 1
+	if (width < WIDTH_NORMAL)
+	    width = WIDTH_NORMAL;  /* gd can't do thin lines */
+	gdImageSetThickness(im, width);
 	/* use brush instead of Thickness to improve end butts */
-	if (width != WIDTH_NORMAL) {
+	if (width > WIDTH_NORMAL) {
 	    brush = gdImageCreate(width, width);
 	    gdImagePaletteCopy(brush, im);
 	    gdImageFilledRectangle(brush,
@@ -795,7 +794,6 @@ static void gd_polygon(point * A, int n, int filled)
 	    else
 		pen = gdBrushed;
 	}
-#endif
 	points = N_GNEW(n, gdPoint);
 	for (i = 0; i < n; i++) {
 	    p.x = A[i].x;
@@ -845,10 +843,11 @@ static void gd_ellipse(point p, int rx, int ry, int filled)
 	    pen = cstk[SP].pencolor;
 	}
 	width = cstk[SP].penwidth * CompScale;
+	if (width < WIDTH_NORMAL)
+	    width = WIDTH_NORMAL;  /* gd can't do thin lines */
 	gdImageSetThickness(im, width);
-#if 1
 	/* use brush instead of Thickness to improve outline appearance */
-	if (width != WIDTH_NORMAL) {
+	if (width > WIDTH_NORMAL) {
 	    brush = gdImageCreate(width, width);
 	    gdImagePaletteCopy(brush, im);
 	    gdImageFilledRectangle(brush,
@@ -860,7 +859,6 @@ static void gd_ellipse(point p, int rx, int ry, int filled)
 	    else
 		pen = gdBrushed;
 	}
-#endif
 	if (Rot) {
 	    int t;
 	    t = rx;
