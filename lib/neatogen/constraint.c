@@ -398,7 +398,6 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
      * if the graph is changed, the ND_in and ND_out data has to be updated.
      */
     mapGraphs(vg, cg, dist);
-fprintf (stderr, "mkG %d nodes %d edges\n", agnnodes(cg), agnedges(cg));
     agclose(vg);
 
     /* add dummy constraints for absolute values and initial positions */
