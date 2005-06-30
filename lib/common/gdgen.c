@@ -26,6 +26,7 @@ extern gdImagePtr gd_getshapeimage(char *name);
 extern void gd_freeusershapes(void);
 
 static gdImagePtr im;
+static int external_surface;
 
 #ifdef _UWIN
 #ifndef DEFAULT_FONTPATH
@@ -217,95 +218,84 @@ static boolean is_format_truecolor_capable(int Output_lang)
     return rv;
 }
 
-static void gd_begin_graph_to_file(GVC_t * gvc, graph_t * g, box bb,
-				   point pb)
+static void gd_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     char *bgcolor_str, *truecolor_str;
     boolean truecolor_p = FALSE;	/* try to use cheaper paletted mode */
     boolean bg_transparent_p = FALSE;
     int bgcolor;
 
+    external_surface = gvc->job->external_surface;
+
     init1_gd(gvc, g, bb, pb);
 
-    truecolor_str = agget(g, "truecolor");	/* allow user to force truecolor */
-    bgcolor_str = agget(g, "bgcolor");
-
-    if (truecolor_str && truecolor_str[0])
-	truecolor_p = mapbool(truecolor_str);
-
-    if (bgcolor_str && strcmp(bgcolor_str, "transparent") == 0) {
-	bg_transparent_p = TRUE;
-	if (is_format_truecolor_capable(Output_lang))
-	    truecolor_p = TRUE;	/* force truecolor */
-    }
-
-    if (GD_has_images(g))
-	truecolor_p = TRUE;	/* force truecolor */
-
-    if (truecolor_p) {
-	if (Verbose)
-	    fprintf(stderr, "%s: allocating a %dK TrueColor GD image\n",
-		    CmdName, ROUND(Viewport.x * Viewport.y * 4 / 1024.));
-	im = gdImageCreateTrueColor(Viewport.x, Viewport.y);
+    if (external_surface) {
+	im = (gdImagePtr)gvc->job->surface;
     } else {
-	if (Verbose)
-	    fprintf(stderr, "%s: allocating a %dK PaletteColor GD image\n",
-		    CmdName, ROUND(Viewport.x * Viewport.y / 1024.));
-	im = gdImageCreate(Viewport.x, Viewport.y);
-    }
-    if (!im) {
-	agerr(AGERR, "gdImageCreate returned NULL. Malloc problem?\n");
-	return;
+        truecolor_str = agget(g, "truecolor");	/* allow user to force truecolor */
+        bgcolor_str = agget(g, "bgcolor");
+
+        if (truecolor_str && truecolor_str[0])
+	    truecolor_p = mapbool(truecolor_str);
+
+        if (bgcolor_str && strcmp(bgcolor_str, "transparent") == 0) {
+	    bg_transparent_p = TRUE;
+	    if (is_format_truecolor_capable(Output_lang))
+	        truecolor_p = TRUE;	/* force truecolor */
+        }
+
+    	if (GD_has_images(g))
+	    truecolor_p = TRUE;	/* force truecolor */
+
+        if (truecolor_p) {
+	    if (Verbose)
+	        fprintf(stderr, "%s: allocating a %dK TrueColor GD image\n",
+		        CmdName, ROUND(Viewport.x * Viewport.y * 4 / 1024.));
+	    im = gdImageCreateTrueColor(Viewport.x, Viewport.y);
+        } else {
+	    if (Verbose)
+	        fprintf(stderr, "%s: allocating a %dK PaletteColor GD image\n",
+		        CmdName, ROUND(Viewport.x * Viewport.y / 1024.));
+	    im = gdImageCreate(Viewport.x, Viewport.y);
+        }
+        if (!im) {
+	    agerr(AGERR, "gdImageCreate returned NULL. Malloc problem?\n");
+	    return;
+        }
     }
 
     init2_gd(im);
 
-    if (bgcolor_str && bgcolor_str[0])
-	if (bg_transparent_p)
-	    bgcolor = transparent;
-	else
-	    bgcolor = gd_resolve_color(bgcolor_str);
-    else
-	bgcolor = white;
-
-    cstk[0].fillcolor = bgcolor;
-
-    /* Blending must be off to lay a transparent bgcolor.
-       Nothing to blend with anyway. */
-    gdImageAlphaBlending(im, FALSE);
-
-    gdImageFill(im, im->sx / 2, im->sy / 2, bgcolor);
-
-    /* Blend everything else together,
-       especially fonts over non-transparent backgrounds */
-    gdImageAlphaBlending(im, TRUE);
-
+    if (! external_surface) {
+        if (bgcolor_str && bgcolor_str[0])
+	    if (bg_transparent_p)
+	        bgcolor = transparent;
+	    else
+	        bgcolor = gd_resolve_color(bgcolor_str);
+        else
+	    bgcolor = white;
+    
+        cstk[0].fillcolor = bgcolor;
+    
+        /* Blending must be off to lay a transparent bgcolor.
+           Nothing to blend with anyway. */
+        gdImageAlphaBlending(im, FALSE);
+    
+        gdImageFill(im, im->sx / 2, im->sy / 2, bgcolor);
+    
+        /* Blend everything else together,
+           especially fonts over non-transparent backgrounds */
+        gdImageAlphaBlending(im, TRUE);
+    }    
 
 #ifdef MYTRACE
-    fprintf(stderr, "gd_begin_graph_to_file\n");
+    fprintf(stderr, "gd_begin_graph\n");
 #endif
 }
 
-static void gd_begin_graph_to_memory(GVC_t * gvc, graph_t * g, box bb,
-				     point pb)
+static void gd_end_graph(void)
 {
-    if (Verbose)
-	fprintf(stderr, "%s: using existing GD image\n", CmdName);
-
-    init1_gd(gvc, g, bb, pb);
-
-    im = *(gdImagePtr *) Output_file;
-
-    init2_gd(im);
-
-#ifdef MYTRACE
-    fprintf(stderr, "gd_begin_graph_to_memory\n");
-#endif
-}
-
-static void gd_end_graph_to_file(void)
-{
-    if (!im)
+    if (!im || external_surface)
 	return;
 
 /*
@@ -1002,37 +992,13 @@ static void gd_user_shape(char *name, point * A, int n, int filled)
 codegen_t GD_CodeGen = {
     0,				/* gd_reset */
     gd_begin_job, gd_end_job,
-    gd_begin_graph_to_file, gd_end_graph_to_file,
+    gd_begin_graph, gd_end_graph,
     gd_begin_page, gd_end_page,
     0, /* gd_begin_layer */ 0,	/* gd_end_layer */
     0, /* gd_begin_cluster */ 0,	/* gd_end_cluster */
     0, /* gd_begin_nodes */ 0,	/* gd_end_nodes */
     0, /* gd_begin_edges */ 0,	/* gd_end_edges */
     gd_begin_node, gd_end_node,
-    0, /* gd_begin_edge */ 0,	/* gd_end_edge */
-    gd_begin_context, gd_end_context,
-    0, /* gd_begin_anchor */ 0,	/* gd_end_anchor */
-    gd_set_font, gd_textline,
-    gd_set_pencolor, gd_set_fillcolor, gd_set_style,
-    gd_ellipse, gd_polygon,
-    gd_bezier, gd_polyline,
-    0,				/* bezier_has_arrows */
-    0,				/* gd_comment */
-    0,				/* gd_textsize */
-    gd_user_shape,
-    0				/* gd_user_shape_size */
-};
-
-codegen_t memGD_CodeGen = {	/* see tcldot */
-    0,				/* gd_reset */
-    gd_begin_job, gd_end_job,
-    gd_begin_graph_to_memory, gd_end_graph_to_memory,
-    gd_begin_page, gd_end_page,
-    0, /* gd_begin_layer */ 0,	/* gd_end_layer */
-    0, /* gd_begin_cluster */ 0,	/* gd_end_cluster */
-    0, /* gd_begin_nodes */ 0,	/* gd_end_nodes */
-    0, /* gd_begin_edges */ 0,	/* gd_end_edges */
-    0, /* gd_begin_node */ 0,	/* gd_end_node */
     0, /* gd_begin_edge */ 0,	/* gd_end_edge */
     gd_begin_context, gd_end_context,
     0, /* gd_begin_anchor */ 0,	/* gd_end_anchor */

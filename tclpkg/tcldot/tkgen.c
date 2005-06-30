@@ -82,6 +82,8 @@ static int SP;
 
 static char *op[] = { "graph", "node", "edge", "graph" };
 
+static tkgendata_t *Tkgendata;
+
 static void tkgen_append_string(char *string)
 {
     Tcl_DStringAppend(&script, string, strlen(string));
@@ -89,7 +91,7 @@ static void tkgen_append_string(char *string)
 
 static void tkgen_start_item(char *item)
 {
-    tkgen_append_string(((tkgendata_t *) Output_file)->canvas);
+    tkgen_append_string(Tkgendata->canvas);
     tkgen_append_string(" create ");
     tkgen_append_string(item);
 }
@@ -191,6 +193,8 @@ static void tk_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     double dpi = GD_drawing(g)->dpi;
 
+    Tkgendata = (tkgendata_t *)gvc->job->surface;
+
     if (dpi < 1.0)
 	dpi = DEFAULT_DPI;
     DevScale = dpi / POINTS_PER_INCH;
@@ -239,7 +243,7 @@ static void tk_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 
 static void tk_end_graph(void)
 {
-    Tcl_DStringResult(((tkgendata_t *) Output_file)->interp, &script);
+    Tcl_DStringResult(Tkgendata->interp, &script);
 }
 
 static void tk_begin_page(graph_t * g, point page, double scale, int rot,

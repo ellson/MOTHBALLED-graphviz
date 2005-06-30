@@ -46,15 +46,7 @@ Tcl_GetString(Tcl_Obj *obj) {
 #endif
 ********* */
 
-#if defined(_BLD_tcldot) && defined(_DLL)
 extern codegen_t TK_CodeGen;
-#else
-extern codegen_t TK_CodeGen;
-#if ENABLE_CODEGENS
-extern FILE *Output_file;
-extern int Output_lang;
-#endif
-#endif
 extern void *GDHandleTable;
 extern int Gdtclft_Init(Tcl_Interp *);
 
@@ -1086,7 +1078,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    return TCL_ERROR;
 	}
 
-	gvc->job->output_file = (FILE *) & tkgendata;
+	gvc->job->surface = (void *)(&tkgendata);
 	gvc->job->external_surface = TRUE;
 
 	/* make sure that layout is done */
@@ -1101,8 +1093,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 'r') && (strncmp(argv[1], "rendergd", length) == 0)) {
-	void *hdl;
-	int *im;
+	void **hdl;
 
 	if (argc < 3) {
 	    Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
@@ -1120,9 +1111,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    Tcl_AppendResult(interp, "GD Image not found.", (char *) NULL);
 	    return TCL_ERROR;
 	}
-	/* FIXME - this is gross! */
-        im = *(int **)hdl;
-	gvc->job->output_file = (FILE *) im;
+	gvc->job->surface = *hdl;
 	gvc->job->external_surface = TRUE;
 
 	/* make sure that layout is done */
