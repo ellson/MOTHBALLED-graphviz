@@ -590,22 +590,22 @@ static void gd_textline(point p, textline_t * line)
 
     str = line->str;
     fontlist = gd_alternate_fontlist(cstk[SP].fontfam);
-    fontsz = cstk[SP].fontsz * CompScale;
+    fontsz = cstk[SP].fontsz;
 
     switch (line->just) {
     case 'l':
 	mp.x = p.x;
 	break;
     case 'r':
-	mp.x = p.x - line->width * Zoom;
+	mp.x = p.x - line->width;
 	break;
     default:
     case 'n':
-	mp.x = p.x - line->width * Zoom / 2;
+	mp.x = p.x - line->width / 2;
 	break;
     }
     ep.y = mp.y = p.y;
-    ep.x = mp.x + line->width * Zoom;
+    ep.x = mp.x + line->width;
 
     mp = gdpt(mp);
     if (fontsz <= FONTSIZE_MUCH_TOO_SMALL) {
