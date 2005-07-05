@@ -1510,6 +1510,7 @@ AC_CONFIG_FILES(Makefile
 	lib/gvc/libgvc.pc
 	plugin/Makefile
 	plugin/layout/Makefile
+	plugin/usershape/Makefile
 	cmd/Makefile
 	cmd/dot/Makefile
 	cmd/dot/dotneato-config

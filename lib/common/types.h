@@ -39,6 +39,7 @@ extern "C" {
     typedef struct gvrender_engine_s gvrender_engine_t;
     typedef struct gvlayout_engine_s gvlayout_engine_t;
     typedef struct gvtextlayout_engine_s gvtextlayout_engine_t;
+    typedef struct gvusershape_engine_s gvusershape_engine_t;
 
     typedef struct htmllabel_t htmllabel_t;
 
