@@ -279,7 +279,7 @@ void circoLayout(Agraph_t * g)
 	    for (i = 0; i < ncc; i++) {
 		sg = ccs[i];
 		circularLayout(sg);
-		adjustNodes(g);
+		adjustNodes(sg);
 	    }
 	    pinfo.margin = getPack(g, CL_OFFSET, CL_OFFSET);
 	    /* FIX: splines have not been calculated for dg
