@@ -15,7 +15,7 @@
 **********************************************************/
 
 /*
- *  textlayout engine wrapper
+ *  usershape engine wrapper
  */
 
 #ifdef HAVE_CONFIG_H
@@ -28,29 +28,19 @@
 #include "types.h"
 #include "macros.h"
 
-#include "gvplugin_textlayout.h"
+#include "gvplugin_usershape.h"
 #include "gvc.h"
 
-int gvtextlayout_select(GVC_t * gvc, char *textlayout)
+int gvusershape_select(GVC_t * gvc, char *usershape)
 {
     gv_plugin_t *plugin;
     gvplugin_type_t *typeptr;
 
-    plugin = gvplugin_load(gvc, API_textlayout, textlayout);
+    plugin = gvplugin_load(gvc, API_usershape, usershape);
     if (plugin) {
 	typeptr = plugin->typeptr;
-	gvc->textlayout_engine = (gvtextlayout_engine_t *) (typeptr->engine);
+	gvc->usershape_engine = (gvusershape_engine_t *) (typeptr->engine);
 	return GVRENDER_PLUGIN;  /* FIXME - need more suitable success code */
     }
     return NO_SUPPORT;
-}
-
-double gvtextlayout_width(GVC_t *gvc, textline_t *textline, char *fontname, double fontsize, char *fontpath)
-{
-    gvtextlayout_engine_t *gvte = gvc->textlayout_engine;
-
-    if (gvte && gvte->width) {
-	gvte->width(textline, fontname, fontsize, fontpath);
-    }
-    return textline->width;
 }

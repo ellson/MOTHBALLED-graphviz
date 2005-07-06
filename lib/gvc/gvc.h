@@ -58,12 +58,18 @@ extern "C" {
 /* emit */
     extern void gvemit_graph(GVC_t * gvc, graph_t * g);
 
-/* text_layout */
+/* textlayout */
 
-    extern int gvtext_select(GVC_t * gvc, char *text_layout);
-    extern double gvtext_width(GVC_t *gvc, textline_t *textline,
-			       char *fontname, double fontsize,
-			       char *fontpath);
+    extern int gvtextlayout_select(GVC_t * gvc, char *textlayout);
+    extern double gvtextlayout_width(GVC_t *gvc, textline_t *textline,
+		       char *fontname, double fontsize, char *fontpath);
+
+/* usershape */
+
+    extern int gvusershape_select(GVC_t * gvc, char *name);
+    extern void * gvusershape_getshape(GVC_t * gvc, char *usershape);
+    extern void gvusershape_freeeshapes(GVC_t * gvc);
+    extern point gvusershape_imagesize(GVC_t * gvc, char *usershape);
 
 /* device */
 

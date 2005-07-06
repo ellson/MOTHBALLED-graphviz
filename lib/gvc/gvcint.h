@@ -200,12 +200,14 @@ extern "C" {
 	gv_plugin_t *api[ APIS ];  /* array of current plugins per api */
 #undef ELEM
 
-	gvtextlayout_engine_t *textlayout_engine;	/* current text_layout engine */
+	gvtextlayout_engine_t *textlayout_engine;	/* current textlayout engine */
+	gvusershape_engine_t *usershape_engine;	/* current usershape engine */
 
 	/* gvrender_begin_job() */
 	char *layout_type;      /* string name of layout type */
 	gvlayout_engine_t *layout_engine;	/* current layout engine */
 	int layout_id;		/* internal id of current layout */
+
 	char *graphname;	/* name from graph */
 	GVJ_t *active_jobs;   /* linked list of active jobs */
 
