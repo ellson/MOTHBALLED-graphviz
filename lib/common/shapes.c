@@ -575,7 +575,7 @@ static void poly_init(node_t * n)
 	    point imagesize;
 	    char *sfile = agget(n, "shapefile");
 
-	    imagesize = user_shape_size(n, sfile);
+	    imagesize = image_size(n->graph, sfile);
 	    if ((imagesize.x == -1) && (imagesize.y == -1)) {
 		agerr(AGERR,
 		      "No or improper shapefile=\"%s\" for node \"%s\"\n",

@@ -105,14 +105,6 @@ extern "C" {
     extern char *gd_alternate_fontlist(char *font);
     extern char *gd_textsize(textline_t * textline, char *fontname,
 			     double fontsz, char **fontpath);
-    extern point gd_user_shape_size(node_t * n, char *shapeimagefile);
-    extern point ps_user_shape_size(node_t * n, char *shapeimagefile);
-    extern point svg_user_shape_size(node_t * n, char *shapeimagefile);
-    extern point quartz_user_shape_size(node_t * n, char *shapeimagefile);
-    extern point gd_image_size(graph_t * n, char *shapeimagefile);
-    extern point ps_image_size(graph_t * n, char *shapeimagefile);
-    extern point svg_image_size(graph_t * n, char *shapeimagefile);
-    extern point quartz_image_size(graph_t * n, char *shapeimagefile);
     extern void getdouble(graph_t * g, char *name, double *result);
     extern splines *getsplinepoints(edge_t * e);
     extern void global_def(char *,
@@ -184,7 +176,6 @@ extern "C" {
     extern void updateBB(graph_t * g, textlabel_t * lp);
     extern void use_library(char *);
     extern char *username(void);
-    extern point user_shape_size(node_t * n, char *shapefile);
     extern char* utf8ToLatin1 (char* ins);
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);

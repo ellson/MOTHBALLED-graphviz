@@ -138,8 +138,3 @@ point gd_image_size(graph_t * g, char *shapeimagefile)
 	rv.x = rv.y = -1;
     return rv;
 }
-
-point gd_user_shape_size(node_t * n, char *shapeimagefile)
-{
-    return (gd_image_size(n->graph, shapeimagefile));
-}

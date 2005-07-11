@@ -23,11 +23,3 @@ point svg_image_size(graph_t * g, char *shapeimagefile)
     rv.x = rv.y = 0;
     return rv;
 }
-
-point svg_user_shape_size(node_t * n, char *shapeimagefile)
-{
-    point rv;
-
-    rv.x = rv.y = 0;
-    return rv;
-}

@@ -214,11 +214,6 @@ point ps_image_size(graph_t * g, char *shapeimagefile)
     return rv;
 }
 
-point ps_user_shape_size(node_t * n, char *shapeimagefile)
-{
-    return (ps_image_size(n->graph, shapeimagefile));
-}
-
 void ps_freeusershapes(void)
 {
     if (EPSF_contents) {

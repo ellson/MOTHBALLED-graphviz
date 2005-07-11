@@ -68,8 +68,8 @@ extern "C" {
 
     extern int gvusershape_select(GVC_t * gvc, char *name);
     extern void * gvusershape_getshape(GVC_t * gvc, char *usershape);
-    extern void gvusershape_freeeshapes(GVC_t * gvc);
-    extern point gvusershape_imagesize(GVC_t * gvc, char *usershape);
+    extern void gvusershape_freeshapes(GVC_t * gvc);
+    extern point gvusershape_size(GVC_t * gvc, char *usershape);
 
 /* device */
 
