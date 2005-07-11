@@ -61,7 +61,6 @@ extern "C" {
     extern void common_init_node(node_t * n);
     extern int common_init_edge(edge_t * e);
     extern void compute_bb(Agraph_t *);
-    extern void config_codegen_builtins(GVC_t * gvc);
     extern point coord(node_t * n);
     extern pointf cvt2ptf(point);
     extern point cvt2pt(pointf);

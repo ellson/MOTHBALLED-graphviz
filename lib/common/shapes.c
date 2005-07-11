@@ -22,6 +22,10 @@
 #include	"htmltable.h"
 #include	<limits.h>
 
+#ifndef DISABLE_CODEGENS
+extern codegen_t VRML_CodeGen;
+#endif
+
 #define FILLED 	(1 << 0)
 #define ROUNDED (1 << 1)
 #define DIAGONALS (1 << 2)

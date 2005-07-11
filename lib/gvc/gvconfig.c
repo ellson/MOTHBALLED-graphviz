@@ -21,6 +21,7 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<string.h>
+
 #ifndef DISABLE_LTDL
 #include	<sys/types.h>
 #include	<sys/stat.h>
@@ -30,11 +31,20 @@
 
 #include        "types.h"
 #include        "macros.h"
+#include        "const.h"
 #include        "gvc.h"
 #include        "graph.h"
 
 #ifndef DISABLE_CODEGENS
-extern void config_codegen_builtins(GVC_t *gvc);
+#ifdef QUARTZ_RENDER
+#include <QuickTime/QuickTime.h>
+
+    extern codegen_t QPDF_CodeGen, QEPDF_CodeGen, QBM_CodeGen;
+#endif
+    extern codegen_t FIG_CodeGen, HPGL_CodeGen, MAP_CodeGen,
+        MIF_CodeGen, XDot_CodeGen, MP_CodeGen, PIC_CodeGen,
+        PS_CodeGen, DIA_CodeGen, SVG_CodeGen, VRML_CodeGen,
+        VTX_CodeGen, GD_CodeGen, memGD_CodeGen;
 #endif
 
 #ifndef DISABLE_LTDL
@@ -261,6 +271,127 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 }
 #endif
 
+#ifndef DISABLE_CODEGENS
+
+#define MAX_CODEGENS 100
+
+static codegen_info_t cg[MAX_CODEGENS] = {
+    {&PS_CodeGen, "ps", POSTSCRIPT},
+    {&PS_CodeGen, "ps2", PDF},
+    {&HPGL_CodeGen, "hpgl", HPGL},
+    {&HPGL_CodeGen, "pcl", PCL},
+    {&MIF_CodeGen, "mif", MIF},
+    {&PIC_CodeGen, "pic", PIC_format},
+
+    {&GD_CodeGen, "gd", GD},
+#ifdef HAVE_LIBZ
+    {&GD_CodeGen, "gd2", GD2},
+#endif
+#ifdef HAVE_GD_GIF
+    {&GD_CodeGen, "gif", GIF},
+#endif
+#ifdef HAVE_GD_JPEG
+    {&GD_CodeGen, "jpg", JPEG},
+    {&GD_CodeGen, "jpeg", JPEG},
+#endif
+#ifdef HAVE_GD_PNG
+    {&GD_CodeGen, "png", PNG},
+    {&VRML_CodeGen, "vrml", VRML},
+#endif
+    {&GD_CodeGen, "wbmp", WBMP},
+#ifdef HAVE_GD_XPM
+    {&GD_CodeGen, "xbm", XBM},
+    {&GD_CodeGen, "xpm", XBM},
+#endif
+
+#ifdef QUARTZ_RENDER
+    {&QPDF_CodeGen, "pdf", QPDF},
+    {&QEPDF_CodeGen, "epdf", QEPDF},
+#endif                          /* QUARTZ_RENDER */
+
+    {&MAP_CodeGen, "ismap", ISMAP},
+    {&MAP_CodeGen, "imap", IMAP},
+    {&MAP_CodeGen, "cmap", CMAP},
+    {&MAP_CodeGen, "cmapx", CMAPX},
+    {&VTX_CodeGen, "vtx", VTX},
+    {&MP_CodeGen, "mp", METAPOST},
+    {&FIG_CodeGen, "fig", FIG},
+    {&SVG_CodeGen, "svg", SVG},
+#ifdef HAVE_LIBZ
+    {&SVG_CodeGen, "svgz", SVGZ},
+    {&DIA_CodeGen, "dia", DIA},
+#endif
+#define DUMMY_CodeGen XDot_CodeGen
+    {&DUMMY_CodeGen, "dot", ATTRIBUTED_DOT},
+    {&DUMMY_CodeGen, "canon", CANONICAL_DOT},
+    {&DUMMY_CodeGen, "plain", PLAIN},
+    {&DUMMY_CodeGen, "plain-ext", PLAIN_EXT},
+    {&DUMMY_CodeGen, "xdot", EXTENDED_DOT},
+    {NULL, NULL, 0}
+};
+
+codegen_info_t *first_codegen(void)
+{
+    return cg;
+}
+
+codegen_info_t *next_codegen(codegen_info_t * p)
+{
+    ++p;
+
+#ifdef QUARTZ_RENDER
+    static boolean unscanned = TRUE;
+    if (!p->name && unscanned) {
+        /* reached end of codegens but haven't yet scanned for Quicktime codegens... */
+
+        unscanned = FALSE;              /* don't scan again */
+
+        ComponentDescription criteria;
+        criteria.componentType = GraphicsExporterComponentType;
+        criteria.componentSubType = 0;
+        criteria.componentManufacturer = 0;
+        criteria.componentFlags = 0;
+        criteria.componentFlagsMask = graphicsExporterIsBaseExporter;
+
+        codegen_info_t *next_cg;
+        int next_id;
+        Component next_component;
+
+        /* make each discovered Quicktime format into a codegen */
+        for (next_cg = p, next_id = QBM_FIRST, next_component =
+             FindNextComponent(0, &criteria);
+             next_cg < cg + MAX_CODEGENS - 1 && next_id <= QBM_LAST
+             && next_component;
+             ++next_cg, ++next_id, next_component =
+             FindNextComponent(next_component, &criteria)) {
+            next_cg->cg = &QBM_CodeGen;
+            next_cg->id = next_id;
+            next_cg->info = next_component;
+
+            /* get four chars of extension, trim and convert to lower case */
+            char extension[5];
+            GraphicsExportGetDefaultFileNameExtension((GraphicsExportComponent) next_component, (OSType *) & extension);
+            extension[4] = '\0';
+
+            char *extension_ptr;
+            for (extension_ptr = extension; *extension_ptr;
+                 ++extension_ptr)
+                *extension_ptr =
+                    *extension_ptr == ' ' ? '\0' : tolower(*extension_ptr);
+            next_cg->name = strdup(extension);
+        }
+
+        /* add new sentinel at end of dynamic codegens */
+        next_cg->cg = (codegen_t *) 0;
+        next_cg->id = 0;
+        next_cg->info = (void *) 0;
+        next_cg->name = (char *) 0;
+    }
+#endif
+    return p;
+}
+#endif
+
 /*
   gvconfig - parse a config file and install the identified plugins
  */
@@ -280,7 +411,11 @@ void gvconfig(GVC_t * gvc)
 #endif
     
 #ifndef DISABLE_CODEGENS
-    config_codegen_builtins(gvc);
+    codegen_info_t *p;
+
+    for (p = cg; p->name; ++p)
+        gvplugin_install(gvc, API_render, p->name, 0,
+                        "cg", NULL, (gvplugin_installed_t *) p);
 #endif
 
 #ifdef DISABLE_LTDL

@@ -39,6 +39,10 @@
 #include "gvplugin_render.h"
 #include "gvc.h"
 
+#ifndef DISABLE_CODEGENS
+extern codegen_t PS_CodeGen;
+#endif
+
 /* FIXME - need these but without rest of crap in common/ */
 extern void colorxlate(char *str, color_t * color,
 		       color_type_t target_type);

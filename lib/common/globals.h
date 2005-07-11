@@ -62,14 +62,6 @@ extern "C" {
     EXTERN int Output_lang;	/* POSTSCRIPT, DOT, etc. */
     EXTERN FILE *Output_file;
     EXTERN int Obj;
-
-    extern codegen_t FIG_CodeGen, HPGL_CodeGen, MAP_CodeGen,
-	MIF_CodeGen, XDot_CodeGen, MP_CodeGen, PIC_CodeGen,
-	PS_CodeGen, DIA_CodeGen, SVG_CodeGen, VRML_CodeGen,
-	VTX_CodeGen, GD_CodeGen, memGD_CodeGen;
-#ifdef QUARTZ_RENDER
-    extern codegen_t QPDF_CodeGen, QEPDF_CodeGen, QBM_CodeGen;
-#endif
 #endif
 
     EXTERN boolean Verbose, Reduce, UseRankdir, MemTest;
