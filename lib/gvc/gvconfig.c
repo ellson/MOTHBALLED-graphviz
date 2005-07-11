@@ -181,7 +181,7 @@ static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplugin_library_t *library)
 {
     gvplugin_api_t *apis;
-    gvplugin_type_t *types;
+    gvplugin_installed_t *types;
     int i;
 
     for (apis = library->apis; (types = apis->types); apis++) {
@@ -195,7 +195,7 @@ static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplug
 static void gvconfig_write_library_config(char *path, gvplugin_library_t *library, FILE *f)
 {
     gvplugin_api_t *apis;
-    gvplugin_type_t *types;
+    gvplugin_installed_t *types;
     int i;
 
     fprintf(f, "%s %s {\n", path, library->packagename);

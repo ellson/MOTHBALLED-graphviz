@@ -33,13 +33,13 @@
 
 int gvusershape_select(GVC_t * gvc, char *usershape)
 {
-    gv_plugin_t *plugin;
-    gvplugin_type_t *typeptr;
+    gvplugin_available_t *plugin;
+    gvplugin_installed_t *typeptr;
 
     plugin = gvplugin_load(gvc, API_usershape, usershape);
     if (plugin) {
 	typeptr = plugin->typeptr;
-	gvc->usershape_engine = (gvusershape_engine_t *) (typeptr->engine);
+	gvc->usershape.engine = (gvusershape_engine_t *) (typeptr->engine);
 	return GVRENDER_PLUGIN;  /* FIXME - need more suitable success code */
     }
     return NO_SUPPORT;

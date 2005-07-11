@@ -72,6 +72,38 @@ extern "C" {
 	int flags;
     } gvdevice_features_t;
 
+    /* active plugin headers */
+    typedef struct gvplugin_active_device_s {
+        gvdevice_engine_t *engine;
+        int id;
+        gvdevice_features_t *features;
+    } gvplugin_active_device_t;
+
+    typedef struct gvplugin_active_layout_s {
+        gvlayout_engine_t *engine;
+        int id;
+        char *type;
+    } gvplugin_active_layout_t;
+
+    typedef struct gvplugin_active_render_s {
+        gvrender_engine_t *engine;
+        int id;
+        gvrender_features_t *features;
+        char *type;
+    } gvplugin_active_render_t;
+
+    typedef struct gvplugin_active_textlayout_s {
+        gvtextlayout_engine_t *engine;
+        int id;
+        char *type;
+    } gvplugin_active_textlayout_t;
+
+    typedef struct gvplugin_active_usershape_s {
+        gvusershape_engine_t *engine;
+        int id;
+        char *type;
+    } gvplugin_active_usershape_t;
+
     /*
      * gv_matrix_t:   (compat with cairo_matrix_t)
      *
@@ -92,13 +124,9 @@ extern "C" {
 	FILE *output_file;
 	int output_lang;
 
-	gvdevice_engine_t *device_engine;	/* current device engine */
-	int device_id;		/* internal id of current device engine within plugin */
-	gvdevice_features_t *device_features;	/* features of current device */
+	gvplugin_active_device_t device;
+	gvplugin_active_render_t render;
 
-	gvrender_engine_t *render_engine;	/* current render engine */
-	int render_id;		/* internal id of current render engine within plugin */
-	gvrender_features_t *render_features;	/* features of current render */
 #ifndef DISABLE_CODEGENS
 	codegen_t *codegen;	/* current  codegen */
 #endif
@@ -157,12 +185,10 @@ extern "C" {
 	void *window;		/* display-specific data for gvrender plugin */
     };
 
-/* gv_plugin_t is a descriptor for available plugins;
-	gvplugin_t is for installed plugins */
-    typedef struct gv_plugin_s gv_plugin_t;
+    typedef struct gvplugin_available_s gvplugin_available_t;
 
-    struct gv_plugin_s {
-	gv_plugin_t *next;       /* next plugin in linked list, or NULL */
+    struct gvplugin_available_s {
+	gvplugin_available_t *next;       /* next plugin in linked list, or NULL */
 	char *typestr;		 /* type string, e.g. "png" or "ps" */
 	int quality;             /* programmer assigned quality
 					ranking within type (+ve or -ve int)
@@ -170,7 +196,7 @@ extern "C" {
 	char *path;		 /* file path to library containing plugin,
 					or NULL if builtin */
 	char *packagename;	 /* package name */
-	gvplugin_type_t *typeptr;  /* pointer to jumptable for plugin,
+	gvplugin_installed_t *typeptr;  /* pointer to jumptable for plugin,
 					or NULL if not yet loaded */
     };
 
@@ -196,17 +222,14 @@ extern "C" {
 	/* plugins */
 #define ELEM(x) +1
 	/* APIS expands to "+1 +1 ... +1" to give the number of APIs */
-	gv_plugin_t *apis[ APIS ]; /* array of linked-list of plugins per api */
-	gv_plugin_t *api[ APIS ];  /* array of current plugins per api */
+	gvplugin_available_t *apis[ APIS ]; /* array of linked-list of plugins per api */
+	gvplugin_available_t *api[ APIS ];  /* array of current plugins per api */
 #undef ELEM
 
-	gvtextlayout_engine_t *textlayout_engine;	/* current textlayout engine */
-	gvusershape_engine_t *usershape_engine;	/* current usershape engine */
-
 	/* gvrender_begin_job() */
-	char *layout_type;      /* string name of layout type */
-	gvlayout_engine_t *layout_engine;	/* current layout engine */
-	int layout_id;		/* internal id of current layout */
+	gvplugin_active_textlayout_t textlayout;
+	gvplugin_active_usershape_t usershape;
+	gvplugin_active_layout_t layout;
 
 	char *graphname;	/* name from graph */
 	GVJ_t *active_jobs;   /* linked list of active jobs */

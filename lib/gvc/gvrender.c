@@ -47,8 +47,8 @@ extern char *canontoken(char *str);
 int gvrender_select(GVJ_t * job, char *str)
 {
     GVC_t *gvc = job->gvc;
-    gv_plugin_t *plugin;
-    gvplugin_type_t *typeptr;
+    gvplugin_available_t *plugin;
+    gvplugin_installed_t *typeptr;
     char *device;
 #ifndef DISABLE_CODEGENS
     codegen_info_t *cg_info;
@@ -64,20 +64,20 @@ int gvrender_select(GVJ_t * job, char *str)
 	} else {
 #endif
 	    typeptr = plugin->typeptr;
-	    job->render_engine = (gvrender_engine_t *) (typeptr->engine);
-	    job->render_features =
+	    job->render.engine = (gvrender_engine_t *) (typeptr->engine);
+	    job->render.features =
 		(gvrender_features_t *) (typeptr->features);
-	    job->render_id = typeptr->id;
-	    device = job->render_features->device;
+	    job->render.id = typeptr->id;
+	    device = job->render.features->device;
 	    if (device) {
 		plugin = gvplugin_load(gvc, API_device, device);
 		if (! plugin)
 		    return NO_SUPPORT;
 	        typeptr = plugin->typeptr;
-		job->device_engine = (gvdevice_engine_t *) (typeptr->engine);
-	        job->device_features =
+		job->device.engine = (gvdevice_engine_t *) (typeptr->engine);
+	        job->device.features =
 		    (gvdevice_features_t *) (typeptr->features);
-	        job->device_id = typeptr->id;
+	        job->device.id = typeptr->id;
 	    }
 	    return GVRENDER_PLUGIN;
 #ifndef DISABLE_CODEGENS
@@ -89,11 +89,11 @@ int gvrender_select(GVJ_t * job, char *str)
 
 int gvrender_features(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
     int features = 0;
 
     if (gvre) {
-	features = job->render_features->flags;
+	features = job->render.features->flags;
     }
 #ifndef DISABLE_CODEGENS
     else {
@@ -115,7 +115,7 @@ int gvrender_features(GVJ_t * job)
 
 void gvrender_begin_job(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
         if (gvre->begin_job)
@@ -134,7 +134,7 @@ void gvrender_begin_job(GVJ_t * job)
 
 void gvrender_end_job(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->end_job)
 	gvre->end_job(job);
@@ -158,7 +158,7 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 {
     pointf rv;
 
-    if (job->render_features->flags & GVRENDER_DOES_TRANSFORM)
+    if (job->render.features->flags & GVRENDER_DOES_TRANSFORM)
 	return p;
 
     if (job->rotation) {
@@ -204,7 +204,7 @@ static void gvrender_resolve_color(gvrender_features_t * features,
 void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 {
     GVC_t *gvc = job->gvc;
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
     char *str;
     double sx, sy;
 
@@ -251,7 +251,7 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 
 	/* background color */
 	if (((str = agget(g, "bgcolor")) != 0) && str[0]) {
-	    gvrender_resolve_color(job->render_features, str,
+	    gvrender_resolve_color(job->render.features, str,
 				   &(gvc->bgcolor));
 	    if (gvre->resolve_color)
 		gvre->resolve_color(job, &(gvc->bgcolor));
@@ -291,7 +291,7 @@ fprintf(stderr,"pb = %d,%d %d,%d\n",
 
 void gvrender_end_graph(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->end_graph)
 	gvre->end_graph(job);
@@ -308,7 +308,7 @@ void gvrender_end_graph(GVJ_t * job)
 
 void gvrender_begin_page(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->begin_page)
 	gvre->begin_page(job);
@@ -328,7 +328,7 @@ void gvrender_begin_page(GVJ_t * job)
 
 void gvrender_end_page(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->end_page)
 	gvre->end_page(job);
@@ -344,7 +344,7 @@ void gvrender_end_page(GVJ_t * job)
 
 void gvrender_begin_layer(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->begin_layer)
 	gvre->begin_layer(job, job->gvc->layerIDs[job->layerNum], job->layerNum, job->numLayers);
@@ -360,7 +360,7 @@ void gvrender_begin_layer(GVJ_t * job)
 
 void gvrender_end_layer(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->end_layer)
 	gvre->end_layer(job);
@@ -376,7 +376,7 @@ void gvrender_end_layer(GVJ_t * job)
 
 void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     job->sg = sg;  /* set current cluster graph object */
 #ifndef DISABLE_CODEGENS
@@ -396,7 +396,7 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 
 void gvrender_end_cluster(GVJ_t * job, graph_t *g)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->end_cluster)
 	gvre->end_cluster(job);
@@ -414,7 +414,7 @@ void gvrender_end_cluster(GVJ_t * job, graph_t *g)
 
 void gvrender_begin_nodes(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->begin_nodes)
 	gvre->begin_nodes(job);
@@ -430,7 +430,7 @@ void gvrender_begin_nodes(GVJ_t * job)
 
 void gvrender_end_nodes(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->end_nodes)
 	gvre->end_nodes(job);
@@ -446,7 +446,7 @@ void gvrender_end_nodes(GVJ_t * job)
 
 void gvrender_begin_edges(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->begin_edges)
 	gvre->begin_edges(job);
@@ -462,7 +462,7 @@ void gvrender_begin_edges(GVJ_t * job)
 
 void gvrender_end_edges(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->end_edges)
 	gvre->end_edges(job);
@@ -478,7 +478,7 @@ void gvrender_end_edges(GVJ_t * job)
 
 void gvrender_begin_node(GVJ_t * job, node_t * n)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
 #ifndef DISABLE_CODEGENS
     Obj = NODE;
@@ -498,7 +498,7 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
 
 void gvrender_end_node(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->end_node)
 	gvre->end_node(job);
@@ -516,7 +516,7 @@ void gvrender_end_node(GVJ_t * job)
 
 void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
 #ifndef DISABLE_CODEGENS
     Obj = EDGE;
@@ -538,7 +538,7 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 
 void gvrender_end_edge(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->end_edge)
 	gvre->end_edge(job);
@@ -557,7 +557,7 @@ void gvrender_end_edge(GVJ_t * job)
 void gvrender_begin_context(GVJ_t * job)
 {
     GVC_t *gvc = job->gvc;
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
 	(gvc->SP)++;
@@ -578,7 +578,7 @@ void gvrender_begin_context(GVJ_t * job)
 void gvrender_end_context(GVJ_t * job)
 {
     GVC_t *gvc = job->gvc;
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
 	gvc->SP--;
@@ -598,7 +598,7 @@ void gvrender_end_context(GVJ_t * job)
 void gvrender_begin_anchor(GVJ_t * job, char *href, char *tooltip,
 			   char *target)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->begin_anchor)
 	gvre->begin_anchor(job, href, tooltip, target);
@@ -614,7 +614,7 @@ void gvrender_begin_anchor(GVJ_t * job, char *href, char *tooltip,
 
 void gvrender_end_anchor(GVJ_t * job)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->end_anchor)
 	gvre->end_anchor(job);
@@ -630,7 +630,7 @@ void gvrender_end_anchor(GVJ_t * job)
 
 void gvrender_set_font(GVJ_t * job, char *fontname, double fontsize)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
 	job->style->fontfam = fontname;
@@ -648,7 +648,7 @@ void gvrender_set_font(GVJ_t * job, char *fontname, double fontsize)
 
 void gvrender_textline(GVJ_t * job, pointf p, textline_t * line)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (line->str && line->str[0]) {
 	if (gvre && gvre->textline) {
@@ -671,11 +671,11 @@ void gvrender_textline(GVJ_t * job, pointf p, textline_t * line)
 
 void gvrender_set_pencolor(GVJ_t * job, char *name)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
     color_t *color = &(job->style->pencolor);
 
     if (gvre) {
-	gvrender_resolve_color(job->render_features, name, color);
+	gvrender_resolve_color(job->render.features, name, color);
 	if (gvre->resolve_color)
 	    gvre->resolve_color(job, color);
     }
@@ -691,11 +691,11 @@ void gvrender_set_pencolor(GVJ_t * job, char *name)
 
 void gvrender_set_fillcolor(GVJ_t * job, char *name)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
     color_t *color = &(job->style->fillcolor);
 
     if (gvre) {
-	gvrender_resolve_color(job->render_features, name, color);
+	gvrender_resolve_color(job->render.features, name, color);
 	if (gvre->resolve_color)
 	    gvre->resolve_color(job, color);
     }
@@ -711,7 +711,7 @@ void gvrender_set_fillcolor(GVJ_t * job, char *name)
 
 void gvrender_set_style(GVJ_t * job, char **s)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
     char *line, *p;
     gvstyle_t *style = job->style;
 
@@ -755,7 +755,7 @@ void gvrender_set_style(GVJ_t * job, char **s)
 
 void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry, int filled)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->ellipse) {
 	if (job->style->pen != PEN_NONE) {
@@ -787,7 +787,7 @@ void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry, int filled)
 
 void gvrender_polygon(GVJ_t * job, point * A, int n, int filled)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->polygon) {
 	if (job->style->pen != PEN_NONE) {
@@ -817,7 +817,7 @@ void gvrender_polygon(GVJ_t * job, point * A, int n, int filled)
 void gvrender_beziercurve(GVJ_t * job, pointf * AF, int n,
 			  int arrow_at_start, int arrow_at_end, int filled)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->beziercurve) {
 	if (job->style->pen != PEN_NONE) {
@@ -858,7 +858,7 @@ void gvrender_beziercurve(GVJ_t * job, pointf * AF, int n,
 
 void gvrender_polyline(GVJ_t * job, point * A, int n)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->polyline) {
 	if (job->style->pen != PEN_NONE) {
@@ -887,7 +887,7 @@ void gvrender_polyline(GVJ_t * job, point * A, int n)
 
 void gvrender_comment(GVJ_t * job, char *str)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
     if (!str || !str[0])
 	return;
@@ -908,7 +908,7 @@ void gvrender_comment(GVJ_t * job, char *str)
 void gvrender_user_shape(GVJ_t * job, char *name, point * A, int n,
 			 int filled)
 {
-    gvrender_engine_t *gvre = job->render_engine;
+    gvrender_engine_t *gvre = job->render.engine;
 
 /* temporary hack until client API is FP */
     static pointf *AF;

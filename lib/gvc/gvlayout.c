@@ -34,15 +34,15 @@
 
 int gvlayout_select(GVC_t * gvc, char *layout)
 {
-    gv_plugin_t *plugin;
-    gvplugin_type_t *typeptr;
+    gvplugin_available_t *plugin;
+    gvplugin_installed_t *typeptr;
 
     plugin = gvplugin_load(gvc, API_layout, layout);
     if (plugin) {
 	typeptr = plugin->typeptr;
-	gvc->layout_type = typeptr->type;
-	gvc->layout_engine = (gvlayout_engine_t *) (typeptr->engine);
-	gvc->layout_id = typeptr->id;
+	gvc->layout.type = typeptr->type;
+	gvc->layout.engine = (gvlayout_engine_t *) (typeptr->engine);
+	gvc->layout.id = typeptr->id;
 	return GVRENDER_PLUGIN;
     }
     return NO_SUPPORT;
@@ -50,7 +50,7 @@ int gvlayout_select(GVC_t * gvc, char *layout)
 
 void gvlayout_layout(GVC_t * gvc, graph_t * g)
 {
-    gvlayout_engine_t *gvle = gvc->layout_engine;
+    gvlayout_engine_t *gvle = gvc->layout.engine;
 
     if (gvle && gvle->layout)
 	gvle->layout(g);
@@ -58,7 +58,7 @@ void gvlayout_layout(GVC_t * gvc, graph_t * g)
 
 void gvlayout_cleanup(GVC_t * gvc, graph_t * g)
 {
-    gvlayout_engine_t *gvle = gvc->layout_engine;
+    gvlayout_engine_t *gvle = gvc->layout.engine;
 
     if (gvle && gvle->cleanup)
 	gvle->cleanup(g);

@@ -87,7 +87,7 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
 {
     switch (job->output_lang) {
     case GVRENDER_PLUGIN:
-        job->flags = chkOrder(g) | job->render_features->flags;
+        job->flags = chkOrder(g) | job->render.features->flags;
         break;
     case POSTSCRIPT:
         job->flags = chkOrder(g) | GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES;
@@ -1036,7 +1036,7 @@ static void init_job_margin(GVJ_t *job)
         /* set default margins depending on format */
         switch (job->output_lang) {
         case GVRENDER_PLUGIN:
-            job->margin.x = job->margin.y = job->render_features->default_margin;
+            job->margin.x = job->margin.y = job->render.features->default_margin;
             break;
         case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
         case METAPOST: case FIG: case VTX: case ATTRIBUTED_DOT:
@@ -1060,7 +1060,7 @@ static void init_job_dpi(GVJ_t *job, graph_t *g)
         /* set default margins depending on format */
         switch (job->output_lang) {
         case GVRENDER_PLUGIN:
-            job->dpi = job->render_features->default_dpi;
+            job->dpi = job->render.features->default_dpi;
             break;
         case POSTSCRIPT:
         case SVG:

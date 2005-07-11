@@ -40,8 +40,8 @@ extern "C" {
 
     extern boolean gvplugin_install(GVC_t * gvc, api_t api,
 		    char *typestr, int quality, char *packagename, char *path,
-		    gvplugin_type_t * typeptr);
-    extern gv_plugin_t *gvplugin_load(GVC_t * gvc, api_t api, char *type);
+		    gvplugin_installed_t * typeptr);
+    extern gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *type);
     extern gvplugin_library_t *gvplugin_library_load(char *path);
     extern const char *gvplugin_list(GVC_t * gvc, api_t api, char *str);
     extern api_t gvplugin_api(char *str);

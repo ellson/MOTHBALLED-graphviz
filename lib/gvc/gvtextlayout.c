@@ -33,13 +33,13 @@
 
 int gvtextlayout_select(GVC_t * gvc, char *textlayout)
 {
-    gv_plugin_t *plugin;
-    gvplugin_type_t *typeptr;
+    gvplugin_available_t *plugin;
+    gvplugin_installed_t *typeptr;
 
     plugin = gvplugin_load(gvc, API_textlayout, textlayout);
     if (plugin) {
 	typeptr = plugin->typeptr;
-	gvc->textlayout_engine = (gvtextlayout_engine_t *) (typeptr->engine);
+	gvc->textlayout.engine = (gvtextlayout_engine_t *) (typeptr->engine);
 	return GVRENDER_PLUGIN;  /* FIXME - need more suitable success code */
     }
     return NO_SUPPORT;
@@ -47,7 +47,7 @@ int gvtextlayout_select(GVC_t * gvc, char *textlayout)
 
 double gvtextlayout_width(GVC_t *gvc, textline_t *textline, char *fontname, double fontsize, char *fontpath)
 {
-    gvtextlayout_engine_t *gvte = gvc->textlayout_engine;
+    gvtextlayout_engine_t *gvte = gvc->textlayout.engine;
 
     if (gvte && gvte->width) {
 	gvte->width(textline, fontname, fontsize, fontpath);

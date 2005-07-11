@@ -62,11 +62,11 @@ extern "C" {
 	void *engine;   /* pointer to the jump table for the plugin */
 	void *features; /* pointer to the feature description 
 				void* because type varies by api */
-    } gvplugin_type_t;
+    } gvplugin_installed_t;
 
     typedef struct {
 	api_t api;
-	gvplugin_type_t *types;
+	gvplugin_installed_t *types;
     } gvplugin_api_t;
 
     typedef struct {

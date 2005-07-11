@@ -881,6 +881,6 @@ void config_codegen_builtins(GVC_t * gvc)
 			0,
 			"cg",
 			NULL,
-			(gvplugin_type_t *) p);
+			(gvplugin_installed_t *) p);
 #endif
 }
