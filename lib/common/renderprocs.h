@@ -110,7 +110,6 @@ extern "C" {
     extern void global_def(char *,
 			   Agsym_t * (*fun) (Agraph_t *, char *, char *));
     extern point image_size(graph_t * g, char *shapefile);
-    extern void init_ugraph(graph_t * g);
     extern point invflip_pt(point p, int rankdir);
     extern boolean isPolygon(node_t *);
     extern int late_attr(void *, char *);

@@ -394,67 +394,31 @@ graph_t *next_input_graph(void)
     return g;
 }
 
-void graph_init(graph_t * g)
+/* findCharset:
+ * Check if the charset attribute is defined for the graph and, if
+ * so, return the corresponding internal value. If undefined, return
+ * CHAR_UTF8
+ */
+static int findCharset (graph_t * g)
 {
-    /* initialize the graph */
-    init_ugraph(g);
+    int enc;
+    char* p;
 
-    /* initialize nodes */
-    N_height = agfindattr(g->proto->n, "height");
-    N_width = agfindattr(g->proto->n, "width");
-    N_shape = agfindattr(g->proto->n, "shape");
-    N_color = agfindattr(g->proto->n, "color");
-    N_fillcolor = agfindattr(g->proto->n, "fillcolor");
-    N_style = agfindattr(g->proto->n, "style");
-    N_fontsize = agfindattr(g->proto->n, "fontsize");
-    N_fontname = agfindattr(g->proto->n, "fontname");
-    N_fontcolor = agfindattr(g->proto->n, "fontcolor");
-    N_label = agfindattr(g->proto->n, "label");
-    N_showboxes = agfindattr(g->proto->n, "showboxes");
-    /* attribs for polygon shapes */
-    N_sides = agfindattr(g->proto->n, "sides");
-    N_peripheries = agfindattr(g->proto->n, "peripheries");
-    N_skew = agfindattr(g->proto->n, "skew");
-    N_orientation = agfindattr(g->proto->n, "orientation");
-    N_distortion = agfindattr(g->proto->n, "distortion");
-    N_fixed = agfindattr(g->proto->n, "fixedsize");
-    N_nojustify = agfindattr(g->proto->n, "nojustify");
-    N_layer = agfindattr(g->proto->n, "layer");
-    N_group = agfindattr(g->proto->n, "group");
-    N_comment = agfindattr(g->proto->n, "comment");
-    N_vertices = agfindattr(g->proto->n, "vertices");
-    N_z = agfindattr(g->proto->n, "z");
+    p = late_nnstring(g,agfindattr(g,"charset"),"utf-8");
+    if (!strcasecmp(p,"latin1") || !strcasecmp(p,"ISO-8859-1") ||
+       !strcasecmp(p,"l1") || !strcasecmp(p,"ISO_8859-1") ||
+       !strcasecmp(p,"ISO8859-1") || !strcasecmp(p,"ISO-IR-100"))
+	enc = CHAR_LATIN1; 
+    else if (!strcasecmp(p,"big-5") || !strcasecmp(p,"big5")) 
+	enc = CHAR_BIG5; 
+    else if (!strcasecmp(p,"utf-8"))
+	enc = CHAR_UTF8; 
+    else {
+	agerr(AGWARN, "Unsupported charset \"%s\" - assuming utf-8\n", p);
+	enc = CHAR_UTF8; 
+    }
 
-    /* initialize edges */
-    E_weight = agfindattr(g->proto->e, "weight");
-    E_color = agfindattr(g->proto->e, "color");
-    E_fontsize = agfindattr(g->proto->e, "fontsize");
-    E_fontname = agfindattr(g->proto->e, "fontname");
-    E_fontcolor = agfindattr(g->proto->e, "fontcolor");
-    E_label = agfindattr(g->proto->e, "label");
-    E_label_float = agfindattr(g->proto->e, "labelfloat");
-    /* vladimir */
-    E_dir = agfindattr(g->proto->e, "dir");
-    E_arrowhead = agfindattr(g->proto->e, "arrowhead");
-    E_arrowtail = agfindattr(g->proto->e, "arrowtail");
-    E_headlabel = agfindattr(g->proto->e, "headlabel");
-    E_taillabel = agfindattr(g->proto->e, "taillabel");
-    E_labelfontsize = agfindattr(g->proto->e, "labelfontsize");
-    E_labelfontname = agfindattr(g->proto->e, "labelfontname");
-    E_labelfontcolor = agfindattr(g->proto->e, "labelfontcolor");
-    E_labeldistance = agfindattr(g->proto->e, "labeldistance");
-    E_labelangle = agfindattr(g->proto->e, "labelangle");
-    /* end vladimir */
-    E_minlen = agfindattr(g->proto->e, "minlen");
-    E_showboxes = agfindattr(g->proto->e, "showboxes");
-    E_style = agfindattr(g->proto->e, "style");
-    E_decorate = agfindattr(g->proto->e, "decorate");
-    E_arrowsz = agfindattr(g->proto->e, "arrowsize");
-    E_constr = agfindattr(g->proto->e, "constraint");
-    E_layer = agfindattr(g->proto->e, "layer");
-    E_comment = agfindattr(g->proto->e, "comment");
-    E_tailclip = agfindattr(g->proto->e, "tailclip");
-    E_headclip = agfindattr(g->proto->e, "headclip");
+    return enc;
 }
 
 /* setRatio:
@@ -494,62 +458,7 @@ static void setRatio(graph_t * g)
     }
 }
 
-/* charsetToStr:
- * Given an internal charset value, return a canonical string
- * representation.
- */
-char*
-charsetToStr (int c)
-{
-   char* s;
-
-   switch (c) {
-   case CHAR_UTF8 :
-	s = "UTF-8";
-	break;
-   case CHAR_LATIN1 :
-	s = "ISO-8859-1";
-	break;
-   case CHAR_BIG5 :
-	s = "BIG-5";
-	break;
-   default :
-	agerr(AGERR, "Unsupported charset value %d\n", c);
-	s = "UTF-8";
-	break;
-   }
-   return s;
-}
-
-/* findCharset:
- * Check if the charset attribute is defined for the graph and, if
- * so, return the corresponding internal value. If undefined, return
- * CHAR_UTF8
- */
-static int
-findCharset (graph_t * g)
-{
-    int enc;
-    char* p;
-
-    p = late_nnstring(g,agfindattr(g,"charset"),"utf-8");
-    if (!strcasecmp(p,"latin1") || !strcasecmp(p,"ISO-8859-1") ||
-       !strcasecmp(p,"l1") || !strcasecmp(p,"ISO_8859-1") ||
-       !strcasecmp(p,"ISO8859-1") || !strcasecmp(p,"ISO-IR-100"))
-	enc = CHAR_LATIN1; 
-    else if (!strcasecmp(p,"big-5") || !strcasecmp(p,"big5")) 
-	enc = CHAR_BIG5; 
-    else if (!strcasecmp(p,"utf-8"))
-	enc = CHAR_UTF8; 
-    else {
-	agerr(AGWARN, "Unsupported charset \"%s\" - assuming utf-8\n", p);
-	enc = CHAR_UTF8; 
-    }
-
-    return enc;
-}
-
-void init_ugraph(graph_t * g)
+static void init_ugraph(graph_t * g)
 {
     char *p;
     double xf;
@@ -653,6 +562,97 @@ void free_ugraph(graph_t * g)
 {
     free(GD_drawing(g));
     GD_drawing(g) = NULL;
+}
+
+
+void graph_init(graph_t * g)
+{
+    /* initialize the graph */
+    init_ugraph(g);
+
+    /* initialize nodes */
+    N_height = agfindattr(g->proto->n, "height");
+    N_width = agfindattr(g->proto->n, "width");
+    N_shape = agfindattr(g->proto->n, "shape");
+    N_color = agfindattr(g->proto->n, "color");
+    N_fillcolor = agfindattr(g->proto->n, "fillcolor");
+    N_style = agfindattr(g->proto->n, "style");
+    N_fontsize = agfindattr(g->proto->n, "fontsize");
+    N_fontname = agfindattr(g->proto->n, "fontname");
+    N_fontcolor = agfindattr(g->proto->n, "fontcolor");
+    N_label = agfindattr(g->proto->n, "label");
+    N_showboxes = agfindattr(g->proto->n, "showboxes");
+    /* attribs for polygon shapes */
+    N_sides = agfindattr(g->proto->n, "sides");
+    N_peripheries = agfindattr(g->proto->n, "peripheries");
+    N_skew = agfindattr(g->proto->n, "skew");
+    N_orientation = agfindattr(g->proto->n, "orientation");
+    N_distortion = agfindattr(g->proto->n, "distortion");
+    N_fixed = agfindattr(g->proto->n, "fixedsize");
+    N_nojustify = agfindattr(g->proto->n, "nojustify");
+    N_layer = agfindattr(g->proto->n, "layer");
+    N_group = agfindattr(g->proto->n, "group");
+    N_comment = agfindattr(g->proto->n, "comment");
+    N_vertices = agfindattr(g->proto->n, "vertices");
+    N_z = agfindattr(g->proto->n, "z");
+
+    /* initialize edges */
+    E_weight = agfindattr(g->proto->e, "weight");
+    E_color = agfindattr(g->proto->e, "color");
+    E_fontsize = agfindattr(g->proto->e, "fontsize");
+    E_fontname = agfindattr(g->proto->e, "fontname");
+    E_fontcolor = agfindattr(g->proto->e, "fontcolor");
+    E_label = agfindattr(g->proto->e, "label");
+    E_label_float = agfindattr(g->proto->e, "labelfloat");
+    /* vladimir */
+    E_dir = agfindattr(g->proto->e, "dir");
+    E_arrowhead = agfindattr(g->proto->e, "arrowhead");
+    E_arrowtail = agfindattr(g->proto->e, "arrowtail");
+    E_headlabel = agfindattr(g->proto->e, "headlabel");
+    E_taillabel = agfindattr(g->proto->e, "taillabel");
+    E_labelfontsize = agfindattr(g->proto->e, "labelfontsize");
+    E_labelfontname = agfindattr(g->proto->e, "labelfontname");
+    E_labelfontcolor = agfindattr(g->proto->e, "labelfontcolor");
+    E_labeldistance = agfindattr(g->proto->e, "labeldistance");
+    E_labelangle = agfindattr(g->proto->e, "labelangle");
+    /* end vladimir */
+    E_minlen = agfindattr(g->proto->e, "minlen");
+    E_showboxes = agfindattr(g->proto->e, "showboxes");
+    E_style = agfindattr(g->proto->e, "style");
+    E_decorate = agfindattr(g->proto->e, "decorate");
+    E_arrowsz = agfindattr(g->proto->e, "arrowsize");
+    E_constr = agfindattr(g->proto->e, "constraint");
+    E_layer = agfindattr(g->proto->e, "layer");
+    E_comment = agfindattr(g->proto->e, "comment");
+    E_tailclip = agfindattr(g->proto->e, "tailclip");
+    E_headclip = agfindattr(g->proto->e, "headclip");
+}
+
+/* charsetToStr:
+ * Given an internal charset value, return a canonical string
+ * representation.
+ */
+char*
+charsetToStr (int c)
+{
+   char* s;
+
+   switch (c) {
+   case CHAR_UTF8 :
+	s = "UTF-8";
+	break;
+   case CHAR_LATIN1 :
+	s = "ISO-8859-1";
+	break;
+   case CHAR_BIG5 :
+	s = "BIG-5";
+	break;
+   default :
+	agerr(AGERR, "Unsupported charset value %d\n", c);
+	s = "UTF-8";
+	break;
+   }
+   return s;
 }
 
 /* do_graph_label:
