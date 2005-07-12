@@ -71,9 +71,6 @@ static void twopi_init_node_edge(graph_t * g)
 
 void twopi_init_graph(graph_t * g)
 {
-    UseRankdir = FALSE;
-    graph_init(g);
-    GD_drawing(g)->engine = TWOPI;
     /* GD_ndim(g) = late_int(g,agfindattr(g,"dim"),2,2); */
     Ndim = GD_ndim(g) = 2;	/* The algorithm only makes sense in 2D */
     twopi_init_node_edge(g);
@@ -168,9 +165,6 @@ static void twopi_cleanup_edge(edge_t * e)
 static void twopi_cleanup_graph(graph_t * g)
 {
     free(GD_neato_nlist(g));
-    free_ugraph(g);
-    free_label(GD_label(g));
-    memset(&(g->u), 0, sizeof(Agraphinfo_t));
 }
 
 void twopi_cleanup(graph_t * g)

@@ -245,7 +245,7 @@ static void init_graph(Agraph_t * g, boolean fill)
 {
     int d;
 
-    graph_init(g);
+    graph_init(g, FALSE);
     d = late_int(g, agfindattr(g, "dim"), 2, 2);
     if (d != 2) {
 	fprintf(stderr, "Error: graph %s has dim = %d (!= 2)\n", g->name,
@@ -670,7 +670,6 @@ static Agraph_t **readGraphs(int *cp)
 
     /* set various state values */
     PSinputscale = POINTS_PER_INCH;
-    UseRankdir = FALSE;
     Nop = 2;
     State = GVSPLINES;
 

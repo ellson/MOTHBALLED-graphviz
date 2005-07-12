@@ -458,7 +458,7 @@ static void setRatio(graph_t * g)
     }
 }
 
-static void init_ugraph(graph_t * g)
+void graph_init(graph_t * g, boolean use_rankdir)
 {
     char *p;
     double xf;
@@ -493,7 +493,7 @@ static void init_ugraph(graph_t * g)
      * The result is confused output, so we turn it off unless requested.
      */
     GD_rankdir(g) = RANKDIR_TB;
-    if (UseRankdir && (p = agget(g, "rankdir"))) {
+    if (use_rankdir && (p = agget(g, "rankdir"))) {
 	if (streq(p, "LR"))
 	    GD_rankdir(g) = RANKDIR_LR;
 	else if (streq(p, "BT"))
@@ -556,19 +556,6 @@ static void init_ugraph(graph_t * g)
     Nodesep = 1.0;
     Nodefactor = 1.0;
     Initial_dist = MYHUGE;
-}
-
-void free_ugraph(graph_t * g)
-{
-    free(GD_drawing(g));
-    GD_drawing(g) = NULL;
-}
-
-
-void graph_init(graph_t * g)
-{
-    /* initialize the graph */
-    init_ugraph(g);
 
     /* initialize nodes */
     N_height = agfindattr(g->proto->n, "height");
@@ -626,6 +613,14 @@ void graph_init(graph_t * g)
     E_comment = agfindattr(g->proto->e, "comment");
     E_tailclip = agfindattr(g->proto->e, "tailclip");
     E_headclip = agfindattr(g->proto->e, "headclip");
+}
+
+void graph_cleanup(graph_t *g)
+{
+    free(GD_drawing(g));
+    GD_drawing(g) = NULL;
+    free_label(GD_label(g));
+    memset(&(g->u), 0, sizeof(Agraphinfo_t));
 }
 
 /* charsetToStr:

@@ -82,9 +82,6 @@ static void circular_init_node_edge(graph_t * g)
 
 void circo_init_graph(graph_t * g)
 {
-    UseRankdir = FALSE;
-    graph_init(g);
-    GD_drawing(g)->engine = CIRCULAR;
     /* GD_ndim(g) = late_int(g,agfindattr(g,"dim"),2,2); */
     Ndim = GD_ndim(g) = 2;	/* The algorithm only makes sense in 2D */
     circular_init_node_edge(g);
@@ -335,14 +332,6 @@ static void circular_cleanup_edge(edge_t * e)
     memset(&(e->u), 0, sizeof(Agedgeinfo_t));
 }
 
-static void circular_cleanup_graph(graph_t * g)
-{
-    free(GD_neato_nlist(g));
-    free_ugraph(g);
-    free_label(GD_label(g));
-    memset(&(g->u), 0, sizeof(Agraphinfo_t));
-}
-
 void circo_cleanup(graph_t * g)
 {
     node_t *n;
@@ -360,5 +349,5 @@ void circo_cleanup(graph_t * g)
 	}
 	circular_cleanup_node(n);
     }
-    circular_cleanup_graph(g);
+    free(GD_neato_nlist(g));
 }

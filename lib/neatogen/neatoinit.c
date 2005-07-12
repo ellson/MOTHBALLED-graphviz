@@ -174,9 +174,6 @@ void neato_cleanup_graph(graph_t * g)
 {
     if (Nop || (Pack < 0))
 	free_scan_graph(g);
-    free_ugraph(g);
-    free_label(GD_label(g));
-    memset(&(g->u), 0, sizeof(Agraphinfo_t));
 }
 
 void neato_cleanup(graph_t * g)
@@ -587,9 +584,6 @@ int init_nop(Agraph_t * g)
 
 void neato_init_graphn(Agraph_t * g, int dfltdim)
 {
-    UseRankdir = FALSE;
-    graph_init(g);
-    GD_drawing(g)->engine = NEATO;
     GD_ndim(g) = late_int(g, agfindattr(g, "dim"), dfltdim, 2);
     Ndim = GD_ndim(g) = MIN(GD_ndim(g), MAXDIM);
     neato_init_node_edge(g);

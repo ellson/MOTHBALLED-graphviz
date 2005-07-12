@@ -186,9 +186,6 @@ dot_cleanup_graph(graph_t * g)
 	    free(GD_rank(g)[i].v);
 	free(GD_rank(g));
     }
-    free_ugraph(g);
-    free_label(GD_label(g));
-    memset(&(g->u), 0, sizeof(Agraphinfo_t));
 }
 
 /* delete the layout (but retain the underlying graph) */
@@ -205,15 +202,6 @@ void dot_cleanup(graph_t * g)
 	dot_cleanup_node(n);
     }
     dot_cleanup_graph(g);
-}
-
-void 
-dot_init_graph(Agraph_t * g)
-{
-    UseRankdir = TRUE;
-    graph_init(g);
-    GD_drawing(g)->engine = DOT;
-    dot_init_node_edge(g);
 }
 
 #ifdef DEBUG
@@ -252,7 +240,7 @@ dumpRanks (graph_t * g)
 
 void dot_layout(Agraph_t * g)
 {
-    dot_init_graph(g);
+    dot_init_node_edge(g);
     dot_rank(g);
     dot_mincross(g);
     /* dumpRanks (g); */

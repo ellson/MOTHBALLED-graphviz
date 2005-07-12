@@ -278,7 +278,6 @@ extern "C" {
 	adjmatrix_t *flat;
     } rank_t;
 
-    typedef enum engine_e { DOT, NEATO, TWOPI, FDP, CIRCULAR } engine_t;
     typedef enum { R_NONE =
 	    0, R_VALUE, R_FILL, R_COMPRESS, R_AUTO, R_EXPAND } ratio_t;
 
@@ -289,7 +288,6 @@ extern "C" {
 	point margin, page, size;
 	boolean filled, landscape, centered;
 	ratio_t ratio_kind;
-	engine_t engine;
     } layout_t;
 
 /* for "record" shapes */
@@ -354,6 +352,7 @@ extern "C" {
 	int ht1, ht2;		/* below and above extremal ranks */
 	unsigned short flags;
 	void *alg;
+	GVC_t *gvc;		/* context for "globals" over multiple graphs */
 
 #ifndef DOT_ONLY
 	/* to place nodes */

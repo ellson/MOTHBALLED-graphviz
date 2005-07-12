@@ -67,7 +67,8 @@ extern "C" {
     extern Agnode_t *dequeue(nodequeue *);
     extern void do_graph_label(graph_t * sg);
     extern point dotneato_closest(splines * spl, point p);
-    extern void graph_init(graph_t * g);
+    extern void graph_init(graph_t * g, boolean use_rankdir);
+    extern void graph_cleanup(graph_t * g);
     extern void dotneato_initialize(GVC_t * gvc, int, char **);
     extern void dotneato_usage(int);
     extern void dotneato_postprocess(Agraph_t *, nodesizefn_t);
@@ -101,7 +102,6 @@ extern "C" {
     extern void free_line(textline_t *);
     extern void free_label(textlabel_t *);
     extern void free_queue(nodequeue *);
-    extern void free_ugraph(graph_t *);
     extern char *gd_alternate_fontlist(char *font);
     extern char *gd_textsize(textline_t * textline, char *fontname,
 			     double fontsz, char **fontpath);

@@ -28,9 +28,14 @@
 #include "const.h"
 #include "types.h"
 #include "macros.h"
+#include "graph.h"
+#include "cdt.h"
 
 #include "gvplugin_layout.h"
 #include "gvc.h"
+
+extern void graph_init(graph_t *g, boolean use_rankdir);
+extern void graph_cleanup(graph_t *g);
 
 int gvlayout_select(GVC_t * gvc, char *layout)
 {
@@ -43,7 +48,8 @@ int gvlayout_select(GVC_t * gvc, char *layout)
 	gvc->layout.type = typeptr->type;
 	gvc->layout.engine = (gvlayout_engine_t *) (typeptr->engine);
 	gvc->layout.id = typeptr->id;
-	return GVRENDER_PLUGIN;
+	gvc->layout.features = (gvlayout_features_t *) (typeptr->features);
+	return GVRENDER_PLUGIN;  /* FIXME - need better return code */
     }
     return NO_SUPPORT;
 }
@@ -51,6 +57,9 @@ int gvlayout_select(GVC_t * gvc, char *layout)
 void gvlayout_layout(GVC_t * gvc, graph_t * g)
 {
     gvlayout_engine_t *gvle = gvc->layout.engine;
+
+    graph_init(g, gvc->layout.features->flags & LAYOUT_USES_RANKDIR);
+    g->u.gvc = gvc;
 
     if (gvle && gvle->layout)
 	gvle->layout(g);
@@ -62,4 +71,6 @@ void gvlayout_cleanup(GVC_t * gvc, graph_t * g)
 
     if (gvle && gvle->cleanup)
 	gvle->cleanup(g);
+
+    graph_cleanup(g);
 }

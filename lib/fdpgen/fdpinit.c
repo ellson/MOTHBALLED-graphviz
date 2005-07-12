@@ -177,9 +177,6 @@ static void fdp_cleanup_graph(graph_t * g)
     cleanup_subgs(g);
     free(GD_neato_nlist(g));
     free(GD_alg(g));
-    free_ugraph(g);
-    free_label(GD_label(g));
-    memset(&(g->u), 0, sizeof(Agraphinfo_t));
 }
 
 void fdp_cleanup(graph_t * g)

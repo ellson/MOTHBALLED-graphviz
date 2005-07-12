@@ -21,8 +21,6 @@
 
 #include "dot.h"
 
-extern void dot_init_node_edge(graph_t * g);
-
 #define	NSUB	9		/* number of subdivisions, re-aiming splines */
 #define	CHUNK	128		/* in building list of edges */
 
@@ -616,9 +614,6 @@ static struct {
  * graph's settings for certain geometry parameters, and
  * declares all node and edge attributes used in the original
  * graph.
- * NOTE: We do not call dot_init_graph, to avoid the call to
- * graph_init and init_ugraph. Just the necessary pieces of the
- * latter are handled here. 
  */
 static graph_t*
 cloneGraph (graph_t* g)
@@ -629,7 +624,6 @@ cloneGraph (graph_t* g)
     
     agraphattr(auxg, "rank", "");
     GD_drawing(auxg) = NEW(layout_t);
-    GD_drawing(auxg)->engine = DOT;
     GD_drawing(auxg)->quantum = GD_drawing(g)->quantum; 
     GD_drawing(auxg)->dpi = GD_drawing(g)->dpi;
 

@@ -72,6 +72,12 @@ extern "C" {
 	int flags;
     } gvdevice_features_t;
 
+#define LAYOUT_USES_RANKDIR (1<<0)
+
+    typedef struct {
+	int flags;
+    } gvlayout_features_t;
+
     /* active plugin headers */
     typedef struct gvplugin_active_device_s {
         gvdevice_engine_t *engine;
@@ -82,6 +88,7 @@ extern "C" {
     typedef struct gvplugin_active_layout_s {
         gvlayout_engine_t *engine;
         int id;
+        gvlayout_features_t *features;
         char *type;
     } gvplugin_active_layout_t;
 
