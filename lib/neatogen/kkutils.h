@@ -40,8 +40,7 @@ extern "C" {
     void compute_apsp_artifical_weights(vtx_data * graph, int n,
 					DistType ** (&Dij));
 
-    void quicksort_place(double *place, int *ordering, int first,
-			 int last);
+    void quicksort_place(double *place, int *ordering, int first, int last);
     void free_graph(vtx_data * (&graph));
 #else
     extern void fill_neighbors_vec_unweighted(vtx_data *, int vtx,
@@ -53,6 +52,7 @@ extern "C" {
     extern DistType **compute_apsp_artifical_weights(vtx_data *, int);
     extern double distance_kD(double **, int, int, int);
     extern void quicksort_place(double *, int *, int, int);
+    extern void quicksort_placef(float *, int *, int, int);
     extern void compute_new_weights(vtx_data * graph, int n);
     extern void restore_old_weights(vtx_data * graph, int n,
 				    float *old_weights);
