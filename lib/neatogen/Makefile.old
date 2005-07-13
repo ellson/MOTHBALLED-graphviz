@@ -18,7 +18,8 @@ HDRS = adjust.h edges.h geometry.h heap.h hedges.h info.h mem.h \
        neato.h neatoprocs.h poly.h simple.h site.h voronoi.h
 
 NOBJS  = stress.o kkutils.o pca.o matrix_ops.o embed_graph.o dijkstra.o \
-       conjgrad.o closest.o bfs.o 
+       conjgrad.o closest.o bfs.o compute_hierarchy.o opt_arrangement.o \
+       smart_ini_x.o constrained_majorization.o quad_prog_solve.o
 OBJS = adjust.o circuit.o edges.o find_ints.o geometry.o heap.o hedges.o \
        info.o neatoinit.o intersect.o legal.o lu.o matinv.o memory.o poly.o \
        printvis.o site.o solve.o neatosplines.o stuff.o voronoi.o \
