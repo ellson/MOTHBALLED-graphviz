@@ -1,3 +1,30 @@
+/* $Id$ $Revision$ */
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
+
+/*
+ * This program generates an image where each pixel is the difference between
+ * the corresponding pixel in each of the two source images.  Thus, if the source images
+ * are the same the resulting image will be black, otherwise it will have regions of
+ * non-black where the images differ.
+ *
+ * Currently only supports PNG images.
+ *
+ * John Ellson <ellson@research.att.com>
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <gd.h>
