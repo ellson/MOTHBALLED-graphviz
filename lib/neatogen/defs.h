@@ -18,8 +18,6 @@
 extern "C" {
 #endif
 
-
-
 #ifndef _DEFS_H_
 #define _DEFS_H_
 
@@ -32,6 +30,7 @@ extern "C" {
 	int *edges;
 	float *ewgts;
 	Style *styles;
+	float *edists; /* directed dist reflecting the direction of the edge */
     };
 
     typedef int DistType;	/* must be signed!! */
@@ -90,6 +89,9 @@ extern "C" {
 	node_t *np;		/* original node */
 #ifdef USE_STYLES
 	Style *styles;
+#endif
+#ifdef DIGCOLA
+	float *edists; /* directed dist reflecting the direction of the edge */
 #endif
     } vtx_data;
 

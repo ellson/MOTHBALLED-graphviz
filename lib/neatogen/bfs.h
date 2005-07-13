@@ -18,8 +18,6 @@
 extern "C" {
 #endif
 
-
-
 #ifndef _BFS_H_
 #define _BFS_H_
 

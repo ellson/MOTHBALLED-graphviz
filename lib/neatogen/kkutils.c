@@ -177,6 +177,30 @@ double distance_kD(double **coords, int dim, int i, int j)
     return sqrt(sum);
 }
 
+static float* fvals;
+static int
+fcmpf (int* ip1, int* ip2)
+{
+    float d1 = fvals[*ip1];
+    float d2 = fvals[*ip2];
+    if (d1 < d2) return -1;
+    else if (d1 > d2) return 1;
+    else return 0;
+}
+
+void quicksort_placef(float *place, int *ordering, int first, int last)
+{
+    if (first < last) {
+	fvals = place;
+	qsort(ordering+first, last-first+1, sizeof(ordering[0]), (qsort_cmpf)fcmpf);
+    }
+}
+
+/* quicksort_place:
+ * For now, we keep the current implementation for stability, but
+ * we should consider replacing this with an implementation similar to
+ * quicksort_placef above.
+ */
 void quicksort_place(double *place, int *ordering, int first, int last)
 {
     if (first < last) {
