@@ -676,11 +676,18 @@ double vectors_inner_productf(int n, float *vector1, float *vector2)
 }
 
 /* inline */
-void set_vector_val(int n, float val, float *result)
+void set_vector_val(int n, double val, double *result)
 {
     int i;
     for (i = 0; i < n; i++)
 	result[i] = val;
+}
+
+/* inline */
+void set_vector_valf(int n, float val, float * result) {
+    int i;
+    for (i=0; i<n; i++)
+        result[i]=val;
 }
 
 /* inline */

@@ -86,9 +86,6 @@ extern double drand48(void);
 #define max_nodes_in_mem 18000
 #endif
 
- /* conjugate gradient related: */
-#define tolerance_cg 1e-3
-
  /* relevant when using sparse distance matrix not within subspace */
 #define smooth_pivots true
 
@@ -206,7 +203,8 @@ compute_stress1(double **coords, dist_data * distances, int dim, int n)
  * a position, use it.
  * Return true if some node is fixed.
  */
-static int initLayout(vtx_data * graph, int n, int dim, double **coords)
+int
+initLayout(vtx_data * graph, int n, int dim, double **coords)
 {
     node_t *np;
     double *xp;
@@ -245,7 +243,8 @@ static int initLayout(vtx_data * graph, int n, int dim, double **coords)
     return pinned;
 }
 
-static float *circuitModel(vtx_data * graph, int nG)
+float*
+circuitModel(vtx_data * graph, int nG)
 {
     int i, j, e, rv, count;
     float *Dij = N_NEW(nG * (nG + 1) / 2, float);
@@ -1362,7 +1361,7 @@ static float *compute_weighted_apsp_packed(vtx_data * graph, int n)
 /* compute_apsp_packed:
  * Assumes integral weights > 0.
  */
-static float *compute_apsp_packed(vtx_data * graph, int n)
+float *compute_apsp_packed(vtx_data * graph, int n)
 {
     int i, j, count;
     float *Dij = N_NEW(n * (n + 1) / 2, float);
@@ -1386,8 +1385,7 @@ static float *compute_apsp_packed(vtx_data * graph, int n)
 
 #define max(x,y) ((x)>(y)?(x):(y))
 
-static float *compute_apsp_artifical_weights_packed(vtx_data * graph,
-						    int n)
+float *compute_apsp_artifical_weights_packed(vtx_data * graph, int n)
 {
     /* compute all-pairs-shortest-path-length while weighting the graph */
     /* so high-degree nodes are distantly located */
@@ -1707,11 +1705,11 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	for (count = 0, i = 0; i < n - 1; i++) {
 	    len = n - i - 1;
 	    /* init 'dist_accumulator' with zeros */
-	    set_vector_val(len, 0, dist_accumulator);
+	    set_vector_valf(len, 0, dist_accumulator);
 
 	    /* put into 'dist_accumulator' all squared distances between 'i' and 'i'+1,...,'n'-1 */
 	    for (k = 0; k < dim; k++) {
-		set_vector_val(len, coords[k][i], tmp_coords);
+		set_vector_valf(len, coords[k][i], tmp_coords);
 		vectors_mult_additionf(len, tmp_coords, -1,
 				       coords[k] + i + 1);
 		square_vec(len, tmp_coords);

@@ -26,6 +26,9 @@
 #include "neato.h"
 #include "pack.h"
 #include "stress.h"
+#ifdef DIGCOLA
+#include "digcola.h"
+#endif
 #include "kkutils.h"
 #include "pointset.h"
 #include <ctype.h>
@@ -628,6 +631,10 @@ static int neatoMode(graph_t * g)
 	    mode = MODE_KK;
 	else if (streq(str, "major"))
 	    mode = MODE_MAJOR;
+#ifdef DIGCOLA
+	else if (streq(str, "hier"))
+	    mode = MODE_HIER;
+#endif
 	else
 	    agerr(AGWARN,
 		  "Illegal value %s for attribute \"mode\" in graph %s - ignored\n",
@@ -654,6 +661,57 @@ static int checkEdge(PointMap * pm, edge_t * ep, int idx)
     return insertPM(pm, i, j, idx);
 }
 
+#ifdef DIGCOLA
+/* dfsCycle:
+ * dfs for breaking cycles in vtxdata
+ */
+static void
+dfsCycle (vtx_data* graph, int i)
+{
+    node_t* np = graph[i].np;
+    node_t* hp;
+    ND_mark(np) = TRUE;
+    ND_onstack(np) = TRUE;
+    int j, e, f;
+
+    for (e = 1; e < graph[i].nedges; e++) {
+	if (graph[i].edists[e] == 1.0) continue;  /* in edge */
+	j = graph[i].edges[e];
+	hp = graph[j].np;
+	if (ND_onstack(hp)) {  /* back edge: reverse it */
+	    graph[i].edists[e] = 1.0;
+	    for (f = 1; (f < graph[j].nedges) &&(graph[j].edges[f] != i); f++) ;
+	    assert (f < graph[j].nedges);
+	    graph[j].edists[f] = -1.0;
+        }
+	else if (ND_mark(hp) == FALSE) dfsCycle(graph, j);
+
+    }
+    ND_onstack(np) = FALSE;
+}
+
+/* acyclic:
+ * Do a dfs of the vtx_data, looking for cycles, reversing edges.
+ */
+static void
+acyclic (vtx_data* graph, int nv)
+{
+    int i;
+    node_t* np;
+
+    for (i = 0; i < nv; i++) {
+	np = graph[i].np;
+	ND_mark(np) = FALSE;
+	ND_onstack(np) = FALSE;
+    }
+    for (i = 0; i < nv; i++) {
+	if (ND_mark(graph[i].np)) continue;
+	dfsCycle (graph, i);	
+    }
+
+}
+#endif
+
 /* makeGraphData:
  * Create sparse graph representation via arrays.
  * Each node is represented by a vtx_data.
@@ -663,10 +721,16 @@ static int checkEdge(PointMap * pm, edge_t * ep, int idx)
  * By convention, graph[i].edges[0] == i.
  * The values graph[i].ewgts[0] and graph[i].eweights[0] are left undefined.
  *
- * In construct graph from g, we neglect loops. We track multiedges (ignoring
+ * In constructing graph from g, we neglect loops. We track multiedges (ignoring
  * direction). Edge weights are additive; the final edge length is the max.
+ *
+ * If direction is used, we set the edists field, -1 for tail, +1 for head. 
+ * graph[i].edists[0] is left undefined. If multiedges exist, the direction
+ * of the first one encountered is used. Finally, a pass is made to guarantee
+ * the graph is acyclic.
+ *
  */
-static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int model)
+static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int model)
 {
     vtx_data *graph;
     int ne = agnedges(g);	/* upper bound */
@@ -675,8 +739,12 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int model)
     node_t *np;
     edge_t *ep;
     float *eweights = NULL;
+#ifdef DIGCOLA
+    float *edists = NULL;
+#endif
     int haveLen;
     int haveWt;
+    int haveDir;
     PointMap *ps = newPM();
     int i, i_nedges, idx;
 
@@ -688,13 +756,21 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int model)
 	haveLen = (agindex(g->root->proto->e, "len") >= 0);
 	haveWt = (E_weight != 0);
     }
+    if (mode == MODE_HIER)
+	haveDir = TRUE;
+    else
+	haveDir = FALSE;
 
     graph = N_GNEW(nv, vtx_data);
     edges = N_GNEW(2 * ne + nv, int);	/* reserve space for self loops */
-    if (haveLen)
+    if (haveLen || haveDir)
 	ewgts = N_GNEW(2 * ne + nv, float);
     if (haveWt)
 	eweights = N_GNEW(2 * ne + nv, float);
+#ifdef DIGCOLA
+    if (haveDir)
+	edists = N_GNEW(2*ne+nv,float);
+#endif
 
     i = 0;
     ne = 0;
@@ -704,7 +780,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int model)
 	assert(ND_id(np) == i);
 	graph[i].np = np;
 	graph[i].edges = edges++;	/* reserve space for the self loop */
-	if (haveLen)
+	if (haveLen || haveDir)
 	    graph[i].ewgts = ewgts++;
 	else
 	    graph[i].ewgts = NULL;
@@ -712,6 +788,13 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int model)
 	    graph[i].eweights = eweights++;
 	else
 	    graph[i].eweights = NULL;
+#ifdef DIGCOLA
+	if (haveDir) {
+	    graph[i].edists = edists++;
+	}
+	else
+	    graph[i].edists = NULL;
+#endif
 	i_nedges = 1;		/* one for the self */
 
 	for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np)) {
@@ -735,6 +818,13 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int model)
 		    *eweights++ = ED_factor(ep);
 		if (haveLen)
 		    *ewgts++ = ED_dist(ep);
+		else if (haveDir)
+		    *ewgts++ = 1.0;
+#ifdef DIGCOLA
+		if (haveDir) {
+		    *edists++ = (np == ep->head ? 1.0 : -1.0);
+		}
+#endif
 		i_nedges++;
 	    }
 	}
@@ -746,6 +836,12 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int model)
 #endif
 	i++;
     }
+#ifdef DIGCOLA
+    if (haveDir) {
+    /* Make graph acyclic */
+	acyclic (graph, nv);
+    }
+#endif
 
     ne /= 2;			/* every edge is counted twice */
 
@@ -919,7 +1015,7 @@ majorization(graph_t * g, int nv, int mode, int model, int dim, int steps)
     vtx_data *gp;
     int init;
 
-    init = checkStart(g, nv, INIT_RANDOM);
+    init = checkStart(g, nv, (mode == MODE_HIER ? INIT_SELF : INIT_RANDOM));
     coords = N_GNEW(dim, double *);
     coords[0] = N_GNEW(nv * dim, double);
     for (i = 1; i < Ndim; i++) {
@@ -931,12 +1027,20 @@ majorization(graph_t * g, int nv, int mode, int model, int dim, int steps)
 	fprintf(stderr, "convert graph: ");
 	start_timer();
     }
-    gp = makeGraphData(g, nv, &ne, model);
+    gp = makeGraphData(g, nv, &ne, mode, model);
     if (Verbose) {
 	fprintf(stderr, "%d nodes %.2f sec\n", nv, elapsed_sec());
     }
 
-    stress_majorization_kD_mkernel(gp, nv, ne, coords, Ndim,
+#ifdef DIGCOLA
+    if (mode == MODE_HIER) {
+	double lgap = late_double(g, agfindattr(g, "levelsgap"), 0.0, -MAXDOUBLE);
+	stress_majorization_with_hierarchy(gp, nv, ne, coords, Ndim,
+				   (init == INIT_SELF), model, MaxIter, lgap);
+    }
+    else
+#endif
+	stress_majorization_kD_mkernel(gp, nv, ne, coords, Ndim,
 				   (init == INIT_SELF), model, MaxIter);
 
     /* store positions back in nodes */
@@ -958,7 +1062,7 @@ static void subset_model(Agraph_t * G, int nG)
     DistType **Dij;
     vtx_data *gp;
 
-    gp = makeGraphData(G, nG, &ne, MODEL_SUBSET);
+    gp = makeGraphData(G, nG, &ne, MODE_KK, MODEL_SUBSET);
     Dij = compute_apsp_artifical_weights(gp, nG);
     for (i = 0; i < nG; i++) {
 	for (j = 0; j < nG; j++) {

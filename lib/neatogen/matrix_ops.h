@@ -91,7 +91,8 @@ extern "C" {
     extern void copy_vectorf(int n, float *source, float *dest);
     extern double vectors_inner_productf(int n, float *vector1,
 					 float *vector2);
-    extern void set_vector_val(int n, float val, float *result);
+    extern void set_vector_val(int n, double val, double *result);
+    extern void set_vector_valf(int n, float val, float * result);
     extern double max_absf(int n, float *vector);
     extern void square_vec(int n, float *vec);
     extern void invert_vec(int n, float *vec);

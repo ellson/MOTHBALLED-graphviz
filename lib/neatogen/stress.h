@@ -24,6 +24,8 @@ extern "C" {
 
 #include "defs.h"
 
+#define tolerance_cg 1e-3
+
 #define DFLT_ITERATIONS 200
 
 #define DFLT_TOLERANCE 1e-4
@@ -54,6 +56,10 @@ extern "C" {
 					      int maxi	/* max iterations */
 	);
 
+extern float *compute_apsp_packed(vtx_data * graph, int n);
+extern float *compute_apsp_artifical_weights_packed(vtx_data * graph, int n);
+extern float* circuitModel(vtx_data * graph, int nG);
+extern int initLayout(vtx_data * graph, int n, int dim, double **coords);
 
 #endif
 
