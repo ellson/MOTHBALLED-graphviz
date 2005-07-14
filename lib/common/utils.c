@@ -1145,13 +1145,20 @@ box flip_rec_box(box b, point p)
 
 /* addLabelBB:
  */
-static box addLabelBB(box bb, textlabel_t * lp)
+static box addLabelBB(box bb, textlabel_t * lp, boolean flipxy)
 {
-    int width = ROUND(lp->dimen.x);
-    int height = ROUND(lp->dimen.y);
+    int width, height;
     point p = lp->p;
     int min, max;
 
+    if (flipxy) {
+	height = ROUND(lp->dimen.x);
+	width = ROUND(lp->dimen.y);
+    }
+    else {
+	width = ROUND(lp->dimen.x);
+	height = ROUND(lp->dimen.y);
+    }
     min = p.x - width / 2;
     max = p.x + width / 2;
     if (min < bb.LL.x)
@@ -1175,7 +1182,7 @@ static box addLabelBB(box bb, textlabel_t * lp)
  */
 void updateBB(graph_t * g, textlabel_t * lp)
 {
-    GD_bb(g) = addLabelBB(GD_bb(g), lp);
+    GD_bb(g) = addLabelBB(GD_bb(g), lp, GD_flip(g));
 }
 
 /* compute_bb:
@@ -1221,7 +1228,7 @@ void compute_bb(graph_t * g)
 		}
 	    }
 	    if (ED_label(e) && ED_label(e)->set)
-		bb = addLabelBB(bb, ED_label(e));
+		bb = addLabelBB(bb, ED_label(e), GD_flip(g));
 	}
     }
 

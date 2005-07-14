@@ -341,7 +341,10 @@ void dot_splines(graph_t * g)
 	    n = e0->tail;
 	    r = ND_rank(n);
 	    if (r == GD_maxrank(g)) {
-		sizey = ND_coord_i(GD_rank(g)[r-1].v[0]).y - ND_coord_i(n).y;
+		if (r > 0)
+		    sizey = ND_coord_i(GD_rank(g)[r-1].v[0]).y - ND_coord_i(n).y;
+		else
+		    sizey = ND_ht_i(n);
 	    }
 	    else if (r == GD_minrank(g)) {
 		sizey = ND_coord_i(n).y - ND_coord_i(GD_rank(g)[r+1].v[0]).y;
@@ -352,6 +355,11 @@ void dot_splines(graph_t * g)
 		sizey = MIN(upy, dwny);
 	    }
 	    makeSelfEdge(P, edges, ind, cnt, sd.Multisep, sizey, &sinfo);
+	    for (i = 0; i < cnt; i++) {
+		e = edges[ind+i];
+		if (ED_label(e))
+		    updateBB(g, ED_label(e));
+	    }
 	}
 	else if (ND_rank(e0->tail) == ND_rank(e0->head)) {
 	    make_flat_edge(&sd, P, edges, ind, cnt);
@@ -856,8 +864,10 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
 	for (j = 0; j <  auxbz->size; j++) {
 	    bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
         }
-	if (ED_label(e))
+	if (ED_label(e)) {
 	    ED_label(e)->p = transform(ED_label(auxe)->p, del, GD_flip(g));
+	    updateBB(g, ED_label(e));
+	}
     }
 
     cleanupCloneGraph (auxg);
