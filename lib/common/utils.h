@@ -32,6 +32,88 @@ extern "C" {
     extern int strncasecmp(const char *s1, const char *s2, unsigned int n);
 #endif
 
+    extern void *zmalloc(size_t);
+    extern void *zrealloc(void *, size_t, size_t, size_t);
+    extern void *gmalloc(size_t);
+    extern void *grealloc(void *, size_t);
+
+    extern nodequeue *new_queue(int);
+    extern void free_queue(nodequeue *);
+    extern void enqueue(nodequeue *, Agnode_t *);
+    extern Agnode_t *dequeue(nodequeue *);
+
+    extern int late_attr(void *, char *);
+    extern int late_int(void *, Agsym_t *, int, int);
+    extern double late_double(void *, Agsym_t *, double, double);
+    extern char *late_nnstring(void *, Agsym_t *, char *);
+    extern char *late_string(void *, Agsym_t *, char *);
+    extern int late_bool(void *, Agsym_t *, int);
+
+    extern Agnode_t *UF_find(Agnode_t *);
+    extern Agnode_t *UF_union(Agnode_t *, Agnode_t *);
+    extern void UF_remove(Agnode_t *, Agnode_t *);
+    extern void UF_singleton(Agnode_t *);
+    extern void UF_setname(Agnode_t *, Agnode_t *);
+
+    extern point pointof(int, int);
+    extern pointf cvt2ptf(point);
+    extern point cvt2pt(pointf);
+    extern point add_points(point, point);
+    extern pointf add_pointfs(pointf, pointf);
+    extern point sub_points(point, point);
+    extern pointf sub_pointfs(pointf, pointf);
+    extern point exch_xy(point p);
+    extern pointf exch_xyf(pointf p);
+    extern point flip_pt(point p, int rankdir);
+    extern pointf flip_ptf(pointf p, int rankdir);
+    extern point invflip_pt(point p, int rankdir);
+
+    extern box boxof(int llx, int lly, int urx, int ury);
+    extern boxf boxfof(double llx, double lly, double urx, double ury);
+    extern box mkbox(point, point);
+    extern boxf mkboxf(pointf, pointf);
+    extern box box_bb(box, box);
+    extern boxf boxf_bb(boxf, boxf);
+    extern box box_intersect(box, box);
+    extern boxf boxf_intersect(boxf, boxf);
+    extern boolean box_overlap(box, box);
+    extern boolean boxf_overlap(boxf, boxf);
+    extern boolean box_contains(box, box);
+    extern boolean boxf_contains(boxf, boxf);
+    extern box flip_rec_box(box b, point p);
+
+    extern pointf Bezier(pointf *, int, double, pointf *, pointf *);
+    extern point dotneato_closest(splines * spl, point p);
+    extern point neato_closest(splines * spl, point p);
+    extern point spline_at_y(splines * spl, int y);
+
+    extern char *username(void);
+    extern char *safefile(char *shapefilename);
+    extern void cat_libfile(FILE *, char **, char **);
+
+    extern int mapbool(char *);
+    extern int maptoken(char *, char **, int *);
+
+    extern void toggle(int);
+    extern int test_toggle(void);
+
+    extern void common_init_node(node_t * n);
+    extern int common_init_edge(edge_t * e);
+
+    extern void updateBB(graph_t * g, textlabel_t * lp);
+    extern void compute_bb(Agraph_t *);
+    extern boolean overlap_node(node_t *n, boxf b);
+    extern boolean overlap_label(textlabel_t *lp, boxf b);
+    extern boolean overlap_edge(edge_t *e, boxf b);
+
+    extern int processClusterEdges(graph_t * g);
+    extern void undoClusterEdges(graph_t * g);
+    extern attrsym_t* safe_dcl(graph_t*, void*, char*, char*,
+             attrsym_t * (*fun) (Agraph_t *, char *, char *));
+
+    extern char *latin1ToUTF8(char *);
+    extern char* utf8ToLatin1 (char* ins);
+
 #ifdef __cplusplus
 }
 #endif
