@@ -20,7 +20,7 @@ XLIBS = -L$(LOC_LIB)/pathplan -lpathplan \
         -L$(LOC_LIB)/gd -lgd \
         $(EXTLIB_LIB) $(EXPAT_LIB) -lm
 
-PLUGS = -L$(LOC_PLUG) -lplugins -L$(LOC_PLUG)/cairo -lgvplugin_cairo -L$(LOC_PLUG)/layout -lgvplugin_layout -L$(LOC_PLUG)/gd -lgvplugin_gd  -L$(LOC_PLUG)/text -lgvplugin_text
+PLUGS = -L$(LOC_PLUG) -lplugins -L$(LOC_PLUG)/layout -lgvplugin_layout
 
 LIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
        -L$(LOC_LIB)/common -lcommon \
@@ -46,7 +46,8 @@ SHLIBS = twopigen/libtwopi.a dotgen/libdot.a neatogen/libneato.a pack/libpack.a 
 all : dot $(LIBDOTNEATO)
 
 dot : $(OBJS) $(DOTLIBS)
-	$(CSLD) $(LDFLAGS) $(OBJS) $(LIBS) -o dot
+	$(CSLD) $(LDFLAGS) $(OBJS) $(LIBS) -o /tmp/dot
+	mv /tmp/dot dot
 
 dot.o : dot.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) dot.c
