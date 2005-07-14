@@ -464,6 +464,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     double xf;
     static char *rankname[] = { "local", "global", "none", NULL };
     static int rankcode[] = { LOCAL, GLOBAL, NOCLUST, LOCAL };
+    int rankdir;
 
     GD_drawing(g) = NEW(layout_t);
 
@@ -491,16 +492,24 @@ void graph_init(graph_t * g, boolean use_rankdir)
     /* setting rankdir=LR is only defined in dot,
      * but having it set causes shape code and others to use it. 
      * The result is confused output, so we turn it off unless requested.
+     * This effective rankdir is stored in the bottom 2 bits of g->u.rankdir.
+     * Sometimes, the code really needs the graph's rankdir, e.g., neato -n
+     * with record shapes, so we store the real rankdir in the next 2 bits.
      */
-    GD_rankdir(g) = RANKDIR_TB;
-    if (use_rankdir && (p = agget(g, "rankdir"))) {
+    rankdir = RANKDIR_TB;
+    if ((p = agget(g, "rankdir"))) {
 	if (streq(p, "LR"))
-	    GD_rankdir(g) = RANKDIR_LR;
+	    rankdir = RANKDIR_LR;
 	else if (streq(p, "BT"))
-	    GD_rankdir(g) = RANKDIR_BT;
+	    rankdir = RANKDIR_BT;
 	else if (streq(p, "RL"))
-	    GD_rankdir(g) = RANKDIR_RL;
+	    rankdir = RANKDIR_RL;
     }
+    if (use_rankdir)
+	g->u.rankdir = (rankdir << 2) || rankdir;
+    else
+	g->u.rankdir = (rankdir << 2);
+
     xf = late_double(g, agfindattr(g, "nodesep"), DEFAULT_NODESEP,
 		     MIN_NODESEP);
     GD_nodesep(g) = POINTS(xf);

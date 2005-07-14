@@ -1662,17 +1662,21 @@ static void record_init(node_t * n)
 {
     field_t *info;
     point ul, sz;
-    int len;
+    int flip, len;
     char *textbuf;		/* temp buffer for storing labels */
     int sides = BOTTOM | RIGHT | TOP | LEFT; 
 
+    if (Nop)
+	flip = NOT(GD_realflip(n->graph));
+    else
+	flip = NOT(GD_flip(n->graph));
     reclblp = ND_label(n)->text;
     len = strlen(reclblp);
     textbuf = N_NEW(len + 1, char);
-    if (!(info = parse_reclbl(n,NOT(GD_flip(n->graph)), TRUE, textbuf))) {
+    if (!(info = parse_reclbl(n, flip, TRUE, textbuf))) {
 	agerr(AGERR, "bad label format %s\n", ND_label(n)->text);
 	reclblp = "\\N";
-	info = parse_reclbl(n, NOT(GD_flip(n->graph)), TRUE, textbuf);
+	info = parse_reclbl(n, flip, TRUE, textbuf);
     }
     free(textbuf);
 

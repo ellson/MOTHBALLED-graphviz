@@ -418,8 +418,10 @@ extern "C" {
 #define GD_installed(g) (g)->u.installed
 #define GD_label(g) (g)->u.label
 #define GD_leader(g) (g)->u.leader
-#define GD_rankdir(g) (g)->u.rankdir
+#define GD_rankdir(g) ((g)->u.rankdir & 0x3)
 #define GD_flip(g) (GD_rankdir(g) & 1)
+#define GD_realrankdir(g) ((g)->u.rankdir >> 2)
+#define GD_realflip(g) (GD_realrankdir(g) & 1)
 #define GD_ln(g) (g)->u.ln
 #define GD_maxrank(g) (g)->u.maxrank
 #define GD_maxset(g) (g)->u.maxset
