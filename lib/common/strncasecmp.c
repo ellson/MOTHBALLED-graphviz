@@ -14,10 +14,10 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include <utils.h>
 
 #ifndef HAVE_STRNCASECMP
 
+#include <render.h>
 #include <string.h>
 #include <ctype.h>
 
