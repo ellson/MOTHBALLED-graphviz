@@ -1,188 +1,303 @@
-4c4
-< 	graph [bb="0,0,1900,2578"];
----
-> 	graph [bb="0,0,1842,2499"];
-11,22c11,22
-< 		0000 [label=M, peripheries=1, distortion="", pos="40,116", width="0.75", height="0.50"];
-< 		0001 [label=MMMMMMMMMM, peripheries=1, distortion="", pos="161,116", width="2.11", height="0.50"];
-< 		0002 [label="M\nM\nM\nM\nM\nM", peripheries=1, distortion="", pos="282,116", width="0.75", height="1.61"];
-< 		0003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, distortion="", pos="420,116", width="2.58", height="2.04"];
-< 		0010 [label=M, distortion="", pos="562,116", width="0.86", height="0.61"];
-< 		0011 [label=MMMMMMMMMM, distortion="", pos="691,116", width="2.22", height="0.61"];
-< 		0012 [label="M\nM\nM\nM\nM\nM", distortion="", pos="820,116", width="0.86", height="1.72"];
-< 		0013 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", distortion="", pos="966,116", width="2.69", height="2.15"];
-< 		0110 [label=M, pos="1113,116", width="0.89", height="0.61"];
-< 		0111 [label=MMMMMMMMMM, pos="1248,116", width="2.36", height="0.61"];
-< 		0112 [label="M\nM\nM\nM\nM\nM", pos="1383,116", width="0.89", height="1.72"];
-< 		0113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1536,116", width="2.86", height="2.15"];
----
-> 		0000 [label=M, peripheries=1, distortion="", pos="39,112", width="0.75", height="0.50"];
-> 		0001 [label=MMMMMMMMMM, peripheries=1, distortion="", pos="157,112", width="2.03", height="0.50"];
-> 		0002 [label="M\nM\nM\nM\nM\nM", peripheries=1, distortion="", pos="275,112", width="0.75", height="1.61"];
-> 		0003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, distortion="", pos="410,112", width="2.50", height="2.04"];
-> 		0010 [label=M, distortion="", pos="549,112", width="0.86", height="0.61"];
-> 		0011 [label=MMMMMMMMMM, distortion="", pos="675,112", width="2.14", height="0.61"];
-> 		0012 [label="M\nM\nM\nM\nM\nM", distortion="", pos="801,112", width="0.86", height="1.72"];
-> 		0013 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", distortion="", pos="944,112", width="2.61", height="2.15"];
-> 		0110 [label=M, pos="1088,112", width="0.89", height="0.61"];
-> 		0111 [label=MMMMMMMMMM, pos="1220,112", width="2.28", height="0.61"];
-> 		0112 [label="M\nM\nM\nM\nM\nM", pos="1352,112", width="0.89", height="1.72"];
-> 		0113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1502,112", width="2.78", height="2.15"];
-30,37c30,37
-< 		3000 [label=M, peripheries=1, orientation=0, pos="40,515", width="1.11", height="0.94"];
-< 		3001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="251,515", width="4.25", height="0.94"];
-< 		3002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="464,515", width="1.17", height="3.24"];
-< 		3003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="710,515", width="5.17", height="4.08"];
-< 		3110 [label=M, pos="962,515", width="1.33", height="1.12"];
-< 		3111 [label=MMMMMMMMMM, pos="1205,515", width="4.92", height="1.06"];
-< 		3112 [label="M\nM\nM\nM\nM\nM", pos="1447,515", width="1.31", height="3.71"];
-< 		3113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1706,515", width="5.39", height="4.26"];
----
-> 		3000 [label=M, peripheries=1, orientation=0, pos="39,499", width="1.08", height="0.94"];
-> 		3001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="243,499", width="4.08", height="0.94"];
-> 		3002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="449,499", width="1.14", height="3.22"];
-> 		3003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="688,499", width="5.00", height="4.08"];
-> 		3110 [label=M, pos="933,499", width="1.31", height="1.12"];
-> 		3111 [label=MMMMMMMMMM, pos="1168,499", width="4.72", height="1.06"];
-> 		3112 [label="M\nM\nM\nM\nM\nM", pos="1402,499", width="1.28", height="3.71"];
-> 		3113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1654,499", width="5.22", height="4.26"];
-45,52c45,52
-< 		4000 [label=M, peripheries=1, orientation=0, pos="40,960", width="0.75", height="0.50"];
-< 		4001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="156,960", width="1.97", height="0.50"];
-< 		4002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="272,960", width="0.75", height="1.44"];
-< 		4003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="388,960", width="1.97", height="1.44"];
-< 		4110 [label=M, pos="511,960", width="0.94", height="0.81"];
-< 		4111 [label=MMMMMMMMMM, pos="689,960", width="3.50", height="0.78"];
-< 		4112 [label="M\nM\nM\nM\nM\nM", pos="867,960", width="0.94", height="2.61"];
-< 		4113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1057,960", width="3.83", height="3.03"];
----
-> 		4000 [label=M, peripheries=1, orientation=0, pos="39,932", width="0.75", height="0.50"];
-> 		4001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="152,932", width="1.89", height="0.50"];
-> 		4002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="265,932", width="0.75", height="1.44"];
-> 		4003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="378,932", width="1.89", height="1.44"];
-> 		4110 [label=M, pos="497,932", width="0.92", height="0.82"];
-> 		4111 [label=MMMMMMMMMM, pos="669,932", width="3.36", height="0.78"];
-> 		4112 [label="M\nM\nM\nM\nM\nM", pos="841,932", width="0.92", height="2.61"];
-> 		4113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1025,932", width="3.69", height="3.03"];
-60,67c60,67
-< 		5000 [label=M, peripheries=1, orientation=0, pos="40,1319", width="0.75", height="0.58"];
-< 		5001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="179,1319", width="2.61", height="0.58"];
-< 		5002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="318,1319", width="0.75", height="2.00"];
-< 		5003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="478,1319", width="3.19", height="2.53"];
-< 		5110 [label=M, pos="643,1319", width="0.89", height="0.71"];
-< 		5111 [label=MMMMMMMMMM, pos="798,1319", width="2.92", height="0.69"];
-< 		5112 [label="M\nM\nM\nM\nM\nM", pos="952,1319", width="0.86", height="2.24"];
-< 		5113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1121,1319", width="3.33", height="2.65"];
----
-> 		5000 [label=M, peripheries=1, orientation=0, pos="39,1280", width="0.75", height="0.58"];
-> 		5001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="175,1280", width="2.53", height="0.58"];
-> 		5002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="311,1280", width="0.75", height="1.99"];
-> 		5003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="467,1280", width="3.08", height="2.53"];
-> 		5110 [label=M, pos="628,1280", width="0.89", height="0.71"];
-> 		5111 [label=MMMMMMMMMM, pos="779,1280", width="2.81", height="0.69"];
-> 		5112 [label="M\nM\nM\nM\nM\nM", pos="929,1280", width="0.86", height="2.22"];
-> 		5113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1094,1280", width="3.22", height="2.65"];
-75,82c75,82
-< 		6000 [label=M, peripheries=1, orientation=0, pos="40,1648", width="0.75", height="0.54"];
-< 		6001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="173,1648", width="2.44", height="0.54"];
-< 		6002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="306,1648", width="0.75", height="1.86"];
-< 		6003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="458,1648", width="2.97", height="2.36"];
-< 		6110 [label=M, pos="614,1648", width="0.86", height="0.67"];
-< 		6111 [label=MMMMMMMMMM, pos="755,1648", width="2.56", height="0.65"];
-< 		6112 [label="M\nM\nM\nM\nM\nM", pos="896,1648", width="0.86", height="2.04"];
-< 		6113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1056,1648", width="3.08", height="2.47"];
----
-> 		6000 [label=M, peripheries=1, orientation=0, pos="39,1599", width="0.75", height="0.54"];
-> 		6001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="169,1599", width="2.36", height="0.54"];
-> 		6002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="299,1599", width="0.75", height="1.86"];
-> 		6003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="448,1599", width="2.89", height="2.36"];
-> 		6110 [label=M, pos="601,1599", width="0.86", height="0.67"];
-> 		6111 [label=MMMMMMMMMM, pos="739,1599", width="2.47", height="0.65"];
-> 		6112 [label="M\nM\nM\nM\nM\nM", pos="877,1599", width="0.86", height="2.04"];
-> 		6113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1034,1599", width="3.00", height="2.47"];
-90,97c90,97
-< 		7000 [label=M, peripheries=1, orientation=0, pos="40,1962", width="0.75", height="0.53"];
-< 		7001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="170,1962", width="2.36", height="0.53"];
-< 		7002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="300,1962", width="0.75", height="1.79"];
-< 		7003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="448,1962", width="2.86", height="2.26"];
-< 		7110 [label=M, pos="600,1962", width="0.86", height="0.64"];
-< 		7111 [label=MMMMMMMMMM, pos="742,1962", width="2.58", height="0.64"];
-< 		7112 [label="M\nM\nM\nM\nM\nM", pos="884,1962", width="0.86", height="1.96"];
-< 		7113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1041,1962", width="3.00", height="2.39"];
----
-> 		7000 [label=M, peripheries=1, orientation=0, pos="39,1904", width="0.75", height="0.53"];
-> 		7001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="165,1904", width="2.25", height="0.53"];
-> 		7002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="291,1904", width="0.75", height="1.79"];
-> 		7003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="436,1904", width="2.78", height="2.26"];
-> 		7110 [label=M, pos="585,1904", width="0.86", height="0.64"];
-> 		7111 [label=MMMMMMMMMM, pos="723,1904", width="2.47", height="0.64"];
-> 		7112 [label="M\nM\nM\nM\nM\nM", pos="861,1904", width="0.86", height="1.96"];
-> 		7113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1014,1904", width="2.89", height="2.39"];
-105,112c105,112
-< 		8000 [label=M, peripheries=1, orientation=0, pos="40,2268", width="0.75", height="0.51"];
-< 		8001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="168,2268", width="2.31", height="0.51"];
-< 		8002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="296,2268", width="0.75", height="1.75"];
-< 		8003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="441,2268", width="2.78", height="2.21"];
-< 		8110 [label=M, pos="590,2268", width="0.86", height="0.62"];
-< 		8111 [label=MMMMMMMMMM, pos="730,2268", width="2.53", height="0.62"];
-< 		8112 [label="M\nM\nM\nM\nM\nM", pos="870,2268", width="0.86", height="1.90"];
-< 		8113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="1024,2268", width="2.92", height="2.33"];
----
-> 		8000 [label=M, peripheries=1, orientation=0, pos="39,2202", width="0.75", height="0.51"];
-> 		8001 [label=MMMMMMMMMM, peripheries=1, orientation=0, pos="163,2202", width="2.19", height="0.51"];
-> 		8002 [label="M\nM\nM\nM\nM\nM", peripheries=1, orientation=0, pos="287,2202", width="0.75", height="1.75"];
-> 		8003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", peripheries=1, orientation=0, pos="429,2202", width="2.69", height="2.21"];
-> 		8110 [label=M, pos="575,2202", width="0.86", height="0.62"];
-> 		8111 [label=MMMMMMMMMM, pos="711,2202", width="2.42", height="0.62"];
-> 		8112 [label="M\nM\nM\nM\nM\nM", pos="847,2202", width="0.86", height="1.90"];
-> 		8113 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM", pos="998,2202", width="2.83", height="2.33"];
-122,145c122,145
-< 		9000 [label=M, peripheries=1, orientation=0, pos="40,2513", width="0.86", height="0.83"];
-< 		9001 [label=M, peripheries=1, orientation="45.", pos="126,2513", width="1.03", height="1.03"];
-< 		9002 [label=M, peripheries=1, orientation="90.", pos="211,2513", width="0.83", height="0.86"];
-< 		9003 [label=M, peripheries=1, orientation="135.", pos="296,2513", width="1.03", height="1.03"];
-< 		9004 [label=M, peripheries=1, orientation="180.", pos="382,2513", width="0.86", height="0.83"];
-< 		9005 [label=M, peripheries=1, orientation="225.", pos="468,2513", width="1.03", height="1.03"];
-< 		9006 [label=M, peripheries=1, orientation="270.", pos="553,2513", width="0.83", height="0.86"];
-< 		9007 [label=M, peripheries=1, pos="638,2513", width="1.03", height="1.03"];
-< 		9010 [label=M, orientation=0, pos="729,2513", width="1.00", height="0.94"];
-< 		9011 [label=M, orientation="45.", pos="827,2513", width="1.22", height="1.22"];
-< 		9012 [label=M, orientation="90.", pos="923,2513", width="0.94", height="1.01"];
-< 		9013 [label=M, orientation="135.", pos="1019,2513", width="1.22", height="1.22"];
-< 		9014 [label=M, orientation="180.", pos="1117,2513", width="1.00", height="0.94"];
-< 		9015 [label=M, orientation="225.", pos="1215,2513", width="1.22", height="1.22"];
-< 		9016 [label=M, orientation="270.", pos="1311,2513", width="0.94", height="1.01"];
-< 		9017 [label=M, pos="1407,2513", width="1.22", height="1.22"];
-< 	}
-< 	3000 -> 0000 [pos="e,40,134 40,498 40,435 40,222 40,144"];
-< 	4000 -> 3000 [pos="e,40,549 40,942 40,876 40,655 40,559"];
-< 	5000 -> 4000 [pos="e,40,978 40,1302 40,1244 40,1059 40,988"];
-< 	6000 -> 5000 [pos="e,40,1340 40,1628 40,1574 40,1418 40,1350"];
-< 	7000 -> 6000 [pos="e,40,1668 40,1945 40,1894 40,1743 40,1678"];
-< 	8000 -> 7000 [pos="e,40,1981 40,2249 40,2198 40,2054 40,1991"];
-< 	9000 -> 8000 [pos="e,40,2286 40,2483 40,2436 40,2344 40,2296"];
----
-> 		9000 [label=M, peripheries=1, orientation=0, pos="39,2437", width="0.83", height="0.81"];
-> 		9001 [label=M, peripheries=1, orientation="45.", pos="123,2437", width="1.00", height="1.00"];
-> 		9002 [label=M, peripheries=1, orientation="90.", pos="206,2437", width="0.81", height="0.83"];
-> 		9003 [label=M, peripheries=1, orientation="135.", pos="289,2437", width="1.00", height="1.00"];
-> 		9004 [label=M, peripheries=1, orientation="180.", pos="373,2437", width="0.83", height="0.81"];
-> 		9005 [label=M, peripheries=1, orientation="225.", pos="457,2437", width="1.00", height="1.00"];
-> 		9006 [label=M, peripheries=1, orientation="270.", pos="540,2437", width="0.81", height="0.83"];
-> 		9007 [label=M, peripheries=1, pos="623,2437", width="1.00", height="1.00"];
-> 		9010 [label=M, orientation=0, pos="712,2437", width="0.97", height="0.92"];
-> 		9011 [label=M, orientation="45.", pos="807,2437", width="1.17", height="1.18"];
-> 		9012 [label=M, orientation="90.", pos="900,2437", width="0.92", height="0.99"];
-> 		9013 [label=M, orientation="135.", pos="993,2437", width="1.17", height="1.18"];
-> 		9014 [label=M, orientation="180.", pos="1088,2437", width="0.97", height="0.92"];
-> 		9015 [label=M, orientation="225.", pos="1183,2437", width="1.17", height="1.18"];
-> 		9016 [label=M, orientation="270.", pos="1276,2437", width="0.92", height="0.99"];
-> 		9017 [label=M, pos="1369,2437", width="1.17", height="1.18"];
-> 	}
-> 	3000 -> 0000 [pos="e,39,130 39,482 39,421 39,216 39,140"];
-> 	4000 -> 3000 [pos="e,39,533 39,914 39,850 39,637 39,543"];
-> 	5000 -> 4000 [pos="e,39,950 39,1263 39,1207 39,1030 39,960"];
-> 	6000 -> 5000 [pos="e,39,1301 39,1579 39,1525 39,1377 39,1311"];
-> 	7000 -> 6000 [pos="e,39,1619 39,1887 39,1837 39,1692 39,1629"];
-> 	8000 -> 7000 [pos="e,39,1923 39,2183 39,2133 39,1994 39,1933"];
-> 	9000 -> 8000 [pos="e,39,2220 39,2408 39,2363 39,2275 39,2230"];
+%!PS-Adobe-2.0
+%%Creator: dot version 2.3 (Mon Mar 14 15:09:49 EST 2005)
+%%For: (erg) Emden Gansner
+%%Title: G
+%%Pages: (atend)
+%%BoundingBox: 0 0 233 183
+%%EndComments
+save
+%%BeginProlog
+/DotDict 200 dict def
+DotDict begin
+
+/setupLatin1 {
+mark
+/EncodingVector 256 array def
+ EncodingVector 0
+
+ISOLatin1Encoding 0 255 getinterval putinterval
+EncodingVector 45 /hyphen put
+
+% Set up ISO Latin 1 character encoding
+/starnetISO {
+        dup dup findfont dup length dict begin
+        { 1 index /FID ne { def }{ pop pop } ifelse
+        } forall
+        /Encoding EncodingVector def
+        currentdict end definefont
+} def
+/Times-Roman starnetISO def
+/Times-Italic starnetISO def
+/Times-Bold starnetISO def
+/Times-BoldItalic starnetISO def
+/Helvetica starnetISO def
+/Helvetica-Oblique starnetISO def
+/Helvetica-Bold starnetISO def
+/Helvetica-BoldOblique starnetISO def
+/Courier starnetISO def
+/Courier-Oblique starnetISO def
+/Courier-Bold starnetISO def
+/Courier-BoldOblique starnetISO def
+cleartomark
+} bind def
+
+%%BeginResource: procset graphviz 0 0
+/coord-font-family /Times-Roman def
+/default-font-family /Times-Roman def
+/coordfont coord-font-family findfont 8 scalefont def
+
+/InvScaleFactor 1.0 def
+/set_scale {
+	dup 1 exch div /InvScaleFactor exch def
+	dup scale
+} bind def
+
+% styles
+/solid { [] 0 setdash } bind def
+/dashed { [9 InvScaleFactor mul dup ] 0 setdash } bind def
+/dotted { [1 InvScaleFactor mul 6 InvScaleFactor mul] 0 setdash } bind def
+/invis {/fill {newpath} def /stroke {newpath} def /show {pop newpath} def} bind def
+/bold { 2 setlinewidth } bind def
+/filled { } bind def
+/unfilled { } bind def
+/rounded { } bind def
+/diagonals { } bind def
+
+% hooks for setting color 
+/nodecolor { sethsbcolor } bind def
+/edgecolor { sethsbcolor } bind def
+/graphcolor { sethsbcolor } bind def
+/nopcolor {pop pop pop} bind def
+
+/beginpage {	% i j npages
+	/npages exch def
+	/j exch def
+	/i exch def
+	/str 10 string def
+	npages 1 gt {
+		gsave
+			coordfont setfont
+			0 0 moveto
+			(\() show i str cvs show (,) show j str cvs show (\)) show
+		grestore
+	} if
+} bind def
+
+/set_font {
+	findfont exch
+	scalefont setfont
+} def
+
+% draw aligned label in bounding box aligned to current point
+/alignedtext {			% width adj text
+	/text exch def
+	/adj exch def
+	/width exch def
+	gsave
+		width 0 gt {
+			text stringwidth pop adj mul 0 rmoveto
+		} if
+		[] 0 setdash
+		text show
+	grestore
+} def
+
+/boxprim {				% xcorner ycorner xsize ysize
+		4 2 roll
+		moveto
+		2 copy
+		exch 0 rlineto
+		0 exch rlineto
+		pop neg 0 rlineto
+		closepath
+} bind def
+
+/ellipse_path {
+	/ry exch def
+	/rx exch def
+	/y exch def
+	/x exch def
+	matrix currentmatrix
+	newpath
+	x y translate
+	rx ry scale
+	0 0 1 0 360 arc
+	setmatrix
+} bind def
+
+/endpage { showpage } bind def
+/showpage { } def
+
+/layercolorseq
+	[	% layer color sequence - darkest to lightest
+		[0 0 0]
+		[.2 .8 .8]
+		[.4 .8 .8]
+		[.6 .8 .8]
+		[.8 .8 .8]
+	]
+def
+
+/layerlen layercolorseq length def
+
+/setlayer {/maxlayer exch def /curlayer exch def
+	layercolorseq curlayer 1 sub layerlen mod get
+	aload pop sethsbcolor
+	/nodecolor {nopcolor} def
+	/edgecolor {nopcolor} def
+	/graphcolor {nopcolor} def
+} bind def
+
+/onlayer { curlayer ne {invis} if } def
+
+/onlayers {
+	/myupper exch def
+	/mylower exch def
+	curlayer mylower lt
+	curlayer myupper gt
+	or
+	{invis} if
+} def
+
+/curlayer 0 def
+
+%%EndResource
+%%EndProlog
+%%BeginSetup
+14 default-font-family set_font
+1 setmiterlimit
+% /arrowlength 10 def
+% /arrowwidth 5 def
+
+% make sure pdfmark is harmless for PS-interpreters other than Distiller
+/pdfmark where {pop} {userdict /pdfmark /cleartomark load put} ifelse
+% make '<<' and '>>' safe on PS Level 1 devices
+/languagelevel where {pop languagelevel}{1} ifelse
+2 lt {
+    userdict (<<) cvn ([) cvn load put
+    userdict (>>) cvn ([) cvn load put
+} if
+
+%%EndSetup
+%%Page: 1 1
+%%PageBoundingBox: 36 36 197 147
+%%PageOrientation: Portrait
+gsave
+0 0 233 183 boxprim clip newpath
+36 36 translate
+0 0 1 beginpage
+1.0000 set_scale
+0 0 translate 0 rotate
+0.000 0.000 0.000 graphcolor
+14.00 /Times-Roman set_font
+% Node29
+gsave 10 dict begin
+newpath 48 74 moveto
+110 74 lineto
+110 110 lineto
+48 110 lineto
+closepath
+stroke
+gsave 10 dict begin
+56 87 moveto
+(Node29)
+[9.84 6.96 6.96 6.24 6.96 6.96]
+xshow
+end grestore
+end grestore
+% Node29->Node29
+newpath 110 79 moveto
+120 79 128 83 128 92 curveto
+128 98 125 101 120 103 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 119 100 moveto
+110 105 lineto
+120 106 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 119 100 moveto
+110 105 lineto
+120 106 lineto
+closepath
+stroke
+end grestore
+gsave 10 dict begin
+132 87 moveto 8.0 -0.5 (v) alignedtext
+end grestore
+% Node27
+gsave 10 dict begin
+35 18 35 18 ellipse_path
+stroke
+gsave 10 dict begin
+12 13 moveto
+(Node27)
+[9.84 6.96 6.96 6.24 6.72 6.96]
+xshow
+end grestore
+end grestore
+% Node29->Node27
+newpath 68 74 moveto
+63 65 56 54 50 44 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 53 42 moveto
+45 35 lineto
+47 45 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 53 42 moveto
+45 35 lineto
+47 45 lineto
+closepath
+stroke
+end grestore
+% Node26
+gsave 10 dict begin
+124 18 36 18 ellipse_path
+stroke
+gsave 10 dict begin
+101 13 moveto
+(Node26)
+[9.84 6.96 6.96 6.24 6.96 6.96]
+xshow
+end grestore
+end grestore
+% Node29->Node26
+newpath 90 74 moveto
+95 65 102 54 108 44 curveto
+stroke
+gsave 10 dict begin
+solid
+1 setlinewidth
+0.000 0.000 0.000 edgecolor
+newpath 111 45 moveto
+113 35 lineto
+105 42 lineto
+closepath
+fill
+0.000 0.000 0.000 edgecolor
+newpath 111 45 moveto
+113 35 lineto
+105 42 lineto
+closepath
+stroke
+end grestore
+endpage
+showpage
+grestore
+%%PageTrailer
+%%EndPage: 1
+%%Trailer
+%%Pages: 1
+end
+restore
+%%EOF
