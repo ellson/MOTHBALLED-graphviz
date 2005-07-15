@@ -14,7 +14,7 @@ AM_CPPFLAGS = \
 noinst_HEADERS = adjust.h edges.h geometry.h heap.h hedges.h info.h mem.h \
 	neato.h poly.h neatoprocs.h simple.h site.h voronoi.h \
 	bfs.h closest.h conjgrad.h defs.h dijkstra.h embed_graph.h kkutils.h \
-	matrix_ops.h pca.h stress.h quad_prog_solver.h
+	matrix_ops.h pca.h stress.h quad_prog_solver.h digcola.h
 noinst_LTLIBRARIES = libneatogen.la
 
 libneatogen_la_SOURCES = adjust.c circuit.c edges.c find_ints.c geometry.c \
