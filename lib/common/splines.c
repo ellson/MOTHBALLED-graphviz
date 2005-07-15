@@ -360,6 +360,15 @@ void add_box(path * P, box b)
  * such that the last one ends has the smallest LL.y and its LL.y is above
  * the bottom of the rank (rank.ht1).
  * 
+ * For flat edges, we assume endp->sidemask has been set. For regular
+ * edges, we set this, but it doesn't appear to be needed any more.
+ * 
+ * In many cases, we tweak the x or y coordinate of P->start.p by 1.
+ * This is because of a problem in the path routing code. If the starting
+ * point actually lies on the polygon, in some cases, the router gets
+ * confused and routes the path outside the polygon. So, the offset ensures
+ * the starting point is in the polygon.
+ *
  * FIX: Creating the initial boxes only really works for rankdir=TB and
  * rankdir=LR. For the others, we rely on compassPort flipping the side
  * and then assume that the node shape has top-bottom symmetry. Since we
@@ -404,27 +413,13 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     if ((et == REGULAREDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_tail_port(e).side))) {
 	edge_t* orig;
 	box b0, b = endp->nb;
-	switch (side) {
-	case LEFT:
-	    b.UR.x = P->start.p.x;
-	    b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
-	    b.UR.y = P->start.p.y;
-	    endp->boxes[0] = b;
-	    endp->boxn = 1;
-	    break;
-	case RIGHT:
-	    b.LL.x = P->start.p.x;
-	    b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
-	    b.UR.y = P->start.p.y;
-	    endp->boxes[0] = b;
-	    endp->boxn = 1;
-	    break;
-	case TOP:
-	    if (ND_coord_i(e->head).x < 2*ND_coord_i(n).x - endp->np.x) {
+	if (side & TOP) {
+	    endp->sidemask = TOP;
+	    if (P->start.p.x < ND_coord_i(n).x) { /* go left */
 		b0.LL.x = b.LL.x - 1;
 		/* b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2; */
 		b0.LL.y = P->start.p.y;
-		b0.UR.x = P->start.p.x;
+		b0.UR.x = b.UR.x;
 		b0.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2 + GD_ranksep(n->graph)/2;
 		b.UR.x = ND_coord_i(n).x - ND_lw_i(n) - 2;
 		b.UR.y = b0.LL.y;
@@ -434,7 +429,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[1] = b;
 	    }
 	    else {
-		b0.LL.x = P->start.p.x;
+		b0.LL.x = b.LL.x;
 		b0.LL.y = P->start.p.y;
 		/* b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2; */
 		b0.UR.x = b.UR.x+1;
@@ -446,58 +441,50 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
 	    } 
+	    P->start.p.y += 1;
 	    endp->boxn = 2;
-	    break;
-	case BOTTOM:
+	}
+	else if (side & BOTTOM) {
+	    endp->sidemask = BOTTOM;
 	    b.UR.y = MAX(b.UR.y,P->start.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    break;
+	    P->start.p.y -= 1;
+	}
+	else if (side & LEFT) {
+	    endp->sidemask = LEFT;
+	    b.UR.x = P->start.p.x;
+	    b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+	    b.UR.y = P->start.p.y;
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    P->start.p.x -= 1;
+	}
+	else {
+	    endp->sidemask = RIGHT;
+	    b.LL.x = P->start.p.x;
+	    b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+	    b.UR.y = P->start.p.y;
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    P->start.p.x += 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == orig->tail)
 	    ED_tail_port(orig).clip = FALSE;
 	else
 	    ED_head_port(orig).clip = FALSE;
-	endp->sidemask = side;
 	return;
     }
     if ((et == FLATEDGE) && ((side = ED_tail_port(e).side))) {
 	box b0, b = endp->nb;
 	edge_t* orig;
-	switch (side) {
-	case LEFT:
-	    b.UR.x = P->start.p.x+1;
-	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
-		b.LL.y = P->start.p.y-1;
-	    }
-	    else {
-		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
-		b.UR.y = P->start.p.y+1;
-	    }
-	    endp->boxes[0] = b;
-	    endp->boxn = 1;
-	    break;
-	case RIGHT:
-	    b.LL.x = P->start.p.x;
-	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
-		b.LL.y = P->start.p.y;
-	    }
-	    else {
-		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
-		b.UR.y = P->start.p.y+1;
-	    }
-	    endp->boxes[0] = b;
-	    endp->boxn = 1;
-	    break;
-	case TOP:
+	if (side & TOP) {
 	    b.LL.y = MIN(b.LL.y,P->end.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    break;
-	case BOTTOM:
+	}
+	else if (side & BOTTOM) {
 	    if (endp->sidemask == TOP) {
 		b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2;
 		b0.UR.x = b.UR.x+1;
@@ -516,7 +503,32 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[0] = b;
 		endp->boxn = 1;
 	    }
-	    break;
+	}
+	else if (side & LEFT) {
+	    b.UR.x = P->start.p.x+1;
+	    if (endp->sidemask == TOP) {
+		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.LL.y = P->start.p.y-1;
+	    }
+	    else {
+		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.UR.y = P->start.p.y+1;
+	    }
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	}
+	else {
+	    b.LL.x = P->start.p.x;
+	    if (endp->sidemask == TOP) {
+		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.LL.y = P->start.p.y;
+	    }
+	    else {
+		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.UR.y = P->start.p.y+1;
+	    }
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == orig->tail)
@@ -554,6 +566,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	case REGULAREDGE:
 	    endp->boxes[0].UR.y = P->start.p.y;
 	    endp->sidemask = BOTTOM;
+	    P->start.p.y -= 1;
 	    break;
 	}    
     }    
@@ -588,27 +601,20 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     if ((et == REGULAREDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_head_port(e).side))) {
 	edge_t* orig;
 	box b0, b = endp->nb;
-	switch (side) {
-	case LEFT:
-	    b.UR.x = P->end.p.x;
-	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
-	    b.LL.y = P->end.p.y;
+	if (side & TOP) {
+	    endp->sidemask = TOP;
+	    b.LL.y = MIN(b.LL.y,P->end.p.y);
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    break;
-	case RIGHT:
-	    b.LL.x = P->end.p.x;
-	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
-	    b.LL.y = P->end.p.y;
-	    endp->boxes[0] = b;
-	    endp->boxn = 1;
-	    break;
-	case BOTTOM:
-	    if (ND_coord_i(e->tail).x < 2*ND_coord_i(n).x - endp->np.x) {
+	    P->start.p.y += 1;
+	}
+	else if (side & BOTTOM) {
+	    endp->sidemask = BOTTOM;
+	    if (P->end.p.x < ND_coord_i(n).x) { /* go left */
 		b0.LL.x = b.LL.x-1;
 		/* b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2; */
 		b0.UR.y = P->end.p.y;
-		b0.UR.x = P->end.p.x;
+		b0.UR.x = b.UR.x;
 		b0.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2 - GD_ranksep(n->graph)/2;
 		b.UR.x = ND_coord_i(n).x - ND_lw_i(n) - 2;
 		b.LL.y = b0.UR.y;
@@ -618,7 +624,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[1] = b;
 	    }
 	    else {
-		b0.LL.x = P->end.p.x;
+		b0.LL.x = b.LL.x;
 		b0.UR.y = P->end.p.y;
 		/* b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2; */
 		b0.UR.x = b.UR.x+1;
@@ -631,12 +637,25 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 		endp->boxes[1] = b;
 	    } 
 	    endp->boxn = 2;
-	    break;
-	case TOP:
-	    b.LL.y = MIN(b.LL.y,P->end.p.y);
+	    P->end.p.y -= 1;
+	}
+	else if (side & LEFT) {
+	    endp->sidemask = LEFT;
+	    b.UR.x = P->end.p.x;
+	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
-	    break;
+	    P->start.p.x -= 1;
+	}
+	else {
+	    endp->sidemask = RIGHT;
+	    b.LL.x = P->end.p.x;
+	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+	    b.LL.y = P->end.p.y;
+	    endp->boxes[0] = b;
+	    endp->boxn = 1;
+	    P->start.p.x -= 1;
 	}
 	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == orig->head)
@@ -737,6 +756,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	case REGULAREDGE:
 	    endp->boxes[0].LL.y = P->end.p.y;
 	    endp->sidemask = TOP;
+	    P->start.p.y += 1;
 	    break;
 	}
     }

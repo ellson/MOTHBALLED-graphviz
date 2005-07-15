@@ -105,6 +105,8 @@ static polygon_t p_Msquare = { TRUE, 1, 4, 0., 0., 0., DIAGONALS };
 static polygon_t p_Mcircle =
     { TRUE, 1, 1, 0., 0., 0., DIAGONALS | AUXLABELS };
 
+#define IS_BOX(n) (ND_shape(n)->polygon == &p_box)
+
 /*
  * every shape has these functions:
  *
@@ -982,14 +984,6 @@ static double invflip_angle (double angle, int rankdir)
     return angle;
 }
 
-/* would like = 0, but spline router croaks
- * Basically, if the point is actually on a box, the curve fitter
- * may, at some point, compute a curve which lies entirely outside
- * the polygon except at the two endpoints. Thus, by guaranteeing that
- * the point lies in the interior, such bad cases can't happen.
- */
-#define MARGIN  1
-
 /* compassPoint:
  * Compute compass points for non-trivial shapes.
  * It finds where the ray ((0,0),(x,y)) hits the boundary and
@@ -1070,7 +1064,7 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
     if (compass && *compass) {
 	switch (*compass++) {
 	case 'e':
-	    p.x = b.UR.x + MARGIN;
+	    p.x = b.UR.x;
 	    theta = 0.0;
 	    constrain = 1;
 	    defined = TRUE;
@@ -1078,26 +1072,28 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	    side = sides & RIGHT;
 	    break;
 	case 's':
-	    p.y = b.LL.y - MARGIN;
+	    p.y = b.LL.y;
 	    constrain = 1;
 	    clip = FALSE;
-	    side = sides & BOTTOM;
 	    switch (*compass) {
 	    case '\0':
 		theta = -PI * 0.5;
 		defined = TRUE;
+	        side = sides & BOTTOM;
 		break;
 	    case 'e':
 		theta = -PI * 0.25;
 		defined = TRUE;
 		if (ictxt) p = compassPoint (ictxt, -MAXINT, MAXINT);
-		else p.x = b.UR.x + MARGIN;
+		else p.x = b.UR.x;
+	        side = sides & (BOTTOM | RIGHT);
 		break;
 	    case 'w':
 		theta = -PI * 0.75;
 		defined = TRUE;
 		if (ictxt) p = compassPoint (ictxt, -MAXINT, -MAXINT);
-		else p.x = b.LL.x - MARGIN;
+		else p.x = b.LL.x;
+	        side = sides & (BOTTOM | LEFT);
 		break;
 	    default:
 		p.y = ctr.y;
@@ -1108,7 +1104,7 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	    }
 	    break;
 	case 'w':
-	    p.x = b.LL.x - MARGIN;
+	    p.x = b.LL.x;
 	    theta = PI;
 	    constrain = 1;
 	    defined = TRUE;
@@ -1116,26 +1112,28 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	    side = sides & LEFT;
 	    break;
 	case 'n':
-	    p.y = b.UR.y + MARGIN;
+	    p.y = b.UR.y;
 	    constrain = 1;
 	    clip = FALSE;
-	    side = sides & TOP;
 	    switch (*compass) {
 	    case '\0':
 		defined = TRUE;
 		theta = PI * 0.5;
+	        side = sides & TOP;
 		break;
 	    case 'e':
 		defined = TRUE;
 		theta = PI * 0.25;
 		if (ictxt) p = compassPoint (ictxt, MAXINT, MAXINT);
-		else p.x = b.UR.x + MARGIN;
+		else p.x = b.UR.x;
+	        side = sides & (TOP | RIGHT);
 		break;
 	    case 'w':
 		defined = TRUE;
 		theta = PI * 0.75;
 		if (ictxt) p = compassPoint (ictxt, MAXINT, -MAXINT);
-		else p.x = b.LL.x - MARGIN;
+		else p.x = b.LL.x;
+	        side = sides & (TOP | LEFT);
 		break;
 	    default:
 		p.y = ctr.y;
@@ -1187,11 +1185,16 @@ static port poly_port(node_t * n, char *portname, char *compass)
 	}
     } 
     else {
-	inside_t ictxt;
+	inside_t* ictxtp;
+	inside_t  ictxt;
 
-	ictxt.s.n = n;
-	ictxt.s.bp = NULL;
-	if (compassPort(n, NULL, &rv, portname, sides, &ictxt))
+	if (IS_BOX(n)) ictxtp = NULL;
+	else {
+	    ictxt.s.n = n;
+	    ictxt.s.bp = NULL;
+	    ictxtp = &ictxt;
+	}
+	if (compassPort(n, NULL, &rv, portname, sides, ictxtp))
 	    unrecognized(n, portname);
     }
 

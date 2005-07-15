@@ -78,7 +78,10 @@ extern "C" {
 	boolean	constrained;    /* if true, constraints such as theta are set */
 	boolean clip;           /* if true, clip end to node/port shape */
 	unsigned char order;	/* for mincross */
-	unsigned char side;	/* if port is on perimeter of node */
+	unsigned char side;	/* if port is on perimeter of node, this
+                                 * contains the bitwise OR of the sides (TOP,
+                                 * BOTTOM, etc.) it is on. 
+                                 */
     } port;
 
     typedef struct {
