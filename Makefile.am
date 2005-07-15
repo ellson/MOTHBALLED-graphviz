@@ -14,6 +14,7 @@ html_DATA = $(html)
 # $(subdirs) contains the list from: AC_CONFIG_SUBDIRS
 SUBDIRS = $(subdirs) lib plugin cmd tclpkg doc contrib graphs
 
+.PHONY: doxygen
 doxygen:
 	doxygen
 
