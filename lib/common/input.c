@@ -506,9 +506,9 @@ void graph_init(graph_t * g, boolean use_rankdir)
 	    rankdir = RANKDIR_RL;
     }
     if (use_rankdir)
-	g->u.rankdir = (rankdir << 2) || rankdir;
+	SET_RANKDIR (g, (rankdir << 2) || rankdir);
     else
-	g->u.rankdir = (rankdir << 2);
+	SET_RANKDIR (g, (rankdir << 2));
 
     xf = late_double(g, agfindattr(g, "nodesep"), DEFAULT_NODESEP,
 		     MIN_NODESEP);

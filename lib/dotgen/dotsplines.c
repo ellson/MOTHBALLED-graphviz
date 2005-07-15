@@ -637,9 +637,9 @@ cloneGraph (graph_t* g)
 
     GD_charset(auxg) = GD_charset (g);
     if (GD_flip(g))
-	GD_rankdir(auxg) = RANKDIR_TB;
+	SET_RANKDIR(auxg, RANKDIR_TB);
     else
-	GD_rankdir(auxg) = RANKDIR_LR;
+	SET_RANKDIR(auxg, RANKDIR_LR);
     GD_nodesep(auxg) = GD_nodesep(g);
     GD_ranksep(auxg) = GD_ranksep(g);
 
