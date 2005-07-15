@@ -337,7 +337,7 @@ void dot_splines(graph_t * g)
 		break;
 	}
 	if (e0->tail == e0->head) {
-	    int sizey, r;
+	    int b, sizey, r;
 	    n = e0->tail;
 	    r = ND_rank(n);
 	    if (r == GD_maxrank(g)) {
@@ -355,8 +355,8 @@ void dot_splines(graph_t * g)
 		sizey = MIN(upy, dwny);
 	    }
 	    makeSelfEdge(P, edges, ind, cnt, sd.Multisep, sizey, &sinfo);
-	    for (i = 0; i < cnt; i++) {
-		e = edges[ind+i];
+	    for (b = 0; b < cnt; b++) {
+		e = edges[ind+b];
 		if (ED_label(e))
 		    updateBB(g, ED_label(e));
 	    }
