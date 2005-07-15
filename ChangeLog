@@ -1,3 +1,24 @@
+July 15, 2005
+	- release 2.4
+	- major code restructuring
+	- new plugin architecture
+	- new script-language bindings using swig
+	- lefty upgrade
+	- fix bugs 156, 255, 492, 631, 641, 647, 659, 662, 665, 670, 690, 691,
+			701, 702, 703, 705, 730, 731, 732, 741, 743
+April 7, 2005
+	- release 2.2.1
+        - correct license headers to CPL in .cpp files
+        - undo indentation cleanup to dynagraph .h files
+        - fix bugs: 183, 247, 419, 615, 616, 625, 626, 627, 643,
+                        646, 651, 658, 661, 664, 674
+        - fix buffer overrun in Gvfilepath construction
+January 19, 2005
+        - release 2.2
+        - fix bugs: 86, 345, 517, 579, 580, 597, 600, 601, 604
+        - use the original cpl1.0.txt as the license master, instead of CPL.html        - fix for bug generating in memory bitmaps that was affecting webdot
+        - fixes for windows builds
+        - documentation updates
 December 11, 2004
 	- release 2.0
 	- new CPL license
