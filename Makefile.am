@@ -29,6 +29,6 @@ EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 	Doxyfile.in Doxyfile \
 	makearch features awk windows \
 	config/config_perl.pl config/config_python.py \
-	config/config_ruby.rb config/config_tcl.tcl
+	config/config_ruby.rb config/config_tcl.tcl dot.demo
 
 DISTCLEANFILES = ast_common.h FEATURE/* graphviz-@VERSION@*
