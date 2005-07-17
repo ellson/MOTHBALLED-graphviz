@@ -14,9 +14,6 @@ License:	CPL
 URL:		http://www.graphviz.org/
 Source:		http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
 
-Packager:	John Ellson (ellson@graphviz.org)
-Vendor:		http://www.graphviz.org/
-
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
 # neededforbuild  expat freetype2 freetype2-devel gcc libjpeg libpng-devel-packages tcl tcl-devel tk tk-devel x-devel-packages
@@ -161,3 +158,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 %{_bindir}/dot -V 2>/dev/null
+
+%changelog
+* Sun Jul 17 2005 John Ellson <ellson@research.att.com>
+- release 2.4
