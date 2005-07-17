@@ -124,8 +124,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/lefty
 %exclude %{_libdir}/%{name}/lib*tcl*.so.*
 %exclude %{_libdir}/%{name}/libtk*.so.*
-%exclude %{_bindir}/dotneato-config
-%exclude %{_mandir}/man1/dotneato-config.1*
 
 %files tcl
 %defattr(-,root,root,-)
@@ -137,12 +135,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %files devel
 %defattr(-,root,root,-)
-%{_bindir}/dotneato-config
 %{_includedir}/%{name}
 %{_libdir}/%{name}/*.la
 %{_libdir}/%{name}/*.so
 %{_libdir}/pkgconfig/*.pc
-%{_mandir}/man1/dotneato-config.1*
 %{_mandir}/man3/*.3*
 %exclude %{_libdir}/%{name}/lib*tcl*.*
 %exclude %{_libdir}/%{name}/libtk*.*
