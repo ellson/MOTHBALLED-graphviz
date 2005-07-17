@@ -1513,7 +1513,6 @@ AC_CONFIG_FILES(Makefile
 	plugin/usershape/Makefile
 	cmd/Makefile
 	cmd/dot/Makefile
-	cmd/dot/dotneato-config
 	cmd/dot/libdotneato.pc
 	cmd/tools/Makefile
 	cmd/gvpr/Makefile
