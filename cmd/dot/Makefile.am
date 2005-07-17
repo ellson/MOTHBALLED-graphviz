@@ -19,26 +19,33 @@ AM_CPPFLAGS = \
 
 pkginclude_HEADERS = dotneato.h
 pkglib_LTLIBRARIES = libdotneato.la
-# pkgconfig_DATA = libdotneato.pc
+pkgconfig_DATA = libdotneato.pc
 bin_SCRIPTS = dotneato-config
 bin_PROGRAMS = dot
 man_MANS = dot.1 dotneato-config.1
 pdf_DATA = dot.pdf dotneato-config.pdf
 
 libdotneato_la_SOURCES = dotneato.c
-libdotneato_la_LIBADD = \
-	$(top_builddir)/lib/common/libcommon.la \
-	$(top_builddir)/lib/gvc/libgvc.la
-
 dot_SOURCES = dot.c args.c
 
 if DISABLE_LTDL
+libdotneato_la_LIBADD = \
+        $(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/common/libcommon.la \
+	$(top_builddir)/lib/gvc/libgvc.la \
+	$(top_builddir)/plugin/libplugins.la
+
 dot_LDADD = \
         $(top_builddir)/lib/graph/libgraph.la \
         $(top_builddir)/lib/common/libcommon.la \
         $(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/plugin/libplugins.la
 else
+libdotneato_la_LIBADD = \
+        $(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/common/libcommon.la \
+	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@
+
 dot_LDADD = \
         $(top_builddir)/lib/graph/libgraph.la \
         $(top_builddir)/lib/common/libcommon.la \

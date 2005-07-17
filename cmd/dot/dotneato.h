@@ -18,6 +18,7 @@
 #define DOTNEATO_H
 
 #include "render.h"
+#include "gvc.h"
 
 #ifdef __cplusplus
 extern "C" {
