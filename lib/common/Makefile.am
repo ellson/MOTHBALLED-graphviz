@@ -3,6 +3,8 @@
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
+	-I$(top_srcdir)/lib/pack \
+	-I$(top_srcdir)/lib/fdpgen \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt  @GD_INCLUDES@ @EXPAT_INCLUDES@ @Z_INCLUDES@
@@ -18,7 +20,7 @@ endif
 
 
 libcommon_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
-	gdtextsize.c gdusershape.c \
+	args.c gdtextsize.c gdusershape.c \
 	globals.c htmllex.c htmlparse.y htmltable.c input.c \
 	pointset.c postproc.c psusershape.c routespl.c splines.c \
 	svgusershape.c timing.c labels.c ns.c shapes.c utils.c \

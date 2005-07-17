@@ -11,22 +11,19 @@ AM_CPPFLAGS = \
         -I$(top_srcdir) \
         -I$(top_srcdir)/lib/common \
         -I$(top_srcdir)/lib/gvc \
-	-I$(top_srcdir)/lib/pack \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/graph \
-	-I$(top_srcdir)/lib/cdt \
-	-I$(top_srcdir)/lib/fdpgen
+	-I$(top_srcdir)/lib/cdt
 
 pkginclude_HEADERS = dotneato.h
 pkglib_LTLIBRARIES = libdotneato.la
 pkgconfig_DATA = libdotneato.pc
-bin_SCRIPTS = dotneato-config
 bin_PROGRAMS = dot
-man_MANS = dot.1 dotneato-config.1
-pdf_DATA = dot.pdf dotneato-config.pdf
+man_MANS = dot.1 
+pdf_DATA = dot.pdf
 
 libdotneato_la_SOURCES = dotneato.c
-dot_SOURCES = dot.c args.c
+dot_SOURCES = dot.c
 
 if DISABLE_LTDL
 libdotneato_la_LIBADD = \
@@ -70,9 +67,6 @@ uninstall-hook:
 dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 	groff -Tps -man $(top_srcdir)/cmd/dot/dot.1 | ps2pdf - - >$@
 
-dotneato-config.pdf: $(top_srcdir)/cmd/dot/dotneato-config.1
-	groff -Tps -man $(top_srcdir)/cmd/dot/dotneato-config.1 | ps2pdf - - >$@
+EXTRA_DIST = Makefile.old dot.1 dot.pdf 
 
-EXTRA_DIST = Makefile.old dot.1 dotneato-config.1 dot.pdf dotneato-config.pdf dotneato-config.in
-
-DISTCLEANFILES = dot.pdf dotneato-config.pdf
+DISTCLEANFILES = dot.pdf

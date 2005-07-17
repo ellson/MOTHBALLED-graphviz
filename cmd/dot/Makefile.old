@@ -40,7 +40,7 @@ DOTLIBS = ../../lib/common/libcommon.a ../../lib/dotgen/libdotgen.a \
 
 
 LIBDOTNEATO = libdotneato.a
-OBJS = dot.o args.o
+OBJS = dot.o
 SHLIBS = twopigen/libtwopi.a dotgen/libdot.a neatogen/libneato.a pack/libpack.a gvrender/libgvrender.a common/libcommon.a
 
 all : dot $(LIBDOTNEATO)
@@ -51,9 +51,6 @@ dot : $(OBJS) $(DOTLIBS)
 
 dot.o : dot.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) dot.c
-
-args.o : args.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(ALLINCS) args.c
 
 plugins.o : plugins.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(ALLINCS) plugins.c
