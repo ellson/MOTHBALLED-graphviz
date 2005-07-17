@@ -22,7 +22,7 @@ BuildRoot:	%{_tmppath}/%{name}-root
 BuildRequires:	zlib-devel libpng-devel libjpeg-devel expat-devel freetype-devel >= 2
 BuildRequires:	/bin/ksh bison m4 flex tk tcl >= 8.3
 BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
-%{?fc5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl-devel cairo-devel} 
+%{?fc5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl-devel} 
 %{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl-devel} 
 %{?fc3:BuildRequires: fontconfig-devel xorg-x11-devel} 
 %{?fc2:BuildRequires: fontconfig-devel XFree86-devel}
