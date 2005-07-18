@@ -202,6 +202,8 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">" :\t"</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:len HREF=#d:len>len</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">1.0(neato)<BR>0.3(fdp)</TD><TD></TD><TD>fdp, neato only</TD> </TR>
+ <TR><TD><A NAME=a:levelsgap HREF=#d:levelsgap>levelsgap</A>
+</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:lhead HREF=#d:lhead>lhead</A>
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:lp HREF=#d:lp>lp</A>
@@ -722,6 +724,12 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:len HREF=#a:len><STRONG>len</STRONG></A>
 <DD>  Preferred edge length, in inches.
 
+<DT><A NAME=d:levelsgap HREF=#a:levelsgap><STRONG>levelsgap</STRONG></A>
+<DD>  Specifies strictness of level constraints in neato when <TT>mode="hier"</TT>.
+  Larger positive values mean stricter constraints, which demand more 
+  separation between levels. On the other hand, negative values will relax 
+  the constraints by allowing some overlap between the levels.
+
 <DT><A NAME=d:lhead HREF=#a:lhead><STRONG>lhead</STRONG></A>
 <DD>  Logical head of an edge. When <A HREF=#d:compound><B>compound</B></A> is true,
   if <B>lhead</B> is defined and is the name of a cluster containing 
@@ -769,6 +777,9 @@ This field indicates which graph component uses the attribute.
   to the latter technique is that it is sometimes appreciably faster for
   small (number of nodes < 100) graphs. A significant disadvantage is that
   it may cycle.
+  <P>
+  There is a new, experimental mode in neato, "hier", which adds a top-down
+  directionality similar to the layout used in dot.
 
 <DT><A NAME=d:model HREF=#a:model><STRONG>model</STRONG></A>
 <DD>  This value specifies how the distance matrix is computed for the input
