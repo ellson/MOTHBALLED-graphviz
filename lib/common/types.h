@@ -411,6 +411,7 @@ extern "C" {
 #define GD_exact_ranksep(g) (g)->u.exact_ranksep
 #define GD_expanded(g) (g)->u.expanded
 #define GD_flags(g) (g)->u.flags
+#define GD_gvc(g) (g)->u.gvc
 #define GD_charset(g) (g)->u.charset
 #define GD_has_labels(g) (g)->u.has_labels
 #define GD_has_images(g) (g)->u.has_images
