@@ -21,7 +21,7 @@ AWKDIR = $(ROOT)/awk
 HDRS = colortbl.h const.h globals.h macros.h render.h \
        renderprocs.h types.h utils.h
 
-OBJS = arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
+OBJS = args.o arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
        colxlate.o globals.o mifgen.o psusershape.o timing.o \
        diagen.o hpglgen.o mpgen.o routespl.o utils.o \
        emit.o htmllex.o ns.o shapes.o vrmlgen.o xdgen.o \
