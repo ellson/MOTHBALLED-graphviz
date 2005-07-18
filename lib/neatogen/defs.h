@@ -77,6 +77,7 @@ extern "C" {
     typedef unsigned char bool;
 #define true TRUE
 #define false FALSE
+#define DIGCOLA 1
 
 #ifdef USE_STYLES
     typedef enum { regular, invisible } Style;
