@@ -1111,8 +1111,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     if ((str = agget(g, "viewport")))
 	rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
     /* rv is ignored since args retain previous values if not scanned */
-    job->width = ROUND(X + 1); 
-    job->height = ROUND(Y + 1);
+    job->width = ROUND(X); 
+    job->height = ROUND(Y);
     job->zoom = Z;              /* scaling factor */
     job->focus.x = x;           /* graph coord of focus - points */
     job->focus.y = y;
