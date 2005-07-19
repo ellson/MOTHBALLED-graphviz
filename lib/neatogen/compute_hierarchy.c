@@ -116,8 +116,8 @@ compute_hierarchy(vtx_data* graph, int n, double abs_tol, double relative_tol,
 		levels[0] = n;
 	}
 	else {
-		*levelsp = levels = N_GNEW(num_levels, int);
 		int count=0;
+		*levelsp = levels = N_GNEW(num_levels, int);
 		for (i=1; i<n; i++) {
 			if (y[ordering[i]] - y[ordering[i-1]] > tol) {
 				levels[count++] = i;
