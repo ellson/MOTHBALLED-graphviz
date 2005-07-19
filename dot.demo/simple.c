@@ -14,22 +14,29 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifndef DOTNEATO_H
-#define DOTNEATO_H
+#include <dotneato.h>
 
-#include "render.h"
-#include "gvc.h"
+int main(int argc, char **argv)
+{
+    GVC_t *gvc;
+    graph_t *g;
+    FILE *fp;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+    gvc = gvContext();
 
-extern GVC_t *gvContext(void);
-extern int gvLayout(GVC_t *gvc, graph_t *g, char *engine);
-extern int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out);
-extern void gvCleanup(GVC_t *gvc);
+    if (argc > 1)
+	fp = fopen(argv[1], "r");
+    else
+	fp = stdin;
+    g = agread(fp);
 
-#ifdef __cplusplus
+    gvLayout(gvc, g, "dot");
+
+    gvRender(gvc, g, "plain", stdout);
+
+    gvCleanup(gvc);
+
+    agclose(g);
+    
+    return 0;
 }
-#endif
-#endif
