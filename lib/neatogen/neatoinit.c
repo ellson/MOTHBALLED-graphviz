@@ -668,12 +668,12 @@ static int checkEdge(PointMap * pm, edge_t * ep, int idx)
 static void
 dfsCycle (vtx_data* graph, int i)
 {
-    node_t* np = graph[i].np;
-    node_t* hp;
-    ND_mark(np) = TRUE;
-    ND_onstack(np) = TRUE;
+    node_t *np, *hp;
     int j, e, f;
 
+    np = graph[i].np;
+    ND_mark(np) = TRUE;
+    ND_onstack(np) = TRUE;
     for (e = 1; e < graph[i].nedges; e++) {
 	if (graph[i].edists[e] == 1.0) continue;  /* in edge */
 	j = graph[i].edges[e];
