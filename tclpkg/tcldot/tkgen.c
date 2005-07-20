@@ -19,10 +19,6 @@
  * tkgen.c generate canvas commands to display a graph
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "tcldot.h"
 
 #ifdef DMALLOC

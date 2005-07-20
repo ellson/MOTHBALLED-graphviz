@@ -2,9 +2,9 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@/@PACKAGE@
 includedir=@includedir@/@PACKAGE@
-
+                                                                                       
 Name: libgvc
-Description: Graphviz context library for plugins
+Description: The GraphVizContext library 
 Version: @VERSION@
 Libs: -L${libdir} -lgvc
 Cflags: -I${includedir}

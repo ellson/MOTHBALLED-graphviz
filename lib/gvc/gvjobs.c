@@ -22,7 +22,9 @@
 #include	<stdlib.h>
 
 #include	"types.h"
-#include	"gvc.h"
+#include        "gvplugin.h"
+#include        "gvcint.h"
+#include        "gvcproc.h"
 
 /* from common/utils.c */
 extern void *zmalloc(size_t);

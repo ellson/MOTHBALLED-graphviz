@@ -44,7 +44,9 @@
 #include "graph.h"
 
 #include "gvplugin_usershape.h"
-#include "gvc.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 
 extern point gd_image_size(graph_t * g, char *shapeimagefile);
 extern point ps_image_size(graph_t * g, char *shapeimagefile);

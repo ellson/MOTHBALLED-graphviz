@@ -29,7 +29,9 @@
 #include "macros.h"
 
 #include "gvplugin_textlayout.h"
-#include "gvc.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 
 int gvtextlayout_select(GVC_t * gvc, char *textlayout)
 {

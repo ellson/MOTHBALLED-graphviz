@@ -31,22 +31,10 @@ html_DATA = $(html)
 endif
 
 libtcldot_la_SOURCES = tcldot.c tkgen.c $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
-if DISABLE_LTDL
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
-        $(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/lib/common/libcommon.la \
-	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/plugin/libplugins.la
-else
-libtcldot_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
-        $(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/lib/common/libcommon.la \
-	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@
-endif
+	$(top_builddir)/lib/gvc/libgvc.la
 
 if WITH_TCL
 all-local: pkgIndex.tcl

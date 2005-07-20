@@ -32,7 +32,9 @@
 #include "cdt.h"
 
 #include "gvplugin_layout.h"
-#include "gvc.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 
 extern void graph_init(graph_t *g, boolean use_rankdir);
 extern void graph_cleanup(graph_t *g);

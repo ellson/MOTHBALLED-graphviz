@@ -18,9 +18,9 @@
 extern "C" {
 #endif
 
+#include "gvc.h"
 #include "tcl.h"
 #include "tclhandle.h"
-#include "render.h"
 
     typedef struct tkgendata_s {
 	Tcl_Interp *interp;

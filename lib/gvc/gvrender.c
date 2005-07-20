@@ -37,7 +37,9 @@
 #include "cdt.h"
 
 #include "gvplugin_render.h"
-#include "gvc.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 
 #ifndef DISABLE_CODEGENS
 extern codegen_t PS_CodeGen;

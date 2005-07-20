@@ -28,8 +28,10 @@
 
 #include        "types.h"
 #include        "macros.h"
-#include        "gvc.h"
 #include        "graph.h"
+#include        "gvplugin.h"
+#include        "gvcint.h"
+#include        "gvcproc.h"
 
 #ifndef DISABLE_LTDL
 static char *libdir = GVLIBDIR;

@@ -27,7 +27,7 @@
  */
 #define SUPPORT_WRITEDATE
 
-#include	"render.h"
+#include	"gvc.h"
 #ifdef SUPPORT_WRITEDATE
 #include <time.h>
 #endif

@@ -14,21 +14,10 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include <stdio.h>
-
-/*
-#include "const.h"
-#include "types.h"
-#include "macros.h"
-*/
-
 #include "render.h"
-
-#include "gvc.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 
 #define PANFACTOR 10
 #define ZOOMFACTOR 1.1

@@ -15,10 +15,6 @@
 **********************************************************/
 
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 /* avoid compiler warnings with template changes in Tcl8.4 */
 /*    specifically just the change to Tcl_CmdProc */
 #define USE_NON_CONST

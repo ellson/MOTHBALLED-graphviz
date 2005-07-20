@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#include	"render.h"
+#include	"gvc.h"
 #include	"agxbuf.h"
 #include	"utils.h"
 #include	"htmltable.h"

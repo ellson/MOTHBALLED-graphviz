@@ -16,7 +16,7 @@
 
 %module gv
 %{
-#include "gv.h"
+#include "gvc.h"
 %}
 
 /* new graph objects */

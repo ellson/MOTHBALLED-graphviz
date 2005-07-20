@@ -32,7 +32,9 @@
 #include "macros.h"
 
 #include "gvplugin_device.h"
-#include "gvc.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 
 int gvdevice_select(GVJ_t * job, char *str)
 {

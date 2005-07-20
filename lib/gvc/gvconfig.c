@@ -32,8 +32,10 @@
 #include        "types.h"
 #include        "macros.h"
 #include        "const.h"
-#include        "gvc.h"
 #include        "graph.h"
+#include	"gvplugin.h"
+#include	"gvcint.h"
+#include        "gvcproc.h"
 
 #ifndef DISABLE_CODEGENS
 #ifdef QUARTZ_RENDER
