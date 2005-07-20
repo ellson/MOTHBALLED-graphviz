@@ -1,8 +1,10 @@
-July 15, 2005
+July 20, 2005
 	- release 2.4
 	- major code restructuring
-	- new plugin architecture
-	- new script-language bindings using swig
+	- new plugin architecture (e.g. see separate package: graphviz-cairo )
+	- new script-language bindings using swig (perl, ruby, python, tcl, java ... )
+	- C-API now in libgvc (no more dotneato.[ch] or dotneato-config.sh]
+	- pkgconfig now used for reusable libraries
 	- lefty upgrade
 	- fix bugs 156, 255, 492, 631, 641, 647, 659, 662, 665, 670, 690, 691,
 			701, 702, 703, 705, 730, 731, 732, 741, 743
