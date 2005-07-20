@@ -240,7 +240,7 @@ function Install
 	
 	# install libraries
 	echo "copying libraries" >> $LFILE
-	LIBS=(ingraphs agraph cdt circogen common dotgen dotneato fdpgen gd graph gvc neatogen pack pathplan twopigen)
+	LIBS=(ingraphs agraph cdt circogen common dotgen fdpgen gd graph gvc neatogen pack pathplan twopigen)
 	if [[ ! -d $PACKAGE_HOME/source/lib ]]
 	then
 	  mkdir $PACKAGE_HOME/source/lib
@@ -295,8 +295,6 @@ function Package
 	SRCDIR=$GVIZ_HOME/lib/cdt
         finstall ast_common.h 
         finstall cdt.h 
-	SRCDIR=$GVIZ_HOME/cmd/dot
-        finstall dotneato.h 
 	SRCDIR=$GVIZ_HOME/lib/circogen
         finstall circo.h 
 	SRCDIR=$GVIZ_HOME/lib/common
@@ -317,7 +315,7 @@ function Package
         finstall gvplugin.h 
         finstall gvplugin_layout.h 
         finstall gvplugin_render.h 
-        finstall gvplugin_text.h 
+        finstall gvplugin_textlayout.h 
 	SRCDIR=$GVIZ_HOME/lib/neatogen
         finstall adjust.h
         finstall neato.h 

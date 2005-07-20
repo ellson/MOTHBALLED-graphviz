@@ -30,7 +30,7 @@ do
 done
 
 # libs to be built
-LIBS=(cdt graph agraph gd pathplan common gvc pack neatogen dotgen twopigen circogen fdpgen dotneato ingraphs)
+LIBS=(cdt graph agraph gd pathplan common gvc pack neatogen dotgen twopigen circogen fdpgen ingraphs)
 
 # plugins to be built
 PLUGINS=(layout)

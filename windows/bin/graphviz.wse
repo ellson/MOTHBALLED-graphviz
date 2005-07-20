@@ -913,11 +913,6 @@ item: Install File
   Flags=0000000010000010
 end
 item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\lib\dotneato.lib
-  Destination=%MAINDIR%\Graphviz\lib\dotneato.lib
-  Flags=0000000010000010
-end
-item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\lib\fdpgen.lib
   Destination=%MAINDIR%\Graphviz\lib\fdpgen.lib
   Flags=0000000010000010
@@ -1190,11 +1185,6 @@ end
 item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\include\dotprocs.h
   Destination=%MAINDIR%\Graphviz\include\dotprocs.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\dotneato.h
-  Destination=%MAINDIR%\Graphviz\include\dotneato.h
   Flags=0000000010000010
 end
 item: Install File

@@ -37,7 +37,6 @@ ALL : "$(OUTDIR)\dot.exe"
 
 
 CLEAN :
-	-@erase "$(INTDIR)\args.obj"
 	-@erase "$(INTDIR)\dot.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(OUTDIR)\dot.exe"
@@ -88,7 +87,6 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=pack.lib layout.lib pathplan.lib plugin.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\dot.pdb" /machine:I386 /out:"$(OUTDIR)\dot.exe" /libpath:"..\..\plugin\Release" /libpath:"..\..\plugin\lib\Release" /libpath:"..\..\lib\lib\Release" /libpath:"..\..\third-party\lib" 
 LINK32_OBJS= \
-	"$(INTDIR)\args.obj" \
 	"$(INTDIR)\dot.obj"
 
 "$(OUTDIR)\dot.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -108,7 +106,6 @@ ALL : "$(OUTDIR)\dot.exe"
 
 
 CLEAN :
-	-@erase "$(INTDIR)\args.obj"
 	-@erase "$(INTDIR)\dot.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
@@ -160,7 +157,6 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=pack.lib layout.lib pathplan.lib plugin.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /profile /debug /machine:I386 /out:"$(OUTDIR)\dot.exe" /libpath:"..\..\plugin\Debug" /libpath:"..\..\lib\lib\Debug" /libpath:"..\..\plugin\lib\Debug" /libpath:"..\..\third-party\lib" 
 LINK32_OBJS= \
-	"$(INTDIR)\args.obj" \
 	"$(INTDIR)\dot.obj"
 
 "$(OUTDIR)\dot.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -181,11 +177,6 @@ LINK32_OBJS= \
 
 
 !IF "$(CFG)" == "dot - Win32 Release" || "$(CFG)" == "dot - Win32 Debug"
-SOURCE=args.c
-
-"$(INTDIR)\args.obj" : $(SOURCE) "$(INTDIR)"
-
-
 SOURCE=dot.c
 
 "$(INTDIR)\dot.obj" : $(SOURCE) "$(INTDIR)"
