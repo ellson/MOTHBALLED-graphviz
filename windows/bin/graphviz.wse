@@ -868,13 +868,18 @@ item: Include Script
   Pathname=%_WISE_%\INCLUDE\uninstal.wse
 end
 item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\lib\gvc.lib
-  Destination=%MAINDIR%\Graphviz\lib\gvc.lib
+  Source=c:\graphvizCVS\builddaemon\package\source\include\gvcproc.h
+  Destination=%MAINDIR%\Graphviz\include\gvcproc.h
   Flags=0000000010000010
 end
 item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\gvplugin_text.h
-  Destination=%MAINDIR%\Graphviz\include\gvplugin_text.h
+  Source=c:\graphvizCVS\builddaemon\package\source\include\gvplugin_textlayout.h
+  Destination=%MAINDIR%\Graphviz\include\gvplugin_textlayout.h
+  Flags=0000000010000010
+end
+item: Install File
+  Source=c:\graphvizCVS\builddaemon\package\source\lib\gvc.lib
+  Destination=%MAINDIR%\Graphviz\lib\gvc.lib
   Flags=0000000010000010
 end
 item: Install File

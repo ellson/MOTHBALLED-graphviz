@@ -312,6 +312,7 @@ function Package
 	SRCDIR=$GVIZ_HOME/lib/gvc
         finstall gvc.h 
         finstall gvcint.h 
+        finstall gvcproc.h 
         finstall gvplugin.h 
         finstall gvplugin_layout.h 
         finstall gvplugin_render.h 
