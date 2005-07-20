@@ -1,7 +1,7 @@
 COMPILE=libtool --tag=CC --mode=compile ${CC} -c
 LINK=libtool --tag=CC --mode=link ${CC}
 
-CFLAGS=`pkg-config libgvc --cflags`
+CFLAGS=`pkg-config libgvc --cflags` -Wall -g -O0
 LDFLAGS=`pkg-config libgvc --libs`
 
 all: dot demo simple
