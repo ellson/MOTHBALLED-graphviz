@@ -8,10 +8,14 @@ TCLSH=/C/tcl/bin/tclsh.exe                  # tcl
 INPKG=graphviz-win.tgz                      # input CVS package
 #WISE=/C/wisein~1/wise32.exe                 # = /Wise InstallMaker
 WISE=/C/progra~1/wisein~2/wise32.exe        # = Wise InstallMaker
+SOURCE=ellson@www.graphviz.org:www.graphviz.org/pub/graphviz
+SOURCEFILE=$SOURCE/CURRENT/$INPKG
+DESTDIR=$SOURCE/CURRENT
 
 OPTION=Release
 WISEFLAG=0
 VERSION=$(date +%K)
+RELEASE=0
 
 # scp data
 #SCPCOMMAND=scp/pscp.exe
@@ -37,18 +41,18 @@ function setVersion {
 function getFile
 {
 #  $TCLSH get.tcl $INPKG
-   scp -q ellson@www.graphviz.org:www.graphviz.org/pub/graphviz/CURRENT/graphviz-win.tgz . >> $LFILE 2>&1
-   if [[ $? != 0 ]]
-   then
-     ErrorEx "failure to get source"
-   fi
+  scp -q $SOURCEFILE . >> $LFILE 2>&1
+  if [[ $? != 0 ]]
+  then
+    ErrorEx "failure to get source"
+  fi
 }
 
 # Copy file back to CVS server
 function putFile
 {
 #  $TCLSH tclscript.tcl $1 >> $LFILE 2>&1
-   scp -q $1 ellson@www.graphviz.org:www.graphviz.org/pub/graphviz/CURRENT  >> $LFILE 2>&1 &
+  scp -q $1 $DESTDIR >> $LFILE 2>&1 &
   PID=$(ps -e | grep scp | awk '{print $1 }')
   sleep 10
   kill $PID
@@ -109,6 +113,13 @@ do
 	TEST=0
 	CLEANUP=0
     ;;
+  -R )       # build official release
+    shift
+	RELEASE=$1
+    INPKG=graphviz-win-${RELEASE}.tgz
+    SOURCEFILE=$SOURCE/ARCHIVE/$INPKG
+    DESTDIR=$SOURCE/ARCHIVE
+    ;;
   -T )       # no test
 	TEST=0
     ;;
@@ -145,7 +156,7 @@ function Get
 
 	# download the zip file from webserver
 	echo "Building graphviz : "$(date) >> $LFILE
-	echo "downloading the current source package" >> $LFILE
+	echo "downloading the current source package $SOURCEFILE" >> $LFILE
 	getFile
 
 	# open the package
@@ -357,7 +368,7 @@ function Package
 	  echo "SUCCESS : installation package created" >> $LFILE
 	  mv $PACKAGEDFILE $UPLOADFILE    # attach version info
 	
-	  echo "uploading the package file" >> $LFILE
+	  echo "uploading the package file $UPLOADFILE" >> $LFILE
 	  chmod 755 $UPLOADFILE
 	  putFile $UPLOADFILE
 	else
@@ -397,8 +408,8 @@ function Cleanup {
 }
 
 function PutLog {
-	echo "uploading the log file" >> $LFILE
 	LOG=graphviz-windows-buildlog-${VERSION}.txt
+	echo "uploading the log $LOG file" >> $LFILE
 	cp $LFILE $LOG
 	putFile $LOG
 }
