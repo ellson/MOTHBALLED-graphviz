@@ -152,9 +152,16 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc __doc/*
 
+# run "dot -V" to generate plugin config in %{_libdir}/%{name}/config
 %post
 %{_bindir}/dot -V 2>/dev/null
 
+%post tcl
+%{_bindir}/dot -V 2>/dev/null
+
+%post devel
+%{_bindir}/dot -V 2>/dev/null
+
 %changelog
-* Sun Jul 17 2005 John Ellson <ellson@research.att.com>
+* Wed Jul 20 2005 John Ellson <ellson@research.att.com>
 - release 2.4
