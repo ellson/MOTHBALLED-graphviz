@@ -1203,11 +1203,6 @@ item: Install File
   Flags=0000000010000010
 end
 item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\circular.h
-  Destination=%MAINDIR%\Graphviz\include\circular.h
-  Flags=0000000010000010
-end
-item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\include\circo.h
   Destination=%MAINDIR%\Graphviz\include\circo.h
   Flags=0000000010000010
