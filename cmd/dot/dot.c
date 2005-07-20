@@ -18,11 +18,8 @@
  * Written by Stephen North and Eleftherios Koutsofios.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "gvc.h"
 
-#include <stdio.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -38,8 +35,6 @@
 #elif HAVE_SYS_FPU_H
 # include <sys/fpu.h>
 #endif
-
-#include "render.h"
 
 extern void parse_args(GVC_t * gvc, int argc, char **argv);
 
