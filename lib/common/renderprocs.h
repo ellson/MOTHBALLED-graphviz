@@ -99,6 +99,7 @@ extern "C" {
     extern bezier *new_spline(edge_t * e, int sz);
     extern Agraph_t *next_input_graph(void);
     extern void osize_label(textlabel_t *, int *, int *, int *, int *);
+    extern void parse_args(GVC_t *gvc, int argc, char** argv);
     extern char **parse_style(char *s);
     extern void place_graph_label(Agraph_t *);
     extern void place_portlabel(edge_t * e, boolean head_p);
