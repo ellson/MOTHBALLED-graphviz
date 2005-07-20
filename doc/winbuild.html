@@ -5,8 +5,11 @@
 <body bgcolor=#ffffff>
 <h2>Graphviz Build Instructions for Windows</h2>
 <P>
-Currently we build Graphviz on Windows using the MS Visual C++ compiler only.
-The simplest way to build the software from source on Windows is as follows:
+(Graphviz versions &gt;= 2.3)
+<P>
+Currently we build Graphviz on Windows using the MS Visual C++ 6.0 compiler 
+only. The simplest way to build the software from source on Windows is as 
+follows:
 <OL>
 <LI>
 Download the Windows source package:<BR>Go to
@@ -25,7 +28,7 @@ If you have Unix tools available, you can use
 <SPACER TYPE=VERTICAL SIZE=10>
 If not, double click on the file and WinZip should start up and let you
 store all of the files into a directory.<BR>
-Let <TT>$ROOT</TT> be the root directory for the Graphviz software.
+Let <TT>$ROOT</TT> be the directory in which you stored the Graphviz source.
 </LI>
 <SPACER TYPE=VERTICAL SIZE=10>
 <LI>
@@ -51,42 +54,42 @@ Unzip the package in the <TT>$ROOT</TT> directory; this will create a subdirecto
 <TT>third-party</TT>.
 Or you can obtain the libraries yourself, and install 
 them in <TT>$ROOT\third-party</TT>
+Also note that these libraries come with the binary release.
 </LI>
 <SPACER TYPE=VERTICAL SIZE=10>
 <LI>
 Build the software in one of the following ways:<BR>  
 <UL TYPE=DISC>
-<LI> Run the script <TT>$ROOT\build.bat</TT>. You'll first want to check
+<LI> Run the script <TT>$ROOT\build.bat</TT> while in the <TT>$ROOT</TT> 
+directory. You'll first want to check
 that the <TT>vc</TT> variable points to your local installation of visual C.
 Obviously, this should be run in a DOS command window.
-<LI> The file <TT>$ROOT\makearch\win32\static\graphviz.dsw</TT> 
+<LI> The file <TT>$ROOT\ws\graphviz.dsw</TT> 
 is the main workspace for the Graphviz libraries and graph drawing programs.
 The file
-<TT>$ROOT\makearch\win32\static\tools.dsw</TT> provides the workspace for the
+<TT>$ROOT\ws\tools.dsw</TT> provides the workspace for the
 additional Graphviz tools. Double-clicking on these files will open the
 workspaces using the MS Visual Studio, from which you can use the Build
 menu item to create the various libraries and programs. 
+<PP>
+Note that we have avoided all dependencies (i.e., there are no .dep files)
+because we found they tended to include absolute pathnames.
+If necessary, follow the order used in <TT>build.bat</TT> to be safe.
 <LI> If you have a Unix environment, with a real ksh, run the script 
 <TT>$ROOT\wmake.sh</TT>
 after setting the PATH, LIB and INCLUDE shell variables to the paths where
 the Visual C programs are installed on your machine, and the associated
 library and include file directories.
-<LI> Execute the <TT>$ROOT\winmake.wsf</TT> file by double-clicking on the 
-file within Windows Explorer. This is a Javascript program. 
-We have found that this build can fail
-in strange ways.</li>
 </UL>
 </OL>
 <P> Once built, all of the libraries and programs will be found in
-<TT>$ROOT\makearch\win32\static\Release</TT>. If you wish to install
+either the Release or Debug subdirectory of the corresponding source
+directory. If you wish to install
 the software somewhere, edit the file <TT>$ROOT\install.bat</TT> to
 set the variable <TT>root</TT> to be the absolute pathname of the
 directory where you want
-the sotware installed, and then run the script <TT>$ROOT\install.bat</TT>.
-<P>
-We have avoided all dependency files, and dependencies in make files,
-because we found they tended to include absolute pathnames.
-If necessary, follow the order used in <TT>build.bat</TT> to be safe.
+the software installed, and then run the script <TT>$ROOT\install.bat</TT>
+from the <TT>$ROOT</TT> directory.
 <P>
 If you want to change source files, you can just do it and rebuild.
 If, however, you want to add new files or projects, you will
