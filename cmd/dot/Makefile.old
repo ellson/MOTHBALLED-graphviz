@@ -39,11 +39,10 @@ DOTLIBS = ../../lib/common/libcommon.a ../../lib/dotgen/libdotgen.a \
           ../../lib/twopigen/libtwopigen.a ../../lib/circogen/libcircogen.a
 
 
-LIBDOTNEATO = libdotneato.a
 OBJS = dot.o
 SHLIBS = twopigen/libtwopi.a dotgen/libdot.a neatogen/libneato.a pack/libpack.a gvrender/libgvrender.a common/libcommon.a
 
-all : dot $(LIBDOTNEATO)
+all : dot
 
 dot : $(OBJS) $(DOTLIBS)
 	$(CSLD) $(LDFLAGS) $(OBJS) $(LIBS) -o /tmp/dot
@@ -55,13 +54,6 @@ dot.o : dot.c
 plugins.o : plugins.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(ALLINCS) plugins.c
 
-dotneato.o : dotneato.c
-	$(CC) -I. -c $(CCFLAGS) $(DEFINES) $(ALLINCS) dotneato.c
-
-$(LIBDOTNEATO) : dotneato.o
-	$(AR) cr libdotneato.a dotneato.o
-	$(RANLIB) libdotneato.a
-	
 install: all
 	$(MKPATH) $(BINDIR)
 	$(INSTALL) dot $(BINDIR)
@@ -70,7 +62,6 @@ install: all
 	$(RM) $(BINDIR)/circo; $(LN) -s $(BINDIR)/dot $(BINDIR)/circo
 	$(RM) $(BINDIR)/twopi; $(LN) -s $(BINDIR)/dot $(BINDIR)/twopi
 	$(MKPATH) $(INCDIR)
-	$(INSTALL) dotneato.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) $(LIBDOTNEATO) $(LIBDIR)/$(LIBDOTNEATO).$(VERSION)
 	$(RM) -rf $(LIBDIR)/$(LIBDOTNEATO)

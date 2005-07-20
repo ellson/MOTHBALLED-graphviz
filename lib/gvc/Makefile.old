@@ -13,12 +13,12 @@ INCS =  -I. \
 
 DEFINES = -DHAVE_CONFIG_H -DGVLIBDIR=\"$(LIBDIR)\"
 
-HDRS = gvc.h gvcint.h gvplugin_render.h gvplugin_device.h \
+HDRS = gvc.h gvcint.h gvcproc.h gvplugin_render.h gvplugin_device.h \
 	gvplugin_layout.h gvplugin_textlayout.h \
 	gvplugin_usershape.h gvplugin.h
 
 OBJS = gvrender.o gvlayout.o gvdevice.o gvcontext.o gvjobs.o \
-	gvplugin.o gvconfig.o gvevent.o gvtextlayout.o gvusershape.o
+	gvplugin.o gvconfig.o gvevent.o gvtextlayout.o gvusershape.o gvc.o
 
 libgvc.a : $(OBJS)
 	$(RM) libgvc.a
