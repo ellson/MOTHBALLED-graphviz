@@ -14,13 +14,14 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #ifndef HAVE_STRNCASECMP
 
-#include <render.h>
 #include <string.h>
 #include <ctype.h>
-
 
 int strncasecmp(const char *s1, const char *s2, unsigned int n)
 {

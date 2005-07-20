@@ -14,10 +14,12 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #ifndef HAVE_STRCASECMP
 
-#include <render.h>
 #include <string.h>
 #include <ctype.h>
 
