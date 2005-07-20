@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#include "render.h"
+#include "gvc.h"
 #include "htmltable.h"
 #include "htmlparse.h"
 #include "htmllex.h"

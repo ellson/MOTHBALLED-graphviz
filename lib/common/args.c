@@ -27,7 +27,7 @@
 #include "config.h"
 #endif
 
-#include "render.h"
+#include "gvc.h"
 #include "tlayout.h"
 
 /* Default layout values, possibly set via command line; -1 indicates unset */

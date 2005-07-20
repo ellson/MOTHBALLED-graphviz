@@ -1,53 +1,24 @@
 ## Process this file with automake to produce Makefile.in
 
 pdfdir = $(pkgdatadir)/doc/pdf
-pkgconfigdir = $(libdir)/pkgconfig
 
 linkedman = neato.1 twopi.1 fdp.1 circo.1
 linkedpdf = neato.pdf twopi.pdf fdp.pdf circo.pdf
 linkedprogram = neato twopi fdp circo
 
 AM_CPPFLAGS = \
-        -I$(top_srcdir) \
         -I$(top_srcdir)/lib/common \
         -I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt
 
-pkginclude_HEADERS = dotneato.h
-pkglib_LTLIBRARIES = libdotneato.la
-pkgconfig_DATA = libdotneato.pc
 bin_PROGRAMS = dot
 man_MANS = dot.1 
 pdf_DATA = dot.pdf
 
-libdotneato_la_SOURCES = dotneato.c
 dot_SOURCES = dot.c
-
-if DISABLE_LTDL
-libdotneato_la_LIBADD = \
-        $(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/lib/common/libcommon.la \
-	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/plugin/libplugins.la
-
-dot_LDADD = \
-        $(top_builddir)/lib/graph/libgraph.la \
-        $(top_builddir)/lib/common/libcommon.la \
-        $(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/plugin/libplugins.la
-else
-libdotneato_la_LIBADD = \
-        $(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/lib/common/libcommon.la \
-	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@
-
-dot_LDADD = \
-        $(top_builddir)/lib/graph/libgraph.la \
-        $(top_builddir)/lib/common/libcommon.la \
-        $(top_builddir)/lib/gvc/libgvc.la  @LIBGEN_LIBS@
-endif
+dot_LDADD = $(top_builddir)/lib/gvc/libgvc.la
 
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); for i in $(linkedman); do rm -f $$i; $(LN_S) dot.1 $$i; done;)

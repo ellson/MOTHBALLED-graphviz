@@ -17,7 +17,7 @@
 
 #define NEWANCHORS 0
 
-#include                "render.h"
+#include                "gvc.h"
 #include                "htmltable.h"
 
 

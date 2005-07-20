@@ -16,8 +16,8 @@
 
 
 
-#include	<stdarg.h>
-#include	"render.h"
+#include <stdarg.h>
+#include "gvc.h"
 #include "utils.h"
 
 #ifdef HAVE_LIBZ

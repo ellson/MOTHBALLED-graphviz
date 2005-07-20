@@ -1,8 +1,8 @@
 COMPILE=libtool --tag=CC --mode=compile ${CC} -c
 LINK=libtool --tag=CC --mode=link ${CC}
 
-CFLAGS=`pkg-config libdotneato --cflags`
-LDFLAGS=`pkg-config libdotneato --libs`
+CFLAGS=`pkg-config libgvc --cflags`
+LDFLAGS=`pkg-config libgvc --libs`
 
 all: dot demo simple
 

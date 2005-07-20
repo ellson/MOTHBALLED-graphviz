@@ -16,7 +16,7 @@
 
 %{
 
-#include "render.h"
+#include "gvc.h"
 #include "htmltable.h"
 #include "htmllex.h"
 

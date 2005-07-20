@@ -14,7 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include	"render.h"
+#include	"gvc.h"
 
 point svg_image_size(graph_t * g, char *shapeimagefile)
 {

@@ -15,8 +15,7 @@
 **********************************************************/
 
 
-/* #include	"dot.h" */
-#include	"render.h"
+#include	"gvc.h"
 #include	"pathplan.h"
 
 #ifdef UNUSED

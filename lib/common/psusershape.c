@@ -21,7 +21,7 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
-#include	"render.h"
+#include	"gvc.h"
 
 static int N_EPSF_files;
 static Dict_t *EPSF_contents;

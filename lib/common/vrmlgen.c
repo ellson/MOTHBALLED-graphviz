@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#include		"render.h"
+#include		"gvc.h"
 #include		"gd.h"
 #include		"utils.h"
 #include		"pathutil.h"

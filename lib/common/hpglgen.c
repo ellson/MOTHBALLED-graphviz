@@ -18,8 +18,8 @@
 /* TODO:
  *  Use encoded form for polyline and polygon
  */
-#include	"render.h"
 #include	<ctype.h>
+#include	"gvc.h"
 
 #define SOLID  0
 #define DOTTED 1

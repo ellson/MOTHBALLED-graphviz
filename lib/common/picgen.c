@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#include	"render.h"
+#include	"gvc.h"
 
 
 #define PIC_COORDS_PER_LINE (16)	/* to avoid stdio BUF overflow */

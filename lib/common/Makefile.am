@@ -11,7 +11,7 @@ AM_CPPFLAGS = \
 
 pkginclude_HEADERS = const.h globals.h htmllex.h htmltable.h macros.h \
 	pointset.h render.h renderprocs.h types.h utils.h colortbl.h
-pkglib_LTLIBRARIES = libcommon.la
+noinst_LTLIBRARIES = libcommon.la
 
 if !DISABLE_CODEGENS
 CODEGENS = diagen.c figgen.c hpglgen.c gdgen.c mapgen.c mifgen.c mpgen.c \
@@ -25,8 +25,6 @@ libcommon_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
 	pointset.c postproc.c psusershape.c routespl.c splines.c \
 	svgusershape.c timing.c labels.c ns.c shapes.c utils.c \
 	output.c emit.c $(CODEGENS)
-
-libcommon_la_LIBADD = $(top_builddir)/lib/pathplan/libpathplan.la @GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@
 
 psgen.o psgen.lo : ps.h
 

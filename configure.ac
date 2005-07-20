@@ -1491,20 +1491,13 @@ AC_CONFIG_FILES(Makefile
 	lib/sfio/Sfio_f/Makefile
 	lib/vmalloc/Makefile
 	lib/dotgen/Makefile
-	lib/dotgen/libdotgen.pc
 	lib/neatogen/Makefile
-	lib/neatogen/libneatogen.pc
 	lib/fdpgen/Makefile
-	lib/fdpgen/libfdpgen.pc
 	lib/circogen/Makefile
-	lib/circogen/libcircogen.pc
 	lib/twopigen/Makefile
-	lib/twopigen/libtwopigen.pc
 	lib/pack/Makefile
-	lib/pack/libpack.pc
 	lib/expr/Makefile
 	lib/common/Makefile
-	lib/common/libcommon.pc
 	lib/ingraphs/Makefile
 	lib/gvc/Makefile
 	lib/gvc/libgvc.pc
@@ -1513,7 +1506,6 @@ AC_CONFIG_FILES(Makefile
 	plugin/usershape/Makefile
 	cmd/Makefile
 	cmd/dot/Makefile
-	cmd/dot/libdotneato.pc
 	cmd/tools/Makefile
 	cmd/gvpr/Makefile
         cmd/lefty/ws/x11/libfilereq/Makefile

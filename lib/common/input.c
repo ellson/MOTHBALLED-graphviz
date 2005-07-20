@@ -16,7 +16,7 @@
 
 #include	<ctype.h>
 
-#include	"render.h"
+#include	"gvc.h"
 #include	"htmltable.h"
 
 char *Gvfilepath;

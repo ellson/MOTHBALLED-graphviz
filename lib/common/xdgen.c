@@ -14,7 +14,6 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include	"render.h"
 #include	"gvc.h"
 #include	"agxbuf.h"
 

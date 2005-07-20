@@ -15,7 +15,6 @@
 **********************************************************/
 
 
-#include	"render.h"
 #include	"gvc.h"
 
 #define sqr(a) ((double) (a) * (a))

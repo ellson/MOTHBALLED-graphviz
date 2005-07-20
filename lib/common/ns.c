@@ -19,7 +19,7 @@
  * Network Simplex Algorithm for Ranking Nodes of a DAG
  */
 
-#include "render.h"
+#include "gvc.h"
 
 static int init_graph(graph_t *);
 static void dfs_cutval(node_t * v, edge_t * par);

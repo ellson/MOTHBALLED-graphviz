@@ -44,7 +44,7 @@ Stephen North
 north@research.att.com
 */
 
-#include	"render.h"
+#include	"gvc.h"
 #include	"utils.h"
 #ifdef HAVE_LIBZ
 #include	"zlib.h"

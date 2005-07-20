@@ -56,7 +56,6 @@
 #include "globals.h"
 #include "renderprocs.h"
 #include "utils.h"
-#include "gvc.h"
 
 typedef struct epsf_s {
     int macro_id;

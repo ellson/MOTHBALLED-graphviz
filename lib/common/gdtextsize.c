@@ -14,7 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include	"render.h"
+#include	"gvc.h"
 #include	"gd.h"
 
 /* sometimes fonts are stored under a different name */

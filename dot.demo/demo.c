@@ -14,7 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include <dotneato.h>
+#include <gvc.h>
 
 int main(int argc, char **argv)
 {

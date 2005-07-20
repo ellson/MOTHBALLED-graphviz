@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#include	"render.h"
+#include	"gvc.h"
 
 
 static int Rankdir;

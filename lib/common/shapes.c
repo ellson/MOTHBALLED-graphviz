@@ -17,7 +17,6 @@
 /* for sincos */
 #define _GNU_SOURCE 1
 
-#include	"render.h"
 #include	"gvc.h"
 #include	"htmltable.h"
 #include	<limits.h>

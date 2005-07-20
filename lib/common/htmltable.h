@@ -21,7 +21,6 @@ extern "C" {
 #ifndef TABLE_H
 #define TABLE_H
 
-#include "render.h"
 #include "gvc.h"
 
 #define FIXED_FLAG 1

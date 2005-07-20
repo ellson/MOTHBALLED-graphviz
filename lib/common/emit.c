@@ -20,9 +20,8 @@
 
 #include	<ctype.h>
 
-#include	"render.h"
-#include	"agxbuf.h"
 #include	"gvc.h"
+#include	"agxbuf.h"
 
 static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 int    emitState;
