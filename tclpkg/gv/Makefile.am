@@ -12,34 +12,46 @@ LIBS =  @LIBS@ -lc
 
 BASELIBS =  $(top_builddir)/lib/gvc/libgvc.la
 
+pkginclude_DATA = gv.i gv.cpp
 pkglib_LTLIBRARIES = 
 TESTS =
 if WITH_SWIG
-#if WITH_CSHARP
-#pkglib_LTLIBRARIES += libgv_csharp.la
-#TESTS += test_csharp
-#endif
+if WITH_CSHARP
+pkginclude_DATA += gv.cs gvPINVOKE.cs \
+	SWIGTYPE_p_Agraph_t.cs \
+	SWIGTYPE_p_Agnode_t.cs \
+	SWIGTYPE_p_Agedge_t.cs
+pkglib_LTLIBRARIES += libgv_csharp.la
+TESTS += test_csharp
+endif
 if WITH_GUILE
 pkglib_LTLIBRARIES += libgv_guile.la
 TESTS += test_guile
 endif
-#if WITH_IO
-#pkglib_LTLIBRARIES += libgv_io.la
-#TESTS += test_io
-#endif
+if WITH_IO
+pkglib_LTLIBRARIES += libgv_io.la
+TESTS += test_io
+endif
 if WITH_JAVA
+pkginclude_DATA += gv.java gvJNI.java \
+	SWIGTYPE_p_Agraph_t.java \
+	SWIGTYPE_p_Agnode_t.java \
+	SWIGTYPE_p_Agedge_t.java
 pkglib_LTLIBRARIES += libgv_java.la
 TESTS += test_java
 endif
 if WITH_PERL
+pkginclude_DATA += gv.pm
 pkglib_LTLIBRARIES += libgv_perl.la
 TESTS += test_perl
 endif
 if WITH_PHP
+pkginclude_DATA += gv.php php_gv.h
 pkglib_LTLIBRARIES += libgv_php.la
 TESTS += test_php
 endif
 if WITH_PYTHON
+pkginclude_DATA += gv.py
 pkglib_LTLIBRARIES += libgv_python.la
 TESTS += test_python
 endif
@@ -53,14 +65,14 @@ TESTS += test_tcl
 endif
 endif
 
-#libgv_csharp_la_SOURCES = gv.cpp gv_csharp.cpp
-#libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@
+libgv_csharp_la_SOURCES = gv.cpp gv_csharp.cpp
+libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@
 
 libgv_guile_la_SOURCES = gv.cpp gv_guile.cpp
 libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
 
-#libgv_io_la_SOURCES = gv.cpp gv_io.cpp
-#libgv_io_la_LIBADD = $(BASELIBS) @IO_LIBS@
+libgv_io_la_SOURCES = gv.cpp gv_io.cpp
+libgv_io_la_LIBADD = $(BASELIBS) @IO_LIBS@
 
 libgv_java_la_SOURCES = gv.cpp gv_java.cpp
 libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
@@ -112,22 +124,6 @@ gv_tcl.cpp: gv.i
 	$(SWIG) -c++ -tcl -namespace -o gv_tcl.cpp gv.i
 
 install-exec-hook:
-if WITH_JAVA
-#	cp $(top_srcdir)/tclpkg/gv/*.java $(DESTDIR)/$(libdir)/@PACKAGE@/
-endif
-if WITH_PERL
-#	cp $(top_srcdir)/tclpkg/gv/*.pm $(DESTDIR)/$(libdir)/@PACKAGE@/
-endif
-if WITH_PHP
-#	cp $(top_srcdir)/tclpkg/gv/*.php $(DESTDIR)/$(libdir)/@PACKAGE@/
-#	cp $(top_srcdir)/tclpkg/gv/php_gv.h $(DESTDIR)/$(libdir)/@PACKAGE@/
-endif
-if WITH_PYTHON
-#	cp $(top_srcdir)/tclpkg/gv/*.py $(DESTDIR)/$(libdir)/@PACKAGE@/
-endif
-#	cp $(top_srcdir)/tclpkg/gv/*.cs $(DESTDIR)/$(libdir)/@PACKAGE@/
-#	cp $(top_srcdir)/tclpkg/gv/*.ml $(DESTDIR)/$(libdir)/@PACKAGE@/
-#	cp $(top_srcdir)/tclpkg/gv/*.mli $(DESTDIR)/$(libdir)/@PACKAGE@/
 	
 if WITH_TCL
 all-local: pkgIndex.tcl
@@ -200,18 +196,20 @@ test_tcl: libgv_tcl.la
 		$(TCLSH) ./test.tcl)
 
 EXTRA_DIST = gv.i \
-	gv.java gvJNI.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agraph_t.java \
+	gv.java gvJNI.java SWIGTYPE_p_Agedge_t.java \
+	SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agraph_t.java \
 	gv.pm \
 	gv.php php_gv.h \
 	gv.py \
-	demo/*
+	demo/* \
+	gv.cs gvPINVOKE.cs SWIGTYPE_p_Agedge_t.cs \
+	SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agraph_t.cs \
+	gv.ml gv.mli
 
-#	gv.cs gvPINVOKE.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agraph_t.cs \
-#	gv.ml gv.mli \
-#	
-
-CLEANFILES = csharp/SWIG*.cs csharp/gv*.cs csharp/*.dot csharp/*.png csharp/*.so \
-	java/*.dot java/*.png java/SWIG*.java java/gv*.java java/*.class java/*.so \
+CLEANFILES = csharp/SWIG*.cs csharp/gv*.cs csharp/*.dot \
+	csharp/*.png csharp/*.so \
+	java/*.dot java/*.png java/SWIG*.java java/gv*.java \
+	java/*.class java/*.so \
 	perl/gv.pm perl/*.so perl/*.dot perl/*.png \
 	php/gv.php php/php_gv.h php/*.so \
 	python/gv.py python/gv.pyc python/*.so python/*.dot python/*.png \
