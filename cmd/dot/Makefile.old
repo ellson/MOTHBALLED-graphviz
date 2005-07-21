@@ -61,11 +61,6 @@ install: all
 	$(RM) $(BINDIR)/fdp; $(LN) -s $(BINDIR)/dot $(BINDIR)/fdp
 	$(RM) $(BINDIR)/circo; $(LN) -s $(BINDIR)/dot $(BINDIR)/circo
 	$(RM) $(BINDIR)/twopi; $(LN) -s $(BINDIR)/dot $(BINDIR)/twopi
-	$(MKPATH) $(INCDIR)
-	$(MKPATH) $(LIBDIR)
-	$(INSTALL) $(LIBDOTNEATO) $(LIBDIR)/$(LIBDOTNEATO).$(VERSION)
-	$(RM) -rf $(LIBDIR)/$(LIBDOTNEATO)
-	$(LN) -s $(LIBDOTNEATO).$(VERSION) $(LIBDIR)/$(LIBDOTNEATO)
 	$(MKPATH) $(MANDIR)
 	$(INSTALL) dot.1 $(MANDIR)
 	$(LN) -s $(MANDIR)/dot.1 $(MANDIR)/neato.1
