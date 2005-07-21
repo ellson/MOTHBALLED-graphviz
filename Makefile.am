@@ -31,4 +31,8 @@ EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 	config/config_perl.pl config/config_python.py \
 	config/config_ruby.rb config/config_tcl.tcl dot.demo
 
+.PHONY: rpm
+rpm: dist
+	rpmbuild -ta graphviz-@VERSION@.tar.gz
+
 DISTCLEANFILES = ast_common.h FEATURE/* graphviz-@VERSION@*
