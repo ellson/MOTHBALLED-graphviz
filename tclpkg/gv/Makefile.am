@@ -17,7 +17,7 @@ libgv_csharp_la_SOURCES = gv.cpp gv.i
 libgv_csharp_la_DEPENDENCIES = gv.lo gv_csharp.lo
 libgv_csharp_la_LIBADD = gv_csharp.lo $(BASELIBS) @CSHARP_LIBS@ 
 gv_csharp.cpp $(CSHARP_hdr): gv.i
-	$(SWIG) -c++ -csharp -namespace Gv -o gv_csharp.cpp gv.i
+	$(SWIG) -c++ -csharp -namespace gv -o gv_csharp.cpp gv.i
 
 GUILE_hdr = 
 libgv_guile_la_SOURCES = gv.cpp gv.i
@@ -92,11 +92,11 @@ pkginclude_DATA += $(CSHARP_hdr)
 pkglib_LTLIBRARIES += libgv_csharp.la
 TESTS += test_csharp
 endif
-if WITH_GUILE
-pkginclude_DATA += $(GUILE_hdr)
-pkglib_LTLIBRARIES += libgv_guile.la
-TESTS += test_guile
-endif
+#if WITH_GUILE
+#pkginclude_DATA += $(GUILE_hdr)
+#pkglib_LTLIBRARIES += libgv_guile.la
+#TESTS += test_guile
+#endif
 #if WITH_IO
 #pkginclude_DATA += $(IO_hdr)
 #pkglib_LTLIBRARIES += libgv_io.la
@@ -151,7 +151,7 @@ test: $(TESTS)
 .PHONY: test_csharp
 test_csharp: libgv_csharp.la
 	-(mkdir -p test_csharp; cd test_csharp; \
-		ln -fs ../.libs/libgv_csharp.so gv.so; \
+		ln -fs ../.libs/libgv_csharp.so libgv_csharp.so; \
 		ln -fs ../*.dot ../*.cs .; \
 		$(CSHARP) *.cs -out:test.exe; \
 		mono test.exe)
