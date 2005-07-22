@@ -23,6 +23,6 @@ gv::rm $g
 set g [gv::stringgraph "digraph G {a->b}"]
 gv::rm $g
 
-set g [gv::readgraph ../hello.dot]
+set g [gv::readgraph hello.dot]
 gv::layout $g dot
 gv::writegraph $g hello.png png

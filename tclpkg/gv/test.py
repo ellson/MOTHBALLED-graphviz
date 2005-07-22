@@ -22,7 +22,7 @@ gv.rm(g)
 g = gv.stringgraph("digraph G {a->b}")
 gv.rm(g)
 
-g = gv.readgraph("../hello.dot")
+g = gv.readgraph("hello.dot")
 gv.layout(g, "dot")
 gv.writegraph(g, "hello.png", "png")
 gv.rm(g)
