@@ -20,7 +20,7 @@ libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@
 $(CSHARP_cpp) $(CSHARP_hdr): gv.i
 	$(SWIG) -c++ -csharp -o $(CSHARP_cpp) gv.i
 
-CSHARP_cpp = gv_guile.cpp
+GUILE_cpp = gv_guile.cpp
 GUILE_hdr = 
 libgv_guile_la_SOURCES = gv.cpp gv.i
 libgv_guile_la_DEPENDENCIES = gv.cpp $(GUILE_cp)
@@ -28,7 +28,7 @@ libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
 $(GUILE_cp) $(GUILE_hdr): gv.i
 	$(SWIG) -c++ -guile -o $(GUILE_cp) gv.i
 
-CSHARP_cpp = gv_io.cpp
+IO_cpp = gv_io.cpp
 IO_hdr = 
 libgv_io_la_SOURCES = gv.cpp gv.i
 libgv_io_la_DEPENDENCIES = gv.cpp $(IO_cpp)
@@ -36,7 +36,7 @@ libgv_io_la_LIBADD = $(BASELIBS) @IO_LIBS@
 $(IO_cpp) $(IO_hdr): gv.i
 	$(SWIG) -c++ -io -o $(IO_cpp) gv.i
 
-CSHARP_cpp = gv_java.cpp
+JAVA_cpp = gv_java.cpp
 JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java
 libgv_java_la_SOURCES = gv.cpp gv.i
 libgv_java_la_DEPENDENCIES = gv.cpp $(JAVA_cpp)
@@ -44,7 +44,7 @@ libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
 $(JAVA_cpp) $(JAVA_hdr): gv.i
 	$(SWIG) -c++ -java -o $(JAVA_cpp) gv.i
 
-CSHARP_cpp = gv_ocaml.cpp
+OCAML_cpp = gv_ocaml.cpp
 OCAML_hdr = gv.ml gv.mli
 libgv_ocaml_la_SOURCES = gv.cpp gv.i
 libgv_ocaml_la_DEPENDENCIES = gv.cpp $(OCAML_cpp)
@@ -52,7 +52,7 @@ libgv_ocaml_la_LIBADD = $(BASELIBS) @IO_LIBS@
 $(OCAML_cpp) $(OCAML_hdr): gv.i
 	$(SWIG) -c++ -ocaml -o $(OCAML_cpp) gv.i
 
-CSHARP_cpp = gv_perl.cpp
+PERL_cpp = gv_perl.cpp
 PERL_hdr = gv.pm
 libgv_perl_la_SOURCES = gv.cpp gv.i
 libgv_perl_la_DEPENDENCIES = gv.cpp $(PERL_cpp)
@@ -60,7 +60,7 @@ libgv_perl_la_LIBADD = $(BASELIBS) @PERL_LIBS@
 $(PERL_cpp) $(PERL_hdr): gv.i
 	$(SWIG) -c++ -perl -o $(PERL_cpp) gv.i
 
-CSHARP_cpp = gv_php.cpp
+PHP_cpp = gv_php.cpp
 PHP_hdr = gv.php php_gv.h
 libgv_php_la_SOURCES = gv.cpp gv.i
 libgv_php_la_DEPENDENCIES = gv.cpp $(PHP_cpp)
@@ -68,7 +68,7 @@ libgv_php_la_LIBADD = $(BASELIBS) @PHP_LIBS@
 $(PHP_cpp) $(PHP_hdr): gv.i
 	$(SWIG) -c++ -php -o $(PHP_cpp) gv.i
 
-CSHARP_cpp = gv_python.cpp
+PYTHON_cpp = gv_python.cpp
 PYTHON_hdr = gv.py
 libgv_python_la_SOURCES = gv.cpp gv.i
 libgv_python_la_DEPENDENCIES = gv.cpp $(PYTHON_cpp)
@@ -76,7 +76,7 @@ libgv_python_la_LIBADD = $(BASELIBS) @PYTHON_LIBS@
 $(PYTHON_cpp) $(PYTHON_hdr): gv.i
 	$(SWIG) -c++ -python -o $(PYTHON_cpp) gv.i
 
-CSHARP_cpp = gv_ruby.cpp
+RUBY_cpp = gv_ruby.cpp
 RUBY_hdr = 
 libgv_ruby_la_SOURCES = gv.cpp gv.i
 libgv_ruby_la_DEPENDENCIES = gv.cpp $(RUBY_cpp)
@@ -84,7 +84,7 @@ libgv_ruby_la_LIBADD = $(BASELIBS) @RUBY_LIBS@
 $(RUBY_cpp) $(RUBY_hdr): gv.i
 	$(SWIG) -c++ -ruby -o $(RUBY_cpp) gv.i
 
-CSHARP_cpp = gv_tcl.cpp
+TCL_cpp = gv_tcl.cpp
 TCL_hdr = 
 libgv_tcl_la_SOURCES = gv.cpp gv.i
 libgv_tcl_la_DEPENDENCIES = gv.cpp $(TCL_cpp)
@@ -234,18 +234,7 @@ test_tcl: libgv_tcl.la
 
 EXTRA_DIST = demo/* 
 
-CLEANFILES = csharp/SWIG*.cs csharp/gv*.cs csharp/*.dot \
-	csharp/*.png csharp/*.so \
-	guile/*.dot guile/*.png \
-	io/*.dot io/*.png \
-	java/*.dot java/*.png java/SWIG*.java java/gv*.java \
-	java/*.class java/*.so \
-	ocaml/*.dot ocaml/*.png ocaml/gv.ml* \
-	perl/gv.pm perl/*.so perl/*.dot perl/*.png \
-	php/gv.php php/php_gv.h php/*.so \
-	python/gv.py python/gv.pyc python/*.so python/*.dot python/*.png \
-	ruby/*.so ruby/*.dot ruby/*.png \
-	tcl/*.so tcl/*.dot tcl/*.png pkgIndex.tcl
+CLEANFILES = test_*/*
 
 DISTCLEANFILES = \
 	$(CSHARP_cpp) $(CSHARP_hdr) \
