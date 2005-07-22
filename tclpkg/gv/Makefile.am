@@ -154,7 +154,7 @@ test_csharp: libgv_csharp.la
 		ln -fs ../.libs/libgv_csharp.so gv.so; \
 		ln -fs ../*.dot ../*.cs .; \
 		$(CSHARP) *.cs -out:test.exe; \
-		$(CSHARP) test.exe)
+		mono test.exe)
 
 .PHONY: test_guile
 test_guile: libgv_guile.la

@@ -1,5 +1,7 @@
 // test.cs
 
+using System;
+
 public class test {
     static void Main() {
 	SWIGTYPE_p_Agraph_t g, sg;
@@ -7,18 +9,18 @@ public class test {
 	SWIGTYPE_p_Agedge_t e;
 
 	g = gv.digraph("G");
-	System.Console.WriteLine(gv.set(g,"aaa","xxx"));
-	System.Console.WriteLine(gv.set(g,"aaa"));
+	Console.WriteLine(gv.set(g,"aaa","xxx"));
+	Console.WriteLine(gv.set(g,"aaa"));
 	sg = gv.graph(g,"SG");
 	n = gv.node(g,"hello");
-	System.Console.WriteLine(gv.set(n,"label"));
-	System.Console.WriteLine(gv.set(n,"aaa","xxx"));
-	System.Console.WriteLine(gv.set(n,"aaa"));
+	Console.WriteLine(gv.set(n,"label"));
+	Console.WriteLine(gv.set(n,"aaa","xxx"));
+	Console.WriteLine(gv.set(n,"aaa"));
 	m = gv.node(g,"world");
-        System.Console.WriteLine(gv.set(m,"aaa"));
+        Console.WriteLine(gv.set(m,"aaa"));
 	e = gv.edge(n,m);
-	System.Console.WriteLine(gv.set(e,"aaa","xxx"));
-        System.Console.WriteLine(gv.set(e,"aaa"));
+	Console.WriteLine(gv.set(e,"aaa","xxx"));
+        Console.WriteLine(gv.set(e,"aaa"));
 	gv.rm(e);
 	gv.rm(n);
 	gv.rm(m);
