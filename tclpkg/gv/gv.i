@@ -20,7 +20,7 @@
 %}
 
 /* new graph objects */
-extern Agraph_t *stringgraph(char *string);		/* from dot-formatted string */
+extern Agraph_t *stringgraph(char *graphstring);	/* from dot-formatted string */
 extern Agraph_t *readgraph(char *filename);		/* from dot-formatted file */
 
 extern Agraph_t *digraphstrict(char *name);		/* new empty digraphstrict */

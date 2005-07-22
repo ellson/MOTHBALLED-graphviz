@@ -78,13 +78,13 @@ Agraph_t *graphstrict(char *name)
     return g;
 }
 
-Agraph_t *stringgraph(char *string)
+Agraph_t *stringgraph(char *graphstring)
 {
     Agraph_t *g;
 
     if (!gvc)
 	gvinit();
-    g = agmemread(string);
+    g = agmemread(graphstring);
     GD_drawing(g) = NULL;
     return g;
 }
