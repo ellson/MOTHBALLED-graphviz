@@ -665,7 +665,7 @@ cloneGraph (graph_t* g)
     E_weight = agfindattr(auxg->proto->e, "weight");
     if (!E_weight)
 	E_weight = agedgeattr (auxg, "weight", "");
-    E_minlen = agfindattr(auxg->proto->e, "minlen");
+    E_minlen = NULL;
     N_group = NULL;
 
     return auxg;
@@ -815,6 +815,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
 	hvye = agedge (auxg, auxt, auxh);
     }
     agxset (hvye, E_weight->index, "10000");
+    GD_gvc(auxg) = GD_gvc(g);
     dot_init_node_edge(auxg);
 
     dot_rank(auxg);
