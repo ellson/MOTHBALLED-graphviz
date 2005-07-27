@@ -36,8 +36,6 @@
 # include <sys/fpu.h>
 #endif
 
-extern void parse_args(GVC_t * gvc, int argc, char **argv);
-
 char *Info[] = {
     "dot",			/* Program */
     VERSION,			/* Version */
@@ -51,9 +49,8 @@ static graph_t * G;
 static void intr(int s)
 {
     if (G)
-	emit_jobs(Gvc, G);
-    dotneato_terminate(Gvc);
-    exit(1);
+	gvRenderJobs(Gvc, G);
+    exit (gvFreeContext(Gvc));
 }
 
 static void fperr(int s)
@@ -138,7 +135,7 @@ int main(int argc, char **argv)
     graph_t *prev = NULL;
 
     Gvc = gvNEWcontext(Info, username());
-    parse_args(Gvc, argc, argv);
+    gvParseArgs(Gvc, argc, argv);
 
 #ifndef MSWIN32
     signal(SIGUSR1, toggle);
@@ -152,8 +149,8 @@ int main(int argc, char **argv)
 	    G = create_test_graph();
 
 	    /* Perform layout and cleanup */
-	    gvlayout_layout(Gvc, G);
-	    gvlayout_cleanup(Gvc, G);
+	    gvLayoutJobs(Gvc, G);  /* take layout engine from command line */
+	    gvFreeLayout(Gvc, G);
 
 	    /* Delete graph */
 	    agclose(G);
@@ -162,14 +159,13 @@ int main(int argc, char **argv)
     } else {
 	while ((G = next_input_graph())) {
 	    if (prev) {
-		gvlayout_cleanup(Gvc, prev);
+		gvFreeLayout(Gvc, prev);
 		agclose(prev);
 	    }
-	    gvlayout_layout(Gvc, G);
-	    emit_jobs(Gvc, G);
+	    gvLayoutJobs(Gvc, G);  /* take layout engine from command line */
+	    gvRenderJobs(Gvc, G);
 	    prev = G;
 	}
     }
-    dotneato_terminate(Gvc);
-    return 1;
+    return (gvFreeContext(Gvc));
 }

@@ -22,17 +22,16 @@ int main(int argc, char **argv)
     GVC_t *gvc;
 
     gvc = gvContext();
-    parse_args(gvc, argc, argv);
+    gvParseArgs(gvc, argc, argv);
 
     while ((g = next_input_graph())) {
 	if (prev) {
-	    gvlayout_cleanup(gvc, prev);
+	    gvFreeLayout(gvc, prev);
 	    agclose(prev);
 	}
-	gvlayout_layout(gvc, g);
-	emit_jobs(gvc, g);
+	gvLayoutJobs(gvc, g);
+	gvRenderJobs(gvc, g);
 	prev = g;
     }
-    dotneato_terminate(gvc);
-    return 0;
+    return (gvFreeContext(gvc));
 }

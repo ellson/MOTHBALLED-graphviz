@@ -24,11 +24,11 @@ int main(int argc, char **argv)
     Agsym_t *a;
     GVC_t *gvc;
 
-    /* set up renderer context */
+    /* set up a graphviz context */
     gvc = gvContext();
 
     /* parse command line args - minimally argv[0] sets layout engine */
-    parse_args(gvc, argc, argv);
+    gvParseArgs(gvc, argc, argv);
 
     /* Create a simple digraph */
     g = agopen("g", AGDIGRAPH);
@@ -41,20 +41,18 @@ int main(int argc, char **argv)
 	a = agnodeattr(g, "color", "");
     agxset(n, a->index, "red");
 
-    /* Compute a layout */
-    gvlayout_layout(gvc, g);
+    /* Compute a layout using layout engine from command line args */
+    gvLayoutJobs(gvc, g);
 
     /* Write the graph according to -T and -o options */
-    emit_jobs(gvc, g);
+    gvRenderJobs(gvc, g);
 
-    /* Clean out layout data */
-    gvlayout_cleanup(gvc, g);
+    /* Free layout data */
+    gvFreeLayout(gvc, g);
 
     /* Free graph structures */
     agclose(g);
 
-    /* Clean up output file and errors */
-    dotneato_terminate(gvc);
-
-    return 0;
+    /* close output file, free context, and return number of errors */
+    return (gvFreeContext(gvc));
 }
