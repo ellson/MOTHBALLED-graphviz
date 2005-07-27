@@ -56,23 +56,26 @@ int gvlayout_select(GVC_t * gvc, char *layout)
     return NO_SUPPORT;
 }
 
-void gvlayout_layout(GVC_t * gvc, graph_t * g)
+int gvLayoutJobs(GVC_t * gvc, graph_t * g)
 {
     gvlayout_engine_t *gvle = gvc->layout.engine;
 
     graph_init(g, gvc->layout.features->flags & LAYOUT_USES_RANKDIR);
     GD_gvc(g) = gvc;
-
     if (gvle && gvle->layout)
 	gvle->layout(g);
+    return 0;
 }
 
-void gvlayout_cleanup(GVC_t * gvc, graph_t * g)
+int gvFreeLayout(GVC_t * gvc, graph_t * g)
 {
     gvlayout_engine_t *gvle = gvc->layout.engine;
 
+    g = g->root;
+    if (gvc->active_jobs)
+	gvdevice_finalize(gvc);
     if (gvle && gvle->cleanup)
 	gvle->cleanup(g);
-
     graph_cleanup(g);
+    return 0;
 }

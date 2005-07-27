@@ -41,7 +41,7 @@ int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
 
     g = g->root;
     if (GD_drawing(g)) {        /* only cleanup once between layouts */
-        gvlayout_cleanup(gvc, g);
+        gvFreeLayout(gvc, g);
         GD_drawing(g) = NULL;
     }
     rc = gvlayout_select(gvc, engine);
@@ -51,7 +51,7 @@ int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
         return -1;
     }
 
-    gvlayout_layout(gvc, g);
+    gvLayoutJobs(gvc, g);
 
 /* set bb attribute for basic layout.
  * doesn't yet include margins, scaling or page sizes because
@@ -95,14 +95,8 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
     }
     job->output_file = out;
 
-    emit_jobs(gvc, g);
+    gvRenderJobs(gvc, g);
     gvrender_delete_jobs(gvc);
 
     return 0;
-}
-
-
-void gvCleanup(GVC_t *gvc)
-{
-    gvFREEcontext(gvc);
 }

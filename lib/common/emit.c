@@ -1747,7 +1747,7 @@ static void init_bb(graph_t *g)
 extern gvevent_key_binding_t gvevent_key_binding[];
 extern int gvevent_key_binding_size;
 
-void emit_jobs (GVC_t * gvc, graph_t * g)
+int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
     GVJ_t *job;
 
@@ -1772,7 +1772,7 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
         job->output_lang = gvrender_select(job, job->output_langname);
 	if (job->output_lang == NO_SUPPORT) {
 	    fprintf(stderr,"renderer for %s is unavailable\n", job->output_langname);
-	    return;
+	    return 1;
 	}
 
         
@@ -1789,7 +1789,9 @@ void emit_jobs (GVC_t * gvc, graph_t * g)
 
         emit_job(job, g);
 
-	/* last job, after all input graphs are processed, is finalized from dotneato_terminate() */
-
+	/* the last job, after all input graphs are processed, 
+	 * 	is finalized from gvFreeContext()
+	 */
     }
+    return 0;
 }

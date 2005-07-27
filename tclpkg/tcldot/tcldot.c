@@ -57,7 +57,7 @@ static void reset_layout(GVC_t *gvc, Agraph_t * sg)
     Agraph_t *g = sg->root;
 
     if (GD_drawing(g)) {	/* only cleanup once between layouts */
-	gvlayout_cleanup(gvc, g);
+	gvFreeLayout(gvc, g);
 	GD_drawing(g) = NULL;
     }
 }
@@ -576,7 +576,7 @@ static void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine)
                 engine, gvplugin_list(gvc, API_layout, engine));
         return;
     }
-    gvlayout_layout(gvc, g);
+    gvLayoutJobs(gvc, g);
 
 /* set bb attribute for basic layout.
  * doesn't yet include margins, scaling or page sizes because
@@ -1091,7 +1091,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    tcldot_layout (gvc, g, (argc > 3) ? argv[3] : (char *) NULL);
 
 	/* render graph TK canvas commands */
-	emit_jobs(gvc, g);
+	gvLayoutJobs(gvc, g);
 
 	gvrender_delete_jobs(gvc);
 	return TCL_OK;
@@ -1125,7 +1125,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	if (!GD_drawing(g) || argc > 4)
 	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : (char *) NULL);
 	
-	emit_jobs(gvc, g);
+	gvRenderJobs(gvc, g);
 
 	gvrender_delete_jobs(gvc);
 	Tcl_AppendResult(interp, argv[2], (char *) NULL);
@@ -1265,7 +1265,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : (char *) NULL);
 	}
 
-	emit_jobs(gvc, g);
+	gvRenderJobs(gvc, g);
 
 	gvrender_delete_jobs(gvc);
 	return TCL_OK;

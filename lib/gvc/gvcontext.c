@@ -39,6 +39,12 @@
 /* from common/utils.c */
 extern void *zmalloc(size_t);
 
+/* from common/emit.c */
+extern void emit_jobs_eof(GVC_t *gvc);
+
+/* from common/globals.c */
+extern int graphviz_errors;
+
 GVC_t *gvNEWcontext(char **info, char *user)
 {
     GVC_t *gvc = zmalloc(sizeof(GVC_t));
@@ -51,8 +57,12 @@ GVC_t *gvNEWcontext(char **info, char *user)
     return gvc;
 }
 
-void gvFREEcontext(GVC_t * gvc)
+int gvFreeContext(GVC_t * gvc)
 {
+    if (gvc->active_jobs)
+	gvdevice_finalize(gvc);
+    emit_jobs_eof(gvc);
     gvrender_delete_jobs(gvc);
     free(gvc);
+    return (graphviz_errors + agerrors());
 }

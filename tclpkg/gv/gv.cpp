@@ -250,56 +250,32 @@ static void reset_layout(Agraph_t *g)
 {
     g = g->root;
     if (GD_drawing(g)) {        /* only cleanup once between layouts */
-	gvlayout_cleanup(gvc, g);
+	gvFreeLayout(gvc, g);
         GD_drawing(g) = NULL;
     }
 }
 
 void layout(Agraph_t *g, char *engine)
 {
-    char buf[256];
-    Agsym_t *a;
-    int rc;
+    int err;
 
-    g = g->root;
-    reset_layout(g);            /* in case previously drawn */
-
-    rc = gvlayout_select(gvc, engine);
-    if (rc == NO_SUPPORT) {
-        fprintf(stderr, "Layout type: \"%s\" not recognized. Use one of:%s\n",
-		engine, gvplugin_list(gvc, API_layout, engine));
-        return;
+    err = gvLayout(gvc, g, engine);
+    if (err) {
+	fprintf(stderr, "Layout type: \"%s\" not recognized. Use one of:%s\n",                engine, gvplugin_list(gvc, API_layout, engine));
+	return;
     }
-
-    gvlayout_layout(gvc, g);
-
-/* set bb attribute for basic layout.
- * doesn't yet include margins, scaling or page sizes because
- * those depend on the renderer being used. */
-    if (GD_drawing(g)->landscape)
-        sprintf(buf, "%d %d %d %d",
-                ROUND(GD_bb(g).LL.y), ROUND(GD_bb(g).LL.x),
-                ROUND(GD_bb(g).UR.y), ROUND(GD_bb(g).UR.x));
-    else
-        sprintf(buf, "%d %d %d %d",
-                ROUND(GD_bb(g).LL.x), ROUND(GD_bb(g).LL.y),
-                ROUND(GD_bb(g).UR.x), ROUND(GD_bb(g).UR.y));
-    if (!(a = agfindattr(g, "bb"))) {
-        a = agraphattr(g, "bb", "");
-    }
-    agxset(g, a->index, buf);
 }
 
 void writegraph(Agraph_t *g, char *filename, char *format)
 {
-    int rc;
+    int err;
     GVJ_t *job;
 
     g = g->root;
 
     /* create a job for the required format */
-    rc = gvrender_output_langname_job(gvc, format);
-    if (rc == NO_SUPPORT) {
+    err = gvrender_output_langname_job(gvc, format);
+    if (err == NO_SUPPORT) {
         fprintf(stderr, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
 		format, gvplugin_list(gvc, API_render, format));
         return;
@@ -313,6 +289,6 @@ void writegraph(Agraph_t *g, char *filename, char *format)
     }
     gvrender_output_filename_job(gvc, filename);
     
-    emit_jobs(gvc, g);
+    gvRenderJobs(gvc, g);
     gvrender_delete_jobs(gvc);
 }

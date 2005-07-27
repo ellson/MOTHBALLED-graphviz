@@ -52,7 +52,6 @@ extern "C" {
     extern void dotneato_usage(int);
     extern void dotneato_postprocess(Agraph_t *, nodesizefn_t);
     extern void dotneato_set_margins(GVC_t * gvc, Agraph_t *);
-    extern void dotneato_terminate(GVC_t * gvc);
     extern void dotneato_write(GVC_t * gvc, graph_t *g);
     extern void dotneato_write_one(GVC_t * gvc, graph_t *g);
     extern double elapsed_sec(void);
@@ -62,7 +61,6 @@ extern "C" {
     extern void emit_graph(GVJ_t * job, graph_t * g);
     extern void emit_label(GVJ_t * job, textlabel_t *, void *obj);
     extern int emit_once(char *message);
-    extern void emit_jobs(GVC_t * gvc, graph_t *g);
     extern void emit_jobs_eof(GVC_t * gvc);
     extern void emit_textlines(GVJ_t*, int, textline_t*, pointf,
               double, char*, double, char*);
@@ -99,7 +97,6 @@ extern "C" {
     extern bezier *new_spline(edge_t * e, int sz);
     extern Agraph_t *next_input_graph(void);
     extern void osize_label(textlabel_t *, int *, int *, int *, int *);
-    extern void parse_args(GVC_t *gvc, int argc, char** argv);
     extern char **parse_style(char *s);
     extern void place_graph_label(Agraph_t *);
     extern void place_portlabel(edge_t * e, boolean head_p);

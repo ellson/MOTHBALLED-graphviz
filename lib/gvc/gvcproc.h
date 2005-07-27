@@ -23,10 +23,11 @@
 extern "C" {
 #endif
 
+/* these are intended to be private entry points - see gvc.h for the public ones */
+
 /* context */
 
     extern GVC_t *gvNEWcontext(char **info, char *user);
-    extern void gvFREEcontext(GVC_t * gvc);
 
 /* configuration */
 
@@ -122,8 +123,6 @@ extern "C" {
 /* layout */
 
     extern int gvlayout_select(GVC_t * gvc, char *str);
-    extern void gvlayout_layout(GVC_t * gvc, graph_t * g);
-    extern void gvlayout_cleanup(GVC_t * gvc, graph_t * g);
 
 #ifdef __cplusplus
 }
