@@ -34,9 +34,9 @@ int main(int argc, char **argv)
 
     gvRender(gvc, g, "plain", stdout);
 
-    gvCleanup(gvc);
+    gvFreeLayout(gvc, g);
 
     agclose(g);
-    
-    return 0;
+
+    return (gvFreeContext(gvc));
 }
