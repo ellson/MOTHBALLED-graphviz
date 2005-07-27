@@ -397,7 +397,7 @@ codegen_info_t *next_codegen(codegen_info_t * p)
 /*
   gvconfig - parse a config file and install the identified plugins
  */
-void gvconfig(GVC_t * gvc)
+void gvconfig(GVC_t * gvc, boolean rescan)
 {
 #ifdef DISABLE_LTDL
     gvplugin_library_t **libraryp;
@@ -437,16 +437,18 @@ void gvconfig(GVC_t * gvc)
     strcpy(config_path, GVLIBDIR);
     strcat(config_path, "/");
     strcat(config_path, config_file_name);
-    rc = stat(config_path, &config_st);
 	
-    if (rc == -1 || libdir_st.st_mtime > config_st.st_mtime) {
+    if (rescan) {
 	config_rescan(gvc, config_path);
     }
     else {
 	/* load in the cached plugin library data */
 
-	rc = 0;
-	if (config_st.st_size > MAX_SZ_CONFIG) {
+    	rc = stat(config_path, &config_st);
+	if (rc == -1) {
+	    agerr(AGERR,"Unable to stat %s.\n", config_path);
+	}
+	else if (config_st.st_size > MAX_SZ_CONFIG) {
 	    agerr(AGERR,"%s is bigger than I can handle.\n", config_path);
 	}
 	else {
@@ -469,10 +471,6 @@ void gvconfig(GVC_t * gvc)
 	    }
 	    if (f)
 		fclose(f);
-	}
-	if (!rc) {
-	    agerr(AGERR,"rescanning for plugins\n");
-	    config_rescan(gvc, config_path);
 	}
     }
     if (config_path)

@@ -62,6 +62,11 @@ static char *memtestFlags = "(additional options for memtest)  [-m]\n";
 static char *memtestItems = "\n\
  -m          - Memory test (Observe no growth with top. Kill when done.)\n";
 
+static char *configFlags = "(additional options for config)  [-c]\n";
+static char *configItems = "\n\
+ -m          - Configure plugins (Writes $prefix/lib/graphviz/config \n\
+               with available plugin information.  Needs write priviledge.)\n";
+
 void dotneato_usage(int exval)
 {
     FILE *outs;
@@ -75,10 +80,12 @@ void dotneato_usage(int exval)
     fputs(neatoFlags, outs);
     fputs(fdpFlags, outs);
     fputs(memtestFlags, outs);
+    fputs(configFlags, outs);
     fputs(genericItems, outs);
     fputs(neatoItems, outs);
     fputs(fdpItems, outs);
     fputs(memtestItems, outs);
+    fputs(configItems, outs);
 
     if (exval >= 0)
 	exit(exval);
@@ -141,7 +148,9 @@ void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
     Gvfilepath = getenv("GV_FILE_PATH");
 
     /* configure for available plugins and codegens */
-    gvconfig(gvc);
+    gvconfig(gvc, Config);
+    if (Config)
+	exit (0);
 
     CmdName = basename(argv[0]);
     i = gvlayout_select(gvc, CmdName);

@@ -1645,7 +1645,7 @@ int Tcldot_Init(Tcl_Interp * interp)
     gvc = gvNEWcontext(Info, username());
 
     /* configure for available plugins and codegens */
-    gvconfig(gvc);
+    gvconfig(gvc, FALSE);
     /* additional codegens */
     for (p = cg; p->name; ++p)
         gvplugin_install(gvc, API_render, p->name, 0, "cg", NULL,

@@ -64,7 +64,7 @@ extern "C" {
     EXTERN int Obj;
 #endif
 
-    EXTERN boolean Verbose, Reduce, MemTest;
+    EXTERN boolean Verbose, Reduce, MemTest, Config;
     EXTERN char *HTTPServerEnVar;
     EXTERN char *Output_file_name;
     EXTERN int graphviz_errors;

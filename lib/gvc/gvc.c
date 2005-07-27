@@ -29,7 +29,7 @@ GVC_t *gvContext(void)
     aginit();
     agnodeattr(NULL, "label", NODENAME_ESC);
     gvc = gvNEWcontext(Info, username());
-    gvconfig(gvc); /* configure for available plugins and codegens */
+    gvconfig(gvc, FALSE); /* configure for available plugins and codegens */
     return gvc;
 }
 

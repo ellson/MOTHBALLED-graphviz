@@ -113,6 +113,36 @@ memtest_extra_args(GVC_t *gvc, int argc, char** argv)
   return cnt;
 }
 
+static int
+config_extra_args(GVC_t *gvc, int argc, char** argv)
+{
+  char** p = argv+1;
+  int    i;
+  char*  arg;
+  int    cnt = 1;
+
+  for (i = 1; i < argc; i++) {
+    arg = argv[i];
+    if (arg && *arg == '-') {
+      switch (arg[1]) {
+      case 'c' : Config = TRUE; break;
+      default :
+        cnt++;
+        if (*p != arg) *p = arg;
+        p++;
+        break;
+      }
+    }
+    else {
+      cnt++;
+      if (*p != arg) *p = arg;
+      p++;
+    }
+  }
+  *p = 0;
+  return cnt;
+}
+
 /* setDouble:
  * If arg is an double, value is stored in v
  * and functions returns 0; otherwise, returns 1.
@@ -222,6 +252,7 @@ int gvParseArgs(GVC_t *gvc, int argc, char** argv)
     argc = neato_extra_args(gvc, argc, argv);
     argc = fdp_extra_args(gvc, argc, argv);
     argc = memtest_extra_args(gvc, argc, argv);
+    argc = config_extra_args(gvc, argc, argv);
     dotneato_initialize(gvc, argc, argv);
     return 0;
 }

@@ -31,7 +31,7 @@ static void gvinit()
     gvc = gvNEWcontext(Info, username());
 
     /* configure for available plugins and codegens */
-    gvconfig(gvc);
+    gvconfig(gvc, FALSE);
 }
 
 Agraph_t *digraph(char *name)
