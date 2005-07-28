@@ -251,9 +251,7 @@ char * gvconfig_libdir(void)
     return libdir;
 }
 
-#ifdef DISABLE_LTDL
 extern gvplugin_library_t *builtins[];
-#endif
 
 #ifndef DISABLE_LTDL
 static void config_rescan(GVC_t *gvc, char *config_path)
@@ -431,9 +429,8 @@ codegen_info_t *next_codegen(codegen_info_t * p)
  */
 void gvconfig(GVC_t * gvc, boolean rescan)
 {
-#ifdef DISABLE_LTDL
     gvplugin_library_t **libraryp;
-#else
+#ifndef DISABLE_LTDL
     int sz, rc;
     struct stat config_st, libdir_st;
     FILE *f = NULL;
@@ -452,11 +449,10 @@ void gvconfig(GVC_t * gvc, boolean rescan)
                         "cg", NULL, (gvplugin_installed_t *) p);
 #endif
 
-#ifdef DISABLE_LTDL
     for (libraryp = builtins; *libraryp; libraryp++) {
 	gvconfig_plugin_install_from_library(gvc, NULL, *libraryp);
     }
-#else
+#ifndef DISABLE_LTDL
     /* see if there are any new plugins */
     libdir = gvconfig_libdir();
     rc = stat(libdir, &libdir_st);

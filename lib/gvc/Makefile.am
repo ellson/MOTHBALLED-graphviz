@@ -22,20 +22,11 @@ libgvc_la_SOURCES = gvrender.c gvlayout.c gvtextlayout.c gvdevice.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c gvusershape.c \
 	gvc.c
 
-if DISABLE_LTDL
 libgvc_la_LIBADD = \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	$(top_builddir)/plugin/libplugins.la \
-	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@
-else
-libgvc_la_LIBADD = \
-	$(top_builddir)/lib/common/libcommon.la \
-	$(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la \
 	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
-endif
-
 
 EXTRA_DIST = Makefile.old
