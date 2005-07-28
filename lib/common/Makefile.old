@@ -48,7 +48,7 @@ htmllex.o : htmllex.c
 
 install: libcommon.a 
 	$(MKPATH) $(INCDIR)
-	$(INSTALL) const.h globals.h macros.h render.h renderprocs.h types.h $(INCDIR)
+	$(INSTALL) const.h globals.h macros.h render.h renderprocs.h types.h utils.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libcommon.a $(LIBDIR)
 
