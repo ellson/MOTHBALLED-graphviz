@@ -136,7 +136,7 @@ static char* basename (char* path)
     else return path;
 }
 
-void dotneato_initialize(GVC_t * gvc, int argc, char **argv)
+void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
     char *rest, c, *val;
     int i, v, nfiles;

@@ -48,7 +48,7 @@ extern "C" {
     extern void do_graph_label(graph_t * sg);
     extern void graph_init(graph_t * g, boolean use_rankdir);
     extern void graph_cleanup(graph_t * g);
-    extern void dotneato_initialize(GVC_t * gvc, int, char **);
+    extern void dotneato_args_initialize(GVC_t * gvc, int, char **);
     extern void dotneato_usage(int);
     extern void dotneato_postprocess(Agraph_t *, nodesizefn_t);
     extern void dotneato_set_margins(GVC_t * gvc, Agraph_t *);
