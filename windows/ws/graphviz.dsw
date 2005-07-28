@@ -15,18 +15,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "cairo"="..\plugin\cairo\cairo.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "cdt"="..\lib\cdt\cdt.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -87,18 +75,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "dotneato"="..\lib\dotneato\dotneato.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "dotty"="..\cmd\dotty\dotty.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -135,18 +111,6 @@ Package=<4>
 
 ###############################################################################
 
-Project: "gdplug"="..\plugin\gd\gdplug.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
 Project: "gfx"="..\cmd\lefty\gfx\gfx.dsp" - Package Owner=<4>
 
 Package=<5>
@@ -172,18 +136,6 @@ Package=<4>
 ###############################################################################
 
 Project: "gvc"="..\lib\gvc\gvc.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "layout"="..\plugin\layout\layout.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -255,19 +207,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "plugin"="..\plugin\plugin.dsp" - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "text"="..\plugin\text\text.dsp" - Package Owner=<4>
+Project: "plugin"="..\lib\plugin\plugin.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
