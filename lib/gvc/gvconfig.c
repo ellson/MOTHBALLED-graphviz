@@ -49,10 +49,6 @@
         VTX_CodeGen, GD_CodeGen, memGD_CodeGen;
 #endif
 
-#ifndef DISABLE_LTDL
-static char *libdir = GVLIBDIR;
-#endif
-
 /*
     A config for gvrender is a text file containing a
     list of plugin librariess and their capabilities using a tcl-like
@@ -221,6 +217,40 @@ static void gvconfig_write_library_config(char *path, gvplugin_library_t *librar
     fputs ("}\n", f);
 }
 
+char * gvconfig_libdir(void)
+{
+    static char line[1024];
+    static char *libdir;
+    char *path, *tmp;
+    FILE *f;
+
+    if (!libdir) {
+
+        /* this only works on linux, other systems will get GVLIBDIR only */
+	libdir = GVLIBDIR;
+        f = fopen ("/proc/self/maps", "r");
+        if (f) {
+            while (!feof (f)) {
+	        if (!fgets (line, sizeof (line), f))
+	            continue;
+	        if (!strstr (line, " r-xp "))
+	            continue;
+		path = strchr (line, '/');
+		if (!path)
+		    continue;
+		tmp = strstr (path, "/libgvc.");
+		if (tmp) {
+		    *tmp = 0;
+		    libdir = path;
+		    break;
+	        }
+            }
+            fclose (f);
+        }
+    }
+    return libdir;
+}
+
 #ifdef DISABLE_LTDL
 extern gvplugin_library_t *builtins[];
 #endif
@@ -230,7 +260,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 {
     FILE *f = NULL;
     glob_t globbuf;
-    char *config_glob, *path;
+    char *config_glob, *path, *libdir;
     int i, rc;
     gvplugin_library_t *library;
     char *plugin_glob = "libgvplugin*.so.?";
@@ -241,6 +271,8 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 	    agerr(AGERR,"failed to open %s for write.\n", config_path);
 	}
     }
+
+    libdir = gvconfig_libdir();
 
     /* load all libraries even if can't save config */
     config_glob = malloc(strlen(libdir)
@@ -406,7 +438,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
     struct stat config_st, libdir_st;
     FILE *f = NULL;
     char *config_path = NULL, *config_text = NULL;
-
+    char *libdir;
     char *config_file_name = "config";
 
 #define MAX_SZ_CONFIG 100000
@@ -426,15 +458,15 @@ void gvconfig(GVC_t * gvc, boolean rescan)
     }
 #else
     /* see if there are any new plugins */
-
+    libdir = gvconfig_libdir();
     rc = stat(libdir, &libdir_st);
     if (rc == -1) {	/* if we fail to stat it then it probably doesn't exist
 		   so just fail silently */
 	return;
     }
 
-    config_path = malloc(strlen(GVLIBDIR) + 1 + strlen(config_file_name) + 1);
-    strcpy(config_path, GVLIBDIR);
+    config_path = malloc(strlen(libdir) + 1 + strlen(config_file_name) + 1);
+    strcpy(config_path, libdir);
     strcat(config_path, "/");
     strcat(config_path, config_file_name);
 	

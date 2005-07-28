@@ -33,10 +33,6 @@
 #include        "gvcint.h"
 #include        "gvcproc.h"
 
-#ifndef DISABLE_LTDL
-static char *libdir = GVLIBDIR;
-#endif
-
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined gvplugin.h.  The apis array is
@@ -111,9 +107,10 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     int len;
     static char *p;
     static int lenp;
-
+    char *libdir;
     char *suffix = "_LTX_library";
 
+    libdir = gvconfig_libdir();
     len = strlen(libdir) + 1 + strlen(path) + 1;
     if (len > lenp) {
 	lenp = len+20;
