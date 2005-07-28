@@ -80,24 +80,31 @@ static void heapify(heap * h, int i, int index[], Word dist[])
     }
 }
 
+#ifdef OBSOLETE
+/* originally, the code called mkHeap to allocate space, then
+ * initHeap to realloc the space. This is silly.
+ * Now we just call initHeap.
+ */
 static void mkHeap(heap * h, int size)
 {
     h->data = N_GNEW(size, int);
     h->heapSize = 0;
 }
+#endif
 
 static void freeHeap(heap * h)
 {
-    free(h->data);
+    if (h->data) free(h->data);
 }
 
 static void
 initHeap(heap * h, int startVertex, int index[], Word dist[], int n)
 {
     int i, count;
-    int j;			/* We cannot use an unsigned value in this loop */
+    int j;    /* We cannot use an unsigned value in this loop */
     /* h->data=(int*) realloc(h->data, (n-1)*sizeof(int)); */
-    h->data = N_GNEW(n - 1, int);
+    if (n == 1) h->data = NULL;
+    else h->data = N_GNEW(n - 1, int);
     h->heapSize = n - 1;
 
     for (count = 0, i = 0; i < n; i++)
@@ -156,7 +163,9 @@ void dijkstra(int vertex, vtx_data * graph, int n, DistType * dist)
     DistType closestDist, prevClosestDist = MAXINT;
     static int *index;
 
+#ifdef OBSOLETE
     mkHeap(&H, n);
+#endif
     index = (int *) realloc(index, n * sizeof(int));
 
     /* initial distances with edge weights: */
@@ -229,7 +238,9 @@ dijkstra_bounded(int vertex, vtx_data * graph, int n, DistType * dist,
     }
 
 
+#ifdef OBSOLETE
     mkHeap(&H, n);
+#endif
     index = (int *) realloc(index, n * sizeof(int));
 
     /* initial distances with edge weights: */
@@ -239,7 +250,8 @@ dijkstra_bounded(int vertex, vtx_data * graph, int n, DistType * dist,
     for (i = 1; i < graph[vertex].nedges; i++)
 	dist[graph[vertex].edges[i]] = (DistType) graph[vertex].ewgts[i];
 
-    initHeap(&H, vertex, index, dist, n);	/* again, TOO COSTLY (O(n)) to put all nodes in heap! */
+    /* again, TOO COSTLY (O(n)) to put all nodes in heap! */
+    initHeap(&H, vertex, index, dist, n); 
 
     while (num_found < num_visited_nodes
 	   && extractMax(&H, &closestVertex, index, dist)) {
@@ -356,7 +368,9 @@ void dijkstra_f(int vertex, vtx_data * graph, int n, float *dist)
     float closestDist;
     int *index;
 
+#ifdef OBSOLETE
     mkHeap(&H, n);
+#endif
     index = N_GNEW(n, int);
 
     /* initial distances with edge weights: */

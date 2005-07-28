@@ -141,11 +141,12 @@ stress_majorization_with_hierarchy(
 		if (dim==2) {
 			IMDS_given_dim(graph, n, y, x, Epsilon);
 		}
-	}	
+	}
 	else {
         initLayout(graph, n, dim, d_coords);
 		hierarchy_spread = compute_hierarchy(graph, n, abs_tol, relative_tol, NULL, &ordering, &levels, &num_levels);		
 	}
+    if (n == 1) return 0;
 
 	hierarchy_boundaries = N_GNEW(num_levels, float);
 

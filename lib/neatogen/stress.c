@@ -1583,6 +1583,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
     } else {
 	havePinned = initLayout(graph, n, dim, d_coords);
     }
+    if (n == 1) return 0;
 
     if (Verbose) {
 	fprintf(stderr, ": %.2f sec\n", elapsed_sec());
