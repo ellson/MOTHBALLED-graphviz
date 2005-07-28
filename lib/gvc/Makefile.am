@@ -26,9 +26,6 @@ libgvc_la_LIBADD = \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
-	$(top_builddir)/lib/plugin/libgvplugin_dot_layout.la \
-	$(top_builddir)/lib/plugin/libgvplugin_neato_layout.la \
-	$(top_builddir)/lib/plugin/libgvplugin_usershape_gd.la \
 	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
 
 EXTRA_DIST = Makefile.old builtins.c

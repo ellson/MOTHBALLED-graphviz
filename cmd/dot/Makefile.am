@@ -18,7 +18,11 @@ man_MANS = dot.1
 pdf_DATA = dot.pdf
 
 dot_SOURCES = dot.c $(top_srcdir)/lib/gvc/builtins.c
-dot_LDADD = $(top_builddir)/lib/gvc/libgvc.la
+dot_LDADD = \
+	$(top_builddir)/lib/plugin/libgvplugin_dot_layout.la \
+	$(top_builddir)/lib/plugin/libgvplugin_neato_layout.la \
+	$(top_builddir)/lib/plugin/libgvplugin_usershape_gd.la \
+	$(top_builddir)/lib/gvc/libgvc.la
 
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); for i in $(linkedman); do rm -f $$i; $(LN_S) dot.1 $$i; done;)
@@ -44,14 +48,16 @@ dot_static: dot.o
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_usershape_gd.a \
 	$(top_builddir)/lib/gvc/.libs/libgvc.a \
-	$(top_builddir)/lib/gd/.libs/libgvgd.a \
-	$(top_builddir)/lib/pack/.libs/libpack.a \
 	$(top_builddir)/lib/pathplan/.libs/libpathplan.a \
+	$(top_builddir)/lib/pack/.libs/libpack.a \
 	$(top_builddir)/lib/graph/.libs/libgraph.a \
 	$(top_builddir)/lib/cdt/.libs/libcdt.a \
-	-lfreetype -lfontconfig -lexpat -lpng -ljpeg -lltdl \
+	$(top_builddir)/lib/gd/.libs/libgvgd.a \
+	-lfreetype -lfontconfig -lexpat -lpng -ljpeg -lltdl -lz \
 	-o dot_static
 
 EXTRA_DIST = Makefile.old dot.1 dot.pdf 
+
+CLEANFILES = dot_static
 
 DISTCLEANFILES = dot.pdf

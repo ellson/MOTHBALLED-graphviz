@@ -36,6 +36,9 @@ libtcldot_la_SOURCES = tcldot.c tkgen.c \
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
+        $(top_builddir)/lib/plugin/libgvplugin_dot_layout.la \
+        $(top_builddir)/lib/plugin/libgvplugin_neato_layout.la \
+        $(top_builddir)/lib/plugin/libgvplugin_usershape_gd.la \
 	$(top_builddir)/lib/gvc/libgvc.la
 
 if WITH_TCL
