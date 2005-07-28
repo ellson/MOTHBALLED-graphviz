@@ -774,8 +774,8 @@ static void svg_ellipse(point p, int rx, int ry, int filled)
 	rx = ry;
 	ry = t;
     }
-    mp.x = rx;
-    mp.y = ry;
+    mp.x = Scale*rx;
+    mp.y = Scale*ry;
     svg_printf(" rx=\"%d\" ry=\"%d\"/>\n", mp.x, mp.y);
 }
 
