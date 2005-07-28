@@ -18,7 +18,7 @@ pkginclude_HEADERS = gvc.h gvcint.h gvplugin.h gvcproc.h gvplugin_render.h \
 pkglib_LTLIBRARIES = libgvc.la
 pkgconfig_DATA = libgvc.pc
 
-libgvc_la_SOURCES = builtins.c gvrender.c gvlayout.c gvtextlayout.c gvdevice.c \
+libgvc_la_SOURCES = gvrender.c gvlayout.c gvtextlayout.c gvdevice.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c gvusershape.c \
 	gvc.c
 
@@ -31,4 +31,4 @@ libgvc_la_LIBADD = \
 	$(top_builddir)/lib/plugin/libgvplugin_usershape_gd.la \
 	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
 
-EXTRA_DIST = Makefile.old
+EXTRA_DIST = Makefile.old builtins.c

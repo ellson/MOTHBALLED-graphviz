@@ -1,28 +1,13 @@
-COMPILE=libtool --tag=CC --mode=compile ${CC} -c
-LINK=libtool --tag=CC --mode=link ${CC}
-
-CFLAGS=`pkg-config libgvc --cflags` -Wall -g -O0
+CFLAGS=`pkg-config libgvc --cflags` -Wall -g -O2
 LDFLAGS=`pkg-config libgvc --libs`
 
 all: dot demo simple
 
-dot: dot.lo
-	${LINK} ${LDFLAGS} -o $@ dot.lo
+dot: dot.o builtins.o
 
-dot.lo: dot.c
-	${COMPILE} ${CFLAGS} -o $@ dot.c
+demo: demo.o builtins.o
 
-demo: demo.lo
-	${LINK} ${LDFLAGS} -o $@ demo.lo
-
-demo.lo: demo.c
-	${COMPILE} ${CFLAGS} -o $@ demo.c
-
-simple: simple.lo
-	${LINK} ${LDFLAGS} -o $@ simple.lo
-
-simple.lo: simple.c
-	${COMPILE} ${CFLAGS} -o $@ simple.c
+simple: simple.o builtins.o
 
 clean:
-	rm -rf .libs dot demo simple *.o *.lo
+	rm -rf *.o dot demo simple *.png

@@ -10,64 +10,65 @@ AM_CPPFLAGS = \
 
 LIBS =  @LIBS@ -lc
 
-BASELIBS =  $(top_builddir)/lib/gvc/libgvc.la
+BASESOURCES = gv.cpp $(top_srcdir)/lib/gvc/builtins.c
+BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
 
 #CSHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs
-#libgv_csharp_la_SOURCES = gv.cpp gv_csharp.cpp
+#libgv_csharp_la_SOURCES = $(BASESOURCES) gv_csharp.cpp
 #libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@ 
 #gv_csharp.cpp $(CSHARP_hdr): gv.i
 #	$(SWIG) -c++ -csharp -namespace gv -o gv_csharp.cpp gv.i
 
 #GUILE_hdr = 
-#libgv_guile_la_SOURCES = gv.cpp gv.gv_guile.cpp
+#libgv_guile_la_SOURCES = $(BASESOURCES) gv.gv_guile.cpp
 #libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
 #gv_guile.cpp $(GUILE_hdr): gv.i
 #	$(SWIG) -c++ -guile -o gv_guile.cpp gv.i
 
 #IO_hdr = 
-#libgv_io_la_SOURCES = gv.cpp gv_io.cpp
+#libgv_io_la_SOURCES = $(BASESOURCES) gv_io.cpp
 #libgv_io_la_LIBADD = $(BASELIBS) @IO_LIBS@
 #gv_io.cpp $(IO_hdr): gv.i
 #	$(SWIG) -c++ -io -o gv_io.cpp gv.i
 
 JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java
-libgv_java_la_SOURCES = gv.cpp gv_java.cpp
+libgv_java_la_SOURCES = $(BASESOURCES) gv_java.cpp
 libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
 gv_java.cpp $(JAVA_hdr): gv.i
 	$(SWIG) -c++ -java -o gv_java.cpp gv.i
 
 #OCAML_hdr = gv.ml gv.mli
-#libgv_ocaml_la_SOURCES = gv.cpp gv_ocaml.cpp
+#libgv_ocaml_la_SOURCES = $(BASESOURCES) gv_ocaml.cpp
 #libgv_ocaml_la_LIBADD = $(BASELIBS) @IO_LIBS@
 #gv_ocaml.cpp $(OCAML_hdr): gv.i
 #	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp gv.i
 
 PERL_hdr = gv.pm
-libgv_perl_la_SOURCES = gv.cpp gv_perl.cpp
+libgv_perl_la_SOURCES = $(BASESOURCES) gv_perl.cpp
 libgv_perl_la_LIBADD = $(BASELIBS) @PERL_LIBS@
 gv_perl.cpp $(PERL_hdr): gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp gv.i
 
 PHP_hdr = gv.php php_gv.h
-libgv_php_la_SOURCES = gv.cpp gv_php.cpp
+libgv_php_la_SOURCES = $(BASESOURCES) gv_php.cpp
 libgv_php_la_LIBADD = $(BASELIBS) @PHP_LIBS@
 gv_php.cpp $(PHP_hdr): gv.i
 	$(SWIG) -c++ -php -o gv_php.cpp gv.i
 
 PYTHON_hdr = gv.py
-libgv_python_la_SOURCES = gv.cpp gv_python.cpp
+libgv_python_la_SOURCES = $(BASESOURCES) gv_python.cpp
 libgv_python_la_LIBADD = $(BASELIBS) @PYTHON_LIBS@
 gv_python.cpp $(PYTHON_hdr): gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp gv.i
 
 RUBY_hdr = 
-libgv_ruby_la_SOURCES = gv.cpp gv_ruby.cpp
+libgv_ruby_la_SOURCES = $(BASESOURCES) gv_ruby.cpp
 libgv_ruby_la_LIBADD = $(BASELIBS) @RUBY_LIBS@
 gv_ruby.cpp $(RUBY_hdr): gv.i
 	$(SWIG) -c++ -ruby -o gv_ruby.cpp gv.i
 
 TCL_hdr = 
-libgv_tcl_la_SOURCES = gv.cpp gv_tcl.cpp
+libgv_tcl_la_SOURCES = $(BASESOURCES) gv_tcl.cpp
 libgv_tcl_la_LIBADD = $(top_builddir)/tclpkg/tclstubs/libtclstubs.la $(BASELIBS) @TCL_LIBS@
 gv_tcl.cpp $(TCL_hdr): gv.i
 	$(SWIG) -c++ -tcl -namespace -o gv_tcl.cpp gv.i

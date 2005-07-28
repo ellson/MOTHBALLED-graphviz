@@ -17,7 +17,7 @@ bin_PROGRAMS = dot
 man_MANS = dot.1 
 pdf_DATA = dot.pdf
 
-dot_SOURCES = dot.c
+dot_SOURCES = dot.c $(top_srcdir)/lib/gvc/builtins.c
 dot_LDADD = $(top_builddir)/lib/gvc/libgvc.la
 
 install-data-hook:
@@ -37,6 +37,20 @@ uninstall-hook:
 
 dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 	groff -Tps -man $(top_srcdir)/cmd/dot/dot.1 | ps2pdf - - >$@
+
+dot_static: dot.o
+	$(CC) dot.o builtins.o \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout.a \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout.a \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_usershape_gd.a \
+	$(top_builddir)/lib/gvc/.libs/libgvc.a \
+	$(top_builddir)/lib/gd/.libs/libgvgd.a \
+	$(top_builddir)/lib/pack/.libs/libpack.a \
+	$(top_builddir)/lib/pathplan/.libs/libpathplan.a \
+	$(top_builddir)/lib/graph/.libs/libgraph.a \
+	$(top_builddir)/lib/cdt/.libs/libcdt.a \
+	-lfreetype -lfontconfig -lexpat -lpng -ljpeg -lltdl \
+	-o dot_static
 
 EXTRA_DIST = Makefile.old dot.1 dot.pdf 
 
