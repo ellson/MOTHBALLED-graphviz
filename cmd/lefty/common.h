@@ -24,7 +24,18 @@ extern "C" {
 #define _COMMON_H
 
 /* some config and conversion definitions from graphviz distribution */
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+/* we set some parameters which graphviz assumes.
+ * At some point, we could consider allowing these to be set in configure
+ * See Makefile.old for others.
+ */
+#define FEATURE_MINTSIZE 1 
+#define FEATURE_DOT 1
+#ifndef MSWIN32
+#define FEATURE_X11 1
+#endif
+#endif
 
 #ifdef _PACKAGE_ast
 #include <ast.h>

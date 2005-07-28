@@ -24,8 +24,7 @@ SUBDIRS = ws os dot2l examples
 leftydir = $(pkgdatadir)/lefty
 pdfdir = $(pkgdatadir)/doc/pdf
 
-DEFINES=-DLEFTYPATH=\"$(LEFTYLIBDIR)\" -DHAVE_CONFIG_H \
-        -DFEATURE_MINTSIZE -DFEATURE_DOT -DFEATURE_X11
+DEFINES=-DLEFTYPATH=\"$(LEFTYLIBDIR)\" -DHAVE_CONFIG_H
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/cmd/lefty/ws/x11 \
