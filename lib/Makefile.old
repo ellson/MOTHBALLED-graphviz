@@ -1,5 +1,5 @@
-SUBDIRS = cdt graph agraph gd pathplan vmalloc sfio ast expr circogen \
-	dotgen fdpgen neatogen pack twopigen common gvc ingraphs
+SUBDIRS = cdt graph agraph gd pathplan agutil sfio vmalloc ast circogen \
+    dotgen fdpgen neatogen pack twopigen plugin common gvc ingraphs expr
 
 all install clean :
 	(for i in ${SUBDIRS}; do (cd $$i; make $@); done)       
