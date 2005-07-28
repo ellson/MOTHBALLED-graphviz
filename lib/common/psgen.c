@@ -104,14 +104,12 @@ static void ps_comment(char *str)
 static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     char *s;
-    point sz;
 
     PB = bb;
-    sz = add_points(PB.LL, PB.UR);
     if (onetime) {
 	if (Show_boxes == NULL)
 	    fprintf(Output_file, "%%%%BoundingBox: %d %d %d %d\n",
-		0, 0, sz.x, sz.y);
+		PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
 	fprintf(Output_file, "%%%%EndComments\nsave\n");
 	cat_libfile(Output_file, U_lib, ps_txt);
 	epsf_define(Output_file);

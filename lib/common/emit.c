@@ -1062,6 +1062,7 @@ static void init_job_dpi(GVJ_t *job, graph_t *g)
             job->dpi = job->render.features->default_dpi;
             break;
         case POSTSCRIPT:
+        case PDF:
         case SVG:
 	    job->dpi = POINTS_PER_INCH;
             break;
