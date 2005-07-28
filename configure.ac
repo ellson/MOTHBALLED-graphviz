@@ -1501,9 +1501,7 @@ AC_CONFIG_FILES(Makefile
 	lib/ingraphs/Makefile
 	lib/gvc/Makefile
 	lib/gvc/libgvc.pc
-	plugin/Makefile
-	plugin/layout/Makefile
-	plugin/usershape/Makefile
+	lib/plugin/Makefile
 	cmd/Makefile
 	cmd/dot/Makefile
 	cmd/tools/Makefile
