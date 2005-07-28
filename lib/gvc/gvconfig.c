@@ -78,6 +78,7 @@
 
  */
 
+#ifndef DISABLE_LTDL
 /*
   separator - consume all non-token characters until next token.  This includes:
 	comments:   '#' ... '\n'
@@ -143,7 +144,6 @@ static char *token(int *nest, char **tokens)
     return t;
 }
 
-#ifndef DISABLE_LTDL
 static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 {
     char *path, *packagename, *api, *type;
@@ -200,6 +200,7 @@ static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplug
     }
 }
 
+#ifndef DISABLE_LTDL
 static void gvconfig_write_library_config(char *path, gvplugin_library_t *library, FILE *f)
 {
     gvplugin_api_t *apis;
@@ -250,6 +251,7 @@ char * gvconfig_libdir(void)
     }
     return libdir;
 }
+#endif
 
 extern gvplugin_library_t *builtins[];
 
