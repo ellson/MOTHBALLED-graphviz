@@ -1222,5 +1222,5 @@ void neato_layout(Agraph_t * g)
 	    spline_edges(g);
 	}
     }
-    dotneato_postprocess(g, neato_nodesize);
+    dotneato_postprocess(g);
 }

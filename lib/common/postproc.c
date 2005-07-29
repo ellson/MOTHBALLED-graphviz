@@ -139,18 +139,44 @@ void translate_bb(graph_t * g, int rankdir)
 	translate_bb(GD_clust(g)[c], rankdir);
 }
 
-static void translate_drawing(graph_t * g, nodesizefn_t ns)
+void dot_nodesize(node_t * n, boolean flip)
+{
+    double x, y;
+    int ps;
+
+    if (flip == FALSE) {
+	x = ND_width(n);
+	y = ND_height(n);
+    } else {
+	y = ND_width(n);
+	x = ND_height(n);
+    }
+    ps = POINTS(x) / 2;
+    if (ps < 1)
+	ps = 1;
+    ND_lw_i(n) = ND_rw_i(n) = ps;
+    ND_ht_i(n) = POINTS(y);
+}
+
+/* translate_drawing:
+ * Translate and/or rotate nodes, spline points, and bbox info if
+ * Offset is non-trivial.
+ * Also, if Rankdir, reset ND_lw, ND_rw, and ND_ht to correct value.
+ */
+static void translate_drawing(graph_t * g)
 {
     node_t *v;
     edge_t *e;
     int shift = (Offset.x || Offset.y);
 
+    if (!shift && !Rankdir) return;
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	ns(v, FALSE);
+	if (Rankdir) dot_nodesize(v, FALSE);
 	if (shift) {
 	    ND_coord_i(v) = map_point(ND_coord_i(v));
-	    for (e = agfstout(g, v); e; e = agnxtout(g, e))
-		map_edge(e);
+	    if (State == GVSPLINES)
+		for (e = agfstout(g, v); e; e = agnxtout(g, e))
+		    map_edge(e);
 	}
     }
     if (shift)
@@ -192,7 +218,7 @@ static void place_root_label(graph_t * g, point d)
  * Assumes the boxes of all clusters have been computed.
  * When done, the bounding box of g has LL at origin.
  */
-void dotneato_postprocess(Agraph_t * g, nodesizefn_t ns)
+void dotneato_postprocess(Agraph_t * g)
 {
     int diff;
     pointf dimen;
@@ -251,7 +277,7 @@ void dotneato_postprocess(Agraph_t * g, nodesizefn_t ns)
 	Offset = pointof(GD_bb(g).LL.y, GD_bb(g).LL.x);
 	break;
     }
-    translate_drawing(g, ns);
+    translate_drawing(g);
     if (GD_label(g) && !GD_label(g)->set)
 	place_root_label(g, d);
 

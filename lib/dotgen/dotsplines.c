@@ -214,6 +214,7 @@ static void edge_normalize(graph_t * g)
 }
 
 /* dot_splines:
+ * If the splines attribute is defined but equal to "", skip edge routing.
  */
 void dot_splines(graph_t * g)
 {
@@ -223,6 +224,9 @@ void dot_splines(graph_t * g)
     edge_t *e, *e0, *e1, *ea, *eb, *le0, *le1, **edges;
     path *P;
     spline_info_t sd;
+    char* s = agget(g, "splines");
+
+    if (s && (*s == '\0')) return; 
 
     mark_lowclusters(g);
     routesplinesinit();
@@ -614,6 +618,7 @@ static struct {
     attrsym_t* E_weight;
     attrsym_t* E_minlen;
     attrsym_t* N_group;
+    int        State;
 } attr_state;
 
 /* cloneGraph:
@@ -659,6 +664,7 @@ cloneGraph (graph_t* g)
     attr_state.E_weight = E_weight;
     attr_state.E_minlen = E_minlen;
     attr_state.N_group = N_group;
+    attr_state.State = State;
     E_constr = NULL;
     E_samehead = agfindattr(auxg->proto->e, "samehead");
     E_sametail = agfindattr(auxg->proto->e, "sametail");
@@ -683,6 +689,7 @@ cleanupCloneGraph (graph_t* g)
     E_weight = attr_state.E_weight;
     E_minlen = attr_state.E_minlen;
     N_group = attr_state.N_group;
+    State = attr_state.State;
 
     dot_cleanup(g);
     agclose(g);
@@ -838,7 +845,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
     }
     dot_sameports(auxg);
     dot_splines(auxg);
-    dotneato_postprocess(auxg, dot_nodesize);
+    dotneato_postprocess(auxg);
 
        /* copy splines */
     if (GD_flip(g)) {

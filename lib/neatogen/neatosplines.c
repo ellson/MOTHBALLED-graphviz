@@ -672,21 +672,11 @@ static int _spline_edges(graph_t * g, double SEP, int splines)
 
 /* splineEdges:
  * Main wrapper code for generating edges.
- * Gets desired separation, sets the graph's aspect ratio,
- * and coalesces equivalent edges (edges
- * with the same endpoints). This also copies the internal
- * layout coordinates (ND_pos) to the external ones (ND_coord_i).
+ * Sets desired separation. 
+ * Coalesces equivalent edges (edges * with the same endpoints). 
  * It then calls the edge generating function, and marks the
  * spline phase complete.
  * Returns 0 on success.
- *
- * Assumes u.bb for has been computed for g and all clusters
- * (not just top-level clusters), and  that GD_bb(g).LL is at the origin.
- *
- * This last criterion is, I believe, mainly to simplify the code
- * in neato_set_aspect. It would be good to remove this constraint,
- * as this would allow nodes pinned on input to have the same coordinates
- * when output in dot or plain format.
  *
  * The edge function is given the graph, the separation to be added
  * around obstacles, and the type of edge. (At present, this is a boolean,
@@ -709,13 +699,10 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, double, int),
      * still overlap.
      */
     SEP = 1.01;
-    neato_set_aspect(g);
 
     /* find equivalent edges */
     map = dtopen(&edgeItemDisc, Dtoset);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	ND_coord_i(n).x = POINTS(ND_pos(n)[0]);
-	ND_coord_i(n).y = POINTS(ND_pos(n)[1]);
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    edge_t *leader = equivEdge(map, e);
 	    if (leader != e) {
@@ -744,11 +731,26 @@ int spline_edges1(graph_t * g, int splines)
 }
 
 /* spline_edges0:
+ * Sets the graph's aspect ratio.
  * Check splines attribute and construct edges using default algorithm.
+ * If the splines attribute is defined but equal to "", skip edge routing.
+ * 
+ * Assumes u.bb for has been computed for g and all clusters
+ * (not just top-level clusters), and  that GD_bb(g).LL is at the origin.
+ *
+ * This last criterion is, I believe, mainly to simplify the code
+ * in neato_set_aspect. It would be good to remove this constraint,
+ * as this would allow nodes pinned on input to have the same coordinates
+ * when output in dot or plain format.
+ *
  */
 void spline_edges0(graph_t * g)
 {
-    spline_edges1(g, mapbool(agget(g, "splines")));
+    char* s = agget(g, "splines");
+
+    neato_set_aspect(g);
+    if (s && (*s == '\0')) return; 
+    spline_edges1(g, mapbool(s));
 }
 
 /* spline_edges:
@@ -839,11 +841,11 @@ static void scaleBB(graph_t * g, double xf, double yf)
 	scaleBB(GD_clust(g)[i], xf, yf);
 }
 
-/* neato_set_aspect;
+/* _neato_set_aspect;
  * Assume all bounding boxes are correct and
  * that GD_bb(g).LL is at origin.
  */
-void neato_set_aspect(graph_t * g)
+static void _neato_set_aspect(graph_t * g)
 {
     /* int          i; */
     double xf, yf, actual, desired;
@@ -922,3 +924,20 @@ void neato_set_aspect(graph_t * g)
 	}
     }
 }
+
+/* neato_set_aspect:
+ * Sets aspect ration if necessary; real work done in _neato_set_aspect;
+ * This also copies the internal layout coordinates (ND_pos) to the 
+ * external ones (ND_coord_i).
+ */
+void neato_set_aspect(graph_t * g)
+{
+    node_t *n;
+
+    _neato_set_aspect(g);
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	ND_coord_i(n).x = POINTS(ND_pos(n)[0]);
+	ND_coord_i(n).y = POINTS(ND_pos(n)[1]);
+    }
+}
+

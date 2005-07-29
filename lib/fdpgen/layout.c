@@ -1059,20 +1059,16 @@ void fdpLayout(graph_t * g)
     setBB(g);
 }
 
-void fdp_layout(graph_t * g)
+static void
+fdpSplines (graph_t * g, char* str)
 {
     char *str;
     int trySplines = 0;
 
-    State = 0;   /* initialize state */
-    fdp_init_graph(g);
-    fdpLayout(g);
-
-    str = agget(g, "splines");
     if (str) {
 	if (streq(str, "compound")) {
 	    trySplines = splineEdges(g, compoundEdges, 1);
-	    /* When doing the edges again, accept edges done by compoundeEdges */
+	    /* When doing the edges again, accept edges done by compoundEdges */
 	    if (trySplines)
 		Nop = 2;
 	}
@@ -1087,5 +1083,18 @@ void fdp_layout(graph_t * g)
     }
     if (State < GVSPLINES)
 	spline_edges1(g, 0);
-    dotneato_postprocess(g, neato_nodesize);
+}
+
+void fdp_layout(graph_t * g)
+{
+    char *str;
+
+    fdp_init_graph(g);
+    fdpLayout(g);
+    neato_set_aspect(g);
+
+    str = agget(g, "splines");
+    if (!str || *str) fdpSplines (g, str); 
+
+    dotneato_postprocess(g);
 }

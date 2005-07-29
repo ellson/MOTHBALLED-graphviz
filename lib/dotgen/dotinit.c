@@ -17,26 +17,6 @@
 
 #include    "dot.h"
 
-
-void dot_nodesize(node_t * n, boolean flip)
-{
-    double x, y;
-    int ps;
-
-    if (flip == FALSE) {
-	x = ND_width(n);
-	y = ND_height(n);
-    } else {
-	y = ND_width(n);
-	x = ND_height(n);
-    }
-    ps = POINTS(x) / 2;
-    if (ps < 1)
-	ps = 1;
-    ND_lw_i(n) = ND_rw_i(n) = ps;
-    ND_ht_i(n) = POINTS(y);
-}
-
 static void 
 dot_init_node(node_t * n)
 {
@@ -250,5 +230,5 @@ void dot_layout(Agraph_t * g)
     dot_splines(g);
     if (mapbool(agget(g, "compound")))
 	dot_compoundEdges(g);
-    dotneato_postprocess(g, dot_nodesize);
+    dotneato_postprocess(g);
 }

@@ -32,23 +32,13 @@
 #include    "adjust.h"
 #include    "pack.h"
 #include    "neatoprocs.h"
-#include	<string.h>
-
-void circo_nodesize(node_t * n, boolean flip)
-{
-    int w;
-
-    w = ND_xsize(n) = POINTS(ND_width(n));
-    ND_lw_i(n) = ND_rw_i(n) = w / 2;
-    ND_ht_i(n) = ND_ysize(n) = POINTS(ND_height(n));
-}
-
+#include    <string.h>
 
 static void circular_init_node(node_t * n)
 {
     common_init_node(n);
 
-    circo_nodesize(n, GD_flip(n->graph));
+    neato_nodesize(n, GD_flip(n->graph));
     ND_pos(n) = N_NEW(GD_ndim(n->graph), double);
     ND_alg(n) = NEW(ndata);
 }
@@ -300,7 +290,7 @@ void circo_layout(Agraph_t * g)
     circo_init_graph(g);
     circoLayout(g);
     spline_edges(g);
-    dotneato_postprocess(g, circo_nodesize);
+    dotneato_postprocess(g);
 }
 
 static void circular_cleanup_node(node_t * n)
