@@ -775,7 +775,13 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    if (*p == ':')
 		numc++;
 
-	if (ED_active(e)) {
+	if (ED_selected(e)) {
+	    color = late_nnstring(e, E_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
+    	    gvrender_set_pencolor(job, color);
+	    color = late_nnstring(e, E_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
+	    gvrender_set_fillcolor(job, color);
+	}
+	else if (ED_active(e)) {
 	    color = late_nnstring(e, E_activepencolor, DEFAULT_ACTIVEPENCOLOR);
     	    gvrender_set_pencolor(job, color);
 	    color = late_nnstring(e, E_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
@@ -825,7 +831,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    colors = strdup(color);
 	    for (cnum = 0, color = strtok(colors, ":"); color;
 		 cnum++, color = strtok(0, ":")) {
-	        if (! ED_active(e)) {
+	        if (! ED_active(e) && ! ED_selected(e)) {
 		    if (color[0]) {
 		        gvrender_set_pencolor(job, color);
 		        gvrender_set_fillcolor(job, color);
@@ -860,7 +866,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    free(offspl.list);
 	    free(tmpspl.list);
 	} else {
-	    if (! ED_active(e)) {
+	    if (! ED_active(e) && ! ED_selected(e)) {
 	        if (color[0]) {
 		    gvrender_set_pencolor(job, color);
 		    gvrender_set_fillcolor(job, color);
@@ -1387,7 +1393,13 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		    break;
 		}
 	}
-	if (GD_active(sg)) {
+	if (GD_selected(sg)) {
+	    color = late_nnstring(sg, G_activepencolor, DEFAULT_SELECTEDPENCOLOR);
+    	    gvrender_set_pencolor(job, color);
+	    color = late_nnstring(sg, G_activefillcolor, DEFAULT_SELECTEDFILLCOLOR);
+	    gvrender_set_fillcolor(job, color);
+	}
+	else if (GD_active(sg)) {
 	    color = late_nnstring(sg, G_activepencolor, DEFAULT_ACTIVEPENCOLOR);
     	    gvrender_set_pencolor(job, color);
 	    color = late_nnstring(sg, G_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);

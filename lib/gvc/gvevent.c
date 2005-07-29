@@ -143,14 +143,128 @@ static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
     }
 }
 
+/* FIXME - gv_argvlist_set_item and gv_argvlist_free should be in a utilities sourcefile */
+static void gv_argvlist_set_item(gv_argvlist_t *list, int index, char *item)
+{
+    if (index >= list->alloc) {
+	list->alloc = index + 10;
+	list->argv = realloc(list->argv, (list->alloc)*(sizeof(char*)));
+    }
+    list->argv[index] = item;
+}
+
+static void gv_graph_attributes(gv_argvlist_t *list, graph_t *g)
+{
+    int i, j;
+    Agsym_t *a;
+
+    for (i = 0, j = 0; i < dtsize(g->univ->globattr->dict); i++) {
+        a = g->univ->globattr->list[i];
+        gv_argvlist_set_item(list, j++, a->name);
+        gv_argvlist_set_item(list, j++, agxget(g, a->index));
+    }
+    list->argc = j;
+}
+
+static void gv_node_attributes(gv_argvlist_t *list, node_t *n)
+{
+    int i, j;
+    Agsym_t *a;
+    Agraph_t *g;
+
+    g = n -> graph -> root;
+    for (i = 0, j = 0; i < dtsize(g->univ->nodeattr->dict); i++) {
+        a = g->univ->nodeattr->list[i];
+        gv_argvlist_set_item(list, j++, a->name);
+        gv_argvlist_set_item(list, j++, agxget(n, a->index));
+    }
+    list->argc = j;
+}
+
+static void gv_edge_attributes(gv_argvlist_t *list, edge_t *e)
+{
+    int i, j;
+    Agsym_t *a;
+    Agraph_t *g;
+
+    g = e -> head -> graph -> root;
+    for (i = 0, j = 0; i < dtsize(g->univ->edgeattr->dict); i++) {
+        a = g->univ->edgeattr->list[i];
+        gv_argvlist_set_item(list, j++, a->name);
+        gv_argvlist_set_item(list, j++, agxget(e, a->index));
+    }
+    list->argc = j;
+}
+
+static void gvevent_select_current_obj(GVJ_t * job)
+{
+    void *obj;
+    int i;
+
+    obj = job->selected_obj;
+    if (obj) {
+        switch (agobjkind(obj)) {
+        case AGGRAPH:
+	    GD_selected((graph_t*)obj) = FALSE;
+	    break;
+        case AGNODE:
+	    ND_selected((node_t*)obj) = FALSE;
+	    break;
+        case AGEDGE:
+	    ED_selected((edge_t*)obj) = FALSE;
+	    break;
+        }
+    }
+    job->selected_obj_type = "";
+
+    obj = job->current_obj;
+    if (obj) {
+        switch (agobjkind(obj)) {
+        case AGGRAPH:
+	    GD_selected((graph_t*)obj) = TRUE;
+            job->selected_obj_type = "graph";
+	    gv_graph_attributes(&(job->selected_obj_attributes), (graph_t*)obj);
+	    break;
+        case AGNODE:
+	    ND_selected((node_t*)obj) = TRUE;
+            job->selected_obj_type = "node";
+	    gv_node_attributes(&(job->selected_obj_attributes), (node_t*)obj);
+	    break;
+        case AGEDGE:
+	    ED_selected((edge_t*)obj) = TRUE;
+            job->selected_obj_type = "edge";
+	    gv_edge_attributes(&(job->selected_obj_attributes), (edge_t*)obj);
+	    break;
+        }
+    }
+    job->selected_obj = obj;
+
+#if 0
+fprintf(stderr,"type = %s\n", job->selected_obj_type);
+
+for (i = 0; i < job->selected_obj_attributes.argc; i++) {
+    fprintf(stderr,"%s%s", job->selected_obj_attributes.argv[i], (i%2)?"\n":" = ");
+}
+#endif
+}
+
 void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
 {
     switch (button) {
     case 1: /* select / create in edit mode */
+	gvevent_find_current_obj(job, pointer);
+	gvevent_select_current_obj(job);
+        job->click = 1;
+	job->active = button;
+	job->needs_refresh = 1;
+	break;
+    case 2: /* pan */
+        job->click = 1;
+	job->active = button;
+	job->needs_refresh = 1;
+	break;
     case 3: /* insert node or edge */
 	gvevent_find_current_obj(job, pointer);
-        /* fall through */
-    case 2: /* pan */
         job->click = 1;
 	job->active = button;
 	job->needs_refresh = 1;

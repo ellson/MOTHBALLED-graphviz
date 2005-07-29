@@ -97,13 +97,6 @@ boolean gvrender_output_langname_job(GVC_t * gvc, char *name)
     return FALSE;
 }
 
-#if 0
-/* -R switches */
-void gvrender_output_option_job(GVC_t * gvc, char *name, char *value)
-{
-}
-#endif
-
 GVJ_t *gvrender_first_job(GVC_t * gvc)
 {
     return (gvc->job = gvc->jobs);
@@ -122,6 +115,16 @@ GVJ_t *gvrender_next_job(GVC_t * gvc)
     return (gvc->job = job);
 }
 
+/* FIXME - gv_argvlist_append_item and gv_argvlist_free should be in a utilities sourcefile */
+static void gv_argvlist_free(gv_argvlist_t *list)
+{
+    if (list->argv)
+	free(list->argv);
+    list->argv = NULL;
+    list->alloc = 0;
+    list->argc = 0;
+}
+
 void gvrender_delete_jobs(GVC_t * gvc)
 {
     GVJ_t *job, *j;
@@ -129,6 +132,8 @@ void gvrender_delete_jobs(GVC_t * gvc)
     job = gvc->jobs;
     while ((j = job)) {
 	job = job->next;
+	gv_argvlist_free(&(j->selected_obj_pathname));
+	gv_argvlist_free(&(j->selected_obj_attributes));
 	free(j);
     }
     gvc->jobs = gvc->job = output_filename_job = output_langname_job =

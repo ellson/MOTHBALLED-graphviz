@@ -123,6 +123,12 @@ extern "C" {
 	double x0; double y0;
     } gv_matrix_t;
 
+    typedef struct gv_argvlist_s {
+	char **argv;
+	int argc;
+	int alloc;
+    } gv_argvlist_t;
+
     struct GVJ_s {
 	GVJ_t *next;  /* linked list of jobs */
 	GVJ_t *next_active;   /* linked list of active jobs (e.g. multiple windows) */
@@ -184,10 +190,23 @@ extern "C" {
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	pointf offset;		/* composite translation */
 	
-	boolean fit_mode, needs_refresh, click, active, has_grown;
+	boolean fit_mode,
+		needs_refresh,
+		click,
+		active,
+		has_grown;
+
 	pointf pointer;		/* pointer position in device units */
 	pointf oldpointer;	/* old pointer position in device units */
+
 	void *current_obj;      /* graph object that pointer is in currently */
+
+	void *selected_obj;      /* graph object that has been selected */
+					/* (e.g. button 1 clicked on current obj) */
+	char *selected_obj_type; /* "graph", "node", "edge" */
+	gv_argvlist_t selected_obj_pathname; /* e.g. "G" "cluster0" "node3" */
+	gv_argvlist_t selected_obj_attributes; /* even args are attribute names, odd are values */
+				/* e.g. "color" "red" "style" "filled" */
 
 	void *window;		/* display-specific data for gvrender plugin */
     };

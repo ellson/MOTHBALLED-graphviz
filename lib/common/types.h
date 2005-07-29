@@ -285,11 +285,16 @@ extern "C" {
 	    0, R_VALUE, R_FILL, R_COMPRESS, R_AUTO, R_EXPAND } ratio_t;
 
     typedef struct layout_t {
-	double quantum, scale;
+	double quantum;
+	double scale;
 	double ratio;		/* set only if ratio_kind == R_VALUE */
 	double dpi;
-	point margin, page, size;
-	boolean filled, landscape, centered;
+	point margin;
+	point page;
+	point  size;
+	boolean filled;
+	boolean landscape;
+	boolean centered;
 	ratio_t ratio_kind;
     } layout_t;
 
@@ -349,7 +354,10 @@ extern "C" {
 	textlabel_t *label;	/* if the cluster has a title */
 	box bb;			/* bounding box */
 	point border[4];	/* sizes of margins for graph labels */
-	boolean has_labels, has_images, active;
+	boolean has_labels;
+	boolean has_images;
+	boolean active;
+	boolean selected;
 	unsigned char charset; /* input character set */
 	int rankdir;
 	int ht1, ht2;		/* below and above extremal ranks */
@@ -380,7 +388,7 @@ extern "C" {
 
 	/* various flags */
 	boolean has_flat_edges;
-	boolean showboxes;
+	boolean	showboxes;
 	boolean cluster_was_collapsed;
 
 	int nodesep, ranksep;
@@ -443,6 +451,7 @@ extern "C" {
 #define GD_rankleader(g) (g)->u.rankleader
 #define GD_ranksep(g) (g)->u.ranksep
 #define GD_rn(g) (g)->u.rn
+#define GD_selected(g) (g)->u.selected
 #define GD_set_type(g) (g)->u.set_type
 #define GD_label_pos(g) (g)->u.label_pos
 #define GD_showboxes(g) (g)->u.showboxes
@@ -461,7 +470,8 @@ extern "C" {
 	void *alg;
 	char state;
 	boolean clustnode;
-	boolean  active;
+	boolean active;
+	boolean selected;
 
 #ifndef DOT_ONLY
 	boolean pinned;
@@ -470,7 +480,8 @@ extern "C" {
 	double *pos, dist;
 #endif
 #ifndef NEATO_ONLY
-	boolean showboxes, has_port;
+	boolean showboxes;
+	boolean  has_port;
 
 	/* fast graph */
 	char node_type, mark, onstack;
@@ -542,6 +553,7 @@ extern "C" {
 #define ND_rw_i(n) (n)->u.rw
 #define ND_save_in(n) (n)->u.save_in
 #define ND_save_out(n) (n)->u.save_out
+#define ND_selected(n) (n)->u.selected
 #define ND_shape(n) (n)->u.shape
 #define ND_shape_info(n) (n)->u.shape_info
 #define ND_showboxes(n) (n)->u.showboxes
@@ -564,6 +576,7 @@ extern "C" {
 	edge_t *to_orig;	/* for dot's shapes.c    */
 	void *alg;
 	boolean active;
+	boolean selected;
 
 #ifndef DOT_ONLY
 	double factor;
@@ -598,6 +611,7 @@ extern "C" {
 #define ED_label_ontop(e) (e)->u.label_ontop
 #define ED_minlen(e) (e)->u.minlen
 #define ED_path(e) (e)->u.path
+#define ED_selected(e) (e)->u.selected
 #define ED_showboxes(e) (e)->u.showboxes
 #define ED_spl(e) (e)->u.spl
 #define ED_tail_label(e) (e)->u.tail_label

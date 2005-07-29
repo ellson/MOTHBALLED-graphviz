@@ -91,10 +91,12 @@ extern "C" {
 
     EXTERN attrsym_t
 	*G_activepencolor, *G_activefillcolor,
+	*G_selectedpencolor, *G_selectedfillcolor,
 	*G_peripheries;
     EXTERN attrsym_t
 	*N_height, *N_width, *N_shape, *N_color, *N_fillcolor,
 	*N_activepencolor, *N_activefillcolor,
+	*N_selectedpencolor, *N_selectedfillcolor,
 	*N_fontsize, *N_fontname, *N_fontcolor,
 	*N_label, *N_nojustify, *N_style, *N_showboxes,
 	*N_sides, *N_peripheries, *N_orientation,
@@ -103,6 +105,7 @@ extern "C" {
     EXTERN attrsym_t
 	*E_weight, *E_minlen, *E_color,
 	*E_activepencolor, *E_activefillcolor,
+	*E_selectedpencolor, *E_selectedfillcolor,
 	*E_fontsize, *E_fontname, *E_fontcolor,
 	*E_label, *E_dir, *E_style, *E_decorate,
 	*E_showboxes, *E_arrowsz, *E_constr, *E_layer,

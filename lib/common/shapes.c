@@ -230,24 +230,6 @@ static int same_side(pointf p0, pointf p1, pointf L0, pointf L1)
 }
 
 static
-void activepencolor(GVJ_t * job, node_t * n)
-{
-    char *color;
-
-    color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
-    gvrender_set_pencolor(job, color);
-}
-
-static
-void activefillcolor(GVJ_t * job, node_t * n)
-{
-    char *color;
-
-    color = late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
-    gvrender_set_fillcolor(job, color);
-}
-
-static
 void pencolor(GVJ_t * job, node_t * n)
 {
     char *color;
@@ -280,11 +262,6 @@ char *findFill(node_t * n)
 	}
     }
     return color;
-}
-
-static void fillcolor(GVJ_t * job, node_t * n)
-{
-    gvrender_set_fillcolor(job, findFill(n));
 }
 
 static char **checkStyle(node_t * n, int *flagp)
@@ -440,7 +417,7 @@ static void round_corners(GVJ_t * job, node_t * n, point * A, int sides,
     } else {			/* diagonals are weird.  rewrite someday. */
 	pencolor(job, n);
 	if (style & FILLED)
-	    fillcolor(job, n);	/* emit fill color */
+	    gvrender_set_fillcolor(job, findFill(n)); /* emit fill color */
 	gvrender_polygon(job, A, sides, style & FILLED);
 	for (seg = 0; seg < sides; seg++) {
 #ifdef NOTDEF
@@ -1211,6 +1188,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     static int A_size;
     boolean filled;
     extern int xdemitState;
+    char *color;
 
     xdemitState = EMIT_DRAW;
     poly = (polygon_t *) ND_shape_info(n);
@@ -1244,14 +1222,23 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     } else {
 	style = stylenode(job, n);
     }
-    if (ND_active(n)) {
-	activefillcolor(job,n);
+    if (ND_selected(n)) {
+        color = late_nnstring(n, N_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
+        gvrender_set_pencolor(job, color);
+        color = late_nnstring(n, N_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
+        gvrender_set_fillcolor(job, color);
 	filled = TRUE;
-	activepencolor(job,n);
+    }
+    else if (ND_active(n)) {
+        color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+        gvrender_set_pencolor(job, color);
+        color = late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
+        gvrender_set_fillcolor(job, color);
+	filled = TRUE;
     }
     else {
         if (style & FILLED) {
-	    fillcolor(job, n);	/* emit fill color */
+	    gvrender_set_fillcolor(job, findFill(n)); /* emit fill color */
 	    filled = TRUE;
         } else {
 	    filled = FALSE;
@@ -1867,7 +1854,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
     style = stylenode(job, n);
     pencolor(job, n);
     if (style & FILLED)
-	fillcolor(job, n);	/* emit fill color */
+	gvrender_set_fillcolor(job, findFill(n)); /* emit fill color */
     if (streq(ND_shape(n)->name, "Mrecord"))
 	style |= ROUNDED;
     if (style & (ROUNDED | DIAGONALS))

@@ -61,6 +61,8 @@
 #define		DEFAULT_COLOR		"black"
 #define		DEFAULT_ACTIVEPENCOLOR	"yellow"
 #define		DEFAULT_ACTIVEFILLCOLOR	"yellow"
+#define		DEFAULT_SELECTEDPENCOLOR	"orange"
+#define		DEFAULT_SELECTEDFILLCOLOR	"orange"
 #define		DEFAULT_FONTSIZE	14.0
 #define		DEFAULT_LABEL_FONTSIZE	11.0	/* for head/taillabel */
 #define		MIN_FONTSIZE		1.0
