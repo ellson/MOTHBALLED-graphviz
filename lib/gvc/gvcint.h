@@ -203,9 +203,8 @@ extern "C" {
 
 	void *selected_obj;      /* graph object that has been selected */
 					/* (e.g. button 1 clicked on current obj) */
-	char *selected_obj_type; /* "graph", "node", "edge" */
-	gv_argvlist_t selected_obj_pathname; /* e.g. "G" "cluster0" "node3" */
-	gv_argvlist_t selected_obj_attributes; /* even args are attribute names, odd are values */
+	gv_argvlist_t selected_obj_type_name; /* (e.g. "edge" "node3" "e" "->" "node5" "") */
+	gv_argvlist_t selected_obj_attributes; /* even args are names, odd are values */
 				/* e.g. "color" "red" "style" "filled" */
 
 	void *window;		/* display-specific data for gvrender plugin */

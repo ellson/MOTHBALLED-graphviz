@@ -115,7 +115,7 @@ GVJ_t *gvrender_next_job(GVC_t * gvc)
     return (gvc->job = job);
 }
 
-/* FIXME - gv_argvlist_append_item and gv_argvlist_free should be in a utilities sourcefile */
+/* FIXME - gv_argvlist_set_item and gv_argvlist_free should be in a utilities sourcefile */
 static void gv_argvlist_free(gv_argvlist_t *list)
 {
     if (list->argv)
@@ -132,8 +132,8 @@ void gvrender_delete_jobs(GVC_t * gvc)
     job = gvc->jobs;
     while ((j = job)) {
 	job = job->next;
-	gv_argvlist_free(&(j->selected_obj_pathname));
 	gv_argvlist_free(&(j->selected_obj_attributes));
+	gv_argvlist_free(&(j->selected_obj_type_name));
 	free(j);
     }
     gvc->jobs = gvc->job = output_filename_job = output_langname_job =
