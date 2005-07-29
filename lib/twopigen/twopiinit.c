@@ -25,21 +25,11 @@
 #include    "pack.h"
 #include    "neatoprocs.h"
 
-
-void twopi_nodesize(node_t * n, boolean flip)
-{
-    int w;
-
-    w = ND_xsize(n) = POINTS(ND_width(n));
-    ND_lw_i(n) = ND_rw_i(n) = w / 2;
-    ND_ht_i(n) = ND_ysize(n) = POINTS(ND_height(n));
-}
-
 static void twopi_init_node(node_t * n)
 {
     common_init_node(n);
 
-    twopi_nodesize(n, GD_flip(n->graph));
+    neato_nodesize(n, GD_flip(n->graph));
     ND_pos(n) = ALLOC(GD_ndim(n->graph), 0, double);
     ND_alg(n) = (void *) NEW(rdata);
 }
@@ -130,7 +120,7 @@ void twopi_layout(Agraph_t * g)
 	}
 	free(ccs);
     }
-    dotneato_postprocess(g, twopi_nodesize);
+    dotneato_postprocess(g);
 
 }
 
