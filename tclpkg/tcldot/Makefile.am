@@ -31,7 +31,7 @@ html_DATA = $(html)
 endif
 
 libtcldot_la_SOURCES = tcldot.c tkgen.c \
-	$(top_srcdir)/tclpkg/gdtclft/gdtclft.c
+	$(top_srcdir)/tclpkg/gdtclft/gdtclft.c \
 	$(top_srcdir)/lib/gvc/builtins.c
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
