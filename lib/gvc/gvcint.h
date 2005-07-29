@@ -129,6 +129,14 @@ extern "C" {
 	int alloc;
     } gv_argvlist_t;
 
+    typedef struct gvdevice_callbacks_s {
+	void (*refresh) (GVJ_t * job);
+        void (*button_press) (GVJ_t * job, int button, pointf pointer);
+        void (*button_release) (GVJ_t * job, int button, pointf pointer);
+        void (*motion) (GVJ_t * job, pointf pointer);
+        void (*modify) (GVJ_t * job, char *name, char *value);
+    } gvdevice_callbacks_t;
+
     struct GVJ_s {
 	GVJ_t *next;  /* linked list of jobs */
 	GVJ_t *next_active;   /* linked list of active jobs (e.g. multiple windows) */
@@ -137,8 +145,9 @@ extern "C" {
 	FILE *output_file;
 	int output_lang;
 
-	gvplugin_active_device_t device;
 	gvplugin_active_render_t render;
+	gvplugin_active_device_t device;
+	gvdevice_callbacks_t *callbacks;
 
 #ifndef DISABLE_CODEGENS
 	codegen_t *codegen;	/* current  codegen */

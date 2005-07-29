@@ -23,7 +23,7 @@
 #define ZOOMFACTOR 1.1
 #define EPSILON .0001
 
-void gvevent_refresh(GVJ_t * job)
+static void gvevent_refresh(GVJ_t * job)
 {
     emit_graph(job, job->g);
 }
@@ -283,7 +283,7 @@ static void gvevent_select_current_obj(GVJ_t * job)
         }
     }
 
-#if 0
+#if 1
 for (i = 0; i < job->selected_obj_type_name.argc; i++)
     fprintf(stderr,"%s%s", job->selected_obj_type_name.argv[i],
 	(i==(job->selected_obj_type_name.argc - 1))?"\n":" ");
@@ -293,7 +293,7 @@ fprintf(stderr,"\n");
 #endif
 }
 
-void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
+static void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
 {
     switch (button) {
     case 1: /* select / create in edit mode */
@@ -337,7 +337,13 @@ void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
     job->oldpointer = pointer;
 }
 
-void gvevent_motion(GVJ_t * job, pointf pointer)
+static void gvevent_button_release(GVJ_t *job, int button, pointf pointer)
+{
+    job->click = 0;
+    job->active = 0;
+}
+
+static void gvevent_motion(GVJ_t * job, pointf pointer)
 {
     double dx = pointer.x - job->oldpointer.x;
     double dy = pointer.y - job->oldpointer.y;
@@ -361,12 +367,6 @@ void gvevent_motion(GVJ_t * job, pointf pointer)
 	break;
     }
     job->oldpointer = pointer;
-}
-
-void gvevent_button_release(GVJ_t *job, int button, pointf pointer)
-{
-    job->click = 0;
-    job->active = 0;
 }
 
 static int quit_cb(GVJ_t * job)
@@ -457,3 +457,11 @@ gvevent_key_binding_t gvevent_key_binding[] = {
 };
 
 int gvevent_key_binding_size = ARRAY_SIZE(gvevent_key_binding);
+
+gvdevice_callbacks_t gvdevice_callbacks = {
+    gvevent_refresh,
+    gvevent_button_press,
+    gvevent_button_release,
+    gvevent_motion,
+    NULL,
+};

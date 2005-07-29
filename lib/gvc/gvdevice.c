@@ -77,14 +77,18 @@ int gvdevice_features(GVJ_t * job)
     return features;
 }
 
+extern gvdevice_callbacks_t gvdevice_callbacks;
+
 void gvdevice_finalize(GVC_t * gvc)
 {
     GVJ_t *job = gvc->active_jobs;
     gvdevice_engine_t *gvde = job->device.engine;
 
     if (gvde) {
-	if (gvde->finalize)
+	if (gvde->finalize) {
+	    job->callbacks = &gvdevice_callbacks;
 	    gvde->finalize(gvc);
+	}
     }
 #ifndef DISABLE_CODEGENS
     else {
