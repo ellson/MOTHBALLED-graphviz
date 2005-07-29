@@ -4,7 +4,7 @@ include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 LOC_LIB = $(ROOT)/lib
-LOC_PLUG=$(ROOT)/plugin
+LOC_PLUG=$(LOC_LIB)/plugin
 
 INCS =  -I$(LOC_LIB)/gvc -I$(LOC_LIB)/common -I$(ROOT) -I$(LOC_LIB)/cdt \
         -I$(LOC_LIB)/pathplan -I$(LOC_LIB)/gd -I$(LOC_LIB)/graph
@@ -20,7 +20,7 @@ XLIBS = -L$(LOC_LIB)/pathplan -lpathplan \
         -L$(LOC_LIB)/gd -lgd \
         $(EXTLIB_LIB) $(EXPAT_LIB) -lm
 
-PLUGS = -L$(LOC_PLUG) -lplugins -L$(LOC_PLUG)/layout -lgvplugin_layout
+PLUGS = -L$(LOC_PLUG) -lgvplugin_layout
 
 LIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
        -L$(LOC_LIB)/common -lcommon \
@@ -34,13 +34,12 @@ LIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
        -L$(LOC_LIB)/common -lcommon \
        $(XLIBS)
 
-DOTLIBS = ../../lib/common/libcommon.a ../../lib/dotgen/libdotgen.a \
-          ../../lib/neatogen/libneatogen.a ../../lib/fdpgen/libfdpgen.a \
-          ../../lib/twopigen/libtwopigen.a ../../lib/circogen/libcircogen.a
-
+DOTLIBS = $(LOC_LIB)/common/libcommon.a $(LOC_LIB)/dotgen/libdotgen.a \
+          $(LOC_LIB)/neatogen/libneatogen.a $(LOC_LIB)/fdpgen/libfdpgen.a \
+          $(LOC_LIB)/plugin/libgvplugin_layout.a $(LOC_LIB)/gvc/libgvc.a \
+          $(LOC_LIB)/twopigen/libtwopigen.a $(LOC_LIB)/circogen/libcircogen.a
 
 OBJS = dot.o
-SHLIBS = twopigen/libtwopi.a dotgen/libdot.a neatogen/libneato.a pack/libpack.a gvrender/libgvrender.a common/libcommon.a
 
 all : dot
 
@@ -51,9 +50,6 @@ dot : $(OBJS) $(DOTLIBS)
 dot.o : dot.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) dot.c
 
-plugins.o : plugins.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(ALLINCS) plugins.c
-
 install: all
 	$(MKPATH) $(BINDIR)
 	$(INSTALL) dot $(BINDIR)
@@ -63,6 +59,7 @@ install: all
 	$(RM) $(BINDIR)/twopi; $(LN) -s $(BINDIR)/dot $(BINDIR)/twopi
 	$(MKPATH) $(MANDIR)
 	$(INSTALL) dot.1 $(MANDIR)
+	$(RM) $(MANDIR)/neato.1 $(MANDIR)/fdp.1 $(MANDIR)/circo.1 $(MANDIR)/twopi.1
 	$(LN) -s $(MANDIR)/dot.1 $(MANDIR)/neato.1
 	$(LN) -s $(MANDIR)/dot.1 $(MANDIR)/fdp.1
 	$(LN) -s $(MANDIR)/dot.1 $(MANDIR)/circo.1
