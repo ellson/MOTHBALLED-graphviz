@@ -45,7 +45,6 @@ extern "C" {
     extern void circleLayout(Agraph_t * sg, Agnode_t * center);
     extern void twopi_layout(Agraph_t * g);
     extern void twopi_cleanup(Agraph_t * g);
-    extern void twopi_nodesize(node_t * n, boolean flip);
     extern void twopi_init_graph(graph_t * g);
 
 #ifdef __cplusplus
