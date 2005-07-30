@@ -214,16 +214,10 @@ static void gvconfig_plugin_install_builtins(GVC_t * gvc)
     const char *name;
 
     s = lt_preloaded_symbols;
-    while ((name = s->name)) {
-fprintf(stderr,"%s\n",name);
-	if (name[0] == 'g'
-	 && name[1] == 'v'
-	 && name[2] == 'p'
-	 && strstr(name, "_LTX_library")) {
-	    gvconfig_plugin_install_from_library(gvc, NULL, (gvplugin_library_t *)(s->address));
-	}
-	s++;
-    }
+    for (s = lt_preloaded_symbols; (name = s->name); s++)
+	if (name[0] == 'g' && strstr(name, "_LTX_library")) 
+	    gvconfig_plugin_install_from_library(gvc, NULL,
+		    (gvplugin_library_t *)(s->address));
 }
 
 #ifndef DISABLE_LTDL
