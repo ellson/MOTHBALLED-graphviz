@@ -85,8 +85,17 @@ fi
 # Set of all available languages
 # ALL_LINGUAS=""
 
-# Build shared libs only
-AC_DISABLE_STATIC
+dnl -----------------------------------
+# Static binaries 
+
+AC_ARG_ENABLE(static,
+        [AC_HELP_STRING([--enable-codegens], [build static executable])])
+if test "x$enable_static" = "xyes"; then
+	AC_DEFINE(ENABLE_STATIC,1,[Define if you want statically linked executables])
+else
+	AC_DISABLE_STATIC
+fi
+AM_CONDITIONAL(ENABLE_STATIC, [test "x$enable_static" = "xyes"])
 
 dnl -----------------------------------
 dnl checks for compilers

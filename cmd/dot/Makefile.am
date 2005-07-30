@@ -13,7 +13,11 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt
 
+if ENABLE_STATIC
+bin_PROGRAMS = dot dot_static
+else
 bin_PROGRAMS = dot
+endif
 man_MANS = dot.1 
 pdf_DATA = dot.pdf
 
@@ -42,8 +46,8 @@ uninstall-hook:
 dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 	groff -Tps -man $(top_srcdir)/cmd/dot/dot.1 | ps2pdf - - >$@
 
-dot_static: dot.o
-	$(CC) dot.o builtins.o \
+dot_static_SOURCES = $(dot_SOURCES)
+dot_static_LDADD = \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_usershape_gd.a \
@@ -53,11 +57,8 @@ dot_static: dot.o
 	$(top_builddir)/lib/graph/.libs/libgraph.a \
 	$(top_builddir)/lib/cdt/.libs/libcdt.a \
 	$(top_builddir)/lib/gd/.libs/libgvgd.a \
-	-lfreetype -lfontconfig -lexpat -lpng -ljpeg -lltdl -lz \
-	-o dot_static
+	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@
 
 EXTRA_DIST = Makefile.old dot.1 dot.pdf 
-
-CLEANFILES = dot_static
 
 DISTCLEANFILES = dot.pdf
