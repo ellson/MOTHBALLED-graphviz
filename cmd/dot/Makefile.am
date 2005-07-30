@@ -47,6 +47,16 @@ dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 	groff -Tps -man $(top_srcdir)/cmd/dot/dot.1 | ps2pdf - - >$@
 
 dot_static_SOURCES = $(dot_SOURCES)
+dot_static_DEPENDENCIES = \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout.a \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout.a \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_usershape_gd.a \
+	$(top_builddir)/lib/gvc/.libs/libgvc.a \
+	$(top_builddir)/lib/pathplan/.libs/libpathplan.a \
+	$(top_builddir)/lib/pack/.libs/libpack.a \
+	$(top_builddir)/lib/graph/.libs/libgraph.a \
+	$(top_builddir)/lib/cdt/.libs/libcdt.a \
+	$(top_builddir)/lib/gd/.libs/libgvgd.a
 dot_static_LDADD = \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout.a \
