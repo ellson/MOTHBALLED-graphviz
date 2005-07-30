@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 
 LIBS =  @LIBS@ -lc
 
-BASESOURCES = gv.cpp $(top_srcdir)/lib/gvc/builtins.c
+BASESOURCES = gv.cpp builtins.c
 BASELIBS = \
 	$(top_builddir)/lib/plugin/libgvplugin_dot_layout.la \
 	$(top_builddir)/lib/plugin/libgvplugin_neato_layout.la \

@@ -21,7 +21,8 @@ endif
 man_MANS = dot.1 
 pdf_DATA = dot.pdf
 
-dot_SOURCES = dot.c $(top_srcdir)/lib/gvc/builtins.c
+dot_SOURCES = dot.c
+dot_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
 dot_LDADD = \
 	$(top_builddir)/lib/plugin/libgvplugin_dot_layout.la \
 	$(top_builddir)/lib/plugin/libgvplugin_neato_layout.la \
@@ -57,6 +58,8 @@ dot_static_DEPENDENCIES = \
 	$(top_builddir)/lib/graph/.libs/libgraph.a \
 	$(top_builddir)/lib/cdt/.libs/libcdt.a \
 	$(top_builddir)/lib/gd/.libs/libgvgd.a
+dot_static_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
+
 dot_static_LDADD = \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout.a \
@@ -67,7 +70,7 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/graph/.libs/libgraph.a \
 	$(top_builddir)/lib/cdt/.libs/libcdt.a \
 	$(top_builddir)/lib/gd/.libs/libgvgd.a \
-	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@
+	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @MATH_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@
 
 EXTRA_DIST = Makefile.old dot.1 dot.pdf 
 

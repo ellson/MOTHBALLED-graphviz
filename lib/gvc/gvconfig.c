@@ -200,6 +200,32 @@ static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplug
     }
 }
 
+struct lt_symlist
+{
+    const char *name;
+    void* address;
+};
+
+extern const struct lt_symlist lt_preloaded_symbols[];
+
+static void gvconfig_plugin_install_builtins(GVC_t * gvc)
+{
+    const struct lt_symlist *s;
+    const char *name;
+
+    s = lt_preloaded_symbols;
+    while ((name = s->name)) {
+fprintf(stderr,"%s\n",name);
+	if (name[0] == 'g'
+	 && name[1] == 'v'
+	 && name[2] == 'p'
+	 && strstr(name, "_LTX_library")) {
+	    gvconfig_plugin_install_from_library(gvc, NULL, (gvplugin_library_t *)(s->address));
+	}
+	s++;
+    }
+}
+
 #ifndef DISABLE_LTDL
 static void gvconfig_write_library_config(char *path, gvplugin_library_t *library, FILE *f)
 {
@@ -252,8 +278,6 @@ char * gvconfig_libdir(void)
     return libdir;
 }
 #endif
-
-extern gvplugin_library_t *builtins[];
 
 #ifndef DISABLE_LTDL
 static void config_rescan(GVC_t *gvc, char *config_path)
@@ -431,7 +455,9 @@ codegen_info_t *next_codegen(codegen_info_t * p)
  */
 void gvconfig(GVC_t * gvc, boolean rescan)
 {
+#if 0
     gvplugin_library_t **libraryp;
+#endif
 #ifndef DISABLE_LTDL
     int sz, rc;
     struct stat config_st, libdir_st;
@@ -451,10 +477,9 @@ void gvconfig(GVC_t * gvc, boolean rescan)
                         "cg", NULL, (gvplugin_installed_t *) p);
 #endif
 
-    for (libraryp = builtins; *libraryp; libraryp++) {
-	gvconfig_plugin_install_from_library(gvc, NULL, *libraryp);
-    }
 #ifndef DISABLE_LTDL
+    gvconfig_plugin_install_builtins(gvc);
+   
     /* see if there are any new plugins */
     libdir = gvconfig_libdir();
     rc = stat(libdir, &libdir_st);

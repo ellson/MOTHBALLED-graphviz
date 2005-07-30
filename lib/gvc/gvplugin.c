@@ -134,7 +134,7 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     }
     hndl = lt_dlopen (p);
     if (!hndl) {
-        agerr(AGWARN, "failed to dlopen %s\n", p);
+        agerr(AGWARN, lt_dlerror());
         return NULL;
     }
 

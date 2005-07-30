@@ -95,7 +95,9 @@ gc_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs.la \
 	$(top_builddir)/lib/graph/libgraph.la
 
-gvpack_SOURCES = gvpack.c plugins.c
+gvpack_SOURCES = gvpack.c
+
+gvpack_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
 
 gvpack_LDADD = \
 	$(top_builddir)/lib/common/libcommon.la \

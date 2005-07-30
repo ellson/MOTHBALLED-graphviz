@@ -30,16 +30,15 @@ pdf_DATA = $(pdf)
 html_DATA = $(html)
 endif
 
-libtcldot_la_SOURCES = tcldot.c tkgen.c \
-	$(top_srcdir)/tclpkg/gdtclft/gdtclft.c \
-	$(top_srcdir)/lib/gvc/builtins.c
+libtcldot_la_SOURCES = tcldot.c tkgen.c builtins.c \
+	$(top_srcdir)/tclpkg/gdtclft/gdtclft.c
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
         $(top_builddir)/lib/plugin/libgvplugin_dot_layout.la \
         $(top_builddir)/lib/plugin/libgvplugin_neato_layout.la \
         $(top_builddir)/lib/plugin/libgvplugin_usershape_gd.la \
-	$(top_builddir)/lib/gvc/libgvc.la
+	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@ @LIBLTDL@
 
 if WITH_TCL
 all-local: pkgIndex.tcl

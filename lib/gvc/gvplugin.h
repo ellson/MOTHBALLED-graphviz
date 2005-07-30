@@ -27,7 +27,6 @@ extern "C" {
 #define NULL (void *)0
 #endif
 
-
 /* 
  * Terminology:
  *
@@ -74,6 +73,8 @@ extern "C" {
 					no pathname */
 	gvplugin_api_t *apis;
     } gvplugin_library_t;
+
+    extern gvplugin_library_t *builtins[];
 
 #ifdef __cplusplus
 }

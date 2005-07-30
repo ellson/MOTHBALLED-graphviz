@@ -16,7 +16,7 @@
 
 #include "gvc.h"
 
-char *Info[] = {
+char *LibInfo[] = {
     "libgvc",		/* Program */
     VERSION,		/* Version */
     BUILDDATE		/* Build Date */
@@ -28,7 +28,7 @@ GVC_t *gvContext(void)
 
     aginit();
     agnodeattr(NULL, "label", NODENAME_ESC);
-    gvc = gvNEWcontext(Info, username());
+    gvc = gvNEWcontext(LibInfo, username());
     gvconfig(gvc, FALSE); /* configure for available plugins and codegens */
     return gvc;
 }

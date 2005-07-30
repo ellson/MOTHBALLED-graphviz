@@ -28,4 +28,4 @@ libgvc_la_LIBADD = \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
 
-EXTRA_DIST = Makefile.old builtins.c
+EXTRA_DIST = Makefile.old
