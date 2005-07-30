@@ -1062,7 +1062,6 @@ void fdpLayout(graph_t * g)
 static void
 fdpSplines (graph_t * g, char* str)
 {
-    char *str;
     int trySplines = 0;
 
     if (str) {
