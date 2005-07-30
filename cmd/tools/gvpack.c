@@ -785,7 +785,7 @@ int main(int argc, char *argv[])
     bb = compBB(gs, cnt);
     GD_bb(g) = bb;
 
-    dotneato_postprocess(g, neato_nodesize);
+    dotneato_postprocess(g);
     attach_attrs(g);
     agwrite(g, outfp);
     exit(0);
