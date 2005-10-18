@@ -23,9 +23,6 @@
 %{?rh7: %{expand: %%define PERL    1}}
 %{?rh7: %{expand: %%define TCL     1}}
 
-%{?rh73: %{expand: %%define PERL    1}}
-%{?rh73: %{expand: %%define TCL     1}}
-
 %{?rh8: %{expand: %%define PERL    1}}
 %{?rh8: %{expand: %%define TCL     1}}
 
