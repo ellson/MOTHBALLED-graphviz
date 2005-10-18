@@ -377,8 +377,8 @@ if test "x$OCAML" = "x"; then
   HAVE_OCAML=0
 else
   HAVE_OCAML=1
-  OCAML_INCLUDES=-I/usr/lib/ocaml
-  OCAML_LIBS=-L/usr/lib/ocaml
+  OCAML_INCLUDES=-I/usr/lib$LIBPOSTFIX/ocaml
+  OCAML_LIBS=-L/usr/lib$LIBPOSTFIX/ocaml
 fi
 save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $OCAML_INCLUDES"
