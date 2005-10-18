@@ -14,21 +14,21 @@ BASESOURCES = gv.cpp
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
 
 
-#pkgcsharpdir = $(pkglibdir)/csharp
-#CSHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs
-#libgv_csharp_la_SOURCES = $(BASESOURCES) gv_csharp.cpp
-#libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@ 
-#libgv_csharp_la_LDFLAGS = -module
-#gv_csharp.cpp $(CSHARP_hdr): gv.i
-#	$(SWIG) -c++ -csharp -namespace gv -o gv_csharp.cpp gv.i
+pkgcsharpdir = $(pkglibdir)/csharp
+CSHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs
+libgv_csharp_la_SOURCES = $(BASESOURCES) gv_csharp.cpp
+libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@ 
+libgv_csharp_la_LDFLAGS = -module
+gv_csharp.cpp $(CSHARP_hdr): gv.i
+	$(SWIG) -c++ -csharp -namespace gv -o gv_csharp.cpp gv.i
 
-#pkgguiledir = $(pkglibdir)/guile
-#GUILE_hdr = 
-#libgv_guile_la_SOURCES = $(BASESOURCES) gv.gv_guile.cpp
-#libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
-#libgv_guile_la_LDFLAGS = -module
-#gv_guile.cpp $(GUILE_hdr): gv.i
-#	$(SWIG) -c++ -guile -o gv_guile.cpp gv.i
+pkgguiledir = $(pkglibdir)/guile
+GUILE_hdr = 
+libgv_guile_la_SOURCES = $(BASESOURCES) gv_guile.cpp
+libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
+libgv_guile_la_LDFLAGS = -module
+gv_guile.cpp $(GUILE_hdr): gv.i
+	$(SWIG) -c++ -guile -o gv_guile.cpp gv.i
 
 #pkgiodir = $(pkglibdir)/io
 #IO_hdr = 
@@ -98,16 +98,16 @@ pkginclude_DATA = gv.i gv.cpp
 pkglib_LTLIBRARIES = 
 TESTS =
 if WITH_SWIG
-#if WITH_CSHARP
-#pkgcsharp_DATA += $(CSHARP_hdr)
-#pkgcsharp_LTLIBRARIES += libgv_csharp.la
-#TESTS += test_csharp
-#endif
-#if WITH_GUILE
-#pkgguile_DATA += $(GUILE_hdr)
-#pkgguile_LTLIBRARIES += libgv_guile.la
-#TESTS += test_guile
-#endif
+if WITH_CSHARP
+pkgcsharp_DATA = $(CSHARP_hdr)
+pkgcsharp_LTLIBRARIES = libgv_csharp.la
+TESTS += test_csharp
+endif
+if WITH_GUILE
+pkgguile_DATA = $(GUILE_hdr)
+pkgguile_LTLIBRARIES = libgv_guile.la
+TESTS += test_guile
+endif
 #if WITH_IO
 #pkgio_DATA += $(IO_hdr)
 #pkgio_LTLIBRARIES += libgv_io.la
@@ -233,19 +233,19 @@ test_tcl: libgv_tcl.la
 		$(TCLSH) ./test.tcl)
 
 EXTRA_DIST = demo/* gv.cpp gv.i \
+	gv_csharp.cpp $(CSHARP_hdr) \
+	gv_guile.cpp $(GUILE_hdr) \
 	gv_java.cpp $(JAVA_hdr) \
+	gv_ocaml.cpp $(OCAML_hdr) \
 	gv_perl.cpp $(PERL_hdr) \
 	gv_php.cpp $(PHP_hdr) \
 	gv_python.cpp $(PYTHON_hdr) \
 	gv_ruby.cpp $(RUBY_hdr) \
 	gv_tcl.cpp $(TCL_hdr)
 
-#	gv_csharp.cpp $(CSHARP_hdr) \
-#	gv_guile.cpp $(GUILE_hdr) \
 #	gv_io.cpp $(IO_hdr) \
-#	gv_ocaml.cpp $(OCAML_hdr) \
 #
-#
+
 CLEANFILES = test_*/*
 
 DISTCLEANFILES = \

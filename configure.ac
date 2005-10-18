@@ -303,102 +303,72 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for CSHARP
 
 AC_CHECK_PROG(CSHARP,mcs,mcs)
-if test "x$CSHARP" = "x"; then
-  HAVE_CSHARP=0
-else
-  HAVE_CSHARP=1
-  CSHARP_INCLUDES=
-  CSHARP_LIBS=
-fi
-AM_CONDITIONAL(WITH_CSHARP, [test "x$HAVE_CSHARP" = "x1"])
-AC_SUBST(HAVE_CSHARP)
+CSHARP_INCLUDES=
+CSHARP_LIBS=
 AC_SUBST(CSHARP_INCLUDES)
 AC_SUBST(CSHARP_LIBS)
+AM_CONDITIONAL(WITH_CSHARP, [test "x$CSHARP" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GUILE
 
 AC_CHECK_PROG(GUILE,guile,guile)
-if test "x$GUILE" = "x"; then
-  HAVE_GUILE=0
-else
-  HAVE_GUILE=1
-  GUILE_INCLUDES=
-  GUILE_LIBS=
-fi
+GUILE_INCLUDES=
+GUILE_LIBS=
 AC_CHECK_HEADER(libguile.h,,[
   AC_MSG_WARN([Unable to find header libguile.h. The Guile packages will not be built])
-  HAVE_GUILE=0])
-AM_CONDITIONAL(WITH_GUILE, [test "x$HAVE_GUILE" = "x1"])
-AC_SUBST(HAVE_GUILE)
+  GUILE=
+  ])
 AC_SUBST(GUILE_INCLUDES)
 AC_SUBST(GUILE_LIBS)
+AM_CONDITIONAL(WITH_GUILE, [test "x$GUILE" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for IO
 
 AC_CHECK_PROG(IO,io,io)
-if test "x$IO" = "x"; then
-  HAVE_IO=0
-else
-  HAVE_IO=1
-  IO_INCLUDES=
-  IO_LIBS=
-fi
-AM_CONDITIONAL(WITH_IO, [test "x$HAVE_IO" = "x1"])
-AC_SUBST(HAVE_IO)
+IO_INCLUDES=
+IO_LIBS=
 AC_SUBST(IO_INCLUDES)
 AC_SUBST(IO_LIBS)
+AM_CONDITIONAL(WITH_IO, [test "x$IO" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for JAVA
 
 AC_CHECK_PROG(JAVA,java,java)
-if test "x$JAVA" = "x"; then
-  HAVE_JAVA=0
-else
-  HAVE_JAVA=1
-  JAVA_INCLUDES=
-  JAVA_LIBS=
-fi
+JAVA_INCLUDES=
+JAVA_LIBS=
 AC_CHECK_HEADER(jni.h,,[
   AC_MSG_WARN([Unable to find header jni.h. The Java packages will not be built])
-  HAVE_JAVA=0])
-AM_CONDITIONAL(WITH_JAVA, [test "x$HAVE_JAVA" = "x1"])
-AC_SUBST(HAVE_JAVA)
+  JAVA=
+  ])
 AC_SUBST(JAVA_INCLUDES)
 AC_SUBST(JAVA_LIBS)
+AM_CONDITIONAL(WITH_JAVA, [test "x$JAVA" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for OCAML
 
 AC_CHECK_PROG(OCAML,ocaml,ocaml)
-if test "x$OCAML" = "x"; then
-  HAVE_OCAML=0
-else
-  HAVE_OCAML=1
-  OCAML_INCLUDES=-I/usr/lib$LIBPOSTFIX/ocaml
-  OCAML_LIBS=-L/usr/lib$LIBPOSTFIX/ocaml
-fi
+OCAML_INCLUDES=-I/usr/lib$LIBPOSTFIX/ocaml
+OCAML_LIBS=-L/usr/lib$LIBPOSTFIX/ocaml
 save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $OCAML_INCLUDES"
 AC_CHECK_HEADER(caml/mlvalues.h,,[
   AC_MSG_WARN([Unable to find header caml/mlvalues.h. The OCAML packages will not be built])
-  HAVE_OCAML=0])
+  OCAML=
+  ])
 CPPFLAGS=$save_CPPFLAGS
-AM_CONDITIONAL(WITH_OCAML, [test "x$HAVE_OCAML" = "x1"])
-AC_SUBST(HAVE_OCAML)
 AC_SUBST(OCAML_INCLUDES)
 AC_SUBST(OCAML_LIBS)
+AM_CONDITIONAL(WITH_OCAML, [test "x$OCAML" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PERL
 
 AC_CHECK_PROG(PERL,perl,perl)
-if test "x$PERL" = "x"; then
-  HAVE_PERL=0
-else
-  HAVE_PERL=1
+if test "x$PERL" != "x"; then
   PERL_ARCHLIB=`perl -e 'use Config; print $Config{archlib};'`
   PERL_INCLUDES=-I$PERL_ARCHLIB/CORE
   PERL_LIBS="-L$PERL_ARCHLIB/CORE -lperl"
@@ -407,57 +377,48 @@ save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $PERL_INCLUDES"
 AC_CHECK_HEADER(EXTERN.h,,[
   AC_MSG_WARN([Unable to find header EXTERN.h. The PERL packages will not be built])
-  HAVE_PERL=0]
-)
+  PERL=
+  ])
 CPPFLAGS=$save_CPPFLAGS
-AM_CONDITIONAL(WITH_PERL, [test "x$HAVE_PERL" = "x1"])
-AC_SUBST(HAVE_PERL)
 AC_SUBST(PERL_INCLUDES)
 AC_SUBST(PERL_LIBS)
+AM_CONDITIONAL(WITH_PERL, [test "x$PERL" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PHP
 
 AC_CHECK_PROG(PHP,php,php)
-if test "x$PHP" = "x"; then
-  HAVE_PHP=0
-else
-  HAVE_PHP=1
-  PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
-  PHP_LIBS=
-fi
+PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
+PHP_LIBS=
 save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $PHP_INCLUDES"
 AC_CHECK_HEADER(zend.h,,[
   AC_MSG_WARN([Unable to find header zend.h. The PHP packages will not be built])
-  HAVE_PHP=0])
+  PHP=i
+  ])
 CPPFLAGS=$save_CPPFLAGS
-AM_CONDITIONAL(WITH_PHP, [test "x$HAVE_PHP" = "x1"])
-AC_SUBST(HAVE_PHP)
 AC_SUBST(PHP_INCLUDES)
 AC_SUBST(PHP_LIBS)
+AM_CONDITIONAL(WITH_PHP, [test "x$HAVE_PHP" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON
 
 AC_CHECK_PROG(PYTHON,python,python)
-if test "x$PYTHON" = "x"; then
-  HAVE_PYTHON=0
-else
-  HAVE_PYTHON=1
+if test "x$PYTHON" != "x"; then
   PYTHON_VERSION=`python -V 2>&1 | grep Python | cut -d ' ' -f 2`
   if test "x$PYTHON_VERSION" = "x"; then
-    HAVE_PYTHON=0
+    PYTHON=
   else
     PYTHON_VERSION_MAJOR=`echo $PYTHON_VERSION | cut -d '.' -f 1`
     PYTHON_VERSION_MINOR=`echo $PYTHON_VERSION | cut -d '.' -f 2`
     PYTHON_VERSION_SHORT=$PYTHON_VERSION_MAJOR.$PYTHON_VERSION_MINOR
     if test $PYTHON_VERSION_MAJOR -lt 3; then
       if test $PYTHON_VERSION_MAJOR -lt 2; then
-	HAVE_PYTHON=0
+	PYTHON=
       else
         if test $PYTHON_VERSION_MINOR -lt 4; then
-	  HAVE_PYTHON=0
+	  PYTHON=
         fi
       fi
     fi
@@ -469,28 +430,25 @@ else
   CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
   AC_CHECK_HEADER(Python.h,,[
     AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
-    HAVE_PYTHON=0])
+    PYTHON=
+    ])
   CPPFLAGS=$save_CPPFLAGS
 fi
-AM_CONDITIONAL(WITH_PYTHON, [test "x$HAVE_PYTHON" = "x1"])
-AC_SUBST(HAVE_PYTHON)
 AC_SUBST(PYTHON_INCLUDES)
 AC_SUBST(PYTHON_LIBS)
+AM_CONDITIONAL(WITH_PYTHON, [test "x$PYTHON" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for RUBY
+
 AC_CHECK_PROG(RUBY,ruby,ruby)
-if test "x$RUBY" = "x"; then
-  HAVE_RUBY=0
-else
-  HAVE_RUBY=1
+if test "x$RUBY" != "x"; then
   RUBY_INCLUDES="-I`ruby $TOP_DIR/config/config_ruby.rb INCLUDES`"
   RUBY_LIBS="-L`ruby $TOP_DIR/config/config_ruby.rb lib` -lruby"
 fi
-AM_CONDITIONAL(WITH_RUBY, [test "x$HAVE_RUBY" = "x1"])
-AC_SUBST(HAVE_RUBY)
 AC_SUBST(RUBY_INCLUDES)
 AC_SUBST(RUBY_LIBS)
+AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for TCL
