@@ -122,6 +122,7 @@ int gvrender_features(GVJ_t * job)
 
 void gvrender_begin_job(GVJ_t * job)
 {
+    GVC_t *gvc = job->gvc;
     gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
@@ -133,8 +134,8 @@ void gvrender_begin_job(GVJ_t * job)
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_job)
-	    cg->begin_job(job->output_file, job->g, job->gvc->lib, job->gvc->user,
-			  job->gvc->info, job->pagesArraySize);
+	    cg->begin_job(job->output_file, gvc->g, gvc->lib, gvc->user,
+			  gvc->info, job->pagesArraySize);
     }
 #endif
 }
@@ -231,7 +232,7 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     sx = job->width / (job->zoom * 2.);
     sy = job->height / (job->zoom * 2.);
 
-    job->sg = g;  /* current subgraph/cluster */
+    gvc->sg = g;  /* current subgraph/cluster */
     job->compscale.y = job->compscale.x = job->zoom * job->dpi / POINTS_PER_INCH;
     job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
     if (job->rotation) {
@@ -323,7 +324,7 @@ void gvrender_end_graph(GVJ_t * job)
 	    cg->end_graph();
     }
 #endif
-    job->sg = NULL;
+    job->gvc->sg = NULL;
 }
 
 void gvrender_begin_page(GVJ_t * job)
@@ -340,7 +341,7 @@ void gvrender_begin_page(GVJ_t * job)
 
 	PF2P(job->pageOffset, offset);
 	if (cg && cg->begin_page)
-	    cg->begin_page(job->g, job->pagesArrayElem,
+	    cg->begin_page(job->gvc->g, job->pagesArrayElem,
 		job->zoom, job->rotation, offset);
     }
 #endif
@@ -398,7 +399,7 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    job->sg = sg;  /* set current cluster graph object */
+    job->gvc->sg = sg;  /* set current cluster graph object */
 #ifndef DISABLE_CODEGENS
     Obj = CLST;
 #endif
@@ -429,7 +430,7 @@ void gvrender_end_cluster(GVJ_t * job, graph_t *g)
     }
     Obj = NONE;
 #endif
-    job->sg = g;  /* reset current cluster to parent graph or cluster */
+    job->gvc->sg = g;  /* reset current cluster to parent graph or cluster */
 }
 
 void gvrender_begin_nodes(GVJ_t * job)
@@ -503,7 +504,7 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
 #ifndef DISABLE_CODEGENS
     Obj = NODE;
 #endif
-    job->n = n; /* set current node */
+    job->gvc->n = n; /* set current node */
     if (gvre && gvre->begin_node)
 	gvre->begin_node(job, n->name, n->id);
 #ifndef DISABLE_CODEGENS
@@ -531,7 +532,7 @@ void gvrender_end_node(GVJ_t * job)
     }
     Obj = NONE;
 #endif
-    job->n = NULL; /* clear current node */
+    job->gvc->n = NULL; /* clear current node */
 }
 
 void gvrender_begin_edge(GVJ_t * job, edge_t * e)
@@ -541,7 +542,7 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 #ifndef DISABLE_CODEGENS
     Obj = EDGE;
 #endif
-    job->e = e; /* set current edge */
+    job->gvc->e = e; /* set current edge */
     if (gvre && gvre->begin_edge)
 	gvre->begin_edge(job, e->tail->name,
 			 e->tail->graph->root->kind & AGFLAG_DIRECTED,
@@ -571,7 +572,7 @@ void gvrender_end_edge(GVJ_t * job)
     }
     Obj = NONE;
 #endif
-    job->e = NULL; /* clear current edge */
+    job->gvc->e = NULL; /* clear current edge */
 }
 
 void gvrender_begin_context(GVJ_t * job)

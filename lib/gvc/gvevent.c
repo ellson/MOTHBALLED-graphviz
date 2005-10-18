@@ -166,12 +166,14 @@ static void gv_edge_state(GVJ_t *job, edge_t *e)
 
 static void gvevent_refresh(GVJ_t * job)
 {
+    graph_t *g = job->gvc->g;
+
     if (!job->selected_obj) {
-	job->selected_obj = job->g;
-	GD_selected(job->g) = TRUE;
-	gv_graph_state(job, job->g);
+	job->selected_obj = g;
+	GD_selected(g) = TRUE;
+	gv_graph_state(job, g);
     }
-    emit_graph(job, job->g);
+    emit_graph(job, g);
 }
 
 /* recursively find innermost cluster containing the point */
@@ -302,7 +304,7 @@ static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
     b.LL.x = p.x - closeenough;
     b.LL.y = p.y - closeenough;
 
-    obj = gvevent_find_obj(job->g, b);
+    obj = gvevent_find_obj(job->gvc->g, b);
     if (obj != job->current_obj) {
 	gvevent_leave_obj(job);
 	job->current_obj = obj;

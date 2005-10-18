@@ -81,6 +81,11 @@ extern "C" {
 	GVJ_t *job;	/* current job */
 	void (*errorfn) (char *fmt, ...);
 
+	graph_t *g;	/* current graph */
+	graph_t *sg;	/* current subgraph/cluster */
+	node_t *n;	/* current node */
+	edge_t *e;	/* current edge */
+
 	/* plugins */
 #define ELEM(x) +1
 	/* APIS expands to "+1 +1 ... +1" to give the number of APIs */
