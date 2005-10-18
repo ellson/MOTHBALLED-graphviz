@@ -39,6 +39,7 @@
         texts exch get 0 get stringwidth pop
         dup texttw gt { /texttw exch def } { pop } ifelse
     } for
+    textyj (b) eq { /ty texty textth add textbl add def } if
     textyj (d) eq { /ty texty textth add def } if
     textyj (c) eq { /ty texty textth 2 div add def } if
     textyj (u) eq { /ty texty def } if
