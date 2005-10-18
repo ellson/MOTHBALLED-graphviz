@@ -466,8 +466,8 @@ if test "x$RUBY" = "x"; then
   HAVE_RUBY=0
 else
   HAVE_RUBY=1
-  RUBY_INCLUDES=-I`ruby $TOP_DIR/config/config_ruby.rb INCLUDES`
-  RUBY_LIBS=-L`ruby $TOP_DIR/config/config_ruby.rb lib` -lruby
+  RUBY_INCLUDES="-I`ruby $TOP_DIR/config/config_ruby.rb INCLUDES`"
+  RUBY_LIBS="-L`ruby $TOP_DIR/config/config_ruby.rb lib` -lruby"
 fi
 AM_CONDITIONAL(WITH_RUBY, [test "x$HAVE_RUBY" = "x1"])
 AC_SUBST(HAVE_RUBY)
