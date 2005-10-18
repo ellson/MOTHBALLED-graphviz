@@ -91,6 +91,7 @@ dnl -----------------------------------
 AC_ARG_ENABLE(static,
         [AC_HELP_STRING([--enable-static], [build static executable])])
 if test "x$enable_static" != "xno"; then
+	AC_ENABLE_STATIC
 	AC_DEFINE(ENABLE_STATIC,1,[Define if you want statically linked executables])
 else
 	AC_DISABLE_STATIC
