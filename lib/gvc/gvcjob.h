@@ -116,6 +116,10 @@ extern "C" {
         void (*button_release) (GVJ_t * job, int button, pointf pointer);
         void (*motion) (GVJ_t * job, pointf pointer);
         void (*modify) (GVJ_t * job, char *name, char *value);
+        void (*delete) (GVJ_t * job);
+        void (*read) (GVJ_t * job, char *filename);
+        void (*layout) (GVJ_t * job, char *type);
+        void (*render) (GVJ_t * job, char *format, char *filename);
     } gvdevice_callbacks_t;
 
     typedef int (*gvevent_key_callback_t) (GVJ_t * job);

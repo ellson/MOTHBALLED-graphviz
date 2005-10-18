@@ -501,6 +501,27 @@ static int toggle_fit_cb(GVJ_t * job)
     return 0;
 }
 
+static void gvevent_delete (GVJ_t * job)
+{
+    /* FIXME */
+}
+
+static void gvevent_read (GVJ_t * job, char *filename)
+{
+    /* FIXME */
+}
+
+static void gvevent_layout (GVJ_t * job, char *type)
+{
+    /* FIXME */
+}
+
+static void gvevent_render (GVJ_t * job, char *format, char *filename)
+{
+    /* FIXME */
+}
+
+
 gvevent_key_binding_t gvevent_key_binding[] = {
     {"Q", quit_cb},
     {"Left", left_cb},
@@ -525,5 +546,9 @@ gvdevice_callbacks_t gvdevice_callbacks = {
     gvevent_button_press,
     gvevent_button_release,
     gvevent_motion,
+    gvevent_delete,
+    gvevent_read,
+    gvevent_layout,
+    gvevent_render,
     NULL,
 };
