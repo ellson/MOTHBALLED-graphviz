@@ -178,7 +178,7 @@ or Dave Korn, you already knew that.
 <P>
 <h2>Build tools for win32</h2>
 <p>See separate
-<A HREF="http://www.graphviz.org/cvs/doc/winbuild.html">
+<A HREF="http://www.graphviz.org/pub/scm/graphviz2/doc/winbuild.html">
 build notes</A> for Microsoft Windows (in native mode).
 <p>
 With some persistence you can likely get Graphviz to build on
@@ -327,12 +327,26 @@ defined in any of the standard system library functions.
 <h2>GNU style building</h2>
 
 <pre>
+<!--
 To produce graphviz-(ver).tar.gz from CVS sources.
 
 	cvs checkout graphviz
 	cd graphviz
 	./autogen.sh
 	make dist
+-->
+To produce graphviz-(ver).tar.gz from GIT sources using cogito.
+	cg clone http://www.graphviz.org/pub/scm/graphviz2/.git
+	cd graphviz2
+or to update from GIT
+	cd graphviz2
+	cg update
+then
+	./autogen.sh
+	make dist
+
+(Cogito &amp; GIT are available from http://www.kernel.org/pub/software/scm/
+or as binary packages in Fedora-Extras )
 
 To build source and binary rpms (results are left in /usr/src/redhat/ ):
 
