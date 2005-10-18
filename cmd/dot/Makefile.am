@@ -15,7 +15,7 @@ AM_CPPFLAGS = \
 	-DBUILTINS
 
 if ENABLE_STATIC
-bin_PROGRAMS = dot_static
+bin_PROGRAMS = dot dot_static
 else
 bin_PROGRAMS = dot
 endif
@@ -43,7 +43,8 @@ uninstall-hook:
 dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 	groff -Tps -man $(top_srcdir)/cmd/dot/dot.1 | ps2pdf - - >$@
 
-dot_static_SOURCES = dot.c dot_static_builtins.c
+dot_static_SOURCES = dot.c
+dot_static_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
 dot_static_LDADD = \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout.a \
