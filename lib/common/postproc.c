@@ -86,7 +86,7 @@ static void place_flip_graph_label(graph_t * g);
 
 point map_point(point p)
 {
-    p = flip_pt(p, Rankdir);
+    p = ccwrotatep(p, Rankdir*90);
     p.x -= Offset.x;
     p.y -= Offset.y;
     return p;

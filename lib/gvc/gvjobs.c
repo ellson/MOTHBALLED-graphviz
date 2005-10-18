@@ -21,6 +21,9 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 
+#include	"logic.h"
+#include	"pathplan.h"
+#include	"geom.h"
 #include	"types.h"
 #include        "gvplugin.h"
 #include        "gvcint.h"

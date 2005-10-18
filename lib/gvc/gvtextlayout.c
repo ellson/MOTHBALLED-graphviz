@@ -24,6 +24,9 @@
 
 #include <stdio.h>
 
+#include "logic.h"
+#include "pathplan.h"
+#include "geom.h"
 #include "const.h"
 #include "types.h"
 #include "macros.h"

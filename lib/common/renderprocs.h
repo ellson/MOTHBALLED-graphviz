@@ -79,6 +79,7 @@ extern "C" {
     extern splines *getsplinepoints(edge_t * e);
     extern void global_def(char *,
 			   Agsym_t * (*fun) (Agraph_t *, char *, char *));
+    extern int gvRenderJobs (GVC_t * gvc, graph_t * g);
     extern point image_size(graph_t * g, char *shapefile);
     extern boolean isPolygon(node_t *);
     extern char *strdup_and_subst_graph(char *str, Agraph_t * g);

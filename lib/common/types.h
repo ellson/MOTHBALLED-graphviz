@@ -17,13 +17,9 @@
 #ifndef GV_TYPES_H
 #define GV_TYPES_H
 
-#include "pathplan.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-    typedef unsigned char boolean;
 
     typedef int (*qsort_cmpf) (const void *, const void *);
     typedef int (*bsearch_cmpf) (const void *, const void *);
@@ -42,20 +38,6 @@ extern "C" {
     typedef struct gvusershape_engine_s gvusershape_engine_t;
 
     typedef struct htmllabel_t htmllabel_t;
-
-    typedef struct point {
-	int x, y;
-    } point;
-
-    typedef Ppoint_t pointf;
-
-    typedef struct box {
-	point LL, UR;
-    } box;
-
-    typedef struct boxf {
-	pointf LL, UR;
-    } boxf;
 
     typedef union inside_t {
 	struct {

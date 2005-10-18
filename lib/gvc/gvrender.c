@@ -29,9 +29,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "logic.h"
+#include "pathplan.h"
+#include "geom.h"
 #include "const.h"
 #include "types.h"
 #include "macros.h"
+#include "geom.h"
 #include "globals.h"
 #include "graph.h"
 #include "cdt.h"

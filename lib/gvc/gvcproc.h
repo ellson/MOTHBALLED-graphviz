@@ -125,6 +125,8 @@ extern "C" {
 /* layout */
 
     extern int gvlayout_select(GVC_t * gvc, char *str);
+    extern int gvFreeLayout(GVC_t * gvc, graph_t * g);
+    extern int gvLayoutJobs(GVC_t * gvc, graph_t * g);
 
 #ifdef __cplusplus
 }

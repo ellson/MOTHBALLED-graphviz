@@ -26,6 +26,9 @@
 #include	<ltdl.h>
 #endif
 
+#include        "logic.h"
+#include        "pathplan.h"
+#include        "geom.h"
 #include        "types.h"
 #include        "macros.h"
 #include        "graph.h"

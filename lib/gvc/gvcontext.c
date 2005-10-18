@@ -29,8 +29,11 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 
-#include	"types.h"
+#include	"logic.h"
+#include	"pathplan.h"
+#include	"geom.h"
 #include	"macros.h"
+#include	"types.h"
 #include	"graph.h"
 #include        "gvplugin.h"
 #include        "gvcint.h"

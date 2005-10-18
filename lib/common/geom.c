@@ -17,13 +17,9 @@
 /* geometric functions (e.g. on points and boxes) with application to, but
  * no specific dependance on graphs */
 
-#include <assert.h>
-#include <math.h>
 #include <stdio.h>
-
-#include "types.h"
-#include "macros.h"
-#include "const.h"
+#include "logic.h"
+#include "pathplan.h"
 #include "geom.h"
 
 point pointof(int x, int y)
@@ -355,84 +351,98 @@ int lineToBox(pointf p1, pointf p2, boxf b)
     return -1;
 }
 
-/* flip_ptf:
- * Transform point =>
- *  LR - rotate ccw by 90
- *  BT - reflect across x axis
- *  RL - TB o LR
- */
-point flip_pt(point p, int rankdir)
+point ccwrotatep(point p, int ccwrot)
 {
     int x = p.x, y = p.y;
-    switch (rankdir) {
-    case RANKDIR_TB:
+    switch (ccwrot) {
+    case 0:
 	break;
-    case RANKDIR_LR:
+    case 90:
 	p.x = -y;
 	p.y = x;
 	break;
-    case RANKDIR_BT:
+    case 180:
 	p.x = x;
 	p.y = -y;
 	break;
-    case RANKDIR_RL:
+    case 270:
 	p.x = y;
 	p.y = x;
 	break;
+    default:
+	fprintf(stderr,"unsupported ccw rotation: %d degrees\n", ccwrot);
     }
     return p;
 }
 
-/* flip_ptf:
- * flip_pt for pointf type.
- */
-pointf flip_ptf(pointf p, int rankdir)
+pointf ccwrotatepf(pointf p, int ccwrot)
 {
     double x = p.x, y = p.y;
-    switch (rankdir) {
-    case RANKDIR_TB:
+    switch (ccwrot) {
+    case 0:
 	break;
-    case RANKDIR_LR:
+    case 90:
 	p.x = -y;
 	p.y = x;
 	break;
-    case RANKDIR_BT:
+    case 180:
 	p.x = x;
 	p.y = -y;
 	break;
-    case RANKDIR_RL:
+    case 270:
 	p.x = y;
 	p.y = x;
 	break;
+    default:
+	fprintf(stderr,"unsupported ccw rotation: %d degrees\n", ccwrot);
     }
     return p;
 }
 
-/* invflip_pt:
- * Transform point =>
- *  LR - rotate cw by 90
- *  BT - reflect across x axis
- *  RL - TB o LR
- * Note that flip and invflip only differ on LR
- */
-point invflip_pt(point p, int rankdir)
+point cwrotatep(point p, int cwrot)
 {
     int x = p.x, y = p.y;
-    switch (rankdir) {
-    case RANKDIR_TB:
+    switch (cwrot) {
+    case 0:
 	break;
-    case RANKDIR_LR:
+    case 90:
 	p.x = y;
 	p.y = -x;
 	break;
-    case RANKDIR_BT:
+    case 180:
 	p.x = x;
 	p.y = -y;
 	break;
-    case RANKDIR_RL:
+    case 270:
 	p.x = y;
 	p.y = x;
 	break;
+    default:
+	fprintf(stderr,"unsupported cw rotation: %d degrees\n", cwrot);
+    }
+    return p;
+}
+
+pointf cwrotatepf(pointf p, int cwrot)
+{
+    double x = p.x, y = p.y;
+    switch (cwrot) {
+    case 0:
+	break;
+    case 90:
+	p.x = y;
+	p.y = -x;
+	break;
+    case 180:
+	p.x = x;
+	p.y = -y;
+	break;
+    case 270:
+	p.x = y;
+	p.y = x;
+	break;
+    default:
+	fprintf(stderr,"unsupported cw rotation: %d degrees\n", cwrot);
     }
     return p;
 }

@@ -780,7 +780,7 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
     box *bp = inside_context->s.bp;
     node_t *n = inside_context->s.n;
 
-    P = flip_ptf(p, GD_rankdir(n->graph));
+    P = ccwrotatepf(p, 90*GD_rankdir(n->graph));
 
     /* Quick test if port rectangle is target */
     if (bp) {
@@ -1127,7 +1127,7 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	    break;
 	}
     }
-    p = invflip_pt(p, GD_rankdir(n->graph));
+    p = cwrotatep(p, 90*GD_rankdir(n->graph));
     pp->side = invflip_side(side, GD_rankdir(n->graph));
     pp->bp = bp;
     pp->p = p;
@@ -1755,7 +1755,7 @@ record_inside(inside_t * inside_context, pointf p)
     box bbox;
 
     /* convert point to node coordinate system */
-    p = flip_ptf(p, GD_rankdir(n->graph));
+    p = ccwrotatepf(p, 90*GD_rankdir(n->graph));
 
     if (bp == NULL) {
 	fld0 = (field_t *) ND_shape_info(n);
@@ -1930,7 +1930,7 @@ static boolean epsf_inside(inside_t * inside_context, pointf p)
     double x2;
     node_t *n = inside_context->s.n;
 
-    P = flip_ptf(p, GD_rankdir(n->graph));
+    P = ccwrotatepf(p, 90*GD_rankdir(n->graph));
     x2 = ND_ht_i(n) / 2;
     return ((P.y >= -x2) && (P.y <= x2) && (P.x >= -ND_lw_i(n))
 	    && (P.x <= ND_rw_i(n)));
