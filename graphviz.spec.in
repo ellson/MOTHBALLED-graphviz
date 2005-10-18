@@ -123,16 +123,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/*.1*
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/lefty
-%exclude %{_libdir}/%{name}/lib*tcl*.so.*
-%exclude %{_libdir}/%{name}/libtk*.so.*
+%exclude %{_libdir}/%{name}/*/*
 
 %files tcl
 %defattr(-,root,root,-)
-%{_libdir}/%{name}/lib*tcl*.so.*.*
-%{_libdir}/%{name}/libtk*.so.*.*
+%{_libdir}/%{name}/*/*
 %{_libdir}/%{name}/pkgIndex.tcl
 %{_datadir}/%{name}/demo
 %{_mandir}/mann/*.n*
+%exclude %{_libdir}/%{name}/*/*.la
 
 %files devel
 %defattr(-,root,root,-)
@@ -141,8 +140,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/*.3*
-%exclude %{_libdir}/%{name}/lib*tcl*.*
-%exclude %{_libdir}/%{name}/libtk*.*
+%exclude %{_libdir}/%{name}/*/*
 
 %files graphs
 %defattr(-,root,root,-)
