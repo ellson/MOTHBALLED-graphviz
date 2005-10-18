@@ -204,10 +204,8 @@ test_java: libgv_java.la
 .PHONY: test_lua
 test_lua: libgv_lua.la
 	-(mkdir -p test_lua; cd test_lua; \
-		ln -fs ../.libs/libgv_lua.so libgv.so; \
-		ln -fs ../*.dot ../*.lua .; \
-		luac *.lua; \
-		LD_LIBRARY_PATH=. lua test)
+		ln -fs ../.libs/libgv_lua.so ../*.dot ../*.lua .; \
+		$(LUA) test.lua)
 
 .PHONY: test_ocaml
 test_ocaml: libgv_ocaml.la
