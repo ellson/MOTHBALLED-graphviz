@@ -966,8 +966,10 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImage * im, int *brect, int fg, char *f
         }
     }
 
-//  if (fg < 0)
-//      render_mode |= FT_LOAD_MONOCHROME;
+#if 0
+    if (fg < 0)
+	render_mode |= FT_LOAD_MONOCHROME;
+#endif
 
   /* find requested charmap */
   encodingfound = 0;
