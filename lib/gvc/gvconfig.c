@@ -24,6 +24,7 @@
 
 #ifndef DISABLE_LTDL
 #include	<sys/types.h>
+#include	<regex.h>
 #include	<sys/stat.h>
 #include	<unistd.h>
 #include	<glob.h>
@@ -278,9 +279,17 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     FILE *f = NULL;
     glob_t globbuf;
     char *config_glob, *path, *libdir;
-    int i, rc;
+    int i, rc, re_status;
     gvplugin_library_t *library;
-    char *plugin_glob = "libgvplugin*.so.?";
+    char *plugin_glob = "libgvplugin*";
+    regex_t re;
+#if 1
+    /* Mac OS X / Darwin */
+    char *plugin_re = "[^0-9]\\.[0-9]+\\.dylib$";
+#else
+    /* Everyone else */
+    char *plugin_re = "\\.so\\.[0-9]+$";
+#endif
 
     if (config_path) {
 	f = fopen(config_path,"w");
@@ -301,20 +310,27 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     strcat(config_glob, plugin_glob);
 
     rc = glob(config_glob, GLOB_NOSORT, NULL, &globbuf);
+    if (regcomp(&re, plugin_re, REG_EXTENDED|REG_NOSUB) != 0) {
+	agerr(AGERR,"cannot compile regular expression %s", plugin_re);
+    }
     if (rc == 0) {
 	for (i = 0; i < globbuf.gl_pathc; i++) {
-	    library = gvplugin_library_load(globbuf.gl_pathv[i]);
-	    if (library) {
-		gvconfig_plugin_install_from_library(gvc, globbuf.gl_pathv[i], library);
-		path = strrchr(globbuf.gl_pathv[i],'/');
-		if (path)
-		    path++;
-		if (f && path) {
-		    gvconfig_write_library_config(path, library, f);
+	    re_status = regexec(&re, globbuf.gl_pathv[i], (size_t) 0, NULL, 0);
+	    if (re_status == 0) {
+		library = gvplugin_library_load(globbuf.gl_pathv[i]);
+		if (library) {
+		    gvconfig_plugin_install_from_library(gvc, globbuf.gl_pathv[i], library);
+		    path = strrchr(globbuf.gl_pathv[i],'/');
+		    if (path)
+			path++;
+		    if (f && path) {
+			gvconfig_write_library_config(path, library, f);
+		    }
 		}
 	    }
 	}
     }
+    regfree(&re);
     globfree(&globbuf);
     free(config_glob);
     if (f)
