@@ -97,7 +97,6 @@ gv_tcl.cpp $(TCL_hdr): gv.i
 pkginclude_DATA = gv.i gv.cpp
 pkglib_LTLIBRARIES = 
 TESTS =
-if WITH_SWIG
 if WITH_CSHARP
 pkgcsharp_DATA = $(CSHARP_hdr)
 pkgcsharp_LTLIBRARIES = libgv_csharp.la
@@ -147,10 +146,7 @@ if WITH_TCL
 pkgtcl_DATA = $(TCL_hdr)
 pkgtcl_LTLIBRARIES = libgv_tcl.la
 TESTS += test_tcl
-endif
-endif
 
-if WITH_TCL
 all-local: pkgIndex.tcl
 
 pkgIndex.tcl: libgv_tcl.la

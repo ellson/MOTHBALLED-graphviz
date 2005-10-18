@@ -306,6 +306,7 @@ AM_CONDITIONAL(WITH_SWIG, [test "x$SWIG" != "x"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for CSHARP
 
+if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(csharp,
   [AC_HELP_STRING([--disable-csharp], [don't support csharp language bindings])])
 if test "x$enable_csharp" != "xno"; then
@@ -315,11 +316,13 @@ CSHARP_LIBS=
 AC_SUBST(CSHARP_INCLUDES)
 AC_SUBST(CSHARP_LIBS)
 fi
+fi
 AM_CONDITIONAL(WITH_CSHARP, [test "x$CSHARP" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GUILE
 
+if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(guile,
   [AC_HELP_STRING([--disable-guile], [don't support guile language bindings])])
 if test "x$enable_guile" != "xno"; then
@@ -333,11 +336,13 @@ AC_CHECK_HEADER(libguile.h,,[
 AC_SUBST(GUILE_INCLUDES)
 AC_SUBST(GUILE_LIBS)
 fi
+fi
 AM_CONDITIONAL(WITH_GUILE, [test "x$GUILE" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for IO
 
+if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(io,
   [AC_HELP_STRING([--disable-io], [don't support io language bindings])])
 if test "x$enable_io" != "xno"; then
@@ -347,11 +352,13 @@ IO_LIBS=
 AC_SUBST(IO_INCLUDES)
 AC_SUBST(IO_LIBS)
 fi
+fi
 AM_CONDITIONAL(WITH_IO, [test "x$IO" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for JAVA
 
+if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(java,
   [AC_HELP_STRING([--disable-java], [don't support java language bindings])])
 if test "x$enable_java" != "xno"; then
@@ -365,11 +372,13 @@ AC_CHECK_HEADER(jni.h,,[
 AC_SUBST(JAVA_INCLUDES)
 AC_SUBST(JAVA_LIBS)
 fi
+fi
 AM_CONDITIONAL(WITH_JAVA, [test "x$JAVA" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for OCAML
 
+if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(ocaml,
   [AC_HELP_STRING([--disable-ocaml], [don't support ocaml language bindings])])
 if test "x$enable_ocaml" != "xno"; then
@@ -386,11 +395,13 @@ CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(OCAML_INCLUDES)
 AC_SUBST(OCAML_LIBS)
 fi
+fi
 AM_CONDITIONAL(WITH_OCAML, [test "x$OCAML" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PERL
 
+if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(perl,
   [AC_HELP_STRING([--disable-perl], [don't support perl language bindings])])
 if test "x$enable_perl" != "xno"; then
@@ -410,11 +421,13 @@ CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(PERL_INCLUDES)
 AC_SUBST(PERL_LIBS)
 fi
+fi
 AM_CONDITIONAL(WITH_PERL, [test "x$PERL" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PHP
 
+if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(php,
   [AC_HELP_STRING([--disable-php], [don't support php language bindings])])
 if test "x$enable_php" != "xno"; then
@@ -431,11 +444,13 @@ CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(PHP_INCLUDES)
 AC_SUBST(PHP_LIBS)
 fi
+fi
 AM_CONDITIONAL(WITH_PHP, [test "x$PHP" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON
 
+if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(python,
   [AC_HELP_STRING([--disable-python], [don't support python language bindings])])
 if test "x$enable_python" != "xno"; then
@@ -472,11 +487,13 @@ fi
 AC_SUBST(PYTHON_INCLUDES)
 AC_SUBST(PYTHON_LIBS)
 fi
+fi
 AM_CONDITIONAL(WITH_PYTHON, [test "x$PYTHON" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for RUBY
 
+if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(ruby,
   [AC_HELP_STRING([--disable-ruby], [don't support ruby language bindings])])
 if test "x$enable_ruby" != "xno"; then
@@ -495,11 +512,13 @@ fi
 AC_SUBST(RUBY_INCLUDES)
 AC_SUBST(RUBY_LIBS)
 fi
+fi
 AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for TCL
 
+if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(tcl,
   [AC_HELP_STRING([--disable-tcl], [don't support tcl language bindings])])
 if test "x$enable_tcl" != "xno"; then
@@ -507,6 +526,7 @@ if test "x$enable_tcl" != "xno"; then
 HAVE_TCL=1 
 else
 HAVE_TCL=0
+fi
 fi
 
 AC_ARG_WITH(tclsh,
