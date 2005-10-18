@@ -20,17 +20,23 @@
 %}
 
 /* new graph objects */
-extern Agraph_t *stringgraph(char *graphstring);	/* from dot-formatted string */
-extern Agraph_t *readgraph(char *filename);		/* from dot-formatted file */
+extern Agraph_t *graph(char *name);		/* new empty graph */
+extern Agraph_t *digraph(char *name);		/* new empty digraph */
+extern Agraph_t *strictgraph(char *name);	/* new empty strict graph */
+extern Agraph_t *strictdigraph(char *name);	/* new empty strict digraph */
 
-extern Agraph_t *digraphstrict(char *name);		/* new empty digraphstrict */
-extern Agraph_t *graphstrict(char *name);		/* new empty graphstrict */
-extern Agraph_t *digraph(char *name);			/* new empty digraph */
-extern Agraph_t *graph(char *name);			/* new empty graph */
+extern Agraph_t *readstring(char *string);	/* from dot-formatted string */
+extern Agraph_t *read(char *filename);		/* from dot-formatted file */
+extern Agraph_t *read(FILE *f);			/* from dot-formatted file */
 
-extern Agraph_t *graph(Agraph_t *g, char *name);	/* add new empty subgraph to existing graph */
-extern Agnode_t *node(Agraph_t *g, char *name);		/* add new node to existing graph */
-extern Agedge_t *edge(Agnode_t *t, Agnode_t *h);	/* add new edge between existing nodes */
+extern Agraph_t *graph(Agraph_t *g, char *name);/* add subgraph to graph */
+extern Agnode_t *node(Agraph_t *g, char *name);	/* add node to graph */
+extern Agedge_t *edge(Agnode_t *t, Agnode_t *h);/* add edge between existing nodes */
+				
+extern Agedge_t *edge(Agnode_t *t, char *hname);/* add edge, existing tail, named head which will be induced if necessary */
+extern Agedge_t *edge(char *tname, Agnode_t *h);/* add edge, named tail which will be induced if necessary, existing head */
+
+extern Agedge_t *edge(Agraph_t *g, char *tname, char *hname);/* add edge between named nodes, induced as necessary */
 
 /* set/get attribute of graph/node/edge */
 extern char *set(Agraph_t *g, char *attr, char *val=NULL);
@@ -47,7 +53,9 @@ extern char *nameof(Agnode_t *n);
 //extern char *nameof(Agedge_t *e);
 extern char *nameof(Agsym_t *a);
 
-extern Agsym_t *findnode(Agraph_t *g, char *name);
+extern Agraph_t *findsubg(Agraph_t *g, char *name);
+extern Agnode_t *findnode(Agraph_t *g, char *name);
+extern Agedge_t *findedge(Agnode_t *t, Agnode_t *h);
 
 extern Agsym_t *findattr(Agraph_t *g, char *name);
 extern Agsym_t *findattr(Agnode_t *n, char *name);
@@ -73,17 +81,29 @@ extern Agraph_t *nextsubg(Agraph_t *g, Agraph_t *sg);
 extern Agraph_t *firstsupg(Agraph_t *g);
 extern Agraph_t *nextsupg(Agraph_t *g, Agraph_t *sg);
 
+extern Agedge_t *firstedge(Agraph_t *g);
+extern Agedge_t *nextedge(Agraph_t *g, Agedge_t *e);
+
 extern Agedge_t *firstout(Agraph_t *g);
 extern Agedge_t *nextout(Agraph_t *g, Agedge_t *e);
 
+extern Agedge_t *firstedge(Agnode_t *n);
+extern Agedge_t *nextedge(Agnode_t *n, Agedge_t *e);
+
 extern Agedge_t *firstout(Agnode_t *n);
 extern Agedge_t *nextout(Agnode_t *n, Agedge_t *e);
+
+extern Agnode_t *firsthead(Agnode_t *n);
+extern Agnode_t *nexthead(Agnode_t *n, Agnode_t *h);
 
 extern Agedge_t *firstin(Agraph_t *g);
 extern Agedge_t *nextin(Agnode_t *n, Agedge_t *e);
 
 extern Agedge_t *firstin(Agnode_t *n);
 extern Agedge_t *nextin(Agraph_t *g, Agedge_t *e);
+
+extern Agnode_t *firsttail(Agnode_t *n);
+extern Agnode_t *nexttail(Agnode_t *n, Agnode_t *t);
 
 extern Agnode_t *firstnode(Agraph_t *g);
 extern Agnode_t *nextnode(Agraph_t *g, Agnode_t *n);

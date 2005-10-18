@@ -21,10 +21,10 @@ $g = Gv::digraph "G";
 #gv::rm $m;
 #gv::rm $g;
 #
-#$g = gv::stringgraph "digraph G {a->b}";
+#$g = gv::readstring "digraph G {a->b}";
 #gv::rm $g;
 #
-#$g = gv::readgraph "hello.dot";
+#$g = gv::read "hello.dot";
 #gv::layout($g, "dot");
 #gv::render($g, "png", "hello.png");
 #gv::rm $g;

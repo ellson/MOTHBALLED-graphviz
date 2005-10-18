@@ -20,10 +20,10 @@ gv::rm $n
 gv::rm $m
 gv::rm $g
 
-set g [gv::stringgraph "digraph G {a->b}"]
+set g [gv::readstring "digraph G {a->b}"]
 gv::rm $g
 
-set g [gv::readgraph hello.dot]
+set g [gv::read hello.dot]
 for {set n [gv::firstnode $g]} {[gv::ok $n]} {set n [gv::nextnode $g $n]} {
     puts [gv::nameof $n]
     for {set a [gv::firstattr $n]} {[gv::ok $a]} {set a [gv::nextattr $n $a]} {

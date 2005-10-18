@@ -19,77 +19,58 @@
 
 GVC_t *gvc;
 
-static void gvinit()
+Agraph_t *graph(char *name)
 {
-    gvc = gvContext();
+    if (!gvc)
+	gvc = gvContext();
+    return agopen(name, AGRAPH);
 }
 
 Agraph_t *digraph(char *name)
 {
-    Agraph_t *g;
-
     if (!gvc)
-	gvinit();
-    g = agopen(name, AGDIGRAPH);
-    GD_drawing(g) = NULL;
-    return g;
+	gvc = gvContext();
+    return agopen(name, AGDIGRAPH);
 }
 
-Agraph_t *digraphstrict(char *name)
+Agraph_t *strictgraph(char *name)
 {
-    Agraph_t *g;
-
     if (!gvc)
-	gvinit();
-    g = agopen(name, AGDIGRAPHSTRICT);
-    GD_drawing(g) = NULL;
-    return g;
+	gvc = gvContext();
+    return agopen(name, AGRAPHSTRICT);
 }
 
-Agraph_t *graph(char *name)
+Agraph_t *strictdigraph(char *name)
 {
-    Agraph_t *g;
-
     if (!gvc)
-	gvinit();
-    g = agopen(name, AGRAPH);
-    GD_drawing(g) = NULL;
-    return g;
+	gvc = gvContext();
+    return agopen(name, AGDIGRAPHSTRICT);
 }
 
-Agraph_t *graphstrict(char *name)
+Agraph_t *readstring(char *string)
 {
-    Agraph_t *g;
-
     if (!gvc)
-	gvinit();
-    g = agopen(name, AGRAPHSTRICT);
-    GD_drawing(g) = NULL;
-    return g;
+	gvc = gvContext();
+    return agmemread(string);
 }
 
-Agraph_t *stringgraph(char *graphstring)
+Agraph_t *read(FILE *f)
 {
-    Agraph_t *g;
-
     if (!gvc)
-	gvinit();
-    g = agmemread(graphstring);
-    GD_drawing(g) = NULL;
-    return g;
+	gvc = gvContext();
+    return agread(f);
 }
 
-Agraph_t *readgraph(char *filename)
+Agraph_t *read(char *filename)
 {
     FILE *f;
     Agraph_t *g;
 
-    if (!gvc)
-	gvinit();
     f = fopen(filename, "r");
+    if (!f)
+	return NULL;
     g = agread(f);
     fclose(f);
-    GD_drawing(g) = NULL;
     return g;
 }
 
@@ -111,6 +92,21 @@ Agnode_t *node(Agraph_t *g, char *name)
 Agedge_t *edge(Agnode_t *t, Agnode_t *h)
 {
     return agedge(t->graph, t, h);
+}
+
+Agedge_t *edge(char *tname, Agnode_t *h)
+{
+    return agedge(h->graph, agnode(h->graph, tname), h);
+}
+
+Agedge_t *edge(Agnode_t *t, char *hname)
+{
+    return agedge(t->graph, t, agnode(t->graph, hname));
+}
+
+Agedge_t *edge(Agraph_t *g, char *tname, char *hname)
+{
+    return agedge(g, agnode(g, tname), agnode(g, hname));
 }
 
 //-------------------------------------------------
@@ -296,11 +292,25 @@ char *set(Agedge_t *e, char *attr, char *val)
     return val;
 }
 //-------------------------------------------------
+Agraph_t *findsubg(Agraph_t *g, char *name)
+{
+    if (!g || !name)
+	return NULL;
+    return agfindsubg(g, name);
+}
+
 Agnode_t *findnode(Agraph_t *g, char *name)
 {
     if (!g || !name)
 	return NULL;
     return agfindnode(g, name);
+}
+
+Agedge_t *findedge(Agnode_t *t, Agnode_t *h)
+{
+    if (!t || !h)
+	return NULL;
+    return agfindedge(t->graph, t, h);
 }
 
 Agsym_t *findattr(Agraph_t *g, char *name)
@@ -529,11 +539,21 @@ Agedge_t *nextout(Agraph_t *g, Agedge_t *e)
     e = agnxtout(g, e);
     if (e)
 	return (e);
-    n = agnxtnode(g, n);
+    n = agnxtnode(g, e->tail);
     if (!n)
 	return NULL;
     return agfstout(g, n);
 }
+
+Agedge_t *firstedge(Agraph_t *g)
+{
+    return firstout(g);
+} 
+
+Agedge_t *nextedge(Agraph_t *g, Agedge_t *e)
+{
+    return nextout(g, e);
+} 
 
 Agedge_t *firstout(Agnode_t *n)
 {
@@ -546,8 +566,51 @@ Agedge_t *nextout(Agnode_t *n, Agedge_t *e)
 {
     if (!n || !e)
 	return NULL;
-    return (agnxtout(n->graph, e));
+    return agnxtout(n->graph, e);
 }
+
+Agnode_t *firsthead(Agnode_t *n)
+{
+    Agedge_t *e;
+
+    if (!n)
+	return NULL;
+    e = agfstout(n->graph, n);
+    if (!e)
+	return NULL;
+    return e->head;
+}
+
+Agnode_t *nexthead(Agnode_t *n, Agnode_t *h)
+{
+    Agedge_t *e;
+
+    if (!n || !h)
+	return NULL;
+    e = agfindedge(n->graph, n, h);
+    if (!e)
+	return NULL;
+    do {
+	e = agnxtout(n->graph, e);
+	if (!e)
+	    return NULL;
+    } while (e->head == h);
+    return e->head;
+}
+
+Agedge_t *firstedge(Agnode_t *n)
+{
+    if (!n)
+	return NULL;
+    return agfstedge(n->graph, n);
+} 
+
+Agedge_t *nextedge(Agnode_t *n, Agedge_t *e)
+{
+    if (!n || !e)
+	return NULL;
+    return agnxtedge(n->graph, e, n); 
+} 
 
 Agedge_t *firstin(Agraph_t *g)
 {
@@ -558,7 +621,7 @@ Agedge_t *firstin(Agraph_t *g)
     n = agfstnode(g);
     if (!n)
 	return NULL;
-    return(agfstin(g, n));
+    return agfstin(g, n);
 }
 
 Agedge_t *nextin(Agraph_t *g, Agedge_t *e)
@@ -573,45 +636,74 @@ Agedge_t *nextin(Agraph_t *g, Agedge_t *e)
     n = agnxtnode(g, n);
     if (!n)
 	return NULL;
-    return (agfstin(g, n));
+    return agfstin(g, n);
 }
 
 Agedge_t *firstin(Agnode_t *n)
 {
     if (!n)
 	return NULL;
-    return(agfstin(n->graph, n));
+    return agfstin(n->graph, n);
 }
 
 Agedge_t *nextin(Agnode_t *n, Agedge_t *e)
 {
     if (!n || !e)
 	return NULL;
-    return (agnxtin(n->graph, e));
+    return agnxtin(n->graph, e);
+}
+
+Agnode_t *firsttail(Agnode_t *n)
+{
+    Agedge_t *e;
+
+    if (!n)
+	return NULL;
+    e = agfstin(n->graph, n);
+    if (!e)
+	return NULL;
+    return e->tail;
+}
+
+Agnode_t *nexttail(Agnode_t *n, Agnode_t *t)
+{
+    Agedge_t *e;
+
+    if (!n || !t)
+	return NULL;
+    e = agfindedge(n->graph, t, n);
+    if (!e)
+	return NULL;
+    do {
+	e = agnxtout(n->graph, e);
+	if (!e)
+	    return NULL;
+    } while (e->tail == t);
+    return e->tail;
 }
 
 Agnode_t *firstnode(Agraph_t *g)
 {
-    return (agfstnode(g));
+    return agfstnode(g);
 }
 
 Agnode_t *nextnode(Agraph_t *g, Agnode_t *n)
 {
-    return (agnxtnode(g, n));
+    return agnxtnode(g, n);
 }
 
 Agnode_t *firstnode(Agedge_t *e)
 {
     if (!e)
 	return NULL;
-    return (e->tail);
+    return e->tail;
 }
 
 Agnode_t *nextnode(Agedge_t *e, Agnode_t *n)
 {
     if (!e || n != e->tail)
 	return NULL;
-    return (e->head);
+    return e->head;
 }
 
 Agsym_t *firstattr(Agraph_t *g)

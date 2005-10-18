@@ -19,10 +19,10 @@ Gv.rm(n)
 Gv.rm(m)
 Gv.rm(g)
 
-g = Gv.stringgraph("digraph G {a->b}")
+g = Gv.readstring("digraph G {a->b}")
 Gv.rm(g)
 
-g = Gv.readgraph("hello.dot")
+g = Gv.read("hello.dot")
 Gv.layout(g, "dot")
 Gv.render(g, "png", "hello.png")
 Gv.rm(g)
