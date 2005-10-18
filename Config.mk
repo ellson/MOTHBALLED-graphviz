@@ -51,4 +51,4 @@ TK_LIBDIR=$(TKDIR)/lib
 # location of tk.h
 TK_INCDIR=$(TKDIR)/include
 
-VERSION=2.3
+VERSION=2.5

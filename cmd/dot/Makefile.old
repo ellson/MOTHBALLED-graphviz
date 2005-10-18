@@ -12,13 +12,13 @@ INCS =  -I$(LOC_LIB)/gvc -I$(LOC_LIB)/common -I$(ROOT) -I$(LOC_LIB)/cdt \
 ALLINCS = -I$(LOC_LIB)/dotgen -I$(LOC_LIB)/neatogen -I$(LOC_LIB)/twopigen \
           -I$(LOC_LIB)/circogen -I$(LOC_LIB)/fdpgen $(INCS)
 
-DEFINES = -DHAVE_CONFIG_H
+DEFINES = -DHAVE_CONFIG_H -DBUILTINS
 
 XLIBS = -L$(LOC_LIB)/pathplan -lpathplan \
         -L$(LOC_LIB)/graph -lgraph \
         -L$(LOC_LIB)/cdt -lcdt \
         -L$(LOC_LIB)/gd -lgd \
-        $(EXTLIB_LIB) $(EXPAT_LIB) -lm
+        $(EXTLIB_LIB) $(EXPAT_LIB) -lltdl -lm
 
 PLUGS = -L$(LOC_PLUG) -lgvplugin_layout
 
@@ -39,7 +39,7 @@ DOTLIBS = $(LOC_LIB)/common/libcommon.a $(LOC_LIB)/dotgen/libdotgen.a \
           $(LOC_LIB)/plugin/libgvplugin_layout.a $(LOC_LIB)/gvc/libgvc.a \
           $(LOC_LIB)/twopigen/libtwopigen.a $(LOC_LIB)/circogen/libcircogen.a
 
-OBJS = dot.o
+OBJS = dot.o dot_builtins.o
 
 all : dot
 
@@ -49,6 +49,9 @@ dot : $(OBJS) $(DOTLIBS)
 
 dot.o : dot.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) dot.c
+
+dot_builtins.o : dot_builtins.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) dot_builtins.c
 
 install: all
 	$(MKPATH) $(BINDIR)
