@@ -278,7 +278,8 @@ void IMDS_given_dim(vtx_data* graph, int n, double* given_coords,
 		for (j=0; j<n; j++)
 			Dij[i][j]*=SCALE_FACTOR;
 	
-	if (x!=NULL) {
+	assert(x!=NULL);
+	{
 		double sum1, sum2;
 		/* scale x (given axis) to minimize the stress */
 		orthog_aux = N_GNEW(n, double);
@@ -318,7 +319,8 @@ void IMDS_given_dim(vtx_data* graph, int n, double* given_coords,
 	
 
 	/* compute residual distances */
-	if (x!=NULL) {
+	/* if (x!=NULL)  */
+    {
 		double diff;
 		for (i=1; i<n; i++) {
 			pos_i=x[i];		
