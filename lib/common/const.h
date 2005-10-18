@@ -61,8 +61,8 @@
 #define		DEFAULT_DELETEDPENCOLOR	"lightgrey"
 #define		DEFAULT_DELETEDFILLCOLOR	"lightgrey"
 #define		DEFAULT_DELETEDFONTCOLOR	"darkgrey"
-#define		DEFAULT_VISITEDPENCOLOR	"paleblue"
-#define		DEFAULT_VISITEDFILLCOLOR	"paleblue"
+#define		DEFAULT_VISITEDPENCOLOR	"pink"
+#define		DEFAULT_VISITEDFILLCOLOR	"pink"
 #define		DEFAULT_VISITEDFONTCOLOR	"black"
 #define		DEFAULT_FONTSIZE	14.0
 #define		DEFAULT_LABEL_FONTSIZE	11.0	/* for head/taillabel */

@@ -169,7 +169,7 @@ static void gvevent_refresh(GVJ_t * job)
 
     if (!job->selected_obj) {
 	job->selected_obj = g;
-	GD_selected(g) = TRUE;
+	GD_selected(g) = true;
 	gv_graph_state(job, g);
     }
     emit_graph(job, g);
@@ -224,13 +224,16 @@ static void gvevent_leave_obj(GVJ_t * job)
     if (obj) {
         switch (agobjkind(obj)) {
         case AGGRAPH:
-	    GD_active((graph_t*)obj) = FALSE;
+	    GD_visited((graph_t*)obj) = true;
+	    GD_active((graph_t*)obj) = false;
 	    break;
         case AGNODE:
-	    ND_active((node_t*)obj) = FALSE;
+	    ND_visited((node_t*)obj) = true;
+	    ND_active((node_t*)obj) = false;
 	    break;
         case AGEDGE:
-	    ED_active((edge_t*)obj) = FALSE;
+	    ED_visited((edge_t*)obj) = true;
+	    ED_active((edge_t*)obj) = false;
 	    break;
         }
     }
@@ -254,21 +257,21 @@ static void gvevent_enter_obj(GVJ_t * job)
         switch (agobjkind(obj)) {
         case AGGRAPH:
 	    g = (graph_t*)obj;
-	    GD_active(g) = TRUE;
+	    GD_active(g) = true;
 	    a = agfindattr(g->root, s_tooltip);
 	    if (a)
 		job->active_tooltip = strdup_and_subst_graph(agxget(g, a->index), g);
 	    break;
         case AGNODE:
 	    n = (node_t*)obj;
-	    ND_active(n) = TRUE;
+	    ND_active(n) = true;
 	    a = agfindattr(n->graph->proto->n, s_tooltip);
 	    if (a)
 		job->active_tooltip = strdup_and_subst_node(agxget(n, a->index), n);
 	    break;
         case AGEDGE:
 	    e = (edge_t*)obj;
-	    ED_active(e) = TRUE;
+	    ED_active(e) = true;
 	    a = agfindattr(e->head->graph->proto->e, s_tooltip);
 	    if (a)
 		job->active_tooltip = strdup_and_subst_edge(agxget(e, a->index), e);
@@ -320,13 +323,13 @@ static void gvevent_select_current_obj(GVJ_t * job)
     if (obj) {
         switch (agobjkind(obj)) {
         case AGGRAPH:
-	    GD_selected((graph_t*)obj) = FALSE;
+	    GD_selected((graph_t*)obj) = false;
 	    break;
         case AGNODE:
-	    ND_selected((node_t*)obj) = FALSE;
+	    ND_selected((node_t*)obj) = false;
 	    break;
         case AGEDGE:
-	    ED_selected((edge_t*)obj) = FALSE;
+	    ED_selected((edge_t*)obj) = false;
 	    break;
         }
     }
@@ -340,15 +343,15 @@ static void gvevent_select_current_obj(GVJ_t * job)
     if (obj) {
         switch (agobjkind(obj)) {
         case AGGRAPH:
-	    GD_selected((graph_t*)obj) = TRUE;
+	    GD_selected((graph_t*)obj) = true;
 	    gv_graph_state(job, (graph_t*)obj);
 	    break;
         case AGNODE:
-	    ND_selected((node_t*)obj) = TRUE;
+	    ND_selected((node_t*)obj) = true;
 	    gv_node_state(job, (node_t*)obj);
 	    break;
         case AGEDGE:
-	    ED_selected((edge_t*)obj) = TRUE;
+	    ED_selected((edge_t*)obj) = true;
 	    gv_edge_state(job, (edge_t*)obj);
 	    break;
         }
