@@ -1147,7 +1147,7 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	/* compute angle with 0 at north pole, increasing CCW */
 	double angle = atan2(p.y,p.x) + 1.5*PI;
 	if (angle >= 2*PI) angle -= 2*PI;
-	pp->order = (int)((MC_SCALE * angle) / 2*PI);
+	pp->order = (int)((MC_SCALE * angle) / (2*PI));
     }
     pp->constrained = constrain;
     pp->defined = defined;
@@ -1760,6 +1760,8 @@ static port record_port(node_t * n, char *portname, char *compass)
     } else if (compassPort(n, &f->b, &rv, portname, sides, NULL)) {
 	unrecognized(n, portname);
     }
+fprintf (stderr, "port %s:%s:%s %d\n", n->name, (portname?portname:""),
+(compass?compass:""), rv.order);
 
     return rv;
 }
