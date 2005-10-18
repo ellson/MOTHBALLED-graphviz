@@ -15,9 +15,12 @@ pkglib_LTLIBRARIES = libpack.la
 man_MANS = pack.3
 pdf_DATA = pack.pdf
 
-libpack_la_LDFLAGS = -version-info @VERSION_INFO@
+libpack_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
 
 libpack_la_SOURCES = ccomps.c pack.c
+
+libpack_la_LIBADD = \
+	$(top_builddir)/lib/gvc/libgvc.la
 
 .3.pdf:
 	groff -Tps -man $< | ps2pdf - - >$@
