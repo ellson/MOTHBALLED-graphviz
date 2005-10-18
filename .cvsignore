@@ -6,6 +6,7 @@ graphviz*.tar.gz
 Makefile
 Makefile.in
 Doxyfile
+doxygen
 COPYING
 FEATURE
 INSTALL
