@@ -19,7 +19,7 @@
         dot files with URL attributes will get active PDF links
         from Adobe's Distiller.
  */
-#define	PDFMAX	3240		/*  Maximum size of Distiller's PDF canvas  */
+#define	PDFMAX	14400		/*  Maximum size of PDF page  */
 
 #include "render.h"
 #include "ps.h"

@@ -67,8 +67,6 @@ int gvusershape_select(GVC_t * gvc, char *usershape)
  * this file type
  * Returns the size required for the shape in points;
  * returns (-1,-1) on error;
- * returns (0,0) to indicate "don't care". For example, in
- * postscript, a node can have a user-defined shape but no shapefile.
  */
 point image_size(graph_t * g, char *shapefile)
 {
@@ -76,13 +74,9 @@ point image_size(graph_t * g, char *shapefile)
     point rv;
 
     /* no shape file, no shape size */
-    if (!shapefile) {
+    if (!shapefile || (*shapefile == '\0')) {
         rv.x = rv.y = -1;
         return rv;
-    }
-    if (*shapefile == '\0') {
-        rv.x = rv.y = 0;
-        return rv;              /* no shapefile; probably postscript custom */
     }
     if (!strncasecmp(shapefile, "http://", 7)) {
         rv.x = rv.y = 0;

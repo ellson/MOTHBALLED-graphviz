@@ -542,15 +542,24 @@ static void poly_init(node_t * n)
     } else {
 	if (ND_shape(n)->usershape) {
 	    point imagesize;
-	    char *sfile = agget(n, "shapefile");
 
-	    imagesize = image_size(n->graph, sfile);
-	    if ((imagesize.x == -1) && (imagesize.y == -1)) {
-		agerr(AGERR,
+		/* custom requires a shapefile
+                 * not custom is an adaptable user shape such as a postscript
+                 * function.
+                 */
+	    if (strcmp(ND_shape(n)->name, "custom")) {
+		imagesize.x = imagesize.y = 0;
+	    }
+	    else {
+		char *sfile = agget(n, "shapefile");
+		imagesize = image_size(n->graph, sfile);
+		if ((imagesize.x == -1) && (imagesize.y == -1)) {
+		    agerr(AGERR,
 		      "No or improper shapefile=\"%s\" for node \"%s\"\n",
 		      (sfile ? sfile : "<nil>"), n->name);
-	    } else
-		GD_has_images(n->graph) = 1;
+		} else
+		    GD_has_images(n->graph) = 1;
+	    }
 	    dimen.x = MAX(dimen.x, imagesize.x);
 	    dimen.y = MAX(dimen.y, imagesize.y);
 	}
