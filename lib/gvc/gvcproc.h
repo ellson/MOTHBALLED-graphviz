@@ -124,6 +124,12 @@ extern "C" {
     extern int gvFreeLayout(GVC_t * gvc, graph_t * g);
     extern int gvLayoutJobs(GVC_t * gvc, graph_t * g);
 
+/* argvlist */
+    extern gv_argvlist_t *gvNEWargvlist(void);
+    extern void gv_argvlist_set_item(gv_argvlist_t *list, int index, char *item);
+    extern void gv_argvlist_reset(gv_argvlist_t *list);
+    extern void gv_argvlist_free(gv_argvlist_t *list);
+
 #ifdef __cplusplus
 }
 #endif

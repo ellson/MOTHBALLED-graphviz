@@ -22,15 +22,13 @@
 #include	<stdlib.h>
 
 #include	"geom.h"
+#include	"memory.h"
 
 #include	"types.h"
 
 #include        "gvplugin.h"
 #include        "gvcint.h"
 #include        "gvcproc.h"
-
-/* from common/utils.c */
-extern void *zmalloc(size_t);
 
 static GVJ_t *output_filename_job;
 static GVJ_t *output_langname_job;
@@ -118,14 +116,34 @@ GVJ_t *gvrender_next_job(GVC_t * gvc)
     return (gvc->job = job);
 }
 
-/* FIXME - gv_argvlist_set_item and gv_argvlist_free should be in a utilities sourcefile */
-static void gv_argvlist_free(gv_argvlist_t *list)
+gv_argvlist_t *gvNEWargvlist(void)
+{
+    return (gv_argvlist_t*)zmalloc(sizeof(gv_argvlist_t));
+}
+
+void gv_argvlist_set_item(gv_argvlist_t *list, int index, char *item)
+{
+    if (index >= list->alloc) {
+	list->alloc = index + 10;
+	list->argv = grealloc(list->argv, (list->alloc)*(sizeof(char*)));
+    }
+    list->argv[index] = item;
+}
+
+void gv_argvlist_reset(gv_argvlist_t *list)
 {
     if (list->argv)
 	free(list->argv);
     list->argv = NULL;
     list->alloc = 0;
     list->argc = 0;
+}
+
+void gv_argvlist_free(gv_argvlist_t *list)
+{
+    if (list->argv)
+	free(list->argv);
+    free(list);
 }
 
 void gvrender_delete_jobs(GVC_t * gvc)
@@ -135,8 +153,8 @@ void gvrender_delete_jobs(GVC_t * gvc)
     job = gvc->jobs;
     while ((j = job)) {
 	job = job->next;
-	gv_argvlist_free(&(j->selected_obj_attributes));
-	gv_argvlist_free(&(j->selected_obj_type_name));
+	gv_argvlist_reset(&(j->selected_obj_attributes));
+	gv_argvlist_reset(&(j->selected_obj_type_name));
 	if (j->active_tooltip)
 	    free(j->active_tooltip);
 	if (j->selected_href)

@@ -35,16 +35,6 @@ static char *s_tailport = "tailport";
 static char *s_headport = "headport";
 static char *s_key = "key";
 
-/* FIXME - gv_argvlist_set_item and gv_argvlist_free should be in a utilities sourcefile */
-static void gv_argvlist_set_item(gv_argvlist_t *list, int index, char *item)
-{
-    if (index >= list->alloc) {
-	list->alloc = index + 10;
-	list->argv = realloc(list->argv, (list->alloc)*(sizeof(char*)));
-    }
-    list->argv[index] = item;
-}
-
 static void gv_graph_state(GVJ_t *job, graph_t *g)
 {
     int i, j;
