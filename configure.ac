@@ -279,24 +279,22 @@ dnl -----------------------------------
 dnl check for SWIG - needed for script-language bindings
 
 AC_CHECK_PROG(SWIG,swig,swig)
-HAVE_SWIG=1
 if test "x$SWIG" != "x"; then
   SWIG_VERSION=`swig -version 2>&1 | grep Version | cut -d ' ' -f 3`
   SWIG_VERSION_MAJOR=`echo $SWIG_VERSION | cut -d '.' -f 1`
   SWIG_VERSION_MINOR=`echo $SWIG_VERSION | cut -d '.' -f 2`
   if test $SWIG_VERSION_MAJOR -lt 2; then
     if test $SWIG_VERSION_MAJOR -lt 1; then
-	HAVE_SWIG=0
+	SWIG=
     else
       if test $SWIG_VERSION_MINOR -lt 3; then
-	HAVE_SWIG=0
+	SWIG=
       fi
     fi
   fi
 fi
 AC_SUBST(SWIG_VERSION)
-AC_SUBST(HAVE_SWIG)
-AM_CONDITIONAL(WITH_SWIG, [test "x$HAVE_SWIG" = "x1"])
+AM_CONDITIONAL(WITH_SWIG, [test "x$SWIG" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for CSHARP
