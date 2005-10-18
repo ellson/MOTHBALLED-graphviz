@@ -1239,6 +1239,20 @@ static void poly_gencode(GVJ_t * job, node_t * n)
         gvrender_set_fillcolor(job, color);
 	filled = TRUE;
     }
+    else if (ND_deleted(n)) {
+        color = late_nnstring(n, N_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
+        gvrender_set_pencolor(job, color);
+        color = late_nnstring(n, N_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
+        gvrender_set_fillcolor(job, color);
+	filled = TRUE;
+    }
+    else if (ND_visited(n)) {
+        color = late_nnstring(n, N_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
+        gvrender_set_pencolor(job, color);
+        color = late_nnstring(n, N_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
+        gvrender_set_fillcolor(job, color);
+	filled = TRUE;
+    }
     else {
         if (style & FILLED) {
 	    gvrender_set_fillcolor(job, findFill(n)); /* emit fill color */

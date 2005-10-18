@@ -312,8 +312,7 @@ extern "C" {
 	point border[4];	/* sizes of margins for graph labels */
 	bool has_labels;
 	bool has_images;
-	bool active;
-	bool selected;
+	bool active, selected, visited, deleted;  /* Graph state for GUI ops */
 	unsigned char charset; /* input character set */
 	int rankdir;
 	int ht1, ht2;		/* below and above extremal ranks */
@@ -370,6 +369,7 @@ extern "C" {
 #define GD_clust(g) (g)->u.clust
 #define GD_cluster_was_collapsed(g) (g)->u.cluster_was_collapsed
 #define GD_comp(g) (g)->u.comp
+#define GD_deleted(g) (g)->u.deleted
 #define GD_dist(g) (g)->u.dist
 #define GD_drawing(g) (g)->u.drawing
 #define GD_exact_ranksep(g) (g)->u.exact_ranksep
@@ -414,6 +414,7 @@ extern "C" {
 #define GD_spring(g) (g)->u.spring
 #define GD_sum_t(g) (g)->u.sum_t
 #define GD_t(g) (g)->u.t
+#define GD_visited(g) (g)->u.visited
 
     typedef struct Agnodeinfo_t {
 	shape_desc *shape;
@@ -426,8 +427,7 @@ extern "C" {
 	void *alg;
 	char state;
 	bool clustnode;
-	bool active;
-	bool selected;
+	bool active, selected, visited, deleted;  /* Node state for GUI ops */
 
 #ifndef DOT_ONLY
 	bool pinned;
@@ -474,6 +474,7 @@ extern "C" {
 #define ND_bb(n) (n)->u.bb
 #define ND_clust(n) (n)->u.clust
 #define ND_coord_i(n) (n)->u.coord
+#define ND_deleted(n) (n)->u.deleted
 #define ND_dist(n) (n)->u.dist
 #define ND_flat_in(n) (n)->u.flat_in
 #define ND_flat_out(n) (n)->u.flat_out
@@ -517,6 +518,7 @@ extern "C" {
 #define ND_clustnode(n) (n)->u.clustnode
 #define ND_tree_in(n) (n)->u.tree_in
 #define ND_tree_out(n) (n)->u.tree_out
+#define ND_visited(n) (n)->u.visited
 #define ND_weight_class(n) (n)->u.weight_class
 #define ND_width(n) (n)->u.width
 #define ND_xsize(n) (n)->u.xsize
@@ -531,8 +533,7 @@ extern "C" {
 	char label_ontop;
 	edge_t *to_orig;	/* for dot's shapes.c    */
 	void *alg;
-	bool active;
-	bool selected;
+	bool active, selected, visited, deleted;  /* Edge state for GUI ops */
 
 #ifndef DOT_ONLY
 	double factor;
@@ -557,6 +558,7 @@ extern "C" {
 #define ED_conc_opp_flag(e) (e)->u.conc_opp_flag
 #define ED_count(e) (e)->u.count
 #define ED_cutvalue(e) (e)->u.cutvalue
+#define ED_deleted(e) (e)->u.deleted
 #define ED_dist(e) (e)->u.dist
 #define ED_edge_type(e) (e)->u.edge_type
 #define ED_adjacent(e) (e)->u.adjacent
@@ -575,6 +577,7 @@ extern "C" {
 #define ED_to_orig(e) (e)->u.to_orig
 #define ED_to_virt(e) (e)->u.to_virt
 #define ED_tree_index(e) (e)->u.tree_index
+#define ED_visited(e) (e)->u.visited
 #define ED_weight(e) (e)->u.weight
 #define ED_xpenalty(e) (e)->u.xpenalty
 

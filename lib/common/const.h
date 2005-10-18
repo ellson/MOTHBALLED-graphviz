@@ -17,13 +17,6 @@
 #ifndef GV_CONST_H
 #define GV_CONST_H
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-#ifndef PI
-#define PI M_PI
-#endif
-
 #define SMALLBUF	128
 #define LPAREN		'('
 #define RPAREN		')'
@@ -61,8 +54,16 @@
 #define		DEFAULT_COLOR		"black"
 #define		DEFAULT_ACTIVEPENCOLOR	"yellow"
 #define		DEFAULT_ACTIVEFILLCOLOR	"yellow"
+#define		DEFAULT_ACTIVEFONTCOLOR	"black"
 #define		DEFAULT_SELECTEDPENCOLOR	"orange"
 #define		DEFAULT_SELECTEDFILLCOLOR	"orange"
+#define		DEFAULT_SELECTEDFONTCOLOR	"black"
+#define		DEFAULT_DELETEDPENCOLOR	"lightgrey"
+#define		DEFAULT_DELETEDFILLCOLOR	"lightgrey"
+#define		DEFAULT_DELETEDFONTCOLOR	"darkgrey"
+#define		DEFAULT_VISITEDPENCOLOR	"paleblue"
+#define		DEFAULT_VISITEDFILLCOLOR	"paleblue"
+#define		DEFAULT_VISITEDFONTCOLOR	"black"
 #define		DEFAULT_FONTSIZE	14.0
 #define		DEFAULT_LABEL_FONTSIZE	11.0	/* for head/taillabel */
 #define		MIN_FONTSIZE		1.0

@@ -789,6 +789,18 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    color = late_nnstring(e, E_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
 	    gvrender_set_fillcolor(job, color);
 	}
+	else if (ED_deleted(e)) {
+	    color = late_nnstring(e, E_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
+    	    gvrender_set_pencolor(job, color);
+	    color = late_nnstring(e, E_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
+	    gvrender_set_fillcolor(job, color);
+	}
+	else if (ED_visited(e)) {
+	    color = late_nnstring(e, E_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
+    	    gvrender_set_pencolor(job, color);
+	    color = late_nnstring(e, E_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
+	    gvrender_set_fillcolor(job, color);
+	}
 	/* if more than one color - then generate parallel beziers, one per color */
 	if (numc) {
 	    /* calculate and save offset vector spline and initialize first offset spline */
@@ -989,6 +1001,8 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
     double xf, yf;
     char *p;
     int i;
+
+    gvc->g = g;
 
     /* margins */
     gvc->graph_sets_margin = FALSE;
@@ -1407,6 +1421,18 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	    color = late_nnstring(sg, G_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
 	    gvrender_set_fillcolor(job, color);
 	}
+	else if (GD_deleted(sg)) {
+	    color = late_nnstring(e, G_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
+    	    gvrender_set_pencolor(job, color);
+	    color = late_nnstring(e, G_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
+	    gvrender_set_fillcolor(job, color);
+	}
+	else if (GD_visited(sg)) {
+	    color = late_nnstring(e, G_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
+    	    gvrender_set_pencolor(job, color);
+	    color = late_nnstring(e, G_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
+	    gvrender_set_fillcolor(job, color);
+	}
 	else {
 	    if (((color = agget(sg, "pencolor")) != 0) && color[0])
 	        gvrender_set_pencolor(job, color);
@@ -1779,8 +1805,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
     gvc->numkeys = gvevent_key_binding_size;
 
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
-	job->g = g;
-
         if (!job->output_file) {        /* if not yet opened */
             if (job->output_filename == NULL) {
                 job->output_file = stdout;
@@ -1793,7 +1817,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	    agerr (AGERR, "renderer for %s is unavailable\n", job->output_langname);
 	    return -1;
 	}
-
         
 	if (gvc->active_jobs && strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
 	    /* finalize previous jobs */

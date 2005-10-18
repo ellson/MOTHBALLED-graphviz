@@ -59,9 +59,16 @@ extern "C" {
 #endif
 #define BETWEEN(a,b,c)	(((a) <= (b)) && ((b) <= (c)))
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+#ifndef PI
+#define PI M_PI
+#endif
+
 #define ROUND(f)        ((f>=0)?(int)(f + .5):(int)(f - .5))
 #define RADIANS(deg)	((deg)/180.0 * PI)
-#define DEGREES(rad)	((rad)/PI * 180.0)
+#define DEGREES(rad)	((rad)/M_PI * 180.0)
 
 #define SQR(a) ((a) * (a))
 
