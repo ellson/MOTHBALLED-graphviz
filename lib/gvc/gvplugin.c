@@ -136,7 +136,7 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     }
     hndl = lt_dlopen (p);
     if (!hndl) {
-        agerr(AGWARN, lt_dlerror());
+        agerr(AGWARN, (char*)lt_dlerror());
         return NULL;
     }
 
