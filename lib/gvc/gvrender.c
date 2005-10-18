@@ -75,6 +75,8 @@ int gvrender_select(GVJ_t * job, char *str)
 	if (strcmp(plugin->packagename, "cg") == 0) {
 	    cg_info = (codegen_info_t *) (plugin->typeptr);
 	    job->codegen = cg_info->cg;
+	    job->render.engine = NULL;
+	    job->device.engine = NULL;
 	    return cg_info->id;
 	} else {
 #endif

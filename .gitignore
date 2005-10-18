@@ -133,6 +133,7 @@ tclpkg/gv/gv_ruby.cpp
 tclpkg/gv/gv_tcl.cpp
 tclpkg/gv/php_gv.h
 tclpkg/gv/pkgIndex.tcl
+tclpkg/gv/test_*
 tclpkg/pkgIndex.tcl
 tclpkg/tcldot/pkgIndex.tcl
 tclpkg/tclpathplan/pkgIndex.tcl

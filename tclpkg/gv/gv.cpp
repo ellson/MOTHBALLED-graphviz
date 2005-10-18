@@ -14,8 +14,8 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#define BUILTINS
 #include "gvc.h"
-#include "graph.h"
 
 GVC_t *gvc;
 
