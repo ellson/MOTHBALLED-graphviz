@@ -125,7 +125,6 @@ char *gd_textsize(textline_t * textline, char *fontname, double fontsz,
 	}
 
 	*fontpath = strex.fontpath;
-	if (strex.fontpath) free (strex.fontpath);
 
 	if (textline->str && textline->str[0]) {
 	    /* can't use brect on some archtectures if strlen 0 */

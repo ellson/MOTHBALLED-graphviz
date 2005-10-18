@@ -201,6 +201,7 @@ estimate_textsize(textline_t * textline, char *fontname, double fontsz,
 double textwidth(textline_t * textline, char *fontname, double fontsize)
 {
     char *fontpath = NULL;
+    int freeFontpath = 0;
 #ifdef CAIRO_HAS_FT_FONT
     cairo_t *cr;
     cairo_text_extents_t extents;
@@ -217,6 +218,8 @@ double textwidth(textline_t * textline, char *fontname, double fontsize)
 #else
     if (gd_textsize(textline, fontname, fontsize, &fontpath))
 	estimate_textsize(textline, fontname, fontsize, &fontpath);
+    else
+	freeFontpath = 1; /* libgd mallocs space for fontpath */
 #endif
 
     if (Verbose) {
@@ -225,5 +228,6 @@ double textwidth(textline_t * textline, char *fontname, double fontsize)
 		    fontname, fontpath);
 	}
     }
+    if (freeFontpath) free (fontpath);
     return textline->width;
 }
