@@ -95,10 +95,6 @@ LINK32=link.exe
 
 SOURCE=dot.c
 # End Source File
-# Begin Source File
-
-SOURCE=.\dot_builtins_oldmake.c
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
