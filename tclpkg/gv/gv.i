@@ -41,18 +41,22 @@ extern Agedge_t *edge(Agraph_t *g, char *tname, char *hname);/* add edge between
 
 /* set/get attribute of graph/node/edge */
 extern char *setv(Agraph_t *g, char *attr, char *val);
+extern char *setv(Agraph_t *g, char *gne, char *att, char *val);
 extern char *setv(Agnode_t *n, char *attr, char *val);
 extern char *setv(Agedge_t *e, char *attr, char *val);
 
 extern char *setv(Agraph_t *g, Agsym_t *a, char *val);
+extern char *setv(Agraph_t *g, char *gne, Agsym_t *a, char *val);
 extern char *setv(Agnode_t *n, Agsym_t *a, char *val);
 extern char *setv(Agedge_t *e, Agsym_t *a, char *val);
 
 extern char *getv(Agraph_t *g, char *attr);
+extern char *getv(Agraph_t *g, char *gne, char *attr);
 extern char *getv(Agnode_t *n, char *attr);
 extern char *getv(Agedge_t *e, char *attr);
 
 extern char *getv(Agraph_t *g, Agsym_t *a);
+extern char *getv(Agraph_t *g, char *gne, Agsym_t *a);
 extern char *getv(Agnode_t *n, Agsym_t *a);
 extern char *getv(Agedge_t *e, Agsym_t *a);
 
@@ -121,7 +125,9 @@ extern Agnode_t *firstnode(Agedge_t *e);
 extern Agnode_t *nextnode(Agedge_t *e, Agnode_t *n);
 
 extern Agsym_t *firstattr(Agraph_t *g);
+extern Agsym_t *firstattr(Agraph_t *g, char *gne);
 extern Agsym_t *nextattr(Agraph_t *g, Agsym_t *a);
+extern Agsym_t *nextattr(Agraph_t *g, char *gne, Agsym_t *a);
 
 extern Agsym_t *firstattr(Agnode_t *n);
 extern Agsym_t *nextattr(Agnode_t *n, Agsym_t *a);

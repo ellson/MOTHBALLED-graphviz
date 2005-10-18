@@ -14,6 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#include <string.h>
 #include "gvc.h"
 
 GVC_t *gvc;
@@ -120,6 +121,26 @@ char *getv(Agraph_t *g, Agsym_t *a)
 	return "";
     return val;
 }
+char *getv(Agraph_t *g, char *gne, Agsym_t *a)
+{
+    char *val;
+    int len;
+
+    if (!g || !gne || !gne[0] || !a)
+	return NULL;
+    len = strlen(gne);
+    if (strncmp(gne,"graph",len) == 0)
+        val = agxget(g, a->index);
+    else if (strncmp(gne,"node",len) == 0)
+        val = agxget(g->proto->n, a->index);
+    else if (strncmp(gne,"edge",len) == 0)
+        val = agxget(g->proto->e, a->index);
+    else
+        return NULL;
+    if (!val)
+	return "";
+    return val;
+}
 char *getv(Agraph_t *g, char *attr)
 {
     Agsym_t *a;
@@ -135,11 +156,61 @@ char *getv(Agraph_t *g, char *attr)
 	return "";
     return val;
 }
+char *getv(Agraph_t *g, char *gne, char *attr)
+{
+    Agsym_t *a;
+    char *val;
+    int len;
+
+    if (!g || !gne || !gne[0] || !attr)
+	return NULL;
+    len = strlen(gne);
+    if (strncmp(gne,"graph",len) == 0) {
+        a = agfindattr(g->root, attr);
+        if (!a)
+	    return "";
+        val = agxget(g, a->index);
+    }
+    else if (strncmp(gne,"node",len) == 0) {
+        a = agfindattr(g->proto->n, attr);
+        if (!a)
+	    return "";
+        val = agxget(g->proto->n, a->index);
+    }
+    else if (strncmp(gne,"edge",len) == 0) {
+        a = agfindattr(g->proto->e, attr);
+        if (!a)
+	    return "";
+        val = agxget(g->proto->e, a->index);
+    }
+    else
+        return NULL;
+    if (!val)
+	return "";
+    return val;
+}
 char *setv(Agraph_t *g, Agsym_t *a, char *val)
 {
     if (!g || !a || !val)
 	return NULL;
     agxset(g, a->index, val);
+    return val;
+}
+char *setv(Agraph_t *g, char *gne, Agsym_t *a, char *val)
+{
+    int len;
+
+    if (!g || !gne || !gne[0] || !a || !val)
+	return NULL;
+    len = strlen(gne);
+    if (strncmp(gne,"graph",len) == 0)
+        agxset(g, a->index, val);
+    else if (strncmp(gne,"node",len) == 0)
+        agxset(g->proto->n, a->index, val);
+    else if (strncmp(gne,"edge",len) == 0)
+        agxset(g->proto->e, a->index, val);
+    else
+        return NULL;
     return val;
 }
 char *setv(Agraph_t *g, char *attr, char *val)
@@ -152,6 +223,36 @@ char *setv(Agraph_t *g, char *attr, char *val)
     if (!a)
         a = agraphattr(g->root, attr, "");
     agxset(g, a->index, val);
+    return val;
+}
+char *setv(Agraph_t *g, char *gne, char *attr, char *val)
+{
+    Agsym_t *a;
+    int len;
+
+    if (!g || !gne || !gne[0] || !attr || !val)
+	return NULL;
+    len = strlen(gne);
+    if (strncmp(gne,"graph",len) == 0) {
+        a = agfindattr(g->root, attr);
+        if (!a)
+	    a = agraphattr(g->root, attr, "");
+        agxset(g, a->index, val);
+    }
+    else if (strncmp(gne,"node",len) == 0) {
+        a = agfindattr(g->proto->n, attr);
+        if (!a)
+	    a = agnodeattr(g->root, attr, "");
+        val = agxget(g->proto->n, a->index);
+    }
+    else if (strncmp(gne,"edge",len) == 0) {
+        a = agfindattr(g->proto->e, attr);
+        if (!a)
+	    a = agedgeattr(g->root, attr, "");
+        val = agxget(g->proto->e, a->index);
+    }
+    else
+        return NULL;
     return val;
 }
 //-------------------------------------------------
@@ -224,7 +325,7 @@ char *getv(Agedge_t *e, char *attr)
 
     if (!e || !attr)
 	return NULL;
-    g = e->head->graph->root;
+    g = e->tail->graph;
     a = agfindattr(g->proto->e, attr);
     if (!a)
 	return "";
@@ -247,7 +348,7 @@ char *setv(Agedge_t *e, char *attr, char *val)
 
     if (!e || !attr || !val)
 	return NULL;
-    g = e->head->graph->root;
+    g = e->tail->graph;
     a = agfindattr(g->proto->e, attr);
     if (!a)
         a = agnodeattr(g, attr, "");
@@ -693,6 +794,69 @@ Agsym_t *nextattr(Agraph_t *g, Agsym_t *a)
     if (i > dtsize(g->univ->globattr->dict))
         return NULL;
     return g->univ->globattr->list[i];
+}
+Agsym_t *firstattr(Agraph_t *g, char *gne)
+{
+    int len;
+
+    if (!g || !gne || !gne[0])
+	return NULL;
+    g = g->root;
+    len = strlen(gne);
+    if (strncmp(gne,"graph",len) == 0) {
+        if (dtsize(g->univ->globattr->dict) == 0)
+	    return NULL;
+        return g->univ->globattr->list[0];
+    }
+    else if (strncmp(gne,"node",len) == 0) {
+        if (dtsize(g->univ->nodeattr->dict) == 0)
+	    return NULL;
+        return g->univ->nodeattr->list[0];
+    }
+    else if (strncmp(gne,"edge",len) == 0) {
+        if (dtsize(g->univ->edgeattr->dict) == 0)
+	    return NULL;
+        return g->univ->edgeattr->list[0];
+    }
+    return NULL;
+}
+
+Agsym_t *nextattr(Agraph_t *g, char *gne, Agsym_t *a)
+{
+    int i, len;
+
+    if (!g || !gne || !gne[0] || !a)
+        return NULL;
+    g = g->root;
+    len = strlen(gne);
+    if (strncmp(gne,"graph",len) == 0) {
+        for (i = 0; i < dtsize(g->univ->globattr->dict); i++)
+	    if (a == g->univ->globattr->list[i])
+	        break;
+        i++;
+        if (i > dtsize(g->univ->globattr->dict))
+            return NULL;
+        return g->univ->globattr->list[i];
+    }
+    else if (strncmp(gne,"node",len) == 0) {
+        for (i = 0; i < dtsize(g->univ->nodeattr->dict); i++)
+	    if (a == g->univ->nodeattr->list[i])
+	        break;
+        i++;
+        if (i > dtsize(g->univ->nodeattr->dict))
+            return NULL;
+        return g->univ->nodeattr->list[i];
+    }
+    else if (strncmp(gne,"edge",len) == 0) {
+        for (i = 0; i < dtsize(g->univ->edgeattr->dict); i++)
+	    if (a == g->univ->edgeattr->list[i])
+	        break;
+        i++;
+        if (i > dtsize(g->univ->edgeattr->dict))
+            return NULL;
+        return g->univ->edgeattr->list[i];
+    }
+    return NULL;
 }
 
 Agsym_t *firstattr(Agnode_t *n)
