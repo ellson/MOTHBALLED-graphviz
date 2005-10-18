@@ -23,7 +23,7 @@ extern "C" {
 
 #define NOT(v) (!(v))
 
-#if ! defined HAVE_BOOL && ! defined __cplusplus
+#ifndef __cplusplus
 typedef unsigned char bool;
 #define false 0
 #define true NOT(false)
