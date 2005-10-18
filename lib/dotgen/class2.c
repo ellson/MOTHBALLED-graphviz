@@ -30,7 +30,7 @@ label_vnode(graph_t * g, edge_t * orig)
     ND_label(v) = ED_label(orig);
     ND_lw_i(v) = GD_nodesep(v->graph->root);
     if (!ED_label_ontop(orig)) {
-	if (GD_flip(g)) {
+	if (GD_flip(g->root)) {
 	    ND_ht_i(v) = dimen.x;
 	    ND_rw_i(v) = dimen.y;
 	} else {
