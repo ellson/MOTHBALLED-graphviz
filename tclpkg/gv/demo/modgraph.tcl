@@ -2,6 +2,8 @@
 
 # display the kernel module dependencies 
 
+# author: John Ellson <ellson@research.att.com>
+
 package require gv
 
 set f [open /proc/modules r]
