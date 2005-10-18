@@ -18,12 +18,12 @@
  *  graphics code generator
  */
 
-#include	<ctype.h>
+#include <ctype.h>
 #include "render.h"
 #include "gvplugin.h"
 #include "gvcint.h"
 #include "gvcproc.h"
-#include	"agxbuf.h"
+#include "agxbuf.h"
 
 static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 int    emitState;

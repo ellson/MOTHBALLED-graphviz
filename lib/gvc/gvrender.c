@@ -43,7 +43,6 @@
 #include "gvplugin_render.h"
 #include "gvplugin.h"
 #include "gvcint.h"
-#include "gvcjob.h"
 #include "gvcproc.h"
 
 extern int emit_once(char *str);
