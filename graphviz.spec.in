@@ -4,6 +4,44 @@
 # Note: graphviz requires gd with gif support (and other fixes), hence use
 # internal one for now.
 
+# select packages according to dist (set in .rpmmacros on each build host)
+
+%{?dist: %{expand: %%define %dist 1}}
+
+%define CSHARP  0
+%define GUILE   0
+%define JAVA    0
+%define OCAML   0
+%define PERL    0
+%define PHP     0
+%define PYTHON  0
+%define RUBY    0
+%define TCL     1
+
+%{?fc4: %{expand:
+%%define CSHARP  0
+%%define GUILE   0
+%%define JAVA    0
+%%define OCAML   0
+%%define PERL    1
+%%define PHP     1
+%%define PYTHON  1
+%%define RUBY    1
+%%define TCL     1
+}}
+
+%{?fc5: %{expand:
+%%define CSHARP  1
+%%define GUILE   1
+%%define JAVA    1
+%%define OCAML   1
+%%define PERL    1
+%%define PHP     1
+%%define PYTHON  1
+%%define RUBY    1
+%%define TCL     1
+}}
+
 Summary:	Graph Visualization Tools
 Name:		graphviz
 Version:	@VERSION@
@@ -36,47 +74,225 @@ BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
 %{?rh7:BuildRequires: XFree86-devel}
 %{?rh6:BuildRequires: XFree86-devel}
 
-%package tcl
-Group:		Applications/Multimedia
-Summary:	Tcl extension tools for %{name}
-Requires:	%{name} = %{version}-%{release} tcl >= 8.3 tk
-
-%package devel
-Group:		Development/Libraries
-Summary:	Development package for %{name}
-Requires:	%{name} = %{version}-%{release} pkgconfig
-
-%package doc
-Group:		Documentation
-Summary:	PDF and HTML documents for %{name}
-
-%package graphs
-Group:		Applications/Multimedia
-Summary:	Demo graphs for %{name}
-
-
 %description
 A collection of tools for the manipulation and layout
 of graphs (as in nodes and edges, not as in barcharts).
 
+%files
+%defattr(-,root,root,-)
+%doc AUTHORS COPYING ChangeLog NEWS README
+%{_bindir}/*
+%dir %{_libdir}/%{name}
+%{_libdir}/%{name}/*.so.*
+%{_mandir}/man1/*.1*
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/lefty
+%exclude %{_libdir}/%{name}/*/*
+
+#------------------------------------------------------------------
+%if %{CSHARP}
+%package csharp
+Group:	Applications/Multimedia
+Summary:	C# extension for %{name}
+Requires:	%{name} = %{version}-%{release}
+
+%description csharp
+C# extensions for %{name}.
+
+%files csharp
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}/csharp
+%{_libdir}/%{name}/csharp/*
+%exclude %{_libdir}/%{name}/csharp/*.la
+%endif
+
+#------------------------------------------------------------------
+%if %{GUILE}
+%package guile
+Group:		Applications/Multimedia
+Summary:	Guile extension for %{name}
+Requires:	%{name} = %{version}-%{release}
+
+%description guile
+Guile extensions for %{name}.
+
+%files guile
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}/guile
+%{_libdir}/%{name}/guile/*
+%exclude %{_libdir}/%{name}/guile/*.la
+%endif
+
+#------------------------------------------------------------------
+%if %{JAVA}
+%package java
+Group:		Applications/Multimedia
+Summary:	Java extension for %{name}
+Requires:	%{name} = %{version}-%{release}
+
+%description java
+Java extensions for %{name}.
+
+%files java
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}/java
+%{_libdir}/%{name}/java/*
+%exclude %{_libdir}/%{name}/java/*.la
+%endif
+
+#------------------------------------------------------------------
+%if %{OCAML}
+%package ocaml
+Group:		Applications/Multimedia
+Summary:	Ocaml extension for %{name}
+Requires:	%{name} = %{version}-%{release}
+
+%description ocaml
+Ocaml extensions for %{name}.
+
+%files ocaml
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}/ocaml
+%{_libdir}/%{name}/ocaml/*
+%exclude %{_libdir}/%{name}/ocaml/*.la
+%endif
+
+#------------------------------------------------------------------
+%if %{PERL}
+%package perl
+Group:		Applications/Multimedia
+Summary:	Perl extension for %{name}
+Requires:	%{name} = %{version}-%{release}
+
+%description perl
+Perl extensions for %{name}.
+
+%files perl
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}/perl
+%{_libdir}/%{name}/perl/*
+%exclude %{_libdir}/%{name}/perl/*.la
+%endif
+
+#------------------------------------------------------------------
+%if %{PHP}
+%package php
+Group:		Applications/Multimedia
+Summary:	PHP extension for %{name}
+Requires:	%{name} = %{version}-%{release}
+
+%description php
+PHP extensions for %{name}.
+
+%files php
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}/php
+%{_libdir}/%{name}/php/*
+%exclude %{_libdir}/%{name}/php/*.la
+%endif
+
+#------------------------------------------------------------------
+%if %{PYTHON}
+%package python
+Group:		Applications/Multimedia
+Summary:	Python extension for %{name}
+Requires:	%{name} = %{version}-%{release}
+
+%description python
+Python extensions for %{name}.
+
+%files python
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}/python
+%{_libdir}/%{name}/python/*
+%exclude %{_libdir}/%{name}/python/*.la
+%endif
+
+#------------------------------------------------------------------
+%if %{RUBY}
+%package ruby
+Group:		Applications/Multimedia
+Summary:	Ruby extension for %{name}
+Requires:	%{name} = %{version}-%{release}
+
+%description ruby
+Ruby extensions for %{name}.
+
+%files ruby
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}/ruby
+%{_libdir}/%{name}/ruby/*
+%exclude %{_libdir}/%{name}/ruby/*.la
+%endif
+
+#------------------------------------------------------------------
+%if %{TCL}
+%package tcl
+Group:		Applications/Multimedia
+Summary:	Tcl extension & tools for %{name}
+Requires:	%{name} = %{version}-%{release} tcl >= 8.3 tk
+
 %description tcl
 Various tcl packages (extensions) for the %{name} tools.
+
+%files tcl
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}/tcl
+%{_libdir}/%{name}/tcl/*
+%{_libdir}/%{name}/pkgIndex.tcl
+%{_datadir}/%{name}/demo
+%{_mandir}/mann/*.n*
+%exclude %{_libdir}/%{name}/tcl/*.la
+%endif
+
+#------------------------------------------------------------------
+%package devel
+Group:		Development/Libraries
+Summary:	Development package for %{name}
+Requires:	%{name} = %{version}-%{release} pkgconfig
 
 %description devel
 A collection of tools for the manipulation and layout
 of graphs (as in nodes and edges, not as in barcharts).
 This package contains development files for %{name}.
 
-%description doc
-Provides some additional PDF and HTML documentation for %{name}.
+%files devel
+%defattr(-,root,root,-)
+%{_includedir}/%{name}
+%{_libdir}/%{name}/*.la
+%{_libdir}/%{name}/*.so
+%{_libdir}/pkgconfig/*.pc
+%{_mandir}/man3/*.3*
+%exclude %{_libdir}/%{name}/*/*
+
+#------------------------------------------------------------------
+%package graphs
+Group:		Applications/Multimedia
+Summary:	Demo graphs for %{name}
 
 %description graphs
 Some demo graphs for %{name}.
 
+%files graphs
+%defattr(-,root,root,-)
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/graphs
 
+#------------------------------------------------------------------
+%package doc
+Group:		Documentation
+Summary:	PDF and HTML documents for %{name}
+
+%description doc
+Provides some additional PDF and HTML documentation for %{name}.
+
+%files doc
+%defattr(-,root,root,-)
+%doc __doc/*
+
+#------------------------------------------------------------------
 %prep
 %setup -q
-
 
 %build
 # XXX ix86 only used to have -ffast-math, let's use everywhere
@@ -97,7 +313,6 @@ CFLAGS="$RPM_OPT_FLAGS" \
       --disable-dependency-tracking
 %__make %{?_smp_mflags}
 
-
 %install
 rm -rf $RPM_BUILD_ROOT __doc
 %{__make} \
@@ -109,59 +324,17 @@ chmod -x $RPM_BUILD_ROOT%{_datadir}/%{name}/lefty/*
 cp -a $RPM_BUILD_ROOT%{_datadir}/%{name}/doc __doc
 rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/doc
 
-
 %clean
 rm -rf $RPM_BUILD_ROOT
-
-
-%files
-%defattr(-,root,root,-)
-%doc AUTHORS COPYING ChangeLog NEWS README
-%{_bindir}/*
-%dir %{_libdir}/%{name}
-%{_libdir}/%{name}/*.so.*
-%{_mandir}/man1/*.1*
-%dir %{_datadir}/%{name}
-%{_datadir}/%{name}/lefty
-%exclude %{_libdir}/%{name}/*/*
-
-%files tcl
-%defattr(-,root,root,-)
-%{_libdir}/%{name}/*/*
-%{_libdir}/%{name}/pkgIndex.tcl
-%{_datadir}/%{name}/demo
-%{_mandir}/mann/*.n*
-%exclude %{_libdir}/%{name}/*/*.la
-
-%files devel
-%defattr(-,root,root,-)
-%{_includedir}/%{name}
-%{_libdir}/%{name}/*.la
-%{_libdir}/%{name}/*.so
-%{_libdir}/pkgconfig/*.pc
-%{_mandir}/man3/*.3*
-%exclude %{_libdir}/%{name}/*/*
-
-%files graphs
-%defattr(-,root,root,-)
-%dir %{_datadir}/%{name}
-%{_datadir}/%{name}/graphs
-
-%files doc
-%defattr(-,root,root,-)
-%doc __doc/*
 
 # run "dot -c" to generate plugin config in %{_libdir}/%{name}/config
 %post
 %{_bindir}/dot -c
 
-%post tcl
-%{_bindir}/dot -c
-
-%post devel
-%{_bindir}/dot -c
-
 %changelog
+* Tue Sep 13 2005 John Ellson <ellson@research.att.com>
+- split out language bindings into their own rpms so that 
+    main rpm doesn't depend on (e.g.) ocaml
 * Sat Aug 13 2005 John Ellson <ellson@research.att.com>
 - imported various fixes from the Fedora-Extras .spec by Oliver Falk <oliver@linux-kernel.at>
 * Wed Jul 20 2005 John Ellson <ellson@research.att.com>
