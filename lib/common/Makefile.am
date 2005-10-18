@@ -10,8 +10,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt  @GD_INCLUDES@ @EXPAT_INCLUDES@ @Z_INCLUDES@
 
 pkginclude_HEADERS = logic.h arith.h geom.h color.h colortbl.h \
-	const.h macros.h types.h globals.h utils.h \
-	htmllex.h htmltable.h pointset.h render.h renderprocs.h
+	const.h macros.h types.h globals.h utils.h memory.h \
+	htmllex.h htmltable.h pointset.h render.h
 noinst_LTLIBRARIES = libcommon.la
 
 if !DISABLE_CODEGENS
@@ -21,7 +21,7 @@ endif
 
 
 libcommon_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
-	args.c gdtextsize.c gdusershape.c \
+	args.c gdtextsize.c gdusershape.c memory.c \
 	globals.c htmllex.c htmlparse.y htmltable.c input.c \
 	pointset.c postproc.c psusershape.c routespl.c splines.c \
 	svgusershape.c timing.c labels.c ns.c shapes.c utils.c geom.c \

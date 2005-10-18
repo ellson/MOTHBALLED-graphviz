@@ -25,11 +25,6 @@ extern "C" {
     extern int strncasecmp(const char *s1, const char *s2, size_t n);
 #endif
 
-    extern void *zmalloc(size_t);
-    extern void *zrealloc(void *, size_t, size_t, size_t);
-    extern void *gmalloc(size_t);
-    extern void *grealloc(void *, size_t);
-
     extern nodequeue *new_queue(int);
     extern void free_queue(nodequeue *);
     extern void enqueue(nodequeue *, Agnode_t *);

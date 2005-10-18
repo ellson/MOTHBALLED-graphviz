@@ -42,7 +42,6 @@
 #include "macros.h"
 #include "const.h"
 #include "types.h"
-#include "cdt.h"
 #include "graph.h"
 
 #include "gvplugin_usershape.h"

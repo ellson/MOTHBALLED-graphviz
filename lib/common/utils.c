@@ -14,66 +14,21 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-
-#include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include	"agxbuf.h"
-#include	"utils.h"
-#include	"htmltable.h"
-#ifndef MSWIN32
-#include	<unistd.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
 #endif
 
+#include <stdio.h>
+#ifndef MSWIN32
+#include <unistd.h>
+#endif
 
-void *zmalloc(size_t nbytes)
-{
-    char *rv = malloc(nbytes);
-    if (nbytes == 0)
-	return 0;
-    if (rv == NULL) {
-	fprintf(stderr, "out of memory\n");
-	abort();
-    }
-    memset(rv, 0, nbytes);
-    return rv;
-}
-
-void *zrealloc(void *ptr, size_t size, size_t elt, size_t osize)
-{
-    void *p = realloc(ptr, size * elt);
-    if (p == NULL && size) {
-	fprintf(stderr, "out of memory\n");
-	abort();
-    }
-    if (osize < size)
-	memset((char *) p + (osize * elt), '\0', (size - osize) * elt);
-    return p;
-}
-
-void *gmalloc(size_t nbytes)
-{
-    char *rv;
-    if (nbytes == 0)
-	return (char *)1; /* NB Return an invalid pointer - since nobody seems to check for NULL */
-    rv = malloc(nbytes);
-    if (rv == NULL) {
-	fprintf(stderr, "out of memory\n");
-	abort();
-    }
-    return rv;
-}
-
-void *grealloc(void *ptr, size_t size)
-{
-    void *p = realloc(ptr, size);
-    if (p == NULL && size) {
-	fprintf(stderr, "out of memory\n");
-	abort();
-    }
-    return p;
-}
+#include "types.h"
+#include "graph.h"
+#include "agxbuf.h"
+#include "memory.h"
+#include "utils.h"
+#include "htmltable.h"
 
 /*
  *  a queue of nodes

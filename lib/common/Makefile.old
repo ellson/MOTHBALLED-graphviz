@@ -19,7 +19,7 @@ DEFINES = -DHAVE_CONFIG_H
 AWKDIR = $(ROOT)/awk
 
 HDRS = colortbl.h const.h globals.h macros.h render.h \
-       renderprocs.h types.h utils.h geom.h logic.h color.h arith.h
+       types.h utils.h geom.h logic.h color.h arith.h memory.h
 
 OBJS = args.o arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
        colxlate.o globals.o mifgen.o psusershape.o timing.o \
@@ -27,7 +27,7 @@ OBJS = args.o arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
        emit.o htmllex.o ns.o shapes.o vrmlgen.o xdgen.o \
        figgen.o htmlparse.o output.o splines.o vtxgen.o \
        fontmetrics.o htmltable.o picgen.o strcasecmp.o \
-       gdgen.o input.o pointset.o strncasecmp.o \
+       gdgen.o input.o pointset.o strncasecmp.o memory.o \
        gdtextsize.o labels.o postproc.o svggen.o xdgen.o
 
 libcommon.a : $(OBJS)
@@ -48,7 +48,7 @@ htmllex.o : htmllex.c
 
 install: libcommon.a 
 	$(MKPATH) $(INCDIR)
-	$(INSTALL) const.h globals.h macros.h render.h renderprocs.h types.h utils.h geom.h $(INCDIR)
+	$(INSTALL) const.h globals.h macros.h render.h memory.h logic.h arith.h  types.h utils.h geom.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libcommon.a $(LIBDIR)
 
