@@ -53,8 +53,9 @@ case "${host_os}" in
   *irix* | *nonstopux* )
     GVPLUGIN_VERSION=`expr $LT_CURRENT + 1`
     ;;
-  *)
+  * )
     GVPLUGIN_VERSION=$LT_CURRENT
+    ;;
 esac
 AC_DEFINE_UNQUOTED(GVPLUGIN_VERSION,$GVPLUGIN_VERSION,[Compatibility version number for plugins.])
 AC_SUBST(GVPLUGIN_VERSION)
