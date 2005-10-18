@@ -19,11 +19,7 @@
  * tkgen.c generate canvas commands to display a graph
  */
 
-/* builtins are defined in tcldot.c  - prevent duplicate */
-#define BUILTINS 
 #include "render.h"
-#include "gvc.h"
-
 #include "tcl.h"
 #include "tclhandle.h"
 #include "tcldot.h"
