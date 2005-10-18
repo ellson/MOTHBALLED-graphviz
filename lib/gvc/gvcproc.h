@@ -45,6 +45,7 @@ extern "C" {
     extern const char *gvplugin_list(GVC_t * gvc, api_t api, char *str);
     extern api_t gvplugin_api(char *str);
     extern char * gvplugin_api_name(api_t api);
+    extern void gvplugin_write_status(GVC_t * gvc);
 
 /* job */
 

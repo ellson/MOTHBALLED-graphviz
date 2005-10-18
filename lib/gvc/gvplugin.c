@@ -328,3 +328,18 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
     free(s);
     return buf;
 }
+
+void gvplugin_write_status(GVC_t * gvc)
+{
+    int api;
+
+    fprintf(stderr,"The plugin configuration file:\n\t%s\n", gvc->config_path);
+    if (gvc->config_found)
+	fprintf(stderr,"\t\twas successfully loaded.\n");
+    else
+	fprintf(stderr,"\t\twas not found or not usable. No on-demand plugins.\n");
+
+    for (api = 0; api < ARRAY_SIZE(api_names); api++) {
+	fprintf(stderr,"    %s\t: %s\n", api_names[api], gvplugin_list(gvc, api, ":"));
+    }
+}

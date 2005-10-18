@@ -254,5 +254,7 @@ int gvParseArgs(GVC_t *gvc, int argc, char** argv)
     argc = memtest_extra_args(gvc, argc, argv);
     argc = config_extra_args(gvc, argc, argv);
     dotneato_args_initialize(gvc, argc, argv);
+    if (Verbose)
+	gvplugin_write_status(gvc);
     return 0;
 }
