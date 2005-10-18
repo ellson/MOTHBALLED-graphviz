@@ -16,12 +16,8 @@
 
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include		"gd.h"
-#include		"utils.h"
-#include		"pathutil.h"
+#include "gd.h"
+#include "pathutil.h"
 
 
 extern char *get_ttf_fontpath(char *fontreq, int warn);

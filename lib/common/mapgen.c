@@ -18,10 +18,7 @@
 #define NEWANCHORS 0
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include                "htmltable.h"
+#include "htmltable.h"
 
 
 /* IMAP font modifiers */

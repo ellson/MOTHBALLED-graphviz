@@ -22,19 +22,14 @@
 #define	PDFMAX	3240		/*  Maximum size of Distiller's PDF canvas  */
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include	"ps.h"
-#include	"utils.h"
-#include	"agxbuf.h"
+#include "ps.h"
+#include "agxbuf.h"
 
 #ifndef MSWIN32
 #include <unistd.h>
 #endif
 
 #include <sys/stat.h>
-#include <stdio.h>
 
 extern void epsf_define(FILE * of);
 void epsf_emit_body(ps_image_t *img, FILE *of);

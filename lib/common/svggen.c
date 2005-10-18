@@ -45,16 +45,12 @@ north@research.att.com
 */
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include	"utils.h"
 #ifdef HAVE_LIBZ
-#include	"zlib.h"
+#include "zlib.h"
 #endif
 #ifdef MSWIN32
-#include	<io.h>
-#include	<stdarg.h>
+#include <io.h>
+#include <stdarg.h>
 #endif
 
 

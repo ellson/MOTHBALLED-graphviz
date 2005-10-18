@@ -15,12 +15,9 @@
 **********************************************************/
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include                "gd.h"
-#include                "utils.h"
-#include                <fcntl.h>
+#include "gd.h"
+
+#include <fcntl.h>
 #ifdef MSWIN32
 #include <io.h>
 #endif

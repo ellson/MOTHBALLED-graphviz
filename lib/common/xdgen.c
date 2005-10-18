@@ -15,10 +15,7 @@
 **********************************************************/
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include	"agxbuf.h"
+#include "agxbuf.h"
 
 int    xdemitState;
 static agxbuf xbuf0;

@@ -16,11 +16,6 @@
 
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include "utils.h"
-
 
 #define	NONE	0
 #define	NODE	1

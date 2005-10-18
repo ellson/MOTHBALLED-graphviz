@@ -18,9 +18,6 @@
  *  Adapted from psgen.c.  See 1st_read.mp.
  */
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
 #ifndef MSWIN32
 #include <unistd.h>
 #endif

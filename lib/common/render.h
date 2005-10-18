@@ -61,6 +61,9 @@ extern "C" {
 #include "geomprocs.h"		/* must follow geom.h (in types.h) */
 #include "graph.h"		/* must follow types.h */
 #include "utils.h"		/* must follow types.h */
+#include "gvplugin.h"		/* must follow gvcext.h (in types.h) */
+#include "gvcint.h"		/* must follow gvcext.h (in types.h) */
+#include "gvcproc.h"		/* must follow gvcext.h (in types.h) */
 
     typedef struct epsf_s {
 	int macro_id;
