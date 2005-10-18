@@ -18,7 +18,8 @@ Source:		http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
 # norootforbuild
 # neededforbuild  expat freetype2 freetype2-devel gcc libjpeg libpng-devel-packages tcl tcl-devel tk tk-devel x-devel-packages
 
-BuildRoot:	%{_tmppath}/%{name}-root
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
 BuildRequires:	zlib-devel libpng-devel libjpeg-devel expat-devel freetype-devel >= 2
 BuildRequires:	/bin/ksh bison m4 flex tk tcl >= 8.3 swig
 BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
@@ -99,11 +100,10 @@ CFLAGS="$RPM_OPT_FLAGS" \
 
 %install
 rm -rf $RPM_BUILD_ROOT __doc
-make \
+%{__make} \
     DESTDIR=$RPM_BUILD_ROOT \
     docdir=$RPM_BUILD_ROOT%{_docdir}/%{name} \
     pkgconfigdir=%{_libdir}/pkgconfig \
-    transform='s,x,x,' \
     install
 chmod -x $RPM_BUILD_ROOT%{_datadir}/%{name}/lefty/*
 cp -a $RPM_BUILD_ROOT%{_datadir}/%{name}/doc __doc
@@ -132,7 +132,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/%{name}/libtk*.so.*.*
 %{_libdir}/%{name}/pkgIndex.tcl
 %{_datadir}/%{name}/demo
-%{_mandir}/mann/*.n* 
+%{_mandir}/mann/*.n*
 
 %files devel
 %defattr(-,root,root,-)
@@ -164,5 +164,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/dot -c
 
 %changelog
+* Sat Aug 13 2005 John Ellson <ellson@research.att.com>
+- imported various fixes from the Fedora-Extras .spec by Oliver Falk <oliver@linux-kernel.at>
 * Wed Jul 20 2005 John Ellson <ellson@research.att.com>
 - release 2.4
