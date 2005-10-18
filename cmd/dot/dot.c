@@ -19,6 +19,7 @@
  */
 
 #include "gvc.h"
+#include "globals.h"
 
 #include <time.h>
 #ifdef HAVE_UNISTD_H
