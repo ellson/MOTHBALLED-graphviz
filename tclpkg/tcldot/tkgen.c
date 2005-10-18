@@ -19,11 +19,13 @@
  * tkgen.c generate canvas commands to display a graph
  */
 
-#include "tcldot.h"
+/* builtins are defined in tcldot.c  - prevent duplicate */
+#define BUILTINS 
+#include "gvc.h"
 
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "tcl.h"
+#include "tclhandle.h"
+#include "tcldot.h"
 
 /* font modifiers */
 #define REGULAR 0

@@ -19,6 +19,9 @@
 /*    specifically just the change to Tcl_CmdProc */
 #define USE_NON_CONST
 
+#include "gvc.h"
+#include "tcl.h"
+#include "tclhandle.h"
 #include "tcldot.h"
 
 char *Info[] = {
