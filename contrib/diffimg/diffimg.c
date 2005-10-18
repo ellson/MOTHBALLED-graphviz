@@ -26,6 +26,10 @@
  * John Ellson <ellson@research.att.com>
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -92,12 +96,30 @@ static gdImagePtr imageLoad (char *filename)
         }
     }
     im = 0;
-    if (strcasecmp(ext, ".png") == 0) 
+    if (strcasecmp(ext, ".png") == 0) {
+#ifdef HAVE_GD_PNG
         im = gdImageCreateFromPng(f);
-    else if (strcasecmp(ext, ".gif") == 0)
+#else
+        fprintf(stderr, "PNG support is not available\n");
+        exit(EX_UNAVAILABLE);
+#endif
+    }
+    else if (strcasecmp(ext, ".gif") == 0) {
+#ifdef HAVE_GD_GIF
         im = gdImageCreateFromGif(f);
-    else if (strcasecmp(ext, ".jpg") == 0)
+#else
+        fprintf(stderr, "GIF support is not available\n");
+        exit(EX_UNAVAILABLE);
+#endif
+    }
+    else if (strcasecmp(ext, ".jpg") == 0) {
+#ifdef HAVE_GD_JPEG
         im = gdImageCreateFromJpeg(f);
+#else
+        fprintf(stderr, "JPEG support is not available\n");
+        exit(EX_UNAVAILABLE);
+#endif
+    }
     fclose(f);
     if (!im) {
         fprintf(stderr, "Loading image from file  \"%s\" failed!\n", filename);
@@ -130,8 +152,10 @@ int main(int argc, char **argv)
     gdImagePtr A, B, C;
     unsigned char black, white;
     unsigned int minSX, minSY, maxSX, maxSY;
-    FILE *f;
     bool rc;
+#ifdef HAVE_GD_PNG
+    FILE *f;
+#endif
 
     if (argc < 3) {
         fprintf(stderr, "Usage: diffimg image1 image2 [outimage]\n");
@@ -155,12 +179,17 @@ int main(int argc, char **argv)
 
     rc = imageDiff (A, B, C, minSX, minSY, black, white);
 
+#ifdef HAVE_GD_PNG
     if ((argc > 3) && ((f = fopen(argv[3], "wb")))) {
 	gdImagePng (C, f);
 	fclose(f);
     }
     else
         gdImagePng (C, stdout);
+#else
+
+    fprintf(stderr, "PNG output support is not available\n");
+#endif
 
     gdImageDestroy(A);
     gdImageDestroy(B);
