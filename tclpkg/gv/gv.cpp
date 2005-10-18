@@ -597,12 +597,13 @@ Agedge_t *firstout(Agraph_t *g)
 Agedge_t *nextout(Agraph_t *g, Agedge_t *e)
 {
     Agnode_t *n;
+    Agedge_t *ne;
 
     if (!g || !e)
 	return NULL;
-    e = agnxtout(g, e);
-    if (e)
-	return (e);
+    ne = agnxtout(g, e);
+    if (ne)
+	return (ne);
     n = agnxtnode(g, e->tail);
     if (!n)
 	return NULL;
@@ -695,12 +696,13 @@ Agedge_t *firstin(Agraph_t *g)
 Agedge_t *nextin(Agraph_t *g, Agedge_t *e)
 {
     Agnode_t *n;
+    Agedge_t *ne;
 
     if (!g || !e)
 	return NULL;
-    e = agnxtin(g, e);
-    if (e)
-	return (e);
+    ne = agnxtin(g, e);
+    if (ne)
+	return (ne);
     n = agnxtnode(g, n);
     if (!n)
 	return NULL;
