@@ -335,8 +335,8 @@ if test "x$GUILE" != "x"; then
     if test $GUILE_VERSION_MAJOR -lt 1; then
       GUILE=
     else
-      if test $SWIG_VERSION_MINOR -lt 4; then
-	SWIG=
+      if test $GUILE_VERSION_MINOR -lt 4; then
+	GUILE=
       fi
     fi
   fi
