@@ -22,6 +22,9 @@ rm -rf \
 	configure.ac \
 	configure.old \
 	Config.mk \
+	Doxyfile \
+	Doxyfile.in \
+	doxygen \
 	features \
 	m4 \
 	aclocal.m4 \
@@ -65,6 +68,4 @@ mv t config.h
 
 # package the result
 cd ..
-#zip -rq graphviz-win graphviz-win
-# rm -rf graphviz-win
 tar cf - graphviz-win | gzip >graphviz-win.tgz
