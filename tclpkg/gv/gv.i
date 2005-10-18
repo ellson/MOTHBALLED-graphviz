@@ -47,6 +47,12 @@ extern char *nameof(Agnode_t *n);
 //extern char *nameof(Agedge_t *e);
 extern char *nameof(Agsym_t *a);
 
+extern Agsym_t *findnode(Agraph_t *g, char *name);
+
+extern Agsym_t *findattr(Agraph_t *g, char *name);
+extern Agsym_t *findattr(Agnode_t *n, char *name);
+extern Agsym_t *findattr(Agedge_t *e, char *name);
+
 /* misc navigators */
 extern Agnode_t *headof(Agedge_t *e);
 extern Agnode_t *tailof(Agedge_t *e);

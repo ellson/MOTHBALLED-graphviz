@@ -296,6 +296,35 @@ char *set(Agedge_t *e, char *attr, char *val)
     return val;
 }
 //-------------------------------------------------
+Agnode_t *findnode(Agraph_t *g, char *name)
+{
+    if (!g || !name)
+	return NULL;
+    return agfindnode(g, name);
+}
+
+Agsym_t *findattr(Agraph_t *g, char *name)
+{
+    if (!g || !name)
+	return NULL;
+    return agfindattr(g, name);
+}
+
+Agsym_t *findattr(Agnode_t *n, char *name)
+{
+    if (!n || !name)
+	return NULL;
+    return agfindattr(n, name);
+}
+
+Agsym_t *findattr(Agedge_t *e, char *name)
+{
+    if (!e || !name)
+	return NULL;
+    return agfindattr(e, name);
+}
+
+//-------------------------------------------------
 
 Agnode_t *headof(Agedge_t *e)
 {
