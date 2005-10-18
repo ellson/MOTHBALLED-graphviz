@@ -1776,7 +1776,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
     gvc->keybindings = gvevent_key_binding;
     gvc->numkeys = gvevent_key_binding_size;
 
-    for (gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
+    for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
 	job->g = g;
 
         if (!job->output_file) {        /* if not yet opened */
