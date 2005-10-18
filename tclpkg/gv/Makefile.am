@@ -6,7 +6,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
-	-I$(top_srcdir)/lib/pathplan $(PERL_INCLUDES) $(PHP_INCLUDES) $(PYTHON_INCLUDES) $(RUBY_INCLUDES) $(TCL_INCLUDES)
+	-I$(top_srcdir)/lib/pathplan $(PERL_INCLUDES) $(OCAML_INCLUDES) $(PHP_INCLUDES) $(PYTHON_INCLUDES) $(RUBY_INCLUDES) $(TCL_INCLUDES) 
 
 LIBS =  @LIBS@ -lc
 
@@ -46,13 +46,13 @@ libgv_java_la_LDFLAGS = -module
 gv_java.cpp $(JAVA_hdr): gv.i
 	$(SWIG) -c++ -java -o gv_java.cpp gv.i
 
-pkgocamldir = $(pkglibdir)/ocaml
-OCAML_hdr = gv.ml gv.mli
-libgv_ocaml_la_SOURCES = $(BASESOURCES) gv_ocaml.cpp
-libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@
-libgv_ocaml_la_LDFLAGS = -module
-gv_ocaml.cpp $(OCAML_hdr): gv.i
-	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp gv.i
+#pkgocamldir = $(pkglibdir)/ocaml
+#OCAML_hdr = gv.ml gv.mli
+#libgv_ocaml_la_SOURCES = $(BASESOURCES) gv_ocaml.cpp
+#libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@
+#libgv_ocaml_la_LDFLAGS = -module
+#gv_ocaml.cpp $(OCAML_hdr): gv.i
+#	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp gv.i
 
 pkgperldir = $(pkglibdir)/perl
 PERL_hdr = gv.pm
@@ -118,11 +118,11 @@ pkgjava_DATA = $(JAVA_hdr)
 pkgjava_LTLIBRARIES = libgv_java.la
 TESTS += test_java
 endif
-if WITH_OCAML
-pkgocaml_DATA = $(OCAML_hdr)
-pkgocaml_LTLIBRARIES = libgv_ocaml.la
-TESTS += test_ocaml
-endif
+#if WITH_OCAML
+#pkgocaml_DATA = $(OCAML_hdr)
+#pkgocaml_LTLIBRARIES = libgv_ocaml.la
+#TESTS += test_ocaml
+#endif
 if WITH_PERL
 pkgperl_DATA = $(PERL_hdr)
 pkgperl_LTLIBRARIES = libgv_perl.la
