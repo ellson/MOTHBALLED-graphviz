@@ -10,9 +10,9 @@ GRAPH = "digraph G { hello -> world }"
 test: diffimg
 	echo $(GRAPH) | dot -Tpng:cg >hello1.png
 	echo $(GRAPH) | dot -Tpng:cg >hello2.png
-	./diffimg hello1.png hello2.png >test1.png
+	if `./diffimg hello1.png hello2.png >test1.png`;then echo same;else echo different;fi
 	echo $(GRAPH) | dot -Grankdir=LR -Tpng:cg >hello2.png
-	./diffimg hello1.png hello2.png >test2.png
+	if `./diffimg hello1.png hello2.png >test2.png`;then echo same;else echo different;fi
 
 dist: clean
 	mkdir diffimg-$(VERSION)

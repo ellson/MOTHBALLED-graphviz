@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <sysexits.h>
 #include <gd.h>
 
 #define NOT(v) (!(v))
@@ -54,12 +55,12 @@ static gdImagePtr imageLoad (char *filename)
     ext = strrchr(filename, '.');
     if (!ext) {
         fprintf(stderr, "Filename \"%s\" has no file extension.\n", filename);
-        exit(-1);
+        exit(EX_USAGE);
     }
     rc = stat(filename, &statbuf);
     if (rc) {
 	 fprintf(stderr, "Failed to stat \"%s\"\n", filename);
-         exit(-1);
+         exit(EX_NOINPUT);
     }
     if (strcasecmp(ext, ".ps") == 0) {
 	ext = ".png";
@@ -80,14 +81,14 @@ static gdImagePtr imageLoad (char *filename)
 	free(tmp);
         if (!f) {
             fprintf(stderr, "Failed to open converted \"%s%s\"\n", filename, ext);
-            exit(-1);
+            exit(EX_NOINPUT);
         }
     }
     else {
         f = fopen(filename, "rb");
         if (!f) {
             fprintf(stderr, "Failed to open \"%s\"\n", filename);
-            exit(-1);
+            exit(EX_NOINPUT);
         }
     }
     im = 0;
@@ -100,7 +101,7 @@ static gdImagePtr imageLoad (char *filename)
     fclose(f);
     if (!im) {
         fprintf(stderr, "Loading image from file  \"%s\" failed!\n", filename);
-        exit(-1);
+        exit(EX_DATAERR);
     }
     return im;
 }
@@ -134,7 +135,7 @@ int main(int argc, char **argv)
 
     if (argc < 3) {
         fprintf(stderr, "Usage: diffimg image1 image2 [outimage]\n");
-        exit(-1);
+        exit(EX_USAGE);
     }
     A = imageLoad(argv[1]);
     B = imageLoad(argv[2]);
@@ -142,7 +143,7 @@ int main(int argc, char **argv)
     minSX = (gdImageSX(A) < gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B);
     minSY = (gdImageSY(A) < gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B);
     maxSX = (gdImageSX(A) > gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B);
-    maxSY = (gdImageSX(A) > gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B);
+    maxSY = (gdImageSY(A) > gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B);
     
     C = gdImageCreatePalette (maxSX, maxSY);
 
@@ -165,6 +166,6 @@ int main(int argc, char **argv)
     gdImageDestroy(B);
     gdImageDestroy(C);
 
-    return (rc ? 0 : 1);
+    return (rc ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
