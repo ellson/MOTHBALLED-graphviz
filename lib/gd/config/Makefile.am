@@ -1,5 +1,6 @@
 ## Process this file with automake to produce Makefile.in -*-Makefile-*-
-
-bin_SCRIPTS = gdlib-config
+AUTOMAKE_OPTIONS = foreign 1.7
 
 EXTRA_DIST = gdlib-config.in
+
+bin_SCRIPTS = gdlib-config
