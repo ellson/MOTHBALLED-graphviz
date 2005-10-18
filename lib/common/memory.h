@@ -17,7 +17,10 @@
 #ifndef GV_MEMORY_H
 #define GV_MEMORY_H
 
+#include <stdlib.h>
+#ifdef HAVE_MALLOC_H
 #include <malloc.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
