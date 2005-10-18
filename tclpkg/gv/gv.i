@@ -37,6 +37,10 @@ extern char *set(Agraph_t *g, char *attr, char *val=NULL);
 extern char *set(Agnode_t *n, char *attr, char *val=NULL);
 extern char *set(Agedge_t *e, char *attr, char *val=NULL);
 
+//extern char *set(Agraph_t *g, Agsym_t *a, char *val=NULL);
+//extern char *set(Agnode_t *n, Agsym_t *a, char *val=NULL);
+//extern char *set(Agedge_t *e, Agsym_t *a, char *val=NULL);
+
 /* misc navigators */
 extern Agnode_t *headof(Agedge_t *e);
 extern Agnode_t *tailof(Agedge_t *e);
@@ -47,29 +51,37 @@ extern Agraph_t *rootof(Agraph_t *g);
 
 /* iterators */
 extern Agraph_t *firstsubg(Agraph_t *g);
-extern Agraph_t *firstsupg(Agraph_t *g);
-extern Agedge_t *firstout(Agraph_t *g);
-extern Agedge_t *firstout(Agedge_t *e);
-extern Agedge_t *firstout(Agnode_t *n);
-extern Agedge_t *firstin(Agraph_t *g);
-extern Agedge_t *firstin(Agedge_t *e);
-extern Agedge_t *firstin(Agnode_t *n);
-extern Agnode_t *first(Agraph_t *g);
-extern Agnode_t *first(Agedge_t *e);
-extern Agnode_t *first(Agnode_t *n);
-
 extern Agraph_t *nextsubg(Agraph_t *g, Agraph_t *sg);
-extern Agraph_t *nextsupg(Agraph_t *g, Agraph_t *sg);
-extern Agedge_t *nextout(Agraph_t *g, Agedge_t *e);
-extern Agedge_t *nextout(Agedge_t *e, Agedge_t *ee);
-extern Agedge_t *nextout(Agnode_t *n, Agedge_t *e);
-extern Agedge_t *nextin(Agraph_t *g, Agedge_t *e);
-extern Agedge_t *nextin(Agedge_t *e, Agedge_t *ee);
-extern Agedge_t *nextin(Agnode_t *n, Agedge_t *e);
-extern Agnode_t *next(Agraph_t *g, Agnode_t *n);
-extern Agnode_t *next(Agedge_t *e, Agnode_t *n);
-extern Agnode_t *next(Agnode_t *n, Agnode_t *nn);
 
+extern Agraph_t *firstsupg(Agraph_t *g);
+extern Agraph_t *nextsupg(Agraph_t *g, Agraph_t *sg);
+
+extern Agedge_t *firstout(Agraph_t *g);
+extern Agedge_t *nextout(Agraph_t *g, Agedge_t *e);
+
+extern Agedge_t *firstout(Agnode_t *n);
+extern Agedge_t *nextout(Agnode_t *n, Agedge_t *e);
+
+extern Agedge_t *firstin(Agraph_t *g);
+extern Agedge_t *nextin(Agnode_t *n, Agedge_t *e);
+
+extern Agedge_t *firstin(Agnode_t *n);
+extern Agedge_t *nextin(Agraph_t *g, Agedge_t *e);
+
+extern Agnode_t *firstnode(Agraph_t *g);
+extern Agnode_t *nextnode(Agraph_t *g, Agnode_t *n);
+
+extern Agnode_t *firstnode(Agedge_t *e);
+extern Agnode_t *nextnode(Agedge_t *e, Agnode_t *n);
+
+extern char *firstattr(Agraph_t *g);
+extern char *nextattr(Agraph_t *g, char *a);
+
+extern char *firstattr(Agnode_t *n);
+extern char *nextattr(Agnode_t *n, char *a);
+
+extern char *firstattr(Agedge_t *e);
+extern char *nextattr(Agedge_t *e, char *a);
 
 /* remove graph objects */
 extern void rm(Agraph_t *g);

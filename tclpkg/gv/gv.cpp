@@ -364,16 +364,6 @@ Agedge_t *nextout(Agraph_t *g, Agedge_t *e)
     return agfstout(g, n);
 }
 
-Agedge_t *firstout(Agedge_t *e)
-{
-    return NULL;
-}
-
-Agedge_t *nextout(Agedge_t *e, Agedge_t *ee)
-{
-    return NULL;
-}
-
 Agedge_t *firstout(Agnode_t *n)
 {
     if (!n)
@@ -415,16 +405,6 @@ Agedge_t *nextin(Agraph_t *g, Agedge_t *e)
     return (agfstin(g, n));
 }
 
-Agedge_t *firstin(Agedge_t *e)
-{
-    return NULL;
-}
-
-Agedge_t *nextin(Agedge_t *e, Agedge_t *ee)
-{
-    return NULL;
-}
-
 Agedge_t *firstin(Agnode_t *n)
 {
     if (!n)
@@ -439,38 +419,125 @@ Agedge_t *nextin(Agnode_t *n, Agedge_t *e)
     return (agnxtin(n->graph, e));
 }
 
-Agnode_t *first(Agraph_t *g)
+Agnode_t *firstnode(Agraph_t *g)
 {
     return (agfstnode(g));
 }
 
-Agnode_t *next(Agraph_t *g, Agnode_t *n)
+Agnode_t *nextnode(Agraph_t *g, Agnode_t *n)
 {
     return (agnxtnode(g, n));
 }
 
-Agnode_t *first(Agedge_t *e)
+Agnode_t *firstnode(Agedge_t *e)
 {
     if (!e)
 	return NULL;
     return (e->tail);
 }
 
-Agnode_t *next(Agedge_t *e, Agnode_t *n)
+Agnode_t *nextnode(Agedge_t *e, Agnode_t *n)
 {
     if (!e || n != e->tail)
 	return NULL;
     return (e->head);
 }
 
-Agnode_t *first(Agnode_t *n)
+char *firstattr(Agraph_t *g)
 {
-    return NULL;
+    Agsym_t *a;
+
+    if (!g)
+	return NULL;
+    g = g->root;
+    if (dtsize(g->univ->globattr->dict) == 0)
+	return NULL;
+    a = g->univ->globattr->list[0];
+    return a->name;
 }
 
-Agnode_t *next(Agnode_t *n, Agnode_t *nn)
+char *nextattr(Agraph_t *g, char *s)
 {
-    return NULL;
+    Agsym_t *a;
+    int i;
+
+    if (!g || !s)
+        return NULL;
+    g = g->root;
+    a = agfindattr(g->root, s);
+    if (!a)
+	return NULL;
+    i = a->index + 1;
+    if (i > dtsize(g->univ->globattr->dict))
+        return NULL;
+    a = g->univ->globattr->list[i];
+    return a->name;
+}
+
+char *firstattr(Agnode_t *n)
+{
+    Agraph_t *g;
+    Agsym_t *a;
+
+    if (!n)
+	return NULL;
+    g = n->graph;
+    if (dtsize(g->univ->nodeattr->dict) == 0)
+	return NULL;
+    a = g->univ->nodeattr->list[0];
+    return a->name;
+}
+
+char *nextattr(Agnode_t *n, char *s)
+{
+    Agraph_t *g;
+    Agsym_t *a;
+    int i;
+
+    if (!n || !s)
+        return NULL;
+    g = n->graph;
+    a = agfindattr(g->proto->n, s);
+    if (!a)
+	return NULL;
+    i = a->index + 1;
+    if (i > dtsize(g->univ->nodeattr->dict))
+        return NULL;
+    a = g->univ->nodeattr->list[i];
+    return a->name;
+}
+
+char *firstattr(Agedge_t *e)
+{
+    Agraph_t *g;
+    Agsym_t *a;
+
+    if (!e)
+	return NULL;
+    g = e->tail->graph;
+    if (dtsize(g->univ->edgeattr->dict) == 0)
+	return NULL;
+    a = g->univ->edgeattr->list[0];
+    return a->name;
+}
+
+char *nextattr(Agedge_t *e, char *s)
+{
+    Agraph_t *g;
+    Agsym_t *a;
+    int i;
+
+    if (!e || !s)
+        return NULL;
+    g = e->tail->graph;
+    a = agfindattr(g->proto->n, s);
+    if (!a)
+	return NULL;
+    i = a->index + 1;
+    if (i > dtsize(g->univ->edgeattr->dict))
+        return NULL;
+    a = g->univ->edgeattr->list[i];
+    return a->name;
 }
 
 void rm(Agraph_t *g)
