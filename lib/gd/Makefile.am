@@ -17,7 +17,7 @@ noinst_PROGRAMS = annotate gdparttopng gdtopng gd2copypal gd2topng pngtogd \
 html_DATA = $(html)
 endif
 
-libgvgd_la_LDFLAGS = -version-info 2:0:0
+libgvgd_la_LDFLAGS = -version-info 2:0:0 -no-undefined
 
 libgvgd_la_SOURCES = gd.c gdfx.c gd_security.c gd_gd.c gd_gd2.c gd_io.c gd_io_dp.c \
 	gd_gif_in.c gd_gif_out.c gd_io_file.c gd_io_ss.c gd_jpeg.c gd_png.c \

@@ -31,6 +31,7 @@ libgvc_builtins_la_SOURCES = gvrender.c gvlayout.c gvtextlayout.c gvdevice.c \
 libgvc_la_SOURCES = ${libgvc_builtins_la_SOURCES} no_builtins.c
 
 libgvc_builtins_la_LIBADD = \
+	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \

@@ -142,8 +142,12 @@ gvplugin_library_t *gvplugin_library_load(char *path)
 	return NULL;
     }
     sym = gmalloc(len + strlen(suffix) + 1);
-    strcpy(sym, s+4);         /* strip leading "/lib" */
-    s = strchr(sym, '.');     /* strip trailing ".so.0" */
+    strcpy(sym, s+4);         /* strip leading "/lib" or "/cyg" */
+#ifdef __CYGWIN__
+    s = strchr(sym, '-');     /* strip trailing "-1.dll" */
+#else 
+    s = strchr(sym, '.');     /* strip trailing ".so.0" or ".dll" */
+#endif
     strcpy(s,suffix);         /* append "_LTX_library" */
 
     ptr = lt_dlsym (hndl, sym);

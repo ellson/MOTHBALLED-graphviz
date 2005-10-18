@@ -79,6 +79,7 @@ case "${host_os}" in
 	CYGWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	PATHSEPARATOR=";"
+	AC_DEFINE(NO_POSTSCRIPT_ALIAS,1,[Alias PostScript font names to URW type 1 fonts])
 	;;
   *mingw32* )
 	MINGW32=yes

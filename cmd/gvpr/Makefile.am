@@ -21,11 +21,13 @@ pdf_DATA = gvpr.pdf
 gvpr_SOURCES = actions.c compile.c gvpr.c gprstate.c parse.c queue.c
 
 gvpr_LDADD = $(top_builddir)/lib/expr/libexpr.la \
-	$(top_builddir)/lib/ast/libast.la \
         $(top_builddir)/lib/vmalloc/libvmalloc.la \
 	$(top_builddir)/lib/sfio/libsfio.la \
         $(top_builddir)/lib/ingraphs/libingraphs.la \
 	$(top_builddir)/lib/agraph/libagraph.la @MATH_LIBS@
+
+gvpr_DEPENDENCIES = \
+       $(top_builddir)/lib/ast/libast.la
 
 $(gvpr_OBJECTS): gdefs.h
 

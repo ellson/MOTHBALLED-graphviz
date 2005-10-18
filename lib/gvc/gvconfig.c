@@ -278,10 +278,13 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     gvplugin_library_t *library;
     regex_t re;
     char *plugin_glob = "libgvplugin_*";
-#ifdef DARWIN_DYLIB
-    /* Mac OS X / Darwin */
+#if defined(DARWIN_DYLIB)
     char *plugin_re_beg = "[^0-9]\\.";
     char *plugin_re_end = "\\.dylib$";
+#elif defined(__CYGWIN__)
+    plugin_glob = "cyggvplugin_*";
+    char *plugin_re_beg = "[^0-9]-";
+    char *plugin_re_end = "\\.dll$"; 
 #else
     /* Everyone else */
     char *plugin_re_beg = "\\.so\\.";
