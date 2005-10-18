@@ -25,6 +25,8 @@ extern "C" {
 #include "config.h"
 #endif
 
+#include "geom.h"
+
 #ifndef HAVE_STRCASECMP
     extern int strcasecmp(const char *s1, const char *s2);
 #endif
@@ -54,38 +56,6 @@ extern "C" {
     extern void UF_remove(Agnode_t *, Agnode_t *);
     extern void UF_singleton(Agnode_t *);
     extern void UF_setname(Agnode_t *, Agnode_t *);
-
-    extern point pointof(int, int);
-    extern pointf cvt2ptf(point);
-    extern point cvt2pt(pointf);
-    extern point add_points(point, point);
-    extern pointf add_pointfs(pointf, pointf);
-    extern point sub_points(point, point);
-    extern pointf sub_pointfs(pointf, pointf);
-    extern point exch_xy(point p);
-    extern pointf exch_xyf(pointf p);
-    extern point flip_pt(point p, int rankdir);
-    extern pointf flip_ptf(pointf p, int rankdir);
-    extern point invflip_pt(point p, int rankdir);
-
-    extern box boxof(int llx, int lly, int urx, int ury);
-    extern boxf boxfof(double llx, double lly, double urx, double ury);
-    extern box mkbox(point, point);
-    extern boxf mkboxf(pointf, pointf);
-    extern box box_bb(box, box);
-    extern boxf boxf_bb(boxf, boxf);
-    extern box box_intersect(box, box);
-    extern boxf boxf_intersect(boxf, boxf);
-    extern boolean box_overlap(box, box);
-    extern boolean boxf_overlap(boxf, boxf);
-    extern boolean box_contains(box, box);
-    extern boolean boxf_contains(boxf, boxf);
-    extern box flip_rec_box(box b, point p);
-
-    extern pointf Bezier(pointf *, int, double, pointf *, pointf *);
-    extern point dotneato_closest(splines * spl, point p);
-    extern point neato_closest(splines * spl, point p);
-    extern point spline_at_y(splines * spl, int y);
 
     extern char *username(void);
     extern char *safefile(char *shapefilename);

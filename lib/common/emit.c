@@ -675,7 +675,7 @@ static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
     PF2P(lp->dimen, sz);
     A[0] = pointof(lp->p.x + sz.x / 2, lp->p.y - sz.y / 2);
     A[1] = pointof(A[0].x - sz.x, A[0].y);
-    A[2] = dotneato_closest(spl, lp->p);
+    A[2] = closest_spline_point(spl, lp->p);
     /* Don't use edge style to draw attachment */
     gvrender_set_style(job, job->gvc->defaultlinestyle);
     /* Use font color to draw attachment

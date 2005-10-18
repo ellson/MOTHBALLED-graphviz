@@ -160,7 +160,7 @@ static void addEdgeLabels(edge_t * e, point rp, point rq)
 	del.y = q.y - p.y;
 	dist2 = del.x*del.x + del.y*del.y;
 	ht = (ED_label(e)->dimen.y + 2)/2.0;
-	sp = dotneato_closest(ED_spl(e), d);
+	sp = closest_spline_point(ED_spl(e), d);
 	spf.x = sp.x;
 	spf.y = sp.y;
 	if (dist2) {

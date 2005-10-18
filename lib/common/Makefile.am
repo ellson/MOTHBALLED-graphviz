@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt  @GD_INCLUDES@ @EXPAT_INCLUDES@ @Z_INCLUDES@
 
 pkginclude_HEADERS = const.h globals.h htmllex.h htmltable.h macros.h \
-	pointset.h render.h renderprocs.h types.h utils.h colortbl.h
+	pointset.h render.h renderprocs.h types.h utils.h colortbl.h geom.h
 noinst_LTLIBRARIES = libcommon.la
 
 if !DISABLE_CODEGENS
@@ -23,7 +23,7 @@ libcommon_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
 	args.c gdtextsize.c gdusershape.c \
 	globals.c htmllex.c htmlparse.y htmltable.c input.c \
 	pointset.c postproc.c psusershape.c routespl.c splines.c \
-	svgusershape.c timing.c labels.c ns.c shapes.c utils.c \
+	svgusershape.c timing.c labels.c ns.c shapes.c utils.c geom.c \
 	output.c emit.c $(CODEGENS)
 
 psgen.o psgen.lo : ps.h

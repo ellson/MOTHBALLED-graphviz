@@ -29,6 +29,10 @@
 #define NOTUSED(var)      (void) var
 #endif
 
+#ifndef NULL
+#define NULL (void *)0
+#endif
+
 #ifndef NIL
 #define NIL(type)       ((type)0)
 #endif
@@ -99,7 +103,10 @@
 #define ROUND(f)        ((f>=0)?(int)(f + .5):(int)(f - .5))
 #define RADIANS(deg)	((deg)/180.0 * PI)
 #define DEGREES(rad)	((rad)/PI * 180.0)
-#define DIST(x1,y1,x2,y2) (sqrt(((x1) - (x2))*((x1) - (x2)) + ((y1) - (y2))*((y1) - (y2))))
+
+#define DIST2(p1,p2) (((p1.x) - (p2.x))*((p1.x) - (p2.x)) + ((p1.y) - (p2.y))*((p1.y) - (p2.y)))
+#define DIST(p1,p2) (sqrt(DIST2((p1),(p2))))
+
 #define POINTS_PER_INCH	72
 #define POINTS(f_inch)	(ROUND((f_inch)*POINTS_PER_INCH))
 #define PS2INCH(ps)		((ps)/(double)POINTS_PER_INCH)
