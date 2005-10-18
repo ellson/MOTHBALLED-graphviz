@@ -14,10 +14,15 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "gvplugin.h"
 #include "types.h"
 #include "graph.h"
 #include "gvcint.h"
+#include "gvplugin_layout.h"
 #include "gvcproc.h"
 
 #include <string.h>
@@ -29,6 +34,7 @@ extern bool overlap_edge(edge_t *e, boxf b);
 extern bool overlap_node(node_t *n, boxf b);
 extern int gvLayout(GVC_t *gvc, graph_t *g, char *engine);
 extern int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename);
+extern void graph_cleanup(graph_t *g);
 
 #define PANFACTOR 10
 #define ZOOMFACTOR 1.1
@@ -529,14 +535,19 @@ static void gvevent_read (GVJ_t * job, char *filename, char *layout)
 {
     FILE *f;
     GVC_t *gvc;
+    gvlayout_engine_t *gvle;
 
     gvc = job->gvc;
     if (gvc->g) {
-        gvFreeLayout(gvc, gvc->g);
+	gvle = gvc->layout.engine;
+	if (gvle && gvle->cleanup)
+	    gvle->cleanup(gvc->g);
+	graph_cleanup(gvc->g);
 	agclose(gvc->g);
     }
     if (!filename) {
 	gvc->g = agopen("G", AGDIGRAPH);
+	job->output_filename = "new.dot";
     }
     else {
 	f = fopen(filename, "r");
@@ -544,8 +555,14 @@ static void gvevent_read (GVJ_t * job, char *filename, char *layout)
 		return;   /* FIXME - need some error handling */
 	gvc->g = agread(f);
 	fclose(f);
+	job->output_filename = filename;
     }
+    GD_gvc(gvc->g) = gvc;
     gvLayout(gvc, gvc->g, layout);
+    job->selected_obj = NULL;
+    job->current_obj = NULL;
+    job->surface = NULL;
+    job->needs_refresh = 1;
 }
 
 static void gvevent_layout (GVJ_t * job, char *layout)
