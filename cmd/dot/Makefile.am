@@ -22,7 +22,7 @@ endif
 man_MANS = dot.1 
 pdf_DATA = dot.pdf
 
-dot_SOURCES = dot.c dot_builtins.c
+dot_SOURCES = dot.c
 dot_LDADD = $(top_builddir)/lib/gvc/libgvc.la
 
 install-data-hook:
@@ -49,7 +49,7 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_usershape_gd.a \
-	$(top_builddir)/lib/gvc/.libs/libgvc.a \
+	$(top_builddir)/lib/gvc/.libs/libgvc_builtins.a \
 	$(top_builddir)/lib/pathplan/.libs/libpathplan.a \
 	$(top_builddir)/lib/pack/.libs/libpack.a \
 	$(top_builddir)/lib/graph/.libs/libgraph.a \

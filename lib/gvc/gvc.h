@@ -89,11 +89,6 @@ extern int gvFreeLayout(GVC_t *gvc, graph_t *g);
 /* Clean up graphviz context */
 extern int gvFreeContext(GVC_t *gvc);
 
-#ifndef BUILTINS
-const lt_symlist_t lt_preloaded_symbols[] = {{0,0,},};
-#define BUILTINS
-#endif
-
 #ifdef __cplusplus
 }
 #endif

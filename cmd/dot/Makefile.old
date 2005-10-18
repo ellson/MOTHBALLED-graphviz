@@ -22,9 +22,9 @@ XLIBS = -L$(LOC_LIB)/pathplan -lpathplan \
 
 PLUGS = -L$(LOC_PLUG) -lgvplugin_dot_layout -lgvplugin_neato_layout -lgvplugin_usershape_gd
 
-LIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
+LIBS = -L$(LOC_LIB)/gvc -lgvc_builtins $(PLUGS) \
        -L$(LOC_LIB)/common -lcommon \
-       -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
+       -L$(LOC_LIB)/gvc -lgvc_builtins $(PLUGS) \
        -L$(LOC_LIB)/neatogen -lneatogen \
        -L$(LOC_LIB)/dotgen -ldotgen \
        -L$(LOC_LIB)/circogen -lcircogen \
@@ -41,7 +41,7 @@ DOTLIBS = $(LOC_LIB)/common/libcommon.a \
           $(LOC_LIB)/plugin/libgvplugin_dot_layout.a \
           $(LOC_LIB)/plugin/libgvplugin_neato_layout.a \
           $(LOC_LIB)/plugin/libgvplugin_usershape_gd.a \
-	  $(LOC_LIB)/gvc/libgvc.a \
+	  $(LOC_LIB)/gvc/libgvc_builtins.a \
           $(LOC_LIB)/twopigen/libtwopigen.a \
 	  $(LOC_LIB)/circogen/libcircogen.a
 
