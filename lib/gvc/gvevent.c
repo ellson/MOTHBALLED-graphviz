@@ -232,13 +232,13 @@ static void gvevent_leave_obj(GVJ_t * job)
     if (obj) {
         switch (agobjkind(obj)) {
         case AGGRAPH:
-	    GD_gui_state((graph_t*)obj) &= !GUI_STATE_ACTIVE;
+	    GD_gui_state((graph_t*)obj) &= ~GUI_STATE_ACTIVE;
 	    break;
         case AGNODE:
-	    ND_gui_state((node_t*)obj) &= !GUI_STATE_ACTIVE;
+	    ND_gui_state((node_t*)obj) &= ~GUI_STATE_ACTIVE;
 	    break;
         case AGEDGE:
-	    ED_gui_state((edge_t*)obj) &= !GUI_STATE_ACTIVE;
+	    ED_gui_state((edge_t*)obj) &= ~GUI_STATE_ACTIVE;
 	    break;
         }
     }
@@ -329,15 +329,15 @@ static void gvevent_select_current_obj(GVJ_t * job)
         switch (agobjkind(obj)) {
         case AGGRAPH:
 	    GD_gui_state((graph_t*)obj) |= GUI_STATE_VISITED;
-	    GD_gui_state((graph_t*)obj) &= !GUI_STATE_SELECTED;
+	    GD_gui_state((graph_t*)obj) &= ~GUI_STATE_SELECTED;
 	    break;
         case AGNODE:
 	    ND_gui_state((node_t*)obj) |= GUI_STATE_VISITED;
-	    ND_gui_state((node_t*)obj) &= !GUI_STATE_SELECTED;
+	    ND_gui_state((node_t*)obj) &= ~GUI_STATE_SELECTED;
 	    break;
         case AGEDGE:
 	    ED_gui_state((edge_t*)obj) |= GUI_STATE_VISITED;
-	    ED_gui_state((edge_t*)obj) &= !GUI_STATE_SELECTED;
+	    ED_gui_state((edge_t*)obj) &= ~GUI_STATE_SELECTED;
 	    break;
         }
     }
