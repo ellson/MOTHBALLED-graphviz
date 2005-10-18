@@ -37,7 +37,7 @@ DNLIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
         -L$(LOC_LIB)/pathplan -lpathplan \
         -L$(LOC_LIB)/gd -lgd \
          $(LIBS) \
-         $(EXTLIB_LIB) $(EXPAT_LIB) -lltdl -lm
+         $(EXTLIB_LIB) $(EXPAT_LIB) $(LTDL_LIB) -lm
 INGLIB = -L$(LOC_LIB)/ingraphs -lingraphs
 
 ALIBS = -L$(LOC_LIB)/agraph -lagraph -L$(LOC_LIB)/cdt -lcdt

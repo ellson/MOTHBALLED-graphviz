@@ -155,9 +155,7 @@ int main(int argc, char **argv)
 	    /* Delete graph */
 	    agclose(G);
 	}
-#if 0
 	assert(0);		/* should never exit loop */
-#endif
     } else {
 	while ((G = next_input_graph())) {
 	    if (prev) {
