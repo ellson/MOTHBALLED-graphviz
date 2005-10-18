@@ -20,6 +20,31 @@
 %define RUBY    0
 %define TCL     1
 
+%{?rh7: %{expand: %%define PERL    1}}
+%{?rh7: %{expand: %%define TCL     1}}
+
+%{?rh8: %{expand: %%define PERL    1}}
+%{?rh8: %{expand: %%define TCL     1}}
+
+%{?rh9: %{expand: %%define PERL    1}}
+%{?rh9: %{expand: %%define TCL     1}}
+
+%{?el2: %{expand: %%define PERL    1}}
+%{?el2: %{expand: %%define TCL     1}}
+
+%{?el3: %{expand: %%define PERL    1}}
+%{?el3: %{expand: %%define TCL     1}}
+
+%{?el4: %{expand: %%define PERL    1}}
+%{?el4: %{expand: %%define PHP     1}}
+%{?el4: %{expand: %%define RUBY    1}}
+%{?el4: %{expand: %%define TCL     1}}
+
+%{?el5: %{expand: %%define PERL    1}}
+%{?el5: %{expand: %%define PHP     1}}
+%{?el5: %{expand: %%define RUBY    1}}
+%{?el5: %{expand: %%define TCL     1}}
+
 %{?fc4: %{expand: %%define GUILE   1}}
 %{?fc4: %{expand: %%define PERL    1}}
 %{?fc4: %{expand: %%define PYTHON  1}}
