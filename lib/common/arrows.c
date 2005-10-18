@@ -17,10 +17,6 @@
 
 #include	"gvc.h"
 
-#define sqr(a) ((double) (a) * (a))
-#define dstsq(a, b) (sqr (a.x - b.x) + sqr (a.y - b.y))
-#define dst(a, b) sqrt (dstsq (a, b))
-
 #define EPSILON .0001
 
 /* standard arrow length in points */
@@ -232,7 +228,7 @@ double arrow_length(edge_t * e, int flag)
 /* inside function for calls to bezier_clip */
 static boolean inside(inside_t * inside_context, pointf p)
 {
-    return dstsq(p, inside_context->a.p[0]) <= inside_context->a.r[0];
+    return DIST2(p, inside_context->a.p[0]) <= inside_context->a.r[0];
 }
 
 int arrowEndClip(edge_t* e, point * ps, int startp,
@@ -245,7 +241,7 @@ int arrowEndClip(edge_t* e, point * ps, int startp,
     elen = arrow_length(e, eflag);
     elen2 = elen * elen;
     spl->eflag = eflag, spl->ep = ps[endp + 3];
-    if (endp > startp && dstsq(ps[endp], ps[endp + 3]) < elen2) {
+    if (endp > startp && DIST2(ps[endp], ps[endp + 3]) < elen2) {
 	endp -= 3;
     }
     P2PF(ps[endp], sp[3]);
@@ -274,7 +270,7 @@ int arrowStartClip(edge_t* e, point * ps, int startp,
     slen = arrow_length(e, sflag);
     slen2 = slen * slen;
     spl->sflag = sflag, spl->sp = ps[startp];
-    if (endp > startp && dstsq(ps[startp], ps[startp + 3]) < slen2) {
+    if (endp > startp && DIST2(ps[startp], ps[startp + 3]) < slen2) {
 	startp += 3;
     }
     P2PF(ps[startp + 3], sp[0]);
