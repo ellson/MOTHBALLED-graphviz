@@ -68,8 +68,6 @@ int gvFreeLayout(GVC_t * gvc, graph_t * g)
     gvlayout_engine_t *gvle = gvc->layout.engine;
 
     g = g->root;
-    if (gvc->active_jobs)
-	gvdevice_finalize(gvc);
     if (gvle && gvle->cleanup)
 	gvle->cleanup(g);
     graph_cleanup(g);
