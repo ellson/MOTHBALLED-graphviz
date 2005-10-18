@@ -22,8 +22,6 @@ LT_REVISION=0
 LT_AGE=0
 
 VERSION_INFO="$LT_CURRENT:$LT_REVISION:$LT_AGE"
-AC_DEFINE_UNQUOTED(LT_CURRENT,$LT_CURRENT,[Compatibility version number for shared libraries.])
-AC_SUBST(LT_CURRENT)
 AC_SUBST(VERSION_INFO)
 
 dnl ===========================================================================
@@ -49,6 +47,17 @@ AC_SUBST(LIBLTDL)
 
 # Checks for system type
 AC_CANONICAL_HOST
+
+# This nonsense drives me crazy!!
+case "${host_os}" in
+  *irix* | *nonstopux* )
+    GVPLUGIN_VERSION=`expr $LT_CURRENT + 1`
+    ;;
+  *)
+    GVPLUGIN_VERSION=$LT_CURRENT
+esac
+AC_DEFINE_UNQUOTED(GVPLUGIN_VERSION,$GVPLUGIN_VERSION,[Compatibility version number for plugins.])
+AC_SUBST(GVPLUGIN_VERSION)
 
 LIBPOSTFIX=
 case "${host_os}" in
