@@ -34,6 +34,13 @@
 #include <unistd.h>
 #include <gd.h>
 
+#define NOT(v) (!(v))
+#if ! defined HAVE_BOOL && ! defined __cplusplus
+typedef unsigned char bool;
+#define false 0
+#define true NOT(false)
+#endif
+
 static char *pstopng="gs -dNOPAUSE -sDEVICE=pngalpha -sOutputFile=- -q -";
 
 static gdImagePtr imageLoad (char *filename)
@@ -98,19 +105,22 @@ static gdImagePtr imageLoad (char *filename)
     return im;
 }
 
-static void imageDiff (gdImagePtr A, gdImagePtr B, gdImagePtr C,
+static bool imageDiff (gdImagePtr A, gdImagePtr B, gdImagePtr C,
 	int w, int h, unsigned char black, unsigned char white)
 {
-    unsigned int a, b;
     unsigned int x, y;
+    bool d, rc;
 
+    rc = false;
     for (y = 0; y < h; y++) {
         for (x = 0; x < w; x++) {
-	    b = gdImageGetTrueColorPixel (B, x, y);
-	    a = gdImageGetTrueColorPixel (A, x, y);
-            gdImageSetPixel (C, x, y, ((a-b) ? white : black));
+	    d = (bool)( gdImageGetTrueColorPixel(B,x,y)
+		      - gdImageGetTrueColorPixel(A,x,y));
+            gdImageSetPixel (C, x, y, (d ? white : black));
+	    rc |= d;
         }
     }
+    return rc;
 }
 
 int main(int argc, char **argv)
@@ -118,6 +128,7 @@ int main(int argc, char **argv)
     gdImagePtr A, B, C;
     unsigned char black, white;
     FILE *f;
+    bool rc;
 
     if (argc < 3) {
         fprintf(stderr, "Usage: diffimg image1 image2 [outimage]\n");
@@ -133,7 +144,7 @@ int main(int argc, char **argv)
     white = gdImageColorAllocate(C, gdRedMax, gdGreenMax, gdBlueMax);
     black = gdImageColorAllocate(C, 0, 0, 0);
 
-    imageDiff (A, B, C, 
+    rc = imageDiff (A, B, C, 
 	(gdImageSX(A) < gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B),
 	(gdImageSY(A) < gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B),
 	black, white);
@@ -149,6 +160,6 @@ int main(int argc, char **argv)
     gdImageDestroy(B);
     gdImageDestroy(C);
 
-    return 0;
+    return (rc ? 0 : 1);
 }
 
