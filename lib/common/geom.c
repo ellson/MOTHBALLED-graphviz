@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include "geom.h"
+#include "geomprocs.h"
 
 point pointof(int x, int y)
 {

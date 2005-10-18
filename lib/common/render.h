@@ -56,10 +56,11 @@ extern "C" {
 #include "macros.h"
 #include "const.h"
 #include "types.h"
-#include "graph.h"		/* must follow types.h */
 #include "globals.h"
 #include "memory.h"
-#include "utils.h"
+#include "geomprocs.h"		/* must follow geom.h (in types.h) */
+#include "graph.h"		/* must follow types.h */
+#include "utils.h"		/* must follow types.h */
 
     typedef struct epsf_s {
 	int macro_id;
