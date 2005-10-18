@@ -21,7 +21,7 @@ libtclplan_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la
-libtclplan_la_LDFLAGS = -module -version-info @VERSION_INFO@ -no-undefined
+libtclplan_la_LDFLAGS = -module -no-undefined
 
 if WITH_TCL
 all-local: pkgIndex.tcl

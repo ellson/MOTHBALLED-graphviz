@@ -27,7 +27,7 @@ libgdtclft_la_SOURCES = gdtclft.c
 libgdtclft_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la @GD_LIBS@
-libgdtclft_la_LDFLAGS = -module -version-info @VERSION_INFO@ -no-undefined
+libgdtclft_la_LDFLAGS = -module -no-undefined
 
 if WITH_TCL
 all-local: pkgIndex.tcl

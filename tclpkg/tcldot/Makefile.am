@@ -37,7 +37,7 @@ libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
 	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@ @LIBLTDL@
-libtcldot_la_LDFLAGS = -module -version-info @VERSION_INFO@ -no-undefined
+libtcldot_la_LDFLAGS = -module -no-undefined
 
 if WITH_TCL
 all-local: pkgIndex.tcl
