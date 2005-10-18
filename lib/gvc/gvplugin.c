@@ -323,6 +323,8 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
 	}
     }
     free(s);
+    if (!buf)
+	buf = "";
     return buf;
 }
 
