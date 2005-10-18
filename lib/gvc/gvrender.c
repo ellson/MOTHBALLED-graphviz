@@ -45,8 +45,10 @@ extern codegen_t PS_CodeGen;
 /* storage for temporary hacks until client API is FP */
 static pointf *AF;
 static int sizeAF;
+#ifndef DISABLE_CODEGENS
 static point *A;
 static int sizeA;
+#endif
 /* end hack */
 
 int gvrender_select(GVJ_t * job, char *str)
