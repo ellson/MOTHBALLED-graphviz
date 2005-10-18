@@ -1361,12 +1361,42 @@ void emit_jobs_eof(GVC_t * gvc)
     }
 }
 
+static char **checkClusterStyle(graph_t* sg, int *flagp)
+{
+    char *style;
+    char **pstyle = 0;
+    int istyle = 0;
+
+    if (((style = agget(sg, "style")) != 0) && style[0]) {
+	char **pp;
+	char **qp;
+	char *p;
+	pp = pstyle = parse_style(style);
+	while ((p = *pp)) {
+	    if (strcmp(p, "filled") == 0) {
+		istyle |= FILLED;
+		pp++;
+	    } else if (strcmp(p, "rounded") == 0) {
+		istyle |= ROUNDED;
+		qp = pp; /* remove rounded from list passed to renderer */
+		do {
+		    qp++;
+		    *(qp-1) = *qp;
+		} while (*qp);
+	    } else pp++;
+	}
+    }
+
+    *flagp = istyle;
+    return pstyle;
+}
+
 void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 {
-    int i, c, istyle, filled;
+    int c, istyle, filled;
     graph_t *sg;
     point A[4];
-    char *color, *fillcolor, *pencolor, *str, **style;
+    char *color, *fillcolor, *pencolor, **style;
     node_t *n;
     edge_t *e;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
@@ -1395,16 +1425,10 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	filled = FALSE;
 	istyle = 0;
 	xdemitState = EMIT_DRAW;
-	if (((str = agget(sg, "style")) != 0) && str[0]) {
-	    gvrender_set_style(job, (style = parse_style(str)));
-	    for (i = 0; style[i]; i++)
-		if (strcmp(style[i], "filled") == 0) {
-		    filled = TRUE;
-		    istyle |= FILLED;
-		}
-		else if (strcmp(style[i], "rounded") == 0) {
-		    istyle |= ROUNDED;
-		}
+	if ((style = checkClusterStyle(sg, &istyle))) {
+	    gvrender_set_style(job, style);
+	    if (istyle & FILLED)
+		filled = TRUE;
 	}
 	fillcolor = pencolor = 0;
 	if (GD_gui_state(sg) & GUI_STATE_ACTIVE) {
