@@ -586,8 +586,8 @@ void gvrender_begin_context(GVJ_t * job)
     if (gvre) {
 	(gvc->SP)++;
 	assert((gvc->SP) < MAXNEST);
-	(gvc->styles)[gvc->SP] = (gvc->styles)[(gvc->SP) - 1];
-	job->style = &((gvc->styles)[gvc->SP]);
+	gvc->styles[gvc->SP] = gvc->styles[(gvc->SP) - 1];
+	job->style = &(gvc->styles[gvc->SP]);
     }
 #ifndef DISABLE_CODEGENS
     else {
