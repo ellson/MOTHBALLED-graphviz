@@ -18,8 +18,6 @@
 #define GVRENDER_PLUGIN_H
 
 #include "gvplugin.h"
-#include "geom.h"
-#include "color.h"
 #include "gvcjob.h"
 
 #ifdef __cplusplus
