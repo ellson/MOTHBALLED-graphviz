@@ -1,10 +1,10 @@
 <!-- REMEMBER TO EDIT index.html.source -->
 <head>
-<TITLE>gd 2.0.31</TITLE>
+<TITLE>gd 2.0.33</TITLE>
 </head>
 <body bgcolor="#FFFFFF">
 <!-- BANNER HERE -->
-<H2>gd 2.0.31</H2>
+<H2>gd 2.0.33</H2>
 <H3>A graphics library for fast image creation</H3>
 <H3>Follow this link to the
 <A HREF="http://www.boutell.com/gd/">latest version
@@ -27,7 +27,7 @@ to the best of my knowledge. I am not a lawyer and cannot give
 legal advice regarding this issue. PNG remains a superior format especially
 if lossless truecolor images are needed.
 <p>
-When building from soruce, gd 2.0.31 <strong>requires</strong> that the 
+When building from soruce, gd 2.0.33 <strong>requires</strong> that the 
 following libraries also be installed, in order to produce the related 
 image formats. The win32 binary release (bgd) already contains the
 appropriate libraries.
@@ -60,7 +60,7 @@ information. Thank you!
 <H3>Table of Contents</H3>
 <UL>
 <LI><A HREF="#notice">Credits and license terms</A>
-<LI><A HREF="#whatsnew2.0.31">What's new in version "XYZ" of GD?</A>
+<LI><A HREF="#whatsnew2.0.33">What's new in version "XYZ" of GD?</A>
 <LI><A HREF="#whatis">What is gd?</A>
 <LI><A HREF="#gdother">What if I want to use another programming language?</A>
 <LI><A HREF="#required">What else do I need to use gd?</A>
@@ -169,10 +169,10 @@ and so forth.
 <A NAME="gdother"><H3>What if I want to use another programming
 language?</h3></A>
 Not all of these tools are necessarily up to date and fully compatible
-with 2.0.31.
+with 2.0.33.
 <h4>PHP</h4>
 A variant of gd 2.x is included in PHP 4.3.0. It is also possible
-to patch PHP 4.2.3 for use with gd 2.0.31; see the
+to patch PHP 4.2.3 for use with gd 2.0.33; see the
 <a href="http://www.boutell.com/gd/">gd home page</a> for a link to
 that information. It would be a Good Idea to merge all of the things
 that are better in mainstream gd and all of the things that are
@@ -207,6 +207,20 @@ invoke the interpreter.
 <ul>
 <li><a href="http://martin.gleeson.com/fly/">fly</a>, by Martin Gleeson
 </ul>
+<p>
+<A NAME="whatsnew2.0.33"><h3>What's new in version 2.0.33?</h3></a>
+<p>
+Version 2.0.33 restores compatibility with older releases
+of Freetype 2.x in addition to the latest release. Thanks to
+John Ellson and the graphviz project.
+<p>
+<A NAME="whatsnew2.0.32"><h3>What's new in version 2.0.32?</h3></a>
+<p>
+Version 2.0.32 restores correct detection of Unicode character sets
+for freetype fonts, which repairs a bug that prevented umlauts from
+displaying properly. Thanks to John Ellson and the graphviz project.
+Also, version 2.0.32 builds all test programs 
+smoothly in the absence of libpng. 
 <p>
 <A NAME="whatsnew2.0.31"><h3>What's new in version 2.0.31?</h3></a>
 <p>
@@ -1245,8 +1259,8 @@ saving of alpha channel information to the file instead.
 </ul>
 <h4>Source Code:</h4>
 <ul>
-<li><a href="http://www.boutell.com/gd/http/gd-2.0.31.tar.gz">Gzipped Tar File (Unix)</a>
-<li><a href="http://www.boutell.com/gd/http/gd-2.0.31.zip">.ZIP File of SOURCE CODE (Windows)</a>
+<li><a href="http://www.boutell.com/gd/http/gd-2.0.33.tar.gz">Gzipped Tar File (Unix)</a>
+<li><a href="http://www.boutell.com/gd/http/gd-2.0.33.zip">.ZIP File of SOURCE CODE (Windows)</a>
 </ul>
 <P>
 <A NAME="buildgd"><H3>How do I build gd?</H3></A>
@@ -1268,10 +1282,10 @@ downloaded. If you are not familiar with <code>tar</code> and
 consult with an experienced user of your system. Sorry, we cannot
 answer questions about basic Internet skills.
 <p>
-Unpacking the archive will produce a directory called "gd-2.0.31".
+Unpacking the archive will produce a directory called "gd-2.0.33".
 <p>
 <h4>For Unix</h4>
-<code>cd</code> to the 2.0.31 directory and type:
+<code>cd</code> to the 2.0.33 directory and type:
 <p>
 <code>./configure</code>
 <P>
