@@ -37,7 +37,7 @@ DNLIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
         -L$(LOC_LIB)/pathplan -lpathplan \
         -L$(LOC_LIB)/gd -lgd \
          $(LIBS) \
-         $(EXTLIB_LIB) $(EXPAT_LIB) -lm
+         $(EXTLIB_LIB) $(EXPAT_LIB) -lltdl -lm
 INGLIB = -L$(LOC_LIB)/ingraphs -lingraphs
 
 ALIBS = -L$(LOC_LIB)/agraph -lagraph -L$(LOC_LIB)/cdt -lcdt
@@ -51,7 +51,7 @@ TOBJS = tred.o
 CCOBJS = ccomps.o
 SCCOBJS = sccmap.o
 GXLOBJS = cvtgxl.o   dot2gxl.o  gxl2dot.o
-GVPOBJS = gvpack.o plugins.o
+GVPOBJS = gvpack.o gvpack_builtins.o
 BCCOBJS = bcomps.o
 MANS = acyclic.1 gvcolor.1 nop.1 tred.1 ccomps.1 gc.1 sccmap.1 \
 	unflatten.1 gxl2dot.1 dot2gxl.1 gvpack.1 bcomps.1
@@ -62,8 +62,8 @@ gvpack : $(GVPOBJS)
 gvpack.o : gvpack.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) gvpack.c
 
-plugins.o : plugins.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) plugins.c
+gvpack_builtins.o : gvpack_builtins.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) gvpack_builtins.c
 
 dijkstra : dijkstra.o
 	$(CSLD) $(LDFLAGS) dijkstra.o $(INGLIB) $(ALIBS) -o $@
