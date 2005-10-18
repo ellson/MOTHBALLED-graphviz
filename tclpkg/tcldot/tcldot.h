@@ -18,10 +18,6 @@
 extern "C" {
 #endif
 
-#include "gvc.h"
-#include "tcl.h"
-#include "tclhandle.h"
-
     typedef struct tkgendata_s {
 	Tcl_Interp *interp;
 	char *canvas;
