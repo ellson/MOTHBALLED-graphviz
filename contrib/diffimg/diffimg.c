@@ -34,8 +34,6 @@
 #include <unistd.h>
 #include <gd.h>
 
-#define ABS(x) (((x) < 0) ? -(x) : (x))
-
 static char *pstopng="gs -dNOPAUSE -sDEVICE=pngalpha -sOutputFile=- -q -";
 
 static gdImagePtr imageLoad (char *filename)
@@ -78,8 +76,8 @@ static gdImagePtr imageLoad (char *filename)
             exit(1);
         }
     }
-    else
-        f = fopen(filename, "rb");{
+    else {
+        f = fopen(filename, "rb");
         if (!f) {
             fprintf(stderr, "Failed to open \"%s\"\n", filename);
             exit(1);
@@ -100,54 +98,56 @@ static gdImagePtr imageLoad (char *filename)
     return im;
 }
 
-static void imageDiff (gdImagePtr dst, gdImagePtr src,
-			int dstX, int dstY,
-			int srcX, int srcY,
-			int w, int h)
+static void imageDiff (gdImagePtr A, gdImagePtr B, gdImagePtr C,
+	int w, int h, unsigned char black, unsigned char white)
 {
-    int s, d;
-    int x, y;
+    unsigned int a, b;
+    unsigned int x, y;
 
-    for (y = 0; (y < h); y++) {
-        for (x = 0; (x < w); x++) {
-	    s = gdImageGetTrueColorPixel (src, srcX + x, srcY + y);
-	    d = gdImageGetTrueColorPixel (dst, dstX + x, dstY + y);
-    
-	    d = gdTrueColorAlpha(
-		  ABS(gdTrueColorGetRed(s) - gdTrueColorGetRed(d)),
-		  ABS(gdTrueColorGetGreen(s) - gdTrueColorGetGreen(d)),
-		  ABS(gdTrueColorGetBlue(s) - gdTrueColorGetBlue(d)),
-		  ABS(gdTrueColorGetAlpha(s) - gdTrueColorGetAlpha(d)));
-    
-            gdImageSetPixel (dst, dstX + x, dstY + y, d);
+    for (y = 0; y < h; y++) {
+        for (x = 0; x < w; x++) {
+	    b = gdImageGetTrueColorPixel (B, x, y);
+	    a = gdImageGetTrueColorPixel (A, x, y);
+            gdImageSetPixel (C, x, y, ((a-b) ? white : black));
         }
     }
 }
 
 int main(int argc, char **argv)
 {
-    gdImagePtr im1, im2, im3;
+    gdImagePtr A, B, C;
+    unsigned char black, white;
+    FILE *f;
 
-    if (argc != 3) {
-        fprintf(stderr, "Usage: diffimg image1 image2\n");
+    if (argc < 3) {
+        fprintf(stderr, "Usage: diffimg image1 image2 [outimage]\n");
         exit(1);
     }
-    im1 = imageLoad(argv[1]);
-    im2 = imageLoad(argv[2]);
+    A = imageLoad(argv[1]);
+    B = imageLoad(argv[2]);
 
-    im3 = gdImageCreateTrueColor (
-	(gdImageSX(im1) > gdImageSX(im2)) ? gdImageSX(im1) : gdImageSX(im2),
-	(gdImageSY(im1) > gdImageSY(im2)) ? gdImageSY(im1) : gdImageSY(im2));
+    C = gdImageCreatePalette (
+	(gdImageSX(A) > gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B),
+	(gdImageSY(A) > gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B));
 
-    gdImageCopy (im3, im1, 0, 0, 0, 0, gdImageSX(im1), gdImageSY(im1));
+    white = gdImageColorAllocate(C, gdRedMax, gdGreenMax, gdBlueMax);
+    black = gdImageColorAllocate(C, 0, 0, 0);
 
-    imageDiff (im3, im2, 0, 0, 0, 0, gdImageSX(im2), gdImageSY(im2));
+    imageDiff (A, B, C, 
+	(gdImageSX(A) < gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B),
+	(gdImageSY(A) < gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B),
+	black, white);
 
-    gdImagePng (im3, stdout);
+    if ((argc > 3) && ((f = fopen(argv[3], "wb")))) {
+	gdImagePng (C, f);
+	fclose(f);
+    }
+    else
+        gdImagePng (C, stdout);
 
-    gdImageDestroy(im1);
-    gdImageDestroy(im2);
-    gdImageDestroy(im3);
+    gdImageDestroy(A);
+    gdImageDestroy(B);
+    gdImageDestroy(C);
 
     return 0;
 }
