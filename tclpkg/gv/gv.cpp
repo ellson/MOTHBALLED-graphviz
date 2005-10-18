@@ -611,11 +611,15 @@ Agedge_t *nextout(Agraph_t *g, Agedge_t *e)
 
 Agedge_t *firstedge(Agraph_t *g)
 {
+    if (!g)
+	return NULL;
     return firstout(g);
 } 
 
 Agedge_t *nextedge(Agraph_t *g, Agedge_t *e)
 {
+    if (!g || !e)
+	return NULL;
     return nextout(g, e);
 } 
 
@@ -748,11 +752,15 @@ Agnode_t *nexttail(Agnode_t *n, Agnode_t *t)
 
 Agnode_t *firstnode(Agraph_t *g)
 {
+    if (!g)
+	return NULL;
     return agfstnode(g);
 }
 
 Agnode_t *nextnode(Agraph_t *g, Agnode_t *n)
 {
+    if (!g || !n)
+	return NULL;
     return agnxtnode(g, n);
 }
 
