@@ -441,7 +441,7 @@ AC_ARG_ENABLE(perl,
 if test "x$enable_perl" != "xno"; then
 AC_CHECK_PROG(PERL,perl,perl)
 if test "x$PERL" != "x"; then
-  PERL_ARCHLIB=`perl -e 'use Config; print $Config{archlib};'`
+  PERL_ARCHLIB=`$PERL -e 'use Config; print $Config{archlib};'`
   PERL_INCLUDES=-I$PERL_ARCHLIB/CORE
   PERL_LIBS="-L$PERL_ARCHLIB/CORE -lperl"
 fi
