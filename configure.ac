@@ -1511,6 +1511,7 @@ AC_CONFIG_FILES(Makefile
 	doc/info/Makefile
 	contrib/Makefile
 	contrib/prune/Makefile
+	contrib/diffimg/Makefile
 	graphs/Makefile
 	graphs/directed/Makefile
 	graphs/undirected/Makefile
