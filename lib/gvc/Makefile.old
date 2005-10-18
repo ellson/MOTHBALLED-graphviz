@@ -30,11 +30,11 @@ libgvc.a : $(OBJS)
 
 install: libgvc.a 
 	$(MKPATH) $(INCDIR)
-	$(INSTALL) $(HDRS) $(INCDIR)
+	$(INSTALL) $(INST_HDRS) $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libgvc.a $(LIBDIR)
 
-$(OBJS) : $(HDRS)
+$(OBJS) : $(INST_HDRS) $(NOINST_HDRS)
 
 clean:
 	$(RM) core *.o
