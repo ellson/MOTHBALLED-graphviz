@@ -187,11 +187,12 @@ extern "C" {
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	pointf offset;		/* composite translation */
 	
-	bool fit_mode,
+	bool	fit_mode,
 		needs_refresh,
 		click,
 		active,
-		has_grown;
+		has_grown,
+		is_configured;
 
 	pointf pointer;		/* pointer position in device units */
 	pointf oldpointer;	/* old pointer position in device units */
