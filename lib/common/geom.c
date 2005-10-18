@@ -355,6 +355,8 @@ static pointf rotatepf(pointf p, int cwrot)
     static int last_cwrot;
     pointf P;
 
+    /* cosa is initially wrong for a cwrot of 0
+     * this caching only works because we are never called for 0 rotations */
     if (cwrot != last_cwrot) {
 	sincos(cwrot / (2 * M_PI), &sina, &cosa);
 	last_cwrot = cwrot;
