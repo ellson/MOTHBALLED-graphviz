@@ -41,7 +41,6 @@ ALL : "$(OUTDIR)\gvpack.exe"
 
 CLEAN :
 	-@erase "$(INTDIR)\gvpack.obj"
-	-@erase "$(INTDIR)\plugins.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(OUTDIR)\gvpack.exe"
 
@@ -56,8 +55,7 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=gd.lib graph.lib cdt.lib ingraphs.lib pack.lib gvc.lib neatogen.lib common.lib pathplan.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\gvpack.pdb" /machine:I386 /out:"$(OUTDIR)\gvpack.exe" /libpath:"../../lib/lib/Release" /libpath:"..\..\third-party\lib" 
 LINK32_OBJS= \
-	"$(INTDIR)\gvpack.obj" \
-	"$(INTDIR)\plugins.obj"
+	"$(INTDIR)\gvpack.obj"
 
 "$(OUTDIR)\gvpack.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -77,7 +75,6 @@ ALL : "$(OUTDIR)\gvpack.exe"
 
 CLEAN :
 	-@erase "$(INTDIR)\gvpack.obj"
-	-@erase "$(INTDIR)\plugins.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
 	-@erase "$(OUTDIR)\gvpack.exe"
@@ -95,8 +92,7 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=graph.lib cdt.lib ingraphs.lib pack.lib gd.lib gvc.lib neatogen.lib common.lib pathplan.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\gvpack.pdb" /debug /machine:I386 /out:"$(OUTDIR)\gvpack.exe" /pdbtype:sept /libpath:"../../lib/lib/Debug" /libpath:"..\..\third-party\lib" 
 LINK32_OBJS= \
-	"$(INTDIR)\gvpack.obj" \
-	"$(INTDIR)\plugins.obj"
+	"$(INTDIR)\gvpack.obj"
 
 "$(OUTDIR)\gvpack.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -149,11 +145,6 @@ LINK32_OBJS= \
 SOURCE=.\gvpack.c
 
 "$(INTDIR)\gvpack.obj" : $(SOURCE) "$(INTDIR)"
-
-
-SOURCE=.\plugins.c
-
-"$(INTDIR)\plugins.obj" : $(SOURCE) "$(INTDIR)"
 
 
 

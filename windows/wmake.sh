@@ -50,10 +50,21 @@ function doComp
   RV=$((RV | $?))
 }
 
+function mkDir
+{
+  if [[ ! -d $1 ]]
+  then
+    mkdir $1
+  fi
+}
+
 cd $GVIZ
 
 # process libs
 cd lib
+mkDir lib
+mkDir lib/Release
+mkDir lib/Debug
 for d in ${LIBS[@]}
 do
   cd $d

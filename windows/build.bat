@@ -4,6 +4,11 @@ set LIB=%vc%\VC98\lib
 set INCLUDE=%vc%\VC98\include
 
 cd lib
+mkdir lib
+cd lib
+mkdir Release
+mkdir Debug
+cd ..
 cd cdt
 nmake /nologo /f cdt.mak CFG="cdt - Win32 Release"
 cd ..

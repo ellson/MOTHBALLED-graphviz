@@ -90,10 +90,6 @@ LINK32=link.exe
 
 SOURCE=.\gvpack.c
 # End Source File
-# Begin Source File
-
-SOURCE=.\plugins.c
-# End Source File
 # End Group
 # Begin Group "Header Files"
 

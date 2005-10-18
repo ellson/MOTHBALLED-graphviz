@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I "../../lib/dotgen" /I "../../lib/neatogen" /I "../../lib/fdpgen" /I "../../lib/circogen" /I "../../lib/twopigen" /I "../../lib/common" /I "../../lib/gvc" /I "../.." /I "../../lib/pathplan" /I "../../lib/cdt" /I "../../lib/gd" /I "../../lib/graph" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D "MSWIN32" /D "HAVE_CONFIG_H" /YX /FD /c
+# ADD CPP /nologo /W3 /GX /O2 /I "../../lib/dotgen" /I "../../lib/neatogen" /I "../../lib/fdpgen" /I "../../lib/circogen" /I "../../lib/twopigen" /I "../../lib/common" /I "../../lib/gvc" /I "../.." /I "../../lib/pathplan" /I "../../lib/cdt" /I "../../lib/gd" /I "../../lib/graph" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "MSWIN32" /D "HAVE_CONFIG_H" /D "BUILTINS" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 pack.lib  pathplan.lib plugin.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"..\..\lib\lib\Release" /libpath:"..\..\third-party\lib"
+# ADD LINK32 pack.lib pathplan.lib plugin.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"..\..\lib\lib\Release" /libpath:"..\..\third-party\lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "dot - Win32 Debug"
@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /Gi /GX /ZI /Od /I "../../lib/dotgen" /I "../../lib/neatogen" /I "../../lib/fdpgen" /I "../../lib/circogen" /I "../../lib/twopigen" /I "../../lib/common" /I "../../lib/gvc" /I "../.." /I "../../lib/pathplan" /I "../../lib/cdt" /I "../../lib/gd" /I "../../lib/graph" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "MSWIN32" /D "HAVE_CONFIG_H" /YX /FD /GZ /c
+# ADD CPP /nologo /W3 /Gm /Gi /GX /ZI /Od /I "../../lib/dotgen" /I "../../lib/neatogen" /I "../../lib/fdpgen" /I "../../lib/circogen" /I "../../lib/twopigen" /I "../../lib/common" /I "../../lib/gvc" /I "../.." /I "../../lib/pathplan" /I "../../lib/cdt" /I "../../lib/gd" /I "../../lib/graph" /D "_DEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "MSWIN32" /D "HAVE_CONFIG_H" /D "BUILTINS" /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 pack.lib  pathplan.lib plugin.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /profile /debug /machine:I386 /libpath:"..\..\lib\lib\Debug" /libpath:"..\..\third-party\lib"
+# ADD LINK32 pack.lib pathplan.lib plugin.lib gd.lib graph.lib cdt.lib common.lib gvc.lib neatogen.lib twopigen.lib fdpgen.lib circogen.lib dotgen.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /profile /debug /machine:I386 /libpath:"..\..\lib\lib\Debug" /libpath:"..\..\third-party\lib"
 
 !ENDIF 
 
@@ -94,6 +94,10 @@ LINK32=link.exe
 # Begin Source File
 
 SOURCE=dot.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\dot_builtins_oldmake.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
