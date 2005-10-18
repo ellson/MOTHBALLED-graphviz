@@ -134,6 +134,10 @@ void gvrender_delete_jobs(GVC_t * gvc)
 	job = job->next;
 	gv_argvlist_free(&(j->selected_obj_attributes));
 	gv_argvlist_free(&(j->selected_obj_type_name));
+	if (j->active_tooltip)
+	    free(j->active_tooltip);
+	if (j->selected_href)
+	    free(j->selected_href);
 	free(j);
     }
     gvc->jobs = gvc->job = output_filename_job = output_langname_job =

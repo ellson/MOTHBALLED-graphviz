@@ -212,6 +212,8 @@ extern "C" {
 
 	void *selected_obj;      /* graph object that has been selected */
 					/* (e.g. button 1 clicked on current obj) */
+	char *active_tooltip;		/* tooltip of active object - or NULL */
+	char *selected_href;		/* href of selected object - or NULL */
 	gv_argvlist_t selected_obj_type_name; /* (e.g. "edge" "node3" "e" "->" "node5" "") */
 	gv_argvlist_t selected_obj_attributes; /* even args are names, odd are values */
 				/* e.g. "color" "red" "style" "filled" */
