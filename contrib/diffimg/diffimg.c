@@ -15,78 +15,89 @@
 **********************************************************/
 
 /*
- * This program generates an image where each pixel is the difference between
- * the corresponding pixel in each of the two source images.  Thus, if the source images
- * are the same the resulting image will be black, otherwise it will have regions of
- * non-black where the images differ.
+ * This program generates an image where each pixel is the
+ * difference between the corresponding pixel in each of the
+ * two source images.  Thus, if the source images are the same
+ * the resulting image will be black, otherwise it will have
+ * regions of non-black where the images differ.
  *
- * Currently only supports PNG images.
+ * Currently supports: .png, .gif, .jpg
  *
  * John Ellson <ellson@research.att.com>
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <gd.h>
 
 #define ABS(x) (((x) < 0) ? -(x) : (x))
 
-void imageDiff (gdImagePtr dst, gdImagePtr src, int dstX, int dstY, int srcX,
-             int srcY, int w, int h)
+static void imageDiff (gdImagePtr dst, gdImagePtr src,
+			int dstX, int dstY,
+			int srcX, int srcY,
+			int w, int h)
 {
-  int s, d;
-  int x, y;
-/*  assert (dst->trueColor); */
-  for (y = 0; (y < h); y++)
-    {
-      for (x = 0; (x < w); x++)
-        {
-	  s = gdImageGetTrueColorPixel (src, srcX + x, srcY + y);
-	  d = gdImageGetTrueColorPixel (dst, dstX + x, dstY + y);
+    int s, d;
+    int x, y;
 
-	  d = gdTrueColorAlpha(
-		ABS(gdTrueColorGetRed(s) - gdTrueColorGetRed(d)),
-		ABS(gdTrueColorGetGreen(s) - gdTrueColorGetGreen(d)),
-		ABS(gdTrueColorGetBlue(s) - gdTrueColorGetBlue(d)),
-		ABS(gdTrueColorGetAlpha(s) - gdTrueColorGetAlpha(d)));
-
-          gdImageSetPixel (dst, dstX + x, dstY + y, d);
+    for (y = 0; (y < h); y++) {
+        for (x = 0; (x < w); x++) {
+	    s = gdImageGetTrueColorPixel (src, srcX + x, srcY + y);
+	    d = gdImageGetTrueColorPixel (dst, dstX + x, dstY + y);
+    
+	    d = gdTrueColorAlpha(
+		  ABS(gdTrueColorGetRed(s) - gdTrueColorGetRed(d)),
+		  ABS(gdTrueColorGetGreen(s) - gdTrueColorGetGreen(d)),
+		  ABS(gdTrueColorGetBlue(s) - gdTrueColorGetBlue(d)),
+		  ABS(gdTrueColorGetAlpha(s) - gdTrueColorGetAlpha(d)));
+    
+            gdImageSetPixel (dst, dstX + x, dstY + y, d);
         }
     }
+}
+
+static gdImagePtr imageLoad (char *filename)
+{
+    FILE *f;
+    char *ext;
+    gdImagePtr im;
+
+    f = fopen(filename, "rb");
+    if (!f) {
+        fprintf(stderr, "Input file \"%s\" does not exist!\n", filename);
+        exit(1);
+    }
+    ext = strrchr(filename, '.');
+    if (!ext) {
+        fprintf(stderr, "Filename \"%s\" has no file extension.\n", filename);
+        exit(1);
+    }
+    im = 0;
+    if (strcasecmp(ext, ".png") == 0) 
+        im = gdImageCreateFromPng(f);
+    else if (strcasecmp(ext, ".gif") == 0)
+        im = gdImageCreateFromGif(f);
+    else if (strcasecmp(ext, ".jpg") == 0)
+        im = gdImageCreateFromJpeg(f);
+    fclose(f);
+    if (!im) {
+        fprintf(stderr, "Loading image from file  \"%s\" failed!\n", filename);
+        exit(1);
+    }
+    return im;
 }
 
 int main(int argc, char **argv)
 {
     gdImagePtr im1, im2, im3;
-    FILE *in;
 
     if (argc != 3) {
-        fprintf(stderr, "Usage: diffimg file1.png file2.png \n");
+        fprintf(stderr, "Usage: diffimg image1 image2\n");
         exit(1);
     }
-    in = fopen(argv[1], "rb");
-    if (!in) {
-        fprintf(stderr, "Input file1 does not exist!\n");
-        exit(1);
-    }
-    im1 = gdImageCreateFromPng(in);
-    fclose(in);
-    if (!im1) {
-        fprintf(stderr, "Input file1 is not in PNG format!\n");
-        exit(1);
-    }
-
-    in = fopen(argv[2], "rb");
-    if (!in) {
-        fprintf(stderr, "Input file2 does not exist!\n");
-        exit(1);
-    }
-    im2 = gdImageCreateFromPng(in);
-    fclose(in);
-    if (!im2) {
-        fprintf(stderr, "Input file2 is not in PNG format!\n");
-        exit(1);
-    }
+    im1 = imageLoad(argv[1]);
+    im2 = imageLoad(argv[2]);
 
     im3 = gdImageCreateTrueColor (
 	(gdImageSX(im1) > gdImageSX(im2)) ? gdImageSX(im1) : gdImageSX(im2),
