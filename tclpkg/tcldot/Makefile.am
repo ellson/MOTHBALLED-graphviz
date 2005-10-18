@@ -32,7 +32,11 @@ pdf_DATA = $(pdf)
 html_DATA = $(html)
 endif
 
-libtcldot_la_SOURCES = tcldot.c tkgen.c $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
+if !DISABLE_CODEGENS
+CODEGENS = tkgen.c
+endif
+
+libtcldot_la_SOURCES = tcldot.c $(CODEGENS) $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \

@@ -219,11 +219,23 @@
 #define RANKDIR_BT	2
 #define RANKDIR_RL	3
 
-/* values specifying emit state */
+/* value specifying emit state */
 #define EMIT_DRAW	0
-#define EMIT_LABEL	1
-#define EMIT_TDRAW	2
-#define EMIT_HDRAW	3
+#define EMIT_GDRAW	EMIT_DRAW
+#define EMIT_CDRAW	EMIT_DRAW
+#define EMIT_NDRAW	EMIT_DRAW
+#define EMIT_EDRAW	EMIT_DRAW
+
+/* values specifying emit state for arrowheads */
+#define EMIT_TDRAW	1
+#define EMIT_HDRAW	2
+
+/* values specifying emit state for labels */
+#define EMIT_LABEL	3
+#define EMIT_GLABEL	EMIT_LABEL
+#define EMIT_CLABEL	EMIT_LABEL
+#define EMIT_NLABEL	EMIT_LABEL
+#define EMIT_ELABEL	EMIT_LABEL
 #define EMIT_TLABEL	4
 #define EMIT_HLABEL	5
 

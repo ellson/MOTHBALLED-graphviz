@@ -543,10 +543,14 @@ boxf arrow_bb(pointf p, pointf u, double scale, int flag)
     return bb;
 }
 
-void arrow_newgen(GVJ_t * job, pointf p, pointf u, double scale, int flag)
+void arrow_newgen(GVJ_t * job, int state, pointf p, pointf u, double scale, int flag)
 {
     double s;
     int f;
+    int oldstate;
+
+    oldstate = job->gvc->emit_state;
+    job->gvc->emit_state = state;
 
     /* Dotted and dashed styles on the arrowhead are ugly (dds) */
     /* linewidth needs to be reset */
@@ -573,14 +577,16 @@ void arrow_newgen(GVJ_t * job, pointf p, pointf u, double scale, int flag)
     arrow_gen_type(job, p, u, f);
 
     gvrender_end_context(job);
+
+    job->gvc->emit_state = oldstate;
 }
 
 /* FIXME emit.c and output.c require wrapper for int point coords */
-void arrow_gen(GVJ_t * job, point p, point u, double scale, int flag)
+void arrow_gen(GVJ_t * job, int state, point p, point u, double scale, int flag)
 {
     pointf P, U;
 
     P2PF(p, P);
     P2PF(u, U);
-    arrow_newgen(job, P, U, scale, flag);
+    arrow_newgen(job, state, P, U, scale, flag);
 }

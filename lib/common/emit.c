@@ -580,10 +580,13 @@ static void emit_node(GVJ_t * job, node_t * n)
 {
     GVC_t *gvc = job->gvc;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
+    int oldstate;
 
     if (ND_shape(n) == NULL)
 	return;
 
+    oldstate = gvc->emit_state;
+    gvc->emit_state = EMIT_NDRAW;
     if (node_in_layer(job, n->graph, n)
 	    && node_in_box(n, job->pageBoxClip)
 	    && (ND_state(n) != gvc->viewNum)) {
@@ -620,6 +623,7 @@ static void emit_node(GVJ_t * job, node_t * n)
 	}
 	gvrender_end_node(job);
     }
+    gvc->emit_state = oldstate;
 }
 
 #define EPSILON .0001
@@ -739,10 +743,12 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
     bool saved = FALSE;
     double scale, numc2;
     char *p;
-    extern int xdemitState;
+    int oldstate;
 
 #define SEP 2.0
 
+    oldstate = job->gvc->emit_state;
+    job->gvc->emit_state = EMIT_EDRAW;
     style = late_string(e, E_style, "");
     /* We shortcircuit drawing an invisible edge because the arrowhead
      * code resets the style to solid, and most of the code generators
@@ -756,7 +762,6 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 		return;
 	}
     }
-    xdemitState = EMIT_DRAW;
     if (ED_spl(e)) {
 	scale = late_double(e, E_arrowsz, 1.0, 0.0);
 	color = late_string(e, E_color, "");
@@ -858,13 +863,14 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 					 FALSE, FALSE, FALSE);
 		}
 	    }
-	    xdemitState = EMIT_TDRAW;
-	    if (bz.sflag)
-		arrow_gen(job, bz.sp, bz.list[0], scale, bz.sflag);
-	    xdemitState = EMIT_HDRAW;
-	    if (bz.eflag)
-		arrow_gen(job, bz.ep, bz.list[bz.size - 1], scale,
-			  bz.eflag);
+	    if (bz.sflag) {
+		arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0],
+			scale, bz.sflag);
+	    }
+	    if (bz.eflag) {
+		arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
+			scale, bz.eflag);
+	    }
 	    free(colors);
 	    for (i = 0; i < offspl.size; i++) {
 		free(offspl.list[i].list);
@@ -895,33 +901,32 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 		} else {
 		    gvrender_beziercurve(job, bzf.list, bz.size, FALSE,
 					 FALSE, FALSE);
-		    xdemitState = EMIT_TDRAW;
-		    if (bz.sflag)
-			arrow_gen(job, bz.sp, bz.list[0], scale, bz.sflag);
-		    xdemitState = EMIT_HDRAW;
-		    if (bz.eflag)
-			arrow_gen(job, bz.ep, bz.list[bz.size - 1], scale,
-				  bz.eflag);
+		    if (bz.sflag) {
+			arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0],
+				scale, bz.sflag);
+		    }
+		    if (bz.eflag) {
+			arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
+				scale, bz.eflag);
+		    }
 		}
 		free(bzf.list);
 	    }
 	}
     }
-    xdemitState = EMIT_LABEL;
     if (ED_label(e)) {
-	emit_label(job, ED_label(e), (void *) e);
+	emit_label(job, EMIT_ELABEL, ED_label(e), (void *) e);
 	if (mapbool(late_string(e, E_decorate, "false")) && ED_spl(e))
 	    emit_attachment(job, ED_label(e), ED_spl(e));
     }
-    xdemitState = EMIT_HLABEL;
     if (ED_head_label(e))
-	emit_label(job, ED_head_label(e), (void *) e);	/* vladimir */
-    xdemitState = EMIT_TLABEL;
+	emit_label(job, EMIT_HLABEL, ED_head_label(e), (void *) e);	/* vladimir */
     if (ED_tail_label(e))
-	emit_label(job, ED_tail_label(e), (void *) e);	/* vladimir */
+	emit_label(job, EMIT_TLABEL, ED_tail_label(e), (void *) e);	/* vladimir */
 
     if (saved)
 	gvrender_end_context(job);
+    job->gvc->emit_state = oldstate;
 }
 
 static bool edge_in_box(edge_t *e, boxf b)
@@ -944,10 +949,13 @@ static void emit_edge(GVJ_t * job, edge_t * e)
 {
     char *s, *url = NULL, *label = NULL, *tooltip = NULL, *target = NULL;
     textlabel_t *lab = NULL;
+    int oldstate;
 
     if (! edge_in_box(e, job->pageBoxClip) || ! edge_in_layer(job, e->head->graph, e))
 	return;
 
+    oldstate = job->gvc->emit_state;
+    job->gvc->emit_state = EMIT_EDRAW;
     s = malloc(strlen(e->tail->name) + 2 + strlen(e->head->name) + 1);
     strcpy(s,e->tail->name);
     if (AG_IS_DIRECTED(e->tail->graph))
@@ -987,6 +995,7 @@ static void emit_edge(GVJ_t * job, edge_t * e)
 	    free(target);
     }
     gvrender_end_edge(job);
+    job->gvc->emit_state = oldstate;
 }
 
 static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
@@ -1202,7 +1211,7 @@ void emit_view(GVJ_t * job, graph_t * g, int flags)
 	gvrender_begin_anchor(job, url, tooltip, target);
     }
     if (GD_label(g))
-	emit_label(job, GD_label(g), (void *) g);
+	emit_label(job, EMIT_GLABEL, GD_label(g), (void *) g);
     /* when drawing, lay clusters down before nodes and edges */
     if (!(flags & EMIT_CLUSTERS_LAST))
 	emit_clusters(job, g, flags);
@@ -1400,8 +1409,10 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     node_t *n;
     edge_t *e;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
-    extern int xdemitState;
+    int oldstate;
 
+    oldstate = job->gvc->emit_state;
+    job->gvc->emit_state = EMIT_CDRAW;
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
 	if (clust_in_layer(job, sg) == FALSE)
@@ -1424,7 +1435,6 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	gvrender_begin_context(job);
 	filled = FALSE;
 	istyle = 0;
-	xdemitState = EMIT_DRAW;
 	if ((style = checkClusterStyle(sg, &istyle))) {
 	    gvrender_set_style(job, style);
 	    if (istyle & FILLED)
@@ -1490,9 +1500,8 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		gvrender_polygon(job, A, 4, filled);
 	    }
 	}
-	xdemitState = EMIT_DRAW;
 	if (GD_label(sg))
-	    emit_label(job, GD_label(sg), (void *) sg);
+	    emit_label(job, EMIT_GLABEL, GD_label(sg), (void *) sg);
 
 	if (flags & EMIT_PREORDER) {
 	    for (n = agfstnode(sg); n; n = agnxtnode(sg, n)) {
@@ -1521,6 +1530,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if (!(flags & EMIT_CLUSTERS_LAST))
 	    emit_clusters(job, sg, flags);
     }
+    job->gvc->emit_state = oldstate;
 }
 
 static bool is_style_delim(int c)
@@ -1679,6 +1689,7 @@ static void emit_job(GVJ_t * job, graph_t * g)
     init_job_viewport(job, g);
     init_job_pagination(job, g);
 
+    job->gvc->emit_state = EMIT_GDRAW;
     gvrender_begin_job(job);
 
     switch (job->output_lang) {

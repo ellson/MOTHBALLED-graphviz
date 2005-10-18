@@ -206,10 +206,14 @@ emit_textlines(GVJ_t* job, int nlines, textline_t lines[], pointf p,
     gvrender_end_context(job);
 }
 
-void emit_label(GVJ_t * job, textlabel_t * lp, void *obj)
+void emit_label(GVJ_t * job, int state, textlabel_t * lp, void *obj)
 {
     double halfwidth_x;
     pointf p;
+    int oldstate;
+
+    oldstate = job->gvc->emit_state;
+    job->gvc->emit_state = state;
 
     if (lp->html) {
 	emit_html_label(job, lp->u.html, lp, obj);
@@ -228,6 +232,7 @@ void emit_label(GVJ_t * job, textlabel_t * lp, void *obj)
 
     emit_textlines(job, lp->u.txt.nlines, lp->u.txt.line, p,
               halfwidth_x, lp->fontname, lp->fontsize, lp->fontcolor);
+    job->gvc->emit_state = oldstate;
 }
 
 

@@ -79,6 +79,7 @@ extern "C" {
 	GVJ_t *job;	/* current job */
 	void (*errorfn) (char *fmt, ...);
 
+	int emit_state;	/* current emit_state */
 	graph_t *g;	/* current graph */
 	graph_t *sg;	/* current subgraph/cluster */
 	node_t *n;	/* current node */

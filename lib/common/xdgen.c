@@ -17,7 +17,7 @@
 #include "render.h"
 #include "agxbuf.h"
 
-int    xdemitState;
+static GVC_t *gvc;
 static agxbuf xbuf0;
 static agxbuf xbuf1;
 static agxbuf xbuf2;
@@ -81,6 +81,8 @@ void extend_attrs(GVJ_t * job, graph_t *g, int s_arrows, int e_arrows)
     unsigned char buf4[BUFSIZ];
     unsigned char buf5[BUFSIZ];
 
+    gvc = job->gvc;
+
     if (GD_has_labels(g) & GRAPH_LABEL)
 	g_l_draw = safe_dcl(g, g, "_ldraw_", "", agraphattr);
     if (GD_n_cluster(g))
@@ -111,8 +113,8 @@ void extend_attrs(GVJ_t * job, graph_t *g, int s_arrows, int e_arrows)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (ND_shape(n) && !isInvis(late_string(n, N_style, ""))) {
 	    ND_shape(n)->fns->codefn(job, n);
-	    agxset(n, n_draw->index, agxbuse(xbufs[EMIT_DRAW]));
-	    agxset(n, n_l_draw->index, agxbuse(xbufs[EMIT_LABEL]));
+	    agxset(n, n_draw->index, agxbuse(xbufs[EMIT_NDRAW]));
+	    agxset(n, n_l_draw->index, agxbuse(xbufs[EMIT_NLABEL]));
 	}
 	if (State < GVSPLINES)
 	    continue;
@@ -125,26 +127,24 @@ void extend_attrs(GVJ_t * job, graph_t *g, int s_arrows, int e_arrows)
 		continue;
 
 	    emit_edge_graphics (job, e);
-	    agxset(e, e_draw->index, agxbuse(xbufs[EMIT_DRAW]));
+	    agxset(e, e_draw->index, agxbuse(xbufs[EMIT_EDRAW]));
 	    if (t_draw) agxset(e, t_draw->index, agxbuse(xbufs[EMIT_TDRAW]));
 	    if (h_draw) agxset(e, h_draw->index, agxbuse(xbufs[EMIT_HDRAW]));
-	    if (e_l_draw) agxset(e, e_l_draw->index,agxbuse(xbufs[EMIT_LABEL]));
+	    if (e_l_draw) agxset(e, e_l_draw->index,agxbuse(xbufs[EMIT_ELABEL]));
 	    if (tl_draw) agxset(e, tl_draw->index, agxbuse(xbufs[EMIT_TLABEL]));
 	    if (hl_draw) agxset(e, hl_draw->index, agxbuse(xbufs[EMIT_HLABEL]));
 	}
     }
   
-    xdemitState = EMIT_DRAW;
     emit_background(job, g);
-    if (agxblen(xbufs[EMIT_DRAW])) {
+    if (agxblen(xbufs[EMIT_GDRAW])) {
 	if (!g_draw)
 	    g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
-	agxset(g, g_draw->index, agxbuse(xbufs[EMIT_DRAW]));
+	agxset(g, g_draw->index, agxbuse(xbufs[EMIT_GDRAW]));
     }
-    xdemitState = EMIT_LABEL;
     if (GD_label(g)) {
-	emit_label(job, GD_label(g), (void *) g);
-	agxset(g, g_l_draw->index, agxbuse(xbufs[EMIT_LABEL]));
+	emit_label(job, EMIT_GLABEL, GD_label(g), (void *) g);
+	agxset(g, g_l_draw->index, agxbuse(xbufs[EMIT_GLABEL]));
     }
     emit_clusters(job, g, 0);
     agxbfree(&xbuf0);
@@ -160,9 +160,9 @@ static void xd_str (char* pfx, char* s)
     char buf[BUFSIZ];
 
     sprintf (buf, "%s%d -", pfx, (int)strlen(s));
-    agxbput(xbufs[xdemitState], buf);
-    agxbput(xbufs[xdemitState], s);
-    agxbputc(xbufs[xdemitState], ' ');
+    agxbput(xbufs[gvc->emit_state], buf);
+    agxbput(xbufs[gvc->emit_state], s);
+    agxbputc(xbufs[gvc->emit_state], ' ');
 }
 
 static void xd_textline(point p, textline_t * line)
@@ -183,7 +183,7 @@ static void xd_textline(point p, textline_t * line)
 	break;
     }
     sprintf(buf, "T %d %d %d %d ", p.x, YDIR(p.y), j, (int) line->width);
-    agxbput(xbufs[xdemitState], buf);
+    agxbput(xbufs[gvc->emit_state], buf);
     xd_str ("", line->str);
 }
 
@@ -191,9 +191,9 @@ static void xd_ellipse(point p, int rx, int ry, int filled)
 {
     char buf[BUFSIZ];
 
-    agxbputc(xbufs[xdemitState], (filled ? 'E' : 'e'));
+    agxbputc(xbufs[gvc->emit_state], (filled ? 'E' : 'e'));
     sprintf(buf, " %d %d %d %d ", p.x, YDIR(p.y), rx, ry);
-    agxbput(xbufs[xdemitState], buf);
+    agxbput(xbufs[gvc->emit_state], buf);
 }
 
 static void xd_points(char c, point * A, int n)
@@ -202,13 +202,13 @@ static void xd_points(char c, point * A, int n)
     int i;
     point p;
 
-    agxbputc(xbufs[xdemitState], c);
+    agxbputc(xbufs[gvc->emit_state], c);
     sprintf(buf, " %d ", n);
-    agxbput(xbufs[xdemitState], buf);
+    agxbput(xbufs[gvc->emit_state], buf);
     for (i = 0; i < n; i++) {
 	p = A[i];
 	sprintf(buf, "%d %d ", p.x, YDIR(p.y));
-	agxbput(xbufs[xdemitState], buf);
+	agxbput(xbufs[gvc->emit_state], buf);
     }
 }
 
@@ -237,7 +237,7 @@ xd_set_font (char *fontname, double fontsize)
     char buf[BUFSIZ];
 
     sprintf(buf, "F %f ", fontsize);
-    agxbput(xbufs[xdemitState], buf);
+    agxbput(xbufs[gvc->emit_state], buf);
     xd_str ("", fontname);
 }
 
@@ -292,9 +292,9 @@ static void xd_begin_cluster(Agraph_t * sg)
 
 static void xd_end_cluster(void)
 {
-    agxset(cluster_g, g_draw->index, agxbuse(xbufs[EMIT_DRAW]));
+    agxset(cluster_g, g_draw->index, agxbuse(xbufs[EMIT_CDRAW]));
     if (GD_label(cluster_g))
-	agxset(cluster_g, g_l_draw->index, agxbuse(xbufs[EMIT_LABEL]));
+	agxset(cluster_g, g_l_draw->index, agxbuse(xbufs[EMIT_CLABEL]));
 }
 
 codegen_t XDot_CodeGen = {

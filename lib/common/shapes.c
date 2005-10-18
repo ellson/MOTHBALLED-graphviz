@@ -1199,10 +1199,8 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     static point *A;
     static int A_size;
     bool filled;
-    extern int xdemitState;
     char *color;
 
-    xdemitState = EMIT_DRAW;
     poly = (polygon_t *) ND_shape_info(n);
     vertices = poly->vertices;
     sides = poly->sides;
@@ -1323,8 +1321,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	filled = FALSE;
     }
 
-    xdemitState = EMIT_LABEL;
-    emit_label(job, ND_label(n), (void *) n);
+    emit_label(job, EMIT_NLABEL, ND_label(n), (void *) n);
 }
 
 /*=======================end poly======================================*/
@@ -1840,7 +1837,7 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
 	cx = (f->b.LL.x + f->b.UR.x) / 2.0 + ND_coord_i(n).x;
 	cy = (f->b.LL.y + f->b.UR.y) / 2.0 + ND_coord_i(n).y;
 	f->lp->p = pointof((int) cx, (int) cy);
-	emit_label(job, f->lp, (void *) n);
+	emit_label(job, EMIT_NLABEL, f->lp, (void *) n);
     }
 
     for (i = 0; i < f->n_flds; i++) {
@@ -1867,9 +1864,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
     point A[4];
     int i, style;
     field_t *f;
-    extern int xdemitState;
 
-    xdemitState = EMIT_DRAW;
     f = (field_t *) ND_shape_info(n);
     A[0] = f->b.LL;
     A[2] = f->b.UR;
@@ -1889,7 +1884,6 @@ static void record_gencode(GVJ_t * job, node_t * n)
 	node_round_corners(job, n, A, 4, ROUNDED);
     else
 	gvrender_polygon(job, A, 4, style & FILLED);
-    xdemitState = EMIT_LABEL;
     gen_fields(job, n, f);
 }
 
@@ -1976,5 +1970,5 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
 		ND_coord_i(n).y + desc->offset.y, desc->macro_id);
     ND_label(n)->p = ND_coord_i(n);
     gvrender_end_context(job);
-    emit_label(job, ND_label(n), (void *) n);
+    emit_label(job, EMIT_NLABEL, ND_label(n), (void *) n);
 }

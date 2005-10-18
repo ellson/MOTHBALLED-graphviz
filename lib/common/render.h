@@ -74,8 +74,8 @@ extern "C" {
     extern void add_box(path *, box);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
     extern boxf arrow_bb(pointf p, pointf u, double scale, int flag);
-    extern void arrow_gen(GVJ_t * job, point p, point u, double scale,
-			  int flag);
+    extern void arrow_gen(GVJ_t * job, int state, point p, point u,
+			  double scale, int flag);
     extern double arrow_length(edge_t * e, int flag);
     extern int arrowEndClip(edge_t*, point*, int, int , bezier*, int eflag);
     extern int arrowStartClip(edge_t*, point* ps, int, int, bezier*, int sflag);
@@ -105,7 +105,7 @@ extern "C" {
     extern void emit_clusters(GVJ_t * job, Agraph_t * g, int flags);
     extern void emit_edge_graphics(GVJ_t * job, edge_t * e);
     extern void emit_graph(GVJ_t * job, graph_t * g);
-    extern void emit_label(GVJ_t * job, textlabel_t *, void *obj);
+    extern void emit_label(GVJ_t * job, int state, textlabel_t *, void *obj);
     extern int emit_once(char *message);
     extern void emit_jobs_eof(GVC_t * gvc);
     extern void emit_textlines(GVJ_t*, int, textline_t*, pointf,

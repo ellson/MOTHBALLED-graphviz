@@ -45,12 +45,14 @@ Tcl_GetString(Tcl_Obj *obj) {
 #endif
 ********* */
 
-extern codegen_t TK_CodeGen;
 extern void *GDHandleTable;
 extern int Gdtclft_Init(Tcl_Interp *);
 
+#ifndef DISABLE_CODEGENS
+extern codegen_t TK_CodeGen;
 static codegen_info_t cg[] = { {&TK_CodeGen, "tk", TK},
 				{NULL, NULL, 0}, };
+#endif
 
 static void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
 static tkgendata_t tkgendata;
@@ -1623,7 +1625,9 @@ __EXPORT__
 int Tcldot_Init(Tcl_Interp * interp)
 {
     GVC_t *gvc;
+#ifndef DISABLE_CODEGENS
     codegen_info_t *p;
+#endif
 
 #ifdef USE_TCL_STUBS
     if (Tcl_InitStubs(interp, TCL_VERSION, 0) == NULL) {
@@ -1649,10 +1653,12 @@ int Tcldot_Init(Tcl_Interp * interp)
 
     /* configure for available plugins and codegens */
     gvconfig(gvc, FALSE);
+#ifndef DISABLE_CODEGENS
     /* additional codegens */
     for (p = cg; p->name; ++p)
         gvplugin_install(gvc, API_render, p->name, 0, "cg", NULL,
                          (gvplugin_installed_t *) p);
+#endif
 
 #ifndef TCLOBJ
     Tcl_CreateCommand(interp, "dotnew", dotnew,
