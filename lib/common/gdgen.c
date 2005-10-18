@@ -59,7 +59,7 @@ static int external_surface;
 
 /* bold line constant */
 #define WIDTH_NORMAL	1
-#define WIDTH_BOLD	3
+#define WIDTH_BOLD	2
 
 /* static int	N_pages; */
 /* static point	Pages; */
