@@ -250,9 +250,15 @@ void dotneato_postprocess(Agraph_t * g)
 	    }
 	} else {
 	    if (GD_label_pos(g) & LABEL_AT_TOP) {
-		GD_bb(g).UR.y += d.y;
+		if (Rankdir == RANKDIR_TB)
+		    GD_bb(g).UR.y += d.y;
+		else
+		    GD_bb(g).LL.y -= d.y;
 	    } else {
-		GD_bb(g).LL.y -= d.y;
+		if (Rankdir == RANKDIR_TB)
+		    GD_bb(g).LL.y -= d.y;
+		else
+		    GD_bb(g).UR.y += d.y;
 	    }
 
 	    if (d.x > GD_bb(g).UR.x - GD_bb(g).LL.x) {
