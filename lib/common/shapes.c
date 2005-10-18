@@ -1213,28 +1213,28 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     } else {
 	style = stylenode(job, n);
     }
-    if (ND_active(n)) {
+    if (ND_gui_state(n) & GUI_STATE_ACTIVE) {
         color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
         gvrender_set_pencolor(job, color);
         color = late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
         gvrender_set_fillcolor(job, color);
 	filled = TRUE;
     }
-    else if (ND_selected(n)) {
+    else if (ND_gui_state(n) & GUI_STATE_SELECTED) {
         color = late_nnstring(n, N_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
         gvrender_set_pencolor(job, color);
         color = late_nnstring(n, N_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
         gvrender_set_fillcolor(job, color);
 	filled = TRUE;
     }
-    else if (ND_deleted(n)) {
+    else if (ND_gui_state(n) & GUI_STATE_DELETED) {
         color = late_nnstring(n, N_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
         gvrender_set_pencolor(job, color);
         color = late_nnstring(n, N_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
         gvrender_set_fillcolor(job, color);
 	filled = TRUE;
     }
-    else if (ND_visited(n)) {
+    else if (ND_gui_state(n) & GUI_STATE_VISITED) {
         color = late_nnstring(n, N_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
         gvrender_set_pencolor(job, color);
         color = late_nnstring(n, N_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);

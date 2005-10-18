@@ -775,27 +775,27 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 		numc++;
 
 	fillcolor = pencolor = color;
-	if (ED_active(e)) {
+	if (ED_gui_state(e) & GUI_STATE_ACTIVE) {
 	    pencolor = late_nnstring(e, E_activepencolor, DEFAULT_ACTIVEPENCOLOR);
 	    fillcolor = late_nnstring(e, E_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
 	}
-	else if (ED_selected(e)) {
+	else if (ED_gui_state(e) & GUI_STATE_SELECTED) {
 	    pencolor = late_nnstring(e, E_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
 	    fillcolor = late_nnstring(e, E_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
 	}
-	else if (ED_deleted(e)) {
+	else if (ED_gui_state(e) & GUI_STATE_DELETED) {
 	    pencolor = late_nnstring(e, E_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
 	    fillcolor = late_nnstring(e, E_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
 	}
-	else if (ED_visited(e)) {
+	else if (ED_gui_state(e) & GUI_STATE_VISITED) {
 	    pencolor = late_nnstring(e, E_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
 	    fillcolor = late_nnstring(e, E_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
 	}
-	if (pencolor != color) {
-	    color = pencolor;
-    	    gvrender_set_pencolor(job, color);
-	    gvrender_set_fillcolor(job, color);
-	}
+	if (pencolor != color)
+    	    gvrender_set_pencolor(job, pencolor);
+	if (fillcolor != color)
+	    gvrender_set_fillcolor(job, fillcolor);
+	color = pencolor;
 	/* if more than one color - then generate parallel beziers, one per color */
 	if (numc) {
 	    /* calculate and save offset vector spline and initialize first offset spline */
@@ -840,7 +840,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    colors = strdup(color);
 	    for (cnum = 0, color = strtok(colors, ":"); color;
 		 cnum++, color = strtok(0, ":")) {
-	        if (! ED_active(e) && ! ED_selected(e)) {
+	        if (! (ED_gui_state(e) & (GUI_STATE_ACTIVE | GUI_STATE_SELECTED))) {
 		    if (color[0]) {
 		        gvrender_set_pencolor(job, color);
 		        gvrender_set_fillcolor(job, color);
@@ -875,7 +875,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    free(offspl.list);
 	    free(tmpspl.list);
 	} else {
-	    if (! ED_active(e) && ! ED_selected(e)) {
+	    if (! (ED_gui_state(e) & (GUI_STATE_ACTIVE | GUI_STATE_SELECTED))) {
 	        if (color[0]) {
 		    gvrender_set_pencolor(job, color);
 		    gvrender_set_fillcolor(job, color);
@@ -1368,7 +1368,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     int i, c, filled;
     graph_t *sg;
     point A[4];
-    char *color, *str, **style;
+    char *color, *fillcolor, *pencolor, *str, **style;
     node_t *n;
     edge_t *e;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
@@ -1404,50 +1404,44 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		    break;
 		}
 	}
-	if (GD_active(sg)) {
-	    color = late_nnstring(sg, G_activepencolor, DEFAULT_ACTIVEPENCOLOR);
-    	    gvrender_set_pencolor(job, color);
-	    color = late_nnstring(sg, G_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
-	    gvrender_set_fillcolor(job, color);
+	fillcolor = pencolor = 0;
+	if (GD_gui_state(sg) & GUI_STATE_ACTIVE) {
+	    pencolor = late_nnstring(sg, G_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+	    fillcolor = late_nnstring(sg, G_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
+	    filled = TRUE;
 	}
-	else if (GD_selected(sg)) {
-	    color = late_nnstring(sg, G_activepencolor, DEFAULT_SELECTEDPENCOLOR);
-    	    gvrender_set_pencolor(job, color);
-	    color = late_nnstring(sg, G_activefillcolor, DEFAULT_SELECTEDFILLCOLOR);
-	    gvrender_set_fillcolor(job, color);
+	else if (GD_gui_state(sg) & GUI_STATE_SELECTED) {
+	    pencolor = late_nnstring(sg, G_activepencolor, DEFAULT_SELECTEDPENCOLOR);
+	    fillcolor = late_nnstring(sg, G_activefillcolor, DEFAULT_SELECTEDFILLCOLOR);
+	    filled = TRUE;
 	}
-	else if (GD_deleted(sg)) {
-	    color = late_nnstring(sg, G_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
-    	    gvrender_set_pencolor(job, color);
-	    color = late_nnstring(sg, G_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
-	    gvrender_set_fillcolor(job, color);
+	else if (GD_gui_state(sg) & GUI_STATE_DELETED) {
+	    pencolor = late_nnstring(sg, G_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
+	    fillcolor = late_nnstring(sg, G_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
+	    filled = TRUE;
 	}
-	else if (GD_visited(sg)) {
-	    color = late_nnstring(sg, G_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
-    	    gvrender_set_pencolor(job, color);
-	    color = late_nnstring(sg, G_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
-	    gvrender_set_fillcolor(job, color);
+	else if (GD_gui_state(sg) & GUI_STATE_VISITED) {
+	    pencolor = late_nnstring(sg, G_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
+	    fillcolor = late_nnstring(sg, G_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
+	    filled = TRUE;
 	}
 	else {
 	    if (((color = agget(sg, "pencolor")) != 0) && color[0])
-	        gvrender_set_pencolor(job, color);
+		pencolor = color;
 	    else if (((color = agget(sg, "color")) != 0) && color[0])
-	        gvrender_set_pencolor(job, color);
-	    /* bgcolor is supported for backward compatability */
-	    else if (((color = agget(sg, "bgcolor")) != 0) && color[0])
-	        gvrender_set_pencolor(job, color);
-    
-	    color = 0;
-	    if (((color = agget(sg, "fillcolor")) != 0) && color[0])
-	        gvrender_set_fillcolor(job, color);
-	    else if (((color = agget(sg, "color")) != 0) && color[0])
-	        gvrender_set_fillcolor(job, color);
+		fillcolor = pencolor = color;
 	    /* bgcolor is supported for backward compatability */
 	    else if (((color = agget(sg, "bgcolor")) != 0) && color[0]) {
+		fillcolor = pencolor = color;
 	        filled = TRUE;
-	        gvrender_set_fillcolor(job, color);
-	    }
+            }
+	    if (((color = agget(sg, "fillcolor")) != 0) && color[0])
+		fillcolor = color;
 	}
+	if (pencolor)
+    	    gvrender_set_pencolor(job, pencolor);
+	if (fillcolor)
+	    gvrender_set_fillcolor(job, fillcolor);
 	A[0] = GD_bb(sg).LL;
 	A[2] = GD_bb(sg).UR;
 	A[1].x = A[2].x;
@@ -1457,7 +1451,8 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if (late_int(sg, G_peripheries, 1, 0)) {
 	    gvrender_polygon(job, A, 4, filled);
 	} else if (filled) {
-	    gvrender_set_pencolor(job, str);
+	    if (fillcolor && fillcolor != pencolor)
+	        gvrender_set_pencolor(job, fillcolor);
 	    gvrender_polygon(job, A, 4, filled);
 	}
 	xdemitState = EMIT_DRAW;

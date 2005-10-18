@@ -303,6 +303,11 @@ extern "C" {
 	int size;
     } elist;
 
+#define GUI_STATE_ACTIVE    (1<<0)
+#define GUI_STATE_SELECTED  (1<<1)
+#define GUI_STATE_VISITED   (1<<2)
+#define GUI_STATE_DELETED   (1<<3)
+
 #define elist_fastapp(item,L) do {L.list[L.size++] = item; L.list[L.size] = NULL;} while(0)
 #define elist_append(item,L)  do {L.list = ALLOC(L.size + 2,L.list,edge_t*); L.list[L.size++] = item; L.list[L.size] = NULL;} while(0)
 #define alloc_elist(n,L)      do {L.size = 0; L.list = N_NEW(n + 1,edge_t*); } while (0)
@@ -314,9 +319,9 @@ extern "C" {
 	textlabel_t *label;	/* if the cluster has a title */
 	box bb;			/* bounding box */
 	point border[4];	/* sizes of margins for graph labels */
+	unsigned char gui_state; /* Graph state for GUI ops */
 	bool has_labels;
 	bool has_images;
-	bool active, selected, visited, deleted;  /* Graph state for GUI ops */
 	unsigned char charset; /* input character set */
 	int rankdir;
 	int ht1, ht2;		/* below and above extremal ranks */
@@ -365,7 +370,6 @@ extern "C" {
 
     } Agraphinfo_t;
 
-#define GD_active(g) (g)->u.active
 #define GD_alg(g) (g)->u.alg
 #define GD_bb(g) (g)->u.bb
 #define GD_border(g) (g)->u.border
@@ -373,12 +377,12 @@ extern "C" {
 #define GD_clust(g) (g)->u.clust
 #define GD_cluster_was_collapsed(g) (g)->u.cluster_was_collapsed
 #define GD_comp(g) (g)->u.comp
-#define GD_deleted(g) (g)->u.deleted
 #define GD_dist(g) (g)->u.dist
 #define GD_drawing(g) (g)->u.drawing
 #define GD_exact_ranksep(g) (g)->u.exact_ranksep
 #define GD_expanded(g) (g)->u.expanded
 #define GD_flags(g) (g)->u.flags
+#define GD_gui_state(g) (g)->u.gui_state
 #define GD_gvc(g) (g)->u.gvc
 #define GD_charset(g) (g)->u.charset
 #define GD_has_labels(g) (g)->u.has_labels
@@ -411,14 +415,12 @@ extern "C" {
 #define GD_rankleader(g) (g)->u.rankleader
 #define GD_ranksep(g) (g)->u.ranksep
 #define GD_rn(g) (g)->u.rn
-#define GD_selected(g) (g)->u.selected
 #define GD_set_type(g) (g)->u.set_type
 #define GD_label_pos(g) (g)->u.label_pos
 #define GD_showboxes(g) (g)->u.showboxes
 #define GD_spring(g) (g)->u.spring
 #define GD_sum_t(g) (g)->u.sum_t
 #define GD_t(g) (g)->u.t
-#define GD_visited(g) (g)->u.visited
 
     typedef struct Agnodeinfo_t {
 	shape_desc *shape;
@@ -430,8 +432,8 @@ extern "C" {
 	textlabel_t *label;
 	void *alg;
 	char state;
+	unsigned char gui_state; /* Node state for GUI ops */
 	bool clustnode;
-	bool active, selected, visited, deleted;  /* Node state for GUI ops */
 
 #ifndef DOT_ONLY
 	bool pinned;
@@ -473,15 +475,14 @@ extern "C" {
 
 #define ND_UF_parent(n) (n)->u.UF_parent
 #define ND_UF_size(n) (n)->u.UF_size
-#define ND_active(n) (n)->u.active
 #define ND_alg(n) (n)->u.alg
 #define ND_bb(n) (n)->u.bb
 #define ND_clust(n) (n)->u.clust
 #define ND_coord_i(n) (n)->u.coord
-#define ND_deleted(n) (n)->u.deleted
 #define ND_dist(n) (n)->u.dist
 #define ND_flat_in(n) (n)->u.flat_in
 #define ND_flat_out(n) (n)->u.flat_out
+#define ND_gui_state(n) (n)->u.gui_state
 #define ND_has_port(n) (n)->u.has_port
 #define ND_heapindex(n) (n)->u.heapindex
 #define ND_height(n) (n)->u.height
@@ -514,7 +515,6 @@ extern "C" {
 #define ND_rw_i(n) (n)->u.rw
 #define ND_save_in(n) (n)->u.save_in
 #define ND_save_out(n) (n)->u.save_out
-#define ND_selected(n) (n)->u.selected
 #define ND_shape(n) (n)->u.shape
 #define ND_shape_info(n) (n)->u.shape_info
 #define ND_showboxes(n) (n)->u.showboxes
@@ -522,7 +522,6 @@ extern "C" {
 #define ND_clustnode(n) (n)->u.clustnode
 #define ND_tree_in(n) (n)->u.tree_in
 #define ND_tree_out(n) (n)->u.tree_out
-#define ND_visited(n) (n)->u.visited
 #define ND_weight_class(n) (n)->u.weight_class
 #define ND_width(n) (n)->u.width
 #define ND_xsize(n) (n)->u.xsize
@@ -535,9 +534,9 @@ extern "C" {
 	char edge_type;
 	char adjacent;          /* true for flat edge with adjacent nodes */
 	char label_ontop;
+	unsigned char gui_state; /* Edge state for GUI ops */
 	edge_t *to_orig;	/* for dot's shapes.c    */
 	void *alg;
-	bool active, selected, visited, deleted;  /* Edge state for GUI ops */
 
 #ifndef DOT_ONLY
 	double factor;
@@ -557,23 +556,21 @@ extern "C" {
 
     } Agedgeinfo_t;
 
-#define ED_active(e) (e)->u.active
 #define ED_alg(e) (e)->u.alg
 #define ED_conc_opp_flag(e) (e)->u.conc_opp_flag
 #define ED_count(e) (e)->u.count
 #define ED_cutvalue(e) (e)->u.cutvalue
-#define ED_deleted(e) (e)->u.deleted
 #define ED_dist(e) (e)->u.dist
 #define ED_edge_type(e) (e)->u.edge_type
 #define ED_adjacent(e) (e)->u.adjacent
 #define ED_factor(e) (e)->u.factor
+#define ED_gui_state(e) (e)->u.gui_state
 #define ED_head_label(e) (e)->u.head_label
 #define ED_head_port(e) (e)->u.head_port
 #define ED_label(e) (e)->u.label
 #define ED_label_ontop(e) (e)->u.label_ontop
 #define ED_minlen(e) (e)->u.minlen
 #define ED_path(e) (e)->u.path
-#define ED_selected(e) (e)->u.selected
 #define ED_showboxes(e) (e)->u.showboxes
 #define ED_spl(e) (e)->u.spl
 #define ED_tail_label(e) (e)->u.tail_label
@@ -581,7 +578,6 @@ extern "C" {
 #define ED_to_orig(e) (e)->u.to_orig
 #define ED_to_virt(e) (e)->u.to_virt
 #define ED_tree_index(e) (e)->u.tree_index
-#define ED_visited(e) (e)->u.visited
 #define ED_weight(e) (e)->u.weight
 #define ED_xpenalty(e) (e)->u.xpenalty
 
