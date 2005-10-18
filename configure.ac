@@ -278,6 +278,9 @@ AM_CONDITIONAL(WITH_X, [test "X$no_x" != "Xyes"])
 dnl -----------------------------------
 dnl check for SWIG - needed for script-language bindings
 
+AC_ARG_ENABLE(swig,
+  [AC_HELP_STRING([--disable-swig], [don't support any swig-generated language bindings])])
+if test "x$enable_swig" != "xno"; then
 AC_CHECK_PROG(SWIG,swig,swig)
 if test "x$SWIG" != "x"; then
   SWIG_VERSION=`swig -version 2>&1 | grep Version | cut -d ' ' -f 3`
@@ -297,6 +300,7 @@ if test "x$SWIG" != "x"; then
   fi
 fi
 AC_SUBST(SWIG_VERSION)
+fi
 AM_CONDITIONAL(WITH_SWIG, [test "x$SWIG" != "x"])
 
 dnl -----------------------------------
@@ -496,8 +500,14 @@ AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for TCL
 
+AC_ARG_ENABLE(tcl,
+  [AC_HELP_STRING([--disable-tcl], [don't support tcl language bindings])])
+if test "x$enable_tcl" != "xno"; then
 # start by assuming we have it
 HAVE_TCL=1 
+else
+HAVE_TCL=0
+fi
 
 AC_ARG_WITH(tclsh,
     [  --with-tclsh=PROG       build graphviz for specific tclsh],
