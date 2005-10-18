@@ -455,7 +455,7 @@ dnl INCLUDES and LIBS for RUBY
 #fi
 #AC_SUBST(RUBY_INCLUDES)
 #AC_SUBST(RUBY_LIBS)
-#AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
+AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for TCL
