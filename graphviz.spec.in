@@ -10,7 +10,7 @@
 
 %define CSHARP  0
 %define GUILE   0
-%define IO      0
+%define _IO     0
 %define JAVA    0
 %define LUA     0
 %define OCAML   0
@@ -127,7 +127,7 @@ Guile extensions for %{name}.
 %endif
 
 #------------------------------------------------------------------
-%if %{IO}
+%if %{_IO}
 %package io
 Group:		Applications/Multimedia
 Summary:	Java extension for %{name}
