@@ -183,6 +183,8 @@ else
 	        *-apple-darwin* )
 	            CFLAGS="${CFLAGS} -fno-common -Wall"
 	            ;;
+	        *-freebsd* )
+	            CFLAGS="${CFLAGS} -Wstrict-prototypes -Wpointer-arith -Wall -ffast-math"
 	        * )
 	            CFLAGS="${CFLAGS} -Wno-unused-parameter -Wno-unknown-pragmas -Wstrict-prototypes -Wpointer-arith -Wall -ffast-math"
 	            ;;
