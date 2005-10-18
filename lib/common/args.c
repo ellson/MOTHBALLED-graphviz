@@ -23,10 +23,6 @@
  * Needs to be fixed before layout engines can be plugins.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "render.h"
 #include "tlayout.h"
 

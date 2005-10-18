@@ -26,14 +26,8 @@
 #include "config.h"
 #endif
 
-#include        <stdio.h>
-#include        <stdlib.h>
-
-#include	"geom.h"
-
 #include	"types.h"
 #include	"graph.h"
-
 #include        "gvplugin.h"
 #include        "gvcint.h"
 #include        "gvcproc.h"

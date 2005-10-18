@@ -17,13 +17,8 @@
 /* geometric functions (e.g. on points and boxes) with application to, but
  * no specific dependance on graphs */
 
-#include <stdio.h>
 #include "geom.h"
-#include "types.h"
-#include "graph.h"
 #include "geomprocs.h"
-#include "types.h"
-#include "graph.h"
 
 point pointof(int x, int y)
 {
@@ -354,51 +349,28 @@ int lineToBox(pointf p1, pointf p2, boxf b)
     return -1;
 }
 
-point ccwrotatep(point p, int ccwrot)
+static pointf rotatepf(pointf p, int cwrot)
 {
-    int x = p.x, y = p.y;
-    switch (ccwrot) {
-    case 0:
-	break;
-    case 90:
-	p.x = -y;
-	p.y = x;
-	break;
-    case 180:
-	p.x = x;
-	p.y = -y;
-	break;
-    case 270:
-	p.x = y;
-	p.y = x;
-	break;
-    default:
-	agerr (AGWARN, "unsupported ccw rotation: %d degrees\n", ccwrot);
+    static double sina, cosa;
+    static int last_cwrot;
+    pointf P;
+
+    if (cwrot != last_cwrot) {
+	sincos(cwrot / (2 * M_PI), &sina, &cosa);
+	last_cwrot = cwrot;
     }
-    return p;
+    P.x = p.x * cosa - p.y * sina;
+    P.y = p.y * cosa + p.x * sina;
+    return P;
 }
 
-pointf ccwrotatepf(pointf p, int ccwrot)
+static point rotatep(point p, int cwrot)
 {
-    double x = p.x, y = p.y;
-    switch (ccwrot) {
-    case 0:
-	break;
-    case 90:
-	p.x = -y;
-	p.y = x;
-	break;
-    case 180:
-	p.x = x;
-	p.y = -y;
-	break;
-    case 270:
-	p.x = y;
-	p.y = x;
-	break;
-    default:
-	agerr (AGWARN, "unsupported ccw rotation: %d degrees\n", ccwrot);
-    }
+    pointf pf;
+
+    P2PF(p, pf);
+    pf = rotatepf(pf, cwrot);
+    PF2P(pf, p);
     return p;
 }
 
@@ -421,7 +393,11 @@ point cwrotatep(point p, int cwrot)
 	p.y = x;
 	break;
     default:
-	agerr (AGWARN, "unsupported cw rotation: %d degrees\n", cwrot);
+	if (cwrot < 0)
+	    return ccwrotatep(p, -cwrot);
+        if (cwrot > 360)
+	    return cwrotatep(p, cwrot%360);
+	return rotatep(p, cwrot);
     }
     return p;
 }
@@ -445,7 +421,67 @@ pointf cwrotatepf(pointf p, int cwrot)
 	p.y = x;
 	break;
     default:
-	agerr (AGWARN, "unsupported cw rotation: %d degrees\n", cwrot);
+	if (cwrot < 0)
+	    return ccwrotatepf(p, -cwrot);
+        if (cwrot > 360)
+	    return cwrotatepf(p, cwrot%360);
+	return rotatepf(p, cwrot);
+    }
+    return p;
+}
+
+point ccwrotatep(point p, int ccwrot)
+{
+    int x = p.x, y = p.y;
+    switch (ccwrot) {
+    case 0:
+	break;
+    case 90:
+	p.x = -y;
+	p.y = x;
+	break;
+    case 180:
+	p.x = x;
+	p.y = -y;
+	break;
+    case 270:
+	p.x = y;
+	p.y = x;
+	break;
+    default:
+	if (ccwrot < 0)
+	    return cwrotatep(p, -ccwrot);
+        if (ccwrot > 360)
+	    return ccwrotatep(p, ccwrot%360);
+	return rotatep(p, 360-ccwrot);
+    }
+    return p;
+}
+
+pointf ccwrotatepf(pointf p, int ccwrot)
+{
+    double x = p.x, y = p.y;
+    switch (ccwrot) {
+    case 0:
+	break;
+    case 90:
+	p.x = -y;
+	p.y = x;
+	break;
+    case 180:
+	p.x = x;
+	p.y = -y;
+	break;
+    case 270:
+	p.x = y;
+	p.y = x;
+	break;
+    default:
+	if (ccwrot < 0)
+	    return cwrotatepf(p, -ccwrot);
+        if (ccwrot > 360)
+	    return ccwrotatepf(p, ccwrot%360);
+	return rotatepf(p, 360-ccwrot);
     }
     return p;
 }

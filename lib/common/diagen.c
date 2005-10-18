@@ -16,10 +16,9 @@
 
 
 
-#include <stdarg.h>
-
 #include "render.h"
 
+#include <stdarg.h>
 #ifdef HAVE_LIBZ
 #include <zlib.h>
 #ifdef MSWIN32

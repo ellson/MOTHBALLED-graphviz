@@ -15,7 +15,6 @@
 **********************************************************/
 
 #include <ctype.h>
-
 #include "render.h"
 
 /* FIG font modifiers */

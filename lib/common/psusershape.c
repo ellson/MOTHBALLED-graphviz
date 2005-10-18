@@ -19,8 +19,6 @@
 #endif
 
 #include <sys/stat.h>
-#include <stdio.h>
-
 #include "render.h"
 
 static int N_EPSF_files;

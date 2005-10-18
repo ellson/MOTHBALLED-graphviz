@@ -18,20 +18,15 @@
 #include "config.h"
 #endif
 
-#include	<stdio.h>
-#include	<stdlib.h>
 #include	<string.h>
 
 #ifndef DISABLE_LTDL
-#include	<sys/types.h>
 #include	<regex.h>
 #include	<sys/stat.h>
 #include	<unistd.h>
 #include	<glob.h>
 #endif
 
-#include        "geom.h"
-#include        "color.h"
 #include        "memory.h"
 
 #include        "const.h"

@@ -14,17 +14,13 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "render.h"
+#include "agxbuf.h"
+#include "htmltable.h"
 
 #ifndef MSWIN32
 #include <unistd.h>
 #endif
-
-#include "render.h"
-#include "agxbuf.h"
-#include "htmltable.h"
 
 /*
  *  a queue of nodes
