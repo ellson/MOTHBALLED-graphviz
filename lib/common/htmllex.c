@@ -19,7 +19,6 @@
 #include "htmltable.h"
 #include "htmlparse.h"
 #include "htmllex.h"
-#include "utils.h"
 #include "entities.h"
 #include <ctype.h>
 

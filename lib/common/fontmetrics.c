@@ -15,7 +15,6 @@
 **********************************************************/
 
 #include "render.h"
-#include "utils.h"
 
 //#ifdef HAVE_CAIRO
 #if 0

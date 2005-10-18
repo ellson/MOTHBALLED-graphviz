@@ -37,7 +37,6 @@
 #include "htmltable.h"
 #include "agxbuf.h"
 #include "pointset.h"
-#include "utils.h"
 #include <assert.h>
 
 #define DEFAULT_BORDER    1

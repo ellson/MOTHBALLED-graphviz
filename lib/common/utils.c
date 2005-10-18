@@ -18,7 +18,6 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
 #ifndef MSWIN32
 #include <unistd.h>
 #endif
