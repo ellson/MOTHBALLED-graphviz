@@ -137,6 +137,8 @@ void initDPI(graph_t * g)
     _dpi = GD_drawing(g)->dpi;
 }
 
+extern codegen_t GD_CodeGen;
+
 double textheight(int nlines, double fontsz)
 {
     if (Output_codegen == &GD_CodeGen) {
