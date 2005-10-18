@@ -32,7 +32,7 @@ BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
 #gv_io.cpp $(IO_hdr): gv.i
 #	$(SWIG) -c++ -io -o gv_io.cpp gv.i
 
-JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java
+JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java
 libgv_java_la_SOURCES = $(BASESOURCES) gv_java.cpp
 libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
 gv_java.cpp $(JAVA_hdr): gv.i
