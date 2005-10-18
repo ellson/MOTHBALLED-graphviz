@@ -18,29 +18,19 @@
 %define RUBY    0
 %define TCL     1
 
-%{?fc4: %{expand:
-%%define CSHARP  0
-%%define GUILE   1
-%%define JAVA    0
-%%define OCAML   0
-%%define PERL    1
-%%define PHP     0
-%%define PYTHON  1
-%%define RUBY    1
-%%define TCL     1
-}}
+%{?fc4: %{expand: %%define GUILE   1}}
+%{?fc4: %{expand: %%define PERL    1}}
+%{?fc4: %{expand: %%define PYTHON  1}}
+%{?fc4: %{expand: %%define RUBY    1}}
 
-%{?fc5: %{expand:
-%%define CSHARP  1
-%%define GUILE   1
-%%define JAVA    1
-%%define OCAML   1
-%%define PERL    1
-%%define PHP     1
-%%define PYTHON  1
-%%define RUBY    1
-%%define TCL     1
-}}
+%{?fc5: %{expand: %%define CSHARP  1}}
+%{?fc5: %{expand: %%define GUILE   1}}
+%{?fc5: %{expand: %%define JAVA    1}}
+%{?fc5: %{expand: %%define OCAML   1}}
+%{?fc5: %{expand: %%define PERL    1}}
+%{?fc5: %{expand: %%define PHP     1}}
+%{?fc5: %{expand: %%define PYTHON  1}}
+%{?fc5: %{expand: %%define RUBY    1}}
 
 Summary:	Graph Visualization Tools
 Name:		graphviz
