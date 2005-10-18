@@ -14,6 +14,10 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "types.h"
 #include "graph.h"
 #include "const.h"

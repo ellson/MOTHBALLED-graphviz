@@ -18,6 +18,10 @@
  * Written by Stephen North and Eleftherios Koutsofios.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "gvc.h"
 #include "globals.h"
 

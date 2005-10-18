@@ -23,23 +23,23 @@ NOINST_HDRS = gvcproc.h
 OBJS = gvrender.o gvlayout.o gvdevice.o gvcontext.o gvjobs.o \
 	gvplugin.o gvconfig.o gvevent.o gvtextlayout.o gvusershape.o gvc.o
 
-EXTRA_OBJS = no_builtins.o
+EXTRA_OBJS = no_builtins.o dot_builtins.o
 
-libgvc_builtins.a : $(OBJS)
+libgvc_dot_builtins.a : $(OBJS) dot_builtins.o
 	$(RM) libgvc_builtins.a
-	$(AR) cr libgvc_builtins.a $(OBJS)
+	$(AR) cr libgvc_builtins.a $(OBJS) dot_builtins.o
 	$(RANLIB) libgvc_builtins.a
 
-libgvc.a : $(OBJS) $(EXTRA_OBJS)
+libgvc.a : $(OBJS) no_builtins.o
 	$(RM) libgvc.a
-	$(AR) cr libgvc.a $(OBJS) $(EXTRA_OBJS)
+	$(AR) cr libgvc.a $(OBJS) no_builtins.o
 	$(RANLIB) libgvc.a
 
 install: libgvc.a libgvc_builtins.a
 	$(MKPATH) $(INCDIR)
 	$(INSTALL) $(INST_HDRS) $(INCDIR)
 	$(MKPATH) $(LIBDIR)
-	$(INSTALL) libgvc.a libgvc_builtins.a $(LIBDIR)
+	$(INSTALL) libgvc.a libgvc_dot_builtins.a $(LIBDIR)
 
 $(OBJS) $(EXTRA_OBJS): $(INST_HDRS) $(NOINST_HDRS)
 

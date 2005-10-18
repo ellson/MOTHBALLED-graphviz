@@ -4,6 +4,7 @@ Requires
 	webdot
 	doxygen
 	R
+	ImageMagick
 
 Require - but just use dot's stdin/stdout simplisticly
 	perl-GraphViz
