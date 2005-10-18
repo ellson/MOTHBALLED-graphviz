@@ -15,9 +15,6 @@
 **********************************************************/
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
 
 point svg_image_size(graph_t * g, char *shapeimagefile)
 {

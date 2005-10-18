@@ -15,10 +15,7 @@
 **********************************************************/
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include                "gd.h"
+#include "gd.h"
 
 static Dict_t *ImageDict;
 

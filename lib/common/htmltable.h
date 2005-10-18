@@ -21,11 +21,6 @@ extern "C" {
 #ifndef TABLE_H
 #define TABLE_H
 
-#include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-
 #define FIXED_FLAG 1
 #define HALIGN_RIGHT (1 << 1)
 #define HALIGN_LEFT (1 << 2)

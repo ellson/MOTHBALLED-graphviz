@@ -42,7 +42,6 @@
 #include "cdt.h"
 
 #include "gvplugin_render.h"
-#include "gvplugin.h"
 #include "gvcint.h"
 #include "gvcproc.h"
 

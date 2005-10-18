@@ -16,9 +16,6 @@
 
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
 
 
 static int Rankdir;

@@ -16,11 +16,8 @@
 
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include	"htmltable.h"
-#include	<limits.h>
+#include "htmltable.h"
+#include <limits.h>
 
 #ifndef DISABLE_CODEGENS
 extern codegen_t *Output_codegen;

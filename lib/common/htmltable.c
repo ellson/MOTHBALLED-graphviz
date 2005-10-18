@@ -34,9 +34,6 @@
  * handled correctly by the table.
  */
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
 #include "htmltable.h"
 #include "agxbuf.h"
 #include "pointset.h"

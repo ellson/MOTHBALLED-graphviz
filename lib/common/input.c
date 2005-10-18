@@ -14,12 +14,9 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include	<ctype.h>
+#include <ctype.h>
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include	"htmltable.h"
+#include "htmltable.h"
 
 char *Gvfilepath;
 

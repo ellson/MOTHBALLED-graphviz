@@ -16,10 +16,7 @@
 
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include	"pathplan.h"
+#include "pathplan.h"
 
 #ifdef UNUSED
 static box *bs = NULL;

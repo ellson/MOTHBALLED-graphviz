@@ -15,7 +15,7 @@
 **********************************************************/
 
 #include "render.h"
-#include "gvplugin.h"
+#include "gvcjob.h"
 #include "gvcint.h"
 #include "gvcproc.h"
 
@@ -501,6 +501,11 @@ static int toggle_fit_cb(GVJ_t * job)
     return 0;
 }
 
+static void gvevent_modify (GVJ_t * job, char *name, char *value)
+{
+    /* FIXME */
+}
+
 static void gvevent_delete (GVJ_t * job)
 {
     /* FIXME */
@@ -546,9 +551,9 @@ gvdevice_callbacks_t gvdevice_callbacks = {
     gvevent_button_press,
     gvevent_button_release,
     gvevent_motion,
+    gvevent_modify,
     gvevent_delete,
     gvevent_read,
     gvevent_layout,
     gvevent_render,
-    NULL,
 };

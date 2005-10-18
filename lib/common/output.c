@@ -15,10 +15,7 @@
 **********************************************************/
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include	"agxbuf.h"
+#include "agxbuf.h"
 
 static int e_arrows;		/* graph has edges with end arrows */
 static int s_arrows;		/* graph has edges with start arrows */

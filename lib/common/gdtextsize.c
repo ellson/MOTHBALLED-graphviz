@@ -15,10 +15,7 @@
 **********************************************************/
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include	"gd.h"
+#include "gd.h"
 
 /* sometimes fonts are stored under a different name */
 char *gd_alternate_fontlist(char *font)

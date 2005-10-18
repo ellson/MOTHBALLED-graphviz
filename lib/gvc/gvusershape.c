@@ -45,7 +45,6 @@
 #include "graph.h"
 
 #include "gvplugin_usershape.h"
-#include "gvplugin.h"
 #include "gvcint.h"
 #include "gvcproc.h"
 

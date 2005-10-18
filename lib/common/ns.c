@@ -20,9 +20,6 @@
  */
 
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
 
 static int init_graph(graph_t *);
 static void dfs_cutval(node_t * v, edge_t * par);

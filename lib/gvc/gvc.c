@@ -14,13 +14,16 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include "render.h"
+#include "types.h"
+#include "graph.h"
+#include "const.h"
 #include "gvplugin.h"
 #include "gvcint.h"
 #include "gvcproc.h"
 
 extern GVC_t *gvNEWcontext(char **info, char *user);
 extern char *gvUsername(void);
+extern int gvRenderJobs (GVC_t * gvc, graph_t * g);
 
 char *LibInfo[] = {
     "libgvc",		/* Program */

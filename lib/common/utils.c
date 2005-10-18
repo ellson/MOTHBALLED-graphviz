@@ -23,11 +23,8 @@
 #include <unistd.h>
 #endif
 
-#include "types.h"
-#include "graph.h"
+#include "render.h"
 #include "agxbuf.h"
-#include "memory.h"
-#include "utils.h"
 #include "htmltable.h"
 
 /*
