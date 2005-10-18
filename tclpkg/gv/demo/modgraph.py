@@ -31,5 +31,5 @@ for rec in modules:
          gv.edge(n, gv.node(G, usedby))
 
 gv.layout(G, 'dot')
-# The 'xlib' renderer is provided by graphviz-cairo
-gv.render(G, 'xlib')
+# The 'gtk' renderer is provided by graphviz-cairo
+gv.render(G, 'gtk')

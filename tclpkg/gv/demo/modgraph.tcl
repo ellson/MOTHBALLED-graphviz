@@ -32,4 +32,4 @@ foreach rec [split $modules \n] {
 }
 
 gv::layout $g dot
-gv::render $g xlib
+gv::render $g gtk
