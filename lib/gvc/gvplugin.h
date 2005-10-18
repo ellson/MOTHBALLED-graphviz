@@ -76,14 +76,6 @@ extern "C" {
 	gvplugin_api_t *apis;
     } gvplugin_library_t;
 
-
-    typedef struct {
-	const char *name;
-	void* address;
-    } lt_symlist_t;
-
-    extern const lt_symlist_t lt_preloaded_symbols[];
-
 #ifdef __cplusplus
 }
 #endif

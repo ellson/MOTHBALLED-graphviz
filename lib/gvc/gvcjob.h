@@ -23,10 +23,16 @@
 extern "C" {
 #endif
 
-#include "geom.h"
-#include "color.h"
+#include "types.h"
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
+
+    typedef struct gvdevice_engine_s gvdevice_engine_t;
+    typedef struct gvrender_engine_s gvrender_engine_t;
+    typedef struct gvlayout_engine_s gvlayout_engine_t;
+    typedef struct gvtextlayout_engine_s gvtextlayout_engine_t;
+    typedef struct gvusershape_engine_s gvusershape_engine_t;
+
 
     typedef enum { PEN_NONE, PEN_DASHED, PEN_DOTTED, PEN_SOLID } pen_type;
     typedef enum { FILL_NONE, FILL_SOLID } fill_type;
@@ -112,6 +118,13 @@ extern "C" {
         void (*modify) (GVJ_t * job, char *name, char *value);
     } gvdevice_callbacks_t;
 
+    typedef int (*gvevent_key_callback_t) (GVJ_t * job);
+
+    typedef struct gvevent_key_binding_s {
+	char *keystring;
+	gvevent_key_callback_t callback;
+    } gvevent_key_binding_t;
+
     struct GVJ_s {
 	GVC_t *gvc;		/* parent gvc */
 	GVJ_t *next;		/* linked list of jobs */
@@ -153,11 +166,13 @@ extern "C" {
 
         unsigned int width;     /* device width in device units */
         unsigned int height;    /* device height in device units */
+	box	boundingBox;	/* drawable region in device units */
 	int dpi;		/* device resolution device-units-per-inch */
+
+	boxf bb;		/* bb in graph units */
 	double zoom;		/* viewport zoom factor */
 	int rotation;		/* viewport rotation  0=portrait, 1=landscape */
 	pointf focus;		/* viewport focus in graph units */
-	box	boundingBox;	/* drawable region in device units */
 
 	boxf clip;		/* clip region in graph units */
 	boxf pageBoxClip;       /* intersection of clip and pageBox */
@@ -186,14 +201,12 @@ extern "C" {
 				/* e.g. "color" "red" "style" "filled" */
 
 	void *window;		/* display-specific data for gvrender plugin */
+
+        /* keybindings for keyboard events */
+	gvevent_key_binding_t *keybindings;
+	int numkeys;
+	void *keycodes;
     };
-
-    typedef int (*gvevent_key_callback_t) (GVJ_t * job);
-
-    typedef struct gvevent_key_binding_s {
-	char *keystring;
-	gvevent_key_callback_t callback;
-    } gvevent_key_binding_t;
 
 #ifdef __cplusplus
 }

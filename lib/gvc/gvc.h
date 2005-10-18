@@ -24,7 +24,7 @@
 #include "types.h"
 #include "globals.h"
 #include "graph.h"
-#include "gvplugin.h"
+#include "gvcext.h"
 
 #ifdef __cplusplus
 extern "C" {

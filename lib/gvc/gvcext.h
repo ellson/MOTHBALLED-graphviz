@@ -23,19 +23,15 @@
 extern "C" {
 #endif
 
-    typedef struct gvdevice_engine_s gvdevice_engine_t;
-    typedef struct gvrender_engine_s gvrender_engine_t;
-    typedef struct gvlayout_engine_s gvlayout_engine_t;
-    typedef struct gvtextlayout_engine_s gvtextlayout_engine_t;
-    typedef struct gvusershape_engine_s gvusershape_engine_t;
-
     typedef struct GVJ_s GVJ_t;
     typedef struct GVC_s GVC_t;
 
-#ifndef DISABLE_CODEGENS
-    typedef struct codegen_s codegen_t;
-    typedef struct codegen_info_s codegen_info_t;
-#endif
+    typedef struct {
+	const char *name;
+	void* address;
+    } lt_symlist_t;
+
+    extern const lt_symlist_t lt_preloaded_symbols[];
 
 #ifdef __cplusplus
 }

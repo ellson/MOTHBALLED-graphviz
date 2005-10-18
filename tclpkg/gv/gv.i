@@ -40,13 +40,21 @@ extern Agedge_t *edge(char *tname, Agnode_t *h);/* add edge, named tail which wi
 extern Agedge_t *edge(Agraph_t *g, char *tname, char *hname);/* add edge between named nodes, induced as necessary */
 
 /* set/get attribute of graph/node/edge */
-extern char *set(Agraph_t *g, char *attr, char *val=NULL);
-extern char *set(Agnode_t *n, char *attr, char *val=NULL);
-extern char *set(Agedge_t *e, char *attr, char *val=NULL);
+extern char *setv(Agraph_t *g, char *attr, char *val);
+extern char *setv(Agnode_t *n, char *attr, char *val);
+extern char *setv(Agedge_t *e, char *attr, char *val);
 
-extern char *set(Agraph_t *g, Agsym_t *a, char *val=NULL);
-extern char *set(Agnode_t *n, Agsym_t *a, char *val=NULL);
-extern char *set(Agedge_t *e, Agsym_t *a, char *val=NULL);
+extern char *setv(Agraph_t *g, Agsym_t *a, char *val);
+extern char *setv(Agnode_t *n, Agsym_t *a, char *val);
+extern char *setv(Agedge_t *e, Agsym_t *a, char *val);
+
+extern char *getv(Agraph_t *g, char *attr);
+extern char *getv(Agnode_t *n, char *attr);
+extern char *getv(Agedge_t *e, char *attr);
+
+extern char *getv(Agraph_t *g, Agsym_t *a);
+extern char *getv(Agnode_t *n, Agsym_t *a);
+extern char *getv(Agedge_t *e, Agsym_t *a);
 
 /* names */
 extern char *nameof(Agraph_t *g);
