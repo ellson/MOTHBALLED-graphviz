@@ -1262,23 +1262,16 @@ the given types.
         <TD>"obox"<TD><IMG SRC="a_obox.gif"></TR>
     <TR><TD>"open"<TD><IMG SRC="a_open.gif">
         <TD>"halfopen"<TD><IMG SRC="a_halfopen.gif"></TR>
-    <TR><TD>"vee"<TD><IMG SRC="a_open.gif">
     </TABLE>
   <P>
-  These are the basic set of backward-compatible arrow shapes.
-  In addition, there is a grammar of <A HREF=arrows.html>arrow shapes</A>
-  which can be used to describe a collection of 1260 arrows as
-  modifications of a primitive set of 9 shapes. The basic arrows shown
-  above contain all of the 9 primitive shapes
-  (<TT>box</TT>, <TT>crow</TT>, <TT>diamond</TT>,
-  <TT>dot</TT>, <TT>inv</TT>, <TT>none</tt>,
-  <TT>normal</tt>, <TT>tee</TT>, <TT>vee</TT>)
-  plus a few that can be derived from the grammar
-  (<TT>odot</TT>, <TT>invdot</TT>, <TT>invodot</TT>,
-  <TT>obox</TT>, <TT>odiamond</TT>) 
-  plus some supported as special cases for backward-compatibility
-  (<TT>ediamond</TT>, <TT>open</TT>, <TT>halfopen</TT>,
-  <TT>empty</TT>, <TT>invempty</TT>).
+  These are the basic arrow shapes. In addition, there is a grammar
+  of <A HREF=arrows.html>arrow shapes</A>
+  which can be used to describe a collection of 1200 arrow shapes as
+  modifications of a primitive set of 9 arrows. The basic arrows shown
+  above contain all of the primitive shapes (e.g., <TT>normal</TT>, 
+  <TT>box</TT>, <TT>tee</TT>, etc.)
+  plus ones that can be derived from the grammar (e.g., <TT>ediamond</TT>, 
+  <TT>inv</TT>).
 
 <DT><A NAME=k:clusterMode><STRONG>clusterMode</STRONG></A>
 <DD>"local","global","none"
@@ -1519,6 +1512,7 @@ the given types.
   At present, the recognized style names comprise 
   "dashed", "dotted", "solid", "invis" and "bold" for nodes and edges,
   and "filled", "diagonals" and "rounded" for nodes only.
+  The styles "filled" and "rounded" are recognized for clusters.
   Additional styles are available in
   device-dependent form. Style lists are passed to device drivers, which
   can use this to generate appropriate output.
