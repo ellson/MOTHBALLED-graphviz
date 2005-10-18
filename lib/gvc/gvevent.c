@@ -263,7 +263,7 @@ static void gvevent_enter_obj(GVJ_t * job)
 	    ND_active(n) = TRUE;
 	    a = agfindattr(n->graph->proto->n, s_tooltip);
 	    if (a)
-		job->active_tooltip = strdup_and_subst_node(agxget(e, a->index), n);
+		job->active_tooltip = strdup_and_subst_node(agxget(n, a->index), n);
 	    break;
         case AGEDGE:
 	    e = (edge_t*)obj;
