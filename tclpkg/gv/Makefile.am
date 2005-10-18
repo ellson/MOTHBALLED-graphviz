@@ -29,6 +29,8 @@ libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
 libgv_guile_la_LDFLAGS = -module
 gv_guile.cpp $(GUILE_hdr): gv.i
 	$(SWIG) -c++ -guile -o gv_guile.cpp gv.i
+	$(SED) -e 's/SWIG_GUILE_INIT_STATIC void/void/' <gv_guile.cpp >t
+	mv -f t gv_guile.cpp
 
 #pkgiodir = $(pkglibdir)/io
 #IO_hdr = 
