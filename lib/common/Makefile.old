@@ -19,11 +19,11 @@ DEFINES = -DHAVE_CONFIG_H
 AWKDIR = $(ROOT)/awk
 
 HDRS = colortbl.h const.h globals.h macros.h render.h \
-       renderprocs.h types.h utils.h
+       renderprocs.h types.h utils.h geom.h
 
 OBJS = args.o arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
        colxlate.o globals.o mifgen.o psusershape.o timing.o \
-       diagen.o hpglgen.o mpgen.o routespl.o utils.o \
+       diagen.o hpglgen.o mpgen.o routespl.o utils.o geom.o \
        emit.o htmllex.o ns.o shapes.o vrmlgen.o xdgen.o \
        figgen.o htmlparse.o output.o splines.o vtxgen.o \
        fontmetrics.o htmltable.o picgen.o strcasecmp.o \
@@ -48,7 +48,7 @@ htmllex.o : htmllex.c
 
 install: libcommon.a 
 	$(MKPATH) $(INCDIR)
-	$(INSTALL) const.h globals.h macros.h render.h renderprocs.h types.h utils.h $(INCDIR)
+	$(INSTALL) const.h globals.h macros.h render.h renderprocs.h types.h utils.h geom.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libcommon.a $(LIBDIR)
 
@@ -62,7 +62,7 @@ arrows.o colxlate.o diagen.o emit.o figgen.o fontmetrics.o gdgen.o \
 gdtextsize.o gdusershape.o globals.o hpglgen.o htmllex.o htmlparse.o \
 htmltable.o input.o labels.o mapgen.o mifgen.o mpgen.o ns.o output.o \
 picgen.o pointset.o postproc.o psgen.o psusershape.o routespl.o shapes.o \
-splines.o svggen.o svgusershape.o timing.o utils.o vrmlgen.o vtxgen.o \
+splines.o svggen.o svgusershape.o timing.o utils.o geom.o vrmlgen.o vtxgen.o \
 xdgen.o : types.h
 
 #ps.h : ps.txt
