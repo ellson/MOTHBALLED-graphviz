@@ -517,7 +517,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
 	    rankdir = RANKDIR_RL;
     }
     if (use_rankdir)
-	SET_RANKDIR (g, (rankdir << 2) || rankdir);
+	SET_RANKDIR (g, (rankdir << 2) | rankdir);
     else
 	SET_RANKDIR (g, (rankdir << 2));
 
