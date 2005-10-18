@@ -48,13 +48,13 @@ libgv_java_la_LDFLAGS = -module
 gv_java.cpp $(JAVA_hdr): gv.i
 	$(SWIG) -c++ -java -o gv_java.cpp gv.i
 
-#pkgluadir = $(pkglibdir)/lua
-#LUA_hdr = 
-#libgv_lua_la_SOURCES = $(BASESOURCES) gv_lua.cpp $(LUA_hdr)
-#libgv_lua_la_LIBADD = $(BASELIBS) @LUA_LIBS@
-#libgv_lua_la_LDFLAGS = -module
-#gv_lua.cpp $(LUA_hdr): gv.i
-#	$(SWIG) -c++ -lua -o gv_lua.cpp gv.i
+pkgluadir = $(pkglibdir)/lua
+LUA_hdr = 
+libgv_lua_la_SOURCES = $(BASESOURCES) gv_lua.cpp $(LUA_hdr)
+libgv_lua_la_LIBADD = $(BASELIBS) @LUA_LIBS@
+libgv_lua_la_LDFLAGS = -module
+gv_lua.cpp $(LUA_hdr): gv.i
+	$(SWIG) -c++ -lua -o gv_lua.cpp gv.i
 
 pkgocamldir = $(pkglibdir)/ocaml
 OCAML_hdr = gv.ml gv.mli
@@ -127,11 +127,11 @@ pkgjava_DATA = $(JAVA_hdr)
 pkgjava_LTLIBRARIES = libgv_java.la
 TESTS += test_java
 endif
-#if WITH_LUA
-#pkglua_DATA += $(LUA_hdr)
-#pkglua_LTLIBRARIES += libgv_lua.la
-#TESTS += test_lua
-#endif
+if WITH_LUA
+pkglua_DATA = $(LUA_hdr)
+pkglua_LTLIBRARIES = libgv_lua.la
+TESTS += test_lua
+endif
 if WITH_OCAML
 pkgocaml_DATA = $(OCAML_hdr)
 pkgocaml_LTLIBRARIES = libgv_ocaml.la
@@ -252,26 +252,6 @@ test_tcl: libgv_tcl.la
 		$(TCLSH) ./test.tcl)
 
 EXTRA_DIST = demo/* gv.cpp gv.i
-
-#EXTRA_DIST = demo/* gv.cpp gv.i \
-#	gv_csharp.cpp $(CSHARP_hdr) \
-#	gv_guile.cpp $(GUILE_hdr) \
-#	gv_java.cpp $(JAVA_hdr) \
-#	gv_ocaml.cpp $(OCAML_hdr) \
-#	gv_perl.cpp $(PERL_hdr) \
-#	gv_php.cpp $(PHP_hdr) \
-#	gv_python.cpp $(PYTHON_hdr) \
-#	gv_ruby.cpp $(RUBY_hdr) \
-#	gv_tcl.cpp $(TCL_hdr)
-
-#	gv_io.cpp $(IO_hdr) \
-#	gv_lua.cpp $(LUA_hdr) \
-#
-
-#CLEANFILES = test_*/*
-
-#DISTCLEANFILES = \
-#
 
 CLEANFILES = test_*/* \
 	gv_csharp.cpp $(CSHARP_hdr) \

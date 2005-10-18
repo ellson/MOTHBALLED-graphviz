@@ -19,6 +19,7 @@
 #include "gvc.h"
 %}
 
+%inline %{
 /* new graph objects */
 extern Agraph_t *graph(char *name);		/* new empty graph */
 extern Agraph_t *digraph(char *name);		/* new empty digraph */
@@ -145,3 +146,4 @@ extern void render(Agraph_t *g, char *format);
 extern void render(Agraph_t *g, char *format, char *filename);
 extern void render(Agraph_t *g, char *format, FILE *f);
 extern void render(Agraph_t *g, char *format, void **data);
+%}
