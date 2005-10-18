@@ -261,7 +261,7 @@ static void cleanup(void)
 }
 #endif
 
-char *gvUsername()
+char *gvUsername(void)
 {
     char *user = NULL;
 #ifndef MSWIN32
