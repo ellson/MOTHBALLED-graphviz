@@ -24,5 +24,11 @@ set g [gv::stringgraph "digraph G {a->b}"]
 gv::rm $g
 
 set g [gv::readgraph hello.dot]
+for {set n [gv::firstnode $g]} {[gv::ok $n]} {set n [gv::nextnode $g $n]} {
+    puts [gv::nameof $n]
+    for {set a [gv::firstattr $n]} {[gv::ok $a]} {set a [gv::nextattr $n $a]} {
+        puts "    [gv::nameof $a] [gv::set $n $a]"
+    }
+}
 gv::layout $g dot
 gv::writegraph $g hello.png png

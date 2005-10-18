@@ -395,6 +395,31 @@ char *nameof(Agsym_t *a)
 }
 
 //-------------------------------------------------
+bool ok(Agraph_t *g)
+{
+    if (!g) 
+	return false;
+    return true;
+}
+bool ok(Agnode_t *n)
+{
+    if (!n) 
+	return false;
+    return true;
+}
+bool ok(Agedge_t *e)
+{
+    if (!e) 
+	return false;
+    return true;
+}
+bool ok(Agsym_t *a)
+{
+    if (!a) 
+	return false;
+    return true;
+}
+//-------------------------------------------------
 Agraph_t *firstsubg(Agraph_t *g)
 {
     Agraph_t *mg;
@@ -606,7 +631,10 @@ Agsym_t *nextattr(Agraph_t *g, Agsym_t *a)
     if (!g || !a)
         return NULL;
     g = g->root;
-    i = a->index + 1;
+    for (i = 0; i < dtsize(g->univ->globattr->dict); i++)
+	if (a == g->univ->globattr->list[i])
+	    break;
+    i++;
     if (i > dtsize(g->univ->globattr->dict))
         return NULL;
     return g->univ->globattr->list[i];
@@ -632,7 +660,10 @@ Agsym_t *nextattr(Agnode_t *n, Agsym_t *a)
     if (!n || !a)
         return NULL;
     g = n->graph;
-    i = a->index + 1;
+    for (i = 0; i < dtsize(g->univ->nodeattr->dict); i++)
+	if (a == g->univ->nodeattr->list[i])
+	    break;
+    i++;
     if (i > dtsize(g->univ->nodeattr->dict))
         return NULL;
     return g->univ->nodeattr->list[i];
@@ -658,7 +689,10 @@ Agsym_t *nextattr(Agedge_t *e, Agsym_t *a)
     if (!e || !a)
         return NULL;
     g = e->tail->graph;
-    i = a->index + 1;
+    for (i = 0; i < dtsize(g->univ->edgeattr->dict); i++)
+	if (a == g->univ->edgeattr->list[i])
+	    break;
+    i++;
     if (i > dtsize(g->univ->edgeattr->dict))
         return NULL;
     return g->univ->edgeattr->list[i];

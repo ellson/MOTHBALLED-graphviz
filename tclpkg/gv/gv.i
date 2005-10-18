@@ -62,6 +62,11 @@ extern Agraph_t *graphof(Agnode_t *n);
 extern Agraph_t *rootof(Agraph_t *g);
 
 /* iterators */
+extern bool ok(Agraph_t *g);
+extern bool ok(Agnode_t *n);
+extern bool ok(Agedge_t *e);
+extern bool ok(Agsym_t *a);
+
 extern Agraph_t *firstsubg(Agraph_t *g);
 extern Agraph_t *nextsubg(Agraph_t *g, Agraph_t *sg);
 
