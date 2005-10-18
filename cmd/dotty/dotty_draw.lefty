@@ -307,10 +307,12 @@ dotty.protogt.movenodedraw = function (draws, dp) {
             if (draw[i].type == 'E' | draw[i].type == 'e') {
                 draw[i].c.x = draw[i].c.x + dp.x;
                 draw[i].c.y = draw[i].c.y + dp.y;
-            } else if (
-                draw[i].type == 'P' | draw[i].type == 'p' |
-                draw[i].type == 'L' | draw[i].type == 'B'
-            ) {
+            } else if (draw[i].type == 'P' | draw[i].type == 'p') {
+                for (j = 1; draw[i].ps[j]; j = j + 1) {
+                    draw[i].ps[j].x = draw[i].ps[j].x + dp.x;
+                    draw[i].ps[j].y = draw[i].ps[j].y + dp.y;
+                }
+            } else if (draw[i].type == 'L' | draw[i].type == 'B') {
                 for (j = 0; draw[i].ps[j]; j = j + 1) {
                     draw[i].ps[j].x = draw[i].ps[j].x + dp.x;
                     draw[i].ps[j].y = draw[i].ps[j].y + dp.y;
