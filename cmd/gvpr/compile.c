@@ -968,7 +968,6 @@ setval(Expr_t * pgm, Exnode_t * x, Exid_t * sym, Exref_t * ref,
 {
     Gpr_t *state;
     Agobj_t *objp;
-    Agsym_t *gsym;
     Agnode_t *np;
     int iv;
     int rv = 0;
@@ -1024,7 +1023,7 @@ setval(Expr_t * pgm, Exnode_t * x, Exid_t * sym, Exref_t * ref,
     }
 
     
-    return setattr(objp, gsym->name, v.string);
+    return setattr(objp, sym->name, v.string);
 }
 
 static int codePhase;

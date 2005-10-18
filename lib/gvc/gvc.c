@@ -49,7 +49,7 @@ int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
     }
     rc = gvlayout_select(gvc, engine);
     if (rc == NO_SUPPORT) {
-        fprintf(stderr, "Layout type: \"%s\" not recognized. Use one of:%s\n",
+        agerr (AGERR, "Layout type: \"%s\" not recognized. Use one of:%s\n",
                 engine, gvplugin_list(gvc, API_layout, engine));
         return -1;
     }
@@ -85,7 +85,7 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
     /* create a job for the required format */
     rc = gvrender_output_langname_job(gvc, format);
     if (rc == NO_SUPPORT) {
-        fprintf(stderr, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
+        agerr (AGERR, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
                 format, gvplugin_list(gvc, API_render, format));
         return -1;
     }

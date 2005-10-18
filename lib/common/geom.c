@@ -19,6 +19,8 @@
 
 #include <stdio.h>
 #include "geom.h"
+#include "types.h"
+#include "graph.h"
 #include "geomprocs.h"
 
 point pointof(int x, int y)
@@ -369,7 +371,7 @@ point ccwrotatep(point p, int ccwrot)
 	p.y = x;
 	break;
     default:
-	fprintf(stderr,"unsupported ccw rotation: %d degrees\n", ccwrot);
+	agerr (AGWARN, "unsupported ccw rotation: %d degrees\n", ccwrot);
     }
     return p;
 }
@@ -393,7 +395,7 @@ pointf ccwrotatepf(pointf p, int ccwrot)
 	p.y = x;
 	break;
     default:
-	fprintf(stderr,"unsupported ccw rotation: %d degrees\n", ccwrot);
+	agerr (AGWARN, "unsupported ccw rotation: %d degrees\n", ccwrot);
     }
     return p;
 }
@@ -417,7 +419,7 @@ point cwrotatep(point p, int cwrot)
 	p.y = x;
 	break;
     default:
-	fprintf(stderr,"unsupported cw rotation: %d degrees\n", cwrot);
+	agerr (AGWARN, "unsupported cw rotation: %d degrees\n", cwrot);
     }
     return p;
 }
@@ -441,7 +443,7 @@ pointf cwrotatepf(pointf p, int cwrot)
 	p.y = x;
 	break;
     default:
-	fprintf(stderr,"unsupported cw rotation: %d degrees\n", cwrot);
+	agerr (AGWARN, "unsupported cw rotation: %d degrees\n", cwrot);
     }
     return p;
 }

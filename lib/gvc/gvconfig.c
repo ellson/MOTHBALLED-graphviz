@@ -31,6 +31,7 @@
 
 #include        "geom.h"
 #include        "color.h"
+#include        "memory.h"
 
 #include        "const.h"
 #include        "types.h"
@@ -291,7 +292,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     libdir = gvconfig_libdir();
 
     /* load all libraries even if can't save config */
-    config_glob = malloc(strlen(libdir)
+    config_glob = gmalloc(strlen(libdir)
 			    + 1
 			    + strlen(plugin_glob)
 			    + 1);
@@ -483,7 +484,7 @@ void gvconfig(GVC_t * gvc, bool rescan)
     }
 
     if (! gvc->config_path) {
-        gvc->config_path = malloc(strlen(libdir) + 1 + strlen(config_file_name) + 1);
+        gvc->config_path = gmalloc(strlen(libdir) + 1 + strlen(config_file_name) + 1);
         strcpy(gvc->config_path, libdir);
         strcat(gvc->config_path, "/");
         strcat(gvc->config_path, config_file_name);
@@ -511,7 +512,7 @@ void gvconfig(GVC_t * gvc, bool rescan)
 	    agerr (AGERR,"failed to open %s for read.\n", gvc->config_path);
 	}
 	else {
-	    config_text = malloc(config_st.st_size + 1);
+	    config_text = gmalloc(config_st.st_size + 1);
 	    sz = fread(config_text, 1, config_st.st_size, f);
 	    if (sz == 0) {
 		agerr(AGERR,"%s is zero sized, or other read error.\n", gvc->config_path);

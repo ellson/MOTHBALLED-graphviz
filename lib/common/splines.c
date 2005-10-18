@@ -725,6 +725,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, bool merge)
 	    }
 	    break;
 	}
+	for (orig = e; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
 	if (n == orig->head)
 	    ED_head_port(orig).clip = FALSE;
 	else

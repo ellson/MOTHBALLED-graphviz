@@ -30,6 +30,7 @@
 #include <string.h>
 
 #include "geom.h"
+#include "memory.h"
 #include "pathplan.h"
 #include "color.h"
 #include "const.h"
@@ -205,7 +206,7 @@ static void gvrender_resolve_color(gvrender_features_t * features,
 	rc = colorxlate(name, color, features->color_type);
 	if (rc != COLOR_OK) {
 	    if (rc == COLOR_UNKNOWN) {
-		char *missedcolor = malloc(strlen(name) + 16);
+		char *missedcolor = gmalloc(strlen(name) + 16);
 		sprintf(missedcolor, "color %s", name);
 		if (emit_once(missedcolor))
 		    agerr(AGWARN, "%s is not a known color.\n", name);
@@ -816,7 +817,7 @@ void gvrender_polygon(GVJ_t * job, point * A, int n, int filled)
 	    int i;
 
 	    if (sizeAF < n)
-		AF = realloc(AF, n * sizeof(pointf));
+		AF = grealloc(AF, n * sizeof(pointf));
 /* end hack */
 	    for (i = 0; i < n; i++)
 		AF[i] = gvrender_pt(job, A[i]);
@@ -845,7 +846,7 @@ void gvrender_beziercurve(GVJ_t * job, pointf * AF, int n,
 	    int i;
 
 	    if (szAF2 < n) {
-		AF2 = realloc(AF2, n * sizeof(pointf));
+		AF2 = grealloc(AF2, n * sizeof(pointf));
 		szAF2 = n;
 	    }
 	    for (i = 0; i < n; i++)
@@ -862,7 +863,7 @@ void gvrender_beziercurve(GVJ_t * job, pointf * AF, int n,
 	int i;
 
 	if (szA < n) {
-	    A = realloc(A, n * sizeof(point));
+	    A = grealloc(A, n * sizeof(point));
 	    szA = n;
 	}
 	for (i = 0; i < n; i++)
@@ -886,7 +887,7 @@ void gvrender_polyline(GVJ_t * job, point * A, int n)
 	    int i;
 
 	    if (szAF < n) {
-		AF = realloc(AF, n * sizeof(pointf));
+		AF = grealloc(AF, n * sizeof(pointf));
 		szAF = n;
 	    }
 	    for (i = 0; i < n; i++)
@@ -935,7 +936,7 @@ void gvrender_user_shape(GVJ_t * job, char *name, point * A, int n,
     int i;
 
     if (szAF < n) {
-	AF = realloc(AF, n * sizeof(pointf));
+	AF = grealloc(AF, n * sizeof(pointf));
 	szAF = n;
     }
     for (i = 0; i < n; i++)

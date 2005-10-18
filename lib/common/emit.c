@@ -1613,7 +1613,7 @@ void use_library(char *name)
 static void emit_job(GVJ_t * job, graph_t * g)
 {
     if (!GD_drawing(g)) {
-	fprintf (stderr,"layout was not done\n");
+	agerr (AGERR, "layout was not done\n");
 	return;
     }
 
@@ -1767,7 +1767,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
     GVJ_t *job;
 
     if (!GD_drawing(g)) {
-        fprintf(stderr, "Layout was not done.  Missing layout plugins? \n");
+        agerr (AGERR, "Layout was not done.  Missing layout plugins? \n");
         return -1;
     }
 
@@ -1790,7 +1790,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
         }
         job->output_lang = gvrender_select(job, job->output_langname);
 	if (job->output_lang == NO_SUPPORT) {
-	    fprintf(stderr,"renderer for %s is unavailable\n", job->output_langname);
+	    agerr (AGERR, "renderer for %s is unavailable\n", job->output_langname);
 	    return -1;
 	}
 

@@ -27,6 +27,7 @@
 #endif
 
 #include        "geom.h"
+#include        "memory.h"
 
 #include        "types.h"
 #include        "graph.h"
@@ -88,7 +89,7 @@ bool gvplugin_install(GVC_t * gvc, api_t api,
     while (*pnext && strcmp(typestr, (*pnext)->typestr) == 0 && quality < (*pnext)->quality)
 	pnext = &((*pnext)->next);
 
-    plugin = malloc(sizeof(gvplugin_available_t));
+    plugin = GNEW(gvplugin_available_t);
     plugin->next = *pnext;
     *pnext = plugin;
     plugin->typestr = typestr;
@@ -117,9 +118,9 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     if (len > lenp) {
 	lenp = len+20;
 	if (p)
-	    p = realloc(p, lenp);
+	    p = grealloc(p, lenp);
 	else
-	    p = malloc(lenp);
+	    p = gmalloc(lenp);
     }
 	
     if (path[0] == '/') {
@@ -146,7 +147,7 @@ gvplugin_library_t *gvplugin_library_load(char *path)
 	agerr (AGERR,"invalid plugin path \"%s\"\n", p);
 	return NULL;
     }
-    sym = malloc(len + strlen(suffix) + 1);
+    sym = gmalloc(len + strlen(suffix) + 1);
     strcpy(sym, s+4);         /* strip leading "/lib" */
     s = strchr(sym, '.');     /* strip trailing ".so.0" */
     strcpy(s,suffix);         /* append "_LTX_library" */
@@ -267,7 +268,7 @@ static const char *append_buf(char sep, char *str, bool new)
     len = strlen(str) + 1;
     if (bufsz < (pos + len + 1)) {
 	bufsz += 4 * len;
-	buf = realloc(buf, bufsz);
+	buf = grealloc(buf, bufsz);
     }
     p = buf + pos;
     *p++ = sep;

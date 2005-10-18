@@ -813,6 +813,7 @@ allocate_ranks(graph_t * g)
 	GD_rank(g)[r].an = GD_rank(g)[r].n = cn[r];
 	GD_rank(g)[r].av = GD_rank(g)[r].v = N_NEW(cn[r] + 1, node_t *);
     }
+    free (cn);
 }
 
 /* install a node at the current right end of its rank */
