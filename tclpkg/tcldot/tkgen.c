@@ -526,7 +526,7 @@ static void tk_polyline(point * A, int n)
 
 static void tk_user_shape(char *name, point * A, int n, int filled)
 {
-    static boolean onetime = TRUE;
+    static bool onetime = TRUE;
     if (onetime) {
 	fprintf(stderr, "custom shapes not available with this driver\n");
 	onetime = FALSE;
