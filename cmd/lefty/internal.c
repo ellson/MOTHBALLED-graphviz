@@ -736,6 +736,7 @@ int Isleep (int argc, lvar_t *argv) {
 int Iecho (int argc, lvar_t *argv) {
     int i;
 
+    rtno = NULL;
     for (i = 0; i < argc; i++) {
         switch (Tgettype (argv[i].o)) {
         case T_STRING:  printf ("%s", Tgetstring (argv[i].o));   break;

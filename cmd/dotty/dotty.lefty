@@ -601,7 +601,10 @@ dotty.protogt.printorsave = function (gt, vt, otype, name, mode, ptype) {
         if (~(otype = ask ('print to', 'choice', 'file|printer')))
             return;
     if (otype == 'printer') {
-        name = '/tmp/dottyout.ps';
+	if (~getenv ('TMPDIR'))
+	    name = concat (getenv ('HOME'), '/.dottyout.ps');
+	else 
+	    name = concat (getenv ('TMPDIR'), '/.dottyout.ps', random (10000));
         if (getenv ('LEFTYWINSYS') ~= 'mswin' & ~pr)
             if (~(pr = ask ('printer command', 'string', 'lpr')))
                 return;
@@ -705,5 +708,5 @@ dotty.protogt.printorsave = function (gt, vt, otype, name, mode, ptype) {
     vt.canvas = canvas;
     destroywidget (pscanvas);
     if (otype == 'printer' & getenv ('LEFTYWINSYS') ~= 'mswin')
-        system (concat (pr, ' /tmp/dottyout.ps; rm /tmp/dottyout.ps'));
+	system (concat (pr, ' ', name, '; rm ',name));
 };
