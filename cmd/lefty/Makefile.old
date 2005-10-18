@@ -31,7 +31,6 @@ DEFINES=-DLEFTYPATH=\"$(LEFTYLIBDIR)\" -DHAVE_CONFIG_H
 
 INCS =	-I. -I$(ROOT) \
 	-I$(DOT2L) \
-	-I$(CS2L) \
 	-I$(X11INC) \
 	-I$(WM) \
 	-I$(WM)/libfilereq \
