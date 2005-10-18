@@ -1920,6 +1920,74 @@ static edge_t *bot_bound(edge_t * e, int side)
     return ans;
 }
 
+static double dist2(pointf p, pointf q) /* square of distance between p and q */
+{
+    double d0, d1;
+
+    d0 = p.x - q.x;
+    d1 = p.y - q.y;
+    return (d0 * d0 + d1 * d1);
+}
+
+point closest(splines * spl, point p)
+{
+    int i, j, k, besti, bestj;
+    double bestdist2, d2, dlow2, dhigh2; /* squares of distance */
+    double low, high, t;
+    pointf c[4], pt2, pt;
+    point rv;
+    bezier bz;
+
+    besti = bestj = -1;
+    bestdist2 = 1e+38;
+    P2PF(p, pt);
+    for (i = 0; i < spl->size; i++) {
+	bz = spl->list[i];
+	for (j = 0; j < bz.size; j++) {
+	    pointf b;
+
+	    b.x = bz.list[j].x;
+	    b.y = bz.list[j].y;
+	    d2 = dist2(b, pt);
+	    if ((bestj == -1) || (d2 < bestdist2)) {
+		besti = i;
+		bestj = j;
+		bestdist2 = d2;
+	    }
+	}
+    }
+
+    bz = spl->list[besti];
+    j = bestj / 3;
+    if (j >= spl->size)
+	j--;
+    for (k = 0; k < 4; k++) {
+	c[k].x = bz.list[j + k].x;
+	c[k].y = bz.list[j + k].y;
+    }
+    low = 0.0;
+    high = 1.0;
+    dlow2 = dist2(c[0], pt);
+    dhigh2 = dist2(c[3], pt);
+    do {
+	t = (low + high) / 2.0;
+	pt2 = Bezier(c, 3, t, NULL, NULL);
+	if (fabs(dlow2 - dhigh2) < 1.0)
+	    break;
+	if (fabs(high - low) < .00001)
+	    break;
+	if (dlow2 < dhigh2) {
+	    high = t;
+	    dhigh2 = dist2(pt2, pt);
+	} else {
+	    low = t;
+	    dlow2 = dist2(pt2, pt);
+	}
+    } while (1);
+    PF2P(pt2, rv);
+    return rv;
+}
+
 /* common routines */
 
 edge_t*

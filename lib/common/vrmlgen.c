@@ -91,6 +91,13 @@ typedef struct context_t {
 static context_t cstk[MAXNEST];
 static int SP;
 
+static double DIST2(pointf p, point q)
+{
+    double delx = p.x - q.x;
+    double dely = p.y - q.y;
+    return (delx*delx + dely*dely);
+}
+
 static char *nodeURL(node_t * n, char *buf)
 {
     sprintf(buf, "node%d.png", n->id);
@@ -480,6 +487,16 @@ static void vrml_textline(point p, textline_t * line)
     }
 }
 
+static double
+idist2 (point p0, point p1)
+{
+    double delx, dely;
+
+    delx = p0.x - p1.x;
+    dely = p0.y - p1.y;
+    return (delx*delx + dely*dely);
+}
+
 /* interpolate_zcoord:
  * Given 2 points in 3D p = (fst.x,fst.y,fstz) and q = (snd.x, snd.y, sndz),
  * and a point p1 in the xy plane lying on the line segment connecting 
@@ -502,8 +519,8 @@ interpolate_zcoord(pointf p1, point fst, double fstz, point snd, double sndz)
 	    rv = fstz + (sndz - fstz) * (p1.y - fst.y) / (snd.y - fst.y);
     } 
     else {
-	len = DIST(fst, snd);
-	d = DIST(p1, fst)/len;
+	len = sqrt(idist2(fst, snd));
+	d = sqrt(DIST2(p1, fst))/len;
 	rv = fstz + d*(sndz - fstz);
     }
     return rv;
@@ -552,8 +569,8 @@ doSegment (point* A, point p0, double z0, point p1, double z1)
     dely = p0.y - p1.y;
     delz = z0 - z1;
     EdgeLen = sqrt(delx*delx + dely*dely + delz*delz);
-    d0 = DIST(A[0],p0);
-    d1 = DIST(A[3],p1);
+    d0 = sqrt(idist2(A[0],p0));
+    d1 = sqrt(idist2(A[3],p1));
     CylHt = EdgeLen - d0 - d1;
     TailHt = HeadHt = 0;
 
@@ -640,15 +657,15 @@ doArrowhead (point* A)
 
     p0.x = (A[0].x + A[2].x)/2.0;
     p0.y = (A[0].y + A[2].y)/2.0;
-    rad = DIST(A[0],A[2])/2.0;
-    ht = DIST(p0,A[1]);
+    rad = sqrt(idist2(A[0],A[2]))/2.0;
+    ht = sqrt(DIST2(p0,A[1]));
 
     y = (CylHt + ht)/2.0;
 
     tp = ND_coord_i(Curedge->tail);
     hp = ND_coord_i(Curedge->head);
     fprintf(Output_file, "Transform {\n");
-    if (DIST2(A[1], tp) < DIST2(A[1], hp)) {
+    if (idist2(A[1], tp) < idist2(A[1], hp)) {
 	TailHt = ht;
 	fprintf(Output_file, "  translation 0 -%.3f 0\n", y);
 	fprintf(Output_file, "  rotation 0 0 1 %.3f\n", PI);
