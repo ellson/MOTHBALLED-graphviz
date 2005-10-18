@@ -468,6 +468,8 @@ Private Sub optPropScope_LostFocus()
     e = Switch(optLayoutEngine.Text = "dot", DOT, _
                 optLayoutEngine.Text = "neato", NEATO, _
                 optLayoutEngine.Text = "twopi", TWOPI, _
+                optLayoutEngine.Text = "circo", CIRCO, _
+                optLayoutEngine.Text = "fdp", FDP, _
                 True, ALL_ENGINES)
         
     s = Switch(optPropScope.Text = "Graph", GRAPH, _
@@ -536,7 +538,9 @@ Private Sub Form_Load()
     Set engineHelp = New Collection
     engineHelp.Add "Hierarchical drawing of directed graphs", "dot"
     engineHelp.Add "Force layout of undirected graphs", "neato"
-    engineHelp.Add "Circular layout", "twopi"
+    engineHelp.Add "Radial layout", "twopi"
+    engineHelp.Add "Circular layout", "circo"
+    engineHelp.Add "Force layout of undirected graphs", "fdp"
     
     optPropScope.AddItem "Graph"
     optPropScope.AddItem "Node"
@@ -547,6 +551,8 @@ Private Sub Form_Load()
     optLayoutEngine.AddItem "dot"
     optLayoutEngine.AddItem "neato"
     optLayoutEngine.AddItem "twopi"
+    optLayoutEngine.AddItem "circo"
+    optLayoutEngine.AddItem "fdp"
     
     optOutputType.AddItem "ps"
     optOutputType.AddItem "ps2"
