@@ -298,7 +298,10 @@ static void cloneNode(Agnode_t * old, Agnode_t * new)
     ND_coord_i(new).x = POINTS(ND_pos(old)[0]);
     ND_coord_i(new).y = POINTS(ND_pos(old)[1]);
     ND_height(new) = ND_height(old);
+    ND_ht_i(new) = ND_ht_i(old);
     ND_width(new) = ND_width(old);
+    ND_lw_i(new) = ND_lw_i(old);
+    ND_rw_i(new) = ND_rw_i(old);
     ND_shape(new) = ND_shape(old);
     ND_shape_info(new) = ND_shape_info(old);
 }
@@ -601,6 +604,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt)
 
     /* do common initialization. This will handle root's label. */
     init_graph(root, FALSE);
+    State = GVSPLINES;
 
     gnames = dtopen(&pairdisc, Dtoset);
     nnames = dtopen(&pairdisc, Dtoset);
@@ -671,7 +675,6 @@ static Agraph_t **readGraphs(int *cp)
     /* set various state values */
     PSinputscale = POINTS_PER_INCH;
     Nop = 2;
-    State = GVSPLINES;
 
     newIngraph(&ig, myFiles, agread);
     while ((g = nextGraph(&ig)) != 0) {
