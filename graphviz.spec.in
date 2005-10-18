@@ -6,8 +6,6 @@
 
 # select packages according to dist (set in .rpmmacros on each build host)
 
-%{?dist: %{expand: %%define %dist 1}}
-
 %define CSHARP  0
 %define GUILE   0
 %define _IO     0
