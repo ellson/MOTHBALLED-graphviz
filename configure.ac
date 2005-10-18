@@ -394,7 +394,7 @@ save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $PHP_INCLUDES"
 AC_CHECK_HEADER(zend.h,,[
   AC_MSG_WARN([Unable to find header zend.h. The PHP packages will not be built])
-  PHP=i
+  PHP=
   ])
 CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(PHP_INCLUDES)

@@ -24,7 +24,7 @@
 %%define JAVA    0
 %%define OCAML   0
 %%define PERL    1
-%%define PHP     1
+%%define PHP     0
 %%define PYTHON  1
 %%define RUBY    1
 %%define TCL     1
