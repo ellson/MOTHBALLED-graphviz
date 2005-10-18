@@ -109,3 +109,4 @@ extern void layout(Agraph_t *g, char *engine);
 
 extern void render(Agraph_t *g, char *format, char *filename);
 extern void render(Agraph_t *g, char *format, FILE *f);
+extern void render(Agraph_t *g, char *format, void **data);

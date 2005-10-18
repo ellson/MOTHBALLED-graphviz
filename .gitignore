@@ -122,6 +122,7 @@ tclpkg/gv/SWIGTYPE_p_Agnode_t.java
 tclpkg/gv/SWIGTYPE_p_Agraph_t.java
 tclpkg/gv/SWIGTYPE_p_Agsym_t.java
 tclpkg/gv/SWIGTYPE_p_FILE.java
+tclpkg/gv/SWIGTYPE_p_p_void.java
 tclpkg/gv/gv.java
 tclpkg/gv/gv.php
 tclpkg/gv/gv.pm

@@ -747,3 +747,12 @@ void render(Agraph_t *g, char *format, FILE *f)
 
     err = gvRender(gvc, g, format, f);
 }
+
+void render(Agraph_t *g, char *format, void **data)
+{
+//    FIXME
+//
+//    int err;
+//
+//    err = gvRenderData(gvc, g, format, data);
+}
