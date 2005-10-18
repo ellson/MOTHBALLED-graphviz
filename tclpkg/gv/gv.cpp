@@ -116,25 +116,40 @@ Agedge_t *edge(Agnode_t *t, Agnode_t *h)
 //-------------------------------------------------
 char *set(Agraph_t *g, Agsym_t *a)
 {
+    char *val;
+
     if (!g || !a)
 	return NULL;
-    return agxget(g, a->index);
+    val = agxget(g, a->index);
+    if (!val)
+	return "";
+    return val;
 }
 char *set(Agraph_t *g, char *attr)
 {
     Agsym_t *a;
+    char *val;
 
     if (!g || !attr)
 	return NULL;
     a = agfindattr(g->root, attr);
-    return agxget(g, a->index);
+    if (!a)
+	return "";
+    val = agxget(g, a->index);
+    if (!val)
+	return "";
+    return val;
 }
 char *set(Agraph_t *g, Agsym_t *a, char *val)
 {
     if (!g || !a)
 	return NULL;
-    if (!val)
-	return agxget(g, a->index);
+    if (!val) {
+	val = agxget(g, a->index);
+    	if (!val)
+		return "";
+    	return val;
+    }
     agxset(g, a->index, val);
     return val;
 }
@@ -147,35 +162,54 @@ char *set(Agraph_t *g, char *attr, char *val)
     a = agfindattr(g->root, attr);
     if (!a)
         a = agraphattr(g->root, attr, "");
-    if (!val)
-	return agxget(g, a->index);
+    if (!val) {
+	val = agxget(g, a->index);
+    	if (!val)
+	    return "";
+    	return val;
+    }
     agxset(g, a->index, val);
     return val;
 }
 //-------------------------------------------------
 char *set(Agnode_t *n, Agsym_t *a)
 {
+    char *val;
+
     if (!n || !a)
 	return NULL;
-    return agxget(n, a->index);
+    val = agxget(n, a->index);
+    if (!val)
+	return "";
+    return val;
 }
 char *set(Agnode_t *n, char *attr)
 {
     Agraph_t *g;
     Agsym_t *a;
+    char *val;
 
     if (!n || !attr)
 	return NULL;
     g = n->graph->root;
     a = agfindattr(g->proto->n, attr);
-    return agxget(n, a->index);
+    if (!a)
+	return "";
+    val = agxget(n, a->index);
+    if (!val)
+	return "";
+    return val;
 }
 char *set(Agnode_t *n, Agsym_t *a, char *val)
 {
     if (!n || !a)
 	return NULL;
-    if (!val)
-	return agxget(n, a->index);
+    if (!val) {
+        val = agxget(n, a->index);
+        if (!val)
+	    return "";
+        return val;
+    }
     agxset(n, a->index, val);
     return val;
 }
@@ -190,35 +224,54 @@ char *set(Agnode_t *n, char *attr, char *val)
     a = agfindattr(g->proto->n, attr);
     if (!a)
         a = agnodeattr(g, attr, "");
-    if (!val)
-	return agxget(n, a->index);
+    if (!val) {
+        val = agxget(n, a->index);
+        if (!val)
+	    return "";
+        return val;
+    }
     agxset(n, a->index, val);
     return val;
 }
 //-------------------------------------------------
 char *set(Agedge_t *e, Agsym_t *a)
 {
+    char *val;
+
     if (!e || !a)
 	return NULL;
-    return agxget(e, a->index);
+    val =  agxget(e, a->index);
+    if (!val)
+	return "";
+    return val;
 }
 char *set(Agedge_t *e, char *attr)
 {
     Agraph_t *g;
     Agsym_t *a;
+    char *val;
 
     if (!e || !attr)
 	return NULL;
     g = e->head->graph->root;
     a = agfindattr(g->proto->e, attr);
-    return agxget(e, a->index);
+    if (!a)
+	return "";
+    val =  agxget(e, a->index);
+    if (!val)
+	return "";
+    return val;
 }
 char *set(Agedge_t *e, Agsym_t *a, char *val)
 {
     if (!e || !a)
 	return NULL;
-    if (!val)
-	return agxget(e, a->index);
+    if (!val) {
+        val = agxget(e, a->index);
+        if (!val)
+	    return "";
+        return val;
+    }
     agxset(e, a->index, val);
     return val;
 }
@@ -233,8 +286,12 @@ char *set(Agedge_t *e, char *attr, char *val)
     a = agfindattr(g->proto->e, attr);
     if (!a)
         a = agnodeattr(g, attr, "");
-    if (!val)
-	return agxget(e, a->index);
+    if (!val) {
+        val = agxget(e, a->index);
+        if (!val)
+	    return "";
+        return val;
+    }
     agxset(e, a->index, val);
     return val;
 }
