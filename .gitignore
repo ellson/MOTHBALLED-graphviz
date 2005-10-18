@@ -171,6 +171,7 @@ tclpkg/gv/gvPINVOKE.cs
 tclpkg/gv/gv_csharp.cpp
 tclpkg/gv/gv_guile.cpp
 tclpkg/gv/gv_java.cpp
+tclpkg/gv/gv_lua.cpp
 tclpkg/gv/gv_ocaml.cpp
 tclpkg/gv/gv_perl.cpp
 tclpkg/gv/gv_php.cpp
