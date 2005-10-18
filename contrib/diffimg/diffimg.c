@@ -21,7 +21,7 @@
  * the resulting image will be black, otherwise it will have
  * regions of non-black where the images differ.
  *
- * Currently supports: .png, .gif, .jpg
+ * Currently supports: .png, .gif, .jpg, and .ps by using ghostscript
  *
  * John Ellson <ellson@research.att.com>
  */
@@ -54,12 +54,12 @@ static gdImagePtr imageLoad (char *filename)
     ext = strrchr(filename, '.');
     if (!ext) {
         fprintf(stderr, "Filename \"%s\" has no file extension.\n", filename);
-        exit(1);
+        exit(-1);
     }
     rc = stat(filename, &statbuf);
     if (rc) {
 	 fprintf(stderr, "Failed to stat \"%s\"\n", filename);
-         exit(1);
+         exit(-1);
     }
     if (strcasecmp(ext, ".ps") == 0) {
 	ext = ".png";
@@ -80,14 +80,14 @@ static gdImagePtr imageLoad (char *filename)
 	free(tmp);
         if (!f) {
             fprintf(stderr, "Failed to open converted \"%s%s\"\n", filename, ext);
-            exit(1);
+            exit(-1);
         }
     }
     else {
         f = fopen(filename, "rb");
         if (!f) {
             fprintf(stderr, "Failed to open \"%s\"\n", filename);
-            exit(1);
+            exit(-1);
         }
     }
     im = 0;
@@ -100,13 +100,14 @@ static gdImagePtr imageLoad (char *filename)
     fclose(f);
     if (!im) {
         fprintf(stderr, "Loading image from file  \"%s\" failed!\n", filename);
-        exit(1);
+        exit(-1);
     }
     return im;
 }
 
 static bool imageDiff (gdImagePtr A, gdImagePtr B, gdImagePtr C,
-	int w, int h, unsigned char black, unsigned char white)
+	unsigned int w, unsigned int h,
+	unsigned char black, unsigned char white)
 {
     unsigned int x, y;
     bool d, rc;
@@ -127,27 +128,31 @@ int main(int argc, char **argv)
 {
     gdImagePtr A, B, C;
     unsigned char black, white;
+    unsigned int minSX, minSY, maxSX, maxSY;
     FILE *f;
     bool rc;
 
     if (argc < 3) {
         fprintf(stderr, "Usage: diffimg image1 image2 [outimage]\n");
-        exit(1);
+        exit(-1);
     }
     A = imageLoad(argv[1]);
     B = imageLoad(argv[2]);
 
-    C = gdImageCreatePalette (
-	(gdImageSX(A) > gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B),
-	(gdImageSY(A) > gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B));
+    minSX = (gdImageSX(A) < gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B);
+    minSY = (gdImageSY(A) < gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B);
+    maxSX = (gdImageSX(A) > gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B);
+    maxSY = (gdImageSX(A) > gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B);
+    
+    C = gdImageCreatePalette (maxSX, maxSY);
 
     white = gdImageColorAllocate(C, gdRedMax, gdGreenMax, gdBlueMax);
     black = gdImageColorAllocate(C, 0, 0, 0);
 
-    rc = imageDiff (A, B, C, 
-	(gdImageSX(A) < gdImageSX(B)) ? gdImageSX(A) : gdImageSX(B),
-	(gdImageSY(A) < gdImageSY(B)) ? gdImageSY(A) : gdImageSY(B),
-	black, white);
+    if (maxSX > minSX && maxSY > minSY)
+	gdImageFilledRectangle(C, minSX, minSY, maxSX-1, maxSY-1, black);
+
+    rc = imageDiff (A, B, C, minSX, minSY, black, white);
 
     if ((argc > 3) && ((f = fopen(argv[3], "wb")))) {
 	gdImagePng (C, f);
