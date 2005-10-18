@@ -1094,7 +1094,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    tcldot_layout (gvc, g, (argc > 3) ? argv[3] : (char *) NULL);
 
 	/* render graph TK canvas commands */
-	gvLayoutJobs(gvc, g);
+	gvRenderJobs(gvc, g);
 
 	gvrender_delete_jobs(gvc);
 	return TCL_OK;
