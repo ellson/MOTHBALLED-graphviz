@@ -20,7 +20,7 @@
 
 %{?fc4: %{expand:
 %%define CSHARP  0
-%%define GUILE   0
+%%define GUILE   1
 %%define JAVA    0
 %%define OCAML   0
 %%define PERL    1
