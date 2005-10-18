@@ -22,11 +22,6 @@
 extern codegen_t VRML_CodeGen;
 #endif
 
-#define FILLED 	(1 << 0)
-#define ROUNDED (1 << 1)
-#define DIAGONALS (1 << 2)
-#define AUXLABELS (1 << 3)
-#define INVISIBLE (1 << 4)
 #define RBCONST 12
 #define RBCURVE .5
 
@@ -233,6 +228,18 @@ void pencolor(GVJ_t * job, node_t * n)
 }
 
 static
+char* findPen(node_t * n)
+{
+    char *color;
+
+    color = late_nnstring(n, N_color, "");
+    if (color[0])
+	return color;
+    else
+	return DEFAULT_COLOR;
+}
+
+static
 char *findFill(node_t * n)
 {
     char *color;
@@ -337,8 +344,8 @@ static point interpolate(double t, point p0, point p1)
     return rv;
 }
 
-static void round_corners(GVJ_t * job, node_t * n, point * A, int sides,
-			  int style)
+void round_corners(GVJ_t * job, char* fillc, char* penc, point * A, 
+			int sides, int style)
 {
     point *B, C[2], p0, p1;
     pointf BF[4];
@@ -378,7 +385,6 @@ static void round_corners(GVJ_t * job, node_t * n, point * A, int sides,
     if (mode == ROUNDED) {
 	if (style & FILLED) {
 	    int j = 0;
-	    char* fillc = findFill(n);
 	    point* pts = N_GNEW(2*sides,point);
     	    gvrender_begin_context(job);
 	    gvrender_set_pencolor (job, fillc);
@@ -396,7 +402,7 @@ static void round_corners(GVJ_t * job, node_t * n, point * A, int sides,
 	    }
     	    gvrender_end_context(job);
 	}
-	pencolor(job, n);
+	gvrender_set_pencolor(job, penc);
 	for (seg = 0; seg < sides; seg++) {
 	    gvrender_polyline(job, B + 4 * seg + 1, 2);
 
@@ -406,9 +412,9 @@ static void round_corners(GVJ_t * job, node_t * n, point * A, int sides,
 	    gvrender_beziercurve(job, BF, 4, FALSE, FALSE, FALSE);
 	}
     } else {			/* diagonals are weird.  rewrite someday. */
-	pencolor(job, n);
+	gvrender_set_pencolor(job, penc);
 	if (style & FILLED)
-	    gvrender_set_fillcolor(job, findFill(n)); /* emit fill color */
+	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
 	gvrender_polygon(job, A, sides, style & FILLED);
 	for (seg = 0; seg < sides; seg++) {
 #ifdef NOTDEF
@@ -422,6 +428,12 @@ static void round_corners(GVJ_t * job, node_t * n, point * A, int sides,
 	}
     }
     free(B);
+}
+
+static void 
+node_round_corners(GVJ_t * job, node_t* n, point * A, int sides, int style)
+{
+    round_corners(job, findFill(n), findPen(n), A, sides, style);
 }
 
 /*=============================poly start=========================*/
@@ -1303,7 +1315,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 		Mcircle_hack(job, n);
 	    }
 	} else if (style & (ROUNDED | DIAGONALS)) {
-	    round_corners(job, n, A, sides, style);
+	    node_round_corners(job, n, A, sides, style);
 	} else {
 	    gvrender_polygon(job, A, sides, filled);
 	}
@@ -1872,7 +1884,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
     if (streq(ND_shape(n)->name, "Mrecord"))
 	style |= ROUNDED;
     if (style & (ROUNDED | DIAGONALS))
-	round_corners(job, n, A, 4, ROUNDED);
+	node_round_corners(job, n, A, 4, ROUNDED);
     else
 	gvrender_polygon(job, A, 4, style & FILLED);
     xdemitState = EMIT_LABEL;

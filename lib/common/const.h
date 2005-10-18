@@ -232,6 +232,13 @@
 #define CHAR_LATIN1	1
 #define CHAR_BIG5	2
 
+/* style flags */
+#define FILLED 	(1 << 0)
+#define ROUNDED (1 << 1)
+#define DIAGONALS (1 << 2)
+#define AUXLABELS (1 << 3)
+#define INVISIBLE (1 << 4)
+
 /* user-specified node position: ND_pinned */
 #define P_SET    1		/* position supplied by user */
 #define P_FIX    2		/* position fixed during topological layout */

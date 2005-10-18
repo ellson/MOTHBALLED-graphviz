@@ -1363,7 +1363,7 @@ void emit_jobs_eof(GVC_t * gvc)
 
 void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 {
-    int i, c, filled;
+    int i, c, istyle, filled;
     graph_t *sg;
     point A[4];
     char *color, *fillcolor, *pencolor, *str, **style;
@@ -1393,13 +1393,17 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	}
 	gvrender_begin_context(job);
 	filled = FALSE;
+	istyle = 0;
 	xdemitState = EMIT_DRAW;
 	if (((str = agget(sg, "style")) != 0) && str[0]) {
 	    gvrender_set_style(job, (style = parse_style(str)));
 	    for (i = 0; style[i]; i++)
 		if (strcmp(style[i], "filled") == 0) {
 		    filled = TRUE;
-		    break;
+		    istyle |= FILLED;
+		}
+		else if (strcmp(style[i], "rounded") == 0) {
+		    istyle |= ROUNDED;
 		}
 	}
 	fillcolor = pencolor = 0;
@@ -1436,22 +1440,31 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	    if (((color = agget(sg, "fillcolor")) != 0) && color[0])
 		fillcolor = color;
 	}
-	if (pencolor)
-    	    gvrender_set_pencolor(job, pencolor);
-	if (fillcolor)
-	    gvrender_set_fillcolor(job, fillcolor);
 	A[0] = GD_bb(sg).LL;
 	A[2] = GD_bb(sg).UR;
 	A[1].x = A[2].x;
 	A[1].y = A[0].y;
 	A[3].x = A[0].x;
 	A[3].y = A[2].y;
-	if (late_int(sg, G_peripheries, 1, 0)) {
-	    gvrender_polygon(job, A, 4, filled);
-	} else if (filled) {
-	    if (fillcolor && fillcolor != pencolor)
-	        gvrender_set_pencolor(job, fillcolor);
-	    gvrender_polygon(job, A, 4, filled);
+	if (istyle & ROUNDED) {
+	    if (!pencolor) pencolor = DEFAULT_COLOR;
+	    if (!fillcolor) fillcolor = DEFAULT_FILL;
+	    if (late_int(sg, G_peripheries, 1, 0) || filled)
+		round_corners(job, fillcolor, pencolor, A, 4, istyle);
+	}
+	else {
+	    if (pencolor)
+    		gvrender_set_pencolor(job, pencolor);
+	    if (fillcolor)
+		gvrender_set_fillcolor(job, fillcolor);
+	    if (late_int(sg, G_peripheries, 1, 0)) {
+		gvrender_polygon(job, A, 4, filled);
+	    }
+	    else if (filled) { 
+		if (fillcolor && fillcolor != pencolor)
+		    gvrender_set_pencolor(job, fillcolor);
+		gvrender_polygon(job, A, 4, filled);
+	    }
 	}
 	xdemitState = EMIT_DRAW;
 	if (GD_label(sg))

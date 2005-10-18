@@ -149,6 +149,7 @@ extern "C" {
     extern void place_portlabel(edge_t * e, bool head_p);
     extern char *ps_string(char *s, int);
     extern int rank(graph_t * g, int balance, int maxiter);
+    extern void round_corners(GVJ_t*, char*, char*, point*, int, int);
     extern void routesplinesinit(void);
     extern point *routesplines(path *, int *);
     extern void routesplinesterm(void);
