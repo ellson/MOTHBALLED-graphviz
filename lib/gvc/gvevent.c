@@ -555,13 +555,11 @@ static void gvevent_read (GVJ_t * job, char *filename, char *layout)
 		return;   /* FIXME - need some error handling */
 	gvc->g = agread(f);
 	fclose(f);
-	job->output_filename = filename;
     }
     GD_gvc(gvc->g) = gvc;
     gvLayout(gvc, gvc->g, layout);
     job->selected_obj = NULL;
     job->current_obj = NULL;
-    job->surface = NULL;
     job->needs_refresh = 1;
 }
 
