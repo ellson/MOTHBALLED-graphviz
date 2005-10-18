@@ -16,6 +16,7 @@
 
 %module gv
 %{
+#define BUILTINS
 #include "gvc.h"
 %}
 
