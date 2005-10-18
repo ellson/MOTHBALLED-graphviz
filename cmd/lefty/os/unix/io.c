@@ -324,7 +324,7 @@ static void ptyopen (char *cmd, FILE **ifp, FILE **ofp, int *pidp) {
     case 0:
         close (fd[0]), close (0), dup (fd[1]);
         close (1), dup (fd[1]), close (fd[1]);
-        execl (shell, shbname, "-c", cmd, 0);
+        execl (shell, shbname, "-c", cmd, NULL);
         panic2 (POS, "ptyopen", "child cannot exec: %s\n", cmd);
     default:
         close (fd[1]);
@@ -386,12 +386,12 @@ static void pipeopen (char *cmd, FILE **ifp, FILE **ofp, int *pidp) {
         for (s = cmd; *s; s++)
             if (*s == '%' && *(s + 1) && *(s + 1) == 'd') {
                 sprintf (cmd2, cmd, p2[0], p1[1]);
-                execl (shell, shbname, "-c", cmd2, 0);
+                execl (shell, shbname, "-c", cmd2, NULL);
                 panic2 (POS, "pipeopen", "child cannot exec: %s\n", cmd2);
             }
         close (1), dup (p1[1]), close (p1[1]);
         close (0), dup (p2[0]), close (p2[0]);
-        execl (shell, shbname, "-c", cmd, 0);
+        execl (shell, shbname, "-c", cmd, NULL);
         panic2 (POS, "pipeopen", "child cannot exec: %s\n", cmd);
     default:
         close (p1[1]), close (p2[0]);
@@ -409,7 +409,7 @@ static void socketopen (char *cmd, int sfd, FILE **ifp, FILE **ofp, int *pidp) {
     case -1:
         panic2 (POS, "socketopen", "cannot fork");
     case 0:
-        execl (shell, shbname, "-c", cmd, 0);
+        execl (shell, shbname, "-c", cmd, NULL);
         panic2 (POS, "socketopen", "child cannot exec: %s\n", cmd);
     default:
         if ((fd = accept (sfd, NULL, NULL)) < 0) {
