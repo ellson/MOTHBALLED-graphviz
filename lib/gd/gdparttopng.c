@@ -39,7 +39,7 @@ main (int argc, char **argv)
 
   printf ("Extracting from (%d, %d), size is %dx%d\n", x, y, w, h);
 
-#if HAVE_LIBZ
+#ifdef HAVE_LIBZ
   im = gdImageCreateFromGd2Part (in, x, y, w, h);
 #else
   im = NULL;
