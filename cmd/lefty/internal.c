@@ -515,8 +515,8 @@ int Iconcat (int argc, lvar_t *argv) {
 }
 
 int Iquote (int argc, lvar_t *argv) {
-    Tobj so, ao, qo;
-    char *s, *s1, *s2, *qs, *as;
+    Tobj so, ao=NULL, qo=NULL;
+    char *s=NULL, *s1, *s2, *qs, *as;
     char buf2[50];
     int n, bufi;
 
