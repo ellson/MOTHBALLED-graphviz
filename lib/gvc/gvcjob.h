@@ -119,8 +119,8 @@ extern "C" {
         void (*motion) (GVJ_t * job, pointf pointer);
         void (*modify) (GVJ_t * job, char *name, char *value);
         void (*delete) (GVJ_t * job);
-        void (*read) (GVJ_t * job, char *filename);
-        void (*layout) (GVJ_t * job, char *type);
+        void (*read) (GVJ_t * job, char *filename, char *layout);
+        void (*layout) (GVJ_t * job, char *layout);
         void (*render) (GVJ_t * job, char *format, char *filename);
     } gvdevice_callbacks_t;
 

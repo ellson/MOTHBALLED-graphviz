@@ -27,6 +27,8 @@ extern char *strdup_and_subst_node(char *str, Agnode_t * n);
 extern void emit_graph(GVJ_t * job, graph_t * g);
 extern bool overlap_edge(edge_t *e, boxf b);
 extern bool overlap_node(node_t *n, boxf b);
+extern int gvLayout(GVC_t *gvc, graph_t *g, char *engine);
+extern int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename);
 
 #define PANFACTOR 10
 #define ZOOMFACTOR 1.1
@@ -523,19 +525,30 @@ static void gvevent_delete (GVJ_t * job)
     /* FIXME */
 }
 
-static void gvevent_read (GVJ_t * job, char *filename)
+static void gvevent_read (GVJ_t * job, char *filename, char *layout)
 {
-    /* FIXME */
+    FILE *f;
+
+    if (job->gvc->g) {
+        gvFreeLayout(job->gvc, job->gvc->g);
+	agclose(job->gvc->g);
+    }
+    f = fopen(filename, "r");
+    if (!f)
+	return;   /* FIXME - need some error handling */
+    job->gvc->g = agread(f);
+    fclose(f);
+    gvLayout(job->gvc, job->gvc->g, layout);
 }
 
-static void gvevent_layout (GVJ_t * job, char *type)
+static void gvevent_layout (GVJ_t * job, char *layout)
 {
-    /* FIXME */
+    gvLayout(job->gvc, job->gvc->g, layout);
 }
 
 static void gvevent_render (GVJ_t * job, char *format, char *filename)
 {
-    /* FIXME */
+    gvRenderFilename(job->gvc, job->gvc->g, format, filename);
 }
 
 
