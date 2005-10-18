@@ -262,6 +262,9 @@ char * gvconfig_libdir(void)
 		tmp = strstr (path, "/libgvc.");
 		if (tmp) {
 		    *tmp = 0;
+		    /* Check for real /lib dir. Don't accept pre-install /.libs */
+		    if (strcmp(strrchr(path,'/'), "/lib") != 0)
+			continue;
 		    libdir = path;
 		    break;
 	        }
@@ -456,7 +459,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
     int sz, rc;
     struct stat config_st, libdir_st;
     FILE *f = NULL;
-    char *config_path = NULL, *config_text = NULL;
+    char *config_text = NULL;
     char *libdir;
     char *config_file_name = "config";
 
@@ -477,52 +480,55 @@ void gvconfig(GVC_t * gvc, boolean rescan)
     /* see if there are any new plugins */
     libdir = gvconfig_libdir();
     rc = stat(libdir, &libdir_st);
-    if (rc == -1) {	/* if we fail to stat it then it probably doesn't exist
-		   so just fail silently */
+    if (rc == -1) {
+	/* if we fail to stat it then it probably doesn't exist so just fail silently */
 	return;
     }
 
-    config_path = malloc(strlen(libdir) + 1 + strlen(config_file_name) + 1);
-    strcpy(config_path, libdir);
-    strcat(config_path, "/");
-    strcat(config_path, config_file_name);
+    if (! gvc->config_path) {
+        gvc->config_path = malloc(strlen(libdir) + 1 + strlen(config_file_name) + 1);
+        strcpy(gvc->config_path, libdir);
+        strcat(gvc->config_path, "/");
+        strcat(gvc->config_path, config_file_name);
+    }
 	
     if (rescan) {
-	config_rescan(gvc, config_path);
+	config_rescan(gvc, gvc->config_path);
+	gvc->config_found = TRUE;
+	return;
+    }
+
+    /* load in the cached plugin library data */
+
+    rc = stat(gvc->config_path, &config_st);
+    if (rc == -1) {
+	/* silently return without setting gvc->config_found = TRUE */
+	return;
+    }
+    else if (config_st.st_size > MAX_SZ_CONFIG) {
+	agerr(AGERR,"%s is bigger than I can handle.\n", gvc->config_path);
     }
     else {
-	/* load in the cached plugin library data */
-
-    	rc = stat(config_path, &config_st);
-	if (rc == -1) {
-	    agerr(AGERR,"Unable to stat %s.\n", config_path);
-	}
-	else if (config_st.st_size > MAX_SZ_CONFIG) {
-	    agerr(AGERR,"%s is bigger than I can handle.\n", config_path);
+	f = fopen(gvc->config_path,"r");
+	if (!f) {
+	    agerr (AGERR,"failed to open %s for read.\n", gvc->config_path);
 	}
 	else {
-	    f = fopen(config_path,"r");
-	    if (!f) {
-	        agerr (AGERR,"failed to open %s for read.\n", config_path);
+	    config_text = malloc(config_st.st_size + 1);
+	    sz = fread(config_text, 1, config_st.st_size, f);
+	    if (sz == 0) {
+		agerr(AGERR,"%s is zero sized, or other read error.\n", gvc->config_path);
+		free(config_text);
 	    }
 	    else {
-	        config_text = malloc(config_st.st_size + 1);
-	        sz = fread(config_text, 1, config_st.st_size, f);
-	        if (sz == 0) {
-		    agerr(AGERR,"%s is zero sized, or other read error.\n", config_path);
-		    free(config_text);
-	        }
-		else {
-	            config_text[sz] = '\0';  /* make input into a null terminated string */
-	            rc = gvconfig_plugin_install_from_config(gvc, config_text);
-		    /* NB. config_text not freed because we retain char* into it */
-		}
+	        gvc->config_found = TRUE;
+	        config_text[sz] = '\0';  /* make input into a null terminated string */
+	        rc = gvconfig_plugin_install_from_config(gvc, config_text);
+		/* NB. config_text not freed because we retain char* into it */
 	    }
-	    if (f)
-		fclose(f);
 	}
+	if (f)
+	    fclose(f);
     }
-    if (config_path)
-	free(config_path);
 #endif
 }

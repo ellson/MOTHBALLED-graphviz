@@ -250,6 +250,9 @@ extern "C" {
 	char *user;
 	char **info;
 
+	char *config_path;
+	boolean config_found;
+
 	/* gvrender_config() */
 	GVJ_t *jobs;	/* linked list of jobs */
 	GVJ_t *job;	/* current job */

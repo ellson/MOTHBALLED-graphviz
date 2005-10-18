@@ -63,6 +63,8 @@ int gvFreeContext(GVC_t * gvc)
 	gvdevice_finalize(gvc);
     emit_jobs_eof(gvc);
     gvrender_delete_jobs(gvc);
+    if (gvc->config_path)
+	free(gvc->config_path);
     free(gvc);
     return (graphviz_errors + agerrors());
 }
