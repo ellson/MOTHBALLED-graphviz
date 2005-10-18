@@ -238,14 +238,10 @@ fi
 
 # Array of pattern/string mapping one archtype to another
 # Current hack uses colon separator because I don't the correct way now. 
-PAIRS=(IRIX64.IP27.sgi_cc:share\
- sgi.mips3:share\
- SunOS.sun4u*:sol6.sun4\
- Linux.*:linux.i386\
-)
+PAIRS="IRIX64.IP27.sgi_cc:share sgi.mips3:share SunOS.sun4u*:sol6.sun4 Linux.*:linux.i386"
 
 function mapa {
-  for R in ${PAIRS[@]}
+  for R in $PAIRS
   do
     PAT=${R%%:*}
     VAL=${R##*:}
@@ -600,6 +596,9 @@ tst dot dot "" labelclust-fbl
 tst dot dot "" labelclust-fbc
 tst dot ps "" in
 tst dot ps "-lgraphs/dfd.ps" ps
+tst dot dot "-Grankdir=LR" a 1
+tst dot dot "-Grankdir=RL" a 2
+tst dot dot "-Grankdir=BT" a 3
 fi
 
 if [[ -n "$NEATOTESTS" ]]
