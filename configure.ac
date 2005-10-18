@@ -47,6 +47,9 @@ AM_CONDITIONAL(DISABLE_LTDL, [test "x$enable_ltdl" = "xno"])
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
 
+# Checks for system type
+AC_CANONICAL_TARGET
+
 LIBPOSTFIX=
 case "${host_os}" in
   *linux* )
