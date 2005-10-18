@@ -327,14 +327,32 @@ AC_ARG_ENABLE(guile,
   [AC_HELP_STRING([--disable-guile], [don't support guile language bindings])])
 if test "x$enable_guile" != "xno"; then
 AC_CHECK_PROG(GUILE,guile,guile)
-GUILE_INCLUDES=
-GUILE_LIBS=
-AC_CHECK_HEADER(libguile.h,,[
-  AC_MSG_WARN([Unable to find header libguile.h. The Guile packages will not be built])
-  GUILE=
-  ])
-AC_SUBST(GUILE_INCLUDES)
-AC_SUBST(GUILE_LIBS)
+if test "x$GUILE" != "x"; then
+  GUILE_VERSION=`guile --version | head -1 | cut -d ' ' -f 2`
+  GUILE_VERSION_MAJOR=`echo $GUILE_VERSION | cut -d '.' -f 1`
+  GUILE_VERSION_MINOR=`echo $GUILE_VERSION | cut -d '.' -f 2`
+  if test $GUILE_VERSION_MAJOR -lt 2; then
+    if test $GUILE_VERSION_MAJOR -lt 1; then
+      GUILE=
+    else
+      if test $SWIG_VERSION_MINOR -lt 4; then
+	SWIG=
+      fi
+    fi
+  fi
+  if test "x$GUILE" = "x"; then
+    AC_MSG_WARN([The version of guile is too old. The guile language binding will not be built])
+  else
+    GUILE_INCLUDES=
+    GUILE_LIBS=
+    AC_CHECK_HEADER(libguile.h,,[
+    AC_MSG_WARN([Unable to find header libguile.h. The Guile packages will not be built])
+      GUILE=
+    ])
+    AC_SUBST(GUILE_INCLUDES)
+    AC_SUBST(GUILE_LIBS)
+  fi
+fi
 fi
 fi
 AM_CONDITIONAL(WITH_GUILE, [test "x$GUILE" != "x"])
