@@ -596,15 +596,16 @@ dotty.message = function (level, text) {
 dotty.protogt.printorsave = function (gt, vt, otype, name, mode, ptype) {
     local pr, wrect, vsize, xy, psize, canvas, pscanvas, cid, cname, t;
     local graph, edgehandles, fontmap, eid, edge, nid, node, gid, sgraph;
+    local did, draw, i;
 
     if (~otype)
         if (~(otype = ask ('print to', 'choice', 'file|printer')))
             return;
     if (otype == 'printer') {
-	if (~getenv ('TMPDIR'))
-	    name = concat (getenv ('HOME'), '/.dottyout.ps');
-	else 
-	    name = concat (getenv ('TMPDIR'), '/.dottyout.ps', random (10000));
+        if (~getenv ('TMPDIR'))
+            name = concat (getenv ('HOME'), '/.dottyout.ps');
+        else 
+            name = concat (getenv ('TMPDIR'), '/.dottyout.ps', random (10000));
         if (getenv ('LEFTYWINSYS') ~= 'mswin' & ~pr)
             if (~(pr = ask ('printer command', 'string', 'lpr')))
                 return;
@@ -690,16 +691,40 @@ dotty.protogt.printorsave = function (gt, vt, otype, name, mode, ptype) {
     for (eid in graph.edges) {
         edge = graph.edges[eid];
         edge.fontname = fontmap[edge.attr.fontname];
+        for (did in edge.draws) {
+            if (did == 'ep')
+                continue;
+            draw = edge.draws[did];
+            for (i = 0; draw[i]; i = i + 1)
+                if (draw[i].type == 'F')
+                    draw[i].fn = fontmap[draw[i].ofn];
+        }
         gt.drawedge (gt, [0 = vt;], edge);
     }
     for (nid in graph.nodes) {
         node = graph.nodes[nid];
         node.fontname = fontmap[node.attr.fontname];
+        for (did in node.draws) {
+            if (did == 'ep')
+                continue;
+            draw = node.draws[did];
+            for (i = 0; draw[i]; i = i + 1)
+                if (draw[i].type == 'F')
+                    draw[i].fn = fontmap[draw[i].ofn];
+        }
         gt.drawnode (gt, [0 = vt;], node);
     }
     for (gid in graph.graphs) {
         sgraph = graph.graphs[gid];
         sgraph.fontname = fontmap[sgraph.graphattr.fontname];
+        for (did in sgraph.draws) {
+            if (did == 'ep')
+                continue;
+            draw = sgraph.draws[did];
+            for (i = 0; draw[i]; i = i + 1)
+                if (draw[i].type == 'F')
+                    draw[i].fn = fontmap[draw[i].ofn];
+        }
         gt.drawsgraph (gt, [0 = vt;], sgraph);
     }
     graph.fontname = fontmap[graph.graphattr.fontname];
@@ -708,5 +733,5 @@ dotty.protogt.printorsave = function (gt, vt, otype, name, mode, ptype) {
     vt.canvas = canvas;
     destroywidget (pscanvas);
     if (otype == 'printer' & getenv ('LEFTYWINSYS') ~= 'mswin')
-	system (concat (pr, ' ', name, '; rm ',name));
+        system (concat (pr, ' ', name, '; rm ',name));
 };

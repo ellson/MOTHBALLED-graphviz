@@ -754,6 +754,7 @@ int Igetenv (int argc, lvar_t *argv) {
 
     if (!T_ISSTRING (argv[0].o))
         return L_FAILURE;
+    rtno = NULL;
     if (!(s = getenv (Tgetstring (argv[0].o))) || !*s)
         return L_SUCCESS;
     rtno = Tstring (s);

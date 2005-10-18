@@ -868,6 +868,21 @@ item: Include Script
   Pathname=%_WISE_%\INCLUDE\uninstal.wse
 end
 item: Install File
+  Source=c:\graphvizCVS\builddaemon\package\source\lib\plugin.lib
+  Destination=%MAINDIR%\Graphviz\lib\plugin.lib
+  Flags=0000000010000010
+end
+item: Install File
+  Source=c:\graphvizCVS\builddaemon\package\source\include\logic.h
+  Destination=%MAINDIR%\Graphviz\include\logic.h
+  Flags=0000000010000010
+end
+item: Install File
+  Source=c:\graphvizCVS\builddaemon\package\source\include\arith.h
+  Destination=%MAINDIR%\Graphviz\include\arith.h
+  Flags=0000000010000010
+end
+item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\include\utils.h
   Destination=%MAINDIR%\Graphviz\include\utils.h
   Flags=0000000010000010

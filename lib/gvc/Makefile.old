@@ -1,4 +1,4 @@
-all:	libgvc.a
+all:	libgvc.a libgvc_dot_builtins.a
 ROOT=../..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
@@ -26,9 +26,9 @@ OBJS = gvrender.o gvlayout.o gvdevice.o gvcontext.o gvjobs.o \
 EXTRA_OBJS = no_builtins.o dot_builtins.o
 
 libgvc_dot_builtins.a : $(OBJS) dot_builtins.o
-	$(RM) libgvc_builtins.a
-	$(AR) cr libgvc_builtins.a $(OBJS) dot_builtins.o
-	$(RANLIB) libgvc_builtins.a
+	$(RM) libgvc_dot_builtins.a
+	$(AR) cr libgvc_dot_builtins.a $(OBJS) dot_builtins.o
+	$(RANLIB) libgvc_dot_builtins.a
 
 libgvc.a : $(OBJS) no_builtins.o
 	$(RM) libgvc.a

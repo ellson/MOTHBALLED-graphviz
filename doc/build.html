@@ -135,13 +135,20 @@ Obviously you would change the pathnames to reflect your installation.
 Note that the directory ${prefix}/include is automatically searched
 for headers, and ${prefix}/lib for libraries.
 <P>
-2. (Recommend for other Unix platforms.)  As above, you need
+2. (Recommend for other Unix platforms.) As above, you need
 the external packages to be installed somewhere.
-Then use old make by editing Config.mk for your architecture
-and installation directory.  Check settings in makearch/$(ARCH).
+<ul>
+<li>
+Run configure.old from the root graphviz directory.
+<li>
+Edit Config.mk for your architecture, tools, and installation directory.
+In particular, set the ARCH make variable.
+<li>
+If desired, check settings in makearch/$(ARCH).
 See below for further notes on individual platforms.
-<P>
-Do the usual:<br>
+<li>
+Run make.
+</ul>
 <pre>
 make
 make install
@@ -149,7 +156,7 @@ make clean
 </pre>
 	
 <P>
-3. (Recommended for Dave Korn and Elefteris Koutsofios) Use AT&amp;T/Lucent
+3. (Recommended for Dave Korn and Eleftheris Koutsofios) Use AT&amp;T/Lucent
 <A HREF="http://www.research.att.com/sw/tools/reuse/packages/astkit.html">nmake</A>.
 <P>
 You have to install the AST tools first.

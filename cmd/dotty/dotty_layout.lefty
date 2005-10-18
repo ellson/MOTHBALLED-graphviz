@@ -402,6 +402,7 @@ dotty.protogt.unpackdraw = function (gt, attr) {
             s = '';
             for (j = 1; j < l; j = j + 1)
                 s = concat (s, tt[j]);
+            o.ofn = s;
             o.fn = dotty.fontmap[s];
         } else if (t[i] == 'S') {
             o.type = t[i];

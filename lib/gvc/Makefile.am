@@ -37,4 +37,4 @@ libgvc_builtins_la_LIBADD = \
 	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
 libgvc_la_LIBADD = ${libgvc_builtins_la_LIBADD}
 
-EXTRA_DIST = Makefile.old
+EXTRA_DIST = Makefile.old dot_builtins.c

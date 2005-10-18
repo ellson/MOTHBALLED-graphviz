@@ -47,7 +47,9 @@ extern "C" {
 #include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef MSWIN32
 #include <sys/time.h>
+#endif
 #endif
 
 #include <math.h>

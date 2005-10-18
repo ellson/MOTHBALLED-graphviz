@@ -9,8 +9,11 @@ INPKG=graphviz-win.tgz                      # input CVS package
 #WISE=/C/wisein~1/wise32.exe                 # = /Wise InstallMaker
 WISE=/C/progra~1/wisein~2/wise32.exe        # = Wise InstallMaker
 SOURCE=ellson@www.graphviz.org:www.graphviz.org/pub/graphviz
+NSOURCE=www.graphviz.org:/home/ellson/www.graphviz.org/pub/graphviz
 SOURCEFILE=$SOURCE/CURRENT/$INPKG
+NSOURCEFILE=$NSOURCE/CURRENT/$INPKG
 DESTDIR=$SOURCE/CURRENT
+NDESTDIR=$NSOURCE/CURRENT
 
 OPTION=Release
 WISEFLAG=0
@@ -41,7 +44,11 @@ function setVersion {
 function getFile
 {
 #  $TCLSH get.tcl $INPKG
-  scp -q $SOURCEFILE . >> $LFILE 2>&1
+#  scp -q $SOURCEFILE . >> $LFILE 2>&1
+  echo ssh soohan scp -q $NSOURCEFILE . >> $LFILE 2>&1
+  ssh soohan scp -q $NSOURCEFILE .
+  echo rcp raptor:graphviz-win.tgz . >> $LFILE 2>&1
+  rcp raptor:graphviz-win.tgz . >> $LFILE 2>&1
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to get source"
@@ -52,10 +59,14 @@ function getFile
 function putFile
 {
 #  $TCLSH tclscript.tcl $1 >> $LFILE 2>&1
-  scp -q $1 $DESTDIR >> $LFILE 2>&1 &
-  PID=$(ps -e | grep scp | awk '{print $1 }')
-  sleep 10
-  kill $PID
+#  scp -q $1 $DESTDIR >> $LFILE 2>&1 &
+#  PID=$(ps -e | grep scp | awk '{print $1 }')
+#  sleep 10
+#  kill $PID
+  BASE=$(basename $1)
+  rcp $1 raptor:. >> $LFILE 2>&1
+  ssh raptor scp -q $BASE $NDESTDIR  >> $LFILE 2>&1
+  ssh raptor rm $BASE >> $LFILE 2>&1
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to put $1"
@@ -163,6 +174,7 @@ function Get
 	#gunzip < graphviz.tar.gz | tar xf -
 	echo "unpacking the package" >> $LFILE
 	#pax -rf $INPKG >> $LFILE 2>&1
+	echo "(gunzip < $INPKG | tar xf - )" >> $LFILE 2>&1
 	(gunzip < $INPKG | tar xf - ) >> $LFILE 2>&1
 	if [[ $? != 0 ]]
 	then
@@ -251,7 +263,7 @@ function Install
 	
 	# install libraries
 	echo "copying libraries" >> $LFILE
-	LIBS=(ingraphs agraph cdt circogen common dotgen fdpgen gd graph gvc neatogen pack pathplan twopigen)
+	LIBS=(ingraphs agraph cdt circogen common dotgen fdpgen gd graph gvc neatogen pack pathplan plugin twopigen)
 	if [[ ! -d $PACKAGE_HOME/source/lib ]]
 	then
 	  mkdir $PACKAGE_HOME/source/lib
@@ -309,12 +321,18 @@ function Package
 	SRCDIR=$GVIZ_HOME/lib/circogen
         finstall circo.h 
 	SRCDIR=$GVIZ_HOME/lib/common
+        finstall arith.h
         finstall globals.h
         finstall const.h
+        finstall logic.h
         finstall macros.h 
         finstall render.h 
-        finstall renderprocs.h 
         finstall types.h 
+        finstall utils.h 
+        finstall geom.h 
+        finstall geomprocs.h 
+        finstall color.h 
+        finstall memory.h 
 	SRCDIR=$GVIZ_HOME/lib/dotgen
         finstall dot.h 
         finstall dotprocs.h 
@@ -322,8 +340,10 @@ function Package
         finstall fdp.h 
 	SRCDIR=$GVIZ_HOME/lib/gvc
         finstall gvc.h 
+        finstall gvcext.h 
         finstall gvcint.h 
         finstall gvcproc.h 
+        finstall gvcjob.h 
         finstall gvplugin.h 
         finstall gvplugin_layout.h 
         finstall gvplugin_render.h 
