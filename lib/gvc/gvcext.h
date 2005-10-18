@@ -14,24 +14,31 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifndef GVLAYOUT_PLUGIN_H
-#define GVLAYOUT_PLUGIN_H
+/* Common header used by both clients and plugins */
 
-#include "gvplugin.h"
-#include "geom.h"
-#include "color.h"
-#include "gvcint.h"
+#ifndef GVCEXT_H
+#define GVCEXT_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-    struct gvlayout_engine_s {
-	void (*layout) (graph_t * g);
-	void (*cleanup) (graph_t * g);
-    };
+    typedef struct gvdevice_engine_s gvdevice_engine_t;
+    typedef struct gvrender_engine_s gvrender_engine_t;
+    typedef struct gvlayout_engine_s gvlayout_engine_t;
+    typedef struct gvtextlayout_engine_s gvtextlayout_engine_t;
+    typedef struct gvusershape_engine_s gvusershape_engine_t;
+
+    typedef struct GVJ_s GVJ_t;
+    typedef struct GVC_s GVC_t;
+
+#ifndef DISABLE_CODEGENS
+    typedef struct codegen_s codegen_t;
+    typedef struct codegen_info_s codegen_info_t;
+#endif
 
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVLAYOUT_PLUGIN_H */
+
+#endif

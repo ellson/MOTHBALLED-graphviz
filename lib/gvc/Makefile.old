@@ -13,7 +13,7 @@ INCS =  -I. \
 
 DEFINES = -DHAVE_CONFIG_H -DGVLIBDIR=\"$(LIBDIR)\"
 
-HDRS = gvc.h gvcint.h gvcproc.h gvplugin_render.h gvplugin_device.h \
+HDRS = gvc.h gvcint.h gvcext.h gvcproc.h gvplugin_render.h gvplugin_device.h \
 	gvplugin_layout.h gvplugin_textlayout.h \
 	gvplugin_usershape.h gvplugin.h
 

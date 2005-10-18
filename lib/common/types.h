@@ -20,6 +20,7 @@
 #include "geom.h"
 #include "pathplan.h"
 #include "color.h"
+#include "gvcext.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,14 +33,6 @@ extern "C" {
     typedef struct Agnode_t node_t;
     typedef struct Agedge_t edge_t;
     typedef struct Agsym_t attrsym_t;
-
-    typedef struct GVC_s GVC_t;
-    typedef struct GVJ_s GVJ_t;
-    typedef struct gvdevice_engine_s gvdevice_engine_t;
-    typedef struct gvrender_engine_s gvrender_engine_t;
-    typedef struct gvlayout_engine_s gvlayout_engine_t;
-    typedef struct gvtextlayout_engine_s gvtextlayout_engine_t;
-    typedef struct gvusershape_engine_s gvusershape_engine_t;
 
     typedef struct htmllabel_t htmllabel_t;
 
@@ -192,7 +185,7 @@ extern "C" {
     } shape_desc;
 
 #ifndef DISABLE_CODEGENS
-    typedef struct codegen_t {
+    struct codegen_s {
 	void (*reset) (void);
 	void (*begin_job) (FILE * ofp, graph_t * g, char **lib, char *user,
 			   char *info[], point pages);
@@ -233,15 +226,15 @@ extern "C" {
 	void (*textsize) (void);	/* not used */
 	void (*user_shape) (char *name, point * A, int sides, int filled);
 	void (*usershapesize) (void);	/* not used */
-    } codegen_t;
+    };
 
-    typedef struct codegen_info_t {
+    struct codegen_info_s {
 	codegen_t *cg;		/* discovered codegen */
 	char *name;		/* output format, null for sentinel */
 	int id;			/* id of output format */
 	void *info;		/* additional info provided by discovery routine */
 	/* Quartz uses this to store the Quicktime Component */
-    } codegen_info_t;
+    };
 
 #endif
 

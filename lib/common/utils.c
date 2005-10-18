@@ -519,7 +519,7 @@ point dotneato_closest(splines * spl, point p)
 
 	    b.x = bz.list[j].x;
 	    b.y = bz.list[j].y;
-	    d2 = dist2(b, pt);
+	    d2 = DIST2(b, pt);
 	    if ((bestj == -1) || (d2 < bestdist2)) {
 		besti = i;
 		bestj = j;
@@ -538,8 +538,8 @@ point dotneato_closest(splines * spl, point p)
     }
     low = 0.0;
     high = 1.0;
-    dlow2 = dist2(c[0], pt);
-    dhigh2 = dist2(c[3], pt);
+    dlow2 = DIST2(c[0], pt);
+    dhigh2 = DIST2(c[3], pt);
     do {
 	t = (low + high) / 2.0;
 	pt2 = Bezier(c, 3, t, NULL, NULL);
@@ -549,10 +549,10 @@ point dotneato_closest(splines * spl, point p)
 	    break;
 	if (dlow2 < dhigh2) {
 	    high = t;
-	    dhigh2 = dist2(pt2, pt);
+	    dhigh2 = DIST2(pt2, pt);
 	} else {
 	    low = t;
-	    dlow2 = dist2(pt2, pt);
+	    dlow2 = DIST2(pt2, pt);
 	}
     } while (1);
     PF2P(pt2, rv);
