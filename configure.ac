@@ -292,6 +292,9 @@ if test "x$SWIG" != "x"; then
       fi
     fi
   fi
+  if test "x$SWIG" = "x"; then
+    AC_MSG_WARN([The version of swig is too old. The language bindings will not be built])
+  fi
 fi
 AC_SUBST(SWIG_VERSION)
 AM_CONDITIONAL(WITH_SWIG, [test "x$SWIG" != "x"])
