@@ -399,7 +399,7 @@ AC_CHECK_HEADER(zend.h,,[
 CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(PHP_INCLUDES)
 AC_SUBST(PHP_LIBS)
-AM_CONDITIONAL(WITH_PHP, [test "x$HAVE_PHP" != "x"])
+AM_CONDITIONAL(WITH_PHP, [test "x$PHP" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON
