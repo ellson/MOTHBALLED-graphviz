@@ -219,6 +219,19 @@ AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 
 dnl -----------------------------------
+dnl Checks for -lm library
+
+save_LIBS=$LIBS
+AC_CHECK_LIB(m, main, [MATH_LIBS="-lm"])
+AC_SUBST(MATH_LIBS)
+
+# Check for functions that might need -lm
+LIBS="$LIBS $MATH_LIBS"
+AC_CHECK_FUNCS([feenableexcept fesetenv])
+
+LIBS=$save_LIBS
+
+dnl -----------------------------------
 dnl old codegens
 
 AC_ARG_ENABLE(codegens,
@@ -1247,18 +1260,6 @@ AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
 AC_REPLACE_FUNCS([strcasecmp strncasecmp])
 
 dnl -----------------------------------
-dnl Checks for -lm library
-
-save_LIBS=$LIBS
-AC_CHECK_LIB(m, main, [MATH_LIBS="-lm"])
-AC_SUBST(MATH_LIBS)
-
-# Check for functions that might need -lm
-LIBS="$LIBS $MATH_LIBS"
-AC_CHECK_FUNCS([feenableexcept fesetenv])
-
-LIBS=$save_LIBS
-
 # Check for st_blksize in struct stat
 # AC_ST_BLKSIZE
 
