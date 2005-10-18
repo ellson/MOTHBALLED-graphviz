@@ -189,9 +189,6 @@ extern "C" {
     } shape_desc;
 
 #ifndef DISABLE_CODEGENS
-    typedef struct codegen_s codegen_t;
-    typedef struct codegen_info_s codegen_info_t;
-
     struct codegen_s {
 	void (*reset) (void);
 	void (*begin_job) (FILE * ofp, graph_t * g, char **lib, char *user,

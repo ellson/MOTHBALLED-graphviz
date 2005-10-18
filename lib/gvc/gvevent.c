@@ -14,10 +14,19 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include "render.h"
-#include "gvcjob.h"
+#include "gvplugin.h"
+#include "types.h"
+#include "graph.h"
 #include "gvcint.h"
 #include "gvcproc.h"
+
+#include <string.h>
+extern char *strdup_and_subst_graph(char *str, Agraph_t * g);
+extern char *strdup_and_subst_edge(char *str, Agedge_t * e);
+extern char *strdup_and_subst_node(char *str, Agnode_t * n);
+extern void emit_graph(GVJ_t * job, graph_t * g);
+extern bool overlap_edge(edge_t *e, boxf b);
+extern bool overlap_node(node_t *n, boxf b);
 
 #define PANFACTOR 10
 #define ZOOMFACTOR 1.1

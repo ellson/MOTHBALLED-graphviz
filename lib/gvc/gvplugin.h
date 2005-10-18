@@ -19,11 +19,11 @@
 #ifndef GVPLUGIN_H
 #define GVPLUGIN_H
 
-#include "gvcext.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "gvcext.h"
 
 #ifndef NULL
 #define NULL (void *)0

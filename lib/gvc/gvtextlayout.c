@@ -24,13 +24,10 @@
 
 #include <stdio.h>
 
-#include "geom.h"
-
 #include "const.h"
 #include "types.h"
 
 #include "gvplugin_textlayout.h"
-#include "gvcint.h"
 #include "gvcproc.h"
 
 int gvtextlayout_select(GVC_t * gvc, char *textlayout)

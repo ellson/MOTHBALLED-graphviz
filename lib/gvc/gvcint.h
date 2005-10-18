@@ -25,8 +25,6 @@ extern "C" {
 
 #include "gvcjob.h"
 
-#define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
-
     typedef struct {
 	int flags;
     } gvlayout_features_t;

@@ -23,7 +23,9 @@
 extern "C" {
 #endif
 
-#include "types.h"
+#include "geom.h"
+#include "color.h"
+#include "gvcext.h"
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 

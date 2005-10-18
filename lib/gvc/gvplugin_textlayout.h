@@ -18,8 +18,6 @@
 #define GVTEXTLAYOUT_PLUGIN_H
 
 #include "gvplugin.h"
-#include "geom.h"
-#include "color.h"
 #include "gvcint.h"
 
 #ifdef __cplusplus

@@ -37,15 +37,12 @@
 
 #include <stdio.h>
 
-#include "geom.h"
-
 #include "macros.h"
 #include "const.h"
 #include "types.h"
 #include "graph.h"
 
 #include "gvplugin_usershape.h"
-#include "gvcint.h"
 #include "gvcproc.h"
 
 extern point gd_image_size(graph_t * g, char *shapeimagefile);
