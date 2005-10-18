@@ -16,7 +16,5 @@
 
 
 #define EXTERN
-#include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
+#include "types.h"
+#include "globals.h"

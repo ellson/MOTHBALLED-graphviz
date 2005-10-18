@@ -22,6 +22,13 @@
 
 /* for sincos */
 #define _GNU_SOURCE 1
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#else
+#ifdef HAVE_VALUES_H
+#include <values.h>
+#endif
+#endif
 #include <math.h>
 
 #include "logic.h"

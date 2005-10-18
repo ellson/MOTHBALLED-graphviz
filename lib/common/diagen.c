@@ -17,21 +17,14 @@
 
 
 #include <stdarg.h>
+
 #include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include "utils.h"
 
 #ifdef HAVE_LIBZ
-#include	"zlib.h"
+#include <zlib.h>
 #ifdef MSWIN32
 #include <io.h>
 #endif
-#endif
-
-#ifdef DMALLOC
-#include "dmalloc.h"
 #endif
 
 /* DIA font modifiers */
