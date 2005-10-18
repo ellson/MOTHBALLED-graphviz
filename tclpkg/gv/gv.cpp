@@ -365,10 +365,14 @@ Agedge_t *nextout(Agraph_t *g, Agedge_t *e)
 }
 
 Agedge_t *firstout(Agedge_t *e)
-{ return NULL; }
+{
+    return NULL;
+}
 
 Agedge_t *nextout(Agedge_t *e, Agedge_t *ee)
-{ return NULL; }
+{
+    return NULL;
+}
 
 Agedge_t *firstout(Agnode_t *n)
 {
@@ -412,10 +416,14 @@ Agedge_t *nextin(Agraph_t *g, Agedge_t *e)
 }
 
 Agedge_t *firstin(Agedge_t *e)
-{ return NULL; }
+{
+    return NULL;
+}
 
 Agedge_t *nextin(Agedge_t *e, Agedge_t *ee)
-{ return NULL; }
+{
+    return NULL;
+}
 
 Agedge_t *firstin(Agnode_t *n)
 {
@@ -456,10 +464,14 @@ Agnode_t *next(Agedge_t *e, Agnode_t *n)
 }
 
 Agnode_t *first(Agnode_t *n)
-{ return NULL; }
+{
+    return NULL;
+}
 
 Agnode_t *next(Agnode_t *n, Agnode_t *nn)
-{ return NULL; }
+{
+    return NULL;
+}
 
 void rm(Agraph_t *g)
 {
