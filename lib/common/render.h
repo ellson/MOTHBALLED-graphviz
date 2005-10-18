@@ -35,7 +35,6 @@ extern "C" {
 
 #include <signal.h>
 #include <assert.h>
-#include <math.h>
 #include <stdio.h>
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>

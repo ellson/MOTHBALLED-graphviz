@@ -20,12 +20,16 @@
 #ifndef GV_ARITH_H
 #define GV_ARITH_H
 
+/* for sincos */
+#define _GNU_SOURCE 1
+#include <math.h>
+
 #include "logic.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
 #ifdef MIN
 #undef MIN
 #endif
@@ -71,6 +75,12 @@ extern "C" {
 #define DEGREES(rad)	((rad)/M_PI * 180.0)
 
 #define SQR(a) ((a) * (a))
+
+#ifdef HAVE_SINCOS
+    extern void sincos(double x, double *s, double *c);
+#else
+# define sincos(x,s,c) *s = sin(x); *c = cos(x)
+#endif
 
 #ifdef __cplusplus
 }
