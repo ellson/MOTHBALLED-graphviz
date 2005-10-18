@@ -57,6 +57,7 @@ extern "C" {
 #include "types.h"
 #include "globals.h"
 #include "memory.h"
+#include "colorprocs.h"		/* must collow color.h (in types.h) */
 #include "geomprocs.h"		/* must follow geom.h (in types.h) */
 #include "graph.h"		/* must follow types.h */
 #include "utils.h"		/* must follow types.h */

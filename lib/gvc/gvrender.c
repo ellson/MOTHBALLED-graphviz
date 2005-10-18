@@ -126,7 +126,6 @@ void gvrender_begin_job(GVJ_t * job)
     GVC_t *gvc = job->gvc;
     gvrender_engine_t *gvre = job->render.engine;
 
-    job->bb = gvc->bb;
     if (gvre) {
         if (gvre->begin_job)
 	    gvre->begin_job(job);

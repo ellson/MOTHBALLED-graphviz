@@ -20,6 +20,7 @@
 #include <ctype.h>
 
 #include "color.h"
+#include "colorprocs.h"
 #include "colortbl.h"
 
 static void hsv2rgb(double h, double s, double v,
