@@ -286,7 +286,7 @@ AC_ARG_ENABLE(swig,
 if test "x$enable_swig" != "xno"; then
 AC_CHECK_PROG(SWIG,swig,swig)
 if test "x$SWIG" != "x"; then
-  SWIG_VERSION=`swig -version 2>&1 | grep Version | cut -d ' ' -f 3`
+  SWIG_VERSION=`$SWIG -version 2>&1 | grep Version | cut -d ' ' -f 3`
   SWIG_VERSION_MAJOR=`echo $SWIG_VERSION | cut -d '.' -f 1`
   SWIG_VERSION_MINOR=`echo $SWIG_VERSION | cut -d '.' -f 2`
   if test $SWIG_VERSION_MAJOR -lt 2; then
@@ -331,7 +331,7 @@ AC_ARG_ENABLE(guile,
 if test "x$enable_guile" != "xno"; then
 AC_CHECK_PROG(GUILE,guile,guile)
 if test "x$GUILE" != "x"; then
-  GUILE_VERSION=`guile --version | head -1 | cut -d ' ' -f 2`
+  GUILE_VERSION=`$GUILE --version | head -1 | cut -d ' ' -f 2`
   GUILE_VERSION_MAJOR=`echo $GUILE_VERSION | cut -d '.' -f 1`
   GUILE_VERSION_MINOR=`echo $GUILE_VERSION | cut -d '.' -f 2`
   if test $GUILE_VERSION_MAJOR -lt 2; then
@@ -493,7 +493,7 @@ AC_ARG_ENABLE(python,
 if test "x$enable_python" != "xno"; then
 AC_CHECK_PROG(PYTHON,python,python)
 if test "x$PYTHON" != "x"; then
-  PYTHON_VERSION=`python -V 2>&1 | grep Python | cut -d ' ' -f 2`
+  PYTHON_VERSION=`$PYTHON -V 2>&1 | grep Python | cut -d ' ' -f 2`
   if test "x$PYTHON_VERSION" = "x"; then
     PYTHON=
   else
@@ -510,7 +510,7 @@ if test "x$PYTHON" != "x"; then
       fi
     fi
   fi
-  PYTHON_PREFIX=`python -c "import sys; print sys.prefix"`
+  PYTHON_PREFIX=`$PYTHON -c "import sys; print sys.prefix"`
   PYTHON_INCLUDES=-I$PYTHON_PREFIX/include/python$PYTHON_VERSION_SHORT
   PYTHON_LIBS="-L$PYTHON_PREFIX/lib -lpython$PYTHON_VERSION_SHORT"
   save_CPPFLAGS=$CPPFLAGS
@@ -536,8 +536,8 @@ AC_ARG_ENABLE(ruby,
 if test "x$enable_ruby" != "xno"; then
 AC_CHECK_PROG(RUBY,ruby,ruby)
 if test "x$RUBY" != "x"; then
-  RUBY_INCLUDES="-I`ruby $TOP_DIR/config/config_ruby.rb INCLUDES`"
-  RUBY_LIBS="-L`ruby $TOP_DIR/config/config_ruby.rb lib` -lruby"
+  RUBY_INCLUDES="-I`$RUBY $TOP_DIR/config/config_ruby.rb INCLUDES`"
+  RUBY_LIBS="-L`$RUBY $TOP_DIR/config/config_ruby.rb lib` -lruby"
   save_CPPFLAGS=$CPPFLAGS
   CPPFLAGS="$CPPFLAGS $RUBY_INCLUDES"
   AC_CHECK_HEADER(ruby.h,,[
