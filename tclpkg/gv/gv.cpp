@@ -734,9 +734,16 @@ void layout(Agraph_t *g, char *engine)
     err = gvLayout(gvc, g, engine);
 }
 
-void writegraph(Agraph_t *g, char *filename, char *format)
+void render(Agraph_t *g, char *format, char *filename)
 {
     int err;
 
     err = gvRenderFilename(gvc, g, format, filename);
+}
+
+void render(Agraph_t *g, char *format, FILE *f)
+{
+    int err;
+
+    err = gvRender(gvc, g, format, f);
 }

@@ -59,6 +59,7 @@ dot.demo/demo
 dot.demo/dot
 dot.demo/simple
 doxygen/*
+graphviz-*/*
 graphviz-*.tar.gz
 graphviz.spec
 lib/agraph/grammar.c
@@ -120,6 +121,7 @@ tclpkg/gv/SWIGTYPE_p_Agedge_t.java
 tclpkg/gv/SWIGTYPE_p_Agnode_t.java
 tclpkg/gv/SWIGTYPE_p_Agraph_t.java
 tclpkg/gv/SWIGTYPE_p_Agsym_t.java
+tclpkg/gv/SWIGTYPE_p_FILE.java
 tclpkg/gv/gv.java
 tclpkg/gv/gv.php
 tclpkg/gv/gv.pm

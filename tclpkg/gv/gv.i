@@ -107,4 +107,5 @@ extern void rm(Agedge_t *e);
 
 extern void layout(Agraph_t *g, char *engine);
 
-extern void writegraph(Agraph_t *g, char *filename, char *format);
+extern void render(Agraph_t *g, char *format, char *filename);
+extern void render(Agraph_t *g, char *format, FILE *f);

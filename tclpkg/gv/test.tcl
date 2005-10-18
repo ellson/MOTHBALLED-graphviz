@@ -30,5 +30,14 @@ for {set n [gv::firstnode $g]} {[gv::ok $n]} {set n [gv::nextnode $g $n]} {
         puts "    [gv::nameof $a] [gv::set $n $a]"
     }
 }
+for {set n [gv::firstnode $g]} {[gv::ok $n]} {set n [gv::nextnode $g $n]} {
+    for {set e [gv::firstout $n]} {[gv::ok $e]} {set e [gv::nextout $n $e]} {
+	puts "[gv::nameof $n] -> [gv::nameof [gv::headof $e]]"
+	for {set a [gv::firstattr $e]} {[gv::ok $a]} {set a [gv::nextattr $e $a]} {
+	    puts "    [gv::nameof $a] [gv::set $e $a]"
+	}
+    }
+}
+
 gv::layout $g dot
-gv::writegraph $g hello.png png
+gv::render $g png hello.png

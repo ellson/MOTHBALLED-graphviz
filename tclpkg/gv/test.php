@@ -26,5 +26,5 @@ $g = Gv::digraph "G";
 #
 #$g = gv::readgraph "hello.dot";
 #gv::layout($g, "dot");
-#gv::writegraph($g, "hello.png", "png");
+#gv::render($g, "png", "hello.png");
 #gv::rm $g;

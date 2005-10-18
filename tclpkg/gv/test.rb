@@ -24,5 +24,5 @@ Gv.rm(g)
 
 g = Gv.readgraph("hello.dot")
 Gv.layout(g, "dot")
-Gv.writegraph(g, "hello.png", "png")
+Gv.render(g, "png", "hello.png")
 Gv.rm(g)
