@@ -13,8 +13,11 @@ pkgconfig_DATA = libpathplan.pc
 man_MANS = $(man)
 pdf_DATA = $(pdf)
 
+libpathplan_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+
 libpathplan_la_SOURCES = cvt.c inpoly.c route.c shortest.c \
 	shortestpth.c solvers.c triang.c util.c visibility.c
+
 libpathplan_la_LIBADD = @MATH_LIBS@
 
 .3.pdf:

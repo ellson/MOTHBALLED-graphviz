@@ -16,6 +16,8 @@ pdf_DATA = $(pdf)
 pkgextrainclude_DATA = $(top_builddir)/ast_common.h
 pkgconfig_DATA = libcdt.pc
 
+libcdt_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+
 libcdt_la_SOURCES = dtclose.c dtdisc.c dtextract.c dtflatten.c \
 	dthash.c dtlist.c dtmethod.c dtopen.c dtrenew.c dtrestore.c dtsize.c \
 	dtstat.c dtstrhash.c dttree.c dtview.c dtwalk.c

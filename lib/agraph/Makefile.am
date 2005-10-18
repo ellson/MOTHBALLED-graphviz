@@ -16,6 +16,8 @@ pkgconfig_DATA = libagraph.pc
 man_MANS = $(man)
 pdf_DATA = $(pdf)
 
+libagraph_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+
 libagraph_la_SOURCES = agerror.c apply.c attr.c \
 	edge.c flatten.c grammar.y graph.c id.c imap.c io.c \
 	mem.c node.c obj.c pend.c rec.c refstr.c scan.l subg.c \

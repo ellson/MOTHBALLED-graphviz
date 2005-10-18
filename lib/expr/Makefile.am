@@ -14,6 +14,8 @@ pkglib_LTLIBRARIES = libexpr.la
 man_MANS = expr.3
 pdf_DATA = expr.pdf
 
+libexpr_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+
 libexpr_la_SOURCES = excc.c excontext.c exdata.c exerror.c \
 	exeval.c exexpr.c exlexname.c exopen.c exrewind.c extoken.c \
 	extype.c exzero.c exparse.y

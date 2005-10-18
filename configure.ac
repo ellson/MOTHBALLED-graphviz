@@ -1,5 +1,31 @@
 # Process this file with autoconf to produce a configure script
+AC_PREREQ(2.54)
+
+dnl ===========================================================================
+
+# Package name and version number, (as distinct from shared library version)
 AC_INIT(graphviz, 2.5)
+
+
+# libtool shared library version
+
+# Increment if the interface has additions, changes, removals.
+LT_CURRENT=1
+
+# Increment any time the source changes; set to
+# 0 if you increment CURRENT
+LT_REVISION=0
+
+# Increment if any interfaces have been added; set to 0
+# if any interfaces have been removed. removal has
+# precedence over adding, so set to 0 if both happened.
+LT_AGE=0
+
+VERSION_INFO="$LT_CURRENT:$LT_REVISION:$LT_AGE"
+AC_SUBST(VERSION_INFO)
+
+dnl ===========================================================================
+
 AC_CONFIG_SRCDIR(configure.ac)
 AC_CONFIG_AUX_DIR(config)
 

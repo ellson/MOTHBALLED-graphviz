@@ -30,7 +30,11 @@ pdf_DATA = $(pdf)
 html_DATA = $(html)
 endif
 
+# need to align pkgIndex.tcl
+#libtcldot_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+
 libtcldot_la_SOURCES = tcldot.c tkgen.c $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
+
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
