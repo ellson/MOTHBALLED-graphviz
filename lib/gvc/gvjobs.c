@@ -161,6 +161,6 @@ void gvrender_delete_jobs(GVC_t * gvc)
 	    free(j->selected_href);
 	free(j);
     }
-    gvc->jobs = gvc->job = output_filename_job = output_langname_job =
+    gvc->jobs = gvc->job = gvc->active_jobs = output_filename_job = output_langname_job =
 	NULL;
 }
