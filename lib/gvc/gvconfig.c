@@ -298,7 +298,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     libdir = gvconfig_libdir();
 
     config_re = gmalloc(strlen(plugin_re_beg) + 20 + strlen(plugin_re_end) + 1);
-#ifdef LT_VERSION
+#ifdef LT_CURRENT
     sprintf(config_re,"%s%d%s", LT_CURRENT, plugin_re_beg, plugin_re_end);
 #else
     sprintf(config_re,"%s[0-9]+%s", plugin_re_beg, plugin_re_end);
