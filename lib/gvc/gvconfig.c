@@ -469,9 +469,11 @@ void gvconfig(GVC_t * gvc, boolean rescan)
                         "cg", NULL, (gvplugin_installed_t *) p);
 #endif
 
-#ifndef DISABLE_LTDL
+    /* builtins don't require LTDL */
     gvconfig_plugin_install_builtins(gvc);
    
+    gvc->config_found = FALSE;
+#ifndef DISABLE_LTDL
     /* see if there are any new plugins */
     libdir = gvconfig_libdir();
     rc = stat(libdir, &libdir_st);

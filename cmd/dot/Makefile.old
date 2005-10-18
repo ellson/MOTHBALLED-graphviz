@@ -18,7 +18,7 @@ XLIBS = -L$(LOC_LIB)/pathplan -lpathplan \
         -L$(LOC_LIB)/graph -lgraph \
         -L$(LOC_LIB)/cdt -lcdt \
         -L$(LOC_LIB)/gd -lgd \
-        $(EXTLIB_LIB) $(EXPAT_LIB) -lltdl -lm
+        $(EXTLIB_LIB) $(EXPAT_LIB) $(LTDL_LIB) -lm
 
 PLUGS = -L$(LOC_PLUG) -lgvplugin_dot_layout -lgvplugin_neato_layout -lgvplugin_usershape_gd
 

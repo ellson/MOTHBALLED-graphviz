@@ -22,6 +22,10 @@ EXPAT_LIB = -lexpat
 EXTLIB_INC=-I/usr/include/freetype2
 EXTLIB_LIB=-ljpeg -lpng -lfontconfig -lfreetype -lz
 
+# library for libtool dynamic loading
+# to enable, uncoment this, and comment out "DISABLE_LTDL" in config.h.old
+#LTDL_LIB=-lltdl
+
 ###################################################
 #  Typically, nothing below should be changed.    #
 ###################################################
@@ -51,4 +55,5 @@ TK_LIBDIR=$(TKDIR)/lib
 # location of tk.h
 TK_INCDIR=$(TKDIR)/include
 
+VERSION=2.5
 VERSION=2.5
