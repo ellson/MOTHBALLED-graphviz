@@ -14,63 +14,83 @@ BASESOURCES = gv.cpp
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
 
 
+#pkgcsharpdir = $(pkglibdir)/csharp
 #CSHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs
 #libgv_csharp_la_SOURCES = $(BASESOURCES) gv_csharp.cpp
 #libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@ 
+#libgv_csharp_la_LDFLAGS = -module
 #gv_csharp.cpp $(CSHARP_hdr): gv.i
 #	$(SWIG) -c++ -csharp -namespace gv -o gv_csharp.cpp gv.i
 
+#pkgguiledir = $(pkglibdir)/guile
 #GUILE_hdr = 
 #libgv_guile_la_SOURCES = $(BASESOURCES) gv.gv_guile.cpp
 #libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
+#libgv_guile_la_LDFLAGS = -module
 #gv_guile.cpp $(GUILE_hdr): gv.i
 #	$(SWIG) -c++ -guile -o gv_guile.cpp gv.i
 
+#pkgiodir = $(pkglibdir)/io
 #IO_hdr = 
 #libgv_io_la_SOURCES = $(BASESOURCES) gv_io.cpp
 #libgv_io_la_LIBADD = $(BASELIBS) @IO_LIBS@
+#libgv_io_la_LDFLAGS = -module
 #gv_io.cpp $(IO_hdr): gv.i
 #	$(SWIG) -c++ -io -o gv_io.cpp gv.i
 
+pkgjavadir = $(pkglibdir)/java
 JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java
 libgv_java_la_SOURCES = $(BASESOURCES) gv_java.cpp
 libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
+libgv_java_la_LDFLAGS = -module
 gv_java.cpp $(JAVA_hdr): gv.i
 	$(SWIG) -c++ -java -o gv_java.cpp gv.i
 
-#OCAML_hdr = gv.ml gv.mli
-#libgv_ocaml_la_SOURCES = $(BASESOURCES) gv_ocaml.cpp
-#libgv_ocaml_la_LIBADD = $(BASELIBS) @IO_LIBS@
-#gv_ocaml.cpp $(OCAML_hdr): gv.i
-#	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp gv.i
+pkgocamldir = $(pkglibdir)/ocaml
+OCAML_hdr = gv.ml gv.mli
+libgv_ocaml_la_SOURCES = $(BASESOURCES) gv_ocaml.cpp
+libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@
+libgv_ocaml_la_LDFLAGS = -module
+gv_ocaml.cpp $(OCAML_hdr): gv.i
+	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp gv.i
 
+pkgperldir = $(pkglibdir)/perl
 PERL_hdr = gv.pm
 libgv_perl_la_SOURCES = $(BASESOURCES) gv_perl.cpp
 libgv_perl_la_LIBADD = $(BASELIBS) @PERL_LIBS@
+libgv_perl_la_LDFLAGS = -module
 gv_perl.cpp $(PERL_hdr): gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp gv.i
 
+pkgphpdir = $(pkglibdir)/php
 PHP_hdr = gv.php php_gv.h
 libgv_php_la_SOURCES = $(BASESOURCES) gv_php.cpp
 libgv_php_la_LIBADD = $(BASELIBS) @PHP_LIBS@
+libgv_php_la_LDFLAGS = -module
 gv_php.cpp $(PHP_hdr): gv.i
 	$(SWIG) -c++ -php -o gv_php.cpp gv.i
 
+pkgpythondir = $(pkglibdir)/python
 PYTHON_hdr = gv.py
-libgv_python_la_SOURCES = $(BASESOURCES) gv_python.cpp
-libgv_python_la_LIBADD = $(BASELIBS) @PYTHON_LIBS@
+_gv_la_SOURCES = $(BASESOURCES) gv_python.cpp
+_gv_la_LIBADD = $(BASELIBS) @PYTHON_LIBS@
+_gv_la_LDFLAGS = -module
 gv_python.cpp $(PYTHON_hdr): gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp gv.i
 
+pkgrubydir = $(pkglibdir)/ruby
 RUBY_hdr = 
 libgv_ruby_la_SOURCES = $(BASESOURCES) gv_ruby.cpp
 libgv_ruby_la_LIBADD = $(BASELIBS) @RUBY_LIBS@
+libgv_ruby_la_LDFLAGS = -module
 gv_ruby.cpp $(RUBY_hdr): gv.i
 	$(SWIG) -c++ -ruby -o gv_ruby.cpp gv.i
 
+pkgtcldir = $(pkglibdir)/tcl
 TCL_hdr = 
 libgv_tcl_la_SOURCES = $(BASESOURCES) gv_tcl.cpp
 libgv_tcl_la_LIBADD = $(top_builddir)/tclpkg/tclstubs/libtclstubs.la $(BASELIBS) @TCL_LIBS@
+libgv_tcl_la_LDFLAGS = -module
 gv_tcl.cpp $(TCL_hdr): gv.i
 	$(SWIG) -c++ -tcl -namespace -o gv_tcl.cpp gv.i
 
@@ -79,53 +99,53 @@ pkglib_LTLIBRARIES =
 TESTS =
 if WITH_SWIG
 #if WITH_CSHARP
-#pkginclude_DATA += $(CSHARP_hdr)
-#pkglib_LTLIBRARIES += libgv_csharp.la
+#pkgcsharp_DATA += $(CSHARP_hdr)
+#pkgcsharp_LTLIBRARIES += libgv_csharp.la
 #TESTS += test_csharp
 #endif
 #if WITH_GUILE
-#pkginclude_DATA += $(GUILE_hdr)
-#pkglib_LTLIBRARIES += libgv_guile.la
+#pkgguile_DATA += $(GUILE_hdr)
+#pkgguile_LTLIBRARIES += libgv_guile.la
 #TESTS += test_guile
 #endif
 #if WITH_IO
-#pkginclude_DATA += $(IO_hdr)
-#pkglib_LTLIBRARIES += libgv_io.la
+#pkgio_DATA += $(IO_hdr)
+#pkgio_LTLIBRARIES += libgv_io.la
 #TESTS += test_io
 #endif
 if WITH_JAVA
-pkginclude_DATA += $(JAVA_hdr)
-pkglib_LTLIBRARIES += libgv_java.la
+pkgjava_DATA = $(JAVA_hdr)
+pkgjava_LTLIBRARIES = libgv_java.la
 TESTS += test_java
 endif
-#if WITH_OCAML
-#pkginclude_DATA += $(OCAML_hdr)
-#pkglib_LTLIBRARIES += libgv_ocaml.la
-#TESTS += test_ocaml
-#endif
+if WITH_OCAML
+pkgocaml_DATA = $(OCAML_hdr)
+pkgocaml_LTLIBRARIES = libgv_ocaml.la
+TESTS += test_ocaml
+endif
 if WITH_PERL
-pkginclude_DATA += $(PERL_hdr)
-pkglib_LTLIBRARIES += libgv_perl.la
+pkgperl_DATA = $(PERL_hdr)
+pkgperl_LTLIBRARIES = libgv_perl.la
 TESTS += test_perl
 endif
 if WITH_PHP
-pkginclude_DATA += $(PHP_hdr)
-pkglib_LTLIBRARIES += libgv_php.la
+pkgphp_DATA = $(PHP_hdr)
+pkgphp_LTLIBRARIES = libgv_php.la
 TESTS += test_php
 endif
 if WITH_PYTHON
-pkginclude_DATA += $(PYTHON_hdr)
-pkglib_LTLIBRARIES += libgv_python.la
+pkgpython_DATA = $(PYTHON_hdr)
+pkgpython_LTLIBRARIES = _gv.la
 TESTS += test_python
 endif
 if WITH_RUBY
-pkginclude_DATA += $(RUBY_hdr)
-pkglib_LTLIBRARIES += libgv_ruby.la
+pkgruby_DATA = $(RUBY_hdr)
+pkgruby_LTLIBRARIES = libgv_ruby.la
 TESTS += test_ruby
 endif
 if WITH_TCL
-pkginclude_DATA += $(TCL_hdr)
-pkglib_LTLIBRARIES += libgv_tcl.la
+pkgtcl_DATA = $(TCL_hdr)
+pkgtcl_LTLIBRARIES = libgv_tcl.la
 TESTS += test_tcl
 endif
 endif
@@ -193,10 +213,9 @@ test_php: libgv_php.la
 		$(PHP) ./test.php)
 
 .PHONY: test_python
-test_python: libgv_python.la
+test_python: _gv.la
 	-(mkdir -p test_python; cd test_python; \
-		ln -fs ../.libs/libgv_python.so _gv.so; \
-		ln -fs ../*.dot ../*.py .; \
+		ln -fs ../.libs/_gv.so ../*.dot ../*.py .; \
 		PYTHONPATH=. $(PYTHON) test.py)
 
 .PHONY: test_ruby

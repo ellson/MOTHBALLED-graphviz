@@ -5,6 +5,8 @@ SUBDIRS = demo
 pdfdir = $(pkgdatadir)/doc/pdf
 htmldir = $(pkgdatadir)/doc/html
 
+pkgtcldir = $(pkglibdir)/tcl
+
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
@@ -24,21 +26,18 @@ html = tcldot.html
 
 noinst_HEADERS = tcldot.h
 if WITH_TCL
-pkglib_LTLIBRARIES = libtcldot.la
+pkgtcl_LTLIBRARIES = libtcldot.la
 man_MANS = $(man)
 pdf_DATA = $(pdf)
 html_DATA = $(html)
 endif
 
-# need to align pkgIndex.tcl
-#libtcldot_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
-
 libtcldot_la_SOURCES = tcldot.c tkgen.c $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
-
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
 	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@ @LIBLTDL@
+libtcldot_la_LDFLAGS = -module -version-info @VERSION_INFO@ -no-undefined
 
 if WITH_TCL
 all-local: pkgIndex.tcl

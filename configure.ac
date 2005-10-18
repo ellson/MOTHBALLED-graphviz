@@ -376,9 +376,12 @@ if test "x$OCAML" = "x"; then
   HAVE_OCAML=0
 else
   HAVE_OCAML=1
-  OCAML_INCLUDES=
-  OCAML_LIBS=
+  OCAML_INCLUDES=/usr/lib/ocaml
+  OCAML_LIBS=/usr/lib/ocaml
 fi
+AC_CHECK_HEADER(caml/mlvalues.h,,[
+  AC_MSG_WARN([Unable to find header caml/mlvalues.h. The OCAML packages will not be built])
+  HAVE_OCAML=0])
 AM_CONDITIONAL(WITH_OCAML, [test "x$HAVE_OCAML" = "x1"])
 AC_SUBST(HAVE_OCAML)
 AC_SUBST(OCAML_INCLUDES)
