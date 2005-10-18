@@ -53,9 +53,9 @@ extern "C" {
 	box *bp;		/* if not null, points to bbox of 
 				 * rectangular area that is port target
 				 */
-	boolean	defined;        /* if true, edge has port info at this end */
-	boolean	constrained;    /* if true, constraints such as theta are set */
-	boolean clip;           /* if true, clip end to node/port shape */
+	bool	defined;        /* if true, edge has port info at this end */
+	bool	constrained;    /* if true, constraints such as theta are set */
+	bool clip;           /* if true, clip end to node/port shape */
 	unsigned char order;	/* for mincross */
 	unsigned char side;	/* if port is on perimeter of node, this
                                  * contains the bitwise OR of the sides (TOP,
@@ -64,8 +64,8 @@ extern "C" {
     } port;
 
     typedef struct {
-	boolean(*swapEnds) (edge_t * e);	/* Should head and tail be swapped? */
-	boolean(*splineMerge) (node_t * n);	/* Is n a node in the middle of an edge? */
+	bool(*swapEnds) (edge_t * e);	/* Should head and tail be swapped? */
+	bool(*splineMerge) (node_t * n);	/* Is n a node in the middle of an edge? */
     } splineInfo;
 
     typedef struct pathend_t {
@@ -130,8 +130,8 @@ extern "C" {
 	    } txt;
 	    htmllabel_t *html;
 	} u;
-	boolean set;		/* true if position is set */
-	boolean html;		/* true if html label */
+	bool set;		/* true if position is set */
+	bool html;		/* true if html label */
     } textlabel_t;
 
     typedef struct polygon_t {	/* mutable shape information for a node */
@@ -169,7 +169,7 @@ extern "C" {
 	void (*initfn) (node_t *);	/* initializes shape from node u.shape_info structure */
 	void (*freefn) (node_t *);	/* frees  shape from node u.shape_info structure */
 	 port(*portfn) (node_t *, char *, char *);	/* finds aiming point and slope of port */
-	 boolean(*insidefn) (inside_t * inside_context, pointf);	/* clips incident gvc->e spline on shape of gvc->n */
+	 bool(*insidefn) (inside_t * inside_context, pointf);	/* clips incident gvc->e spline on shape of gvc->n */
 	int (*pboxfn)(node_t* n, port* p, int side, box rv[], int *kptr); /* finds box path to reach port */
 	void (*codefn) (GVJ_t * job, node_t * n);	/* emits graphics code for node */
     } shape_functions;
@@ -181,7 +181,7 @@ extern "C" {
 	char *name;		/* as read from graph file */
 	shape_functions *fns;
 	polygon_t *polygon;	/* base polygon info */
-	boolean usershape;
+	bool usershape;
     } shape_desc;
 
 #ifndef DISABLE_CODEGENS
@@ -221,7 +221,7 @@ extern "C" {
 	void (*beziercurve) (point * A, int n, int arrow_at_start,
 			     int arrow_at_end, int filled);
 	void (*polyline) (point * A, int n);
-	boolean bezier_has_arrows;
+	bool bezier_has_arrows;
 	void (*comment) (char *str);
 	void (*textsize) (void);	/* not used */
 	void (*user_shape) (char *name, point * A, int sides, int filled);
@@ -254,8 +254,8 @@ extern "C" {
 	node_t **av;		/* allocated list of nodes in rank  */
 	int ht1, ht2;		/* height below/above centerline    */
 	int pht1, pht2;		/* as above, but only primitive nodes   */
-	boolean candidate;	/* for transpose () */
-	boolean valid;
+	bool candidate;	/* for transpose () */
+	bool valid;
 	int cache_nc;		/* caches number of crossings */
 	adjmatrix_t *flat;
     } rank_t;
@@ -271,9 +271,9 @@ extern "C" {
 	point margin;
 	point page;
 	point  size;
-	boolean filled;
-	boolean landscape;
-	boolean centered;
+	bool filled;
+	bool landscape;
+	bool centered;
 	ratio_t ratio_kind;
     } layout_t;
 
@@ -310,10 +310,10 @@ extern "C" {
 	textlabel_t *label;	/* if the cluster has a title */
 	box bb;			/* bounding box */
 	point border[4];	/* sizes of margins for graph labels */
-	boolean has_labels;
-	boolean has_images;
-	boolean active;
-	boolean selected;
+	bool has_labels;
+	bool has_images;
+	bool active;
+	bool selected;
 	unsigned char charset; /* input character set */
 	int rankdir;
 	int ht1, ht2;		/* below and above extremal ranks */
@@ -343,9 +343,9 @@ extern "C" {
 	short minrank, maxrank;
 
 	/* various flags */
-	boolean has_flat_edges;
-	boolean	showboxes;
-	boolean cluster_was_collapsed;
+	bool has_flat_edges;
+	bool	showboxes;
+	bool cluster_was_collapsed;
 
 	int nodesep, ranksep;
 	node_t *ln, *rn;	/* left, right nodes of bounding box */
@@ -353,11 +353,11 @@ extern "C" {
 
 	/* for clusters */
 	node_t *leader, **rankleader;
-	boolean expanded;
+	bool expanded;
 	char installed;
 	char set_type;
 	char label_pos;
-	boolean exact_ranksep;
+	bool exact_ranksep;
 #endif
 
     } Agraphinfo_t;
@@ -425,19 +425,19 @@ extern "C" {
 	textlabel_t *label;
 	void *alg;
 	char state;
-	boolean clustnode;
-	boolean active;
-	boolean selected;
+	bool clustnode;
+	bool active;
+	bool selected;
 
 #ifndef DOT_ONLY
-	boolean pinned;
+	bool pinned;
 	short xsize, ysize;
 	int id, heapindex, hops;
 	double *pos, dist;
 #endif
 #ifndef NEATO_ONLY
-	boolean showboxes;
-	boolean  has_port;
+	bool showboxes;
+	bool  has_port;
 
 	/* fast graph */
 	char node_type, mark, onstack;
@@ -531,8 +531,8 @@ extern "C" {
 	char label_ontop;
 	edge_t *to_orig;	/* for dot's shapes.c    */
 	void *alg;
-	boolean active;
-	boolean selected;
+	bool active;
+	bool selected;
 
 #ifndef DOT_ONLY
 	double factor;
@@ -540,8 +540,8 @@ extern "C" {
 	Ppolyline_t path;
 #endif
 #ifndef NEATO_ONLY
-	boolean showboxes;
-	boolean conc_opp_flag;
+	bool showboxes;
+	bool conc_opp_flag;
 	short xpenalty;
 	int weight;
 	int cutvalue, tree_index;

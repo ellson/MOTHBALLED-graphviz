@@ -1630,7 +1630,7 @@ static void checkGuard(Exnode_t * gp, char *src, int line)
 	    error_info.file = src;
 	    error_info.line = line;
 	}
-	error(ERROR_WARNING, "assignment used as boolean in guard");
+	error(ERROR_WARNING, "assignment used as bool in guard");
     }
 }
 

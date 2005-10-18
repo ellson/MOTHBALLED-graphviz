@@ -21,14 +21,19 @@
 extern "C" {
 #endif
 
-typedef unsigned char boolean;
-
 #define NOT(v) (!(v))
+
+#if ! defined HAVE_BOOL && ! defined __cplusplus
+typedef unsigned char bool;
+#define false 0
+#define true NOT(false)
+#endif
+
 #ifndef FALSE
-#define	FALSE 0
+#define	FALSE false
 #endif
 #ifndef TRUE
-#define TRUE NOT(FALSE)
+#define TRUE true
 #endif
 
 #ifndef NOTUSED

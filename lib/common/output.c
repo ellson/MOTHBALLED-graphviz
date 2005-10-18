@@ -61,7 +61,7 @@ static void writenodeandport(FILE * fp, node_t * node, char *port)
 
 /* _write_plain:
  */
-static void _write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
+static void _write_plain(GVJ_t * job, graph_t * g, FILE * f, bool extend)
 {
     int i, j, splinePoints;
     char *tport, *hport;

@@ -58,9 +58,9 @@ extern "C" {
 
     extern void updateBB(graph_t * g, textlabel_t * lp);
     extern void compute_bb(Agraph_t *);
-    extern boolean overlap_node(node_t *n, boxf b);
-    extern boolean overlap_label(textlabel_t *lp, boxf b);
-    extern boolean overlap_edge(edge_t *e, boxf b);
+    extern bool overlap_node(node_t *n, boxf b);
+    extern bool overlap_label(textlabel_t *lp, boxf b);
+    extern bool overlap_edge(edge_t *e, boxf b);
 
     extern int processClusterEdges(graph_t * g);
     extern void undoClusterEdges(graph_t * g);

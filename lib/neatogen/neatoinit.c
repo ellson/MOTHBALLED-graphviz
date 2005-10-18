@@ -43,7 +43,7 @@ static int Pack;		/* If >= 0, layout components separately and pack together
 				 */
 static char *cc_pfx = "_neato_cc";
 
-void neato_nodesize(node_t * n, boolean flip)
+void neato_nodesize(node_t * n, bool flip)
 {
     int w;
 
@@ -1180,7 +1180,7 @@ void neato_layout(Agraph_t * g)
 	    int n_cc;
 	    int i;
 	    pack_info pinfo;
-	    boolean pin;
+	    bool pin;
 
 	    cc = pccomps(g, &n_cc, cc_pfx, &pin);
 
@@ -1191,9 +1191,9 @@ void neato_layout(Agraph_t * g)
 		adjustNodes(gc);
 	    }
 	    if (n_cc > 1) {
-		boolean *bp;
+		bool *bp;
 		if (pin) {
-		    bp = N_NEW(n_cc, boolean);
+		    bp = N_NEW(n_cc, bool);
 		    bp[0] = TRUE;
 		} else
 		    bp = 0;

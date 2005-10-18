@@ -44,7 +44,7 @@ extern "C" {
 	unsigned int margin;	/* margin left around objects, in points */
 	int doSplines;		/* use splines in constructing graph shape */
 	pack_mode mode;		/* granularity and method */
-	boolean *fixed;		/* fixed[i] == true implies g[i] should not be moved */
+	bool *fixed;		/* fixed[i] == true implies g[i] should not be moved */
     } pack_info;
 
     extern point *putGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
@@ -56,7 +56,7 @@ extern "C" {
 
     extern int isConnected(Agraph_t *);
     extern Agraph_t **ccomps(Agraph_t *, int *, char *);
-    extern Agraph_t **pccomps(Agraph_t *, int *, char *, boolean *);
+    extern Agraph_t **pccomps(Agraph_t *, int *, char *, bool *);
     extern int nodeInduce(Agraph_t *);
 
 #ifdef __cplusplus

@@ -681,11 +681,11 @@ initFontLabelEdgeAttr(edge_t * e, struct fontinfo *fi,
  * Return true if head/tail end of edge should not be clipped
  * to node.
  */
-static boolean 
+static bool 
 noClip(edge_t *e, attrsym_t* sym)
 {
     char		*str;
-    boolean		rv = FALSE;
+    bool		rv = FALSE;
 
     if (sym) {	/* mapbool isn't a good fit, because we want "" to mean TRUE */
 	str = agxget(e,sym->index);
@@ -799,7 +799,7 @@ int common_init_edge(edge_t * e)
 
 /* addLabelBB:
  */
-static box addLabelBB(box bb, textlabel_t * lp, boolean flipxy)
+static box addLabelBB(box bb, textlabel_t * lp, bool flipxy)
 {
     int width, height;
     point p = lp->p;
@@ -1401,7 +1401,7 @@ utf8ToLatin1 (char* s)
     return ns;
 }
 
-boolean overlap_node(node_t *n, boxf b)
+bool overlap_node(node_t *n, boxf b)
 {
     boxf bb;
     inside_t ictxt;
@@ -1423,7 +1423,7 @@ boolean overlap_node(node_t *n, boxf b)
     return ND_shape(n)->fns->insidefn(&ictxt, p);
 }
 
-boolean overlap_label(textlabel_t *lp, boxf b)
+bool overlap_label(textlabel_t *lp, boxf b)
 {
     double sx, sy;
     boxf bb;
@@ -1437,7 +1437,7 @@ boolean overlap_label(textlabel_t *lp, boxf b)
     return OVERLAP(b, bb);
 }
 
-static boolean overlap_arrow(pointf p, pointf u, double scale, int flag, boxf b)
+static bool overlap_arrow(pointf p, pointf u, double scale, int flag, boxf b)
 {
     boxf bb;
 
@@ -1449,7 +1449,7 @@ static boolean overlap_arrow(pointf p, pointf u, double scale, int flag, boxf b)
     return FALSE;
 }
 
-static boolean overlap_bezier(bezier bz, boxf b)
+static bool overlap_bezier(bezier bz, boxf b)
 {
     int i;
     point pp;
@@ -1482,7 +1482,7 @@ static boolean overlap_bezier(bezier bz, boxf b)
     return FALSE;
 }
 
-boolean overlap_edge(edge_t *e, boxf b)
+bool overlap_edge(edge_t *e, boxf b)
 {
     int i;
     splines *spl;

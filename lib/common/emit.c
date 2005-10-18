@@ -155,7 +155,7 @@ static void firstlayer(GVJ_t *job)
     job->layerNum = 1;
 }
 
-static boolean validlayer(GVJ_t *job)
+static bool validlayer(GVJ_t *job)
 {
     return (job->layerNum <= job->numLayers);
 }
@@ -310,7 +310,7 @@ static void firstpage(GVJ_t *job)
     job->pagesArrayElem = job->pagesArrayFirst;
 }
 
-static boolean validpage(GVJ_t *job)
+static bool validpage(GVJ_t *job)
 {
     return ((job->pagesArrayElem.x >= 0)
 	 && (job->pagesArrayElem.x < job->pagesArraySize.x)
@@ -330,7 +330,7 @@ static void nextpage(GVJ_t *job)
     }
 }
 
-static boolean write_edge_test(Agraph_t * g, Agedge_t * e)
+static bool write_edge_test(Agraph_t * g, Agedge_t * e)
 {
     Agraph_t *sg;
     int c;
@@ -343,7 +343,7 @@ static boolean write_edge_test(Agraph_t * g, Agedge_t * e)
     return TRUE;
 }
 
-static boolean write_node_test(Agraph_t * g, Agnode_t * n)
+static bool write_node_test(Agraph_t * g, Agnode_t * n)
 {
     Agraph_t *sg;
     int c;
@@ -432,7 +432,7 @@ fprintf(stderr,"pagesArrayElem = %d,%d pageSize = %g,%g pageOffset = %g,%g\n",
 }
 
 #if 0
-static boolean node_in_view(GVJ_t *job, node_t * n)
+static bool node_in_view(GVJ_t *job, node_t * n)
 {
     boxf b;
 
@@ -447,7 +447,7 @@ static boolean node_in_view(GVJ_t *job, node_t * n)
 }
 #endif
 
-static boolean is_natural_number(char *sstr)
+static bool is_natural_number(char *sstr)
 {
     unsigned char *str = (unsigned char *) sstr;
 
@@ -473,14 +473,14 @@ static int layer_index(GVC_t *gvc, char *str, int all)
     return -1;
 }
 
-static boolean selectedlayer(GVJ_t *job, char *spec)
+static bool selectedlayer(GVJ_t *job, char *spec)
 {
     GVC_t *gvc = job->gvc;
     int n0, n1;
     unsigned char buf[SMALLBUF];
     char *w0, *w1;
     agxbuf xb;
-    boolean rval = FALSE;
+    bool rval = FALSE;
 
     agxbinit(&xb, SMALLBUF, buf);
     agxbput(&xb, spec);
@@ -512,7 +512,7 @@ static boolean selectedlayer(GVJ_t *job, char *spec)
     return rval;
 }
 
-static boolean node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
+static bool node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
 {
     char *pn, *pe;
     edge_t *e;
@@ -534,7 +534,7 @@ static boolean node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
     return FALSE;
 }
 
-static boolean edge_in_layer(GVJ_t *job, graph_t * g, edge_t * e)
+static bool edge_in_layer(GVJ_t *job, graph_t * g, edge_t * e)
 {
     char *pe, *pn;
     int cnt;
@@ -554,7 +554,7 @@ static boolean edge_in_layer(GVJ_t *job, graph_t * g, edge_t * e)
     return FALSE;
 }
 
-static boolean clust_in_layer(GVJ_t *job, graph_t * sg)
+static bool clust_in_layer(GVJ_t *job, graph_t * sg)
 {
     char *pg;
     node_t *n;
@@ -573,7 +573,7 @@ static boolean clust_in_layer(GVJ_t *job, graph_t * sg)
 }
 
 #if 1
-static boolean node_in_box(node_t *n, boxf b)
+static bool node_in_box(node_t *n, boxf b)
 {
     return boxf_overlap(ND_bb(n), b);
 }
@@ -689,7 +689,7 @@ static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
 }
 
 #if 0
-static boolean edge_in_view(GVJ_t *job, edge_t * e)
+static bool edge_in_view(GVJ_t *job, edge_t * e)
 {
     int i, j, np;
     bezier bz;
@@ -739,7 +739,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
     bezierf bzf;
     splinesf offspl, tmpspl;
     pointf pf0, pf1, pf2 = { 0, 0 }, pf3, *offlist, *tmplist;
-    boolean saved = FALSE;
+    bool saved = FALSE;
     double scale, numc2;
     char *p;
     extern int xdemitState;
@@ -919,7 +919,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	gvrender_end_context(job);
 }
 
-static boolean edge_in_box(edge_t *e, boxf b)
+static bool edge_in_box(edge_t *e, boxf b)
 {
     splines *spl;
     textlabel_t *lp;
@@ -1472,7 +1472,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     }
 }
 
-static boolean is_style_delim(int c)
+static bool is_style_delim(int c)
 {
     switch (c) {
     case '(':
@@ -1534,9 +1534,9 @@ static void cleanup(void)
 char **parse_style(char *s)
 {
     static char *parse[FUNLIMIT];
-    static boolean is_first = TRUE;
+    static bool is_first = TRUE;
     int fun = 0;
-    boolean in_parens = FALSE;
+    bool in_parens = FALSE;
     unsigned char buf[SMALLBUF];
     char *p;
     int c;

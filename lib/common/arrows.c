@@ -229,7 +229,7 @@ double arrow_length(edge_t * e, int flag)
 }
 
 /* inside function for calls to bezier_clip */
-static boolean inside(inside_t * inside_context, pointf p)
+static bool inside(inside_t * inside_context, pointf p)
 {
     return DIST2(p, inside_context->a.p[0]) <= inside_context->a.r[0];
 }

@@ -578,7 +578,7 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
     point *places;
     Dict_t *ps;
     int i;
-    boolean *fixed = pinfo->fixed;
+    bool *fixed = pinfo->fixed;
     int fixed_cnt = 0;
     box fixed_bb = { {0, 0}, {0, 0} };
     point center;

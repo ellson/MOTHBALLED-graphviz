@@ -390,7 +390,7 @@ codegen_info_t *next_codegen(codegen_info_t * p)
     ++p;
 
 #ifdef QUARTZ_RENDER
-    static boolean unscanned = TRUE;
+    static bool unscanned = TRUE;
     if (!p->name && unscanned) {
         /* reached end of codegens but haven't yet scanned for Quicktime codegens... */
 
@@ -445,7 +445,7 @@ codegen_info_t *next_codegen(codegen_info_t * p)
 /*
   gvconfig - parse a config file and install the identified plugins
  */
-void gvconfig(GVC_t * gvc, boolean rescan)
+void gvconfig(GVC_t * gvc, bool rescan)
 {
 #if 0
     gvplugin_library_t **libraryp;

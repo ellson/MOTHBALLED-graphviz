@@ -149,7 +149,7 @@ extern "C" {
 #endif
 
 	void *surface;		/* gd or cairo surface */
-	boolean external_surface; /* surface belongs to caller */
+	bool external_surface; /* surface belongs to caller */
 
 	gvstyle_t *style;       /* active style from gvc->styles[] */
 
@@ -194,7 +194,7 @@ extern "C" {
 	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
 	pointf offset;		/* composite translation */
 	
-	boolean fit_mode,
+	bool fit_mode,
 		needs_refresh,
 		click,
 		active,
@@ -246,7 +246,7 @@ extern "C" {
 	char **info;
 
 	char *config_path;
-	boolean config_found;
+	bool config_found;
 
 	/* gvrender_config() */
 	GVJ_t *jobs;	/* linked list of jobs */
@@ -276,7 +276,7 @@ extern "C" {
 	point pb;		/* page size - including margins (inches) */
 	boxf bb;		/* graph bb in graph units, not including margins */
 	int rotation;		/* rotation - 0 = portrait, 90 = landscape */
-	boolean graph_sets_margin, graph_sets_pageSize, graph_sets_rotation;
+	bool graph_sets_margin, graph_sets_pageSize, graph_sets_rotation;
 
 	/* layers */
 	char *layerDelims;	/* delimiters in layer names */

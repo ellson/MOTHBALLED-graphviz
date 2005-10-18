@@ -70,7 +70,7 @@ static void insertFn(Agnode_t * n, void *state)
  * Note that the component subgraphs do not contain any edges. These must
  * be obtained from the root graph.
  */
-Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, boolean * pinned)
+Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, bool * pinned)
 {
     int c_cnt = 0;
     char buffer[SMALLBUF];
@@ -80,7 +80,7 @@ Agraph_t **pccomps(Agraph_t * g, int *ncc, char *pfx, boolean * pinned)
     Agraph_t **ccs;
     int len;
     int bnd = 10;
-    boolean pin = FALSE;
+    bool pin = FALSE;
 
     if (agnnodes(g) == 0) {
 	*ncc = 0;

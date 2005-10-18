@@ -62,7 +62,7 @@ static char *Sep = ";";
 static int PageWidth;		/* Width of page, in points. */
 static char *prefix;		/* Machine-dependent prefix and suffix */
 static char *suffix;
-/* static boolean	onetime = TRUE; */
+/* static bool	onetime = TRUE; */
 
 #define MAXLINELEN   80
 static int bufcnt;		/* Number of characters output on current line */
@@ -830,7 +830,7 @@ static void hpgl_polyline(point * A, int n)
 
 static void hpgl_user_shape(char *name, point * A, int n, int filled)
 {
-    static boolean onetime = TRUE;
+    static bool onetime = TRUE;
     if (onetime) {
 	agerr(AGERR, "custom shapes not available with this driver\n");
 	onetime = FALSE;

@@ -554,7 +554,7 @@ static void mif_polyline(point * A, int n)
 
 static void mif_user_shape(char *name, point * A, int n, int filled)
 {
-    static boolean onetime = TRUE;
+    static bool onetime = TRUE;
     if (onetime) {
 	agerr(AGERR, "custom shapes not available with this driver\n");
 	onetime = FALSE;

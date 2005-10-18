@@ -332,13 +332,13 @@ void global_def(char *dcl,
  * converts a graph attribute to a point.
  * Returns true if the attribute ends in '!'.
  */
-static boolean getdoubles2pt(graph_t * g, char *name, point * result)
+static bool getdoubles2pt(graph_t * g, char *name, point * result)
 {
     char *p;
     int i;
     double xf, yf;
     char c = '\0';
-    boolean rv = FALSE;
+    bool rv = FALSE;
 
     if ((p = agget(g, name))) {
 	i = sscanf(p, "%lf,%lf%c", &xf, &yf, &c);
@@ -469,7 +469,7 @@ static void setRatio(graph_t * g)
     }
 }
 
-void graph_init(graph_t * g, boolean use_rankdir)
+void graph_init(graph_t * g, bool use_rankdir)
 {
     char *p;
     double xf;

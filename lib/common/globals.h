@@ -64,7 +64,7 @@ extern "C" {
     EXTERN int Obj;
 #endif
 
-    EXTERN boolean Verbose, Reduce, MemTest, Config;
+    EXTERN bool Verbose, Reduce, MemTest, Config;
     EXTERN char *HTTPServerEnVar;
     EXTERN char *Output_file_name;
     EXTERN int graphviz_errors;
@@ -74,7 +74,7 @@ extern "C" {
     EXTERN int Show_cnt;
     EXTERN char** Show_boxes;	/* emit code for correct box coordinates */
     EXTERN int CL_type;		/* NONE, LOCAL, GLOBAL */
-    EXTERN boolean Concentrate;	/* if parallel edges should be merged */
+    EXTERN bool Concentrate;	/* if parallel edges should be merged */
     EXTERN double Epsilon;	/* defined in input_graph */
     EXTERN double Nodesep;
     EXTERN double Nodefactor;

@@ -57,20 +57,20 @@ static shape_desc *point_desc;
 static void poly_init(node_t * n);
 static void poly_free(node_t * n);
 static port poly_port(node_t * n, char *portname, char *);
-static boolean poly_inside(inside_t * inside_context, pointf p);
+static bool poly_inside(inside_t * inside_context, pointf p);
 static int poly_path(node_t* n, port* p, int side, box rv[], int *kptr);
 static void poly_gencode(GVJ_t * job, node_t * n);
 
 static void record_init(node_t * n);
 static void record_free(node_t * n);
 static port record_port(node_t * n, char *portname, char *);
-static boolean record_inside(inside_t * inside_context, pointf p);
+static bool record_inside(inside_t * inside_context, pointf p);
 static int record_path(node_t* n, port* p, int side, box rv[], int *kptr);
 static void record_gencode(GVJ_t * job, node_t * n);
 
 static void point_init(node_t * n);
 
-static boolean epsf_inside(inside_t * inside_context, pointf p);
+static bool epsf_inside(inside_t * inside_context, pointf p);
 static void epsf_gencode(GVJ_t * job, node_t * n);
 
 /* polygon descriptions.  "polygon" with 0 sides takes all user control */
@@ -468,7 +468,7 @@ shape_kind shapeOf(node_t * n)
 	return SH_USER;
 }
 
-boolean isPolygon(node_t * n)
+bool isPolygon(node_t * n)
 {
     return (ND_shape(n) && (ND_shape(n)->fns->initfn == poly_init));
 }
@@ -766,7 +766,7 @@ static void poly_free(node_t * n)
 
 #define GET_PORT_BOX(n,e) ((n) == (e)->head ? ED_head_port(e).bp : ED_tail_port(e).bp)
 
-static boolean poly_inside(inside_t * inside_context, pointf p)
+static bool poly_inside(inside_t * inside_context, pointf p)
 {
     static node_t *lastn;	/* last node argument */
     static polygon_t *poly;
@@ -1189,7 +1189,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     pointf P, *vertices;
     static point *A;
     static int A_size;
-    boolean filled;
+    bool filled;
     extern int xdemitState;
     char *color;
 
@@ -1745,7 +1745,7 @@ static port record_port(node_t * n, char *portname, char *compass)
  * Note that this does not handle Mrecords correctly. It assumes 
  * everything is a rectangle.
  */
-static boolean
+static bool
 record_inside(inside_t * inside_context, pointf p)
 {
 
@@ -1924,7 +1924,7 @@ shape_desc *bind_shape(char *name, node_t * np)
     return rv;
 }
 
-static boolean epsf_inside(inside_t * inside_context, pointf p)
+static bool epsf_inside(inside_t * inside_context, pointf p)
 {
     pointf P;
     double x2;

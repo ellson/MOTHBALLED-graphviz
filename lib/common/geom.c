@@ -197,22 +197,22 @@ boxf boxf_intersect(boxf b0, boxf b1)
     return b;
 }
 
-boolean box_overlap(box b0, box b1)
+bool box_overlap(box b0, box b1)
 {
     return OVERLAP(b0, b1);
 }
 
-boolean boxf_overlap(boxf b0, boxf b1)
+bool boxf_overlap(boxf b0, boxf b1)
 {
     return OVERLAP(b0, b1);
 }
 
-boolean box_contains(box b0, box b1)
+bool box_contains(box b0, box b1)
 {
     return CONTAINS(b0, b1);
 }
 
-boolean boxf_contains(boxf b0, boxf b1)
+bool boxf_contains(boxf b0, boxf b1)
 {
     return CONTAINS(b0, b1);
 }

@@ -189,9 +189,9 @@ static void init2_gd(gdImagePtr im)
     cstk[0].penwidth = WIDTH_NORMAL;
 }
 
-static boolean is_format_truecolor_capable(int Output_lang)
+static bool is_format_truecolor_capable(int Output_lang)
 {
-    boolean rv = FALSE;
+    bool rv = FALSE;
 
     if (Output_lang == GD) {
 	rv = TRUE;
@@ -224,8 +224,8 @@ static boolean is_format_truecolor_capable(int Output_lang)
 static void gd_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     char *bgcolor_str, *truecolor_str;
-    boolean truecolor_p = FALSE;	/* try to use cheaper paletted mode */
-    boolean bg_transparent_p = FALSE;
+    bool truecolor_p = FALSE;	/* try to use cheaper paletted mode */
+    bool bg_transparent_p = FALSE;
     int bgcolor;
 
     external_surface = gvc->job->external_surface;

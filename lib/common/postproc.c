@@ -22,7 +22,7 @@
 
 
 static int Rankdir;
-static boolean Flip;
+static bool Flip;
 static point Offset;
 
 static void place_flip_graph_label(graph_t * g);
@@ -142,7 +142,7 @@ void translate_bb(graph_t * g, int rankdir)
 	translate_bb(GD_clust(g)[c], rankdir);
 }
 
-void dot_nodesize(node_t * n, boolean flip)
+void dot_nodesize(node_t * n, bool flip)
 {
     double x, y;
     int ps;

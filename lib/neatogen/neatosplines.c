@@ -33,12 +33,12 @@ extern double drand48(void);
 extern void printvis(vconfig_t * cp);
 extern int in_poly(Ppoly_t argpoly, Ppoint_t q);
 
-static boolean spline_merge(node_t * n)
+static bool spline_merge(node_t * n)
 {
     return FALSE;
 }
 
-static boolean swap_ends_p(edge_t * e)
+static bool swap_ends_p(edge_t * e)
 {
     return FALSE;
 }
@@ -534,7 +534,7 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
  * is on or inside one of the obstacles and, if so, tells the shortest path
  * computation to ignore them. 
  */
-void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
+void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, bool chkPts)
 {
     Ppolyline_t line, spline;
     Pvector_t slopes[2];
@@ -679,7 +679,7 @@ static int _spline_edges(graph_t * g, double SEP, int splines)
  * Returns 0 on success.
  *
  * The edge function is given the graph, the separation to be added
- * around obstacles, and the type of edge. (At present, this is a boolean,
+ * around obstacles, and the type of edge. (At present, this is a bool,
  * with 1 meaning splines and 0 meaning line segments.) It must guarantee 
  * that all bounding boxes are current; in particular, the bounding box of 
  * g must reflect the addition of the edges.

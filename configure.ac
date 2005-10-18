@@ -1245,6 +1245,7 @@ AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
 	sys/select.h fpu_control.h sys/fpu.h strings.h sys/socket.h sys/stat.h)
 AC_HEADER_TIME
 AC_HEADER_DIRENT
+AC_HEADER_STDBOOL
 
 # Check for socklen_t
 AC_MSG_CHECKING([for socklen_t])

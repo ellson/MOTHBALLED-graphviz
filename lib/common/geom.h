@@ -79,10 +79,10 @@ extern box box_bb(box, box);
 extern boxf boxf_bb(boxf, boxf);
 extern box box_intersect(box, box);
 extern boxf boxf_intersect(boxf, boxf);
-extern boolean box_overlap(box, box);
-extern boolean boxf_overlap(boxf, boxf);
-extern boolean box_contains(box, box);
-extern boolean boxf_contains(boxf, boxf);
+extern bool box_overlap(box, box);
+extern bool boxf_overlap(boxf, boxf);
+extern bool box_contains(box, box);
+extern bool boxf_contains(boxf, boxf);
 extern box flip_rec_box(box b, point p);
 
 extern int lineToBox(pointf p1, pointf p2, boxf b);

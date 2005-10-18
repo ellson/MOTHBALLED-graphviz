@@ -876,7 +876,7 @@ static void set_aspect(graph_t * g)
 {
     double xf = 0.0, yf = 0.0, actual, desired;
     node_t *n;
-    boolean scale_it, filled;
+    bool scale_it, filled;
     point sz;
 
     rec_bb(g, g);
@@ -1144,7 +1144,7 @@ static void contain_nodes(graph_t * g)
 
 /* idealsize:
  * set g->drawing->size to a reasonable default.
- * returns a boolean to indicate if drawing is to
+ * returns a bool to indicate if drawing is to
  * be scaled and filled */
 static int idealsize(graph_t * g, double minallowed)
 {

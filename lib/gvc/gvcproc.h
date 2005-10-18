@@ -32,12 +32,12 @@ extern "C" {
 /* configuration */
 
     extern char *gvconfig_libdir(void);
-    extern void gvconfig(GVC_t * gvc, boolean rescan);
+    extern void gvconfig(GVC_t * gvc, bool rescan);
     extern char *gvhostname(void);
 
 /* plugins */
 
-    extern boolean gvplugin_install(GVC_t * gvc, api_t api,
+    extern bool gvplugin_install(GVC_t * gvc, api_t api,
 		    char *typestr, int quality, char *packagename, char *path,
 		    gvplugin_installed_t * typeptr);
     extern gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *type);
@@ -50,7 +50,7 @@ extern "C" {
 /* job */
 
     extern void gvrender_output_filename_job(GVC_t * gvc, char *name);
-    extern boolean gvrender_output_langname_job(GVC_t * gvc, char *name);
+    extern bool gvrender_output_langname_job(GVC_t * gvc, char *name);
     extern GVJ_t *gvrender_first_job(GVC_t * gvc);
     extern GVJ_t *gvrender_next_job(GVC_t * gvc);
     extern void gvrender_delete_jobs(GVC_t * gvc);

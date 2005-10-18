@@ -44,7 +44,7 @@ extern "C" {
 	void (*end_edges) (GVJ_t * job);
 	void (*begin_node) (GVJ_t * job, char *nodename, long id);
 	void (*end_node) (GVJ_t * job);
-	void (*begin_edge) (GVJ_t * job, char *tailname, boolean directed,
+	void (*begin_edge) (GVJ_t * job, char *tailname, bool directed,
 			    char *headname, long id);
 	void (*end_edge) (GVJ_t * job);
 	void (*begin_anchor) (GVJ_t * job, char *href, char *tooltip,

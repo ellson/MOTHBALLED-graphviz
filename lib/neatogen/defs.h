@@ -74,9 +74,6 @@ extern "C" {
 
 #include <macros.h>
     extern void *gmalloc(size_t);
-    typedef unsigned char bool;
-#define true TRUE
-#define false FALSE
 #define DIGCOLA 1
 
 #ifdef USE_STYLES

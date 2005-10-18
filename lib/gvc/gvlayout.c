@@ -37,7 +37,7 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 
-extern void graph_init(graph_t *g, boolean use_rankdir);
+extern void graph_init(graph_t *g, bool use_rankdir);
 extern void graph_cleanup(graph_t *g);
 
 int gvlayout_select(GVC_t * gvc, char *layout)

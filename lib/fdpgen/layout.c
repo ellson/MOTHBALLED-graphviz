@@ -903,9 +903,9 @@ setClustNodes(graph_t* root)
      * How to combine parts, especially with disparate components?
      */
     if (c_cnt > 1) {
-	boolean *bp;
+	bool *bp;
 	if (pinned) {
-	    bp = N_NEW(c_cnt, boolean);
+	    bp = N_NEW(c_cnt, bool);
 	    bp[0] = TRUE;
 	} else
 	    bp = 0;
