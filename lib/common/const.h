@@ -86,7 +86,8 @@
 #define		MIN_RANKSEP		0.02
 
 /* default margin for paged formats such as PostScript */
-#define		DEFAULT_MARGIN	36
+/* #define		DEFAULT_MARGIN	36 */
+#define		DEFAULT_MARGIN	5
 
 /* default margin for embedded formats such as PNG */
 #define		DEFAULT_EMBED_MARGIN	5
