@@ -92,6 +92,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
       --mandir=%{_mandir} \
       --with-x \
       --with-mylibgd \
+      --disable-static \
       --disable-dependency-tracking
 %__make %{?_smp_mflags}
 

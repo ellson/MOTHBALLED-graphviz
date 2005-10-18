@@ -88,16 +88,14 @@ fi
 dnl -----------------------------------
 # Static binaries 
 
-# Always enable static as dot_static makes it so much easier to debug
-
-#AC_ARG_ENABLE(static,
-#        [AC_HELP_STRING([--enable-codegens], [build static executable])])
-#if test "x$enable_static" = "xyes"; then
-#	AC_DEFINE(ENABLE_STATIC,1,[Define if you want statically linked executables])
-#else
-#	AC_DISABLE_STATIC
-#fi
-#AM_CONDITIONAL(ENABLE_STATIC, [test "x$enable_static" = "xyes"])
+AC_ARG_ENABLE(static,
+        [AC_HELP_STRING([--enable-static], [build static executable])])
+if test "x$enable_static" != "xno"; then
+	AC_DEFINE(ENABLE_STATIC,1,[Define if you want statically linked executables])
+else
+	AC_DISABLE_STATIC
+fi
+AM_CONDITIONAL(ENABLE_STATIC, [test "x$enable_static" != "xno"])
 
 dnl -----------------------------------
 dnl checks for compilers
