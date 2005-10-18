@@ -25,11 +25,10 @@
 
 #include <stdio.h>
 
-#include "logic.h"
 #include "geom.h"
+
 #include "const.h"
 #include "types.h"
-#include "macros.h"
 #include "graph.h"
 #include "cdt.h"
 

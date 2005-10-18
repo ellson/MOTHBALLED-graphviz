@@ -14,15 +14,16 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include "render.h"
-#include "gvplugin.h"
-#include "gvcint.h"
-#include "gvcproc.h"
-#include "colortbl.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 
-static void hsv2rgb(double h, double s, double v, double *r, double *g,
-		    double *b)
+#include "color.h"
+#include "colortbl.h"
+
+static void hsv2rgb(double h, double s, double v,
+			double *r, double *g, double *b)
 {
     int i;
     double f, p, q, t;
@@ -75,8 +76,8 @@ static void hsv2rgb(double h, double s, double v, double *r, double *g,
     }
 }
 
-static void rgb2hsv(double r, double g, double b, double *h, double *s,
-		    double *v)
+static void rgb2hsv(double r, double g, double b,
+		double *h, double *s, double *v)
 {
 
     double rgbmin, rgbmax;
@@ -121,7 +122,7 @@ static void rgb2cmyk(double r, double g, double b, double *c, double *m,
     *y -= *k;
 }
 
-static int colorcmpf(void *p0, void *p1)
+static int colorcmpf(const void *p0, const void *p1)
 {
     /* fast comparison of first character */
     int i = (((hsbcolor_t *) p0)->name[0] - ((hsbcolor_t *) p1)->name[0]);
@@ -132,40 +133,47 @@ static int colorcmpf(void *p0, void *p1)
 
 char *canontoken(char *str)
 {
-    static unsigned char canon[SMALLBUF];
-    unsigned char c;
-    unsigned char *p = (unsigned char *) str;
-    unsigned char *q = canon;
-    int i = SMALLBUF;
+    static unsigned char *canon;
+    static int allocated;
+    unsigned char c, *p, *q;
+    int len;
 
-    while ((c = *p++) && (--i)) {
+    p = (unsigned char *) str;
+    len = strlen(str);
+    if (len >= allocated) {
+	allocated = len + 1 + 10;
+	canon = realloc(canon, allocated);
+	if (!canon)
+	    return NULL;
+    }
+    q = (unsigned char *) canon;
+    while ((c = *p++)) {
 	if (isalnum(c) == FALSE)
 	    continue;
 	if (isupper(c))
 	    c = tolower(c);
 	*q++ = c;
     }
-    if (c)
-	agerr(AGWARN, "color value '%s' truncated\n", str);
     *q = '\0';
-    return (char *) canon;
+    return (char*)canon;
 }
 
-void colorxlate(char *str, color_t * color, color_type_t target_type)
+int colorxlate(char *str, color_t * color, color_type_t target_type)
 {
     static hsbcolor_t *last;
-    hsbcolor_t fake;
-    unsigned char canon[SMALLBUF];
+    static unsigned char *canon;
+    static int allocated;
     unsigned char *p, *q;
-    char *missedcolor;
-    unsigned char ch;
+    hsbcolor_t fake;
+    unsigned char c;
     double H, S, V, R, G, B;
     double C, M, Y, K;
     unsigned int r, g, b, a;
-    int i;
+    int len, rc;
 
     color->type = target_type;
 
+    rc = COLOR_OK;
     for (; *str == ' '; str++);	/* skip over any leading whitespace */
     p = (unsigned char *) str;
 
@@ -217,20 +225,26 @@ void colorxlate(char *str, color_t * color, color_type_t target_type)
 	case COLOR_INDEX:
 	    break;
 	}
-	return;
+	return rc;
     }
 
     /* test for hsv value such as: ".6,.5,.3" */
-    if (((ch = *p) == '.') || isdigit(ch)) {
-	q = canon;
-	i = SMALLBUF;
-	while ((ch = *p++) && (--i)) {
-	    if (ch == ',')
-		ch = ' ';
-	    *q++ = ch;
+    if (((c = *p) == '.') || isdigit(c)) {
+	len = strlen((char*)p);
+	if (len >= allocated) {
+	    allocated = len + 1 + 10;
+	    canon = realloc(canon, allocated);
+	    if (! canon) {
+		rc = COLOR_MALLOC_FAIL;
+		return rc;
+	    }
 	}
-	if (ch)
-	    agerr(AGWARN, "color value '%s' truncated\n", str);
+	q = canon;
+	while ((c = *p++)) {
+	    if (c == ',')
+		c = ' ';
+	    *q++ = c;
+	}
 	*q = '\0';
 
 	if (sscanf((char *) canon, "%lf%lf%lf", &H, &S, &V) == 3) {
@@ -278,12 +292,14 @@ void colorxlate(char *str, color_t * color, color_type_t target_type)
 	    case COLOR_INDEX:
 		break;
 	    }
-	    return;
+	    return rc;
 	}
     }
 
     /* test for known color name (generic, not renderer specific known names) */
     fake.name = canontoken(str);
+    if (!fake.name)
+	return COLOR_MALLOC_FAIL;
     if ((last == NULL)
 	|| (last->name[0] != fake.name[0])
 	|| (strcmp(last->name, fake.name))) {
@@ -291,7 +307,7 @@ void colorxlate(char *str, color_t * color, color_type_t target_type)
 				      (void *) color_lib,
 				      sizeof(color_lib) /
 				      sizeof(hsbcolor_t), sizeof(fake),
-				      (bsearch_cmpf) colorcmpf);
+				      colorcmpf);
     }
     if (last != NULL) {
 	switch (target_type) {
@@ -346,15 +362,11 @@ void colorxlate(char *str, color_t * color, color_type_t target_type)
 	case COLOR_INDEX:
 	    break;
 	}
-	return;
+	return rc;
     }
 
     /* if we're still here then we failed to find a valid color spec */
-    missedcolor = malloc(strlen(str) + 16);
-    sprintf(missedcolor, "color %s", str);
-    if (emit_once(missedcolor))
-	agerr(AGWARN, "%s is not a known color. Using black.\n", str);
-    free(missedcolor);
+    rc = COLOR_UNKNOWN;
     switch (target_type) {
     case HSV_DOUBLE:
 	color->u.HSV[0] = color->u.HSV[1] = color->u.HSV[2] = 0.0;
@@ -381,5 +393,5 @@ void colorxlate(char *str, color_t * color, color_type_t target_type)
     case COLOR_INDEX:
 	break;
     }
-    return;
+    return rc;
 }

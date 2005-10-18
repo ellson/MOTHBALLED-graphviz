@@ -17,10 +17,10 @@
 /* geometric functions (e.g. on points and boxes) with application to, but
  * no specific dependance on graphs */
 
+#include "arith.h"
+
 #ifndef GV_GEOM_H
 #define GV_GEOM_H
-
-#include "pathplan.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,44 +29,13 @@ extern "C" {
 typedef struct { int x, y; } point;
 
 typedef struct pointf_s { double x, y; } pointf;
+
+/* tell pathplan/pathgeom.h */
 #define HAVE_POINTF_S
 
 typedef struct { point LL, UR; } box;
 
 typedef struct { pointf LL, UR; } boxf;
-
-#ifdef MIN
-#undef MIN
-#endif
-#define MIN(a,b)	((a)<(b)?(a):(b))
-
-#ifdef MAX
-#undef MAX
-#endif
-#define MAX(a,b)	((a)>(b)?(a):(b))
-
-#ifdef ABS
-#undef ABS
-#endif
-#define ABS(a)		((a) >= 0 ? (a) : -(a))
-
-#ifndef MAXINT
-#define	MAXINT		((int)(~(unsigned)0 >> 1))
-#endif
-#ifndef MAXSHORT
-#define	MAXSHORT	(0x7fff)
-#endif
-#ifndef MAXDOUBLE
-#define MAXDOUBLE   1.7976931348623157e+308
-#endif
-#ifndef MAXFLOAT
-#define MAXFLOAT   ((float)3.40282347e+38)
-#endif
-
-#ifdef BETWEEN
-#undef BETWEEN
-#endif
-#define BETWEEN(a,b,c)	(((a) <= (b)) && ((b) <= (c)))
 
 /* true if point p is inside box b */
 #define INSIDE(p,b)	(BETWEEN((b).LL.x,(p).x,(b).UR.x) && BETWEEN((b).LL.y,(p).y,(b).UR.y))
@@ -80,11 +49,6 @@ typedef struct { pointf LL, UR; } boxf;
 /* expand box b0 as needed to enclose box b1 */
 #define EXPANDBB(b0, b1) (b0.LL.x = MIN(b0.LL.x, b1.LL.x), b0.LL.y = MIN(b0.LL.y, b1.LL.y), b0.UR.x = MAX(b0.UR.x, b1.UR.x), b0.UR.y = MAX(b0.UR.y, b1.UR.y))
 
-#define ROUND(f)        ((f>=0)?(int)(f + .5):(int)(f - .5))
-#define RADIANS(deg)	((deg)/180.0 * PI)
-#define DEGREES(rad)	((rad)/PI * 180.0)
-
-#define SQR(v) ((v) * (v))
 #define DIST2(p1,p2) (SQR((p1.x) - (p2.x))) + (SQR((p1.y) - (p2.y)))
 #define DIST(p1,p2) (sqrt(DIST2((p1),(p2))))
 

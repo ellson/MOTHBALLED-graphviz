@@ -17,6 +17,10 @@
 #ifndef GV_TYPES_H
 #define GV_TYPES_H
 
+#include "geom.h"
+#include "pathplan.h"
+#include "color.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -291,29 +295,6 @@ extern "C" {
 	unsigned char LR;	/* if box list is horizontal (left to right) */
 	unsigned char sides;    /* sides of node exposed to field */
     } field_t;
-
-    typedef struct hsbcolor_t {
-	char *name;
-	unsigned char h, s, b;
-    } hsbcolor_t;
-
-/* possible representations of color in color_t */
-    typedef enum { HSV_DOUBLE, RGBA_BYTE, RGBA_WORD, CMYK_BYTE,
-	    RGBA_DOUBLE, COLOR_STRING, COLOR_INDEX } color_type_t;
-
-/* color_t can hold a color spec in a choice or representations */
-    typedef struct color_s {
-	union {
-	    double RGBA[4];
-	    double HSV[3];
-	    unsigned char rgba[4];
-	    unsigned char cmyk[4];
-	    int rrggbbaa[4];
-	    char *string;
-	    int index;
-	} u;
-	color_type_t type;
-    } color_t;
 
     typedef struct nlist_t {
 	node_t **list;

@@ -24,11 +24,10 @@
 
 #include <stdio.h>
 
-#include "logic.h"
 #include "geom.h"
+
 #include "const.h"
 #include "types.h"
-#include "macros.h"
 
 #include "gvplugin_textlayout.h"
 #include "gvplugin.h"

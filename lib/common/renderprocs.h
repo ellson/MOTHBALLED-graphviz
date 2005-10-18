@@ -42,8 +42,6 @@ extern "C" {
 				 splineInfo *);
     extern char *canontoken(char *str);
     extern char* charsetToStr (int c);
-    extern void colorxlate(char *str, color_t * color,
-			   color_type_t target_type);
     extern point coord(node_t * n);
     extern void do_graph_label(graph_t * sg);
     extern void graph_init(graph_t * g, boolean use_rankdir);

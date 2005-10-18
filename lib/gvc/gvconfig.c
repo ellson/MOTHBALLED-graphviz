@@ -29,12 +29,13 @@
 #include	<glob.h>
 #endif
 
-#include        "logic.h"
 #include        "geom.h"
-#include        "macros.h"
+#include        "color.h"
+
 #include        "const.h"
 #include        "types.h"
 #include        "graph.h"
+
 #include	"gvplugin.h"
 #include	"gvcint.h"
 #include        "gvcproc.h"

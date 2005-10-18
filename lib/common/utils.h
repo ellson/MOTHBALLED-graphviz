@@ -18,15 +18,6 @@
 extern "C" {
 #endif
 
-
-/* extern char *pathget(char *, char *, char *); */
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include "geom.h"
-
 #ifndef HAVE_STRCASECMP
     extern int strcasecmp(const char *s1, const char *s2);
 #endif

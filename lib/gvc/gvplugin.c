@@ -26,11 +26,11 @@
 #include	<ltdl.h>
 #endif
 
-#include        "logic.h"
 #include        "geom.h"
+
 #include        "types.h"
-#include        "macros.h"
 #include        "graph.h"
+
 #include        "gvplugin.h"
 #include        "gvcint.h"
 #include        "gvcproc.h"

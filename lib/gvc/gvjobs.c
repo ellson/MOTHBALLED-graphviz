@@ -21,9 +21,10 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 
-#include	"logic.h"
 #include	"geom.h"
+
 #include	"types.h"
+
 #include        "gvplugin.h"
 #include        "gvcint.h"
 #include        "gvcproc.h"

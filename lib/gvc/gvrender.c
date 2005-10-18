@@ -29,12 +29,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "logic.h"
 #include "geom.h"
+#include "pathplan.h"
+#include "color.h"
 #include "const.h"
 #include "types.h"
 #include "macros.h"
-#include "geom.h"
 #include "globals.h"
 #include "graph.h"
 #include "cdt.h"
@@ -44,14 +44,11 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 
+extern int emit_once(char *str);
+
 #ifndef DISABLE_CODEGENS
 extern codegen_t PS_CodeGen;
 #endif
-
-/* FIXME - need these but without rest of crap in common/ */
-extern void colorxlate(char *str, color_t * color,
-		       color_type_t target_type);
-extern char *canontoken(char *str);
 
 int gvrender_select(GVJ_t * job, char *str)
 {
@@ -197,6 +194,7 @@ static void gvrender_resolve_color(gvrender_features_t * features,
 				   char *name, color_t * color)
 {
     char *tok;
+    int rc;
 
     color->u.string = name;
     color->type = COLOR_STRING;
@@ -204,7 +202,19 @@ static void gvrender_resolve_color(gvrender_features_t * features,
     if (!features->knowncolors || (bsearch(&tok, features->knowncolors, features->sz_knowncolors,
 		 sizeof(char *), gvrender_comparestr)) == NULL) {
 	/* if tok was not found in known_colors */
-	colorxlate(name, color, features->color_type);
+	rc = colorxlate(name, color, features->color_type);
+	if (rc != COLOR_OK) {
+	    if (rc == COLOR_UNKNOWN) {
+		char *missedcolor = malloc(strlen(name) + 16);
+		sprintf(missedcolor, "color %s", name);
+		if (emit_once(missedcolor))
+		    agerr(AGWARN, "%s is not a known color.\n", name);
+		free(missedcolor);
+	    }
+	    else {
+		agerr(AGERR, "error in colxlate()\n");
+	    }
+	}
     }
 }
 

@@ -27,11 +27,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "logic.h"
 #include "geom.h"
+
 #include "const.h"
 #include "types.h"
-#include "macros.h"
 
 #include "gvplugin_device.h"
 #include "gvplugin.h"

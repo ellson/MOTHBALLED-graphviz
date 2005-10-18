@@ -37,11 +37,11 @@
 
 #include <stdio.h>
 
-#include "logic.h"
 #include "geom.h"
+
+#include "macros.h"
 #include "const.h"
 #include "types.h"
-#include "macros.h"
 #include "cdt.h"
 #include "graph.h"
 

@@ -18,8 +18,6 @@
  * no specific dependance on graphs */
 
 #include <stdio.h>
-#include "logic.h"
-#include "pathplan.h"
 #include "geom.h"
 
 point pointof(int x, int y)
