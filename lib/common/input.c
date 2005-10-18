@@ -66,7 +66,7 @@ static char *memtestItems = "\n\
 
 static char *configFlags = "(additional options for config)  [-c]\n";
 static char *configItems = "\n\
- -m          - Configure plugins (Writes $prefix/lib/graphviz/config \n\
+ -c          - Configure plugins (Writes $prefix/lib/graphviz/config \n\
                with available plugin information.  Needs write priviledge.)\n";
 
 void dotneato_usage(int exval)
