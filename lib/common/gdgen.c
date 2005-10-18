@@ -220,7 +220,8 @@ static bool is_format_truecolor_capable(int Output_lang)
 
 static void gd_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
-    char *bgcolor_str, *truecolor_str;
+    char *bgcolor_str = NULL;
+    char *truecolor_str;
     bool truecolor_p = FALSE;	/* try to use cheaper paletted mode */
     bool bg_transparent_p = FALSE;
     int bgcolor;
