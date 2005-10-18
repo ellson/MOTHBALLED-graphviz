@@ -23,8 +23,124 @@
 #define ZOOMFACTOR 1.1
 #define EPSILON .0001
 
+/* FIXME - gv_argvlist_set_item and gv_argvlist_free should be in a utilities sourcefile */
+static void gv_argvlist_set_item(gv_argvlist_t *list, int index, char *item)
+{
+    if (index >= list->alloc) {
+	list->alloc = index + 10;
+	list->argv = realloc(list->argv, (list->alloc)*(sizeof(char*)));
+    }
+    list->argv[index] = item;
+}
+
+static void gv_graph_state(GVJ_t *job, graph_t *g)
+{
+    int i, j;
+    Agsym_t *a;
+    gv_argvlist_t *list;
+
+    list = &(job->selected_obj_type_name);
+    j = 0;
+    if (g == g->root) {
+	if (g->kind && AGFLAG_DIRECTED) 
+            gv_argvlist_set_item(list, j++, "digraph");
+	else
+            gv_argvlist_set_item(list, j++, "graph");
+    }
+    else {
+        gv_argvlist_set_item(list, j++, "subgraph");
+    }
+    gv_argvlist_set_item(list, j++, g->name);
+    list->argc = j;
+
+    list = &(job->selected_obj_attributes);
+    for (i = 0, j = 0; i < dtsize(g->univ->globattr->dict); i++) {
+        a = g->univ->globattr->list[i];
+        gv_argvlist_set_item(list, j++, a->name);
+        gv_argvlist_set_item(list, j++, agxget(g, a->index));
+    }
+    list->argc = j;
+}
+
+static void gv_node_state(GVJ_t *job, node_t *n)
+{
+    int i, j;
+    Agsym_t *a;
+    Agraph_t *g;
+    gv_argvlist_t *list;
+
+    list = &(job->selected_obj_type_name);
+    j = 0;
+    gv_argvlist_set_item(list, j++, "node");
+    gv_argvlist_set_item(list, j++, n->name);
+    list->argc = j;
+
+    list = &(job->selected_obj_attributes);
+    g = n -> graph -> root;
+    for (i = 0, j = 0; i < dtsize(g->univ->nodeattr->dict); i++) {
+        a = g->univ->nodeattr->list[i];
+        gv_argvlist_set_item(list, j++, a->name);
+        gv_argvlist_set_item(list, j++, agxget(n, a->index));
+    }
+    list->argc = j;
+}
+
+static void gv_edge_state(GVJ_t *job, edge_t *e)
+{
+    int i, j;
+    Agsym_t *a;
+    Agraph_t *g;
+    gv_argvlist_t *nlist, *alist;
+
+    nlist = &(job->selected_obj_type_name);
+
+    /* only tail, head, and key are strictly identifying properties,
+     * but we commonly alse use edge kind (e.g. "->") and tailport,headport
+     * in edge names */
+    j = 0;
+    gv_argvlist_set_item(nlist, j++, "edge");
+    gv_argvlist_set_item(nlist, j++, e->tail->name);
+    j++; /* skip tailport slot for now */
+    gv_argvlist_set_item(nlist, j++, (e->tail->graph->kind && AGFLAG_DIRECTED)?"->":"--");
+    gv_argvlist_set_item(nlist, j++, e->head->name);
+    j++; /* skip headport slot for now */
+    j++; /* skip key slot for now */
+    nlist->argc = j;
+
+    alist = &(job->selected_obj_attributes);
+    g = e -> head -> graph -> root;
+    for (i = 0, j = 0; i < dtsize(g->univ->edgeattr->dict); i++) {
+        a = g->univ->edgeattr->list[i];
+
+	/* tailport and headport can be shown as part of the name, but they
+	 * are not identifying properties of the edge so we 
+	 * also list them as modifyable attributes. */
+        if (strcmp(a->name,"tailport") == 0)
+	    gv_argvlist_set_item(nlist, 2, agxget(e, a->index));
+	else if (strcmp(a->name,"headport") == 0)
+	    gv_argvlist_set_item(nlist, 5, agxget(e, a->index));
+
+	/* key is strictly an identifying property to distinguish multiple
+	 * edges between the same node pair.   Its non-writable, so
+	 * no need to list it as an attribute as well. */
+	else if (strcmp(a->name,"key") == 0) {
+	    gv_argvlist_set_item(nlist, 6, agxget(e, a->index));
+	    continue;
+	}
+
+        gv_argvlist_set_item(alist, j++, a->name);
+        gv_argvlist_set_item(alist, j++, agxget(e, a->index));
+    }
+    alist->argc = j;
+}
+
 static void gvevent_refresh(GVJ_t * job)
 {
+    if (!job->selected_obj) {
+	job->selected_obj = job->g;
+	GD_selected(job->g) = TRUE;
+	gv_graph_state(job, job->g);
+    }
     emit_graph(job, job->g);
 }
 
@@ -143,108 +259,6 @@ static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
     }
 }
 
-/* FIXME - gv_argvlist_set_item and gv_argvlist_free should be in a utilities sourcefile */
-static void gv_argvlist_set_item(gv_argvlist_t *list, int index, char *item)
-{
-    if (index >= list->alloc) {
-	list->alloc = index + 10;
-	list->argv = realloc(list->argv, (list->alloc)*(sizeof(char*)));
-    }
-    list->argv[index] = item;
-}
-
-static void gv_graph_state(GVJ_t *job, graph_t *g)
-{
-    int i, j;
-    Agsym_t *a;
-    gv_argvlist_t *list;
-
-    list = &(job->selected_obj_type_name);
-    j = 0;
-    if (g == g->root) {
-	if (g->kind && AGFLAG_DIRECTED) 
-            gv_argvlist_set_item(list, j++, "digraph");
-	else
-            gv_argvlist_set_item(list, j++, "graph");
-    }
-    else {
-        gv_argvlist_set_item(list, j++, "subgraph");
-    }
-    gv_argvlist_set_item(list, j++, g->name);
-    list->argc = j;
-
-    list = &(job->selected_obj_attributes);
-    for (i = 0, j = 0; i < dtsize(g->univ->globattr->dict); i++) {
-        a = g->univ->globattr->list[i];
-        gv_argvlist_set_item(list, j++, a->name);
-        gv_argvlist_set_item(list, j++, agxget(g, a->index));
-    }
-    list->argc = j;
-}
-
-static void gv_node_state(GVJ_t *job, node_t *n)
-{
-    int i, j;
-    Agsym_t *a;
-    Agraph_t *g;
-    gv_argvlist_t *list;
-
-    list = &(job->selected_obj_type_name);
-    j = 0;
-    gv_argvlist_set_item(list, j++, "node");
-    gv_argvlist_set_item(list, j++, n->name);
-    list->argc = j;
-
-    list = &(job->selected_obj_attributes);
-    g = n -> graph -> root;
-    for (i = 0, j = 0; i < dtsize(g->univ->nodeattr->dict); i++) {
-        a = g->univ->nodeattr->list[i];
-        gv_argvlist_set_item(list, j++, a->name);
-        gv_argvlist_set_item(list, j++, agxget(n, a->index));
-    }
-    list->argc = j;
-}
-
-static void gv_edge_state(GVJ_t *job, edge_t *e)
-{
-    int i, j;
-    Agsym_t *a;
-    Agraph_t *g;
-    gv_argvlist_t *nlist, *alist;
-
-    nlist = &(job->selected_obj_type_name);
-    j = 0;
-    gv_argvlist_set_item(nlist, j++, "edge");
-    gv_argvlist_set_item(nlist, j++, e->tail->name);
-    j++; /* skip tailport slot for now */
-    gv_argvlist_set_item(nlist, j++, (e->tail->graph->kind && AGFLAG_DIRECTED)?"->":"--");
-    gv_argvlist_set_item(nlist, j++, e->head->name);
-    j++; /* skip headport slot for now */
-    j++; /* skip key slot for now */
-    nlist->argc = j;
-
-    alist = &(job->selected_obj_attributes);
-    g = e -> head -> graph -> root;
-    for (i = 0, j = 0; i < dtsize(g->univ->edgeattr->dict); i++) {
-        a = g->univ->edgeattr->list[i];
-        if (strcmp(a->name,"tailport") == 0) {
-	    gv_argvlist_set_item(nlist, 2, agxget(e, a->index));
-	    continue;
-	}
-        if (strcmp(a->name,"headport") == 0) {
-	    gv_argvlist_set_item(nlist, 5, agxget(e, a->index));
-	    continue;
-	}
-        if (strcmp(a->name,"key") == 0) {
-	    gv_argvlist_set_item(nlist, 6, agxget(e, a->index));
-	    continue;
-	}
-        gv_argvlist_set_item(alist, j++, a->name);
-        gv_argvlist_set_item(alist, j++, agxget(e, a->index));
-    }
-    alist->argc = j;
-}
-
 static void gvevent_select_current_obj(GVJ_t * job)
 {
     void *obj;
@@ -283,7 +297,7 @@ static void gvevent_select_current_obj(GVJ_t * job)
         }
     }
 
-#if 1
+#if 0
 for (i = 0; i < job->selected_obj_type_name.argc; i++)
     fprintf(stderr,"%s%s", job->selected_obj_type_name.argv[i],
 	(i==(job->selected_obj_type_name.argc - 1))?"\n":" ");
