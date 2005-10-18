@@ -1,8 +1,8 @@
-#!/bin/ksh
 
 FILES=""
 MLEVEL="0"
 LMODE="async"
+FLAGS=
 
 function usage {
     print "usage: lneato [-V] [-lm (sync|async)] [-el (0|1)] <filename>"
@@ -12,7 +12,13 @@ function processoptions {
     while [[ $# > 0 ]] do
         case $1 in
         -V)
-            print "lneato version 96b (06-24-96)"
+            print "lneato version 96c (09-24-96)"
+			FLAGS=$FLAGS" -V"
+            shift
+            ;;
+        -f)
+            shift
+            loadfile=$1
             shift
             ;;
         -lm)
@@ -34,7 +40,7 @@ function processoptions {
             shift
             ;;
         -)
-            FILES="$(print $FILES "'"$1"'")"
+            FILES=$(print $FILES "'"$1"'")
             shift
             ;;
         -*)
@@ -42,7 +48,7 @@ function processoptions {
             exit 1
             ;;
         *)
-            FILES="$(print $FILES "'"$1"'")"
+            FILES=$(print $FILES "'"$1"'")
             shift
             ;;
         esac
@@ -55,27 +61,49 @@ fi
 processoptions "$@"
 
 if [[ $DOTTYPATH != '' ]] then
-    LEFTYPATH="$DOTTYPATH:$LEFTYPATH"
+    export LEFTYPATH="$DOTTYPATH:$LEFTYPATH"
 fi
 
 CMDS=""
 
 CMDS="dotty.protogt.layoutmode = '$LMODE';"
 
-CMDS="$(print $CMDS dotty.mlevel = $MLEVEL";")"
+CMDS=$(print $CMDS dotty.mlevel = $MLEVEL";")
 
-if [[ $FILES == '' ]] then
+if [[ $loadfile != '' ]] then
+    CMDS=$(print $CMDS load \("'"$loadfile"'"\)";")
+fi
+
+if [[ $FILES = '' ]] then
     FILES=null
 fi
 FUNC="dotty.createviewandgraph"
 for i in $FILES; do
-    CMDS="$(print $CMDS $FUNC \($i, "'"file"'", null, null\)";")"
+    CMDS=$(print $CMDS $FUNC \($i, "'"file"'", null, null\)";")
 done
 
-lefty -e "
+leftypath=$(whence -p lefty)
+if [[ $leftypath == '' ]] then
+    print -u2 "lneato: cannot locate the lefty program"
+    print -u2 "       make sure that your path includes"
+    print -u2 "       the directory containing lneato and lefty"
+    exit 1
+fi
+
+$leftypath $FLAGS -e "
 load ('dotty.lefty');
 dotty.protogt.lserver = 'neato';
-dotty.protogt.graph.type = 'graph';
+checkpath = function () {
+    if (tablesize (dotty) > 0)
+        remove ('checkpath');
+    else {
+        echo ('lneato: cannot locate the dotty scripts');
+        echo ('       make sure that the environment variable LEFTYPATH');
+        echo ('       is set to the directory containing dotty.lefty');
+        exit ();
+    }
+};
+checkpath ();
 dotty.init ();
 monitorfile = dotty.monitorfile;
 $CMDS
