@@ -1022,8 +1022,8 @@ majorization(graph_t * g, int nv, int mode, int model, int dim, int steps)
 	coords[i] = coords[0] + i * nv;
     }
     if (Verbose) {
-	fprintf(stderr, "model %d smart_init %d iterations %d tol %f\n",
-		model, (init == INIT_SELF), MaxIter, Epsilon);
+	fprintf(stderr, "mode %d model %d smart_init %d iterations %d tol %f\n",
+		mode, model, (init == INIT_SELF), MaxIter, Epsilon);
 	fprintf(stderr, "convert graph: ");
 	start_timer();
     }
