@@ -21,8 +21,6 @@
 
 #include <stdio.h>
 
-#include "geom.h"
-
 #include "types.h"
 
 #include "gvplugin_layout.h"
