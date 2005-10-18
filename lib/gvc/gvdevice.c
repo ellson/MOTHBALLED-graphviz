@@ -82,18 +82,18 @@ extern gvdevice_callbacks_t gvdevice_callbacks;
 
 void gvdevice_finalize(GVC_t * gvc)
 {
-    GVJ_t *job = gvc->active_jobs;
-    gvdevice_engine_t *gvde = job->device.engine;
+    GVJ_t *firstjob = gvc->active_jobs;
+    gvdevice_engine_t *gvde = firstjob->device.engine;
 
     if (gvde) {
 	if (gvde->finalize) {
-	    job->callbacks = &gvdevice_callbacks;
-	    gvde->finalize(gvc);
+	    firstjob->callbacks = &gvdevice_callbacks;
+	    gvde->finalize(firstjob);
 	}
     }
 #ifndef DISABLE_CODEGENS
     else {
-	codegen_t *cg = job->codegen;
+	codegen_t *cg = firstjob->codegen;
 
 	if (cg && cg->reset)
 	    cg->reset();

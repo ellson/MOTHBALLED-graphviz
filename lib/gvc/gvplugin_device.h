@@ -18,16 +18,14 @@
 #define GVDEVICE_PLUGIN_H
 
 #include "gvplugin.h"
-#include "geom.h"
-#include "color.h"
-#include "gvcint.h"
+#include "gvcjob.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
     struct gvdevice_engine_s {
-	void (*finalize) (GVC_t * gvc);
+	void (*finalize) (GVJ_t * firstjob);
     };
 
 #ifdef __cplusplus
