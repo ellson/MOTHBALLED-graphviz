@@ -21,6 +21,7 @@
 
 #ifndef DISABLE_CODEGENS
 extern codegen_t *Output_codegen;
+extern codegen_t *GD_CodeGen;
 #endif
 
 static void storeline(textlabel_t * lp, char *line, char terminator,
