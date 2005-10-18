@@ -20,6 +20,12 @@ libexpr_la_SOURCES = excc.c excontext.c exdata.c exerror.c \
 	exeval.c exexpr.c exlexname.c exopen.c exrewind.c extoken.c \
 	extype.c exzero.c exparse.y
 
+libexpr_la_LIBADD = \
+	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/ast/libast.la \
+	$(top_builddir)/lib/sfio/libsfio.la \
+	$(top_builddir)/lib/vmalloc/libvmalloc.la -lc
+
 $(libexpr_la_OBJECTS): exparse.h exparse.c exgram.h exop.h
 
 y.output: $(top_srcdir)/lib/expr/exparse.y
