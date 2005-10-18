@@ -13,11 +13,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt
 
-if ENABLE_STATIC
-bin_PROGRAMS = dot dot_static
-else
 bin_PROGRAMS = dot
-endif
+noinst_PROGRAMS = dot_static
 man_MANS = dot.1 
 pdf_DATA = dot.pdf
 
