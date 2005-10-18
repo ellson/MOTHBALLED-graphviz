@@ -528,17 +528,24 @@ static void gvevent_delete (GVJ_t * job)
 static void gvevent_read (GVJ_t * job, char *filename, char *layout)
 {
     FILE *f;
+    GVC_t *gvc;
 
-    if (job->gvc->g) {
-        gvFreeLayout(job->gvc, job->gvc->g);
-	agclose(job->gvc->g);
+    gvc = job->gvc;
+    if (gvc->g) {
+        gvFreeLayout(gvc, gvc->g);
+	agclose(gvc->g);
     }
-    f = fopen(filename, "r");
-    if (!f)
-	return;   /* FIXME - need some error handling */
-    job->gvc->g = agread(f);
-    fclose(f);
-    gvLayout(job->gvc, job->gvc->g, layout);
+    if (!filename) {
+	gvc->g = agopen("G", AGDIGRAPH);
+    }
+    else {
+	f = fopen(filename, "r");
+	if (!f)
+		return;   /* FIXME - need some error handling */
+	gvc->g = agread(f);
+	fclose(f);
+    }
+    gvLayout(gvc, gvc->g, layout);
 }
 
 static void gvevent_layout (GVJ_t * job, char *layout)
