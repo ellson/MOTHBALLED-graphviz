@@ -192,7 +192,7 @@ extern "C" {
 		click,
 		active,
 		has_grown,
-		is_configured;
+		has_been_rendered;
 
 	pointf pointer;		/* pointer position in device units */
 	pointf oldpointer;	/* old pointer position in device units */

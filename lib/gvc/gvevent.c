@@ -181,6 +181,7 @@ static void gvevent_refresh(GVJ_t * job)
 	gv_graph_state(job, g);
     }
     emit_graph(job, g);
+    job->has_been_rendered = TRUE;
 }
 
 /* recursively find innermost cluster containing the point */
