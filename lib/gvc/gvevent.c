@@ -77,6 +77,7 @@ static void gv_graph_state(GVJ_t *job, graph_t *g)
         a = g->univ->globattr->list[i];
         gv_argvlist_set_item(list, j++, a->name);
         gv_argvlist_set_item(list, j++, agxget(g, a->index));
+        gv_argvlist_set_item(list, j++, (char*)GVATTR_STRING);
     }
     list->argc = j;
 

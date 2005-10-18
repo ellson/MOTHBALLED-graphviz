@@ -41,6 +41,7 @@ extern "C" {
     typedef enum { FONT_REGULAR, FONT_BOLD, FONT_ITALIC } font_type;
 #define PENWIDTH_NORMAL 1.
 #define PENWIDTH_BOLD 2.
+    typedef enum { GVATTR_STRING, GVATTR_BOOL, GVATTR_COLOR } gvattr_t;
 
     typedef struct {
 	char *fontfam, fontopt;
@@ -204,8 +205,9 @@ extern "C" {
 	char *active_tooltip;		/* tooltip of active object - or NULL */
 	char *selected_href;		/* href of selected object - or NULL */
 	gv_argvlist_t selected_obj_type_name; /* (e.g. "edge" "node3" "e" "->" "node5" "") */
-	gv_argvlist_t selected_obj_attributes; /* even args are names, odd are values */
-				/* e.g. "color" "red" "style" "filled" */
+	gv_argvlist_t selected_obj_attributes; /* attribute triplets: name, value, type */
+				/* e.g. "color", "red", GVATTR_COLOR,
+					"style", "filled", GVATTR_BOOL, */
 
 	void *window;		/* display-specific data for gvrender plugin */
 
