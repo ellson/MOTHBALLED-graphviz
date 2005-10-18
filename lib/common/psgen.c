@@ -190,7 +190,7 @@ fprintf(stderr,"offset = %d,%d\n", offset.x, offset.y);
 		  "canvas size (%d,%d) exceeds PDF limit (%d)\n"
 		  "\t(suggest setting a bounding box size, see dot(1))\n",
 		  sz.x, sz.y, PDFMAX);
-	fprintf(Output_file, "[ /CropBox [%d %d %d %d] /PAGES pdfmark\n",
+	fprintf(Output_file, "[ /CropBox [%d %d %d %d] /PAGE pdfmark\n",
 		0, 0, sz.x, sz.y);
     }
 }
