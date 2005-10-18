@@ -41,7 +41,7 @@ static char *pstopng="gs -dNOPAUSE -sDEVICE=pngalpha -sOutputFile=- -q -";
 static gdImagePtr imageLoad (char *filename)
 {
     FILE *f;
-    char *ext, *cmd, *tmp, *base;
+    char *ext, *cmd, *tmp;
     gdImagePtr im;
     int rc;
     struct stat statbuf;
@@ -58,31 +58,32 @@ static gdImagePtr imageLoad (char *filename)
     }
     if (strcasecmp(ext, ".ps") == 0) {
 	ext = ".png";
-	base = strrchr(filename, '/');
-	if (base != filename)
-	    base++;
-	tmp = malloc(strlen(base) + 20 + strlen(ext));
-	strcpy(tmp,"/tmp/diffimg-");
-	strcat(tmp,base);
+	tmp = malloc(strlen(filename) + strlen(ext) + 1);
+	strcpy(tmp,filename);
 	strcat(tmp,ext);
 	
-	cmd = malloc(strlen(pstopng) + strlen(filename) + strlen(tmp) + 10);
+	cmd = malloc(strlen(pstopng) + 2 + strlen(filename) + 2 + strlen(tmp) + 1);
 	strcpy(cmd,pstopng);
 	strcat(cmd," <");
 	strcat(cmd,filename);
 	strcat(cmd," >");
 	strcat(cmd,tmp);
 	rc = system(cmd);
+	free(cmd);
 	
         f = fopen(tmp, "rb");
-	free(cmd);
 	free(tmp);
+        if (!f) {
+            fprintf(stderr, "Failed to open converted \"%s%s\"\n", filename, ext);
+            exit(1);
+        }
     }
     else
-        f = fopen(filename, "rb");
-    if (!f) {
-        fprintf(stderr, "Failed to open \"%s\"\n", filename);
-        exit(1);
+        f = fopen(filename, "rb");{
+        if (!f) {
+            fprintf(stderr, "Failed to open \"%s\"\n", filename);
+            exit(1);
+        }
     }
     im = 0;
     if (strcasecmp(ext, ".png") == 0) 
