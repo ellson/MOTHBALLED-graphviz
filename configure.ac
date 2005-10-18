@@ -4,13 +4,13 @@ AC_PREREQ(2.54)
 dnl ===========================================================================
 
 # Package name and version number, (as distinct from shared library version)
-AC_INIT(graphviz, 2.6)
+AC_INIT(graphviz, 2.7)
 
 
 # libtool shared library version
 
 # Increment if the interface has additions, changes, removals.
-LT_CURRENT=1
+LT_CURRENT=2
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
