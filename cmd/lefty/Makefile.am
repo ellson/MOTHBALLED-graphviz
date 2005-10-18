@@ -24,14 +24,12 @@ SUBDIRS = ws os dot2l examples
 leftydir = $(pkgdatadir)/lefty
 pdfdir = $(pkgdatadir)/doc/pdf
 
-DEFINES=-DLEFTYPATH=\"$(LEFTYLIBDIR)\" -DHAVE_CONFIG_H
-
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/cmd/lefty/ws/x11 \
 	-I$(top_srcdir)/cmd/lefty/os/unix \
 	-I$(top_srcdir)/cmd/lefty/dot2l @XAW_INCLUDES@
 
-AM_CFLAGS = $(DEFINES) @X_CFLAGS@
+AM_CFLAGS = -DLEFTYDATADIR=\"$(leftydir)\" -DHAVE_CONFIG_H @X_CFLAGS@
 
 man = lefty.1
 pdf = lefty.pdf

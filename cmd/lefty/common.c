@@ -67,6 +67,11 @@ int init (char *aout) {
         extern HANDLE hinstance;
         char buf[260];
 #endif
+#ifdef LEFTYDATADIR
+    char *leftdatadir = LEFTYDATADIR;
+#else
+    char *leftdatadir = NULL;
+#endif
 
     c = 0;
     if (getenv ("INNETSCAPE"))
@@ -93,10 +98,14 @@ int init (char *aout) {
     if (!(leftypath = malloc (PATHINCR * PATHSIZE)))
         panic (POS, "init", "leftypath malloc failed");
     leftypath[0] = 0;
-    if ((s1 = getenv ("LEFTYPATH")))
-        strcat (leftypath, s1), strcat (leftypath, PATHSEPSTR);
-    if (*aout)
-        strcat (leftypath, aout), strcat (leftypath, PATHSEPSTR);
+    if ((s1 = getenv ("LEFTYPATH"))) {
+        strcat (leftypath, s1);
+	strcat (leftypath, PATHSEPSTR);
+    }
+    if (*aout) {
+        strcat (leftypath, aout);
+        strcat (leftypath, PATHSEPSTR);
+    }
     for (k = 0; k < 2; k++) {
         if (k == 0)
             s1 = aout;
@@ -115,6 +124,10 @@ int init (char *aout) {
         }
         if (leftypath[0])
             strcat (leftypath, PATHSEPSTR);
+    }
+    if (leftdatadir) {    /* support a compile-time path as last resort */
+	strcat (leftypath, leftdatadir);
+	strcat (leftypath, PATHSEPSTR);
     }
     if (!(leftyoptions = getenv ("LEFTYOPTIONS")))
         leftyoptions = "";
