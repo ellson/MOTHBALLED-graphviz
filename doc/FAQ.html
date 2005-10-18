@@ -1,4 +1,7 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
 <HTML><HEAD><TITLE>Graphviz FAQ 2004-12-15</TITLE>
+<META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
 </HEAD><BODY>
 <H1>Graphviz FAQ 2004-12-15</H1>
 
@@ -20,11 +23,11 @@ for a partial list of compatible tools and packages.
 <B>Q. Where can I see a list of all the attributes
 that control dot or neato?</B>
 <P>
-See <A HREF="http://www.research.att.com/~erg/graphviz/info/attrs.html">
+See <A HREF="info/attrs.html">
 Graph Attributes</A>. There is also information on
-<A HREF="http://www.research.att.com/~erg/graphviz/info/command.html">
+<A HREF="info/command.html">
 command-line usage</A> and
-<A HREF="http://www.research.att.com/~erg/graphviz/info/output.html">
+<A HREF="info/output.html">
 output formats</A>.
 <p>
 <a name="mailinglist"></a>
@@ -55,7 +58,7 @@ please contact ellson, erg, or north@research.att.com.
 <p>
 Also, if a program crashes or you get an abort or something strange occurs
 and you are fairly comfortable using the tools:
-<BL>
+<UL>
 <LI>
 Check the 
 <A HREF="http://www.research.att.com/~erg/graphviz/bugs/openbugs.html"> open
@@ -70,7 +73,7 @@ report</A>. If you prefer, you can download a
 <A HREF="http://www.research.att.com/~erg/graphviz/bugform.txt">report in
 text form</A>, fill in the fields, and email it to 
 <a href="mailto:gviz-bugs@research.att.com">gviz-bugs@research.att.com</a>.
-</BL>
+</UL>
 <p>
 <B>Q. I'm trying to make a layout larger. How?</B>
 <p>
@@ -106,7 +109,7 @@ expand the layout.
 </pre>
 For twopi and circo, there are other parameters such as
 <tt>ranksep</tt> which can be used. See the 
-<A HREF="http://www.research.att.com/~erg/graphviz/info/attrs.html">
+<A HREF="info/attrs.html">
 graph attributes</A>.
 <p>
 You can also use the <tt>ratio</tt> attribute. If you set the <tt>size</tt>
@@ -140,7 +143,6 @@ digraph G {
 }
 </pre>
 
-<p>
 <P>
 <b>Q. How can I generate graph layouts in PDF?</b>
 <P>
@@ -179,7 +181,7 @@ is the default. When <tt>splines=true</tt>, we have no good answer but
 we are working on it. One trick which is sometimes sufficient is to 
 specify multiple colors for the edge. This will a produce set of tightly
 parallel splines, each in its specified color. Read about the
-<A HREF="http://www.research.att.com/~erg/graphviz/info/attrs.html#d:color">color
+<A HREF="info/attrs.html#d:color">color
 attribute</A> for more information.
 
 <h2>Clusters</h2>
@@ -237,7 +239,7 @@ is drawn between the real nodes as usual.
 <p>
 <B>Q. Clusters are hard to see.</B>
 <P>
-Set </tt>bgcolor=grey</tt>
+Set <tt>bgcolor=grey</tt>
 (or some other color)
 in the cluster.
 <P>
@@ -281,7 +283,7 @@ raster drivers that load Truetype or Type1
 fonts!  (That means, <tt>-Tgif, -Tpng, -Tjpeg</tt>, and possibly
 <tt>-Tbmp</tt> or <tt>-Txbm</tt> if enabled). 
  
-Use UTF8 coding, <i>e.g.</i> <verb>&#165;</verb> for the Yen
+Use UTF8 coding, <i>e.g.</i> &#165; for the Yen
 currency symbol.  Example:
  
       graph G {
@@ -295,7 +297,7 @@ character set reference</A> .
 <B>Q. How do I get font and color changes in record labels or other labels?</B>
 <P>
 This is not possible in record shapes. However, you can do this using
-<A HREF="http://www.research.att.com/%7Eerg/graphviz/info/shapes.html#html">
+<A HREF="info/shapes.html#html">
 HTML-like labels</A>. The granularity of changes is still at the cell level,
 but by playing with cell spacing and padding, you can get pretty much
 the effect you want. The intention is to support arbitrary font changes
@@ -321,7 +323,7 @@ all the way to both nodes.
 It's true.  dot -Grankdir=LR rotates record nodes so that their top level
 fields are still listed across levels.  rankdir=LR has no effect in neato.
 One workaround is
-<A HREF="http://www.graphviz.org/cvs/doc/info/shapes.html#html">
+<A HREF="info/shapes.html#html">
 HTML-like records</A> (they don't rotate; the downside is that
 you have to write in XML). Another workaround is to enclose
 record labels in { } to rotate/unrotate the record contents. See also,
@@ -361,7 +363,7 @@ might already rely on.
 <B>Q. How can I get custom shapes or images in my graph?</B>
 <P>
 Please see the
-<A HREF="http://www.research.att.com/sw/tools/graphviz/shapehowto.html">
+<A HREF="http://www.graphviz.org/Documentation/html/shapehowto.html">
 Shape HowTo</A> for some approaches.  There is no easy way to create
 custom shapes that work with dot/neato, dotty
 (Unix or MS-Windows) and Grappa (the Java
@@ -378,18 +380,18 @@ known bug</A>.
 <B>Q. How can I get some display feature (such
 as bold lines) in dotty?</B>
 <P>
-<A NAME=dotty_note>Dotty</A> has not really changed for many years. Therefore, there are
+<A NAME="dotty_note">Dotty</A> has not really changed for many years. Therefore, there are
 myriad features available in Graphviz which it cannot handle.
 In some cases, you can use 
-<A HREF="http://www.research.att.com/~john/Grappa">Grappa</A> 
-or <A HREF="http://www.graphviz.org/webdot">webdot</A> 
+<A HREF="http://www.research.att.com/~john/Grappa/">Grappa</A> 
+or <A HREF="http://www.graphviz.org/webdot/">webdot</A> 
 for display instead of dotty.  
 For example, Grappa has generalized polygons 
 (<tt>node [shape=polygon]</tt>) that dotty lacks.
 There are additional interactive viewers available. For example, see
 <A HREF="http://www.graphviz.org/Resources.php">Graphical Interfaces</A>
 and <A HREF="http://www.graphviz.org/About.php">Viewers</A>. If you
-are using MacOSX, the <A HREF="http://www.pixelglow.com/graphviz/">Mac
+are using Mac OS X, the <A HREF="http://www.pixelglow.com/graphviz/">Mac
 version</A> of Graphviz has a highly recommended GUI.
 <P>
 If the display attribute that you need isn't there already, in dotty,
@@ -471,11 +473,11 @@ and that it is not commented out!
 <P>
 <B>Q. I've installed Debian Graphviz and it works just fine on the command line,
 but when I execute a Perl/CGI script through Apache, no output is generated.
-For example, the code
+For example, the code</B>
 <pre>
-system("/usr/local/bin/dot -Tpng /tmp/tree.dot -o /tmp/tree.png");
+<B>system("/usr/local/bin/dot -Tpng /tmp/tree.dot -o /tmp/tree.png");</B>
 </pre>
-produces no file <tt>/tmp/tree.png</tt>.</B>
+<B>produces no file <tt>/tmp/tree.png</tt>.</B>
 <P>
 As best as we can tell, dot dies with no stdout or stderr messages on Debian 
 systems when run from an Apache cgi program
@@ -483,7 +485,7 @@ with no HOME set. The workaround is to provide a HOME directory in the
 Apache userid's environment.
 <P>
 Someone has also suggested using the 
-<A HREF="http://search.cpan.org/search?query=graphviz&mode=all">
+<A HREF="http://search.cpan.org/search?query=graphviz&amp;mode=all">
 Perl module for Graphviz</A>.
 <P>
 <B>Q. How can I get 3D output?</B>
@@ -498,15 +500,15 @@ scene graphs? Open Scene Graphs? Java3D programs?) we'd like to try it.
 <p>
 neato internally supports layouts in higher dimensions through the <tt>dim</tt>
 attribute, e.g. <tt>neato -Gdim=7</tt> but there's no way to get the output
-unless you invoke neato as a library and inspect <verb>ND_pos(n)[i]</verb>
-where <verb>n</verb> is a pointer to the relevant node.
+unless you invoke neato as a library and inspect ND_pos(n)[i]
+where n is a pointer to the relevant node.
 This would need some (minor) driver work and a good 7-dimensional viewer. Well,
 <tt>dim=3</tt> ought to be possible.
 
 <H2>Problems</H2>
 <B>Q. How can I avoid node overlaps in neato?</B>
 <P>
-Use the graph attribute <A HREF="http://www.research.att.com/%7Eerg/graphviz/info/attrs.html#d:overlap"><tt>overlap</tt></A>.
+Use the graph attribute <A HREF="info/attrs.html#d:overlap"><tt>overlap</tt></A>.
 <P>
 <B>Q. How can I avoid node-edge overlaps in neato?</B>
 <P>
@@ -564,7 +566,7 @@ is a cubic algorithm, so you would do well to avoid using <tt>splines=true</tt>.
 Difficult problem.  We're working on it.
 If anyone has some general
 label placement code (e.g. a simulated annealer based on the Marks et al.
-technique in <I>Graphics Gems IV</I>, please get in touch.
+technique in <I>Graphics Gems IV</I>), please get in touch.
 <P>
 <B>Q. Dot runs forever on a certain example.</B>
 <p>
@@ -616,7 +618,7 @@ is also possible for these heuristics to get stuck in local
 minima. Also, it is heavily influenced by the initial position
 of the nodes. It is quite possible that if you run neato again,
 but with a different random seed value,
-or more iterations, you'll get a better layout.  For example: <P>
+or more iterations, you'll get a better layout.  For example:
 <pre>
 neato -Gstart=5 file.dot -Tps -o file.ps
 neato -Gepsilon=.0000001 file.dot -Tps -o file.ps
@@ -628,7 +630,7 @@ symmetries.
 <P>
 Q. <B> Webdot doesn't work.</B>
 <P>
-We assume you're using Apache and have <A HREF="http://www.tcl.tk">TCL</A> installed.
+We assume you're using Apache and have <A HREF="http://www.tcl.tk/">TCL</A> installed.
 If you don't, it's probably better to just use the
 <A HREF="http://www.research.att.com/sw/tools/graphviz/webdot.cgi.pl">
 webdot perl script</A>.
@@ -671,7 +673,7 @@ simple cgi-bin tcl script like:
 	foreach e [lsort [array names env]] {puts "$e: $env($e)"}
 </pre>
 Save this script as .../cgi-bin/test.tcl, make it executable, then
-loook at: <a href="http://localhost/cgi-bin/test.tcl">http://localhost/cgi-bin/test.tcl</a>
+look at: <a href="http://localhost/cgi-bin/test.tcl">http://localhost/cgi-bin/test.tcl</a>
 <P>
 Q. <B> I have "Font not found" errors, or text labels missing in webdot.</B>
 <P>
@@ -712,11 +714,12 @@ renderer in Java and can be run as a stand-alone program.
 <P>
 For help with embedding SVG in HTML pages, see 
 <A HREF="http://www.graphviz.org/webdot/svgembed.html">here</A>.
+<P>
 Q. <B> libexpat is reported as containing a virus or as a security hole.
-Is this a real problem?
+Is this a real problem?</B>
 <P>
 No, this is a false positive reported by various security software.
-See <A HREF=http://www.pcreview.co.uk/forums/thread-1689630.php>http://www.pcreview.co.uk/forums/thread-1689630.php</A> or
-<A HREF=http://spywareblog.com/index.php/2004/11/24/is_libexpat_dll_spyware>http://spywareblog.com/index.php/2004/11/24/is_libexpat_dll_spyware</A>.
+See <A HREF="http://www.pcreview.co.uk/forums/thread-1689630.php">http://www.pcreview.co.uk/forums/thread-1689630.php</A> or
+<A HREF="http://spywareblog.com/index.php/2004/11/24/is_libexpat_dll_spyware">http://spywareblog.com/index.php/2004/11/24/is_libexpat_dll_spyware</A>.
 </BODY>
 </HTML>
