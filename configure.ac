@@ -47,13 +47,10 @@ AM_CONDITIONAL(DISABLE_LTDL, [test "x$enable_ltdl" = "xno"])
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
 
-# Checks for system type
-AC_CANONICAL_TARGET
-
 LIBPOSTFIX=
-case "${target_os}" in
+case "${host_os}" in
   *linux* )
-    case "${target_cpu}" in
+    case "${host_cpu}" in
       powerpc64 | s390x | x86_64 )
         LIBPOSTFIX="64"
         ;;
@@ -64,7 +61,7 @@ esac
 CYGWIN=no
 MINGW32=no
 DARWIN=no
-case "${target_os}" in
+case "${host_os}" in
   *cygwin* )
 	CYGWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
