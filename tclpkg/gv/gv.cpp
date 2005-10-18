@@ -958,15 +958,20 @@ void render(Agraph_t *g, char *format, char *filename)
     int err;
 
     err = gvRenderFilename(gvc, g, format, filename);
-}
 
+}
+void render(Agraph_t *g, char *format)
+{
+    int err;
+
+    err = gvRender(gvc, g, format, stdout);
+}
 void render(Agraph_t *g, char *format, FILE *f)
 {
     int err;
 
     err = gvRender(gvc, g, format, f);
 }
-
 void render(Agraph_t *g, char *format, void **data)
 {
 //    FIXME

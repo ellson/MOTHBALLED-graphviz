@@ -105,6 +105,8 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
     }
     job->output_file = out;
     gvRenderJobs(gvc, g);
+    if (gvc->active_jobs)
+	gvdevice_finalize(gvc);
     gvrender_delete_jobs(gvc);
 
     return 0;
@@ -133,6 +135,8 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
     }
     gvrender_output_filename_job(gvc, filename);
     gvRenderJobs(gvc, g);
+    if (gvc->active_jobs)
+	gvdevice_finalize(gvc);
     gvrender_delete_jobs(gvc);
 
     return 0;
