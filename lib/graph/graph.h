@@ -137,6 +137,7 @@ extern "C" {
     extern char *agget(void *, char *);
     extern char *agxget(void *, int);
     extern int agset(void *, char *, char *);
+    extern int agsafeset(void *, char *, char *, char*);
     extern int agxset(void *, int, char *);
     extern int agindex(void *, char *);
 

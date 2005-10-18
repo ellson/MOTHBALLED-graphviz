@@ -327,6 +327,27 @@ int agxset(void *obj, int index, char *buf)
 	return -1;
 }
 
+int agsafeset(void* obj, char* name, char* value, char* def)
+{
+    Agsym_t* a = agfindattr(obj, name);
+
+    if (a == NULL) {
+	if (!def) def = "";
+	switch (TAG_OF(obj)) {
+	case TAG_GRAPH:
+	    agraphattr((Agraph_t*)obj, name, def);
+	    break;
+	case TAG_NODE:
+	    agnodeattr(((Agnode_t*)obj)->graph, name, def);
+	    break;
+	case TAG_EDGE:
+	    agedgeattr(((Agedge_t*)obj)->head->graph, name, def);
+	    break;
+	}
+    }
+    return agxset(obj, a->index, value);
+}
+
 /* agcopyattr:
  * Assumes attributes have already been declared.
  * Do not copy key attribute for edges, as this must be distinct.
