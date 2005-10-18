@@ -11,18 +11,18 @@ public class test {
 	SWIGTYPE_p_Agedge_t e;
 
 	g = gv.digraph("G");
-	System.out.println(gv.set(g,"aaa","xxx"));
-	System.out.println(gv.set(g,"aaa"));
+	System.out.println(gv.setv(g,"aaa","xxx"));
+	System.out.println(gv.getv(g,"aaa"));
 	sg = gv.graph(g,"SG");
 	n = gv.node(g,"hello");
-	System.out.println(gv.set(n,"label"));
-	System.out.println(gv.set(n,"aaa","xxx"));
-	System.out.println(gv.set(n,"aaa"));
+	System.out.println(gv.getv(n,"label"));
+	System.out.println(gv.setv(n,"aaa","xxx"));
+	System.out.println(gv.getv(n,"aaa"));
 	m = gv.node(g,"world");
-        System.out.println(gv.set(m,"aaa"));
+        System.out.println(gv.getv(m,"aaa"));
 	e = gv.edge(n,m);
-	System.out.println(gv.set(e,"aaa","xxx"));
-        System.out.println(gv.set(e,"aaa"));
+	System.out.println(gv.setv(e,"aaa","xxx"));
+        System.out.println(gv.getv(e,"aaa"));
 	gv.rm(e);
 	gv.rm(n);
 	gv.rm(m);

@@ -9,18 +9,18 @@ public class test {
 	SWIGTYPE_p_Agedge_t e;
 
 	g = gv.digraph("G");
-	Console.WriteLine(gv.set(g,"aaa","xxx"));
-	Console.WriteLine(gv.set(g,"aaa"));
+	Console.WriteLine(gv.setv(g,"aaa","xxx"));
+	Console.WriteLine(gv.getv(g,"aaa"));
 	sg = gv.graph(g,"SG");
 	n = gv.node(g,"hello");
-	Console.WriteLine(gv.set(n,"label"));
-	Console.WriteLine(gv.set(n,"aaa","xxx"));
-	Console.WriteLine(gv.set(n,"aaa"));
+	Console.WriteLine(gv.getv(n,"label"));
+	Console.WriteLine(gv.setv(n,"aaa","xxx"));
+	Console.WriteLine(gv.getv(n,"aaa"));
 	m = gv.node(g,"world");
-        Console.WriteLine(gv.set(m,"aaa"));
+        Console.WriteLine(gv.getv(m,"aaa"));
 	e = gv.edge(n,m);
-	Console.WriteLine(gv.set(e,"aaa","xxx"));
-        Console.WriteLine(gv.set(e,"aaa"));
+	Console.WriteLine(gv.setv(e,"aaa","xxx"));
+        Console.WriteLine(gv.getv(e,"aaa"));
 	gv.rm(e);
 	gv.rm(n);
 	gv.rm(m);
