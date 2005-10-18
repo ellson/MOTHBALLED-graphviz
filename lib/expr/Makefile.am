@@ -24,7 +24,7 @@ libexpr_la_LIBADD = \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/ast/libast.la \
 	$(top_builddir)/lib/sfio/libsfio.la \
-	$(top_builddir)/lib/vmalloc/libvmalloc.la -lc
+	$(top_builddir)/lib/vmalloc/libvmalloc.la
 
 $(libexpr_la_OBJECTS): exparse.h exparse.c exgram.h exop.h
 
