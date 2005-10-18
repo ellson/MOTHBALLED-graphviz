@@ -21,7 +21,10 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
-#include	"gvc.h"
+#include "render.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 
 static int N_EPSF_files;
 static Dict_t *EPSF_contents;

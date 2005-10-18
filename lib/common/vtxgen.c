@@ -27,7 +27,10 @@
  */
 #define SUPPORT_WRITEDATE
 
-#include	"gvc.h"
+#include "render.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 #ifdef SUPPORT_WRITEDATE
 #include <time.h>
 #endif

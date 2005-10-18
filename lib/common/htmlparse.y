@@ -16,7 +16,10 @@
 
 %{
 
-#include "gvc.h"
+#include "render.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 #include "htmltable.h"
 #include "htmllex.h"
 

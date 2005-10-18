@@ -200,17 +200,9 @@ static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplug
     }
 }
 
-struct lt_symlist
-{
-    const char *name;
-    void* address;
-};
-
-extern const struct lt_symlist lt_preloaded_symbols[];
-
 static void gvconfig_plugin_install_builtins(GVC_t * gvc)
 {
-    const struct lt_symlist *s;
+    const lt_symlist_t *s;
     const char *name;
 
     s = lt_preloaded_symbols;

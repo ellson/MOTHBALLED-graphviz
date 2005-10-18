@@ -27,7 +27,10 @@
 #include "config.h"
 #endif
 
-#include "gvc.h"
+#include "render.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 #include "tlayout.h"
 
 /* Default layout values, possibly set via command line; -1 indicates unset */

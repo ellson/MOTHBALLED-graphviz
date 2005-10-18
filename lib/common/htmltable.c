@@ -33,7 +33,10 @@
  * e.g., CELLGRID=n, which sets CELLBORDER=0 and has the border drawing
  * handled correctly by the table.
  */
-#include "gvc.h"
+#include "render.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 #include "htmltable.h"
 #include "agxbuf.h"
 #include "pointset.h"

@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/neatogen \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/common \
-	-I$(top_srcdir)/lib/ingraphs @EXPAT_INCLUDES@
+	-I$(top_srcdir)/lib/ingraphs @EXPAT_INCLUDES@ -DBUILTINS
 
 pdfdir = $(pkgdatadir)/doc/pdf
 
@@ -95,15 +95,11 @@ gc_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs.la \
 	$(top_builddir)/lib/graph/libgraph.la
 
-gvpack_SOURCES = gvpack.c
-
-gvpack_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
+gvpack_SOURCES = gvpack.c gvpack_builtins.c
 
 gvpack_LDADD = \
-	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/ingraphs/libingraphs.la \
-	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/plugin/libgvplugin_neato_layout.la
 
 dijkstra_SOURCES = dijkstra.c

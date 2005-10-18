@@ -21,7 +21,10 @@
  */
 #define	PDFMAX	3240		/*  Maximum size of Distiller's PDF canvas  */
 
-#include	"gvc.h"
+#include "render.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 #include	"ps.h"
 #include	"utils.h"
 #include	"agxbuf.h"

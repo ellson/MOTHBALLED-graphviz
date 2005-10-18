@@ -10,12 +10,8 @@ AM_CPPFLAGS = \
 
 LIBS =  @LIBS@ -lc
 
-BASESOURCES = gv.cpp builtins.c
-BASELIBS = \
-	$(top_builddir)/lib/plugin/libgvplugin_dot_layout.la \
-	$(top_builddir)/lib/plugin/libgvplugin_neato_layout.la \
-	$(top_builddir)/lib/plugin/libgvplugin_usershape_gd.la \
-	$(top_builddir)/lib/gvc/libgvc.la
+BASESOURCES = gv.cpp
+BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
 
 
 #CSHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs

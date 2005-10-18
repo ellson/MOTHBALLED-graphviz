@@ -17,7 +17,10 @@
 /* mpgen.c 1999-Feb-23 Jim Hefferon jim@joshua.smcvt.edu 
  *  Adapted from psgen.c.  See 1st_read.mp.
  */
-#include	"gvc.h"
+#include "render.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 #ifndef MSWIN32
 #include <unistd.h>
 #endif

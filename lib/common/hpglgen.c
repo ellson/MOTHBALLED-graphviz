@@ -19,7 +19,10 @@
  *  Use encoded form for polyline and polygon
  */
 #include	<ctype.h>
-#include	"gvc.h"
+#include "render.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 
 #define SOLID  0
 #define DOTTED 1

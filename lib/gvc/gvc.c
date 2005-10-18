@@ -14,7 +14,10 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include "gvc.h"
+#include "render.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 
 char *LibInfo[] = {
     "libgvc",		/* Program */

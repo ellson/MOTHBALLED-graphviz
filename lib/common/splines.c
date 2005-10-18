@@ -19,7 +19,10 @@
  * an edge, starting from a list of control points.
  */
 
-#include "gvc.h"
+#include "render.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 
 static int debugleveln(edge_t* e, int i)
 {

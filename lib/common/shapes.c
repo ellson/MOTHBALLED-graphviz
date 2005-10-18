@@ -17,7 +17,10 @@
 /* for sincos */
 #define _GNU_SOURCE 1
 
-#include	"gvc.h"
+#include "render.h"
+#include "gvplugin.h"
+#include "gvcint.h"
+#include "gvcproc.h"
 #include	"htmltable.h"
 #include	<limits.h>
 

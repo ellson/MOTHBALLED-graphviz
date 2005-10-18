@@ -11,23 +11,19 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/graph \
-	-I$(top_srcdir)/lib/cdt
+	-I$(top_srcdir)/lib/cdt \
+	-DBUILTINS
 
 if ENABLE_STATIC
-bin_PROGRAMS = dot dot_static
+bin_PROGRAMS = dot_static
 else
 bin_PROGRAMS = dot
 endif
 man_MANS = dot.1 
 pdf_DATA = dot.pdf
 
-dot_SOURCES = dot.c
-dot_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
-dot_LDADD = \
-	$(top_builddir)/lib/plugin/libgvplugin_dot_layout.la \
-	$(top_builddir)/lib/plugin/libgvplugin_neato_layout.la \
-	$(top_builddir)/lib/plugin/libgvplugin_usershape_gd.la \
-	$(top_builddir)/lib/gvc/libgvc.la
+dot_SOURCES = dot.c dot_builtins.c
+dot_LDADD = $(top_builddir)/lib/gvc/libgvc.la
 
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); for i in $(linkedman); do rm -f $$i; $(LN_S) dot.1 $$i; done;)
@@ -47,19 +43,7 @@ uninstall-hook:
 dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 	groff -Tps -man $(top_srcdir)/cmd/dot/dot.1 | ps2pdf - - >$@
 
-dot_static_SOURCES = $(dot_SOURCES)
-dot_static_DEPENDENCIES = \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_usershape_gd.a \
-	$(top_builddir)/lib/gvc/.libs/libgvc.a \
-	$(top_builddir)/lib/pathplan/.libs/libpathplan.a \
-	$(top_builddir)/lib/pack/.libs/libpack.a \
-	$(top_builddir)/lib/graph/.libs/libgraph.a \
-	$(top_builddir)/lib/cdt/.libs/libcdt.a \
-	$(top_builddir)/lib/gd/.libs/libgvgd.a
-dot_static_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
-
+dot_static_SOURCES = dot.c dot_static_builtins.c
 dot_static_LDADD = \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout.a \
