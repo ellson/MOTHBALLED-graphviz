@@ -93,7 +93,7 @@ Agraph_t *readgraph(char *filename)
     return g;
 }
 
-/* create a subgraph of an existing graph */
+//-------------------------------------------------
 Agraph_t *graph(Agraph_t *g, char *name)
 {
     if (!gvc)
@@ -113,99 +113,132 @@ Agedge_t *edge(Agnode_t *t, Agnode_t *h)
     return agedge(t->graph, t, h);
 }
 
-char *set(Agraph_t *g, char *attr, char *val)
+//-------------------------------------------------
+char *set(Agraph_t *g, Agsym_t *a)
 {
-    Agsym_t *a;
-
-    a = agfindattr(g->root, attr);
-    if (val) {
-	if (!a)
-	    a = agraphattr(g->root, attr, "");
-	agxset(g, a->index, val);
-    }
-    else {
-	if (a)
-	    val = agxget(g, a->index);
-	else
-	    val = "";
-    }
-    return val;
+    if (!g || !a)
+	return NULL;
+    return agxget(g, a->index);
 }
-
 char *set(Agraph_t *g, char *attr)
 {
     Agsym_t *a;
 
+    if (!g || !attr)
+	return NULL;
     a = agfindattr(g->root, attr);
-    if (a)
-	return agxget(g, a->index);
-    else
-	return "";
+    return agxget(g, a->index);
 }
+char *set(Agraph_t *g, Agsym_t *a, char *val)
+{
+    if (!g || !a)
+	return NULL;
+    if (!val)
+	return agxget(g, a->index);
+    agxset(g, a->index, val);
+    return val;
+}
+char *set(Agraph_t *g, char *attr, char *val)
+{
+    Agsym_t *a;
 
+    if (!g || !attr)
+	return NULL;
+    a = agfindattr(g->root, attr);
+    if (!a)
+        a = agraphattr(g->root, attr, "");
+    if (!val)
+	return agxget(g, a->index);
+    agxset(g, a->index, val);
+    return val;
+}
+//-------------------------------------------------
+char *set(Agnode_t *n, Agsym_t *a)
+{
+    if (!n || !a)
+	return NULL;
+    return agxget(n, a->index);
+}
+char *set(Agnode_t *n, char *attr)
+{
+    Agraph_t *g;
+    Agsym_t *a;
+
+    if (!n || !attr)
+	return NULL;
+    g = n->graph->root;
+    a = agfindattr(g->proto->n, attr);
+    return agxget(n, a->index);
+}
+char *set(Agnode_t *n, Agsym_t *a, char *val)
+{
+    if (!n || !a)
+	return NULL;
+    if (!val)
+	return agxget(n, a->index);
+    agxset(n, a->index, val);
+    return val;
+}
 char *set(Agnode_t *n, char *attr, char *val)
 {
     Agraph_t *g;
     Agsym_t *a;
 
+    if (!n || !attr)
+	return NULL;
     g = n->graph->root;
     a = agfindattr(g->proto->n, attr);
-    if (val) {
-        if (!a)
-            a = agnodeattr(g, attr, "");
-        agxset(n, a->index, val);
-    }
-    else {
-        if (a)
-            val = agxget(n, a->index);
-        else
-            val = "";
-    }
+    if (!a)
+        a = agnodeattr(g, attr, "");
+    if (!val)
+	return agxget(n, a->index);
+    agxset(n, a->index, val);
     return val;
 }
-
-char *set(Agnode_t *n, char *attr)
+//-------------------------------------------------
+char *set(Agedge_t *e, Agsym_t *a)
 {
+    if (!e || !a)
+	return NULL;
+    return agxget(e, a->index);
+}
+char *set(Agedge_t *e, char *attr)
+{
+    Agraph_t *g;
     Agsym_t *a;
 
-    a = agfindattr(n->graph->root->proto->n, attr);
-    if (a)
-        return agxget(n, a->index);
-    else
-        return "";
+    if (!e || !attr)
+	return NULL;
+    g = e->head->graph->root;
+    a = agfindattr(g->proto->e, attr);
+    return agxget(e, a->index);
 }
-
+char *set(Agedge_t *e, Agsym_t *a, char *val)
+{
+    if (!e || !a)
+	return NULL;
+    if (!val)
+	return agxget(e, a->index);
+    agxset(e, a->index, val);
+    return val;
+}
 char *set(Agedge_t *e, char *attr, char *val)
 {
     Agraph_t *g;
     Agsym_t *a;
 
-    g = e->tail->graph->root;
+    if (!e || !attr)
+	return NULL;
+    g = e->head->graph->root;
     a = agfindattr(g->proto->e, attr);
-    if (val) {
-        if (!a)
-            a = agedgeattr(g, attr, "");
-        agxset(e, a->index, val);
-    }
-    else {
-        if (a)
-            val = agxget(e, a->index);
-        else
-            val = "";
-    }
+    if (!a)
+        a = agnodeattr(g, attr, "");
+    if (!val)
+	return agxget(e, a->index);
+    agxset(e, a->index, val);
     return val;
 }
-
-char *set(Agedge_t *e, char *attr)
-{
-    Agsym_t *a;
-
-    a = agfindattr(e->tail->graph->root->proto->e, attr);
-    if (a)
-        return agxget(e, a->index);
-    else
-        return "";
-}
+//-------------------------------------------------
 
 Agnode_t *headof(Agedge_t *e)
 {
@@ -249,6 +282,33 @@ Agraph_t *rootof(Agraph_t *g)
     return g->root;
 }
 
+//-------------------------------------------------
+char *nameof(Agraph_t *g)
+{
+    if (!g)
+	return NULL;
+    return g->name;
+}
+char *nameof(Agnode_t *n)
+{
+    if (!n)
+	return NULL;
+    return n->name;
+}
+//char *nameof(Agedge_t *e)
+//{
+//    if (!e)
+//	return NULL;
+//    return e->name;
+//}
+char *nameof(Agsym_t *a)
+{
+    if (!a)
+	return NULL;
+    return a->name;
+}
+
+//-------------------------------------------------
 Agraph_t *firstsubg(Agraph_t *g)
 {
     Agraph_t *mg;
@@ -443,101 +503,79 @@ Agnode_t *nextnode(Agedge_t *e, Agnode_t *n)
     return (e->head);
 }
 
-char *firstattr(Agraph_t *g)
+Agsym_t *firstattr(Agraph_t *g)
 {
-    Agsym_t *a;
-
     if (!g)
 	return NULL;
     g = g->root;
     if (dtsize(g->univ->globattr->dict) == 0)
 	return NULL;
-    a = g->univ->globattr->list[0];
-    return a->name;
+    return g->univ->globattr->list[0];
 }
 
-char *nextattr(Agraph_t *g, char *s)
+Agsym_t *nextattr(Agraph_t *g, Agsym_t *a)
 {
-    Agsym_t *a;
     int i;
 
-    if (!g || !s)
+    if (!g || !a)
         return NULL;
     g = g->root;
-    a = agfindattr(g->root, s);
-    if (!a)
-	return NULL;
     i = a->index + 1;
     if (i > dtsize(g->univ->globattr->dict))
         return NULL;
-    a = g->univ->globattr->list[i];
-    return a->name;
+    return g->univ->globattr->list[i];
 }
 
-char *firstattr(Agnode_t *n)
+Agsym_t *firstattr(Agnode_t *n)
 {
     Agraph_t *g;
-    Agsym_t *a;
 
     if (!n)
 	return NULL;
     g = n->graph;
     if (dtsize(g->univ->nodeattr->dict) == 0)
 	return NULL;
-    a = g->univ->nodeattr->list[0];
-    return a->name;
+    return g->univ->nodeattr->list[0];
 }
 
-char *nextattr(Agnode_t *n, char *s)
+Agsym_t *nextattr(Agnode_t *n, Agsym_t *a)
 {
     Agraph_t *g;
-    Agsym_t *a;
     int i;
 
-    if (!n || !s)
+    if (!n || !a)
         return NULL;
     g = n->graph;
-    a = agfindattr(g->proto->n, s);
-    if (!a)
-	return NULL;
     i = a->index + 1;
     if (i > dtsize(g->univ->nodeattr->dict))
         return NULL;
-    a = g->univ->nodeattr->list[i];
-    return a->name;
+    return g->univ->nodeattr->list[i];
 }
 
-char *firstattr(Agedge_t *e)
+Agsym_t *firstattr(Agedge_t *e)
 {
     Agraph_t *g;
-    Agsym_t *a;
 
     if (!e)
 	return NULL;
     g = e->tail->graph;
     if (dtsize(g->univ->edgeattr->dict) == 0)
 	return NULL;
-    a = g->univ->edgeattr->list[0];
-    return a->name;
+    return g->univ->edgeattr->list[0];
 }
 
-char *nextattr(Agedge_t *e, char *s)
+Agsym_t *nextattr(Agedge_t *e, Agsym_t *a)
 {
     Agraph_t *g;
-    Agsym_t *a;
     int i;
 
-    if (!e || !s)
+    if (!e || !a)
         return NULL;
     g = e->tail->graph;
-    a = agfindattr(g->proto->n, s);
-    if (!a)
-	return NULL;
     i = a->index + 1;
     if (i > dtsize(g->univ->edgeattr->dict))
         return NULL;
-    a = g->univ->edgeattr->list[i];
-    return a->name;
+    return g->univ->edgeattr->list[i];
 }
 
 void rm(Agraph_t *g)
