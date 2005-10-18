@@ -24,13 +24,10 @@
 
 void *zmalloc(size_t nbytes)
 {
-    char *rv = malloc(nbytes);
+    char *rv;
     if (nbytes == 0)
 	return 0;
-    if (rv == NULL) {
-	fprintf(stderr, "out of memory\n");
-	abort();
-    }
+    rv = gmalloc(nbytes);
     memset(rv, 0, nbytes);
     return rv;
 }
@@ -51,7 +48,7 @@ void *gmalloc(size_t nbytes)
 {
     char *rv;
     if (nbytes == 0)
-	return (char *)1; /* NB Return an invalid pointer - since nobody seems to check for NULL */
+	return NULL;
     rv = malloc(nbytes);
     if (rv == NULL) {
 	fprintf(stderr, "out of memory\n");
