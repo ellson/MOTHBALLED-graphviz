@@ -17,6 +17,8 @@
 #include "render.h"
 #include "agxbuf.h"
 
+#define XDOTVERSION "1.1"
+
 static GVC_t *gvc;
 static agxbuf xbuf0;
 static agxbuf xbuf1;
@@ -83,6 +85,7 @@ void extend_attrs(GVJ_t * job, graph_t *g, int s_arrows, int e_arrows)
 
     gvc = job->gvc;
 
+    agsafeset (g, "xdotversion", XDOTVERSION, "");
     if (GD_has_labels(g) & GRAPH_LABEL)
 	g_l_draw = safe_dcl(g, g, "_ldraw_", "", agraphattr);
     if (GD_n_cluster(g))
