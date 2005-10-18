@@ -442,7 +442,7 @@ nop_init_graphs(Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
  * Translate edge by offset.
  * Assume ED_spl(e) != NULL
  */
-static void translateE(edge_t * e, pointf offset)
+static void translateE(edge_t * e, point offset)
 {
     int i, j;
     point *pt;
@@ -518,7 +518,7 @@ static void translate(Agraph_t * g, pos_edge posEdges)
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e))
 		if (ED_spl(e))
-		    translateE(e, offset);
+		    translateE(e, GD_bb(g).LL);
 	}
     }
     translateG(g, GD_bb(g).LL);
