@@ -110,6 +110,7 @@ static char *sdotarray = "1,5";
 static int N_pages;
 /* static 	point	Pages; */
 static int onetime = TRUE;
+static int isLatin1;
 
 static int Rot;
 static double Scale;
@@ -358,10 +359,44 @@ static void svg_grstyle(context_t * cp, int filled)
     svg_fputs("\"");
 }
 
+/* xml_namestring:
+ * Return xml_string applied to input.
+ * If input is Latin1, first translate to UTF8
+ */
+static char*
+xml_namestring (char* str)
+{
+    if (isLatin1) {
+	char* s = latin1ToUTF8 (str);
+	str = xml_string(s);
+	free (s);
+    }
+    else
+	str = xml_string(str);
+    return str;
+}
+
+/* svg_name_fputs:
+ * Do fputs on input.
+ * If input is Latin1, first translate to UTF8.
+ */
+static void
+svg_name_fputs (char* str)
+{
+    if (isLatin1) {
+	char* s = latin1ToUTF8 (str);
+	svg_fputs(s);
+	free (s);
+    }
+    else
+	svg_fputs(str);
+}
+
 static void svg_comment(char *str)
 {
+
     svg_fputs("<!-- ");
-    svg_fputs(xml_string(str));
+    svg_fputs(xml_namestring(str));
     svg_fputs(" -->\n");
 }
 
@@ -444,8 +479,9 @@ static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 	init_svg();
 	onetime = FALSE;
     }
+    isLatin1 = (GD_charset(g) == CHAR_LATIN1);
     svg_fputs("<!-- Title: ");
-    svg_fputs(xml_string(g->name));
+    svg_fputs(xml_namestring(g->name));
     svg_printf(" Pages: %d -->\n", N_pages);
     if (dpi == POINTS_PER_INCH) 
 	svg_printf("<svg width=\"%dpt\" height=\"%dpt\"\n",
@@ -499,7 +535,7 @@ svg_begin_page(graph_t * g, point page, double scale, int rot,
     svg_fputs(cstk[0].fontfam);
     svg_printf(";font-size:%.2f;\">\n", cstk[0].fontsz);
     svg_fputs("<title>");
-    svg_fputs(xml_string(g->name));
+    svg_fputs(xml_namestring(g->name));
     svg_fputs("</title>\n");
 }
 
@@ -526,7 +562,7 @@ static void svg_begin_cluster(graph_t * g)
     svg_printf("<g id=\"%s%d\" class=\"cluster\">", op[Obj],
 	       g->meta_node->id);
     svg_fputs("<title>");
-    svg_fputs(xml_string(g->name));
+    svg_fputs(xml_namestring(g->name));
     svg_fputs("</title>\n");
 }
 
@@ -540,7 +576,7 @@ static void svg_begin_node(node_t * n)
     Curnode = n;
     svg_printf("<g id=\"%s%d\" class=\"node\">", op[Obj], n->id);
     svg_fputs("<title>");
-    svg_fputs(xml_string(n->name));
+    svg_fputs(xml_namestring(n->name));
     svg_fputs("</title>\n");
 }
 
@@ -559,11 +595,11 @@ static void svg_begin_edge(edge_t * e)
     else
 	edgeop = "&#45;&#45;";
     svg_fputs("<title>");
-    svg_fputs(xml_string(e->tail->name));
+    svg_fputs(xml_namestring(e->tail->name));
     svg_fputs(edgeop);
     /* can't do this in single svg_printf because
      * xml_string's buffer gets reused. */
-    svg_fputs(xml_string(e->head->name));
+    svg_fputs(xml_namestring(e->head->name));
     svg_fputs("</title>\n");
 }
 
@@ -864,8 +900,8 @@ static void svg_user_shape(char *name, point * A, int n, int filled)
 */
 
     svg_fputs("<clipPath id=\"mypath");
-    svg_fputs(name);
-    svg_fputs(Curnode->name);
+    svg_name_fputs(name);
+    svg_name_fputs(Curnode->name);
     svg_fputs("\">\n<polygon points=\"");
     maxx = minx = svgpt(A[0]).x;
     maxy = miny = svgpt(A[0]).y;
@@ -889,12 +925,12 @@ static void svg_user_shape(char *name, point * A, int n, int filled)
     p = svgpt(A[0]);
     svg_printf("%d,%d ", p.x, p.y);
     svg_fputs("\"/>\n</clipPath>\n<image xlink:href=\"");
-    svg_fputs(imagefile);
+    svg_name_fputs(imagefile);
     svg_printf
 	("\" width=\"%dpx\" height=\"%dpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%d\" y=\"%d\" clip-path=\"url(#mypath",
 	 sz.x, sz.y, minx, miny);
-    svg_fputs(name);
-    svg_fputs(Curnode->name);
+    svg_name_fputs(name);
+    svg_name_fputs(Curnode->name);
     svg_fputs(")\"/>\n");
 }
 
