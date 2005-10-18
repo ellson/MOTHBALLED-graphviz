@@ -4,7 +4,7 @@
 ARCH=linux.i386
 
 # specify root directory for installation
-INSTALLROOT=/usr/local/graphviz
+INSTALLROOT=/home/erg/src/gviz/build/linux.i386
 
 # specify where to find tcl >= 8.0
 TCLDIR=/usr/common/tcl8.3.3
@@ -51,3 +51,4 @@ TK_LIBDIR=$(TKDIR)/lib
 # location of tk.h
 TK_INCDIR=$(TKDIR)/include
 
+VERSION=2.5
