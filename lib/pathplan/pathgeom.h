@@ -22,12 +22,17 @@
 extern "C" {
 #endif
 
+#ifdef HAVE_POINTF_S
+    typedef struct pointf_s Ppoint_t;
+    typedef struct pointf_s Pvector_t;
+#else
     typedef struct Pxy_t {
 	double x, y;
     } Pxy_t;
 
     typedef struct Pxy_t Ppoint_t;
     typedef struct Pxy_t Pvector_t;
+#endif
 
     typedef struct Ppoly_t {
 	Ppoint_t *ps;
