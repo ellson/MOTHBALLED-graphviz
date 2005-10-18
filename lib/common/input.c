@@ -128,6 +128,16 @@ static char* dotneato_basename (char* path)
 {
     char* s = path;
     if (*s == '\0') return path; /* empty string */
+#ifdef MSWIN32
+    /* On Windows, executables, by convention, end in ".exe". Thus,
+     * this may be part of the path name and must be removed for
+     * matching to work.
+     */
+    {
+	char* dotp = strrchr (s, '.');
+	if (dotp) *dotp = '\0';
+    }
+#endif
     while (*s) s++; s--;
     /* skip over trailing slashes, nulling out as we go */
     while ((s > path) && ((*s == '/') || (*s == '\\')))
