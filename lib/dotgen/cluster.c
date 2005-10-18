@@ -195,11 +195,14 @@ void interclexp(graph_t * subg)
 
 	    /* flat edges */
 	    if (ND_rank(e->tail) == ND_rank(e->head)) {
-		if (find_flat_edge(e->tail, e->head) == NULL) {
+		edge_t* fe;
+		if ((fe = find_flat_edge(e->tail, e->head)) == NULL) {
 		    flat_edge(g, e);
 		    prev = e;
-		} else
-		    prev = NULL;
+		} else if (e != fe) {
+		    safe_other_edge(e);
+		    if (!ED_to_virt(e)) merge_oneway(e, fe);
+		}
 		continue;
 	    }
 
