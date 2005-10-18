@@ -22,6 +22,8 @@ LT_REVISION=0
 LT_AGE=0
 
 VERSION_INFO="$LT_CURRENT:$LT_REVISION:$LT_AGE"
+AC_DEFINE_UNQUOTED(LT_CURRENT,$LT_CURRENT,[Compatibility version number for shared libraries.])
+AC_SUBST(LT_CURRENT)
 AC_SUBST(VERSION_INFO)
 
 dnl ===========================================================================
@@ -76,6 +78,7 @@ case "${target_os}" in
   *darwin* )
 	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
 	PATHSEPARATOR=":"
+	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
 	;;
   * ) # This sucks!  Whatever happened to standards for file system layout?
 	DEFAULT_FONTPATH="/usr/X11R6/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/truetype:/usr/X11R6/lib/X11/fonts/TTF:/usr/share/fonts/TrueType:/usr/share/fonts/truetype:/usr/openwin/lib/X11/fonts/TrueType:/usr/X11R6/lib/X11/fonts/Type1:/usr/common/share/fonts/ttf";
@@ -85,8 +88,8 @@ esac
 AC_SUBST(CYGWIN)
 AC_SUBST(MINGW32)
 AC_SUBST(DARWIN)
-AC_DEFINE_UNQUOTED(DEFAULT_FONTPATH,"$DEFAULT_FONTPATH",Path to TrueType fonts.)
-AC_DEFINE_UNQUOTED(PATHSEPARATOR,"$PATHSEPARATOR",Path separator character.)
+AC_DEFINE_UNQUOTED(DEFAULT_FONTPATH,"$DEFAULT_FONTPATH",[Path to TrueType fonts.])
+AC_DEFINE_UNQUOTED(PATHSEPARATOR,"$PATHSEPARATOR",[Path separator character.])
 
 DEFAULT_DPI=96
 AC_DEFINE_UNQUOTED(DEFAULT_DPI,$DEFAULT_DPI,Default DPI.)

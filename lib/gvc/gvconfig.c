@@ -278,17 +278,19 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 {
     FILE *f = NULL;
     glob_t globbuf;
-    char *config_glob, *path, *libdir;
+    char *config_glob, *config_re, *path, *libdir;
     int i, rc, re_status;
     gvplugin_library_t *library;
-    char *plugin_glob = "libgvplugin*";
     regex_t re;
-#if 1
+    char *plugin_glob = "libgvplugin_*";
+#ifdef DARWIN_DYLIB
     /* Mac OS X / Darwin */
-    char *plugin_re = "[^0-9]\\.[0-9]+\\.dylib$";
+    char *plugin_re_beg = "[^0-9]\\.";
+    char *plugin_re_end = "\\.dylib$";
 #else
     /* Everyone else */
-    char *plugin_re = "\\.so\\.[0-9]+$";
+    char *plugin_re_beg = "\\.so\\.";
+    char *plugin_re_end= "$";
 #endif
 
     if (config_path) {
@@ -300,19 +302,24 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 
     libdir = gvconfig_libdir();
 
-    /* load all libraries even if can't save config */
-    config_glob = gmalloc(strlen(libdir)
-			    + 1
-			    + strlen(plugin_glob)
-			    + 1);
+    config_re = gmalloc(strlen(plugin_re_beg) + 20 + strlen(plugin_re_end) + 1);
+#ifdef LT_VERSION
+    sprintf(config_re,"%s%d%s", LT_CURRENT, plugin_re_beg, plugin_re_end);
+#else
+    sprintf(config_re,"%s[0-9]+%s", plugin_re_beg, plugin_re_end);
+#endif
+
+    if (regcomp(&re, config_re, REG_EXTENDED|REG_NOSUB) != 0) {
+	agerr(AGERR,"cannot compile regular expression %s", config_re);
+    }
+
+    config_glob = gmalloc(strlen(libdir) + 1 + strlen(plugin_glob) + 1);
     strcpy(config_glob, libdir);
     strcat(config_glob, "/");
     strcat(config_glob, plugin_glob);
 
+    /* load all libraries even if can't save config */
     rc = glob(config_glob, GLOB_NOSORT, NULL, &globbuf);
-    if (regcomp(&re, plugin_re, REG_EXTENDED|REG_NOSUB) != 0) {
-	agerr(AGERR,"cannot compile regular expression %s", plugin_re);
-    }
     if (rc == 0) {
 	for (i = 0; i < globbuf.gl_pathc; i++) {
 	    re_status = regexec(&re, globbuf.gl_pathv[i], (size_t) 0, NULL, 0);
@@ -333,6 +340,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     regfree(&re);
     globfree(&globbuf);
     free(config_glob);
+    free(config_re);
     if (f)
 	fclose(f);
 }
