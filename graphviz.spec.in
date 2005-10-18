@@ -43,6 +43,14 @@ Group:		Applications/Multimedia
 License:	CPL
 URL:		http://www.graphviz.org/
 Source:		http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
+%{?fc5:Requires: urw-fonts}
+%{?fc4:Requires: urw-fonts}
+%{?fc3:Requires: urw-fonts}
+%{?fc2:Requires: urw-fonts}
+%{?fc1:Requires: urw-fonts}
+%{?el5:Requires: urw-fonts}
+%{?el4:Requires: urw-fonts}
+%{?el3:Requires: urw-fonts}
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -58,6 +66,7 @@ BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
 %{?fc3:BuildRequires: fontconfig-devel xorg-x11-devel} 
 %{?fc2:BuildRequires: fontconfig-devel XFree86-devel}
 %{?fc1:BuildRequires: fontconfig-devel XFree86-devel}
+%{?el5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl-devel}
 %{?el4:BuildRequires: fontconfig-devel xorg-x11-devel}
 %{?el3:BuildRequires: fontconfig-devel XFree86-devel}
 %{?el2:BuildRequires: XFree86-devel}
