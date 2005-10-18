@@ -1,0 +1,40 @@
+This is an attempt to document the lifecycles of the various datastructures in libgvc.
+
+
+
+
+gvc       ------------------------------------------------------------------------------
+i/p file  ---------------------------------------------------   ------------------------
+i/p graph ------------------------   ------------------------   ------------------------
+jobset    ------------------------   ------------------------   ------------------------
+layout    ------------------------   ------------------------   -----------  -----------
+job       -----------  -----------   -----------  -----------   -----------  -----------
+render    -----------  -----------   -----------  -----------   -----------  -----------
+page      -- -- -- --  -- -- -- --   -- -- -- --  -- -- -- --   -- -- -- --  -- -- -- --
+gvdevice  -----------------------------------------------------------------  -----------
+
+
+gvc - extends over all input files, all graphs, all layouts, all renderings
+      lasts for as long as the application is dealing with graphs
+      provides management of plugins which should be loaded just once per invocation
+
+i/p file - can be more than one per gvc
+
+i/p graph - can be more than one per i/p file
+
+jobset - all layouts, all renderings of a single graph (not currently implemented)
+
+layout - a dot, or neato, or etc layout of a single graph
+
+job - a rendering of a single layout to a single gvdevice
+      possibly including multiple pages from a single rendering, or mutiple refresh renderings for callback events
+
+render - rendering of the whole of single graph layout in a single format to a single device, possibly in multiple parts,
+
+page or refresh - one part of a mutipart rendering
+
+gvdevice - typically, one device per job.
+      in the case of multipage output, a single gvdevice can be used for mutiple jobs and jobsets.
+      a single format to a single file, or a single window on a desktop
+   
+
