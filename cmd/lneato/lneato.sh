@@ -2,6 +2,7 @@
 FILES=""
 MLEVEL="0"
 LMODE="async"
+FLAGS=
 
 usage="echo usage: lneato [-V] [-lm (sync|async)] [-el (0|1)] <filename>"
 
@@ -80,7 +81,7 @@ do
 	CMDS="$CMDS dotty.createviewandgraph($i,'file',null,null);"
 done
 
-lefty -e "
+lefty $FLAGS -e "
 load ('dotty.lefty');
 
 checkpath = function () {

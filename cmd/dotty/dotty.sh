@@ -3,6 +3,7 @@
 FILES=""
 MLEVEL="0"
 LMODE="async"
+FLAGS=
 
 usage='echo "usage: dotty [-V] [-lm (sync|async)] [-el (0|1)] <filename>"'
 
@@ -85,7 +86,7 @@ if [ ! -f "$leftypath" ]; then
     exit 1
 fi
 
-exec $leftypath -e "
+exec $leftypath $FLAGS -e "
 load ('dotty.lefty');
 checkpath = function () {
     if (tablesize (dotty) > 0)
