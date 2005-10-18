@@ -541,12 +541,21 @@ static void ps_user_shape(char *name, point * A, int sides, int filled)
 	shapeimagefile = agget(Curnode, "shapefile");
     }
     else if (find_user_shape(name)) {
+	if (filled) {
+	    ps_begin_context();
+	    ps_set_color(S[SP].fillcolor);
+	    fprintf(Output_file, "[ ");
+	    for (j = 0; j < sides; j++)
+		fprintf(Output_file, "%d %d ", A[j].x, A[j].y);
+	    fprintf(Output_file, "%d %d ", A[0].x, A[0].y);
+	    fprintf(Output_file, "]  %d true %s\n", sides, name);
+	    ps_end_context();
+	}
 	fprintf(Output_file, "[ ");
 	for (j = 0; j < sides; j++)
 	    fprintf(Output_file, "%d %d ", A[j].x, A[j].y);
 	fprintf(Output_file, "%d %d ", A[0].x, A[0].y);
-	fprintf(Output_file, "]  %d %s %s\n", sides,
-		(filled ? "true" : "false"), name);
+	fprintf(Output_file, "]  %d false %s\n", sides, name);
 	return;
     }
     else
