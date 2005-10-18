@@ -50,7 +50,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 gd.lib graph.lib cdt.lib ingraphs.lib pack.lib gvc.lib neatogen.lib common.lib pathplan.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"../../lib/lib/Release" /libpath:"..\..\third-party\lib"
+# ADD LINK32 gd.lib graph.lib cdt.lib ingraphs.lib pack.lib gvc.lib neatogen.lib circogen.lib twopigen.lib fdpgen.lib common.lib plugin.lib pathplan.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386 /libpath:"../../lib/lib/Release" /libpath:"..\..\third-party\lib"
 
 !ELSEIF  "$(CFG)" == "gvpack - Win32 Debug"
 
@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 graph.lib cdt.lib ingraphs.lib pack.lib gd.lib gvc.lib neatogen.lib common.lib pathplan.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"../../lib/lib/Debug" /libpath:"..\..\third-party\lib"
+# ADD LINK32 graph.lib cdt.lib ingraphs.lib pack.lib gd.lib gvc.lib neatogen.lib circogen.lib twopigen.lib fdpgen.lib common.lib plugin.lib pathplan.lib libexpat.lib libexpatw.lib z.lib png.lib jpeg.lib ft.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /libpath:"../../lib/lib/Debug" /libpath:"..\..\third-party\lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -89,6 +89,10 @@ LINK32=link.exe
 # Begin Source File
 
 SOURCE=.\gvpack.c
+# End Source File
+# Begin Source File
+
+SOURCE=.\gvpack_builtins.c
 # End Source File
 # End Group
 # Begin Group "Header Files"
