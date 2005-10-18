@@ -89,10 +89,6 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
 
     job = gvc->job;
     job->output_lang = gvrender_select(job, job->output_langname);
-    if (!GD_drawing(g) && job->output_lang != CANONICAL_DOT) {
-        fprintf(stderr, "Layout was not done\n");
-        return -1;
-    }
     job->output_file = out;
 
     gvRenderJobs(gvc, g);

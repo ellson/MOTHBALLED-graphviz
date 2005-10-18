@@ -1764,6 +1764,11 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
     GVJ_t *job;
 
+    if (!GD_drawing(g)) {
+        fprintf(stderr, "Layout was not done.  Missing layout plugins? \n");
+        return -1;
+    }
+
     init_gvc_from_graph(gvc, g);
     init_layering(gvc, g);
     init_bb(g);
@@ -1771,8 +1776,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
     gvc->keybindings = gvevent_key_binding;
     gvc->numkeys = gvevent_key_binding_size;
 
-/*     gvc->active_jobs = NULL;  acive job sets can straddle multiple input graphs */
-    for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
+    for (gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
 	job->g = g;
 
         if (!job->output_file) {        /* if not yet opened */
@@ -1785,7 +1789,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
         job->output_lang = gvrender_select(job, job->output_langname);
 	if (job->output_lang == NO_SUPPORT) {
 	    fprintf(stderr,"renderer for %s is unavailable\n", job->output_langname);
-	    return 1;
+	    return -1;
 	}
 
         
