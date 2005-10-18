@@ -1,5 +1,5 @@
 CFLAGS=`pkg-config libgvc --cflags` -Wall -g -O2
-LDFLAGS=`pkg-config libgvc --libs`
+LDFLAGS=-Wl,--rpath -Wl,`pkg-config libgvc --variable=libdir` `pkg-config libgvc --libs`
 
 all: dot demo simple
 
