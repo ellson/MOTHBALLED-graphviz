@@ -22,6 +22,8 @@
 #include "types.h"
 #include "graph.h"
 #include "geomprocs.h"
+#include "types.h"
+#include "graph.h"
 
 point pointof(int x, int y)
 {

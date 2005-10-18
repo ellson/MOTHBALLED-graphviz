@@ -20,7 +20,7 @@
 #include "gvplugin.h"
 #include "geom.h"
 #include "color.h"
-#include "gvcint.h"
+#include "gvcjob.h"
 
 #ifdef __cplusplus
 extern "C" {
