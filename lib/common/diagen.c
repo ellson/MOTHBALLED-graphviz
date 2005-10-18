@@ -637,7 +637,7 @@ int ellipse_connection(pointf cp, pointf p)
 int box_connection(node_t * n, pointf p)
 {
     int i = 0, j, sides, conn = 0, peripheries, z;
-    double xsize, ysize, mindist = 0.0, dist;
+    double xsize, ysize, mindist2 = 0.0, dist2;
     polygon_t *poly;
     pointf P, *vertices;
     static point *A;
@@ -673,13 +673,13 @@ int box_connection(node_t * n, pointf p)
 
     z = 0;
     while (z < i) {
-	dist = DIST(p.x, p.y, diapt(A[z]).x, diapt(A[z]).y);
+	dist2 = DIST2(p, diapt(A[z]));
 	if (z == 0) {
-	    mindist = dist;
+	    mindist2 = dist2;
 	    conn = 0;
 	}
-	if (dist < mindist) {
-	    mindist = dist;
+	if (dist2 < mindist2) {
+	    mindist2 = dist2;
 	    conn = 2 * z;
 	}
 	z++;
@@ -687,11 +687,11 @@ int box_connection(node_t * n, pointf p)
 
     z = 0;
     while (z < i) {
-	dist =
-	    DIST(p.x, p.y, (diapt(A[z]).x + diapt(A[z + 1]).x) / 2,
-		 (diapt(A[z]).y + diapt(A[z + 1]).y) / 2);
-	if (dist < mindist) {
-	    mindist = dist;
+	P.x = (diapt(A[z]).x + diapt(A[z + 1]).x) / 2;
+	P.y = (diapt(A[z]).y + diapt(A[z + 1]).y) / 2;
+	dist2 = DIST2(p, P);
+	if (dist2 < mindist2) {
+	    mindist2 = dist2;
 	    conn = 2 * z + 1;
 	}
 	z++;

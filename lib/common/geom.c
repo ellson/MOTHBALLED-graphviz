@@ -14,6 +14,9 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+/* geometric functions (e.g. on points and boxes) with application to, but
+ * no specific dependance on graphs */
+
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -152,47 +155,6 @@ pointf exch_xyf(pointf p)
     return p;
 }
 
-/* from Glassner's Graphics Gems */
-#define W_DEGREE 5
-
-/*
- *  Bezier : 
- *	Evaluate a Bezier curve at a particular parameter value
- *      Fill in control points for resulting sub-curves if "Left" and
- *	"Right" are non-null.
- * 
- */
-pointf Bezier(pointf * V, int degree, double t, pointf * Left,
-	      pointf * Right)
-{
-    int i, j;			/* Index variables      */
-    pointf Vtemp[W_DEGREE + 1][W_DEGREE + 1];
-
-    /* Copy control points  */
-    for (j = 0; j <= degree; j++) {
-	Vtemp[0][j] = V[j];
-    }
-
-    /* Triangle computation */
-    for (i = 1; i <= degree; i++) {
-	for (j = 0; j <= degree - i; j++) {
-	    Vtemp[i][j].x =
-		(1.0 - t) * Vtemp[i - 1][j].x + t * Vtemp[i - 1][j + 1].x;
-	    Vtemp[i][j].y =
-		(1.0 - t) * Vtemp[i - 1][j].y + t * Vtemp[i - 1][j + 1].y;
-	}
-    }
-
-    if (Left != NULL)
-	for (j = 0; j <= degree; j++)
-	    Left[j] = Vtemp[j][0];
-    if (Right != NULL)
-	for (j = 0; j <= degree; j++)
-	    Right[j] = Vtemp[degree - j][j];
-
-    return (Vtemp[degree][0]);
-}
-
 box box_bb(box b0, box b1)
 {
     box b;
@@ -259,140 +221,6 @@ boolean box_contains(box b0, box b1)
 boolean boxf_contains(boxf b0, boxf b1)
 {
     return CONTAINS(b0, b1);
-}
-
-point closest_spline_point(splines * spl, point p)
-{
-    int i, j, k, besti, bestj;
-    double bestdist2, d2, dlow2, dhigh2; /* squares of distances */
-    double low, high, t;
-    pointf c[4], pt2, pt;
-    point rv;
-    bezier bz;
-
-    besti = bestj = -1;
-    bestdist2 = 1e+38;
-    P2PF(p, pt);
-    for (i = 0; i < spl->size; i++) {
-	bz = spl->list[i];
-	for (j = 0; j < bz.size; j++) {
-	    pointf b;
-
-	    b.x = bz.list[j].x;
-	    b.y = bz.list[j].y;
-	    d2 = DIST2(b, pt);
-	    if ((bestj == -1) || (d2 < bestdist2)) {
-		besti = i;
-		bestj = j;
-		bestdist2 = d2;
-	    }
-	}
-    }
-
-    bz = spl->list[besti];
-    j = bestj / 3;
-    if (j >= spl->size)
-	j--;
-    for (k = 0; k < 4; k++) {
-	c[k].x = bz.list[j + k].x;
-	c[k].y = bz.list[j + k].y;
-    }
-    low = 0.0;
-    high = 1.0;
-    dlow2 = DIST2(c[0], pt);
-    dhigh2 = DIST2(c[3], pt);
-    do {
-	t = (low + high) / 2.0;
-	pt2 = Bezier(c, 3, t, NULL, NULL);
-	if (fabs(dlow2 - dhigh2) < 1.0)
-	    break;
-	if (fabs(high - low) < .00001)
-	    break;
-	if (dlow2 < dhigh2) {
-	    high = t;
-	    dhigh2 = DIST2(pt2, pt);
-	} else {
-	    low = t;
-	    dlow2 = DIST2(pt2, pt);
-	}
-    } while (1);
-    PF2P(pt2, rv);
-    return rv;
-}
-
-point spline_at_y(splines * spl, int y)
-{
-    int i, j;
-    double low, high, d, t;
-    pointf c[4], pt2;
-    point pt;
-    static bezier bz;
-
-/* this caching seems to prevent pt.x from getting set from bz.list[0].x
-	- optimizer problem ? */
-
-#if 0
-    static splines *mem = NULL;
-
-    if (mem != spl) {
-	mem = spl;
-#endif
-	for (i = 0; i < spl->size; i++) {
-	    bz = spl->list[i];
-	    if (BETWEEN(bz.list[bz.size - 1].y, y, bz.list[0].y))
-		break;
-	}
-#if 0
-    }
-#endif
-    if (y > bz.list[0].y)
-	pt = bz.list[0];
-    else if (y < bz.list[bz.size - 1].y)
-	pt = bz.list[bz.size - 1];
-    else {
-	for (i = 0; i < bz.size; i += 3) {
-	    for (j = 0; j < 3; j++) {
-		if ((bz.list[i + j].y <= y) && (y <= bz.list[i + j + 1].y))
-		    break;
-		if ((bz.list[i + j].y >= y) && (y >= bz.list[i + j + 1].y))
-		    break;
-	    }
-	    if (j < 3)
-		break;
-	}
-	assert(i < bz.size);
-	for (j = 0; j < 4; j++) {
-	    c[j].x = bz.list[i + j].x;
-	    c[j].y = bz.list[i + j].y;
-	    /* make the spline be monotonic in Y, awful but it works for now */
-	    if ((j > 0) && (c[j].y > c[j - 1].y))
-		c[j].y = c[j - 1].y;
-	}
-	low = 0.0;
-	high = 1.0;
-	do {
-	    t = (low + high) / 2.0;
-	    pt2 = Bezier(c, 3, t, NULL, NULL);
-	    d = pt2.y - y;
-	    if (ABS(d) <= 1)
-		break;
-	    if (d < 0)
-		high = t;
-	    else
-		low = t;
-	} while (1);
-	pt.x = pt2.x;
-	pt.y = pt2.y;
-    }
-    pt.y = y;
-    return pt;
-}
-
-point neato_closest(splines * spl, point p)
-{
-/* this is a stub so that we can share a common emit.c between dot and neato */
-
-    return spline_at_y(spl, p.y);
 }
 
 /*

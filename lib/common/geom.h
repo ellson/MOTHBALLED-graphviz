@@ -14,10 +14,13 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+/* geometric functions (e.g. on points and boxes) with application to, but
+ * no specific dependance on graphs */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
     extern point pointof(int, int);
     extern pointf cvt2ptf(point);
     extern point cvt2pt(pointf);
@@ -48,11 +51,6 @@ extern "C" {
     extern point flip_pt(point p, int rankdir);
     extern pointf flip_ptf(pointf p, int rankdir);
     extern point invflip_pt(point p, int rankdir);
-
-    extern pointf Bezier(pointf *, int, double, pointf *, pointf *);
-    extern point closest_spline_point(splines * spl, point p);
-    extern point neato_closest(splines * spl, point p);
-    extern point spline_at_y(splines * spl, int y);
 
 #ifdef __cplusplus
 }
