@@ -27,7 +27,9 @@ libtkspline_la_SOURCES = tkspline.c
 libtkspline_la_LIBADD = \
 	$(top_builddir)/tclpkg/tkstubs/libtkstubs.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la 
-libtkspline_la_LDFLAGS = -module -no-undefined
+libtkspline_la_LDFLAGS = -module
+## can't use -no-undefined because of references to TkMakeBezierCurve() and others
+#libtkspline_la_LDFLAGS = -module -no-undefined
 
 if WITH_TK
 all-local: pkgIndex.tcl
