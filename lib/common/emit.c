@@ -752,10 +752,8 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	styles = parse_style(style);
 	sp = styles;
 	while ((p = *sp++)) {
-	    if (streq(p, "invis")) {
-		gvrender_end_edge(job);
+	    if (streq(p, "invis"))
 		return;
-	    }
 	}
     }
     xdemitState = EMIT_DRAW;
