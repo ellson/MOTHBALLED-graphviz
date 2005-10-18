@@ -181,8 +181,8 @@ static void rec_attach_bb(graph_t * g)
     char buf[32];
     point pt;
 
-    sprintf(buf, "%d,%d,%d,%d", GD_bb(g).LL.x, YDIR(GD_bb(g).LL.y),
-	    GD_bb(g).UR.x, YDIR(GD_bb(g).UR.y));
+    sprintf(buf, "%d,%d,%d,%d", GD_bb(g).LL.x, GD_bb(g).LL.y,
+	    GD_bb(g).UR.x, GD_bb(g).UR.y);
     agset(g, "bb", buf);
     if (GD_label(g) && GD_label(g)->text[0]) {
 	pt = GD_label(g)->p;
