@@ -8,12 +8,13 @@ TCLSH=/C/tcl/bin/tclsh.exe                  # tcl
 INPKG=graphviz-win.tgz                      # input CVS package
 #WISE=/C/wisein~1/wise32.exe                 # = /Wise InstallMaker
 WISE=/C/progra~1/wisein~2/wise32.exe        # = Wise InstallMaker
-SOURCE=ellson@www.graphviz.org:www.graphviz.org/pub/graphviz
-NSOURCE=www.graphviz.org:/home/ellson/www.graphviz.org/pub/graphviz
+SOURCEID=ellson@www.graphviz.org
+SOURCE=/home/ellson/www.graphviz.org/pub/graphviz
+#NSOURCE=www.graphviz.org:/home/ellson/www.graphviz.org/pub/graphviz
 SOURCEFILE=$SOURCE/CURRENT/$INPKG
-NSOURCEFILE=$NSOURCE/CURRENT/$INPKG
+#NSOURCEFILE=$NSOURCE/CURRENT/$INPKG
 DESTDIR=$SOURCE/CURRENT
-NDESTDIR=$NSOURCE/CURRENT
+#NDESTDIR=$NSOURCE/CURRENT
 
 OPTION=Release
 WISEFLAG=0
@@ -45,10 +46,12 @@ function getFile
 {
 #  $TCLSH get.tcl $INPKG
 #  scp -q $SOURCEFILE . >> $LFILE 2>&1
-  echo ssh soohan scp -q $NSOURCEFILE . >> $LFILE 2>&1
-  ssh soohan scp -q $NSOURCEFILE .
-  echo rcp raptor:graphviz-win.tgz . >> $LFILE 2>&1
-  rcp raptor:graphviz-win.tgz . >> $LFILE 2>&1
+#  echo ssh graphviz. scp -q $NSOURCEFILE . >> $LFILE 2>&1
+#  ssh soohan scp -q $NSOURCEFILE .
+#  echo rcp raptor:graphviz-win.tgz . >> $LFILE 2>&1
+#  rcp raptor:graphviz-win.tgz . >> $LFILE 2>&1
+  echo ssh $SOURCEID "cat $SOURCEFILE" >> $LFILE
+  ssh $SOURCEID "cat $SOURCEFILE" > $INPKG 2>> $LFILE
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to get source"
@@ -64,9 +67,11 @@ function putFile
 #  sleep 10
 #  kill $PID
   BASE=$(basename $1)
-  rcp $1 raptor:. >> $LFILE 2>&1
-  ssh raptor scp -q $BASE $NDESTDIR  >> $LFILE 2>&1
-  ssh raptor rm $BASE >> $LFILE 2>&1
+#  rcp $1 raptor:. >> $LFILE 2>&1
+#  ssh raptor scp -q $BASE $NDESTDIR  >> $LFILE 2>&1
+#  ssh raptor rm $BASE >> $LFILE 2>&1
+  echo "cat $1 | ssh $SOURCEID cat - $DESTDIR" >> $LFILE 
+  cat $1 | ssh $SOURCEID "cat - $DESTDIR" 
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to put $1"

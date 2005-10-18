@@ -24,6 +24,7 @@
 #include "render.h"
 #include "ps.h"
 #include "agxbuf.h"
+#include "gd.h"
 
 #ifndef MSWIN32
 #include <unistd.h>
@@ -35,6 +36,8 @@ extern void epsf_define(FILE * of);
 void epsf_emit_body(ps_image_t *img, FILE *of);
 extern void ps_freeusershapes(void);
 extern ps_image_t *ps_usershape(char *shapeimagefile);
+
+extern gdImagePtr gd_getshapeimage(char *name);
 
 static int N_pages, Cur_page;
 /* static 	point	Pages; */
@@ -471,6 +474,50 @@ static void ps_polyline(point * A, int n)
     fprintf(Output_file, Stroke);
 }
 
+static void writePSBitmap (gdImagePtr im, point p, point sz)
+{
+    int x, y, px;
+
+    fprintf(Output_file, "gsave\n");
+
+    /* this sets the position of the image */
+    fprintf(Output_file, "%d %d translate %% lower-left coordinate\n", p.x, p.y);
+
+    /* this sets the rendered size, from 'pixels' to points (1/72 inch) */
+    fprintf(Output_file,"%d %d scale\n", sz.x, sz.y);
+
+    /* xsize ysize bits-per-sample [matrix] */
+    fprintf(Output_file, "%d %d 8 [%d 0 0 %d 0 %d]\n", im->sx, im->sy, 
+			im->sx, -(im->sy), im->sy);
+
+    fprintf(Output_file, "{<\n");
+    for (y = 0; y < im->sy; y++) {
+	for (x = 0; x < im->sx; x++) {
+	    if (im->trueColor) {
+		px = gdImageTrueColorPixel(im, x, y);
+		fprintf(Output_file, "%02x%02x%02x",
+		    gdTrueColorGetRed(px),
+		    gdTrueColorGetGreen(px),
+		    gdTrueColorGetBlue(px));
+	    }
+	    else {
+		px = gdImagePalettePixel(im, x, y);
+		fprintf(Output_file, "%02x%02x%02x",
+		    im->red[px],
+		    im->green[px],
+		    im->blue[px]);
+	    }
+	}
+	fprintf(Output_file, "\n");
+    }
+
+    fprintf(Output_file, ">}\n");
+    fprintf(Output_file, "false 3 colorimage\n");
+
+    fprintf(Output_file, "grestore\n");
+
+}
+
 /* ps_user_shape:
  * Images for postscript are complicated by the old epsf shape, as
  * well as user-defined shapes using postscript code.
@@ -483,7 +530,7 @@ static void ps_polyline(point * A, int n)
 static void ps_user_shape(char *name, point * A, int sides, int filled)
 {
     int j;
-    ps_image_t *img = 0;
+    gdImagePtr bmimg; 
     point offset;
     char *shapeimagefile = NULL;
     char *suffix;
@@ -492,7 +539,6 @@ static void ps_user_shape(char *name, point * A, int sides, int filled)
 	return;
     if (streq(name, "custom")) {
 	shapeimagefile = agget(Curnode, "shapefile");
-	img = ps_usershape(shapeimagefile);
     }
     else if (find_user_shape(name)) {
 	fprintf(Output_file, "[ ");
@@ -504,36 +550,39 @@ static void ps_user_shape(char *name, point * A, int sides, int filled)
 	return;
     }
     else
-	img = ps_usershape(name);
-    if (img) {
-	ps_begin_context();
-	offset.x = -img->origin.x - (img->size.x) / 2;
-	offset.y = -img->origin.y - (img->size.y) / 2;
-	fprintf(Output_file, "%d %d translate newpath\n",
+	shapeimagefile = name;
+
+    assert (shapeimagefile);
+    suffix = strrchr(shapeimagefile, '.');
+    if (suffix) {
+	suffix++;
+	if (streq(suffix, "ps")) {
+	    ps_image_t *img = 0;
+	    img = ps_usershape(shapeimagefile);
+	    if (!img) /* problems would have been reported by image_size */
+		return; 
+	    ps_begin_context();
+	    offset.x = -img->origin.x - (img->size.x) / 2;
+	    offset.y = -img->origin.y - (img->size.y) / 2;
+	    fprintf(Output_file, "%d %d translate newpath\n",
 		ND_coord_i(Curnode).x + offset.x,
 		ND_coord_i(Curnode).y + offset.y);
-	if (img->must_inline) epsf_emit_body(img,Output_file);
-	else fprintf(Output_file,"user_shape_%d\n",img->macro_id);
-	ps_end_context();
-    }
-    else if (shapeimagefile) {
-	suffix = strrchr(shapeimagefile, '.');
-	if (suffix) {
-	    suffix++;
-	    if (strcmp(suffix, "ps")) {
-		agerr(AGERR,
-		    "image type \"%s\" not supported in PostScript output\n",
-		    suffix);
-	    } else {
-		agerr(AGERR, "Could not find image file \"%s\"\n",
-		    shapeimagefile);
-	    }
-	} else {
-	    agerr(AGERR,
-		  "image file %s not supported in PostScript output\n",
-		  shapeimagefile);
+	    if (img->must_inline) epsf_emit_body(img,Output_file);
+	    else fprintf(Output_file,"user_shape_%d\n",img->macro_id);
+	    ps_end_context();
 	}
-    } 
+	else if ((bmimg = gd_getshapeimage(shapeimagefile))) {
+	    point sz;
+	    sz.x = A[0].x - A[2].x;
+	    sz.y = A[0].y - A[2].y;
+	    writePSBitmap (bmimg, A[2], sz);
+	}
+	else {  /* some other type of image */
+	    agerr(AGERR, "image type \"%s\" of file %s unsupported in PostScript output\n",
+		suffix, shapeimagefile);
+	}
+    }
+    /* if !suffix, already reported by image_size */
 }
 
 codegen_t PS_CodeGen = {
