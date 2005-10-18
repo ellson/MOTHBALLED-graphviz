@@ -401,15 +401,15 @@ else
       fi
     fi
   fi
-fi
-AC_CHECK_HEADER(python$PYTHON_VERSION_SHORT/Python.h,,[
-  AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
-  HAVE_PYTHON=0])
-AC_SUBST(PYTHON_VERSION)
-AC_SUBST(HAVE_PYTHON)
-if test "x$HAVE_PYTHON" = "x1"; then
-  PYTHON_INCLUDES=-I/usr/include/python$PYTHON_VERSION_SHORT
-  PYTHON_LIBS=-lpython$PYTHON_VERSION_SHORT
+  PYTHON_PREFIX=`python -c "import sys; print sys.prefix"`
+  PYTHON_INCLUDES=-I$PYTHON_PREFIX/include/python$PYTHON_VERSION_SHORT
+  PYTHON_LIBS="-L$PYTHON_PREFIX/lib -lpython$PYTHON_VERSION_SHORT"
+  save_CPPFLAGS=$CPPFLAGS
+  CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
+  AC_CHECK_HEADER(Python.h,,[
+    AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
+    HAVE_PYTHON=0])
+  CPPFLAGS=$save_CPPFLAGS
 fi
 AM_CONDITIONAL(WITH_PYTHON, [test "x$HAVE_PYTHON" = "x1"])
 AC_SUBST(HAVE_PYTHON)
