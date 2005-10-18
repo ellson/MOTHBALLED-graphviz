@@ -42,7 +42,7 @@ gv_guile.cpp $(GUILE_hdr): gv.i
 
 pkgjavadir = $(pkglibdir)/java
 JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java
-libgv_java_la_SOURCES = $(BASESOURCES) gv_java.cpp $(JAVA_hdr)
+libgv_java_la_SOURCES = $(BASESOURCES) gv_java.cpp
 libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
 libgv_java_la_LDFLAGS = -module
 gv_java.cpp $(JAVA_hdr): gv.i
@@ -282,6 +282,6 @@ CLEANFILES = test_*/* \
 	gv_ocaml.cpp $(OCAML_hdr) \
 	gv_perl.cpp $(PERL_hdr) \
 	gv_php.cpp $(PHP_hdr) \
-	gv_python.cpp $(PYTHON_hdr) \
+	gv_python.cpp $(PYTHON_hdr) gv.pyc \
 	gv_ruby.cpp $(RUBY_hdr) \
 	gv_tcl.cpp $(TCL_hdr)
