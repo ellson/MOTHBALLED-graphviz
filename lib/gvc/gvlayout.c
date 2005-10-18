@@ -23,12 +23,9 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
-
 #include "const.h"
 #include "types.h"
 #include "graph.h"
-
 #include "gvplugin_layout.h"
 #include "gvcproc.h"
 

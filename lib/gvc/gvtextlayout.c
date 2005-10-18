@@ -22,11 +22,9 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
 
 #include "const.h"
 #include "types.h"
-
 #include "gvplugin_textlayout.h"
 #include "gvcproc.h"
 

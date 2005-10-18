@@ -18,20 +18,14 @@
 #include "config.h"
 #endif
 
-#include	<stdio.h>
-#include	<stdlib.h>
 #include	<string.h>
-
 #ifndef DISABLE_LTDL
 #include	<ltdl.h>
 #endif
 
-#include        "geom.h"
 #include        "memory.h"
-
 #include        "types.h"
 #include        "graph.h"
-
 #include        "gvplugin.h"
 #include        "gvcint.h"
 #include        "gvcproc.h"

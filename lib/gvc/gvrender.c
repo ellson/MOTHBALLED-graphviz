@@ -24,25 +24,16 @@
 #include "config.h"
 #endif
 
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-
-#include "geom.h"
 #include "memory.h"
-#include "pathplan.h"
-#include "color.h"
-#include "colorprocs.h"
 #include "const.h"
 #include "types.h"
 #include "macros.h"
 #include "globals.h"
 #include "graph.h"
-#include "cdt.h"
-
 #include "gvplugin_render.h"
 #include "gvcint.h"
+#include "colorprocs.h"
 #include "gvcproc.h"
 
 extern int emit_once(char *str);

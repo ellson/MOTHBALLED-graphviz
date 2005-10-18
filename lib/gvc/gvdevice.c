@@ -24,14 +24,10 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
 #include <string.h>
-
-#include "geom.h"
 
 #include "const.h"
 #include "types.h"
-
 #include "gvplugin_device.h"
 #include "gvcint.h"
 #include "gvcproc.h"

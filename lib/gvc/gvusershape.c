@@ -35,13 +35,10 @@
     extern int strncasecmp(const char *s1, const char *s2, unsigned int n);
 #endif
 
-#include <stdio.h>
-
 #include "macros.h"
 #include "const.h"
 #include "types.h"
 #include "graph.h"
-
 #include "gvplugin_usershape.h"
 #include "gvcproc.h"
 
