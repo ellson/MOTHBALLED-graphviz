@@ -57,6 +57,6 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/gd/.libs/libgvgd.a \
 	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @MATH_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@
 
-EXTRA_DIST = Makefile.old dot.1 dot.pdf 
+EXTRA_DIST = Makefile.old dot.1 dot.pdf dot_builtins_oldmake.c
 
 DISTCLEANFILES = dot.pdf
