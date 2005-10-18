@@ -27,7 +27,6 @@
 #endif
 
 #include        "logic.h"
-#include        "pathplan.h"
 #include        "geom.h"
 #include        "types.h"
 #include        "macros.h"

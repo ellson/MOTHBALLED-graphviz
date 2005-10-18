@@ -26,13 +26,14 @@
 extern "C" {
 #endif
     
-typedef struct point { int x, y; } point;
+typedef struct { int x, y; } point;
 
-typedef Ppoint_t pointf;
+typedef struct pointf_s { double x, y; } pointf;
+#define HAVE_POINTF_S
 
-typedef struct box { point LL, UR; } box;
+typedef struct { point LL, UR; } box;
 
-typedef struct boxf { pointf LL, UR; } boxf;
+typedef struct { pointf LL, UR; } boxf;
 
 #ifdef MIN
 #undef MIN
@@ -121,7 +122,6 @@ extern boolean boxf_contains(boxf, boxf);
 extern box flip_rec_box(box b, point p);
 
 extern int lineToBox(pointf p1, pointf p2, boxf b);
-extern double dist2(pointf p, pointf q);
 
 extern point ccwrotatep(point p, int ccwrot);
 extern pointf ccwrotatepf(pointf p, int ccwrot);

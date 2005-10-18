@@ -22,7 +22,6 @@
 #include	<stdlib.h>
 
 #include	"logic.h"
-#include	"pathplan.h"
 #include	"geom.h"
 #include	"types.h"
 #include        "gvplugin.h"
