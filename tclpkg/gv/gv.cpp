@@ -207,6 +207,253 @@ char *set(Agedge_t *e, char *attr)
         return "";
 }
 
+Agnode_t *headof(Agedge_t *e)
+{
+    if (!e)
+	return NULL;
+    return e->head;
+}
+
+Agnode_t *tailof(Agedge_t *e)
+{
+    if (!e)
+	return NULL;
+    return e->tail;
+}
+
+Agraph_t *graphof(Agraph_t *g) {
+    if (!g || g == g->root)
+	return NULL;
+    return g->root;
+}
+
+Agraph_t *graphof(Agedge_t *e)
+{
+    if (!e)
+	return NULL;
+    return e->tail->graph;
+}
+
+Agraph_t *graphof(Agnode_t *n)
+{
+    if (!n)
+	return NULL;
+    return n->graph;
+}
+
+Agraph_t *rootof(Agraph_t *g)
+{
+    if (!g)
+	return NULL;
+    return g->root;
+}
+
+Agraph_t *firstsubg(Agraph_t *g)
+{
+    Agraph_t *mg;
+    Agnode_t *n;
+    Agedge_t *e;
+
+    if (!g)
+	return NULL;
+    n = g->meta_node;
+    if (!n) 
+	return NULL;
+    mg = n->graph;
+    if (!mg) 
+	return NULL;
+    e = agfstout(mg, n);
+    if (!e) 
+	return NULL;
+    return agusergraph(e->head);
+}
+
+Agraph_t *nextsubg(Agraph_t *g, Agraph_t *sg)
+{
+    Agraph_t *mg;
+    Agnode_t *ng, *nsg;
+    Agedge_t *e;
+
+    if (!g || !sg)
+	return NULL;
+    ng = g->meta_node;
+    nsg = sg->meta_node;
+    if (!ng || !nsg) 
+	return NULL;
+    mg = ng->graph;
+    if (!mg) 
+	return NULL;
+    e = agfindedge(mg, ng, nsg);
+    if (!e) 
+	return NULL;
+    e = agnxtout(mg, e);
+    if (!e) 
+	return NULL;
+    return agusergraph(e->head);
+}
+
+Agraph_t *firstsupg(Agraph_t *g)
+{
+    Agraph_t *mg;
+    Agnode_t *n;
+    Agedge_t *e;
+
+    if (!g)
+	return NULL;
+    n = g->meta_node;
+    if (!n) 
+	return NULL;
+    mg = n->graph;
+    if (!mg) 
+	return NULL;
+    e = agfstin(mg, n);
+    if (!e) 
+	return NULL;
+    return agusergraph(e->tail);
+}
+
+Agraph_t *nextsupg(Agraph_t *g, Agraph_t *sg)
+{
+    Agraph_t *mg;
+    Agnode_t *ng, *nsg;
+    Agedge_t *e;
+
+    if (!g || !sg)
+	return NULL;
+    ng = g->meta_node;
+    nsg = sg->meta_node;
+    if (!ng || !nsg) 
+	return NULL;
+    mg = ng->graph;
+    if (!mg) 
+	return NULL;
+    e = agfindedge(mg, nsg, ng);
+    if (!e) 
+	return NULL;
+    e = agnxtin(mg, e);
+    if (!e) 
+	return NULL;
+    return agusergraph(e->tail);
+}
+
+Agedge_t *firstout(Agraph_t *g)
+{
+    Agnode_t *n;
+
+    if (!g)
+	return NULL;
+    n = agfstnode(g);
+    if (!n)
+	return NULL;
+    return agfstout(g, n);
+}
+
+Agedge_t *nextout(Agraph_t *g, Agedge_t *e)
+{
+    Agnode_t *n;
+
+    if (!g || !e)
+	return NULL;
+    e = agnxtout(g, e);
+    if (e)
+	return (e);
+    n = agnxtnode(g, n);
+    if (!n)
+	return NULL;
+    return agfstout(g, n);
+}
+
+Agedge_t *firstout(Agedge_t *e) { return NULL; }
+
+Agedge_t *nextout(Agedge_t *e, Agedge_t *ee) { return NULL; }
+
+Agedge_t *firstout(Agnode_t *n)
+{
+    if (!n)
+	return NULL;
+    return agfstout(n->graph, n);
+}
+
+Agedge_t *nextout(Agnode_t *n, Agedge_t *e)
+{
+    if (!n || !e)
+	return NULL;
+    return (agnxtout(n->graph, e));
+}
+
+Agedge_t *firstin(Agraph_t *g)
+{
+    Agnode_t *n;
+
+    if (!g)
+	return NULL;
+    n = agfstnode(g);
+    if (!n)
+	return NULL;
+    return(agfstin(g, n));
+}
+
+Agedge_t *nextin(Agraph_t *g, Agedge_t *e)
+{
+    Agnode_t *n;
+
+    if (!g || !e)
+	return NULL;
+    e = agnxtin(g, e);
+    if (e)
+	return (e);
+    n = agnxtnode(g, n);
+    if (!n)
+	return NULL;
+    return (agfstin(g, n));
+}
+
+Agedge_t *firstin(Agedge_t *e) { return NULL; }
+
+Agedge_t *nextin(Agedge_t *e, Agedge_t *ee) { return NULL; }
+
+Agedge_t *firstin(Agnode_t *n)
+{
+    if (!n)
+	return NULL;
+    return(agfstin(n->graph, n));
+}
+
+Agedge_t *nextin(Agnode_t *n, Agedge_t *e)
+{
+    if (!n || !e)
+	return NULL;
+    return (agnxtin(n->graph, e));
+}
+
+Agnode_t *first(Agraph_t *g)
+{
+    return (agfstnode(g));
+}
+
+Agnode_t *next(Agraph_t *g, Agnode_t *n)
+{
+    return (agnxtnode(g, n));
+}
+
+Agnode_t *first(Agedge_t *e)
+{
+    if (!e)
+	return NULL;
+    return (e->tail);
+}
+
+Agnode_t *next(Agedge_t *e, Agnode_t *n)
+{
+    if (!e || n != e->tail)
+	return NULL;
+    return (e->head);
+}
+
+Agnode_t *first(Agnode_t *n) { return NULL; }
+
+Agnode_t *next(Agnode_t *n, Agnode_t *nn) { return NULL; }
+
 void rm(Agraph_t *g)
 {
     Agedge_t *e;
