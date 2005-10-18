@@ -63,6 +63,14 @@ static int isInvis(char *style)
  * dot, etc. and 
  * these would be the arrow/label positions to use if a user want to flip the 
  * direction of an edge (as sometimes is there want).
+ * 
+ * N.B. John M. asks:
+ *   By the way, I don't know if you ever plan to add other letters for 
+ * the xdot spec, but could you reserve "a" and also "A" (for  attribute), 
+ * "n" and also "N" (for numeric), "w" (for sWitch),  "s" (for string) 
+ * and "t" (for tooltip) and "x" (for position). We use  those letters in 
+ * our drawing spec (and also "<" and ">"), so if you  start generating 
+ * output with them, it could break what we have. 
  */
 void extend_attrs(GVJ_t * job, graph_t *g, int s_arrows, int e_arrows)
 {
