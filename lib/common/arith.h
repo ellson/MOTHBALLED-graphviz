@@ -20,10 +20,6 @@
 #ifndef GV_ARITH_H
 #define GV_ARITH_H
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 /* for sincos */
 #define _GNU_SOURCE 1
 #ifdef HAVE_LIMITS_H

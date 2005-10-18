@@ -17,10 +17,6 @@
 #ifndef			GVC_H
 #define			GVC_H
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "types.h"
 #include "graph.h"
 
@@ -92,4 +88,4 @@ extern int gvFreeContext(GVC_t *gvc);
 #ifdef __cplusplus
 }
 #endif
-#endif			/* RENDER_H */
+#endif			/* GVC_H */
