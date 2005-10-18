@@ -745,7 +745,7 @@ void gvrender_set_style(GVJ_t * job, char **s)
 		style->pen = PEN_DASHED;
 	    else if (streq(line, "dotted"))
 		style->pen = PEN_DOTTED;
-	    else if (streq(line, "invis"))
+	    else if (streq(line, "invis") || streq(line, "invisible"))
 		style->pen = PEN_NONE;
 	    else if (streq(line, "bold"))
 		style->penwidth = PENWIDTH_BOLD;
