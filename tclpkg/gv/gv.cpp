@@ -221,7 +221,8 @@ Agnode_t *tailof(Agedge_t *e)
     return e->tail;
 }
 
-Agraph_t *graphof(Agraph_t *g) {
+Agraph_t *graphof(Agraph_t *g)
+{
     if (!g || g == g->root)
 	return NULL;
     return g->root;
@@ -363,9 +364,11 @@ Agedge_t *nextout(Agraph_t *g, Agedge_t *e)
     return agfstout(g, n);
 }
 
-Agedge_t *firstout(Agedge_t *e) { return NULL; }
+Agedge_t *firstout(Agedge_t *e)
+{ return NULL; }
 
-Agedge_t *nextout(Agedge_t *e, Agedge_t *ee) { return NULL; }
+Agedge_t *nextout(Agedge_t *e, Agedge_t *ee)
+{ return NULL; }
 
 Agedge_t *firstout(Agnode_t *n)
 {
@@ -408,9 +411,11 @@ Agedge_t *nextin(Agraph_t *g, Agedge_t *e)
     return (agfstin(g, n));
 }
 
-Agedge_t *firstin(Agedge_t *e) { return NULL; }
+Agedge_t *firstin(Agedge_t *e)
+{ return NULL; }
 
-Agedge_t *nextin(Agedge_t *e, Agedge_t *ee) { return NULL; }
+Agedge_t *nextin(Agedge_t *e, Agedge_t *ee)
+{ return NULL; }
 
 Agedge_t *firstin(Agnode_t *n)
 {
@@ -450,9 +455,11 @@ Agnode_t *next(Agedge_t *e, Agnode_t *n)
     return (e->head);
 }
 
-Agnode_t *first(Agnode_t *n) { return NULL; }
+Agnode_t *first(Agnode_t *n)
+{ return NULL; }
 
-Agnode_t *next(Agnode_t *n, Agnode_t *nn) { return NULL; }
+Agnode_t *next(Agnode_t *n, Agnode_t *nn)
+{ return NULL; }
 
 void rm(Agraph_t *g)
 {
