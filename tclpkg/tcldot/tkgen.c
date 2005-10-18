@@ -21,6 +21,7 @@
 
 /* builtins are defined in tcldot.c  - prevent duplicate */
 #define BUILTINS 
+#include "render.h"
 #include "gvc.h"
 
 #include "tcl.h"

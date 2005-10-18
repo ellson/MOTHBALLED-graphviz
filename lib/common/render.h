@@ -25,17 +25,6 @@ extern "C" {
 #include "config.h"
 #endif
 
-#ifdef HAVE_LIMITS_H
-#include <limits.h>
-#else
-#ifdef HAVE_VALUES_H
-#include <values.h>
-#endif
-#endif
-
-#include <signal.h>
-#include <assert.h>
-#include <stdio.h>
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -52,9 +41,9 @@ extern "C" {
 #include <string.h>
 #endif
 
+#include "types.h"
 #include "macros.h"
 #include "const.h"
-#include "types.h"
 #include "globals.h"
 #include "memory.h"
 #include "colorprocs.h"		/* must collow color.h (in types.h) */

@@ -417,7 +417,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = cmd/dot \
+INPUT = cmd/dot \
 	lib/cdt \
 	lib/circogen \
 	lib/common \
@@ -429,7 +429,8 @@ INPUT                  = cmd/dot \
 	lib/pack \
 	lib/pathplan \
 	lib/twopigen \
-	lib/plugin
+	lib/plugin \
+	tclpkg/gv
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 

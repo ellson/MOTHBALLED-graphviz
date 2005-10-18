@@ -18,6 +18,8 @@
 #define GV_TYPES_H
 
 #include <stdio.h>
+#include <assert.h>
+#include <signal.h>
 
 #include "geom.h"
 #include "pathplan.h"

@@ -14,25 +14,14 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#define BUILTINS
 #include "gvc.h"
+#include "graph.h"
 
 GVC_t *gvc;
 
-char *Info[] = {
-    "gv",
-    VERSION,
-    BUILDDATE
-};
-
 static void gvinit()
 {
-    aginit();
-    agnodeattr(NULL, "label", NODENAME_ESC);
-    gvc = gvNEWcontext(Info, username());
-
-    /* configure for available plugins and codegens */
-    gvconfig(gvc, FALSE);
+    gvc = gvContext();
 }
 
 Agraph_t *digraph(char *name)
@@ -247,49 +236,16 @@ void rm(Agedge_t *e)
     agdelete(e->head->graph->root, e);
 }
 
-static void reset_layout(Agraph_t *g)
-{
-    g = g->root;
-    if (GD_drawing(g)) {        /* only cleanup once between layouts */
-	gvFreeLayout(gvc, g);
-        GD_drawing(g) = NULL;
-    }
-}
-
 void layout(Agraph_t *g, char *engine)
 {
     int err;
 
     err = gvLayout(gvc, g, engine);
-    if (err) {
-	fprintf(stderr, "Layout type: \"%s\" not recognized. Use one of:%s\n",                engine, gvplugin_list(gvc, API_layout, engine));
-	return;
-    }
 }
 
 void writegraph(Agraph_t *g, char *filename, char *format)
 {
     int err;
-    GVJ_t *job;
 
-    g = g->root;
-
-    /* create a job for the required format */
-    err = gvrender_output_langname_job(gvc, format);
-    if (err == NO_SUPPORT) {
-        fprintf(stderr, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
-		format, gvplugin_list(gvc, API_render, format));
-        return;
-    }
-
-    job = gvc->job;
-    job->output_lang = gvrender_select(job, job->output_langname);
-    if (!GD_drawing(g) && job->output_lang != CANONICAL_DOT) {
-        fprintf(stderr, "Layout was not done\n");
-        return;
-    }
-    gvrender_output_filename_job(gvc, filename);
-    
-    gvRenderJobs(gvc, g);
-    gvrender_delete_jobs(gvc);
+    err = gvRenderFilename(gvc, g, format, filename);
 }

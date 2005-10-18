@@ -9,10 +9,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt  @GD_INCLUDES@ @EXPAT_INCLUDES@ @Z_INCLUDES@
 
-pkginclude_HEADERS = logic.h arith.h geom.h geomprocs.h \
-	color.h colorprocs.h colortbl.h \
-	const.h macros.h types.h globals.h utils.h memory.h \
-	htmllex.h htmltable.h pointset.h render.h
+pkginclude_HEADERS = logic.h arith.h geom.h color.h types.h globals.h
+noinst_HEADERS = render.h utils.h memory.h \
+	geomprocs.h colorprocs.h colortbl.h \
+	const.h macros.h htmllex.h htmltable.h pointset.h
 noinst_LTLIBRARIES = libcommon.la
 
 if !DISABLE_CODEGENS

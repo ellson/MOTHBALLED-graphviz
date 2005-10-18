@@ -261,7 +261,7 @@ static void cleanup(void)
 }
 #endif
 
-char *username()
+char *gvUsername()
 {
     char *user = NULL;
 #ifndef MSWIN32
@@ -590,11 +590,11 @@ point neato_closest(splines * spl, point p)
 }
 
 static int Tflag;
-void toggle(int s)
+void gvToggle(int s)
 {
     Tflag = !Tflag;
 #ifndef MSWIN32
-    signal(SIGUSR1, toggle);
+    signal(SIGUSR1, gvToggle);
 #endif
 }
 

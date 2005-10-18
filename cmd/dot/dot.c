@@ -134,11 +134,11 @@ int main(int argc, char **argv)
 {
     graph_t *prev = NULL;
 
-    Gvc = gvNEWcontext(Info, username());
+    Gvc = gvNEWcontext(Info, gvUsername());
     gvParseArgs(Gvc, argc, argv);
 
 #ifndef MSWIN32
-    signal(SIGUSR1, toggle);
+    signal(SIGUSR1, gvToggle);
     signal(SIGINT, intr);
     fpinit();
 #endif

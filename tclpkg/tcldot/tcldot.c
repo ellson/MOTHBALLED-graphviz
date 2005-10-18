@@ -18,7 +18,9 @@
 /* avoid compiler warnings with template changes in Tcl8.4 */
 /*    specifically just the change to Tcl_CmdProc */
 #define USE_NON_CONST
+#define BUILTINS
 
+#include "render.h"
 #include "gvc.h"
 #include "tcl.h"
 #include "tclhandle.h"
@@ -1645,7 +1647,7 @@ int Tcldot_Init(Tcl_Interp * interp)
     agnodeattr(NULL, "label", NODENAME_ESC);
 
     /* create a GraphViz Context and pass a pointer to it in clientdata */
-    gvc = gvNEWcontext(Info, username());
+    gvc = gvNEWcontext(Info, gvUsername());
 
     /* configure for available plugins and codegens */
     gvconfig(gvc, FALSE);

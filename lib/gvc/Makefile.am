@@ -12,9 +12,13 @@ AM_CPPFLAGS = \
 
 LIBS = $(LIBLTDL) $(SOCKET_LIBS)
 
-pkginclude_HEADERS = gvc.h gvcint.h gvcjob.h gvcext.h gvplugin.h gvcproc.h \
-	gvplugin_render.h gvplugin_layout.h gvplugin_textlayout.h \
-	gvplugin_device.h gvplugin_usershape.h
+pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h gvcint.h \
+	gvplugin_render.h \
+	gvplugin_layout.h \
+	gvplugin_textlayout.h \
+	gvplugin_device.h \
+	gvplugin_usershape.h
+noinst_HEADERS = gvcproc.h
 pkglib_LTLIBRARIES = libgvc.la
 pkgconfig_DATA = libgvc.pc
 

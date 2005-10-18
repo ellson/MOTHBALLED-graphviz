@@ -18,11 +18,10 @@ DEFINES = -DHAVE_CONFIG_H
 
 AWKDIR = $(ROOT)/awk
 
-INST_HDRS = const.h globals.h macros.h render.h \
-       types.h utils.h geom.h geomprocs.h logic.h \
-       color.h colorprocs.h arith.h memory.h
-
-NOINST_HDRS = colortbl.h ps.h htmltable.h htmlparse.h htmllex.h
+INST_HDRS = logic.h arith.h geom.h color.h types.h globals.h
+NOINST_HDRS = render.h utils.h memory.h \
+	geomprocs.h colorprocs.h const.h macros.h h pointset.h
+NOINST_GENERATED_HDRS = colortbl.h ps.h htmltable.h  htmlparse.h htmllex.h 
 
 OBJS = args.o arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
        colxlate.o globals.o mifgen.o psusershape.o timing.o \
@@ -55,7 +54,7 @@ install: libcommon.a
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libcommon.a $(LIBDIR)
 
-$(OBJS) : $(INST_HDRS)
+$(OBJS) : $(INST_HDRS) $(NOINST_HDRS)
 colxlate.o : colortbl.h
 psgen.o : ps.h
 emit.o mapgen.o utils.o htmllex.o htmltable.o htmlparse.o : htmltable.h

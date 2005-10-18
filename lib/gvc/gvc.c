@@ -19,6 +19,9 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 
+extern GVC_t *gvNEWcontext(char **info, char *user);
+extern char *gvUsername(void);
+
 char *LibInfo[] = {
     "libgvc",		/* Program */
     VERSION,		/* Version */
@@ -31,7 +34,7 @@ GVC_t *gvContext(void)
 
     aginit();
     agnodeattr(NULL, "label", NODENAME_ESC);
-    gvc = gvNEWcontext(LibInfo, username());
+    gvc = gvNEWcontext(LibInfo, gvUsername());
     gvconfig(gvc, FALSE); /* configure for available plugins and codegens */
     return gvc;
 }
@@ -75,6 +78,7 @@ int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
     return 0;
 }
 
+/* Render layout in a specified format to an open FILE */
 int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
 {
     int rc;
@@ -92,8 +96,39 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
 
     job = gvc->job;
     job->output_lang = gvrender_select(job, job->output_langname);
+    if (!GD_drawing(g) && job->output_lang != CANONICAL_DOT) {
+	fprintf(stderr, "Layout was not done\n");
+	return -1;
+    }
     job->output_file = out;
+    gvRenderJobs(gvc, g);
+    gvrender_delete_jobs(gvc);
 
+    return 0;
+}
+
+/* Render layout in a specified format to an open FILE */
+int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
+{
+    int rc;
+    GVJ_t *job;
+
+    g = g->root;
+
+    /* create a job for the required format */
+    rc = gvrender_output_langname_job(gvc, format);
+    if (rc == NO_SUPPORT) {
+	agerr(AGERR, "Renderer type: \"%s\" not recognized. Use one of:%s\n",                format, gvplugin_list(gvc, API_render, format));
+	return -1;
+    }
+
+    job = gvc->job;
+    job->output_lang = gvrender_select(job, job->output_langname);
+    if (!GD_drawing(g) && job->output_lang != CANONICAL_DOT) {
+	fprintf(stderr, "Layout was not done\n");
+	return -1;
+    }
+    gvrender_output_filename_job(gvc, filename);
     gvRenderJobs(gvc, g);
     gvrender_delete_jobs(gvc);
 

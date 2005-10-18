@@ -25,10 +25,6 @@ extern "C" {
 
 /* these are intended to be private entry points - see gvc.h for the public ones */
 
-/* context */
-
-    extern GVC_t *gvNEWcontext(char **info, char *user);
-
 /* configuration */
 
     extern char *gvconfig_libdir(void);

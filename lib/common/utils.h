@@ -43,14 +43,12 @@ extern "C" {
     extern void UF_singleton(Agnode_t *);
     extern void UF_setname(Agnode_t *, Agnode_t *);
 
-    extern char *username(void);
     extern char *safefile(char *shapefilename);
     extern void cat_libfile(FILE *, char **, char **);
 
     extern int mapbool(char *);
     extern int maptoken(char *, char **, int *);
 
-    extern void toggle(int);
     extern int test_toggle(void);
 
     extern void common_init_node(node_t * n);
