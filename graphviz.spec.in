@@ -21,7 +21,7 @@
 %{?fc4: %{expand: %%define GUILE   1}}
 %{?fc4: %{expand: %%define PERL    1}}
 %{?fc4: %{expand: %%define PYTHON  1}}
-%{?fc4: %{expand: %%define RUBY    1}}
+%{?fc4: %{expand: %%define RUBY    0}}
 
 %{?fc5: %{expand: %%define CSHARP  1}}
 %{?fc5: %{expand: %%define GUILE   1}}
@@ -30,7 +30,7 @@
 %{?fc5: %{expand: %%define PERL    1}}
 %{?fc5: %{expand: %%define PHP     1}}
 %{?fc5: %{expand: %%define PYTHON  1}}
-%{?fc5: %{expand: %%define RUBY    1}}
+%{?fc5: %{expand: %%define RUBY    0}}
 
 Summary:	Graph Visualization Tools
 Name:		graphviz

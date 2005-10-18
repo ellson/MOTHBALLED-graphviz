@@ -441,21 +441,21 @@ AM_CONDITIONAL(WITH_PYTHON, [test "x$PYTHON" != "x"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for RUBY
 
-AC_CHECK_PROG(RUBY,ruby,ruby)
-if test "x$RUBY" != "x"; then
-  RUBY_INCLUDES="-I`ruby $TOP_DIR/config/config_ruby.rb INCLUDES`"
-  RUBY_LIBS="-L`ruby $TOP_DIR/config/config_ruby.rb lib` -lruby"
-  save_CPPFLAGS=$CPPFLAGS
-  CPPFLAGS="$CPPFLAGS $RUBY_INCLUDES"
-  AC_CHECK_HEADER(ruby.h,,[
-    AC_MSG_WARN([Unable to find header ruby.h. The Ruby packages will not be built])
-    RUBY=
-    ])
-  CPPFLAGS=$save_CPPFLAGS
-fi
-AC_SUBST(RUBY_INCLUDES)
-AC_SUBST(RUBY_LIBS)
-AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
+#AC_CHECK_PROG(RUBY,ruby,ruby)
+#if test "x$RUBY" != "x"; then
+#  RUBY_INCLUDES="-I`ruby $TOP_DIR/config/config_ruby.rb INCLUDES`"
+#  RUBY_LIBS="-L`ruby $TOP_DIR/config/config_ruby.rb lib` -lruby"
+#  save_CPPFLAGS=$CPPFLAGS
+#  CPPFLAGS="$CPPFLAGS $RUBY_INCLUDES"
+#  AC_CHECK_HEADER(ruby.h,,[
+#    AC_MSG_WARN([Unable to find header ruby.h. The Ruby packages will not be built])
+#    RUBY=
+#    ])
+#  CPPFLAGS=$save_CPPFLAGS
+#fi
+#AC_SUBST(RUBY_INCLUDES)
+#AC_SUBST(RUBY_LIBS)
+#AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for TCL
