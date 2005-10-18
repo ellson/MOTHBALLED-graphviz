@@ -116,13 +116,13 @@ static char *getFlagOpt(int argc, char **argv, int *idx)
     return 0;
 }
 
-/* basename:
+/* dotneato_basename:
  * Partial implementation of real basename.
  * Skip over any trailing slashes or backslashes; then
  * find next (back)slash moving left; return string to the right.
  * If no next slash is found, return the whole string.
  */
-static char* basename (char* path)
+static char* dotneato_basename (char* path)
 {
     char* s = path;
     if (*s == '\0') return path; /* empty string */
@@ -152,7 +152,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     if (Config)
 	exit (0);
 
-    CmdName = basename(argv[0]);
+    CmdName = dotneato_basename(argv[0]);
     i = gvlayout_select(gvc, CmdName);
     if (i == NO_SUPPORT)
 	gvlayout_select(gvc, "dot");
