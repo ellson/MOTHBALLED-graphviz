@@ -429,8 +429,7 @@ INPUT                  = cmd/dot \
 	lib/pack \
 	lib/pathplan \
 	lib/twopigen \
-	plugin/layout \
-	plugin/usershape
+	lib/plugin
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
