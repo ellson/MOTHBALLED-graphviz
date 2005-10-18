@@ -1917,7 +1917,7 @@ static shape_desc *user_shape(char *name)
     UserShape = ALLOC(N_UserShape, UserShape, shape_desc *);
     p = UserShape[i] = NEW(shape_desc);
     *p = Shapes[0];
-    p->name = name;
+    p->name = strdup(name);
     p->usershape = TRUE;
     if (Lib == NULL && strcmp(name, "custom"))
 	agerr(AGWARN, "using %s for unknown shape %s\n", Shapes[0].name,
