@@ -34,12 +34,18 @@ LIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
        -L$(LOC_LIB)/common -lcommon \
        $(XLIBS)
 
-DOTLIBS = $(LOC_LIB)/common/libcommon.a $(LOC_LIB)/dotgen/libdotgen.a \
-          $(LOC_LIB)/neatogen/libneatogen.a $(LOC_LIB)/fdpgen/libfdpgen.a \
-          $(LOC_LIB)/plugin/libgvplugin_layout.a $(LOC_LIB)/gvc/libgvc.a \
-          $(LOC_LIB)/twopigen/libtwopigen.a $(LOC_LIB)/circogen/libcircogen.a
+DOTLIBS = $(LOC_LIB)/common/libcommon.a \
+	  $(LOC_LIB)/dotgen/libdotgen.a \
+          $(LOC_LIB)/neatogen/libneatogen.a \
+	  $(LOC_LIB)/fdpgen/libfdpgen.a \
+          $(LOC_LIB)/plugin/libgvplugin_dot_layout.a \
+          $(LOC_LIB)/plugin/libgvplugin_neato_layout.a \
+          $(LOC_LIB)/plugin/libgvplugin_usershape_gd.a \
+	  $(LOC_LIB)/gvc/libgvc.a \
+          $(LOC_LIB)/twopigen/libtwopigen.a \
+	  $(LOC_LIB)/circogen/libcircogen.a
 
-OBJS = dot.o dot_builtins.o
+OBJS = dot.o dot_builtins_oldmake.o
 
 all : dot
 
@@ -50,8 +56,8 @@ dot : $(OBJS) $(DOTLIBS)
 dot.o : dot.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) dot.c
 
-dot_builtins.o : dot_builtins.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) dot_builtins.c
+dot_builtins_oldmake.o : dot_builtins_oldmake.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) dot_builtins_oldmake.c
 
 install: all
 	$(MKPATH) $(BINDIR)
