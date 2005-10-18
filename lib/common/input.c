@@ -314,7 +314,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     }
 
 #if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
-    Output_codegen = gvc->codegen;
+    Output_codegen = gvc->jobs->codegen;
 #endif
 
     /* set persistent attributes here (if not already set from command line options) */
