@@ -17,6 +17,8 @@
 #ifndef GV_TYPES_H
 #define GV_TYPES_H
 
+#include <stdio.h>
+
 #include "geom.h"
 #include "pathplan.h"
 #include "color.h"
