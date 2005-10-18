@@ -1,5 +1,5 @@
 digraph G {
-	graph [center rankdir=LR bgcolor="#808080"]
+	graph [center=true rankdir=LR bgcolor="#808080"]
 	edge [dir=none]
 	node [width=0.3 height=0.3 label=""]
 	{ node [shape=circle style=invis]
