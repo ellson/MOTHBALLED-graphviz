@@ -98,6 +98,8 @@ install_mt:
 		CCMODE="$(CCMODE)" CXFLAGS="$(CXFLAGS)" install_multithreaded
 
 install_unithreaded: libsfio.a
+	$(MKPATH) $(LOC_INCDIR)
+	$(MKPATH) $(LOC_LIBDIR)
 	cp sfio.h ast_common.h sfio_t.h Sfio_dc/sfdisc.h $(LOC_INCDIR)
 	cp libsfio.a $(LOC_LIBDIR)
 	-(ranlib $(LOC_LIBDIR)/libsfio.a; exit 0) >/dev/null 2>&1
