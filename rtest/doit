@@ -599,6 +599,8 @@ tst dot ps "-lgraphs/dfd.ps" ps
 tst dot dot "-Grankdir=LR" a 1
 tst dot dot "-Grankdir=RL" a 2
 tst dot dot "-Grankdir=BT" a 3
+tst dot ps "" multi
+tst dot dot "" b786
 fi
 
 if [[ -n "$NEATOTESTS" ]]
