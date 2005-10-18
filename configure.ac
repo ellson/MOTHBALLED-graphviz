@@ -48,7 +48,7 @@ AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
 
 # Checks for system type
-AC_CANONICAL_TARGET
+AC_CANONICAL_HOST
 
 LIBPOSTFIX=
 case "${host_os}" in
