@@ -22,7 +22,7 @@ noinst_HEADERS = gvcproc.h
 pkglib_LTLIBRARIES = libgvc.la
 pkgconfig_DATA = libgvc.pc
 
-libgvc_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libgvc_la_LDFLAGS = -version-info @VERSION_INFO@
 
 libgvc_la_SOURCES = gvrender.c gvlayout.c gvtextlayout.c gvdevice.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c gvusershape.c \
