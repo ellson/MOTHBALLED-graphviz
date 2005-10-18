@@ -1,4 +1,4 @@
-August 25, 2005
+August 28, 2005
 	- release 2.6
 	- experimentally moved source code management from CVS to GIT
 	- added iterator functions to script bindings
@@ -8,11 +8,12 @@ August 25, 2005
 	- better support for binary relocation.
 	- plugin versioning and version checking
 	- clean up of header files
-	- provide statically linked "dot_static"
-	- additional "event" support for GUIs (e.g. the gtk one in graphviz-cairo)
+	- provide statically linked "dot_static" (not incl. in rpms)
+	- additional "event" support for GUIs (e.g. "DotEdit" graphviz-cairo)
 	- add some information about plugins to "dot -v" output.
+	- lefty/dotty fixes
 	- fix bugs 746, 750, 752, 753, 754, 756, 761, 763, 764, 765, 768, 
-		771, 772, 773, 774, 775, 776, 777
+		771, 772, 773, 774, 775, 776, 777, 778
 	- not a bug 757, 760, 770
 July 20, 2005
 	- release 2.4
