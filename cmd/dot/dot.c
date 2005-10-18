@@ -144,8 +144,7 @@ int main(int argc, char **argv)
 #endif
 
     if (MemTest) {
-        int i = 2;
-	while (i--) {
+	while (1) {
 	    /* Create a test graph */
 	    G = create_test_graph();
 
