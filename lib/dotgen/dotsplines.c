@@ -2036,7 +2036,12 @@ node_t *n, *adj;
  * Return an initial bounding box to be used for building the
  * beginning or ending of the path of boxes.
  * Height reflects height of tallest node on rank.
+ * The extra space provided by FUDGE allows begin/endpath to create a box
+ * FUDGE-2 away from the node, so the routing can avoid the node and the
+ * box is at least 2 wide.
  */
+#define FUDGE 4
+
 static box maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
 {
     int nb, b;
@@ -2047,7 +2052,7 @@ static box maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
     left_cl = right_cl = NULL;
 
     /* give this node all the available space up to its neighbors */
-    b = ND_coord_i(vn).x - ND_lw_i(vn);
+    b = ND_coord_i(vn).x - ND_lw_i(vn) - FUDGE;
     if ((left = neighbor(vn, ie, oe, -1))) {
 	if ((left_cl = cl_bound(vn, left)))
 	    nb = GD_bb(left_cl).UR.x + sp->Splinesep;
@@ -2065,10 +2070,10 @@ static box maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
 	rv.LL.x = MIN(b, sp->LeftBound);
 
     /* we have to leave room for our own label! */
-    if (ND_label(vn))
+    if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn)))
 	b = ND_coord_i(vn).x + 10;
     else
-	b = ND_coord_i(vn).x + ND_rw_i(vn);
+	b = ND_coord_i(vn).x + ND_rw_i(vn) + FUDGE;
     if ((right = neighbor(vn, ie, oe, 1))) {
 	if ((right_cl = cl_bound(vn, right)))
 	    nb = GD_bb(right_cl).LL.x - sp->Splinesep;
