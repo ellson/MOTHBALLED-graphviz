@@ -335,13 +335,13 @@ int agsafeset(void* obj, char* name, char* value, char* def)
 	if (!def) def = "";
 	switch (TAG_OF(obj)) {
 	case TAG_GRAPH:
-	    agraphattr((Agraph_t*)obj, name, def);
+	    a = agraphattr((Agraph_t*)obj, name, def);
 	    break;
 	case TAG_NODE:
-	    agnodeattr(((Agnode_t*)obj)->graph, name, def);
+	    a = agnodeattr(((Agnode_t*)obj)->graph, name, def);
 	    break;
 	case TAG_EDGE:
-	    agedgeattr(((Agedge_t*)obj)->head->graph, name, def);
+	    a = agedgeattr(((Agedge_t*)obj)->head->graph, name, def);
 	    break;
 	}
     }
