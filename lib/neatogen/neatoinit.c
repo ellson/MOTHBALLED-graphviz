@@ -745,6 +745,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
     int haveLen;
     int haveWt;
     int haveDir;
+    int dfltConstr;
     PointMap *ps = newPM();
     int i, i_nedges, idx;
 
@@ -791,6 +792,11 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
 #ifdef DIGCOLA
 	if (haveDir) {
 	    graph[i].edists = edists++;
+		/* if g is directed, use edge direction by default
+		 * if g is undirected, don't.
+		 */
+	    if (AG_IS_DIRECTED(g)) dfltConstr = 1;
+	    else dfltConstr = 0;
 	}
 	else
 	    graph[i].edists = NULL;
@@ -822,7 +828,10 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
 		    *ewgts++ = 1.0;
 #ifdef DIGCOLA
 		if (haveDir) {
-		    *edists++ = (np == ep->head ? 1.0 : -1.0);
+		    if (late_bool(ep,E_constr,dfltConstr))
+			*edists++ = (np == ep->head ? 1.0 : -1.0);
+		    else
+		        *edists++ = 0.0;
 		}
 #endif
 		i_nedges++;
