@@ -243,13 +243,13 @@ char *setv(Agraph_t *g, char *gne, char *attr, char *val)
         a = agfindattr(g->proto->n, attr);
         if (!a)
 	    a = agnodeattr(g->root, attr, "");
-        val = agxget(g->proto->n, a->index);
+        agxset(g->proto->n, a->index, val);
     }
     else if (strncmp(gne,"edge",len) == 0) {
         a = agfindattr(g->proto->e, attr);
         if (!a)
 	    a = agedgeattr(g->root, attr, "");
-        val = agxget(g->proto->e, a->index);
+        agxset(g->proto->e, a->index, val);
     }
     else
         return NULL;
