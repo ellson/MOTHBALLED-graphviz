@@ -30,7 +30,6 @@ extern "C" {
 #endif
 
     typedef COORD **array2;
-    typedef unsigned char boolean;
 
 #define	OBSCURED	0.0
 #define EQ(p,q)		((p.x == q.x) && (p.y == q.y))
