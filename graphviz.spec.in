@@ -10,7 +10,9 @@
 
 %define CSHARP  0
 %define GUILE   0
+%define IO      0
 %define JAVA    0
+%define LUA     0
 %define OCAML   0
 %define PERL    0
 %define PHP     0
@@ -125,6 +127,23 @@ Guile extensions for %{name}.
 %endif
 
 #------------------------------------------------------------------
+%if %{IO}
+%package io
+Group:		Applications/Multimedia
+Summary:	Java extension for %{name}
+Requires:	%{name} = %{version}-%{release}
+
+%description io
+Java extensions for %{name}.
+
+%files io
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}/io
+%{_libdir}/%{name}/io/*
+%exclude %{_libdir}/%{name}/io/*.la
+%endif
+
+#------------------------------------------------------------------
 %if %{JAVA}
 %package java
 Group:		Applications/Multimedia
@@ -139,6 +158,23 @@ Java extensions for %{name}.
 %dir %{_libdir}/%{name}/java
 %{_libdir}/%{name}/java/*
 %exclude %{_libdir}/%{name}/java/*.la
+%endif
+
+#------------------------------------------------------------------
+%if %{LUA}
+%package lua
+Group:		Applications/Multimedia
+Summary:	Java extension for %{name}
+Requires:	%{name} = %{version}-%{release}
+
+%description lua
+Java extensions for %{name}.
+
+%files lua
+%defattr(-,root,root,-)
+%dir %{_libdir}/%{name}/lua
+%{_libdir}/%{name}/lua/*
+%exclude %{_libdir}/%{name}/lua/*.la
 %endif
 
 #------------------------------------------------------------------
