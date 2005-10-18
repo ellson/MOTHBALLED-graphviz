@@ -408,7 +408,7 @@ static void vtx_node_style(void)
 
 static void vtx_set_color(char *name)
 {
-    color_t color;
+    gvcolor_t color;
     context_t *cp;
 
     cp = &(cstk[SP]);

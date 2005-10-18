@@ -49,7 +49,7 @@ extern "C" {
 			      char *target);
 	void (*end_anchor) (GVJ_t * job);
 	void (*textline) (GVJ_t * job, pointf p, textline_t * str);
-	void (*resolve_color) (GVJ_t * job, color_t * color);
+	void (*resolve_color) (GVJ_t * job, gvcolor_t * color);
 	void (*ellipse) (GVJ_t * job, pointf * A, int filled);
 	void (*polygon) (GVJ_t * job, pointf * A, int n, int filled);
 	void (*beziercurve) (GVJ_t * job, pointf * A, int n,

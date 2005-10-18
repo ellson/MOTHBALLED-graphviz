@@ -269,7 +269,7 @@ static void ps_set_font(char *name, double size)
 static void ps_set_color(char *name)
 {
     static char *op[] = { "graph", "node", "edge", "sethsb" };
-    color_t color;
+    gvcolor_t color;
 
     colorxlate(name, &color, HSV_DOUBLE);
     fprintf(Output_file, "%.3f %.3f %.3f %scolor\n",

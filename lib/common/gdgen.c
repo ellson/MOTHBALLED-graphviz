@@ -87,7 +87,7 @@ static int white, black, transparent;
 
 static int gd_resolve_color(char *name)
 {
-    color_t color;
+    gvcolor_t color;
 
     if (!(strcmp(name, "transparent"))) {
 	/* special case for "transparent" color */

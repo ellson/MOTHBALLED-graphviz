@@ -452,7 +452,7 @@ static void pic_textline(point p, textline_t * line)
 
 static void pic_set_color(char *name)
 {
-    color_t color;
+    gvcolor_t color;
 
     S[SP].color = name;
     colorxlate(name, &color, HSV_DOUBLE);
@@ -533,7 +533,7 @@ static void pic_polygon(point * A, int n, int filled)
 	pf1 = cvt2ptf(A[0]);	/* opposite */
 	pf2 = cvt2ptf(A[2]);	/* corners  */
 	if (filled) {
-	    color_t color;
+	    gvcolor_t color;
 
 	    colorxlate(S[SP].color, &color, HSV_DOUBLE);
 	    fprintf(Output_file, "setfillval %f\n", color.u.HSV[2]);

@@ -21,7 +21,7 @@
 extern "C" {
 #endif
 
-extern int colorxlate(char *str, color_t * color, color_type_t target_type);
+extern int colorxlate(char *str, gvcolor_t * color, color_type_t target_type);
 extern char *canontoken(char *str);
 
 #ifdef __cplusplus

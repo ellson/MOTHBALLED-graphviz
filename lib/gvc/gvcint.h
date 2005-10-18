@@ -128,7 +128,7 @@ extern "C" {
 	int SP;
 
 	/* render defaults set from graph */
-	color_t bgcolor;	/* background color */
+	gvcolor_t bgcolor;	/* background color */
 
 	/* keybindings for keyboard events */
 	gvevent_key_binding_t *keybindings;

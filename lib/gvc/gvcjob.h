@@ -44,7 +44,7 @@ extern "C" {
 
     typedef struct {
 	char *fontfam, fontopt;
-	color_t pencolor, fillcolor;
+	gvcolor_t pencolor, fillcolor;
 	pen_type pen;
 	fill_type fill;
 	double penwidth;

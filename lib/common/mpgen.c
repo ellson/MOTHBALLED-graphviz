@@ -131,7 +131,7 @@ static void mp_set_font(char *name, double size)
 static void mp_set_color(char *name)
 {
     static char *op[] = { "graph", "node", "edge", "sethsb" };
-    color_t color;
+    gvcolor_t color;
 
     if (strcmp(name, S[SP].color)) {
 	colorxlate(name, &color, HSV_DOUBLE);

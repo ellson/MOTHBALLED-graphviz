@@ -159,7 +159,7 @@ char *canontoken(char *str)
     return (char*)canon;
 }
 
-int colorxlate(char *str, color_t * color, color_type_t target_type)
+int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
 {
     static hsbcolor_t *last;
     static unsigned char *canon;

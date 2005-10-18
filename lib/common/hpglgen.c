@@ -601,7 +601,7 @@ static void hpgl_set_font(char *name, double size)
 
 static void hpgl_set_color(char *name)
 {
-    color_t color;
+    gvcolor_t color;
 
 #ifdef HPDEBUG
     fprintf(stderr, "set color %s\n", name);

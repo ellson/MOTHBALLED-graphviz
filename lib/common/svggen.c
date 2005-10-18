@@ -294,7 +294,7 @@ char *svg_resolve_color(char *name, int useKnown)
 
     static char buf[SMALLBUF];
     char *tok;
-    color_t color;
+    gvcolor_t color;
 
     tok = canontoken(name);
     if (!useKnown || (bsearch(&tok, svg_known_colors,

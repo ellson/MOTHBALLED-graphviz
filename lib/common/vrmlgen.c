@@ -154,7 +154,7 @@ static FILE *nodefile(node_t * n)
 
 static unsigned char vrml_resolve_color(char *name)
 {
-    color_t color;
+    gvcolor_t color;
 
     if (!(strcmp(name, "transparent"))) {
 	/* special case for "transparent" color */
@@ -174,7 +174,7 @@ static void vrml_set_pencolor(char *name)
 
 static void vrml_set_fillcolor(char *name)
 {
-    color_t color;
+    gvcolor_t color;
     cstk[SP].fillcolor = name;
     colorxlate(name, &color, RGBA_BYTE);
     cstk[SP].r = (double) color.u.rgba[0] / 255.0;

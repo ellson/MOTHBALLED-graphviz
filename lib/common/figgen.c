@@ -269,7 +269,7 @@ static unsigned char fig_resolve_color(char *name)
     unsigned char i;
     int new;
     char *tok;
-    color_t color;
+    gvcolor_t color;
 
     static char *figcolor[] = { "black", "blue", "green", "cyan",
 	"red", "magenta", "yellow", "white", (char *) NULL

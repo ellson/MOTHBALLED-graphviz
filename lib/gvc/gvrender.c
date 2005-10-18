@@ -194,7 +194,7 @@ static int gvrender_comparestr(const void *s1, const void *s2)
 }
 
 static void gvrender_resolve_color(gvrender_features_t * features,
-				   char *name, color_t * color)
+				   char *name, gvcolor_t * color)
 {
     char *tok;
     int rc;
@@ -694,7 +694,7 @@ void gvrender_textline(GVJ_t * job, pointf p, textline_t * line)
 void gvrender_set_pencolor(GVJ_t * job, char *name)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    color_t *color = &(job->style->pencolor);
+    gvcolor_t *color = &(job->style->pencolor);
 
     if (gvre) {
 	gvrender_resolve_color(job->render.features, name, color);
@@ -714,7 +714,7 @@ void gvrender_set_pencolor(GVJ_t * job, char *name)
 void gvrender_set_fillcolor(GVJ_t * job, char *name)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    color_t *color = &(job->style->fillcolor);
+    gvcolor_t *color = &(job->style->fillcolor);
 
     if (gvre) {
 	gvrender_resolve_color(job->render.features, name, color);
