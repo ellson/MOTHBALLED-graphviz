@@ -728,7 +728,7 @@ static bool edge_in_view(GVJ_t *job, edge_t * e)
 void emit_edge_graphics(GVJ_t * job, edge_t * e)
 {
     int i, j, cnum, numc = 0;
-    char *color, *style;
+    char *color, *pencolor, *fillcolor, *style;
     char *colors = NULL;
     char **styles = 0;
     char **sp;
@@ -774,28 +774,26 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    if (*p == ':')
 		numc++;
 
-	if (ED_selected(e)) {
-	    color = late_nnstring(e, E_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
-    	    gvrender_set_pencolor(job, color);
-	    color = late_nnstring(e, E_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
-	    gvrender_set_fillcolor(job, color);
+	fillcolor = pencolor = color;
+	if (ED_active(e)) {
+	    pencolor = late_nnstring(e, E_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+	    fillcolor = late_nnstring(e, E_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
 	}
-	else if (ED_active(e)) {
-	    color = late_nnstring(e, E_activepencolor, DEFAULT_ACTIVEPENCOLOR);
-    	    gvrender_set_pencolor(job, color);
-	    color = late_nnstring(e, E_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
-	    gvrender_set_fillcolor(job, color);
+	else if (ED_selected(e)) {
+	    pencolor = late_nnstring(e, E_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
+	    fillcolor = late_nnstring(e, E_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
 	}
 	else if (ED_deleted(e)) {
-	    color = late_nnstring(e, E_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
-    	    gvrender_set_pencolor(job, color);
-	    color = late_nnstring(e, E_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
-	    gvrender_set_fillcolor(job, color);
+	    pencolor = late_nnstring(e, E_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
+	    fillcolor = late_nnstring(e, E_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
 	}
 	else if (ED_visited(e)) {
-	    color = late_nnstring(e, E_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
+	    pencolor = late_nnstring(e, E_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
+	    fillcolor = late_nnstring(e, E_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
+	}
+	if (pencolor != color) {
+	    color = pencolor;
     	    gvrender_set_pencolor(job, color);
-	    color = late_nnstring(e, E_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
 	    gvrender_set_fillcolor(job, color);
 	}
 	/* if more than one color - then generate parallel beziers, one per color */
@@ -1406,16 +1404,16 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		    break;
 		}
 	}
-	if (GD_selected(sg)) {
-	    color = late_nnstring(sg, G_activepencolor, DEFAULT_SELECTEDPENCOLOR);
-    	    gvrender_set_pencolor(job, color);
-	    color = late_nnstring(sg, G_activefillcolor, DEFAULT_SELECTEDFILLCOLOR);
-	    gvrender_set_fillcolor(job, color);
-	}
-	else if (GD_active(sg)) {
+	if (GD_active(sg)) {
 	    color = late_nnstring(sg, G_activepencolor, DEFAULT_ACTIVEPENCOLOR);
     	    gvrender_set_pencolor(job, color);
 	    color = late_nnstring(sg, G_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
+	    gvrender_set_fillcolor(job, color);
+	}
+	else if (GD_selected(sg)) {
+	    color = late_nnstring(sg, G_activepencolor, DEFAULT_SELECTEDPENCOLOR);
+    	    gvrender_set_pencolor(job, color);
+	    color = late_nnstring(sg, G_activefillcolor, DEFAULT_SELECTEDFILLCOLOR);
 	    gvrender_set_fillcolor(job, color);
 	}
 	else if (GD_deleted(sg)) {

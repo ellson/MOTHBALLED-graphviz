@@ -1213,17 +1213,17 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     } else {
 	style = stylenode(job, n);
     }
-    if (ND_selected(n)) {
-        color = late_nnstring(n, N_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
-        gvrender_set_pencolor(job, color);
-        color = late_nnstring(n, N_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
-        gvrender_set_fillcolor(job, color);
-	filled = TRUE;
-    }
-    else if (ND_active(n)) {
+    if (ND_active(n)) {
         color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
         gvrender_set_pencolor(job, color);
         color = late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
+        gvrender_set_fillcolor(job, color);
+	filled = TRUE;
+    }
+    else if (ND_selected(n)) {
+        color = late_nnstring(n, N_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
+        gvrender_set_pencolor(job, color);
+        color = late_nnstring(n, N_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
         gvrender_set_fillcolor(job, color);
 	filled = TRUE;
     }

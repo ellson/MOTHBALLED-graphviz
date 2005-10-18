@@ -224,15 +224,12 @@ static void gvevent_leave_obj(GVJ_t * job)
     if (obj) {
         switch (agobjkind(obj)) {
         case AGGRAPH:
-	    GD_visited((graph_t*)obj) = true;
 	    GD_active((graph_t*)obj) = false;
 	    break;
         case AGNODE:
-	    ND_visited((node_t*)obj) = true;
 	    ND_active((node_t*)obj) = false;
 	    break;
         case AGEDGE:
-	    ED_visited((edge_t*)obj) = true;
 	    ED_active((edge_t*)obj) = false;
 	    break;
         }
@@ -323,12 +320,15 @@ static void gvevent_select_current_obj(GVJ_t * job)
     if (obj) {
         switch (agobjkind(obj)) {
         case AGGRAPH:
+	    GD_visited((graph_t*)obj) = true;
 	    GD_selected((graph_t*)obj) = false;
 	    break;
         case AGNODE:
+	    ND_visited((node_t*)obj) = true;
 	    ND_selected((node_t*)obj) = false;
 	    break;
         case AGEDGE:
+	    ED_visited((edge_t*)obj) = true;
 	    ED_selected((edge_t*)obj) = false;
 	    break;
         }
