@@ -13,7 +13,6 @@ LIBS =  @LIBS@ -lc
 BASESOURCES = gv.cpp
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
 
-
 pkgcsharpdir = $(pkglibdir)/csharp
 CSHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs
 libgv_csharp_la_SOURCES = $(BASESOURCES) gv_csharp.cpp $(CSHARP_hdr)
@@ -82,9 +81,9 @@ gv_php.cpp $(PHP_hdr): gv.i
 
 pkgpythondir = $(pkglibdir)/python
 PYTHON_hdr = gv.py
-_gv_la_SOURCES = $(BASESOURCES) gv_python.cpp $(PYTHON_hdr)
-_gv_la_LIBADD = $(BASELIBS) @PYTHON_LIBS@
-_gv_la_LDFLAGS = -module
+libgv_python_la_SOURCES = $(BASESOURCES) gv_python.cpp $(PYTHON_hdr)
+libgv_python_la_LIBADD = $(BASELIBS) @PYTHON_LIBS@
+libgv_python_la_LDFLAGS = -module
 gv_python.cpp $(PYTHON_hdr): gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp gv.i
 
@@ -108,57 +107,57 @@ pkginclude_DATA = gv.i gv.cpp
 pkglib_LTLIBRARIES = 
 TESTS =
 if WITH_CSHARP
-pkgcsharp_DATA = $(CSHARP_hdr)
+pkgcsharp_DATA = $(CSHARP_hdr) gv_csharp.man
 pkgcsharp_LTLIBRARIES = libgv_csharp.la
 TESTS += test_csharp
 endif
 if WITH_GUILE
-pkgguile_DATA = $(GUILE_hdr)
+pkgguile_DATA = $(GUILE_hdr) gv_guile.man
 pkgguile_LTLIBRARIES = libgv_guile.la
 TESTS += test_guile
 endif
 #if WITH_IO
-#pkgio_DATA += $(IO_hdr)
-#pkgio_LTLIBRARIES += libgv_io.la
+#pkgio_DATA = $(IO_hdr) gv_io.man
+#pkgio_LTLIBRARIES = libgv_io.la
 #TESTS += test_io
 #endif
 if WITH_JAVA
-pkgjava_DATA = $(JAVA_hdr)
+pkgjava_DATA = $(JAVA_hdr) gv_java.man
 pkgjava_LTLIBRARIES = libgv_java.la
 TESTS += test_java
 endif
 if WITH_LUA
-pkglua_DATA = $(LUA_hdr)
+pkglua_DATA = $(LUA_hdr) gv_lua.man
 pkglua_LTLIBRARIES = libgv_lua.la
 TESTS += test_lua
 endif
 if WITH_OCAML
-pkgocaml_DATA = $(OCAML_hdr)
+pkgocaml_DATA = $(OCAML_hdr) gv_ocaml.man
 pkgocaml_LTLIBRARIES = libgv_ocaml.la
 TESTS += test_ocaml
 endif
 if WITH_PERL
-pkgperl_DATA = $(PERL_hdr)
+pkgperl_DATA = $(PERL_hdr) gv_perl.man
 pkgperl_LTLIBRARIES = libgv_perl.la
 TESTS += test_perl
 endif
 if WITH_PHP
-pkgphp_DATA = $(PHP_hdr)
+pkgphp_DATA = $(PHP_hdr) gv_php.man
 pkgphp_LTLIBRARIES = libgv_php.la
 TESTS += test_php
 endif
 if WITH_PYTHON
-pkgpython_DATA = $(PYTHON_hdr)
-pkgpython_LTLIBRARIES = _gv.la
+pkgpython_DATA = $(PYTHON_hdr) gv_python.man
+pkgpython_LTLIBRARIES = libgv_python.la
 TESTS += test_python
 endif
 if WITH_RUBY
-pkgruby_DATA = $(RUBY_hdr)
+pkgruby_DATA = $(RUBY_hdr) gv_ruby.man
 pkgruby_LTLIBRARIES = libgv_ruby.la
 TESTS += test_ruby
 endif
 if WITH_TCL
-pkgtcl_DATA = $(TCL_hdr)
+pkgtcl_DATA = $(TCL_hdr) gv_tcl.man
 pkgtcl_LTLIBRARIES = libgv_tcl.la
 TESTS += test_tcl
 
@@ -167,6 +166,21 @@ all-local: pkgIndex.tcl
 pkgIndex.tcl: libgv_tcl.la
 	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libgv_tcl.la gv $(VERSION)
 endif
+
+gv_csharp.man gv_guile.man gv_io.man gv_java.man gv_ocaml.man gv_perl.man gv_php.man gv_python.man gv_ruby.man gv_tcl.man: gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
+	tclsh ./gv_doc_writer.tcl
+
+install-exec-hook:
+	(cd $(DESTDIR)$(pkgperldir);   rm -f gv.so;  $(LN_S) libgv_perl.so gv.so;)
+	(cd $(DESTDIR)$(pkgpythondir); rm -f _gv.so; $(LN_S) libgv_python.so _gv.so;)
+	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;  $(LN_S) libgv_ruby.so gv.so;)
+	(cd $(DESTDIR)$(pkgtcldir);    rm -f gv.so;  $(LN_S) libgv_tcl.so gv.so;)
+
+uninstall-hook:
+	(cd $(DESTDIR)$(pkgperldir);   rm -f gv.so;)
+	(cd $(DESTDIR)$(pkgpythondir); rm -f _gv.so;)
+	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;)
+	(cd $(DESTDIR)$(pkgtcldir);    rm -f gv.so;)
 
 test: $(TESTS)
 
@@ -232,14 +246,15 @@ test_php: libgv_php.la
 .PHONY: test_python
 test_python: _gv.la
 	-(mkdir -p test_python; cd test_python; \
-		ln -fs ../.libs/_gv.so ../*.dot ../*.py .; \
+		ln -fs ../.libs/libgv_python.so _gv.so; \
+		ln -fs ../*.dot ../*.py .; \
 		PYTHONPATH=. $(PYTHON) test.py)
 
 .PHONY: test_ruby
-test_ruby: libgv_ruby.la
+test_ruby: gv.la
 	-(mkdir -p test_ruby; cd test_ruby; \
 		ln -fs ../.libs/libgv_ruby.so gv.so; \
-		ln -fs ../*.dot ../*.rb .; \
+		ln -fs ../.libs/gv.so ../*.dot ../*.rb .; \
 		$(RUBY) test.rb)
 
 .PHONY: test_tcl
@@ -249,9 +264,9 @@ test_tcl: libgv_tcl.la
 		ln -fs ../*.dot ../*.tcl .; \
 		$(TCLSH) ./test.tcl)
 
-EXTRA_DIST = demo/* gv.cpp gv.i
+EXTRA_DIST = demo/* gv.cpp gv.i gv_doc_*.tcl
 
-CLEANFILES = test_*/* \
+CLEANFILES = test_*/* gv_*.man \
 	gv_csharp.cpp $(CSHARP_hdr) \
 	gv_guile.cpp $(GUILE_hdr) \
 	gv_io.cpp $(IO_hdr) \

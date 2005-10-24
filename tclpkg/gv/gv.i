@@ -41,7 +41,7 @@ extern Agedge_t *edge(Agraph_t *g, char *tname, char *hname);/* add edge between
 
 /* set/get attribute of graph/node/edge */
 extern char *setv(Agraph_t *g, char *attr, char *val);
-extern char *setv(Agraph_t *g, char *gne, char *att, char *val);
+extern char *setv(Agraph_t *g, char *gne, char *attr, char *val);
 extern char *setv(Agnode_t *n, char *attr, char *val);
 extern char *setv(Agedge_t *e, char *attr, char *val);
 

@@ -4,7 +4,11 @@
 
 # author: John Ellson <ellson@research.att.com>
 
-package require gv
+#package require gv
+
+load /usr/lib/graphviz/tcl/gv.so
+#load /usr/lib64/graphviz/tcl/gv.so
+#load $env(PREFIX)/lib/graphviz/tcl/gv.so
 
 set f [open /proc/modules r]
 set modules [read -nonewline $f]

@@ -4,7 +4,8 @@
 
 -- author: John Ellson <ellson@research.att.com>
 
-lib = loadlib('/usr/lib64/graphviz/lua/libgv_lua.so','Gv_Init')
+lib = loadlib('/usr/lib/graphviz/lua/libgv_lua.so','Gv_Init')
+-- lib = loadlib('/usr/lib64/graphviz/lua/libgv_lua.so','Gv_Init')
 assert(lib)()
 
 modules = io.lines('/proc/modules') 
