@@ -167,16 +167,20 @@ pkgIndex.tcl: libgv_tcl.la
 	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libgv_tcl.la gv $(VERSION)
 endif
 
-gv_csharp.man gv_guile.man gv_io.man gv_java.man gv_ocaml.man gv_perl.man gv_php.man gv_python.man gv_ruby.man gv_tcl.man: gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
+gv_csharp.man gv_guile.man gv_io.man gv_java.man gv_lua.man \
+gv_ocaml.man gv_perl.man gv_php.man gv_python.man gv_ruby.man \
+gv_tcl.man: gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
 	tclsh ./gv_doc_writer.tcl
 
 install-exec-hook:
+	(cd $(DESTDIR)$(pkgluadir);    rm -f gv.so;  $(LN_S) libgv_lua.so gv.so;)
 	(cd $(DESTDIR)$(pkgperldir);   rm -f gv.so;  $(LN_S) libgv_perl.so gv.so;)
 	(cd $(DESTDIR)$(pkgpythondir); rm -f _gv.so; $(LN_S) libgv_python.so _gv.so;)
 	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;  $(LN_S) libgv_ruby.so gv.so;)
 	(cd $(DESTDIR)$(pkgtcldir);    rm -f gv.so;  $(LN_S) libgv_tcl.so gv.so;)
 
 uninstall-hook:
+	(cd $(DESTDIR)$(pkgluadir);    rm -f gv.so;)
 	(cd $(DESTDIR)$(pkgperldir);   rm -f gv.so;)
 	(cd $(DESTDIR)$(pkgpythondir); rm -f _gv.so;)
 	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;)

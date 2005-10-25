@@ -21,6 +21,25 @@ array set LANGS {
 	}
 	guile {
 		TYPES {
+			{Agraph_t* g} graph_handle
+			{Agraph_t* sg} subgraph_handle
+			{Agnode_t* n} node_handle
+			{Agnode_t* t} tail_node_handle
+			{Agnode_t* h} head_node_handle
+			{Agedge_t* e} edge_handle
+			{Agsym_t* a} attr_handle
+			{char* gne} type
+			{char* name} name
+			{char* tname} tail_name
+			{char* hname} head_name
+			{char* attr} attr_name
+			{char* val} attr_value
+			{char* filename} filename
+			{char* engine} engine
+			{char* string} string
+			{char* format} format
+			{FILE* f} channel
+			{void** data} data_handle
 			Agraph_t* graph_handle
 			Agnode_t* node_handle
 			Agedge_t* edge_handle
@@ -42,6 +61,25 @@ array set LANGS {
 	}
 	io {
 		TYPES {
+			{Agraph_t* g} graph_handle
+			{Agraph_t* sg} subgraph_handle
+			{Agnode_t* n} node_handle
+			{Agnode_t* t} tail_node_handle
+			{Agnode_t* h} head_node_handle
+			{Agedge_t* e} edge_handle
+			{Agsym_t* a} attr_handle
+			{char* gne} type
+			{char* name} name
+			{char* tname} tail_name
+			{char* hname} head_name
+			{char* attr} attr_name
+			{char* val} attr_value
+			{char* filename} filename
+			{char* engine} engine
+			{char* string} string
+			{char* format} format
+			{FILE* f} channel
+			{void** data} data_handle
 			Agraph_t* graph_handle
 			Agnode_t* node_handle
 			Agedge_t* edge_handle
@@ -83,6 +121,25 @@ array set LANGS {
 	}
 	lua {
 		TYPES {
+			{Agraph_t* g} graph_handle
+			{Agraph_t* sg} subgraph_handle
+			{Agnode_t* n} node_handle
+			{Agnode_t* t} tail_node_handle
+			{Agnode_t* h} head_node_handle
+			{Agedge_t* e} edge_handle
+			{Agsym_t* a} attr_handle
+			{char* gne} type
+			{char* name} name
+			{char* tname} tail_name
+			{char* hname} head_name
+			{char* attr} attr_name
+			{char* val} attr_value
+			{char* filename} filename
+			{char* engine} engine
+			{char* string} string
+			{char* format} format
+			{FILE* f} channel
+			{void** data} data_handle
 			Agraph_t* graph_handle
 			Agnode_t* node_handle
 			Agedge_t* edge_handle
@@ -106,6 +163,25 @@ array set LANGS {
 	}
 	ocaml {
 		TYPES {
+			{Agraph_t* g} graph_handle
+			{Agraph_t* sg} subgraph_handle
+			{Agnode_t* n} node_handle
+			{Agnode_t* t} tail_node_handle
+			{Agnode_t* h} head_node_handle
+			{Agedge_t* e} edge_handle
+			{Agsym_t* a} attr_handle
+			{char* gne} type
+			{char* name} name
+			{char* tname} tail_name
+			{char* hname} head_name
+			{char* attr} attr_name
+			{char* val} attr_value
+			{char* filename} filename
+			{char* engine} engine
+			{char* string} string
+			{char* format} format
+			{FILE* f} channel
+			{void** data} data_handle
 			Agraph_t* graph_handle
 			Agnode_t* node_handle
 			Agedge_t* edge_handle
@@ -126,6 +202,25 @@ array set LANGS {
 	}
 	perl {
 		TYPES {
+			{Agraph_t* g} graph_handle
+			{Agraph_t* sg} subgraph_handle
+			{Agnode_t* n} node_handle
+			{Agnode_t* t} tail_node_handle
+			{Agnode_t* h} head_node_handle
+			{Agedge_t* e} edge_handle
+			{Agsym_t* a} attr_handle
+			{char* gne} type
+			{char* name} name
+			{char* tname} tail_name
+			{char* hname} head_name
+			{char* attr} attr_name
+			{char* val} attr_value
+			{char* filename} filename
+			{char* engine} engine
+			{char* string} string
+			{char* format} format
+			{FILE* f} channel
+			{void** data} data_handle
 			Agraph_t* graph_handle
 			Agnode_t* node_handle
 			Agedge_t* edge_handle
@@ -148,6 +243,25 @@ array set LANGS {
 	}
 	php {
 		TYPES {
+			{Agraph_t* g} graph_handle
+			{Agraph_t* sg} subgraph_handle
+			{Agnode_t* n} node_handle
+			{Agnode_t* t} tail_node_handle
+			{Agnode_t* h} head_node_handle
+			{Agedge_t* e} edge_handle
+			{Agsym_t* a} attr_handle
+			{char* gne} type
+			{char* name} name
+			{char* tname} tail_name
+			{char* hname} head_name
+			{char* attr} attr_name
+			{char* val} attr_value
+			{char* filename} filename
+			{char* engine} engine
+			{char* string} string
+			{char* format} format
+			{FILE* f} channel
+			{void** data} data_handle
 			Agraph_t* graph_handle
 			Agnode_t* node_handle
 			Agedge_t* edge_handle
@@ -170,6 +284,25 @@ array set LANGS {
 	}
 	python {
 		TYPES {
+			{Agraph_t* g} graph_handle
+			{Agraph_t* sg} subgraph_handle
+			{Agnode_t* n} node_handle
+			{Agnode_t* t} tail_node_handle
+			{Agnode_t* h} head_node_handle
+			{Agedge_t* e} edge_handle
+			{Agsym_t* a} attr_handle
+			{char* gne} type
+			{char* name} name
+			{char* tname} tail_name
+			{char* hname} head_name
+			{char* attr} attr_name
+			{char* val} attr_value
+			{char* filename} filename
+			{char* engine} engine
+			{char* string} string
+			{char* format} format
+			{FILE* f} channel
+			{void** data} data_handle
 			Agraph_t* graph_handle
 			Agnode_t* node_handle
 			Agedge_t* edge_handle
@@ -194,6 +327,25 @@ array set LANGS {
 	}
 	ruby {
 		TYPES {
+			{Agraph_t* g} graph_handle
+			{Agraph_t* sg} subgraph_handle
+			{Agnode_t* n} node_handle
+			{Agnode_t* t} tail_node_handle
+			{Agnode_t* h} head_node_handle
+			{Agedge_t* e} edge_handle
+			{Agsym_t* a} attr_handle
+			{char* gne} type
+			{char* name} name
+			{char* tname} tail_name
+			{char* hname} head_name
+			{char* attr} attr_name
+			{char* val} attr_value
+			{char* filename} filename
+			{char* engine} engine
+			{char* string} string
+			{char* format} format
+			{FILE* f} channel
+			{void** data} data_handle
 			Agraph_t* graph_handle
 			Agnode_t* node_handle
 			Agedge_t* edge_handle

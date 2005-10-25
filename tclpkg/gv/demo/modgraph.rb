@@ -17,7 +17,12 @@ Gv.setv(G, 'node', 'fontsize', '8')
 Gv.setv(G, 'node', 'fontname', 'helvetica')
 Gv.setv(G, 'edge', 'arrowsize', '.4')
 
-# for rec in modules do
+f = File.open('/proc/modules', mode="r")
+while ! f.eof do
+	rec = f.gets()
+
+#FIXME - complete translation to ruby
+
 #    for mod, usedbylist in string.gfind(rec, "([_%w]+) %w+ %w+ ([-,_%w]+)") do
 #       n = gv.node(G, mod)
 #       for usedby in string.gfind(usedbylist, "([-_%w]+)") do
@@ -26,7 +31,9 @@ Gv.setv(G, 'edge', 'arrowsize', '.4')
 #          end
 #       end
 #    end
-# end
+
+end	
+f.close
 
 Gv.layout(G, 'dot')
 Gv.render(G, 'gtk')
