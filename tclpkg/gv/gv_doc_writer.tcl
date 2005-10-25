@@ -52,8 +52,8 @@ proc gv_doc_command {cmd} {
 	foreach {functype params} $FUNC($cmd) {
 		set par {}
 		foreach {paramtype param} $params {
-			if {[string length [array names TYPES -exact "$paramtype $param"]]} {
-				lappend par "$TYPES($paramtype $param)"
+			if {[info exists TYPES([list $paramtype $param])]} {
+				lappend par $TYPES([list $paramtype $param])
 			} {
 				lappend par "$TYPES($paramtype) $param"
 			}
