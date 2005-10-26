@@ -360,21 +360,18 @@ void emit_background(GVJ_t * job, graph_t *g)
     point A[4];
     int i;
 
-    if (((str = agget(g, "bgcolor")) != 0)
-		&& str[0]
-		&& strcmp(str, "white") != 0
-		&& strcmp(str, "transparent") != 0) {
-	AF[0].x = AF[1].x = job->pageBox.LL.x;
-	AF[2].x = AF[3].x = job->pageBox.UR.x;
-	AF[1].y = AF[2].y = job->pageBox.UR.y;
-	AF[3].y = AF[0].y = job->pageBox.LL.y;
-	for (i = 0; i < 4; i++) {
-	    PF2P(AF[i],A[i]);
-	}
-	gvrender_set_fillcolor(job, str);
-	gvrender_set_pencolor(job, str);
-	gvrender_polygon(job, A, 4, TRUE);	/* filled */
+    if (! ((str = agget(g, "bgcolor")) && str[0]))
+	str = "white";
+    AF[0].x = AF[1].x = job->pageBox.LL.x;
+    AF[2].x = AF[3].x = job->pageBox.UR.x;
+    AF[1].y = AF[2].y = job->pageBox.UR.y;
+    AF[3].y = AF[0].y = job->pageBox.LL.y;
+    for (i = 0; i < 4; i++) {
+	PF2P(AF[i],A[i]);
     }
+    gvrender_set_fillcolor(job, str);
+    gvrender_set_pencolor(job, str);
+    gvrender_polygon(job, A, 4, TRUE);	/* filled */
 }
 
 static void emit_defaults(GVJ_t * job)
