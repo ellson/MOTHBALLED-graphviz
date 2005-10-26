@@ -1469,9 +1469,10 @@ static Extype_t eval(Expr_t * ex, register Exnode_t * expr, void *env)
 #if _WIN32
 	    v.floating = v.integer;
 #else
-	    v.floating =
-		(expr->type ==
-		 UNSIGNED) ? (Sfulong_t) v.integer : v.integer;
+	    if (expr->type == UNSIGNED) 
+		v.floating = (Sfulong_t) v.integer;
+	    else
+		v.floating = v.integer;
 #endif
 	    return v;
 	case I2S:
