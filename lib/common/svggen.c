@@ -617,17 +617,23 @@ static void svg_begin_context(void)
 
 static void svg_begin_anchor(char *href, char *tooltip, char *target)
 {
-    svg_fputs("<a xlink:href=\"");
-    svg_fputs(xml_string(href));
+    svg_fputs("<a");
+    if (href && href[0]) {
+        svg_fputs(" xlink:href=\"");
+        svg_fputs(xml_string(href));
+	svg_fputs("\"");
+    }
     if (tooltip && tooltip[0]) {
-	svg_fputs("\" xlink:title=\"");
+	svg_fputs(" xlink:title=\"");
 	svg_fputs(xml_string(tooltip));
+	svg_fputs("\"");
     }
     if (target && target[0]) {
-	svg_fputs("\" target=\"");
+	svg_fputs(" target=\"");
 	svg_fputs(xml_string(target));
+	svg_fputs("\"");
     }
-    svg_fputs("\">\n");
+    svg_fputs(">\n");
 }
 
 static void svg_end_anchor(void)

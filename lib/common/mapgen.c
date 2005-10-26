@@ -93,7 +93,7 @@ map_output_rect(pointf p1, pointf p2, char *url, char *target, char *label,
     point pp1, pp2;
     double t;
 
-    if (!(url && url[0]))
+    if (!(url && url[0]) && !(tooltip && tooltip[0]))
 	return;
 
     /* apply scaling and translation if necessary */
@@ -128,29 +128,20 @@ map_output_rect(pointf p1, pointf p2, char *url, char *target, char *label,
     }
 #if ! NEWANCHORS
 
-    if (Output_lang == IMAP) {
+    if (Output_lang == IMAP && url &&url[0]) {
 	fprintf(Output_file, "rect %s %d,%d %d,%d\n",
 		url, pp1.x, pp1.y, pp2.x, pp2.y);
-    } else if (Output_lang == ISMAP) {
+    } else if (Output_lang == ISMAP && url &&url[0]) {
 	fprintf(Output_file, "rectangle (%d,%d) (%d,%d) %s %s\n",
 		pp1.x, pp1.y, pp2.x, pp2.y, url, label);
     } else if (Output_lang == CMAP || Output_lang == CMAPX) {
-	fprintf(Output_file, "<area shape=\"rect\" href=\"%s\"",
-		xml_string(url));
-	if (target && target[0]) {
+	fprintf(Output_file, "<area shape=\"rect\"");
+	if (url && url[0])
+	    fprintf(Output_file, " href=\"%s\"", xml_string(url));
+	if (target && target[0])
 	    fprintf(Output_file, " target=\"%s\"", xml_string(target));
-	}
-	if (tooltip && tooltip[0]) {
+	if (tooltip && tooltip[0])
 	    fprintf(Output_file, " title=\"%s\"", xml_string(tooltip));
-	}
-#if 0
-	/* If the node has a non-empty label, use that for the alt string */
-	if (label && label[0]) {
-	    fprintf(Output_file, " alt=\"%s\"", xml_string(label));
-	} else {
-	    fprintf(Output_file, " alt=\"\"");
-	}
-#else
 	/*
 	 * alt text is intended for the visually impaired, but such
 	 * folk are not likely to be clicking around on a graph anyway.
@@ -162,7 +153,6 @@ map_output_rect(pointf p1, pointf p2, char *url, char *target, char *label,
 	 * we generate just an empty alt string.
 	 */
 	fprintf(Output_file, " alt=\"\"");
-#endif
 	fprintf(Output_file, " coords=\"%d,%d,%d,%d\"",
 		pp1.x, pp1.y, pp2.x, pp2.y);
 	if (Output_lang == CMAPX)
@@ -170,12 +160,14 @@ map_output_rect(pointf p1, pointf p2, char *url, char *target, char *label,
 	fprintf(Output_file, ">\n");
 
     } else if (Output_lang == POSTSCRIPT || Output_lang == PDF) {
-	fprintf(Output_file, "[ /Rect [ %d %d %d %d ]\n"
+	if (url && url[0]) {
+	    fprintf(Output_file, "[ /Rect [ %d %d %d %d ]\n"
 		"  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
 		pp1.x, pp1.y, pp2.x, pp2.y, ps_string(url, isLatin1));
+	}
     }
 #endif
 }
@@ -216,12 +208,11 @@ static void init_imap(void)
 
 static void doHTMLdata(htmldata_t * dp, point p, void *obj)
 {
-    char *url, *target, *title;
+    char *url = NULL, *target = NULL, *title = NULL;
     pointf p1, p2;
     int havetitle=0;
 
     if ((url = dp->href) && url[0]) {
-
 	switch (agobjkind(obj)) {
 	case AGGRAPH:
 	    url = strdup_and_subst_graph(url, (graph_t *) obj);
@@ -233,36 +224,31 @@ static void doHTMLdata(htmldata_t * dp, point p, void *obj)
 	    url = strdup_and_subst_edge(url, (edge_t *) obj);
 	    break;
 	}
-	if (!(target = dp->target) || !target[0]) {
-	    target = "";
-	}
-	if ((title = dp->title) && title[0]) {
-	    havetitle++;
-	    switch (agobjkind(obj)) {
-	    case AGGRAPH:
+    }
+    target = dp->target;
+    if ((title = dp->title) && title[0]) {
+	havetitle++;
+	switch (agobjkind(obj)) {
+	case AGGRAPH:
 	        title = strdup_and_subst_graph(title, (graph_t *) obj);
 	        break;
-	    case AGNODE:
+	case AGNODE:
 	        title = strdup_and_subst_node(title, (node_t *) obj);
 	        break;
-	    case AGEDGE:
+	case AGEDGE:
 	        title = strdup_and_subst_edge(title, (edge_t *) obj);
 	        break;
-	    }
 	}
-	else {
-	    title = "";
-	}
-
+    }
+    if (url || title) {
 	p1.x = p.x + dp->box.LL.x;
 	p1.y = p.y + dp->box.LL.y;
 	p2.x = p.x + dp->box.UR.x;
 	p2.y = p.y + dp->box.UR.y;
 	map_output_rect(p1, p2, url, target, "", title);
-	free(url);
-	if (havetitle)
-	    free(title);
     }
+    free(url);
+    free(title);
 }
 
 /* forward declaration */
@@ -399,173 +385,130 @@ static void map_end_page(void)
 
 void map_begin_cluster(graph_t * g)
 {
-    char *url, *target, *title = "", *tooltip = "",
-	*m_target = NULL, *m_tooltip = NULL;
+    char *s, *url = NULL, *target = NULL, *title = NULL, *tooltip = NULL,
+	*m_url = NULL, *m_target = NULL, *m_tooltip = NULL;
     pointf p1, p2;
 
-    if (GD_label(g) && GD_label(g)->html)
-	doHTMLlabel(GD_label(g)->u.html, GD_label(g)->p, (void *) g);
-    if (((url = agget(g, "href")) && url[0])
-	|| ((url = agget(g, "URL")) && url[0])) {
-	if (GD_label(g) != NULL)
-	    title = GD_label(g)->text;
-	if ((target = agget(g, "target")) && target[0]) {
-	    m_target = target = strdup_and_subst_graph(target, g);
-	}
+    if (GD_label(g)) {
+	if (GD_label(g)->html)
+	    doHTMLlabel(GD_label(g)->u.html, GD_label(g)->p, (void *) g);
+	title = GD_label(g)->text;
+    }
+    if (((s = agget(g, "href")) && s[0]) || ((s = agget(g, "URL")) && s[0]))
+	m_url = url = strdup_and_subst_graph(s, g);
+    if ((s = agget(g, "target")) && s[0])
+	m_target = target = strdup_and_subst_graph(s, g);
+    if ((s = agget(g, "tooltip")) && s[0])
+	m_tooltip = tooltip = strdup_and_subst_graph(s, g);
+    else
+	    tooltip = title;
+    if (url || m_tooltip) {
 	p1.x = GD_bb(g).LL.x;
 	p1.y = GD_bb(g).LL.y;
 	p2.x = GD_bb(g).UR.x;
 	p2.y = GD_bb(g).UR.y;
-	url = strdup_and_subst_graph(url, g);
-	if ((tooltip = agget(g, "tooltip")) && tooltip[0]) {
-	    m_tooltip = tooltip = strdup_and_subst_graph(tooltip, g);
-	} else {
-	    tooltip = title;
-	}
 	map_output_rect(p1, p2, url, target, title, tooltip);
-	if (m_target)
-	    free(m_target);
-	if (m_tooltip)
-	    free(m_tooltip);
-	free(url);
     }
+    free(m_target);
+    free(m_tooltip);
+    free(m_url);
 }
 
 void map_begin_node(node_t * n)
 {
-    char *url, *target, *tooltip, *m_target = NULL, *m_tooltip = NULL;
+    char *s, *url = NULL, *target = NULL, *tooltip = NULL,
+	*m_url = NULL, *m_target = NULL, *m_tooltip = NULL;
     pointf p1, p2;
 
     if (ND_label(n)->html)
 	doHTMLlabel(ND_label(n)->u.html, ND_coord_i(n), (void *) n);
-    if (((url = agget(n, "href")) && url[0])
-	|| ((url = agget(n, "URL")) && url[0])) {
-	if ((target = agget(n, "target")) && target[0]) {
-	    m_target = target = strdup_and_subst_node(target, n);
-	}
+    if (((s = agget(n, "href")) && s[0]) || ((s = agget(n, "URL")) && s[0]))
+	m_url = url = strdup_and_subst_node(s, n);
+    if ((s = agget(n, "target")) && s[0])
+	m_target = target = strdup_and_subst_node(s, n);
+    if ((s = agget(n, "tooltip")) && s[0])
+	m_tooltip = tooltip = strdup_and_subst_node(s, n);
+    else
+	tooltip = ND_label(n)->text;
+    if (url || m_tooltip) {
 	p1.x = ND_coord_i(n).x - ND_lw_i(n);
 	p1.y = ND_coord_i(n).y - (ND_ht_i(n) / 2);
 	p2.x = ND_coord_i(n).x + ND_rw_i(n);
 	p2.y = ND_coord_i(n).y + (ND_ht_i(n) / 2);
-	url = strdup_and_subst_node(url, n);
-	if ((tooltip = agget(n, "tooltip")) && tooltip[0]) {
-	    m_tooltip = tooltip = strdup_and_subst_node(tooltip, n);
-	} else {
-	    tooltip = ND_label(n)->text;
-	}
 	map_output_rect(p1, p2, url, target, ND_label(n)->text, tooltip);
-	if (m_target)
-	    free(m_target);
-	if (m_tooltip)
-	    free(m_tooltip);
-	free(url);
     }
+    free(m_url);
+    free(m_target);
+    free(m_tooltip);
 }
 
 void map_begin_edge(edge_t * e)
 {
     /* strings */
-    char *label, *taillabel, *headlabel;
-    char *url, *headurl, *tailurl, *tooltip, *target;
-    char *tailtooltip = NULL, *headtooltip = NULL, *tailtarget =
-	NULL, *headtarget = NULL;
-
-    /* malloc flags for strings */
-    char *m_url = NULL, *m_headurl = NULL, *m_tailurl = NULL;
-    char *m_target = NULL, *m_tailtarget = NULL, *m_headtarget = NULL;
-    char *m_tooltip = NULL, *m_tailtooltip = NULL, *m_headtooltip = NULL;
+    char *s, *label, *taillabel, *headlabel, *url, *tailurl, *headurl,
+	*target, *tailtarget, *headtarget, *tooltip, *tailtooltip, *headtooltip,
+	*m_url = NULL, *m_tailurl = NULL, *m_headurl = NULL,
+	*m_target = NULL, *m_tailtarget = NULL, *m_headtarget = NULL,
+	*m_tooltip = NULL, *m_tailtooltip = NULL, *m_headtooltip = NULL;
 
     textlabel_t *lab = NULL, *tlab = NULL, *hlab = NULL;
     pointf p, p1, p2;
     bezier bz;
 
     /*  establish correct text for main edge label, URL, tooltip */
+    label = NULL;
     if ((lab = ED_label(e))) {
 	if (lab->html)
 	    doHTMLlabel(lab->u.html, lab->p, (void *) e);
 	label = lab->text;
-    } else {
-	label = "";
     }
-    if (((url = agget(e, "href")) && url[0])
-	|| ((url = agget(e, "URL")) && url[0])) {
-	m_url = url = strdup_and_subst_edge(url, e);
-	if ((tooltip = agget(e, "tooltip")) && tooltip[0]) {
-	    m_tooltip = tooltip = strdup_and_subst_edge(tooltip, e);
-	} else {
-	    tooltip = label;
-	}
-	if ((target = agget(e, "target")) && target[0]) {
-	    m_target = target = strdup_and_subst_edge(target, e);
-	} else {
-	    target = "";
-	}
-    } else {
-	tooltip = "";
-	target = "";
-    }
+    url = NULL;
+    if (((s = agget(e, "href")) && s[0]) || ((s = agget(e, "URL")) && s[0]))
+	m_url = url = strdup_and_subst_edge(s, e);
+    tooltip = label;
+    if ((s = agget(e, "tooltip")) && s[0])
+	m_tooltip = tooltip = strdup_and_subst_edge(s, e);
+    target = NULL;
+    if ((s = agget(e, "target")) && s[0])
+	m_target = target = strdup_and_subst_edge(s, e);
 
     /*  establish correct text for tail label, URL, tooltip */
+    taillabel = label;
     if ((tlab = ED_tail_label(e))) {
 	if (tlab->html)
 	    doHTMLlabel(tlab->u.html, tlab->p, (void *) e);
 	taillabel = tlab->text;
-    } else {
-	taillabel = label;
     }
-    if (((tailurl = agget(e, "tailhref")) && tailurl[0])
-	|| ((tailurl = agget(e, "tailURL")) && tailurl[0])) {
-	m_tailurl = tailurl = strdup_and_subst_edge(tailurl, e);
-	if ((tailtooltip = agget(e, "tailtooltip")) && tailtooltip[0]) {
-	    m_tailtooltip = tailtooltip =
-		strdup_and_subst_edge(tailtooltip, e);
-	} else {
-	    tailtooltip = taillabel;
-	}
-	if ((tailtarget = agget(e, "tailtarget")) && tailtarget[0]) {
-	    m_tailtarget = tailtarget =
-		strdup_and_subst_edge(tailtarget, e);
-	} else {
-	    tailtarget = target;
-	}
-    } else if (url) {
-	tailurl = url;
-	tailtooltip = tooltip;
-	tailtarget = target;
-    }
+    tailurl = url;
+    if (((s = agget(e, "tailhref")) && s[0]) || ((s = agget(e, "tailURL")) && s[0]))
+	m_tailurl = tailurl = strdup_and_subst_edge(s, e);
+    tailtooltip = taillabel;
+    if ((s = agget(e, "tailtooltip")) && s[0])
+	m_tailtooltip = tailtooltip = strdup_and_subst_edge(s, e);
+    tailtarget = target;
+    if ((s = agget(e, "tailtarget")) && s[0])
+	m_tailtarget = tailtarget = strdup_and_subst_edge(s, e);
 
     /*  establish correct text for head label, URL, tooltip */
+    headlabel = label;
     if ((hlab = ED_head_label(e))) {
 	if (hlab->html)
 	    doHTMLlabel(hlab->u.html, hlab->p, (void *) e);
 	headlabel = hlab->text;
-    } else {
-	headlabel = label;
     }
-    if (((headurl = agget(e, "headhref")) && headurl[0])
-	|| ((headurl = agget(e, "headURL")) && headurl[0])) {
-	m_headurl = headurl = strdup_and_subst_edge(headurl, e);
-	if ((headtooltip = agget(e, "headtooltip")) && headtooltip[0]) {
-	    m_headtooltip = headtooltip =
-		strdup_and_subst_edge(headtooltip, e);
-	} else {
-	    headtooltip = headlabel;
-	}
-	if ((headtarget = agget(e, "headtarget")) && headtarget[0]) {
-	    m_headtarget = headtarget =
-		strdup_and_subst_edge(headtarget, e);
-	} else {
-	    headtarget = target;
-	}
-    } else if (url) {
-	headurl = url;
-	headtooltip = tooltip;
-	headtarget = target;
-    }
+    headurl = url;
+    if (((s = agget(e, "headhref")) && s[0]) || ((s = agget(e, "headURL")) && s[0]))
+	m_headurl = headurl = strdup_and_subst_edge(s, e);
+    headtooltip = headlabel;
+    if ((s = agget(e, "headtooltip")) && s[0])
+	m_headtooltip = headtooltip = strdup_and_subst_edge(s, e);
+    headtarget = target;
+    if ((s = agget(e, "headtarget")) && s[0])
+	m_headtarget = headtarget = strdup_and_subst_edge(s, e);
 
     /* strings are now set  - next we map the three labels */
 
-    if (lab && url) {
+    if (lab && (url || m_tooltip)) {
 	/* map a rectangle around the edge label */
 	p1.x = lab->p.x - lab->dimen.x / 2;
 	p1.y = lab->p.y - lab->dimen.y / 2;
@@ -574,50 +517,28 @@ void map_begin_edge(edge_t * e)
 	map_output_rect(p1, p2, url, target, label, tooltip);
     }
 
-    if (tlab && (url || tailurl)) {
+    if (tlab && (tailurl || m_tailtooltip)) {
 	/* map a rectangle around the edge taillabel */
 	p1.x = tlab->p.x - tlab->dimen.x / 2;
 	p1.y = tlab->p.y - tlab->dimen.y / 2;
 	p2.x = tlab->p.x + tlab->dimen.x / 2;
 	p2.y = tlab->p.y + tlab->dimen.y / 2;
-	map_output_rect(p1, p2, tailurl, tailtarget, taillabel,
-			tailtooltip);
+	map_output_rect(p1, p2, tailurl, tailtarget, taillabel, tailtooltip);
     }
 
-    if (hlab && (url || headurl)) {
+    if (hlab && (headurl || m_headtooltip)) {
 	/* map a rectangle around the edge headlabel */
 	p1.x = hlab->p.x - hlab->dimen.x / 2;
 	p1.y = hlab->p.y - hlab->dimen.y / 2;
 	p2.x = hlab->p.x + hlab->dimen.x / 2;
 	p2.y = hlab->p.y + hlab->dimen.y / 2;
-	map_output_rect(p1, p2, headurl, headtarget, headlabel,
-			headtooltip);
+	map_output_rect(p1, p2, headurl, headtarget, headlabel, headtooltip);
     }
-#if 0
-    /* FIXME - what is this supposed to do?  Perhaps map spline control points? */
-    if (ED_spl(e) && url) {
-	int i, j;
-
-	for (i = 0; i < ED_spl(e)->size; i++) {
-	    bz = ED_spl(e)->list[i];
-	    for (j = 0; j < bz.size; j += 3) {
-		if (((i == 0) && (j == 0))	/* origin */
-		    ||((i == (ED_spl(e)->size - 1))
-		       && (j == (bz.size - 1)))) {
-		    continue;
-		}
-		p.x = bz.list[j].x;
-		p.y = bz.list[j].y;
-		map_output_fuzzy_point(p, url, ED_label(e)->text);
-	    }
-	}
-    }
-#endif
 
     /* finally we map the two ends of the edge where they touch nodes */
 
     /* process intersecion with tail node */
-    if (ED_spl(e) && (url || tailurl)) {
+    if (ED_spl(e) && (tailurl || m_tailtooltip)) {
 	bz = ED_spl(e)->list[0];
 	if (bz.sflag) {
 	    /* Arrow at start of splines */
@@ -628,12 +549,11 @@ void map_begin_edge(edge_t * e)
 	    p.x = bz.list[0].x;
 	    p.y = bz.list[0].y;
 	}
-	map_output_fuzzy_point(p, tailurl, tailtarget, taillabel,
-			       tailtooltip);
+	map_output_fuzzy_point(p, tailurl, tailtarget, taillabel, tailtooltip);
     }
 
     /* process intersection with head node */
-    if (ED_spl(e) && (url || headurl)) {
+    if (ED_spl(e) && (headurl || m_headtooltip)) {
 	bz = ED_spl(e)->list[ED_spl(e)->size - 1];
 	if (bz.eflag) {
 	    /* Arrow at end of splines */
@@ -644,40 +564,30 @@ void map_begin_edge(edge_t * e)
 	    p.x = bz.list[bz.size - 1].x;
 	    p.y = bz.list[bz.size - 1].y;
 	}
-	map_output_fuzzy_point(p, headurl, headtarget, headlabel,
-			       headtooltip);
+	map_output_fuzzy_point(p, headurl, headtarget, headlabel, headtooltip);
     }
 
-    if (m_url)
-	free(m_url);
-    if (m_target)
-	free(m_target);
-    if (m_tailtarget)
-	free(m_tailtarget);
-    if (m_headtarget)
-	free(m_headtarget);
-    if (m_tailurl)
-	free(m_tailurl);
-    if (m_headurl)
-	free(m_headurl);
-    if (m_tooltip)
-	free(m_tooltip);
-    if (m_tailtooltip)
-	free(m_tailtooltip);
-    if (m_headtooltip)
-	free(m_headtooltip);
+    free(m_url);
+    free(m_target);
+    free(m_tailtarget);
+    free(m_headtarget);
+    free(m_tailurl);
+    free(m_headurl);
+    free(m_tooltip);
+    free(m_tailtooltip);
+    free(m_headtooltip);
 }
 
 static void map_begin_anchor(char *href, char *tooltip, char *target)
 {
 #if NEWANCHORS
-    fprintf(Output_file, "<area href=\"%s\"", xml_string(href));
-    if (tooltip && tooltip[0]) {
+    fprintf(Output_file, "<area");
+    if (href && href[0])
+	fprintf(Output_file, " href=\"%s\"", xml_string(href));
+    if (tooltip && tooltip[0])
 	fprintf(Output_file, " title=\"%s\"", xml_string(tooltip));
-    }
-    if (target && target[0]) {
+    if (target && target[0])
 	fprintf(Output_file, " target=\"%s\"", xml_string(target));
-    }
 #endif
 }
 
