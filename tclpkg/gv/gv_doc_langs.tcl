@@ -12,7 +12,7 @@ array set LANGS {
                 	void {}
 		}
 		SYNTAX {
-			gv.  (  ,   {);}
+			gv.  (  {, }   {);}
 		}
 		SYNOPSIS {
 		}
@@ -51,7 +51,7 @@ array set LANGS {
 			void {}
 		}
 		SYNTAX {
-			gv.  (  ,   {);}
+			gv.  (  {, }   {);}
 		}
 		SYNOPSIS {
 			{(load-extension "./libgv.so" "SWIG_init")}
@@ -91,7 +91,7 @@ array set LANGS {
 			void {}
 		}
 		SYNTAX {
-			gv.  (  ,   {);}
+			gv.  (  {, }   {);}
 		}
 		SYNOPSIS {
 		}
@@ -111,7 +111,7 @@ array set LANGS {
 			void {}
 		}
 		SYNTAX {
-			gv.  (  ,   {);}
+			gv.  (  {, }   {);}
 		}
 		SYNOPSIS {
 			{System.loadLibrary("gv");}
@@ -151,7 +151,7 @@ array set LANGS {
 			void {}
 		}
 		SYNTAX {
-			gv.  (  ,   {);}
+			gv.  (  {, }   {);}
 		}
 		SYNOPSIS {
 			{#!/usr/bin/lua}
@@ -193,7 +193,7 @@ array set LANGS {
 			void {}
 		}
 		SYNTAX {
-			gv.  (  ,   {);}
+			gv.  (  {, }   {);}
 		}
 		SYNOPSIS {
 		}
@@ -232,7 +232,7 @@ array set LANGS {
 			void {}
 		}
 		SYNTAX {
-			gv:: (  ,   {);}
+			gv:: (  {, }   {);}
 		}
 		SYNOPSIS {
 			{#!/usr/bin/perl}
@@ -273,7 +273,7 @@ array set LANGS {
 			void {}
 		}
 		SYNTAX {
-			gv:: (  ,   {);}
+			gv:: (  {, }   {);}
 		}
 		SYNOPSIS {
 			{dl("libgv_php.so");}
@@ -314,7 +314,7 @@ array set LANGS {
 			void {}
 		}
 		SYNTAX {
-			gv.  (  ,   {);}
+			gv.  (  {, }   {);}
 		}
 		SYNOPSIS {
 			{#!/usr/bin/python}
@@ -357,7 +357,7 @@ array set LANGS {
 			void {}
 		}
 		SYNTAX {
-			Gv.  (  ,   {);}
+			Gv.  (  {, }   {);}
 		}
 		SYNOPSIS {
 			{export RUBYLIB=/usr/lib/graphviz/ruby}

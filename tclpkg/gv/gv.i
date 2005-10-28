@@ -20,61 +20,84 @@
 %}
 
 %inline %{
-/* new graph objects */
-extern Agraph_t *graph(char *name);		/* new empty graph */
-extern Agraph_t *digraph(char *name);		/* new empty digraph */
-extern Agraph_t *strictgraph(char *name);	/* new empty strict graph */
-extern Agraph_t *strictdigraph(char *name);	/* new empty strict digraph */
+/** New graphs */
+/*** New empty graph */
+extern Agraph_t *graph(char *name);
+extern Agraph_t *digraph(char *name);
+extern Agraph_t *strictgraph(char *name);
+extern Agraph_t *strictdigraph(char *name);
+/*** New graph from a dot-syntax string or file */
+extern Agraph_t *readstring(char *string);
+extern Agraph_t *read(char *filename);
+extern Agraph_t *read(FILE *f);	
+/*** Add new subgraph to existing graph */
+extern Agraph_t *graph(Agraph_t *g, char *name);
 
-extern Agraph_t *readstring(char *string);	/* from dot-formatted string */
-extern Agraph_t *read(char *filename);		/* from dot-formatted file */
-extern Agraph_t *read(FILE *f);			/* from dot-formatted file */
+/** New nodes */
+/*** Add new node to existing graph */
+extern Agnode_t *node(Agraph_t *g, char *name);
 
-extern Agraph_t *graph(Agraph_t *g, char *name);/* add subgraph to graph */
-extern Agnode_t *node(Agraph_t *g, char *name);	/* add node to graph */
-extern Agedge_t *edge(Agnode_t *t, Agnode_t *h);/* add edge between existing nodes */
-				
-extern Agedge_t *edge(Agnode_t *t, char *hname);/* add edge, existing tail, named head which will be induced if necessary */
-extern Agedge_t *edge(char *tname, Agnode_t *h);/* add edge, named tail which will be induced if necessary, existing head */
+/** New edges */
+/*** Add new edge between existing nodes */
+extern Agedge_t *edge(Agnode_t *t, Agnode_t *h);
+/*** Add a new edge between an existing tail node, and a named head node which will be induced in the graph if it doesn't already exist */
+extern Agedge_t *edge(Agnode_t *t, char *hname);
+/*** Add a new edge between an existing head node, and a named tail node which will be induced in the graph if it doesn't already exist */
+extern Agedge_t *edge(char *tname, Agnode_t *h);
+/*** Add a new edge between named tail  and head nodes which will be induced in the graph if they don't already exist */
+extern Agedge_t *edge(Agraph_t *g, char *tname, char *hname);
 
-extern Agedge_t *edge(Agraph_t *g, char *tname, char *hname);/* add edge between named nodes, induced as necessary */
-
-/* set/get attribute of graph/node/edge */
+/** Setting attribute values */
+/*** Set value of named attribute of graph/node/edge - creating attribute if necessary */
 extern char *setv(Agraph_t *g, char *attr, char *val);
-extern char *setv(Agraph_t *g, char *gne, char *attr, char *val);
 extern char *setv(Agnode_t *n, char *attr, char *val);
 extern char *setv(Agedge_t *e, char *attr, char *val);
 
+/*** Set default value of graph/node/edge named attribute - creating attribute if necessary */
+extern char *setv(Agraph_t *g, char *gne, char *attr, char *val);
+
+/*** Set value of existing attribute of graph/node/edge (using attribute handle) */
 extern char *setv(Agraph_t *g, Agsym_t *a, char *val);
-extern char *setv(Agraph_t *g, char *gne, Agsym_t *a, char *val);
 extern char *setv(Agnode_t *n, Agsym_t *a, char *val);
 extern char *setv(Agedge_t *e, Agsym_t *a, char *val);
 
+/*** Set default value of existing graph/node/edge attribute (using attribute handle) */
+extern char *setv(Agraph_t *g, char *gne, Agsym_t *a, char *val);
+
+/** Getting attribute values */
+/*** Get value of named attribute of graph/node/edge */
 extern char *getv(Agraph_t *g, char *attr);
-extern char *getv(Agraph_t *g, char *gne, char *attr);
 extern char *getv(Agnode_t *n, char *attr);
 extern char *getv(Agedge_t *e, char *attr);
 
+/*** Get default value of graph/node/edge named attribute */
+extern char *getv(Agraph_t *g, char *gne, char *attr);
+
+/*** Get value of attribute of graph/node/edge (using attribute handle) */
 extern char *getv(Agraph_t *g, Agsym_t *a);
-extern char *getv(Agraph_t *g, char *gne, Agsym_t *a);
 extern char *getv(Agnode_t *n, Agsym_t *a);
 extern char *getv(Agedge_t *e, Agsym_t *a);
 
-/* names */
+/*** Get default value of attribute of graph/node/edge (using attribute handle) */
+extern char *getv(Agraph_t *g, char *gne, Agsym_t *a);
+
+/** Obtain names from handles */
 extern char *nameof(Agraph_t *g);
 extern char *nameof(Agnode_t *n);
 //extern char *nameof(Agedge_t *e);
 extern char *nameof(Agsym_t *a);
 
+/** Find handles from names */
 extern Agraph_t *findsubg(Agraph_t *g, char *name);
 extern Agnode_t *findnode(Agraph_t *g, char *name);
 extern Agedge_t *findedge(Agnode_t *t, Agnode_t *h);
 
+/** */
 extern Agsym_t *findattr(Agraph_t *g, char *name);
 extern Agsym_t *findattr(Agnode_t *n, char *name);
 extern Agsym_t *findattr(Agedge_t *e, char *name);
 
-/* misc navigators */
+/** Misc graph navigators returning handles */
 extern Agnode_t *headof(Agedge_t *e);
 extern Agnode_t *tailof(Agedge_t *e);
 extern Agraph_t *graphof(Agraph_t *g);
@@ -82,67 +105,89 @@ extern Agraph_t *graphof(Agedge_t *e);
 extern Agraph_t *graphof(Agnode_t *n);
 extern Agraph_t *rootof(Agraph_t *g);
 
-/* iterators */
+/** Iterators */
+/*** Iteration termination tests */
 extern bool ok(Agraph_t *g);
 extern bool ok(Agnode_t *n);
 extern bool ok(Agedge_t *e);
 extern bool ok(Agsym_t *a);
 
+/*** Iterate over subgraphs of a graph */
 extern Agraph_t *firstsubg(Agraph_t *g);
 extern Agraph_t *nextsubg(Agraph_t *g, Agraph_t *sg);
 
+/*** Iterate over supergraphs of a graph (obscure and rarely usefull) */
 extern Agraph_t *firstsupg(Agraph_t *g);
 extern Agraph_t *nextsupg(Agraph_t *g, Agraph_t *sg);
 
+/*** Iterate over edges of a graph */
 extern Agedge_t *firstedge(Agraph_t *g);
 extern Agedge_t *nextedge(Agraph_t *g, Agedge_t *e);
 
+/*** Iterate over outedges of a graph */
 extern Agedge_t *firstout(Agraph_t *g);
 extern Agedge_t *nextout(Agraph_t *g, Agedge_t *e);
 
+/*** Iterate over edges of a node */
 extern Agedge_t *firstedge(Agnode_t *n);
 extern Agedge_t *nextedge(Agnode_t *n, Agedge_t *e);
 
+/*** Iterate over out-edges of a node */
 extern Agedge_t *firstout(Agnode_t *n);
 extern Agedge_t *nextout(Agnode_t *n, Agedge_t *e);
 
+/*** Iterate over head nodes reachable from out-edges of a node */
 extern Agnode_t *firsthead(Agnode_t *n);
 extern Agnode_t *nexthead(Agnode_t *n, Agnode_t *h);
 
+/*** Iterate over in-edges of a graph */
 extern Agedge_t *firstin(Agraph_t *g);
 extern Agedge_t *nextin(Agnode_t *n, Agedge_t *e);
 
+/*** Iterate over in-edges of a node */
 extern Agedge_t *firstin(Agnode_t *n);
 extern Agedge_t *nextin(Agraph_t *g, Agedge_t *e);
 
+/*** Iterate over tail nodes reachable from in-edges of a node */
 extern Agnode_t *firsttail(Agnode_t *n);
 extern Agnode_t *nexttail(Agnode_t *n, Agnode_t *t);
 
+/*** Iterate over nodes of a graph */
 extern Agnode_t *firstnode(Agraph_t *g);
 extern Agnode_t *nextnode(Agraph_t *g, Agnode_t *n);
 
+/*** Iterate over nodes of an edge */
 extern Agnode_t *firstnode(Agedge_t *e);
 extern Agnode_t *nextnode(Agedge_t *e, Agnode_t *n);
 
+/*** Iterate over attributes of a graph */
 extern Agsym_t *firstattr(Agraph_t *g);
-extern Agsym_t *firstattr(Agraph_t *g, char *gne);
 extern Agsym_t *nextattr(Agraph_t *g, Agsym_t *a);
+
+/*** Iterate over default graph/node/edge attributes of a graph */
+extern Agsym_t *firstattr(Agraph_t *g, char *gne);
 extern Agsym_t *nextattr(Agraph_t *g, char *gne, Agsym_t *a);
 
-extern Agsym_t *firstattr(Agnode_t *n);
-extern Agsym_t *nextattr(Agnode_t *n, Agsym_t *a);
-
+/*** Iterate over attributes of an edge */
 extern Agsym_t *firstattr(Agedge_t *e);
 extern Agsym_t *nextattr(Agedge_t *e, Agsym_t *a);
 
-/* remove graph objects */
+/*** Iterate over attributes of a node */
+extern Agsym_t *firstattr(Agnode_t *n);
+extern Agsym_t *nextattr(Agnode_t *n, Agsym_t *a);
+
+/** Remove graph objects */
 extern void rm(Agraph_t *g);
 extern void rm(Agnode_t *n);
 extern void rm(Agedge_t *e);
 
+/** Layout */
+/*** Annotate a graph with layout attributes and values using a specific layout engine */
 extern void layout(Agraph_t *g, char *engine);
 
-extern void render(Agraph_t *g, char *format);
+/** Render */
+/*** Render a graph in a specific format */
+//extern void render(Agraph_t *g, char *format);
 extern void render(Agraph_t *g, char *format, char *filename);
 extern void render(Agraph_t *g, char *format, FILE *f);
 extern void render(Agraph_t *g, char *format, void **data);
