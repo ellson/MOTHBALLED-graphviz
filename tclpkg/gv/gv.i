@@ -187,7 +187,7 @@ extern void layout(Agraph_t *g, char *engine);
 
 /** Render */
 /*** Render a graph in a specific format */
-//extern void render(Agraph_t *g, char *format);
+extern void render(Agraph_t *g, char *format);
 extern void render(Agraph_t *g, char *format, char *filename);
 extern void render(Agraph_t *g, char *format, FILE *f);
 extern void render(Agraph_t *g, char *format, void **data);
