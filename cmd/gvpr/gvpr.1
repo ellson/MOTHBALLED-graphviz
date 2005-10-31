@@ -1,4 +1,4 @@
-.TH GVPR 1 "14 November 2003"
+.TH GVPR 1 "1 November 2005"
 .SH NAME
 gvpr \- graph pattern scanning and processing language
 .br
@@ -63,8 +63,9 @@ available as strings in the \fBgvpr\fP program
 as \fBARGV[\fI0\fP],...,ARGV[ARGC-1]\fR.
 Whitespace characters within single or double quoted substrings, or
 preceded by a backslash, are ignored as separators. 
-In general, backslash character turns off any special meaning of the
+In general, a backslash character turns off any special meaning of the
 following character.
+Note that the tokens derived from multiple \fB-a\fP flags are concatenated.
 .TP
 .B \-c
 Use the source graph as the output graph.
@@ -125,7 +126,10 @@ A program can contain at most one of each of the \fBBEGIN\fP, \fBBEG_G\fP,
 There can be any number of \fBN\fP and \fBE\fP statements,
 the first applied to nodes, the second to edges.
 The top-level semantics of a \fBgvpr\fP program are:
-.EX
+.PP
+.ta \w'\f(CWdelete array[expression]'u
+.RS
+.nf
 Evaluate the \fBBEGIN\fP clause, if any.
 For each input graph \fIG\fP {
     Set \fIG\fP as the current graph and current object.
@@ -138,7 +142,10 @@ For each input graph \fIG\fP {
     Evaluate the \fBEND_G\fP clause, if any.
 } 
 Evaluate the \fBEND\fP clause, if any.
-.EE
+.fi
+.RE
+.DT
+.PP
 The actions of the \fBBEGIN\fP, \fBBEG_G\fP, \fBEND_G\fP and \fBEND\fP clauses
 are performed when the clauses are evaluated.
 For \fBN\fP or \fBE\fP clauses,
@@ -176,21 +183,21 @@ interpreted as patterns for the purpose of regular expression matching.
 Patterns use
 .IR ksh (1)
 file match pattern syntax.
-\fBgvpr\fP uses C++ comments.
+\fBgvpr\fP accepts C++ comments as well as cpp-type comments.
+For the latter, if a line begins with a '#' character, the rest of
+the line is ignored.
 .PP
 A statement can be a declaration of a function, a variable
 or an array, or an executable statement. For declarations, there
 is a single scope. Array declarations have the form: 
 .PP
-.EX
 .ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
 \fI type array \fP[\fI var \fP]
 .fi
 .RE
-.EE
-.ST
+.DT
 .PP
 where the \fI var \fP is optional. As in C, variables and arrays must
 be declared. In particular, an undeclared variable will be interpreted
@@ -198,7 +205,6 @@ as the name of an attribute of a node, edge or graph, depending on the
 context.
 .PP
 Executable statements can be one of the following:
-.EX
 .ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
@@ -214,7 +220,6 @@ continue [\fI expression \fP]
 return [\fI expression \fP]
 .fi
 .RE
-.EE
 .ST
 .PP
 In the second form of the \fBfor\fP statement, the variable \fIvar\fP
@@ -756,16 +761,31 @@ edges in undirected graphs are given an arbitrary direction, which is
 used for this traversal. The choice of roots for the traversal is the
 same as described for \fBTV_dfs\fR above.
 .SH EXAMPLES
-.EX
-gvpr -i 'N[color=="blue"]' file.dot
-.EE
+.PP
+.ta \w'\f(CWdelete array[expression]'u
+.RS
+.nf
+\f5gvpr -i 'N[color=="blue"]' file.dot\fP
+.fi
+.RE
+.DT
+.PP
 Generate the node-induced subgraph of all nodes with color blue.
-.EX
-gvpr -c 'N[color=="blue"]{color = "red"}' file.dot
-.EE
+.PP
+.ta \w'\f(CWdelete array[expression]'u
+.RS
+.nf
+\f5gvpr -c 'N[color=="blue"]{color = "red"}' file.dot\fP
+.fi
+.RE
+.DT
+.PP
 Make all blue nodes red.
-.EX
-BEGIN { int n, e; int tot_n = 0; int tot_e = 0; }
+.PP
+.ta \w'\f(CWdelete array[expression]'u
+.RS
+.nf
+\f5BEGIN { int n, e; int tot_n = 0; int tot_e = 0; }
 BEG_G {
   n = nNodes($G);
   e = nEdges($G);
@@ -773,34 +793,55 @@ BEG_G {
   tot_n += n;
   tot_e += e;
 }
-END { printf ("%d nodes %d edges total\n", tot_n, tot_e) }
-.EE
+END { printf ("%d nodes %d edges total\n", tot_n, tot_e) }\fP
+.fi
+.RE
+.DT
+.PP
 Version of the program \fBgc\fP.
-.EX
-gvpr -c ""
-.EE
+.PP
+.ta \w'\f(CWdelete array[expression]'u
+.RS
+.nf
+\f5gvpr -c ""\fP
+.fi
+.RE
+.DT
+.PP
 Equivalent to \fBnop\fP.
-.EX
-BEG_G { graph_t g = graph ("merge", "S"); }
+.PP
+.ta \w'\f(CWdelete array[expression]'u
+.RS
+.nf
+\f5BEG_G { graph_t g = graph ("merge", "S"); }
 E {
   node_t h = clone(g,$.head);
   node_t t = clone(g,$.tail);
   edge_t e = edge(t,h,"");
   e.weight = e.weight + 1;
 }
-END_G { $O = g; }
-.EE
+END_G { $O = g; }\fP
+.fi
+.RE
+.DT
+.PP
 Produces a strict version of the input graph, where the weight attribute
 of an edge indicates how many edges from the input graph the edge represents.
-.EX
-BEGIN {node_t n; int deg[]}
+.PP
+.ta \w'\f(CWdelete array[expression]'u
+.RS
+.nf
+\f5BEGIN {node_t n; int deg[]}
 E{deg[head]++; deg[tail]++; }
 END_G {
   for (deg[n]) {
     printf ("deg[%s] = %d\n", n.name, deg[n]);
   }
-}
-.EE
+}\fP
+.fi
+.RE
+.DT
+.PP
 Computes the degrees of nodes with edges.
 .SH ENVIRONMENT
 .TP
