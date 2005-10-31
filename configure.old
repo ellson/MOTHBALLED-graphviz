@@ -12,10 +12,10 @@ for i in `find . -name Makefile.old`; do cp $i ${i%%.old}; done
 # do the same for config.h plus insert VERSION and BUILDDATE
 V=$(grep 'AC_INIT(graphviz' configure.ac | m4 '-DAC_INIT=$2')
 D=$(date)
-./iffe - set cc cc : run configdata | sed "s/VVVV/$V/" | sed "s/DDDD/$D/" > config.h
+./iffe - set cc cc : run config.iffe | sed "s/VVVV/$V/" | sed "s/DDDD/$D/" > config.h
 
 # Append VERSION to Config.mk
-mv Config.mk.old Config.mk
+cp Config.mk.old Config.mk
 echo "VERSION=$V" >> Config.mk
 
 # Remove cdt/ast_common.h if it came with the distribution

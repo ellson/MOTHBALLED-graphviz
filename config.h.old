@@ -1,4 +1,4 @@
-/* : : generated from configdata by iffe version 2004-08-11 : : */
+/* : : generated from config.iffe by iffe version 2004-08-11 : : */
 #ifndef _GVIZ_CONFIG_H
 #define _GVIZ_CONFIG_H	1
 #define HAVE_SYS_TYPES_H	1	/* #include <sys/types.h> ok */
