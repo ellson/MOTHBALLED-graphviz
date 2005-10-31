@@ -84,8 +84,15 @@ static Sfio_t *openOut(char *name)
 }
 
 /* gettok:
+ * Tokenize a string. Tokens consist of either a non-empty string
+ * of non-space characters, or all characters between a pair of
+ * single or double quotes. As usual, we map 
+ *   \c -> c
+ * for all c
  * Return next argument token, returning NULL if none.
  * sp is updated to point to next character to be processed.
+ * NB. There must be white space between tokens. Otherwise, they
+ * are concatenated.
  */
 static char*
 gettok (char** sp)
@@ -120,24 +127,23 @@ gettok (char** sp)
 	else break;
         rs++;
     }
-    *ws = '\0';
     if (*rs) *rs++;
     else if (q)
 	error(ERROR_WARNING, "no closing quote for argument %s", s);
     *sp = rs;
+    *ws = '\0';
     return s;
 }
 
-#define NUM_ARGS 10
+#define NUM_ARGS 100
 
 /* parseArgs:
- * Tokenize a string. Tokens consist of either a non-empty string
- * of non-space characters, or all characters between a pair of
- * single or double quotes. As usual, we map 
- *   \c -> c
- * for all c
+ * Split s into whitespace separated tokens, allowing quotes.
+ * Append tokens to argument list and return new number of arguments.
+ * argc is the current number of arguments, with the arguments
+ * stored in *argv.
  */
-static void parseArgs(char *s, int *argc, char ***argv)
+static int parseArgs(char *s, int argc, char ***argv)
 {
     int i, cnt = 0;
     char *args[NUM_ARGS];
@@ -147,7 +153,7 @@ static void parseArgs(char *s, int *argc, char ***argv)
     while ((t = gettok(&s))) {
 	if (cnt == NUM_ARGS) {
 	    error(ERROR_WARNING,
-		  "at most %d arguments allowed in -a flag - ignoring rest",
+		  "at most %d arguments allowed per -a flag - ignoring rest",
 		  NUM_ARGS);
 	    break;
 	}
@@ -155,12 +161,14 @@ static void parseArgs(char *s, int *argc, char ***argv)
     }
 
     if (cnt) {
-	av = oldof(0, char *, cnt, 0);
+	int oldcnt = argc;
+	argc = oldcnt + cnt;
+	av = oldof(*argv, char *, argc, 0);
 	for (i = 0; i < cnt; i++)
-	    av[i] = strdup(args[i]);
+	    av[oldcnt+i] = strdup(args[i]);
 	*argv = av;
     }
-    *argc = cnt;
+    return argc;
 }
 
 /* resolve:
@@ -228,6 +236,8 @@ static void scanArgs(int argc, char **argv)
     options.cmdName = argv[0];
     options.outFile = 0;
     options.useFile = 0;
+    options.argv = 0;
+    options.argc = 0;
     error_info.id = options.cmdName;
 
     while ((c = getopt(argc, argv, ":?Vcia:f:o:")) != -1) {
@@ -243,7 +253,7 @@ static void scanArgs(int argc, char **argv)
 	    options.compflags |= INDUCE;
 	    break;
 	case 'a':
-	    parseArgs(optarg, &options.argc, &options.argv);
+	    options.argc = parseArgs(optarg, options.argc, &options.argv);
 	    break;
 	case 'o':
 	    outname = optarg;
