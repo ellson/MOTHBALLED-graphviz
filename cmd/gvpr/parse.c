@@ -29,6 +29,7 @@
 #include <ctype.h>
 
 static int lineno = 1;		/* current line number */
+static int col0 = 1;		/* true if char ptr is at column 0 */
 static int startLine = 1;	/* set to start line of bracketd content */
 static int kwLine = 1;		/* set to line of keyword */
 
@@ -51,6 +52,23 @@ static char *caseStr(case_t cs)
     return case_str[(int) cs];
 }
 
+/* eol:
+ * Eat characters until eol.
+ */
+static int eol (Sfio_t * str, Sfio_t * ostr)
+{
+    int c;
+    while ((c = sfgetc(str)) != '\n') {
+	if (c < 0)
+	    return c;
+    }
+    lineno++;
+    col0 = 1;
+    if (ostr)
+	sfputc(ostr, c);
+    return c;
+}
+
 /* readc:
  * return character from input stream
  * while keeping track of line number.
@@ -66,6 +84,13 @@ static int readc(Sfio_t * str, Sfio_t * ostr)
     switch (c = sfgetc(str)) {
     case '\n':
 	lineno++;
+        col0 = 1;
+	break;
+    case '#':
+	if (col0) { /* shell comment */
+	    c = eol (str, ostr);
+	}
+	else col0 = 0;
 	break;
     case '/':
 	cc = sfgetc(str);
@@ -92,6 +117,7 @@ static int readc(Sfio_t * str, Sfio_t * ostr)
 			sfungetc(str, cc);
 			break;
 		    case '/':
+			col0 = 0;
 			return ' ';
 			break;
 		    }
@@ -99,19 +125,16 @@ static int readc(Sfio_t * str, Sfio_t * ostr)
 	    }
 	    break;
 	case '/':		/* in C++ comment */
-	    while ((c = sfgetc(str)) != '\n') {
-		if (c < 0)
-		    return c;
-	    }
-	    lineno++;
-	    if (ostr)
-		sfputc(ostr, c);
+	    c = eol (str, ostr);
 	    break;
 	default:		/* not a comment  */
 	    if (cc >= '\0')
 		sfungetc(str, cc);
 	    break;
 	}
+	break;
+    default:
+        col0 = 0;
 	break;
     }
     return c;
