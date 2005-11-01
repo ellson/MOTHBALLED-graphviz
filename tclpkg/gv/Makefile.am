@@ -14,7 +14,7 @@ BASESOURCES = gv.cpp
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
 
 pkgcsharpdir = $(pkglibdir)/csharp
-CSHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs
+CSHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs SWIGTYPE_p_p_void.cs
 libgv_csharp_la_SOURCES = $(BASESOURCES) gv_csharp.cpp $(CSHARP_hdr)
 libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@ 
 libgv_csharp_la_LDFLAGS = -module
@@ -40,7 +40,7 @@ gv_guile.cpp $(GUILE_hdr): gv.i
 #	$(SWIG) -c++ -io -o gv_io.cpp gv.i
 
 pkgjavadir = $(pkglibdir)/java
-JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java
+JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java SWIGTYPE_p_FILE.java SWIGTYPE_p_p_void.java
 libgv_java_la_SOURCES = $(BASESOURCES) gv_java.cpp
 libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
 libgv_java_la_LDFLAGS = -module
