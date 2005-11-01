@@ -163,7 +163,7 @@ Guile extensions for %{name}.
 %if %{_IO}
 %package io
 Group:		Applications/Multimedia
-Summary:	Java extension for %{name}
+Summary:	Io extension for %{name}
 Requires:	%{name} = %{version}-%{release}
 
 %description io
@@ -197,7 +197,7 @@ Java extensions for %{name}.
 %if %{LUA}
 %package lua
 Group:		Applications/Multimedia
-Summary:	Java extension for %{name}
+Summary:	Lua extension for %{name}
 Requires:	%{name} = %{version}-%{release}
 
 %description lua
