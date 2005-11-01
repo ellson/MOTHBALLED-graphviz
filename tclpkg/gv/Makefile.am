@@ -172,7 +172,7 @@ gv_ocaml.man gv_perl.man gv_php.man gv_python.man gv_ruby.man \
 gv_tcl.man: gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
 	tclsh ./gv_doc_writer.tcl
 
-install-exec-hook:
+install-data-hook:
 	(cd $(DESTDIR)$(pkgluadir);    rm -f gv.so;  $(LN_S) libgv_lua.so gv.so;)
 	(cd $(DESTDIR)$(pkgperldir);   rm -f gv.so;  $(LN_S) libgv_perl.so gv.so;)
 	(cd $(DESTDIR)$(pkgpythondir); rm -f _gv.so; $(LN_S) libgv_python.so _gv.so;)
