@@ -194,7 +194,7 @@ is a single scope. Array declarations have the form:
 .ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
-\fI type array \fP[\fI var \fP]
+\fI type array \fB[\fP var \fB]\fR
 .fi
 .RE
 .DT
@@ -208,19 +208,20 @@ Executable statements can be one of the following:
 .ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
-{\fR [\fP\fI statement ... \fP\fR] \fP}
-\fIexpression\fP	\fR// commonly\fP\fI var = expression\fP
-if(\fI expression \fP)\fI statement \fP\fR[ \fPelse\fI statement \fP\fR]\fP
-for(\fI expression \fP;\fI expression \fP;\fI expression \fP)\fI statement\fP
-for(\fI array \fP[\fI var \fP])\fI statement\fP
-while(\fI expression \fP)\fI statement\fP
-switch(\fI expression \fP)\fI case statements\fP
-break [\fI expression \fP]
-continue [\fI expression \fP]
-return [\fI expression \fP]
+\fB{\fR [\fI statement ... \fR] \fB}\fR
+\fIexpression\fP	\fR// commonly\fP\fI var \fB=\fP expression\fR
+\fBif(\fI expression \fP)\fI statement \fR[ \fBelse\fI statement \fR]
+\fBfor(\fI expression \fP;\fI expression \fP;\fI expression \fP)\fI statement\fP
+\fBfor(\fI array \fP[\fI var \fP])\fI statement\fP
+\fBwhile(\fI expression \fP)\fI statement\fP
+\fBswitch(\fI expression \fP)\fI case statements\fP
+\fBbreak [\fI expression \fP]
+\fBcontinue [\fI expression \fP]
+\fBreturn [\fI expression \fP]\fR
 .fi
 .RE
 .ST
+Items in brackets are optional.
 .PP
 In the second form of the \fBfor\fP statement, the variable \fIvar\fP
 is set to each value used as an index in the specified array and then
