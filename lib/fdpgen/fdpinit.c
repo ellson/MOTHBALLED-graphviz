@@ -191,5 +191,4 @@ void fdp_cleanup(graph_t * g)
 	fdp_cleanup_node(n);
     }
     fdp_cleanup_graph(g);
-    agclose(g);
 }
