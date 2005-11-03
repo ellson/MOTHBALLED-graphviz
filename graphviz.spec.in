@@ -96,7 +96,8 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	zlib-devel libpng-devel libjpeg-devel expat-devel freetype-devel >= 2
 BuildRequires:	/bin/ksh bison m4 flex tk tcl >= 8.3 swig
 BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
-%{?fc5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl-devel} 
+%{?fc5:BuildRequires: fontconfig-devel libtool-ltdl-devel}
+%{?fc5:BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
 %{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl-devel} 
 %{?fc3:BuildRequires: fontconfig-devel xorg-x11-devel} 
 %{?fc2:BuildRequires: fontconfig-devel XFree86-devel}
