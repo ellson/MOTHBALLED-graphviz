@@ -443,18 +443,22 @@ AC_ARG_ENABLE(perl,
   [AC_HELP_STRING([--disable-perl], [don't support perl language bindings])])
 if test "x$enable_perl" != "xno"; then
 AC_CHECK_PROG(PERL,perl,perl)
+if test -n "$PERL" && $PERL -e 'exit !($] <= 5.004)' > /dev/null 2>&1 ; then
+	PERL=
+	AC_MSG_WARN([perl is too old. The PERL packages will not be built])
+fi
 if test "x$PERL" != "x"; then
   PERL_ARCHLIB=`$PERL -e 'use Config; print $Config{archlib};'`
   PERL_INCLUDES=-I$PERL_ARCHLIB/CORE
   PERL_LIBS="-L$PERL_ARCHLIB/CORE -lperl"
+  save_CPPFLAGS=$CPPFLAGS
+  CPPFLAGS="$CPPFLAGS $PERL_INCLUDES"
+  AC_CHECK_HEADER(EXTERN.h,,[
+    AC_MSG_WARN([Unable to find header EXTERN.h. The PERL packages will not be built])
+    PERL=
+    ])
+  CPPFLAGS=$save_CPPFLAGS
 fi
-save_CPPFLAGS=$CPPFLAGS
-CPPFLAGS="$CPPFLAGS $PERL_INCLUDES"
-AC_CHECK_HEADER(EXTERN.h,,[
-  AC_MSG_WARN([Unable to find header EXTERN.h. The PERL packages will not be built])
-  PERL=
-  ])
-CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(PERL_INCLUDES)
 AC_SUBST(PERL_LIBS)
 fi
