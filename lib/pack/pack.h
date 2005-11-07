@@ -19,11 +19,12 @@
 #ifndef _PACK_H
 #define _PACK_H 1
 
-#include "render.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "types.h"
+#include "graph.h"
 
 /* Type indicating granularity and method 
  *  l_undef  - unspecified
