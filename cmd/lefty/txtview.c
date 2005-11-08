@@ -441,6 +441,7 @@ static void rebuildlist (txtnode_t *pnode) {
     txtnode_t tmpnode;
     int on, nn, i, j, cmpval;
 
+    cmpval = 0;
     olist = pnode->u.f.t.list;
     on = pnode->u.f.t.n;
     pnode->u.f.t.n = ((Ttable_t *) pnode->vo)->n;
