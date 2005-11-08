@@ -342,6 +342,7 @@ Tobj Tcopy (Tobj fmvo) {
     Tobj tovo;
     long m;
 
+    tovo = NULL;
     switch (M_TYPEOF (fmvo)) {
     case T_INTEGER: case T_REAL: case T_STRING: case T_CODE:
         tovo = fmvo;
@@ -395,6 +396,9 @@ static void insert (Ttable_t *tp, Tobj ko, char *sk, Tobj vo) {
     long ik, i, ind, nln;
     double rk;
 
+    rk = 0.0;
+    kvlp = NULL;
+    ind = ik = 0;
     switch ((kt = M_TYPEOF (ko))) {
     case T_INTEGER:
         ik = ((Tinteger_t *) ko)->i;
@@ -544,6 +548,8 @@ static void copytable (Ttable_t *tp, long ln) {
     lp = Mallocate ((long) (ln * T_KVLISTPTRSIZE));
     oln = tp->ln, tp->ln = ln;
     olp = tp->lp, tp->lp = lp;
+    kvlp = NULL;
+    ind = 0;
     for (i = 0; i < ln; i++)
         lp[i] = NULL;
     for (i = 0; i < oln; i++) {

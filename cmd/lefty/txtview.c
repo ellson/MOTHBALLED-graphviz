@@ -267,6 +267,8 @@ int TXTask (int argc, lvar_t *argv) {
     char *sp, *ap;
     int mode;
 
+    mode = 0;
+    ap = NULL;
     if (argc < 2)
         mode = G_QWSTRING;
     else {
