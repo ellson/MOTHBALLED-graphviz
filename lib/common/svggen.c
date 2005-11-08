@@ -142,6 +142,7 @@ static gzFile Zfile;
 static void svg_fputs(char *s)
 {
     int len;
+    size_t cnt;
 
     len = strlen(s);
     switch (Output_lang) {
@@ -154,7 +155,7 @@ static void svg_fputs(char *s)
 	exit(1);
 #endif
     case SVG:
-	fwrite(s, sizeof(char), (unsigned) len, Output_file);
+	cnt = fwrite(s, sizeof(char), (unsigned) len, Output_file);
 	break;
     }
 }

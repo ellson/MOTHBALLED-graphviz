@@ -50,6 +50,7 @@ static ps_image_t *user_init(char *str)
     int saw_bb, must_inline;
     int lx, ly, ux, uy;
     ps_image_t *val;
+    size_t cnt;
 
     if (!EPSF_contents)
 	EPSF_contents = dtopen(&ImageDictDisc, Dtoset);
@@ -85,7 +86,7 @@ static ps_image_t *user_init(char *str)
 	fstat(fileno(fp), &statbuf);
 	contents = val->contents = N_GNEW(statbuf.st_size + 1, char);
 	fseek(fp, 0, SEEK_SET);
-	fread(contents, statbuf.st_size, 1, fp);
+	cnt = fread(contents, statbuf.st_size, 1, fp);
 	contents[statbuf.st_size] = '\0';
 	fclose(fp);
 	dtinsert(EPSF_contents, val);
