@@ -245,6 +245,7 @@ static int pexp6 (void) {
 static int pexp7 (void) {
     int ei0, ei1, ei2;
 
+    ei0 = 0;
     switch (Ltok) {
     case L_FUNCTION:
         Lgtok ();
@@ -308,6 +309,7 @@ static int pcons (void) {
     int ci;
     double d;
 
+    ci = 0;
     switch (Ltok) {
     case L_NUMBER:
         d = atof (Lstrtok);
