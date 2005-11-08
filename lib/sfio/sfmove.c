@@ -41,7 +41,7 @@ reg int rc;			/* record separator */
     reg int direct;
     Sfoff_t n_move;
     uchar *rbuf = NIL(uchar *);
-    ssize_t cnt, rsize = 0;
+    ssize_t rsize = 0;
 
     SFMTXSTART(fr, (Sfoff_t) 0);
     if (fw)
@@ -186,7 +186,7 @@ reg int rc;			/* record separator */
 	    r = cp - next;
 	    if (fr->mode & SF_PKRD) {	/* advance the read point by proper amount */
 		fr->mode &= ~SF_PKRD;
-		cnt = read(fr->file, (Void_t *) next, r);
+		(void) read(fr->file, (Void_t *) next, r);
 		fr->here += r;
 		if (!direct)
 		    fr->endb = cp;
