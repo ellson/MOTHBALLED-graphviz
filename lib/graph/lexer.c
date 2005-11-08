@@ -446,7 +446,6 @@ char *aglasterr()
     long endpos;
     long len;
     char *buf;
-    size_t cnt;
 
     if (!agerrout)
 	return 0;
@@ -455,7 +454,7 @@ char *aglasterr()
     len = endpos - aglast;
     buf = malloc(len + 1);
     fseek(agerrout, aglast, SEEK_SET);
-    cnt = fread(buf, sizeof(char), len, agerrout);
+    fread(buf, sizeof(char), len, agerrout);
     buf[len] = '\0';
     fseek(agerrout, endpos, SEEK_SET);
 
