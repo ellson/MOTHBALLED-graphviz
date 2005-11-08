@@ -103,7 +103,7 @@ extern char *sys_errlist[];
 #include "SFDecls.h"
 
 #if !defined (SVR4) && !defined (SYSV) && !defined (USG)
-extern char *getwd ();
+extern char *getwd (char *);
 #endif /* !defined (SVR4) && !defined (SYSV) && !defined (USG) */
 
 #ifdef HAVE_STDLIB_H
