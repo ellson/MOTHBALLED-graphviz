@@ -196,6 +196,7 @@ void GFXlabelcb (Gevent_t *evp) {
     char s[2];
     long fm;
 
+    fn = NULL;
     wo = Tfindi (rootwo, evp->wi);
     switch (evp->type) {
     case G_MOUSE:
@@ -259,6 +260,9 @@ void GFXevent (Gevent_t *evp) {
     long fm;
     int ni;
 
+    pp.x = pp.y = 0;
+    pvo = NULL;
+    fn = NULL;
     ni = Gwidgets[evp->wi].udata;
     np = &gfxnodes[ni];
     wo = Tfindi (rootwo, evp->wi);
@@ -502,6 +506,8 @@ void GFXarrayresizecb (int wi, Gawdata_t *dp) {
     Tinss (to, "size", (so = Ttable (2)));
     Tinss (so, "x", Treal ((double) dp->sx));
     Tinss (so, "y", Treal ((double) dp->sy));
+
+    lrtno = NULL;
     if ((co = Pfcall (fo, to)))
         lrtno = Eunit (co);
     Mpopmark (fm);
@@ -830,6 +836,8 @@ int GFXgetgfxattr (int argc, lvar_t *argv) {
         !T_ISTABLE (argv[1].o)
     )
         return L_FAILURE;
+
+    s = NULL;
     for (Tgetfirst (argv[1].o, &tkvi); tkvi.kvp; Tgetnext (&tkvi)) {
         if (!T_ISSTRING (tkvi.kvp->vo))
             continue;
@@ -1756,6 +1764,7 @@ static void hsv2rgb (float h, float s, float v, Gcolor_t *cp) {
     h = max (min (h, 1.0), 0.0);
     s = max (min (s, 1.0), 0.0);
     v = max (min (v, 1.0), 0.0);
+    r = g = b = 0.0;
 
     if (s == 0.0)
         r = g = b = v;

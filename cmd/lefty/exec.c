@@ -680,6 +680,7 @@ static Tobj getval (Tobj co, int ci) {
     int ct, vt;
     int vi, ni, nn;
 
+    cvo = NULL;
     if ((ct = TCgettype (co, ci)) == C_LVAR) {
         nn = (int) TCgetinteger (co, (ni = TCgetnext (co, TCgetfp (co, ci))));
         cto = cvo = lvarp[flvari + nn].o;
@@ -722,6 +723,9 @@ static int getvar (Tobj co, int ci, tnk_t *tnkp) {
     long m;
     int vi, ovi, nn, ni;
 
+    nn = 0;
+    vt = 0;
+    cko = cto = NULL;
     if ((ct = TCgettype (co, ci)) == C_LVAR) {
         nn = (int) TCgetinteger (co, (ni = TCgetnext (co, TCgetfp (co, ci))));
         cvo = cto = lvarp[flvari + nn].o;

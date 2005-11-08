@@ -309,6 +309,8 @@ void D2Lwritegraph (int ioi, Tobj graph, int flag) {
         writeattr (ioi, to, buf);
         IOwriteline (ioi, "\t]");
     }
+
+    n = 0;
     if ((nodes = Tfinds (graph, "nodes"))) {
         if (!(no = Tfinds (graph, "maxnid")) || !T_ISNUMBER (no))
             n = 100 * Tgettablen (nodes);
