@@ -37,6 +37,7 @@ int GVcreatewidget (
     WVU->closing = FALSE;
     s = "LEFTY";
     ps.x = ps.y = MINVWSIZE;
+    po.x = po.y = 0;
     haveorigin = FALSE;
     RESETARGS;
     for (ai = 0; ai < attrn; ai++) {

@@ -560,6 +560,7 @@ int GPreadbitmap (Gwidget_t *widget, Gbitmap_t *bitmap, FILE *fp) {
     char c;
     int bufn, bufi, step, x, y, k;
 
+    s.x = s.y = 0;
     if (!widget) {
         Gerr (POS, G_ERRNOPARENTWIDGET);
         return -1;

@@ -951,6 +951,7 @@ int GCreadbitmap (Gwidget_t *widget, Gbitmap_t *bitmap, FILE *fp) {
     char c;
     int cmaxdiff, colori, colorn, bufn, bufi, step, x, y, k;
 
+    s.x = s.y = 0;
     if (!widget) {
         Gerr (POS, G_ERRNOPARENTWIDGET);
         return -1;
@@ -1300,6 +1301,7 @@ static int scalebitmap (
     y = 0;
     yr = o2n.y;
     yl = 0;
+    y2 = yr2 = yl2 = 0;
     for (yp = 0; yp < nsize.y; yp++) {
         x = 0;
         xr = o2n.x;

@@ -193,6 +193,7 @@ int GSgetwidgetattr (Gwidget_t *widget, int attrn, Gwattr_t *attrp) {
     Gwidget_t *child;
     int ai, wi;
 
+    child = NULL;
     for (ai = 0; ai < attrn; ai++) {
         RESETARGS;
         switch (attrp[ai].id) {
