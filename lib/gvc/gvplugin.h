@@ -45,7 +45,13 @@ extern "C" {
 #define APIS ELEM(render) ELEM(layout) ELEM(textlayout) ELEM(device) ELEM(usershape)
 
 #define ELEM(x) API_##x,
-    typedef enum { APIS } api_t; /* API_render, API_layout, ... */
+    typedef enum { APIS DUMMY_ELEM=0 } api_t; /* API_render, API_layout, ... */
+    			/* Stupid but true:... The sole purpose of "DUMMY_ELEM=0"
+			 * is to avoid a "," after the last element of the enum
+			 * because some compilers when using "-pedantic" complain
+			 * about the dangling "," !  Setting it to 0 makes sure
+			 * that the enumeration does not define an extra value.
+			 */
 #undef ELEM
 
     typedef struct {
