@@ -51,6 +51,16 @@ extern "C" {
 			 * because some compilers when using "-pedantic" complain
 			 * about the dangling "," !  Setting it to 0 makes sure
 			 * that the enumeration does not define an extra value.
+			 * (It does however define DUMMY_ELEM as an enumeration
+			 * symbol, but its value duplicates that of the first
+			 * symbol in the enumeration - in this case "render". )
+			 */
+
+    			/* One could wonder why trailing "," in:
+			 * 	int nums[]={1,2,3,};
+			 * is OK, but in:
+			 * 	typedef enum {a,b,c,} abc_t; 
+			 * is not!!!
 			 */
 #undef ELEM
 
