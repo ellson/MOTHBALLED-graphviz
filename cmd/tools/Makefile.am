@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/neatogen \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/common \
-	-I$(top_srcdir)/lib/ingraphs @EXPAT_INCLUDES@ -DBUILTINS
+	-I$(top_srcdir)/lib/ingraphs @EXPAT_INCLUDES@
 
 pdfdir = $(pkgdatadir)/doc/pdf
 

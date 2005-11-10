@@ -4,8 +4,7 @@
 # Note: graphviz requires gd with gif support (and other fixes), hence use
 # internal one for now.
 
-# select packages according to dist (set in .rpmmacros on each build host)
-
+# Define a default set incase none of the conditionals apply
 %define CSHARP  0
 %define GUILE   0
 %define _IO     0
@@ -18,6 +17,10 @@
 %define RUBY    0
 %define TCL     1
 
+# Select packages according to dist (set in .rpmmacros on each build host)
+
+# These are all single line conditional blocks because older versions
+# of rpm can't handle multiline blocks/
 %{?rh7: %{expand: %%define PERL    1}}
 %{?rh7: %{expand: %%define TCL     1}}
 

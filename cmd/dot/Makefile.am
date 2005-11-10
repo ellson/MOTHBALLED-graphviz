@@ -11,8 +11,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/graph \
-	-I$(top_srcdir)/lib/cdt \
-	-DBUILTINS
+	-I$(top_srcdir)/lib/cdt
 
 if ENABLE_STATIC
 bin_PROGRAMS = dot dot_static
