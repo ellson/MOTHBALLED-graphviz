@@ -69,6 +69,20 @@ extern void qsort ();
 
 #include "SFDecls.h"
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+#ifdef HAVE_INTPTR_T
+#define INT2PTR(t,v) ((t)(intptr_t)(v))
+#define PTR2INT(v) ((Sflong_t)(intptr_t)(v))
+#else
+#define INT2PTR(t,v) ((t)(v))
+#define PTR2INT(v) ((Sflong_t)(v))
+#endif
+
 typedef struct {
     char *name;
     char *dir;
@@ -623,10 +637,10 @@ void SFbuttonPressList (Widget w, XtPointer cl, XEvent *ev, Boolean *b) {
 
 void SFbuttonReleaseList (Widget w, XtPointer cl, XEvent *ev, Boolean *b) {
     SFDir *dir;
-    int n;
+    intptr_t n;
     XButtonReleasedEvent *event;
 
-    n = (int) cl;
+    n = (intptr_t) cl;
     event = (XButtonReleasedEvent *) ev;
     SFbuttonPressed = 0;
     if (SFcurrentInvert[n] != -1) {

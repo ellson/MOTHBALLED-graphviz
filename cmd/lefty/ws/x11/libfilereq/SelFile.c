@@ -110,6 +110,20 @@ extern char *getwd (char *);
 # include <stdlib.h>
 #endif
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+#endif
+#ifdef HAVE_INTPTR_T
+#define INT2PTR(t,v) ((t)(intptr_t)(v))
+#define PTR2INT(v) ((Sflong_t)(intptr_t)(v))
+#else
+#define INT2PTR(t,v) ((t)(v))
+#define PTR2INT(v) ((Sflong_t)(v))
+#endif
+
 int SFstatus = SEL_FILE_NULL;
 
 char SFstartDir[MAXPATHLEN], SFcurrentPath[MAXPATHLEN];
@@ -170,7 +184,7 @@ static void SFexposeList (Widget w, XtPointer n, XEvent *event, Boolean *cont) {
         return;
     }
 
-    SFdrawList ((int) n, SF_DO_NOT_SCROLL);
+    SFdrawList ((intptr_t) n, SF_DO_NOT_SCROLL);
 }
 
 static void SFmodVerifyCallback (
@@ -229,7 +243,7 @@ static void SFcreateWidgets (
     Widget toplevel, char *prompt, char *ok, char *cancel
 ) {
     Cardinal i;
-    int      n;
+    intptr_t n;
     int      listWidth, listHeight;
     int      listSpacing = 10;
     int      scrollThickness = 15;

@@ -59,6 +59,14 @@
 #endif
 #define ABS(x) (((x) < 0) ? (-(x)) : (x))
 
+#ifdef HAVE_INTPTR_T
+#define INT2PTR(t,v) ((t)(intptr_t)(v))
+#define PTR2INT(v) ((Sflong_t)(intptr_t)(v))
+#else
+#define INT2PTR(t,v) ((t)(v))
+#define PTR2INT(v) ((Sflong_t)(v))
+#endif
+
 typedef struct {
     char *fontname;
 } TextData, *textPtr;
@@ -373,9 +381,9 @@ static unsigned long SFscrollTimerInterval (void) {
 static void SFscrollTimer (XtPointer cd, XtIntervalId *id) {
     SFDir *dir;
     int   save;
-    int   n;
+    intptr_t   n;
 
-    n = (int) cd;
+    n = (intptr_t) cd;
 
     dir = &(SFdirs[SFdirPtr + n]);
     save = dir->vOrigin;
@@ -383,14 +391,14 @@ static void SFscrollTimer (XtPointer cd, XtIntervalId *id) {
         if (dir->vOrigin > 0) {
             SFvSliderMovedCallback (
                 selFileVScrolls[n],
-                (XtPointer) n, (XtPointer) (dir->vOrigin - 1)
+                (XtPointer) n, (XtPointer) ((intptr_t)(dir->vOrigin) - 1)
             );
         }
     } else if (SFcurrentListY > SFupperY) {
         if (dir->vOrigin < dir->nEntries - SFlistSize) {
             SFvSliderMovedCallback (
                 selFileVScrolls[n], (XtPointer) n,
-                (XtPointer) (dir->vOrigin + 1)
+                (XtPointer) ((intptr_t)(dir->vOrigin) + 1)
             );
         }
     }
@@ -412,7 +420,7 @@ static void SFscrollTimer (XtPointer cd, XtIntervalId *id) {
     }
 }
 
-static int SFnewInvertEntry (int n, XMotionEvent *event) {
+static int SFnewInvertEntry (intptr_t n, XMotionEvent *event) {
     int        x, y;
     int        new;
     static int SFscrollTimerAdded = 0;
@@ -451,10 +459,11 @@ static int SFnewInvertEntry (int n, XMotionEvent *event) {
 }
 
 void SFenterList (Widget w, XtPointer cl, XEvent *ev, Boolean *b) {
-    int n, new;
+    int new;
+    intptr_t n;
     XEnterWindowEvent *event;
 
-    n = (int) cl;
+    n = (intptr_t) cl;
     event = (XEnterWindowEvent *) ev;
     /* sanity */
     if (SFcurrentInvert[n] != -1) {
@@ -469,9 +478,9 @@ void SFenterList (Widget w, XtPointer cl, XEvent *ev, Boolean *b) {
 }
 
 void SFleaveList (Widget w, XtPointer cl, XEvent *ev, Boolean *b) {
-    int n;
+    intptr_t n;
 
-    n = (int) cl;
+    n = (intptr_t) cl;
     if (SFcurrentInvert[n] != -1) {
         SFinvertEntry (n);
         SFcurrentInvert[n] = -1;
@@ -479,10 +488,11 @@ void SFleaveList (Widget w, XtPointer cl, XEvent *ev, Boolean *b) {
 }
 
 void SFmotionList (Widget w, XtPointer cl, XEvent *ev, Boolean *b) {
-    int n, new;
+    int new;
+    intptr_t n;
     XMotionEvent *event;
 
-    n = (int) cl;
+    n = (intptr_t) cl;
     event = (XMotionEvent *) ev;
     new = SFnewInvertEntry (n, event);
     if (new != SFcurrentInvert[n]) {
@@ -497,22 +507,22 @@ void SFmotionList (Widget w, XtPointer cl, XEvent *ev, Boolean *b) {
 }
 
 void SFvFloatSliderMovedCallback (Widget w, XtPointer cl, XtPointer cd) {
-    int n, new;
+    intptr_t n, new;
     float *fnew;
 
-    n = (int) cl;
+    n = (intptr_t) cl;
     fnew = (float *) cd;
     new = (*fnew) * SFdirs[SFdirPtr + n].nEntries;
     SFvSliderMovedCallback (w, (XtPointer) n, (XtPointer) new);
 }
 
 void SFvSliderMovedCallback (Widget w, XtPointer cl, XtPointer cd) {
-    int    n, new, old;
+    intptr_t    n, new, old;
     Window win;
     SFDir  *dir;
 
-    n = (int) cl;
-    new = (int) cd;
+    n = (intptr_t) cl;
+    new = (intptr_t) cd;
     dir = &(SFdirs[SFdirPtr + n]);
     old = dir->vOrigin;
     dir->vOrigin = new;
@@ -562,10 +572,10 @@ void SFvSliderMovedCallback (Widget w, XtPointer cl, XtPointer cd) {
 
 void SFvAreaSelectedCallback (Widget w, XtPointer cl, XtPointer cd) {
     SFDir *dir;
-    int   n, pnew, new;
+    intptr_t   n, pnew, new;
 
-    n = (int) cl;
-    pnew = (int) cd;
+    n = (intptr_t) cl;
+    pnew = (intptr_t) cd;
     dir = &(SFdirs[SFdirPtr + n]);
     new = dir->vOrigin + (((double) pnew) / SFvScrollHeight) * dir->nEntries;
     if (new > dir->nEntries - SFlistSize) {
@@ -592,9 +602,9 @@ void SFhSliderMovedCallback (Widget w, XtPointer cl, XtPointer cd) {
     SFDir *dir;
     int   save;
     float *new;
-    int   n;
+    intptr_t   n;
 
-    n = (int) cl;
+    n = (intptr_t) cl;
     new = (float *) cd;
     dir = &(SFdirs[SFdirPtr + n]);
     save = dir->hOrigin;
@@ -607,10 +617,10 @@ void SFhSliderMovedCallback (Widget w, XtPointer cl, XtPointer cd) {
 
 void SFhAreaSelectedCallback (Widget w, XtPointer cl, XtPointer cd) {
     SFDir *dir;
-    int   n, pnew, new;
+    intptr_t   n, pnew, new;
 
-    n = (int) cl;
-    pnew = (int) cd;
+    n = (intptr_t) cl;
+    pnew = (intptr_t) cd;
     dir = &(SFdirs[SFdirPtr + n]);
     new = dir->hOrigin + (((double) pnew) / SFhScrollWidth) * dir->nChars;
     if (new > dir->nChars - SFcharsPerEntry) {
@@ -663,10 +673,10 @@ void SFpathSliderMovedCallback (Widget w, XtPointer cl, XtPointer cd) {
 }
 
 void SFpathAreaSelectedCallback (Widget w, XtPointer cl, XtPointer cd) {
-    int   pnew, new;
+    intptr_t   pnew, new;
     float f;
 
-    pnew = (int) cd;
+    pnew = (intptr_t) cd;
     new = SFdirPtr + (((double) pnew) / SFpathScrollWidth) * SFdirEnd;
     if (new > SFdirEnd - 3) {
         new = SFdirEnd - 3;
