@@ -17,7 +17,8 @@
 #include <string.h>
 #include "gvc.h"
 
-GVC_t *gvc;
+static GVC_t *gvc;
+static char *empty_string = "";
 
 Agraph_t *graph(char *name)
 {
@@ -118,7 +119,7 @@ char *getv(Agraph_t *g, Agsym_t *a)
 	return NULL;
     val = agxget(g, a->index);
     if (!val)
-	return "";
+	return empty_string;
     return val;
 }
 char *getv(Agraph_t *g, char *gne, Agsym_t *a)
@@ -138,7 +139,7 @@ char *getv(Agraph_t *g, char *gne, Agsym_t *a)
     else
         return NULL;
     if (!val)
-	return "";
+	return empty_string;
     return val;
 }
 char *getv(Agraph_t *g, char *attr)
@@ -150,10 +151,10 @@ char *getv(Agraph_t *g, char *attr)
 	return NULL;
     a = agfindattr(g->root, attr);
     if (!a)
-	return "";
+	return empty_string;
     val = agxget(g, a->index);
     if (!val)
-	return "";
+	return empty_string;
     return val;
 }
 char *getv(Agraph_t *g, char *gne, char *attr)
@@ -168,25 +169,25 @@ char *getv(Agraph_t *g, char *gne, char *attr)
     if (strncmp(gne,"graph",len) == 0) {
         a = agfindattr(g->root, attr);
         if (!a)
-	    return "";
+	    return empty_string;
         val = agxget(g, a->index);
     }
     else if (strncmp(gne,"node",len) == 0) {
         a = agfindattr(g->proto->n, attr);
         if (!a)
-	    return "";
+	    return empty_string;
         val = agxget(g->proto->n, a->index);
     }
     else if (strncmp(gne,"edge",len) == 0) {
         a = agfindattr(g->proto->e, attr);
         if (!a)
-	    return "";
+	    return empty_string;
         val = agxget(g->proto->e, a->index);
     }
     else
         return NULL;
     if (!val)
-	return "";
+	return empty_string;
     return val;
 }
 char *setv(Agraph_t *g, Agsym_t *a, char *val)
@@ -221,7 +222,7 @@ char *setv(Agraph_t *g, char *attr, char *val)
 	return NULL;
     a = agfindattr(g->root, attr);
     if (!a)
-        a = agraphattr(g->root, attr, "");
+        a = agraphattr(g->root, attr, empty_string);
     agxset(g, a->index, val);
     return val;
 }
@@ -236,19 +237,19 @@ char *setv(Agraph_t *g, char *gne, char *attr, char *val)
     if (strncmp(gne,"graph",len) == 0) {
         a = agfindattr(g->root, attr);
         if (!a)
-	    a = agraphattr(g->root, attr, "");
+	    a = agraphattr(g->root, attr, empty_string);
         agxset(g, a->index, val);
     }
     else if (strncmp(gne,"node",len) == 0) {
         a = agfindattr(g->proto->n, attr);
         if (!a)
-	    a = agnodeattr(g->root, attr, "");
+	    a = agnodeattr(g->root, attr, empty_string);
         agxset(g->proto->n, a->index, val);
     }
     else if (strncmp(gne,"edge",len) == 0) {
         a = agfindattr(g->proto->e, attr);
         if (!a)
-	    a = agedgeattr(g->root, attr, "");
+	    a = agedgeattr(g->root, attr, empty_string);
         agxset(g->proto->e, a->index, val);
     }
     else
@@ -264,7 +265,7 @@ char *getv(Agnode_t *n, Agsym_t *a)
 	return NULL;
     val = agxget(n, a->index);
     if (!val)
-	return "";
+	return empty_string;
     return val;
 }
 char *getv(Agnode_t *n, char *attr)
@@ -278,10 +279,10 @@ char *getv(Agnode_t *n, char *attr)
     g = n->graph->root;
     a = agfindattr(g->proto->n, attr);
     if (!a)
-	return "";
+	return empty_string;
     val = agxget(n, a->index);
     if (!val)
-	return "";
+	return empty_string;
     return val;
 }
 char *setv(Agnode_t *n, Agsym_t *a, char *val)
@@ -301,7 +302,7 @@ char *setv(Agnode_t *n, char *attr, char *val)
     g = n->graph->root;
     a = agfindattr(g->proto->n, attr);
     if (!a)
-        a = agnodeattr(g, attr, "");
+        a = agnodeattr(g, attr, empty_string);
     agxset(n, a->index, val);
     return val;
 }
@@ -314,7 +315,7 @@ char *getv(Agedge_t *e, Agsym_t *a)
 	return NULL;
     val =  agxget(e, a->index);
     if (!val)
-	return "";
+	return empty_string;
     return val;
 }
 char *getv(Agedge_t *e, char *attr)
@@ -328,10 +329,10 @@ char *getv(Agedge_t *e, char *attr)
     g = e->tail->graph;
     a = agfindattr(g->proto->e, attr);
     if (!a)
-	return "";
+	return empty_string;
     val =  agxget(e, a->index);
     if (!val)
-	return "";
+	return empty_string;
     return val;
 }
 char *setv(Agedge_t *e, Agsym_t *a, char *val)
@@ -351,7 +352,7 @@ char *setv(Agedge_t *e, char *attr, char *val)
     g = e->tail->graph;
     a = agfindattr(g->proto->e, attr);
     if (!a)
-        a = agnodeattr(g, attr, "");
+        a = agnodeattr(g, attr, empty_string);
     agxset(e, a->index, val);
     return val;
 }
