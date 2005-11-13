@@ -116,7 +116,8 @@ int IOopen (char *kind, char *name, char *mode, char *fmt) {
     int type;
     char *path, *command;
     char hname[200];
-    int sfd, slen;
+    int sfd;
+    unsigned int slen;
     int i;
     struct sockaddr_in sname;
 
