@@ -46,7 +46,7 @@ extern "C" {
     extern void makeSpline(edge_t *, Ppoly_t **, int, bool);
     extern void make_spring(graph_t *, Agnode_t *, Agnode_t *, double);
     extern void move_node(graph_t *, int, Agnode_t *);
-    extern int init_nop(graph_t * g);
+    extern int init_nop(graph_t * g, int);
     extern void neato_nodesize(node_t * n, bool flip);
     extern void neato_cleanup(graph_t * g);
     extern void neato_cleanup_edge(edge_t * e);

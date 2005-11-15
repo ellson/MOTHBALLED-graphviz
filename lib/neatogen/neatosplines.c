@@ -909,7 +909,6 @@ static void _neato_set_aspect(graph_t * g)
 	 * allocate it in the root graph and the connected components. 
 	 */
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    /* for (i = 0; (n = GD_neato_nlist(g)[i]); i++) { */
 	    ND_pos(n)[0] = ND_pos(n)[0] * xf;
 	    ND_pos(n)[1] = ND_pos(n)[1] * yf;
 	}
@@ -926,7 +925,7 @@ static void _neato_set_aspect(graph_t * g)
 }
 
 /* neato_set_aspect:
- * Sets aspect ration if necessary; real work done in _neato_set_aspect;
+ * Sets aspect ratio if necessary; real work done in _neato_set_aspect;
  * This also copies the internal layout coordinates (ND_pos) to the 
  * external ones (ND_coord_i).
  */

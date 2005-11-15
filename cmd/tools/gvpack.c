@@ -254,7 +254,7 @@ static void init_graph(Agraph_t * g, bool fill)
     }
     Ndim = GD_ndim(g) = 2;
     init_node_edge(g);
-    if (fill && init_nop(g)) {
+    if (fill && init_nop(g, 0)) {
 	exit(1);
     }
 }

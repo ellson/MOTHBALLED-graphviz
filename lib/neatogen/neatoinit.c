@@ -201,9 +201,11 @@ static int numFields(unsigned char *pos)
     do {
 	while (isspace(*pos))
 	    pos++;		/* skip white space */
-	cnt++;
-	while ((c = *pos) && !isspace(c) && (c != ';'))
-	    pos++;		/* skip token */
+	if (c = *pos) { /* skip token */
+	    cnt++;
+	    while ((c = *pos) && !isspace(c) && (c != ';'))
+		pos++;
+	}
     } while (isspace(c));
     return cnt;
 }
@@ -286,6 +288,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	    pp++;
 	    n--;
 	}
+ 	while (isspace(*pos)) pos++;
 	if (*pos == '\0')
 	    more = 0;
 	else
@@ -535,7 +538,7 @@ static void translate(Agraph_t * g, pos_edge posEdges)
  * is missing, init_nop will use a standard neato technique to
  * supply it.
  */
-int init_nop(Agraph_t * g)
+int init_nop(Agraph_t * g, int adjust)
 {
     int i;
     node_t *np;
@@ -554,7 +557,7 @@ int init_nop(Agraph_t * g)
     nop_init_graphs(g, G_lp, G_bb);
     posEdges = nop_init_edges(g);
 
-    if (Nop == 1)
+    if (adjust && Nop == 1)
 	adjustNodes(g);
 
     /* If G_bb not defined, define it */
@@ -568,19 +571,22 @@ int init_nop(Agraph_t * g)
     /* At this point, all bounding boxes should be correctly defined.
      * If necessary, we translate the graph to the origin.
      */
-    if (GD_bb(g).LL.x || GD_bb(g).LL.y)
+    if (adjust && (GD_bb(g).LL.x || GD_bb(g).LL.y))
 	translate(g, posEdges);
 
-    if (posEdges != AllEdges)
-	spline_edges0(g);
-    else {
+    if (!adjust) {
 	node_t *n;
-	neato_set_aspect(g);
 	State = GVSPLINES;
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    ND_coord_i(n).x = POINTS(ND_pos(n)[0]);
 	    ND_coord_i(n).y = POINTS(ND_pos(n)[1]);
 	}
+    }
+    else if (posEdges != AllEdges)
+	spline_edges0(g);
+    else {
+	State = GVSPLINES;
+	neato_set_aspect(g);
     }
     return 0;
 }
@@ -1155,7 +1161,7 @@ void neato_layout(Agraph_t * g)
     neato_init_graph(g);
     if (Nop) {
 	addZ (g);
-	if (init_nop(g)) {
+	if (init_nop(g, 1)) {
 	    agerr(AGPREV, "as required by the -n flag\n");
 	    exit(1);
 	}
