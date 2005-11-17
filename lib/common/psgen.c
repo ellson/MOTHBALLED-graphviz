@@ -166,6 +166,9 @@ fprintf(stderr,"offset = %d,%d\n", offset.x, offset.y);
 	    PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
     fprintf(Output_file, "%%%%PageOrientation: %s\n",
 	    (rot ? "Landscape" : "Portrait"));
+    if (Output_lang == PDF)
+	fprintf(Output_file, "<< /PageSize [%d %d] >> setpagedevice\n",
+	    PB.UR.x - PB.LL.x, PB.UR.y - PB.LL.y);
     if (Show_boxes == NULL)
 	fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    0, 0, sz.x, sz.y);
