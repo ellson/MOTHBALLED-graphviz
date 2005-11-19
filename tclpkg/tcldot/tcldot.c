@@ -614,8 +614,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
     Agedge_t **ep, *e;
     Agsym_t *a;
     char c, buf[256], **argv2;
-    int i, j, length, argc2, rc, chanmode;
-    Tcl_Channel chan;
+    int i, j, length, argc2, rc;
     unsigned long id;
     GVC_t *gvc = (GVC_t *) clientData;
 
@@ -1261,33 +1260,9 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	gvc->job->output_lang =
             gvrender_select(gvc->job, gvc->job->output_langname);
 
-	/* NEW CODE: Use new Tcl_Channel based API */
-	chanmode = 0;
-	chan = Tcl_GetChannel(interp,argv[2],&chanmode);
-	if (chan == NULL) {
-	    Tcl_AppendResult(interp, "Bad channel: \"", argv[2],
-				"\"", (char *)NULL);
-	    return TCL_ERROR;
-	}
-	if (!(chanmode & TCL_WRITABLE)) {
-	    Tcl_AppendResult(interp, "Bad channel: \"", argv[2],
-				"\". Not writeable.", (char *)NULL);
-	    return TCL_ERROR;
-	}
-	if (!strncmp(Tcl_ChannelName(Tcl_GetChannelType(chan)),"file",4)) {
-	    Tcl_AppendResult(interp, "Bad channel: \"", argv[2],
-				"\". Not a file.", (char *)NULL);
-	    return TCL_ERROR;
-	}
-	if (Tcl_GetChannelHandle(chan,TCL_WRITABLE,
-			(ClientData*) &(gvc->job->output_file)) != TCL_OK)
-	    return TCL_ERROR;
-
-	/* OLD UNIX only code
 	if (Tcl_GetOpenFile (interp, argv[2], 1, 1,
 	     (ClientData *) &(gvc->job->output_file)) != TCL_OK)
 	    return TCL_ERROR;
-	*/
 
 	/* make sure that layout is done  - unless canonical output */
 	if ((!GD_drawing(g) || argc > 4)
@@ -1647,11 +1622,7 @@ static int dotstring(ClientData clientData, Tcl_Interp * interp,
 #if defined(_BLD_tcldot) && defined(_DLL)
 __EXPORT__
 #endif
-#ifdef __WIN32__
-__declspec(dllexport) int Tcldot_Init(Tcl_Interp * interp)
-#else
 int Tcldot_Init(Tcl_Interp * interp)
-#endif
 {
     GVC_t *gvc;
 #ifndef DISABLE_CODEGENS
@@ -1712,11 +1683,7 @@ int Tcldot_Init(Tcl_Interp * interp)
     return TCL_OK;
 }
 
-#ifdef __WIN32__
-__declspec(dllexport) int Tcldot_SafeInit(Tcl_Interp * interp)
-#else
 int Tcldot_SafeInit(Tcl_Interp * interp)
-#endif
 {
     return Tcldot_Init(interp);
 }
