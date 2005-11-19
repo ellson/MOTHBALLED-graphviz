@@ -201,7 +201,7 @@ static int numFields(unsigned char *pos)
     do {
 	while (isspace(*pos))
 	    pos++;		/* skip white space */
-	if (c = *pos) { /* skip token */
+	if ((c = *pos)) { /* skip token */
 	    cnt++;
 	    while ((c = *pos) && !isspace(c) && (c != ';'))
 		pos++;
