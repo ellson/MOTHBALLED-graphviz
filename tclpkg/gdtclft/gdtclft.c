@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <tcl.h>
-#include <unistd.h>
 #include "gd.h"
 #include "tclhandle.h"
 
