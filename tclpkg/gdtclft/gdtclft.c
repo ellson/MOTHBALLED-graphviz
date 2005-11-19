@@ -498,10 +498,11 @@ tclGdCreateCmd(Tcl_Interp * interp, GdData * gdData,
     int w, h;
     unsigned long idx;
     gdImagePtr im = NULL;
-    FILE *filePtr;
+    FILE *filePtr = NULL;
     ClientData clientdata;
     char *cmd, buf[50];
-    int fileByName;
+    Tcl_Channel chan;
+    int fileByName, mode;
 
     cmd = Tcl_GetString(objv[1]);
     if (strcmp(cmd, "create") == 0) {
@@ -517,14 +518,17 @@ tclGdCreateCmd(Tcl_Interp * interp, GdData * gdData,
 	}
     } else {
 	fileByName = 0;		/* first try to get file from open channel */
-	if (Tcl_GetOpenFile
-	    (interp, Tcl_GetString(objv[2]), 0, 1,
-	     &clientdata) == TCL_OK) {
-	    filePtr = (FILE *) clientdata;
+	if ((chan = Tcl_GetChannel(interp,Tcl_GetString(objv[2]),&mode)) != NULL) {
+	    if (!strncmp(Tcl_ChannelName(Tcl_GetChannelType(chan)),"file",4)) {
+		Tcl_AppendResult(interp, "Bad channel: \"", Tcl_GetString(objv[2]),
+				"\". Not a file.", (char *)NULL);
+		return TCL_ERROR;
+	    }
+	    if (Tcl_GetChannelHandle(chan,TCL_READABLE, &clientdata) == TCL_OK) {
+		filePtr = (FILE *) clientdata;
+	    }
 	} else {
-	    /* Not a channel, or Tcl_GetOpenFile() not supported.
-	     *   See if we can open directly.
-	     */
+	    /* Not a channel.  See if we can open directly. */
 	    fileByName++;
 	    if ((filePtr = fopen(Tcl_GetString(objv[2]), "rb")) == NULL) {
 		return TCL_ERROR;
@@ -602,7 +606,8 @@ tclGdWriteCmd(Tcl_Interp * interp, GdData * gdData, int argc,
     FILE *filePtr;
     ClientData clientdata;
     char *cmd;
-    int fileByName;
+    Tcl_Channel chan;
+    int fileByName, mode;
 
     cmd = Tcl_GetString(objv[1]);
     /* Get the image pointer. */
@@ -611,9 +616,22 @@ tclGdWriteCmd(Tcl_Interp * interp, GdData * gdData, int argc,
 
     /* Get the file reference. */
     fileByName = 0;		/* first try to get file from open channel */
-    if (Tcl_GetOpenFile(interp, Tcl_GetString(objv[3]), 1, 1, &clientdata)
-	== TCL_OK) {
-	filePtr = (FILE *) clientdata;
+    if ((chan = Tcl_GetChannel(interp,Tcl_GetString(objv[2]),&mode)) != NULL) {
+	if (!strncmp(Tcl_ChannelName(Tcl_GetChannelType(chan)),"file",4)) {
+	    Tcl_AppendResult(interp, "Bad channel: \"", Tcl_GetString(objv[2]),
+				"\". Not a file.", (char *)NULL);
+	    return TCL_ERROR;
+	}
+	if (!(mode & TCL_WRITABLE)) {
+	    Tcl_AppendResult(interp, "Bad channel: \"", Tcl_GetString(objv[2]),
+				"\". Not writeable.", (char *)NULL);
+	    return TCL_ERROR;
+	}
+	if (Tcl_GetChannelHandle(chan,TCL_WRITABLE, &clientdata) == TCL_OK) {
+	    filePtr = (FILE *) clientdata;
+	} else {
+	    return TCL_ERROR;
+	}
     } else {
 	/* Not a channel, or Tcl_GetOpenFile() not supported.
 	 *   See if we can open directly.
@@ -1351,7 +1369,10 @@ tclGdTextCmd(Tcl_Interp * interp, GdData * gdData,
 int Gdtclft_Init(Tcl_Interp * interp)
 #else
 #ifdef __WIN32__
-EXPORT(int, Gdtclft_Init) (interp)
+__declspec(dllexport) int Gdtclft_Init(Tcl_Interp *interp)
+/*
+EXPORT(Gdtclft_Init) (interp)
+*/
 #else
 int Gdtclft_Init(Tcl_Interp * interp)
 #endif
@@ -1389,7 +1410,10 @@ int Gdtclft_Init(Tcl_Interp * interp)
 int Gdtclft_SafeInit(Tcl_Interp * interp)
 #else
 #ifdef __WIN32__
+__declspec(dllexport) int Gdtclft_Init(Tcl_Interp *interp)
+/*
 EXPORT(int, Gdtclft_SafeInit) (interp)
+*/
 #else
 int Gdtclft_SafeInit(Tcl_Interp * interp)
 #endif
