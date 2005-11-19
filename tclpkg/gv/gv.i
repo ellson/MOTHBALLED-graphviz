@@ -17,7 +17,7 @@
 %module gv
 %{
 
-/* some language headers (e.g. php.h, ruby.h) leave these defined #/
+/* some language headers (e.g. php.h, ruby.h) leave these defined */
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
