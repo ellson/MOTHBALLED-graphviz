@@ -236,6 +236,7 @@ array set LANGS {
 		}
 		SYNOPSIS {
 			{#!/usr/bin/perl}
+			{use lib "/usr/lib/graphviz/perl"}
 			{use gv;}
 		}
 		USAGE {

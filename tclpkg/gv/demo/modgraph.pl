@@ -4,8 +4,7 @@
 
 # author: John Ellson <ellson@research.att.com>
 
-#use lib "/usr/lib/graphviz/perl";
-use lib "/home/ellson/FIX/Linux.i686/lib/graphviz/perl";
+use lib "/usr/lib/graphviz/perl";
 use gv;
 
 $g = gv::digraph "G";
