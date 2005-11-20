@@ -581,14 +581,14 @@ tclGdDestroyCmd(Tcl_Interp * interp, GdData * gdData, int argc,
 		Tcl_Obj * CONST objv[])
 {
     gdImagePtr im;
-    void *hdl;
 
-    /* Get the handle, and the image pointer. */
-    hdl = (void *) tclhandleXlate(gdData->handleTbl,
-				  Tcl_GetString(objv[2]));
-    im = *(gdImagePtr *) hdl;
-    /* Release the handle, destroy the image. */
-    tclhandleFree(gdData->handleTbl, hdl);
+    unsigned long idx;
+
+    if (tclhandleIndex(gdData->handleTbl, Tcl_GetString(objv[2]), &idx) != TCL_OK)
+
+	return TCL_ERROR;
+    im = *(gdImagePtr *) tclhandleXlateIndex(gdData->handleTbl, idx);
+    tclhandleFreeIndex(gdData->handleTbl, idx);
     gdImageDestroy(im);
 
     return TCL_OK;
