@@ -21,6 +21,7 @@
 extern "C" {
 #endif
 
+extern void setColorScheme (char* s);
 extern int colorxlate(char *str, gvcolor_t * color, color_type_t target_type);
 extern char *canontoken(char *str);
 

@@ -22,6 +22,9 @@
 #include "color.h"
 #include "colorprocs.h"
 #include "colortbl.h"
+#include "memory.h"
+
+static char* colorscheme;
 
 static void hsv2rgb(double h, double s, double v,
 			double *r, double *g, double *b)
@@ -143,20 +146,93 @@ char *canontoken(char *str)
     len = strlen(str);
     if (len >= allocated) {
 	allocated = len + 1 + 10;
-	canon = realloc(canon, allocated);
+	canon = grealloc(canon, allocated);
 	if (!canon)
 	    return NULL;
     }
     q = (unsigned char *) canon;
     while ((c = *p++)) {
-	if (isalnum(c) == FALSE)
-	    continue;
+	/* if (isalnum(c) == FALSE) */
+	    /* continue; */
 	if (isupper(c))
 	    c = tolower(c);
 	*q++ = c;
     }
     *q = '\0';
     return (char*)canon;
+}
+
+/* fullColor:
+ * Return "/prefix/str"
+ */
+static char* fullColor (char* prefix, char* str)
+{
+    static char *fulls;
+    static int allocated;
+    int len = strlen (prefix) + strlen (str) + 3;
+
+    if (len >= allocated) {
+	allocated = len + 10;
+	fulls = grealloc(fulls, allocated);
+    }
+    sprintf (fulls, "/%s/%s", prefix, str);
+    return fulls;
+}
+
+/* resolveColor:
+ * Resolve input color str allowing color scheme namespaces.
+ *  1) No initial / => 
+ *          if colorscheme is defined and no "X11", return /colorscheme/str
+ *          else return str
+ *  2) One initial / => return str+1
+ *  3) Two initial /'s =>
+ *       a) If colorscheme is defined and not "X11", return /colorscheme/(str+2)
+ *       b) else return (str+2)
+ *  4) Two /'s, not both initial => return str.
+ *
+ * Note that 1), 2), and 3b) allow the default X11 color scheme. 
+ *
+ * In other words,
+ *   xxx => /colorscheme/xxx     if colorscheme is defined and not "X11"
+ *   xxx => xxx                  otherwise
+ *   /xxx => xxx
+ *   /X11/yyy => yyy
+ *   /xxx/yyy => /xxx/yyy
+ *   //yyy => /colorscheme/yyy   if colorscheme is defined and not "X11"
+ *   //yyy => yyy                otherwise
+ * 
+ * At present, no other error checking is done. For example, 
+ * yyy could be "". This will be caught later.
+ */
+
+#define DFLT_SCHEME "X11/"      /* Must have final '/' */
+#define DFLT_SCHEME_LEN ((sizeof(DFLT_SCHEME)-1)/sizeof(char))
+#define ISNONDFLT(s) ((s) && *(s) && strncasecmp(DFLT_SCHEME, s, DFLT_SCHEME_LEN-1))
+
+static char* resolveColor (char* str)
+{
+    char* s;
+    char* ss;   /* second slash */
+    char* c2;   /* second char */
+
+    if (*str == '/') {   /* if begins with '/' */
+	c2 = str+1;
+        if ((ss = strchr(c2, '/'))) {  /* if has second '/' */
+	    if (*c2 == '/') {    /* if second '/' is second character */
+		    /* Do not compare against final '/' */
+		if (ISNONDFLT(colorscheme))
+		    s = fullColor (colorscheme, c2+1);
+		else
+		    s = c2+1;
+	    }
+	    else if (strncasecmp(DFLT_SCHEME, c2, DFLT_SCHEME_LEN)) s = str;
+	    else s = ss + 1;
+	}
+	else s = c2;
+    }
+    else if (ISNONDFLT(colorscheme)) s = fullColor (colorscheme, str);
+    else s = str;
+    return canontoken(s);
 }
 
 int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
@@ -234,7 +310,7 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
 	len = strlen((char*)p);
 	if (len >= allocated) {
 	    allocated = len + 1 + 10;
-	    canon = realloc(canon, allocated);
+	    canon = grealloc(canon, allocated);
 	    if (! canon) {
 		rc = COLOR_MALLOC_FAIL;
 		return rc;
@@ -298,7 +374,7 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
     }
 
     /* test for known color name (generic, not renderer specific known names) */
-    fake.name = canontoken(str);
+    fake.name = resolveColor(str);
     if (!fake.name)
 	return COLOR_MALLOC_FAIL;
     if ((last == NULL)
@@ -395,4 +471,12 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
 	break;
     }
     return rc;
+}
+
+/* setColorScheme:
+ * Set current color scheme for resolving names.
+ */
+void setColorScheme (char* s)
+{
+    colorscheme = s;
 }

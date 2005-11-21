@@ -614,6 +614,7 @@ static void emit_node(GVJ_t * job, node_t * n)
 	if (url || explicit_tooltip)
 	    gvrender_begin_anchor(job, url, tooltip, target);
 
+	setColorScheme (agget (n, "colorscheme"));
 	gvrender_begin_context(job);
 	ND_shape(n)->fns->codefn(job, n);
 	ND_state(n) = gvc->viewNum;
@@ -765,6 +766,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 		return;
 	}
     }
+    setColorScheme (agget (e, "colorscheme"));
     if (ED_spl(e)) {
 	scale = late_double(e, E_arrowsz, 1.0, 0.0);
 	color = late_string(e, E_color, "");
@@ -1298,6 +1300,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
 
 	/* iterate pages */
 	for (firstpage(job); validpage(job); nextpage(job)) {
+	    setColorScheme (agget (g, "colorscheme"));
     	    setup_page(job, g);
 	    if (boxf_overlap(job->clip, job->pageBox))
 	        emit_view(job,g,flags);
@@ -1433,6 +1436,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if (url || explicit_tooltip)
 	    gvrender_begin_anchor(job, url, tooltip, target);
 
+	setColorScheme (agget (sg, "colorscheme"));
 	gvrender_begin_context(job);
 	filled = FALSE;
 	istyle = 0;
