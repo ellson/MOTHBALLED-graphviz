@@ -104,6 +104,8 @@ This field indicates which graph component uses the attribute.
 </TD><TD>ENC</TD><TD><A HREF=#k:color>color</A>
 <BR><A HREF=#k:colorList>colorList</A>
 </TD><TD ALIGN="CENTER">black</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:colorscheme HREF=#d:colorscheme>colorscheme</A>
+</TD><TD>ENCG</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:comment HREF=#d:comment>comment</A>
 </TD><TD>ENG</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:compound HREF=#d:compound>compound</A>
@@ -483,6 +485,16 @@ This field indicates which graph component uses the attribute.
   can either be a single color or a <A HREF=#k:colorList>colorList</A>.
   In the latter case, the edge is drawn using parallel splines or lines,
   one for each color in the list, in the order given.
+
+<DT><A NAME=d:colorscheme HREF=#a:colorscheme><STRONG>colorscheme</STRONG></A>
+<DD>  This attribute specifies a color scheme namespace. If defined, it specifies
+  the context for interpreting color names. In particular, if a 
+  <A HREF=#k:color>color</A> value has form <TT>"xxx"</TT> or <TT>"//xxx"</TT>, 
+  then the
+  color <TT>xxx</TT> will be evaluated according to the current color scheme.
+  If no color scheme is set, the standard X11 naming is used.
+  For example, if <TT>colorscheme=bugn9</TT>, then <TT>color=7</TT>
+  is interpreted as <TT>"/bugn9/7"</TT>.
 
 <DT><A NAME=d:comment HREF=#a:comment><STRONG>comment</STRONG></A>
 <DD>  Comments are inserted into output. Device-dependent
@@ -1291,13 +1303,28 @@ the given types.
          <TABLE><TR><TD>"#%2x%2x%2x"<TD>Red-Green-Blue (RGB)</TR>
          <TR><TD>"#%2x%2x%2x%2x"<TD>Red-Green-Blue-Alpha (RGBA)</TR>
          <TR><TD>H[,&#160;]+S[,&#160;]+V<TD>Hue-Saturation-Value (HSV) 0.0 <= H,S,V <= 1.0</TR>
-         <TR><TD>string<TD><A HREF=colors.html>color name</A></TR>
-         <TR><TD>"transparent"<TD>No color</TR></TABLE>
+         <TR><TD>string<TD><A HREF=colors.html>color name</A></TR></TABLE>
    The specification for the RGB and RGBA formats are the format strings used by
    <TT>sscanf</TT> to scan the color value. Thus, these values have the form
    "#RGB" or "#RGBA", where R, G, B, and A each consist of 2 hexidecimal
    digits, and can be separated by whitespace. HSV colors have the form of 3
    numbers between 0 and 1, separated by whitespace or commas.
+  <P>
+  String-valued color specifications are case-insensitive and interpreted 
+  in the context of the current color scheme, as specified by the 
+  <A HREF=#d:colorscheme>colorscheme</A> attribute. If this is undefined,
+  the X11 naming scheme will be used.
+  An initial <TT>"/"</TT> character can be used to override the use of
+  the <TT>colorscheme</TT> attribute. In particular, a single initial
+  <TT>"/"</TT> will cause the string to be evaluated using the default
+  X11 naming. If the color value has the form <TT>"/ssss/yyyy"</TT>, 
+  the name <TT>yyyy</TT> is interpreted using the schema <TT>ssss</TT>.
+  If the color scheme name is empty, i.e., the color has the 
+  form <TT>"//yyyy"</TT>, the <TT>colorscheme</TT> attribute is used.
+  Thus, the forms <TT>"yyyy"</TT> and <TT>"//yyyy"</TT> are
+  equivalent. 
+  <P>At present, Graphviz recognizes the default color scheme <TT>X11</TT>,
+  and the <A HREF="http://www.personal.psu.edu/faculty/c/a/cab38/ColorBrewer/ColorBrewer_intro.html">Brewer color schemes</A>.
   <P>
   Examples:<BR>
     <TABLE border=1>
@@ -1312,7 +1339,8 @@ the given types.
    Note that some output formats, e.g., <A HREF="output.html#a:mif">mif</A>, 
    only support a limited number of specific colors.
   <P>
-   The color <TT>transparent</TT> is only available in the output formats
+   The string value <TT>transparent</TT> can be used to indicate no color.
+   This is only available in the output formats
    ps, svg, fig, vmrl, and the bitmap formats. It can be used whenever a
    color is needed but is most useful with 
    the <A HREF=#d:bgcolor>bgcolor</A> attribute.
