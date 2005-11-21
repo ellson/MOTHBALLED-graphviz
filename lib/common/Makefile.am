@@ -39,7 +39,10 @@ colortbl.h : color_lib
 	$(AWK) -f $(top_srcdir)/awk/colortbl.awk color_lib > colortbl.h
 
 color_lib : $(top_srcdir)/lib/common/color_names
-	$(SED) s/_//g $(top_srcdir)/lib/common/color_names | LC_COLLATE=C $(SORT) > color_lib
+	cat brewer_lib $(top_srcdir)/lib/common/color_names | LC_COLLATE=C $(SORT) > color_lib
+
+brewer_lib : $(top_srcdir)/lib/common/brewer_colors
+	$(AWK) -f $(top_srcdir)/awk/brewer.awk $(top_srcdir)/lib/common/brewer_colors > brewer_lib
 
 htmllex.o htmllex.lo: htmllex.c htmllex.h htmlparse.h
 htmlparse.o htmlparse.lo: htmlparse.c htmlparse.h
@@ -53,7 +56,7 @@ htmlparse.c: y.output
 htmlparse.h: y.output
 	@SED@ "s/yy/html/g" < y.tab.h > htmlparse.h
 
-DISTCLEANFILES = color_lib colortbl.h y.output y.tab.[ch] htmlparse.[ch]
+DISTCLEANFILES = brewer_lib color_lib colortbl.h y.output y.tab.[ch] htmlparse.[ch]
 
 EXTRA_DIST = Makefile.old README.imap chars.tcl ps.h \
 	strcasecmp.c strncasecmp.c htmlparse.c htmlparse.h y.output

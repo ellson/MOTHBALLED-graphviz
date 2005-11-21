@@ -64,10 +64,11 @@ htmlparse.o htmllex.o : htmllex.h
 #ps.h : ps.txt
 #	$(AWK) -f $(AWKDIR)/stringize.awk ps.txt > ps.h
 
-colortbl.h : color_names
-	$(SED) s/_//g color_names | LC_COLLATE=C $(SORT) > color_lib
+colortbl.h : color_names brewer_colors
+	$(AWK) -f $(AWKDIR)/brewer.awk brewer_colors > brewer_lib
+	cat brewer_lib color_names | LC_COLLATE=C $(SORT) > color_lib
 	$(AWK) -f $(AWKDIR)/colortbl.awk color_lib > colortbl.h
-	$(RM) color_lib
+	$(RM) color_lib brewer_lib
 
 clean:
 	$(RM) core *.o htmlparse.c htmlparse.h colortbl.h y.output
