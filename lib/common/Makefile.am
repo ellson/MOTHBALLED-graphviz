@@ -38,10 +38,10 @@ colxlate.o colxlate.lo : colortbl.h
 colortbl.h : color_lib
 	$(AWK) -f $(top_srcdir)/awk/colortbl.awk color_lib > colortbl.h
 
-color_lib : $(top_srcdir)/lib/common/color_names
+color_lib : brewer_lib $(top_srcdir)/lib/common/color_names
 	cat brewer_lib $(top_srcdir)/lib/common/color_names | LC_COLLATE=C $(SORT) > color_lib
 
-brewer_lib : $(top_srcdir)/lib/common/brewer_colors
+brewer_lib : $(top_srcdir)/lib/common/brewer_colors  $(top_srcdir)/awk/brewer.awk
 	$(AWK) -f $(top_srcdir)/awk/brewer.awk $(top_srcdir)/lib/common/brewer_colors > brewer_lib
 
 htmllex.o htmllex.lo: htmllex.c htmllex.h htmlparse.h
