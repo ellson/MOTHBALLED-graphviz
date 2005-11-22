@@ -112,6 +112,7 @@ static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
      * at PB.LL by the B & L margin width.
      * The PostScript BoundingBox also needs margin T & R */
     sz = add_points(PB.LL, PB.UR);
+    sz.x--; sz.y--;   /* -1  just for kicks */
     if (onetime) {
 	if (Show_boxes == NULL)
 	    fprintf(Output_file, "%%%%BoundingBox: %d %d %d %d\n",
@@ -159,11 +160,12 @@ fprintf(stderr,"offset = %d,%d\n", offset.x, offset.y);
 #endif
 
     sz = add_points(PB.LL, PB.UR);
+    sz.x--; sz.y--;   /* -1  just for kicks */
     Cur_page++;
     fprintf(Output_file, "%%%%Page: %d %d\n", Cur_page, Cur_page);
     if (Show_boxes == NULL)
 	fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
-	    PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
+	    0, 0, sz.x, sz.y);
     fprintf(Output_file, "%%%%PageOrientation: %s\n",
 	    (rot ? "Landscape" : "Portrait"));
     if (Output_lang == PDF)
