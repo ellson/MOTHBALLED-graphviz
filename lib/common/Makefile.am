@@ -59,4 +59,5 @@ htmlparse.h: y.output
 DISTCLEANFILES = brewer_lib color_lib colortbl.h y.output y.tab.[ch] htmlparse.[ch]
 
 EXTRA_DIST = Makefile.old README.imap chars.tcl ps.h \
-	strcasecmp.c strncasecmp.c htmlparse.c htmlparse.h y.output
+	strcasecmp.c strncasecmp.c htmlparse.c htmlparse.h y.output \
+	brewer_colors
