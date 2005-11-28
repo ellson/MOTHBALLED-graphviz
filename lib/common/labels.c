@@ -168,7 +168,7 @@ emit_textlines(GVJ_t* job, int nlines, textline_t lines[], pointf p,
               double halfwidth_x, char* fname, double fsize, char* fcolor)
 {
     int i, linespacing;
-    double center_x, left_x, right_x;
+    double tmp, center_x, left_x, right_x;
 
     center_x = p.x;
     left_x = center_x - halfwidth_x;
@@ -180,6 +180,9 @@ emit_textlines(GVJ_t* job, int nlines, textline_t lines[], pointf p,
     /* position for first line */
     p.y += (linespacing * (nlines - 1) / 2)	/* cl of topline */
 	-fsize / 3.0;	/* cl to baseline */
+
+    tmp = ROUND(p.y);  /* align with interger points */
+    p.y = (double)tmp;
 
     gvrender_begin_context(job);
     gvrender_set_pencolor(job, fcolor);
