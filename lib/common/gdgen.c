@@ -605,9 +605,11 @@ static void gd_textline(point p, textline_t * line)
 				ROUND(mp.x), ROUND(mp.y), str, &strex);
 #if 0
 	gdImagePolygon(im, (gdPointPtr) brect, 4, cstk[SP].pencolor);
+#endif
+#if 0
 	fprintf(stderr,
-		"textline: font=%s size=%g width=%g dpi=%d width/dpi=%g\n",
-		fontlist, fontsz, (double) (brect[4] - brect[0]),
+		"textline: font=%s size=%g pos=%g,%g width=%g dpi=%d width/dpi=%g\n",
+		fontlist, fontsz, mp.x, mp.y, (double) (brect[4] - brect[0]),
 		strex.hdpi,
 		(((double) (brect[4] - brect[0])) / strex.hdpi));
 #endif
@@ -895,8 +897,9 @@ static void gd_polyline(point * A, int n)
 	    pen = cstk[SP].pencolor;
 	}
 	width = cstk[SP].penwidth * CompScale;
+	if (width < WIDTH_NORMAL)
+	    width = WIDTH_NORMAL;  /* gd can't do thin lines */
 	gdImageSetThickness(im, width);
-#if 1
 	if (width != WIDTH_NORMAL) {
 	    brush = gdImageCreate(width, width);
 	    gdImagePaletteCopy(brush, im);
@@ -909,7 +912,6 @@ static void gd_polyline(point * A, int n)
 	    else
 		pen = gdBrushed;
 	}
-#endif
 	p.x = A[0].x;
 	p.y = A[0].y;
 	p = gdpt(p);
