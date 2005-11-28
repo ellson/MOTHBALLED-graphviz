@@ -945,6 +945,9 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImage * im, int *brect, int fg, char *f
   /* set rotation transform */
   FT_Set_Transform (face, &matrix, NULL);
 
+#if 0
+fprintf(stderr, "fontsize=%g resolution=%d,%d\n", ptsize, METRIC_RES, METRIC_RES );
+#endif
   FT_New_Size (face, &platform_independent);
   FT_Activate_Size (platform_independent);
   if (FT_Set_Char_Size (face, 0, (FT_F26Dot6)(ptsize*64), METRIC_RES, METRIC_RES))
@@ -956,13 +959,16 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImage * im, int *brect, int fg, char *f
 
   if (render)
     {
+#if 0
+fprintf(stderr, "fontsize=%g dpi=%d,%d\n", ptsize, hdpi, vdpi );
+#endif
       FT_New_Size (face, &platform_specific);
       FT_Activate_Size (platform_specific);
       if (FT_Set_Char_Size (face, 0, (FT_F26Dot6)(ptsize*64), hdpi, vdpi))
         {
           gdCacheDelete (tc_cache);
           gdMutexUnlock (gdFontCacheMutex);
-          return "Could not set character size";
+          return "Could not set character size (render)";
         }
     }
 
