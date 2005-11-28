@@ -284,9 +284,11 @@ fprintf(stderr,"bb = %g,%g %g,%g (graph units)\n",
 	gvc->bb.LL.y,
 	gvc->bb.UR.x,
 	gvc->bb.UR.y);
-fprintf(stderr,"margin = %g,%g deviceSize = %g,%g (graph units)\n",
+fprintf(stderr,"margin = %g,%g extra %g,%g deviceSize = %g,%g (graph units) pageSize = %g,%g\n",
 	job->margin.x, job->margin.y,
-	deviceSize.x, deviceSize.y);
+	extra.x, extra.y,
+	deviceSize.x, deviceSize.y,
+	job->pageSize.x, job->pageSize.y);
 fprintf(stderr,"pageSizeCenteredLessMargins = %g,%g (graph units)\n",
 	pageSizeCenteredLessMargins.x, pageSizeCenteredLessMargins.y);
 fprintf(stderr,"dpi = %d zoom = %g rotation = %d\n",
@@ -365,10 +367,10 @@ void emit_background(GVJ_t * job, graph_t *g)
     /* need to make background rectangle bigger than the page
      * otherwise black dots show up from the antialising of the edge
      * in bitmap outputs */
-    AF[0].x = AF[1].x = job->pageBox.LL.x - 1;
-    AF[2].x = AF[3].x = job->pageBox.UR.x + 1;
-    AF[3].y = AF[0].y = job->pageBox.LL.y - 1;
-    AF[1].y = AF[2].y = job->pageBox.UR.y + 1;
+    AF[0].x = AF[1].x = job->pageBox.LL.x - job->margin.x - 1;
+    AF[2].x = AF[3].x = job->pageBox.UR.x + job->margin.x + 1;
+    AF[3].y = AF[0].y = job->pageBox.LL.y - job->margin.y - 1;
+    AF[1].y = AF[2].y = job->pageBox.UR.y + job->margin.y + 1;
     for (i = 0; i < 4; i++) {
 	PF2P(AF[i],A[i]);
     }
@@ -1115,7 +1117,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     /* start with "natural" size of layout */
 
     Z = 1.0;
-    if (GD_drawing(g)->size.x > 0) {	/* was given by user... */
+    if (GD_drawing(g)->size.x > 0) {	/* graph size was given by user... */
 	P2PF(GD_drawing(g)->size, size);
 	if ((size.x < UR.x) || (size.y < UR.y) /* drawing is too big... */
 	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
@@ -1130,8 +1132,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     /* rotate and scale bb to give default device width and height */
     if (GD_drawing(g)->landscape)
 	UR = exch_xyf(UR);
-    X = Z * (UR.x + 2 * job->margin.x) * job->dpi / POINTS_PER_INCH;
-    Y = Z * (UR.y + 2 * job->margin.y) * job->dpi / POINTS_PER_INCH;
+    X = (Z * UR.x + 2 * job->margin.x) * job->dpi / POINTS_PER_INCH;
+    Y = (Z * UR.y + 2 * job->margin.y) * job->dpi / POINTS_PER_INCH;
 
     /* user can override */
     if ((str = agget(g, "viewport")))
@@ -1143,6 +1145,13 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     job->focus.x = x;           /* graph coord of focus - points */
     job->focus.y = y;
     job->rotation = job->gvc->rotation;
+
+#if 0
+    fprintf(stderr,"bb = 0,0 %d,%d (graph units) size %d,%d (graph units)\n",
+	GD_bb(g).UR.x, GD_bb(g).UR.y, GD_drawing(g)->size.x, GD_drawing(g)->size.y);
+    fprintf(stderr,"width,height = %d,%d (device units)\n", job->width, job->height);
+    fprintf(stderr,"zoom = %g focus = %g,%g (graph units)\n", job->zoom, job->focus.x, job->focus.y);
+#endif
 }
 
 static void emit_colors(GVJ_t * job, graph_t * g)
