@@ -30,6 +30,9 @@ cd ..
 cd gvc
 nmake /nologo /f gvc.mak CFG="gvc - Win32 Release"
 cd ..
+cd plugin
+nmake /nologo /f plugin.mak CFG="plugin - Win32 Release"
+cd ..
 cd pack
 nmake /nologo /f pack.mak CFG="pack - Win32 Release"
 cd ..
@@ -51,15 +54,7 @@ cd ..
 cd ingraphs
 nmake /nologo /f ingraphs.mak CFG="ingraphs - Win32 Release"
 cd ..
-
 cd ..
-cd plugin
-cd layout
-nmake /nologo /f layout.mak CFG="layout - Win32 Release"
-cd ..
-nmake /nologo /f plugin.mak CFG="plugin - Win32 Release"
-cd ..
-
 cd cmd
 cd dot
 nmake /nologo /f dot.mak CFG="dot - Win32 Release"
