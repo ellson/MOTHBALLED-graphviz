@@ -1068,7 +1068,7 @@ static void init_job_margin(GVJ_t *job)
         case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
         case METAPOST: case FIG: case VTX: case ATTRIBUTED_DOT:
         case PLAIN: case PLAIN_EXT: case QPDF:
-            job->margin.x = job->margin.y = DEFAULT_MARGIN;
+            job->margin.x = job->margin.y = DEFAULT_PRINT_MARGIN;
             break;
         case CANONICAL_DOT:
             job->margin.x = job->margin.y = 0;
