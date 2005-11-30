@@ -595,7 +595,7 @@ int GCsplinegon(Gwidget_t * widget, int gpn, Gpoint_t * gpp, Ggattr_t * ap)
 	gr.o.x = min(gr.o.x, gpp[i].x);
 	gr.o.y = min(gr.o.y, gpp[i].y);
 	gr.c.x = max(gr.c.x, gpp[i].x);
-	gr.c.x = max(gr.c.x, gpp[i].y);
+	gr.c.y = max(gr.c.y, gpp[i].y);
     }
 
     Gppi = 1;
