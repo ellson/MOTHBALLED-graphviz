@@ -1439,7 +1439,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if ((s = agget(sg, "tooltip")) && s[0]) {
 	    tooltip = strdup_and_subst_graph(s, sg);
 	    explicit_tooltip++;
-	} else {
+	} else if (GD_label(sg)) {
 	    tooltip = strdup_and_subst_graph(GD_label(sg)->text, sg);
 	}
 	if (url || explicit_tooltip)
