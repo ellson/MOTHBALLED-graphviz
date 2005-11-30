@@ -366,7 +366,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD>ENGC</TD><TD><A HREF=#k:escString>escString</A>
 <BR>string</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:tooltip HREF=#d:tooltip>tooltip</A>
-</TD><TD>NE</TD><TD><A HREF=#k:escString>escString</A>
+</TD><TD>NEC</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>cmap only</TD> </TR>
  <TR><TD><A NAME=a:truecolor HREF=#d:truecolor>truecolor</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
@@ -1184,8 +1184,12 @@ This field indicates which graph component uses the attribute.
   See <A HREF="http://www.w3.org/TR/html401/present/frames.html#adef-target">W3C documentation</A>.
 
 <DT><A NAME=d:tooltip HREF=#a:tooltip><STRONG>tooltip</STRONG></A>
-<DD>  Tooltip annotation attached to the node or edge. This is used only
-  if the object has a <A HREF=#d:URL>URL</A> attribute.
+<DD>  Tooltip annotation attached to the node or edge. If unset, Graphviz
+  will use the object's <A HREF=#d:label>label</A> if defined.
+  Note that if the label is a record specification or an HTML-like
+  label, the resulting tooltip may be unhelpful. In this case, if
+  tooltips will be generated, the user should set a <TT>tooltip</TT>
+  attribute explicitly.
 
 <DT><A NAME=d:truecolor HREF=#a:truecolor><STRONG>truecolor</STRONG></A>
 <DD>  If set explicitly to true or false, the value determines whether or not
