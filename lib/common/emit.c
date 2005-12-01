@@ -739,6 +739,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 {
     int i, j, cnum, numc = 0;
     char *color, *pencolor, *fillcolor, *style;
+    char *headcolor, *tailcolor, *lastcolor;
     char *colors = NULL;
     char **styles = 0;
     char **sp;
@@ -847,18 +848,23 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 		tmplist[j].x = pf3.x - numc2 * offlist[j].x;
 		tmplist[j].y = pf3.y - numc2 * offlist[j].y;
 	    }
+	    lastcolor = headcolor = tailcolor = color;
 	    colors = strdup(color);
 	    for (cnum = 0, color = strtok(colors, ":"); color;
-		 cnum++, color = strtok(0, ":")) {
-	        if (! (ED_gui_state(e) & (GUI_STATE_ACTIVE | GUI_STATE_SELECTED))) {
-		    if (color[0]) {
+		cnum++, color = strtok(0, ":")) {
+		if (!color[0])
+		    color = DEFAULT_COLOR;
+		if (color != lastcolor) {
+	            if (! (ED_gui_state(e) & (GUI_STATE_ACTIVE | GUI_STATE_SELECTED))) {
 		        gvrender_set_pencolor(job, color);
 		        gvrender_set_fillcolor(job, color);
-		    } else {
-		        gvrender_set_pencolor(job, DEFAULT_COLOR);
-		        gvrender_set_fillcolor(job, DEFAULT_COLOR);
 		    }
+		    lastcolor = color;
 		}
+		if (cnum == 0)
+		    headcolor = tailcolor = color;
+		if (cnum == 1)
+		    tailcolor = color;
 		for (i = 0; i < tmpspl.size; i++) {
 		    tmplist = tmpspl.list[i].list;
 		    offlist = offspl.list[i].list;
@@ -871,10 +877,24 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 		}
 	    }
 	    if (bz.sflag) {
+		if (color != tailcolor) {
+		    color = tailcolor;
+	            if (! (ED_gui_state(e) & (GUI_STATE_ACTIVE | GUI_STATE_SELECTED))) {
+		        gvrender_set_pencolor(job, color);
+		        gvrender_set_fillcolor(job, color);
+		    }
+		}
 		arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0],
 			scale, bz.sflag);
 	    }
 	    if (bz.eflag) {
+		if (color != headcolor) {
+		    color = headcolor;
+	            if (! (ED_gui_state(e) & (GUI_STATE_ACTIVE | GUI_STATE_SELECTED))) {
+		        gvrender_set_pencolor(job, color);
+		        gvrender_set_fillcolor(job, color);
+		    }
+		}
 		arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
 			scale, bz.eflag);
 	    }
