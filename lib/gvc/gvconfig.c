@@ -285,6 +285,9 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     plugin_glob = "cyggvplugin_*";
     char *plugin_re_beg = "[^0-9]-";
     char *plugin_re_end = "\\.dll$"; 
+#elif defined(__hpux__)
+    char *plugin_re_beg = "\\.sl\\.";
+    char *plugin_re_end = "$"; 
 #else
     /* Everyone else */
     char *plugin_re_beg = "\\.so\\.";
