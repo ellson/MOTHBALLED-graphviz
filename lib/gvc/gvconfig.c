@@ -21,6 +21,7 @@
 #include	<string.h>
 
 #ifndef DISABLE_LTDL
+#include	<sys/types.h>
 #include	<regex.h>
 #include	<sys/stat.h>
 #include	<unistd.h>
