@@ -899,11 +899,11 @@ AC_ARG_WITH(expatincludedir,
 	[  --with-expatincludedir=DIR use EXPAT includes from DIR],
 	[EXPAT_INCLUDES="-I$withval"])
 CPPFLAGS="$CPPFLAGS $EXPAT_INCLUDES"
-EXPAT_LIBDIR="/usr/lib"
+EXPAT_LIBDIR="/usr/lib$LIBPOSTFIX"
 AC_ARG_WITH(expatlibdir,
 	[  --with-expatlibdir=DIR  use EXPAT libraries from DIR],
 	[EXPAT_LIBDIR="$withval"])
-if test "$EXPAT_LIBDIR" != "/usr/lib"; then
+if test "$EXPAT_LIBDIR" != "/usr/lib$LIBPOSTFIX"; then
 	EXPAT_LIBS="-L$EXPAT_LIBDIR"
 	LDFLAGS="$LDFLAGS $EXPAT_LIBS"
 fi
@@ -1299,11 +1299,11 @@ AC_ARG_WITH(jpegincludedir,
 	[  --with-jpegincludedir=DIR use JPEG includes from DIR],
 	[JPEG_INCLUDES="-I$withval"])
 CPPFLAGS="$CPPFLAGS $JPEG_INCLUDES"
-JPEG_LIBDIR="/usr/lib"
+JPEG_LIBDIR="/usr/lib$LIBPOSTFIX"
 AC_ARG_WITH(jpeglibdir,
 	[  --with-jpeglibdir=DIR   use JPEG libraries from DIR],
 	[JPEG_LIBDIR="$withval"])
-if test "$JPEG_LIBDIR" != "/usr/lib"; then
+if test "$JPEG_LIBDIR" != "/usr/lib$LIBPOSTFIX"; then
 	JPEG_LIBS="-L$JPEG_LIBDIR"
 	LDFLAGS="$LDFLAGS $JPEG_LIBS"
 fi
