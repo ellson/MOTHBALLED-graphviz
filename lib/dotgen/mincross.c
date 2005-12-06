@@ -1220,6 +1220,16 @@ ordercmpf(int *i0, int *i1)
     return (*i0) - (*i1);
 }
 
+/* flat_mval:
+ * Calculate a mval for nodes with no in or out non-flat edges.
+ * Assume (ND_out(n).size == 0) && (ND_in(n).size == 0)
+ * Find flat edge a->n where a has the largest order and set
+ * n.mval = a.mval+1, assuming a.mval is defined (>=0).
+ * If there are no flat in edges, find flat edge n->a where a 
+ * has the smallest order and set * n.mval = a.mval-1, assuming 
+ * a.mval is > 0.
+ * Return true if n.mval is left -1, indicating a fixed node for sorting.
+ */
 static int 
 flat_mval(node_t * n)
 {
@@ -1227,21 +1237,23 @@ flat_mval(node_t * n)
     edge_t *e, **fl;
     node_t *nn;
 
-    if ((ND_in(n).size == 0) && (ND_out(n).size == 0)) {
-	if (ND_flat_in(n).size > 0) {
-	    fl = ND_flat_in(n).list;
-	    nn = fl[0]->tail;
-	    for (i = 1; (e = fl[i]); i++)
-		if (ND_order(e->tail) > ND_order(nn))
-		    nn = e->tail;
+    if (ND_flat_in(n).size > 0) {
+	fl = ND_flat_in(n).list;
+	nn = fl[0]->tail;
+	for (i = 1; (e = fl[i]); i++)
+	    if (ND_order(e->tail) > ND_order(nn))
+		nn = e->tail;
+	if (ND_mval(nn) >= 0) {
 	    ND_mval(n) = ND_mval(nn) + 1;
 	    return FALSE;
-	} else if (ND_flat_out(n).size > 0) {
-	    fl = ND_flat_out(n).list;
-	    nn = fl[0]->head;
-	    for (i = 1; (e = fl[i]); i++)
-		if (ND_order(e->head) < ND_order(nn))
-		    nn = e->head;
+	}
+    } else if (ND_flat_out(n).size > 0) {
+	fl = ND_flat_out(n).list;
+	nn = fl[0]->head;
+	for (i = 1; (e = fl[i]); i++)
+	    if (ND_order(e->head) < ND_order(nn))
+		nn = e->head;
+	if (ND_mval(nn) > 0) {
 	    ND_mval(n) = ND_mval(nn) - 1;
 	    return FALSE;
 	}
@@ -1369,7 +1381,7 @@ void check_rs(graph_t * g, int null_ok)
 		if (null_ok == FALSE)
 		    abort();
 	    } else {
-		fprintf(stderr, "%s\t", v->name);
+		fprintf(stderr, "%s(%d)\t", v->name, ND_mval(v));
 		assert(ND_rank(v) == r);
 		assert(v != prev);
 		prev = v;
