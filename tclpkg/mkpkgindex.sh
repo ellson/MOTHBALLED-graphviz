@@ -4,7 +4,17 @@
 # $2 = Name of extension
 # $3 = Version of extension
 
-lib=`grep library_names $1 | sed -e "s/.*=.//" -e "s/ .*//"`
+lib=`sed -n "/library_names/s/^[^']*'\([^ ']*\).*$/\1/p" $1`
+if [ -z "$lib" ]
+then
+    libBaseName=`basename $1 .la`
+    case `uname` in
+        CYGWIN*) lib="${libBaseName}.dll" ;;
+        HP-UX*)  lib="${libBaseName}.sl" ;;
+        *)       lib="${libBaseName}.so" ;;
+    esac
+fi
+
 echo "package ifneeded $2 $3 \"" >pkgIndex.tcl
 case "$1" in
   *tk* )
