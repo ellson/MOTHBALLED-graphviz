@@ -332,7 +332,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>-100.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:splines HREF=#d:splines>splines</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
-<BR>string</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>not dot</TD> </TR>
+<BR>string</TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:start HREF=#d:start>start</A>
 </TD><TD>G</TD><TD><A HREF=#k:startType>startType</A>
 </TD><TD ALIGN="CENTER">"random"</TD><TD></TD><TD>fdp, neato only</TD> </TR>
@@ -1127,9 +1127,16 @@ This field indicates which graph component uses the attribute.
   skew top of polygon to right; negative to left.
 
 <DT><A NAME=d:splines HREF=#a:splines><STRONG>splines</STRONG></A>
-<DD>  If true, draw edges as splines. This requires non-overlapping 
-  nodes (cf. <A HREF=#d:overlap><B>overlap</B></A>).
-  If fdp is used for layout, if <TT>splines="compound"</TT>, then the edges are
+<DD>  Controls how, and if, edges are represented. If true, edges are drawn as
+  splines routed around nodes; if false, edges are drawn as line segments.
+  If set to "", no edges are drawn at all.
+  <P>
+  By default, the attribute is unset. How this is interpreted depends on
+  the layout. For dot, the default is to draw edges as splines. For all
+  other layouts, the default is to draw edges as line segments. Note that
+  for these latter layouts, if <TT>splines="true"</TT>, this
+  requires non-overlapping nodes (cf. <A HREF=#d:overlap><B>overlap</B></A>).
+  If fdp is used for layout and <TT>splines="compound"</TT>, then the edges are
   drawn to avoid clusters as well as nodes.
 
 <DT><A NAME=d:start HREF=#a:start><STRONG>start</STRONG></A>
