@@ -146,7 +146,7 @@ gvplugin_library_t *gvplugin_library_load(char *path)
 #ifdef __CYGWIN__
     s = strchr(sym, '-');     /* strip trailing "-1.dll" */
 #else 
-    s = strchr(sym, '.');     /* strip trailing ".so.0" or ".dll" */
+    s = strchr(sym, '.');     /* strip trailing ".so.0" or ".dll" or ".sl" */
 #endif
     strcpy(s,suffix);         /* append "_LTX_library" */
 
