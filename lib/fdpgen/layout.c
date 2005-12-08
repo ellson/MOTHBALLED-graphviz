@@ -54,6 +54,7 @@
 #include <dbg.h>
 
 typedef struct {
+    graph_t*  rootg;  /* logical root; graph passed in to fdp_layout */
     attrsym_t *G_coord;
     attrsym_t *G_width;
     attrsym_t *G_height;
@@ -74,8 +75,10 @@ typedef struct {
  */
 static void
 finalCC(graph_t * g, int c_cnt, graph_t ** cc, point * pts, graph_t * rg,
-	attrsym_t * G_width, attrsym_t * G_height)
+	layout_info* infop)
 {
+    attrsym_t * G_width = infop->G_width;
+    attrsym_t * G_height = infop->G_height;
     graph_t *cg;
     box b, bb;
     boxf bbf;
@@ -83,7 +86,7 @@ finalCC(graph_t * g, int c_cnt, graph_t ** cc, point * pts, graph_t * rg,
     int margin;
     graph_t **cp = cc;
     point *pp = pts;
-    int isRoot = (rg == rg->root);
+    int isRoot = (rg == infop->rootg);
     int isEmpty = 0;
 
     /* compute graph bounding box in points */
@@ -223,7 +226,7 @@ static void freeDerivedGraph(graph_t * g, graph_t ** cc)
  * in absolute coordinates and that box of root graph
  * has LL at origin.
  */
-static void evalPositions(graph_t * g)
+static void evalPositions(graph_t * g, graph_t* rootg)
 {
     int i;
     graph_t *subg;
@@ -234,7 +237,7 @@ static void evalPositions(graph_t * g)
     bb = BB(g);
 
     /* translate nodes in g */
-    if (g != g->root) {
+    if (g != rootg) {
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    if (PARENT(n) != g)
 		continue;
@@ -246,7 +249,7 @@ static void evalPositions(graph_t * g)
     /* translate top-level clusters and recurse */
     for (i = 1; i <= GD_n_cluster(g); i++) {
 	subg = GD_clust(g)[i];
-	if (g != g->root) {
+	if (g != rootg) {
 	    sbb = BB(subg);
 	    sbb.LL.x += bb.LL.x;
 	    sbb.LL.y += bb.LL.y;
@@ -254,7 +257,7 @@ static void evalPositions(graph_t * g)
 	    sbb.UR.y += bb.LL.y;
 	    BB(subg) = sbb;
 	}
-	evalPositions(subg);
+	evalPositions(subg, rootg);
     }
 }
 
@@ -325,17 +328,18 @@ static char *portName(graph_t * g, bport_t * p)
  * is identical to the child graph, we have to assume the child
  * inherited it.
  */
-static void chkPos(graph_t* g, node_t* n, attrsym_t* G_coord, boxf* bbp)
+static void chkPos(graph_t* g, node_t* n, layout_info* infop, boxf* bbp)
 {
     char *p;
     char *pp;
     boxf bb;
     char c;
     graph_t *parent;
+    attrsym_t *G_coord = infop->G_coord;
 
     p = agxget(g, G_coord->index);
     if (p[0]) {
-	if (g != g->root) {
+	if (g != infop->rootg) {
 	    parent =
 		agusergraph((agfstin(g->meta_node->graph, g->meta_node))->
 			    tail);
@@ -444,7 +448,7 @@ static graph_t *deriveGraph(graph_t * g, layout_info * infop)
 	ND_clust(dn) = subg;
 	ND_id(dn) = id++;
 	if (infop->G_coord)
-		chkPos(subg, dn, infop->G_coord, &fix_bb);
+		chkPos(subg, dn, infop, &fix_bb);
 	for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 	    DNODE(n) = dn;
 #ifdef UNIMPLEMENTED
@@ -884,7 +888,7 @@ setClustNodes(graph_t* root)
 
 	/* Remove overlaps */
 	if (agnnodes(cg) >= 2) {
-	    if (g == g->root)
+	    if (g == infop->rootg)
 		normalize (cg);
 	    fdp_xLayout(cg, &xpms);
 	}
@@ -920,7 +924,7 @@ setClustNodes(graph_t* root)
     }
 
     /* set bounding box of dg and reposition nodes */
-    finalCC(dg, c_cnt, cc, pts, g, infop->G_width, infop->G_height);
+    finalCC(dg, c_cnt, cc, pts, g, infop);
 
     /* record positions from derived graph to input graph */
     /* At present, this does not record port node info */
@@ -938,7 +942,7 @@ setClustNodes(graph_t* root)
     }
     BB(g) = BB(dg);
 #ifdef DEBUG
-    if (g == g->root)
+    if (g == infop->rootg)
 	dump(g, 1, 0);
 #endif
 
@@ -978,6 +982,7 @@ void init_info(graph_t * g, layout_info * infop)
     infop->G_coord = agfindattr(g, "coords");
     infop->G_width = agfindattr(g, "width");
     infop->G_height = agfindattr(g, "height");
+    infop->rootg = g;
     infop->gid = 0;
     infop->pack.margin = getPack(g, CL_OFFSET / 2, CL_OFFSET / 2);
     infop->pack.doSplines = 0;
@@ -1048,7 +1053,7 @@ void fdpLayout(graph_t * g)
     init_info(g, &info);
     layout(g, &info);
     setClustNodes(g);
-    evalPositions(g);
+    evalPositions(g,g);
 
     /* Set bbox info for g and all clusters. This is needed for
      * spline drawing. We already know the graph bbox is at the origin.
