@@ -35,7 +35,7 @@ libgvc.a : $(OBJS) no_builtins.o
 	$(AR) cr libgvc.a $(OBJS) no_builtins.o
 	$(RANLIB) libgvc.a
 
-install: libgvc.a libgvc_builtins.a
+install: libgvc.a libgvc_dot_builtins.a
 	$(MKPATH) $(INCDIR)
 	$(INSTALL) $(INST_HDRS) $(INCDIR)
 	$(MKPATH) $(LIBDIR)
