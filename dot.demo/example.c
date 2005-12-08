@@ -26,9 +26,7 @@ int main(int argc, char **argv)
     e = agedge(g, n, m);
 
     /* Set an attribute - in this case one that affects the visible rendering */
-    if (!(a = agfindattr(g->proto->n, "color")))
-	a = agnodeattr(g, "color", "");
-    agxset(n, a->index, "red");
+    agsafeset(n, "color", "red", "");
     
 #ifdef NO_LAYOUT_OR_RENDERING
     /* Just write the graph without layout */
