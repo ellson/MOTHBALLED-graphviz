@@ -776,12 +776,9 @@ layout algorithms. These include {\tt mclimit},
 Sometimes it is natural to make edges point from left to right
 instead of from top to bottom.
 If \verb"rankdir=LR" in the top-level graph, the drawing is rotated
-in this way.  \verb"TB" (top to bottom) is the default.
-(\verb"BT" seems potentially useful for drawing upward-directed graphs,
-but hasn't been implemented. In some graphs, you could achieve the same
-effect by reversing the endpoints of edges and setting their \verb"dir=back".)
-We note that the setting of {\tt rankdir} is complementary to how the
-final drawing may be rotated by {\tt orientation} or {\tt rotate}.
+in this way.  \verb"TB" (top to bottom) is the default. The mode
+\verb"rankdir=BT" is useful for drawing upward-directed graphs.
+For completeness, one can also have \verb"rankdir=RL".
 
 In graphs with time-lines, or in drawings that emphasize source and sink nodes,
 you may need to constrain rank assignments.
