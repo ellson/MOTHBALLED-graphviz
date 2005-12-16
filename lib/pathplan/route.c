@@ -262,21 +262,7 @@ static int mkspline(Ppoint_t * inps, int inpn, tna_t * tnas, Ppoint_t ev0,
 	x[0] += dot(tnas[i].a[0], tmp);
 	x[1] += dot(tnas[i].a[1], tmp);
     }
-#if 0
     det01 = c[0][0] * c[1][1] - c[1][0] * c[0][1];
-#else
-    /* workaround for problem with:
-     *         gcc (GCC) 4.1.0 20051212 (Red Hat 4.1.0-0.7)
-     *
-     * the problem is a NAN from the subtraction which 
-     * shows up as a SIGFPE a few lines down when
-     * det01 is used as the denominator in a division 
-     */
-    det01 = c[0][0] * c[1][1];
-    d01 = c[1][0] * c[0][1];
-    if (ABS(d01) > 1e-6)
-	det01 -= d01;
-#endif
     det0X = c[0][0] * x[1] - c[0][1] * x[0];
     detX1 = x[0] * c[1][1] - x[1] * c[0][1];
     if (ABS(det01) >= 1e-6) {
