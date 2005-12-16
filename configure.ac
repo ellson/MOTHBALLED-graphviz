@@ -193,6 +193,11 @@ else
 	    ;;
     esac
 fi
+# -ffast-math is incompatible with FP error trapping
+#     ref: https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=175793
+if `echo ${CFLAGS} | grep -q ffast-math`; then
+    CFLAGS="${CFLAGS} -DNO_FPERR"
+fi
 
 dnl -----------------------------------
 dnl checks for other programs

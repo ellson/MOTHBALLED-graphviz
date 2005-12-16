@@ -104,7 +104,6 @@ static void fpinit(void)
     _FPU_SETCW(fpe_flags);
 # endif
 #endif
-    signal(SIGFPE, fperr);
 }
 #endif
 
@@ -145,7 +144,10 @@ int main(int argc, char **argv)
 #ifndef MSWIN32
     signal(SIGUSR1, gvToggle);
     signal(SIGINT, intr);
+#ifndef NO_FPERR
     fpinit();
+    signal(SIGFPE, fperr);
+#endif
 #endif
 
     if (MemTest) {
