@@ -31,9 +31,9 @@
 #endif
 
 #if defined(HAVE_FENV_H) && defined(HAVE_FEENABLEEXCEPT)
-/* __USE_GNU is needed for feenableexcept to be defined in fenv.h on GNU
+/* _GNU_SOURCE is needed for feenableexcept to be defined in fenv.h on GNU
  * systems.   Presumably it will do no harm on other systems. */
-#define __USE_GNU
+#define _GNU_SOURCE
 # include <fenv.h>
 #elif HAVE_FPU_CONTROL_H
 # include <fpu_control.h>
