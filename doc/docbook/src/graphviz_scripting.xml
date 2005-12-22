@@ -1,0 +1,13 @@
+<!-- $Id: -->
+<chapter id="ch-scripting">
+<title>Graphviz Scripting</title>
+<sect1 id="s1-scripting-introduction">
+<title>Introduction</title>
+<para>
+Graphviz supports a C/C++ API suitable for SWIG-generatted wrappers so that the dot libraries can be used form various scripting and other languages.
+The set of languages currently available includes:
+C#, GUILE, JAVA, LUA, OCAML, PERL, PHP, PYTHON, RUBY, TCL.
+in addition to C and C++.
+</para>
+</sect1>
+</chapter>

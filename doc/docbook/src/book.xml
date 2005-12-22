@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: -->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+	"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"
+[
+<!ENTITY bookinfo SYSTEM "bookinfo.xml">
+<!ENTITY plugins SYSTEM "graphviz_plugins.xml">
+<!ENTITY scripting SYSTEM "graphviz_scripting.xml">
+]>
+
+<book id="graphviz-extensions">
+<title>Graphviz Extensions</title>
+<subtitle>Plugin and Scripting extensions to Graphviz</subtitle>
+<!-- External entity refs -->
+&bookinfo;
+&plugins;
+&scripting;
+</book>

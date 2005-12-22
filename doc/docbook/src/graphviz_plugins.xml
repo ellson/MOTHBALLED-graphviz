@@ -1,0 +1,444 @@
+<!-- $Id: -->
+<chapter id="ch-plugins">
+<title>Graphviz Plugins</title>
+<sect1 id="s1-plugins-introduction">
+<title>Introduction</title>
+<para>
+Graphviz plugins are a means of extending the capabilities of the
+graphviz tools:
+<command>dot</command>,
+<command>neato</command>,
+<command>fdp</command>,
+<command>twopi</command>, and
+<command>circo</command>,
+</para>
+<para>
+The initial motivation for the development of plugins was to support
+alternative renders based on
+<ulink url="http://cairo.freedesktop.org/Home">
+<command>cairo</command>
+</ulink>,
+while keeping
+the stable renderer based on
+<ulink url="http://www.boutell.com/gd">
+<command>gd</command>
+</ulink>
+available.
+The <command>gd</command> renderer does not support anti-aliased lines
+(first image).
+Simply by installing the graphviz-cairo package the -Tpng renderer is
+substituted with one based on cairo (second image).
+</para>
+<para>
+Use of the newly installed plugin requires no change in the user's command.
+These images were generated before and after installing 
+<command>graphviz-cairo</command>with the command:
+<programlisting>
+echo "digraph G {hello->world}" | dot -Tpng > hello.png
+</programlisting>
+</para>
+<para>
+<inlinemediaobject>
+  <imageobject  role="html">
+    <imagedata  format="PNG"  fileref="imgs/hello_gd.png"/>
+  </imageobject>
+  <imageobject  role="fo">
+    <imagedata  format="PNG"  fileref="imgs/hello_gd.png" scale="72" />
+  </imageobject>
+</inlinemediaobject>
+<inlinemediaobject>
+  <imageobject  role="html">
+    <imagedata  format="PNG"  fileref="imgs/hello_cairo.png"/>
+  </imageobject>
+  <imageobject  role="fo">
+    <imagedata  format="PNG"  fileref="imgs/hello_cairo.png" scale="72" />
+  </imageobject>
+</inlinemediaobject>
+</para>
+<para>
+A second motivation was to support GUI interfaces to graphs, but
+without bloating the basic version of
+<command>dot</command> with dependencies on
+<command>gtk</command> or <command>xlib</command>.
+The command:
+<programlisting>
+echo "digraph G {hello->world}" | dot -Txlib
+</programlisting>
+demand loads the xlib renderer from the graphviz-cairo plugins
+and produces a zoomable display of the graph in a window:
+</para>
+<mediaobject>
+  <imageobject  role="html">
+    <imagedata  format="PNG"  fileref="imgs/Txlib.png"/>
+  </imageobject>
+  <imageobject  role="fo">
+    <imagedata  format="PNG"  fileref="imgs/Txlib.png" scale="72" />
+  </imageobject>
+</mediaobject>
+</sect1>
+<sect1 id="s1-objectives">
+<title>Objectives and Constraints</title>
+<itemizedlist>
+<listitem>
+Support independent compilation so that plugins can be provided by
+others separate from the base graphviz package.
+</listitem>
+<listitem>
+Support independent packaging so that plugins can be installed
+at the user's discretion, separate from the base graphviz package.
+</listitem>
+<listitem>
+Support optional platform-specific functionality without adding
+complexity to the base package.
+</listitem>
+<listitem>
+Support on-demand loading of plugins so that extra capabilities
+do not degrade performance for basic usage of the tools.
+</listitem>
+<listitem>
+Unbundle some existing functionality into plugins so that the base
+version of dot can be faster when that functionality is not needed.
+</listitem>
+<listitem>
+Minimize performance cost of plugin support, particularly if no plugins
+are demanded.
+</listitem>
+<listitem>
+Must be able to configure dot with a fixed set of plugins as
+<emphasis>builtins</emphasis> that are unconditionally loaded at program
+invocation (linked at load time).
+</listitem>
+<listitem>
+Must be able to configure dot as a static binary (linked at compile time),
+including <emphasis>builtins</emphasis> if specified.
+</listitem>
+<listitem>
+Must support old-style <emphasis>codegens</emphasis>
+at least until completely replaced
+by plugins that are equal or better in quality.
+</listitem>
+</itemizedlist>
+</sect1>
+<sect1 id="s1-structure">
+<title>Structure and terminology</title>
+<para>
+A <emphasis>plugin-package</emphasis>,
+such as <command>graphviz-cairo-2.6-1.i386.rpm</command>, provides one or more
+<emphasis>plugin-libraries</emphasis>.
+</para>
+<para>
+A <emphasis>plugin-library</emphasis> provides plugins that implement various
+<emphasis>plugin-apis</emphasis>.
+The <emphasis>plugin-library</emphasis> is the unit that is dynamically loaded.
+</para>
+<para>
+There are currently five <emphasis>plugin-apis</emphasis>:
+layout, textlayout, usershape, render, device.
+</para>
+<para>
+A <emphasis>plugin-library</emphasis> provides
+<emphasis>plugin-types</emphasis>
+which implement <emphasis>plugin-api</emphasis>.
+e.g. png ps pdf <emphasis>plugin-types</emphasis> implementing the renderer api.
+</para>
+<para>
+Each <emphasis>plugin-type</emphasis> implementation provides a
+<emphasis>quality</emphasis> indicator to control
+the default selection when there are multiple implementations
+of the same plugin-type.
+The builtin implementations (if any) have a <emphasis>quality</emphasis>
+of 0.
+A positive <emphasis>quality</emphasis>
+will choose the plugin in preference to the builtin.
+A negative <emphasis>quality</emphasis>
+will leave the builtin as the default.
+</para>
+<para>
+The plugins are self-describing.
+At installation time, <command>dot -c</command> is run to generate
+<filename>/usr/lib/graphviz/config</filename> which describes the capabilities
+of the available plugin-libraries so that they don't have
+to be loaded at startup and can be loaded later on demand.
+</para>
+</sect1>
+<sect1 id="s1-package">
+<title>The graphviz-cairo package.</title>
+<para>
+The graphviz-cairo package provides multiple plugin-libraries,
+all with some dependence on libcairo.so.
+In general, a plugin-package can be used to localize all
+knowledge and dependencies on some facility like cairo or
+gtk or quartz.
+The graphviz-cairo package alongside the graphviz base package
+is illustrated diagrammatically here:
+</para>
+<mediaobject>
+  <imageobject  role="html">
+    <imagedata  format="PNG"  fileref="imgs/framework.png"/>
+  </imageobject>
+  <imageobject  role="fo">
+    <imagedata  format="PNG"  fileref="imgs/framework.png" scale="72" />
+  </imageobject>
+</mediaobject>
+<para>
+	Once graphviz-cairo is installed, and <command>dot -c</command> has
+been run as part of the installation process,
+the file: <filename>/usr/lib/graphviz/config</filename> contains:
+</para>
+<programlisting>
+libgvplugin_gtk.so.2 gtk {
+        device {
+                gtk 0
+        }
+}
+libgvplugin_xlib.so.2 xlib {
+        device {
+                xlib 0
+        }
+}
+libgvplugin_cairo.so.2 cairo {
+        render {
+                png 10
+                ps -10
+                pdf 0
+                gtk 0
+                xlib 0
+        }
+        textlayout {
+                cairo 10
+        }
+}
+libgvplugin_dot_layout.so.2 dot_layout {
+        layout {
+                dot 0
+        }
+}
+libgvplugin_neato_layout.so.2 neato_layout {
+        layout {
+                neato 0
+                fdp 0
+                twopi 0
+                circo 0
+        }
+}
+</programlisting>
+</sect1>
+<sect1 id="s1-running">
+<title>Running dot with plugins</title>
+<para>
+Dot attempts to be transparent to the user about its use of plugins.
+By default it will always chose the highest quality plugin of the matching plugin-type.
+Sometimes it is necessary to override the default.
+This can be done by explicitly specifying the package to
+take the plugin from. e.g. <command>dot -Tpng</command>
+takes the highest quality
+plugin currently available.
+<command>dot -Tpng:cg</command>
+takes the png renderer from the codegens.
+</para>
+<para>
+If the package is unrecognized, the dot will return the set of available packages:
+</para>
+<programlisting>
+$ dot -Tpng: hello.dot
+Renderer type: "png:" not recognized. Use one of: png:cairo png:cg
+</programlisting>
+<para>
+Also, <command>dot -v</command> will identify all
+available plugins for all the apis.
+</para>
+<programlisting>
+	The plugin configuration file:
+	        /home/ellson/FIX/Linux.i686/lib/graphviz/config
+	                was successfully loaded.
+ 	render      :  canon cmap cmapx dia dot fig gd gd2 gif gtk
+			hpgl imap ismap jpeg jpg mif mp pcl pdf pic plain
+			plain-ext png ps ps2 svg svgz vrml vtx wbmp xdot xlib
+    	layout      :  circo dot fdp neato twopi
+    	textlayout  :  cairo
+    	device      :  gtk xlib
+    	usershape   :  png-gd
+</programlisting>
+</sect1>
+<sect1 id="s1-installing">
+<title>Installing plugins</title>
+<para>
+In order for dot to know what plugin capabilities are available
+there is a file called <filename>/usr/lib/graphviz/config</filename> that is created
+by running
+<command>dot -c</command>
+at install time.
+<command>dot -c</command>
+globs the library directory for all
+filenames that look
+like they might be plugins, then it goes through and actually
+loads each of them in turn, positively verifying that they are
+version compatible and loadable, and it then extracts from each
+library the set of apis and types that it supports.
+It saves this information in <filename>/usr/lib/graphviz/config</filename>.
+When dot is run normally by a user, the single <filename>/usr/lib/graphviz/config</filename> file is
+loaded but the plugins themselves are not loaded unless a plugin
+is demanded from that library.
+</para>
+<para>
+<command>dot -c</command> must be run, with enough priviledges to write
+<filename>/usr/lib/graphviz/config</filename>, whenever the set of plugins is changed.
+For rpm systems
+<command>dot -c</command>
+is run automatically in %post and %postun
+scripts in the rpm specfile.
+If building from sources and installing directly,
+<command>dot -c</command> is run
+by the <command>make install</command> target.
+If you are cross-compiling and cross-installing then probably the
+best thing to do is to not use demand loaded plugins at all.
+There is a <command>dot_static</command>
+binary generated which as a basic set of
+plugins already builtin.
+</para>
+</sect1>
+<sect1 id="s1-developing">
+<title>Developing new plugins</title>
+<para>
+One of the key goals of the plugin architecture was to allow others
+to develop new plugins or plugin-libraries.   In this section I 
+describe the structure of the key parts of the graphvz-cairo package
+with a view to reusing or hacking them into a new package.
+</para>
+<sect2>
+<title>A plugin-package</title>
+<para>
+The following files in the source tree for the graphviz-cairo package
+can probably be used without change:
+<programlisting>
+        graphviz-cairo/
+        autogen.sh
+        cpl1.0.txt
+        ltmain.sh.patch
+        mkinstalldirs
+</programlisting>
+</para>
+<para>
+The following files should be changed to suit:
+<programlisting>
+        graphviz-cairo/
+        AUTHORS
+        ChangeLog
+        NEWS README
+        configure.ac
+        Makefile.am
+        graphviz-cairo.spec.in 
+</programlisting>
+</para>
+<para>
+Also in graphviz-cairo are a number of GUI related files
+specific to graphviz-cairo.
+These can be probably not useful for any other plugin based on this code:
+</para>
+<programlisting>
+    graphviz-cairo/
+        dot.dot
+        dot.png
+        dot.xml
+        dotedit-splash.dot
+        dotedit.desktop.in
+        dotedit.indotedit.in
+        po/
+</programlisting>
+</sect2>
+<sect2>
+<title>A plugin library</title>
+<para>
+Each library in the plugin package has its own subdirectory under plugins:
+</para>
+<programlisting>
+    graphviz-cairo/
+        plugin/
+            Makefile.am
+            cairo/
+                Makefile.am
+                gvplugin_cairo.c
+            gtk/
+                Makefile.am
+                gvplugin_gtk.c
+            xlib/
+                Makefile.am
+                gvplugin_xlib.c
+</programlisting>
+<para>
+graphviz-cairo/plugins/Makefile.am builds all the libraries as SUBDIRS.
+</para>
+<para>
+In each library subdir Makefile.am and a gvplugin_xxx.c.
+The gvplugin_cairo.c file is quite short.
+It defines the primary entry symbol to the library
+which is a structure defining the <emphasis>name</emphasis>
+of the library and the address of the table of APIs that it supports.
+</para>
+<para>
+The name: <emphasis>cairo</emphasis>,
+the symbol: <emphasis>gvplugin_cairo_LTX_library</emphasis>,
+and the filename of the library:
+<emphasis>libgvplugin_cairo.so.2.0.0</emphasis>
+must be kept aligned for the plugin mechanism to work.
+</para>
+<programlisting>
+#include "gvplugin.h"
+
+extern gvplugin_installed_t gvrender_cairogen_types;
+extern gvplugin_installed_t gvtextlayout_cairogen_types;
+
+static gvplugin_api_t apis[] = {
+    {API_render, &amp;gvrender_cairogen_types},
+    {API_textlayout, &amp;gvtextlayout_cairogen_types},
+    {(api_t)0, NULL},
+};
+
+gvplugin_library_t gvplugin_cairo_LTX_library = { "cairo", apis };
+</programlisting>
+</sect2>
+<sect2>
+<title>Plugin APIs</title>
+<para>
+The APIs are defined for the plugins by header files:
+</para>
+<programlisting>
+    /usr/include/graphviz/gvplugin_device.h
+    /usr/include/graphviz/gvplugin_layout.h
+    /usr/include/graphviz/gvplugin_render.h
+    /usr/include/graphviz/gvplugin_textlayout.h
+    /usr/include/graphviz/gvplugin_usershape.h
+</programlisting>
+<para>
+Also, the set of APIS is defined in graphviz2/lib/gvc/gvplugin.h in:
+    #define APIS ELEM(render) ELEM(layout) ELEM(textlayout) ELEM(device) ELEM(usershape)
+</para>
+<para>
+In the core of graphviz, each API is wrapped by a set of functions
+that hide the details of the plugin mechanisms from the caller.
+</para>
+<programlisting>
+    graphviz2/lib/gvc/gvdevice.c
+    graphviz2/lib/gvc/gvlayout.c
+    graphviz2/lib/gvc/gvrender.c
+    graphviz2/lib/gvc/gvtextlayout.c
+    graphviz2/lib/gvc/gvusershape.c
+</programlisting>
+<para>
+So, to add a new API, minimally what is required
+is a new header file, extend the #define APIS,
+and a new file of wrapper functions.
+</para>
+</sect2>
+<sect2>
+<title >Plugin types for an API</title>
+<para>
+The cairo library in particular is developing a number of new backends.
+At some point someone will want to use one or more of these new backends.
+</para>
+<para>
+(tbd)
+</para>
+</sect2>
+</sect1>
+</chapter>
