@@ -6,13 +6,13 @@ SRCS = \
 
 all: html pdf
 
-dvi fo javahelp man pdf ps txt xhtml xhtml-nochunks: $(SRCS)
+dvi fo javahelp man pdf ps txt: $(SRCS)
 	xmlto $@ src/book.xml
 
 
-html html-nochunks htmlhelp: $(SRCS)
+xhtml xhtml-nochunks html html-nochunks htmlhelp: $(SRCS)
 	xmlto $@ -o $@ src/book.xml
 	cp -rp src/imgs $@/
 
 clean:
-	rm -rf html* book.*
+	rm -rf xhtml xhtml-nochunks html html-nochunks htmlhelp book.*
