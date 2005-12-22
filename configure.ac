@@ -409,10 +409,10 @@ AC_ARG_ENABLE(lua,
   [AC_HELP_STRING([--disable-lua], [don't support lua language bindings])])
 if test "x$enable_lua" != "xno"; then
 AC_CHECK_PROG(LUA,lua,lua)
-IO_INCLUDES=
-IO_LIBS=
-AC_SUBST(IO_INCLUDES)
-AC_SUBST(IO_LIBS)
+LUA_INCLUDES=
+LUA_LIBS=
+AC_SUBST(LUA_INCLUDES)
+AC_SUBST(LUA_LIBS)
 fi
 fi
 AM_CONDITIONAL(WITH_LUA, [test "x$LUA" != "x"])
