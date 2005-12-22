@@ -61,7 +61,7 @@ extern "C" {
 /* agxbmore:
  * Expand buffer to hold at least ssz more bytes.
  */
-    extern int agxbmore(agxbuf * xb, int unsigned ssz);
+    extern void agxbmore(agxbuf * xb, int unsigned ssz);
 
 /* agxbputc:
  * Add character to buffer.
