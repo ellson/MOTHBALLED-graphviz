@@ -188,7 +188,7 @@ static char *gobble(Match_t * mp, register char *s, register int sub,
 	case '[':
 	    if (!b) {
 		if (*s == '!')
-		    mbgetchar(s);
+		    (void)mbgetchar(s);
 		b = s;
 	    } else if (*s == '.' || *s == '=' || *s == ':')
 		c = *s;
@@ -470,7 +470,7 @@ onematch(Match_t * mp, int g, char *s, char *p, char *e, char *r,
 				break;
 			    x++;
 			}
-			mbgetchar(p);
+			(void)mbgetchar(p);
 			if (ok)
 			    /*NOP*/;
 			else if (n == ':') {
@@ -548,7 +548,7 @@ onematch(Match_t * mp, int g, char *s, char *p, char *e, char *r,
 			else if (range)
 			    goto getrange;
 			else if (*p == '-' && *(p + 1) != ']') {
-			    mbgetchar(p);
+			    (void)mbgetchar(p);
 			    range = oldp;
 			} else
 			    if ((isalpha(*oldp) && isalpha(*olds)
@@ -632,13 +632,13 @@ onematch(Match_t * mp, int g, char *s, char *p, char *e, char *r,
 			if (sc == x || sc == pc || (sc > x && sc < pc))
 			    ok = 1;
 			if (*p == '-' && *(p + 1) != ']') {
-			    mbgetchar(p);
+			    (void)mbgetchar(p);
 			    range = oldp;
 			} else
 			    range = 0;
 			n = 1;
 		    } else if (*p == '-' && *(p + 1) != ']') {
-			mbgetchar(p);
+			(void)mbgetchar(p);
 #if _lib_fnmatch
 			if (ast.locale.set & (1 << AST_LC_COLLATE))
 			    ok = -1;
