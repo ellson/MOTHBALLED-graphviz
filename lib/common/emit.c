@@ -1684,7 +1684,7 @@ char **parse_style(char *s)
     }
     parse[fun] = (char *) 0;
     agxbfree(&xb);
-    agxbuse(&ps_xb);		/* adds final '\0' to buffer */
+    (void)agxbuse(&ps_xb);		/* adds final '\0' to buffer */
     return parse;
 }
 
