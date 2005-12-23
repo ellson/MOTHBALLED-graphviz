@@ -49,12 +49,16 @@ about spam. We also run anti-spam filters, and rewrite <tt>@</tt>
 as <tt>at</tt> to keep verbatim addresses out of the archive.
 <p>
 Please, please, please, do not torment the mailing list with beginner's
-questions or software build problems.  First, check this FAQ and the
+questions.  First, check this FAQ and the
 <A HREF="https://mailman.research.att.com/pipermail/graphviz-interest/">
-message archive</A> carefully.
+message archive</A> carefully. 
 Because Graphviz software is made available without charge,
-our resources for routine support are very limited.  If you are desperate,
-please contact ellson, erg, or north@research.att.com.
+our resources for routine support are very limited. 
+If you run into software build problems with the ``stable'' release,
+you could also try the current <A HREF="http://www.graphviz.org/pub/graphviz/CURRENT/">development snapshot<A>.
+If you are desperate, or better yet, if you have constructive advice,
+please send a message to the <A HREF="https://mailman.research.att.com/mailman/listinfo/graphviz-devel">graphviz-devel mailing list</A>.
+(Note that our local buildlogs are also <A HREF="http://www.graphviz.org/pub/graphviz/ARCHIVE/">online</A>.)
 <p>
 Also, if a program crashes or you get an abort or something strange occurs
 and you are fairly comfortable using the tools:
@@ -560,6 +564,7 @@ neato -Gmaxiter=500
 <P>
 Note that, if you have a large graph, the generation of edges as splines
 is a cubic algorithm, so you would do well to avoid using <tt>splines=true</tt>.
+(This commment applies to circo, fdp and twopi as well.)
 <P>
 <B>Q. Edge label placement in neato is bad.</b>
 <p>
