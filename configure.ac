@@ -196,7 +196,7 @@ fi
 # -ffast-math is incompatible with FP error trapping
 #     ref: https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=175793
 if `echo ${CFLAGS} | grep -q ffast-math`; then
-    CFLAGS="${CFLAGS} -DNO_FPERR"
+    AC_DEFINE_UNQUOTED(NO_FPERR,1,[Define if no fpu error exception handling is required.])
 fi
 
 dnl -----------------------------------

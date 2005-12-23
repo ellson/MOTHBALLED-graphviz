@@ -33,7 +33,9 @@
 #if defined(HAVE_FENV_H) && defined(HAVE_FEENABLEEXCEPT)
 /* _GNU_SOURCE is needed for feenableexcept to be defined in fenv.h on GNU
  * systems.   Presumably it will do no harm on other systems. */
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 # include <fenv.h>
 #elif HAVE_FPU_CONTROL_H
 # include <fpu_control.h>
@@ -58,6 +60,7 @@ static void intr(int s)
     exit (gvFreeContext(Gvc));
 }
 
+#ifndef NO_FPERR
 static void fperr(int s)
 {
     fprintf(stderr, "caught SIGFPE %d\n", s);
@@ -105,6 +108,7 @@ static void fpinit(void)
 # endif
 #endif
 }
+#endif
 #endif
 
 static graph_t *create_test_graph(void)
