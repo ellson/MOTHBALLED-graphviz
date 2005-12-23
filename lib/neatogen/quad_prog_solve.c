@@ -72,7 +72,7 @@ ensureMonotonicOrderingWithGaps(float* place, int n, int* ordering,
 	
 	int i;
 	int node, level, max_in_level;
-	float lower_bound;
+	float lower_bound = (float)-1e9;
 
 	level = -1; max_in_level=0;		
 	for (i=0; i<n; i++) {
