@@ -127,7 +127,7 @@ gettok (char** sp)
 	else break;
         rs++;
     }
-    if (*rs) *rs++;
+    if (*rs) rs++;
     else if (q)
 	error(ERROR_WARNING, "no closing quote for argument %s", s);
     *sp = rs;
