@@ -405,6 +405,9 @@ rm -rf $RPM_BUILD_ROOT
 %post
 %{_bindir}/dot -c
 
+%postun
+rm -f %{_libdir}/%{name}/config
+
 %changelog
 * Tue Sep 13 2005 John Ellson <ellson@research.att.com>
 - split out language bindings into their own rpms so that 
