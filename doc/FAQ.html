@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
-<HTML><HEAD><TITLE>Graphviz FAQ 2004-12-15</TITLE>
+<HTML><HEAD><TITLE>Graphviz FAQ 2005-12-27</TITLE>
 <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
 </HEAD><BODY>
-<H1>Graphviz FAQ 2004-12-15</H1>
+<H1>Graphviz FAQ 2005-12-27</H1>
 
 <A HREF="mailto:north@graphviz.org">Stephen North</A>,
 <A HREF="mailto:erg@graphviz.org">Emden Gansner</A>,
@@ -273,6 +273,31 @@ layouts other than trees, too).
 
 <H2>Output features</H2>
 
+<B>Q. How can I get high quality (antialiased) output?
+<P>
+The easiest thing may be to make the layout in Postscript (option <tt>-Tps</tt>),
+then run through <A HREF="http://www.cs.wisc.edu/~ghost/">Ghostview</A> with
+antialiasing enabled.  The important command line options are
+<tt>-dTextAlphaBits=4 -dGraphicsAlphaBits=4</tt>
+(4 is the highest level of antialiasing allowed - see the
+<A HREF="http://www.cs.wisc.edu/~ghost/doc/GPL/8.15/Use.htm">Ghostview documentation</A>).
+The full command line to render a raster could be something like:
+<pre>
+gs -q -dNOPAUSE -dBATCH -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -sDEVICE=png16m -sOutputFile=file.png file.ps
+</pre>
+<P>
+On Mac OS X, the <A HREF="http://www.pixelglow.com/graphviz/">pixelglow</A> port
+uses Apple's Quartz renderer, which enables antialiasing.  (The downside is
+that you can't run Pixelglow Graphviz as a web server or other background
+process if your Mac has 3D graphics, because Quartz wants to get this resource
+to accelerate its rendering.)
+<P>
+On the Linux bleeding edge, Graphviz can use the new <A HREF="http://www.cairographics.org">cairo</A>
+back end, which has antialiased rendering.  This requires installing cairo, which
+is not part of graphviz itself.  Cairo can be compiled from source and binary RPMs can be found
+for Fedora Core 4.  It is believed that Cairo will be part of FC5 and may enable
+this back end if it is already installed.
+<P>
 <B>Q. I can only get 11x17 output.</B>
 <P>
 It's not us!  It's probably your printer setup.  If you don't
