@@ -273,7 +273,7 @@ layouts other than trees, too).
 
 <H2>Output features</H2>
 
-<B>Q. How can I get high quality (antialiased) output?
+<B>Q. How can I get high quality (antialiased) output?</B>
 <P>
 The easiest thing may be to make the layout in Postscript (option <tt>-Tps</tt>),
 then run through <A HREF="http://www.cs.wisc.edu/~ghost/">Ghostview</A> with
@@ -287,16 +287,19 @@ gs -q -dNOPAUSE -dBATCH -dTextAlphaBits=4 -dGraphicsAlphaBits=4 -sDEVICE=png16m 
 </pre>
 <P>
 On Mac OS X, the <A HREF="http://www.pixelglow.com/graphviz/">pixelglow</A> port
-uses Apple's Quartz renderer, which enables antialiasing.  (The downside is
+uses Apple's Quartz renderer, which enables antialiasing.  It also provides a beautiful document container for its user interface. (One downside is
 that you can't run Pixelglow Graphviz as a web server or other background
 process if your Mac has 3D graphics, because Quartz wants to get this resource
-to accelerate its rendering.)
+to accelerate rendering. Another problem is that as of this writing,
+Pixelglow Graphviz hasn't been updated in a long time, maybe mid 2004.)
 <P>
-On the Linux bleeding edge, Graphviz can use the new <A HREF="http://www.cairographics.org">cairo</A>
-back end, which has antialiased rendering.  This requires installing cairo, which
-is not part of graphviz itself.  Cairo can be compiled from source and binary RPMs can be found
-for Fedora Core 4.  It is believed that Cairo will be part of FC5 and may enable
-this back end if it is already installed.
+On the Linux bleeding edge, Graphviz has an optional plugin to use
+the new <A HREF="http://www.cairographics.org">cairo</A> back end,
+which is antialiased.  If you want to use this, you need to install
+cairo, which is not part of graphviz.  Cairo can be built from source,
+and binary RPMs for Fedora Core 4 are around.  Then you need to install
+the optional <A HREF="http://www.graphviz.org/pub/graphviz/CURRENT/">graphviz-cairo</A> plugin.  It is believed that Cairo
+will be part of FC5, so this will become a more standard feature.
 <P>
 <B>Q. I can only get 11x17 output.</B>
 <P>
