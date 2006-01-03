@@ -38,7 +38,7 @@ uninstall-hook:
 	(cd $(DESTDIR)$(man1dir); for i in $(linkedman); do rm -f $$i; done;)
 	(cd $(DESTDIR)$(pdfdir); for i in $(linkedpdf); do rm -f $$i; done;)
 	(cd $(DESTDIR)$(bindir); for i in $(linkedprogram); do rm -f $$i; done;)
-	(cd $(DESTDIR)$(libdir); rm -f config; done;)
+	(cd $(DESTDIR)$(libdir); rm -f config;)
 
 dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 	groff -Tps -man $(top_srcdir)/cmd/dot/dot.1 | ps2pdf - - >$@
