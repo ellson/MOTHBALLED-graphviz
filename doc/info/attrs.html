@@ -1566,6 +1566,12 @@ the given types.
   Additional styles are available in
   device-dependent form. Style lists are passed to device drivers, which
   can use this to generate appropriate output.
+  <P>
+  The <A NAME=d:setlinewidth><TT>setlinewidth</TT></A> style value can be
+  used for more control over the width of edges and node borders than is
+  allowed by <TT>bold</TT>. The style takes an argument, specifying the
+  width of the line in points. For example, <TT>style="bold"</TT> is
+  equivalent to <TT>style="setlinewidth(2)"</TT>. 
 
 <DT><A NAME=k:viewPort><STRONG>viewPort</STRONG></A>
 <DD>"%lf,%lf,%lf,%lf,%lf" The viewPort "W,H,Z,x,y" 

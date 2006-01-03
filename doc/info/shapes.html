@@ -184,8 +184,13 @@ it then looks like:<BR>
 <H2><A NAME="d:style">Styles for Nodes</A></H2>
 The <A HREF=attrs.html#d:style><TT>style</TT></A>
 attribute can be used to modify the appearance of a node.
-At present, there are 4 style values recognized:
-<TT>filled</TT>, <TT>invisible</TT>, <TT>diagonals</TT> and <TT>rounded</TT>.
+At present, there are 8 style values recognized:
+<TT>filled</TT>, <TT>invisible</TT>, <TT>diagonals</TT>, <TT>rounded</TT>.
+<TT>dashed</TT>, <TT>dotted</TT>, <TT>solid</TT> and <TT>bold</TT>.
+As usual, the value of the <A HREF=attrs.html#d:style><TT>style</TT></A>
+attribute can be a comma-separated list of any of these. If the
+style contains conflicts (e.g, <TT>style="dotted, solid"</TT>), the last
+attribute wins.
 <DL>
 <DT><A NAME=d:filled><TT>filled</TT>
   <DD>This value indicates that the node's interior should be filled.
@@ -242,6 +247,17 @@ digraph R {
 </XMP>
 to produce the figure<BR>
 <IMG SRC=round.gif>
+<DT><A NAME=d:dashed><TT>dashed</TT>
+  <DD>This style causes the node's border to be drawn as a dashed line.
+<DT><A NAME=d:dotted><TT>dotted</TT>
+  <DD>This style causes the node's border to be drawn as a dotted line.
+<DT><A NAME=d:solid><TT>solid</TT>
+  <DD>This style causes the node's border to be drawn as a solid line,
+which is the default.
+<DT><A NAME=d:bold><TT>bold</TT>
+  <DD>This style causes the node's border to be drawn as a bold line.
+See also <A HREF=attrs.html#d:setlinewidth>setlinewidth</A>.
+
 </DL>
 
 <P>
