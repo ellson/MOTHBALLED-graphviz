@@ -123,7 +123,7 @@ extern bool ok(Agsym_t *a);
 extern Agraph_t *firstsubg(Agraph_t *g);
 extern Agraph_t *nextsubg(Agraph_t *g, Agraph_t *sg);
 
-/*** Iterate over supergraphs of a graph (obscure and rarely usefull) */
+/*** Iterate over supergraphs of a graph (obscure and rarely useful) */
 extern Agraph_t *firstsupg(Agraph_t *g);
 extern Agraph_t *nextsupg(Agraph_t *g, Agraph_t *sg);
 
