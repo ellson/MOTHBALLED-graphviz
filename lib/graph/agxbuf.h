@@ -61,20 +61,15 @@ extern "C" {
 /* agxbmore:
  * Expand buffer to hold at least ssz more bytes.
  */
-    extern void agxbmore(agxbuf * xb, int unsigned ssz);
+    extern int agxbmore(agxbuf * xb, int unsigned ssz);
 
 /* agxbputc:
  * Add character to buffer.
  *  int agxbputc(agxbuf*, char)
  */
-#if 0
 #define agxbputc(X,C) ((((X)->ptr >= (X)->eptr) ? agxbmore(X,1) : 0), \
           (int)(*(X)->ptr++ = ((unsigned char)C)))
-#else
-/* this version avoids returning an unused int that causes compiler warnings */
-#define agxbputc(X,C) ({if ((X)->ptr >= (X)->eptr) agxbmore(X,1); \
-          (int)(*(X)->ptr++ = ((unsigned char)C));})
-#endif
+
 /* agxbuse:
  * Null-terminates buffer; resets and returns pointer to data;
  *  char* agxbuse(agxbuf* xb)

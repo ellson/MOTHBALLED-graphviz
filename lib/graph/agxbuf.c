@@ -44,7 +44,7 @@ void agxbinit(agxbuf * xb, unsigned int hint, unsigned char *init)
 /* agxbmore;
  * Expand buffer to hold at least ssz more bytes.
  */
-void agxbmore(agxbuf * xb, unsigned int ssz)
+int agxbmore(agxbuf * xb, unsigned int ssz)
 {
     int cnt;			/* current no. of characters in buffer */
     int size;			/* current buffer size */
@@ -66,6 +66,7 @@ void agxbmore(agxbuf * xb, unsigned int ssz)
     xb->buf = nbuf;
     xb->ptr = xb->buf + cnt;
     xb->eptr = xb->buf + nsize;
+    return 0;
 }
 
 /* agxbput_n:
