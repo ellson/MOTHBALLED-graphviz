@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
-<HTML><HEAD><TITLE>Graphviz FAQ 2005-12-27</TITLE>
+<HTML><HEAD><TITLE>Graphviz FAQ 2006-01-03</TITLE>
 <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
 </HEAD><BODY>
-<H1>Graphviz FAQ 2005-12-27</H1>
+<H1>Graphviz FAQ 2006-01-03</H1>
 
 <A HREF="mailto:north@graphviz.org">Stephen North</A>,
 <A HREF="mailto:erg@graphviz.org">Emden Gansner</A>,
@@ -20,8 +20,10 @@ for a partial list of compatible tools and packages.
 
 <h2>General</h2>
 
+<A name=Q1>
 <B>Q. Where can I see a list of all the attributes
 that control dot or neato?</B>
+</A>
 <P>
 See <A HREF="info/attrs.html">
 Graph Attributes</A>. There is also information on
@@ -31,7 +33,9 @@ command-line usage</A> and
 output formats</A>.
 <p>
 <a name="mailinglist"></a>
+<A name=Q2>
 <B>Q. Where can I discuss Graphviz?</B>
+</A>
 <p>
 We run a mailing list.
 <p>
@@ -79,7 +83,9 @@ text form</A>, fill in the fields, and email it to
 <a href="mailto:gviz-bugs@research.att.com">gviz-bugs@research.att.com</a>.
 </UL>
 <p>
+<A name=Q3>
 <B>Q. I'm trying to make a layout larger. How?</B>
+</A>
 <p>
 There are various ways to increase the size of a layout. In doing this,
 one has to decide if the sizes of the nodes and text should be 
@@ -133,7 +139,9 @@ manually adding a command such as <tt>2 2 scale</tt> where the
 Postscript environment is set up.  Make sure to adjust the
 <tt>BoundingBox</tt> too if your tools look at this header.
 <p>
+<A name=Q4>
 <B>Q. How can I join or merge certain edge routes in dot?</B>
+</A>
 <p>
 You can try running <tt>dot -Gconcentrate=true</tt> or you can
 introduce your own virtual nodes drawn as tiny circles where
@@ -178,7 +186,9 @@ Set the label at the end of the graph (before the closing brace), after all
 its contents have been defined. (We admit it seems desirable to define some
 special syntax for non-inherited attribute settings.)
 <p>
+<A name=Q5>
 <B>Q. How can I draw multiple parallel edges in neato?</B>
+</A>
 <p>
 This is possible when the <tt>splines</tt> attribute is false, which
 is the default. When <tt>splines=true</tt>, we have no good answer but
@@ -241,13 +251,17 @@ A similar check is done for logical tails. In
 these cases, the edge
 is drawn between the real nodes as usual.
 <p>
+<A name=Q6>
 <B>Q. Clusters are hard to see.</B>
+</A>
 <P>
 Set <tt>bgcolor=grey</tt>
 (or some other color)
 in the cluster.
 <P>
+<A name=Q7>
 <B>Q. How can I symmetrize (balance) tree layouts?</B>
+</A>
 <P>
 When a tree node has an even number of children, it isn't necessarily
 centered above the two middle ones.  If you know the order of the children,
@@ -273,7 +287,9 @@ layouts other than trees, too).
 
 <H2>Output features</H2>
 
+<A name=Q8>
 <B>Q. How can I get high quality (antialiased) output?</B>
+</A>
 <P>
 The easiest thing may be to make the layout in Postscript (option <tt>-Tps</tt>),
 then run through <A HREF="http://www.cs.wisc.edu/~ghost/">Ghostview</A> with
@@ -301,14 +317,18 @@ and binary RPMs for Fedora Core 4 are around.  Then you need to install
 the optional <A HREF="http://www.graphviz.org/pub/graphviz/CURRENT/">graphviz-cairo</A> plugin.  It is believed that Cairo
 will be part of FC5, so this will become a more standard feature.
 <P>
+<A name=Q9>
 <B>Q. I can only get 11x17 output.</B>
+</A>
 <P>
 It's not us!  It's probably your printer setup.  If you don't
 believe this, run <tt>dot -Tps</tt> and look at the
 <tt>BoundingBox</tt> header.  The coords are in 1/72ths of an inch.
  
 <P>
+<A name=Q10>
 <B>Q. How do I create special symbols and accents in labels?</B>
+<A name=Q2>
 <P>
 The following solution only works with the
 raster drivers that load Truetype or Type1
@@ -326,7 +346,9 @@ You can look up other examples in this
 handy <A HREF="http://www.research.att.com/sw/tools/graphviz/doc/char.html">
 character set reference</A> .
 <P>
+<A name=Q11>
 <B>Q. How do I get font and color changes in record labels or other labels?</B>
+</A>
 <P>
 This is not possible in record shapes. However, you can do this using
 <A HREF="info/shapes.html#html">
@@ -336,7 +358,9 @@ the effect you want. The intention is to support arbitrary font changes
 within running text in the not-too-distant future.
  
 <P>
+<A name=Q12>
 <B>Q. In plain format, splines do not touch the nodes (arrowheads are missing).</B>
+</A>
 <P>
 Edges are specified as the main spline and, if necessary, arrowheads
 which actually abut the node. If the arrowheads are not given, drawing
@@ -350,7 +374,9 @@ A workaround is to set
 Since the edges have no arrowheads, the spline specification will go
 all the way to both nodes. 
 <P>
+<A name=Q13>
 <B>Q. Record nodes are drawn differently in dot and neato when rankdir=LR.</B>
+</A>
 <P>
 It's true.  dot -Grankdir=LR rotates record nodes so that their top level
 fields are still listed across levels.  rankdir=LR has no effect in neato.
@@ -362,7 +388,9 @@ record labels in { } to rotate/unrotate the record contents. See also,
 <A HREF="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnhfact/html/hfactor8_5.asp">How To Avoid Foolish Consistency</A>
 by Scott Berkun (Microsoft Corp.)
 <P>
+<A name=Q14>
 <B>Q. How can I print a big graph on multiple pages?</B>
+</A>
 <P>
 The <tt>page</tt> attribute, if set, tells Graphviz to print the
 graph as an array of pages of the given size. Thus, the graph
@@ -380,9 +408,11 @@ Alternatively, there are various tools and viewers which will take
 a large picture and allow you to extract page-size pieces, which can
 then be printed.
 <P>
+<A name=Q15>
 <B>Q. When I have a red edge it shows up as a
 solid red in PNG and GIF formats, but has a
 black border when rendered to JPEG.  </B>
+</A>
 <P>
 This is an artifact of JPEG's lossy
 compression algorithm.  JPEG isn't very good
@@ -392,7 +422,9 @@ eventually remove the JPEG driver, but North
 is reluctant to change anything that people
 might already rely on.
 <P>
+<A name=Q16>
 <B>Q. How can I get custom shapes or images in my graph?</B>
+</A>
 <P>
 Please see the
 <A HREF="http://www.graphviz.org/Documentation/html/shapehowto.html">
@@ -402,15 +434,36 @@ custom shapes that work with dot/neato, dotty
 front end), because they don't share any universal back end structure.
 We're thinking about it.
 <P>
+<A name=Q17>
 <B>Q. Sometimes in dotty, right mouse click shows the global menu
 but none of the items can be selected.</B>
+</A>
 <P>
 Check that the NUMLOCK key is off.  It's a
 <A HREF="http://www.research.att.com/~erg/graphviz/bugs/b524.html">
 known bug</A>.
 <P>
+<A name=Q18>
+<B>Q. Why does dotty report a syntax error on a legal dot file?</B>
+</A>
+Typically this error is reported as:
+<pre>
+>> graph parser: syntax error near line 14
+>> context:  >>>  <<< digraph G {
+>> dotty.lefty: giving up on dot
+>> dotty.lefty: graph that causes dot
+>> dotty.lefty: to fail has been saved in file dottybug.dot
+</pre>
+Probably there is a command in your shell environment (such as
+.alias or .profile) that does output even for non-interactive shells.
+When this occurs, those characters go in the pipe to the dot parser
+and cause this problem.  An easy check is whether other users have
+the same problem.
+<P>
+<A name=Q20>
 <B>Q. How can I get some display feature (such
 as bold lines) in dotty?</B>
+</A>
 <P>
 <A NAME="dotty_note">Dotty</A> has not really changed for many years. Therefore, there are
 myriad features available in Graphviz which it cannot handle.
@@ -437,16 +490,20 @@ various front ends don't use it yet.  This would be a good project
 for someone who wants to get involved here (along with porting
 dotty to GTK.)
 <P>
+<A name=Q21>
 <B>Q. How can I get rid of the little circles on
 edges ("edge handles") in dotty?</B>
+</A>
 <P> 
 Edit the file dotty.lefty and change the
 line that says: 'edgehandles' = 1; to 'edgehandles' = 0;
 it's around line 110.
 <P>
+<A name=Q22>
 <B>Q. I already have all the coordinates for the
 nodes and edges of my graph and just want to
 use dot, neato, or dotty to render it.  How?</B>
+</A>
 <P>
 Put the graph with layout attributes into a dot
 file. 
@@ -460,8 +517,10 @@ defined, neato will perform whatever edge routing it would
 normally do. All of the usual backend attributes (<TT>size</TT>,
 <TT>overlap</TT>, <TT>page</TT>, etc.) are available.
 <P>
+<A name=Q23>
 <B>Q. I already have all the coordinates for the
 nodes, and I want dot or neato to route the edges.</B>
+</A>
 <P>
 It's not really too convenient to use dot for this.
 It is possible to use neato for this,
@@ -479,22 +538,30 @@ you have to specify -Gsplines=true. And this will only work if none of
 the nodes overlap. Since the input graph supplies fixed node positions,
 it is the user's task to insure this.
 <P>
+<A name=Q24>
 <B>Q. I already have all the coordinates for the
 nodes and edges of my graph and just want to
 use dotty to render it.  How?</B>
+</A>
 <P>
 Just run dotty on it. Dotty will use the given pos attributes.
 <P>
+<A name=Q25>
 <B>Q. Same as above, but I have only node coords, not edges.</B>
+</A>
 <P>
 <tt>neato -n -s</tt> is some help, but neato doesn't handle
 spline-based parallel edges. 
 <P>
+<A name=Q26>
 <B>Q. How can I make client-side image maps?</B>
+</A>
 <P>
 Use the -Tcmap command line option (only version 1.8.9 and beyond!)
 <P>
+<A name=Q27>
 <B>Q. Why aren't my server-side maps being recognized? I've checked the HTML!</B>
+</A>
 <P>
 Make sure that your server has map files enabled. For example, if running
 apache, check that httpd.conf has a line like the following:
@@ -503,6 +570,7 @@ AddHandler imap-file map
 </pre>
 and that it is not commented out!
 <P>
+<A name=Q28>
 <B>Q. I've installed Debian Graphviz and it works just fine on the command line,
 but when I execute a Perl/CGI script through Apache, no output is generated.
 For example, the code</B>
@@ -510,6 +578,7 @@ For example, the code</B>
 <B>system("/usr/local/bin/dot -Tpng /tmp/tree.dot -o /tmp/tree.png");</B>
 </pre>
 <B>produces no file <tt>/tmp/tree.png</tt>.</B>
+</A>
 <P>
 As best as we can tell, dot dies with no stdout or stderr messages on Debian 
 systems when run from an Apache cgi program
@@ -520,7 +589,9 @@ Someone has also suggested using the
 <A HREF="http://search.cpan.org/search?query=graphviz&amp;mode=all">
 Perl module for Graphviz</A>.
 <P>
+<A name=Q29>
 <B>Q. How can I get 3D output?</B>
+</A>
 <P>
 The Graphviz authors have qualms about the gratuitous use of 3D.
 <p>
@@ -538,11 +609,15 @@ This would need some (minor) driver work and a good 7-dimensional viewer. Well,
 <tt>dim=3</tt> ought to be possible.
 
 <H2>Problems</H2>
+<A name=Q30>
 <B>Q. How can I avoid node overlaps in neato?</B>
+</A>
 <P>
 Use the graph attribute <A HREF="info/attrs.html#d:overlap"><tt>overlap</tt></A>.
 <P>
+<A name=Q31>
 <B>Q. How can I avoid node-edge overlaps in neato?</B>
+</A>
 <P>
 Use the <tt>overlap</tt> attribute to leave room among the nodes, then
 use <tt>-Gsplines=true</tt>.
@@ -558,7 +633,9 @@ The actual value may require some tinkering.
 slows down neato, so should be used sparingly and only
 with modest-sized graphs.
 <P>
+<A name=Q32>
 <B>Q. Neato runs forever on a certain example.</B>
+</A>
 <P>
 First, how big is your graph? Neato is a quadratic algorithm, roughly
 equivalent to statistical multidimensional scaling. If you
@@ -594,14 +671,18 @@ Note that, if you have a large graph, the generation of edges as splines
 is a cubic algorithm, so you would do well to avoid using <tt>splines=true</tt>.
 (This commment applies to circo, fdp and twopi as well.)
 <P>
+<A name=Q33>
 <B>Q. Edge label placement in neato is bad.</b>
+</A>
 <p>
 Difficult problem.  We're working on it.
 If anyone has some general
 label placement code (e.g. a simulated annealer based on the Marks et al.
 technique in <I>Graphics Gems IV</I>), please get in touch.
 <P>
+<A name=Q34>
 <B>Q. Dot runs forever on a certain example.</B>
+</A>
 <p>
 Try dot -v to observe its progress.
 <p>
@@ -641,8 +722,10 @@ digraph G {
 The addition of <tt>attr0</tt> touches every node of the graph.
 Then the addition of <tt>attr1</tt> touches every node again, and so on.
 <P>
-Q. <B> Neato has unnecessary edge crossings, or has missed an
-obvious change to make a much nicer layout.</B>
+<A name=Q35>
+<B>Q. Neato has unnecessary edge crossings, or has missed an
+obvious chance to make a much nicer layout.</B>
+</A>
 <P>
 Neato and all similar virtual physical model algorithms rely
 on heuristic solutions of optimization problems. The better
@@ -661,7 +744,9 @@ In particular, note that there are no guarantees that neato will produce
 a planar layout of a planar graph, or expose all or most of a graph's
 symmetries.
 <P>
-Q. <B> Webdot doesn't work.</B>
+<A name=Q36>
+<B>Q. Webdot doesn't work.</B>
+</A>
 <P>
 We assume you're using Apache and have <A HREF="http://www.tcl.tk/">TCL</A> installed.
 If you don't, it's probably better to just use the
@@ -694,7 +779,7 @@ can't read "LIBTCLDOT": no such variable
 "
     (file "scaffold.tcl" line 22)
 </pre>
-The above is a strong clue that webdot is not configured properly properly. 
+The above is a strong clue that webdot is not configured properly. 
 <P>
 Finally, test whether webdot runs as a cgi-bin program.
 It may help to examine the cgi-bin environment using a
@@ -708,7 +793,9 @@ simple cgi-bin tcl script like:
 Save this script as .../cgi-bin/test.tcl, make it executable, then
 look at: <a href="http://localhost/cgi-bin/test.tcl">http://localhost/cgi-bin/test.tcl</a>
 <P>
-Q. <B> I have "Font not found" errors, or text labels missing in webdot.</B>
+<A name=Q37>
+<B>Q. I have "Font not found" errors, or text labels missing in webdot.</B>
+</A>
 <P>
 Firstly, recent versions of graphviz will use fontconfig if it is available
 on your platform.  With fontconfig, this error should not occur, so you
@@ -733,7 +820,9 @@ the webdot script, or recompile Graphviz with the correct DEFAULT_FONTPATH
 (or set <tt>fontpath="/your/font/directory"</tt> in every graph you lay out,
 but that's pretty clumsy.)
 <P>
-Q. <B> My browser doesn't recognize SVG.</B>
+<A name=Q38>
+<B>Q. My browser doesn't recognize SVG.</B>
+</A>
 <P>
 The correct MIME type for svg images is: <tt>image/svg+xml</tt>   (note "+" not "-").
 <P>
@@ -742,14 +831,18 @@ SVG is not built into all browsers; you can get
 from Adobe for Windows, Linux and some other operating systems.
 The <A HREF="http://www.w3.org/Amaya/">Amaya</A> browser from W3C
 is said to have builtin SVG.
+Firefox 1.5 has a (a href="http://developer.mozilla.org/en/docs/SVG_in_Firefox_1.5">large subset of SVG</A> (somebody please let us know if it can
+render graphviz -Tsvg output>.
 <A HREF="http://xml.apache.org/batik/">Batik</A> is an SVG
 renderer in Java and can be run as a stand-alone program.
 <P>
 For help with embedding SVG in HTML pages, see 
 <A HREF="http://www.graphviz.org/webdot/svgembed.html">here</A>.
 <P>
-Q. <B> libexpat is reported as containing a virus or as a security hole.
+<A name=Q39>
+<B>Q. libexpat is reported as containing a virus or as a security hole.
 Is this a real problem?</B>
+</A>
 <P>
 No, this is a false positive reported by various security software.
 See <A HREF="http://www.pcreview.co.uk/forums/thread-1689630.php">http://www.pcreview.co.uk/forums/thread-1689630.php</A> or
