@@ -23,6 +23,7 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
 #include "geom.h"
 #include "color.h"
 #include "gvcext.h"
