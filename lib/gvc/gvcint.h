@@ -103,6 +103,7 @@ extern "C" {
 	char **lib;
 
 	/* pagination */
+	char *pagedir;		/* pagination order */
 	pointf margin;		/* margins in graph units */
 	pointf pageSize;	/* pageSize in graph units, not including margins */
 	point pb;		/* page size - including margins (inches) */

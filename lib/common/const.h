@@ -86,13 +86,15 @@
 #define		DEFAULT_RANKSEP	0.5
 #define		MIN_RANKSEP		0.02
 
-/* default margin for paged formats such as PostScript */
-#define		DEFAULT_PRINT_MARGIN	36
-/* default margin for embedded formats such as PNG */
-#define		DEFAULT_EMBED_MARGIN	5
-
-#define		DEFAULT_PAGEHT	792
-#define		DEFAULT_PAGEWD	612
+/* default page size in points - not including margins = 7.5in x 10in */
+#define		DEFAULT_PAGEWD	540
+#define		DEFAULT_PAGEHT	720
+/* default margin for paged formats such as PostScript - in points  = 0.5in */
+#define		DEFAULT_PRINT_MARGIN 36
+/* default margin for embedded formats such as PNG - in points */
+#define		DEFAULT_EMBED_MARGIN 0
+/* default padding around graph - in points */
+#define		DEFAULT_GRAPH_PAD 4
 
 #define		SELF_EDGE_SIZE	18
 #define		MC_SCALE	256	/* for mincross */

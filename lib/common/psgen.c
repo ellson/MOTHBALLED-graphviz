@@ -112,7 +112,6 @@ static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
      * at PB.LL by the B & L margin width.
      * The PostScript BoundingBox also needs margin T & R */
     sz = add_points(PB.LL, PB.UR);
-    sz.x--; sz.y--;   /* -1  just for kicks */
     if (onetime) {
 	if (Show_boxes == NULL)
 	    fprintf(Output_file, "%%%%BoundingBox: %d %d %d %d\n",

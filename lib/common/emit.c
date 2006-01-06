@@ -24,6 +24,7 @@
 
 static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 int    emitState;
+int    Pad;
 
 /* parse_layers:
  * Split input string into tokens, with separators specified by
@@ -40,25 +41,25 @@ static int parse_layers(GVC_t *gvc, graph_t * g, char *p)
 
     gvc->layerDelims = agget(g, "layersep");
     if (!gvc->layerDelims)
-	gvc->layerDelims = DEFAULT_LAYERSEP;
+        gvc->layerDelims = DEFAULT_LAYERSEP;
 
     ntok = 0;
     sz = 0;
     gvc->layers = strdup(p);
 
     for (tok = strtok(gvc->layers, gvc->layerDelims); tok;
-	 tok = strtok(NULL, gvc->layerDelims)) {
-	ntok++;
-	if (ntok > sz) {
-	    sz += SMALLBUF;
-	    gvc->layerIDs = ALLOC(sz, gvc->layerIDs, char *);
-	}
-	gvc->layerIDs[ntok] = tok;
+         tok = strtok(NULL, gvc->layerDelims)) {
+        ntok++;
+        if (ntok > sz) {
+            sz += SMALLBUF;
+            gvc->layerIDs = ALLOC(sz, gvc->layerIDs, char *);
+        }
+        gvc->layerIDs[ntok] = tok;
     }
     if (ntok) {
-	gvc->layerIDs = RALLOC(ntok + 2, gvc->layerIDs, char *);	/* shrink to minimum size */
-	gvc->layerIDs[0] = NULL;
-	gvc->layerIDs[ntok + 1] = NULL;
+        gvc->layerIDs = RALLOC(ntok + 2, gvc->layerIDs, char *);        /* shrink to minimum size */
+        gvc->layerIDs[0] = NULL;
+        gvc->layerIDs[ntok + 1] = NULL;
     }
 
     return ntok;
@@ -185,40 +186,18 @@ static point pagecode(GVJ_t *job, char c)
     return rv;
 }
 
-static void set_pagedir(GVC_t *gvc, graph_t * g)
-{
-    GVJ_t *job = gvc->job;
-    char *str;
-
-    job->pagesArrayMajor.x = job->pagesArrayMajor.y 
-		= job->pagesArrayMinor.x = job->pagesArrayMinor.y = 0;
-    job->pagesArrayFirst.x = job->pagesArrayFirst.y = 0;
-    str = agget(g, "pagedir");
-    if (str && str[0]) {
-	job->pagesArrayMajor = pagecode(job, str[0]);
-	job->pagesArrayMinor = pagecode(job, str[1]);
-    }
-    if ((abs(job->pagesArrayMajor.x + job->pagesArrayMinor.x) != 1)
-     || (abs(job->pagesArrayMajor.y + job->pagesArrayMinor.y) != 1)) {
-	job->pagesArrayMajor = pagecode(job, 'B');
-	job->pagesArrayMinor = pagecode(job, 'L');
-	if (str)
-	    agerr(AGWARN, "pagedir=%s ignored\n", str);
-    }
-}
-
-static void init_job_pagination(GVJ_t * job, graph_t * g)
+static void init_job_pagination(GVJ_t * job, graph_t *g)
 {
     GVC_t *gvc = job->gvc;
-    pointf pageSizeCenteredLessMargins;	 /* page for centering less margins - graph units*/
-    pointf deviceSize;			/* device size for a page of the graph - graph units */
-    pointf extra, size;
+    point pageSize;	/* page size for the graph - device units */
+    point imageSize;	/* image size on one page of the graph - device units */
+    point margin;	/* margin for a page of the graph - device units */
 
-    /* determine desired device size in graph units */
-    deviceSize.x = job->width * POINTS_PER_INCH / job->dpi;
-    deviceSize.y = job->height * POINTS_PER_INCH / job->dpi;
+    /* unpaginated image size in device units */
+    imageSize.x = job->width;
+    imageSize.y = job->height;
     if (GD_drawing(g)->landscape)
-	deviceSize = exch_xyf(deviceSize);
+	imageSize = exch_xy(imageSize);
 
     /* determine pagination */
     if (gvc->graph_sets_pageSize) {
@@ -226,71 +205,89 @@ static void init_job_pagination(GVJ_t * job, graph_t * g)
 #if 0
 fprintf(stderr,"graph_sets_pageSize\n");
 #endif
-	pageSizeCenteredLessMargins.x = gvc->pageSize.x - 2 * job->margin.x;
-	pageSizeCenteredLessMargins.y = gvc->pageSize.y - 2 * job->margin.y;
-	job->pageSize.x = pageSizeCenteredLessMargins.x;
-	job->pageSize.y = pageSizeCenteredLessMargins.y;
+	pageSize.x = ROUND(gvc->pageSize.x * job->dpi / POINTS_PER_INCH);
+	pageSize.y = ROUND(gvc->pageSize.y * job->dpi / POINTS_PER_INCH);
 	if (GD_drawing(g)->landscape)
-	    job->pageSize = exch_xyf(job->pageSize);
-	job->pageSize.x /= job->zoom;
-	job->pageSize.y /= job->zoom;
+	    pageSize = exch_xy(pageSize);
 	/* we don't want graph page to exceed its bounding box */
-	job->pageSize.x = MIN(job->pageSize.x, gvc->bb.UR.x);
-	job->pageSize.y = MIN(job->pageSize.y, gvc->bb.UR.y);
-	job->pagesArraySize.x =
-	    (job->pageSize.x > 0) ? ceil((gvc->bb.UR.x) / job->pageSize.x) : 1;
-	job->pagesArraySize.y =
-	    (job->pageSize.y > 0) ? ceil((gvc->bb.UR.y) / job->pageSize.y) : 1;
+	pageSize.x = MIN(pageSize.x, imageSize.x);
+	pageSize.y = MIN(pageSize.y, imageSize.y);
+
+	if (pageSize.x == 0)
+	    job->pagesArraySize.x = 1;
+	else {
+	    job->pagesArraySize.x = imageSize.x / pageSize.x;
+	    if (imageSize.x % pageSize.x)
+		job->pagesArraySize.x++;
+	}
+	if (pageSize.y == 0)
+	    job->pagesArraySize.y = 1;
+	else {
+	    job->pagesArraySize.y = imageSize.y / pageSize.y;
+	    if (imageSize.y % pageSize.y)
+		job->pagesArraySize.y++;
+	}
 	job->numPages = job->pagesArraySize.x * job->pagesArraySize.y;
 
-	/* find the drawable size in graph coords */
-	deviceSize.x = MIN(deviceSize.x, pageSizeCenteredLessMargins.x);
-	deviceSize.y = MIN(deviceSize.y, pageSizeCenteredLessMargins.y);
+	/* find the drawable size in device coords */
+	imageSize.x = MIN(imageSize.x, pageSize.x);
+	imageSize.y = MIN(imageSize.y, pageSize.y);
     } else {
 	/* page not set by user, assume default when centering,
 	   but allow infinite page for any other interpretation */
-	job->pageSize.x = gvc->bb.UR.x;
-	job->pageSize.y = gvc->bb.UR.y;
-	pageSizeCenteredLessMargins.x = DEFAULT_PAGEWD - 2 * job->margin.x;
-	pageSizeCenteredLessMargins.y = DEFAULT_PAGEHT - 2 * job->margin.y;
+	pageSize.x = DEFAULT_PAGEWD;
+	pageSize.y = DEFAULT_PAGEHT;
 	job->pagesArraySize.x = job->pagesArraySize.y = job->numPages = 1;
     }
 
-    set_pagedir(gvc, g);
+    /* size of one page in graph units */
+    job->pageSize.x = (double)imageSize.x * POINTS_PER_INCH / (job->dpi * job->zoom);
+    job->pageSize.y = (double)imageSize.y * POINTS_PER_INCH / (job->dpi * job->zoom);
+
+    margin.x = ROUND(job->margin.x * job->dpi / POINTS_PER_INCH);
+    margin.y = ROUND(job->margin.y * job->dpi / POINTS_PER_INCH);
 
     /* determine page box including centering */
-    extra.x = extra.y = 0.;
     if (GD_drawing(g)->centered) {
-	if ((extra.x = pageSizeCenteredLessMargins.x - deviceSize.x) < 0)
-	    extra.x = 0.;
-	if ((extra.y = pageSizeCenteredLessMargins.y - deviceSize.y) < 0)
-	    extra.y = 0.;
-	extra.x /= 2.;
-	extra.y /= 2.;
+	if (pageSize.x > imageSize.x)
+	    margin.x += (pageSize.x - imageSize.x) / 2;
+	if (pageSize.y > imageSize.y)
+	    margin.y += (pageSize.y - imageSize.y) / 2;
     }
 
-    job->boundingBox.LL.x = ROUND((job->margin.x + extra.x) * job->dpi / POINTS_PER_INCH);
-    job->boundingBox.LL.y = ROUND((job->margin.y + extra.y) * job->dpi / POINTS_PER_INCH);
-    size.x = job->pageSize.x * job->zoom * job->dpi / POINTS_PER_INCH;
-    size.y = job->pageSize.y * job->zoom * job->dpi / POINTS_PER_INCH;
-    if (GD_drawing(g)->landscape)
-	size = exch_xyf(size);
-    job->boundingBox.UR.x = job->boundingBox.LL.x + ROUND(size.x + 1);
-    job->boundingBox.UR.y = job->boundingBox.LL.y + ROUND(size.y + 1);
+    job->boundingBox.LL.x = margin.x;
+    job->boundingBox.LL.y = margin.y;
+    job->boundingBox.UR.x = margin.x + imageSize.x;
+    job->boundingBox.UR.y = margin.y + imageSize.y;
 
 #if 0
-fprintf(stderr,"bb = %g,%g %g,%g (graph units)\n",
-	gvc->bb.LL.x,
-	gvc->bb.LL.y,
-	gvc->bb.UR.x,
-	gvc->bb.UR.y);
-fprintf(stderr,"margin = %g,%g extra %g,%g deviceSize = %g,%g (graph units) pageSize = %g,%g\n",
-	job->margin.x, job->margin.y,
-	extra.x, extra.y,
-	deviceSize.x, deviceSize.y,
+fprintf(stderr,"margin = %d,%d  imageSize = %d,%d boundingBox = %d,%d %d,%d\n",
+	margin.x, margin.y,
+	imageSize.x, imageSize.x,
+	job->boundingBox.LL.x, job->boundingBox.LL.y,
+	job->boundingBox.UR.x, job->boundingBox.UR.x);
+#endif
+
+    /* set up pagedir */
+    job->pagesArrayMajor.x = job->pagesArrayMajor.y 
+		= job->pagesArrayMinor.x = job->pagesArrayMinor.y = 0;
+    job->pagesArrayFirst.x = job->pagesArrayFirst.y = 0;
+    job->pagesArrayMajor = pagecode(job, gvc->pagedir[0]);
+    job->pagesArrayMinor = pagecode(job, gvc->pagedir[1]);
+    if ((abs(job->pagesArrayMajor.x + job->pagesArrayMinor.x) != 1)
+     || (abs(job->pagesArrayMajor.y + job->pagesArrayMinor.y) != 1)) {
+	job->pagesArrayMajor = pagecode(job, 'B');
+	job->pagesArrayMinor = pagecode(job, 'L');
+	agerr(AGWARN, "pagedir=%s ignored\n", gvc->pagedir);
+    }
+
+#if 0
+fprintf(stderr,"margin = %d,%d imageSize = %d,%d pageSize = %d,%d (device units)\n",
+	margin.x, margin.y,
+	imageSize.x, imageSize.y,
+	pageSize.x, pageSize.y);
+fprintf(stderr,"job->pageSize= %g,%g (graph units)\n",
 	job->pageSize.x, job->pageSize.y);
-fprintf(stderr,"pageSizeCenteredLessMargins = %g,%g (graph units)\n",
-	pageSizeCenteredLessMargins.x, pageSizeCenteredLessMargins.y);
 fprintf(stderr,"dpi = %d zoom = %g rotation = %d\n",
         job->dpi, job->zoom, job->rotation);
 fprintf(stderr,"boundingBox = %d,%d %d,%d (device units)\n",
@@ -301,6 +298,18 @@ fprintf(stderr,"boundingBox = %d,%d %d,%d (device units)\n",
 fprintf(stderr,"width,height = %d,%d (device units)\n",
         job->width,
         job->height);
+fprintf (stderr,"pagedir = %s, pagesArrayMajor = %d,%d pagesArrayMinor = %d,%d\n",
+	gvc->pagedir,
+	job->pagesArrayMajor.x,
+	job->pagesArrayMajor.y,
+	job->pagesArrayMinor.x,
+	job->pagesArrayMinor.y);
+fprintf (stderr,"pagesArrayFirst = %d,%d pagesArraySize = %d,%d numPages = %d\n",
+	job->pagesArrayFirst.x,
+	job->pagesArrayFirst.y,
+	job->pagesArraySize.x,
+	job->pagesArraySize.y,
+	job->numPages);
 #endif
 }
 
@@ -367,10 +376,10 @@ void emit_background(GVJ_t * job, graph_t *g)
     /* need to make background rectangle bigger than the page
      * otherwise black dots show up from the antialising of the edge
      * in bitmap outputs */
-    AF[0].x = AF[1].x = job->pageBox.LL.x - job->margin.x - 1;
-    AF[2].x = AF[3].x = job->pageBox.UR.x + job->margin.x + 1;
-    AF[3].y = AF[0].y = job->pageBox.LL.y - job->margin.y - 1;
-    AF[1].y = AF[2].y = job->pageBox.UR.y + job->margin.y + 1;
+    AF[0].x = AF[1].x = job->pageBox.LL.x - job->margin.x - Pad - 1;
+    AF[2].x = AF[3].x = job->pageBox.UR.x + job->margin.x + Pad + 1;
+    AF[3].y = AF[0].y = job->pageBox.LL.y - job->margin.y - Pad - 1;
+    AF[1].y = AF[2].y = job->pageBox.UR.y + job->margin.y + Pad + 1;
     for (i = 0; i < 4; i++) {
 	PF2P(AF[i],A[i]);
     }
@@ -388,7 +397,6 @@ static void emit_defaults(GVJ_t * job)
 }
 
 
-/* even if this makes you cringe, at least it's short */
 static void setup_page(GVJ_t * job, graph_t * g)
 {
     /* establish current box in graph coordinates */
@@ -412,18 +420,26 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	job->pageOffset.y = -(job->pagesArrayElem.x)     * job->pageSize.x;
     }
 
+    job->pageOffset.x += Pad;
+    job->pageOffset.y += Pad;
+
+    job->pageBoxClip.UR.x = MIN(job->clip.UR.x, job->pageBox.UR.x);
+    job->pageBoxClip.UR.y = MIN(job->clip.UR.y, job->pageBox.UR.y);
+    job->pageBoxClip.LL.x = MAX(job->clip.LL.x, job->pageBox.LL.x);
+    job->pageBoxClip.LL.y = MAX(job->clip.LL.y, job->pageBox.LL.y);
+
 #if 0
 fprintf(stderr,"pagesArrayElem = %d,%d pageSize = %g,%g pageOffset = %g,%g\n",
 	job->pagesArrayElem.x, job->pagesArrayElem.y,
 	job->pageSize.x, job->pageSize.y,
 	job->pageOffset.x, job->pageOffset.y);
-#endif
 
-    
-    job->pageBoxClip.UR.x = MIN(job->clip.UR.x, job->pageBox.UR.x);
-    job->pageBoxClip.UR.y = MIN(job->clip.UR.y, job->pageBox.UR.y);
-    job->pageBoxClip.LL.x = MAX(job->clip.LL.x, job->pageBox.LL.x);
-    job->pageBoxClip.LL.y = MAX(job->clip.LL.y, job->pageBox.LL.y);
+fprintf(stderr,"clip = %g,%g %g,%g pageBox = %g,%g %g,%g\n",
+	job->clip.LL.x, job->clip.LL.y,
+	job->clip.UR.x, job->clip.UR.y,
+	job->pageBox.LL.x, job->pageBox.LL.y,
+	job->pageBox.UR.x, job->pageBox.UR.y);
+#endif
 
     gvrender_begin_page(job);
     emit_background(job, g);
@@ -1022,7 +1038,7 @@ static void emit_edge(GVJ_t * job, edge_t * e)
     job->gvc->emit_state = oldstate;
 }
 
-static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
+static void init_gvc(GVC_t * gvc, graph_t * g)
 {
     double xf, yf;
     char *p;
@@ -1049,6 +1065,11 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
         gvc->graph_sets_pageSize = TRUE;
     }
 
+    /* pagedir */
+    gvc->pagedir = "BL";
+    if ((p = agget(g, "pagedir")) && p[0])
+            gvc->pagedir = p;
+
     /* bounding box */
     B2BF(GD_bb(g),gvc->bb);
 
@@ -1060,9 +1081,9 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
 
     /* default font */
     gvc->defaultfontname = late_nnstring(g->proto->n,
-		N_fontname, DEFAULT_FONTNAME);
+                N_fontname, DEFAULT_FONTNAME);
     gvc->defaultfontsize = late_double(g->proto->n,
-		N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
+                N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
 
     /* default line style */
     gvc->defaultlinestyle = defaultlinestyle;
@@ -1070,7 +1091,6 @@ static void init_gvc_from_graph(GVC_t * gvc, graph_t * g)
     gvc->graphname = g->name;
     gvc->lib = Lib;
 }
-
 
 static void init_job_margin(GVJ_t *job)
 {
@@ -1132,6 +1152,9 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 
     P2PF(GD_bb(g).UR, UR);
 
+    /* may want to take this from an attribute someday */
+    Pad = DEFAULT_GRAPH_PAD;
+
     /* determine final drawing size and scale to apply. */
     /* N.B. size given by user is not rotated by landscape mode */
     /* start with "natural" size of layout */
@@ -1152,13 +1175,16 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     /* rotate and scale bb to give default device width and height */
     if (GD_drawing(g)->landscape)
 	UR = exch_xyf(UR);
-    X = (Z * UR.x + 2 * job->margin.x) * job->dpi / POINTS_PER_INCH;
-    Y = (Z * UR.y + 2 * job->margin.y) * job->dpi / POINTS_PER_INCH;
+
+    /* calculate default viewport size in device units */
+    X = (Z * UR.x + 2 * Pad) * job->dpi / POINTS_PER_INCH;
+    Y = (Z * UR.y + 2 * Pad) * job->dpi / POINTS_PER_INCH;
 
     /* user can override */
     if ((str = agget(g, "viewport")))
 	rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
     /* rv is ignored since args retain previous values if not scanned */
+
     job->width = ROUND(X); 
     job->height = ROUND(Y);
     job->zoom = Z;              /* scaling factor */
@@ -1167,10 +1193,14 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     job->rotation = job->gvc->rotation;
 
 #if 0
-    fprintf(stderr,"bb = 0,0 %d,%d (graph units) size %d,%d (graph units)\n",
-	GD_bb(g).UR.x, GD_bb(g).UR.y, GD_drawing(g)->size.x, GD_drawing(g)->size.y);
-    fprintf(stderr,"width,height = %d,%d (device units)\n", job->width, job->height);
-    fprintf(stderr,"zoom = %g focus = %g,%g (graph units)\n", job->zoom, job->focus.x, job->focus.y);
+    fprintf(stderr,"bb = %d,%d %d,%d size %d,%d (graph units)\n",
+	GD_bb(g).LL.x, GD_bb(g).LL.y,
+	GD_bb(g).UR.x, GD_bb(g).UR.y,
+	GD_drawing(g)->size.x, GD_drawing(g)->size.y);
+    fprintf(stderr,"width,height = %d,%d (device units)\n",
+	job->width, job->height);
+    fprintf(stderr,"zoom = %g focus = %g,%g (graph units)\n",
+	job->zoom, job->focus.x, job->focus.y);
 #endif
 }
 
@@ -1767,8 +1797,8 @@ static boxf bezier_bb(bezier bz)
     assert(bz.size > 0);
     bb.LL = bb.UR = bz.list[0];
     for (i = 1; i < bz.size; i++) {
-        p=bz.list[i];
-	EXPANDBP(bb,p);
+	p=bz.list[i];
+        EXPANDBP(bb,p);
     }
     B2BF(bb, bbf);
     return bbf;
@@ -1786,22 +1816,22 @@ static void init_splines_bb(splines *spl)
     bb = bezier_bb(bz);
     for (i = 0; i < spl->size; i++) {
         if (i > 0) {
-	    bz = spl->list[i];
+            bz = spl->list[i];
             b = bezier_bb(bz);
-	    EXPANDBB(bb, b);
-	}
-	if (bz.sflag) {
-	    P2PF(bz.sp, p);
-	    P2PF(bz.list[0], u);
-	    b = arrow_bb(p, u, 1, bz.sflag);
-	    EXPANDBB(bb, b);
-	}
-	if (bz.eflag) {
-	    P2PF(bz.ep, p);
-	    P2PF(bz.list[bz.size - 1], u);
-	    b = arrow_bb(p, u, 1, bz.eflag);
-	    EXPANDBB(bb, b);
-	}
+            EXPANDBB(bb, b);
+        }
+        if (bz.sflag) {
+            P2PF(bz.sp, p);
+            P2PF(bz.list[0], u);
+            b = arrow_bb(p, u, 1, bz.sflag);
+            EXPANDBB(bb, b);
+        }
+        if (bz.eflag) {
+            P2PF(bz.ep, p);
+            P2PF(bz.list[bz.size - 1], u);
+            b = arrow_bb(p, u, 1, bz.eflag);
+            EXPANDBB(bb, b);
+        }
     }
     spl->bb = bb;
 }
@@ -1812,7 +1842,7 @@ static void init_bb_edge(edge_t *e)
 
     spl = ED_spl(e);
     if (spl)
-	init_splines_bb(spl);
+        init_splines_bb(spl);
 
 //    lp = ED_label(e);
 //    if (lp)
@@ -1829,9 +1859,9 @@ static void init_bb_node(graph_t *g, node_t *n)
     ND_bb(n).UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
 
     for (e = agfstout(g, n); e; e = agnxtout(g, e))
-	init_bb_edge(e);
+        init_bb_edge(e);
 
-    /* IDEA - could also save in the node the bb of the node and 
+    /* IDEA - could also save in the node the bb of the node and
     all of its outedges, then the scan time would be proportional
     to just the number of nodes for many graphs.
     Wouldn't work so well if the edges are sprawling all over the place
@@ -1842,10 +1872,10 @@ static void init_bb_node(graph_t *g, node_t *n)
 
 static void init_bb(graph_t *g)
 {
-    node_t *n;
+        node_t *n;
 
-    for (n = agfstnode(g); n; n = agnxtnode(g, n))
-	init_bb_node(g, n);
+	    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+		        init_bb_node(g, n);
 }
 
 extern gvevent_key_binding_t gvevent_key_binding[];
@@ -1860,9 +1890,9 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
         return -1;
     }
 
-    init_gvc_from_graph(gvc, g);
-    init_layering(gvc, g);
     init_bb(g);
+    init_gvc(gvc, g);
+    init_layering(gvc, g);
 
     gvc->keybindings = gvevent_key_binding;
     gvc->numkeys = gvevent_key_binding_size;
@@ -1876,27 +1906,27 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
             }
         }
         job->output_lang = gvrender_select(job, job->output_langname);
-	if (job->output_lang == NO_SUPPORT) {
-	    agerr (AGERR, "renderer for %s is unavailable\n", job->output_langname);
-	    return -1;
-	}
-        
-	if (gvc->active_jobs && strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
-	    /* finalize previous jobs */
-	    gvdevice_finalize(gvc);
-	    /* clear active list */
-	    gvc->active_jobs = NULL;
+        if (job->output_lang == NO_SUPPORT) {
+            agerr (AGERR, "renderer for %s is unavailable\n", job->output_langname);
+            return -1;
         }
 
-	/* insert job in active list */
-	job->next_active = gvc->active_jobs;
-	gvc->active_jobs = job;
+        if (gvc->active_jobs && strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
+		/* finalize previous jobs */
+            gvdevice_finalize(gvc);
+            /* clear active list */
+            gvc->active_jobs = NULL;
+        }
+
+        /* insert job in active list */
+        job->next_active = gvc->active_jobs;
+        gvc->active_jobs = job;
 
         emit_job(job, g);
 
-	/* the last job, after all input graphs are processed, 
-	 * 	is finalized from gvFreeContext()
-	 */
+        /* the last job, after all input graphs are processed,
+         *      is finalized from gvFreeContext()
+         */
     }
     return 0;
 }
