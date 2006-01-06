@@ -151,15 +151,15 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
     fprintf(Output_file, "%%%%Page: %d %d\n", Cur_page, Cur_page);
     if (Show_boxes == NULL)
 	fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
-	    0, 0, PB.LL.x + PB.UR.x, PB.LL.y + PB.UR.y);
+	    0, 0, (PB.UR.x + PB.LL.x), (PB.UR.y + PB.LL.y));
     fprintf(Output_file, "%%%%PageOrientation: %s\n",
 	    (rot ? "Landscape" : "Portrait"));
     if (Output_lang == PDF)
 	fprintf(Output_file, "<< /PageSize [%d %d] >> setpagedevice\n",
-	    PB.UR.x - PB.LL.x, PB.UR.y - PB.LL.y);
+	    (PB.UR.x - PB.LL.x), (PB.UR.y - PB.LL.y));
     if (Show_boxes == NULL)
 	fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
-	    PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
+	    PB.LL.x, PB.LL.y, (PB.UR.x - PB.LL.x), (PB.UR.y - PB.LL.y));
     fprintf(Output_file, "%d %d translate\n", PB.LL.x, PB.LL.y);
     if (rot)
         fprintf(Output_file, "gsave %d %d translate %d rotate\n",
@@ -182,7 +182,7 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 		  "\t(suggest setting a bounding box size, see dot(1))\n",
 		  (PB.UR.x - PB.LL.x), (PB.UR.y - PB.LL.y), PDFMAX);
 	fprintf(Output_file, "[ /CropBox [%d %d %d %d] /PAGE pdfmark\n",
-		PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
+		PB.LL.x, PB.LL.y, (PB.UR.x - PB.LL.x), (PB.UR.y - PB.LL.y));
     }
 }
 
