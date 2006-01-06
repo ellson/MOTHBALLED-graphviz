@@ -60,16 +60,10 @@ extern char *setv(Agraph_t *g, char *attr, char *val);
 extern char *setv(Agnode_t *n, char *attr, char *val);
 extern char *setv(Agedge_t *e, char *attr, char *val);
 
-/*** Set default value of graph/node/edge named attribute - creating attribute if necessary */
-extern char *setv(Agraph_t *g, char *gne, char *attr, char *val);
-
 /*** Set value of existing attribute of graph/node/edge (using attribute handle) */
 extern char *setv(Agraph_t *g, Agsym_t *a, char *val);
 extern char *setv(Agnode_t *n, Agsym_t *a, char *val);
 extern char *setv(Agedge_t *e, Agsym_t *a, char *val);
-
-/*** Set default value of existing graph/node/edge attribute (using attribute handle) */
-extern char *setv(Agraph_t *g, char *gne, Agsym_t *a, char *val);
 
 /** Getting attribute values */
 /*** Get value of named attribute of graph/node/edge */
@@ -77,16 +71,10 @@ extern char *getv(Agraph_t *g, char *attr);
 extern char *getv(Agnode_t *n, char *attr);
 extern char *getv(Agedge_t *e, char *attr);
 
-/*** Get default value of graph/node/edge named attribute */
-extern char *getv(Agraph_t *g, char *gne, char *attr);
-
 /*** Get value of attribute of graph/node/edge (using attribute handle) */
 extern char *getv(Agraph_t *g, Agsym_t *a);
 extern char *getv(Agnode_t *n, Agsym_t *a);
 extern char *getv(Agedge_t *e, Agsym_t *a);
-
-/*** Get default value of attribute of graph/node/edge (using attribute handle) */
-extern char *getv(Agraph_t *g, char *gne, Agsym_t *a);
 
 /** Obtain names from handles */
 extern char *nameof(Agraph_t *g);
@@ -111,6 +99,10 @@ extern Agraph_t *graphof(Agraph_t *g);
 extern Agraph_t *graphof(Agedge_t *e);
 extern Agraph_t *graphof(Agnode_t *n);
 extern Agraph_t *rootof(Agraph_t *g);
+
+/** Obtain handles of proto node/edge for setting default attribute values */
+extern Agnode_t *protonode(Agraph_t *g);
+extern Agedge_t *protoedge(Agraph_t *g);
 
 /** Iterators */
 /*** Iteration termination tests */
@@ -170,10 +162,6 @@ extern Agnode_t *nextnode(Agedge_t *e, Agnode_t *n);
 /*** Iterate over attributes of a graph */
 extern Agsym_t *firstattr(Agraph_t *g);
 extern Agsym_t *nextattr(Agraph_t *g, Agsym_t *a);
-
-/*** Iterate over default graph/node/edge attributes of a graph */
-extern Agsym_t *firstattr(Agraph_t *g, char *gne);
-extern Agsym_t *nextattr(Agraph_t *g, char *gne, Agsym_t *a);
 
 /*** Iterate over attributes of an edge */
 extern Agsym_t *firstattr(Agedge_t *e);

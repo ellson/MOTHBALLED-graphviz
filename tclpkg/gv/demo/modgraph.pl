@@ -7,16 +7,19 @@
 use lib "/usr/lib/graphviz/perl";
 use gv;
 
-$g = gv::digraph "G";
-gv::setv($g, "rankdir", "LR");
-gv::setv($g, "nodesep", "0.05");
-gv::setv($g, "node", "shape", "box");
-gv::setv($g, "node", "width", "0");
-gv::setv($g, "node", "height", "0");
-gv::setv($g, "node", "margin", ".03");
-gv::setv($g, "node", "fontsize", "8");
-gv::setv($g, "node", "fontname", "helvetica");
-gv::setv($g, "edge", "arrowsize", ".4");
+$G = gv::digraph("G");
+$N = gv::protonode($G);
+$E = gv::protoedge($G);
+
+gv::setv($G, "rankdir", "LR");
+gv::setv($G, "nodesep", "0.05");
+gv::setv($N, "shape", "box");
+gv::setv($N, "width", "0");
+gv::setv($N, "height", "0");
+gv::setv($N, "margin", ".03");
+gv::setv($N, "fontsize", "8");
+gv::setv($N, "fontname", "helvetica");
+gv::setv($E, "arrowsize", ".4");
 
 #FIXME - complete translation to perl
 
@@ -36,5 +39,5 @@ gv::setv($g, "edge", "arrowsize", ".4");
 #end	
 #f.close
 
-gv::layout($g, "dot");
-gv::render($g, "gtk");
+gv::layout($G, "dot");
+gv::render($G, "gtk");

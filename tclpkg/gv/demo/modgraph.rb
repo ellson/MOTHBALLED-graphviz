@@ -7,15 +7,18 @@
 require 'gv'
 
 G = Gv.digraph("G")
+N = Gv.protonode(G)
+E = Gv.protoedge(G)
+
 Gv.setv(G, 'rankdir', 'LR')
 Gv.setv(G, 'nodesep', '0.05')
-Gv.setv(G, 'node', 'shape', 'box')
-Gv.setv(G, 'node', 'width', '0')
-Gv.setv(G, 'node', 'height', '0')
-Gv.setv(G, 'node', 'margin', '.03')
-Gv.setv(G, 'node', 'fontsize', '8')
-Gv.setv(G, 'node', 'fontname', 'helvetica')
-Gv.setv(G, 'edge', 'arrowsize', '.4')
+Gv.setv(N, 'shape', 'box')
+Gv.setv(N, 'width', '0')
+Gv.setv(N, 'height', '0')
+Gv.setv(N, 'margin', '.03')
+Gv.setv(N, 'fontsize', '8')
+Gv.setv(N, 'fontname', 'helvetica')
+Gv.setv(E, 'arrowsize', '.4')
 
 f = File.open('/proc/modules', mode="r")
 while ! f.eof do

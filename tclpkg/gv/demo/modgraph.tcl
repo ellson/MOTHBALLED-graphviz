@@ -10,26 +10,27 @@ set f [open /proc/modules r]
 set modules [read -nonewline $f]
 close $f
 
-set g [gv::digraph G]
-gv::setv $g rankdir LR
-gv::setv $g nodesep .05
+set G [gv::digraph G]
+set N [gv::protonode $G]
+set E [gv::protoedge $G]
 
-gv::setv $g node shape box
-gv::setv $g node width 0
-gv::setv $g node height 0
-gv::setv $g node margin .03
-gv::setv $g node fontsize 8
-gv::setv $g node fontname helvetica
-
-gv::setv $g edge arrowsize .4
+gv::setv $G rankdir LR
+gv::setv $G nodesep .05
+gv::setv $N shape box
+gv::setv $N width 0
+gv::setv $N height 0
+gv::setv $N margin .03
+gv::setv $N fontsize 8
+gv::setv $N fontname helvetica
+gv::setv $E arrowsize .4
 
 foreach rec [split $modules \n] {
-  set n [gv::node $g [lindex $rec 0]]
+  set n [gv::node $G [lindex $rec 0]]
   foreach usedby [split [lindex $rec 3] ,] {
     if {[string equal $usedby -] || [string equal $usedby {}]} {continue}
-    set e [gv::edge $n [gv::node $g $usedby]]
+    set e [gv::edge $n [gv::node $G $usedby]]
   }
 }
 
-gv::layout $g dot
-gv::render $g gtk
+gv::layout $G dot
+gv::render $G gtk

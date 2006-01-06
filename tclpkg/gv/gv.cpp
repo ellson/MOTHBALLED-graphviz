@@ -92,22 +92,26 @@ Agnode_t *node(Agraph_t *g, char *name)
 
 Agedge_t *edge(Agnode_t *t, Agnode_t *h)
 {
+    // edges from/to the protonode are not permitted
+    if ((t->name[0] == '\001' && strcmp (t->name, "\001proto") == 0)
+     || (h->name[0] == '\001' && strcmp (h->name, "\001proto") == 0))
+	return NULL;
     return agedge(t->graph, t, h);
 }
 
 Agedge_t *edge(char *tname, Agnode_t *h)
 {
-    return agedge(h->graph, agnode(h->graph, tname), h);
+    return edge(agnode(h->graph, tname), h);
 }
 
 Agedge_t *edge(Agnode_t *t, char *hname)
 {
-    return agedge(t->graph, t, agnode(t->graph, hname));
+    return edge(t, agnode(t->graph, hname));
 }
 
 Agedge_t *edge(Agraph_t *g, char *tname, char *hname)
 {
-    return agedge(g, agnode(g, tname), agnode(g, hname));
+    return edge(agnode(g, tname), agnode(g, hname));
 }
 
 //-------------------------------------------------
@@ -118,26 +122,6 @@ char *getv(Agraph_t *g, Agsym_t *a)
     if (!g || !a)
 	return NULL;
     val = agxget(g, a->index);
-    if (!val)
-	return empty_string;
-    return val;
-}
-char *getv(Agraph_t *g, char *gne, Agsym_t *a)
-{
-    char *val;
-    int len;
-
-    if (!g || !gne || !gne[0] || !a)
-	return NULL;
-    len = strlen(gne);
-    if (strncmp(gne,"graph",len) == 0)
-        val = agxget(g, a->index);
-    else if (strncmp(gne,"node",len) == 0)
-        val = agxget(g->proto->n, a->index);
-    else if (strncmp(gne,"edge",len) == 0)
-        val = agxget(g->proto->e, a->index);
-    else
-        return NULL;
     if (!val)
 	return empty_string;
     return val;
@@ -157,61 +141,11 @@ char *getv(Agraph_t *g, char *attr)
 	return empty_string;
     return val;
 }
-char *getv(Agraph_t *g, char *gne, char *attr)
-{
-    Agsym_t *a;
-    char *val;
-    int len;
-
-    if (!g || !gne || !gne[0] || !attr)
-	return NULL;
-    len = strlen(gne);
-    if (strncmp(gne,"graph",len) == 0) {
-        a = agfindattr(g->root, attr);
-        if (!a)
-	    return empty_string;
-        val = agxget(g, a->index);
-    }
-    else if (strncmp(gne,"node",len) == 0) {
-        a = agfindattr(g->proto->n, attr);
-        if (!a)
-	    return empty_string;
-        val = agxget(g->proto->n, a->index);
-    }
-    else if (strncmp(gne,"edge",len) == 0) {
-        a = agfindattr(g->proto->e, attr);
-        if (!a)
-	    return empty_string;
-        val = agxget(g->proto->e, a->index);
-    }
-    else
-        return NULL;
-    if (!val)
-	return empty_string;
-    return val;
-}
 char *setv(Agraph_t *g, Agsym_t *a, char *val)
 {
     if (!g || !a || !val)
 	return NULL;
     agxset(g, a->index, val);
-    return val;
-}
-char *setv(Agraph_t *g, char *gne, Agsym_t *a, char *val)
-{
-    int len;
-
-    if (!g || !gne || !gne[0] || !a || !val)
-	return NULL;
-    len = strlen(gne);
-    if (strncmp(gne,"graph",len) == 0)
-        agxset(g, a->index, val);
-    else if (strncmp(gne,"node",len) == 0)
-        agxset(g->proto->n, a->index, val);
-    else if (strncmp(gne,"edge",len) == 0)
-        agxset(g->proto->e, a->index, val);
-    else
-        return NULL;
     return val;
 }
 char *setv(Agraph_t *g, char *attr, char *val)
@@ -224,36 +158,6 @@ char *setv(Agraph_t *g, char *attr, char *val)
     if (!a)
         a = agraphattr(g->root, attr, empty_string);
     agxset(g, a->index, val);
-    return val;
-}
-char *setv(Agraph_t *g, char *gne, char *attr, char *val)
-{
-    Agsym_t *a;
-    int len;
-
-    if (!g || !gne || !gne[0] || !attr || !val)
-	return NULL;
-    len = strlen(gne);
-    if (strncmp(gne,"graph",len) == 0) {
-        a = agfindattr(g->root, attr);
-        if (!a)
-	    a = agraphattr(g->root, attr, empty_string);
-        agxset(g, a->index, val);
-    }
-    else if (strncmp(gne,"node",len) == 0) {
-        a = agfindattr(g->proto->n, attr);
-        if (!a)
-	    a = agnodeattr(g->root, attr, empty_string);
-        agxset(g->proto->n, a->index, val);
-    }
-    else if (strncmp(gne,"edge",len) == 0) {
-        a = agfindattr(g->proto->e, attr);
-        if (!a)
-	    a = agedgeattr(g->root, attr, empty_string);
-        agxset(g->proto->e, a->index, val);
-    }
-    else
-        return NULL;
     return val;
 }
 //-------------------------------------------------
@@ -441,6 +345,21 @@ Agraph_t *rootof(Agraph_t *g)
     if (!g)
 	return NULL;
     return g->root;
+}
+
+//-------------------------------------------------
+Agnode_t *protonode(Agraph_t *g)
+{
+    if (!g)
+        return NULL;
+    return g->proto->n;
+}
+
+Agedge_t *protoedge(Agraph_t *g)
+{
+    if (!g)
+        return NULL;
+    return g->proto->e;
 }
 
 //-------------------------------------------------
@@ -806,69 +725,6 @@ Agsym_t *nextattr(Agraph_t *g, Agsym_t *a)
         return NULL;
     return g->univ->globattr->list[i];
 }
-Agsym_t *firstattr(Agraph_t *g, char *gne)
-{
-    int len;
-
-    if (!g || !gne || !gne[0])
-	return NULL;
-    g = g->root;
-    len = strlen(gne);
-    if (strncmp(gne,"graph",len) == 0) {
-        if (dtsize(g->univ->globattr->dict) == 0)
-	    return NULL;
-        return g->univ->globattr->list[0];
-    }
-    else if (strncmp(gne,"node",len) == 0) {
-        if (dtsize(g->univ->nodeattr->dict) == 0)
-	    return NULL;
-        return g->univ->nodeattr->list[0];
-    }
-    else if (strncmp(gne,"edge",len) == 0) {
-        if (dtsize(g->univ->edgeattr->dict) == 0)
-	    return NULL;
-        return g->univ->edgeattr->list[0];
-    }
-    return NULL;
-}
-
-Agsym_t *nextattr(Agraph_t *g, char *gne, Agsym_t *a)
-{
-    int i, len;
-
-    if (!g || !gne || !gne[0] || !a)
-        return NULL;
-    g = g->root;
-    len = strlen(gne);
-    if (strncmp(gne,"graph",len) == 0) {
-        for (i = 0; i < dtsize(g->univ->globattr->dict); i++)
-	    if (a == g->univ->globattr->list[i])
-	        break;
-        i++;
-        if (i > dtsize(g->univ->globattr->dict))
-            return NULL;
-        return g->univ->globattr->list[i];
-    }
-    else if (strncmp(gne,"node",len) == 0) {
-        for (i = 0; i < dtsize(g->univ->nodeattr->dict); i++)
-	    if (a == g->univ->nodeattr->list[i])
-	        break;
-        i++;
-        if (i > dtsize(g->univ->nodeattr->dict))
-            return NULL;
-        return g->univ->nodeattr->list[i];
-    }
-    else if (strncmp(gne,"edge",len) == 0) {
-        for (i = 0; i < dtsize(g->univ->edgeattr->dict); i++)
-	    if (a == g->univ->edgeattr->list[i])
-	        break;
-        i++;
-        if (i > dtsize(g->univ->edgeattr->dict))
-            return NULL;
-        return g->univ->edgeattr->list[i];
-    }
-    return NULL;
-}
 
 Agsym_t *firstattr(Agnode_t *n)
 {
@@ -949,11 +805,18 @@ void rm(Agraph_t *g)
 
 void rm(Agnode_t *n)
 {
+    // removal of the protonode is not permitted
+    if (n->name[0] == '\001' && strcmp (n->name, "\001proto") ==0)
+	return;
     agdelete(n->graph, n);
 }
 
 void rm(Agedge_t *e)
 {
+    // removal of the protoedge is not permitted
+    if ((e->head->name[0] == '\001' && strcmp (e->head->name, "\001proto") == 0)
+     || (e->tail->name[0] == '\001' && strcmp (e->tail->name, "\001proto") == 0))
+	return;
     agdelete(e->head->graph->root, e);
 }
 

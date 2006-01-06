@@ -13,15 +13,18 @@ import gv
 modules = open("/proc/modules", 'r').readlines()
 
 G = gv.digraph("G")
+N = gv.protonode(G)
+E = gv.protoedge(G)
+
 gv.setv(G, 'rankdir', 'LR')
 gv.setv(G, 'nodesep', '0.05')
-gv.setv(G, 'node', 'shape', 'box')
-gv.setv(G, 'node', 'width', '0')
-gv.setv(G, 'node', 'height', '0')
-gv.setv(G, 'node', 'margin', '.03')
-gv.setv(G, 'node', 'fontsize', '8')
-gv.setv(G, 'node', 'fontname', 'helvetica')
-gv.setv(G, 'edge', 'arrowsize', '.4')
+gv.setv(N, 'shape', 'box')
+gv.setv(N, 'width', '0')
+gv.setv(N, 'height', '0')
+gv.setv(N, 'margin', '.03')
+gv.setv(N, 'fontsize', '8')
+gv.setv(N, 'fontname', 'helvetica')
+gv.setv(E, 'arrowsize', '.4')
 
 for rec in modules:
    fields = rec.split(' ')
