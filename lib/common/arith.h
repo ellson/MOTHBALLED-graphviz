@@ -21,7 +21,9 @@
 #define GV_ARITH_H
 
 /* for sincos */
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE 1
+#endif
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #else
