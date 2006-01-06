@@ -105,17 +105,12 @@ static void ps_comment(char *str)
 static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     char *s;
-    point sz;
 
     PB = bb;
-    /* PB (in the case of a single page graph) is the graph bb offset
-     * at PB.LL by the B & L margin width.
-     * The PostScript BoundingBox also needs margin T & R */
-    sz = add_points(PB.LL, PB.UR);
     if (onetime) {
 	if (Show_boxes == NULL)
 	    fprintf(Output_file, "%%%%BoundingBox: %d %d %d %d\n",
-		0, 0, sz.x, sz.y);
+		PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
 	fprintf(Output_file, "%%%%EndComments\nsave\n");
 	cat_libfile(Output_file, U_lib, ps_txt);
 	epsf_define(Output_file);
@@ -151,20 +146,12 @@ static void ps_end_graph(void)
 static void
 ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 {
-    point sz;
 
-#if 0
-fprintf(stderr,"PB = %d,%d,%d,%d\n", PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
-fprintf(stderr,"offset = %d,%d\n", offset.x, offset.y);
-#endif
-
-    sz = add_points(PB.LL, PB.UR);
-    sz.x--; sz.y--;   /* -1  just for kicks */
     Cur_page++;
     fprintf(Output_file, "%%%%Page: %d %d\n", Cur_page, Cur_page);
     if (Show_boxes == NULL)
 	fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
-	    0, 0, sz.x, sz.y);
+	    0, 0, PB.LL.x + PB.UR.x, PB.LL.y + PB.UR.y);
     fprintf(Output_file, "%%%%PageOrientation: %s\n",
 	    (rot ? "Landscape" : "Portrait"));
     if (Output_lang == PDF)
@@ -172,7 +159,7 @@ fprintf(stderr,"offset = %d,%d\n", offset.x, offset.y);
 	    PB.UR.x - PB.LL.x, PB.UR.y - PB.LL.y);
     if (Show_boxes == NULL)
 	fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
-	    0, 0, sz.x, sz.y);
+	    PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
     fprintf(Output_file, "%d %d translate\n", PB.LL.x, PB.LL.y);
     if (rot)
         fprintf(Output_file, "gsave %d %d translate %d rotate\n",
@@ -189,13 +176,13 @@ fprintf(stderr,"offset = %d,%d\n", offset.x, offset.y);
 
     /*  Define the size of the PS canvas  */
     if (Output_lang == PDF) {
-	if (sz.x > PDFMAX || sz.y > PDFMAX)
+	if ((PB.UR.x - PB.LL.x) > PDFMAX || (PB.UR.y - PB.LL.y) > PDFMAX)
 	    agerr(AGWARN,
 		  "canvas size (%d,%d) exceeds PDF limit (%d)\n"
 		  "\t(suggest setting a bounding box size, see dot(1))\n",
-		  sz.x, sz.y, PDFMAX);
+		  (PB.UR.x - PB.LL.x), (PB.UR.y - PB.LL.y), PDFMAX);
 	fprintf(Output_file, "[ /CropBox [%d %d %d %d] /PAGE pdfmark\n",
-		0, 0, sz.x, sz.y);
+		PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
     }
 }
 
