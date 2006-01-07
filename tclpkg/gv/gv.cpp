@@ -85,7 +85,8 @@ Agraph_t *graph(Agraph_t *g, char *name)
 
 Agnode_t *node(Agraph_t *g, char *name)
 {
-    if (!gvc)
+    // creating a protonode is not permitted
+    if (!gvc || (name[0] == '\001' && strcmp (name, "\001proto") == 0))
 	return NULL;
     return agnode(g, name);
 }
@@ -93,25 +94,29 @@ Agnode_t *node(Agraph_t *g, char *name)
 Agedge_t *edge(Agnode_t *t, Agnode_t *h)
 {
     // edges from/to the protonode are not permitted
-    if ((t->name[0] == '\001' && strcmp (t->name, "\001proto") == 0)
-     || (h->name[0] == '\001' && strcmp (h->name, "\001proto") == 0))
+    if (!gvc || !t || !h
+      || (t->name[0] == '\001' && strcmp (t->name, "\001proto") == 0)
+      || (h->name[0] == '\001' && strcmp (h->name, "\001proto") == 0))
 	return NULL;
     return agedge(t->graph, t, h);
 }
 
+// induce tail if necessary
 Agedge_t *edge(char *tname, Agnode_t *h)
 {
-    return edge(agnode(h->graph, tname), h);
+    return edge(node(h->graph, tname), h);
 }
 
+// induce head if necessary
 Agedge_t *edge(Agnode_t *t, char *hname)
 {
-    return edge(t, agnode(t->graph, hname));
+    return edge(t, node(t->graph, hname));
 }
 
+// induce tail/head if necessary
 Agedge_t *edge(Agraph_t *g, char *tname, char *hname)
 {
-    return edge(agnode(g, tname), agnode(g, hname));
+    return edge(node(g, tname), node(g, hname));
 }
 
 //-------------------------------------------------
