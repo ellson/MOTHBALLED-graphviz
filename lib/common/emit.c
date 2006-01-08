@@ -373,13 +373,10 @@ void emit_background(GVJ_t * job, graph_t *g)
 
     if (! ((str = agget(g, "bgcolor")) && str[0]))
 	str = "white";
-    /* need to make background rectangle bigger than the page
-     * otherwise black dots show up from the antialising of the edge
-     * in bitmap outputs */
-    AF[0].x = AF[1].x = job->pageBox.LL.x - job->margin.x - Pad - 1;
-    AF[2].x = AF[3].x = job->pageBox.UR.x + job->margin.x + Pad + 1;
-    AF[3].y = AF[0].y = job->pageBox.LL.y - job->margin.y - Pad - 1;
-    AF[1].y = AF[2].y = job->pageBox.UR.y + job->margin.y + Pad + 1;
+    AF[0].x = AF[1].x = job->pageBox.LL.x;
+    AF[2].x = AF[3].x = job->pageBox.UR.x;
+    AF[3].y = AF[0].y = job->pageBox.LL.y;
+    AF[1].y = AF[2].y = job->pageBox.UR.y;
     for (i = 0; i < 4; i++) {
 	PF2P(AF[i],A[i]);
     }
@@ -409,6 +406,11 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	are drawn in the margins of each page */
     job->pageBox.LL = sub_pointfs(job->pageBox.LL,job->margin);
     job->pageBox.UR = add_pointfs(job->pageBox.UR,job->margin);
+
+    job->pageBox.LL.x -= Pad;
+    job->pageBox.LL.y -= Pad;
+    job->pageBox.UR.x -= Pad;
+    job->pageBox.UR.y -= Pad;
 
     /* establish pageOffset to be applied, in graph coordinates */
     if (job->rotation == 0) {
