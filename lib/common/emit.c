@@ -373,10 +373,10 @@ void emit_background(GVJ_t * job, graph_t *g)
 
     if (! ((str = agget(g, "bgcolor")) && str[0]))
 	str = "white";
-    AF[0].x = AF[1].x = job->pageBox.LL.x;
-    AF[2].x = AF[3].x = job->pageBox.UR.x;
-    AF[3].y = AF[0].y = job->pageBox.LL.y;
-    AF[1].y = AF[2].y = job->pageBox.UR.y;
+    AF[0].x = AF[1].x = job->pageBox.LL.x + job->margin.x -10;
+    AF[2].x = AF[3].x = job->pageBox.UR.x + job->margin.x +10;
+    AF[3].y = AF[0].y = job->pageBox.LL.y - job->margin.y -10;
+    AF[1].y = AF[2].y = job->pageBox.UR.y - job->margin.y +10;
     for (i = 0; i < 4; i++) {
 	PF2P(AF[i],A[i]);
     }

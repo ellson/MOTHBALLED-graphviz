@@ -146,20 +146,32 @@ static void ps_end_graph(void)
 static void
 ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 {
+    point sz;
 
     Cur_page++;
+    sz = sub_points(PB.UR,PB.LL);
     fprintf(Output_file, "%%%%Page: %d %d\n", Cur_page, Cur_page);
-    if (Show_boxes == NULL)
-	fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
-	    0, 0, (PB.UR.x + PB.LL.x), (PB.UR.y + PB.LL.y));
+    if (Show_boxes == NULL) {
+	if (rot)
+	    fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
+	        PB.LL.y, PB.LL.x, PB.UR.y, PB.UR.x);
+	else
+	    fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
+	        PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
+    }
     fprintf(Output_file, "%%%%PageOrientation: %s\n",
 	    (rot ? "Landscape" : "Portrait"));
     if (Output_lang == PDF)
 	fprintf(Output_file, "<< /PageSize [%d %d] >> setpagedevice\n",
-	    (PB.UR.x - PB.LL.x), (PB.UR.y - PB.LL.y));
-    if (Show_boxes == NULL)
-	fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
-	    PB.LL.x, PB.LL.y, (PB.UR.x - PB.LL.x), (PB.UR.y - PB.LL.y));
+	    sz.x, sz.y);
+    if (Show_boxes == NULL) {
+	if (rot)
+	    fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
+	        PB.LL.y, PB.LL.x, sz.y, sz.x);
+	else
+	    fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
+	        PB.LL.x, PB.LL.y, sz.x, sz.y);
+    }
     fprintf(Output_file, "%d %d translate\n", PB.LL.x, PB.LL.y);
     if (rot)
         fprintf(Output_file, "gsave %d %d translate %d rotate\n",
@@ -176,13 +188,13 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 
     /*  Define the size of the PS canvas  */
     if (Output_lang == PDF) {
-	if ((PB.UR.x - PB.LL.x) > PDFMAX || (PB.UR.y - PB.LL.y) > PDFMAX)
+	if (sz.x > PDFMAX || sz.y > PDFMAX)
 	    agerr(AGWARN,
 		  "canvas size (%d,%d) exceeds PDF limit (%d)\n"
 		  "\t(suggest setting a bounding box size, see dot(1))\n",
-		  (PB.UR.x - PB.LL.x), (PB.UR.y - PB.LL.y), PDFMAX);
+		  sz.x, sz.y, PDFMAX);
 	fprintf(Output_file, "[ /CropBox [%d %d %d %d] /PAGE pdfmark\n",
-		PB.LL.x, PB.LL.y, (PB.UR.x - PB.LL.x), (PB.UR.y - PB.LL.y));
+		PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
     }
 }
 
