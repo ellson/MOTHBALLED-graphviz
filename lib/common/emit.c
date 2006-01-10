@@ -370,13 +370,15 @@ void emit_background(GVJ_t * job, graph_t *g)
     pointf AF[4];
     point A[4];
     int i;
+    /* fudge to compensate for rounding errors */
+    double fudge = 1 * POINTS_PER_INCH / (job->zoom * job->dpi);
 
     if (! ((str = agget(g, "bgcolor")) && str[0]))
 	str = "white";
-    AF[0].x = AF[1].x = job->pageBox.LL.x + job->margin.x -10;
-    AF[2].x = AF[3].x = job->pageBox.UR.x + job->margin.x +10;
-    AF[3].y = AF[0].y = job->pageBox.LL.y - job->margin.y -10;
-    AF[1].y = AF[2].y = job->pageBox.UR.y - job->margin.y +10;
+    AF[0].x = AF[1].x = job->pageBox.LL.x + job->margin.x - fudge;
+    AF[2].x = AF[3].x = job->pageBox.UR.x - job->margin.x + fudge;
+    AF[3].y = AF[0].y = job->pageBox.LL.y + job->margin.y - fudge;
+    AF[1].y = AF[2].y = job->pageBox.UR.y - job->margin.y + fudge;
     for (i = 0; i < 4; i++) {
 	PF2P(AF[i],A[i]);
     }
@@ -396,6 +398,9 @@ static void emit_defaults(GVJ_t * job)
 
 static void setup_page(GVJ_t * job, graph_t * g)
 {
+    /* prescaled pad so that its size is constant under scaling */
+    double pad = Pad * POINTS_PER_INCH / (job->zoom * job->dpi);
+
     /* establish current box in graph coordinates */
     job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x;
     job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y;
@@ -407,23 +412,20 @@ static void setup_page(GVJ_t * job, graph_t * g)
     job->pageBox.LL = sub_pointfs(job->pageBox.LL,job->margin);
     job->pageBox.UR = add_pointfs(job->pageBox.UR,job->margin);
 
-    job->pageBox.LL.x -= Pad;
-    job->pageBox.LL.y -= Pad;
-    job->pageBox.UR.x -= Pad;
-    job->pageBox.UR.y -= Pad;
+    job->pageBox.LL.x -= pad;
+    job->pageBox.LL.y -= pad;
+    job->pageBox.UR.x += pad;
+    job->pageBox.UR.y += pad;
 
     /* establish pageOffset to be applied, in graph coordinates */
     if (job->rotation == 0) {
-	job->pageOffset.x =  -(job->pagesArrayElem.x)    * job->pageSize.x;
-	job->pageOffset.y =  -(job->pagesArrayElem.y)    * job->pageSize.y;
+	job->pageOffset.x =  pad - job->pageSize.x * job->pagesArrayElem.x;
+	job->pageOffset.y =  pad - job->pageSize.y * job->pagesArrayElem.y;
     }
     else {
-	job->pageOffset.x =  (job->pagesArrayElem.y + 1) * job->pageSize.y;
-	job->pageOffset.y = -(job->pagesArrayElem.x)     * job->pageSize.x;
+	job->pageOffset.x = -pad + job->pageSize.y * (job->pagesArrayElem.y +1);
+	job->pageOffset.y =  pad - job->pageSize.x * job->pagesArrayElem.x;
     }
-
-    job->pageOffset.x += Pad;
-    job->pageOffset.y += Pad;
 
     job->pageBoxClip.UR.x = MIN(job->clip.UR.x, job->pageBox.UR.x);
     job->pageBoxClip.UR.y = MIN(job->clip.UR.y, job->pageBox.UR.y);
