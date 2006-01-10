@@ -1,5 +1,5 @@
 array set LANGS {
-	csharp {
+	sharp {
 		TYPES {
 			Agraph_t* SWIGTYPE_p_Agraph_t
                 	Agnode_t* SWIGTYPE_p_Agnode_t

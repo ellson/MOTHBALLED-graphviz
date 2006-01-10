@@ -312,20 +312,20 @@ fi
 AM_CONDITIONAL(WITH_SWIG, [test "x$SWIG" != "x"])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for CSHARP
+dnl INCLUDES and LIBS for C#
 
 if test "x$SWIG" != "x"; then
-AC_ARG_ENABLE(csharp,
-  [AC_HELP_STRING([--disable-csharp], [don't support csharp language bindings])])
-if test "x$enable_csharp" != "xno"; then
-AC_CHECK_PROG(CSHARP,mcs,mcs)
-CSHARP_INCLUDES=
-CSHARP_LIBS=
-AC_SUBST(CSHARP_INCLUDES)
-AC_SUBST(CSHARP_LIBS)
+AC_ARG_ENABLE(sharp,
+  [AC_HELP_STRING([--disable-sharp], ["don't support C# language bindings"])])
+if test "x$enable_sharp" != "xno"; then
+AC_CHECK_PROG(SHARP,mcs,mcs)
+SHARP_INCLUDES=
+SHARP_LIBS=
+AC_SUBST(SHARP_INCLUDES)
+AC_SUBST(SHARP_LIBS)
 fi
 fi
-AM_CONDITIONAL(WITH_CSHARP, [test "x$CSHARP" != "x"])
+AM_CONDITIONAL(WITH_SHARP, [test "x$SHARP" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GUILE

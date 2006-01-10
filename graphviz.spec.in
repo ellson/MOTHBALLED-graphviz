@@ -5,7 +5,7 @@
 # internal one for now.
 
 # Define a default set incase none of the conditionals apply
-%define CSHARP  0
+%define SHARP  0
 %define GUILE   0
 %define _IO     0
 %define JAVA    0
@@ -61,7 +61,7 @@
 %{?fc4: %{expand: %%define RUBY    1}}
 %{?fc4: %{expand: %%define TCL     1}}
 
-%{?fc5: %{expand: %%define CSHARP  1}}
+%{?fc5: %{expand: %%define SHARP   1}}
 %{?fc5: %{expand: %%define GUILE   1}}
 %{?fc5: %{expand: %%define JAVA    1}}
 %{?fc5: %{expand: %%define LUA     1}}
@@ -130,20 +130,20 @@ of graphs (as in nodes and edges, not as in barcharts).
 %exclude %{_libdir}/%{name}/*/*
 
 #------------------------------------------------------------------
-%if %{CSHARP}
-%package csharp
+%if %{SHARP}
+%package sharp
 Group:	Applications/Multimedia
 Summary:	C# extension for %{name}
 Requires:	%{name} = %{version}-%{release}
 
-%description csharp
+%description sharp
 C# extensions for %{name}.
 
-%files csharp
+%files sharp
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/csharp
-%{_libdir}/%{name}/csharp/*
-%exclude %{_libdir}/%{name}/csharp/*.la
+%dir %{_libdir}/%{name}/sharp
+%{_libdir}/%{name}/sharp/*
+%exclude %{_libdir}/%{name}/sharp/*.la
 %endif
 
 #------------------------------------------------------------------

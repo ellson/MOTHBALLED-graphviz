@@ -13,13 +13,13 @@ LIBS =  @LIBS@ -lc
 BASESOURCES = gv.cpp
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
 
-pkgcsharpdir = $(pkglibdir)/csharp
-CSHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs SWIGTYPE_p_p_void.cs
-libgv_csharp_la_SOURCES = $(BASESOURCES) gv_csharp.cpp $(CSHARP_hdr)
-libgv_csharp_la_LIBADD = $(BASELIBS) @CSHARP_LIBS@ 
-libgv_csharp_la_LDFLAGS = -module
-gv_csharp.cpp $(CSHARP_hdr): gv.i
-	$(SWIG) -c++ -csharp -namespace gv -o gv_csharp.cpp gv.i
+pkgsharpdir = $(pkglibdir)/sharp
+SHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs SWIGTYPE_p_p_void.cs
+libgv_sharp_la_SOURCES = $(BASESOURCES) gv_sharp.cpp $(SHARP_hdr)
+libgv_sharp_la_LIBADD = $(BASELIBS) @SHARP_LIBS@ 
+libgv_sharp_la_LDFLAGS = -module
+gv_sharp.cpp $(SHARP_hdr): gv.i
+	$(SWIG) -c++ -csharp -namespace gv -o gv_sharp.cpp gv.i
 
 pkgguiledir = $(pkglibdir)/guile
 GUILE_hdr = 
@@ -106,10 +106,10 @@ gv_tcl.cpp $(TCL_hdr): gv.i
 pkginclude_DATA = gv.i gv.cpp
 pkglib_LTLIBRARIES = 
 TESTS =
-if WITH_CSHARP
-pkgcsharp_DATA = $(CSHARP_hdr) gv_csharp.man
-pkgcsharp_LTLIBRARIES = libgv_csharp.la
-TESTS += test_csharp
+if WITH_SHARP
+pkgsharp_DATA = $(SHARP_hdr) gv_sharp.man
+pkgsharp_LTLIBRARIES = libgv_sharp.la
+TESTS += test_sharp
 endif
 if WITH_GUILE
 pkgguile_DATA = $(GUILE_hdr) gv_guile.man
@@ -167,7 +167,7 @@ pkgIndex.tcl: libgv_tcl.la
 	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libgv_tcl.la gv $(VERSION)
 endif
 
-gv_csharp.man gv_guile.man gv_io.man gv_java.man gv_lua.man \
+gv_sharp.man gv_guile.man gv_io.man gv_java.man gv_lua.man \
 gv_ocaml.man gv_perl.man gv_php.man gv_python.man gv_ruby.man \
 gv_tcl.man: gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
 	tclsh ./gv_doc_writer.tcl
@@ -188,12 +188,12 @@ uninstall-hook:
 
 test: $(TESTS)
 
-.PHONY: test_csharp
-test_csharp: libgv_csharp.la
-	-(mkdir -p test_csharp; cd test_csharp; \
-		ln -fs ../.libs/libgv_csharp.so libgv_csharp.so; \
+.PHONY: test_sharp
+test_sharp: libgv_sharp.la
+	-(mkdir -p test_sharp; cd test_sharp; \
+		ln -fs ../.libs/libgv_sharp.so libgv_sharp.so; \
 		ln -fs ../*.dot ../*.cs .; \
-		$(CSHARP) *.cs -out:test.exe; \
+		$(SHARP) *.cs -out:test.exe; \
 		mono test.exe)
 
 .PHONY: test_guile
@@ -271,7 +271,7 @@ test_tcl: libgv_tcl.la
 EXTRA_DIST = demo/* gv.cpp gv.i gv_doc_*.tcl
 
 CLEANFILES = test_*/* gv_*.man \
-	gv_csharp.cpp $(CSHARP_hdr) \
+	gv_sharp.cpp $(SHARP_hdr) \
 	gv_guile.cpp $(GUILE_hdr) \
 	gv_io.cpp $(IO_hdr) \
 	gv_java.cpp $(JAVA_hdr) \
