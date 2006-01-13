@@ -258,7 +258,7 @@ char *setv(Agedge_t *e, char *attr, char *val)
 
     if (!e || !attr || !val)
 	return NULL;
-    g = e->tail->graph;
+    g = e->tail->graph->root;
     a = agfindattr(g->proto->e, attr);
     if (!a)
         a = agedgeattr(g, attr, empty_string);
