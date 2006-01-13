@@ -261,7 +261,7 @@ char *setv(Agedge_t *e, char *attr, char *val)
     g = e->tail->graph;
     a = agfindattr(g->proto->e, attr);
     if (!a)
-        a = agnodeattr(g, attr, empty_string);
+        a = agedgeattr(g, attr, empty_string);
     agxset(e, a->index, val);
     return val;
 }
