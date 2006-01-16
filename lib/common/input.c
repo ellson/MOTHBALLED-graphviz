@@ -242,18 +242,6 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		}
 		use_library(val);
 		break;
-	    case 'n':
-		if (*rest) {
-		    Nop = atoi(rest);
-		    if (Nop <= 0) {
-			fprintf(stderr,
-				"Invalid parameter \"%s\" for -n flag\n",
-				rest);
-			dotneato_usage(1);
-		    }
-		} else
-		    Nop = 1;
-		break;
 	    case 'o':
 		val = getFlagOpt(argc, argv, &i);
 		gvrender_output_filename_job(gvc, val);
