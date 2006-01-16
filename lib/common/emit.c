@@ -202,13 +202,9 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     /* determine pagination */
     if (gvc->graph_sets_pageSize) {
 	/* page was set by user */
-#if 0
-fprintf(stderr,"graph_sets_pageSize\n");
-#endif
 	pageSize.x = ROUND(gvc->pageSize.x * job->dpi / POINTS_PER_INCH);
 	pageSize.y = ROUND(gvc->pageSize.y * job->dpi / POINTS_PER_INCH);
-	if (GD_drawing(g)->landscape)
-	    pageSize = exch_xy(pageSize);
+
 	/* we don't want graph page to exceed its bounding box */
 	pageSize.x = MIN(pageSize.x, imageSize.x);
 	pageSize.y = MIN(pageSize.y, imageSize.y);
@@ -249,10 +245,24 @@ fprintf(stderr,"graph_sets_pageSize\n");
 
     /* determine page box including centering */
     if (GD_drawing(g)->centered) {
-	if (pageSize.x > imageSize.x)
-	    margin.x += (pageSize.x - imageSize.x) / 2;
-	if (pageSize.y > imageSize.y)
-	    margin.y += (pageSize.y - imageSize.y) / 2;
+#if 1
+	/* FIXME - this code seems odd since margin, pageSize, and imageSize
+	 * should have all been rotated already */
+	if (GD_drawing(g)->landscape) {
+	    if (pageSize.x > imageSize.x)
+	        margin.x += (pageSize.x - imageSize.y) / 2;
+	    if (pageSize.y > imageSize.y)
+	        margin.y += (pageSize.y - imageSize.x) / 2;
+	}
+	else {
+#endif
+	    if (pageSize.x > imageSize.x)
+	        margin.x += (pageSize.x - imageSize.x) / 2;
+	    if (pageSize.y > imageSize.y)
+	        margin.y += (pageSize.y - imageSize.y) / 2;
+#if 1
+	}
+#endif
     }
 
     job->boundingBox.LL.x = margin.x;
@@ -375,10 +385,10 @@ void emit_background(GVJ_t * job, graph_t *g)
 
     if (! ((str = agget(g, "bgcolor")) && str[0]))
 	str = "white";
-    AF[0].x = AF[1].x = job->pageBox.LL.x + job->margin.x - fudge;
-    AF[2].x = AF[3].x = job->pageBox.UR.x - job->margin.x + fudge;
-    AF[3].y = AF[0].y = job->pageBox.LL.y + job->margin.y - fudge;
-    AF[1].y = AF[2].y = job->pageBox.UR.y - job->margin.y + fudge;
+    AF[0].x = AF[1].x = job->pageBox.LL.x - fudge;
+    AF[2].x = AF[3].x = job->pageBox.UR.x + fudge;
+    AF[3].y = AF[0].y = job->pageBox.LL.y - fudge;
+    AF[1].y = AF[2].y = job->pageBox.UR.y + fudge;
     for (i = 0; i < 4; i++) {
 	PF2P(AF[i],A[i]);
     }
@@ -402,20 +412,10 @@ static void setup_page(GVJ_t * job, graph_t * g)
     double pad = Pad * POINTS_PER_INCH / (job->zoom * job->dpi);
 
     /* establish current box in graph coordinates */
-    job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x;
-    job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y;
+    job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - pad;
+    job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y - pad;
     job->pageBox.UR.x = job->pageBox.LL.x + job->pageSize.x;
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
-
-    /* increase pageBox to include margins so that overlapping nodes and edges
-	are drawn in the margins of each page */
-    job->pageBox.LL = sub_pointfs(job->pageBox.LL,job->margin);
-    job->pageBox.UR = add_pointfs(job->pageBox.UR,job->margin);
-
-    job->pageBox.LL.x -= pad;
-    job->pageBox.LL.y -= pad;
-    job->pageBox.UR.x += pad;
-    job->pageBox.UR.y += pad;
 
     /* establish pageOffset to be applied, in graph coordinates */
     if (job->rotation == 0) {
@@ -1069,6 +1069,17 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
         gvc->graph_sets_pageSize = TRUE;
     }
 
+    /* rotation */
+    if (GD_drawing(g)->landscape) {
+	gvc->rotation = 90;
+	/* we expect the user to have swapped x,y coords of pagesize and margin */
+	gvc->pageSize = exch_xyf(gvc->pageSize);
+	gvc->margin = exch_xyf(gvc->margin);
+    }
+    else {
+	gvc->rotation = 0;
+    }
+
     /* pagedir */
     gvc->pagedir = "BL";
     if ((p = agget(g, "pagedir")) && p[0])
@@ -1076,9 +1087,6 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
 
     /* bounding box */
     B2BF(GD_bb(g),gvc->bb);
-
-    /* rotation */
-    gvc->rotation = GD_drawing(g)->landscape ? 90 : 0;
 
     /* clusters have peripheries */
     G_peripheries = agfindattr(g, "peripheries");

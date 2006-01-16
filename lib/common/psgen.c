@@ -167,7 +167,7 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
     if (Show_boxes == NULL) {
 	if (rot)
 	    fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
-	        PB.LL.y, PB.LL.x, sz.y, sz.x);
+	        PB.LL.x, PB.LL.y, sz.y, sz.x);
 	else
 	    fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	        PB.LL.x, PB.LL.y, sz.x, sz.y);
