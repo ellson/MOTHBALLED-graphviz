@@ -556,12 +556,13 @@ void graph_init(graph_t * g, bool use_rankdir)
     getdouble(g, "nodefactor", &Nodefactor);
 
     GD_drawing(g)->centered = mapbool(agget(g, "center"));
+
     if ((p = agget(g, "rotate")))
 	GD_drawing(g)->landscape = (atoi(p) == 90);
-    else {			/* today we learned the importance of backward compatibilty */
-	if ((p = agget(g, "orientation")))
-	    GD_drawing(g)->landscape = ((p[0] == 'l') || (p[0] == 'L'));
-    }
+    else if ((p = agget(g, "orientation")))
+	GD_drawing(g)->landscape = ((p[0] == 'l') || (p[0] == 'L'));
+    else if ((p = agget(g, "landscape")))
+	GD_drawing(g)->landscape = mapbool(p);
 
     p = agget(g, "clusterrank");
     CL_type = maptoken(p, rankname, rankcode);
