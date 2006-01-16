@@ -61,6 +61,7 @@ neato_extra_args(GVC_t *gvc, int argc, char** argv)
           }
         }
         else Nop = 1;
+	PSinputscale = POINTS_PER_INCH;
         break;
       default :
         cnt++;
