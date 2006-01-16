@@ -381,7 +381,7 @@ void emit_background(GVJ_t * job, graph_t *g)
     point A[4];
     int i;
     /* fudge to compensate for rounding errors */
-    double fudge = 1 * POINTS_PER_INCH / (job->zoom * job->dpi);
+    double fudge = 2 * POINTS_PER_INCH / (job->zoom * job->dpi);
 
     if (! ((str = agget(g, "bgcolor")) && str[0]))
 	str = "white";
