@@ -31,12 +31,12 @@ typedef enum {
 } adjust_mode;
 
     extern double expFactor(graph_t * G);
-    extern void adjustNodes(graph_t * G);
+    extern int adjustNodes(graph_t * G);
     extern void normalize(graph_t * g);
-    extern void removeOverlap(graph_t * G);
-    extern void removeOverlapAs(graph_t*, char*);
-    extern void cAdjust(graph_t *, int);
-    extern void scAdjust(graph_t *, int);
+    extern int removeOverlap(graph_t * G);
+    extern int removeOverlapAs(graph_t*, char*);
+    extern int cAdjust(graph_t *, int);
+    extern int scAdjust(graph_t *, int);
 
 #ifdef __cplusplus
 }

@@ -621,10 +621,10 @@ static void initItem(node_t * n, nitem * p, double margin)
  * mode = AM_ORTHO   => first X, then Y
  * mode = AM_ORTHO_YX   => first Y, then X
  */
-void cAdjust(graph_t * g, int mode)
+int cAdjust(graph_t * g, int mode)
 {
     double margin;
-    int i, nnodes = agnnodes(g);
+    int ret, i, nnodes = agnnodes(g);
     nitem *nlist = N_GNEW(nnodes, nitem);
     nitem *p = nlist;
     node_t *n;
@@ -680,8 +680,11 @@ void cAdjust(graph_t * g, int mode)
 	    ND_pos(n)[1] = PS2INCH(pt.y) / SCALE;
 	    p++;
 	}
+	ret = 1;
     }
+    else ret = 0;
     free(nlist);
+    return ret;
 }
 
 typedef struct {
@@ -853,7 +856,7 @@ static double computeScale(pointf * aarr, int m)
  * "Removing Node Overlapping in Graph Layout Using Constrained Optimization",
  * Constraints,8(2):143--172, 2003.
  */
-void scAdjust(graph_t * g, int equal)
+int scAdjust(graph_t * g, int equal)
 {
     int nnodes = agnnodes(g);
     info *nlist = N_GNEW(nnodes, info);
@@ -886,7 +889,7 @@ void scAdjust(graph_t * g, int equal)
 	s.x = s.y = compress(nlist, nnodes);
 	if (s.x == 0) {		/* overlaps exist */
 	    free(nlist);
-	    return;
+	    return 0;
 	}
 	fprintf(stderr, "compress %g \n", s.x);
     } else {
@@ -895,7 +898,7 @@ void scAdjust(graph_t * g, int equal)
 	if (m == 0) {		/* no overlaps */
 	    free(aarr);
 	    free(nlist);
-	    return;
+	    return 0;
 	}
 
 	if (equal) {
@@ -914,4 +917,5 @@ void scAdjust(graph_t * g, int equal)
     }
 
     free(nlist);
+    return 1;
 }

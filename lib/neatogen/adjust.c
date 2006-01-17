@@ -726,7 +726,7 @@ static adjust_data *getAdjustMode(char *s)
  * Use flag value to determine if and how to remove
  * node overlaps.
  */
-void 
+int 
 removeOverlapAs(graph_t * G, char* flag)
 {
     /* int          userWindow = 0; */
@@ -736,13 +736,13 @@ removeOverlapAs(graph_t * G, char* flag)
     adjust_data *am;
 
     if (agnnodes(G) < 2)
-	return;
+	return 0;
     if (flag == NULL)
-	return;
+	return 0;
 
     am = getAdjustMode(flag);
     if (am->mode == AM_NONE)
-	return;
+	return 0;
 
     if (Verbose)
 	fprintf(stderr, "Adjusting %s using %s\n", G->name, am->print);
@@ -751,10 +751,10 @@ removeOverlapAs(graph_t * G, char* flag)
 /* start_timer(); */
 	switch (am->mode) {
 	case AM_NSCALE:
-	    scAdjust(G, 1);
+	    ret = scAdjust(G, 1);
 	    break;
 	case AM_SCALEXY:
-	    scAdjust(G, 0);
+	    ret = scAdjust(G, 0);
 	    break;
 	case AM_PUSH:
 	    /* scanAdjust (G, 1); */
@@ -773,13 +773,13 @@ removeOverlapAs(graph_t * G, char* flag)
 	    cAdjust(G, am->mode);
 	    break;
 	case AM_COMPRESS:
-	    scAdjust(G, -1);
+	    ret = scAdjust(G, -1);
 	    break;
 	default:		/* to silence warnings */
 	    break;
 	}
 /* fprintf (stderr, "%s %.4f sec\n", am->attrib, elapsed_sec()); */
-	return;
+	return ret;
     }
 
     /* create main array */
@@ -802,22 +802,27 @@ removeOverlapAs(graph_t * G, char* flag)
     sites = 0;
 /* fprintf (stderr, "old scale %.4f sec\n", elapsed_sec()); */
 
+    return ret;
 }
 
 /* removeOverlap:
  */
-void 
+int 
 removeOverlap(graph_t * G)
 {
-    removeOverlapAs(G, agget(G, "overlap"));
+    return (removeOverlapAs(G, agget(G, "overlap")));
 }
 
-void adjustNodes(graph_t * G)
+/* adjustNodes:
+ * Remove node overlap relying on graph's overlap attribute.
+ * Return non-zero if graph has changed.
+ */
+int adjustNodes(graph_t * G)
 {
     if (agnnodes(G) < 2)
-	return;
+	return 0;
     normalize(G);
-    removeOverlap (G);
+    return removeOverlap (G);
 }
 
 /* expFactor:
