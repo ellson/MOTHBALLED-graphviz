@@ -46,17 +46,17 @@ GVC_t *gvContext(void)
     return gvc;
 }
 
+/* gvLayout:
+ * Selects layout based on engine and binds it to gvc;
+ * does the layout and sets the graph's bbox.
+ * Return 0 on success.
+ */
 int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
 {
     char buf[256];
     Agsym_t *a;
     int rc;
 
-    g = g->root;
-    if (GD_drawing(g)) {        /* only cleanup once between layouts */
-        gvFreeLayout(gvc, g);
-        GD_drawing(g) = NULL;
-    }
     rc = gvlayout_select(gvc, engine);
     if (rc == NO_SUPPORT) {
         agerr (AGERR, "Layout type: \"%s\" not recognized. Use one of:%s\n",
@@ -77,10 +77,7 @@ int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
         sprintf(buf, "%d %d %d %d",
                 ROUND(GD_bb(g).LL.x), ROUND(GD_bb(g).LL.y),
                 ROUND(GD_bb(g).UR.x), ROUND(GD_bb(g).UR.y));
-    if (!(a = agfindattr(g, "bb"))) {
-        a = agraphattr(g, "bb", "");
-    }
-    agxset(g, a->index, buf);
+    agsafeset(g, "bb", buf, "");
 
     return 0;
 }

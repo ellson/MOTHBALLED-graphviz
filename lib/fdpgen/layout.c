@@ -823,7 +823,7 @@ setClustNodes(graph_t* root)
  *      Layout c' (recursion)
  *    Remove ports from cc
  *    Expand nodes of cc to reflect size of c'  (xLayout)
- *  Pack connected components to get layout of g (packGraphs)
+ *  Pack connected components to get layout of g (putGraphs)
  *  Translate layout so that bounding box of layout + margin 
  *  has the origin as LL corner. 
  *  Set position of top level clusters and real nodes.

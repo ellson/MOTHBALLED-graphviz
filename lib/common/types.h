@@ -324,10 +324,11 @@ extern "C" {
 	bool has_images;
 	unsigned char charset; /* input character set */
 	int rankdir;
-	int ht1, ht2;		/* below and above extremal ranks */
+	int ht1, ht2;	/* below and above extremal ranks */
 	unsigned short flags;
 	void *alg;
-	GVC_t *gvc;		/* context for "globals" over multiple graphs */
+	GVC_t *gvc;	/* context for "globals" over multiple graphs */
+	void (*cleanup) (graph_t * g);   /* function to deallocate layout-specific data */
 
 #ifndef DOT_ONLY
 	/* to place nodes */
@@ -374,6 +375,7 @@ extern "C" {
 #define GD_bb(g) (g)->u.bb
 #define GD_border(g) (g)->u.border
 #define GD_cl_cnt(g) (g)->u.cl_cnt
+#define GD_cleanup(g) (g)->u.cleanup
 #define GD_clust(g) (g)->u.clust
 #define GD_cluster_was_collapsed(g) (g)->u.cluster_was_collapsed
 #define GD_comp(g) (g)->u.comp

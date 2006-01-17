@@ -81,7 +81,7 @@ void circo_init_graph(graph_t * g)
  * Make a node in the derived graph, with the given name.
  * orig points to what it represents, either a real node or
  * a cluster. Copy size info from original node; needed for
- * adjustNodes and packGraphs.
+ * adjustNodes and packSubgraphs.
  */
 static node_t *makeDerivedNode(graph_t * dg, char *name, int isNode,
 			       void *orig)

@@ -320,7 +320,7 @@ void circleLayout(Agraph_t * sg, Agnode_t * center)
     if (!center)
 	center = findCenterNode(sg);
     if (Verbose)
-	fprintf(stderr, "Center = %s\n", center->name);
+	fprintf(stderr, "root = %s\n", center->name);
 
     /* maxNStepsToCenter = setParentNodes(sg,center); */
     setParentNodes(sg, center);
