@@ -1,3 +1,24 @@
+January 17, 2005
+	- (POTENTIAL INCOMPATIBILITY) The default input scaling, in the in absence of a "-s"
+	switch, has been changed from inches to points.  The new behavior of "neato"
+	is equivalent to "neato -s72".  The old behavior can be restored with "neato -s1"
+	The purpose of this change is to avoid a Frequently-Made-Mistake when using
+	"neato -n" to process a previously generated layout.  Presiously it was necessary
+	to use "neato -n -s72", but with this change the default matches dot's output and
+	the "-s72" is not required.
+	- Added pseudo layout engines: "dot -Knop" and dot -Knop1" equivalent to "neato -n"
+	- Added pseodo layout engine: "dot -Knop2" equivalent to "neato -n2"
+	- Add support for color namespaces; add Brewer color data
+	- Add support for simulated duplex edges using parallel edges:
+	head arrow takes first color, tail arrow takes second color.
+	- source code management moved back to CVS until GIT matures a bit more
+	- distribute separe rpms for binares of language bindings : 
+	- Add a small pad region around graph renderings to allow for finite
+	penwidths at the drawing edges
+	- Add protonode(g) and E=protoedge(g) functions to simplify language bindings.
+	- Various portability fixes for: HPUX, Mac OS/X, Cygwin, Windows.
+	- Fix bugs 784, 786, 787, 788, 789, 791, 795, 796, 804, 806, 817, 826, 830, 837, 858
+
 August 28, 2005
 	- release 2.6
 	- experimentally moved source code management from CVS to GIT
@@ -27,24 +48,24 @@ July 20, 2005
 			701, 702, 703, 705, 730, 731, 732, 741, 743
 April 7, 2005
 	- release 2.2.1
-        - correct license headers to CPL in .cpp files
-        - undo indentation cleanup to dynagraph .h files
-        - fix bugs: 183, 247, 419, 615, 616, 625, 626, 627, 643,
-                        646, 651, 658, 661, 664, 674
-        - fix buffer overrun in Gvfilepath construction
+	- correct license headers to CPL in .cpp files
+	- undo indentation cleanup to dynagraph .h files
+	- fix bugs: 183, 247, 419, 615, 616, 625, 626, 627, 643,
+		646, 651, 658, 661, 664, 674
+	- fix buffer overrun in Gvfilepath construction
 January 19, 2005
-        - release 2.2
-        - fix bugs: 86, 345, 517, 579, 580, 597, 600, 601, 604
-        - use the original cpl1.0.txt as the license master, instead of CPL.html        - fix for bug generating in memory bitmaps that was affecting webdot
-        - fixes for windows builds
-        - documentation updates
+	- release 2.2
+	- fix bugs: 86, 345, 517, 579, 580, 597, 600, 601, 604
+	- use the original cpl1.0.txt as the license master, instead of CPL.html        - fix for bug generating in memory bitmaps that was affecting webdot
+	- fixes for windows builds
+	- documentation updates
 December 11, 2004
 	- release 2.0
 	- new CPL license
 	- re indent all sources
 December 11, 2004
 	- release 1.18
-    dotneato
+	dotneato
 	- fix bugs: 451, 536, 545, 547, 548, 559, 561, 565, 572
 	- increase max size  of HTML tables.
 	- spline cluster edges in fdp
@@ -58,10 +79,10 @@ December 11, 2004
 		
 September 14, 2004
 	- release 1.16
-    dotneato
+	dotneato
 	- fix bugs: 275, 523, 526, 527, 529, 534
 August 30, 2004
-        - release 1.14
+	- release 1.14
     dotneato
 	- the official gd now has support support for GIFs again - the
 		internal gd is now closely sync'ed with the official version
