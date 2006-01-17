@@ -724,16 +724,29 @@ static void shiftGraph(Agraph_t * g, int dx, int dy)
 }
 
 /* shiftGraphs:
- * Uses points computed from putGraphs to shift points, edges and clusters.
- * Always shifts pos.
- * If doSplines is true, assumes node position is also in coord, 
- * and edges and edge labels have been placed, so it shifts those.
- * If root is non-null, it is used to find edges.
- *
- * Depends on graph field bb, node field pos and coord, and edge field spl.
- * as well as labels in graphs and edges
+ * The function takes ng graphs gs and a similar
+ * number of points pp and translates each graph so
+ * that the lower left corner of the bounding box of graph gs[i] is at
+ * point ps[i]. To do this, it assumes the bb field in
+ * Agraphinfo_t accurately reflects the current graph layout.
+ * The graph is repositioned by translating the pos and coord fields of 
+ * each node appropriately.
+ * 
+ * If doSplines is non-zero, the function also translates splines coordinates
+ * of each edge, if they have been calculated. In addition, edge labels are
+ * repositioned. 
+ * 
+ * If root is non-NULL, it is taken as the root graph of
+ * the graphs in gs and is used to find the edges. Otherwise, the function
+ * uses the edges found in each graph gs[i].
+ * 
+ * It returns 0 on success.
+ * 
+ * This function uses the bb field in Agraphinfo_t,
+ * the pos and coord fields in nodehinfo_t and
+ * the spl field in Aedgeinfo_t.
  */
-int
+static int
 shiftGraphs(int ng, Agraph_t ** gs, point * pp, Agraph_t * root,
 	    int doSplines)
 {
@@ -764,8 +777,8 @@ shiftGraphs(int ng, Agraph_t ** gs, point * pp, Agraph_t * root,
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    ND_pos(n)[0] += fx;
 	    ND_pos(n)[1] += fy;
+	    MOVEPT(ND_coord_i(n));
 	    if (doSplines) {
-		MOVEPT(ND_coord_i(n));
 		for (e = agfstout(eg, n); e; e = agnxtout(eg, e))
 		    shiftEdge(e, dx, dy);
 	    }
@@ -801,8 +814,7 @@ int packGraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * info)
 }
 
 /* packSubgraphs:
- *  Packs subgraphs of given root graph, then recalculates root's bounding
- * box.
+ * Packs subgraphs of given root graph, then recalculates root's bounding box.
  * Note that it does not recompute subgraph bounding boxes.
  * Cluster bounding boxes are recomputed in shiftGraphs.
  */
@@ -812,8 +824,39 @@ packSubgraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * info)
     int ret;
 
     ret = packGraphs(ng, gs, root, info);
-    if (ret == 0)
+    if (ret == 0) {
+	int i, j;
+	box bb;
+	graph_t* g;
+
 	compute_bb(root);
+	bb = GD_bb(root);
+	for (i = 0; i < ng; i++) {
+	    g = gs[i];
+	    for (j = 1; j <= GD_n_cluster(g); j++) {
+		EXPANDBB(bb,GD_bb(GD_clust(g)[j]));
+	    }
+	}
+	GD_bb(root) = bb;
+    }
+    return ret;
+}
+
+/* pack_graph:
+ * Pack subgraphs followed by postprocessing.
+ */
+int 
+pack_graph(int ng, Agraph_t** gs, Agraph_t* root, int fixed)
+{
+    int ret;
+    pack_info info;
+
+    pinfo.margin = getPack (g, CL_OFFSET, CL_OFFSET);;
+    pinfo.doSplines = 1;
+    pinfo.mode = getPackMode (g, l_graph);
+    pinfo.fixed = fixed;
+    ret = packSubgraphs(ng, gs, root, info);
+    if (ret == 0) dotneato_postprocess (root);
     return ret;
 }
 
