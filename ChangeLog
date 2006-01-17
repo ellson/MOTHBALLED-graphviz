@@ -1,12 +1,14 @@
 January 17, 2005
-	- (POTENTIAL INCOMPATIBILITY) The default input scaling, in the in absence of a "-s"
-	switch, has been changed from inches to points.  The new behavior of "neato"
-	is equivalent to "neato -s72".  The old behavior can be restored with "neato -s1"
-	The purpose of this change is to avoid a Frequently-Made-Mistake when using
-	"neato -n" to process a previously generated layout.  Presiously it was necessary
-	to use "neato -n -s72", but with this change the default matches dot's output and
-	the "-s72" is not required.
-	- Added pseudo layout engines: "dot -Knop" and dot -Knop1" equivalent to "neato -n"
+	- (POTENTIAL INCOMPATIBILITY) The default input scaling, in the
+	absence of a "-s" switch, has been changed from inches to points.
+	The new behavior of "neato" is equivalent to "neato -s72".
+	The old behavior can be restored with "neato -s1".
+	The purpose of this change is to avoid a Frequently-Made-Mistake
+	when using "neato -n" to process a previously generated layout.
+	Previously it was necessary to use "neato -n -s72", but with this
+	change the default matches dot's output and the "-s72" is not required.
+	- Added pseudo layout engines: "dot -Knop" and dot -Knop1" equivalent
+	to "neato -n"
 	- Added pseodo layout engine: "dot -Knop2" equivalent to "neato -n2"
 	- Add support for color namespaces; add Brewer color data
 	- Add support for simulated duplex edges using parallel edges:
@@ -15,9 +17,11 @@ January 17, 2005
 	- distribute separe rpms for binares of language bindings : 
 	- Add a small pad region around graph renderings to allow for finite
 	penwidths at the drawing edges
-	- Add protonode(g) and E=protoedge(g) functions to simplify language bindings.
+	- Add protonode(g) and E=protoedge(g) functions to simplify
+	language bindings.
 	- Various portability fixes for: HPUX, Mac OS/X, Cygwin, Windows.
-	- Fix bugs 784, 786, 787, 788, 789, 791, 795, 796, 804, 806, 817, 830, 837, 858
+	- Fix bugs 784, 786, 787, 788, 789, 791, 795, 796, 804, 806, 817,
+	824, 830, 837, 858
 
 August 28, 2005
 	- release 2.6
