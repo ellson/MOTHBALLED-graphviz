@@ -18,7 +18,6 @@ typedef struct {
 } pack_info;
 
 point*     putGraphs (int, Agraph_t**, Agraph_t*, pack_info*);
-int        shiftGraphs (int, Agraph_t**, point*, Agraph_t*, int);
 int        packGraphs (int, Agraph_t**, Agraph_t*, pack_info*);
 int        packSubgraphs (int, Agraph_t**, Agraph_t*, pack_info*);
 
@@ -130,29 +129,6 @@ than setting the \fIbb\fP.
 .PP
 This function uses the \fIbb\fP field in \fIAgraphinfo_t\fP,
 the \fIpos\fP, \fIxsize\fP and \fIysize\fP fields in \fInodehinfo_t\fP and
-the \fIspl\fP field in \fIAedgeinfo_t\fP.
-.PP
-.SS "  int shiftGraphs (int ng, Agraph_t** gs, point* ps, Agraph_t* root, int doSplines)"
-The function \fIshiftGraphs\fP takes \fIng\fP graphs \fIgs\fP and a similar
-number of points \fIps\fP and translates each graph so
-that the lower left corner of the bounding box of graph \fIgs[i]\fP is at
-point \fIps[i]\fP. To do this, it assumes the \fIbb\fP field in
-\fIAgraphinfo_t\fP accurately reflects the current graph layout.
-The graph is repositioned by translating the \fIpos\fP field of each node 
-appropriately.
-.PP
-If \fIdoSplines\fP is non-zero, the function
-also translates the \fIcoord\fP field of each node and the splines coordinates
-of each edge, if they have been calculated. In addition, edge labels are
-repositioned. If \fIroot\fP is non-NULL, it is taken as the root graph of
-the graphs in \fIgs\fP and is used to find the edges. Otherwise, the function
-uses the edges found in each graph \fIgs[i]\fP.
-.PP
-It returns 0 on success. Note also that the bounding boxes of all graphs
-are left unmodified.
-.PP
-This function uses the \fIbb\fP field in \fIAgraphinfo_t\fP,
-the \fIpos\fP and \fIcoord\fP fields in \fInodehinfo_t\fP and
 the \fIspl\fP field in \fIAedgeinfo_t\fP.
 .PP
 .SS "  int packGraphs (int ng, Agraph_t** gs, Agraph_t* root, pack_info* ip)"
