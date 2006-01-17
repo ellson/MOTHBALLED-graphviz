@@ -17,7 +17,7 @@ January 17, 2005
 	penwidths at the drawing edges
 	- Add protonode(g) and E=protoedge(g) functions to simplify language bindings.
 	- Various portability fixes for: HPUX, Mac OS/X, Cygwin, Windows.
-	- Fix bugs 784, 786, 787, 788, 789, 791, 795, 796, 804, 806, 817, 826, 830, 837, 858
+	- Fix bugs 784, 786, 787, 788, 789, 791, 795, 796, 804, 806, 817, 830, 837, 858
 
 August 28, 2005
 	- release 2.6
