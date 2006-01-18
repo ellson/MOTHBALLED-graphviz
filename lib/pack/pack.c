@@ -846,16 +846,16 @@ packSubgraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * info)
  * Pack subgraphs followed by postprocessing.
  */
 int 
-pack_graph(int ng, Agraph_t** gs, Agraph_t* root, int fixed)
+pack_graph(int ng, Agraph_t** gs, Agraph_t* root, bool* fixed)
 {
     int ret;
     pack_info info;
 
-    pinfo.margin = getPack (g, CL_OFFSET, CL_OFFSET);;
-    pinfo.doSplines = 1;
-    pinfo.mode = getPackMode (g, l_graph);
-    pinfo.fixed = fixed;
-    ret = packSubgraphs(ng, gs, root, info);
+    info.margin = getPack (root, CL_OFFSET, CL_OFFSET);;
+    info.mode = getPackMode (root, l_graph);
+    info.doSplines = 1;
+    info.fixed = fixed;
+    ret = packSubgraphs(ng, gs, root, &info);
     if (ret == 0) dotneato_postprocess (root);
     return ret;
 }

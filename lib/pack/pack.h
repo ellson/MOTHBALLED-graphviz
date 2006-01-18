@@ -51,7 +51,7 @@ extern "C" {
     extern point *putGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packSubgraphs(int, Agraph_t **, Agraph_t *, pack_info *);
-    extern int pack_graph(int, Agraph_t **, Agraph_t *, int);
+    extern int pack_graph(int, Agraph_t **, Agraph_t *, bool*);
     extern pack_mode getPackMode(Agraph_t * g, pack_mode dflt);
     extern int getPack(Agraph_t *, int not_def, int dflt);
 
