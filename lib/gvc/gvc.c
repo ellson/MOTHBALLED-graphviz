@@ -54,7 +54,6 @@ GVC_t *gvContext(void)
 int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
 {
     char buf[256];
-    Agsym_t *a;
     int rc;
 
     rc = gvlayout_select(gvc, engine);
