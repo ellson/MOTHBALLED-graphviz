@@ -197,6 +197,9 @@ This field indicates which graph component uses the attribute.
 </TD><TD>GC</TD><TD>string</TD><TD ALIGN="CENTER">"c"</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:labelloc HREF=#d:labelloc>labelloc</A>
 </TD><TD>GC</TD><TD>string</TD><TD ALIGN="CENTER">"t"</TD><TD>clusters)<BR>"b"(root graphs)</TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:landscape HREF=#d:landscape>landscape</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
+</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:layer HREF=#d:layer>layer</A>
 </TD><TD>EN</TD><TD><A HREF=#k:layerRange>layerRange</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
@@ -722,6 +725,11 @@ This field indicates which graph component uses the attribute.
   Note that a subgraph inherits attributes from its parent. Thus, if
   the root graph sets <B>labelloc</B> to "b", the subgraph inherits
   this value.
+
+<DT><A NAME=d:landscape HREF=#a:landscape><STRONG>landscape</STRONG></A>
+<DD>  If true, the graph is rendered in landscape mode. Synonymous with
+  <A HREF=#d:rotate><TT>rotate=90</TT></A> or 
+  <A HREF=#d:orientation><TT>orientation=landscape</TT></A>.
 
 <DT><A NAME=d:layer HREF=#a:layer><STRONG>layer</STRONG></A>
 <DD>  Specifies layers in which the node or edge is present.
