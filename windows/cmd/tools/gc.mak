@@ -36,21 +36,10 @@ INTDIR=.\Release
 OutDir=.\Release
 # End Custom Macros
 
-!IF "$(RECURSE)" == "0" 
-
 ALL : "$(OUTDIR)\gc.exe"
 
-!ELSE 
 
-ALL : "ingraphs - Win32 Release" "$(OUTDIR)\gc.exe"
-
-!ENDIF 
-
-!IF "$(RECURSE)" == "1" 
-CLEAN :"ingraphs - Win32 ReleaseCLEAN" 
-!ELSE 
 CLEAN :
-!ENDIF 
 	-@erase "$(INTDIR)\gc.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(OUTDIR)\gc.exe"
@@ -66,8 +55,7 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=graph.lib cdt.lib ingraphs.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\gc.pdb" /machine:I386 /out:"$(OUTDIR)\gc.exe" /libpath:"../../lib/lib/Release" 
 LINK32_OBJS= \
-	"$(INTDIR)\gc.obj" \
-	"..\..\lib\ingraphs\Release\ingraphs.lib"
+	"$(INTDIR)\gc.obj"
 
 "$(OUTDIR)\gc.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -82,21 +70,10 @@ INTDIR=.\Debug
 OutDir=.\Debug
 # End Custom Macros
 
-!IF "$(RECURSE)" == "0" 
-
 ALL : "$(OUTDIR)\gc.exe"
 
-!ELSE 
 
-ALL : "ingraphs - Win32 Debug" "$(OUTDIR)\gc.exe"
-
-!ENDIF 
-
-!IF "$(RECURSE)" == "1" 
-CLEAN :"ingraphs - Win32 DebugCLEAN" 
-!ELSE 
 CLEAN :
-!ENDIF 
 	-@erase "$(INTDIR)\gc.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
@@ -115,8 +92,7 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=graph.lib cdt.lib ingraphs.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\gc.pdb" /debug /machine:I386 /out:"$(OUTDIR)\gc.exe" /pdbtype:sept /libpath:"../../lib/lib/Debug" 
 LINK32_OBJS= \
-	"$(INTDIR)\gc.obj" \
-	"..\..\lib\ingraphs\Debug\ingraphs.lib"
+	"$(INTDIR)\gc.obj"
 
 "$(OUTDIR)\gc.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
     $(LINK32) @<<
@@ -170,32 +146,6 @@ SOURCE=.\gc.c
 
 "$(INTDIR)\gc.obj" : $(SOURCE) "$(INTDIR)"
 
-
-!IF  "$(CFG)" == "gc - Win32 Release"
-
-"ingraphs - Win32 Release" : 
-   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
-   $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Release" 
-   cd "..\..\cmd\tools"
-
-"ingraphs - Win32 ReleaseCLEAN" : 
-   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
-   $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Release" RECURSE=1 CLEAN 
-   cd "..\..\cmd\tools"
-
-!ELSEIF  "$(CFG)" == "gc - Win32 Debug"
-
-"ingraphs - Win32 Debug" : 
-   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
-   $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Debug" 
-   cd "..\..\cmd\tools"
-
-"ingraphs - Win32 DebugCLEAN" : 
-   cd "\graphvizCVS\builddaemon\graphviz-win\lib\ingraphs"
-   $(MAKE) /$(MAKEFLAGS) /F ".\ingraphs.mak" CFG="ingraphs - Win32 Debug" RECURSE=1 CLEAN 
-   cd "..\..\cmd\tools"
-
-!ENDIF 
 
 
 !ENDIF 
