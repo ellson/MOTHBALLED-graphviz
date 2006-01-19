@@ -232,15 +232,25 @@ main (int argc, char *argv[])
   /* Create an image of text on a circle, with an
      alpha channel so that we can copy it onto a
      background */
+
+  im = NULL;
+
+/* What is this eleanor.jpg stuff doing here anyway?
+ * There is no such file in the gd-2.0.33 sources. */
+#if 0
+#if HAVE_LIBJPEG
   in = fopen ("eleanor.jpg", "rb");
-  if (!in)
-    {
-      im = gdImageCreateTrueColor (300, 300);
-    }
-  else
+  if (in)
     {
       im = gdImageCreateFromJpeg (in);
       fclose (in);
+    }
+#endif
+#endif
+
+  if (!im)
+    {
+      im = gdImageCreateTrueColor (300, 300);
     }
   if (gdImageSX (im) < gdImageSY (im))
     {
