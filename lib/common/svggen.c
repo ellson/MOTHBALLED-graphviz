@@ -44,6 +44,7 @@ Stephen North
 north@research.att.com
 */
 
+#include <ctype.h>
 #include "render.h"
 #ifdef HAVE_LIBZ
 #include "zlib.h"
@@ -52,7 +53,6 @@ north@research.att.com
 #include <io.h>
 #include <stdarg.h>
 #endif
-
 
 /* SVG font modifiers */
 #define REGULAR 0
@@ -400,6 +400,17 @@ static void svg_comment(char *str)
     svg_fputs(" -->\n");
 }
 
+/* isAscii:
+ * Return true if all bytes in string are ascii.
+ */
+static int isAscii (char* s)
+{
+  int c;
+
+  while ((c = *s++) && isascii(c)) ;
+  return (c == '\0');
+}
+
 static void
 svg_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
 	      char *info[], point pages)
@@ -459,9 +470,18 @@ svg_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
     svg_fputs(xml_string(info[1]));
     svg_fputs(" (");
     svg_fputs(xml_string(info[2]));
-    svg_fputs(")\n     For user: ");
-    svg_fputs(xml_string(user));
-    svg_fputs(" -->\n");
+    /* We assume utf-8 output. If user name contains any non-ascii bytes,
+     * we don't put it in the output. Obviously, this could be made more
+     * sophisticated, like checking that the name is utf-8 or doing some
+     * conversion. 
+     */
+    if (isAscii(user)) {
+	svg_fputs(")\n     For user: ");
+	svg_fputs(xml_string(user));
+	svg_fputs(" -->\n");
+    }
+    else
+	svg_fputs(") -->\n");
 }
 
 static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
