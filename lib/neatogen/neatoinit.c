@@ -528,11 +528,8 @@ static void translate(Agraph_t * g, pos_edge posEdges)
 }
 
 /* init_nop:
- * This assumes all nodes have been positioned, and the
- * root graph has a bb defined, as name/value pairs. 
- * (We could possible weaken the latter and perform a 
- * recomputation of all bb.) It also assumes none of the 
- * relevant fields in A*info_t have set.
+ * This assumes all nodes have been positioned.
+ * It also assumes none of the * relevant fields in A*info_t have been set.
  * The input may provide additional position information for
  * clusters, edges and labels. If certain position information
  * is missing, init_nop will use a standard neato technique to
@@ -545,6 +542,10 @@ int init_nop(Agraph_t * g, int adjust)
     pos_edge posEdges;		/* How many edges have spline info */
     attrsym_t *G_lp = agfindattr(g, "lp");
     attrsym_t *G_bb = agfindattr(g, "bb");
+
+    /* If G_bb not defined, define it */
+    if (!G_bb)
+	G_bb = agraphattr(g, "bb", "");
 
     scan_graph(g);		/* mainly to set up GD_neato_nlist */
     for (i = 0; (np = GD_neato_nlist(g)[i]); i++) {
@@ -559,10 +560,6 @@ int init_nop(Agraph_t * g, int adjust)
 
     if (adjust && Nop == 1)
 	adjustNodes(g);
-
-    /* If G_bb not defined, define it */
-    if (!G_bb)
-	G_bb = agraphattr(g, "bb", "");
 
     /* If g does not have a good "bb" attribute, compute it. */
     if (!chkBB(g, G_bb))
@@ -1157,18 +1154,27 @@ addZ (Agraph_t* g)
  */
 void neato_layout(Agraph_t * g)
 {
+    int layoutMode;
+    int model;
+    pack_mode mode;
 
-    neato_init_graph(g);
     if (Nop) {
+	int save = PSinputscale;
+	int ret;
+	PSinputscale = POINTS_PER_INCH;
+	neato_init_graph(g);
 	addZ (g);
-	if (init_nop(g, 1)) {
+	ret = init_nop(g, 1);
+	PSinputscale = save;
+	if (ret) {
 	    agerr(AGPREV, "as required by the -n flag\n");
 	    exit(1);
 	}
     } else {
-	int layoutMode = neatoMode(g);
-	int model = neatoModel(g);
-	pack_mode mode = getPackMode(g, l_undef);
+	neato_init_graph(g);
+	layoutMode = neatoMode(g);
+	model = neatoModel(g);
+	mode = getPackMode(g, l_undef);
 	Pack = getPack(g, -1, CL_OFFSET);
 	/* pack if just packmode defined. */
 	if (mode == l_undef) {

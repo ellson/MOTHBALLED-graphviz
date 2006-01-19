@@ -53,14 +53,12 @@ extern void circo_cleanup(graph_t * g);
 static void nop1_layout(graph_t * g)
 {
     Nop = 1;
-    PSinputscale = POINTS_PER_INCH;
     neato_layout(g);
 }
 
 static void nop2_layout(graph_t * g)
 {
     Nop = 2;
-    PSinputscale = POINTS_PER_INCH;
     neato_layout(g);
 }
 
