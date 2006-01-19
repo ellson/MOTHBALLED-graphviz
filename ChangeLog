@@ -21,7 +21,7 @@ January 17, 2005
 	language bindings.
 	- Various portability fixes for: HPUX, Mac OS/X, Cygwin, Windows.
 	- Fix bugs 784, 786, 787, 788, 789, 791, 795, 796, 804, 806, 817,
-	824, 830, 837, 858
+	824, 830, 837, 858, 861
 
 August 28, 2005
 	- release 2.6
