@@ -484,10 +484,23 @@ This field indicates which graph component uses the attribute.
 
 <DT><A NAME=d:color HREF=#a:color><STRONG>color</STRONG></A>
 <DD>  Basic drawing color for graphics, not text. For the latter, use the
-  <A HREF=#d.fontcolor>fontcolor</A> attribute. For edges, the value
+  <A HREF=#d.fontcolor>fontcolor</A> attribute. 
+  <P>
+  For edges, the value
   can either be a single color or a <A HREF=#k:colorList>colorList</A>.
   In the latter case, the edge is drawn using parallel splines or lines,
   one for each color in the list, in the order given.
+  The head arrow, if any, is drawn using the first color in the list, 
+  and the tail arrow, if any, the second color. This supports the common 
+  case of drawing opposing edges, but using parallel splines instead of 
+  separately routed multiedges. For example, the graph
+  <PRE>
+  digraph G {
+    a -> b [dir=both color="red:blue"]
+  } 
+  </PRE>
+  yields<BR>
+  <IMG SRC="colorlist.gif">
 
 <DT><A NAME=d:colorscheme HREF=#a:colorscheme><STRONG>colorscheme</STRONG></A>
 <DD>  This attribute specifies a color scheme namespace. If defined, it specifies
