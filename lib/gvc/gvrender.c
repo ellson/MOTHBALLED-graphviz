@@ -236,7 +236,8 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     sy = job->height / (job->zoom * 2.);
 
     gvc->sg = g;  /* current subgraph/cluster */
-    job->compscale.y = job->compscale.x = job->zoom * job->dpi / POINTS_PER_INCH;
+    job->compscale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
+    job->compscale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
     job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
     if (job->rotation) {
         job->clip.UR.x = job->focus.x + sy + EPSILON;

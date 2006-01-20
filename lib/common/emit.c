@@ -202,8 +202,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     /* determine pagination */
     if (gvc->graph_sets_pageSize) {
 	/* page was set by user */
-	pageSize.x = ROUND(gvc->pageSize.x * job->dpi / POINTS_PER_INCH);
-	pageSize.y = ROUND(gvc->pageSize.y * job->dpi / POINTS_PER_INCH);
+	pageSize.x = ROUND(gvc->pageSize.x * job->dpi.x / POINTS_PER_INCH);
+	pageSize.y = ROUND(gvc->pageSize.y * job->dpi.y / POINTS_PER_INCH);
 
 	/* we don't want graph page to exceed its bounding box */
 	pageSize.x = MIN(pageSize.x, imageSize.x);
@@ -237,11 +237,11 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     }
 
     /* size of one page in graph units */
-    job->pageSize.x = (double)imageSize.x * POINTS_PER_INCH / (job->dpi * job->zoom);
-    job->pageSize.y = (double)imageSize.y * POINTS_PER_INCH / (job->dpi * job->zoom);
+    job->pageSize.x = (double)imageSize.x * POINTS_PER_INCH / (job->dpi.x * job->zoom);
+    job->pageSize.y = (double)imageSize.y * POINTS_PER_INCH / (job->dpi.y * job->zoom);
 
-    margin.x = ROUND(job->margin.x * job->dpi / POINTS_PER_INCH);
-    margin.y = ROUND(job->margin.y * job->dpi / POINTS_PER_INCH);
+    margin.x = ROUND(job->margin.x * job->dpi.x / POINTS_PER_INCH);
+    margin.y = ROUND(job->margin.y * job->dpi.y / POINTS_PER_INCH);
 
     /* determine page box including centering */
     if (GD_drawing(g)->centered) {
@@ -298,8 +298,8 @@ fprintf(stderr,"margin = %d,%d imageSize = %d,%d pageSize = %d,%d (device units)
 	pageSize.x, pageSize.y);
 fprintf(stderr,"job->pageSize= %g,%g (graph units)\n",
 	job->pageSize.x, job->pageSize.y);
-fprintf(stderr,"dpi = %d zoom = %g rotation = %d\n",
-        job->dpi, job->zoom, job->rotation);
+fprintf(stderr,"dpi = %g,%g zoom = %g rotation = %d\n",
+        job->dpi.x, job->dpi.y, job->zoom, job->rotation);
 fprintf(stderr,"boundingBox = %d,%d %d,%d (device units)\n",
         job->boundingBox.LL.x,
         job->boundingBox.LL.y,
@@ -381,14 +381,17 @@ void emit_background(GVJ_t * job, graph_t *g)
     point A[4];
     int i;
     /* fudge to compensate for rounding errors */
-    double fudge = 2 * POINTS_PER_INCH / (job->zoom * job->dpi);
+    pointf fudge;
+
+    fudge.x = 2 * POINTS_PER_INCH / (job->zoom * job->dpi.x);
+    fudge.y = 2 * POINTS_PER_INCH / (job->zoom * job->dpi.y);
 
     if (! ((str = agget(g, "bgcolor")) && str[0]))
 	str = "white";
-    AF[0].x = AF[1].x = job->pageBox.LL.x - fudge;
-    AF[2].x = AF[3].x = job->pageBox.UR.x + fudge;
-    AF[3].y = AF[0].y = job->pageBox.LL.y - fudge;
-    AF[1].y = AF[2].y = job->pageBox.UR.y + fudge;
+    AF[0].x = AF[1].x = job->pageBox.LL.x - fudge.x;
+    AF[2].x = AF[3].x = job->pageBox.UR.x + fudge.x;
+    AF[3].y = AF[0].y = job->pageBox.LL.y - fudge.y;
+    AF[1].y = AF[2].y = job->pageBox.UR.y + fudge.y;
     for (i = 0; i < 4; i++) {
 	PF2P(AF[i],A[i]);
     }
@@ -409,22 +412,25 @@ static void emit_defaults(GVJ_t * job)
 static void setup_page(GVJ_t * job, graph_t * g)
 {
     /* prescaled pad so that its size is constant under scaling */
-    double pad = Pad * POINTS_PER_INCH / (job->zoom * job->dpi);
+    pointf pad;
+
+    pad.x = Pad * POINTS_PER_INCH / (job->zoom * job->dpi.x);
+    pad.y = Pad * POINTS_PER_INCH / (job->zoom * job->dpi.y);
 
     /* establish current box in graph coordinates */
-    job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - pad;
-    job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y - pad;
+    job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - pad.x;
+    job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y - pad.y;
     job->pageBox.UR.x = job->pageBox.LL.x + job->pageSize.x;
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
     /* establish pageOffset to be applied, in graph coordinates */
     if (job->rotation == 0) {
-	job->pageOffset.x =  pad - job->pageSize.x * job->pagesArrayElem.x;
-	job->pageOffset.y =  pad - job->pageSize.y * job->pagesArrayElem.y;
+	job->pageOffset.x =  pad.x - job->pageSize.x * job->pagesArrayElem.x;
+	job->pageOffset.y =  pad.y - job->pageSize.y * job->pagesArrayElem.y;
     }
     else {
-	job->pageOffset.x = -pad + job->pageSize.y * (job->pagesArrayElem.y +1);
-	job->pageOffset.y =  pad - job->pageSize.x * job->pagesArrayElem.x;
+	job->pageOffset.x = -pad.x + job->pageSize.y * (job->pagesArrayElem.y +1);
+	job->pageOffset.y =  pad.y - job->pageSize.x * job->pagesArrayElem.x;
     }
 
     job->pageBoxClip.UR.x = MIN(job->clip.UR.x, job->pageBox.UR.x);
@@ -1134,20 +1140,22 @@ static void init_job_margin(GVJ_t *job)
 
 static void init_job_dpi(GVJ_t *job, graph_t *g)
 {
-    job->dpi = GD_drawing(g)->dpi;
-    if (job->dpi == 0) {
+    if (GD_drawing(g)->dpi != 0) {
+        job->dpi.x = job->dpi.y = GD_drawing(g)->dpi;
+    }
+    else {
         /* set default margins depending on format */
         switch (job->output_lang) {
         case GVRENDER_PLUGIN:
-            job->dpi = job->render.features->default_dpi;
+            job->dpi.x = job->dpi.y = job->render.features->default_dpi;
             break;
         case POSTSCRIPT:
         case PDF:
         case SVG:
-	    job->dpi = POINTS_PER_INCH;
+	    job->dpi.x = job->dpi.y = POINTS_PER_INCH;
             break;
         default:
-            job->dpi = DEFAULT_DPI;
+            job->dpi.x = job->dpi.y = DEFAULT_DPI;
             break;
         }
     }
@@ -1189,8 +1197,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	UR = exch_xyf(UR);
 
     /* calculate default viewport size in device units */
-    X = (Z * UR.x + 2 * Pad) * job->dpi / POINTS_PER_INCH;
-    Y = (Z * UR.y + 2 * Pad) * job->dpi / POINTS_PER_INCH;
+    X = (Z * UR.x + 2 * Pad) * job->dpi.x / POINTS_PER_INCH;
+    Y = (Z * UR.y + 2 * Pad) * job->dpi.y / POINTS_PER_INCH;
 
     /* user can override */
     if ((str = agget(g, "viewport")))

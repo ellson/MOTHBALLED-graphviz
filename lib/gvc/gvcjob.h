@@ -175,7 +175,7 @@ extern "C" {
         unsigned int width;     /* device width in device units */
         unsigned int height;    /* device height in device units */
 	box	boundingBox;	/* drawable region in device units */
-	int dpi;		/* device resolution device-units-per-inch */
+	pointf	dpi;		/* device resolution device-units-per-inch */
 
 	boxf bb;		/* bb in graph units */
 	double zoom;		/* viewport zoom factor */
