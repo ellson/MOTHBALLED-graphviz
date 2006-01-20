@@ -20,6 +20,8 @@ doxygen:
 
 dist-hook:
 	find $(distdir) -name CVS -type d -prune -exec rm -rf {} \;
+#	rm -f ToPAS
+#	find $(distdir) -type f -exec md5sum {} >>ToPAS \;
 
 EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 	autogen.sh config/depcomp config/config.rpath ast_common.h.in \
