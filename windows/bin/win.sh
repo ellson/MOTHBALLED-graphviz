@@ -8,6 +8,7 @@ TCLSH=/C/tcl/bin/tclsh.exe                  # tcl
 INPKG=graphviz-win.tgz                      # input CVS package
 #WISE=/C/wisein~1/wise32.exe                 # = /Wise InstallMaker
 WISE=/C/progra~1/wisein~2/wise32.exe        # = Wise InstallMaker
+SOURCEM=www.graphviz.org
 SOURCEID=ellson@www.graphviz.org
 SOURCE=/home/ellson/www.graphviz.org/pub/graphviz
 #NSOURCE=www.graphviz.org:/home/ellson/www.graphviz.org/pub/graphviz
@@ -67,11 +68,13 @@ function putFile
 #  sleep 10
 #  kill $PID
   BASE=$(basename $1)
-#  rcp $1 raptor:. >> $LFILE 2>&1
-#  ssh raptor scp -q $BASE $NDESTDIR  >> $LFILE 2>&1
-#  ssh raptor rm $BASE >> $LFILE 2>&1
-  echo "cat $1 | ssh $SOURCEID cat - $DESTDIR" >> $LFILE 
-  cat $1 | ssh $SOURCEID "cat - $DESTDIR" 
+  echo rcp $1 raptor:. >> $LFILE 2>&1
+  rcp $1 raptor:. >> $LFILE 2>&1
+  echo ssh raptor scp -q $BASE $SOURCEM:$DESTDIR  >> $LFILE 2>&1
+  ssh raptor scp -q $BASE $SOURCEM:$DESTDIR  >> $LFILE 2>&1
+  ssh raptor rm $BASE >> $LFILE 2>&1
+#  echo "cat $1 | ssh $SOURCEID cat - $DESTDIR" >> $LFILE 
+#  cat $1 | ssh $SOURCEID "cat - > $DESTDIR/$BASE" 
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to put $1"
@@ -84,7 +87,7 @@ BUILD=1      # build all of the software
 INSTALL=1    # install the software locally
 PACKAGE=1    # make main package and copy all software to cvs machine
 TEST=1       # run regression tests
-CLEANUP=1    # cleanup
+CLEANUP=0    # cleanup
 
 while [[ $# > 0 ]]
 do
@@ -376,7 +379,27 @@ function Package
 	SRCDIR=$GVIZ_HOME/lib/ingraphs
         finstall ingraphs.h 
 
-	# Create package
+	# Create tgz package
+	TGZFILE=graphviz-win-${VERSION}.bin.tgz
+	if [[ $WISEFLAG == 0 ]]
+	then
+	  echo "creating tgz package" >> $LFILE
+      cd package
+	  pax -w -x tar -s/source/graphviz-${VERSION}/ source | gzip > $TGZFILE
+	  if [[ -f $TGZFILE ]]
+	  then
+	    echo "SUCCESS : tgz file created" >> $LFILE
+	    echo "uploading the tgz file $TGZFILE" >> $LFILE
+	    chmod 644 $TGZFILE
+	    putFile $TGZFILE
+	  else
+	    echo "FAILED : could not create tgz file" >> $LFILE
+        ErrorEx "windows install failure"
+	  fi
+      cd ..
+	fi
+
+	# Create wise package
 	# Assume graphviz.wse has instructions for making package
 	if [[ $WISEFLAG == 0 ]]
 	then
