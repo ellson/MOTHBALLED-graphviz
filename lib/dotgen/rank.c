@@ -356,20 +356,22 @@ minmax_edges(graph_t * g)
     return slen;
 }
     
-static void 
+static int 
 minmax_edges2(graph_t * g, point slen)
 {
     node_t *n;
+    edge_t *e = 0;
 
     if ((GD_maxset(g) == NULL) && (GD_minset(g) == NULL)) return;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (n != UF_find(n))
 	    continue;
 	if ((ND_out(n).size == 0) && GD_maxset(g) && (n != GD_maxset(g)))
-	    virtual_edge(n, GD_maxset(g), NULL)->u.minlen = slen.y;
+	    e = virtual_edge(n, GD_maxset(g), NULL)->u.minlen = slen.y;
 	if ((ND_in(n).size == 0) && GD_minset(g) && (n != GD_minset(g)))
-	    virtual_edge(GD_minset(g), n, NULL)->u.minlen = slen.x;
+	    e = virtual_edge(GD_minset(g), n, NULL)->u.minlen = slen.x;
     }
+    return (e != 0);
 }
 
 /* Run the network simplex algorithm on each component. */
@@ -464,8 +466,8 @@ void dot_rank(graph_t * g)
     p = minmax_edges(g);
     decompose(g, 0);
     acyclic(g);
-    minmax_edges2(g, p);
-    decompose(g, 0);
+    if (minmax_edges2(g, p))
+	decompose(g, 0);
 #ifdef ALLOW_LEVELS
     if ((N_level = agfindattr(g->proto->n, "level")))
 	setRanks(g, N_level);
