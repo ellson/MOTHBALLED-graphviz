@@ -362,14 +362,19 @@ minmax_edges2(graph_t * g, point slen)
     node_t *n;
     edge_t *e = 0;
 
-    if ((GD_maxset(g) == NULL) && (GD_minset(g) == NULL)) return;
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (n != UF_find(n))
-	    continue;
-	if ((ND_out(n).size == 0) && GD_maxset(g) && (n != GD_maxset(g)))
-	    e = virtual_edge(n, GD_maxset(g), NULL)->u.minlen = slen.y;
-	if ((ND_in(n).size == 0) && GD_minset(g) && (n != GD_minset(g)))
-	    e = virtual_edge(GD_minset(g), n, NULL)->u.minlen = slen.x;
+    if ((GD_maxset(g)) || (GD_minset(g))) {
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	    if (n != UF_find(n))
+		continue;
+	    if ((ND_out(n).size == 0) && GD_maxset(g) && (n != GD_maxset(g))) {
+		e = virtual_edge(n, GD_maxset(g), NULL);
+		ED_minlen(e) = slen.y;
+	    }
+	    if ((ND_in(n).size == 0) && GD_minset(g) && (n != GD_minset(g))) {
+		e = virtual_edge(GD_minset(g), n, NULL);
+		ED_minlen(e) = slen.x;
+	    }
+	}
     }
     return (e != 0);
 }
