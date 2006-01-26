@@ -73,7 +73,7 @@ connectGraph (graph_t* g)
     edge_t* e;
     rank_t* rp;
 
-    for (r = GD_minrank(g); r < GD_maxrank(g); r++) {
+    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	rp = GD_rank(g)+r;
 	found =FALSE;
         tp = NULL;
@@ -100,7 +100,8 @@ connectGraph (graph_t* g)
 	}
 	if (found || !tp) continue;
 	tp = rp->v[0];
-	hp = (rp+1)->v[0];
+	if (r < GD_maxrank(g)) hp = (rp+1)->v[0];
+	else hp = (rp-1)->v[0];
 	assert (hp);
 	sn = virtual_node(g);
 	ND_node_type(sn) = SLACKNODE;

@@ -465,6 +465,7 @@ void dot_rank(graph_t * g)
     decompose(g, 0);
     acyclic(g);
     minmax_edges2(g, p);
+    decompose(g, 0);
 #ifdef ALLOW_LEVELS
     if ((N_level = agfindattr(g->proto->n, "level")))
 	setRanks(g, N_level);
