@@ -1394,6 +1394,22 @@ if test $ac_cv_type_socklen_t = no; then
     AC_DEFINE(socklen_t, unsigned, [Define to unsigned if socklet_t is missing])
 fi
 
+# -----------------------------------
+# Test if compiler supports bool
+AC_MSG_CHECKING([for bool])
+AC_TRY_COMPILE([
+    #ifdef HAVE_STDBOOL_H>
+    #include <stdbool.h>
+    #endif
+    ],[
+    bool foo = true, bar = false;
+    ],[
+AC_MSG_RESULT(yes)
+AC_DEFINE(HAVE_BOOL, 1,[Define to 1 if compiler supports bool])
+    ],[
+AC_MSG_RESULT(no)])
+
+# -----------------------------------
 # Test for direct I/O
 AC_MSG_CHECKING([for struct dioattr])
 AC_TRY_COMPILE([#include <sys/types.h>

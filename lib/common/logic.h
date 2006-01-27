@@ -21,9 +21,13 @@
 extern "C" {
 #endif
 
+#ifdef HAVE_STDBOOL_H
+#include <stdbool.h>
+#endif
+
 #define NOT(v) (!(v))
 
-#ifndef __cplusplus
+#ifndef HAVE_BOOL
 typedef unsigned char bool;
 #define false 0
 #define true NOT(false)
