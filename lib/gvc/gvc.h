@@ -70,6 +70,9 @@ extern int gvLayout(GVC_t *gvc, graph_t *g, char *engine);
 /* Compute a layout using layout engine from command line args */
 extern int gvLayoutJobs(GVC_t *gvc, graph_t *g);
 
+/* Render layout into string attributes of the graph */
+extern void attach_attrs(graph_t *g);
+
 /* Render layout in a specified format to an open FILE */
 extern int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out);
 

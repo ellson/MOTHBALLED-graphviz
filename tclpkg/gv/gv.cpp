@@ -832,25 +832,37 @@ void layout(Agraph_t *g, char *engine)
     err = gvLayout(gvc, g, engine);
 }
 
+// annotate the graph with layout information
+void render(Agraph_t *g)
+{
+    attach_attrs(g);
+}
+
+// render to a filename
 void render(Agraph_t *g, char *format, char *filename)
 {
     int err;
 
     err = gvRenderFilename(gvc, g, format, filename);
-
 }
+
+// render to stdout
 void render(Agraph_t *g, char *format)
 {
     int err;
 
     err = gvRender(gvc, g, format, stdout);
 }
+
+// render to a FILE
 void render(Agraph_t *g, char *format, FILE *f)
 {
     int err;
 
     err = gvRender(gvc, g, format, f);
 }
+
+// FIXME - render to a caller provided memory blob
 void render(Agraph_t *g, char *format, void **data)
 {
 //    FIXME
