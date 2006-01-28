@@ -79,8 +79,7 @@ typedef struct {
 
 static void adjustregularpath(path *, int, int);
 static Agedge_t *bot_bound(Agedge_t *, int);
-static unsigned char pathscross(Agnode_t *, Agnode_t *, Agedge_t *,
-				Agedge_t *);
+static bool pathscross(Agnode_t *, Agnode_t *, Agedge_t *, Agedge_t *);
 #ifdef OBSOLETE
 static void chooseflatsides(pathend_t *, pathend_t *, int *, int *, int *,
 			    int *, int *, int *);
