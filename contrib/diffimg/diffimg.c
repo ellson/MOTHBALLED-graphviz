@@ -38,6 +38,9 @@
 #include <unistd.h>
 #include <sysexits.h>
 #include <gd.h>
+#if defined HAVE_STDBOOL_H && ! defined __cplusplus
+#include <stdbool.h>
+#endif
 
 #define NOT(v) (!(v))
 #if ! defined HAVE_BOOL && ! defined __cplusplus
