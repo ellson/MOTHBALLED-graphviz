@@ -21,13 +21,14 @@
 extern "C" {
 #endif
 
-#ifdef HAVE_STDBOOL_H
+#if defined HAVE_STDBOOL_H && ! defined __cplusplus
 #include <stdbool.h>
 #endif
 
 #define NOT(v) (!(v))
 
-#ifndef HAVE_BOOL
+/* HAVE_BOOL only tested the CC compiler, we know C++ must define bool */
+#if ! defined HAVE_BOOL && ! defined __cplusplus
 typedef unsigned char bool;
 #define false 0
 #define true NOT(false)
