@@ -730,7 +730,7 @@ int
 removeOverlapAs(graph_t * G, char* flag)
 {
     /* int          userWindow = 0; */
-    int ret;
+    int ret = 0;
     /* extern void  scanAdjust(graph_t*, int); */
 
     adjust_data *am;
