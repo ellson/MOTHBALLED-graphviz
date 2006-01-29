@@ -192,10 +192,10 @@ extern "C" {
 	bool	fit_mode,
 		needs_refresh,
 		click,
-		active,
 		has_grown,
 		has_been_rendered;
 
+	unsigned char button;   /* active button */
 	pointf pointer;		/* pointer position in device units */
 	pointf oldpointer;	/* old pointer position in device units */
 

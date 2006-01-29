@@ -384,18 +384,18 @@ static void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
 	gvevent_find_current_obj(job, pointer);
 	gvevent_select_current_obj(job);
         job->click = 1;
-	job->active = button;
+	job->button = button;
 	job->needs_refresh = 1;
 	break;
     case 2: /* pan */
         job->click = 1;
-	job->active = button;
+	job->button = button;
 	job->needs_refresh = 1;
 	break;
     case 3: /* insert node or edge */
 	gvevent_find_current_obj(job, pointer);
         job->click = 1;
-	job->active = button;
+	job->button = button;
 	job->needs_refresh = 1;
 	break;
     case 4:
@@ -424,7 +424,7 @@ static void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
 static void gvevent_button_release(GVJ_t *job, int button, pointf pointer)
 {
     job->click = 0;
-    job->active = 0;
+    job->button = 0;
 }
 
 static void gvevent_motion(GVJ_t * job, pointf pointer)
@@ -435,7 +435,7 @@ static void gvevent_motion(GVJ_t * job, pointf pointer)
     if (abs(dx) < EPSILON && abs(dy) < EPSILON)  /* ignore motion events with no motion */
 	return;
 
-    switch (job->active) {
+    switch (job->button) {
     case 0: /* drag with no button - */
 	gvevent_find_current_obj(job, pointer);
 	break;
