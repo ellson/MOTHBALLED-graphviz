@@ -400,15 +400,6 @@ void emit_background(GVJ_t * job, graph_t *g)
     gvrender_polygon(job, A, 4, TRUE);	/* filled */
 }
 
-static void emit_defaults(GVJ_t * job)
-{
-    GVC_t * gvc = job->gvc;
-
-    gvrender_set_pencolor(job, DEFAULT_COLOR);
-    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
-}
-
-
 static void setup_page(GVJ_t * job, graph_t * g)
 {
     /* prescaled pad so that its size is constant under scaling */
@@ -452,8 +443,6 @@ fprintf(stderr,"clip = %g,%g %g,%g pageBox = %g,%g %g,%g\n",
 #endif
 
     gvrender_begin_page(job);
-    emit_background(job, g);
-    emit_defaults(job);
 }
 
 #if 0
@@ -1362,6 +1351,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
     node_t *n;
     char *s;
     int flags = job->flags;
+    GVC_t *gvc = job->gvc;
 
     s = late_string(g, agfindattr(g, "comment"), "");
     gvrender_comment(job, s);
@@ -1381,6 +1371,10 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	for (firstpage(job); validpage(job); nextpage(job)) {
 	    setColorScheme (agget (g, "colorscheme"));
     	    setup_page(job, g);
+	    if (job->numLayers == 1)
+		emit_background(job, g);
+	    gvrender_set_pencolor(job, DEFAULT_COLOR);
+	    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
 	    if (boxf_overlap(job->clip, job->pageBox))
 	        emit_view(job,g,flags);
 	} 
