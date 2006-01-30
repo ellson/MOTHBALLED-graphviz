@@ -405,7 +405,7 @@ rm -rf $RPM_BUILD_ROOT
 %post
 %{_bindir}/dot -c
 
-%postun
+%preun
 rm -f %{_libdir}/%{name}/config
 
 %changelog
