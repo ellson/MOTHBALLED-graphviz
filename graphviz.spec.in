@@ -405,8 +405,9 @@ rm -rf $RPM_BUILD_ROOT
 %post
 %{_bindir}/dot -c
 
-%preun
-rm -f %{_libdir}/%{name}/config
+# if there is not dot after everything else is done, the remove config
+%postun
+if ! test -x %{_bindir}/dot; then rm -f %{_libdir}/%{name}/config; fi
 
 %changelog
 * Tue Sep 13 2005 John Ellson <ellson@research.att.com>
