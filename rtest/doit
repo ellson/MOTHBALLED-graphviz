@@ -508,7 +508,7 @@ tst dot ps "" big
 tst dot ps "" biglabel 
 tst dot ps "" b3         # unescaped parentheses
 tst dot ps "" b7         # core dump
-tst dot png "" b15       # windows core dump
+#tst dot png "" b15       # windows core dump
 tst dot ps "" b22        # core dump
 tst dot dot "" b29       # windows core dump
 tst dot ps "" b33        # core dump
