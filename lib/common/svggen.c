@@ -326,7 +326,7 @@ static void svg_font(context_t * cp)
 	needstyle++;
     }
     if (fontsz != DEFAULT_FONTSIZE) {
-	sprintf(buf + strlen(buf), "font-size:%.2f;", fontsz);
+	sprintf(buf + strlen(buf), "font-size:%.2fpt;", fontsz);
 	needstyle++;
     }
     color = svg_resolve_color(cp->pencolor, 1);
