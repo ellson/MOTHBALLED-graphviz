@@ -32,6 +32,8 @@ static agxbuf* xbufs[6] = {
   &xbuf4, &xbuf5,
 };
 static Agraph_t *cluster_g;
+static attrsym_t *g_draw;
+static attrsym_t *g_l_draw;
 
 static int isInvis(char *style)
 {
@@ -96,8 +98,12 @@ void extend_attrs(GVJ_t * job, graph_t *g, int s_arrows, int e_arrows)
     agsafeset (g, "xdotversion", XDOTVERSION, "");
     if (GD_has_labels(g) & GRAPH_LABEL)
 	g_l_draw = safe_dcl(g, g, "_ldraw_", "", agraphattr);
+    else
+	g_l_draw = NULL;
     if (GD_n_cluster(g))
 	g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
+    else
+	g_draw = NULL;
 
     n_draw = safe_dcl(g, g->proto->n, "_draw_", "", agnodeattr);
     n_l_draw = safe_dcl(g, g->proto->n, "_ldraw_", "", agnodeattr);

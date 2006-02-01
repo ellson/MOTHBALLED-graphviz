@@ -540,8 +540,6 @@ void graph_init(graph_t * g, bool use_rankdir)
     GD_drawing(g)->filled =
 	getdoubles2pt(g, "size", &(GD_drawing(g)->size));
     getdoubles2pt(g, "page", &(GD_drawing(g)->page));
-    getdouble(g, "nodesep", &Nodesep);
-    getdouble(g, "nodefactor", &Nodefactor);
 
     GD_drawing(g)->centered = mapbool(agget(g, "center"));
 
@@ -570,8 +568,6 @@ void graph_init(graph_t * g, bool use_rankdir)
 #endif
     do_graph_label(g);
 
-    Nodesep = 1.0;
-    Nodefactor = 1.0;
     Initial_dist = MYHUGE;
 
     /* initialize nodes */

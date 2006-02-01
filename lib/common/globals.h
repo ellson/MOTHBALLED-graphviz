@@ -76,8 +76,6 @@ extern "C" {
     EXTERN int CL_type;		/* NONE, LOCAL, GLOBAL */
     EXTERN bool Concentrate;	/* if parallel edges should be merged */
     EXTERN double Epsilon;	/* defined in input_graph */
-    EXTERN double Nodesep;
-    EXTERN double Nodefactor;
     EXTERN int MaxIter;
     EXTERN int Ndim;
     EXTERN int State;		/* last finished phase */
@@ -86,8 +84,6 @@ extern "C" {
     EXTERN int Y_invert;	/* invert y in dot & plain output */
     EXTERN int Y_off;           /* ymin + ymax */
     EXTERN double YF_off;       /* Y_off in inches */
-    EXTERN attrsym_t *g_draw;
-    EXTERN attrsym_t *g_l_draw;
 
     EXTERN attrsym_t
 	*G_activepencolor, *G_activefillcolor,
