@@ -346,10 +346,14 @@ static void make_edge_pairs(graph_t * g)
 static void contain_clustnodes(graph_t * g)
 {
     int c;
+    edge_t	*e;
 
     if (g != g->root) {
 	contain_nodes(g);
-	make_aux_edge(GD_ln(g), GD_rn(g), 1, 128);	/* clust compaction edge */
+	if ((e = find_fast_edge(GD_ln(g),GD_rn(g))))	/* maybe from lrvn()?*/
+	    ED_weight(e) += 128;
+	else
+	    make_aux_edge(GD_ln(g), GD_rn(g), 1, 128);	/* clust compaction edge */
     }
     for (c = 1; c <= GD_n_cluster(g); c++)
 	contain_clustnodes(GD_clust(g)[c]);
