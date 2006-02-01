@@ -25,6 +25,9 @@ static int init_graph(graph_t *);
 static void dfs_cutval(node_t * v, edge_t * par);
 static int dfs_range(node_t * v, edge_t * par, int low);
 static int x_val(edge_t * e, node_t * v, int dir);
+#ifdef DEBUG
+static void check_cycles(graph_t * g);
+#endif
 
 #define LENGTH(e)		(ND_rank(e->head) - ND_rank(e->tail))
 #define SLACK(e)		(LENGTH(e) - ED_minlen(e))
@@ -575,6 +578,9 @@ int rank(graph_t * g, int balance, int maxiter)
     char *s, *ns = "network simplex: ";
     edge_t *e, *f;
 
+#ifdef DEBUG
+    check_cycles(g);
+#endif
     if (Verbose)
 	start_timer();
     feasible = init_graph(g);
@@ -800,26 +806,39 @@ void check_fast_node(node_t * n)
     assert(nptr != NULL);
 }
 
-void checkdfs(node_t * n)
+static node_t *checkdfs(node_t * n)
 {
     int i;
     edge_t *e;
-    node_t *w;
+    node_t *w,*x;
 
     if (ND_mark(n))
-	return;
+	return 0;
     ND_mark(n) = TRUE;
     ND_onstack(n) = TRUE;
     for (i = 0; (e = ND_out(n).list[i]); i++) {
 	w = e->head;
-	if (ND_onstack(w))
-	    fprintf(stderr, "cycle involving %s %s\n", n->name, w->name);
+	if (ND_onstack(w)) {
+	    fprintf(stderr, "cycle: last edge %x %s(%x) %s(%x)\n",
+		e,n->name,n,w->name,w);
+	    return w;
+	}
 	else {
-	    if (ND_mark(w) == FALSE)
-		checkdfs(w);
+	    if (ND_mark(w) == FALSE) {
+		x = checkdfs(w);
+		if (x) {
+		    fprintf(stderr,"unwind %x %s(%x)\n",e,n->name,n);
+		    if (x != n) return x;
+		    fprintf(stderr,"unwound to root\n");
+		    fflush(stderr);
+		    abort();
+		    return 0;
+		}
+	    }
 	}
     }
     ND_onstack(n) = FALSE;
+    return 0;
 }
 
 void check_cycles(graph_t * g)
