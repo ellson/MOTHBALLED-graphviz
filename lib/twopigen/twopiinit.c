@@ -155,6 +155,7 @@ static void twopi_cleanup_edge(edge_t * e)
 static void twopi_cleanup_graph(graph_t * g)
 {
     free(GD_neato_nlist(g));
+    memset(&(g->u), 0, sizeof(Agraphinfo_t));
 }
 
 void twopi_cleanup(graph_t * g)

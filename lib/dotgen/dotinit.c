@@ -157,6 +157,7 @@ dot_cleanup_graph(graph_t * g)
 
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	clust = GD_clust(g)[c];
+	GD_cluster_was_collapsed(clust) = FALSE;
 	dot_cleanup(clust);
     }
 
@@ -166,6 +167,7 @@ dot_cleanup_graph(graph_t * g)
 	    free(GD_rank(g)[i].v);
 	free(GD_rank(g));
     }
+    memset(&(g->u), 0, sizeof(Agraphinfo_t));
 }
 
 /* delete the layout (but retain the underlying graph) */
