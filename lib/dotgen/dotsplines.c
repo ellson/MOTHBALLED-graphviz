@@ -869,7 +869,9 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
 	bz->eflag = auxbz->eflag;
 	bz->ep = transform(auxbz->ep, del, GD_flip(g));
 	for (j = 0; j <  auxbz->size; j++) {
-	    bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
+	    point pt;
+	    pt = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
+	    update_bb(g, pt);
         }
 	if (ED_label(e)) {
 	    ED_label(e)->p = transform(ED_label(auxe)->p, del, GD_flip(g));

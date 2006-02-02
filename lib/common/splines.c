@@ -226,7 +226,7 @@ bezier *new_spline(edge_t * e, int sz)
  * Update the bounding box of g based on the addition of
  * point p.
  */
-static void update_bb(graph_t * g, point pt)
+void update_bb(graph_t * g, point pt)
 {
     if (pt.x > GD_bb(g).UR.x)
 	GD_bb(g).UR.x = pt.x;
