@@ -3,4 +3,4 @@
 SUBDIRS = prune diffimg
 
 EXTRA_DIST = INDEX dotmcl.pl gprof2dot.awk webdot.cgi Makefile.old \
-	sdlshapes lefty-grace dirgraph diffimg
+	sdlshapes lefty-grace dirgraph
