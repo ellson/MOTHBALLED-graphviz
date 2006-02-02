@@ -120,37 +120,61 @@ Agedge_t *edge(Agraph_t *g, char *tname, char *hname)
 }
 
 //-------------------------------------------------
-char *getv(Agraph_t *g, Agsym_t *a)
+static char* myagxget(void *obj, Agsym_t *a)
 {
-    char *val;
+    int len;
+    char *val, *hs;
 
-    if (!g || !a)
-	return NULL;
-    val = agxget(g, a->index);
+    if (!obj || !a)
+	return empty_string;
+    val = agxget(obj, a->index);
     if (!val)
 	return empty_string;
+    if (a->name[0] == 'l' && strcmp(a->name, "label") == 0 && aghtmlstr(val)) {
+	len = strlen(val);
+	hs = (char*)malloc(len + 3);
+	hs[0] = '<';
+	strcpy(hs+1, val);
+	hs[len+1] = '>';
+	hs[len+2] = '\0';
+	return hs;
+    }
     return val;
+}
+char *getv(Agraph_t *g, Agsym_t *a)
+{
+    return myagxget(g, a);
 }
 char *getv(Agraph_t *g, char *attr)
 {
     Agsym_t *a;
-    char *val;
 
     if (!g || !attr)
 	return NULL;
     a = agfindattr(g->root, attr);
-    if (!a)
-	return empty_string;
-    val = agxget(g, a->index);
-    if (!val)
-	return empty_string;
-    return val;
+    return myagxget(g, a);
+}
+static void myagxset(void *obj, Agsym_t *a, char *val)
+{
+    int len;
+    char *hs;
+
+    if (a->name[0] == 'l' && val[0] == '<' && strcmp(a->name, "label") == 0) {
+	len = strlen(val);
+	if (val[len-1] == '>') {
+	    hs = strdup(val+1);
+    	    *(hs+len-2) = '\0';
+	    val = agstrdup_html(hs);
+	    free(hs);
+	}
+    }
+    agxset(obj, a->index, val);
 }
 char *setv(Agraph_t *g, Agsym_t *a, char *val)
 {
     if (!g || !a || !val)
 	return NULL;
-    agxset(g, a->index, val);
+    myagxset(g, a, val);
     return val;
 }
 char *setv(Agraph_t *g, char *attr, char *val)
@@ -162,43 +186,30 @@ char *setv(Agraph_t *g, char *attr, char *val)
     a = agfindattr(g->root, attr);
     if (!a)
         a = agraphattr(g->root, attr, empty_string);
-    agxset(g, a->index, val);
+    myagxset(g, a, val);
     return val;
 }
 //-------------------------------------------------
 char *getv(Agnode_t *n, Agsym_t *a)
 {
-    char *val;
-
-    if (!n || !a)
-	return NULL;
-    val = agxget(n, a->index);
-    if (!val)
-	return empty_string;
-    return val;
+    return myagxget(n, a);
 }
 char *getv(Agnode_t *n, char *attr)
 {
     Agraph_t *g;
     Agsym_t *a;
-    char *val;
 
     if (!n || !attr)
 	return NULL;
     g = n->graph->root;
     a = agfindattr(g->proto->n, attr);
-    if (!a)
-	return empty_string;
-    val = agxget(n, a->index);
-    if (!val)
-	return empty_string;
-    return val;
+    return myagxget(n, a);
 }
 char *setv(Agnode_t *n, Agsym_t *a, char *val)
 {
     if (!n || !a || !val)
 	return NULL;
-    agxset(n, a->index, val);
+    myagxset(n, a, val);
     return val;
 }
 char *setv(Agnode_t *n, char *attr, char *val)
@@ -212,43 +223,30 @@ char *setv(Agnode_t *n, char *attr, char *val)
     a = agfindattr(g->proto->n, attr);
     if (!a)
         a = agnodeattr(g, attr, empty_string);
-    agxset(n, a->index, val);
+    myagxset(n, a, val);
     return val;
 }
 //-------------------------------------------------
 char *getv(Agedge_t *e, Agsym_t *a)
 {
-    char *val;
-
-    if (!e || !a)
-	return NULL;
-    val =  agxget(e, a->index);
-    if (!val)
-	return empty_string;
-    return val;
+    return myagxget(e, a);
 }
 char *getv(Agedge_t *e, char *attr)
 {
     Agraph_t *g;
     Agsym_t *a;
-    char *val;
 
     if (!e || !attr)
 	return NULL;
     g = e->tail->graph;
     a = agfindattr(g->proto->e, attr);
-    if (!a)
-	return empty_string;
-    val =  agxget(e, a->index);
-    if (!val)
-	return empty_string;
-    return val;
+    return myagxget(e, a);
 }
 char *setv(Agedge_t *e, Agsym_t *a, char *val)
 {
     if (!e || !a || !val)
 	return NULL;
-    agxset(e, a->index, val);
+    myagxset(e, a, val);
     return val;
 }
 char *setv(Agedge_t *e, char *attr, char *val)
@@ -262,7 +260,7 @@ char *setv(Agedge_t *e, char *attr, char *val)
     a = agfindattr(g->proto->e, attr);
     if (!a)
         a = agedgeattr(g, attr, empty_string);
-    agxset(e, a->index, val);
+    myagxset(e, a, val);
     return val;
 }
 //-------------------------------------------------
