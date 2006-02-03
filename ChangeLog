@@ -1,4 +1,5 @@
-January 17, 2005
+February 3, 2006
+	- release 2.8
 	- (POTENTIAL INCOMPATIBILITY) The default input scaling, in the
 	absence of a "-s" switch, has been changed from inches to points.
 	The new behavior of "neato" is equivalent to "neato -s72".
@@ -19,9 +20,13 @@ January 17, 2005
 	penwidths at the drawing edges
 	- Add protonode(g) and E=protoedge(g) functions to simplify
 	language bindings.
+	- Add special purpose code to deal with html labels from language
+	bindings.
 	- Various portability fixes for: HPUX, Mac OS/X, Cygwin, Windows.
-	- Fix bugs 784, 786, 787, 788, 789, 791, 795, 796, 804, 806, 817,
-	824, 830, 837, 858, 861
+	- Fix bugs 784, 786, 787, 788, 789, 790, 791, 793, 795, 796, 798, 799,
+	    800, 801, 804, 806, 811, 812, 817, 820, 821, 823, 824, 825, 830,
+	    837, 839, 841, 842, 843, 848, 850, 851, 854, 855, 856, 857, 858,
+	    859, 861, 863, 866, 867, 869, 872, 874, 876, 877
 
 August 28, 2005
 	- release 2.6
