@@ -45,6 +45,7 @@ F_nxtin     "nxtin"     FUNCTION E|A(1,E)
 F_fstedge   "fstedge"   FUNCTION E|A(1,V)
 F_nxtedge   "nxtedge"   FUNCTION E|A(1,E)|A(2,V)
 F_compof    "compOf"    FUNCTION G|A(1,G)|A(2,V)
+F_kindof    "kindOf"    FUNCTION S|A(1,O)
 F_index     "index"     FUNCTION I|A(1,S)|A(2,S)
 F_isedge    "isEdge"    FUNCTION E|A(1,V)|A(2,V)|A(3,S)
 F_length    "length"    FUNCTION I|A(1,S)
@@ -81,6 +82,8 @@ F_urof      "urOf"      FUNCTION S|A(1,S)
 F_canon     "canon"     FUNCTION S|A(1,S)
 F_get       "aget"      FUNCTION S|A(1,O)|A(2,S)
 F_set       "aset"      FUNCTION I|A(1,O)|A(2,S)|A(3,S)
+F_dget      "getDflt"   FUNCTION S|A(1,G)|A(2,S)|A(3,S)
+F_dset      "setDflt"   FUNCTION I|A(1,G)|A(2,S)|A(3,S)|A(4,S)
 C_flat      "TV_flat"   CONSTANT T_tvtyp
 C_dfs       "TV_dfs"    CONSTANT T_tvtyp
 C_bfs       "TV_bfs"    CONSTANT T_tvtyp

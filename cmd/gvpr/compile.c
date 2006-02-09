@@ -418,6 +418,65 @@ static char *getArg(int n, Gpr_t * state)
     return (state->argv[n]);
 }
 
+/* setDfltAttr:
+ */
+static int
+setDfltAttr (Agraph_t *gp, char* k, char* name, char* value)
+{
+    Agsym_t* sym;
+    int kind;
+
+    switch (*k) {
+    case 'G' :
+	kind = AGRAPH;
+	break;
+    case 'E' :
+	kind = AGEDGE;
+	break;
+    case 'N' :
+	kind = AGNODE;
+	break;
+    default :
+	error(ERROR_WARNING, "Unknown kind \"%s\" passed to setDflt()", k);
+	return 1;
+	break;
+    }
+    sym = agattr(gp, kind, name, 0);
+    if (!sym)
+	sym = agattr(gp, kind, name, "");
+
+    agattr(gp, kind, name, value);
+    return 0;
+}
+
+/* getDfltAttr:
+ */
+static char*
+getDfltAttr (Agraph_t *gp, char* k, char* name)
+{
+    int      kind;
+    Agsym_t* sym;
+
+    switch (*k) {
+    case 'G' :
+	kind = AGRAPH;
+	break;
+    case 'E' :
+	kind = AGEDGE;
+	break;
+    case 'N' :
+	kind = AGNODE;
+	break;
+    default :
+	error(ERROR_WARNING, "Unknown kind \"%s\" passed to getDflt()", k);
+	return 0;
+	break;
+    }
+    sym = agattr (gp, kind, name, 0);
+    if (sym) return sym->defval; 
+    else return 0;
+}
+
 /* getval:
  * Return value associated with gpr identifier.
  */
@@ -555,6 +614,24 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		v.integer = 0;
 	    } else
 		v.integer = PTR2INT(compOf(gp, np));
+	    break;
+	case F_kindof:
+	    objp = INT2PTR(Agobj_t *, args[0].integer);
+	    if (!objp) {
+		error(ERROR_WARNING, "NULL object passed to kindOf()");
+		v.string = 0;
+	    } else switch (AGTYPE(objp)) {
+		case AGRAPH :
+		    v.string = "G";
+		    break;
+		case AGNODE :
+		    v.string = "N";
+		    break;
+		case AGINEDGE :
+		case AGOUTEDGE :
+		    v.string = "E";
+		    break;
+	    }
 	    break;
 	case F_edge:
 	    key = args[2].string;
@@ -826,13 +903,13 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    objp = INT2PTR(Agobj_t *, args[0].integer);
 	    if (!objp) {
 		error(ERROR_WARNING, "NULL object passed to aget()");
-		v.string = exstring(pgm, "");
+		v.string = 0;
 	    } else {
 		char* name = args[1].string;
 		if (name) v.string = agget(objp, name);
 		else {
 		    error(ERROR_WARNING, "NULL name passed to aget()");
-		    v.string = exstring(pgm, "");
+		    v.string = 0;
 		}
             }
 	    break;
@@ -856,6 +933,53 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		    v.integer = setattr(objp, name, value);
         	}
             }
+	    break;
+	case F_dset:
+	    gp = INT2PTR(Agraph_t *, args[0].integer);
+	    if (gp) {
+		char* kind = args[1].string;
+		char* name = args[2].string;
+		char* value = args[3].string;
+		if (!name) {
+		    error(ERROR_WARNING, "NULL name passed to setDflt()");
+		    v.integer = 1;
+		}
+		else if (!value) {
+		    error(ERROR_WARNING, "NULL value passed to setDflt()");
+		    v.integer = 1;
+		}
+		else if (!kind) {
+		    error(ERROR_WARNING, "NULL kind passed to setDflt()");
+		    v.integer = 1;
+		}
+		else {
+		    v.integer = setDfltAttr(gp, kind, name, value);
+        	}
+	    } else {
+		error(ERROR_WARNING, "NULL graph passed to node()");
+		v.integer = 0;
+	    }
+	    break;
+	case F_dget:
+	    gp = INT2PTR(Agraph_t *, args[0].integer);
+	    if (gp) {
+		char* kind = args[1].string;
+		char* name = args[2].string;
+		if (!name) {
+		    error(ERROR_WARNING, "NULL name passed to getDflt()");
+		    v.string = 0;
+		}
+		else if (!kind) {
+		    error(ERROR_WARNING, "NULL kind passed to getDflt()");
+		    v.string = 0;
+		}
+		else {
+		    v.string = getDfltAttr(gp, kind, name);
+        	}
+	    } else {
+		error(ERROR_WARNING, "NULL graph passed to node()");
+		v.string = 0;
+	    }
 	    break;
 	case F_canon:
 	    v.string = canon(pgm, args[0].string);

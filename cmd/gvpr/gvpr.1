@@ -451,10 +451,24 @@ extends \fIg\fP to its node-induced subgraph extension in its root graph.
 returns the value of attribute \fIname\fP in object \fIsrc\fP. This is
 useful for those cases when \fIname\fP conflicts with one of the keywords
 such as "head" or "root".
+Returns \fBNULL\fP on failure or if the attribute is not defined.
 .TP
 \fBaset\fP(\fIsrc\fP : \fBobj_t\fP, \fIname\fP : \fBstring\fP, \fIvalue\fP : \fBstring\fP) : \fBint\fP
 sets the value of attribute \fIname\fP in object \fIsrc\fP to \fIvalue\fP.
 Returns 0 on success, non-zero on failure. See \fBaget\fP above.
+.TP
+\fBgetDflt\fP(\fIg\fP : \fBgraph_t\fP, \fIkind\fP : \fBstring\fP, \fIname\fP : \fBstring\fP) : \fBstring\fP
+returns the default value of attribute \fIname\fP in objects in \fIg\fP of
+the given \fIkind\fP. For nodes, edges, and graphs, \fIkind\fP
+should be "N", "E", and "G", respectively.
+Returns \fBNULL\fP on failure or if the attribute is not defined.
+.TP
+\fBsetDflt\fP(\fIg\fP : \fBgraph_t\fP, \fIkind\fP : \fBstring\fP, \fIname\fP : \fBstring\fP, \fIvalue\fP : \fBstring\fP) : \fBint\fP
+sets the default value of attribute \fIname\fP to \fIvalue\fP in 
+objects in \fIg\fP of
+the given \fIkind\fP. For nodes, edges, and graphs, \fIkind\fP
+should be "N", "E", and "G", respectively.
+Returns 0 on success, non-zero on failure. See \fBsetDflt\fP above.
 .TP
 \fBcompOf\fP(\fIg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBgraph_t\fP
 returns the connected component of the graph \fIg\fP containing node \fIn\fP,
@@ -462,6 +476,11 @@ as a subgraph of \fIg\fP. The subgraph only contains the nodes. One can
 use \fIinduce\fP to add the edges. The function fails and returns \fBNULL\fP
 if \fIn\fP is not in \fIg\fP. Connectivity is based on the underlying
 undirected graph of \fIg\fP.
+.TP
+\fBkindOf\fP(\fIobj\fP : \fBobj_t\fP) : \fBstring\fP
+returns an indication of what kind of graph object is the argument.
+For nodes, edges, and graphs, it returns
+should be "N", "E", and "G", respectively.
 .TP
 \fBlock\fP(\fIg\fP : \fBgraph_t\fP, \fIv\fP : \fBint\fP) : \fBint\fP
 implements graph locking on root graphs. If the integer \fIv\fP is positive, the
