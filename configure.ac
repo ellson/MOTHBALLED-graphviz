@@ -117,9 +117,13 @@ if test "x${prefix}" = "xNONE"; then
 	prefix=${ac_default_prefix}
 	AC_SUBST(prefix)
 fi
+
+# automatically check for other dependencies in $PREFIX first
 if test "x${prefix}" != "x/usr"; then
 	CPPFLAGS="$CPPFLAGS -I${prefix}/include"
 	LDFLAGS="$LDFLAGS -L${prefix}/lib"
+	PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
+	export PKG_CONFIG_PATH
 fi
 
 # Set of all available languages
