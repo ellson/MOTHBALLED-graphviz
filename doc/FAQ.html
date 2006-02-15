@@ -829,15 +829,28 @@ The correct MIME type for svg images is: <tt>image/svg+xml</tt>   (note "+" not 
 SVG is not built into all browsers; you can get
 <A HREF="http://www.adobe.com/svg/viewer/install/main.html">plugins</A>
 from Adobe for Windows, Linux and some other operating systems.
-The <A HREF="http://www.w3.org/Amaya/">Amaya</A> browser from W3C
-is said to have builtin SVG.
-Firefox 1.5 has a (a href="http://developer.mozilla.org/en/docs/SVG_in_Firefox_1.5">large subset of SVG</A> (somebody please let us know if it can
-render graphviz -Tsvg output>.
-<A HREF="http://xml.apache.org/batik/">Batik</A> is an SVG
-renderer in Java and can be run as a stand-alone program.
+<A HREF="http://www.mozilla.com/firefox/">
+Firefox 1.5</A> has a <A href="http://developer.mozilla.org/en/docs/SVG_in_Firefox_1.5">large subset of SVG</A> and renders graphviz -Tsvg output
+though until graphviz 2.8, the fonts may be too large (thanks for
+Phil Colbourne at the RailCorp of New South Wales for this advice).
 <P>
 For help with embedding SVG in HTML pages, see 
 <A HREF="http://www.graphviz.org/webdot/svgembed.html">here</A>.
+<P>
+There are several goodstandalone viewers and editors for SVG.
+We like <A HREF="http://www.inkscape.org">inkscape</A>.
+<A HREF="http://www.gnome.org/projects/evince/">evince</A>
+is the standard Gnome document viewer that handles SVG, at least
+since version 0.5 (though Phil C. reports output is blurred)
+(see also <A HREF="">eog</A> (Eye of Gnome)).
+Commercial tools like Adobe Illustrator and Microsoft Visio
+can import SVG (the better to deal with your content, my dear!)
+If you are using an older (less bloated) Unix system, you
+may find tools like <A HREF="http://xml.apache.org/batik/">Batik</A>
+(an SVG renderer in Java) or <A HREF="http://www.sodipodi.com">sodipodi</A>
+useful, though it seems they are no longer very actively maintained.
+sodipodi is faster but both make sharp images - isn't that the
+beauty of path-based graphics?
 <P>
 <A name=Q39>
 <B>Q. libexpat is reported as containing a virus or as a security hole.
