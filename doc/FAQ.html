@@ -310,12 +310,12 @@ to accelerate rendering. Another problem is that as of this writing,
 Pixelglow Graphviz hasn't been updated in a long time, maybe mid 2004.)
 <P>
 On the Linux bleeding edge, Graphviz has an optional plugin to use
-the new <A HREF="http://www.cairographics.org">cairo</A> back end,
-which is antialiased.  If you want to use this, you need to install
-cairo, which is not part of graphviz.  Cairo can be built from source,
-and binary RPMs for Fedora Core 4 are around.  Then you need to install
-the optional <A HREF="http://www.graphviz.org/pub/graphviz/CURRENT/">graphviz-cairo</A> plugin.  It is believed that Cairo
-will be part of FC5, so this will become a more standard feature.
+the <A HREF="http://www.cairographics.org">cairo</A> back end,
+which has antialiased, path-based graphics.  If you want this,
+you must install cairo, which is not part of Graphviz.  Cairo can be
+built from source, and binary RPMs for Fedora Core 5 (test 2) are available.
+Then you need to install the optional <A HREF="http://www.graphviz.org/pub/graphviz/CURRENT/">graphviz-cairo</A> plugin.  (n.b. we tried
+cairo-1.0.2-1.fc4.remi for FC4 - it has errors.)
 <P>
 <A name=Q9>
 <B>Q. I can only get 11x17 output.</B>
