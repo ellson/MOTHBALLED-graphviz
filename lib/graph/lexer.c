@@ -66,7 +66,7 @@ void aglexinit(FILE * fp, gets_f mygets)
     (Lexer_gets) (AG.linebuf, 0, fp);	/* reset mygets */
 }
 
-#define ISSPACE(c) (isspace(c) || iscntrl(c))
+#define ISSPACE(c) ((c != 0) && ((isspace(c) || iscntrl(c))))
 
 /* skip leading white space and comments in a string p
  * whitespace includes control characters
