@@ -350,12 +350,13 @@ function Package
         finstall gvc.h 
         finstall gvcext.h 
         finstall gvcint.h 
-        finstall gvcproc.h 
         finstall gvcjob.h 
         finstall gvplugin.h 
+        finstall gvplugin_device.h 
         finstall gvplugin_layout.h 
         finstall gvplugin_render.h 
         finstall gvplugin_textlayout.h 
+        finstall gvplugin_usershape.h 
 	SRCDIR=$GVIZ_HOME/lib/neatogen
         finstall adjust.h
         finstall neato.h 
@@ -392,6 +393,7 @@ function Package
 	    echo "uploading the tgz file $TGZFILE" >> $LFILE
 	    chmod 644 $TGZFILE
 	    putFile $TGZFILE
+	    rm $TGZFILE
 	  else
 	    echo "FAILED : could not create tgz file" >> $LFILE
         ErrorEx "windows install failure"

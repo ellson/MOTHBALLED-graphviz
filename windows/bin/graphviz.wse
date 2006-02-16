@@ -868,6 +868,21 @@ item: Include Script
   Pathname=%_WISE_%\INCLUDE\uninstal.wse
 end
 item: Install File
+  Source=c:\graphvizCVS\builddaemon\package\source\include\gvplugin_usershape.h
+  Destination=%MAINDIR%\Graphviz\include\gvplugin_usershape.h
+  Flags=0000000010000010
+end
+item: Install File
+  Source=c:\graphvizCVS\builddaemon\package\source\include\gvplugin_device.h
+  Destination=%MAINDIR%\Graphviz\include\gvplugin_device.h
+  Flags=0000000010000010
+end
+item: Install File
+  Source=c:\graphvizCVS\builddaemon\package\source\include\gvcjob.h
+  Destination=%MAINDIR%\Graphviz\include\gvcjob.h
+  Flags=0000000010000010
+end
+item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\lib\plugin.lib
   Destination=%MAINDIR%\Graphviz\lib\plugin.lib
   Flags=0000000010000010
@@ -905,11 +920,6 @@ end
 item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\include\color.h
   Destination=%MAINDIR%\Graphviz\include\color.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\gvcproc.h
-  Destination=%MAINDIR%\Graphviz\include\gvcproc.h
   Flags=0000000010000010
 end
 item: Install File
