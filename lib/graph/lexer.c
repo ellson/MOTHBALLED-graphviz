@@ -66,12 +66,16 @@ void aglexinit(FILE * fp, gets_f mygets)
     (Lexer_gets) (AG.linebuf, 0, fp);	/* reset mygets */
 }
 
-/* skip leading white space and comments in a string p */
+#define ISSPACE(c) (isspace(c) || iscntrl(c))
+
+/* skip leading white space and comments in a string p
+ * whitespace includes control characters
+ */
 static char *skip_wscomments(char *pp)
 {
     unsigned char *p = (unsigned char *) pp;
     do {
-	while (isspace(*p))
+	while (ISSPACE(*p))
 	    p++;
 	while (In_comment && p[0]) {
 	    while (p[0] && (p[0] != '*'))
@@ -99,7 +103,7 @@ static char *skip_wscomments(char *pp)
 		    break;	/* return a slash */
 	    }
 	} else {
-	    if (!isspace(*p))
+	    if (!ISSPACE(*p))
 		break;
 	}
     } while (p[0]);

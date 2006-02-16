@@ -117,35 +117,35 @@ ID		({NAME}|{NUMBER})
 %x qstring
 %x hstring
 %%
-{GRAPH_EOF_TOKEN}		return(EOF);
+{GRAPH_EOF_TOKEN}	return(EOF);
 <INITIAL,comment,qstring>\n	line_num++;
-"/*"					BEGIN(comment);
-<comment>[^*\n]*		/* eat anything not a '*' */
+"/*"			BEGIN(comment);
+<comment>[^*\n]*	/* eat anything not a '*' */
 <comment>"*"+[^*/\n]*	/* eat up '*'s not followed by '/'s */
-<comment>"*"+"/"		BEGIN(INITIAL);
-"//".*					/* ignore C++-style comments */
-"#".*					/* ignore shell-like comments */
-[ \t\r]					/* ignore whitespace */
-"node"					return(T_node);			/* see tokens in agcanonstr */
-"edge"					return(T_edge);
-"graph"					return(T_graph);
-"digraph"				return(T_digraph);
-"strict"				return(T_strict);
-"subgraph"				return(T_subgraph);
-"->"|"--"				return(T_edgeop);
-{NAME}					{ yylval.str = (char*)agstrdup(Ag_G_global,yytext); return(T_atom); }
-{NUMBER}				{ if (chkNum()) yyless(yyleng-1); yylval.str = (char*)agstrdup(Ag_G_global,yytext); return(T_atom); }
-["]						BEGIN(qstring); beginstr();
-<qstring>["]			BEGIN(INITIAL); endstr(); return (T_qatom);
-<qstring>[\\]["]		addstr ("\"");
-<qstring>[\\][\n]		line_num++; /* ignore escaped newlines */
+<comment>"*"+"/"	BEGIN(INITIAL);
+"//".*			/* ignore C++-style comments */
+"#".*			/* ignore shell-like comments */
+[\000-\040\177]		/* ignore whitespace */
+"node"			return(T_node);		/* see tokens in agcanonstr */
+"edge"			return(T_edge);
+"graph"			return(T_graph);
+"digraph"		return(T_digraph);
+"strict"		return(T_strict);
+"subgraph"		return(T_subgraph);
+"->"|"--"		return(T_edgeop);
+{NAME}			{ yylval.str = (char*)agstrdup(Ag_G_global,yytext); return(T_atom); }
+{NUMBER}		{ if (chkNum()) yyless(yyleng-1); yylval.str = (char*)agstrdup(Ag_G_global,yytext); return(T_atom); }
+["]			BEGIN(qstring); beginstr();
+<qstring>["]		BEGIN(INITIAL); endstr(); return (T_qatom);
+<qstring>[\\]["]	addstr ("\"");
+<qstring>[\\][\n]	line_num++; /* ignore escaped newlines */
 <qstring>([^"\\]*|[\\].)	addstr(yytext);
-[<]						BEGIN(hstring); html_nest = 1; beginstr();
-<hstring>[>]			html_nest--; if (html_nest) addstr(yytext); else {BEGIN(INITIAL); endstr_html(); return (T_qatom);}
-<hstring>[<]			html_nest++; addstr(yytext);
-<hstring>[\n]			addstr(yytext); line_num++; /* add newlines */
-<hstring>([^><]*)		addstr(yytext);
-.						return (yytext[0]);
+[<]			BEGIN(hstring); html_nest = 1; beginstr();
+<hstring>[>]		html_nest--; if (html_nest) addstr(yytext); else {BEGIN(INITIAL); endstr_html(); return (T_qatom);}
+<hstring>[<]		html_nest++; addstr(yytext);
+<hstring>[\n]		addstr(yytext); line_num++; /* add newlines */
+<hstring>([^><]*)	addstr(yytext);
+.			return (yytext[0]);
 %%
 void yyerror(char *str)
 {
