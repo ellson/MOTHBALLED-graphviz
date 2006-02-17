@@ -1879,7 +1879,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
     if (streq(ND_shape(n)->name, "Mrecord"))
 	style |= ROUNDED;
     if (style & (ROUNDED | DIAGONALS))
-	node_round_corners(job, n, A, 4, ROUNDED);
+	node_round_corners(job, n, A, 4, style);
     else
 	gvrender_polygon(job, A, 4, style & FILLED);
     gen_fields(job, n, f);
