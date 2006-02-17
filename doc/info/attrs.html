@@ -133,6 +133,8 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">96.0<BR>0.0</TD><TD></TD><TD>svg, bitmap output only</TD> </TR>
  <TR><TD><A NAME=a:epsilon HREF=#d:epsilon>epsilon</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">.0001 * # nodes(mode == KK)<BR>.0001(mode == major)</TD><TD></TD><TD>neato only</TD> </TR>
+ <TR><TD><A NAME=a:esep HREF=#d:esep>esep</A>
+</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.8*sep</TD><TD></TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:fillcolor HREF=#d:fillcolor>fillcolor</A>
 </TD><TD>NC</TD><TD><A HREF=#k:color>color</A>
 </TD><TD ALIGN="CENTER">lightgrey(nodes)<BR>black(clusters)</TD><TD></TD><TD></TD> </TR>
@@ -572,6 +574,12 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:epsilon HREF=#a:epsilon><STRONG>epsilon</STRONG></A>
 <DD>  Terminating condition. If the length squared of all energy gradients are
   < <B>epsilon</B>, the algorithm stops.
+
+<DT><A NAME=d:esep HREF=#a:esep><STRONG>esep</STRONG></A>
+<DD>  Fraction to increase polygons (multiply
+  coordinates by 1 + esep) for purposes of spline edge routing. 
+  This should normally be strictly less than 
+  <A HREF=#d:sep>sep</A>.
 
 <DT><A NAME=d:fillcolor HREF=#a:fillcolor><STRONG>fillcolor</STRONG></A>
 <DD>  Color used to fill the background of a node or cluster.
@@ -1100,6 +1108,9 @@ This field indicates which graph component uses the attribute.
 <DD>  Fraction to increase polygons (multiply
   coordinates by 1 + sep) for purposes of determining overlap. Guarantees
   a minimal non-zero distance between nodes.
+  If unset but <A HREF=#d:esep>esep</A> is defined, <tt>sep</tt> will be
+  set to <tt>esep/0.8</tt>. If <tt>esep</tt> is unset, the default value
+  is used. 
 
 <DT><A NAME=d:shape HREF=#a:shape><STRONG>shape</STRONG></A>
 <DD>  Set the shape of a node.
