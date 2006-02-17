@@ -834,9 +834,11 @@ expFactor(graph_t* g)
     double pmargin;
     char*  marg;
 
-    if ((marg = agget(g, "sep"))) {
+    if ((marg = agget(g, "sep")))
 	pmargin = 1.0 + atof(marg);
-    } else
+    else if ((marg = agget(g, "esep")))
+	pmargin = 1.0 + atof(marg)/SEPFACT;
+    else
 	pmargin = 1.1;
     return pmargin;
 }

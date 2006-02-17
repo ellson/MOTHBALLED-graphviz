@@ -196,6 +196,7 @@
 #define Spring_coeff    1.0
 #define MYHUGE          (1.0e+37)
 #define MAXDIM			10
+#define SEPFACT         0.8  /* default esep/sep */
 
 /* drawing phases */
 #define GVBEGIN         0

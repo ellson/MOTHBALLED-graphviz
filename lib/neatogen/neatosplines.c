@@ -692,13 +692,18 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, double, int),
     edge_t *e;
     double SEP;
     Dt_t *map;
+    char* marg;
 
     /* This value should be independent of the sep value used to expand
      * nodes during adjustment. If not, when the adjustment pass produces
      * a fairly tight layout, the spline code will find that some nodes
      * still overlap.
      */
-    SEP = 1.01;
+    if ((marg = agget(g, "esep")))
+	SEP = 1.0 + atof(marg);
+    else 
+          /* expFactor = 1 + "sep" value */
+	SEP = 1.0 + SEPFACT*(expFactor(g) - 1.0); 
 
     /* find equivalent edges */
     map = dtopen(&edgeItemDisc, Dtoset);
