@@ -256,7 +256,7 @@ char * gvconfig_libdir(void)
 		if (tmp) {
 		    *tmp = 0;
 		    /* Check for real /lib dir. Don't accept pre-install /.libs */
-		    if (strcmp(strrchr(path,'/'), "/lib") != 0)
+		    if (strcmp(strrchr(path,'/'), "/graphviz") != 0)
 			continue;
 		    libdir = path;
 		    break;
