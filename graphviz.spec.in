@@ -4,6 +4,9 @@
 # Note: graphviz requires gd with gif support (and other fixes), hence use
 # internal one for now.
 
+# graphviz is relocatable
+Prefix: /usr
+
 # Define a default set incase none of the conditionals apply
 %define SHARP  0
 %define GUILE   0
