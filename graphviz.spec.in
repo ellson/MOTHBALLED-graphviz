@@ -125,243 +125,243 @@ of graphs (as in nodes and edges, not as in barcharts).
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING ChangeLog NEWS README
 %{_bindir}/*
-%dir %{_libdir}/%{name}
-%{_libdir}/%{name}/*.so.*
+%dir %{_libdir}/graphviz
+%{_libdir}/graphviz/*.so.*
 %{_mandir}/man1/*.1*
-%dir %{_datadir}/%{name}
-%{_datadir}/%{name}/lefty
-%exclude %{_libdir}/%{name}/*/*
+%dir %{_datadir}/graphviz
+%{_datadir}/graphviz/lefty
+%exclude %{_libdir}/graphviz/*/*
 
 #------------------------------------------------------------------
 %if %{SHARP}
 %package sharp
 Group:	Applications/Multimedia
-Summary:	C# extension for %{name}
-Requires:	%{name} = %{version}-%{release}
+Summary:	C# extension for graphviz
+Requires:	graphviz = %{version}-%{release}
 
 %description sharp
-C# extensions for %{name}.
+C# extensions for graphviz.
 
 %files sharp
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/sharp
-%{_libdir}/%{name}/sharp/*
-%exclude %{_libdir}/%{name}/sharp/*.la
+%dir %{_libdir}/graphviz/sharp
+%{_libdir}/graphviz/sharp/*
+%exclude %{_libdir}/graphviz/sharp/*.la
 %endif
 
 #------------------------------------------------------------------
 %if %{GUILE}
 %package guile
 Group:		Applications/Multimedia
-Summary:	Guile extension for %{name}
-Requires:	%{name} = %{version}-%{release}
+Summary:	Guile extension for graphviz
+Requires:	graphviz = %{version}-%{release}
 
 %description guile
-Guile extensions for %{name}.
+Guile extensions for graphviz.
 
 %files guile
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/guile
-%{_libdir}/%{name}/guile/*
-%exclude %{_libdir}/%{name}/guile/*.la
+%dir %{_libdir}/graphviz/guile
+%{_libdir}/graphviz/guile/*
+%exclude %{_libdir}/graphviz/guile/*.la
 %endif
 
 #------------------------------------------------------------------
 %if %{_IO}
 %package io
 Group:		Applications/Multimedia
-Summary:	Io extension for %{name}
-Requires:	%{name} = %{version}-%{release}
+Summary:	Io extension for graphviz
+Requires:	graphviz = %{version}-%{release}
 
 %description io
-Java extensions for %{name}.
+Java extensions for graphviz.
 
 %files io
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/io
-%{_libdir}/%{name}/io/*
-%exclude %{_libdir}/%{name}/io/*.la
+%dir %{_libdir}/graphviz/io
+%{_libdir}/graphviz/io/*
+%exclude %{_libdir}/graphviz/io/*.la
 %endif
 
 #------------------------------------------------------------------
 %if %{JAVA}
 %package java
 Group:		Applications/Multimedia
-Summary:	Java extension for %{name}
-Requires:	%{name} = %{version}-%{release}
+Summary:	Java extension for graphviz
+Requires:	graphviz = %{version}-%{release}
 
 %description java
-Java extensions for %{name}.
+Java extensions for graphviz.
 
 %files java
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/java
-%{_libdir}/%{name}/java/*
-%exclude %{_libdir}/%{name}/java/*.la
+%dir %{_libdir}/graphviz/java
+%{_libdir}/graphviz/java/*
+%exclude %{_libdir}/graphviz/java/*.la
 %endif
 
 #------------------------------------------------------------------
 %if %{LUA}
 %package lua
 Group:		Applications/Multimedia
-Summary:	Lua extension for %{name}
-Requires:	%{name} = %{version}-%{release}
+Summary:	Lua extension for graphviz
+Requires:	graphviz = %{version}-%{release}
 
 %description lua
-Java extensions for %{name}.
+Java extensions for graphviz.
 
 %files lua
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/lua
-%{_libdir}/%{name}/lua/*
-%exclude %{_libdir}/%{name}/lua/*.la
+%dir %{_libdir}/graphviz/lua
+%{_libdir}/graphviz/lua/*
+%exclude %{_libdir}/graphviz/lua/*.la
 %endif
 
 #------------------------------------------------------------------
 %if %{OCAML}
 %package ocaml
 Group:		Applications/Multimedia
-Summary:	Ocaml extension for %{name}
-Requires:	%{name} = %{version}-%{release}
+Summary:	Ocaml extension for graphviz
+Requires:	graphviz = %{version}-%{release}
 
 %description ocaml
-Ocaml extensions for %{name}.
+Ocaml extensions for graphviz.
 
 %files ocaml
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/ocaml
-%{_libdir}/%{name}/ocaml/*
-%exclude %{_libdir}/%{name}/ocaml/*.la
+%dir %{_libdir}/graphviz/ocaml
+%{_libdir}/graphviz/ocaml/*
+%exclude %{_libdir}/graphviz/ocaml/*.la
 %endif
 
 #------------------------------------------------------------------
 %if %{PERL}
 %package perl
 Group:		Applications/Multimedia
-Summary:	Perl extension for %{name}
-Requires:	%{name} = %{version}-%{release}
+Summary:	Perl extension for graphviz
+Requires:	graphviz = %{version}-%{release}
 
 %description perl
-Perl extensions for %{name}.
+Perl extensions for graphviz.
 
 %files perl
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/perl
-%{_libdir}/%{name}/perl/*
-%exclude %{_libdir}/%{name}/perl/*.la
+%dir %{_libdir}/graphviz/perl
+%{_libdir}/graphviz/perl/*
+%exclude %{_libdir}/graphviz/perl/*.la
 %endif
 
 #------------------------------------------------------------------
 %if %{PHP}
 %package php
 Group:		Applications/Multimedia
-Summary:	PHP extension for %{name}
-Requires:	%{name} = %{version}-%{release}
+Summary:	PHP extension for graphviz
+Requires:	graphviz = %{version}-%{release}
 
 %description php
-PHP extensions for %{name}.
+PHP extensions for graphviz.
 
 %files php
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/php
-%{_libdir}/%{name}/php/*
-%exclude %{_libdir}/%{name}/php/*.la
+%dir %{_libdir}/graphviz/php
+%{_libdir}/graphviz/php/*
+%exclude %{_libdir}/graphviz/php/*.la
 %endif
 
 #------------------------------------------------------------------
 %if %{PYTHON}
 %package python
 Group:		Applications/Multimedia
-Summary:	Python extension for %{name}
-Requires:	%{name} = %{version}-%{release}
+Summary:	Python extension for graphviz
+Requires:	graphviz = %{version}-%{release}
 
 %description python
-Python extensions for %{name}.
+Python extensions for graphviz.
 
 %files python
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/python
-%{_libdir}/%{name}/python/*
-%exclude %{_libdir}/%{name}/python/*.la
+%dir %{_libdir}/graphviz/python
+%{_libdir}/graphviz/python/*
+%exclude %{_libdir}/graphviz/python/*.la
 %endif
 
 #------------------------------------------------------------------
 %if %{RUBY}
 %package ruby
 Group:		Applications/Multimedia
-Summary:	Ruby extension for %{name}
-Requires:	%{name} = %{version}-%{release}
+Summary:	Ruby extension for graphviz
+Requires:	graphviz = %{version}-%{release}
 
 %description ruby
-Ruby extensions for %{name}.
+Ruby extensions for graphviz.
 
 %files ruby
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/ruby
-%{_libdir}/%{name}/ruby/*
-%exclude %{_libdir}/%{name}/ruby/*.la
+%dir %{_libdir}/graphviz/ruby
+%{_libdir}/graphviz/ruby/*
+%exclude %{_libdir}/graphviz/ruby/*.la
 %endif
 
 #------------------------------------------------------------------
 %if %{TCL}
 %package tcl
 Group:		Applications/Multimedia
-Summary:	Tcl extension & tools for %{name}
-Requires:	%{name} = %{version}-%{release} tcl >= 8.3 tk
+Summary:	Tcl extension & tools for graphviz
+Requires:	graphviz = %{version}-%{release} tcl >= 8.3 tk
 
 %description tcl
-Various tcl packages (extensions) for the %{name} tools.
+Various tcl packages (extensions) for the graphviz tools.
 
 %files tcl
 %defattr(-,root,root,-)
-%dir %{_libdir}/%{name}/tcl
-%{_libdir}/%{name}/tcl/*
-%{_libdir}/%{name}/pkgIndex.tcl
-%{_datadir}/%{name}/demo
+%dir %{_libdir}/graphviz/tcl
+%{_libdir}/graphviz/tcl/*
+%{_libdir}/graphviz/pkgIndex.tcl
+%{_datadir}/graphviz/demo
 %{_mandir}/mann/*.n*
-%exclude %{_libdir}/%{name}/tcl/*.la
+%exclude %{_libdir}/graphviz/tcl/*.la
 %endif
 
 #------------------------------------------------------------------
 %package devel
 Group:		Development/Libraries
-Summary:	Development package for %{name}
-Requires:	%{name} = %{version}-%{release} pkgconfig
+Summary:	Development package for graphviz
+Requires:	graphviz = %{version}-%{release} pkgconfig
 
 %description devel
 A collection of tools for the manipulation and layout
 of graphs (as in nodes and edges, not as in barcharts).
-This package contains development files for %{name}.
+This package contains development files for graphviz.
 
 %files devel
 %defattr(-,root,root,-)
-%{_includedir}/%{name}
-%{_libdir}/%{name}/*.la
-%{_libdir}/%{name}/*.so
+%{_includedir}/graphviz
+%{_libdir}/graphviz/*.la
+%{_libdir}/graphviz/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/*.3*
-%exclude %{_libdir}/%{name}/*/*
+%exclude %{_libdir}/graphviz/*/*
 
 #------------------------------------------------------------------
 %package graphs
 Group:		Applications/Multimedia
-Summary:	Demo graphs for %{name}
+Summary:	Demo graphs for graphviz
 
 %description graphs
-Some demo graphs for %{name}.
+Some demo graphs for graphviz.
 
 %files graphs
 %defattr(-,root,root,-)
-%dir %{_datadir}/%{name}
-%{_datadir}/%{name}/graphs
+%dir %{_datadir}/graphviz
+%{_datadir}/graphviz/graphs
 
 #------------------------------------------------------------------
 %package doc
 Group:		Documentation
-Summary:	PDF and HTML documents for %{name}
+Summary:	PDF and HTML documents for graphviz
 
 %description doc
-Provides some additional PDF and HTML documentation for %{name}.
+Provides some additional PDF and HTML documentation for graphviz.
 
 %files doc
 %defattr(-,root,root,-)
@@ -404,13 +404,13 @@ rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/doc
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-# run "dot -c" to generate plugin config in %{_libdir}/%{name}/config
+# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
 %post
-%{_bindir}/dot -c
+LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib}/graphviz $RPM_INSTALL_PREFIX0/bin/dot -c
 
 # if there is not dot after everything else is done, the remove config
 %postun
-if ! test -x %{_bindir}/dot; then rm -f %{_libdir}/%{name}/config; fi
+if ! test -x $RPM_INSTALL_PREFIX0/bin/dot; then rm -f $RPM_INSTALL_PREFIX0/%{_lib}/graphviz/config; fi
 
 %changelog
 * Tue Sep 13 2005 John Ellson <ellson@research.att.com>
