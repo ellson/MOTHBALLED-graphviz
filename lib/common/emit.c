@@ -1897,7 +1897,7 @@ extern int gvevent_key_binding_size;
 
 int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
-    GVJ_t *job;
+    GVJ_t *job, *prev_job;
 
     if (!GD_drawing(g)) {
         agerr (AGERR, "Layout was not done.  Missing layout plugins? \n");
@@ -1910,7 +1910,8 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 
     gvc->keybindings = gvevent_key_binding;
     gvc->numkeys = gvevent_key_binding_size;
-
+    gvc->active_jobs = NULL; /* clear active list */
+    prev_job = NULL;
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
         if (!job->output_file) {        /* if not yet opened */
             if (job->output_filename == NULL) {
@@ -1925,16 +1926,20 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
             return -1;
         }
 
-        if (gvc->active_jobs && strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
-		/* finalize previous jobs */
-            gvdevice_finalize(gvc);
-            /* clear active list */
-            gvc->active_jobs = NULL;
+	/* if we already have an active job list to a different output device */
+        if (gvc->active_jobs
+	&& strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
+            gvdevice_finalize(gvc); /* finalize previous jobs */
+            gvc->active_jobs = NULL; /* clear active list */
+	    prev_job = NULL;
         }
 
-        /* insert job in active list */
-        job->next_active = gvc->active_jobs;
-        gvc->active_jobs = job;
+	if (prev_job)
+            prev_job->next_active = job;  /* insert job in active list */
+	else
+	    gvc->active_jobs = job;   /* first job of new list */
+	job->next_active = NULL;      /* terminate active list */
+	prev_job = job;
 
         emit_job(job, g);
 
