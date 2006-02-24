@@ -73,8 +73,6 @@ int gvdevice_features(GVJ_t * job)
     return features;
 }
 
-extern gvdevice_callbacks_t gvdevice_callbacks;
-
 void gvdevice_finalize(GVC_t * gvc)
 {
     GVJ_t *firstjob = gvc->active_jobs;
@@ -82,7 +80,6 @@ void gvdevice_finalize(GVC_t * gvc)
 
     if (gvde) {
 	if (gvde->finalize) {
-	    firstjob->callbacks = &gvdevice_callbacks;
 	    gvde->finalize(firstjob);
 	}
     }

@@ -1894,6 +1894,7 @@ static void init_bb(graph_t *g)
 
 extern gvevent_key_binding_t gvevent_key_binding[];
 extern int gvevent_key_binding_size;
+extern gvdevice_callbacks_t gvdevice_callbacks;
 
 int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
@@ -1940,6 +1941,8 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	    gvc->active_jobs = job;   /* first job of new list */
 	job->next_active = NULL;      /* terminate active list */
 	prev_job = job;
+
+	job->callbacks = &gvdevice_callbacks;
 
         emit_job(job, g);
 
