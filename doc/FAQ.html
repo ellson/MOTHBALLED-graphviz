@@ -21,8 +21,8 @@ for a partial list of compatible tools and packages.
 <h2>General</h2>
 
 <A name=Q1>
-<B>Q. Where can I see a list of all the attributes
-that control dot or neato?</B>
+<B>Q. Where can I see a list of all the attributes that control dot or neato?</B>
+</A>
 </A>
 <P>
 See <A HREF="info/attrs.html">
@@ -156,7 +156,9 @@ digraph G {
 </pre>
 
 <P>
-<b>Q. How can I generate graph layouts in PDF?</b>
+<A name=Q4a>
+<B>Q. How can I generate graph layouts in PDF?</B>
+</A>
 <P>
 First, create Postscript output, then use an external converter from
 Postscript to PDF.
@@ -169,7 +171,9 @@ system, such as pdflatex, it is very important to use -Tps2 rather than
 -Tps. In general, if you really want PDF output, that is, you would like
 to have a -Tpdf flag, use -Tps2 before converting to PDF. 
 <P>
-<b>Q. How can I make duplicate nodes?</b>
+<A name=Q4b>
+<B>Q. How can I make duplicate nodes?</B>
+</A>
 <P>
 Make unique nodes with duplicate labels.
 <pre>
@@ -180,7 +184,9 @@ Make unique nodes with duplicate labels.
 	  }
 </pre>
 <P>
-<b>Q. How can I set a graph or cluster label without its propagating to all sub-clusters?</b>
+<A name=Q4c>
+<B>Q. How can I set a graph or cluster label without its propagating to all sub-clusters?</B>
+</A>
 <P>
 Set the label at the end of the graph (before the closing brace), after all
 its contents have been defined. (We admit it seems desirable to define some
@@ -200,7 +206,9 @@ attribute</A> for more information.
 
 <h2>Clusters</h2>
 
-<b>Q. How can I create edges between cluster boxes?</b>
+<A name=Q5a>
+<B>Q. How can I create edges between cluster boxes?</B>
+</A>
 <p>
 This only works in Graphviz version 1.7 and higher.
 To make edges between clusters, first set the
@@ -328,7 +336,7 @@ believe this, run <tt>dot -Tps</tt> and look at the
 <P>
 <A name=Q10>
 <B>Q. How do I create special symbols and accents in labels?</B>
-<A name=Q2>
+</A>
 <P>
 The following solution only works with the
 raster drivers that load Truetype or Type1
@@ -446,6 +454,7 @@ known bug</A>.
 <A name=Q18>
 <B>Q. Why does dotty report a syntax error on a legal dot file?</B>
 </A>
+<P>
 Typically this error is reported as:
 <pre>
 >> graph parser: syntax error near line 14
@@ -572,13 +581,12 @@ and that it is not commented out!
 <P>
 <A name=Q28>
 <B>Q. I've installed Debian Graphviz and it works just fine on the command line,
-but when I execute a Perl/CGI script through Apache, no output is generated.
-For example, the code</B>
-<pre>
-<B>system("/usr/local/bin/dot -Tpng /tmp/tree.dot -o /tmp/tree.png");</B>
-</pre>
-<B>produces no file <tt>/tmp/tree.png</tt>.</B>
-</A>
+but when I execute a Perl/CGI script through Apache, no output is generated.</A>
+For example, the code
+<tt>
+system("/usr/local/bin/dot -Tpng /tmp/tree.dot -o /tmp/tree.png");
+</tt>
+produces no file <tt>/tmp/tree.png</tt>.</B>
 <P>
 As best as we can tell, dot dies with no stdout or stderr messages on Debian 
 systems when run from an Apache cgi program
@@ -722,6 +730,14 @@ digraph G {
 The addition of <tt>attr0</tt> touches every node of the graph.
 Then the addition of <tt>attr1</tt> touches every node again, and so on.
 <P>
+<A name=Q34a>
+<B>Q. Twopi runs forever on a certain example.</B>
+</A>
+<p>
+Is your graph is large (many thousands of edges),
+and did you set <pre>splines=true</pre>?  It takes
+a lot of cycles to fit all those splines!
+<p>
 <A name=Q35>
 <B>Q. Neato has unnecessary edge crossings, or has missed an
 obvious chance to make a much nicer layout.</B>
