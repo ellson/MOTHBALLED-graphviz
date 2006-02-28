@@ -49,6 +49,29 @@ int gvlayout_select(GVC_t * gvc, char *layout)
     return NO_SUPPORT;
 }
 
+/* gvLayoutJobs:
+ * Layout input graph g based on layout engine attached to gvc.
+ * Check that the root graph has been initialized. If not, initialize it.
+ * Return 0 on success.
+ */
+int gvLayoutJobs(GVC_t * gvc, graph_t * g)
+{
+    gvlayout_engine_t *gvle = gvc->layout.engine;
+
+    if (! gvle)
+	return -1;
+
+    graph_init(g, gvc->layout.features->flags & LAYOUT_USES_RANKDIR);
+    GD_drawing(g->root) = GD_drawing(g);
+    GD_gvc(g) = gvc;
+    if (gvle && gvle->layout) {
+	gvle->layout(g);
+	if (gvle->cleanup)
+	    GD_cleanup(g) = gvle->cleanup;
+    }
+    return 0;
+}
+
 /* gvFreeLayout:
  * Free layout resources.
  * First, if the graph has a layout-specific cleanup function attached,
@@ -67,29 +90,5 @@ int gvFreeLayout(GVC_t * gvc, graph_t * g)
 	GD_drawing(g) = NULL;
 	GD_drawing(g->root) = NULL;
     }
-    return 0;
-}
-
-/* gvLayoutJobs:
- * Layout input graph g based on layout engine attached to gvc.
- * Check that the root graph has been initialized. If not, initialize it.
- * Return 0 on success.
- */
-int gvLayoutJobs(GVC_t * gvc, graph_t * g)
-{
-    gvlayout_engine_t *gvle = gvc->layout.engine;
-
-    if (! gvle)
-	return -1;
-    if (gvFreeLayout(gvc, g) != 0)
-	return -1;
-    graph_init(g, gvc->layout.features->flags & LAYOUT_USES_RANKDIR);
-    GD_drawing(g->root) = GD_drawing(g);
-    GD_gvc(g) = gvc;
-    if (gvle->layout)
-	gvle->layout(g);
-    /* record layout-specific cleanup function */
-    if (gvle->cleanup)
-	GD_cleanup(g) = gvle->cleanup;
     return 0;
 }
