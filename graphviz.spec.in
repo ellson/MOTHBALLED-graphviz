@@ -8,7 +8,7 @@
 Prefix: /usr
 
 # Define a default set incase none of the conditionals apply
-%define SHARP  0
+%define SHARP   0
 %define GUILE   0
 %define _IO     0
 %define JAVA    0
@@ -102,13 +102,13 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	zlib-devel libpng-devel libjpeg-devel expat-devel freetype-devel >= 2
 BuildRequires:	/bin/ksh bison m4 flex tk tcl >= 8.3 swig
 BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
-%{?fc5:BuildRequires: fontconfig-devel libtool-ltdl-devel}
+%{?fc5:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel}
 %{?fc5:BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
-%{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl-devel} 
+%{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel} 
 %{?fc3:BuildRequires: fontconfig-devel xorg-x11-devel} 
 %{?fc2:BuildRequires: fontconfig-devel XFree86-devel}
 %{?fc1:BuildRequires: fontconfig-devel XFree86-devel}
-%{?el5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl-devel}
+%{?el5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel}
 %{?el4:BuildRequires: fontconfig-devel xorg-x11-devel}
 %{?el3:BuildRequires: fontconfig-devel XFree86-devel}
 %{?el2:BuildRequires: XFree86-devel}
@@ -146,7 +146,6 @@ C# extensions for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/sharp
 %{_libdir}/graphviz/sharp/*
-%exclude %{_libdir}/graphviz/sharp/*.la
 %endif
 
 #------------------------------------------------------------------
@@ -163,7 +162,6 @@ Guile extensions for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/guile
 %{_libdir}/graphviz/guile/*
-%exclude %{_libdir}/graphviz/guile/*.la
 %endif
 
 #------------------------------------------------------------------
@@ -174,13 +172,12 @@ Summary:	Io extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
 %description io
-Java extensions for graphviz.
+Io extensions for graphviz.
 
 %files io
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/io
 %{_libdir}/graphviz/io/*
-%exclude %{_libdir}/graphviz/io/*.la
 %endif
 
 #------------------------------------------------------------------
@@ -197,7 +194,6 @@ Java extensions for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/java
 %{_libdir}/graphviz/java/*
-%exclude %{_libdir}/graphviz/java/*.la
 %endif
 
 #------------------------------------------------------------------
@@ -214,7 +210,6 @@ Java extensions for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/lua
 %{_libdir}/graphviz/lua/*
-%exclude %{_libdir}/graphviz/lua/*.la
 %endif
 
 #------------------------------------------------------------------
@@ -231,7 +226,6 @@ Ocaml extensions for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/ocaml
 %{_libdir}/graphviz/ocaml/*
-%exclude %{_libdir}/graphviz/ocaml/*.la
 %endif
 
 #------------------------------------------------------------------
@@ -248,7 +242,6 @@ Perl extensions for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/perl
 %{_libdir}/graphviz/perl/*
-%exclude %{_libdir}/graphviz/perl/*.la
 %endif
 
 #------------------------------------------------------------------
@@ -265,7 +258,6 @@ PHP extensions for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/php
 %{_libdir}/graphviz/php/*
-%exclude %{_libdir}/graphviz/php/*.la
 %endif
 
 #------------------------------------------------------------------
@@ -282,7 +274,6 @@ Python extensions for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/python
 %{_libdir}/graphviz/python/*
-%exclude %{_libdir}/graphviz/python/*.la
 %endif
 
 #------------------------------------------------------------------
@@ -299,7 +290,6 @@ Ruby extensions for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/ruby
 %{_libdir}/graphviz/ruby/*
-%exclude %{_libdir}/graphviz/ruby/*.la
 %endif
 
 #------------------------------------------------------------------
@@ -319,7 +309,6 @@ Various tcl packages (extensions) for the graphviz tools.
 %{_libdir}/graphviz/pkgIndex.tcl
 %{_datadir}/graphviz/demo
 %{_mandir}/mann/*.n*
-%exclude %{_libdir}/graphviz/tcl/*.la
 %endif
 
 #------------------------------------------------------------------
@@ -336,7 +325,6 @@ This package contains development files for graphviz.
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/graphviz
-%{_libdir}/graphviz/*.la
 %{_libdir}/graphviz/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/*.3*
@@ -397,6 +385,7 @@ rm -rf $RPM_BUILD_ROOT __doc
     docdir=$RPM_BUILD_ROOT%{_docdir}/%{name} \
     pkgconfigdir=%{_libdir}/pkgconfig \
     install
+find ${RPM_BUILD_ROOT} -type f -name "*.la" -exec rm -f {} ';'
 chmod -x $RPM_BUILD_ROOT%{_datadir}/%{name}/lefty/*
 cp -a $RPM_BUILD_ROOT%{_datadir}/%{name}/doc __doc
 rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/doc
