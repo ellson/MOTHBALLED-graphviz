@@ -85,7 +85,7 @@ dotty.protogt.finishlayout = function (gt) {
                     0, 'please fill out a bug report at'
                 );
                 dotty.message (
-                    0, 'http://www.research.att.com/~erg/graphviz/bugform.html'
+                    0, 'http://www.graphviz.org/bugs/bugform.html'
                 );
             }
             dotty.popbusy (gt, gt.views);
