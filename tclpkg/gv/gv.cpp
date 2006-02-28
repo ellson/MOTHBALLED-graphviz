@@ -827,6 +827,7 @@ void layout(Agraph_t *g, char *engine)
 {
     int err;
 
+    err = gvFreeLayout(gvc, g);
     err = gvLayout(gvc, g, engine);
 }
 
