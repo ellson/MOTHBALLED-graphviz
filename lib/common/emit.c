@@ -24,7 +24,6 @@
 
 static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 int    emitState;
-int    Pad;
 
 /* parse_layers:
  * Split input string into tokens, with separators specified by
@@ -405,8 +404,8 @@ static void setup_page(GVJ_t * job, graph_t * g)
     /* prescaled pad so that its size is constant under scaling */
     pointf pad;
 
-    pad.x = Pad * POINTS_PER_INCH / (job->zoom * job->dpi.x);
-    pad.y = Pad * POINTS_PER_INCH / (job->zoom * job->dpi.y);
+    pad.x = job->pad.x * POINTS_PER_INCH / (job->zoom * job->dpi.x);
+    pad.y = job->pad.y * POINTS_PER_INCH / (job->zoom * job->dpi.y);
 
     /* establish current box in graph coordinates */
     job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - pad.x;
@@ -1162,7 +1161,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     P2PF(GD_bb(g).UR, UR);
 
     /* may want to take this from an attribute someday */
-    Pad = DEFAULT_GRAPH_PAD;
+    job->pad.x = job->pad.y = DEFAULT_GRAPH_PAD;
 
     /* determine final drawing size and scale to apply. */
     /* N.B. size given by user is not rotated by landscape mode */
@@ -1171,6 +1170,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     Z = 1.0;
     if (GD_drawing(g)->size.x > 0) {	/* graph size was given by user... */
 	P2PF(GD_drawing(g)->size, size);
+	size.x -= (2 * job->pad.x);
+	size.y -= (2 * job->pad.y);
 	if ((size.x < UR.x) || (size.y < UR.y) /* drawing is too big... */
 	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
 		&& (size.x > UR.x) && (size.y > UR.y))) /* drawing is too small... */
@@ -1186,8 +1187,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	UR = exch_xyf(UR);
 
     /* calculate default viewport size in device units */
-    X = (Z * UR.x + 2 * Pad) * job->dpi.x / POINTS_PER_INCH;
-    Y = (Z * UR.y + 2 * Pad) * job->dpi.y / POINTS_PER_INCH;
+    X = (Z * UR.x + (2 * job->pad.x)) * job->dpi.x / POINTS_PER_INCH;
+    Y = (Z * UR.y + (2 * job->pad.y)) * job->dpi.y / POINTS_PER_INCH;
 
     /* user can override */
     if ((str = agget(g, "viewport")))

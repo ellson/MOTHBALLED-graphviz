@@ -178,6 +178,7 @@ extern "C" {
 	pointf	dpi;		/* device resolution device-units-per-inch */
 
 	boxf bb;		/* bb in graph units */
+	pointf pad;             /* padding around bb in graph units */
 	double zoom;		/* viewport zoom factor */
 	int rotation;		/* viewport rotation  0=portrait, 1=landscape */
 	pointf focus;		/* viewport focus in graph units */
