@@ -175,6 +175,8 @@ else
 	    CFLAGS=`echo ${CFLAGS} | sed 's/ -pipe//'`
 	    # icc doesn't like -ffast-math
 	    CFLAGS=`echo ${CFLAGS} | sed 's/ -ffast-math//'`
+	    # icc doesn't like -O2
+	    CFLAGS=`echo ${CFLAGS} | sed 's/ -O2/ -O0/'`
 	    ;;
         * )
             case "${build}" in
