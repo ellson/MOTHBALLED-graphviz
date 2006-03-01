@@ -42,6 +42,7 @@ extern gdImagePtr gd_getshapeimage(char *name);
 static int N_pages, Cur_page;
 /* static 	point	Pages; */
 static box PB;
+static box DBB;
 static int onetime = TRUE;
 static int isLatin1;
 static char setupLatin1;
@@ -83,6 +84,9 @@ ps_begin_job(FILE * ofp, graph_t * g, char **lib, char *user, char *info[],
         fprintf(Output_file, "%%%%For: %s\n", user);
         fprintf(Output_file, "%%%%Title: %s\n", g->name);
         fprintf(Output_file, "%%%%Pages: (atend)\n");
+	if (Show_boxes == NULL)
+	    fprintf(Output_file, "%%%%BoundingBox: (atend)\n");
+	fprintf(Output_file, "%%%%EndComments\nsave\n");
     }
 
     /* remainder is emitted by first begin_graph */
@@ -92,6 +96,9 @@ static void ps_end_job(void)
 {
     fprintf(Output_file, "%%%%Trailer\n");
     fprintf(Output_file, "%%%%Pages: %d\n", Cur_page);
+    if (Show_boxes == NULL)
+	fprintf(Output_file, "%%%%BoundingBox: %d %d %d %d\n",
+		DBB.LL.x, DBB.LL.y, DBB.UR.x, DBB.UR.y);
     fprintf(Output_file, "end\nrestore\n");
     fprintf(Output_file, "%%%%EOF\n");
     setupLatin1 = FALSE;
@@ -108,10 +115,6 @@ static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 
     PB = bb;
     if (onetime) {
-	if (Show_boxes == NULL)
-	    fprintf(Output_file, "%%%%BoundingBox: %d %d %d %d\n",
-		PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
-	fprintf(Output_file, "%%%%EndComments\nsave\n");
 	cat_libfile(Output_file, U_lib, ps_txt);
 	epsf_define(Output_file);
  	if (Show_boxes) {
@@ -147,17 +150,29 @@ static void
 ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 {
     point sz;
+    box pbr;
 
     Cur_page++;
     sz = sub_points(PB.UR,PB.LL);
     fprintf(Output_file, "%%%%Page: %d %d\n", Cur_page, Cur_page);
     if (Show_boxes == NULL) {
-	if (rot)
-	    fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
-	        PB.LL.y, PB.LL.x, PB.UR.y, PB.UR.x);
-	else
-	    fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
-	        PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
+	if (rot) {
+	    pbr.LL.x = PB.LL.y;
+	    pbr.LL.y = PB.LL.x;
+	    pbr.UR.x = PB.LL.y;
+	    pbr.UR.y = PB.LL.x;
+	}
+	else {
+	    pbr = PB;
+	}
+	fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
+	        pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
+	if (onetime) {
+	    DBB = pbr;
+	}
+	else {
+	    EXPANDBB(DBB, pbr);
+	}
     }
     fprintf(Output_file, "%%%%PageOrientation: %s\n",
 	    (rot ? "Landscape" : "Portrait"));
