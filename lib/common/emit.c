@@ -244,24 +244,10 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 
     /* determine page box including centering */
     if (GD_drawing(g)->centered) {
-#if 1
-	/* FIXME - this code seems odd since margin, pageSize, and imageSize
-	 * should have all been rotated already */
-	if (GD_drawing(g)->landscape) {
-	    if (pageSize.x > imageSize.x)
-	        margin.x += (pageSize.x - imageSize.y) / 2;
-	    if (pageSize.y > imageSize.y)
-	        margin.y += (pageSize.y - imageSize.x) / 2;
-	}
-	else {
-#endif
-	    if (pageSize.x > imageSize.x)
-	        margin.x += (pageSize.x - imageSize.x) / 2;
-	    if (pageSize.y > imageSize.y)
-	        margin.y += (pageSize.y - imageSize.y) / 2;
-#if 1
-	}
-#endif
+	if (pageSize.x > imageSize.x)
+	    margin.x += (pageSize.x - imageSize.x) / 2;
+	if (pageSize.y > imageSize.y)
+	    margin.y += (pageSize.y - imageSize.y) / 2;
     }
 
     job->boundingBox.LL.x = margin.x;
