@@ -159,8 +159,8 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 	if (rot) {
 	    pbr.LL.x = PB.LL.y;
 	    pbr.LL.y = PB.LL.x;
-	    pbr.UR.x = PB.LL.y;
-	    pbr.UR.y = PB.LL.x;
+	    pbr.UR.x = PB.UR.y;
+	    pbr.UR.y = PB.UR.x;
 	}
 	else {
 	    pbr = PB;
