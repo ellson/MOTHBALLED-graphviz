@@ -109,7 +109,7 @@ BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
 %{?fc2:BuildRequires: fontconfig-devel XFree86-devel}
 %{?fc1:BuildRequires: fontconfig-devel XFree86-devel}
 %{?el5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel}
-%{?el4:BuildRequires: fontconfig-devel xorg-x11-devel}
+%{?el4:BuildRequires: fontconfig-devel xorg-x11-devel tcl-devel tk-devel}
 %{?el3:BuildRequires: fontconfig-devel XFree86-devel}
 %{?el2:BuildRequires: XFree86-devel}
 %{?rh9:BuildRequires: XFree86-devel}
