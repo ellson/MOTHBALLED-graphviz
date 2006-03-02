@@ -336,13 +336,13 @@ static void
 map_begin_page(graph_t * g, point page, double scale, int rot,
 	       point offset)
 {
-    char *url;
+    char *url, *name;
 
     Rot = rot;
+    name = xml_string(g->name);
 
     if (Output_lang == CMAPX) {
-	fprintf(Output_file, "<map id=\"%s\" name=\"%s\">\n", g->name,
-		g->name);
+	fprintf(Output_file, "<map id=\"%s\" name=\"%s\">\n", name, name);
     }
     Root_Graph = g;
     Default_URL = NULL;
