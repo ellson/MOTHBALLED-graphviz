@@ -101,16 +101,22 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:	zlib-devel libpng-devel libjpeg-devel expat-devel freetype-devel >= 2
 BuildRequires:	/bin/ksh bison m4 flex tk tcl >= 8.3 swig
+
+# This just indicates the requirement for tcl.h, tk.h, but doesn't identify
+# where to get them from. In RH9 and earlier they were in the tcl, tk,
+# base packages which are always BR'd anyway (above).
 BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
-%{?fc5:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel}
+
+#Stuff moves around.   
+%{?fc5:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel}
 %{?fc5:BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
-%{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel} 
-%{?fc3:BuildRequires: fontconfig-devel xorg-x11-devel} 
-%{?fc2:BuildRequires: fontconfig-devel XFree86-devel}
-%{?fc1:BuildRequires: fontconfig-devel XFree86-devel}
-%{?el5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel}
+%{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel} 
+%{?fc3:BuildRequires: fontconfig-devel xorg-x11-devel tcl-devel tk-devel} 
+%{?fc2:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
+%{?fc1:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
+%{?el5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel}
 %{?el4:BuildRequires: fontconfig-devel xorg-x11-devel tcl-devel tk-devel}
-%{?el3:BuildRequires: fontconfig-devel XFree86-devel}
+%{?el3:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
 %{?el2:BuildRequires: XFree86-devel}
 %{?rh9:BuildRequires: XFree86-devel}
 %{?rh8:BuildRequires: XFree86-devel}
@@ -135,7 +141,7 @@ of graphs (as in nodes and edges, not as in barcharts).
 #------------------------------------------------------------------
 %if %{SHARP}
 %package sharp
-Group:	Applications/Multimedia
+Group:		Applications/Multimedia
 Summary:	C# extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
