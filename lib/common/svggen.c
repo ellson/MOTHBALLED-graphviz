@@ -118,7 +118,6 @@ static pointf CompScale;
 static pointf Offset;
 
 static point Viewport;
-static pointf GraphFocus;
 
 static node_t *Curnode;
 
@@ -204,19 +203,11 @@ static point svgpt(point p)
     point rv;
 
     if (Rot) {
-#if 0
-        rv.x = ROUND(-(p.y - GraphFocus.y) * CompScale.x + Viewport.x / 2.);
-        rv.y = ROUND( (p.x - GraphFocus.x) * CompScale.y + Viewport.y / 2.);
-    } else {
-        rv.x = ROUND( (p.x - GraphFocus.x) * CompScale.x + Viewport.x / 2.);
-        rv.y = ROUND( (p.y - GraphFocus.y) * CompScale.y + Viewport.y / 2.);
-#else
         rv.x = ROUND(-p.y * CompScale.x + Offset.x);
         rv.y = ROUND( p.x * CompScale.y + Offset.y);
     } else {
         rv.x = ROUND( p.x * CompScale.x + Offset.x);
         rv.y = ROUND( p.y * CompScale.y + Offset.y);
-#endif
     }
     return rv;
 }
@@ -487,7 +478,6 @@ static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     Viewport.x = gvc->job->width;
     Viewport.y = gvc->job->height;
-    GraphFocus = gvc->job->focus;
     CompScale = gvc->job->compscale;
     Offset = gvc->job->offset;
 
