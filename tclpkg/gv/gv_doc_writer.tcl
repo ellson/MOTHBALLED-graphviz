@@ -1,4 +1,4 @@
-#!/usr/bin/tclsh
+#!/usr/bin/env tclsh8.4
 
 source gv_doc_langs.tcl
 
