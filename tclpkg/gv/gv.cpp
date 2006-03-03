@@ -626,7 +626,7 @@ Agedge_t *nextin(Agraph_t *g, Agedge_t *e)
     ne = agnxtin(g, e);
     if (ne)
 	return (ne);
-    n = agnxtnode(g, n);
+    n = agnxtnode(g, e->head);
     if (!n)
 	return NULL;
     return agfstin(g, n);
