@@ -119,7 +119,6 @@ static pointf Offset;
 
 static point Viewport;
 static pointf GraphFocus;
-static double Zoom;
 
 static node_t *Curnode;
 
@@ -488,7 +487,6 @@ static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     Viewport.x = gvc->job->width;
     Viewport.y = gvc->job->height;
-    Zoom = gvc->job->zoom;
     GraphFocus = gvc->job->focus;
     CompScale = gvc->job->compscale;
     Offset = gvc->job->offset;
