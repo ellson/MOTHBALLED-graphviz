@@ -99,6 +99,7 @@ static void popFontInfo(htmlenv_t * env, htmlfont_t * savp)
 	env->finfo.size = savp->size;
 }
 
+#ifdef OLD
 static void
 emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env, void *obj)
 {
@@ -110,34 +111,136 @@ emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env, void *obj)
 
     /* make sure that there is something to do */
     if (tp->nlines < 1)
-	return;
+      return;
 
-    /* set font attributes */
-    if (tp->font) {
-	if (tp->font->size > 0.0)
-	    fsize = tp->font->size;
-	else
-	    fsize = env->finfo.size;
-	if (tp->font->name)
-	    fname = tp->font->name;
-	else
-	    fname = env->finfo.name;
-	if (tp->font->color)
-	    fcolor = tp->font->color;
-	else
-	    fcolor = env->finfo.color;
-    } else {
-	fsize = env->finfo.size;
-	fname = env->finfo.name;
-	fcolor = env->finfo.color;
+      /* set font attributes */
+     if (tp->font) {
+     if (tp->font->size > 0.0)
+     fsize = tp->font->size;
+     else
+     fsize = env->finfo.size;
+     if (tp->font->name)
+     fname = tp->font->name;
+     else
+     fname = env->finfo.name;
+     if (tp->font->color)
+     fcolor = tp->font->color;
+     else
+     fcolor = env->finfo.color;
+     } else {
+     fsize = env->finfo.size;
+     fname = env->finfo.name;
+     fcolor = env->finfo.color;
+     }
+     halfwidth_x = ((double)(tp->box.UR.x - tp->box.LL.x))/2.0;
+     p.x = env->p.x + ((double)(tp->box.UR.x + tp->box.LL.x))/2.0;
+     p.y = env->p.y + ((double)(tp->box.UR.y + tp->box.LL.y))/2.0;
+
+     emit_textlines(job, tp->nlines, tp->line, p,
+     halfwidth_x, fname, fsize, fcolor);
+     }
+#endif
+
+static void 
+emit_htextlines(GVJ_t* job, int nlines, htextline_t* lines, pointf p,
+         double halfwidth_x, char* fname, double fsize, char* fcolor, box b)
+{
+    int i,j;
+    double tmp, center_x, left_x, right_x, fsize_;
+    double offset=0.0;
+    char *fname_ , *fcolor_;
+    textline_t tl;
+    pointf p_;
+    textitem_t* ti;
+	
+    center_x = p.x;
+    left_x = center_x - halfwidth_x;
+    right_x = center_x + halfwidth_x;
+
+    gvrender_begin_context(job);
+    for(i=0; i<nlines; i++) {
+	switch (lines[i].just) {
+	case 'l':
+	    p_.x = left_x;
+	    p.x = left_x;
+	    break;
+	case 'r':
+	    p_.x = right_x;
+	    p.x = right_x;		
+	    break;
+	default:
+	case 'n':
+	    p_.x = center_x;
+	    p.x = center_x;
+	    break;
+	}
+
+	if (i == 0) {
+	    p_.y = p.y + (double)(b.UR.y-b.LL.y)/2 - lines[i].lfsize;
+	    tmp = ROUND(p_.y);  /* align with interger points */
+	    p_.y = (double)tmp;
+	}
+
+	ti = lines[i].items;
+	for(j=0; j<lines[i].nitems; j++) {
+	    if (ti->font && (ti->font->size > 0))
+		fsize_ = ti->font->size;
+	    else
+	        fsize_ = fsize;
+	    if (ti->font && ti->font->name)
+		fname_ = ti->font->name;
+	    else
+	        fname_ = fname;
+	    if (ti->font && ti->font->color)
+		fcolor_ = ti->font->color;
+	    else
+	        fcolor_ = fcolor;
+
+    	    gvrender_set_pencolor(job, fcolor_);
+   	    gvrender_set_font(job, fname_, fsize_);
+
+	    tl.str = ti->str;
+	    tl.xshow = ti->xshow;
+	    tl.width = lines[i].size;
+	    tl.just = lines[i].just;
+
+	    gvrender_textline(job, p_, &tl);
+	    offset += ti->size;
+	    p_.x = p.x + offset;
+            ti++;
+	}
+	/* position for next line */
+	if(i != nlines-1)
+	    p_.y -= lines[i+1].lfsize * LINESPACING;
+	offset = 0.0;
     }
 
-    halfwidth_x = ((double)(tp->box.UR.x - tp->box.LL.x))/2.0;
-    p.x = env->p.x + ((double)(tp->box.UR.x + tp->box.LL.x))/2.0;
-    p.y = env->p.y + ((double)(tp->box.UR.y + tp->box.LL.y))/2.0;
+    gvrender_end_context(job);
+}
 
-    emit_textlines(job, tp->nlines, tp->line, p,
-              halfwidth_x, fname, fsize, fcolor);
+static void
+emit_html_txt(GVJ_t* job, htmltxt_t* tp, htmlenv_t* env, void* obj)
+{
+    double halfwidth_x;
+    pointf p;
+    char *fname;
+    char *fcolor;
+    double fsize;
+
+    /* make sure that there is something to do */
+    if (tp->nlines < 1)
+	return;
+
+    fsize = env->finfo.size;
+    fname = env->finfo.name;
+    fcolor = env->finfo.color;
+
+    halfwidth_x = ((double) (tp->box.UR.x - tp->box.LL.x)) / 2.0;
+    p.x = env->p.x + ((double) (tp->box.UR.x + tp->box.LL.x)) / 2.0;
+    p.y = env->p.y + ((double) (tp->box.UR.y + tp->box.LL.y)) / 2.0;
+
+    emit_htextlines(job, tp->nlines, tp->lines, p, halfwidth_x, fname,
+		    fsize, fcolor, tp->box);
 }
 
 static void doSide(GVJ_t * job, point p, int wd, int ht)
@@ -357,13 +460,16 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp, void *obj)
     }
 }
 
-static void free_html_font(htmlfont_t * fp)
+void free_html_font(htmlfont_t * fp)
 {
-    if (fp->name)
-	free(fp->name);
-    if (fp->color)
-	free(fp->color);
-    free(fp);
+    fp->cnt--;
+    if (fp->cnt == 0) {
+	if (fp->name)
+	   free(fp->name);
+	if (fp->color)
+	   free(fp->color);
+	free(fp);
+    }
 }
 
 void free_html_data(htmldata_t * dp)
@@ -375,6 +481,7 @@ void free_html_data(htmldata_t * dp)
     free(dp->bgcolor);
 }
 
+#ifdef OLD
 void free_html_text(htmltxt_t * tp)
 {
     textline_t *lp;
@@ -390,6 +497,31 @@ void free_html_text(htmltxt_t * tp)
     if (tp->font)
 	free_html_font(tp->font);
     free(tp);
+}
+#endif
+
+void free_html_text(htmltxt_t* t)
+{
+    htextline_t *tl;
+    textitem_t *ti;
+    int i, j;
+
+    if (!t) return;
+
+    tl = t->lines;
+    for (i = 0; i < t->nlines; i++) {
+	ti = tl->items;
+	for (j = 0; j < tl->nitems; j++) {
+	    if (ti->str) free (ti->str);
+	    if (ti->xshow) free (ti->xshow);
+	    if (ti->font) free_html_font(ti->font);
+	    ti++;
+	}
+	tl++;
+    }
+    free(tl->items);
+    free(t->lines);
+    free(t);
 }
 
 void free_html_img(htmlimg_t * ip)
@@ -568,6 +700,7 @@ int html_path(node_t * n, port* p, int side, box * rv, int *k)
     return 0;
 }
 
+#ifdef OLD
 static int 
 size_html_txt(htmltxt_t * txt, htmlenv_t * env)
 {
@@ -619,6 +752,85 @@ size_html_txt(htmltxt_t * txt, htmlenv_t * env)
 	txt->box.UR.y = (int) (fsize);
     else
 	txt->box.UR.y = txt->nlines * (int) (fsize * LINESPACING);
+    return 0;
+}
+#endif
+
+static char*
+substrGFn (char* s, htmlenv_t* env)
+{
+    return strdup_and_subst_graph(s, (Agraph_t *) (env->obj));
+}
+
+static char*
+substrNFn (char* s, htmlenv_t* env)
+{
+    return strdup_and_subst_node(s, (Agnode_t *) (env->obj));
+}
+
+static char*
+substrEFn (char* s, htmlenv_t* env)
+{
+    return strdup_and_subst_edge(s, (Agedge_t *) (env->obj));
+}
+
+static int 
+size_html_txt(htmltxt_t* ftxt, htmlenv_t* env)
+{
+    double xsize = 0.0, ysize = 0.0;
+    double fsize, lsize = 0.0;
+    int i, j, w = 0, width = 0;
+    char *fname;
+    textline_t lp;
+    char* (*substrFn) (char*, htmlenv_t* env);
+
+    switch (agobjkind(env->obj)) {
+    case AGGRAPH:
+	substrFn = substrGFn;
+	break;
+    case AGNODE:
+	substrFn = substrNFn;
+	break;
+    case AGEDGE:
+	substrFn = substrEFn;
+	break;
+    }
+
+    for (i = 0; i < ftxt->nlines; i++) {
+	for (j = 0; j < ftxt->lines[i].nitems; j++) {
+	    lp.str = substrFn (ftxt->lines[i].items[j].str, env);
+	    if (ftxt->lines[i].items[j].font) {
+		if (ftxt->lines[i].items[j].font->size > 0)
+		    fsize = ftxt->lines[i].items[j].font->size;
+		else
+		    fsize = env->finfo.size;
+		if (ftxt->lines[i].items[j].font->name)
+		    fname = ftxt->lines[i].items[j].font->name;
+		else
+		    fname = env->finfo.name;
+	    } else {
+		fsize = env->finfo.size;
+		fname = env->finfo.name;
+	    }
+	    w = textwidth(&lp, fname, fsize);
+	    free (ftxt->lines[i].items[j].str);
+	    ftxt->lines[i].items[j].str = lp.str;
+	    ftxt->lines[i].items[j].size = (double) w;
+	    ftxt->lines[i].items[j].xshow = lp.xshow;
+	    width += w;
+	    ftxt->lines[i].size = (double) width;
+	    if (fsize > lsize)
+		lsize = fsize;
+	}
+	ftxt->lines[i].lfsize = lsize;
+	if (width > xsize)
+	    xsize = width;
+	ysize += lsize * LINESPACING;
+	width = w = 0;
+	lsize = 0;
+    }
+    ftxt->box.UR.x = xsize;
+    ftxt->box.UR.y = (int) (ysize);
     return 0;
 }
 
@@ -683,6 +895,7 @@ size_html_cell(htmlcell_t * cp, htmltbl_t * parent, htmlenv_t * env)
 	rv = size_html_txt(cp->child.u.txt, env);
 	child_sz = cp->child.u.txt->box.UR;
     }
+
     margin = 2 * (cp->data.pad + cp->data.border);
     sz.x = child_sz.x + margin;
     sz.y = child_sz.y + margin;
@@ -1024,6 +1237,22 @@ static void pos_html_img(htmlimg_t * cp, box pos)
     cp->box = pos;
 }
 
+/* pos_html_txt:
+ * Set default alignment.
+ */
+static void
+pos_html_txt(htmltxt_t* ftxt, char c)
+{
+    int i;
+
+    for (i = 0; i < ftxt->nlines; i++) {
+	if (ftxt->lines[i].just == UNSET_ALIGN)  /* unset */
+	    ftxt->lines[i].just = c;
+    }
+}
+
+/* pos_html_cell:
+ */
 static void pos_html_cell(htmlcell_t * cp, box pos, int sides)
 {
     int delx, dely;
@@ -1083,10 +1312,16 @@ static void pos_html_cell(htmlcell_t * cp, box pos, int sides)
     } else if (cp->child.kind == HTML_IMAGE) {
 	pos_html_img(cp->child.u.img, cbox);
     } else {
+	char dfltalign;
+	int af;
+
 	oldsz = cp->child.u.txt->box.UR;
 	delx = (cbox.UR.x - cbox.LL.x) - oldsz.x;
-	if (delx > 0) {
-	    switch (cp->data.flags & HALIGN_MASK) {
+	/* If the cell is larger than the text block and alignment is 
+         * done at textblock level, the text box is shrunk accordingly. 
+         */
+	if ((delx > 0)&&((af=(cp->data.flags & HALIGN_MASK)) != HALIGN_TEXT)) {
+	    switch (af) {
 	    case HALIGN_LEFT:
 		cbox.UR.x -= delx;
 		break;
@@ -1099,6 +1334,7 @@ static void pos_html_cell(htmlcell_t * cp, box pos, int sides)
 		break;
 	    }
 	}
+
 	dely = (cbox.UR.y - cbox.LL.y) - oldsz.y;
 	if (dely > 0) {
 	    switch (cp->data.flags & VALIGN_MASK) {
@@ -1115,6 +1351,21 @@ static void pos_html_cell(htmlcell_t * cp, box pos, int sides)
 	    }
 	}
 	cp->child.u.txt->box = cbox;
+
+	/* Set default text alignment
+         */
+	switch (cp->data.flags & BALIGN_MASK) {
+	case BALIGN_LEFT:
+	    dfltalign = 'l';
+	    break;
+	case BALIGN_RIGHT:
+	    dfltalign = 'r';
+	    break;
+	default:
+	    dfltalign = 'c';
+	    break;
+	}
+	pos_html_txt (cp->child.u.txt, dfltalign);
     }
 }
 
@@ -1310,6 +1561,7 @@ void printImage(htmlimg_t *ip, int ind)
     fprintf(stderr, "img: %s\n", ip->src);
 }
 
+#ifdef OLD
 void printTxt(htmltxt_t * tp, int ind)
 {
     int i;
@@ -1321,6 +1573,31 @@ void printTxt(htmltxt_t * tp, int ind)
 	indent(ind + 1);
 	fprintf(stderr, "(%c) \"%s\"\n", tp->line[i].just,
 		tp->line[i].str);
+    }
+}
+#endif
+
+void printTxt(htmltxt_t * txt, int ind)
+{
+    int i, j;
+
+    indent(ind);
+    fprintf (stderr, "txt lines = %d \n", txt->nlines);
+    for (i = 0; i < txt->nlines; i++) {
+	indent(ind+1);
+	fprintf (stderr, "[%d] %d items\n", i, txt->lines[i].nitems);
+	for (j = 0; j < txt->lines[i].nitems; j++) {
+	    indent(ind+2);
+	    fprintf (stderr, "[%d] (%f) \"%s\" ",
+		   j, txt->lines[i].items[j].size,
+		   txt->lines[i].items[j].str);
+	    if (txt->lines[i].items[j].font)
+	      fprintf (stderr, "font %s color %s size %f\n",
+		   txt->lines[i].items[j].font->name,
+		   txt->lines[i].items[j].font->color,
+		   txt->lines[i].items[j].font->size);
+	    else fprintf (stderr, "\n");
+	}
     }
 }
 
@@ -1438,15 +1715,18 @@ int make_html_label(textlabel_t * lp, void *obj)
     }
     env.finfo.size = lp->fontsize;
     env.finfo.name = lp->fontname;
-    env.finfo.color = NULL;
+    env.finfo.color = lp->fontcolor;
 
     lbl = parseHTML(lp->text, &rv, GD_charset(env.g));
     if (!lbl) {
+	/* Parse of label failed; revert to simple text label */
 	agxbuf xb;
 	unsigned char buf[SMALLBUF];
 	agxbinit(&xb, SMALLBUF, buf);
-	lbl = simpleHTML(nameOf(obj, &xb));
+	lp->html = FALSE;
+	size_label(env.g, nameOf(obj, &xb), lp);
 	agxbfree(&xb);
+	return rv;
     }
 
     if (lbl->kind == HTML_TBL) {
@@ -1467,6 +1747,7 @@ int make_html_label(textlabel_t * lp, void *obj)
 	lp->dimen.x = box.UR.x - box.LL.x;
 	lp->dimen.y = box.UR.y - box.LL.y;
     }
+
     lp->u.html = lbl;
 
     /* If the label is a table, replace label text because this may

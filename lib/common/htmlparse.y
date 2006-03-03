@@ -22,11 +22,21 @@
 
 extern int yyparse(void);
 
+typedef struct sfont_t {
+    htmlfont_t *cfont;	
+    struct sfont_t *pfont;
+} sfont_t;
+
 static struct {
   htmllabel_t* lbl;       /* Generated label */
   htmltbl_t*   tblstack;  /* Stack of tables maintained during parsing */
+#ifdef OLD
   Dt_t*        lines;     /* Dictionary for lines of text */
+#endif
+  Dt_t*        fitemList; /* Dictionary for font text items */
+  Dt_t*        flineList; 
   agxbuf*      str;       /* Buffer for text */
+  sfont_t*     fontstack;
 } HTMLstate;
 
 /* free_ritem:
@@ -40,12 +50,12 @@ free_ritem(Dt_t* d, pitem* p,Dtdisc_t* ds)
   free (p);
 }
 
-/* free_ritem:
- * Free cell item after cell has been copies into final table.
- * Only the pitem is freed.
+/* free_item:
+ * Generic Dt free. Only frees container, assuming contents
+ * have been copied elsewhere.
  */
 static void
-free_item(Dt_t* d, pitem* p,Dtdisc_t* ds)
+free_item(Dt_t* d, void* p,Dtdisc_t* ds)
 {
   free (p);
 }
@@ -106,18 +116,61 @@ static Dtdisc_t cellDisc = {
     NIL(Dtevent_f)
 };
 
+#ifdef OLD
 typedef struct {
   Dtlink_t      link;
   const char*   s;          /* line of text */
   char          c;          /* alignment of text */
 } sitem;
+#endif
 
+typedef struct {
+    Dtlink_t    link;
+    textitem_t  ti;
+} fitem;
+
+typedef struct {
+    Dtlink_t     link;
+    htextline_t  lp;
+} fline;
+
+#ifdef OLD
 static void
-free_sitem(Dt_t* d,sitem* p,Dtdisc_t* ds)
+free_sitem(Dt_t* d, sitem* p,Dtdisc_t* ds)
 {
   free (p);
 }
+#endif
 
+static void 
+free_fitem(Dt_t* d, fitem* p, Dtdisc_t* ds)
+{
+    if (p->ti.str)
+	free (p->ti.str);
+    if (p->ti.font)
+        free_html_font (p->ti.font);
+    free (p);
+}
+
+static void 
+free_fline(Dt_t* d, fline* p, Dtdisc_t* ds)
+{
+    textitem_t* ti;
+
+    if (p->lp.nitems) {
+	int i;
+	ti = p->lp.items;
+	for (i = 0; i < p->lp.nitems; i++) {
+	    if (ti->str) free (ti->str);
+	    if (ti->font) free_html_font (ti->font);
+	    ti++;
+	}
+	free (p->lp.items);
+    }
+    free (p);
+}
+
+#ifdef OLD
 static Dtdisc_t strDisc = {
     offsetof(sitem,s),
     sizeof(char*),
@@ -129,7 +182,34 @@ static Dtdisc_t strDisc = {
     NIL(Dtmemory_f),
     NIL(Dtevent_f)
 };
+#endif
 
+static Dtdisc_t fstrDisc = {
+    0,
+    0,
+    offsetof(fitem,link),
+    NIL(Dtmake_f),
+    (Dtfree_f)free_item,
+    NIL(Dtcompar_f),
+    NIL(Dthash_f),
+    NIL(Dtmemory_f),
+    NIL(Dtevent_f)
+};
+
+
+static Dtdisc_t flineDisc = {
+    0,
+    0,
+    offsetof(fline,link),
+    NIL(Dtmake_f),
+    (Dtfree_f)free_item,
+    NIL(Dtcompar_f),
+    NIL(Dthash_f),
+    NIL(Dtmemory_f),
+    NIL(Dtevent_f)
+};
+
+#ifdef OLD
 static void
 appendStrList(const char* p,int v)
 {
@@ -138,7 +218,60 @@ appendStrList(const char* p,int v)
   sp->c = v;
   dtinsert (HTMLstate.lines, sp);
 }
+#endif
 
+/* dupFont:
+ */
+static htmlfont_t *
+dupFont (htmlfont_t *f)
+{
+    if (f) f->cnt++;
+    return f;
+}
+
+/* appendFItemList:
+ * Append a new fitem to the list.
+ */
+static void
+appendFItemList (agxbuf *ag)
+{
+    fitem *fi = NEW(fitem);
+
+    fi->ti.str = strdup(agxbuse(ag));
+    fi->ti.font = dupFont (HTMLstate.fontstack->cfont);
+    dtinsert(HTMLstate.fitemList, fi);
+}	
+
+/* appendFLineList:
+ */
+static void 
+appendFLineList (int v)
+{
+    int cnt;
+    fline *ln = NEW(fline);
+    fitem *fi;
+    Dt_t *ilist = HTMLstate.fitemList;
+
+    cnt = dtsize(ilist);
+    ln->lp.nitems = cnt;
+    ln->lp.just = v;
+    if (cnt) {
+        int i = 0;
+	ln->lp.items = N_NEW(cnt, textitem_t); 
+
+	fi = (fitem*)dtflatten(ilist);
+	for (; fi; fi = (fitem*)dtlink(fitemList,(Dtlink_t*)fi)) {
+	    ln->lp.items[i] = fi->ti;
+	    i++;
+	}
+    }
+
+    dtclear(ilist);
+
+    dtinsert(HTMLstate.flineList, ln);
+}
+
+#ifdef OLD
 /* mkText:
  * Construct htmltxt_t from list of lines in HTMLstate.lines.
  * lastl is a last, odd line with no <BR>, so we use n by default.
@@ -173,12 +306,41 @@ mkText (const char* lastl)
   }
   if (lastl) {
     lp->str = strdup(lastl);
-    lp->just = 'n';
+    lp->just = '\0';
   }
 
   if (lines) dtclear (lines);
 
   return tp;
+}
+#endif
+
+static htmltxt_t*
+mkText()
+{
+    int cnt;
+    Dt_t * iline = HTMLstate.flineList;
+    fline *fl ;
+    htmltxt_t *hft = NEW(htmltxt_t);
+    
+    if (dtsize (HTMLstate.fitemList)) 
+	appendFLineList (UNSET_ALIGN);
+
+    cnt = dtsize(iline);
+    hft->nlines = cnt;
+    	
+    if (cnt) {
+	int i = 0;
+	hft->lines = N_NEW(cnt,htextline_t);	
+    	for(fl=(fline *)dtfirst(iline); fl; fl=(fline *)dtnext(iline,fl)) {
+    	    hft->lines[i] = fl->lp;
+    	    i++;
+    	}
+    }
+    
+    dtclear(iline);
+
+    return hft;
 }
 
 /* addRow:
@@ -189,7 +351,6 @@ static void addRow (void)
   Dt_t*      dp = dtopen(&cellDisc, Dtqueue);
   htmltbl_t* tbl = HTMLstate.tblstack;
   pitem*     sp = NEW(pitem);
-
   sp->u.rp = dp;
   dtinsert (tbl->u.p.rows, sp);
 }
@@ -203,18 +364,19 @@ static void setCell (htmlcell_t* cp, void* obj, int kind)
   htmltbl_t* tbl = HTMLstate.tblstack;
   pitem*     rp = (pitem*)dtlast (tbl->u.p.rows);
   Dt_t*      row = rp->u.rp;
-
   sp->u.cp = cp;
   dtinsert (row, sp);
   cp->child.kind = kind;
-  if (kind == HTML_TEXT)
-    cp->child.u.txt = (htmltxt_t*)obj;
+  
+  if(kind == HTML_TEXT)
+  	cp->child.u.txt = (htmltxt_t*)obj;
   else if (kind == HTML_IMAGE)
     cp->child.u.img = (htmlimg_t*)obj;
   else
     cp->child.u.tbl = (htmltbl_t*)obj;
 }
 
+#ifdef OLD
 /* setFont:
  * Copy in font attributes. fp has the new attributes.
  * curf corresponds to the current font info of the object.
@@ -237,7 +399,6 @@ static htmlfont_t* setFont (htmlfont_t* fp, htmlfont_t*  curf)
     return fp;
 }
 
-
 /* fontText:
  * Attach font information to text.
  */
@@ -253,6 +414,7 @@ static void fontTable (htmlfont_t* fp, htmltbl_t* cp)
 {
   cp->font = setFont (fp, cp->font);
 }
+#endif
 
 /* mkLabel:
  * Create label, given body and type.
@@ -266,8 +428,23 @@ static htmllabel_t* mkLabel (void* obj, int kind)
     lp->u.txt = (htmltxt_t*)obj;
   else
     lp->u.tbl = (htmltbl_t*)obj;
-    
   return lp;
+}
+
+/* freeFontstack:
+ * Free all stack items but the last, which is
+ * put on artificially during in parseHTML.
+ */
+static void
+freeFontstack()
+{
+    sfont_t* s;
+    sfont_t* next;
+
+    for (s = HTMLstate.fontstack; (next = s->pfont); s = next) {
+	free_html_font (s->cfont);
+	free(s);
+    }
 }
 
 /* cleanup:
@@ -292,6 +469,16 @@ static void cleanup (void)
     tp = next;
   }
   cellDisc.freef = (Dtfree_f)free_item;
+
+  fstrDisc.freef = (Dtfree_f)free_fitem;
+  dtclear (HTMLstate.fitemList);
+  fstrDisc.freef = (Dtfree_f)free_item;
+
+  flineDisc.freef = (Dtfree_f)free_fline;
+  dtclear (HTMLstate.flineList);
+  flineDisc.freef = (Dtfree_f)free_item;
+
+  freeFontstack();
 }
 
 /* nonSpace:
@@ -305,6 +492,42 @@ static int nonSpace (char* s)
     if (c != ' ') return 1;
   }
   return 0;
+}
+
+/* pushFont:
+ * Fonts are allocated in the lexer.
+ */
+static void
+pushFont (htmlfont_t *f)
+{
+    sfont_t *ft = NEW(sfont_t);
+    htmlfont_t* curfont = HTMLstate.fontstack->cfont;
+
+    if (curfont) {
+	if (!f->color && curfont->color)
+	    f->color = strdup(curfont->color);
+	if ((f->size < 0.0) && (curfont->size >= 0.0))
+	    f->size = curfont->size;
+	if (!f->name && curfont->name)
+	    f->name = strdup(curfont->name);
+    }
+
+    ft->cfont = dupFont (f);
+    ft->pfont = HTMLstate.fontstack;
+    HTMLstate.fontstack = ft;
+}
+
+/* popFont:
+ */
+static void 
+popFont ()
+{
+    sfont_t* curfont = HTMLstate.fontstack;
+    sfont_t* prevfont = curfont->pfont;
+
+    free_html_font (curfont->cfont);
+    free (curfont);
+    HTMLstate.fontstack = prevfont;
 }
 
 %}
@@ -326,38 +549,36 @@ static int nonSpace (char* s)
 %token <cell> T_cell
 %token <font> T_font
 
-%type <txt> text fonttext
+%type <txt> fonttext
 %type <i> br
 %type <tbl> table fonttable
 %type <img> image
 
 %start html
-
+             
 %%
 
-html  : T_html fonttext { HTMLstate.lbl = mkLabel($2,HTML_TEXT); } T_end_html
-      | T_html fonttable { HTMLstate.lbl = mkLabel($2,HTML_TBL); } T_end_html
+html  : T_html fonttext T_end_html { HTMLstate.lbl = mkLabel($2,HTML_TEXT); }
+      | T_html fonttable T_end_html { HTMLstate.lbl = mkLabel($2,HTML_TBL); }
       | error { cleanup(); YYABORT; }
       ;
 
-fonttext : text { $$ = $1; }
-         | T_font text T_end_font { fontText($1,$2); $$ = $2; }
-         ;
+fonttext : text { $$ = mkText(); }
+      ;
 
-text : lines
-        { $$ = mkText (NULL); }
-     | lines string
-        { $$ = mkText (agxbuse(HTMLstate.str)); }
-     | string
-        { $$ = mkText (agxbuse(HTMLstate.str)); }
-     |  /* empty */
-        { $$ = mkText (NULL); }
+text : text textitem  
+     | textitem 
      ;
 
-lines : string br
-        { appendStrList (agxbuse(HTMLstate.str),$2); }
-      | lines string br
-        { appendStrList (agxbuse(HTMLstate.str), $3); }
+textitem : string { appendFItemList(HTMLstate.str);}
+         | br {appendFLineList($1);}
+         | sfont text nfont
+         ;
+
+sfont : T_font { pushFont ($1); }
+      ;
+
+nfont : T_end_font { popFont (); }
       ;
 
 br     : T_br T_end_br { $$ = $1; }
@@ -376,6 +597,7 @@ table : opt_space T_table {
           $2->u.p.prev = HTMLstate.tblstack;
           $2->u.p.rows = dtopen(&rowDisc, Dtqueue);
           HTMLstate.tblstack = $2;
+          $2->font = dupFont (HTMLstate.fontstack->cfont);
           $$ = $2;
         }
         rows T_end_table opt_space {
@@ -389,7 +611,7 @@ table : opt_space T_table {
       ;
 
 fonttable : table { $$ = $1; }
-          | T_font table T_end_font { fontTable($1,$2); $$ = $2; }
+          | sfont table nfont { $$=$2; }
           ;
 
 opt_space : string 
@@ -416,9 +638,9 @@ image  : T_img T_end_img { $$ = $1; }
        | T_IMG { $$ = $1; }
        ;
 
-
 %%
 
+#ifdef OLD
 htmllabel_t*
 simpleHTML (char* txt)
 {
@@ -426,6 +648,7 @@ simpleHTML (char* txt)
   htmllabel_t* l = mkLabel(tobj,HTML_TEXT);
   return l;
 }
+#endif
 
 /* parseHTML:
  * Return parsed label or NULL if failure.
@@ -437,10 +660,16 @@ parseHTML (char* txt, int* warn, int charset)
   unsigned char buf[SMALLBUF];
   agxbuf        str;
   htmllabel_t*  l;
+  sfont_t       dfltf;
 
+  dfltf.cfont = NULL;
+  dfltf.pfont = NULL;
+  HTMLstate.fontstack = &dfltf;
   HTMLstate.tblstack = 0;
   HTMLstate.lbl = 0;
-  HTMLstate.lines = dtopen(&strDisc, Dtqueue);
+  HTMLstate.fitemList = dtopen(&fstrDisc, Dtqueue);
+  HTMLstate.flineList = dtopen(&flineDisc, Dtqueue);
+
   agxbinit (&str, SMALLBUF, buf);
   HTMLstate.str = &str;
   
@@ -454,8 +683,13 @@ parseHTML (char* txt, int* warn, int charset)
     l = HTMLstate.lbl;
   }
 
-  dtclose (HTMLstate.lines);
-  HTMLstate.lines = NULL;
+  dtclose (HTMLstate.fitemList);
+  dtclose (HTMLstate.flineList);
+  
+  HTMLstate.fitemList = NULL;
+  HTMLstate.flineList = NULL;
+  HTMLstate.fontstack = NULL;
+  
   agxbfree (&str);
 
   return l;

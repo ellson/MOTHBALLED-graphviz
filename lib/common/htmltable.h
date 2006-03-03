@@ -25,32 +25,62 @@ extern "C" {
 #define HALIGN_RIGHT (1 << 1)
 #define HALIGN_LEFT (1 << 2)
 #define HALIGN_MASK (HALIGN_RIGHT | HALIGN_LEFT)
+#define HALIGN_TEXT HALIGN_MASK
 #define VALIGN_TOP (1 << 3)
 #define VALIGN_BOTTOM (1 << 4)
 #define VALIGN_MASK (VALIGN_TOP | VALIGN_BOTTOM)
 #define BORDER_SET (1 << 5)
 #define PAD_SET (1 << 6)
 #define SPACE_SET (1 << 7)
+#define BALIGN_RIGHT (1 << 8)
+#define BALIGN_LEFT (1 << 9)
+#define BALIGN_MASK (BALIGN_RIGHT | BALIGN_LEFT)
+
+#define UNSET_ALIGN 0
 
     /* font information
      * If name or color is NULL, or size < 0, that attribute
      * is unspecified. 
      */
     typedef struct {
-	char *name;
-	char *color;
+	char*  name;
+	char*  color;
 	double size;
+	int    cnt;   /* reference count */
     } htmlfont_t;
 
     /* lines of text within a cell
      * NOTE: As required, the str field in line is utf-8.
      * This translation is done when libexpat scans the input.
      */
+#ifdef OLD
     typedef struct {
 	textline_t *line;
 	short nlines;
 	box box;
 	htmlfont_t *font;	/* font info */
+    } htmltxt_t;
+#endif
+	
+    typedef struct {
+	char *str;
+	char *xshow;
+	htmlfont_t *font;
+	double size;  /* size of text item according to font */
+    } textitem_t;
+	
+    typedef struct {
+	textitem_t *items;
+	short nitems;
+	char just;
+	double size;   /* size of line */
+	double lfsize; /* size of largest font in line */
+    } htextline_t;
+	
+    typedef struct {
+	htextline_t *lines;
+	short nlines;
+	box box;
     } htmltxt_t;
 
     typedef struct {
@@ -68,11 +98,11 @@ extern "C" {
 	signed char space;
 	unsigned char border;
 	unsigned char pad;
-	unsigned char flags;
+	unsigned char sides;    /* set of sides exposed to field */
+	unsigned short flags;
 	unsigned short width;
 	unsigned short height;
 	box box;		/* its geometric placement in points */
-	unsigned char sides;    /* set of sides exposed to field */
     } htmldata_t;
 
 #define HTML_UNSET 0
@@ -82,7 +112,7 @@ extern "C" {
 
     typedef struct htmlcell_t htmlcell_t;
     typedef struct htmltbl_t htmltbl_t;
-
+	
     struct htmltbl_t {
 	htmldata_t data;
 	union {
@@ -134,9 +164,8 @@ extern "C" {
 	    htmlcell_t *cp;
 	} u;
     } pitem;
-
+	
     extern htmllabel_t *parseHTML(char *, int *, int);
-    extern htmllabel_t *simpleHTML(char *);
 
     extern int make_html_label(textlabel_t * lp, void *obj);
     extern void emit_html_label(GVJ_t * job, htmllabel_t * lp,
@@ -145,6 +174,7 @@ extern "C" {
     extern void free_html_label(htmllabel_t *, int);
     extern void free_html_data(htmldata_t *);
     extern void free_html_text(htmltxt_t *);
+    extern void free_html_font(htmlfont_t*);
 
     extern box *html_port(node_t * n, char *pname, int* sides);
     extern int html_path(node_t * n, port* p, int side, box * rv, int *k);

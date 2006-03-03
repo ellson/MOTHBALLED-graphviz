@@ -251,6 +251,38 @@ static int halignfn(htmldata_t * p, char *v)
     return rv;
 }
 
+static int cell_halignfn(htmldata_t * p, char *v)
+{
+    int rv = 0;
+    char c = toupper(*v);
+    if ((c == 'L') && !strcasecmp(v + 1, "EFT"))
+	p->flags |= HALIGN_LEFT;
+    else if ((c == 'R') && !strcasecmp(v + 1, "IGHT"))
+	p->flags |= HALIGN_RIGHT;
+    else if ((c == 'T') && !strcasecmp(v + 1, "EXT"))
+	p->flags |= HALIGN_TEXT;
+    else if ((c != 'C') || strcasecmp(v + 1, "ENTER"))
+	rv = 1;
+    if (rv)
+	agerr(AGWARN, "Illegal value %s for ALIGN in TD - ignored\n", v);
+    return rv;
+}
+
+static int balignfn(htmldata_t * p, char *v)
+{
+    int rv = 0;
+    char c = toupper(*v);
+    if ((c == 'L') && !strcasecmp(v + 1, "EFT"))
+	p->flags |= BALIGN_LEFT;
+    else if ((c == 'R') && !strcasecmp(v + 1, "IGHT"))
+	p->flags |= BALIGN_RIGHT;
+    else if ((c != 'C') || strcasecmp(v + 1, "ENTER"))
+	rv = 1;
+    if (rv)
+	agerr(AGWARN, "Illegal value %s for BALIGN in TD - ignored\n", v);
+    return rv;
+}
+
 static int heightfn(htmldata_t * p, char *v)
 {
     long u;
@@ -335,7 +367,9 @@ static int alignfn(int *p, char *v)
 	*p = 'r';
     else if ((c == 'L') || !strcasecmp(v + 1, "EFT"))
 	*p = 'l';
-    else if ((c != 'C') && strcasecmp(v + 1, "ENTER")) {
+    else if ((c == 'C') || strcasecmp(v + 1, "ENTER")) 
+	*p = 'n';
+    else {
 	agerr(AGWARN, "Illegal value %s for ALIGN - ignored\n", v);
 	rv = 1;
     }
@@ -362,7 +396,8 @@ static attr_item tbl_items[] = {
 };
 
 static attr_item cell_items[] = {
-    {"align", (attrFn) halignfn},
+    {"align", (attrFn) cell_halignfn},
+    {"balign", (attrFn) balignfn},
     {"bgcolor", (attrFn) bgcolorfn},
     {"border", (attrFn) borderfn},
     {"cellpadding", (attrFn) cellpaddingfn},
@@ -426,7 +461,7 @@ doAttrs(void *tp, attr_item * items, int nel, char **atts, char *s)
 
 static void mkBR(char **atts)
 {
-    htmllval.i = 'n';
+    htmllval.i = UNSET_ALIGN;
     doAttrs(&htmllval.i, br_items, sizeof(br_items) / ISIZE, atts, "<BR>");
 }
 
@@ -541,16 +576,18 @@ static void endElement(void *user, const char *name)
 static void characterData(void *user, const char *s, int length)
 {
     int i;
+    int cnt = 0;
     unsigned char c;
 
     if (state.inCell) {
 	for (i = length; i; i--) {
 	    c = *s++;
 	    if (c >= ' ') {
+		cnt++;
 		agxbputc(state.xb, c);
 	    }
 	}
-	state.tok = T_string;
+	if (cnt) state.tok = T_string;
     }
 }
 #endif

@@ -114,6 +114,21 @@ static pointf label_size(char *str, textlabel_t * lp, graph_t * g)
     return lp->dimen;
 }
 
+/* size_label:
+ * Process label text for size and line breaks.
+ */ 
+void
+size_label (graph_t* g, char* str, textlabel_t* rv)
+{
+    if (GD_charset(g) == CHAR_LATIN1) {
+	char* lstr = latin1ToUTF8(str);
+	label_size(lstr, rv, g);
+	free(lstr);
+    }
+    else
+	label_size(str, rv, g);
+}
+
 /* make_label:
  * Assume str is freshly allocated for this instance, so it
  * can be freed in free_label.
@@ -129,13 +144,8 @@ textlabel_t *make_label(int html, char *str, double fontsize,
     rv->fontsize = fontsize;
     if (html)
 	rv->html = TRUE;
-    else if (GD_charset(g) == CHAR_LATIN1) {
-	char* lstr = latin1ToUTF8(str);
-	label_size(lstr, rv, g);
-	free(lstr);
-    }
     else
-	label_size(str, rv, g);
+	size_label(g, str, rv);
     return rv;
 }
 
