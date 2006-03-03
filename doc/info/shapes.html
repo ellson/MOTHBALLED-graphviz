@@ -309,62 +309,42 @@ Vertical bars | separate alternatives.
 <TR>
   <TD ALIGN=RIGHT><I>label</I></TD>
   <TD ALIGN=LEFT>:</TD>
-  <TD ALIGN=LEFT><I>fonttext</I></TD>
+  <TD ALIGN=LEFT><I>text</I></TD>
 </TR>
 <TR>
   <TD ALIGN=RIGHT></TD>
   <TD ALIGN=LEFT>|</TD>
-  <TD ALIGN=LEFT><I>fonttable</I></TD>
-</TR>
-<TR>
-  <TD ALIGN=RIGHT><I>fonttext</I></TD>
-  <TD ALIGN=LEFT>:</TD>
-  <TD ALIGN=LEFT>[ <I>text</I> ]</TD>
-</TR>
-<TR>
-  <TD ALIGN=RIGHT></TD>
-  <TD ALIGN=LEFT>|</TD>
-  <TD ALIGN=LEFT><B>&lt;FONT&gt;</B> [ <I>text</I> ] <B>&lt;/FONT&gt;</B></TD>
+  <TD ALIGN=LEFT><I>table</I></TD>
 </TR>
 <TR>
   <TD ALIGN=RIGHT><I>text</I></TD>
   <TD ALIGN=LEFT>:</TD>
-  <TD ALIGN=LEFT><I>lines</I></TD>
+  <TD ALIGN=LEFT><I>textitem</I></TD>
 </TR>
 <TR>
   <TD ALIGN=RIGHT></TD>
   <TD ALIGN=LEFT>|</TD>
-  <TD ALIGN=LEFT><I>lines</I> <I>string</I></TD>
+  <TD ALIGN=LEFT><I>text</I> <I>textitem</I></TD>
 </TR>
 <TR>
-  <TD ALIGN=RIGHT></TD>
-  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=RIGHT><I>textitem</I></TD>
+  <TD ALIGN=LEFT>:</TD>
   <TD ALIGN=LEFT><I>string</I></TD>
 </TR>
 <TR>
-  <TD ALIGN=RIGHT><I>lines</I></TD>
-  <TD ALIGN=LEFT>:</TD>
-  <TD ALIGN=LEFT><I>string</I> <B>&lt;BR/&gt;</B></TD>
+  <TD ALIGN=RIGHT></TD>
+  <TD ALIGN=LEFT>|</TD>
+  <TD ALIGN=LEFT><B>&lt;BR/&gt;</B></TD>
 </TR>
 <TR>
   <TD ALIGN=RIGHT></TD>
   <TD ALIGN=LEFT>|</TD>
-  <TD ALIGN=LEFT><I>lines</I> <I>string</I> <B>&lt;BR/&gt;</B></TD>
-</TR>
-<TR>
-  <TD ALIGN=RIGHT><I>fonttable</I></TD>
-  <TD ALIGN=LEFT>:</TD>
-  <TD ALIGN=LEFT><I>table</I></TD>
-</TR>
-<TR>
-  <TD ALIGN=RIGHT></TD>
-  <TD ALIGN=LEFT>|</TD>
-  <TD ALIGN=LEFT><B>&lt;FONT&gt;</B> <I>table</I> <B>&lt;/FONT&gt;</B></TD>
+  <TD ALIGN=LEFT><B>&lt;FONT&gt;</B> <I>text</I> <B>&lt;/FONT&gt;</B></TD>
 </TR>
 <TR>
   <TD ALIGN=RIGHT><I>table</I></TD>
   <TD ALIGN=LEFT>:</TD>
-  <TD ALIGN=LEFT><B>&lt;TABLE&gt;</B> <I>rows</I> <B>&lt;/TABLE&gt;</B></TD>
+  <TD ALIGN=LEFT>[ <B>&lt;FONT&gt;</B> ] <B>&lt;TABLE&gt;</B> <I>rows</I> <B>&lt;/TABLE&gt;</B> [ <B>&lt;/FONT&gt;</B> ]</TD>
 </TR>
 <TR>
   <TD ALIGN=RIGHT><I>rows</I></TD>
@@ -407,13 +387,20 @@ Above, a <I>string</I> is any collection of printable characters, including
 all spaces. Note that outside of the body of a &lt;TD&gt; element, 
 whitespace characters are ignored; within a &lt;TD&gt; element, spaces
 are preserved but all other white space characters are discarded.
-Because of the grammar used, be careful of putting spaces after
-&lt;TD&gt; but before an enclosed &lt;FONT&gt; or &lt;TABLE&gt;.
-The parse will see the spaces, assume it is parsing text, and will then
-report a syntax error when it encounters the element.
 HTML comments are allowed within an HTML string. They can occur anywhere
 provided that, if they contain part of an HTML element, they must contain
 the entire element.
+<P>
+As is obvious from the above description, the interpretation of white space
+characters is one place where HTML-like labels is very different from 
+standard HTML. In HTML, any sequence of white space characters is 
+collapsed to a single space, If the user does not want this to happen, the
+input must use non-breaking spaces "&amp;nbsp;". This makes sense in
+HTML, where text layout depends dynamically on the space available. In
+Graphviz, the layout is statically determined by the input, so it is
+reasonable to treat ordinary space characters as non-breaking. In addition,
+ignoring tabs and newlines allows the input text to be formatted for
+easier reading. 
 <P>
 Each of the HTML elements has a set of optional attributes.
 Attribute values must appear in double quotes.
@@ -437,7 +424,8 @@ Attribute values must appear in double quotes.
 </PRE>
 <P>
 <PRE>&lt;TD
-  ALIGN="CENTER|LEFT|RIGHT"
+  ALIGN="CENTER|LEFT|RIGHT|TEXT"
+  BALIGN="CENTER|LEFT|RIGHT"
   BGCOLOR="<I>color</I>"
   BORDER="<I>value</I>"
   CELLPADDING="<I>value</I>"
@@ -487,7 +475,27 @@ is placed left and right of the object.
 <LI>CENTER aligns the object in the center. (Default) </LI>
 <LI>LEFT aligns the object on the left.</LI>
 <LI>RIGHT aligns the object on the right.  </LI>
+<LI>(<T>&lt;TD&gt;</T> only) TEXT aligns lines of text using the full
+cell width. The alignment of a line is determined by its (possibly
+implicit) associated <T>&lt;BR&gt;</T> element.</LI> 
 </ul>
+<P>
+The contents of a cell are normally aligned as a block. In particular,
+lines of text are first aligned as a text block based on the width of
+the widest line and the corresponding <T>&lt;BR&gt;</T> elements. Then,
+the entire text block is aligned within a cell. If, however, the
+cell's <B><I>ALIGN</I></B> value is <T>"TEXT"</T>, and the cell contains
+lines of text, then the lines are justified using the entire available
+width of the cell. If the cell does not contain text, then the contained
+image or table is centered.
+</BLOCKQUOTE>
+
+<B><I><FONT SIZE=-1>BALIGN</FONT> </I></B>
+<BLOCKQUOTE>
+specifies the default alignment of <T>&lt;BR&gt;</T> elements contained
+in the cell. That is, if a <T>&lt;BR&gt;</T> element has no
+explicit <B><I>ALIGN</I></B> attribute, the attribute value is specified
+by the value of <B><I>BALIGN</I></B>.
 </BLOCKQUOTE>
 
 <B><I><FONT SIZE=-1>BGCOLOR="color"</FONT></I></B>
