@@ -176,8 +176,8 @@ emit_htextlines(GVJ_t* job, int nlines, htextline_t* lines, pointf p,
 	}
 
 	if (i == 0) {
-	    p_.y = p.y + (double)(b.UR.y-b.LL.y)/2 - lines[i].lfsize;
-	    tmp = ROUND(p_.y);  /* align with interger points */
+	    p_.y = p.y + (double)(b.UR.y-b.LL.y)/2 - lines[i].lfsize * 0.9 ;
+	    tmp = ROUND(p_.y);  /* align with integer points */
 	    p_.y = (double)tmp;
 	}
 
