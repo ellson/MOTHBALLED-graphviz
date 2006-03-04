@@ -117,6 +117,8 @@ static double Scale;
 static pointf CompScale;
 static pointf Offset;
 
+#define FUDGE 0.72
+
 static point Viewport;
 
 static node_t *Curnode;
@@ -308,15 +310,14 @@ static void svg_font(context_t * cp)
 {
     char *color, buf[BUFSIZ];
     int needstyle = 0;
-    double fontsz = cp->fontsz * Scale;
 
     strcpy(buf, " style=\"");
     if (strcasecmp(cp->fontfam, DEFAULT_FONTNAME)) {
 	sprintf(buf + strlen(buf), "font-family:%s;", cp->fontfam);
 	needstyle++;
     }
-    if (fontsz != DEFAULT_FONTSIZE) {
-	sprintf(buf + strlen(buf), "font-size:%.2fpt;", fontsz);
+    if (cp->fontsz != DEFAULT_FONTSIZE) {
+	sprintf(buf + strlen(buf), "font-size:%.2fpt;", cp->fontsz * Scale * FUDGE);
 	needstyle++;
     }
     color = svg_resolve_color(cp->pencolor, 1);
@@ -489,13 +490,13 @@ static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     svg_fputs("<!-- Title: ");
     svg_fputs(xml_namestring(g->name));
     svg_printf(" Pages: %d -->\n", N_pages);
-    if (ROUND(gvc->job->dpi.x) == POINTS_PER_INCH && ROUND(gvc->job->dpi.y) == POINTS_PER_INCH) 
+    if (ROUND(gvc->job->dpi.x) == POINTS_PER_INCH && ROUND(gvc->job->dpi.y) == POINTS_PER_INCH)
 	svg_printf("<svg width=\"%dpt\" height=\"%dpt\"\n",
-		   Viewport.x, Viewport.y);
+		Viewport.x, Viewport.y);
     else
 	svg_printf("<svg width=\"%dpx\" height=\"%dpx\"\n",
-		   ROUND(gvc->job->dpi.x * Viewport.x / POINTS_PER_INCH),
-		   ROUND(gvc->job->dpi.y * Viewport.y / POINTS_PER_INCH));
+		ROUND(gvc->job->dpi.x * Viewport.x / POINTS_PER_INCH),
+		ROUND(gvc->job->dpi.y * Viewport.y / POINTS_PER_INCH));
     /* establish absolute units in points */
     svg_printf(" viewBox = \"%d %d %d %d\"\n", 0, 0, Viewport.x, Viewport.y);
     /* namespace of svg */
@@ -529,17 +530,18 @@ svg_begin_page(graph_t * g, point page, double scale, int rot,
     Rot = rot;
     Scale = scale;
 
+#if 0
+fprintf(stderr,"Scale=%g CompScale=%g,%f\n", Scale, CompScale.x, CompScale.y);
+fprintf(stderr,"font-size=%g  Scale=%g\n", cstk[0].fontsz, Scale);
+#endif
+
     /* its really just a page of the graph, but its still a graph,
      * and it is the entire graph if we're not currently paging */
     svg_printf("<g id=\"%s0\" class=\"graph\"", op[Obj]);
-#if 0
-    if (scale != 1.0)
-	svg_printf(" transform = \"scale(%f)\"\n", scale);
-#endif
     /* default style */
     svg_fputs(" style=\"font-family:");
     svg_fputs(cstk[0].fontfam);
-    svg_printf(";font-size:%.2f;\">\n", cstk[0].fontsz);
+    svg_printf(";font-size:%.2fpt;\">\n", cstk[0].fontsz * Scale * FUDGE);
     svg_fputs("<title>");
     svg_fputs(xml_namestring(g->name));
     svg_fputs("</title>\n");
