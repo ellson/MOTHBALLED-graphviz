@@ -1362,7 +1362,7 @@ static void pos_html_cell(htmlcell_t * cp, box pos, int sides)
 	    dfltalign = 'r';
 	    break;
 	default:
-	    dfltalign = 'c';
+	    dfltalign = 'n';
 	    break;
 	}
 	pos_html_txt (cp->child.u.txt, dfltalign);
@@ -1617,7 +1617,7 @@ void printData(htmldata_t * dp)
 	c = 'l';
 	break;
     default:
-	c = 'c';
+	c = 'n';
 	break;
     }
     fprintf(stderr, "%c", c);
