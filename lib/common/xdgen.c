@@ -19,7 +19,7 @@
 
 #define XDOTVERSION "1.1"
 
-static GVC_t *gvc;
+static GVG_t *gvg;
 static agxbuf xbuf0;
 static agxbuf xbuf1;
 static agxbuf xbuf2;
@@ -93,7 +93,7 @@ void extend_attrs(GVJ_t * job, graph_t *g, int s_arrows, int e_arrows)
     unsigned char buf4[BUFSIZ];
     unsigned char buf5[BUFSIZ];
 
-    gvc = job->gvc;
+    gvg = job->gvg;
 
     agsafeset (g, "xdotversion", XDOTVERSION, "");
     if (GD_has_labels(g) & GRAPH_LABEL)
@@ -177,9 +177,9 @@ static void xd_str (char* pfx, char* s)
     char buf[BUFSIZ];
 
     sprintf (buf, "%s%d -", pfx, (int)strlen(s));
-    agxbput(xbufs[gvc->emit_state], buf);
-    agxbput(xbufs[gvc->emit_state], s);
-    agxbputc(xbufs[gvc->emit_state], ' ');
+    agxbput(xbufs[gvg->emit_state], buf);
+    agxbput(xbufs[gvg->emit_state], s);
+    agxbputc(xbufs[gvg->emit_state], ' ');
 }
 
 static void xd_textline(point p, textline_t * line)
@@ -200,7 +200,7 @@ static void xd_textline(point p, textline_t * line)
 	break;
     }
     sprintf(buf, "T %d %d %d %d ", p.x, YDIR(p.y), j, (int) line->width);
-    agxbput(xbufs[gvc->emit_state], buf);
+    agxbput(xbufs[gvg->emit_state], buf);
     xd_str ("", line->str);
 }
 
@@ -208,9 +208,9 @@ static void xd_ellipse(point p, int rx, int ry, int filled)
 {
     char buf[BUFSIZ];
 
-    agxbputc(xbufs[gvc->emit_state], (filled ? 'E' : 'e'));
+    agxbputc(xbufs[gvg->emit_state], (filled ? 'E' : 'e'));
     sprintf(buf, " %d %d %d %d ", p.x, YDIR(p.y), rx, ry);
-    agxbput(xbufs[gvc->emit_state], buf);
+    agxbput(xbufs[gvg->emit_state], buf);
 }
 
 static void xd_points(char c, point * A, int n)
@@ -219,13 +219,13 @@ static void xd_points(char c, point * A, int n)
     int i;
     point p;
 
-    agxbputc(xbufs[gvc->emit_state], c);
+    agxbputc(xbufs[gvg->emit_state], c);
     sprintf(buf, " %d ", n);
-    agxbput(xbufs[gvc->emit_state], buf);
+    agxbput(xbufs[gvg->emit_state], buf);
     for (i = 0; i < n; i++) {
 	p = A[i];
 	sprintf(buf, "%d %d ", p.x, YDIR(p.y));
-	agxbput(xbufs[gvc->emit_state], buf);
+	agxbput(xbufs[gvg->emit_state], buf);
     }
 }
 
@@ -254,7 +254,7 @@ xd_set_font (char *fontname, double fontsize)
     char buf[BUFSIZ];
 
     sprintf(buf, "F %f ", fontsize);
-    agxbput(xbufs[gvc->emit_state], buf);
+    agxbput(xbufs[gvg->emit_state], buf);
     xd_str ("", fontname);
 }
 

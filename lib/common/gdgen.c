@@ -136,19 +136,19 @@ static void gd_end_job(void)
 #endif
 }
 
-static void init1_gd(GVC_t * gvc, graph_t * g, box bb, point pb)
+static void init1_gd(GVG_t * gvg, graph_t * g, box bb, point pb)
 {
     Dpi = GD_drawing(g)->dpi;
     if (Dpi < 1.0)
 	Dpi = DEFAULT_DPI;
     DevScale = Dpi / POINTS_PER_INCH;
 
-    Viewport.x = gvc->job->width;
-    Viewport.y = gvc->job->height;
+    Viewport.x = gvg->job->width;
+    Viewport.y = gvg->job->height;
 #if 0
     if (Viewport.x) {
-	Zoom = gvc->job->zoom;
-	GraphFocus = gvc->job->focus;
+	Zoom = gvg->job->zoom;
+	GraphFocus = gvg->job->focus;
     } else {
 	Viewport.x =
 	    (bb.UR.x - bb.LL.x + 2 * GD_drawing(g)->margin.x) * DevScale + 2;
@@ -159,8 +159,8 @@ static void init1_gd(GVC_t * gvc, graph_t * g, box bb, point pb)
 	Zoom = 1.0;
     }
 #else
-    Zoom = gvc->job->zoom;
-    GraphFocus = gvc->job->focus;
+    Zoom = gvg->job->zoom;
+    GraphFocus = gvg->job->focus;
 #endif
     CompScale = Zoom * DevScale;
 }
@@ -218,20 +218,21 @@ static bool is_format_truecolor_capable(int Output_lang)
     return rv;
 }
 
-static void gd_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
+static void gd_begin_graph(GVJ_t * job, graph_t * g, box bb, point pb)
 {
     char *bgcolor_str = NULL;
     char *truecolor_str;
     bool truecolor_p = FALSE;	/* try to use cheaper paletted mode */
     bool bg_transparent_p = FALSE;
     int bgcolor;
+    GVG_t *gvg = job->gvg;
 
-    external_surface = gvc->job->external_surface;
+    external_surface = gvg->job->external_surface;
 
-    init1_gd(gvc, g, bb, pb);
+    init1_gd(gvg, g, bb, pb);
 
     if (external_surface) {
-	im = (gdImagePtr)gvc->job->surface;
+	im = (gdImagePtr)gvg->job->surface;
     } else {
         truecolor_str = agget(g, "truecolor");	/* allow user to force truecolor */
         bgcolor_str = agget(g, "bgcolor");

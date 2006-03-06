@@ -448,7 +448,7 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp, void *obj)
 	/* set basic graphics context */
 	gvrender_begin_context(job);
 	/* Need to override line style set by node. */
-	gvrender_set_style(job, job->gvc->defaultlinestyle);
+	gvrender_set_style(job, job->gvg->defaultlinestyle);
 	if (tbl->data.pencolor)
 	    gvrender_set_pencolor(job, tbl->data.pencolor);
 	else

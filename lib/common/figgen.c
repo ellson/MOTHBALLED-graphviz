@@ -192,7 +192,7 @@ static void fig_end_job(void)
     fprintf(Output_file, "# end of FIG file\n");
 }
 
-static void fig_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
+static void fig_begin_graph(GVJ_t * job, graph_t * g, box bb, point pb)
 {
     PB = bb;
     if (onetime) {

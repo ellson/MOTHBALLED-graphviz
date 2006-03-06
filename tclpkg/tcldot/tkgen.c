@@ -184,21 +184,21 @@ static void tk_end_job(void)
 {
 }
 
-static void tk_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
+static void tk_begin_graph(GVJ_t * job, graph_t * g, box bb, point pb)
 {
     double dpi = GD_drawing(g)->dpi;
 
-    Tkgendata = (tkgendata_t *)gvc->job->surface;
+    Tkgendata = (tkgendata_t *)job->surface;
 
     if (dpi < 1.0)
 	dpi = DEFAULT_DPI;
     DevScale = dpi / POINTS_PER_INCH;
 
-    Viewport.x = gvc->job->width;
-    Viewport.y = gvc->job->height;
+    Viewport.x = job->width;
+    Viewport.y = job->height;
     if (Viewport.x) {
-	Zoom = gvc->job->zoom;
-	GraphFocus = gvc->job->focus;
+	Zoom = job->zoom;
+	GraphFocus = job->focus;
     } else {
 	Viewport.x =
 	    (bb.UR.x - bb.LL.x + 2 * GD_drawing(g)->margin.x) * DevScale +

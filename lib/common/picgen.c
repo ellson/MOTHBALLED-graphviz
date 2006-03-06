@@ -172,7 +172,7 @@ static void pic_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
     fprintf(Output_file, "%s Title: %s\n", EscComment, g->name);
 }
 
-static void pic_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
+static void pic_begin_graph(GVJ_t * job, graph_t * g, box bb, point pb)
 {
     BB = bb;
 

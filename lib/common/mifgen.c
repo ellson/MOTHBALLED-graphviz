@@ -311,7 +311,7 @@ static void mif_end_job(void)
     fprintf(Output_file, "# end of MIFFile\n");
 }
 
-static void mif_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
+static void mif_begin_graph(GVJ_t * job, graph_t * g, box bb, point pb)
 {
     PB = bb;
     if (onetime) {

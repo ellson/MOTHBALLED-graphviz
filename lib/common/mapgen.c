@@ -298,18 +298,18 @@ map_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
     isLatin1 = (GD_charset(g) == CHAR_LATIN1);
 }
 
-static void map_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
+static void map_begin_graph(GVJ_t * job, graph_t * g, box bb, point pb)
 {
     Dpi = GD_drawing(g)->dpi;
     if (Dpi < 1.0)
 	Dpi = DEFAULT_DPI;
     DevScale = Dpi / POINTS_PER_INCH;
 
-    Viewport.x = gvc->job->width;
-    Viewport.y = gvc->job->height;
+    Viewport.x = job->width;
+    Viewport.y = job->height;
     if (Viewport.x) {
-	Zoom = gvc->job->zoom;
-	GraphFocus = gvc->job->focus;
+	Zoom = job->zoom;
+	GraphFocus = job->focus;
     } else {
 	Viewport.x =
 	    (bb.UR.x - bb.LL.x + 2 * GD_drawing(g)->margin.x) * DevScale +

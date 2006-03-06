@@ -48,12 +48,14 @@ static GVJ_t *output_langname_job;
 /* -o switches */
 void gvrender_output_filename_job(GVC_t * gvc, char *name)
 {
-    if (!gvc->jobs) {
-	output_filename_job = gvc->job = gvc->jobs =
+    GVG_t *gvg = gvc->gvg;
+
+    if (!gvg->jobs) {
+	output_filename_job = gvg->job = gvg->jobs =
 	    zmalloc(sizeof(GVJ_t));
     } else {
 	if (!output_filename_job) {
-	    output_filename_job = gvc->jobs;
+	    output_filename_job = gvg->jobs;
 	} else {
 	    if (!output_filename_job->next) {
 		output_filename_job->next =
@@ -63,18 +65,20 @@ void gvrender_output_filename_job(GVC_t * gvc, char *name)
 	}
     }
     output_filename_job->output_filename = name;
-    output_filename_job->gvc = gvc;
+    output_filename_job->gvg = gvg;
 }
 
 /* -T switches */
 bool gvrender_output_langname_job(GVC_t * gvc, char *name)
 {
-    if (!gvc->jobs) {
-	output_langname_job = gvc->job = gvc->jobs =
+    GVG_t *gvg = gvc->gvg;
+
+    if (!gvg->jobs) {
+	output_langname_job = gvg->job = gvg->jobs =
 	    zmalloc(sizeof(GVJ_t));
     } else {
 	if (!output_langname_job) {
-	    output_langname_job = gvc->jobs;
+	    output_langname_job = gvg->jobs;
 	} else {
 	    if (!output_langname_job->next) {
 		output_langname_job->next =
@@ -84,7 +88,7 @@ bool gvrender_output_langname_job(GVC_t * gvc, char *name)
 	}
     }
     output_langname_job->output_langname = name;
-    output_langname_job->gvc = gvc;
+    output_langname_job->gvg = gvg;
 
     /* load it now to check that it exists */
     if (gvplugin_load(gvc, API_render, name))
@@ -94,20 +98,23 @@ bool gvrender_output_langname_job(GVC_t * gvc, char *name)
 
 GVJ_t *gvrender_first_job(GVC_t * gvc)
 {
-    return (gvc->job = gvc->jobs);
+    GVG_t *gvg = gvc->gvg;
+
+    return (gvg->job = gvg->jobs);
 }
 
 GVJ_t *gvrender_next_job(GVC_t * gvc)
 {
-    GVJ_t *job = gvc->job->next;
+    GVG_t *gvg = gvc->gvg;
+    GVJ_t *job = gvg->job->next;
 
     if (job) {
 	/* if langname not specified, then repeat previous value */
 	if (!job->output_langname)
-	    job->output_langname = gvc->job->output_langname;
+	    job->output_langname = gvg->job->output_langname;
 	/* if filename not specified, then leave NULL to indicate stdout */
     }
-    return (gvc->job = job);
+    return (gvg->job = job);
 }
 
 gv_argvlist_t *gvNEWargvlist(void)
@@ -143,8 +150,9 @@ void gv_argvlist_free(gv_argvlist_t *list)
 void gvrender_delete_jobs(GVC_t * gvc)
 {
     GVJ_t *job, *j;
+    GVG_t *gvg = gvc->gvg;
 
-    job = gvc->jobs;
+    job = gvg->jobs;
     while ((j = job)) {
 	job = job->next;
 	gv_argvlist_reset(&(j->selected_obj_attributes));
@@ -155,6 +163,6 @@ void gvrender_delete_jobs(GVC_t * gvc)
 	    free(j->selected_href);
 	free(j);
     }
-    gvc->jobs = gvc->job = gvc->active_jobs = output_filename_job = output_langname_job =
+    gvg->jobs = gvg->job = gvg->active_jobs = output_filename_job = output_langname_job =
 	NULL;
 }

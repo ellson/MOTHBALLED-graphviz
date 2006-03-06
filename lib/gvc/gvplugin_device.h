@@ -18,7 +18,7 @@
 #define GVDEVICE_PLUGIN_H
 
 #include "gvplugin.h"
-#include "gvcjob.h"
+#include "gvj.h"
 
 #ifdef __cplusplus
 extern "C" {

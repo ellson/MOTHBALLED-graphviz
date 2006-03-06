@@ -17,7 +17,7 @@
 /*
     A gvcontext is a single instance of a GVC_t data structure providing
     for a set of plugins for processing one graph at a time, and a job
-    description provividing for a sequence of graph jobs.
+    description providing for a sequence of graph jobs.
 
     Sometime in the future it may become the basis for a thread.
  */
@@ -49,18 +49,22 @@ GVC_t *gvNEWcontext(char **info, char *user)
 	gvc->info = info;
 	gvc->user = user;
 	gvc->errorfn = agerrorf;
+        gvc->gvg = zmalloc(sizeof(GVG_t));   /* FIXME - this will be allocated by the args parser */
+	gvc->gvg->gvc = gvc;  /* link back to parent */
     }
     return gvc;
 }
 
 int gvFreeContext(GVC_t * gvc)
 {
-    if (gvc->active_jobs)
+    if (gvc->gvg->active_jobs)
 	gvdevice_finalize(gvc);
     emit_jobs_eof(gvc);
     gvrender_delete_jobs(gvc);
     if (gvc->config_path)
 	free(gvc->config_path);
+    if (gvc->gvg)  /* FIXME - this be be a list of gvg's eventually */
+	free(gvc->gvg);
     free(gvc);
     return (graphviz_errors + agerrors());
 }

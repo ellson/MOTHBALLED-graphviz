@@ -16,8 +16,8 @@
 
 /* Common header used by both clients and plugins */
 
-#ifndef GVCJOB_H
-#define GVCJOB_H
+#ifndef GVJ_H
+#define GVJ_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -134,7 +134,7 @@ extern "C" {
     } gvevent_key_binding_t;
 
     struct GVJ_s {
-	GVC_t *gvc;		/* parent gvc */
+	GVG_t *gvg;		/* parent gvg */
 	GVJ_t *next;		/* linked list of jobs */
 	GVJ_t *next_active;	/* linked list of active jobs (e.g. multiple windows) */
 	char *output_filename;
@@ -222,4 +222,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVCJOB_H */
+#endif				/* GVJ_H */

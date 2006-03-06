@@ -1085,10 +1085,10 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
-	gvc->active_jobs = gvc->job;
+	gvc->gvg->active_jobs = gvc->gvg->job;
 
-	gvc->job->surface = (void *)(&tkgendata);
-	gvc->job->external_surface = TRUE;
+	gvc->gvg->job->surface = (void *)(&tkgendata);
+	gvc->gvg->job->external_surface = TRUE;
 
 	/* make sure that layout is done */
 	g = g->root;
@@ -1116,14 +1116,14 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
-	gvc->active_jobs = gvc->job;
+	gvc->gvg->active_jobs = gvc->gvg->job;
 
 	if (!  (hdl = tclhandleXlate(GDHandleTable, argv[2]))) {
 	    Tcl_AppendResult(interp, "GD Image not found.", (char *) NULL);
 	    return TCL_ERROR;
 	}
-	gvc->job->surface = *hdl;
-	gvc->job->external_surface = TRUE;
+	gvc->gvg->job->surface = *hdl;
+	gvc->gvg->job->external_surface = TRUE;
 
 	/* make sure that layout is done */
 	g = g->root;
@@ -1254,19 +1254,19 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		"\". Use one of:", s, (char *)NULL);
 	    return TCL_ERROR;
 	}
-	gvc->active_jobs = gvc->job;
+	gvc->gvg->active_jobs = gvc->gvg->job;
 
 	/* populate new job struct with output language and output file data */
-	gvc->job->output_lang =
-            gvrender_select(gvc->job, gvc->job->output_langname);
+	gvc->gvg->job->output_lang =
+            gvrender_select(gvc->gvg->job, gvc->gvg->job->output_langname);
 
 	if (Tcl_GetOpenFile (interp, argv[2], 1, 1,
-	     (ClientData *) &(gvc->job->output_file)) != TCL_OK)
+	     (ClientData *) &(gvc->gvg->job->output_file)) != TCL_OK)
 	    return TCL_ERROR;
 
 	/* make sure that layout is done  - unless canonical output */
 	if ((!GD_drawing(g) || argc > 4)
-	    && gvc->job->output_lang != CANONICAL_DOT) {
+	    && gvc->gvg->job->output_lang != CANONICAL_DOT) {
 	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : (char *) NULL);
 	}
 

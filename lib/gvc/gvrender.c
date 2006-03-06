@@ -53,7 +53,7 @@ static int sizeA;
 
 int gvrender_select(GVJ_t * job, char *str)
 {
-    GVC_t *gvc = job->gvc;
+    GVC_t *gvc = job->gvg->gvc;
     gvplugin_available_t *plugin;
     gvplugin_installed_t *typeptr;
     char *device;
@@ -124,10 +124,11 @@ int gvrender_features(GVJ_t * job)
 
 void gvrender_begin_job(GVJ_t * job)
 {
-    GVC_t *gvc = job->gvc;
+    GVG_t *gvg = job->gvg;
+    GVC_t *gvc = gvg->gvc;
     gvrender_engine_t *gvre = job->render.engine;
 
-    job->bb = gvc->bb;
+    job->bb = gvg->bb;
     if (gvre) {
         if (gvre->begin_job)
 	    gvre->begin_job(job);
@@ -137,7 +138,7 @@ void gvrender_begin_job(GVJ_t * job)
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_job)
-	    cg->begin_job(job->output_file, gvc->g, gvc->lib, gvc->user,
+	    cg->begin_job(job->output_file, gvg->g, gvg->lib, gvc->user,
 			  gvc->info, job->pagesArraySize);
     }
 #endif
@@ -157,7 +158,7 @@ void gvrender_end_job(GVJ_t * job)
 	    cg->end_job();
     }
 #endif
-    job->gvc->lib = NULL;
+    job->gvg->lib = NULL;
 }
 
 /* font modifiers */
@@ -227,7 +228,7 @@ static void gvrender_resolve_color(gvrender_features_t * features,
 
 void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 {
-    GVC_t *gvc = job->gvc;
+    GVG_t *gvg = job->gvg;
     gvrender_engine_t *gvre = job->render.engine;
     char *str;
     double sx, sy;
@@ -235,7 +236,7 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     sx = job->width / (job->zoom * 2.);
     sy = job->height / (job->zoom * 2.);
 
-    gvc->sg = g;  /* current subgraph/cluster */
+    gvg->sg = g;  /* current subgraph/cluster */
     job->compscale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
     job->compscale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
     job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
@@ -272,19 +273,19 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     if (gvre) {
 	/* render specific init */
 	if (gvre->begin_graph)
-	    gvre->begin_graph(job, gvc->graphname);
+	    gvre->begin_graph(job, gvg->graphname);
 
 	/* background color */
 	if (((str = agget(g, "bgcolor")) != 0) && str[0]) {
 	    gvrender_resolve_color(job->render.features, str,
-				   &(gvc->bgcolor));
+				   &(gvg->bgcolor));
 	    if (gvre->resolve_color)
-		gvre->resolve_color(job, &(gvc->bgcolor));
+		gvre->resolve_color(job, &(gvg->bgcolor));
 	}
 
 	/* init stack */
-	gvc->SP = 0;
-	job->style = &(gvc->styles[0]);
+	gvg->SP = 0;
+	job->style = &(gvg->styles[0]);
 	gvrender_set_pencolor(job, DEFAULT_COLOR);
 	gvrender_set_fillcolor(job, DEFAULT_FILL);
 	job->style->fontfam = DEFAULT_FONTNAME;
@@ -309,7 +310,7 @@ fprintf(stderr,"pb = %d,%d %d,%d\n",
 #endif
 
 	if (cg && cg->begin_graph)
-	    cg->begin_graph(gvc, g, job->boundingBox, gvc->pb);
+	    cg->begin_graph(job, g, job->boundingBox, gvg->pb);
     }
 #endif
 }
@@ -328,7 +329,7 @@ void gvrender_end_graph(GVJ_t * job)
 	    cg->end_graph();
     }
 #endif
-    job->gvc->sg = NULL;
+    job->gvg->sg = NULL;
 }
 
 void gvrender_begin_page(GVJ_t * job)
@@ -345,7 +346,7 @@ void gvrender_begin_page(GVJ_t * job)
 
 	PF2P(job->pageOffset, offset);
 	if (cg && cg->begin_page)
-	    cg->begin_page(job->gvc->g, job->pagesArrayElem,
+	    cg->begin_page(job->gvg->g, job->pagesArrayElem,
 		job->zoom, job->rotation, offset);
     }
 #endif
@@ -372,13 +373,13 @@ void gvrender_begin_layer(GVJ_t * job)
     gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->begin_layer)
-	gvre->begin_layer(job, job->gvc->layerIDs[job->layerNum], job->layerNum, job->numLayers);
+	gvre->begin_layer(job, job->gvg->layerIDs[job->layerNum], job->layerNum, job->numLayers);
 #ifndef DISABLE_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_layer)
-	    cg->begin_layer(job->gvc->layerIDs[job->layerNum], job->layerNum, job->numLayers);
+	    cg->begin_layer(job->gvg->layerIDs[job->layerNum], job->layerNum, job->numLayers);
     }
 #endif
 }
@@ -403,7 +404,7 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    job->gvc->sg = sg;  /* set current cluster graph object */
+    job->gvg->sg = sg;  /* set current cluster graph object */
 #ifndef DISABLE_CODEGENS
     Obj = CLST;
 #endif
@@ -434,7 +435,7 @@ void gvrender_end_cluster(GVJ_t * job, graph_t *g)
     }
     Obj = NONE;
 #endif
-    job->gvc->sg = g;  /* reset current cluster to parent graph or cluster */
+    job->gvg->sg = g;  /* reset current cluster to parent graph or cluster */
 }
 
 void gvrender_begin_nodes(GVJ_t * job)
@@ -508,7 +509,7 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
 #ifndef DISABLE_CODEGENS
     Obj = NODE;
 #endif
-    job->gvc->n = n; /* set current node */
+    job->gvg->n = n; /* set current node */
     if (gvre && gvre->begin_node)
 	gvre->begin_node(job, n->name, n->id);
 #ifndef DISABLE_CODEGENS
@@ -536,7 +537,7 @@ void gvrender_end_node(GVJ_t * job)
     }
     Obj = NONE;
 #endif
-    job->gvc->n = NULL; /* clear current node */
+    job->gvg->n = NULL; /* clear current node */
 }
 
 void gvrender_begin_edge(GVJ_t * job, edge_t * e)
@@ -546,7 +547,7 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 #ifndef DISABLE_CODEGENS
     Obj = EDGE;
 #endif
-    job->gvc->e = e; /* set current edge */
+    job->gvg->e = e; /* set current edge */
     if (gvre && gvre->begin_edge)
 	gvre->begin_edge(job, e->tail->name,
 			 e->tail->graph->root->kind & AGFLAG_DIRECTED,
@@ -576,19 +577,19 @@ void gvrender_end_edge(GVJ_t * job)
     }
     Obj = NONE;
 #endif
-    job->gvc->e = NULL; /* clear current edge */
+    job->gvg->e = NULL; /* clear current edge */
 }
 
 void gvrender_begin_context(GVJ_t * job)
 {
-    GVC_t *gvc = job->gvc;
+    GVG_t *gvg = job->gvg;
     gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
-	(gvc->SP)++;
-	assert((gvc->SP) < MAXNEST);
-	gvc->styles[gvc->SP] = gvc->styles[(gvc->SP) - 1];
-	job->style = &(gvc->styles[gvc->SP]);
+	(gvg->SP)++;
+	assert((gvg->SP) < MAXNEST);
+	gvg->styles[gvg->SP] = gvg->styles[(gvg->SP) - 1];
+	job->style = &(gvg->styles[gvg->SP]);
     }
 #ifndef DISABLE_CODEGENS
     else {
@@ -602,13 +603,13 @@ void gvrender_begin_context(GVJ_t * job)
 
 void gvrender_end_context(GVJ_t * job)
 {
-    GVC_t *gvc = job->gvc;
+    GVG_t *gvg = job->gvg;
     gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
-	gvc->SP--;
-	assert(gvc->SP >= 0);
-	job->style = &(gvc->styles[gvc->SP]);
+	gvg->SP--;
+	assert(gvg->SP >= 0);
+	job->style = &(gvg->styles[gvg->SP]);
     }
 #ifndef DISABLE_CODEGENS
     else {

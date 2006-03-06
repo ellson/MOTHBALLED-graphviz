@@ -174,7 +174,7 @@ static void gv_edge_state(GVJ_t *job, edge_t *e)
 
 static void gvevent_refresh(GVJ_t * job)
 {
-    graph_t *g = job->gvc->g;
+    graph_t *g = job->gvg->g;
 
     if (!job->selected_obj) {
 	job->selected_obj = g;
@@ -313,7 +313,7 @@ static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
     b.LL.x = p.x - closeenough;
     b.LL.y = p.y - closeenough;
 
-    obj = gvevent_find_obj(job->gvc->g, b);
+    obj = gvevent_find_obj(job->gvg->g, b);
     if (obj != job->current_obj) {
 	gvevent_leave_obj(job);
 	job->current_obj = obj;
@@ -536,30 +536,30 @@ static void gvevent_delete (GVJ_t * job)
 static void gvevent_read (GVJ_t * job, char *filename, char *layout)
 {
     FILE *f;
-    GVC_t *gvc;
     gvlayout_engine_t *gvle;
+    GVG_t *gvg = job->gvg;
+    GVC_t *gvc = gvg->gvc;
 
-    gvc = job->gvc;
-    if (gvc->g) {
+    if (gvg->g) {
 	gvle = gvc->layout.engine;
 	if (gvle && gvle->cleanup)
-	    gvle->cleanup(gvc->g);
-	graph_cleanup(gvc->g);
-	agclose(gvc->g);
+	    gvle->cleanup(gvg->g);
+	graph_cleanup(gvg->g);
+	agclose(gvg->g);
     }
     if (!filename) {
-	gvc->g = agopen("G", AGDIGRAPH);
+	gvg->g = agopen("G", AGDIGRAPH);
 	job->output_filename = "new.dot";
     }
     else {
 	f = fopen(filename, "r");
 	if (!f)
 		return;   /* FIXME - need some error handling */
-	gvc->g = agread(f);
+	gvg->g = agread(f);
 	fclose(f);
     }
-    GD_gvc(gvc->g) = gvc;
-    gvLayout(gvc, gvc->g, layout);
+    GD_gvc(gvg->g) = gvc;
+    gvLayout(gvc, gvg->g, layout);
     job->selected_obj = NULL;
     job->current_obj = NULL;
     job->needs_refresh = 1;
@@ -567,12 +567,12 @@ static void gvevent_read (GVJ_t * job, char *filename, char *layout)
 
 static void gvevent_layout (GVJ_t * job, char *layout)
 {
-    gvLayout(job->gvc, job->gvc->g, layout);
+    gvLayout(job->gvg->gvc, job->gvg->g, layout);
 }
 
 static void gvevent_render (GVJ_t * job, char *format, char *filename)
 {
-    gvRenderFilename(job->gvc, job->gvc->g, format, filename);
+    gvRenderFilename(job->gvg->gvc, job->gvg->g, format, filename);
 }
 
 
