@@ -34,7 +34,7 @@
 
 int gvdevice_select(GVJ_t * job, char *str)
 {
-    GVC_t *gvc = job->gvg->gvc;
+    GVC_t *gvc = job->gvc;
     gvplugin_available_t *plugin;
     gvplugin_installed_t *typeptr;
 #ifndef DISABLE_CODEGENS
@@ -75,7 +75,7 @@ int gvdevice_features(GVJ_t * job)
 
 void gvdevice_finalize(GVC_t * gvc)
 {
-    GVJ_t *firstjob = gvc->gvg->active_jobs;
+    GVJ_t *firstjob = gvc->active_jobs;
     gvdevice_engine_t *gvde = firstjob->device.engine;
 
     if (gvde) {

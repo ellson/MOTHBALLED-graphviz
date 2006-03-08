@@ -47,11 +47,11 @@ extern "C" {
 
 #define gvCleanup gvCleanup_DEPRECATED_BY_gvFreeContext
 #define dotneato_terminate dotneato_terminate_DEPRECATED_BY_gvFreeContext
-#define next_input_graph next_input_graph_DEPRECATED_BY_gvNextInputGraph
 
 /* misc */
-/* FIXME - this needs eliminating or renaming */
+/* FIXME - these need eliminating or renaming */
 extern void gvToggle(int);
+extern graph_t *next_input_graph(void);
 
 /* set up a graphviz context */
 extern GVC_t *gvNEWcontext(char **info, char *user);
@@ -63,9 +63,6 @@ extern GVC_t *gvContext(void);
 
 /* parse command line args - minimally argv[0] sets layout engine */
 extern int gvParseArgs(GVC_t *gvc, int argc, char **argv);
-
-/* iterate over input graphs resulting from gvParseArgs() */
-extern graph_t *gvNextInputGraph(GVC_t *gvc);
 
 /* Compute a layout using a specified engine */
 extern int gvLayout(GVC_t *gvc, graph_t *g, char *engine);

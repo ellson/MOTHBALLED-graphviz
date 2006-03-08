@@ -549,13 +549,13 @@ void arrow_newgen(GVJ_t * job, int state, pointf p, pointf u, double scale, int 
     int f;
     int oldstate;
 
-    oldstate = job->gvg->emit_state;
-    job->gvg->emit_state = state;
+    oldstate = job->gvc->emit_state;
+    job->gvc->emit_state = state;
 
     /* Dotted and dashed styles on the arrowhead are ugly (dds) */
     /* linewidth needs to be reset */
     gvrender_begin_context(job);
-    gvrender_set_style(job, job->gvg->defaultlinestyle);
+    gvrender_set_style(job, job->gvc->defaultlinestyle);
 
     /* generate arrowhead vector */
     u.x -= p.x;
@@ -578,7 +578,7 @@ void arrow_newgen(GVJ_t * job, int state, pointf p, pointf u, double scale, int 
 
     gvrender_end_context(job);
 
-    job->gvg->emit_state = oldstate;
+    job->gvc->emit_state = oldstate;
 }
 
 /* FIXME emit.c and output.c require wrapper for int point coords */

@@ -80,7 +80,7 @@ static void mp_comment(char *str)
     fprintf(Output_file, "%% %s\n", str);
 }
 
-static void mp_begin_graph(GVJ_t * job, graph_t * g, box bb, point pb)
+static void mp_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     /* PB = bb; */
     if (onetime) {

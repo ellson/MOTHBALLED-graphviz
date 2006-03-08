@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-#include "gvg.h"
+#include "gvcjob.h"
 
     typedef struct {
 	int flags;
@@ -64,15 +64,26 @@ extern "C" {
 					or NULL if not yet loaded */
     };
 
+#define MAXNEST 4
+
     struct GVC_s {
 	/* gvNEWcontext() */
 	char *user;
 	char **info;
 
-        void (*errorfn) (char *fmt, ...);
-
 	char *config_path;
 	bool config_found;
+
+	/* gvrender_config() */
+	GVJ_t *jobs;	/* linked list of jobs */
+	GVJ_t *job;	/* current job */
+	void (*errorfn) (char *fmt, ...);
+
+	int emit_state;	/* current emit_state */
+	graph_t *g;	/* current graph */
+	graph_t *sg;	/* current subgraph/cluster */
+	node_t *n;	/* current node */
+	edge_t *e;	/* current edge */
 
 	/* plugins */
 #define ELEM(x) +1
@@ -86,13 +97,45 @@ extern "C" {
 	gvplugin_active_usershape_t usershape;
 	gvplugin_active_layout_t layout;
 
+	char *graphname;	/* name from graph */
+	GVJ_t *active_jobs;   /* linked list of active jobs */
+
+	char **lib;
+
+	/* pagination */
+	char *pagedir;		/* pagination order */
+	pointf margin;		/* margins in graph units */
+	pointf pageSize;	/* pageSize in graph units, not including margins */
+	point pb;		/* page size - including margins (inches) */
+	boxf bb;		/* graph bb in graph units, not including margins */
+	int rotation;		/* rotation - 0 = portrait, 90 = landscape */
+	bool graph_sets_margin, graph_sets_pageSize, graph_sets_rotation;
+
+	/* layers */
+	char *layerDelims;	/* delimiters in layer names */
+	char *layers;		/* null delimited list of layer names */
+	char **layerIDs;	/* array of layer names */
+	int numLayers;		/* number of layers */
+
+        int viewNum;	        /* current view - 1 based count of views,
+					all pages in all layers */
+	/* default font */
+	char *defaultfontname;
+	double defaultfontsize;
+
+	/* default line style */
+	char **defaultlinestyle;
+
+	gvstyle_t styles[MAXNEST]; /* style stack - reused by each job */
+	int SP;
+
+	/* render defaults set from graph */
+	gvcolor_t bgcolor;	/* background color */
+
 	/* keybindings for keyboard events */
 	gvevent_key_binding_t *keybindings;
 	int numkeys;
 	void *keycodes;
-
-	/* gvrender_config() */
-	GVG_t *gvg;
     };
 
 #ifdef __cplusplus

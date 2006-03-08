@@ -234,7 +234,7 @@ static void vrml_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
     fprintf(Output_file, "#VRML V2.0 utf8\n");
 }
 
-static void vrml_begin_graph(GVJ_t * job, graph_t * g, box bb, point pb)
+static void vrml_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     g = g;
 

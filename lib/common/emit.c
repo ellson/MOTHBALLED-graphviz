@@ -27,38 +27,38 @@ int    emitState;
 
 /* parse_layers:
  * Split input string into tokens, with separators specified by
- * the layersep attribute. Store the values in the gvg->layerIDs array,
+ * the layersep attribute. Store the values in the gvc->layerIDs array,
  * starting at index 1, and return the count.
  * Free previously stored list. Note that there is no mechanism
  * to free the memory before exit.
  */
-static int parse_layers(GVG_t *gvg, graph_t * g, char *p)
+static int parse_layers(GVC_t *gvc, graph_t * g, char *p)
 {
     int ntok;
     char *tok;
     int sz;
 
-    gvg->layerDelims = agget(g, "layersep");
-    if (!gvg->layerDelims)
-        gvg->layerDelims = DEFAULT_LAYERSEP;
+    gvc->layerDelims = agget(g, "layersep");
+    if (!gvc->layerDelims)
+        gvc->layerDelims = DEFAULT_LAYERSEP;
 
     ntok = 0;
     sz = 0;
-    gvg->layers = strdup(p);
+    gvc->layers = strdup(p);
 
-    for (tok = strtok(gvg->layers, gvg->layerDelims); tok;
-         tok = strtok(NULL, gvg->layerDelims)) {
+    for (tok = strtok(gvc->layers, gvc->layerDelims); tok;
+         tok = strtok(NULL, gvc->layerDelims)) {
         ntok++;
         if (ntok > sz) {
             sz += SMALLBUF;
-            gvg->layerIDs = ALLOC(sz, gvg->layerIDs, char *);
+            gvc->layerIDs = ALLOC(sz, gvc->layerIDs, char *);
         }
-        gvg->layerIDs[ntok] = tok;
+        gvc->layerIDs[ntok] = tok;
     }
     if (ntok) {
-        gvg->layerIDs = RALLOC(ntok + 2, gvg->layerIDs, char *);        /* shrink to minimum size */
-        gvg->layerIDs[0] = NULL;
-        gvg->layerIDs[ntok + 1] = NULL;
+        gvc->layerIDs = RALLOC(ntok + 2, gvc->layerIDs, char *);        /* shrink to minimum size */
+        gvc->layerIDs[0] = NULL;
+        gvc->layerIDs[ntok + 1] = NULL;
     }
 
     return ntok;
@@ -121,27 +121,27 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
     }
 }
 
-static void init_layering(GVG_t * gvg, graph_t * g)
+static void init_layering(GVC_t * gvc, graph_t * g)
 {
     char *str;
 
     /* free layer strings and pointers from previous graph */
-    if (gvg->layers)
-	free(gvg->layers);
-    if (gvg->layerIDs)
-	free(gvg->layerIDs);
+    if (gvc->layers)
+	free(gvc->layers);
+    if (gvc->layerIDs)
+	free(gvc->layerIDs);
 
     if ((str = agget(g, "layers")) != 0) {
-	gvg->numLayers = parse_layers(gvg, g, str);
+	gvc->numLayers = parse_layers(gvc, g, str);
     } else {
-	gvg->layerIDs = NULL;
-	gvg->numLayers = 1;
+	gvc->layerIDs = NULL;
+	gvc->numLayers = 1;
     }
 }
 
 static void firstlayer(GVJ_t *job)
 {
-    job->numLayers = job->gvg->numLayers;
+    job->numLayers = job->gvc->numLayers;
     if ((job->numLayers > 1)
 		&& (! (gvrender_features(job) & GVRENDER_DOES_LAYERS))) {
 	agerr(AGWARN, "layers not supported in %s output\n",
@@ -187,7 +187,7 @@ static point pagecode(GVJ_t *job, char c)
 
 static void init_job_pagination(GVJ_t * job, graph_t *g)
 {
-    GVG_t *gvg = job->gvg;
+    GVC_t *gvc = job->gvc;
     point pageSize;	/* page size for the graph - device units */
     point imageSize;	/* image size on one page of the graph - device units */
     point margin;	/* margin for a page of the graph - device units */
@@ -199,10 +199,10 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	imageSize = exch_xy(imageSize);
 
     /* determine pagination */
-    if (gvg->graph_sets_pageSize) {
+    if (gvc->graph_sets_pageSize) {
 	/* page was set by user */
-	pageSize.x = ROUND(gvg->pageSize.x * job->dpi.x / POINTS_PER_INCH);
-	pageSize.y = ROUND(gvg->pageSize.y * job->dpi.y / POINTS_PER_INCH);
+	pageSize.x = ROUND(gvc->pageSize.x * job->dpi.x / POINTS_PER_INCH);
+	pageSize.y = ROUND(gvc->pageSize.y * job->dpi.y / POINTS_PER_INCH);
 
 	/* we don't want graph page to exceed its bounding box */
 	pageSize.x = MIN(pageSize.x, imageSize.x);
@@ -267,13 +267,13 @@ fprintf(stderr,"margin = %d,%d  imageSize = %d,%d boundingBox = %d,%d %d,%d\n",
     job->pagesArrayMajor.x = job->pagesArrayMajor.y 
 		= job->pagesArrayMinor.x = job->pagesArrayMinor.y = 0;
     job->pagesArrayFirst.x = job->pagesArrayFirst.y = 0;
-    job->pagesArrayMajor = pagecode(job, gvg->pagedir[0]);
-    job->pagesArrayMinor = pagecode(job, gvg->pagedir[1]);
+    job->pagesArrayMajor = pagecode(job, gvc->pagedir[0]);
+    job->pagesArrayMinor = pagecode(job, gvc->pagedir[1]);
     if ((abs(job->pagesArrayMajor.x + job->pagesArrayMinor.x) != 1)
      || (abs(job->pagesArrayMajor.y + job->pagesArrayMinor.y) != 1)) {
 	job->pagesArrayMajor = pagecode(job, 'B');
 	job->pagesArrayMinor = pagecode(job, 'L');
-	agerr(AGWARN, "pagedir=%s ignored\n", gvg->pagedir);
+	agerr(AGWARN, "pagedir=%s ignored\n", gvc->pagedir);
     }
 
 #if 0
@@ -294,7 +294,7 @@ fprintf(stderr,"width,height = %d,%d (device units)\n",
         job->width,
         job->height);
 fprintf (stderr,"pagedir = %s, pagesArrayMajor = %d,%d pagesArrayMinor = %d,%d\n",
-	gvg->pagedir,
+	gvc->pagedir,
 	job->pagesArrayMajor.x,
 	job->pagesArrayMajor.y,
 	job->pagesArrayMinor.x,
@@ -456,24 +456,25 @@ static bool is_natural_number(char *sstr)
     return TRUE;
 }
 
-static int layer_index(GVG_t *gvg, char *str, int all)
+static int layer_index(GVC_t *gvc, char *str, int all)
 {
+    GVJ_t *job = gvc->job;
     int i;
 
     if (streq(str, "all"))
 	return all;
     if (is_natural_number(str))
 	return atoi(str);
-    if (gvg->layerIDs)
-	for (i = 1; i <= gvg->numLayers; i++)
-	    if (streq(str, gvg->layerIDs[i]))
+    if (gvc->layerIDs)
+	for (i = 1; i <= job->numLayers; i++)
+	    if (streq(str, gvc->layerIDs[i]))
 		return i;
     return -1;
 }
 
 static bool selectedlayer(GVJ_t *job, char *spec)
 {
-    GVG_t *gvg = job->gvg;
+    GVC_t *gvc = job->gvc;
     int n0, n1;
     unsigned char buf[SMALLBUF];
     char *w0, *w1;
@@ -482,20 +483,20 @@ static bool selectedlayer(GVJ_t *job, char *spec)
 
     agxbinit(&xb, SMALLBUF, buf);
     agxbput(&xb, spec);
-    w1 = w0 = strtok(agxbuse(&xb), gvg->layerDelims);
+    w1 = w0 = strtok(agxbuse(&xb), gvc->layerDelims);
     if (w0)
-	w1 = strtok(NULL, gvg->layerDelims);
+	w1 = strtok(NULL, gvc->layerDelims);
     switch ((w0 != NULL) + (w1 != NULL)) {
     case 0:
 	rval = FALSE;
 	break;
     case 1:
-	n0 = layer_index(gvg, w0, job->layerNum);
+	n0 = layer_index(gvc, w0, job->layerNum);
 	rval = (n0 == job->layerNum);
 	break;
     case 2:
-	n0 = layer_index(gvg, w0, 0);
-	n1 = layer_index(gvg, w1, job->numLayers);
+	n0 = layer_index(gvc, w0, 0);
+	n1 = layer_index(gvc, w1, job->numLayers);
 	if ((n0 < 0) || (n1 < 0))
 	    rval = TRUE;
 	else if (n0 > n1) {
@@ -579,18 +580,18 @@ static bool node_in_box(node_t *n, boxf b)
 
 static void emit_node(GVJ_t * job, node_t * n)
 {
-    GVG_t *gvg = job->gvg;
+    GVC_t *gvc = job->gvc;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
     int oldstate, explicit_tooltip = 0;
 
     if (ND_shape(n) == NULL)
 	return;
 
-    oldstate = gvg->emit_state;
-    gvg->emit_state = EMIT_NDRAW;
+    oldstate = gvc->emit_state;
+    gvc->emit_state = EMIT_NDRAW;
     if (node_in_layer(job, n->graph, n)
 	    && node_in_box(n, job->pageBoxClip)
-	    && (ND_state(n) != gvg->viewNum)) {
+	    && (ND_state(n) != gvc->viewNum)) {
 
         gvrender_comment(job, n->name);
 
@@ -618,7 +619,7 @@ static void emit_node(GVJ_t * job, node_t * n)
 	setColorScheme (agget (n, "colorscheme"));
 	gvrender_begin_context(job);
 	ND_shape(n)->fns->codefn(job, n);
-	ND_state(n) = gvg->viewNum;
+	ND_state(n) = gvc->viewNum;
 	gvrender_end_context(job);
 
 	if (url || explicit_tooltip)
@@ -628,7 +629,7 @@ static void emit_node(GVJ_t * job, node_t * n)
 	free(target);
 	gvrender_end_node(job);
     }
-    gvg->emit_state = oldstate;
+    gvc->emit_state = oldstate;
 }
 
 #define EPSILON .0001
@@ -685,7 +686,7 @@ static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
     A[1] = pointof(A[0].x - sz.x, A[0].y);
     A[2] = dotneato_closest(spl, lp->p);
     /* Don't use edge style to draw attachment */
-    gvrender_set_style(job, job->gvg->defaultlinestyle);
+    gvrender_set_style(job, job->gvc->defaultlinestyle);
     /* Use font color to draw attachment
        - need something unambiguous in case of multicolored parallel edges
        - defaults to black for html-like labels
@@ -753,8 +754,8 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 
 #define SEP 2.0
 
-    oldstate = job->gvg->emit_state;
-    job->gvg->emit_state = EMIT_EDRAW;
+    oldstate = job->gvc->emit_state;
+    job->gvc->emit_state = EMIT_EDRAW;
     style = late_string(e, E_style, "");
     /* We shortcircuit drawing an invisible edge because the arrowhead
      * code resets the style to solid, and most of the code generators
@@ -952,7 +953,7 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 
     if (saved)
 	gvrender_end_context(job);
-    job->gvg->emit_state = oldstate;
+    job->gvc->emit_state = oldstate;
 }
 
 static bool edge_in_box(edge_t *e, boxf b)
@@ -980,8 +981,8 @@ static void emit_edge(GVJ_t * job, edge_t * e)
     if (! edge_in_box(e, job->pageBoxClip) || ! edge_in_layer(job, e->head->graph, e))
 	return;
 
-    oldstate = job->gvg->emit_state;
-    job->gvg->emit_state = EMIT_EDRAW;
+    oldstate = job->gvc->emit_state;
+    job->gvc->emit_state = EMIT_EDRAW;
     s = malloc(strlen(e->tail->name) + 2 + strlen(e->head->name) + 1);
     strcpy(s,e->tail->name);
     if (AG_IS_DIRECTED(e->tail->graph))
@@ -1018,77 +1019,77 @@ static void emit_edge(GVJ_t * job, edge_t * e)
     free(tooltip);
     free(target);
     gvrender_end_edge(job);
-    job->gvg->emit_state = oldstate;
+    job->gvc->emit_state = oldstate;
 }
 
-static void init_gvg(GVG_t * gvg, graph_t * g)
+static void init_gvc(GVC_t * gvc, graph_t * g)
 {
     double xf, yf;
     char *p;
     int i;
-    
-    gvg->g = g;
+
+    gvc->g = g;
 
     /* margins */
-    gvg->graph_sets_margin = FALSE;
+    gvc->graph_sets_margin = FALSE;
     if ((p = agget(g, "margin"))) {
         i = sscanf(p, "%lf,%lf", &xf, &yf);
         if (i > 0) {
-            gvg->margin.x = gvg->margin.y = xf * POINTS_PER_INCH;
+            gvc->margin.x = gvc->margin.y = xf * POINTS_PER_INCH;
             if (i > 1)
-                gvg->margin.y = yf * POINTS_PER_INCH;
-            gvg->graph_sets_margin = TRUE;
+                gvc->margin.y = yf * POINTS_PER_INCH;
+            gvc->graph_sets_margin = TRUE;
         }
     }
 
     /* pagesize */
-    gvg->graph_sets_pageSize = FALSE;
-    P2PF(GD_drawing(g)->page, gvg->pageSize);
+    gvc->graph_sets_pageSize = FALSE;
+    P2PF(GD_drawing(g)->page, gvc->pageSize);
     if ((GD_drawing(g)->page.x > 0) && (GD_drawing(g)->page.y > 0)) {
-        gvg->graph_sets_pageSize = TRUE;
+        gvc->graph_sets_pageSize = TRUE;
     }
 
     /* rotation */
     if (GD_drawing(g)->landscape) {
-	gvg->rotation = 90;
+	gvc->rotation = 90;
 	/* we expect the user to have swapped x,y coords of pagesize and margin */
-	gvg->pageSize = exch_xyf(gvg->pageSize);
-	gvg->margin = exch_xyf(gvg->margin);
+	gvc->pageSize = exch_xyf(gvc->pageSize);
+	gvc->margin = exch_xyf(gvc->margin);
     }
     else {
-	gvg->rotation = 0;
+	gvc->rotation = 0;
     }
 
     /* pagedir */
-    gvg->pagedir = "BL";
+    gvc->pagedir = "BL";
     if ((p = agget(g, "pagedir")) && p[0])
-            gvg->pagedir = p;
+            gvc->pagedir = p;
 
     /* bounding box */
-    B2BF(GD_bb(g),gvg->bb);
+    B2BF(GD_bb(g),gvc->bb);
 
     /* clusters have peripheries */
     G_peripheries = agfindattr(g, "peripheries");
 
     /* default font */
-    gvg->defaultfontname = late_nnstring(g->proto->n,
+    gvc->defaultfontname = late_nnstring(g->proto->n,
                 N_fontname, DEFAULT_FONTNAME);
-    gvg->defaultfontsize = late_double(g->proto->n,
+    gvc->defaultfontsize = late_double(g->proto->n,
                 N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
 
     /* default line style */
-    gvg->defaultlinestyle = defaultlinestyle;
+    gvc->defaultlinestyle = defaultlinestyle;
 
-    gvg->graphname = g->name;
-    gvg->lib = Lib;
+    gvc->graphname = g->name;
+    gvc->lib = Lib;
 }
 
 static void init_job_margin(GVJ_t *job)
 {
-    GVG_t *gvg = job->gvg;
+    GVC_t *gvc = job->gvc;
     
-    if (gvg->graph_sets_margin) {
-	job->margin = gvg->margin;
+    if (gvc->graph_sets_margin) {
+	job->margin = gvc->margin;
     }
     else {
         /* set default margins depending on format */
@@ -1185,7 +1186,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     job->zoom = Z;              /* scaling factor */
     job->focus.x = x;           /* graph coord of focus - points */
     job->focus.y = y;
-    job->rotation = job->gvg->rotation;
+    job->rotation = job->gvc->rotation;
 
 #if 0
     fprintf(stderr,"bb = %d,%d %d,%d size %d,%d (graph units)\n",
@@ -1249,13 +1250,13 @@ static void emit_colors(GVJ_t * job, graph_t * g)
 
 void emit_view(GVJ_t * job, graph_t * g, int flags)
 {
-    GVG_t * gvg = job->gvg;
+    GVC_t * gvc = job->gvc;
     node_t *n;
     edge_t *e;
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
     int explicit_tooltip = 0;
 
-    gvg->viewNum++;
+    gvc->viewNum++;
     if (((s = agget(g, "href")) && s[0]) || ((s = agget(g, "URL")) && s[0]))
 	url = strdup_and_subst_graph(s, g);
     if ((s = agget(g, "target")) && s[0])
@@ -1337,7 +1338,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
     node_t *n;
     char *s;
     int flags = job->flags;
-    GVG_t *gvg = job->gvg;
+    GVC_t *gvc = job->gvc;
 
     s = late_string(g, agfindattr(g, "comment"), "");
     gvrender_comment(job, s);
@@ -1360,7 +1361,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	    if (job->numLayers == 1)
 		emit_background(job, g);
 	    gvrender_set_pencolor(job, DEFAULT_COLOR);
-	    gvrender_set_font(job, gvg->defaultfontname, gvg->defaultfontsize);
+	    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
 	    if (boxf_overlap(job->clip, job->pageBox))
 	        emit_view(job,g,flags);
 	} 
@@ -1415,10 +1416,10 @@ void emit_jobs_eof(GVC_t * gvc)
 
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
         if (job->output_file) {
-	    if (job->gvg->viewNum > 0) {
+	    if (gvc->viewNum > 0) {
 		gvrender_end_job(job);
 		emit_once_reset();
-		job->gvg->viewNum = 0;
+		gvc->viewNum = 0;
 	    }
             fclose(job->output_file);
             job->output_file = NULL;
@@ -1467,8 +1468,8 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     char *s, *url, *tooltip, *target;
     int oldstate, explicit_tooltip;
 
-    oldstate = job->gvg->emit_state;
-    job->gvg->emit_state = EMIT_CDRAW;
+    oldstate = job->gvc->emit_state;
+    job->gvc->emit_state = EMIT_CDRAW;
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
 	if (clust_in_layer(job, sg) == FALSE)
@@ -1587,7 +1588,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if (!(flags & EMIT_CLUSTERS_LAST))
 	    emit_clusters(job, sg, flags);
     }
-    job->gvg->emit_state = oldstate;
+    job->gvc->emit_state = oldstate;
 }
 
 static bool is_style_delim(int c)
@@ -1746,7 +1747,7 @@ static void emit_job(GVJ_t * job, graph_t * g)
     init_job_viewport(job, g);
     init_job_pagination(job, g);
 
-    job->gvg->emit_state = EMIT_GDRAW;
+    job->gvc->emit_state = EMIT_GDRAW;
     gvrender_begin_job(job);
 
     switch (job->output_lang) {
@@ -1885,7 +1886,6 @@ extern gvdevice_callbacks_t gvdevice_callbacks;
 int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
     GVJ_t *job, *prev_job;
-    GVG_t *gvg = gvc->gvg;
 
     if (!GD_drawing(g)) {
         agerr (AGERR, "Layout was not done.  Missing layout plugins? \n");
@@ -1893,12 +1893,12 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
     }
 
     init_bb(g);
-    init_gvg(gvg, g);
-    init_layering(gvg, g);
+    init_gvc(gvc, g);
+    init_layering(gvc, g);
 
     gvc->keybindings = gvevent_key_binding;
     gvc->numkeys = gvevent_key_binding_size;
-    gvg->active_jobs = NULL; /* clear active list */
+    gvc->active_jobs = NULL; /* clear active list */
     prev_job = NULL;
     for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
         if (!job->output_file) {        /* if not yet opened */
@@ -1915,17 +1915,17 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
         }
 
 	/* if we already have an active job list to a different output device */
-        if (gvg->active_jobs
-	&& strcmp(job->output_langname,gvg->active_jobs->output_langname) != 0) {
+        if (gvc->active_jobs
+	&& strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
             gvdevice_finalize(gvc); /* finalize previous jobs */
-            gvg->active_jobs = NULL; /* clear active list */
+            gvc->active_jobs = NULL; /* clear active list */
 	    prev_job = NULL;
         }
 
 	if (prev_job)
             prev_job->next_active = job;  /* insert job in active list */
 	else
-	    gvg->active_jobs = job;   /* first job of new list */
+	    gvc->active_jobs = job;   /* first job of new list */
 	job->next_active = NULL;      /* terminate active list */
 	prev_job = job;
 

@@ -475,12 +475,12 @@ svg_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
 	svg_fputs(") -->\n");
 }
 
-static void svg_begin_graph(GVJ_t * job, graph_t * g, box bb, point pb)
+static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
-    Viewport.x = job->width;
-    Viewport.y = job->height;
-    CompScale = job->compscale;
-    Offset = job->offset;
+    Viewport.x = gvc->job->width;
+    Viewport.y = gvc->job->height;
+    CompScale = gvc->job->compscale;
+    Offset = gvc->job->offset;
 
     if (onetime) {
 	init_svg();
@@ -490,13 +490,13 @@ static void svg_begin_graph(GVJ_t * job, graph_t * g, box bb, point pb)
     svg_fputs("<!-- Title: ");
     svg_fputs(xml_namestring(g->name));
     svg_printf(" Pages: %d -->\n", N_pages);
-    if (ROUND(job->dpi.x) == POINTS_PER_INCH && ROUND(job->dpi.y) == POINTS_PER_INCH)
+    if (ROUND(gvc->job->dpi.x) == POINTS_PER_INCH && ROUND(gvc->job->dpi.y) == POINTS_PER_INCH)
 	svg_printf("<svg width=\"%dpt\" height=\"%dpt\"\n",
 		Viewport.x, Viewport.y);
     else
 	svg_printf("<svg width=\"%dpx\" height=\"%dpx\"\n",
-		ROUND(job->dpi.x * Viewport.x / POINTS_PER_INCH),
-		ROUND(job->dpi.y * Viewport.y / POINTS_PER_INCH));
+		ROUND(gvc->job->dpi.x * Viewport.x / POINTS_PER_INCH),
+		ROUND(gvc->job->dpi.y * Viewport.y / POINTS_PER_INCH));
     /* establish absolute units in points */
     svg_printf(" viewBox = \"%d %d %d %d\"\n", 0, 0, Viewport.x, Viewport.y);
     /* namespace of svg */

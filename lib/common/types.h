@@ -194,7 +194,7 @@ extern "C" {
 	void (*begin_job) (FILE * ofp, graph_t * g, char **lib, char *user,
 			   char *info[], point pages);
 	void (*end_job) (void);
-	void (*begin_graph) (GVJ_t * job, graph_t * g, box bb, point pb);
+	void (*begin_graph) (GVC_t * gvc, graph_t * g, box bb, point pb);
 	void (*end_graph) (void);
 	void (*begin_page) (graph_t * g, point page, double scale, int rot,
 			    point offset);

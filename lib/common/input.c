@@ -296,13 +296,13 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     }
 
     /* if no -Txxx, then set default format */
-    if (!gvc->gvg->jobs || !gvc->gvg->jobs->output_langname) {
+    if (!gvc->jobs || !gvc->jobs->output_langname) {
 	v = gvrender_output_langname_job(gvc, "dot");
 	assert(v);  /* "dot" should always be available as an output format */
     }
 
 #if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
-    Output_codegen = gvc->gvg->jobs->codegen;
+    Output_codegen = gvc->jobs->codegen;
 #endif
 
     /* set persistent attributes here (if not already set from command line options) */
@@ -358,7 +358,6 @@ void getdouble(graph_t * g, char *name, double *result)
     }
 }
 
-#if 0
 static FILE *next_input_file(void)
 {
     static int ctr = 0;
@@ -400,7 +399,6 @@ graph_t *next_input_graph(void)
     }
     return g;
 }
-#endif
 
 /* findCharset:
  * Check if the charset attribute is defined for the graph and, if

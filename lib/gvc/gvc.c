@@ -97,7 +97,7 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
         return -1;
     }
 
-    job = gvc->gvg->job;
+    job = gvc->job;
     job->output_lang = gvrender_select(job, job->output_langname);
     if (!GD_drawing(g) && job->output_lang != CANONICAL_DOT) {
 	fprintf(stderr, "Layout was not done\n");
@@ -105,7 +105,7 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
     }
     job->output_file = out;
     gvRenderJobs(gvc, g);
-    if (gvc->gvg->active_jobs)
+    if (gvc->active_jobs)
 	gvdevice_finalize(gvc);
     gvrender_delete_jobs(gvc);
 
@@ -127,7 +127,7 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
 	return -1;
     }
 
-    job = gvc->gvg->job;
+    job = gvc->job;
     job->output_lang = gvrender_select(job, job->output_langname);
     if (!GD_drawing(g) && job->output_lang != CANONICAL_DOT) {
 	fprintf(stderr, "Layout was not done\n");
@@ -135,7 +135,7 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
     }
     gvrender_output_filename_job(gvc, filename);
     gvRenderJobs(gvc, g);
-    if (gvc->gvg->active_jobs)
+    if (gvc->active_jobs)
 	gvdevice_finalize(gvc);
     gvrender_delete_jobs(gvc);
 

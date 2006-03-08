@@ -28,9 +28,8 @@ extern "C" {
     typedef struct codegen_info_s codegen_info_t;
 #endif
 
-    typedef struct GVC_s GVC_t;
-    typedef struct GVG_s GVG_t;
     typedef struct GVJ_s GVJ_t;
+    typedef struct GVC_s GVC_t;
 
     typedef struct {
 	const char *name;
