@@ -216,34 +216,28 @@ formats need to be interpreted in this manner.
   given the dot file
   <PRE>
   /* x.dot */
-  digraph G {
+  digraph mainmap {
     URL="http://www.research.att.com/base.html";
     command [URL="http://www.research.att.com/command.html"];
     command -> output [URL="colors.html"];
   }
   </PRE>
-  one would process the graph twice:
+  one would process the graph and generate two output files:
   <PRE>
-  dot -Timap x.dot > x.map
-  dot -Tgif x.dot > x.gif
+  dot -Timap -ox.map -Tgif -ox.gif x.dot
   </PRE>
   and then refer to it in a web page:
   <XMP>
-  <A HREF="x.map">
-  <IMG SRC="x.gif" ISMAP>
-  </A>
+  <A HREF="x.map"><IMG SRC="x.gif" ismap="ismap" /></A>
   </XMP>
-  For client-side maps, one again processes the graph twice:
+  For client-side maps, one again generates two output files:
   <PRE>
-  dot -Tcmapx x.dot > x.map
-  dot -Tgif x.dot > x.gif
+  dot -Tcmapx -ox.map -Tgif -ox.gif x.dot
   </PRE>
   and uses the HTML
   <XMP>
-  <IMG SRC="x.gif" USEMAP=#mainmap>
-  <MAP NAME="mainmap">
-    ... [content of x.map] ...
-  </MAP>
+  <IMG SRC="x.gif" USEMAP="#mainmap" />
+  ... [content of x.map] ...
   </XMP>
   <A HREF=attrs.html#d:URL>URLs</A> can be attached to the root 
   graph, nodes and edges. If a node has a URL, clicking in the node
@@ -357,7 +351,7 @@ formats need to be interpreted in this manner.
   <UL>
   <LI> Arrange that the input graph uses <TT>dir=none</TT>, 
   <TT>arrowhead=none</TT>, or <TT>arrowtail=none</TT> for all edges.
-  In this case, the terminating control points will always touch the
+  In this case, the terminating control points will always touch the node.
   <LI> Consider the line segment joining the control point and the center
   of the node, and determine the point where the segment intersects the
   node's boundary. Then use the control point and the intersection point
