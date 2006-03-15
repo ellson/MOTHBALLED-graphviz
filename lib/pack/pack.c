@@ -20,6 +20,7 @@
  * K. Freivalds et al., GD0'01, LNCS 2265, pp. 378-391.
  */
 
+#include <render.h>
 #include <pack.h>
 #include <pointset.h>
 #include <math.h>
