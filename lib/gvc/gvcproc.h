@@ -107,10 +107,10 @@ extern "C" {
     extern void gvrender_set_pencolor(GVJ_t * job, char *name);
     extern void gvrender_set_fillcolor(GVJ_t * job, char *name);
     extern void gvrender_set_style(GVJ_t * job, char **s);
-    extern void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry,
-				 int filled);
-    extern void gvrender_polygon(GVJ_t * job, point * A, int n,
-				 int filled);
+    extern void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry, int filled);
+    extern void gvrender_ellipsef(GVJ_t * job, pointf p, double rx, double ry, int filled);
+    extern void gvrender_polygon(GVJ_t * job, point * A, int n, int filled);
+    extern void gvrender_polygonf(GVJ_t * job, pointf * AF, int n, int filled);
     extern void gvrender_beziercurve(GVJ_t * job, pointf * AF, int n,
 				     int arrow_at_start, int arrow_at_end, int);
     extern void gvrender_polyline(GVJ_t * job, point * A, int n);

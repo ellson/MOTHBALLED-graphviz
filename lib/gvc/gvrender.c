@@ -778,6 +778,39 @@ void gvrender_set_style(GVJ_t * job, char **s)
 #endif
 }
 
+void gvrender_ellipsef(GVJ_t * job, pointf pf, double rx, double ry, int filled)
+{
+    gvrender_engine_t *gvre = job->render.engine;
+
+    if (gvre && gvre->ellipse) {
+	if (job->style->pen != PEN_NONE) {
+	    pointf af[2];
+
+	    /* center */
+	    af[0] = pf;
+	    /* corner */
+	    af[1].x = pf.x + rx;
+	    af[1].y = pf.y + ry;
+	    /* scale */
+	    af[0] = gvrender_ptf(job, af[0]);
+	    af[1] = gvrender_ptf(job, af[1]);
+	    gvre->ellipse(job, af, filled);
+	}
+    }
+#ifndef DISABLE_CODEGENS
+    else {
+	codegen_t *cg = job->codegen;
+
+	if (cg && cg->ellipse) {
+	    point p;
+
+	    PF2P(pf, p);
+	    cg->ellipse(p, ROUND(rx), ROUND(ry), filled);
+	}
+    }
+#endif
+}
+
 void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry, int filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
@@ -806,6 +839,38 @@ void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry, int filled)
 
 	if (cg && cg->ellipse)
 	    cg->ellipse(p, rx, ry, filled);
+    }
+#endif
+}
+
+void gvrender_polygonf(GVJ_t * job, pointf * af, int n, int filled)
+{
+    int i;
+    gvrender_engine_t *gvre = job->render.engine;
+
+    if (gvre && gvre->polygon) {
+	if (job->style->pen != PEN_NONE) {
+	    if (sizeAF < n) {
+		sizeAF = n+10;
+		AF = grealloc(AF, sizeAF * sizeof(pointf));
+	    }
+	    for (i = 0; i < n; i++)
+		AF[i] = gvrender_ptf(job, af[i]);
+	    gvre->polygon(job, AF, n, filled);
+	}
+    }
+#ifndef DISABLE_CODEGENS
+    else {
+	codegen_t *cg = job->codegen;
+
+	if (sizeA < n) {
+	    sizeA = n+10;
+	    A = grealloc(A, sizeA * sizeof(point));
+	}
+	for (i = 0; i < n; i++)
+	    PF2P(af[i], A[i]);
+	if (cg && cg->polygon)
+	    cg->polygon(A, n, filled);
     }
 #endif
 }

@@ -1197,6 +1197,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     int i, j, peripheries, sides, style;
     pointf P, *vertices;
     static point *A;
+    static pointf *AF;
     static int A_size;
     bool filled;
     char *color;
@@ -1208,6 +1209,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     if (A_size < sides) {
 	A_size = sides + 5;
 	A = ALLOC(A_size, A, point);
+	AF = ALLOC(A_size, AF, pointf);
     }
 
     ND_label(n)->p = ND_coord_i(n);
@@ -1297,6 +1299,12 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     for (j = 0; j < peripheries; j++) {
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i + j * sides];
+	    AF[i].x = P.x * xsize / 16.;
+	    AF[i].y = P.y * ysize / 16.;
+	    if (sides > 2) {
+		AF[i].x += ND_coord_i(n).x;
+		AF[i].y += ND_coord_i(n).y;
+	    }
 /* simple rounding produces random results around .5 
  * this trick should clip off the random part. 
  * (note xsize/ysize prescaled by 16.0 above) */
@@ -1308,14 +1316,17 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    }
 	}
 	if (sides <= 2) {
-	    gvrender_ellipse(job, ND_coord_i(n), A[0].x, A[0].y, filled);
+	    pointf PF;
+
+	    P2PF(ND_coord_i(n), PF);
+	    gvrender_ellipsef(job, PF, AF[0].x, AF[0].y, filled);
 	    if (style & DIAGONALS) {
 		Mcircle_hack(job, n);
 	    }
 	} else if (style & (ROUNDED | DIAGONALS)) {
 	    node_round_corners(job, n, A, sides, style);
 	} else {
-	    gvrender_polygon(job, A, sides, filled);
+	    gvrender_polygonf(job, AF, sides, filled);
 	}
 	/* fill innermost periphery only */
 	filled = FALSE;
