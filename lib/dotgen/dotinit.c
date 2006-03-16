@@ -167,7 +167,7 @@ dot_cleanup_graph(graph_t * g)
 	    free(GD_rank(g)[i].v);
 	free(GD_rank(g));
     }
-    memset(&(g->u), 0, sizeof(Agraphinfo_t));
+    if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
 }
 
 /* delete the layout (but retain the underlying graph) */

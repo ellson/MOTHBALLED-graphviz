@@ -177,7 +177,7 @@ void neato_cleanup_graph(graph_t * g)
 {
     if (Nop || (Pack < 0))
 	free_scan_graph(g);
-    memset(&(g->u), 0, sizeof(Agraphinfo_t));
+    if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
 }
 
 void neato_cleanup(graph_t * g)

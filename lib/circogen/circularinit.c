@@ -340,5 +340,5 @@ void circo_cleanup(graph_t * g)
 	circular_cleanup_node(n);
     }
     free(GD_neato_nlist(g));
-    memset(&(g->u), 0, sizeof(Agraphinfo_t));
+    if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
 }
