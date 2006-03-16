@@ -289,37 +289,6 @@ int arrowStartClip(edge_t* e, point * ps, int startp,
     return startp;
 }
 
-/* FIXME - codegens should accept floats directly */
-static void arrow_codegen_polygon(GVJ_t * job, pointf p[], int np,
-				  int fill)
-{
-    point P[16];		/* ugly - but this should be enough for arrows */
-    int i;
-    for (i = 0; i < np; i++)
-	PF2P(p[i], P[i]);
-    gvrender_polygon(job, P, np, fill);
-}
-
-/* FIXME - codegens should accept floats directly */
-static void arrow_codegen_polyline(GVJ_t * job, pointf p[], int np)
-{
-    point P[16];		/* ugly - but this should be enough for arrows */
-    int i;
-    for (i = 0; i < np; i++)
-	PF2P(p[i], P[i]);
-    gvrender_polyline(job, P, np);
-}
-
-/* FIXME - codegens should accept floats directly */
-static void arrow_codegen_ellipse(GVJ_t * job, pointf p, pointf r,
-				  int fill)
-{
-    point P, R;
-    PF2P(p, P);
-    PF2P(r, R);
-    gvrender_ellipse(job, P, R.x, R.y, fill);
-}
-
 static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, int flag)
 {
     pointf q, v, a[5];
@@ -344,11 +313,11 @@ static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, int flag)
 	a[3].y = q.y + v.y;
     }
     if (flag & ARR_MOD_LEFT)
-	arrow_codegen_polygon(job, a, 3, !(flag & ARR_MOD_OPEN));
+	gvrender_polygonf(job, a, 3, !(flag & ARR_MOD_OPEN));
     else if (flag & ARR_MOD_RIGHT)
-	arrow_codegen_polygon(job, &a[2], 3, !(flag & ARR_MOD_OPEN));
+	gvrender_polygonf(job, &a[2], 3, !(flag & ARR_MOD_OPEN));
     else
-	arrow_codegen_polygon(job, &a[1], 3, !(flag & ARR_MOD_OPEN));
+	gvrender_polygonf(job, &a[1], 3, !(flag & ARR_MOD_OPEN));
 }
 
 static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, int flag)
@@ -381,11 +350,11 @@ static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, int flag)
 	a[5].y = p.y + v.y;
     }
     if (flag & ARR_MOD_LEFT)
-	arrow_codegen_polygon(job, a, 5, 1);
+	gvrender_polygonf(job, a, 5, 1);
     else if (flag & ARR_MOD_RIGHT)
-	arrow_codegen_polygon(job, &a[2], 5, 1);
+	gvrender_polygonf(job, &a[2], 5, 1);
     else
-	arrow_codegen_polygon(job, a, 7, 1);
+	gvrender_polygonf(job, a, 7, 1);
 }
 
 static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, int flag)
@@ -415,10 +384,10 @@ static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, int flag)
 	a[1] = m;
 	a[2] = n;
     }
-    arrow_codegen_polygon(job, a, 4, 1);
+    gvrender_polygonf(job, a, 4, 1);
     a[0] = p;
     a[1] = q;
-    arrow_codegen_polyline(job, a, 2);
+    gvrender_polylinef(job, a, 2);
 }
 
 static void arrow_type_box(GVJ_t * job, pointf p, pointf u, int flag)
@@ -446,10 +415,10 @@ static void arrow_type_box(GVJ_t * job, pointf p, pointf u, int flag)
 	a[1] = p;
 	a[2] = m;
     }
-    arrow_codegen_polygon(job, a, 4, !(flag & ARR_MOD_OPEN));
+    gvrender_polygonf(job, a, 4, !(flag & ARR_MOD_OPEN));
     a[0] = m;
     a[1] = q;
-    arrow_codegen_polyline(job, a, 2);
+    gvrender_polylinef(job, a, 2);
 }
 
 static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, int flag)
@@ -469,21 +438,21 @@ static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, int flag)
     a[3].x = r.x - v.x;
     a[3].y = r.y - v.y;
     if (flag & ARR_MOD_LEFT)
-	arrow_codegen_polygon(job, &a[2], 3, !(flag & ARR_MOD_OPEN));
+	gvrender_polygonf(job, &a[2], 3, !(flag & ARR_MOD_OPEN));
     else if (flag & ARR_MOD_RIGHT)
-	arrow_codegen_polygon(job, a, 3, !(flag & ARR_MOD_OPEN));
+	gvrender_polygonf(job, a, 3, !(flag & ARR_MOD_OPEN));
     else
-	arrow_codegen_polygon(job, a, 4, !(flag & ARR_MOD_OPEN));
+	gvrender_polygonf(job, a, 4, !(flag & ARR_MOD_OPEN));
 }
 
 static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, int flag)
 {
-    pointf r;
+    double r;
 
-    r.x = r.y = sqrt(u.x * u.x + u.y * u.y) / 2.;
+    r = sqrt(u.x * u.x + u.y * u.y) / 2.;
     p.x += u.x / 2.;
     p.y += u.y / 2.;
-    arrow_codegen_ellipse(job, p, r, !(flag & ARR_MOD_OPEN));
+    gvrender_ellipsef(job, p, r, r, !(flag & ARR_MOD_OPEN));
 }
 
 static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, int flag)

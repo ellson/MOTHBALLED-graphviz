@@ -934,6 +934,38 @@ void gvrender_beziercurve(GVJ_t * job, pointf * af, int n,
 #endif
 }
 
+void gvrender_polylinef(GVJ_t * job, pointf * af, int n)
+{
+    int i;
+    gvrender_engine_t *gvre = job->render.engine;
+
+    if (gvre && gvre->polyline) {
+	if (job->style->pen != PEN_NONE) {
+	    if (sizeAF < n) {
+		sizeAF = n+10;
+		AF = grealloc(AF, sizeAF * sizeof(pointf));
+	    }
+	    for (i = 0; i < n; i++)
+		AF[i] = gvrender_ptf(job, af[i]);
+	    gvre->polyline(job, AF, n);
+	}
+    }
+#ifndef DISABLE_CODEGENS
+    else {
+	codegen_t *cg = job->codegen;
+
+	if (sizeA < n) {
+	    sizeA = n+10;
+	    A = grealloc(A, sizeA * sizeof(point));
+	}
+	for (i = 0; i < n; i++)
+	    PF2P(af[i], A[i]);
+	if (cg && cg->polyline)
+	    cg->polyline(A, n);
+    }
+#endif
+}
+
 void gvrender_polyline(GVJ_t * job, point * a, int n)
 {
     gvrender_engine_t *gvre = job->render.engine;

@@ -114,6 +114,7 @@ extern "C" {
     extern void gvrender_beziercurve(GVJ_t * job, pointf * AF, int n,
 				     int arrow_at_start, int arrow_at_end, int);
     extern void gvrender_polyline(GVJ_t * job, point * A, int n);
+    extern void gvrender_polylinef(GVJ_t * job, pointf * AF, int n);
     extern void gvrender_comment(GVJ_t * job, char *str);
     extern void gvrender_user_shape(GVJ_t * job, char *name, point * A,
 				    int sides, int filled);
