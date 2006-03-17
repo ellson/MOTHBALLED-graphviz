@@ -100,16 +100,16 @@ Group:		Applications/Multimedia
 License:	CPL
 URL:		http://www.graphviz.org/
 Source:		http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
-%{?fc6:Requires: urw-fonts}
-%{?fc5:Requires: urw-fonts}
-%{?fc4:Requires: urw-fonts}
-%{?fc3:Requires: urw-fonts}
-%{?fc2:Requires: urw-fonts}
-%{?fc1:Requires: urw-fonts}
-%{?el6:Requires: urw-fonts}
-%{?el5:Requires: urw-fonts}
-%{?el4:Requires: urw-fonts}
 %{?el3:Requires: urw-fonts}
+%{?el4:Requires: urw-fonts}
+%{?el5:Requires: urw-fonts}
+%{?el6:Requires: urw-fonts}
+%{?fc1:Requires: urw-fonts}
+%{?fc2:Requires: urw-fonts}
+%{?fc3:Requires: urw-fonts}
+%{?fc4:Requires: urw-fonts}
+%{?fc5:Requires: urw-fonts}
+%{?fc6:Requires: urw-fonts}
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -126,21 +126,21 @@ BuildRequires:	/bin/ksh bison m4 flex tk tcl >= 8.3 swig
 BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
 
 #Stuff moves around.   
-%{?fc6:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
-%{?fc5:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
-%{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel} 
-%{?fc3:BuildRequires: fontconfig-devel xorg-x11-devel tcl-devel tk-devel} 
-%{?fc2:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
-%{?fc1:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
-%{?el6:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
-%{?el5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
-%{?el4:BuildRequires: fontconfig-devel xorg-x11-devel tcl-devel tk-devel}
-%{?el3:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
-%{?el2:BuildRequires: XFree86-devel}
-%{?rh9:BuildRequires: XFree86-devel}
-%{?rh8:BuildRequires: XFree86-devel}
-%{?rh7:BuildRequires: XFree86-devel}
 %{?rh6:BuildRequires: XFree86-devel}
+%{?rh7:BuildRequires: XFree86-devel}
+%{?rh8:BuildRequires: XFree86-devel}
+%{?rh9:BuildRequires: XFree86-devel}
+%{?el2:BuildRequires: XFree86-devel}
+%{?el3:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
+%{?el4:BuildRequires: fontconfig-devel xorg-x11-devel tcl-devel tk-devel}
+%{?el5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
+%{?el6:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
+%{?fc1:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
+%{?fc2:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
+%{?fc3:BuildRequires: fontconfig-devel xorg-x11-devel tcl-devel tk-devel} 
+%{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel} 
+%{?fc5:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
+%{?fc6:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
 
 %description
 A collection of tools for the manipulation and layout
