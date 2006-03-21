@@ -189,7 +189,7 @@ emit_textlines(GVJ_t* job, int nlines, textline_t lines[], pointf p,
 
     /* position for first line  - FUDGE */
     p.y += (linespacing * (nlines - 1) / 2)	/* cl of topline */
-	-fsize / 5.0;	/* cl to baseline */
+	-fsize * 0.23;	/* cl to baseline */
 
     tmp = ROUND(p.y);  /* align with interger points */
     p.y = (double)tmp;
