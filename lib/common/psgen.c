@@ -152,40 +152,38 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
     point sz;
     box pbr;
 
-    Cur_page++;
     sz = sub_points(PB.UR,PB.LL);
+    Cur_page++;
     fprintf(Output_file, "%%%%Page: %d %d\n", Cur_page, Cur_page);
+
+    if (rot) {
+	pbr.LL.x = PB.LL.y;
+	pbr.LL.y = PB.LL.x;
+	pbr.UR.x = PB.UR.y;
+	pbr.UR.y = PB.UR.x;
+    }
+    else {
+	pbr = PB;
+    }
+    if (onetime) {
+	DBB = pbr;
+    }
+    else {
+	EXPANDBB(DBB, pbr);
+    }
     if (Show_boxes == NULL) {
-	if (rot) {
-	    pbr.LL.x = PB.LL.y;
-	    pbr.LL.y = PB.LL.x;
-	    pbr.UR.x = PB.UR.y;
-	    pbr.UR.y = PB.UR.x;
-	}
-	else {
-	    pbr = PB;
-	}
 	fprintf(Output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
 	        pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
-	if (onetime) {
-	    DBB = pbr;
-	}
-	else {
-	    EXPANDBB(DBB, pbr);
-	}
     }
+    
     fprintf(Output_file, "%%%%PageOrientation: %s\n",
 	    (rot ? "Landscape" : "Portrait"));
     if (Output_lang == PDF)
 	fprintf(Output_file, "<< /PageSize [%d %d] >> setpagedevice\n",
-	    sz.x, sz.y);
+	    pbr.UR.x, pbr.UR.y);
     if (Show_boxes == NULL) {
-	if (rot)
-	    fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
-	        PB.LL.x, PB.LL.y, sz.y, sz.x);
-	else
-	    fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
-	        PB.LL.x, PB.LL.y, sz.x, sz.y);
+	fprintf(Output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
+	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
     }
     fprintf(Output_file, "%d %d translate\n", PB.LL.x, PB.LL.y);
     if (rot)
@@ -209,7 +207,7 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 		  "\t(suggest setting a bounding box size, see dot(1))\n",
 		  sz.x, sz.y, PDFMAX);
 	fprintf(Output_file, "[ /CropBox [%d %d %d %d] /PAGE pdfmark\n",
-		PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
+		pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
     }
 }
 
