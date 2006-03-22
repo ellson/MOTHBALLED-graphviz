@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
-<HTML><HEAD><TITLE>Graphviz FAQ 2006-01-03</TITLE>
+<HTML><HEAD><TITLE>Graphviz FAQ 2006-03-22</TITLE>
 <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
 </HEAD><BODY>
-<H1>Graphviz FAQ 2006-01-03</H1>
+<H1>Graphviz FAQ 2006-03-22</H1>
 
 <A HREF="mailto:north@graphviz.org">Stephen North</A>,
 <A HREF="mailto:erg@graphviz.org">Emden Gansner</A>,
@@ -343,18 +343,107 @@ raster drivers that load Truetype or Type1
 fonts!  (That means, <tt>-Tgif, -Tpng, -Tjpeg</tt>, and possibly
 <tt>-Tbmp</tt> or <tt>-Txbm</tt> if enabled). 
  
-Use UTF8 coding, <i>e.g.</i> &#165; for the Yen
-currency symbol.  Example:
+Use UTF8 coding, <i>e.g.</i> &amp;#165; for the Yen currency symbol &#165.
+Example:
  
+<pre>
       graph G {
-            yen [label="&#165;"]
+            yen [label="&amp#165;"]
       }
+</pre>
 <P>
 You can look up other examples in this
 handy <A HREF="http://www.research.att.com/sw/tools/graphviz/doc/char.html">
-character set reference</A> .
+character set reference</A>.
 <P>
-<A name=Q11>
+<A name=Q10b>
+<B>Q. More generally, how do I use non-ASCII character sets?</B>
+</A>
+<P>
+The following applies to Graphviz 2.8 and later.  (In older versions
+of Graphviz, you can sometimes get away with simply putting
+Latin-1 or other UTF-8 characters in the input stream, but the
+results are not always correct.)
+<P>
+<B>Input:</B> the general idea is to find the
+<A HREF="http://en.wikipedia.org/wiki/Unicode">Unicode</A>
+value for the glyph you want, and enter it within a text
+string "...." or HTML-like label <...>.
+<P>
+For example, the mathematical <it>forall</it> sign (&#8704;) has the value 0x2200.
+There are several ways this can be inserted into a file.
+One is to write out the ASCII representation: "&amp;#&lt;nnn&gt;;" where &lt;nnn&gt;
+is the decimal representation of the value. The decimal value of 0x2200 is 8704,
+so the character can be specified as "&amp;#8704;" . Alternatively, Graphviz
+accepts UTF-8 encoded input.  In the case of forall, its UTF-8 representation
+is 3 bytes whose decimal values are 226 136 128. For convenience, you
+would probably enter this using your favorite editor, tuned to your character set
+of choice. You can then use the <A HREF="http://www.gnu.org/software/libiconv/#TOCdownloading">
+iconv</A> program to map the graph from your character set to UTF-8 or Latin-1.
+<P>
+We also accept the HTML symbolic names for Latin-1 characters as suggested
+<A HREF="#Q10">above</A>.
+(Go to http://www.research.att.com/~john/docs/html/index.htm and click
+on Special symbols and Entities) For example, the cent sign (unicode
+and Latin-1 value decimal 162 can be inserted as
+<pre>
+&amp;cent;
+</pre>
+<P>
+Note that <b>the graph file must always be a plain text document</b>
+not a Word or other rich format file.  Any characters not enclosed in "..."
+or <...> must be ordinary ASCII characters. In particular, all of the DOT
+keywords such as <tt>digraph</tt> or <tt>subgraph</tt> must be ASCII.
+<P>
+Because we cannot always guess the encoding, you should set the graph
+attribute <tt>charset</tt> to 
+<A HREF="http://en.wikipedia.org/wiki/UTF-8">UTF-8</A>,
+<A HREF="http://en.wikipedia.org/wiki/Latin-1">Latin1</A>
+(alias ISO-8859-1 or ISO-IR-100)
+or 
+<A HREF="http://en.wikipedia.org/wiki/Big-5">Big-5</A> for
+Traditional Chinese.  This can be done in the graph file or on the command line.
+For example <tt>charset=Latin1</tt>.
+<P>
+<B>Output:</B> It is essential that a font which has the glyphs for your
+specified characters is available at final rendering time.
+The choice of this font depends on the target code generator.
+For the gd-based raster generators (PNG, GIF, etc.) you need a
+TrueType or Type-1 font file on the machine running the Graphviz program. 
+If Graphviz is built with the <tt>fontconfig</tt>
+library, it will be used to find the specified font. Otherwise, Graphviz will
+look in various default directories for the font. The directories to be
+searched include those specified by the <tt>fontpath</tt> attribute,
+related environment or shell variables
+(see the <a href=http://www.graphviz.org/doc/info/attrs.html#d:fontpath>fontpath</A> entry),
+and known system font directories. 
+(<A HREF="http://www.research.att.com/sw/tools/graphviz/doc/char.html">
+http://www.research.att.com/sw/tools/graphviz/doc/char.html</A>
+points out that these glyphs are from the <tt>times.ttf</tt> font.
+With fontconfig, it's hard to specify this font.  <tt>Times</tt> usually gets
+resolved to Adobe Type1 times, which doesn't have all the glyphs seen on that page.)
+<!--- can someone explain whether Cairo differs from libgd here? --->
+<P>
+For Postscript, the input must be either the ASCII subset of UTF-8
+or Latin-1. (We have looked for more general solutions, but it
+appears that UTF-8 and Unicode are handled differently for every
+kind of font type in Postscript, and we don't have time to hack
+this case-by-case.  If someone wants to volunteer to work on this, let us know.)
+<P>
+For SVG output, we just pass the raw UTF-8 (or other encoding)
+straight through to the generated code.
+<P>
+Non-ASCII characters probably won't ever work in Grappa
+or dotty, which have their own back end rendering. 
+(Though, Java supports UTF-8, so there's a chance
+Grappa also handles raw UTF-8 strings.)
+<P>
+As you can see, this is a sad state of affairs.
+Our plan is to eventually migrate Graphviz to the
+<A HREF="http://www.pango.org/">pango</A> text formatting
+library, to ameliorate the worst of these complications.
+<P>
+<A name = Q11>
 <B>Q. How do I get font and color changes in record labels or other labels?</B>
 </A>
 <P>
