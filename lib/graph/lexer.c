@@ -328,7 +328,6 @@ int aglex(void)
 {
     int token;
     char *tbuf, *p;
-    agxbuf xb;
     static unsigned char BOM[] = { 0xEF, 0xBB, 0xBF };	/* UTF-8 byte order marker */
 
     /* if the parser has accepted a graph, reset and return EOF */
@@ -363,7 +362,9 @@ int aglex(void)
 
     /* scan HTML strings */
     if (LexPtr[0] == '<') {
-	agxbinit(&xb, LineBufSize, (unsigned char *) TokenBuf);
+	agxbuf xb;
+	unsigned char htmlbuf[BUFSIZ];
+	agxbinit(&xb, BUFSIZ, htmlbuf);
 	LexPtr = html_string(LexPtr, &xb);
 	aglval.str = agstrdup_html(agxbuse(&xb));
 	agxbfree(&xb);
