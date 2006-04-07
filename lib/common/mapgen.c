@@ -14,12 +14,10 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-
 #define NEWANCHORS 0
 
 #include "render.h"
 #include "htmltable.h"
-
 
 /* IMAP font modifiers */
 #define REGULAR 0
@@ -62,6 +60,39 @@ static point Viewport;
 static pointf GraphFocus;
 static double Zoom;
 
+/* isRect:
+ * isRect function returns true when polygon has 
+ * regular rectangular shape. Rectangle is regular when
+ * it is not skewed and distorted and orientation is almost zero     
+ */
+bool isRect(polygon_t * p)
+{
+    return (p->sides == 4 && (ROUND(p->orientation) % 90) == 0
+	    && p->distortion == 0.0 && p->skew == 0.0);
+}
+
+/* pEllipse:
+ * pEllipse function returns 'np' points from the circumference
+ * of ellipse described by radii 'a' and 'b'. 
+ * Assumes 'np' is greater than zero.
+ * 'np' should be at least 4 to sample polygon from ellipse
+ */
+static pointf *pEllipse(double a, double b, int np)
+{
+    double theta = 0.0;
+    double deltheta = 2 * M_PI / np;
+    int i;
+    pointf *ps;
+
+    ps = N_NEW(np, pointf);
+    for (i = 0; i < np; i++) {
+	ps[i].x = a * cos(theta);
+	ps[i].y = b * sin(theta);
+	theta += deltheta;
+    }
+    return ps;
+}
+
 static pointf mapptf(pointf p)
 {
     pointf rv;
@@ -85,57 +116,49 @@ static pointf mapptf(pointf p)
     return rv;
 }
 
-static void
-map_output_rect(pointf p1, pointf p2, char *url, char *target, char *label,
-		char *tooltip)
+/*
+ * isFilled function returns 1 if filled style has been set for node 'n'
+ * otherwise returns 0. it accepts pointer to node_t as an argument 
+ */
+static int ifFilled(node_t * n)
 {
-    pointf ppf1, ppf2;
-    point pp1, pp2;
-    double t;
-
-    if (!(url && url[0]) && !(tooltip && tooltip[0]))
-	return;
-
-    /* apply scaling and translation if necessary */
-    if (Output_lang == ISMAP
-	|| Output_lang == IMAP
-	|| Output_lang == CMAP || Output_lang == CMAPX) {
-	ppf1 = mapptf(p1);
-	ppf2 = mapptf(p2);
-    } else {
-	ppf1 = p1;
-	ppf2 = p2;
+    char *style, *p, **pp;
+    int r = 0;
+    style = late_nnstring(n, N_style, "");
+    if (style[0]) {
+	pp = parse_style(style);
+	while ((p = *pp)) {
+	    if (strcmp(p, "filled") == 0)
+		r = 1;
+	    pp++;
+	}
     }
-    pp1.x = ROUND(ppf1.x);
-    pp1.y = ROUND(ppf1.y);
-    pp2.x = ROUND(ppf2.x);
-    pp2.y = ROUND(ppf2.y);
+    return r;
+}
 
-    /* suppress maps that are totally clipped in either x or y */
-    if (pp1.x == pp2.x || pp1.y == pp2.y)
-	return;
-
-    /* fix up coordinate order */
-    if (pp2.x < pp1.x) {
-	t = pp2.x;
-	pp2.x = pp1.x;
-	pp1.x = t;
-    }
-    if (pp2.y < pp1.y) {
-	t = pp2.y;
-	pp2.y = pp1.y;
-	pp1.y = t;
-    }
 #if ! NEWANCHORS
+static void mapOutput (char* shapename, point* pp, int nump,
+		char* url, char *target, char *label, char *tooltip)
+{
+    int i;
 
-    if (Output_lang == IMAP && url &&url[0]) {
-	fprintf(Output_file, "rect %s %d,%d %d,%d\n",
-		url, pp1.x, pp1.y, pp2.x, pp2.y);
-    } else if (Output_lang == ISMAP && url &&url[0]) {
+    if (Output_lang == IMAP && url && url[0]) {
+	fprintf(Output_file, "%s %s ", shapename, url);
+	if (strcmp(shapename, "circle") == 0)
+	    fprintf(Output_file, "%d,%d %d,%d", 
+		pp[0].x, pp[0].y, (pp[1].x+pp[0].x), pp[0].y);
+	else {
+	    for (i = 0; i < nump; i++)
+		fprintf(Output_file, "%d,%d ", pp[i].x, pp[i].y);
+	}
+	fprintf(Output_file, "\n");
+
+    } else if (Output_lang == ISMAP && url && url[0]) {
 	fprintf(Output_file, "rectangle (%d,%d) (%d,%d) %s %s\n",
-		pp1.x, pp1.y, pp2.x, pp2.y, url, label);
+		pp[0].x, pp[0].y, pp[1].x, pp[1].y, url, label);
+
     } else if (Output_lang == CMAP || Output_lang == CMAPX) {
-	fprintf(Output_file, "<area shape=\"rect\"");
+	fprintf(Output_file, "<area shape=\"%s\"", shapename);
 	if (url && url[0])
 	    fprintf(Output_file, " href=\"%s\"", xml_string(url));
 	if (target && target[0])
@@ -153,8 +176,16 @@ map_output_rect(pointf p1, pointf p2, char *url, char *target, char *label,
 	 * we generate just an empty alt string.
 	 */
 	fprintf(Output_file, " alt=\"\"");
-	fprintf(Output_file, " coords=\"%d,%d,%d,%d\"",
-		pp1.x, pp1.y, pp2.x, pp2.y);
+	fprintf(Output_file, " coords=\"");
+
+	if (strcmp(shapename, "circle") == 0)
+	    fprintf(Output_file, "%d,%d,%d\"", pp[0].x, pp[0].y, pp[1].x);
+	else {
+	    for (i = 0; i < nump; i++)
+		fprintf(Output_file, "%d,%d ", pp[i].x, pp[i].y);
+	    fprintf(Output_file, "\"");
+	}
+
 	if (Output_lang == CMAPX)
 	    fprintf(Output_file, " /");
 	fprintf(Output_file, ">\n");
@@ -166,9 +197,207 @@ map_output_rect(pointf p1, pointf p2, char *url, char *target, char *label,
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-		pp1.x, pp1.y, pp2.x, pp2.y, ps_string(url, isLatin1));
+		pp[0].x, pp[0].y, pp[1].x, pp[1].y, ps_string(url, isLatin1));
 	}
     }
+}
+#endif
+
+/*
+ * map_output_poly function generates the map file of requested format 
+ * currently imap, cmapx, ismap, cmap, postscipt and pdf formats are supported
+ * This function maps the node. 
+ */
+static void
+map_output_poly(node_t * n, char *url,
+		char *target, char *label, char *tooltip, int sample)
+{
+    int sides, peri, nump, i, j, filled = 0, rect = 0, nshape;
+    pointf *ppf, *vertices, ldimen;
+    point *pp, coord;
+    char *shapename;
+    polygon_t *poly = NULL;
+
+    /* checking shape of node */
+    nshape = shapeOf(n);
+    /* node coordinate */
+    coord = ND_coord_i(n);
+    /* checking if filled style has been set for node */
+    filled = ifFilled(n);
+
+    if (nshape == SH_POLY || nshape == SH_POINT) {
+	poly = (polygon_t *) ND_shape_info(n);
+
+	/* checking if polygon is regular rectangle */
+	if (isRect(poly) && (poly->peripheries || filled))
+	    rect = 1;
+    }
+
+    /* When node has polygon shape and requested output format is imap or cmapx,
+     * we have used shape of polygon to map clickable region that is circle, 
+     * ellipse, polygon with n side, or point. For regular rectangular shape 
+     * we have use node's bounding box to map clickable region 
+     */
+    if (poly && !rect && (Output_lang == IMAP || Output_lang == CMAPX)) {
+
+	if (poly->sides < 3)
+	    sides = 1;
+	else
+	    sides = poly->sides;
+
+	if (poly->peripheries < 2)
+	    peri = 1;
+	else
+	    peri = poly->peripheries;
+
+	vertices = poly->vertices;
+
+	/* use bounding box of text label for mapping   
+	 * when polygon has no peripheries and node is not filled 
+	 */
+	if (poly->peripheries == 0 && !filled) {
+	    shapename = "rect";
+	    nump = 2;
+	    ppf = N_NEW(nump, pointf);
+	    pp = N_NEW(nump, point);
+	    ldimen = ND_label(n)->dimen;
+	    ppf[0].x = coord.x - (ldimen.x) / 2.0;
+	    ppf[0].y = coord.y + (ldimen.y) / 2.0;
+	    ppf[1].x = coord.x + (ldimen.x) / 2.0;
+	    ppf[1].y = coord.y - (ldimen.y) / 2.0;
+
+	} 
+ 	/* circle or ellipse */
+	else if (poly->sides < 3 && poly->skew == 0.0
+		    && poly->distortion == 0.0) {
+	    if (poly->regular) {
+		shapename = "circle";	/* circle */
+		nump = 2;		/* center of circle and radius */
+		ppf = N_NEW(nump, pointf);
+		pp = N_NEW(nump, point);
+		ppf[0].x = coord.x;
+		ppf[0].y = coord.y;
+		ppf[1].x = vertices[peri - 1].x;
+		ppf[1].y = vertices[peri - 1].y;
+	    }
+	    else { /* ellipse is treated as polygon */
+		double a, b;
+		shapename = "poly";	/* ellipse */
+		a = vertices[peri - 1].x;
+		b = vertices[peri - 1].y;
+		nump = sample;
+		ppf = pEllipse(a, b, nump);
+		pp = N_NEW(nump, point);
+		for (i = 0; i < nump; i++) {
+		    ppf[i].x += coord.x;
+		    ppf[i].y += coord.y;
+		}
+	    }
+	    /* all other polygonal shape */
+	} else {
+	    int offset = (peri - 1)*(poly->sides);
+	    shapename = "poly";
+	    /* distorted or skewed ellipses and circles are polygons with 120 
+             * sides. For mapping we convert them into polygon with sample sides
+	     */
+	    if (poly->sides == 120) {
+		int delta = 120/sample;
+		nump = sample;
+		ppf = N_NEW(nump, pointf);
+		pp = N_NEW(nump, point);
+		for (i = 0, j = 0; j < nump; i += delta, j++) {
+		    ppf[j].x = coord.x + vertices[i + offset].x;
+		    ppf[j].y = coord.y + vertices[i + offset].y;
+		}
+	    } else {
+		nump = sides;
+		ppf = N_NEW(nump, pointf);
+		pp = N_NEW(nump, point);
+		for (i = 0; i < nump; i++) {
+		    ppf[i].x = coord.x + vertices[i + offset].x;
+		    ppf[i].y = coord.y + vertices[i + offset].y;
+		}
+	    }
+	}
+    } else {
+	/* we have used node's bounding box to map clickable region  
+	 * when requested output format is neither imap nor cmapx and for all 
+	 * node shapes other than polygon ( except regular ractangle polygon ) 
+	 */
+	shapename = "rect";
+	nump = 2;
+	ppf = N_NEW(nump, pointf);
+	pp = N_NEW(nump, point);
+	ppf[0].x = ND_coord_i(n).x - ND_lw_i(n);
+	ppf[0].y = ND_coord_i(n).y + (ND_ht_i(n) / 2);
+	ppf[1].x = ND_coord_i(n).x + ND_rw_i(n);
+	ppf[1].y = ND_coord_i(n).y - (ND_ht_i(n) / 2);
+    }
+
+    /* apply scaling and translation if necessary */
+    if (Output_lang == ISMAP
+	|| Output_lang == IMAP
+	|| Output_lang == CMAP || Output_lang == CMAPX) {
+	for (i = 0; i < nump; i++) {
+	    ppf[i] = mapptf(ppf[i]);
+	}
+    }
+
+    for (i = 0; i < nump; i++) {
+	pp[i].x = ROUND(ppf[i].x);
+	pp[i].y = ROUND(ppf[i].y);
+    }
+
+#if ! NEWANCHORS
+    mapOutput (shapename, pp, nump, url, target, label, tooltip);
+#endif
+    free(ppf);
+    free(pp);
+}
+
+static void
+map_output_rect(pointf p1, pointf p2, char *url, char *target, char *label,
+		char *tooltip)
+{
+    pointf ppf1, ppf2;
+    point pp[2];
+    double t;
+
+    if (!(url && url[0]) && !(tooltip && tooltip[0]))
+	return;
+
+    /* apply scaling and translation if necessary */
+    if (Output_lang == ISMAP
+	|| Output_lang == IMAP
+	|| Output_lang == CMAP || Output_lang == CMAPX) {
+	ppf1 = mapptf(p1);
+	ppf2 = mapptf(p2);
+    } else {
+	ppf1 = p1;
+	ppf2 = p2;
+    }
+    pp[0].x = ROUND(ppf1.x);
+    pp[0].y = ROUND(ppf1.y);
+    pp[1].x = ROUND(ppf2.x);
+    pp[1].y = ROUND(ppf2.y);
+
+    /* suppress maps that are totally clipped in either x or y */
+    if (pp[0].x == pp[1].x || pp[0].y == pp[1].y)
+	return;
+
+    /* fix up coordinate order */
+    if (pp[1].x < pp[0].x) {
+	t = pp[1].x;
+	pp[1].x = pp[0].x;
+	pp[0].x = t;
+    }
+    if (pp[1].y < pp[0].y) {
+	t = pp[1].y;
+	pp[1].y = pp[0].y;
+	pp[0].y = t;
+    }
+#if ! NEWANCHORS
+    mapOutput ("rect", pp, 2, url, target, label, tooltip);
 #endif
 }
 
@@ -210,7 +439,7 @@ static void doHTMLdata(htmldata_t * dp, point p, void *obj)
 {
     char *url = NULL, *target = NULL, *title = NULL;
     pointf p1, p2;
-    int havetitle=0;
+    int havetitle = 0;
 
     if ((url = dp->href) && url[0]) {
 	switch (agobjkind(obj)) {
@@ -230,14 +459,14 @@ static void doHTMLdata(htmldata_t * dp, point p, void *obj)
 	havetitle++;
 	switch (agobjkind(obj)) {
 	case AGGRAPH:
-	        title = strdup_and_subst_graph(title, (graph_t *) obj);
-	        break;
+	    title = strdup_and_subst_graph(title, (graph_t *) obj);
+	    break;
 	case AGNODE:
-	        title = strdup_and_subst_node(title, (node_t *) obj);
-	        break;
+	    title = strdup_and_subst_node(title, (node_t *) obj);
+	    break;
 	case AGEDGE:
-	        title = strdup_and_subst_edge(title, (edge_t *) obj);
-	        break;
+	    title = strdup_and_subst_edge(title, (edge_t *) obj);
+	    break;
 	}
     }
     if (url || title) {
@@ -394,14 +623,15 @@ void map_begin_cluster(graph_t * g)
 	    doHTMLlabel(GD_label(g)->u.html, GD_label(g)->p, (void *) g);
 	title = GD_label(g)->text;
     }
-    if (((s = agget(g, "href")) && s[0]) || ((s = agget(g, "URL")) && s[0]))
+    if (((s = agget(g, "href")) && s[0])
+	|| ((s = agget(g, "URL")) && s[0]))
 	m_url = url = strdup_and_subst_graph(s, g);
     if ((s = agget(g, "target")) && s[0])
 	m_target = target = strdup_and_subst_graph(s, g);
     if ((s = agget(g, "tooltip")) && s[0])
 	m_tooltip = tooltip = strdup_and_subst_graph(s, g);
     else
-	    tooltip = title;
+	tooltip = title;
     if (url || m_tooltip) {
 	p1.x = GD_bb(g).LL.x;
 	p1.y = GD_bb(g).LL.y;
@@ -418,8 +648,7 @@ void map_begin_node(node_t * n)
 {
     char *s, *url = NULL, *target = NULL, *tooltip = NULL,
 	*m_url = NULL, *m_target = NULL, *m_tooltip = NULL;
-    pointf p1, p2;
-
+    
     if (ND_label(n)->html)
 	doHTMLlabel(ND_label(n)->u.html, ND_coord_i(n), (void *) n);
     if (((s = agget(n, "href")) && s[0]) || ((s = agget(n, "URL")) && s[0]))
@@ -430,13 +659,22 @@ void map_begin_node(node_t * n)
 	m_tooltip = tooltip = strdup_and_subst_node(s, n);
     else
 	tooltip = ND_label(n)->text;
+
     if (url || m_tooltip) {
-	p1.x = ND_coord_i(n).x - ND_lw_i(n);
-	p1.y = ND_coord_i(n).y - (ND_ht_i(n) / 2);
-	p2.x = ND_coord_i(n).x + ND_rw_i(n);
-	p2.y = ND_coord_i(n).y + (ND_ht_i(n) / 2);
-	map_output_rect(p1, p2, url, target, ND_label(n)->text, tooltip);
+	int sample;
+	char *p = agget(n, "samplepoints");
+	
+	if (p)
+	    sample = atoi(p);
+	/* We want at least 4 points. For server-side maps, at most 100
+         * points are allowed. To simplify things to fit with the 120 points
+         * used for skewed ellipses, we set the bound at 60.
+         */
+	if ((sample < 4) || (sample > 60))
+	    sample = DFLT_SAMPLE;
+	map_output_poly(n, url, target, ND_label(n)->text, tooltip, sample);
     }
+
     free(m_url);
     free(m_target);
     free(m_tooltip);

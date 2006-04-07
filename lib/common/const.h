@@ -102,6 +102,9 @@
 #define		PORT_LABEL_DISTANCE	10
 #define		PORT_LABEL_ANGLE	-25	/* degrees; pos is CCW, neg is CW */
 
+/* default polygon sample size for overlap removal and maps */
+#define DFLT_SAMPLE 20
+
 /* arrow types */
 #define		ARR_NONE         0
 
