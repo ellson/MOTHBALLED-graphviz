@@ -1,3 +1,4 @@
+# $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
 GRAPHS = ER.dot ngk10_4.dot process.dot Heawood.dot Petersen.dot

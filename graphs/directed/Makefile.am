@@ -1,3 +1,4 @@
+# $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
 GRAPHS = KW91.dot Latin1.dot NaN.dot abstract.dot alf.dot arrows.dot \

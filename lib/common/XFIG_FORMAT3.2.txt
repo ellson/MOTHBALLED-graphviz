@@ -1,6 +1,6 @@
 This specification document was obtained from:
- 	http://duke.usask.ca/~macphed/soft/fig/FORMAT3.2.txt
-on 17 May 1999 by ellson@graphviz.org
+	http://duke.usask.ca/~macphed/soft/fig/FORMAT3.2.txt
+on 4 April 2006 by ellson@graphviz.org
 ===========================================================================
 
 /*
@@ -58,7 +58,6 @@ Description of the Fig Format Follows
 
 (2) The first non-comment line consists of the following:
 
-	int	fig_resolution		(Fig units/inch)
 	string	orientation		("Landscape" or "Portrait")
 	string	justification		("Center" or "Flush Left")
 	string	units			("Metric" or "Inches")
@@ -70,8 +69,9 @@ Description of the Fig Format Follows
 	int	transparent color	(color number for transparent color for GIF
 					 export. -2=None, -1=background, 0-31 for
 					 standard colors or 32- for user colors)
-	int	coordinate_system	(1: origin at lower left corner (NOT USED)
-					 2: upper left)
+	int	resolution coord_system	(Fig units/inch and coordinate system:
+					   1: origin at lower left corner (NOT USED)
+					   2: upper left)
 
     Fig_resolution is the resolution of the figure in the file.
     Xfig will always write the file with a resolution of 1200ppi so it
@@ -218,28 +218,28 @@ Description of the Fig Format Follows
 	 0 = Stick-type (the default in xfig 2.1 and earlier)
 	 1 = Closed triangle:
 		|\
-		|  \
-		|    \
-		|    /
-		|  /
+		|   \
+		|      \
+		|      /
+		|   /
 		|/
 	 2 = Closed with "indented" butt:
 		|\
-		\  \
-		 \   \
-		  \    \
-		  /    /
-		 /   /
-		/  /
+		\   \
+		 \     \
+		  \       \
+		  /       /
+		 /     /
+		/   /
 		|/
 	 3 = Closed with "pointed" butt:
 		   |\
-		  /   \
-		 /      \
-		/         \
-		\         /
-		 \      /
-		  \   /
+		  /    \
+		 /        \
+		/            \
+		\            /
+		 \        /
+		  \    /
 		   |/
 
     The arrow_style field is defined for LINES, ARCS and OPEN SPLINES
@@ -309,7 +309,7 @@ Description of the Fig Format Follows
 
     A line with object code 6 signifies the start of a compound.
     There are four more numbers on this line which indicate the
-    upper right corner and the lower left corner of the bounding
+    upper left corner and the lower right corner of the bounding
     box of this compound.  A line with object code -6 signifies
     the end of the compound.  Compound may be nested.
 
@@ -317,10 +317,10 @@ Description of the Fig Format Follows
 	type	name			(brief description)
 	----	----			-------------------
 	int	object_code		(always 6)
-	int	upperright_corner_x	(Fig units)
-	int	upperright_corner_y	(Fig units)
-	int	lowerleft_corner_x	(Fig units)
-	int	lowerleft_corner_y	(Fig units)
+	int	upperleft_corner_x	(Fig units)
+	int	upperleft_corner_y	(Fig units)
+	int	lowerright_corner_x	(Fig units)
+	int	lowerright_corner_y	(Fig units)
 
     Subsequent lines:
 	objects
@@ -336,7 +336,7 @@ Description of the Fig Format Follows
 	type	name			(brief description)
 	----	----			-------------------
 	int	object_code		(always 1)
-	int	sub_type		(1: ellipse defined by radiuses
+	int	sub_type		(1: ellipse defined by radii
 					 2: ellipse defined by diameters
 					 3: circle defined by radius
 					 4: circle defined by diameter)

@@ -1,3 +1,4 @@
+# $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
 html = gd.html
