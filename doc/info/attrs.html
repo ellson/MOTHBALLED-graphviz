@@ -316,7 +316,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:sametail HREF=#d:sametail>sametail</A>
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:samplepoints HREF=#d:samplepoints>samplepoints</A>
-</TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">8</TD><TD></TD><TD></TD> </TR>
+</TD><TD>N</TD><TD>int</TD><TD ALIGN="CENTER">8(output)<BR>20(overlap and image maps)</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:searchsize HREF=#d:searchsize>searchsize</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">30</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:sep HREF=#d:sep>sep</A>
@@ -1095,10 +1095,10 @@ This field indicates which graph component uses the attribute.
 
 <DT><A NAME=d:samplepoints HREF=#a:samplepoints><STRONG>samplepoints</STRONG></A>
 <DD>  If the input graph defines the <A HREF=#d:vertices><B>vertices</B></A> 
-  attribute, and output is dot or xdot, this give
-  the number of points used to represent circles and ellipses.
+  attribute, and output is dot or xdot, this gives
+  the number of points used for a node whose shape is a circle or ellipse.
   It plays the same role in neato, when adjusting the layout to avoid
-  overlapping nodes.
+  overlapping nodes, and in image maps.
 
 <DT><A NAME=d:searchsize HREF=#a:searchsize><STRONG>searchsize</STRONG></A>
 <DD>  During network simplex, maximum number of edges with negative cut values
