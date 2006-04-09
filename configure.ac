@@ -532,16 +532,20 @@ if test "x$PYTHON" != "x"; then
       fi
     fi
   fi
-  PYTHON_PREFIX=`$PYTHON -c "import sys; print sys.prefix"`
-  PYTHON_INCLUDES=-I$PYTHON_PREFIX/include/python$PYTHON_VERSION_SHORT
-  PYTHON_LIBS="-L$PYTHON_PREFIX/lib$LIBPOSTFIX -lpython$PYTHON_VERSION_SHORT"
-  save_CPPFLAGS=$CPPFLAGS
-  CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
-  AC_CHECK_HEADER(Python.h,,[
-    AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
-    PYTHON=
-    ])
-  CPPFLAGS=$save_CPPFLAGS
+  if test "x$PYTHON" = "x"; then
+      AC_MSG_WARN([Can't use Python version $PYTHON_VERSION  The Python packages will not be built])
+  else
+    PYTHON_PREFIX=`$PYTHON -c "import sys; print sys.prefix"`
+    PYTHON_INCLUDES=-I$PYTHON_PREFIX/include/python$PYTHON_VERSION_SHORT
+    PYTHON_LIBS="-L$PYTHON_PREFIX/lib$LIBPOSTFIX -lpython$PYTHON_VERSION_SHORT"
+    save_CPPFLAGS=$CPPFLAGS
+    CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
+    AC_CHECK_HEADER(Python.h,,[
+      AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
+      PYTHON=
+      ])
+    CPPFLAGS=$save_CPPFLAGS
+  fi
 fi
 AC_SUBST(PYTHON_INCLUDES)
 AC_SUBST(PYTHON_LIBS)
