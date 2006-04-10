@@ -76,7 +76,7 @@ nop_SOURCES = nop.c
 
 nop_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs.la \
-	$(top_builddir)/lib/graph/libgraph.la
+	$(top_builddir)/lib/graph/libagraph.la
 
 gvcolor_SOURCES = gvcolor.c colxlate.c colortbl.h
 
