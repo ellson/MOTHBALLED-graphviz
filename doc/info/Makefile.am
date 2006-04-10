@@ -23,6 +23,7 @@ html_DATA = attrs.html colors.html command.html grammar.html \
 	doublecircle.gif doubleoctagon.gif egg.gif ellipse.gif fill.gif \
 	forward.gif hexagon.gif house.gif html1.gif html2.gif invhouse.gif \
 	invtrapezium.gif invtriangle.gif mrecord.gif nohead.gif octagon.gif \
+    none.gif sdlshapes.jpg html3.gif html4.gif \
 	parallelogram.gif pentagon.gif plaintext.gif point.gif \
 	polygon.gif record.gif rect.gif rectangle.gif round.gif \
 	septagon.gif trapezium.gif triangle.gif tripleoctagon.gif
