@@ -46,6 +46,7 @@ grammar.h: y.output
 	groff -Tps -man $< | ps2pdf - - >$@
 
 EXTRA_DIST = $(man) $(pdf) Makefile.old cmpnd.c dotdge.c \
-	main.c tester.c README grammar.c grammar.h scan.c y.output
+	main.c tester.c README grammar.c grammar.h scan.c \
+	y.tab.c y.tab.h y.output
 
 DISTCLEANFILES = $(pdf) grammar.[ch] scan.c y.output y.tab.[ch]

@@ -27,6 +27,7 @@ y.output: $(top_srcdir)/cmd/lefty/dot2l/dotparse.y
 # trie.c : trie_input
 #       triegen  < trie_input > trie.c
 
-DISTCLEANFILES = y.output dotparse.[ch]
+DISTCLEANFILES = y.output y.tab.[ch] dotparse.[ch]
 
-EXTRA_DIST = $(libdot2l_la_SOURCES) triefa.c
+EXTRA_DIST = $(libdot2l_la_SOURCES) triefa.c \
+	y.tab.c y.tab.h y.output

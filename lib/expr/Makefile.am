@@ -61,6 +61,7 @@ exop.h: exparse.h
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) RELEASE \
 	Makefile.nmake Makefile.orig Makefile.old \
-	exparse.c exparse.h exop.h y.output
+	exparse.c exparse.h exop.h \
+	y.tab.c y.tab.h y.output
 
 DISTCLEANFILES = $(pdf_DATA) exparse.[ch] exop.h y.tab.[ch] y.output
