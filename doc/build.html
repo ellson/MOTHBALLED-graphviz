@@ -312,7 +312,12 @@ Put /usr/ccs/bin in PATH
 
 <h2>HP-UX</h2>
 The X11 package must include /usr/contrib/X11R6
-as well as the base stuff.
+as well as the base stuff.  For some reason GNU autoconf doesn't seem to find
+X11 in this location so you may need to add the following to the
+./configure line:
+<pre>
+--with-Xawincludedir=/usr/contrib/X11R6/include --with-Xawlibdir=/usr/contrib/X11R6/lib
+</pre>
 
 <h2>Apple Mac OS/X</h2>
 <P>
