@@ -72,7 +72,6 @@ Prefix: /usr
 %{?fc5: %{expand: %%define SHARP   1}}
 %{?fc5: %{expand: %%define GUILE   1}}
 %{?fc5: %{expand: %%define JAVA    1}}
-%{?fc5: %{expand: %%define LUA     1}}
 %{?fc5: %{expand: %%define OCAML   1}}
 %{?fc5: %{expand: %%define PERL    1}}
 %{?fc5: %{expand: %%define PHP     1}}
