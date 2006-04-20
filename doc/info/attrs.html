@@ -414,16 +414,20 @@ This field indicates which graph component uses the attribute.
   cmap and i*map formats. This serves as the base URL for relative URLs in the 
   former, and as the default image map file in the latter.
   <P>
-  The active area for a node or cluster is its bounding box. For edges,
-  the active areas are small circles where the edge contacts its head
-  and tail nodes. These areas may overlap the related node, and the edge
-  URL dominates.
+  The active area for a node is its visible image. For example, an unfilled
+  node with no drawn boundary will only be active on its label. 
+  The active area for a cluster is its bounding box. 
+  For edges, the active areas are small circles where the edge contacts its head
+  and tail nodes, and a thin polygon approximating the edge. The circles may 
+  overlap the related node, and the edge URL dominates.
   If the edge has a label, this will also be active. 
   Finally, if the edge has a head or tail label, this will also be active.
   Note, however, that if the edge has a <A HREF=#d:headURL>headURL</A> 
   attribute, it is this value that is used near the head node and on
   the head label, if defined. The similar restriction holds when
   <A HREF=#d:tailURL>tailURL</A> is defined.
+  Also note that, if active areas of two edges overlap, it is unspecified 
+  which area dominates.
   <P>
   The URL of the root graph is only treated as an
   <A HREF=#k:escString>escString</A> if the output format is cmap.
