@@ -503,3 +503,14 @@ box flip_rec_box(box b, point p)
     rv.UR.y += p.y;
     return rv;
 }
+
+/* ptToLine2:
+ * Return distance from point p to line a-b squared.
+ */
+double ptToLine2 (pointf a, pointf b, pointf p)
+{
+  double dx = b.x-a.x;
+  double dy = b.y-a.y;
+  double a2 = (p.y-a.y)*dx - (p.x-a.x)*dy;
+  return (a2*a2) / (dx*dx + dy*dy);
+}

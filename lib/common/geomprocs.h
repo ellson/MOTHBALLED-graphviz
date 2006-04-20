@@ -48,6 +48,7 @@ extern bool box_contains(box, box);
 extern bool boxf_contains(boxf, boxf);
 extern box flip_rec_box(box b, point p);
 
+extern double ptToLine2 (pointf l1, pointf l2, pointf p);
 extern int lineToBox(pointf p1, pointf p2, boxf b);
 
 extern point ccwrotatep(point p, int ccwrot);
