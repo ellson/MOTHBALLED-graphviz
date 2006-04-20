@@ -414,11 +414,14 @@ This field indicates which graph component uses the attribute.
   cmap and i*map formats. This serves as the base URL for relative URLs in the 
   former, and as the default image map file in the latter.
   <P>
-  The active area for a node is its visible image. For example, an unfilled
+  For cmapx and imap output, the active area for a node is its visible image. 
+  For example, an unfilled
   node with no drawn boundary will only be active on its label. 
+  For other output, the active area is its bounding box.
   The active area for a cluster is its bounding box. 
   For edges, the active areas are small circles where the edge contacts its head
-  and tail nodes, and a thin polygon approximating the edge. The circles may 
+  and tail nodes. In addition, for cmapx and imap, the active area includes a
+  thin polygon approximating the edge. The circles may 
   overlap the related node, and the edge URL dominates.
   If the edge has a label, this will also be active. 
   Finally, if the edge has a head or tail label, this will also be active.
