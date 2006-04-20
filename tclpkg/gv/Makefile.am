@@ -13,11 +13,9 @@ LIBS =  @LIBS@ -lc
 
 BASESOURCES = gv.cpp gv.i
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
-BUILTSOURCES =
 
 pkgsharpdir = $(pkglibdir)/sharp
 SHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs SWIGTYPE_p_p_void.cs
-BUILTSOURCES += gv_sharp.cpp $(SHARP_hdr)
 nodist_libgv_sharp_la_SOURCES = gv_sharp.cpp $(SHARP_hdr)
 libgv_sharp_la_SOURCES = $(BASESOURCES)
 libgv_sharp_la_LIBADD = $(BASELIBS) @SHARP_LIBS@ 
@@ -27,7 +25,6 @@ gv_sharp.cpp $(SHARP_hdr): gv.i
 
 pkgguiledir = $(pkglibdir)/guile
 GUILE_hdr = 
-BUILTSOURCES += gv_guile.cpp $(GUILE_hdr)
 nodist_libgv_guile_la_SOURCES = gv_guile.cpp $(GUILE_hdr)
 libgv_guile_la_SOURCES = $(BASESOURCES)
 libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
@@ -39,7 +36,6 @@ gv_guile.cpp $(GUILE_hdr): gv.i
 
 pkgiodir = $(pkglibdir)/io
 IO_hdr = 
-BUILTSOURCES += gv_io.cpp $(IO_hdr)
 nodist_libgv_io_la_SOURCES = gv_io.cpp $(IO_hdr)
 libgv_io_la_SOURCES = $(BASESOURCES)
 libgv_io_la_LIBADD = $(BASELIBS) @IO_LIBS@
@@ -49,7 +45,6 @@ gv_io.cpp $(IO_hdr): gv.i
 
 pkgjavadir = $(pkglibdir)/java
 JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java SWIGTYPE_p_FILE.java SWIGTYPE_p_p_void.java
-BUILTSOURCES += gv_java.cpp $(JAVA_hdr)
 nodist_libgv_java_la_SOURCES = gv_java.cpp
 libgv_java_la_SOURCES = $(BASESOURCES) 
 libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
@@ -59,7 +54,6 @@ gv_java.cpp $(JAVA_hdr): gv.i
 
 pkgluadir = $(pkglibdir)/lua
 LUA_hdr = 
-BUILTSOURCES += gv_lua.cpp $(LUA_hdr)
 nodist_libgv_lua_la_SOURCES = gv_lua.cpp $(LUA_hdr)
 libgv_lua_la_SOURCES = $(BASESOURCES)
 libgv_lua_la_LIBADD = $(BASELIBS) @LUA_LIBS@
@@ -69,7 +63,6 @@ gv_lua.cpp $(LUA_hdr): gv.i
 
 pkgocamldir = $(pkglibdir)/ocaml
 OCAML_hdr = gv.ml gv.mli
-BUILTSOURCES += gv_ocaml.cpp $(OCAML_hdr)
 nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_hdr)
 libgv_ocaml_la_SOURCES = $(BASESOURCES)
 libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@
@@ -79,7 +72,6 @@ gv_ocaml.cpp $(OCAML_hdr): gv.i
 
 pkgperldir = $(pkglibdir)/perl
 PERL_hdr = gv.pm
-BUILTSOURCES += gv_perl.cpp $(PERL_hdr)
 nodist_libgv_perl_la_SOURCES = gv_perl.cpp $(PERL_hdr)
 libgv_perl_la_SOURCES = $(BASESOURCES)
 libgv_perl_la_LIBADD = $(BASELIBS) @PERL_LIBS@
@@ -89,7 +81,6 @@ gv_perl.cpp $(PERL_hdr): gv.i
 
 pkgphpdir = $(pkglibdir)/php
 PHP_hdr = gv.php php_gv.h
-BUILTSOURCES += gv_php.cpp $(PHP_hdr)
 nodist_libgv_php_la_SOURCES = gv_php.cpp $(PHP_hdr)
 libgv_php_la_SOURCES = $(BASESOURCES)
 libgv_php_la_LIBADD = $(BASELIBS) @PHP_LIBS@
@@ -99,7 +90,6 @@ gv_php.cpp $(PHP_hdr): gv.i
 
 pkgpythondir = $(pkglibdir)/python
 PYTHON_hdr = gv.py
-BUILTSOURCES += gv_python.cpp $(PYTHON_hdr)
 nodist_libgv_python_la_SOURCES = gv_python.cpp $(PYTHON_hdr)
 libgv_python_la_SOURCES = $(BASESOURCES)
 libgv_python_la_LIBADD = $(BASELIBS) @PYTHON_LIBS@
@@ -109,7 +99,6 @@ gv_python.cpp $(PYTHON_hdr): gv.i
 
 pkgrubydir = $(pkglibdir)/ruby
 RUBY_hdr = 
-BUILTSOURCES += gv_ruby.cpp $(RUBY_hdr)
 nodist_libgv_ruby_la_SOURCES = gv_ruby.cpp $(RUBY_hdr)
 libgv_ruby_la_SOURCES = $(BASESOURCES)
 libgv_ruby_la_LIBADD = $(BASELIBS) @RUBY_LIBS@
@@ -119,7 +108,6 @@ gv_ruby.cpp $(RUBY_hdr): gv.i
 
 pkgtcldir = $(pkglibdir)/tcl
 TCL_hdr = 
-BUILTSOURCES += gv_tcl.cpp $(TCL_hdr)
 nodist_libgv_tcl_la_SOURCES = gv_tcl.cpp $(TCL_hdr)
 libgv_tcl_la_SOURCES = $(BASESOURCES)
 libgv_tcl_la_LIBADD = $(top_builddir)/tclpkg/tclstubs/libtclstubs.la $(BASELIBS) @TCL_LIBS@
