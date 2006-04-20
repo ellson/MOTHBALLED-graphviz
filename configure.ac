@@ -197,7 +197,7 @@ else
 	        * )
 		    # -Wno-unused-parameter only needed for bug in gcc3
 		    # this test from: http://cvs.auriga.wearlab.de/cgi-bin/cvsweb.cgi/dillo/configure.in?rev=1.90;content-type=text%2Fplain;cvsroot=dillo
-		    if test "`$CC -v 2>&1 | grep 'version 3'`" != ""; then
+		    if test "`$CC -v 2>&1 | $GREP 'version 3'`" != ""; then
 		        CFLAGS="${CFLAGS} -Wno-unused-parameter"
 		    fi
 	            CFLAGS="${CFLAGS} -Wno-unknown-pragmas -Wstrict-prototypes -Wpointer-arith -Wall -ffast-math"
@@ -208,7 +208,7 @@ else
 fi
 # -ffast-math is incompatible with FP error trapping
 #     ref: https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=175793
-if `echo ${CFLAGS} | grep -q ffast-math`; then
+if `echo ${CFLAGS} | $GREP -q ffast-math`; then
     AC_DEFINE_UNQUOTED(NO_FPERR,1,[Define if no fpu error exception handling is required.])
 fi
 
@@ -223,6 +223,7 @@ AM_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_CHECK_PROG(SED,sed,sed,false)
+AC_CHECK_PROG(GREP,grep,grep,false)
 AC_CHECK_PROG(SORT,sort,sort,false)
 AC_CHECK_PROG(KSH,ksh,ksh,sh)
 
@@ -304,7 +305,7 @@ AC_ARG_ENABLE(swig,
 if test "x$enable_swig" != "xno"; then
 AC_CHECK_PROG(SWIG,swig,swig)
 if test "x$SWIG" != "x"; then
-  SWIG_VERSION=`$SWIG -version 2>&1 | grep Version | cut -d ' ' -f 3`
+  SWIG_VERSION=`$SWIG -version 2>&1 | $GREP Version | cut -d ' ' -f 3`
   SWIG_VERSION_MAJOR=`echo $SWIG_VERSION | cut -d '.' -f 1`
   SWIG_VERSION_MINOR=`echo $SWIG_VERSION | cut -d '.' -f 2`
   if test $SWIG_VERSION_MAJOR -lt 2; then
@@ -331,11 +332,16 @@ if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(sharp,
   [AC_HELP_STRING([--disable-sharp], ["don't support C# language bindings"])])
 if test "x$enable_sharp" != "xno"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-csharp *- Generate'` = 0; then
+	SHARP=
+	AC_MSG_WARN([swig does not support csharp. The SHARP packages will not be built])
+else
 AC_CHECK_PROG(SHARP,mcs,mcs)
 SHARP_INCLUDES=
 SHARP_LIBS=
 AC_SUBST(SHARP_INCLUDES)
 AC_SUBST(SHARP_LIBS)
+fi
 fi
 fi
 AM_CONDITIONAL(WITH_SHARP, [test "x$SHARP" != "x"])
@@ -347,6 +353,10 @@ if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(guile,
   [AC_HELP_STRING([--disable-guile], [don't support guile language bindings])])
 if test "x$enable_guile" != "xno"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-guile *- Generate'` = 0; then
+	GUILE=
+	AC_MSG_WARN([swig does not support guile. The GUILE packages will not be built])
+else
 AC_CHECK_PROG(GUILE,guile,guile)
 if test "x$GUILE" != "x"; then
   GUILE_VERSION=`$GUILE --version | head -1 | cut -d ' ' -f 2`
@@ -376,6 +386,7 @@ if test "x$GUILE" != "x"; then
 fi
 fi
 fi
+fi
 AM_CONDITIONAL(WITH_GUILE, [test "x$GUILE" != "x"])
 
 dnl -----------------------------------
@@ -385,11 +396,16 @@ if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(io,
   [AC_HELP_STRING([--disable-io], [don't support io language bindings])])
 if test "x$enable_io" != "xno"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-io *- Generate'` = 0; then
+	IO=
+	AC_MSG_WARN([swig does not support io. The IO packages will not be built])
+else
 AC_CHECK_PROG(IO,io,io)
 IO_INCLUDES=
 IO_LIBS=
 AC_SUBST(IO_INCLUDES)
 AC_SUBST(IO_LIBS)
+fi
 fi
 fi
 AM_CONDITIONAL(WITH_IO, [test "x$IO" != "x"])
@@ -401,6 +417,10 @@ if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(java,
   [AC_HELP_STRING([--disable-java], [don't support java language bindings])])
 if test "x$enable_java" != "xno"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-java *- Generate'` = 0; then
+	JAVA=
+	AC_MSG_WARN([swig does not support java. The JAVA packages will not be built])
+else
 AC_CHECK_PROG(JAVA,java,java)
 JAVA_INCLUDES=
 JAVA_LIBS=
@@ -412,6 +432,7 @@ AC_SUBST(JAVA_INCLUDES)
 AC_SUBST(JAVA_LIBS)
 fi
 fi
+fi
 AM_CONDITIONAL(WITH_JAVA, [test "x$JAVA" != "x"])
 
 dnl -----------------------------------
@@ -421,11 +442,16 @@ if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(lua,
   [AC_HELP_STRING([--disable-lua], [don't support lua language bindings])])
 if test "x$enable_lua" != "xno"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-lua *- Generate'` = 0; then
+	LUA=
+	AC_MSG_WARN([swig does not support lua. The LUA packages will not be built])
+else
 AC_CHECK_PROG(LUA,lua,lua)
 LUA_INCLUDES=
 LUA_LIBS=
 AC_SUBST(LUA_INCLUDES)
 AC_SUBST(LUA_LIBS)
+fi
 fi
 fi
 AM_CONDITIONAL(WITH_LUA, [test "x$LUA" != "x"])
@@ -437,6 +463,10 @@ if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(ocaml,
   [AC_HELP_STRING([--disable-ocaml], [don't support ocaml language bindings])])
 if test "x$enable_ocaml" != "xno"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-ocaml *- Generate'` = 0; then
+	OCAML=
+	AC_MSG_WARN([swig does not support ocaml. The OCAML packages will not be built])
+else
 AC_CHECK_PROG(OCAML,ocaml,ocaml)
 OCAML_INCLUDES=-I/usr/lib$LIBPOSTFIX/ocaml
 OCAML_LIBS=-L/usr/lib$LIBPOSTFIX/ocaml
@@ -449,6 +479,7 @@ AC_CHECK_HEADER(caml/mlvalues.h,,[
 CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(OCAML_INCLUDES)
 AC_SUBST(OCAML_LIBS)
+fi
 fi
 fi
 AM_CONDITIONAL(WITH_OCAML, [test "x$OCAML" != "x"])
@@ -464,6 +495,10 @@ AC_CHECK_PROG(PERL,perl,perl)
 if test -n "$PERL" && $PERL -e 'exit !($] <= 5.004)' > /dev/null 2>&1 ; then
 	PERL=
 	AC_MSG_WARN([perl is too old. The PERL packages will not be built])
+fi
+if test `$SWIG -help 2>&1 | $GREP -c '\-perl *- Generate'` = 0; then
+	PERL=
+	AC_MSG_WARN([swig does not support perl. The PERL packages will not be built])
 fi
 if test "x$PERL" != "x"; then
   PERL_ARCHLIB=`$PERL -e 'use Config; print $Config{archlib};'`
@@ -490,6 +525,10 @@ if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(php,
   [AC_HELP_STRING([--disable-php], [don't support php language bindings])])
 if test "x$enable_php" != "xno"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-php *- Generate'` = 0; then
+	PHP=
+	AC_MSG_WARN([swig does not support php. The PHP packages will not be built])
+else
 AC_CHECK_PROG(PHP,php,php)
 PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
 PHP_LIBS=
@@ -504,6 +543,7 @@ AC_SUBST(PHP_INCLUDES)
 AC_SUBST(PHP_LIBS)
 fi
 fi
+fi
 AM_CONDITIONAL(WITH_PHP, [test "x$PHP" != "x"])
 
 dnl -----------------------------------
@@ -513,9 +553,13 @@ if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(python,
   [AC_HELP_STRING([--disable-python], [don't support python language bindings])])
 if test "x$enable_python" != "xno"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+	PYTHON=
+	AC_MSG_WARN([swig does not support python. The PYTHON packages will not be built])
+else
 AC_CHECK_PROG(PYTHON,python,python)
 if test "x$PYTHON" != "x"; then
-  PYTHON_VERSION=`$PYTHON -V 2>&1 | grep Python | cut -d ' ' -f 2`
+  PYTHON_VERSION=`$PYTHON -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
   if test "x$PYTHON_VERSION" = "x"; then
     PYTHON=
   else
@@ -551,6 +595,7 @@ AC_SUBST(PYTHON_INCLUDES)
 AC_SUBST(PYTHON_LIBS)
 fi
 fi
+fi
 AM_CONDITIONAL(WITH_PYTHON, [test "x$PYTHON" != "x"])
 
 dnl -----------------------------------
@@ -560,6 +605,10 @@ if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(ruby,
   [AC_HELP_STRING([--disable-ruby], [don't support ruby language bindings])])
 if test "x$enable_ruby" != "xno"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-ruby *- Generate'` = 0; then
+	RUBY=
+	AC_MSG_WARN([swig does not support ruby. The RUBY packages will not be built])
+else
 AC_CHECK_PROG(RUBY,ruby,ruby)
 if test "x$RUBY" != "x"; then
   RUBY_INCLUDES="-I`$RUBY $TOP_DIR/config/config_ruby.rb INCLUDES`"
@@ -574,6 +623,7 @@ if test "x$RUBY" != "x"; then
 fi
 AC_SUBST(RUBY_INCLUDES)
 AC_SUBST(RUBY_LIBS)
+fi
 fi
 fi
 AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
@@ -592,6 +642,11 @@ HAVE_TCL=0
 fi
 fi
 
+if test `$SWIG -help 2>&1 | $GREP -c '\-tcl *- Generate'` = 0; then
+	HAVE_TCL=0
+	AC_MSG_WARN([swig does not support tcl. The TCL packages will not be built])
+else
+
 AC_ARG_WITH(tclsh,
     [  --with-tclsh=PROG       build graphviz for specific tclsh],
     TCLSH=$withval,)
@@ -609,6 +664,7 @@ fi
 if test "x$TCLSH" = "x"; then
     AC_MSG_WARN([Unable to find a tclsh. The Tcl packages will not be built])
     HAVE_TCL=0
+fi
 fi
 
 if test "$HAVE_TCL" = "1"; then
@@ -1624,7 +1680,7 @@ assert(argc);
 ; return 0; }
 EOF
 ${CC-cc} -c $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext 1>&5
-if test "x`nm conftest.o |grep __eprintf`" != "x"; then
+if test "x`nm conftest.o |$GREP __eprintf`" != "x"; then
     AC_MSG_RESULT(yes)
     CFLAGS="$CFLAGS -DNDEBUG"
 else
