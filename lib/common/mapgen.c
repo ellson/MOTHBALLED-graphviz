@@ -680,7 +680,230 @@ void map_begin_node(node_t * n)
     free(m_tooltip);
 }
 
-void map_begin_edge(edge_t * e)
+#define HW 2.0   /* maximum distance away from line, in points */
+
+/* check_control_points:
+ * check_control_points function checks the size of quadrilateral
+ * formed by four control points
+ * returns 1 if four points are in line (or close to line)
+ * else return 0
+ */
+static int check_control_points(pointf *cp)
+{
+    double dis1 = ptToLine2 (cp[0], cp[3], cp[1]);
+    double dis2 = ptToLine2 (cp[0], cp[3], cp[2]);
+    if (dis1 < HW*HW && dis2 < HW*HW)
+	return 1;
+    else 
+	return 0;
+}
+
+#ifdef DEBUG
+void psmapOutput (point* ps, int n)
+{
+   int i;
+   fprintf (stdout, "newpath %d %d moveto\n", ps[0].x, ps[0].y);
+   for (i=1; i < n; i++)
+	fprintf (stdout, "%d %d lineto\n", ps[i].x, ps[i].y);
+   fprintf (stdout, "closepath stroke\n");
+}
+#endif
+
+typedef struct segitem_s {
+    pointf p;
+    struct segitem_s* next;
+} segitem_t;
+
+#define MARK_FIRST_SEG(L) ((L)->next = (segitem_t*)1)
+#define FIRST_SEG(L) ((L)->next == (segitem_t*)1)
+#define INIT_SEG(P,L) {(L)->next = 0; (L)->p = P;} 
+
+static segitem_t*
+appendSeg (pointf p, segitem_t* lp)
+{
+    segitem_t* s = GNEW(segitem_t);
+    INIT_SEG (p, s);
+    lp->next = s;
+    return s;
+}
+
+/* map_bspline_poly:
+ * Output the polygon determined by the n points in p1, followed
+ * by the n points in p2 in reverse order. Assumes n <= 50.
+ *
+ * Note: when using psmapOutput for debugging, remove the calls to
+ * mapptf, since for postscript the necessary parameters aren't defined and
+ * mapptf always returns (0,0).
+ */
+static void 
+map_bspline_poly(int n, pointf* p1, pointf* p2, 
+                 char *url, char* target, char* tooltip)
+{
+    int i;
+    pointf ppf;
+    point rp[100];
+    int last = 2*n-1;
+
+    for (i = 0; i < n; i++) {
+	ppf = mapptf(p1[i]);
+	rp[i].x = ROUND(ppf.x);
+	rp[i].y = ROUND(ppf.y);
+    }
+    for (i = 0; i < n; i++) {
+	ppf = mapptf(p2[i]);
+	rp[last-i].x = ROUND(ppf.x);
+	rp[last-i].y = ROUND(ppf.y);
+    }
+    mapOutput ("poly", rp, last+1, url, target, NULL, tooltip);
+#ifdef DEBUG
+    psmapOutput (rp, last+1);
+#endif
+}
+/* approx_bezier:
+ * Approximate Bezier by line segments. If the four points are
+ * almost colinear, as determined by check_control_points, we store
+ * the segment cp[0]-cp[3]. Otherwise we split the Bezier into 2
+ * and recurse. 
+ * Since 2 contiguous segments share an endpoint, we actually store
+ * the segments as a list of points.
+ * New points are appended to the list given by lp. The tail of the
+ * list is returned.
+ */ 
+static segitem_t* 
+approx_bezier (pointf *cp, segitem_t* lp)
+{
+    pointf sub_curves[8];
+
+    if (check_control_points(cp)) {
+	if (FIRST_SEG (lp)) INIT_SEG (cp[0], lp);
+	lp = appendSeg (cp[3], lp);
+    }
+    else {
+	Bezier (cp, 3, 0.5, sub_curves, sub_curves+4);
+	lp = approx_bezier (sub_curves, lp);
+	lp = approx_bezier (sub_curves+4, lp);
+    }
+    return lp;
+}
+
+/* bisect:
+ * Return the angle of the bisector between the two rays
+ * pp-cp and cp-np. The bisector returned is always to the
+ * left of pp-cp-np.
+ */
+static double
+bisect (pointf pp, pointf cp, pointf np)
+{
+  double ang, theta, phi;
+  theta = atan2(np.y - cp.y,np.x - cp.x);
+  phi = atan2(pp.y - cp.y,pp.x - cp.x);
+  ang = theta - phi;
+  if (ang > 0) ang -= 2*M_PI;
+
+  return (phi + ang/2.0);
+}
+
+/* mkSegPts:
+ * Determine polygon points related to 2 segments prv-cur and cur-nxt.
+ * The points lie on the bisector of the 2 segments, passing through cur,
+ * and distance HW from cur. The points are stored in p1 and p2.
+ * If p1 is NULL, we use the normal to cur-nxt.
+ * If p2 is NULL, we use the normal to prv-cur.
+ * Assume at least one of prv or nxt is non-NULL.
+ */
+static void
+mkSegPts (segitem_t* prv, segitem_t* cur, segitem_t* nxt, 
+	pointf* p1, pointf* p2)
+{
+    pointf cp, pp, np;
+    double theta, delx, dely;
+    pointf p;
+
+    cp = cur->p;
+    /* if prv or nxt are NULL, use the one given to create a collinear
+     * prv or nxt. This could be more efficiently done with special case code, 
+     * but this way is more uniform.
+     */
+    if (prv) {
+	pp = prv->p;
+	if (nxt)
+	    np = nxt->p;
+	else {
+	    np.x = 2*cp.x - pp.x;
+	    np.y = 2*cp.y - pp.y;
+	}
+    }
+    else {
+	np = nxt->p;
+	pp.x = 2*cp.x - np.x;
+	pp.y = 2*cp.y - np.y;
+    }
+    theta = bisect(pp,cp,np);
+    delx = HW*cos(theta);
+    dely = HW*sin(theta);
+    p.x = cp.x + delx;
+    p.y = cp.y + dely;
+    *p1 = p;
+    p.x = cp.x - delx;
+    p.y = cp.y - dely;
+    *p2 = p;
+}
+
+/* map_output_bspline:
+ * Construct and output a closed polygon approximating the input
+ * B-spline bp. We do this by first approximating bp by a sequence
+ * of line segments. We then use the sequence of segments to determine
+ * the polygon.
+ * In cmapx, polygons are limited to 100 points, so we output polygons
+ * in chunks of 100.
+ */
+static void
+map_output_bspline (bezier* bp, char *url, char *target, char *tooltip)
+{
+    segitem_t* segl = GNEW(segitem_t);
+    segitem_t* segp = segl;
+    segitem_t* segprev;
+    segitem_t* segnext;
+    int nc, j, k, cnt;
+    pointf pts[4];
+    pointf pt1[50], pt2[50];
+
+    MARK_FIRST_SEG(segl);
+    nc = (bp->size - 1)/3; /* nc is number of bezier curves */
+    for (j = 0; j < nc; j++) { 
+	for (k = 0; k < 4; k++) {
+	    pts[k].x = (double)bp->list[3*j + k].x;
+	    pts[k].y = (double)bp->list[3*j + k].y;
+	}
+	segp = approx_bezier (pts, segp);
+    }
+
+    segp = segl;
+    segprev = 0;
+    cnt = 0;
+    while (segp) {
+	segnext = segp->next;
+	mkSegPts (segprev, segp, segnext, pt1+cnt, pt2+cnt);
+	cnt++;
+	if ((segnext == NULL) || (cnt == 50)) {
+	    map_bspline_poly (cnt, pt1, pt2, url, target, tooltip);
+	    pt1[0] = pt1[cnt-1];
+	    pt2[0] = pt2[cnt-1];
+	    cnt = 1;
+	}
+	segprev = segp;
+	segp = segnext;
+    }
+
+    /* free segl */
+    while (segl) {
+	segp = segl->next;
+	free (segl);
+	segl = segp;
+    }
+}
+
+void map_begin_edge(edge_t* e)
 {
     /* strings */
     char *s, *label, *taillabel, *headlabel, *url, *tailurl, *headurl,
@@ -804,7 +1027,21 @@ void map_begin_edge(edge_t * e)
 	}
 	map_output_fuzzy_point(p, headurl, headtarget, headlabel, headtooltip);
     }
-
+    
+    /* map the edge (spline) for format IMAP or CMAPX */  
+    
+    if (ED_spl(e) && (url || m_tooltip) && (Output_lang == IMAP || Output_lang == CMAPX)) 
+    {
+	int i, ns;
+	splines *spl;
+	
+	spl = ED_spl(e);
+	ns = spl->size; /* number of splines */
+	for (i = 0; i < ns; i++) {
+	    map_output_bspline (spl->list+i, url, target, tooltip);
+	}
+    }
+    
     free(m_url);
     free(m_target);
     free(m_tailtarget);
@@ -835,7 +1072,7 @@ static void map_end_anchor(void)
     fprintf(Output_file, "/>\n");
 #endif
 }
-
+     
 static void map_polygon(point * A, int n, int filled)
 {
 #if NEWANCHORS
