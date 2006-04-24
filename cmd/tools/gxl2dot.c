@@ -135,6 +135,7 @@ static namev_t *make_nitem(Dt_t * d, namev_t * objp, Dtdisc_t * disc)
 
 static void free_nitem(Dt_t * d, namev_t * np, Dtdisc_t * disc)
 {
+    free(np->unique_name);
     free(np);
 }
 
@@ -184,7 +185,7 @@ static void addToMap(Dt_t * map, char *name, char *uniqueName)
     obj.name = name;
     objp = dtinsert(map, &obj);
     assert(objp->unique_name == 0);
-    objp->unique_name = uniqueName;
+    objp->unique_name = strdup(uniqueName);
 }
 
 static char *mapLookup(Dt_t * nm, char *name)
