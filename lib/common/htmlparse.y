@@ -316,7 +316,7 @@ mkText (const char* lastl)
 #endif
 
 static htmltxt_t*
-mkText()
+mkText(void)
 {
     int cnt;
     Dt_t * iline = HTMLstate.flineList;
@@ -436,7 +436,7 @@ static htmllabel_t* mkLabel (void* obj, int kind)
  * put on artificially during in parseHTML.
  */
 static void
-freeFontstack()
+freeFontstack(void)
 {
     sfont_t* s;
     sfont_t* next;
@@ -520,7 +520,7 @@ pushFont (htmlfont_t *f)
 /* popFont:
  */
 static void 
-popFont ()
+popFont (void)
 {
     sfont_t* curfont = HTMLstate.fontstack;
     sfont_t* prevfont = curfont->pfont;
