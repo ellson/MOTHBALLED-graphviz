@@ -191,7 +191,7 @@ emit_textlines(GVJ_t* job, int nlines, textline_t lines[], pointf p,
     p.y += (linespacing * (nlines - 1) / 2)	/* cl of topline */
 	-fsize * 0.23;	/* cl to baseline */
 
-    tmp = ROUND(p.y);  /* align with interger points */
+    tmp = ROUND(p.y);  /* align with integer points */
     p.y = (double)tmp;
 
     gvrender_begin_context(job);
