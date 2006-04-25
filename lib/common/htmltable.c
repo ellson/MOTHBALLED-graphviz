@@ -150,7 +150,7 @@ emit_htextlines(GVJ_t* job, int nlines, htextline_t* lines, pointf p,
     double offset=0.0;
     char *fname_ , *fcolor_;
     textline_t tl;
-    pointf p_;
+    pointf p_ = {0.0, 0.0};
     textitem_t* ti;
 	
     center_x = p.x;
@@ -794,6 +794,8 @@ size_html_txt(htmltxt_t* ftxt, htmlenv_t* env)
     case AGEDGE:
 	substrFn = substrEFn;
 	break;
+    default:
+	substrFn = NULL;
     }
 
     for (i = 0; i < ftxt->nlines; i++) {
