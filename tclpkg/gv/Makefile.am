@@ -280,7 +280,8 @@ test_tcl: libgv_tcl.la
 		ln -fs ../*.dot ../*.tcl .; \
 		$(TCLSH) ./test.tcl)
 
-EXTRA_DIST = demo/* gv_doc_*.tcl
+EXTRA_DIST = demo/* gv_doc_*.tcl \
+	gv_sharp.cpp $(SHARP_hdr)
 
 CLEANFILES = test_*/* gv_*.man \
 	gv_sharp.cpp $(SHARP_hdr) \
