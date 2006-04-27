@@ -720,7 +720,7 @@ static edge_t*
 cloneEdge (graph_t* g, node_t* tn, node_t* hn, edge_t* orige)
 {
     edge_t* e = agedge(g, tn, hn);
-    agcopyattr (orige, e);
+    agcopyattr (getmainedge(orige), e);
 
     return e;
 }
