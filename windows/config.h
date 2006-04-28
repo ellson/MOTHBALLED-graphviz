@@ -247,6 +247,12 @@ extern "C" {
 /* Define if you want the gd renderers (png, gif, etc ) */
 #define GD_RENDER 1
 
+/* Define if you want the DIGCOLA features */
+#define DIGCOLA 1
+
+/* Define if you want the IPSEPCOLA features */
+/* #define IPSEPCOLA 1 */
+
 /* Default DPI. */
 #define DEFAULT_DPI 96
 
