@@ -33,6 +33,16 @@ extern "C" {
 	float *edists; /* directed dist reflecting the direction of the edge */
     };
 
+    struct cluster_data {
+	int nvars;         /* total count of vars in clusters */
+        int nclusters;     /* number of clusters */
+        int *clustersizes; /* number of vars in each cluster */
+        int **clusters;    /* list of var indices for constituents of each c */
+	int ntoplevel;     /* number of nodes not in any cluster */
+	int *toplevel;     /* array of nodes not in any cluster */
+	boxf *bb;	   /* bounding box of each cluster */
+    };
+
     typedef int DistType;	/* must be signed!! */
 
     inline double max(double x, double y) {
@@ -92,6 +102,17 @@ extern "C" {
 	float *edists; /* directed dist reflecting the direction of the edge */
 #endif
     } vtx_data;
+
+    typedef struct cluster_data {
+	int nvars;         /* total count of vars in clusters */
+        int nclusters;     /* number of clusters */
+        int *clustersizes; /* number of vars in each cluster */
+        int **clusters;    /* list of var indices for constituents of each c */
+	int ntoplevel;     /* number of nodes not in any cluster */
+	int *toplevel;     /* array of nodes not in any cluster */
+	boxf *bb;	   /* bounding box of each cluster */
+    } cluster_data;
+
 
     typedef int DistType;	/* must be signed!! */
 

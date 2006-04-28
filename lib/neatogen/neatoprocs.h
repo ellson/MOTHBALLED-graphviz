@@ -59,7 +59,7 @@ extern "C" {
     extern void neato_init_edge(Agedge_t *);
     extern void neato_init_node(Agnode_t *);
     extern void neato_layout(Agraph_t * g);
-    extern void neatoLayout(Agraph_t * g, int layoutMode, int layoutModel);
+    extern void neatoLayout(Agraph_t *mg, Agraph_t * g, int layoutMode, int layoutModel);
     extern void neato_init_graph(graph_t * g);
     extern void neato_init_graphn(graph_t * g, int);
     extern int Plegal_arrangement(Ppoly_t ** polys, int n_polys);

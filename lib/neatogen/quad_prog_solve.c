@@ -389,6 +389,176 @@ constrained_majorization_new(CMajEnv *e, float * b, float **coords,
 	return counter;
 }
 
+static float *place;
+static int compare_incr(const void *a, const void *b) {
+	if(place[*(int*)a]>place[*(int*)b]) {
+		return 1;
+	} else if(place[*(int*)a]<place[*(int*)b]) {
+		return -1;
+	}
+	return 0;
+}
+/*
+While not converged: move everything towards the optimum, then satisfy constraints with as little displacement as possible.
+Returns number of iterations before convergence.
+*/
+int constrained_majorization_gradient_projection(CMajEnv *e,
+		float * b, float ** coords, int ndims, int cur_axis, int max_iterations,
+		float * hierarchy_boundaries,float levels_gap) {
+	
+	int i,j,counter;
+	if(max_iterations==0) return 0;
+
+	int * ordering=e->ordering;
+	int * levels=e->levels;
+	int num_levels=e->num_levels; 
+	bool converged=false;
+	place = coords[cur_axis];
+	float *g = e->fArray1;
+	float *old_place = e->fArray2;
+	float *d = e->fArray4;
+
+#ifdef CONMAJ_LOGGING
+	double prev_stress=0;
+	static int call_no=0;
+	for (i=0; i<e->n; i++) {
+		prev_stress += 2*b[i]*place[i];
+		for (j=0; j<e->n; j++) {
+			prev_stress -= e->A[i][j]*place[j]*place[i];
+		}
+	}
+	FILE *logfile = fopen("constrained_majorization_log","a");
+
+	fprintf(logfile,"grad proj %d: stress=%f\n",call_no,prev_stress);
+#endif
+	for (counter=0; counter<max_iterations&&!converged; counter++) {
+		converged=true;		
+		// find steepest descent direction
+		for (i=0; i<e->n; i++) {
+			old_place[i]=place[i];
+			g[i] = 2*b[i];
+			for (j=0; j<e->n; j++) {
+				g[i] -= 2*e->A[i][j]*place[j];
+			}
+		}		
+		float numerator = 0, denominator = 0, r;
+		for (i=0; i<e->n; i++) {
+			numerator += g[i]*g[i];
+			r=0;
+			for (j=0; j<e->n; j++) {
+				r += 2*e->A[i][j]*g[j];
+			}
+			denominator -= r*g[i];
+		}
+		float alpha = numerator/denominator;
+		for (i=0; i<e->n; i++) {
+			if(alpha > 0 && alpha < 1000) {
+				place[i]-=alpha*g[i];
+			}
+		}
+		if(num_levels) 
+			qsort((int *)ordering, (size_t)levels[0], sizeof(int), compare_incr );
+		//project to constraint boundary
+		for (i=0; i<num_levels; i++) {
+			int endOfLevel=i==num_levels-1?e->n:levels[i+1];
+			// ensure monotic increase in position within levels
+			qsort((int *)ordering+levels[i], (size_t)endOfLevel-levels[i], sizeof(int), compare_incr );
+			// If there are overlapping levels find offending nodes and place at average position
+			int ui=levels[i],li=ui-1;
+			int l = ordering[li--],u = ordering[ui++];
+			if(place[l]+levels_gap>place[u]) {
+				float sum=place[l]+place[u]-levels_gap*(e->lev[l]+e->lev[u]),w=2;
+				float avgPos=sum/w;
+				float pos;
+				bool finished;
+				do {
+					finished=true;
+					if(ui<endOfLevel) {
+						u=ordering[ui];
+						pos=place[u]-levels_gap*e->lev[u];
+						if(pos<avgPos) {
+							ui++; w++;
+							sum+=pos;
+							avgPos=sum/w;
+							finished=false;
+						}
+					}
+					
+					if(li>=0) {
+						l=ordering[li];
+						pos=place[l]-levels_gap*e->lev[l];
+						if(pos>avgPos) {
+							li--; w++;
+							sum+=pos;
+							avgPos=sum/w;
+							finished=false;
+						}
+					}
+				} while (!finished);
+				for(j=li+1;j<ui;j++) {
+					place[ordering[j]]=avgPos+levels_gap*e->lev[ordering[j]];
+				}
+			}
+		}
+		// set place to the intersection of old_place-g and boundary and compute d, the vector from intersection pnt to projection pnt
+		for (i=0; i<e->n; i++) {
+			d[i]=place[i]-old_place[i];
+		}	
+		// now compute beta
+		numerator = 0, denominator = 0;
+		for (i=0; i<e->n; i++) {
+			numerator += g[i]*d[i];
+			r=0;
+			for (j=0; j<e->n; j++) {
+				r += 2*e->A[i][j]*d[j];
+			}
+			denominator += r*d[i];
+		}
+		float beta = numerator/denominator;
+
+		float test=0,tmptest=0;
+		for (i=0; i<e->n; i++) {
+			if(beta>0&&beta<1.0) {
+				place[i]=old_place[i]+beta*d[i];
+			}
+			tmptest = fabs(place[i]-old_place[i]);
+			if(test<tmptest) test=tmptest;
+		}
+		computeHierarchyBoundaries(place, e->n, ordering, levels, num_levels, hierarchy_boundaries);
+		/*
+		if(num_levels) 
+			qsort((int *)ordering, (size_t)levels[0], sizeof(int), compare_incr );
+		for (i=0; i<num_levels; i++) {
+			int endOfLevel=i==num_levels-1?e->n:levels[i+1];
+			// ensure monotic increase in position within levels
+			qsort((int *)ordering+levels[i], (size_t)endOfLevel-levels[i], sizeof(int), compare_incr );
+			// If there are overlapping levels find offending nodes and place at average position
+			int l = ordering[levels[i]-1],u = ordering[levels[i]];
+			//assert(place[l]+levels_gap<=place[u]+0.00001);
+		}
+		*/
+#ifdef CONMAJ_LOGGING
+		double stress=0;
+		for (i=0; i<e->n; i++) {
+			stress += 2*b[i]*place[i];
+			for (j=0; j<e->n; j++) {
+				stress -= e->A[i][j]*place[j]*place[i];
+			}
+		}
+		fprintf(logfile,"%d: stress=%f, test=%f, %s\n",call_no,stress,test,(stress>=prev_stress)?"No Improvement":"");
+		prev_stress=stress;
+#endif
+		if(test>quad_prog_tol) {
+			converged=false;
+		}
+	}
+#ifdef CONMAJ_LOGGING
+	call_no++;
+	fclose(logfile);
+#endif
+	return counter;
+}
+
 int 
 constrained_majorization_new_with_gaps(CMajEnv *e, float* b, float** coords, 
     int ndims, int cur_axis, int max_iterations, float* hierarchy_boundaries,

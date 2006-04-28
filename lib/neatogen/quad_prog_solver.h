@@ -45,6 +45,12 @@ extern int constrained_majorization_new(CMajEnv*, float*, float**,
 
 extern int constrained_majorization_new_with_gaps(CMajEnv*, float*, float**, 
                                                   int, int, int,  float*, float);
+extern int constrained_majorization_gradient_projection(CMajEnv *e,
+	float * b, float ** coords, int ndims, int cur_axis, int max_iterations,
+	float * hierarchy_boundaries,float levels_gap);
+
+extern int constrained_majorization_new_with_gaps(CMajEnv*, float*, float**, 
+                                                  int, int, int,  float*, float);
 extern void deleteCMajEnv(CMajEnv *e);
 
 extern float** unpackMatrix(float * packedMat, int n);

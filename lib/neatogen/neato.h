@@ -29,6 +29,7 @@
 #define MODE_KK          0
 #define MODE_MAJOR       1
 #define MODE_HIER        2
+#define MODE_IPSEP       3
 
 #define INIT_SELF        0
 #define INIT_REGULAR     1
