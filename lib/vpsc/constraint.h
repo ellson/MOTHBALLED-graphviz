@@ -1,3 +1,6 @@
+/* $Id$ $Revision$ */
+/* vim:set shiftwidth=4 ts=8: */
+
 /**
  * \brief A constraint determines a minimum or exact spacing required between
  * two variables.
@@ -32,7 +35,7 @@ public:
 	double lm;
 	Constraint(Variable *left, Variable *right, double gap, bool equality=false);
 	~Constraint();
-	inline double Constraint::slack() const { return right->position() - gap - left->position(); }
+	inline double slack() const { return right->position() - gap - left->position(); }
 	long timeStamp;
 	bool active;
 	bool visited;
