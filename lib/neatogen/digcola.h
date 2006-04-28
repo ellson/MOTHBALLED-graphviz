@@ -26,6 +26,7 @@ extern double compute_hierarchy(vtx_data*, int, double, double,
 extern void IMDS_given_dim(vtx_data*, int, double*, double*, double);
 extern int stress_majorization_with_hierarchy(vtx_data*, int, int, double**, 
                                               int, int, int, int, double);
+#ifdef IPSEPCOLA
 typedef struct ipsep_options {
     int diredges;       /* 1=generate directed edge constraints */
                         /* 2=generate directed hierarchy level constraints (DiG-CoLa) */
@@ -39,11 +40,12 @@ typedef struct ipsep_options {
                         /* list of node indices for each cluster */
 #ifdef MOSEK
     int mosek;          /* use Mosek as constraint optimization engine */
-#endif //MOSEK
+#endif /* MOSEK */
 } ipsep_options;
 
-// stress majorization, for Constraint Layout
+ /* stress majorization, for Constraint Layout */
 extern int stress_majorization_cola(vtx_data*, int, int, double**, int, int, int, ipsep_options*);
+#endif
 #endif
 #endif
 

@@ -225,20 +225,21 @@ static void set_elabel(edge_t * e, textlabel_t * l, char *name)
     }
 }
 
-static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g) {
+#ifdef IPSEPCOLA
+static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g)
+{
     /* search meta-graph to find clusters */
     graph_t *mg, *subg;
     node_t *mm, *mn;
+    node_t *n;
     edge_t *me;
-    // array of arrays of node indices in each cluster
+     /* array of arrays of node indices in each cluster */
     int **cs,*cn;
     int i,j,nclusters=0;
-    bool assigned[agnnodes(g)];
-    for(i=0;i<agnnodes(g);i++) {
-        assigned[i]=false;
-    }
+    bool* assigned = N_NEW(agnnodes(g), bool);
     cluster_data *cdata = GNEW(cluster_data);
-    cdata->ntoplevel=agnnodes(g);
+
+    cdata->ntoplevel = agnnodes(g);
     mm = mastergraph->meta_node;
     mg = mm->graph;
     for (me = agfstout(mg, mm); me; me = agnxtout(mg, me)) {
@@ -249,28 +250,29 @@ static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g) {
         }
     }
     cdata->nvars=0;
-    cdata->nclusters=nclusters;
-    cs=cdata->clusters=N_GNEW(nclusters,int*);
-    cn=cdata->clustersizes=N_GNEW(nclusters,int);
-    //fprintf(stderr,"search %d clusters...\n",nclusters);
+    cdata->nclusters = nclusters;
+    cs = cdata->clusters = N_GNEW(nclusters,int*);
+    cn = cdata->clustersizes = N_GNEW(nclusters,int);
+    /* fprintf(stderr,"search %d clusters...\n",nclusters); */
     for (me = agfstout(mg, mm); me; me = agnxtout(mg, me)) {
         mn = me->head;
         subg = agusergraph(mn);
         /* clusters are processed by separate calls to ordered_edges */
         if (!strncmp(subg->name, "cluster", 7)) {
-            *cn=agnnodes(subg);
-            cdata->nvars+=*cn;
-            int *c=*cs++=N_GNEW(*cn++,int);
-            node_t *n;
-            //fprintf(stderr,"Cluster with %d nodes...\n",agnnodes(subg));
+            int *c;
+
+            *cn = agnnodes(subg);
+            cdata->nvars += *cn;
+            c = *cs++ = N_GNEW(*cn++,int);
+            /* fprintf(stderr,"Cluster with %d nodes...\n",agnnodes(subg)); */
             for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
                 node_t *gn;
-                int ind=0;
+                int ind = 0;
                 for (gn = agfstnode(g); gn; gn = agnxtnode(g, gn)) {
                     if(gn->id==n->id) break;
                     ind++;
                 }
-                //fprintf(stderr,"  node=%s, id=%d, ind=%d\n",n->name,n->id,ind);
+                /* fprintf(stderr,"  node=%s, id=%d, ind=%d\n",n->name,n->id,ind); */
                 *c++=ind;
                 assigned[ind]=true;
                 cdata->ntoplevel--;
@@ -285,8 +287,10 @@ static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g) {
         }
     }
     assert(cdata->ntoplevel==agnnodes(g)-cdata->nvars);
+    free (assigned);
     return cdata;
 }
+
 static void freeClusterData(cluster_data *c) {
     if(c->nclusters>0) {
         free(c->clusters[0]);
@@ -297,6 +301,8 @@ static void freeClusterData(cluster_data *c) {
     }
     free(c);
 }
+#endif
+
 /* user_spline:
  * Attempt to use already existing pos info for spline
  * Return 1 if successful, 0 otherwise.
@@ -710,8 +716,10 @@ static int neatoMode(graph_t * g)
 #ifdef DIGCOLA
 	else if (streq(str, "hier"))
 	    mode = MODE_HIER;
+#ifdef IPSEPCOLA
         else if (streq(str, "ipsep"))
             mode = MODE_IPSEP;
+#endif
 #endif
 	else
 	    agerr(AGWARN,
@@ -748,6 +756,10 @@ dfsCycle (vtx_data* graph, int i,int mode)
 {
     node_t *np, *hp;
     int j, e, f;
+    /* if mode is IPSEP make it an in-edge
+     * at both ends, so that an edge constraint won't be generated!
+     */
+    double x = (mode==MODE_IPSEP?-1.0:1.0);
 
     np = graph[i].np;
     ND_mark(np) = TRUE;
@@ -757,9 +769,7 @@ dfsCycle (vtx_data* graph, int i,int mode)
 	j = graph[i].edges[e];
 	hp = graph[j].np;
 	if (ND_onstack(hp)) {  /* back edge: reverse it */
-            // if mode is IPSEP make it an in-edge 
-            // at both ends, so that an edge constraint won't be generated!
-            graph[i].edists[e] = mode==MODE_IPSEP?-1.0:1.0;
+            graph[i].edists[e] = x;
             for (f = 1; (f < graph[j].nedges) &&(graph[j].edges[f] != i); f++) ;
             assert (f < graph[j].nedges);
             graph[j].edists[f] = -1.0;
@@ -902,7 +912,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
 		    *ewgts++ = 1.0;
 #ifdef DIGCOLA
                 if (haveDir) {
-                    char *s=agget(ep,"dir");
+                    char *s = agget(ep,"dir");
                     if(s&&!strncmp(s,"none",4)) {
                         *edists++ = 0;
                     } else {
@@ -1089,6 +1099,7 @@ void dumpData(graph_t * g, vtx_data * gp, int nv, int ne)
  * Solve stress using majorization.
  * Old neato attributes to incorporate:
  *  weight?
+ * model will be MODE_MAJOR, MODE_HIER or MODE_IPSEP
  */
 static void
 majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int steps)
@@ -1098,7 +1109,6 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     int i;
     node_t *v;
     vtx_data *gp;
-    cluster_data *cs;
 
     int init;
 
@@ -1116,50 +1126,51 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     }
     gp = makeGraphData(g, nv, &ne, mode, model);
 
-    cs=(cluster_data*)cluster_map(mg,g);
-
     if (Verbose) {
 	fprintf(stderr, "%d nodes %.2f sec\n", nv, elapsed_sec());
     }
 
 #ifdef DIGCOLA
-    if (mode == MODE_HIER || mode == MODE_IPSEP) {
+    if (mode != MODE_MAJOR) {
         double lgap = late_double(g, agfindattr(g, "levelsgap"), 0.0, -MAXDOUBLE);
         if (mode == MODE_HIER) {        
             stress_majorization_with_hierarchy(gp, nv, ne, coords, Ndim,
                        (init == INIT_SELF), model, MaxIter, lgap);
-        } else {
+        } 
+#ifdef IPSEPCOLA
+	else {
             char* str;
             ipsep_options opt;
             pointf nsize[nv];
-            opt.edge_gap=lgap;
+	    cluster_data *cs = (cluster_data*)cluster_map(mg,g);
+            opt.edge_gap = lgap;
 #ifdef MOSEK
-            opt.mosek=0;
-#endif // MOSEK
-            opt.noverlap=opt.diredges=0;
-            opt.gap.x=opt.gap.y=0;
-            opt.nsize=nsize;
-            opt.clusters=cs;
+            opt.mosek = 0;
+#endif /* MOSEK */
+            opt.nsize = nsize;
+            opt.clusters = cs;
             str = agget(g, "diredgeconstraints");
-            if(str && !strncmp(str,"true",4)) {
+            if (mapbool(str)) {
                 opt.diredges = 1;
                 if(Verbose)
                     fprintf(stderr,"Generating Edge Constraints...\n");
-            } else if(str && !strncmp(str,"hier",4)) {
+            } else if (str && !strncasecmp(str,"hier",4)) {
                 opt.diredges = 2;
                 if(Verbose)
                     fprintf(stderr,"Generating DiG-CoLa Edge Constraints...\n");
             }
+	    else opt.diredges = 0;
             str = agget(g, "overlapconstraints");
-            if(str && !strncmp(str,"true",4)) {
+            if (mapbool(str)) {
                 opt.noverlap = 1;
                 if(Verbose)
                     fprintf(stderr,"Generating Non-overlap Constraints...\n");
-            } else if(str && !strncmp(str,"post",4)) {
+            } else if (str && !strncasecmp(str,"post",4)) {
                 opt.noverlap = 2;
                 if(Verbose)
                     fprintf(stderr,"Removing overlaps as postprocess...\n");
             }  
+            else opt.noverlap = 0;
 #ifdef MOSEK
             str = agget(g, "mosek");
             if(str && !strncmp(str,"true",4)) {
@@ -1167,32 +1178,23 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
                 if(Verbose)
                     fprintf(stderr,"Using Mosek for constraint optimization...\n");
             }
-#endif // MOSEK
-            if ((str = agget(g, "sep"))) {
-                char* c;
-                if ((c=strchr(str,','))) {
-                    i=c-str;
-                    if(Verbose)
-                        fprintf(stderr,"gap=%s,%d\n",str,i);
-                    char s[strlen(str)];
-                    strncpy(s,str,i);
-                    s[i]=0;
-                    opt.gap.x=atof(s);
-                    strcpy(s,c+1);
-                    opt.gap.y=atof(s);
+#endif /* MOSEK */
+            if ((str = agget(g, "sep")) && 
+                (i = sscanf(str, "%lf,%lf", &opt.gap.x, &opt.gap.y))) {
+		    if (i == 1) opt.gap.y = opt.gap.x;
                     if(Verbose)
                         fprintf(stderr,"gap=%f,%f\n",opt.gap.x,opt.gap.y);
-                } else {
-                    opt.gap.x =opt.gap.y = atof(str);
-                }
             }
+            else opt.gap.x = opt.gap.y = 0;
             for (i=0, v = agfstnode(g); v; v = agnxtnode(g, v),i++) {
-                nsize[i].x=ND_width(v);
-                nsize[i].y=ND_height(v);
+                nsize[i].x = ND_width(v);
+                nsize[i].y = ND_height(v);
             }
 
             stress_majorization_cola(gp, nv, ne, coords, Ndim, model, MaxIter, &opt);
+	    freeClusterData(cs);
         }
+#endif
     }
     else
 #endif
@@ -1208,7 +1210,6 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 	}
     }
     freeGraphData(gp);
-    freeClusterData(cs);
     free(coords[0]);
     free(coords);
 }
@@ -1381,6 +1382,7 @@ void neato_layout(Agraph_t * g)
 		free_scan_graph(gc);
 		agdelete(g, gc);
 	    }
+#ifdef IPSEPCOLA
             {
                 graph_t *mg, *subg;
                 node_t *mm, *mn;
@@ -1396,6 +1398,7 @@ void neato_layout(Agraph_t * g)
                     }
                 }
             }
+#endif
 	} else {
 	    neatoLayout(g, g, layoutMode, model);
 	    adjustNodes(g);

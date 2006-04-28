@@ -252,7 +252,7 @@ CMDS_orthog(vtx_data* graph, int n, int dim, double** eigs, double tol,
 void IMDS_given_dim(vtx_data* graph, int n, double* given_coords, 
        double* new_coords, double conj_tol)
 {
-	int iterations1,iterations2, mat_mult_count1;
+	int iterations2;
 	int i,j;
 	DistType** Dij;
 	float* f_storage = NULL;	
@@ -267,7 +267,9 @@ void IMDS_given_dim(vtx_data* graph, int n, double* given_coords,
 	double b;
 	bool converged;
 
+#if 0
 	iterations1=mat_mult_count1=0; /* We don't compute the x-axis at all. */
+#endif
 
 	Dij = compute_apsp(graph, n);
 	

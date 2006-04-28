@@ -219,6 +219,10 @@ cat{
 #define VERSION "VVVV"
 #define BUILDDATE "DDDD"
 
+#define DIGCOLA 1
+#define IPSEPCOLA 1
+/* #define MOSEK 1 */
+
 #ifndef DEFAULT_FONTPATH
 # ifdef _UWIN
 #  define DEFAULT_FONTPATH    "/win/fonts"

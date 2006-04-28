@@ -6,6 +6,7 @@ include $(ROOT)/makearch/$(ARCH)
 INCS =  -I. -I$(ROOT) \
         -I../common \
         -I../pack \
+        -I../vpsc \
         -I../gvc \
         -I../cdt \
         -I../pathplan \
@@ -15,15 +16,17 @@ INCS =  -I. -I$(ROOT) \
 DEFINES = -DHAVE_CONFIG_H
 
 HDRS = adjust.h edges.h geometry.h heap.h hedges.h info.h mem.h \
-       neato.h neatoprocs.h poly.h simple.h site.h voronoi.h
+       neato.h neatoprocs.h poly.h simple.h site.h voronoi.h \
+       quad_prog_vpsc.h mosek_quad_solve.h
 
 NOBJS  = stress.o kkutils.o pca.o matrix_ops.o embed_graph.o dijkstra.o \
        conjgrad.o closest.o bfs.o compute_hierarchy.o opt_arrangement.o \
        smart_ini_x.o constrained_majorization.o quad_prog_solve.o
+POBJS = quad_prog_vpsc.o constrained_majorization_ipsep.o mosek_quad_solve.o
 OBJS = adjust.o circuit.o edges.o find_ints.o geometry.o heap.o hedges.o \
        info.o neatoinit.o intersect.o legal.o lu.o matinv.o memory.o poly.o \
        printvis.o site.o solve.o neatosplines.o stuff.o voronoi.o \
-       $(NOBJS) constraint.o
+       $(NOBJS) $(POBJS) constraint.o
 
 libneatogen.a : $(OBJS)
 	$(RM) libneatogen.a

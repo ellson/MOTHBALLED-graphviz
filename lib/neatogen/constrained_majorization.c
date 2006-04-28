@@ -69,7 +69,6 @@ stress_majorization_with_hierarchy(
 	double conj_tol=tolerance_cg;        /* tolerance of Conjugate Gradient */
 	float ** unpackedLap = NULL;
 	CMajEnv *cMajEnv = NULL;
-	clock_t start_time;
 	double y_0;
 	int length;
 	DistType diameter;
@@ -79,7 +78,6 @@ stress_majorization_with_hierarchy(
     /* Additionally, we never consider gaps smaller than 'abs_tol'*<avg_gap> */
     double relative_tol=levels_sep_tol; 
 	int *ordering=NULL, *levels=NULL;
-	double hierarchy_spread;
 	float constant_term;
 	int count;
 	double degree;
@@ -120,7 +118,7 @@ stress_majorization_with_hierarchy(
 
 		x = d_coords[0]; y = d_coords[1];
 		compute_y_coords(graph, n, y, n);
-		hierarchy_spread = compute_hierarchy(graph, n, abs_tol, relative_tol, y, &ordering, &levels, &num_levels);
+		compute_hierarchy(graph, n, abs_tol, relative_tol, y, &ordering, &levels, &num_levels);
 		if (num_levels<=1) {
 			/* no hierarchy found, use faster algorithm */
 			return stress_majorization_kD_mkernel(graph, n, nedges_graph, d_coords, dim, smart_ini, model, maxi);
@@ -144,7 +142,7 @@ stress_majorization_with_hierarchy(
 	}
 	else {
         initLayout(graph, n, dim, d_coords);
-		hierarchy_spread = compute_hierarchy(graph, n, abs_tol, relative_tol, NULL, &ordering, &levels, &num_levels);		
+		compute_hierarchy(graph, n, abs_tol, relative_tol, NULL, &ordering, &levels, &num_levels);		
 	}
     if (n == 1) return 0;
 
@@ -314,8 +312,6 @@ stress_majorization_with_hierarchy(
 #endif
 	
 	old_stress=DBL_MAX; /* at least one iteration */
-
-	start_time = clock();
 
 	unpackedLap = unpackMatrix(lap2, n);
 	cMajEnv=initConstrainedMajorization(lap2, n, ordering, levels, num_levels);
