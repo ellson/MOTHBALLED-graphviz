@@ -5,14 +5,11 @@
 <body bgcolor=#ffffff>
 
 <h1>graphviz todo list 22-December-2005</h1>
-
-Please <A HREF="mailto:north@graphviz.org">
-contact us</A> if you'd like to help.
 <P>
 The 4 categories give a rough time as to when a task should be done, 
 and reflect an assessment of the task's ease multiplied by its importance. 
-Thus, multiple edges is extremely important but not easy, so it falls into 
-category 2. The following denote owners:<br>
+Thus, new overlap removal strategy is extremely important but not easy,
+so it falls into category 2. The following denote owners:<br>
 ERG=<A HREF=mailto:erg@graphviz.org>Emden Gansner</A><br>
 JCE=<A HREF=mailto:ellson@graphviz.org>John Ellson</A><br>
 SCN=<A HREF=mailto:ellson@graphviz.org>Stephen North</A><br>
@@ -20,58 +17,57 @@ SCN=<A HREF=mailto:ellson@graphviz.org>Stephen North</A><br>
 <hr align=left width=66>
 <H2>Category 0</H2>
 <pre>
-SCN - Fix cluster model in dot
-ERG - Update dotguide
+ERG - Update libguide
+SCN - Update dot/neatoguide
 JCE - Document plugin interface
 JCE - Create graph editor using Cairo + scripting language;
       deprecate use of lefty.
 JCE - Revise GV_FILE_PATH to work as directory list; remove loose ends
-JCE - Fix padding, margins, border.
-SCN - Support for Unicode in Postscript
+JCE - Integrate new cgraph library
 ALL - Revise the buglist
-JCE - New release
 </pre>
 <hr align=left width=66>
 <H2>Category 1</H2>
 <pre>
-ERG - New text labels with font elements &lt;FONT&gt;, &lt;B&gt;, &lt;I&gt;, &lt;TT&gt;, etc. (Amit)
-JCE/SCN - Move layouts to floating point
-ERG - Allow edges as line segments and polylines (Amit)
+SCN - Fix cluster model in dot
+SCN - Lightweight edge labels in dot
+ERG - New text labels with font elements &lt;FONT&gt;, &lt;B&gt;, &lt;I&gt;, &lt;TT&gt;, etc. (support via fontconfig or egregious hacks)
+JCE/SCN - Move layouts to floating point (after cgraph)
+ERG - Allow edges as line segments and polylines
 ERG - New orthogonal routing code
 ERG - New multiedge code
-SCN - Modify libgraph to integrate desirable libagraph features; testing.
 </pre>
 <hr align=left width=66>
 <H2>Category 2</H2>
 <pre>
-??? - Lightweight edge labels in dot
 JCE - Shapes
       - new parallelogram shape where angle is fixed for varying text
       - SVG grammar or other grammar to specify node and arrow shapes
 			- user-defined nodes in all code generators
 JCE - Extend attribute set for line thickness and styles
+ERG - New overlap adjustment strategies
+ - adjustment strategies sensitive to edges
+ - eliminate the nonlinear adjustment
+ - use convex hull or alpha shapes
 </pre>
 <hr align=left width=66>
 <H2>Category 3</H2>
 <pre>
 Generic label placement, with and without modifying the graph layout
-New overlap adjustment strategies
- - adjustment strategies sensitive to edges
- - eliminate the nonlinear adjustment
- - use convex hull or alpha shapes
 Orthogonal layouts
 Support for compound graphs
 New dot techniques: 
   - symmetrize layouts
-  - speed up edge crossing counting (done)
+  - speed up edge crossing counting (done but not integrated)
   - built-in support for better aspect ratios
+			Coffman-Graham and other algorithms
   - Ulrik's improvements with network simplex
 Spline router improvement (Gordon's improvements, alpha adjustments, fewer
   inflection points)
 Graph language improvements
   local name spaces
   subclassing
-  graph databases
+  tabular layout in rows and columns
 </pre>
 </body>
 </html>
