@@ -1,3 +1,6 @@
+/* $Id$ $Revision$ */
+/* vim:set shiftwidth=4 ts=8: */
+
 /**
  * \brief Pairing heap datastructure implementation
  *

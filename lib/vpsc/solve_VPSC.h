@@ -1,3 +1,6 @@
+/* $Id$ $Revision$ */
+/* vim:set shiftwidth=4 ts=8: */
+
 /**
  * \brief Solve an instance of the "Variable Placement with Separation
  * Constraints" problem.
