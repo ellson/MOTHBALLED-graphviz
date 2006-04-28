@@ -1,33 +1,28 @@
-INCLUDES = -I$(top_srcdir)/libvpsc
+# $Id$ $Revision$
+## Process this file with automake to produce Makefile.in
 
-lib_LTLIBRARIES = libvpsc.la
+if WITH_IPSEPCOLA
+noinst_LTLIBRARIES = libvpsc.la
+endif
 
-libvpsc_la_SOURCES = block.cpp\
-	blocks.cpp\
-	constraint.cpp\
-	generate-constraints.cpp\
-	pairingheap/PairingHeap.cpp\
-	remove_rectangle_overlap.cpp\
-	solve_VPSC.cpp\
-	csolve_VPSC.cpp\
-	variable.cpp\
-	isnan.h\
-	block.h\
-	blocks.h\
-	constraint.h\
-	generate-constraints.h\
-	pairingheap/PairingHeap.h\
-	pairingheap/dsexceptions.h\
-	remove_rectangle_overlap.h\
-	solve_VPSC.h\
-	csolve_VPSC.h\
-	variable.h
+libvpsc_la_SOURCES = block.cpp \
+	blocks.cpp \
+	constraint.cpp \
+	generate-constraints.cpp \
+	pairingheap/PairingHeap.cpp \
+	remove_rectangle_overlap.cpp \
+	solve_VPSC.cpp \
+	csolve_VPSC.cpp \
+	variable.cpp
 
-include_HEADERS = solve_VPSC.h \
-	variable.h
-	constraint.h\
-	generate-constraints.h\
-	remove_rectangle_overlap.h\
-	csolve_VPSC.h
-	
-
+noinst_HEADERS = solve_VPSC.h \
+	block.h \
+	blocks.h \
+	variable.h \
+	constraint.h \
+	generate-constraints.h \
+	remove_rectangle_overlap.h \
+	solve_VPSC.h \
+	csolve_VPSC.h \
+	pairingheap/PairingHeap.h \
+	pairingheap/dsexceptions.h
