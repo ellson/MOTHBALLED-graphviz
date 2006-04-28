@@ -143,6 +143,8 @@ static int isBox(Point * verts, int cnt)
 		(verts[0].y == verts[3].y) && (verts[1].y == verts[2].y));
 }
 
+#define DFLT_SAMPLE 20
+
 static Point makeScaledPoint(int x, int y)
 {
     Point rv;
