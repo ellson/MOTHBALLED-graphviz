@@ -427,7 +427,7 @@ int stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse representa
 	}
     }
     if (Verbose)
-	fprintf(stderr, "\nfinal e = %f",
+	fprintf(stderr, "\nfinal e = %f\n",
 		compute_stress(coords, Dij, dim, n));
 
 
