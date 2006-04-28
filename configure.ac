@@ -1080,6 +1080,42 @@ AC_SUBST(Z_INCLUDES)
 AC_SUBST(Z_LIBS)
 
 dnl -----------------------------------
+dnl DIGCOLA (enable by default)
+AC_ARG_WITH(digcola,
+  [AC_HELP_STRING([--with-digcola],
+                  [with DIGCOLA features in neato layout engine])])
+if test "x$with_digcola" != "xno"; then
+	AC_MSG_WARN(Optional DIGCOLA is enabled)
+	AC_DEFINE_UNQUOTED(DIGCOLA,1,[Define if you want DIGCOLA])
+else
+	AC_MSG_WARN(Optional DIGCOLA is disabled)
+fi
+
+dnl -----------------------------------
+dnl IPSEPCOLA (disable by default)
+AC_ARG_WITH(ipsepcola,
+  [AC_HELP_STRING([--with-ipsepcola],
+                  [with IPSEPCOLA features in neato layout engine])])
+if test "x$with_digcola" = "xno"; then
+	with_ipsepcola=no
+
+fi
+if test "x$with_ipsepcola" != "xyes"; then
+	AC_MSG_WARN(Optional IPSEPCOLA is disabled)
+	IPSEPCOLA_INCLUDES=
+	IPSEPCOLA_LIBS=
+else
+	AC_MSG_WARN(Optional IPSEPCOLA is enabled)
+	AC_DEFINE_UNQUOTED(IPSEPCOLA,1,[Define if you want IPSEPCOLA])
+	IPSEPCOLA_INCLUDES='-I$(top_srcdir)/lib/vpsc'
+	IPSEPCOLA_LIBS='$(top_builddir)/lib/vpsc/libvpsc.la -lstdc++'
+fi
+AC_SUBST(IPSEPCOLA_INCLUDES)
+AC_SUBST(IPSEPCOLA_LIBS)
+                                                                                
+AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$with_ipsepcola" = "xyes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
                                                                                 
 AC_ARG_WITH(mylibgd,
@@ -1725,6 +1761,7 @@ AC_CONFIG_FILES(Makefile
 	lib/expr/Makefile
 	lib/common/Makefile
 	lib/ingraphs/Makefile
+	lib/vpsc/Makefile
 	lib/gvc/Makefile
 	lib/gvc/libgvc.pc
 	lib/plugin/Makefile

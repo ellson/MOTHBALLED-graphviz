@@ -56,7 +56,7 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/graph/.libs/libgraph.a \
 	$(top_builddir)/lib/cdt/.libs/libcdt.a \
 	$(top_builddir)/lib/gd/.libs/libgvgd.a \
-	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @MATH_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@
+	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @MATH_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@
 
 EXTRA_DIST = Makefile.old dot.1 dot.pdf
 
