@@ -20,6 +20,7 @@
 #include <constraint.h>
 #include <generate-constraints.h>
 #include <solve_VPSC.h>
+#include <cassert>
 #include "csolve_VPSC.h"
 extern "C" {
 Variable* newVariable(int id, double desiredPos, double weight) {

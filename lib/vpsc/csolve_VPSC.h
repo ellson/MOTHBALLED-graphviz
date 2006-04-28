@@ -1,3 +1,6 @@
+/* $Id$ $Revision$ */
+/* vim:set shiftwidth=4 ts=8: */
+
 /**
  * \brief Bridge for C programs to access solve_VPSC (which is in C++)
  *
