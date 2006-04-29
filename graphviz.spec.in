@@ -19,6 +19,7 @@ Prefix: /usr
 %define PYTHON  0
 %define RUBY    0
 %define TCL     1
+%define IPSEPCOLA --without-ipsepcola
 
 # Select packages according to dist (set in .rpmmacros on each build host)
 
@@ -89,6 +90,7 @@ Prefix: /usr
 %{?fc6: %{expand: %%define PYTHON  1}}
 %{?fc6: %{expand: %%define RUBY    1}}
 %{?fc6: %{expand: %%define TCL     1}}
+%{?fc6: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
 
 Summary:	Graph Visualization Tools
 Name:		graphviz
@@ -399,7 +401,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
       --with-x \
       --with-mylibgd \
       --disable-static \
-      --disable-dependency-tracking
+      --disable-dependency-tracking %{IPSEPCOLA}
 %__make %{?_smp_mflags}
 
 %install

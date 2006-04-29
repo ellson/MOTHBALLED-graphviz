@@ -1080,12 +1080,11 @@ AC_SUBST(Z_INCLUDES)
 AC_SUBST(Z_LIBS)
 
 dnl -----------------------------------
-dnl DIGCOLA (enable by default)
+dnl DIGCOLA (enabled by default)
 AC_ARG_WITH(digcola,
   [AC_HELP_STRING([--with-digcola],
                   [with DIGCOLA features in neato layout engine])])
 if test "x$with_digcola" != "xno"; then
-	AC_MSG_WARN(Optional DIGCOLA is enabled)
 	AC_DEFINE_UNQUOTED(DIGCOLA,1,[Define if you want DIGCOLA])
 else
 	AC_MSG_WARN(Optional DIGCOLA is disabled)
@@ -1101,7 +1100,6 @@ if test "x$with_digcola" = "xno"; then
 
 fi
 if test "x$with_ipsepcola" != "xyes"; then
-	AC_MSG_WARN(Optional IPSEPCOLA is disabled)
 	IPSEPCOLA_INCLUDES=
 	IPSEPCOLA_LIBS=
 else
