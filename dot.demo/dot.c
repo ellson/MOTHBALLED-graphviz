@@ -24,7 +24,7 @@ int main(int argc, char **argv)
     gvc = gvContext();
     gvParseArgs(gvc, argc, argv);
 
-    while ((g = next_input_graph())) {
+    while ((g = gvNextInputGraph(gvc))) {
 	if (prev) {
 	    gvFreeLayout(gvc, prev);
 	    agclose(prev);
