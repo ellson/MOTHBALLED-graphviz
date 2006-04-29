@@ -168,7 +168,7 @@ int main(int argc, char **argv)
 	}
 	assert(0);		/* should never exit loop */
     } else {
-	while ((G = next_input_graph())) {
+	while ((G = gvNextInputGraph(Gvc))) {
 	    if (prev) {
 		gvFreeLayout(Gvc, prev);
 		agclose(prev);
