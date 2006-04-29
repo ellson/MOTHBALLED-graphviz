@@ -55,12 +55,21 @@ GVC_t *gvNEWcontext(char **info, char *user)
 
 int gvFreeContext(GVC_t * gvc)
 {
+    GVG_t *gvg, *gvg_next;
+
     if (gvc->active_jobs)
 	gvdevice_finalize(gvc);
     emit_jobs_eof(gvc);
-    gvrender_delete_jobs(gvc);
+    gvg_next = gvc->gvgs;
+    while ((gvg = gvg_next)) {
+	gvg_next = gvg->next;
+	free(gvg);
+    }
+    gvjobs_delete(gvc);
     if (gvc->config_path)
 	free(gvc->config_path);
+    if (gvc->input_filenames)
+	free(gvc->input_filenames);
     free(gvc);
     return (graphviz_errors + agerrors());
 }

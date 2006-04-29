@@ -137,6 +137,10 @@ extern "C" {
 	GVC_t *gvc;		/* parent gvc */
 	GVJ_t *next;		/* linked list of jobs */
 	GVJ_t *next_active;	/* linked list of active jobs (e.g. multiple windows) */
+
+	char *input_filename;
+	int graph_index;
+
 	char *output_filename;
 	char *output_langname;
 	FILE *output_file;

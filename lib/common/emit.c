@@ -1414,7 +1414,7 @@ void emit_jobs_eof(GVC_t * gvc)
 {
     GVJ_t *job;
 
-    for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
+    for (job = gvjobs_first(gvc); job; job = gvjobs_next(gvc)) {
         if (job->output_file) {
 	    if (gvc->viewNum > 0) {
 		gvrender_end_job(job);
@@ -1900,7 +1900,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
     gvc->numkeys = gvevent_key_binding_size;
     gvc->active_jobs = NULL; /* clear active list */
     prev_job = NULL;
-    for (job = gvrender_first_job(gvc); job; job = gvrender_next_job(gvc)) {
+    for (job = gvjobs_first(gvc); job; job = gvjobs_next(gvc)) {
         if (!job->output_file) {        /* if not yet opened */
             if (job->output_filename == NULL) {
                 job->output_file = stdout;

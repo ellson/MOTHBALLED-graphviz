@@ -45,11 +45,11 @@ extern "C" {
 
 /* job */
 
-    extern void gvrender_output_filename_job(GVC_t * gvc, char *name);
-    extern bool gvrender_output_langname_job(GVC_t * gvc, char *name);
-    extern GVJ_t *gvrender_first_job(GVC_t * gvc);
-    extern GVJ_t *gvrender_next_job(GVC_t * gvc);
-    extern void gvrender_delete_jobs(GVC_t * gvc);
+    extern void gvjobs_output_filename(GVC_t * gvc, char *name);
+    extern bool gvjobs_output_langname(GVC_t * gvc, char *name);
+    extern GVJ_t *gvjobs_first(GVC_t * gvc);
+    extern GVJ_t *gvjobs_next(GVC_t * gvc);
+    extern void gvjobs_delete(GVC_t * gvc);
 
 /* emit */
     extern void gvemit_graph(GVC_t * gvc, graph_t * g);

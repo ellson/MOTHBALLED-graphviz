@@ -171,7 +171,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     for (i = 1; i < argc; i++)
 	if (argv[i] && argv[i][0] != '-')
 	    nfiles++;
-    Files = N_NEW(nfiles + 1, char *);
+    gvc->input_filenames = N_NEW(nfiles + 1, char *);
     nfiles = 0;
     for (i = 1; i < argc; i++) {
 	if (argv[i] && argv[i][0] == '-') {
@@ -208,7 +208,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    dotneato_usage(1);
 		    exit(1);
 		}
-		v = gvrender_output_langname_job(gvc, val);
+		v = gvjobs_output_langname(gvc, val);
 		if (!v) {
 		    fprintf(stderr, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
 			val, gvplugin_list(gvc, API_render, val));
@@ -244,7 +244,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		break;
 	    case 'o':
 		val = getFlagOpt(argc, argv, &i);
-		gvrender_output_filename_job(gvc, val);
+		gvjobs_output_filename(gvc, val);
 		break;
 	    case 'q':
 		if (*rest) {
@@ -292,12 +292,12 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		dotneato_usage(1);
 	    }
 	} else if (argv[i])
-	    Files[nfiles++] = argv[i];
+	    gvc->input_filenames[nfiles++] = argv[i];
     }
 
     /* if no -Txxx, then set default format */
     if (!gvc->jobs || !gvc->jobs->output_langname) {
-	v = gvrender_output_langname_job(gvc, "dot");
+	v = gvjobs_output_langname(gvc, "dot");
 	assert(v);  /* "dot" should always be available as an output format */
     }
 
@@ -358,48 +358,48 @@ void getdouble(graph_t * g, char *name, double *result)
     }
 }
 
-static FILE *next_input_file(void)
+graph_t *gvNextInputGraph(GVC_t *gvc)
 {
-    static int ctr = 0;
-    FILE *rv = NULL;
+    graph_t *g = NULL;
+    char *fn = NULL;
+    static FILE *fp;
+    static int fidx, gidx;
+    GVG_t *gvg;
 
-    if (Files[0] == NULL) {
-	if (ctr++ == 0)
-	    rv = stdin;
-    } else {
-	rv = NULL;
-	while (Files[ctr]) {
-	    if ((rv = fopen(Files[ctr++], "r")))
-		break;
+    while (!g) {
+	if (!fp) {
+    	    if (!(fn = gvc->input_filenames[0])) {
+		if (fidx++ == 0)
+		    fp = stdin;
+	    }
 	    else {
-		agerr(AGERR, "%s: can't open %s\n", CmdName,
-		      Files[ctr - 1]);
-		graphviz_errors++;
+		while ((fn = gvc->input_filenames[fidx++]) && !(fp = fopen(fn, "r")))  {
+		    agerr(AGERR, "%s: can't open %s\n", CmdName, fn);
+		    graphviz_errors++;
+		}
 	    }
 	}
-    }
-    if (rv)
-	agsetfile(Files[0] ? Files[ctr - 1] : "<stdin>");
-    return rv;
-}
-
-graph_t *next_input_graph(void)
-{
-    graph_t *g;
-    static FILE *fp;
-
-    if (fp == NULL)
-	fp = next_input_file();
-    g = NULL;
-
-    while (fp != NULL) {
-	if ((g = agread(fp)))
+	if (fp == NULL)
 	    break;
-	fp = next_input_file();
+	agsetfile(fn ? fn : "<stdin>");
+	if ((g = agread(fp))) {
+	    gvg = zmalloc(sizeof(GVG_t));
+	    if (!gvc->gvgs) 
+		gvc->gvgs = gvg;
+	    else
+		gvc->gvg->next = gvg;
+	    gvc->gvg = gvg;
+	    gvg->gvc = gvc;
+	    gvg->g = g;
+	    gvg->input_filename = fn;
+	    gvg->graph_index = gidx++;
+	    break;
+	}
+	fp = NULL;
+	gidx = 0;
     }
     return g;
 }
-
 /* findCharset:
  * Check if the charset attribute is defined for the graph and, if
  * so, return the corresponding internal value. If undefined, return

@@ -90,7 +90,7 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
     g = g->root;
 
     /* create a job for the required format */
-    rc = gvrender_output_langname_job(gvc, format);
+    rc = gvjobs_output_langname(gvc, format);
     if (rc == NO_SUPPORT) {
         agerr (AGERR, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
                 format, gvplugin_list(gvc, API_render, format));
@@ -107,7 +107,7 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
     gvRenderJobs(gvc, g);
     if (gvc->active_jobs)
 	gvdevice_finalize(gvc);
-    gvrender_delete_jobs(gvc);
+    gvjobs_delete(gvc);
 
     return 0;
 }
@@ -121,7 +121,7 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
     g = g->root;
 
     /* create a job for the required format */
-    rc = gvrender_output_langname_job(gvc, format);
+    rc = gvjobs_output_langname(gvc, format);
     if (rc == NO_SUPPORT) {
 	agerr(AGERR, "Renderer type: \"%s\" not recognized. Use one of:%s\n",                format, gvplugin_list(gvc, API_render, format));
 	return -1;
@@ -133,11 +133,11 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
 	fprintf(stderr, "Layout was not done\n");
 	return -1;
     }
-    gvrender_output_filename_job(gvc, filename);
+    gvjobs_output_filename(gvc, filename);
     gvRenderJobs(gvc, g);
     if (gvc->active_jobs)
 	gvdevice_finalize(gvc);
-    gvrender_delete_jobs(gvc);
+    gvjobs_delete(gvc);
 
     return 0;
 }

@@ -64,6 +64,17 @@ extern "C" {
 					or NULL if not yet loaded */
     };
 
+    typedef struct GVG_s GVG_t;
+
+    struct GVG_s {
+	GVC_t *gvc;	/* parent gvc */
+	GVG_t *next;	/* next gvg in list */
+
+	char *input_filename; /* or NULL if stdin */
+	int graph_index;  /* index of graph within input_file */
+	graph_t *g;
+    };
+
 #define MAXNEST 4
 
     struct GVC_s {
@@ -74,16 +85,14 @@ extern "C" {
 	char *config_path;
 	bool config_found;
 
-	/* gvrender_config() */
-	GVJ_t *jobs;	/* linked list of jobs */
-	GVJ_t *job;	/* current job */
 	void (*errorfn) (char *fmt, ...);
 
-	int emit_state;	/* current emit_state */
-	graph_t *g;	/* current graph */
-	graph_t *sg;	/* current subgraph/cluster */
-	node_t *n;	/* current node */
-	edge_t *e;	/* current edge */
+	/* gvParseArgs */
+	char **input_filenames; /* null terminated array of input filenames */
+
+	/* gvNextInputGraph() */
+	GVG_t *gvgs;	/* linked list of graphs */
+	GVG_t *gvg;	/* current graph */
 
 	/* plugins */
 #define ELEM(x) +1
@@ -91,6 +100,23 @@ extern "C" {
 	gvplugin_available_t *apis[ APIS ]; /* array of linked-list of plugins per api */
 	gvplugin_available_t *api[ APIS ];  /* array of current plugins per api */
 #undef ELEM
+
+	/* keybindings for keyboard events */
+	gvevent_key_binding_t *keybindings;
+	int numkeys;
+	void *keycodes;
+
+/* FIXME - everything below should probably move to GVG_t */
+
+	/* gvrender_config() */
+	GVJ_t *jobs;	/* linked list of jobs */
+	GVJ_t *job;	/* current job */
+
+	int emit_state;	/* current emit_state */
+	graph_t *g;	/* current graph */
+	graph_t *sg;	/* current subgraph/cluster */
+	node_t *n;	/* current node */
+	edge_t *e;	/* current edge */
 
 	/* gvrender_begin_job() */
 	gvplugin_active_textlayout_t textlayout;
@@ -131,11 +157,6 @@ extern "C" {
 
 	/* render defaults set from graph */
 	gvcolor_t bgcolor;	/* background color */
-
-	/* keybindings for keyboard events */
-	gvevent_key_binding_t *keybindings;
-	int numkeys;
-	void *keycodes;
     };
 
 #ifdef __cplusplus

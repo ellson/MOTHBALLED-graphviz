@@ -1079,7 +1079,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 	tkgendata.interp = interp;
 
-        rc = gvrender_output_langname_job(gvc, "tk");
+        rc = gvjobs_output_langname(gvc, "tk");
 	if (rc == NO_SUPPORT) {
 	    Tcl_AppendResult(interp, " Renderer type: \"tk\" not recognized.\n",
                                      (char *) 0);
@@ -1098,7 +1098,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	/* render graph TK canvas commands */
 	gvRenderJobs(gvc, g);
 
-	gvrender_delete_jobs(gvc);
+	gvjobs_delete(gvc);
 	return TCL_OK;
 
     } else if ((c == 'r') && (strncmp(argv[1], "rendergd", length) == 0)) {
@@ -1110,7 +1110,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 			     (char *) NULL);
 	    return TCL_ERROR;
 	}
-	rc = gvrender_output_langname_job(gvc, "gd");
+	rc = gvjobs_output_langname(gvc, "gd");
 	if (rc == NO_SUPPORT) {
 	    Tcl_AppendResult(interp, " Renderer type: \"gd\" not recognized.\n",
                                      (char *) 0);
@@ -1132,7 +1132,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	
 	gvRenderJobs(gvc, g);
 
-	gvrender_delete_jobs(gvc);
+	gvjobs_delete(gvc);
 	Tcl_AppendResult(interp, argv[2], (char *) NULL);
 	return TCL_OK;
 
@@ -1244,9 +1244,9 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 
 	/* process lang first to create job */
 	if (argc < 4) {
-	    i = gvrender_output_langname_job(gvc, "dot");
+	    i = gvjobs_output_langname(gvc, "dot");
 	} else {
-	    i = gvrender_output_langname_job(gvc, argv[3]);
+	    i = gvjobs_output_langname(gvc, argv[3]);
 	}
 	if (i == NO_SUPPORT) {
 	    const char *s = gvplugin_list(gvc, API_render, argv[3]);
@@ -1272,7 +1272,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 
 	gvRenderJobs(gvc, g);
 
-	gvrender_delete_jobs(gvc);
+	gvjobs_delete(gvc);
 	return TCL_OK;
 
     } else {

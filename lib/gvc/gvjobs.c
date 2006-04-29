@@ -46,7 +46,7 @@ static GVJ_t *output_langname_job;
  */
 
 /* -o switches */
-void gvrender_output_filename_job(GVC_t * gvc, char *name)
+void gvjobs_output_filename(GVC_t * gvc, char *name)
 {
     if (!gvc->jobs) {
 	output_filename_job = gvc->job = gvc->jobs =
@@ -67,7 +67,7 @@ void gvrender_output_filename_job(GVC_t * gvc, char *name)
 }
 
 /* -T switches */
-bool gvrender_output_langname_job(GVC_t * gvc, char *name)
+bool gvjobs_output_langname(GVC_t * gvc, char *name)
 {
     if (!gvc->jobs) {
 	output_langname_job = gvc->job = gvc->jobs =
@@ -92,12 +92,12 @@ bool gvrender_output_langname_job(GVC_t * gvc, char *name)
     return FALSE;
 }
 
-GVJ_t *gvrender_first_job(GVC_t * gvc)
+GVJ_t *gvjobs_first(GVC_t * gvc)
 {
     return (gvc->job = gvc->jobs);
 }
 
-GVJ_t *gvrender_next_job(GVC_t * gvc)
+GVJ_t *gvjobs_next(GVC_t * gvc)
 {
     GVJ_t *job = gvc->job->next;
 
@@ -140,7 +140,7 @@ void gv_argvlist_free(gv_argvlist_t *list)
     free(list);
 }
 
-void gvrender_delete_jobs(GVC_t * gvc)
+void gvjobs_delete(GVC_t * gvc)
 {
     GVJ_t *job, *j;
 
