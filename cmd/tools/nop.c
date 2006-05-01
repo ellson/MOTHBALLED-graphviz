@@ -55,7 +55,7 @@ static void init(int argc, char *argv[])
 		usage(0);
 	    else
 		fprintf(stderr, "nop: option -%c unrecognized - ignored\n",
-			c);
+			optopt);
 	    break;
 	}
     }

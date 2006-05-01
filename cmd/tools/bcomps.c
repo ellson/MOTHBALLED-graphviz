@@ -355,7 +355,7 @@ static void init(int argc, char *argv[])
 		usage(0);
 	    else
 		fprintf(stderr,
-			"bcomps: option -%c unrecognized - ignored\n", c);
+			"bcomps: option -%c unrecognized - ignored\n", optopt);
 	    break;
 	}
     }

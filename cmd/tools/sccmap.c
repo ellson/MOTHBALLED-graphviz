@@ -338,7 +338,7 @@ static void scanArgs(int argc, char **argv)
 		usage(0);
 	    else
 		fprintf(stderr, "%s: option -%c unrecognized - ignored\n",
-			CmdName, c);
+			CmdName, optopt);
 	    break;
 	}
     }

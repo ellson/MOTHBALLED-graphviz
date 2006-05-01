@@ -77,6 +77,7 @@ static int G_sz;		/* Storage size for -G arguments */
 static attr_t *G_args;		/* Storage for -G arguments */
 
 #define NEWNODE(n) ((node_t*)ND_alg(n))
+#define DOPACK     (packMode != l_undef)
 
 static char *useString =
     "Usage: gvpack [-gnuv?] [-m<margin>] [-o<outf>] <files>\n\
@@ -199,7 +200,7 @@ static void init(int argc, char *argv[])
 		usage(0);
 	    else
 		fprintf(stderr,
-			"gvpack: option -%c unrecognized - ignored\n", c);
+			"gvpack: option -%c unrecognized - ignored\n", optopt);
 	    break;
 	}
     }
@@ -494,7 +495,8 @@ cloneSubg(Agraph_t * g, Agraph_t * ng, Agsym_t * G_bb, Dt_t * gnames)
     Agraph_t *nsubg;
 
     cloneGraphAttr(g, ng);
-    agxset(ng, G_bb->index, "");	/* Unset all subgraph bb */
+    if (DOPACK)
+	agxset(ng, G_bb->index, "");	/* Unset all subgraph bb */
 
     /* clone subgraphs */
     mg = g->meta_node->graph;
@@ -591,7 +593,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt)
     root = agopen("root", kind);
     initAttrs(root, gs, cnt);
     G_bb = agfindattr(root, "bb");
-    assert(G_bb);
+    if (DOPACK) assert(G_bb);
 
     /* add command-line attributes */
     for (i = 0; i < G_cnt; i++) {
@@ -692,7 +694,7 @@ static Agraph_t **readGraphs(int *cp)
 	    exit(1);
 	} else if (!AG_IS_STRICT(g))
 	    kind = g->kind;
-	init_graph(g, TRUE);
+	init_graph(g, DOPACK);
 	gs[cnt++] = g;
     }
 
@@ -770,7 +772,7 @@ int main(int argc, char *argv[])
 	exit(0);
 
     /* pack graphs */
-    if (packMode != l_undef) {
+    if (DOPACK) {
 	pinfo.margin = margin;
 	pinfo.doSplines = doSplines;
 	pinfo.mode = packMode;
@@ -785,11 +787,12 @@ int main(int argc, char *argv[])
     g = cloneGraph(gs, cnt);
 
     /* compute new top-level bb and set */
-    bb = compBB(gs, cnt);
-    GD_bb(g) = bb;
-
-    dotneato_postprocess(g);
-    attach_attrs(g);
+    if (DOPACK) {
+	bb = compBB(gs, cnt);
+	GD_bb(g) = bb;
+	dotneato_postprocess(g);
+	attach_attrs(g);
+    }
     agwrite(g, outfp);
     exit(0);
 }
