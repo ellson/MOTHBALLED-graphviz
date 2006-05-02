@@ -12,7 +12,11 @@ endif
 
 libdot2l_la_SOURCES = dot2l.c dotlex.c dotparse.y dottrie.c 
 
-dotlex.o dotlex.lo : dotparse.h
+libdot2l_la_DEPENDENCIES = \
+	dotparse.h \
+	dotparse.c
+
+dotlex.o dotlex.lo : dotparse.h dotparse.c
 
 dotparse.c : y.output
 	cat < y.tab.c > dotparse.c
