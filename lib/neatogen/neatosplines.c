@@ -791,22 +791,38 @@ static void scaleEdge(edge_t * e, double xf, double yf)
     int i, j;
     point *pt;
     bezier *bez;
+    point   delh, delt;
+
+    delh.x = POINTS(ND_pos(e->head)[0] * (xf - 1.0));
+    delh.y = POINTS(ND_pos(e->head)[1] * (yf - 1.0));
+    delt.x = POINTS(ND_pos(e->tail)[0] * (xf - 1.0));
+    delt.y = POINTS(ND_pos(e->tail)[1] * (yf - 1.0));
 
     bez = ED_spl(e)->list;
     for (i = 0; i < ED_spl(e)->size; i++) {
 	pt = bez->list;
 	for (j = 0; j < bez->size; j++) {
-	    pt->x *= xf;
-	    pt->y *= yf;
+	    if ((i == 0) && (j == 0)) {
+		pt->x += delt.x;
+		pt->y += delt.y;
+	    }
+	    else if ((i == ED_spl(e)->size-1) && (j == bez->size-1)) {
+		pt->x += delh.x;
+		pt->y += delh.y;
+	    }
+	    else {
+		pt->x *= xf;
+		pt->y *= yf;
+	    }
 	    pt++;
 	}
 	if (bez->sflag) {
-	    bez->sp.x *= xf;
-	    bez->sp.y *= yf;
+	    bez->sp.x += delt.x;
+	    bez->sp.y += delt.y;
 	}
 	if (bez->eflag) {
-	    bez->ep.x *= xf;
-	    bez->ep.y *= yf;
+	    bez->ep.x += delh.x;
+	    bez->ep.y += delh.y;
 	}
 	bez++;
     }
@@ -816,12 +832,12 @@ static void scaleEdge(edge_t * e, double xf, double yf)
 	ED_label(e)->p.y *= yf;
     }
     if (ED_head_label(e) && ED_head_label(e)->set) {
-	ED_head_label(e)->p.x *= xf;
-	ED_head_label(e)->p.y *= yf;
+	ED_head_label(e)->p.x += delh.x;
+	ED_head_label(e)->p.y += delh.y;
     }
     if (ED_tail_label(e) && ED_tail_label(e)->set) {
-	ED_tail_label(e)->p.x *= xf;
-	ED_tail_label(e)->p.y *= yf;
+	ED_tail_label(e)->p.x += delt.x;
+	ED_tail_label(e)->p.y += delt.y;
     }
 }
 
@@ -910,14 +926,6 @@ static void _neato_set_aspect(graph_t * g)
 	    yf = t;
 	}
 
-	/* Not relying on neato_nlist here allows us not to have to 
-	 * allocate it in the root graph and the connected components. 
-	 */
-	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    ND_pos(n)[0] = ND_pos(n)[0] * xf;
-	    ND_pos(n)[1] = ND_pos(n)[1] * yf;
-	}
-	scaleBB(g, xf, yf);
 	if (Nop > 1) {
 	    edge_t *e;
 	    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
@@ -926,6 +934,14 @@ static void _neato_set_aspect(graph_t * g)
 			scaleEdge(e, xf, yf);
 	    }
 	}
+	/* Not relying on neato_nlist here allows us not to have to 
+	 * allocate it in the root graph and the connected components. 
+	 */
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	    ND_pos(n)[0] = ND_pos(n)[0] * xf;
+	    ND_pos(n)[1] = ND_pos(n)[1] * yf;
+	}
+	scaleBB(g, xf, yf);
     }
 }
 
