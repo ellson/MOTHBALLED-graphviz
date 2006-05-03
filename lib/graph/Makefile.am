@@ -42,7 +42,7 @@ y.output: $(top_srcdir)/lib/graph/parser.y
 .3.pdf:
 	groff -Tps -man $< | ps2pdf - - > $@
 
-EXTRA_DIST = $(man) $(pdf) triefa.cP parser.grammar \
+EXTRA_DIST = $(man) $(pdf) triefa.cP \
 	Makefile.old parser.c parser.h \
 	y.tab.c y.tab.h y.output
 
