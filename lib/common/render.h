@@ -142,7 +142,6 @@ extern "C" {
     extern void map_edge(Agedge_t *);
     extern point map_point(point);
     extern bezier *new_spline(edge_t * e, int sz);
-    extern Agraph_t *next_input_graph(void);
     extern void osize_label(textlabel_t *, int *, int *, int *, int *);
     extern char **parse_style(char *s);
     extern void place_graph_label(Agraph_t *);
