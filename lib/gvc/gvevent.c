@@ -537,9 +537,23 @@ static void gvevent_read (GVJ_t * job, char *filename, char *layout)
 {
     FILE *f;
     GVC_t *gvc;
+    Agraph_t *g = NULL;
     gvlayout_engine_t *gvle;
 
     gvc = job->gvc;
+    if (!filename) {
+	g = agopen("G", AGDIGRAPH);
+	job->output_filename = "new.dot";
+    }
+    else {
+	f = fopen(filename, "r");
+	if (!f)
+	   return;   /* FIXME - need some error handling */
+	g = agread(f);
+	fclose(f);
+    }
+    if (!g)
+	return;   /* FIXME - need some error handling */
     if (gvc->g) {
 	gvle = gvc->layout.engine;
 	if (gvle && gvle->cleanup)
@@ -547,19 +561,9 @@ static void gvevent_read (GVJ_t * job, char *filename, char *layout)
 	graph_cleanup(gvc->g);
 	agclose(gvc->g);
     }
-    if (!filename) {
-	gvc->g = agopen("G", AGDIGRAPH);
-	job->output_filename = "new.dot";
-    }
-    else {
-	f = fopen(filename, "r");
-	if (!f)
-		return;   /* FIXME - need some error handling */
-	gvc->g = agread(f);
-	fclose(f);
-    }
-    GD_gvc(gvc->g) = gvc;
-    gvLayout(gvc, gvc->g, layout);
+    gvc->g = g;
+    GD_gvc(g) = gvc;
+    gvLayout(gvc, g, layout);
     job->selected_obj = NULL;
     job->current_obj = NULL;
     job->needs_refresh = 1;
