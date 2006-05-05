@@ -127,6 +127,7 @@ void gvrender_begin_job(GVJ_t * job)
     GVC_t *gvc = job->gvc;
     gvrender_engine_t *gvre = job->render.engine;
     job->input_filename = gvc->gvg->input_filename;
+    job->layout_type = gvc->layout.type;
     job->graph_index = gvc->gvg->graph_index;
     job->bb = gvc->bb;
     if (gvre) {

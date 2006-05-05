@@ -141,6 +141,8 @@ extern "C" {
 	char *input_filename;
 	int graph_index;
 
+	char *layout_type;
+
 	char *output_filename;
 	char *output_langname;
 	FILE *output_file;
