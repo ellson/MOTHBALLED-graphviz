@@ -24,7 +24,7 @@ libgraph_la_SOURCES = attribs.c agxbuf.c edge.c graph.c graphio.c lexer.c \
  
 libgraph_la_LIBADD = $(top_builddir)/lib/cdt/libcdt.la
 
-lexer.o lexer.lo: parser.h
+lexer.o lexer.lo trie.o trie.lo: parser.h
 
 parser.c: y.output
 	@SED@ "s/yy/ag/g" < y.tab.c > parser.c
