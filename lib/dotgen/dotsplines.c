@@ -829,7 +829,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
     dot_position(auxg);
     
     /* reposition */
-    midx = (ND_coord_i(tn).x + ND_coord_i(hn).x)/2;
+    midx = (ND_coord_i(tn).x - ND_rw_i(tn) + ND_coord_i(hn).x + ND_lw_i(hn))/2;
     midy = (ND_coord_i(auxt).x + ND_coord_i(auxh).x)/2;
     for (n = GD_nlist(auxg); n; n = ND_next(n)) {
 	if (n == auxt) {
