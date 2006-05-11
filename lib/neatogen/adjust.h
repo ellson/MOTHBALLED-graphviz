@@ -27,8 +27,15 @@ typedef enum {
     AM_NONE, AM_VOR, AM_COMPRESS,
     AM_SCALE, AM_NSCALE, AM_SCALEXY, AM_PUSH, AM_PUSHPULL,
     AM_ORTHO, AM_ORTHO_YX, AM_ORTHOXY, AM_ORTHOYX,
-    AM_PORTHO, AM_PORTHO_YX, AM_PORTHOXY, AM_PORTHOYX
+    AM_PORTHO, AM_PORTHO_YX, AM_PORTHOXY, AM_PORTHOYX,
+    AM_VPSC, AM_IPSEP
 } adjust_mode;
+
+typedef struct {
+    adjust_mode mode;
+    char *attrib;
+    char *print;
+} adjust_data;
 
     extern double expFactor(graph_t * G);
     extern int adjustNodes(graph_t * G);
@@ -37,6 +44,7 @@ typedef enum {
     extern int removeOverlapAs(graph_t*, char*);
     extern int cAdjust(graph_t *, int);
     extern int scAdjust(graph_t *, int);
+    extern adjust_data *graphAdjustMode(graph_t *G);
 
 #ifdef __cplusplus
 }

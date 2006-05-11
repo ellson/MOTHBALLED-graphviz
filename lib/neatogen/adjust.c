@@ -678,11 +678,6 @@ void normalize(graph_t * g)
     }
 }
 
-typedef struct {
-    adjust_mode mode;
-    char *attrib;
-    char *print;
-} adjust_data;
 static adjust_data adjustMode[] = {
     {AM_NONE, "", ""},
     {AM_VOR, "", "Voronoi"},
@@ -700,6 +695,8 @@ static adjust_data adjustMode[] = {
     {AM_PORTHOXY, "porthoxy", "xy pseudo-orthogonal constraints"},
     {AM_PORTHOYX, "porthoyx", "yx pseudo-orthogonal constraints"},
     {AM_COMPRESS, "compress", "compress"},
+    {AM_VPSC, "vpsc", "vpsc"},
+    {AM_IPSEP, "ipsep", "ipsep"},
     {AM_NONE, 0, 0}
 };
 
@@ -720,6 +717,11 @@ static adjust_data *getAdjustMode(char *s)
 	return adjustMode;
     else
 	return adjustMode + 1;
+}
+
+adjust_data *graphAdjustMode(graph_t *G)
+{
+    return (getAdjustMode (agget(G, "overlap")));
 }
 
 /* removeOverlapAs:

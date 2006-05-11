@@ -1140,6 +1140,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 #ifdef IPSEPCOLA
 	else {
             char* str;
+	    adjust_data* am;
             ipsep_options opt;
             pointf nsize[nv];
 	    cluster_data *cs = (cluster_data*)cluster_map(mg,g);
@@ -1160,12 +1161,12 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
                     fprintf(stderr,"Generating DiG-CoLa Edge Constraints...\n");
             }
 	    else opt.diredges = 0;
-            str = agget(g, "overlapconstraints");
-            if (mapbool(str)) {
+            am = graphAdjustMode (g);
+	    if (am->mode == AM_IPSEP) {
                 opt.noverlap = 1;
                 if(Verbose)
                     fprintf(stderr,"Generating Non-overlap Constraints...\n");
-            } else if (str && !strncasecmp(str,"post",4)) {
+            } else if (am->mode == AM_VPSC) {
                 opt.noverlap = 2;
                 if(Verbose)
                     fprintf(stderr,"Removing overlaps as postprocess...\n");
