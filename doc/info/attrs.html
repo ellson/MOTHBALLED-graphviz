@@ -127,6 +127,9 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:dir HREF=#d:dir>dir</A>
 </TD><TD>E</TD><TD><A HREF=#k:dirType>dirType</A>
 </TD><TD ALIGN="CENTER">forward(directed)<BR>none(undirected)</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:diredgeconstraints HREF=#d:diredgeconstraints>diredgeconstraints</A>
+</TD><TD>G</TD><TD>string<BR><A HREF=#k:bool>bool</A>
+</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:distortion HREF=#d:distortion>distortion</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>-100.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:dpi HREF=#d:dpi>dpi</A>
@@ -236,6 +239,9 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">"major"</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:model HREF=#d:model>model</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">"shortpath"</TD><TD></TD><TD>neato only</TD> </TR>
+ <TR><TD><A NAME=a:mosek HREF=#d:mosek>mosek</A>
+</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
+</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:nodesep HREF=#d:nodesep>nodesep</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.25</TD><TD>0.02</TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:nojustify HREF=#d:nojustify>nojustify</A>
@@ -258,7 +264,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER">breadthfirst</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:overlap HREF=#d:overlap>overlap</A>
 </TD><TD>G</TD><TD>string<BR><A HREF=#k:bool>bool</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>not dot</TD> </TR>
+</TD><TD ALIGN="CENTER">true</TD><TD></TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:pack HREF=#d:pack>pack</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 <BR>int</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>not dot</TD> </TR>
@@ -320,7 +326,8 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:searchsize HREF=#d:searchsize>searchsize</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">30</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:sep HREF=#d:sep>sep</A>
-</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.1</TD><TD></TD><TD>not dot</TD> </TR>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
+</TD><TD ALIGN="CENTER">0.1</TD><TD></TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:shape HREF=#d:shape>shape</A>
 </TD><TD>N</TD><TD><A HREF=#k:shape>shape</A>
 </TD><TD ALIGN="CENTER">ellipse</TD><TD></TD><TD></TD> </TR>
@@ -567,6 +574,14 @@ This field indicates which graph component uses the attribute.
   and <A HREF=#d:arrowtail>arrowtail</A> attributes.
   See <A HREF=#h:undir_note>limitation</A>.
 
+<DT><A NAME=d:diredgeconstraints HREF=#a:diredgeconstraints><STRONG>diredgeconstraints</STRONG></A>
+<DD>  Only valid when <A HREF=#d:mode>mode</A>="ipsep".
+  If true, constraints are generated for each edge in the largest (heuristic) 
+  directed acyclic subgraph such that the edge must point downwards.
+  If "hier", generates level constraints similar to those used with
+  <A HREF=#d:mode>mode</A>="hier". The main difference is that, in the latter
+  case, only these constraints are involved, so a faster solver can be used.
+
 <DT><A NAME=d:distortion HREF=#a:distortion><STRONG>distortion</STRONG></A>
 <DD>  Distortion factor for <A HREF=#d:shape><B>shape</B></A>=polygon. 
   Positive values cause top part to
@@ -778,7 +793,8 @@ This field indicates which graph component uses the attribute.
 <DD>  Preferred edge length, in inches.
 
 <DT><A NAME=d:levelsgap HREF=#a:levelsgap><STRONG>levelsgap</STRONG></A>
-<DD>  Specifies strictness of level constraints in neato when <TT>mode="hier"</TT>.
+<DD>  Specifies strictness of level constraints in neato
+  when <TT><A HREF=#d:mode>mode</A>="ipsep" or "hier"</TT>.
   Larger positive values mean stricter constraints, which demand more 
   separation between levels. On the other hand, negative values will relax 
   the constraints by allowing some overlap between the levels.
@@ -831,8 +847,8 @@ This field indicates which graph component uses the attribute.
   small (number of nodes < 100) graphs. A significant disadvantage is that
   it may cycle.
   <P>
-  There is a new, experimental mode in neato, "hier", which adds a top-down
-  directionality similar to the layout used in dot.
+  There are two new, experimental modes in neato, "hier", which adds a top-down
+  directionality similar to the layout used in dot, and "ipsep", which .
 
 <DT><A NAME=d:model HREF=#a:model><STRONG>model</STRONG></A>
 <DD>  This value specifies how the distance matrix is computed for the input
@@ -847,6 +863,10 @@ This field indicates which graph component uses the attribute.
   edge length to be the number of nodes that are neighbors of exactly one
   of the end points, and then calculates the shortest paths. This helps
   to separate nodes with high degree. 
+
+<DT><A NAME=d:mosek HREF=#a:mosek><STRONG>mosek</STRONG></A>
+<DD>  If Graphviz is built with MOSEK defined, mode=ipsep and mosek=true, 
+  the Mosek software (www.mosek.com) is use to solve the ipsep constraints.
 
 <DT><A NAME=d:nodesep HREF=#a:nodesep><STRONG>nodesep</STRONG></A>
 <DD>  Minimum space between two adjacent nodes in the same rank, in inches.
@@ -918,6 +938,15 @@ This field indicates which graph component uses the attribute.
   possible without introducing any overlaps, obviously assuming there are
   none to begin with.
   <P>
+  If the value is "ipsep", and the layout is done by neato with 
+  <A HREF=#d:mode>mode</A>="ipsep", the overlap removal constraints are
+  incorporated into the layout algorithm itself.
+  N.B. At present, this only supports one level of clustering.
+  <P>
+  If the value is "vpsc", overlap removal is similarly to "ortho", except
+  quadratic optimization is used to minimize node displacement.
+  N.B. At present, this mode on works when <A HREF=#d:mode>mode</A>="ipsep".
+  <P>
   Except for fdp, the layouts assume <TT>overlap="true"</TT> as the default. 
   Fdp first uses a number of passes using built-in, force-directed technique
   to remove overlaps. Thus, fdp accepts <B>overlap</B> with an integer
@@ -934,6 +963,8 @@ This field indicates which graph component uses the attribute.
   the x coordinate of one node is originally less than the x coordinate of
   another, this relation will still hold in the transformed layout. The
   similar properties hold for the y coordinates.
+  This is not quite true for the "porth*" cases. For these, orthogonal
+  ordering is only preserved among nodes related by an edge.
   <P>
   <B>NOTE</B>The methods "orthoxy" and "orthoyx" are still evolving. The
   semantics of these may change, or these methods may disappear altogether.
@@ -1120,6 +1151,11 @@ This field indicates which graph component uses the attribute.
   If unset but <A HREF=#d:esep>esep</A> is defined, <tt>sep</tt> will be
   set to <tt>esep/0.8</tt>. If <tt>esep</tt> is unset, the default value
   is used. 
+  <P>
+  When <A HREF=#d:overlap>overlap</A>="ipsep" or "vpsc",
+  <tt>sep</tt> gives a minimum distance, in inches, to be left between nodes.
+  In this case, if <tt>sep</tt> is a pointf, the x and y separations can be
+  specified separately.
 
 <DT><A NAME=d:shape HREF=#a:shape><STRONG>shape</STRONG></A>
 <DD>  Set the shape of a node.
