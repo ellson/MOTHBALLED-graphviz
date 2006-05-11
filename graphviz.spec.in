@@ -146,9 +146,9 @@ BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
 %{?fc1:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
 %{?fc2:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
 %{?fc3:BuildRequires: fontconfig-devel xorg-x11-devel tcl-devel tk-devel} 
-%{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel} 
-%{?fc5:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
-%{?fc6:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
+%{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel guile-devel} 
+%{?fc5:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel guile-devel}
+%{?fc6:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel guile-devel gmp-devel}
 
 %description
 A collection of tools for the manipulation and layout
