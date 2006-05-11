@@ -167,7 +167,7 @@ static void arrow_match_name(char *name, int *flag)
     *flag = f1 | (f2 << 16);
 }
 
-void arrow_flags(edge_t * e, int *sflag, int *eflag)
+void arrow_flags(Agedge_t * e, int *sflag, int *eflag)
 {
     char *attr;
     arrowdir_t *arrowdir;
