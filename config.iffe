@@ -36,6 +36,7 @@ hdr ndir
 hdr netdb
 hdr search
 hdr stdarg
+hdr stdbool
 hdr stddef
 hdr stdint
 hdr stdlib
@@ -116,6 +117,16 @@ link{
 }end yes{
 /* Define if intptr_t is declared */
 #define HAVE_SOCKLEN_T 1
+}end
+
+compile{
+    #ifdef HAVE_STDBOOL_H
+    #include <stdbool.h>
+    #endif
+    bool xx = true, yy = false; 
+}end yes{
+/* Define to 1 if compiler supports bool */
+#define HAVE_BOOL 1
 }end
 
 compile{
