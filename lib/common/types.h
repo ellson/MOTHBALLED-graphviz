@@ -320,7 +320,7 @@ extern "C" {
 	box bb;			/* bounding box */
 	point border[4];	/* sizes of margins for graph labels */
 	unsigned char gui_state; /* Graph state for GUI ops */
-	bool has_labels;
+	unsigned char has_labels;
 	bool has_images;
 	unsigned char charset; /* input character set */
 	int rankdir;
