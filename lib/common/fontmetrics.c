@@ -16,11 +16,6 @@
 
 #include "render.h"
 
-//#ifdef HAVE_CAIRO
-#if 0
-#include <cairo.h>
-#else
-
 static double timesFontWidth[] = {
     0.2500, 0.2500, 0.2500, 0.2500, 0.2500, 0.2500, 0.2500, 0.2500,	/*          */
     0.2500, 0.2500, 0.2500, 0.2500, 0.2500, 0.2500, 0.2500, 0.2500,	/*          */
@@ -124,10 +119,6 @@ static double courFontWidth[] = {
     0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999,	/* רשתû     */
 };
 
-#ifdef CAIRO_HAS_FT_FONT
-#include <cairo-ft.h>
-#endif
-
 #if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
 extern codegen_t *Output_codegen;
 
@@ -196,31 +187,16 @@ estimate_textsize(textline_t * textline, char *fontname, double fontsz,
 	textline->width *= fontsz;
     }
 }
-#endif
 
 double textwidth(textline_t * textline, char *fontname, double fontsize)
 {
     char *fontpath = NULL;
     int freeFontpath = 0;
-#ifdef CAIRO_HAS_FT_FONT
-    cairo_t *cr;
-    cairo_text_extents_t extents;
 
-    cr = cairo_create();
-    cairo_select_font(cr, fontname, 0, 0);
-    cairo_scale_font(cr, fontsize);
-    cairo_text_extents(cr, textline->str, &extents);
-    cairo_destroy(cr);
-
-    textline->width = extents.width;
-    textline->xshow = NULL;
-    fontpath = "[cairo]";
-#else
     if (gd_textsize(textline, fontname, fontsize, &fontpath))
 	estimate_textsize(textline, fontname, fontsize, &fontpath);
     else
 	freeFontpath = 1; /* libgd mallocs space for fontpath */
-#endif
 
     if (Verbose) {
 	if (emit_once(fontname)) {

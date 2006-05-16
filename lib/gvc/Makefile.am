@@ -37,7 +37,7 @@ libgvc_builtins_la_LIBADD = \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
-	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
+	@PANGOCAIRO_LIBS@ @GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
 libgvc_la_LIBADD = ${libgvc_builtins_la_LIBADD}
 
 EXTRA_DIST = Makefile.old dot_builtins.c

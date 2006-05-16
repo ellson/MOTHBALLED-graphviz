@@ -145,6 +145,26 @@ fi
 AM_CONDITIONAL(ENABLE_STATIC, [test "x$enable_static" != "xno"])
 
 dnl -----------------------------------
+dnl checks for various programs
+
+AC_ISC_POSIX
+AM_PROG_LEX
+AC_PROG_YACC
+AC_PROG_AWK
+AM_PROG_LIBTOOL
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_CHECK_PROG(SED,sed,sed,false)
+AC_CHECK_PROG(GREP,grep,grep,false)
+AC_CHECK_PROG(SORT,sort,sort,false)
+AC_CHECK_PROG(KSH,ksh,ksh,sh)
+
+# are we building for windows?
+# (these tests must follow AC_ISC_POSIX)
+#AC_CYGWIN
+#AC_MINGW32
+
+dnl -----------------------------------
 dnl checks for compilers
 
 AC_PROG_CC
@@ -211,26 +231,6 @@ fi
 if `echo ${CFLAGS} | $GREP -q ffast-math`; then
     AC_DEFINE_UNQUOTED(NO_FPERR,1,[Define if no fpu error exception handling is required.])
 fi
-
-dnl -----------------------------------
-dnl checks for other programs
-
-AC_ISC_POSIX
-AM_PROG_LEX
-AC_PROG_YACC
-AC_PROG_AWK
-AM_PROG_LIBTOOL
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_CHECK_PROG(SED,sed,sed,false)
-AC_CHECK_PROG(GREP,grep,grep,false)
-AC_CHECK_PROG(SORT,sort,sort,false)
-AC_CHECK_PROG(KSH,ksh,ksh,sh)
-
-# are we building for windows?
-# (these tests must follow AC_ISC_POSIX)
-#AC_CYGWIN
-#AC_MINGW32
 
 dnl -----------------------------------
 dnl where are we in the directory structure
@@ -1112,6 +1112,16 @@ AC_SUBST(IPSEPCOLA_INCLUDES)
 AC_SUBST(IPSEPCOLA_LIBS)
                                                                                 
 AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$with_ipsepcola" = "xyes"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for PANGOCAIRO
+                                                                                
+PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.0],
+        [AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
+                [Define if you have the pangocairo library])],
+        [AC_MSG_ERROR(pangocairo library not available)])
+AC_SUBST(PANGOCAIRO_CFLAGS)
+AC_SUBST(PANGOCAIRO_LIBS)
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
