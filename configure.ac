@@ -1119,7 +1119,7 @@ dnl INCLUDES and LIBS for PANGOCAIRO
 PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.0],
         [AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
                 [Define if you have the pangocairo library])],
-        [AC_MSG_ERROR(pangocairo library not available)])
+        [AC_MSG_WARN(Optional pangocairo library not available)])
 AC_SUBST(PANGOCAIRO_CFLAGS)
 AC_SUBST(PANGOCAIRO_LIBS)
 
