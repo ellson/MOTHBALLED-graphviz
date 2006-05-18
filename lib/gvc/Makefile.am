@@ -19,7 +19,8 @@ pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h gvcint.h \
 	gvplugin_layout.h \
 	gvplugin_device.h
 noinst_HEADERS = gvcproc.h
-pkglib_LTLIBRARIES = libgvc.la libgvc_builtins.la
+pkglib_LTLIBRARIES = libgvc.la
+noinst_LTLIBRARIES = libgvc_builtins.la
 pkgconfig_DATA = libgvc.pc
 
 libgvc_builtins_la_LDFLAGS = -version-info @VERSION_INFO@
