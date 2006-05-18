@@ -156,7 +156,7 @@ extern "C" {
     extern void setup_graph(GVC_t * gvc, graph_t * g);
     extern shape_kind shapeOf(node_t *);
     extern void shape_clip(node_t * n, point curve[4]);
-    extern void size_label (graph_t* g, char* str, textlabel_t* rv);
+    extern void size_label (graph_t* g, textlabel_t* rv);
     extern void start_timer(void);
     extern double textwidth(textline_t * textline, char *fontname,
 			    double fontsz);

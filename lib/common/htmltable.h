@@ -65,6 +65,7 @@ extern "C" {
     typedef struct {
 	char *str;
 	char *xshow;
+	void *layout;
 	htmlfont_t *font;
 	double size;  /* size of text item according to font */
     } textitem_t;

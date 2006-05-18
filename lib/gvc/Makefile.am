@@ -17,9 +17,7 @@ LIBS = $(LIBLTDL) $(SOCKET_LIBS)
 pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h gvcint.h \
 	gvplugin_render.h \
 	gvplugin_layout.h \
-	gvplugin_textlayout.h \
-	gvplugin_device.h \
-	gvplugin_usershape.h
+	gvplugin_device.h
 noinst_HEADERS = gvcproc.h
 pkglib_LTLIBRARIES = libgvc.la libgvc_builtins.la
 pkgconfig_DATA = libgvc.pc
@@ -27,9 +25,9 @@ pkgconfig_DATA = libgvc.pc
 libgvc_builtins_la_LDFLAGS = -version-info @VERSION_INFO@
 libgvc_la_LDFLAGS = ${libgvc_builtins_la_LDFLAGS} -no-undefined
 
-libgvc_builtins_la_SOURCES = gvrender.c gvlayout.c gvtextlayout.c gvdevice.c \
-	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c gvusershape.c \
-	gvc.c
+libgvc_builtins_la_SOURCES = gvrender.c gvlayout.c gvdevice.c \
+	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
+	gvusershape.c gvc.c
 libgvc_la_SOURCES = ${libgvc_builtins_la_SOURCES} no_builtins.c
 
 libgvc_builtins_la_LIBADD = \

@@ -142,6 +142,10 @@ ps:
 	for i in $(GRAPHS); do echo "dot $$i"; \
 		$(top_builddir)/cmd/dot/dot -Tps -o$$i.ps $(top_srcdir)/graphs/directed/$$i; done
 
+ps_cairo:
+	for i in $(GRAPHS); do echo "dot $$i"; \
+		$(top_builddir)/cmd/dot/dot -Tps:cairo -o$$i.ps $(top_srcdir)/graphs/directed/$$i; done
+
 ps2:
 	for i in $(GRAPHS); do echo "dot $$i"; \
 		$(top_builddir)/cmd/dot/dot -Tps2 -o$$i.ps2 $(top_srcdir)/graphs/directed/$$i; done

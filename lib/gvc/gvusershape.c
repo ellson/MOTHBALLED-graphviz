@@ -39,27 +39,11 @@
 #include "const.h"
 #include "types.h"
 #include "graph.h"
-#include "gvplugin_usershape.h"
-#include "gvcproc.h"
 
 extern point gd_image_size(graph_t * g, char *shapeimagefile);
 extern point ps_image_size(graph_t * g, char *shapeimagefile);
 extern point svg_image_size(graph_t * g, char *shapeimagefile);
 extern point quartz_image_size(graph_t * g, char *shapeimagefile);
-
-int gvusershape_select(GVC_t * gvc, char *usershape)
-{
-    gvplugin_available_t *plugin;
-    gvplugin_installed_t *typeptr;
-
-    plugin = gvplugin_load(gvc, API_usershape, usershape);
-    if (plugin) {
-	typeptr = plugin->typeptr;
-	gvc->usershape.engine = (gvusershape_engine_t *) (typeptr->engine);
-	return GVRENDER_PLUGIN;  /* FIXME - need more suitable success code */
-    }
-    return NO_SUPPORT;
-}
 
 /*
  * This routine extracts the usershape size from known filetypes,
@@ -123,4 +107,3 @@ point image_size(graph_t * g, char *shapefile)
     }
     return rv;
 }
-

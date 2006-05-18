@@ -18,6 +18,9 @@
 #include "render.h"
 #include "htmltable.h"
 #include <limits.h>
+#ifdef HAVE_PANGOCAIRO
+#include <pango/pangocairo.h>
+#endif
 
 #ifndef DISABLE_CODEGENS
 extern codegen_t *Output_codegen;
@@ -54,9 +57,9 @@ static void storeline(textlabel_t * lp, char *line, char terminator,
 }
 
 /* compiles <str> into a label <lp> and returns its bounding box size.  */
-static pointf label_size(char *str, textlabel_t * lp, graph_t * g)
+static pointf label_size(graph_t * g, textlabel_t * lp)
 {
-    char c, *p, *line, *lineptr;
+    char c, *p, *line, *lineptr, *str = lp->text;
     unsigned char byte = 0x00;
     int charset = GD_charset(g);
 
@@ -118,15 +121,14 @@ static pointf label_size(char *str, textlabel_t * lp, graph_t * g)
  * Process label text for size and line breaks.
  */ 
 void
-size_label (graph_t* g, char* str, textlabel_t* rv)
+size_label (graph_t* g, textlabel_t* rv)
 {
     if (GD_charset(g->root) == CHAR_LATIN1) {
-	char* lstr = latin1ToUTF8(str);
-	label_size(lstr, rv, g);
-	free(lstr);
+	char* lstr = latin1ToUTF8(rv->text);
+	free(rv->text);
+	rv->text = lstr;
     }
-    else
-	label_size(str, rv, g);
+    label_size(g, rv);
 }
 
 /* make_label:
@@ -145,7 +147,7 @@ textlabel_t *make_label(int html, char *str, double fontsize,
     if (html)
 	rv->html = TRUE;
     else
-	size_label(g, str, rv);
+	size_label(g, rv);
     return rv;
 }
 
@@ -156,6 +158,10 @@ static void free_textline(textline_t * tl)
 	    free(tl->str);
 	if (tl->xshow)
 	    free(tl->xshow);
+#ifdef HAVE_PANGOCAIRO
+	if (tl->layout)
+	    g_object_unref ((PangoLayout*)(tl->layout));
+#endif
 	free(tl);
     }
 }
@@ -187,9 +193,9 @@ emit_textlines(GVJ_t* job, int nlines, textline_t lines[], pointf p,
     /* set linespacing to an exact no. of pixelrows */
     linespacing = (int) (fsize * LINESPACING);
 
-    /* position for first line  - FUDGE */
-    p.y += (linespacing * (nlines - 1) / 2)	/* cl of topline */
-	-fsize * 0.23;	/* cl to baseline */
+    /* position for first line */
+    p.y += linespacing * (nlines - 1) / 2	/* cl of topline */
+			- fsize * 0.23; /* Empirically determined fudge factor */
 
     tmp = ROUND(p.y);  /* align with integer points */
     p.y = (double)tmp;

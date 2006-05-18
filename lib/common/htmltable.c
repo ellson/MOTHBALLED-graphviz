@@ -201,6 +201,7 @@ emit_htextlines(GVJ_t* job, int nlines, htextline_t* lines, pointf p,
 
 	    tl.str = ti->str;
 	    tl.xshow = ti->xshow;
+	    tl.layout = ti->layout;
 	    tl.width = lines[i].size;
 	    tl.just = lines[i].just;
 
@@ -819,6 +820,7 @@ size_html_txt(htmltxt_t* ftxt, htmlenv_t* env)
 	    ftxt->lines[i].items[j].str = lp.str;
 	    ftxt->lines[i].items[j].size = (double) w;
 	    ftxt->lines[i].items[j].xshow = lp.xshow;
+	    ftxt->lines[i].items[j].layout = lp.layout;
 	    width += w;
 	    ftxt->lines[i].size = (double) width;
 	    if (fsize > lsize)
@@ -1726,7 +1728,8 @@ int make_html_label(textlabel_t * lp, void *obj)
 	unsigned char buf[SMALLBUF];
 	agxbinit(&xb, SMALLBUF, buf);
 	lp->html = FALSE;
-	size_label(env.g, nameOf(obj, &xb), lp);
+	lp->text = nameOf(obj, &xb);
+	size_label(env.g, lp);
 	agxbfree(&xb);
 	return rv;
     }

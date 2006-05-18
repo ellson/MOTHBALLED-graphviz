@@ -130,6 +130,10 @@ ps:
 	for i in $(GRAPHS); do echo "neato $$i"; \
 		$(top_builddir)/cmd/dot/dot -Kneato -Tps -o$$i.ps $(top_srcdir)/graphs/undirected/$$i; done
 
+ps_cairo:
+	for i in $(GRAPHS); do echo "neato $$i"; \
+		$(top_builddir)/cmd/dot/dot -Kneato -Tps:cairo -o$$i.ps $(top_srcdir)/graphs/undirected/$$i; done
+
 ps2:
 	for i in $(GRAPHS); do echo "neato $$i"; \
 		$(top_builddir)/cmd/dot/dot -Kneato -Tps2 -o$$i.ps2 $(top_srcdir)/graphs/undirected/$$i; done

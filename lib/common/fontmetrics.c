@@ -126,6 +126,7 @@ double _dpi;
 void initDPI(graph_t * g)
 {
     _dpi = GD_drawing(g)->dpi;
+fprintf(stderr,"graph dpi = %g\n", _dpi);
 }
 
 extern codegen_t GD_CodeGen;
@@ -156,7 +157,10 @@ estimate_textsize(textline_t * textline, char *fontname, double fontsz,
     char c, *p;
 
     textline->width = 0.0;
+    textline->height = fontsz;
     textline->xshow = NULL;
+    textline->layout = NULL;
+
 #if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
     if (Output_codegen == &GD_CodeGen) {
 	int cwidth;
@@ -193,10 +197,12 @@ double textwidth(textline_t * textline, char *fontname, double fontsize)
     char *fontpath = NULL;
     int freeFontpath = 0;
 
-    if (gd_textsize(textline, fontname, fontsize, &fontpath))
-	estimate_textsize(textline, fontname, fontsize, &fontpath);
-    else
-	freeFontpath = 1; /* libgd mallocs space for fontpath */
+    if (pango_textsize(textline, fontname, fontsize, &fontpath)) {
+	if (gd_textsize(textline, fontname, fontsize, &fontpath))
+	   estimate_textsize(textline, fontname, fontsize, &fontpath);
+        else
+	   freeFontpath = 1; /* libgd mallocs space for fontpath */
+    }
 
     if (Verbose) {
 	if (emit_once(fontname)) {

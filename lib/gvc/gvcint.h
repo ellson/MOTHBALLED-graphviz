@@ -37,18 +37,6 @@ extern "C" {
         char *type;
     } gvplugin_active_layout_t;
 
-    typedef struct gvplugin_active_textlayout_s {
-        gvtextlayout_engine_t *engine;
-        int id;
-        char *type;
-    } gvplugin_active_textlayout_t;
-
-    typedef struct gvplugin_active_usershape_s {
-        gvusershape_engine_t *engine;
-        int id;
-        char *type;
-    } gvplugin_active_usershape_t;
-
     typedef struct gvplugin_available_s gvplugin_available_t;
 
     struct gvplugin_available_s {
@@ -119,8 +107,6 @@ extern "C" {
 	edge_t *e;	/* current edge */
 
 	/* gvrender_begin_job() */
-	gvplugin_active_textlayout_t textlayout;
-	gvplugin_active_usershape_t usershape;
 	gvplugin_active_layout_t layout;
 
 	char *graphname;	/* name from graph */

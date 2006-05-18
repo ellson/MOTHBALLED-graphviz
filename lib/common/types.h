@@ -117,8 +117,9 @@ extern "C" {
     typedef struct textline_t {
 	char *str;      /* stored in utf-8 */
 	char *xshow;
-	double width;
+	double width, height;
 	char just;
+	void *layout;
     } textline_t;
 
     typedef struct textlabel_t {

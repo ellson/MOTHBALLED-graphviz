@@ -25,12 +25,10 @@ struct lt_symlist
 #if 1
 extern gvplugin_library_t gvplugin_dot_layout_LTX_library;
 extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
-extern gvplugin_library_t gvplugin_usershape_gd_LTX_library;
 
 const struct lt_symlist lt_preloaded_symbols[] = {
     { "gvplugin_dot_layout_LTX_library", (void*)(&gvplugin_dot_layout_LTX_library) },
     { "gvplugin_neato_layout_LTX_library", (void*)(&gvplugin_neato_layout_LTX_library) },
-    { "gvplugin_usershape_gd_LTX_library", (void*)(&gvplugin_usershape_gd_LTX_library) },
     { 0, 0 }
 };
 #else

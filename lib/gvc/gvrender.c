@@ -181,11 +181,11 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 	return p;
 
     if (job->rotation) {
-	rv.x = -p.y * job->compscale.x + job->offset.x;
-	rv.y =  p.x * job->compscale.y + job->offset.y;
+	rv.x = -(p.y - job->focus.y) * job->compscale.x + job->width / 2.;
+	rv.y = -(p.x - job->focus.x) * job->compscale.y + job->height / 2.;
     } else {
-	rv.x =  p.x * job->compscale.x + job->offset.x;
-	rv.y =  p.y * job->compscale.y + job->offset.y;
+	rv.x =  (p.x - job->focus.x) * job->compscale.x + job->width / 2.;
+	rv.y =  (p.y - job->focus.y) * job->compscale.y + job->height / 2.;
     }
     return rv;
 }
@@ -252,7 +252,7 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
         job->clip.UR.y = job->focus.y + sx + EPSILON;
         job->clip.LL.x = job->focus.x - sy - EPSILON;
         job->clip.LL.y = job->focus.y - sx - EPSILON;
-	job->offset.x = -job->focus.y * job->compscale.x + job->width / 2.;
+	job->offset.x = -job->focus.y * job->compscale.x + job->width * 3 / 2;
 	job->offset.y = -job->focus.x * job->compscale.y + job->height / 2.;
 
 	job->transform.xx = 0;

@@ -98,7 +98,9 @@ char *gd_textsize(textline_t * textline, char *fontname, double fontsz,
 	strex.flags |= gdFTEX_FONTCONFIG;
 
     textline->width = 0.0;
+    textline->height = 0.0;
     textline->xshow = NULL;
+    textline->layout = NULL;
 
     fontlist = gd_alternate_fontlist(fontname);
     if (fontlist) {
@@ -129,6 +131,7 @@ char *gd_textsize(textline_t * textline, char *fontname, double fontsz,
 	if (textline->str && textline->str[0]) {
 	    /* can't use brect on some archtectures if strlen 0 */
 	    textline->width = (double) (brect[4] - brect[0]);
+	    textline->height = (double) (brect[5] - brect[1]);
 	}
 #else
 	return "No Freetype support available";

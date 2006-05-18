@@ -12,7 +12,7 @@ AC_INIT(graphviz, 2.9)
 # libtool shared library version
 
 # Increment if the interface has additions, changes, removals.
-LT_CURRENT=2
+LT_CURRENT=3
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
