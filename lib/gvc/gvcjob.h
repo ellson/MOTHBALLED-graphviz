@@ -33,7 +33,7 @@ extern "C" {
     typedef struct gvdevice_engine_s gvdevice_engine_t;
     typedef struct gvrender_engine_s gvrender_engine_t;
     typedef struct gvlayout_engine_s gvlayout_engine_t;
-
+    typedef struct gvtextlayout_engine_s gvtextlayout_engine_t;
 
     typedef enum { PEN_NONE, PEN_DASHED, PEN_DOTTED, PEN_SOLID } pen_type;
     typedef enum { FILL_NONE, FILL_SOLID } fill_type;

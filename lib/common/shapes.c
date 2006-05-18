@@ -1400,6 +1400,7 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
     char *tsp, *psp, *hstsp, *hspsp, *sp;
     char port[SMALLBUF];
     int maxf, cnt, mode, wflag, ishardspace, fi;
+    graph_t *sg = n->graph;
 
     fp = NULL;
     for (maxf = 1, cnt = 0, sp = reclblp; *sp; sp++) {
@@ -1469,9 +1470,10 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
 		    tsp--;
 		*tsp = '\000';
 		fp->lp =
-		    make_label(0, strdup(text), ND_label(n)->fontsize,
+		    make_label(sg->root, 0, strdup(text),
+			       ND_label(n)->fontsize,
 			       ND_label(n)->fontname,
-			       ND_label(n)->fontcolor, n->graph);
+			       ND_label(n)->fontcolor);
 		fp->LR = TRUE;
 		hstsp = tsp = text;
 	    }

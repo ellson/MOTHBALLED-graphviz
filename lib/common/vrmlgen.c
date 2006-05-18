@@ -449,7 +449,7 @@ static void vrml_textline(point p, textline_t * line)
     if (Obj != NODE)
 	return;
     cstk[SP].pencolor_ix = vrml_resolve_color(cstk[SP].pencolor);
-    fontlist = gd_alternate_fontlist(cstk[SP].fontfam);
+    fontlist = (char*)(line->layout); /* FIXME - kluge */
 
     switch (line->just) {
     case 'l':

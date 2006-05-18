@@ -134,8 +134,8 @@ extern "C" {
     extern char *xml_string(char *s);
     extern void makeSelfEdge(path *, edge_t **, int, int, int, int,
 			     splineInfo *);
-    extern textlabel_t *make_label(int, char *, double, char *, char *,
-				   graph_t *);
+    extern textlabel_t *make_label(graph_t *g, int html, char *str,
+				   double fontsize, char *fontname, char *fontcolor);
     extern void map_begin_cluster(graph_t * g);
     extern void map_begin_edge(Agedge_t * e);
     extern void map_begin_node(Agnode_t * n);
@@ -158,8 +158,8 @@ extern "C" {
     extern void shape_clip(node_t * n, point curve[4]);
     extern void size_label (graph_t* g, textlabel_t* rv);
     extern void start_timer(void);
-    extern double textwidth(textline_t * textline, char *fontname,
-			    double fontsz);
+    extern double textwidth(graph_t *g, textline_t * textline,
+			    char *fontname, double fontsz);
     extern void translate_bb(Agraph_t *, int);
     extern void use_library(char *);
     extern void write_attributed_dot(graph_t *g, FILE *f);

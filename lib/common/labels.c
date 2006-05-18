@@ -27,17 +27,15 @@ extern codegen_t *Output_codegen;
 extern codegen_t *GD_CodeGen;
 #endif
 
-static void storeline(textlabel_t * lp, char *line, char terminator,
-		      graph_t * g)
+static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
 {
     double width = 0.0;
 
     lp->u.txt.line =
 	ALLOC(lp->u.txt.nlines + 2, lp->u.txt.line, textline_t);
     lp->u.txt.line[lp->u.txt.nlines].str = line;
-    width =
-	textwidth(&(lp->u.txt.line[lp->u.txt.nlines]), lp->fontname,
-		  lp->fontsize);
+    width = textwidth(g, &(lp->u.txt.line[lp->u.txt.nlines]),
+	    lp->fontname, lp->fontsize);
     lp->u.txt.line[lp->u.txt.nlines].just = terminator;
     lp->u.txt.nlines++;
     /* total width = max line width */
@@ -90,7 +88,7 @@ static pointf label_size(graph_t * g, textlabel_t * lp)
 		case 'l':
 		case 'r':
 		    *lineptr++ = '\0';
-		    storeline(lp, line, *p, g);
+		    storeline(g, lp, line, *p);
 		    line = lineptr;
 		    break;
 		default:
@@ -101,7 +99,7 @@ static pointf label_size(graph_t * g, textlabel_t * lp)
 		/* tcldot can enter real linend characters */
 	    } else if (c == '\n') {
 		*lineptr++ = '\0';
-		storeline(lp, line, 'n', g);
+		storeline(g, lp, line, 'n');
 		line = lineptr;
 	    } else {
 		*lineptr++ = c;
@@ -111,7 +109,7 @@ static pointf label_size(graph_t * g, textlabel_t * lp)
 
     if (line != lineptr) {
 	*lineptr++ = '\0';
-	storeline(lp, line, 'n', g);
+	storeline(g, lp, line, 'n');
     }
 
     return lp->dimen;
@@ -135,8 +133,8 @@ size_label (graph_t* g, textlabel_t* rv)
  * Assume str is freshly allocated for this instance, so it
  * can be freed in free_label.
  */
-textlabel_t *make_label(int html, char *str, double fontsize,
-			char *fontname, char *fontcolor, graph_t * g)
+textlabel_t *make_label(graph_t *g, int html, char *str, double fontsize,
+			char *fontname, char *fontcolor)
 {
     textlabel_t *rv = NEW(textlabel_t);
 
@@ -195,7 +193,7 @@ emit_textlines(GVJ_t* job, int nlines, textline_t lines[], pointf p,
 
     /* position for first line */
     p.y += linespacing * (nlines - 1) / 2	/* cl of topline */
-			- fsize * 0.23; /* Empirically determined fudge factor */
+			- fsize * 0.30; /* Empirically determined fudge factor */
 
     tmp = ROUND(p.y);  /* align with integer points */
     p.y = (double)tmp;

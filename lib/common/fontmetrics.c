@@ -192,17 +192,12 @@ estimate_textsize(textline_t * textline, char *fontname, double fontsz,
     }
 }
 
-double textwidth(textline_t * textline, char *fontname, double fontsize)
+double textwidth(graph_t *g, textline_t * textline, char *fontname, double fontsize)
 {
     char *fontpath = NULL;
-    int freeFontpath = 0;
 
-    if (pango_textsize(textline, fontname, fontsize, &fontpath)) {
-	if (gd_textsize(textline, fontname, fontsize, &fontpath))
-	   estimate_textsize(textline, fontname, fontsize, &fontpath);
-        else
-	   freeFontpath = 1; /* libgd mallocs space for fontpath */
-    }
+    if (! gvtextlayout(GD_gvc(g), textline, fontname, fontsize, &fontpath))
+	estimate_textsize(textline, fontname, fontsize, &fontpath);
 
     if (Verbose) {
 	if (emit_once(fontname)) {
@@ -210,6 +205,5 @@ double textwidth(textline_t * textline, char *fontname, double fontsize)
 		    fontname, fontpath);
 	}
     }
-    if (freeFontpath) free (fontpath);
     return textline->width;
 }

@@ -572,7 +572,7 @@ static void gd_textline(point p, textline_t * line)
 	strex.flags |= gdFTEX_FONTCONFIG;
 
     str = line->str;
-    fontlist = gd_alternate_fontlist(cstk[SP].fontfam);
+    fontlist = (char *)(line->layout); /* FIXME - kluge */
     fontsz = cstk[SP].fontsz;
 
     switch (line->just) {

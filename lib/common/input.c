@@ -680,20 +680,18 @@ void do_graph_label(graph_t * sg)
 	pointf dimen;
 
 	GD_has_labels(sg->root) |= GRAPH_LABEL;
-	GD_label(sg) = make_label(html, strdup_and_subst_graph(p, sg),
+	GD_label(sg) = make_label(sg->root, html, strdup_and_subst_graph(p, sg),
 				  late_double(sg,
 					      agfindattr(sg, "fontsize"),
-					      DEFAULT_FONTSIZE,
-					      MIN_FONTSIZE),
+					      DEFAULT_FONTSIZE, MIN_FONTSIZE),
 				  late_nnstring(sg,
 						agfindattr(sg, "fontname"),
 						DEFAULT_FONTNAME),
 				  late_nnstring(sg,
-						agfindattr(sg,
-							   "fontcolor"),
-						DEFAULT_COLOR), sg);
+						agfindattr(sg, "fontcolor"),
+						DEFAULT_COLOR));
 	if (html) {
-	    if (make_html_label(GD_label(sg), sg) == 1)
+	    if (make_html_label(sg->root, GD_label(sg), sg) == 1)
 		agerr(AGPREV, "in label of graph %s\n", sg->name);
 	}
 

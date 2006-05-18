@@ -17,6 +17,7 @@ LIBS = $(LIBLTDL) $(SOCKET_LIBS)
 pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h gvcint.h \
 	gvplugin_render.h \
 	gvplugin_layout.h \
+	gvplugin_textlayout.h \
 	gvplugin_device.h
 noinst_HEADERS = gvcproc.h
 pkglib_LTLIBRARIES = libgvc.la
@@ -28,7 +29,7 @@ libgvc_la_LDFLAGS = ${libgvc_builtins_la_LDFLAGS} -no-undefined
 
 libgvc_builtins_la_SOURCES = gvrender.c gvlayout.c gvdevice.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
-	gvusershape.c gvc.c
+	gvtextlayout.c gvusershape.c gvc.c
 libgvc_la_SOURCES = ${libgvc_builtins_la_SOURCES} no_builtins.c
 
 libgvc_builtins_la_LIBADD = \
@@ -36,7 +37,7 @@ libgvc_builtins_la_LIBADD = \
 	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
-	@PANGOCAIRO_LIBS@ @GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
+	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
 libgvc_la_LIBADD = ${libgvc_builtins_la_LIBADD}
 
 EXTRA_DIST = Makefile.old dot_builtins.c

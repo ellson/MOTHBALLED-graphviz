@@ -599,6 +599,7 @@ void common_init_node(node_t * n)
 {
     char *str;
     int html = 0;
+    graph_t *sg = n->graph;
 
     ND_width(n) =
 	late_double(n, N_width, DEFAULT_NODEWIDTH, MIN_NODEWIDTH);
@@ -614,15 +615,12 @@ void common_init_node(node_t * n)
 	str = strdup(str);
     else
 	str = strdup_and_subst_node(str, n);
-    ND_label(n) = make_label(html, str,
-			     late_double(n, N_fontsize, DEFAULT_FONTSIZE,
-					 MIN_FONTSIZE), late_nnstring(n,
-								      N_fontname,
-								      DEFAULT_FONTNAME),
-			     late_nnstring(n, N_fontcolor, DEFAULT_COLOR),
-			     n->graph);
+    ND_label(n) = make_label(sg->root, html, str,
+		late_double(n, N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE),
+		late_nnstring(n, N_fontname, DEFAULT_FONTNAME),
+		late_nnstring(n, N_fontcolor, DEFAULT_COLOR));
     if (html) {
-	if (make_html_label(ND_label(n), n) == 1)
+	if (make_html_label(sg->root, ND_label(n), n) == 1)
 	    agerr(AGPREV, "in label of node %s\n", n->name);
     }
     ND_shape(n) =
@@ -712,6 +710,7 @@ int common_init_edge(edge_t * e)
     int html = 0, r = 0;
     struct fontinfo fi;
     struct fontinfo lfi;
+    graph_t *sg = e->tail->graph;
 
     fi.fontname = NULL;
     lfi.fontname = NULL;
@@ -723,14 +722,13 @@ int common_init_edge(edge_t * e)
 	else
 	    s = strdup_and_subst_edge(s, e);
 	initFontEdgeAttr(e, &fi);
-	ED_label(e) = make_label(html, s,
-				 fi.fontsize, fi.fontname, fi.fontcolor,
-				 e->tail->graph);
+	ED_label(e) = make_label(sg->root, html, s,
+				fi.fontsize, fi.fontname, fi.fontcolor);
 	if (html) {
-	    if (make_html_label(ED_label(e), e) == 1)
+	    if (make_html_label(sg->root, ED_label(e), e) == 1)
 		edgeError(e, "label");
 	}
-	GD_has_labels(e->tail->graph) |= EDGE_LABEL;
+	GD_has_labels(sg) |= EDGE_LABEL;
 	ED_label_ontop(e) =
 	    mapbool(late_string(e, E_label_float, "false"));
     }
@@ -744,14 +742,13 @@ int common_init_edge(edge_t * e)
 	else
 	    s = strdup_and_subst_edge(s, e);
 	initFontLabelEdgeAttr(e, &fi, &lfi);
-	ED_head_label(e) = make_label(html, s,
-				      lfi.fontsize, lfi.fontname,
-				      lfi.fontcolor, e->tail->graph);
+	ED_head_label(e) = make_label(sg->root, html, s,
+				lfi.fontsize, lfi.fontname, lfi.fontcolor);
 	if (html) {
-	    if (make_html_label(ED_head_label(e), e) == 1)
+	    if (make_html_label(sg->root, ED_head_label(e), e) == 1)
 		edgeError(e, "head label");
 	}
-	GD_has_labels(e->tail->graph) |= HEAD_LABEL;
+	GD_has_labels(sg) |= HEAD_LABEL;
     }
     if (E_taillabel && (s = agxget(e, E_taillabel->index)) && (s[0])) {
 	html = aghtmlstr(s);
@@ -761,14 +758,13 @@ int common_init_edge(edge_t * e)
 	    s = strdup_and_subst_edge(s, e);
 	if (!lfi.fontname)
 	    initFontLabelEdgeAttr(e, &fi, &lfi);
-	ED_tail_label(e) = make_label(html, s,
-				      lfi.fontsize, lfi.fontname,
-				      lfi.fontcolor, e->tail->graph);
+	ED_tail_label(e) = make_label(sg->root, html, s,
+				lfi.fontsize, lfi.fontname, lfi.fontcolor);
 	if (html) {
-	    if (make_html_label(ED_tail_label(e), e) == 1)
+	    if (make_html_label(sg->root, ED_tail_label(e), e) == 1)
 		edgeError(e, "tail label");
 	}
-	GD_has_labels(e->tail->graph) |= TAIL_LABEL;
+	GD_has_labels(sg) |= TAIL_LABEL;
     }
     /* end vladimir */
 

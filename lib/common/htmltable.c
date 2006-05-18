@@ -703,7 +703,7 @@ int html_path(node_t * n, port* p, int side, box * rv, int *k)
 
 #ifdef OLD
 static int 
-size_html_txt(htmltxt_t * txt, htmlenv_t * env)
+size_html_txt(graph_t *g, htmltxt_t * txt, htmlenv_t * env)
 {
     double xsize = 0.0;
     double fsize;
@@ -742,7 +742,7 @@ size_html_txt(htmltxt_t * txt, htmlenv_t * env)
 	free(lp->str);
 	lp->str = news;
 
-	width = textwidth(lp, fname, fsize);
+	width = textwidth(g, lp, fname, fsize);
 	/* no margins are added since the containing node or cell will pad */
 	if (width > xsize)
 	    xsize = width;
@@ -776,7 +776,7 @@ substrEFn (char* s, htmlenv_t* env)
 }
 
 static int 
-size_html_txt(htmltxt_t* ftxt, htmlenv_t* env)
+size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 {
     double xsize = 0.0, ysize = 0.0;
     double fsize, lsize = 0.0;
@@ -815,7 +815,7 @@ size_html_txt(htmltxt_t* ftxt, htmlenv_t* env)
 		fsize = env->finfo.size;
 		fname = env->finfo.name;
 	    }
-	    w = textwidth(&lp, fname, fsize);
+	    w = textwidth(g, &lp, fname, fsize);
 	    free (ftxt->lines[i].items[j].str);
 	    ftxt->lines[i].items[j].str = lp.str;
 	    ftxt->lines[i].items[j].size = (double) w;
@@ -839,7 +839,7 @@ size_html_txt(htmltxt_t* ftxt, htmlenv_t* env)
 }
 
 /* forward declarion for recursive usage */
-static int size_html_tbl(htmltbl_t * tbl, htmlcell_t * parent,
+static int size_html_tbl(graph_t *g, htmltbl_t * tbl, htmlcell_t * parent,
 			 htmlenv_t * env);
 
 /* size_html_img:
@@ -867,7 +867,7 @@ static int size_html_img(htmlimg_t * img, htmlenv_t * env)
 /* size_html_cell:
  */
 static int
-size_html_cell(htmlcell_t * cp, htmltbl_t * parent, htmlenv_t * env)
+size_html_cell(graph_t *g, htmlcell_t * cp, htmltbl_t * parent, htmlenv_t * env)
 {
     int rv;
     point sz, child_sz;
@@ -890,13 +890,13 @@ size_html_cell(htmlcell_t * cp, htmltbl_t * parent, htmlenv_t * env)
     }
 
     if (cp->child.kind == HTML_TBL) {
-	rv = size_html_tbl(cp->child.u.tbl, cp, env);
+	rv = size_html_tbl(g, cp->child.u.tbl, cp, env);
 	child_sz = cp->child.u.tbl->data.box.UR;
     } else if (cp->child.kind == HTML_IMAGE) {
 	rv = size_html_img(cp->child.u.img, env);
 	child_sz = cp->child.u.img->box.UR;
     } else {
-	rv = size_html_txt(cp->child.u.txt, env);
+	rv = size_html_txt(g, cp->child.u.txt, env);
 	child_sz = cp->child.u.txt->box.UR;
     }
 
@@ -955,7 +955,7 @@ static int findCol(PointSet * ps, int row, int col, htmlcell_t * cellp)
  * Recursively size cells.
  * Return 1 if problem sizing a cell.
  */
-static int processTbl(htmltbl_t * tbl, htmlenv_t * env)
+static int processTbl(graph_t *g, htmltbl_t * tbl, htmlenv_t * env)
 {
     pitem *rp;
     pitem *cp;
@@ -992,7 +992,7 @@ static int processTbl(htmltbl_t * tbl, htmlenv_t * env)
 	while (cp) {
 	    cellp = cp->u.cp;
 	    *cells++ = cellp;
-	    rv |= size_html_cell(cellp, tbl, env);
+	    rv |= size_html_cell(g, cellp, tbl, env);
 	    c = findCol(ps, r, c, cellp);
 	    cellp->row = r;
 	    cellp->col = c;
@@ -1475,7 +1475,7 @@ static void pos_html_tbl(htmltbl_t * tbl, box pos, int sides)
  * size of each cell.
  */
 static int
-size_html_tbl(htmltbl_t * tbl, htmlcell_t * parent, htmlenv_t * env)
+size_html_tbl(graph_t *g, htmltbl_t * tbl, htmlcell_t * parent, htmlenv_t * env)
 {
     int i, wd, ht;
     int rv = 0;
@@ -1484,7 +1484,7 @@ size_html_tbl(htmltbl_t * tbl, htmlcell_t * parent, htmlenv_t * env)
     if (tbl->font)
 	pushFontInfo(env, tbl->font, &savef);
     tbl->u.n.parent = parent;
-    rv = processTbl(tbl, env);
+    rv = processTbl(g, tbl, env);
 
     /* Set up border and spacing */
     if (!(tbl->data.flags & SPACE_SET)) {
@@ -1697,7 +1697,7 @@ static char *getPenColor(void *obj)
 /* make_html_label:
  * Return non-zero if problem parsing HTML. In this case, use object name.
  */
-int make_html_label(textlabel_t * lp, void *obj)
+int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
 {
     int rv;
     int wd2, ht2;
@@ -1736,7 +1736,7 @@ int make_html_label(textlabel_t * lp, void *obj)
 
     if (lbl->kind == HTML_TBL) {
 	lbl->u.tbl->data.pencolor = getPenColor(obj);
-	rv |= size_html_tbl(lbl->u.tbl, NULL, &env);
+	rv |= size_html_tbl(g, lbl->u.tbl, NULL, &env);
 	wd2 = (lbl->u.tbl->data.box.UR.x + 1) / 2;
 	ht2 = (lbl->u.tbl->data.box.UR.y + 1) / 2;
 	box = boxof(-wd2, -ht2, wd2, ht2);
@@ -1744,7 +1744,7 @@ int make_html_label(textlabel_t * lp, void *obj)
 	lp->dimen.x = box.UR.x - box.LL.x;
 	lp->dimen.y = box.UR.y - box.LL.y;
     } else {
-	rv |= size_html_txt(lbl->u.txt, &env);
+	rv |= size_html_txt(g, lbl->u.txt, &env);
 	wd2 = (lbl->u.txt->box.UR.x + 1) / 2;
 	ht2 = (lbl->u.txt->box.UR.y + 1) / 2;
 	box = boxof(-wd2, -ht2, wd2, ht2);

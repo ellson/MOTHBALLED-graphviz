@@ -558,4 +558,5 @@ void gvconfig(GVC_t * gvc, bool rescan)
 	    fclose(f);
     }
 #endif
+    gvtextlayout_select(gvc);   /* choose best available textlayout plugin immediately */
 }
