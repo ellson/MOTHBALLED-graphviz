@@ -516,6 +516,7 @@ void free_html_text(htmltxt_t* t)
 	    if (ti->str) free (ti->str);
 	    if (ti->xshow) free (ti->xshow);
 	    if (ti->font) free_html_font(ti->font);
+	    if (ti->layout && ti->free_layout) ti->free_layout (ti->layout);
 	    ti++;
 	}
 	tl++;
@@ -821,6 +822,7 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	    ftxt->lines[i].items[j].size = (double) w;
 	    ftxt->lines[i].items[j].xshow = lp.xshow;
 	    ftxt->lines[i].items[j].layout = lp.layout;
+	    ftxt->lines[i].items[j].free_layout = lp.free_layout;
 	    width += w;
 	    ftxt->lines[i].size = (double) width;
 	    if (fsize > lsize)

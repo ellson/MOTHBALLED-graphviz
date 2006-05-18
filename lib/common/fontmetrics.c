@@ -160,6 +160,7 @@ estimate_textsize(textline_t * textline, char *fontname, double fontsz,
     textline->height = fontsz;
     textline->xshow = NULL;
     textline->layout = NULL;
+    textline->free_layout = NULL;
 
 #if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
     if (Output_codegen == &GD_CodeGen) {

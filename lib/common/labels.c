@@ -156,10 +156,8 @@ static void free_textline(textline_t * tl)
 	    free(tl->str);
 	if (tl->xshow)
 	    free(tl->xshow);
-#ifdef HAVE_PANGOCAIRO
-	if (tl->layout)
-	    g_object_unref ((PangoLayout*)(tl->layout));
-#endif
+	if (tl->layout && tl->free_layout)
+	    tl->free_layout (tl->layout);
 	free(tl);
     }
 }

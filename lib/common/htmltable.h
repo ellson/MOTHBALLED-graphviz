@@ -66,6 +66,7 @@ extern "C" {
 	char *str;
 	char *xshow;
 	void *layout;
+	void (*free_layout) (void *layout);
 	htmlfont_t *font;
 	double size;  /* size of text item according to font */
     } textitem_t;
