@@ -61,9 +61,9 @@ int gvLayoutJobs(GVC_t * gvc, graph_t * g)
     if (! gvle)
 	return -1;
 
+    GD_gvc(g) = gvc;
     graph_init(g, gvc->layout.features->flags & LAYOUT_USES_RANKDIR);
     GD_drawing(g->root) = GD_drawing(g);
-    GD_gvc(g) = gvc;
     if (gvle && gvle->layout) {
 	gvle->layout(g);
 	if (gvle->cleanup)
