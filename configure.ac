@@ -330,7 +330,7 @@ dnl INCLUDES and LIBS for C#
 
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(sharp,
-  [AC_HELP_STRING([--disable-sharp], ["don't support C# language bindings"])])
+  [AC_HELP_STRING([--disable-sharp], [don't support C# language bindings])])
 if test "x$enable_sharp" != "xno"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-csharp *- Generate'` = 0; then
 	SHARP=
