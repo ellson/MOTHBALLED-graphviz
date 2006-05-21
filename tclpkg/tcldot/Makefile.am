@@ -37,7 +37,12 @@ if !DISABLE_CODEGENS
 CODEGENS = tkgen.c
 endif
 
-libtcldot_la_SOURCES = tcldot.c $(CODEGENS) $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
+if WITH_LIBGD
+GDTCLFT = $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
+endif
+
+libtcldot_la_SOURCES = tcldot.c $(CODEGENS) $(GDTCLFT)
+
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
