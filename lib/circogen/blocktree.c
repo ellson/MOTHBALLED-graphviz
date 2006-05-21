@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#include <blocktree.h>
+#include "blocktree.h"
 
 static int min_value(int x, int y)
 {
