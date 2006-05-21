@@ -24,7 +24,10 @@
 #include "render.h"
 #include "ps.h"
 #include "agxbuf.h"
+
+#ifdef HAVE_LIBGD
 #include "gd.h"
+#endif
 
 #ifndef MSWIN32
 #include <unistd.h>
