@@ -182,11 +182,11 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 	return p;
 
     if (job->rotation) {
-	rv.x = -(p.y - job->focus.y) * job->compscale.x + job->width / 2.;
-	rv.y = -(p.x - job->focus.x) * job->compscale.y + job->height / 2.;
+	rv.x = -(p.y - job->focus.y) * job->compscale.x + job->width / 2. + job->margin.x;
+	rv.y = -(p.x - job->focus.x) * job->compscale.y + job->height / 2. + job->margin.y;
     } else {
-	rv.x =  (p.x - job->focus.x) * job->compscale.x + job->width / 2.;
-	rv.y =  (p.y - job->focus.y) * job->compscale.y + job->height / 2.;
+	rv.x =  (p.x - job->focus.x) * job->compscale.x + job->width / 2. + job->margin.x;
+	rv.y =  (p.y - job->focus.y) * job->compscale.y + job->height / 2. + job->margin.y;
     }
     return rv;
 }

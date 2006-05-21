@@ -299,12 +299,12 @@ static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
 
     /* convert window point to graph coordinates */
     if (job->rotation) {
-	p.x = job->focus.y - (pointer.y - job->height / 2.) / job->compscale.x;
-	p.y = job->focus.x + (pointer.x - job->width / 2.) / job->compscale.y;
+	p.x = job->focus.y - (pointer.y - job->height / 2. - job->margin.y) / job->compscale.x;
+	p.y = job->focus.x + (pointer.x - job->width / 2. - job->margin.x) / job->compscale.y;
     }
     else {
-	p.x = job->focus.x + (pointer.x - job->width / 2.) / job->compscale.x;
-	p.y = job->focus.y + (pointer.y - job->height / 2.) / job->compscale.y;
+	p.x = job->focus.x + (pointer.x - job->width / 2. - job->margin.x) / job->compscale.x;
+	p.y = job->focus.y + (pointer.y - job->height / 2. - job->margin.y) / job->compscale.y;
     }
     closeenough = CLOSEENOUGH / job->compscale.x;
 
