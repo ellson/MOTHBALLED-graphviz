@@ -27,31 +27,38 @@ Prefix: /usr
 # of rpm can't handle multiline blocks/
 %{?rh7: %{expand: %%define PERL    1}}
 %{?rh7: %{expand: %%define TCL     1}}
+%{?rh7: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?rh8: %{expand: %%define PERL    1}}
 %{?rh8: %{expand: %%define TCL     1}}
+%{?rh8: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?rh9: %{expand: %%define PERL    1}}
 %{?rh9: %{expand: %%define TCL     1}}
+%{?rh9: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?el2: %{expand: %%define PERL    1}}
 %{?el2: %{expand: %%define TCL     1}}
+%{?el2: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?el3: %{expand: %%define PERL    1}}
 %{?el3: %{expand: %%define TCL     1}}
 %{?el3: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
+%{?el3: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?el4: %{expand: %%define PERL    1}}
 %{?el4: %{expand: %%define PHP     1}}
 %{?el4: %{expand: %%define RUBY    1}}
 %{?el4: %{expand: %%define TCL     1}}
 %{?el4: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
+%{?el4: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?el5: %{expand: %%define PERL    1}}
 %{?el5: %{expand: %%define PHP     1}}
 %{?el5: %{expand: %%define RUBY    1}}
 %{?el5: %{expand: %%define TCL     1}}
 %{?el5: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
+%{?el5: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?el6: %{expand: %%define PERL    1}}
 %{?el6: %{expand: %%define PHP     1}}
@@ -61,13 +68,16 @@ Prefix: /usr
 
 %{?fc1: %{expand: %%define PERL    1}}
 %{?fc1: %{expand: %%define TCL     1}}
+%{?fc1: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?fc2: %{expand: %%define PERL    1}}
 %{?fc2: %{expand: %%define TCL     1}}
+%{?fc2: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?fc3: %{expand: %%define PERL    1}}
 %{?fc3: %{expand: %%define TCL     1}}
 %{?fc3: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
+%{?fc3: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?fc4: %{expand: %%define GUILE   1}}
 %{?fc4: %{expand: %%define PERL    1}}
@@ -75,6 +85,7 @@ Prefix: /usr
 %{?fc4: %{expand: %%define RUBY    1}}
 %{?fc4: %{expand: %%define TCL     1}}
 %{?fc4: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
+%{?fc4: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?fc5: %{expand: %%define SHARP   1}}
 %{?fc5: %{expand: %%define GUILE   1}}
@@ -396,7 +407,6 @@ Provides some additional PDF and HTML documentation for graphviz.
 # XXX ix86 only used to have -ffast-math, let's use everywhere
 %{expand: %%define optflags %{optflags} -ffast-math}
 # %%configure is broken in RH7.3 rpmbuild
-# need unreleased changes to gd, so use --with-mylibgd for now.
 CFLAGS="$RPM_OPT_FLAGS" \
 ./configure \
       --prefix=%{_prefix} \
@@ -406,9 +416,8 @@ CFLAGS="$RPM_OPT_FLAGS" \
       --datadir=%{_datadir} \
       --mandir=%{_mandir} \
       --with-x \
-      --with-mylibgd \
       --disable-static \
-      --disable-dependency-tracking %{IPSEPCOLA}
+      --disable-dependency-tracking %{MYLIBGD} %{IPSEPCOLA}
 %__make %{?_smp_mflags}
 
 %install
