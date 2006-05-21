@@ -12,7 +12,7 @@ AM_CPPFLAGS = \
 
 pkginclude_HEADERS = logic.h arith.h geom.h color.h types.h globals.h
 noinst_HEADERS = render.h utils.h memory.h \
-	geomprocs.h colorprocs.h colortbl.h \
+	geomprocs.h colorprocs.h colortbl.h entities.h \
 	const.h macros.h htmllex.h htmltable.h pointset.h
 noinst_LTLIBRARIES = libcommon.la
 
@@ -65,5 +65,5 @@ DISTCLEANFILES = brewer_lib color_lib colortbl.h y.output y.tab.[ch] htmlparse.[
 
 EXTRA_DIST = Makefile.old README.imap chars.tcl ps.h \
 	strcasecmp.c strncasecmp.c htmlparse.c htmlparse.h \
-	y.tab.c y.tab.h y.output \
+	y.tab.c y.tab.h y.output entities.html entities.tcl \
 	brewer_colors brewer_lib color_names color_lib colortbl.h
