@@ -22,9 +22,6 @@
 #include <io.h>
 #endif
 
-extern gdImagePtr gd_getshapeimage(char *name);
-extern void gd_freeusershapes(void);
-
 static gdImagePtr im;
 static int external_surface;
 
@@ -356,7 +353,6 @@ static void gd_end_graph(void)
 	gdImageXbm(im, Output_file);
 #endif
     }
-    gd_freeusershapes();
     gdImageDestroy(im);
 #ifdef MYTRACE
     fprintf(stderr, "gd_end_graph_to_file\n");
@@ -929,59 +925,52 @@ static void gd_polyline(point * A, int n)
     }
 }
 
-static void gd_user_shape(char *name, point * A, int n, int filled)
+static void gd_freeimage(void *data)
 {
-    gdImagePtr im2 = 0;
-    pointf destul, destlr;
-    pointf ul, lr;		/* upper left, lower right */
-    double sx, sy;		/* target size */
-    double scalex, scaley;	/* scale factors */
-    int i;
-    char *shapeimagefile;
+    gdImageDestroy((gdImagePtr)data);
+}
 
-    if (streq(name, "custom"))
-	shapeimagefile = agget(Curnode, "shapefile");
-    else
-	shapeimagefile = name;
-    im2 = gd_getshapeimage(shapeimagefile);
-    if (im2) {
-	pointf delta;
-	/* compute dest origin and size */
-	ul.x = lr.x = A[0].x;
-	ul.y = lr.y = A[0].y;
-	for (i = 1; i < n; i++) {
-	    if (ul.x > A[i].x)
-		ul.x = A[i].x;
-	    if (ul.y < A[i].y)
-		ul.y = A[i].y;
-	    if (lr.y > A[i].y)
-		lr.y = A[i].y;
-	    if (lr.x < A[i].x)
-		lr.x = A[i].x;
-	}
-	destul = gdpt(ul);
-	destlr = gdpt(lr);
-	delta.x = destlr.x - destul.x;
-	delta.y = destlr.y - destul.y;
-	scalex = delta.x / (double) (im2->sx);
-	scaley = delta.y / (double) (im2->sy);
-	/* keep aspect ratio fixed by just using the smaller scale */
-	if (scalex < scaley) {
-	    sx = im2->sx * scalex;
-	    sy = im2->sy * scalex;
-	} else {
-	    sx = im2->sx * scaley;
-	    sy = im2->sy * scaley;
-	}
-	if (sx < delta.x)
-	    destul.x += (delta.x - sx) / 2.0;
-	if (sy < delta.y)
-	    destul.y += (delta.y - sy) / 2.0;
-	sx = ROUND(sx);
-	sy = ROUND(sy);
-	gdImageCopyResized(im, im2, ROUND(destul.x), ROUND(destul.y), 0, 0,
-			   sx, sy, im2->sx, im2->sy);
+static void gd_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
+{
+    gdImagePtr im2 = NULL;
+
+    if (us->data) {
+        if (us->datafree == gd_freeimage)
+             im2 = (gdImagePtr)(us->data);  /* use cached data */
+        else {
+             us->datafree(us->data);        /* free incompatible cache data */
+             us->data = NULL;
+        }
     }
+    if (!im2) { /* read file into cache */
+        fseek(us->f, 0, SEEK_SET);
+        switch (us->type) {
+#ifdef HAVE_GD_PNG
+            case FT_PNG:
+                im2 = gdImageCreateFromPng(us->f);
+                break;
+#endif
+#ifdef HAVE_GD_GIF
+            case FT_GIF:
+                im2 = gdImageCreateFromGif(us->f);
+                break;
+#endif
+#ifdef HAVE_GD_JPEG
+            case FT_JPEG:
+                im2 = gdImageCreateFromJpeg(us->f);
+                break;
+#endif
+            default:
+                im2 = NULL;
+        }
+        if (im2) {
+            us->data = (void*)im2;
+            us->datafree = gd_freeimage;
+        }
+    }
+    if (im2)
+        gdImageCopyResized(im, im2, ROUND(b.LL.x), ROUND(b.LL.y), 0, 0,
+                   ROUND(b.UR.x - b.LL.x), ROUND(b.UR.y - b.LL.y), us->w, us->h);
 }
 
 codegen_t GD_CodeGen = {
@@ -1003,7 +992,5 @@ codegen_t GD_CodeGen = {
     gd_bezier, gd_polyline,
     0,				/* bezier_has_arrows */
     0,				/* gd_comment */
-    0,				/* gd_textsize */
-    gd_user_shape,
-    0				/* gd_user_shape_size */
+    gd_usershape
 };

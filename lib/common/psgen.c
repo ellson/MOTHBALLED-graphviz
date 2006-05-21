@@ -35,7 +35,7 @@
 extern void epsf_define(FILE * of);
 void epsf_emit_body(ps_image_t *img, FILE *of);
 extern void ps_freeusershapes(void);
-extern ps_image_t *ps_usershape(char *shapeimagefile);
+extern ps_image_t *ps_usershape_to_image(char *shapeimagefile);
 
 extern gdImagePtr gd_getshapeimage(char *name);
 
@@ -534,7 +534,12 @@ static void writePSBitmap (gdImagePtr im, point p, point sz)
 
 }
 
-/* ps_user_shape:
+static void ps_freeimage_gd (void *data)
+{
+    gdImageDestroy((gdImagePtr)data);
+}
+
+/* ps_usershape:
  * Images for postscript are complicated by the old epsf shape, as
  * well as user-defined shapes using postscript code.
  * If the name is custom, we look for the image stored in the
@@ -543,71 +548,113 @@ static void writePSBitmap (gdImagePtr im, point p, point sz)
  * Else we assume name is the name of the image. This occurs when
  * the image is part of an html label.
  */
-static void ps_user_shape(char *name, point * A, int sides, int filled)
+static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
     int j;
-    gdImagePtr bmimg; 
+    gdImagePtr gd_img = NULL;
+    ps_image_t *ps_img = NULL;
     point offset;
-    char *shapeimagefile = NULL;
-    char *suffix;
 
     if (S[SP].invis)
 	return;
-    if (streq(name, "custom")) {
-	shapeimagefile = agget(Curnode, "shapefile");
-    }
-    else if (find_user_shape(name)) {
-	if (filled) {
-	    ps_begin_context();
-	    ps_set_color(S[SP].fillcolor);
+
+    if (!us->f) {
+        if (find_user_shape(us->name)) {
+	    if (filled) {
+	        ps_begin_context();
+	        ps_set_color(S[SP].fillcolor);
+	        fprintf(Output_file, "[ ");
+	        for (j = 0; j < n; j++)
+		    fprintf(Output_file, "%d %d ", A[j].x, A[j].y);
+	        fprintf(Output_file, "%d %d ", A[0].x, A[0].y);
+	        fprintf(Output_file, "]  %d true %s\n", n, us->name);
+	        ps_end_context();
+	    }
 	    fprintf(Output_file, "[ ");
-	    for (j = 0; j < sides; j++)
-		fprintf(Output_file, "%d %d ", A[j].x, A[j].y);
+	    for (j = 0; j < n; j++)
+	        fprintf(Output_file, "%d %d ", A[j].x, A[j].y);
 	    fprintf(Output_file, "%d %d ", A[0].x, A[0].y);
-	    fprintf(Output_file, "]  %d true %s\n", sides, name);
-	    ps_end_context();
+	    fprintf(Output_file, "]  %d false %s\n", n, us->name);
+        }
+        else {   /* name not find by find_ser_shape */  }
+	return;  
+    }
+
+    if (us->data) {
+	if (us->datafree == ps_freeimage_gd)
+	    gd_img = (gdImagePtr)(us->data);  /* use cached data */
+#if 0
+	else if (us->datafree == ps_freeimage_ps)
+	    ps_img = (ps_image_t *)(us->data);  /* use cached data */
+#endif
+	else {
+	    us->datafree(us->data);        /* free incompatible cache data */
+	    us->data = NULL;
 	}
-	fprintf(Output_file, "[ ");
-	for (j = 0; j < sides; j++)
-	    fprintf(Output_file, "%d %d ", A[j].x, A[j].y);
-	fprintf(Output_file, "%d %d ", A[0].x, A[0].y);
-	fprintf(Output_file, "]  %d false %s\n", sides, name);
+    }
+
+    if (!gd_img && !ps_img) { /* read file into cache */
+        fseek(us->f, 0, SEEK_SET);
+        switch (us->type) {
+#ifdef HAVE_GD_PNG
+            case FT_PNG:
+                gd_img = gdImageCreateFromPng(us->f);
+                break;
+#endif
+#ifdef HAVE_GD_GIF
+            case FT_GIF:
+                gd_img = gdImageCreateFromGif(us->f);
+                break;
+#endif
+#ifdef HAVE_GD_JPEG
+            case FT_JPEG:
+                gd_img = gdImageCreateFromJpeg(us->f);
+                break;
+#endif
+	    case FT_PS:
+	    case FT_EPS:
+	        ps_img = ps_usershape_to_image(us->name);
+	        break;
+            default:
+		break;
+        }
+        if (gd_img) {
+            us->data = (void*)gd_img;
+            us->datafree = ps_freeimage_gd;
+        }
+#if 0
+        if (ps_img) {
+            us->data = (void*)ps_img;
+            us->datafree = ps_freeimage_ps;
+        }
+#endif
+    }
+
+    if (ps_img) {
+	ps_begin_context();
+	offset.x = -ps_img->origin.x - (ps_img->size.x) / 2;
+	offset.y = -ps_img->origin.y - (ps_img->size.y) / 2;
+	fprintf(Output_file, "%d %d translate newpath\n",
+	    ND_coord_i(Curnode).x + offset.x,
+	    ND_coord_i(Curnode).y + offset.y);
+	if (ps_img->must_inline)
+	    epsf_emit_body(ps_img, Output_file);
+	else
+	    fprintf(Output_file, "user_shape_%d\n", ps_img->macro_id);
+	ps_end_context();
 	return;
     }
-    else
-	shapeimagefile = name;
 
-    assert (shapeimagefile);
-    suffix = strrchr(shapeimagefile, '.');
-    if (suffix) {
-	suffix++;
-	if (streq(suffix, "ps")) {
-	    ps_image_t *img = 0;
-	    img = ps_usershape(shapeimagefile);
-	    if (!img) /* problems would have been reported by image_size */
-		return; 
-	    ps_begin_context();
-	    offset.x = -img->origin.x - (img->size.x) / 2;
-	    offset.y = -img->origin.y - (img->size.y) / 2;
-	    fprintf(Output_file, "%d %d translate newpath\n",
-		ND_coord_i(Curnode).x + offset.x,
-		ND_coord_i(Curnode).y + offset.y);
-	    if (img->must_inline) epsf_emit_body(img,Output_file);
-	    else fprintf(Output_file,"user_shape_%d\n",img->macro_id);
-	    ps_end_context();
-	}
-	else if ((bmimg = gd_getshapeimage(shapeimagefile))) {
-	    point sz;
-	    sz.x = A[0].x - A[2].x;
-	    sz.y = A[0].y - A[2].y;
-	    writePSBitmap (bmimg, A[2], sz);
-	}
-	else {  /* some other type of image */
-	    agerr(AGERR, "image type \"%s\" of file %s unsupported in PostScript output\n",
-		suffix, shapeimagefile);
-	}
+    if (gd_img) {
+	point sz;
+	sz.x = A[0].x - A[2].x;
+	sz.y = A[0].y - A[2].y;
+	writePSBitmap (gd_img, A[2], sz);
+	return;
     }
-    /* if !suffix, already reported by image_size */
+
+    /* some other type of image */
+    agerr(AGERR, "usershape %s is not supported  in PostScript output\n", us->name);
 }
 
 codegen_t PS_CodeGen = {
@@ -629,7 +676,5 @@ codegen_t PS_CodeGen = {
     ps_bezier, ps_polyline,
     0,				/* bezier_has_arrows */
     ps_comment,
-    0,				/* ps_textsize */
-    ps_user_shape,
-    0				/* usershapesize */
+    ps_usershape
 };

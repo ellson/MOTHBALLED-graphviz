@@ -93,6 +93,15 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
     case SVG:
         job->flags = chkOrder(g) | GVRENDER_Y_GOES_DOWN;
         break;
+    case GD: /* bitmap formats supported by gdgen.c */
+    case GD2:
+    case GIF:
+    case JPEG:
+    case PNG:
+    case WBMP:
+    case XBM:
+        job->flags = chkOrder(g) | GVRENDER_Y_GOES_DOWN;
+        break;
     case ISMAP: case IMAP: case CMAP: case CMAPX:
         /* output in breadth first graph walk order, but
          * with nodes edges and nested clusters before

@@ -246,15 +246,15 @@ static void mp_polyline(point * A, int n)
     fprintf(Output_file, " withcolor %s;\n", S[SP].color);
 }
 
-static void mp_user_shape(char *name, point * A, int sides, int filled)
+static void mp_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
     int j;
     fprintf(Output_file, "%%GV USER SHAPE [ ");
-    for (j = 0; j < sides; j++)
+    for (j = 0; j < n; j++)
 	fprintf(Output_file, "%d %d ", A[j].x, A[j].y);
     fprintf(Output_file, "%d %d ", A[0].x, A[0].y);
-    fprintf(Output_file, "]  %d %s %s ignored\n", sides,
-	    (filled ? "true" : "false"), name);
+    fprintf(Output_file, "]  %d %s %s ignored\n", n,
+	    (filled ? "true" : "false"), us->name);
 }
 
 codegen_t MP_CodeGen = {
@@ -276,7 +276,5 @@ codegen_t MP_CodeGen = {
     mp_bezier, mp_polyline,
     0,				/* bezier_has_arrows */
     mp_comment,
-    0,				/* mp_textsize */
-    mp_user_shape,
-    0				/* mp_usershapesize */
+    mp_usershape
 };

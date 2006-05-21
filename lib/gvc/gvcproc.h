@@ -60,6 +60,10 @@ extern "C" {
     extern bool gvtextlayout(GVC_t *gvc, textline_t *textline,
                       char *fontname, double fontsize, char **fontpath);
 
+/* usershapes */
+    extern point gvusershape_size(graph_t *g, char *name);
+    extern usershape_t *gvusershape_find(char *name);
+
 /* device */
 
     extern void gvdevice_initialize(GVC_t * gvc);
@@ -92,25 +96,26 @@ extern "C" {
     extern void gvrender_begin_context(GVJ_t * job);
     extern void gvrender_end_context(GVJ_t * job);
     extern void gvrender_begin_anchor(GVJ_t * job, char *href,
-				      char *tooltip, char *target);
+			char *tooltip, char *target);
     extern void gvrender_end_anchor(GVJ_t * job);
     extern void gvrender_set_font(GVJ_t * job, char *fontname,
-				  double fontsize);
+			double fontsize);
     extern void gvrender_textline(GVJ_t * job, pointf p, textline_t * str);
     extern void gvrender_set_pencolor(GVJ_t * job, char *name);
     extern void gvrender_set_fillcolor(GVJ_t * job, char *name);
     extern void gvrender_set_style(GVJ_t * job, char **s);
-    extern void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry, int filled);
-    extern void gvrender_ellipsef(GVJ_t * job, pointf p, double rx, double ry, int filled);
-    extern void gvrender_polygon(GVJ_t * job, point * A, int n, int filled);
-    extern void gvrender_polygonf(GVJ_t * job, pointf * AF, int n, int filled);
+    extern void gvrender_ellipse(GVJ_t * job, point p,
+			int rx, int ry, bool filled);
+    extern void gvrender_ellipsef(GVJ_t * job, pointf p,
+	    		double rx, double ry, bool filled);
+    extern void gvrender_polygon(GVJ_t * job, point * A, int n, bool filled);
+    extern void gvrender_polygonf(GVJ_t * job, pointf * AF, int n, bool filled);
     extern void gvrender_beziercurve(GVJ_t * job, pointf * AF, int n,
-				     int arrow_at_start, int arrow_at_end, int);
+			int arrow_at_start, int arrow_at_end, bool filled);
     extern void gvrender_polyline(GVJ_t * job, point * A, int n);
     extern void gvrender_polylinef(GVJ_t * job, pointf * AF, int n);
     extern void gvrender_comment(GVJ_t * job, char *str);
-    extern void gvrender_user_shape(GVJ_t * job, char *name, point * A,
-				    int sides, int filled);
+    extern void gvrender_usershape(GVJ_t * job, char *name, point * A, int n, bool filled);
 
 /* layout */
 

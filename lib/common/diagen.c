@@ -920,7 +920,7 @@ static void dia_polyline(point * A, int n)
     dia_fputs("    </dia:object>\n");
 }
 
-static void dia_user_shape(char *name, point * A, int n, int filled)
+static void dia_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
     char *imagefile;
 
@@ -928,9 +928,15 @@ static void dia_user_shape(char *name, point * A, int n, int filled)
 	/* its invisible, don't draw */
 	return;
     }
-    imagefile = agget(Curnode, "shapefile");
 
-    if (imagefile == 0) {
+#if 0
+/* FIXME */
+    imagefile = agget(Curnode, "shapefile");
+#else
+    imagefile = NULL;
+#endif
+
+    if (! imagefile) {
 	dia_polygon(A, n, filled);
 	return;
     }
@@ -955,7 +961,5 @@ codegen_t DIA_CodeGen = {
     dia_bezier, dia_polyline,
     1,				/* bezier_has_arrows */
     dia_comment,
-    0,				/* dia_textsize */
-    dia_user_shape,
-    0				/* dia_usershapesize */
+    dia_usershape
 };

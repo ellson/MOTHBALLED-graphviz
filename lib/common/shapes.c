@@ -564,7 +564,7 @@ static void poly_init(node_t * n)
 	    }
 	    else {
 		char *sfile = agget(n, "shapefile");
-		imagesize = image_size(n->graph, sfile);
+		imagesize = gvusershape_size(n->graph, sfile);
 		if ((imagesize.x == -1) && (imagesize.y == -1)) {
 		    agerr(AGERR,
 		      "No or improper shapefile=\"%s\" for node \"%s\"\n",
@@ -1200,7 +1200,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     static pointf *AF;
     static int A_size;
     bool filled;
-    char *color;
+    char *color, *name;
 
     poly = (polygon_t *) ND_shape_info(n);
     vertices = poly->vertices;
@@ -1285,7 +1285,10 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 		A[i].y += ND_coord_i(n).y;
 	    }
 	}
-	gvrender_user_shape(job, ND_shape(n)->name, A, sides, filled);
+	name = ND_shape(n)->name;
+	if (streq(name, "custom"))
+	    name = agget(n, "shapefile");
+	gvrender_usershape(job, name, A, sides, filled);
 	filled = FALSE;
     }
     /* if no boundary but filled, set boundary color to fill color */

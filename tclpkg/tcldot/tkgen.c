@@ -521,8 +521,9 @@ static void tk_polyline(point * A, int n)
     }
 }
 
-static void tk_user_shape(char *name, point * A, int n, int filled)
+static void tk_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
+/* FIXME */
     static bool onetime = TRUE;
     if (onetime) {
 	fprintf(stderr, "custom shapes not available with this driver\n");
@@ -550,7 +551,5 @@ codegen_t TK_CodeGen = {
     tk_bezier, tk_polyline,
     0,				/* tk_arrows */
     0,				/* tk_comment */
-    0,				/* tk_textsize */
-    tk_user_shape,
-    0				/* tk_usershapesize */
+    tk_usershape
 };

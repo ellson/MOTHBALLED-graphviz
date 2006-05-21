@@ -554,12 +554,13 @@ static void pic_polyline(point * A, int n)
     point_list_out(A, n, FALSE);
 }
 
-static void pic_user_shape(char *name, point * A, int sides, int filled)
+static void pic_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
+/* FIXME */
     /* it's not at all clear what xxx_user_shape is supposed to do; in most xxxgen.c files it emits a message */
     /* this defines the shape as a macro and then invokes the macro */
-    fprintf(Output_file, "define %s {\n", name);
-    fprintf(Output_file, "}\n%s\n", name);
+    fprintf(Output_file, "define %s {\n", us->name);
+    fprintf(Output_file, "}\n%s\n", us->name);
 }
 
 static void pic_bezier(point * A, int n, int arrow_at_start,
@@ -614,7 +615,5 @@ codegen_t PIC_CodeGen = {
     pic_bezier, pic_polyline,
     0,				/* bezier_has_arrows */
     pic_comment,
-    0,				/* pic_textsize */
-    pic_user_shape,
-    0				/* pic_usershapesize */
+    pic_usershape
 };

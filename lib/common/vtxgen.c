@@ -598,8 +598,9 @@ static void vtx_polyline(point * A, int n)
     vtx_style();
 }
 
-static void vtx_user_shape(char *name, point * A, int n, int filled)
+static void vtx_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
+/* FIXME */
     int i;
     pointf mp, max, min;
 
@@ -645,7 +646,5 @@ codegen_t VTX_CodeGen = {
     vtx_bezier, vtx_polyline,
     1,				/* bezier_has_arrows */
     vtx_comment,
-    0,				/* vtx_textsize */
-    vtx_user_shape,
-    0				/* vtx_usershapesize */
+    vtx_usershape
 };

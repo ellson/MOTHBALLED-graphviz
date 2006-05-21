@@ -547,7 +547,7 @@ static void mif_polyline(point * A, int n)
     fprintf(Output_file, ">\n");
 }
 
-static void mif_user_shape(char *name, point * A, int n, int filled)
+static void mif_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
     static bool onetime = TRUE;
     if (onetime) {
@@ -575,7 +575,5 @@ codegen_t MIF_CodeGen = {
     mif_bezier, mif_polyline,
     0,				/* bezier_has_arrows */
     mif_comment,
-    0,				/* mif_textsize */
-    mif_user_shape,
-    0				/* mif_usershapesize */
+    mif_usershape
 };

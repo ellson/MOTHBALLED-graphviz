@@ -114,7 +114,16 @@ extern "C" {
 	int size;
     } splinesf;
 
+    typedef enum { FT_BMP, FT_GIF, FT_PNG, FT_JPEG, FT_PDF, FT_PS, FT_EPS } imagetype_t;
 
+    typedef struct usershape_s {
+	char *name;
+        FILE *f;
+        imagetype_t type;
+        unsigned int w, h, dpi;
+        void *data;                   /* data loaded by a renderer */
+        void (*datafree)(void *data); /* renderer's function for freeing data */
+    } usershape_t;
 
     typedef struct textline_t {
 	char *str;      /* stored in utf-8 */
@@ -231,9 +240,7 @@ extern "C" {
 	void (*polyline) (point * A, int n);
 	bool bezier_has_arrows;
 	void (*comment) (char *str);
-	void (*textsize) (void);	/* not used */
-	void (*user_shape) (char *name, point * A, int sides, int filled);
-	void (*usershapesize) (void);	/* not used */
+	void (*usershape) (usershape_t *us, boxf b, point * A, int sides, bool filled);
     };
 
     struct codegen_info_s {

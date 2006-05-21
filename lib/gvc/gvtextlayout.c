@@ -22,7 +22,6 @@
 #include "config.h"
 #endif
 
-
 #include "const.h"
 #include "types.h"
 #include "gvplugin_textlayout.h"

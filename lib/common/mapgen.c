@@ -1116,7 +1116,5 @@ codegen_t MAP_CodeGen = {
     0, /* map_bezier */ 0,	/* map_polyline */
     0,				/* bezier_has_arrows */
     0,				/* map_comment */
-    0,				/* map_textsize */
-    0,				/* map_user_shape */
-    0				/* map_usershapesize */
+    0				/* map_usershape */
 };

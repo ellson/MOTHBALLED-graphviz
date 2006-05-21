@@ -195,6 +195,9 @@ static void gvconfig_plugin_install_from_library(GVC_t * gvc, char *path, gvplug
 
     for (apis = library->apis; (types = apis->types); apis++) {
 	for (i = 0; types[i].type; i++) {
+	    /* FIXME - should only install if dependencies on other plugins are satisfied */
+	    /*         e.g. "render" "gtk" depends on "device" "gtk" */
+	    /*         only need to check during actual loading, so no need to store dependencies in config */
 	    gvplugin_install(gvc, apis->api, types[i].type,
 			types[i].quality, library->packagename, path, &types[i]);
         }

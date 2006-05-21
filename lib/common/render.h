@@ -126,7 +126,6 @@ extern "C" {
     extern void global_def(char *,
 			   Agsym_t * (*fun) (Agraph_t *, char *, char *));
     extern int gvRenderJobs (GVC_t * gvc, graph_t * g);
-    extern point image_size(graph_t * g, char *shapefile);
     extern bool isPolygon(node_t *);
     extern char *strdup_and_subst_graph(char *str, Agraph_t * g);
     extern char *strdup_and_subst_node(char *str, Agnode_t * n);

@@ -883,7 +883,7 @@ static void svg_polyline(point * A, int n)
     svg_fputs("\"/>\n");
 }
 
-static void svg_user_shape(char *name, point * A, int n, int filled)
+static void svg_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
     int i;
     point p;
@@ -896,11 +896,11 @@ static void svg_user_shape(char *name, point * A, int n, int filled)
 	/* its invisible, don't draw */
 	return;
     }
-    if (streq(name, "custom"))
-	imagefile = agget(Curnode, "shapefile");
+    if (us->f)
+	imagefile = us->name;
     else
-	imagefile = name;
-    if (imagefile == 0) {
+	imagefile = NULL;
+    if (! imagefile) {
 	svg_polygon(A, n, filled);
 	return;
     }
@@ -914,7 +914,7 @@ static void svg_user_shape(char *name, point * A, int n, int filled)
 */
 
     svg_fputs("<clipPath id=\"mypath");
-    svg_name_fputs(name);
+    svg_name_fputs(us->name);
     svg_name_fputs(Curnode->name);
     svg_fputs("\">\n<polygon points=\"");
     maxx = minx = svgpt(A[0]).x;
@@ -943,7 +943,7 @@ static void svg_user_shape(char *name, point * A, int n, int filled)
     svg_printf
 	("\" width=\"%dpx\" height=\"%dpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%d\" y=\"%d\" clip-path=\"url(#mypath",
 	 sz.x, sz.y, minx, miny);
-    svg_name_fputs(name);
+    svg_name_fputs(us->name);
     svg_name_fputs(Curnode->name);
     svg_fputs(")\"/>\n");
 }
@@ -967,7 +967,5 @@ codegen_t SVG_CodeGen = {
     svg_bezier, svg_polyline,
     0,				/* bezier_has_arrows */
     svg_comment,
-    0,				/* svg_textsize */
-    svg_user_shape,
-    0				/* svg_usershape_size */
+    svg_usershape
 };

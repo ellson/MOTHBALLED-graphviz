@@ -598,7 +598,7 @@ static void fig_polyline(point * A, int n)
     figptarray(A, n, 0);	/* open shape */
 }
 
-static void fig_user_shape(char *name, point * A, int n, int filled)
+static void fig_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
     static bool onetime = TRUE;
     if (onetime) {
@@ -626,7 +626,5 @@ codegen_t FIG_CodeGen = {
     fig_bezier, fig_polyline,
     0,				/* bezier_has_arrows */
     fig_comment,
-    0,				/* fig_textsize */
-    fig_user_shape,
-    0				/* fig_usershapesize */
+    fig_usershape
 };

@@ -32,6 +32,9 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 
+#if 0
+/* This code is not used - see gvrender_select() in gvrender.c */
+
 int gvdevice_select(GVJ_t * job, char *str)
 {
     GVC_t *gvc = job->gvc;
@@ -72,6 +75,8 @@ int gvdevice_features(GVJ_t * job)
 	features = job->device.features->flags;
     return features;
 }
+
+#endif
 
 void gvdevice_finalize(GVC_t * gvc)
 {

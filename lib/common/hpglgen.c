@@ -825,7 +825,7 @@ static void hpgl_polyline(point * A, int n)
     output(buffer);
 }
 
-static void hpgl_user_shape(char *name, point * A, int n, int filled)
+static void hpgl_usershape(usershape_t *us, boxf p, point *A, int n, bool filled)
 {
     static bool onetime = TRUE;
     if (onetime) {
@@ -853,7 +853,5 @@ codegen_t HPGL_CodeGen = {
     hpgl_bezier, hpgl_polyline,
     0,				/* bezier_has_arrows */
     0,				/* hpgl_comment */
-    0,				/* hpgl_textsize */
-    hpgl_user_shape,
-    0				/* hpgl_usershapesize */
+    hpgl_usershape
 };

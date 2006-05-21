@@ -1022,8 +1022,9 @@ static void vrml_polyline(point * A, int n)
 */
 }
 
-static void vrml_user_shape(char *name, point * A, int n, int filled)
+static void vrml_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
+/* FIXME */
     vrml_polygon(A, n, filled);
 }
 
@@ -1046,8 +1047,6 @@ codegen_t VRML_CodeGen = {
     vrml_bezier, vrml_polyline,
     0,				/* bezier_has_arrows */
     0,				/* comment */
-    0,				/* vrml_textsize */
-    vrml_user_shape,
-    0				/* vrml_usershapesize */
+    vrml_usershape
 };
 #endif				/* HAVE_GD_PNG */

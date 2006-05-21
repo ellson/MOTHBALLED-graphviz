@@ -23,10 +23,9 @@ endif
 
 
 libcommon_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
-	args.c gdusershape.c memory.c \
-	globals.c htmllex.c htmlparse.y htmltable.c input.c \
-	pointset.c postproc.c psusershape.c routespl.c splines.c \
-	svgusershape.c timing.c labels.c ns.c shapes.c utils.c geom.c \
+	args.c memory.c globals.c htmllex.c htmlparse.y htmltable.c input.c \
+	pointset.c postproc.c routespl.c splines.c psusershape.c \
+	timing.c labels.c ns.c shapes.c utils.c geom.c \
 	output.c emit.c $(CODEGENS)
 
 psgen.o psgen.lo : ps.h

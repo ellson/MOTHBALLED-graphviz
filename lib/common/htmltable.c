@@ -394,7 +394,7 @@ emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env, void *obj)
     A[3].x = bb.UR.x;
     A[3].y = bb.LL.y;
 
-    gvrender_user_shape(job, cp->src, A, 4, 1);
+    gvrender_usershape(job, cp->src, A, 4, true);
 }
 
 static void
@@ -852,7 +852,7 @@ static int size_html_img(htmlimg_t * img, htmlenv_t * env)
     int rv;
 
     b.LL.x = b.LL.y = 0;
-    b.UR = image_size(env->g, img->src);
+    b.UR = gvusershape_size(env->g, img->src);
     if ((b.UR.x == -1) && (b.UR.y == -1)) {
 	rv = 1;
 	b.UR.x = b.UR.y = 0;

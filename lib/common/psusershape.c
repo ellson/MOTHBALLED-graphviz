@@ -221,7 +221,7 @@ void ps_freeusershapes(void)
     }
 }
 
-ps_image_t *ps_usershape(char *shapeimagefile)
+ps_image_t *ps_usershape_to_image(char *shapeimagefile)
 {
     if (EPSF_contents) {
 	return dtmatch(EPSF_contents, shapeimagefile);

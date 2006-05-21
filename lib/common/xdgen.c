@@ -331,6 +331,7 @@ codegen_t XDot_CodeGen = {
     xd_set_pencolor, xd_set_fillcolor, xd_set_style,
     xd_ellipse, xd_polygon,
     xd_bezier, xd_polyline,
-    0, /* xd_has_arrows */ 0,	/* xd_comment */
-    0, /* xd_textsize */ 0, /* xd_user_shape */ 0	/* xd_usershapesize */
+    0, /* xd_has_arrows */
+    0, /* xd_comment */
+    0 /* xd_usershape */
 };

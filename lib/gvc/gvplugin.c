@@ -60,7 +60,7 @@ char *gvplugin_api_name(api_t api)
 }
 
 /* install a plugin description into the list of available plugins */
-/* list is alpha sorted by type, the quality sorted within the type,
+/* list is alpha sorted by type, then quality sorted within the type,
    then, if qualities are the same, last install wins */
 bool gvplugin_install(GVC_t * gvc, api_t api,
 		 char *typestr, int quality, char *packagename, char *path,

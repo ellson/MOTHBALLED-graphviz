@@ -81,7 +81,7 @@ int gvrender_select(GVJ_t * job, char *str)
 	    if (device) {
 		plugin = gvplugin_load(gvc, API_device, device);
 		if (! plugin)
-		    return NO_SUPPORT;
+		    return NO_SUPPORT;  /* FIXME - should differentiate no device from no renderer */
 	        typeptr = plugin->typeptr;
 		job->device.engine = (gvdevice_engine_t *) (typeptr->engine);
 	        job->device.features =
@@ -177,7 +177,8 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 {
     pointf rv;
 
-    if (job->render.features->flags & GVRENDER_DOES_TRANSFORM)
+    if (job->render.features &&
+	    (job->render.features->flags & GVRENDER_DOES_TRANSFORM))
 	return p;
 
     if (job->rotation) {
@@ -786,7 +787,7 @@ void gvrender_set_style(GVJ_t * job, char **s)
 #endif
 }
 
-void gvrender_ellipsef(GVJ_t * job, pointf pf, double rx, double ry, int filled)
+void gvrender_ellipsef(GVJ_t * job, pointf pf, double rx, double ry, bool filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
@@ -819,7 +820,7 @@ void gvrender_ellipsef(GVJ_t * job, pointf pf, double rx, double ry, int filled)
 #endif
 }
 
-void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry, int filled)
+void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry, bool filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
@@ -851,7 +852,7 @@ void gvrender_ellipse(GVJ_t * job, point p, int rx, int ry, int filled)
 #endif
 }
 
-void gvrender_polygonf(GVJ_t * job, pointf * af, int n, int filled)
+void gvrender_polygonf(GVJ_t * job, pointf * af, int n, bool filled)
 {
     int i;
     gvrender_engine_t *gvre = job->render.engine;
@@ -883,7 +884,7 @@ void gvrender_polygonf(GVJ_t * job, pointf * af, int n, int filled)
 #endif
 }
 
-void gvrender_polygon(GVJ_t * job, point * A, int n, int filled)
+void gvrender_polygon(GVJ_t * job, point * A, int n, bool filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
@@ -910,7 +911,7 @@ void gvrender_polygon(GVJ_t * job, point * A, int n, int filled)
 }
 
 void gvrender_beziercurve(GVJ_t * job, pointf * af, int n,
-			  int arrow_at_start, int arrow_at_end, int filled)
+			  int arrow_at_start, int arrow_at_end, bool filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
@@ -1020,26 +1021,57 @@ void gvrender_comment(GVJ_t * job, char *str)
 #endif
 }
 
-void gvrender_user_shape(GVJ_t * job, char *name, point * a, int n, int filled)
+void gvrender_usershape(GVJ_t * job, char *name, point * a, int n, bool filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    usershape_t *us;
+    double pw, ph, tw, th;  /* poly width, height,  target width, height */
+    double scalex, scaley;  /* scale factors */
+    boxf b;		    /* target box */
+    int i;
 
-    if (gvre && gvre->user_shape) {
-	int i;
-	if (sizeAF < n) {
-	    sizeAF = n+10;
-	    AF = grealloc(AF, sizeAF * sizeof(pointf));
-	}
-	for (i = 0; i < n; i++)
-	    P2PF(a[i], AF[i]);
-	gvre->user_shape(job, name, AF, n, filled);
-    } 
+    if (! (us = gvusershape_find(name)))
+        return;
+
+    if (sizeAF < n) {
+	sizeAF = n+10;
+	AF = grealloc(AF, sizeAF * sizeof(pointf));
+    }
+    for (i = 0; i < n; i++)
+	AF[i] = gvrender_pt(job, a[i]);
+
+    /* compute bb of polygon */
+    b.LL = b.UR = AF[0];
+    for (i = 1; i < n; i++) {
+	EXPANDBP(b, AF[i]);
+    }
+    pw = b.UR.x - b.LL.x;
+    ph = b.UR.y - b.LL.y;
+    scalex = pw / (double) (us->w);
+    scaley = ph / (double) (us->h);
+
+    /* keep aspect ratio fixed by just using the smaller scale */
+    if (scalex < scaley) {
+	tw = us->w * scalex;
+	th = us->h * scalex;
+    } else {
+	tw = us->w * scaley;
+	th = us->h * scaley;
+    }
+    /* if image is smaller than target area then center it */
+    if (tw < pw)
+	b.LL.x += (pw - tw) / 2.0;
+    if (th < ph)
+	b.LL.y += (ph - th) / 2.0;
+
+    if (gvre && gvre->usershape)
+        gvre->usershape(job, us, b, filled);
 #ifndef DISABLE_CODEGENS
     else {
-	codegen_t *cg = job->codegen;
+        codegen_t *cg = job->codegen;
 
-	if (cg && cg->user_shape)
-	    cg->user_shape(name, a, n, filled);
+        if (cg && cg->usershape)
+            cg->usershape(us, b, a, n, filled);
     }
 #endif
 }
