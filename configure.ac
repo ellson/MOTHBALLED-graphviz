@@ -136,13 +136,13 @@ dnl -----------------------------------
 
 AC_ARG_ENABLE(static,
         [AC_HELP_STRING([--enable-static], [build static executable])])
-if test "x$enable_static" != "xno"; then
+if test "x$enable_static" = "xyes"; then
 	AC_ENABLE_STATIC
 	AC_DEFINE(ENABLE_STATIC,1,[Define if you want statically linked executables])
 else
 	AC_DISABLE_STATIC
 fi
-AM_CONDITIONAL(ENABLE_STATIC, [test "x$enable_static" != "xno"])
+AM_CONDITIONAL(ENABLE_STATIC, [test "x$enable_static" = "xyes"])
 
 dnl -----------------------------------
 dnl checks for various programs
@@ -1114,12 +1114,33 @@ AC_SUBST(IPSEPCOLA_LIBS)
 AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$with_ipsepcola" = "xyes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for PANGO, CAIRO et.al.
+                                                                                
+PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.0],
+	[AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
+		[Define if you have the pangocairo library])],
+	[AC_MSG_WARN(pangocairo library not available)])
+AC_SUBST(PANGOCAIRO_CFLAGS)
+AC_SUBST(PANGOCAIRO_LIBS)
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
                                                                                 
+### default is to not build with libgd
+
+AC_ARG_WITH(libgd,
+  [AC_HELP_STRING([--with-libgd],
+                  [use gd library])])
+
 AC_ARG_WITH(mylibgd,
   [AC_HELP_STRING([--with-mylibgd],
                   [use internal gd library in preference to any installed libgd])])
 
+if test "x$with_mylibgd" = "xyes"; then
+	with_libgd=yes
+fi
+
+if test "x$with_libgd" = "xyes"; then
 if test "x$with_mylibgd" != "xyes"; then
     AC_PATH_PROG(GDLIB_CONFIG,gdlib-config)
     if test -n "$GDLIB_CONFIG"; then
@@ -1160,8 +1181,10 @@ if test "x$with_mylibgd" != "xyes"; then
         AC_MSG_WARN(No gdlib-config found.)
     fi
 fi
+fi
 
 if test "x$with_mylibgd" != "xyes"; then
+if test "x$with_libgd" = "xyes"; then
 # see if we can use the external gd lib
     save_CPPFLAGS=$CPPFLAGS
     save_LDFLAGS=$LDFLAGS
@@ -1176,22 +1199,28 @@ if test "x$with_mylibgd" != "xyes"; then
     AC_CHECK_HEADER(gd.h,
     AC_CHECK_LIB(gd,main,
         [GD_LIBS="$GD_LDFLAGS -lgd $GD_LIBS"
-        AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if you have the GD library])],
-        AC_MSG_WARN(Optional GD library not available),
-	$GD_LIBS),
-    AC_MSG_WARN(Optional GD library not available - no gd.h))
+            AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if you have the GD library])],
+        AC_MSG_WARN(Optional GD library not available), $GD_LIBS),
+	    AC_MSG_WARN(Optional GD library not available - no gd.h))
     LDFLAGS=$save_LDFLAGS
     CPPFLAGS=$save_CPPFLAGS
+    GD_LIBS_STATIC=$(GD_LIBS)
+fi
 else
     # using the internal libgd
     AC_MSG_WARN(Using internal libgd source.)
     AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library has the GD_GIF feature])
+    AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if either internal or external GD library is availabel])
     GD_INCLUDES='-I$(top_srcdir)/lib/gd'
     GD_LIBS='$(top_builddir)/lib/gd/libgvgd.la'
+    GD_LIBS_STATIC='$(top_builddir)/lib/gd/.libs/libgvgd.a'
 fi
 AC_SUBST(GD_INCLUDES)
 AC_SUBST(GD_LIBS)
+AC_SUBST(GD_LIBS_STATIC)
+AC_SUBST(HAVE_LIBGD)
                                                                                 
+AM_CONDITIONAL(WITH_LIBGD, [test "x$with_libgd" = "xyes"])
 AM_CONDITIONAL(WITH_MYLIBGD, [test "x$with_mylibgd" = "xyes"])
 
 dnl -----------------------------------

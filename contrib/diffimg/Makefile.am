@@ -5,7 +5,9 @@ VERSION=0.2
 
 AM_CPPFLAGS = @GD_INCLUDES@
 
+if WITH_LIBGD
 noinst_PROGRAMS = diffimg
+endif
 
 diffimg_SOURCES = diffimg.c
 
