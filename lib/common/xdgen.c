@@ -199,7 +199,7 @@ static void xd_textline(point p, textline_t * line)
 	j = 0;
 	break;
     }
-    sprintf(buf, "T %d %d %d %d ", p.x, YDIR(p.y), j, (int) line->width);
+    sprintf(buf, "T %d %d %d %d ", p.x, YDIR(p.y), j, (int) line->dimen.x);
     agxbput(xbufs[gvc->emit_state], buf);
     xd_str ("", line->str);
 }

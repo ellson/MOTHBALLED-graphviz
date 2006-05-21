@@ -68,6 +68,7 @@ extern "C" {
 
     extern char *latin1ToUTF8(char *);
     extern char* utf8ToLatin1 (char* ins);
+    extern char* scanEntity (char* t, agxbuf* xb);
 
     extern pointf Bezier(pointf *, int, double, pointf *, pointf *);
     extern point dotneato_closest(splines * spl, point p);

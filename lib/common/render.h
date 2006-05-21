@@ -49,7 +49,8 @@ extern "C" {
 #include "colorprocs.h"		/* must collow color.h (in types.h) */
 #include "geomprocs.h"		/* must follow geom.h (in types.h) */
 #include "graph.h"		/* must follow types.h */
-#include "utils.h"		/* must follow types.h */
+#include "agxbuf.h"
+#include "utils.h"		/* must follow types.h and agxbuf.h */
 #include "gvplugin.h"		/* must follow gvcext.h (in types.h) */
 #include "gvcint.h"		/* must follow gvcext.h (in types.h) */
 #include "gvcproc.h"		/* must follow gvcext.h (in types.h) */
@@ -157,7 +158,7 @@ extern "C" {
     extern void shape_clip(node_t * n, point curve[4]);
     extern void size_label (graph_t* g, textlabel_t* rv);
     extern void start_timer(void);
-    extern double textwidth(graph_t *g, textline_t * textline,
+    extern pointf textsize(graph_t *g, textline_t * textline,
 			    char *fontname, double fontsz);
     extern void translate_bb(Agraph_t *, int);
     extern void use_library(char *);

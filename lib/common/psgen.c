@@ -373,11 +373,11 @@ static void ps_textline(point p, textline_t * line)
 	case 'l':
 	    break;
 	case 'r':
-	    p.x -= line->width;
+	    p.x -= line->dimen.x;
 	    break;
 	default:
 	case 'n':
-	    p.x -= line->width / 2;
+	    p.x -= line->dimen.x / 2;
 	    break;
 	}
 	fprintf(Output_file, "%d %d moveto\n%s\n[%s]\nxshow\n",
@@ -396,7 +396,7 @@ static void ps_textline(point p, textline_t * line)
 	    break;
 	}
 	fprintf(Output_file, "%d %d moveto %.1f %.1f %s alignedtext\n",
-		p.x, p.y, line->width, adj, ps_string(line->str,isLatin1));
+		p.x, p.y, line->dimen.x, adj, ps_string(line->str,isLatin1));
     }
 }
 
@@ -490,6 +490,7 @@ static void ps_polyline(point * A, int n)
     fprintf(Output_file, Stroke);
 }
 
+#ifdef HAVE_LIBGD
 static void writePSBitmap (gdImagePtr im, point p, point sz)
 {
     int x, y, px;
@@ -533,10 +534,20 @@ static void writePSBitmap (gdImagePtr im, point p, point sz)
     fprintf(Output_file, "grestore\n");
 
 }
+#endif
 
 static void ps_freeimage_gd (void *data)
 {
+#ifdef HAVE_LIBGD
     gdImageDestroy((gdImagePtr)data);
+#endif
+}
+
+static void ps_freeimage_ps (void *data)
+{
+#if 0
+    free (data);
+#endif
 }
 
 /* ps_usershape:
@@ -551,7 +562,9 @@ static void ps_freeimage_gd (void *data)
 static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
     int j;
+#ifdef HAVE_LIBGD
     gdImagePtr gd_img = NULL;
+#endif
     ps_image_t *ps_img = NULL;
     point offset;
 
@@ -581,21 +594,30 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
     }
 
     if (us->data) {
-	if (us->datafree == ps_freeimage_gd)
+	if (us->datafree == ps_freeimage_gd) {
+#ifdef HAVE_LIBGD
 	    gd_img = (gdImagePtr)(us->data);  /* use cached data */
+#endif
+	}
+	else if (us->datafree == ps_freeimage_ps) {
 #if 0
-	else if (us->datafree == ps_freeimage_ps)
 	    ps_img = (ps_image_t *)(us->data);  /* use cached data */
 #endif
+	}
 	else {
 	    us->datafree(us->data);        /* free incompatible cache data */
 	    us->data = NULL;
 	}
     }
 
-    if (!gd_img && !ps_img) { /* read file into cache */
+#ifdef HAVE_LIBGD
+    if (!ps_img && !gd_img) { /* read file into cache */
+#else
+    if (!ps_img) { /* read file into cache */
+#endif
         fseek(us->f, 0, SEEK_SET);
         switch (us->type) {
+#ifdef HAVE_LIBGD
 #ifdef HAVE_GD_PNG
             case FT_PNG:
                 gd_img = gdImageCreateFromPng(us->f);
@@ -611,6 +633,7 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
                 gd_img = gdImageCreateFromJpeg(us->f);
                 break;
 #endif
+#endif
 	    case FT_PS:
 	    case FT_EPS:
 	        ps_img = ps_usershape_to_image(us->name);
@@ -618,10 +641,12 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
             default:
 		break;
         }
+#ifdef HAVE_LIBGD
         if (gd_img) {
             us->data = (void*)gd_img;
             us->datafree = ps_freeimage_gd;
         }
+#endif
 #if 0
         if (ps_img) {
             us->data = (void*)ps_img;
@@ -645,6 +670,7 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 	return;
     }
 
+#ifdef HAVE_LIBGD
     if (gd_img) {
 	point sz;
 	sz.x = A[0].x - A[2].x;
@@ -652,6 +678,7 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 	writePSBitmap (gd_img, A[2], sz);
 	return;
     }
+#endif
 
     /* some other type of image */
     agerr(AGERR, "usershape %s is not supported  in PostScript output\n", us->name);

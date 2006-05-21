@@ -533,8 +533,8 @@ static void dia_textline(point p, textline_t * line)
     dia_fputs("      </dia:attribute>\n");
     dia_fputs("      <dia:attribute name=\"obj_bb\">\n");
     dia_printf("        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
-	       mp.x - (Scale * (line->width) / 2.), mp.y - 0.4,
-	       mp.x + (Scale * (line->width) / 2.), mp.y + 0.4);
+	       mp.x - (Scale * (line->dimen.x) / 2.), mp.y - 0.4,
+	       mp.x + (Scale * (line->dimen.x) / 2.), mp.y + 0.4);
     dia_fputs("      </dia:attribute>\n");
     dia_fputs("    </dia:object>\n");
 }

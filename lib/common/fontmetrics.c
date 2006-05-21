@@ -119,63 +119,36 @@ static double courFontWidth[] = {
     0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999,	/* רשתû     */
 };
 
-#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
-extern codegen_t *Output_codegen;
-
-double _dpi;
-void initDPI(graph_t * g)
-{
-    _dpi = GD_drawing(g)->dpi;
-fprintf(stderr,"graph dpi = %g\n", _dpi);
-}
-
-extern codegen_t GD_CodeGen;
-
-double textheight(int nlines, double fontsz)
-{
-    if (Output_codegen == &GD_CodeGen) {
-	double fsize = (fontsz * _dpi) / POINTS_PER_INCH;	/* in pixels */
-	double fontsize = builtinFontHt(fsize);
-	return (nlines * (int) (fontsize * LINESPACING) *
-		POINTS_PER_INCH) / _dpi;
-    } else
-	return nlines * (int) (fontsz * LINESPACING);
-}
-#endif
-
 /* estimate_textsize:
- * Estimate width of text, for given face and size, in points.
- * Value is stored textline->width.
+ * Estimate width and height of text, for given face and size, in points.
+ * Value is stored textline->size.
  * NOTE: Tables are based on a font of size 1. Need to multiply by
  * fontsize to get appropriate value.
  */
 static void
-estimate_textsize(textline_t * textline, char *fontname, double fontsz,
-		  char **fontpath)
+estimate_textsize(graph_t *g, textline_t * textline, char *fontname, double fontsz, char **fontpath)
 {
     double *Fontwidth;
     char c, *p;
 
-    textline->width = 0.0;
-    textline->height = fontsz;
+    textline->dimen.x = 0.0;
+    textline->dimen.y = fontsz;
     textline->xshow = NULL;
     textline->layout = NULL;
     textline->free_layout = NULL;
 
-#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
+#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE) && defined(HAVE_LIBGD)
     if (Output_codegen == &GD_CodeGen) {
-	int cwidth;
-	double fsize = (fontsz * _dpi) / POINTS_PER_INCH;	/* in pixels */
+	double scale = GD_drawing(g)->dpi) / POINTS_PER_INCH;
+	double fsize = fontsz * scale;	/* in pixels */
 	*fontpath = "[internal gd]";
-	cwidth = builtinFontWd(fsize);
-	if ((p = textline->str)) {
-	    textline->width = strlen(p) * cwidth * POINTS_PER_INCH / _dpi;
-	}
+	if ((p = textline->str))
+	    textline->dimen.x = strlen(p) * builtinFontWd(fsize) / scale;
+	textline->dimen.y = builtinFontHt(fsize) / scale;
 	return;
-    } else if (!strncasecmp(fontname, "cour", 4)) {
-#else
-    if (!strncasecmp(fontname, "cour", 4)) {
+    }
 #endif
+    if (!strncasecmp(fontname, "cour", 4)) {
 	*fontpath = "[internal courier]";
 	Fontwidth = courFontWidth;
     } else if (!strncasecmp(fontname, "arial", 5)
@@ -188,17 +161,17 @@ estimate_textsize(textline_t * textline, char *fontname, double fontsz,
     }
     if ((p = textline->str)) {
 	while ((c = *p++))
-	    textline->width += Fontwidth[(unsigned char) c];
-	textline->width *= fontsz;
+	    textline->dimen.x += Fontwidth[(unsigned char) c];
+	textline->dimen.x *= fontsz;
     }
 }
 
-double textwidth(graph_t *g, textline_t * textline, char *fontname, double fontsize)
+pointf textsize(graph_t *g, textline_t * textline, char *fontname, double fontsize)
 {
     char *fontpath = NULL;
 
     if (! gvtextlayout(GD_gvc(g), textline, fontname, fontsize, &fontpath))
-	estimate_textsize(textline, fontname, fontsize, &fontpath);
+	estimate_textsize(g, textline, fontname, fontsize, &fontpath);
 
     if (Verbose) {
 	if (emit_once(fontname)) {
@@ -206,5 +179,5 @@ double textwidth(graph_t *g, textline_t * textline, char *fontname, double fonts
 		    fontname, fontpath);
 	}
     }
-    return textline->width;
+    return textline->dimen;
 }

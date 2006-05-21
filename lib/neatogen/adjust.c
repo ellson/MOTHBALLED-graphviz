@@ -20,6 +20,7 @@
  */
 
 #include "neato.h"
+#include "agxbuf.h"
 #include "utils.h"
 #include "voronoi.h"
 #include "info.h"

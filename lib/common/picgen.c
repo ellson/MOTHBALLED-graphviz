@@ -418,11 +418,11 @@ static void pic_textline(point p, textline_t * line)
 	p.x = p.x;
 	break;
     case 'r':
-	p.x = p.x - line->width;
+	p.x = p.x - line->dimen.x;
 	break;
     default:
     case 'n':
-	p.x = p.x - line->width / 2;
+	p.x = p.x - line->dimen.x / 2;
 	break;
     }
     pf = cvt2ptf(p);
@@ -432,7 +432,7 @@ static void pic_textline(point p, textline_t * line)
 #endif
     /* Why on earth would we do this either. But it works. SCN 2/26/2002 */
     pf.y += fontsz / (3.0 * POINTS_PER_INCH);
-    pf.x += line->width / (2.0 * POINTS_PER_INCH);
+    pf.x += line->dimen.x / (2.0 * POINTS_PER_INCH);
     if (!(S[SP].size)) {	/* size was never set in this or hierarchically higher context */
 	pic_set_font(S[SP].font, fontsz);	/* primarily to output font and/or size directives */
 	for (flag = SP; ((S[flag].size = fontsz), flag); flag--)	/* set size in contexts */

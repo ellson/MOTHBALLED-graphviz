@@ -24,6 +24,7 @@
 
 #include "types.h"
 #include "graph.h"
+#include "agxbuf.h"
 #include "utils.h"
 
 static Dict_t *ImageDict;

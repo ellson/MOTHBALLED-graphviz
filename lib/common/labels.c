@@ -19,36 +19,22 @@
 #include "htmltable.h"
 #include <limits.h>
 
-#ifndef DISABLE_CODEGENS
-extern codegen_t *Output_codegen;
-extern codegen_t *GD_CodeGen;
-#endif
-
 static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
 {
-    double width = 0.0;
+    pointf size;
 
     lp->u.txt.line =
 	ALLOC(lp->u.txt.nlines + 2, lp->u.txt.line, textline_t);
     lp->u.txt.line[lp->u.txt.nlines].str = line;
-    width = textwidth(g, &(lp->u.txt.line[lp->u.txt.nlines]),
+    size = textsize(g, &(lp->u.txt.line[lp->u.txt.nlines]),
 	    lp->fontname, lp->fontsize);
     lp->u.txt.line[lp->u.txt.nlines].just = terminator;
     lp->u.txt.nlines++;
     /* total width = max line width */
-    if (lp->dimen.x < width)
-	lp->dimen.x = width;
+    if (lp->dimen.x < size.x)
+	lp->dimen.x = size.x;
     /* recalculate total height */
-#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
-    if (Output_codegen == &GD_CodeGen)
-	lp->dimen.y = textheight(lp->u.txt.nlines, lp->fontsize);
-    else
-	lp->dimen.y =
-	    lp->u.txt.nlines * (int) (lp->fontsize * LINESPACING);
-#else
-    lp->dimen.y = lp->u.txt.nlines * (int) (lp->fontsize * LINESPACING);
-#endif
-
+    lp->dimen.y = lp->u.txt.nlines * (int) (size.y * LINESPACING);
 }
 
 /* compiles <str> into a label <lp> and returns its bounding box size.  */

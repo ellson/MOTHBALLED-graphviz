@@ -46,8 +46,10 @@
 #endif
     extern codegen_t FIG_CodeGen, HPGL_CodeGen, MAP_CodeGen,
         MIF_CodeGen, XDot_CodeGen, MP_CodeGen, PIC_CodeGen,
-        PS_CodeGen, DIA_CodeGen, SVG_CodeGen, VRML_CodeGen,
-        VTX_CodeGen, GD_CodeGen, memGD_CodeGen;
+        PS_CodeGen, DIA_CodeGen, SVG_CodeGen, VTX_CodeGen;
+#ifdef HAVE_LIBGD
+    extern codegen_t GD_CodeGen, memGD_CodeGen, VRML_CodeGens;
+#endif
 #endif
 
 /*
@@ -366,6 +368,7 @@ static codegen_info_t cg[MAX_CODEGENS] = {
     {&MIF_CodeGen, "mif", MIF},
     {&PIC_CodeGen, "pic", PIC_format},
 
+#ifdef HAVE_LIBGD
     {&GD_CodeGen, "gd", GD},
 #ifdef HAVE_LIBZ
     {&GD_CodeGen, "gd2", GD2},
@@ -385,6 +388,7 @@ static codegen_info_t cg[MAX_CODEGENS] = {
 #ifdef HAVE_GD_XPM
     {&GD_CodeGen, "xbm", XBM},
     {&GD_CodeGen, "xpm", XBM},
+#endif
 #endif
 
 #ifdef QUARTZ_RENDER

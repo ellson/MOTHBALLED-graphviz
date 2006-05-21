@@ -202,7 +202,8 @@ emit_htextlines(GVJ_t* job, int nlines, htextline_t* lines, pointf p,
 	    tl.str = ti->str;
 	    tl.xshow = ti->xshow;
 	    tl.layout = ti->layout;
-	    tl.width = lines[i].size;
+	    tl.dimen.x = lines[i].size;
+	    tl.dimen.y = lines[i].lfsize;
 	    tl.just = lines[i].just;
 
 	    gvrender_textline(job, p_, &tl);
@@ -708,10 +709,10 @@ size_html_txt(graph_t *g, htmltxt_t * txt, htmlenv_t * env)
 {
     double xsize = 0.0;
     double fsize;
-    int width;
     char *fname;
     char *news = NULL;
     textline_t *lp = txt->line;
+    pointf size;
 
     if (txt->font) {
 	if (txt->font->size > 0.0)
@@ -743,17 +744,17 @@ size_html_txt(graph_t *g, htmltxt_t * txt, htmlenv_t * env)
 	free(lp->str);
 	lp->str = news;
 
-	width = textwidth(g, lp, fname, fsize);
+	size = textsize(g, lp, fname, fsize);
 	/* no margins are added since the containing node or cell will pad */
-	if (width > xsize)
-	    xsize = width;
+	if (dimen.x > xsize)
+	    xsize = size.x;
 	lp++;
     }
     txt->box.UR.x = xsize;
     if (txt->nlines == 1)
-	txt->box.UR.y = (int) (fsize);
+	txt->box.UR.y = (int) (size.y);
     else
-	txt->box.UR.y = txt->nlines * (int) (fsize * LINESPACING);
+	txt->box.UR.y = txt->nlines * (int) (size.y * LINESPACING);
     return 0;
 }
 #endif
@@ -781,6 +782,7 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 {
     double xsize = 0.0, ysize = 0.0;
     double fsize, lsize = 0.0;
+    pointf sz;
     int i, j, w = 0, width = 0;
     char *fname;
     textline_t lp;
@@ -816,10 +818,11 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 		fsize = env->finfo.size;
 		fname = env->finfo.name;
 	    }
-	    w = textwidth(g, &lp, fname, fsize);
+	    sz = textsize(g, &lp, fname, fsize);
+	    w = sz.x;
 	    free (ftxt->lines[i].items[j].str);
 	    ftxt->lines[i].items[j].str = lp.str;
-	    ftxt->lines[i].items[j].size = (double) w;
+	    ftxt->lines[i].items[j].size = sz.x;
 	    ftxt->lines[i].items[j].xshow = lp.xshow;
 	    ftxt->lines[i].items[j].layout = lp.layout;
 	    ftxt->lines[i].items[j].free_layout = lp.free_layout;

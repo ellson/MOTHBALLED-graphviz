@@ -19,7 +19,6 @@
 #include "htmltable.h"
 #include "htmlparse.h"
 #include "htmllex.h"
-#include "entities.h"
 #include <ctype.h>
 
 #ifdef HAVE_LIBEXPAT
@@ -661,44 +660,6 @@ static char *eatComment(char *p)
 	}
     }
     return s;
-}
-
-#define MAXENTLEN 8
-
-static int 
-comp_entities(const void *e1, const void *e2) {
-  struct entities_s *en1 = (struct entities_s *) e1;
-  struct entities_s *en2 = (struct entities_s *) e2;
-  return strcmp(en1->name, en2->name);
-}
-
-/* scanEntity:
- * Scan non-numeric entity, convert to &#...; form and store in xbuf.
- * t points to first char after '&'. Return after final semicolon.
- * If unknown, we return t and let libexpat flag the error.
- */
-static char*
-scanEntity (char* t, agxbuf* xb)
-{
-    char*  endp = strchr (t, ';');
-    struct entities_s key, *res;
-    int    len;
-    char   buf[MAXENTLEN+1];
-
-    agxbputc(xb, '&');
-    if (!endp) return t;
-    if (((len = endp-t) > MAXENTLEN) || (len < 2)) return t;
-    strncpy (buf, t, len);
-    buf[len] = '\0';
-    key.name =  buf;
-    res = bsearch(&key, entities, NR_OF_ENTITIES,
-	sizeof(entities[0]), comp_entities);
-    if (!res) return t;
-    sprintf (buf, "%d", res->value);
-    agxbputc(xb, '#');
-    agxbput(xb, buf);
-    agxbputc(xb, ';');
-    return (endp+1); 
 }
 
 /* findNext:

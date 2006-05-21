@@ -128,10 +128,10 @@ extern "C" {
     typedef struct textline_t {
 	char *str;      /* stored in utf-8 */
 	char *xshow;
-	double width, height;
-	char just;
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
+	pointf dimen;
+	char just;
     } textline_t;
 
     typedef struct textlabel_t {

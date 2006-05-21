@@ -647,11 +647,11 @@ static void hpgl_textline(point p, textline_t * line)
     case 'l':
 	break;
     case 'r':
-	p.x -= line->width;
+	p.x -= line->dimen.x;
 	break;
     default:
     case 'n':
-	p.x -= line->width / 2;
+	p.x -= line->dimen.x / 2;
 	break;
     }
 

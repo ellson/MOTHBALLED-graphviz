@@ -17,8 +17,13 @@ noinst_HEADERS = render.h utils.h memory.h \
 noinst_LTLIBRARIES = libcommon.la
 
 if !DISABLE_CODEGENS
+if WITH_LIBGD
 CODEGENS = diagen.c figgen.c hpglgen.c gdgen.c mapgen.c mifgen.c mpgen.c \
 	picgen.c psgen.c svggen.c vrmlgen.c vtxgen.c ps.txt xdgen.c color_names
+else
+CODEGENS = diagen.c figgen.c hpglgen.c mapgen.c mifgen.c mpgen.c \
+	picgen.c psgen.c svggen.c vtxgen.c ps.txt xdgen.c color_names
+endif
 endif
 
 
