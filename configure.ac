@@ -1117,12 +1117,12 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for PANGO, CAIRO et.al.
                                                                                 
 PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.0],
-	[AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
-		[Define if you have the pangocairo library])],
+	[HAVE_PANGOCAIRO=1
+	AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
+		[Define if you have the pango library with cairo support])],
 	[AC_MSG_WARN(pangocairo library not available)])
 AC_SUBST(PANGOCAIRO_CFLAGS)
 AC_SUBST(PANGOCAIRO_LIBS)
-
 AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
 
 dnl -----------------------------------
