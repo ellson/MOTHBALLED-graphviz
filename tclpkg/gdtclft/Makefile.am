@@ -18,10 +18,12 @@ AM_CFLAGS = @TCL_CFLAGS@
 man = gdtclft.n
 pdf = gdtclft.pdf
 
+if WITH_LIBGD
 if WITH_TCL
 pkgtcl_LTLIBRARIES = libgdtclft.la
 man_MANS = $(man)
 pdf_DATA = $(pdf)
+endif
 endif
 
 libgdtclft_la_SOURCES = gdtclft.c

@@ -45,8 +45,10 @@ Tcl_GetString(Tcl_Obj *obj) {
 #endif
 ********* */
 
+#if HAVE_LIBGD
 extern void *GDHandleTable;
 extern int Gdtclft_Init(Tcl_Interp *);
+#endif
 
 #ifndef DISABLE_CODEGENS
 extern codegen_t TK_CodeGen;
@@ -1101,6 +1103,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	gvjobs_delete(gvc);
 	return TCL_OK;
 
+#if HAVE_LIBGD
     } else if ((c == 'r') && (strncmp(argv[1], "rendergd", length) == 0)) {
 	void **hdl;
 
@@ -1135,6 +1138,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	gvjobs_delete(gvc);
 	Tcl_AppendResult(interp, argv[2], (char *) NULL);
 	return TCL_OK;
+#endif
 
     } else if ((c == 's')
 	       && (strncmp(argv[1], "setattributes", length) == 0)) {
@@ -1642,7 +1646,9 @@ int Tcldot_Init(Tcl_Interp * interp)
 	return TCL_ERROR;
     }
 
+#if HAVE_LIBGD
     Gdtclft_Init(interp);
+#endif
 
     aginit();
     /* set persistent attributes here */
