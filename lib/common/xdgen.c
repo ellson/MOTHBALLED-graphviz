@@ -207,8 +207,9 @@ static void xd_textline(point p, textline_t * line)
 static void xd_ellipse(point p, int rx, int ry, int filled)
 {
     char buf[BUFSIZ];
+    int rc;
 
-    agxbputc(xbufs[gvc->emit_state], (filled ? 'E' : 'e'));
+    rc = agxbputc(xbufs[gvc->emit_state], (filled ? 'E' : 'e'));
     sprintf(buf, " %d %d %d %d ", p.x, YDIR(p.y), rx, ry);
     agxbput(xbufs[gvc->emit_state], buf);
 }
@@ -216,10 +217,10 @@ static void xd_ellipse(point p, int rx, int ry, int filled)
 static void xd_points(char c, point * A, int n)
 {
     char buf[BUFSIZ];
-    int i;
+    int i, rc;
     point p;
 
-    agxbputc(xbufs[gvc->emit_state], c);
+    rc = agxbputc(xbufs[gvc->emit_state], c);
     sprintf(buf, " %d ", n);
     agxbput(xbufs[gvc->emit_state], buf);
     for (i = 0; i < n; i++) {

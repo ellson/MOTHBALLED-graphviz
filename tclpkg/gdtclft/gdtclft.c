@@ -60,7 +60,9 @@ static CmdFunc tclGdBrushCmd;
 static CmdFunc tclGdStyleCmd;
 static CmdFunc tclGdTileCmd;
 static CmdFunc tclGdPolygonCmd;
+#ifdef HAVE_GD_PNG
 static CmdFunc tclGdWriteBufCmd;
+#endif
 
 static ColCmdFunc tclGdColorNewCmd;
 static ColCmdFunc tclGdColorExactCmd;
@@ -1431,6 +1433,7 @@ LPVOID reserved;		/* Not used. */
 #endif
 #endif
 
+#ifdef HAVE_GD_PNG
 static int BufferSinkFunc(void *context, const char *buffer, int len)
 {
     BuffSinkContext *p = context;
@@ -1454,7 +1457,6 @@ static int
 tclGdWriteBufCmd(Tcl_Interp * interp, GdData * gdData, int argc,
 		 Tcl_Obj * CONST objv[])
 {
-#ifdef HAVE_GD_PNG
     gdImagePtr im;
     Tcl_Obj *output;
     /* char *cmd; */
@@ -1490,6 +1492,6 @@ tclGdWriteBufCmd(Tcl_Interp * interp, GdData * gdData, int argc,
     if (Tcl_ObjSetVar2(interp, objv[3], NULL, output, 0) == NULL)
 	return TCL_ERROR;
     else
-#endif
 	return TCL_OK;
 }
+#endif

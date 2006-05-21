@@ -727,7 +727,11 @@ if test "$HAVE_TCL" = "1"; then
 fi
 
 if test "$HAVE_TCL" = "1"; then
-    TCL_PKGINDEX="gdtclft/pkgIndex.tcl tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl gv/pkgIndex.tcl"
+    if test "$HAVE_LIBGD" = "1"; then
+	TCL_PKGINDEX="gdtclft/pkgIndex.tcl tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl gv/pkgIndex.tcl"
+    else
+	TCL_PKGINDEX="tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl gv/pkgIndex.tcl"
+    fi
 else
     TCL_PKGINDEX=""
 fi

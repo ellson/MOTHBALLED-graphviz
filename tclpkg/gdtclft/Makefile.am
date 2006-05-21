@@ -32,6 +32,7 @@ libgdtclft_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la @GD_LIBS@
 libgdtclft_la_LDFLAGS = -module -no-undefined
 
+if WITH_LIBGD
 if WITH_TCL
 all-local: pkgIndex.tcl
 
@@ -40,6 +41,7 @@ pkgIndex.tcl: libgdtclft.la
 
 test:
 	echo 'load .libs/libgdtclft$(TCL_SHLIB_SUFFIX) Gdtclft ; cd tests ; source all' | tclsh8.3
+endif
 endif
 
 .n.pdf:

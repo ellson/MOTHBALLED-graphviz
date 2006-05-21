@@ -1618,7 +1618,7 @@ static bool is_style_delim(int c)
 static int style_token(char **s, agxbuf * xb)
 {
     char *p = *s;
-    int token;
+    int token, rc;
     char c;
 
     while (*p && (isspace(*p) || (*p == ',')))
@@ -1634,7 +1634,7 @@ static int style_token(char **s, agxbuf * xb)
     default:
 	token = SID;
 	while (!is_style_delim(c = *p)) {
-	    agxbputc(xb, c);
+	    rc = agxbputc(xb, c);
 	    p++;
 	}
     }

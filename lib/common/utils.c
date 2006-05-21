@@ -1362,6 +1362,7 @@ latin1ToUTF8 (char* s)
     agxbuf xb;
     unsigned char buf[BUFSIZ];
     unsigned int  v;
+    int rc;
     
     agxbinit(&xb, BUFSIZ, buf);
 
@@ -1373,15 +1374,16 @@ latin1ToUTF8 (char* s)
 	    v = htmlEntity (&s);
 	    if (!v) v = '&';
         }
-	if (v < 0x7F) agxbputc(&xb, v);
+	if (v < 0x7F)
+	    rc = agxbputc(&xb, v);
 	else if (v < 0x07FF) {
-	    agxbputc(&xb, (v >> 6) | 0xC0);
-	    agxbputc(&xb, (v & 0x3F) | 0x80);
+	    rc = agxbputc(&xb, (v >> 6) | 0xC0);
+	    rc = agxbputc(&xb, (v & 0x3F) | 0x80);
 	}
 	else {
-	    agxbputc(&xb, (v >> 12) | 0xE0);
-	    agxbputc(&xb, ((v >> 6) & 0x3F) | 0x80);
-	    agxbputc(&xb, (v & 0x3F) | 0x80);
+	    rc = agxbputc(&xb, (v >> 12) | 0xE0);
+	    rc = agxbputc(&xb, ((v >> 6) & 0x3F) | 0x80);
+	    rc = agxbputc(&xb, (v & 0x3F) | 0x80);
 	}
     }
     ns = strdup (agxbuse(&xb));
@@ -1402,16 +1404,18 @@ utf8ToLatin1 (char* s)
     unsigned char buf[BUFSIZ];
     unsigned char c;
     unsigned char outc;
+    int rc;
     
     agxbinit(&xb, BUFSIZ, buf);
 
     while ((c = *(unsigned char*)s++)) {
-	if (c < 0x7F) agxbputc(&xb, c);
+	if (c < 0x7F)
+	    rc = agxbputc(&xb, c);
 	else {
 	    outc = (c & 0x03) << 6;
 	    c = *(unsigned char*)s++;
 	    outc = outc | (c & 0x3F);
-	    agxbputc(&xb, outc);
+	    rc = agxbputc(&xb, outc);
 	}
     }
     ns = strdup (agxbuse(&xb));

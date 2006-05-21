@@ -275,7 +275,7 @@ static char *lex_gets(void)
 static char *html_pair(char *p, agxbuf * tokp)
 {
     unsigned char c;
-    int depth = 1;
+    int rc, depth = 1;
 
     while (1) {
 	while ((c = *p)) {
@@ -285,7 +285,7 @@ static char *html_pair(char *p, agxbuf * tokp)
 		    return p;	/* p points to closing > */
 	    } else if (c == '<')
 		depth++;
-	    agxbputc(tokp, c);
+	    rc = agxbputc(tokp, c);
 	    p++;
 	}
 	if ((p = lex_gets()) == NULL) {

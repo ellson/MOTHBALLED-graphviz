@@ -338,6 +338,7 @@ char *ps_string(char *ins, int latin)
     char *s;
     char *base;
     static agxbuf  xb;
+    int rc;
 
     if (latin)
 	base = utf8ToLatin1 (ins);
@@ -347,13 +348,12 @@ char *ps_string(char *ins, int latin)
     if (xb.buf == NULL)
 	agxbinit (&xb, BUFSIZ, psbuf);
 
-    agxbputc (&xb, LPAREN);
+    rc = agxbputc (&xb, LPAREN);
     s = base;
     while (*s) {
-	if ((*s == LPAREN) || (*s == RPAREN) || (*s == '\\')) {
-	    agxbputc (&xb, '\\');
-	}
-	agxbputc (&xb, *s++);
+	if ((*s == LPAREN) || (*s == RPAREN) || (*s == '\\'))
+	    rc = agxbputc (&xb, '\\');
+	rc = agxbputc (&xb, *s++);
     }
     agxbputc (&xb, RPAREN);
     if (base != ins) free (base);
