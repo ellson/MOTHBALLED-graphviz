@@ -1123,6 +1123,8 @@ PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.0],
 AC_SUBST(PANGOCAIRO_CFLAGS)
 AC_SUBST(PANGOCAIRO_LIBS)
 
+AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
+
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
                                                                                 
