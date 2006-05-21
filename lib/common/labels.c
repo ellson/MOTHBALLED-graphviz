@@ -18,9 +18,6 @@
 #include "render.h"
 #include "htmltable.h"
 #include <limits.h>
-#ifdef HAVE_PANGOCAIRO
-#include <pango/pangocairo.h>
-#endif
 
 #ifndef DISABLE_CODEGENS
 extern codegen_t *Output_codegen;
