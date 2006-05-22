@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #endif
+#include <stdio.h>
 #include "cdt.h"
 
 #ifdef __cplusplus
