@@ -862,7 +862,7 @@ static int size_html_img(htmlimg_t * img, htmlenv_t * env)
 	agerr(AGERR, "No or improper image file=\"%s\"\n", img->src);
     } else {
 	rv = 0;
-	GD_has_images(env->g) = 1;
+	GD_has_images(env->g) = TRUE;
     }
 
     img->box = b;

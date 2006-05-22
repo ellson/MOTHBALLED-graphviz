@@ -364,7 +364,7 @@ extern "C" {
 
 	/* various flags */
 	bool has_flat_edges;
-	bool	showboxes;
+	unsigned char	showboxes;
 	bool cluster_was_collapsed;
 
 	int nodesep, ranksep;
@@ -449,13 +449,13 @@ extern "C" {
 	bool clustnode;
 
 #ifndef DOT_ONLY
-	bool pinned;
+	unsigned char pinned;
 	short xsize, ysize;
 	int id, heapindex, hops;
 	double *pos, dist;
 #endif
 #ifndef NEATO_ONLY
-	bool showboxes;
+	unsigned char showboxes;
 	bool  has_port;
 
 	/* fast graph */
@@ -557,7 +557,7 @@ extern "C" {
 	Ppolyline_t path;
 #endif
 #ifndef NEATO_ONLY
-	bool showboxes;
+	unsigned char showboxes;
 	bool conc_opp_flag;
 	short xpenalty;
 	int weight;

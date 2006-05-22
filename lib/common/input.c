@@ -273,7 +273,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    PSinputscale = POINTS_PER_INCH;
 		break;
 	    case 'v':
-		Verbose = TRUE;
+		Verbose = 1;
 		if (isdigit(*(unsigned char *) rest))
 		    Verbose = atoi(rest);
 		break;

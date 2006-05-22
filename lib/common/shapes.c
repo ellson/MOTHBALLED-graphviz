@@ -570,7 +570,7 @@ static void poly_init(node_t * n)
 		      "No or improper shapefile=\"%s\" for node \"%s\"\n",
 		      (sfile ? sfile : "<nil>"), n->name);
 		} else
-		    GD_has_images(n->graph) = 1;
+		    GD_has_images(n->graph) = TRUE;
 	    }
 	    dimen.x = MAX(dimen.x, imagesize.x);
 	    dimen.y = MAX(dimen.y, imagesize.y);
@@ -1024,10 +1024,10 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
     point p, ctr;
     int rv = 0;
     double theta = 0.0;
-    int constrain = 0;
+    bool constrain = FALSE;
     int side = 0;
-    int clip = TRUE;
-    int defined;
+    bool clip = TRUE;
+    bool defined;
 
     if (bp) {
 	b = *bp;
@@ -1054,14 +1054,14 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	case 'e':
 	    p.x = b.UR.x;
 	    theta = 0.0;
-	    constrain = 1;
+	    constrain = TRUE;
 	    defined = TRUE;
 	    clip = FALSE;
 	    side = sides & RIGHT;
 	    break;
 	case 's':
 	    p.y = b.LL.y;
-	    constrain = 1;
+	    constrain = TRUE;
 	    clip = FALSE;
 	    switch (*compass) {
 	    case '\0':
@@ -1085,7 +1085,7 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 		break;
 	    default:
 		p.y = ctr.y;
-		constrain = 0;
+		constrain = FALSE;
 		clip = TRUE;
 		rv = 1;
 		break;
@@ -1094,14 +1094,14 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	case 'w':
 	    p.x = b.LL.x;
 	    theta = PI;
-	    constrain = 1;
+	    constrain = TRUE;
 	    defined = TRUE;
 	    clip = FALSE;
 	    side = sides & LEFT;
 	    break;
 	case 'n':
 	    p.y = b.UR.y;
-	    constrain = 1;
+	    constrain = TRUE;
 	    clip = FALSE;
 	    switch (*compass) {
 	    case '\0':
@@ -1125,7 +1125,7 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 		break;
 	    default:
 		p.y = ctr.y;
-		constrain = 0;
+		constrain = FALSE;
 		clip = TRUE;
 		rv = 1;
 		break;

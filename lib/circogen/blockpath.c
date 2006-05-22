@@ -480,6 +480,7 @@ static nodelist_t *reduce(nodelist_t * list, Agraph_t * subg, int *cnt)
     nodelist_t *listCopy;
     int crossings, j, newCrossings;
 
+/* printNodelist (list); */
     crossings = *cnt;
     for (curnode = agfstnode(subg); curnode;
 	 curnode = agnxtnode(subg, curnode)) {
@@ -493,10 +494,13 @@ static nodelist_t *reduce(nodelist_t * list, Agraph_t * subg, int *cnt)
 	    for (j = 0; j < 2; j++) {
 		listCopy = cloneNodelist(list);
 		insertNodelist(list, curnode, neighbor, j);
+/* fprintf (stderr, "put %s %s %s: ", curnode->name, (j ? "after " : "before"), neighbor->name); */
+/* printNodelist (list); */
 		newCrossings = count_all_crossings(list, subg);
 		if (newCrossings < crossings) {
 		    crossings = newCrossings;
 		    freeNodelist(listCopy);
+/* fprintf (stderr, "====\n"); */
 		    if (crossings == 0) {
 			*cnt = 0;
 			return list;
@@ -518,6 +522,8 @@ static nodelist_t *reduce_edge_crossings(nodelist_t * list,
     int i, crossings, origCrossings;
 
     crossings = count_all_crossings(list, subg);
+fprintf (stderr, "Crossings %d", crossings);
+if (mapbool(agget((Agraph_t*)GD_alg(subg->root), "nolocal"))) return list;
     if (crossings == 0)
 	return list;
 
@@ -526,8 +532,9 @@ static nodelist_t *reduce_edge_crossings(nodelist_t * list,
 	list = reduce(list, subg, &crossings);
 	/* return if no crossings or no improvement */
 	if ((origCrossings == crossings) || (crossings == 0))
-	    return list;
+	    break;
     }
+fprintf (stderr, " %d\n", crossings);
     return list;
 }
 

@@ -124,6 +124,7 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
 #endif
 
     dg = agopen("derived", AGFLAG_STRICT);
+    GD_alg(dg) = g;
 #ifdef USER_BLOCKS
     sg = g->meta_node->graph;
     for (me = agfstout(sg, g->meta_node); me; me = agnxtout(sg, me)) {

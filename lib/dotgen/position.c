@@ -1197,7 +1197,7 @@ static void contain_nodes(graph_t * g)
  * set g->drawing->size to a reasonable default.
  * returns a bool to indicate if drawing is to
  * be scaled and filled */
-static int idealsize(graph_t * g, double minallowed)
+static bool idealsize(graph_t * g, double minallowed)
 {
     double xf, yf, f, R;
     point b, relpage, margin;
