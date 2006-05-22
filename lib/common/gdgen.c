@@ -576,15 +576,15 @@ static void gd_textline(point p, textline_t * line)
 	mp.x = p.x;
 	break;
     case 'r':
-	mp.x = p.x - line->width;
+	mp.x = p.x - line->dimen.x;
 	break;
     default:
     case 'n':
-	mp.x = p.x - line->width / 2;
+	mp.x = p.x - line->dimen.x / 2;
 	break;
     }
     ep.y = mp.y = p.y;
-    ep.x = mp.x + line->width;
+    ep.x = mp.x + line->dimen.x;
 
     mp = gdpt(mp);
     if (fontsz <= FONTSIZE_MUCH_TOO_SMALL) {
