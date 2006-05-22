@@ -26,6 +26,7 @@ LIBS = -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
        -L$(LOC_LIB)/common -lcommon \
        -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
        -L$(LOC_LIB)/neatogen -lneatogen \
+       -L$(LOC_LIB)/vpsc -lvpsc \
        -L$(LOC_LIB)/dotgen -ldotgen \
        -L$(LOC_LIB)/circogen -lcircogen \
        -L$(LOC_LIB)/fdpgen -lfdpgen \
@@ -50,11 +51,11 @@ OBJS = dot.o
 all : dot
 
 dot : $(OBJS) $(DOTLIBS)
-	$(CSLD) $(LDFLAGS) $(OBJS) $(LIBS) -o /tmp/dot
+	$(CPP) $(LDFLAGS) $(OBJS) $(LIBS) -o /tmp/dot
 	mv /tmp/dot dot
 
 dot.o : dot.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(INCS) dot.c
+	$(CPP) -c $(CCFLAGS) $(DEFINES) $(INCS) dot.c
 
 install: all
 	$(MKPATH) $(BINDIR)
