@@ -455,11 +455,11 @@ static void vrml_textline(point p, textline_t * line)
     case 'l':
 	break;
     case 'r':
-	p.x -= line->width;
+	p.x -= line->dimen.x;
 	break;
     default:
     case 'n':
-	p.x -= line->width / 2;
+	p.x -= line->dimen.x / 2;
 	break;
     }
 /*	p.y += cstk[SP].fontsz*2/3; */
