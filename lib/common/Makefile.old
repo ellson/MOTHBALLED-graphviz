@@ -23,14 +23,14 @@ NOINST_HDRS = render.h utils.h memory.h \
 	geomprocs.h colorprocs.h const.h macros.h pointset.h
 NOINST_GENERATED_HDRS = colortbl.h ps.h htmltable.h  htmlparse.h htmllex.h 
 
-OBJS = args.o arrows.o gdusershape.o mapgen.o psgen.o svgusershape.o \
+OBJS = args.o arrows.o mapgen.o psgen.o \
        colxlate.o globals.o mifgen.o psusershape.o timing.o \
        diagen.o hpglgen.o mpgen.o routespl.o utils.o geom.o \
        emit.o htmllex.o ns.o shapes.o vrmlgen.o xdgen.o \
        figgen.o htmlparse.o output.o splines.o vtxgen.o \
        fontmetrics.o htmltable.o picgen.o strcasecmp.o \
        gdgen.o input.o pointset.o strncasecmp.o memory.o \
-       gdtextsize.o labels.o postproc.o svggen.o
+       labels.o postproc.o svggen.o
 
 libcommon.a : $(OBJS)
 	$(RM) libcommon.a
