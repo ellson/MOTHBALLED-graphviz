@@ -34,7 +34,7 @@ static void set_aspect(graph_t * g);
 static void expand_leaves(graph_t * g);
 static void make_lrvn(graph_t * g);
 static void contain_nodes(graph_t * g);
-static int idealsize(graph_t * g, double);
+static bool idealsize(graph_t * g, double);
 
 #ifdef DEBUG
 static void
