@@ -165,7 +165,7 @@ static void sameport(node_t * u, elist * l, double arr_len)
 	(MC_SCALE * (ND_lw_i(u) + prt.p.x)) / (ND_lw_i(u) + ND_rw_i(u));
     prt.constrained = FALSE;
     prt.defined = TRUE;
-    prt.clip = 0;
+    prt.clip = FALSE;
     prt.theta = 0;
     prt.side = 0;
 
