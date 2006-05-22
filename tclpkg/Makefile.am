@@ -7,9 +7,7 @@ pkgindex_DATA = pkgIndex.tcl
 SUBDIRS = tclstubs tkstubs tclhandle gdtclft tcldot tclpathplan tkspline gv
 
 pkgIndex.tcl: @TCL_PKGINDEX@ @TK_PKGINDEX@
-	echo "# end" >end
-	cat @TCL_PKGINDEX@ @TK_PKGINDEX@ end >$@
-	rm -f end
+	(cat @TCL_PKGINDEX@ @TK_PKGINDEX@ ; echo "# end") >$@
 
 EXTRA_DIST = Makefile.old mkpkgindex.sh
 
