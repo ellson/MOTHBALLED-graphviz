@@ -20,7 +20,8 @@ Prefix: /usr
 %define RUBY    0
 %define TCL     1
 %define IPSEPCOLA --without-ipsepcola
-%define MYLIBGD --without-mylibgd
+# %define MYLIBGD --without-mylibgd
+%define MYLIBGD --with-mylibgd
 
 # Select packages according to dist (set in .rpmmacros on each build host)
 
