@@ -48,7 +48,7 @@
         MIF_CodeGen, XDot_CodeGen, MP_CodeGen, PIC_CodeGen,
         PS_CodeGen, DIA_CodeGen, SVG_CodeGen, VTX_CodeGen;
 #ifdef HAVE_LIBGD
-    extern codegen_t GD_CodeGen, memGD_CodeGen, VRML_CodeGens;
+    extern codegen_t GD_CodeGen, memGD_CodeGen, VRML_CodeGen;
 #endif
 #endif
 
