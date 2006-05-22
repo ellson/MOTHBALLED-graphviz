@@ -78,19 +78,13 @@ static void init_node(node_t * n)
 }
 
 /* init_edge:
- * Return true if edge has label.
  */
-static int init_edge(edge_t * e, attrsym_t * E_len)
+static void init_edge(edge_t * e, attrsym_t * E_len)
 {
-    int r;
-
     ED_factor(e) = late_double(e, E_weight, 1.0, 0.0);
     ED_dist(e) = late_double(e, E_len, fdp_parms.K, 0.0);
 
-    /* initialize labels and set r TRUE if edge has one */
-    r = common_init_edge(e);
-
-    return r;
+    common_init_edge(e);
 }
 
 void fdp_init_node_edge(graph_t * g)
@@ -115,8 +109,7 @@ void fdp_init_node_edge(graph_t * g)
     E_len = agfindattr(g->proto->e, "len");
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    if (init_edge(e, E_len))
-		GD_has_labels(g) = TRUE;
+	    init_edge(e, E_len);
 	}
     }
     initialPositions(g);
