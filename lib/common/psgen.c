@@ -40,10 +40,6 @@ void epsf_emit_body(ps_image_t *img, FILE *of);
 extern void ps_freeusershapes(void);
 extern ps_image_t *ps_usershape_to_image(char *shapeimagefile);
 
-#ifdef HAVE_LIBGD
-extern gdImagePtr gd_getshapeimage(char *name);
-#endif
-
 static int N_pages, Cur_page;
 /* static 	point	Pages; */
 static box PB;
