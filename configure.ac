@@ -726,19 +726,9 @@ if test "$HAVE_TCL" = "1"; then
     fi
 fi
 
-if test "$HAVE_TCL" = "1"; then
-    if test "$HAVE_LIBGD" = "1"; then
-	TCL_PKGINDEX="gdtclft/pkgIndex.tcl tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl gv/pkgIndex.tcl"
-    else
-	TCL_PKGINDEX="tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl gv/pkgIndex.tcl"
-    fi
-else
-    TCL_PKGINDEX=""
-fi
 AC_SUBST(HAVE_TCL)
 
 AM_CONDITIONAL(WITH_TCL, [test "x${HAVE_TCL}" = "x1"])
-AC_SUBST(TCL_PKGINDEX)
 
 if test "x${TCL_SUPPORTS_STUBS}" = "x1"; then
     TCL_CFLAGS="${TCL_CFLAGS} -DUSE_TCL_STUBS"
@@ -880,25 +870,13 @@ if test "$HAVE_TK" = "1"; then
     fi
 fi
                                                                                 
-#if test "$HAVE_TK" = "1"; then
-#    # TK STUBS support is required (but support is indicated by TCL_SUPPORTS_STUBS)
-#    if test "x${TCL_SUPPORTS_STUBS}" != "x1"; then
-#        AC_MSG_WARN([Tk does not have STUBs support, perhaps it is too old?  The Tk packages will not be built])
-#        HAVE_TK=0
-#    fi
-#di
-                                                                                
 if test "$HAVE_TK" = "1"; then
     TK_SUBDIRS="tkstubs tkspline"
-    TK_PKGINDEX="tkspline/pkgIndex.tcl"
 else
     TK_SUBDIRS=""
-    TK_PKGINDEX=""
 fi
 AC_SUBST(HAVE_TK)
-                                                                                
 AM_CONDITIONAL(WITH_TK, [test "x${HAVE_TK}" = "x1"])
-AC_SUBST(TK_PKGINDEX)
 
 # NB. No TK_SUPPORTS_STUBS set by tkConfig.sh
 if test "${TCL_SUPPORTS_STUBS}" = "1"; then
@@ -1591,6 +1569,26 @@ fi
 fi
 fi
 AC_SUBST(TKINT_INCLUDES)
+
+# ----------------------------------
+# tcl/tk pkgIndex.tcl generation
+
+if test "$HAVE_TCL" = "1"; then
+    if test "x$with_libgd" = "xyes"; then
+	TCL_PKGINDEX="gdtclft/pkgIndex.tcl tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl gv/pkgIndex.tcl"
+    else
+	TCL_PKGINDEX="tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl gv/pkgIndex.tcl"
+    fi
+else
+    TCL_PKGINDEX=""
+fi
+if test "$HAVE_TK" = "1"; then
+    TK_PKGINDEX="tkspline/pkgIndex.tcl"
+else
+    TK_PKGINDEX=""
+fi
+AC_SUBST(TCL_PKGINDEX)
+AC_SUBST(TK_PKGINDEX)
 
 # -----------------------------------
 # Special checks
