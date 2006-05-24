@@ -73,7 +73,8 @@ extern "C" {
 
 #define EX_INTARRAY  1		/* integer-index array */
 
-#define EXID(n,l,i,t,f)	{{0},(l),(i),(t),0,(f),0,{0},n}
+/* previously known as EXID, but EXID is also defined by bison in y.tab.h */
+#define EX_ID(n,l,i,t,f)	{{0},(l),(i),(t),0,(f),0,{0},n}
 
 #define DELETE		BREAK	/* exexpr() delete `type'       */
 
