@@ -18,6 +18,7 @@
 #include "config.h"
 #endif
 
+#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <fcntl.h>
@@ -26,9 +27,6 @@
 
 #include "color.h"
 #include "types.h"
-#include "globals.h"
-
-#include "graph.h"
 
 #include "gvplugin_render.h"
 
@@ -44,8 +42,6 @@ extern char *safefile(char *shapefilename);
 #define FONTSIZE_MUCH_TOO_SMALL 0.15
 /* fontsize at which text is rendered by a simple line */
 #define FONTSIZE_TOO_SMALL 1.5
-
-static Dict_t *ImageDict;
 
 /* from Glassner's Graphics Gems */
 #define W_DEGREE 5
@@ -274,10 +270,6 @@ static void gdgen_end_graph(GVJ_t * job)
 #endif
 #endif
 	    break;
-	}
-	if (ImageDict) {
-	    dtclose(ImageDict);
-	    ImageDict = 0;
 	}
 	gdImageDestroy(im);
 #ifdef MYTRACE
