@@ -24,9 +24,6 @@ pkglib_LTLIBRARIES = libgvc.la
 noinst_LTLIBRARIES = libgvc_builtins.la
 pkgconfig_DATA = libgvc.pc
 
-libgvc_builtins_la_LDFLAGS = -version-info @VERSION_INFO@
-libgvc_la_LDFLAGS = ${libgvc_builtins_la_LDFLAGS} -no-undefined
-
 libgvc_builtins_la_SOURCES = gvrender.c gvlayout.c gvdevice.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
 	gvtextlayout.c gvusershape.c gvc.c
@@ -38,6 +35,9 @@ libgvc_builtins_la_LIBADD = \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
+
+libgvc_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+
 libgvc_la_LIBADD = ${libgvc_builtins_la_LIBADD}
 
 EXTRA_DIST = Makefile.old dot_builtins.c
