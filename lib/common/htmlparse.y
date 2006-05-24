@@ -632,6 +632,7 @@ cells : cell
 cell : T_cell fonttable { setCell($1,$2,HTML_TBL); } T_end_cell
      | T_cell fonttext { setCell($1,$2,HTML_TEXT); } T_end_cell
      | T_cell image { setCell($1,$2,HTML_IMAGE); } T_end_cell
+     | T_cell { setCell($1,mkText(),HTML_TEXT); } T_end_cell
      ;
 
 image  : T_img T_end_img { $$ = $1; }

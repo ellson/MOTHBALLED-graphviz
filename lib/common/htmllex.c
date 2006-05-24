@@ -622,7 +622,7 @@ int initHTMLlexer(char *src, agxbuf * xb, int charset)
 int clearHTMLlexer()
 {
 #ifdef HAVE_LIBEXPAT
-    int rv = state.warn;
+    int rv = state.warn | state.error;
     XML_ParserFree(state.parser);
     agxbfree (&state.lb);
     return rv;

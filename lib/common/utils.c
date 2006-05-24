@@ -621,7 +621,7 @@ void common_init_node(node_t * n)
 		late_nnstring(n, N_fontname, DEFAULT_FONTNAME),
 		late_nnstring(n, N_fontcolor, DEFAULT_COLOR));
     if (html) {
-	if (make_html_label(sg->root, ND_label(n), n) == 1)
+	if (make_html_label(sg->root, ND_label(n), n))
 	    agerr(AGPREV, "in label of node %s\n", n->name);
     }
     ND_shape(n) =
