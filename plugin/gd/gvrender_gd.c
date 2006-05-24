@@ -356,19 +356,28 @@ void gdgen_missingfont(char *err, char *fontreq)
 	return;
     if ((lastmissing == 0) || (strcmp(lastmissing, fontreq))) {
 #if HAVE_GD_FONTCONFIG
+#if 0
+/* FIXME - error function */
 	agerr(AGERR, "%s : %s\n", err, fontreq);
+#endif
 #else
 	char *p = getenv("GDFONTPATH");
 	if (!p)
 	    p = DEFAULT_FONTPATH;
+#if 0
+/* FIXME - error function */
 	agerr(AGERR, "%s : %s in %s\n", err, fontreq, p);
+#endif
 #endif
 	if (lastmissing)
 	    free(lastmissing);
 	lastmissing = strdup(fontreq);
 	n_errors++;
+#if 0
+/* FIXME - error function */
 	if (n_errors >= 20)
 	    agerr(AGWARN, "(font errors suppressed)\n");
+#endif
     }
 }
 
