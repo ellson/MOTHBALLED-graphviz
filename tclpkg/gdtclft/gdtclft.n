@@ -241,8 +241,15 @@ Examples
 
    The sample program from the gd documentation can be written thusly:
 
+   
+#!/bin/sh
+# next line is a comment in tcl \
+exec tclsh "$0" ${1+"$@"}
+
+package require Gdtclft
+
 ################################################################
-# Sample gdtcl program
+# Sample gdtcl program  - from gdtclft man page
 #
 # Create a 64 x 64 image
 set im [gd create 64 64]
@@ -269,15 +276,27 @@ close $out
 gd destroy $im
 
    
-   
   GDDEMO
   
    Here's the gddemo.c program translated to tcl.
+
+#!/bin/sh
+# next line is a comment in tcl \
+exec tclsh "$0" ${1+"$@"}
+
+package require Gdtclft
 
 ################################################################
 #
 # gddemo in tcl
 #
+
+# open demoin.png or die
+if {[catch {open demoin.png r} in]} {
+  puts stderr "Can't load source image; this demo is much";
+  puts stderr "more impressive if demoin.png is available";
+  exit
+}
 
 # Create output image 128 x 128
 set im_out [gd create 128 128]
@@ -289,16 +308,11 @@ set white [gd color new $im_out 255 255 255]
 gd color transparent $im_out $white
 
 # Load demoin.png and paste part of it into the output image.
-if {[catch {set in [open demoin.png]}]} {
-  puts stderr "Can't load source image; this demo is much";
-  puts stderr "more impressive if demoin.png is available";
-  set im_in "";
-} else {
-  set im_in [gd createFromPNG $in]
-  close $in
-  # Copy and shrink
-  gd copy $im_out $im_in 16 16 0 0 96 96 128 128
-}
+set im_in [gd createFromPNG $in]
+close $in
+ 
+# Copy and shrink
+gd copy $im_out $im_in 16 16 0 0 96 96 128 128
 
 # Get some colors
 set red [gd color new $im_out 255 0 0]
@@ -312,8 +326,8 @@ gd line $im_out $green 120 120 8 120
 gd line $im_out $green 8 120 8 8
 
 # Text
-gd text $im_out $red /usr/lib/ttf/arial.ttf 20 0 16 16 hi
-gd text $im_out $red /usr/lib/ttf/arial.ttf 20 90 23 23 hi
+gd text $im_out $red arial 20 0 16 16 hi
+gd text $im_out $red arial 20 90 23 23 hi
 
 # Circle
 gd arc $im_out $blue 64 64 30 10 0 360
@@ -333,7 +347,7 @@ if {$im_in != ""} {
   eval [concat gd copy $brush $im_in 0 0 0 0 [gd size $brush] [gd size $im_in]]
   gd brush $im_out $brush
   # Style so they won't overprint each other.
-  gd style $im_out [concat [replicate "0 " 7] 1]
+  gd style $im_out "0 0 0 0 0 0 0 1"
   gd line $im_out "styled brushed" 0 0 128 128
 }
 
