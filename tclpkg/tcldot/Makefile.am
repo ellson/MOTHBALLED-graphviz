@@ -42,12 +42,11 @@ GDTCLFT = $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
 endif
 
 libtcldot_la_SOURCES = tcldot.c $(CODEGENS) $(GDTCLFT)
-
+libtcldot_la_LDFLAGS = -no-undefined
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
 	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@ @LIBLTDL@
-libtcldot_la_LDFLAGS = -module -no-undefined
 
 if WITH_TCL
 all-local: pkgIndex.tcl
