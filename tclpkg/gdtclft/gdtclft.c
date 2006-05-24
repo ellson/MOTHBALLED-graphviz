@@ -1332,6 +1332,7 @@ tclGdTextCmd(Tcl_Interp * interp, GdData * gdData,
     str = Tcl_GetStringFromObj(objv[9], &len);
     fontname = Tcl_GetString(objv[4]);
 
+    gdFTUseFontConfig(1);
     error =
 	gdImageStringFT(im, brect, color, fontname, ptsize, angle, x, y, str);
 
