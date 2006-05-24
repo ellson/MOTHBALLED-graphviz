@@ -596,6 +596,7 @@ static void gd_textline(point p, textline_t * line)
 		    ROUND(ep.x), ROUND(ep.y), cstk[SP].pencolor);
     } else {
 #ifdef HAVE_GD_FREETYPE
+	gdFTUseFontConfig(1); /* use fontconfig if possible */
 	err = gdImageStringFTEx(im, brect, pencolor,
 				fontlist, fontsz, Rot ? (PI / 2) : 0,
 				ROUND(mp.x), ROUND(mp.y), str, &strex);
