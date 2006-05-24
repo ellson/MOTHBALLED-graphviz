@@ -22,6 +22,8 @@ dowheel (gdImagePtr im, int color, char *fontfile, int fontsize,
 	double angle, int x, int y, int offset, char *string)
 {
   int brect[8];
+  gdPoint points[4];
+  int i;
   FILE *err;
   double curangrads, curang, x0, y0;
   char *cp;
@@ -49,7 +51,15 @@ dowheel (gdImagePtr im, int color, char *fontfile, int fontsize,
       if (cp)
 	doerr (err, cp);
 
-      gdImagePolygon (im, (gdPointPtr)brect, 4, color);
+      /* FIXME - this is silly, but if we try to cast int[] to gdPointPtr
+       * we get a "warning: dereferencing type-punned pointer will break strict -aliasing rules" from gcc
+       * The proper fix probably requires an API change to use gdPoint[] in gdImageString*
+       */
+      for (i = 0; i < 4; i++) {
+	points[i].x = brect[2*i];
+	points[i].y = brect[2*i + 1];
+      }
+      gdImagePolygon (im, points, 4, color);
     }
 
   fclose (err);
