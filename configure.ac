@@ -1120,6 +1120,9 @@ AC_ARG_WITH(mylibgd,
   [AC_HELP_STRING([--with-mylibgd],
                   [use internal gd library in preference to any installed libgd])])
 
+if test "x$with_libgd" != "xno"; then
+	with_libgd=yes
+fi
 if test "x$with_mylibgd" = "xyes"; then
 	with_libgd=yes
 fi
