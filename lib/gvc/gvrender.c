@@ -134,6 +134,8 @@ void gvrender_begin_job(GVJ_t * job)
         job->input_filename = NULL;
     	job->graph_index = 0;
     }
+    job->cmdname = gvc->cmdname;
+    job->verbose = gvc->verbose;
     job->layout_type = gvc->layout.type;
     job->bb = gvc->bb;
     if (gvre) {

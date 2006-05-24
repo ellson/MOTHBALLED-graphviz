@@ -136,6 +136,8 @@ extern "C" {
 	GVJ_t *next;		/* linked list of jobs */
 	GVJ_t *next_active;	/* linked list of active jobs (e.g. multiple windows) */
 
+	char *cmdname;
+	int verbose;
 	char *input_filename;
 	int graph_index;
 

@@ -161,8 +161,8 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     if (Config)
 	exit (0);
 
-    CmdName = dotneato_basename(argv[0]);
-    i = gvlayout_select(gvc, CmdName);
+    CmdName = gvc->cmdname = dotneato_basename(argv[0]);
+    i = gvlayout_select(gvc, gvc->cmdname);
     if (i == NO_SUPPORT)
 	gvlayout_select(gvc, "dot");
 
@@ -273,9 +273,10 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    PSinputscale = POINTS_PER_INCH;
 		break;
 	    case 'v':
-		Verbose = 1;
+		gvc->verbose = 1;
 		if (isdigit(*(unsigned char *) rest))
-		    Verbose = atoi(rest);
+		    gvc->verbose = atoi(rest);
+		Verbose = gvc->verbose;
 		break;
 	    case 'x':
 		Reduce = TRUE;
@@ -287,7 +288,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		dotneato_usage(0);
 		break;
 	    default:
-		fprintf(stderr, "%s: option -%c unrecognized\n\n", CmdName,
+		fprintf(stderr, "%s: option -%c unrecognized\n\n", gvc->cmdname,
 			c);
 		dotneato_usage(1);
 	    }
@@ -374,7 +375,7 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 	    }
 	    else {
 		while ((fn = gvc->input_filenames[fidx++]) && !(fp = fopen(fn, "r")))  {
-		    agerr(AGERR, "%s: can't open %s\n", CmdName, fn);
+		    agerr(AGERR, "%s: can't open %s\n", gvc->cmdname, fn);
 		    graphviz_errors++;
 		}
 	    }

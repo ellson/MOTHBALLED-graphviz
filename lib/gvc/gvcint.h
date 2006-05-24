@@ -75,6 +75,8 @@ extern "C" {
 	/* gvNEWcontext() */
 	char *user;
 	char **info;
+	char *cmdname;
+	int verbose;
 
 	char *config_path;
 	bool config_found;

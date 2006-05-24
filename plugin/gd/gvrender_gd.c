@@ -36,7 +36,6 @@ typedef enum { FORMAT_GD, FORMAT_GD2, FORMAT_GIF, FORMAT_JPEG, FORMAT_PNG,
 	FORMAT_WBMP, FORMAT_XBM, } format_type;
 
 extern int mapbool(char *);
-extern pointf Bezier(pointf *, int, double, pointf *, pointf *);
 extern char *safefile(char *shapefilename);
 
 #define BEZIERSUBDIVISION 10
@@ -47,6 +46,47 @@ extern char *safefile(char *shapefilename);
 #define FONTSIZE_TOO_SMALL 1.5
 
 static Dict_t *ImageDict;
+
+/* from Glassner's Graphics Gems */
+#define W_DEGREE 5
+
+/*
+ *  Bezier :
+ *      Evaluate a Bezier curve at a particular parameter value
+ *      Fill in control points for resulting sub-curves if "Left" and
+ *      "Right" are non-null.
+ *
+ */
+static pointf Bezier(pointf * V, int degree, double t, pointf * Left,
+              pointf * Right)
+{
+    int i, j;                   /* Index variables      */
+    pointf Vtemp[W_DEGREE + 1][W_DEGREE + 1];
+
+    /* Copy control points  */
+    for (j = 0; j <= degree; j++) {
+        Vtemp[0][j] = V[j];
+    }
+
+    /* Triangle computation */
+    for (i = 1; i <= degree; i++) {
+        for (j = 0; j <= degree - i; j++) {
+            Vtemp[i][j].x =
+                (1.0 - t) * Vtemp[i - 1][j].x + t * Vtemp[i - 1][j + 1].x;
+            Vtemp[i][j].y =
+                (1.0 - t) * Vtemp[i - 1][j].y + t * Vtemp[i - 1][j + 1].y;
+        }
+    }
+
+    if (Left != NULL)
+        for (j = 0; j <= degree; j++)
+            Left[j] = Vtemp[j][0];
+    if (Right != NULL)
+        for (j = 0; j <= degree; j++)
+            Right[j] = Vtemp[degree - j][j];
+
+    return (Vtemp[degree][0]);
+}
 
 static void gdgen_resolve_color(GVJ_t * job, gvcolor_t * color)
 {
@@ -93,32 +133,35 @@ static void gdgen_begin_graph(GVJ_t * job, char *graphname)
 //	truecolor_p = TRUE;	/* force truecolor */
 
     if (job->external_surface) {
-	if (Verbose)
-	    fprintf(stderr, "%s: using existing GD image\n", CmdName);
+	if (job->verbose)
+	    fprintf(stderr, "%s: using existing GD image\n", job->cmdname);
 	im = (gdImagePtr) (job->output_file);
     } else {
 	/* device size with margins all around */
 	width = ROUND(job->boundingBox.UR.x + job->boundingBox.LL.x);
 	height = ROUND(job->boundingBox.UR.y + job->boundingBox.LL.y);
 	if (truecolor_p) {
-	    if (Verbose)
+	    if (job->verbose)
 		fprintf(stderr,
 			"%s: allocating a %dK TrueColor GD image\n",
-			CmdName,
+			job->cmdname,
 			ROUND(width * height * 4 / 1024.));
 	    im = gdImageCreateTrueColor(width, height);
 	} else {
-	    if (Verbose)
+	    if (job->verbose)
 		fprintf(stderr,
 			"%s: allocating a %dK PaletteColor GD image\n",
-			CmdName, ROUND(width * height / 1024.));
+			job->cmdname, ROUND(width * height / 1024.));
 	    im = gdImageCreate(width, height);
 	}
     }
     job->surface = (void *) im;
 
     if (!im) {
+#if 0
+/* FIXME - error function */
 	agerr(AGERR, "gdImageCreate returned NULL. Malloc problem?\n");
+#endif
 	return;
     }
 
