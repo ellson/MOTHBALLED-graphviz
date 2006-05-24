@@ -177,10 +177,10 @@ int main(int argc, char *argv[])
 
     fprintf(fp, "static Exid_t symbols[] = {\n");
     for (recp = vals.next; recp; recp = recp->next) {
-	fprintf(fp, "\tEXID ( %s, %s, %s, %s, 0),\n",
+	fprintf(fp, "\tEX_ID ( %s, %s, %s, %s, 0),\n",
 		recp->name, recp->lex, recp->symbol, recp->type);
     }
-    fprintf(fp, "\tEXID ( {0}, 0, 0, 0, 0)\n};\n");
+    fprintf(fp, "\tEX_ID ( {0}, 0, 0, 0, 0)\n};\n");
 
     fprintf(fp, "\nstatic char* typenames[] = {\n");
     for (recp = vals.next; recp; recp = recp->next) {
