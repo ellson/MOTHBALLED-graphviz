@@ -21,8 +21,6 @@
 extern "C" {
 #endif
 
-#include "geom.h"
-
     typedef struct textpara_t {
 	char *str;      /* stored in utf-8 */
 	char *xshow;
