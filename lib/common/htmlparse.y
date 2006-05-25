@@ -31,10 +31,10 @@ static struct {
   htmllabel_t* lbl;       /* Generated label */
   htmltbl_t*   tblstack;  /* Stack of tables maintained during parsing */
 #ifdef OLD
-  Dt_t*        lines;     /* Dictionary for lines of text */
+  Dt_t*        paras;     /* Dictionary for paras of text */
 #endif
   Dt_t*        fitemList; /* Dictionary for font text items */
-  Dt_t*        flineList; 
+  Dt_t*        fparaList; 
   agxbuf*      str;       /* Buffer for text */
   sfont_t*     fontstack;
 } HTMLstate;
@@ -119,7 +119,7 @@ static Dtdisc_t cellDisc = {
 #ifdef OLD
 typedef struct {
   Dtlink_t      link;
-  const char*   s;          /* line of text */
+  const char*   s;          /* para of text */
   char          c;          /* alignment of text */
 } sitem;
 #endif
@@ -131,8 +131,8 @@ typedef struct {
 
 typedef struct {
     Dtlink_t     link;
-    htextline_t  lp;
-} fline;
+    htextpara_t  lp;
+} fpara;
 
 #ifdef OLD
 static void
@@ -153,7 +153,7 @@ free_fitem(Dt_t* d, fitem* p, Dtdisc_t* ds)
 }
 
 static void 
-free_fline(Dt_t* d, fline* p, Dtdisc_t* ds)
+free_fpara(Dt_t* d, fpara* p, Dtdisc_t* ds)
 {
     textitem_t* ti;
 
@@ -197,10 +197,10 @@ static Dtdisc_t fstrDisc = {
 };
 
 
-static Dtdisc_t flineDisc = {
+static Dtdisc_t fparaDisc = {
     0,
     0,
-    offsetof(fline,link),
+    offsetof(fpara,link),
     NIL(Dtmake_f),
     (Dtfree_f)free_item,
     NIL(Dtcompar_f),
@@ -216,7 +216,7 @@ appendStrList(const char* p,int v)
   sitem*  sp = NEW(sitem);
   sp->s = strdup(p);
   sp->c = v;
-  dtinsert (HTMLstate.lines, sp);
+  dtinsert (HTMLstate.paras, sp);
 }
 #endif
 
@@ -248,7 +248,7 @@ static void
 appendFLineList (int v)
 {
     int cnt;
-    fline *ln = NEW(fline);
+    fpara *ln = NEW(fpara);
     fitem *fi;
     Dt_t *ilist = HTMLstate.fitemList;
 
@@ -268,36 +268,36 @@ appendFLineList (int v)
 
     dtclear(ilist);
 
-    dtinsert(HTMLstate.flineList, ln);
+    dtinsert(HTMLstate.fparaList, ln);
 }
 
 #ifdef OLD
 /* mkText:
- * Construct htmltxt_t from list of lines in HTMLstate.lines.
- * lastl is a last, odd line with no <BR>, so we use n by default.
+ * Construct htmltxt_t from list of paras in HTMLstate.paras.
+ * lastl is a last, odd para with no <BR>, so we use n by default.
  */
 static htmltxt_t*
 mkText (const char* lastl)
 {
   int         cnt;
-  textline_t* lp;
+  textpara_t* lp;
   sitem*      sp;
-  Dt_t*       lines = HTMLstate.lines;
+  Dt_t*       paras = HTMLstate.paras;
   htmltxt_t* tp = NEW(htmltxt_t);
 
-  if (lines)
-    cnt = dtsize (lines);
+  if (paras)
+    cnt = dtsize (paras);
   else
     cnt = 0;
   if (lastl) cnt++;
 
-  tp->nlines = cnt;
-  tp->line = N_NEW(cnt+1,textline_t);
+  tp->nparas = cnt;
+  tp->para = N_NEW(cnt+1,textpara_t);
 
-  lp = tp->line;
-  if (lines) {
-    sp = (sitem*)dtflatten(lines);
-    for (; sp; sp = (sitem*)dtlink(lines,(Dtlink_t*)sp)) {
+  lp = tp->para;
+  if (paras) {
+    sp = (sitem*)dtflatten(paras);
+    for (; sp; sp = (sitem*)dtlink(paras,(Dtlink_t*)sp)) {
       lp->str = (char*)(sp->s);
       lp->xshow = NULL;
       lp->just = sp->c;
@@ -309,7 +309,7 @@ mkText (const char* lastl)
     lp->just = '\0';
   }
 
-  if (lines) dtclear (lines);
+  if (paras) dtclear (paras);
 
   return tp;
 }
@@ -319,26 +319,26 @@ static htmltxt_t*
 mkText(void)
 {
     int cnt;
-    Dt_t * iline = HTMLstate.flineList;
-    fline *fl ;
+    Dt_t * ipara = HTMLstate.fparaList;
+    fpara *fl ;
     htmltxt_t *hft = NEW(htmltxt_t);
     
     if (dtsize (HTMLstate.fitemList)) 
 	appendFLineList (UNSET_ALIGN);
 
-    cnt = dtsize(iline);
-    hft->nlines = cnt;
+    cnt = dtsize(ipara);
+    hft->nparas = cnt;
     	
     if (cnt) {
 	int i = 0;
-	hft->lines = N_NEW(cnt,htextline_t);	
-    	for(fl=(fline *)dtfirst(iline); fl; fl=(fline *)dtnext(iline,fl)) {
-    	    hft->lines[i] = fl->lp;
+	hft->paras = N_NEW(cnt,htextpara_t);	
+    	for(fl=(fpara *)dtfirst(ipara); fl; fl=(fpara *)dtnext(ipara,fl)) {
+    	    hft->paras[i] = fl->lp;
     	    i++;
     	}
     }
     
-    dtclear(iline);
+    dtclear(ipara);
 
     return hft;
 }
@@ -474,9 +474,9 @@ static void cleanup (void)
   dtclear (HTMLstate.fitemList);
   fstrDisc.freef = (Dtfree_f)free_item;
 
-  flineDisc.freef = (Dtfree_f)free_fline;
-  dtclear (HTMLstate.flineList);
-  flineDisc.freef = (Dtfree_f)free_item;
+  fparaDisc.freef = (Dtfree_f)free_fpara;
+  dtclear (HTMLstate.fparaList);
+  fparaDisc.freef = (Dtfree_f)free_item;
 
   freeFontstack();
 }
@@ -669,7 +669,7 @@ parseHTML (char* txt, int* warn, int charset)
   HTMLstate.tblstack = 0;
   HTMLstate.lbl = 0;
   HTMLstate.fitemList = dtopen(&fstrDisc, Dtqueue);
-  HTMLstate.flineList = dtopen(&flineDisc, Dtqueue);
+  HTMLstate.fparaList = dtopen(&fparaDisc, Dtqueue);
 
   agxbinit (&str, SMALLBUF, buf);
   HTMLstate.str = &str;
@@ -685,10 +685,10 @@ parseHTML (char* txt, int* warn, int charset)
   }
 
   dtclose (HTMLstate.fitemList);
-  dtclose (HTMLstate.flineList);
+  dtclose (HTMLstate.fparaList);
   
   HTMLstate.fitemList = NULL;
-  HTMLstate.flineList = NULL;
+  HTMLstate.fparaList = NULL;
   HTMLstate.fontstack = NULL;
   
   agxbfree (&str);
