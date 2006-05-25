@@ -148,7 +148,7 @@ void textlayout(textpara_t * para, char *fontname, double fontsize, char **fontp
 	if (para->str && para->str[0]) {
 	    /* can't use brect on some archtectures if strlen 0 */
 	    para->width = (double) (brect[4] - brect[0]);
-	    para->height = (double) (brect[5] - brect[1]);
+	    para->height = (double) (brect[1] - brect[5]);
 	}
     }
 }
