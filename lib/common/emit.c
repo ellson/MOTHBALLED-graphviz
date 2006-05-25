@@ -1745,7 +1745,7 @@ static void emit_job(GVJ_t * job, graph_t * g)
 	return;
     }
 
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
     Output_file = job->output_file;
     Output_lang = job->output_lang;
 #endif

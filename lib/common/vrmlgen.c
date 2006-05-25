@@ -439,7 +439,7 @@ static void vrml_set_style(char **s)
     }
 }
 
-static void vrml_textline(point p, textline_t * line)
+static void vrml_textpara(point p, textpara_t * para)
 {
     char *fontlist, *err;
     pointf mp;
@@ -449,17 +449,17 @@ static void vrml_textline(point p, textline_t * line)
     if (Obj != NODE)
 	return;
     cstk[SP].pencolor_ix = vrml_resolve_color(cstk[SP].pencolor);
-    fontlist = (char*)(line->layout); /* FIXME - kluge */
+    fontlist = (char*)(para->layout); /* FIXME - kluge */
 
-    switch (line->just) {
+    switch (para->just) {
     case 'l':
 	break;
     case 'r':
-	p.x -= line->dimen.x;
+	p.x -= para->width;
 	break;
     default:
     case 'n':
-	p.x -= line->dimen.x / 2;
+	p.x -= para->width / 2;
 	break;
     }
 /*	p.y += cstk[SP].fontsz*2/3; */
@@ -468,11 +468,11 @@ static void vrml_textline(point p, textline_t * line)
 
     err = gdImageStringFT(im, brect, cstk[SP].pencolor_ix, fontlist,
 			  cstk[SP].fontsz, (Rot ? 90.0 : 0.0) * PI / 180.0,
-			  ROUND(mp.x), ROUND(mp.y), line->str);
+			  ROUND(mp.x), ROUND(mp.y), para->str);
     if (err) {
 	/* revert to builtin fonts */
 	gdImageString(im, gdFontSmall, ROUND(mp.x), ROUND(mp.y),
-		      (unsigned char *) line->str, cstk[SP].pencolor_ix);
+		      (unsigned char *) para->str, cstk[SP].pencolor_ix);
     }
 }
 
@@ -1041,7 +1041,7 @@ codegen_t VRML_CodeGen = {
     vrml_begin_edge, vrml_end_edge,
     vrml_begin_context, vrml_end_context,
     0, /* vrml_begin_anchor */ 0,	/* vrml_end_anchor */
-    vrml_set_font, vrml_textline,
+    vrml_set_font, vrml_textpara,
     vrml_set_pencolor, vrml_set_fillcolor, vrml_set_style,
     vrml_ellipse, vrml_polygon,
     vrml_bezier, vrml_polyline,

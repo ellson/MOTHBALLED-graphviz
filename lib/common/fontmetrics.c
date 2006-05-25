@@ -121,30 +121,30 @@ static double courFontWidth[] = {
 
 /* estimate_textsize:
  * Estimate width and height of text, for given face and size, in points.
- * Value is stored textline->size.
+ * Value is stored para->width.
  * NOTE: Tables are based on a font of size 1. Need to multiply by
  * fontsize to get appropriate value.
  */
 static void
-estimate_textsize(graph_t *g, textline_t * textline, char *fontname, double fontsz, char **fontpath)
+estimate_textsize(graph_t *g, textpara_t * para, char *fontname, double fontsz, char **fontpath)
 {
     double *Fontwidth;
     char c, *p;
 
-    textline->dimen.x = 0.0;
-    textline->dimen.y = fontsz;
-    textline->xshow = NULL;
-    textline->layout = NULL;
-    textline->free_layout = NULL;
+    para->width = 0.0;
+    para->width = fontsz;
+    para->xshow = NULL;
+    para->layout = NULL;
+    para->free_layout = NULL;
 
-#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE) && defined(HAVE_LIBGD)
+#if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE) && defined(HAVE_LIBGD)
     if (Output_codegen == &GD_CodeGen) {
-	double scale = GD_drawing(g)->dpi) / POINTS_PER_INCH;
+	double scale = GD_drawing(g)->dpi / POINTS_PER_INCH;
 	double fsize = fontsz * scale;	/* in pixels */
 	*fontpath = "[internal gd]";
-	if ((p = textline->str))
-	    textline->dimen.x = strlen(p) * builtinFontWd(fsize) / scale;
-	textline->dimen.y = builtinFontHt(fsize) / scale;
+	if ((p = para->str))
+	    para->width = strlen(p) * builtinFontWd(fsize) / scale;
+	para->height = builtinFontHt(fsize) / scale;
 	return;
     }
 #endif
@@ -159,19 +159,20 @@ estimate_textsize(graph_t *g, textline_t * textline, char *fontname, double font
 	*fontpath = "[internal times]";
 	Fontwidth = timesFontWidth;
     }
-    if ((p = textline->str)) {
+    if ((p = para->str)) {
 	while ((c = *p++))
-	    textline->dimen.x += Fontwidth[(unsigned char) c];
-	textline->dimen.x *= fontsz;
+	    para->width += Fontwidth[(unsigned char) c];
+	para->width *= fontsz;
     }
 }
 
-pointf textsize(graph_t *g, textline_t * textline, char *fontname, double fontsize)
+pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
 {
     char *fontpath = NULL;
+    pointf size;
 
-    if (! gvtextlayout(GD_gvc(g), textline, fontname, fontsize, &fontpath))
-	estimate_textsize(g, textline, fontname, fontsize, &fontpath);
+    if (! gvtextlayout(GD_gvc(g), para, fontname, fontsize, &fontpath))
+	estimate_textsize(g, para, fontname, fontsize, &fontpath);
 
     if (Verbose) {
 	if (emit_once(fontname)) {
@@ -179,5 +180,7 @@ pointf textsize(graph_t *g, textline_t * textline, char *fontname, double fontsi
 		    fontname, fontpath);
 	}
     }
-    return textline->dimen;
+    size.x = para->width;
+    size.y = para->height;
+    return size;
 }

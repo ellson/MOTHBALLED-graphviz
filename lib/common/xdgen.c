@@ -182,12 +182,12 @@ static void xd_str (char* pfx, char* s)
     agxbputc(xbufs[gvc->emit_state], ' ');
 }
 
-static void xd_textline(point p, textline_t * line)
+static void xd_textpara(point p, textpara_t * para)
 {
     char buf[BUFSIZ];
     int j;
 
-    switch (line->just) {
+    switch (para->just) {
     case 'l':
 	j = -1;
 	break;
@@ -199,9 +199,9 @@ static void xd_textline(point p, textline_t * line)
 	j = 0;
 	break;
     }
-    sprintf(buf, "T %d %d %d %d ", p.x, YDIR(p.y), j, (int) line->dimen.x);
+    sprintf(buf, "T %d %d %d %d ", p.x, YDIR(p.y), j, (int) para->width);
     agxbput(xbufs[gvc->emit_state], buf);
-    xd_str ("", line->str);
+    xd_str ("", para->str);
 }
 
 static void xd_ellipse(point p, int rx, int ry, int filled)
@@ -328,7 +328,7 @@ codegen_t XDot_CodeGen = {
     0, /* xd_begin_edge */ 0, /* xd_end_edge */
     0, /* xd_begin_context */ 0,	/* xd_context */
     0, /* xd_begin_anchor */ 0,	/* xd_anchor */
-    xd_set_font, xd_textline,
+    xd_set_font, xd_textpara,
     xd_set_pencolor, xd_set_fillcolor, xd_set_style,
     xd_ellipse, xd_polygon,
     xd_bezier, xd_polyline,

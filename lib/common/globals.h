@@ -58,7 +58,7 @@ extern "C" {
     EXTERN char *specificItems;
     external char *Gvfilepath;	/* Path of files allowed in 'shapefile' attrib  (also ps libs) */
 
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
     EXTERN int Output_lang;	/* POSTSCRIPT, DOT, etc. */
     EXTERN FILE *Output_file;
     EXTERN int Obj;

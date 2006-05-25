@@ -361,7 +361,7 @@ char *ps_string(char *ins, int latin)
     return agxbuse(&xb);
 }
 
-static void ps_textline(point p, textline_t * line)
+static void ps_textpara(point p, textpara_t * para)
 {
     double adj;
 
@@ -369,22 +369,22 @@ static void ps_textline(point p, textline_t * line)
 	return;
     if (*S[SP].pencolor == '\0')
 	return;
-    if (line->xshow) {
-	switch (line->just) {
+    if (para->xshow) {
+	switch (para->just) {
 	case 'l':
 	    break;
 	case 'r':
-	    p.x -= line->dimen.x;
+	    p.x -= para->width;
 	    break;
 	default:
 	case 'n':
-	    p.x -= line->dimen.x / 2;
+	    p.x -= para->width / 2;
 	    break;
 	}
 	fprintf(Output_file, "%d %d moveto\n%s\n[%s]\nxshow\n",
-		p.x, p.y, ps_string(line->str,isLatin1), line->xshow);
+		p.x, p.y, ps_string(para->str,isLatin1), para->xshow);
     } else {
-	switch (line->just) {
+	switch (para->just) {
 	case 'l':
 	    adj = 0.0;
 	    break;
@@ -397,7 +397,7 @@ static void ps_textline(point p, textline_t * line)
 	    break;
 	}
 	fprintf(Output_file, "%d %d moveto %.1f %.1f %s alignedtext\n",
-		p.x, p.y, line->dimen.x, adj, ps_string(line->str,isLatin1));
+		p.x, p.y, para->width, adj, ps_string(para->str,isLatin1));
     }
 }
 
@@ -698,7 +698,7 @@ codegen_t PS_CodeGen = {
     ps_begin_edge, 0,		/* ps_end_edge */
     ps_begin_context, ps_end_context,
     0, /* ps_begin_anchor */ 0,	/* ps_end_anchor */
-    ps_set_font, ps_textline,
+    ps_set_font, ps_textpara,
     ps_set_pencolor, ps_set_fillcolor, ps_set_style,
     ps_ellipse, ps_polygon,
     ps_bezier, ps_polyline,

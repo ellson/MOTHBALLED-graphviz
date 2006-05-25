@@ -468,14 +468,14 @@ static void dia_set_style(char **s)
     /* if (cp->style_was_set) dia_style(cp); */
 }
 
-static void dia_textline(point p, textline_t * line)
+static void dia_textpara(point p, textpara_t * para)
 {
     int anchor;
     char *string;
     pointf mp;
     context_t *cp;
 
-    string = xml_string(line->str);
+    string = xml_string(para->str);
     if (strlen(string) == 0) {
 	/* its zero length, don't draw */
 	return;
@@ -485,7 +485,7 @@ static void dia_textline(point p, textline_t * line)
 	/* its invisible, don't draw */
 	return;
     }
-    switch (line->just) {
+    switch (para->just) {
     case 'l':
 	anchor = 0;
 	break;
@@ -533,8 +533,8 @@ static void dia_textline(point p, textline_t * line)
     dia_fputs("      </dia:attribute>\n");
     dia_fputs("      <dia:attribute name=\"obj_bb\">\n");
     dia_printf("        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
-	       mp.x - (Scale * (line->dimen.x) / 2.), mp.y - 0.4,
-	       mp.x + (Scale * (line->dimen.x) / 2.), mp.y + 0.4);
+	       mp.x - (Scale * (para->width) / 2.), mp.y - 0.4,
+	       mp.x + (Scale * (para->width) / 2.), mp.y + 0.4);
     dia_fputs("      </dia:attribute>\n");
     dia_fputs("    </dia:object>\n");
 }
@@ -955,7 +955,7 @@ codegen_t DIA_CodeGen = {
     dia_begin_edge, dia_end_edge,
     dia_begin_context, dia_end_context,
     0, /* dia_begin_anchor */ 0,	/* dia_end_anchor */
-    dia_set_font, dia_textline,
+    dia_set_font, dia_textpara,
     dia_set_pencolor, dia_set_fillcolor, dia_set_style,
     dia_ellipse, dia_polygon,
     dia_bezier, dia_polyline,

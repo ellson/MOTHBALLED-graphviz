@@ -267,12 +267,19 @@ LIBS=$save_LIBS
 dnl -----------------------------------
 dnl old codegens
 
-AC_ARG_ENABLE(codegens,
-  [AC_HELP_STRING([--disable-codegens], [don't build old codegens])])
-if test "x$enable_codegens" = "xno"; then
-  AC_DEFINE(DISABLE_CODEGENS,1,[Define if you don't want the old codegens])
+AC_ARG_WITH(codegens,
+  [AC_HELP_STRING([--with-codegens],
+                  [use old codegens])])
+
+### default is to build with codegens
+if test "x$with_codegens" != "xno"; then
+	with_codegens=yes
 fi
-AM_CONDITIONAL(DISABLE_CODEGENS, [test "x$enable_codegens" = "xno"])
+
+if test "x$with_codegens" = "xyes"; then
+  AC_DEFINE(WITH_CODEGENS,1,[Define if you want the old codegens])
+fi
+AM_CONDITIONAL(WITH_CODEGENS, [test "x$with_codegens" = "xyes"])
 
 dnl -----------------------------------
 dnl ElectricFence support for debugging
@@ -1098,11 +1105,22 @@ AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$with_ipsepcola" = "xyes"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PANGO, CAIRO et.al.
                                                                                 
+AC_ARG_WITH(libgd,
+  [AC_HELP_STRING([--with-pangocairo],
+                  [use pangocairo library])])
+
+### default is to build with pangocairo
+if test "x$with_pangocairo" != "xno"; then
+	with_pangocairo=yes
+fi
+
+if test "x$with_pangocairo" = "xyes"; then
 PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.0],
 	[HAVE_PANGOCAIRO=1
 	AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
 		[Define if you have the pango library with cairo support])],
 	[AC_MSG_WARN(pangocairo library not available)])
+fi
 AC_SUBST(PANGOCAIRO_CFLAGS)
 AC_SUBST(PANGOCAIRO_LIBS)
 AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
@@ -1110,8 +1128,6 @@ AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
                                                                                 
-### default is to not build with libgd
-
 AC_ARG_WITH(libgd,
   [AC_HELP_STRING([--with-libgd],
                   [use gd library])])
@@ -1120,6 +1136,7 @@ AC_ARG_WITH(mylibgd,
   [AC_HELP_STRING([--with-mylibgd],
                   [use internal gd library in preference to any installed libgd])])
 
+### default is to build with libgd
 if test "x$with_libgd" != "xno"; then
 	with_libgd=yes
 fi

@@ -375,7 +375,7 @@ static char *fig_string(char *s)
     return buf;
 }
 
-static void fig_textline(point p, textline_t * line)
+static void fig_textpara(point p, textpara_t * para)
 {
     int object_code = 4;	/* always 4 for text */
     int sub_type = 0;		/* text justification */
@@ -390,7 +390,7 @@ static void fig_textline(point p, textline_t * line)
     double length = 0.0;
     point mp;
 
-    switch (line->just) {
+    switch (para->just) {
     case 'l':
 	sub_type = 0;
 	break;
@@ -410,7 +410,7 @@ static void fig_textline(point p, textline_t * line)
 	    "%d %d %d %d %d %d %.1f %.4f %d %.1f %.1f %d %d %s\\001\n",
 	    object_code, sub_type, color, depth, pen_style, font,
 	    font_size, angle, font_flags, height, length, mp.x, mp.y,
-	    fig_string(line->str));
+	    fig_string(para->str));
 }
 
 static void fig_bezier(point * A, int n, int arrow_at_start,
@@ -620,7 +620,7 @@ codegen_t FIG_CodeGen = {
     0, /* fig_begin_edge */  0,	/* fig_end_edge */
     fig_begin_context, fig_end_context,
     0, /* fig_begin_anchor */ 0,	/* fig_end_anchor */
-    fig_set_font, fig_textline,
+    fig_set_font, fig_textpara,
     fig_set_pencolor, fig_set_fillcolor, fig_set_style,
     fig_ellipse, fig_polygon,
     fig_bezier, fig_polyline,

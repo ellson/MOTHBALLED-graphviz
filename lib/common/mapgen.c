@@ -1110,7 +1110,7 @@ codegen_t MAP_CodeGen = {
     map_begin_edge, 0,		/* map_end_edge */
     0, /* map_begin_context */ 0,	/* map_end_context */
     map_begin_anchor, map_end_anchor,
-    0, /* map_set_font */ 0,	/* map_textline */
+    0, /* map_set_font */ 0,	/* map_textpara */
     0, /* map_set_color */ 0, /* map_set_color */ 0,	/* map_set_style */
     map_ellipse, map_polygon,
     0, /* map_bezier */ 0,	/* map_polyline */

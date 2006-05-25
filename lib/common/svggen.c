@@ -735,13 +735,13 @@ static void svg_set_style(char **s)
     /* if (cp->style_was_set) svg_style(cp); */
 }
 
-static void svg_textline(point p, textline_t * line)
+static void svg_textpara(point p, textpara_t * para)
 {
     char *anchor, *string;
     point mp;
     context_t *cp;
 
-    string = xml_string(line->str);
+    string = xml_string(para->str);
     if (!string[0])
 	return;
 
@@ -752,22 +752,22 @@ static void svg_textline(point p, textline_t * line)
     }
 #if 0
 /* adobe svg doesn't like the dx propert */
-    if (line->xshow) {
+    if (para->xshow) {
 	anchor = "start";
-	switch (line->just) {
+	switch (para->just) {
 	case 'l':
 	    break;
 	case 'r':
-	    p.x -= line->width;
+	    p.x -= para->width;
 	    break;
 	default:
 	case 'n':
-	    p.x -= line->width / 2;
+	    p.x -= para->width / 2;
 	    break;
 	}
     } else {
 #endif
-	switch (line->just) {
+	switch (para->just) {
 	case 'l':
 	    anchor = "start";
 	    break;
@@ -795,7 +795,7 @@ static void svg_textline(point p, textline_t * line)
 /* adobe svg doesn't like the dx propert */
     if (line->xshow) {
 	svg_fputs("\" dx=\"");
-	svg_fputs(line->xshow);
+	svg_fputs(para->xshow);
     }
 #endif
     svg_fputs(">");
@@ -961,7 +961,7 @@ codegen_t SVG_CodeGen = {
     svg_begin_edge, svg_end_edge,
     svg_begin_context, svg_end_context,
     svg_begin_anchor, svg_end_anchor,
-    svg_set_font, svg_textline,
+    svg_set_font, svg_textpara,
     svg_set_pencolor, svg_set_fillcolor, svg_set_style,
     svg_ellipse, svg_polygon,
     svg_bezier, svg_polyline,

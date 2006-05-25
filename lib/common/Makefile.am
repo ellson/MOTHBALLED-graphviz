@@ -10,20 +10,19 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt @GD_INCLUDES@ @EXPAT_INCLUDES@ @Z_INCLUDES@
 
-pkginclude_HEADERS = logic.h arith.h geom.h color.h types.h globals.h
+pkginclude_HEADERS = logic.h arith.h geom.h color.h types.h globals.h textpara.h usershape.h
 noinst_HEADERS = render.h utils.h memory.h \
 	geomprocs.h colorprocs.h colortbl.h entities.h \
 	const.h macros.h htmllex.h htmltable.h pointset.h
 noinst_LTLIBRARIES = libcommon.la
 
-if !DISABLE_CODEGENS
 if WITH_LIBGD
-CODEGENS = diagen.c figgen.c hpglgen.c gdgen.c mapgen.c mifgen.c mpgen.c \
-	picgen.c psgen.c svggen.c vrmlgen.c vtxgen.c ps.txt xdgen.c color_names
-else
-CODEGENS = diagen.c figgen.c hpglgen.c mapgen.c mifgen.c mpgen.c \
-	picgen.c psgen.c svggen.c vtxgen.c ps.txt xdgen.c color_names
+GD_CODEGENS = gdgen.c vrmlgen.c
 endif
+
+if WITH_CODEGENS
+CODEGENS = $(GD_CODEGENS) diagen.c figgen.c hpglgen.c mapgen.c mifgen.c mpgen.c \
+	picgen.c psgen.c svggen.c vtxgen.c ps.txt xdgen.c color_names
 endif
 
 

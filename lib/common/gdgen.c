@@ -509,7 +509,7 @@ void gd_missingfont(char *err, char *fontreq)
 extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge,
     gdFontGiant;
 
-#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
+#if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE)
 /* builtinFont:
  * Map fontsz in pixels to builtin font.
  */
@@ -540,7 +540,7 @@ int builtinFontWd(double fontsz)
 }
 #endif
 
-static void gd_textline(point p, textline_t * line)
+static void gd_textpara(point p, textpara_t * para)
 {
     char *str, *fontlist, *err;
     pointf mp, ep;
@@ -567,24 +567,24 @@ static void gd_textline(point p, textline_t * line)
     else
 	strex.flags |= gdFTEX_FONTCONFIG;
 
-    str = line->str;
-    fontlist = (char *)(line->layout); /* FIXME - kluge */
+    str = para->str;
+    fontlist = (char *)(para->layout); /* FIXME - kluge */
     fontsz = cstk[SP].fontsz;
 
-    switch (line->just) {
+    switch (para->just) {
     case 'l':
 	mp.x = p.x;
 	break;
     case 'r':
-	mp.x = p.x - line->dimen.x;
+	mp.x = p.x - para->width;
 	break;
     default:
     case 'n':
-	mp.x = p.x - line->dimen.x / 2;
+	mp.x = p.x - para->width / 2;
 	break;
     }
     ep.y = mp.y = p.y;
-    ep.x = mp.x + line->dimen.x;
+    ep.x = mp.x + para->width;
 
     mp = gdpt(mp);
     if (fontsz <= FONTSIZE_MUCH_TOO_SMALL) {
@@ -605,7 +605,7 @@ static void gd_textline(point p, textline_t * line)
 #endif
 #if 0
 	fprintf(stderr,
-		"textline: font=%s size=%g pos=%g,%g width=%g dpi=%d width/dpi=%g\n",
+		"textpara: font=%s size=%g pos=%g,%g width=%g dpi=%d width/dpi=%g\n",
 		fontlist, fontsz, mp.x, mp.y, (double) (brect[4] - brect[0]),
 		strex.hdpi,
 		(((double) (brect[4] - brect[0])) / strex.hdpi));
@@ -987,7 +987,7 @@ codegen_t GD_CodeGen = {
     0, /* gd_begin_edge */ 0,	/* gd_end_edge */
     gd_begin_context, gd_end_context,
     0, /* gd_begin_anchor */ 0,	/* gd_end_anchor */
-    gd_set_font, gd_textline,
+    gd_set_font, gd_textpara,
     gd_set_pencolor, gd_set_fillcolor, gd_set_style,
     gd_ellipse, gd_polygon,
     gd_bezier, gd_polyline,

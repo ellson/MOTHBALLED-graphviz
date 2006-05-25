@@ -635,32 +635,31 @@ static void hpgl_set_style(char **s)
     }
 }
 
-static void hpgl_textline(point p, textline_t * line)
+static void hpgl_textpara(point p, textpara_t * para)
 {
     char buffer[128];
-    char *str = line->str;
 
     if (isInvis())
 	return;
 
-    switch (line->just) {
+    switch (para->just) {
     case 'l':
 	break;
     case 'r':
-	p.x -= line->dimen.x;
+	p.x -= para->width;
 	break;
     default:
     case 'n':
-	p.x -= line->dimen.x / 2;
+	p.x -= para->width / 2;
 	break;
     }
 
     sprintf(buffer, "PA%d,%d%s", CX(p.x), CY(p.y), Sep);
     output(buffer);
-    output_text(str);
+    output_text(para->str);
 
 #ifdef HPDEBUG
-    fprintf(stderr, "text =%s=\n", str);
+    fprintf(stderr, "text =%s=\n", para->str);
 #endif
 }
 
@@ -847,7 +846,7 @@ codegen_t HPGL_CodeGen = {
     0, /* hpgl_begin_edge */ 0,	/* hpgl_end_edge */
     hpgl_begin_context, hpgl_end_context,
     0, /* hpgl_begin_anchor */ 0,	/* hpgl_end_anchor */
-    hpgl_set_font, hpgl_textline,
+    hpgl_set_font, hpgl_textpara,
     hpgl_set_color, hpgl_set_color, hpgl_set_style,
     hpgl_ellipse, hpgl_polygon,
     hpgl_bezier, hpgl_polyline,
