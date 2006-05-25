@@ -33,7 +33,7 @@ pdf_DATA = $(pdf)
 html_DATA = $(html)
 endif
 
-if !DISABLE_CODEGENS
+if WITH_CODEGENS
 CODEGENS = tkgen.c
 endif
 

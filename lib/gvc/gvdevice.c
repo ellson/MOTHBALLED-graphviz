@@ -40,13 +40,13 @@ int gvdevice_select(GVJ_t * job, char *str)
     GVC_t *gvc = job->gvc;
     gvplugin_available_t *plugin;
     gvplugin_installed_t *typeptr;
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
     codegen_info_t *cg_info;
 #endif
 
     plugin = gvplugin_load(gvc, API_device, str);
     if (plugin) {
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
 	if (strcmp(plugin->packagename, "cg") == 0) {
 	    cg_info = (codegen_info_t *) (plugin->typeptr);
 	    job->codegen = cg_info->cg;
@@ -59,7 +59,7 @@ int gvdevice_select(GVJ_t * job, char *str)
 		(gvdevice_features_t *) (typeptr->features);
 	    job->device.id = typeptr->id;
 	    return GVRENDER_PLUGIN;
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
 	}
 #endif
     }
@@ -88,7 +88,7 @@ void gvdevice_finalize(GVC_t * gvc)
 	    gvde->finalize(firstjob);
 	}
     }
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = firstjob->codegen;
 

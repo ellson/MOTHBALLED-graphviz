@@ -50,7 +50,7 @@ extern void *GDHandleTable;
 extern int Gdtclft_Init(Tcl_Interp *);
 #endif
 
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
 extern codegen_t TK_CodeGen;
 static codegen_info_t cg[] = { {&TK_CodeGen, "tk", TK},
 				{NULL, NULL, 0}, };
@@ -1629,7 +1629,7 @@ __EXPORT__
 int Tcldot_Init(Tcl_Interp * interp)
 {
     GVC_t *gvc;
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
     codegen_info_t *p;
 #endif
 
@@ -1659,7 +1659,7 @@ int Tcldot_Init(Tcl_Interp * interp)
 
     /* configure for available plugins and codegens */
     gvconfig(gvc, FALSE);
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
     /* additional codegens */
     for (p = cg; p->name; ++p)
         gvplugin_install(gvc, API_render, p->name, 0, "cg", NULL,

@@ -385,9 +385,9 @@ static void tk_set_style(char **s)
     }
 }
 
-static void tk_textline(point p, textline_t * line)
+static void tk_textpara(point p, textpara_t * para)
 {
-    char *str = line->str;
+    char *str = para->str;
     double fontsz = cstk[SP].fontsz;
 
     tkgen_start_item("text");
@@ -397,7 +397,7 @@ static void tk_textline(point p, textline_t * line)
     if (cstk[SP].pencolor[0])
 	tkgen_append_attribute("-fill", cstk[SP].pencolor);
     tkgen_append_attribute("-font", fontname);
-    switch (line->just) {
+    switch (para->just) {
     case 'l':
 	tkgen_append_attribute("-anchor", "w");
 	break;
@@ -545,7 +545,7 @@ codegen_t TK_CodeGen = {
     tk_begin_edge, 0,		/* tk_end_edge */
     tk_begin_context, tk_end_context,
     0, /* tk_begin_anchor */ 0,	/* tk_end_anchor */
-    tk_set_font, tk_textline,
+    tk_set_font, tk_textpara,
     tk_set_pencolor, tk_set_fillcolor, tk_set_style,
     tk_ellipse, tk_polygon,
     tk_bezier, tk_polyline,

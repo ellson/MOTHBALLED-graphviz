@@ -140,7 +140,7 @@ void write_plain_ext(GVJ_t * job, graph_t * g, FILE * f)
 
 void write_extended_dot(GVJ_t *job, graph_t *g, FILE *f)
 {
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
 	attach_attrs(g);
 	extend_attrs(job, g, s_arrows, e_arrows);
 	agwrite(g, f);

@@ -19,6 +19,9 @@
 
 #include "gvplugin.h"
 #include "gvcjob.h"
+#include "color.h"
+#include "textpara.h"
+#include "usershape.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -48,7 +51,7 @@ extern "C" {
 	void (*begin_anchor) (GVJ_t * job, char *href, char *tooltip,
 			      char *target);
 	void (*end_anchor) (GVJ_t * job);
-	void (*textline) (GVJ_t * job, pointf p, textline_t * str);
+	void (*textpara) (GVJ_t * job, pointf p, textpara_t * str);
 	void (*resolve_color) (GVJ_t * job, gvcolor_t * color);
 	void (*ellipse) (GVJ_t * job, pointf * A, int filled);
 	void (*polygon) (GVJ_t * job, pointf * A, int n, int filled);

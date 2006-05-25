@@ -57,7 +57,7 @@ extern "C" {
 /* textlayout */
 
     extern int gvtextlayout_select(GVC_t * gvc);
-    extern bool gvtextlayout(GVC_t *gvc, textline_t *textline,
+    extern bool gvtextlayout(GVC_t *gvc, textpara_t *para,
                       char *fontname, double fontsize, char **fontpath);
 
 /* usershapes */
@@ -100,7 +100,7 @@ extern "C" {
     extern void gvrender_end_anchor(GVJ_t * job);
     extern void gvrender_set_font(GVJ_t * job, char *fontname,
 			double fontsize);
-    extern void gvrender_textline(GVJ_t * job, pointf p, textline_t * str);
+    extern void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para);
     extern void gvrender_set_pencolor(GVJ_t * job, char *name);
     extern void gvrender_set_fillcolor(GVJ_t * job, char *name);
     extern void gvrender_set_style(GVJ_t * job, char **s);

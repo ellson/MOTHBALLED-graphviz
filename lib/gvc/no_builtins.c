@@ -14,6 +14,10 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "gvplugin.h"
 
 const lt_symlist_t lt_preloaded_symbols[] = { { 0, 0 } };

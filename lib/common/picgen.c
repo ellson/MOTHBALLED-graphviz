@@ -407,22 +407,22 @@ static char *pic_string(char *s)
     return buf;
 }
 
-static void pic_textline(point p, textline_t * line)
+static void pic_textpara(point p, textpara_t * para)
 {
     pointf pf;
     short flag = 0;
     double fontsz = S[SP].size;
 
-    switch (line->just) {
+    switch (para->just) {
     case 'l':
 	p.x = p.x;
 	break;
     case 'r':
-	p.x = p.x - line->dimen.x;
+	p.x = p.x - para->width;
 	break;
     default:
     case 'n':
-	p.x = p.x - line->dimen.x / 2;
+	p.x = p.x - para->width / 2;
 	break;
     }
     pf = cvt2ptf(p);
@@ -432,7 +432,7 @@ static void pic_textline(point p, textline_t * line)
 #endif
     /* Why on earth would we do this either. But it works. SCN 2/26/2002 */
     pf.y += fontsz / (3.0 * POINTS_PER_INCH);
-    pf.x += line->dimen.x / (2.0 * POINTS_PER_INCH);
+    pf.x += para->width / (2.0 * POINTS_PER_INCH);
     if (!(S[SP].size)) {	/* size was never set in this or hierarchically higher context */
 	pic_set_font(S[SP].font, fontsz);	/* primarily to output font and/or size directives */
 	for (flag = SP; ((S[flag].size = fontsz), flag); flag--)	/* set size in contexts */
@@ -445,7 +445,7 @@ static void pic_textline(point p, textline_t * line)
 	pic_set_font(S[SP - 1].font, fontsz);
     }
     fprintf(Output_file, "\"%s\" at (%.5f,%.5f);\n",
-	    pic_string(line->str), Scale * pf.x, Scale * pf.y);
+	    pic_string(para->str), Scale * pf.x, Scale * pf.y);
     if (flag)
 	pic_end_context();
 }
@@ -609,7 +609,7 @@ codegen_t PIC_CodeGen = {
     pic_begin_edge, 0,		/* pic_end_edge */
     pic_begin_context, pic_end_context,
     0, /* pic_begin_anchor */ 0,	/* pic_end_anchor */
-    pic_set_font, pic_textline,
+    pic_set_font, pic_textpara,
     pic_set_color, pic_set_color, pic_set_style,
     pic_ellipse, pic_polygon,
     pic_bezier, pic_polyline,

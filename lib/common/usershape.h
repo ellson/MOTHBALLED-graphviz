@@ -14,24 +14,25 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include "gvplugin.h"
+#ifndef USERSHAPE_H
+#define USERSHAPE_H
 
-struct lt_symlist
-{
-    const char *name;
-    void* address;
-};
-
-#if 1
-extern gvplugin_library_t gvplugin_dot_layout_LTX_library;
-extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
-
-const struct lt_symlist lt_preloaded_symbols[] = {
-    { "gvplugin_dot_layout_LTX_library", (void*)(&gvplugin_dot_layout_LTX_library) },
-    { "gvplugin_neato_layout_LTX_library", (void*)(&gvplugin_neato_layout_LTX_library) },
-    { 0, 0 }
-};
-#else
-const struct lt_symlist lt_preloaded_symbols[] = {{0,0,},};
+#ifdef __cplusplus
+extern "C" {
 #endif
 
+    typedef enum { FT_BMP, FT_GIF, FT_PNG, FT_JPEG, FT_PDF, FT_PS, FT_EPS } imagetype_t;
+
+    typedef struct usershape_s {
+	char *name;
+        FILE *f;
+        imagetype_t type;
+        unsigned int w, h, dpi;
+        void *data;                   /* data loaded by a renderer */
+        void (*datafree)(void *data); /* renderer's function for freeing data */
+    } usershape_t;
+
+#ifdef __cplusplus
+}
+#endif
+#endif

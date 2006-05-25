@@ -21,13 +21,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "gd.h"
-
-/* FIXME - shouldn't need this */
-#include "types.h"
-
 #include "gvplugin_textlayout.h"
+
+#ifdef HAVE_LIBGD
+#include "gd.h"
 
 /* fontsize at which text is omitted entirely */
 #define FONTSIZE_MUCH_TOO_SMALL 0.15
@@ -96,7 +93,7 @@ char *gd_alternate_fontlist(char *font)
 #endif				/* HAVE_GD_FONTCONFIG */
 }
 
-void textlayout(textline_t * textline, char *fontname, double fontsize, char **fontpath)
+void textlayout(textpara_t * para, char *fontname, double fontsize, char **fontpath)
 {
     static char *fntpath;
     char *fontlist, *err;
@@ -113,13 +110,13 @@ void textlayout(textline_t * textline, char *fontname, double fontsize, char **f
     else
 	strex.flags |= gdFTEX_FONTCONFIG;
 
-    textline->dimen.x = 0.0;
-    textline->dimen.y = 0.0;
-    textline->xshow = NULL;
+    para->width = 0.0;
+    para->width = 0.0;
+    para->xshow = NULL;
 
     fontlist = gd_alternate_fontlist(fontname);
-    textline->layout = (void*)fontlist;
-    textline->free_layout = NULL; /* no need to free fontlist (??) */
+    para->layout = (void*)fontlist;
+    para->free_layout = NULL; /* no need to free fontlist (??) */
 
 
     if (fontlist) {
@@ -133,14 +130,14 @@ void textlayout(textline_t * textline, char *fontname, double fontsize, char **f
 	}
 	/* call gdImageStringFT with null *im to get brect and to set font cache */
 	err = gdImageStringFTEx(NULL, brect, -1, fontlist,
-				fontsize, 0, 0, 0, textline->str, &strex);
+				fontsize, 0, 0, 0, para->str, &strex);
 
 	if (err)
 	    return;
 
 	if (strex.xshow) {
-	    /* transfer malloc'ed xshow string to textline */
-	    textline->xshow = strex.xshow;
+	    /* transfer malloc'ed xshow string to para */
+	    para->xshow = strex.xshow;
 	    strex.xshow = NULL;
 	}
 
@@ -148,10 +145,10 @@ void textlayout(textline_t * textline, char *fontname, double fontsize, char **f
 	    free(fntpath);
 	*fontpath = fntpath = strex.fontpath;
 
-	if (textline->str && textline->str[0]) {
+	if (para->str && para->str[0]) {
 	    /* can't use brect on some archtectures if strlen 0 */
-	    textline->dimen.x = (double) (brect[4] - brect[0]);
-	    textline->dimen.y = (double) (brect[5] - brect[1]);
+	    para->width = (double) (brect[4] - brect[0]);
+	    para->height = (double) (brect[5] - brect[1]);
 	}
     }
 }
@@ -159,8 +156,11 @@ void textlayout(textline_t * textline, char *fontname, double fontsize, char **f
 gvtextlayout_engine_t textlayout_engine = {
     textlayout,
 };
+#endif
 
 gvplugin_installed_t gvtextlayout_gd_types[] = {
+#ifdef HAVE_LIBGD
     {0, "textlayout", 2, &textlayout_engine, NULL},
+#endif
     {0, NULL, 0, NULL, NULL}
 };

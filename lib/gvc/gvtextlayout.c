@@ -25,6 +25,7 @@
 #include "const.h"
 #include "types.h"
 #include "gvplugin_textlayout.h"
+#include "gvcint.h"
 #include "gvcproc.h"
 
 int gvtextlayout_select(GVC_t * gvc)
@@ -41,12 +42,12 @@ int gvtextlayout_select(GVC_t * gvc)
     return NO_SUPPORT;
 }
 
-bool gvtextlayout(GVC_t *gvc, textline_t *textline, char *fontname, double fontsize, char **fontpath)
+bool gvtextlayout(GVC_t *gvc, textpara_t *para, char *fontname, double fontsize, char **fontpath)
 {
     gvtextlayout_engine_t *gvte = gvc->textlayout.engine;
 
     if (gvte && gvte->textlayout) {
-	gvte->textlayout(textline, fontname, fontsize, fontpath);
+	gvte->textlayout(para, fontname, fontsize, fontpath);
 	return TRUE;
     }
     return FALSE;

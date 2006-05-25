@@ -110,7 +110,7 @@ emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env, void *obj)
     double fsize;
 
     /* make sure that there is something to do */
-    if (tp->nlines < 1)
+    if (tp->nparas < 1)
       return;
 
       /* set font attributes */
@@ -136,20 +136,20 @@ emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env, void *obj)
      p.x = env->p.x + ((double)(tp->box.UR.x + tp->box.LL.x))/2.0;
      p.y = env->p.y + ((double)(tp->box.UR.y + tp->box.LL.y))/2.0;
 
-     emit_textlines(job, tp->nlines, tp->line, p,
+     emit_textparas(job, tp->nparas, tp->para, p,
      halfwidth_x, fname, fsize, fcolor);
      }
 #endif
 
 static void 
-emit_htextlines(GVJ_t* job, int nlines, htextline_t* lines, pointf p,
+emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
          double halfwidth_x, char* fname, double fsize, char* fcolor, box b)
 {
     int i,j;
     double tmp, center_x, left_x, right_x, fsize_;
     double offset=0.0;
     char *fname_ , *fcolor_;
-    textline_t tl;
+    textpara_t tl;
     pointf p_ = {0.0, 0.0};
     textitem_t* ti;
 	
@@ -158,8 +158,8 @@ emit_htextlines(GVJ_t* job, int nlines, htextline_t* lines, pointf p,
     right_x = center_x + halfwidth_x;
 
     gvrender_begin_context(job);
-    for(i=0; i<nlines; i++) {
-	switch (lines[i].just) {
+    for(i=0; i<nparas; i++) {
+	switch (paras[i].just) {
 	case 'l':
 	    p_.x = left_x;
 	    p.x = left_x;
@@ -176,13 +176,13 @@ emit_htextlines(GVJ_t* job, int nlines, htextline_t* lines, pointf p,
 	}
 
 	if (i == 0) {
-	    p_.y = p.y + (double)(b.UR.y-b.LL.y)/2 - lines[i].lfsize * 0.9 ;
+	    p_.y = p.y + (double)(b.UR.y-b.LL.y)/2 - paras[i].lfsize * 0.9 ;
 	    tmp = ROUND(p_.y);  /* align with integer points */
 	    p_.y = (double)tmp;
 	}
 
-	ti = lines[i].items;
-	for(j=0; j<lines[i].nitems; j++) {
+	ti = paras[i].items;
+	for(j=0; j<paras[i].nitems; j++) {
 	    if (ti->font && (ti->font->size > 0))
 		fsize_ = ti->font->size;
 	    else
@@ -202,18 +202,18 @@ emit_htextlines(GVJ_t* job, int nlines, htextline_t* lines, pointf p,
 	    tl.str = ti->str;
 	    tl.xshow = ti->xshow;
 	    tl.layout = ti->layout;
-	    tl.dimen.x = lines[i].size;
-	    tl.dimen.y = lines[i].lfsize;
-	    tl.just = lines[i].just;
+	    tl.width = paras[i].size;
+	    tl.height = paras[i].lfsize;
+	    tl.just = paras[i].just;
 
-	    gvrender_textline(job, p_, &tl);
+	    gvrender_textpara(job, p_, &tl);
 	    offset += ti->size;
 	    p_.x = p.x + offset;
             ti++;
 	}
-	/* position for next line */
-	if(i != nlines-1)
-	    p_.y -= lines[i+1].lfsize * LINESPACING;
+	/* position for next para */
+	if(i != nparas-1)
+	    p_.y -= paras[i+1].lfsize * LINESPACING;
 	offset = 0.0;
     }
 
@@ -230,7 +230,7 @@ emit_html_txt(GVJ_t* job, htmltxt_t* tp, htmlenv_t* env, void* obj)
     double fsize;
 
     /* make sure that there is something to do */
-    if (tp->nlines < 1)
+    if (tp->nparas < 1)
 	return;
 
     fsize = env->finfo.size;
@@ -241,7 +241,7 @@ emit_html_txt(GVJ_t* job, htmltxt_t* tp, htmlenv_t* env, void* obj)
     p.x = env->p.x + ((double) (tp->box.UR.x + tp->box.LL.x)) / 2.0;
     p.y = env->p.y + ((double) (tp->box.UR.y + tp->box.LL.y)) / 2.0;
 
-    emit_htextlines(job, tp->nlines, tp->lines, p, halfwidth_x, fname,
+    emit_htextparas(job, tp->nparas, tp->paras, p, halfwidth_x, fname,
 		    fsize, fcolor, tp->box);
 }
 
@@ -486,16 +486,16 @@ void free_html_data(htmldata_t * dp)
 #ifdef OLD
 void free_html_text(htmltxt_t * tp)
 {
-    textline_t *lp;
+    textpara_t *lp;
 
     if (!tp)
 	return;
-    lp = tp->line;
+    lp = tp->para;
     while (lp->str) {
 	free(lp->str);
 	lp++;
     }
-    free(tp->line);
+    free(tp->para);
     if (tp->font)
 	free_html_font(tp->font);
     free(tp);
@@ -504,14 +504,14 @@ void free_html_text(htmltxt_t * tp)
 
 void free_html_text(htmltxt_t* t)
 {
-    htextline_t *tl;
+    htextpara_t *tl;
     textitem_t *ti;
     int i, j;
 
     if (!t) return;
 
-    tl = t->lines;
-    for (i = 0; i < t->nlines; i++) {
+    tl = t->paras;
+    for (i = 0; i < t->nparas; i++) {
 	ti = tl->items;
 	for (j = 0; j < tl->nitems; j++) {
 	    if (ti->str) free (ti->str);
@@ -523,7 +523,7 @@ void free_html_text(htmltxt_t* t)
 	tl++;
     }
     free(tl->items);
-    free(t->lines);
+    free(t->paras);
     free(t);
 }
 
@@ -711,7 +711,7 @@ size_html_txt(graph_t *g, htmltxt_t * txt, htmlenv_t * env)
     double fsize;
     char *fname;
     char *news = NULL;
-    textline_t *lp = txt->line;
+    textpara_t *lp = txt->para;
     pointf size;
 
     if (txt->font) {
@@ -751,10 +751,10 @@ size_html_txt(graph_t *g, htmltxt_t * txt, htmlenv_t * env)
 	lp++;
     }
     txt->box.UR.x = xsize;
-    if (txt->nlines == 1)
+    if (txt->nparas == 1)
 	txt->box.UR.y = (int) (size.y);
     else
-	txt->box.UR.y = txt->nlines * (int) (size.y * LINESPACING);
+	txt->box.UR.y = txt->nparas * (int) (size.y * LINESPACING);
     return 0;
 }
 #endif
@@ -785,7 +785,7 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
     pointf sz;
     int i, j, w = 0, width = 0;
     char *fname;
-    textline_t lp;
+    textpara_t lp;
     char* (*substrFn) (char*, htmlenv_t* env);
 
     switch (agobjkind(env->obj)) {
@@ -802,16 +802,16 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	substrFn = NULL;
     }
 
-    for (i = 0; i < ftxt->nlines; i++) {
-	for (j = 0; j < ftxt->lines[i].nitems; j++) {
-	    lp.str = substrFn (ftxt->lines[i].items[j].str, env);
-	    if (ftxt->lines[i].items[j].font) {
-		if (ftxt->lines[i].items[j].font->size > 0)
-		    fsize = ftxt->lines[i].items[j].font->size;
+    for (i = 0; i < ftxt->nparas; i++) {
+	for (j = 0; j < ftxt->paras[i].nitems; j++) {
+	    lp.str = substrFn (ftxt->paras[i].items[j].str, env);
+	    if (ftxt->paras[i].items[j].font) {
+		if (ftxt->paras[i].items[j].font->size > 0)
+		    fsize = ftxt->paras[i].items[j].font->size;
 		else
 		    fsize = env->finfo.size;
-		if (ftxt->lines[i].items[j].font->name)
-		    fname = ftxt->lines[i].items[j].font->name;
+		if (ftxt->paras[i].items[j].font->name)
+		    fname = ftxt->paras[i].items[j].font->name;
 		else
 		    fname = env->finfo.name;
 	    } else {
@@ -820,18 +820,18 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	    }
 	    sz = textsize(g, &lp, fname, fsize);
 	    w = sz.x;
-	    free (ftxt->lines[i].items[j].str);
-	    ftxt->lines[i].items[j].str = lp.str;
-	    ftxt->lines[i].items[j].size = sz.x;
-	    ftxt->lines[i].items[j].xshow = lp.xshow;
-	    ftxt->lines[i].items[j].layout = lp.layout;
-	    ftxt->lines[i].items[j].free_layout = lp.free_layout;
+	    free (ftxt->paras[i].items[j].str);
+	    ftxt->paras[i].items[j].str = lp.str;
+	    ftxt->paras[i].items[j].size = sz.x;
+	    ftxt->paras[i].items[j].xshow = lp.xshow;
+	    ftxt->paras[i].items[j].layout = lp.layout;
+	    ftxt->paras[i].items[j].free_layout = lp.free_layout;
 	    width += w;
-	    ftxt->lines[i].size = (double) width;
+	    ftxt->paras[i].size = (double) width;
 	    if (fsize > lsize)
 		lsize = fsize;
 	}
-	ftxt->lines[i].lfsize = lsize;
+	ftxt->paras[i].lfsize = lsize;
 	if (width > xsize)
 	    xsize = width;
 	ysize += lsize * LINESPACING;
@@ -1254,9 +1254,9 @@ pos_html_txt(htmltxt_t* ftxt, char c)
 {
     int i;
 
-    for (i = 0; i < ftxt->nlines; i++) {
-	if (ftxt->lines[i].just == UNSET_ALIGN)  /* unset */
-	    ftxt->lines[i].just = c;
+    for (i = 0; i < ftxt->nparas; i++) {
+	if (ftxt->paras[i].just == UNSET_ALIGN)  /* unset */
+	    ftxt->paras[i].just = c;
     }
 }
 
@@ -1578,10 +1578,10 @@ void printTxt(htmltxt_t * tp, int ind)
     fprintf(stderr, "txt ");
     printBox(tp->box);
     fputs("\n", stderr);
-    for (i = 0; i < tp->nlines; i++) {
+    for (i = 0; i < tp->nparas; i++) {
 	indent(ind + 1);
-	fprintf(stderr, "(%c) \"%s\"\n", tp->line[i].just,
-		tp->line[i].str);
+	fprintf(stderr, "(%c) \"%s\"\n", tp->para[i].just,
+		tp->para[i].str);
     }
 }
 #endif
@@ -1591,20 +1591,20 @@ void printTxt(htmltxt_t * txt, int ind)
     int i, j;
 
     indent(ind);
-    fprintf (stderr, "txt lines = %d \n", txt->nlines);
-    for (i = 0; i < txt->nlines; i++) {
+    fprintf (stderr, "txt paras = %d \n", txt->nparas);
+    for (i = 0; i < txt->nparas; i++) {
 	indent(ind+1);
-	fprintf (stderr, "[%d] %d items\n", i, txt->lines[i].nitems);
-	for (j = 0; j < txt->lines[i].nitems; j++) {
+	fprintf (stderr, "[%d] %d items\n", i, txt->paras[i].nitems);
+	for (j = 0; j < txt->paras[i].nitems; j++) {
 	    indent(ind+2);
 	    fprintf (stderr, "[%d] (%f) \"%s\" ",
-		   j, txt->lines[i].items[j].size,
-		   txt->lines[i].items[j].str);
-	    if (txt->lines[i].items[j].font)
+		   j, txt->paras[i].items[j].size,
+		   txt->paras[i].items[j].str);
+	    if (txt->paras[i].items[j].font)
 	      fprintf (stderr, "font %s color %s size %f\n",
-		   txt->lines[i].items[j].font->name,
-		   txt->lines[i].items[j].font->color,
-		   txt->lines[i].items[j].font->size);
+		   txt->paras[i].items[j].font->name,
+		   txt->paras[i].items[j].font->color,
+		   txt->paras[i].items[j].font->size);
 	    else fprintf (stderr, "\n");
 	}
     }

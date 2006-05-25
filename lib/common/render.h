@@ -109,7 +109,7 @@ extern "C" {
     extern void emit_label(GVJ_t * job, int state, textlabel_t *, void *obj);
     extern int emit_once(char *message);
     extern void emit_jobs_eof(GVC_t * gvc);
-    extern void emit_textlines(GVJ_t*, int, textline_t*, pointf,
+    extern void emit_textparas(GVJ_t*, int, textpara_t*, pointf,
               double, char*, double, char*);
     extern void enqueue_neighbors(nodequeue *, Agnode_t *, int);
     extern void endpath(path *, Agedge_t *, int, pathend_t *, bool);
@@ -117,10 +117,10 @@ extern "C" {
     extern void epsf_free(node_t * n);
     extern void extend_attrs(GVJ_t * job, graph_t *g, int s_arrows, int e_arrows);
     extern shape_desc *find_user_shape(char *);
-    extern void free_line(textline_t *);
+    extern void free_line(textpara_t *);
     extern void free_label(textlabel_t *);
     extern char *gd_alternate_fontlist(char *font);
-    extern char *gd_textsize(textline_t * textline, char *fontname,
+    extern char *gd_textsize(textpara_t * textpara, char *fontname,
 			     double fontsz, char **fontpath);
     extern void getdouble(graph_t * g, char *name, double *result);
     extern splines *getsplinepoints(edge_t * e);
@@ -158,7 +158,7 @@ extern "C" {
     extern void shape_clip(node_t * n, point curve[4]);
     extern void size_label (graph_t* g, textlabel_t* rv);
     extern void start_timer(void);
-    extern pointf textsize(graph_t *g, textline_t * textline,
+    extern pointf textsize(graph_t *g, textpara_t * para,
 			    char *fontname, double fontsz);
     extern void translate_bb(Agraph_t *, int);
     extern void use_library(char *);
@@ -172,7 +172,7 @@ extern "C" {
 #   define extern __EXPORT__
 #endif
 
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
 #ifndef HAVE_GD_FREETYPE
     extern void initDPI(graph_t *);
     extern double textheight(int nlines, double fontsz);

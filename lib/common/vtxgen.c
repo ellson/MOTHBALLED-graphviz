@@ -492,7 +492,7 @@ static char *vtx_string(char *s)
     return buf;
 }
 
-static void vtx_textline(point p, textline_t * line)
+static void vtx_textpara(point p, textpara_t * para)
 {
     pointf mp;
     double fontsz = Scale * cstk[SP].fontsz;
@@ -514,7 +514,7 @@ static void vtx_textline(point p, textline_t * line)
 		"{\\fonttbl{\\f0\\fnil helvetica medium;}}\n"
 		"{\\colortbl\\red0\\green0\\blue0;}\n"
 		"\\cf0\\plain\\pard {\\fs%d %s}})\n",
-		(int) ((fontsz * 2) - 8), vtx_string(line->str));
+		(int) ((fontsz * 2) - 8), vtx_string(para->str));
     } else {
 	fprintf(Output_file, "    (showText T)\n"
 		"    (textVerticalAlignment \"left\")\n"
@@ -522,7 +522,7 @@ static void vtx_textline(point p, textline_t * line)
 		"{\\fonttbl{\\f0\\fnil helvetica medium;}}\n"
 		"{\\colortbl\\red0\\green0\\blue0;}\n"
 		"\\cf0\\plain\\pard {\\fs%d %s}})\n",
-		(int) ((fontsz * 2) - 8), vtx_string(line->str));
+		(int) ((fontsz * 2) - 8), vtx_string(para->str));
     }
 }
 
@@ -640,7 +640,7 @@ codegen_t VTX_CodeGen = {
     vtx_begin_edge, vtx_end_edge,
     vtx_begin_context, vtx_end_context,
     0, /* vtx_begin_anchor */ 0,	/* vtx_end_anchor */
-    vtx_set_font, vtx_textline,
+    vtx_set_font, vtx_textpara,
     vtx_set_color, vtx_set_color, vtx_set_style,
     vtx_ellipse, vtx_polygon,
     vtx_bezier, vtx_polyline,

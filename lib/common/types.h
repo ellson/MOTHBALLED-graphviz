@@ -25,6 +25,8 @@
 #include "pathplan.h"
 #include "color.h"
 #include "gvcext.h"
+#include "textpara.h"
+#include "usershape.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -114,26 +116,6 @@ extern "C" {
 	int size;
     } splinesf;
 
-    typedef enum { FT_BMP, FT_GIF, FT_PNG, FT_JPEG, FT_PDF, FT_PS, FT_EPS } imagetype_t;
-
-    typedef struct usershape_s {
-	char *name;
-        FILE *f;
-        imagetype_t type;
-        unsigned int w, h, dpi;
-        void *data;                   /* data loaded by a renderer */
-        void (*datafree)(void *data); /* renderer's function for freeing data */
-    } usershape_t;
-
-    typedef struct textline_t {
-	char *str;      /* stored in utf-8 */
-	char *xshow;
-	void *layout;
-	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
-	pointf dimen;
-	char just;
-    } textline_t;
-
     typedef struct textlabel_t {
 	char *text, *fontname, *fontcolor;
 	double fontsize;
@@ -142,8 +124,8 @@ extern "C" {
 	pointf d;		/* delta from resizing */
 	union {
 	    struct {
-		textline_t *line;
-		short nlines;
+		textpara_t *para;
+		short nparas;
 	    } txt;
 	    htmllabel_t *html;
 	} u;
@@ -201,7 +183,7 @@ extern "C" {
 	bool usershape;
     } shape_desc;
 
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
     struct codegen_s {
 	void (*reset) (void);
 	void (*begin_job) (FILE * ofp, graph_t * g, char **lib, char *user,
@@ -229,7 +211,7 @@ extern "C" {
 	void (*begin_anchor) (char *href, char *tooltip, char *target);
 	void (*end_anchor) (void);
 	void (*set_font) (char *fontname, double fontsize);
-	void (*textline) (point p, textline_t * str);
+	void (*textpara) (point p, textpara_t * str);
 	void (*set_pencolor) (char *name);
 	void (*set_fillcolor) (char *name);
 	void (*set_style) (char **s);

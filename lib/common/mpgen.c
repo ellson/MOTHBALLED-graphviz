@@ -189,10 +189,10 @@ static char *mp_string(char *s)
     return buf;
 }
 
-static void mp_textline(point p, textline_t * line)
+static void mp_textpara(point p, textpara_t * para)
 {
     fprintf(Output_file, "label(btex %s etex,(%dbp,%dbp)) withcolor %s;\n",
-	    mp_string(line->str), p.x, p.y, S[SP].color);
+	    mp_string(para->str), p.x, p.y, S[SP].color);
 }
 
 static void
@@ -270,7 +270,7 @@ codegen_t MP_CodeGen = {
     0, /* mp_begin_edge */  0,	/* mp_end_edge */
     mp_begin_context, mp_end_context,
     0, /* mp_begin_anchor */ 0,	/* mp_end_anchor */
-    mp_set_font, mp_textline,
+    mp_set_font, mp_textpara,
     mp_set_color, mp_set_color, mp_set_style,
     mp_ellipse, mp_polygon,
     mp_bezier, mp_polyline,

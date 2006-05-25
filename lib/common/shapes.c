@@ -18,7 +18,7 @@
 #include "htmltable.h"
 #include <limits.h>
 
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
 extern codegen_t VRML_CodeGen;
 #endif
 
@@ -252,7 +252,7 @@ char *findFill(node_t * n)
 	    if (ND_shape(n) == point_desc) {
 		color = "black";
 	    }
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
 	    else {
 		color = (Output_lang == MIF ? "black" : DEFAULT_FILL);
 	    }
@@ -1217,7 +1217,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     xsize = (16.0 * (ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n)));
     ysize = (16.0 * ND_ht_i(n) / POINTS(ND_height(n)));
 
-#if !defined(DISABLE_CODEGENS) && defined(HAVE_GD_PNG)
+#if defined(WITH_CODEGENS) && defined(HAVE_GD_PNG)
     /* this is bad, but it's because of how the VRML driver works */
     if ((job->codegen == &VRML_CodeGen) && (peripheries == 0)) {
 	peripheries = 1;

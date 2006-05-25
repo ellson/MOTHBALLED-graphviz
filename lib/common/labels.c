@@ -23,18 +23,18 @@ static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
 {
     pointf size;
 
-    lp->u.txt.line =
-	ALLOC(lp->u.txt.nlines + 2, lp->u.txt.line, textline_t);
-    lp->u.txt.line[lp->u.txt.nlines].str = line;
-    size = textsize(g, &(lp->u.txt.line[lp->u.txt.nlines]),
+    lp->u.txt.para =
+	ALLOC(lp->u.txt.nparas + 2, lp->u.txt.para, textpara_t);
+    lp->u.txt.para[lp->u.txt.nparas].str = line;
+    size = textsize(g, &(lp->u.txt.para[lp->u.txt.nparas]),
 	    lp->fontname, lp->fontsize);
-    lp->u.txt.line[lp->u.txt.nlines].just = terminator;
-    lp->u.txt.nlines++;
+    lp->u.txt.para[lp->u.txt.nparas].just = terminator;
+    lp->u.txt.nparas++;
     /* total width = max line width */
     if (lp->dimen.x < size.x)
 	lp->dimen.x = size.x;
     /* recalculate total height */
-    lp->dimen.y = lp->u.txt.nlines * (int) (size.y * LINESPACING);
+    lp->dimen.y = lp->u.txt.nparas * (int) (size.y * LINESPACING);
 }
 
 /* compiles <str> into a label <lp> and returns its bounding box size.  */
@@ -132,7 +132,7 @@ textlabel_t *make_label(graph_t *g, int html, char *str, double fontsize,
     return rv;
 }
 
-static void free_textline(textline_t * tl)
+static void free_textpara(textpara_t * tl)
 {
     if (tl) {
 	if (tl->str)
@@ -152,28 +152,28 @@ void free_label(textlabel_t * p)
 	if (p->html) {
 	    free_html_label(p->u.html, 1);
 	} else {
-	    free_textline(p->u.txt.line);
+	    free_textpara(p->u.txt.para);
 	}
 	free(p);
     }
 }
 
 void 
-emit_textlines(GVJ_t* job, int nlines, textline_t lines[], pointf p,
+emit_textparas(GVJ_t* job, int nparas, textpara_t paras[], pointf p,
               double halfwidth_x, char* fname, double fsize, char* fcolor)
 {
-    int i, linespacing;
+    int i, paraspacing;
     double tmp, center_x, left_x, right_x;
 
     center_x = p.x;
     left_x = center_x - halfwidth_x;
     right_x = center_x + halfwidth_x;
 
-    /* set linespacing to an exact no. of pixelrows */
-    linespacing = (int) (fsize * LINESPACING);
+    /* set paraspacing to an exact no. of pixelrows */
+    paraspacing = (int) (fsize * LINESPACING);
 
-    /* position for first line */
-    p.y += linespacing * (nlines - 1) / 2	/* cl of topline */
+    /* position for first para */
+    p.y += paraspacing * (nparas - 1) / 2	/* cl of toppara */
 			- fsize * 0.30; /* Empirically determined fudge factor */
 
     tmp = ROUND(p.y);  /* align with integer points */
@@ -183,8 +183,8 @@ emit_textlines(GVJ_t* job, int nlines, textline_t lines[], pointf p,
     gvrender_set_pencolor(job, fcolor);
     gvrender_set_font(job, fname, fsize);
 
-    for (i = 0; i < nlines; i++) {
-	switch (lines[i].just) {
+    for (i = 0; i < nparas; i++) {
+	switch (paras[i].just) {
 	case 'l':
 	    p.x = left_x;
 	    break;
@@ -196,10 +196,10 @@ emit_textlines(GVJ_t* job, int nlines, textline_t lines[], pointf p,
 	    p.x = center_x;
 	    break;
 	}
-	gvrender_textline(job, p, &(lines[i]));
+	gvrender_textpara(job, p, &(paras[i]));
 
-	/* position for next line */
-	p.y -= linespacing;
+	/* position for next para */
+	p.y -= paraspacing;
     }
 
     gvrender_end_context(job);
@@ -220,7 +220,7 @@ void emit_label(GVJ_t * job, int state, textlabel_t * lp, void *obj)
     }
 
     /* make sure that there is something to do */
-    if (lp->u.txt.nlines < 1)
+    if (lp->u.txt.nparas < 1)
 	return;
 
     p.x = lp->p.x;
@@ -229,7 +229,7 @@ void emit_label(GVJ_t * job, int state, textlabel_t * lp, void *obj)
     /* dimensions of box for label, no padding, adjusted for resizing */
     halfwidth_x = (lp->dimen.x + lp->d.x) / 2.0;
 
-    emit_textlines(job, lp->u.txt.nlines, lp->u.txt.line, p,
+    emit_textparas(job, lp->u.txt.nparas, lp->u.txt.para, p,
               halfwidth_x, lp->fontname, lp->fontsize, lp->fontcolor);
     job->gvc->emit_state = oldstate;
 }

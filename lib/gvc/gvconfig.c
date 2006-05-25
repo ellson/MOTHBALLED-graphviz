@@ -38,7 +38,7 @@
 #include	"gvcint.h"
 #include        "gvcproc.h"
 
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
 #ifdef QUARTZ_RENDER
 #include <QuickTime/QuickTime.h>
 
@@ -356,7 +356,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 }
 #endif
 
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
 
 #define MAX_CODEGENS 100
 
@@ -498,7 +498,7 @@ void gvconfig(GVC_t * gvc, bool rescan)
 #define MAX_SZ_CONFIG 100000
 #endif
     
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
     codegen_info_t *p;
 
     for (p = cg; p->name; ++p)

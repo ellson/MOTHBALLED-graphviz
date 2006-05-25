@@ -14,24 +14,25 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include "gvplugin.h"
+#ifndef TEXTPARA_H
+#define TEXTPARA_H
 
-struct lt_symlist
-{
-    const char *name;
-    void* address;
-};
-
-#if 1
-extern gvplugin_library_t gvplugin_dot_layout_LTX_library;
-extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
-
-const struct lt_symlist lt_preloaded_symbols[] = {
-    { "gvplugin_dot_layout_LTX_library", (void*)(&gvplugin_dot_layout_LTX_library) },
-    { "gvplugin_neato_layout_LTX_library", (void*)(&gvplugin_neato_layout_LTX_library) },
-    { 0, 0 }
-};
-#else
-const struct lt_symlist lt_preloaded_symbols[] = {{0,0,},};
+#ifdef __cplusplus
+extern "C" {
 #endif
 
+#include "geom.h"
+
+    typedef struct textpara_t {
+	char *str;      /* stored in utf-8 */
+	char *xshow;
+	void *layout;
+	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
+	double width, height;
+	char just;
+    } textpara_t;
+
+#ifdef __cplusplus
+}
+#endif
+#endif

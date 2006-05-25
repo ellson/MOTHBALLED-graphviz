@@ -238,8 +238,8 @@ extern "C" {
 /* <stdlib.h> <stdarg.h> <string.h> <float.h> */
 #define STDC_HEADERS 1
 
-/* Set to 0 if you don't want the old codegens */
-#define ENABLE_CODEGENS 1
+/* Define to 1 if you the old codegens */
+#define WITH_CODEGENS 1
 
 /* Define if you don't want on-demand plugin loading */
 #define DISABLE_LTDL 1

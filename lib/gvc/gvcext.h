@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
     typedef struct codegen_s codegen_t;
     typedef struct codegen_info_s codegen_info_t;
 #endif

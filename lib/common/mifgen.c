@@ -480,15 +480,14 @@ static char *mif_string(char *s)
     return buf;
 }
 
-static void mif_textline(point p, textline_t * line)
+static void mif_textpara(point p, textpara_t * para)
 {
     pointf mp;
-    char *str = line->str;
     char *anchor;
 
     mp.x = p.x;
     mp.y = p.y - cstk[SP].fontsz / 2 + 2;
-    switch (line->just) {
+    switch (para->just) {
     case 'l':
 	anchor = "Left";
 	break;
@@ -504,7 +503,7 @@ static void mif_textline(point p, textline_t * line)
     fprintf(Output_file,
 	    "<TextLine <Angle %d> <TLOrigin %.2f %.2f> <TLAlignment %s>",
 	    Rot, mp.x, mp.y, anchor);
-    fprintf(Output_file, " <String `%s'>>\n", mif_string(str));
+    fprintf(Output_file, " <String `%s'>>\n", mif_string(para->str));
 }
 
 static void mif_bezier(point * A, int n, int arrow_at_start,
@@ -569,7 +568,7 @@ codegen_t MIF_CodeGen = {
     0, /* mif_begin_edge */  0,	/* mif_end_edge */
     mif_begin_context, mif_end_context,
     0, /* mif_begin_anchor */ 0,	/* mif_end_anchor */
-    mif_set_font, mif_textline,
+    mif_set_font, mif_textpara,
     mif_set_color, mif_set_color, mif_set_style,
     mif_ellipse, mif_polygon,
     mif_bezier, mif_polyline,

@@ -49,14 +49,14 @@ extern "C" {
 	int    cnt;   /* reference count */
     } htmlfont_t;
 
-    /* lines of text within a cell
-     * NOTE: As required, the str field in line is utf-8.
+    /* paras of text within a cell
+     * NOTE: As required, the str field in para is utf-8.
      * This translation is done when libexpat scans the input.
      */
 #ifdef OLD
     typedef struct {
-	textline_t *line;
-	short nlines;
+	textpara_t *para;
+	short nparas;
 	box box;
 	htmlfont_t *font;	/* font info */
     } htmltxt_t;
@@ -75,13 +75,13 @@ extern "C" {
 	textitem_t *items;
 	short nitems;
 	char just;
-	double size;   /* size of line */
-	double lfsize; /* size of largest font in line */
-    } htextline_t;
+	double size;   /* size of para */
+	double lfsize; /* size of largest font in para */
+    } htextpara_t;
 	
     typedef struct {
-	htextline_t *lines;
-	short nlines;
+	htextpara_t *paras;
+	short nparas;
 	box box;
     } htmltxt_t;
 

@@ -20,7 +20,7 @@
 
 char *Gvfilepath;
 
-#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
+#if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE)
 codegen_t *Output_codegen;
 #endif
 
@@ -302,7 +302,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	assert(v);  /* "dot" should always be available as an output format */
     }
 
-#if !defined(DISABLE_CODEGENS) && !defined(HAVE_GD_FREETYPE)
+#if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE)
     Output_codegen = gvc->jobs->codegen;
 #endif
 

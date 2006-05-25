@@ -23,12 +23,11 @@
 #include <string.h>
 #include <fcntl.h>
 #include <math.h>
-#include <gd.h>
-
-#include "color.h"
-#include "types.h"
 
 #include "gvplugin_render.h"
+
+#ifdef HAVE_LIBGD
+#include "gd.h"
 
 typedef enum { FORMAT_GD, FORMAT_GD2, FORMAT_GIF, FORMAT_JPEG, FORMAT_PNG,
 	FORMAT_WBMP, FORMAT_XBM, } format_type;
@@ -408,15 +407,15 @@ int builtinFontWd(double fontsz)
 }
 #endif
 
-static void gdgen_textline(GVJ_t * job, pointf p, textline_t * line)
+static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     gvstyle_t *style = job->style;
     gdImagePtr im = (gdImagePtr) job->surface;
     char *fontlist, *err;
     pointf mp, ep;
     int brect[8];
-    char *str = line->str;
-    double linewidth = line->dimen.x * job->compscale.x;
+    char *str = para->str;
+    double parawidth = para->width * job->compscale.x;
     double fontsz = style->fontsz;
     gdFTStringExtra strex;
 
@@ -433,19 +432,19 @@ static void gdgen_textline(GVJ_t * job, pointf p, textline_t * line)
 
     fontlist = gdgen_alternate_fontlist(style->fontfam);
 
-    switch (line->just) {
+    switch (para->just) {
     case 'l':
 	mp.x = 0.0;
 	break;
     case 'r':
-	mp.x = -linewidth;
+	mp.x = -parawidth;
 	break;
     default:
     case 'n':
-	mp.x = -linewidth / 2;
+	mp.x = -parawidth / 2;
 	break;
     }
-    ep.x = mp.x + linewidth;
+    ep.x = mp.x + parawidth;
 
     if (job->rotation) {
 	mp.y = -mp.x + p.y;
@@ -461,7 +460,7 @@ static void gdgen_textline(GVJ_t * job, pointf p, textline_t * line)
     if (fontsz * job->compscale.x <= FONTSIZE_MUCH_TOO_SMALL) {
 	/* ignore entirely */
     } else if (fontsz * job->compscale.x <= FONTSIZE_TOO_SMALL) {
-	/* draw line in place of text */
+	/* draw para in place of text */
 	gdImageLine(im, ROUND(mp.x), ROUND(mp.y),
 		    ROUND(ep.x), ROUND(ep.y),
 		    style->pencolor.u.index);
@@ -476,7 +475,7 @@ static void gdgen_textline(GVJ_t * job, pointf p, textline_t * line)
 #endif
 #if 0
 	fprintf(stderr,
-		"textline: font=%s size=%g pos=%g,%g width=%g dpi=%d width/dpi=%g\n",
+		"textpara: font=%s size=%g pos=%g,%g width=%g dpi=%d width/dpi=%g\n",
 		fontlist, fontsz, mp.x, mp.y, (double) (brect[4] - brect[0]),
 		strex.hdpi,
 		(((double) (brect[4] - brect[0])) / strex.hdpi));
@@ -848,7 +847,7 @@ gvrender_engine_t gdgen_engine = {
     0,				/* gdgen_end_edge */
     0,				/* gdgen_begin_anchor */
     0,				/* gdgen_end_anchor */
-    gdgen_textline,
+    gdgen_textpara,
     gdgen_resolve_color,
     gdgen_ellipse,
     gdgen_polygon,
@@ -879,7 +878,10 @@ gvrender_features_t gdgen_features = {
     NULL,			/* device */
 };
 
+#endif
+
 gvplugin_installed_t gvrender_gd_types[] = {
+#ifdef HAVE_LIBGD
 #if 0
     {FORMAT_GD, "gd", 1, &gdgen_engine, &gdgen_features_tc},
     {FORMAT_GD2, "gd2", 1, &gdgen_engine, &gdgen_features_tc},
@@ -897,6 +899,7 @@ gvplugin_installed_t gvrender_gd_types[] = {
     {FORMAT_WBMP, "wbmp", 1, &gdgen_engine, &gdgen_features},
 #ifdef HAVE_GD_XPM
     {FORMAT_XBM, "xbm", 1, &gdgen_engine, &gdgen_features},
+#endif
 #endif
     {0, NULL, 0, NULL, NULL}
 };

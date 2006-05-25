@@ -152,7 +152,7 @@ extern "C" {
 	gvplugin_active_device_t device;
 	gvdevice_callbacks_t *callbacks;
 
-#ifndef DISABLE_CODEGENS
+#ifdef WITH_CODEGENS
 	codegen_t *codegen;	/* current  codegen */
 #endif
 

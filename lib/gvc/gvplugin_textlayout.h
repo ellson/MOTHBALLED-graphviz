@@ -18,14 +18,15 @@
 #define GVTEXTLAYOUT_PLUGIN_H
 
 #include "gvplugin.h"
-#include "gvcint.h"
+#include "gvcjob.h"
+#include "textpara.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
     struct gvtextlayout_engine_s {
-	void (*textlayout) (textline_t *textline, char *fontname, double fontsize, char** fontpath);
+	void (*textlayout) (textpara_t *para, char *fontname, double fontsize, char** fontpath);
     };
 
 #ifdef __cplusplus
