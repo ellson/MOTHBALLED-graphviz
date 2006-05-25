@@ -375,7 +375,7 @@ void gdgen_missingfont(char *err, char *fontreq)
 extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge,
     gdFontGiant;
 
-#if ENABLE_CODEGENS && !defined(HAVE_GD_FREETYPE)
+#if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE)
 
 /* builtinFont:
  * Map fontsz in pixels to builtin font.
