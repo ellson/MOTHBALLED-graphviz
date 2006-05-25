@@ -1693,3 +1693,8 @@ int Tcldot_SafeInit(Tcl_Interp * interp)
 {
     return Tcldot_Init(interp);
 }
+
+int Tcldot_builtin_Init(Tcl_Interp * interp)
+{
+    return Tcldot_Init(interp);
+}

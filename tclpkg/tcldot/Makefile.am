@@ -27,7 +27,7 @@ html = tcldot.html
 
 noinst_HEADERS = tcldot.h
 if WITH_TCL
-pkgtcl_LTLIBRARIES = libtcldot.la
+pkgtcl_LTLIBRARIES = libtcldot.la libtcldot_builtin.la
 man_MANS = $(man)
 pdf_DATA = $(pdf)
 html_DATA = $(html)
@@ -47,6 +47,18 @@ libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
 	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@ @LIBLTDL@
+
+libtcldot_builtin_la_SOURCES = tcldot.c $(top_srcdir)/lib/gvc/dot_builtins.c $(CODEGENS) $(GDTCLFT)
+libtcldot_builtin_la_LDFLAGS = -no-undefined
+libtcldot_builtin_la_LIBADD = \
+	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
+	$(top_builddir)/lib/plugin/libgvplugin_dot_layout.la \
+	$(top_builddir)/lib/plugin/libgvplugin_neato_layout.la \
+	$(top_builddir)/lib/plugin/libgvplugin_gd.la \
+	$(top_builddir)/lib/plugin/libgvplugin_pangocairo.la \
+	$(top_builddir)/lib/gvc/libgvc_builtins.la \
+	@PANGOCAIRO_LIBS@ @GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@
 
 if WITH_TCL
 all-local: pkgIndex.tcl
