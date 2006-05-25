@@ -562,8 +562,6 @@ void graph_init(graph_t * g, bool use_rankdir)
 	|| ((p = agget(g, "resolution")) && p[0]))
 	GD_drawing(g)->dpi = atof(p);
 
-    /* The following functions relies on dpi being set */
-    if (GD_drawing(g)->dpi < 1.0) GD_drawing(g)->dpi = DEFAULT_DPI;
     do_graph_label(g);
 
     Initial_dist = MYHUGE;

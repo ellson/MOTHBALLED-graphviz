@@ -434,6 +434,10 @@ fprintf(stderr,"clip = %g,%g %g,%g pageBox = %g,%g %g,%g\n",
 	job->clip.UR.x, job->clip.UR.y,
 	job->pageBox.LL.x, job->pageBox.LL.y,
 	job->pageBox.UR.x, job->pageBox.UR.y);
+
+fprintf(stderr,"zoom = %g  dpi = %g,%g\n",
+	job->zoom,
+	job->dpi.x, job->dpi.y);
 #endif
 
     gvrender_begin_page(job);
