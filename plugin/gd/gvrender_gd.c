@@ -394,17 +394,6 @@ static gdFontPtr builtinFont(double fsize)
 	return gdFontGiant;
     }
 }
-
-static int builtinFontHt(double fontsz)
-{
-    gdFontPtr fp = builtinFont(fontsz);
-    return fp->h;
-}
-static int builtinFontWd(double fontsz)
-{
-    gdFontPtr fp = builtinFont(fontsz);
-    return fp->w;
-}
 #endif
 
 static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)

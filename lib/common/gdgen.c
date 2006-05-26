@@ -528,12 +528,12 @@ static gdFontPtr builtinFont(double fsize)
     }
 }
 
-static int builtinFontHt(double fontsz)
+int builtinFontHt(double fontsz)
 {
     gdFontPtr fp = builtinFont(fontsz);
     return fp->h;
 }
-static int builtinFontWd(double fontsz)
+int builtinFontWd(double fontsz)
 {
     gdFontPtr fp = builtinFont(fontsz);
     return fp->w;
