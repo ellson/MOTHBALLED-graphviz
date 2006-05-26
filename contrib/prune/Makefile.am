@@ -16,7 +16,7 @@ pdf_DATA = prune.pdf
 
 prune_SOURCES = generic_list.c prune.c
 
-prune_LDADD = $(top_builddir)/lib/ingraphs/libingraphs.la \
+prune_LDADD = $(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/agraph/libagraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la
 

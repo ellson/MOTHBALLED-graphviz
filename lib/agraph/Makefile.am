@@ -12,18 +12,19 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt
 
 pkginclude_HEADERS = aghdr.h agraph.h malloc.h vmstub.h grammar.h
+noinst_LTLIBRARIES = libagraph_C.la
 pkglib_LTLIBRARIES = libagraph.la
 pkgconfig_DATA = libagraph.pc
 man_MANS = $(man)
 pdf_DATA = $(pdf)
 
-libagraph_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
-
-libagraph_la_SOURCES = agerror.c apply.c attr.c \
+libagraph_C_la_SOURCES = agerror.c apply.c attr.c \
 	edge.c flatten.c grammar.y graph.c id.c imap.c io.c \
 	mem.c node.c obj.c pend.c rec.c refstr.c scan.l subg.c \
 	utils.c write.c
 
+libagraph_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libagraph_la_SOURCES = $(libagraph_C_la_SOURCES)
 libagraph_la_LIBADD = $(top_builddir)/lib/cdt/libcdt.la
 
 scan.o scan.lo: scan.c grammar.h

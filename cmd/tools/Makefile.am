@@ -38,75 +38,75 @@ uninstall-hook:
 gxl2dot_SOURCES = cvtgxl.c dot2gxl.c gxl2dot.c
 
 gxl2dot_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/agraph/libagraph.la @EXPAT_LIBS@ \
 	$(top_builddir)/lib/graph/libgraph.la
 
 sccmap_SOURCES = sccmap.c
 
 sccmap_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/agraph/libagraph.la
 
 ccomps_SOURCES = ccomps.c
 
 ccomps_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/graph/libgraph.la
 
 tred_SOURCES = tred.c
 
 tred_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/graph/libgraph.la
 
 unflatten_SOURCES = unflatten.c
 
 unflatten_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/agraph/libagraph.la
 
 acyclic_SOURCES = acyclic.c
 
 acyclic_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/graph/libgraph.la
 
 nop_SOURCES = nop.c
 
 nop_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/agraph/libagraph.la
 
 gvcolor_SOURCES = gvcolor.c colxlate.c colortbl.h
 
 gvcolor_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/graph/libgraph.la
 
 bcomps_SOURCES = bcomps.c
 
 bcomps_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/graph/libgraph.la
 
 gc_SOURCES = gc.c
 
 gc_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/graph/libgraph.la
 
 gvpack_SOURCES = gvpack.c gvpack_builtins.c
 
 gvpack_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/plugin/libgvplugin_neato_layout.la
 
 dijkstra_SOURCES = dijkstra.c
 
 dijkstra_LDADD = \
-	$(top_builddir)/lib/ingraphs/libingraphs.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/agraph/libagraph.la
 
 .1.pdf:

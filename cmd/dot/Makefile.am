@@ -47,16 +47,16 @@ dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 dot_static_SOURCES = dot.c
 dot_static_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
 dot_static_LDADD = \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_gd.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_pangocairo.a \
-	$(top_builddir)/lib/gvc/.libs/libgvc_builtins.a \
-	$(top_builddir)/lib/pathplan/.libs/libpathplan.a \
-	$(top_builddir)/lib/pack/.libs/libpack.a \
-	$(top_builddir)/lib/graph/.libs/libgraph.a \
-	$(top_builddir)/lib/cdt/.libs/libcdt.a \
-	@PANGOCAIRO_LIBS@ @GD_LIBS_STATIC@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@
+	$(top_builddir)/lib/plugin/libgvplugin_dot_layout_C.la \
+	$(top_builddir)/lib/plugin/libgvplugin_neato_layout_C.la \
+	$(top_builddir)/lib/plugin/libgvplugin_gd_C.la \
+	$(top_builddir)/lib/plugin/libgvplugin_pangocairo_C.la \
+	$(top_builddir)/lib/gvc/libgvc_builtins_C.la \
+	$(top_builddir)/lib/pathplan/libpathplan_C.la \
+	$(top_builddir)/lib/pack/libpack_C.la \
+	$(top_builddir)/lib/graph/libgraph_C.la \
+	$(top_builddir)/lib/cdt/libcdt_C.la \
+	@PANGOCAIRO_LIBS@ @GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@
 
 EXTRA_DIST = Makefile.old dot.1 dot.pdf
 

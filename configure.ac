@@ -1095,7 +1095,7 @@ else
 	AC_MSG_WARN(Optional IPSEPCOLA is enabled)
 	AC_DEFINE_UNQUOTED(IPSEPCOLA,1,[Define if you want IPSEPCOLA])
 	IPSEPCOLA_INCLUDES='-I$(top_srcdir)/lib/vpsc'
-	IPSEPCOLA_LIBS='$(top_builddir)/lib/vpsc/libvpsc.la -lstdc++'
+	IPSEPCOLA_LIBS='$(top_builddir)/lib/vpsc/libvpsc_C.la -lstdc++'
 fi
 AC_SUBST(IPSEPCOLA_INCLUDES)
 AC_SUBST(IPSEPCOLA_LIBS)
@@ -1208,7 +1208,6 @@ if test "x$with_libgd" = "xyes"; then
 	    AC_MSG_WARN(Optional GD library not available - no gd.h))
     LDFLAGS=$save_LDFLAGS
     CPPFLAGS=$save_CPPFLAGS
-    GD_LIBS_STATIC=$(GD_LIBS)
 fi
 else
     # using the internal libgd
@@ -1216,8 +1215,7 @@ else
     AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library has the GD_GIF feature])
     AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if either internal or external GD library is availabel])
     GD_INCLUDES='-I$(top_srcdir)/lib/gd'
-    GD_LIBS='$(top_builddir)/lib/gd/libgvgd.la'
-    GD_LIBS_STATIC='$(top_builddir)/lib/gd/.libs/libgvgd.a'
+    GD_LIBS='$(top_builddir)/lib/gd/libgvgd_C.la'
 fi
 AC_SUBST(GD_INCLUDES)
 AC_SUBST(GD_LIBS)
