@@ -11,6 +11,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt
 
 pkginclude_HEADERS = exgram.h exlib.h expr.h
+noinst_LTLIBRARIES = libexpr_C.la
 pkglib_LTLIBRARIES = libexpr.la
 man_MANS = expr.3
 pdf_DATA = expr.pdf
@@ -20,17 +21,18 @@ pdf_DATA = expr.pdf
 ####      undefined until linked with main()
 #libexpr_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
 
-libexpr_la_LDFLAGS = -version-info @VERSION_INFO@
-
-libexpr_la_SOURCES = excc.c excontext.c exdata.c exerror.c \
+libexpr_C_la_SOURCES = excc.c excontext.c exdata.c exerror.c \
 	exeval.c exexpr.c exlexname.c exopen.c exrewind.c extoken.c \
 	extype.c exzero.c exparse.y
+libexpr_C_la_LIBADD = \
+	$(top_builddir)/lib/ast/libast_C.la \
+	$(top_builddir)/lib/vmalloc/libvmalloc_C.la \
+	$(top_builddir)/lib/sfio/libsfio_C.la
 
-libexpr_la_LIBADD = \
-	$(top_builddir)/lib/cdt/libcdt.la \
-	$(top_builddir)/lib/ast/libast.la \
-	$(top_builddir)/lib/sfio/libsfio.la \
-	$(top_builddir)/lib/vmalloc/libvmalloc.la
+libexpr_la_LDFLAGS = -version-info @VERSION_INFO@
+libexpr_la_SOURCES = $(libexpr_C_la_SOURCES)
+libexpr_la_LIBADD = $(libexpr_C_la_LIBADD)
+	$(top_builddir)/lib/cdt/libcdt.la
 
 $(libexpr_la_OBJECTS): exparse.h exparse.c exgram.h exop.h
 
