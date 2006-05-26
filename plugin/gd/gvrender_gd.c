@@ -427,7 +427,6 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	ep.y = mp.y = p.y;
     }
 
-    fontsz *= job->compscale.x;
     if (fontsz <= FONTSIZE_MUCH_TOO_SMALL) {
 	/* ignore entirely */
     } else if (fontsz <= FONTSIZE_TOO_SMALL) {
@@ -456,22 +455,22 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	    gdgen_missingfont(err, style->fontfam);
 #endif
 	    mp.y += 2;
-	    if (fontsz <= 10) {
+	    if (fontsz <= 8.5) {
 		gdImageString(im, gdFontTiny,
 			      ROUND(mp.x), ROUND(mp.y - 9.),
 			      (unsigned char *) str,
 			      style->pencolor.u.index);
-	    } else if (fontsz <= 13) {
+	    } else if (fontsz <= 9.5) {
 		gdImageString(im, gdFontSmall,
 			      ROUND(mp.x), ROUND(mp.y - 12.),
 			      (unsigned char *) str,
 			      style->pencolor.u.index);
-	    } else if (fontsz <= 14) {
+	    } else if (fontsz <= 10.5) {
 		gdImageString(im, gdFontMediumBold,
 			      ROUND(mp.x), ROUND(mp.y - 13.),
 			      (unsigned char *) str,
 			      style->pencolor.u.index);
-	    } else if (fontsz <= 15) {
+	    } else if (fontsz <= 11.5) {
 		gdImageString(im, gdFontLarge,
 			      ROUND(mp.x), ROUND(mp.y - 14.),
 			      (unsigned char *) str,

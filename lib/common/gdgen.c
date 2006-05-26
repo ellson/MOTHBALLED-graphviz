@@ -558,7 +558,6 @@ static void gd_textpara(point p, textpara_t * para)
     ep.x = mp.x + para->width;
 
     mp = gdpt(mp);
-    fontsz *= CompScale;
     if (fontsz <= FONTSIZE_MUCH_TOO_SMALL) {
 	/* ignore entirely */
     } else if (fontsz <= FONTSIZE_TOO_SMALL) {
@@ -587,19 +586,19 @@ static void gd_textpara(point p, textpara_t * para)
 	    gd_missingfont(err, cstk[SP].fontfam);
 #endif
 	    mp.y += 2;
-	    if (fontsz <= 10) {
+	    if (fontsz <= 8.5) {
 		gdImageString(im, gdFontTiny,
 			      ROUND(mp.x), ROUND(mp.y - 9.),
 			      (unsigned char *) str, cstk[SP].pencolor);
-	    } else if (fontsz <= 13) {
+	    } else if (fontsz <= 9.5) {
 		gdImageString(im, gdFontSmall,
 			      ROUND(mp.x), ROUND(mp.y - 12.),
 			      (unsigned char *) str, cstk[SP].pencolor);
-	    } else if (fontsz <= 14) {
+	    } else if (fontsz <= 10.5) {
 		gdImageString(im, gdFontMediumBold,
 			      ROUND(mp.x), ROUND(mp.y - 13.),
 			      (unsigned char *) str, cstk[SP].pencolor);
-	    } else if (fontsz <= 15) {
+	    } else if (fontsz <= 11.5) {
 		gdImageString(im, gdFontLarge,
 			      ROUND(mp.x), ROUND(mp.y - 14.),
 			      (unsigned char *) str, cstk[SP].pencolor);

@@ -139,7 +139,7 @@ estimate_textsize(graph_t *g, textpara_t * para, char *fontname, double fontsz, 
     para->width = 0.0;
     para->height = fontsz;
     para->xshow = NULL;
-    para->layout = NULL;
+    para->layout = fontname;
     para->free_layout = NULL;
 
     if (!strncasecmp(fontname, "cour", 4)) {
