@@ -110,7 +110,7 @@ pkgtcldir = $(pkglibdir)/tcl
 TCL_hdr = 
 nodist_libgv_tcl_la_SOURCES = gv_tcl.cpp $(TCL_hdr)
 libgv_tcl_la_SOURCES = $(BASESOURCES)
-libgv_tcl_la_LIBADD = $(top_builddir)/tclpkg/tclstubs/libtclstubs.la $(BASELIBS) @TCL_LIBS@
+libgv_tcl_la_LIBADD = $(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la $(BASELIBS) @TCL_LIBS@
 libgv_tcl_la_LDFLAGS = 
 gv_tcl.cpp $(TCL_hdr): gv.i
 	$(SWIG) -c++ -tcl -namespace -o gv_tcl.cpp gv.i

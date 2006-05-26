@@ -44,20 +44,20 @@ endif
 libtcldot_la_SOURCES = tcldot.c $(CODEGENS) $(GDTCLFT)
 libtcldot_la_LDFLAGS = -no-undefined
 libtcldot_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
+	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
 	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@ @LIBLTDL@
 
 libtcldot_builtin_la_SOURCES = tcldot.c $(top_srcdir)/lib/gvc/dot_builtins.c $(CODEGENS) $(GDTCLFT)
 libtcldot_builtin_la_LDFLAGS = -no-undefined
 libtcldot_builtin_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la \
-	$(top_builddir)/lib/plugin/libgvplugin_dot_layout.la \
-	$(top_builddir)/lib/plugin/libgvplugin_neato_layout.la \
-	$(top_builddir)/lib/plugin/libgvplugin_gd.la \
-	$(top_builddir)/lib/plugin/libgvplugin_pangocairo.la \
-	$(top_builddir)/lib/gvc/libgvc_builtins.la \
+	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
+	$(top_builddir)/lib/plugin/libgvplugin_dot_layout_C.la \
+	$(top_builddir)/lib/plugin/libgvplugin_neato_layout_C.la \
+	$(top_builddir)/lib/plugin/libgvplugin_gd_C.la \
+	$(top_builddir)/lib/plugin/libgvplugin_pangocairo_C.la \
+	$(top_builddir)/lib/gvc/libgvc_builtins_C.la \
 	@PANGOCAIRO_LIBS@ @GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@
 
 if WITH_TCL
@@ -70,8 +70,7 @@ endif
 .n.pdf:
 	groff -Tps -man $< | ps2pdf - - >$@
 
-EXTRA_DIST = $(libtcldot_la_SOURCES) $(man) $(pdf) $(html) \
-	README README.Tkspline Makefile.old
+EXTRA_DIST = $(man) $(pdf) $(html) README README.Tkspline Makefile.old
 
 CLEANFILES = pkgIndex.tcl
 

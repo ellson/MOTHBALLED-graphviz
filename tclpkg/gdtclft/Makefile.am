@@ -31,8 +31,8 @@ libgdtclft_la_SOURCES = gdtclft.c
 libgdtclft_la_LDFLAGS = -no-undefined
 
 libgdtclft_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la @GD_LIBS@
+	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la @GD_LIBS@
 
 if WITH_LIBGD
 if WITH_TCL
@@ -49,7 +49,7 @@ endif
 .n.pdf:
 	groff -Tps -man $< | ps2pdf - - >$@
 
-EXTRA_DIST = $(libgdtclft_la_SOURCES) $(man) $(pdf) Makefile.old
+EXTRA_DIST = $(man) $(pdf) Makefile.old
 
 CLEANFILES = pkgIndex.tcl
 
