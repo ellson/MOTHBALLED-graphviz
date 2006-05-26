@@ -24,11 +24,11 @@ man_MANS = $(man)
 pdf_DATA = $(pdf)
 endif
 
-libtkspline_la_SOURCES = tkspline.c
 libtkspline_la_LDFLAGS = -no-undefined 
+libtkspline_la_SOURCES = tkspline.c
 libtkspline_la_LIBADD = \
-	$(top_builddir)/tclpkg/tkstubs/libtkstubs.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs.la @TK_LIB_SPEC@
+	$(top_builddir)/tclpkg/tkstubs/libtkstubs_C.la \
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la @TK_LIB_SPEC@
 
 if WITH_TK
 all-local: pkgIndex.tcl
@@ -40,7 +40,7 @@ endif
 .n.pdf:
 	groff -Tps -man $< | ps2pdf - - >$@
 
-EXTRA_DIST = $(libtkspline_la_SOURCES) $(man) $(pdf) dllEntry.c
+EXTRA_DIST = $(man) $(pdf) dllEntry.c
 
 CLEANFILES = pkgIndex.tcl
 
