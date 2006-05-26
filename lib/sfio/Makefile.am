@@ -8,9 +8,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/lib/ast
 AM_CFLAGS = -Dvt_threaded=0
 
 noinst_HEADERS = sfhdr.h sfio.h sfio_t.h vthread.h
-noinst_LTLIBRARIES = libsfio.la
+noinst_LTLIBRARIES = libsfio_C.la
 
-libsfio_la_SOURCES = sfclose.c sfclrlock.c sfcvt.c sfdisc.c \
+libsfio_C_la_SOURCES = sfclose.c sfclrlock.c sfcvt.c sfdisc.c \
 	sfdlen.c sfexcept.c sfexit.c sfextern.c sffcvt.c sffilbuf.c \
 	sfflsbuf.c sfgetd.c sfgetl.c sfgetm.c sfgetr.c sfgetu.c \
 	sfllen.c sfmode.c sfmove.c sfmutex.c sfnew.c sfnotify.c \
@@ -22,9 +22,9 @@ libsfio_la_SOURCES = sfclose.c sfclrlock.c sfcvt.c sfdisc.c \
 	sftable.c sftell.c sftmp.c sfungetc.c sfvprintf.c \
 	sfvscanf.c sfwr.c sfwrite.c
 
-libsfio_la_DEPENDENCIES = \
-	Sfio_dc/libsfiodc.la \
-	Sfio_f/libsfiof.la
+libsfio_C_la_DEPENDENCIES = \
+	Sfio_dc/libsfiodc_C.la \
+	Sfio_f/libsfiof_C.la
 
 $(top_builddir)/FEATURE/sfio: $(top_srcdir)/lib/sfio/features/sfio
 	mkdir -p $(top_builddir)/FEATURE

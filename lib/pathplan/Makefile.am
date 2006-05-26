@@ -9,16 +9,17 @@ pdf = pathplan.pdf
 
 pkginclude_HEADERS = pathgeom.h pathplan.h pathutil.h solvers.h \
 	tri.h vis.h vispath.h
+noinst_LTLIBRARIES = libpathplan_C.la
 pkglib_LTLIBRARIES = libpathplan.la
 pkgconfig_DATA = libpathplan.pc
 man_MANS = $(man)
 pdf_DATA = $(pdf)
 
-libpathplan_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
-
-libpathplan_la_SOURCES = cvt.c inpoly.c route.c shortest.c \
+libpathplan_C_la_SOURCES = cvt.c inpoly.c route.c shortest.c \
 	shortestpth.c solvers.c triang.c util.c visibility.c
 
+libpathplan_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libpathplan_la_SOURCES = $(libpathplan_C_la_SOURCES)
 libpathplan_la_LIBADD = @MATH_LIBS@
 
 .3.pdf:
