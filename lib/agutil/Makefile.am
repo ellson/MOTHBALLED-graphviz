@@ -7,6 +7,6 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/cdt
 
 noinst_HEADERS = agutil.h
-noinst_LTLIBRARIES = libagutil.la
+noinst_LTLIBRARIES = libagutil_C.la
 
-libagutil_la_SOURCES = dynattr.c nodeq.c agutil.h
+libagutil_C_la_SOURCES = dynattr.c nodeq.c agutil.h
