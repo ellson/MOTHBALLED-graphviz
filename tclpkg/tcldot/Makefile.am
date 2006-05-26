@@ -58,6 +58,10 @@ libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/lib/plugin/libgvplugin_gd_C.la \
 	$(top_builddir)/lib/plugin/libgvplugin_pangocairo_C.la \
 	$(top_builddir)/lib/gvc/libgvc_builtins_C.la \
+	$(top_builddir)/lib/graph/libgraph_C.la \
+	$(top_builddir)/lib/cdt/libcdt_C.la \
+	$(top_builddir)/lib/pathplan/libpathplan_C.la \
+	$(top_builddir)/lib/pack/libpack_C.la \
 	@PANGOCAIRO_LIBS@ @GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@
 
 if WITH_TCL
