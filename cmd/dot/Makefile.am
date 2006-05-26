@@ -51,7 +51,7 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/plugin/libgvplugin_neato_layout_C.la \
 	$(top_builddir)/lib/plugin/libgvplugin_gd_C.la \
 	$(top_builddir)/lib/plugin/libgvplugin_pangocairo_C.la \
-	$(top_builddir)/lib/gvc/libgvc_builtins_C.la \
+	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la \
 	$(top_builddir)/lib/graph/libgraph_C.la \
