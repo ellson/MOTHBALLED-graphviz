@@ -544,10 +544,13 @@ static void gd_textpara(point p, textpara_t * para)
 {
     char *str, *fontlist, *err;
     pointf mp, ep;
-    int brect[8];
     double fontsz;
     gdFTStringExtra strex;
     int pencolor;
+#ifdef HAVE_GD_FREETYPE
+    char *err;
+    int brect[8];
+#endif
 
     if (!im)
 	return;
