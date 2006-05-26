@@ -13,9 +13,9 @@ AM_CPPFLAGS = \
 
 noinst_HEADERS = comp.h dbg.h fdp.h grid.h tlayout.h xlayout.h \
 	clusteredges.h
-noinst_LTLIBRARIES = libfdpgen.la
+noinst_LTLIBRARIES = libfdpgen_C.la
 
-libfdpgen_la_SOURCES = comp.c dbg.c grid.c fdpinit.c layout.c \
+libfdpgen_C_la_SOURCES = comp.c dbg.c grid.c fdpinit.c layout.c \
 	tlayout.c xlayout.c clusteredges.c
 
 EXTRA_DIST = Makefile.old
