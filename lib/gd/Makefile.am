@@ -8,9 +8,9 @@ AM_CPPFLAGS = @FT_INCLUDES@ @FC_INCLUDES@ @PNG_INCLUDES@ @JPEG_INCLUDES@ @Z_INCL
 htmldir = $(pkgdatadir)/doc/html
 
 if WITH_MYLIBGD
-pkginclude_HEADERS = gd.h gd_io.h gdcache.h gdfontg.h gdfontl.h gdfontmb.h \
+noinst_HEADERS = gd.h gd_io.h gdcache.h gdfontg.h gdfontl.h gdfontmb.h \
 	gdfonts.h gdfontt.h gdhelpers.h jisx0208.h wbmp.h gdfx.h entities.h
-pkglib_LTLIBRARIES = libgvgd.la
+noinst_LTLIBRARIES = libgvgd_C.la
 noinst_PROGRAMS = annotate gdparttopng gdtopng gd2copypal gd2topng pngtogd \
 	pngtogd2 webpng gd2togif gdcmpgif giftogd2 \
 	fontsizetest fontwheeltest gdtest gddemo gd2time gdtestft \
@@ -18,19 +18,17 @@ noinst_PROGRAMS = annotate gdparttopng gdtopng gd2copypal gd2topng pngtogd \
 html_DATA = $(html)
 endif
 
-libgvgd_la_LDFLAGS = -version-info 2:0:0 -no-undefined
-
-libgvgd_la_SOURCES = gdtables.c gd.c gdfx.c gd_security.c gd_gd.c gd_gd2.c gd_io.c gd_io_dp.c \
+libgvgd_C_la_SOURCES = \
+	gdtables.c gd.c gdfx.c gd_security.c gd_gd.c gd_gd2.c gd_io.c gd_io_dp.c \
 	gd_gif_in.c gd_gif_out.c gd_io_file.c gd_io_ss.c gd_jpeg.c gd_png.c \
 	gd_ss.c gd_topal.c gd_wbmp.c gdcache.c gdfontg.c gdfontl.c gdfontmb.c \
 	gdfonts.c gdfontt.c gdft.c gdhelpers.c gdkanji.c gdxpm.c wbmp.c
-
-libgvgd_la_LIBADD = @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
+libgvgd_C_la_LIBADD = @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
 
 gd.html: index.html
 	cp $(top_srcdir)/lib/gd/index.html gd.html
 
-LDADD = ./libgvgd.la
+LDADD = ./libgvgd_C.la
 
 dist-zip: distdir
 	zip -qr $(distdir).zip $(distdir)

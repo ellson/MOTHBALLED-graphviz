@@ -20,24 +20,25 @@ pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h gvcint.h \
 	gvplugin_textlayout.h \
 	gvplugin_device.h
 noinst_HEADERS = gvcproc.h
+noinst_LTLIBRARIES = libgvc_C.la libgvc_builtins_C.la
 pkglib_LTLIBRARIES = libgvc.la
-noinst_LTLIBRARIES = libgvc_builtins.la
 pkgconfig_DATA = libgvc.pc
 
-libgvc_builtins_la_SOURCES = gvrender.c gvlayout.c gvdevice.c \
+libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
 	gvtextlayout.c gvusershape.c gvc.c
-libgvc_la_SOURCES = ${libgvc_builtins_la_SOURCES} no_builtins.c
+libgvc_C_la_LIBADD = \
+	$(top_builddir)/lib/common/libcommon_C.la
 
-libgvc_builtins_la_LIBADD = \
+libgvc_builtins_C_la_SOURCES = $(libgvc_C_la_SOURCES)
+libgvc_builtins_C_la_LIBADD = $(libgvc_C_la_LIBADD)
+
+libgvc_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libgvc_la_SOURCES = $(libgvc_C_la_SOURCES) no_builtins.c
+libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
-	$(top_builddir)/lib/common/libcommon.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
-
-libgvc_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
-
-libgvc_la_LIBADD = ${libgvc_builtins_la_LIBADD}
 
 EXTRA_DIST = Makefile.old dot_builtins.c

@@ -12,16 +12,18 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt
 
 pkginclude_HEADERS = graph.h libgraph.h triefa.h parser.h agxbuf.h
+noinst_LTLIBRARIES = libgraph_C.la
 pkglib_LTLIBRARIES = libgraph.la
 pkgconfig_DATA = libgraph.pc
 man_MANS = $(man)
 pdf_DATA = $(pdf)
 
-libgraph_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
-
-libgraph_la_SOURCES = attribs.c agxbuf.c edge.c graph.c graphio.c lexer.c \
+libgraph_C_la_SOURCES = \
+	attribs.c agxbuf.c edge.c graph.c graphio.c lexer.c \
 	node.c parser.y refstr.c trie.c
  
+libgraph_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libgraph_la_SOURCES = $(libgraph_C_la_SOURCES)
 libgraph_la_LIBADD = $(top_builddir)/lib/cdt/libcdt.la
 
 lexer.o lexer.lo trie.o trie.lo: parser.h
