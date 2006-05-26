@@ -119,6 +119,10 @@ static double courFontWidth[] = {
     0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999, 0.5999,	/* רשתû     */
 };
 
+#if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE) && defined(HAVE_LIBGD)
+extern codegen_t GD_CodeGen;
+#endif
+
 /* estimate_textsize:
  * Estimate width and height of text, for given face and size, in points.
  * Value is stored para->width.
