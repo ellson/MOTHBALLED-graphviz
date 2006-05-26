@@ -542,7 +542,7 @@ int builtinFontWd(double fontsz)
 
 static void gd_textpara(point p, textpara_t * para)
 {
-    char *str, *fontlist, *err;
+    char *str, *fontlist;
     pointf mp, ep;
     double fontsz;
     gdFTStringExtra strex;
