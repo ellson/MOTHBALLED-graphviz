@@ -427,9 +427,10 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	ep.y = mp.y = p.y;
     }
 
-    if (fontsz * job->compscale.x <= FONTSIZE_MUCH_TOO_SMALL) {
+    fontsz *= job->compscale.x;
+    if (fontsz <= FONTSIZE_MUCH_TOO_SMALL) {
 	/* ignore entirely */
-    } else if (fontsz * job->compscale.x <= FONTSIZE_TOO_SMALL) {
+    } else if (fontsz <= FONTSIZE_TOO_SMALL) {
 	/* draw para in place of text */
 	gdImageLine(im, ROUND(mp.x), ROUND(mp.y),
 		    ROUND(ep.x), ROUND(ep.y),
@@ -454,24 +455,23 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	    /* revert to builtin fonts */
 	    gdgen_missingfont(err, style->fontfam);
 #endif
-	    fontsz *= job->dpi.x / POINTS_PER_INCH;
 	    mp.y += 2;
-	    if (fontsz <= 8.5) {
+	    if (fontsz <= 10) {
 		gdImageString(im, gdFontTiny,
 			      ROUND(mp.x), ROUND(mp.y - 9.),
 			      (unsigned char *) str,
 			      style->pencolor.u.index);
-	    } else if (fontsz <= 9.5) {
+	    } else if (fontsz <= 13) {
 		gdImageString(im, gdFontSmall,
 			      ROUND(mp.x), ROUND(mp.y - 12.),
 			      (unsigned char *) str,
 			      style->pencolor.u.index);
-	    } else if (fontsz <= 10.5) {
+	    } else if (fontsz <= 14) {
 		gdImageString(im, gdFontMediumBold,
 			      ROUND(mp.x), ROUND(mp.y - 13.),
 			      (unsigned char *) str,
 			      style->pencolor.u.index);
-	    } else if (fontsz <= 11.5) {
+	    } else if (fontsz <= 15) {
 		gdImageString(im, gdFontLarge,
 			      ROUND(mp.x), ROUND(mp.y - 14.),
 			      (unsigned char *) str,
