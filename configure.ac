@@ -1219,7 +1219,6 @@ else
 fi
 AC_SUBST(GD_INCLUDES)
 AC_SUBST(GD_LIBS)
-AC_SUBST(GD_LIBS_STATIC)
 AC_SUBST(HAVE_LIBGD)
                                                                                 
 AM_CONDITIONAL(WITH_LIBGD, [test "x$with_libgd" = "xyes"])
