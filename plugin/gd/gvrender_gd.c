@@ -378,13 +378,16 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     gvstyle_t *style = job->style;
     gdImagePtr im = (gdImagePtr) job->surface;
-    char *fontlist, *err;
+    char *fontlist;
     pointf mp, ep;
-    int brect[8];
     char *str = para->str;
     double parawidth = para->width * job->compscale.x;
     double fontsz = style->fontsz;
     gdFTStringExtra strex;
+#ifdef HAVE_GD_FREETYPE
+    char *err;
+    int brect[8];
+#endif
 
     if (!im)
 	return;
