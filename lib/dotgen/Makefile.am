@@ -10,9 +10,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/pathplan
 
 noinst_HEADERS = dot.h dotprocs.h
-noinst_LTLIBRARIES = libdotgen.la
+noinst_LTLIBRARIES = libdotgen_C.la
 
-libdotgen_la_SOURCES = acyclic.c class1.c class2.c cluster.c compound.c \
+libdotgen_C_la_LDFLAGS = -no-undefined
+libdotgen_C_la_SOURCES = acyclic.c class1.c class2.c cluster.c compound.c \
 	conc.c decomp.c fastgr.c flat.c dotinit.c mincross.c \
 	position.c rank.c sameport.c dotsplines.c
 
