@@ -506,6 +506,8 @@ void gd_missingfont(char *err, char *fontreq)
     }
 }
 
+extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge, gdFontGiant;
+
 static void gd_textpara(point p, textpara_t * para)
 {
     char *str, *fontlist;

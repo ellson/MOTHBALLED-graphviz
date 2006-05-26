@@ -372,6 +372,8 @@ void gdgen_missingfont(char *err, char *fontreq)
     }
 }
 
+extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge, gdFontGiant;
+
 static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     gvstyle_t *style = job->style;
