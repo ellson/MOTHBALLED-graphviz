@@ -12,8 +12,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt
 
 noinst_HEADERS = circle.h
-noinst_LTLIBRARIES = libtwopigen.la
+noinst_LTLIBRARIES = libtwopigen_C.la
 
-libtwopigen_la_SOURCES = twopiinit.c circle.c
+libtwopigen_C_la_SOURCES = twopiinit.c circle.c
 
 EXTRA_DIST = Makefile.old
