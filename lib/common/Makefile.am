@@ -14,7 +14,7 @@ pkginclude_HEADERS = logic.h arith.h geom.h color.h types.h globals.h textpara.h
 noinst_HEADERS = render.h utils.h memory.h \
 	geomprocs.h colorprocs.h colortbl.h entities.h \
 	const.h macros.h htmllex.h htmltable.h pointset.h
-noinst_LTLIBRARIES = libcommon.la
+noinst_LTLIBRARIES = libcommon_C.la
 
 if WITH_LIBGD
 GD_CODEGENS = gdgen.c vrmlgen.c
@@ -26,7 +26,7 @@ CODEGENS = $(GD_CODEGENS) diagen.c figgen.c hpglgen.c mapgen.c mifgen.c mpgen.c 
 endif
 
 
-libcommon_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
+libcommon_C_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
 	args.c memory.c globals.c htmllex.c htmlparse.y htmltable.c input.c \
 	pointset.c postproc.c routespl.c splines.c psusershape.c \
 	timing.c labels.c ns.c shapes.c utils.c geom.c \
