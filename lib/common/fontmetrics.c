@@ -137,22 +137,11 @@ estimate_textsize(graph_t *g, textpara_t * para, char *fontname, double fontsz, 
     char c, *p;
 
     para->width = 0.0;
-    para->width = fontsz;
+    para->height = fontsz;
     para->xshow = NULL;
     para->layout = NULL;
     para->free_layout = NULL;
 
-#if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE) && defined(HAVE_LIBGD)
-    if (Output_codegen == &GD_CodeGen) {
-	double scale = GD_drawing(g)->dpi / POINTS_PER_INCH;
-	double fsize = fontsz * scale;	/* in pixels */
-	*fontpath = "[internal gd]";
-	if ((p = para->str))
-	    para->width = strlen(p) * builtinFontWd(fsize) / scale;
-	para->height = builtinFontHt(fsize) / scale;
-	return;
-    }
-#endif
     if (!strncasecmp(fontname, "cour", 4)) {
 	*fontpath = "[internal courier]";
 	Fontwidth = courFontWidth;

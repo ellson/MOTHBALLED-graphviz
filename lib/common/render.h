@@ -173,12 +173,6 @@ extern "C" {
 #endif
 
 #ifdef WITH_CODEGENS
-#ifndef HAVE_GD_FREETYPE
-    extern void initDPI(graph_t *);
-    extern double textheight(int nlines, double fontsz);
-    extern int builtinFontHt(double fontsz);
-    extern int builtinFontWd(double fontsz);
-#endif
     extern codegen_info_t *first_codegen(void);
     extern codegen_info_t *next_codegen(codegen_info_t * p);
 #endif

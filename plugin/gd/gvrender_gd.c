@@ -372,30 +372,6 @@ void gdgen_missingfont(char *err, char *fontreq)
     }
 }
 
-extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge,
-    gdFontGiant;
-
-#if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE)
-
-/* builtinFont:
- * Map fontsz in pixels to builtin font.
- */
-static gdFontPtr builtinFont(double fsize)
-{
-    if (fsize <= 8.5) {
-	return gdFontTiny;
-    } else if (fsize <= 9.5) {
-	return gdFontSmall;
-    } else if (fsize <= 10.5) {
-	return gdFontMediumBold;
-    } else if (fsize <= 11.5) {
-	return gdFontLarge;
-    } else {
-	return gdFontGiant;
-    }
-}
-#endif
-
 static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     gvstyle_t *style = job->style;

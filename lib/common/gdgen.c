@@ -506,40 +506,6 @@ void gd_missingfont(char *err, char *fontreq)
     }
 }
 
-extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge,
-    gdFontGiant;
-
-#if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE)
-/* builtinFont:
- * Map fontsz in pixels to builtin font.
- */
-static gdFontPtr builtinFont(double fsize)
-{
-    if (fsize <= 8.5) {
-	return gdFontTiny;
-    } else if (fsize <= 9.5) {
-	return gdFontSmall;
-    } else if (fsize <= 10.5) {
-	return gdFontMediumBold;
-    } else if (fsize <= 11.5) {
-	return gdFontLarge;
-    } else {
-	return gdFontGiant;
-    }
-}
-
-int builtinFontHt(double fontsz)
-{
-    gdFontPtr fp = builtinFont(fontsz);
-    return fp->h;
-}
-int builtinFontWd(double fontsz)
-{
-    gdFontPtr fp = builtinFont(fontsz);
-    return fp->w;
-}
-#endif
-
 static void gd_textpara(point p, textpara_t * para)
 {
     char *str, *fontlist;
