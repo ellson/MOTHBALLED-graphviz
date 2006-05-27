@@ -175,6 +175,9 @@ cat{
 
 /* Define if the GD library has the GD_PNG feature */
 #define HAVE_GD_PNG 1
+
+/* Define if either internal or external GD library is available */
+#define HAVE_LIBGD 1
 }end
 
 # 3rd party libraries features
@@ -230,8 +233,14 @@ cat{
 #define VERSION "VVVV"
 #define BUILDDATE "DDDD"
 
+/* Define if you have the pango library with cairo support */
+/* #define HAVE_PANGOCAIRO 1 */
+
+/* Define if you want DIGCOLA */ 
 #define DIGCOLA 1
+/* Define if you want IPSEPCOLA */ 
 #define IPSEPCOLA 1
+
 /* #define MOSEK 1 */
 
 #ifndef DEFAULT_FONTPATH
