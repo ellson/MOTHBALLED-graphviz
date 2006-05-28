@@ -18,33 +18,35 @@ pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h gvcint.h \
 	gvplugin_render.h \
 	gvplugin_layout.h \
 	gvplugin_textlayout.h \
-	gvplugin_device.h
+	gvplugin_device.h \
+	dot_builtins.c \
+	demand_loading.c no_demand_loading.c
 noinst_HEADERS = gvcproc.h
 noinst_LTLIBRARIES = libgvc_C.la
 pkglib_LTLIBRARIES = libgvc.la libgvc_builtins.la
-pkgconfig_DATA = libgvc.pc
+pkgconfig_DATA = libgvc.pc libgvc_builtins.pc
 
-libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c \
-	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
-	gvtextlayout.c gvusershape.c gvc.c
-libgvc_C_la_LIBADD = \
-	$(top_builddir)/lib/common/libcommon_C.la
+libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvcontext.c gvjobs.c \
+	gvevent.c gvplugin.c gvconfig.c gvtextlayout.c gvusershape.c gvc.c
+libgvc_C_la_LIBADD = $(top_builddir)/lib/common/libcommon_C.la
 
-#libgvc is intended for use with plugins
+#For use with plugins.
 #   so it is linked with an empty table of builtins.
 libgvc_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
-libgvc_la_SOURCES = $(libgvc_C_la_SOURCES) no_builtins.c
+libgvc_la_SOURCES = $(libgvc_C_la_SOURCES) no_builtins.c demand_loading.c
 libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	@GD_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@
 
-#libgvc_builtins is intended for use with builtins (still allowing plugins).
-#   The application needs to provide a table of builtins, dot_builtins.c
-#   provides and example.
+#For use without plugins.
+#  so it needs to be linked with a preset table of builtins, e.g. dot_builtins.c,
+#  		with either demand_loading.c or no_demand_loading.c,
+#  		and with the plugins themselves, e.g.
+#  -lgvplugin_dot_layout -lgvplugin_neato_layout -lgvplugin_gd -lgvplugin_pangocairo
 libgvc_builtins_la_LDFLAGS = -version-info @VERSION_INFO@
 libgvc_builtins_la_SOURCES = $(libgvc_C_la_SOURCES)
 libgvc_builtins_la_LIBADD = $(libgvc_la_LIBADD)
 
-EXTRA_DIST = Makefile.old dot_builtins.c
+EXTRA_DIST = Makefile.old

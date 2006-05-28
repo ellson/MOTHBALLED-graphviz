@@ -38,6 +38,8 @@
 #include	"gvcint.h"
 #include        "gvcproc.h"
 
+extern const bool Demand_Loading;
+
 #ifdef WITH_CODEGENS
 #ifdef QUARTZ_RENDER
 #include <QuickTime/QuickTime.h>
@@ -511,58 +513,60 @@ void gvconfig(GVC_t * gvc, bool rescan)
    
     gvc->config_found = FALSE;
 #ifdef ENABLE_LTDL
-    /* see if there are any new plugins */
-    libdir = gvconfig_libdir();
-    rc = stat(libdir, &libdir_st);
-    if (rc == -1) {
-	/* if we fail to stat it then it probably doesn't exist so just fail silently */
-	return;
-    }
-
-    if (! gvc->config_path) {
-        gvc->config_path = gmalloc(strlen(libdir) + 1 + strlen(config_file_name) + 1);
-        strcpy(gvc->config_path, libdir);
-        strcat(gvc->config_path, "/");
-        strcat(gvc->config_path, config_file_name);
-    }
-	
-    if (rescan) {
-	config_rescan(gvc, gvc->config_path);
-	gvc->config_found = TRUE;
-	return;
-    }
-
-    /* load in the cached plugin library data */
-
-    rc = stat(gvc->config_path, &config_st);
-    if (rc == -1) {
-	/* silently return without setting gvc->config_found = TRUE */
-	return;
-    }
-    else if (config_st.st_size > MAX_SZ_CONFIG) {
-	agerr(AGERR,"%s is bigger than I can handle.\n", gvc->config_path);
-    }
-    else {
-	f = fopen(gvc->config_path,"r");
-	if (!f) {
-	    agerr (AGERR,"failed to open %s for read.\n", gvc->config_path);
-	}
-	else {
-	    config_text = gmalloc(config_st.st_size + 1);
-	    sz = fread(config_text, 1, config_st.st_size, f);
-	    if (sz == 0) {
-		agerr(AGERR,"%s is zero sized, or other read error.\n", gvc->config_path);
-		free(config_text);
-	    }
-	    else {
-	        gvc->config_found = TRUE;
-	        config_text[sz] = '\0';  /* make input into a null terminated string */
-	        rc = gvconfig_plugin_install_from_config(gvc, config_text);
-		/* NB. config_text not freed because we retain char* into it */
-	    }
-	}
-	if (f)
-	    fclose(f);
+    if (Demand_Loading) {
+        /* see if there are any new plugins */
+        libdir = gvconfig_libdir();
+        rc = stat(libdir, &libdir_st);
+        if (rc == -1) {
+    	/* if we fail to stat it then it probably doesn't exist so just fail silently */
+    	return;
+        }
+    
+        if (! gvc->config_path) {
+            gvc->config_path = gmalloc(strlen(libdir) + 1 + strlen(config_file_name) + 1);
+            strcpy(gvc->config_path, libdir);
+            strcat(gvc->config_path, "/");
+            strcat(gvc->config_path, config_file_name);
+        }
+    	
+        if (rescan) {
+    	config_rescan(gvc, gvc->config_path);
+    	gvc->config_found = TRUE;
+    	return;
+        }
+    
+        /* load in the cached plugin library data */
+    
+        rc = stat(gvc->config_path, &config_st);
+        if (rc == -1) {
+    	/* silently return without setting gvc->config_found = TRUE */
+    	return;
+        }
+        else if (config_st.st_size > MAX_SZ_CONFIG) {
+    	agerr(AGERR,"%s is bigger than I can handle.\n", gvc->config_path);
+        }
+        else {
+    	f = fopen(gvc->config_path,"r");
+    	if (!f) {
+    	    agerr (AGERR,"failed to open %s for read.\n", gvc->config_path);
+    	}
+    	else {
+    	    config_text = gmalloc(config_st.st_size + 1);
+    	    sz = fread(config_text, 1, config_st.st_size, f);
+    	    if (sz == 0) {
+    		agerr(AGERR,"%s is zero sized, or other read error.\n", gvc->config_path);
+    		free(config_text);
+    	    }
+    	    else {
+    	        gvc->config_found = TRUE;
+    	        config_text[sz] = '\0';  /* make input into a null terminated string */
+    	        rc = gvconfig_plugin_install_from_config(gvc, config_text);
+    		/* NB. config_text not freed because we retain char* into it */
+    	    }
+    	}
+    	if (f)
+    	    fclose(f);
+        }
     }
 #endif
     gvtextlayout_select(gvc);   /* choose best available textlayout plugin immediately */

@@ -23,11 +23,8 @@
 extern "C" {
 #endif
 
+#include "arith.h"
 #include "gvcext.h"
-
-#ifndef NULL
-#define NULL (void *)0
-#endif
 
 /* 
  * Terminology:

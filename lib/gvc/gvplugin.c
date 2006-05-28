@@ -30,6 +30,8 @@
 #include        "gvcint.h"
 #include        "gvcproc.h"
 
+extern const bool Demand_Loading;
+
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
  * The enumerated type is defined gvplugin.h.  The apis array is
@@ -106,6 +108,9 @@ gvplugin_library_t *gvplugin_library_load(char *path)
     static int lenp;
     char *libdir;
     char *suffix = "_LTX_library";
+
+    if (!Demand_Loading)
+	return NULL;
 
     libdir = gvconfig_libdir();
     len = strlen(libdir) + 1 + strlen(path) + 1;
@@ -337,11 +342,16 @@ void gvplugin_write_status(GVC_t * gvc)
     int api;
 
 #ifdef ENABLE_LTDL
-    fprintf(stderr,"The plugin configuration file:\n\t%s\n", gvc->config_path);
-    if (gvc->config_found)
-	fprintf(stderr,"\t\twas successfully loaded.\n");
-    else
-	fprintf(stderr,"\t\twas not found or not usable. No on-demand plugins.\n");
+    if (Demand_Loading) {
+        fprintf(stderr,"The plugin configuration file:\n\t%s\n", gvc->config_path);
+        if (gvc->config_found)
+	    fprintf(stderr,"\t\twas successfully loaded.\n");
+        else
+	    fprintf(stderr,"\t\twas not found or not usable. No on-demand plugins.\n");
+    }
+    else {
+        fprintf(stderr,"Demand loading of plugins is disabled.\n");
+    }
 #endif
 
     for (api = 0; api < ARRAY_SIZE(api_names); api++) {
