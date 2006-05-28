@@ -48,10 +48,10 @@ dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 # symbols be in the binary image, but libtool makes it difficult
 # to get a library into an image if it doesn't already resolve any symbols!
 # Workaround is to link explicity to the .libs/libxxx.a
-# A better approach is probably to provide an explicit list of builins
-# like lib/gvc/dot_builtins.c
+# A better approach is probably to provide an explicit list of builtins
+# like $(top_srcdir)/lib/gvc/dot_builtins.c
 #
-dot_static_SOURCES = dot.c
+dot_static_SOURCES = dot.c $(top_srcdir)/lib/gvc/no_demand_loading.c
 dot_static_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
 dot_static_LDADD = \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout_C.a \

@@ -2,3 +2,12 @@ dot
 simple
 demo
 example
+*.png
+*.o
+_gv.so
+gv.i
+gv.py
+gv.pyc
+gv.cpp
+gv_python.cpp
+dot_builtins.c
