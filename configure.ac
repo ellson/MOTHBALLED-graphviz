@@ -32,22 +32,8 @@ AC_CONFIG_SRCDIR(configure.ac)
 AC_CONFIG_AUX_DIR(config)
 
 dnl -----------------------------------
-dnl libtool ltdl on-demand plugin loading
+dnl Checks for system type
 
-AC_ARG_ENABLE(ltdl,
-  [AC_HELP_STRING([--disable-ltdl], [don't support on-demand plugin loading])])
-if test "x$enable_ltdl" = "xno"; then
-  AC_DEFINE(DISABLE_LTDL,1,[Define if you don't want on-demand plugin loading])
-else
-  AC_CONFIG_SUBDIRS(libltdl)
-  AC_LIBTOOL_DLOPEN
-  AC_LIBLTDL_INSTALLABLE
-fi
-AM_CONDITIONAL(DISABLE_LTDL, [test "x$enable_ltdl" = "xno"])
-AC_SUBST(INCLTDL)
-AC_SUBST(LIBLTDL)
-
-# Checks for system type
 AC_CANONICAL_HOST
 
 # This nonsense drives me crazy!!
@@ -151,7 +137,6 @@ AC_ISC_POSIX
 AM_PROG_LEX
 AC_PROG_YACC
 AC_PROG_AWK
-AM_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_CHECK_PROG(SED,sed,sed,false)
@@ -252,6 +237,69 @@ AC_TYPE_SIZE_T
 AC_TYPE_UID_T
 
 dnl -----------------------------------
+dnl Checks for header files
+
+# AC_STDC_HEADERS
+# AC_HAVE_HEADERS(string.h)
+AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
+	search.h getopt.h pthread.h values.h float.h limits.h termios.h \
+	errno.h time.h sys/time.h sys/times.h sys/types.h unistd.h fenv.h \
+	sys/select.h fpu_control.h sys/fpu.h strings.h sys/socket.h sys/stat.h)
+AC_HEADER_TIME
+AC_HEADER_DIRENT
+AC_HEADER_STDBOOL
+
+# Check for st_blksize in struct stat
+# AC_ST_BLKSIZE
+
+# Internationalization macros
+# AM_GNU_GETTEXT
+
+# Check for socklen_t
+AC_MSG_CHECKING([for socklen_t])
+AC_CACHE_VAL(ac_cv_type_socklen_t,[AC_EGREP_CPP(changequote(<<,>>)dnl
+<<(^|[^a-zA-Z_0-9])socklen_t[^a-zA-Z_0-9]>>dnl
+changequote([,]),[
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #if STDC_HEADERS
+    #include <stdlib.h>
+    #include <stddef.h>
+    #endif
+    ], ac_cv_type_socklen_t=yes, ac_cv_type_socklen_t=no)])
+AC_MSG_RESULT($ac_cv_type_socklen_t)
+if test $ac_cv_type_socklen_t = no; then
+    AC_DEFINE(socklen_t, unsigned, [Define to unsigned if socklet_t is missing])
+fi
+
+# -----------------------------------
+# Test if compiler supports bool
+AC_MSG_CHECKING([for bool])
+AC_TRY_COMPILE([
+    #ifdef HAVE_STDBOOL_H>
+    #include <stdbool.h>
+    #endif
+    ],[
+    bool foo = true, bar = false;
+    ],[
+AC_MSG_RESULT(yes)
+AC_DEFINE(HAVE_BOOL, 1,[Define to 1 if compiler supports bool])
+    ],[
+AC_MSG_RESULT(no)])
+
+# -----------------------------------
+# Test for direct I/O
+AC_MSG_CHECKING([for struct dioattr])
+AC_TRY_COMPILE([#include <sys/types.h>
+#include <fcntl.h>
+#include <stdio.h>],[
+struct dioattr dio;],[
+AC_MSG_RESULT(yes)
+AC_DEFINE(HAVE_STRUCT_DIOATTR, 1,
+[Define to 1 if you have struct dioattr])],[
+AC_MSG_RESULT(no)])
+
+dnl -----------------------------------
 dnl Checks for -lm library
 
 save_LIBS=$LIBS
@@ -263,6 +311,48 @@ LIBS="$LIBS $MATH_LIBS"
 AC_CHECK_FUNCS([feenableexcept fesetenv])
 
 LIBS=$save_LIBS
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for libgen (provides basename function)
+
+save_CPPFLAGS=$CPPFLAGS
+save_LDFLAGS=$LDFLAGS
+AC_CHECK_HEADER(libgen.h,
+        AC_CHECK_LIB(gen,basename,
+                [LIBGEN_LIBS="-lgen"
+                AC_DEFINE_UNQUOTED(HAVE_LIBGEN,1,[Define if the LIBGEN library has the basename feature])]),
+        AC_MSG_WARN(libgen.h header not available))
+LDFLAGS=$save_LDFLAGS
+CPPFLAGS=$save_CPPFLAGS
+AC_SUBST(LIBGEN_LIBS)
+
+# -----------------------------------
+
+# Checks for library functions
+AC_FUNC_ALLOCA
+
+AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
+	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
+	strtoul strtoll strtoull uname])
+
+AC_REPLACE_FUNCS([strcasecmp strncasecmp])
+
+dnl -----------------------------------
+dnl libtool ltdl on-demand plugin loading
+
+AC_ARG_ENABLE(ltdl,
+  [AC_HELP_STRING([--disable-ltdl], [don't support on-demand plugin loading])])
+if test "x$enable_ltdl" = "xno"; then
+  AC_DEFINE(DISABLE_LTDL,1,[Define if you don't want on-demand plugin loading])
+else
+  AC_CONFIG_SUBDIRS(libltdl)
+  AC_LIBTOOL_DLOPEN
+  AC_LIBLTDL_INSTALLABLE
+fi
+AM_CONDITIONAL(DISABLE_LTDL, [test "x$enable_ltdl" = "xno"])
+AC_SUBST(INCLTDL)
+AC_SUBST(LIBLTDL)
+AM_PROG_LIBTOOL
 
 dnl -----------------------------------
 dnl old codegens
@@ -1465,93 +1555,6 @@ AC_SUBST(JPEG_INCLUDES)
 AC_SUBST(JPEG_LIBS)
 
 fi
-
-dnl -----------------------------------
-dnl INCLUDES and LIBS for libgen (provides basename function)
-
-save_CPPFLAGS=$CPPFLAGS
-save_LDFLAGS=$LDFLAGS
-AC_CHECK_HEADER(libgen.h,
-        AC_CHECK_LIB(gen,basename,
-                [LIBGEN_LIBS="-lgen"
-                AC_DEFINE_UNQUOTED(HAVE_LIBGEN,1,[Define if the LIBGEN library has the basename feature])]),
-        AC_MSG_WARN(libgen.h header not available))
-LDFLAGS=$save_LDFLAGS
-CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(LIBGEN_LIBS)
-
-# -----------------------------------
-
-# Checks for library functions
-AC_FUNC_ALLOCA
-
-AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
-	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
-	strtoul strtoll strtoull uname])
-
-AC_REPLACE_FUNCS([strcasecmp strncasecmp])
-
-dnl -----------------------------------
-# Check for st_blksize in struct stat
-# AC_ST_BLKSIZE
-
-# Internationalization macros
-# AM_GNU_GETTEXT
-
-# Checks for header files
-# AC_STDC_HEADERS
-# AC_HAVE_HEADERS(string.h)
-AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
-	search.h getopt.h pthread.h values.h float.h limits.h termios.h \
-	errno.h time.h sys/time.h sys/times.h sys/types.h unistd.h fenv.h \
-	sys/select.h fpu_control.h sys/fpu.h strings.h sys/socket.h sys/stat.h)
-AC_HEADER_TIME
-AC_HEADER_DIRENT
-AC_HEADER_STDBOOL
-
-# Check for socklen_t
-AC_MSG_CHECKING([for socklen_t])
-AC_CACHE_VAL(ac_cv_type_socklen_t,[AC_EGREP_CPP(changequote(<<,>>)dnl
-<<(^|[^a-zA-Z_0-9])socklen_t[^a-zA-Z_0-9]>>dnl
-changequote([,]),[
-    #include <sys/types.h>
-    #include <sys/socket.h>
-    #if STDC_HEADERS
-    #include <stdlib.h>
-    #include <stddef.h>
-    #endif
-    ], ac_cv_type_socklen_t=yes, ac_cv_type_socklen_t=no)])
-AC_MSG_RESULT($ac_cv_type_socklen_t)
-if test $ac_cv_type_socklen_t = no; then
-    AC_DEFINE(socklen_t, unsigned, [Define to unsigned if socklet_t is missing])
-fi
-
-# -----------------------------------
-# Test if compiler supports bool
-AC_MSG_CHECKING([for bool])
-AC_TRY_COMPILE([
-    #ifdef HAVE_STDBOOL_H>
-    #include <stdbool.h>
-    #endif
-    ],[
-    bool foo = true, bar = false;
-    ],[
-AC_MSG_RESULT(yes)
-AC_DEFINE(HAVE_BOOL, 1,[Define to 1 if compiler supports bool])
-    ],[
-AC_MSG_RESULT(no)])
-
-# -----------------------------------
-# Test for direct I/O
-AC_MSG_CHECKING([for struct dioattr])
-AC_TRY_COMPILE([#include <sys/types.h>
-#include <fcntl.h>
-#include <stdio.h>],[
-struct dioattr dio;],[
-AC_MSG_RESULT(yes)
-AC_DEFINE(HAVE_STRUCT_DIOATTR, 1,
-[Define to 1 if you have struct dioattr])],[
-AC_MSG_RESULT(no)])
 
 # -----------------------------------
 # tclInt.h
