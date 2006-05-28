@@ -44,19 +44,27 @@ uninstall-hook:
 dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 	groff -Tps -man $(top_srcdir)/cmd/dot/dot.1 | ps2pdf - - >$@
 
+# This automagic technique for building the list of builtins requires that the
+# symbols be in the binary image, but libtool makes it difficult
+# to get a library into an image if it doesn't already resolve any symbols!
+# Workaround is to link explicity to the .libs/libxxx.a
+# A better approach is probably to provide an explicit list of builins
+# like lib/gvc/dot_builtins.c
+#
 dot_static_SOURCES = dot.c
 dot_static_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
 dot_static_LDADD = \
-	$(top_builddir)/lib/plugin/libgvplugin_dot_layout_C.la \
-	$(top_builddir)/lib/plugin/libgvplugin_neato_layout_C.la \
-	$(top_builddir)/lib/plugin/libgvplugin_gd_C.la \
-	$(top_builddir)/lib/plugin/libgvplugin_pangocairo_C.la \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout_C.a \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout_C.a \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_gd_C.a \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_pangocairo_C.a \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la \
 	$(top_builddir)/lib/graph/libgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
-	@PANGOCAIRO_LIBS@ @GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@
+       	@PANGOCAIRO_LIBS@ @GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@
+
 
 EXTRA_DIST = Makefile.old dot.1 dot.pdf
 

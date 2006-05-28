@@ -19,7 +19,7 @@
 #endif
 
 #include	<string.h>
-#ifndef DISABLE_LTDL
+#ifdef ENABLE_LTDL
 #include	<ltdl.h>
 #endif
 
@@ -97,7 +97,7 @@ bool gvplugin_install(GVC_t * gvc, api_t api,
 
 gvplugin_library_t *gvplugin_library_load(char *path)
 {
-#ifndef DISABLE_LTDL
+#ifdef ENABLE_LTDL
     lt_dlhandle hndl;
     lt_ptr ptr;
     char *s, *sym;
@@ -336,7 +336,7 @@ void gvplugin_write_status(GVC_t * gvc)
 {
     int api;
 
-#ifndef DISABLE_LTDL
+#ifdef ENABLE_LTDL
     fprintf(stderr,"The plugin configuration file:\n\t%s\n", gvc->config_path);
     if (gvc->config_found)
 	fprintf(stderr,"\t\twas successfully loaded.\n");

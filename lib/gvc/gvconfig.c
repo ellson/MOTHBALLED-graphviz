@@ -20,7 +20,7 @@
 
 #include	<string.h>
 
-#ifndef DISABLE_LTDL
+#ifdef ENABLE_LTDL
 #include	<sys/types.h>
 #include	<regex.h>
 #include	<sys/stat.h>
@@ -81,7 +81,7 @@
 
  */
 
-#ifndef DISABLE_LTDL
+#ifdef ENABLE_LTDL
 /*
   separator - consume all non-token characters until next token.  This includes:
 	comments:   '#' ... '\n'
@@ -218,7 +218,7 @@ static void gvconfig_plugin_install_builtins(GVC_t * gvc)
 		    (gvplugin_library_t *)(s->address));
 }
 
-#ifndef DISABLE_LTDL
+#ifdef ENABLE_LTDL
 static void gvconfig_write_library_config(char *path, gvplugin_library_t *library, FILE *f)
 {
     gvplugin_api_t *apis;
@@ -274,7 +274,7 @@ char * gvconfig_libdir(void)
 }
 #endif
 
-#ifndef DISABLE_LTDL
+#ifdef ENABLE_LTDL
 static void config_rescan(GVC_t *gvc, char *config_path)
 {
     FILE *f = NULL;
@@ -487,7 +487,7 @@ void gvconfig(GVC_t * gvc, bool rescan)
 #if 0
     gvplugin_library_t **libraryp;
 #endif
-#ifndef DISABLE_LTDL
+#ifdef ENABLE_LTDL
     int sz, rc;
     struct stat config_st, libdir_st;
     FILE *f = NULL;
@@ -510,7 +510,7 @@ void gvconfig(GVC_t * gvc, bool rescan)
     gvconfig_plugin_install_builtins(gvc);
    
     gvc->config_found = FALSE;
-#ifndef DISABLE_LTDL
+#ifdef ENABLE_LTDL
     /* see if there are any new plugins */
     libdir = gvconfig_libdir();
     rc = stat(libdir, &libdir_st);

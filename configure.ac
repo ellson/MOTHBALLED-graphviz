@@ -341,15 +341,14 @@ dnl -----------------------------------
 dnl libtool ltdl on-demand plugin loading
 
 AC_ARG_ENABLE(ltdl,
-  [AC_HELP_STRING([--disable-ltdl], [don't support on-demand plugin loading])])
-if test "x$enable_ltdl" = "xno"; then
-  AC_DEFINE(DISABLE_LTDL,1,[Define if you don't want on-demand plugin loading])
-else
+  [AC_HELP_STRING([--enable-ltdl], [support on-demand plugin loading])])
+if test "x$enable_ltdl" != "xno"; then
+  AC_DEFINE(ENABLE_LTDL,1,[Define if you want on-demand plugin loading])
   AC_CONFIG_SUBDIRS(libltdl)
   AC_LIBTOOL_DLOPEN
   AC_LIBLTDL_INSTALLABLE
 fi
-AM_CONDITIONAL(DISABLE_LTDL, [test "x$enable_ltdl" = "xno"])
+AM_CONDITIONAL(ENABLE_LTDL, [test "x$enable_ltdl" != "xno"])
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
 AM_PROG_LIBTOOL
