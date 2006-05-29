@@ -1194,7 +1194,7 @@ AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$with_ipsepcola" = "xyes"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PANGO, CAIRO et.al.
                                                                                 
-AC_ARG_WITH(libgd,
+AC_ARG_WITH(pangocairo,
   [AC_HELP_STRING([--with-pangocairo],
                   [use pangocairo library])])
 
@@ -1209,9 +1209,9 @@ PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.0],
 	AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
 		[Define if you have the pango library with cairo support])],
 	[AC_MSG_WARN(pangocairo library not available)])
-fi
 AC_SUBST(PANGOCAIRO_CFLAGS)
 AC_SUBST(PANGOCAIRO_LIBS)
+fi
 AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
 
 dnl -----------------------------------
@@ -1357,6 +1357,16 @@ dnl INCLUDES and LIBS for FREETYPE (only with mylibgd)
 
 if test "x$with_mylibgd" = "xyes"; then
 
+AC_ARG_WITH(freetype,
+  [AC_HELP_STRING([--with-freetype],
+                  [use freetype library])])
+
+### default is to build with freetype
+if test "x$with_freetype" != "xno"; then
+	with_freetype=yes
+fi
+
+if test "x$with_freetype" = "xyes"; then
   dnl FreeType configure tests snarfed from libgd ..from libwmf ..
   FREETYPE_DIR="yes" 
   AC_ARG_WITH(freetype,
@@ -1421,12 +1431,23 @@ if test "x$with_mylibgd" = "xyes"; then
     AC_SUBST(FT_LIBS)
   fi
 fi
+fi
 
 dnl ----------------------------------
 dnl INCLUDES and LIBS for FONTCONFIG (only with mylibgd)
 
 if test "x$with_mylibgd" = "xyes"; then
 
+AC_ARG_WITH(fontconfig,
+  [AC_HELP_STRING([--with-fontconfig],
+                  [use fontconfig library])])
+
+### default is to build with fontconfig
+if test "x$with_fontconfig" != "xno"; then
+	with_fontconfig=yes
+fi
+
+if test "x$with_fontconfig" = "xyes"; then
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
 FC_INCLUDES=""
@@ -1476,7 +1497,7 @@ CPPFLAGS=$save_CPPFLAGS
 LDFLAGS=$save_LDFLAGS
 AC_SUBST(FC_INCLUDES)
 AC_SUBST(FC_LIBS)
-
+fi
 fi
 
 dnl -----------------------------------
