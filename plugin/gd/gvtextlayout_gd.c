@@ -26,7 +26,7 @@
 #ifdef HAVE_LIBGD
 #include "gd.h"
 
-#ifdef HAVE_GD_FREETYPE
+#if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
 
 /* fontsize at which text is omitted entirely */
 #define FONTSIZE_MUCH_TOO_SMALL 0.15
@@ -134,8 +134,10 @@ void textlayout(textpara_t * para, char *fontname, double fontsize, char **fontp
 	err = gdImageStringFTEx(NULL, brect, -1, fontlist,
 				fontsize, 0, 0, 0, para->str, &strex);
 
-	if (err)
+	if (err) {
+	    fprintf(stderr,"%s\n", err);
 	    return;
+	}
 
 	if (strex.xshow) {
 	    /* transfer malloc'ed xshow string to para */
@@ -162,7 +164,7 @@ gvtextlayout_engine_t textlayout_engine = {
 #endif
 
 gvplugin_installed_t gvtextlayout_gd_types[] = {
-#if defined(HAVE_LIBGD) && defined(HAVE_GD_FREETYPE)
+#if defined(HAVE_LIBGD) && defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
     {0, "textlayout", 2, &textlayout_engine, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}

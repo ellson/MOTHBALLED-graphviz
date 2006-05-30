@@ -1357,30 +1357,22 @@ dnl INCLUDES and LIBS for FREETYPE (only with mylibgd)
 
 if test "x$with_mylibgd" = "xyes"; then
 
-AC_ARG_WITH(freetype,
-  [AC_HELP_STRING([--with-freetype],
-                  [use freetype library])])
+dnl FreeType configure tests snarfed from libgd ..from libwmf ..
 
-### default is to build with freetype
-if test "x$with_freetype" != "xno"; then
-	with_freetype=yes
-fi
-
-if test "x$with_freetype" = "xyes"; then
-  dnl FreeType configure tests snarfed from libgd ..from libwmf ..
   FREETYPE_DIR="yes" 
   AC_ARG_WITH(freetype,
   [  --with-freetype=DIR     where to find the freetype 2.x library],
-         FREETYPE_DIR=$withval)
+	FREETYPE_DIR=$withval)
 
-  if test "x$FREETYPE_DIR" = "xno"; then
-    AC_MSG_WARN(Optional FREETYPE2 library disabled)
+  ### default is to build with freetype
+  if test "x$with_freetype" = "xno"; then
+    AC_MSG_WARN(Optional FREETYPE library disabled)
   else
-                                                                                
-    if test "x$FREETYPE_DIR" != "xyes"; then
-      AC_PATH_PROG(FREETYPE_CONFIG,freetype-config,,[$FREETYPE_DIR/bin:$PATH])
-    else
+
+    if test "x$FREETYPE_DIR" = "xyes"; then
       AC_PATH_PROG(FREETYPE_CONFIG,freetype-config)
+    else
+      AC_PATH_PROG(FREETYPE_CONFIG,freetype-config,,[$FREETYPE_DIR/bin:$PATH])
     fi
 
     if test -n "$FREETYPE_CONFIG"; then
@@ -1430,7 +1422,6 @@ if test "x$with_freetype" = "xyes"; then
     AC_SUBST(FT_INCLUDES)
     AC_SUBST(FT_LIBS)
   fi
-fi
 fi
 
 dnl ----------------------------------
