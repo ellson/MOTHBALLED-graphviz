@@ -1304,7 +1304,7 @@ else
     AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library has the GD_GIF feature])
     AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if either internal or external GD library is availabel])
     GD_INCLUDES='-I$(top_srcdir)/lib/gd'
-    GD_LIBS='$(top_builddir)/lib/gd/libgvgd_C.la'
+    GD_LIBS='$(top_builddir)/lib/gd/libgvgd.la'
 fi
 AC_SUBST(GD_INCLUDES)
 AC_SUBST(GD_LIBS)

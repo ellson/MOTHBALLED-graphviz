@@ -30,11 +30,20 @@ libgdtclft_la_SOURCES = gdtclft.c
 
 libgdtclft_la_LDFLAGS = -no-undefined
 
+if WITH_LIBGD
+if WITH_MYLIBGD
 libgdtclft_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la @GD_LIBS@
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
+	$(top_builddir)/lib/gd/libgvgd_C.la \
+	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
+else
+libgdtclft_la_LIBADD = \
+	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
+	@GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
+endif
 
-if WITH_LIBGD
 if WITH_TCL
 all-local: pkgIndex.tcl
 
