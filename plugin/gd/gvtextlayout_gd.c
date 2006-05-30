@@ -26,79 +26,17 @@
 #ifdef HAVE_LIBGD
 #include "gd.h"
 
-#if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
+#if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE) && defined(HAVE_LIBFONTCONFIG) && defined(HAVE_GD_FONTCONFIG)
 
 /* fontsize at which text is omitted entirely */
 #define FONTSIZE_MUCH_TOO_SMALL 0.15
 /* fontsize at which text is rendered by a simple line */
 #define FONTSIZE_TOO_SMALL 1.5
 
-/* sometimes fonts are stored under a different name */
-char *gd_alternate_fontlist(char *font)
-{
-#ifdef HAVE_GD_FONTCONFIG
-    return font;
-#else
-    static char *fontbuf;
-    static int fontbufsz;
-    char *p, *fontlist;
-    int len;
-
-    len = strlen(font) + 1;
-    if (len > fontbufsz) {
-	fontbufsz = 2 * len;
-	if (fontbuf)
-	    fontbuf = malloc(fontbufsz);
-	else
-	    fontbuf = realloc(fontbuf, fontbufsz);
-    }
-
-    /* fontbuf to contain font without style descriptions like -Roman or -Italic */
-    strcpy(fontbuf, font);
-    if ((p = strchr(fontbuf, '-')) || (p = strchr(fontbuf, '_')))
-	*p = 0;
-
-    fontlist = fontbuf;
-    if ((strcasecmp(font, "times-bold") == 0)
-	|| (strcasecmp(fontbuf, "timesbd") == 0)
-	|| (strcasecmp(fontbuf, "timesb") == 0))
-	fontlist = "timesbd;Timesbd;TIMESBD;timesb;Timesb;TIMESB";
-
-    else if ((strcasecmp(font, "times-italic") == 0)
-	     || (strcasecmp(fontbuf, "timesi") == 0))
-	fontlist = "timesi;Timesi;TIMESI";
-
-    else if ((strcasecmp(font, "timesnewroman") == 0)
-	     || (strcasecmp(font, "timesnew") == 0)
-	     || (strcasecmp(font, "timesroman") == 0)
-	     || (strcasecmp(fontbuf, "times") == 0))
-	fontlist = "times;Times;TIMES";
-
-    else if ((strcasecmp(font, "arial-bold") == 0)
-	     || (strcasecmp(fontbuf, "arialb") == 0))
-	fontlist = "arialb;Alialb;ARIALB";
-
-    else if ((strcasecmp(font, "arial-italic") == 0)
-	     || (strcasecmp(fontbuf, "ariali") == 0))
-	fontlist = "ariali;Aliali;ARIALI";
-
-    else if (strcasecmp(fontbuf, "helvetica") == 0)
-	fontlist = "helvetica;Helvetica;HELVETICA;arial;Arial;ARIAL";
-
-    else if (strcasecmp(fontbuf, "arial") == 0)
-	fontlist = "arial;Arial;ARIAL";
-
-    else if (strcasecmp(fontbuf, "courier") == 0)
-	fontlist = "courier;Courier;COURIER;cour";
-
-    return fontlist;
-#endif				/* HAVE_GD_FONTCONFIG */
-}
-
 void textlayout(textpara_t * para, char *fontname, double fontsize, char **fontpath)
 {
     static char *fntpath;
-    char *fontlist, *err;
+    char *err;
     int brect[8];
     gdFTStringExtra strex;
 
@@ -116,12 +54,10 @@ void textlayout(textpara_t * para, char *fontname, double fontsize, char **fontp
     para->width = 0.0;
     para->xshow = NULL;
 
-    fontlist = gd_alternate_fontlist(fontname);
-    para->layout = (void*)fontlist;
-    para->free_layout = NULL; /* no need to free fontlist (??) */
+    para->layout = (void*)fontname;
+    para->free_layout = NULL; /* no need to free fontname */
 
-
-    if (fontlist) {
+    if (fontname) {
 	if (fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
 	    /* OK, but ignore text entirely */
 	    return;
@@ -131,7 +67,7 @@ void textlayout(textpara_t * para, char *fontname, double fontsize, char **fontp
 	    fontsize = FONTSIZE_TOO_SMALL;
 	}
 	/* call gdImageStringFT with null *im to get brect and to set font cache */
-	err = gdImageStringFTEx(NULL, brect, -1, fontlist,
+	err = gdImageStringFTEx(NULL, brect, -1, fontname,
 				fontsize, 0, 0, 0, para->str, &strex);
 
 	if (err) {
@@ -164,7 +100,7 @@ gvtextlayout_engine_t textlayout_engine = {
 #endif
 
 gvplugin_installed_t gvtextlayout_gd_types[] = {
-#if defined(HAVE_LIBGD) && defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
+#if defined(HAVE_LIBGD) && defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE) && defined(HAVE_LIBFONTCONFIG) && defined(HAVE_GD_FONTCONFIG)
     {0, "textlayout", 2, &textlayout_engine, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}

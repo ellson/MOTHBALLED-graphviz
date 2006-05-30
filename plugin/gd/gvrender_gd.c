@@ -277,67 +277,6 @@ static void gdgen_end_graph(GVJ_t * job)
     }
 }
 
-/* sometimes fonts are stored under a different name */
-char *gdgen_alternate_fontlist(char *font)
-{
-#ifdef HAVE_GD_FONTCONFIG
-    return font;
-#else
-    static char *fontbuf;
-    static int fontbufsz;
-    char *p, *fontlist;
-    int len;
-
-    len = strlen(font) + 1;
-    if (len > fontbufsz) {
-	fontbufsz = 2 * len;
-	if (fontbuf)
-	    fontbuf = malloc(fontbufsz);
-	else
-	    fontbuf = realloc(fontbuf, fontbufsz);
-    }
-
-    /* fontbuf to contain font without style descriptions like -Roman or -Italic */
-    strcpy(fontbuf, font);
-    if ((p = strchr(fontbuf, '-')) || (p = strchr(fontbuf, '_')))
-	*p = 0;
-
-    fontlist = fontbuf;
-    if ((strcasecmp(font, "times-bold") == 0)
-	|| (strcasecmp(fontbuf, "timesb") == 0))
-	fontlist = "timesb;Timesb;TIMESB";
-
-    else if ((strcasecmp(font, "times-italic") == 0)
-	     || (strcasecmp(fontbuf, "timesi") == 0))
-	fontlist = "timesi;Timesi;TIMESI";
-
-    else if ((strcasecmp(font, "timesnewroman") == 0)
-	     || (strcasecmp(font, "timesnew") == 0)
-	     || (strcasecmp(font, "timesroman") == 0)
-	     || (strcasecmp(fontbuf, "times") == 0))
-	fontlist = "times;Times;TIMES";
-
-    else if ((strcasecmp(font, "arial-bold") == 0)
-	     || (strcasecmp(fontbuf, "arialb") == 0))
-	fontlist = "arialb;Alialb;ARIALB";
-
-    else if ((strcasecmp(font, "arial-italic") == 0)
-	     || (strcasecmp(fontbuf, "ariali") == 0))
-	fontlist = "ariali;Aliali;ARIALI";
-
-    else if (strcasecmp(fontbuf, "helvetica") == 0)
-	fontlist = "helvetica;Helvetica;HELVETICA;arial;Arial;ARIAL";
-
-    else if (strcasecmp(fontbuf, "arial") == 0)
-	fontlist = "arial;Arial;ARIAL";
-
-    else if (strcasecmp(fontbuf, "courier") == 0)
-	fontlist = "courier;Courier;COURIER;cour";
-
-    return fontlist;
-#endif				/* HAVE_GD_FONTCONFIG */
-}
-
 void gdgen_missingfont(char *err, char *fontreq)
 {
     static char *lastmissing = 0;
@@ -346,7 +285,7 @@ void gdgen_missingfont(char *err, char *fontreq)
     if (n_errors >= 20)
 	return;
     if ((lastmissing == 0) || (strcmp(lastmissing, fontreq))) {
-#if HAVE_GD_FONTCONFIG
+#if defined(HAVE_LIBFONTCONFIG) && defined(HAVE_GD_FONTCONFIG)
 #if 0
 /* FIXME - error function */
 	agerr(AGERR, "%s : %s\n", err, fontreq);
@@ -384,7 +323,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     double parawidth = para->width * job->compscale.x;
     double fontsz = style->fontsz;
     gdFTStringExtra strex;
-#ifdef HAVE_GD_FREETYPE
+#if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
     char *err;
     int brect[8];
 #endif
@@ -400,7 +339,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     else
 	strex.flags |= gdFTEX_FONTCONFIG;
 
-    fontlist = gdgen_alternate_fontlist(style->fontfam);
+    fontlist = (char*)(para->layout);
 
     switch (para->just) {
     case 'l':
@@ -435,7 +374,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 		    ROUND(ep.x), ROUND(ep.y),
 		    style->pencolor.u.index);
     } else {
-#ifdef HAVE_GD_FREETYPE
+#if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
 	err = gdImageStringFTEx(im, brect, style->pencolor.u.index,
 				fontlist, fontsz, job->rotation ? (PI / 2) : 0,
 				ROUND(mp.x), ROUND(mp.y), str, &strex);
@@ -481,7 +420,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 			      (unsigned char *) str,
 			      style->pencolor.u.index);
 	    }
-#ifdef HAVE_GD_FREETYPE
+#if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
 	}
 #endif
     }
