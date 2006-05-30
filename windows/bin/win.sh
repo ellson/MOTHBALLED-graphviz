@@ -356,7 +356,6 @@ function Package
         finstall gvplugin_layout.h 
         finstall gvplugin_render.h 
         finstall gvplugin_textlayout.h 
-        finstall gvplugin_usershape.h 
 	SRCDIR=$GVIZ_HOME/lib/neatogen
         finstall adjust.h
         finstall neato.h 
