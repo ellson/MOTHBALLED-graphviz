@@ -12,10 +12,6 @@ noinst_HEADERS = gd.h gd_io.h gdcache.h gdfontg.h gdfontl.h gdfontmb.h \
 	gdfonts.h gdfontt.h gdhelpers.h jisx0208.h wbmp.h gdfx.h entities.h
 noinst_LTLIBRARIES = libgvgd_C.la
 pkglib_LTLIBRARIES = libgvgd.la
-noinst_PROGRAMS = annotate gdparttopng gdtopng gd2copypal gd2topng pngtogd \
-	pngtogd2 webpng gd2togif gdcmpgif giftogd2 \
-	fontsizetest fontwheeltest gdtest gddemo gd2time gdtestft \
-	testac circletexttest testtr fontconfigtest gifanimtest
 html_DATA = $(html)
 endif
 
@@ -32,16 +28,14 @@ libgvgd_la_LIBADD = @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_L
 gd.html: index.html
 	cp $(top_srcdir)/lib/gd/index.html gd.html
 
-LDADD = ./libgvgd.la
-
-dist-zip: distdir
-	zip -qr $(distdir).zip $(distdir)
-	$(am__remove_distdir)
-
 # keep the contents of the original gd-2.0.31 distribution
 EXTRA_DIST = README-JPEG.TXT README.TXT configure.pl bdftogd demoin.png \
 	index.html install-item makefile.sample readme.jpn \
 	entities.html entities.tcl \
+	annotate.c gdparttopng.c gdtopng.c gd2copypal.c gd2topng.c pngtogd.c \
+	pngtogd2.c webpng.c gd2togif.c gdcmpgif.c giftogd2.c \
+	fontsizetest.c fontwheeltest.c gdtest.c gddemo.c gd2time.c gdtestft.c \
+	testac.c circletexttest.c testtr.c fontconfigtest.c gifanimtest.c \
 	configure.ac Makefile.old Makefile.am.orig Makefile.in.orig \
 	config.hin config test $(html)
 
