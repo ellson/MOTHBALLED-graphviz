@@ -141,12 +141,13 @@ static void bmp_size (usershape_t *us) {
 }
 
 static void jpeg_size (usershape_t *us) {
-    unsigned int marker, length, size_x, size_y, junk;
+    unsigned char marker;
+    unsigned int length, size_x, size_y, junk;
 
     /* These are the markers that follow 0xff in the file.
      * Other markers implicitly have a 2-byte length field that follows.
      */
-    static char standalone_markers [] = {
+    static unsigned char standalone_markers [] = {
         0x01,                       /* Temporary */
         0xd0, 0xd1, 0xd2, 0xd3,     /* Reset */
             0xd4, 0xd5, 0xd6,
