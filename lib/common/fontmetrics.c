@@ -170,7 +170,7 @@ pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
 
     if (Verbose) {
 	if (emit_once(fontname)) {
-	    fprintf(stderr, "%s: fontname=%s fontpath=%s\n", GD_gvc(g)->cmdname,
+	    fprintf(stderr, "%s: fontname=%s fontpath=%s\n", GD_gvc(g)->common.cmdname,
 		    fontname, fontpath);
 	}
     }

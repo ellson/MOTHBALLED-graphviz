@@ -14,17 +14,28 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include "gvplugin.h"
+#ifndef GVCOMMON_H
+#define GVCOMMON_H
 
-extern gvplugin_installed_t gvrender_gd_types;
-extern gvplugin_installed_t gvrender_ps_types;
-extern gvplugin_installed_t gvtextlayout_gd_types;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-static gvplugin_api_t apis[] = {
-    {API_render, &gvrender_gd_types},
-    {API_render, &gvrender_ps_types},
-    {API_textlayout, &gvtextlayout_gd_types},
-    {(api_t)0, NULL},
-};
+    typedef struct GVCOMMON_s {
+	char *user;
+	char **info;
+	char *cmdname;
+	int verbose;
+        void (*errorfn) (char *fmt, ...);
+	char **show_boxes; /* emit code for correct box coordinates */
+	char **lib; 
 
-gvplugin_library_t gvplugin_gd_LTX_library = { "gd", apis };
+	/* rendering state */
+	int viewNum;     /* current view - 1 based count of views,
+			    all pages in all layers */
+    } GVCOMMON_t;
+
+#ifdef __cplusplus
+}
+#endif
+#endif				/* GVCOMMON_H */

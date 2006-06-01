@@ -134,8 +134,7 @@ void gvrender_begin_job(GVJ_t * job)
         job->input_filename = NULL;
     	job->graph_index = 0;
     }
-    job->cmdname = gvc->cmdname;
-    job->verbose = gvc->verbose;
+    job->common = &(gvc->common);
     job->layout_type = gvc->layout.type;
     job->bb = gvc->bb;
     if (gvre) {
@@ -147,8 +146,8 @@ void gvrender_begin_job(GVJ_t * job)
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_job)
-	    cg->begin_job(job->output_file, gvc->g, gvc->lib, gvc->user,
-			  gvc->info, job->pagesArraySize);
+	    cg->begin_job(job->output_file, gvc->g, gvc->common.lib, gvc->common.user,
+			  gvc->common.info, job->pagesArraySize);
     }
 #endif
 }
@@ -167,7 +166,7 @@ void gvrender_end_job(GVJ_t * job)
 	    cg->end_job();
     }
 #endif
-    job->gvc->lib = NULL;
+    job->gvc->common.lib = NULL;
 }
 
 /* font modifiers */

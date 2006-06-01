@@ -32,6 +32,9 @@
 #include        "gvcint.h"
 #include        "gvcproc.h"
 
+/* for Show_boxes */
+#include	"globals.h" 
+
 /* from common/utils.c */
 extern void *zmalloc(size_t);
 
@@ -46,9 +49,10 @@ GVC_t *gvNEWcontext(char **info, char *user)
     GVC_t *gvc = zmalloc(sizeof(GVC_t));
 
     if (gvc) {
-	gvc->info = info;
-	gvc->user = user;
-	gvc->errorfn = agerrorf;
+	gvc->common.info = info;
+	gvc->common.user = user;
+	gvc->common.errorfn = agerrorf;
+	gvc->common.show_boxes = Show_boxes;
     }
     return gvc;
 }

@@ -604,7 +604,7 @@ static void emit_node(GVJ_t * job, node_t * n)
     gvc->emit_state = EMIT_NDRAW;
     if (node_in_layer(job, n->graph, n)
 	    && node_in_box(n, job->pageBoxClip)
-	    && (ND_state(n) != gvc->viewNum)) {
+	    && (ND_state(n) != gvc->common.viewNum)) {
 
         gvrender_comment(job, n->name);
 
@@ -632,7 +632,7 @@ static void emit_node(GVJ_t * job, node_t * n)
 	setColorScheme (agget (n, "colorscheme"));
 	gvrender_begin_context(job);
 	ND_shape(n)->fns->codefn(job, n);
-	ND_state(n) = gvc->viewNum;
+	ND_state(n) = gvc->common.viewNum;
 	gvrender_end_context(job);
 
 	if (url || explicit_tooltip)
@@ -1094,7 +1094,6 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     gvc->defaultlinestyle = defaultlinestyle;
 
     gvc->graphname = g->name;
-    gvc->lib = Lib;
 }
 
 static void init_job_margin(GVJ_t *job)
@@ -1269,7 +1268,7 @@ void emit_view(GVJ_t * job, graph_t * g, int flags)
     char *s, *url = NULL, *tooltip = NULL, *target = NULL;
     int explicit_tooltip = 0;
 
-    gvc->viewNum++;
+    gvc->common.viewNum++;
     if (((s = agget(g, "href")) && s[0]) || ((s = agget(g, "URL")) && s[0]))
 	url = strdup_and_subst_graph(s, g);
     if ((s = agget(g, "target")) && s[0])
@@ -1429,10 +1428,10 @@ void emit_jobs_eof(GVC_t * gvc)
 
     for (job = gvjobs_first(gvc); job; job = gvjobs_next(gvc)) {
         if (job->output_file) {
-	    if (gvc->viewNum > 0) {
+	    if (gvc->common.viewNum > 0) {
 		gvrender_end_job(job);
 		emit_once_reset();
-		gvc->viewNum = 0;
+		gvc->common.viewNum = 0;
 	    }
             fclose(job->output_file);
             job->output_file = NULL;
@@ -1730,16 +1729,6 @@ char **parse_style(char *s)
     agxbfree(&xb);
     (void)agxbuse(&ps_xb);		/* adds final '\0' to buffer */
     return parse;
-}
-
-void use_library(char *name)
-{
-    static int cnt = 0;
-    if (name) {
-	Lib = ALLOC(cnt + 2, Lib, char *);
-	Lib[cnt++] = name;
-	Lib[cnt] = NULL;
-    }
 }
 
 static void emit_job(GVJ_t * job, graph_t * g)

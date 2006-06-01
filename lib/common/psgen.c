@@ -332,8 +332,6 @@ static void ps_set_style(char **s)
     }
 }
 
-static unsigned char psbuf[BUFSIZ];
-
 char *ps_string(char *ins, int latin)
 {
     char *s;
@@ -347,7 +345,7 @@ char *ps_string(char *ins, int latin)
 	base = ins;
 
     if (xb.buf == NULL)
-	agxbinit (&xb, BUFSIZ, psbuf);
+	agxbinit (&xb, 0, NULL);
 
     rc = agxbputc (&xb, LPAREN);
     s = base;
@@ -358,7 +356,8 @@ char *ps_string(char *ins, int latin)
     }
     agxbputc (&xb, RPAREN);
     if (base != ins) free (base);
-    return agxbuse(&xb);
+    s = agxbuse(&xb);
+    return s;
 }
 
 static void ps_textpara(point p, textpara_t * para)

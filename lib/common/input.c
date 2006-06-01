@@ -145,6 +145,19 @@ static char* dotneato_basename (char* path)
     else return path;
 }
 
+static void use_library(GVC_t *gvc, char *name)
+{
+    static int cnt = 0;
+    if (name) {
+	Lib = ALLOC(cnt + 2, Lib, char *);
+	Lib[cnt++] = name;
+	Lib[cnt] = NULL;
+    }
+    gvc->common.lib = Lib;
+}
+
+
+
 void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
     char *rest, c, *val;
@@ -161,8 +174,8 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     if (Config)
 	exit (0);
 
-    CmdName = gvc->cmdname = dotneato_basename(argv[0]);
-    i = gvlayout_select(gvc, gvc->cmdname);
+    CmdName = gvc->common.cmdname = dotneato_basename(argv[0]);
+    i = gvlayout_select(gvc, gvc->common.cmdname);
     if (i == NO_SUPPORT)
 	gvlayout_select(gvc, "dot");
 
@@ -231,7 +244,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		break;
 	    case 'V':
 		fprintf(stderr, "%s version %s (%s)\n",
-			gvc->info[0], gvc->info[1], gvc->info[2]);
+			gvc->common.info[0], gvc->common.info[1], gvc->common.info[2]);
 		exit(0);
 		break;
 	    case 'l':
@@ -240,7 +253,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    fprintf(stderr, "Missing argument for -l flag\n");
 		    dotneato_usage(1);
 		}
-		use_library(val);
+		use_library(gvc, val);
 		break;
 	    case 'o':
 		val = getFlagOpt(argc, argv, &i);
@@ -273,10 +286,10 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    PSinputscale = POINTS_PER_INCH;
 		break;
 	    case 'v':
-		gvc->verbose = 1;
+		gvc->common.verbose = 1;
 		if (isdigit(*(unsigned char *) rest))
-		    gvc->verbose = atoi(rest);
-		Verbose = gvc->verbose;
+		    gvc->common.verbose = atoi(rest);
+		Verbose = gvc->common.verbose;
 		break;
 	    case 'x':
 		Reduce = TRUE;
@@ -288,7 +301,7 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		dotneato_usage(0);
 		break;
 	    default:
-		fprintf(stderr, "%s: option -%c unrecognized\n\n", gvc->cmdname,
+		fprintf(stderr, "%s: option -%c unrecognized\n\n", gvc->common.cmdname,
 			c);
 		dotneato_usage(1);
 	    }
@@ -426,7 +439,7 @@ graph_t *gvNextInputGraph(GVC_t *gvc)
 	    }
 	    else {
 		while ((fn = gvc->input_filenames[fidx++]) && !(fp = fopen(fn, "r")))  {
-		    agerr(AGERR, "%s: can't open %s\n", gvc->cmdname, fn);
+		    agerr(AGERR, "%s: can't open %s\n", gvc->common.cmdname, fn);
 		    graphviz_errors++;
 		}
 	    }

@@ -248,12 +248,12 @@ static void gd_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
         if (truecolor_p) {
 	    if (Verbose)
 	        fprintf(stderr, "%s: allocating a %dK TrueColor GD image\n",
-		        gvc->cmdname, ROUND(Viewport.x * Viewport.y * 4 / 1024.));
+		        gvc->common.cmdname, ROUND(Viewport.x * Viewport.y * 4 / 1024.));
 	    im = gdImageCreateTrueColor(Viewport.x, Viewport.y);
         } else {
 	    if (Verbose)
 	        fprintf(stderr, "%s: allocating a %dK PaletteColor GD image\n",
-		        gvc->cmdname, ROUND(Viewport.x * Viewport.y / 1024.));
+		        gvc->common.cmdname, ROUND(Viewport.x * Viewport.y / 1024.));
 	    im = gdImageCreate(Viewport.x, Viewport.y);
         }
         if (!im) {

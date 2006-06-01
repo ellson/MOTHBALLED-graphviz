@@ -27,6 +27,7 @@ extern "C" {
 #include "geom.h"
 #include "color.h"
 #include "gvcext.h"
+#include "gvcommon.h"
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
@@ -136,8 +137,8 @@ extern "C" {
 	GVJ_t *next;		/* linked list of jobs */
 	GVJ_t *next_active;	/* linked list of active jobs (e.g. multiple windows) */
 
-	char *cmdname;
-	int verbose;
+	GVCOMMON_t *common;
+
 	char *input_filename;
 	int graph_index;
 

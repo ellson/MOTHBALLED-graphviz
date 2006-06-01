@@ -161,7 +161,6 @@ extern "C" {
     extern pointf textsize(graph_t *g, textpara_t * para,
 			    char *fontname, double fontsz);
     extern void translate_bb(Agraph_t *, int);
-    extern void use_library(char *);
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
     extern void write_extended_dot(GVJ_t * job, graph_t *g, FILE *f);

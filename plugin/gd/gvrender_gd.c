@@ -128,25 +128,25 @@ static void gdgen_begin_graph(GVJ_t * job, char *graphname)
 //	truecolor_p = TRUE;	/* force truecolor */
 
     if (job->external_surface) {
-	if (job->verbose)
-	    fprintf(stderr, "%s: using existing GD image\n", job->cmdname);
+	if (job->common->verbose)
+	    fprintf(stderr, "%s: using existing GD image\n", job->common->cmdname);
 	im = (gdImagePtr) (job->output_file);
     } else {
 	/* device size with margins all around */
 	width = ROUND(job->boundingBox.UR.x + job->boundingBox.LL.x);
 	height = ROUND(job->boundingBox.UR.y + job->boundingBox.LL.y);
 	if (truecolor_p) {
-	    if (job->verbose)
+	    if (job->common->verbose)
 		fprintf(stderr,
 			"%s: allocating a %dK TrueColor GD image\n",
-			job->cmdname,
+			job->common->cmdname,
 			ROUND(width * height * 4 / 1024.));
 	    im = gdImageCreateTrueColor(width, height);
 	} else {
-	    if (job->verbose)
+	    if (job->common->verbose)
 		fprintf(stderr,
 			"%s: allocating a %dK PaletteColor GD image\n",
-			job->cmdname, ROUND(width * height / 1024.));
+			job->common->cmdname, ROUND(width * height / 1024.));
 	    im = gdImageCreate(width, height);
 	}
     }
@@ -734,7 +734,7 @@ gdgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 		   ROUND(b.UR.x - b.LL.x), ROUND(b.UR.y - b.LL.y), us->w, us->h);
 }
 
-gvrender_engine_t gdgen_engine = {
+static gvrender_engine_t gdgen_engine = {
     0,				/* gdgen_begin_job */
     0,				/* gdgen_end_job */
     gdgen_begin_graph,
@@ -765,7 +765,7 @@ gvrender_engine_t gdgen_engine = {
     gdgen_usershape
 };
 
-gvrender_features_t gdgen_features_tc = {
+static gvrender_features_t gdgen_features_tc = {
     GVRENDER_DOES_TRUECOLOR
 	| GVRENDER_Y_GOES_DOWN,	/* flags */
     0,				/* default margin - points */
@@ -776,7 +776,7 @@ gvrender_features_t gdgen_features_tc = {
     NULL,			/* device */
 };
 
-gvrender_features_t gdgen_features = {
+static gvrender_features_t gdgen_features = {
     GVRENDER_Y_GOES_DOWN,	/* flags */
     0,				/* default margin - points */
     96,				/* default dpi */

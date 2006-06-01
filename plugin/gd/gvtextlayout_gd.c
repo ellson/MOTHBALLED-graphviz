@@ -93,7 +93,7 @@ void textlayout(textpara_t * para, char *fontname, double fontsize, char **fontp
     }
 }
 
-gvtextlayout_engine_t textlayout_engine = {
+static gvtextlayout_engine_t textlayout_engine = {
     textlayout,
 };
 #endif

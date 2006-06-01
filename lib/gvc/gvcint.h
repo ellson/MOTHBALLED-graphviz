@@ -24,6 +24,7 @@ extern "C" {
 #endif
 
 #include "gvcjob.h"
+#include "gvcommon.h"
 
     typedef struct {
 	int flags;
@@ -72,16 +73,10 @@ extern "C" {
 #define MAXNEST 4
 
     struct GVC_s {
-	/* gvNEWcontext() */
-	char *user;
-	char **info;
-	char *cmdname;
-	int verbose;
+	GVCOMMON_t common;
 
 	char *config_path;
 	bool config_found;
-
-	void (*errorfn) (char *fmt, ...);
 
 	/* gvParseArgs */
 	char **input_filenames; /* null terminated array of input filenames */
@@ -121,8 +116,6 @@ extern "C" {
 	char *graphname;	/* name from graph */
 	GVJ_t *active_jobs;   /* linked list of active jobs */
 
-	char **lib;
-
 	/* pagination */
 	char *pagedir;		/* pagination order */
 	pointf margin;		/* margins in graph units */
@@ -138,8 +131,6 @@ extern "C" {
 	char **layerIDs;	/* array of layer names */
 	int numLayers;		/* number of layers */
 
-        int viewNum;	        /* current view - 1 based count of views,
-					all pages in all layers */
 	/* default font */
 	char *defaultfontname;
 	double defaultfontsize;
