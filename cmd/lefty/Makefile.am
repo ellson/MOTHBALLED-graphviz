@@ -39,9 +39,11 @@ noinst_HEADERS = code.h common.h display.h exec.h g.h gfxview.h internal.h \
 	io.h lex.h mem.h parse.h str.h tbl.h txtview.h
 
 if WITH_X
+if WITH_XAW
 bin_PROGRAMS = lefty
 man_MANS = $(man)
 pdf_DATA = $(pdf)
+endif
 endif
 
 lefty_DATA = lefty.psp

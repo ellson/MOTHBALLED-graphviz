@@ -1119,19 +1119,26 @@ AC_ARG_WITH(Xawlibdir,
 	[XAW_LIBS="-L$withval"])
 LDFLAGS="$LDFLAGS $XAW_LIBS $XPM_LIBS $X_LIBS $X_EXTRA_LIBS $X_PRE_LIBS $SOCKET_LIBS"
 AC_CHECK_HEADERS([X11/Intrinsic.h])
-AC_CHECK_HEADERS([X11/Xaw/Text.h], [], [],
-   [#if HAVE_X11_INTRINSIC_H
-   # include <X11/Intrinsic.h>
-   # endif
-   ])
+AC_CHECK_HEADERS([X11/Xaw/Text.h],
+		 [],
+		 [with_xaw=no
+		  AC_MSG_WARN(Optional Xaw library not available - missing headers)],
+		 [#if HAVE_X11_INTRINSIC_H
+		  # include <X11/Intrinsic.h>
+		  # endif
+		  ])
+if test "x$with_xaw" != "xno"; then
 AC_CHECK_LIB(Xaw,main,
-	[XAW_LIBS="$XAW_LIBS -lXaw"
-	AC_DEFINE_UNQUOTED(HAVE_LIBXAW,1,[Define if you have the XAW library])],
-		AC_MSG_WARN(Optional Xaw library not available), [-lXmu -lXt -lX11 -lXext $SOCKET_LIBS])
+	     [XAW_LIBS="$XAW_LIBS -lXaw"],
+	     [with_xaw=no
+	      AC_MSG_WARN(Optional Xaw library not available)],
+	      [-lXmu -lXt -lX11 -lXext $SOCKET_LIBS])
+fi
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(XAW_INCLUDES)
 AC_SUBST(XAW_LIBS)
+AM_CONDITIONAL(WITH_XAW, [test "x$with_xaw" != "xno"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for Z
