@@ -6,7 +6,9 @@ AM_CPPFLAGS = @X_CFLAGS@ \
 
 noinst_HEADERS = SFinternal.h SFDecls.h xstat.h SF.h
 if WITH_X
+if WITH_XAW
 noinst_LTLIBRARIES = libfilereq.la
+endif
 endif
 
 libfilereq_la_SOURCES = Dir.c Draw.c Path.c SelFile.c

@@ -9,7 +9,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/cmd/lefty \
 
 noinst_HEADERS = gcommon.h
 if WITH_X
+if WITH_XAW
 noinst_LTLIBRARIES = libws.la
+endif
 endif
 
 libws_la_SOURCES = garray.c gbutton.c gcanvas.c gcommon.c glabel.c \
