@@ -1127,21 +1127,21 @@ static void init_job_margin(GVJ_t *job)
 static void init_job_dpi(GVJ_t *job, graph_t *g)
 {
     if (GD_drawing(g)->dpi != 0) {
-        job->dpi.x = job->dpi.y = GD_drawing(g)->dpi;
+        job->dpi.x = job->dpi.y = (double)(GD_drawing(g)->dpi);
     }
     else {
         /* set default margins depending on format */
         switch (job->output_lang) {
         case GVRENDER_PLUGIN:
-            job->dpi.x = job->dpi.y = job->render.features->default_dpi;
+            job->dpi = job->render.features->default_dpi;
             break;
         case POSTSCRIPT:
         case PDF:
         case SVG:
-	    job->dpi.x = job->dpi.y = POINTS_PER_INCH;
+	    job->dpi.x = job->dpi.y = (double)(POINTS_PER_INCH);
             break;
         default:
-            job->dpi.x = job->dpi.y = DEFAULT_DPI;
+            job->dpi.x = job->dpi.y = (double)(DEFAULT_DPI);
             break;
         }
     }

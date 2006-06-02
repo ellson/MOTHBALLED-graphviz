@@ -769,7 +769,7 @@ static gvrender_features_t gdgen_features_tc = {
     GVRENDER_DOES_TRUECOLOR
 	| GVRENDER_Y_GOES_DOWN,	/* flags */
     0,				/* default margin - points */
-    96,				/* default dpi */
+    {96.,96.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
@@ -779,7 +779,7 @@ static gvrender_features_t gdgen_features_tc = {
 static gvrender_features_t gdgen_features = {
     GVRENDER_Y_GOES_DOWN,	/* flags */
     0,				/* default margin - points */
-    96,				/* default dpi */
+    {96.,96.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */

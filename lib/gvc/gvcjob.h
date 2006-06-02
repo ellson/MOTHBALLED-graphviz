@@ -68,7 +68,7 @@ extern "C" {
     typedef struct {
 	int flags;
 	double default_margin; /* graph units */
-	int default_dpi;
+	pointf default_dpi;
 	char **knowncolors;
 	int sz_knowncolors;
 	color_type_t color_type;
