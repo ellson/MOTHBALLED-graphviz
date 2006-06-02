@@ -4,6 +4,7 @@
 
 import sys
 sys.path.append('/usr/lib64/graphviz/python')
+sys.path.append('/usr/lib/graphviz/python')
 import gv
 
 # create a new empty graph 
