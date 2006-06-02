@@ -153,10 +153,6 @@ extern "C" {
 	gvplugin_active_device_t device;
 	gvdevice_callbacks_t *callbacks;
 
-#ifdef WITH_CODEGENS
-	codegen_t *codegen;	/* current  codegen */
-#endif
-
 	void *surface;		/* gd or cairo surface */
 	bool external_surface; /* surface belongs to caller */
 
@@ -224,6 +220,11 @@ extern "C" {
 	gvevent_key_binding_t *keybindings;
 	int numkeys;
 	void *keycodes;
+
+/* Must be last as separately compiled plugins are not compiled with WITH_CODEGENS */
+#ifdef WITH_CODEGENS
+	codegen_t *codegen;	/* current  codegen */
+#endif
     };
 
 #ifdef __cplusplus
