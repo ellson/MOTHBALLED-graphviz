@@ -70,6 +70,8 @@ Agraph_t *read(char *filename)
     f = fopen(filename, "r");
     if (!f)
 	return NULL;
+    if (!gvc)
+	gvc = gvContext();
     g = agread(f);
     fclose(f);
     return g;
