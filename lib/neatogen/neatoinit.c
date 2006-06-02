@@ -989,13 +989,12 @@ static void freeGraphData(vtx_data * graph)
 
 static void initRegular(graph_t * G, int nG)
 {
-    int i;
     double a, da;
     node_t *np;
 
     a = 0.0;
     da = (2 * PI) / nG;
-    for (i = 0; (np = GD_neato_nlist(G)[i]); i++) {
+    for (np = agfstnode(G); np; np = agnxtnode(G, np)) {
 	ND_pos(np)[0] = nG * Spring_coeff * cos(a);
 	ND_pos(np)[1] = nG * Spring_coeff * sin(a);
 	ND_pinned(np) = P_SET;
