@@ -336,19 +336,18 @@ static void Mcircle_hack(GVJ_t * job, node_t * n)
     gvrender_polyline(job, A, 2);
 }
 
-static point interpolate(double t, point p0, point p1)
+static pointf interpolate(double t, pointf p0, pointf p1)
 {
-    point rv;
+    pointf rv;
     rv.x = p0.x + t * (p1.x - p0.x);
     rv.y = p0.y + t * (p1.y - p0.y);
     return rv;
 }
 
-void round_corners(GVJ_t * job, char* fillc, char* penc, point * A, 
+void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF, 
 			int sides, int style)
 {
-    point *B, C[2], p0, p1;
-    pointf BF[4];
+    pointf *B, C[2], p0, p1;
     double d, dx, dy, t;
     int i, seg, mode;
 
@@ -356,14 +355,14 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, point * A,
 	mode = DIAGONALS;
     else
 	mode = ROUNDED;
-    B = N_NEW(4 * sides + 4, point);
+    B = N_NEW(4 * sides + 4, pointf);
     i = 0;
     for (seg = 0; seg < sides; seg++) {
-	p0 = A[seg];
+	p0 = AF[seg];
 	if (seg < sides - 1)
-	    p1 = A[seg + 1];
+	    p1 = AF[seg + 1];
 	else
-	    p1 = A[0];
+	    p1 = AF[0];
 	dx = p1.x - p0.x;
 	dy = p1.y - p0.y;
 	d = sqrt(dx * dx + dy * dy);
@@ -385,7 +384,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, point * A,
     if (mode == ROUNDED) {
 	if (style & FILLED) {
 	    int j = 0;
-	    point* pts = N_GNEW(2*sides,point);
+	    pointf* pts = N_GNEW(2*sides,pointf);
     	    gvrender_begin_context(job);
 	    gvrender_set_pencolor (job, fillc);
 	    gvrender_set_fillcolor (job, fillc);
@@ -396,44 +395,38 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, point * A,
 	    gvrender_polygon(job, pts, 2*sides, TRUE);
 	    free (pts);
 	    for (seg = 0; seg < sides; seg++) {
-		for (i = 0; i < 4; i++)
-		    P2PF(B[4 * seg + 2 + i], BF[i]);
-		gvrender_beziercurve(job, BF, 4, FALSE, FALSE, TRUE);
+		gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE, TRUE);
 	    }
     	    gvrender_end_context(job);
 	}
 	gvrender_set_pencolor(job, penc);
 	for (seg = 0; seg < sides; seg++) {
-	    gvrender_polyline(job, B + 4 * seg + 1, 2);
-
-	    /* convert to floats for gvrender api */
-	    for (i = 0; i < 4; i++)
-		P2PF(B[4 * seg + 2 + i], BF[i]);
-	    gvrender_beziercurve(job, BF, 4, FALSE, FALSE, FALSE);
+	    gvrender_polylinef(job, B + 4 * seg + 1, 2);
+	    gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE, FALSE);
 	}
     } else {			/* diagonals are weird.  rewrite someday. */
 	gvrender_set_pencolor(job, penc);
 	if (style & FILLED)
 	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
-	gvrender_polygon(job, A, sides, style & FILLED);
+	gvrender_polygon(job, AF, sides, style & FILLED);
 	for (seg = 0; seg < sides; seg++) {
 #ifdef NOTDEF
 	    C[0] = B[3 * seg];
 	    C[1] = B[3 * seg + 3];
-	    gvrender_polyline(job, C, 2);
+	    gvrender_polylinef(job, C, 2);
 #endif
 	    C[0] = B[3 * seg + 2];
 	    C[1] = B[3 * seg + 4];
-	    gvrender_polyline(job, C, 2);
+	    gvrender_polylinef(job, C, 2);
 	}
     }
     free(B);
 }
 
 static void 
-node_round_corners(GVJ_t * job, node_t* n, point * A, int sides, int style)
+node_round_corners(GVJ_t * job, node_t* n, pointf * AF, int sides, int style)
 {
-    round_corners(job, findFill(n), findPen(n), A, sides, style);
+    round_corners(job, findFill(n), findPen(n), AF, sides, style);
 }
 
 /*=============================poly start=========================*/
@@ -1213,9 +1206,8 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     }
 
     ND_label(n)->p = ND_coord_i(n);
-/* prescale by 16.0 to help rounding trick below */
-    xsize = (16.0 * (ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n)));
-    ysize = (16.0 * ND_ht_i(n) / POINTS(ND_height(n)));
+    xsize = (double)(ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n));
+    ysize = (double)ND_ht_i(n) / POINTS(ND_height(n));
 
 #if defined(WITH_CODEGENS) && defined(HAVE_GD_PNG)
     /* this is bad, but it's because of how the VRML driver works */
@@ -1275,20 +1267,17 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     if (ND_shape(n)->usershape) {
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i];
-/* simple rounding produces random results around .5 
- * this trick should clip off the random part. 
- * (note xsize/ysize prescaled by 16.0 above) */
-	    A[i].x = ROUND(P.x * xsize) / 16;
-	    A[i].y = ROUND(P.y * ysize) / 16;
+	    AF[i].x = P.x * xsize;
+	    AF[i].y = P.y * ysize;
 	    if (sides > 2) {
-		A[i].x += ND_coord_i(n).x;
-		A[i].y += ND_coord_i(n).y;
+		AF[i].x += (double)ND_coord_i(n).x;
+		AF[i].y += (double)ND_coord_i(n).y;
 	    }
 	}
 	name = ND_shape(n)->name;
 	if (streq(name, "custom"))
 	    name = agget(n, "shapefile");
-	gvrender_usershape(job, name, A, sides, filled);
+	gvrender_usershape(job, name, AF, sides, filled);
 	filled = FALSE;
     }
     /* if no boundary but filled, set boundary color to fill color */
@@ -1302,34 +1291,25 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     for (j = 0; j < peripheries; j++) {
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i + j * sides];
-	    AF[i].x = P.x * xsize / 16.;
-	    AF[i].y = P.y * ysize / 16.;
+	    AF[i].x = P.x * xsize;
+	    AF[i].y = P.y * ysize;
 	    if (sides > 2) {
-		AF[i].x += ND_coord_i(n).x;
-		AF[i].y += ND_coord_i(n).y;
-	    }
-/* simple rounding produces random results around .5 
- * this trick should clip off the random part. 
- * (note xsize/ysize prescaled by 16.0 above) */
-	    A[i].x = ROUND(P.x * xsize) / 16;
-	    A[i].y = ROUND(P.y * ysize) / 16;
-	    if (sides > 2) {
-		A[i].x += ND_coord_i(n).x;
-		A[i].y += ND_coord_i(n).y;
+		AF[i].x += (double)ND_coord_i(n).x;
+		AF[i].y += (double)ND_coord_i(n).y;
 	    }
 	}
 	if (sides <= 2) {
 	    pointf PF;
 
 	    P2PF(ND_coord_i(n), PF);
-	    gvrender_ellipsef(job, PF, AF[0].x, AF[0].y, filled);
+	    gvrender_ellipse(job, PF, AF[0].x, AF[0].y, filled);
 	    if (style & DIAGONALS) {
 		Mcircle_hack(job, n);
 	    }
 	} else if (style & (ROUNDED | DIAGONALS)) {
-	    node_round_corners(job, n, A, sides, style);
+	    node_round_corners(job, n, AF, sides, style);
 	} else {
-	    gvrender_polygonf(job, AF, sides, filled);
+	    gvrender_polygon(job, AF, sides, filled);
 	}
 	/* fill innermost periphery only */
 	filled = FALSE;
@@ -1875,29 +1855,35 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
 
 static void record_gencode(GVJ_t * job, node_t * n)
 {
-    point A[4];
-    int i, style;
+    boxf BF;
+    pointf AF[4];
+    int style;
     field_t *f;
 
     f = (field_t *) ND_shape_info(n);
-    A[0] = f->b.LL;
-    A[2] = f->b.UR;
-    A[1].x = A[2].x;
-    A[1].y = A[0].y;
-    A[3].x = A[0].x;
-    A[3].y = A[2].y;
-    for (i = 0; i < 4; i++)
-	A[i] = add_points(A[i], ND_coord_i(n));
+    B2BF(f->b, BF);
+    BF.LL.x += (double)(ND_coord_i(n).x);
+    BF.LL.y += (double)(ND_coord_i(n).y);
+    BF.UR.x += (double)(ND_coord_i(n).x);
+    BF.UR.y += (double)(ND_coord_i(n).y);
+    
     style = stylenode(job, n);
     pencolor(job, n);
     if (style & FILLED)
 	gvrender_set_fillcolor(job, findFill(n)); /* emit fill color */
     if (streq(ND_shape(n)->name, "Mrecord"))
 	style |= ROUNDED;
-    if (style & (ROUNDED | DIAGONALS))
-	node_round_corners(job, n, A, 4, style);
+    if (style & (ROUNDED | DIAGONALS)) {
+        AF[0] = BF.LL;
+        AF[2] = BF.UR;
+        AF[1].x = AF[2].x;
+        AF[1].y = AF[0].y;
+        AF[3].x = AF[0].x;
+        AF[3].y = AF[2].y;
+	node_round_corners(job, n, AF, 4, style);
+    }
     else
-	gvrender_polygon(job, A, 4, style & FILLED);
+	gvrender_box(job, BF, style & FILLED);
     gen_fields(job, n, f);
 }
 

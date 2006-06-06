@@ -247,18 +247,14 @@ emit_html_txt(GVJ_t* job, htmltxt_t* tp, htmlenv_t* env, void* obj)
 		    fsize, fcolor, tp->box);
 }
 
-static void doSide(GVJ_t * job, point p, int wd, int ht)
+static void doSide(GVJ_t * job, pointf p, double wd, double ht)
 {
-    point A[4];
+    boxf BF;
 
-    A[0] = p;
-    A[1].x = p.x;
-    A[1].y = p.y + ht;
-    A[2].y = A[1].y;
-    A[2].x = p.x + wd;
-    A[3].x = A[2].x;
-    A[3].y = p.y;
-    gvrender_polygon(job, A, 4, 1);
+    BF.LL = p;
+    BF.UR.x = p.x + wd;
+    BF.UR.y = p.y + ht;
+    gvrender_box(job, BF, 1);
 }
 
 /* doBorder:
@@ -271,10 +267,11 @@ static void doSide(GVJ_t * job, point p, int wd, int ht)
  * from x to x+border will all pixels from x to x+border, and thus have
  * width border+1.
  */
-static void doBorder(GVJ_t * job, char *color, int border, box pts)
+static void doBorder(GVJ_t * job, char *color, int border, box B)
 {
-    point pt;
-    int wd, ht;
+    pointf pt;
+    boxf BF;
+    double wd, ht;
 
     gvrender_begin_context(job);
 
@@ -283,46 +280,34 @@ static void doBorder(GVJ_t * job, char *color, int border, box pts)
     gvrender_set_fillcolor(job, color);
     gvrender_set_pencolor(job, color);
 
+    B2BF(B, BF);
     if (border == 1) {
-	point A[4];
-
-	A[0] = pts.LL;
-	A[2] = pts.UR;
-	A[1].x = A[0].x;
-	A[1].y = A[2].y;
-	A[3].x = A[2].x;
-	A[3].y = A[0].y;
-	gvrender_polygon(job, A, 4, 0);
+	gvrender_box(job, BF, 0);
     } else {
 	border--;
-	ht = pts.UR.y - pts.LL.y;
-	wd = pts.UR.x - pts.LL.x;
-	doSide(job, pts.LL, border, ht);
-	pt.x = pts.LL.x;
-	pt.y = pts.UR.y;
+	ht = BF.UR.y - BF.LL.y;
+	wd = BF.UR.x - BF.LL.x;
+	doSide(job, BF.LL, border, ht);
+	pt.x = BF.LL.x;
+	pt.y = BF.UR.y;
 	doSide(job, pt, wd, -border);
-	doSide(job, pts.UR, -border, -ht);
-	pt.x = pts.UR.x;
-	pt.y = pts.LL.y;
+	doSide(job, BF.UR, -border, -ht);
+	pt.x = BF.UR.x;
+	pt.y = BF.LL.y;
 	doSide(job, pt, -wd, border);
     }
 
     gvrender_end_context(job);
 }
 
-static void doFill(GVJ_t * job, char *color, box pts)
+static void doFill(GVJ_t * job, char *color, box B)
 {
-    point A[4];
+    boxf BF;
 
     gvrender_set_fillcolor(job, color);
     gvrender_set_pencolor(job, color);
-    A[0] = pts.LL;
-    A[1].x = pts.LL.x;
-    A[1].y = pts.UR.y;
-    A[2] = pts.UR;
-    A[3].x = pts.UR.x;
-    A[3].y = pts.LL.y;
-    gvrender_polygon(job, A, 4, 1);
+    B2BF(B, BF);
+    gvrender_box(job, BF, 1);
 }
 
 static void doAnchorStart(GVJ_t * job, htmldata_t * data, void *obj)

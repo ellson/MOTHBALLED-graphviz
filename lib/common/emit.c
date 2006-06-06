@@ -371,27 +371,12 @@ static bool write_node_test(Agraph_t * g, Agnode_t * n)
 void emit_background(GVJ_t * job, graph_t *g)
 {
     char *str;
-    pointf AF[4];
-    point A[4];
-    int i;
-    /* fudge to compensate for rounding errors */
-    pointf fudge;
-
-    fudge.x = 2 * POINTS_PER_INCH / (job->zoom * job->dpi.x);
-    fudge.y = 2 * POINTS_PER_INCH / (job->zoom * job->dpi.y);
 
     if (! ((str = agget(g, "bgcolor")) && str[0]))
 	str = "white";
-    AF[0].x = AF[1].x = job->pageBox.LL.x - fudge.x;
-    AF[2].x = AF[3].x = job->pageBox.UR.x + fudge.x;
-    AF[3].y = AF[0].y = job->pageBox.LL.y - fudge.y;
-    AF[1].y = AF[2].y = job->pageBox.UR.y + fudge.y;
-    for (i = 0; i < 4; i++) {
-	PF2P(AF[i],A[i]);
-    }
     gvrender_set_fillcolor(job, str);
     gvrender_set_pencolor(job, str);
-    gvrender_polygon(job, A, 4, TRUE);	/* filled */
+    gvrender_box(job, job->pageBox, TRUE);	/* filled */
 }
 
 static void setup_page(GVJ_t * job, graph_t * g)
@@ -1473,7 +1458,8 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 {
     int c, istyle, filled;
     graph_t *sg;
-    point A[4];
+    boxf BF;
+    pointf AF[4];
     char *color, *fillcolor, *pencolor, **style;
     node_t *n;
     edge_t *e;
@@ -1551,30 +1537,31 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	    if (((color = agget(sg, "fillcolor")) != 0) && color[0])
 		fillcolor = color;
 	}
-	A[0] = GD_bb(sg).LL;
-	A[2] = GD_bb(sg).UR;
-	A[1].x = A[2].x;
-	A[1].y = A[0].y;
-	A[3].x = A[0].x;
-	A[3].y = A[2].y;
+        B2BF(GD_bb(sg), BF);
 	if (istyle & ROUNDED) {
 	    if (!pencolor) pencolor = DEFAULT_COLOR;
 	    if (!fillcolor) fillcolor = DEFAULT_FILL;
-	    if (late_int(sg, G_peripheries, 1, 0) || filled)
-		round_corners(job, fillcolor, pencolor, A, 4, istyle);
+	    if (late_int(sg, G_peripheries, 1, 0) || filled) {
+		AF[0] = BF.LL;
+		AF[1] = BF.UR;
+		AF[1].x = AF[2].x;
+		AF[1].y = AF[0].y;
+		AF[3].x = AF[0].x;
+		AF[3].y = AF[2].y;
+		round_corners(job, fillcolor, pencolor, AF, 4, istyle);
+	    }
 	}
 	else {
 	    if (pencolor)
     		gvrender_set_pencolor(job, pencolor);
 	    if (fillcolor)
 		gvrender_set_fillcolor(job, fillcolor);
-	    if (late_int(sg, G_peripheries, 1, 0)) {
-		gvrender_polygon(job, A, 4, filled);
-	    }
+	    if (late_int(sg, G_peripheries, 1, 0))
+		gvrender_box(job, BF, filled);
 	    else if (filled) { 
 		if (fillcolor && fillcolor != pencolor)
 		    gvrender_set_pencolor(job, fillcolor);
-		gvrender_polygon(job, A, 4, filled);
+		gvrender_box(job, BF, filled);
 	    }
 	}
 	if (GD_label(sg))
