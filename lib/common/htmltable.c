@@ -200,6 +200,8 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
    	    gvrender_set_font(job, fname_, fsize_);
 
 	    tl.str = ti->str;
+	    tl.fontname = fname_;
+	    tl.fontsize = fsize_;
 	    tl.xshow = ti->xshow;
 	    tl.layout = ti->layout;
 	    tl.width = paras[i].size;

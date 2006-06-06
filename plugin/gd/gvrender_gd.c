@@ -315,13 +315,9 @@ extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge, gdFontG
 
 static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
-    gvstyle_t *style = job->style;
     gdImagePtr im = (gdImagePtr) job->surface;
-    char *fontlist;
     pointf mp, ep;
-    char *str = para->str;
     double parawidth = para->width * job->compscale.x;
-    double fontsz = style->fontsz;
     gdFTStringExtra strex;
 #if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
     char *err;
@@ -334,12 +330,10 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     strex.flags = gdFTEX_RESOLUTION;
     strex.hdpi = strex.vdpi = POINTS_PER_INCH * job->compscale.x;
 
-    if (strstr(style->fontfam, "/"))
+    if (strstr(para->fontname, "/"))
 	strex.flags |= gdFTEX_FONTPATHNAME;
     else
 	strex.flags |= gdFTEX_FONTCONFIG;
-
-    fontlist = (char*)(para->layout);
 
     switch (para->just) {
     case 'l':
@@ -366,59 +360,59 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	ep.y = mp.y = p.y;
     }
 
-    if (fontsz <= FONTSIZE_MUCH_TOO_SMALL) {
+    if (para->fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
 	/* ignore entirely */
-    } else if (fontsz <= FONTSIZE_TOO_SMALL) {
+    } else if (para->fontsize <= FONTSIZE_TOO_SMALL) {
 	/* draw para in place of text */
 	gdImageLine(im, ROUND(mp.x), ROUND(mp.y),
 		    ROUND(ep.x), ROUND(ep.y),
-		    style->pencolor.u.index);
+		    job->style->pencolor.u.index);
     } else {
 #if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
-	err = gdImageStringFTEx(im, brect, style->pencolor.u.index,
-				fontlist, fontsz, job->rotation ? (PI / 2) : 0,
-				ROUND(mp.x), ROUND(mp.y), str, &strex);
+	err = gdImageStringFTEx(im, brect, job->style->pencolor.u.index,
+				para->fontname, para->fontsize, job->rotation ? (PI / 2) : 0,
+				ROUND(mp.x), ROUND(mp.y), (char *)(para->str), &strex);
 #if 0
 	gdImagePolygon(im, (gdPointPtr) brect, 4,
-		       style->pencolor.u.index);
+		       job->style->pencolor.u.index);
 #endif
 #if 0
 	fprintf(stderr,
 		"textpara: font=%s size=%g pos=%g,%g width=%g dpi=%d width/dpi=%g\n",
-		fontlist, fontsz, mp.x, mp.y, (double) (brect[4] - brect[0]),
+		para->fontname, para->fontsize, mp.x, mp.y, (double) (brect[4] - brect[0]),
 		strex.hdpi,
 		(((double) (brect[4] - brect[0])) / strex.hdpi));
 #endif
 	if (err) {
 	    /* revert to builtin fonts */
-	    gdgen_missingfont(err, style->fontfam);
+	    gdgen_missingfont(err, para->fontname);
 #endif
 	    mp.y += 2;
-	    if (fontsz <= 8.5) {
+	    if (para->fontsize <= 8.5) {
 		gdImageString(im, gdFontTiny,
 			      ROUND(mp.x), ROUND(mp.y - 9.),
-			      (unsigned char *) str,
-			      style->pencolor.u.index);
-	    } else if (fontsz <= 9.5) {
+			      (unsigned char *)para->str,
+			      job->style->pencolor.u.index);
+	    } else if (para->fontsize <= 9.5) {
 		gdImageString(im, gdFontSmall,
 			      ROUND(mp.x), ROUND(mp.y - 12.),
-			      (unsigned char *) str,
-			      style->pencolor.u.index);
-	    } else if (fontsz <= 10.5) {
+			      (unsigned char *)para->str,
+			      job->style->pencolor.u.index);
+	    } else if (para->fontsize <= 10.5) {
 		gdImageString(im, gdFontMediumBold,
 			      ROUND(mp.x), ROUND(mp.y - 13.),
-			      (unsigned char *) str,
-			      style->pencolor.u.index);
-	    } else if (fontsz <= 11.5) {
+			      (unsigned char *)para->str,
+			      job->style->pencolor.u.index);
+	    } else if (para->fontsize <= 11.5) {
 		gdImageString(im, gdFontLarge,
 			      ROUND(mp.x), ROUND(mp.y - 14.),
-			      (unsigned char *) str,
-			      style->pencolor.u.index);
+			      (unsigned char *)para->str,
+			      job->style->pencolor.u.index);
 	    } else {
 		gdImageString(im, gdFontGiant,
 			      ROUND(mp.x), ROUND(mp.y - 15.),
-			      (unsigned char *) str,
-			      style->pencolor.u.index);
+			      (unsigned char *)para->str,
+			      job->style->pencolor.u.index);
 	    }
 #if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
 	}

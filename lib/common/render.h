@@ -120,8 +120,6 @@ extern "C" {
     extern void free_line(textpara_t *);
     extern void free_label(textlabel_t *);
     extern char *gd_alternate_fontlist(char *font);
-    extern char *gd_textsize(textpara_t * textpara, char *fontname,
-			     double fontsz, char **fontpath);
     extern void getdouble(graph_t * g, char *name, double *result);
     extern splines *getsplinepoints(edge_t * e);
     extern void global_def(char *,
@@ -158,8 +156,7 @@ extern "C" {
     extern void shape_clip(node_t * n, point curve[4]);
     extern void size_label (graph_t* g, textlabel_t* rv);
     extern void start_timer(void);
-    extern pointf textsize(graph_t *g, textpara_t * para,
-			    char *fontname, double fontsz);
+    extern pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize);
     extern void translate_bb(Agraph_t *, int);
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);

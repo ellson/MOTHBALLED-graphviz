@@ -22,13 +22,14 @@
 static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
 {
     pointf size;
+    textpara_t *para;
 
     lp->u.txt.para =
 	ALLOC(lp->u.txt.nparas + 2, lp->u.txt.para, textpara_t);
-    lp->u.txt.para[lp->u.txt.nparas].str = line;
-    size = textsize(g, &(lp->u.txt.para[lp->u.txt.nparas]),
-	    lp->fontname, lp->fontsize);
-    lp->u.txt.para[lp->u.txt.nparas].just = terminator;
+    para = &(lp->u.txt.para[lp->u.txt.nparas]);
+    para->str = line;
+    para->just = terminator;
+    size = textsize(g, para, lp->fontname, lp->fontsize);
     lp->u.txt.nparas++;
     /* total width = max line width */
     if (lp->dimen.x < size.x)

@@ -211,7 +211,7 @@ extern "C" {
 	void (*begin_anchor) (char *href, char *tooltip, char *target);
 	void (*end_anchor) (void);
 	void (*set_font) (char *fontname, double fontsize);
-	void (*textpara) (point p, textpara_t * str);
+	void (*textpara) (point p, textpara_t * para);
 	void (*set_pencolor) (char *name);
 	void (*set_fillcolor) (char *name);
 	void (*set_style) (char **s);

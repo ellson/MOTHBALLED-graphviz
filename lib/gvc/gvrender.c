@@ -246,6 +246,7 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     sy = job->height / (job->zoom * 2.);
 
     gvc->sg = g;  /* current subgraph/cluster */
+    job->objname = "graph";
     job->compscale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
     job->compscale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
     job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
@@ -417,6 +418,7 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 #ifdef WITH_CODEGENS
     Obj = CLST;
 #endif
+    job->objname = "graph";
     if (gvre && gvre->begin_cluster)
 	gvre->begin_cluster(job, sg->name, sg->meta_node->id);
 #ifdef WITH_CODEGENS
@@ -518,6 +520,7 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
 #ifdef WITH_CODEGENS
     Obj = NODE;
 #endif
+    job->objname = "node";
     job->gvc->n = n; /* set current node */
     if (gvre && gvre->begin_node)
 	gvre->begin_node(job, n->name, n->id);
@@ -556,6 +559,7 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 #ifdef WITH_CODEGENS
     Obj = EDGE;
 #endif
+    job->objname = "edge";
     job->gvc->e = e; /* set current edge */
     if (gvre && gvre->begin_edge)
 	gvre->begin_edge(job, e->tail->name,
@@ -750,6 +754,7 @@ void gvrender_set_style(GVJ_t * job, char **s)
     char *line, *p;
     gvstyle_t *style = job->style;
 
+    style->rawstyle = s;
     if (gvre) {
 	while ((p = line = *s++)) {
 	    if (streq(line, "solid"))

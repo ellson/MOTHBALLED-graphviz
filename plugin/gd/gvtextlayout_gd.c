@@ -33,7 +33,7 @@
 /* fontsize at which text is rendered by a simple line */
 #define FONTSIZE_TOO_SMALL 1.5
 
-void textlayout(textpara_t * para, char *fontname, double fontsize, char **fontpath)
+void textlayout(textpara_t * para, char **fontpath)
 {
     static char *fntpath;
     char *err;
@@ -45,30 +45,30 @@ void textlayout(textpara_t * para, char *fontname, double fontsize, char **fontp
     strex.xshow = NULL;
     strex.hdpi = strex.vdpi = 72;
 
-    if (strstr(fontname, "/"))
+    if (strstr(para->fontname, "/"))
 	strex.flags |= gdFTEX_FONTPATHNAME;
     else
 	strex.flags |= gdFTEX_FONTCONFIG;
 
     para->width = 0.0;
-    para->width = 0.0;
+    para->height = 0.0;
     para->xshow = NULL;
 
-    para->layout = (void*)fontname;
-    para->free_layout = NULL; /* no need to free fontname */
+    para->layout = NULL;
+    para->free_layout = NULL;
 
-    if (fontname) {
-	if (fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
+    if (para->fontname) {
+	if (para->fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
 	    /* OK, but ignore text entirely */
 	    return;
-	} else if (fontsize <= FONTSIZE_TOO_SMALL) {
+	} else if (para->fontsize <= FONTSIZE_TOO_SMALL) {
 	    /* draw line in place of text */
 	    /* fake a finite fontsize so that line length is calculated */
-	    fontsize = FONTSIZE_TOO_SMALL;
+	    para->fontsize = FONTSIZE_TOO_SMALL;
 	}
 	/* call gdImageStringFT with null *im to get brect and to set font cache */
-	err = gdImageStringFTEx(NULL, brect, -1, fontname,
-				fontsize, 0, 0, 0, para->str, &strex);
+	err = gdImageStringFTEx(NULL, brect, -1, para->fontname,
+				para->fontsize, 0, 0, 0, para->str, &strex);
 
 	if (err) {
 	    fprintf(stderr,"%s\n", err);

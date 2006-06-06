@@ -131,22 +131,22 @@ extern codegen_t GD_CodeGen;
  * fontsize to get appropriate value.
  */
 static void
-estimate_textsize(graph_t *g, textpara_t * para, char *fontname, double fontsz, char **fontpath)
+estimate_textlayout(graph_t *g, textpara_t * para, char **fontpath)
 {
     double *Fontwidth;
     char c, *p;
 
     para->width = 0.0;
-    para->height = fontsz;
+    para->height = para->fontsize;
     para->xshow = NULL;
-    para->layout = fontname;
+    para->layout = para->fontname;
     para->free_layout = NULL;
 
-    if (!strncasecmp(fontname, "cour", 4)) {
+    if (!strncasecmp(para->fontname, "cour", 4)) {
 	*fontpath = "[internal courier]";
 	Fontwidth = courFontWidth;
-    } else if (!strncasecmp(fontname, "arial", 5)
-	       || !strncasecmp(fontname, "helvetica", 9)) {
+    } else if (!strncasecmp(para->fontname, "arial", 5)
+	       || !strncasecmp(para->fontname, "helvetica", 9)) {
 	*fontpath = "[internal arial]";
 	Fontwidth = arialFontWidth;
     } else {
@@ -156,7 +156,7 @@ estimate_textsize(graph_t *g, textpara_t * para, char *fontname, double fontsz, 
     if ((p = para->str)) {
 	while ((c = *p++))
 	    para->width += Fontwidth[(unsigned char) c];
-	para->width *= fontsz;
+	para->width *= para->fontsize;
     }
 }
 
@@ -165,13 +165,16 @@ pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
     char *fontpath = NULL;
     pointf size;
 
-    if (! gvtextlayout(GD_gvc(g), para, fontname, fontsize, &fontpath))
-	estimate_textsize(g, para, fontname, fontsize, &fontpath);
+    para->fontname = fontname;
+    para->fontsize = fontsize;
+
+    if (! gvtextlayout(GD_gvc(g), para, &fontpath))
+	estimate_textlayout(g, para, &fontpath);
 
     if (Verbose) {
-	if (emit_once(fontname)) {
-	    fprintf(stderr, "%s: fontname=%s fontpath=%s\n", GD_gvc(g)->common.cmdname,
-		    fontname, fontpath);
+	if (emit_once(para->fontname)) {
+	    fprintf(stderr, "%s: fontname=%s fontpath=%s\n",
+		    GD_gvc(g)->common.cmdname, para->fontname, fontpath);
 	}
     }
     size.x = para->width;

@@ -23,10 +23,11 @@ extern "C" {
 
     typedef struct textpara_t {
 	char *str;      /* stored in utf-8 */
+	char *fontname; 
 	char *xshow;
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
-	double width, height;
+	double fontsize, width, height;
 	char just;
     } textpara_t;
 

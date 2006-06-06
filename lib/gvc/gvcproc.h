@@ -57,8 +57,7 @@ extern "C" {
 /* textlayout */
 
     extern int gvtextlayout_select(GVC_t * gvc);
-    extern bool gvtextlayout(GVC_t *gvc, textpara_t *para,
-                      char *fontname, double fontsize, char **fontpath);
+    extern bool gvtextlayout(GVC_t *gvc, textpara_t *para, char **fontpath);
 
 /* usershapes */
     extern point gvusershape_size(graph_t *g, char *name);

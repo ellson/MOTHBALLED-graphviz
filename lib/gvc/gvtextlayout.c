@@ -42,12 +42,12 @@ int gvtextlayout_select(GVC_t * gvc)
     return NO_SUPPORT;
 }
 
-bool gvtextlayout(GVC_t *gvc, textpara_t *para, char *fontname, double fontsize, char **fontpath)
+bool gvtextlayout(GVC_t *gvc, textpara_t *para, char **fontpath)
 {
     gvtextlayout_engine_t *gvte = gvc->textlayout.engine;
 
     if (gvte && gvte->textlayout) {
-	gvte->textlayout(para, fontname, fontsize, fontpath);
+	gvte->textlayout(para, fontpath);
 	return TRUE;
     }
     return FALSE;

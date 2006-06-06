@@ -44,6 +44,7 @@ extern "C" {
     typedef enum { GVATTR_STRING, GVATTR_BOOL, GVATTR_COLOR } gvattr_t;
 
     typedef struct {
+	char **rawstyle;
 	char *fontfam, fontopt;
 	gvcolor_t pencolor, fillcolor;
 	pen_type pen;
@@ -157,6 +158,7 @@ extern "C" {
 	bool external_surface; /* surface belongs to caller */
 
 	gvstyle_t *style;       /* active style from gvc->styles[] */
+	char *objname;		/* "graph", "node", or "edge" */
 
         int flags;		/* emit_graph flags */
 
