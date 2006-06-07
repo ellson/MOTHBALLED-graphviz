@@ -136,7 +136,7 @@ png:
 
 png_cg:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/cmd/dot/dot -Tpng:cg -o$$i.png_cg $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tpng:cg -o$$i.cg.png $(top_srcdir)/graphs/directed/$$i; done
 
 ps:
 	for i in $(GRAPHS); do echo "dot $$i"; \
@@ -144,11 +144,11 @@ ps:
 
 ps_gd:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/cmd/dot/dot -Tps:gd -o$$i.ps $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tps:gd -o$$i.gd.ps $(top_srcdir)/graphs/directed/$$i; done
 
-ps_cairo:
+ps_pango:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/cmd/dot/dot -Tps:cairo -o$$i.ps $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tps:pango -o$$i.pango.ps $(top_srcdir)/graphs/directed/$$i; done
 
 ps2:
 	for i in $(GRAPHS); do echo "dot $$i"; \
