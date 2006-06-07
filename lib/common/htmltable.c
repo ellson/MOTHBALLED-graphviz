@@ -367,7 +367,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env, void *obj)
 static void
 emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env, void *obj)
 {
-    point A[4];
+    pointf A[4];
     box bb = cp->box;
 
     bb.LL.x += env->p.x;
@@ -375,12 +375,12 @@ emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env, void *obj)
     bb.UR.x += env->p.x;
     bb.UR.y += env->p.y;
 
-    A[0] = bb.UR;
-    A[1].x = bb.LL.x;
-    A[1].y = bb.UR.y;
-    A[2] = bb.LL;
-    A[3].x = bb.UR.x;
-    A[3].y = bb.LL.y;
+    P2PF(bb.UR, A[0]);
+    P2PF(bb.LL, A[2]);
+    A[1].x = A[2].x;
+    A[1].y = A[0].y;
+    A[3].x = A[0].x;
+    A[3].y = A[2].y;
 
     gvrender_usershape(job, cp->src, A, 4, true);
 }
