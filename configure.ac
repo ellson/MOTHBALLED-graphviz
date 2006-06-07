@@ -521,7 +521,7 @@ AC_CHECK_PROG(JAVA,java,java)
 JAVA_INCLUDES=
 JAVA_LIBS=
 AC_CHECK_HEADER(jni.h,,[
-  AC_MSG_WARN([Unable to find header jni.h. The Java packages will not be built])
+  AC_MSG_WARN([Unable to find header jni.h. The JAVA packages will not be built])
   JAVA=
   ])
 AC_SUBST(JAVA_INCLUDES)
@@ -545,6 +545,10 @@ else
 AC_CHECK_PROG(LUA,lua,lua)
 LUA_INCLUDES=
 LUA_LIBS=
+AC_CHECK_HEADER(lua.h,,[
+  AC_MSG_WARN([Unable to find header lua.h. The LUA packages will not be built])
+  LUA=
+  ])
 AC_SUBST(LUA_INCLUDES)
 AC_SUBST(LUA_LIBS)
 fi
