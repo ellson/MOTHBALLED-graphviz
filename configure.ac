@@ -213,7 +213,7 @@ else
 fi
 # -ffast-math is incompatible with FP error trapping
 #     ref: https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=175793
-if `echo ${CFLAGS} | $GREP -q ffast-math`; then
+if `echo ${CFLAGS} | $GREP ffast-math >/dev/null`; then
     AC_DEFINE_UNQUOTED(NO_FPERR,1,[Define if no fpu error exception handling is required.])
 fi
 
