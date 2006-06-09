@@ -112,14 +112,14 @@ static int N_pages;
 static int onetime = TRUE;
 static int isLatin1;
 
+static double Dpi;
+static double CompScale;
+static double FontScale;
 static int Rot;
-static double Scale;
-static pointf CompScale;
-static pointf Offset;
-
-#define FUDGE 0.72
 
 static point Viewport;
+static pointf GraphFocus;
+static double Zoom;
 
 static node_t *Curnode;
 
@@ -204,12 +204,12 @@ static point svgpt(point p)
 {
     point rv;
 
-    if (Rot) {
-        rv.x = ROUND(-p.y * CompScale.x + Offset.x);
-        rv.y = ROUND( p.x * CompScale.y + Offset.y);
+    if (Rot == 0) {
+        rv.x = (p.x - GraphFocus.x) * CompScale + Viewport.x / 2.;
+        rv.y = -(p.y - GraphFocus.y) * CompScale + Viewport.y / 2.;
     } else {
-        rv.x = ROUND( p.x * CompScale.x + Offset.x);
-        rv.y = ROUND( p.y * CompScale.y + Offset.y);
+        rv.x = -(p.y - GraphFocus.y) * CompScale + Viewport.x / 2.;
+        rv.y = -(p.x - GraphFocus.x) * CompScale + Viewport.y / 2.;
     }
     return rv;
 }
@@ -222,9 +222,7 @@ static void svgbzptarray(point * A, int n)
 
     c = "M";			/* first point */
     for (i = 0; i < n; i++) {
-	p.x = A[i].x;
-	p.y = A[i].y;
-	p = svgpt(p);
+	p = svgpt(A[i]);
 	svg_printf("%s%d,%d", c, p.x, p.y);
 	if (i == 0)
 	    c = "C";		/* second point */
@@ -317,7 +315,7 @@ static void svg_font(context_t * cp)
 	needstyle++;
     }
     if (cp->fontsz != DEFAULT_FONTSIZE) {
-	sprintf(buf + strlen(buf), "font-size:%.2fpt;", cp->fontsz * Scale * FUDGE);
+	sprintf(buf + strlen(buf), "font-size:%.2fpt;", cp->fontsz * FontScale);
 	needstyle++;
     }
     color = svg_resolve_color(cp->pencolor, 1);
@@ -477,10 +475,18 @@ svg_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
 
 static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
+    Dpi = GD_drawing(g)->dpi;
+    if (Dpi < 1.0)
+        Dpi = POINTS_PER_INCH;
+
     Viewport.x = gvc->job->width;
     Viewport.y = gvc->job->height;
-    CompScale = gvc->job->compscale;
-    Offset = gvc->job->offset;
+
+    Zoom = gvc->job->zoom;
+    GraphFocus = gvc->job->focus;
+
+    CompScale = Zoom * Dpi / POINTS_PER_INCH;
+    FontScale = CompScale * 0.72;
 
     if (onetime) {
 	init_svg();
@@ -490,13 +496,15 @@ static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     svg_fputs("<!-- Title: ");
     svg_fputs(xml_namestring(g->name));
     svg_printf(" Pages: %d -->\n", N_pages);
-    if (ROUND(gvc->job->dpi.x) == POINTS_PER_INCH && ROUND(gvc->job->dpi.y) == POINTS_PER_INCH)
+    if (ROUND(gvc->job->dpi.x) == POINTS_PER_INCH && ROUND(gvc->job->dpi.y) == POINTS_PER_INCH) {
 	svg_printf("<svg width=\"%dpt\" height=\"%dpt\"\n",
 		Viewport.x, Viewport.y);
-    else
+    }
+    else {
 	svg_printf("<svg width=\"%dpx\" height=\"%dpx\"\n",
 		ROUND(gvc->job->dpi.x * Viewport.x / POINTS_PER_INCH),
 		ROUND(gvc->job->dpi.y * Viewport.y / POINTS_PER_INCH));
+    }
     /* establish absolute units in points */
     svg_printf(" viewBox = \"%d %d %d %d\"\n", 0, 0, Viewport.x, Viewport.y);
     /* namespace of svg */
@@ -528,11 +536,10 @@ svg_begin_page(graph_t * g, point page, double scale, int rot,
 	       point offset)
 {
     Rot = rot;
-    Scale = scale;
 
 #if 0
-fprintf(stderr,"Scale=%g CompScale=%g,%f\n", Scale, CompScale.x, CompScale.y);
-fprintf(stderr,"font-size=%g  Scale=%g\n", cstk[0].fontsz, Scale);
+fprintf(stderr,"Zoom=%g CompScale=%g,%f\n", Zoom, CompScale.x, CompScale.y);
+fprintf(stderr,"font-size=%g  Zoom=%g\n", cstk[0].fontsz, Zoom);
 #endif
 
     /* its really just a page of the graph, but its still a graph,
@@ -541,7 +548,7 @@ fprintf(stderr,"font-size=%g  Scale=%g\n", cstk[0].fontsz, Scale);
     /* default style */
     svg_fputs(" style=\"font-family:");
     svg_fputs(cstk[0].fontfam);
-    svg_printf(";font-size:%.2fpt;\">\n", cstk[0].fontsz * Scale * FUDGE);
+    svg_printf(";font-size:%.2fpt;\">\n", cstk[0].fontsz * FontScale);
     svg_fputs("<title>");
     svg_fputs(xml_namestring(g->name));
     svg_fputs("</title>\n");
@@ -823,8 +830,8 @@ static void svg_ellipse(point p, int rx, int ry, int filled)
 	rx = ry;
 	ry = t;
     }
-    mp.x = Scale*rx;
-    mp.y = Scale*ry;
+    mp.x = CompScale * rx;
+    mp.y = CompScale * ry;
     svg_printf(" rx=\"%d\" ry=\"%d\"/>\n", mp.x, mp.y);
 }
 
