@@ -91,7 +91,7 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
         job->flags = chkOrder(g) | GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES;
         break;
     case SVG:
-        job->flags = chkOrder(g) | GVRENDER_Y_GOES_DOWN;
+        job->flags = chkOrder(g);
         break;
     case GD: /* bitmap formats supported by gdgen.c */
     case GD2:
