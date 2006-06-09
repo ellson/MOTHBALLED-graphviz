@@ -670,7 +670,7 @@ if test "x$PYTHON" != "x"; then
       if test $PYTHON_VERSION_MAJOR -lt 2; then
 	PYTHON=
       else
-        if test $PYTHON_VERSION_MINOR -lt 4; then
+        if test $PYTHON_VERSION_MINOR -lt 3; then
 	  PYTHON=
         fi
       fi
