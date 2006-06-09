@@ -491,17 +491,17 @@ static void ps_polyline(point * A, int n)
 }
 
 #ifdef HAVE_LIBGD
-static void writePSBitmap (gdImagePtr im, point p, point sz)
+static void writePSBitmap (gdImagePtr im, boxf b)
 {
     int x, y, px;
 
     fprintf(Output_file, "gsave\n");
 
     /* this sets the position of the image */
-    fprintf(Output_file, "%d %d translate %% lower-left coordinate\n", p.x, p.y);
+    fprintf(Output_file, "%g %g translate %% lower-left coordinate\n", b.LL.x, b.LL.y);
 
-    /* this sets the rendered size, from 'pixels' to points (1/72 inch) */
-    fprintf(Output_file,"%d %d scale\n", sz.x, sz.y);
+    /* this sets the rendered size to fit the box */
+    fprintf(Output_file,"%g %g scale\n", b.UR.x - b.LL.x, b.UR.y - b.LL.y);
 
     /* xsize ysize bits-per-sample [matrix] */
     fprintf(Output_file, "%d %d 8 [%d 0 0 %d 0 %d]\n", im->sx, im->sy, 
@@ -672,10 +672,7 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 
 #ifdef HAVE_LIBGD
     if (gd_img) {
-	point sz;
-	sz.x = A[0].x - A[2].x;
-	sz.y = A[0].y - A[2].y;
-	writePSBitmap (gd_img, A[2], sz);
+	writePSBitmap (gd_img, b);
 	return;
     }
 #endif

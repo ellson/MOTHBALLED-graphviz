@@ -1029,10 +1029,14 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, bool filled)
 	th = us->h * scaley;
     }
     /* if image is smaller than target area then center it */
-    if (tw < pw)
+    if (tw < pw) {
 	b.LL.x += (pw - tw) / 2.0;
-    if (th < ph)
+	b.UR.x -= (pw - tw) / 2.0;
+    }
+    if (th < ph) {
 	b.LL.y += (ph - th) / 2.0;
+	b.UR.y -= (ph - th) / 2.0;
+    }
 
     if (gvre && gvre->usershape)
         gvre->usershape(job, us, b, filled);
