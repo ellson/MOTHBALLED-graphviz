@@ -491,17 +491,17 @@ static void ps_polyline(point * A, int n)
 }
 
 #ifdef HAVE_LIBGD
-static void writePSBitmap (gdImagePtr im, boxf b)
+static void writePSBitmap (gdImagePtr im, point p, pointf sz)
 {
     int x, y, px;
 
     fprintf(Output_file, "gsave\n");
 
     /* this sets the position of the image */
-    fprintf(Output_file, "%g %g translate %% lower-left coordinate\n", b.LL.x, b.LL.y);
+    fprintf(Output_file, "%d %d translate %% lower-left coordinate\n", p.x, p.y);
 
     /* this sets the rendered size to fit the box */
-    fprintf(Output_file,"%g %g scale\n", b.UR.x - b.LL.x, b.UR.y - b.LL.y);
+    fprintf(Output_file,"%g %g scale\n", sz.x, sz.y);
 
     /* xsize ysize bits-per-sample [matrix] */
     fprintf(Output_file, "%d %d 8 [%d 0 0 %d 0 %d]\n", im->sx, im->sy, 
@@ -672,7 +672,42 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 
 #ifdef HAVE_LIBGD
     if (gd_img) {
-	writePSBitmap (gd_img, b);
+	point p;
+	pointf sz;
+	double tw, th;
+	double scalex, scaley;
+        sz.x = (double)(A[0].x - A[2].x);
+        sz.y = (double)(A[0].y - A[2].y);
+	scalex = sz.x / us->w;
+	scaley = sz.y / us->h;
+	if (scalex < scaley) {
+            tw = us->w * scalex;
+            th = us->h * scalex;
+        } else {
+            tw = us->w * scaley;
+            th = us->h * scaley;
+        }
+	p = A[2];
+	if (tw < sz.x) {
+	    p.x = ROUND(A[2].x + (sz.x - tw) / 2.0);
+	    sz.x = tw;
+	}
+	if (th < sz.y) {
+	    p.y = ROUND(A[2].y + (sz.y - th) / 2.0);
+	    sz.x = th;
+	}
+
+
+#if 0
+fprintf(stderr,"b = %g,%g,%g,%g\n", b.LL.x,b.LL.y,b.UR.x,b.UR.y);
+fprintf(stderr,"A = %d,%d,%d,%d,%d,%d,%d,%d\n",
+	A[0].x, A[0].y,
+	A[1].x, A[1].y,
+	A[2].x, A[2].y,
+	A[3].x, A[3].y);
+#endif
+        
+	writePSBitmap (gd_img, p, sz);
 	return;
     }
 #endif

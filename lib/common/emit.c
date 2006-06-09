@@ -88,10 +88,10 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
         job->flags = chkOrder(g) | job->render.features->flags;
         break;
     case POSTSCRIPT:
-        job->flags = chkOrder(g) | GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES;
+        job->flags = chkOrder(g) | GVRENDER_DOES_TRANSFORM | GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES;
         break;
     case SVG:
-        job->flags = chkOrder(g);
+        job->flags = chkOrder(g) | GVRENDER_Y_GOES_DOWN;
         break;
     case GD: /* bitmap formats supported by gdgen.c */
     case GD2:
