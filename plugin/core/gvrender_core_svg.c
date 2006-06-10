@@ -473,19 +473,28 @@ static void svggen_polyline(GVJ_t * job, pointf * A, int n)
 }
 
 static void
-svggen_usershape(GVJ_t * job, usershape_t *us, boxf b, pointf * A, int n, int filled)
+svggen_usershape(GVJ_t * job, usershape_t *us, boxf b, int filled)
 {
     if (job->style->pen == PEN_NONE) {
 	/* its invisible, don't draw */
 	return;
     }
     if (! us->f) {
-        svggen_polygon(job, A, n, filled);
+        pointf A[4];
+        A[0] = b.LL;
+        A[2] = b.UR;
+        A[1].x = b.LL.x;
+        A[1].y = b.UR.y;
+        A[3].x = b.UR.x;
+        A[3].y = b.LL.y;
+        svggen_polygon(job, A, 4, filled);
         return;
     }
 
     svggen_fputs(job, "<clipPath id=\"clipPath.");
     svggen_fputs(job, us->name);
+    svggen_fputs(job, ".");
+    svggen_fputs(job, job->common->node_name);
     svggen_fputs(job, "\">\n<polygon points=\"");
     svggen_printf(job, "%g,%g ", b.LL.x, b.LL.y);
     svggen_printf(job, "%g,%g ", b.LL.x, b.UR.y);
@@ -499,6 +508,8 @@ svggen_usershape(GVJ_t * job, usershape_t *us, boxf b, pointf * A, int n, int fi
         (job, "\" width=\"%gpx\" height=\"%fpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%f\" clip-path=\"url(#clipPath.",
          b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
     svggen_fputs(job, us->name);
+    svggen_fputs(job, ".");
+    svggen_fputs(job, job->common->node_name);
     svggen_fputs(job, ")\"/>\n");
 }
 
@@ -575,7 +586,7 @@ gvrender_engine_t svggen_engine = {
     svggen_bezier,
     svggen_polyline,
     svggen_comment,
-    0				/* FIXME svggen_user_shape, */
+    svggen_usershape
 };
 
 gvrender_features_t svggen_features = {
