@@ -30,23 +30,22 @@ extern "C" {
     struct gvrender_engine_s {
 	void (*begin_job) (GVJ_t * job);
 	void (*end_job) (GVJ_t * job);
-	void (*begin_graph) (GVJ_t * job, char *graphname);
+	void (*begin_graph) (GVJ_t * job);
 	void (*end_graph) (GVJ_t * job);
 	void (*begin_layer) (GVJ_t * job, char *layername,
 			     int layerNum, int numLayers);
 	void (*end_layer) (GVJ_t * job);
 	void (*begin_page) (GVJ_t * job);
 	void (*end_page) (GVJ_t * job);
-	void (*begin_cluster) (GVJ_t * job, char *clustername, long id);
+	void (*begin_cluster) (GVJ_t * job);
 	void (*end_cluster) (GVJ_t * job);
 	void (*begin_nodes) (GVJ_t * job);
 	void (*end_nodes) (GVJ_t * job);
 	void (*begin_edges) (GVJ_t * job);
 	void (*end_edges) (GVJ_t * job);
-	void (*begin_node) (GVJ_t * job, char *nodename, long id);
+	void (*begin_node) (GVJ_t * job);
 	void (*end_node) (GVJ_t * job);
-	void (*begin_edge) (GVJ_t * job, char *tailname, bool directed,
-			    char *headname, long id);
+	void (*begin_edge) (GVJ_t * job);
 	void (*end_edge) (GVJ_t * job);
 	void (*begin_anchor) (GVJ_t * job, char *href, char *tooltip,
 			      char *target);

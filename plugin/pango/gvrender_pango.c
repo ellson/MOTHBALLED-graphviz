@@ -127,7 +127,7 @@ reader (void *closure, unsigned char *data, unsigned int length)
     return CAIRO_STATUS_READ_ERROR;
 }
 
-static void cairogen_begin_graph(GVJ_t * job, char *graphname)
+static void cairogen_begin_graph(GVJ_t * job)
 {
     cairo_t *cr;
     cairo_surface_t *surface;

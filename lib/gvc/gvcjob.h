@@ -146,7 +146,6 @@ extern "C" {
 
 	gvstyle_t *style;       /* active style from gvc->styles[] */
 	char **rawstyle;
-	char *objname;		/* "graph", "node", or "edge" */
 
         int flags;		/* emit_graph flags */
 

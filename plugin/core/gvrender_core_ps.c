@@ -82,12 +82,12 @@ static void psgen_end_job(GVJ_t * job)
     fprintf(job->output_file, "%%%%EOF\n");
 }
 
-static void psgen_begin_graph(GVJ_t * job, char *graphname)
+static void psgen_begin_graph(GVJ_t * job)
 {
     setupLatin1 = FALSE;
 
     if (job->common->viewNum == 0) {
-        fprintf(job->output_file, "%%%%Title: %s\n", graphname);
+        fprintf(job->output_file, "%%%%Title: %s\n", job->common->graphname);
         fprintf(job->output_file, "%%%%Pages: (atend)\n");
         if (job->common->show_boxes == NULL)
             fprintf(job->output_file, "%%%%BoundingBox: (atend)\n");
@@ -217,7 +217,7 @@ static void psgen_begin_cluster(GVJ_t * job, char *clustername, long id)
 #endif
 }
 
-static void psgen_begin_node(GVJ_t * job, char *nodename, long id)
+static void psgen_begin_node(GVJ_t * job)
 {
 #if 0
     /*  Embed information for Distiller to generate hyperlinked PDF  */
@@ -226,7 +226,7 @@ static void psgen_begin_node(GVJ_t * job, char *nodename, long id)
 }
 
 static void
-psgen_begin_edge(GVJ_t * job, char *tailname, bool directed,
+psgen_begin_edge(GVJ_t * job)
 		 char *headname, long id)
 {
 #if 0

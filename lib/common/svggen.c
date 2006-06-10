@@ -911,14 +911,6 @@ static void svg_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 	svg_polygon(A, n, filled);
 	return;
     }
-/*
-    p = ND_coord_i(Curnode);
-    p.x -= ND_lw_i(Curnode);
-    p.y += ND_ht_i(Curnode) / 2;
-    p = svgpt(p);
-    sz.x = ROUND((ND_lw_i(Curnode) + ND_rw_i(Curnode)));
-    sz.y = ROUND(ND_ht_i(Curnode));
-*/
 
     svg_fputs("<clipPath id=\"mypath");
     svg_name_fputs(us->name);

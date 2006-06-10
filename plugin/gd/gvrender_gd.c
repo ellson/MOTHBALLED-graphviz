@@ -101,7 +101,7 @@ static void gdgen_resolve_color(GVJ_t * job, gvcolor_t * color)
 
 static int white, black, transparent, basecolor;
 
-static void gdgen_begin_graph(GVJ_t * job, char *graphname)
+static void gdgen_begin_graph(GVJ_t * job)
 {
     char *bgcolor_str = NULL, *truecolor_str = NULL;
     bool truecolor_p = FALSE;	/* try to use cheaper paletted mode */

@@ -42,8 +42,6 @@ typedef enum { FORMAT_SVG, FORMAT_SVGZ, } format_type;
 
 extern char *xml_string(char *str);
 
-static char *GraphName;
-
 /* SVG dash array */
 static char *sdarray = "5,2";
 /* SVG dot array */
@@ -246,14 +244,12 @@ static void svggen_begin_job(GVJ_t * job)
     svggen_fputs(job, " -->\n");
 }
 
-static void svggen_begin_graph(GVJ_t * job, char *graphname)
+static void svggen_begin_graph(GVJ_t * job)
 {
-    GraphName = graphname;
-
     svggen_fputs(job, "<!--");
-    if (GraphName[0]) {
+    if (job->common->graph_name[0]) {
         svggen_fputs(job, " Title: ");
-	svggen_fputs(job, xml_string(GraphName));
+	svggen_fputs(job, xml_string(job->common->graph_name));
     }
     svggen_printf(job, " Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
 
@@ -271,9 +267,6 @@ static void svggen_begin_graph(GVJ_t * job, char *graphname)
     svggen_printf(job, " viewBox = \"%g %g %d %d\"\n",
 	    job->margin.x, job->margin.y,
 	    job->width, job->height);
-//    svggen_printf(job, " viewBox = \"%g %g %g %g\"\n",
-//	    job->margin.x, job->margin.y,
-//	    job->width + job->margin.x, job->height + job->margin.y);
     /* namespace of svg */
     svggen_fputs(job, " xmlns=\"http://www.w3.org/2000/svg\"");
     /* namespace of xlink */
@@ -322,9 +315,9 @@ static void svggen_begin_page(GVJ_t * job)
     svggen_fputs(job, " style=\"font-family:");
     svggen_fputs(job, job->style->fontfam);
     svggen_printf(job, ";font-size:%.2f;\">\n", job->style->fontsz);
-    if (GraphName[0]) {
+    if (job->common->graph_name[0]) {
         svggen_fputs(job, "<title>");
-        svggen_fputs(job, xml_string(GraphName));
+        svggen_fputs(job, xml_string(job->common->graph_name));
         svggen_fputs(job, "</title>\n");
     }
 }
@@ -334,11 +327,11 @@ static void svggen_end_page(GVJ_t * job)
     svggen_fputs(job, "</g>\n");
 }
 
-static void svggen_begin_cluster(GVJ_t * job, char *clustername, long id)
+static void svggen_begin_cluster(GVJ_t * job)
 {
-    svggen_printf(job, "<g id=\"cluster%ld\" class=\"cluster\">", id);
+    svggen_printf(job, "<g id=\"cluster%ld\" class=\"cluster\">", job->common->cluster_id);
     svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(clustername));
+    svggen_fputs(job, xml_string(job->common->cluster_name));
     svggen_fputs(job, "</title>\n");
 }
 
@@ -347,11 +340,11 @@ static void svggen_end_cluster(GVJ_t * job)
     svggen_fputs(job, "</g>\n");
 }
 
-static void svggen_begin_node(GVJ_t * job, char *nodename, long id)
+static void svggen_begin_node(GVJ_t * job)
 {
-    svggen_printf(job, "<g id=\"node%ld\" class=\"node\">", id);
+    svggen_printf(job, "<g id=\"node%ld\" class=\"node\">", job->common->node_id);
     svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(nodename));
+    svggen_fputs(job, xml_string(job->common->node_name));
     svggen_fputs(job, "</title>\n");
 }
 
@@ -361,22 +354,21 @@ static void svggen_end_node(GVJ_t * job)
 }
 
 static void
-svggen_begin_edge(GVJ_t * job, char *tailname, bool directed,
-		  char *headname, long id)
+svggen_begin_edge(GVJ_t * job)
 {
     char *edgeop;
 
-    svggen_printf(job, "<g id=\"edge%ld\" class=\"edge\">", id);
-    if (directed)
+    svggen_printf(job, "<g id=\"edge%ld\" class=\"edge\">", job->common->edge_id);
+    if (job->common->edge_directed)
 	edgeop = "&#45;&gt;";
     else
 	edgeop = "&#45;&#45;";
     svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(tailname));
+    svggen_fputs(job, xml_string(job->common->edge_tailname));
     svggen_fputs(job, edgeop);
     /* can't do this in single svggen_printf because
      * xml_string's buffer gets reused. */
-    svggen_fputs(job, xml_string(headname));
+    svggen_fputs(job, xml_string(job->common->edge_headname));
     svggen_fputs(job, "</title>\n");
 }
 
@@ -480,61 +472,35 @@ static void svggen_polyline(GVJ_t * job, pointf * A, int n)
     svggen_fputs(job, "\"/>\n");
 }
 
-#if 0
 static void
-svggen_user_shape(GVJ_t * job, char *name, pointf * A, int n, int filled)
+svggen_usershape(GVJ_t * job, usershape_t *us, boxf b, pointf * A, int n, int filled)
 {
-    int i;
-    point p;
-    pointf pf;
-    point sz;
-    char *imagefile;
-    int minx, miny;
-
     if (job->style->pen == PEN_NONE) {
 	/* its invisible, don't draw */
 	return;
     }
-    imagefile = agget(gvc->n, "shapefile");
-    if (imagefile == 0) {
-	svggen_polygon(gvc, A, n, filled);
-	return;
+    if (! us->f) {
+        svggen_polygon(job, A, n, filled);
+        return;
     }
-    pf.x = ND_coord_i(gvc->n).x - ND_lw_i(gvc->n);
-    pf.y = ND_coord_i(gvc->n).y + ND_ht_i(gvc->n) / 2;
-    p = svgpt(gvc, pf);
-    sz.x = ROUND((ND_lw_i(gvc->n) + ND_rw_i(gvc->n)));
-    sz.y = ROUND(ND_ht_i(gvc->n));
 
-    svggen_fputs(job, "<clipPath id=\"mypath");
-    svggen_fputs(job, name);
-    svggen_fputs(job, gvc->n->name);
+    svggen_fputs(job, "<clipPath id=\"clipPath.");
+    svggen_fputs(job, us->name);
     svggen_fputs(job, "\">\n<polygon points=\"");
-    minx = svgpt(gvc, A[0]).x;
-    miny = svgpt(gvc, A[0]).y;
-    for (i = 0; i < n; i++) {
-	p = svgpt(gvc, A[i]);
-
-	if (p.x < minx)
-	    minx = p.x;
-	if (p.y < miny)
-	    miny = p.y;
-
-	svggen_printf(job, "%d,%d ", p.x, p.y);
-    }
+    svggen_printf(job, "%g,%g ", b.LL.x, b.LL.y);
+    svggen_printf(job, "%g,%g ", b.LL.x, b.UR.y);
+    svggen_printf(job, "%g,%g ", b.UR.x, b.UR.y);
+    svggen_printf(job, "%g,%g ", b.UR.x, b.LL.y);
     /* because Adobe SVG is broken (?) */
-    p = svgpt(gvc, A[0]);
-    svggen_printf(job, "%d,%d ", p.x, p.y);
+    svggen_printf(job, "%g,%g ", b.LL.x, b.LL.y);
     svggen_fputs(job, "\"/>\n</clipPath>\n<image xlink:href=\"");
-    svggen_fputs(job, imagefile);
-    svggen_printf(job,
-		  "\" width=\"%dpx\" height=\"%dpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%d\" y=\"%d\" clip-path=\"url(#mypath",
-		  sz.x, sz.y, minx, miny);
-    svggen_fputs(job, name);
-    svggen_fputs(job, gvc->n->name);
+    svggen_fputs(job, us->name);
+    svggen_printf
+        (job, "\" width=\"%gpx\" height=\"%fpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%f\" clip-path=\"url(#clipPath.",
+         b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
+    svggen_fputs(job, us->name);
     svggen_fputs(job, ")\"/>\n");
 }
-#endif
 
 /* color names from http://www.w3.org/TR/SVG/types.html */
 /* NB.  List must be LANG_C sorted */

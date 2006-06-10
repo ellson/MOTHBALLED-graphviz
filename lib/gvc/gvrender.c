@@ -246,7 +246,8 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     sy = job->height / (job->zoom * 2.);
 
     gvc->sg = g;  /* current subgraph/cluster */
-    job->objname = "graph";
+    job->common->objtype = "graph";
+    job->common->graph_name = g->name;
     job->compscale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
     job->compscale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
     job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
@@ -269,7 +270,7 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     if (gvre) {
 	/* render specific init */
 	if (gvre->begin_graph)
-	    gvre->begin_graph(job, gvc->graphname);
+	    gvre->begin_graph(job);
 
 	/* background color */
 	if (((str = agget(g, "bgcolor")) != 0) && str[0]) {
@@ -295,16 +296,6 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     else {
 	codegen_t *cg = job->codegen;
 	
-#if 0
-fprintf(stderr,"boundingBox = %d,%d %d,%d\n",
-        job->boundingBox.LL.x,
-        job->boundingBox.LL.y,
-        job->boundingBox.UR.x,
-        job->boundingBox.UR.y);
-fprintf(stderr,"pb = %d,%d %d,%d\n",
-        gvc->pb.x, gvc->pb.y);
-#endif
-
 	if (cg && cg->begin_graph)
 	    cg->begin_graph(gvc, g, job->boundingBox, gvc->pb);
     }
@@ -404,9 +395,11 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 #ifdef WITH_CODEGENS
     Obj = CLST;
 #endif
-    job->objname = "graph";
+    job->common->objtype = "cluster";
+    job->common->cluster_name = sg->name;
+    job->common->cluster_id = sg->meta_node->id;
     if (gvre && gvre->begin_cluster)
-	gvre->begin_cluster(job, sg->name, sg->meta_node->id);
+	gvre->begin_cluster(job);
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -506,10 +499,12 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
 #ifdef WITH_CODEGENS
     Obj = NODE;
 #endif
-    job->objname = "node";
+    job->common->objtype = "node";
+    job->common->node_name = n->name;
+    job->common->node_id = n->id;
     job->gvc->n = n; /* set current node */
     if (gvre && gvre->begin_node)
-	gvre->begin_node(job, n->name, n->id);
+	gvre->begin_node(job);
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -545,12 +540,16 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 #ifdef WITH_CODEGENS
     Obj = EDGE;
 #endif
-    job->objname = "edge";
+    job->common->objtype = "edge";
+    job->common->edge_tailname = e->tail->name;
+    job->common->edge_tailid = e->tail->id;
+    job->common->edge_headname = e->head->name;
+    job->common->edge_headid = e->head->id;
+    job->common->edge_directed = e->tail->graph->root->kind & AGFLAG_DIRECTED;
+    job->common->edge_id = e->id;
     job->gvc->e = e; /* set current edge */
     if (gvre && gvre->begin_edge)
-	gvre->begin_edge(job, e->tail->name,
-			 e->tail->graph->root->kind & AGFLAG_DIRECTED,
-			 e->head->name, e->id);
+	gvre->begin_edge(job);
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
