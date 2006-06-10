@@ -939,9 +939,12 @@ static void svg_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
     svg_printf("%d,%d ", p.x, p.y);
     svg_fputs("\"/>\n</clipPath>\n<image xlink:href=\"");
     svg_name_fputs(imagefile);
-    svg_printf
-	("\" width=\"%dpx\" height=\"%dpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%d\" y=\"%d\" clip-path=\"url(#mypath",
-	 sz.x, sz.y, minx, miny);
+    svg_printf ("\" width=\"%gpx\" height=\"%fpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+	b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
+    if (Rot)
+	svg_printf (" transform=\"rotate(-%d %g %g)\"",
+	    Rot, (b.UR.x + b.LL.x)/2., (b.UR.y + b.LL.y) / 2.);
+    svg_fputs (" clip-path=\"url(#clipPath.");
     svg_name_fputs(us->name);
     svg_name_fputs(Curnode->name);
     svg_fputs(")\"/>\n");
