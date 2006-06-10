@@ -246,8 +246,8 @@ static void cairogen_begin_page(GVJ_t * job)
     if (job->rotation) {
         cairo_rotate(cr, job->rotation * -M_PI / 180.);
         cairo_translate(cr,
-		   -job->margin.x / job->zoom - job->pageBox.UR.x,
-		    job->margin.y / job->zoom + job->pageBox.UR.y);
+		   -job->margin.y / job->zoom - job->pageBox.UR.x,
+		    job->margin.x / job->zoom + job->pageBox.UR.y);
     }
     else
         cairo_translate(cr,

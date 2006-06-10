@@ -250,22 +250,30 @@ static void svggen_begin_graph(GVJ_t * job, char *graphname)
 {
     GraphName = graphname;
 
-    svggen_fputs(job, "<!-- Title: ");
-    if (GraphName[0])
+    svggen_fputs(job, "<!--");
+    if (GraphName[0]) {
+        svggen_fputs(job, " Title: ");
 	svggen_fputs(job, xml_string(GraphName));
+    }
     svggen_printf(job, " Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
 
     if (ROUND(job->dpi.x) == POINTS_PER_INCH && ROUND(job->dpi.y) == POINTS_PER_INCH) {
-	svggen_printf(job, "<svg width=\"%dpt\" height=\"%dpt\"\n",
-		      job->width, job->height);
+	svggen_printf(job, "<svg width=\"%gpt\" height=\"%gpt\"\n",
+		      job->width + job->margin.x * 2,
+		      job->height + job->margin.y * 2);
     }
     else {
-	svggen_printf(job, "<svg width=\"%dpx\" height=\"%dpx\"\n",
-		      ROUND(job->dpi.x * job->width / POINTS_PER_INCH),
-		      ROUND(job->dpi.y * job->height / POINTS_PER_INCH));
+	svggen_printf(job, "<svg width=\"%gpx\" height=\"%gpx\"\n",
+	job->dpi.x * (job->width + job->margin.x * 2) / POINTS_PER_INCH,
+	job->dpi.y * (job->height + job->margin.y * 2) / POINTS_PER_INCH);
     }
     /* establish absolute units in points */
-    svggen_printf(job, " viewBox = \"%d %d %d %d\"\n", 0, 0, job->width, job->height);
+    svggen_printf(job, " viewBox = \"%g %g %d %d\"\n",
+	    job->margin.x, job->margin.y,
+	    job->width, job->height);
+//    svggen_printf(job, " viewBox = \"%g %g %g %g\"\n",
+//	    job->margin.x, job->margin.y,
+//	    job->width + job->margin.x, job->height + job->margin.y);
     /* namespace of svg */
     svggen_fputs(job, " xmlns=\"http://www.w3.org/2000/svg\"");
     /* namespace of xlink */
@@ -314,11 +322,11 @@ static void svggen_begin_page(GVJ_t * job)
     svggen_fputs(job, " style=\"font-family:");
     svggen_fputs(job, job->style->fontfam);
     svggen_printf(job, ";font-size:%.2f;\">\n", job->style->fontsz);
-    if (GraphName[0])
-	svggen_fputs(job, xml_string(GraphName));
-    svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(GraphName));
-    svggen_fputs(job, "</title>\n");
+    if (GraphName[0]) {
+        svggen_fputs(job, "<title>");
+        svggen_fputs(job, xml_string(GraphName));
+        svggen_fputs(job, "</title>\n");
+    }
 }
 
 static void svggen_end_page(GVJ_t * job)
