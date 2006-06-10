@@ -306,12 +306,10 @@ static void svggen_begin_page(GVJ_t * job)
 {
     /* its really just a page of the graph, but its still a graph,
      * and it is the entire graph if we're not currently paging */
-    svggen_printf(job, "<g id=\"graph%d\" class=\"graph\"", job->common->viewNum + 1);
-    if (job->zoom != 1.0)
-	svggen_printf(job, " transform = \"scale(%f)\"\n", job->zoom);
-    if (job->rotation) {
-	svggen_printf(job, "transform=\"rotate(-90 %g %g)\" ", 0, 0);
-    }
+    svggen_printf(job, "<g id=\"graph%d\" class=\"graph\"",
+	    job->common->viewNum);
+    svggen_printf(job, " transform=\"scale(%f);rotate(-%d 0 0)\"",
+	    job->zoom, job->rotation);
     /* default style */
     svggen_fputs(job, " style=\"font-family:");
     svggen_fputs(job, job->style->fontfam);
@@ -417,8 +415,10 @@ static void svggen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	break;
     }
 
-    svggen_printf(job, "<text text-anchor=\"%s\" ", anchor);
-    svggen_printf(job, "x=\"%g\" y=\"%g\"", p.x, p.y);
+    svggen_printf(job, "<text text-anchor=\"%s\"", anchor);
+    if (job->rotation) 
+	svggen_printf(job, " transform=\"rotate(-%d %g %g)\"", job->rotation, p.x, p.y);
+    svggen_printf(job, " x=\"%g\" y=\"%g\"", p.x, p.y);
     svggen_font(job);
     svggen_fputs(job, ">");
     svggen_fputs(job, xml_string(para->str));
