@@ -33,7 +33,7 @@
 /* fontsize at which text is rendered by a simple line */
 #define FONTSIZE_TOO_SMALL 1.5
 
-void textlayout(textpara_t * para, char **fontpath)
+static void gd_textlayout(textpara_t * para, char **fontpath)
 {
     static char *fntpath;
     char *err;
@@ -93,15 +93,15 @@ void textlayout(textpara_t * para, char **fontpath)
     }
 }
 
-static gvtextlayout_engine_t textlayout_engine = {
-    textlayout,
+static gvtextlayout_engine_t gd_textlayout_engine = {
+    gd_textlayout,
 };
 #endif
 #endif
 
 gvplugin_installed_t gvtextlayout_gd_types[] = {
 #if defined(HAVE_LIBGD) && defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE) && defined(HAVE_LIBFONTCONFIG) && defined(HAVE_GD_FONTCONFIG)
-    {0, "textlayout", 2, &textlayout_engine, NULL},
+    {0, "textlayout", 2, &gd_textlayout_engine, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

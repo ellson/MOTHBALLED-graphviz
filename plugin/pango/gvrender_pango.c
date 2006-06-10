@@ -549,7 +549,7 @@ static gvrender_features_t cairogen_features_gtk = {
 #endif
 #endif
 
-gvplugin_installed_t gvrender_pangogen_types[] = {
+gvplugin_installed_t gvrender_pango_types[] = {
 #ifdef HAVE_PANGOCAIRO
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
     {FORMAT_PNG, "png", 10, &cairogen_engine, &cairogen_features},

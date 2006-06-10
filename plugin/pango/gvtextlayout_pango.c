@@ -24,12 +24,12 @@
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
 
-static void pangocairo_free_layout (void *layout)
+static void pango_free_layout (void *layout)
 {
     g_object_unref((PangoLayout*)layout);
 }
 
-static void pangocairo_textlayout(textpara_t * para, char **fontpath)
+static void pango_textlayout(textpara_t * para, char **fontpath)
 {
     static PangoFontMap *fontmap;
     static PangoContext *context;
@@ -65,7 +65,7 @@ static void pangocairo_textlayout(textpara_t * para, char **fontpath)
 
     layout = pango_layout_new (context);
     para->layout = (void *)layout;    /* layout free with textpara - see labels.c */
-    para->free_layout = pangocairo_free_layout;    /* function for freeing pango layout */
+    para->free_layout = pango_free_layout;    /* function for freeing pango layout */
 
     pango_layout_set_text (layout, text, -1);
     pango_layout_set_font_description (layout, desc);
@@ -95,14 +95,14 @@ static void pangocairo_textlayout(textpara_t * para, char **fontpath)
     *fontpath = "[pango]";
 }
 
-static gvtextlayout_engine_t pangocairo_textlayout_engine = {
-    pangocairo_textlayout,
+static gvtextlayout_engine_t pango_textlayout_engine = {
+    pango_textlayout,
 };
 #endif
 
-gvplugin_installed_t gvtextlayout_pangocairogen_types[] = {
+gvplugin_installed_t gvtextlayout_pango_types[] = {
 #ifdef HAVE_PANGOCAIRO
-    {0, "textlayout", 10, &pangocairo_textlayout_engine, NULL},
+    {0, "textlayout", 10, &pango_textlayout_engine, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}
 };
