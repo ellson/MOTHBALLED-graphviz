@@ -133,8 +133,8 @@ static void gdgen_begin_graph(GVJ_t * job)
 	im = (gdImagePtr) (job->output_file);
     } else {
 	/* device size with margins all around */
-	width = ROUND(job->boundingBox.UR.x + job->boundingBox.LL.x);
-	height = ROUND(job->boundingBox.UR.y + job->boundingBox.LL.y);
+	width = job->width + 2 * ROUND(job->margin.x * job->dpi.x / POINTS_PER_INCH);
+	height = job->height + 2 * ROUND(job->margin.y * job->dpi.y / POINTS_PER_INCH);
 	if (truecolor_p) {
 	    if (job->common->verbose)
 		fprintf(stderr,
@@ -687,7 +687,9 @@ static void gdgen_freeimage(void *data)
 static void
 gdgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
-    gdImagePtr im2 = NULL, im = (gdImagePtr) job->surface;
+    gdImagePtr im3, im2 = NULL, im = (gdImagePtr) job->surface;
+
+fprintf(stderr,"b = %g,%g,%g,%g\n", b.LL.x, b.LL.y, b.UR.x, b.UR.y);
 
     if (us->data) {
 	if (us->datafree == gdgen_freeimage)
@@ -723,9 +725,20 @@ gdgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 	    us->datafree = gdgen_freeimage;
 	}
     }
-    if (im2)
-	gdImageCopyResized(im, im2, ROUND(b.LL.x), ROUND(b.LL.y), 0, 0,
-		   ROUND(b.UR.x - b.LL.x), ROUND(b.UR.y - b.LL.y), us->w, us->h);
+    if (im2) {
+        if (job->rotation) {
+            im3 = gdImageCreate(im2->sy, im2->sx); /* scratch image for rotation */
+            gdImageCopyRotated(im3, im2, im3->sx / 2., im3->sy / 2.,
+                0, 0, im2->sx, im2->sy, job->rotation);
+            gdImageCopyResized(im, im3, ROUND(b.LL.x), ROUND(b.LL.y), 0, 0,
+                ROUND(b.UR.y - b.LL.y), ROUND(b.UR.x - b.LL.x), im3->sx, im3->sy);
+            gdImageDestroy(im3);
+        }
+        else {
+            gdImageCopyResized(im, im2, ROUND(b.LL.x), ROUND(b.LL.y), 0, 0,
+                ROUND(b.UR.x - b.LL.x), ROUND(b.UR.y - b.LL.y), im2->sx, im2->sy);
+        }
+    }
 }
 
 static gvrender_engine_t gdgen_engine = {

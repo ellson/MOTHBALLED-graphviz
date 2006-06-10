@@ -60,9 +60,9 @@ static int external_surface;
 
 /* static int	N_pages; */
 /* static point	Pages; */
-static double Dpi;
-static double DevScale;
-static double CompScale;
+static pointf Dpi;
+static point Margin;
+static pointf CompScale;
 static int Rot;
 
 static point Viewport;
@@ -107,11 +107,11 @@ static pointf gdpt(pointf p)
     pointf rv;
 
     if (Rot == 0) {
-	rv.x = (p.x - GraphFocus.x) * CompScale + Viewport.x / 2.;
-	rv.y = -(p.y - GraphFocus.y) * CompScale + Viewport.y / 2.;
+	rv.x = (p.x - GraphFocus.x) * CompScale.x + Viewport.x / 2. + Margin.x;
+	rv.y = -(p.y - GraphFocus.y) * CompScale.y + Viewport.y / 2. + Margin.y;
     } else {
-	rv.x = -(p.y - GraphFocus.y) * CompScale + Viewport.x / 2.;
-	rv.y = -(p.x - GraphFocus.x) * CompScale + Viewport.y / 2.;
+	rv.x = -(p.y - GraphFocus.y) * CompScale.x + Viewport.x / 2. + Margin.x;
+	rv.y = -(p.x - GraphFocus.x) * CompScale.y + Viewport.y / 2. + Margin.y;
     }
     return rv;
 }
@@ -135,31 +135,15 @@ static void gd_end_job(void)
 
 static void init1_gd(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
-    Dpi = GD_drawing(g)->dpi;
-    if (Dpi < 1.0)
-	Dpi = DEFAULT_DPI;
-    DevScale = Dpi / POINTS_PER_INCH;
-
+    Dpi = gvc->job->dpi;
+    Margin.x = ROUND(gvc->job->margin.x * Dpi.x / POINTS_PER_INCH);
+    Margin.y = ROUND(gvc->job->margin.y * Dpi.y / POINTS_PER_INCH);
     Viewport.x = gvc->job->width;
     Viewport.y = gvc->job->height;
-#if 0
-    if (Viewport.x) {
-	Zoom = gvc->job->zoom;
-	GraphFocus = gvc->job->focus;
-    } else {
-	Viewport.x =
-	    (bb.UR.x - bb.LL.x + 2 * GD_drawing(g)->margin.x) * DevScale + 2;
-	Viewport.y =
-	    (bb.UR.y - bb.LL.y + 2 * GD_drawing(g)->margin.y) * DevScale + 2;
-	GraphFocus.x = (GD_bb(g).UR.x - GD_bb(g).LL.x) / 2.;
-	GraphFocus.y = (GD_bb(g).UR.y - GD_bb(g).LL.y) / 2.;
-	Zoom = 1.0;
-    }
-#else
     Zoom = gvc->job->zoom;
     GraphFocus = gvc->job->focus;
-#endif
-    CompScale = Zoom * DevScale;
+    CompScale.x = Zoom *  Dpi.x / POINTS_PER_INCH;
+    CompScale.y = Zoom *  Dpi.y / POINTS_PER_INCH;
 }
 
 static void init2_gd(gdImagePtr im)
@@ -230,6 +214,8 @@ static void gd_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     if (external_surface) {
 	im = (gdImagePtr)gvc->job->surface;
     } else {
+	int width, height;
+
         truecolor_str = agget(g, "truecolor");	/* allow user to force truecolor */
         bgcolor_str = agget(g, "bgcolor");
 
@@ -245,16 +231,20 @@ static void gd_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     	if (GD_has_images(g))
 	    truecolor_p = TRUE;	/* force truecolor */
 
+	/* device size with margins all around */
+	width = Viewport.x + 2 * Margin.x;
+	height = Viewport.y + 2 * Margin.y;
+
         if (truecolor_p) {
 	    if (Verbose)
 	        fprintf(stderr, "%s: allocating a %dK TrueColor GD image\n",
-		        gvc->common.cmdname, ROUND(Viewport.x * Viewport.y * 4 / 1024.));
-	    im = gdImageCreateTrueColor(Viewport.x, Viewport.y);
+		        gvc->common.cmdname, ROUND(width * height * 4 / 1024.));
+	    im = gdImageCreateTrueColor(width, height);
         } else {
 	    if (Verbose)
 	        fprintf(stderr, "%s: allocating a %dK PaletteColor GD image\n",
-		        gvc->common.cmdname, ROUND(Viewport.x * Viewport.y / 1024.));
-	    im = gdImageCreate(Viewport.x, Viewport.y);
+		        gvc->common.cmdname, ROUND(width * height / 1024.));
+	    im = gdImageCreate(width, height);
         }
         if (!im) {
 	    agerr(AGERR, "gdImageCreate returned NULL. Malloc problem?\n");
@@ -510,7 +500,6 @@ extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge, gdFontG
 
 static void gd_textpara(point p, textpara_t * para)
 {
-    char *str, *fontlist;
     pointf mp, ep;
     double fontsz;
     gdFTStringExtra strex;
@@ -524,7 +513,7 @@ static void gd_textpara(point p, textpara_t * para)
 	return;
 
     strex.flags = gdFTEX_RESOLUTION;
-    strex.hdpi = strex.vdpi = Dpi * Zoom;
+    strex.hdpi = strex.vdpi = Dpi.x * Zoom;
 
     if (cstk[SP].pen == P_NONE)
 	return;
@@ -538,8 +527,6 @@ static void gd_textpara(point p, textpara_t * para)
     else
 	strex.flags |= gdFTEX_FONTCONFIG;
 
-    str = para->str;
-    fontlist = (char *)(para->layout); /* FIXME - kluge */
     fontsz = cstk[SP].fontsz;
 
     switch (para->just) {
@@ -569,15 +556,15 @@ static void gd_textpara(point p, textpara_t * para)
 #ifdef HAVE_GD_FREETYPE
 	gdFTUseFontConfig(1); /* use fontconfig if possible */
 	err = gdImageStringFTEx(im, brect, pencolor,
-				fontlist, fontsz, Rot ? (PI / 2) : 0,
-				ROUND(mp.x), ROUND(mp.y), str, &strex);
+				para->fontname, fontsz, Rot ? (PI / 2) : 0,
+				ROUND(mp.x), ROUND(mp.y), para->str, &strex);
 #if 0
 	gdImagePolygon(im, (gdPointPtr) brect, 4, cstk[SP].pencolor);
 #endif
 #if 0
 	fprintf(stderr,
 		"textpara: font=%s size=%g pos=%g,%g width=%g dpi=%d width/dpi=%g\n",
-		fontlist, fontsz, mp.x, mp.y, (double) (brect[4] - brect[0]),
+		para->fontname, fontsz, mp.x, mp.y, (double) (brect[4] - brect[0]),
 		strex.hdpi,
 		(((double) (brect[4] - brect[0])) / strex.hdpi));
 #endif
@@ -589,23 +576,23 @@ static void gd_textpara(point p, textpara_t * para)
 	    if (fontsz <= 8.5) {
 		gdImageString(im, gdFontTiny,
 			      ROUND(mp.x), ROUND(mp.y - 9.),
-			      (unsigned char *) str, cstk[SP].pencolor);
+			      (unsigned char *) para->str, cstk[SP].pencolor);
 	    } else if (fontsz <= 9.5) {
 		gdImageString(im, gdFontSmall,
 			      ROUND(mp.x), ROUND(mp.y - 12.),
-			      (unsigned char *) str, cstk[SP].pencolor);
+			      (unsigned char *) para->str, cstk[SP].pencolor);
 	    } else if (fontsz <= 10.5) {
 		gdImageString(im, gdFontMediumBold,
 			      ROUND(mp.x), ROUND(mp.y - 13.),
-			      (unsigned char *) str, cstk[SP].pencolor);
+			      (unsigned char *) para->str, cstk[SP].pencolor);
 	    } else if (fontsz <= 11.5) {
 		gdImageString(im, gdFontLarge,
 			      ROUND(mp.x), ROUND(mp.y - 14.),
-			      (unsigned char *) str, cstk[SP].pencolor);
+			      (unsigned char *) para->str, cstk[SP].pencolor);
 	    } else {
 		gdImageString(im, gdFontGiant,
 			      ROUND(mp.x), ROUND(mp.y - 15.),
-			      (unsigned char *) str, cstk[SP].pencolor);
+			      (unsigned char *) para->str, cstk[SP].pencolor);
 	    }
 #ifdef HAVE_GD_FREETYPE
 	}
@@ -644,7 +631,7 @@ gd_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 	} else {
 	    pen = cstk[SP].pencolor;
 	}
-	width = cstk[SP].penwidth * CompScale;
+	width = cstk[SP].penwidth * CompScale.x;
 	if (width < WIDTH_NORMAL)
 	    width = WIDTH_NORMAL;  /* gd can't do thin lines */
 	gdImageSetThickness(im, width);
@@ -730,7 +717,7 @@ static void gd_polygon(point * A, int n, int filled)
 	} else {
 	    pen = cstk[SP].pencolor;
 	}
-	width = cstk[SP].penwidth * CompScale;
+	width = cstk[SP].penwidth * CompScale.x;
 	if (width < WIDTH_NORMAL)
 	    width = WIDTH_NORMAL;  /* gd can't do thin lines */
 	gdImageSetThickness(im, width);
@@ -795,7 +782,7 @@ static void gd_ellipse(point p, int rx, int ry, int filled)
 	} else {
 	    pen = cstk[SP].pencolor;
 	}
-	width = cstk[SP].penwidth * CompScale;
+	width = cstk[SP].penwidth * CompScale.x;
 	if (width < WIDTH_NORMAL)
 	    width = WIDTH_NORMAL;  /* gd can't do thin lines */
 	gdImageSetThickness(im, width);
@@ -823,13 +810,13 @@ static void gd_ellipse(point p, int rx, int ry, int filled)
 	mp = gdpt(mp);
 	if (filled) {
 	    gdImageFilledEllipse(im, ROUND(mp.x), ROUND(mp.y),
-				 ROUND(CompScale * (rx + rx)),
-				 ROUND(CompScale * (ry + ry)),
+				 ROUND(CompScale.x * (rx + rx)),
+				 ROUND(CompScale.y * (ry + ry)),
 				 cstk[SP].fillcolor);
 	}
 	gdImageArc(im, ROUND(mp.x), ROUND(mp.y),
-		   ROUND(CompScale * (rx + rx)),
-		   ROUND(CompScale * (ry + ry)), 0, 360, pen);
+		   ROUND(CompScale.x * (rx + rx)),
+		   ROUND(CompScale.y * (ry + ry)), 0, 360, pen);
 	if (brush)
 	    gdImageDestroy(brush);
     }
@@ -864,7 +851,7 @@ static void gd_polyline(point * A, int n)
 	} else {
 	    pen = cstk[SP].pencolor;
 	}
-	width = cstk[SP].penwidth * CompScale;
+	width = cstk[SP].penwidth * CompScale.x;
 	if (width < WIDTH_NORMAL)
 	    width = WIDTH_NORMAL;  /* gd can't do thin lines */
 	gdImageSetThickness(im, width);
@@ -904,7 +891,7 @@ static void gd_freeimage(void *data)
 
 static void gd_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
-    gdImagePtr im2 = NULL;
+    gdImagePtr im2 = NULL, im3;
 
     if (us->data) {
         if (us->datafree == gd_freeimage)
@@ -940,9 +927,20 @@ static void gd_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
             us->datafree = gd_freeimage;
         }
     }
-    if (im2)
-        gdImageCopyResized(im, im2, ROUND(b.LL.x), ROUND(b.LL.y), 0, 0,
-                   ROUND(b.UR.x - b.LL.x), ROUND(b.UR.y - b.LL.y), us->w, us->h);
+    if (im2) {
+	if (Rot) {
+	    im3 = gdImageCreate(im2->sy, im2->sx); /* scratch image for rotation */
+	    gdImageCopyRotated(im3, im2, im3->sx / 2., im3->sy / 2.,
+		0, 0, im2->sx, im2->sy, Rot);
+            gdImageCopyResized(im, im3, ROUND(b.LL.x), ROUND(b.LL.y), 0, 0,
+                ROUND(b.UR.y - b.LL.y), ROUND(b.UR.x - b.LL.x), im3->sx, im3->sy);
+	    gdImageDestroy(im3);
+	}
+	else {
+            gdImageCopyResized(im, im2, ROUND(b.LL.x), ROUND(b.LL.y), 0, 0,
+                ROUND(b.UR.x - b.LL.x), ROUND(b.UR.y - b.LL.y), im2->sx, im2->sy);
+	}
+    }
 }
 
 codegen_t GD_CodeGen = {
