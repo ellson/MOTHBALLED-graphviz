@@ -16,15 +16,13 @@
 
 #include "gvplugin.h"
 
-extern gvplugin_installed_t gvrender_gd_types;
-extern gvplugin_installed_t gvrender_gd_ps_types;
-extern gvplugin_installed_t gvtextlayout_gd_types;
+extern gvplugin_installed_t gvrender_core_ps_types;
+extern gvplugin_installed_t gvrender_core_svg_types;
 
 static gvplugin_api_t apis[] = {
-    {API_render, &gvrender_gd_types},
-    {API_render, &gvrender_gd_ps_types},
-    {API_textlayout, &gvtextlayout_gd_types},
+    {API_render, &gvrender_core_ps_types},
+    {API_render, &gvrender_core_svg_types},
     {(api_t)0, NULL},
 };
 
-gvplugin_library_t gvplugin_gd_LTX_library = { "gd", apis };
+gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };
