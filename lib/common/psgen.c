@@ -491,17 +491,17 @@ static void ps_polyline(point * A, int n)
 }
 
 #ifdef HAVE_LIBGD
-static void writePSBitmap (gdImagePtr im, point p, pointf sz)
+static void writePSBitmap (gdImagePtr im, boxf bb)
 {
     int x, y, px;
 
     fprintf(Output_file, "gsave\n");
 
     /* this sets the position of the image */
-    fprintf(Output_file, "%d %d translate %% lower-left coordinate\n", p.x, p.y);
+    fprintf(Output_file, "%g %g translate %% lower-left coordinate\n", bb.LL.x, bb.LL.y);
 
     /* this sets the rendered size to fit the box */
-    fprintf(Output_file,"%g %g scale\n", sz.x, sz.y);
+    fprintf(Output_file,"%g %g scale\n", bb.UR.x - bb.LL.x, bb.UR.y - bb.LL.y);
 
     /* xsize ysize bits-per-sample [matrix] */
     fprintf(Output_file, "%d %d 8 [%d 0 0 %d 0 %d]\n", im->sx, im->sy, 
@@ -672,14 +672,25 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 
 #ifdef HAVE_LIBGD
     if (gd_img) {
-	point p;
-	pointf sz;
-	double tw, th;
+	boxf bb;
+	pointf p;
+	double pw, ph, tw, th;
 	double scalex, scaley;
-        sz.x = (double)(A[0].x - A[2].x);
-        sz.y = (double)(A[0].y - A[2].y);
-	scalex = sz.x / us->w;
-	scaley = sz.y / us->h;
+	int i;
+
+	/* compute bb of polygon */
+	P2PF(A[0],p);
+	bb.LL = bb.UR = p;
+	for (i = 1; i < n; i++) {
+	    P2PF(A[i],p);
+	    EXPANDBP(bb, p);
+	}
+	pw = b.UR.x - b.LL.x;
+	ph = b.UR.y - b.LL.y;
+	scalex = pw / (double) (us->w);
+	scaley = ph / (double) (us->h);
+
+	/* keep aspect ratio fixed by just using the smaller scale */
 	if (scalex < scaley) {
             tw = us->w * scalex;
             th = us->h * scalex;
@@ -687,27 +698,17 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
             tw = us->w * scaley;
             th = us->h * scaley;
         }
-	p = A[2];
-	if (tw < sz.x) {
-	    p.x = ROUND(A[2].x + (sz.x - tw) / 2.0);
-	    sz.x = tw;
+	/* if image is smaller than target area then center it */
+	if (tw < pw) {
+	    b.LL.x += (pw - tw) / 2.0;
+	    b.UR.x -= (pw - tw) / 2.0;
 	}
-	if (th < sz.y) {
-	    p.y = ROUND(A[2].y + (sz.y - th) / 2.0);
-	    sz.x = th;
+	if (th < ph) {
+	    b.LL.y += (ph - th) / 2.0;
+	    b.UR.y -= (ph - th) / 2.0;
 	}
 
-
-#if 0
-fprintf(stderr,"b = %g,%g,%g,%g\n", b.LL.x,b.LL.y,b.UR.x,b.UR.y);
-fprintf(stderr,"A = %d,%d,%d,%d,%d,%d,%d,%d\n",
-	A[0].x, A[0].y,
-	A[1].x, A[1].y,
-	A[2].x, A[2].y,
-	A[3].x, A[3].y);
-#endif
-        
-	writePSBitmap (gd_img, p, sz);
+	writePSBitmap (gd_img, bb);
 	return;
     }
 #endif
