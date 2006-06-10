@@ -614,7 +614,7 @@ gvrender_features_t svggen_features = {
     RGBA_BYTE,			/* color_type */
 };
 
-gvplugin_installed_t gvrender_svggen_types[] = {
+gvplugin_installed_t gvrender_core_svg_types[] = {
     {FORMAT_SVG, "svg", -1, &svggen_engine, &svggen_features},
 #if HAVE_LIBZ
     {FORMAT_SVGZ, "svgz", -1, &svggen_engine, &svggen_features},

@@ -57,8 +57,9 @@ if WITH_MYLIBGD
 dot_static_LDADD = \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout_C.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout_C.a \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_core_C.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_gd_C.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_pangocairo_C.a \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_pango_C.a \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la \
@@ -70,8 +71,9 @@ else
 dot_static_LDADD = \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout_C.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout_C.a \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_core_C.a \
 	$(top_builddir)/lib/plugin/.libs/libgvplugin_gd_C.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_pangocairo_C.a \
+	$(top_builddir)/lib/plugin/.libs/libgvplugin_pango_C.a \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la \

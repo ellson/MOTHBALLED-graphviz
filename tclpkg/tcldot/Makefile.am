@@ -58,8 +58,9 @@ libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
 	$(top_builddir)/lib/plugin/libgvplugin_dot_layout_C.la \
 	$(top_builddir)/lib/plugin/libgvplugin_neato_layout_C.la \
+	$(top_builddir)/lib/plugin/libgvplugin_core_C.la \
 	$(top_builddir)/lib/plugin/libgvplugin_gd_C.la \
-	$(top_builddir)/lib/plugin/libgvplugin_pangocairo_C.la \
+	$(top_builddir)/lib/plugin/libgvplugin_pango_C.la \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/graph/libgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
