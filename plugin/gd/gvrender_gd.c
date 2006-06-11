@@ -22,7 +22,6 @@
 #include <stddef.h>
 #include <string.h>
 #include <fcntl.h>
-#include <math.h>
 
 #include "gvplugin_render.h"
 
@@ -688,8 +687,6 @@ static void
 gdgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
     gdImagePtr im3, im2 = NULL, im = (gdImagePtr) job->surface;
-
-fprintf(stderr,"b = %g,%g,%g,%g\n", b.LL.x, b.LL.y, b.UR.x, b.UR.y);
 
     if (us->data) {
 	if (us->datafree == gdgen_freeimage)

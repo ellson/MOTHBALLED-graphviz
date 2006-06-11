@@ -24,7 +24,7 @@ static gvplugin_api_t apis[] = {
     {API_render, &gvrender_gd_types},
     {API_render, &gvrender_gd_ps_types},
     {API_textlayout, &gvtextlayout_gd_types},
-    {(api_t)0, NULL},
+    {(api_t)0, 0},
 };
 
 gvplugin_library_t gvplugin_gd_LTX_library = { "gd", apis };
