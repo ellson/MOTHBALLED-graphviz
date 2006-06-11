@@ -22,7 +22,7 @@ extern gvplugin_installed_t gvtextlayout_pango_types;
 static gvplugin_api_t apis[] = {
     {API_render, &gvrender_pango_types},
     {API_textlayout, &gvtextlayout_pango_types},
-    {(api_t)0, NULL},
+    {(api_t)0, 0},
 };
 
 gvplugin_library_t gvplugin_pango_LTX_library = { "pango", apis };
