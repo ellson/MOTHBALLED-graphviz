@@ -14,11 +14,12 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifndef GVLAYOUT_PLUGIN_H
-#define GVLAYOUT_PLUGIN_H
+#ifndef GVPLUGIN_LAYOUT_H
+#define GVPLUGIN_LAYOUT_H
 
+#include "types.h"
 #include "gvplugin.h"
-#include "gvcint.h"
+#include "gvcjob.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -32,4 +33,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVLAYOUT_PLUGIN_H */
+#endif				/* GVPLUGIN_LAYOUT_H */
