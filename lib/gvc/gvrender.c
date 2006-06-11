@@ -997,7 +997,6 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, bool filled)
     double iw, ih, pw, ph, tw, th;  
     double scalex, scaley;  /* scale factors */
     boxf b;		    /* target box */
-    pointf tmp;
     int i;
 
     if (! (us = gvusershape_find(name)))
