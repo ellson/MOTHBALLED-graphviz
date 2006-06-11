@@ -19,7 +19,6 @@
 
 #include "gvplugin.h"
 #include "gvcjob.h"
-#include "color.h"
 #include "textpara.h"
 #include "usershape.h"
 

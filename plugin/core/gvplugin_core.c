@@ -22,7 +22,7 @@ extern gvplugin_installed_t gvrender_core_svg_types;
 static gvplugin_api_t apis[] = {
 //    {API_render, &gvrender_core_ps_types},
     {API_render, &gvrender_core_svg_types},
-    {(api_t)0, NULL},
+    {(api_t)0, 0},
 };
 
 gvplugin_library_t gvplugin_core_LTX_library = { "core", apis };

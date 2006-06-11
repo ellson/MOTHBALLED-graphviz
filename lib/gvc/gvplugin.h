@@ -23,7 +23,6 @@
 extern "C" {
 #endif
 
-#include "arith.h"
 #include "gvcext.h"
 
 /* 

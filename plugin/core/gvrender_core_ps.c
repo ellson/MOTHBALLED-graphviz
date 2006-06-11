@@ -18,11 +18,9 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <assert.h>
 
 #ifdef HAVE_LIBZ
@@ -34,7 +32,6 @@
 
 #undef HAVE_LIBGD
 
-#include "textpara.h"
 #include "gvplugin_render.h"
 #include "gv_ps.h"
 #include "const.h"
@@ -227,7 +224,6 @@ static void psgen_begin_node(GVJ_t * job)
 
 static void
 psgen_begin_edge(GVJ_t * job)
-		 char *headname, long id)
 {
 #if 0
     /* Embed information for Distiller, so it can generate hyperactive PDF  */
@@ -235,9 +231,13 @@ psgen_begin_edge(GVJ_t * job)
 #endif
 }
 
-static void
-psgen_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
+static void psgen_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
 {
+#if 0
+    if (href && href[0]) 
+	fprintf(job->output_file, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
+		"/PUT pdfmark\n", href);
+#endif
 }
 
 static void psgen_end_anchor(GVJ_t * job)

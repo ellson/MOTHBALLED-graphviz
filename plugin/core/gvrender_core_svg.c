@@ -18,11 +18,9 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <assert.h>
 
 #ifdef HAVE_LIBZ
@@ -34,7 +32,6 @@
 
 #include "macros.h"
 #include "const.h"
-#include "types.h"
 
 #include "gvplugin_render.h"
 
