@@ -994,9 +994,10 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, bool filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
     usershape_t *us;
-    double pw, ph, tw, th;  /* poly width, height,  target width, height */
+    double iw, ih, pw, ph, tw, th;  
     double scalex, scaley;  /* scale factors */
     boxf b;		    /* target box */
+    pointf tmp;
     int i;
 
     if (! (us = gvusershape_find(name)))
@@ -1014,18 +1015,28 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, bool filled)
     for (i = 1; i < n; i++) {
 	EXPANDBP(b, AF[i]);
     }
+
+    if (job->rotation) {
+	iw = (double)us->h;
+	ih = (double)us->w;
+    }
+    else {
+	ih = (double)us->h;
+	iw = (double)us->w;
+    }
+
     pw = b.UR.x - b.LL.x;
     ph = b.UR.y - b.LL.y;
-    scalex = pw / (double) (us->w);
-    scaley = ph / (double) (us->h);
+    scalex = pw / iw;
+    scaley = ph / ih;
 
     /* keep aspect ratio fixed by just using the smaller scale */
     if (scalex < scaley) {
-	tw = us->w * scalex;
-	th = us->h * scalex;
+	tw = iw * scalex;
+	th = ih * scalex;
     } else {
-	tw = us->w * scaley;
-	th = us->h * scaley;
+	tw = iw * scaley;
+	th = ih * scaley;
     }
     /* if image is smaller than target area then center it */
     if (tw < pw) {

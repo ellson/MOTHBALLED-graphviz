@@ -112,11 +112,11 @@ static int N_pages;
 static int onetime = TRUE;
 static int isLatin1;
 
-static double Dpi;
-static double CompScale;
+static pointf CompScale;
 static double FontScale;
 static int Rot;
 
+static point Margin;
 static point Viewport;
 static pointf GraphFocus;
 static double Zoom;
@@ -205,11 +205,11 @@ static point svgpt(point p)
     point rv;
 
     if (Rot == 0) {
-        rv.x = (p.x - GraphFocus.x) * CompScale + Viewport.x / 2.;
-        rv.y = -(p.y - GraphFocus.y) * CompScale + Viewport.y / 2.;
+        rv.x = (p.x - GraphFocus.x) * CompScale.x + Viewport.x / 2. + Margin.x;
+        rv.y = -(p.y - GraphFocus.y) * CompScale.y + Viewport.y / 2. + Margin.y;
     } else {
-        rv.x = -(p.y - GraphFocus.y) * CompScale + Viewport.x / 2.;
-        rv.y = -(p.x - GraphFocus.x) * CompScale + Viewport.y / 2.;
+        rv.x = -(p.y - GraphFocus.y) * CompScale.x + Viewport.x / 2. + Margin.x;
+        rv.y = -(p.x - GraphFocus.x) * CompScale.y + Viewport.y / 2. + Margin.y;
     }
     return rv;
 }
@@ -475,18 +475,17 @@ svg_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
 
 static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
-    Dpi = GD_drawing(g)->dpi;
-    if (Dpi < 1.0)
-        Dpi = POINTS_PER_INCH;
-
     Viewport.x = gvc->job->width;
     Viewport.y = gvc->job->height;
+    Margin.x = ROUND(gvc->job->margin.x * gvc->job->dpi.x / POINTS_PER_INCH);
+    Margin.y = ROUND(gvc->job->margin.y * gvc->job->dpi.y / POINTS_PER_INCH);
 
     Zoom = gvc->job->zoom;
     GraphFocus = gvc->job->focus;
 
-    CompScale = Zoom * Dpi / POINTS_PER_INCH;
-    FontScale = CompScale * 0.72;
+    CompScale.x = Zoom * gvc->job->dpi.x / POINTS_PER_INCH;
+    CompScale.y = Zoom * gvc->job->dpi.y / POINTS_PER_INCH;
+    FontScale = CompScale.y * 0.72;
 
     if (onetime) {
 	init_svg();
@@ -498,15 +497,15 @@ static void svg_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     svg_printf(" Pages: %d -->\n", N_pages);
     if (ROUND(gvc->job->dpi.x) == POINTS_PER_INCH && ROUND(gvc->job->dpi.y) == POINTS_PER_INCH) {
 	svg_printf("<svg width=\"%dpt\" height=\"%dpt\"\n",
-		Viewport.x, Viewport.y);
+		Viewport.x + Margin.x * 2, Viewport.y + Margin.y * 2);
     }
     else {
 	svg_printf("<svg width=\"%dpx\" height=\"%dpx\"\n",
-		ROUND(gvc->job->dpi.x * Viewport.x / POINTS_PER_INCH),
-		ROUND(gvc->job->dpi.y * Viewport.y / POINTS_PER_INCH));
+		ROUND(gvc->job->dpi.x * (Viewport.x + Margin.x * 2) / POINTS_PER_INCH),
+		ROUND(gvc->job->dpi.y * (Viewport.y + Margin.y * 2) / POINTS_PER_INCH));
     }
     /* establish absolute units in points */
-    svg_printf(" viewBox = \"%d %d %d %d\"\n", 0, 0, Viewport.x, Viewport.y);
+    svg_printf(" viewBox = \"%d %d %d %d\"\n", Margin.x, Margin.y, Viewport.x, Viewport.y);
     /* namespace of svg */
     svg_fputs(" xmlns=\"http://www.w3.org/2000/svg\"");
     /* namespace of xlink */
@@ -830,8 +829,8 @@ static void svg_ellipse(point p, int rx, int ry, int filled)
 	rx = ry;
 	ry = t;
     }
-    mp.x = CompScale * rx;
-    mp.y = CompScale * ry;
+    mp.x = CompScale.x * rx;
+    mp.y = CompScale.y * ry;
     svg_printf(" rx=\"%d\" ry=\"%d\"/>\n", mp.x, mp.y);
 }
 
@@ -892,12 +891,7 @@ static void svg_polyline(point * A, int n)
 
 static void svg_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
-    int i;
-    point p;
-    point sz;
     char *imagefile;
-    int minx, miny;
-    int maxx, maxy;
 
     if (cstk[SP].pen == P_NONE) {
 	/* its invisible, don't draw */
@@ -912,42 +906,19 @@ static void svg_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 	return;
     }
 
-    svg_fputs("<clipPath id=\"mypath");
-    svg_name_fputs(us->name);
-    svg_name_fputs(Curnode->name);
-    svg_fputs("\">\n<polygon points=\"");
-    maxx = minx = svgpt(A[0]).x;
-    maxy = miny = svgpt(A[0]).y;
-    for (i = 0; i < n; i++) {
-	p = svgpt(A[i]);
-
-	if (p.x < minx)
-	    minx = p.x;
-	if (p.y < miny)
-	    miny = p.y;
-	if (p.x > maxx)
-	    maxx = p.x;
-	if (p.y > maxy)
-	    maxy = p.y;
-
-	svg_printf("%d,%d ", p.x, p.y);
-    }
-    sz.x = maxx - minx;
-    sz.y = maxy - miny;
-    /* because Adobe SVG is broken (?) */
-    p = svgpt(A[0]);
-    svg_printf("%d,%d ", p.x, p.y);
-    svg_fputs("\"/>\n</clipPath>\n<image xlink:href=\"");
+    svg_fputs("<image xlink:href=\"");
     svg_name_fputs(imagefile);
-    svg_printf ("\" width=\"%gpx\" height=\"%fpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
-	b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
-    if (Rot)
+    if (Rot) {
+        svg_printf ("\" width=\"%gpx\" height=\"%fpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+	    b.UR.y - b.LL.y, b.UR.x - b.LL.x, b.LL.x, b.UR.y);
 	svg_printf (" transform=\"rotate(-%d %g %g)\"",
-	    Rot, (b.UR.x + b.LL.x)/2., (b.UR.y + b.LL.y) / 2.);
-    svg_fputs (" clip-path=\"url(#clipPath.");
-    svg_name_fputs(us->name);
-    svg_name_fputs(Curnode->name);
-    svg_fputs(")\"/>\n");
+	    Rot, b.LL.x, b.UR.y);
+    }
+    else {
+        svg_printf ("\" width=\"%gpx\" height=\"%fpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+	    b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
+    }
+    svg_fputs("/>\n");
 }
 
 codegen_t SVG_CodeGen = {

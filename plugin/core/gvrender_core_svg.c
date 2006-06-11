@@ -491,29 +491,19 @@ svggen_usershape(GVJ_t * job, usershape_t *us, boxf b, int filled)
         return;
     }
 
-    svggen_fputs(job, "<clipPath id=\"clipPath.");
+    svggen_fputs(job, "<image xlink:href=\"");
     svggen_fputs(job, us->name);
-    svggen_fputs(job, ".");
-    svggen_fputs(job, job->common->node_name);
-    svggen_fputs(job, "\">\n<polygon points=\"");
-    svggen_printf(job, "%g,%g ", b.LL.x, b.LL.y);
-    svggen_printf(job, "%g,%g ", b.LL.x, b.UR.y);
-    svggen_printf(job, "%g,%g ", b.UR.x, b.UR.y);
-    svggen_printf(job, "%g,%g ", b.UR.x, b.LL.y);
-    /* because Adobe SVG is broken (?) */
-    svggen_printf(job, "%g,%g ", b.LL.x, b.LL.y);
-    svggen_fputs(job, "\"/>\n</clipPath>\n<image xlink:href=\"");
-    svggen_fputs(job, us->name);
-    svggen_printf (job, "\" width=\"%gpx\" height=\"%fpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
-         b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
-    if (job->rotation)
+    if (job->rotation) {
+        svggen_printf (job, "\" width=\"%gpx\" height=\"%fpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+                b.UR.y - b.LL.y, b.UR.x - b.LL.x, b.LL.x, b.UR.y);
 	svggen_printf (job, " transform=\"rotate(-%d %g %g)\"",
-		job->rotation, (b.UR.x + b.LL.x)/2., (b.UR.y + b.LL.y) / 2.);
-    svggen_fputs (job, " clip-path=\"url(#clipPath.");
-    svggen_fputs(job, us->name);
-    svggen_fputs(job, ".");
-    svggen_fputs(job, job->common->node_name);
-    svggen_fputs(job, ")\"/>\n");
+		job->rotation, b.LL.x, b.UR.y);
+    }
+    else {
+        svggen_printf (job, "\" width=\"%gpx\" height=\"%fpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+                b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
+    }
+    svggen_fputs(job, "/>\n");
 }
 
 /* color names from http://www.w3.org/TR/SVG/types.html */
