@@ -14,13 +14,12 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifndef GVRENDER_PLUGIN_H
-#define GVRENDER_PLUGIN_H
+#ifndef GVPLUGIN_RENDER_H
+#define GVPLUGIN_RENDER_H
 
+#include "types.h"
 #include "gvplugin.h"
 #include "gvcjob.h"
-#include "textpara.h"
-#include "usershape.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,4 +62,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-#endif				/* GVRENDER_PLUGIN_H */
+#endif				/* GVPLUGIN_RENDER_H */

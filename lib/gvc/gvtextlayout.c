@@ -23,7 +23,6 @@
 #endif
 
 #include "const.h"
-#include "types.h"
 #include "gvplugin_textlayout.h"
 #include "gvcint.h"
 #include "gvcproc.h"

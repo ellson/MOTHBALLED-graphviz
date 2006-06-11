@@ -21,7 +21,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 #ifdef HAVE_LIBZ
 #include <zlib.h>
@@ -33,9 +32,11 @@
 #undef HAVE_LIBGD
 
 #include "gvplugin_render.h"
+#include "graph.h"
+#if 0
+/* FIXME - gv_ps_txt collides in multiple ps renderers */
 #include "gv_ps.h"
-#include "const.h"
-#include "macros.h"
+#endif
 #ifdef HAVE_LIBGD
 #include "gd.h"
 #endif
@@ -84,12 +85,15 @@ static void psgen_begin_graph(GVJ_t * job)
     setupLatin1 = FALSE;
 
     if (job->common->viewNum == 0) {
-        fprintf(job->output_file, "%%%%Title: %s\n", job->common->graphname);
+        fprintf(job->output_file, "%%%%Title: %s\n", job->g->name);
         fprintf(job->output_file, "%%%%Pages: (atend)\n");
         if (job->common->show_boxes == NULL)
             fprintf(job->output_file, "%%%%BoundingBox: (atend)\n");
         fprintf(job->output_file, "%%%%EndComments\nsave\n");
+#if 0
+/* FIXME - gv_ps_txt collides in multiple ps renderers */
         cat_libfile(job->output_file, job->common->lib, gv_ps_txt);
+#endif
         epsf_define(job->output_file);
     }
 #ifdef FIXME
@@ -204,9 +208,9 @@ static void psgen_end_page(GVJ_t * job)
     fprintf(job->output_file, "%%%%EndPage: %d\n", job->common->viewNum);
 }
 
-static void psgen_begin_cluster(GVJ_t * job, char *clustername, long id)
+static void psgen_begin_cluster(GVJ_t * job)
 {
-    fprintf(job->output_file, "%% %s\n", clustername);
+    fprintf(job->output_file, "%% %s\n", job->sg->name);
 
 #if 0
     /*  Embed information for Distiller to generate hyperlinked PDF  */
@@ -231,7 +235,8 @@ psgen_begin_edge(GVJ_t * job)
 #endif
 }
 
-static void psgen_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
+static void
+psgen_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
 {
 #if 0
     if (href && href[0]) 
@@ -279,7 +284,7 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 	  || last_color.u.HSV[1] != color->u.HSV[1]
 	  || last_color.u.HSV[2] != color->u.HSV[2]) {
 	    fprintf(job->output_file, "%.3f %.3f %.3f %scolor\n",
-		color->u.HSV[0], color->u.HSV[1], color->u.HSV[2], job->objname);
+		color->u.HSV[0], color->u.HSV[1], color->u.HSV[2], job->common->objtype);
 	    last_color.u.HSV[0] = color->u.HSV[0];
 	    last_color.u.HSV[1] = color->u.HSV[1];
 	    last_color.u.HSV[2] = color->u.HSV[2];
@@ -656,7 +661,7 @@ static gvrender_engine_t psgen_engine = {
 static gvrender_features_t psgen_features = {
     GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES
 	| GVRENDER_DOES_TRANSFORM,
-    DEFAULT_PRINT_MARGIN,	/* default margin - points */
+    36,				/* default margin - points */
     {72.,72.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */

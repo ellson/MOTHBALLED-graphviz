@@ -21,7 +21,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
 #ifdef HAVE_LIBZ
 #include <zlib.h>
@@ -34,6 +33,7 @@
 #include "const.h"
 
 #include "gvplugin_render.h"
+#include "graph.h"
 
 typedef enum { FORMAT_SVG, FORMAT_SVGZ, } format_type;
 
@@ -244,9 +244,9 @@ static void svggen_begin_job(GVJ_t * job)
 static void svggen_begin_graph(GVJ_t * job)
 {
     svggen_fputs(job, "<!--");
-    if (job->common->graph_name[0]) {
+    if (job->g->name[0]) {
         svggen_fputs(job, " Title: ");
-	svggen_fputs(job, xml_string(job->common->graph_name));
+	svggen_fputs(job, xml_string(job->g->name));
     }
     svggen_printf(job, " Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
 
@@ -312,9 +312,9 @@ static void svggen_begin_page(GVJ_t * job)
     svggen_fputs(job, " style=\"font-family:");
     svggen_fputs(job, job->style->fontfam);
     svggen_printf(job, ";font-size:%.2f;\">\n", job->style->fontsz);
-    if (job->common->graph_name[0]) {
+    if (job->g->name[0]) {
         svggen_fputs(job, "<title>");
-        svggen_fputs(job, xml_string(job->common->graph_name));
+        svggen_fputs(job, xml_string(job->g->name));
         svggen_fputs(job, "</title>\n");
     }
 }
@@ -326,9 +326,10 @@ static void svggen_end_page(GVJ_t * job)
 
 static void svggen_begin_cluster(GVJ_t * job)
 {
-    svggen_printf(job, "<g id=\"cluster%ld\" class=\"cluster\">", job->common->cluster_id);
+    svggen_printf(job, "<g id=\"cluster%ld\" class=\"cluster\">",
+	    job->sg->meta_node->id);
     svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(job->common->cluster_name));
+    svggen_fputs(job, xml_string(job->sg->name));
     svggen_fputs(job, "</title>\n");
 }
 
@@ -339,9 +340,9 @@ static void svggen_end_cluster(GVJ_t * job)
 
 static void svggen_begin_node(GVJ_t * job)
 {
-    svggen_printf(job, "<g id=\"node%ld\" class=\"node\">", job->common->node_id);
+    svggen_printf(job, "<g id=\"node%ld\" class=\"node\">", job->n->id);
     svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(job->common->node_name));
+    svggen_fputs(job, xml_string(job->n->name));
     svggen_fputs(job, "</title>\n");
 }
 
@@ -355,17 +356,17 @@ svggen_begin_edge(GVJ_t * job)
 {
     char *edgeop;
 
-    svggen_printf(job, "<g id=\"edge%ld\" class=\"edge\">", job->common->edge_id);
-    if (job->common->edge_directed)
+    svggen_printf(job, "<g id=\"edge%ld\" class=\"edge\">", job->e->id);
+    if (job->e->tail->graph->root->kind & AGFLAG_DIRECTED)
 	edgeop = "&#45;&gt;";
     else
 	edgeop = "&#45;&#45;";
     svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(job->common->edge_tailname));
+    svggen_fputs(job, xml_string(job->e->tail->name));
     svggen_fputs(job, edgeop);
     /* can't do this in single svggen_printf because
      * xml_string's buffer gets reused. */
-    svggen_fputs(job, xml_string(job->common->edge_headname));
+    svggen_fputs(job, xml_string(job->e->head->name));
     svggen_fputs(job, "</title>\n");
 }
 
@@ -470,7 +471,7 @@ static void svggen_polyline(GVJ_t * job, pointf * A, int n)
 }
 
 static void
-svggen_usershape(GVJ_t * job, usershape_t *us, boxf b, int filled)
+svggen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
     if (job->style->pen == PEN_NONE) {
 	/* its invisible, don't draw */
