@@ -20,7 +20,7 @@ extern gvplugin_installed_t gvlayout_neato_types;
 
 static gvplugin_api_t apis[] = {
     {API_layout, &gvlayout_neato_types},
-    {(api_t)0, NULL},
+    {(api_t)0, 0},
 };
 
 gvplugin_library_t gvplugin_neato_layout_LTX_library = { "neato_layout", apis };
