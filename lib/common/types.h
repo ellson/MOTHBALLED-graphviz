@@ -587,6 +587,10 @@ extern "C" {
         double T0;              /* initial temperature */
     } fdpParms_t;
 
+    typedef struct {
+	int flags;
+    } gvlayout_features_t;
+
 #ifdef __cplusplus
 }
 #endif

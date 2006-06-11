@@ -23,12 +23,7 @@
 extern "C" {
 #endif
 
-#include "gvcjob.h"
 #include "gvcommon.h"
-
-    typedef struct {
-	int flags;
-    } gvlayout_features_t;
 
     /* active plugin headers */
     typedef struct gvplugin_active_layout_s {
@@ -104,10 +99,7 @@ extern "C" {
 	GVJ_t *job;	/* current job */
 
 	int emit_state;	/* current emit_state */
-	graph_t *g;	/* current graph */
-	graph_t *sg;	/* current subgraph/cluster */
-	node_t *n;	/* current node */
-	edge_t *e;	/* current edge */
+	graph_t *g;      /* current graph */
 
 	/* gvrender_begin_job() */
 	gvplugin_active_textlayout_t textlayout;

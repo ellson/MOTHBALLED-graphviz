@@ -52,6 +52,7 @@ extern "C" {
 #include "agxbuf.h"
 #include "utils.h"		/* must follow types.h and agxbuf.h */
 #include "gvplugin.h"		/* must follow gvcext.h (in types.h) */
+#include "gvcjob.h"		/* must follow gvcext.h (in types.h) */
 #include "gvcint.h"		/* must follow gvcext.h (in types.h) */
 #include "gvcproc.h"		/* must follow gvcext.h (in types.h) */
 

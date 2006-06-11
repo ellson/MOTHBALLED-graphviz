@@ -34,17 +34,6 @@ extern "C" {
 	int viewNum;     /* current view - 1 based count of views,
 			    all pages in all layers */
 	char *objtype;   /* "graph", "cluster", "node", or "edge" */
-	char *graph_name;
-	char *cluster_name;
-	unsigned long cluster_id;
-	char *node_name;
-	unsigned long node_id;
-	char *edge_tailname;
-	unsigned long edge_tailid;
-	char *edge_headname;
-	unsigned long edge_headid;
-        unsigned long edge_id;
-	bool edge_directed;
 
     } GVCOMMON_t;
 

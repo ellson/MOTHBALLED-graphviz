@@ -17,6 +17,7 @@
 #ifndef GVDEVICE_PLUGIN_H
 #define GVDEVICE_PLUGIN_H
 
+#include "types.h"
 #include "gvplugin.h"
 #include "gvcjob.h"
 

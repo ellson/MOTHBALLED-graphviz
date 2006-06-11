@@ -18,11 +18,9 @@
 #include "config.h"
 #endif
 
-#include "gvplugin.h"
-#include "types.h"
+#include "gvplugin_layout.h"
 #include "graph.h"
 #include "gvcint.h"
-#include "gvplugin_layout.h"
 #include "gvcproc.h"
 
 #include <string.h>

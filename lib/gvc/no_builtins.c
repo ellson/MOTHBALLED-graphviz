@@ -18,6 +18,6 @@
 #include "config.h"
 #endif
 
-#include "gvplugin.h"
+#include "gvcext.h"
 
 const lt_symlist_t lt_preloaded_symbols[] = { { 0, 0 } };

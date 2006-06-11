@@ -27,7 +27,6 @@
 #include <string.h>
 
 #include "const.h"
-#include "types.h"
 #include "gvplugin_device.h"
 #include "gvcint.h"
 #include "gvcproc.h"

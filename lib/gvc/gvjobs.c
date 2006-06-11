@@ -21,6 +21,7 @@
 #include	"memory.h"
 #include	"types.h"
 #include        "gvplugin.h"
+#include        "gvcjob.h"
 #include        "gvcint.h"
 #include        "gvcproc.h"
 

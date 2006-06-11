@@ -24,9 +24,9 @@
 #endif
 
 #include "const.h"
-#include "types.h"
-#include "graph.h"
 #include "gvplugin_layout.h"
+#include "graph.h"
+#include "gvcint.h"
 #include "gvcproc.h"
 
 extern void graph_init(graph_t *g, bool use_rankdir);
