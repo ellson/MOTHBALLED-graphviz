@@ -33,10 +33,6 @@
 
 #include "gvplugin_render.h"
 #include "graph.h"
-#if 0
-/* FIXME - gv_ps_txt collides in multiple ps renderers */
-#include "gv_ps.h"
-#endif
 #ifdef HAVE_LIBGD
 #include "gd.h"
 #endif
@@ -44,6 +40,7 @@
 extern void cat_libfile(FILE * ofp, char **arglib, char **stdlib);
 extern void epsf_define(FILE * of);
 extern char *ps_string(char *ins, int latin);
+extern char **ps_txt;
 
 typedef enum { FORMAT_PS, FORMAT_PS2, } format_type;
 
@@ -90,10 +87,7 @@ static void psgen_begin_graph(GVJ_t * job)
         if (job->common->show_boxes == NULL)
             fprintf(job->output_file, "%%%%BoundingBox: (atend)\n");
         fprintf(job->output_file, "%%%%EndComments\nsave\n");
-#if 0
-/* FIXME - gv_ps_txt collides in multiple ps renderers */
-        cat_libfile(job->output_file, job->common->lib, gv_ps_txt);
-#endif
+        cat_libfile(job->output_file, job->common->lib, ps_txt);
         epsf_define(job->output_file);
     }
 #ifdef FIXME

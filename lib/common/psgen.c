@@ -22,7 +22,6 @@
 #define	PDFMAX	14400		/*  Maximum size of PDF page  */
 
 #include "render.h"
-#include "ps.h"
 #include "agxbuf.h"
 
 #ifdef HAVE_LIBGD
@@ -39,6 +38,7 @@ extern void epsf_define(FILE * of);
 void epsf_emit_body(ps_image_t *img, FILE *of);
 extern void ps_freeusershapes(void);
 extern ps_image_t *ps_usershape_to_image(char *shapeimagefile);
+extern char **ps_txt;
 
 static int N_pages, Cur_page;
 /* static 	point	Pages; */
