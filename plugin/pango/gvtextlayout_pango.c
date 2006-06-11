@@ -18,7 +18,6 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
 #include "gvplugin_textlayout.h"
 
 #ifdef HAVE_PANGOCAIRO
