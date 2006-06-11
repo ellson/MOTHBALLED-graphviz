@@ -19,10 +19,6 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
-
-#include "types.h"
-
 #include "gvplugin_layout.h"
 
 typedef enum { LAYOUT_DOT, } layout_type;
