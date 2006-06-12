@@ -113,6 +113,8 @@ extern "C" {
 /* Define if the GD library has the GD_PNG feature */
 #define HAVE_GD_PNG 1
 
+#define HAVE_LIBGD 1
+
 /* Define if you have the <iconv.h> header file.  */
 /* #define HAVE_ICONV_H 1 */
 
