@@ -18,7 +18,6 @@
 #include "agxbuf.h"
 #include "htmltable.h"
 #include "entities.h"
-#include "ps.h"
 
 #ifndef MSWIN32
 #include <unistd.h>
