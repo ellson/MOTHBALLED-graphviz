@@ -114,13 +114,6 @@ static point figpt(point p)
     return figfpt(P);
 }
 
-
-
-static double figfontsz(double size)
-{
-    return Zoom * size * POINTS_PER_INCH / 1200.0;
-}
-
 static void figptarray(point * A, int n, int close)
 {
     int i;
@@ -201,25 +194,25 @@ fig_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 }
 
 static void
-fig_begin_node(Agnode_t *n)
+fig_begin_node(node_t *n)
 {
     Depth = 1;
 }
 
 static void
-fig_end_node(Agnode_t *n)
+fig_end_node(void)
 {
     Depth = 2;
 }
 
 static void
-fig_begin_edge(Agedge_t *e)
+fig_begin_edge(edge_t *e)
 {
     Depth = 0;
 }
 
 static void
-fig_end_edge(Agedge_t *e)
+fig_end_edge(void)
 {
     Depth = 2;
 }
@@ -387,7 +380,7 @@ static void fig_textpara(point p, textpara_t * para)
     int depth = Depth;
     int pen_style = 0;		/* not used */
     int font = 0;
-    double font_size = figfontsz(cstk[SP].fontsz);
+    double font_size = para->fontsize * Zoom;
     double angle = Rot ? (PI / 2.0) : 0.0;
     int font_flags = 2;
     double height = 0.0;
