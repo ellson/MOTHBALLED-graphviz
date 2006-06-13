@@ -37,10 +37,14 @@
 
 static int N_pages;
 /* static 	point	Pages; */
-static double Scale;
+static pointf Dpi;
+static point Margin;
+static pointf CompScale;
 static int Rot;
-static box PB;
-static int onetime = TRUE;
+
+static point Viewport;
+static pointf GraphFocus;
+static double Zoom;
 
 typedef struct context_t {
     unsigned char pencolor_ix, fillcolor_ix;
@@ -86,57 +90,34 @@ static int figColorResolve(int *new, int r, int g, int b)
     return c;			/* Return newly allocated color */
 }
 
-static void fig_reset(void)
-{
-    onetime = TRUE;
-}
-
-
-static void init_fig(void)
-{
-    SP = 0;
-    cstk[0].pencolor_ix = 0;	/* FIG pencolor index */
-    cstk[0].fillcolor_ix = 0;	/* FIG fillcolor index */
-    cstk[0].fontfam = DEFAULT_FONTNAME;	/* font family name */
-    cstk[0].fontopt = REGULAR;	/* modifier: REGULAR, BOLD or ITALIC */
-    cstk[0].line_style = P_SOLID;	/* pen pattern style, default is solid */
-    cstk[0].style_val = 0.0;	/* style_val, used for dashed style */
-    cstk[0].fill = P_NONE;
-    cstk[0].penwidth = WIDTH_NORMAL;
-}
-
-static point figpt(point p)
-{
-    point rv;
-
-    if (Rot == 0) {
-	rv.x = Scale * p.x;
-	rv.y = Scale * (2 * PB.UR.y - p.y);
-    } else {
-	rv.x = Scale * (2 * PB.UR.x - p.y);
-	rv.y = Scale * p.x;
-    }
-    return rv;
-}
-
-
 static point figfpt(pointf p)
 {
     point rv;
 
     if (Rot == 0) {
-	rv.x = (int) (Scale * p.x);
-	rv.y = (int) (Scale * (2 * PB.UR.y - p.y));
+        rv.x = ROUND(  (p.x - GraphFocus.x) * CompScale.x + Viewport.x / 2. + Margin.x);
+        rv.y = ROUND( -(p.y - GraphFocus.y) * CompScale.y + Viewport.y / 2. + Margin.y);
     } else {
-	rv.x = (int) (Scale * (2 * PB.UR.x - p.y));
-	rv.y = (int) (Scale * p.x);
+        rv.x = ROUND( -(p.y - GraphFocus.y) * CompScale.x + Viewport.x / 2. + Margin.x);
+        rv.y = ROUND( -(p.x - GraphFocus.x) * CompScale.y + Viewport.y / 2. + Margin.y);
     }
+
     return rv;
 }
 
+static point figpt(point p)
+{
+    pointf P;
+
+    P2PF(p,P);
+    return figfpt(P);
+}
+
+
+
 static double figfontsz(double size)
 {
-    return Scale * size * POINTS_PER_INCH / 1200.0;
+    return Zoom * size * POINTS_PER_INCH / 1200.0;
 }
 
 static void figptarray(point * A, int n, int close)
@@ -145,15 +126,11 @@ static void figptarray(point * A, int n, int close)
     point p;
 
     for (i = 0; i < n; i++) {
-	p.x = A[i].x;
-	p.y = A[i].y;
-	p = figpt(p);
+	p = figpt(A[i]);
 	fprintf(Output_file, " %d %d", p.x, p.y);
     }
     if (close) {
-	p.x = A[0].x;
-	p.y = A[0].y;
-	p = figpt(p);
+	p = figpt(A[0]);
 	fprintf(Output_file, " %d %d", p.x, p.y);
     }
     fprintf(Output_file, "\n");
@@ -178,8 +155,8 @@ fig_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
     fprintf(Output_file, "# Pages: %d\n", N_pages);
     fprintf(Output_file, "Portrait\n");	/* orientation */
     fprintf(Output_file, "Center\n");	/* justification */
-    fprintf(Output_file, "Metric\n");	/* units */
-    fprintf(Output_file, "A4\n");	/* papersize */
+    fprintf(Output_file, "Inches\n");	/* units */
+    fprintf(Output_file, "Letter\n");	/* papersize */
     fprintf(Output_file, "100.00\n");	/* magnification % */
     fprintf(Output_file, "Single\n");	/* multiple-page */
     fprintf(Output_file, "-2\n");	/* transparent color (none) */
@@ -194,30 +171,31 @@ static void fig_end_job(void)
 
 static void fig_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
-    PB = bb;
-    if (onetime) {
-#if 0
-	fprintf(stderr, "LL %d %d UR %d %d\n", PB.LL.x, PB.LL.y, PB.UR.x,
-		PB.UR.y);
-#endif
-	init_fig();
-	onetime = FALSE;
-    }
+    Dpi = gvc->job->dpi;
+    Margin.x = ROUND(gvc->job->margin.x * Dpi.x / POINTS_PER_INCH);
+    Margin.y = ROUND(gvc->job->margin.y * Dpi.y / POINTS_PER_INCH);
+    Viewport.x = gvc->job->width;
+    Viewport.y = gvc->job->height;
+    Zoom = gvc->job->zoom;
+    GraphFocus = gvc->job->focus;
+    CompScale.x = Zoom *  Dpi.x / POINTS_PER_INCH;
+    CompScale.y = Zoom *  Dpi.y / POINTS_PER_INCH;
+
+    SP = 0;
+    cstk[0].pencolor_ix = 0;	/* FIG pencolor index */
+    cstk[0].fillcolor_ix = 0;	/* FIG fillcolor index */
+    cstk[0].fontfam = DEFAULT_FONTNAME;	/* font family name */
+    cstk[0].fontopt = REGULAR;	/* modifier: REGULAR, BOLD or ITALIC */
+    cstk[0].line_style = P_SOLID;	/* pen pattern style, default is solid */
+    cstk[0].style_val = 0.0;	/* style_val, used for dashed style */
+    cstk[0].fill = P_NONE;
+    cstk[0].penwidth = WIDTH_NORMAL;
 }
 
 static void
-fig_begin_page(graph_t * g, point page, double scale, int rot,
-	       point offset)
+fig_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 {
-    /* int          page_number; */
-    /* point        sz; */
-
-    Scale = scale * 1200.0 / POINTS_PER_INCH;
     Rot = rot;
-/*
-	page_number =  page.x + page.y * Pages.x + 1;
-	sz = sub_points(PB.UR,PB.LL);
-*/
 }
 
 static void fig_begin_context(void)
@@ -509,7 +487,10 @@ static void fig_polygon(point * A, int n, int filled)
     int thickness = cstk[SP].penwidth;
     int pen_color = cstk[SP].pencolor_ix;
     int fill_color = cstk[SP].fillcolor_ix;
-    int depth = 0;
+    int depth = 1;  /* Apparently all ellipses are drawn before polygons
+		       so if they are at the same depth the background 
+		       polygon will obscure the ellipses.  Fix is to use
+		       depth=1 for polygons and depth=0 for ellipses. */
     int pen_style = 0;		/* not used */
     int area_fill = filled ? 20 : -1;
     double style_val = cstk[SP].style_val;
@@ -545,23 +526,23 @@ static void fig_ellipse(point p, int rx, int ry, int filled)
     int center_x, center_y, radius_x, radius_y;
     int start_x, start_y, end_x, end_y;
 
+    point p2;
+
+    p2.x = p.x + rx;
+    p2.y = p.y + ry;
+
+    p = figpt(p);
+    p2 = figpt(p2);
+
 #if 0
     fprintf(stderr, "p %d %d\n", p.x, p.y);
 #endif
-    if (Rot == 0) {
-	start_x = center_x = Scale * p.x;
-/* FIXME - why do I need 2 * ??? */
-	start_y = center_y = Scale * (2 * PB.UR.y - p.y);
-	radius_x = Scale * rx;
-	radius_y = Scale * ry;
-    } else {
-	start_x = center_x = Scale * (2 * PB.UR.x - p.y);
-	start_y = center_y = Scale * p.x;
-	radius_x = Scale * ry;
-	radius_y = Scale * rx;
-    }
-    end_x = start_x + radius_x;
-    end_y = start_y + radius_y;
+    start_x = center_x = p.x;
+    start_y = center_y = p.y;
+    radius_x = p2.x - p.x;
+    radius_y = p2.y - p.y;
+    end_x = p2.x;
+    end_y = p2.y;
 
     fprintf(Output_file,
 	    "%d %d %d %d %d %d %d %d %d %.3f %d %.4f %d %d %d %d %d %d %d %d\n",
@@ -608,7 +589,7 @@ static void fig_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 }
 
 codegen_t FIG_CodeGen = {
-    fig_reset,
+    0, /* fig_reset */
     fig_begin_job, fig_end_job,
     fig_begin_graph, 0,		/* fig_end_graph */
     fig_begin_page, 0,		/* fig_end_page */

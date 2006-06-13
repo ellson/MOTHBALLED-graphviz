@@ -384,8 +384,8 @@ static void setup_page(GVJ_t * job, graph_t * g)
     /* prescaled pad so that its size is constant under scaling */
     pointf pad;
 
-    pad.x = job->pad.x * POINTS_PER_INCH / (job->zoom * job->dpi.x);
-    pad.y = job->pad.y * POINTS_PER_INCH / (job->zoom * job->dpi.y);
+    pad.x = job->pad.x / job->zoom;
+    pad.y = job->pad.y / job->zoom;
 
     /* establish current box in graph coordinates */
     job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - pad.x;
@@ -1124,6 +1124,9 @@ static void init_job_dpi(GVJ_t *job, graph_t *g)
         case PDF:
         case SVG:
 	    job->dpi.x = job->dpi.y = (double)(POINTS_PER_INCH);
+            break;
+        case FIG:
+            job->dpi.x = job->dpi.y = 1200.;
             break;
         default:
             job->dpi.x = job->dpi.y = (double)(DEFAULT_DPI);
