@@ -128,7 +128,6 @@ static void cairogen_begin_page(GVJ_t * job)
 {
     cairo_t *cr;
     cairo_surface_t *surface;
-    double width, height;
 
 #if defined(HAVE_FENV_H) && defined(HAVE_FESETENV) && defined(HAVE_FEGETENV) && defined(HAVE_FEDISABLEEXCEPT)
     /* cairo generates FE_INVALID and other exceptions we 
@@ -141,16 +140,12 @@ static void cairogen_begin_page(GVJ_t * job)
 
     cr = (cairo_t *) job->surface; /* might be NULL */
 
-    /* device size with margins all around */
-    width = job->pageBoundingBox.UR.x + job->pageBoundingBox.LL.x;
-    height = job->pageBoundingBox.UR.y + job->pageBoundingBox.LL.y;
-
     switch (job->render.id) {
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
     case FORMAT_PNG:
 	if (!cr) {
 	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-			width, height);
+			(double)(job->width), (double)(job->height));
 	    cr = cairo_create(surface);
 	    cairo_surface_destroy (surface);
 	}
@@ -160,7 +155,7 @@ static void cairogen_begin_page(GVJ_t * job)
     case FORMAT_PS:
 	if (!cr) {
 	    surface = cairo_ps_surface_create_for_stream (writer,
-			job->output_file, width, height);
+			job->output_file, (double)(job->width), (double)(job->height));
 	    cr = cairo_create(surface);
 	    cairo_surface_destroy (surface);
 	}
@@ -170,7 +165,7 @@ static void cairogen_begin_page(GVJ_t * job)
     case FORMAT_PDF:
 	if (!cr) {
 	    surface = cairo_pdf_surface_create_for_stream (writer,
-			job->output_file, width, height);
+			job->output_file, (double)(job->width), (double)(job->height));
 	    cr = cairo_create(surface);
 	    cairo_surface_destroy (surface);
 	}
@@ -180,7 +175,7 @@ static void cairogen_begin_page(GVJ_t * job)
     case FORMAT_SVG:
 	if (!cr) {
 	    surface = cairo_svg_surface_create_for_stream (writer,
-			job->output_file, width, height);
+			job->output_file, (double)(job->width), (double)(job->height));
 	    cr = cairo_create(surface);
 	    cairo_surface_destroy (surface);
 	}

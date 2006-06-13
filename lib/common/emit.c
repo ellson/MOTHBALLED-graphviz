@@ -423,6 +423,10 @@ static void setup_page(GVJ_t * job, graph_t * g)
     else
         EXPANDBB(job->boundingBox, job->pageBoundingBox);
 
+    /* update job->width and job->height with margins */
+    job->width = job->boundingBox.UR.x + job->boundingBox.LL.x;
+    job->height = job->boundingBox.UR.y + job->boundingBox.LL.y;
+
     if (job->rotation) {
 	if (job->flags & GVRENDER_Y_GOES_DOWN) {
 	    job->translation.x = -job->pageBox.UR.x - job->pageBoundingBox.LL.y / job->scale.y;

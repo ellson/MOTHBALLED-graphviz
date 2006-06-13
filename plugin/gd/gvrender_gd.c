@@ -107,7 +107,6 @@ static void gdgen_begin_page(GVJ_t * job)
     bool bg_transparent_p = FALSE;
     int bgcolor = 0;
     gdImagePtr im = NULL;
-    int width, height;
 
 
 /* FIXME - ... */
@@ -131,23 +130,19 @@ static void gdgen_begin_page(GVJ_t * job)
 	    fprintf(stderr, "%s: using existing GD image\n", job->common->cmdname);
 	im = (gdImagePtr) (job->output_file);
     } else {
-	/* device size with margins all around */
-	width = job->pageBoundingBox.UR.x + job->pageBoundingBox.LL.x;
-	height = job->pageBoundingBox.UR.y + job->pageBoundingBox.LL.y;
-
 	if (truecolor_p) {
 	    if (job->common->verbose)
 		fprintf(stderr,
 			"%s: allocating a %dK TrueColor GD image\n",
 			job->common->cmdname,
-			ROUND(width * height * 4 / 1024.));
-	    im = gdImageCreateTrueColor(width, height);
+			ROUND(job->width * job->height * 4 / 1024.));
+	    im = gdImageCreateTrueColor(job->width, job->height);
 	} else {
 	    if (job->common->verbose)
 		fprintf(stderr,
 			"%s: allocating a %dK PaletteColor GD image\n",
-			job->common->cmdname, ROUND(width * height / 1024.));
-	    im = gdImageCreate(width, height);
+			job->common->cmdname, ROUND(job->width * job->height / 1024.));
+	    im = gdImageCreate(job->width, job->height);
 	}
     }
     job->surface = (void *) im;
