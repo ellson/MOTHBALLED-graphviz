@@ -259,17 +259,17 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	    margin.y += (pageSize.y - imageSize.y) / 2;
     }
 
-    job->boundingBox.LL.x = margin.x;
-    job->boundingBox.LL.y = margin.y;
-    job->boundingBox.UR.x = margin.x + imageSize.x;
-    job->boundingBox.UR.y = margin.y + imageSize.y;
+    job->canvasBox.LL.x = margin.x;
+    job->canvasBox.LL.y = margin.y;
+    job->canvasBox.UR.x = margin.x + imageSize.x;
+    job->canvasBox.UR.y = margin.y + imageSize.y;
 
 #if 0
-fprintf(stderr,"margin = %d,%d  imageSize = %d,%d boundingBox = %d,%d %d,%d\n",
+fprintf(stderr,"margin = %d,%d  imageSize = %d,%d pageBoundingBox = %d,%d %d,%d\n",
 	margin.x, margin.y,
 	imageSize.x, imageSize.x,
-	job->boundingBox.LL.x, job->boundingBox.LL.y,
-	job->boundingBox.UR.x, job->boundingBox.UR.x);
+	job->pageBoundingBox.LL.x, job->pageBoundingBox.LL.y,
+	job->pageBoundingBox.UR.x, job->pageBoundingBox.UR.x);
 #endif
 
     /* set up pagedir */
@@ -294,11 +294,11 @@ fprintf(stderr,"job->pageSize= %g,%g (graph units)\n",
 	job->pageSize.x, job->pageSize.y);
 fprintf(stderr,"dpi = %g,%g zoom = %g rotation = %d\n",
         job->dpi.x, job->dpi.y, job->zoom, job->rotation);
-fprintf(stderr,"boundingBox = %d,%d %d,%d (device units)\n",
-        job->boundingBox.LL.x,
-        job->boundingBox.LL.y,
-        job->boundingBox.UR.x,
-        job->boundingBox.UR.y);
+fprintf(stderr,"pageBoundingBox = %d,%d %d,%d (device units)\n",
+        job->pageBoundingBox.LL.x,
+        job->pageBoundingBox.LL.y,
+        job->pageBoundingBox.UR.x,
+        job->pageBoundingBox.UR.y);
 fprintf(stderr,"width,height = %d,%d (device units)\n",
         job->width,
         job->height);
@@ -394,19 +394,54 @@ static void setup_page(GVJ_t * job, graph_t * g)
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
     /* establish pageOffset to be applied, in graph coordinates */
-    if (job->rotation == 0) {
-	job->pageOffset.x =  pad.x - job->pageSize.x * job->pagesArrayElem.x;
-	job->pageOffset.y =  pad.y - job->pageSize.y * job->pagesArrayElem.y;
-    }
-    else {
+    if (job->rotation) {
 	job->pageOffset.x = -pad.x + job->pageSize.y * (job->pagesArrayElem.y +1);
 	job->pageOffset.y =  pad.y - job->pageSize.x * job->pagesArrayElem.x;
+    }
+    else {
+	job->pageOffset.x =  pad.x - job->pageSize.x * job->pagesArrayElem.x;
+	job->pageOffset.y =  pad.y - job->pageSize.y * job->pagesArrayElem.y;
     }
 
     job->pageBoxClip.UR.x = MIN(job->clip.UR.x, job->pageBox.UR.x);
     job->pageBoxClip.UR.y = MIN(job->clip.UR.y, job->pageBox.UR.y);
     job->pageBoxClip.LL.x = MAX(job->clip.LL.x, job->pageBox.LL.x);
     job->pageBoxClip.LL.y = MAX(job->clip.LL.y, job->pageBox.LL.y);
+
+    if (job->rotation) {
+        job->pageBoundingBox.LL.x = job->canvasBox.LL.y;
+        job->pageBoundingBox.LL.y = job->canvasBox.LL.x;
+        job->pageBoundingBox.UR.x = job->canvasBox.UR.y;
+        job->pageBoundingBox.UR.y = job->canvasBox.UR.x;
+    }
+    else {
+        job->pageBoundingBox = job->canvasBox;
+    }
+
+    if (job->common->viewNum == 0)
+        job->boundingBox = job->pageBoundingBox;
+    else
+        EXPANDBB(job->boundingBox, job->pageBoundingBox);
+
+    if (job->rotation) {
+	if (job->flags & GVRENDER_Y_GOES_DOWN) {
+	    job->translation.x = -job->pageBox.UR.x - job->pageBoundingBox.LL.y / job->scale.y;
+	    job->translation.y =  job->pageBox.UR.y + job->pageBoundingBox.LL.x / job->scale.x;
+	}
+	else {
+	    job->translation.x = -job->pageBox.LL.x + job->pageBoundingBox.LL.y / job->scale.y;
+	}
+    }
+    else {
+	job->translation.x = -job->pageBox.LL.x + job->pageBoundingBox.LL.x / job->scale.x;
+	if (job->flags & GVRENDER_Y_GOES_DOWN)
+	    job->translation.y =  job->pageBox.UR.y + job->pageBoundingBox.LL.y / job->scale.y;
+	else
+	    job->translation.y = -job->pageBox.LL.y + job->pageBoundingBox.LL.y / job->scale.y;
+    }
+    job->comptrans = job->translation;
+    job->comptrans.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1: 1;
+
 
 #if 0
 fprintf(stderr,"pagesArrayElem = %d,%d pageSize = %g,%g pageOffset = %g,%g\n",
@@ -1186,7 +1221,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     job->zoom = Z;              /* scaling factor */
     job->focus.x = x;           /* graph coord of focus - points */
     job->focus.y = y;
-    job->rotation = job->gvc->rotation;
+    job->rotation = job->gvc->rotation * ((job->flags & GVRENDER_Y_GOES_DOWN) ? -1 : 1);
 
 #if 0
     fprintf(stderr,"bb = %d,%d %d,%d size %d,%d (graph units)\n",

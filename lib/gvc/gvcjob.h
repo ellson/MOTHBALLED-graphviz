@@ -166,20 +166,28 @@ extern "C" {
 
         unsigned int width;     /* device width in device units */
         unsigned int height;    /* device height in device units */
-	box	boundingBox;	/* drawable region in device units */
+	box	canvasBox;	/* drawable region in device units */
+	box     pageBoundingBox; /* rotated boundingBox in device units */
+	box     boundingBox;    /* cumulative boundingBox over all pages in device units */
+
 	pointf	dpi;		/* device resolution device-units-per-inch */
 
 	boxf bb;		/* bb in graph units */
 	pointf pad;             /* padding around bb in graph units */
 	double zoom;		/* viewport zoom factor */
-	int rotation;		/* viewport rotation  0=portrait, 1=landscape */
 	pointf focus;		/* viewport focus in graph units */
 
 	boxf clip;		/* clip region in graph units */
 	boxf pageBoxClip;       /* intersection of clip and pageBox */
 
-	pointf compscale;	/* composite device scale incl: scale, zoom, dpi, y_goes_down */
-	pointf offset;		/* composite translation */
+	pointf scale;	        /* composite device scale (zoom and dpi) */
+	int rotation;		/* viewport rotation (degrees)  0=portrait, 90=landscape */
+	pointf translation;     /* composite translation */
+
+
+	pointf compscale;	/* composite device scale incl: zoom, dpi, y_goes_down */
+	pointf comptrans;       /* composite translation */
+	pointf offset;		/* composite translation  (used by codegens) */
 	
 	bool	fit_mode,
 		needs_refresh,

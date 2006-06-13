@@ -124,7 +124,7 @@ reader (void *closure, unsigned char *data, unsigned int length)
     return CAIRO_STATUS_READ_ERROR;
 }
 
-static void cairogen_begin_graph(GVJ_t * job)
+static void cairogen_begin_page(GVJ_t * job)
 {
     cairo_t *cr;
     cairo_surface_t *surface;
@@ -142,8 +142,8 @@ static void cairogen_begin_graph(GVJ_t * job)
     cr = (cairo_t *) job->surface; /* might be NULL */
 
     /* device size with margins all around */
-    width = job->width + 2 * ROUND(job->margin.x * job->dpi.x / POINTS_PER_INCH);
-    height = job->height + 2 * ROUND(job->margin.y * job->dpi.y / POINTS_PER_INCH);
+    width = job->pageBoundingBox.UR.x + job->pageBoundingBox.LL.x;
+    height = job->pageBoundingBox.UR.y + job->pageBoundingBox.LL.y;
 
     switch (job->render.id) {
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
@@ -208,9 +208,13 @@ static void cairogen_begin_graph(GVJ_t * job)
 	break;
     }
     job->surface = (void *) cr;
+
+    cairo_scale(cr, job->scale.x, job->scale.y);
+    cairo_rotate(cr, job->rotation * M_PI / 180.);
+    cairo_translate(cr, job->translation.x, job->translation.y);
 }
 
-static void cairogen_end_graph(GVJ_t * job)
+static void cairogen_end_page(GVJ_t * job)
 {
     cairo_t *cr = (cairo_t *) job->surface;
     cairo_surface_t *surface;
@@ -221,44 +225,6 @@ static void cairogen_end_graph(GVJ_t * job)
 	surface = cairo_get_target(cr);
 	cairo_surface_write_to_png_stream(surface, writer, job->output_file);
 #endif
-    default:
-	break;
-    }
-    if (!job->external_surface)
-	cairo_destroy(cr);
-
-#if defined HAVE_FENV_H && defined HAVE_FESETENV && defined HAVE_FEGETENV && defined(HAVE_FEENABLEEXCEPT)
-    /* Restore FP environment */
-    fesetenv(&fenv);
-#endif
-}
-
-static void cairogen_begin_page(GVJ_t * job)
-{
-    cairo_t *cr = (cairo_t *) job->surface;
-
-    cairo_save(cr);
-    cairo_scale(cr, job->zoom * job->dpi.x / POINTS_PER_INCH,
-		    job->zoom * job->dpi.y / POINTS_PER_INCH);
-    if (job->rotation) {
-        cairo_rotate(cr, job->rotation * -M_PI / 180.);
-        cairo_translate(cr,
-		   -job->margin.y / job->zoom - job->pageBox.UR.x,
-		    job->margin.x / job->zoom + job->pageBox.UR.y);
-    }
-    else
-        cairo_translate(cr,
-		    job->margin.x / job->zoom - job->pageBox.LL.x,
-		    job->margin.y / job->zoom + job->pageBox.UR.y);
-}
-
-static void cairogen_end_page(GVJ_t * job)
-{
-    cairo_t *cr = (cairo_t *) job->surface;
-
-    cairo_restore(cr);
-
-    switch (job->render.id) {
 #ifdef CAIRO_HAS_PS_SURFACE
     case FORMAT_PS:
 	cairo_show_page(cr);
@@ -277,6 +243,13 @@ static void cairogen_end_page(GVJ_t * job)
     default:
 	break;
     }
+    if (!job->external_surface)
+	cairo_destroy(cr);
+
+#if defined HAVE_FENV_H && defined HAVE_FESETENV && defined HAVE_FEGETENV && defined(HAVE_FEENABLEEXCEPT)
+    /* Restore FP environment */
+    fesetenv(&fenv);
+#endif
 }
 
 static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
@@ -324,7 +297,7 @@ static void cairogen_ellipse(GVJ_t * job, pointf * A, int filled)
     } else {
 	cairo_set_dash (cr, dashed, 0, 0.0);
     }
-    cairo_set_line_width (cr, style->penwidth * job->compscale.x);
+    cairo_set_line_width (cr, style->penwidth * job->scale.x);
 
     cairo_get_matrix(cr, &matrix);
     cairo_translate(cr, A[0].x, -A[0].y);
@@ -360,7 +333,7 @@ cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     } else {
 	cairo_set_dash (cr, dashed, 0, 0.0);
     }
-    cairo_set_line_width (cr, style->penwidth * job->compscale.x);
+    cairo_set_line_width (cr, style->penwidth * job->scale.x);
     cairo_move_to(cr, A[0].x, -A[0].y);
     for (i = 1; i < n; i++)
 	cairo_line_to(cr, A[i].x, -A[i].y);
@@ -388,7 +361,7 @@ cairogen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     } else {
 	cairo_set_dash (cr, dashed, 0, 0.0);
     }
-    cairo_set_line_width (cr, style->penwidth * job->compscale.x);
+    cairo_set_line_width (cr, style->penwidth * job->scale.x);
     cairo_move_to(cr, A[0].x, -A[0].y);
     for (i = 1; i < n; i += 3)
 	cairo_curve_to(cr, A[i].x, -A[i].y, A[i + 1].x, -A[i + 1].y,
@@ -411,7 +384,7 @@ cairogen_polyline(GVJ_t * job, pointf * A, int n)
     } else {
 	cairo_set_dash (cr, dashed, 0, 0.0);
     }
-    cairo_set_line_width (cr, style->penwidth * job->compscale.x);
+    cairo_set_line_width (cr, style->penwidth * job->scale.x);
     cairo_move_to(cr, A[0].x, -A[0].y);
     for (i = 1; i < n; i++)
 	cairo_line_to(cr, A[i].x, -A[i].y);
@@ -469,8 +442,8 @@ cairogen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 static gvrender_engine_t cairogen_engine = {
     0,				/* cairogen_begin_job */
     0,				/* cairogen_end_job */
-    cairogen_begin_graph,
-    cairogen_end_graph,
+    0,				/* cairogen_begin_graph */
+    0,				/* cairogen_end_graph */
     0,				/* cairogen_begin_layer */
     0,				/* cairogen_end_layer */
     cairogen_begin_page,
@@ -499,6 +472,7 @@ static gvrender_engine_t cairogen_engine = {
 
 static gvrender_features_t cairogen_features = {
     GVRENDER_DOES_TRUECOLOR
+	| GVRENDER_Y_GOES_DOWN
 	| GVRENDER_DOES_TRANSFORM, /* flags */
     0,				/* default margin - points */
     {96.,96.},			/* default dpi */
@@ -510,6 +484,7 @@ static gvrender_features_t cairogen_features = {
 
 static gvrender_features_t cairogen_features_ps = {
     GVRENDER_DOES_TRUECOLOR
+	| GVRENDER_Y_GOES_DOWN
 	| GVRENDER_DOES_TRANSFORM, /* flags */
     36,				/* default margin - points */
     {72.,72.},			/* postscript 72 dpi */
@@ -522,6 +497,7 @@ static gvrender_features_t cairogen_features_ps = {
 #if 0
 static gvrender_features_t cairogen_features_x = {
     GVRENDER_DOES_TRUECOLOR
+	| GVRENDER_Y_GOES_DOWN
 	| GVRENDER_DOES_TRANSFORM
 	| GVRENDER_X11_EVENTS,	/* flags */
     0,				/* default margin - points */
@@ -534,6 +510,7 @@ static gvrender_features_t cairogen_features_x = {
 
 static gvrender_features_t cairogen_features_gtk = {
     GVRENDER_DOES_TRUECOLOR
+	| GVRENDER_Y_GOES_DOWN
 	| GVRENDER_DOES_TRANSFORM
 	| GVRENDER_X11_EVENTS,	/* flags */
     0,				/* default margin - points */

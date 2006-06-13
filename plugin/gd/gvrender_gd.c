@@ -100,7 +100,7 @@ static void gdgen_resolve_color(GVJ_t * job, gvcolor_t * color)
 
 static int white, black, transparent, basecolor;
 
-static void gdgen_begin_graph(GVJ_t * job)
+static void gdgen_begin_page(GVJ_t * job)
 {
     char *bgcolor_str = NULL, *truecolor_str = NULL;
     bool truecolor_p = FALSE;	/* try to use cheaper paletted mode */
@@ -132,8 +132,9 @@ static void gdgen_begin_graph(GVJ_t * job)
 	im = (gdImagePtr) (job->output_file);
     } else {
 	/* device size with margins all around */
-	width = job->width + 2 * ROUND(job->margin.x * job->dpi.x / POINTS_PER_INCH);
-	height = job->height + 2 * ROUND(job->margin.y * job->dpi.y / POINTS_PER_INCH);
+	width = job->pageBoundingBox.UR.x + job->pageBoundingBox.LL.x;
+	height = job->pageBoundingBox.UR.y + job->pageBoundingBox.LL.y;
+
 	if (truecolor_p) {
 	    if (job->common->verbose)
 		fprintf(stderr,
@@ -194,7 +195,7 @@ static void gdgen_begin_graph(GVJ_t * job)
     gdImageAlphaBlending(im, TRUE);
 }
 
-static void gdgen_end_graph(GVJ_t * job)
+static void gdgen_end_page(GVJ_t * job)
 {
     gdImagePtr im = (gdImagePtr) job->surface;
 
@@ -316,7 +317,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     gdImagePtr im = (gdImagePtr) job->surface;
     pointf mp, ep;
-    double parawidth = para->width * job->compscale.x;
+    double parawidth = para->width * job->scale.x;
     gdFTStringExtra strex;
 #if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
     char *err;
@@ -327,7 +328,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	return;
 
     strex.flags = gdFTEX_RESOLUTION;
-    strex.hdpi = strex.vdpi = POINTS_PER_INCH * job->compscale.x;
+    strex.hdpi = strex.vdpi = POINTS_PER_INCH * job->scale.x;
 
     if (strstr(para->fontname, "/"))
 	strex.flags |= gdFTEX_FONTPATHNAME;
@@ -532,7 +533,7 @@ static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 	pen = style->pencolor.u.index;
     }
 
-    width = style->penwidth * job->compscale.x;
+    width = style->penwidth * job->scale.x;
     if (width < PENWIDTH_NORMAL)
 	width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
     gdImageSetThickness(im, width);
@@ -593,7 +594,7 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
 	pen = style->pencolor.u.index;
     }
 
-    width = style->penwidth * job->compscale.x;
+    width = style->penwidth * job->scale.x;
     if (width < PENWIDTH_NORMAL)
 	width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
     gdImageSetThickness(im, width);
@@ -652,7 +653,7 @@ static void gdgen_polyline(GVJ_t * job, pointf * A, int n)
     } else {
 	pen = style->pencolor.u.index;
     }
-    width = style->penwidth * job->compscale.x;
+    width = style->penwidth * job->scale.x;
     if (width < PENWIDTH_NORMAL)
 	width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
     gdImageSetThickness(im, width);
@@ -741,12 +742,12 @@ gdgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 static gvrender_engine_t gdgen_engine = {
     0,				/* gdgen_begin_job */
     0,				/* gdgen_end_job */
-    gdgen_begin_graph,
-    gdgen_end_graph,
+    0,				/* gdgen_begin_graph */
+    0,				/* gdgen_end_graph */
     0,				/* gdgen_begin_layer */
     0,				/* gdgen_end_layer */
-    0,				/* gdgen_begin_page */
-    0,				/* gdgen_end_page */
+    gdgen_begin_page,
+    gdgen_end_page,
     0,				/* gdgen_begin_cluster */
     0,				/* gdgen_end_cluster */
     0,				/* gdgen_begin_nodes */

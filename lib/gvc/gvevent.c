@@ -295,15 +295,24 @@ static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
     boxf b;
     double closeenough;
 
-    /* convert window point to graph coordinates */
     if (job->rotation) {
-	p.x = job->focus.y - (pointer.y - job->height / 2. - job->margin.y) / job->compscale.x;
-	p.y = job->focus.x + (pointer.x - job->width / 2. - job->margin.x) / job->compscale.y;
+	p.x = pointer.y / job->compscale.y - job->comptrans.x; 
+	p.y = -pointer.x / job->compscale.x - job->comptrans.y; 
     }
     else {
-	p.x = job->focus.x + (pointer.x - job->width / 2. - job->margin.x) / job->compscale.x;
-	p.y = job->focus.y + (pointer.y - job->height / 2. - job->margin.y) / job->compscale.y;
+	p.x = pointer.x / job->compscale.x - job->comptrans.x; 
+	p.y = pointer.y / job->compscale.y - job->comptrans.y; 
     }
+
+#if 0
+fprintf(stderr,"pointer = %g,%g compscale = %g,%g comptrans = %g,%g, graphpoint = %g,%g\n",
+	pointer.x, pointer.y,
+	job->compscale.x, job->compscale.y,
+	job->comptrans.x, job->comptrans.y,
+	p.x, p.y);
+#endif
+
+    /* convert window point to graph coordinates */
     closeenough = CLOSEENOUGH / job->compscale.x;
 
     b.UR.x = p.x + closeenough;

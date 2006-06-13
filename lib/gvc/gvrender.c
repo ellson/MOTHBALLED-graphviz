@@ -182,11 +182,11 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 	return p;
 
     if (job->rotation) {
-	rv.x = -(p.y - job->focus.y) * job->compscale.x + job->width / 2. + job->margin.x * job->dpi.x / POINTS_PER_INCH;
-	rv.y = -(p.x - job->focus.x) * job->compscale.y + job->height / 2. + job->margin.y * job->dpi.y / POINTS_PER_INCH;
+	rv.x =  -(p.y + job->comptrans.y) * job->compscale.x;
+	rv.y =  (p.x + job->comptrans.x) * job->compscale.y;
     } else {
-	rv.x =  (p.x - job->focus.x) * job->compscale.x + job->width / 2. + job->margin.x * job->dpi.x / POINTS_PER_INCH;
-	rv.y =  (p.y - job->focus.y) * job->compscale.y + job->height / 2. + job->margin.y * job->dpi.y / POINTS_PER_INCH;
+	rv.x =  (p.x + job->comptrans.x) * job->compscale.x;
+	rv.y =  (p.y + job->comptrans.y) * job->compscale.y;
     }
     return rv;
 }
@@ -246,8 +246,8 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 
     job->common->objtype = "graph";
     job->g = g; /* current graph */
-    job->compscale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
-    job->compscale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
+    job->compscale.x = job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
+    job->compscale.y = job->scale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
     job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
     if (job->rotation) {
         job->clip.UR.x = job->focus.x + sy + EPSILON;
@@ -295,7 +295,7 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 	codegen_t *cg = job->codegen;
 	
 	if (cg && cg->begin_graph)
-	    cg->begin_graph(gvc, g, job->boundingBox, gvc->pb);
+	    cg->begin_graph(gvc, g, job->canvasBox, gvc->pb);
     }
 #endif
 }
@@ -327,12 +327,12 @@ void gvrender_begin_page(GVJ_t * job)
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
-	point offset;
+        point offset;
 
-	PF2P(job->pageOffset, offset);
-	if (cg && cg->begin_page)
-	    cg->begin_page(job->gvc->g, job->pagesArrayElem,
-		job->zoom, job->rotation, offset);
+        PF2P(job->pageOffset, offset);
+        if (cg && cg->begin_page)
+            cg->begin_page(job->gvc->g, job->pagesArrayElem,
+               job->zoom, job->rotation, offset);
     }
 #endif
 }

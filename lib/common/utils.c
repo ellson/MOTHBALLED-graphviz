@@ -18,6 +18,7 @@
 #include "agxbuf.h"
 #include "htmltable.h"
 #include "entities.h"
+#include "ps.h"
 
 #ifndef MSWIN32
 #include <unistd.h>
@@ -424,6 +425,11 @@ void cat_libfile(FILE * ofp, char **arglib, char **stdlib)
 		agerr(AGWARN, "can't open library file %s\n", p);
 	}
     }
+}
+
+void cat_preamble(GVJ_t *job, char **arglib)
+{
+    cat_libfile(job->output_file, arglib, ps_txt);
 }
 
 int maptoken(char *p, char **name, int *val)

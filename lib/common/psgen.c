@@ -27,7 +27,6 @@
 #ifdef HAVE_LIBGD
 #include "gd.h"
 #endif
-#include "ps.h"
 
 #ifndef MSWIN32
 #include <unistd.h>
@@ -116,7 +115,7 @@ static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 
     PB = bb;
     if (onetime) {
-	cat_libfile(Output_file, U_lib, ps_txt);
+	cat_preamble(gvc->job, U_lib);
 	epsf_define(Output_file);
  	if (Show_boxes) {
 	    char* args[2];
@@ -193,7 +192,7 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
     fprintf(Output_file, "%d %d %d beginpage\n", page.x, page.y, N_pages);
     if (rot)
         fprintf(Output_file, "grestore\n");
-    fprintf(Output_file, "%.4f set_scale\n", scale);
+    fprintf(Output_file, "%g %g scale\n", scale, scale);
     fprintf(Output_file, "%d %d translate %d rotate\n",
 	    offset.x, offset.y, rot);
     assert(SP == 0);

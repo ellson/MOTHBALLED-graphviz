@@ -33,18 +33,17 @@
 
 #include "gvplugin_render.h"
 #include "graph.h"
+#include "agxbuf.h"
+#include "utils.h"
 #ifdef HAVE_LIBGD
 #include "gd.h"
 #endif
 
-extern void cat_libfile(FILE * ofp, char **arglib, char **stdlib);
 extern void epsf_define(FILE * of);
 extern char *ps_string(char *ins, int latin);
-extern char **ps_txt;
 
 typedef enum { FORMAT_PS, FORMAT_PS2, } format_type;
 
-static box DBB;
 static int isLatin1;
 static char setupLatin1;
 
@@ -72,7 +71,8 @@ static void psgen_end_job(GVJ_t * job)
     fprintf(job->output_file, "%%%%Pages: %d\n", job->common->viewNum);
     if (job->common->show_boxes == NULL)
 	fprintf(job->output_file, "%%%%BoundingBox: %d %d %d %d\n",
-	    DBB.LL.x, DBB.LL.y, DBB.UR.x, DBB.UR.y);
+	    job->boundingBox.LL.x, job->boundingBox.LL.y,
+	    job->boundingBox.UR.x, job->boundingBox.UR.y);
     fprintf(job->output_file, "end\nrestore\n");
     fprintf(job->output_file, "%%%%EOF\n");
 }
@@ -87,7 +87,7 @@ static void psgen_begin_graph(GVJ_t * job)
         if (job->common->show_boxes == NULL)
             fprintf(job->output_file, "%%%%BoundingBox: (atend)\n");
         fprintf(job->output_file, "%%%%EndComments\nsave\n");
-        cat_libfile(job->output_file, job->common->lib, ps_txt);
+        cat_preamble(job, job->common->lib);
         epsf_define(job->output_file);
     }
 #ifdef FIXME
@@ -124,35 +124,9 @@ static void psgen_begin_layer(GVJ_t * job, char *layername, int layerNum, int nu
     fprintf(job->output_file, "%d %d setlayer\n", layerNum, numLayers);
 }
 
-static point sub_points(point p0, point p1)
-{
-    p0.x -= p1.x;
-    p0.y -= p1.y;
-    return p0;
-}
-
 static void psgen_begin_page(GVJ_t * job)
 {
-    point sz;
-    box PB, pbr;
-
-    BF2B(job->boundingBox, PB);
-
-    sz = sub_points(PB.UR, PB.LL);
-    if (job->rotation) {
-	pbr.LL.x = PB.LL.y;
-	pbr.LL.y = PB.LL.x;
-	pbr.UR.x = PB.UR.y;
-	pbr.UR.y = PB.UR.x;
-    }
-    else {
-	pbr = PB;
-    }
-
-    if (job->common->viewNum == 0)
-	DBB = pbr;
-    else
-	EXPANDBB(DBB, pbr);
+    box pbr = job->pageBoundingBox;
 
     fprintf(job->output_file, "%%%%Page: %d %d\n",
 	    job->common->viewNum + 1, job->common->viewNum + 1);
@@ -164,17 +138,10 @@ static void psgen_begin_page(GVJ_t * job)
     if (job->common->show_boxes == NULL)
         fprintf(job->output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
-    fprintf(job->output_file, "gsave %g set_scale\n", job->zoom);
-    if (job->rotation) {
-	fprintf(job->output_file, "%d rotate\n", job->rotation);
-	fprintf(job->output_file, "%g %g translate\n",
-		   -job->pageBox.LL.x + pbr.LL.y / job->zoom,
-		   -job->pageBox.UR.y - pbr.LL.x / job->zoom);
-    }
-    else
-	fprintf(job->output_file, "%g %g translate\n",
-		    -job->pageBox.LL.x + pbr.LL.x / job->zoom,
-		    -job->pageBox.LL.y + pbr.LL.y / job->zoom);
+    fprintf(job->output_file, "gsave %g %g scale %d rotate %g %g translate\n",
+		job->scale.x, job->scale.y,
+		job->rotation,
+		job->translation.x, job->translation.y);
 
 #if 0
     /*  Define the size of the PS canvas  */

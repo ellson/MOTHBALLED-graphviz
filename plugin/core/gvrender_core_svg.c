@@ -415,7 +415,7 @@ static void svggen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
     svggen_printf(job, "<text text-anchor=\"%s\"", anchor);
     if (job->rotation) 
-	svggen_printf(job, " transform=\"rotate(-%d %g %g)\"", job->rotation, p.x, p.y);
+	svggen_printf(job, " transform=\"rotate(%d %g %g)\"", job->rotation, p.x, p.y);
     svggen_printf(job, " x=\"%g\" y=\"%g\"", p.x, p.y);
     svggen_font(job);
     svggen_fputs(job, ">");
@@ -492,13 +492,13 @@ svggen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
     svggen_fputs(job, "<image xlink:href=\"");
     svggen_fputs(job, us->name);
     if (job->rotation) {
-        svggen_printf (job, "\" width=\"%gpx\" height=\"%fpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+        svggen_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
                 b.UR.y - b.LL.y, b.UR.x - b.LL.x, b.LL.x, b.UR.y);
-	svggen_printf (job, " transform=\"rotate(-%d %g %g)\"",
+	svggen_printf (job, " transform=\"rotate(%d %g %g)\"",
 		job->rotation, b.LL.x, b.UR.y);
     }
     else {
-        svggen_printf (job, "\" width=\"%gpx\" height=\"%fpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+        svggen_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
                 b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
     }
     svggen_fputs(job, "/>\n");
