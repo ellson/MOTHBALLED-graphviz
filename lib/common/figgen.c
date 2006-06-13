@@ -45,6 +45,7 @@ static int Rot;
 static point Viewport;
 static pointf GraphFocus;
 static double Zoom;
+static int Depth;
 
 typedef struct context_t {
     unsigned char pencolor_ix, fillcolor_ix;
@@ -196,6 +197,31 @@ static void
 fig_begin_page(graph_t * g, point page, double scale, int rot, point offset)
 {
     Rot = rot;
+    Depth = 2;
+}
+
+static void
+fig_begin_node(Agnode_t *n)
+{
+    Depth = 1;
+}
+
+static void
+fig_end_node(Agnode_t *n)
+{
+    Depth = 2;
+}
+
+static void
+fig_begin_edge(Agedge_t *e)
+{
+    Depth = 0;
+}
+
+static void
+fig_end_edge(Agedge_t *e)
+{
+    Depth = 2;
 }
 
 static void fig_begin_context(void)
@@ -358,7 +384,7 @@ static void fig_textpara(point p, textpara_t * para)
     int object_code = 4;	/* always 4 for text */
     int sub_type = 0;		/* text justification */
     int color = cstk[SP].pencolor_ix;
-    int depth = 0;
+    int depth = Depth;
     int pen_style = 0;		/* not used */
     int font = 0;
     double font_size = figfontsz(cstk[SP].fontsz);
@@ -400,7 +426,7 @@ static void fig_bezier(point * A, int n, int arrow_at_start,
     int thickness = cstk[SP].penwidth;
     int pen_color = cstk[SP].pencolor_ix;
     int fill_color;
-    int depth = 0;
+    int depth = Depth;
     int pen_style = 0;		/* not used */
     int area_fill;
     double style_val = cstk[SP].style_val;
@@ -487,10 +513,7 @@ static void fig_polygon(point * A, int n, int filled)
     int thickness = cstk[SP].penwidth;
     int pen_color = cstk[SP].pencolor_ix;
     int fill_color = cstk[SP].fillcolor_ix;
-    int depth = 1;  /* Apparently all ellipses are drawn before polygons
-		       so if they are at the same depth the background 
-		       polygon will obscure the ellipses.  Fix is to use
-		       depth=1 for polygons and depth=0 for ellipses. */
+    int depth = Depth;
     int pen_style = 0;		/* not used */
     int area_fill = filled ? 20 : -1;
     double style_val = cstk[SP].style_val;
@@ -517,7 +540,7 @@ static void fig_ellipse(point p, int rx, int ry, int filled)
     int thickness = cstk[SP].penwidth;
     int pen_color = cstk[SP].pencolor_ix;
     int fill_color = cstk[SP].fillcolor_ix;
-    int depth = 0;
+    int depth = Depth;
     int pen_style = 0;		/* not used */
     int area_fill = filled ? 20 : -1;
     double style_val = cstk[SP].style_val;
@@ -560,7 +583,7 @@ static void fig_polyline(point * A, int n)
     int thickness = cstk[SP].penwidth;
     int pen_color = cstk[SP].pencolor_ix;
     int fill_color = 0;
-    int depth = 0;
+    int depth = Depth;
     int pen_style = 0;		/* not used */
     int area_fill = 0;
     double style_val = cstk[SP].style_val;
@@ -595,10 +618,10 @@ codegen_t FIG_CodeGen = {
     fig_begin_page, 0,		/* fig_end_page */
     0, /* fig_begin_layer */ 0, /* fig_end_layer */
     0, /* fig_begin_cluster */ 0, /* fig_end_cluster */
-    0, /* fig_begin_nodes */ 0,	/* fig_end_nodes */
-    0, /* fig_begin_edges */ 0,	/* fig_end_edges */
-    0, /* fig_begin_node */  0,	/* fig_end_node */
-    0, /* fig_begin_edge */  0,	/* fig_end_edge */
+    0, /* fig_begin_nodes */  0, /* fig_end_nodes */
+    0, /* fig_begin_edges */  0, /* fig_end_edges */
+    fig_begin_node, fig_end_node,
+    fig_begin_edge, fig_end_edge,
     fig_begin_context, fig_end_context,
     0, /* fig_begin_anchor */ 0,	/* fig_end_anchor */
     fig_set_font, fig_textpara,
