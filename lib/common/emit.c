@@ -434,6 +434,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	}
 	else {
 	    job->translation.x = -job->pageBox.LL.x + job->pageBoundingBox.LL.y / job->scale.y;
+	    job->translation.y = -job->pageBox.UR.y - job->pageBoundingBox.LL.x / job->scale.x;
 	}
     }
     else {

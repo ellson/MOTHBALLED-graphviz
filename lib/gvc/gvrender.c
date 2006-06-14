@@ -1003,15 +1003,8 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, bool filled)
 	EXPANDBP(b, AF[i]);
     }
 
-    if (job->rotation) {
-	iw = (double)us->h;
-	ih = (double)us->w;
-    }
-    else {
-	ih = (double)us->h;
-	iw = (double)us->w;
-    }
-
+    ih = (double)us->h;
+    iw = (double)us->w;
     pw = b.UR.x - b.LL.x;
     ph = b.UR.y - b.LL.y;
     scalex = pw / iw;
