@@ -1119,6 +1119,8 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     node_t *h;
     edge_t *e;
     int i;
+    int* minc;
+    int* minr;
 
     lastn = NULL;
     for (i = 0; i <= tbl->cc; i++) {
@@ -1144,14 +1146,31 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 	    lastn = GD_nlist(rowg) = t;
 	}
     }
+    minr = N_NEW(tbl->rc, int);
+    minc = N_NEW(tbl->cc, int);
     for (cells = tbl->u.n.cells; *cells; cells++) {
+        int x, y, c, r;
+	cp = *cells;
+        x = (cp->data.box.UR.x + (cp->cspan-1))/cp->cspan;
+        for (c = 0; c < cp->cspan; c++)
+          minc[cp->col + c] = MAX(minc[cp->col + c],x);
+        y = (cp->data.box.UR.y + (cp->rspan-1))/cp->rspan;
+        for (r = 0; r < cp->rspan; r++)
+          minr[cp->row + r] = MAX(minr[cp->row + r],y);
+    }
+    for (cells = tbl->u.n.cells; *cells; cells++) {
+        int x, y, c, r;
 	cp = *cells;
 	t = agfindnode(colg, nToName(cp->col));
 	h = agfindnode(colg, nToName(cp->col + cp->cspan));
 	e = agedge(colg, t, h);
-	ED_minlen(e) = cp->data.box.UR.x;
+        x = 0;
+        for (c = 0; c < cp->cspan; c++)
+            x += minc[cp->col + c];
+	ED_minlen(e) = x;
+	/* ED_minlen(e) = cp->data.box.UR.x; */
 #ifdef DEBUG
-	fprintf(stderr, "edge %s -> %s %d\n", t->name, h->name,
+	fprintf(stderr, "col edge %s -> %s %d\n", t->name, h->name,
 		ED_minlen(e));
 #endif
 	elist_append(e, ND_out(t));
@@ -1160,7 +1179,15 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
 	t = agfindnode(rowg, nToName(cp->row));
 	h = agfindnode(rowg, nToName(cp->row + cp->rspan));
 	e = agedge(rowg, t, h);
-	ED_minlen(e) = cp->data.box.UR.y;
+        y = 0;
+        for (r = 0; r < cp->rspan; r++)
+            y += minr[cp->row + r];
+	ED_minlen(e) = y;
+	/* ED_minlen(e) = cp->data.box.UR.y; */
+#ifdef DEBUG
+	fprintf(stderr, "row edge %s -> %s %d\n", t->name, h->name,
+		ED_minlen(e));
+#endif
 	elist_append(e, ND_out(t));
 	elist_append(e, ND_in(h));
     }
@@ -1168,6 +1195,9 @@ void makeGraphs(htmltbl_t * tbl, graph_t * rowg, graph_t * colg)
     /* Make sure that 0 <= 1 <= 2 ...k. This implies graph connected. */
     checkChain(colg);
     checkChain(rowg);
+
+    free (minc);
+    free (minr);
 }
 
 /* setSizes:
