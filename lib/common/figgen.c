@@ -597,11 +597,39 @@ static void fig_polyline(point * A, int n)
 
 static void fig_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
-    static bool onetime = TRUE;
-    if (onetime) {
-	agerr(AGERR, "custom shapes not available with this driver\n");
-	onetime = FALSE;
-    }
+    int object_code = 2;	/* always 2 for polyline */
+    int sub_type = 5;		/* always 5 for image */
+    int line_style = cstk[SP].line_style;	/* solid, dotted, dashed */
+    int thickness = cstk[SP].penwidth;
+    int pen_color = cstk[SP].pencolor_ix;
+    int fill_color = -1;
+    int depth = Depth;
+    int pen_style = -1;		/* not used */
+    int area_fill = 0;
+    double style_val = cstk[SP].style_val;
+    int join_style = 0;
+    int cap_style = 0;
+    int radius = 0;
+    int forward_arrow = 0;
+    int backward_arrow = 0;
+    int npoints = n + 1;
+    int flipped = 0;
+    char *imagefilename = us->name;
+    point a[4];
+
+    a[0] = A[1];  /* image rotation is determined by the bounding polygon */
+    a[1] = A[2];
+    a[2] = A[3];
+    a[3] = A[0];
+
+    fprintf(Output_file,
+	    "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n %d %s\n",
+	    object_code, sub_type, line_style, thickness, pen_color,
+	    fill_color, depth, pen_style, area_fill, style_val, join_style,
+	    cap_style, radius, forward_arrow, backward_arrow, npoints, 
+	    flipped, imagefilename);
+
+    figptarray(a, 4, 1);	/* closed shape */
 }
 
 codegen_t FIG_CodeGen = {
