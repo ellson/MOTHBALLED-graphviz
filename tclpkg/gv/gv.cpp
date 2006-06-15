@@ -18,7 +18,6 @@
 #include "gvc.h"
 
 static GVC_t *gvc;
-static char *empty_string = "";
 
 Agraph_t *graph(char *name)
 {
@@ -128,10 +127,10 @@ static char* myagxget(void *obj, Agsym_t *a)
     char *val, *hs;
 
     if (!obj || !a)
-	return empty_string;
+	return "";
     val = agxget(obj, a->index);
     if (!val)
-	return empty_string;
+	return "";
     if (a->name[0] == 'l' && strcmp(a->name, "label") == 0 && aghtmlstr(val)) {
 	len = strlen(val);
 	hs = (char*)malloc(len + 3);
@@ -187,7 +186,7 @@ char *setv(Agraph_t *g, char *attr, char *val)
 	return NULL;
     a = agfindattr(g->root, attr);
     if (!a)
-        a = agraphattr(g->root, attr, empty_string);
+        a = agraphattr(g->root, attr, "");
     myagxset(g, a, val);
     return val;
 }
@@ -224,7 +223,7 @@ char *setv(Agnode_t *n, char *attr, char *val)
     g = n->graph->root;
     a = agfindattr(g->proto->n, attr);
     if (!a)
-        a = agnodeattr(g, attr, empty_string);
+        a = agnodeattr(g, attr, "");
     myagxset(n, a, val);
     return val;
 }
@@ -261,7 +260,7 @@ char *setv(Agedge_t *e, char *attr, char *val)
     g = e->tail->graph->root;
     a = agfindattr(g->proto->e, attr);
     if (!a)
-        a = agedgeattr(g, attr, empty_string);
+        a = agedgeattr(g, attr, "");
     myagxset(e, a, val);
     return val;
 }
