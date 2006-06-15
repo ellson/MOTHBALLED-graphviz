@@ -276,7 +276,8 @@ static imagerec_t *imagerec_open (char *name)
 	us = &(val->us);
         us->name = name;
         us->w = us->h = 0;
-	us->data = us->datafree = NULL;
+	us->data = NULL;
+	us->datafree = NULL;
 
 	if ((fn = safefile(name))) {
 #ifndef MSWIN32
