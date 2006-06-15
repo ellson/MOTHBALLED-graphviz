@@ -166,7 +166,6 @@ int main(int argc, char **argv)
 	    /* Delete graph */
 	    agclose(G);
 	}
-	assert(0);		/* should never exit loop */
     } else {
 	while ((G = gvNextInputGraph(Gvc))) {
 	    if (prev) {
