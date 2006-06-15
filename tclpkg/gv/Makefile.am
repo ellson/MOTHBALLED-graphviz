@@ -78,6 +78,8 @@ libgv_perl_la_LIBADD = $(BASELIBS) @PERL_LIBS@
 libgv_perl_la_LDFLAGS = 
 gv_perl.cpp $(PERL_hdr): gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp gv.i
+	(echo "#define register" ; cat gv_perl.cpp) > gv_perl.cpp.tmp
+	mv -f gv_perl.cpp.tmp gv_perl.cpp
 
 pkgphpdir = $(pkglibdir)/php
 PHP_hdr = gv.php php_gv.h
