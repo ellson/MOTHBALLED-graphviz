@@ -192,7 +192,7 @@ ps_begin_page(graph_t * g, point page, double scale, int rot, point offset)
     fprintf(Output_file, "%d %d %d beginpage\n", page.x, page.y, N_pages);
     if (rot)
         fprintf(Output_file, "grestore\n");
-    fprintf(Output_file, "%g %g scale\n", scale, scale);
+    fprintf(Output_file, "%g %g set_scale\n", scale, scale);
     fprintf(Output_file, "%d %d translate %d rotate\n",
 	    offset.x, offset.y, rot);
     assert(SP == 0);

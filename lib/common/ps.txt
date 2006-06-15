@@ -38,6 +38,12 @@ cleartomark
 /default-font-family /Times-Roman def
 /coordfont coord-font-family findfont 8 scalefont def
 
+/InvScaleFactor 1.0 def
+/set_scale {
+       exch dup 1 exch div /InvScaleFactor exch def
+       exch scale
+} bind def
+
 % styles
 /solid { [] 0 setdash } bind def
 /dashed { [9 InvScaleFactor mul dup ] 0 setdash } bind def

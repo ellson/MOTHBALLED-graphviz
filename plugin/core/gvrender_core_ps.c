@@ -138,7 +138,7 @@ static void psgen_begin_page(GVJ_t * job)
     if (job->common->show_boxes == NULL)
         fprintf(job->output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
-    fprintf(job->output_file, "gsave %g %g scale %d rotate %g %g translate\n",
+    fprintf(job->output_file, "gsave %g %g set_scale %d rotate %g %g translate\n",
 		job->scale.x, job->scale.y,
 		job->rotation,
 		job->translation.x, job->translation.y);
