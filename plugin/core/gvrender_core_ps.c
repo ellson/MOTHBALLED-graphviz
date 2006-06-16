@@ -363,7 +363,7 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
             adj = -0.5;
             break;
         }
-        fprintf(job->output_file, "%g %g moveto %1f %.1f %s alignedtext\n",
+        fprintf(job->output_file, "%g %g moveto %g %g %s alignedtext\n",
                 p.x, p.y, para->width, adj, str);
     }
 }

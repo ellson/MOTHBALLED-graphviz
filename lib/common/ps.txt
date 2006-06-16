@@ -40,8 +40,8 @@ cleartomark
 
 /InvScaleFactor 1.0 def
 /set_scale {
-       exch dup 1 exch div /InvScaleFactor exch def
-       exch scale
+       dup 1 exch div /InvScaleFactor exch def
+       scale
 } bind def
 
 % styles
