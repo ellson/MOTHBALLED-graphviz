@@ -314,10 +314,20 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 static pointf* gvrender_ptf_A(GVJ_t *job, pointf *af, pointf *AF, int n)
 {
     int i;
+    pointf trans = job->comptrans, scale = job->compscale;
 
-    for (i = 0; i < n; i++)
-	AF[i] = gvrender_ptf(job, af[i]);
-
+    if (job->rotation) {
+        for (i = 0; i < n; i++) {
+	    AF[i].x = -(af[i].y + trans.y) * scale.x;
+	    AF[i].y =  (af[i].x + trans.x) * scale.y;
+	}
+    }
+    else {
+        for (i = 0; i < n; i++) {
+	    AF[i].x =  (af[i].x + trans.x) * scale.x;
+	    AF[i].y =  (af[i].y + trans.y) * scale.y;
+	}
+    }
     return AF;
 }
 
