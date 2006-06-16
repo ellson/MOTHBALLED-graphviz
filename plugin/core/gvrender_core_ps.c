@@ -39,8 +39,18 @@
 #include "gd.h"
 #endif
 
+/*
+ *     J$: added `pdfmark' URL embedding.  PostScript rendered from
+ *         dot files with URL attributes will get active PDF links
+ *         from Adobe's Distiller.
+ */
+#define PDFMAX  14400           /*  Maximum size of PDF page  */
+
 extern void epsf_define(FILE * of);
 extern char *ps_string(char *ins, int latin);
+extern char *strdup_and_subst_graph(char *str, Agraph_t * g);
+extern char *strdup_and_subst_node(char *str, Agnode_t * n);
+extern char *strdup_and_subst_edge(char *str, Agedge_t * e);
 
 typedef enum { FORMAT_PS, FORMAT_PS2, } format_type;
 
@@ -90,21 +100,18 @@ static void psgen_begin_graph(GVJ_t * job)
         cat_preamble(job, job->common->lib);
         epsf_define(job->output_file);
     }
-#ifdef FIXME
-    isLatin1 = (GD_charset(g) == CHAR_LATIN1);
+#if 0
+    // FIXME
+    isLatin1 = (GD_charset(job->g) == CHAR_LATIN1);
     if (isLatin1 && !setupLatin1) {
 	fprintf(job->output_file, "setupLatin1\n");	/* as defined in ps header */
 	setupLatin1 = TRUE;
     }
 #endif
-#ifdef FIXME
     /*  Set base URL for relative links (for Distiller >= 3.0)  */
-    if (((s = agget(g, "href")) && s[0])
-	|| ((s = agget(g, "URL")) && s[0])) {
-	    fprintf(job->output_file, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
-		    "/PUT pdfmark\n", s);
-    }
-#endif
+    if (job->url)
+	fprintf(job->output_file, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
+		"/PUT pdfmark\n", job->url);
 }
 
 static void psgen_end_graph(GVJ_t * job)
@@ -138,23 +145,20 @@ static void psgen_begin_page(GVJ_t * job)
     if (job->common->show_boxes == NULL)
         fprintf(job->output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
-    fprintf(job->output_file, "gsave %g %g set_scale %d rotate %g %g translate\n",
+	fprintf(job->output_file, "gsave %g %g set_scale %d rotate %g %g translate\n",
 		job->scale.x, job->scale.y,
 		job->rotation,
 		job->translation.x, job->translation.y);
 
-#if 0
     /*  Define the size of the PS canvas  */
-    if (Output_lang == PDF) {
-	if (PB.UR.x >= PDFMAX || PB.UR.y >= PDFMAX)
-	    agerr(AGWARN,
-		  "canvas size (%d,%d) exceeds PDF limit (%d)\n"
+    if (job->render.id == FORMAT_PS2) {
+	if (pbr.UR.x >= PDFMAX || pbr.UR.y >= PDFMAX)
+	    job->common->errorfn("canvas size (%d,%d) exceeds PDF limit (%d)\n"
 		  "\t(suggest setting a bounding box size, see dot(1))\n",
-		  PB.UR.x, PB.UR.y, PDFMAX);
+		  pbr.UR.x, pbr.UR.y, PDFMAX);
 	fprintf(job->output_file, "[ /CropBox [%d %d %d %d] /PAGES pdfmark\n",
-		PB.LL.x, PB.LL.y, PB.UR.x, PB.UR.y);
+		pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
     }
-#endif
 }
 
 static void psgen_end_page(GVJ_t * job)
@@ -173,41 +177,85 @@ static void psgen_begin_cluster(GVJ_t * job)
 {
     fprintf(job->output_file, "%% %s\n", job->sg->name);
 
-#if 0
-    /*  Embed information for Distiller to generate hyperlinked PDF  */
-    map_begin_cluster(g);
-#endif
+    if (job->url) {
+        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+		job->url_map_p[0].x, job->url_map_p[0].y,
+		job->url_map_p[1].x, job->url_map_p[1].y);
+        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+		"  /Action << /Subtype /URI /URI %s >>\n"
+		"  /Subtype /Link\n"
+		"/ANN pdfmark\n",
+		ps_string(job->url, isLatin1));
+    }
 }
 
 static void psgen_begin_node(GVJ_t * job)
 {
-#if 0
-    /*  Embed information for Distiller to generate hyperlinked PDF  */
-    map_begin_node(n);
-#endif
+    if (job->url_map_p) {
+        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+		job->url_map_p[0].x, job->url_map_p[0].y,
+		job->url_map_p[1].x, job->url_map_p[1].y);
+        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+		"  /Action << /Subtype /URI /URI %s >>\n"
+		"  /Subtype /Link\n"
+		"/ANN pdfmark\n",
+		ps_string(job->url, isLatin1));
+    }
 }
 
 static void
 psgen_begin_edge(GVJ_t * job)
 {
-#if 0
-    /* Embed information for Distiller, so it can generate hyperactive PDF  */
-    map_begin_edge(e);
-#endif
-}
-
-static void
-psgen_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
-{
-#if 0
-    if (href && href[0]) 
-	fprintf(job->output_file, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
-		"/PUT pdfmark\n", href);
-#endif
-}
-
-static void psgen_end_anchor(GVJ_t * job)
-{
+    if (job->url_map_p) {
+        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+		job->url_map_p[0].x, job->url_map_p[0].y,
+		job->url_map_p[1].x, job->url_map_p[1].y);
+        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+		"  /Action << /Subtype /URI /URI %s >>\n"
+		"  /Subtype /Link\n"
+		"/ANN pdfmark\n",
+		ps_string(job->url, isLatin1));
+    }
+    if (job->tailurl_map_p) {
+        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+		job->tailurl_map_p[0].x, job->tailurl_map_p[0].y,
+		job->tailurl_map_p[1].x, job->tailurl_map_p[1].y);
+        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+		"  /Action << /Subtype /URI /URI %s >>\n"
+		"  /Subtype /Link\n"
+		"/ANN pdfmark\n",
+		ps_string(job->tailurl, isLatin1));
+    }
+    if (job->headurl_map_p) {
+        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+		job->headurl_map_p[0].x, job->headurl_map_p[0].y,
+		job->headurl_map_p[1].x, job->headurl_map_p[1].y);
+        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+		"  /Action << /Subtype /URI /URI %s >>\n"
+		"  /Subtype /Link\n"
+		"/ANN pdfmark\n",
+		ps_string(job->headurl, isLatin1));
+    }
+    if (job->tailendurl_map_p) {
+        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+		job->tailendurl_map_p[0].x, job->tailendurl_map_p[0].y,
+		job->tailendurl_map_p[1].x, job->tailendurl_map_p[1].y);
+        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+		"  /Action << /Subtype /URI /URI %s >>\n"
+		"  /Subtype /Link\n"
+		"/ANN pdfmark\n",
+		ps_string(job->tailurl, isLatin1));
+    }
+    if (job->headendurl_map_p) {
+        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+		job->headendurl_map_p[0].x, job->headendurl_map_p[0].y,
+		job->headendurl_map_p[1].x, job->headendurl_map_p[1].y);
+        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+		"  /Action << /Subtype /URI /URI %s >>\n"
+		"  /Subtype /Link\n"
+		"/ANN pdfmark\n",
+		ps_string(job->headurl, isLatin1));
+    }
 }
 
 static void
@@ -452,14 +500,14 @@ static void writePSBitmap (GVJ_t *job, gdImagePtr im, boxf b)
 static void
 psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
-    int j;
 #ifdef HAVE_LIBGD
     gdImagePtr gd_img = NULL;
 #endif
 #ifdef XXX_PS
+    int j;
     ps_image_t *ps_img = NULL;
-#endif
     point offset;
+#endif
 
     if (!us->f) {
 #ifdef XXX_PS
@@ -581,11 +629,8 @@ psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
     }
 #endif
 
-#if 0
-/* FIXME */
     /* some other type of image */
-    agerr(AGERR, "usershape %s is not supported  in PostScript output\n", us->name);
-#endif
+    job->common->errorfn("usershape %s is not supported  in PostScript output\n", us->name);
 }
 
 static gvrender_engine_t psgen_engine = {
@@ -607,8 +652,8 @@ static gvrender_engine_t psgen_engine = {
     0,				/* psgen_end_node */
     psgen_begin_edge,
     0,				/* psgen_end_edge */
-    psgen_begin_anchor,
-    psgen_end_anchor,
+    0,				/* psgen_begin_anchor */
+    0,				/* psgen_end_anchor */
     psgen_textpara,
     0,				/* psgen_resolve_color */
     psgen_ellipse,
@@ -621,7 +666,9 @@ static gvrender_engine_t psgen_engine = {
 
 static gvrender_features_t psgen_features = {
     GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES
-	| GVRENDER_DOES_TRANSFORM,
+	| GVRENDER_DOES_TRANSFORM
+	| GVRENDER_DOES_MAPS
+	| GVRENDER_DOES_MAP_RECT,
     36,				/* default margin - points */
     {72.,72.},			/* default dpi */
     NULL,			/* knowncolors */

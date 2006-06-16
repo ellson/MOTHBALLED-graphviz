@@ -60,6 +60,14 @@ extern "C" {
 #define GVRENDER_Y_GOES_DOWN (1<<9)
 #define GVRENDER_X11_EVENTS (1<<10)
 #define GVRENDER_DOES_TRANSFORM (1<<11)
+#define GVRENDER_DOES_LABELS (1<<12)
+#define GVRENDER_DOES_MAPS (1<<13)
+#define GVRENDER_DOES_MAP_RECT (1<<14)
+#define GVRENDER_DOES_MAP_ELLIPSE (1<<15)
+#define GVRENDER_DOES_MAP_POLY (1<<16)
+#define GVRENDER_DOES_MAP_BSPLINE (1<<17)
+#define GVRENDER_DOES_TOOLTIPS (1<<18)
+#define GVRENDER_DOES_TARGETS (1<<19)
 
     typedef struct {
 	int flags;
@@ -126,6 +134,42 @@ extern "C" {
 	graph_t *sg;
 	node_t *n;
 	edge_t *e;
+
+	char *url;              /* fully substituted url if GVRENDER_DOES_MAPS */
+	char *tailurl;
+	char *headurl; 
+
+	char *url_map_shapename;/* name of shape if GVRENDER_DOES_MAPS */
+				/* "rect" "circle" "polygon"  depending on GVREMDER DOES_MAP_* capability */
+	int url_map_n;          /* number of points for url map if GVRENDER_DOES_MAPS */
+	pointf * url_map_p;
+
+				/* additonal mapped regions for edges */
+	int url_bsplinemap_n;   /* number of points for url map if GVRENDER_DOES_MAPS && GVRENDER_DOES_MAP_BSPLINES */
+	pointf * url_bsplinemap_p;
+
+	char *tailurl_map_shapename; 
+	int tailurl_map_n;
+	pointf * tailurl_map_p;
+
+	char *headurl_map_shapename;
+	int headurl_map_n;
+	pointf * headurl_map_p;
+
+	char *tailendurl_map_shapename;
+	int tailendurl_map_n;
+	pointf * tailendurl_map_p;
+
+	char *headendurl_map_shapename;
+	int headendurl_map_n;
+	pointf * headendurl_map_p;
+
+	char *tooltip;          /* fully substituted url if GVRENDER_DOES_TOOLTIPS */
+	char *tailtooltip;
+	char *headtooltip; 
+	char *target;           /* fully substituted url if GVRENDER_DOES_TARGETS */
+	char *tailtarget;
+	char *headtarget; 
 
 	char *input_filename;
 	int graph_index;

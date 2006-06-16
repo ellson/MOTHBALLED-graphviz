@@ -34,6 +34,13 @@
 #include "gvcint.h"
 #include "colorprocs.h"
 #include "gvcproc.h"
+#include "htmltable.h"
+
+#include "render.h"
+
+#define FUZZ 3
+
+#define P2RECT(p, pr, sx, sy) (pr[0].x = p.x - sx, pr[0].y = p.y - sy, pr[1].x = p.x + sx, pr[1].y = p.y + sy)
 
 extern int emit_once(char *str);
 
@@ -177,10 +184,6 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 {
     pointf rv;
 
-    if (job->render.features &&
-	    (job->render.features->flags & GVRENDER_DOES_TRANSFORM))
-	return p;
-
     if (job->rotation) {
 	rv.x =  -(p.y + job->comptrans.y) * job->compscale.x;
 	rv.y =  (p.x + job->comptrans.x) * job->compscale.y;
@@ -189,6 +192,19 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 	rv.y =  (p.y + job->comptrans.y) * job->compscale.y;
     }
     return rv;
+}
+
+/* transform an array of n points */
+/*  *AF and *af must be preallocated */
+/*  *AF can be the same as *af for inplace transforms */
+static pointf* gvrender_ptf_A(GVJ_t *job, pointf *af, pointf *AF, int n)
+{
+    int i;
+
+    for (i = 0; i < n; i++)
+	AF[i] = gvrender_ptf(job, af[i]);
+
+    return AF;
 }
 
 static pointf gvrender_pt(GVJ_t *job, point p)
@@ -238,7 +254,7 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 {
     GVC_t *gvc = job->gvc;
     gvrender_engine_t *gvre = job->render.engine;
-    char *str;
+    char *s;
     double sx, sy;
 
     sx = job->width / (job->zoom * 2.);
@@ -265,14 +281,48 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 	job->offset.y = -job->focus.y * job->compscale.y + job->height / 2.;
     }
 
+    job->url = NULL;
+    job->tailurl = NULL;
+    job->headurl = NULL;
+    job->tooltip = NULL;
+    job->tailtooltip = NULL;
+    job->headtooltip = NULL;
+    job->target = NULL;
+    job->tailtarget = NULL;
+    job->headtarget = NULL;
+
+    job->url_map_p = NULL;
+    job->url_map_n = 0;
+
+    job->url_bsplinemap_p = NULL;
+    job->url_bsplinemap_n = 0;
+
+    job->tailurl_map_p = NULL;
+    job->tailurl_map_n = 0;
+
+    job->headurl_map_p = NULL;
+    job->headurl_map_n = 0;
+
+    job->tailendurl_map_p = NULL;
+    job->tailendurl_map_n = 0;
+
+    job->headendurl_map_p = NULL;
+    job->headendurl_map_n = 0;
+
+    if ((job->flags & GVRENDER_DOES_MAPS)
+        && (((s = agget(g, "href")) && s[0])
+	    || ((s = agget(g, "URL")) && s[0]))) {
+        job->url = strdup_and_subst_graph(s, g);
+    } 
+
     if (gvre) {
 	/* render specific init */
 	if (gvre->begin_graph)
 	    gvre->begin_graph(job);
 
 	/* background color */
-	if (((str = agget(g, "bgcolor")) != 0) && str[0]) {
-	    gvrender_resolve_color(job->render.features, str,
+	if (((s = agget(g, "bgcolor")) != 0) && s[0]) {
+	    gvrender_resolve_color(job->render.features, s,
 				   &(gvc->bgcolor));
 	    if (gvre->resolve_color)
 		gvre->resolve_color(job, &(gvc->bgcolor));
@@ -315,6 +365,19 @@ void gvrender_end_graph(GVJ_t * job)
     }
 #endif
     job->sg = NULL;
+    if (job->url) free(job->url);
+    if (job->tailurl) free(job->tailurl);
+    if (job->headurl) free(job->headurl);
+    if (job->tooltip) free(job->tooltip);
+    if (job->tailtooltip) free(job->tailtooltip);
+    if (job->headtooltip) free(job->headtooltip);
+    if (job->target) free(job->target);
+    if (job->tailtarget) free(job->tailtarget);
+    if (job->headtarget) free(job->headtarget);
+    if (job->url_map_p) free(job->url_map_p);
+    if (job->url_bsplinemap_p) free(job->url_bsplinemap_p);
+    if (job->tailurl_map_p) free(job->tailurl_map_p);
+    if (job->headurl_map_p) free(job->headurl_map_p);
 }
 
 void gvrender_begin_page(GVJ_t * job)
@@ -385,14 +448,77 @@ void gvrender_end_layer(GVJ_t * job)
 #endif
 }
 
+static void rect2poly(pointf *p)
+{
+    p[3].x = p[2].x = p[1].x;
+    p[2].y = p[1].y;
+    p[3].y = p[0].y;
+    p[1].x = p[0].x;
+}
+
 void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    char *s;
+    int nump = 0;
+    pointf *p = NULL;
 
     job->sg = sg;  /* set current cluster graph object */
 #ifdef WITH_CODEGENS
     Obj = CLST;
 #endif
+
+    if (job->flags & GVRENDER_DOES_MAPS) {
+	if (job->url) {
+	    free(job->url);
+	    job->url = NULL;
+	}
+        if (((s = agget(sg, "href")) && s[0]) || ((s = agget(sg, "URL")) && s[0]))
+            job->url = strdup_and_subst_graph(s, sg);
+    } 
+    if (job->flags & GVRENDER_DOES_TARGETS) {
+	if (job->target) {
+	    free(job->target);
+	    job->target = NULL;
+	}
+        if ((s = agget(sg, "target")) && s[0])
+            job->target = strdup_and_subst_graph(s, sg);
+    } 
+    if (job->flags & GVRENDER_DOES_TOOLTIPS) {
+	if (job->tooltip) {
+	    free(job->tooltip);
+	    job->tooltip = NULL;
+	}
+        if ((s = agget(sg, "tooltip")) && s[0])
+            job->tooltip = strdup_and_subst_graph(s, sg);
+    } 
+    if (job->flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
+	if (job->url_map_p) {
+	    free(job->url_map_p);
+	    job->url_map_p = NULL;
+	    job->url_map_n = 0;
+	}
+        if (job->flags & (GVRENDER_DOES_MAP_RECT | GVRENDER_DOES_MAP_POLY)) {
+	    if (job->flags & GVRENDER_DOES_MAP_RECT) {
+	        job->url_map_shapename = "rect";
+	        nump = 2;
+	    }
+	    else {
+	        job->url_map_shapename = "poly";
+	        nump = 4;
+	    }
+
+	    p = N_NEW(nump, pointf);
+	    P2PF(GD_bb(sg).LL, p[0]);
+	    P2PF(GD_bb(sg).UR, p[1]);
+
+	    if (! (job->flags & (GVRENDER_DOES_MAP_RECT)))
+		rect2poly(p);
+	}
+	job->url_map_p = p;
+	job->url_map_n = nump;
+    }
+
     job->common->objtype = "cluster";
     if (gvre && gvre->begin_cluster)
 	gvre->begin_cluster(job);
@@ -488,13 +614,289 @@ void gvrender_end_edges(GVJ_t * job)
 #endif
 }
 
+static void doHTMLdata(htmldata_t * dp, point p, void *obj)
+{
+    char *url = NULL, *target = NULL, *title = NULL;
+    pointf p1, p2;
+    int havetitle = 0;
+
+    if ((url = dp->href) && url[0]) {
+        switch (agobjkind(obj)) {
+        case AGGRAPH:
+            url = strdup_and_subst_graph(url, (graph_t *) obj);
+            break;
+        case AGNODE:
+            url = strdup_and_subst_node(url, (node_t *) obj);
+            break;
+        case AGEDGE:
+            url = strdup_and_subst_edge(url, (edge_t *) obj);
+            break;
+        }
+    }
+    target = dp->target;
+    if ((title = dp->title) && title[0]) {
+        havetitle++;
+        switch (agobjkind(obj)) {
+        case AGGRAPH:
+            title = strdup_and_subst_graph(title, (graph_t *) obj);
+            break;
+        case AGNODE:
+            title = strdup_and_subst_node(title, (node_t *) obj);
+            break;
+        case AGEDGE:
+            title = strdup_and_subst_edge(title, (edge_t *) obj);
+            break;
+        }
+    }
+    if (url || title) {
+        p1.x = p.x + dp->box.LL.x;
+        p1.y = p.y + dp->box.LL.y;
+        p2.x = p.x + dp->box.UR.x;
+        p2.y = p.y + dp->box.UR.y;
+//  FIXME
+//        map_output_rect(p1, p2, url, target, "", title);
+    }
+    free(url);
+    free(title);
+}
+
+/* forward declaration */
+static void doHTMLcell(htmlcell_t * cp, point p, void *obj);
+
+static void doHTMLtbl(htmltbl_t * tbl, point p, void *obj)
+{
+    htmlcell_t **cells = tbl->u.n.cells;
+    htmlcell_t *cp;
+
+    while ((cp = *cells++))
+        doHTMLcell(cp, p, obj);
+    if (tbl->data.href)
+        doHTMLdata(&tbl->data, p, obj);
+}
+
+static void doHTMLcell(htmlcell_t * cp, point p, void *obj)
+{
+    if (cp->child.kind == HTML_TBL)
+        doHTMLtbl(cp->child.u.tbl, p, obj);
+    if (cp->data.href)
+        doHTMLdata(&cp->data, p, obj);
+}
+
+static void doHTMLlabel(htmllabel_t * lbl, point p, void *obj)
+{
+    if (lbl->kind == HTML_TBL) {
+        doHTMLtbl(lbl->u.tbl, p, obj);
+    }
+}
+
+/* isRect:
+ *  * isRect function returns true when polygon has
+ *   * regular rectangular shape. Rectangle is regular when
+ *    * it is not skewed and distorted and orientation is almost zero
+ *     */
+static bool isRect(polygon_t * p)
+{
+    return (p->sides == 4 && (ROUND(p->orientation) % 90) == 0
+            && p->distortion == 0.0 && p->skew == 0.0);
+}
+
+/*
+ * isFilled function returns 1 if filled style has been set for node 'n'
+ * otherwise returns 0. it accepts pointer to node_t as an argument
+ */
+static int ifFilled(node_t * n)
+{
+    char *style, *p, **pp;
+    int r = 0;
+    style = late_nnstring(n, N_style, "");
+    if (style[0]) {
+        pp = parse_style(style);
+        while ((p = *pp)) {
+            if (strcmp(p, "filled") == 0)
+                r = 1;
+            pp++;
+        }
+    }
+    return r;
+}
+
+/* pEllipse:
+ * pEllipse function returns 'np' points from the circumference
+ * of ellipse described by radii 'a' and 'b'.
+ * Assumes 'np' is greater than zero.
+ * 'np' should be at least 4 to sample polygon from ellipse
+ */
+static pointf *pEllipse(double a, double b, int np)
+{
+    double theta = 0.0;
+    double deltheta = 2 * M_PI / np;
+    int i;
+    pointf *ps;
+
+    ps = N_NEW(np, pointf);
+    for (i = 0; i < np; i++) {
+        ps[i].x = a * cos(theta);
+        ps[i].y = b * sin(theta);
+        theta += deltheta;
+    }
+    return ps;
+}
+
+
 void gvrender_begin_node(GVJ_t * job, node_t * n)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    int sides, peripheries, i, j, filled = 0, rect = 0, shape, sample = 100, nump = 0;
+    polygon_t *poly = NULL;
+    pointf *vertices, ldimen, *p =  NULL;
+    point coord;
+    char *s;
 
 #ifdef WITH_CODEGENS
     Obj = NODE;
 #endif
+
+    if (job->flags & GVRENDER_DOES_MAPS) {
+	if (job->url) {
+	    free(job->url);
+	    job->url = NULL;
+	}
+        if (((s = agget(n, "href")) && s[0]) || ((s = agget(n, "URL")) && s[0]))
+            job->url = strdup_and_subst_node(s, n);
+    } 
+    if (job->flags & GVRENDER_DOES_TARGETS) {
+	if (job->target) {
+	    free(job->target);
+	    job->target = NULL;
+	}
+        if ((s = agget(n, "target")) && s[0])
+            job->target = strdup_and_subst_node(s, n);
+    } 
+    if (job->flags & GVRENDER_DOES_TOOLTIPS) {
+	if (job->tooltip) {
+	    free(job->tooltip);
+	    job->tooltip = NULL;
+	}
+        if ((s = agget(n, "tooltip")) && s[0])
+            job->tooltip = strdup_and_subst_node(s, n);
+	else
+	    job->tooltip = strdup(ND_label(n)->text);
+    } 
+    if (job->flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
+	if (job->url_map_p) {
+	    free(job->url_map_p);
+	    job->url_map_p = NULL;
+	    job->url_map_n = 0;
+	}
+
+        /* checking shape of node */
+        shape = shapeOf(n);
+        /* node coordinate */
+        coord = ND_coord_i(n);
+        /* checking if filled style has been set for node */
+        filled = ifFilled(n);
+
+        if (shape == SH_POLY || shape == SH_POINT) {
+            poly = (polygon_t *) ND_shape_info(n);
+
+            /* checking if polygon is regular rectangle */
+            if (isRect(poly) && (poly->peripheries || filled))
+                rect = 1;
+        }
+
+        /* When node has polygon shape and requested output supports polygons
+         * we use a polygon to map the clickable region that is a:
+         * circle, ellipse, polygon with n side, or point.
+         * For regular rectangular shape we have use node's bounding box to map clickable region
+         */
+        if (poly && !rect && (job->flags & GVRENDER_DOES_MAP_POLY)) {
+
+            if (poly->sides < 3)
+                sides = 1;
+            else
+                sides = poly->sides;
+
+            if (poly->peripheries < 2)
+                peripheries = 1;
+            else
+                peripheries = poly->peripheries;
+
+            vertices = poly->vertices;
+
+            /* use bounding box of text label for mapping
+	     * when polygon has no peripheries and node is not filled
+	     */
+            if (poly->peripheries == 0 && !filled) {
+                job->url_map_shapename = "rect";
+                nump = 2;
+                p = N_NEW(nump, pointf);
+                ldimen = ND_label(n)->dimen;
+		P2RECT(coord, p, ldimen.x / 2.0, ldimen.y / 2.0);
+            }
+            /* circle or ellipse */
+            else if (poly->sides < 3 && poly->skew == 0.0 && poly->distortion == 0.0) {
+                if (poly->regular) {
+                    job->url_map_shapename = "circle";   /* circle */
+                    nump = 2;              /* center of circle and top right corner of bb */
+                    p = N_NEW(nump, pointf);
+                    p[0].x = coord.x;
+                    p[0].y = coord.y;
+                    p[1].x = coord.x + vertices[peripheries - 1].x;
+                    p[1].y = coord.y + vertices[peripheries - 1].y;
+                }
+                else { /* ellipse is treated as polygon */
+                    job->url_map_shapename = "poly";     /* ellipse */
+                    nump = sample;
+                    p = pEllipse((double)(vertices[peripheries - 1].x),
+					      (double)(vertices[peripheries - 1].y),
+					      nump);
+                    for (i = 0; i < nump; i++) {
+                        p[i].x += coord.x;
+                        p[i].y += coord.y;
+                    }
+                }
+            }
+            /* all other polygonal shape */
+	    else {
+                int offset = (peripheries - 1)*(poly->sides);
+                job->url_map_shapename = "poly";
+                /* distorted or skewed ellipses and circles are polygons with 120
+		 * sides. For mapping we convert them into polygon with sample sides
+		 */
+                if (poly->sides >= sample) {
+                    int delta = poly->sides / sample;
+                    nump = sample;
+                    p = N_NEW(nump, pointf);
+                    for (i = 0, j = 0; j < nump; i += delta, j++) {
+                        p[j].x = coord.x + vertices[i + offset].x;
+                        p[j].y = coord.y + vertices[i + offset].y;
+                    }
+                } else {
+                    nump = sides;
+                    p = N_NEW(nump, pointf);
+                    for (i = 0; i < nump; i++) {
+                        p[i].x = coord.x + vertices[i + offset].x;
+                        p[i].y = coord.y + vertices[i + offset].y;
+                    }
+                }
+            }
+	}
+	else {
+            /* we have to use the node's bounding box to map clickable region
+	     * when requested output format is not capable of polygons.
+	     */
+            job->url_map_shapename = "rect";
+            nump = 2;
+            p = N_NEW(nump, pointf);
+            p[0].x = coord.x - ND_lw_i(n);
+            p[0].y = coord.y - (ND_ht_i(n) / 2);
+            p[1].x = coord.x + ND_rw_i(n);
+            p[1].y = coord.y + (ND_ht_i(n) / 2);
+        }
+	job->url_map_p = p;
+	job->url_map_n = nump;
+    }
+
     job->common->objtype = "node";
     job->n = n; /* set current node */
     if (gvre && gvre->begin_node)
@@ -530,10 +932,237 @@ void gvrender_end_node(GVJ_t * job)
 void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    char *s, *label = NULL, *taillabel = NULL, *headlabel = NULL;
+    textlabel_t *lab = NULL, *tlab = NULL, *hlab = NULL;
+    pointf *p = NULL, *pt = NULL, *ph = NULL, *pte = NULL, *phe = NULL;
+    int nump;
+    bezier bz;
 
 #ifdef WITH_CODEGENS
     Obj = EDGE;
 #endif
+
+    if (job->flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
+
+	if (job->url) {
+	    free(job->url);
+	    job->url = NULL;
+	}
+	if (job->tailurl) {
+	    free(job->tailurl);
+	    job->tailurl = NULL;
+	}
+	if (job->headurl) {
+	    free(job->headurl);
+	    job->headurl = NULL;
+	}
+
+	if ((lab = ED_label(e))) {
+	    if (lab->html)
+		doHTMLlabel(lab->u.html, lab->p, (void *) e);
+		label = lab->text;
+	}
+	taillabel = label;
+	if ((tlab = ED_tail_label(e))) {
+	    if (tlab->html)
+		doHTMLlabel(tlab->u.html, tlab->p, (void *) e);
+	    taillabel = tlab->text;
+	}
+	headlabel = label;
+	if ((hlab = ED_head_label(e))) {
+	    if (hlab->html)
+		doHTMLlabel(hlab->u.html, hlab->p, (void *) e);
+	    headlabel = hlab->text;
+	}
+
+        if (((s = agget(e, "href")) && s[0]) || ((s = agget(e, "URL")) && s[0]))
+            job->url = strdup_and_subst_edge(s, e);
+	if (((s = agget(e, "tailhref")) && s[0]) || ((s = agget(e, "tailURL")) && s[0]))
+            job->tailurl = strdup_and_subst_edge(s, e);
+	else if (job->url)
+	    job->tailurl = strdup(job->url);
+	if (((s = agget(e, "headhref")) && s[0]) || ((s = agget(e, "headURL")) && s[0]))
+            job->headurl = strdup_and_subst_edge(s, e);
+	else if (job->url)
+	    job->headurl = strdup(job->url);
+
+    } 
+    if (job->flags & GVRENDER_DOES_TARGETS) {
+
+	if (job->target) {
+	    free(job->target);
+	    job->target = NULL;
+	}
+	if (job->tailtarget) {
+	    free(job->tailtarget);
+	    job->tailtarget = NULL;
+	}
+	if (job->headtarget) {
+	    free(job->headtarget);
+	    job->headtarget = NULL;
+	}
+
+        if ((s = agget(e, "target")) && s[0])
+            job->target = strdup_and_subst_edge(s, e);
+        if ((s = agget(e, "tailtarget")) && s[0])
+            job->tailtarget = strdup_and_subst_edge(s, e);
+	else if (job->target)
+	    job->tailtarget = strdup(job->target);
+        if ((s = agget(e, "headtarget")) && s[0])
+            job->headtarget = strdup_and_subst_edge(s, e);
+	else if (job->target)
+	    job->headtarget = strdup(job->target);
+    } 
+    if (job->flags & GVRENDER_DOES_TOOLTIPS) {
+
+	if (job->tooltip) {
+	    free(job->tooltip);
+	    job->tooltip = NULL;
+	}
+	if (job->tailtooltip) {
+	    free(job->tailtooltip);
+	    job->tailtooltip = NULL;
+	}
+	if (job->headtooltip) {
+	    free(job->headtooltip);
+	    job->headtooltip = NULL;
+	}
+
+        if ((s = agget(e, "tooltip")) && s[0])
+            job->tooltip = strdup_and_subst_edge(s, e);
+	else if (label)
+	    job->tooltip = strdup(label);
+        if ((s = agget(e, "tailtooltip")) && s[0])
+            job->tailtooltip = strdup_and_subst_edge(s, e);
+	else if (taillabel)
+	    job->tailtooltip = strdup(taillabel);
+        if ((s = agget(e, "headtooltip")) && s[0])
+            job->headtooltip = strdup_and_subst_edge(s, e);
+	else if (headlabel)
+	    job->headtooltip = strdup(headlabel);
+    } 
+    if (job->flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
+
+	if (job->url_map_p) {
+	    free(job->url_map_p);
+	    job->url_map_p = NULL;
+	    job->url_map_n = 0;
+	}
+	if (job->url_bsplinemap_p) {
+	    free(job->url_bsplinemap_p);
+	    job->url_bsplinemap_p = NULL;
+	    job->url_bsplinemap_n = 0;
+	}
+	if (job->tailurl_map_p) {
+	    free(job->tailurl_map_p);
+	    job->tailurl_map_p = NULL;
+	    job->tailurl_map_n = 0;
+	}
+	if (job->headurl_map_p) {
+	    free(job->headurl_map_p);
+	    job->headurl_map_p = NULL;
+	    job->headurl_map_n = 0;
+	}
+	if (job->tailendurl_map_p) {
+	    free(job->tailendurl_map_p);
+	    job->tailendurl_map_p = NULL;
+	    job->tailendurl_map_n = 0;
+	}
+	if (job->headendurl_map_p) {
+	    free(job->headendurl_map_p);
+	    job->headendurl_map_p = NULL;
+	    job->headendurl_map_n = 0;
+	}
+
+        if (job->flags & (GVRENDER_DOES_MAP_RECT | GVRENDER_DOES_MAP_POLY)) {
+            if (job->flags & GVRENDER_DOES_MAP_RECT) {
+	        job->url_map_shapename = job->tailurl_map_shapename = job->headurl_map_shapename = job->tailendurl_map_shapename = job->headendurl_map_shapename = "rect";
+	        nump = 2;
+	    }
+	    else { /* GVRENDER_DOES_MAP_POLY */
+	        job->url_map_shapename = job->tailurl_map_shapename = job->headurl_map_shapename = job->tailendurl_map_shapename = job->headendurl_map_shapename = "poly";
+	        nump = 4;
+	    }
+
+	    if (lab && (job->url || job->tooltip)) {
+		job->url_map_n = nump;
+	        p = N_NEW(nump, pointf);
+		P2RECT(lab->p, p, lab->dimen.x / 2., lab->dimen.y / 2.);
+	    }
+
+	    if (tlab && (job->tailurl || job->tailtooltip)) {
+		job->tailurl_map_n = nump;
+	        pt = N_NEW(nump, pointf);
+		P2RECT(tlab->p, pt, tlab->dimen.x / 2., tlab->dimen.y / 2.);
+	    }
+
+	    if (hlab && (job->headurl || job->headtooltip)) {
+		job->headurl_map_n = nump;
+	        ph = N_NEW(nump, pointf);
+		P2RECT(hlab->p, ph, hlab->dimen.x / 2., hlab->dimen.y / 2.);
+	    }
+
+           /* process intersecion with tail node */
+            if (ED_spl(e) && (job->tailurl || job->tailtooltip)) {
+		job->tailendurl_map_n = nump;
+	        pte = N_NEW(nump, pointf);
+                bz = ED_spl(e)->list[0];
+                if (bz.sflag) {
+                    /* Arrow at start of splines */
+		    P2RECT(bz.sp, pte, FUZZ, FUZZ);
+                } else {
+                    /* No arrow at start of splines */
+		    P2RECT(bz.list[0], pte, FUZZ, FUZZ);
+                }
+            }
+        
+            /* process intersection with head node */
+            if (ED_spl(e) && (job->headurl || job->headtooltip)) {
+		job->headendurl_map_n = nump;
+	        phe = N_NEW(nump, pointf);
+                bz = ED_spl(e)->list[ED_spl(e)->size - 1];
+                if (bz.eflag) {
+                    /* Arrow at end of splines */
+		    P2RECT(bz.ep, phe, FUZZ, FUZZ);
+                } else {
+                    /* No arrow at end of splines */
+		    P2RECT(bz.list[bz.size - 1], phe, FUZZ, FUZZ);
+                }
+            }
+	    
+	    if (! (job->flags & GVRENDER_DOES_TRANSFORM)) {
+		if (p) gvrender_ptf_A(job, p, p, 2);
+		if (pt) gvrender_ptf_A(job, pt, pt, 2);
+		if (ph) gvrender_ptf_A(job, ph, ph, 2);
+		if (pte) gvrender_ptf_A(job, pte, pte, 2);
+		if (phe) gvrender_ptf_A(job, phe, phe, 2);
+	    }
+	    if (! (job->flags & GVRENDER_DOES_MAP_RECT)) {
+		if (p) rect2poly(p);
+		if (pt) rect2poly(pt);
+		if (ph) rect2poly(ph);
+		if (pte) rect2poly(pte);
+		if (phe) rect2poly(phe);
+	    }
+
+	    if (ED_spl(e) && (job->url || job->tooltip) && (job->flags & GVRENDER_DOES_MAP_POLY)) {
+		int i, ns;
+		splines *spl;
+
+		spl = ED_spl(e);
+		ns = spl->size; /* number of splines */
+		for (i = 0; i < ns; i++) {
+//		    map_output_bspline (spl->list+i, url, target, tooltip);
+		}
+	    }
+	}
+	job->url_map_p = p;
+	job->tailurl_map_p = pt;
+	job->headurl_map_p = ph;
+	job->tailendurl_map_p = pte;
+	job->headendurl_map_p = phe;
+    }
+
     job->common->objtype = "edge";
     job->e = e; /* set current edge */
     if (gvre && gvre->begin_edge)
@@ -661,11 +1290,16 @@ void gvrender_set_font(GVJ_t * job, char *fontname, double fontsize)
 void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    pointf PF;
 
     if (para->str && para->str[0]) {
+	if (job->flags & GVRENDER_DOES_TRANSFORM)
+	    PF = p;
+	else
+	    PF = gvrender_ptf(job, p);
 	if (gvre && gvre->textpara) {
 	    if (job->style->pen != PEN_NONE) {
-		gvre->textpara(job, gvrender_ptf(job, p), para);
+		gvre->textpara(job, PF, para);
 	    }
 	}
 #ifdef WITH_CODEGENS
@@ -780,7 +1414,7 @@ void gvrender_ellipse(GVJ_t * job, pointf pf, double rx, double ry, bool filled)
 	    af[1].x = pf.x + rx;
 	    af[1].y = pf.y + ry;
 
-	    if (! (job->render.features && (job->render.features->flags & GVRENDER_DOES_TRANSFORM))) {
+	    if (! (job->flags & GVRENDER_DOES_TRANSFORM)) {
 	        af[0] = gvrender_ptf(job, af[0]);
 	        af[1] = gvrender_ptf(job, af[1]);
             }
@@ -808,7 +1442,7 @@ void gvrender_polygon(GVJ_t * job, pointf * af, int n, bool filled)
 
     if (gvre && gvre->polygon) {
 	if (job->style->pen != PEN_NONE) {
-	    if (job->render.features && (job->render.features->flags & GVRENDER_DOES_TRANSFORM))
+	    if (job->flags & GVRENDER_DOES_TRANSFORM)
 		gvre->polygon(job, af, n, filled);
 	    else {
 	        if (sizeAF < n) {
@@ -858,7 +1492,7 @@ void gvrender_beziercurve(GVJ_t * job, pointf * af, int n,
 
     if (gvre && gvre->beziercurve) {
 	if (job->style->pen != PEN_NONE) {
-	    if (job->render.features && (job->render.features->flags & GVRENDER_DOES_TRANSFORM))
+	    if (job->flags & GVRENDER_DOES_TRANSFORM)
 		gvre->beziercurve(job, af, n, arrow_at_start, arrow_at_end,filled);
 	    else {
 	        int i;
@@ -896,7 +1530,7 @@ void gvrender_polylinef(GVJ_t * job, pointf * af, int n)
 
     if (gvre && gvre->polyline) {
 	if (job->style->pen != PEN_NONE) {
-	    if (job->render.features && (job->render.features->flags & GVRENDER_DOES_TRANSFORM))
+	    if (job->flags & GVRENDER_DOES_TRANSFORM)
 	        gvre->polyline(job, af, n);
             else {
 	        if (sizeAF < n) {
@@ -936,7 +1570,7 @@ void gvrender_polyline(GVJ_t * job, point * a, int n)
 		sizeAF = n+10;
 		AF = grealloc(AF, sizeAF * sizeof(pointf));
 	    }
-	    if (job->render.features && (job->render.features->flags & GVRENDER_DOES_TRANSFORM)) {
+	    if (job->flags & GVRENDER_DOES_TRANSFORM) {
 	        for (i = 0; i < n; i++) {
 		    P2PF(a[i],AF[i]);
 		}
@@ -986,21 +1620,27 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, bool filled)
     double scalex, scaley;  /* scale factors */
     boxf b;		    /* target box */
     int i;
+    pointf *af;
 
     if (! (us = gvusershape_find(name)))
         return;
 
-    if (sizeAF < n) {
-	sizeAF = n+10;
-	AF = grealloc(AF, sizeAF * sizeof(pointf));
+    if (job->flags & GVRENDER_DOES_TRANSFORM)
+	af = a;
+    else {
+        if (sizeAF < n) {
+	    sizeAF = n+10;
+	    AF = grealloc(AF, sizeAF * sizeof(pointf));
+        }
+        for (i = 0; i < n; i++)
+	    AF[i] = gvrender_ptf(job, a[i]);
+	af = AF;
     }
-    for (i = 0; i < n; i++)
-	AF[i] = gvrender_ptf(job, a[i]);
 
     /* compute bb of polygon */
-    b.LL = b.UR = AF[0];
+    b.LL = b.UR = af[0];
     for (i = 1; i < n; i++) {
-	EXPANDBP(b, AF[i]);
+	EXPANDBP(b, af[i]);
     }
 
     ih = (double)us->h;

@@ -322,7 +322,7 @@ map_output_poly(node_t * n, char *url,
     } else {
 	/* we have used node's bounding box to map clickable region  
 	 * when requested output format is neither imap nor cmapx and for all 
-	 * node shapes other than polygon ( except regular ractangle polygon ) 
+	 * node shapes other than polygon ( except regular rectangle polygon ) 
 	 */
 	shapename = "rect";
 	nump = 2;
