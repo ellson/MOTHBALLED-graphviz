@@ -18,10 +18,12 @@
 
 extern gvplugin_installed_t gvrender_core_ps_types;
 extern gvplugin_installed_t gvrender_core_svg_types;
+extern gvplugin_installed_t gvrender_core_map_types;
 
 static gvplugin_api_t apis[] = {
     {API_render, &gvrender_core_ps_types},
     {API_render, &gvrender_core_svg_types},
+    {API_render, &gvrender_core_map_types},
     {(api_t)0, 0},
 };
 

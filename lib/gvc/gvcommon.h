@@ -33,8 +33,6 @@ extern "C" {
 	/* rendering state */
 	int viewNum;     /* current view - 1 based count of views,
 			    all pages in all layers */
-	char *objtype;   /* "graph", "cluster", "node", or "edge" */
-
     } GVCOMMON_t;
 
 #ifdef __cplusplus

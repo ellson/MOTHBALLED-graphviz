@@ -48,9 +48,6 @@
 
 extern void epsf_define(FILE * of);
 extern char *ps_string(char *ins, int latin);
-extern char *strdup_and_subst_graph(char *str, Agraph_t * g);
-extern char *strdup_and_subst_node(char *str, Agnode_t * n);
-extern char *strdup_and_subst_edge(char *str, Agedge_t * e);
 
 typedef enum { FORMAT_PS, FORMAT_PS2, } format_type;
 
@@ -89,10 +86,12 @@ static void psgen_end_job(GVJ_t * job)
 
 static void psgen_begin_graph(GVJ_t * job)
 {
+    obj_state_t *obj = job->obj;
+
     setupLatin1 = FALSE;
 
     if (job->common->viewNum == 0) {
-        fprintf(job->output_file, "%%%%Title: %s\n", job->g->name);
+        fprintf(job->output_file, "%%%%Title: %s\n", obj->g->name);
         fprintf(job->output_file, "%%%%Pages: (atend)\n");
         if (job->common->show_boxes == NULL)
             fprintf(job->output_file, "%%%%BoundingBox: (atend)\n");
@@ -102,16 +101,16 @@ static void psgen_begin_graph(GVJ_t * job)
     }
 #if 0
     // FIXME
-    isLatin1 = (GD_charset(job->g) == CHAR_LATIN1);
+    isLatin1 = (GD_charset(obj->g) == CHAR_LATIN1);
     if (isLatin1 && !setupLatin1) {
 	fprintf(job->output_file, "setupLatin1\n");	/* as defined in ps header */
 	setupLatin1 = TRUE;
     }
 #endif
     /*  Set base URL for relative links (for Distiller >= 3.0)  */
-    if (job->url)
+    if (obj->url)
 	fprintf(job->output_file, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
-		"/PUT pdfmark\n", job->url);
+		"/PUT pdfmark\n", obj->url);
 }
 
 static void psgen_end_graph(GVJ_t * job)
@@ -175,86 +174,92 @@ static void psgen_end_page(GVJ_t * job)
 
 static void psgen_begin_cluster(GVJ_t * job)
 {
-    fprintf(job->output_file, "%% %s\n", job->sg->name);
+    obj_state_t *obj = job->obj;
 
-    if (job->url) {
+    fprintf(job->output_file, "%% %s\n", obj->sg->name);
+
+    if (obj->url) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
-		job->url_map_p[0].x, job->url_map_p[0].y,
-		job->url_map_p[1].x, job->url_map_p[1].y);
+		obj->url_map_p[0].x, obj->url_map_p[0].y,
+		obj->url_map_p[1].x, obj->url_map_p[1].y);
         fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-		ps_string(job->url, isLatin1));
+		ps_string(obj->url, isLatin1));
     }
 }
 
 static void psgen_begin_node(GVJ_t * job)
 {
-    if (job->url_map_p) {
+    obj_state_t *obj = job->obj;
+
+    if (obj->url_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
-		job->url_map_p[0].x, job->url_map_p[0].y,
-		job->url_map_p[1].x, job->url_map_p[1].y);
+		obj->url_map_p[0].x, obj->url_map_p[0].y,
+		obj->url_map_p[1].x, obj->url_map_p[1].y);
         fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-		ps_string(job->url, isLatin1));
+		ps_string(obj->url, isLatin1));
     }
 }
 
 static void
 psgen_begin_edge(GVJ_t * job)
 {
-    if (job->url_map_p) {
+    obj_state_t *obj = job->obj;
+
+    if (obj->url_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
-		job->url_map_p[0].x, job->url_map_p[0].y,
-		job->url_map_p[1].x, job->url_map_p[1].y);
+		obj->url_map_p[0].x, obj->url_map_p[0].y,
+		obj->url_map_p[1].x, obj->url_map_p[1].y);
         fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-		ps_string(job->url, isLatin1));
+		ps_string(obj->url, isLatin1));
     }
-    if (job->tailurl_map_p) {
+    if (obj->tailurl_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
-		job->tailurl_map_p[0].x, job->tailurl_map_p[0].y,
-		job->tailurl_map_p[1].x, job->tailurl_map_p[1].y);
+		obj->tailurl_map_p[0].x, obj->tailurl_map_p[0].y,
+		obj->tailurl_map_p[1].x, obj->tailurl_map_p[1].y);
         fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-		ps_string(job->tailurl, isLatin1));
+		ps_string(obj->tailurl, isLatin1));
     }
-    if (job->headurl_map_p) {
+    if (obj->headurl_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
-		job->headurl_map_p[0].x, job->headurl_map_p[0].y,
-		job->headurl_map_p[1].x, job->headurl_map_p[1].y);
+		obj->headurl_map_p[0].x, obj->headurl_map_p[0].y,
+		obj->headurl_map_p[1].x, obj->headurl_map_p[1].y);
         fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-		ps_string(job->headurl, isLatin1));
+		ps_string(obj->headurl, isLatin1));
     }
-    if (job->tailendurl_map_p) {
+    if (obj->tailendurl_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
-		job->tailendurl_map_p[0].x, job->tailendurl_map_p[0].y,
-		job->tailendurl_map_p[1].x, job->tailendurl_map_p[1].y);
+		obj->tailendurl_map_p[0].x, obj->tailendurl_map_p[0].y,
+		obj->tailendurl_map_p[1].x, obj->tailendurl_map_p[1].y);
         fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-		ps_string(job->tailurl, isLatin1));
+		ps_string(obj->tailurl, isLatin1));
     }
-    if (job->headendurl_map_p) {
+    if (obj->headendurl_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
-		job->headendurl_map_p[0].x, job->headendurl_map_p[0].y,
-		job->headendurl_map_p[1].x, job->headendurl_map_p[1].y);
+		obj->headendurl_map_p[0].x, obj->headendurl_map_p[0].y,
+		obj->headendurl_map_p[1].x, obj->headendurl_map_p[1].y);
         fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
-		ps_string(job->headurl, isLatin1));
+		ps_string(obj->headurl, isLatin1));
     }
 }
 
@@ -288,12 +293,24 @@ ps_set_pen_style(GVJ_t *job)
 
 static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 {
+    char *objtype;
+
     if (color) {
+	if (job->obj->g)
+	   objtype = "graph";
+	else if (job->obj->sg)
+	   objtype = "cluster";
+	else if (job->obj->n)
+	   objtype = "node";
+	else if (job->obj->e)
+	   objtype = "edge";
+	else
+	   objtype = "sethsb";
 	if ( last_color.u.HSV[0] != color->u.HSV[0]
 	  || last_color.u.HSV[1] != color->u.HSV[1]
 	  || last_color.u.HSV[2] != color->u.HSV[2]) {
 	    fprintf(job->output_file, "%.3f %.3f %.3f %scolor\n",
-		color->u.HSV[0], color->u.HSV[1], color->u.HSV[2], job->common->objtype);
+		color->u.HSV[0], color->u.HSV[1], color->u.HSV[2], objtype);
 	    last_color.u.HSV[0] = color->u.HSV[0];
 	    last_color.u.HSV[1] = color->u.HSV[1];
 	    last_color.u.HSV[2] = color->u.HSV[2];

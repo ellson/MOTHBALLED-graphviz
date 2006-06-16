@@ -124,53 +124,67 @@ extern "C" {
 	gvevent_key_callback_t callback;
     } gvevent_key_binding_t;
 
+    typedef struct obj_state_s obj_state_t;
+
+    struct obj_state_s {
+	obj_state_t *parent;
+
+	graph_t *g;    /* this object - only one of *g, *sg, *n, *e should be non-NULL */
+	graph_t *sg;  
+	node_t *n;
+	edge_t *e;
+
+	/* fully substituted text strings */
+	char *label;
+	char *taillabel;
+	char *headlabel; 
+
+	char *url;              /* if GVRENDER_DOES_MAPS */
+	char *tailurl;
+	char *headurl; 
+
+	char *tooltip;          /* if GVRENDER_DOES_TOOLTIPS */
+	char *tailtooltip;
+	char *headtooltip; 
+
+	char *target;           /* if GVRENDER_DOES_TARGETS */
+	char *tailtarget;
+	char *headtarget; 
+
+	/* primary mapped region - node shape, edge label */
+	char *url_map_shapename;        /* "rect", "poly", "circle" */
+	int url_map_n;                  /* number of points for url map if GVRENDER_DOES_MAPS */
+	pointf *url_map_p;
+
+	/* additonal mapped regions for edges */
+	int url_bsplinemap_poly_n;      /* number of polygons in url bspline map
+					 if GVRENDER_DOES_MAPS && GVRENDER_DOES_MAP_BSPLINES */
+	int *url_bsplinemap_n;          /* array of url_bsplinemap_poly_n ints 
+					 of number of points in each polygon */
+	pointf *url_bsplinemap_p;       /* all the polygon points */
+
+	int tailurl_map_n;              /* tail label */
+	pointf *tailurl_map_p;
+
+	int headurl_map_n;		/* head label */
+	pointf *headurl_map_p;
+
+	int tailendurl_map_n;           /* tail end intersection with node */
+	pointf *tailendurl_map_p;
+
+	int headendurl_map_n;           /* head end intersection with node */
+	pointf *headendurl_map_p;
+    };
+
     struct GVJ_s {
 	GVC_t *gvc;		/* parent gvc */
 	GVJ_t *next;		/* linked list of jobs */
 	GVJ_t *next_active;	/* linked list of active jobs (e.g. multiple windows) */
 
 	GVCOMMON_t *common;
-	graph_t *g;		/* current state */
-	graph_t *sg;
-	node_t *n;
-	edge_t *e;
 
-	char *url;              /* fully substituted url if GVRENDER_DOES_MAPS */
-	char *tailurl;
-	char *headurl; 
-
-	char *url_map_shapename;/* name of shape if GVRENDER_DOES_MAPS */
-				/* "rect" "circle" "polygon"  depending on GVREMDER DOES_MAP_* capability */
-	int url_map_n;          /* number of points for url map if GVRENDER_DOES_MAPS */
-	pointf * url_map_p;
-
-				/* additonal mapped regions for edges */
-	int url_bsplinemap_n;   /* number of points for url map if GVRENDER_DOES_MAPS && GVRENDER_DOES_MAP_BSPLINES */
-	pointf * url_bsplinemap_p;
-
-	char *tailurl_map_shapename; 
-	int tailurl_map_n;
-	pointf * tailurl_map_p;
-
-	char *headurl_map_shapename;
-	int headurl_map_n;
-	pointf * headurl_map_p;
-
-	char *tailendurl_map_shapename;
-	int tailendurl_map_n;
-	pointf * tailendurl_map_p;
-
-	char *headendurl_map_shapename;
-	int headendurl_map_n;
-	pointf * headendurl_map_p;
-
-	char *tooltip;          /* fully substituted url if GVRENDER_DOES_TOOLTIPS */
-	char *tailtooltip;
-	char *headtooltip; 
-	char *target;           /* fully substituted url if GVRENDER_DOES_TARGETS */
-	char *tailtarget;
-	char *headtarget; 
-
+	obj_state_t *obj;	/* objects can be nested (at least clusters can)
+					so keep object state on a stack */
 	char *input_filename;
 	int graph_index;
 

@@ -243,10 +243,12 @@ static void svggen_begin_job(GVJ_t * job)
 
 static void svggen_begin_graph(GVJ_t * job)
 {
+    obj_state_t *obj = job->obj;
+
     svggen_fputs(job, "<!--");
-    if (job->g->name[0]) {
+    if (obj->g->name[0]) {
         svggen_fputs(job, " Title: ");
-	svggen_fputs(job, xml_string(job->g->name));
+	svggen_fputs(job, xml_string(obj->g->name));
     }
     svggen_printf(job, " Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
 
@@ -302,6 +304,8 @@ static void svggen_end_layer(GVJ_t * job)
 
 static void svggen_begin_page(GVJ_t * job)
 {
+    obj_state_t *obj = job->obj;
+
     /* its really just a page of the graph, but its still a graph,
      * and it is the entire graph if we're not currently paging */
     svggen_printf(job, "<g id=\"graph%d\" class=\"graph\"",
@@ -312,9 +316,9 @@ static void svggen_begin_page(GVJ_t * job)
     svggen_fputs(job, " style=\"font-family:");
     svggen_fputs(job, job->style->fontfam);
     svggen_printf(job, ";font-size:%.2f;\">\n", job->style->fontsz);
-    if (job->g->name[0]) {
+    if (obj->g->name[0]) {
         svggen_fputs(job, "<title>");
-        svggen_fputs(job, xml_string(job->g->name));
+        svggen_fputs(job, xml_string(obj->g->name));
         svggen_fputs(job, "</title>\n");
     }
 }
@@ -326,10 +330,12 @@ static void svggen_end_page(GVJ_t * job)
 
 static void svggen_begin_cluster(GVJ_t * job)
 {
+    obj_state_t *obj = job->obj;
+
     svggen_printf(job, "<g id=\"cluster%ld\" class=\"cluster\">",
-	    job->sg->meta_node->id);
+	    obj->sg->meta_node->id);
     svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(job->sg->name));
+    svggen_fputs(job, xml_string(obj->sg->name));
     svggen_fputs(job, "</title>\n");
 }
 
@@ -340,9 +346,11 @@ static void svggen_end_cluster(GVJ_t * job)
 
 static void svggen_begin_node(GVJ_t * job)
 {
-    svggen_printf(job, "<g id=\"node%ld\" class=\"node\">", job->n->id);
+    obj_state_t *obj = job->obj;
+
+    svggen_printf(job, "<g id=\"node%ld\" class=\"node\">", obj->n->id);
     svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(job->n->name));
+    svggen_fputs(job, xml_string(obj->n->name));
     svggen_fputs(job, "</title>\n");
 }
 
@@ -354,19 +362,20 @@ static void svggen_end_node(GVJ_t * job)
 static void
 svggen_begin_edge(GVJ_t * job)
 {
+    obj_state_t *obj = job->obj;
     char *edgeop;
 
-    svggen_printf(job, "<g id=\"edge%ld\" class=\"edge\">", job->e->id);
-    if (job->e->tail->graph->root->kind & AGFLAG_DIRECTED)
+    svggen_printf(job, "<g id=\"edge%ld\" class=\"edge\">", obj->e->id);
+    if (obj->e->tail->graph->root->kind & AGFLAG_DIRECTED)
 	edgeop = "&#45;&gt;";
     else
 	edgeop = "&#45;&#45;";
     svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(job->e->tail->name));
+    svggen_fputs(job, xml_string(obj->e->tail->name));
     svggen_fputs(job, edgeop);
     /* can't do this in single svggen_printf because
      * xml_string's buffer gets reused. */
-    svggen_fputs(job, xml_string(job->e->head->name));
+    svggen_fputs(job, xml_string(obj->e->head->name));
     svggen_fputs(job, "</title>\n");
 }
 
