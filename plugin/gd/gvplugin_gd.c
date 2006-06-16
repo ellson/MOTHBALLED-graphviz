@@ -17,13 +17,13 @@
 #include "gvplugin.h"
 
 extern gvplugin_installed_t gvrender_gd_types;
-extern gvplugin_installed_t gvrender_gd_ps_types;
 extern gvplugin_installed_t gvtextlayout_gd_types;
+extern gvplugin_installed_t gvloadimage_gd_types;
 
 static gvplugin_api_t apis[] = {
     {API_render, &gvrender_gd_types},
-    {API_render, &gvrender_gd_ps_types},
     {API_textlayout, &gvtextlayout_gd_types},
+    {API_loadimage, &gvloadimage_gd_types},
     {(api_t)0, 0},
 };
 
