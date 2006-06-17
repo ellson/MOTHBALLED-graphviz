@@ -444,11 +444,10 @@ static void psgen_comment(GVJ_t * job, char *str)
     fprintf(job->output_file, "%% %s\n", str);
 }
 
+#if 0
 static void ps_freeimage_ps (void *data)
 {
-#if 0
-    free (data);
-#endif
+//    free (data);
 }
 
 /* ps_usershape:
@@ -463,14 +462,11 @@ static void ps_freeimage_ps (void *data)
 static void
 psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
-#ifdef XXX_PS
     int j;
     ps_image_t *ps_img = NULL;
     point offset;
-#endif
 
     if (!us->f) {
-#ifdef XXX_PS
         if (find_user_shape(us->name)) {
             if (filled) {
                 ps_begin_context();
@@ -489,15 +485,12 @@ psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
             fprintf(job->output_file, "]  %d false %s\n", n, us->name);
         }
         else {   /* name not find by find_ser_shape */  }
-#endif
         return;
     }
 
     if (us->data) {
         if (us->datafree == ps_freeimage_ps) {
-#ifdef XXX_PS
             ps_img = (ps_image_t *)(us->data);  /* use cached data */
-#endif
         }
         else {
             us->datafree(us->data);        /* free incompatible cache data */
@@ -505,31 +498,21 @@ psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
         }
     }
 
-#ifdef XXX_PS
     if (!ps_img) { /* read file into cache */
-#else
-    if (false) { /* nothing to do */
-#endif
         fseek(us->f, 0, SEEK_SET);
         switch (us->type) {
-#ifdef XXX_PS
             case FT_PS:
             case FT_EPS:
                 ps_img = ps_usershape_to_image(us->name);
                 break;
-#endif
             default:
                 break;
         }
-#ifdef XXX_PS
         if (ps_img) {
             us->data = (void*)ps_img;
             us->datafree = ps_freeimage_ps;
         }
-#endif
     }
-
-#ifdef XXX_PS
     if (ps_img) {
         ps_begin_context();
         offset.x = -ps_img->origin.x - (ps_img->size.x) / 2;
@@ -544,11 +527,11 @@ psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
         ps_end_context();
         return;
     }
-#endif
 
     /* some other type of image */
     job->common->errorfn("usershape %s is not supported  in PostScript output\n", us->name);
 }
+#endif
 
 static gvrender_engine_t psgen_engine = {
     psgen_begin_job,

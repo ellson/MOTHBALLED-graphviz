@@ -481,10 +481,6 @@ gvplugin_installed_t gvrender_pango_types[] = {
     {FORMAT_SVG, "svg", -10, &cairogen_engine, &cairogen_features_ps},
 #endif
 #if 0
-#ifdef CAIRO_HAS_XLIB_SURFACE
-    {FORMAT_GTK, "gtk", 0, &cairogen_engine, &cairogen_features_gtk},
-    {FORMAT_XLIB, "xlib", 0, &cairogen_engine, &cairogen_features_x},
-#endif
 #ifdef CAIRO_HAS_XCB_SURFACE
     {FORMAT_XCB, "xcb", 0, &cairogen_engine, &cairogen_features_x},
 #endif
@@ -499,6 +495,10 @@ gvplugin_installed_t gvrender_pango_types[] = {
 #endif
 #ifdef CAIRO_HAS_WIN32_SURFACE
     {FORMAT_WIN32, "win32", 0, &cairogen_engine, &cairogen_features_x},
+#endif
+#ifdef CAIRO_HAS_XLIB_SURFACE
+    {FORMAT_GTK, "gtk", 0, &cairogen_engine, &cairogen_features_gtk},
+    {FORMAT_XLIB, "xlib", 0, &cairogen_engine, &cairogen_features_x},
 #endif
 #endif
 #endif
