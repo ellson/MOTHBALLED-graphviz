@@ -23,6 +23,7 @@
  * Needs to be fixed before layout engines can be plugins.
  */
 
+#include <ctype.h>
 #include "render.h"
 #include "tlayout.h"
 
@@ -51,7 +52,7 @@ neato_extra_args(GVC_t *gvc, int argc, char** argv)
     arg = argv[i];
     if (arg && *arg == '-') {
       switch (arg[1]) {
-      case 'x' : Reduce = TRUE; break;
+      case 'x' : Reduce = true; break;
       case 'n':
         if (arg[2]) {
           Nop = atoi(arg+2);
@@ -91,7 +92,7 @@ memtest_extra_args(GVC_t *gvc, int argc, char** argv)
     arg = argv[i];
     if (arg && *arg == '-') {
       switch (arg[1]) {
-      case 'm' : MemTest = TRUE; break;
+      case 'm' : MemTest = true; break;
       default :
         cnt++;
         if (*p != arg) *p = arg;
@@ -121,7 +122,13 @@ config_extra_args(GVC_t *gvc, int argc, char** argv)
     arg = argv[i];
     if (arg && *arg == '-') {
       switch (arg[1]) {
-      case 'c' : Config = TRUE; break;
+      case 'v':
+	gvc->common.verbose = 1;
+	if (isdigit(arg[2]))
+	  gvc->common.verbose = atoi(&arg[2]);
+        break;
+      case 'c' :
+          gvc->common.config = true; break;
       default :
         cnt++;
         if (*p != arg) *p = arg;

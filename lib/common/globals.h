@@ -65,7 +65,7 @@ extern "C" {
 #endif
 
     EXTERN unsigned char Verbose;
-    EXTERN bool Reduce, MemTest, Config;
+    EXTERN bool Reduce, MemTest;
     EXTERN char *HTTPServerEnVar;
     EXTERN char *Output_file_name;
     EXTERN int graphviz_errors;

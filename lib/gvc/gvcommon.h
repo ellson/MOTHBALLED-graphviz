@@ -26,6 +26,7 @@ extern "C" {
 	char **info;
 	char *cmdname;
 	int verbose;
+	bool config;
         void (*errorfn) (char *fmt, ...);
 	char **show_boxes; /* emit code for correct box coordinates */
 	char **lib; 

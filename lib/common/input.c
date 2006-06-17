@@ -61,10 +61,11 @@ static char *memtestFlags = "(additional options for memtest)  [-m]\n";
 static char *memtestItems = "\n\
  -m          - Memory test (Observe no growth with top. Kill when done.)\n";
 
-static char *configFlags = "(additional options for config)  [-c]\n";
+static char *configFlags = "(additional options for config)  [-cv]\n";
 static char *configItems = "\n\
  -c          - Configure plugins (Writes $prefix/lib/graphviz/config \n\
-               with available plugin information.  Needs write priviledge.)\n";
+               with available plugin information.  Needs write priviledge.)\n\
+ -v          - Enable verbose mode \n";
 
 void dotneato_usage(int exval)
 {
@@ -170,14 +171,18 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     Gvfilepath = getenv("GV_FILE_PATH");
 
     /* configure for available plugins and codegens */
-    gvconfig(gvc, Config);
-    if (Config)
+    gvconfig(gvc, gvc->common.config);
+    if (gvc->common.config)
 	exit (0);
 
-    CmdName = gvc->common.cmdname = dotneato_basename(argv[0]);
+    gvc->common.cmdname = dotneato_basename(argv[0]);
     i = gvlayout_select(gvc, gvc->common.cmdname);
     if (i == NO_SUPPORT)
 	gvlayout_select(gvc, "dot");
+
+    /* feed the globals */
+    Verbose = gvc->common.verbose;
+    CmdName = gvc->common.cmdname;
 
     aginit();
     nfiles = 0;
@@ -286,10 +291,12 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    PSinputscale = POINTS_PER_INCH;
 		break;
 	    case 'v':
-		gvc->common.verbose = 1;
+/* already processed in args.c:config_extra_args() */
+#if 0
+		Verbose = 1;
 		if (isdigit(*(unsigned char *) rest))
-		    gvc->common.verbose = atoi(rest);
-		Verbose = gvc->common.verbose;
+		    Verbose = atoi(rest);
+#endif
 		break;
 	    case 'x':
 		Reduce = TRUE;

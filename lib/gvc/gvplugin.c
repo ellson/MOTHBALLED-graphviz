@@ -98,7 +98,7 @@ bool gvplugin_install(GVC_t * gvc, api_t api,
     return TRUE;
 }
 
-gvplugin_library_t *gvplugin_library_load(char *path)
+gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
 {
 #ifdef ENABLE_LTDL
     lt_dlhandle hndl;
@@ -140,6 +140,8 @@ gvplugin_library_t *gvplugin_library_load(char *path)
         agerr(AGWARN, (char*)lt_dlerror());
         return NULL;
     }
+    if (gvc->common.verbose >= 2)
+	fprintf(stderr, "Loading %s\n", p);
 
     s = strrchr(p, '/');
     len = strlen(s); 
@@ -211,7 +213,7 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
     rv = *pnext;
     if ((*pnext) && (*pnext)->typeptr == NULL) {
         rv = NULL;
-	library = gvplugin_library_load((*pnext)->path);
+	library = gvplugin_library_load(gvc, (*pnext)->path);
 	if (library) {
 
 	    /*

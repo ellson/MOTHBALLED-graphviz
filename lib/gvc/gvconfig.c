@@ -336,7 +336,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 	for (i = 0; i < globbuf.gl_pathc; i++) {
 	    re_status = regexec(&re, globbuf.gl_pathv[i], (size_t) 0, NULL, 0);
 	    if (re_status == 0) {
-		library = gvplugin_library_load(globbuf.gl_pathv[i]);
+		library = gvplugin_library_load(gvc, globbuf.gl_pathv[i]);
 		if (library) {
 		    gvconfig_plugin_install_from_library(gvc, globbuf.gl_pathv[i], library);
 		    path = strrchr(globbuf.gl_pathv[i],'/');
