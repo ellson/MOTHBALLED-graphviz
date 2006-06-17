@@ -1951,6 +1951,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	&& strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
             gvdevice_finalize(gvc); /* finalize previous jobs */
             gvc->active_jobs = NULL; /* clear active list */
+	    gvc->common.viewNum = 0;
 	    prev_job = NULL;
         }
 
