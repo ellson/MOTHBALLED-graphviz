@@ -112,8 +112,7 @@ extern "C" {
     extern void gvrender_box(GVJ_t * job, boxf BF, bool filled);
     extern void gvrender_beziercurve(GVJ_t * job, pointf * AF, int n,
 			int arrow_at_start, int arrow_at_end, bool filled);
-    extern void gvrender_polyline(GVJ_t * job, point * A, int n);
-    extern void gvrender_polylinef(GVJ_t * job, pointf * AF, int n);
+    extern void gvrender_polyline(GVJ_t * job, pointf * AF, int n);
     extern void gvrender_comment(GVJ_t * job, char *str);
     extern void gvrender_usershape(GVJ_t * job, char *name, pointf * AF, int n, bool filled);
 

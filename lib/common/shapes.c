@@ -320,20 +320,21 @@ static int stylenode(GVJ_t * job, node_t * n)
 static void Mcircle_hack(GVJ_t * job, node_t * n)
 {
     double x, y;
-    point A[2], p;
+    pointf AF[2], p, coord;
 
     y = .7500;
     x = .6614;			/* x^2 + y^2 = 1.0 */
     p.y = y * ND_ht_i(n) / 2.0;
     p.x = ND_rw_i(n) * x;	/* assume node is symmetric */
 
-    A[0] = add_points(p, ND_coord_i(n));
-    A[1].y = A[0].y;
-    A[1].x = A[0].x - 2 * p.x;
-    gvrender_polyline(job, A, 2);
-    A[0].y -= 2 * p.y;
-    A[1].y = A[0].y;
-    gvrender_polyline(job, A, 2);
+    P2PF(ND_coord_i(n), coord);
+    AF[0] = add_pointfs(p, coord);
+    AF[1].y = AF[0].y;
+    AF[1].x = AF[0].x - 2 * p.x;
+    gvrender_polyline(job, AF, 2);
+    AF[0].y -= 2 * p.y;
+    AF[1].y = AF[0].y;
+    gvrender_polyline(job, AF, 2);
 }
 
 static pointf interpolate(double t, pointf p0, pointf p1)
@@ -401,7 +402,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	}
 	gvrender_set_pencolor(job, penc);
 	for (seg = 0; seg < sides; seg++) {
-	    gvrender_polylinef(job, B + 4 * seg + 1, 2);
+	    gvrender_polyline(job, B + 4 * seg + 1, 2);
 	    gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE, FALSE);
 	}
     } else {			/* diagonals are weird.  rewrite someday. */
@@ -413,11 +414,11 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 #ifdef NOTDEF
 	    C[0] = B[3 * seg];
 	    C[1] = B[3 * seg + 3];
-	    gvrender_polylinef(job, C, 2);
+	    gvrender_polyline(job, C, 2);
 #endif
 	    C[0] = B[3 * seg + 2];
 	    C[1] = B[3 * seg + 4];
-	    gvrender_polylinef(job, C, 2);
+	    gvrender_polyline(job, C, 2);
 	}
     }
     free(B);
@@ -1825,7 +1826,7 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
 {
     int i;
     double cx, cy;
-    point A[2];
+    pointf AF[2], coord;
 
     if (f->lp) {
 	cx = (f->b.LL.x + f->b.UR.x) / 2.0 + ND_coord_i(n).x;
@@ -1837,17 +1838,18 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
     for (i = 0; i < f->n_flds; i++) {
 	if (i > 0) {
 	    if (f->LR) {
-		A[0] = f->fld[i]->b.LL;
-		A[1].x = A[0].x;
-		A[1].y = f->fld[i]->b.UR.y;
+		P2PF(f->fld[i]->b.LL, AF[0]);
+		AF[1].x = AF[0].x;
+		AF[1].y = (double)(f->fld[i]->b.UR.y);
 	    } else {
-		A[1] = f->fld[i]->b.UR;
-		A[0].x = f->fld[i]->b.LL.x;
-		A[0].y = A[1].y;
+		P2PF(f->fld[i]->b.UR, AF[1]);
+		AF[0].x = (double)(f->fld[i]->b.LL.x);
+		AF[0].y = AF[1].y;
 	    }
-	    A[0] = add_points(A[0], ND_coord_i(n));
-	    A[1] = add_points(A[1], ND_coord_i(n));
-	    gvrender_polyline(job, A, 2);
+	    P2PF(ND_coord_i(n), coord);
+	    AF[0] = add_pointfs(AF[0], coord);
+	    AF[1] = add_pointfs(AF[1], coord);
+	    gvrender_polyline(job, AF, 2);
 	}
 	gen_fields(job, n, f->fld[i]);
     }

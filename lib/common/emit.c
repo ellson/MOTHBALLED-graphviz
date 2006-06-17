@@ -709,7 +709,8 @@ static pointf computeoffset_qr(pointf p, pointf q, pointf r, pointf s,
 
 static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
 {
-    point sz, A[3];
+    pointf sz, AF[3];
+    point p;
     unsigned char *s;
 
     for (s = (unsigned char *) (lp->text); *s; s++) {
@@ -719,10 +720,11 @@ static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
     if (*s == 0)
 	return;
 
-    PF2P(lp->dimen, sz);
-    A[0] = pointof(lp->p.x + sz.x / 2, lp->p.y - sz.y / 2);
-    A[1] = pointof(A[0].x - sz.x, A[0].y);
-    A[2] = dotneato_closest(spl, lp->p);
+    sz = lp->dimen;
+    AF[0] = pointfof((double)(lp->p.x) + sz.x / 2., (double)(lp->p.y) - sz.y / 2.);
+    AF[1] = pointfof(AF[0].x - sz.x, AF[0].y);
+    p = dotneato_closest(spl, lp->p);
+    P2PF(p,AF[2]);
     /* Don't use edge style to draw attachment */
     gvrender_set_style(job, job->gvc->defaultlinestyle);
     /* Use font color to draw attachment
@@ -730,7 +732,7 @@ static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
        - defaults to black for html-like labels
      */
     gvrender_set_pencolor(job, lp->fontcolor);
-    gvrender_polyline(job, A, 3);
+    gvrender_polyline(job, AF, 3);
 }
 
 #if 0

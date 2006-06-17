@@ -25,34 +25,47 @@ extern "C" {
 #endif
 
 extern point pointof(int, int);
+extern pointf pointfof(double, double);
+
 extern pointf cvt2ptf(point);
 extern point cvt2pt(pointf);
+
 extern point add_points(point, point);
 extern pointf add_pointfs(pointf, pointf);
+
 extern point sub_points(point, point);
 extern pointf sub_pointfs(pointf, pointf);
+
 extern point exch_xy(point p);
 extern pointf exch_xyf(pointf p);
 
 extern box boxof(int llx, int lly, int urx, int ury);
 extern boxf boxfof(double llx, double lly, double urx, double ury);
+
 extern box mkbox(point, point);
 extern boxf mkboxf(pointf, pointf);
+
 extern box box_bb(box, box);
 extern boxf boxf_bb(boxf, boxf);
+
 extern box box_intersect(box, box);
 extern boxf boxf_intersect(boxf, boxf);
+
 extern bool box_overlap(box, box);
 extern bool boxf_overlap(boxf, boxf);
+
 extern bool box_contains(box, box);
 extern bool boxf_contains(boxf, boxf);
+
 extern box flip_rec_box(box b, point p);
 
 extern double ptToLine2 (pointf l1, pointf l2, pointf p);
+
 extern int lineToBox(pointf p1, pointf p2, boxf b);
 
 extern point ccwrotatep(point p, int ccwrot);
 extern pointf ccwrotatepf(pointf p, int ccwrot);
+
 extern point cwrotatep(point p, int cwrot);
 extern pointf cwrotatepf(pointf p, int cwrot);
 

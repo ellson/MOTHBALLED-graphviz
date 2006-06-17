@@ -331,14 +331,6 @@ static pointf* gvrender_ptf_A(GVJ_t *job, pointf *af, pointf *AF, int n)
     return AF;
 }
 
-static pointf gvrender_pt(GVJ_t *job, point p)
-{
-    pointf pf;
-
-    P2PF(p, pf);
-    return gvrender_ptf(job, pf);
-}
-
 static int gvrender_comparestr(const void *s1, const void *s2)
 {
     return strcmp(*(char **) s1, *(char **) s2);
@@ -1647,7 +1639,7 @@ void gvrender_beziercurve(GVJ_t * job, pointf * af, int n,
 #endif
 }
 
-void gvrender_polylinef(GVJ_t * job, pointf * af, int n)
+void gvrender_polyline(GVJ_t * job, pointf * af, int n)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
@@ -1678,39 +1670,6 @@ void gvrender_polylinef(GVJ_t * job, pointf * af, int n)
 	    PF2P(af[i], A[i]);
 	if (cg && cg->polyline)
 	    cg->polyline(A, n);
-    }
-#endif
-}
-
-void gvrender_polyline(GVJ_t * job, point * a, int n)
-{
-    gvrender_engine_t *gvre = job->render.engine;
-
-    if (gvre && gvre->polyline) {
-	if (job->style->pen != PEN_NONE) {
-	    int i;
-	    if (sizeAF < n) {
-		sizeAF = n+10;
-		AF = grealloc(AF, sizeAF * sizeof(pointf));
-	    }
-	    if (job->flags & GVRENDER_DOES_TRANSFORM) {
-	        for (i = 0; i < n; i++) {
-		    P2PF(a[i],AF[i]);
-		}
-	    }
-	    else {
-	        for (i = 0; i < n; i++)
-		    AF[i] = gvrender_pt(job, a[i]);
-	    }
-	    gvre->polyline(job, AF, n);
-	}
-    }
-#ifdef WITH_CODEGENS
-    else {
-	codegen_t *cg = job->codegen;
-
-	if (cg && cg->polyline)
-	    cg->polyline(a, n);
     }
 #endif
 }

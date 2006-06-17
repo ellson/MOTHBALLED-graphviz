@@ -387,7 +387,7 @@ static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, int flag)
     gvrender_polygon(job, a, 4, 1);
     a[0] = p;
     a[1] = q;
-    gvrender_polylinef(job, a, 2);
+    gvrender_polyline(job, a, 2);
 }
 
 static void arrow_type_box(GVJ_t * job, pointf p, pointf u, int flag)
@@ -418,7 +418,7 @@ static void arrow_type_box(GVJ_t * job, pointf p, pointf u, int flag)
     gvrender_polygon(job, a, 4, !(flag & ARR_MOD_OPEN));
     a[0] = m;
     a[1] = q;
-    gvrender_polylinef(job, a, 2);
+    gvrender_polyline(job, a, 2);
 }
 
 static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, int flag)

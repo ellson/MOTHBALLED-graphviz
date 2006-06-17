@@ -178,7 +178,7 @@ static void psgen_begin_cluster(GVJ_t * job)
 
     fprintf(job->output_file, "%% %s\n", obj->sg->name);
 
-    if (obj->url) {
+    if (obj->url &&  obj->url_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
 		obj->url_map_p[1].x, obj->url_map_p[1].y);
@@ -194,7 +194,7 @@ static void psgen_begin_node(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    if (obj->url) {
+    if (obj->url && obj->url_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
 		obj->url_map_p[1].x, obj->url_map_p[1].y);
@@ -211,7 +211,7 @@ psgen_begin_edge(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    if (obj->url) {
+    if (obj->url && obj->url_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
 		obj->url_map_p[1].x, obj->url_map_p[1].y);
@@ -221,7 +221,7 @@ psgen_begin_edge(GVJ_t * job)
 		"/ANN pdfmark\n",
 		ps_string(obj->url, isLatin1));
     }
-    if (obj->tailurl) {
+    if (obj->tailurl && obj->tailurl_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->tailurl_map_p[0].x, obj->tailurl_map_p[0].y,
 		obj->tailurl_map_p[1].x, obj->tailurl_map_p[1].y);
@@ -231,7 +231,7 @@ psgen_begin_edge(GVJ_t * job)
 		"/ANN pdfmark\n",
 		ps_string(obj->tailurl, isLatin1));
     }
-    if (obj->headurl) {
+    if (obj->headurl && obj->headurl_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->headurl_map_p[0].x, obj->headurl_map_p[0].y,
 		obj->headurl_map_p[1].x, obj->headurl_map_p[1].y);
@@ -241,7 +241,7 @@ psgen_begin_edge(GVJ_t * job)
 		"/ANN pdfmark\n",
 		ps_string(obj->headurl, isLatin1));
     }
-    if (obj->tailurl) {
+    if (obj->tailurl && obj->tailendurl_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->tailendurl_map_p[0].x, obj->tailendurl_map_p[0].y,
 		obj->tailendurl_map_p[1].x, obj->tailendurl_map_p[1].y);
@@ -251,7 +251,7 @@ psgen_begin_edge(GVJ_t * job)
 		"/ANN pdfmark\n",
 		ps_string(obj->tailurl, isLatin1));
     }
-    if (obj->headurl) {
+    if (obj->headurl && obj->headendurl_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->headendurl_map_p[0].x, obj->headendurl_map_p[0].y,
 		obj->headendurl_map_p[1].x, obj->headendurl_map_p[1].y);

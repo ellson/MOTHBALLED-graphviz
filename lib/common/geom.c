@@ -27,6 +27,13 @@ point pointof(int x, int y)
     return rv;
 }
 
+pointf pointfof(double x, double y)
+{
+    pointf rv;
+    rv.x = x, rv.y = y;
+    return rv;
+}
+
 point cvt2pt(pointf p)
 {
     point rv;
