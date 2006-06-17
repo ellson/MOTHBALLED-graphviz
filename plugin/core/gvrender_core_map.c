@@ -179,6 +179,8 @@ static gvrender_features_t mapgen_features_poly = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     0,				/* color_type */
+    NULL,                       /* device */
+    NULL,                       /* gvloadimage target for usershapes */
 };
 
 static gvrender_features_t mapgen_features = {
@@ -189,6 +191,8 @@ static gvrender_features_t mapgen_features = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     0,				/* color_type */
+    NULL,                       /* device */
+    NULL,                       /* gvloadimage target for usershapes */
 };
 
 gvplugin_installed_t gvrender_core_map_types[] = {

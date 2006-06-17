@@ -16,15 +16,14 @@ LIBS = $(LIBLTDL) $(SOCKET_LIBS)
 
 pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h gvcint.h \
 	gvcommon.h gvplugin_render.h gvplugin_layout.h \
-	gvplugin_textlayout.h gvplugin_device.h \
-	dot_builtins.c \
-	demand_loading.c no_demand_loading.c
+	gvplugin_textlayout.h gvplugin_device.h gvplugin_loadimage.h \
+	dot_builtins.c demand_loading.c no_demand_loading.c
 noinst_HEADERS = gvcproc.h
 noinst_LTLIBRARIES = libgvc_C.la
 pkglib_LTLIBRARIES = libgvc.la libgvc_builtins.la
 pkgconfig_DATA = libgvc.pc libgvc_builtins.pc
 
-libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvcontext.c gvjobs.c \
+libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvloadimage.c gvcontext.c gvjobs.c \
 	gvevent.c gvplugin.c gvconfig.c gvtextlayout.c gvusershape.c gvc.c
 libgvc_C_la_LIBADD = $(top_builddir)/lib/common/libcommon_C.la
 

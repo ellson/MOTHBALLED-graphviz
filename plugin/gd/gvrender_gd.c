@@ -674,66 +674,6 @@ static void gdgen_polyline(GVJ_t * job, pointf * A, int n)
 	gdImageDestroy(brush);
 }
 
-static void gdgen_freeimage(void *data)
-{
-    gdImageDestroy((gdImagePtr)data);
-}
-
-static void
-gdgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
-{
-    gdImagePtr im3, im2 = NULL, im = (gdImagePtr) job->surface;
-
-    if (us->data) {
-	if (us->datafree == gdgen_freeimage)
-             im2 = (gdImagePtr)(us->data);  /* use cached data */
-	else {
-	     us->datafree(us->data);        /* free incompatible cache data */
-	     us->data = NULL;
-	}
-    }
-    if (!im2) { /* read file into cache */
-	fseek(us->f, 0, SEEK_SET);
-	switch (us->type) {
-#ifdef HAVE_GD_PNG
-	    case FT_PNG:
-		im2 = gdImageCreateFromPng(us->f);
-		break;
-#endif
-#ifdef HAVE_GD_GIF
-	    case FT_GIF:
-		im2 = gdImageCreateFromGif(us->f);
-		break;
-#endif
-#ifdef HAVE_GD_JPEG
-	    case FT_JPEG:
-		im2 = gdImageCreateFromJpeg(us->f);
-		break;
-#endif
-	    default:
-		im2 = NULL;
-	}
-        if (im2) {
-	    us->data = (void*)im2;
-	    us->datafree = gdgen_freeimage;
-	}
-    }
-    if (im2) {
-        if (job->rotation) {
-            im3 = gdImageCreate(im2->sy, im2->sx); /* scratch image for rotation */
-            gdImageCopyRotated(im3, im2, im3->sx / 2., im3->sy / 2.,
-                0, 0, im2->sx, im2->sy, job->rotation);
-            gdImageCopyResized(im, im3, ROUND(b.LL.x), ROUND(b.LL.y), 0, 0,
-                ROUND(b.UR.y - b.LL.y), ROUND(b.UR.x - b.LL.x), im3->sx, im3->sy);
-            gdImageDestroy(im3);
-        }
-        else {
-            gdImageCopyResized(im, im2, ROUND(b.LL.x), ROUND(b.LL.y), 0, 0,
-                ROUND(b.UR.x - b.LL.x), ROUND(b.UR.y - b.LL.y), im2->sx, im2->sy);
-        }
-    }
-}
-
 static gvrender_engine_t gdgen_engine = {
     0,				/* gdgen_begin_job */
     0,				/* gdgen_end_job */
@@ -762,7 +702,7 @@ static gvrender_engine_t gdgen_engine = {
     gdgen_bezier,
     gdgen_polyline,
     0,				/* gdgen_comment */
-    gdgen_usershape
+    0				/* gdgen_usershape */ /* provided by gvloadimage */
 };
 
 static gvrender_features_t gdgen_features_tc = {
@@ -774,6 +714,7 @@ static gvrender_features_t gdgen_features_tc = {
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     NULL,			/* device */
+    "gd",			/* gvloadimage target for usershapes */
 };
 
 static gvrender_features_t gdgen_features = {
@@ -784,6 +725,7 @@ static gvrender_features_t gdgen_features = {
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     NULL,			/* device */
+    "gd",			/* gvloadimage target for usershapes */
 };
 
 #endif

@@ -115,15 +115,6 @@ writer (void *closure, const unsigned char *data, unsigned int length)
     return CAIRO_STATUS_WRITE_ERROR;
 }
 
-static cairo_status_t
-reader (void *closure, unsigned char *data, unsigned int length)
-{
-    if (length == fread(data, 1, length, (FILE *)closure)
-     || feof((FILE *)closure))
-	return CAIRO_STATUS_SUCCESS;
-    return CAIRO_STATUS_READ_ERROR;
-}
-
 static void cairogen_begin_page(GVJ_t * job)
 {
     cairo_t *cr;
@@ -387,53 +378,6 @@ cairogen_polyline(GVJ_t * job, pointf * A, int n)
     cairo_stroke(cr);
 }
 
-static void cairogen_freeimage(void *data)
-{
-    cairo_destroy((cairo_t*)data);
-}
-
-static void
-cairogen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
-{
-    cairo_t *cr = (cairo_t *) job->surface; /* target context */
-    cairo_surface_t *surface1 = NULL; /* source surface */
-
-    if (us->data) {
-        if (us->datafree == cairogen_freeimage)
-    	     surface1 = (cairo_surface_t*)(us->data); /* use cached data */
-        else {
-             us->datafree(us->data);        /* free incompatible cache data */
-             us->data = NULL;
-        }
-    }
-    if (!surface1) { /* read file into cache */
-        fseek(us->f, 0, SEEK_SET);
-        switch (us->type) {
-#ifdef CAIRO_HAS_PNG_FUNCTIONS
-            case FT_PNG:
-                surface1 = cairo_image_surface_create_from_png_stream(reader, us->f);
-		cairo_surface_reference(surface1);
-                break;
-#endif
-            default:
-                surface1 = NULL;
-        }
-        if (surface1) {
-            us->data = (void*)surface1;
-            us->datafree = cairogen_freeimage;
-        }
-    }
-    if (surface1) {
-	cairo_save(cr);
-	cairo_translate(cr, ROUND(b.LL.x), ROUND(-b.UR.y));
-	cairo_scale(cr, (b.UR.x - b.LL.x) / us->w,
-			(b.UR.y - b.LL.y) / us->h);
-	cairo_set_source_surface (cr, surface1, 0, 0);
-	cairo_paint (cr);
-	cairo_restore(cr);
-    }
-}
-
 static gvrender_engine_t cairogen_engine = {
     0,				/* cairogen_begin_job */
     0,				/* cairogen_end_job */
@@ -462,7 +406,7 @@ static gvrender_engine_t cairogen_engine = {
     cairogen_bezier,
     cairogen_polyline,
     0,				/* cairogen_comment */
-    cairogen_usershape
+    0				/* cairogen_usershape */ /* provided by gvloadimage */
 };
 
 static gvrender_features_t cairogen_features = {
@@ -475,6 +419,7 @@ static gvrender_features_t cairogen_features = {
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
     0,				/* device */
+    "cairo",			/* gvloadimage target for usershapes */
 };
 
 static gvrender_features_t cairogen_features_ps = {
@@ -487,6 +432,7 @@ static gvrender_features_t cairogen_features_ps = {
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
     0,				/* device */
+    "cairo",			/* gvloadimage target for usershapes */
 };
 
 #if 0
@@ -501,6 +447,7 @@ static gvrender_features_t cairogen_features_x = {
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
     "xlib",			/* device */
+    "cairo",			/* gvloadimage target for usershapes */
 };
 
 static gvrender_features_t cairogen_features_gtk = {
@@ -514,6 +461,7 @@ static gvrender_features_t cairogen_features_gtk = {
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
     "gtk",			/* device */
+    "cairo",			/* gvloadimage target for usershapes */
 };
 #endif
 #endif

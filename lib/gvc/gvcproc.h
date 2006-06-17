@@ -59,6 +59,9 @@ extern "C" {
     extern int gvtextlayout_select(GVC_t * gvc);
     extern bool gvtextlayout(GVC_t *gvc, textpara_t *para, char **fontpath);
 
+/* loadimage */
+    extern void gvloadimage(GVJ_t *job, usershape_t *us, boxf b, bool filled, char *target);
+    
 /* usershapes */
     extern point gvusershape_size(graph_t *g, char *name);
     extern usershape_t *gvusershape_find(char *name);

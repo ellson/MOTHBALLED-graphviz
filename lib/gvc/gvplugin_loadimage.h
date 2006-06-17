@@ -14,17 +14,22 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#ifndef GVPLUGIN_IMAGELOAD_H
+#define GVPLUGIN_IMAGELOAD_H
+
+#include "types.h"
 #include "gvplugin.h"
+#include "gvcjob.h"
 
-extern gvplugin_installed_t gvrender_pango_types;
-extern gvplugin_installed_t gvtextlayout_pango_types;
-extern gvplugin_installed_t gvloadimage_pango_types;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-static gvplugin_api_t apis[] = {
-    {API_render, &gvrender_pango_types},
-    {API_textlayout, &gvtextlayout_pango_types},
-    {API_loadimage, &gvloadimage_pango_types},
-    {(api_t)0, 0},
-};
+    struct gvloadimage_engine_s {
+	void (*loadimage) (GVJ_t *job, usershape_t *us, boxf b, bool filled);
+    };
 
-gvplugin_library_t gvplugin_pango_LTX_library = { "pango", apis };
+#ifdef __cplusplus
+}
+#endif
+#endif				/* GVPLUGIN_IMAGELOAD_H */

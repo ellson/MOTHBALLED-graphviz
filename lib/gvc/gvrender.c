@@ -1543,10 +1543,8 @@ void gvrender_ellipse(GVJ_t * job, pointf pf, double rx, double ry, bool filled)
 	    af[1].x = pf.x + rx;
 	    af[1].y = pf.y + ry;
 
-	    if (! (job->flags & GVRENDER_DOES_TRANSFORM)) {
-	        af[0] = gvrender_ptf(job, af[0]);
-	        af[1] = gvrender_ptf(job, af[1]);
-            }
+	    if (! (job->flags & GVRENDER_DOES_TRANSFORM))
+	        gvrender_ptf_A(job, af, af, 2);
 	    gvre->ellipse(job, af, filled);
 	}
     }
@@ -1566,7 +1564,6 @@ void gvrender_ellipse(GVJ_t * job, pointf pf, double rx, double ry, bool filled)
 
 void gvrender_polygon(GVJ_t * job, pointf * af, int n, bool filled)
 {
-    int i;
     gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->polygon) {
@@ -1578,8 +1575,7 @@ void gvrender_polygon(GVJ_t * job, pointf * af, int n, bool filled)
 		    sizeAF = n+10;
 		    AF = grealloc(AF, sizeAF * sizeof(pointf));
 	        }
-	        for (i = 0; i < n; i++)
-		    AF[i] = gvrender_ptf(job, af[i]);
+	        gvrender_ptf_A(job, af, AF, n);
 	        gvre->polygon(job, AF, n, filled);
 	    }
 	}
@@ -1587,6 +1583,7 @@ void gvrender_polygon(GVJ_t * job, pointf * af, int n, bool filled)
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
+        int i;
 
 	if (sizeA < n) {
 	    sizeA = n+10;
@@ -1624,13 +1621,11 @@ void gvrender_beziercurve(GVJ_t * job, pointf * af, int n,
 	    if (job->flags & GVRENDER_DOES_TRANSFORM)
 		gvre->beziercurve(job, af, n, arrow_at_start, arrow_at_end,filled);
 	    else {
-	        int i;
 	        if (sizeAF < n) {
 		    sizeAF = n+10;
 		    AF = grealloc(AF, sizeAF * sizeof(pointf));
 	        }
-	        for (i = 0; i < n; i++)
-		    AF[i] = gvrender_ptf(job, af[i]);
+	        gvrender_ptf_A(job, af, AF, n);
 	        gvre->beziercurve(job, AF, n, arrow_at_start, arrow_at_end,filled);
 	    }
 	}
@@ -1654,7 +1649,6 @@ void gvrender_beziercurve(GVJ_t * job, pointf * af, int n,
 
 void gvrender_polylinef(GVJ_t * job, pointf * af, int n)
 {
-    int i;
     gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre && gvre->polyline) {
@@ -1666,8 +1660,7 @@ void gvrender_polylinef(GVJ_t * job, pointf * af, int n)
 		    sizeAF = n+10;
 		    AF = grealloc(AF, sizeAF * sizeof(pointf));
 	        }
-	        for (i = 0; i < n; i++)
-		    AF[i] = gvrender_ptf(job, af[i]);
+	        gvrender_ptf_A(job, af, AF, n);
 	        gvre->polyline(job, AF, n);
 	    }
 	}
@@ -1675,6 +1668,7 @@ void gvrender_polylinef(GVJ_t * job, pointf * af, int n)
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
+        int i;
 
 	if (sizeA < n) {
 	    sizeA = n+10;
@@ -1761,8 +1755,7 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, bool filled)
 	    sizeAF = n+10;
 	    AF = grealloc(AF, sizeAF * sizeof(pointf));
         }
-        for (i = 0; i < n; i++)
-	    AF[i] = gvrender_ptf(job, a[i]);
+	gvrender_ptf_A(job, a, AF, n);
 	af = AF;
     }
 
@@ -1797,8 +1790,12 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, bool filled)
 	b.UR.y -= (ph - th) / 2.0;
     }
 
-    if (gvre && gvre->usershape)
-        gvre->usershape(job, us, b, filled);
+    if (gvre) {
+	if (gvre->usershape)
+            gvre->usershape(job, us, b, filled);
+	else if (job->render.features->loadimage_target)
+	    gvloadimage(job, us, b, filled, job->render.features->loadimage_target);
+    }
 #ifdef WITH_CODEGENS
     else {
         codegen_t *cg = job->codegen;

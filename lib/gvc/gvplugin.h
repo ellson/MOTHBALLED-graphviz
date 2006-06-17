@@ -38,7 +38,7 @@ extern "C" {
  * The enumerated type is defined here.  The apis array is
  * inititialized in gvplugin.c by redefining ELEM and reinvoking APIS.
  */
-#define APIS ELEM(render) ELEM(layout) ELEM(textlayout) ELEM(device)
+#define APIS ELEM(render) ELEM(layout) ELEM(textlayout) ELEM(device) ELEM(loadimage)
 
 /*
  * Define api_t using names based on the plugin names with API_ prefixed.

@@ -31,6 +31,7 @@ extern "C" {
     typedef struct gvrender_engine_s gvrender_engine_t;
     typedef struct gvlayout_engine_s gvlayout_engine_t;
     typedef struct gvtextlayout_engine_s gvtextlayout_engine_t;
+    typedef struct gvloadimage_engine_s gvloadimage_engine_t;
 
     typedef enum { PEN_NONE, PEN_DASHED, PEN_DOTTED, PEN_SOLID } pen_type;
     typedef enum { FILL_NONE, FILL_SOLID } fill_type;
@@ -77,6 +78,7 @@ extern "C" {
 	int sz_knowncolors;
 	color_type_t color_type;
 	char *device;
+	char *loadimage_target;
     } gvrender_features_t;
 
     typedef struct {
@@ -98,6 +100,12 @@ extern "C" {
         gvrender_features_t *features;
         char *type;
     } gvplugin_active_render_t;
+
+    typedef struct gvplugin_active_loadimage_t {
+	gvloadimage_engine_t *engine;
+	int id;
+	char *type;
+    } gvplugin_active_loadimage_t;
 
     typedef struct gv_argvlist_s {
 	char **argv;
@@ -197,6 +205,7 @@ extern "C" {
 
 	gvplugin_active_render_t render;
 	gvplugin_active_device_t device;
+	gvplugin_active_loadimage_t loadimage;
 	gvdevice_callbacks_t *callbacks;
 
 	void *surface;		/* gd or cairo surface */

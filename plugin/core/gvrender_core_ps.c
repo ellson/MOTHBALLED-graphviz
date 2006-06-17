@@ -39,6 +39,9 @@
 #include "gd.h"
 #endif
 
+/* for CHAR_LATIN1  */
+#include "const.h"
+
 /*
  *     J$: added `pdfmark' URL embedding.  PostScript rendered from
  *         dot files with URL attributes will get active PDF links
@@ -99,14 +102,11 @@ static void psgen_begin_graph(GVJ_t * job)
         cat_preamble(job, job->common->lib);
         epsf_define(job->output_file);
     }
-#if 0
-    // FIXME
     isLatin1 = (GD_charset(obj->g) == CHAR_LATIN1);
     if (isLatin1 && !setupLatin1) {
 	fprintf(job->output_file, "setupLatin1\n");	/* as defined in ps header */
 	setupLatin1 = TRUE;
     }
-#endif
     /*  Set base URL for relative links (for Distiller >= 3.0)  */
     if (obj->url)
 	fprintf(job->output_file, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
@@ -194,7 +194,7 @@ static void psgen_begin_node(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    if (obj->url_map_p) {
+    if (obj->url) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
 		obj->url_map_p[1].x, obj->url_map_p[1].y);
@@ -211,7 +211,7 @@ psgen_begin_edge(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    if (obj->url_map_p) {
+    if (obj->url) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
 		obj->url_map_p[1].x, obj->url_map_p[1].y);
@@ -221,7 +221,7 @@ psgen_begin_edge(GVJ_t * job)
 		"/ANN pdfmark\n",
 		ps_string(obj->url, isLatin1));
     }
-    if (obj->tailurl_map_p) {
+    if (obj->tailurl) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->tailurl_map_p[0].x, obj->tailurl_map_p[0].y,
 		obj->tailurl_map_p[1].x, obj->tailurl_map_p[1].y);
@@ -231,7 +231,7 @@ psgen_begin_edge(GVJ_t * job)
 		"/ANN pdfmark\n",
 		ps_string(obj->tailurl, isLatin1));
     }
-    if (obj->headurl_map_p) {
+    if (obj->headurl) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->headurl_map_p[0].x, obj->headurl_map_p[0].y,
 		obj->headurl_map_p[1].x, obj->headurl_map_p[1].y);
@@ -241,7 +241,7 @@ psgen_begin_edge(GVJ_t * job)
 		"/ANN pdfmark\n",
 		ps_string(obj->headurl, isLatin1));
     }
-    if (obj->tailendurl_map_p) {
+    if (obj->tailurl) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->tailendurl_map_p[0].x, obj->tailendurl_map_p[0].y,
 		obj->tailendurl_map_p[1].x, obj->tailendurl_map_p[1].y);
@@ -251,7 +251,7 @@ psgen_begin_edge(GVJ_t * job)
 		"/ANN pdfmark\n",
 		ps_string(obj->tailurl, isLatin1));
     }
-    if (obj->headendurl_map_p) {
+    if (obj->headurl) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
 		obj->headendurl_map_p[0].x, obj->headendurl_map_p[0].y,
 		obj->headendurl_map_p[1].x, obj->headendurl_map_p[1].y);
@@ -444,66 +444,12 @@ static void psgen_comment(GVJ_t * job, char *str)
     fprintf(job->output_file, "%% %s\n", str);
 }
 
-static void ps_freeimage_gd (void *data)
-{
-#ifdef HAVE_LIBGD
-    gdImageDestroy((gdImagePtr)data);
-#endif
-}
-
 static void ps_freeimage_ps (void *data)
 {
 #if 0
     free (data);
 #endif
 }
-
-#ifdef HAVE_LIBGD
-static void writePSBitmap (GVJ_t *job, gdImagePtr im, boxf b)
-{
-    int x, y, px;
-
-    fprintf(job->output_file, "gsave\n");
-
-    /* this sets the position of the image */
-    fprintf(job->output_file, "%g %g translate %% lower-left coordinate\n", b.LL.x, b.LL.y);
-
-    /* this sets the rendered size to fit the box */
-    fprintf(job->output_file,"%g %g scale\n", b.UR.x - b.LL.x, b.UR.y - b.LL.y);
-
-    /* xsize ysize bits-per-sample [matrix] */
-    fprintf(job->output_file, "%d %d 8 [%d 0 0 %d 0 %d]\n", im->sx, im->sy,
-                        im->sx, -(im->sy), im->sy);
-
-    fprintf(job->output_file, "{<\n");
-    for (y = 0; y < im->sy; y++) {
-        for (x = 0; x < im->sx; x++) {
-            if (im->trueColor) {
-                px = gdImageTrueColorPixel(im, x, y);
-                fprintf(job->output_file, "%02x%02x%02x",
-                    gdTrueColorGetRed(px),
-                    gdTrueColorGetGreen(px),
-                    gdTrueColorGetBlue(px));
-            }
-            else {
-                px = gdImagePalettePixel(im, x, y);
-                fprintf(job->output_file, "%02x%02x%02x",
-                    im->red[px],
-                    im->green[px],
-                    im->blue[px]);
-            }
-        }
-        fprintf(job->output_file, "\n");
-    }
-
-    fprintf(job->output_file, ">}\n");
-    fprintf(job->output_file, "false 3 colorimage\n");
-
-    fprintf(job->output_file, "grestore\n");
-
-}
-#endif
-
 
 /* ps_usershape:
  * Images for postscript are complicated by the old epsf shape, as
@@ -517,9 +463,6 @@ static void writePSBitmap (GVJ_t *job, gdImagePtr im, boxf b)
 static void
 psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
-#ifdef HAVE_LIBGD
-    gdImagePtr gd_img = NULL;
-#endif
 #ifdef XXX_PS
     int j;
     ps_image_t *ps_img = NULL;
@@ -551,12 +494,7 @@ psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
     }
 
     if (us->data) {
-        if (us->datafree == ps_freeimage_gd) {
-#ifdef HAVE_LIBGD
-            gd_img = (gdImagePtr)(us->data);  /* use cached data */
-#endif
-        }
-        else if (us->datafree == ps_freeimage_ps) {
+        if (us->datafree == ps_freeimage_ps) {
 #ifdef XXX_PS
             ps_img = (ps_image_t *)(us->data);  /* use cached data */
 #endif
@@ -567,38 +505,13 @@ psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
         }
     }
 
-#ifdef HAVE_LIBGD
-#ifdef XXX_PS
-    if (!ps_img && !gd_img) { /* read file into cache */
-#else
-    if (!gd_img) { /* read file into cache */
-#endif
-#else
 #ifdef XXX_PS
     if (!ps_img) { /* read file into cache */
 #else
     if (false) { /* nothing to do */
 #endif
-#endif
         fseek(us->f, 0, SEEK_SET);
         switch (us->type) {
-#ifdef HAVE_LIBGD
-#ifdef HAVE_GD_PNG
-            case FT_PNG:
-                gd_img = gdImageCreateFromPng(us->f);
-                break;
-#endif
-#ifdef HAVE_GD_GIF
-            case FT_GIF:
-                gd_img = gdImageCreateFromGif(us->f);
-                break;
-#endif
-#ifdef HAVE_GD_JPEG
-            case FT_JPEG:
-                gd_img = gdImageCreateFromJpeg(us->f);
-                break;
-#endif
-#endif
 #ifdef XXX_PS
             case FT_PS:
             case FT_EPS:
@@ -608,12 +521,6 @@ psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
             default:
                 break;
         }
-#ifdef HAVE_LIBGD
-        if (gd_img) {
-            us->data = (void*)gd_img;
-            us->datafree = ps_freeimage_gd;
-        }
-#endif
 #ifdef XXX_PS
         if (ps_img) {
             us->data = (void*)ps_img;
@@ -635,13 +542,6 @@ psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
         else
             fprintf(job->output_file, "user_shape_%d\n", ps_img->macro_id);
         ps_end_context();
-        return;
-    }
-#endif
-
-#ifdef HAVE_LIBGD
-    if (gd_img) {
-        writePSBitmap (job, gd_img, b);
         return;
     }
 #endif
@@ -678,7 +578,7 @@ static gvrender_engine_t psgen_engine = {
     psgen_bezier,
     psgen_polyline,
     psgen_comment,
-    psgen_usershape
+    0,				/* psgen_usershape */
 };
 
 static gvrender_features_t psgen_features = {
@@ -691,6 +591,8 @@ static gvrender_features_t psgen_features = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     HSV_DOUBLE,			/* color_type */
+    NULL,                       /* device */
+    "ps",                       /* gvloadimage target for usershapes */
 };
 
 gvplugin_installed_t gvrender_core_ps_types[] = {
