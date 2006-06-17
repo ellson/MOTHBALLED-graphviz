@@ -56,7 +56,6 @@ extern "C" {
 			     int arrow_at_start, int arrow_at_end, int);
 	void (*polyline) (GVJ_t * job, pointf * A, int n);
 	void (*comment) (GVJ_t * job, char *comment);
-	void (*usershape) (GVJ_t * job, usershape_t *us, boxf b, bool filled);
     };
 
 #ifdef __cplusplus

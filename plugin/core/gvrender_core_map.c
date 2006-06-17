@@ -167,7 +167,6 @@ static gvrender_engine_t mapgen_engine = {
     0,				/* mapgen_bezier */
     0,				/* mapgen_polyline */
     0,				/* mapgen_comment */
-    0				/* mapgen_usershape */
 };
 
 static gvrender_features_t mapgen_features_poly = {

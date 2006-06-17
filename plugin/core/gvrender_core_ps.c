@@ -444,95 +444,6 @@ static void psgen_comment(GVJ_t * job, char *str)
     fprintf(job->output_file, "%% %s\n", str);
 }
 
-#if 0
-static void ps_freeimage_ps (void *data)
-{
-//    free (data);
-}
-
-/* ps_usershape:
- * Images for postscript are complicated by the old epsf shape, as
- * well as user-defined shapes using postscript code.
- * If the name is custom, we look for the image stored in the
- * current node's shapefile attribute.
- * Else we see if name is a user-defined postscript function
- * Else we assume name is the name of the image. This occurs when
- * the image is part of an html label.
- */
-static void
-psgen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
-{
-    int j;
-    ps_image_t *ps_img = NULL;
-    point offset;
-
-    if (!us->f) {
-        if (find_user_shape(us->name)) {
-            if (filled) {
-                ps_begin_context();
-                ps_set_color(S[SP].fillcolor);
-                fprintf(job->output_file, "[ ");
-                for (j = 0; j < n; j++)
-                    fprintf(job->output_file, "%d %d ", A[j].x, A[j].y);
-                fprintf(job->output_file, "%d %d ", A[0].x, A[0].y);
-                fprintf(job->output_file, "]  %d true %s\n", n, us->name);
-                ps_end_context();
-            }
-            fprintf(job->output_file, "[ ");
-            for (j = 0; j < n; j++)
-                fprintf(job->output_file, "%d %d ", A[j].x, A[j].y);
-            fprintf(job->output_file, "%d %d ", A[0].x, A[0].y);
-            fprintf(job->output_file, "]  %d false %s\n", n, us->name);
-        }
-        else {   /* name not find by find_ser_shape */  }
-        return;
-    }
-
-    if (us->data) {
-        if (us->datafree == ps_freeimage_ps) {
-            ps_img = (ps_image_t *)(us->data);  /* use cached data */
-        }
-        else {
-            us->datafree(us->data);        /* free incompatible cache data */
-            us->data = NULL;
-        }
-    }
-
-    if (!ps_img) { /* read file into cache */
-        fseek(us->f, 0, SEEK_SET);
-        switch (us->type) {
-            case FT_PS:
-            case FT_EPS:
-                ps_img = ps_usershape_to_image(us->name);
-                break;
-            default:
-                break;
-        }
-        if (ps_img) {
-            us->data = (void*)ps_img;
-            us->datafree = ps_freeimage_ps;
-        }
-    }
-    if (ps_img) {
-        ps_begin_context();
-        offset.x = -ps_img->origin.x - (ps_img->size.x) / 2;
-        offset.y = -ps_img->origin.y - (ps_img->size.y) / 2;
-        fprintf(job->output_file, "%d %d translate newpath\n",
-            ND_coord_i(Curnode).x + offset.x,
-            ND_coord_i(Curnode).y + offset.y);
-        if (ps_img->must_inline)
-            epsf_emit_body(ps_img, job->output_file);
-        else
-            fprintf(job->output_file, "user_shape_%d\n", ps_img->macro_id);
-        ps_end_context();
-        return;
-    }
-
-    /* some other type of image */
-    job->common->errorfn("usershape %s is not supported  in PostScript output\n", us->name);
-}
-#endif
-
 static gvrender_engine_t psgen_engine = {
     psgen_begin_job,
     psgen_end_job,
@@ -561,7 +472,6 @@ static gvrender_engine_t psgen_engine = {
     psgen_bezier,
     psgen_polyline,
     psgen_comment,
-    0,				/* psgen_usershape */
 };
 
 static gvrender_features_t psgen_features = {

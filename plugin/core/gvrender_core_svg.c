@@ -552,7 +552,6 @@ gvrender_engine_t svggen_engine = {
     svggen_bezier,
     svggen_polyline,
     svggen_comment,
-    0				/* svggen_usershape */ /* usershapes provided by gvloadimage */
 };
 
 gvrender_features_t svggen_features = {

@@ -406,7 +406,6 @@ static gvrender_engine_t cairogen_engine = {
     cairogen_bezier,
     cairogen_polyline,
     0,				/* cairogen_comment */
-    0				/* cairogen_usershape */ /* provided by gvloadimage */
 };
 
 static gvrender_features_t cairogen_features = {

@@ -22,6 +22,12 @@
 
 #include "gvplugin_loadimage.h"
 
+/* for ps_image_t */
+#include "types.h"
+
+/* for ND_coord_i */
+#include "graph.h"
+
 extern void svggen_fputs(GVJ_t * job, char *s);
 extern void svggen_printf(GVJ_t * job, const char *format, ...);
 
@@ -49,9 +55,58 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled
     }
 }
 
+static void ps_freeimage(void *data)
+{
+    free (data);
+}
+
+extern void epsf_emit_body(ps_image_t *img, FILE *of);
+extern ps_image_t *ps_usershape_to_image(char *shapeimagefile);
+
+/* usershape described by a postscript function */
 static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
-    if (us->name) {
+    obj_state_t *obj = job->obj;
+    ps_image_t *img = NULL;
+    point offset;
+
+    if (us->data) {
+        if (us->datafree == ps_freeimage) {
+            img = (ps_image_t *)(us->data);  /* use cached data */
+        }
+        else {
+            us->datafree(us->data);        /* free incompatible cache data */
+            us->data = NULL;
+        }
+    }
+
+    if (!img) { /* read file into cache */
+        fseek(us->f, 0, SEEK_SET);
+        switch (us->type) {
+            case FT_PS:
+            case FT_EPS:
+                img = ps_usershape_to_image(us->name);
+                break;
+            default:
+                break;
+        }
+        if (img) {
+            us->data = (void*)img;
+            us->datafree = ps_freeimage;
+        }
+    }
+
+    if (img) {
+        offset.x = -(img->origin.x) - (img->size.x) / 2;
+        offset.y = -(img->origin.y) - (img->size.y) / 2;
+        fprintf(job->output_file, "gsave %d %d translate newpath\n",
+            ND_coord_i(obj->n).x + offset.x,
+            ND_coord_i(obj->n).y + offset.y);
+        if (img->must_inline)
+            epsf_emit_body(img, job->output_file);
+        else
+            fprintf(job->output_file, "user_shape_%d\n", img->macro_id);
+        fprintf(job->output_file, "grestore\n");
     }
 }
 

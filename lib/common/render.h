@@ -48,8 +48,8 @@ extern "C" {
 #include "memory.h"
 #include "colorprocs.h"		/* must collow color.h (in types.h) */
 #include "geomprocs.h"		/* must follow geom.h (in types.h) */
-#include "graph.h"		/* must follow types.h */
 #include "agxbuf.h"
+#include "graph.h"		/* must follow types.h */
 #include "utils.h"		/* must follow types.h and agxbuf.h */
 #include "gvplugin.h"		/* must follow gvcext.h (in types.h) */
 #include "gvcjob.h"		/* must follow gvcext.h (in types.h) */
@@ -60,16 +60,6 @@ extern "C" {
 	int macro_id;
 	point offset;
     } epsf_t;
-
-    typedef struct {
-	Dtlink_t link;
-	char *name;
-	int macro_id;
-	point size;
-	point origin;
-	char *contents;
-	int must_inline;
-    } ps_image_t;
 
     typedef void (*nodesizefn_t) (Agnode_t *, bool);
 

@@ -276,8 +276,10 @@ void gvrender_end_job(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->end_job)
-	gvre->end_job(job);
+    if (gvre) {
+       	if (gvre->end_job)
+	    gvre->end_job(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -448,8 +450,10 @@ void gvrender_end_graph(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->end_graph)
-	gvre->end_graph(job);
+    if (gvre) {
+       	if (gvre->end_graph)
+	    gvre->end_graph(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -465,9 +469,10 @@ void gvrender_begin_page(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->begin_page)
-	gvre->begin_page(job);
-
+    if (gvre) {
+        if (gvre->begin_page)
+	    gvre->begin_page(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -485,8 +490,10 @@ void gvrender_end_page(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->end_page)
-	gvre->end_page(job);
+    if (gvre) {
+       	if (gvre->end_page)
+	    gvre->end_page(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -501,8 +508,10 @@ void gvrender_begin_layer(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->begin_layer)
-	gvre->begin_layer(job, job->gvc->layerIDs[job->layerNum], job->layerNum, job->numLayers);
+    if (gvre) {
+	if (gvre->begin_layer)
+	    gvre->begin_layer(job, job->gvc->layerIDs[job->layerNum], job->layerNum, job->numLayers);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -517,8 +526,10 @@ void gvrender_end_layer(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->end_layer)
-	gvre->end_layer(job);
+    if (gvre) {
+        if (gvre->end_layer)
+	    gvre->end_layer(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -586,8 +597,10 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 	obj->url_map_n = nump;
     }
 
-    if (gvre && gvre->begin_cluster)
-	gvre->begin_cluster(job);
+    if (gvre) {
+	if (gvre->begin_cluster)
+	    gvre->begin_cluster(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -603,8 +616,10 @@ void gvrender_end_cluster(GVJ_t * job, graph_t *g)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->end_cluster)
-	gvre->end_cluster(job);
+    if (gvre) {
+       	if (gvre->end_cluster)
+	    gvre->end_cluster(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -621,8 +636,10 @@ void gvrender_begin_nodes(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->begin_nodes)
-	gvre->begin_nodes(job);
+    if (gvre) {
+	if (gvre->begin_nodes)
+	    gvre->begin_nodes(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -637,8 +654,10 @@ void gvrender_end_nodes(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->end_nodes)
-	gvre->end_nodes(job);
+    if (gvre) {
+	if (gvre->end_nodes)
+	    gvre->end_nodes(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -653,8 +672,10 @@ void gvrender_begin_edges(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->begin_edges)
-	gvre->begin_edges(job);
+    if (gvre) {
+	if (gvre->begin_edges)
+	    gvre->begin_edges(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -669,8 +690,10 @@ void gvrender_end_edges(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->end_edges)
-	gvre->end_edges(job);
+    if (gvre) {
+	if (gvre->end_edges)
+	    gvre->end_edges(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -872,8 +895,10 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
 	obj->url_map_n = nump;
     }
 
-    if (gvre && gvre->begin_node)
-	gvre->begin_node(job);
+    if (gvre) {
+	if (gvre->begin_node)
+	    gvre->begin_node(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -889,8 +914,10 @@ void gvrender_end_node(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->end_node)
-	gvre->end_node(job);
+    if (gvre) {
+	if (gvre->end_node)
+	    gvre->end_node(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -1285,8 +1312,10 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 	obj->url_bsplinemap_p = pbs;
     }
 
-    if (gvre && gvre->begin_edge)
-	gvre->begin_edge(job);
+    if (gvre) {
+	if (gvre->begin_edge)
+	    gvre->begin_edge(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -1302,8 +1331,10 @@ void gvrender_end_edge(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->end_edge)
-	gvre->end_edge(job);
+    if (gvre) {
+	if (gvre->end_edge)
+	    gvre->end_edge(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -1362,8 +1393,10 @@ void gvrender_begin_anchor(GVJ_t * job, char *href, char *tooltip,
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->begin_anchor)
-	gvre->begin_anchor(job, href, tooltip, target);
+    if (gvre) {
+	if (gvre->begin_anchor)
+	    gvre->begin_anchor(job, href, tooltip, target);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -1378,8 +1411,10 @@ void gvrender_end_anchor(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->end_anchor)
-	gvre->end_anchor(job);
+    if (gvre) {
+	if (gvre->end_anchor)
+	    gvre->end_anchor(job);
+    }
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
@@ -1418,10 +1453,9 @@ void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	    PF = p;
 	else
 	    PF = gvrender_ptf(job, p);
-	if (gvre && gvre->textpara) {
-	    if (job->style->pen != PEN_NONE) {
+	if (gvre) {
+	    if (gvre->textpara && job->style->pen != PEN_NONE)
 		gvre->textpara(job, PF, para);
-	    }
 	}
 #ifdef WITH_CODEGENS
 	else {
@@ -1525,8 +1559,8 @@ void gvrender_ellipse(GVJ_t * job, pointf pf, double rx, double ry, bool filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->ellipse) {
-	if (job->style->pen != PEN_NONE) {
+    if (gvre) {
+	if (gvre->ellipse && job->style->pen != PEN_NONE) {
 	    pointf af[2];
 
 	    /* center */
@@ -1558,8 +1592,8 @@ void gvrender_polygon(GVJ_t * job, pointf * af, int n, bool filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->polygon) {
-	if (job->style->pen != PEN_NONE) {
+    if (gvre) {
+	if (gvre->polygon && job->style->pen != PEN_NONE) {
 	    if (job->flags & GVRENDER_DOES_TRANSFORM)
 		gvre->polygon(job, af, n, filled);
 	    else {
@@ -1608,8 +1642,8 @@ void gvrender_beziercurve(GVJ_t * job, pointf * af, int n,
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->beziercurve) {
-	if (job->style->pen != PEN_NONE) {
+    if (gvre) {
+	if (gvre->beziercurve && job->style->pen != PEN_NONE) {
 	    if (job->flags & GVRENDER_DOES_TRANSFORM)
 		gvre->beziercurve(job, af, n, arrow_at_start, arrow_at_end,filled);
 	    else {
@@ -1643,8 +1677,8 @@ void gvrender_polyline(GVJ_t * job, pointf * af, int n)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre && gvre->polyline) {
-	if (job->style->pen != PEN_NONE) {
+    if (gvre) {
+	if (gvre->polyline && job->style->pen != PEN_NONE) {
 	    if (job->flags & GVRENDER_DOES_TRANSFORM)
 	        gvre->polyline(job, af, n);
             else {
@@ -1681,8 +1715,9 @@ void gvrender_comment(GVJ_t * job, char *str)
     if (!str || !str[0])
 	return;
 
-    if (gvre && gvre->comment) {
-	gvre->comment(job, str);
+    if (gvre) {
+	if (gvre->comment)
+	    gvre->comment(job, str);
     }
 #ifdef WITH_CODEGENS
     else {
@@ -1750,9 +1785,7 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, bool filled)
     }
 
     if (gvre) {
-	if (gvre->usershape)
-            gvre->usershape(job, us, b, filled);
-	else if (job->render.features->loadimage_target)
+	if (job->render.features->loadimage_target)
 	    gvloadimage(job, us, b, filled, job->render.features->loadimage_target);
     }
 #ifdef WITH_CODEGENS

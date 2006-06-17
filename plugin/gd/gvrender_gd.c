@@ -702,7 +702,6 @@ static gvrender_engine_t gdgen_engine = {
     gdgen_bezier,
     gdgen_polyline,
     0,				/* gdgen_comment */
-    0				/* gdgen_usershape */ /* provided by gvloadimage */
 };
 
 static gvrender_features_t gdgen_features_tc = {
