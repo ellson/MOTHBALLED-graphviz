@@ -44,7 +44,7 @@ static char *sdarray = "5,2";
 /* SVG dot array */
 static char *sdotarray = "1,5";
 
-static void svggen_fputs(GVJ_t * job, char *s)
+void svggen_fputs(GVJ_t * job, char *s)
 {
     int len;
 
@@ -68,7 +68,7 @@ static void svggen_fputs(GVJ_t * job, char *s)
  * input coming from users. Also, if vsnprintf is available, the
  * code should check for return values to use it safely.
  */
-static void svggen_printf(GVJ_t * job, const char *format, ...)
+void svggen_printf(GVJ_t * job, const char *format, ...)
 {
     char buf[BUFSIZ];
     va_list argp;
@@ -479,40 +479,6 @@ static void svggen_polyline(GVJ_t * job, pointf * A, int n)
     svggen_fputs(job, "\"/>\n");
 }
 
-static void
-svggen_usershape(GVJ_t * job, usershape_t *us, boxf b, bool filled)
-{
-    if (job->style->pen == PEN_NONE) {
-	/* its invisible, don't draw */
-	return;
-    }
-    if (! us->f) {
-        pointf A[4];
-        A[0] = b.LL;
-        A[2] = b.UR;
-        A[1].x = b.LL.x;
-        A[1].y = b.UR.y;
-        A[3].x = b.UR.x;
-        A[3].y = b.LL.y;
-        svggen_polygon(job, A, 4, filled);
-        return;
-    }
-
-    svggen_fputs(job, "<image xlink:href=\"");
-    svggen_fputs(job, us->name);
-    if (job->rotation) {
-        svggen_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
-                b.UR.y - b.LL.y, b.UR.x - b.LL.x, b.LL.x, b.UR.y);
-	svggen_printf (job, " transform=\"rotate(%d %g %g)\"",
-		job->rotation, b.LL.x, b.UR.y);
-    }
-    else {
-        svggen_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
-                b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
-    }
-    svggen_fputs(job, "/>\n");
-}
-
 /* color names from http://www.w3.org/TR/SVG/types.html */
 /* NB.  List must be LANG_C sorted */
 static char *svggen_knowncolors[] = {
@@ -586,7 +552,7 @@ gvrender_engine_t svggen_engine = {
     svggen_bezier,
     svggen_polyline,
     svggen_comment,
-    svggen_usershape
+    0				/* svggen_usershape */ /* usershapes provided by gvloadimage */
 };
 
 gvrender_features_t svggen_features = {
@@ -598,7 +564,7 @@ gvrender_features_t svggen_features = {
     sizeof(svggen_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     NULL,                       /* device */
-    NULL,                       /* gvloadimage target for usershapes */
+    "svg",                      /* gvloadimage target for usershapes */
 };
 
 gvplugin_installed_t gvrender_core_svg_types[] = {
