@@ -168,7 +168,7 @@ pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
     para->fontname = fontname;
     para->fontsize = fontsize;
 
-    if (! gvtextlayout(GD_gvc(g), para, &fontpath))
+    if (! gvtextlayout(GD_gvc(g), para, &fontpath) || !fontpath)
 	estimate_textlayout(g, para, &fontpath);
 
     if (Verbose) {

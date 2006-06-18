@@ -73,6 +73,16 @@ static void pango_textlayout(textpara_t * para, char **fontpath)
 #endif
 
     pango_layout_get_extents (layout, &ink_rect, &logical_rect);
+
+    /* if pango doesn't like the font then it sets width=0 but height = garbage */
+    if (logical_rect.width == 0) {
+	*fontpath = NULL;              /* indicate a problem */
+	logical_rect.height = 0;
+    }
+    else {
+    	*fontpath = "[pango]";
+    }
+
     para->width = (double)logical_rect.width / PANGO_SCALE;
     para->height = (double)logical_rect.height / PANGO_SCALE;
 
@@ -90,8 +100,6 @@ static void pango_textlayout(textpara_t * para, char **fontpath)
 #endif
 
     pango_font_description_free (desc);
-
-    *fontpath = "[pango]";
 }
 
 static gvtextlayout_engine_t pango_textlayout_engine = {
