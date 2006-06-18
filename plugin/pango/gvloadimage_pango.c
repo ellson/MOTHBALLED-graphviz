@@ -38,9 +38,9 @@ reader (void *closure, unsigned char *data, unsigned int length)
     return CAIRO_STATUS_READ_ERROR;
 }
 
-static void cairo_freeimage(void *data)
+static void cairo_freeimage(usershape_t *us)
 {
-    cairo_destroy((cairo_t*)data);
+    cairo_destroy((cairo_t*)us->data);
 }
 
 static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
@@ -49,7 +49,7 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
 
     if (us->data) {
         if (us->datafree == cairo_freeimage)
-             surface = (cairo_surface_t*)(us->data); /* use cached data */
+             surface = (cairo_surface_t*)(us); /* use cached data */
         else {
              us->datafree(us->data);        /* free incompatible cache data */
              us->data = NULL;

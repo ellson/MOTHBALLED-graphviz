@@ -51,20 +51,7 @@ void gvloadimage(GVJ_t * job, usershape_t *us, boxf b, bool filled, char *target
     gvloadimage_engine_t *gvli;
     char type[SMALLBUF];
 
-    switch (us->type) {
-    case FT_PNG:
-	strcpy(type, "png");
-	break;
-    case FT_JPEG:
-	strcpy(type, "jpeg");
-	break;
-    case FT_GIF:
-	strcpy(type, "gif");
-	break;
-    default:
-	strcpy(type, "");
-	break;
-    }
+    strcpy(type, us->stringtype);
     strcat(type, "2");
     strcat(type, target);
 

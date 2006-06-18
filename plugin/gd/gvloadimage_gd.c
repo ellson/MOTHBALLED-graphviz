@@ -40,24 +40,21 @@ typedef enum {
 } format_type;
 
 
-static void gd_freeimage(void *data)
+static void gd_freeimage(usershape_t *us)
 {
-    gdImageDestroy((gdImagePtr)data);
+    gdImageDestroy((gdImagePtr)us->data);
 }
 
 static gdImagePtr gd_loadimage(GVJ_t * job, usershape_t *us)
 {
-    gdImagePtr im = NULL;
-
     if (us->data) {
-	if (us->datafree == gd_freeimage)
-             im = (gdImagePtr)(us->data);  /* use cached data */
-	else {
-	     us->datafree(us->data);        /* free incompatible cache data */
+	if (us->datafree != gd_freeimage) {
+	     us->datafree(us);        /* free incompatible cache data */
 	     us->data = NULL;
+	     us->datafree = NULL;
 	}
     }
-    if (!im) { /* read file into cache */
+    if (!us->data) { /* read file into cache */
 	fseek(us->f, 0, SEEK_SET);
 	switch (us->type) {
 #if 0
@@ -70,48 +67,45 @@ static gdImagePtr gd_loadimage(GVJ_t * job, usershape_t *us)
 #endif
 #ifdef HAVE_GD_PNG
 	    case FT_PNG:
-		im = gdImageCreateFromPng(us->f);
+		us->data = (void*)gdImageCreateFromPng(us->f);
 		break;
 #endif
 #ifdef HAVE_GD_GIF
 	    case FT_GIF:
-		im = gdImageCreateFromGif(us->f);
+		us->data = (void*)gdImageCreateFromGif(us->f);
 		break;
 #endif
 #ifdef HAVE_GD_JPEG
 	    case FT_JPEG:
-		im = gdImageCreateFromJpeg(us->f);
+		us->data = (void*)gdImageCreateFromJpeg(us->f);
 		break;
 #endif
 #if 0
 #ifdef HAVE_GD_XPM
 	    case FT_XPM:
-		im = gdImageCreateFromXpm(us->f);
+		us->data = (void*)gdImageCreateFromXpm(us->f);
 		break;
 #endif
 #ifdef HAVE_GD_WBMP
 	    case FT_WBMP:
-		im = gdImageCreateFromWbmp(us->f);
+		us->data = (void*)gdImageCreateFromWbmp(us->f);
 		break;
 #endif
 #endif
 	    default:
-		im = NULL;
+		break;
 	}
-        if (im) {
-	    us->data = (void*)im;
+        if (us->data)
 	    us->datafree = gd_freeimage;
-	}
     }
-    return im;
+    return (gdImagePtr)(us->data);
 }
 
 static void gd_loadimage_gd(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
     gdImagePtr im3, im2 = NULL, im = (gdImagePtr) job->surface;
 
-    im2 = gd_loadimage(job, us);
-    if (im2) {
+    if ((im2 = gd_loadimage(job, us))) {
         if (job->rotation) {
             im3 = gdImageCreate(im2->sy, im2->sx); /* scratch image for rotation */
             gdImageCopyRotated(im3, im2, im3->sx / 2., im3->sy / 2.,
@@ -133,8 +127,7 @@ static void gd_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
     FILE *out = job->output_file;
     int X, Y, x, y, px;
 
-    im = gd_loadimage(job, us);
-    if (im) {
+    if ((im = gd_loadimage(job, us))) {
 	X = im->sx;
 	Y = im->sy;
 

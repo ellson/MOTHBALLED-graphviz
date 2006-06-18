@@ -592,16 +592,6 @@ extern "C" {
 	int flags;
     } gvlayout_features_t;
 
-    typedef struct {
-        Dtlink_t link;
-        char *name;
-        int macro_id;
-        point size;
-        point origin;
-        char *contents;
-        int must_inline;
-    } ps_image_t;
-
 #ifdef __cplusplus
 }
 #endif

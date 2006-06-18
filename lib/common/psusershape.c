@@ -24,13 +24,13 @@
 static int N_EPSF_files;
 static Dict_t *EPSF_contents;
 
-static void ps_image_free(Dict_t * dict, ps_image_t * p, Dtdisc_t * disc)
+static void ps_image_free(Dict_t * dict, usershape_t * p, Dtdisc_t * disc)
 {
-    free(p->contents);
+    free(p->data);
 }
 
 static Dtdisc_t ImageDictDisc = {
-    offsetof(ps_image_t, name),	/* key */
+    offsetof(usershape_t, name),/* key */
     -1,				/* size */
     0,				/* link offset */
     NIL(Dtmake_f),
@@ -41,7 +41,7 @@ static Dtdisc_t ImageDictDisc = {
     NIL(Dtevent_f)
 };
 
-static ps_image_t *user_init(char *str)
+static usershape_t *user_init(char *str)
 {
     char *contents;
     char line[BUFSIZ];
@@ -49,14 +49,14 @@ static ps_image_t *user_init(char *str)
     struct stat statbuf;
     int saw_bb, must_inline;
     int lx, ly, ux, uy;
-    ps_image_t *val;
+    usershape_t *us;
 
     if (!EPSF_contents)
 	EPSF_contents = dtopen(&ImageDictDisc, Dtoset);
 
-    val = dtmatch(EPSF_contents, str);
-    if (val)
-	return val;
+    us = dtmatch(EPSF_contents, str);
+    if (us)
+	return us;
 
     if (!(fp = fopen(str, "r"))) {
 	agerr(AGWARN, "couldn't open epsf file %s\n", str);
@@ -66,8 +66,7 @@ static ps_image_t *user_init(char *str)
     saw_bb = must_inline = FALSE;
     while (fgets(line, sizeof(line), fp)) {
 	if (sscanf
-	    (line, "%%%%BoundingBox: %d %d %d %d", &lx, &ly, &ux,
-	     &uy) == 4) {
+	    (line, "%%%%BoundingBox: %d %d %d %d", &lx, &ly, &ux, &uy) == 4) {
 	    saw_bb = TRUE;
 	}
 	if ((line[0] != '%') && strstr(line,"read")) must_inline = TRUE;
@@ -75,22 +74,22 @@ static ps_image_t *user_init(char *str)
     }
 
     if (saw_bb) {
-	val = GNEW(ps_image_t);
-	val->origin.x = lx;
-	val->origin.y = ly;
-	val->size.x = ux - lx;
-	val->size.y = uy - ly;
-	val->name = str;
-	val->macro_id = N_EPSF_files++;
+	us = GNEW(usershape_t);
+	us->x = lx;
+	us->y = ly;
+	us->w = ux - lx;
+	us->y = uy - ly;
+	us->name = str;
+	us->macro_id = N_EPSF_files++;
 	fstat(fileno(fp), &statbuf);
-	contents = val->contents = N_GNEW(statbuf.st_size + 1, char);
+	contents = us->data = N_GNEW(statbuf.st_size + 1, char);
 	fseek(fp, 0, SEEK_SET);
 	fread(contents, statbuf.st_size, 1, fp);
 	contents[statbuf.st_size] = '\0';
 	fclose(fp);
-	dtinsert(EPSF_contents, val);
-	val->must_inline = must_inline;
-	return val;
+	dtinsert(EPSF_contents, us);
+	us->must_inline = must_inline;
+	return us;
     } else {
 	agerr(AGWARN, "BoundingBox not found in epsf file %s\n", str);
 	return NULL;
@@ -101,21 +100,21 @@ void epsf_init(node_t * n)
 {
     epsf_t *desc;
     char *str;
-    ps_image_t *img;
+    usershape_t *us;
     int dx, dy;
 
     if ((str = safefile(agget(n, "shapefile")))) {
-	img = user_init(str);
-	if (!img)
+	us = user_init(str);
+	if (!us)
 	    return;
-	dx = img->size.x;
-	dy = img->size.y;
+	dx = us->w;
+	dy = us->h;
 	ND_width(n) = PS2INCH(dx);
 	ND_height(n) = PS2INCH(dy);
 	ND_shape_info(n) = desc = NEW(epsf_t);
-	desc->macro_id = img->macro_id;
-	desc->offset.x = -img->origin.x - (dx) / 2;
-	desc->offset.y = -img->origin.y - (dy) / 2;
+	desc->macro_id = us->macro_id;
+	desc->offset.x = -us->x - (dx) / 2;
+	desc->offset.y = -us->y - (dy) / 2;
     } else
 	agerr(AGWARN, "shapefile not set for epsf node %s\n", n->name);
 }
@@ -132,10 +131,10 @@ void epsf_free(node_t * n)
 /* this removes EPSF DSC comments that, when nested in another
  * document, cause errors in Ghostview and other Postscript
  * processors (although legal according to the Adobe EPSF spec).                 */
-void epsf_emit_body(ps_image_t *img, FILE *of)
+void epsf_emit_body(usershape_t *us, FILE *of)
 {
 	char *p;
-	p = img->contents;
+	p = us->data;
 	while (*p) {
 		/* skip %%EOF lines */
 		if ((p[0] == '%') && (p[1] == '%')
@@ -154,9 +153,9 @@ void epsf_emit_body(ps_image_t *img, FILE *of)
 	}
 }
 #else
-void epsf_emit_body(ps_image_t *img, FILE *of)
+void epsf_emit_body(usershape_t *us, FILE *of)
 {
-	if (fputs(img->contents, of) == EOF) {
+	if (fputs(us->data, of) == EOF) {
 	    perror("epsf_define()->fputs");
 	    exit(EXIT_FAILURE);
 	}
@@ -165,20 +164,20 @@ void epsf_emit_body(ps_image_t *img, FILE *of)
 
 void epsf_define(FILE * of)
 {
-    ps_image_t *img;
+    usershape_t *us;
 
     if (!EPSF_contents)
 	return;
-    for (img = dtfirst(EPSF_contents); img;
-	 img = dtnext(EPSF_contents, img)) {
-	 if (img->must_inline) continue;
-	fprintf(of, "/user_shape_%d {\n", img->macro_id);
+    for (us = dtfirst(EPSF_contents); us;
+	 us = dtnext(EPSF_contents, us)) {
+	 if (us->must_inline) continue;
+	fprintf(of, "/user_shape_%d {\n", us->macro_id);
 
 	if (fputs("%%BeginDocument:\n", of) == EOF) {
 	    perror("epsf_define()->fputs");
 	    exit(EXIT_FAILURE);
 	}
-	epsf_emit_body(img,of);
+	epsf_emit_body(us,of);
 
 	if (fputs("%%EndDocument\n", of) == EOF) {
 	    perror("epsf_define()->fputs");
@@ -195,36 +194,30 @@ void epsf_define(FILE * of)
     }
 }
 
-point ps_image_size(graph_t * g, char *shapeimagefile)
+char *ps_string(char *ins, int latin)
 {
-    point rv;
-    ps_image_t *img;
+    char *s;
+    char *base;
+    static agxbuf  xb;
+    int rc;
 
-    rv.x = rv.y = -1;		/* assume error */
-    if (shapeimagefile && *shapeimagefile) {
-	img = user_init(shapeimagefile);
-	if (img) {
-	    rv.x = img->size.x;
-	    rv.y = img->size.y;
-	}
-    } else
-	rv.x = rv.y = 0;
-    return rv;
-}
+    if (latin)
+        base = utf8ToLatin1 (ins);
+    else
+        base = ins;
 
-void ps_freeusershapes(void)
-{
-    if (EPSF_contents) {
-	dtclose(EPSF_contents);
-	EPSF_contents = 0;
-	N_EPSF_files = 0;
+    if (xb.buf == NULL)
+        agxbinit (&xb, 0, NULL);
+
+    rc = agxbputc (&xb, LPAREN);
+    s = base;
+    while (*s) {
+        if ((*s == LPAREN) || (*s == RPAREN) || (*s == '\\'))
+            rc = agxbputc (&xb, '\\');
+        rc = agxbputc (&xb, *s++);
     }
-}
-
-ps_image_t *ps_usershape_to_image(char *shapeimagefile)
-{
-    if (EPSF_contents) {
-	return dtmatch(EPSF_contents, shapeimagefile);
-    }
-    return NULL;
+    agxbputc (&xb, RPAREN);
+    if (base != ins) free (base);
+    s = agxbuse(&xb);
+    return s;
 }

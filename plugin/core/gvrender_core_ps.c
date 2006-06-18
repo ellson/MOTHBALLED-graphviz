@@ -113,18 +113,6 @@ static void psgen_begin_graph(GVJ_t * job)
 		"/PUT pdfmark\n", obj->url);
 }
 
-static void psgen_end_graph(GVJ_t * job)
-{
-#if 0
-    if (EPSF_contents) {
-	dtclose(EPSF_contents);
-	EPSF_contents = 0;
-	N_EPSF_files = 0;
-    }
-    onetime = FALSE;
-#endif
-}
-
 static void psgen_begin_layer(GVJ_t * job, char *layername, int layerNum, int numLayers)
 {
     fprintf(job->output_file, "%d %d setlayer\n", layerNum, numLayers);
@@ -266,14 +254,13 @@ psgen_begin_edge(GVJ_t * job)
 static void
 ps_set_pen_style(GVJ_t *job)
 {
-#if 0
     double penwidth = job->style->penwidth * job->zoom;
     char *p, *line, **s = job->rawstyle;
 
     fprintf(stderr,"%g setlinewidth\n", penwidth);
 
     while (s && (p = line = *s++)) {
-	if (streq(line, "setlinewidth"))
+	if (strcmp(line, "setlinewidth") == 0)
 	    continue;
 	while (*p)
 	    p++;
@@ -284,11 +271,10 @@ ps_set_pen_style(GVJ_t *job)
 		p++;
 	    p++;
 	}
-//	if (streq(line, "invis"))
-//	    job->style->width = 0;
+	if (strcmp(line, "invis") == 0)
+	    job->style->penwidth = 0;
 	fprintf(stderr, "%s\n", line);
     }
-#endif
 }
 
 static void ps_set_color(GVJ_t *job, gvcolor_t *color)
@@ -448,7 +434,7 @@ static gvrender_engine_t psgen_engine = {
     psgen_begin_job,
     psgen_end_job,
     psgen_begin_graph,
-    psgen_end_graph,
+    0,				/* psgen_end_graph */
     psgen_begin_layer,
     0,				/* psgen_end_layer */
     psgen_begin_page,

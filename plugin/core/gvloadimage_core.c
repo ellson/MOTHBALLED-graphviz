@@ -19,17 +19,18 @@
 #endif
 
 #include <stdlib.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "gvplugin_loadimage.h"
 
-/* for ps_image_t */
-#include "types.h"
-
-/* for ND_coord_i */
-#include "graph.h"
-
 extern void svggen_fputs(GVJ_t * job, char *s);
 extern void svggen_printf(GVJ_t * job, const char *format, ...);
+
+extern void epsf_emit_body(usershape_t *us, FILE *of);
+extern shape_desc *find_user_shape(char *name);
 
 typedef enum {
     FORMAT_PNG_SVG, FORMAT_GIF_SVG, FORMAT_JPEG_SVG,
@@ -55,58 +56,82 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled
     }
 }
 
-static void ps_freeimage(void *data)
+static void ps_freeimage(usershape_t *us)
 {
-    free (data);
+    munmap(us->data, us->datasize);
 }
-
-extern void epsf_emit_body(ps_image_t *img, FILE *of);
-extern ps_image_t *ps_usershape_to_image(char *shapeimagefile);
 
 /* usershape described by a postscript function */
 static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
-    obj_state_t *obj = job->obj;
-    ps_image_t *img = NULL;
-    point offset;
+    FILE *out = job->output_file;
+    int j;
+    pointf AF[4];
+
+    if (!us->f) {
+        if (find_user_shape(us->name)) {
+	    AF[0] = b.LL;
+	    AF[2] = b.UR;
+	    AF[1].x = AF[0].x;
+	    AF[1].y = AF[2].y;
+	    AF[3].x = AF[2].x;
+	    AF[3].y = AF[0].y;
+            if (filled) {
+//                ps_begin_context();
+//                ps_set_color(S[SP].fillcolor);
+                fprintf(out, "[ ");
+                for (j = 0; j < 4; j++)
+                    fprintf(out, "%g %g ", AF[j].x, AF[j].y);
+                fprintf(out, "%g %g ", AF[0].x, AF[0].y);
+                fprintf(out, "]  %d true %s\n", 4, us->name);
+//                ps_end_context();
+            }
+            fprintf(out, "[ ");
+            for (j = 0; j < 4; j++)
+                fprintf(out, "%g %g ", AF[j].x, AF[j].y);
+            fprintf(out, "%g %g ", AF[0].x, AF[0].y);
+            fprintf(out, "]  %d false %s\n", 4, us->name);
+        }
+        return;
+    }
 
     if (us->data) {
-        if (us->datafree == ps_freeimage) {
-            img = (ps_image_t *)(us->data);  /* use cached data */
-        }
-        else {
-            us->datafree(us->data);        /* free incompatible cache data */
+        if (us->datafree != (void*)ps_freeimage) {
+            us->datafree(us);        /* free incompatible cache data */
             us->data = NULL;
+            us->datafree = NULL;
+            us->datasize = 0;
         }
     }
 
-    if (!img) { /* read file into cache */
+    if (!us->data) { /* read file into cache */
+        int fd = fileno(us->f);
+	struct stat statbuf;
+
         fseek(us->f, 0, SEEK_SET);
         switch (us->type) {
             case FT_PS:
             case FT_EPS:
-                img = ps_usershape_to_image(us->name);
+		fstat(fd, &statbuf);
+		us->datasize = statbuf.st_size;
+		us->data = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
+		us->must_inline = true;
                 break;
             default:
                 break;
         }
-        if (img) {
-            us->data = (void*)img;
-            us->datafree = ps_freeimage;
-        }
+        if (us->data)
+            us->datafree = (void*)ps_freeimage;
     }
 
-    if (img) {
-        offset.x = -(img->origin.x) - (img->size.x) / 2;
-        offset.y = -(img->origin.y) - (img->size.y) / 2;
-        fprintf(job->output_file, "gsave %d %d translate newpath\n",
-            ND_coord_i(obj->n).x + offset.x,
-            ND_coord_i(obj->n).y + offset.y);
-        if (img->must_inline)
-            epsf_emit_body(img, job->output_file);
+    if (us->data) {
+        fprintf(out, "gsave %g %g translate newpath\n",
+		b.LL.x - us->x, b.LL.y - us->y);
+        if (us->must_inline)
+            epsf_emit_body(us, out);
         else
-            fprintf(job->output_file, "user_shape_%d\n", img->macro_id);
-        fprintf(job->output_file, "grestore\n");
+            fprintf(out, "user_shape_%d\n", us->macro_id);
+        fprintf(out, "grestore\n");
     }
 }
 

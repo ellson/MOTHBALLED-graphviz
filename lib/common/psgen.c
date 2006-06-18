@@ -23,6 +23,9 @@
 
 #include "render.h"
 #include "agxbuf.h"
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #ifdef HAVE_LIBGD
 #include "gd.h"
@@ -32,12 +35,9 @@
 #include <unistd.h>
 #endif
 
-#include <sys/stat.h>
-
 extern void epsf_define(FILE * of);
-extern void epsf_emit_body(ps_image_t *img, FILE *of);
-extern void ps_freeusershapes(void);
-extern ps_image_t *ps_usershape_to_image(char *shapeimagefile);
+extern void epsf_emit_body(usershape_t *us, FILE *of);
+extern char *ps_string(char *ins, int latin);
 
 static int N_pages, Cur_page;
 /* static 	point	Pages; */
@@ -142,7 +142,6 @@ static void ps_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 
 static void ps_end_graph(void)
 {
-    ps_freeusershapes();
     onetime = FALSE;
 }
 
@@ -331,34 +330,6 @@ static void ps_set_style(char **s)
     }
 }
 
-char *ps_string(char *ins, int latin)
-{
-    char *s;
-    char *base;
-    static agxbuf  xb;
-    int rc;
-
-    if (latin)
-	base = utf8ToLatin1 (ins);
-    else
-	base = ins;
-
-    if (xb.buf == NULL)
-	agxbinit (&xb, 0, NULL);
-
-    rc = agxbputc (&xb, LPAREN);
-    s = base;
-    while (*s) {
-	if ((*s == LPAREN) || (*s == RPAREN) || (*s == '\\'))
-	    rc = agxbputc (&xb, '\\');
-	rc = agxbputc (&xb, *s++);
-    }
-    agxbputc (&xb, RPAREN);
-    if (base != ins) free (base);
-    s = agxbuse(&xb);
-    return s;
-}
-
 static void ps_textpara(point p, textpara_t * para)
 {
     double adj;
@@ -492,7 +463,7 @@ static void ps_polyline(point * A, int n)
 #ifdef HAVE_LIBGD
 static void writePSBitmap (gdImagePtr im, boxf bb)
 {
-    int x, y, px;
+    int X = im->sx, Y = im->sy, x, y, px;
 
     fprintf(Output_file, "gsave\n");
 
@@ -503,50 +474,51 @@ static void writePSBitmap (gdImagePtr im, boxf bb)
     fprintf(Output_file,"%g %g scale\n", bb.UR.x - bb.LL.x, bb.UR.y - bb.LL.y);
 
     /* xsize ysize bits-per-sample [matrix] */
-    fprintf(Output_file, "%d %d 8 [%d 0 0 %d 0 %d]\n", im->sx, im->sy, 
-			im->sx, -(im->sy), im->sy);
+    fprintf(Output_file, "%d %d 8 [%d 0 0 %d 0 %d]\n", X, Y, X, -Y, Y);
 
     fprintf(Output_file, "{<\n");
-    for (y = 0; y < im->sy; y++) {
-	for (x = 0; x < im->sx; x++) {
-	    if (im->trueColor) {
+    if (im->trueColor) {
+        for (y = 0; y < Y; y++) {
+	    for (x = 0; x < X; x++) {
 		px = gdImageTrueColorPixel(im, x, y);
 		fprintf(Output_file, "%02x%02x%02x",
 		    gdTrueColorGetRed(px),
 		    gdTrueColorGetGreen(px),
 		    gdTrueColorGetBlue(px));
 	    }
-	    else {
+	    fprintf(Output_file, "\n");
+        }
+    }
+    else {
+        for (y = 0; y < Y; y++) {
+	    for (x = 0; x < X; x++) {
 		px = gdImagePalettePixel(im, x, y);
 		fprintf(Output_file, "%02x%02x%02x",
 		    im->red[px],
 		    im->green[px],
 		    im->blue[px]);
 	    }
-	}
-	fprintf(Output_file, "\n");
+	    fprintf(Output_file, "\n");
+        }
     }
 
     fprintf(Output_file, ">}\n");
     fprintf(Output_file, "false 3 colorimage\n");
 
     fprintf(Output_file, "grestore\n");
-
 }
 #endif
 
-static void ps_freeimage_gd (void *data)
+static void ps_freeimage_gd (usershape_t *us)
 {
 #ifdef HAVE_LIBGD
-    gdImageDestroy((gdImagePtr)data);
+    gdImageDestroy((gdImagePtr)us->data);
 #endif
 }
 
-static void ps_freeimage_ps (void *data)
+static void ps_freeimage_ps (usershape_t *us)
 {
-#if 0
-    free (data);
-#endif
+    munmap(us->data, us->datasize);
 }
 
 /* ps_usershape:
@@ -561,12 +533,6 @@ static void ps_freeimage_ps (void *data)
 static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
     int j;
-#ifdef HAVE_LIBGD
-    gdImagePtr gd_img = NULL;
-#endif
-    ps_image_t *ps_img = NULL;
-    point offset;
-
     if (S[SP].invis)
 	return;
 
@@ -593,127 +559,114 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
     }
 
     if (us->data) {
-	if (us->datafree == ps_freeimage_gd) {
-#ifdef HAVE_LIBGD
-	    gd_img = (gdImagePtr)(us->data);  /* use cached data */
-#endif
-	}
-	else if (us->datafree == ps_freeimage_ps) {
-#if 0
-	    ps_img = (ps_image_t *)(us->data);  /* use cached data */
-#endif
-	}
-	else {
+	if ((us->datafree != (void*)ps_freeimage_gd)
+		&& (us->datafree != (void*)ps_freeimage_ps))  {
 	    us->datafree(us->data);        /* free incompatible cache data */
 	    us->data = NULL;
+	    us->datafree = NULL;
+	    us->datasize = 0;
 	}
     }
 
-#ifdef HAVE_LIBGD
-    if (!ps_img && !gd_img) { /* read file into cache */
-#else
-    if (!ps_img) { /* read file into cache */
-#endif
+    if (! us->data) { /* read file into cache */
+	int fd = fileno(us->f);
+	struct stat statbuf;
+
         fseek(us->f, 0, SEEK_SET);
         switch (us->type) {
 #ifdef HAVE_LIBGD
 #ifdef HAVE_GD_PNG
             case FT_PNG:
-                gd_img = gdImageCreateFromPng(us->f);
+                us->data = (void*)gdImageCreateFromPng(us->f);
+                us->datafree = (void*)ps_freeimage_gd;
                 break;
 #endif
 #ifdef HAVE_GD_GIF
             case FT_GIF:
-                gd_img = gdImageCreateFromGif(us->f);
+                us->data = (void*)gdImageCreateFromGif(us->f);
+                us->datafree = (void*)ps_freeimage_gd;
                 break;
 #endif
 #ifdef HAVE_GD_JPEG
             case FT_JPEG:
-                gd_img = gdImageCreateFromJpeg(us->f);
+                us->data = (void*)gdImageCreateFromJpeg(us->f);
+                us->datafree = (void*)ps_freeimage_gd;
                 break;
 #endif
 #endif
 	    case FT_PS:
 	    case FT_EPS:
-	        ps_img = ps_usershape_to_image(us->name);
+                fstat(fd, &statbuf);
+                us->datasize = statbuf.st_size;
+                us->data = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
+                us->datafree = (void*)ps_freeimage_ps;
+                us->must_inline = true;
 	        break;
             default:
 		break;
         }
+    }
+
+    if (us->data) {
+        boxf bb;
+        pointf p;
+        double pw, ph, tw, th;
+        double scalex, scaley;
+        int i;
+ 
+        /* compute bb of polygon */
+        P2PF(A[0],p);
+        bb.LL = bb.UR = p;
+        for (i = 1; i < n; i++) {
+            P2PF(A[i],p);
+            EXPANDBP(bb, p);
+        }
+        pw = b.UR.x - b.LL.x;
+        ph = b.UR.y - b.LL.y;
+        scalex = pw / (double) (us->w);
+        scaley = ph / (double) (us->h);
+ 
+        /* keep aspect ratio fixed by just using the smaller scale */
+        if (scalex < scaley) {
+             tw = us->w * scalex;
+             th = us->h * scalex;
+         } else {
+             tw = us->w * scaley;
+             th = us->h * scaley;
+         }
+        /* if image is smaller than target area then center it */
+        if (tw < pw) {
+            b.LL.x += (pw - tw) / 2.0;
+            b.UR.x -= (pw - tw) / 2.0;
+        }
+        if (th < ph) {
+            b.LL.y += (ph - th) / 2.0;
+            b.UR.y -= (ph - th) / 2.0;
+	}
+	switch (us->type) {
 #ifdef HAVE_LIBGD
-        if (gd_img) {
-            us->data = (void*)gd_img;
-            us->datafree = ps_freeimage_gd;
-        }
+	case FT_PNG:
+        case FT_GIF:
+        case FT_JPEG:
+	    writePSBitmap ((gdImagePtr)us->data, bb);
+	    break;
 #endif
-#if 0
-        if (ps_img) {
-            us->data = (void*)ps_img;
-            us->datafree = ps_freeimage_ps;
-        }
-#endif
-    }
-
-    if (ps_img) {
-	ps_begin_context();
-	offset.x = -ps_img->origin.x - (ps_img->size.x) / 2;
-	offset.y = -ps_img->origin.y - (ps_img->size.y) / 2;
-	fprintf(Output_file, "%d %d translate newpath\n",
-	    ND_coord_i(Curnode).x + offset.x,
-	    ND_coord_i(Curnode).y + offset.y);
-	if (ps_img->must_inline)
-	    epsf_emit_body(ps_img, Output_file);
-	else
-	    fprintf(Output_file, "user_shape_%d\n", ps_img->macro_id);
-	ps_end_context();
-	return;
-    }
-
-#ifdef HAVE_LIBGD
-    if (gd_img) {
-	boxf bb;
-	pointf p;
-	double pw, ph, tw, th;
-	double scalex, scaley;
-	int i;
-
-	/* compute bb of polygon */
-	P2PF(A[0],p);
-	bb.LL = bb.UR = p;
-	for (i = 1; i < n; i++) {
-	    P2PF(A[i],p);
-	    EXPANDBP(bb, p);
+	case FT_PS:
+	case FT_EPS:
+	    ps_begin_context();
+	    fprintf(Output_file, "%d %d translate newpath\n",
+		ROUND(bb.LL.x - us->x), ROUND(bb.LL.y - us->y));
+	    if (us->must_inline)
+	        epsf_emit_body(us, Output_file);
+	    else
+	        fprintf(Output_file, "user_shape_%d\n", us->macro_id);
+	    ps_end_context();
+	    break;
+	default:
+	    agerr(AGERR, "usershape %s is not supported in PostScript output\n", us->name);
+	    break;
 	}
-	pw = b.UR.x - b.LL.x;
-	ph = b.UR.y - b.LL.y;
-	scalex = pw / (double) (us->w);
-	scaley = ph / (double) (us->h);
-
-	/* keep aspect ratio fixed by just using the smaller scale */
-	if (scalex < scaley) {
-            tw = us->w * scalex;
-            th = us->h * scalex;
-        } else {
-            tw = us->w * scaley;
-            th = us->h * scaley;
-        }
-	/* if image is smaller than target area then center it */
-	if (tw < pw) {
-	    b.LL.x += (pw - tw) / 2.0;
-	    b.UR.x -= (pw - tw) / 2.0;
-	}
-	if (th < ph) {
-	    b.LL.y += (ph - th) / 2.0;
-	    b.UR.y -= (ph - th) / 2.0;
-	}
-
-	writePSBitmap (gd_img, bb);
-	return;
     }
-#endif
-
-    /* some other type of image */
-    agerr(AGERR, "usershape %s is not supported  in PostScript output\n", us->name);
 }
 
 codegen_t PS_CodeGen = {

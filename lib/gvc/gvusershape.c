@@ -22,20 +22,18 @@
 #include <string.h>
 
 #include "types.h"
+#include "memory.h"
 #include "graph.h"
 #include "agxbuf.h"
 #include "utils.h"
 
 static Dict_t *ImageDict;
 
-typedef struct imagerec_s {
-    Dtlink_t link;
-    usershape_t us;
-} imagerec_t;
-
 typedef struct {
     char *template;
-    int size, type;
+    int size;
+    int type;
+    char *stringtype;
 } knowntype_t;
 
 #define HDRLEN 20
@@ -49,13 +47,13 @@ typedef struct {
 #define EPS_MAGIC  "\xC5\xD0\xD3\xC6"
 
 knowntype_t knowntypes[] = {
-    { PNG_MAGIC,  sizeof(PNG_MAGIC)-1,  FT_PNG,  },
-    { PS_MAGIC,   sizeof(PS_MAGIC)-1,   FT_PS,   },
-    { BMP_MAGIC,  sizeof(BMP_MAGIC)-1,  FT_BMP,  },
-    { GIF_MAGIC,  sizeof(GIF_MAGIC)-1,  FT_GIF,  },
-    { JPEG_MAGIC, sizeof(JPEG_MAGIC)-1, FT_JPEG, },
-    { PDF_MAGIC,  sizeof(PDF_MAGIC)-1,  FT_PDF,  },
-    { EPS_MAGIC,  sizeof(EPS_MAGIC)-1,  FT_EPS,  },
+    { PNG_MAGIC,  sizeof(PNG_MAGIC)-1,  FT_PNG,  "png",  },
+    { PS_MAGIC,   sizeof(PS_MAGIC)-1,   FT_PS,   "ps",   },
+    { BMP_MAGIC,  sizeof(BMP_MAGIC)-1,  FT_BMP,  "bmp",  },
+    { GIF_MAGIC,  sizeof(GIF_MAGIC)-1,  FT_GIF,  "gif",  },
+    { JPEG_MAGIC, sizeof(JPEG_MAGIC)-1, FT_JPEG, "jpeg", },
+    { PDF_MAGIC,  sizeof(PDF_MAGIC)-1,  FT_PDF,  "pdf",  },
+    { EPS_MAGIC,  sizeof(EPS_MAGIC)-1,  FT_EPS,  "eps",  },
 };
 
 static int imagetype (usershape_t *us)
@@ -66,8 +64,10 @@ static int imagetype (usershape_t *us)
     if (fread(header, 1, HDRLEN, us->f) != HDRLEN)
 	return -1;
     for (i = 0; i < sizeof(knowntypes) / sizeof(knowntype_t); i++) {
-	if (!memcmp (header, knowntypes[i].template, knowntypes[i].size))
+	if (!memcmp (header, knowntypes[i].template, knowntypes[i].size)) {
+	    us->stringtype = knowntypes[i].stringtype;
 	    return (us->type = knowntypes[i].type);
+	}
     }
     return -1;
 }
@@ -230,55 +230,57 @@ static void ps_size (usershape_t *us)
         }
     }
     if (saw_bb) {
+	us->x = lx;
+	us->y = ly;
         us->w = ux - lx;
         us->h = uy - ly;
     }
 }
 
-static void imagerec_close (Dict_t * dict, Void_t * p, Dtdisc_t * disc)
+static void usershape_close (Dict_t * dict, Void_t * p, Dtdisc_t * disc)
 {
-    imagerec_t *val = (imagerec_t *)p;
+    usershape_t *us = (usershape_t *)p;
 
-    if (val->us.f)
-	fclose(val->us.f);
-    if (val->us.data && val->us.datafree)
-	val->us.datafree(val->us.data);
-    free (val);
+    if (us->f)
+	fclose(us->f);
+    if (us->data && us->datafree)
+	us->datafree(us);
+    free (us);
 }
 
 static Dtdisc_t ImageDictDisc = {
-    offsetof(imagerec_t, us.name), /* key */
+    offsetof(usershape_t, name), /* key */
     -1,                         /* size */
     0,                          /* link offset */
     NIL(Dtmake_f),
-    imagerec_close,
+    usershape_close,
     NIL(Dtcompar_f),
     NIL(Dthash_f),
     NIL(Dtmemory_f),
     NIL(Dtevent_f)
 };
 
-static imagerec_t *imagerec_open (char *name)
+usershape_t *gvusershape_find(char *name)
 {
-    imagerec_t probe, *val;
+    usershape_t probe;
+
+    probe.name = name;
+    return (dtsearch(ImageDict, &probe));
+}
+
+static usershape_t *gvusershape_open (char *name)
+{
     usershape_t *us;
     char *fn;
 
     if (!ImageDict)
         ImageDict = dtopen(&ImageDictDisc, Dttree);
 
-    probe.us.name = name;
-    val = dtsearch(ImageDict, &probe);
-    if (!val) {
-        val = malloc(sizeof(imagerec_t));
-        if (!val)
+    if (! (us = gvusershape_find(name))) {
+        if (! (us = zmalloc(sizeof(usershape_t))))
 	    return NULL;
-	us = &(val->us);
-        us->name = name;
-        us->w = us->h = 0;
-	us->data = NULL;
-	us->datafree = NULL;
 
+	us->name = name;
 	if ((fn = safefile(name))) {
 #ifndef MSWIN32
 	    us->f = fopen(fn, "r");
@@ -309,16 +311,16 @@ static imagerec_t *imagerec_open (char *name)
 	            break;
             }
         }
-        dtinsert(ImageDict, val);
+        dtinsert(ImageDict, us);
     }
 
-    return val;
+    return us;
 }
 
 point gvusershape_size(graph_t * g, char *name)
 {
     point rv;
-    imagerec_t *val;
+    usershape_t *us;
     double dpi;
 
     dpi = GD_drawing(g)->dpi;
@@ -330,29 +332,14 @@ point gvusershape_size(graph_t * g, char *name)
         rv.x = rv.y = -1;
         return rv;
     }
-    if (!strncasecmp(name, "http://", 7)) {
-        rv.x = rv.y = 0;
-        return rv;              /* punt on obvious web addresses */
-    }
 
-    if ((val = imagerec_open (name))) {
-	rv.x = val->us.w * dpi / val->us.dpi;
-	rv.y = val->us.h * dpi / val->us.dpi;
+    if ((us = gvusershape_open (name))) {
+	rv.x = us->w * dpi / us->dpi;
+	rv.y = us->h * dpi / us->dpi;
     }
     else {
         rv.x = rv.y = -1;
     }
 
     return rv;
-}
-
-usershape_t *gvusershape_find(char *name)
-{
-    imagerec_t probe, *val;
-
-    probe.us.name = name;
-    val = dtsearch(ImageDict, &probe);
-    if (!val)
-	return NULL;
-    return &(val->us);
 }

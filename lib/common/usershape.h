@@ -24,12 +24,17 @@ extern "C" {
     typedef enum { FT_BMP, FT_GIF, FT_PNG, FT_JPEG, FT_PDF, FT_PS, FT_EPS } imagetype_t;
 
     typedef struct usershape_s {
+	Dtlink_t link;
 	char *name;
-        FILE *f;
-        imagetype_t type;
-        unsigned int w, h, dpi;
-        void *data;                   /* data loaded by a renderer */
-        void (*datafree)(void *data); /* renderer's function for freeing data */
+	int macro_id;
+	bool must_inline;
+	FILE *f;
+	imagetype_t type;
+	char *stringtype;
+	unsigned int x, y, w, h, dpi;
+	void *data;                   /* data loaded by a renderer */
+	size_t datasize;              /* size of data (if mmap'ed) */
+	void (*datafree)(void *data); /* renderer's function for freeing data */
     } usershape_t;
 
 #ifdef __cplusplus
