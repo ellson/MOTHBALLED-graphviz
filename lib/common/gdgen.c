@@ -884,9 +884,9 @@ static void gd_polyline(point * A, int n)
     }
 }
 
-static void gd_freeimage(void *data)
+static void gd_freeimage(usershape_t *us)
 {
-    gdImageDestroy((gdImagePtr)data);
+    gdImageDestroy((gdImagePtr)us->data);
 }
 
 static void gd_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
@@ -897,7 +897,7 @@ static void gd_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
         if (us->datafree == gd_freeimage)
              im2 = (gdImagePtr)(us->data);  /* use cached data */
         else {
-             us->datafree(us->data);        /* free incompatible cache data */
+             us->datafree(us);        /* free incompatible cache data */
              us->data = NULL;
         }
     }
