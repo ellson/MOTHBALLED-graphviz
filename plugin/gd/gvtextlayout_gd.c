@@ -72,6 +72,7 @@ static void gd_textlayout(textpara_t * para, char **fontpath)
 
 	if (err) {
 	    fprintf(stderr,"%s\n", err);
+	    *fontpath = NULL;   /* indicate error */
 	    return;
 	}
 
