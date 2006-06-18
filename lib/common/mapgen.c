@@ -661,9 +661,8 @@ void map_begin_node(node_t * n)
 	tooltip = ND_label(n)->text;
 
     if (url || m_tooltip) {
-	int sample;
+	int sample = 0;
 	char *p = agget(n, "samplepoints");
-	
 	if (p)
 	    sample = atoi(p);
 	/* We want at least 4 points. For server-side maps, at most 100

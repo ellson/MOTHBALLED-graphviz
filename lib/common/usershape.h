@@ -23,7 +23,9 @@ extern "C" {
 
     typedef enum { FT_BMP, FT_GIF, FT_PNG, FT_JPEG, FT_PDF, FT_PS, FT_EPS } imagetype_t;
 
-    typedef struct usershape_s {
+    typedef struct usershape_s usershape_t;
+
+    struct usershape_s {
 	Dtlink_t link;
 	char *name;
 	int macro_id;
@@ -34,8 +36,8 @@ extern "C" {
 	unsigned int x, y, w, h, dpi;
 	void *data;                   /* data loaded by a renderer */
 	size_t datasize;              /* size of data (if mmap'ed) */
-	void (*datafree)(void *data); /* renderer's function for freeing data */
-    } usershape_t;
+	void (*datafree)(usershape_t *us); /* renderer's function for freeing data */
+    };
 
 #ifdef __cplusplus
 }

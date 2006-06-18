@@ -51,7 +51,7 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
         if (us->datafree == cairo_freeimage)
              surface = (cairo_surface_t*)(us); /* use cached data */
         else {
-             us->datafree(us->data);        /* free incompatible cache data */
+             us->datafree(us);        /* free incompatible cache data */
              us->data = NULL;
         }
     }

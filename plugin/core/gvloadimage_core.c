@@ -96,7 +96,7 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
     }
 
     if (us->data) {
-        if (us->datafree != (void*)ps_freeimage) {
+        if (us->datafree != ps_freeimage) {
             us->datafree(us);        /* free incompatible cache data */
             us->data = NULL;
             us->datafree = NULL;
@@ -121,7 +121,7 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
                 break;
         }
         if (us->data)
-            us->datafree = (void*)ps_freeimage;
+            us->datafree = ps_freeimage;
     }
 
     if (us->data) {

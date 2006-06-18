@@ -559,9 +559,9 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
     }
 
     if (us->data) {
-	if ((us->datafree != (void*)ps_freeimage_gd)
-		&& (us->datafree != (void*)ps_freeimage_ps))  {
-	    us->datafree(us->data);        /* free incompatible cache data */
+	if ((us->datafree != ps_freeimage_gd)
+		&& (us->datafree != ps_freeimage_ps))  {
+	    us->datafree(us);        /* free incompatible cache data */
 	    us->data = NULL;
 	    us->datafree = NULL;
 	    us->datasize = 0;
@@ -578,13 +578,13 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 #ifdef HAVE_GD_PNG
             case FT_PNG:
                 us->data = (void*)gdImageCreateFromPng(us->f);
-                us->datafree = (void*)ps_freeimage_gd;
+                us->datafree = ps_freeimage_gd;
                 break;
 #endif
 #ifdef HAVE_GD_GIF
             case FT_GIF:
                 us->data = (void*)gdImageCreateFromGif(us->f);
-                us->datafree = (void*)ps_freeimage_gd;
+                us->datafree = ps_freeimage_gd;
                 break;
 #endif
 #ifdef HAVE_GD_JPEG
