@@ -28,7 +28,7 @@ libsfio_C_la_DEPENDENCIES = \
 
 $(top_builddir)/FEATURE/sfio: $(top_srcdir)/lib/sfio/features/sfio
 	mkdir -p $(top_builddir)/FEATURE
-	@KSH@ $(top_srcdir)/iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run $(top_srcdir)/lib/sfio/features/sfio >$@
+	$(top_srcdir)/iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run $(top_srcdir)/lib/sfio/features/sfio >$@
 
 $(libsfio_la_OBJECTS): $(top_builddir)/FEATURE/sfio
 

@@ -142,7 +142,6 @@ AC_PROG_LN_S
 AC_CHECK_PROG(SED,sed,sed,false)
 AC_CHECK_PROG(GREP,grep,grep,false)
 AC_CHECK_PROG(SORT,sort,sort,false)
-AC_CHECK_PROG(KSH,ksh,ksh,sh)
 
 # are we building for windows?
 # (these tests must follow AC_ISC_POSIX)
