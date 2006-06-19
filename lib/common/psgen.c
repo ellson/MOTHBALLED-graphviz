@@ -23,7 +23,9 @@
 
 #include "render.h"
 #include "agxbuf.h"
+#if HAVE_SYS_MMAN_H
 #include <sys/mman.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -518,7 +520,11 @@ static void ps_freeimage_gd (usershape_t *us)
 
 static void ps_freeimage_ps (usershape_t *us)
 {
+#if HAVE_SYS_MMAN_H
     munmap(us->data, us->datasize);
+#else
+    free(us->data);
+#endif
 }
 
 /* ps_usershape:
@@ -598,7 +604,12 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 	    case FT_EPS:
                 fstat(fd, &statbuf);
                 us->datasize = statbuf.st_size;
+#if HAVE_SYS_MMAN_H
                 us->data = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
+#else
+		us->data = malloc(statbuf.st_size);
+		read(fd, us->data, statbuf.st_size);
+#endif
                 us->datafree = ps_freeimage_ps;
                 us->must_inline = true;
 	        break;

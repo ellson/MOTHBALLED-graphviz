@@ -242,8 +242,9 @@ dnl Checks for header files
 # AC_HAVE_HEADERS(string.h)
 AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
 	search.h getopt.h pthread.h values.h float.h limits.h termios.h \
-	errno.h time.h sys/time.h sys/times.h sys/types.h unistd.h fenv.h \
-	sys/select.h fpu_control.h sys/fpu.h strings.h sys/socket.h sys/stat.h)
+	errno.h time.h unistd.h fenv.h strings.h \
+	sys/time.h sys/times.h sys/types.h sys/select.h fpu_control.h \
+	sys/fpu.h strings.h sys/socket.h sys/stat.h sys/mman.h)
 AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_STDBOOL
