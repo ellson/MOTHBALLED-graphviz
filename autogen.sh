@@ -16,4 +16,6 @@ patch -N -p0 <ltmain.sh.patch
 rm -f COPYING
 cp cpl1.0.txt COPYING
 
+# don't use any old cache, but create a new one
+rm -f config.cache
 ./configure -C "$@"
