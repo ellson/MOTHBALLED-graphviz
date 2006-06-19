@@ -19,12 +19,12 @@
 #endif
 
 #include <stdlib.h>
-#if HAVE_SYS_MMAN_H
-#include <sys/mman.h>
-#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#if HAVE_SYS_MMAN_H
+#include <sys/mman.h>
+#endif
 
 #include "gvplugin_loadimage.h"
 

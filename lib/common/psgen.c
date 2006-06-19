@@ -23,11 +23,11 @@
 
 #include "render.h"
 #include "agxbuf.h"
+#include <sys/types.h>
+#include <sys/stat.h>
 #if HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
-#include <sys/types.h>
-#include <sys/stat.h>
 
 #ifdef HAVE_LIBGD
 #include "gd.h"
