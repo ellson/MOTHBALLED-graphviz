@@ -590,7 +590,7 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 #ifdef HAVE_GD_JPEG
             case FT_JPEG:
                 us->data = (void*)gdImageCreateFromJpeg(us->f);
-                us->datafree = (void*)ps_freeimage_gd;
+                us->datafree = ps_freeimage_gd;
                 break;
 #endif
 #endif
@@ -599,7 +599,7 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
                 fstat(fd, &statbuf);
                 us->datasize = statbuf.st_size;
                 us->data = mmap(0, statbuf.st_size, PROT_READ, MAP_SHARED, fd, 0);
-                us->datafree = (void*)ps_freeimage_ps;
+                us->datafree = ps_freeimage_ps;
                 us->must_inline = true;
 	        break;
             default:
