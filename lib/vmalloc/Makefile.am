@@ -14,7 +14,7 @@ libvmalloc_C_la_SOURCES = malloc.c vmbest.c vmclear.c vmclose.c vmdcheap.c \
 
 ${top_builddir}/FEATURE/vmalloc: ${top_srcdir}/lib/vmalloc/features/vmalloc
 	mkdir -p ${top_builddir}/FEATURE
-	@KSH@ ${top_srcdir}/iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run ${top_srcdir}/lib/vmalloc/features/vmalloc > $@
+	${top_srcdir}/iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run ${top_srcdir}/lib/vmalloc/features/vmalloc > $@
 
 $(libvmalloc_C_la_OBJECTS): ${top_builddir}/FEATURE/vmalloc
 
