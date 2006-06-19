@@ -11,7 +11,7 @@ libsfiodc_C_la_SOURCES = sfdcdio.c sfdcdos.c sfdcfilter.c sfdclzw.c \
 
 ${top_builddir}/FEATURE/sfio:  ${top_srcdir}/lib/sfio/features/sfio
 	mkdir -p ${top_builddir}/FEATURE
-	@KSH@ $(top_srcdir)/iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run  ${top_srcdir}/lib/sfio/features/sfio > $@
+	$(top_srcdir)/iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run  ${top_srcdir}/lib/sfio/features/sfio > $@
 
 $(libsfiodc_C_la_OBJECTS): ${top_builddir}/FEATURE/sfio
 
