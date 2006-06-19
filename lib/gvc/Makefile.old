@@ -19,7 +19,7 @@ INST_HDRS = gvc.h gvcint.h gvcjob.h gvcext.h gvplugin.h \
 
 NOINST_HDRS = gvcproc.h
 
-OBJS = gvrender.o gvlayout.o gvdevice.o gvcontext.o gvjobs.o \
+OBJS = gvrender.o gvlayout.o gvdevice.o gvcontext.o gvjobs.o gvloadimage.o \
 	gvplugin.o gvconfig.o gvevent.o gvtextlayout.o gvusershape.o gvc.o
 
 EXTRA_OBJS = no_builtins.o dot_builtins.o
