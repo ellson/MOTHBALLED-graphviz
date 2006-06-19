@@ -48,6 +48,7 @@ hdr values
 
 sys types
 sys socket
+sys mman
 sys stat
 sys select
 sys fpu
