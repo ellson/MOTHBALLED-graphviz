@@ -38,4 +38,4 @@ EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 rpm: dist
 	rpmbuild -ta graphviz-@VERSION@.tar.gz
 
-DISTCLEANFILES = builddate.h ast_common.h FEATURE/* graphviz-@VERSION@*
+DISTCLEANFILES = config.cache builddate.h ast_common.h FEATURE/* graphviz-@VERSION@*
