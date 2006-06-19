@@ -256,8 +256,9 @@ ps_set_pen_style(GVJ_t *job)
 {
     double penwidth = job->style->penwidth * job->zoom;
     char *p, *line, **s = job->rawstyle;
+    FILE *out = job->output_file;
 
-    fprintf(stderr,"%g setlinewidth\n", penwidth);
+    fprintf(out,"%g setlinewidth\n", penwidth);
 
     while (s && (p = line = *s++)) {
 	if (strcmp(line, "setlinewidth") == 0)
@@ -266,14 +267,14 @@ ps_set_pen_style(GVJ_t *job)
 	    p++;
 	p++;
 	while (*p) {
-            fprintf(stderr,"%s ", p);
+            fprintf(out,"%s ", p);
 	    while (*p)
 		p++;
 	    p++;
 	}
 	if (strcmp(line, "invis") == 0)
 	    job->style->penwidth = 0;
-	fprintf(stderr, "%s\n", line);
+	fprintf(out, "%s\n", line);
     }
 }
 
