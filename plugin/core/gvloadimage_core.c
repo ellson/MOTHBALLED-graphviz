@@ -21,7 +21,9 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#if HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #if HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
