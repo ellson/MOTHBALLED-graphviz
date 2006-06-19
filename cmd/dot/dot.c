@@ -22,6 +22,7 @@
 #include "config.h"
 #endif
 
+#include "builddate.h"
 #include "gvc.h"
 #include "globals.h"
 

@@ -18,6 +18,7 @@
 /* avoid compiler warnings with template changes in Tcl8.4 */
 /*    specifically just the change to Tcl_CmdProc */
 #define USE_NON_CONST
+#include "builddate.h"
 #include "render.h"
 #include "gvc.h"
 #include "tcl.h"

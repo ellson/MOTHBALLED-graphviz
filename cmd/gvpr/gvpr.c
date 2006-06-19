@@ -41,6 +41,7 @@
 #else
 #include "compat_getopt.h"
 #endif
+#include "builddate.h"
 
 char *Info[] = {
     "dot",			/* Program */

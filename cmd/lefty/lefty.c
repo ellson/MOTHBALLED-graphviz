@@ -22,6 +22,7 @@
 
 #define LEFTYVERSION "10 Mar 2005"
 
+#include "builddate.h"
 #include "common.h"
 #include "g.h"
 #include "code.h"

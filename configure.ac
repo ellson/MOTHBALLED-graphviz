@@ -96,9 +96,13 @@ AC_DEFINE_UNQUOTED(DEFAULT_DPI,$DEFAULT_DPI,Default DPI.)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 AM_CONFIG_HEADER(config.h)
 
-AC_DEFINE_UNQUOTED(BUILDDATE,"`date -u`",[Date (usually date of extraction from CVS).])
-BUILDDATE="`date -u`"
-AC_SUBST(BUILDDATE)
+# put BUILDDATE in its own file so that only targets that use it get rebuilt
+echo "#define BUILDDATE \"`date -u`\"" > builddate.h
+
+# only update ast_common.h (for GNU builds) from master if changed
+if ! `cmp -s ast_common.h.in ast_common.h`; then
+	cp ast_common.h.in ast_common.h;
+fi
 
 AC_PREFIX_DEFAULT([/usr/local])
 if test "x${prefix}" = "xNONE"; then
@@ -1869,7 +1873,6 @@ AC_CONFIG_FILES(Makefile
 	tclpkg/gv/Makefile
 	graphviz.spec
 	Doxyfile
-	ast_common.h
 	)
 
 AC_OUTPUT

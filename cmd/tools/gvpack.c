@@ -36,6 +36,8 @@
 #include <pack.h>
 #include <assert.h>
 
+#include "builddate.h"
+
 extern Agdict_t *agdictof(void *);
 
 /* gvpack:

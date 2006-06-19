@@ -18,6 +18,7 @@
 #include "config.h"
 #endif
 
+#include "builddate.h"
 #include "types.h"
 #include "graph.h"
 #include "const.h"
