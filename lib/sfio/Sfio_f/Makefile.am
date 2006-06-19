@@ -12,7 +12,7 @@ libsfiof_C_la_SOURCES = _sfclrerr.c _sfdlen.c _sfeof.c _sferror.c \
 
 ${top_builddir}/FEATURE/sfio:  ${top_srcdir}/lib/sfio/features/sfio
 	mkdir -p ${top_builddir}/FEATURE
-	@KSH@ $(top_srcdir)/iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run ${top_srcdir}/lib/sfio/features/sfio > $@
+	$(top_srcdir)/iffe - set cc $(CC) $(CCMODE) $(CXFLAGS) : run ${top_srcdir}/lib/sfio/features/sfio > $@
 
 $(libsfiof_C_la_OBJECTS): ${top_builddir}/FEATURE/sfio
 
