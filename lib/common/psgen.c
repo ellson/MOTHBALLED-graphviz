@@ -539,11 +539,16 @@ static void ps_freeimage_ps (usershape_t *us)
 static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
     int j;
+    shape_desc *shape;
+
+    assert(us);
+    assert(us->name);
+
     if (S[SP].invis)
 	return;
 
     if (!us->f) {
-        if (us->data) { /* if we found the shape in a library then us->data was set */
+        if ((shape = (shape_desc*)us->data)) { /* if we found the shape in a library then us->data was set */
 	    if (filled) {
 	        ps_begin_context();
 	        ps_set_color(S[SP].fillcolor);

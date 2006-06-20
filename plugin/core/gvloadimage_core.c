@@ -136,6 +136,7 @@ static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, bool fill
     int i;
     pointf AF[4];
     FILE *out;
+    shape_desc *shape;
 
     assert(job);
     assert(us);
@@ -145,7 +146,7 @@ static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, bool fill
     out = job->output_file;
     assert(out);
 
-    if (us->data) { /* if us->name was found in a library, then us->data was set */
+    if ((shape = (shape_desc*)us->data)) {
 	AF[0] = b.LL;
 	AF[2] = b.UR;
 	AF[1].x = AF[0].x;
