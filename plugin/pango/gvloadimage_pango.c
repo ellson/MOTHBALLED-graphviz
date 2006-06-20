@@ -47,6 +47,11 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
 {
     cairo_surface_t *surface = NULL; /* source surface */
 
+    assert(job);
+    assert(us);
+    assert(us->name);
+    assert(us->f);
+
     if (us->data) {
         if (us->datafree == cairo_freeimage)
              surface = (cairo_surface_t*)(us->data); /* use cached data */

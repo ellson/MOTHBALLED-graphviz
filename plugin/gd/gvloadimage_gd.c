@@ -47,6 +47,11 @@ static void gd_freeimage(usershape_t *us)
 
 static gdImagePtr gd_loadimage(GVJ_t * job, usershape_t *us)
 {
+    assert(job);
+    assert(us);
+    assert(us->name);
+    assert(us->f);
+
     if (us->data) {
 	if (us->datafree != gd_freeimage) {
 	     us->datafree(us);        /* free incompatible cache data */

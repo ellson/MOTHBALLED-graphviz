@@ -43,21 +43,24 @@ typedef enum {
 
 static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
-    if (us->name) {
-        svggen_fputs(job, "<image xlink:href=\"");
-        svggen_fputs(job, us->name);
-        if (job->rotation) {
-            svggen_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
-                b.UR.y - b.LL.y, b.UR.x - b.LL.x, b.LL.x, b.UR.y);
-            svggen_printf (job, " transform=\"rotate(%d %g %g)\"",
-                job->rotation, b.LL.x, b.UR.y);
-        }
-        else {
-            svggen_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
-                b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
-        }
-        svggen_fputs(job, "/>\n");
+    assert(job);
+    assert(us);
+    assert(us->name);
+    assert(us->f);
+
+    svggen_fputs(job, "<image xlink:href=\"");
+    svggen_fputs(job, us->name);
+    if (job->rotation) {
+        svggen_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+            b.UR.y - b.LL.y, b.UR.x - b.LL.x, b.LL.x, b.UR.y);
+        svggen_printf (job, " transform=\"rotate(%d %g %g)\"",
+            job->rotation, b.LL.x, b.UR.y);
     }
+    else {
+        svggen_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+            b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
+    }
+    svggen_fputs(job, "/>\n");
 }
 
 static void ps_freeimage(usershape_t *us)
@@ -72,7 +75,15 @@ static void ps_freeimage(usershape_t *us)
 /* usershape described by a postscript file */
 static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
-    FILE *out = job->output_file;
+    FILE *out;
+
+    assert(job);
+    assert(us);
+    assert(us->name);
+    assert(us->f);
+
+    out = job->output_file;
+    assert(out);
 
     if (us->data) {
         if (us->datafree != ps_freeimage) {
@@ -122,11 +133,19 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 /* usershape described by a member of a postscript library */
 static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
-    FILE *out = job->output_file;
     int i;
     pointf AF[4];
+    FILE *out;
 
-    if (find_user_shape(us->name)) {
+    assert(job);
+    assert(us);
+    assert(us->name);
+    assert(!(us->f));
+
+    out = job->output_file;
+    assert(out);
+
+    if (us->data) { /* if us->name was found in a library, then us->data was set */
 	AF[0] = b.LL;
 	AF[2] = b.UR;
 	AF[1].x = AF[0].x;

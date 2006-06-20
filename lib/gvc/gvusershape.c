@@ -291,6 +291,10 @@ static usershape_t *gvusershape_open (char *name)
 #endif
 	}
         switch(imagetype(us)) {
+	    case FT_NULL:
+		if (!(us->data = (void*)find_user_shape(us->name)))
+		    agerr(AGWARN, "\"%s\" was not found as a file or as a shape library member\n", us->name);
+		break;
 	    case FT_GIF:
 	        gif_size(us);
 	        break;
@@ -308,7 +312,6 @@ static usershape_t *gvusershape_open (char *name)
 	        break;
 	    case FT_PDF:   /* no pdf_size code available */
 	    case FT_EPS:   /* no eps_size code available */
-	    case FT_NULL:  /* no size code for eps libraries of shapes */
 	    default:
 	        break;
         }

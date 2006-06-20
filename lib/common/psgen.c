@@ -543,7 +543,7 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 	return;
 
     if (!us->f) {
-        if (find_user_shape(us->name)) {
+        if (us->data) { /* if we found the shape in a library then us->data was set */
 	    if (filled) {
 	        ps_begin_context();
 	        ps_set_color(S[SP].fillcolor);
@@ -560,7 +560,6 @@ static void ps_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 	    fprintf(Output_file, "%d %d ", A[0].x, A[0].y);
 	    fprintf(Output_file, "]  %d false %s\n", n, us->name);
         }
-        else {   /* name not find by find_ser_shape */  }
 	return;  
     }
 
