@@ -38,7 +38,7 @@ extern shape_desc *find_user_shape(char *name);
 
 typedef enum {
     FORMAT_PNG_SVG, FORMAT_GIF_SVG, FORMAT_JPEG_SVG,
-    FORMAT_PS_PS,
+    FORMAT_PS_PS, FORMAT__PS,
 } format_type;
 
 static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled)
@@ -69,39 +69,10 @@ static void ps_freeimage(usershape_t *us)
 #endif
 }
 
-/* usershape described by a postscript function */
+/* usershape described by a postscript file */
 static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 {
     FILE *out = job->output_file;
-    int j;
-    pointf AF[4];
-
-    if (!us->f) {
-        if (find_user_shape(us->name)) {
-	    AF[0] = b.LL;
-	    AF[2] = b.UR;
-	    AF[1].x = AF[0].x;
-	    AF[1].y = AF[2].y;
-	    AF[3].x = AF[2].x;
-	    AF[3].y = AF[0].y;
-            if (filled) {
-//                ps_begin_context();
-//                ps_set_color(S[SP].fillcolor);
-                fprintf(out, "[ ");
-                for (j = 0; j < 4; j++)
-                    fprintf(out, "%g %g ", AF[j].x, AF[j].y);
-                fprintf(out, "%g %g ", AF[0].x, AF[0].y);
-                fprintf(out, "]  %d true %s\n", 4, us->name);
-//                ps_end_context();
-            }
-            fprintf(out, "[ ");
-            for (j = 0; j < 4; j++)
-                fprintf(out, "%g %g ", AF[j].x, AF[j].y);
-            fprintf(out, "%g %g ", AF[0].x, AF[0].y);
-            fprintf(out, "]  %d false %s\n", 4, us->name);
-        }
-        return;
-    }
 
     if (us->data) {
         if (us->datafree != ps_freeimage) {
@@ -148,6 +119,38 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
     }
 }
 
+/* usershape described by a member of a postscript library */
+static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, bool filled)
+{
+    FILE *out = job->output_file;
+    int i;
+    pointf AF[4];
+
+    if (find_user_shape(us->name)) {
+	AF[0] = b.LL;
+	AF[2] = b.UR;
+	AF[1].x = AF[0].x;
+	AF[1].y = AF[2].y;
+	AF[3].x = AF[2].x;
+	AF[3].y = AF[0].y;
+        if (filled) {
+//            ps_begin_context();
+//            ps_set_color(S[SP].fillcolor);
+            fprintf(out, "[ ");
+            for (i = 0; i < 4; i++)
+                fprintf(out, "%g %g ", AF[i].x, AF[i].y);
+            fprintf(out, "%g %g ", AF[0].x, AF[0].y);
+            fprintf(out, "]  %d true %s\n", 4, us->name);
+//            ps_end_context();
+        }
+        fprintf(out, "[ ");
+        for (i = 0; i < 4; i++)
+            fprintf(out, "%g %g ", AF[i].x, AF[i].y);
+        fprintf(out, "%g %g ", AF[0].x, AF[0].y);
+        fprintf(out, "]  %d false %s\n", 4, us->name);
+    }
+}
+
 static gvloadimage_engine_t engine_svg = {
     core_loadimage_svg
 };
@@ -156,10 +159,15 @@ static gvloadimage_engine_t engine_ps = {
     core_loadimage_ps
 };
 
+static gvloadimage_engine_t engine_pslib = {
+    core_loadimage_pslib
+};
+
 gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_PNG_SVG, "png2svg", 1, &engine_svg, NULL},
     {FORMAT_GIF_SVG, "gif2svg", 1, &engine_svg, NULL},
     {FORMAT_JPEG_SVG, "jpeg2svg", 1, &engine_svg, NULL},
     {FORMAT_PS_PS, "ps2ps", 1, &engine_ps, NULL},
+    {FORMAT__PS, "2ps", 1, &engine_pslib, NULL},
     {0, NULL, 0, NULL, NULL}
 };

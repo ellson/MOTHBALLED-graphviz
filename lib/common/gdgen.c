@@ -893,6 +893,9 @@ static void gd_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
 {
     gdImagePtr im2 = NULL, im3;
 
+    if (!us->f)
+	return;
+
     if (us->data) {
         if (us->datafree == gd_freeimage)
              im2 = (gdImagePtr)(us->data);  /* use cached data */

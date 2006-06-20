@@ -58,9 +58,6 @@ void gvloadimage(GVJ_t * job, usershape_t *us, boxf b, bool filled, char *target
     if (type)
         gvloadimage_select(job, type);
 
-    if ((gvli = job->loadimage.engine)) {
-	if (gvli->loadimage) {
-	    gvli->loadimage(job, us, b, filled);
-	}
-    }
+    if ((gvli = job->loadimage.engine) && gvli->loadimage)
+	gvli->loadimage(job, us, b, filled);
 }

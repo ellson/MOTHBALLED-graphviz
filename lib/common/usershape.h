@@ -21,7 +21,10 @@
 extern "C" {
 #endif
 
-    typedef enum { FT_BMP, FT_GIF, FT_PNG, FT_JPEG, FT_PDF, FT_PS, FT_EPS } imagetype_t;
+    typedef enum { FT_NULL,
+		FT_BMP, FT_GIF, FT_PNG, FT_JPEG,
+		FT_PDF, FT_PS, FT_EPS
+    } imagetype_t;
 
     typedef struct usershape_s usershape_t;
 

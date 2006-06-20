@@ -61,15 +61,17 @@ static int imagetype (usershape_t *us)
     char header[HDRLEN];
     int i;
 
-    if (fread(header, 1, HDRLEN, us->f) != HDRLEN)
-	return -1;
-    for (i = 0; i < sizeof(knowntypes) / sizeof(knowntype_t); i++) {
-	if (!memcmp (header, knowntypes[i].template, knowntypes[i].size)) {
-	    us->stringtype = knowntypes[i].stringtype;
-	    return (us->type = knowntypes[i].type);
-	}
+    if (us->f && fread(header, 1, HDRLEN, us->f) == HDRLEN) {
+        for (i = 0; i < sizeof(knowntypes) / sizeof(knowntype_t); i++) {
+	    if (!memcmp (header, knowntypes[i].template, knowntypes[i].size)) {
+	        us->stringtype = knowntypes[i].stringtype;
+	        return (us->type = knowntypes[i].type);
+	    }
+        }
     }
-    return -1;
+    us->stringtype = "";
+    us->type = FT_NULL;
+    return FT_NULL;
 }
     
 static bool get_int_lsb_first (FILE *f, unsigned int sz, unsigned int *val)
@@ -288,28 +290,27 @@ static usershape_t *gvusershape_open (char *name)
 	    us->f = fopen(fn, "rb");
 #endif
 	}
-        if (us->f) {
-            switch(imagetype(us)) {
-	        case FT_GIF:
-	            gif_size(us);
-	            break;
-	        case FT_PNG:
-	            png_size(us);
-	            break;
-	        case FT_BMP:
-	            bmp_size(us);
-	            break;
-	        case FT_JPEG:
-	            jpeg_size(us);
-	            break;
-	        case FT_PS:
-	            ps_size(us);
-	            break;
-	        case FT_PDF:   /* no pdf_size code available */
-	        case FT_EPS:   /* no eps_size code available */
-	        default:
-	            break;
-            }
+        switch(imagetype(us)) {
+	    case FT_GIF:
+	        gif_size(us);
+	        break;
+	    case FT_PNG:
+	        png_size(us);
+	        break;
+	    case FT_BMP:
+	        bmp_size(us);
+	        break;
+	    case FT_JPEG:
+	        jpeg_size(us);
+	        break;
+	    case FT_PS:
+	        ps_size(us);
+	        break;
+	    case FT_PDF:   /* no pdf_size code available */
+	    case FT_EPS:   /* no eps_size code available */
+	    case FT_NULL:  /* no size code for eps libraries of shapes */
+	    default:
+	        break;
         }
         dtinsert(ImageDict, us);
     }
