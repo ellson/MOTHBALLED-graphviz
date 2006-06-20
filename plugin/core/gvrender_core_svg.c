@@ -567,9 +567,9 @@ gvrender_features_t svggen_features = {
 };
 
 gvplugin_installed_t gvrender_core_svg_types[] = {
-    {FORMAT_SVG, "svg", -1, &svggen_engine, &svggen_features},
+    {FORMAT_SVG, "svg", 1, &svggen_engine, &svggen_features},
 #if HAVE_LIBZ
-    {FORMAT_SVGZ, "svgz", -1, &svggen_engine, &svggen_features},
+    {FORMAT_SVGZ, "svgz", 1, &svggen_engine, &svggen_features},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

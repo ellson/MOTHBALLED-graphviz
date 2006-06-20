@@ -474,7 +474,7 @@ gvplugin_installed_t gvrender_pango_types[] = {
     {FORMAT_PS, "ps", -10, &cairogen_engine, &cairogen_features_ps},
 #endif
 #ifdef CAIRO_HAS_PDF_SURFACE
-    {FORMAT_PDF, "pdf", 0, &cairogen_engine, &cairogen_features_ps},
+    {FORMAT_PDF, "pdf", 1, &cairogen_engine, &cairogen_features_ps},
 #endif
 #ifdef CAIRO_HAS_SVG_SURFACE
     {FORMAT_SVG, "svg", -10, &cairogen_engine, &cairogen_features_ps},

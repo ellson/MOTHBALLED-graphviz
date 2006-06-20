@@ -476,7 +476,7 @@ static gvrender_features_t psgen_features = {
 };
 
 gvplugin_installed_t gvrender_core_ps_types[] = {
-    {FORMAT_PS, "ps", -2, &psgen_engine, &psgen_features},
-    {FORMAT_PS2, "ps2", -2, &psgen_engine, &psgen_features},
+    {FORMAT_PS, "ps", 1, &psgen_engine, &psgen_features},
+    {FORMAT_PS2, "ps2", 1, &psgen_engine, &psgen_features},
     {0, NULL, 0, NULL, NULL}
 };
