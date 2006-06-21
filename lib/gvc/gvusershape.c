@@ -266,6 +266,9 @@ usershape_t *gvusershape_find(char *name)
 {
     usershape_t probe;
 
+    if (!ImageDict)
+	return NULL;
+
     probe.name = name;
     return (dtsearch(ImageDict, &probe));
 }
