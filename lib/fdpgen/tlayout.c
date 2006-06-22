@@ -48,6 +48,7 @@
 #include <ctype.h>
 #include <dbg.h>
 #include <grid.h>
+#include <neato.h>
 
 #ifndef HAVE_SRAND48
 #define srand48 srand
@@ -82,7 +83,7 @@ typedef struct {
     double Tfact;	/* scale temp from default expression */
     double K;		/* spring constant; ideal distance */
     double T0;          /* initial temperature */
-    seedMode smode;     /* seed mode */
+    int smode;          /* seed mode */
     double Cell;	/* grid cell size */
     double Cell2;	/* Cell*Cell */
     double K2;		/* K*K */
@@ -122,7 +123,7 @@ static parms_t parms;
 #define DFLT_K  0.3
 #define DFLT_Cell  0.0
 #define DFLT_seed  1
-#define DFLT_smode seed_val
+#define DFLT_smode INIT_RANDOM
 
 static double cool(double temp, int t)
 {
@@ -180,51 +181,6 @@ static int init_params(graph_t * g, xparams * xpms)
     return ret;
 }
 
-/* setInt:
- * If arg is an integer, value is stored in v
- * and functions returns 0; otherwise, returns 1.
- */
-static int setInt(int *v, char *arg)
-{
-    char *p;
-    int i;
-
-    i = (int) strtol(arg, &p, 10);
-    if (p == arg) {
-	agerr(AGERR, "bad value in flag -L%s - ignored\n", arg - 1);
-	return 1;
-    }
-    *v = i;
-    return 0;
-}
-
-/* fdp_setSeed:
- * Takes string and evaluates it as
- * a supported seed mode. If arg is an
- * integer, mode is seed_val and integer is
- * used as seed. If arg is "regular", mode is
- * seed_regular. Otherwise, mode is seed_time.
- * Returns 0 unless arg is NULL
- */
-static int fdp_setSeed(seedMode * sm, char *arg)
-{
-    int v;
-
-    if (arg == NULL)
-	return 1;
-    if (isdigit(*arg)) {
-	if (!setInt(&v, arg)) {
-	    *sm = seed_val;
-	    T_seed = v;
-	}
-    } else if (!strcmp(arg, "regular")) {
-	*sm = seed_regular;
-    } else
-	*sm = seed_time;
-    return 0;
-}
-
-
 /* fdp_initParams:
  * Initialize parameters based on root graph attributes.
  */
@@ -243,9 +199,11 @@ void fdp_initParams(graph_t * g)
 	T_T0 = late_double(g, agfindattr(g, "T0"), -1.0, 0.0);
     } else
 	T_T0 = D_T0;
-    if (fdp_setSeed(&T_smode, agget(g, "start"))) {
-	T_smode = DFLT_smode;
-	T_seed = DFLT_seed;
+    T_seed = DFLT_seed;
+    T_smode = setSeed (g, DFLT_smode, &T_seed);
+    if (T_smode == INIT_SELF) {
+	agerr(AGWARN, "fdp does not support start=self - ignoring\n");
+	T_seed = DFLT_smode;
     }
 
     T_pass1 = (T_unscaled * T_maxIters) / 100;
@@ -582,7 +540,7 @@ static pointf initPositions(graph_t * g, bport_t * pp)
     T_Ht2 = T_Ht * T_Ht;
 
     /* Set seed value */
-    if (T_smode == seed_val)
+    if (T_smode == INIT_RANDOM)
 	local_seed = T_seed;
     else {
 #ifdef MSWIN32
