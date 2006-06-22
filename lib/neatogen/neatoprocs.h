@@ -68,6 +68,7 @@ extern "C" {
     extern int scan_graph(graph_t *);
     extern int scan_graph_mode(graph_t * G, int mode);
     extern void free_scan_graph(graph_t *);
+    extern int setSeed (graph_t*, int dflt, long* seedp);
     extern void shortest_path(graph_t *, int);
     extern void solve(double *, double *, double *, int);
     extern void solve_model(graph_t *, int);

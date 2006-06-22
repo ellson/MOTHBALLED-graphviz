@@ -1009,60 +1009,76 @@ static void initRegular(graph_t * G, int nG)
 #define REGULAR "regular"
 #define RANDOM  "random"
 
+/* setSeed:
+ * Analyze "start" attribute. If unset, return dflt.
+ * If it begins with self, regular, or random, return set init to same,
+ * else set init to dflt.
+ * If init is random, look for value integer suffix to use a seed; if not
+ * found, use time to set seed and store seed in graph.
+ * Return seed in seedp.
+ * Return init.
+ */
+int
+setSeed (graph_t * G, int dflt, long* seedp)
+{
+    char smallbuf[32];
+    char *p = agget(G, "start");
+    unsigned char uc = *(unsigned char *) p;
+    int init;
+
+    if (!p || (*p == '\0')) return dflt;
+    uc = *(unsigned char *) p;
+    if (isalpha(*(unsigned char *)p)) {
+	if (!strncmp(p, SMART, SLEN(SMART))) {
+	    init = INIT_SELF;
+	    p += SLEN(SMART);
+	} else if (!strncmp(p, REGULAR, SLEN(REGULAR))) {
+	    init = INIT_REGULAR;
+	    p += SLEN(REGULAR);
+	} else if (!strncmp(p, RANDOM, SLEN(RANDOM))) {
+	    init = INIT_RANDOM;
+	    p += SLEN(RANDOM);
+	}
+	else init = dflt;
+    }
+    if (init == INIT_RANDOM) {
+	long seed;
+	/* Check for seed value */
+	if (!isdigit(p) || sscanf(p, "%ld", &seed) < 1) {
+#ifdef MSWIN32
+	    seed = (unsigned) time(NULL);
+#else
+	    seed = (unsigned) getpid() ^ (unsigned) time(NULL);
+#endif
+	    sprintf(smallbuf, "%ld", seed);
+	    agset(G, "start", smallbuf);
+	}
+	*seedp = seed;
+    }
+    return init;
+}
+
 /* checkStart:
  * Analyzes start attribute, setting seed.
  * If set,
  *   If start is regular, places nodes and returns INIT_REGULAR.
  *   If start is self, returns INIT_SELF.
  *   If start is random, returns INIT_RANDOM
- *   If number follows, use as seed.
- *   else set seed random
+ *   Set RNG seed
  * else return default
  * 
  */
 int checkStart(graph_t * G, int nG, int dflt)
 {
-    char *p;
-    unsigned int seed;
-    char smallbuf[32];
-    int init = dflt;
+    long seed;
+    int init;
 
     seed = 1;
-    p = agget(G, "start");
-    if (p) {
-	unsigned char uc = *(unsigned char *) p;
-	if (isalpha(uc)) {
-	    if (!strncmp(p, SMART, SLEN(SMART))) {
-		if (N_pos)
-		    agerr(AGWARN,
-			  "node positions are ignored with start=%s\n",
-			  SMART);
-		init = INIT_SELF;
-		p += SLEN(SMART);
-	    } else if (!strncmp(p, REGULAR, SLEN(REGULAR))) {
-		if (N_pos)
-		    agerr(AGWARN,
-			  "node positions are ignored with start=%s\n",
-			  REGULAR);
-		initRegular(G, nG);
-		return INIT_REGULAR;
-	    } else if (!strncmp(p, RANDOM, SLEN(RANDOM))) {
-		init = INIT_RANDOM;
-		p += SLEN(RANDOM);
-	    }
-	}
-
-	/* Check for seed value */
-	if (sscanf(p, "%d", &seed) < 1) {
-#ifdef MSWIN32
-	    seed = (unsigned) time(NULL);
-#else
-	    seed = (unsigned) getpid() ^ (unsigned) time(NULL);
-#endif
-	    sprintf(smallbuf, "%u", seed);
-	    agset(G, "start", smallbuf);
-	}
+    init = setSeed (G, dflt, &seed); 
+    if (N_pos && (init != INIT_RANDOM)) {
+	agerr(AGWARN, "node positions are ignored unless start=random\n");
     }
+    if (init == INIT_REGULAR) initRegular(G, nG);
     srand48(seed);
     return init;
 }
