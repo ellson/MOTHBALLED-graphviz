@@ -212,7 +212,7 @@ static void svggen_begin_job(GVJ_t * job)
 	}
 	break;
 #else
-	(job->gvc->errorfn) ("No libz support.\n");
+	(job->common->errorfn) ("No libz support.\n");
 	exit(1);
 #endif
     case FORMAT_SVG:
@@ -282,7 +282,7 @@ static void svggen_end_graph(GVJ_t * job)
 	gzclose((gzFile *) (job->output_file));
 	break;
 #else
-	(job->gvc->errorfn) ("No libz support\n");
+	(job->common->errorfn) ("No libz support\n");
 	exit(1);
 #endif
     case FORMAT_SVG:
