@@ -218,8 +218,7 @@ static void dia_grstylefill(context_t * cp, int filled)
 static void dia_comment(char *str)
 {
     dia_fputs("<!-- ");
-    /* FIXME - should check for --> sequences in str */
-    dia_fputs(str);
+    dia_fputs(xml_string(str));
     dia_fputs(" -->\n");
 }
 
@@ -471,20 +470,10 @@ static void dia_set_style(char **s)
 static void dia_textpara(point p, textpara_t * para)
 {
     int anchor;
-    char *string;
     pointf mp;
     context_t *cp;
 
-    string = xml_string(para->str);
-    if (strlen(string) == 0) {
-	/* its zero length, don't draw */
-	return;
-    }
     cp = &(cstk[SP]);
-    if (cp->pen == P_NONE) {
-	/* its invisible, don't draw */
-	return;
-    }
     switch (para->just) {
     case 'l':
 	anchor = 0;
@@ -506,7 +495,7 @@ static void dia_textpara(point p, textpara_t * para)
     dia_fputs("        <dia:composite type=\"text\">\n");
     dia_fputs("          <dia:attribute name=\"string\">\n");
     dia_fputs("            <dia:string>#");
-    dia_fputs(string);
+    dia_fputs(xml_string(para->str));
     dia_fputs("#</dia:string>\n");
     dia_fputs("          </dia:attribute>\n");
     dia_fputs("          <dia:attribute name=\"font\">\n");

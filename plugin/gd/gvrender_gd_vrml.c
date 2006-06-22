@@ -15,13 +15,29 @@
 **********************************************************/
 
 
-#include "render.h"
-#include "gd.h"
-#include "pathutil.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-extern char *get_ttf_fontpath(char *fontreq, int warn);
+#include <stdlib.h>
+#include <stddef.h>
+#include <string.h>
+#include <fcntl.h>
+
+#include "gvplugin_render.h"
 
 #ifdef HAVE_GD_PNG
+#include "gd.h"
+#include "graph.h"
+
+/* for late_double() */
+#include "agxbuf.h"
+#include "utils.h"
+
+/* for wind() */
+#include "pathutil.h"
+
+extern shape_kind shapeOf(node_t *);
 
 typedef enum { FORMAT_VRML, } format_type;
 
@@ -59,8 +75,6 @@ typedef struct {
 /* static int	N_pages; */
 /* static point	Pages; */
 static double Scale;
-static int Rot;
-static box BB;
 static double MinZ;
 /* static int	onetime = TRUE; */
 static int Saw_skycolor;
@@ -144,36 +158,6 @@ static FILE *nodefile(char *filename, node_t * n)
     return rv;
 }
 
-static unsigned char vrml_resolve_color(char *name)
-{
-    gvcolor_t color;
-
-    if (!(strcmp(name, "transparent"))) {
-	/* special case for "transparent" color */
-	return gdImageColorResolve(im, 255, 255, 254);
-    } else {
-	colorxlate(name, &color, RGBA_BYTE);
-	return gdImageColorResolve(im,
-				   color.u.rgba[0], color.u.rgba[1],
-				   color.u.rgba[2]);
-    }
-}
-
-static void vrml_set_pencolor(char *name)
-{
-    cstk[SP].pencolor = name;
-}
-
-static void vrml_set_fillcolor(char *name)
-{
-    gvcolor_t color;
-    cstk[SP].fillcolor = name;
-    colorxlate(name, &color, RGBA_BYTE);
-    cstk[SP].r = (double) color.u.rgba[0] / 255.0;
-    cstk[SP].g = (double) color.u.rgba[1] / 255.0;
-    cstk[SP].b = (double) color.u.rgba[2] / 255.0;
-}
-
 static void init_png(gdImagePtr im)
 {
     int transparent;
@@ -184,17 +168,17 @@ static void init_png(gdImagePtr im)
     }
 }
 
-static pointf vrml_node_point(node_t *n, point p)
+static pointf vrml_node_point(GVJ_t *job, node_t *n, point p)
 {
     pointf rv;
 
     /* make mp relative to PNG canvas */
-    if (Rot == 0) {
-	rv.x = (p.x - ND_coord_i(n).x + ND_lw_i(n)) * Scale;
-	rv.y = (ND_coord_i(n).y - p.y + ND_ht_i(n) / 2) * Scale;
-    } else {
+    if (job->rotation) {
 	rv.x = (p.y - ND_coord_i(n).y + ND_lw_i(n)) * Scale;
 	rv.y = (ND_coord_i(n).x - p.x + ND_ht_i(n) / 2) * Scale;
+    } else {
+	rv.x = (p.x - ND_coord_i(n).x + ND_lw_i(n)) * Scale;
+	rv.y = (ND_coord_i(n).y - p.y + ND_ht_i(n) / 2) * Scale;
     }
     return rv;
 }
@@ -218,22 +202,33 @@ static void vrml_font(context_t * cp)
 
 /* warmed over VRML code starts here */
 
+static void vrml_resolve_color(GVJ_t * job, gvcolor_t * color)
+{
+    gdImagePtr im = (gdImagePtr) job->surface;
+
+    if (!im)
+        return;
+
+    /* seems gd alpha is "transparency" rather than the usual "opacity" */
+    color->u.index = gdImageColorResolveAlpha(im,
+                          color->u.rgba[0],
+                          color->u.rgba[1],
+                          color->u.rgba[2],
+                          (255 - color->u.rgba[3]) * gdAlphaMax / 255);
+    color->type = COLOR_INDEX;
+}
+
+static int white, black, transparent, basecolor;
+
 static void vrml_begin_page(GVJ_t *job)
 {
     FILE *out = job->output_file;
 
-#if 0				/* scale not used */
-    Scale = scale * (double) DEFAULT_DPI / POINTS_PER_INCH;
-#else
     Scale = (double) DEFAULT_DPI / POINTS_PER_INCH;
-#endif
-    Rot = rot;
-
     fprintf(out, "#VRML V2.0 utf8\n");
 
     Saw_skycolor = FALSE;
     MinZ = MAXDOUBLE;
-    BB = bb;
     fprintf(out, "Group { children [\n");
     fprintf(out, "  Transform {\n");
     fprintf(out, "    scale %.3f %.3f %.3f\n", .0278, .0278, .0278);
@@ -249,9 +244,10 @@ static void vrml_begin_page(GVJ_t *job)
 }
 
 static void vrml_end_page(GVJ_t *job)
+{
     FILE *out = job->output_file;
     double d, z;
-    box bb = BB;
+    box bb = job->boundingBox;
 
     d = MAX(bb.UR.x - bb.LL.x,bb.UR.y - bb.LL.y);
     /* Roughly fill 3/4 view assuming FOV angle of PI/4.
@@ -273,14 +269,13 @@ static void vrml_begin_node(GVJ_t *job)
     FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
     node_t *n = obj->n;
+    double z = obj->z;
     int width, height;
-    double z;
 
     fprintf(out, "# node %s\n", n->name);
-    z = late_double(n, N_z, 0.0, -MAXFLOAT);
     if (z < MinZ) MinZ = z;
     if (shapeOf(n) != SH_POINT) {
-	PNGfile = nodefile(job->output_file_name, n);
+	PNGfile = nodefile(job->output_filename, n);
 	width = (ND_lw_i(n) + ND_rw_i(n)) * Scale + 3;
 	height = (ND_ht_i(n)) * Scale + 3;
 	im = gdImageCreate(width, height);
@@ -397,48 +392,19 @@ static void vrml_set_font(char *name, double size)
     vrml_font(&cstk[SP]);
 }
 
-static void vrml_set_style(char **s)
-{
-    char *line;
-    context_t *cp;
-
-    cp = &(cstk[SP]);
-    while ((line = *s++)) {
-	if (streq(line, "solid"))
-	    cp->pen = P_SOLID;
-	else if (streq(line, "dashed"))
-	    cp->pen = P_DASHED;
-	else if (streq(line, "dotted"))
-	    cp->pen = P_DOTTED;
-	else if (streq(line, "bold"))
-	    cp->penwidth = WIDTH_BOLD;
-	else if (streq(line, "invis"))
-	    cp->pen = P_NONE;
-	else if (streq(line, "filled"))
-	    cp->fill = P_SOLID;
-	else if (streq(line, "unfilled"))
-	    cp->fill = P_NONE;
-	else {
-	    agerr(AGWARN,
-		  "vrml_set_style: unsupported style %s - ignoring\n",
-		  line);
-	}
-    }
-}
-
-static void vrml_textpara(GVJ_t *job, point p, textpara_t * para)
+static void vrml_textpara(GVJ_t *job, pointf pf, textpara_t * para)
 {
     obj_state_t *obj = job->obj;
-    char *fontlist, *err;
+    char *err;
+    point p;
     pointf mp;
     int brect[8];
     extern gdFontPtr gdFontSmall;
 
     if (! obj->n)
 	return;
-    cstk[SP].pencolor_ix = vrml_resolve_color(cstk[SP].pencolor);
-    fontlist = (char*)(para->layout); /* FIXME - kluge */
 
+    PF2P(pf, p);
     switch (para->just) {
     case 'l':
 	break;
@@ -452,15 +418,15 @@ static void vrml_textpara(GVJ_t *job, point p, textpara_t * para)
     }
 /*	p.y += cstk[SP].fontsz*2/3; */
 
-    mp = vrml_node_point(obj->n, p);
+    mp = vrml_node_point(job, obj->n, p);
 
-    err = gdImageStringFT(im, brect, cstk[SP].pencolor_ix, fontlist,
-			  cstk[SP].fontsz, (Rot ? 90.0 : 0.0) * PI / 180.0,
-			  ROUND(mp.x), ROUND(mp.y), para->str);
+    err = gdImageStringFT(im, brect, job->style->pencolor.u.index, para->fontname,
+	    		  para->fontsize, job->rotation ? PI/2 : 0,
+			  ROUND(mp.x), ROUND(mp.y), (char*)para->str);
     if (err) {
 	/* revert to builtin fonts */
 	gdImageString(im, gdFontSmall, ROUND(mp.x), ROUND(mp.y),
-		      (unsigned char *) para->str, cstk[SP].pencolor_ix);
+		      (unsigned char *) para->str, job->style->pencolor.u.index);
     }
 }
 
@@ -566,9 +532,9 @@ vrml_bezier(GVJ_t *job, point * A, int n, int arrow_at_start, int arrow_at_end, 
     FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
     edge_t *e = obj->e;
+    double fstz = obj->tail_z, sndz = obj->head_z;
     pointf p1, V[4];
     int i, j, step;
-    double fstz, sndz;
     context_t *cp;
 
     assert(obj->e);
@@ -576,8 +542,6 @@ vrml_bezier(GVJ_t *job, point * A, int n, int arrow_at_start, int arrow_at_end, 
     cp = &(cstk[SP]);
     if (cp->pen == P_NONE)
 	return;
-    fstz = Fstz = late_double(e->tail, N_z, 0.0, -1000.0);
-    sndz = Sndz = late_double(e->head, N_z, 0.0, -MAXFLOAT);
     if (straight(A,n)) {
 	doSegment (out, A, ND_coord_i(e->tail),Fstz,ND_coord_i(e->head),Sndz);
 	return;
@@ -663,21 +627,21 @@ doArrowhead (GVJ_t *job, point* A)
     fprintf(out, "}\n");
 }
 
-static void vrml_polygon(GVJ_t *job, point * A, int n, int filled)
+static void vrml_polygon(GVJ_t *job, point * A, int np, int filled)
 {
     FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
     graph_t *g = obj->g;
     node_t *n = obj->n;
     edge_t *e = obj->e;
+    double z = obj->z;
     pointf p, mp;
     int i;
     gdPoint *points;
     int style[20];
     int pen, width;
     gdImagePtr brush = NULL;
-    double theta, z;
-    node_t *endp;
+    double theta;
 
     if (g) {
 	fprintf(out, " Background { skyColor %.3f %.3f %.3f }\n",
@@ -719,21 +683,19 @@ static void vrml_polygon(GVJ_t *job, point * A, int n, int filled)
 		else
 		    pen = gdBrushed;
 	    }
-	    points = N_GNEW(n, gdPoint);
-	    for (i = 0; i < n; i++) {
-		mp = vrml_node_point(A[i]);
+	    points = N_GNEW(np, gdPoint);
+	    for (i = 0; i < np; i++) {
+		mp = vrml_node_point(job, n, A[i]);
 		points[i].x = ROUND(mp.x);
 		points[i].y = ROUND(mp.y);
 	    }
 	    if (filled)
-		gdImageFilledPolygon(im, points, n, cstk[SP].fillcolor_ix);
-	    gdImagePolygon(im, points, n, pen);
+		gdImageFilledPolygon(im, points, np, cstk[SP].fillcolor_ix);
+	    gdImagePolygon(im, points, np, pen);
 	    free(points);
 	    if (brush)
 		gdImageDestroy(brush);
 	}
-
-	z = late_double(n, N_z, 0.0, -MAXFLOAT);
 
 	fprintf(out, "Shape {\n");
 	fprintf(out, "  appearance Appearance {\n");
@@ -764,7 +726,7 @@ static void vrml_polygon(GVJ_t *job, point * A, int n, int filled)
     else if (e) {
 	if (cstk[SP].pen == P_NONE)
 	    return;
-	if (n != 3) {
+	if (np != 3) {
 	    static int flag;
 	    if (!flag) {
 		flag++;
@@ -777,12 +739,12 @@ static void vrml_polygon(GVJ_t *job, point * A, int n, int filled)
 	    return;
 	}
 	p.x = p.y = 0.0;
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < np; i++) {
 	    p.x += A[i].x;
 	    p.y += A[i].y;
 	}
-	p.x = p.x / n;
-	p.y = p.y / n;
+	p.x = p.x / np;
+	p.y = p.y / np;
 
 	/* it is bad to know that A[1] is the aiming point, but we do */
 	theta =
@@ -791,12 +753,10 @@ static void vrml_polygon(GVJ_t *job, point * A, int n, int filled)
 
 
 	/* this is gruesome, but how else can we get z coord */
-	if (DIST2(p, ND_coord_i(e->tail)) <
-	    DIST2(p, ND_coord_i(e->head)))
-	    endp = e->tail;
+	if (DIST2(p, ND_coord_i(e->tail)) < DIST2(p, ND_coord_i(e->head)))
+	    z = obj->tail_z;
 	else
-	    endp = e->head;
-	z = late_double(endp, N_z, 0.0, -MAXFLOAT);
+	    z = obj->head_z;
 
 	/* FIXME: arrow vector ought to follow z coord of bezier */
 	fprintf(out, "Transform {\n");
@@ -822,10 +782,9 @@ static void vrml_polygon(GVJ_t *job, point * A, int n, int filled)
  * Output sphere in VRML for point nodes.
  */
 static void 
-doSphere (FILE *out, node_t *n, point p, int rx, int ry)
+doSphere (FILE *out, node_t *n, point p, double z, int rx, int ry)
 {
     pointf  mp;
-    double  z;
 
     if (!(strcmp(cstk[SP].fillcolor, "transparent"))) {
 	return;
@@ -833,8 +792,6 @@ doSphere (FILE *out, node_t *n, point p, int rx, int ry)
  
     mp.x = ND_coord_i(n).x;
     mp.y = ND_coord_i(n).y;
-
-    z = late_double(n, N_z, 0.0, -MAXFLOAT);
 
     fprintf(out, "Transform {\n");
     fprintf(out, "  translation %.3f %.3f %.3f\n", mp.x, mp.y, z);
@@ -862,20 +819,18 @@ static void vrml_ellipse(GVJ_t *job, point p, int rx, int ry, int filled)
 {
     FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
-    graph_t *g = obj->g;
     node_t *n = obj->n;
     edge_t *e = obj->e;
+    double z = obj->z;
     pointf mp;
     int i;
-    node_t *endp;
     int style[40];		/* need 2* size for arcs, I don't know why */
     int pen, width;
     gdImagePtr brush = NULL;
-    double z;
 
     if (n) {
 	if (shapeOf(n) == SH_POINT) {
-	    doSphere (out, n, p, rx, ry);
+	    doSphere (out, n, p, z, rx, ry);
 	    return;
 	}
 	cstk[SP].pencolor_ix = vrml_resolve_color(cstk[SP].pencolor);
@@ -911,7 +866,7 @@ static void vrml_ellipse(GVJ_t *job, point p, int rx, int ry, int filled)
 		else
 		    pen = gdBrushed;
 	    }
-	    mp = vrml_node_point(p);
+	    mp = vrml_node_point(job, n, p);
 
 	    if (filled) {
 		gdImageFilledEllipse(im, ROUND(mp.x), ROUND(mp.y),
@@ -928,8 +883,6 @@ static void vrml_ellipse(GVJ_t *job, point p, int rx, int ry, int filled)
 
 	mp.x = ND_coord_i(n).x;
 	mp.y = ND_coord_i(n).y;
-
-	z = late_double(n, N_z, 0.0, -MAXFLOAT);
 
 	fprintf(out, "Transform {\n");
 	fprintf(out, "  translation %.3f %.3f %.3f\n", mp.x, mp.y, z);
@@ -960,12 +913,10 @@ static void vrml_ellipse(GVJ_t *job, point p, int rx, int ry, int filled)
 	mp.x = (double) p.x;
 	mp.y = (double) p.y;
 	/* this is gruesome, but how else can we get z coord */
-	if (DIST2(mp, ND_coord_i(e->tail)) <
-	    DIST2(mp, ND_coord_i(e->head)))
-	    endp = e->tail;
+	if (DIST2(mp, ND_coord_i(e->tail)) < DIST2(mp, ND_coord_i(e->head)))
+	    z = obj->tail_z;
 	else
-	    endp = e->head;
-	z = late_double(endp, N_z, 0.0, -MAXFLOAT);
+	    z = obj->head_z;
 
 	fprintf(out, "Transform {\n");
 	fprintf(out, "  translation %.3f %.3f %.3f\n", mp.x, mp.y, z);
@@ -1007,31 +958,52 @@ static void vrml_polyline(point * A, int n)
 */
 }
 
-static void vrml_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
-{
-/* FIXME */
-    vrml_polygon(A, n, filled);
-}
+static gvrender_engine_t vrml_engine = {
+    0,                          /* vrml_begin_job */
+    0,                          /* vrml_end_job */
+    0,                          /* vrml_begin_graph */
+    0,                          /* vrml_end_graph */
+    0,                          /* vrml_begin_layer */
+    0,                          /* vrml_end_layer */
+    vrml_begin_page,
+    vrml_end_page,
+    0,                          /* vrml_begin_cluster */
+    0,                          /* vrml_end_cluster */
+    0,                          /* vrml_begin_nodes */
+    0,                          /* vrml_end_nodes */
+    0,                          /* vrml_begin_edges */
+    0,                          /* vrml_end_edges */
+    vrml_begin_node,
+    vrml_end_node,
+    vrml_begin_edge,
+    vrml_end_edge,
+    0,                          /* vrml_begin_anchor */
+    0,                          /* vrml_end_anchor */
+    vrml_textpara,
+    vrml_resolve_color,
+    vrml_ellipse,
+    vrml_polygon,
+    vrml_bezier,
+    vrml_polyline,
+    0,                          /* vrml_comment */
+};
 
-codegen_t VRML_CodeGen = {
-    0,				/* vrml_reset */
-    vrml_begin_job, 0,		/* vrml_end_job */
-    vrml_begin_graph, vrml_end_graph,
-    vrml_begin_page, 0,		/* vrml_end_page */
-    0, /* vrml_begin_layer */ 0,	/* vrml_end_layer */
-    0, /* vrml_begin_cluster */ 0,	/* vrml_end_cluster */
-    0, /* vrml_begin_nodes */ 0,	/* vrml_end_nodes */
-    0, /* vrml_begin_edges */ 0,	/* vrml_end_edges */
-    vrml_begin_node, vrml_end_node,
-    vrml_begin_edge, vrml_end_edge,
-    vrml_begin_context, vrml_end_context,
-    0, /* vrml_begin_anchor */ 0,	/* vrml_end_anchor */
-    vrml_set_font, vrml_textpara,
-    vrml_set_pencolor, vrml_set_fillcolor, vrml_set_style,
-    vrml_ellipse, vrml_polygon,
-    vrml_bezier, vrml_polyline,
-    0,				/* bezier_has_arrows */
-    0,				/* comment */
-    vrml_usershape
+static gvrender_features_t vrml_features = {
+    GVRENDER_DOES_Z 
+        | GVRENDER_Y_GOES_DOWN, /* flags */
+    0,                          /* default margin - points */
+    {96.,96.},                  /* default dpi */
+    NULL,                       /* knowncolors */
+    0,                          /* sizeof knowncolors */
+    RGBA_BYTE,                  /* color_type */
+    NULL,                       /* device */
+    NULL,                       /* gvloadimage target for usershapes */
 };
 #endif				/* HAVE_GD_PNG */
+
+gvplugin_installed_t gvrender_gd_types[] = {
+#ifdef HAVE_GD_PNG
+    {FORMAT_VRML, "vrml", 1, &vrml_engine, &vrml_features},
+#endif
+    {0, NULL, 0, NULL, NULL}
+};

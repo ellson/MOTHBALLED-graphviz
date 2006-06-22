@@ -767,18 +767,22 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
     flags = job->flags;
     obj = push_obj_state(job);
     obj->n = n;
+
+    if (flags & GVRENDER_DOES_Z) {
+        obj->z = late_double(n, N_z, 0.0, -MAXFLOAT);
+    }
     if ((flags & GVRENDER_DOES_LABELS) && ((lab = ND_label(n)))) {
         if (lab->html)
             doHTMLlabel(lab->u.html, lab->p, (void *) n);
 	obj->label = lab->text;
     }
     if ((flags & GVRENDER_DOES_MAPS)
-        && (((s = agget(n, "href")) && s[0]) || ((s = agget(n, "URL")) && s[0])))
+        && (((s = agget(n, "href")) && s[0]) || ((s = agget(n, "URL")) && s[0]))) {
         obj->url = strdup_and_subst_node(s, n);
-
-    if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(n, "target")) && s[0]))
+    }
+    if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(n, "target")) && s[0])) {
         obj->target = strdup_and_subst_node(s, n);
-
+    }
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if ((s = agget(n, "tooltip")) && s[0])
             obj->tooltip = strdup_and_subst_node(s, n);
@@ -1154,6 +1158,12 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
     flags = job->flags;
     obj = push_obj_state(job);
     obj->e = e;
+
+    if (flags & GVRENDER_DOES_Z) {
+        obj->tail_z= late_double(e->tail, N_z, 0.0, -1000.0);
+        obj->head_z= late_double(e->head, N_z, 0.0, -MAXFLOAT);
+    }
+
     if (flags & GVRENDER_DOES_LABELS) {
 	if ((lab = ED_label(e))) {
 	    if (lab->html)
@@ -1448,13 +1458,13 @@ void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para)
     gvrender_engine_t *gvre = job->render.engine;
     pointf PF;
 
-    if (para->str && para->str[0]) {
+    if (para->str && para->str[0] && (job->style->pen != PEN_NONE)) {
 	if (job->flags & GVRENDER_DOES_TRANSFORM)
 	    PF = p;
 	else
 	    PF = gvrender_ptf(job, p);
 	if (gvre) {
-	    if (gvre->textpara && job->style->pen != PEN_NONE)
+	    if (gvre->textpara)
 		gvre->textpara(job, PF, para);
 	}
 #ifdef WITH_CODEGENS

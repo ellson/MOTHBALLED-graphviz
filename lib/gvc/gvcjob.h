@@ -69,6 +69,7 @@ extern "C" {
 #define GVRENDER_DOES_MAP_BSPLINE (1<<17)
 #define GVRENDER_DOES_TOOLTIPS (1<<18)
 #define GVRENDER_DOES_TARGETS (1<<19)
+#define GVRENDER_DOES_Z (1<<20)
 
     typedef struct {
 	int flags;
@@ -141,6 +142,8 @@ extern "C" {
 	graph_t *sg;  
 	node_t *n;
 	edge_t *e;
+
+	double z, tail_z, head_z;   /* z depths for 2.5D renderers such as vrml */
 
 	/* fully substituted text strings */
 	char *label;
