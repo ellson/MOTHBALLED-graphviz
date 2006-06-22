@@ -31,6 +31,7 @@
 #define MODE_HIER        2
 #define MODE_IPSEP       3
 
+#define INIT_ERROR       -1
 #define INIT_SELF        0
 #define INIT_REGULAR     1
 #define INIT_RANDOM      2
