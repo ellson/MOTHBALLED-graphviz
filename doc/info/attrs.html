@@ -347,7 +347,7 @@ This field indicates which graph component uses the attribute.
 <BR>string</TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:start HREF=#d:start>start</A>
 </TD><TD>G</TD><TD><A HREF=#k:startType>startType</A>
-</TD><TD ALIGN="CENTER">"random"</TD><TD></TD><TD>fdp, neato only</TD> </TR>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>fdp, neato only</TD> </TR>
  <TR><TD><A NAME=a:style HREF=#d:style>style</A>
 </TD><TD>ENC</TD><TD><A HREF=#k:style>style</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
@@ -1219,9 +1219,9 @@ This field indicates which graph component uses the attribute.
   drawn to avoid clusters as well as nodes.
 
 <DT><A NAME=d:start HREF=#a:start><STRONG>start</STRONG></A>
-<DD>  Parameter used to determine the initial layout of nodes. By default,
-  nodes are randomly placed in a unit square.
-  The same seed is always used for the random number generator, so the
+<DD>  Parameter used to determine the initial layout of nodes. If unset, the
+  nodes are randomly placed in a unit square with
+  the same seed is always used for the random number generator, so the
   initial placement is repeatable.
 
 <DT><A NAME=d:style HREF=#a:style><STRONG>style</STRONG></A>
@@ -1613,8 +1613,7 @@ the given types.
   <TT>"self"</TT>, or <TT>"random"</TT>. In the first case, the nodes are 
   placed regularly about a circle. In the second case, 
   an abbreviated version of neato is run to obtain the initial layout.
-  In the last case, the nodes are placed randomly in a unit square. This
-  is the default.
+  In the last case, the nodes are placed randomly in a unit square.
   <P>
   If <I>seed</I> is present, it specifies a seed for the random number
   generator. If <I>seed</I> is a positive number, this is used as the
@@ -1622,6 +1621,8 @@ the given types.
   the current time, and possibly the process id, is used to pick a seed,
   thereby making the choice more random. In this case, the seed value
   is stored in the graph.
+  <P>
+  If the value is just <TT>"random"</TT>, a time-based seed is chosen.
   <P>
   Note that input positions, specified by a node's 
   <A HREF=#d:pos>pos</A>
