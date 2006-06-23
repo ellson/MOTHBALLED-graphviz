@@ -10,3 +10,4 @@ dotparse.output
 y.tab.h
 y.tab.c
 y.output
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
