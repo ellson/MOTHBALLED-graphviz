@@ -27,6 +27,8 @@
 #include "agxbuf.h"
 #include "utils.h"
 
+extern shape_desc *find_user_shape(char *);
+
 static Dict_t *ImageDict;
 
 typedef struct {
