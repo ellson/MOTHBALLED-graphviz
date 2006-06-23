@@ -3,3 +3,4 @@
 Makefile
 Makefile.in
 diffimg
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
