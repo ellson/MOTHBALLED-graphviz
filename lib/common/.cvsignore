@@ -11,3 +11,4 @@ colortbl.h
 htmlparse.[ch]
 y.output
 y.tab.[ch]
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
