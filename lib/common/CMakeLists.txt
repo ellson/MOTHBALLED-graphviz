@@ -10,49 +10,39 @@ INCLUDE_DIRECTORIES(
 	${CMAKE_SOURCE_DIR}/lib/pathplan
 	${CMAKE_SOURCE_DIR}/lib/graph
 	${CMAKE_SOURCE_DIR}/lib/cdt
+	${CMAKE_SOURCE_DIR}/lib/gd
 )
 
 
 ########### next target ###############
 
 ADD_CUSTOM_COMMAND(
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/htmlparse.c
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/htmlparse.h
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT htmlparse.c
+	OUTPUT htmlparse.h
 	DEPENDS htmlparse.y
 	COMMAND yacc -dv htmlparse.y
-	COMMAND sed "s/yy/html/g" < y.tab.c > ${CMAKE_CURRENT_SOURCE_DIR}/htmlparse.c
-	COMMAND sed "s/yy/html/g" < y.tab.h > ${CMAKE_CURRENT_SOURCE_DIR}/htmlparse.h
+	COMMAND sed "s/yy/html/g" < y.tab.c > htmlparse.c
+	COMMAND sed "s/yy/html/g" < y.tab.h > htmlparse.h
 	COMMAND rm y.tab.c y.tab.h y.output
 )
 
 ADD_CUSTOM_COMMAND(
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/ps.h
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT ps.h
 	DEPENDS ps.txt
-	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/stringize.awk ps.txt > ${CMAKE_CURRENT_SOURCE_DIR}/ps.h
+	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/stringize.awk ps.txt > ps.h
 )
 
 ADD_CUSTOM_COMMAND(
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/colortbl.h
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT colortbl.h
 	DEPENDS color_names
 	DEPENDS brewer_colors
-	COMMAND LC_COLLATE=C sort color_names > ${CMAKE_CURRENT_SOURCE_DIR}/color_lib
-	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/brewer.awk brewer_colors >> ${CMAKE_CURRENT_SOURCE_DIR}/color_lib
-	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/colortbl.awk color_lib > ${CMAKE_CURRENT_SOURCE_DIR}/colortbl.h
+	COMMAND LC_COLLATE=C sort color_names > color_lib
+	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/brewer.awk brewer_colors >> color_lib
+	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/colortbl.awk color_lib > colortbl.h
 	COMMAND rm color_lib
-)
-
-SET(CODEGEN_SRCS
-	diagen.c
-	figgen.c
-	hpglgen.c
-	mapgen.c
-	mifgen.c
-	mpgen.c
-	picgen.c
-	psgen.c
-	svggen.c
-	vtxgen.c
-	xdgen.c
 )
 
 SET(common_SRCS
@@ -82,11 +72,29 @@ SET(common_SRCS
 	geom.c
 	output.c
 	emit.c
-	${CODEGENS_SRCS}
 )
 
 ADD_LIBRARY(common STATIC ${common_SRCS})
 
+########### next target ###############
+
+SET(codegen_SRCS
+	diagen.c
+	figgen.c
+	gdgen.c
+	hpglgen.c
+	mapgen.c
+	mifgen.c
+	mpgen.c
+	picgen.c
+	psgen.c
+	svggen.c
+	vrmlgen.c
+	vtxgen.c
+	xdgen.c
+)
+
+ADD_LIBRARY(codegen STATIC ${codegen_SRCS} )
 
 ########### install files ###############
 

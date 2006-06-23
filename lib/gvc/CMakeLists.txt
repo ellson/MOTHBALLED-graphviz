@@ -30,7 +30,9 @@ SET(gvc_SRCS
 	gvc.c
 )
 
-ADD_LIBRARY(gvc STATIC ${gvc_SRCS})
+ADD_LIBRARY(gvc STATIC ${gvc_SRCS} no_builtins.c demand_loading.c)
+
+ADD_LIBRARY(gvc_builtins STATIC ${gvc_SRCS} )
 
 
 ########### install files ###############

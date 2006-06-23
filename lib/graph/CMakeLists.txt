@@ -10,12 +10,13 @@ INCLUDE_DIRECTORIES(
 ########### next target ###############
 
 ADD_CUSTOM_COMMAND(
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/parser.c
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/parser.h
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        OUTPUT parser.c
+        OUTPUT parser.h
 	DEPENDS parser.y
 	COMMAND yacc -dv parser.y
-	COMMAND sed "s/yy/ag/g" < y.tab.c > ${CMAKE_CURRENT_SOURCE_DIR}/parser.c
-	COMMAND sed "s/yy/ag/g" < y.tab.h > ${CMAKE_CURRENT_SOURCE_DIR}/parser.h
+	COMMAND sed "s/yy/ag/g" < y.tab.c > parser.c
+	COMMAND sed "s/yy/ag/g" < y.tab.h > parser.h
 	COMMAND rm y.tab.c y.tab.h y.output
 )
 

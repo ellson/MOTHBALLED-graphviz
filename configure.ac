@@ -946,6 +946,7 @@ if test "$HAVE_TK" = "1"; then
     AC_CHECK_HEADER(tk.h,,[
         AC_MSG_WARN([Unable to find header tk.h. The Tk packages will not be built])
         HAVE_TK=0])
+    AC_CHECK_HEADERS(tk.h, tkInt.h)
     CPPFLAGS=$save_CPPFLAGS
 fi
 

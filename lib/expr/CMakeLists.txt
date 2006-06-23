@@ -14,20 +14,21 @@ INCLUDE_DIRECTORIES(
 ########### next target ###############
 
 ADD_CUSTOM_COMMAND(
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/exparse.c
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/exparse.h
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/exop.h
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT exparse.c
+	OUTPUT exparse.h
+	OUTPUT exop.h
 	DEPENDS exparse.y
 	COMMAND yacc -dv exparse.y
-	COMMAND sed 's/yy/ex/g' < y.tab.c | sed 's/YY/EX/g' | sed 's/fprintf/sfprintf/g' | sed 's/FILE/Sfio_t/g' | sed 's/stderr/sfstderr/g' > ${CMAKE_CURRENT_SOURCE_DIR}/exparse.c
-	COMMAND echo "\#ifndef _EXPARSE_H" > ${CMAKE_CURRENT_SOURCE_DIR}/exparse.h
-	COMMAND echo "\#define _EXPARSE_H" >> ${CMAKE_CURRENT_SOURCE_DIR}/exparse.h
-	COMMAND sed "s/yy/ex/g" < y.tab.h | sed "s/YY/EX/g" >> ${CMAKE_CURRENT_SOURCE_DIR}/exparse.h
-	COMMAND echo "\#endif /* _EXPARSE_H */" >> ${CMAKE_CURRENT_SOURCE_DIR}/exparse.h
-	COMMAND echo "static const char* exop[] = {" > ${CMAKE_CURRENT_SOURCE_DIR}/exop.h
-	COMMAND echo "	\"MINTOKEN\"," >> ${CMAKE_CURRENT_SOURCE_DIR}/exop.h
-	COMMAND sed -e "1,/MINTOKEN/d" -e "/^[ 	]*\#[ 	]*define[ 	][ ]*[A-Z]/!d" -e "s/^[ 	]*\#[ 	]*define[ 	]*\\\([A-Z0-9_]*\\\).*/ \"\\1\",/" < exparse.h >> ${CMAKE_CURRENT_SOURCE_DIR}/exop.h
-	COMMAND echo "};" >> ${CMAKE_CURRENT_SOURCE_DIR}/exop.h
+	COMMAND sed 's/yy/ex/g' < y.tab.c | sed 's/YY/EX/g' | sed 's/fprintf/sfprintf/g' | sed 's/FILE/Sfio_t/g' | sed 's/stderr/sfstderr/g' > exparse.c
+	COMMAND echo "\#ifndef _EXPARSE_H" > exparse.h
+	COMMAND echo "\#define _EXPARSE_H" >> exparse.h
+	COMMAND sed "s/yy/ex/g" < y.tab.h | sed "s/YY/EX/g" >> exparse.h
+	COMMAND echo "\#endif /* _EXPARSE_H */" >> exparse.h
+	COMMAND echo "static const char* exop[] = {" > exop.h
+	COMMAND echo "	\"MINTOKEN\"," >> exop.h
+	COMMAND sed -e "1,/MINTOKEN/d" -e "/^[ 	]*\#[ 	]*define[ 	][ ]*[A-Z]/!d" -e "s/^[ 	]*\#[ 	]*define[ 	]*\\\([A-Z0-9_]*\\\).*/ \"\\1\",/" < exparse.h >> exop.h
+	COMMAND echo "};" >> exop.h
 	COMMAND rm y.tab.c y.tab.h y.output
 )
 

@@ -11,20 +11,22 @@ INCLUDE_DIRECTORIES(
 ########### next target ###############
 
 ADD_CUSTOM_COMMAND(
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/grammar.c
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/grammar.h
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT grammar.c
+	OUTPUT grammar.h
 	DEPENDS grammar.y
 	COMMAND yacc -dv grammar.y
-	COMMAND sed "s/yy/aag/g" < y.tab.c > ${CMAKE_CURRENT_SOURCE_DIR}/grammar.c
-	COMMAND sed "s/yy/aag/g" < y.tab.h > ${CMAKE_CURRENT_SOURCE_DIR}/grammar.h
+	COMMAND sed "s/yy/aag/g" < y.tab.c > grammar.c
+	COMMAND sed "s/yy/aag/g" < y.tab.h > grammar.h
 	COMMAND rm y.tab.c y.tab.h y.output
 )
 
 ADD_CUSTOM_COMMAND(
-	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/scan.c
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT scan.c
 	DEPENDS scan.l
 	COMMAND flex -i scan.l
-	COMMAND sed "s/yy/aag/g" < lex.yy.c > ${CMAKE_CURRENT_SOURCE_DIR}/scan.c
+	COMMAND sed "s/yy/aag/g" < lex.yy.c > scan.c
 	COMMAND rm lex.yy.c
 )
 
