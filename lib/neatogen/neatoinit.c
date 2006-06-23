@@ -1023,11 +1023,9 @@ setSeed (graph_t * G, int dflt, long* seedp)
 {
     char smallbuf[32];
     char *p = agget(G, "start");
-    unsigned char uc = *(unsigned char *) p;
     int init;
 
     if (!p || (*p == '\0')) return dflt;
-    uc = *(unsigned char *) p;
     if (isalpha(*(unsigned char *)p)) {
 	if (!strncmp(p, SMART, SLEN(SMART))) {
 	    init = INIT_SELF;
