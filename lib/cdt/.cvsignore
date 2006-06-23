@@ -7,3 +7,4 @@ Makefile
 Makefile.in
 ast_common.h
 *.pdf
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
