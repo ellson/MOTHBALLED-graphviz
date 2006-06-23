@@ -5,3 +5,4 @@
 Makefile
 Makefile.in
 pkgIndex.tcl
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
