@@ -2,3 +2,4 @@ Makefile
 Makefile.in
 lneato
 *.pdf
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
