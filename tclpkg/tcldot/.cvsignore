@@ -6,3 +6,4 @@ Makefile
 Makefile.in
 pkgIndex.tcl
 *.pdf
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
