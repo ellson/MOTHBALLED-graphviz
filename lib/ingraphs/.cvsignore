@@ -19,3 +19,4 @@ sccmap
 tred
 unflatten
 *.pdf
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
