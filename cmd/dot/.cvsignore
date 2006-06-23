@@ -7,3 +7,4 @@ Makefile.in
 dot
 dot_static
 *.pdf
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
