@@ -3,6 +3,14 @@
 
 INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_SOURCE_DIR}
+	${CMAKE_SOURCE_DIR}lib/expr
+	${CMAKE_SOURCE_DIR}lib/vmalloc
+	${CMAKE_SOURCE_DIR}lib/sfio
+	${CMAKE_SOURCE_DIR}lib/ast
+	${CMAKE_SOURCE_DIR}lib/ingraphs
+	${CMAKE_SOURCE_DIR}lib/agraph
+	${CMAKE_SOURCE_DIR}lib/cdt
 )
 
 

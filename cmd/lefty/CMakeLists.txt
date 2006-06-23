@@ -1,6 +1,8 @@
 # $Id$ $Revision$
 ## Process this file with cmake to produce Makefile
 
+INCLUDE( FindX11 )
+
 SUBDIRS(
 	ws
 	os
@@ -10,9 +12,12 @@ SUBDIRS(
 
 INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_BINARY_DIR}
+	${CMAKE_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/ws/x11
+	${CMAKE_CURRENT_SOURCE_DIR}/os/unix
+	${CMAKE_CURRENT_SOURCE_DIR}/dot2l
+	${X11_INCLUDE_DIR}
 )
-
 
 ########### next target ###############
 
@@ -35,7 +40,19 @@ SET(lefty_SRCS
 
 ADD_EXECUTABLE(lefty ${lefty_SRCS})
 
-#TARGET_LINK_LIBRARIES(lefty  ${QT_AND_KDECORE_LIBS} )
+TARGET_LINK_LIBRARIES(lefty
+	ws
+	filereq
+	os
+	dot2l
+	Xaw
+	Xt
+	Xmu
+	Xext
+	X11
+#	socket
+	m
+)
 
 INSTALL_TARGETS(/bin lefty )
 

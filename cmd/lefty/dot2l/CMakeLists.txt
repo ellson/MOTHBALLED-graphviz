@@ -3,7 +3,7 @@
 
 INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_BINARY_DIR}
+	${CMAKE_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/cmd/lefty
 )
 
@@ -11,15 +11,17 @@ INCLUDE_DIRECTORIES(
 ########### next target ###############
 
 ADD_CUSTOM_COMMAND(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/dotparse.c
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/dotparse.h
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/dotparse.y
-	COMMAND bison -dv ${CMAKE_CURRENT_SOURCE_DIR} dotparse.y
-	COMMAND cat < ${CMAKE_CURRENT_BINARY_DIR}/y.tab.c > ${CMAKE_CURRENT_BINARY_DIR}/dotparse.c
-	COMMAND cat < ${CMAKE_CURRENT_BINARY_DIR}/y.tab.h > ${CMAKE_CURRENT_BINARY_DIR}/dotparse.h
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT dotparse.c
+	OUTPUT dotparse.h
+	DEPENDS dotparse.y
+	COMMAND yacc -dv dotparse.y
+	COMMAND cat < y.tab.c > dotparse.c
+	COMMAND cat < y.tab.h > dotparse.h
 )
 
 SET(dot2l_SRCS
+	dotparse.h
 	dot2l.c
 	dotlex.c
 	dotparse.c
