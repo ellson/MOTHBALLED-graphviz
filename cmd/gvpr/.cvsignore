@@ -8,3 +8,4 @@ gdefs.h
 gvpr
 mkdefs
 *.pdf
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
