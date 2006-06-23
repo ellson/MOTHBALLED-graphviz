@@ -1023,7 +1023,7 @@ setSeed (graph_t * G, int dflt, long* seedp)
 {
     char smallbuf[32];
     char *p = agget(G, "start");
-    int init;
+    int init = dflt;
 
     if (!p || (*p == '\0')) return dflt;
     if (isalpha(*(unsigned char *)p)) {
@@ -1039,6 +1039,10 @@ setSeed (graph_t * G, int dflt, long* seedp)
 	}
 	else init = dflt;
     }
+    else if (isdigit(*(unsigned char *)p)) {
+	init = INIT_RANDOM;
+    }
+    
     if (init == INIT_RANDOM) {
 	long seed;
 	/* Check for seed value */
