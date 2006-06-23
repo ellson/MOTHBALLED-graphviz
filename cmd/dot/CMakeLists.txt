@@ -17,14 +17,14 @@ INCLUDE_DIRECTORIES(
 )
 
 LINK_DIRECTORIES(
-	${CMAKE_BINARY_DIR}/lib/commmon
+	${CMAKE_BINARY_DIR}/lib/common
 	${CMAKE_BINARY_DIR}/lib/gvc
 	${CMAKE_BINARY_DIR}/lib/pathplan
 	${CMAKE_BINARY_DIR}/lib/graph
 	${CMAKE_BINARY_DIR}/lib/cdt
+	${CMAKE_BINARY_DIR}/lib/gd
 	$(PANGOCAIRO_LIB_DIR)
 )
-
 
 ########### next target ###############
 
@@ -37,7 +37,6 @@ ADD_EXECUTABLE(dot ${dot_SRCS})
 TARGET_LINK_LIBRARIES(dot
 	common
 	gvc
-	codegen
 	pathplan
 	graph
 	cdt
@@ -68,15 +67,14 @@ ADD_EXECUTABLE(dot_static ${dot_static_SRCS})
 TARGET_LINK_LIBRARIES(dot_static
 	common
 	gvc_builtins
-	codegen
-	pathplan
-	graph
-	cdt
 	gvplugin_dot_layout_static
 	gvplugin_neato_layout_static
 	gvplugin_pango_static
 	gvplugin_gd_static
 	gvplugin_core_static
+	pathplan
+	graph
+	cdt
 	gvgd
 	pango
 	cairo

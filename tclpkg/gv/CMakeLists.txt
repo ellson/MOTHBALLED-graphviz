@@ -19,7 +19,7 @@ INCLUDE( FindSWIG )
 IF(${SWIG_FOUND})
 ########### next target #################
 
-INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/FindRuby.cmake )
+INCLUDE( FindRuby )
 IF(${RUBY_FOUND})
 INCLUDE_DIRECTORIES(
 	${BASE_INCLUDES}
@@ -40,7 +40,7 @@ ENDIF(${RUBY_FOUND})
 
 ########### next target #################
 
-INCLUDE( ${CMAKE_SOURCE_DIR}/cmake/FindTCL.cmake )
+INCLUDE( FindTCL )
 IF(${TCL_FOUND})
 INCLUDE_DIRECTORIES(
 	${BASE_INCLUDES}

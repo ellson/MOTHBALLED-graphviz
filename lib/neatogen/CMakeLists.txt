@@ -10,12 +10,13 @@ INCLUDE_DIRECTORIES(
 	${CMAKE_SOURCE_DIR}/lib/pathplan
 	${CMAKE_SOURCE_DIR}/lib/graph
 	${CMAKE_SOURCE_DIR}/lib/cdt
+	${CMAKE_SOURCE_DIR}/lib/vpsc
 )
 
 
 ########### next target ###############
 
-SET(IPSEPCOLA_SRCS
+SET(ipsepcola_SRCS
 	constrained_majorization_ipsep.c
 	mosek_quad_solve.c
 	quad_prog_vpsc.c 
@@ -58,10 +59,9 @@ SET(neatogen_SRCS
 	constrained_majorization.c
 	opt_arrangement.c
 	compute_hierarchy.c
-	${IPSEPCOLA_SRCS}
 )
 
-ADD_LIBRARY(neatogen STATIC ${neatogen_SRCS})
+ADD_LIBRARY(neatogen STATIC ${neatogen_SRCS} ${ipsepcola_SRCS})
 
 
 ########### install files ###############

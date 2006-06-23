@@ -16,6 +16,56 @@ INCLUDE_DIRECTORIES(
 
 ########### next target ###############
 
+SET(common_SRCS
+	arrows.c
+	colxlate.c
+	fontmetrics.c
+	args.c
+	memory.c
+	globals.c
+	htmllex.c
+	htmltable.c
+	input.c
+	pointset.c
+	postproc.c
+	routespl.c
+	splines.c
+	psusershape.c
+	timing.c
+	labels.c
+	ns.c
+	shapes.c
+	utils.c
+	geom.c
+	output.c
+	emit.c
+)
+
+SET(codegen_SRCS
+	diagen.c
+	figgen.c
+	gdgen.c
+	hpglgen.c
+	mapgen.c
+	mifgen.c
+	mpgen.c
+	picgen.c
+	psgen.c
+	svggen.c
+	vrmlgen.c
+	vtxgen.c
+	xdgen.c
+)
+
+set(generated_SRCS
+	colortbl.h
+	htmlparse.h
+	htmlparse.c
+	ps.h
+)
+
+ADD_LIBRARY(common STATIC ${generated_SRCS} ${common_SRCS} ${codegen_SRCS} )
+
 ADD_CUSTOM_COMMAND(
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	OUTPUT htmlparse.c
@@ -44,57 +94,6 @@ ADD_CUSTOM_COMMAND(
 	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/colortbl.awk color_lib > colortbl.h
 	COMMAND rm color_lib
 )
-
-SET(common_SRCS
-	ps.h
-	colortbl.h
-	htmltable.h
-	arrows.c
-	colxlate.c
-	fontmetrics.c
-	args.c
-	memory.c
-	globals.c
-	htmllex.c
-	htmlparse.c
-	htmltable.c
-	input.c
-	pointset.c
-	postproc.c
-	routespl.c
-	splines.c
-	psusershape.c
-	timing.c
-	labels.c
-	ns.c
-	shapes.c
-	utils.c
-	geom.c
-	output.c
-	emit.c
-)
-
-ADD_LIBRARY(common STATIC ${common_SRCS})
-
-########### next target ###############
-
-SET(codegen_SRCS
-	diagen.c
-	figgen.c
-	gdgen.c
-	hpglgen.c
-	mapgen.c
-	mifgen.c
-	mpgen.c
-	picgen.c
-	psgen.c
-	svggen.c
-	vrmlgen.c
-	vtxgen.c
-	xdgen.c
-)
-
-ADD_LIBRARY(codegen STATIC ${codegen_SRCS} )
 
 ########### install files ###############
 
