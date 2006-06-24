@@ -200,8 +200,7 @@ point coord(node_t * n)
  *	"Right" are non-null.
  * 
  */
-pointf Bezier(pointf * V, int degree, double t, pointf * Left,
-	      pointf * Right)
+pointf Bezier(pointf * V, int degree, double t, pointf * Left, pointf * Right)
 {
     int i, j;			/* Index variables      */
     pointf Vtemp[W_DEGREE + 1][W_DEGREE + 1];

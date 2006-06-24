@@ -31,6 +31,9 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 
+/* for agerr() */
+#include "graph.h"
+
 int gvloadimage_select(GVJ_t * job, char *str)
 {
     gvplugin_available_t *plugin;
@@ -55,8 +58,8 @@ void gvloadimage(GVJ_t * job, usershape_t *us, boxf b, bool filled, char *target
     strcat(type, "2");
     strcat(type, target);
 
-    if (type)
-        gvloadimage_select(job, type);
+    if (gvloadimage_select(job, type) == NO_SUPPORT)
+	    agerr (AGWARN, "No loadimage plugin for \"%s\"\n", type);
 
     if ((gvli = job->loadimage.engine) && gvli->loadimage)
 	gvli->loadimage(job, us, b, filled);

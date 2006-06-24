@@ -3,14 +3,20 @@
 
 PROJECT(graphviz)
 
-SUBDIRS(
-	lib
-	cmd
-	tclpkg
-	doc
-	contrib
-	graphs
-)
+SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake
+
+ADD_SUBDIRECTORY(lib)
+ADD_SUBDIRECTORY(cmd)
+ADD_SUBDIRECTORY(tclpkg)
+ADD_SUBDIRECTORY(doc)
+ADD_SUBDIRECTORY(contrib)
+ADD_SUBDIRECTORY(graphs)
+
+# create config.h
+#INCLUDE (ConfigureChecks.cmake)
+#CONFIGURE_FILE (config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
+
+ADD_DEFINITIONS( -DHAVE_CONFIG_H )
 
 CONFIGURE_FILE(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/uninstall.cmake.in"
@@ -19,8 +25,7 @@ CONFIGURE_FILE(
 )
 
 ADD_CUSTOM_TARGET(uninstall
-	"${CMAKE_COMMAND}" -P
-	"${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+	"${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
 )
 
 # FIXME - this config.h comes from ./configure
@@ -29,8 +34,6 @@ ADD_CUSTOM_COMMAND(
 	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/config.h
 	COMMAND cat < ${CMAKE_CURRENT_SOURCE_DIR}/config.h > ${CMAKE_BINARY_DIR}/config.h
 )
-
-ADD_DEFINITIONS( -DHAVE_CONFIG_H )
 
 # FIXME - this ast_common.h comes from ./configure
 ADD_CUSTOM_COMMAND(

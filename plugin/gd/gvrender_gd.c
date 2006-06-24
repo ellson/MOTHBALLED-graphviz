@@ -25,6 +25,7 @@
 
 #include "gvplugin_render.h"
 
+
 #ifdef HAVE_LIBGD
 #include "gd.h"
 
@@ -33,6 +34,7 @@ typedef enum { FORMAT_GD, FORMAT_GD2, FORMAT_GIF, FORMAT_JPEG, FORMAT_PNG,
 
 extern int mapbool(char *);
 extern char *safefile(char *shapefilename);
+extern pointf Bezier(pointf * V, int degree, double t, pointf * Left, pointf * Right);
 
 #define BEZIERSUBDIVISION 10
 
@@ -40,47 +42,6 @@ extern char *safefile(char *shapefilename);
 #define FONTSIZE_MUCH_TOO_SMALL 0.15
 /* fontsize at which text is rendered by a simple line */
 #define FONTSIZE_TOO_SMALL 1.5
-
-/* from Glassner's Graphics Gems */
-#define W_DEGREE 5
-
-/*
- *  Bezier :
- *      Evaluate a Bezier curve at a particular parameter value
- *      Fill in control points for resulting sub-curves if "Left" and
- *      "Right" are non-null.
- *
- */
-static pointf Bezier(pointf * V, int degree, double t, pointf * Left,
-              pointf * Right)
-{
-    int i, j;                   /* Index variables      */
-    pointf Vtemp[W_DEGREE + 1][W_DEGREE + 1];
-
-    /* Copy control points  */
-    for (j = 0; j <= degree; j++) {
-        Vtemp[0][j] = V[j];
-    }
-
-    /* Triangle computation */
-    for (i = 1; i <= degree; i++) {
-        for (j = 0; j <= degree - i; j++) {
-            Vtemp[i][j].x =
-                (1.0 - t) * Vtemp[i - 1][j].x + t * Vtemp[i - 1][j + 1].x;
-            Vtemp[i][j].y =
-                (1.0 - t) * Vtemp[i - 1][j].y + t * Vtemp[i - 1][j + 1].y;
-        }
-    }
-
-    if (Left != NULL)
-        for (j = 0; j <= degree; j++)
-            Left[j] = Vtemp[j][0];
-    if (Right != NULL)
-        for (j = 0; j <= degree; j++)
-            Right[j] = Vtemp[degree - j][j];
-
-    return (Vtemp[degree][0]);
-}
 
 static void gdgen_resolve_color(GVJ_t * job, gvcolor_t * color)
 {
@@ -415,114 +376,24 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     }
 }
 
-static void
-gdgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
-	     int arrow_at_end, int filled)
+int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
 {
     gvstyle_t *style = job->style;
-    gdImagePtr im = (gdImagePtr) job->surface;
-    pointf p0, p1, V[4];
-    int i, j, step;
-    int dashstyle[20];
-    int pen, width;
-    gdImagePtr brush = NULL;
-    gdPoint F[4];
-
-    if (!im)
-	return;
+    int i, pen, width, dashstyle[40];
 
     if (style->pen == PEN_DASHED) {
-	for (i = 0; i < 10; i++)
+	for (i = 0; i < 20; i++)
 	    dashstyle[i] = style->pencolor.u.index;
-	for (; i < 20; i++)
+	for (; i < 40; i++)
 	    dashstyle[i] = transparent;
 	gdImageSetStyle(im, dashstyle, 20);
 	pen = gdStyled;
     } else if (style->pen == PEN_DOTTED) {
 	for (i = 0; i < 2; i++)
 	    dashstyle[i] = style->pencolor.u.index;
-	for (; i < 12; i++)
+	for (; i < 24; i++)
 	    dashstyle[i] = transparent;
-	gdImageSetStyle(im, dashstyle, 12);
-	pen = gdStyled;
-    } else {
-	pen = style->pencolor.u.index;
-    }
-
-    width = style->penwidth;
-    if (width < PENWIDTH_NORMAL)
-        width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
-    gdImageSetThickness(im, width);
-    if (style->penwidth != PENWIDTH_NORMAL) {
-	brush = gdImageCreate(width, width);
-	gdImagePaletteCopy(brush, im);
-	gdImageFilledRectangle(brush, 0, 0, width - 1, width - 1,
-			       style->pencolor.u.index);
-	gdImageSetBrush(im, brush);
-	if (pen == gdStyled)
-	    pen = gdStyledBrushed;
-	else
-	    pen = gdBrushed;
-    }
-
-    V[3].x = A[0].x;
-    V[3].y = A[0].y;
-    F[0].x = ROUND(A[0].x);
-    F[0].y = ROUND(A[0].y);
-    F[3].x = ROUND(A[n-1].x);
-    F[3].y = ROUND(A[n-1].y);
-    for (i = 0; i + 3 < n; i += 3) {
-	V[0] = V[3];
-	for (j = 1; j <= 3; j++) {
-	    V[j].x = A[i + j].x;
-	    V[j].y = A[i + j].y;
-	}
-	p0 = V[0];
-	for (step = 1; step <= BEZIERSUBDIVISION; step++) {
-	    p1 = Bezier(V, 3, (double) step / BEZIERSUBDIVISION, NULL,
-			NULL);
-	    gdImageLine(im, ROUND(p0.x), ROUND(p0.y), ROUND(p1.x),
-			ROUND(p1.y), pen);
-	    if (filled) {
-    		F[1].x = ROUND(p0.x);
-    		F[1].y = ROUND(p0.y);
-    		F[2].x = ROUND(p1.x);
-    		F[2].y = ROUND(p1.y);
-		gdImageFilledPolygon(im, F, 4, style->fillcolor.u.index);
-	    }
-	    p0 = p1;
-	}
-    }
-    if (brush)
-	gdImageDestroy(brush);
-}
-
-static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
-{
-    gvstyle_t *style = job->style;
-    gdImagePtr im = (gdImagePtr) job->surface;
-    int i;
-    gdPoint *points;
-    int dashstyle[20];
-    int pen, width;
-    gdImagePtr brush = NULL;
-
-    if (!im)
-	return;
-
-    if (style->pen == PEN_DASHED) {
-	for (i = 0; i < 10; i++)
-	    dashstyle[i] = style->pencolor.u.index;
-	for (; i < 20; i++)
-	    dashstyle[i] = transparent;
-	gdImageSetStyle(im, dashstyle, 20);
-	pen = gdStyled;
-    } else if (style->pen == PEN_DOTTED) {
-	for (i = 0; i < 2; i++)
-	    dashstyle[i] = style->pencolor.u.index;
-	for (; i < 12; i++)
-	    dashstyle[i] = transparent;
-	gdImageSetStyle(im, dashstyle, 12);
+	gdImageSetStyle(im, dashstyle, 24);
 	pen = gdStyled;
     } else {
 	pen = style->pencolor.u.index;
@@ -544,6 +415,62 @@ static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 	else
 	    pen = gdBrushed;
     }
+
+    return pen;
+}
+
+static void
+gdgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
+	     int arrow_at_end, int filled)
+{
+    gvstyle_t *style = job->style;
+    gdImagePtr im = (gdImagePtr) job->surface;
+    pointf p0, p1, V[4];
+    int i, j, step, pen;
+    gdImagePtr brush = NULL;
+    gdPoint F[4];
+
+    if (!im)
+	return;
+
+    pen = gdgen_set_penstyle(job, im, brush);
+
+    V[3] = A[0];
+    PF2P(A[0], F[0]);
+    PF2P(A[n-1], F[3]);
+    for (i = 0; i + 3 < n; i += 3) {
+	V[0] = V[3];
+	for (j = 1; j <= 3; j++)
+	    V[j] = A[i + j];
+	p0 = V[0];
+	for (step = 1; step <= BEZIERSUBDIVISION; step++) {
+	    p1 = Bezier(V, 3, (double) step / BEZIERSUBDIVISION, NULL, NULL);
+	    PF2P(p0, F[1]);
+	    PF2P(p1, F[2]);
+	    gdImageLine(im, F[1].x, F[1].y, F[2].x, F[2].y, pen);
+	    if (filled)
+		gdImageFilledPolygon(im, F, 4, style->fillcolor.u.index);
+	    p0 = p1;
+	}
+    }
+    if (brush)
+	gdImageDestroy(brush);
+}
+
+static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
+{
+    gvstyle_t *style = job->style;
+    gdImagePtr im = (gdImagePtr) job->surface;
+    gdImagePtr brush = NULL;
+    int i;
+    gdPoint *points;
+    int pen;
+
+    if (!im)
+	return;
+
+    pen = gdgen_set_penstyle(job, im, brush);
+
     points = malloc(n * sizeof(gdPoint));
     for (i = 0; i < n; i++) {
 	points[i].x = ROUND(A[i].x);
@@ -563,50 +490,16 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
     gvstyle_t *style = job->style;
     gdImagePtr im = (gdImagePtr) job->surface;
     double dx, dy;
-    int i;
-    int dashstyle[40];		/* need 2* size for arcs, I don't know why */
-    int pen, width;
+    int pen;
     gdImagePtr brush = NULL;
 
     if (!im)
 	return;
 
-    if (style->pen == PEN_DASHED) {
-	for (i = 0; i < 20; i++)
-	    dashstyle[i] = style->pencolor.u.index;
-	for (; i < 40; i++)
-	    dashstyle[i] = transparent;
-	gdImageSetStyle(im, dashstyle, 40);
-	pen = gdStyled;
-    } else if (style->pen == PEN_DOTTED) {
-	for (i = 0; i < 2; i++)
-	    dashstyle[i] = style->pencolor.u.index;
-	for (; i < 24; i++)
-	    dashstyle[i] = transparent;
-	gdImageSetStyle(im, dashstyle, 24);
-	pen = gdStyled;
-    } else {
-	pen = style->pencolor.u.index;
-    }
+    pen = gdgen_set_penstyle(job, im, brush);
 
-    width = style->penwidth * job->scale.x;
-    if (width < PENWIDTH_NORMAL)
-	width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
-    gdImageSetThickness(im, width);
-    /* use brush instead of Thickness to improve outline appearance */
-    if (width != PENWIDTH_NORMAL) {
-	brush = gdImageCreate(width, width);
-	gdImagePaletteCopy(brush, im);
-	gdImageFilledRectangle(brush, 0, 0, width - 1, width - 1,
-			       style->pencolor.u.index);
-	gdImageSetBrush(im, brush);
-	if (pen == gdStyled)
-	    pen = gdStyledBrushed;
-	else
-	    pen = gdBrushed;
-    }
-    dx = fabs(2 * (A[1].x - A[0].x));
-    dy = fabs(2 * (A[1].y - A[0].y));
+    dx = 2 * (A[1].x - A[0].x);
+    dy = 2 * (A[1].y - A[0].y);
 
     if (filled)
 	gdImageFilledEllipse(im, ROUND(A[0].x), ROUND(A[0].y),

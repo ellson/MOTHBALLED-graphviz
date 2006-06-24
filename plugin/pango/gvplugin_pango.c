@@ -27,4 +27,4 @@ static gvplugin_api_t apis[] = {
     {(api_t)0, 0},
 };
 
-gvplugin_library_t gvplugin_pango_LTX_library = { "pango", apis };
+gvplugin_library_t gvplugin_pango_LTX_library = { "cairo", apis };
