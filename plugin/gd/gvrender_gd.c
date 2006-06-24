@@ -376,7 +376,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     }
 }
 
-int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
+static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
 {
     gvstyle_t *style = job->style;
     int i, pen, width, dashstyle[40];

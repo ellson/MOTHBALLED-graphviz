@@ -411,6 +411,18 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 	job->offset.y = -job->focus.y * job->compscale.y + job->height / 2.;
     }
 
+    /* init stack */
+    gvc->SP = 0;
+    job->style = &(gvc->styles[0]);
+    gvrender_set_pencolor(job, DEFAULT_COLOR);
+    gvrender_set_fillcolor(job, DEFAULT_FILL);
+    job->style->fontfam = DEFAULT_FONTNAME;
+    job->style->fontsz = DEFAULT_FONTSIZE;
+    job->style->fontopt = FONT_REGULAR;
+    job->style->pen = PEN_SOLID;
+    job->style->fill = FILL_NONE;
+    job->style->penwidth = PENWIDTH_NORMAL;
+
     if (gvre) {
 	/* render specific init */
 	if (gvre->begin_graph)
@@ -418,23 +430,11 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 
 	/* background color */
 	if (((s = agget(g, "bgcolor")) != 0) && s[0]) {
-	    gvrender_resolve_color(job->render.features, s,
-				   &(gvc->bgcolor));
+	    gvrender_resolve_color(job->render.features, s, &(gvc->bgcolor));
 	    if (gvre->resolve_color)
 		gvre->resolve_color(job, &(gvc->bgcolor));
 	}
 
-	/* init stack */
-	gvc->SP = 0;
-	job->style = &(gvc->styles[0]);
-	gvrender_set_pencolor(job, DEFAULT_COLOR);
-	gvrender_set_fillcolor(job, DEFAULT_FILL);
-	job->style->fontfam = DEFAULT_FONTNAME;
-	job->style->fontsz = DEFAULT_FONTSIZE;
-	job->style->fontopt = FONT_REGULAR;
-	job->style->pen = PEN_SOLID;
-	job->style->fill = FILL_NONE;
-	job->style->penwidth = PENWIDTH_NORMAL;
     }
 #ifdef WITH_CODEGENS
     else {
