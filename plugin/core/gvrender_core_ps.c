@@ -29,15 +29,10 @@
 #endif
 #endif
 
-#undef HAVE_LIBGD
-
 #include "gvplugin_render.h"
 #include "graph.h"
 #include "agxbuf.h"
 #include "utils.h"
-#ifdef HAVE_LIBGD
-#include "gd.h"
-#endif
 
 /* for CHAR_LATIN1  */
 #include "const.h"
