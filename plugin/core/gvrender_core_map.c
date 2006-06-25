@@ -51,7 +51,7 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
         switch (map_shape) {
         case MAP_RECTANGLE:
 	    /* Y_GOES_DOWN so need UL to LR */
-            fprintf(out, "rect %s %d %d %d %d\n", url,
+            fprintf(out, "rectangle %s %d %d %d %d\n", url,
                 A[0].x, A[1].y, A[1].x, A[0].y);
             break;
         case MAP_CIRCLE:
@@ -138,17 +138,6 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
     }
 }
 
-static void map_begin_job(GVJ_t * job)
-{
-    switch (job->render.id) {
-    case FORMAT_IMAP:
-        fprintf(job->output_file, "base referer\n");
-	break;
-    default:
-	break;
-    }
-}
-
 static void map_begin_page(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
@@ -156,6 +145,7 @@ static void map_begin_page(GVJ_t * job)
 
     switch (job->render.id) {
     case FORMAT_IMAP:
+        fprintf(job->output_file, "base referer\n");
         if (obj->url)
 	    fprintf(job->output_file, "default %s\n", obj->url);
         break;
@@ -176,6 +166,11 @@ static void map_end_page(GVJ_t * job)
     obj_state_t *obj = job->obj;
 
     switch (job->render.id) {
+    case FORMAT_CMAP:
+	if (obj->url_map_p)
+	    map_output_shape(job, obj->url_map_shape, obj->url_map_p,obj->url_map_n,
+		                    obj->url, obj->tooltip, obj->target);
+	break;
     case FORMAT_CMAPX:
 	if (obj->url_map_p)
 	    map_output_shape(job, obj->url_map_shape, obj->url_map_p,obj->url_map_n,
@@ -239,7 +234,7 @@ map_begin_edge(GVJ_t * job)
 }
 
 static gvrender_engine_t map_engine = {
-    map_begin_job,
+    0,				/* map_begin_job */
     0,				/* map_end_job */
     0,				/* map_begin_graph */
     0,				/* map_end_graph */
@@ -303,8 +298,8 @@ static gvrender_features_t map_features = {
 
 gvplugin_installed_t gvrender_core_map_types[] = {
     {FORMAT_ISMAP, "ismap", 1, &map_engine, &map_features},
+    {FORMAT_CMAP, "cmap", 1, &map_engine, &map_features},
     {FORMAT_IMAP, "imap", 1, &map_engine, &map_features_poly},
-    {FORMAT_CMAP, "cmap", 1, &map_engine, &map_features_poly},
     {FORMAT_CMAPX, "cmapx", 1, &map_engine, &map_features_poly},
     {0, NULL, 0, NULL, NULL}
 };
