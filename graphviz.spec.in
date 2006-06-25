@@ -4,8 +4,20 @@
 # Note: graphviz requires gd with gif support (and other fixes), hence use
 # internal one for now.
 
+#-- graphviz src.rpm --------------------------------------------------------
+Name:		graphviz
+Version:	@VERSION@
+Release:	1
+
+License:	CPL
+URL:		http://www.graphviz.org/
+Source:		http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
+
 # graphviz is relocatable
 Prefix: /usr
+
+#-- feature and package selection -------------------------------------------
+#        depends on %dist which is set in .rpmmacros on each build host
 
 # Define a default set incase none of the conditionals apply
 %define SHARP   0
@@ -20,47 +32,37 @@ Prefix: /usr
 %define RUBY    0
 %define TCL     1
 %define IPSEPCOLA --without-ipsepcola
-# %define MYLIBGD --without-mylibgd
 %define MYLIBGD --with-mylibgd
-
-# Select packages according to dist (set in .rpmmacros on each build host)
 
 # These are all single line conditional blocks because older versions
 # of rpm can't handle multiline blocks/
 %{?rh7: %{expand: %%define PERL    1}}
 %{?rh7: %{expand: %%define TCL     1}}
-%{?rh7: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?rh8: %{expand: %%define PERL    1}}
 %{?rh8: %{expand: %%define TCL     1}}
-%{?rh8: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?rh9: %{expand: %%define PERL    1}}
 %{?rh9: %{expand: %%define TCL     1}}
-%{?rh9: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?el2: %{expand: %%define PERL    1}}
 %{?el2: %{expand: %%define TCL     1}}
-%{?el2: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?el3: %{expand: %%define PERL    1}}
 %{?el3: %{expand: %%define TCL     1}}
 %{?el3: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-%{?el3: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?el4: %{expand: %%define PERL    1}}
 %{?el4: %{expand: %%define PHP     1}}
 %{?el4: %{expand: %%define RUBY    1}}
 %{?el4: %{expand: %%define TCL     1}}
 %{?el4: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-%{?el4: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?el5: %{expand: %%define PERL    1}}
 %{?el5: %{expand: %%define PHP     1}}
 %{?el5: %{expand: %%define RUBY    1}}
 %{?el5: %{expand: %%define TCL     1}}
 %{?el5: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-%{?el5: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?el6: %{expand: %%define PERL    1}}
 %{?el6: %{expand: %%define PHP     1}}
@@ -70,16 +72,13 @@ Prefix: /usr
 
 %{?fc1: %{expand: %%define PERL    1}}
 %{?fc1: %{expand: %%define TCL     1}}
-%{?fc1: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?fc2: %{expand: %%define PERL    1}}
 %{?fc2: %{expand: %%define TCL     1}}
-%{?fc2: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?fc3: %{expand: %%define PERL    1}}
 %{?fc3: %{expand: %%define TCL     1}}
 %{?fc3: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-%{?fc3: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?fc4: %{expand: %%define GUILE   1}}
 %{?fc4: %{expand: %%define PERL    1}}
@@ -87,7 +86,6 @@ Prefix: /usr
 %{?fc4: %{expand: %%define RUBY    1}}
 %{?fc4: %{expand: %%define TCL     1}}
 %{?fc4: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-%{?fc4: %{expand: %%define MYLIBGD --with-mylibgd}}
 
 %{?fc5: %{expand: %%define SHARP   1}}
 %{?fc5: %{expand: %%define GUILE   1}}
@@ -112,25 +110,7 @@ Prefix: /usr
 %{?fc6: %{expand: %%define TCL     1}}
 %{?fc6: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
 
-Summary:	Graph Visualization Tools
-Name:		graphviz
-Version:	@VERSION@
-Release:	1
-
-Group:		Applications/Multimedia
-License:	CPL
-URL:		http://www.graphviz.org/
-Source:		http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
-%{?el3:Requires: urw-fonts}
-%{?el4:Requires: urw-fonts}
-%{?el5:Requires: urw-fonts}
-%{?el6:Requires: urw-fonts}
-%{?fc1:Requires: urw-fonts}
-%{?fc2:Requires: urw-fonts}
-%{?fc3:Requires: urw-fonts}
-%{?fc4:Requires: urw-fonts}
-%{?fc5:Requires: urw-fonts}
-%{?fc6:Requires: urw-fonts}
+#-- build requirements --------------------------------------------------
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -163,6 +143,10 @@ BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
 %{?fc5:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel guile-devel}
 %{?fc6:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel guile-devel gmp-devel lua-devel pango-devel cairo-devel >= 1.1.10}
 
+#-- graphviz rpm --------------------------------------------------
+Group:		Applications/Multimedia
+Summary:	Graph Visualization Tools
+
 %description
 A collection of tools for the manipulation and layout
 of graphs (as in nodes and edges, not as in barcharts).
@@ -177,8 +161,30 @@ of graphs (as in nodes and edges, not as in barcharts).
 %dir %{_datadir}/graphviz
 %{_datadir}/graphviz/lefty
 %exclude %{_libdir}/graphviz/*/*
+%exclude %{_libdir}/graphviz/libgvplugin_gd.*
 
-#------------------------------------------------------------------
+#-- graphviz-gd rpm --------------------------------------------------
+%package gd
+Group:		Applications/Multimedia
+Summary:	graphviz plugin for renderers based on gd
+
+%{?el3:Requires: urw-fonts}
+%{?el4:Requires: urw-fonts}
+%{?el5:Requires: urw-fonts}
+%{?el6:Requires: urw-fonts}
+%{?fc1:Requires: urw-fonts}
+%{?fc2:Requires: urw-fonts}
+%{?fc3:Requires: urw-fonts}
+%{?fc4:Requires: urw-fonts}
+%{?fc5:Requires: urw-fonts}
+
+%description gd
+graphviz plugin for renderers based on gd
+
+%files gd
+%{_libdir}/graphviz/libgvplugin_gd.so.*
+
+#-- graphviz-sharp rpm --------------------------------------------
 %if %{SHARP}
 %package sharp
 Group:		Applications/Multimedia
@@ -186,7 +192,7 @@ Summary:	C# extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
 %description sharp
-C# extensions for graphviz.
+C# extension for graphviz.
 
 %files sharp
 %defattr(-,root,root,-)
@@ -194,7 +200,7 @@ C# extensions for graphviz.
 %{_libdir}/graphviz/sharp/*
 %endif
 
-#------------------------------------------------------------------
+#-- graphviz-guile rpm --------------------------------------------
 %if %{GUILE}
 %package guile
 Group:		Applications/Multimedia
@@ -202,7 +208,7 @@ Summary:	Guile extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
 %description guile
-Guile extensions for graphviz.
+Guile extension for graphviz.
 
 %files guile
 %defattr(-,root,root,-)
@@ -210,7 +216,7 @@ Guile extensions for graphviz.
 %{_libdir}/graphviz/guile/*
 %endif
 
-#------------------------------------------------------------------
+#-- graphviz-io rpm -----------------------------------------------
 %if %{_IO}
 %package io
 Group:		Applications/Multimedia
@@ -218,7 +224,7 @@ Summary:	Io extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
 %description io
-Io extensions for graphviz.
+Io extension for graphviz.
 
 %files io
 %defattr(-,root,root,-)
@@ -226,7 +232,7 @@ Io extensions for graphviz.
 %{_libdir}/graphviz/io/*
 %endif
 
-#------------------------------------------------------------------
+#-- graphviz-java rpm ---------------------------------------------
 %if %{JAVA}
 %package java
 Group:		Applications/Multimedia
@@ -234,7 +240,7 @@ Summary:	Java extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
 %description java
-Java extensions for graphviz.
+Java extension for graphviz.
 
 %files java
 %defattr(-,root,root,-)
@@ -242,7 +248,7 @@ Java extensions for graphviz.
 %{_libdir}/graphviz/java/*
 %endif
 
-#------------------------------------------------------------------
+#-- graphviz-lua rpm ----------------------------------------------------------------
 %if %{LUA}
 %package lua
 Group:		Applications/Multimedia
@@ -250,7 +256,7 @@ Summary:	Lua extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
 %description lua
-Java extensions for graphviz.
+Java extension for graphviz.
 
 %files lua
 %defattr(-,root,root,-)
@@ -258,7 +264,7 @@ Java extensions for graphviz.
 %{_libdir}/graphviz/lua/*
 %endif
 
-#------------------------------------------------------------------
+#-- graphviz-ocaml rpm --------------------------------------------
 %if %{OCAML}
 %package ocaml
 Group:		Applications/Multimedia
@@ -266,7 +272,7 @@ Summary:	Ocaml extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
 %description ocaml
-Ocaml extensions for graphviz.
+Ocaml extension for graphviz.
 
 %files ocaml
 %defattr(-,root,root,-)
@@ -274,7 +280,7 @@ Ocaml extensions for graphviz.
 %{_libdir}/graphviz/ocaml/*
 %endif
 
-#------------------------------------------------------------------
+#-- graphviz-perl rpm ---------------------------------------------
 %if %{PERL}
 %package perl
 Group:		Applications/Multimedia
@@ -282,7 +288,7 @@ Summary:	Perl extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
 %description perl
-Perl extensions for graphviz.
+Perl extension for graphviz.
 
 %files perl
 %defattr(-,root,root,-)
@@ -290,7 +296,7 @@ Perl extensions for graphviz.
 %{_libdir}/graphviz/perl/*
 %endif
 
-#------------------------------------------------------------------
+#-- graphviz-php rpm ----------------------------------------------
 %if %{PHP}
 %package php
 Group:		Applications/Multimedia
@@ -298,7 +304,7 @@ Summary:	PHP extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
 %description php
-PHP extensions for graphviz.
+PHP extension for graphviz.
 
 %files php
 %defattr(-,root,root,-)
@@ -306,7 +312,7 @@ PHP extensions for graphviz.
 %{_libdir}/graphviz/php/*
 %endif
 
-#------------------------------------------------------------------
+#-- graphviz-python rpm -------------------------------------------
 %if %{PYTHON}
 %package python
 Group:		Applications/Multimedia
@@ -314,7 +320,7 @@ Summary:	Python extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
 %description python
-Python extensions for graphviz.
+Python extension for graphviz.
 
 %files python
 %defattr(-,root,root,-)
@@ -322,7 +328,7 @@ Python extensions for graphviz.
 %{_libdir}/graphviz/python/*
 %endif
 
-#------------------------------------------------------------------
+#-- graphviz-ruby rpm ---------------------------------------------
 %if %{RUBY}
 %package ruby
 Group:		Applications/Multimedia
@@ -330,7 +336,7 @@ Summary:	Ruby extension for graphviz
 Requires:	graphviz = %{version}-%{release}
 
 %description ruby
-Ruby extensions for graphviz.
+Ruby extension for graphviz.
 
 %files ruby
 %defattr(-,root,root,-)
@@ -338,7 +344,7 @@ Ruby extensions for graphviz.
 %{_libdir}/graphviz/ruby/*
 %endif
 
-#------------------------------------------------------------------
+#-- graphviz-tcl rpm ----------------------------------------------
 %if %{TCL}
 %package tcl
 Group:		Applications/Multimedia
@@ -357,7 +363,7 @@ Various tcl packages (extensions) for the graphviz tools.
 %{_mandir}/mann/*.n*
 %endif
 
-#------------------------------------------------------------------
+#-- graphviz-devel rpm --------------------------------------------
 %package devel
 Group:		Development/Libraries
 Summary:	Development package for graphviz
@@ -375,8 +381,9 @@ This package contains development files for graphviz.
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/*.3*
 %exclude %{_libdir}/graphviz/*/*
+%exclude %{_libdir}/graphviz/libgvplugin*
 
-#------------------------------------------------------------------
+#-- graphviz-graphs rpm -------------------------------------------
 %package graphs
 Group:		Applications/Multimedia
 Summary:	Demo graphs for graphviz
@@ -389,7 +396,7 @@ Some demo graphs for graphviz.
 %dir %{_datadir}/graphviz
 %{_datadir}/graphviz/graphs
 
-#------------------------------------------------------------------
+#-- graphviz-doc rpm ----------------------------------------------
 %package doc
 Group:		Documentation
 Summary:	PDF and HTML documents for graphviz
@@ -401,7 +408,8 @@ Provides some additional PDF and HTML documentation for graphviz.
 %defattr(-,root,root,-)
 %doc __doc/*
 
-#------------------------------------------------------------------
+#-- building --------------------------------------------------
+
 %prep
 %setup -q
 
@@ -437,6 +445,8 @@ rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/doc
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+#-- post scripts ----------------------------------------------
+
 # run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
 %post
 LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib}/graphviz $RPM_INSTALL_PREFIX0/bin/dot -c
@@ -444,6 +454,8 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib}/graphviz $RPM_INSTALL_PREFIX0/bin/d
 # if there is not dot after everything else is done, the remove config
 %postun
 if ! test -x $RPM_INSTALL_PREFIX0/bin/dot; then rm -f $RPM_INSTALL_PREFIX0/%{_lib}/graphviz/config; fi
+
+#-- changelog --------------------------------------------------
 
 %changelog
 * Tue Sep 13 2005 John Ellson <ellson@research.att.com>

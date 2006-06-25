@@ -11,7 +11,6 @@ if WITH_MYLIBGD
 noinst_HEADERS = gd.h gd_io.h gdcache.h gdfontg.h gdfontl.h gdfontmb.h \
 	gdfonts.h gdfontt.h gdhelpers.h jisx0208.h wbmp.h gdfx.h entities.h
 noinst_LTLIBRARIES = libgvgd_C.la
-pkglib_LTLIBRARIES = libgvgd.la
 html_DATA = $(html)
 endif
 

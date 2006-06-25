@@ -11,7 +11,12 @@ endif
 
 diffimg_SOURCES = diffimg.c
 
+if WITH_LIBGD
+diffimg_LDADD = $(top_builddir)/lib/gd/libgvgd_C.la \
+	@FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
+else
 diffimg_LDADD = @GD_LIBS@
+endif
 
 GRAPH = "digraph G { hello -> world }"
 
