@@ -1053,6 +1053,8 @@ HIDE_UNDOC_RELATIONS   = YES
 
 HAVE_DOT               = YES
 
+DOT_MULTI_TARGETS      = YES
+
 # If the CLASS_GRAPH and HAVE_DOT tags are set to YES then doxygen 
 # will generate a graph for each documented class showing the direct and 
 # indirect inheritance relations. Setting this tag to YES will force the 
