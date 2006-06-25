@@ -15,14 +15,11 @@ html_DATA = $(html)
 endif
 
 libgvgd_C_la_SOURCES = \
-	gdtables.c gd.c gdfx.c gd_security.c gd_gd.c gd_gd2.c gd_io.c gd_io_dp.c \
-	gd_gif_in.c gd_gif_out.c gd_io_file.c gd_io_ss.c gd_jpeg.c gd_png.c \
-	gd_ss.c gd_topal.c gd_wbmp.c gdcache.c gdfontg.c gdfontl.c gdfontmb.c \
-	gdfonts.c gdfontt.c gdft.c gdhelpers.c gdkanji.c gdxpm.c wbmp.c
-
-libgvgd_la_SOURCES = $(libgvgd_C_la_SOURCES)
-libgvgd_la_LIBADD = @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
-
+	gdtables.c gd.c gdfx.c gd_security.c gd_gd.c gd_gd2.c gd_io.c \
+	gd_io_dp.c gd_gif_in.c gd_gif_out.c gd_io_file.c gd_io_ss.c \
+	gd_jpeg.c gd_png.c gd_ss.c gd_topal.c gd_wbmp.c gdcache.c \
+	gdfontg.c gdfontl.c gdfontmb.c gdfonts.c gdfontt.c gdft.c \
+	gdhelpers.c gdkanji.c gdxpm.c wbmp.c
 
 gd.html: index.html
 	cp $(top_srcdir)/lib/gd/index.html gd.html
