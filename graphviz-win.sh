@@ -16,11 +16,15 @@ rm -rf \
 	config.h.in \
 	config.h.old \
 	config.log \
+	config.cache \
 	config.status \
 	configure \
 	configure.in \
 	configure.ac \
 	configure.old \
+	CMakeLists.txt \
+	CMakeFiles \
+	cmake \
 	Config.mk \
 	Doxyfile \
 	Doxyfile.in \

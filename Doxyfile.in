@@ -429,7 +429,10 @@ INPUT = cmd/dot \
 	lib/pack \
 	lib/pathplan \
 	lib/twopigen \
-	lib/plugin \
+	plugin/core \
+	plugin/pango \
+	plugin/dot_layout \
+	plugin/neato_layout \
 	tclpkg/gv
 
 # If the value of the INPUT tag contains directories, you can use the 
