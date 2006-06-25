@@ -1210,13 +1210,6 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     xsize = (double)(ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n));
     ysize = (double)ND_ht_i(n) / POINTS(ND_height(n));
 
-#if defined(WITH_CODEGENS) && defined(HAVE_GD_PNG)
-    /* this is bad, but it's because of how the VRML driver works */
-    if ((job->codegen == &VRML_CodeGen) && (peripheries == 0)) {
-	peripheries = 1;
-    }
-#endif
-
     if (ND_shape(n) == point_desc) {
 	checkStyle(n, &style);
 	if (style & INVISIBLE)

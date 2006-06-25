@@ -132,6 +132,81 @@ static int dia_printf(const char *format, ...)
 #endif
 }
 
+#define SVG_COLORS_P 0
+
+static int dia_comparestr(const void *s1, const void *s2)
+{
+        return strcmp(*(char **) s1, *(char **) s2);
+}
+
+static char *dia_resolve_color(char *name)
+{
+/* color names from http://www.w3.org/TR/SVG/types.html */
+/* NB.  List must be LANG_C sorted */
+    static char *svg_known_colors[] = {
+        "aliceblue", "antiquewhite", "aqua", "aquamarine", "azure",
+        "beige", "bisque", "black", "blanchedalmond", "blue",
+        "blueviolet", "brown", "burlywood",
+        "cadetblue", "chartreuse", "chocolate", "coral",
+        "cornflowerblue", "cornsilk", "crimson", "cyan",
+        "darkblue", "darkcyan", "darkgoldenrod", "darkgray",
+        "darkgreen", "darkgrey", "darkkhaki", "darkmagenta",
+        "darkolivegreen", "darkorange", "darkorchid", "darkred",
+        "darksalmon", "darkseagreen", "darkslateblue", "darkslategray",
+        "darkslategrey", "darkturquoise", "darkviolet", "deeppink",
+        "deepskyblue", "dimgray", "dimgrey", "dodgerblue",
+        "firebrick", "floralwhite", "forestgreen", "fuchsia",
+        "gainsboro", "ghostwhite", "gold", "goldenrod", "gray",
+        "green", "greenyellow", "grey",
+        "honeydew", "hotpink", "indianred",
+        "indigo", "ivory", "khaki",
+        "lavender", "lavenderblush", "lawngreen", "lemonchiffon",
+        "lightblue", "lightcoral", "lightcyan", "lightgoldenrodyellow",
+        "lightgray", "lightgreen", "lightgrey", "lightpink",
+        "lightsalmon", "lightseagreen", "lightskyblue",
+        "lightslategray", "lightslategrey", "lightsteelblue",
+        "lightyellow", "lime", "limegreen", "linen",
+        "magenta", "maroon", "mediumaquamarine", "mediumblue",
+        "mediumorchid", "mediumpurple", "mediumseagreen",
+        "mediumslateblue", "mediumspringgreen", "mediumturquoise",
+        "mediumvioletred", "midnightblue", "mintcream",
+        "mistyrose", "moccasin",
+        "navajowhite", "navy", "oldlace",
+        "olive", "olivedrab", "orange", "orangered", "orchid",
+        "palegoldenrod", "palegreen", "paleturquoise",
+        "palevioletred", "papayawhip", "peachpuff", "peru", "pink",
+        "plum", "powderblue", "purple",
+        "red", "rosybrown", "royalblue",
+        "saddlebrown", "salmon", "sandybrown", "seagreen", "seashell",
+        "sienna", "silver", "skyblue", "slateblue", "slategray",
+        "slategrey", "snow", "springgreen", "steelblue",
+        "tan", "teal", "thistle", "tomato", "turquoise",
+        "violet",
+        "wheat", "white", "whitesmoke",
+        "yellow", "yellowgreen",
+    };
+
+    static char buf[SMALLBUF];
+    char *tok;
+    gvcolor_t color;
+
+    tok = canontoken(name);
+    if (!SVG_COLORS_P || (bsearch(&tok, svg_known_colors,
+                              sizeof(svg_known_colors) / sizeof(char *),
+                              sizeof(char *), dia_comparestr) == NULL)) {
+        /* if tok was not found in known_colors */
+        if (streq(tok, "transparent")) {
+            tok = "none";
+        } else {
+            colorxlate(name, &color, RGBA_BYTE);
+            sprintf(buf, "#%02x%02x%02x",
+                    color.u.rgba[0], color.u.rgba[1], color.u.rgba[2]);
+            tok = buf;
+        }
+    }
+    return tok;
+}
+
 
 static void dia_reset(void)
 {
@@ -164,16 +239,6 @@ static pointf diapt(point p)
 	rv.y = PB.UR.y - 1 - p.x * Scale - Offset.y;
     }
     return rv;
-}
-
-static char *dia_resolve_color(char *name)
-{
-    extern char *svg_resolve_color(char *, int);
-#ifdef DIA_KNOWS_SVG_COLORNAMES
-    return svg_resolve_color(name, 1);
-#else
-    return svg_resolve_color(name, 0);
-#endif
 }
 
 static void dia_grstyle(context_t * cp)

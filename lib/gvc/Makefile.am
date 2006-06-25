@@ -31,20 +31,11 @@ libgvc_C_la_LIBADD = $(top_builddir)/lib/common/libcommon_C.la
 #   so it is linked with an empty table of builtins.
 libgvc_la_LDFLAGS = -version-info @VERSION_INFO@ 
 libgvc_la_SOURCES = $(libgvc_C_la_SOURCES) no_builtins.c demand_loading.c
-if WITH_MYLIBGD
-libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
-	$(top_builddir)/lib/gd/libgvgd_C.la \
-	$(top_builddir)/lib/cdt/libcdt.la \
-	$(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la \
-	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ 
-else
 libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
-	@GD_LIBS@
-endif
+	@EXPAT_LIBS@ @Z_LIBS@
 
 #For use without plugins.
 #  so it needs to be linked with a preset table of builtins, e.g. dot_builtins.c,

@@ -44,10 +44,6 @@
 
 extern int emit_once(char *str);
 
-#ifdef WITH_CODEGENS
-extern codegen_t PS_CodeGen;
-#endif
-
 /* storage for temporary hacks until client API is FP */
 static pointf *AF;
 static int sizeAF;
@@ -119,9 +115,6 @@ int gvrender_features(GVJ_t * job)
 		features |= GVRENDER_DOES_ARROWS;
 	    if (cg->begin_layer)
 		features |= GVRENDER_DOES_LAYERS;
-	    /* WARNING - nasty hack to avoid modifying old codegens */
-	    if (cg == &PS_CodeGen)
-		features |= GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES;
 	}
     }
 #endif

@@ -46,12 +46,9 @@ extern const bool Demand_Loading;
 
     extern codegen_t QPDF_CodeGen, QEPDF_CodeGen, QBM_CodeGen;
 #endif
-    extern codegen_t FIG_CodeGen, HPGL_CodeGen, MAP_CodeGen,
+    extern codegen_t FIG_CodeGen, HPGL_CodeGen,
         MIF_CodeGen, XDot_CodeGen, MP_CodeGen, PIC_CodeGen,
-        PS_CodeGen, DIA_CodeGen, SVG_CodeGen, VTX_CodeGen;
-#ifdef HAVE_LIBGD
-    extern codegen_t GD_CodeGen, memGD_CodeGen, VRML_CodeGen;
-#endif
+        DIA_CodeGen, VTX_CodeGen;
 #endif
 
 /*
@@ -363,51 +360,20 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 #define MAX_CODEGENS 100
 
 static codegen_info_t cg[MAX_CODEGENS] = {
-    {&PS_CodeGen, "ps", POSTSCRIPT},
-    {&PS_CodeGen, "ps2", PDF},
     {&HPGL_CodeGen, "hpgl", HPGL},
     {&HPGL_CodeGen, "pcl", PCL},
     {&MIF_CodeGen, "mif", MIF},
     {&PIC_CodeGen, "pic", PIC_format},
-
-#ifdef HAVE_LIBGD
-    {&GD_CodeGen, "gd", GD},
-#ifdef HAVE_LIBZ
-    {&GD_CodeGen, "gd2", GD2},
-#endif
-#ifdef HAVE_GD_GIF
-    {&GD_CodeGen, "gif", GIF},
-#endif
-#ifdef HAVE_GD_JPEG
-    {&GD_CodeGen, "jpg", JPEG},
-    {&GD_CodeGen, "jpeg", JPEG},
-#endif
-#ifdef HAVE_GD_PNG
-    {&GD_CodeGen, "png", PNG},
-    {&VRML_CodeGen, "vrml", VRML},
-#endif
-    {&GD_CodeGen, "wbmp", WBMP},
-#ifdef HAVE_GD_XPM
-    {&GD_CodeGen, "xbm", XBM},
-    {&GD_CodeGen, "xpm", XBM},
-#endif
-#endif
 
 #ifdef QUARTZ_RENDER
     {&QPDF_CodeGen, "pdf", QPDF},
     {&QEPDF_CodeGen, "epdf", QEPDF},
 #endif                          /* QUARTZ_RENDER */
 
-    {&MAP_CodeGen, "ismap", ISMAP},
-    {&MAP_CodeGen, "imap", IMAP},
-    {&MAP_CodeGen, "cmap", CMAP},
-    {&MAP_CodeGen, "cmapx", CMAPX},
     {&VTX_CodeGen, "vtx", VTX},
     {&MP_CodeGen, "mp", METAPOST},
     {&FIG_CodeGen, "fig", FIG},
-    {&SVG_CodeGen, "svg", SVG},
 #ifdef HAVE_LIBZ
-    {&SVG_CodeGen, "svgz", SVGZ},
     {&DIA_CodeGen, "dia", DIA},
 #endif
 #define DUMMY_CodeGen XDot_CodeGen
