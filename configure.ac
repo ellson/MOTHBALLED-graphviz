@@ -1843,7 +1843,12 @@ AC_CONFIG_FILES(Makefile
 	lib/gvc/Makefile
 	lib/gvc/libgvc.pc
 	lib/gvc/libgvc_builtins.pc
-	lib/plugin/Makefile
+	plugin/Makefile
+	plugin/core/Makefile
+	plugin/gd/Makefile
+	plugin/pango/Makefile
+	plugin/dot_layout/Makefile
+	plugin/neato_layout/Makefile
 	cmd/Makefile
 	cmd/dot/Makefile
 	cmd/tools/Makefile

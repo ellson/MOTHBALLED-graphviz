@@ -3,6 +3,6 @@
 
 SUBDIRS = cdt graph agraph gd pathplan agutil sfio vmalloc ast vpsc \
 	circogen dotgen fdpgen neatogen twopigen common gvc pack \
-	ingraphs expr plugin 
+	ingraphs expr
 
 EXTRA_DIST = Makefile.old

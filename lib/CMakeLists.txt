@@ -22,7 +22,6 @@ SUBDIRS(
 	pack 
 	ingraphs 
 #expr 
-	plugin
 ) 
 
 #original Makefile.am contents follow:

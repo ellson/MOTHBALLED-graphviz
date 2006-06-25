@@ -55,11 +55,11 @@ dot_static_SOURCES = dot.c $(top_srcdir)/lib/gvc/no_demand_loading.c
 dot_static_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
 if WITH_MYLIBGD
 dot_static_LDADD = \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout_C.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout_C.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_core_C.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_gd_C.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_pango_C.a \
+	$(top_builddir)/plugin/dot_layout/.libs/libgvplugin_dot_layout_C.a \
+	$(top_builddir)/plugin/neato_layout/.libs/libgvplugin_neato_layout_C.a \
+	$(top_builddir)/plugin/core/.libs/libgvplugin_core_C.a \
+	$(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a \
+	$(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la \
@@ -69,11 +69,11 @@ dot_static_LDADD = \
        	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@
 else
 dot_static_LDADD = \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_dot_layout_C.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_neato_layout_C.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_core_C.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_gd_C.a \
-	$(top_builddir)/lib/plugin/.libs/libgvplugin_pango_C.a \
+	$(top_builddir)/plugin/dot_layout/.libs/libgvplugin_dot_layout_C.a \
+	$(top_builddir)/plugin/neato_layout/.libs/libgvplugin_neato_layout_C.a \
+	$(top_builddir)/plugin/core/.libs/libgvplugin_core_C.a \
+	$(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a \
+	$(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la \

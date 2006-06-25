@@ -56,11 +56,11 @@ libtcldot_builtin_la_LDFLAGS = -no-undefined
 libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(top_builddir)/lib/plugin/libgvplugin_dot_layout_C.la \
-	$(top_builddir)/lib/plugin/libgvplugin_neato_layout_C.la \
-	$(top_builddir)/lib/plugin/libgvplugin_core_C.la \
-	$(top_builddir)/lib/plugin/libgvplugin_gd_C.la \
-	$(top_builddir)/lib/plugin/libgvplugin_pango_C.la \
+	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout_C.la \
+	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
+	$(top_builddir)/plugin/core/libgvplugin_core_C.la \
+	$(top_builddir)/plugin/gd/libgvplugin_gd_C.la \
+	$(top_builddir)/plugin/pango/libgvplugin_pango_C.la \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/graph/libgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \

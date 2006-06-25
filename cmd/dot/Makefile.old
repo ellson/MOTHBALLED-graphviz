@@ -20,7 +20,11 @@ XLIBS = -L$(LOC_LIB)/pathplan -lpathplan \
         -L$(LOC_LIB)/gd -lgd \
         $(EXTLIB_LIB) $(EXPAT_LIB) $(LTDL_LIB) -lm
 
-PLUGS = -L$(LOC_PLUG) -lgvplugin_dot_layout -lgvplugin_neato_layout -lgvplugin_gd
+PLUGS = -L$(LOC_PLUG) -lgvplugin_dot_layout \
+	-lgvplugin_neato_layout \
+	-lgvplugin_core \
+	-lgvplugin_pango \
+	-lgvplugin_gd
 
 LIBS = -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
        -L$(LOC_LIB)/common -lcommon \
