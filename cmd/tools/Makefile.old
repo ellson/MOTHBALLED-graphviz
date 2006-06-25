@@ -8,7 +8,7 @@ include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 LOC_LIB=$(ROOT)/lib
-LOC_PLUG=$(LOC_LIB)/plugin
+LOC_PLUG=$(ROOT)/plugin
 LOC_INCDIR=$(LOC_LIB)/include
 LOC_LIBDIR=$(LOC_LIB)/lib
 
@@ -22,7 +22,11 @@ DNINCS = -I$(LOC_LIB)/pack -I$(LOC_LIB)/neatogen  \
          -I$(LOC_LIB)/common -I$(LOC_LIB)
 
 LIBS =  -L$(LOC_LIB)/graph -lgraph -L$(LOC_LIB)/cdt -lcdt
-PLUGS = -L$(LOC_PLUG) -lgvplugin_dot_layout -lgvplugin_neato_layout -lgvplugin_usershape_gd
+PLUGS = -L$(LOC_PLUG)/neato_layout -lgvplugin_neato_layout \
+	-L$(LOC_PLUG)/dot_layout -lgvplugin_dot_layout \
+	-L$(LOC_PLUG)/core -lgvplugin_core \
+	-L$(LOC_PLUG)/gd -lgvplugin_gd \
+	-L$(LOC_PLUG)/pango -lgvplugin_pango
 
 DNLIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
         -L$(LOC_LIB)/common -lcommon \
