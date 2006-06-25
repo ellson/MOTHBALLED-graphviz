@@ -619,8 +619,8 @@ static bool node_in_box(node_t *n, boxf b)
 static void emit_node(GVJ_t * job, node_t * n)
 {
     GVC_t *gvc = job->gvc;
-    char *s, *url = NULL, *tooltip = NULL, *target = NULL;
-    int oldstate, explicit_tooltip = 0;
+    char *s;
+    int oldstate;
 
     if (ND_shape(n) == NULL)
 	return;
@@ -638,33 +638,11 @@ static void emit_node(GVJ_t * job, node_t * n)
 	    gvrender_comment(job, s);
         
 	gvrender_begin_node(job, n);
-	if (((s = agget(n, "href")) && s[0]) || ((s = agget(n, "URL")) && s[0]))
-	    url = strdup_and_subst_node(s, n);
-
-	if ((s = agget(n, "tooltip")) && s[0]) {
-	    tooltip = strdup_and_subst_node(s, n);
-	    explicit_tooltip++;
-	} else {
-	    tooltip = strdup_and_subst_node(ND_label(n)->text, n);
-	}
-
-	if ((s = agget(n, "target")) && s[0])
-	    target = strdup_and_subst_node(s, n);
-
-	if (url || explicit_tooltip)
-	    gvrender_begin_anchor(job, url, tooltip, target);
-
 	setColorScheme (agget (n, "colorscheme"));
 	gvrender_begin_context(job);
 	ND_shape(n)->fns->codefn(job, n);
 	ND_state(n) = gvc->common.viewNum;
 	gvrender_end_context(job);
-
-	if (url || explicit_tooltip)
-	    gvrender_end_anchor(job);
-	free(url);
-	free(tooltip);
-	free(target);
 	gvrender_end_node(job);
     }
     gvc->emit_state = oldstate;
@@ -1014,9 +992,8 @@ static bool edge_in_box(edge_t *e, boxf b)
 
 static void emit_edge(GVJ_t * job, edge_t * e)
 {
-    char *s, *url = NULL, *label = NULL, *tooltip = NULL, *target = NULL;
-    textlabel_t *lab = NULL;
-    int oldstate, explicit_tooltip=0;
+    char *s;
+    int oldstate;
 
     if (! edge_in_box(e, job->pageBoxClip) || ! edge_in_layer(job, e->head->graph, e))
 	return;
@@ -1038,26 +1015,7 @@ static void emit_edge(GVJ_t * job, edge_t * e)
         gvrender_comment(job, s);
 
     gvrender_begin_edge(job, e);
-    if (((s = agget(e, "href")) && s[0]) || ((s = agget(e, "URL")) && s[0]))
-	url = strdup_and_subst_edge(s, e);
-    if ((lab = ED_label(e)))
-	label = lab->text;
-    if ((s = agget(e, "tooltip")) && s[0]) {
-	tooltip = strdup_and_subst_edge(s, e);
-	explicit_tooltip++;
-    } else if (label) {
-	tooltip = strdup_and_subst_edge(label, e);
-    }
-    if ((s = agget(e, "target")) && s[0])
-	target = strdup_and_subst_edge(s, e);
-    if (url || explicit_tooltip)
-	gvrender_begin_anchor(job, url, tooltip, target);
     emit_edge_graphics (job, e);
-    if (url || explicit_tooltip)
-	gvrender_end_anchor(job);
-    free(url);
-    free(tooltip);
-    free(target);
     gvrender_end_edge(job);
     job->gvc->emit_state = oldstate;
 }
@@ -1295,22 +1253,8 @@ void emit_view(GVJ_t * job, graph_t * g, int flags)
     GVC_t * gvc = job->gvc;
     node_t *n;
     edge_t *e;
-    char *s, *url = NULL, *tooltip = NULL, *target = NULL;
-    int explicit_tooltip = 0;
 
     gvc->common.viewNum++;
-    if (((s = agget(g, "href")) && s[0]) || ((s = agget(g, "URL")) && s[0]))
-	url = strdup_and_subst_graph(s, g);
-    if ((s = agget(g, "target")) && s[0])
-	target = strdup_and_subst_graph(s, g);
-    if ((s = agget(g, "tooltip")) && s[0]) {
-	tooltip = strdup_and_subst_graph(s, g);
-	explicit_tooltip++;
-    } else if (GD_label(g)) {
-	tooltip = strdup_and_subst_graph(GD_label(g)->text, g);
-    }
-    if (url || explicit_tooltip)
-        gvrender_begin_anchor(job, url, tooltip, target);
     if (GD_label(g))
 	emit_label(job, EMIT_GLABEL, GD_label(g), (void *) g);
     /* when drawing, lay clusters down before nodes and edges */
@@ -1367,11 +1311,6 @@ void emit_view(GVJ_t * job, graph_t * g, int flags)
     /* when mapping, detect events on clusters after nodes and edges */
     if (flags & EMIT_CLUSTERS_LAST)
 	emit_clusters(job, g, flags);
-    if (url || explicit_tooltip)
-	gvrender_end_anchor(job);
-    free(url);
-    free(tooltip);
-    free(target);
     gvrender_end_page(job);
 }
 
@@ -1508,8 +1447,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     char *color, *fillcolor, *pencolor, **style;
     node_t *n;
     edge_t *e;
-    char *s, *url, *tooltip, *target;
-    int oldstate, explicit_tooltip;
+    int oldstate;
 
     oldstate = job->gvc->emit_state;
     job->gvc->emit_state = EMIT_CDRAW;
@@ -1521,24 +1459,6 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if (flags & EMIT_CLUSTERS_LAST)
 	    emit_clusters(job, sg, flags);
 	gvrender_begin_cluster(job, sg);
-
-	url = tooltip = target = NULL;
-	explicit_tooltip = 0;
-
-	if (((s = agget(sg, "href")) && s[0]) || ((s = agget(sg, "URL")) && s[0]))
-	    url = strdup_and_subst_graph(s, sg);
-
-	if ((s = agget(sg, "target")) && s[0])
-	    target = strdup_and_subst_graph(s, sg);
-	if ((s = agget(sg, "tooltip")) && s[0]) {
-	    tooltip = strdup_and_subst_graph(s, sg);
-	    explicit_tooltip++;
-	} else if (GD_label(sg)) {
-	    tooltip = strdup_and_subst_graph(GD_label(sg)->text, sg);
-	}
-	if (url || explicit_tooltip)
-	    gvrender_begin_anchor(job, url, tooltip, target);
-
 	setColorScheme (agget (sg, "colorscheme"));
 	gvrender_begin_context(job);
 	filled = FALSE;
@@ -1619,14 +1539,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		    emit_edge(job, e);
 	    }
 	}
-
 	gvrender_end_context(job);
-	if (url || explicit_tooltip)
-	    gvrender_end_anchor(job);
-
-	free(url);
-	free(tooltip);
-	free(target);
 	gvrender_end_cluster(job, g);
 	/* when drawing, lay down clusters before sub_clusters */
 	if (!(flags & EMIT_CLUSTERS_LAST))

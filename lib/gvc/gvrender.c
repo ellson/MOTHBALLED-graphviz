@@ -338,6 +338,14 @@ static int gvrender_comparestr(const void *s1, const void *s2)
     return strcmp(*(char **) s1, *(char **) s2);
 }
 
+static void rect2poly(pointf *p)
+{
+    p[3].x = p[2].x = p[1].x;
+    p[2].y = p[1].y;
+    p[3].y = p[0].y;
+    p[1].x = p[0].x;
+}
+
 static void gvrender_resolve_color(gvrender_features_t * features,
 				   char *name, gvcolor_t * color)
 {
@@ -468,8 +476,37 @@ void gvrender_end_graph(GVJ_t * job)
 void gvrender_begin_page(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    obj_state_t *obj = job->obj;
+    int nump = 0, flags = job->flags;
+    pointf *p = NULL;
+
+    if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
+        if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
+	    if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
+	        obj->url_map_shape = MAP_RECTANGLE;
+	        nump = 2;
+	    }
+	    else {
+	        obj->url_map_shape = MAP_POLYGON;
+	        nump = 4;
+	    }
+
+	    p = N_NEW(nump, pointf);
+	    p[0] = job->pageBox.LL;
+	    p[1] = job->pageBox.UR;
+
+	    if (! (flags & (GVRENDER_DOES_MAP_RECTANGLE)))
+		rect2poly(p);
+	}
+	if (! (flags & GVRENDER_DOES_TRANSFORM))
+	    gvrender_ptf_A(job, p, p, nump);
+	obj->url_map_p = p;
+	obj->url_map_n = nump;
+    }
 
     if (gvre) {
+	if (gvre->begin_anchor && (obj->url || obj->explicit_tooltip))
+	    gvre->begin_anchor(job, obj->url, obj->tooltip, obj->target);
         if (gvre->begin_page)
 	    gvre->begin_page(job);
     }
@@ -479,6 +516,8 @@ void gvrender_begin_page(GVJ_t * job)
         point offset;
 
         PF2P(job->pageOffset, offset);
+	if (cg && cg->begin_anchor && (obj->url || obj->explicit_tooltip))
+	    cg->begin_anchor(obj->url, obj->tooltip, obj->target);
         if (cg && cg->begin_page)
             cg->begin_page(job->gvc->g, job->pagesArrayElem,
                job->zoom, job->rotation, offset);
@@ -489,10 +528,13 @@ void gvrender_begin_page(GVJ_t * job)
 void gvrender_end_page(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    obj_state_t *obj = job->obj;
 
     if (gvre) {
        	if (gvre->end_page)
 	    gvre->end_page(job);
+	if (gvre->end_anchor && (obj->url || obj->explicit_tooltip))
+	    gvre->end_anchor(job);
     }
 #ifdef WITH_CODEGENS
     else {
@@ -500,6 +542,8 @@ void gvrender_end_page(GVJ_t * job)
 
 	if (cg && cg->end_page)
 	    cg->end_page();
+	if (cg && cg->end_anchor && (obj->url || obj->explicit_tooltip))
+	    cg->end_anchor();
     }
 #endif
 }
@@ -540,14 +584,6 @@ void gvrender_end_layer(GVJ_t * job)
 #endif
 }
 
-static void rect2poly(pointf *p)
-{
-    p[3].x = p[2].x = p[1].x;
-    p[2].y = p[1].y;
-    p[3].y = p[0].y;
-    p[1].x = p[0].x;
-}
-
 void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 {
     gvrender_engine_t *gvre = job->render.engine;
@@ -576,13 +612,13 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
         obj->tooltip = strdup_and_subst_graph(s, sg);
 
     if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
-        if (flags & (GVRENDER_DOES_MAP_RECT | GVRENDER_DOES_MAP_POLY)) {
-	    if (flags & GVRENDER_DOES_MAP_RECT) {
-	        obj->url_map_shapename = "rect";
+        if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
+	    if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
+	        obj->url_map_shape = MAP_RECTANGLE;
 	        nump = 2;
 	    }
 	    else {
-	        obj->url_map_shapename = "poly";
+	        obj->url_map_shape = MAP_POLYGON;
 	        nump = 4;
 	    }
 
@@ -590,7 +626,7 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 	    P2PF(GD_bb(sg).LL, p[0]);
 	    P2PF(GD_bb(sg).UR, p[1]);
 
-	    if (! (flags & (GVRENDER_DOES_MAP_RECT)))
+	    if (! (flags & (GVRENDER_DOES_MAP_RECTANGLE)))
 		rect2poly(p);
 	}
 	obj->url_map_p = p;
@@ -598,6 +634,8 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
     }
 
     if (gvre) {
+	if (gvre->begin_anchor && (obj->url || obj->explicit_tooltip))
+	    gvre->begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	if (gvre->begin_cluster)
 	    gvre->begin_cluster(job);
     }
@@ -606,6 +644,8 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 	codegen_t *cg = job->codegen;
 
         Obj = CLST;
+	if (cg && cg->begin_anchor && (obj->url || obj->explicit_tooltip))
+	    cg->begin_anchor(obj->url, obj->tooltip, obj->target);
 	if (cg && cg->begin_cluster)
 	    cg->begin_cluster(sg);
     }
@@ -615,10 +655,13 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 void gvrender_end_cluster(GVJ_t * job, graph_t *g)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    obj_state_t *obj = job->obj;
 
     if (gvre) {
        	if (gvre->end_cluster)
 	    gvre->end_cluster(job);
+	if (gvre->end_anchor && (obj->url || obj->explicit_tooltip))
+	    gvre->end_anchor(job);
     }
 #ifdef WITH_CODEGENS
     else {
@@ -626,6 +669,8 @@ void gvrender_end_cluster(GVJ_t * job, graph_t *g)
 
 	if (cg && cg->end_cluster)
 	    cg->end_cluster();
+	if (cg && cg->end_anchor && (obj->url || obj->explicit_tooltip))
+	    cg->end_anchor();
     }
     Obj = NONE;
 #endif
@@ -758,7 +803,7 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
     gvrender_engine_t *gvre = job->render.engine;
     obj_state_t *obj;
     textlabel_t *lab;
-    int flags, sides, peripheries, i, j, filled = 0, rect = 0, shape, sample = 100, nump = 0;
+    int flags, sides, peripheries, i, j, filled = 0, rect = 0, shape, nump = 0;
     polygon_t *poly = NULL;
     pointf *vertices, ldimen, *p =  NULL;
     point coord;
@@ -780,15 +825,15 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
         && (((s = agget(n, "href")) && s[0]) || ((s = agget(n, "URL")) && s[0]))) {
         obj->url = strdup_and_subst_node(s, n);
     }
-    if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(n, "target")) && s[0])) {
-        obj->target = strdup_and_subst_node(s, n);
-    }
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if ((s = agget(n, "tooltip")) && s[0])
             obj->tooltip = strdup_and_subst_node(s, n);
 	else
 	    obj->tooltip = strdup(ND_label(n)->text);
     } 
+    if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(n, "target")) && s[0])) {
+        obj->target = strdup_and_subst_node(s, n);
+    }
     if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
 
         /* checking shape of node */
@@ -811,7 +856,7 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
          * circle, ellipse, polygon with n side, or point.
          * For regular rectangular shape we have use node's bounding box to map clickable region
          */
-        if (poly && !rect && (flags & GVRENDER_DOES_MAP_POLY)) {
+        if (poly && !rect && (flags & GVRENDER_DOES_MAP_POLYGON)) {
 
             if (poly->sides < 3)
                 sides = 1;
@@ -825,11 +870,19 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
 
             vertices = poly->vertices;
 
+	    if ((s = agget(n, "samplepoints")))
+		nump = atoi(s);
+	    /* We want at least 4 points. For server-side maps, at most 100
+	     * points are allowed. To simplify things to fit with the 120 points
+	     * used for skewed ellipses, we set the bound at 60.
+	     */
+	    if ((nump < 4) || (nump > 60))
+		nump = DFLT_SAMPLE;
             /* use bounding box of text label for mapping
 	     * when polygon has no peripheries and node is not filled
 	     */
             if (poly->peripheries == 0 && !filled) {
-                obj->url_map_shapename = "rect";
+                obj->url_map_shape = MAP_RECTANGLE;
                 nump = 2;
                 p = N_NEW(nump, pointf);
                 ldimen = ND_label(n)->dimen;
@@ -838,7 +891,7 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
             /* circle or ellipse */
             else if (poly->sides < 3 && poly->skew == 0.0 && poly->distortion == 0.0) {
                 if (poly->regular) {
-                    obj->url_map_shapename = "circle";   /* circle */
+                    obj->url_map_shape = MAP_CIRCLE;
                     nump = 2;              /* center of circle and top right corner of bb */
                     p = N_NEW(nump, pointf);
                     p[0].x = coord.x;
@@ -847,11 +900,9 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
                     p[1].y = coord.y + vertices[peripheries - 1].y;
                 }
                 else { /* ellipse is treated as polygon */
-                    obj->url_map_shapename = "poly";     /* ellipse */
-                    nump = sample;
+                    obj->url_map_shape= MAP_POLYGON;
                     p = pEllipse((double)(vertices[peripheries - 1].x),
-					      (double)(vertices[peripheries - 1].y),
-					      nump);
+				 (double)(vertices[peripheries - 1].y), nump);
                     for (i = 0; i < nump; i++) {
                         p[i].x += coord.x;
                         p[i].y += coord.y;
@@ -861,13 +912,12 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
             /* all other polygonal shape */
 	    else {
                 int offset = (peripheries - 1)*(poly->sides);
-                obj->url_map_shapename = "poly";
+                obj->url_map_shape = MAP_POLYGON;
                 /* distorted or skewed ellipses and circles are polygons with 120
 		 * sides. For mapping we convert them into polygon with sample sides
 		 */
-                if (poly->sides >= sample) {
-                    int delta = poly->sides / sample;
-                    nump = sample;
+                if (poly->sides >= nump) {
+                    int delta = poly->sides / nump;
                     p = N_NEW(nump, pointf);
                     for (i = 0, j = 0; j < nump; i += delta, j++) {
                         p[j].x = coord.x + vertices[i + offset].x;
@@ -887,7 +937,7 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
             /* we have to use the node's bounding box to map clickable region
 	     * when requested output format is not capable of polygons.
 	     */
-            obj->url_map_shapename = "rect";
+            obj->url_map_shape = MAP_RECTANGLE;
             nump = 2;
             p = N_NEW(nump, pointf);
             p[0].x = coord.x - ND_lw_i(n);
@@ -895,11 +945,15 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
             p[1].x = coord.x + ND_rw_i(n);
             p[1].y = coord.y + (ND_ht_i(n) / 2);
         }
+	if (! (flags & GVRENDER_DOES_TRANSFORM))
+	    gvrender_ptf_A(job, p, p, nump);
 	obj->url_map_p = p;
 	obj->url_map_n = nump;
     }
 
     if (gvre) {
+	if (gvre->begin_anchor && (obj->url || obj->explicit_tooltip))
+	    gvre->begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	if (gvre->begin_node)
 	    gvre->begin_node(job);
     }
@@ -908,6 +962,8 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
 	codegen_t *cg = job->codegen;
 
         Obj = NODE;
+	if (cg && cg->begin_anchor && (obj->url || obj->explicit_tooltip))
+	    cg->begin_anchor(obj->url, obj->tooltip, obj->target);
 	if (cg && cg->begin_node)
 	    cg->begin_node(n);
     }
@@ -917,10 +973,13 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
 void gvrender_end_node(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    obj_state_t *obj = job->obj;
 
     if (gvre) {
 	if (gvre->end_node)
 	    gvre->end_node(job);
+	if (gvre->end_anchor && (obj->url || obj->explicit_tooltip))
+	    gvre->end_anchor(job);
     }
 #ifdef WITH_CODEGENS
     else {
@@ -928,6 +987,8 @@ void gvrender_end_node(GVJ_t * job)
 
 	if (cg && cg->end_node)
 	    cg->end_node();
+	if (cg && cg->end_anchor && (obj->url || obj->explicit_tooltip))
+	    cg->end_anchor();
     }
     Obj = NONE;
 #endif
@@ -986,15 +1047,15 @@ static segitem_t* appendSeg (pointf p, segitem_t* lp)
  */
 static void map_bspline_poly(pointf **pbs_p, int **pbs_n, int *pbs_poly_n, int n, pointf* p1, pointf* p2) 
 {
-    int i, nump = 0, last = 2*n-1;
+    int i = 0, nump = 0, last = 2*n-1;
 
-    for ( i = 0; i < *pbs_poly_n; i++)
+    for ( ; i < *pbs_poly_n; i++)
 	nump += (*pbs_n)[i];
 
     (*pbs_poly_n)++;
     *pbs_n = grealloc(*pbs_n, (*pbs_poly_n) * sizeof(int));
-    (*pbs_n)[i] = n;
-    *pbs_p = grealloc(*pbs_p, (nump + n) * sizeof(pointf));
+    (*pbs_n)[i] = 2*n;
+    *pbs_p = grealloc(*pbs_p, (nump + 2*n) * sizeof(pointf));
 
     for (i = 0; i < n; i++) {
 	(*pbs_p)[nump+i] = p1[i];
@@ -1183,7 +1244,7 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 	}
     }
 
-    if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
+    if (flags & GVRENDER_DOES_MAPS) {
         if (((s = agget(e, "href")) && s[0]) || ((s = agget(e, "URL")) && s[0]))
             obj->url = strdup_and_subst_edge(s, e);
 	if (((s = agget(e, "tailhref")) && s[0]) || ((s = agget(e, "tailURL")) && s[0]))
@@ -1210,28 +1271,34 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
     } 
 
     if (flags & GVRENDER_DOES_TOOLTIPS) {
-        if ((s = agget(e, "tooltip")) && s[0])
+        if ((s = agget(e, "tooltip")) && s[0]) {
             obj->tooltip = strdup_and_subst_edge(s, e);
+	    obj->explicit_tooltip = true;
+	}
 	else if (obj->label)
 	    obj->tooltip = strdup(obj->label);
-        if ((s = agget(e, "tailtooltip")) && s[0])
+        if ((s = agget(e, "tailtooltip")) && s[0]) {
             obj->tailtooltip = strdup_and_subst_edge(s, e);
+	    obj->explicit_tailtooltip = true;
+	}
 	else if (obj->taillabel)
 	    obj->tailtooltip = strdup(obj->taillabel);
-        if ((s = agget(e, "headtooltip")) && s[0])
+        if ((s = agget(e, "headtooltip")) && s[0]) {
             obj->headtooltip = strdup_and_subst_edge(s, e);
+	    obj->explicit_headtooltip = true;
+	}
 	else if (obj->headlabel)
 	    obj->headtooltip = strdup(obj->headlabel);
     } 
 
     if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
-        if (flags & (GVRENDER_DOES_MAP_RECT | GVRENDER_DOES_MAP_POLY)) {
-            if (flags & GVRENDER_DOES_MAP_RECT) {
-	        obj->url_map_shapename = "rect";
+        if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
+            if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
+	        obj->url_map_shape = MAP_RECTANGLE;
 	        nump = 2;
 	    }
-	    else { /* GVRENDER_DOES_MAP_POLY */
-	        obj->url_map_shapename = "poly";
+	    else { /* GVRENDER_DOES_MAP_POLYGON */
+	        obj->url_map_shape = MAP_POLYGON;
 	        nump = 4;
 	    }
 
@@ -1281,7 +1348,7 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
                 }
             }
 
-	    if (ED_spl(e) && (obj->url || obj->tooltip) && (flags & GVRENDER_DOES_MAP_POLY)) {
+	    if (ED_spl(e) && (obj->url || obj->tooltip) && (flags & GVRENDER_DOES_MAP_POLYGON)) {
 		int ns;
 		splines *spl;
 
@@ -1305,7 +1372,7 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 		    gvrender_ptf_A(job, pbs, pbs, nump);		
 		}
 	    }
-	    if (! (flags & GVRENDER_DOES_MAP_RECT)) {
+	    if (! (flags & GVRENDER_DOES_MAP_RECTANGLE)) {
 		if (p) rect2poly(p);
 		if (pt) rect2poly(pt);
 		if (ph) rect2poly(ph);
@@ -1323,6 +1390,8 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
     }
 
     if (gvre) {
+	if (gvre->begin_anchor && (obj->url || obj->explicit_tooltip))
+	    gvre->begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	if (gvre->begin_edge)
 	    gvre->begin_edge(job);
     }
@@ -1331,6 +1400,8 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 	codegen_t *cg = job->codegen;
 
         Obj = EDGE;
+	if (cg && cg->begin_anchor && (obj->url || obj->explicit_tooltip))
+	    cg->begin_anchor(obj->url, obj->tooltip, obj->target);
 	if (cg && cg->begin_edge)
 	    cg->begin_edge(e);
     }
@@ -1340,10 +1411,13 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 void gvrender_end_edge(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    obj_state_t *obj = job->obj;
 
     if (gvre) {
 	if (gvre->end_edge)
 	    gvre->end_edge(job);
+	if (gvre->end_anchor && (obj->url || obj->explicit_tooltip))
+	    gvre->end_anchor(job);
     }
 #ifdef WITH_CODEGENS
     else {
@@ -1351,6 +1425,8 @@ void gvrender_end_edge(GVJ_t * job)
 
 	if (cg && cg->end_edge)
 	    cg->end_edge();
+	if (cg && cg->end_anchor && (obj->url || obj->explicit_tooltip))
+	    cg->end_anchor();
     }
     Obj = NONE;
 #endif
@@ -1398,8 +1474,7 @@ void gvrender_end_context(GVJ_t * job)
 #endif
 }
 
-void gvrender_begin_anchor(GVJ_t * job, char *href, char *tooltip,
-			   char *target)
+void gvrender_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
 {
     gvrender_engine_t *gvre = job->render.engine;
 

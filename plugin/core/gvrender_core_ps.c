@@ -465,7 +465,7 @@ static gvrender_features_t psgen_features = {
     GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES
 	| GVRENDER_DOES_TRANSFORM
 	| GVRENDER_DOES_MAPS
-	| GVRENDER_DOES_MAP_RECT,
+	| GVRENDER_DOES_MAP_RECTANGLE,
     36,				/* default margin - points */
     {72.,72.},			/* default dpi */
     NULL,			/* knowncolors */

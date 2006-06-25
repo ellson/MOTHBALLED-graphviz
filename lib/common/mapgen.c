@@ -137,28 +137,58 @@ static int ifFilled(node_t * n)
 }
 
 #if ! NEWANCHORS
-static void mapOutput (char* shapename, point* pp, int nump,
+static void mapOutput (map_shape_t map_shape, point* pp, int nump,
 		char* url, char *target, char *label, char *tooltip)
 {
     int i;
 
     if (Output_lang == IMAP && url && url[0]) {
-	fprintf(Output_file, "%s %s ", shapename, url);
-	if (strcmp(shapename, "circle") == 0)
-	    fprintf(Output_file, "%d,%d %d,%d", 
+	switch (map_shape) {
+	case MAP_RECTANGLE:
+	    fprintf(Output_file, "rectangle %s %d %d %d %d\n", url,
+		pp[0].x, pp[0].y, pp[1].x, pp[1].y);
+	    break;
+	case MAP_CIRCLE:
+	    fprintf(Output_file, "circle %s %d %d %d %d\n", url,
 		pp[0].x, pp[0].y, (pp[1].x+pp[0].x), pp[0].y);
-	else {
+	    break;
+	case MAP_POLYGON:
+	    fprintf(Output_file, "poly %s", url);
 	    for (i = 0; i < nump; i++)
-		fprintf(Output_file, "%d,%d ", pp[i].x, pp[i].y);
+		fprintf(Output_file, " %d,%d", pp[i].x, pp[i].y);
+	    fprintf(Output_file, "\n");
+	    break;
+	default:
+	    assert(0);
+	    break;
 	}
-	fprintf(Output_file, "\n");
 
     } else if (Output_lang == ISMAP && url && url[0]) {
-	fprintf(Output_file, "rectangle (%d,%d) (%d,%d) %s %s\n",
+	switch (map_shape) {
+	case MAP_RECTANGLE:
+	    fprintf(Output_file, "rectangle (%d,%d) (%d,%d) %s %s\n",
 		pp[0].x, pp[0].y, pp[1].x, pp[1].y, url, label);
+	    break;
+	default:
+	    assert(0);
+	    break;
+	}
 
     } else if (Output_lang == CMAP || Output_lang == CMAPX) {
-	fprintf(Output_file, "<area shape=\"%s\"", shapename);
+	switch (map_shape) {
+	case MAP_RECTANGLE:
+	    fprintf(Output_file, "<area shape=\"rect\"");
+	    break;
+	case MAP_CIRCLE:
+	    fprintf(Output_file, "<area shape=\"circle\"");
+	    break;
+	case MAP_POLYGON:
+	    fprintf(Output_file, "<area shape=\"poly\"");
+	    break;
+	default:
+	    assert(0);
+	    break;
+	}
 	if (url && url[0])
 	    fprintf(Output_file, " href=\"%s\"", xml_string(url));
 	if (target && target[0])
@@ -178,14 +208,22 @@ static void mapOutput (char* shapename, point* pp, int nump,
 	fprintf(Output_file, " alt=\"\"");
 	fprintf(Output_file, " coords=\"");
 
-	if (strcmp(shapename, "circle") == 0)
+	switch (map_shape) {
+	case MAP_RECTANGLE:
+	    fprintf(Output_file, "%d,%d,%d,%d\"", pp[0].x, pp[0].y, pp[1].x, pp[1].y);
+	    break;
+	case MAP_CIRCLE:
 	    fprintf(Output_file, "%d,%d,%d\"", pp[0].x, pp[0].y, pp[1].x);
-	else {
-	    for (i = 0; i < nump; i++)
-		fprintf(Output_file, "%d,%d ", pp[i].x, pp[i].y);
+	    break;
+	case MAP_POLYGON:
+	    fprintf(Output_file, "%d,%d", pp[0].x, pp[0].y);
+	    for (i = 1; i < nump; i++)
+		fprintf(Output_file, " %d,%d", pp[i].x, pp[i].y);
 	    fprintf(Output_file, "\"");
+	    break;
+	default:
+	    break;
 	}
-
 	if (Output_lang == CMAPX)
 	    fprintf(Output_file, " /");
 	fprintf(Output_file, ">\n");
@@ -215,7 +253,7 @@ map_output_poly(node_t * n, char *url,
     int sides, peri, nump, i, j, filled = 0, rect = 0, nshape;
     pointf *ppf, *vertices, ldimen;
     point *pp, coord;
-    char *shapename;
+    map_shape_t map_shape;
     polygon_t *poly = NULL;
 
     /* checking shape of node */
@@ -256,7 +294,7 @@ map_output_poly(node_t * n, char *url,
 	 * when polygon has no peripheries and node is not filled 
 	 */
 	if (poly->peripheries == 0 && !filled) {
-	    shapename = "rect";
+	    map_shape = MAP_RECTANGLE;
 	    nump = 2;
 	    ppf = N_NEW(nump, pointf);
 	    pp = N_NEW(nump, point);
@@ -271,7 +309,7 @@ map_output_poly(node_t * n, char *url,
 	else if (poly->sides < 3 && poly->skew == 0.0
 		    && poly->distortion == 0.0) {
 	    if (poly->regular) {
-		shapename = "circle";	/* circle */
+		map_shape = MAP_CIRCLE;
 		nump = 2;		/* center of circle and radius */
 		ppf = N_NEW(nump, pointf);
 		pp = N_NEW(nump, point);
@@ -282,7 +320,7 @@ map_output_poly(node_t * n, char *url,
 	    }
 	    else { /* ellipse is treated as polygon */
 		double a, b;
-		shapename = "poly";	/* ellipse */
+		map_shape = MAP_POLYGON;
 		a = vertices[peri - 1].x;
 		b = vertices[peri - 1].y;
 		nump = sample;
@@ -296,7 +334,7 @@ map_output_poly(node_t * n, char *url,
 	    /* all other polygonal shape */
 	} else {
 	    int offset = (peri - 1)*(poly->sides);
-	    shapename = "poly";
+	    map_shape = MAP_POLYGON;
 	    /* distorted or skewed ellipses and circles are polygons with 120 
              * sides. For mapping we convert them into polygon with sample sides
 	     */
@@ -324,7 +362,7 @@ map_output_poly(node_t * n, char *url,
 	 * when requested output format is neither imap nor cmapx and for all 
 	 * node shapes other than polygon ( except regular rectangle polygon ) 
 	 */
-	shapename = "rect";
+	map_shape = MAP_RECTANGLE;
 	nump = 2;
 	ppf = N_NEW(nump, pointf);
 	pp = N_NEW(nump, point);
@@ -349,7 +387,7 @@ map_output_poly(node_t * n, char *url,
     }
 
 #if ! NEWANCHORS
-    mapOutput (shapename, pp, nump, url, target, label, tooltip);
+    mapOutput (map_shape, pp, nump, url, target, label, tooltip);
 #endif
     free(ppf);
     free(pp);
@@ -397,7 +435,7 @@ map_output_rect(pointf p1, pointf p2, char *url, char *target, char *label,
 	pp[0].y = t;
     }
 #if ! NEWANCHORS
-    mapOutput ("rect", pp, 2, url, target, label, tooltip);
+    mapOutput (MAP_RECTANGLE, pp, 2, url, target, label, tooltip);
 #endif
 }
 
@@ -753,7 +791,7 @@ map_bspline_poly(int n, pointf* p1, pointf* p2,
 	rp[last-i].x = ROUND(ppf.x);
 	rp[last-i].y = ROUND(ppf.y);
     }
-    mapOutput ("poly", rp, last+1, url, target, NULL, tooltip);
+    mapOutput (MAP_POLYGON, rp, last+1, url, target, NULL, tooltip);
 #ifdef DEBUG
     psmapOutput (rp, last+1);
 #endif

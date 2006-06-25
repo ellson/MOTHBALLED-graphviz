@@ -63,13 +63,14 @@ extern "C" {
 #define GVRENDER_DOES_TRANSFORM (1<<11)
 #define GVRENDER_DOES_LABELS (1<<12)
 #define GVRENDER_DOES_MAPS (1<<13)
-#define GVRENDER_DOES_MAP_RECT (1<<14)
-#define GVRENDER_DOES_MAP_ELLIPSE (1<<15)
-#define GVRENDER_DOES_MAP_POLY (1<<16)
-#define GVRENDER_DOES_MAP_BSPLINE (1<<17)
-#define GVRENDER_DOES_TOOLTIPS (1<<18)
-#define GVRENDER_DOES_TARGETS (1<<19)
-#define GVRENDER_DOES_Z (1<<20)
+#define GVRENDER_DOES_MAP_RECTANGLE (1<<14)
+#define GVRENDER_DOES_MAP_CIRCLE (1<<15)
+#define GVRENDER_DOES_MAP_POLYGON (1<<16)
+#define GVRENDER_DOES_MAP_ELLIPSE (1<<17)
+#define GVRENDER_DOES_MAP_BSPLINE (1<<18)
+#define GVRENDER_DOES_TOOLTIPS (1<<19)
+#define GVRENDER_DOES_TARGETS (1<<20)
+#define GVRENDER_DOES_Z (1<<21)
 
     typedef struct {
 	int flags;
@@ -133,6 +134,8 @@ extern "C" {
 	gvevent_key_callback_t callback;
     } gvevent_key_binding_t;
 
+    typedef enum {MAP_RECTANGLE, MAP_CIRCLE, MAP_POLYGON, } map_shape_t;
+
     typedef struct obj_state_s obj_state_t;
 
     struct obj_state_s {
@@ -157,13 +160,16 @@ extern "C" {
 	char *tooltip;          /* if GVRENDER_DOES_TOOLTIPS */
 	char *tailtooltip;
 	char *headtooltip; 
+	bool explicit_tooltip;
+	bool explicit_tailtooltip;
+	bool explicit_headtooltip;
 
 	char *target;           /* if GVRENDER_DOES_TARGETS */
 	char *tailtarget;
 	char *headtarget; 
 
 	/* primary mapped region - node shape, edge label */
-	char *url_map_shapename;        /* "rect", "poly", "circle" */
+	map_shape_t url_map_shape; 
 	int url_map_n;                  /* number of points for url map if GVRENDER_DOES_MAPS */
 	pointf *url_map_p;
 

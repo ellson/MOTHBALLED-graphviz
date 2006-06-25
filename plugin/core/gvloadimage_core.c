@@ -30,6 +30,9 @@
 
 #include "gvplugin_loadimage.h"
 
+/* for n->name */
+#include "graph.h"
+
 extern void svggen_fputs(GVJ_t * job, char *s);
 extern void svggen_printf(GVJ_t * job, const char *format, ...);
 
@@ -38,6 +41,7 @@ extern shape_desc *find_user_shape(char *name);
 
 typedef enum {
     FORMAT_PNG_SVG, FORMAT_GIF_SVG, FORMAT_JPEG_SVG,
+    FORMAT_PNG_VRML, FORMAT_GIF_VRML, FORMAT_JPEG_VRML,
     FORMAT_PS_PS, FORMAT__PS,
 } format_type;
 
@@ -61,6 +65,39 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled
             b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
     }
     svggen_fputs(job, "/>\n");
+}
+
+static void core_loadimage_vrml(GVJ_t * job, usershape_t *us, boxf b, bool filled)
+{
+    FILE *out;
+    obj_state_t *obj;
+    node_t *n;
+
+    assert(job);
+
+    out = job->output_file;
+    obj = job->obj;
+    assert(out);
+    assert(obj);
+
+    assert(us);
+    assert(us->name);
+    assert(us->f);
+
+    n = job->obj->n;
+    assert(n);
+
+    fprintf(out, "Shape {\n");
+    fprintf(out, "  appearance Appearance {\n");
+    fprintf(out, "    material Material {\n");
+    fprintf(out, "      ambientIntensity 0.33\n");
+    fprintf(out, "        diffuseColor 1 1 1\n");
+    fprintf(out, "    }\n");
+    fprintf(out, "    texture ImageTexture { url \"%s\" }\n", us->name);
+    fprintf(out, "  }\n");
+    fprintf(out, "}\n");
+
+
 }
 
 static void ps_freeimage(usershape_t *us)
@@ -175,6 +212,10 @@ static gvloadimage_engine_t engine_svg = {
     core_loadimage_svg
 };
 
+static gvloadimage_engine_t engine_vrml = {
+    core_loadimage_vrml
+};
+
 static gvloadimage_engine_t engine_ps = {
     core_loadimage_ps
 };
@@ -187,6 +228,9 @@ gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_PNG_SVG, "png2svg", 1, &engine_svg, NULL},
     {FORMAT_GIF_SVG, "gif2svg", 1, &engine_svg, NULL},
     {FORMAT_JPEG_SVG, "jpeg2svg", 1, &engine_svg, NULL},
+    {FORMAT_PNG_VRML, "png2vrml", 1, &engine_vrml, NULL},
+    {FORMAT_GIF_VRML, "gif2vrml", 1, &engine_vrml, NULL},
+    {FORMAT_JPEG_VRML, "jpeg2vrml", 1, &engine_vrml, NULL},
     {FORMAT_PS_PS, "ps2ps", 1, &engine_ps, NULL},
     {FORMAT__PS, "2ps", 1, &engine_pslib, NULL},
     {0, NULL, 0, NULL, NULL}

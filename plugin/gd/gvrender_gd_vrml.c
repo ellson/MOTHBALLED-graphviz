@@ -262,10 +262,7 @@ static void vrml_begin_node(GVJ_t *job)
 
 static void vrml_end_node(GVJ_t *job)
 {
-    obj_state_t *obj = job->obj;
-    node_t *n = obj->n;
-
-    if (shapeOf(n) != SH_POINT) {
+    if (im) {
 	gdImagePng(im, PNGfile);
 	gdImageDestroy(im);
 	im = NULL;
@@ -354,7 +351,6 @@ static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
 	p.x -= para->width / 2;
 	break;
     }
-/*	p.y += cstk[SP].fontsz*2/3; */
 
     mp = vrml_node_point(job, obj->n, p);
 
@@ -837,7 +833,7 @@ static gvrender_features_t vrml_features = {
     0,                          /* sizeof knowncolors */
     RGBA_BYTE,                  /* color_type */
     NULL,                       /* device */
-    NULL,                       /* gvloadimage target for usershapes */
+    "vrml",                     /* gvloadimage target for usershapes */
 };
 #endif				/* HAVE_GD_PNG */
 #endif				/* HAVE_LIBGD */
