@@ -26,11 +26,10 @@
 
 #include <stdio.h>
 
-#include "types.h"
+#include "gvplugin_layout.h"
+
 /* FIXME - globals.h is needed for Nop */
 #include "globals.h"
-
-#include "gvplugin_layout.h"
 
 typedef enum { LAYOUT_NEATO,
 		LAYOUT_FDP,
