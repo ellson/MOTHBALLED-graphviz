@@ -498,8 +498,8 @@ void free_html_text(htmltxt_t* t)
     if (!t) return;
 
     tl = t->paras;
+    ti = tl->items;
     for (i = 0; i < t->nparas; i++) {
-	ti = tl->items;
 	for (j = 0; j < tl->nitems; j++) {
 	    if (ti->str) free (ti->str);
 	    if (ti->xshow) free (ti->xshow);
@@ -508,9 +508,12 @@ void free_html_text(htmltxt_t* t)
 	    ti++;
 	}
 	tl++;
+	ti = tl->items;
     }
-    free(tl->items);
-    free(t->paras);
+    if (ti != tl->items)
+	free(tl->items);
+    if (tl != t->paras)
+	free(t->paras);
     free(t);
 }
 
