@@ -44,10 +44,29 @@ endif
 
 libtcldot_la_SOURCES = tcldot.c $(CODEGENS) $(GDTCLFT)
 libtcldot_la_LDFLAGS = -no-undefined
+if WITH_LIBGD
+if WITH_MYLIBGD
 libtcldot_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(top_builddir)/lib/gvc/libgvc.la @LIBGEN_LIBS@ @LIBLTDL@
+	$(top_builddir)/lib/gvc/libgvc.la \
+        $(top_builddir)/lib/gd/libgvgd_C.la \
+	@PANGOCAIRO_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
+else
+libtcldot_la_LIBADD = \
+	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
+	$(top_builddir)/lib/gvc/libgvc.la \
+	@PANGOCAIRO_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
+endif
+else
+libtcldot_la_LIBADD = \
+	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
+	$(top_builddir)/lib/gvc/libgvc.la \
+	@PANGOCAIRO_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @ICONV_LIBS@ @MATH_LIBS@
+endif
+
 
 libtcldot_builtin_la_SOURCES = \
 	tcldot.c $(CODEGENS) $(GDTCLFT) \
