@@ -125,7 +125,9 @@ static obj_state_t* push_obj_state(GVJ_t *job)
 {
     obj_state_t *obj;
 
-    obj = zmalloc(sizeof(obj_state_t));
+    if ((obj = zmalloc(sizeof(obj_state_t))))
+	agerr(AGERR, "no memory from zmalloc()\n");
+
     obj->parent = job->obj;
     job->obj = obj;
 
@@ -135,6 +137,8 @@ static obj_state_t* push_obj_state(GVJ_t *job)
 static void pop_obj_state(GVJ_t *job)
 {
     obj_state_t *obj = job->obj;
+
+    assert(obj);
 
     if (obj->url) free(obj->url);
     if (obj->tailurl) free(obj->tailurl);
