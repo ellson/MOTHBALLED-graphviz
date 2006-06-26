@@ -1855,6 +1855,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	/* if we already have an active job list to a different output device */
         if ((active_job = gvc->active_jobs)
 	&& strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
+	    gvrender_end_job(active_job);
             gvdevice_finalize(gvc); /* finalize previous jobs */
 	    
             gvc->active_jobs = NULL; /* clear active list */
