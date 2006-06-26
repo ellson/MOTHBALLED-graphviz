@@ -129,7 +129,12 @@ static void cairogen_begin_page(GVJ_t * job)
     fedisableexcept(FE_ALL_EXCEPT);
 #endif
 
-    cr = (cairo_t *) job->surface; /* might be NULL */
+    if (job->external_surface) {
+        cr = (cairo_t *) job->surface;
+	assert(cr);
+
+        cairo_save(cr);
+    }
 
     switch (job->render.id) {
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
@@ -229,8 +234,12 @@ static void cairogen_end_page(GVJ_t * job)
     default:
 	break;
     }
-    if (!job->external_surface)
+    if (job->external_surface)
+	cairo_restore(cr);
+    else {
 	cairo_destroy(cr);
+	job->surface = NULL;
+    }
 
 #if defined HAVE_FENV_H && defined HAVE_FESETENV && defined HAVE_FEGETENV && defined(HAVE_FEENABLEEXCEPT)
     /* Restore FP environment */
