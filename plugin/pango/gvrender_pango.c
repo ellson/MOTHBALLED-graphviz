@@ -76,10 +76,6 @@ static int dashed_len = ARRAY_SIZE(dashed);
 static double dotted[] = {2., 10.};
 static int dotted_len = ARRAY_SIZE(dotted);
 
-#ifdef CAIRO_HAS_PNG_SURFACE
-#include <cairo-png.h>
-#endif
-
 #ifdef CAIRO_HAS_PS_SURFACE
 #include <cairo-ps.h>
 #endif
@@ -117,7 +113,7 @@ writer (void *closure, const unsigned char *data, unsigned int length)
 
 static void cairogen_begin_page(GVJ_t * job)
 {
-    cairo_t *cr;
+    cairo_t *cr = NULL;
     cairo_surface_t *surface;
 
 #if defined(HAVE_FENV_H) && defined(HAVE_FESETENV) && defined(HAVE_FEGETENV) && defined(HAVE_FEDISABLEEXCEPT)
@@ -141,7 +137,7 @@ static void cairogen_begin_page(GVJ_t * job)
     case FORMAT_PNG:
 	if (!cr) {
 	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-			(double)(job->width), (double)(job->height));
+			job->width, job->height);
 	    cr = cairo_create(surface);
 	    cairo_surface_destroy (surface);
 	}
@@ -151,7 +147,7 @@ static void cairogen_begin_page(GVJ_t * job)
     case FORMAT_PS:
 	if (!cr) {
 	    surface = cairo_ps_surface_create_for_stream (writer,
-			job->output_file, (double)(job->width), (double)(job->height));
+			job->output_file, job->width, job->height);
 	    cr = cairo_create(surface);
 	    cairo_surface_destroy (surface);
 	}
@@ -161,7 +157,7 @@ static void cairogen_begin_page(GVJ_t * job)
     case FORMAT_PDF:
 	if (!cr) {
 	    surface = cairo_pdf_surface_create_for_stream (writer,
-			job->output_file, (double)(job->width), (double)(job->height));
+			job->output_file, job->width, job->height);
 	    cr = cairo_create(surface);
 	    cairo_surface_destroy (surface);
 	}
@@ -171,7 +167,7 @@ static void cairogen_begin_page(GVJ_t * job)
     case FORMAT_SVG:
 	if (!cr) {
 	    surface = cairo_svg_surface_create_for_stream (writer,
-			job->output_file, (double)(job->width), (double)(job->height));
+			job->output_file, job->width, job->height);
 	    cr = cairo_create(surface);
 	    cairo_surface_destroy (surface);
 	}
@@ -213,8 +209,9 @@ static void cairogen_end_page(GVJ_t * job)
     switch (job->render.id) {
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
     case FORMAT_PNG:
-	surface = cairo_get_target(cr);
+        surface = cairo_get_target(cr);
 	cairo_surface_write_to_png_stream(surface, writer, job->output_file);
+	break;
 #endif
 #ifdef CAIRO_HAS_PS_SURFACE
     case FORMAT_PS:
