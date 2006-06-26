@@ -79,20 +79,30 @@ int gvdevice_features(GVJ_t * job)
 
 void gvdevice_finalize(GVC_t * gvc)
 {
-    GVJ_t *firstjob = gvc->active_jobs;
-    gvdevice_engine_t *gvde = firstjob->device.engine;
+    GVJ_t *active_job = gvc->active_jobs;
+    gvdevice_engine_t *gvde = active_job->device.engine;
 
     if (gvde) {
 	if (gvde->finalize) {
-	    gvde->finalize(firstjob);
+	    gvde->finalize(active_job);
 	}
     }
 #ifdef WITH_CODEGENS
     else {
-	codegen_t *cg = firstjob->codegen;
+	codegen_t *cg = active_job->codegen;
 
 	if (cg && cg->reset)
 	    cg->reset();
     }
 #endif
+
+    /* FIXME - file output should be its own device */
+    while(active_job) {
+	if (active_job->output_file) {
+	    fclose(active_job->output_file);
+	    active_job->output_file = NULL;
+	}
+        active_job->output_filename = NULL;
+	active_job = active_job->next_active;
+    }
 }

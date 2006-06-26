@@ -127,8 +127,12 @@ config_extra_args(GVC_t *gvc, int argc, char** argv)
 	if (isdigit(arg[2]))
 	  gvc->common.verbose = atoi(&arg[2]);
         break;
+      case 'O' :
+          gvc->common.auto_outfile_names = true;
+	  break;
       case 'c' :
-          gvc->common.config = true; break;
+          gvc->common.config = true;
+	  break;
       default :
         cnt++;
         if (*p != arg) *p = arg;

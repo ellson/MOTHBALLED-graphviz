@@ -40,7 +40,7 @@
 extern void *zmalloc(size_t);
 
 /* from common/emit.c */
-extern void emit_jobs_eof(GVC_t *gvc);
+extern void emit_once_reset(void);
 
 /* from common/globals.c */
 extern int graphviz_errors;
@@ -64,7 +64,7 @@ int gvFreeContext(GVC_t * gvc)
 
     if (gvc->active_jobs)
 	gvdevice_finalize(gvc);
-    emit_jobs_eof(gvc);
+    emit_once_reset();
     gvg_next = gvc->gvgs;
     while ((gvg = gvg_next)) {
 	gvg_next = gvg->next;

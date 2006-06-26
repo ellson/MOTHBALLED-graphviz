@@ -243,17 +243,7 @@ void gvrender_begin_job(GVJ_t * job)
 {
     GVC_t *gvc = job->gvc;
     gvrender_engine_t *gvre = job->render.engine;
-    if (gvc->gvg) {
-	job->input_filename = gvc->gvg->input_filename;
-	job->graph_index = gvc->gvg->graph_index;
-    }
-    else {
-        job->input_filename = NULL;
-    	job->graph_index = 0;
-    }
-    job->common = &(gvc->common);
-    job->layout_type = gvc->layout.type;
-    job->bb = gvc->bb;
+
     if (gvre) {
         if (gvre->begin_job)
 	    gvre->begin_job(job);
@@ -263,8 +253,11 @@ void gvrender_begin_job(GVJ_t * job)
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->begin_job)
-	    cg->begin_job(job->output_file, gvc->g, gvc->common.lib, gvc->common.user,
-			  gvc->common.info, job->pagesArraySize);
+	    cg->begin_job(job->output_file, gvc->g,
+		    gvc->common.lib,
+		    gvc->common.user,
+		    gvc->common.info,
+		    job->pagesArraySize);
     }
 #endif
 }
@@ -285,7 +278,7 @@ void gvrender_end_job(GVJ_t * job)
 	    cg->end_job();
     }
 #endif
-    job->gvc->common.lib = NULL;
+    job->gvc->common.lib = NULL;    /* FIXME - minimally this doesn't belong here */
 }
 
 /* font modifiers */

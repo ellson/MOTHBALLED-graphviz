@@ -1383,28 +1383,11 @@ int emit_once(char *str)
     return FALSE;
 }
 
-static void emit_once_reset(void)
+void emit_once_reset(void)
 {
     if (strings) {
 	dtclose(strings);
 	strings = 0;
-    }
-}
-
-void emit_jobs_eof(GVC_t * gvc)
-{
-    GVJ_t *job;
-
-    for (job = gvjobs_first(gvc); job; job = gvjobs_next(gvc)) {
-        if (job->output_file) {
-	    if (gvc->common.viewNum > 0) {
-		gvrender_end_job(job);
-		emit_once_reset();
-		gvc->common.viewNum = 0;
-	    }
-            fclose(job->output_file);
-            job->output_file = NULL;
-        }
     }
 }
 
@@ -1832,7 +1815,11 @@ extern gvdevice_callbacks_t gvdevice_callbacks;
 
 int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
-    GVJ_t *job, *prev_job;
+    GVJ_t *job, *prev_job, *active_job;
+    static char *buf;
+    static int bufsz;
+    int len;
+    char *inf;
 
     if (!GD_drawing(g)) {
         agerr (AGERR, "Layout was not done.  Missing layout plugins? \n");
@@ -1845,16 +1832,20 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 
     gvc->keybindings = gvevent_key_binding;
     gvc->numkeys = gvevent_key_binding_size;
-    gvc->active_jobs = NULL; /* clear active list */
     prev_job = NULL;
     for (job = gvjobs_first(gvc); job; job = gvjobs_next(gvc)) {
-        if (!job->output_file) {        /* if not yet opened */
-            if (job->output_filename == NULL) {
-                job->output_file = stdout;
-            } else {
-                job->output_file = file_select(job->output_filename);
-            }
-        }
+	if (gvc->gvg) {
+	    job->input_filename = gvc->gvg->input_filename;
+	    job->graph_index = gvc->gvg->graph_index;
+	}
+	else {
+	    job->input_filename = NULL;
+	    job->graph_index = 0;
+	}
+	job->common = &(gvc->common);
+	job->layout_type = gvc->layout.type;
+	job->bb = gvc->bb;
+
         job->output_lang = gvrender_select(job, job->output_langname);
         if (job->output_lang == NO_SUPPORT) {
             agerr (AGERR, "renderer for %s is unavailable\n", job->output_langname);
@@ -1862,12 +1853,36 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
         }
 
 	/* if we already have an active job list to a different output device */
-        if (gvc->active_jobs
+        if ((active_job = gvc->active_jobs)
 	&& strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
             gvdevice_finalize(gvc); /* finalize previous jobs */
+	    
             gvc->active_jobs = NULL; /* clear active list */
 	    gvc->common.viewNum = 0;
 	    prev_job = NULL;
+        }
+
+        if (!job->output_file) {        /* if not yet opened */
+	    if (gvc->common.auto_outfile_names) {
+		if (!(inf = job->input_filename))
+		    inf = "noname";
+		len = strlen(inf) + 1 + strlen(job->output_langname) +1;
+		if (bufsz < len) {
+		    bufsz = len + 10;
+		    buf = realloc(buf, bufsz * sizeof(char));
+		}
+		strcpy(buf, inf);
+		strcat(buf, ".");
+		strcat(buf, job->output_langname);
+
+		job->output_filename = buf;
+	    }
+
+            if (job->output_filename == NULL) {
+                job->output_file = stdout;
+            } else {
+                job->output_file = file_select(job->output_filename);
+            }
         }
 
 	if (prev_job)

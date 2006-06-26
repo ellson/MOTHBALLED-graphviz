@@ -37,6 +37,7 @@ static char *genericItems = "\n\
  -Kv         - Set layout engine to 'v' (overrides default based on command name)\n\
  -lv         - Use external library 'v'\n\
  -ofile      - Write output to 'file'\n\
+ -O          - Automatically generate an output filename based on the input filename with a .'format' appended. (Causes all -ofile options to be ignored.) \n\
  -q[l]       - Set level of message suppression (=1)\n\
  -s[v]       - Scale input by 'v' (=72)\n\
  -y          - Invert y coordinate in output\n";
@@ -262,7 +263,8 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		break;
 	    case 'o':
 		val = getFlagOpt(argc, argv, &i);
-		gvjobs_output_filename(gvc, val);
+		if (! gvc->common.auto_outfile_names)
+		    gvjobs_output_filename(gvc, val);
 		break;
 	    case 'q':
 		if (*rest) {
@@ -289,14 +291,6 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		    }
 		} else
 		    PSinputscale = POINTS_PER_INCH;
-		break;
-	    case 'v':
-/* already processed in args.c:config_extra_args() */
-#if 0
-		Verbose = 1;
-		if (isdigit(*(unsigned char *) rest))
-		    Verbose = atoi(rest);
-#endif
 		break;
 	    case 'x':
 		Reduce = TRUE;
