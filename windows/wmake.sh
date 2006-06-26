@@ -30,7 +30,7 @@ do
 done
 
 # libs to be built
-LIBS=(cdt graph agraph gd pathplan common gvc plugin pack neatogen dotgen twopigen circogen fdpgen ingraphs)
+LIBS=(cdt graph agraph gd pathplan common gvc pack neatogen dotgen twopigen circogen fdpgen ingraphs)
 
 # commands to be built
 CMDS=(dot lefty/gfx lefty dotty lneato)
@@ -71,6 +71,11 @@ do
   doComp $d
   cd ..
 done
+cd ..
+
+# process plugins
+cd plugin
+doComp plugin
 cd ..
 
 # process commands
