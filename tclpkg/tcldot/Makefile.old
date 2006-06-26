@@ -18,6 +18,7 @@ INCS =  -I. -I.. \
         -I../dotneato/gvrender \
         -I../dotneato/common \
         -I../tclhandle \
+        -I../tkstubs \
         -I$(TCL_INCDIR)
 
 LIBS =  ../gdtclft/libgdtclft.a \
