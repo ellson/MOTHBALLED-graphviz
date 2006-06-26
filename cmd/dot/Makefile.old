@@ -4,7 +4,7 @@ include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
 
 LOC_LIB = $(ROOT)/lib
-LOC_PLUG=$(LOC_LIB)/plugin
+LOC_PLUG=$(ROOT)/plugin
 
 INCS =  -I$(LOC_LIB)/gvc -I$(LOC_LIB)/common -I$(ROOT) -I$(LOC_LIB)/cdt \
         -I$(LOC_LIB)/pathplan -I$(LOC_LIB)/gd -I$(LOC_LIB)/graph
@@ -20,11 +20,11 @@ XLIBS = -L$(LOC_LIB)/pathplan -lpathplan \
         -L$(LOC_LIB)/gd -lgd \
         $(EXTLIB_LIB) $(EXPAT_LIB) $(LTDL_LIB) -lm
 
-PLUGS = -L$(LOC_PLUG) -lgvplugin_dot_layout \
-	-lgvplugin_neato_layout \
-	-lgvplugin_core \
-	-lgvplugin_pango \
-	-lgvplugin_gd
+PLUGS = -L$(LOC_PLUG)/core -lgvplugin_core \
+        -L$(LOC_PLUG)/dot_layout -lgvplugin_dot_layout \
+        -L$(LOC_PLUG)/neato_layout -lgvplugin_neato_layout \
+        -L$(LOC_PLUG)/gd -lgvplugin_gd \
+        -L$(LOC_PLUG)/pango -lgvplugin_pango
 
 LIBS = -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
        -L$(LOC_LIB)/common -lcommon \
@@ -40,15 +40,18 @@ LIBS = -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
        $(XLIBS)
 
 DOTLIBS = $(LOC_LIB)/common/libcommon.a \
-	  $(LOC_LIB)/dotgen/libdotgen.a \
+          $(LOC_LIB)/dotgen/libdotgen.a \
           $(LOC_LIB)/neatogen/libneatogen.a \
-	  $(LOC_LIB)/fdpgen/libfdpgen.a \
-          $(LOC_LIB)/plugin/libgvplugin_dot_layout.a \
-          $(LOC_LIB)/plugin/libgvplugin_neato_layout.a \
-          $(LOC_LIB)/plugin/libgvplugin_gd.a \
-	  $(LOC_LIB)/gvc/libgvc_dot_builtins.a \
+          $(LOC_LIB)/fdpgen/libfdpgen.a \
+          $(LOC_LIB)/gvc/libgvc_dot_builtins.a \
+          $(LOC_LIB)/vpsc/libvpsc.a \
           $(LOC_LIB)/twopigen/libtwopigen.a \
-	  $(LOC_LIB)/circogen/libcircogen.a
+          $(LOC_LIB)/circogen/libcircogen.a \
+          $(LOC_PLUG)/core/libgvplugin_core.a \
+          $(LOC_PLUG)/dot_layout/libgvplugin_dot_layout.a \
+          $(LOC_PLUG)/neato_layout/libgvplugin_neato_layout.a \
+          $(LOC_PLUG)/gd/libgvplugin_gd.a \
+          $(LOC_PLUG)/pango/libgvplugin_pango.a
 
 OBJS = dot.o
 
