@@ -89,7 +89,7 @@ static void gdgen_begin_page(GVJ_t * job)
     if (job->external_surface) {
 	if (job->common->verbose)
 	    fprintf(stderr, "%s: using existing GD image\n", job->common->cmdname);
-	im = (gdImagePtr) (job->output_file);
+	im = (gdImagePtr) (job->surface);
     } else {
 	if (truecolor_p) {
 	    if (job->common->verbose)
@@ -105,14 +105,11 @@ static void gdgen_begin_page(GVJ_t * job)
 			job->common->cmdname, ROUND(job->width * job->height / 1024.));
 	    im = gdImageCreate(job->width, job->height);
 	}
+        job->surface = (void *) im;
     }
-    job->surface = (void *) im;
 
     if (!im) {
-#if 0
-/* FIXME - error function */
-	agerr(AGERR, "gdImageCreate returned NULL. Malloc problem?\n");
-#endif
+	job->common->errorfn("gdImageCreate returned NULL. Malloc problem?\n");
 	return;
     }
 
@@ -230,6 +227,7 @@ static void gdgen_end_page(GVJ_t * job)
 #ifdef MYTRACE
 	fprintf(stderr, "gdgen_end_graph (to file)\n");
 #endif
+	job->surface = NULL;
     }
 }
 
