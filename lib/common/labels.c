@@ -163,8 +163,8 @@ void
 emit_textparas(GVJ_t* job, int nparas, textpara_t paras[], pointf p,
               double halfwidth_x, char* fname, double fsize, char* fcolor)
 {
-    int i, paraspacing;
-    double tmp, center_x, left_x, right_x;
+    int i, paraspacing, tmp;
+    double center_x, left_x, right_x;
 
     center_x = p.x;
     left_x = center_x - halfwidth_x;
@@ -176,9 +176,6 @@ emit_textparas(GVJ_t* job, int nparas, textpara_t paras[], pointf p,
     /* position for first para */
     p.y += paraspacing * (nparas - 1) / 2	/* cl of toppara */
 			- fsize * 0.30; /* Empirically determined fudge factor */
-
-    tmp = ROUND(p.y);  /* align with integer points */
-    p.y = (double)tmp;
 
     gvrender_begin_context(job);
     gvrender_set_pencolor(job, fcolor);
@@ -197,6 +194,12 @@ emit_textparas(GVJ_t* job, int nparas, textpara_t paras[], pointf p,
 	    p.x = center_x;
 	    break;
 	}
+
+        tmp = ROUND(p.x);  /* align with integer points */
+        p.x = (double)tmp;
+        tmp = ROUND(p.y);  /* align with integer points */
+        p.y = (double)tmp;
+
 	gvrender_textpara(job, p, &(paras[i]));
 
 	/* position for next para */

@@ -1852,9 +1852,11 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
             return -1;
         }
 
-	/* if we already have an active job list to a different output device */
+	/* if we already have an active job list and the device doesn't support mutiple output files, or we are about to write to a different output device */
         if ((active_job = gvc->active_jobs)
-	&& strcmp(job->output_langname,gvc->active_jobs->output_langname) != 0) {
+	    && (!(active_job->flags & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES)
+	      || (strcmp(job->output_langname,active_job->output_langname)))) {
+
 	    gvrender_end_job(active_job);
             gvdevice_finalize(gvc); /* finalize previous jobs */
 	    
