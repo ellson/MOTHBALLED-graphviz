@@ -18,14 +18,10 @@
 #include "config.h"
 #endif
 
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "gvplugin_render.h"
+
+/* for g->name */
 #include "graph.h"
-#include "agxbuf.h"
-#include "utils.h"
 
 extern char *xml_string(char *str);
 
@@ -265,7 +261,7 @@ static gvrender_engine_t map_engine = {
     0,				/* map_comment */
 };
 
-static gvrender_features_t map_features_poly = {
+static gvrender_features_t map_features = {
     GVRENDER_Y_GOES_DOWN
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_LABELS
@@ -283,7 +279,7 @@ static gvrender_features_t map_features_poly = {
     NULL,                       /* gvloadimage target for usershapes */
 };
 
-static gvrender_features_t map_features = {
+static gvrender_features_t map_features_nopoly = {
     GVRENDER_Y_GOES_DOWN
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_LABELS
@@ -299,9 +295,9 @@ static gvrender_features_t map_features = {
 };
 
 gvplugin_installed_t gvrender_core_map_types[] = {
-    {FORMAT_ISMAP, "ismap", 1, &map_engine, &map_features},
+    {FORMAT_ISMAP, "ismap", 1, &map_engine, &map_features_nopoly},
     {FORMAT_CMAP, "cmap", 1, &map_engine, &map_features},
-    {FORMAT_IMAP, "imap", 1, &map_engine, &map_features_poly},
-    {FORMAT_CMAPX, "cmapx", 1, &map_engine, &map_features_poly},
+    {FORMAT_IMAP, "imap", 1, &map_engine, &map_features},
+    {FORMAT_CMAPX, "cmapx", 1, &map_engine, &map_features},
     {0, NULL, 0, NULL, NULL}
 };
