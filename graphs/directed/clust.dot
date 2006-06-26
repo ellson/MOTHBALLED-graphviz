@@ -3,7 +3,7 @@ digraph G {
 		label = "hello world";
 		a -> b;
 		a -> c;
-		color = hot_pink;
+		color = hotpink;
 	}
 
 	subgraph cluster_1 {
