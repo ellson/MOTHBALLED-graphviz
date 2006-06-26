@@ -59,13 +59,17 @@ As usual, edge layout is guided by the
 <DT><STRONG>-o</STRONG><I>outfile</I>    
 <DD>Write output to file <I>outfile</I>. By default, output goes to
 <STRONG>stdout</STRONG>.
+<DT><STRONG>-O</STRONG>
+<DD>Automatically generate output file names based on the input
+file name and the various output formats specified by the <STRONG>-T</STRONG>
+flags.
 <DT><STRONG>-q</STRONG>
 <DD>Suppress warning messages.
 <DT><A NAME=d:s><STRONG>-s</STRONG></A>[<I>scale</I>]
 <DD>Set input scale to <I>scale</I>. If this value is omitted,
 72.0 is used. This number is used to convert the point coordinate
 units used in the <A HREF=attrs.html#d:pos>pos</A> attribute 
-into inches.
+into inches. Ignored if the <STRONG>-n</STRONG> flag is used.
 <DT><STRONG>-v</STRONG>             
 <DD>Verbose mode
 <DT><STRONG>-x</STRONG>             
