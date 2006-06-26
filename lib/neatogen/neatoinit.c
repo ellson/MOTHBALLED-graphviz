@@ -1046,7 +1046,7 @@ setSeed (graph_t * G, int dflt, long* seedp)
     if (init == INIT_RANDOM) {
 	long seed;
 	/* Check for seed value */
-	if (!isdigit(p) || sscanf(p, "%ld", &seed) < 1) {
+	if (!isdigit(*(unsigned char *)p) || sscanf(p, "%ld", &seed) < 1) {
 #ifdef MSWIN32
 	    seed = (unsigned) time(NULL);
 #else

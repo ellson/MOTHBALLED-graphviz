@@ -17,6 +17,7 @@ INCLUDE_DIRECTORIES(
 	${CMAKE_SOURCE_DIR}/lib/pathplan
 	${CMAKE_SOURCE_DIR}/lib/gd
 	${CMAKE_SOURCE_DIR}/tclpkg/tclhandle
+	${CMAKE_SOURCE_DIR}/tclpkg/tkstubs
 	${TCL_INCLUDE_PATH}
 )
 
