@@ -451,7 +451,7 @@ static void processargs (int argc, char *argv[]) {
             fp = stdin;
         else {
             if ((fp = fopen (argv[0], "r")) == NULL)
-                panic (POS, "main", "cannot open input file: %s", argv[0]);
+                panic1 (POS, "main", "cannot open input file: %s", argv[0]);
         }
         argv++, argc--;
     }
