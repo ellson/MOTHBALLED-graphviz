@@ -531,7 +531,7 @@ void D2Lbegin (char *name) {
     attrclass = GRAPH;
 
     if (!(gstack = Mallocate (sizeof (graphframe_t))))
-        panic (POS, "D2Lbegingraph", "cannot allocate graph stack");
+        panic1 (POS, "D2Lbegingraph", "cannot allocate graph stack");
     gstack->next = NULL;
     gstack->estack = NULL;
     topgframe = gstack;
@@ -586,7 +586,7 @@ void D2Lpushgraph (char *name) {
     long gid;
 
     if (!(gframe = Mallocate (sizeof (graphframe_t))))
-        panic (POS, "D2Lpushgraph", "cannot allocate graph stack");
+        panic1 (POS, "D2Lpushgraph", "cannot allocate graph stack");
     gframe->next = gstack, gstack = gframe;
     gstack->estack = NULL;
 
@@ -687,7 +687,7 @@ void D2Linsertedge (Tobj tail, char *tport, Tobj head, char *hport) {
 
 void D2Lbeginedge (int type, Tobj obj, char *port) {
     if (!(gstack->estack = Mallocate (sizeof (edgeframe_t))))
-        panic (POS, "D2Lbeginedge", "cannot allocate edge stack");
+        panic1 (POS, "D2Lbeginedge", "cannot allocate edge stack");
     gstack->estack->next = NULL;
     gstack->estack->type = type;
     gstack->estack->obj = obj;
@@ -699,7 +699,7 @@ void D2Lmidedge (int type, Tobj obj, char *port) {
     edgeframe_t *eframe;
 
     if (!(eframe = Mallocate (sizeof (edgeframe_t))))
-        panic (POS, "D2Lmidedge", "cannot allocate edge stack");
+        panic1 (POS, "D2Lmidedge", "cannot allocate edge stack");
     eframe->next = gstack->estack, gstack->estack = eframe;
     gstack->estack->type = type;
     gstack->estack->obj = obj;
