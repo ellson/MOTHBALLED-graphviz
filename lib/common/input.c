@@ -427,7 +427,7 @@ static char *myfgets(char * ubuf, int n, FILE * fp)
 graph_t *gvNextInputGraph(GVC_t *gvc)
 {
     graph_t *g = NULL;
-    char *fn = NULL;
+    static char *fn;
     static FILE *fp;
     static int fidx, gidx;
     GVG_t *gvg;

@@ -1809,6 +1809,37 @@ static void init_bb(graph_t *g)
 		        init_bb_node(g, n);
 }
 
+static void auto_output_filename(GVJ_t *job)
+{
+    static char *buf;
+    static int bufsz;
+    char gidx[20];
+    char *fn;
+    int len;
+
+    if (job->graph_index)
+	snprintf(gidx, sizeof(gidx), ".%d", job->graph_index + 1);
+    else
+	gidx[0] = '\0';
+    if (!(fn = job->input_filename))
+	fn = "noname.dot";
+    len = strlen(fn)			/* typically "something.dot" */
+	+ strlen(gidx) 			/* "", ".2", ".3", ".4", ... */
+	+ 1 				/* "." */
+	+ strlen(job->output_langname)  /* e.g. "png" */
+	+ 1; 				/* null terminaor */
+    if (bufsz < len) {
+	    bufsz = len + 10;
+	    buf = realloc(buf, bufsz * sizeof(char));
+    }
+    strcpy(buf, fn);
+    strcat(buf, gidx);
+    strcat(buf, ".");
+    strcat(buf, job->output_langname);
+
+    job->output_filename = buf;
+}
+
 extern gvevent_key_binding_t gvevent_key_binding[];
 extern int gvevent_key_binding_size;
 extern gvdevice_callbacks_t gvdevice_callbacks;
@@ -1816,10 +1847,6 @@ extern gvdevice_callbacks_t gvdevice_callbacks;
 int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
     GVJ_t *job, *prev_job, *active_job;
-    static char *buf;
-    static int bufsz;
-    int len;
-    char *inf;
 
     if (!GD_drawing(g)) {
         agerr (AGERR, "Layout was not done.  Missing layout plugins? \n");
@@ -1866,26 +1893,12 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
         }
 
         if (!job->output_file) {        /* if not yet opened */
-	    if (gvc->common.auto_outfile_names) {
-		if (!(inf = job->input_filename))
-		    inf = "noname";
-		len = strlen(inf) + 1 + strlen(job->output_langname) +1;
-		if (bufsz < len) {
-		    bufsz = len + 10;
-		    buf = realloc(buf, bufsz * sizeof(char));
-		}
-		strcpy(buf, inf);
-		strcat(buf, ".");
-		strcat(buf, job->output_langname);
-
-		job->output_filename = buf;
-	    }
-
-            if (job->output_filename == NULL) {
-                job->output_file = stdout;
-            } else {
+	    if (gvc->common.auto_outfile_names)
+		auto_output_filename(job);
+            if (job->output_filename)
                 job->output_file = file_select(job->output_filename);
-            }
+            else
+                job->output_file = stdout;
         }
 
 	if (prev_job)
