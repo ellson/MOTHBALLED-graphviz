@@ -40,7 +40,7 @@ void IOinit (void) {
             iop[ioi].type = IO_FILE;
             iop[ioi].ifp = iop[ioi].ofp = fdopen (ioi, "r+");
             if (!(iop[ioi].buf = malloc (IOBUFSIZE)))
-                panic (POS, "IOinit", "malloc failed");
+                panic1 (POS, "IOinit", "malloc failed");
             iop[ioi].buf[0] = 0;
         }
 }
@@ -80,7 +80,7 @@ int IOopen (char *kind, char *name, char *mode, char *fmt) {
     p = &iop[i];
     p->type = type;
     if (!(p->buf = malloc (IOBUFSIZE)))
-        panic (POS, "IOopen", "malloc failed");
+        panic1 (POS, "IOopen", "malloc failed");
     p->buf[0] = 0;
     switch (type) {
     case IO_FILE:
@@ -256,22 +256,22 @@ static void pipeopen (char *cmd, FILE **ifp, FILE **ofp, int *pidp) {
     save[0] = GetStdHandle (STD_INPUT_HANDLE);
     save[1] = GetStdHandle (STD_OUTPUT_HANDLE);
     if (!SetStdHandle (STD_OUTPUT_HANDLE, p1[1]))
-        panic (POS, "pipeopen", "cannot set stdout handle");
+        panic1 (POS, "pipeopen", "cannot set stdout handle");
     if (!SetStdHandle (STD_INPUT_HANDLE, p2[0]))
-        panic (POS, "pipeopen", "cannot set stdin handle");
+        panic1 (POS, "pipeopen", "cannot set stdin handle");
     h = p1[0];
     if (!DuplicateHandle (
         GetCurrentProcess (), h, GetCurrentProcess (), &p1[0], 0, FALSE,
         DUPLICATE_SAME_ACCESS
     ))
-        panic (POS, "pipeopen", "cannot dup input handle");
+        panic1 (POS, "pipeopen", "cannot dup input handle");
     CloseHandle (h);
     h = p2[1];
     if (!DuplicateHandle (
         GetCurrentProcess(), h, GetCurrentProcess(), &p2[1], 0, FALSE,
         DUPLICATE_SAME_ACCESS
     ))
-        panic (POS, "pipeopen", "cannot dup output handle");
+        panic1 (POS, "pipeopen", "cannot dup output handle");
     CloseHandle (h);
     sinfo.cb = sizeof (STARTUPINFO);
     sinfo.lpReserved = NULL;
@@ -286,12 +286,12 @@ static void pipeopen (char *cmd, FILE **ifp, FILE **ofp, int *pidp) {
     if (!CreateProcess (
         NULL, cmd, NULL, NULL, TRUE, 0, NULL, NULL, &sinfo, &pinfo
     ))
-        panic (POS, "pipeopen", "cannot create child process");
+        panic1 (POS, "pipeopen", "cannot create child process");
     *pidp = pinfo.hProcess;
     if (!SetStdHandle (STD_INPUT_HANDLE, save[0]))
-        panic (POS, "pipeopen", "cannot restore stdin");
+        panic1 (POS, "pipeopen", "cannot restore stdin");
     if (!SetStdHandle (STD_OUTPUT_HANDLE, save[1]))
-        panic (POS, "pipeopen", "cannot restore stdout");
+        panic1 (POS, "pipeopen", "cannot restore stdout");
     CloseHandle (p1[1]);
     CloseHandle (p2[0]);
     *ifp = p1[0], *ofp = p2[1];
