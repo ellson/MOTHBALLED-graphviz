@@ -107,7 +107,7 @@ int GMmenudisplay (Gwidget_t *parent, Gwidget_t *widget) {
     TrackPopupMenu (widget->w, flag, p.x, p.y, 0, parent->w, NULL);
     PostMessage (parent->w, WM_COMMAND, 999, 0);
     if (!GetMessage(&msg, parent->w, WM_COMMAND, WM_COMMAND))
-        panic (POS, "GMmenudisplay", "exit code in GetMessage");
+        panic1 (POS, "GMmenudisplay", "exit code in GetMessage");
     TranslateMessage(&msg);
     DispatchMessage(&msg);
     Gpopdownflag = TRUE;

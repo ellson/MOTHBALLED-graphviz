@@ -263,7 +263,7 @@ int GTgetwidgetattr (Gwidget_t *widget, int attrn, Gwattr_t *attrp) {
             else if (mode == XawtextRead)
                 attrp[ai].u.t = "output";
             else {
-                panic (POS, "GTgetwidgetattr", "unexpected text mode");
+                panic1 (POS, "GTgetwidgetattr", "unexpected text mode");
                 return -1;
             }
             break;

@@ -243,7 +243,7 @@ void Gawdefcoordscb (int wi, Gawdata_t *dp) {
 void Gawinitialize (Gwidget_t *widget, int mode) {
     WAU->data.type = mode;
     if (!(WAU->data.carray = Marrayalloc ((long) AWCARRAYINCR * AWCARRAYSIZE)))
-        panic (POS, "Gawinitialize", "cannot allocate carray");
+        panic1 (POS, "Gawinitialize", "cannot allocate carray");
     WAU->data.cn = AWCARRAYINCR;
     WAU->data.cj = 0;
     WAU->data.batchmode = FALSE;

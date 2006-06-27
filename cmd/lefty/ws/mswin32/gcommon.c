@@ -71,7 +71,7 @@ int Ginitgraphics (void) {
         wc.lpszMenuName = 0;
         wc.lpszClassName = "LeftyClass";
         if (!(rtn = RegisterClass (&wc)))
-            panic (POS, "GXinit", "register class rtn = %d", (int) rtn);
+            panic1 (POS, "GXinit", "register class rtn = %d", (int) rtn);
 
         wc.style = NULL;
         wc.lpfnWndProc = ArrayWndProc;
@@ -84,7 +84,7 @@ int Ginitgraphics (void) {
         wc.lpszMenuName = 0;
         wc.lpszClassName = "ArrayClass";
         if (!(rtn = RegisterClass (&wc)))
-            panic (POS, "GXinit", "register class rtn = %d", (int) rtn);
+            panic1 (POS, "GXinit", "register class rtn = %d", (int) rtn);
 
         wc.style = CS_OWNDC;
         wc.lpfnWndProc = CanvasWndProc;
@@ -97,7 +97,7 @@ int Ginitgraphics (void) {
         wc.lpszMenuName = 0;
         wc.lpszClassName = "CanvasClass";
         if (!(rtn = RegisterClass (&wc)))
-            panic (POS, "GXinit", "register class rtn = %d", (int) rtn);
+            panic1 (POS, "GXinit", "register class rtn = %d", (int) rtn);
 
         wc.style = NULL;
         wc.lpfnWndProc = ScrollWndProc;
@@ -110,7 +110,7 @@ int Ginitgraphics (void) {
         wc.lpszMenuName = 0;
         wc.lpszClassName = "ScrollClass";
         if (!(rtn = RegisterClass (&wc)))
-            panic (POS, "GXinit", "register class rtn = %d", (int) rtn);
+            panic1 (POS, "GXinit", "register class rtn = %d", (int) rtn);
 
         wc.style = NULL;
         wc.lpfnWndProc = LabelWndProc;
@@ -123,7 +123,7 @@ int Ginitgraphics (void) {
         wc.lpszMenuName = 0;
         wc.lpszClassName = "LabelClass";
         if (!(rtn = RegisterClass (&wc)))
-            panic (POS, "GXinit", "register class rtn = %d", (int) rtn);
+            panic1 (POS, "GXinit", "register class rtn = %d", (int) rtn);
     }
     if (getenv ("LEFTY3BMOUSE"))
         twobmouse = FALSE;
@@ -134,7 +134,7 @@ int Ginitgraphics (void) {
     deffont = GetStockObject (SYSTEM_FONT);
 #ifndef FEATURE_MS
     if (!(Gxfp = fopen ("/dev/windows", "r")))
-        panic (POS, "GXinit", "cannot open windows device");
+        panic1 (POS, "GXinit", "cannot open windows device");
     Gxfd = fileno (Gxfp);
 #endif
     Gpopdownflag = FALSE;
