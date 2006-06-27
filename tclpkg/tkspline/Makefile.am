@@ -9,11 +9,12 @@ pdfdir = $(pkgdatadir)/doc/pdf
 man = tkspline.n
 pdf = tkspline.pdf
 
+# If all else fails there is a local copy of tkInt.h in tkstubs/
 AM_CPPFLAGS = \
 	-I@TK_SRC_DIR@/generic \
 	-I@TCL_SRC_DIR@/generic \
 	@TCL_INCLUDES@ @TCLINT_INCLUDES@ \
-	@TK_INCLUDES@ @TKINT_INCLUDES@
+	@TK_INCLUDES@ @TKINT_INCLUDES@ -I$(top_srcdir)/tclpkg/tkstubs
 
 AM_CFLAGS = @X_CFLAGS@ @TCL_CFLAGS@  @TK_CFLAGS@ @TK_DEFS@ \
 	-UPACKAGE_NAME -UPACKAGE_STRING -UPACKAGE_TARNAME -UPACKAGE_VERSION

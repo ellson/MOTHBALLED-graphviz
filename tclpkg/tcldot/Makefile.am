@@ -15,7 +15,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/pathplan \
-	-I$(top_srcdir)/tclpkg/tkstubs \
 	-I$(top_srcdir)/tclpkg/tclhandle @GD_INCLUDES@ @TCL_INCLUDES@
 
 LIBS =  @LIBS@ -lc
