@@ -173,13 +173,13 @@ void *Marrayalloc (long size) {
     void *p;
 
     if (!(p = malloc (size)))
-        panic (POS, "Marrayallocate", "cannot allocate array");
+        panic1 (POS, "Marrayallocate", "cannot allocate array");
     return p;
 }
 
 void *Marraygrow (void *p, long size) {
     if (!(p = realloc (p, size)))
-        panic (POS, "Marrayreallocate", "cannot re-allocate array");
+        panic1 (POS, "Marrayreallocate", "cannot re-allocate array");
     return p;
 }
 
@@ -201,9 +201,9 @@ void *Marrayalloc (long size) {
         if (!arraymap[i].k)
             break;
     if (i == 100)
-        panic (POS, "Marrayalloc", "out of space in arraymap");
+        panic1 (POS, "Marrayalloc", "out of space in arraymap");
     if (!(arraymap[i].k = GlobalAlloc (GPTR, size)))
-        panic (POS, "Marrayallocate", "cannot allocate array");
+        panic1 (POS, "Marrayallocate", "cannot allocate array");
     arraymap[i].v = GlobalLock (arraymap[i].k);
     return arraymap[i].v;
 }
@@ -215,9 +215,9 @@ void *Marraygrow (void *p, long size) {
         if (arraymap[i].v == p)
             break;
     if (i == 100)
-        panic (POS, "Marraygrow", "cannot locate pointer");
+        panic1 (POS, "Marraygrow", "cannot locate pointer");
     if (!(arraymap[i].k = GlobalReAlloc (arraymap[i].k, size, GMEM_MOVEABLE)))
-        panic (POS, "Marraygrow", "cannot re-allocate array");
+        panic1 (POS, "Marraygrow", "cannot re-allocate array");
     arraymap[i].v = GlobalLock (arraymap[i].k);
     return arraymap[i].v;
 }
@@ -229,7 +229,7 @@ void Marrayfree (void *p) {
         if (arraymap[i].v == p)
             break;
     if (i == 100)
-        panic (POS, "Marrayfree", "cannot locate pointer");
+        panic1 (POS, "Marrayfree", "cannot locate pointer");
     GlobalUnlock (arraymap[i].k);
     GlobalFree (arraymap[i].k);
     arraymap[i].k = 0;
@@ -378,7 +378,7 @@ static void allocbuffer (long size) {
 
     if (size >= freen) {
         if (size > M_SIZEMAX)
-            panic (POS, "allocbuffer", "size %d > max size %d: try rebuilding using -DMINTSIZE", size, M_SIZEMAX);
+            panic1 (POS, "allocbuffer", "size %d > max size %d: try rebuilding using -DMINTSIZE", size, M_SIZEMAX);
         freearray = Marraygrow (freearray, (long) (size + 1) * FREESIZE);
         for (i = freen; i < size + 1; i++)
             freearray[i] = NULL;
@@ -387,9 +387,9 @@ static void allocbuffer (long size) {
     n = CALCNUM (size);
     if (!freearray[size]) {
         if (!(bp = malloc (BUFLEN)))
-            panic (POS, "allocbuffer", "cannot allocate buffer struct");
+            panic1 (POS, "allocbuffer", "cannot allocate buffer struct");
         if (!(bp->data = malloc (size * M_UNITSIZE * n)))
-            panic (POS, "allocbuffer", "cannot allocate buffer");
+            panic1 (POS, "allocbuffer", "cannot allocate buffer");
         bp->next = bufferlist, bufferlist = bp;
         bytes = size * M_UNITSIZE;
         for (i = 0, p = bp->data; i < n - 1; i++, p += bytes) {

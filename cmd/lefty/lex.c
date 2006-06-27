@@ -271,7 +271,7 @@ static void sungetc (void) {
         return;
     }
     if (ucp == unitp)
-        panic (POS, "sungetc", "unget before start of string");
+        panic1 (POS, "sungetc", "unget before start of string");
     ucp--;
     if (*ucp == '\n')
         linenum--;
