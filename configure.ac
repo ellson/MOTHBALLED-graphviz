@@ -248,7 +248,8 @@ AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
 	search.h getopt.h pthread.h values.h float.h limits.h termios.h \
 	errno.h time.h unistd.h fenv.h strings.h \
 	sys/time.h sys/times.h sys/types.h sys/select.h fpu_control.h \
-	sys/fpu.h strings.h sys/socket.h sys/stat.h sys/mman.h)
+	sys/fpu.h strings.h sys/socket.h sys/stat.h sys/mman.h \
+	sys/ioctl.h sys/inotify.h)
 AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_STDBOOL
@@ -1229,6 +1230,40 @@ AC_SUBST(PANGOCAIRO_CFLAGS)
 AC_SUBST(PANGOCAIRO_LIBS)
 fi
 AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for GTK.
+
+PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.7.0],
+        [HAVE_GTK=1
+        AC_DEFINE_UNQUOTED(HAVE_GTK,1,
+                [Define if you have the gtk+ library])],
+        [AC_MSG_WARN(gtk+ library not available. desktop features will not be built)])
+AC_SUBST(GTK_CFLAGS)
+AC_SUBST(GTK_LIBS)
+AM_CONDITIONAL(WITH_GTK, [test "x$HAVE_GTK" != "x"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for GNOMEUI.
+
+PKG_CHECK_MODULES(GNOMEUI, [libgnomeui-2.0],
+        [HAVE_GNOMEUI=1
+        AC_DEFINE_UNQUOTED(HAVE_GNOMEUI,1,
+                [Define if you have the gnomeui library])],
+        [AC_MSG_WARN(gnomeui library not available. using alternate code for firefox interaction)])
+AC_SUBST(GNOMEUI_CFLAGS)
+AC_SUBST(GNOMEUI_LIBS)
+AM_CONDITIONAL(WITH_GNOMEUI, [test "x$HAVE_GNOMEUI" != "x"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for GLADE.
+
+GETTEXT_PACKAGE=glade-2.0
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package.])
+
+ALL_LINGUAS=""
+AM_GLIB_GNU_GETTEXT
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
