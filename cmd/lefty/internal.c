@@ -202,7 +202,7 @@ void Iinit (void) {
     int i;
 
     if (!(bufp = malloc (BUFINCR * BUFSIZE)))
-        panic (POS, "Iinit", "buf malloc failed");
+        panic1 (POS, "Iinit", "buf malloc failed");
     bufn = BUFINCR;
     for (i = 0; Ifuncs[i].name; i++)
         Efunction (Pfunction (Ifuncs[i].name, i), Ifuncs[i].name);
@@ -845,6 +845,6 @@ static void growbufp (int newsize) {
     if (!(bufp = realloc (
         bufp, ((newsize + BUFINCR - 1) / BUFINCR) * BUFINCR * BUFSIZE
     )))
-        panic (POS, "growbufp", "buf realloc failed");
+        panic1 (POS, "growbufp", "buf realloc failed");
     bufn = ((newsize + BUFINCR - 1) / BUFINCR) * BUFINCR;
 }

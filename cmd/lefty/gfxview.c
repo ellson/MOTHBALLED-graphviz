@@ -1594,7 +1594,7 @@ static void rectinsert (int ni, Tobj ko, Grect_t r) {
             return;
         }
     if (!(crp = malloc (sizeof (gfxrect_t))))
-        panic (POS, "rectinsert", "rect malloc failed");
+        panic1 (POS, "rectinsert", "rect malloc failed");
 
     crp->ko = ko;
     crp->r.o.x = min (r.o.x, r.c.x);
@@ -1619,7 +1619,7 @@ static void rectmerge (int ni, Tobj ko, Grect_t r) {
             return;
         }
     if (!(crp = malloc (sizeof (gfxrect_t))))
-        panic (POS, "rectmerge", "rect malloc failed");
+        panic1 (POS, "rectmerge", "rect malloc failed");
 
     crp->ko = ko;
     crp->r.o.x = min (r.o.x, r.c.x);
@@ -1693,7 +1693,7 @@ static void menuinsert (int ni, Tobj ko, long time, int mi) {
             return;
         }
     if (!(cmp = malloc (sizeof (gfxmenu_t))))
-        panic (POS, "menuinsert", "menu malloc failed");
+        panic1 (POS, "menuinsert", "menu malloc failed");
 
     cmp->ko = ko;
     cmp->time = time;

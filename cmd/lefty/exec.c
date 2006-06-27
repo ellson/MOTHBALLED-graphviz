@@ -185,7 +185,7 @@ Tobj Eunit (Tobj co) {
         return NULL;
 
     if (Tgettype (co) != T_CODE)
-        panic (POS, "Eunit", "argument type is not T_CODE");
+        panic1 (POS, "Eunit", "argument type is not T_CODE");
 
     m = Mpushmark (co);
     PUSHJMP (oeljbufp, eljbufp, eljbuf);
@@ -426,7 +426,7 @@ tailrec:
         /* NOT REACHED */
         break;
     default:
-        panic (POS, "eeval", "unknown program token type %d", ctype);
+        panic1 (POS, "eeval", "unknown program token type %d", ctype);
     }
     return v1o;
 }
@@ -490,7 +490,7 @@ static Tobj efcall (Tobj co, int ci) {
         sinfop[ownsinfoi].fco = fdo;
         sinfop[ownsinfoi].fci = bi;
         if (fid < 0 || fid >= Ifuncn)
-            panic (POS, "efcall", "no such internal function: %d", fid);
+            panic1 (POS, "efcall", "no such internal function: %d", fid);
         rtno = Ttrue;
         if ((*Ifuncs[fid].func) (i, &lvarp[flvari]) == L_FAILURE) {
             rtno = NULL;
@@ -892,7 +892,7 @@ static int orderop (Tobj v1o, int op, Tobj v2o) {
     case C_GT: return (r >  0) ? TRUE : FALSE;
     case C_GE: return (r >= 0) ? TRUE : FALSE;
     }
-    panic (POS, "orderop", "bad op code");
+    panic1 (POS, "orderop", "bad op code");
     return FALSE; /* NOT REACHED */
 }
 
