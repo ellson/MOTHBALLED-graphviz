@@ -233,7 +233,7 @@ static void viewon (void) {
     Gawsetmode (&Gwidgets[listwi], FALSE);
 
     if (!(txtroot = malloc (sizeof (txtnode_t))))
-        panic (POS, "TXTinit", "txtroot malloc failed");
+        panic1 (POS, "TXTinit", "txtroot malloc failed");
     *txtroot = defnode;
     txtroot->mode = TXT_FULL;
     txtroot->vo = root;
@@ -407,7 +407,7 @@ static void buildlist (txtnode_t *pnode) {
     if (!(pnode->u.f.t.list = malloc (
         max (pnode->u.f.t.n, 1) * sizeof (txtnode_t)
     )))
-        panic (POS, "buildlist", "list malloc failed");
+        panic1 (POS, "buildlist", "list malloc failed");
 
     for (
         cnode = &pnode->u.f.t.list[0], Tgetfirst (pnode->vo, &tkvi);
@@ -448,7 +448,7 @@ static void rebuildlist (txtnode_t *pnode) {
     if (!(pnode->u.f.t.list = malloc (
         max (pnode->u.f.t.n, 1) * sizeof (txtnode_t)
     )))
-        panic (POS, "rebuildlist", "list malloc failed");
+        panic1 (POS, "rebuildlist", "list malloc failed");
 
     for (
         cnode = &pnode->u.f.t.list[0], Tgetfirst (pnode->vo, &tkvi);
