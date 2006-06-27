@@ -77,9 +77,9 @@ int init (char *aout) {
     if (getenv ("INNETSCAPE"))
         innetscape = TRUE, nswin = getenv ("NSWIN");
     if (!(pathp = malloc (PATHINCR * PATHSIZE)))
-        panic (POS, "init", "pathp malloc failed");
+        panic1 (POS, "init", "pathp malloc failed");
     if (!(cmdp = malloc (CMDINCR * CMDSIZE)))
-        panic (POS, "init", "cmdp malloc failed");
+        panic1 (POS, "init", "cmdp malloc failed");
     shellpath = getenv ("PATH");
 #ifdef FEATURE_WIN32
     GetModuleFileName (hinstance, buf, 260);
@@ -96,7 +96,7 @@ int init (char *aout) {
         s1 = aout;
     *s1 = 0;
     if (!(leftypath = malloc (PATHINCR * PATHSIZE)))
-        panic (POS, "init", "leftypath malloc failed");
+        panic1 (POS, "init", "leftypath malloc failed");
     leftypath[0] = 0;
     if ((s1 = getenv ("LEFTYPATH"))) {
         strcat (leftypath, s1);
@@ -369,7 +369,7 @@ void warning (char *file, int line, char *func, char *fmt, ...) {
 }
 
 /* varargs function for printing an error message and aborting */
-void panic (char *file, int line, char *func, char *fmt, ...) {
+void panic1 (char *file, int line, char *func, char *fmt, ...) {
     va_list args;
 
 #ifndef FEATURE_MS

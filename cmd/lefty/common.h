@@ -99,7 +99,7 @@ void term (void);
 char *buildpath (char *, int);
 char *buildcommand (char *, char *, int, int, char *);
 void warning (char *, int, char *, char *, ...);
-void panic (char *, int, char *, char *, ...);
+void panic1 (char *, int, char *, char *, ...);
 void panic2 (char *, int, char *, char *, ...);
 #endif /* _COMMON_H */
 
