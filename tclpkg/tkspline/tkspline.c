@@ -19,9 +19,7 @@
 #endif
 
 #include <tk.h>
-#ifdef HAVE_TKINT_H
 #include <tkInt.h>
-#endif
 
 #ifndef CONST84
 #define CONST84
