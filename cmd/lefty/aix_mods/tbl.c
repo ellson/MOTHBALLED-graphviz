@@ -224,7 +224,7 @@ void Tinsi(Tobj to, long ik, Tobj vo)
     long tm;
 
     if (!to || !T_ISTABLE(to))
-	panic(POS, "Tinsi", "insert attempted on non-table");
+	panic1(POS, "Tinsi", "insert attempted on non-table");
     tm = Mpushmark(to);
     if (vo)
 	Mpushmark(vo);
@@ -238,7 +238,7 @@ void Tinsr(Tobj to, double rk, Tobj vo)
     long tm;
 
     if (!to || !T_ISTABLE(to))
-	panic(POS, "Tinsr", "insert attempted on non-table");
+	panic1(POS, "Tinsr", "insert attempted on non-table");
     tm = Mpushmark(to);
     if (vo)
 	Mpushmark(vo);
@@ -252,7 +252,7 @@ void Tinss(Tobj to, char *sk, Tobj vo)
     long tm;
 
     if (!to || !T_ISTABLE(to))
-	panic(POS, "Tinss", "insert attempted on non-table");
+	panic1(POS, "Tinss", "insert attempted on non-table");
     tm = Mpushmark(to);
     if (vo)
 	Mpushmark(vo);
@@ -265,9 +265,9 @@ void Tinso(Tobj to, Tobj ko, Tobj vo)
     long tm;
 
     if (!to || !T_ISTABLE(to))
-	panic(POS, "Tinso", "insert attempted on non-table");
+	panic1(POS, "Tinso", "insert attempted on non-table");
     if (!ko || !(T_ISINTEGER(ko) || T_ISREAL(ko) || T_ISSTRING(ko)))
-	panic(POS, "Tinso", "bad key");
+	panic1(POS, "Tinso", "bad key");
     tm = Mpushmark(to);
     Mpushmark(ko);
     if (vo)
@@ -281,7 +281,7 @@ Tobj Tfindi(Tobj to, long ik)
     if (!to)
 	return NULL;
     if (!T_ISTABLE(to))
-	panic(POS, "Tfindi", "find attempted on non-table");
+	panic1(POS, "Tfindi", "find attempted on non-table");
     keyi.i = ik;
     return find(to, &keyi, NULL);
 }
@@ -291,7 +291,7 @@ Tobj Tfindr(Tobj to, double rk)
     if (!to)
 	return NULL;
     if (!T_ISTABLE(to))
-	panic(POS, "Tfindr", "find attempted on non-table");
+	panic1(POS, "Tfindr", "find attempted on non-table");
     keyr.d = rk;
     return find(to, &keyr, NULL);
 }
@@ -301,7 +301,7 @@ Tobj Tfinds(Tobj to, char *sk)
     if (!to)
 	return NULL;
     if (!T_ISTABLE(to))
-	panic(POS, "Tfinds", "find attempted on non-table");
+	panic1(POS, "Tfinds", "find attempted on non-table");
     return find(to, &keys, sk);
 }
 
@@ -310,9 +310,9 @@ Tobj Tfindo(Tobj to, Tobj ko)
     if (!to || !ko)
 	return NULL;
     if (!T_ISTABLE(to))
-	panic(POS, "Tfindo", "find attempted on non-table");
+	panic1(POS, "Tfindo", "find attempted on non-table");
     if (!(T_ISINTEGER(ko) || T_ISREAL(ko) || T_ISSTRING(ko)))
-	panic(POS, "Tfindo", "bad key");
+	panic1(POS, "Tfindo", "bad key");
     return find(to, ko, NULL);
 }
 
@@ -321,7 +321,7 @@ void Tdeli(Tobj to, long ik)
     if (!to)
 	return;
     if (!T_ISTABLE(to))
-	panic(POS, "Tdeli", "delete attempted on non-table");
+	panic1(POS, "Tdeli", "delete attempted on non-table");
     keyi.i = ik;
     delete(to, &keyi, NULL);
 }
@@ -331,7 +331,7 @@ void Tdelr(Tobj to, double rk)
     if (!to)
 	return;
     if (!T_ISTABLE(to))
-	panic(POS, "Tdelr", "delete attempted on non-table");
+	panic1(POS, "Tdelr", "delete attempted on non-table");
     keyr.d = rk;
     delete(to, &keyr, NULL);
 }
@@ -341,7 +341,7 @@ void Tdels(Tobj to, char *sk)
     if (!to)
 	return;
     if (!T_ISTABLE(to))
-	panic(POS, "Tdels", "delete attempted on non-table");
+	panic1(POS, "Tdels", "delete attempted on non-table");
     delete(to, &keys, sk);
 }
 
@@ -350,9 +350,9 @@ void Tdelo(Tobj to, Tobj ko)
     if (!to || !ko)
 	return;
     if (!T_ISTABLE(to))
-	panic(POS, "Tdelo", "delete attempted on non-table");
+	panic1(POS, "Tdelo", "delete attempted on non-table");
     if (!(T_ISINTEGER(ko) || T_ISREAL(ko) || T_ISSTRING(ko)))
-	panic(POS, "Tdelo", "bad key");
+	panic1(POS, "Tdelo", "bad key");
     delete(to, ko, NULL);
 }
 
@@ -703,7 +703,7 @@ static void mapinsert(Tobj fmo, Tobj too)
 
     lp = &map.list[(unsigned long) fmo % MAPLISTN];
     if (!(cep = Mallocate(MAPENTRYSIZE)))
-	panic(POS, "mapinsert", "cannot allocate mapentry");
+	panic1(POS, "mapinsert", "cannot allocate mapentry");
     cep->fmo = fmo, cep->too = too;
     cep->next = *lp, *lp = cep;
 }
