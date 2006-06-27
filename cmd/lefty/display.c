@@ -87,7 +87,7 @@ static void update (dnode_t *pnode) {
     indent += 2;
     n = ((Ttable_t *) pnode->vo)->n;
     if (!(list = malloc (n * sizeof (dnode_t))))
-        panic (POS, "update", "list malloc failed");
+        panic1 (POS, "update", "list malloc failed");
     for (
         cnode = &list[0], Tgetfirst (pnode->vo, &tkvi); tkvi.kvp;
         cnode++, Tgetnext (&tkvi)
