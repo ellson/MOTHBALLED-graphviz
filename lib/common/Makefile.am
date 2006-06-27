@@ -17,7 +17,7 @@ noinst_HEADERS = render.h utils.h memory.h \
 noinst_LTLIBRARIES = libcommon_C.la
 
 if WITH_CODEGENS
-CODEGENS = $(GD_CODEGENS) diagen.c figgen.c hpglgen.c mapgen.c mifgen.c mpgen.c \
+CODEGENS = $(GD_CODEGENS) diagen.c figgen.c hpglgen.c mifgen.c mpgen.c \
 	picgen.c vtxgen.c xdgen.c
 endif
 
