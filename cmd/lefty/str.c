@@ -44,7 +44,7 @@ static char *copysbuf (void);
 
 void Sinit (void) {
     if (!(sbufp = malloc (SBUFINCR * SBUFSIZE)))
-        panic (POS, "Sinit", "sbuf malloc failed");
+        panic1 (POS, "Sinit", "sbuf malloc failed");
     sbufi = 0;
     sbufn = SBUFINCR;
     indent = 0;
@@ -434,7 +434,7 @@ static void codestr (Tobj co, int ci) {
         }
         break;
     default:
-        panic (POS, "codestr", "bad object type: %d", ct);
+        panic1 (POS, "codestr", "bad object type: %d", ct);
     }
 }
 
@@ -488,7 +488,7 @@ static void growsbuf (int ssize) {
 
     nsize = ((sbufn + ssize) / SBUFINCR + 1) * SBUFINCR;
     if (!(sbufp = realloc (sbufp, nsize * SBUFSIZE)))
-        panic (POS, "growsbuf", "sbuf realloc failed");
+        panic1 (POS, "growsbuf", "sbuf realloc failed");
     sbufn = nsize;
 }
 
@@ -497,7 +497,7 @@ static char *copysbuf (void) {
 
     sbufp[sbufi++] = '\000';
     if (!(newsbufp = malloc (sbufi * sizeof (char))))
-        panic (POS, "copysbuf", "newsbuf malloc failed");
+        panic1 (POS, "copysbuf", "newsbuf malloc failed");
     strcpy (newsbufp, sbufp);
     return newsbufp;
 }
