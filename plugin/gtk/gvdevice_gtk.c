@@ -20,7 +20,8 @@
 
 #include <stdint.h>
 #include <gtk/gtk.h>
-#include <gvplugin_device.h>
+
+#include "gvplugin_device.h"
 
 #include "interface.h"
 #include "support.h"

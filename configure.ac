@@ -1884,6 +1884,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/pango/Makefile
 	plugin/dot_layout/Makefile
 	plugin/neato_layout/Makefile
+	plugin/xlib/Makefile
 	cmd/Makefile
 	cmd/dot/Makefile
 	cmd/tools/Makefile

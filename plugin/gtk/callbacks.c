@@ -29,7 +29,7 @@
 #include <string.h>
 #endif
 
-#include <gvplugin_device.h>
+#include "gvplugin_device.h"
 
 #include "callbacks.h"
 #include "interface.h"

@@ -259,10 +259,21 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	    margin.y += (pageSize.y - imageSize.y) / 2;
     }
 
-    job->canvasBox.LL.x = margin.x;
-    job->canvasBox.LL.y = margin.y;
-    job->canvasBox.UR.x = margin.x + imageSize.x;
-    job->canvasBox.UR.y = margin.y + imageSize.y;
+    job->canvasBox.LL.x = ROUND(job->margin.x);
+    job->canvasBox.LL.y = ROUND(job->margin.y);
+    job->canvasBox.UR.x = ROUND(job->margin.x) + imageSize.x;
+    job->canvasBox.UR.y = ROUND(job->margin.y) + imageSize.y;
+
+    /* calculate job->width and job->height with margins */
+    if (job->rotation) {
+        job->width = job->canvasBox.UR.y + job->canvasBox.LL.y;
+        job->height = job->canvasBox.UR.x + job->canvasBox.LL.x;
+    }
+    else {
+        job->width = job->canvasBox.UR.x + job->canvasBox.LL.x;
+        job->height = job->canvasBox.UR.y + job->canvasBox.LL.y;
+    }
+
 
 #if 0
 fprintf(stderr,"margin = %d,%d  imageSize = %d,%d pageBoundingBox = %d,%d %d,%d\n",
@@ -422,10 +433,6 @@ static void setup_page(GVJ_t * job, graph_t * g)
         job->boundingBox = job->pageBoundingBox;
     else
         EXPANDBB(job->boundingBox, job->pageBoundingBox);
-
-    /* update job->width and job->height with margins */
-    job->width = job->boundingBox.UR.x + job->boundingBox.LL.x;
-    job->height = job->boundingBox.UR.y + job->boundingBox.LL.y;
 
     if (job->rotation) {
 	if (job->flags & GVRENDER_Y_GOES_DOWN) {
