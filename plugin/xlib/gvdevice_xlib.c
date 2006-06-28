@@ -48,7 +48,7 @@
 #include <X11/Xutil.h>
 #include <X11/extensions/Xrender.h>
 
-#include <gvplugin_device.h>
+#include "gvplugin_device.h"
 
 typedef struct window_xlib_s {
     Window win;
@@ -420,6 +420,7 @@ static void finalize(GVJ_t *firstjob)
     KeyCode *keycodes;
     static char *dir;
     char *p, *cwd = NULL;
+    struct timeval timeout;
 
     FD_ZERO(&rfds);
 
@@ -479,6 +480,13 @@ static void finalize(GVJ_t *firstjob)
 
     for (job = firstjob; job; job = job->next_active)
 	init_window(job, dpy, scr);
+
+    ret = handle_xlib_events(firstjob, dpy);
+
+    /* FIXME - poll for initial expose event */
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 10000;
+    select(0, NULL, NULL, NULL, &timeout);
 
     xlib_fd = XConnectionNumber(dpy);
     

@@ -125,12 +125,8 @@ static void cairogen_begin_page(GVJ_t * job)
     fedisableexcept(FE_ALL_EXCEPT);
 #endif
 
-    if (job->external_surface) {
+    if (job->surface)
         cr = (cairo_t *) job->surface;
-	assert(cr);
-
-        cairo_save(cr);
-    }
 
     switch (job->render.id) {
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
@@ -196,6 +192,7 @@ static void cairogen_begin_page(GVJ_t * job)
     }
     job->surface = (void *) cr;
 
+    cairo_save(cr);
     cairo_scale(cr, job->scale.x, job->scale.y);
     cairo_rotate(cr, job->rotation * M_PI / 180.);
     cairo_translate(cr, job->translation.x, job->translation.y);
@@ -440,14 +437,13 @@ static gvrender_features_t cairogen_features_ps = {
     "cairo",			/* gvloadimage target for usershapes */
 };
 
-#if 0
 static gvrender_features_t cairogen_features_x = {
     GVRENDER_DOES_TRUECOLOR
 	| GVRENDER_Y_GOES_DOWN
 	| GVRENDER_DOES_TRANSFORM
 	| GVRENDER_X11_EVENTS,	/* flags */
     0,				/* default margin - points */
-    {96.,96.},			/* default dpi */
+    {72.,72.},			/* default dpi */
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
@@ -461,14 +457,13 @@ static gvrender_features_t cairogen_features_gtk = {
 	| GVRENDER_DOES_TRANSFORM
 	| GVRENDER_X11_EVENTS,	/* flags */
     0,				/* default margin - points */
-    {96.,96.},			/* default dpi */
+    {72.,72.},			/* default dpi */
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
     "gtk",			/* device */
     "cairo",			/* gvloadimage target for usershapes */
 };
-#endif
 #endif
 
 gvplugin_installed_t gvrender_pango_types[] = {
@@ -485,7 +480,6 @@ gvplugin_installed_t gvrender_pango_types[] = {
 #ifdef CAIRO_HAS_SVG_SURFACE
     {FORMAT_SVG, "svg", -10, &cairogen_engine, &cairogen_features_ps},
 #endif
-#if 0
 #ifdef CAIRO_HAS_XCB_SURFACE
     {FORMAT_XCB, "xcb", 0, &cairogen_engine, &cairogen_features_x},
 #endif
@@ -504,7 +498,6 @@ gvplugin_installed_t gvrender_pango_types[] = {
 #ifdef CAIRO_HAS_XLIB_SURFACE
     {FORMAT_GTK, "gtk", 0, &cairogen_engine, &cairogen_features_gtk},
     {FORMAT_XLIB, "xlib", 0, &cairogen_engine, &cairogen_features_x},
-#endif
 #endif
 #endif
     {0, NULL, 0, NULL, NULL}
