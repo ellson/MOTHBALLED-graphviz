@@ -24,7 +24,7 @@ NOINST_HDRS = render.h utils.h memory.h \
 NOINST_GENERATED_HDRS = colortbl.h ps.h htmltable.h  htmlparse.h htmllex.h 
 
 GD_CODEGENS = 
-CODEGENS = $(GD_CODEGENS) diagen.o figgen.o hpglgen.o mapgen.o mifgen.o \
+CODEGENS = $(GD_CODEGENS) diagen.o figgen.o hpglgen.o mifgen.o \
            mpgen.o picgen.o vtxgen.o xdgen.o
 
 OBJS = arrows.o colxlate.o fontmetrics.o \
