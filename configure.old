@@ -12,7 +12,8 @@ for i in `find . -name Makefile.old`; do cp $i ${i%%.old}; done
 # do the same for config.h plus insert VERSION and BUILDDATE
 V=$(grep 'AC_INIT(graphviz' configure.ac | m4 '-DAC_INIT=$2')
 D=$(date)
-./iffe - set cc cc : run config.iffe | sed "s/VVVV/$V/" | sed "s/DDDD/$D/" > config.h
+./iffe - set cc cc : run config.iffe | sed "s/VVVV/$V/" > config.h
+echo "#define BUILDDATE \"$D\"" > builddate.h
 
 # Append VERSION to Config.mk
 cp Config.mk.old Config.mk
