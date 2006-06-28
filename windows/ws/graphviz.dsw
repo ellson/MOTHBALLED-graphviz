@@ -207,7 +207,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "plugin"="..\lib\plugin\plugin.dsp" - Package Owner=<4>
+Project: "plugin"="..\plugin\plugin.dsp" - Package Owner=<4>
 
 Package=<5>
 {{{
