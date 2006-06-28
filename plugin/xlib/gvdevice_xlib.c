@@ -412,19 +412,18 @@ static void finalize(GVJ_t *firstjob)
 {
     GVJ_t *job;
     Display *dpy;
-    int i, scr, inotify_fd=0, wd=0, xlib_fd, ret, events;
-    bool watching_p = FALSE;
+    int i, scr, inotify_fd=0, xlib_fd, ret, events;
     fd_set rfds;
     const char *display_name = NULL;
     KeySym keysym;
     KeyCode *keycodes;
+    struct timeval timeout;
+#ifdef HAVE_SYS_INOTIFY_H
+    int wd=0;
+    bool watching_p = FALSE;
     static char *dir;
     char *p, *cwd = NULL;
-    struct timeval timeout;
 
-    FD_ZERO(&rfds);
-
-#ifdef HAVE_SYS_INOTIFY_H
     inotify_fd = inotify_init();
     if (inotify_fd < 0) {
 	fprintf(stderr,"inotify_init() failed\n");
@@ -489,8 +488,9 @@ static void finalize(GVJ_t *firstjob)
     select(0, NULL, NULL, NULL, &timeout);
 
     xlib_fd = XConnectionNumber(dpy);
-    
+
     /* This is the event loop */
+    FD_ZERO(&rfds);
     while (1) {
 	events = 0;
 
