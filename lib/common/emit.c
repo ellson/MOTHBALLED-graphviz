@@ -1851,12 +1851,12 @@ static void auto_output_filename(GVJ_t *job)
 {
     static char *buf;
     static int bufsz;
-    char gidx[20];
+    char gidx[100];  /* large enough for '.' plus any integer */
     char *fn;
     int len;
 
     if (job->graph_index)
-	snprintf(gidx, sizeof(gidx), ".%d", job->graph_index + 1);
+	sprintf(gidx, ".%d", job->graph_index + 1);
     else
 	gidx[0] = '\0';
     if (!(fn = job->input_filename))
