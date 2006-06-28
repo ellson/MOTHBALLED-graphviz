@@ -10,10 +10,11 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/cdt \
 	$(GTK_CFLAGS) $(GNOMEUI_CFLAGS)
 
+if WITH_PANGOCAIRO
 if WITH_GTK
 noinst_LTLIBRARIES = libgvplugin_gtk_C.la
-
 pkglib_LTLIBRARIES = libgvplugin_gtk.la
+endif
 endif
 
 libgvplugin_gtk_C_la_SOURCES = \
