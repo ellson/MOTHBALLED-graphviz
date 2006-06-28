@@ -14,7 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include <gvplugin.h>
+#include "gvplugin.h"
 
 extern gvplugin_installed_t gvdevice_types_xlib;
 
