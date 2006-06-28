@@ -5,13 +5,11 @@ include $(ROOT)/makearch/$(ARCH)
 
 INCS =  -I. \
 	-I$(ROOT) \
-        -I../common \
-        -I../gvc \
-        -I../pathplan \
-        -I../graph \
-        -I../cdt \
-        -I../gd \
-        $(EXTLIB_INC)
+        -I../../lib/common \
+        -I../../lib/pathplan \
+        -I../../lib/graph \
+        -I../../lib/cdt \
+        -I../../lib/gvc 
 
 DEFINES = -DHAVE_CONFIG_H
 
