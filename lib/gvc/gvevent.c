@@ -18,12 +18,26 @@
 #include "config.h"
 #endif
 
+#include <string.h>
+
+#ifdef HAVE_GNOMEUI
+#include <libgnome/libgnome.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
+
 #include "gvplugin_layout.h"
 #include "graph.h"
 #include "gvcint.h"
 #include "gvcproc.h"
 
-#include <string.h>
 extern char *strdup_and_subst_graph(char *str, Agraph_t * g);
 extern char *strdup_and_subst_edge(char *str, Agedge_t * e);
 extern char *strdup_and_subst_node(char *str, Agnode_t * n);
@@ -432,6 +446,30 @@ static void gvevent_button_release(GVJ_t *job, int button, pointf pointer)
 {
     job->click = 0;
     job->button = 0;
+    if (job->selected_href && job->selected_href[0]) {
+#ifdef HAVE_GNOMEUI
+        gnome_url_show(job->selected_href, NULL);
+#else
+#if defined HAVE_SYS_TYPES_H && defined HAVE_UNISTD_Y && defined HAVE_ERRNO_H
+        char *exec_argv[3] = {"firefox", NULL, NULL};
+        pid_t pid;
+        int err;
+
+        exec_argv[1] = job->selected_href;
+
+        pid = fork();
+        if (pid == -1) {
+            fprintf(stderr,"fork failed: %s\n", strerror(errno));
+        }
+        else if (pid == 0) {
+            err = execvp(exec_argv[0], exec_argv);
+            fprintf(stderr,"error starting %s: %s\n", exec_argv[0], strerror(errno));
+        }
+#else
+	fprintf(stdout,"%s\n", job->selected_href);
+#endif
+#endif
+    }
 }
 
 static void gvevent_motion(GVJ_t * job, pointf pointer)

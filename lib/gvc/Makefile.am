@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
 	$(INCLTDL) -I$(top_srcdir)/libltdl \
-	-DGVLIBDIR=\"$(pkglibdir)\"
+	$(GNOMEUI_CFLAGS) -DGVLIBDIR=\"$(pkglibdir)\"
 
 LIBS = $(LIBLTDL) $(SOCKET_LIBS)
 
@@ -35,7 +35,7 @@ libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
-	@EXPAT_LIBS@ @Z_LIBS@
+	@GNOMEUI_LIBS@ @EXPAT_LIBS@ @Z_LIBS@
 
 #For use without plugins.
 #  so it needs to be linked with a preset table of builtins, e.g. dot_builtins.c,

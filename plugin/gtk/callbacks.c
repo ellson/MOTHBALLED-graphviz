@@ -19,15 +19,6 @@
 #endif
 
 #include <gtk/gtk.h>
-#ifdef HAVE_GNOMEUI
-#include <libgnome/libgnome.h>
-#else
-#include <stdio.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#endif
 
 #include "gvplugin_device.h"
 
@@ -377,30 +368,6 @@ on_drawingarea1_button_press_event     (GtkWidget       *widget,
     (job->callbacks->button_press)(job, event->button, pointer);
     
     load_store_with_attrs(GTK_LIST_STORE(g_object_get_data(G_OBJECT(widget), "attr_store")), job);
-
-    if (job->selected_href && job->selected_href[0]) {
-#if 0
-	fprintf(stderr,"href = \"%s\"\n", job->selected_href);
-#endif
-#ifdef HAVE_GNOMEUI
-	gnome_url_show(job->selected_href, NULL);
-#else
-	char *exec_argv[3] = {"firefox", NULL, NULL};
-	pid_t pid;
-	int err;
-
-	exec_argv[1] = job->selected_href;
-
-	pid = fork();
-	if (pid == -1) {
-	    fprintf(stderr,"fork failed: %s\n", strerror(errno));
-	}
-	else if (pid == 0) {
-	    err = execvp(exec_argv[0], exec_argv);
-	    fprintf(stderr,"error starting %s: %s\n", exec_argv[0], strerror(errno));
-	}
-#endif
-    }
     return FALSE;
 }
 
