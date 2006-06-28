@@ -760,6 +760,33 @@ static bool edge_in_view(GVJ_t *job, edge_t * e)
 }
 #endif
 
+/* edges colors can be mutiple colors separated by ":"
+ * so we commpute a default pencolor with the same number of colors. */
+static char* default_pencolor(char *pencolor, char *deflt)
+{
+    static char *buf;
+    static int bufsz;
+    char *p;
+    int len, ncol;
+
+    ncol = 1;
+    for (p = pencolor; *p; p++) {
+	if (*p == ':')
+	    ncol++;
+    }
+    len = ncol * (strlen(deflt) + 1);
+    if (bufsz < len) {
+	bufsz = len + 10;
+	buf = realloc(buf, bufsz);
+    }
+    strcpy(buf, deflt);
+    while(--ncol) {
+	strcat(buf, ":");
+	strcat(buf, deflt);
+    }
+    return buf;
+}
+
 void emit_edge_graphics(GVJ_t * job, edge_t * e)
 {
     int i, j, cnum, numc = 0;
@@ -812,19 +839,23 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 
 	fillcolor = pencolor = color;
 	if (ED_gui_state(e) & GUI_STATE_ACTIVE) {
-	    pencolor = late_nnstring(e, E_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+	    pencolor = late_nnstring(e, E_activepencolor,
+			default_pencolor(pencolor, DEFAULT_ACTIVEPENCOLOR));
 	    fillcolor = late_nnstring(e, E_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
 	}
 	else if (ED_gui_state(e) & GUI_STATE_SELECTED) {
-	    pencolor = late_nnstring(e, E_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
+	    pencolor = late_nnstring(e, E_selectedpencolor,
+			default_pencolor(pencolor, DEFAULT_SELECTEDPENCOLOR));
 	    fillcolor = late_nnstring(e, E_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
 	}
 	else if (ED_gui_state(e) & GUI_STATE_DELETED) {
-	    pencolor = late_nnstring(e, E_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
+	    pencolor = late_nnstring(e, E_deletedpencolor,
+			default_pencolor(pencolor, DEFAULT_DELETEDPENCOLOR));
 	    fillcolor = late_nnstring(e, E_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
 	}
 	else if (ED_gui_state(e) & GUI_STATE_VISITED) {
-	    pencolor = late_nnstring(e, E_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
+	    pencolor = late_nnstring(e, E_visitedpencolor,
+			default_pencolor(pencolor, DEFAULT_VISITEDPENCOLOR));
 	    fillcolor = late_nnstring(e, E_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
 	}
 	if (pencolor != color)
