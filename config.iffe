@@ -232,7 +232,6 @@ cat{
 #define DEFAULT_DPI 96
  
 #define VERSION "VVVV"
-#define BUILDDATE "DDDD"
 
 /* Define if you have the pango library with cairo support */
 /* #define HAVE_PANGOCAIRO 1 */
