@@ -21,6 +21,7 @@ extern "C" {
 #ifndef GVIZ_CONFIG
 #define GVIZ_CONFIG
 
+#define VERSION "2.9.20060628.0440"
 /* Define if you have the cbrt function.  */
 /* #define HAVE_CBRT 1 */
 
