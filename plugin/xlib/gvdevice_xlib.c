@@ -137,6 +137,32 @@ static Visual *find_argb_visual(Display * dpy, int scr)
     return visual;
 }
 
+static void browser_show(GVJ_t *job)
+{
+#ifdef HAVE_GNOMEUI
+   gnome_url_show(job->selected_href, NULL);
+#else
+#if defined HAVE_SYS_TYPES_H && defined HAVE_UNISTD_Y && defined HAVE_ERRNO_H
+   char *exec_argv[3] = {"firefox", NULL, NULL};
+   pid_t pid;
+   int err;
+
+   exec_argv[1] = job->selected_href;
+
+   pid = fork();
+   if (pid == -1) {
+       fprintf(stderr,"fork failed: %s\n", strerror(errno));
+   }
+   else if (pid == 0) {
+       err = execvp(exec_argv[0], exec_argv);
+       fprintf(stderr,"error starting %s: %s\n", exec_argv[0], strerror(errno));
+   }
+#else
+   fprintf(stdout,"browser_show: %s\n", job->selected_href);
+#endif
+#endif
+}
+
 static int handle_xlib_events (GVJ_t *firstjob, Display *dpy)
 {
     GVJ_t *job;
@@ -168,6 +194,8 @@ static int handle_xlib_events (GVJ_t *firstjob, Display *dpy)
 		    pointer.x = (double)xev.xbutton.x;
 		    pointer.y = (double)xev.xbutton.y;
                     (job->callbacks->button_release)(job, xev.xbutton.button, pointer);
+		    if (job->selected_href && job->selected_href[0])
+		        browser_show(job);
 		    rc++;
                     break;
                 case KeyPress:
