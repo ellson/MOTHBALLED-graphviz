@@ -135,16 +135,7 @@ of graphs (as in nodes and edges, not as in barcharts).
 %package gd
 Group:		Applications/Multimedia
 Summary:	graphviz plugin for renderers based on gd
-
-%{?el3:Requires: urw-fonts}
-%{?el4:Requires: urw-fonts}
-%{?el5:Requires: urw-fonts}
-%{?el6:Requires: urw-fonts}
-%{?fc1:Requires: urw-fonts}
-%{?fc2:Requires: urw-fonts}
-%{?fc3:Requires: urw-fonts}
-%{?fc4:Requires: urw-fonts}
-%{?fc5:Requires: urw-fonts}
+Requires:	graphviz = %{version}-%{release} urw-fonts
 
 %description gd
 graphviz plugin for renderers based on gd
@@ -157,7 +148,7 @@ graphviz plugin for renderers based on gd
 %package sharp
 Group:		Applications/Multimedia
 Summary:	C# extension for graphviz
-Requires:	graphviz = %{version}-%{release}
+Requires:	graphviz = %{version}-%{release} mono-core
 
 %description sharp
 C# extension for graphviz.
@@ -173,7 +164,7 @@ C# extension for graphviz.
 %package guile
 Group:		Applications/Multimedia
 Summary:	Guile extension for graphviz
-Requires:	graphviz = %{version}-%{release}
+Requires:	graphviz = %{version}-%{release} guile
 
 %description guile
 Guile extension for graphviz.
@@ -189,7 +180,7 @@ Guile extension for graphviz.
 %package io
 Group:		Applications/Multimedia
 Summary:	Io extension for graphviz
-Requires:	graphviz = %{version}-%{release}
+Requires:	graphviz = %{version}-%{release} io
 
 %description io
 Io extension for graphviz.
@@ -205,7 +196,7 @@ Io extension for graphviz.
 %package java
 Group:		Applications/Multimedia
 Summary:	Java extension for graphviz
-Requires:	graphviz = %{version}-%{release}
+Requires:	graphviz = %{version}-%{release} libgcj
 
 %description java
 Java extension for graphviz.
@@ -221,7 +212,7 @@ Java extension for graphviz.
 %package lua
 Group:		Applications/Multimedia
 Summary:	Lua extension for graphviz
-Requires:	graphviz = %{version}-%{release}
+Requires:	graphviz = %{version}-%{release} lua
 
 %description lua
 Java extension for graphviz.
@@ -237,7 +228,7 @@ Java extension for graphviz.
 %package ocaml
 Group:		Applications/Multimedia
 Summary:	Ocaml extension for graphviz
-Requires:	graphviz = %{version}-%{release}
+Requires:	graphviz = %{version}-%{release} ocaml
 
 %description ocaml
 Ocaml extension for graphviz.
@@ -253,7 +244,7 @@ Ocaml extension for graphviz.
 %package perl
 Group:		Applications/Multimedia
 Summary:	Perl extension for graphviz
-Requires:	graphviz = %{version}-%{release}
+Requires:	graphviz = %{version}-%{release} perl
 
 %description perl
 Perl extension for graphviz.
@@ -269,7 +260,7 @@ Perl extension for graphviz.
 %package php
 Group:		Applications/Multimedia
 Summary:	PHP extension for graphviz
-Requires:	graphviz = %{version}-%{release}
+Requires:	graphviz = %{version}-%{release} php
 
 %description php
 PHP extension for graphviz.
@@ -285,7 +276,7 @@ PHP extension for graphviz.
 %package python
 Group:		Applications/Multimedia
 Summary:	Python extension for graphviz
-Requires:	graphviz = %{version}-%{release}
+Requires:	graphviz = %{version}-%{release} python
 
 %description python
 Python extension for graphviz.
@@ -301,7 +292,7 @@ Python extension for graphviz.
 %package ruby
 Group:		Applications/Multimedia
 Summary:	Ruby extension for graphviz
-Requires:	graphviz = %{version}-%{release}
+Requires:	graphviz = %{version}-%{release} ruby
 
 %description ruby
 Ruby extension for graphviz.
