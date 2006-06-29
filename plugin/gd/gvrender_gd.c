@@ -380,18 +380,18 @@ static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
     int i, pen, width, dashstyle[40];
 
     if (style->pen == PEN_DASHED) {
-	for (i = 0; i < 20; i++)
+	for (i = 0; i < 10; i++)
 	    dashstyle[i] = style->pencolor.u.index;
-	for (; i < 40; i++)
+	for (; i < 20; i++)
 	    dashstyle[i] = transparent;
 	gdImageSetStyle(im, dashstyle, 20);
 	pen = gdStyled;
     } else if (style->pen == PEN_DOTTED) {
 	for (i = 0; i < 2; i++)
 	    dashstyle[i] = style->pencolor.u.index;
-	for (; i < 24; i++)
+	for (; i < 14; i++)
 	    dashstyle[i] = transparent;
-	gdImageSetStyle(im, dashstyle, 24);
+	gdImageSetStyle(im, dashstyle, 12);
 	pen = gdStyled;
     } else {
 	pen = style->pencolor.u.index;
@@ -522,38 +522,8 @@ static void gdgen_polyline(GVJ_t * job, pointf * A, int n)
     if (!im)
 	return;
 
-    if (style->pen == PEN_DASHED) {
-	for (i = 0; i < 10; i++)
-	    dashstyle[i] = style->pencolor.u.index;
-	for (; i < 20; i++)
-	    dashstyle[i] = transparent;
-	gdImageSetStyle(im, dashstyle, 20);
-	pen = gdStyled;
-    } else if (style->pen == PEN_DOTTED) {
-	for (i = 0; i < 2; i++)
-	    dashstyle[i] = style->pencolor.u.index;
-	for (; i < 12; i++)
-	    dashstyle[i] = transparent;
-	gdImageSetStyle(im, dashstyle, 12);
-	pen = gdStyled;
-    } else {
-	pen = style->pencolor.u.index;
-    }
-    width = style->penwidth * job->scale.x;
-    if (width < PENWIDTH_NORMAL)
-	width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
-    gdImageSetThickness(im, width);
-    if (style->penwidth != PENWIDTH_NORMAL) {
-	brush = gdImageCreate(width, width);
-	gdImagePaletteCopy(brush, im);
-	gdImageFilledRectangle(brush, 0, 0, width - 1, width - 1,
-			       style->pencolor.u.index);
-	gdImageSetBrush(im, brush);
-	if (pen == gdStyled)
-	    pen = gdStyledBrushed;
-	else
-	    pen = gdBrushed;
-    }
+    pen = gdgen_set_penstyle(job, im, brush);
+
     p = A[0];
     for (i = 1; i < n; i++) {
 	p1 = A[i];

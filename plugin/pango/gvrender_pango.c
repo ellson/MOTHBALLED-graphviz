@@ -70,10 +70,10 @@ typedef enum { FORMAT_PNG,
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
-static double dashed[] = {10.};
+static double dashed[] = {6.};
 static int dashed_len = ARRAY_SIZE(dashed);
 
-static double dotted[] = {2., 10.};
+static double dotted[] = {2., 6.};
 static int dotted_len = ARRAY_SIZE(dotted);
 
 #ifdef CAIRO_HAS_PS_SURFACE
@@ -272,12 +272,9 @@ static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     pango_cairo_show_layout(cr, layout);
 }
 
-static void cairogen_ellipse(GVJ_t * job, pointf * A, int filled)
+static void cairogen_set_penstyle(GVJ_t *job, cairo_t *cr)
 {
     gvstyle_t *style = job->style;
-    cairo_t *cr = (cairo_t *) job->surface;
-    cairo_matrix_t matrix;
-    double rx, ry;
 
     if (style->pen == PEN_DASHED) {
 	cairo_set_dash (cr, dashed, dashed_len, 0.0);
@@ -287,6 +284,17 @@ static void cairogen_ellipse(GVJ_t * job, pointf * A, int filled)
 	cairo_set_dash (cr, dashed, 0, 0.0);
     }
     cairo_set_line_width (cr, style->penwidth * job->scale.x);
+
+}
+
+static void cairogen_ellipse(GVJ_t * job, pointf * A, int filled)
+{
+    gvstyle_t *style = job->style;
+    cairo_t *cr = (cairo_t *) job->surface;
+    cairo_matrix_t matrix;
+    double rx, ry;
+
+    cairogen_set_penstyle(job, cr);
 
     cairo_get_matrix(cr, &matrix);
     cairo_translate(cr, A[0].x, -A[0].y);
@@ -315,14 +323,8 @@ cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     cairo_t *cr = (cairo_t *) job->surface;
     int i;
 
-    if (style->pen == PEN_DASHED) {
-	cairo_set_dash (cr, dashed, dashed_len, 0.0);
-    } else if (style->pen == PEN_DOTTED) {
-	cairo_set_dash (cr, dotted, dotted_len, 0.0);
-    } else {
-	cairo_set_dash (cr, dashed, 0, 0.0);
-    }
-    cairo_set_line_width (cr, style->penwidth * job->scale.x);
+    cairogen_set_penstyle(job, cr);
+
     cairo_move_to(cr, A[0].x, -A[0].y);
     for (i = 1; i < n; i++)
 	cairo_line_to(cr, A[i].x, -A[i].y);
@@ -343,14 +345,8 @@ cairogen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     cairo_t *cr = (cairo_t *) job->surface;
     int i;
 
-    if (style->pen == PEN_DASHED) {
-	cairo_set_dash (cr, dashed, dashed_len, 0.0);
-    } else if (style->pen == PEN_DOTTED) {
-	cairo_set_dash (cr, dotted, dotted_len, 0.0);
-    } else {
-	cairo_set_dash (cr, dashed, 0, 0.0);
-    }
-    cairo_set_line_width (cr, style->penwidth * job->scale.x);
+    cairogen_set_penstyle(job, cr);
+
     cairo_move_to(cr, A[0].x, -A[0].y);
     for (i = 1; i < n; i += 3)
 	cairo_curve_to(cr, A[i].x, -A[i].y, A[i + 1].x, -A[i + 1].y,
@@ -366,13 +362,8 @@ cairogen_polyline(GVJ_t * job, pointf * A, int n)
     cairo_t *cr = (cairo_t *) job->surface;
     int i;
 
-    if (style->pen == PEN_DASHED) {
-	cairo_set_dash (cr, dashed, dashed_len, 0.0);
-    } else if (style->pen == PEN_DOTTED) {
-	cairo_set_dash (cr, dotted, dotted_len, 0.0);
-    } else {
-	cairo_set_dash (cr, dashed, 0, 0.0);
-    }
+    cairogen_set_penstyle(job, cr);
+
     cairo_set_line_width (cr, style->penwidth * job->scale.x);
     cairo_move_to(cr, A[0].x, -A[0].y);
     for (i = 1; i < n; i++)
