@@ -52,12 +52,13 @@ BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
 %if 0%{?rhl}
 %define PERL    1
 %define TCL     1
-BuildRequires: XFree86-devel
+BuildRequires: XFree86-devel perl
 %endif
 
 %if 0%{?rhel}
 %define PERL    1
 %define TCL     1
+BuildRequires: perl
 %if "%rhel" < "4"
 BuildRequires: XFree86-devel
 %endif
@@ -66,10 +67,9 @@ BuildRequires: XFree86-devel
 BuildRequires: fontconfig-devel tcl-devel tk-devel
 %endif
 %if "%rhel" >= "4"
-%define PERL    1
 %define PHP     1
 %define RUBY    1
-BuildRequires: xorg-x11-devel
+BuildRequires: xorg-x11-devel php-devel ruby-devel
 %endif
 %if "%rhel" >= "5"
 BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
@@ -96,18 +96,18 @@ BuildRequires: xorg-x11-devel
 %define PHP     1
 %define RUBY    1
 %define GUILE   1
-BuildRequires: libtool-ltdl libtool-ltdl-devel guile-devel 
+BuildRequires: libtool-ltdl libtool-ltdl-devel php-devel ruby-devel guile-devel 
 %endif
 %if "%fedora" >= "5"
 %define SHARP   1
 %define JAVA    1
 %define OCAML   1
 %define PYTHON  1
-BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
+BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel libgcj-devel mono-core ocaml python-devel pango-devel cairo-devel
 %endif
 %if "%fedora" >= "6"
 %define LUA     1
-BuildRequires: gmp-devel lua-devel pango-devel cairo-devel >= 1.1.10
+BuildRequires: gmp-devel lua-devel
 %endif
 %endif
 
