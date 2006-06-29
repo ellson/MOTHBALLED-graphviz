@@ -7,7 +7,7 @@
 #-- graphviz src.rpm --------------------------------------------------------
 Name:		graphviz
 Version:	@VERSION@
-Release:	1
+Release:	1%{dist}
 
 License:	CPL
 URL:		http://www.graphviz.org/
@@ -17,9 +17,10 @@ Source:		http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
 Prefix: /usr
 
 #-- feature and package selection -------------------------------------------
-#        depends on %dist which is set in .rpmmacros on each build host
+#        depends on %dist and %fedora (or %rhl or %rhel) which are set
+#        in .rpmmacros on each build host
 
-# Define a default set incase none of the conditionals apply
+# Define a default set of features incase none of the conditionals apply
 %define SHARP   0
 %define GUILE   0
 %define _IO     0
@@ -33,84 +34,6 @@ Prefix: /usr
 %define TCL     1
 %define IPSEPCOLA --without-ipsepcola
 %define MYLIBGD --with-mylibgd
-
-# These are all single line conditional blocks because older versions
-# of rpm can't handle multiline blocks/
-%{?rh7: %{expand: %%define PERL    1}}
-%{?rh7: %{expand: %%define TCL     1}}
-
-%{?rh8: %{expand: %%define PERL    1}}
-%{?rh8: %{expand: %%define TCL     1}}
-
-%{?rh9: %{expand: %%define PERL    1}}
-%{?rh9: %{expand: %%define TCL     1}}
-
-%{?el2: %{expand: %%define PERL    1}}
-%{?el2: %{expand: %%define TCL     1}}
-
-%{?el3: %{expand: %%define PERL    1}}
-%{?el3: %{expand: %%define TCL     1}}
-%{?el3: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-
-%{?el4: %{expand: %%define PERL    1}}
-%{?el4: %{expand: %%define PHP     1}}
-%{?el4: %{expand: %%define RUBY    1}}
-%{?el4: %{expand: %%define TCL     1}}
-%{?el4: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-
-%{?el5: %{expand: %%define PERL    1}}
-%{?el5: %{expand: %%define PHP     1}}
-%{?el5: %{expand: %%define RUBY    1}}
-%{?el5: %{expand: %%define TCL     1}}
-%{?el5: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-
-%{?el6: %{expand: %%define PERL    1}}
-%{?el6: %{expand: %%define PHP     1}}
-%{?el6: %{expand: %%define RUBY    1}}
-%{?el6: %{expand: %%define TCL     1}}
-%{?el6: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-
-%{?fc1: %{expand: %%define PERL    1}}
-%{?fc1: %{expand: %%define TCL     1}}
-
-%{?fc2: %{expand: %%define PERL    1}}
-%{?fc2: %{expand: %%define TCL     1}}
-
-%{?fc3: %{expand: %%define PERL    1}}
-%{?fc3: %{expand: %%define TCL     1}}
-%{?fc3: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-
-%{?fc4: %{expand: %%define GUILE   1}}
-%{?fc4: %{expand: %%define PERL    1}}
-%{?fc4: %{expand: %%define PYTHON  1}}
-%{?fc4: %{expand: %%define RUBY    1}}
-%{?fc4: %{expand: %%define TCL     1}}
-%{?fc4: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-
-%{?fc5: %{expand: %%define SHARP   1}}
-%{?fc5: %{expand: %%define GUILE   1}}
-%{?fc5: %{expand: %%define JAVA    1}}
-%{?fc5: %{expand: %%define OCAML   1}}
-%{?fc5: %{expand: %%define PERL    1}}
-%{?fc5: %{expand: %%define PHP     1}}
-%{?fc5: %{expand: %%define PYTHON  1}}
-%{?fc5: %{expand: %%define RUBY    1}}
-%{?fc5: %{expand: %%define TCL     1}}
-%{?fc5: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-
-%{?fc6: %{expand: %%define SHARP   1}}
-%{?fc6: %{expand: %%define GUILE   1}}
-%{?fc6: %{expand: %%define JAVA    1}}
-%{?fc6: %{expand: %%define LUA     1}}
-%{?fc6: %{expand: %%define OCAML   1}}
-%{?fc6: %{expand: %%define PERL    1}}
-%{?fc6: %{expand: %%define PHP     1}}
-%{?fc6: %{expand: %%define PYTHON  1}}
-%{?fc6: %{expand: %%define RUBY    1}}
-%{?fc6: %{expand: %%define TCL     1}}
-%{?fc6: %{expand: %%define IPSEPCOLA --with-ipsepcola}}
-
-#-- build requirements --------------------------------------------------
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -126,22 +49,67 @@ BuildRequires:	/bin/ksh bison m4 flex tk tcl >= 8.3 swig
 # base packages which are always BR'd anyway (above).
 BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
 
-#Stuff moves around.   
-%{?rh6:BuildRequires: XFree86-devel}
-%{?rh7:BuildRequires: XFree86-devel}
-%{?rh8:BuildRequires: XFree86-devel}
-%{?rh9:BuildRequires: XFree86-devel}
-%{?el2:BuildRequires: XFree86-devel}
-%{?el3:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
-%{?el4:BuildRequires: fontconfig-devel xorg-x11-devel tcl-devel tk-devel}
-%{?el5:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
-%{?el6:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel}
-%{?fc1:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
-%{?fc2:BuildRequires: fontconfig-devel XFree86-devel tcl-devel tk-devel}
-%{?fc3:BuildRequires: fontconfig-devel xorg-x11-devel tcl-devel tk-devel} 
-%{?fc4:BuildRequires: fontconfig-devel xorg-x11-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel guile-devel} 
-%{?fc5:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel guile-devel}
-%{?fc6:BuildRequires: fontconfig-devel libtool-ltdl libtool-ltdl-devel tcl-devel tk-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel guile-devel gmp-devel lua-devel pango-devel cairo-devel >= 1.1.10}
+%if 0%{?rhl}
+%define PERL    1
+%define TCL     1
+BuildRequires: XFree86-devel
+%endif
+
+%if 0%{?rhel}
+%define PERL    1
+%define TCL     1
+%if "%rhel" < "4"
+BuildRequires: XFree86-devel
+%endif
+%if "%rhel" >= "3"
+%define IPSEPCOLA --with-ipsepcola
+BuildRequires: fontconfig-devel tcl-devel tk-devel
+%endif
+%if "%rhel" >= "4"
+%define PERL    1
+%define PHP     1
+%define RUBY    1
+BuildRequires: xorg-x11-devel
+%endif
+%if "%rhel" >= "5"
+BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
+%endif
+%endif
+
+%if 0%{?fedora}
+%define PERL    1
+%define TCL     1
+BuildRequires: fontconfig-devel tcl-devel tk-devel 
+%if "%fedora" < "3"
+BuildRequires: XFree86-devel
+%endif
+%if "%fedora" == "3"
+BuildRequires: xorg-x11-devel
+%endif
+%if "%fedora" == "4"
+BuildRequires: xorg-x11-devel
+%endif
+%if "%fedora" >= "3"
+%define IPSEPCOLA --with-ipsepcola
+%endif
+%if "%fedora" >= "4"
+%define PHP     1
+%define RUBY    1
+%define GUILE   1
+BuildRequires: libtool-ltdl libtool-ltdl-devel guile-devel 
+%endif
+%if "%fedora" >= "5"
+%define SHARP   1
+%define JAVA    1
+%define OCAML   1
+%define PYTHON  1
+BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
+%endif
+%if "%fedora" >= "6"
+%define LUA     1
+BuildRequires: gmp-devel lua-devel pango-devel cairo-devel >= 1.1.10
+%endif
+%endif
 
 #-- graphviz rpm --------------------------------------------------
 Group:		Applications/Multimedia
@@ -248,7 +216,7 @@ Java extension for graphviz.
 %{_libdir}/graphviz/java/*
 %endif
 
-#-- graphviz-lua rpm ----------------------------------------------------------------
+#-- graphviz-lua rpm ----------------------------------------------
 %if %{LUA}
 %package lua
 Group:		Applications/Multimedia
