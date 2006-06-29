@@ -103,11 +103,11 @@ BuildRequires: libtool-ltdl libtool-ltdl-devel php-devel ruby-devel guile-devel
 %define JAVA    1
 %define OCAML   1
 %define PYTHON  1
-BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel libgcj-devel mono-core ocaml python-devel pango-devel cairo-devel
+BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel libgcj-devel mono-core ocaml python-devel
 %endif
 %if "%fedora" >= "6"
 %define LUA     1
-BuildRequires: gmp-devel lua-devel
+BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel
 %endif
 %endif
 
