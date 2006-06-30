@@ -43,6 +43,12 @@
 #ifdef HAVE_SYS_INOTIFY_H
 #include <sys/inotify.h>
 #endif
+#ifdef HAVE_ERRNO_H
+#include <errno.h>
+#endif
+#ifdef HAVE_GNOMEUI
+#include <libgnome/libgnome.h>
+#endif
 #include <cairo.h>
 #include <cairo-xlib.h>
 #include <X11/Xutil.h>

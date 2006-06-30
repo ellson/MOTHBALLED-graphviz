@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
 	$(INCLTDL) -I$(top_srcdir)/libltdl \
-	$(GNOMEUI_CFLAGS) -DGVLIBDIR=\"$(pkglibdir)\"
+	-DGVLIBDIR=\"$(pkglibdir)\"
 
 LIBS = $(LIBLTDL) $(SOCKET_LIBS)
 
