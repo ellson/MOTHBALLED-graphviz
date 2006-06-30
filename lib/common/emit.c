@@ -264,8 +264,6 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     job->canvasBox.UR.x = ROUND(job->margin.x) + imageSize.x;
     job->canvasBox.UR.y = ROUND(job->margin.y) + imageSize.y;
 
-/* FIXME - can't do this - must not overide window size */
-
     /* calculate job->width and job->height with margins */
     if (job->rotation) {
         job->width = job->canvasBox.UR.y + job->canvasBox.LL.y;

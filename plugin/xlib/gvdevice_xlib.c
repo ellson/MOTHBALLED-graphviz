@@ -194,8 +194,8 @@ static int handle_xlib_events (GVJ_t *firstjob, Display *dpy)
 		    pointer.x = (double)xev.xbutton.x;
 		    pointer.y = (double)xev.xbutton.y;
                     (job->callbacks->button_release)(job, xev.xbutton.button, pointer);
-		    if (job->selected_href && job->selected_href[0])
-		        browser_show(job);
+//		    if (job->selected_href && job->selected_href[0])
+//		        browser_show(job);
 		    rc++;
                     break;
                 case KeyPress:
