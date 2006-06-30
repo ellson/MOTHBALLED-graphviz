@@ -299,8 +299,8 @@ static void cairogen_ellipse(GVJ_t * job, pointf * A, int filled)
     cairo_get_matrix(cr, &matrix);
     cairo_translate(cr, A[0].x, -A[0].y);
 
-    rx = fabs(A[1].x - A[0].x);
-    ry = fabs(A[1].y - A[0].y);
+    rx = A[1].x - A[0].x;
+    ry = A[1].y - A[0].y;
     cairo_scale(cr, 1, ry / rx);
     cairo_move_to(cr, rx, 0);
     cairo_arc(cr, 0, 0, rx, 0, 2 * M_PI);

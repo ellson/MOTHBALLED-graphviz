@@ -91,7 +91,7 @@ static void svggen_bzptarray(GVJ_t * job, pointf * A, int n)
 
     c = 'M';			/* first point */
     for (i = 0; i < n; i++) {
-	svggen_printf(job, "%c%g,%g", c, A[i].x, A[i].y);
+	svggen_printf(job, "%c%g,%g", c, A[i].x, -A[i].y);
 	if (i == 0)
 	    c = 'C';		/* second point */
 	else
@@ -252,20 +252,8 @@ static void svggen_begin_graph(GVJ_t * job)
     }
     svggen_printf(job, " Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
 
-    if (ROUND(job->dpi.x) == POINTS_PER_INCH && ROUND(job->dpi.y) == POINTS_PER_INCH) {
-	svggen_printf(job, "<svg width=\"%gpt\" height=\"%gpt\"\n",
-		      job->width + job->margin.x * 2,
-		      job->height + job->margin.y * 2);
-    }
-    else {
-	svggen_printf(job, "<svg width=\"%gpx\" height=\"%gpx\"\n",
-	job->dpi.x * (job->width + job->margin.x * 2) / POINTS_PER_INCH,
-	job->dpi.y * (job->height + job->margin.y * 2) / POINTS_PER_INCH);
-    }
-    /* establish absolute units in points */
-    svggen_printf(job, " viewBox = \"%g %g %d %d\"\n",
-	    job->margin.x, job->margin.y,
-	    job->width, job->height);
+    svggen_printf(job, "<svg width=\"%dpx\" height=\"%dpx\"\n",
+	job->width, job->height);
     /* namespace of svg */
     svggen_fputs(job, " xmlns=\"http://www.w3.org/2000/svg\"");
     /* namespace of xlink */
@@ -310,8 +298,10 @@ static void svggen_begin_page(GVJ_t * job)
      * and it is the entire graph if we're not currently paging */
     svggen_printf(job, "<g id=\"graph%d\" class=\"graph\"",
 	    job->common->viewNum);
-    svggen_printf(job, " transform=\"scale(%f);rotate(-%d 0 0)\"",
-	    job->zoom, job->rotation);
+    svggen_printf(job,
+	    " transform=\"scale(%g %g) rotate(%d) translate(%g %g)\"",
+	    job->scale.x, job->scale.y, job->rotation,
+	    job->translation.x, job->translation.y);
     /* default style */
     svggen_fputs(job, " style=\"font-family:");
     svggen_fputs(job, job->style->fontfam);
@@ -423,9 +413,7 @@ static void svggen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     }
 
     svggen_printf(job, "<text text-anchor=\"%s\"", anchor);
-    if (job->rotation) 
-	svggen_printf(job, " transform=\"rotate(%d %g %g)\"", job->rotation, p.x, p.y);
-    svggen_printf(job, " x=\"%g\" y=\"%g\"", p.x, p.y);
+    svggen_printf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
     svggen_font(job);
     svggen_fputs(job, ">");
     svggen_fputs(job, xml_string(para->str));
@@ -437,9 +425,9 @@ static void svggen_ellipse(GVJ_t * job, pointf * A, int filled)
     /* A[] contains 2 points: the center and corner. */
     svggen_fputs(job, "<ellipse");
     svggen_grstyle(job, filled);
-    svggen_printf(job, " cx=\"%g\" cy=\"%g\"", A[0].x, A[0].y);
+    svggen_printf(job, " cx=\"%g\" cy=\"%g\"", A[0].x, -A[0].y);
     svggen_printf(job, " rx=\"%g\" ry=\"%g\"",
-		fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
+	    A[1].x - A[0].x, A[1].y - A[0].y);
     svggen_fputs(job, "/>\n");
 }
 
@@ -462,8 +450,8 @@ static void svggen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     svggen_grstyle(job, filled);
     svggen_fputs(job, " points=\"");
     for (i = 0; i < n; i++)
-	svggen_printf(job, "%g,%g ", A[i].x, A[i].y);
-    svggen_printf(job, "%g,%g", A[0].x, A[0].y);	/* because Adobe SVG is broken */
+	svggen_printf(job, "%g,%g ", A[i].x, -A[i].y);
+    svggen_printf(job, "%g,%g", A[0].x, -A[0].y);	/* because Adobe SVG is broken */
     svggen_fputs(job, "\"/>\n");
 }
 
@@ -475,7 +463,7 @@ static void svggen_polyline(GVJ_t * job, pointf * A, int n)
     svggen_grstyle(job, 0);
     svggen_fputs(job, " points=\"");
     for (i = 0; i < n; i++)
-	svggen_printf(job, "%g,%g ", A[i].x, A[i].y);
+	svggen_printf(job, "%g,%g ", A[i].x, -A[i].y);
     svggen_fputs(job, "\"/>\n");
 }
 
@@ -556,9 +544,10 @@ gvrender_engine_t svggen_engine = {
 
 gvrender_features_t svggen_features = {
     GVRENDER_DOES_TRUECOLOR
-        | GVRENDER_Y_GOES_DOWN, /* flags*/
+	| GVRENDER_Y_GOES_DOWN
+        | GVRENDER_DOES_TRANSFORM, /* flags*/
     DEFAULT_EMBED_MARGIN,	/* default margin - points */
-    {72.,72.},			/* default dpi */
+    {96.,96.},			/* default dpi */
     svggen_knowncolors,		/* knowncolors */
     sizeof(svggen_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */

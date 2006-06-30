@@ -264,6 +264,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     job->canvasBox.UR.x = ROUND(job->margin.x) + imageSize.x;
     job->canvasBox.UR.y = ROUND(job->margin.y) + imageSize.y;
 
+/* FIXME - can't do this - must not overide window size */
+
     /* calculate job->width and job->height with margins */
     if (job->rotation) {
         job->width = job->canvasBox.UR.y + job->canvasBox.LL.y;
@@ -1224,7 +1226,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     job->zoom = Z;              /* scaling factor */
     job->focus.x = x;           /* graph coord of focus - points */
     job->focus.y = y;
-    job->rotation = job->gvc->rotation * ((job->flags & GVRENDER_Y_GOES_DOWN) ? -1 : 1);
+    job->rotation = job->gvc->rotation;
 
 #if 0
     fprintf(stderr,"bb = %d,%d %d,%d size %d,%d (graph units)\n",
