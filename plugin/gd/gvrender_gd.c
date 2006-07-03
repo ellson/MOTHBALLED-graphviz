@@ -511,12 +511,10 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
 
 static void gdgen_polyline(GVJ_t * job, pointf * A, int n)
 {
-    gvstyle_t *style = job->style;
     gdImagePtr im = (gdImagePtr) job->surface;
     pointf p, p1;
     int i;
-    int dashstyle[20];
-    int pen, width;
+    int pen;
     gdImagePtr brush = NULL;
 
     if (!im)
