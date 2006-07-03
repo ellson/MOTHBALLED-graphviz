@@ -738,10 +738,14 @@ void sqrt_vec(int n, float *vec)
 void sqrt_vecf(int n, float *source, float *target)
 {
     int i;
+    double d;
     float v;
     for (i = 0; i < n; i++) {
-	if ((v = source[i]) >= 0.0)
-	    target[i] = (float) sqrt(v);
+	if ((v = source[i]) >= 0.0) {
+	    /* do this in two steps to avoid a bug in gcc-4.00 on AIX */
+	    d = sqrt(v);
+	    target[i] = (float) d;
+	}
     }
 }
 
@@ -749,10 +753,14 @@ void sqrt_vecf(int n, float *source, float *target)
 void invert_sqrt_vec(int n, float *vec)
 {
     int i;
+    double d;
     float v;
     for (i = 0; i < n; i++) {
-	if ((v = vec[i]) > 0.0)
-	    vec[i] = 1.0f / (float) sqrt(v);
+	if ((v = vec[i]) > 0.0) {
+	    /* do this in two steps to avoid a bug in gcc-4.00 on AIX */
+	    d = 1. / sqrt(v);
+	    vec[i] = (float) d;
+	}
     }
 }
 
