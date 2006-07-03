@@ -122,7 +122,7 @@ fi
 # ALL_LINGUAS=""
 
 dnl -----------------------------------
-# Static binaries 
+# Static/Shared binaries 
 
 AC_ARG_ENABLE(static,
         [AC_HELP_STRING([--enable-static], [build static executable])])
@@ -133,6 +133,16 @@ else
 	AC_DISABLE_STATIC
 fi
 AM_CONDITIONAL(ENABLE_STATIC, [test "x$enable_static" = "xyes"])
+
+AC_ARG_ENABLE(shared,
+        [AC_HELP_STRING([--enable-shared], [build shared executable])])
+if test "x$enable_shared" != "xno"; then
+	AC_ENABLE_SHARED
+	AC_DEFINE(ENABLE_SHARED,1,[Define if you want shared lib executables])
+else
+	AC_DISABLE_SHARED
+fi
+AM_CONDITIONAL(ENABLE_SHARED, [test "x$enable_shared" = "xyes"])
 
 dnl -----------------------------------
 dnl checks for various programs

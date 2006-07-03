@@ -15,7 +15,11 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt
 
 if ENABLE_STATIC
+if ENABLE_SHARED
 bin_PROGRAMS = dot dot_static
+else
+bin_PROGRAMS = dot_static
+endif
 else
 bin_PROGRAMS = dot
 endif
