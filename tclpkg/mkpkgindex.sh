@@ -9,9 +9,10 @@ if [ -z "$lib" ]
 then
     libBaseName=`basename $1 .la`
     case `uname` in
-        CYGWIN*) lib="${libBaseName}.dll" ;;
-        HP-UX*)  lib="${libBaseName}.sl" ;;
-        *)       lib="${libBaseName}.so" ;;
+        CYGWIN*) lib="${libBaseName}.dll"   ;;
+        Darwin*) lib="${libBaseName}.dylib" ;;
+        HP-UX*)  lib="${libBaseName}.sl"    ;;
+        *)       lib="${libBaseName}.so"    ;;
     esac
 fi
 
