@@ -88,7 +88,7 @@ libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la \
 	$(top_builddir)/lib/gd/libgvgd_C.la \
-	@PANGOCAIRO_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@
+	@PANGOCAIRO_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 else
 libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
@@ -103,7 +103,7 @@ libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la \
-	@PANGOCAIRO_LIBS@ @GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@
+	@PANGOCAIRO_LIBS@ @GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 endif
 else
 libtcldot_builtin_la_LIBADD = \
@@ -118,7 +118,7 @@ libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/pack/libpack_C.la \
-	@PANGOCAIRO_LIBS@ @ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@
+	@PANGOCAIRO_LIBS@ @ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 endif
 
 if WITH_TCL
