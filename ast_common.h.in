@@ -213,10 +213,9 @@ typedef int ssize_t;
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#else
+#endif
 #ifndef R_OK
 #define R_OK 4
-#endif
 #endif
 
 #endif /*AST_COMMON_H*/
