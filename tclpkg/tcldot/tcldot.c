@@ -619,6 +619,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
     char c, buf[256], **argv2;
     int i, j, length, argc2, rc;
     unsigned long id;
+    ClientData outfp;
     GVC_t *gvc = (GVC_t *) clientData;
 
     if (argc < 2) {
@@ -1265,9 +1266,9 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	gvc->job->output_lang =
             gvrender_select(gvc->job, gvc->job->output_langname);
 
-	if (Tcl_GetOpenFile (interp, argv[2], 1, 1,
-	     (ClientData *) &(gvc->job->output_file)) != TCL_OK)
+	if (Tcl_GetOpenFile (interp, argv[2], 1, 1, &outfp) != TCL_OK)
 	    return TCL_ERROR;
+	gvc->job->output_file = (FILE *)outfp;
 
 	/* make sure that layout is done  - unless canonical output */
 	if ((!GD_drawing(g) || argc > 4)
