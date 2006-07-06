@@ -1523,7 +1523,9 @@ void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para)
     gvrender_engine_t *gvre = job->render.engine;
     pointf PF;
 
-    if (para->str && para->str[0] && (job->style->pen != PEN_NONE)) {
+    if (para->str && para->str[0]
+	    && ( ! job-style  /* because of xdgen non-conformity */
+		|| job->style->pen != PEN_NONE)) {
 	if (job->flags & GVRENDER_DOES_TRANSFORM)
 	    PF = p;
 	else
