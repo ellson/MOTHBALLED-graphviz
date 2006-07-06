@@ -1269,6 +1269,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	if (Tcl_GetOpenFile (interp, argv[2], 1, 1, &outfp) != TCL_OK)
 	    return TCL_ERROR;
 	gvc->job->output_file = (FILE *)outfp;
+	gvc->job->output_filename = NULL;
 
 	/* make sure that layout is done  - unless canonical output */
 	if ((!GD_drawing(g) || argc > 4)

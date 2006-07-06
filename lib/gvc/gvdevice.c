@@ -98,12 +98,13 @@ void gvdevice_finalize(GVC_t * gvc)
 
     /* FIXME - file output should be its own device */
     while(active_job) {
-	if (active_job->output_file != stdout 
+	if (active_job->output_filename
+	  && active_job->output_file != stdout 
 	  && ! active_job->external_surface) {
 	    fclose(active_job->output_file);
 	    active_job->output_file = NULL;
+            active_job->output_filename = NULL;
 	}
-        active_job->output_filename = NULL;
 	active_job = active_job->next_active;
     }
 }
