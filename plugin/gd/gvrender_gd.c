@@ -590,10 +590,8 @@ static gvrender_features_t gdgen_features = {
 
 gvplugin_installed_t gvrender_gd_types[] = {
 #ifdef HAVE_LIBGD
-#if 0
     {FORMAT_GD, "gd", 1, &gdgen_engine, &gdgen_features_tc},
     {FORMAT_GD2, "gd2", 1, &gdgen_engine, &gdgen_features_tc},
-#endif
 #ifdef HAVE_GD_GIF
     {FORMAT_GIF, "gif", 1, &gdgen_engine, &gdgen_features},
 #endif
