@@ -364,8 +364,6 @@ static void gvrender_resolve_color(gvrender_features_t * features,
     }
 }
 
-#define EPSILON .0001
-
 void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 {
     GVC_t *gvc = job->gvc;
@@ -373,10 +371,6 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     gvrender_engine_t *gvre = job->render.engine;
     textlabel_t *lab;
     char *s;
-    double sx, sy;
-
-    sx = job->width / (job->zoom * 2.);
-    sy = job->height / (job->zoom * 2.);
 
     obj = push_obj_state(job);
     obj->g = g;
@@ -389,25 +383,6 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
         && (((s = agget(g, "href")) && s[0]) || ((s = agget(g, "URL")) && s[0]))) {
         obj->url = strdup_and_subst_graph(s, g);
     } 
-
-    job->compscale.x = job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
-    job->compscale.y = job->scale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
-    job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
-    if (job->rotation) {
-        job->clip.UR.x = job->focus.x + sy + EPSILON;
-        job->clip.UR.y = job->focus.y + sx + EPSILON;
-        job->clip.LL.x = job->focus.x - sy - EPSILON;
-        job->clip.LL.y = job->focus.y - sx - EPSILON;
-	job->offset.x = -job->focus.y * job->compscale.x + job->width * 3 / 2;
-	job->offset.y = -job->focus.x * job->compscale.y + job->height / 2.;
-    } else {
-        job->clip.UR.x = job->focus.x + sx + EPSILON;
-        job->clip.UR.y = job->focus.y + sy + EPSILON;
-        job->clip.LL.x = job->focus.x - sx - EPSILON;
-        job->clip.LL.y = job->focus.y - sy - EPSILON;
-	job->offset.x = -job->focus.x * job->compscale.x + job->width / 2.;
-	job->offset.y = -job->focus.y * job->compscale.y + job->height / 2.;
-    }
 
     /* init stack */
     gvc->SP = 0;
