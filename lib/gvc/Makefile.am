@@ -35,7 +35,7 @@ libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
-	@GNOMEUI_LIBS@ @EXPAT_LIBS@ @Z_LIBS@
+	@EXPAT_LIBS@
 
 #For use without plugins.
 #  so it needs to be linked with a preset table of builtins, e.g. dot_builtins.c,
