@@ -20,10 +20,6 @@
 #include <stdio.h>
 #include "agraph.h"
 
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
-
 #define NILgraph			NIL(Agraph_t*)
 #define NILnode				NIL(Agnode_t*)
 #define NILedge				NIL(Agedge_t*)

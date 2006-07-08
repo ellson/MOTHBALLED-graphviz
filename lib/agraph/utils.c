@@ -15,11 +15,7 @@
 **********************************************************/
 
 
-#include <aghdr.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "aghdr.h"
 
 static Agraph_t *Ag_dictop_G;
 
