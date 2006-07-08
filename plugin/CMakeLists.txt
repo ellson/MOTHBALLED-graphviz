@@ -7,4 +7,6 @@ SUBDIRS(
 	pango
 	dot_layout
 	neato_layout
+	xlib
+#gtk
 )
