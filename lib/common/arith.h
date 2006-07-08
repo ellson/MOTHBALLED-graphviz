@@ -54,17 +54,24 @@ extern "C" {
 #endif
 #define ABS(a)		((a) >= 0 ? (a) : -(a))
 
-#ifndef MAXINT
-#define	MAXINT		((int)(~(unsigned)0 >> 1))
+#ifndef INT_MAX
+#define	INT_MAX		((int)(~(unsigned)0 >> 1))
 #endif
+
+#ifndef INT_MIN
+#define INT_MIN		(-INT_MAX - 1)
+#endif
+
 #ifndef MAXSHORT
 #define	MAXSHORT	(0x7fff)
 #endif
+
 #ifndef MAXDOUBLE
-#define MAXDOUBLE   1.7976931348623157e+308
+#define MAXDOUBLE	1.7976931348623157e+308
 #endif
+
 #ifndef MAXFLOAT
-#define MAXFLOAT   ((float)3.40282347e+38)
+#define MAXFLOAT	((float)3.40282347e+38)
 #endif
 
 #ifdef BETWEEN
@@ -73,10 +80,11 @@ extern "C" {
 #define BETWEEN(a,b,c)	(((a) <= (b)) && ((b) <= (c)))
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#define M_PI		3.14159265358979323846
 #endif
+
 #ifndef PI
-#define PI M_PI
+#define PI		M_PI
 #endif
 
 #define ROUND(f)        ((f>=0)?(int)(f + .5):(int)(f - .5))

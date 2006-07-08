@@ -383,7 +383,7 @@ minmax_edges2(graph_t * g, point slen)
 static void 
 rank1(graph_t * g)
 {
-    int maxiter = MAXINT;
+    int maxiter = INT_MAX;
     int c;
     char *s;
 

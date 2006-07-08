@@ -306,7 +306,7 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
     node_t *n = NULL;
     edge_t *e;
     int lcnt, cnt;
-    int oldval = -MAXINT;
+    int oldval = -INT_MAX;
 #ifdef OLD
     double root_val;
 #endif
@@ -323,7 +323,7 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
     }
 
     /* construct basic chain to enforce left to right order */
-    oldval = -MAXINT;
+    oldval = -INT_MAX;
     lcnt = 0;
     for (p = (nitem *) dtflatten(list); p;
 	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
@@ -373,7 +373,7 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 	p->vnode = n;
 	ND_alg(n) = p;
     }
-    oldval = -MAXINT;
+    oldval = -INT_MAX;
     for (p = (nitem *) dtflatten(list); p;
 	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
 	if (oldval != p->val) {	/* new pos: reset nxt */
@@ -470,7 +470,7 @@ static void constrainX(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
 	cg = mkConstraintG(g, list, ifn, distX);
     else
 	cg = mkNConstraintG(g, list, ifn, distX);
-    rank(cg, 2, MAXINT);
+    rank(cg, 2, INT_MAX);
 
     p = nlist;
     for (i = 0; i < nnodes; i++) {
@@ -508,7 +508,7 @@ static void constrainY(graph_t* g, nitem* nlist, int nnodes, intersectfn ifn,
 	cg = mkConstraintG(g, list, ifn, distY);
     else
 	cg = mkNConstraintG(g, list, ifn, distY);
-    rank(cg, 2, MAXINT);
+    rank(cg, 2, INT_MAX);
 #ifdef DEBUG
     {
 	Agsym_t *mlsym = agedgeattr(cg, "minlen", "");

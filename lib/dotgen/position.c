@@ -136,7 +136,7 @@ void dot_position(graph_t * g)
 
 static int nsiter2(graph_t * g)
 {
-    int maxiter = MAXINT;
+    int maxiter = INT_MAX;
     char *s;
 
     if ((s = agget(g, "nslimit")))
@@ -864,8 +864,8 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
     point LL, UR;
 
     if (g == g->root) {
-	LL.x = MAXINT;
-	UR.x = -MAXINT;
+	LL.x = INT_MAX;
+	UR.x = -INT_MAX;
 	for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	    if (GD_rank(g)[r].n == 0)
 		continue;

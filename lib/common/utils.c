@@ -846,8 +846,8 @@ void compute_bb(graph_t * g)
     point pt, s2;
     int i, j;
 
-    bb.LL = pointof(MAXINT, MAXINT);
-    bb.UR = pointof(-MAXINT, -MAXINT);
+    bb.LL = pointof(INT_MAX, INT_MAX);
+    bb.UR = pointof(-INT_MAX, -INT_MAX);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	pt = coord(n);
 	s2.x = ND_xsize(n) / 2 + 1;

@@ -32,7 +32,7 @@ void bfs(int vertex, vtx_data * graph, int n, DistType * dist, Queue * Q)
 {
     int i;
     int closestVertex, neighbor;
-    DistType closestDist = MAXINT;
+    DistType closestDist = INT_MAX;
 
     /* initial distances with edge weights: */
     for (i = 0; i < n; i++)

@@ -244,7 +244,7 @@ static edge_t *enter_edge(edge_t * e)
 	outsearch = TRUE;
     }
     Enter = NULL;
-    Slack = MAXINT;
+    Slack = INT_MAX;
     Low = ND_low(v);
     Lim = ND_lim(v);
     if (outsearch)
@@ -428,8 +428,8 @@ static void scan_and_normalize(void)
 {
     node_t *n;
 
-    Minrank = MAXINT;
-    Maxrank = -MAXINT;
+    Minrank = INT_MAX;
+    Maxrank = -INT_MAX;
     for (n = GD_nlist(G); n; n = ND_next(n)) {
 	if (ND_node_type(n) == NORMAL) {
 	    Minrank = MIN(Minrank, ND_rank(n));

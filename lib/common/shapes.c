@@ -1066,14 +1066,14 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	    case 'e':
 		theta = -PI * 0.25;
 		defined = TRUE;
-		if (ictxt) p = compassPoint (ictxt, -MAXINT, MAXINT);
+		if (ictxt) p = compassPoint (ictxt, -INT_MAX, INT_MAX);
 		else p.x = b.UR.x;
 	        side = sides & (BOTTOM | RIGHT);
 		break;
 	    case 'w':
 		theta = -PI * 0.75;
 		defined = TRUE;
-		if (ictxt) p = compassPoint (ictxt, -MAXINT, -MAXINT);
+		if (ictxt) p = compassPoint (ictxt, -INT_MAX, -INT_MAX);
 		else p.x = b.LL.x;
 	        side = sides & (BOTTOM | LEFT);
 		break;
@@ -1106,14 +1106,14 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	    case 'e':
 		defined = TRUE;
 		theta = PI * 0.25;
-		if (ictxt) p = compassPoint (ictxt, MAXINT, MAXINT);
+		if (ictxt) p = compassPoint (ictxt, INT_MAX, INT_MAX);
 		else p.x = b.UR.x;
 	        side = sides & (TOP | RIGHT);
 		break;
 	    case 'w':
 		defined = TRUE;
 		theta = PI * 0.75;
-		if (ictxt) p = compassPoint (ictxt, MAXINT, -MAXINT);
+		if (ictxt) p = compassPoint (ictxt, INT_MAX, -INT_MAX);
 		else p.x = b.LL.x;
 	        side = sides & (TOP | LEFT);
 		break;

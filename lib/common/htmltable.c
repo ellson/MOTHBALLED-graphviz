@@ -1253,8 +1253,8 @@ void sizeArray(htmltbl_t * tbl)
     rowg = agopen("rowg", AGDIGRAPH);
     colg = agopen("colg", AGDIGRAPH);
     makeGraphs(tbl, rowg, colg);
-    rank(rowg, 2, MAXINT);
-    rank(colg, 2, MAXINT);
+    rank(rowg, 2, INT_MAX);
+    rank(colg, 2, INT_MAX);
     setSizes(tbl, rowg, colg);
     closeGraphs(rowg, colg);
 }

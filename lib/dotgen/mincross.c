@@ -414,7 +414,7 @@ static int mincross(graph_t * g, int startpass, int endpass)
 	cur_cross = best_cross = ncross(g);
 	save_best(g);
     } else
-	cur_cross = best_cross = MAXINT;
+	cur_cross = best_cross = INT_MAX;
     for (pass = startpass; pass <= endpass; pass++) {
 	if (pass <= 1) {
 	    maxthispass = MIN(4, MaxIter);
