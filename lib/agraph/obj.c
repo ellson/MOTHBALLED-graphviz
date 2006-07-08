@@ -15,11 +15,7 @@
 **********************************************************/
 
 
-#include <aghdr.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "aghdr.h"
 
 int agobjidcmpf(Dict_t * dict, void *arg0, void *arg1, Dtdisc_t * disc)
 {
