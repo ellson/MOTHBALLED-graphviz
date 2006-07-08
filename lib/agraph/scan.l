@@ -17,7 +17,6 @@
 
 /* requires flex (i.e. not lex)  */
 %{
-#include <string.h>
 #include <ctype.h>
 #include "grammar.h"
 #include "aghdr.h"

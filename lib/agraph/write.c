@@ -16,7 +16,6 @@
 
 
 #include <stdio.h>		/* need sprintf() */
-#include <string.h>
 #include <ctype.h>
 #include "aghdr.h"
 
