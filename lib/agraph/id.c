@@ -16,11 +16,7 @@
 
 
 #include <stdio.h>
-#include <aghdr.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "aghdr.h"
 
 /* a default ID allocator that works off the shared string lib */
 

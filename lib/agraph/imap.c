@@ -15,11 +15,7 @@
 **********************************************************/
 
 
-#include <aghdr.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "aghdr.h"
 
 typedef struct IMapEntry_s {
     Dtlink_t namedict_link;

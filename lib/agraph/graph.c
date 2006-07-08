@@ -16,11 +16,7 @@
 
 
 #define EXTERN
-#include <aghdr.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "aghdr.h"
 
 const char AgraphVersion[] = VERSION;
 
