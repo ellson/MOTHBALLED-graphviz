@@ -16,11 +16,7 @@
 
 
 #include <stdio.h>
-#include <agraph.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "agraph.h"
 
 static void prstats(Agraph_t * g, int verbose);
 static void do_it(Agraph_t * g, int dostat);
