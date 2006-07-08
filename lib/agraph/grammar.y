@@ -17,7 +17,6 @@
 %{
 
 #include <stdio.h>  /* SAFE */
-#include <string.h>
 #include "aghdr.h"	/* SAFE */
 
 #ifdef _WIN32
