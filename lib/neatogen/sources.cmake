@@ -1,0 +1,63 @@
+# $Id$ $Revision$
+
+INCLUDE_DIRECTORIES(
+	${neatogen_SRCDIR}
+	${top_SRCDIR}
+	${common_SRCDIR}
+	${gvc_SRCDIR}
+	${pack_SRCDIR}
+	${pathplan_SRCDIR}
+	${graph_SRCDIR}
+	${cdt_SRCDIR}
+	${vpsc_SRCDIR}
+)
+
+SET(ipsepcola_SRCS
+	${neatogen_SRCDIR}/constrained_majorization_ipsep.c
+	${neatogen_SRCDIR}/mosek_quad_solve.c
+	${neatogen_SRCDIR}/quad_prog_vpsc.c 
+)
+
+SET(neatogen_base_SRCS
+	${neatogen_SRCDIR}/adjust.c
+	${neatogen_SRCDIR}/circuit.c
+	${neatogen_SRCDIR}/edges.c
+	${neatogen_SRCDIR}/find_ints.c
+	${neatogen_SRCDIR}/geometry.c
+	${neatogen_SRCDIR}/heap.c
+	${neatogen_SRCDIR}/hedges.c
+	${neatogen_SRCDIR}/info.c
+	${neatogen_SRCDIR}/neatoinit.c
+	${neatogen_SRCDIR}/intersect.c
+	${neatogen_SRCDIR}/legal.c
+	${neatogen_SRCDIR}/lu.c
+	${neatogen_SRCDIR}/matinv.c
+	${neatogen_SRCDIR}/memory.c
+	${neatogen_SRCDIR}/poly.c
+	${neatogen_SRCDIR}/printvis.c
+	${neatogen_SRCDIR}/site.c
+	${neatogen_SRCDIR}/solve.c
+	${neatogen_SRCDIR}/neatosplines.c
+	${neatogen_SRCDIR}/stuff.c
+	${neatogen_SRCDIR}/voronoi.c
+	${neatogen_SRCDIR}/stress.c
+	${neatogen_SRCDIR}/kkutils.c
+	${neatogen_SRCDIR}/matrix_ops.c
+	${neatogen_SRCDIR}/embed_graph.c
+	${neatogen_SRCDIR}/dijkstra.c
+	${neatogen_SRCDIR}/conjgrad.c
+	${neatogen_SRCDIR}/pca.c
+	${neatogen_SRCDIR}/closest.c
+	${neatogen_SRCDIR}/bfs.c
+	${neatogen_SRCDIR}/constraint.c
+	${neatogen_SRCDIR}/quad_prog_solve.c
+	${neatogen_SRCDIR}/smart_ini_x.c
+	${neatogen_SRCDIR}/constrained_majorization.c
+	${neatogen_SRCDIR}/opt_arrangement.c
+	${neatogen_SRCDIR}/compute_hierarchy.c
+)
+
+SET(neatogen_SRCS
+	${neatogen_base_SRCS}
+	${ipsepcola_SRCS}
+)
