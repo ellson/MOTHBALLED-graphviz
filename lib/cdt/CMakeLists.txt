@@ -2,33 +2,20 @@
 ## Process this file with cmake to produce Makefile
 
 INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}
+)
+
+ADD_CUSTOM_COMMAND(
+	OUTPUT cdt.pdf
+	DEPENDS cdt.3
+	COMMAND groff -Tps -man cdt.3 | ps2pdf - cdt.pdf
 )
 
 ########### next target ###############
 
-SET(cdt_SRCS
-	dtclose.c
-	dtdisc.c
-	dtextract.c
-	dtflatten.c
-	dthash.c
-	dtlist.c
-	dtmethod.c
-	dtopen.c
-	dtrenew.c
-	dtrestore.c
-	dtsize.c
-	dtstat.c
-	dtstrhash.c
-	dttree.c
-	dtview.c
-	dtwalk.c
-)
+INCLUDE(${CMAKE_SOURCE_DIR}/lib/cdt/sources.cmake)
 
 ADD_LIBRARY(cdt STATIC ${cdt_SRCS})
-
 
 ########### install files ###############
 

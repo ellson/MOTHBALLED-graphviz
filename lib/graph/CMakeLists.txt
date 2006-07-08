@@ -2,36 +2,19 @@
 ## Process this file with cmake to produce Makefile
 
 INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/lib/cdt
 )
 
+ADD_CUSTOM_COMMAND(
+	OUTPUT graph.pdf
+	DEPENDS graph.3
+	COMMAND groff -Tps -man graph.3 | ps2pdf - graph.pdf
+)
+
 ########### next target ###############
 
-ADD_CUSTOM_COMMAND(
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        OUTPUT parser.c
-        OUTPUT parser.h
-	DEPENDS parser.y
-	COMMAND yacc -dv parser.y
-	COMMAND sed "s/yy/ag/g" < y.tab.c > parser.c
-	COMMAND sed "s/yy/ag/g" < y.tab.h > parser.h
-	COMMAND rm y.tab.c y.tab.h y.output
-)
-
-SET(graph_SRCS
-	attribs.c
-	agxbuf.c
-	edge.c
-	graph.c
-	graphio.c
-	lexer.c
-	node.c
-	parser.c
-	refstr.c
-	trie.c
-)
+INCLUDE(${CMAKE_SOURCE_DIR}/lib/graph/sources.cmake)
 
 ADD_LIBRARY(graph STATIC ${graph_SRCS})
 

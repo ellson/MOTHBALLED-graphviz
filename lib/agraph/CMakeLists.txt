@@ -2,59 +2,23 @@
 ## Process this file with cmake to produce Makefile
 
 INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/lib/cdt
 )
 
+ADD_CUSTOM_COMMAND(
+	OUTPUT agraph.pdf
+	DEPENDS agraph.3
+	COMMAND groff -Tps -man agraph.3 | ps2pdf - agraph.pdf
+)
+
+ADD_DEFINITIONS(-DVERSION='"1.0"')
 
 ########### next target ###############
 
-ADD_CUSTOM_COMMAND(
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	OUTPUT grammar.c
-	OUTPUT grammar.h
-	DEPENDS grammar.y
-	COMMAND yacc -dv grammar.y
-	COMMAND sed "s/yy/aag/g" < y.tab.c > grammar.c
-	COMMAND sed "s/yy/aag/g" < y.tab.h > grammar.h
-	COMMAND rm y.tab.c y.tab.h y.output
-)
-
-ADD_CUSTOM_COMMAND(
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	OUTPUT scan.c
-	DEPENDS scan.l
-	COMMAND flex -i scan.l
-	COMMAND sed "s/yy/aag/g" < lex.yy.c > scan.c
-	COMMAND rm lex.yy.c
-)
-
-SET(agraph_SRCS
-	agerror.c
-	apply.c
-	attr.c
-	edge.c
-	flatten.c
-	grammar.c
-	graph.c
-	id.c
-	imap.c
-	io.c
-	mem.c
-	node.c
-	obj.c
-	pend.c
-	rec.c
-	refstr.c
-	scan.c
-	subg.c
-	utils.c
-	write.c
-)
+INCLUDE(${CMAKE_SOURCE_DIR}/lib/agraph/sources.cmake)
 
 ADD_LIBRARY(agraph STATIC ${agraph_SRCS})
-
 
 ########### install files ###############
 

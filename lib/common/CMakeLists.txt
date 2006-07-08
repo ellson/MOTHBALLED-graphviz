@@ -2,7 +2,6 @@
 ## Process this file with cmake to produce Makefile
 
 INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/lib/gvc
 	${CMAKE_SOURCE_DIR}/lib/pack
@@ -13,87 +12,11 @@ INCLUDE_DIRECTORIES(
 	${CMAKE_SOURCE_DIR}/lib/gd
 )
 
-
 ########### next target ###############
 
-SET(common_SRCS
-	arrows.c
-	colxlate.c
-	fontmetrics.c
-	args.c
-	memory.c
-	globals.c
-	htmllex.c
-	htmltable.c
-	input.c
-	pointset.c
-	postproc.c
-	routespl.c
-	splines.c
-	psusershape.c
-	timing.c
-	labels.c
-	ns.c
-	shapes.c
-	utils.c
-	geom.c
-	output.c
-	emit.c
-)
-
-SET(codegen_SRCS
-	diagen.c
-	figgen.c
-	gdgen.c
-	hpglgen.c
-	mapgen.c
-	mifgen.c
-	mpgen.c
-	picgen.c
-	psgen.c
-	svggen.c
-	vrmlgen.c
-	vtxgen.c
-	xdgen.c
-)
-
-set(generated_SRCS
-	colortbl.h
-	htmlparse.h
-	htmlparse.c
-	ps.h
-)
+INCLUDE(${CMAKE_SOURCE_DIR}/lib/common/sources.cmake)
 
 ADD_LIBRARY(common STATIC ${generated_SRCS} ${common_SRCS} ${codegen_SRCS} )
-
-ADD_CUSTOM_COMMAND(
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	OUTPUT htmlparse.c
-	OUTPUT htmlparse.h
-	DEPENDS htmlparse.y
-	COMMAND yacc -dv htmlparse.y
-	COMMAND sed "s/yy/html/g" < y.tab.c > htmlparse.c
-	COMMAND sed "s/yy/html/g" < y.tab.h > htmlparse.h
-	COMMAND rm y.tab.c y.tab.h y.output
-)
-
-ADD_CUSTOM_COMMAND(
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	OUTPUT ps.h
-	DEPENDS ps.txt
-	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/stringize.awk ps.txt > ps.h
-)
-
-ADD_CUSTOM_COMMAND(
-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	OUTPUT colortbl.h
-	DEPENDS color_names
-	DEPENDS brewer_colors
-	COMMAND LC_COLLATE=C sort color_names > color_lib
-	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/brewer.awk brewer_colors >> color_lib
-	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/colortbl.awk color_lib > colortbl.h
-	COMMAND rm color_lib
-)
 
 ########### install files ###############
 

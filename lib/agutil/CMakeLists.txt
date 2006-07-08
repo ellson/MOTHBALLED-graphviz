@@ -2,19 +2,14 @@
 ## Process this file with cmake to produce Makefile
 
 INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}/lib/agraph
 	${CMAKE_SOURCE_DIR}/lib/cdt
 )
 
-
 ########### next target ###############
 
-SET(agutil_SRCS
-	dynattr.c
-	nodeq.c
-)
+INCLUDE(${CMAKE_SOURCE_DIR}/lib/agutil/sources.cmake)
 
 ADD_LIBRARY(agutil STATIC ${agutil_SRCS})
 
