@@ -17,7 +17,8 @@
 %{
 
 #include <stdio.h>  /* SAFE */
-#include <aghdr.h>	/* SAFE */
+#include <string.h>
+#include "aghdr.h"	/* SAFE */
 
 #ifdef _WIN32
 #define gettxt(a,b)	(b)

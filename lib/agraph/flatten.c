@@ -15,11 +15,7 @@
 **********************************************************/
 
 
-#include <aghdr.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "aghdr.h"
 
 void agflatten_elist(Dict_t * d, Dtlink_t ** lptr)
 {

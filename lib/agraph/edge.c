@@ -15,11 +15,7 @@
 **********************************************************/
 
 
-#include <aghdr.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "aghdr.h"
 
 #define IN_SET FALSE
 #define OUT_SET TRUE
