@@ -16,11 +16,7 @@
 
 
 #include <stdio.h>
-#include <aghdr.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "aghdr.h"
 
 static char *Message[] = {
     "",				/* 0 is not assigned   */

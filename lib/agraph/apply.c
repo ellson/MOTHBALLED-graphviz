@@ -15,11 +15,7 @@
 **********************************************************/
 
 
-#include	<aghdr.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "aghdr.h"
 
 /* The following functions take a graph and a template (node/edge/graph)
  * and return the object representing the template within the local graph.
