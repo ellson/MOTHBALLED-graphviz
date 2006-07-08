@@ -1,8 +1,11 @@
 # $Id$ $Revision$
 
-SET(agutil_SRCDIR ${CMAKE_SOURCE_DIR}/lib/agutil)
-
-INCLUDE_DIRECTORIES(${agutil_SRCDIR})
+INCLUDE_DIRECTORIES(
+	${top_SRCDIR}
+	${agutil_SRCDIR}
+	${agraph_SRCDIR}
+	${cdt_SRCDIR}
+)
 
 SET(agutil_SRCS
 	${agutil_SRCDIR}/dynattr.c
