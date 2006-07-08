@@ -15,11 +15,8 @@
 **********************************************************/
 
 
-#include <aghdr.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include <string.h>
+#include "aghdr.h"
 
 /*
  * reference counted strings.

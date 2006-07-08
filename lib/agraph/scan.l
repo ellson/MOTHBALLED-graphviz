@@ -17,9 +17,11 @@
 
 /* requires flex (i.e. not lex)  */
 %{
-#include <grammar.h>
-#include <aghdr.h>
+#include <string.h>
 #include <ctype.h>
+#include "grammar.h"
+#include "aghdr.h"
+
 #define GRAPH_EOF_TOKEN		'@'		/* lex class must be defined below */
 	/* this is a workaround for linux flex */
 static int line_num = 1;
