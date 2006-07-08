@@ -1,8 +1,10 @@
 # $Id$ $Revision$
 
-SET(agraph_SRCDIR ${CMAKE_SOURCE_DIR}/lib/agraph)
-
-INCLUDE_DIRECTORIES(${agraph_SRCDIR})
+INCLUDE_DIRECTORIES(
+	${top_SRCDIR}
+	${agraph_SRCDIR}
+	${cdt_SRCDIR}
+)
 
 ADD_CUSTOM_COMMAND(
 	WORKING_DIRECTORY ${agraph_SRCDIR}
@@ -30,7 +32,6 @@ SET(agraph_SRCS
 	${agraph_SRCDIR}/attr.c
 	${agraph_SRCDIR}/edge.c
 	${agraph_SRCDIR}/flatten.c
-	${agraph_SRCDIR}/grammar.c
 	${agraph_SRCDIR}/graph.c
 	${agraph_SRCDIR}/id.c
 	${agraph_SRCDIR}/imap.c
@@ -41,8 +42,10 @@ SET(agraph_SRCS
 	${agraph_SRCDIR}/pend.c
 	${agraph_SRCDIR}/rec.c
 	${agraph_SRCDIR}/refstr.c
-	${agraph_SRCDIR}/scan.c
 	${agraph_SRCDIR}/subg.c
 	${agraph_SRCDIR}/utils.c
 	${agraph_SRCDIR}/write.c
+	${agraph_SRCDIR}/grammar.c
+	${agraph_SRCDIR}/grammar.h
+	${agraph_SRCDIR}/scan.c
 )
