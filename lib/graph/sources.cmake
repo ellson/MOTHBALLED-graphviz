@@ -1,8 +1,10 @@
 # $Id$ $Revision$
 
-SET(graph_SRCDIR ${CMAKE_SOURCE_DIR}/lib/graph)
-
-INCLUDE_DIRECTORIES(${graph_SRCDIR})
+INCLUDE_DIRECTORIES(
+	${graph_SRCDIR}
+	${top_SRCDIR}
+	${cdt_SRCDIR}
+)
 
 ADD_CUSTOM_COMMAND(
 	WORKING_DIRECTORY ${graph_SRCDIR}
