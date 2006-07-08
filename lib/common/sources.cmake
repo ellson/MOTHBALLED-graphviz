@@ -1,8 +1,16 @@
 # $Id$ $Revision$
 
-SET(common_SRCDIR ${CMAKE_SOURCE_DIR}/lib/common)
-
-INCLUDE_DIRECTORIES(${common_SRCDIR})
+INCLUDE_DIRECTORIES(
+	${top_SRCDIR}
+	${common_SRCDIR}
+	${gvc_SRCDIR}
+	${pack_SRCDIR}
+	${fdpgen_SRCDIR}
+	${pathplan_SRCDIR}
+	${graph_SRCDIR}
+	${cdt_SRCDIR}
+	${gd_SRCDIR}
+)
 
 ADD_CUSTOM_COMMAND(
 	WORKING_DIRECTORY ${common_SRCDIR}
@@ -19,7 +27,7 @@ ADD_CUSTOM_COMMAND(
 	WORKING_DIRECTORY ${common_SRCDIR}
 	OUTPUT ps.h
 	DEPENDS ps.txt
-	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/stringize.awk ps.txt > ps.h
+	COMMAND awk -f ${awk_SRCDIR}/stringize.awk ps.txt > ps.h
 )
 
 ADD_CUSTOM_COMMAND(
@@ -28,8 +36,8 @@ ADD_CUSTOM_COMMAND(
 	DEPENDS color_names
 	DEPENDS brewer_colors
 	COMMAND LC_COLLATE=C sort color_names > color_lib
-	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/brewer.awk brewer_colors >> color_lib
-	COMMAND awk -f ${CMAKE_SOURCE_DIR}/awk/colortbl.awk color_lib > colortbl.h
+	COMMAND awk -f ${awk_SRCDIR}/brewer.awk brewer_colors >> color_lib
+	COMMAND awk -f ${awk_SRCDIR}/colortbl.awk color_lib > colortbl.h
 	COMMAND rm color_lib
 )
 
