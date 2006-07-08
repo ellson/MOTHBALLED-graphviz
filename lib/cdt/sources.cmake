@@ -1,8 +1,9 @@
 # $Id$ $Revision$
 
-SET(cdt_SRCDIR ${CMAKE_SOURCE_DIR}/lib/cdt)
-
-INCLUDE_DIRECTORIES(${cdt_SRCDIR})
+INCLUDE_DIRECTORIES(
+	${cdt_SRCDIR}
+	${top_SRCDIR}
+)
 
 SET(cdt_SRCS
 	${cdt_SRCDIR}/dtclose.c
