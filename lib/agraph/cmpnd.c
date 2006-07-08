@@ -15,11 +15,7 @@
 **********************************************************/
 
 
-#include <aghdr.h>
-
-#ifdef DMALLOC
-#include "dmalloc.h"
-#endif
+#include "aghdr.h"
 
 /*
  * provides "compound nodes" on top of base Libgraph.
