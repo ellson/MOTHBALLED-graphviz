@@ -15,7 +15,7 @@
 **********************************************************/
 
 #include <stdio.h>
-#include <aghdr.h>
+#include "aghdr.h"
 
 /* experimental ICONV code - probably should be removed - JCE */
 #undef HAVE_ICONV
@@ -24,10 +24,6 @@
 #include <iconv.h>
 #include <langinfo.h>
 #include <errno.h>
-#endif
-
-#ifdef DMALLOC
-#include "dmalloc.h"
 #endif
 
 #ifdef HAVE_ICONV
