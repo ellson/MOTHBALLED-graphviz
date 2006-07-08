@@ -15,7 +15,6 @@
 **********************************************************/
 
 
-#include <string.h>
 #include "aghdr.h"
 
 /* memory management discipline and entry points */
