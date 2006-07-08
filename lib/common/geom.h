@@ -48,6 +48,8 @@ typedef struct { pointf LL, UR; } boxf;
 #define EXPANDBP(b, p)	(b.LL.x = MIN(b.LL.x, p.x), b.LL.y = MIN(b.LL.y, p.y), b.UR.x = MAX(b.UR.x, p.x), b.UR.y = MAX(b.UR.y, p.y))
 /* expand box b0 as needed to enclose box b1 */
 #define EXPANDBB(b0, b1) (b0.LL.x = MIN(b0.LL.x, b1.LL.x), b0.LL.y = MIN(b0.LL.y, b1.LL.y), b0.UR.x = MAX(b0.UR.x, b1.UR.x), b0.UR.y = MAX(b0.UR.y, b1.UR.y))
+/* clip box b0 to fit box b1 */
+#define CLIPBB(b0, b1) (b0.LL.x = MAX(b0.LL.x, b1.LL.x), b0.LL.y = MAX(b0.LL.y, b1.LL.y), b0.UR.x = MIN(b0.UR.x, b1.UR.x), b0.UR.y = MIN(b0.UR.y, b1.UR.y))
 
 #define DIST2(p1,p2) (SQR((p1.x) - (p2.x))) + (SQR((p1.y) - (p2.y)))
 #define DIST(p1,p2) (sqrt(DIST2((p1),(p2))))
