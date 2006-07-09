@@ -6,7 +6,7 @@ ADD_CUSTOM_COMMAND(
 	COMMAND groff -Tps -man pathplan.3 | ps2pdf - pathplan.pdf
 )
 
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${pathplan_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(pathplan STATIC ${pathplan_SRCS})
