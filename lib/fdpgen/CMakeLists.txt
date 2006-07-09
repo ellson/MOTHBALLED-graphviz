@@ -1,6 +1,6 @@
 # $Id$ $Revision$
 
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${fdpgen_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(fdpgen STATIC ${fdpgen_SRCS})

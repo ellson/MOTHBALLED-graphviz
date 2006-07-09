@@ -1,6 +1,6 @@
 # $Id$ $Revision$
 
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${gd_SRCDIR}/sources.cmake)
 
 # rename private copy of libgd to libgvgd
