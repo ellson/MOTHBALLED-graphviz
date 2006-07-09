@@ -6,10 +6,7 @@ ADD_CUSTOM_COMMAND(
 	COMMAND groff -Tps -man agraph.3 | ps2pdf - agraph.pdf
 )
 
-# FIXME
-ADD_DEFINITIONS(-DVERSION='"1.0"')
-
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${agraph_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(agraph STATIC ${agraph_SRCS})
