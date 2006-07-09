@@ -1,6 +1,6 @@
 # $Id$ $Revision$
 
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${gvplugin_dot_layout_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(gvplugin_dot_layout MODULE ${gvplugin_dot_layout_SRCS})

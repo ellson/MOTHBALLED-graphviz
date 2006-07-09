@@ -1,6 +1,6 @@
 # $Id$ $Revision$
 
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${gvplugin_neato_layout_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(gvplugin_neato_layout MODULE ${gvplugin_neato_layout_SRCS})

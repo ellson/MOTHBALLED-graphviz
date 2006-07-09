@@ -1,6 +1,6 @@
 # $Id$ $Revision$
 
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${gvplugin_pango_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(gvplugin_pango MODULE ${gvplugin_pango_SRCS})
