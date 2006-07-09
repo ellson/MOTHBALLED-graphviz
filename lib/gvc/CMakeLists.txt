@@ -1,6 +1,6 @@
 # $Id$ $Revision$
 
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${gvc_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(gvc STATIC ${gvc_SRCS} no_builtins.c demand_loading.c)

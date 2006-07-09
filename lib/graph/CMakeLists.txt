@@ -6,7 +6,7 @@ ADD_CUSTOM_COMMAND(
 	COMMAND groff -Tps -man graph.3 | ps2pdf - graph.pdf
 )
 
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${graph_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(graph STATIC ${graph_SRCS})
