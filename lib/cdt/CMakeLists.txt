@@ -6,7 +6,7 @@ ADD_CUSTOM_COMMAND(
 	COMMAND groff -Tps -man cdt.3 | ps2pdf - cdt.pdf
 )
 
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${cdt_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(cdt STATIC ${cdt_SRCS})
