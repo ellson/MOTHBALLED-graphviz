@@ -1,6 +1,6 @@
 # $Id$ $Revision$
 
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${common_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(common STATIC ${common_SRCS})
