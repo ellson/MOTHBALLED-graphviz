@@ -6,7 +6,7 @@ ADD_CUSTOM_COMMAND(
 	COMMAND groff -Tps -man pack.3 | ps2pdf - pack.pdf
 )
 
-INCLUDE(${CMAKE_SOURCE_DIR}/cmake/directories.cmake)
+INCLUDE(SRCDIRs)
 INCLUDE(${pack_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(pack STATIC ${pack_SRCS})
