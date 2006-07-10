@@ -134,9 +134,9 @@ static void mp_set_color(char *name)
     gvcolor_t color;
 
     if (strcmp(name, S[SP].color)) {
-	colorxlate(name, &color, HSV_DOUBLE);
+	colorxlate(name, &color, HSVA_DOUBLE);
 	fprintf(Output_file, "%% GV set color: %.3f %.3f %.3f %scolor\n",
-		color.u.HSV[0], color.u.HSV[1], color.u.HSV[2], op[Obj]);
+		color.u.HSVA[0], color.u.HSVA[1], color.u.HSVA[2], op[Obj]);
     }
     S[SP].color = name;
 }

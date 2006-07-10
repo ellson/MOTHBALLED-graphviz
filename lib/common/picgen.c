@@ -455,9 +455,9 @@ static void pic_set_color(char *name)
     gvcolor_t color;
 
     S[SP].color = name;
-    colorxlate(name, &color, HSV_DOUBLE);
+    colorxlate(name, &color, HSVA_DOUBLE);
     /* just v used to set grayscale value */
-    fprintf(Output_file, "setfillval %f\n", color.u.HSV[2]);
+    fprintf(Output_file, "setfillval %f\n", color.u.HSVA[2]);
 }
 
 static void pic_set_style(char **s)
@@ -535,8 +535,8 @@ static void pic_polygon(point * A, int n, int filled)
 	if (filled) {
 	    gvcolor_t color;
 
-	    colorxlate(S[SP].color, &color, HSV_DOUBLE);
-	    fprintf(Output_file, "setfillval %f\n", color.u.HSV[2]);
+	    colorxlate(S[SP].color, &color, HSVA_DOUBLE);
+	    fprintf(Output_file, "setfillval %f\n", color.u.HSVA[2]);
 	}
 	fprintf(Output_file, "box attrs%d %swid %.5f ht %.5f at (%.5f,%.5f);\n", SP, filled ? "fill " : "", Scale * fabs(pf1.x - pf2.x), Scale * fabs(pf1.y - pf2.y),	/* width, height */
 		Scale * (pf1.x + pf2.x) / 2.0, Scale * (pf1.y + pf2.y) / 2.0);	/* center coordinates */

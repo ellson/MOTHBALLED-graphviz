@@ -23,20 +23,21 @@
 extern "C" {
 #endif
 
-typedef struct hsbcolor_t {
+typedef struct hsvrgbacolor_t {
     char *name;
-    unsigned char h, s, b;
-} hsbcolor_t;
+    unsigned char h, s, v;
+    unsigned char r, g, b, a;
+} hsvrgbacolor_t;
 
 /* possible representations of color in gvcolor_t */
-typedef enum { HSV_DOUBLE, RGBA_BYTE, RGBA_WORD, CMYK_BYTE,
+typedef enum { HSVA_DOUBLE, RGBA_BYTE, RGBA_WORD, CMYK_BYTE,
 		RGBA_DOUBLE, COLOR_STRING, COLOR_INDEX } color_type_t;
 
 /* gvcolor_t can hold a color spec in a choice or representations */
 typedef struct color_s {
     union {
 	double RGBA[4];
-	double HSV[3];
+	double HSVA[4];
 	unsigned char rgba[4];
 	unsigned char cmyk[4];
 	int rrggbbaa[4];

@@ -60,9 +60,10 @@ static void psgen_begin_job(GVJ_t * job)
 {
     last_fontname = NULL;
     last_fontsize = 0.0;
-    last_color.u.HSV[0] = 0;
-    last_color.u.HSV[1] = 0;
-    last_color.u.HSV[2] = 0;
+    last_color.u.HSVA[0] = 0.0;
+    last_color.u.HSVA[1] = 0.0;
+    last_color.u.HSVA[2] = 0.0;
+    last_color.u.HSVA[3] = 1.0;  /* opaque */
 
     fprintf(job->output_file, "%%!PS-Adobe-2.0\n");
     fprintf(job->output_file, "%%%%Creator: %s version %s (%s)\n",
@@ -117,6 +118,10 @@ static void psgen_begin_page(GVJ_t * job)
 {
     box pbr = job->pageBoundingBox;
 
+// FIXME
+    point page = {0,0};
+    int N_pages = 0;
+
     fprintf(job->output_file, "%%%%Page: %d %d\n",
 	    job->common->viewNum + 1, job->common->viewNum + 1);
     if (job->common->show_boxes == NULL)
@@ -124,13 +129,19 @@ static void psgen_begin_page(GVJ_t * job)
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
     fprintf(job->output_file, "%%%%PageOrientation: %s\n",
 	    (job->rotation ? "Landscape" : "Portrait"));
+#if 0
+   if (Output_lang == PDF)
+        fprintf(Output_file, "<< /PageSize [%d %d] >> setpagedevice\n",
+            sz.x, sz.y);
+#endif
     if (job->common->show_boxes == NULL)
         fprintf(job->output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
-	fprintf(job->output_file, "gsave %g %g set_scale %d rotate %g %g translate\n",
-		job->scale.x, job->scale.y,
-		job->rotation,
-		job->translation.x, job->translation.y);
+    fprintf(job->output_file, "%d %d %d beginpage\n", page.x, page.y, N_pages);
+    fprintf(job->output_file, "%g %g set_scale %d rotate %g %g translate\n",
+	    job->scale.x, job->scale.y,
+	    job->rotation,
+	    job->translation.x, job->translation.y);
 
     /*  Define the size of the PS canvas  */
     if (job->render.id == FORMAT_PS2) {
@@ -145,8 +156,8 @@ static void psgen_begin_page(GVJ_t * job)
 
 static void psgen_end_page(GVJ_t * job)
 {
-    if (job->common->show_boxes)
-	cat_libfile(job->output_file, NULL, job->common->show_boxes + 1);
+//    if (job->common->show_boxes)
+//	cat_libfile(job->output_file, NULL, job->common->show_boxes + 1);
     /* the showpage is really a no-op, but at least one PS processor
      * out there needs to see this literal token.  endpage does the real work.
      */
@@ -281,21 +292,24 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 	if (job->obj->g)
 	   objtype = "graph";
 	else if (job->obj->sg)
-	   objtype = "cluster";
+	   objtype = "graph";
 	else if (job->obj->n)
 	   objtype = "node";
 	else if (job->obj->e)
 	   objtype = "edge";
 	else
 	   objtype = "sethsb";
-	if ( last_color.u.HSV[0] != color->u.HSV[0]
-	  || last_color.u.HSV[1] != color->u.HSV[1]
-	  || last_color.u.HSV[2] != color->u.HSV[2]) {
+	if ( last_color.u.HSVA[0] != color->u.HSVA[0]
+	  || last_color.u.HSVA[1] != color->u.HSVA[1]
+	  || last_color.u.HSVA[2] != color->u.HSVA[2]
+	  || last_color.u.HSVA[3] != color->u.HSVA[3]
+	  || (job->obj->g && (job->obj->g == job->obj->g->root))) {
 	    fprintf(job->output_file, "%.3f %.3f %.3f %scolor\n",
-		color->u.HSV[0], color->u.HSV[1], color->u.HSV[2], objtype);
-	    last_color.u.HSV[0] = color->u.HSV[0];
-	    last_color.u.HSV[1] = color->u.HSV[1];
-	    last_color.u.HSV[2] = color->u.HSV[2];
+		color->u.HSVA[0], color->u.HSVA[1], color->u.HSVA[2], objtype);
+	    last_color.u.HSVA[0] = color->u.HSVA[0];
+	    last_color.u.HSVA[1] = color->u.HSVA[1];
+	    last_color.u.HSVA[2] = color->u.HSVA[2];
+	    last_color.u.HSVA[3] = color->u.HSVA[3];
 	}
     }
 }
@@ -304,6 +318,9 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     double adj, sz;
     char *str;
+
+    if (job->style->pencolor.u.HSVA[3] < .5)
+	return;  /* skip transparent text */
 
     ps_set_color(job, &(job->style->pencolor));
     if (para->fontname) {
@@ -354,15 +371,17 @@ static void psgen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     /* A[] contains 2 points: the center and corner. */
 
-    if (filled) {
+    if (filled && job->style->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->style->fillcolor));
 	fprintf(job->output_file, "%g %g %g %g ellipse_path fill\n",
 	    A[0].x, A[0].y, fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
     }
-    ps_set_pen_style(job);
-    ps_set_color(job, &(job->style->pencolor));
-    fprintf(job->output_file, "%g %g %g %g ellipse_path stroke\n",
-	A[0].x, A[0].y, fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
+    if (job->style->pencolor.u.HSVA[3] > .5) {
+        ps_set_pen_style(job);
+        ps_set_color(job, &(job->style->pencolor));
+        fprintf(job->output_file, "%g %g %g %g ellipse_path stroke\n",
+	    A[0].x, A[0].y, fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
+    }
 }
 
 static void
@@ -371,7 +390,7 @@ psgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 {
     int j;
 
-    if (filled) {
+    if (filled && job->style->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->style->fillcolor));
 	fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
 	for (j = 1; j < n; j += 3)
@@ -380,45 +399,51 @@ psgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 		A[j + 2].y);
 	fprintf(job->output_file, "closepath fill\n");
     }
-    ps_set_pen_style(job);
-    ps_set_color(job, &(job->style->pencolor));
-    fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
-    for (j = 1; j < n; j += 3)
-	fprintf(job->output_file, "%g %g %g %g %g %g curveto\n",
-		A[j].x, A[j].y, A[j + 1].x, A[j + 1].y, A[j + 2].x,
-		A[j + 2].y);
-    fprintf(job->output_file, "stroke\n");
+    if (job->style->pencolor.u.HSVA[3] > .5) {
+        ps_set_pen_style(job);
+        ps_set_color(job, &(job->style->pencolor));
+        fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
+        for (j = 1; j < n; j += 3)
+	    fprintf(job->output_file, "%g %g %g %g %g %g curveto\n",
+		    A[j].x, A[j].y, A[j + 1].x, A[j + 1].y, A[j + 2].x,
+		    A[j + 2].y);
+        fprintf(job->output_file, "stroke\n");
+    }
 }
 
 static void psgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
     int j;
 
-    if (filled) {
+    if (filled && job->style->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->style->fillcolor));
 	fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
 	for (j = 1; j < n; j++)
 	    fprintf(job->output_file, "%g %g lineto\n", A[j].x, A[j].y);
 	fprintf(job->output_file, "closepath fill\n");
     }
-    ps_set_pen_style(job);
-    ps_set_color(job, &(job->style->pencolor));
-    fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
-    for (j = 1; j < n; j++)
-	fprintf(job->output_file, "%g %g lineto\n", A[j].x, A[j].y);
-    fprintf(job->output_file, "closepath stroke\n");
+    if (job->style->pencolor.u.HSVA[3] > .5) {
+        ps_set_pen_style(job);
+        ps_set_color(job, &(job->style->pencolor));
+        fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
+        for (j = 1; j < n; j++)
+	    fprintf(job->output_file, "%g %g lineto\n", A[j].x, A[j].y);
+        fprintf(job->output_file, "closepath stroke\n");
+    }
 }
 
 static void psgen_polyline(GVJ_t * job, pointf * A, int n)
 {
     int j;
 
-    ps_set_pen_style(job);
-    ps_set_color(job, &(job->style->pencolor));
-    fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
-    for (j = 1; j < n; j++)
-	fprintf(job->output_file, "%g %g lineto\n", A[j].x, A[j].y);
-    fprintf(job->output_file, "stroke\n");
+    if (job->style->pencolor.u.HSVA[3] > .5) {
+        ps_set_pen_style(job);
+        ps_set_color(job, &(job->style->pencolor));
+        fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
+        for (j = 1; j < n; j++)
+	    fprintf(job->output_file, "%g %g lineto\n", A[j].x, A[j].y);
+        fprintf(job->output_file, "stroke\n");
+    }
 }
 
 static void psgen_comment(GVJ_t * job, char *str)
@@ -465,7 +490,7 @@ static gvrender_features_t psgen_features = {
     {72.,72.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
-    HSV_DOUBLE,			/* color_type */
+    HSVA_DOUBLE,		/* color_type */
     NULL,                       /* device */
     "ps",                       /* gvloadimage target for usershapes */
 };

@@ -12,7 +12,7 @@
 # *              AT&T Research, Florham Park NJ             *
 # **********************************************************/
 
-function rgb_to_hsb(r,g,b) {
+function rgb_to_hsv(r,g,b) {
 	r = r / 255.0; g = g / 255.0; b = b / 255.0;
 	max = r; if (max < g) max = g; if (max < b) max = b;
 	min = r; if (min > g) min = g; if (min > b) min = b;
@@ -38,11 +38,11 @@ function rgb_to_hsb(r,g,b) {
 	v = v * 255.0;
 }
 
-BEGIN	{ s = ARGV[1]; gsub("\\.","_",s); printf("hsbcolor_t %s[] = {\n",s); }
+BEGIN	{ s = ARGV[1]; gsub("\\.","_",s); printf("hsvrgbacolor_t %s[] = {\n",s); }
 /^$/	{ next; }
 /^#/	{ next; }
 		{
-			rgb_to_hsb($2,$3,$4);
-			printf("{\"%s\",%d,%d,%d},\n",$1,h,s,v);
+			rgb_to_hsv($2,$3,$4);
+			printf("{\"%s\",%d,%d,%d,%d,%d,%d,%d},\n",$1,h,s,v,$2,$3,$4,$5);
 		}
 END		{ printf("};\n"); }

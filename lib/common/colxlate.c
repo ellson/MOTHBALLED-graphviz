@@ -129,10 +129,10 @@ static void rgb2cmyk(double r, double g, double b, double *c, double *m,
 static int colorcmpf(const void *p0, const void *p1)
 {
     /* fast comparison of first character */
-    int i = (((hsbcolor_t *) p0)->name[0] - ((hsbcolor_t *) p1)->name[0]);
+    int i = (((hsvrgbacolor_t *) p0)->name[0] - ((hsvrgbacolor_t *) p1)->name[0]);
     /* if first character matches then compare full color name */
     return (i ? i :
-	    strcmp(((hsbcolor_t *) p0)->name, ((hsbcolor_t *) p1)->name));
+	    strcmp(((hsvrgbacolor_t *) p0)->name, ((hsvrgbacolor_t *) p1)->name));
 }
 
 char *canontoken(char *str)
@@ -237,13 +237,13 @@ static char* resolveColor (char* str)
 
 int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
 {
-    static hsbcolor_t *last;
+    static hsvrgbacolor_t *last;
     static unsigned char *canon;
     static int allocated;
     unsigned char *p, *q;
-    hsbcolor_t fake;
+    hsvrgbacolor_t fake;
     unsigned char c;
-    double H, S, V, R, G, B;
+    double H, S, V, A, R, G, B;
     double C, M, Y, K;
     unsigned int r, g, b, a;
     int len, rc;
@@ -260,14 +260,16 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
     if ((*p == '#')
 	&& (sscanf((char *) p, "#%2x%2x%2x%2x", &r, &g, &b, &a) >= 3)) {
 	switch (target_type) {
-	case HSV_DOUBLE:
+	case HSVA_DOUBLE:
 	    R = (double) r / 255.0;
 	    G = (double) g / 255.0;
 	    B = (double) b / 255.0;
+	    A = (double) a / 255.0;
 	    rgb2hsv(R, G, B, &H, &S, &V);
-	    color->u.HSV[0] = H;
-	    color->u.HSV[1] = S;
-	    color->u.HSV[2] = V;
+	    color->u.HSVA[0] = H;
+	    color->u.HSVA[1] = S;
+	    color->u.HSVA[2] = V;
+	    color->u.HSVA[3] = A;
 	    break;
 	case RGBA_BYTE:
 	    color->u.rgba[0] = r;
@@ -330,10 +332,11 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
 	    S = MAX(MIN(S, 1.0), 0.0);
 	    V = MAX(MIN(V, 1.0), 0.0);
 	    switch (target_type) {
-	    case HSV_DOUBLE:
-		color->u.HSV[0] = H;
-		color->u.HSV[1] = S;
-		color->u.HSV[2] = V;
+	    case HSVA_DOUBLE:
+		color->u.HSVA[0] = H;
+		color->u.HSVA[1] = S;
+		color->u.HSVA[2] = V;
+		color->u.HSVA[3] = 1.0; /* opaque */
 		break;
 	    case RGBA_BYTE:
 		hsv2rgb(H, S, V, &R, &G, &B);
@@ -380,59 +383,47 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
     if ((last == NULL)
 	|| (last->name[0] != fake.name[0])
 	|| (strcmp(last->name, fake.name))) {
-	last = (hsbcolor_t *) bsearch((void *) &fake,
+	last = (hsvrgbacolor_t *) bsearch((void *) &fake,
 				      (void *) color_lib,
 				      sizeof(color_lib) /
-				      sizeof(hsbcolor_t), sizeof(fake),
+				      sizeof(hsvrgbacolor_t), sizeof(fake),
 				      colorcmpf);
     }
     if (last != NULL) {
 	switch (target_type) {
-	case HSV_DOUBLE:
-	    color->u.HSV[0] = ((double) last->h) / 255.0;
-	    color->u.HSV[1] = ((double) last->s) / 255.0;
-	    color->u.HSV[2] = ((double) last->b) / 255.0;
+	case HSVA_DOUBLE:
+	    color->u.HSVA[0] = ((double) last->h) / 255.0;
+	    color->u.HSVA[1] = ((double) last->s) / 255.0;
+	    color->u.HSVA[2] = ((double) last->b) / 255.0;
+	    color->u.HSVA[3] = ((double) last->a) / 255.0;
 	    break;
 	case RGBA_BYTE:
-	    H = (last->h) / 255.0;
-	    S = (last->s) / 255.0;
-	    V = (last->b) / 255.0;
-	    hsv2rgb(H, S, V, &R, &G, &B);
-	    color->u.rgba[0] = (int) (R * 255);
-	    color->u.rgba[1] = (int) (G * 255);
-	    color->u.rgba[2] = (int) (B * 255);
-	    color->u.rgba[3] = 255;	/* opaque */
+	    color->u.rgba[0] = last->r;
+	    color->u.rgba[1] = last->g;
+	    color->u.rgba[2] = last->b;
+	    color->u.rgba[3] = last->a;
 	    break;
 	case CMYK_BYTE:
-	    H = (last->h) / 255.0;
-	    S = (last->s) / 255.0;
-	    V = (last->b) / 255.0;
-	    hsv2rgb(H, S, V, &R, &G, &B);
+	    R = (last->r) / 255.0;
+	    G = (last->g) / 255.0;
+	    B = (last->b) / 255.0;
 	    rgb2cmyk(R, G, B, &C, &M, &Y, &K);
-	    color->u.cmyk[0] = (int) C *255;
-	    color->u.cmyk[1] = (int) M *255;
-	    color->u.cmyk[2] = (int) Y *255;
-	    color->u.cmyk[3] = (int) K *255;
+	    color->u.cmyk[0] = (int) C * 255;
+	    color->u.cmyk[1] = (int) M * 255;
+	    color->u.cmyk[2] = (int) Y * 255;
+	    color->u.cmyk[3] = (int) K * 255;
 	    break;
 	case RGBA_WORD:
-	    H = (last->h) / 255.0;
-	    S = (last->s) / 255.0;
-	    V = (last->b) / 255.0;
-	    hsv2rgb(H, S, V, &R, &G, &B);
-	    color->u.rrggbbaa[0] = (int) (R * 65535);
-	    color->u.rrggbbaa[1] = (int) (G * 65535);
-	    color->u.rrggbbaa[2] = (int) (B * 65535);
-	    color->u.rrggbbaa[3] = 65535;	/* opaque */
+	    color->u.rrggbbaa[0] = last->r * 65535 / 255;
+	    color->u.rrggbbaa[1] = last->g * 65535 / 255;
+	    color->u.rrggbbaa[2] = last->b * 65535 / 255;
+	    color->u.rrggbbaa[3] = last->a * 65535 / 255;
 	    break;
 	case RGBA_DOUBLE:
-	    H = (last->h) / 255.0;
-	    S = (last->s) / 255.0;
-	    V = (last->b) / 255.0;
-	    hsv2rgb(H, S, V, &R, &G, &B);
-	    color->u.RGBA[0] = R;
-	    color->u.RGBA[1] = G;
-	    color->u.RGBA[2] = B;
-	    color->u.RGBA[3] = 1.0;	/* opaque */
+	    color->u.RGBA[0] = last->r / 255.0;
+	    color->u.RGBA[1] = last->g / 255.0;
+	    color->u.RGBA[2] = last->b / 255.0;
+	    color->u.RGBA[3] = last->a / 255.0;
 	    break;
 	case COLOR_STRING:
 	    break;
@@ -445,8 +436,9 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
     /* if we're still here then we failed to find a valid color spec */
     rc = COLOR_UNKNOWN;
     switch (target_type) {
-    case HSV_DOUBLE:
-	color->u.HSV[0] = color->u.HSV[1] = color->u.HSV[2] = 0.0;
+    case HSVA_DOUBLE:
+	color->u.HSVA[0] = color->u.HSVA[1] = color->u.HSVA[2] = 0.0;
+	color->u.HSVA[3] = 1.0; /* opaque */
 	break;
     case RGBA_BYTE:
 	color->u.rgba[0] = color->u.rgba[1] = color->u.rgba[2] = 0;
@@ -457,8 +449,7 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
 	    color->u.cmyk[1] = color->u.cmyk[2] = color->u.cmyk[3] = 0;
 	break;
     case RGBA_WORD:
-	color->u.rrggbbaa[0] =
-	    color->u.rrggbbaa[1] = color->u.rrggbbaa[2] = 0;
+	color->u.rrggbbaa[0] = color->u.rrggbbaa[1] = color->u.rrggbbaa[2] = 0;
 	color->u.rrggbbaa[3] = 65535;	/* opaque */
 	break;
     case RGBA_DOUBLE:
