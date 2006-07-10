@@ -1,5 +1,4 @@
 # $Id$ $Revision$
-## Process this file with cmake to produce Makefile
 
 SET(BASE_INCLUDES
 	${CMAKE_CURRENT_SOURCE_DIR}
@@ -11,12 +10,162 @@ SET(BASE_INCLUDES
 	${CMAKE_SOURCE_DIR}/lib/pathplan
 )
 
-SET(BASE_SRCS
-	gv.cpp
+INCLUDE( FindSWIG )
+#IF(${SWIG_FOUND})
+########### next target #################
+
+#INCLUDE( FindCSHARP )
+#IF(${CSHARP_FOUND})
+#INCLUDE_DIRECTORIES(
+#	${BASE_INCLUDES}
+#	${CSHARP_INCLUDES}
+#)
+#ADD_CUSTOM_COMMAND(
+#	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#	OUTPUT gv_sharp.cpp
+#	DEPENDS gv.i
+#	COMMAND ${SWIG_EXECUTABLE} -c++ -csharp -o gv_sharp.cpp gv.i
+#)
+#
+#SET(gv_sharp_SRCS
+#	gv.cpp
+#	gv_sharp.cpp
+#)
+#ADD_LIBRARY(gv_sharp MODULE ${gv_sharp_SRCS})
+#ENDIF(${CSHARP_FOUND})
+
+########### next target #################
+
+#INCLUDE( FindGUILE )
+#IF(${GUILE_FOUND})
+#INCLUDE_DIRECTORIES(
+#	${BASE_INCLUDES}
+#	${GUILE_INCLUDES}
+#)
+#ADD_CUSTOM_COMMAND(
+#	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#	OUTPUT gv_guile.cpp
+#	DEPENDS gv.i
+#	COMMAND ${SWIG_EXECUTABLE} -c++ -guile -o gv_guile.cpp gv.i
+#)
+#
+#SET(gv_guile_SRCS
+#	gv.cpp
+#	gv_guile.cpp
+#)
+#ADD_LIBRARY(gv_guile MODULE ${gv_guile_SRCS})
+#ENDIF(${GUILE_FOUND})
+
+########### next target #################
+
+INCLUDE( FindJava )
+IF(${JAVA_FOUND})
+INCLUDE_DIRECTORIES(
+	${BASE_INCLUDES}
+	${JAVA_INCLUDES}
+)
+ADD_CUSTOM_COMMAND(
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT gv_java.cpp
+	DEPENDS gv.i
+	COMMAND ${SWIG_EXECUTABLE} -c++ -java -o gv_java.cpp gv.i
 )
 
-INCLUDE( FindSWIG )
-IF(${SWIG_FOUND})
+SET(gv_java_SRCS
+	gv.cpp
+	gv_java.cpp
+)
+ADD_LIBRARY(gv_java MODULE ${gv_java_SRCS})
+ENDIF(${JAVA_FOUND})
+
+########### next target #################
+
+#INCLUDE( FindLUA )
+#IF(${LUA_FOUND})
+#INCLUDE_DIRECTORIES(
+#	${BASE_INCLUDES}
+#	${LUA_INCLUDES}
+#)
+#ADD_CUSTOM_COMMAND(
+#	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#	OUTPUT gv_lua.cpp
+#	DEPENDS gv.i
+#	COMMAND ${SWIG_EXECUTABLE} -c++ -lua -o gv_lua.cpp gv.i
+#)
+#
+#SET(gv_lua_SRCS
+#	gv.cpp
+#	gv_lua.cpp
+#)
+#ADD_LIBRARY(gv_lua MODULE ${gv_lua_SRCS})
+#ENDIF(${LUA_FOUND})
+
+########### next target #################
+
+INCLUDE( FindPerl )
+IF(${PERL_FOUND})
+INCLUDE_DIRECTORIES(
+	${BASE_INCLUDES}
+	${PERL_INCLUDES}
+)
+ADD_CUSTOM_COMMAND(
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT gv_perl.cpp
+	DEPENDS gv.i
+	COMMAND ${SWIG_EXECUTABLE} -c++ -perl -o gv_perl.cpp gv.i
+)
+
+SET(gv_perl_SRCS
+	gv.cpp
+	gv_perl.cpp
+)
+ADD_LIBRARY(gv_perl MODULE ${gv_perl_SRCS})
+ENDIF(${PERL_FOUND})
+
+########### next target #################
+
+INCLUDE( FindPHP4 )
+IF(${PHP4_FOUND})
+INCLUDE_DIRECTORIES(
+	${BASE_INCLUDES}
+	${PHP4_INCLUDES}
+)
+ADD_CUSTOM_COMMAND(
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT gv_php.cpp
+	DEPENDS gv.i
+	COMMAND ${SWIG_EXECUTABLE} -c++ -php -o gv_php.cpp gv.i
+)
+
+SET(gv_php_SRCS
+	gv.cpp
+	gv_php.cpp
+)
+ADD_LIBRARY(gv_php MODULE ${gv_php_SRCS})
+ENDIF(${PHP4_FOUND})
+
+########### next target #################
+
+#INCLUDE( FindPython )
+#IF(${PYTHON_FOUND})
+#INCLUDE_DIRECTORIES(
+#	${BASE_INCLUDES}
+#	${PYTHON_INCLUDES}
+#)
+#ADD_CUSTOM_COMMAND(
+#	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#	OUTPUT gv_python.cpp
+#	DEPENDS gv.i
+#	COMMAND ${SWIG_EXECUTABLE} -c++ -python -o gv_python.cpp gv.i
+#)
+#
+#SET(gv_python_SRCS
+#	gv.cpp
+#	gv_python.cpp
+#)
+#ADD_LIBRARY(gv_python MODULE ${gv_python_SRCS})
+#ENDIF(${PYTHON_FOUND})
+
 ########### next target #################
 
 INCLUDE( FindRuby )
@@ -26,16 +175,17 @@ INCLUDE_DIRECTORIES(
 	${RUBY_INCLUDES}
 )
 ADD_CUSTOM_COMMAND(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gv_ruby.cpp
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/gv.i
-	COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -o ${CMAKE_CURRENT_BINARY_DIR}/gv_ruby.cpp ${CMAKE_CURRENT_SOURCE_DIR}/gv.i
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT gv_ruby.cpp
+	DEPENDS gv.i
+	COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -o gv_ruby.cpp gv.i
 )
 
-SET(gv_tcl_SRCS
-	${BASE_SRCS}
+SET(gv_ruby_SRCS
+	gv.cpp
 	gv_ruby.cpp
 )
-ADD_LIBRARY(gv_ruby MODULE ${gv_tcl_SRCS})
+ADD_LIBRARY(gv_ruby MODULE ${gv_ruby_SRCS})
 ENDIF(${RUBY_FOUND})
 
 ########### next target #################
@@ -47,19 +197,20 @@ INCLUDE_DIRECTORIES(
 	${TCL_INCLUDES}
 )
 ADD_CUSTOM_COMMAND(
-	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/gv_tcl.cpp
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/gv.i
-	COMMAND ${SWIG_EXECUTABLE} -c++ -tcl -namespace -o ${CMAKE_CURRENT_BINARY_DIR}/gv_tcl.cpp ${CMAKE_CURRENT_SOURCE_DIR}/gv.i
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	OUTPUT gv_tcl.cpp
+	DEPENDS gv.i
+	COMMAND ${SWIG_EXECUTABLE} -c++ -tcl -namespace -o gv_tcl.cpp gv.i
 )
 SET(gv_tcl_SRCS
-	${BASE_SRCS}
+	gv.cpp
 	gv_tcl.cpp
 )
 ADD_LIBRARY(gv_tcl MODULE ${gv_tcl_SRCS})
 ENDIF(${TCL_FOUND})
 
 ########### install files ###############
-ENDIF(${SWIG_FOUND})
+#ENDIF(${SWIG_FOUND})
 
 INSTALL_FILES(FILES $(OCAML_hdr) gv_ocaml.man )
 INSTALL_FILES(FILES $(PYTHON_hdr) gv_python.man )
