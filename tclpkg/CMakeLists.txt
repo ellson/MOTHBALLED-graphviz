@@ -1,5 +1,4 @@
 # $Id$ $Revision$
-## Process this file with cmake to produce Makefile
 
 SUBDIRS(
 	tclstubs 

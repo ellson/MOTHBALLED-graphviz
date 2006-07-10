@@ -10,6 +10,7 @@ INCLUDE(SRCDIRs)
 INCLUDE(${pathplan_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(pathplan STATIC ${pathplan_SRCS})
+ADD_LIBRARY(pathplan SHARED ${pathplan_SRCS})
 
 INSTALL_FILES(FILES
 	pathplan.pdf
