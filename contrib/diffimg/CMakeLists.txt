@@ -1,8 +1,11 @@
 # $Id$ $Revision$
 ## Process this file with cmake to produce Makefile
 
+INCLUDE(SRCDIRs)
+
 INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_SOURCE_DIR}
 )
 
 
@@ -14,7 +17,13 @@ SET(diffimg_SRCS
 
 ADD_EXECUTABLE(diffimg ${diffimg_SRCS})
 
-#TARGET_LINK_LIBRARIES(diffimg  ${QT_AND_KDECORE_LIBS} )
+TARGET_LINK_LIBRARIES(diffimg
+	gvgd
+	png
+	jpeg
+	z
+	m
+)
 
 
 ########### install files ###############

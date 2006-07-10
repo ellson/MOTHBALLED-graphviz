@@ -10,6 +10,7 @@ INCLUDE(SRCDIRs)
 INCLUDE(${cdt_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(cdt STATIC ${cdt_SRCS})
+ADD_LIBRARY(cdt SHARED ${cdt_SRCS})
 
 INSTALL_FILES(FILES
 	libcdt.pc

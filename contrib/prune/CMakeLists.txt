@@ -1,8 +1,14 @@
 # $Id$ $Revision$
 ## Process this file with cmake to produce Makefile
 
+INCLUDE(SRCDIRs)
+
 INCLUDE_DIRECTORIES(
 	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_SOURCE_DIR}
+	${ingraphs_SRCDIR}
+	${agraph_SRCDIR}
+	${cdt_SRCDIR}
 )
 
 
@@ -15,7 +21,11 @@ SET(prune_SRCS
 
 ADD_EXECUTABLE(prune ${prune_SRCS})
 
-#TARGET_LINK_LIBRARIES(prune  ${QT_AND_KDECORE_LIBS} )
+TARGET_LINK_LIBRARIES(prune 
+	ingraphs
+	agraph
+	cdt
+)
 
 INSTALL_TARGETS(/bin prune )
 
