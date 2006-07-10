@@ -161,12 +161,17 @@ static void svggen_grstyle(GVJ_t * job, int filled)
     gvstyle_t *style = job->style;
 
     svggen_fputs(job, " style=\"fill:");
-    if (filled)
+    if (filled && ! (style->fillcolor.type == RGBA_BYTE
+		  && style->fillcolor.u.RGBA[3] < 128))
 	svggen_print_color(job, style->fillcolor);
     else
 	svggen_fputs(job, "none");
     svggen_fputs(job, ";stroke:");
-    svggen_print_color(job, style->pencolor);
+    if (! (style->pencolor.type == RGBA_BYTE
+		  && style->pencolor.u.RGBA[3] < 128))
+	svggen_print_color(job, style->pencolor);
+    else
+	svggen_fputs(job, "none");
     if (style->penwidth != PENWIDTH_NORMAL)
 	svggen_printf(job, ";stroke-width:%g", style->penwidth);
     if (style->pen == PEN_DASHED) {
