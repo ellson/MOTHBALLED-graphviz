@@ -10,6 +10,7 @@ INCLUDE(SRCDIRs)
 INCLUDE(${graph_SRCDIR}/sources.cmake)
 
 ADD_LIBRARY(graph STATIC ${graph_SRCS})
+ADD_LIBRARY(graph SHARED ${graph_SRCS})
 
 INSTALL_FILES(FILES
 	graph.pdf
