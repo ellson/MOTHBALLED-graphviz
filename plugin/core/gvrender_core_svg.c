@@ -162,13 +162,15 @@ static void svggen_grstyle(GVJ_t * job, int filled)
 
     svggen_fputs(job, " style=\"fill:");
     if (filled && ! (style->fillcolor.type == RGBA_BYTE
-		  && style->fillcolor.u.RGBA[3] < 128))
+		  && style->fillcolor.u.RGBA[3] == 0))
+	/* filled && not completely transparent" */
 	svggen_print_color(job, style->fillcolor);
     else
 	svggen_fputs(job, "none");
     svggen_fputs(job, ";stroke:");
     if (! (style->pencolor.type == RGBA_BYTE
-		  && style->pencolor.u.RGBA[3] < 128))
+		  && style->pencolor.u.RGBA[3] == 0))
+	/* not completely transparent" */
 	svggen_print_color(job, style->pencolor);
     else
 	svggen_fputs(job, "none");
