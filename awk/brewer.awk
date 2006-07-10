@@ -12,9 +12,10 @@
 # *              AT&T Research, Florham Park NJ             *
 # **********************************************************/
 # 
-# Convert Brewer data to same RGB format used in color_names.
+# Convert Brewer data to same RGBA format used in color_names.
 # See brewer_colors for input format.
 #
+# All colors assumed opaque, so A = 255 in all colors
 BEGIN { 
   FS = ","
 }
@@ -23,5 +24,5 @@ BEGIN {
     name = $1 $2;
     gsub ("\"","",name);
   }
-  printf ("/%s/%s %s %s %s\n", name, $5, $7, $8, $9); 
+  printf ("/%s/%s %s %s %s 255\n", name, $5, $7, $8, $9); 
 }
