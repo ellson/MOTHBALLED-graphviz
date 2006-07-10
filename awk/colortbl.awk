@@ -1,7 +1,16 @@
-# Copyright (c) AT&T Corp. 1994, 1995.
-# This code is licensed by AT&T Corp.  For the
-# terms and conditions of the license, see
-# http://www.research.att.com/orgs/ssr/book/reuse
+#
+# /**********************************************************
+# *      This software is part of the graphviz package      *
+# *                http://www.graphviz.org/                 *
+# *                                                         *
+# *            Copyright (c) 1994-2005 AT&T Corp.           *
+# *                and is licensed under the                *
+# *            Common Public License, Version 1.0           *
+# *                      by AT&T Corp.                      *
+# *                                                         *
+# *        Information and Software Systems Research        *
+# *              AT&T Research, Florham Park NJ             *
+# **********************************************************/
 
 function rgb_to_hsb(r,g,b) {
 	r = r / 255.0; g = g / 255.0; b = b / 255.0;
