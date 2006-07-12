@@ -118,6 +118,7 @@ gv_tcl.cpp $(TCL_hdr): gv.i
 pkginclude_DATA = gv.i gv.cpp
 pkglib_LTLIBRARIES = 
 TESTS =
+if WITH_SWIG
 if WITH_SHARP
 pkgsharp_DATA = $(SHARP_hdr) gv_sharp.man
 pkgsharp_LTLIBRARIES = libgv_sharp.la
@@ -177,6 +178,7 @@ all-local: pkgIndex.tcl
 
 pkgIndex.tcl: libgv_tcl.la
 	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libgv_tcl.la gv $(VERSION)
+endif
 endif
 
 gv_sharp.man gv_guile.man gv_io.man gv_java.man gv_lua.man \
