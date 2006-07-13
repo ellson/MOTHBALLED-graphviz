@@ -369,6 +369,7 @@ static void gvrender_resolve_color(gvrender_features_t * features,
 void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 {
     GVC_t *gvc = job->gvc;
+    int flags = job->flags;
     obj_state_t *obj;
     gvrender_engine_t *gvre = job->render.engine;
     textlabel_t *lab;
@@ -380,31 +381,44 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 
     obj = push_obj_state(job);
     obj->g = g;
-    if ((job->flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g)))) {
+    if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g)))) {
         if (lab->html)
             doHTMLlabel(lab->u.html, lab->p, (void *) g);
 	obj->label = lab->text;
     }
-    if ((job->flags & GVRENDER_DOES_MAPS)
-        && (((s = agget(g, "href")) && s[0]) || ((s = agget(g, "URL")) && s[0]))) {
+    if ((flags & GVRENDER_DOES_MAPS)
+        && (((s = agget(g, "href")) && s[0])
+	    || ((s = agget(g, "URL")) && s[0]))) {
         obj->url = strdup_and_subst_graph(s, g);
     } 
+    if (flags & GVRENDER_DOES_TOOLTIPS) {
+        if ((s = agget(g, "tooltip")) && s[0]) {
+            obj->tooltip = strdup_and_subst_graph(s, g);
+	    obj->explicit_tooltip = true;
+	}
+	else if (obj->url && obj->label) {
+	    obj->tooltip = strdup(obj->label);
+	}
+    } 
+    if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(g, "target")) && s[0])) {
+        obj->target = strdup_and_subst_graph(s, g);
+    }
 
     job->compscale.x = job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
     job->compscale.y = job->scale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
     job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
     if (job->rotation) {
-        job->clip.UR.x = job->focus.x + sy + EPSILON;
-        job->clip.UR.y = job->focus.y + sx + EPSILON;
-        job->clip.LL.x = job->focus.x - sy - EPSILON;
-        job->clip.LL.y = job->focus.y - sx - EPSILON;
+	job->clip.UR.x = job->focus.x + sy + EPSILON;
+	job->clip.UR.y = job->focus.y + sx + EPSILON;
+	job->clip.LL.x = job->focus.x - sy - EPSILON;
+	job->clip.LL.y = job->focus.y - sx - EPSILON;
 	job->offset.x = -job->focus.y * job->compscale.x + job->width * 3 / 2;
 	job->offset.y = -job->focus.x * job->compscale.y + job->height / 2.;
     } else {
-        job->clip.UR.x = job->focus.x + sx + EPSILON;
-        job->clip.UR.y = job->focus.y + sy + EPSILON;
-        job->clip.LL.x = job->focus.x - sx - EPSILON;
-        job->clip.LL.y = job->focus.y - sy - EPSILON;
+	job->clip.UR.x = job->focus.x + sx + EPSILON;
+	job->clip.UR.y = job->focus.y + sy + EPSILON;
+	job->clip.LL.x = job->focus.x - sx - EPSILON;
+	job->clip.LL.y = job->focus.y - sy - EPSILON;
 	job->offset.x = -job->focus.x * job->compscale.x + job->width / 2.;
 	job->offset.y = -job->focus.y * job->compscale.y + job->height / 2.;
     }
@@ -437,7 +451,7 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
-	
+
 	if (cg && cg->begin_graph)
 	    cg->begin_graph(gvc, g, job->canvasBox, gvc->pb);
     }
@@ -470,7 +484,8 @@ void gvrender_begin_page(GVJ_t * job)
     int nump = 0, flags = job->flags;
     pointf *p = NULL;
 
-    if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
+    if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
+	    && (obj->url || obj->explicit_tooltip)) {
         if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
 	    if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
 	        obj->url_map_shape = MAP_RECTANGLE;
@@ -598,8 +613,15 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
     if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(sg, "target")) && s[0]))
 	obj->target = strdup_and_subst_graph(s, sg);
 
-    if ((flags & GVRENDER_DOES_TOOLTIPS) && ((s = agget(sg, "tooltip")) && s[0]))
-        obj->tooltip = strdup_and_subst_graph(s, sg);
+    if (flags & GVRENDER_DOES_TOOLTIPS) {
+	if ((s = agget(sg, "tooltip")) && s[0]) {
+            obj->tooltip = strdup_and_subst_graph(s, sg);
+            obj->explicit_tooltip = true;
+	}
+	else if (obj->label) {
+	    obj->tooltip = strdup(obj->label);
+	}
+    }
 
     if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
         if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
@@ -816,15 +838,19 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
         obj->url = strdup_and_subst_node(s, n);
     }
     if (flags & GVRENDER_DOES_TOOLTIPS) {
-        if ((s = agget(n, "tooltip")) && s[0])
+        if ((s = agget(n, "tooltip")) && s[0]) {
             obj->tooltip = strdup_and_subst_node(s, n);
-	else
+	    obj->explicit_tooltip = true;
+	}
+	else {
 	    obj->tooltip = strdup(ND_label(n)->text);
+	}
     } 
     if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(n, "target")) && s[0])) {
         obj->target = strdup_and_subst_node(s, n);
     }
-    if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
+    if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
+	   && (obj->url || obj->explicit_tooltip)) {
 
         /* checking shape of node */
         shape = shapeOf(n);

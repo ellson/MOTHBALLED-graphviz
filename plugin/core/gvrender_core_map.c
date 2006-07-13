@@ -36,6 +36,9 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
     static point *A;
     static int size_A;
 
+    if (!AF || !nump)
+	return;
+
     if (size_A < nump) {
 	size_A = nump + 10;
 	A = realloc(A, size_A * sizeof(point));
@@ -43,7 +46,7 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
     for (i = 0; i < nump; i++)
 	PF2P(AF[i], A[i]);
 
-    if (job->render.id == FORMAT_IMAP) {
+    if (job->render.id == FORMAT_IMAP && url && url[0]) {
         switch (map_shape) {
         case MAP_RECTANGLE:
 	    /* Y_GOES_DOWN so need UL to LR */
@@ -65,7 +68,7 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
             break;
         }
 
-    } else if (job->render.id == FORMAT_ISMAP) {
+    } else if (job->render.id == FORMAT_ISMAP && url && url[0]) {
         switch (map_shape) {
         case MAP_RECTANGLE:
 	    /* Y_GOES_DOWN so need UL to LR */
@@ -163,13 +166,11 @@ static void map_end_page(GVJ_t * job)
 
     switch (job->render.id) {
     case FORMAT_CMAP:
-	if (obj->url && obj->url[0] && obj->url_map_p)
-	    map_output_shape(job, obj->url_map_shape, obj->url_map_p,obj->url_map_n,
+	map_output_shape(job, obj->url_map_shape, obj->url_map_p,obj->url_map_n,
 		                    obj->url, obj->tooltip, obj->target);
 	break;
     case FORMAT_CMAPX:
-	if (obj->url && obj->url[0] && obj->url_map_p)
-	    map_output_shape(job, obj->url_map_shape, obj->url_map_p,obj->url_map_n,
+	map_output_shape(job, obj->url_map_shape, obj->url_map_p,obj->url_map_n,
 		                    obj->url, obj->tooltip, obj->target);
         fprintf(job->output_file, "</map>\n");
 	break;
@@ -184,8 +185,7 @@ static void map_begin_cluster(GVJ_t * job)
 
     fprintf(job->output_file, "%% %s\n", obj->sg->name);
 
-    if (obj->url && obj->url[0] && obj->url_map_p)
-        map_output_shape(job, obj->url_map_shape, obj->url_map_p, obj->url_map_n,
+    map_output_shape(job, obj->url_map_shape, obj->url_map_p, obj->url_map_n,
 	        obj->url, obj->tooltip, obj->target);
 }
 
@@ -193,8 +193,7 @@ static void map_begin_node(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    if (obj->url && obj->url[0] && obj->url_map_p)
-        map_output_shape(job, obj->url_map_shape, obj->url_map_p,obj->url_map_n,
+    map_output_shape(job, obj->url_map_shape, obj->url_map_p,obj->url_map_n,
 	        obj->url, obj->tooltip, obj->target);
 }
 
@@ -204,30 +203,21 @@ map_begin_edge(GVJ_t * job)
     obj_state_t *obj = job->obj;
     int i, j = 0;
 
-    if (obj->url && obj->url[0] && obj->url_map_p)
-        map_output_shape(job, obj->url_map_shape, obj->url_map_p, obj->url_map_n,
+    map_output_shape(job, obj->url_map_shape, obj->url_map_p, obj->url_map_n,
 	        obj->url, obj->tooltip, obj->target);
-
-    if (obj->tailurl && obj->tailurl[0] && obj->tailurl_map_p)
-        map_output_shape(job, MAP_RECTANGLE, obj->tailurl_map_p, 2,
+    map_output_shape(job, MAP_RECTANGLE, obj->tailurl_map_p, 2,
 	        obj->tailurl, obj->tailtooltip, obj->tailtarget);
-    if (obj->headurl && obj->headurl[0] && obj->headurl_map_p)
-        map_output_shape(job, MAP_RECTANGLE, obj->headurl_map_p, 2,
+    map_output_shape(job, MAP_RECTANGLE, obj->headurl_map_p, 2,
 	        obj->headurl, obj->headtooltip, obj->headtarget);
-
-    if (obj->url && obj->url[0] && obj->tailendurl_map_p)
-        map_output_shape(job, MAP_RECTANGLE, obj->tailendurl_map_p,2, 
+    map_output_shape(job, MAP_RECTANGLE, obj->tailendurl_map_p,2, 
 	        obj->url, obj->tooltip, obj->target);
-    if (obj->url && obj->url[0] && obj->headendurl_map_p)
-        map_output_shape(job, MAP_RECTANGLE, obj->headendurl_map_p, 2,
+    map_output_shape(job, MAP_RECTANGLE, obj->headendurl_map_p, 2,
 	        obj->url, obj->tooltip, obj->target);
-
-    if (obj->url && obj->url[0]) {
-        for (i = 0; i < obj->url_bsplinemap_poly_n; i++) {
-            map_output_shape(job, MAP_POLYGON, obj->url_bsplinemap_p+j, obj->url_bsplinemap_n[i],
-                    obj->url, obj->tooltip, obj->target);
-	    j += obj->url_bsplinemap_n[i];
-        }
+    for (i = 0; i < obj->url_bsplinemap_poly_n; i++) {
+        map_output_shape(job, MAP_POLYGON,
+		obj->url_bsplinemap_p+j, obj->url_bsplinemap_n[i],
+		obj->url, obj->tooltip, obj->target);
+	j += obj->url_bsplinemap_n[i];
     }
 }
 
