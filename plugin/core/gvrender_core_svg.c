@@ -384,17 +384,14 @@ static void svggen_end_edge(GVJ_t * job)
 static void
 svggen_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
 {
-    svggen_fputs(job, "<a xlink:href=\"");
-    svggen_fputs(job, xml_string(href));
-    if (tooltip && tooltip[0]) {
-	svggen_fputs(job, "\" xlink:title=\"");
-	svggen_fputs(job, xml_string(tooltip));
-    }
-    if (target && target[0]) {
-	svggen_fputs(job, "\" target=\"");
-	svggen_fputs(job, xml_string(target));
-    }
-    svggen_fputs(job, "\">\n");
+    svggen_fputs(job, "<a");
+    if (href && href[0])
+	svggen_printf(job, " xlink:href=\"%s\"", xml_string(href));
+    if (tooltip && tooltip[0])
+	svggen_printf(job, " xlink:title=\"%s\"", xml_string(tooltip));
+    if (target && target[0])
+	svggen_printf(job, " target=\"%s\"", xml_string(target));
+    svggen_fputs(job, ">\n");
 }
 
 static void svggen_end_anchor(GVJ_t * job)
@@ -552,7 +549,11 @@ gvrender_engine_t svggen_engine = {
 gvrender_features_t svggen_features = {
     GVRENDER_DOES_TRUECOLOR
 	| GVRENDER_Y_GOES_DOWN
-        | GVRENDER_DOES_TRANSFORM, /* flags*/
+        | GVRENDER_DOES_TRANSFORM
+	| GVRENDER_DOES_LABELS
+	| GVRENDER_DOES_MAPS
+	| GVRENDER_DOES_TARGETS
+	| GVRENDER_DOES_TOOLTIPS, /* flags */
     DEFAULT_EMBED_MARGIN,	/* default margin - points */
     {96.,96.},			/* default dpi */
     svggen_knowncolors,		/* knowncolors */
