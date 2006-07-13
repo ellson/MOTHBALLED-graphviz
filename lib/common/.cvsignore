@@ -9,6 +9,7 @@ color_lib
 brewer_lib
 colortbl.h
 htmlparse.[ch]
+ps.h
 y.output
 y.tab.[ch]
 CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
