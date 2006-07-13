@@ -286,7 +286,7 @@ static const char *append_buf(char sep, char *str, bool new)
 /* assemble a string list of available plugins */
 const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
 {
-    gvplugin_available_t **pnext, **plugin;
+    gvplugin_available_t **pnext, **plugin, **pprev;
     const char *buf = NULL;
     char *s, *p, *typestr_last;
     bool new = TRUE;
@@ -305,16 +305,19 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
     plugin = &(gvc->apis[api]);
 
     if (p) {	/* if str contains a ':', and if we find a match for the type,
-		   then just list teh alternative paths for the plugin */
+		   then just list the alternative paths for the plugin */
 	pnext = plugin;
+	pprev = NULL;
 	while (*pnext) {
-	    /* list only the matching type */
-	    if (strcmp(s, (*pnext)->typestr) == 0) {
+	    /* list only the matching type, and only once*/
+	    if ((strcmp(s, (*pnext)->typestr) == 0)
+		    && ! (pprev && strcmp((*pnext)->packagename, (*pprev)->packagename) == 0)) {
 		/* list each member of the matching type as "type:path" */
 		append_buf(' ', (*pnext)->typestr, new);
 		buf = append_buf(':', (*pnext)->packagename, FALSE);
 		new = FALSE;
 	    }
+	    pprev = pnext;
 	    pnext = &((*pnext)->next);
 	}
     }
