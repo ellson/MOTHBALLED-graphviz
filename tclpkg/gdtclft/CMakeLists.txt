@@ -1,29 +1,20 @@
 # $Id$ $Revision$
 ## Process this file with cmake to produce Makefile
 
-SUBDIRS( demo ) 
+SUBDIRS(demo) 
 
-INCLUDE(
-	FindTCL
+INCLUDE(SRCDIRs)
+INCLUDE(${gdtclft_SRCDIR}/sources.cmake)
+INCLUDE(${gd_SRCDIR}/sources.cmake)
+INCLUDE(${tclhandle_SRCDIR}/sources.cmake)
+INCLUDE(${tclstubs_SRCDIR}/sources.cmake)
+
+ADD_LIBRARY(gdtclft MODULE
+	${gdtclft_SRCS}
+	${gd_SRCS}
+	${tclhandle_SRCS}
+	${tclstubs_SRCS}
 )
-
-INCLUDE_DIRECTORIES(
-	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_BINARY_DIR}
-	${CMAKE_SOURCE_DIR}/tclpkg/tclhandle
-	${CMAKE_SOURCE_DIR}/lib/gd
-	${TCL_INCLUDE_PATH}
-)
-
-SET(gdtclft_SRCS
-	gdtclft.c
-	${GD_SRCS}
-)
-
-ADD_LIBRARY(gdtclft MODULE ${gdtclft_SRCS})
-
-
-########### install files ###############
 
 INSTALL_FILES(FILES
 	gdtclft.pdf
@@ -31,73 +22,3 @@ INSTALL_FILES(FILES
 INSTALL_FILES(FILES
 	gdtclft.n
 )
-
-
-
-#original Makefile.am contents follow:
-
-## $Id$ $Revision$
-### Process this file with automake to produce Makefile.in
-#
-#SUBDIRS = demo
-#
-#pdfdir = $(pkgdatadir)/doc/pdf
-#pkgtcldir = $(pkglibdir)/tcl
-#
-#AM_CPPFLAGS = \
-#	 -I$(top_srcdir) \
-#	-I$(top_srcdir)/tclpkg/tclhandle \
-#	@GD_INCLUDES@ @TCL_INCLUDES@
-#
-#LIBS = @LIBS@ -lc
-#
-#AM_CFLAGS = @TCL_CFLAGS@
-#
-#man = gdtclft.n
-#pdf = gdtclft.pdf
-#
-#if WITH_LIBGD
-#if WITH_TCL
-#pkgtcl_LTLIBRARIES = libgdtclft.la
-#man_MANS = $(man)
-#pdf_DATA = $(pdf)
-#endif
-#endif
-#
-#libgdtclft_la_SOURCES = gdtclft.c
-#
-#libgdtclft_la_LDFLAGS = -no-undefined
-#
-#if WITH_LIBGD
-#if WITH_MYLIBGD
-#libgdtclft_la_LIBADD = \
-#	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
-#	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-#	$(top_builddir)/lib/gd/libgvgd_C.la \
-#	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
-#else
-#libgdtclft_la_LIBADD = \
-#	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
-#	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-#	@GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
-#endif
-#
-#if WITH_TCL
-#all-local: pkgIndex.tcl
-#
-#pkgIndex.tcl: libgdtclft.la
-#	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libgdtclft.la Gdtclft $(VERSION)
-#
-#test:
-#	echo 'load .libs/libgdtclft$(TCL_SHLIB_SUFFIX) Gdtclft ; cd tests ; source all' | tclsh8.3
-#endif
-#endif
-#
-#.n.pdf:
-#	groff -Tps -man $< | ps2pdf - - >$@
-#
-#EXTRA_DIST = $(man) $(pdf) Makefile.old
-#
-#CLEANFILES = pkgIndex.tcl
-#
-#DISTCLEANFILES = $(pdf)
