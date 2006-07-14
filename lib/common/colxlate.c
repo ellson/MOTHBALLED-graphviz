@@ -394,7 +394,7 @@ int colorxlate(char *str, gvcolor_t * color, color_type_t target_type)
 	case HSVA_DOUBLE:
 	    color->u.HSVA[0] = ((double) last->h) / 255.0;
 	    color->u.HSVA[1] = ((double) last->s) / 255.0;
-	    color->u.HSVA[2] = ((double) last->b) / 255.0;
+	    color->u.HSVA[2] = ((double) last->v) / 255.0;
 	    color->u.HSVA[3] = ((double) last->a) / 255.0;
 	    break;
 	case RGBA_BYTE:
