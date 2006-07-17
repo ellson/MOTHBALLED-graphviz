@@ -125,24 +125,12 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
 
         /* try to find a match for a PostScript font
 	 * - or just get best available match */
-        if (common->verbose)
-	    fprintf(stderr, "Font: \"%s\"", fontname);
-
-        if ((fontreq = find_postscript_font(fontname))) {
-            if (common->verbose)
-	        fprintf(stderr, " (ps) translated to: \"%s\"", fontreq);
-        }
-        else
+        if (! (fontreq = find_postscript_font(fontname)))
 	    fontreq = fontname;
         desc = pango_font_description_from_string(fontreq);
-        if (common->verbose) {
-	    family = pango_font_description_get_family (desc);
-	    if (strcmp(family, fontreq) == 0)
-	        fprintf(stderr, " resolved.\n");
-	    else
-                fprintf(stderr, " resolved to: \"%s\"\n", family);
-        }
     }
+    family = pango_font_description_get_family (desc);
+    *fontpath = (char *)family;
 
     pango_font_description_set_size (desc, (gint)(para->fontsize * PANGO_SCALE));
 
@@ -169,9 +157,6 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
     if (logical_rect.width == 0) {
 	*fontpath = NULL;              /* indicate a problem */
 	logical_rect.height = 0;
-    }
-    else {
-    	*fontpath = "[pango]";
     }
 
     para->width = (double)logical_rect.width / PANGO_SCALE;
