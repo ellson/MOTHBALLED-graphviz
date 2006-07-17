@@ -98,7 +98,8 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
 {
     static PangoFontMap *fontmap;
     static PangoContext *context;
-    PangoFontDescription *desc;
+    static PangoFontDescription *desc;
+    static char *fontname;
     PangoLayout *layout;
     PangoRectangle ink_rect, logical_rect;
 #if ENABLE_PANGO_XSHOW
@@ -109,7 +110,8 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
     PangoAttrList *attrs;
     GError *error = NULL;
 #endif
-    char *text, *fontreq, *family;
+    char *text, *fontreq;
+    const char *family;
 
     if (!fontmap)
         fontmap = pango_cairo_font_map_get_default();
@@ -117,24 +119,29 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
     if (!context)
         context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
 
-    /* try to find a match for a PostScript font - or just get best available match */
-    if (common->verbose)
-	fprintf(stderr, "Font: \"%s\"", para->fontname);
+    if (!fontname || strcmp(fontname, para->fontname)) {
+	fontname = para->fontname;
+        pango_font_description_free (desc);
 
-    if ((fontreq = find_postscript_font(para->fontname))) {
+        /* try to find a match for a PostScript font
+	 * - or just get best available match */
         if (common->verbose)
-	    fprintf(stderr, " (ps) translated to: \"%s\"", fontreq);
-    }
-    else {
-	fontreq = para->fontname;
-    }
-    desc = pango_font_description_from_string(fontreq);
-    if (common->verbose) {
-	family = pango_font_description_get_family (desc);
-	if (strcmp(family, fontreq) == 0)
-	    fprintf(stderr, " resolved.\n");
-	else
-            fprintf(stderr, " resolved to: \"%s\"\n", family);
+	    fprintf(stderr, "Font: \"%s\"", fontname);
+
+        if ((fontreq = find_postscript_font(fontname))) {
+            if (common->verbose)
+	        fprintf(stderr, " (ps) translated to: \"%s\"", fontreq);
+        }
+        else
+	    fontreq = fontname;
+        desc = pango_font_description_from_string(fontreq);
+        if (common->verbose) {
+	    family = pango_font_description_get_family (desc);
+	    if (strcmp(family, fontreq) == 0)
+	        fprintf(stderr, " resolved.\n");
+	    else
+                fprintf(stderr, " resolved to: \"%s\"\n", family);
+        }
     }
 
     pango_font_description_set_size (desc, (gint)(para->fontsize * PANGO_SCALE));
@@ -182,8 +189,6 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
     } while (pango_layout_iter_next_char (iter));
     pango_layout_iter_free (iter);
 #endif
-
-    pango_font_description_free (desc);
 }
 
 static gvtextlayout_engine_t pango_textlayout_engine = {
