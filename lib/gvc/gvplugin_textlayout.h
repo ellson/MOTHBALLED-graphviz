@@ -20,13 +20,14 @@
 #include "types.h"
 #include "gvplugin.h"
 #include "gvcjob.h"
+#include "gvcommon.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
     struct gvtextlayout_engine_s {
-	void (*textlayout) (textpara_t *para, char** fontpath);
+	void (*textlayout) (GVCOMMON_t *common, textpara_t *para, char** fontpath);
     };
 
 #ifdef __cplusplus

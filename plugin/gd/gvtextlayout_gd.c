@@ -33,7 +33,7 @@
 /* fontsize at which text is rendered by a simple line */
 #define FONTSIZE_TOO_SMALL 1.5
 
-static void gd_textlayout(textpara_t * para, char **fontpath)
+static void gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath)
 {
     static char *fntpath;
     char *err;

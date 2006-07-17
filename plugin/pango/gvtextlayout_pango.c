@@ -94,7 +94,7 @@ static void pango_free_layout (void *layout)
     g_object_unref((PangoLayout*)layout);
 }
 
-static void pango_textlayout(textpara_t * para, char **fontpath)
+static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath)
 {
     static PangoFontMap *fontmap;
     static PangoContext *context;
@@ -109,7 +109,7 @@ static void pango_textlayout(textpara_t * para, char **fontpath)
     PangoAttrList *attrs;
     GError *error = NULL;
 #endif
-    char *text, *psfont;
+    char *text, *fontreq, *family;
 
     if (!fontmap)
         fontmap = pango_cairo_font_map_get_default();
@@ -117,10 +117,26 @@ static void pango_textlayout(textpara_t * para, char **fontpath)
     if (!context)
         context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
 
-    if ((psfont = find_postscript_font(para->fontname)))
-        desc = pango_font_description_from_string(psfont);
-    else
-        desc = pango_font_description_from_string(para->fontname);
+    /* try to find a match for a PostScript font - or just get best available match */
+    if (common->verbose)
+	fprintf(stderr, "Font: \"%s\"", para->fontname);
+
+    if ((fontreq = find_postscript_font(para->fontname))) {
+        if (common->verbose)
+	    fprintf(stderr, " (ps) translated to: \"%s\"", fontreq);
+    }
+    else {
+	fontreq = para->fontname;
+    }
+    desc = pango_font_description_from_string(fontreq);
+    if (common->verbose) {
+	family = pango_font_description_get_family (desc);
+	if (strcmp(family, fontreq) == 0)
+	    fprintf(stderr, " resolved.\n");
+	else
+            fprintf(stderr, " resolved to: \"%s\"\n", family);
+    }
+
     pango_font_description_set_size (desc, (gint)(para->fontsize * PANGO_SCALE));
 
 #ifdef ENABLE_PANGO_MARKUP
