@@ -151,14 +151,17 @@ void agedgesetop(Agraph_t * g, Agedge_t * e, int ins)
 {
     Dtlink_t **seq_set, **id_set;
     Agnode_t *n;		/* node where <e> is referenced */
+    Agedge_t **tmp;		
 
     if (AGTYPE(e) == AGOUTEDGE) {
 	n = AGOUT2IN(e)->node;
-	seq_set = (Dtlink_t **) & (n->out);
+	tmp = &(n->out); /* avoiding - "dereferencing type-punned pointer will break strict-aliasing rules" */
+	seq_set = (Dtlink_t **)tmp;
 	id_set = &(n->outid);
     } else {
 	n = AGIN2OUT(e)->node;
-	seq_set = (Dtlink_t **) & (n->in);
+	tmp = &(n->in);  
+	seq_set = (Dtlink_t **)tmp;
 	id_set = &(n->inid);
     }
 
