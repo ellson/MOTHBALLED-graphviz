@@ -117,11 +117,14 @@ static void psgen_begin_layer(GVJ_t * job, char *layername, int layerNum, int nu
 static void psgen_begin_page(GVJ_t * job)
 {
     box pbr = job->pageBoundingBox;
+    point sz;
 
 // FIXME
     point page = {0,0};
     int N_pages = 0;
 
+    sz.x = pbr.UR.x - pbr.LL.x;
+    sz.y = pbr.UR.y - pbr.LL.y;
     fprintf(job->output_file, "%%%%Page: %d %d\n",
 	    job->common->viewNum + 1, job->common->viewNum + 1);
     if (job->common->show_boxes == NULL)
@@ -129,14 +132,12 @@ static void psgen_begin_page(GVJ_t * job)
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
     fprintf(job->output_file, "%%%%PageOrientation: %s\n",
 	    (job->rotation ? "Landscape" : "Portrait"));
-#if 0
-   if (Output_lang == PDF)
-        fprintf(Output_file, "<< /PageSize [%d %d] >> setpagedevice\n",
+    if (job->render.id == FORMAT_PS2)
+        fprintf(job->output_file, "<< /PageSize [%d %d] >> setpagedevice\n",
             sz.x, sz.y);
-#endif
     if (job->common->show_boxes == NULL)
         fprintf(job->output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
-	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
+	    pbr.LL.x, pbr.LL.y, sz.x, sz.y);
     fprintf(job->output_file, "%d %d %d beginpage\n", page.x, page.y, N_pages);
     fprintf(job->output_file, "%g %g set_scale %d rotate %g %g translate\n",
 	    job->scale.x, job->scale.y,
@@ -145,10 +146,10 @@ static void psgen_begin_page(GVJ_t * job)
 
     /*  Define the size of the PS canvas  */
     if (job->render.id == FORMAT_PS2) {
-	if (pbr.UR.x >= PDFMAX || pbr.UR.y >= PDFMAX)
+	if (sz.x >= PDFMAX || sz.y >= PDFMAX)
 	    job->common->errorfn("canvas size (%d,%d) exceeds PDF limit (%d)\n"
 		  "\t(suggest setting a bounding box size, see dot(1))\n",
-		  pbr.UR.x, pbr.UR.y, PDFMAX);
+		  sz.x, sz.y, PDFMAX);
 	fprintf(job->output_file, "[ /CropBox [%d %d %d %d] /PAGES pdfmark\n",
 		pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
     }
