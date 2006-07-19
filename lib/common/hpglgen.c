@@ -402,6 +402,13 @@ hpgl_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
 {
     /* Pages = pages; */
     N_pages = pages.x * pages.y;
+    initGC();
+}
+
+static void
+hpgl_end_job(void)
+{
+    destroyGC();
 }
 
 static void hpgl_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
@@ -445,7 +452,6 @@ static void hpgl_begin_page(graph_t * g, point page, double scale, int rot,
 #if 0				/* not used */
     initTextAlign();
 #endif
-    initGC();
 
     if (N_pages > 1) {
 	saveGC();
@@ -502,7 +508,6 @@ static void hpgl_end_page(void)
     sprintf(buffer, "PU%sSP0%sPG;\n", Sep, Sep);	/* pen up; advance page */
     output(buffer);
     output(suffix);
-    destroyGC();
 }
 
 static void hpgl_begin_context(void)
@@ -835,7 +840,7 @@ static void hpgl_usershape(usershape_t *us, boxf p, point *A, int n, bool filled
 
 codegen_t HPGL_CodeGen = {
     hpgl_reset,
-    hpgl_begin_job, 0,		/* hpgl_end_job */
+    hpgl_begin_job, hpgl_end_job, 
     hpgl_begin_graph, 0,	/* hpgl_end_graph */
     hpgl_begin_page, hpgl_end_page,
     0, /* hpgl_begin_layer */ 0,	/* hpgl_end_layer */
