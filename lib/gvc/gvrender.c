@@ -426,8 +426,6 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     /* init stack */
     gvc->SP = 0;
     job->style = &(gvc->styles[0]);
-    gvrender_set_pencolor(job, DEFAULT_COLOR);
-    gvrender_set_fillcolor(job, DEFAULT_FILL);
     job->style->fontfam = DEFAULT_FONTNAME;
     job->style->fontsz = DEFAULT_FONTSIZE;
     job->style->fontopt = FONT_REGULAR;

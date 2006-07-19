@@ -473,6 +473,8 @@ fprintf(stderr,"zoom = %g  dpi = %g,%g\n",
 #endif
 
     gvrender_begin_page(job);
+    gvrender_set_pencolor(job, DEFAULT_COLOR);
+    gvrender_set_fillcolor(job, DEFAULT_FILL);
 }
 
 #if 0
