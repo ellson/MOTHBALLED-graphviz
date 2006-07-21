@@ -8,7 +8,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
-	$(GNOMEUI_CFLAGS) $(PANGOCAIRO_CFLAGS)
+	$(PANGOCAIRO_CFLAGS)
 
 if WITH_PANGOCAIRO
 if WITH_X

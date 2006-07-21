@@ -46,15 +46,27 @@
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
-#ifdef HAVE_GNOMEUI
-#include <libgnome/libgnome.h>
-#endif
+
 #include <cairo.h>
 #include <cairo-xlib.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/Xrender.h>
 
 #include "gvplugin_device.h"
+
+/* Don't load up the xlib plugin with all that gnome stuff */
+/*   - OTOH now we are dependent on a firefox installation */
+/*                                                         */
+/* This undef must follow gvplugin_device.h because        */
+/*	 config.h is reincluded via:                       */
+/*             types.h->cdt.h->ast_common.h                */
+/*                      FIXME                              */
+#undef HAVE_GNOMEUI
+#define BROWSER "firefox"
+
+#ifdef HAVE_GNOMEUI
+#include <libgnome/libgnome.h>
+#endif
 
 typedef struct window_xlib_s {
     Window win;
@@ -148,8 +160,8 @@ static void browser_show(GVJ_t *job)
 #ifdef HAVE_GNOMEUI
    gnome_url_show(job->selected_href, NULL);
 #else
-#if defined HAVE_SYS_TYPES_H && defined HAVE_UNISTD_Y && defined HAVE_ERRNO_H
-   char *exec_argv[3] = {"firefox", NULL, NULL};
+#if defined HAVE_SYS_TYPES_H && defined HAVE_UNISTD_H && defined HAVE_ERRNO_H
+   char *exec_argv[3] = {BROWSER, NULL, NULL};
    pid_t pid;
    int err;
 
@@ -191,17 +203,19 @@ static int handle_xlib_events (GVJ_t *firstjob, Display *dpy)
 		    rc++;
                     break;
                 case MotionNotify:
-		    pointer.x = (double)xev.xbutton.x;
-		    pointer.y = (double)xev.xbutton.y;
-                    (job->callbacks->motion)(job, pointer);
-		    rc++;
+		    if (job->button) { /* only interested while a button is pressed */
+		        pointer.x = (double)xev.xbutton.x;
+		        pointer.y = (double)xev.xbutton.y;
+                        (job->callbacks->motion)(job, pointer);
+		        rc++;
+		    }
                     break;
                 case ButtonRelease:
 		    pointer.x = (double)xev.xbutton.x;
 		    pointer.y = (double)xev.xbutton.y;
                     (job->callbacks->button_release)(job, xev.xbutton.button, pointer);
-//		    if (job->selected_href && job->selected_href[0])
-//		        browser_show(job);
+		    if (job->selected_href && job->selected_href[0] && xev.xbutton.button == 1)
+		        browser_show(job);
 		    rc++;
                     break;
                 case KeyPress:
