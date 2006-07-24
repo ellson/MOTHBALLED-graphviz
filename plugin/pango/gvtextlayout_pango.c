@@ -24,71 +24,6 @@
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
 
-typedef struct _PostscriptAlias {
-    char* name;
-    char* string_desc;
-} PostscriptAlias;
-
-/* This table maps standard Postscript font names to URW Type 1 fonts */
-static PostscriptAlias postscript_alias[] = {
-    { "AvantGarde-Book", "URW Gothic L, Book" },
-    { "AvantGarde-BookOblique", "URW Gothic L, Book, Oblique" },
-    { "AvantGarde-Demi", "URW Gothic L, Demi" },
-    { "AvantGarde-DemiOblique", "URW Gothic L, Demi, Oblique" },
-
-    { "Bookman-Demi", "URW Bookman L, Demi, Bold" },
-    { "Bookman-DemiItalic", "URW Bookman L, Demi, Bold, Italic" },
-    { "Bookman-Light", "URW Bookman L, Light" },
-    { "Bookman-LightItalic", "URW Bookman L, Light, Italic" },
-
-    { "Courier", "Nimbus Mono L, Regular" },
-    { "Courier-Oblique", "Nimbus Mono L, Regular, Oblique" },
-    { "Courier-Bold", "Nimbus Mono L, Bold" },
-    { "Courier-BoldOblique", "Nimbus Mono L, Bold, Oblique" },
-
-    { "Helvetica", "Nimbus Sans L, Regular" },
-    { "Helvetica-Oblique", "Nimbus Sans L, Regular, Italic" },
-    { "Helvetica-Bold", "Nimbus Sans L, Bold" },
-    { "Helvetica-BoldOblique", "Nimbus Sans L, Bold, Italic" },
-
-    { "Helvetica-Narrow", "Nimbus Sans L, Regular, Condensed" },
-    { "Helvetica-Narrow-Oblique", "Nimbus Sans L, Regular, Condensed, Italic" },
-    { "Helvetica-Narrow-Bold", "Nimbus Sans L, Bold, Condensed" },
-    { "Helvetica-Narrow-BoldOblique", "Nimbus Sans L, Bold, Condensed, Italic" },
-
-    { "NewCenturySchlbk-Roman", "Century Schoolbook L, Roman" },
-    { "NewCenturySchlbk-Italic", "Century Schoolbook L, Italic" },
-    { "NewCenturySchlbk-Bold", "Century Schoolbook L, Bold" },
-    { "NewCenturySchlbk-BoldItalic", "Century Schoolbook L, Bold, Italic" },
-
-    { "Palatino-Roman", "URW Palladio L, Roman" },
-    { "Palatino-Italic", "URW Palladio L, Italic" },
-    { "Palatino-Bold", "URW Palladio L, Bold" },
-    { "Palatino-BoldItalic", "URW Palladio L, Bold, Italic" },
-
-    { "Symbol", "Standard Symbols L, Regular" },
-
-    { "Times-Roman", "Nimbus Roman No9 L, Regular" },
-    { "Times-Italic", "Nimbus Roman No9 L, Regular, Italic" },
-    { "Times-Bold", "Nimbus Roman No9 L, Medium" },
-    { "Times-BoldItalic", "Nimbus Roman No9 L, Medium, Italic" },
-
-    { "ZapfChancery-MediumItalic", "URW Chancery L, Medium, Italic" },
-    { "ZapfDingbats", "Dingbats" },
-};
-
-static char* find_postscript_font(char* fontname)
-{
-  int i;
-
-  for (i = 0; i < sizeof(postscript_alias)/sizeof(*postscript_alias); i++) {
-    if (strcmp(fontname, postscript_alias[i].name) == 0) {
-	return postscript_alias[i].string_desc;
-    }
-  }
-  return NULL;
-}
-
 static void pango_free_layout (void *layout)
 {
     g_object_unref((PangoLayout*)layout);
@@ -110,7 +45,7 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
     PangoAttrList *attrs;
     GError *error = NULL;
 #endif
-    char *text, *fontreq;
+    char *text;
     const char *family;
 
     if (!fontmap)
@@ -119,15 +54,11 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
     if (!context)
         context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
 
-    if (!fontname || strcmp(fontname, para->fontname)) {
-	fontname = para->fontname;
+    if (!fontname || strcmp(fontname, para->translated_fontname)) {
+	fontname = para->translated_fontname;
         pango_font_description_free (desc);
 
-        /* try to find a match for a PostScript font
-	 * - or just get best available match */
-        if (! (fontreq = find_postscript_font(fontname)))
-	    fontreq = fontname;
-        desc = pango_font_description_from_string(fontreq);
+        desc = pango_font_description_from_string(fontname);
     }
     family = pango_font_description_get_family (desc);
     *fontpath = (char *)family;

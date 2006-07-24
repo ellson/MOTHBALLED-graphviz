@@ -160,6 +160,71 @@ estimate_textlayout(graph_t *g, textpara_t * para, char **fontpath)
     }
 }
 
+typedef struct _PostscriptAlias {
+    char* name;
+    char* string_desc;
+} PostscriptAlias;
+
+/* This table maps standard Postscript font names to URW Type 1 fonts */
+static PostscriptAlias postscript_alias[] = {
+    { "AvantGarde-Book", "URW Gothic L, Book" },
+    { "AvantGarde-BookOblique", "URW Gothic L, Book, Oblique" },
+    { "AvantGarde-Demi", "URW Gothic L, Demi" },
+    { "AvantGarde-DemiOblique", "URW Gothic L, Demi, Oblique" },
+
+    { "Bookman-Demi", "URW Bookman L, Demi, Bold" },
+    { "Bookman-DemiItalic", "URW Bookman L, Demi, Bold, Italic" },
+    { "Bookman-Light", "URW Bookman L, Light" },
+    { "Bookman-LightItalic", "URW Bookman L, Light, Italic" },
+
+    { "Courier", "Nimbus Mono L, Regular" },
+    { "Courier-Oblique", "Nimbus Mono L, Regular, Oblique" },
+    { "Courier-Bold", "Nimbus Mono L, Bold" },
+    { "Courier-BoldOblique", "Nimbus Mono L, Bold, Oblique" },
+
+    { "Helvetica", "Nimbus Sans L, Regular" },
+    { "Helvetica-Oblique", "Nimbus Sans L, Regular, Italic" },
+    { "Helvetica-Bold", "Nimbus Sans L, Bold" },
+    { "Helvetica-BoldOblique", "Nimbus Sans L, Bold, Italic" },
+
+    { "Helvetica-Narrow", "Nimbus Sans L, Regular, Condensed" },
+    { "Helvetica-Narrow-Oblique", "Nimbus Sans L, Regular, Condensed, Italic" },
+    { "Helvetica-Narrow-Bold", "Nimbus Sans L, Bold, Condensed" },
+    { "Helvetica-Narrow-BoldOblique", "Nimbus Sans L, Bold, Condensed, Italic" },
+
+    { "NewCenturySchlbk-Roman", "Century Schoolbook L, Roman" },
+    { "NewCenturySchlbk-Italic", "Century Schoolbook L, Italic" },
+    { "NewCenturySchlbk-Bold", "Century Schoolbook L, Bold" },
+    { "NewCenturySchlbk-BoldItalic", "Century Schoolbook L, Bold, Italic" },
+
+    { "Palatino-Roman", "URW Palladio L, Roman" },
+    { "Palatino-Italic", "URW Palladio L, Italic" },
+    { "Palatino-Bold", "URW Palladio L, Bold" },
+    { "Palatino-BoldItalic", "URW Palladio L, Bold, Italic" },
+
+    { "Symbol", "Standard Symbols L, Regular" },
+
+    { "Times-Roman", "Nimbus Roman No9 L, Regular" },
+    { "Times-Italic", "Nimbus Roman No9 L, Regular, Italic" },
+    { "Times-Bold", "Nimbus Roman No9 L, Medium" },
+    { "Times-BoldItalic", "Nimbus Roman No9 L, Medium, Italic" },
+
+    { "ZapfChancery-MediumItalic", "URW Chancery L, Medium, Italic" },
+    { "ZapfDingbats", "Dingbats" },
+};
+
+static char* translate_postscript_fontname(char* fontname)
+{
+  int i;
+
+  for (i = 0; i < sizeof(postscript_alias)/sizeof(*postscript_alias); i++) {
+    if (strcmp(fontname, postscript_alias[i].name) == 0) {
+        return postscript_alias[i].string_desc;
+    }
+  }
+  return NULL;
+}
+
 pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
 {
     char *fontpath = NULL;
@@ -167,6 +232,8 @@ pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
 
     para->fontname = fontname;
     para->fontsize = fontsize;
+
+    para->translated_fontname = translate_postscript_fontname(fontname);
 
     if (! gvtextlayout(GD_gvc(g), para, &fontpath) || !fontpath)
 	estimate_textlayout(g, para, &fontpath);

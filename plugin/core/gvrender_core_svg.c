@@ -117,42 +117,31 @@ static void svggen_print_color(GVJ_t * job, gvcolor_t color)
     }
 }
 
-static void svggen_font(GVJ_t * job)
+static void svggen_font(GVJ_t * job, char *fontname, double fontsize)
 {
     gvstyle_t *style = job->style;
     char buf[BUFSIZ];
-    int needstyle = 0;
 
     strcpy(buf, " style=\"");
-    if (strcasecmp(style->fontfam, DEFAULT_FONTNAME)) {
-	sprintf(buf + strlen(buf), "font-family:%s;", style->fontfam);
-	needstyle++;
-    }
-    if (style->fontsz != DEFAULT_FONTSIZE) {
-	sprintf(buf + strlen(buf), "font-size:%.2f;", (style->fontsz));
-	needstyle++;
-    }
+    sprintf(buf + strlen(buf), "font-family:%s;", fontname);
+    sprintf(buf + strlen(buf), "font-size:%.2f;", fontsize);
     switch (style->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(style->pencolor.u.string, "black")) {
 	    sprintf(buf + strlen(buf), "fill:%s;",
 		    style->pencolor.u.string);
-	    needstyle++;
 	}
 	break;
     case RGBA_BYTE:
 	sprintf(buf + strlen(buf), "fill:#%02x%02x%02x;",
 		style->pencolor.u.rgba[0],
 		style->pencolor.u.rgba[1], style->pencolor.u.rgba[2]);
-	needstyle++;
 	break;
     default:
 	assert(0);		/* internal error */
     }
-    if (needstyle) {
-	strcat(buf, "\"");
-	svggen_fputs(job, buf);
-    }
+    strcat(buf, "\"");
+    svggen_fputs(job, buf);
 }
 
 
@@ -306,13 +295,10 @@ static void svggen_begin_page(GVJ_t * job)
     svggen_printf(job, "<g id=\"graph%d\" class=\"graph\"",
 	    job->common->viewNum);
     svggen_printf(job,
-	    " transform=\"scale(%g %g) rotate(%d) translate(%g %g)\"",
+	    " transform=\"scale(%g %g) rotate(%d) translate(%g %g)\">\n",
 	    job->scale.x, job->scale.y, job->rotation,
 	    job->translation.x, job->translation.y);
     /* default style */
-    svggen_fputs(job, " style=\"font-family:");
-    svggen_fputs(job, job->style->fontfam);
-    svggen_printf(job, ";font-size:%.2f;\">\n", job->style->fontsz);
     if (obj->g->name[0]) {
         svggen_fputs(job, "<title>");
         svggen_fputs(job, xml_string(obj->g->name));
@@ -418,7 +404,7 @@ static void svggen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
     svggen_printf(job, "<text text-anchor=\"%s\"", anchor);
     svggen_printf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
-    svggen_font(job);
+    svggen_font(job, para->translated_fontname, para->fontsize);
     svggen_fputs(job, ">");
     svggen_fputs(job, xml_string(para->str));
     svggen_fputs(job, "</text>\n");

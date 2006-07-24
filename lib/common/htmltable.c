@@ -111,34 +111,34 @@ emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env, void *obj)
 
     /* make sure that there is something to do */
     if (tp->nparas < 1)
-      return;
+        return;
 
       /* set font attributes */
-     if (tp->font) {
-     if (tp->font->size > 0.0)
-     fsize = tp->font->size;
-     else
-     fsize = env->finfo.size;
-     if (tp->font->name)
-     fname = tp->font->name;
-     else
-     fname = env->finfo.name;
-     if (tp->font->color)
-     fcolor = tp->font->color;
-     else
-     fcolor = env->finfo.color;
-     } else {
-     fsize = env->finfo.size;
-     fname = env->finfo.name;
-     fcolor = env->finfo.color;
-     }
-     halfwidth_x = ((double)(tp->box.UR.x - tp->box.LL.x))/2.0;
-     p.x = env->p.x + ((double)(tp->box.UR.x + tp->box.LL.x))/2.0;
-     p.y = env->p.y + ((double)(tp->box.UR.y + tp->box.LL.y))/2.0;
+    if (tp->font) {
+        if (tp->font->size > 0.0)
+            fsize = tp->font->size;
+        else
+            fsize = env->finfo.size;
+        if (tp->font->name)
+            fname = tp->font->name;
+        else
+            fname = env->finfo.name;
+        if (tp->font->color)
+            fcolor = tp->font->color;
+        else
+            fcolor = env->finfo.color;
+    } else {
+        fsize = env->finfo.size;
+        fname = env->finfo.name;
+        fcolor = env->finfo.color;
+    }
+    halfwidth_x = ((double)(tp->box.UR.x - tp->box.LL.x))/2.0;
+    p.x = env->p.x + ((double)(tp->box.UR.x + tp->box.LL.x))/2.0;
+    p.y = env->p.y + ((double)(tp->box.UR.y + tp->box.LL.y))/2.0;
 
-     emit_textparas(job, tp->nparas, tp->para, p,
-     halfwidth_x, fname, fsize, fcolor);
-     }
+    emit_textparas(job, tp->nparas, tp->para, p,
+        halfwidth_x, fname, fsize, fcolor);
+}
 #endif
 
 static void 

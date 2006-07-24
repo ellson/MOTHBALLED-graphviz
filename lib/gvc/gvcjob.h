@@ -41,12 +41,10 @@ extern "C" {
     typedef enum { GVATTR_STRING, GVATTR_BOOL, GVATTR_COLOR } gvattr_t;
 
     typedef struct {
-	char *fontfam, fontopt;
 	gvcolor_t pencolor, fillcolor;
 	pen_type pen;
 	fill_type fill;
 	double penwidth;
-	double fontsz;
     } gvstyle_t;
 
 #define EMIT_SORTED (1<<0)

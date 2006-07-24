@@ -426,9 +426,6 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
     /* init stack */
     gvc->SP = 0;
     job->style = &(gvc->styles[0]);
-    job->style->fontfam = DEFAULT_FONTNAME;
-    job->style->fontsz = DEFAULT_FONTSIZE;
-    job->style->fontopt = FONT_REGULAR;
     job->style->pen = PEN_SOLID;
     job->style->fill = FILL_NONE;
     job->style->penwidth = PENWIDTH_NORMAL;
@@ -1528,12 +1525,8 @@ void gvrender_set_font(GVJ_t * job, char *fontname, double fontsize)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
-    if (gvre) {
-	job->style->fontfam = fontname;
-	job->style->fontsz = fontsize;
-    }
 #ifdef WITH_CODEGENS
-    else {
+    if (!gvre) {
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->set_font)

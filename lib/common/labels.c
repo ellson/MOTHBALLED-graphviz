@@ -174,7 +174,7 @@ emit_textparas(GVJ_t* job, int nparas, textpara_t paras[], pointf p,
     paraspacing = (int) (fsize * LINESPACING);
 
     /* position for first para */
-    p.y += paraspacing * (nparas - 1) / 2	/* cl of toppara */
+    p.y += paraspacing * (nparas - 1) / 2	/* cl of top para */
 			- fsize * 0.30; /* Empirically determined fudge factor */
 
     gvrender_begin_context(job);

@@ -24,6 +24,7 @@ extern "C" {
     typedef struct textpara_t {
 	char *str;      /* stored in utf-8 */
 	char *fontname; 
+	char *translated_fontname; 
 	char *xshow;
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
