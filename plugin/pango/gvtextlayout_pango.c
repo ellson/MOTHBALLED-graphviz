@@ -31,6 +31,7 @@ static void pango_free_layout (void *layout)
 
 static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath)
 {
+    static char buf[512];  /* returned in fontpath, only good until next call */
     static PangoFontMap *fontmap;
     static PangoContext *context;
     static PangoFontDescription *desc;
@@ -47,6 +48,10 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
 #endif
     char *text;
     const char *family;
+    PangoStyle style;
+    PangoWeight weight;
+    PangoVariant variant;
+    PangoStretch stretch;
 
     if (!fontmap)
         fontmap = pango_cairo_font_map_get_default();
@@ -61,7 +66,41 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
         desc = pango_font_description_from_string(fontname);
     }
     family = pango_font_description_get_family (desc);
-    *fontpath = (char *)family;
+    style = pango_font_description_get_style (desc);
+    weight = pango_font_description_get_weight (desc);
+    variant = pango_font_description_get_variant (desc);
+    stretch = pango_font_description_get_stretch (desc);
+    strcpy(buf,family);
+    switch (style) {
+	case PANGO_STYLE_NORMAL:            /* strcat(buf, ", normal");*/ break;
+	case PANGO_STYLE_OBLIQUE:           strcat(buf, ", oblique"); break;
+	case PANGO_STYLE_ITALIC:            strcat(buf, ", italic"); break;
+    }
+    switch (weight) {
+	case PANGO_WEIGHT_ULTRALIGHT:       strcat(buf, ", ultralight"); break;
+	case PANGO_WEIGHT_LIGHT:            strcat(buf, ", light"); break;
+	case PANGO_WEIGHT_NORMAL:           /* strcat(buf, ", normal");*/ break;
+	case PANGO_WEIGHT_SEMIBOLD:         strcat(buf, ", semibold"); break;
+	case PANGO_WEIGHT_BOLD:             strcat(buf, ", bold"); break;
+	case PANGO_WEIGHT_ULTRABOLD:        strcat(buf, ", ultrabold"); break;
+	case PANGO_WEIGHT_HEAVY:            strcat(buf, ", heavy"); break;
+    }
+    switch (variant) {
+	case PANGO_VARIANT_NORMAL:          /* strcat(buf, ", normal");*/ break;
+	case PANGO_VARIANT_SMALL_CAPS:      strcat(buf, ", smallcaps"); break;
+    }
+    switch (stretch) {
+	case PANGO_STRETCH_ULTRA_CONDENSED: strcat(buf, ", ultracondensed"); break;
+	case PANGO_STRETCH_EXTRA_CONDENSED: strcat(buf, ", extracondensed"); break;
+	case PANGO_STRETCH_CONDENSED:       strcat(buf, ", condensed"); break;
+	case PANGO_STRETCH_SEMI_CONDENSED:  strcat(buf, ", semicondensed"); break;
+	case PANGO_STRETCH_NORMAL:          /* strcat(buf, ", normal");*/ break;
+	case PANGO_STRETCH_SEMI_EXPANDED:   strcat(buf, ", semiexpanded"); break;
+	case PANGO_STRETCH_EXPANDED:        strcat(buf, ", expanded"); break;
+	case PANGO_STRETCH_EXTRA_EXPANDED:  strcat(buf, ", extraexpanded"); break;
+	case PANGO_STRETCH_ULTRA_EXPANDED:  strcat(buf, ", ultraexpanded"); break;
+    }
+    *fontpath = buf;
 
     pango_font_description_set_size (desc, (gint)(para->fontsize * PANGO_SCALE));
 
