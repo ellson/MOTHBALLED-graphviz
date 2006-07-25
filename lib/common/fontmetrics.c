@@ -162,67 +162,41 @@ estimate_textlayout(graph_t *g, textpara_t * para, char **fontpath)
 
 typedef struct _PostscriptAlias {
     char* name;
-    char* string_desc;
+    char* translated_name;
 } PostscriptAlias;
 
-/* This table maps standard Postscript font names to URW Type 1 fonts */
+/*
+ * This table maps standard Postscript font names to URW Type 1 fonts.
+ *
+ *   The original source is in ps_font_equiv.txt.  This is sorted 
+ *   during make into ps_font_equiv.h to ensure that it is in the right
+ *   order for bsearch()
+ */
 static PostscriptAlias postscript_alias[] = {
-    { "AvantGarde-Book", "URW Gothic L, Book" },
-    { "AvantGarde-BookOblique", "URW Gothic L, Book, Oblique" },
-    { "AvantGarde-Demi", "URW Gothic L, Demi" },
-    { "AvantGarde-DemiOblique", "URW Gothic L, Demi, Oblique" },
-
-    { "Bookman-Demi", "URW Bookman L, Demi, Bold" },
-    { "Bookman-DemiItalic", "URW Bookman L, Demi, Bold, Italic" },
-    { "Bookman-Light", "URW Bookman L, Light" },
-    { "Bookman-LightItalic", "URW Bookman L, Light, Italic" },
-
-    { "Courier", "Nimbus Mono L, Regular" },
-    { "Courier-Oblique", "Nimbus Mono L, Regular, Oblique" },
-    { "Courier-Bold", "Nimbus Mono L, Bold" },
-    { "Courier-BoldOblique", "Nimbus Mono L, Bold, Oblique" },
-
-    { "Helvetica", "Nimbus Sans L, Regular" },
-    { "Helvetica-Oblique", "Nimbus Sans L, Regular, Italic" },
-    { "Helvetica-Bold", "Nimbus Sans L, Bold" },
-    { "Helvetica-BoldOblique", "Nimbus Sans L, Bold, Italic" },
-
-    { "Helvetica-Narrow", "Nimbus Sans L, Regular, Condensed" },
-    { "Helvetica-Narrow-Oblique", "Nimbus Sans L, Regular, Condensed, Italic" },
-    { "Helvetica-Narrow-Bold", "Nimbus Sans L, Bold, Condensed" },
-    { "Helvetica-Narrow-BoldOblique", "Nimbus Sans L, Bold, Condensed, Italic" },
-
-    { "NewCenturySchlbk-Roman", "Century Schoolbook L, Roman" },
-    { "NewCenturySchlbk-Italic", "Century Schoolbook L, Italic" },
-    { "NewCenturySchlbk-Bold", "Century Schoolbook L, Bold" },
-    { "NewCenturySchlbk-BoldItalic", "Century Schoolbook L, Bold, Italic" },
-
-    { "Palatino-Roman", "URW Palladio L, Roman" },
-    { "Palatino-Italic", "URW Palladio L, Italic" },
-    { "Palatino-Bold", "URW Palladio L, Bold" },
-    { "Palatino-BoldItalic", "URW Palladio L, Bold, Italic" },
-
-    { "Symbol", "Standard Symbols L, Regular" },
-
-    { "Times-Roman", "Nimbus Roman No9 L, Regular" },
-    { "Times-Italic", "Nimbus Roman No9 L, Regular, Italic" },
-    { "Times-Bold", "Nimbus Roman No9 L, Medium" },
-    { "Times-BoldItalic", "Nimbus Roman No9 L, Medium, Italic" },
-
-    { "ZapfChancery-MediumItalic", "URW Chancery L, Medium, Italic" },
-    { "ZapfDingbats", "Dingbats" },
+#include "ps_font_equiv.h"
 };
+
+static int fontcmpf(const void *a, const void *b)
+{
+    return (strcasecmp(((PostscriptAlias*)a)->name, ((PostscriptAlias*)b)->name));
+}
 
 static char* translate_postscript_fontname(char* fontname)
 {
-  int i;
+    static PostscriptAlias key;
+    static PostscriptAlias *result;
 
-  for (i = 0; i < sizeof(postscript_alias)/sizeof(*postscript_alias); i++) {
-    if (strcmp(fontname, postscript_alias[i].name) == 0) {
-        return postscript_alias[i].string_desc;
+    if (key.name == NULL || strcasecmp(key.name, fontname)) {
+        key.name = fontname;
+        result = (PostscriptAlias *) bsearch((void *) &key,
+			(void *) postscript_alias,
+			sizeof(postscript_alias) / sizeof(PostscriptAlias),
+			sizeof(PostscriptAlias),
+                        fontcmpf);
     }
-  }
-  return NULL;
+    if (result == NULL)
+	return NULL;
+    return result->translated_name;
 }
 
 pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)

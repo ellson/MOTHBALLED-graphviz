@@ -128,11 +128,7 @@ static void rgb2cmyk(double r, double g, double b, double *c, double *m,
 
 static int colorcmpf(const void *p0, const void *p1)
 {
-    /* fast comparison of first character */
-    int i = (((hsvrgbacolor_t *) p0)->name[0] - ((hsvrgbacolor_t *) p1)->name[0]);
-    /* if first character matches then compare full color name */
-    return (i ? i :
-	    strcmp(((hsvrgbacolor_t *) p0)->name, ((hsvrgbacolor_t *) p1)->name));
+    return strcasecmp(((hsvrgbacolor_t *) p0)->name, ((hsvrgbacolor_t *) p1)->name);
 }
 
 char *canontoken(char *str)

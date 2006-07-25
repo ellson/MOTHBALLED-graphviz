@@ -26,7 +26,13 @@ libcommon_C_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
 	args.c memory.c globals.c htmllex.c htmlparse.y htmltable.c input.c \
 	pointset.c postproc.c routespl.c splines.c psusershape.c \
 	timing.c labels.c ns.c shapes.c utils.c geom.c \
-	output.c emit.c ps.txt color_names $(CODEGENS)
+	output.c emit.c ps.txt ps_font_equiv.txt color_names $(CODEGENS)
+
+fontmetrics.o fontmetrics.lo: ps_font_equiv.h
+
+# ensure font names are properly sorted for bsearch operation 
+ps_font_equiv.h: ps_font_equiv.txt
+	LC_COLLATE=C $(SORT) <ps_font_equiv.txt >ps_font_equiv.h
 
 utils.o utils.lo : ps.h
 
@@ -38,6 +44,7 @@ colxlate.o colxlate.lo : colortbl.h
 colortbl.h : color_lib
 	$(AWK) -f $(top_srcdir)/awk/colortbl.awk color_lib > colortbl.h
 
+# ensure color names are properly sorted for bsearch operation 
 color_lib : brewer_lib $(top_srcdir)/lib/common/color_names
 	cat brewer_lib $(top_srcdir)/lib/common/color_names | LC_COLLATE=C $(SORT) > color_lib
 
@@ -56,9 +63,10 @@ htmlparse.c: y.output
 htmlparse.h: y.output
 	@SED@ "s/yy/html/g" < y.tab.h > htmlparse.h
 
-DISTCLEANFILES = brewer_lib color_lib colortbl.h y.output y.tab.[ch] htmlparse.[ch]
+DISTCLEANFILES = brewer_lib color_lib colortbl.h ps_font_equiv.h ps.h \
+	y.output y.tab.[ch] htmlparse.[ch]
 
-EXTRA_DIST = Makefile.old README.imap chars.tcl ps.h \
+EXTRA_DIST = Makefile.old README.imap chars.tcl ps.h ps_font_equiv.h \
 	strcasecmp.c strncasecmp.c htmlparse.c htmlparse.h \
 	y.tab.c y.tab.h y.output entities.html entities.tcl \
 	brewer_colors brewer_lib color_names color_lib colortbl.h
