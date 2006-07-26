@@ -59,11 +59,28 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
     if (!context)
         context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
 
-    if (!fontname || strcmp(fontname, para->translated_fontname)) {
-	fontname = para->translated_fontname;
+    if (!fontname || strcmp(fontname, para->fontname)) {
+	fontname = para->fontname;
         pango_font_description_free (desc);
 
-        desc = pango_font_description_from_string(fontname);
+	if (para->postscript_alias) {
+	    strcpy(buf, para->postscript_alias->family);
+	    if (para->postscript_alias->weight) {
+		strcat(buf, ", ");
+		strcat(buf, para->postscript_alias->weight);
+	    }
+	    if (para->postscript_alias->stretch) {
+		strcat(buf, ", ");
+		strcat(buf, para->postscript_alias->stretch);
+	    }
+	    if (para->postscript_alias->style) {
+		strcat(buf, ", ");
+		strcat(buf, para->postscript_alias->style);
+	    }
+            desc = pango_font_description_from_string(buf);
+	}
+	else
+            desc = pango_font_description_from_string(fontname);
     }
     family = pango_font_description_get_family (desc);
     style = pango_font_description_get_style (desc);

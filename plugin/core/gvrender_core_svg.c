@@ -117,34 +117,6 @@ static void svggen_print_color(GVJ_t * job, gvcolor_t color)
     }
 }
 
-static void svggen_font(GVJ_t * job, char *fontname, double fontsize)
-{
-    gvstyle_t *style = job->style;
-    char buf[BUFSIZ];
-
-    strcpy(buf, " style=\"");
-    sprintf(buf + strlen(buf), "font-family:%s;", fontname);
-    sprintf(buf + strlen(buf), "font-size:%.2f;", fontsize);
-    switch (style->pencolor.type) {
-    case COLOR_STRING:
-	if (strcasecmp(style->pencolor.u.string, "black")) {
-	    sprintf(buf + strlen(buf), "fill:%s;",
-		    style->pencolor.u.string);
-	}
-	break;
-    case RGBA_BYTE:
-	sprintf(buf + strlen(buf), "fill:#%02x%02x%02x;",
-		style->pencolor.u.rgba[0],
-		style->pencolor.u.rgba[1], style->pencolor.u.rgba[2]);
-	break;
-    default:
-	assert(0);		/* internal error */
-    }
-    strcat(buf, "\"");
-    svggen_fputs(job, buf);
-}
-
-
 static void svggen_grstyle(GVJ_t * job, int filled)
 {
     gvstyle_t *style = job->style;
@@ -387,25 +359,50 @@ static void svggen_end_anchor(GVJ_t * job)
 
 static void svggen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
-    char *anchor;
+    gvstyle_t *penstyle = job->style;
 
+    svggen_fputs(job, "<text");
     switch (para->just) {
     case 'l':
-	anchor = "start";
+	svggen_fputs(job, " text-anchor=\"start\"");
 	break;
     case 'r':
-	anchor = "end";
+	svggen_fputs(job, " text-anchor=\"end\"");
 	break;
     default:
     case 'n':
-	anchor = "middle";
+	svggen_fputs(job, " text-anchor=\"middle\"");
 	break;
     }
-
-    svggen_printf(job, "<text text-anchor=\"%s\"", anchor);
     svggen_printf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
-    svggen_font(job, para->translated_fontname, para->fontsize);
-    svggen_fputs(job, ">");
+    svggen_fputs(job, " style=\"");
+    if (para->postscript_alias) {
+        svggen_printf(job, "font-family:%s;", para->postscript_alias->family);
+        if (para->postscript_alias->weight)
+	    svggen_printf(job, "font-weight:%s;", para->postscript_alias->weight);
+        if (para->postscript_alias->stretch)
+	    svggen_printf(job, "font-stretch:%s;", para->postscript_alias->stretch);
+        if (para->postscript_alias->style)
+	    svggen_printf(job, "font-style:%s;", para->postscript_alias->style);
+    }
+    else {
+        svggen_printf(job, "font:%s;", para->fontname);
+    }
+    svggen_printf(job, "font-size:%.2f;", para->fontsize);
+    switch (penstyle->pencolor.type) {
+    case COLOR_STRING:
+	if (strcasecmp(penstyle->pencolor.u.string, "black"))
+	    svggen_printf(job, "fill:%s;", penstyle->pencolor.u.string);
+	break;
+    case RGBA_BYTE:
+	svggen_printf(job, "fill:#%02x%02x%02x;",
+		penstyle->pencolor.u.rgba[0],
+		penstyle->pencolor.u.rgba[1], penstyle->pencolor.u.rgba[2]);
+	break;
+    default:
+	assert(0);		/* internal error */
+    }
+    svggen_fputs(job, "\">");
     svggen_fputs(job, xml_string(para->str));
     svggen_fputs(job, "</text>\n");
 }

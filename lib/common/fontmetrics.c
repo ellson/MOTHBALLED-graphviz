@@ -160,11 +160,6 @@ estimate_textlayout(graph_t *g, textpara_t * para, char **fontpath)
     }
 }
 
-typedef struct _PostscriptAlias {
-    char* name;
-    char* translated_name;
-} PostscriptAlias;
-
 /*
  * This table maps standard Postscript font names to URW Type 1 fonts.
  *
@@ -181,7 +176,7 @@ static int fontcmpf(const void *a, const void *b)
     return (strcasecmp(((PostscriptAlias*)a)->name, ((PostscriptAlias*)b)->name));
 }
 
-static char* translate_postscript_fontname(char* fontname)
+static PostscriptAlias* translate_postscript_fontname(char* fontname)
 {
     static PostscriptAlias key;
     static PostscriptAlias *result;
@@ -194,9 +189,7 @@ static char* translate_postscript_fontname(char* fontname)
 			sizeof(PostscriptAlias),
                         fontcmpf);
     }
-    if (result == NULL)
-	return NULL;
-    return result->translated_name;
+    return result;
 }
 
 pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
@@ -207,7 +200,7 @@ pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
     para->fontname = fontname;
     para->fontsize = fontsize;
 
-    para->translated_fontname = translate_postscript_fontname(fontname);
+    para->postscript_alias = translate_postscript_fontname(fontname);
 
     if (! gvtextlayout(GD_gvc(g), para, &fontpath) || !fontpath)
 	estimate_textlayout(g, para, &fontpath);

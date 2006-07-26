@@ -21,10 +21,19 @@
 extern "C" {
 #endif
 
+    typedef struct _PostscriptAlias {
+        char* name;
+        char* family;
+        char* weight;
+        char* stretch;
+        char* style;
+        int xfig_code;
+    } PostscriptAlias;
+
     typedef struct textpara_t {
 	char *str;      /* stored in utf-8 */
 	char *fontname; 
-	char *translated_fontname; 
+	PostscriptAlias *postscript_alias; 
 	char *xshow;
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
