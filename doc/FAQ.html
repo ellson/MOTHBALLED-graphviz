@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
-<HTML><HEAD><TITLE>Graphviz FAQ 2006-03-22</TITLE>
+<HTML><HEAD><TITLE>Graphviz FAQ 2006-07-27</TITLE>
 <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
 </HEAD><BODY>
-<H1>Graphviz FAQ 2006-03-22</H1>
+<H1>Graphviz FAQ 2006-07-27</H1>
 
 <A HREF="mailto:north@graphviz.org">Stephen North</A>,
 <A HREF="mailto:erg@graphviz.org">Emden Gansner</A>,
@@ -901,6 +901,25 @@ simple cgi-bin tcl script like:
 </pre>
 Save this script as .../cgi-bin/test.tcl, make it executable, then
 look at: <a href="http://localhost/cgi-bin/test.tcl">http://localhost/cgi-bin/test.tcl</a>
+<P>
+Also, if you see something like:
+<pre>
+WebDot Error:
+
+Response Code = 403
+</pre>
+This usually means that webdot ran succesfully, but was not able
+to fetch the remote graph from the URL you gave as an argument.
+The reason is probably that your server is behind a firewall that
+blocks the webdot server, so it cannot get the graph file.
+You can either change firewall permissions, put the graph on a
+different server, or install webdot locally so you don't need a
+remote server to fetch your graph data.
+<P>
+It would be nice if someone hacked webdot to take the contents
+of a graph as a cgi-bin argument, so it wouldn't need
+permission to fetch a graph remotely.
+This is left as an exercise for the Open Source Community.
 <P>
 <A name=Q37>
 <B>Q. I have "Font not found" errors, or text labels missing in webdot.</B>
