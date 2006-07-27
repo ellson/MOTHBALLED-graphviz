@@ -105,11 +105,18 @@ static pointf label_size(graph_t * g, textlabel_t * lp)
 void
 size_label (graph_t* g, textlabel_t* rv)
 {
-    if (GD_charset(g->root) == CHAR_LATIN1) {
-	char* lstr = latin1ToUTF8(rv->text);
-	free(rv->text);
-	rv->text = lstr;
+    char *s;
+
+    switch (GD_charset(g->root)) {
+    case CHAR_LATIN1:
+	s = latin1ToUTF8(rv->text);
+	break;
+    default: /* UTF8 */
+	s = htmlEntityUTF8(rv->text);
+	break;
     }
+    free(rv->text);
+    rv->text = s;
     label_size(g, rv);
 }
 

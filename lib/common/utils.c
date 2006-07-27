@@ -1247,17 +1247,15 @@ safe_dcl(graph_t * g, void *obj, char *name, char *def,
 }
 
 static int comp_entities(const void *e1, const void *e2) {
-  struct entities_s *en1 = (struct entities_s *) e1;
-  struct entities_s *en2 = (struct entities_s *) e2;
-  return strcmp(en1->name, en2->name);
+  return strcmp(((struct entities_s *)e1)->name, ((struct entities_s *)e2)->name);
 }
 
 #define MAXENTLEN 8
 
 /* scanEntity:
- *  * Scan non-numeric entity, convert to &#...; form and store in xbuf.
- *   * t points to first char after '&'. Return after final semicolon.
- *    * If unknown, we return t and let libexpat flag the error.
+ * Scan non-numeric entity, convert to &#...; form and store in xbuf.
+ * t points to first char after '&'. Return after final semicolon.
+ * If unknown, we return t and let libexpat flag the error.
  *     */
 char* scanEntity (char* t, agxbuf* xb)
 {
@@ -1355,13 +1353,87 @@ htmlEntity (char** s)
     return n;
 }
 
+/* substitute html entities like: &#123; and: &amp; for the UTF8 equivalents */
+char* htmlEntityUTF8 (char* s)
+{
+    char*  ns;
+    agxbuf xb;
+    unsigned char buf[BUFSIZ];
+    unsigned char c;
+    unsigned int v;
+    int rc;
+
+    agxbinit(&xb, BUFSIZ, buf);
+
+    while ((c = *(unsigned char*)s++)) {
+        if (c < 0xC0) {
+	    /*
+	     * Handles properly formed UTF-8 characters between
+	     * 0x01 and 0x7F.  Also treats \0 and naked trail
+	     * bytes 0x80 to 0xBF as valid characters representing
+	     * themselves.
+	     */
+	    if (c == '&') {
+		/* replace html entity sequences like: &amp;
+		 * and: &#123; with their UTF8 equivalents */
+	        v = htmlEntity (&s);
+	        if (v) {
+		    if (v < 0x7F) /* entity needs 1 byte in UTF8 */
+			c = v;
+		    else if (v < 0x07FF) { /* entity needs 2 bytes in UTF8 */
+			rc = agxbputc(&xb, (v >> 6) | 0xC0);
+			c = (v & 0x3F) | 0x80;
+		    }
+		    else { /* entity needs 3 bytes in UTF8 */
+			rc = agxbputc(&xb, (v >> 12) | 0xE0);
+			rc = agxbputc(&xb, ((v >> 6) & 0x3F) | 0x80);
+			c = (v & 0x3F) | 0x80;
+		    }
+		}
+		else {
+		    c = '&';
+		}
+            }
+	}
+        else if (c < 0xE0) { /* copy 2 byte UTF8 characters */
+	    if ((s[1] & 0xC0) == 0x80) {
+	        rc = agxbputc(&xb, c);
+	        c = *(unsigned char*)s++;
+	    }
+	    /*
+	     * A two-byte-character lead-byte not followed by trail-byte
+	     * represents itself.
+	     */
+	}
+	else if (c < 0xF0) { /* copy 3 byte UTF8 characters */
+	    if (((s[1] & 0xC0) == 0x80) && ((s[2] & 0xC0) == 0x80)) {
+	        rc = agxbputc(&xb, c);
+	        c = *(unsigned char*)s++;
+	        rc = agxbputc(&xb, c);
+	        c = *(unsigned char*)s++;
+	    }
+	    /*
+	     * A three-byte-character lead-byte not followed by
+	     * two trail-bytes represents itself.
+	     */
+	}
+	else  {
+	    /* UTF8 codes > 3 bytes not supported */
+	    assert (0);
+        }
+	rc = agxbputc(&xb, c);
+    }
+    ns = strdup (agxbuse(&xb));
+    agxbfree(&xb);
+    return ns;
+}
+
 /* latin1ToUTF8:
  * Converts string from Latin1 encoding to utf8
  * Also translates HTML entities.
  *
  */
-char*
-latin1ToUTF8 (char* s)
+char* latin1ToUTF8 (char* s)
 {
     char*  ns;
     agxbuf xb;

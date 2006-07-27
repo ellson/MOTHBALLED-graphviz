@@ -68,6 +68,7 @@ extern "C" {
              attrsym_t * (*fun) (Agraph_t *, char *, char *));
 
     extern char *latin1ToUTF8(char *);
+    extern char *htmlEntityUTF8(char *);
     extern char* utf8ToLatin1 (char* ins);
     extern char* scanEntity (char* t, agxbuf* xb);
 
