@@ -543,10 +543,12 @@ gvrender_features_t figgen_features = {
     EMIT_COLORS
 	| GVRENDER_Y_GOES_DOWN,	/* flags */
     DEFAULT_EMBED_MARGIN,	/* default margin - points */
-    {1450.,1450.},		/* default dpi */
+    {1440.,1440.},		/* default dpi */
    	 /* FIXME - this default dpi is a very strange number!!!
-	  * it was picked to make .png usershapes the right size on my screen
-    	  * also 1200 is hardcoded into the o/p file instead of using job->dpi 
+	  * It was picked to make .png usershapes the right size on my screen.
+	  * It happens to be 1.2 * 1200, but I can't explain the 1.2.
+	  * (I was expecting 1.3333 which is 96/72, but thats too big.)
+    	  * Also 1200 is hardcoded in figgen_begin_graph() instead of using job->dpi 
           */
     figgen_knowncolors,		/* knowncolors */
     sizeof(figgen_knowncolors) / sizeof(char *), /* sizeof knowncolors */

@@ -77,7 +77,7 @@ static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, bool fille
     int thickness = 0;
     int pen_color = 0;
     int fill_color = -1;
-    int depth = 0;
+    int depth = 1;
     int pen_style = -1;         /* not used */
     int area_fill = 0;
     double style_val = 0.0;
