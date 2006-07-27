@@ -18,6 +18,11 @@
 #include "config.h"
 #endif
 
+#ifdef WIN32
+#include <io.h>
+#include <compat.h>
+#endif
+
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>

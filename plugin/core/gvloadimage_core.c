@@ -20,6 +20,9 @@
 
 #include <stdlib.h>
 #include <sys/types.h>
+#ifdef WIN32
+#include <io.h>
+#endif
 #include <sys/stat.h>
 #if HAVE_UNISTD_H
 #include <unistd.h>

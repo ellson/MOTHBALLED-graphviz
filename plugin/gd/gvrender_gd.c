@@ -18,6 +18,9 @@
 #include "config.h"
 #endif
 
+#ifdef WIN32
+#include <io.h>
+#endif
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
