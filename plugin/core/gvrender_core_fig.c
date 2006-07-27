@@ -361,7 +361,7 @@ figgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     int line_style;		/* solid, dotted, dashed */
     int thickness = style->penwidth;
     int pen_color = style->pencolor.u.index;
-    int fill_color = style->fillcolor.u.index;;
+    int fill_color = style->fillcolor.u.index;
     int depth = Depth;
     int pen_style = 0;          /* not used */
     int area_fill;
