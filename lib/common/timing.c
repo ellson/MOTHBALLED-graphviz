@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#ifndef MSWIN32
+#ifndef WIN32
 
 #include        <unistd.h>
 #include	<sys/types.h>
