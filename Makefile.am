@@ -26,7 +26,7 @@ dist-hook:
 
 EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 	autogen.sh config/depcomp config/config.rpath \
-	builddate.h ast_common.h.in \
+	builddate.h ast_common.h.in compat.h \
 	Makefile.old Config.mk.old configure.old INSTALL.old \
 	Makeargs config.h.old compat_getopt.h iffe config.iffe \
 	m4/README m4/iconv.m4 m4/lib-ld.m4 m4/lib-link.m4 m4/lib-prefix.m4 \
