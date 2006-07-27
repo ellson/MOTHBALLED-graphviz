@@ -20,6 +20,9 @@
 #include <ctype.h>
 #include "grammar.h"
 #include "aghdr.h"
+#ifdef WIN32
+#include <io.h>
+#endif
 
 #define GRAPH_EOF_TOKEN		'@'		/* lex class must be defined below */
 	/* this is a workaround for linux flex */

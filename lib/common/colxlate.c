@@ -16,6 +16,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef WIN32
+#include <compat.h>
+#endif
 #include <string.h>
 #include <ctype.h>
 

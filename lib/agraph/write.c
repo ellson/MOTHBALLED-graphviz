@@ -15,6 +15,9 @@
 **********************************************************/
 
 
+#ifdef WIN32
+#include <compat.h>
+#endif
 #include <stdio.h>		/* need sprintf() */
 #include <ctype.h>
 #include "aghdr.h"
