@@ -2,6 +2,7 @@
 *.lo
 .deps
 .libs
+po
 graphviz*.tar.gz
 Makefile
 Makefile.in
