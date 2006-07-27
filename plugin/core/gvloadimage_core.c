@@ -35,12 +35,14 @@
 
 extern void svggen_fputs(GVJ_t * job, char *s);
 extern void svggen_printf(GVJ_t * job, const char *format, ...);
+extern void figgen_printf(GVJ_t * job, const char *format, ...);
 
 extern void epsf_emit_body(usershape_t *us, FILE *of);
 extern shape_desc *find_user_shape(char *name);
 
 typedef enum {
     FORMAT_PNG_SVG, FORMAT_GIF_SVG, FORMAT_JPEG_SVG,
+    FORMAT_PNG_FIG, FORMAT_GIF_FIG, FORMAT_JPEG_FIG,
     FORMAT_PNG_VRML, FORMAT_GIF_VRML, FORMAT_JPEG_VRML,
     FORMAT_PS_PS, FORMAT__PS,
 } format_type;
@@ -65,6 +67,49 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled
             b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
     }
     svggen_fputs(job, "/>\n");
+}
+
+static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, bool filled)
+{
+    int object_code = 2;        /* always 2 for polyline */
+    int sub_type = 5;           /* always 5 for image */
+    int line_style = 0;		/* solid, dotted, dashed */
+    int thickness = 0;
+    int pen_color = 0;
+    int fill_color = -1;
+    int depth = 0;
+    int pen_style = -1;         /* not used */
+    int area_fill = 0;
+    double style_val = 0.0;
+    int join_style = 0;
+    int cap_style = 0;
+    int radius = 0;
+    int forward_arrow = 0;
+    int backward_arrow = 0;
+    int npoints = 5;
+    int flipped = 0;
+
+    box b;
+
+    assert(job);
+    assert(us);
+    assert(us->name);
+    assert(us->f);
+
+    BF2B(bf, b);
+
+    figgen_printf(job,
+            "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n %d %s\n",
+            object_code, sub_type, line_style, thickness, pen_color,
+            fill_color, depth, pen_style, area_fill, style_val, join_style,
+            cap_style, radius, forward_arrow, backward_arrow, npoints,
+            flipped, us->name);
+    figgen_printf(job," %d %d %d %d %d %d %d %d %d %d\n",
+	    b.LL.x, b.LL.y,
+	    b.LL.x, b.UR.y,
+	    b.UR.x, b.UR.y,
+	    b.UR.x, b.LL.y,
+	    b.LL.x, b.LL.y);
 }
 
 static void core_loadimage_vrml(GVJ_t * job, usershape_t *us, boxf b, bool filled)
@@ -212,6 +257,10 @@ static gvloadimage_engine_t engine_svg = {
     core_loadimage_svg
 };
 
+static gvloadimage_engine_t engine_fig = {
+    core_loadimage_fig
+};
+
 static gvloadimage_engine_t engine_vrml = {
     core_loadimage_vrml
 };
@@ -228,6 +277,9 @@ gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_PNG_SVG, "png2svg", 1, &engine_svg, NULL},
     {FORMAT_GIF_SVG, "gif2svg", 1, &engine_svg, NULL},
     {FORMAT_JPEG_SVG, "jpeg2svg", 1, &engine_svg, NULL},
+    {FORMAT_PNG_FIG, "png2fig", 1, &engine_fig, NULL},
+    {FORMAT_GIF_FIG, "gif2fig", 1, &engine_fig, NULL},
+    {FORMAT_JPEG_FIG, "jpeg2fig", 1, &engine_fig, NULL},
     {FORMAT_PNG_VRML, "png2vrml", 1, &engine_vrml, NULL},
     {FORMAT_GIF_VRML, "gif2vrml", 1, &engine_vrml, NULL},
     {FORMAT_JPEG_VRML, "jpeg2vrml", 1, &engine_vrml, NULL},

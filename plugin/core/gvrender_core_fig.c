@@ -241,8 +241,8 @@ static void figgen_begin_graph(GVJ_t * job)
     figgen_fputs(job, "100.00\n");   /* magnification % */
     figgen_fputs(job, "Single\n");   /* multiple-page */
     figgen_fputs(job, "-2\n");       /* transparent color (none) */
-    figgen_printf(job, "%d", ROUND(job->dpi.x)); /* resolution */
-    figgen_fputs(job, " 2\n");        /* coordinate system (upper left) */
+    figgen_fputs(job, "1200");	     /* resolution */
+    figgen_fputs(job, " 2\n");       /* coordinate system (upper left) */
 }
 
 static void figgen_end_graph(GVJ_t * job)
@@ -543,7 +543,11 @@ gvrender_features_t figgen_features = {
     EMIT_COLORS
 	| GVRENDER_Y_GOES_DOWN,	/* flags */
     DEFAULT_EMBED_MARGIN,	/* default margin - points */
-    {1200.,1200.},		/* default dpi */
+    {1450.,1450.},		/* default dpi */
+   	 /* FIXME - this default dpi is a very strange number!!!
+	  * it was picked to make .png usershapes the right size on my screen
+    	  * also 1200 is hardcoded into the o/p file instead of using job->dpi 
+          */
     figgen_knowncolors,		/* knowncolors */
     sizeof(figgen_knowncolors) / sizeof(char *), /* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
