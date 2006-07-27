@@ -14,6 +14,10 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#ifdef WIN32
+#include <compat.h>
+#include <io.h>
+#endif
 #include <stdio.h>
 #include "aghdr.h"
 
