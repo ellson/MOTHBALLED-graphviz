@@ -156,7 +156,7 @@ static gvloadimage_engine_t engine_ps = {
 gvplugin_installed_t gvloadimage_pango_types[] = {
 #ifdef HAVE_PANGOCAIRO
     {FORMAT_PNG_CAIRO, "png2cairo", 1, &engine_cairo, NULL},
-    {FORMAT_PNG_PS, "png2ps", 1, &engine_ps, NULL},
+    {FORMAT_PNG_PS, "png2ps", 2, &engine_ps, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}
 };
