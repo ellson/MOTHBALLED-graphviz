@@ -1,0 +1,9 @@
+#ifndef COMPAT_H
+#define COMPAT_H
+#ifndef HAVE_STRCASECMP
+extern int strcasecmp(const char*, const char*);
+#endif
+#ifndef HAVE_STRNCASECMP
+extern int strncasecmp(const char*, const char*, unsigned int);
+#endif
+#endif
