@@ -118,7 +118,7 @@ char *late_nnstring(void *obj, attrsym_t * attr, char *def)
     return rv;
 }
 
-int late_bool(void *obj, attrsym_t * attr, int def)
+bool late_bool(void *obj, attrsym_t * attr, int def)
 {
     if (attr == NULL)
 	return def;
@@ -331,7 +331,7 @@ static char *Fgets(FILE * fp)
  */
 char *safefile(char *filename)
 {
-    static int onetime = TRUE;
+    static bool onetime = true;
     static char *safefilename = NULL;
     char *str, *p;
 
@@ -349,7 +349,7 @@ char *safefile(char *filename)
 		      "file loading is disabled because the environment contains: %s\n"
 		      "and there is no GV_FILE_PATH variable.\n",
 		      HTTPServerEnVar);
-		onetime = FALSE;
+		onetime = false;
 	    }
 	    return NULL;
 	}
@@ -375,7 +375,7 @@ char *safefile(char *filename)
 		  " because files are only permitted to be loaded from the \"%s\""
 		  " directory when running in an http server.\n", filename,
 		  Gvfilepath);
-	    onetime = FALSE;
+	    onetime = false;
 	}
 
 	return safefilename;
@@ -398,13 +398,14 @@ void cat_libfile(FILE * ofp, char **arglib, char **stdlib)
 {
     FILE *fp;
     char *p, **s, *bp;
-    int i, use_stdlib = TRUE;
+    int i;
+    bool use_stdlib = true;
 
     /* check for empty string to turn off stdlib */
     if (arglib) {
 	for (i = 0; use_stdlib && ((p = arglib[i])); i++) {
 	    if (*p == '\0')
-		use_stdlib = FALSE;
+		use_stdlib = false;
 	}
     }
     if (use_stdlib)
@@ -442,14 +443,14 @@ int maptoken(char *p, char **name, int *val)
     return val[i];
 }
 
-int mapbool(char *p)
+bool mapbool(char *p)
 {
     if (p == NULL)
-	return FALSE;
+	return false;
     if (!strcasecmp(p, "false"))
-	return FALSE;
+	return false;
     if (!strcasecmp(p, "true"))
-	return TRUE;
+	return true;
     return atoi(p);
 }
 
@@ -681,12 +682,12 @@ static bool
 noClip(edge_t *e, attrsym_t* sym)
 {
     char		*str;
-    bool		rv = FALSE;
+    bool		rv = false;
 
-    if (sym) {	/* mapbool isn't a good fit, because we want "" to mean TRUE */
+    if (sym) {	/* mapbool isn't a good fit, because we want "" to mean true */
 	str = agxget(e,sym->index);
 	if (str && str[0]) rv = !mapbool(str);
-	else rv = FALSE;
+	else rv = false;
     }
     return rv;
 }
@@ -709,7 +710,7 @@ chkPort (port (*pf)(node_t*, char*, char*), node_t* n, char* s)
     return pt;
 }
 
-/* return TRUE if edge has label */
+/* return true if edge has label */
 int common_init_edge(edge_t * e)
 {
     char *s;
@@ -777,16 +778,16 @@ int common_init_edge(edge_t * e)
     /* We still accept ports beginning with colons but this is deprecated */
     s = agget(e, TAIL_ID);
     if (s[0])
-	ND_has_port(e->tail) = TRUE;
+	ND_has_port(e->tail) = true;
     ED_tail_port(e) = chkPort (ND_shape(e->tail)->fns->portfn,e->tail, s);
     if (noClip(e, E_tailclip))
-	ED_tail_port(e).clip = FALSE;
+	ED_tail_port(e).clip = false;
     s = agget(e, HEAD_ID);
     if (s[0])
-	ND_has_port(e->head) = TRUE;
+	ND_has_port(e->head) = true;
     ED_head_port(e) = chkPort(ND_shape(e->head)->fns->portfn,e->head, s);
     if (noClip(e, E_headclip))
-	ED_head_port(e).clip = FALSE;
+	ED_head_port(e).clip = false;
 
     return r;
 }
@@ -1400,7 +1401,12 @@ char* htmlEntityUTF8 (char* s)
 	        rc = agxbputc(&xb, c);
 	        c = *(unsigned char*)s++;
 	    }
+	    else {
+		agerr(AGERR, "Invalid UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
+		exit(EXIT_FAILURE);
+	    }
 	    /*
+	     * (if we didn't just exit)
 	     * A two-byte-character lead-byte not followed by trail-byte
 	     * represents itself.
 	     */
@@ -1412,14 +1418,19 @@ char* htmlEntityUTF8 (char* s)
 	        rc = agxbputc(&xb, c);
 	        c = *(unsigned char*)s++;
 	    }
+	    else {
+		agerr(AGERR, "Invalid UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
+		exit(EXIT_FAILURE);
+	    }
 	    /*
+	     * (if we didn't just exit)
 	     * A three-byte-character lead-byte not followed by
 	     * two trail-bytes represents itself.
 	     */
 	}
 	else  {
-	    /* UTF8 codes > 3 bytes not supported */
-	    assert (0);
+	    agerr(AGERR, "UTF8 codes > 3 bytes are not currently supported\n");
+	    exit(EXIT_FAILURE);
         }
 	rc = agxbputc(&xb, c);
     }
@@ -1508,7 +1519,7 @@ bool overlap_node(node_t *n, boxf b)
 
     bb = ND_bb(n);
     if (! OVERLAP(b, bb))
-        return FALSE;
+        return false;
 
     P2PF(ND_coord_i(n),p);
 
@@ -1543,9 +1554,9 @@ static bool overlap_arrow(pointf p, pointf u, double scale, int flag, boxf b)
     bb = arrow_bb(p, u, scale, flag);
     if (OVERLAP(b, bb)) {
 	/* FIXME - check inside arrow shape */
-	return TRUE;
+	return true;
     }
-    return FALSE;
+    return false;
 }
 
 static bool overlap_bezier(bezier bz, boxf b)
@@ -1561,7 +1572,7 @@ static bool overlap_bezier(bezier bz, boxf b)
 	pp = bz.list[i];
 	P2PF(pp, p);
 	if (lineToBox(p, u, b) != -1)
-	       return TRUE;
+	    return true;
 	u = p;
     }
 
@@ -1570,15 +1581,15 @@ static bool overlap_bezier(bezier bz, boxf b)
 	P2PF(bz.sp, p);
 	P2PF(bz.list[0], u);
 	if (overlap_arrow(p, u, 1, bz.sflag, b))
-	    return TRUE;
+	    return true;
     }
     if (bz.eflag) {
 	P2PF(bz.ep, p);
 	P2PF(bz.list[bz.size - 1], u);
 	if (overlap_arrow(p, u, 1, bz.eflag, b))
-	    return TRUE;
+	    return true;
     }
-    return FALSE;
+    return false;
 }
 
 bool overlap_edge(edge_t *e, boxf b)
@@ -1591,13 +1602,13 @@ bool overlap_edge(edge_t *e, boxf b)
     if (spl && boxf_overlap(spl->bb, b))
         for (i = 0; i < spl->size; i++)
             if (overlap_bezier(spl->list[i], b))
-                return TRUE;
+                return true;
 
     lp = ED_label(e);
     if (lp && overlap_label(lp, b))
-        return TRUE;
+        return true;
 
-    return FALSE;
+    return false;
 }
 
 

@@ -35,7 +35,7 @@
 typedef enum { FORMAT_GD, FORMAT_GD2, FORMAT_GIF, FORMAT_JPEG, FORMAT_PNG,
 	FORMAT_WBMP, FORMAT_XBM, } format_type;
 
-extern int mapbool(char *);
+extern bool mapbool(char *);
 extern char *safefile(char *shapefilename);
 extern pointf Bezier(pointf * V, int degree, double t, pointf * Left, pointf * Right);
 

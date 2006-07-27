@@ -35,7 +35,7 @@ extern "C" {
     extern double late_double(void *, Agsym_t *, double, double);
     extern char *late_nnstring(void *, Agsym_t *, char *);
     extern char *late_string(void *, Agsym_t *, char *);
-    extern int late_bool(void *, Agsym_t *, int);
+    extern bool late_bool(void *, Agsym_t *, int);
 
     extern Agnode_t *UF_find(Agnode_t *);
     extern Agnode_t *UF_union(Agnode_t *, Agnode_t *);
@@ -47,7 +47,7 @@ extern "C" {
     extern void cat_libfile(FILE *of, char **arglib, char **stdlib);
     extern void cat_preamble(GVJ_t *job, char **arglib);
 
-    extern int mapbool(char *);
+    extern bool mapbool(char *);
     extern int maptoken(char *, char **, int *);
 
     extern int test_toggle(void);
