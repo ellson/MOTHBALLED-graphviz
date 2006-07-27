@@ -62,6 +62,12 @@ emit.o mapgen.o utils.o htmllex.o htmltable.o htmlparse.o : htmltable.h
 htmllex.o : htmlparse.h
 htmlparse.o htmllex.o : htmllex.h
 
+fontmetrics.o: ps_font_equiv.h
+
+# ensure font names are properly sorted for bsearch operation 
+ps_font_equiv.h: ps_font_equiv.txt
+	LC_COLLATE=C $(SORT) <ps_font_equiv.txt >ps_font_equiv.h
+
 ps.h : ps.txt
 	$(AWK) -f $(AWKDIR)/stringize.awk ps.txt > ps.h
 

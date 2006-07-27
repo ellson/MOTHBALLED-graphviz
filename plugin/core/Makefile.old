@@ -14,7 +14,7 @@ INCS =  -I. \
 DEFINES = -DHAVE_CONFIG_H
 
 OBJS = gvplugin_core.o gvrender_core_ps.o gvrender_core_svg.o \
-          gvrender_core_map.o gvloadimage_core.o
+          gvrender_core_map.o gvloadimage_core.o gvrender_core_fig.o
 
 libgvplugin_core.a : $(OBJS)
 	$(RM) libgvplugin_core.a
