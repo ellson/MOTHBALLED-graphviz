@@ -1552,7 +1552,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	** Layout initialization **
 	**************************/
 
-    if (smart_ini) {
+    if (smart_ini && (n > 1)) {
 	havePinned = 0;
 	/* optimize layout quickly within subspace */
 	/* perform at most 50 iterations within 30-D subspace to 
@@ -1583,6 +1583,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
     } else {
 	havePinned = initLayout(graph, n, dim, d_coords);
     }
+    if (Verbose) fprintf(stderr, ": %.2f sec", elapsed_sec());
     if (n == 1) return 0;
 
     if (Verbose) {
