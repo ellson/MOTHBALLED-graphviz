@@ -53,7 +53,7 @@ char *Info[] = {
 static GVC_t *Gvc;
 static graph_t * G;
 
-#ifndef MSWIN32
+#ifndef WIN32
 static void intr(int s)
 {
     if (G)
@@ -146,7 +146,7 @@ int main(int argc, char **argv)
     Gvc = gvNEWcontext(Info, gvUsername());
     gvParseArgs(Gvc, argc, argv);
 
-#ifndef MSWIN32
+#ifndef WIN32
     signal(SIGUSR1, gvToggle);
     signal(SIGINT, intr);
 #ifndef NO_FPERR

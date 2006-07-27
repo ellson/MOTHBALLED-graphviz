@@ -22,7 +22,7 @@
 #include	"neato.h"
 #include	"stress.h"
 #include	<time.h>
-#ifndef MSWIN32
+#ifndef WIN32
 #include	<unistd.h>
 #endif
 

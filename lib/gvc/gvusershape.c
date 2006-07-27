@@ -289,7 +289,7 @@ static usershape_t *gvusershape_open (char *name)
 
 	us->name = name;
 	if ((fn = safefile(name))) {
-#ifndef MSWIN32
+#ifndef WIN32
 	    us->f = fopen(fn, "r");
 #else
 	    us->f = fopen(fn, "rb");

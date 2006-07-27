@@ -20,7 +20,7 @@
 #endif
 
 #include <time.h>
-#ifndef MSWIN32
+#ifndef WIN32
 #include <unistd.h>
 #endif
 #include "neato.h"

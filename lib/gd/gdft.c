@@ -17,7 +17,7 @@
 #include "gdhelpers.h"
 #include "entities.h"
 
-/* 2.0.10: WIN32, not MSWIN32 */
+/* 2.0.10: WIN32 */
 #ifndef WIN32
 #include <unistd.h>
 #else

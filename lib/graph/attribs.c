@@ -256,7 +256,7 @@ void agcopydict(Agdict_t * to_dict, Agdict_t * from_dict)
 	b = agNEWsym(to_dict, a->name, a->value);
 	b->printed = a->printed;
 	b->fixed = a->fixed;
-#ifdef MSWIN32
+#ifdef WIN32
 	/* Microsoft C is a thing of wonder. */
 	fprintf(stderr, "", a->name, a->value);
 #endif

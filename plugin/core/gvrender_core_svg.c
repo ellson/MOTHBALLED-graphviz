@@ -25,7 +25,7 @@
 #ifdef HAVE_LIBZ
 #include <zlib.h>
 #endif
-#ifdef MSWIN32
+#ifdef WIN32
 #include <io.h>
 #endif
 
