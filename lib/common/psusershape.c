@@ -14,7 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifndef MSWIN32
+#ifndef WIN32
 #include <unistd.h>
 #endif
 

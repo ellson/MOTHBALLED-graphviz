@@ -127,7 +127,7 @@ static char* dotneato_basename (char* path)
 {
     char* s = path;
     if (*s == '\0') return path; /* empty string */
-#ifdef MSWIN32
+#ifdef WIN32
     /* On Windows, executables, by convention, end in ".exe". Thus,
      * this may be part of the path name and must be removed for
      * matching to work.
