@@ -113,9 +113,11 @@ static void svggen_print_color(GVJ_t * job, gvcolor_t color)
 	svggen_fputs(job, color.u.string);
 	break;
     case RGBA_BYTE:
-	sprintf(buf, "#%02x%02x%02x",
+	if (color.u.rgba[3] == 0) /* transparent */
+	    svggen_fputs(job, "none");
+	else
+	    svggen_printf(job, "#%02x%02x%02x",
 		color.u.rgba[0], color.u.rgba[1], color.u.rgba[2]);
-	svggen_fputs(job, buf);
 	break;
     default:
 	assert(0);		/* internal error */
@@ -127,19 +129,12 @@ static void svggen_grstyle(GVJ_t * job, int filled)
     gvstyle_t *style = job->style;
 
     svggen_fputs(job, " style=\"fill:");
-    if (filled && ! (style->fillcolor.type == RGBA_BYTE
-		  && style->fillcolor.u.RGBA[3] == 0))
-	/* filled && not completely transparent" */
+    if (filled)
 	svggen_print_color(job, style->fillcolor);
     else
 	svggen_fputs(job, "none");
     svggen_fputs(job, ";stroke:");
-    if (! (style->pencolor.type == RGBA_BYTE
-		  && style->pencolor.u.RGBA[3] == 0))
-	/* not completely transparent" */
-	svggen_print_color(job, style->pencolor);
-    else
-	svggen_fputs(job, "none");
+    svggen_print_color(job, style->pencolor);
     if (style->penwidth != PENWIDTH_NORMAL)
 	svggen_printf(job, ";stroke-width:%g", style->penwidth);
     if (style->pen == PEN_DASHED) {
