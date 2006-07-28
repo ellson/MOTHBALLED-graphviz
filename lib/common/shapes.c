@@ -527,6 +527,8 @@ static void poly_init(node_t * n)
 	/* padding */
 	if ((p = agget(n, "margin"))) {
 	    i = sscanf(p, "%lf,%lf", &marginx, &marginy);
+	    if (marginx < 0) marginx = 0;
+	    if (marginy < 0) marginy = 0;
 	    if (i > 0) {
 		dimen.x += 2 * POINTS(marginx);
 		if (i > 1)
