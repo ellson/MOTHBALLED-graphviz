@@ -106,8 +106,6 @@ static void svggen_bzptarray(GVJ_t * job, pointf * A, int n)
 
 static void svggen_print_color(GVJ_t * job, gvcolor_t color)
 {
-    static char buf[SMALLBUF];
-
     switch (color.type) {
     case COLOR_STRING:
 	svggen_fputs(job, color.u.string);
