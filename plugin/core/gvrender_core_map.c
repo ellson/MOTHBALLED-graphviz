@@ -252,7 +252,8 @@ static gvrender_engine_t map_engine = {
 };
 
 static gvrender_features_t map_features = {
-    GVRENDER_Y_GOES_DOWN
+    EMIT_CLUSTERS_LAST
+        | GVRENDER_Y_GOES_DOWN
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_LABELS
 	| GVRENDER_DOES_TOOLTIPS
@@ -270,7 +271,8 @@ static gvrender_features_t map_features = {
 };
 
 static gvrender_features_t map_features_nopoly = {
-    GVRENDER_Y_GOES_DOWN
+    EMIT_CLUSTERS_LAST
+        | GVRENDER_Y_GOES_DOWN
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_LABELS
 	| GVRENDER_DOES_TOOLTIPS
