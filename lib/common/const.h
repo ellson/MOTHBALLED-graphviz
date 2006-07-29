@@ -131,7 +131,6 @@
 
 /* output languages */
 #define		ATTRIBUTED_DOT	0	/* default */
-#define		POSTSCRIPT	1
 #define		HPGL		2	/* HP Graphics Language */
 #define		PCL		3	/* Printer Control Language */
 #define		MIF		4	/* Adobe FrameMaker */
@@ -140,29 +139,12 @@
 #define		PLAIN		6
 #define		PLAIN_EXT	7
 
-#define		GD		8	/* libgd bitmap format */
-#define		GD2		9	/* libgd bitmap format */
-#define		GIF		10	/* libgd bitmap format */
-#define		JPEG		11	/* libgd bitmap format */
-#define		PNG		12	/* libgd bitmap format */
-#define		WBMP		13	/* libgd bitmap format */
-#define		XBM		14	/* libgd bitmap format */
-
 #define		TK		15	/* TK canvas */
 
-#define 	ISMAP		16	/* old style map file for httpd servers */
-#define 	IMAP		17	/* apache map file for httpd servers */
-#define 	CMAP		18	/* client map file for html browsers */
-#define 	CMAPX		19	/* client map file for xhtml browsers */
-#define		VRML		20
 #define		VTX		21	/* visual thought */
 #define		METAPOST	22
-#define		FIG		23	/* xfig drawing tool */
 #define		DIA		24	/* dia drawing tool */
-#define		SVG		25	/* Structured Vector Graphics */
-#define		SVGZ		26	/* compressed SVG */
 #define		CANONICAL_DOT	27	/* wanted for tcl/tk version */
-#define		PDF		28
 #define		EXTENDED_DOT	29	/* dot with drawing info */
 
 #define		QPDF		30	/* Quartz paged PDF */

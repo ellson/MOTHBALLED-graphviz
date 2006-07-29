@@ -262,11 +262,9 @@ static void svggen_begin_page(GVJ_t * job)
 
     /* its really just a page of the graph, but its still a graph,
      * and it is the entire graph if we're not currently paging */
-    svggen_printf(job, "<g id=\"graph%d\" class=\"graph\"",
-	    job->common->viewNum);
-    svggen_printf(job,
-	    " transform=\"scale(%g %g) rotate(%d) translate(%g %g)\">\n",
-	    job->scale.x, job->scale.y, job->rotation,
+    svggen_printf(job, "<g id=\"graph%d\" class=\"graph\"", job->common->viewNum);
+    svggen_printf(job, " transform=\"scale(%g %g) rotate(%d) translate(%g %g)\">\n",
+	    job->scale.x, job->scale.y, -job->rotation,
 	    job->translation.x, job->translation.y);
     /* default style */
     if (obj->g->name[0]) {

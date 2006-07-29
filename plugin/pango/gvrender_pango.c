@@ -194,7 +194,7 @@ static void cairogen_begin_page(GVJ_t * job)
 
     cairo_save(cr);
     cairo_scale(cr, job->scale.x, job->scale.y);
-    cairo_rotate(cr, job->rotation * M_PI / 180.);
+    cairo_rotate(cr, -job->rotation * M_PI / 180.);
     cairo_translate(cr, job->translation.x, job->translation.y);
 }
 

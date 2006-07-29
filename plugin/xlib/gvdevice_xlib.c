@@ -297,14 +297,9 @@ static void init_window(GVJ_t *job, Display *dpy, int scr)
     job->dpi.x = DisplayWidth(dpy, scr) * 25.4 / DisplayWidthMM(dpy, scr);
     job->dpi.y = DisplayHeight(dpy, scr) * 25.4 / DisplayHeightMM(dpy, scr);
 
-    /* adjust width/height for margins */
-    /* FIXME - emit.c does this too late */
-    job->width += 2 * job->margin.x;
-    job->height += 2 * job->margin.y;
-
-    /* adjust width/height for real dpi */
-    job->width *= job->dpi.x / POINTS_PER_INCH;
-    job->height *= job->dpi.y / POINTS_PER_INCH;
+    /* compute initial width,height in device units */
+    job->width = ROUND((job->view.x + 2 * job->margin.x) * job->dpi.x / POINTS_PER_INCH);
+    job->height = ROUND((job->view.y + 2 * job->margin.y) * job->dpi.y / POINTS_PER_INCH);
 
     if (argb && (window->visual = find_argb_visual(dpy, scr))) {
         window->cmap = XCreateColormap(dpy, RootWindow(dpy, scr),

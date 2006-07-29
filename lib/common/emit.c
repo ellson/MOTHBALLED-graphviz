@@ -22,6 +22,8 @@
 #include "render.h"
 #include "agxbuf.h"
 
+#define EPSILON .0001
+
 static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 int    emitState;
 
@@ -86,31 +88,6 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
     switch (job->output_lang) {
     case GVRENDER_PLUGIN:
         job->flags = chkOrder(g) | job->render.features->flags;
-        break;
-    case POSTSCRIPT:
-        job->flags = chkOrder(g) | GVRENDER_DOES_TRANSFORM | GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES;
-        break;
-    case SVG:
-        job->flags = chkOrder(g) | GVRENDER_Y_GOES_DOWN;
-        break;
-    case GD: /* bitmap formats supported by gdgen.c */
-    case GD2:
-    case GIF:
-    case JPEG:
-    case PNG:
-    case WBMP:
-    case XBM:
-        job->flags = chkOrder(g) | GVRENDER_Y_GOES_DOWN;
-        break;
-    case ISMAP: case IMAP: case CMAP: case CMAPX:
-        /* output in breadth first graph walk order, but
-         * with nodes edges and nested clusters before
-         * clusters */
-        job->flags = EMIT_CLUSTERS_LAST;
-        break;
-    case FIG:
-        /* output color definition objects first */
-        job->flags = EMIT_COLORS;
         break;
     case VTX:
         /* output sorted, i.e. all nodes then all edges */
@@ -197,38 +174,36 @@ static point pagecode(GVJ_t *job, char c)
 static void init_job_pagination(GVJ_t * job, graph_t *g)
 {
     GVC_t *gvc = job->gvc;
-    point pageSize;	/* page size for the graph - device units */
-    point imageSize;	/* image size on one page of the graph - device units */
-    point margin;	/* margin for a page of the graph - device units */
+    pointf pageSize;	/* page size for the graph - points*/
+    pointf imageSize;	/* image size on one page of the graph - points */
+    pointf margin;	/* margin for a page of the graph - points */
 
     /* unpaginated image size in device units */
-    imageSize.x = job->width;
-    imageSize.y = job->height;
-    if (GD_drawing(g)->landscape)
-	imageSize = exch_xy(imageSize);
+    imageSize = job->view;
+    if (job->rotation)
+	imageSize = exch_xyf(imageSize);
 
     /* determine pagination */
     if (gvc->graph_sets_pageSize) {
 	/* page was set by user */
-	pageSize.x = ROUND(gvc->pageSize.x * job->dpi.x / POINTS_PER_INCH);
-	pageSize.y = ROUND(gvc->pageSize.y * job->dpi.y / POINTS_PER_INCH);
+	pageSize = gvc->pageSize;
 
 	/* we don't want graph page to exceed its bounding box */
 	pageSize.x = MIN(pageSize.x, imageSize.x);
 	pageSize.y = MIN(pageSize.y, imageSize.y);
 
-	if (pageSize.x == 0)
+	if (pageSize.x < EPSILON)
 	    job->pagesArraySize.x = 1;
 	else {
-	    job->pagesArraySize.x = imageSize.x / pageSize.x;
-	    if (imageSize.x % pageSize.x)
+	    job->pagesArraySize.x = (int)(imageSize.x / pageSize.x);
+	    if ((imageSize.x - (job->pagesArraySize.x * pageSize.x)) > EPSILON)
 		job->pagesArraySize.x++;
 	}
-	if (pageSize.y == 0)
+	if (pageSize.y < EPSILON)
 	    job->pagesArraySize.y = 1;
 	else {
-	    job->pagesArraySize.y = imageSize.y / pageSize.y;
-	    if (imageSize.y % pageSize.y)
+	    job->pagesArraySize.y = (int)(imageSize.y / pageSize.y);
+	    if ((imageSize.y - (job->pagesArraySize.y * pageSize.y)) > EPSILON)
 		job->pagesArraySize.y++;
 	}
 	job->numPages = job->pagesArraySize.x * job->pagesArraySize.y;
@@ -245,11 +220,10 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     }
 
     /* size of one page in graph units */
-    job->pageSize.x = (double)imageSize.x * POINTS_PER_INCH / (job->dpi.x * job->zoom);
-    job->pageSize.y = (double)imageSize.y * POINTS_PER_INCH / (job->dpi.y * job->zoom);
+    job->pageSize.x = imageSize.x / job->zoom;
+    job->pageSize.y = imageSize.y / job->zoom;
 
-    margin.x = ROUND(job->margin.x * job->dpi.x / POINTS_PER_INCH);
-    margin.y = ROUND(job->margin.y * job->dpi.y / POINTS_PER_INCH);
+    PF2P(job->margin, margin);
 
     /* determine page box including centering */
     if (GD_drawing(g)->centered) {
@@ -259,29 +233,10 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	    margin.y += (pageSize.y - imageSize.y) / 2;
     }
 
-    job->canvasBox.LL.x = ROUND(job->margin.x);
-    job->canvasBox.LL.y = ROUND(job->margin.y);
-    job->canvasBox.UR.x = ROUND(job->margin.x) + imageSize.x;
-    job->canvasBox.UR.y = ROUND(job->margin.y) + imageSize.y;
-
-    /* calculate job->width and job->height with margins */
-    if (job->rotation) {
-        job->width = job->canvasBox.UR.y + job->canvasBox.LL.y;
-        job->height = job->canvasBox.UR.x + job->canvasBox.LL.x;
-    }
-    else {
-        job->width = job->canvasBox.UR.x + job->canvasBox.LL.x;
-        job->height = job->canvasBox.UR.y + job->canvasBox.LL.y;
-    }
-
-
-#if 0
-fprintf(stderr,"margin = %d,%d  imageSize = %d,%d pageBoundingBox = %d,%d %d,%d\n",
-	margin.x, margin.y,
-	imageSize.x, imageSize.x,
-	job->pageBoundingBox.LL.x, job->pageBoundingBox.LL.y,
-	job->pageBoundingBox.UR.x, job->pageBoundingBox.UR.x);
-#endif
+    job->canvasBox.LL.x = margin.x;
+    job->canvasBox.LL.y = margin.y;
+    job->canvasBox.UR.x = margin.x + imageSize.x;
+    job->canvasBox.UR.y = margin.y + imageSize.y;
 
     /* set up pagedir */
     job->pagesArrayMajor.x = job->pagesArrayMajor.y 
@@ -295,37 +250,6 @@ fprintf(stderr,"margin = %d,%d  imageSize = %d,%d pageBoundingBox = %d,%d %d,%d\
 	job->pagesArrayMinor = pagecode(job, 'L');
 	agerr(AGWARN, "pagedir=%s ignored\n", gvc->pagedir);
     }
-
-#if 0
-fprintf(stderr,"margin = %d,%d imageSize = %d,%d pageSize = %d,%d (device units)\n",
-	margin.x, margin.y,
-	imageSize.x, imageSize.y,
-	pageSize.x, pageSize.y);
-fprintf(stderr,"job->pageSize= %g,%g (graph units)\n",
-	job->pageSize.x, job->pageSize.y);
-fprintf(stderr,"dpi = %g,%g zoom = %g rotation = %d\n",
-        job->dpi.x, job->dpi.y, job->zoom, job->rotation);
-fprintf(stderr,"pageBoundingBox = %d,%d %d,%d (device units)\n",
-        job->pageBoundingBox.LL.x,
-        job->pageBoundingBox.LL.y,
-        job->pageBoundingBox.UR.x,
-        job->pageBoundingBox.UR.y);
-fprintf(stderr,"width,height = %d,%d (device units)\n",
-        job->width,
-        job->height);
-fprintf (stderr,"pagedir = %s, pagesArrayMajor = %d,%d pagesArrayMinor = %d,%d\n",
-	gvc->pagedir,
-	job->pagesArrayMajor.x,
-	job->pagesArrayMajor.y,
-	job->pagesArrayMinor.x,
-	job->pagesArrayMinor.y);
-fprintf (stderr,"pagesArrayFirst = %d,%d pagesArraySize = %d,%d numPages = %d\n",
-	job->pagesArrayFirst.x,
-	job->pagesArrayFirst.y,
-	job->pagesArraySize.x,
-	job->pagesArraySize.y,
-	job->numPages);
-#endif
 }
 
 static void firstpage(GVJ_t *job)
@@ -420,13 +344,16 @@ static void setup_page(GVJ_t * job, graph_t * g)
     job->pageBoxClip.LL.y = MAX(job->clip.LL.y, job->pageBox.LL.y);
 
     if (job->rotation) {
-        job->pageBoundingBox.LL.x = job->canvasBox.LL.y;
-        job->pageBoundingBox.LL.y = job->canvasBox.LL.x;
-        job->pageBoundingBox.UR.x = job->canvasBox.UR.y;
-        job->pageBoundingBox.UR.y = job->canvasBox.UR.x;
+        job->pageBoundingBox.LL.x = ROUND(job->canvasBox.LL.y * job->dpi.x / POINTS_PER_INCH);
+        job->pageBoundingBox.LL.y = ROUND(job->canvasBox.LL.x * job->dpi.y / POINTS_PER_INCH);
+        job->pageBoundingBox.UR.x = ROUND(job->canvasBox.UR.y * job->dpi.x / POINTS_PER_INCH);
+        job->pageBoundingBox.UR.y = ROUND(job->canvasBox.UR.x * job->dpi.y / POINTS_PER_INCH);
     }
     else {
-        job->pageBoundingBox = job->canvasBox;
+        job->pageBoundingBox.LL.x = ROUND(job->canvasBox.LL.x * job->dpi.x / POINTS_PER_INCH);
+        job->pageBoundingBox.LL.y = ROUND(job->canvasBox.LL.y * job->dpi.y / POINTS_PER_INCH);
+        job->pageBoundingBox.UR.x = ROUND(job->canvasBox.UR.x * job->dpi.x / POINTS_PER_INCH);
+        job->pageBoundingBox.UR.y = ROUND(job->canvasBox.UR.y * job->dpi.y / POINTS_PER_INCH);
     }
 
     if (job->common->viewNum == 0)
@@ -436,8 +363,8 @@ static void setup_page(GVJ_t * job, graph_t * g)
 
     if (job->rotation) {
 	if (job->flags & GVRENDER_Y_GOES_DOWN) {
-	    job->translation.x = -job->pageBox.UR.x - job->pageBoundingBox.LL.y / job->scale.y;
-	    job->translation.y =  job->pageBox.UR.y + job->pageBoundingBox.LL.x / job->scale.x;
+	    job->translation.x = -job->pageBox.UR.x - job->pageBoundingBox.LL.x / job->scale.x;
+	    job->translation.y =  job->pageBox.UR.y + job->pageBoundingBox.LL.y / job->scale.y;
 	}
 	else {
 	    job->translation.x = -job->pageBox.LL.x + job->pageBoundingBox.LL.y / job->scale.y;
@@ -453,24 +380,6 @@ static void setup_page(GVJ_t * job, graph_t * g)
     }
     job->comptrans = job->translation;
     job->comptrans.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1: 1;
-
-
-#if 0
-fprintf(stderr,"pagesArrayElem = %d,%d pageSize = %g,%g pageOffset = %g,%g\n",
-	job->pagesArrayElem.x, job->pagesArrayElem.y,
-	job->pageSize.x, job->pageSize.y,
-	job->pageOffset.x, job->pageOffset.y);
-
-fprintf(stderr,"clip = %g,%g %g,%g pageBox = %g,%g %g,%g\n",
-	job->clip.LL.x, job->clip.LL.y,
-	job->clip.UR.x, job->clip.UR.y,
-	job->pageBox.LL.x, job->pageBox.LL.y,
-	job->pageBox.UR.x, job->pageBox.UR.y);
-
-fprintf(stderr,"zoom = %g  dpi = %g,%g\n",
-	job->zoom,
-	job->dpi.x, job->dpi.y);
-#endif
 
     gvrender_begin_page(job);
     gvrender_set_pencolor(job, DEFAULT_COLOR);
@@ -656,8 +565,6 @@ static void emit_node(GVJ_t * job, node_t * n)
     }
     gvc->emit_state = oldstate;
 }
-
-#define EPSILON .0001
 
 /* calculate an offset vector, length d, perpendicular to line p,q */
 static pointf computeoffset_p(pointf p, pointf q, double d)
@@ -1134,8 +1041,7 @@ static void init_job_margin(GVJ_t *job)
         case GVRENDER_PLUGIN:
             job->margin.x = job->margin.y = job->render.features->default_margin;
             break;
-        case POSTSCRIPT: case PDF: case HPGL: case PCL: case MIF:
-        case METAPOST: case FIG: case VTX: case ATTRIBUTED_DOT:
+        case HPGL: case PCL: case MIF: case METAPOST: case VTX: case ATTRIBUTED_DOT:
         case PLAIN: case PLAIN_EXT: case QPDF:
             job->margin.x = job->margin.y = DEFAULT_PRINT_MARGIN;
             break;
@@ -1160,14 +1066,6 @@ static void init_job_dpi(GVJ_t *job, graph_t *g)
         case GVRENDER_PLUGIN:
             job->dpi = job->render.features->default_dpi;
             break;
-        case POSTSCRIPT:
-        case PDF:
-        case SVG:
-	    job->dpi.x = job->dpi.y = (double)(POINTS_PER_INCH);
-            break;
-        case FIG:
-            job->dpi.x = job->dpi.y = 1200.;
-            break;
         default:
             job->dpi.x = job->dpi.y = (double)(DEFAULT_DPI);
             break;
@@ -1183,7 +1081,6 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     int rv;
 
     assert((GD_bb(g).LL.x == 0) && (GD_bb(g).LL.y == 0));
-
     P2PF(GD_bb(g).UR, UR);
 
     /* may want to take this from an attribute someday */
@@ -1212,32 +1109,63 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     if (GD_drawing(g)->landscape)
 	UR = exch_xyf(UR);
 
-    /* calculate default viewport size in device units */
-    X = (Z * UR.x + (2 * job->pad.x)) * job->dpi.x / POINTS_PER_INCH;
-    Y = (Z * UR.y + (2 * job->pad.y)) * job->dpi.y / POINTS_PER_INCH;
+    /* calculate default viewport size in points */
+    X = Z * UR.x + 2 * job->pad.x;
+    Y = Z * UR.y + 2 * job->pad.y;
 
     /* user can override */
     if ((str = agget(g, "viewport")))
 	rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
     /* rv is ignored since args retain previous values if not scanned */
 
-    job->width = ROUND(X); 
-    job->height = ROUND(Y);
+    job->view.x = X; 		/* viewport - points */
+    job->view.y = Y;
     job->zoom = Z;              /* scaling factor */
-    job->focus.x = x;           /* graph coord of focus - points */
+    job->focus.x = x;           /* focus - graph units */
     job->focus.y = y;
     job->rotation = job->gvc->rotation;
+}
 
-#if 0
-    fprintf(stderr,"bb = %d,%d %d,%d size %d,%d (graph units)\n",
-	GD_bb(g).LL.x, GD_bb(g).LL.y,
-	GD_bb(g).UR.x, GD_bb(g).UR.y,
-	GD_drawing(g)->size.x, GD_drawing(g)->size.y);
-    fprintf(stderr,"width,height = %d,%d (device units)\n",
-	job->width, job->height);
-    fprintf(stderr,"zoom = %g focus = %g,%g (graph units)\n",
-	job->zoom, job->focus.x, job->focus.y);
-#endif
+#define EPSILON .0001
+
+/* setup_view is called for a particular device and refresh event.
+ * actual dpi is now known.
+ * width and height might have changed through window resizing
+ */
+static void setup_view(GVJ_t * job, graph_t * g)
+{
+    double sx, sy; /* half width, half height in graph-units */
+
+    /* compute width,height in device units */
+    /* FIXME - width/height also calculated in xlib finalize() using the same formula
+     * to get initial windows size.  Should be done in one place only. */
+    job->width = ROUND((job->view.x + 2 * job->margin.x) * job->dpi.x / POINTS_PER_INCH);
+    job->height = ROUND((job->view.y + 2 * job->margin.y) * job->dpi.y / POINTS_PER_INCH);
+
+    job->compscale.x = job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
+    job->compscale.y = job->scale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
+    job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
+
+    sx = job->width / (job->scale.x * 2.);
+    sy = job->height / (job->scale.y * 2.);
+
+    /* calculate clip region in graph units
+     * calculate offset to 0,0 of graph in device units */
+    if (job->rotation) {
+        job->clip.UR.x = job->focus.x + sy + EPSILON;
+        job->clip.UR.y = job->focus.y + sx + EPSILON;
+        job->clip.LL.x = job->focus.x - sy - EPSILON;
+        job->clip.LL.y = job->focus.y - sx - EPSILON;
+        job->offset.x = -job->focus.y * job->compscale.x + job->width * 3 / 2;
+        job->offset.y = -job->focus.x * job->compscale.y + job->height / 2.;
+    } else {
+        job->clip.UR.x = job->focus.x + sx + EPSILON;
+        job->clip.UR.y = job->focus.y + sy + EPSILON;
+        job->clip.LL.x = job->focus.x - sx - EPSILON;
+        job->clip.LL.y = job->focus.y - sy - EPSILON;
+        job->offset.x = -job->focus.x * job->compscale.x + job->width / 2.;
+        job->offset.y = -job->focus.y * job->compscale.y + job->height / 2.;
+    }
 }
 
 static void emit_colors(GVJ_t * job, graph_t * g)
@@ -1360,6 +1288,8 @@ void emit_graph(GVJ_t * job, graph_t * g)
     char *s;
     int flags = job->flags;
     GVC_t *gvc = job->gvc;
+
+    setup_view(job, g);
 
     s = late_string(g, agfindattr(g, "comment"), "");
     gvrender_comment(job, s);

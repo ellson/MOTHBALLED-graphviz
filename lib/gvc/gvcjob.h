@@ -191,6 +191,13 @@ extern "C" {
 	pointf *headendurl_map_p;
     };
 
+
+/* Note on units:
+ *     points  - a physical distance (1/72 inch) unaffected by zoom or dpi.
+ *     graph units - related to physical distance by zoom.  Equals points at zoom=1
+ *     device units - related to physical distance in points by dpi/72
+ */
+
     struct GVJ_s {
 	GVC_t *gvc;		/* parent gvc */
 	GVJ_t *next;		/* linked list of jobs */
@@ -216,52 +223,51 @@ extern "C" {
 	gvdevice_callbacks_t *callbacks;
 
 	void *surface;		/* gd or cairo surface */
-	bool external_surface; /* surface belongs to caller */
+	bool external_surface;	/* surface belongs to caller */
 
 	gvstyle_t *style;       /* active style from gvc->styles[] */
 	char **rawstyle;
 
         int flags;		/* emit_graph flags */
 
-        pointf margin;		 /* job-specific margin - graph units */
-
 	int numLayers;		/* number of layers */
 	int layerNum;		/* current layer - 1 based*/
 
-	boxf	pageBox;	 /* current page in graph coords */
-	pointf	pageOffset;	 /* offset for current page in graph coords */
-	pointf	pageSize;	 /* page size in graph units */
-	point 	pagesArraySize;  /* 2D size of page array */
-	point	pagesArrayFirst; /* 2D starting corner in */
-	point	pagesArrayMajor; /* 2D major increment */
-	point	pagesArrayMinor; /* 2D minor increment */
-	point	pagesArrayElem;  /* 2D coord of current page - 0,0 based */
-        int	numPages;	 /* number of pages */
+	point 	pagesArraySize; /* 2D size of page array */
+	point	pagesArrayFirst;/* 2D starting corner in */
+	point	pagesArrayMajor;/* 2D major increment */
+	point	pagesArrayMinor;/* 2D minor increment */
+	point	pagesArrayElem; /* 2D coord of current page - 0,0 based */
+        int	numPages;	/* number of pages */
 
-        unsigned int width;     /* device width in device units */
-        unsigned int height;    /* device height in device units */
-	box	canvasBox;	/* drawable region in device units */
-	box     pageBoundingBox; /* rotated boundingBox in device units */
-	box     boundingBox;    /* cumulative boundingBox over all pages in device units */
+	boxf    bb;		/* bb in graph units */
+	pointf  pad;		/* padding around bb - graph units */
+	boxf    clip;		/* clip region in graph units */
+	boxf    pageBoxClip;	/* intersection of clip and pageBox in graph units */
+	boxf	pageBox;	/* current page in graph units */
+	pointf	pageOffset;	/* offset for current page in graph units */
+	pointf	pageSize;	/* page size in graph units */
+	pointf  focus;		/* viewport focus - graph units */
+
+	double  zoom;		/* viewport zoom factor (points per graph unit) */
+	int	rotation;	/* viewport rotation (degrees)  0=portrait, 90=landscape */
+
+	pointf  view;		/* viewport size - points */
+	box	canvasBox;	/* drawing area - points */
+        pointf  margin;		/* job-specific margin - points */
 
 	pointf	dpi;		/* device resolution device-units-per-inch */
 
-	boxf bb;		/* bb in graph units */
-	pointf pad;             /* padding around bb in graph units */
-	double zoom;		/* viewport zoom factor */
-	pointf focus;		/* viewport focus in graph units */
+        unsigned int width;     /* device width - device units */
+        unsigned int height;    /* device height - device units */
+	box     pageBoundingBox;/* rotated boundingBox - device units */
+	box     boundingBox;    /* cumulative boundingBox over all pages - device units */
 
-	boxf clip;		/* clip region in graph units */
-	boxf pageBoxClip;       /* intersection of clip and pageBox */
-
-	pointf scale;	        /* composite device scale (zoom and dpi) */
-	int rotation;		/* viewport rotation (degrees)  0=portrait, 90=landscape */
-	pointf translation;     /* composite translation */
-
-
-	pointf compscale;	/* composite device scale incl: zoom, dpi, y_goes_down */
-	pointf comptrans;       /* composite translation */
-	pointf offset;		/* composite translation  (used by codegens) */
+	pointf  scale;	        /* composite device scale (zoom and dpi) */
+	pointf  translation;    /* composite translation */
+	pointf  compscale;	/* composite device scale incl: zoom, dpi, y_goes_down */
+	pointf  comptrans;      /* composite translation */
+	pointf  offset;		/* composite translation  (used by codegens) */
 	
 	bool	fit_mode,
 		needs_refresh,
