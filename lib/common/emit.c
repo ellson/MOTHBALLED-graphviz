@@ -364,7 +364,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
     if (job->rotation) {
 	if (job->flags & GVRENDER_Y_GOES_DOWN) {
 	    job->translation.x = -job->pageBox.UR.x - job->pageBoundingBox.LL.x / job->scale.x;
-	    job->translation.y =  job->pageBox.UR.y + job->pageBoundingBox.LL.y / job->scale.y;
+	    job->translation.y = -job->pageBox.UR.y - job->pageBoundingBox.LL.y / job->scale.y;
 	}
 	else {
 	    job->translation.x = -job->pageBox.LL.x + job->pageBoundingBox.LL.y / job->scale.y;
@@ -374,15 +374,13 @@ static void setup_page(GVJ_t * job, graph_t * g)
     else {
 	job->translation.x = -job->pageBox.LL.x + job->pageBoundingBox.LL.x / job->scale.x;
 	if (job->flags & GVRENDER_Y_GOES_DOWN)
-	    job->translation.y =  job->pageBox.UR.y + job->pageBoundingBox.LL.y / job->scale.y;
+	    job->translation.y = -job->pageBox.UR.y - job->pageBoundingBox.LL.y / job->scale.y;
 	else
 	    job->translation.y = -job->pageBox.LL.y + job->pageBoundingBox.LL.y / job->scale.y;
     }
 
     job->compscale = job->scale;
     job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
-    job->comptrans = job->translation;
-    job->comptrans.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1: 1;
 }
 
 #if 0

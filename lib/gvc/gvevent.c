@@ -292,29 +292,29 @@ static void gvevent_enter_obj(GVJ_t * job)
 static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
 {
     void *obj;
-    pointf p;
+    pointf p, translation = job->translation, scale = job->compscale;
     boxf b;
     double closeenough;
 
     if (job->rotation) {
-	p.x = pointer.y / job->compscale.y - job->comptrans.x; 
-	p.y = -pointer.x / job->compscale.x - job->comptrans.y; 
+	p.x = pointer.y / scale.y - translation.x; 
+	p.y = -pointer.x / scale.x - translation.y; 
     }
     else {
-	p.x = pointer.x / job->compscale.x - job->comptrans.x; 
-	p.y = pointer.y / job->compscale.y - job->comptrans.y; 
+	p.x = pointer.x / scale.x - translation.x; 
+	p.y = pointer.y / scale.y - translation.y; 
     }
 
 #if 0
 fprintf(stderr,"pointer = %g,%g compscale = %g,%g comptrans = %g,%g, graphpoint = %g,%g\n",
 	pointer.x, pointer.y,
-	job->compscale.x, job->compscale.y,
-	job->comptrans.x, job->comptrans.y,
+	scale.x, scale.y,
+	trans.x, trans.y,
 	p.x, p.y);
 #endif
 
     /* convert window point to graph coordinates */
-    closeenough = CLOSEENOUGH / job->compscale.x;
+    closeenough = CLOSEENOUGH / scale.x;
 
     b.UR.x = p.x + closeenough;
     b.UR.y = p.y + closeenough;

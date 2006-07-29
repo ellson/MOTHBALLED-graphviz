@@ -288,14 +288,14 @@ void gvrender_end_job(GVJ_t * job)
 
 static pointf gvrender_ptf(GVJ_t *job, pointf p)
 {
-    pointf rv;
+    pointf rv, translation = job->translation, scale = job->compscale;
 
     if (job->rotation) {
-	rv.x =  -(p.y + job->comptrans.y) * job->compscale.x;
-	rv.y =  (p.x + job->comptrans.x) * job->compscale.y;
+	rv.x =  -(p.y + translation.y) * scale.x;
+	rv.y =  (p.x + translation.x) * scale.y;
     } else {
-	rv.x =  (p.x + job->comptrans.x) * job->compscale.x;
-	rv.y =  (p.y + job->comptrans.y) * job->compscale.y;
+	rv.x =  (p.x + translation.x) * scale.x;
+	rv.y =  (p.y + translation.y) * scale.y;
     }
     return rv;
 }
@@ -306,18 +306,20 @@ static pointf gvrender_ptf(GVJ_t *job, pointf p)
 static pointf* gvrender_ptf_A(GVJ_t *job, pointf *af, pointf *AF, int n)
 {
     int i;
-    pointf trans = job->comptrans, scale = job->compscale;
+    pointf translation = job->translation, scale = job->compscale;
+    double t;
 
     if (job->rotation) {
         for (i = 0; i < n; i++) {
-	    AF[i].x = -(af[i].y + trans.y) * scale.x;
-	    AF[i].y =  (af[i].x + trans.x) * scale.y;
+	          t = -(af[i].y + translation.y) * scale.x;
+	    AF[i].y =  (af[i].x + translation.x) * scale.y;
+	    AF[i].x = t;
 	}
     }
     else {
         for (i = 0; i < n; i++) {
-	    AF[i].x =  (af[i].x + trans.x) * scale.x;
-	    AF[i].y =  (af[i].y + trans.y) * scale.y;
+	    AF[i].x =  (af[i].x + translation.x) * scale.x;
+	    AF[i].y =  (af[i].y + translation.y) * scale.y;
 	}
     }
     return AF;
