@@ -378,12 +378,11 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	else
 	    job->translation.y = -job->pageBox.LL.y + job->pageBoundingBox.LL.y / job->scale.y;
     }
+
+    job->compscale = job->scale;
+    job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
     job->comptrans = job->translation;
     job->comptrans.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1: 1;
-
-    gvrender_begin_page(job);
-    gvrender_set_pencolor(job, DEFAULT_COLOR);
-    gvrender_set_fillcolor(job, DEFAULT_FILL);
 }
 
 #if 0
@@ -1142,29 +1141,23 @@ static void setup_view(GVJ_t * job, graph_t * g)
     job->width = ROUND((job->view.x + 2 * job->margin.x) * job->dpi.x / POINTS_PER_INCH);
     job->height = ROUND((job->view.y + 2 * job->margin.y) * job->dpi.y / POINTS_PER_INCH);
 
-    job->compscale.x = job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
-    job->compscale.y = job->scale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
-    job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
+    job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
+    job->scale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
 
     sx = job->width / (job->scale.x * 2.);
     sy = job->height / (job->scale.y * 2.);
 
-    /* calculate clip region in graph units
-     * calculate offset to 0,0 of graph in device units */
+    /* calculate clip region in graph units */
     if (job->rotation) {
         job->clip.UR.x = job->focus.x + sy + EPSILON;
         job->clip.UR.y = job->focus.y + sx + EPSILON;
         job->clip.LL.x = job->focus.x - sy - EPSILON;
         job->clip.LL.y = job->focus.y - sx - EPSILON;
-        job->offset.x = -job->focus.y * job->compscale.x + job->width * 3 / 2;
-        job->offset.y = -job->focus.x * job->compscale.y + job->height / 2.;
     } else {
         job->clip.UR.x = job->focus.x + sx + EPSILON;
         job->clip.UR.y = job->focus.y + sy + EPSILON;
         job->clip.LL.x = job->focus.x - sx - EPSILON;
         job->clip.LL.y = job->focus.y - sy - EPSILON;
-        job->offset.x = -job->focus.x * job->compscale.x + job->width / 2.;
-        job->offset.y = -job->focus.y * job->compscale.y + job->height / 2.;
     }
 }
 
@@ -1309,10 +1302,12 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	for (firstpage(job); validpage(job); nextpage(job)) {
 	    setColorScheme (agget (g, "colorscheme"));
     	    setup_page(job, g);
+	    gvrender_begin_page(job);
+	    gvrender_set_pencolor(job, DEFAULT_COLOR);
+	    gvrender_set_fillcolor(job, DEFAULT_FILL);
+	    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
 	    if (job->numLayers == 1)
 		emit_background(job, g);
-	    gvrender_set_pencolor(job, DEFAULT_COLOR);
-	    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
 	    if (boxf_overlap(job->clip, job->pageBox))
 	        emit_view(job,g,flags);
 	} 

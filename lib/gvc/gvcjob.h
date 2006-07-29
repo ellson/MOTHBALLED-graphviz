@@ -267,7 +267,6 @@ extern "C" {
 	pointf  translation;    /* composite translation */
 	pointf  compscale;	/* composite device scale incl: zoom, dpi, y_goes_down */
 	pointf  comptrans;      /* composite translation */
-	pointf  offset;		/* composite translation  (used by codegens) */
 	
 	bool	fit_mode,
 		needs_refresh,
