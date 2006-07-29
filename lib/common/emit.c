@@ -322,13 +322,13 @@ static void setup_page(GVJ_t * job, graph_t * g)
     pad.x = job->pad.x / job->zoom;
     pad.y = job->pad.y / job->zoom;
 
-    /* establish current box in graph coordinates */
+    /* establish current box in graph units */
     job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - pad.x;
     job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y - pad.y;
     job->pageBox.UR.x = job->pageBox.LL.x + job->pageSize.x;
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
-    /* establish pageOffset to be applied, in graph coordinates */
+    /* establish pageOffset from graph origin, in graph units */
     if (job->rotation) {
 	job->pageOffset.x = -pad.x + job->pageSize.y * (job->pagesArrayElem.y +1);
 	job->pageOffset.y =  pad.y - job->pageSize.x * job->pagesArrayElem.x;
@@ -338,11 +338,13 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	job->pageOffset.y =  pad.y - job->pageSize.y * job->pagesArrayElem.y;
     }
 
+    /* clib box for this page in graph units */
     job->pageBoxClip.UR.x = MIN(job->clip.UR.x, job->pageBox.UR.x);
     job->pageBoxClip.UR.y = MIN(job->clip.UR.y, job->pageBox.UR.y);
     job->pageBoxClip.LL.x = MAX(job->clip.LL.x, job->pageBox.LL.x);
     job->pageBoxClip.LL.y = MAX(job->clip.LL.y, job->pageBox.LL.y);
 
+    /* pageBoundingBox in device units */
     if (job->rotation) {
         job->pageBoundingBox.LL.x = ROUND(job->canvasBox.LL.y * job->dpi.x / POINTS_PER_INCH);
         job->pageBoundingBox.LL.y = ROUND(job->canvasBox.LL.x * job->dpi.y / POINTS_PER_INCH);
@@ -356,27 +358,36 @@ static void setup_page(GVJ_t * job, graph_t * g)
         job->pageBoundingBox.UR.y = ROUND(job->canvasBox.UR.y * job->dpi.y / POINTS_PER_INCH);
     }
 
+    /* boundingBox in device units */
     if (job->common->viewNum == 0)
         job->boundingBox = job->pageBoundingBox;
     else
         EXPANDBB(job->boundingBox, job->pageBoundingBox);
 
+    /* CAUTION - This block was difficult to get right. */
+    /* Test with and without assymetric margins, e.g: -Gmargin="1,0" */
     if (job->rotation) {
 	if (job->flags & GVRENDER_Y_GOES_DOWN) {
+	    /* test with: -Glandscape -Tgif -Tsvg -Tpng */
 	    job->translation.x = -job->pageBox.UR.x - job->pageBoundingBox.LL.x / job->scale.x;
 	    job->translation.y = -job->pageBox.UR.y - job->pageBoundingBox.LL.y / job->scale.y;
 	}
 	else {
+	    /* test with: -Glandscape -Tps */
 	    job->translation.x = -job->pageBox.LL.x + job->pageBoundingBox.LL.y / job->scale.y;
 	    job->translation.y = -job->pageBox.UR.y - job->pageBoundingBox.LL.x / job->scale.x;
 	}
     }
     else {
 	job->translation.x = -job->pageBox.LL.x + job->pageBoundingBox.LL.x / job->scale.x;
-	if (job->flags & GVRENDER_Y_GOES_DOWN)
+	if (job->flags & GVRENDER_Y_GOES_DOWN) {
+	    /* test with: -Tgif -Tsvg -Tpng */
 	    job->translation.y = -job->pageBox.UR.y - job->pageBoundingBox.LL.y / job->scale.y;
-	else
+	}
+	else {
+	    /* test with: -Tps */
 	    job->translation.y = -job->pageBox.LL.y + job->pageBoundingBox.LL.y / job->scale.y;
+	}
     }
 
     job->compscale = job->scale;
