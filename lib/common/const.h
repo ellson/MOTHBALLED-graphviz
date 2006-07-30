@@ -86,9 +86,9 @@
 #define		DEFAULT_RANKSEP	0.5
 #define		MIN_RANKSEP		0.02
 
-/* default page size in points - not including margins = 7.5in x 10in */
-#define		DEFAULT_PAGEWD	540
-#define		DEFAULT_PAGEHT	720
+/* default page size in points - including margins = 8.5in x 11in */
+#define		DEFAULT_PAGEWD	612
+#define		DEFAULT_PAGEHT	792
 /* default margin for paged formats such as PostScript - in points  = 0.5in */
 #define		DEFAULT_PRINT_MARGIN 36
 /* default margin for embedded formats such as PNG - in points */
