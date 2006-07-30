@@ -259,7 +259,7 @@ static void
 ps_set_pen_style(GVJ_t *job)
 {
     double penwidth = job->style->penwidth * job->zoom;
-    char *p, *line, **s = job->rawstyle;
+    char *p, *line, **s = job->style->rawstyle;
     FILE *out = job->output_file;
 
     fprintf(out,"%g setlinewidth\n", penwidth);

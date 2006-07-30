@@ -423,9 +423,12 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
+	box canvas;
+
+	BF2B(job->canvasBox, canvas);
 
 	if (cg && cg->begin_graph)
-	    cg->begin_graph(gvc, g, job->canvasBox, gvc->pb);
+	    cg->begin_graph(gvc, g, canvas, gvc->pb);
     }
 #endif
 }
@@ -1587,7 +1590,7 @@ void gvrender_set_style(GVJ_t * job, char **s)
     char *line, *p;
     gvstyle_t *style = job->style;
 
-    job->rawstyle = s;
+    job->style->rawstyle = s;
     if (gvre) {
 	while ((p = line = *s++)) {
 	    if (streq(line, "solid"))

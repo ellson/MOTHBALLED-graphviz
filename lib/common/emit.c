@@ -178,6 +178,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     pointf imageSize;	/* image size on one page of the graph - points */
     pointf margin;	/* margin for a page of the graph - points */
 
+    margin = job->margin;
+
     /* unpaginated image size in device units */
     imageSize = job->view;
     if (job->rotation)
@@ -186,7 +188,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     /* determine pagination */
     if (gvc->graph_sets_pageSize) {
 	/* page was set by user */
-	pageSize = gvc->pageSize;
+	pageSize.x = gvc->pageSize.x - 2 * margin.x;
+	pageSize.y = gvc->pageSize.y - 2 * margin.y;
 
 	/* we don't want graph page to exceed its bounding box */
 	pageSize.x = MIN(pageSize.x, imageSize.x);
@@ -208,22 +211,16 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	}
 	job->numPages = job->pagesArraySize.x * job->pagesArraySize.y;
 
-	/* find the drawable size in device coords */
+	/* find the drawable size in points */
 	imageSize.x = MIN(imageSize.x, pageSize.x);
 	imageSize.y = MIN(imageSize.y, pageSize.y);
     } else {
 	/* page not set by user, assume default when centering,
 	   but allow infinite page for any other interpretation */
-	pageSize.x = DEFAULT_PAGEWD;
-	pageSize.y = DEFAULT_PAGEHT;
+	pageSize.x = DEFAULT_PAGEWD - 2 * margin.x;
+	pageSize.y = DEFAULT_PAGEHT - 2 * margin.y;
 	job->pagesArraySize.x = job->pagesArraySize.y = job->numPages = 1;
     }
-
-    /* size of one page in graph units */
-    job->pageSize.x = imageSize.x / job->zoom;
-    job->pageSize.y = imageSize.y / job->zoom;
-
-    PF2P(job->margin, margin);
 
     /* determine page box including centering */
     if (GD_drawing(g)->centered) {
@@ -233,10 +230,15 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	    margin.y += (pageSize.y - imageSize.y) / 2;
     }
 
+    /* canvas area, centered if necessary */
     job->canvasBox.LL.x = margin.x;
     job->canvasBox.LL.y = margin.y;
     job->canvasBox.UR.x = margin.x + imageSize.x;
     job->canvasBox.UR.y = margin.y + imageSize.y;
+
+    /* size of one page in graph units */
+    job->pageSize.x = imageSize.x / job->zoom;
+    job->pageSize.y = imageSize.y / job->zoom;
 
     /* set up pagedir */
     job->pagesArrayMajor.x = job->pagesArrayMajor.y 

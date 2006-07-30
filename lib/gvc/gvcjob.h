@@ -45,6 +45,7 @@ extern "C" {
 	pen_type pen;
 	fill_type fill;
 	double penwidth;
+	char **rawstyle;
     } gvstyle_t;
 
 #define EMIT_SORTED (1<<0)
@@ -226,7 +227,6 @@ extern "C" {
 	bool external_surface;	/* surface belongs to caller */
 
 	gvstyle_t *style;       /* active style from gvc->styles[] */
-	char **rawstyle;
 
         int flags;		/* emit_graph flags */
 
@@ -253,7 +253,7 @@ extern "C" {
 	int	rotation;	/* viewport rotation (degrees)  0=portrait, 90=landscape */
 
 	pointf  view;		/* viewport size - points */
-	box	canvasBox;	/* drawing area - points */
+	boxf	canvasBox;	/* drawing area - points */
         pointf  margin;		/* job-specific margin - points */
 
 	pointf	dpi;		/* device resolution device-units-per-inch */
