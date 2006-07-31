@@ -356,6 +356,14 @@ int lineToBox(pointf p1, pointf p2, boxf b)
     return -1;
 }
 
+void rect2poly(pointf *p)
+{
+    p[3].x = p[2].x = p[1].x;
+    p[2].y = p[1].y;
+    p[3].y = p[0].y;
+    p[1].x = p[0].x;
+}
+
 static pointf rotatepf(pointf p, int cwrot)
 {
     static double sina, cosa;

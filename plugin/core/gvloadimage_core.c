@@ -132,7 +132,7 @@ static void core_loadimage_vrml(GVJ_t * job, usershape_t *us, boxf b, bool fille
     assert(us->name);
     assert(us->f);
 
-    n = job->obj->n;
+    n = job->obj->u.n;
     assert(n);
 
     fprintf(out, "Shape {\n");

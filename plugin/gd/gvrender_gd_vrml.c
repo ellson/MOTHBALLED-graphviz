@@ -240,7 +240,7 @@ static void vrml_begin_node(GVJ_t *job)
 {
     FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
-    node_t *n = obj->n;
+    node_t *n = obj->u.n;
     double z = obj->z;
     int width, height;
     int transparent;
@@ -273,7 +273,8 @@ static void vrml_end_node(GVJ_t *job)
 static void vrml_begin_edge(GVJ_t *job)
 {
     FILE *out = job->output_file;
-    edge_t *e = job->obj->e;
+    obj_state_t *obj = job->obj;
+    edge_t *e = obj->u.e;
 
     IsSegment = 0;
     fprintf(out, "# edge %s -> %s\n", e->tail->name, e->head->name);
@@ -325,7 +326,7 @@ finishSegment (FILE *out, edge_t *e)
 static void vrml_end_edge(GVJ_t *job)
 {
     if (IsSegment)
-	finishSegment(job->output_file, job->obj->e);
+	finishSegment(job->output_file, job->obj->u.e);
     fprintf(job->output_file, "] }\n");
 }
 
@@ -337,7 +338,7 @@ static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
     int brect[8];
     extern gdFontPtr gdFontSmall;
 
-    if (! obj->n)
+    if (! obj->u.n)
 	return;
 
     switch (para->just) {
@@ -352,7 +353,7 @@ static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
 	break;
     }
 
-    mp = vrml_node_point(job, obj->n, p);
+    mp = vrml_node_point(job, obj->u.n, p);
 
     err = gdImageStringFT(im, brect,
 	    color_index(im, job->style->pencolor),
@@ -379,7 +380,7 @@ static double
 interpolate_zcoord(GVJ_t *job, pointf p1, pointf fst, double fstz, pointf snd, double sndz)
 {
     obj_state_t *obj = job->obj;
-    edge_t *e = obj->e;
+    edge_t *e = obj->u.e;
     double len, d, rv;
 
     if (fstz == sndz)
@@ -463,12 +464,12 @@ vrml_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end,
     FILE *out = job->output_file;
     gvstyle_t *style = job->style;
     obj_state_t *obj = job->obj;
-    edge_t *e = obj->e;
+    edge_t *e = obj->u.e;
     double fstz = obj->tail_z, sndz = obj->head_z;
     pointf p1, V[4];
     int i, j, step;
 
-    assert(obj->e);
+    assert(e);
 
     if (straight(A,n)) {
 	doSegment (job, A, ND_coord_i(e->tail),Fstz,ND_coord_i(e->head),Sndz);
@@ -514,7 +515,7 @@ static void doArrowhead (GVJ_t *job, pointf * A)
     FILE *out = job->output_file;
     gvstyle_t *style = job->style;
     obj_state_t *obj = job->obj;
-    edge_t *e = obj->e;
+    edge_t *e = obj->u.e;
     double rad, ht, y;
     pointf p0;      /* center of triangle base */
     point  tp,hp;
@@ -561,9 +562,8 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
     FILE *out = job->output_file;
     gvstyle_t *style = job->style;
     obj_state_t *obj = job->obj;
-    graph_t *g = obj->g;
-    node_t *n = obj->n;
-    edge_t *e = obj->e;
+    node_t *n;
+    edge_t *e;
     double z = obj->z;
     pointf p, mp;
     gdPoint *points;
@@ -571,16 +571,19 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
     gdImagePtr brush = NULL;
     double theta;
 
-    if (g) {
+    switch (obj->type) {
+    case ROOTGRAPH_OBJTYPE:
 	fprintf(out, " Background { skyColor %.3f %.3f %.3f }\n",
 	    style->fillcolor.u.rgba[0] / 255.,
 	    style->fillcolor.u.rgba[1] / 255.,
 	    style->fillcolor.u.rgba[2] / 255.);
 	Saw_skycolor = TRUE;
-    }
-    else if (n) {
+	break;
+    case CLUSTER_OBJTYPE:
+	break;
+    case NODE_OBJTYPE:
+	n = obj->u.n;
 	pen = set_penstyle(job, im, brush);
-
 	points = N_GNEW(np, gdPoint);
 	for (i = 0; i < np; i++) {
 	    mp = vrml_node_point(job, n, A[i]);
@@ -617,9 +620,9 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 		ND_coord_i(n).x, ND_coord_i(n).y, z + .01);
 	fprintf(out, "  }\n");
 	fprintf(out, "}\n");
-
-    }
-    else if (e) {
+	break;
+    case EDGE_OBJTYPE:
+	e = obj->u.e;
 	if (np != 3) {
 	    static int flag;
 	    if (!flag) {
@@ -645,7 +648,6 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	    atan2((A[0].y + A[2].y) / 2.0 - A[1].y,
 		  (A[0].x + A[2].x) / 2.0 - A[1].x) + PI / 2.0;
 
-
 	/* this is gruesome, but how else can we get z coord */
 	if (DIST2(p, ND_coord_i(e->tail)) < DIST2(p, ND_coord_i(e->head)))
 	    z = obj->tail_z;
@@ -668,6 +670,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	fprintf(out, "    }\n");
 	fprintf(out, "  ]\n");
 	fprintf(out, "}\n");
+	break;
     }
 }
 
@@ -713,8 +716,8 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
     FILE *out = job->output_file;
     gvstyle_t *style = job->style;
     obj_state_t *obj = job->obj;
-    node_t *n = obj->n;
-    edge_t *e = obj->e;
+    node_t *n;
+    edge_t *e;
     double z = obj->z;
     double rx, ry;
     int dx, dy;
@@ -726,7 +729,12 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
     rx = A[1].x - A[0].x;
     ry = A[1].y - A[0].y;
 
-    if (n) {
+    switch (obj->type) {
+    case ROOTGRAPH_OBJTYPE:
+    case CLUSTER_OBJTYPE:
+	break;
+    case NODE_OBJTYPE:
+	n = obj->u.n;
         P2PF(ND_coord_i(n), mp);
 
 	if (shapeOf(n) == SH_POINT) {
@@ -771,8 +779,9 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	fprintf(out, "    }\n");
 	fprintf(out, "  ]\n");
 	fprintf(out, "}\n");
-    }
-    else if (e) {
+	break;
+    case EDGE_OBJTYPE:
+	e = obj->u.e;
 	/* this is gruesome, but how else can we get z coord */
 	if (DIST2(A[0], ND_coord_i(e->tail)) < DIST2(A[0], ND_coord_i(e->head)))
 	    z = obj->tail_z;

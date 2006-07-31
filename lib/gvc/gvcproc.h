@@ -75,6 +75,9 @@ extern "C" {
 
 /* render */
 
+    extern pointf gvrender_ptf(GVJ_t *job, pointf p);
+    extern pointf* gvrender_ptf_A(GVJ_t *job, pointf *af, pointf *AF, int n);
+
     extern void gvrender_begin_job(GVJ_t * job);
     extern void gvrender_end_job(GVJ_t * job);
     extern int gvrender_select(GVJ_t * job, char *lang);

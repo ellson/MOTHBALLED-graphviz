@@ -90,7 +90,7 @@ static void psgen_begin_graph(GVJ_t * job)
     setupLatin1 = FALSE;
 
     if (job->common->viewNum == 0) {
-        fprintf(job->output_file, "%%%%Title: %s\n", obj->g->name);
+        fprintf(job->output_file, "%%%%Title: %s\n", obj->u.g->name);
         fprintf(job->output_file, "%%%%Pages: (atend)\n");
         if (job->common->show_boxes == NULL)
             fprintf(job->output_file, "%%%%BoundingBox: (atend)\n");
@@ -98,7 +98,7 @@ static void psgen_begin_graph(GVJ_t * job)
         cat_preamble(job, job->common->lib);
         epsf_define(job->output_file);
     }
-    isLatin1 = (GD_charset(obj->g) == CHAR_LATIN1);
+    isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
     if (isLatin1 && !setupLatin1) {
 	fprintf(job->output_file, "setupLatin1\n");	/* as defined in ps header */
 	setupLatin1 = TRUE;
@@ -168,7 +168,7 @@ static void psgen_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    fprintf(job->output_file, "%% %s\n", obj->sg->name);
+    fprintf(job->output_file, "%% %s\n", obj->u.sg->name);
 
     if (obj->url &&  obj->url_map_p) {
         fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
@@ -287,21 +287,26 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
     char *objtype;
 
     if (color) {
-	if (job->obj->g)
-	   objtype = "graph";
-	else if (job->obj->sg)
-	   objtype = "graph";
-	else if (job->obj->n)
-	   objtype = "node";
-	else if (job->obj->e)
-	   objtype = "edge";
-	else
-	   objtype = "sethsb";
+	switch (job->obj->type) {
+	    case ROOTGRAPH_OBJTYPE:
+	    case CLUSTER_OBJTYPE:
+		objtype = "graph";
+		break;
+	    case NODE_OBJTYPE:
+		objtype = "node";
+		break;
+	    case EDGE_OBJTYPE:
+		objtype = "edge";
+		break;
+	    default:
+		objtype = "sethsb";
+		break;
+	}
 	if ( last_color.u.HSVA[0] != color->u.HSVA[0]
 	  || last_color.u.HSVA[1] != color->u.HSVA[1]
 	  || last_color.u.HSVA[2] != color->u.HSVA[2]
 	  || last_color.u.HSVA[3] != color->u.HSVA[3]
-	  || (job->obj->g && (job->obj->g == job->obj->g->root))) {
+	  || (job->obj->type == ROOTGRAPH_OBJTYPE)) {
 	    fprintf(job->output_file, "%.3f %.3f %.3f %scolor\n",
 		color->u.HSVA[0], color->u.HSVA[1], color->u.HSVA[2], objtype);
 	    last_color.u.HSVA[0] = color->u.HSVA[0];

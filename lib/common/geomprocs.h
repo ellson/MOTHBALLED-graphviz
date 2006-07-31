@@ -69,6 +69,8 @@ extern pointf ccwrotatepf(pointf p, int ccwrot);
 extern point cwrotatep(point p, int cwrot);
 extern pointf cwrotatepf(pointf p, int cwrot);
 
+extern void rect2poly(pointf *p);
+
 #ifdef __cplusplus
 }
 #endif

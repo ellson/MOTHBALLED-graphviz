@@ -135,15 +135,21 @@ extern "C" {
 
     typedef enum {MAP_RECTANGLE, MAP_CIRCLE, MAP_POLYGON, } map_shape_t;
 
+    typedef enum {ROOTGRAPH_OBJTYPE, CLUSTER_OBJTYPE, NODE_OBJTYPE, EDGE_OBJTYPE} obj_type;
     typedef struct obj_state_s obj_state_t;
 
     struct obj_state_s {
 	obj_state_t *parent;
 
-	graph_t *g;    /* this object - only one of *g, *sg, *n, *e should be non-NULL */
-	graph_t *sg;  
-	node_t *n;
-	edge_t *e;
+	obj_type type;
+	union {
+	    graph_t *g;
+	    graph_t *sg;  
+	    node_t *n;
+	    edge_t *e;
+	} u;
+
+	int oldstate;  /* FIXME - used by one of those other state stacks */
 
 	double z, tail_z, head_z;   /* z depths for 2.5D renderers such as vrml */
 

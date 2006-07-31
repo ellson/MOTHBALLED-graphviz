@@ -140,7 +140,7 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
 static void map_begin_page(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
-    char *name = xml_string(obj->g->name);
+    char *name = xml_string(obj->u.g->name);
 
     switch (job->render.id) {
     case FORMAT_IMAP:
@@ -150,7 +150,7 @@ static void map_begin_page(GVJ_t * job)
         break;
     case FORMAT_ISMAP:
         if (obj->url && obj->url[0])
-	    fprintf(job->output_file, "default %s %s\n", obj->url, obj->g->name);
+	    fprintf(job->output_file, "default %s %s\n", obj->url, obj->u.g->name);
         break;
     case FORMAT_CMAPX:
 	fprintf(job->output_file, "<map id=\"%s\" name=\"%s\">\n", name, name);
@@ -183,7 +183,7 @@ static void map_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    fprintf(job->output_file, "%% %s\n", obj->sg->name);
+    fprintf(job->output_file, "%% %s\n", obj->u.sg->name);
 
     map_output_shape(job, obj->url_map_shape, obj->url_map_p, obj->url_map_n,
 	        obj->url, obj->tooltip, obj->target);
