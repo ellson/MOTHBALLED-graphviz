@@ -384,7 +384,7 @@ static void svggen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     else {
         svggen_printf(job, "font:%s;", para->fontname);
     }
-    svggen_printf(job, "font-size:%.2f;", para->fontsize);
+    svggen_printf(job, "font-size:%.2fpx;", para->fontsize);
     switch (penstyle->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(penstyle->pencolor.u.string, "black"))
