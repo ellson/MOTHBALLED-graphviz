@@ -65,6 +65,7 @@ extern "C" {
     typedef struct {
 	char *str;
 	char *xshow;
+	PostscriptAlias *postscript_alias;
 	void *layout;
 	void (*free_layout) (void *layout);
 	htmlfont_t *font;

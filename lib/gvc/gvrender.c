@@ -609,9 +609,10 @@ void gvrender_end_edge(GVJ_t * job)
 void gvrender_begin_context(GVJ_t * job)
 {
 #ifdef WITH_CODEGENS
+    gvrender_engine_t *gvre = job->render.engine;
     codegen_t *cg = job->codegen;
 
-    if (cg && cg->begin_context)
+    if (!gvre && cg && cg->begin_context)
 	cg->begin_context();
 #endif
 }
@@ -619,9 +620,10 @@ void gvrender_begin_context(GVJ_t * job)
 void gvrender_end_context(GVJ_t * job)
 {
 #ifdef WITH_CODEGENS
+    gvrender_engine_t *gvre = job->render.engine;
     codegen_t *cg = job->codegen;
 
-    if (cg && cg->end_context)
+    if (!gvre && cg && cg->end_context)
 	cg->end_context();
 #endif
 }
