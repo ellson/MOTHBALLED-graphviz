@@ -37,14 +37,27 @@ static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 /* push empty graphic state for current object */
 static obj_state_t* push_obj_state(GVJ_t *job)
 {
-    obj_state_t *obj;
+    obj_state_t *obj, *parent;
 
     if (! (obj = zmalloc(sizeof(obj_state_t))))
         agerr(AGERR, "no memory from zmalloc()\n");
 
-    obj->parent = job->obj;
+    parent = obj->parent = job->obj;
     job->obj = obj;
-
+    if (parent) {
+        obj->pencolor = parent->pencolor;        /* default styles to parent's style */
+        obj->fillcolor = parent->fillcolor;
+        obj->pen = parent->pen;
+        obj->fill = parent->fill;
+        obj->penwidth = parent->penwidth;
+    }
+    else {
+	/* obj->pencolor = NULL */
+	/* obj->fillcolor = NULL */
+	obj->pen = PEN_SOLID;
+	obj->fill = FILL_NONE;
+	obj->penwidth = PENWIDTH_NORMAL;
+    }
     return obj;
 }
 
@@ -1114,12 +1127,12 @@ static void emit_node(GVJ_t * job, node_t * n)
     GVC_t *gvc = job->gvc;
     char *s;
 
-    if (ND_shape(n) == NULL)
-	return;
-
-    if (node_in_layer(job, n->graph, n)
-	    && node_in_box(n, job->pageBoxClip)
-	    && (ND_state(n) != gvc->common.viewNum)) {
+    if (ND_shape(n) 				     /* node has a shape */
+	    && node_in_layer(job, n->graph, n)       /* and is in layer */
+	    && node_in_box(n, job->pageBoxClip)      /* and is in page  */
+	    && (ND_state(n) != gvc->common.viewNum)) /* and not already drawn */
+    {
+	ND_state(n) = gvc->common.viewNum; 	     /* mark node as drawn */
 
         gvrender_comment(job, n->name);
 	s = late_string(n, N_comment, "");
@@ -1128,7 +1141,6 @@ static void emit_node(GVJ_t * job, node_t * n)
         
 	emit_begin_node(job, n);
 	ND_shape(n)->fns->codefn(job, n);
-	ND_state(n) = gvc->common.viewNum;
 	emit_end_node(job);
     }
 }
@@ -1706,26 +1718,26 @@ static void emit_edge(GVJ_t * job, edge_t * e)
 {
     char *s;
 
-    if (! edge_in_box(e, job->pageBoxClip) || ! edge_in_layer(job, e->head->graph, e))
-	return;
+    if (edge_in_box(e, job->pageBoxClip) && edge_in_layer(job, e->head->graph, e)) {
 
-    s = malloc(strlen(e->tail->name) + 2 + strlen(e->head->name) + 1);
-    strcpy(s,e->tail->name);
-    if (AG_IS_DIRECTED(e->tail->graph))
-        strcat(s,"->");
-    else
-        strcat(s,"--");
-    strcat(s,e->head->name);
-    gvrender_comment(job, s);
-    free(s);
+	s = malloc(strlen(e->tail->name) + 2 + strlen(e->head->name) + 1);
+	strcpy(s,e->tail->name);
+	if (AG_IS_DIRECTED(e->tail->graph))
+	    strcat(s,"->");
+	else
+	    strcat(s,"--");
+	strcat(s,e->head->name);
+	gvrender_comment(job, s);
+	free(s);
 
-    s = late_string(e, E_comment, "");
-    if (s[0])
-        gvrender_comment(job, s);
+	s = late_string(e, E_comment, "");
+	if (s[0])
+	    gvrender_comment(job, s);
 
-    emit_begin_edge(job, e);
-    emit_edge_graphics (job, e);
-    emit_end_edge(job);
+	emit_begin_edge(job, e);
+	emit_edge_graphics (job, e);
+	emit_end_edge(job);
+    }
 }
 
 static void init_gvc(GVC_t * gvc, graph_t * g)
@@ -2039,7 +2051,6 @@ void emit_view(GVJ_t * job, graph_t * g, int flags)
 
 static void emit_begin_graph(GVJ_t * job, graph_t * g)
 {
-    GVC_t *gvc = job->gvc;
     int flags = job->flags;
     obj_state_t *obj;
     textlabel_t *lab;
@@ -2074,13 +2085,6 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
     if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(g, "target")) && s[0])) {
         obj->target = strdup_and_subst_graph(s, g);
     }
-
-    /* init stack */
-    gvc->SP = 0;
-    job->style = &(gvc->styles[0]);
-    job->style->pen = PEN_SOLID;
-    job->style->fill = FILL_NONE;
-    job->style->penwidth = PENWIDTH_NORMAL;
 
 #ifdef WITH_CODEGENS
     Obj = NONE;

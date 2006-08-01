@@ -243,14 +243,14 @@ static void cairogen_end_page(GVJ_t * job)
 
 static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->surface;
     pointf offset;
     PangoLayout *layout = (PangoLayout*)(para->layout);
     PangoLayoutIter* iter;
 
     cairo_set_dash (cr, dashed, 0, 0.0);  /* clear any dashing */
-    cairogen_set_color(cr, &(style->pencolor));
+    cairogen_set_color(cr, &(obj->pencolor));
 
     switch (para->just) {
     case 'r':
@@ -274,22 +274,22 @@ static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
 static void cairogen_set_penstyle(GVJ_t *job, cairo_t *cr)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
 
-    if (style->pen == PEN_DASHED) {
+    if (obj->pen == PEN_DASHED) {
 	cairo_set_dash (cr, dashed, dashed_len, 0.0);
-    } else if (style->pen == PEN_DOTTED) {
+    } else if (obj->pen == PEN_DOTTED) {
 	cairo_set_dash (cr, dotted, dotted_len, 0.0);
     } else {
 	cairo_set_dash (cr, dashed, 0, 0.0);
     }
-    cairo_set_line_width (cr, style->penwidth * job->scale.x);
+    cairo_set_line_width (cr, obj->penwidth * job->scale.x);
 
 }
 
 static void cairogen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->surface;
     cairo_matrix_t matrix;
     double rx, ry;
@@ -309,17 +309,17 @@ static void cairogen_ellipse(GVJ_t * job, pointf * A, int filled)
     cairo_set_matrix(cr, &matrix);
 
     if (filled) {
-	cairogen_set_color(cr, &(style->fillcolor));
+	cairogen_set_color(cr, &(obj->fillcolor));
 	cairo_fill_preserve(cr);
     }
-    cairogen_set_color(cr, &(style->pencolor));
+    cairogen_set_color(cr, &(obj->pencolor));
     cairo_stroke(cr);
 }
 
 static void
 cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->surface;
     int i;
 
@@ -330,10 +330,10 @@ cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 	cairo_line_to(cr, A[i].x, -A[i].y);
     cairo_close_path(cr);
     if (filled) {
-	cairogen_set_color(cr, &(style->fillcolor));
+	cairogen_set_color(cr, &(obj->fillcolor));
 	cairo_fill_preserve(cr);
     }
-    cairogen_set_color(cr, &(style->pencolor));
+    cairogen_set_color(cr, &(obj->pencolor));
     cairo_stroke(cr);
 }
 
@@ -341,7 +341,7 @@ static void
 cairogen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 		int arrow_at_end, int filled)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->surface;
     int i;
 
@@ -351,24 +351,24 @@ cairogen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     for (i = 1; i < n; i += 3)
 	cairo_curve_to(cr, A[i].x, -A[i].y, A[i + 1].x, -A[i + 1].y,
 		       A[i + 2].x, -A[i + 2].y);
-    cairogen_set_color(cr, &(style->pencolor));
+    cairogen_set_color(cr, &(obj->pencolor));
     cairo_stroke(cr);
 }
 
 static void
 cairogen_polyline(GVJ_t * job, pointf * A, int n)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->surface;
     int i;
 
     cairogen_set_penstyle(job, cr);
 
-    cairo_set_line_width (cr, style->penwidth * job->scale.x);
+    cairo_set_line_width (cr, obj->penwidth * job->scale.x);
     cairo_move_to(cr, A[0].x, -A[0].y);
     for (i = 1; i < n; i++)
 	cairo_line_to(cr, A[i].x, -A[i].y);
-    cairogen_set_color(cr, &(style->pencolor));
+    cairogen_set_color(cr, &(obj->pencolor));
     cairo_stroke(cr);
 }
 

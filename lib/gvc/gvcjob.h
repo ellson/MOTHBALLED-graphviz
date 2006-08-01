@@ -40,14 +40,6 @@ extern "C" {
 #define PENWIDTH_BOLD 2.
     typedef enum { GVATTR_STRING, GVATTR_BOOL, GVATTR_COLOR } gvattr_t;
 
-    typedef struct {
-	gvcolor_t pencolor, fillcolor;
-	pen_type pen;
-	fill_type fill;
-	double penwidth;
-	char **rawstyle;
-    } gvstyle_t;
-
 #define EMIT_SORTED (1<<0)
 #define EMIT_COLORS (1<<1)
 #define EMIT_CLUSTERS_LAST (1<<2)
@@ -151,6 +143,12 @@ extern "C" {
 
 	int oldstate;  /* FIXME - used by one of those other state stacks */
 
+	gvcolor_t pencolor, fillcolor;
+	pen_type pen;
+	fill_type fill;
+	double penwidth;
+	char **rawstyle;
+
 	double z, tail_z, head_z;   /* z depths for 2.5D renderers such as vrml */
 
 	/* fully substituted text strings */
@@ -231,8 +229,6 @@ extern "C" {
 
 	void *surface;		/* gd or cairo surface */
 	bool external_surface;	/* surface belongs to caller */
-
-	gvstyle_t *style;       /* active style from gvc->styles[] */
 
         int flags;		/* emit_graph flags */
 

@@ -200,9 +200,9 @@ static void figgen_resolve_color(GVJ_t *job, gvcolor_t * color)
     color->type = COLOR_INDEX;
 }
 
-static void figgen_line_style(gvstyle_t *style, int *line_style, double *style_val)
+static void figgen_line_style(obj_state_t *obj, int *line_style, double *style_val)
 {
-    switch (style->pen) {
+    switch (obj->pen) {
 	case PEN_DASHED: 
 	    *line_style = 1;
 	    *style_val = 10.;
@@ -277,11 +277,11 @@ static void figgen_end_edge(GVJ_t * job)
 
 static void figgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
 
     int object_code = 4;        /* always 4 for text */
     int sub_type = 0;           /* text justification */
-    int color = style->pencolor.u.index;
+    int color = obj->pencolor.u.index;
     int depth = Depth;
     int pen_style = 0;          /* not used */
     int font = -1;		/* init to xfig's default font */
@@ -316,14 +316,14 @@ static void figgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
 static void figgen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
 
     int object_code = 1;        /* always 1 for ellipse */
     int sub_type = 1;           /* ellipse defined by radii */
     int line_style;		/* solid, dotted, dashed */
-    int thickness = style->penwidth;
-    int pen_color = style->pencolor.u.index;
-    int fill_color = style->fillcolor.u.index;
+    int thickness = obj->penwidth;
+    int pen_color = obj->pencolor.u.index;
+    int fill_color = obj->fillcolor.u.index;
     int depth = Depth;
     int pen_style = 0;          /* not used */
     int area_fill = filled ? 20 : -1;
@@ -333,7 +333,7 @@ static void figgen_ellipse(GVJ_t * job, pointf * A, int filled)
     int center_x, center_y, radius_x, radius_y;
     int start_x, start_y, end_x, end_y;
 
-    figgen_line_style(style, &line_style, &style_val);
+    figgen_line_style(obj, &line_style, &style_val);
 
     start_x = center_x = ROUND(A[0].x);
     start_y = center_y = ROUND(A[0].y);
@@ -350,18 +350,17 @@ static void figgen_ellipse(GVJ_t * job, pointf * A, int filled)
             start_y, end_x, end_y);
 }
 
-static void
-figgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
+static void figgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	      int arrow_at_end, int filled)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
 
     int object_code = 3;        /* always 3 for spline */
     int sub_type;
     int line_style;		/* solid, dotted, dashed */
-    int thickness = style->penwidth;
-    int pen_color = style->pencolor.u.index;
-    int fill_color = style->fillcolor.u.index;
+    int thickness = obj->penwidth;
+    int pen_color = obj->pencolor.u.index;
+    int fill_color = obj->fillcolor.u.index;
     int depth = Depth;
     int pen_style = 0;          /* not used */
     int area_fill;
@@ -385,12 +384,12 @@ figgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
                                 1) * 20 * sizeof(char));
     buf = buffer;
 
-    figgen_line_style(style, &line_style, &style_val);
+    figgen_line_style(obj, &line_style, &style_val);
 
     if (filled) {
         sub_type = 5;     /* closed X-spline */
         area_fill = 20;   /* fully saturated color */
-        fill_color = job->style->fillcolor.u.index;
+        fill_color = job->obj->fillcolor.u.index;
     }
     else {
         sub_type = 4;     /* opened X-spline */
@@ -442,14 +441,14 @@ figgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 
 static void figgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
 
     int object_code = 2;        /* always 2 for polyline */
     int sub_type = 3;           /* always 3 for polygon */
     int line_style;		/* solid, dotted, dashed */
-    int thickness = style->penwidth;
-    int pen_color = style->pencolor.u.index;
-    int fill_color = style->fillcolor.u.index;
+    int thickness = obj->penwidth;
+    int pen_color = obj->pencolor.u.index;
+    int fill_color = obj->fillcolor.u.index;
     int depth = Depth;
     int pen_style = 0;          /* not used */
     int area_fill = filled ? 20 : -1;
@@ -461,7 +460,7 @@ static void figgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     int backward_arrow = 0;
     int npoints = n + 1;
 
-    figgen_line_style(style, &line_style, &style_val);
+    figgen_line_style(obj, &line_style, &style_val);
 
     figgen_printf(job,
             "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n",
@@ -473,13 +472,13 @@ static void figgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
 static void figgen_polyline(GVJ_t * job, pointf * A, int n)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
 
     int object_code = 2;        /* always 2 for polyline */
     int sub_type = 1;           /* always 1 for polyline */
     int line_style;		/* solid, dotted, dashed */
-    int thickness = style->penwidth;
-    int pen_color = style->pencolor.u.index;
+    int thickness = obj->penwidth;
+    int pen_color = obj->pencolor.u.index;
     int fill_color = 0;
     int depth = Depth;
     int pen_style = 0;          /* not used */
@@ -492,7 +491,7 @@ static void figgen_polyline(GVJ_t * job, pointf * A, int n)
     int backward_arrow = 0;
     int npoints = n;
 
-    figgen_line_style(style, &line_style, &style_val);
+    figgen_line_style(obj, &line_style, &style_val);
 
     figgen_printf(job,
             "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n",

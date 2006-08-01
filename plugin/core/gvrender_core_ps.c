@@ -258,8 +258,8 @@ psgen_begin_edge(GVJ_t * job)
 static void
 ps_set_pen_style(GVJ_t *job)
 {
-    double penwidth = job->style->penwidth * job->zoom;
-    char *p, *line, **s = job->style->rawstyle;
+    double penwidth = job->obj->penwidth * job->zoom;
+    char *p, *line, **s = job->obj->rawstyle;
     FILE *out = job->output_file;
 
     fprintf(out,"%g setlinewidth\n", penwidth);
@@ -277,7 +277,7 @@ ps_set_pen_style(GVJ_t *job)
 	    p++;
 	}
 	if (strcmp(line, "invis") == 0)
-	    job->style->penwidth = 0;
+	    job->obj->penwidth = 0;
 	fprintf(out, "%s\n", line);
     }
 }
@@ -322,10 +322,10 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     double adj, sz;
     char *str;
 
-    if (job->style->pencolor.u.HSVA[3] < .5)
+    if (job->obj->pencolor.u.HSVA[3] < .5)
 	return;  /* skip transparent text */
 
-    ps_set_color(job, &(job->style->pencolor));
+    ps_set_color(job, &(job->obj->pencolor));
     if (para->fontname) {
 	sz = para->fontsize;
         if (sz != last_fontsize
@@ -374,14 +374,14 @@ static void psgen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     /* A[] contains 2 points: the center and corner. */
 
-    if (filled && job->style->fillcolor.u.HSVA[3] > .5) {
-	ps_set_color(job, &(job->style->fillcolor));
+    if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
+	ps_set_color(job, &(job->obj->fillcolor));
 	fprintf(job->output_file, "%g %g %g %g ellipse_path fill\n",
 	    A[0].x, A[0].y, fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
     }
-    if (job->style->pencolor.u.HSVA[3] > .5) {
+    if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
-        ps_set_color(job, &(job->style->pencolor));
+        ps_set_color(job, &(job->obj->pencolor));
         fprintf(job->output_file, "%g %g %g %g ellipse_path stroke\n",
 	    A[0].x, A[0].y, fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
     }
@@ -393,8 +393,8 @@ psgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 {
     int j;
 
-    if (filled && job->style->fillcolor.u.HSVA[3] > .5) {
-	ps_set_color(job, &(job->style->fillcolor));
+    if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
+	ps_set_color(job, &(job->obj->fillcolor));
 	fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
 	for (j = 1; j < n; j += 3)
 	    fprintf(job->output_file, "%g %g %g %g %g %g curveto\n",
@@ -402,9 +402,9 @@ psgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 		A[j + 2].y);
 	fprintf(job->output_file, "closepath fill\n");
     }
-    if (job->style->pencolor.u.HSVA[3] > .5) {
+    if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
-        ps_set_color(job, &(job->style->pencolor));
+        ps_set_color(job, &(job->obj->pencolor));
         fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
         for (j = 1; j < n; j += 3)
 	    fprintf(job->output_file, "%g %g %g %g %g %g curveto\n",
@@ -418,16 +418,16 @@ static void psgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
     int j;
 
-    if (filled && job->style->fillcolor.u.HSVA[3] > .5) {
-	ps_set_color(job, &(job->style->fillcolor));
+    if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
+	ps_set_color(job, &(job->obj->fillcolor));
 	fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
 	for (j = 1; j < n; j++)
 	    fprintf(job->output_file, "%g %g lineto\n", A[j].x, A[j].y);
 	fprintf(job->output_file, "closepath fill\n");
     }
-    if (job->style->pencolor.u.HSVA[3] > .5) {
+    if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
-        ps_set_color(job, &(job->style->pencolor));
+        ps_set_color(job, &(job->obj->pencolor));
         fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
         for (j = 1; j < n; j++)
 	    fprintf(job->output_file, "%g %g lineto\n", A[j].x, A[j].y);
@@ -439,9 +439,9 @@ static void psgen_polyline(GVJ_t * job, pointf * A, int n)
 {
     int j;
 
-    if (job->style->pencolor.u.HSVA[3] > .5) {
+    if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
-        ps_set_color(job, &(job->style->pencolor));
+        ps_set_color(job, &(job->obj->pencolor));
         fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
         for (j = 1; j < n; j++)
 	    fprintf(job->output_file, "%g %g lineto\n", A[j].x, A[j].y);

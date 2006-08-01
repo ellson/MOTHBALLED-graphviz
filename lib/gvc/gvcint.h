@@ -130,9 +130,6 @@ extern "C" {
 	/* default line style */
 	char **defaultlinestyle;
 
-	gvstyle_t styles[MAXNEST]; /* style stack - reused by each job */
-	int SP;
-
 	/* render defaults set from graph */
 	gvcolor_t bgcolor;	/* background color */
     };

@@ -124,20 +124,20 @@ static void svggen_print_color(GVJ_t * job, gvcolor_t color)
 
 static void svggen_grstyle(GVJ_t * job, int filled)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
 
     svggen_fputs(job, " style=\"fill:");
     if (filled)
-	svggen_print_color(job, style->fillcolor);
+	svggen_print_color(job, obj->fillcolor);
     else
 	svggen_fputs(job, "none");
     svggen_fputs(job, ";stroke:");
-    svggen_print_color(job, style->pencolor);
-    if (style->penwidth != PENWIDTH_NORMAL)
-	svggen_printf(job, ";stroke-width:%g", style->penwidth);
-    if (style->pen == PEN_DASHED) {
+    svggen_print_color(job, obj->pencolor);
+    if (obj->penwidth != PENWIDTH_NORMAL)
+	svggen_printf(job, ";stroke-width:%g", obj->penwidth);
+    if (obj->pen == PEN_DASHED) {
 	svggen_printf(job, ";stroke-dasharray:%s", sdarray);
-    } else if (style->pen == PEN_DOTTED) {
+    } else if (obj->pen == PEN_DOTTED) {
 	svggen_printf(job, ";stroke-dasharray:%s", sdotarray);
     }
     svggen_fputs(job, ";\"");
@@ -355,7 +355,7 @@ static void svggen_end_anchor(GVJ_t * job)
 
 static void svggen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
-    gvstyle_t *penstyle = job->style;
+    obj_state_t *obj = job->obj;
 
     svggen_fputs(job, "<text");
     switch (para->just) {
@@ -385,15 +385,14 @@ static void svggen_textpara(GVJ_t * job, pointf p, textpara_t * para)
         svggen_printf(job, "font:%s;", para->fontname);
     }
     svggen_printf(job, "font-size:%.2fpx;", para->fontsize);
-    switch (penstyle->pencolor.type) {
+    switch (obj->pencolor.type) {
     case COLOR_STRING:
-	if (strcasecmp(penstyle->pencolor.u.string, "black"))
-	    svggen_printf(job, "fill:%s;", penstyle->pencolor.u.string);
+	if (strcasecmp(obj->pencolor.u.string, "black"))
+	    svggen_printf(job, "fill:%s;", obj->pencolor.u.string);
 	break;
     case RGBA_BYTE:
 	svggen_printf(job, "fill:#%02x%02x%02x;",
-		penstyle->pencolor.u.rgba[0],
-		penstyle->pencolor.u.rgba[1], penstyle->pencolor.u.rgba[2]);
+		obj->pencolor.u.rgba[0], obj->pencolor.u.rgba[1], obj->pencolor.u.rgba[2]);
 	break;
     default:
 	assert(0);		/* internal error */

@@ -323,15 +323,15 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	/* draw para in place of text */
 	gdImageLine(im, ROUND(mp.x), ROUND(mp.y),
 		    ROUND(ep.x), ROUND(ep.y),
-		    job->style->pencolor.u.index);
+		    job->obj->pencolor.u.index);
     } else {
 #if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
-	err = gdImageStringFTEx(im, brect, job->style->pencolor.u.index,
+	err = gdImageStringFTEx(im, brect, job->obj->pencolor.u.index,
 				para->fontname, para->fontsize, job->rotation ? (PI / 2) : 0,
 				ROUND(mp.x), ROUND(mp.y), (char *)(para->str), &strex);
 #if 0
 	gdImagePolygon(im, (gdPointPtr) brect, 4,
-		       job->style->pencolor.u.index);
+		       job->obj->pencolor.u.index);
 #endif
 #if 0
 	fprintf(stderr,
@@ -349,27 +349,27 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 		gdImageString(im, gdFontTiny,
 			      ROUND(mp.x), ROUND(mp.y - 9.),
 			      (unsigned char *)para->str,
-			      job->style->pencolor.u.index);
+			      job->obj->pencolor.u.index);
 	    } else if (para->fontsize <= 9.5) {
 		gdImageString(im, gdFontSmall,
 			      ROUND(mp.x), ROUND(mp.y - 12.),
 			      (unsigned char *)para->str,
-			      job->style->pencolor.u.index);
+			      job->obj->pencolor.u.index);
 	    } else if (para->fontsize <= 10.5) {
 		gdImageString(im, gdFontMediumBold,
 			      ROUND(mp.x), ROUND(mp.y - 13.),
 			      (unsigned char *)para->str,
-			      job->style->pencolor.u.index);
+			      job->obj->pencolor.u.index);
 	    } else if (para->fontsize <= 11.5) {
 		gdImageString(im, gdFontLarge,
 			      ROUND(mp.x), ROUND(mp.y - 14.),
 			      (unsigned char *)para->str,
-			      job->style->pencolor.u.index);
+			      job->obj->pencolor.u.index);
 	    } else {
 		gdImageString(im, gdFontGiant,
 			      ROUND(mp.x), ROUND(mp.y - 15.),
 			      (unsigned char *)para->str,
-			      job->style->pencolor.u.index);
+			      job->obj->pencolor.u.index);
 	    }
 #if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
 	}
@@ -379,28 +379,28 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
 static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
     int i, pen, width, dashstyle[40];
 
-    if (style->pen == PEN_DASHED) {
+    if (obj->pen == PEN_DASHED) {
 	for (i = 0; i < 10; i++)
-	    dashstyle[i] = style->pencolor.u.index;
+	    dashstyle[i] = obj->pencolor.u.index;
 	for (; i < 20; i++)
 	    dashstyle[i] = transparent;
 	gdImageSetStyle(im, dashstyle, 20);
 	pen = gdStyled;
-    } else if (style->pen == PEN_DOTTED) {
+    } else if (obj->pen == PEN_DOTTED) {
 	for (i = 0; i < 2; i++)
-	    dashstyle[i] = style->pencolor.u.index;
+	    dashstyle[i] = obj->pencolor.u.index;
 	for (; i < 14; i++)
 	    dashstyle[i] = transparent;
 	gdImageSetStyle(im, dashstyle, 12);
 	pen = gdStyled;
     } else {
-	pen = style->pencolor.u.index;
+	pen = obj->pencolor.u.index;
     }
 
-    width = style->penwidth * job->scale.x;
+    width = obj->penwidth * job->scale.x;
     if (width < PENWIDTH_NORMAL)
 	width = PENWIDTH_NORMAL;  /* gd can't do thin lines */
     gdImageSetThickness(im, width);
@@ -409,7 +409,7 @@ static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
 	brush = gdImageCreate(width, width);
 	gdImagePaletteCopy(brush, im);
 	gdImageFilledRectangle(brush, 0, 0, width - 1, width - 1,
-			       style->pencolor.u.index);
+			       obj->pencolor.u.index);
 	gdImageSetBrush(im, brush);
 	if (pen == gdStyled)
 	    pen = gdStyledBrushed;
@@ -424,7 +424,7 @@ static void
 gdgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	     int arrow_at_end, int filled)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
     gdImagePtr im = (gdImagePtr) job->surface;
     pointf p0, p1, V[4];
     int i, j, step, pen;
@@ -450,7 +450,7 @@ gdgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	    PF2P(p1, F[2]);
 	    gdImageLine(im, F[1].x, F[1].y, F[2].x, F[2].y, pen);
 	    if (filled)
-		gdImageFilledPolygon(im, F, 4, style->fillcolor.u.index);
+		gdImageFilledPolygon(im, F, 4, obj->fillcolor.u.index);
 	    p0 = p1;
 	}
     }
@@ -460,7 +460,7 @@ gdgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 
 static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
     gdImagePtr im = (gdImagePtr) job->surface;
     gdImagePtr brush = NULL;
     int i;
@@ -478,7 +478,7 @@ static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 	points[i].y = ROUND(A[i].y);
     }
     if (filled)
-	gdImageFilledPolygon(im, points, n, style->fillcolor.u.index);
+	gdImageFilledPolygon(im, points, n, obj->fillcolor.u.index);
 
     gdImagePolygon(im, points, n, pen);
     free(points);
@@ -488,7 +488,7 @@ static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
 static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
-    gvstyle_t *style = job->style;
+    obj_state_t *obj = job->obj;
     gdImagePtr im = (gdImagePtr) job->surface;
     double dx, dy;
     int pen;
@@ -505,7 +505,7 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
     if (filled)
 	gdImageFilledEllipse(im, ROUND(A[0].x), ROUND(A[0].y),
 			     ROUND(dx), ROUND(dy),
-			     style->fillcolor.u.index);
+			     obj->fillcolor.u.index);
     gdImageArc(im, ROUND(A[0].x), ROUND(A[0].y), ROUND(dx), ROUND(dy),
 	       0, 360, pen);
     if (brush)

@@ -608,42 +608,21 @@ void gvrender_end_edge(GVJ_t * job)
 
 void gvrender_begin_context(GVJ_t * job)
 {
-    GVC_t *gvc = job->gvc;
-    gvrender_engine_t *gvre = job->render.engine;
-
-    if (gvre) {
-	(gvc->SP)++;
-	assert((gvc->SP) < MAXNEST);
-	gvc->styles[gvc->SP] = gvc->styles[(gvc->SP) - 1];
-	job->style = &(gvc->styles[gvc->SP]);
-    }
 #ifdef WITH_CODEGENS
-    else {
-	codegen_t *cg = job->codegen;
+    codegen_t *cg = job->codegen;
 
-	if (cg && cg->begin_context)
-	    cg->begin_context();
-    }
+    if (cg && cg->begin_context)
+	cg->begin_context();
 #endif
 }
 
 void gvrender_end_context(GVJ_t * job)
 {
-    GVC_t *gvc = job->gvc;
-    gvrender_engine_t *gvre = job->render.engine;
-
-    if (gvre) {
-	gvc->SP--;
-	assert(gvc->SP >= 0);
-	job->style = &(gvc->styles[gvc->SP]);
-    }
 #ifdef WITH_CODEGENS
-    else {
-	codegen_t *cg = job->codegen;
+    codegen_t *cg = job->codegen;
 
-	if (cg && cg->end_context)
-	    cg->end_context();
-    }
+    if (cg && cg->end_context)
+	cg->end_context();
 #endif
 }
 
@@ -703,8 +682,8 @@ void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para)
     pointf PF;
 
     if (para->str && para->str[0]
-	    && ( ! job->style  /* because of xdgen non-conformity */
-		|| job->style->pen != PEN_NONE)) {
+	    && ( ! job->obj  /* because of xdgen non-conformity */
+		|| job->obj->pen != PEN_NONE)) {
 	if (job->flags & GVRENDER_DOES_TRANSFORM)
 	    PF = p;
 	else
@@ -729,7 +708,7 @@ void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para)
 void gvrender_set_pencolor(GVJ_t * job, char *name)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    gvcolor_t *color = &(job->style->pencolor);
+    gvcolor_t *color = &(job->obj->pencolor);
 
     if (gvre) {
 	gvrender_resolve_color(job->render.features, name, color);
@@ -749,7 +728,7 @@ void gvrender_set_pencolor(GVJ_t * job, char *name)
 void gvrender_set_fillcolor(GVJ_t * job, char *name)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    gvcolor_t *color = &(job->style->fillcolor);
+    gvcolor_t *color = &(job->obj->fillcolor);
 
     if (gvre) {
 	gvrender_resolve_color(job->render.features, name, color);
@@ -769,31 +748,31 @@ void gvrender_set_fillcolor(GVJ_t * job, char *name)
 void gvrender_set_style(GVJ_t * job, char **s)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    obj_state_t *obj = job->obj;
     char *line, *p;
-    gvstyle_t *style = job->style;
 
-    job->style->rawstyle = s;
+    obj->rawstyle = s;
     if (gvre) {
 	while ((p = line = *s++)) {
 	    if (streq(line, "solid"))
-		style->pen = PEN_SOLID;
+		obj->pen = PEN_SOLID;
 	    else if (streq(line, "dashed"))
-		style->pen = PEN_DASHED;
+		obj->pen = PEN_DASHED;
 	    else if (streq(line, "dotted"))
-		style->pen = PEN_DOTTED;
+		obj->pen = PEN_DOTTED;
 	    else if (streq(line, "invis") || streq(line, "invisible"))
-		style->pen = PEN_NONE;
+		obj->pen = PEN_NONE;
 	    else if (streq(line, "bold"))
-		style->penwidth = PENWIDTH_BOLD;
+		obj->penwidth = PENWIDTH_BOLD;
 	    else if (streq(line, "setlinewidth")) {
 		while (*p)
 		    p++;
 		p++;
-		style->penwidth = atof(p);
+		obj->penwidth = atof(p);
 	    } else if (streq(line, "filled"))
-		style->fill = FILL_SOLID;
+		obj->fill = FILL_SOLID;
 	    else if (streq(line, "unfilled"))
-		style->fill = FILL_NONE;
+		obj->fill = FILL_NONE;
 	    else {
 		agerr(AGWARN,
 		      "gvrender_set_style: unsupported style %s - ignoring\n",
@@ -816,7 +795,7 @@ void gvrender_ellipse(GVJ_t * job, pointf pf, double rx, double ry, bool filled)
     gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
-	if (gvre->ellipse && job->style->pen != PEN_NONE) {
+	if (gvre->ellipse && job->obj->pen != PEN_NONE) {
 	    pointf af[2];
 
 	    /* center */
@@ -849,7 +828,7 @@ void gvrender_polygon(GVJ_t * job, pointf * af, int n, bool filled)
     gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
-	if (gvre->polygon && job->style->pen != PEN_NONE) {
+	if (gvre->polygon && job->obj->pen != PEN_NONE) {
 	    if (job->flags & GVRENDER_DOES_TRANSFORM)
 		gvre->polygon(job, af, n, filled);
 	    else {
@@ -899,7 +878,7 @@ void gvrender_beziercurve(GVJ_t * job, pointf * af, int n,
     gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
-	if (gvre->beziercurve && job->style->pen != PEN_NONE) {
+	if (gvre->beziercurve && job->obj->pen != PEN_NONE) {
 	    if (job->flags & GVRENDER_DOES_TRANSFORM)
 		gvre->beziercurve(job, af, n, arrow_at_start, arrow_at_end,filled);
 	    else {
@@ -934,7 +913,7 @@ void gvrender_polyline(GVJ_t * job, pointf * af, int n)
     gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
-	if (gvre->polyline && job->style->pen != PEN_NONE) {
+	if (gvre->polyline && job->obj->pen != PEN_NONE) {
 	    if (job->flags & GVRENDER_DOES_TRANSFORM)
 	        gvre->polyline(job, af, n);
             else {
