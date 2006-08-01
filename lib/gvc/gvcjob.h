@@ -226,6 +226,11 @@ extern "C" {
 	gvplugin_active_device_t device;
 	gvplugin_active_loadimage_t loadimage;
 	gvdevice_callbacks_t *callbacks;
+	pointf device_dpi;
+	bool device_sets_dpi;
+
+	void *display;
+	int screen;
 
 	void *surface;		/* gd or cairo surface */
 	bool external_surface;	/* surface belongs to caller */

@@ -26,6 +26,7 @@ extern "C" {
 #endif
 
     struct gvdevice_engine_s {
+	void (*initialize) (GVJ_t * firstjob);
 	void (*finalize) (GVJ_t * firstjob);
     };
 

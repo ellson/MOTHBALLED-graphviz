@@ -28,15 +28,15 @@
 
 #include "const.h"
 #include "gvplugin_device.h"
+#include "gvcjob.h"
 #include "gvcint.h"
 #include "gvcproc.h"
 
 #if 0
 /* This code is not used - see gvrender_select() in gvrender.c */
 
-int gvdevice_select(GVJ_t * job, char *str)
+int gvdevice_select(GVC_t * gvc, char *str)
 {
-    GVC_t *gvc = job->gvc;
     gvplugin_available_t *plugin;
     gvplugin_installed_t *typeptr;
 #ifdef WITH_CODEGENS
@@ -48,15 +48,15 @@ int gvdevice_select(GVJ_t * job, char *str)
 #ifdef WITH_CODEGENS
 	if (strcmp(plugin->packagename, "cg") == 0) {
 	    cg_info = (codegen_info_t *) (plugin->typeptr);
-	    job->codegen = cg_info->cg;
+	    gvc->codegen = cg_info->cg;
 	    return cg_info->id;
 	} else {
 #endif
 	    typeptr = plugin->typeptr;
-	    job->device.engine = (gvdevice_engine_t *) (typeptr->engine);
-	    job->device.features =
+	    gvc->device.engine = (gvdevice_engine_t *) (typeptr->engine);
+	    gvc->device.features =
 		(gvdevice_features_t *) (typeptr->features);
-	    job->device.id = typeptr->id;
+	    gvc->device.id = typeptr->id;
 	    return GVRENDER_PLUGIN;
 #ifdef WITH_CODEGENS
 	}
@@ -65,31 +65,42 @@ int gvdevice_select(GVJ_t * job, char *str)
     return NO_SUPPORT;
 }
 
-int gvdevice_features(GVJ_t * job)
+int gvdevice_features(GVC_t * gvc)
 {
-    gvdevice_engine_t *gvde = job->device.engine;
+    gvdevice_engine_t *gvde = gvc->device.engine;
     int features = 0;
 
     if (gvde)
-	features = job->device.features->flags;
+	features = gvc->device.features->flags;
     return features;
 }
 
 #endif
 
-void gvdevice_finalize(GVC_t * gvc)
+void gvdevice_initialize(GVJ_t * firstjob)
 {
-    GVJ_t *active_job = gvc->active_jobs;
-    gvdevice_engine_t *gvde = active_job->device.engine;
+    gvdevice_engine_t *gvde = firstjob->device.engine;
+
+    if (gvde) {
+	if (gvde->initialize) {
+	    gvde->initialize(firstjob);
+	}
+    }
+}
+
+void gvdevice_finalize(GVJ_t * firstjob)
+{
+    gvdevice_engine_t *gvde = firstjob->device.engine;
+    GVJ_t *job;
 
     if (gvde) {
 	if (gvde->finalize) {
-	    gvde->finalize(active_job);
+	    gvde->finalize(firstjob);
 	}
     }
 #ifdef WITH_CODEGENS
     else {
-	codegen_t *cg = active_job->codegen;
+	codegen_t *cg = firstjob->codegen;
 
 	if (cg && cg->reset)
 	    cg->reset();
@@ -97,14 +108,13 @@ void gvdevice_finalize(GVC_t * gvc)
 #endif
 
     /* FIXME - file output should be its own device */
-    while(active_job) {
-	if (active_job->output_filename
-	  && active_job->output_file != stdout 
-	  && ! active_job->external_surface) {
-	    fclose(active_job->output_file);
-	    active_job->output_file = NULL;
-            active_job->output_filename = NULL;
+    for (job = firstjob; job; job = job->next_active) {
+	if (job->output_filename
+	  && job->output_file != stdout 
+	  && ! job->external_surface) {
+	    fclose(job->output_file);
+	    job->output_file = NULL;
+            job->output_filename = NULL;
 	}
-	active_job = active_job->next_active;
     }
 }

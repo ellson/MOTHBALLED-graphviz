@@ -294,13 +294,6 @@ static void init_window(GVJ_t *job, Display *dpy, int scr)
     job->fit_mode = 0;
     job->needs_refresh = 1;
 
-    job->dpi.x = DisplayWidth(dpy, scr) * 25.4 / DisplayWidthMM(dpy, scr);
-    job->dpi.y = DisplayHeight(dpy, scr) * 25.4 / DisplayHeightMM(dpy, scr);
-
-    /* compute initial width,height in device units */
-    job->width = ROUND((job->view.x + 2 * job->margin.x) * job->dpi.x / POINTS_PER_INCH);
-    job->height = ROUND((job->view.y + 2 * job->margin.y) * job->dpi.y / POINTS_PER_INCH);
-
     if (argb && (window->visual = find_argb_visual(dpy, scr))) {
         window->cmap = XCreateColormap(dpy, RootWindow(dpy, scr),
                                     window->visual, AllocNone);
@@ -451,21 +444,61 @@ static int handle_file_events(GVJ_t *job, int inotify_fd)
 }
 #endif
 
-static void finalize(GVJ_t *firstjob)
+static void initialize_xlib(GVJ_t *firstjob)
+{
+    Display *dpy;
+    KeySym keysym;
+    KeyCode *keycodes;
+    const char *display_name = NULL;
+    int i, scr;
+
+    dpy = XOpenDisplay(display_name);
+    if (dpy == NULL) {
+	fprintf(stderr, "Failed to open XLIB display: %s\n",
+		XDisplayName(NULL));
+	return;
+    }
+    scr = DefaultScreen(dpy);
+
+    firstjob->display = (void*)dpy;
+    firstjob->screen = scr;
+
+    keycodes = (KeyCode *)malloc(firstjob->numkeys * sizeof(KeyCode));
+    if (keycodes == NULL) {
+        fprintf(stderr, "Failed to malloc %d*KeyCode\n", firstjob->numkeys);
+        return;
+    }
+    for (i = 0; i < firstjob->numkeys; i++) {
+        keysym = XStringToKeysym(firstjob->keybindings[i].keystring);
+        if (keysym == NoSymbol)
+            fprintf(stderr, "ERROR: No keysym for \"%s\"\n",
+		firstjob->keybindings[i].keystring);
+        else
+            keycodes[i] = XKeysymToKeycode(dpy, keysym);
+    }
+    firstjob->keycodes = (void*)keycodes;
+
+    firstjob->device_dpi.x = DisplayWidth(dpy, scr) * 25.4 / DisplayWidthMM(dpy, scr);
+    firstjob->device_dpi.y = DisplayHeight(dpy, scr) * 25.4 / DisplayHeightMM(dpy, scr);
+    firstjob->device_sets_dpi = true;
+}
+
+static void finalize_xlib(GVJ_t *firstjob)
 {
     GVJ_t *job;
     Display *dpy;
-    int i, scr, inotify_fd=0, xlib_fd, ret, events;
-    fd_set rfds;
-    const char *display_name = NULL;
-    KeySym keysym;
     KeyCode *keycodes;
+    int scr, inotify_fd=0, xlib_fd, ret, events;
+    fd_set rfds;
     struct timeval timeout;
 #ifdef HAVE_SYS_INOTIFY_H
     int wd=0;
     bool watching_p = FALSE;
     static char *dir;
     char *p, *cwd = NULL;
+
+    dpy = (Display *)(firstjob->display);
+    scr = firstjob->screen;
 
     inotify_fd = inotify_init();
     if (inotify_fd < 0) {
@@ -496,29 +529,6 @@ static void finalize(GVJ_t *firstjob)
     	wd = inotify_add_watch(inotify_fd, dir, IN_MODIFY );
     }
 #endif
-
-    dpy = XOpenDisplay(display_name);
-    if (dpy == NULL) {
-	fprintf(stderr, "Failed to open XLIB display: %s\n",
-		XDisplayName(NULL));
-	return;
-    }
-    scr = DefaultScreen(dpy);
-
-    keycodes = (KeyCode *)malloc(firstjob->numkeys * sizeof(KeyCode));
-    if (keycodes == NULL) {
-        fprintf(stderr, "Failed to malloc %d*KeyCode\n", firstjob->numkeys);
-        return;
-    }
-    for (i = 0; i < firstjob->numkeys; i++) {
-        keysym = XStringToKeysym(firstjob->keybindings[i].keystring);
-        if (keysym == NoSymbol)
-            fprintf(stderr, "ERROR: No keysym for \"%s\"\n",
-		firstjob->keybindings[i].keystring);
-        else
-            keycodes[i] = XKeysymToKeycode(dpy, keysym);
-    }
-    firstjob->keycodes = (void*)keycodes;
 
     for (job = firstjob; job; job = job->next_active)
 	init_window(job, dpy, scr);
@@ -573,7 +583,8 @@ static void finalize(GVJ_t *firstjob)
 }
 
 static gvdevice_engine_t device_engine_xlib = {
-    finalize,
+    initialize_xlib,
+    finalize_xlib,
 };
 
 gvplugin_installed_t gvdevice_types_xlib[] = {

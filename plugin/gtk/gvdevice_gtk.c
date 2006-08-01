@@ -53,6 +53,10 @@ attr_value_edited_cb(GtkCellRendererText *renderer, gchar *pathStr, gchar *newTe
 	gtk_tree_path_free(path);
 }
 
+static void initialize_gtk(GVJ_t *firstjob)
+{
+}
+
 static void finalize_gtk(GVJ_t *firstjob)
 {
     GVJ_t *job;
@@ -119,6 +123,7 @@ static void finalize_gtk(GVJ_t *firstjob)
 }
 
 static gvdevice_engine_t device_engine_gtk = {
+    initialize_gtk,
     finalize_gtk,
 };
 

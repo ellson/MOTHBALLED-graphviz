@@ -1830,8 +1830,13 @@ static void init_job_margin(GVJ_t *job)
 
 static void init_job_dpi(GVJ_t *job, graph_t *g)
 {
+    GVJ_t *firstjob = job->gvc->active_jobs;
+
     if (GD_drawing(g)->dpi != 0) {
         job->dpi.x = job->dpi.y = (double)(GD_drawing(g)->dpi);
+    }
+    else if (firstjob->device_sets_dpi) {
+        job->dpi = firstjob->device_dpi;   /* some devices set dpi in initialize() */
     }
     else {
         /* set default margins depending on format */
@@ -1910,8 +1915,6 @@ static void setup_view(GVJ_t * job, graph_t * g)
     double sx, sy; /* half width, half height in graph-units */
 
     /* compute width,height in device units */
-    /* FIXME - width/height also calculated in xlib finalize() using the same formula
-     * to get initial windows size.  Should be done in one place only. */
     job->width = ROUND((job->view.x + 2 * job->margin.x) * job->dpi.x / POINTS_PER_INCH);
     job->height = ROUND((job->view.y + 2 * job->margin.y) * job->dpi.y / POINTS_PER_INCH);
 
@@ -2710,7 +2713,7 @@ extern gvdevice_callbacks_t gvdevice_callbacks;
 
 int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
-    GVJ_t *job, *prev_job, *active_job;
+    GVJ_t *job, *prevjob, *firstjob;
 
     if (!GD_drawing(g)) {
         agerr (AGERR, "Layout was not done.  Missing layout plugins? \n");
@@ -2723,7 +2726,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 
     gvc->keybindings = gvevent_key_binding;
     gvc->numkeys = gvevent_key_binding_size;
-    prev_job = NULL;
+    prevjob = NULL;
     for (job = gvjobs_first(gvc); job; job = gvjobs_next(gvc)) {
 	if (gvc->gvg) {
 	    job->input_filename = gvc->gvg->input_filename;
@@ -2744,16 +2747,17 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
         }
 
 	/* if we already have an active job list and the device doesn't support mutiple output files, or we are about to write to a different output device */
-        if ((active_job = gvc->active_jobs)
-	    && (!(active_job->flags & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES)
-	      || (strcmp(job->output_langname,active_job->output_langname)))) {
+        firstjob = gvc->active_jobs;
+        if (firstjob
+	    && (!(firstjob->flags & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES)
+	      || (strcmp(job->output_langname,firstjob->output_langname)))) {
 
-	    gvrender_end_job(active_job);
-            gvdevice_finalize(gvc); /* finalize previous jobs */
+	    gvrender_end_job(firstjob);
+            gvdevice_finalize(firstjob); /* finalize previous jobs */
 	    
             gvc->active_jobs = NULL; /* clear active list */
 	    gvc->common.viewNum = 0;
-	    prev_job = NULL;
+	    prevjob = NULL;
         }
 
         if (!job->output_file) {        /* if not yet opened */
@@ -2765,12 +2769,14 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
                 job->output_file = stdout;
         }
 
-	if (prev_job)
-            prev_job->next_active = job;  /* insert job in active list */
-	else
+	if (prevjob) {
+            prevjob->next_active = job;  /* insert job in active list */
+	}
+	else {
 	    gvc->active_jobs = job;   /* first job of new list */
+	    gvdevice_initialize(job);
+	}
 	job->next_active = NULL;      /* terminate active list */
-	prev_job = job;
 
 	job->callbacks = &gvdevice_callbacks;
 
@@ -2779,6 +2785,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
         /* the last job, after all input graphs are processed,
          *      is finalized from gvFreeContext()
          */
+	prevjob = job;
     }
     return 0;
 }

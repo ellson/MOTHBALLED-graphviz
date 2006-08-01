@@ -70,19 +70,22 @@ int gvrender_select(GVJ_t * job, char *str)
 #endif
 	    typeptr = plugin->typeptr;
 	    job->render.engine = (gvrender_engine_t *) (typeptr->engine);
-	    job->render.features =
-		(gvrender_features_t *) (typeptr->features);
+	    job->render.features = (gvrender_features_t *) (typeptr->features);
 	    job->render.id = typeptr->id;
 	    device = job->render.features->device;
 	    if (device) {
 		plugin = gvplugin_load(gvc, API_device, device);
-		if (! plugin)
+		if (! plugin) {
+		    job->device.engine = NULL;
 		    return NO_SUPPORT;  /* FIXME - should differentiate no device from no renderer */
+		}
 	        typeptr = plugin->typeptr;
 		job->device.engine = (gvdevice_engine_t *) (typeptr->engine);
-	        job->device.features =
-		    (gvdevice_features_t *) (typeptr->features);
+	        job->device.features = (gvdevice_features_t *) (typeptr->features);
 	        job->device.id = typeptr->id;
+	    }
+	    else {
+		job->device.engine = NULL;
 	    }
 	    return GVRENDER_PLUGIN;
 #ifdef WITH_CODEGENS

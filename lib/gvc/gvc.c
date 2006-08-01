@@ -87,7 +87,8 @@ int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
 int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
 {
     int rc;
-    GVJ_t *job;
+    GVJ_t *job = gvc->job;
+    GVJ_t *firstjob = gvc->active_jobs;
 
     g = g->root;
 
@@ -99,7 +100,6 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
         return -1;
     }
 
-    job = gvc->job;
     job->output_lang = gvrender_select(job, job->output_langname);
     if (!GD_drawing(g) && job->output_lang != CANONICAL_DOT) {
 	fprintf(stderr, "Layout was not done\n");
@@ -107,8 +107,8 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
     }
     job->output_file = out;
     gvRenderJobs(gvc, g);
-    if (gvc->active_jobs)
-	gvdevice_finalize(gvc);
+    if (firstjob)
+	gvdevice_finalize(firstjob);
     gvjobs_delete(gvc);
 
     return 0;
@@ -118,7 +118,8 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
 int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
 {
     int rc;
-    GVJ_t *job;
+    GVJ_t *job = gvc->job;
+    GVJ_t *firstjob = gvc->active_jobs;
 
     g = g->root;
 
@@ -129,7 +130,6 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
 	return -1;
     }
 
-    job = gvc->job;
     job->output_lang = gvrender_select(job, job->output_langname);
     if (!GD_drawing(g) && job->output_lang != CANONICAL_DOT) {
 	fprintf(stderr, "Layout was not done\n");
@@ -137,8 +137,8 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
     }
     gvjobs_output_filename(gvc, filename);
     gvRenderJobs(gvc, g);
-    if (gvc->active_jobs)
-	gvdevice_finalize(gvc);
+    if (firstjob)
+	gvdevice_finalize(firstjob);
     gvjobs_delete(gvc);
 
     return 0;

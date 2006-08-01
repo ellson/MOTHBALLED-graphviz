@@ -68,10 +68,8 @@ extern "C" {
 
 /* device */
 
-    extern void gvdevice_initialize(GVC_t * gvc);
-    extern void gvdevice_finalize(GVC_t * gvc);
-    extern void gvdevice_begin_job(GVJ_t * job);
-    extern void gvdevice_end_job(GVJ_t * job);
+    extern void gvdevice_initialize(GVJ_t * job);
+    extern void gvdevice_finalize(GVJ_t * job);
 
 /* render */
 

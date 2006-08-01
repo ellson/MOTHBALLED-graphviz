@@ -61,10 +61,11 @@ GVC_t *gvNEWcontext(char **info, char *user)
 int gvFreeContext(GVC_t * gvc)
 {
     GVG_t *gvg, *gvg_next;
+    GVJ_t *firstjob;
 
-    if (gvc->active_jobs) {
-	gvrender_end_job(gvc->active_jobs);
-	gvdevice_finalize(gvc);
+    if ((firstjob = gvc->active_jobs)) {
+	gvrender_end_job(firstjob);
+	gvdevice_finalize(firstjob);
     }
     emit_once_reset();
     gvg_next = gvc->gvgs;
