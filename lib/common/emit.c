@@ -621,6 +621,10 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	job->pagesArraySize.x = job->pagesArraySize.y = job->numPages = 1;
     }
 
+    /* initial window size */
+    job->width = (imageSize.x + 2*margin.x) * job->dpi.x / POINTS_PER_INCH;
+    job->height = (imageSize.y + 2*margin.y) * job->dpi.x / POINTS_PER_INCH;
+
     /* determine page box including centering */
     if (GD_drawing(g)->centered) {
 	if (pageSize.x > imageSize.x)
@@ -1913,10 +1917,6 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 static void setup_view(GVJ_t * job, graph_t * g)
 {
     double sx, sy; /* half width, half height in graph-units */
-
-    /* compute width,height in device units */
-    job->width = ROUND((job->view.x + 2 * job->margin.x) * job->dpi.x / POINTS_PER_INCH);
-    job->height = ROUND((job->view.y + 2 * job->margin.y) * job->dpi.y / POINTS_PER_INCH);
 
     job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
     job->scale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;

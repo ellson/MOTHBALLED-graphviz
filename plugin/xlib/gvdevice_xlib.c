@@ -274,7 +274,6 @@ static void update_display(GVJ_t *job, Display *dpy)
 static void init_window(GVJ_t *job, Display *dpy, int scr)
 {
     int argb = 0;
-    const char *geometry = NULL;
     const char *base = "";
     XGCValues gcv;
     XSetWindowAttributes attributes;
@@ -301,8 +300,10 @@ static void init_window(GVJ_t *job, Display *dpy, int scr)
         attributes.background_pixel = 0;
         attributes.border_pixel = 0;
         attributes.colormap = window->cmap;
-        attributemask = (CWBackPixel |
-                         CWBorderPixel | CWOverrideRedirect | CWColormap);
+        attributemask = ( CWBackPixel
+                          | CWBorderPixel
+			  | CWOverrideRedirect
+			  | CWColormap );
         window->depth = 32;
     } else {
         window->cmap = DefaultColormap(dpy, scr);
@@ -311,11 +312,6 @@ static void init_window(GVJ_t *job, Display *dpy, int scr)
         attributes.border_pixel = BlackPixel(dpy, scr);
         attributemask = (CWBackPixel | CWBorderPixel);
         window->depth = DefaultDepth(dpy, scr);
-    }
-
-    if (geometry) {
-        int x, y;
-        XParseGeometry(geometry, &x, &y, &job->width, &job->height);
     }
 
     window->win = XCreateWindow(dpy, RootWindow(dpy, scr),
@@ -499,6 +495,7 @@ static void finalize_xlib(GVJ_t *firstjob)
 
     dpy = (Display *)(firstjob->display);
     scr = firstjob->screen;
+    keycodes = firstjob->keycodes;
 
     inotify_fd = inotify_init();
     if (inotify_fd < 0) {
