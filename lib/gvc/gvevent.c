@@ -292,10 +292,15 @@ static void gvevent_enter_obj(GVJ_t * job)
 static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
 {
     void *obj;
-    pointf p, translation = job->translation, scale = job->compscale;
     boxf b;
     double closeenough;
+    pointf p, translation, scale;
 
+    translation = job->translation;
+    scale.x = job->zoom * job->devscale.x;
+    scale.y = job->zoom * job->devscale.y;
+
+    /* transform position in device units to poition in graph units */
     if (job->rotation) {
 	p.x = pointer.y / scale.y - translation.x; 
 	p.y = -pointer.x / scale.x - translation.y; 
@@ -306,10 +311,10 @@ static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
     }
 
 #if 0
-fprintf(stderr,"pointer = %g,%g compscale = %g,%g comptrans = %g,%g, graphpoint = %g,%g\n",
+fprintf(stderr,"pointer = %g,%g scale = %g,%g translation = %g,%g, graphpoint = %g,%g\n",
 	pointer.x, pointer.y,
 	scale.x, scale.y,
-	trans.x, trans.y,
+	translation.x, translation.y,
 	p.x, p.y);
 #endif
 
@@ -410,9 +415,9 @@ static void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
 	/* scrollwheel zoom in at current mouse x,y */
 	job->fit_mode = 0;
 	job->focus.x +=  (pointer.x - job->width / 2.)
-		* (ZOOMFACTOR - 1.) / job->zoom;
-	job->focus.y += -(pointer.y - job->height / 2.)
-		* (ZOOMFACTOR - 1.) / job->zoom;
+		* (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
+	job->focus.y += (pointer.y - job->height / 2.)
+		* (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
 	job->zoom *= ZOOMFACTOR;
 	job->needs_refresh = 1;
 	break;
@@ -420,9 +425,9 @@ static void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
 	job->fit_mode = 0;
 	job->zoom /= ZOOMFACTOR;
 	job->focus.x -=  (pointer.x - job->width / 2.)
-		* (ZOOMFACTOR - 1.) / job->zoom;
+		* (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
 	job->focus.y -= -(pointer.y - job->height / 2.)
-		* (ZOOMFACTOR - 1.) / job->zoom;
+		* (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
 	job->needs_refresh = 1;
 	break;
     }
@@ -437,8 +442,9 @@ static void gvevent_button_release(GVJ_t *job, int button, pointf pointer)
 
 static void gvevent_motion(GVJ_t * job, pointf pointer)
 {
-    double dx = pointer.x - job->oldpointer.x;
-    double dy = pointer.y - job->oldpointer.y;
+    /* dx,dy change in position, in device independent points */
+    double dx = (pointer.x - job->oldpointer.x) / job->devscale.x;
+    double dy = (pointer.y - job->oldpointer.y) / job->devscale.y;
 
     if (abs(dx) < EPSILON && abs(dy) < EPSILON)  /* ignore motion events with no motion */
 	return;
@@ -451,8 +457,8 @@ static void gvevent_motion(GVJ_t * job, pointf pointer)
 	/* FIXME - to be implemented */
 	break;
     case 2: /* drag with button 2 - pan graph */
-	job->focus.x -=  dx / job->zoom;
-	job->focus.y -= -dy / job->zoom;
+	job->focus.x -= dx / job->zoom;
+	job->focus.y -= dy / job->zoom;
 	job->needs_refresh = 1;
 	break;
     case 3: /* drag with button 3 - drag inserted node or uncompleted edge */
@@ -518,6 +524,7 @@ static int toggle_fit_cb(GVJ_t * job)
 {
     job->fit_mode = !job->fit_mode;
     if (job->fit_mode) {
+	/* FIXME - this code looks wrong */
 	int dflt_width, dflt_height;
 	dflt_width = job->width;
 	dflt_height = job->height;

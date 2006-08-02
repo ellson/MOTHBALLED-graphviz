@@ -794,9 +794,6 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	    job->translation.y = -job->pageBox.LL.y + job->pageBoundingBox.LL.y / job->scale.y;
 	}
     }
-
-    job->compscale = job->scale;
-    job->compscale.y *= (job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.;
 }
 
 #if 0
@@ -1920,6 +1917,9 @@ static void setup_view(GVJ_t * job, graph_t * g)
 
     job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
     job->scale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
+
+    job->devscale.x = job->dpi.x / POINTS_PER_INCH;
+    job->devscale.y = job->dpi.y / POINTS_PER_INCH * ((job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.);
 
     sx = job->width / (job->scale.x * 2.);
     sy = job->height / (job->scale.y * 2.);

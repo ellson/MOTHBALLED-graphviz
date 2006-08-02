@@ -270,9 +270,9 @@ extern "C" {
 	box     pageBoundingBox;/* rotated boundingBox - device units */
 	box     boundingBox;    /* cumulative boundingBox over all pages - device units */
 
-	pointf  scale;		/* composite device scale (zoom and dpi) */
+	pointf  scale;		/* composite device to graph units (zoom and dpi) */
 	pointf  translation;    /* composite translation */
-	pointf  compscale;	/* composite device scale incl: zoom, dpi, y_goes_down */
+	pointf  devscale;	/* composite device to points: dpi, y_goes_down */
 
 	bool	fit_mode,
 		needs_refresh,

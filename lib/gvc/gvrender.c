@@ -167,7 +167,11 @@ void gvrender_end_job(GVJ_t * job)
 
 pointf gvrender_ptf(GVJ_t *job, pointf p)
 {
-    pointf rv, translation = job->translation, scale = job->compscale;
+    pointf rv, translation, scale;
+
+    translation = job->translation;
+    scale.x = job->zoom * job->devscale.x;
+    scale.y = job->zoom * job->devscale.y;
 
     if (job->rotation) {
 	rv.x =  -(p.y + translation.y) * scale.x;
@@ -185,8 +189,12 @@ pointf gvrender_ptf(GVJ_t *job, pointf p)
 pointf* gvrender_ptf_A(GVJ_t *job, pointf *af, pointf *AF, int n)
 {
     int i;
-    pointf translation = job->translation, scale = job->compscale;
     double t;
+    pointf translation, scale;
+
+    translation = job->translation;
+    scale.x = job->zoom * job->devscale.x;
+    scale.y = job->zoom * job->devscale.y;
 
     if (job->rotation) {
         for (i = 0; i < n; i++) {
