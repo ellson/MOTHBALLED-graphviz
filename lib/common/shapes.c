@@ -1706,11 +1706,25 @@ static void record_init(node_t * n)
     ND_shape_info(n) = (void *) info;
 }
 
+static void free_field (field_t* f)
+{
+    int i;
+
+    for (i=0; i<f->n_flds; i++ ) {
+        free_field(f->fld[i]);
+    }
+
+    free(f->id);
+    free_label(f->lp);
+    free(f->fld);
+    free(f);
+}
+
 static void record_free(node_t * n)
 {
     field_t *p = ND_shape_info(n);
 
-    free(p);
+    free_field (p);
 }
 
 static field_t *map_rec_port(field_t * f, char *str)
