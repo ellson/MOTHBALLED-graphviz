@@ -87,13 +87,15 @@ int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
 int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
 {
     int rc;
-    GVJ_t *job = gvc->job;
-    GVJ_t *firstjob = gvc->active_jobs;
+    GVJ_t *job;
+    GVJ_t *firstjob;
 
     g = g->root;
 
     /* create a job for the required format */
     rc = gvjobs_output_langname(gvc, format);
+    job = gvc->job;
+    firstjob = gvc->active_jobs;
     if (rc == NO_SUPPORT) {
         agerr (AGERR, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
                 format, gvplugin_list(gvc, API_render, format));
