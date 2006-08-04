@@ -101,14 +101,16 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
 	    core_fputs(job, xml_string(url));
 	    core_fputs(job, "\"");
 	}
-        if (target && target[0])
+        if (target && target[0]) {
             core_fputs(job, " target=\"");
 	    core_fputs(job, xml_string(target));
 	    core_fputs(job, "\"");
-        if (tooltip && tooltip[0])
+	}
+        if (tooltip && tooltip[0]) {
             core_fputs(job, " title=\"");
 	    core_fputs(job, xml_string(tooltip));
 	    core_fputs(job, "\"");
+	}
         /*
 	 * alt text is intended for the visually impaired, but such
 	 * folk are not likely to be clicking around on a graph anyway.

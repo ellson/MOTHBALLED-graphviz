@@ -492,7 +492,7 @@ char *xml_string(char *s)
     }
 
     p = buf;
-    while (*s) {
+    while (s && *s) {
 	if (pos > (bufsize - 8)) {
 	    bufsize *= 2;
 	    buf = grealloc(buf, bufsize);
