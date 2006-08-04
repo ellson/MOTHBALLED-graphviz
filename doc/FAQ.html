@@ -965,7 +965,7 @@ Phil Colbourne at the RailCorp of New South Wales for this advice).
 For help with embedding SVG in HTML pages, see 
 <A HREF="http://www.graphviz.org/webdot/svgembed.html">here</A>.
 <P>
-There are several goodstandalone viewers and editors for SVG.
+There are several good standalone viewers and editors for SVG.
 We like <A HREF="http://www.inkscape.org">inkscape</A>.
 <A HREF="http://www.gnome.org/projects/evince/">evince</A>
 is the standard Gnome document viewer that handles SVG, at least
@@ -988,5 +988,40 @@ Is this a real problem?</B>
 No, this is a false positive reported by various security software.
 See <A HREF="http://www.pcreview.co.uk/forums/thread-1689630.php">http://www.pcreview.co.uk/forums/thread-1689630.php</A> or
 <A HREF="http://spywareblog.com/index.php/2004/11/24/is_libexpat_dll_spyware">http://spywareblog.com/index.php/2004/11/24/is_libexpat_dll_spyware</A>.
+<P>
+<A name=Q40>
+<B>Q. What is the coordinate transformation between the graph bb and a .png image?</B>
+</A>
+<OL>
+<LI>
+The bb is expanded by 4 graph-units in all directions (pad) to allow for finite line widths.
+<LI>
+Then it is zoomed and/or rotated according to -Gviewport, -Gsize, -Glandscape, -Gorientation options.
+At the default scaling of 1:1, one graph unit = 1 point (1/72 inch).
+<LI>
+Then it is paginated, if requested by -Gpage and if the output format supports it.  Not the -Tpng renderer, yet.
+<LI>
+Then a margin is added, -Gmargin, in absolute units (inches).
+The top/bottom margin can be set independently of the left/right margin.
+<LI>
+Then it is converted to device units, according to -Gdpi,
+or a dpi value that is given by the output device,
+or a default that is provided by each render.
+There are separate dpi values for x an y to allow for non-square pixels.
+Some renderers invert the Y axis and need an offset to place the
+origin in the top left corner.
+The default dpi for -Tpng is 96dpi (approximating the resolution
+of most computer monitors) so this is where the scaling by 96/72 (4/3)
+comes from.
+</OL>
+<P>
+At the renderer api, plugins have a choice of coordinate representation:
+<UL>
+<LI>
+coordinates in graph-units, and composite transformation data consisting
+of: scaling, rotation, and translation.  (used by svg, cairo, ps, renderers)
+<LI>
+coordinates pre-transformed into device units. 
+<LI>
 </BODY>
 </HTML>
