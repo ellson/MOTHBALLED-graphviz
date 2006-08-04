@@ -774,7 +774,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
     /* CAUTION - This block was difficult to get right. */
     /* Test with and without assymetric margins, e.g: -Gmargin="1,0" */
     if (job->rotation) {
-	if (job->flags & GVRENDER_Y_GOES_DOWN) {
+	if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert)) {
 	    /* test with: -Glandscape -Tgif -Tsvg -Tpng */
 	    job->translation.x = -job->pageBox.UR.x - job->pageBoundingBox.LL.x / job->scale.x;
 	    job->translation.y = -job->pageBox.UR.y - job->pageBoundingBox.LL.y / job->scale.y;
@@ -787,7 +787,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
     }
     else {
 	job->translation.x = -job->pageBox.LL.x + job->pageBoundingBox.LL.x / job->scale.x;
-	if (job->flags & GVRENDER_Y_GOES_DOWN) {
+	if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert)) {
 	    /* test with: -Tgif -Tsvg -Tpng */
 	    job->translation.y = -job->pageBox.UR.y - job->pageBoundingBox.LL.y / job->scale.y;
 	}
@@ -1911,7 +1911,9 @@ static void setup_view(GVJ_t * job, graph_t * g)
     job->scale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
 
     job->devscale.x = job->dpi.x / POINTS_PER_INCH;
-    job->devscale.y = job->dpi.y / POINTS_PER_INCH * ((job->flags & GVRENDER_Y_GOES_DOWN) ? -1. : 1.);
+    job->devscale.y = job->dpi.y / POINTS_PER_INCH;
+    if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert))
+	job->devscale.y *= -1;
 
     sx = job->width / (job->scale.x * 2.);
     sy = job->height / (job->scale.y * 2.);
