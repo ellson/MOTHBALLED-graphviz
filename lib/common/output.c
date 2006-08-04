@@ -19,6 +19,8 @@
 
 static int e_arrows;		/* graph has edges with end arrows */
 static int s_arrows;		/* graph has edges with start arrows */
+static attrsym_t *g_draw;
+static attrsym_t *g_l_draw;
 
 static void printptf(FILE * f, point pt)
 {
@@ -58,7 +60,7 @@ static void writenodeandport(FILE * fp, node_t * node, char *port)
 
 /* _write_plain:
  */
-static void _write_plain(GVJ_t * job, graph_t * g, FILE * f, bool extend)
+void write_plain(GVJ_t * job, graph_t * g, FILE * f, bool extend)
 {
     int i, j, splinePoints;
     char *tport, *hport;
@@ -125,39 +127,6 @@ static void _write_plain(GVJ_t * job, graph_t * g, FILE * f, bool extend)
 	}
     }
     fprintf(f, "stop\n");
-}
-
-void write_plain(GVJ_t * job, graph_t * g, FILE * f)
-{
-    _write_plain(job, g, f, FALSE);
-}
-
-void write_plain_ext(GVJ_t * job, graph_t * g, FILE * f)
-{
-    _write_plain(job, g, f, TRUE);
-}
-
-
-void write_extended_dot(GVJ_t *job, graph_t *g, FILE *f)
-{
-#ifdef WITH_CODEGENS
-	attach_attrs(g);
-	extend_attrs(job, g, s_arrows, e_arrows);
-	agwrite(g, f);
-#endif
-}
-
-void write_attributed_dot(graph_t *g, FILE *f)
-{
-	attach_attrs(g);
-	agwrite(g, f);
-}
-
-void write_canonical_dot(graph_t *g, FILE *f)
-{
-	if (HAS_CLUST_EDGE(g))
-	    undoClusterEdges(g);
-	agwrite(g, f);
 }
 
 static void set_record_rects(node_t * n, field_t * f, agxbuf * xb)
@@ -328,4 +297,148 @@ void attach_attrs(graph_t * g)
 
     if (HAS_CLUST_EDGE(g))
 	undoClusterEdges(g);
+}
+
+static int isInvis(char *style)
+{
+    char **styles = 0;
+    char **sp;
+    char *p;
+
+    if (style[0]) {
+        styles = parse_style(style);
+        sp = styles;
+        while ((p = *sp++)) {
+            if (streq(p, "invis"))
+                return 1;
+        }
+    }
+    return 0;
+}
+
+/* 
+ * John M. suggests:
+ * You might want to add four more:
+ *
+ * _ohdraw_ (optional head-end arrow for edges)
+ * _ohldraw_ (optional head-end label for edges)
+ * _otdraw_ (optional tail-end arrow for edges)
+ * _otldraw_ (optional tail-end label for edges)
+ * 
+ * that would be generated when an additional option is supplied to dot, etc. and 
+ * these would be the arrow/label positions to use if a user want to flip the 
+ * direction of an edge (as sometimes is there want).
+ * 
+ * N.B. John M. asks:
+ *   By the way, I don't know if you ever plan to add other letters for 
+ * the xdot spec, but could you reserve "a" and also "A" (for  attribute), 
+ * "n" and also "N" (for numeric), "w" (for sWitch),  "s" (for string) 
+ * and "t" (for tooltip) and "x" (for position). We use  those letters in 
+ * our drawing spec (and also "<" and ">"), so if you  start generating 
+ * output with them, it could break what we have. 
+ */
+
+#define XDOTVERSION "1.1"
+
+void extend_attrs(GVJ_t * job, graph_t *g, agxbuf** xbufs)
+{
+    node_t *n;
+    edge_t *e;
+    attrsym_t *n_draw = NULL;
+    attrsym_t *n_l_draw = NULL;
+    attrsym_t *e_draw = NULL;
+    attrsym_t *h_draw = NULL;
+    attrsym_t *t_draw = NULL;
+    attrsym_t *e_l_draw = NULL;
+    attrsym_t *hl_draw = NULL;
+    attrsym_t *tl_draw = NULL;
+    unsigned char buf0[BUFSIZ];
+    unsigned char buf1[BUFSIZ];
+    unsigned char buf2[BUFSIZ];
+    unsigned char buf3[BUFSIZ];
+    unsigned char buf4[BUFSIZ];
+    unsigned char buf5[BUFSIZ];
+
+    agsafeset (g, "xdotversion", XDOTVERSION, "");
+    if (GD_has_labels(g) & GRAPH_LABEL)
+        g_l_draw = safe_dcl(g, g, "_ldraw_", "", agraphattr);
+    else
+        g_l_draw = NULL;
+    if (GD_n_cluster(g))
+        g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
+    else
+        g_draw = NULL;
+
+    n_draw = safe_dcl(g, g->proto->n, "_draw_", "", agnodeattr);
+    n_l_draw = safe_dcl(g, g->proto->n, "_ldraw_", "", agnodeattr);
+
+    e_draw = safe_dcl(g, g->proto->e, "_draw_", "", agedgeattr);
+    if (e_arrows)
+        h_draw = safe_dcl(g, g->proto->e, "_hdraw_", "", agedgeattr);
+    if (s_arrows)
+        t_draw = safe_dcl(g, g->proto->e, "_tdraw_", "", agedgeattr);
+    if (GD_has_labels(g) & EDGE_LABEL)
+        e_l_draw = safe_dcl(g, g->proto->e, "_ldraw_", "", agedgeattr);
+    if (GD_has_labels(g) & HEAD_LABEL)
+        hl_draw = safe_dcl(g, g->proto->e, "_hldraw_", "", agedgeattr);
+    if (GD_has_labels(g) & TAIL_LABEL)
+        tl_draw = safe_dcl(g, g->proto->e, "_tldraw_", "", agedgeattr);
+
+    agxbinit(xbufs[0], BUFSIZ, buf0);
+    agxbinit(xbufs[1], BUFSIZ, buf1);
+    agxbinit(xbufs[2], BUFSIZ, buf2);
+    agxbinit(xbufs[3], BUFSIZ, buf3);
+    agxbinit(xbufs[4], BUFSIZ, buf4);
+    agxbinit(xbufs[5], BUFSIZ, buf5);
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+        if (ND_shape(n) && !isInvis(late_string(n, N_style, ""))) {
+            ND_shape(n)->fns->codefn(job, n);
+            agxset(n, n_draw->index, agxbuse(xbufs[EMIT_NDRAW]));
+            agxset(n, n_l_draw->index, agxbuse(xbufs[EMIT_NLABEL]));
+        }
+        if (State < GVSPLINES)
+            continue;
+        for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+            if (ED_edge_type(e) == IGNORED)
+                continue;
+            if (isInvis(late_string(e, E_style, "")))
+                continue;
+            if (ED_spl(e) == NULL)
+                continue;
+
+            emit_edge_graphics (job, e);
+            agxset(e, e_draw->index, agxbuse(xbufs[EMIT_EDRAW]));
+            if (t_draw) agxset(e, t_draw->index, agxbuse(xbufs[EMIT_TDRAW]));
+            if (h_draw) agxset(e, h_draw->index, agxbuse(xbufs[EMIT_HDRAW]));
+            if (e_l_draw) agxset(e, e_l_draw->index,agxbuse(xbufs[EMIT_ELABEL]));
+            if (tl_draw) agxset(e, tl_draw->index, agxbuse(xbufs[EMIT_TLABEL]));
+            if (hl_draw) agxset(e, hl_draw->index, agxbuse(xbufs[EMIT_HLABEL]));
+        }
+    }
+
+    emit_background(job, g);
+    if (agxblen(xbufs[EMIT_GDRAW])) {
+        if (!g_draw)
+            g_draw = safe_dcl(g, g, "_draw_", "", agraphattr);
+        agxset(g, g_draw->index, agxbuse(xbufs[EMIT_GDRAW]));
+    }
+    if (GD_label(g)) {
+        emit_label(job, EMIT_GLABEL, GD_label(g));
+        agxset(g, g_l_draw->index, agxbuse(xbufs[EMIT_GLABEL]));
+    }
+    emit_clusters(job, g, 0);
+    agxbfree(xbufs[0]);
+    agxbfree(xbufs[1]);
+    agxbfree(xbufs[2]);
+    agxbfree(xbufs[3]);
+    agxbfree(xbufs[4]);
+    agxbfree(xbufs[5]);
+}
+
+void extend_attrs_glabel(graph_t *sg, agxbuf **xbufs)
+{
+    agxset(sg, g_draw->index, agxbuse(xbufs[EMIT_CDRAW]));
+    if (GD_label(sg))
+	agxset(sg, g_l_draw->index, agxbuse(xbufs[EMIT_CLABEL]));
 }

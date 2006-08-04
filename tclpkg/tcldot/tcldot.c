@@ -606,9 +606,9 @@ static void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine)
 static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 #ifndef TCLOBJ
 		    int argc, char *argv[]
-#else				/* TCLOBJ */
+#else
 		    int argc, Tcl_Obj * CONST objv[]
-#endif				/* TCLOBJ */
+#endif
     )
 {
 
@@ -621,6 +621,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
     unsigned long id;
     ClientData outfp;
     GVC_t *gvc = (GVC_t *) clientData;
+    GVJ_t *job = gvc->job;
 
     if (argc < 2) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"",
@@ -1089,10 +1090,10 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
-	gvc->active_jobs = gvc->job;
+	gvc->active_jobs = job;
 
-	gvc->job->surface = (void *)(&tkgendata);
-	gvc->job->external_surface = TRUE;
+	job->surface = (void *)(&tkgendata);
+	job->external_surface = TRUE;
 
 	/* make sure that layout is done */
 	g = g->root;
@@ -1121,14 +1122,14 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
-	gvc->active_jobs = gvc->job;
+	gvc->active_jobs = job;
 
 	if (!  (hdl = tclhandleXlate(GDHandleTable, argv[2]))) {
 	    Tcl_AppendResult(interp, "GD Image not found.", (char *) NULL);
 	    return TCL_ERROR;
 	}
-	gvc->job->surface = *hdl;
-	gvc->job->external_surface = TRUE;
+	job->surface = *hdl;
+	job->external_surface = TRUE;
 
 	/* make sure that layout is done */
 	g = g->root;
@@ -1260,20 +1261,18 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		"\". Use one of:", s, (char *)NULL);
 	    return TCL_ERROR;
 	}
-	gvc->active_jobs = gvc->job;
+	gvc->active_jobs = job;
 
 	/* populate new job struct with output language and output file data */
-	gvc->job->output_lang =
-            gvrender_select(gvc->job, gvc->job->output_langname);
+	job->output_lang = gvrender_select(job, job->output_langname);
 
 	if (Tcl_GetOpenFile (interp, argv[2], 1, 1, &outfp) != TCL_OK)
 	    return TCL_ERROR;
-	gvc->job->output_file = (FILE *)outfp;
-	gvc->job->output_filename = NULL;
+	job->output_file = (FILE *)outfp;
+	job->output_filename = NULL;
 
 	/* make sure that layout is done  - unless canonical output */
-	if ((!GD_drawing(g) || argc > 4)
-	    && gvc->job->output_lang != CANONICAL_DOT) {
+	if ((!GD_drawing(g) || argc > 4) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
 	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : (char *) NULL);
 	}
 

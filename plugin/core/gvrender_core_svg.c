@@ -18,21 +18,9 @@
 #include "config.h"
 #endif
 
-#ifdef WIN32
-#include <io.h>
-#include <compat.h>
-#endif
-
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef HAVE_LIBZ
-#include <zlib.h>
-#endif
-#ifdef WIN32
-#include <io.h>
-#endif
 
 #include "macros.h"
 #include "const.h"
@@ -43,60 +31,24 @@
 typedef enum { FORMAT_SVG, FORMAT_SVGZ, } format_type;
 
 extern char *xml_string(char *str);
+extern void core_init_compression(GVJ_t * job, compression_t compression);
+extern void core_fini_compression(GVJ_t * job);
+extern void core_fputs(GVJ_t * job, char *s);
+extern void core_printf(GVJ_t * job, const char *format, ...);
 
 /* SVG dash array */
 static char *sdarray = "5,2";
 /* SVG dot array */
 static char *sdotarray = "1,5";
 
-void svggen_fputs(GVJ_t * job, char *s)
-{
-    int len;
-
-    len = strlen(s);
-    switch (job->render.id) {
-    case FORMAT_SVGZ:
-#ifdef HAVE_LIBZ
-	gzwrite((gzFile *) (job->output_file), s, (unsigned) len);
-#endif
-	break;
-    case FORMAT_SVG:
-	fwrite(s, sizeof(char), (unsigned) len, job->output_file);
-	break;
-    }
-}
-
-/* svggen_printf:
- * Note that this function is unsafe due to the fixed buffer size.
- * It should only be used when the caller is sure the input will not
- * overflow the buffer. In particular, it should be avoided for
- * input coming from users. Also, if vsnprintf is available, the
- * code should check for return values to use it safely.
- */
-void svggen_printf(GVJ_t * job, const char *format, ...)
-{
-    char buf[BUFSIZ];
-    va_list argp;
-
-    va_start(argp, format);
-#ifdef HAVE_VSNPRINTF
-    (void) vsnprintf(buf, sizeof(buf), format, argp);
-#else
-    (void) vsprintf(buf, format, argp);
-#endif
-    va_end(argp);
-
-    svggen_fputs(job, buf);
-}
-
-static void svggen_bzptarray(GVJ_t * job, pointf * A, int n)
+static void svg_bzptarray(GVJ_t * job, pointf * A, int n)
 {
     int i;
     char c;
 
     c = 'M';			/* first point */
     for (i = 0; i < n; i++) {
-	svggen_printf(job, "%c%g,%g", c, A[i].x, -A[i].y);
+	core_printf(job, "%c%g,%g", c, A[i].x, -A[i].y);
 	if (i == 0)
 	    c = 'C';		/* second point */
 	else
@@ -104,17 +56,17 @@ static void svggen_bzptarray(GVJ_t * job, pointf * A, int n)
     }
 }
 
-static void svggen_print_color(GVJ_t * job, gvcolor_t color)
+static void svg_print_color(GVJ_t * job, gvcolor_t color)
 {
     switch (color.type) {
     case COLOR_STRING:
-	svggen_fputs(job, color.u.string);
+	core_fputs(job, color.u.string);
 	break;
     case RGBA_BYTE:
 	if (color.u.rgba[3] == 0) /* transparent */
-	    svggen_fputs(job, "none");
+	    core_fputs(job, "none");
 	else
-	    svggen_printf(job, "#%02x%02x%02x",
+	    core_printf(job, "#%02x%02x%02x",
 		color.u.rgba[0], color.u.rgba[1], color.u.rgba[2]);
 	break;
     default:
@@ -122,336 +74,297 @@ static void svggen_print_color(GVJ_t * job, gvcolor_t color)
     }
 }
 
-static void svggen_grstyle(GVJ_t * job, int filled)
+static void svg_grstyle(GVJ_t * job, int filled)
 {
     obj_state_t *obj = job->obj;
 
-    svggen_fputs(job, " style=\"fill:");
+    core_fputs(job, " style=\"fill:");
     if (filled)
-	svggen_print_color(job, obj->fillcolor);
+	svg_print_color(job, obj->fillcolor);
     else
-	svggen_fputs(job, "none");
-    svggen_fputs(job, ";stroke:");
-    svggen_print_color(job, obj->pencolor);
+	core_fputs(job, "none");
+    core_fputs(job, ";stroke:");
+    svg_print_color(job, obj->pencolor);
     if (obj->penwidth != PENWIDTH_NORMAL)
-	svggen_printf(job, ";stroke-width:%g", obj->penwidth);
+	core_printf(job, ";stroke-width:%g", obj->penwidth);
     if (obj->pen == PEN_DASHED) {
-	svggen_printf(job, ";stroke-dasharray:%s", sdarray);
+	core_printf(job, ";stroke-dasharray:%s", sdarray);
     } else if (obj->pen == PEN_DOTTED) {
-	svggen_printf(job, ";stroke-dasharray:%s", sdotarray);
+	core_printf(job, ";stroke-dasharray:%s", sdotarray);
     }
-    svggen_fputs(job, ";\"");
+    core_fputs(job, ";\"");
 }
 
-static void svggen_comment(GVJ_t * job, char *str)
+static void svg_comment(GVJ_t * job, char *str)
 {
-    svggen_fputs(job, "<!-- ");
-    svggen_fputs(job, xml_string(str));
-    svggen_fputs(job, " -->\n");
+    core_fputs(job, "<!-- ");
+    core_fputs(job, xml_string(str));
+    core_fputs(job, " -->\n");
 }
 
-static void svggen_begin_job(GVJ_t * job)
+static void svg_begin_job(GVJ_t * job)
 {
-#if HAVE_LIBZ
-    int fd;
-#endif
-
     switch (job->render.id) {
     case FORMAT_SVGZ:
-#if HAVE_LIBZ
-	/* open dup so can gzclose independent of FILE close */
-	fd = dup(fileno(job->output_file));
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-	/*
-	 * Windows will do \n -> \r\n  translations on
-	 * stdout unless told otherwise.
-	 */
-	setmode(fd, O_BINARY);
-#endif
-#endif
-
-	job->output_file = (FILE *) (gzdopen(fd, "wb"));
-	if (!job->output_file) {
-	    (job->common->errorfn) ("Error opening compressed output file\n");
-	    exit(1);
-	}
+	core_init_compression(job, COMPRESSION_ZLIB);
 	break;
-#else
-	(job->common->errorfn) ("No libz support.\n");
-	exit(1);
-#endif
     case FORMAT_SVG:
+	core_init_compression(job, COMPRESSION_NONE);
 	break;
     }
 
-    svggen_fputs(job,
-		 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n");
-    svggen_fputs(job,
-		 "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\"\n");
-    svggen_fputs(job,
-		 " \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\"");
+    core_fputs(job, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n");
+    core_fputs(job, "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\"\n");
+    core_fputs(job, " \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\"");
 
     /* This is to work around a bug in the SVG 1.0 DTD */
-    svggen_fputs(job,
-		 " [\n <!ATTLIST svg xmlns:xlink CDATA #FIXED \"http://www.w3.org/1999/xlink\">\n]");
+    core_fputs(job, " [\n <!ATTLIST svg xmlns:xlink CDATA #FIXED \"http://www.w3.org/1999/xlink\">\n]");
 
-    svggen_fputs(job, ">\n<!-- Generated by ");
-    svggen_fputs(job, xml_string(job->common->info[0]));
-    svggen_fputs(job, " version ");
-    svggen_fputs(job, xml_string(job->common->info[1]));
-    svggen_fputs(job, " (");
-    svggen_fputs(job, xml_string(job->common->info[2]));
-    svggen_fputs(job, ")\n     For user: ");
-    svggen_fputs(job, xml_string(job->common->user));
-    svggen_fputs(job, " -->\n");
+    core_fputs(job, ">\n<!-- Generated by ");
+    core_fputs(job, xml_string(job->common->info[0]));
+    core_fputs(job, " version ");
+    core_fputs(job, xml_string(job->common->info[1]));
+    core_fputs(job, " (");
+    core_fputs(job, xml_string(job->common->info[2]));
+    core_fputs(job, ")\n     For user: ");
+    core_fputs(job, xml_string(job->common->user));
+    core_fputs(job, " -->\n");
 }
 
-static void svggen_begin_graph(GVJ_t * job)
+static void svg_begin_graph(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    svggen_fputs(job, "<!--");
+    core_fputs(job, "<!--");
     if (obj->u.g->name[0]) {
-        svggen_fputs(job, " Title: ");
-	svggen_fputs(job, xml_string(obj->u.g->name));
+        core_fputs(job, " Title: ");
+	core_fputs(job, xml_string(obj->u.g->name));
     }
-    svggen_printf(job, " Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
+    core_printf(job, " Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
 
-    svggen_printf(job, "<svg width=\"%dpx\" height=\"%dpx\"\n",
+    core_printf(job, "<svg width=\"%dpx\" height=\"%dpx\"\n",
 	job->width, job->height);
     /* namespace of svg */
-    svggen_fputs(job, " xmlns=\"http://www.w3.org/2000/svg\"");
+    core_fputs(job, " xmlns=\"http://www.w3.org/2000/svg\"");
     /* namespace of xlink */
-    svggen_fputs(job, " xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
-    svggen_fputs(job, ">\n");
+    core_fputs(job, " xmlns:xlink=\"http://www.w3.org/1999/xlink\"");
+    core_fputs(job, ">\n");
 }
 
-static void svggen_end_graph(GVJ_t * job)
+static void svg_end_graph(GVJ_t * job)
 {
-    svggen_fputs(job, "</svg>\n");
-    switch (job->render.id) {
-    case FORMAT_SVGZ:
-#ifdef HAVE_LIBZ
-	gzclose((gzFile *) (job->output_file));
-	break;
-#else
-	(job->common->errorfn) ("No libz support\n");
-	exit(1);
-#endif
-    case FORMAT_SVG:
-	break;
-    }
+    core_fputs(job, "</svg>\n");
+    core_fini_compression(job);
 }
 
-static void svggen_begin_layer(GVJ_t * job, char *layername, int layerNum, int numLayers)
+static void svg_begin_layer(GVJ_t * job, char *layername, int layerNum, int numLayers)
 {
-    svggen_fputs(job, "<g id=\"");
-    svggen_fputs(job, xml_string(layername));
-    svggen_fputs(job, "\" class=\"layer\">\n");
+    core_fputs(job, "<g id=\"");
+    core_fputs(job, xml_string(layername));
+    core_fputs(job, "\" class=\"layer\">\n");
 }
 
-static void svggen_end_layer(GVJ_t * job)
+static void svg_end_layer(GVJ_t * job)
 {
-    svggen_fputs(job, "</g>\n");
+    core_fputs(job, "</g>\n");
 }
 
-static void svggen_begin_page(GVJ_t * job)
+static void svg_begin_page(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
     /* its really just a page of the graph, but its still a graph,
      * and it is the entire graph if we're not currently paging */
-    svggen_printf(job, "<g id=\"graph%d\" class=\"graph\"", job->common->viewNum);
-    svggen_printf(job, " transform=\"scale(%g %g) rotate(%d) translate(%g %g)\">\n",
+    core_printf(job, "<g id=\"graph%d\" class=\"graph\"", job->common->viewNum);
+    core_printf(job, " transform=\"scale(%g %g) rotate(%d) translate(%g %g)\">\n",
 	    job->scale.x, job->scale.y, -job->rotation,
 	    job->translation.x, -job->translation.y);
     /* default style */
     if (obj->u.g->name[0]) {
-        svggen_fputs(job, "<title>");
-        svggen_fputs(job, xml_string(obj->u.g->name));
-        svggen_fputs(job, "</title>\n");
+        core_fputs(job, "<title>");
+        core_fputs(job, xml_string(obj->u.g->name));
+        core_fputs(job, "</title>\n");
     }
 }
 
-static void svggen_end_page(GVJ_t * job)
+static void svg_end_page(GVJ_t * job)
 {
-    svggen_fputs(job, "</g>\n");
+    core_fputs(job, "</g>\n");
 }
 
-static void svggen_begin_cluster(GVJ_t * job)
+static void svg_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    svggen_printf(job, "<g id=\"cluster%ld\" class=\"cluster\">",
+    core_printf(job, "<g id=\"cluster%ld\" class=\"cluster\">",
 	    obj->u.sg->meta_node->id);
-    svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(obj->u.sg->name));
-    svggen_fputs(job, "</title>\n");
+    core_fputs(job, "<title>");
+    core_fputs(job, xml_string(obj->u.sg->name));
+    core_fputs(job, "</title>\n");
 }
 
-static void svggen_end_cluster(GVJ_t * job)
+static void svg_end_cluster(GVJ_t * job)
 {
-    svggen_fputs(job, "</g>\n");
+    core_fputs(job, "</g>\n");
 }
 
-static void svggen_begin_node(GVJ_t * job)
+static void svg_begin_node(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    svggen_printf(job, "<g id=\"node%ld\" class=\"node\">", obj->u.n->id);
-    svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(obj->u.n->name));
-    svggen_fputs(job, "</title>\n");
+    core_printf(job, "<g id=\"node%ld\" class=\"node\">", obj->u.n->id);
+    core_fputs(job, "<title>");
+    core_fputs(job, xml_string(obj->u.n->name));
+    core_fputs(job, "</title>\n");
 }
 
-static void svggen_end_node(GVJ_t * job)
+static void svg_end_node(GVJ_t * job)
 {
-    svggen_fputs(job, "</g>\n");
+    core_fputs(job, "</g>\n");
 }
 
 static void
-svggen_begin_edge(GVJ_t * job)
+svg_begin_edge(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
     char *edgeop;
 
-    svggen_printf(job, "<g id=\"edge%ld\" class=\"edge\">", obj->u.e->id);
+    core_printf(job, "<g id=\"edge%ld\" class=\"edge\">", obj->u.e->id);
     if (obj->u.e->tail->graph->root->kind & AGFLAG_DIRECTED)
 	edgeop = "&#45;&gt;";
     else
 	edgeop = "&#45;&#45;";
-    svggen_fputs(job, "<title>");
-    svggen_fputs(job, xml_string(obj->u.e->tail->name));
-    svggen_fputs(job, edgeop);
-    /* can't do this in single svggen_printf because
+    core_fputs(job, "<title>");
+    core_fputs(job, xml_string(obj->u.e->tail->name));
+    core_fputs(job, edgeop);
+    /* can't do this in single core_printf because
      * xml_string's buffer gets reused. */
-    svggen_fputs(job, xml_string(obj->u.e->head->name));
-    svggen_fputs(job, "</title>\n");
+    core_fputs(job, xml_string(obj->u.e->head->name));
+    core_fputs(job, "</title>\n");
 }
 
-static void svggen_end_edge(GVJ_t * job)
+static void svg_end_edge(GVJ_t * job)
 {
-    svggen_fputs(job, "</g>\n");
+    core_fputs(job, "</g>\n");
 }
 
 static void
-svggen_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
+svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
 {
-    svggen_fputs(job, "<a");
+    core_fputs(job, "<a");
     if (href && href[0])
-	svggen_printf(job, " xlink:href=\"%s\"", xml_string(href));
+	core_printf(job, " xlink:href=\"%s\"", xml_string(href));
     if (tooltip && tooltip[0])
-	svggen_printf(job, " xlink:title=\"%s\"", xml_string(tooltip));
+	core_printf(job, " xlink:title=\"%s\"", xml_string(tooltip));
     if (target && target[0])
-	svggen_printf(job, " target=\"%s\"", xml_string(target));
-    svggen_fputs(job, ">\n");
+	core_printf(job, " target=\"%s\"", xml_string(target));
+    core_fputs(job, ">\n");
 }
 
-static void svggen_end_anchor(GVJ_t * job)
+static void svg_end_anchor(GVJ_t * job)
 {
-    svggen_fputs(job, "</a>\n");
+    core_fputs(job, "</a>\n");
 }
 
-static void svggen_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     obj_state_t *obj = job->obj;
 
-    svggen_fputs(job, "<text");
+    core_fputs(job, "<text");
     switch (para->just) {
     case 'l':
-	svggen_fputs(job, " text-anchor=\"start\"");
+	core_fputs(job, " text-anchor=\"start\"");
 	break;
     case 'r':
-	svggen_fputs(job, " text-anchor=\"end\"");
+	core_fputs(job, " text-anchor=\"end\"");
 	break;
     default:
     case 'n':
-	svggen_fputs(job, " text-anchor=\"middle\"");
+	core_fputs(job, " text-anchor=\"middle\"");
 	break;
     }
-    svggen_printf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
-    svggen_fputs(job, " style=\"");
+    core_printf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
+    core_fputs(job, " style=\"");
     if (para->postscript_alias) {
-        svggen_printf(job, "font-family:%s;", para->postscript_alias->family);
+        core_printf(job, "font-family:%s;", para->postscript_alias->family);
         if (para->postscript_alias->weight)
-	    svggen_printf(job, "font-weight:%s;", para->postscript_alias->weight);
+	    core_printf(job, "font-weight:%s;", para->postscript_alias->weight);
         if (para->postscript_alias->stretch)
-	    svggen_printf(job, "font-stretch:%s;", para->postscript_alias->stretch);
+	    core_printf(job, "font-stretch:%s;", para->postscript_alias->stretch);
         if (para->postscript_alias->style)
-	    svggen_printf(job, "font-style:%s;", para->postscript_alias->style);
+	    core_printf(job, "font-style:%s;", para->postscript_alias->style);
     }
     else {
-        svggen_printf(job, "font:%s;", para->fontname);
+        core_printf(job, "font:%s;", para->fontname);
     }
-    svggen_printf(job, "font-size:%.2fpx;", para->fontsize);
+    core_printf(job, "font-size:%.2fpx;", para->fontsize);
     switch (obj->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(obj->pencolor.u.string, "black"))
-	    svggen_printf(job, "fill:%s;", obj->pencolor.u.string);
+	    core_printf(job, "fill:%s;", obj->pencolor.u.string);
 	break;
     case RGBA_BYTE:
-	svggen_printf(job, "fill:#%02x%02x%02x;",
+	core_printf(job, "fill:#%02x%02x%02x;",
 		obj->pencolor.u.rgba[0], obj->pencolor.u.rgba[1], obj->pencolor.u.rgba[2]);
 	break;
     default:
 	assert(0);		/* internal error */
     }
-    svggen_fputs(job, "\">");
-    svggen_fputs(job, xml_string(para->str));
-    svggen_fputs(job, "</text>\n");
+    core_fputs(job, "\">");
+    core_fputs(job, xml_string(para->str));
+    core_fputs(job, "</text>\n");
 }
 
-static void svggen_ellipse(GVJ_t * job, pointf * A, int filled)
+static void svg_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     /* A[] contains 2 points: the center and corner. */
-    svggen_fputs(job, "<ellipse");
-    svggen_grstyle(job, filled);
-    svggen_printf(job, " cx=\"%g\" cy=\"%g\"", A[0].x, -A[0].y);
-    svggen_printf(job, " rx=\"%g\" ry=\"%g\"",
+    core_fputs(job, "<ellipse");
+    svg_grstyle(job, filled);
+    core_printf(job, " cx=\"%g\" cy=\"%g\"", A[0].x, -A[0].y);
+    core_printf(job, " rx=\"%g\" ry=\"%g\"",
 	    A[1].x - A[0].x, A[1].y - A[0].y);
-    svggen_fputs(job, "/>\n");
+    core_fputs(job, "/>\n");
 }
 
 static void
-svggen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
+svg_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	      int arrow_at_end, int filled)
 {
-    svggen_fputs(job, "<path");
-    svggen_grstyle(job, filled);
-    svggen_fputs(job, " d=\"");
-    svggen_bzptarray(job, A, n);
-    svggen_fputs(job, "\"/>\n");
+    core_fputs(job, "<path");
+    svg_grstyle(job, filled);
+    core_fputs(job, " d=\"");
+    svg_bzptarray(job, A, n);
+    core_fputs(job, "\"/>\n");
 }
 
-static void svggen_polygon(GVJ_t * job, pointf * A, int n, int filled)
+static void svg_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
     int i;
 
-    svggen_fputs(job, "<polygon");
-    svggen_grstyle(job, filled);
-    svggen_fputs(job, " points=\"");
+    core_fputs(job, "<polygon");
+    svg_grstyle(job, filled);
+    core_fputs(job, " points=\"");
     for (i = 0; i < n; i++)
-	svggen_printf(job, "%g,%g ", A[i].x, -A[i].y);
-    svggen_printf(job, "%g,%g", A[0].x, -A[0].y);	/* because Adobe SVG is broken */
-    svggen_fputs(job, "\"/>\n");
+	core_printf(job, "%g,%g ", A[i].x, -A[i].y);
+    core_printf(job, "%g,%g", A[0].x, -A[0].y);	/* because Adobe SVG is broken */
+    core_fputs(job, "\"/>\n");
 }
 
-static void svggen_polyline(GVJ_t * job, pointf * A, int n)
+static void svg_polyline(GVJ_t * job, pointf * A, int n)
 {
     int i;
 
-    svggen_fputs(job, "<polyline");
-    svggen_grstyle(job, 0);
-    svggen_fputs(job, " points=\"");
+    core_fputs(job, "<polyline");
+    svg_grstyle(job, 0);
+    core_fputs(job, " points=\"");
     for (i = 0; i < n; i++)
-	svggen_printf(job, "%g,%g ", A[i].x, -A[i].y);
-    svggen_fputs(job, "\"/>\n");
+	core_printf(job, "%g,%g ", A[i].x, -A[i].y);
+    core_fputs(job, "\"/>\n");
 }
 
 /* color names from http://www.w3.org/TR/SVG/types.html */
 /* NB.  List must be LANG_C sorted */
-static char *svggen_knowncolors[] = {
+static char *svg_knowncolors[] = {
     "aliceblue", "antiquewhite", "aqua", "aquamarine", "azure",
     "beige", "bisque", "black", "blanchedalmond", "blue",
     "blueviolet", "brown", "burlywood",
@@ -494,37 +407,37 @@ static char *svggen_knowncolors[] = {
     "yellow", "yellowgreen"
 };
 
-gvrender_engine_t svggen_engine = {
-    svggen_begin_job,
-    0,				/* svggen_end_job */
-    svggen_begin_graph,
-    svggen_end_graph,
-    svggen_begin_layer,
-    svggen_end_layer,
-    svggen_begin_page,
-    svggen_end_page,
-    svggen_begin_cluster,
-    svggen_end_cluster,
-    0,				/* svggen_begin_nodes */
-    0,				/* svggen_end_nodes */
-    0,				/* svggen_begin_edges */
-    0,				/* svggen_end_edges */
-    svggen_begin_node,
-    svggen_end_node,
-    svggen_begin_edge,
-    svggen_end_edge,
-    svggen_begin_anchor,
-    svggen_end_anchor,
-    svggen_textpara,
-    0,				/* svggen_resolve_color */
-    svggen_ellipse,
-    svggen_polygon,
-    svggen_bezier,
-    svggen_polyline,
-    svggen_comment,
+gvrender_engine_t svg_engine = {
+    svg_begin_job,
+    0,				/* svg_end_job */
+    svg_begin_graph,
+    svg_end_graph,
+    svg_begin_layer,
+    svg_end_layer,
+    svg_begin_page,
+    svg_end_page,
+    svg_begin_cluster,
+    svg_end_cluster,
+    0,				/* svg_begin_nodes */
+    0,				/* svg_end_nodes */
+    0,				/* svg_begin_edges */
+    0,				/* svg_end_edges */
+    svg_begin_node,
+    svg_end_node,
+    svg_begin_edge,
+    svg_end_edge,
+    svg_begin_anchor,
+    svg_end_anchor,
+    svg_textpara,
+    0,				/* svg_resolve_color */
+    svg_ellipse,
+    svg_polygon,
+    svg_bezier,
+    svg_polyline,
+    svg_comment,
 };
 
-gvrender_features_t svggen_features = {
+gvrender_features_t svg_features = {
     GVRENDER_DOES_TRUECOLOR
 	| GVRENDER_Y_GOES_DOWN
         | GVRENDER_DOES_TRANSFORM
@@ -534,17 +447,17 @@ gvrender_features_t svggen_features = {
 	| GVRENDER_DOES_TOOLTIPS, /* flags */
     DEFAULT_EMBED_MARGIN,	/* default margin - points */
     {96.,96.},			/* default dpi */
-    svggen_knowncolors,		/* knowncolors */
-    sizeof(svggen_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
+    svg_knowncolors,		/* knowncolors */
+    sizeof(svg_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     NULL,                       /* device */
     "svg",                      /* gvloadimage target for usershapes */
 };
 
 gvplugin_installed_t gvrender_core_svg_types[] = {
-    {FORMAT_SVG, "svg", 1, &svggen_engine, &svggen_features},
+    {FORMAT_SVG, "svg", 1, &svg_engine, &svg_features},
 #if HAVE_LIBZ
-    {FORMAT_SVGZ, "svgz", 1, &svggen_engine, &svggen_features},
+    {FORMAT_SVGZ, "svgz", 1, &svg_engine, &svg_features},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

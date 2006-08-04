@@ -24,9 +24,11 @@
 
 #ifdef HAVE_LIBZ
 #include <zlib.h>
+#endif
+
 #ifdef WIN32
 #include <io.h>
-#endif
+#include "compat.h"
 #endif
 
 #include "gvplugin_render.h"

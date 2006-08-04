@@ -99,48 +99,6 @@ static void popFontInfo(htmlenv_t * env, htmlfont_t * savp)
 	env->finfo.size = savp->size;
 }
 
-#ifdef OLD
-static void
-emit_html_txt(GVJ_t * job, htmltxt_t * tp, htmlenv_t * env, void *obj)
-{
-    double halfwidth_x;
-    pointf p;
-    char *fname;
-    char *fcolor;
-    double fsize;
-
-    /* make sure that there is something to do */
-    if (tp->nparas < 1)
-        return;
-
-      /* set font attributes */
-    if (tp->font) {
-        if (tp->font->size > 0.0)
-            fsize = tp->font->size;
-        else
-            fsize = env->finfo.size;
-        if (tp->font->name)
-            fname = tp->font->name;
-        else
-            fname = env->finfo.name;
-        if (tp->font->color)
-            fcolor = tp->font->color;
-        else
-            fcolor = env->finfo.color;
-    } else {
-        fsize = env->finfo.size;
-        fname = env->finfo.name;
-        fcolor = env->finfo.color;
-    }
-    halfwidth_x = ((double)(tp->box.UR.x - tp->box.LL.x))/2.0;
-    p.x = env->p.x + ((double)(tp->box.UR.x + tp->box.LL.x))/2.0;
-    p.y = env->p.y + ((double)(tp->box.UR.y + tp->box.LL.y))/2.0;
-
-    emit_textparas(job, tp->nparas, tp->para, p,
-        halfwidth_x, fname, fsize, fcolor);
-}
-#endif
-
 static void 
 emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
          double halfwidth_x, char* fname, double fsize, char* fcolor, box b)
@@ -224,7 +182,7 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 }
 
 static void
-emit_html_txt(GVJ_t* job, htmltxt_t* tp, htmlenv_t* env, void* obj)
+emit_html_txt(GVJ_t* job, htmltxt_t* tp, htmlenv_t* env)
 {
     double halfwidth_x;
     pointf p;
@@ -311,7 +269,7 @@ static void doFill(GVJ_t * job, char *color, box B)
     gvrender_box(job, BF, 1);
 }
 
-static void doAnchorStart(GVJ_t * job, htmldata_t * data, void *obj)
+static void doAnchorStart(GVJ_t * job, htmldata_t * data)
 {
     gvrender_begin_anchor(job, data->href, data->title, data->target);
 }
@@ -322,11 +280,10 @@ static void doAnchorEnd(GVJ_t * job)
 }
 
 /* forward declaration */
-static void emit_html_cell(GVJ_t * job, htmlcell_t * cp,
-			   htmlenv_t * env, void *obj);
+static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env);
 
 static void
-emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env, void *obj)
+emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 {
     box pts = tbl->data.box;
     point p = env->p;
@@ -344,13 +301,13 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env, void *obj)
     /* gvrender_begin_context(job); */
 
     if (tbl->data.href)
-	doAnchorStart(job, &tbl->data, obj);
+	doAnchorStart(job, &tbl->data);
 
     if (tbl->data.bgcolor)
 	doFill(job, tbl->data.bgcolor, pts);
 
     while (*cells) {
-	emit_html_cell(job, *cells, env, obj);
+	emit_html_cell(job, *cells, env);
 	cells++;
     }
 
@@ -366,7 +323,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env, void *obj)
 }
 
 static void
-emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env, void *obj)
+emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env)
 {
     pointf A[4];
     box bb = cp->box;
@@ -387,7 +344,7 @@ emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env, void *obj)
 }
 
 static void
-emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, void *obj)
+emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 {
     box pts = cp->data.box;
     point p = env->p;
@@ -400,17 +357,17 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, void *obj)
     /* gvrender_begin_context(); */
 
     if (cp->data.href)
-	doAnchorStart(job, &cp->data, obj);
+	doAnchorStart(job, &cp->data);
 
     if (cp->data.bgcolor)
 	doFill(job, cp->data.bgcolor, pts);
 
     if (cp->child.kind == HTML_TBL)
-	emit_html_tbl(job, cp->child.u.tbl, env, obj);
+	emit_html_tbl(job, cp->child.u.tbl, env);
     else if (cp->child.kind == HTML_IMAGE)
-	emit_html_img(job, cp->child.u.img, env, obj);
+	emit_html_img(job, cp->child.u.img, env);
     else
-	emit_html_txt(job, cp->child.u.txt, env, obj);
+	emit_html_txt(job, cp->child.u.txt, env);
 
     if (cp->data.border)
 	doBorder(job, cp->data.pencolor, cp->data.border, pts);
@@ -424,7 +381,7 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env, void *obj)
 /* emit_html_label:
  */
 void
-emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp, void *obj)
+emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
 {
     htmlenv_t env;
 
@@ -443,10 +400,10 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp, void *obj)
 	    gvrender_set_pencolor(job, tbl->data.pencolor);
 	else
 	    gvrender_set_pencolor(job, DEFAULT_COLOR);
-	emit_html_tbl(job, tbl, &env, obj);
+	emit_html_tbl(job, tbl, &env);
 	gvrender_end_context(job);
     } else {
-	emit_html_txt(job, lp->u.txt, &env, obj);
+	emit_html_txt(job, lp->u.txt, &env);
     }
 }
 
@@ -470,25 +427,6 @@ void free_html_data(htmldata_t * dp)
     free(dp->title);
     free(dp->bgcolor);
 }
-
-#ifdef OLD
-void free_html_text(htmltxt_t * tp)
-{
-    textpara_t *lp;
-
-    if (!tp)
-	return;
-    lp = tp->para;
-    while (lp->str) {
-	free(lp->str);
-	lp++;
-    }
-    free(tp->para);
-    if (tp->font)
-	free_html_font(tp->font);
-    free(tp);
-}
-#endif
 
 void free_html_text(htmltxt_t* t)
 {
@@ -693,62 +631,6 @@ int html_path(node_t * n, port* p, int side, box * rv, int *k)
 #endif
     return 0;
 }
-
-#ifdef OLD
-static int 
-size_html_txt(graph_t *g, htmltxt_t * txt, htmlenv_t * env)
-{
-    double xsize = 0.0;
-    double fsize;
-    char *fname;
-    char *news = NULL;
-    textpara_t *lp = txt->para;
-    pointf size;
-
-    if (txt->font) {
-	if (txt->font->size > 0.0)
-	    fsize = txt->font->size;
-	else
-	    fsize = env->finfo.size;
-	if (txt->font->name)
-	    fname = txt->font->name;
-	else
-	    fname = env->finfo.name;
-    } else {
-	fsize = env->finfo.size;
-	fname = env->finfo.name;
-    }
-
-    while (lp->str) {
-	switch (agobjkind(env->obj)) {
-	case AGGRAPH:
-	    news =
-		strdup_and_subst_graph(lp->str, (Agraph_t *) (env->obj));
-	    break;
-	case AGNODE:
-	    news = strdup_and_subst_node(lp->str, (Agnode_t *) (env->obj));
-	    break;
-	case AGEDGE:
-	    news = strdup_and_subst_edge(lp->str, (Agedge_t *) (env->obj));
-	    break;
-	}
-	free(lp->str);
-	lp->str = news;
-
-	size = textsize(g, lp, fname, fsize);
-	/* no margins are added since the containing node or cell will pad */
-	if (dimen.x > xsize)
-	    xsize = size.x;
-	lp++;
-    }
-    txt->box.UR.x = xsize;
-    if (txt->nparas == 1)
-	txt->box.UR.y = (int) (size.y);
-    else
-	txt->box.UR.y = txt->nparas * (int) (size.y * LINESPACING);
-    return 0;
-}
-#endif
 
 static char*
 substrGFn (char* s, htmlenv_t* env)
@@ -1591,22 +1473,6 @@ void printImage(htmlimg_t *ip, int ind)
     indent(ind);
     fprintf(stderr, "img: %s\n", ip->src);
 }
-
-#ifdef OLD
-void printTxt(htmltxt_t * tp, int ind)
-{
-    int i;
-    indent(ind);
-    fprintf(stderr, "txt ");
-    printBox(tp->box);
-    fputs("\n", stderr);
-    for (i = 0; i < tp->nparas; i++) {
-	indent(ind + 1);
-	fprintf(stderr, "(%c) \"%s\"\n", tp->para[i].just,
-		tp->para[i].str);
-    }
-}
-#endif
 
 void printTxt(htmltxt_t * txt, int ind)
 {

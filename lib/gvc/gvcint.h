@@ -98,7 +98,6 @@ extern "C" {
 	GVJ_t *jobs;	/* linked list of jobs */
 	GVJ_t *job;	/* current job */
 
-	int emit_state;	/* current emit_state */
 	graph_t *g;      /* current graph */
 
 	/* gvrender_begin_job() */

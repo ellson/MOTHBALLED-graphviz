@@ -216,17 +216,18 @@ emit_textparas(GVJ_t* job, int nparas, textpara_t paras[], pointf p,
     gvrender_end_context(job);
 }
 
-void emit_label(GVJ_t * job, int state, textlabel_t * lp, void *obj)
+void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 {
+    obj_state_t *obj = job->obj;
     double halfwidth_x;
     pointf p;
-    int oldstate;
+    emit_state_t old_emit_state;
 
-    oldstate = job->gvc->emit_state;
-    job->gvc->emit_state = state;
+    old_emit_state = obj->emit_state;
+    obj->emit_state = emit_state;
 
     if (lp->html) {
-	emit_html_label(job, lp->u.html, lp, obj);
+	emit_html_label(job, lp->u.html, lp);
 	return;
     }
 
@@ -242,7 +243,8 @@ void emit_label(GVJ_t * job, int state, textlabel_t * lp, void *obj)
 
     emit_textparas(job, lp->u.txt.nparas, lp->u.txt.para, p,
               halfwidth_x, lp->fontname, lp->fontsize, lp->fontcolor);
-    job->gvc->emit_state = oldstate;
+
+    obj->emit_state = old_emit_state;
 }
 
 

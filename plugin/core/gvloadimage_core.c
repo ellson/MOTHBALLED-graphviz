@@ -36,9 +36,8 @@
 /* for n->name */
 #include "graph.h"
 
-extern void svggen_fputs(GVJ_t * job, char *s);
-extern void svggen_printf(GVJ_t * job, const char *format, ...);
-extern void figgen_printf(GVJ_t * job, const char *format, ...);
+extern void core_fputs(GVJ_t * job, char *s);
+extern void core_printf(GVJ_t * job, const char *format, ...);
 
 extern void epsf_emit_body(usershape_t *us, FILE *of);
 extern shape_desc *find_user_shape(char *name);
@@ -57,19 +56,19 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled
     assert(us->name);
     assert(us->f);
 
-    svggen_fputs(job, "<image xlink:href=\"");
-    svggen_fputs(job, us->name);
+    core_fputs(job, "<image xlink:href=\"");
+    core_fputs(job, us->name);
     if (job->rotation) {
-        svggen_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+        core_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
             b.UR.y - b.LL.y, b.UR.x - b.LL.x, b.LL.x, b.UR.y);
-        svggen_printf (job, " transform=\"rotate(%d %g %g)\"",
+        core_printf (job, " transform=\"rotate(%d %g %g)\"",
             job->rotation, b.LL.x, b.UR.y);
     }
     else {
-        svggen_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+        core_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
             b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
     }
-    svggen_fputs(job, "/>\n");
+    core_fputs(job, "/>\n");
 }
 
 static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, bool filled)
@@ -101,13 +100,12 @@ static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, bool fille
 
     BF2B(bf, b);
 
-    figgen_printf(job,
-            "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n %d %s\n",
+    core_printf(job, "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n %d %s\n",
             object_code, sub_type, line_style, thickness, pen_color,
             fill_color, depth, pen_style, area_fill, style_val, join_style,
             cap_style, radius, forward_arrow, backward_arrow, npoints,
             flipped, us->name);
-    figgen_printf(job," %d %d %d %d %d %d %d %d %d %d\n",
+    core_printf(job," %d %d %d %d %d %d %d %d %d %d\n",
 	    b.LL.x, b.LL.y,
 	    b.LL.x, b.UR.y,
 	    b.UR.x, b.UR.y,

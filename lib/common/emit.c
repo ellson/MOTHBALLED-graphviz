@@ -496,10 +496,6 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
         /* output in preorder traversal of the graph */
         job->flags = EMIT_PREORDER;
         break;
-    case EXTENDED_DOT: case ATTRIBUTED_DOT: case CANONICAL_DOT:
-    case PLAIN: case PLAIN_EXT:
-        job->flags = 0;
-        break;
     default:
         job->flags = chkOrder(g);
         break;
@@ -622,8 +618,14 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     }
 
     /* initial window size */
-    job->width = (imageSize.x + 2*margin.x) * job->dpi.x / POINTS_PER_INCH;
-    job->height = (imageSize.y + 2*margin.y) * job->dpi.x / POINTS_PER_INCH;
+    if (job->rotation) {
+        job->width = (imageSize.y + 2*margin.y) * job->dpi.x / POINTS_PER_INCH;
+        job->height = (imageSize.x + 2*margin.x) * job->dpi.x / POINTS_PER_INCH;
+    }
+    else {
+        job->width = (imageSize.x + 2*margin.x) * job->dpi.x / POINTS_PER_INCH;
+        job->height = (imageSize.y + 2*margin.y) * job->dpi.x / POINTS_PER_INCH;
+    }
 
     /* determine page box including centering */
     if (GD_drawing(g)->centered) {
@@ -958,9 +960,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     obj = push_obj_state(job);
     obj->type = NODE_OBJTYPE;
     obj->u.n = n;
-
-    obj->oldstate = job->gvc->emit_state;
-    job->gvc->emit_state = EMIT_NDRAW;
+    obj->emit_state = EMIT_NDRAW;
 
     if (flags & GVRENDER_DOES_Z) {
         obj->z = late_double(n, N_z, 0.0, -MAXFLOAT);
@@ -1119,7 +1119,6 @@ static void emit_end_node(GVJ_t * job)
 #ifdef WITH_CODEGENS
     Obj = NONE;
 #endif
-    job->gvc->emit_state = job->obj->oldstate;
     pop_obj_state(job);
 }
 
@@ -1484,14 +1483,14 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	}
     }
     if (ED_label(e)) {
-	emit_label(job, EMIT_ELABEL, ED_label(e), (void *) e);
+	emit_label(job, EMIT_ELABEL, ED_label(e));
 	if (mapbool(late_string(e, E_decorate, "false")) && ED_spl(e))
 	    emit_attachment(job, ED_label(e), ED_spl(e));
     }
     if (ED_head_label(e))
-	emit_label(job, EMIT_HLABEL, ED_head_label(e), (void *) e);	/* vladimir */
+	emit_label(job, EMIT_HLABEL, ED_head_label(e));	/* vladimir */
     if (ED_tail_label(e))
-	emit_label(job, EMIT_TLABEL, ED_tail_label(e), (void *) e);	/* vladimir */
+	emit_label(job, EMIT_TLABEL, ED_tail_label(e));	/* vladimir */
 
     if (saved)
 	gvrender_end_context(job);
@@ -1526,9 +1525,7 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
     obj = push_obj_state(job);
     obj->type = EDGE_OBJTYPE;
     obj->u.e = e;
-
-    obj->oldstate = job->gvc->emit_state;
-    job->gvc->emit_state = EMIT_EDRAW;
+    obj->emit_state = EMIT_EDRAW;
 
     if (flags & GVRENDER_DOES_Z) {
         obj->tail_z= late_double(e->tail, N_z, 0.0, -1000.0);
@@ -1711,7 +1708,6 @@ static void emit_end_edge(GVJ_t * job)
 #ifdef WITH_CODEGENS
     Obj = NONE;
 #endif
-    job->gvc->emit_state = job->obj->oldstate;
     pop_obj_state(job);
 }
 
@@ -1815,12 +1811,8 @@ static void init_job_margin(GVJ_t *job)
         case GVRENDER_PLUGIN:
             job->margin.x = job->margin.y = job->render.features->default_margin;
             break;
-        case HPGL: case PCL: case MIF: case METAPOST: case VTX: case ATTRIBUTED_DOT:
-        case PLAIN: case PLAIN_EXT: case QPDF:
+        case HPGL: case PCL: case MIF: case METAPOST: case VTX: case QPDF:
             job->margin.x = job->margin.y = DEFAULT_PRINT_MARGIN;
-            break;
-        case CANONICAL_DOT:
-            job->margin.x = job->margin.y = 0;
             break;
         default:
             job->margin.x = job->margin.y = DEFAULT_EMBED_MARGIN;
@@ -1994,7 +1986,7 @@ void emit_view(GVJ_t * job, graph_t * g, int flags)
 
     gvc->common.viewNum++;
     if (GD_label(g))
-	emit_label(job, EMIT_GLABEL, GD_label(g), (void *) g);
+	emit_label(job, EMIT_GLABEL, GD_label(g));
     /* when drawing, lay clusters down before nodes and edges */
     if (!(flags & EMIT_CLUSTERS_LAST))
 	emit_clusters(job, g, flags);
@@ -2062,9 +2054,7 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
     obj = push_obj_state(job);
     obj->type = ROOTGRAPH_OBJTYPE;
     obj->u.g = g;
-
-    obj->oldstate = job->gvc->emit_state;
-    job->gvc->emit_state = EMIT_GDRAW;
+    obj->emit_state = EMIT_GDRAW;
 
     if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g)))) {
         if (lab->html)
@@ -2101,7 +2091,6 @@ static void emit_end_graph(GVJ_t * job, graph_t * g)
 #ifdef WITH_CODEGENS
     Obj = NONE;
 #endif
-    job->gvc->emit_state = job->obj->oldstate;
     pop_obj_state(job);
 }
 
@@ -2229,9 +2218,7 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     obj = push_obj_state(job);
     obj->type = CLUSTER_OBJTYPE;
     obj->u.sg = sg;
-
-    obj->oldstate = job->gvc->emit_state;
-    job->gvc->emit_state = EMIT_CDRAW;
+    obj->emit_state = EMIT_CDRAW;
 
     if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(sg)))) {
         if (lab->html)
@@ -2289,7 +2276,6 @@ static void emit_end_cluster(GVJ_t * job, Agraph_t * g)
 #ifdef WITH_CODEGENS
     Obj = NONE;
 #endif
-    job->gvc->emit_state = job->obj->oldstate;
     pop_obj_state(job);
 }
 
@@ -2382,7 +2368,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	    }
 	}
 	if (GD_label(sg))
-	    emit_label(job, EMIT_GLABEL, GD_label(sg), (void *) sg);
+	    emit_label(job, EMIT_GLABEL, GD_label(sg));
 
 	if (flags & EMIT_PREORDER) {
 	    for (n = agfstnode(sg); n; n = agnxtnode(sg, n)) {
@@ -2547,27 +2533,8 @@ static void emit_job(GVJ_t * job, graph_t * g)
 
     gvrender_begin_job(job);
 
-    switch (job->output_lang) {
-    case EXTENDED_DOT:
-        write_extended_dot(job, g, job->output_file);
-        break;
-    case ATTRIBUTED_DOT:
-        write_attributed_dot(g, job->output_file);
-        break;
-    case CANONICAL_DOT:
-        write_canonical_dot(g, job->output_file);
-        break;
-    case PLAIN:
-        write_plain(job, g, job->output_file);
-        break;
-    case PLAIN_EXT:
-        write_plain_ext(job, g, job->output_file);
-        break;
-    default:
-	if (! (job->flags & GVRENDER_X11_EVENTS))
-            emit_graph(job, g);
-        break;
-    }
+    if (! (job->flags & GVRENDER_X11_EVENTS))
+        emit_graph(job, g);
 
     /* Flush is necessary because we may be writing to a pipe. */
     if (! job->external_surface && job->output_lang != TK)

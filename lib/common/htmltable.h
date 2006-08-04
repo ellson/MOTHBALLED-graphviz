@@ -171,8 +171,7 @@ extern "C" {
     extern htmllabel_t *parseHTML(char *, int *, int);
 
     extern int make_html_label(graph_t *g, textlabel_t * lp, void *obj);
-    extern void emit_html_label(GVJ_t * job, htmllabel_t * lp,
-				textlabel_t *, void *obj);
+    extern void emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t *);
 
     extern void free_html_label(htmllabel_t *, int);
     extern void free_html_data(htmldata_t *);

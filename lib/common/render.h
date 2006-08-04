@@ -66,7 +66,7 @@ extern "C" {
     extern void add_box(path *, box);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
     extern boxf arrow_bb(pointf p, pointf u, double scale, int flag);
-    extern void arrow_gen(GVJ_t * job, int state, point p, point u,
+    extern void arrow_gen(GVJ_t * job, emit_state_t emit_state, point p, point u,
 			  double scale, int flag);
     extern double arrow_length(edge_t * e, int flag);
     extern int arrowEndClip(edge_t*, point*, int, int , bezier*, int eflag);
@@ -97,7 +97,7 @@ extern "C" {
     extern void emit_clusters(GVJ_t * job, Agraph_t * g, int flags);
     extern void emit_edge_graphics(GVJ_t * job, edge_t * e);
     extern void emit_graph(GVJ_t * job, graph_t * g);
-    extern void emit_label(GVJ_t * job, int state, textlabel_t *, void *obj);
+    extern void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t *);
     extern int emit_once(char *message);
     extern void emit_jobs_eof(GVC_t * gvc);
     extern void emit_textparas(GVJ_t*, int, textpara_t*, pointf,
@@ -106,7 +106,6 @@ extern "C" {
     extern void endpath(path *, Agedge_t *, int, pathend_t *, bool);
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
-    extern void extend_attrs(GVJ_t * job, graph_t *g, int s_arrows, int e_arrows);
     extern shape_desc *find_user_shape(char *);
     extern void free_line(textpara_t *);
     extern void free_label(textlabel_t *);
@@ -152,8 +151,7 @@ extern "C" {
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
     extern void write_extended_dot(GVJ_t * job, graph_t *g, FILE *f);
-    extern void write_plain(GVJ_t * job, graph_t * g, FILE * f);
-    extern void write_plain_ext(GVJ_t * job, graph_t * g, FILE * f);
+    extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, bool extend);
 
 #if defined(_BLD_dot) && defined(_DLL)
 #   define extern __EXPORT__

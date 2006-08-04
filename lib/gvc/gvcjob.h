@@ -62,6 +62,7 @@ extern "C" {
 #define GVRENDER_DOES_TOOLTIPS (1<<19)
 #define GVRENDER_DOES_TARGETS (1<<20)
 #define GVRENDER_DOES_Z (1<<21)
+#define LAYOUT_NOT_REQUIRED (1<<22)
 
     typedef struct {
 	int flags;
@@ -128,6 +129,36 @@ extern "C" {
     typedef enum {MAP_RECTANGLE, MAP_CIRCLE, MAP_POLYGON, } map_shape_t;
 
     typedef enum {ROOTGRAPH_OBJTYPE, CLUSTER_OBJTYPE, NODE_OBJTYPE, EDGE_OBJTYPE} obj_type;
+#if 0
+    typedef enum {EMIT_GDRAW, EMIT_CDRAW, EMIT_NDRAW, EMIT_EDRAW, EMIT_TDRAW, EMIT_HDRAW, 
+	EMIT_GLABEL, EMIT_CLABEL, EMIT_NLABEL, EMIT_ELABEL, EMIT_TLABEL, EMIT_HLABEL} emit_state_t;
+#else
+
+/* FIXME - There are places in the core that rely on there being exactly 6 emit_states ! */
+#define emit_state_t int
+
+/* value specifying emit state */
+#define EMIT_DRAW      0
+#define EMIT_GDRAW     EMIT_DRAW
+#define EMIT_CDRAW     EMIT_DRAW
+#define EMIT_NDRAW     EMIT_DRAW
+#define EMIT_EDRAW     EMIT_DRAW
+
+/* values specifying emit state for arrowheads */
+#define EMIT_TDRAW     1
+#define EMIT_HDRAW     2
+
+/* values specifying emit state for labels */
+#define EMIT_LABEL     3
+#define EMIT_GLABEL    EMIT_LABEL
+#define EMIT_CLABEL    EMIT_LABEL
+#define EMIT_NLABEL    EMIT_LABEL
+#define EMIT_ELABEL    EMIT_LABEL
+#define EMIT_TLABEL    4
+#define EMIT_HLABEL    5
+
+#endif
+
     typedef struct obj_state_s obj_state_t;
 
     struct obj_state_s {
@@ -141,7 +172,7 @@ extern "C" {
 	    edge_t *e;
 	} u;
 
-	int oldstate;  /* FIXME - used by one of those other state stacks */
+	emit_state_t emit_state; 
 
 	gvcolor_t pencolor, fillcolor;
 	pen_type pen;
@@ -196,6 +227,7 @@ extern "C" {
 	pointf *headendurl_map_p;
     };
 
+typedef enum {COMPRESSION_NONE, COMPRESSION_ZLIB} compression_t;
 
 /* Note on units:
  *     points  - a physical distance (1/72 inch) unaffected by zoom or dpi.
@@ -221,6 +253,8 @@ extern "C" {
 	char *output_langname;
 	FILE *output_file;
 	int output_lang;
+
+	compression_t compression;
 
 	gvplugin_active_render_t render;
 	gvplugin_active_device_t device;

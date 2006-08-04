@@ -46,8 +46,7 @@ extern const bool Demand_Loading;
 
     extern codegen_t QPDF_CodeGen, QEPDF_CodeGen, QBM_CodeGen;
 #endif
-    extern codegen_t HPGL_CodeGen, MIF_CodeGen, XDot_CodeGen,
-	MP_CodeGen, PIC_CodeGen, DIA_CodeGen, VTX_CodeGen;
+    extern codegen_t HPGL_CodeGen, MIF_CodeGen, MP_CodeGen, PIC_CodeGen, DIA_CodeGen, VTX_CodeGen;
 #endif
 
 /*
@@ -374,12 +373,6 @@ static codegen_info_t cg[MAX_CODEGENS] = {
 #ifdef HAVE_LIBZ
     {&DIA_CodeGen, "dia", DIA},
 #endif
-#define DUMMY_CodeGen XDot_CodeGen
-    {&DUMMY_CodeGen, "dot", ATTRIBUTED_DOT},
-    {&DUMMY_CodeGen, "canon", CANONICAL_DOT},
-    {&DUMMY_CodeGen, "plain", PLAIN},
-    {&DUMMY_CodeGen, "plain-ext", PLAIN_EXT},
-    {&DUMMY_CodeGen, "xdot", EXTENDED_DOT},
     {NULL, NULL, 0}
 };
 

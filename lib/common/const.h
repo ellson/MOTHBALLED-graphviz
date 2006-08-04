@@ -130,22 +130,16 @@
 #define		CLST    3
 
 /* output languages */
-#define		ATTRIBUTED_DOT	0	/* default */
 #define		HPGL		2	/* HP Graphics Language */
 #define		PCL		3	/* Printer Control Language */
 #define		MIF		4	/* Adobe FrameMaker */
 #define		PIC_format	5	/* symbol PIC is used by compilers for 
 					   Position Independent Code */
-#define		PLAIN		6
-#define		PLAIN_EXT	7
-
 #define		TK		15	/* TK canvas */
 
 #define		VTX		21	/* visual thought */
 #define		METAPOST	22
 #define		DIA		24	/* dia drawing tool */
-#define		CANONICAL_DOT	27	/* wanted for tcl/tk version */
-#define		EXTENDED_DOT	29	/* dot with drawing info */
 
 #define		QPDF		30	/* Quartz paged PDF */
 #define		QEPDF		31	/* Quartz embedded PDF */
@@ -204,26 +198,6 @@
 #define RANKDIR_LR	1
 #define RANKDIR_BT	2
 #define RANKDIR_RL	3
-
-/* value specifying emit state */
-#define EMIT_DRAW	0
-#define EMIT_GDRAW	EMIT_DRAW
-#define EMIT_CDRAW	EMIT_DRAW
-#define EMIT_NDRAW	EMIT_DRAW
-#define EMIT_EDRAW	EMIT_DRAW
-
-/* values specifying emit state for arrowheads */
-#define EMIT_TDRAW	1
-#define EMIT_HDRAW	2
-
-/* values specifying emit state for labels */
-#define EMIT_LABEL	3
-#define EMIT_GLABEL	EMIT_LABEL
-#define EMIT_CLABEL	EMIT_LABEL
-#define EMIT_NLABEL	EMIT_LABEL
-#define EMIT_ELABEL	EMIT_LABEL
-#define EMIT_TLABEL	4
-#define EMIT_HLABEL	5
 
 /* allowed charsets */
 #define CHAR_UTF8	0
