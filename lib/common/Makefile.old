@@ -18,7 +18,8 @@ DEFINES = -DHAVE_CONFIG_H
 
 AWKDIR = $(ROOT)/awk
 
-INST_HDRS = logic.h arith.h geom.h color.h types.h globals.h
+INST_HDRS = logic.h arith.h geom.h color.h types.h globals.h textpara.h \
+    usershape.h
 NOINST_HDRS = render.h utils.h memory.h \
 	geomprocs.h colorprocs.h const.h macros.h pointset.h
 NOINST_GENERATED_HDRS = colortbl.h ps.h htmltable.h  htmlparse.h htmllex.h 
