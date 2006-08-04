@@ -48,6 +48,8 @@
 
 extern void epsf_define(FILE * of);
 extern char *ps_string(char *ins, int latin);
+extern void core_fputs(GVJ_t * job, char *s);
+extern void core_printf(GVJ_t * job, const char *format, ...);
 
 typedef enum { FORMAT_PS, FORMAT_PS2, } format_type;
 
@@ -67,22 +69,22 @@ static void psgen_begin_job(GVJ_t * job)
     last_color.u.HSVA[2] = 0.0;
     last_color.u.HSVA[3] = 1.0;  /* opaque */
 
-    fprintf(job->output_file, "%%!PS-Adobe-2.0\n");
-    fprintf(job->output_file, "%%%%Creator: %s version %s (%s)\n",
+    core_fputs(job, "%%!PS-Adobe-2.0\n");
+    core_printf(job, "%%%%Creator: %s version %s (%s)\n",
 	    job->common->info[0], job->common->info[1], job->common->info[2]);
-    fprintf(job->output_file, "%%%%For: %s\n", job->common->user);
+    core_printf(job, "%%%%For: %s\n", job->common->user);
 }
 
 static void psgen_end_job(GVJ_t * job)
 {
-    fprintf(job->output_file, "%%%%Trailer\n");
-    fprintf(job->output_file, "%%%%Pages: %d\n", job->common->viewNum);
+    core_fputs(job, "%%%%Trailer\n");
+    core_printf(job, "%%%%Pages: %d\n", job->common->viewNum);
     if (job->common->show_boxes == NULL)
-	fprintf(job->output_file, "%%%%BoundingBox: %d %d %d %d\n",
+	core_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
 	    job->boundingBox.LL.x, job->boundingBox.LL.y,
 	    job->boundingBox.UR.x, job->boundingBox.UR.y);
-    fprintf(job->output_file, "end\nrestore\n");
-    fprintf(job->output_file, "%%%%EOF\n");
+    core_fputs(job, "end\nrestore\n");
+    core_fputs(job, "%%%%EOF\n");
 }
 
 static void psgen_begin_graph(GVJ_t * job)
@@ -92,28 +94,28 @@ static void psgen_begin_graph(GVJ_t * job)
     setupLatin1 = FALSE;
 
     if (job->common->viewNum == 0) {
-        fprintf(job->output_file, "%%%%Title: %s\n", obj->u.g->name);
-        fprintf(job->output_file, "%%%%Pages: (atend)\n");
+        core_printf(job, "%%%%Title: %s\n", obj->u.g->name);
+        core_fputs(job, "%%%%Pages: (atend)\n");
         if (job->common->show_boxes == NULL)
-            fprintf(job->output_file, "%%%%BoundingBox: (atend)\n");
-        fprintf(job->output_file, "%%%%EndComments\nsave\n");
+            core_fputs(job, "%%%%BoundingBox: (atend)\n");
+        core_fputs(job, "%%%%EndComments\nsave\n");
         cat_preamble(job, job->common->lib);
         epsf_define(job->output_file);
     }
     isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
     if (isLatin1 && !setupLatin1) {
-	fprintf(job->output_file, "setupLatin1\n");	/* as defined in ps header */
+	core_fputs(job, "setupLatin1\n");	/* as defined in ps header */
 	setupLatin1 = TRUE;
     }
     /*  Set base URL for relative links (for Distiller >= 3.0)  */
     if (obj->url)
-	fprintf(job->output_file, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
+	core_printf(job, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
 		"/PUT pdfmark\n", obj->url);
 }
 
 static void psgen_begin_layer(GVJ_t * job, char *layername, int layerNum, int numLayers)
 {
-    fprintf(job->output_file, "%d %d setlayer\n", layerNum, numLayers);
+    core_printf(job, "%d %d setlayer\n", layerNum, numLayers);
 }
 
 static void psgen_begin_page(GVJ_t * job)
@@ -124,21 +126,21 @@ static void psgen_begin_page(GVJ_t * job)
     point page = {0,0};
     int N_pages = 0;
 
-    fprintf(job->output_file, "%%%%Page: %d %d\n",
+    core_printf(job, "%%%%Page: %d %d\n",
 	    job->common->viewNum + 1, job->common->viewNum + 1);
     if (job->common->show_boxes == NULL)
-        fprintf(job->output_file, "%%%%PageBoundingBox: %d %d %d %d\n",
+        core_printf(job, "%%%%PageBoundingBox: %d %d %d %d\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
-    fprintf(job->output_file, "%%%%PageOrientation: %s\n",
+    core_printf(job, "%%%%PageOrientation: %s\n",
 	    (job->rotation ? "Landscape" : "Portrait"));
     if (job->render.id == FORMAT_PS2)
-        fprintf(job->output_file, "<< /PageSize [%d %d] >> setpagedevice\n",
+        core_printf(job, "<< /PageSize [%d %d] >> setpagedevice\n",
             pbr.UR.x, pbr.UR.y);
     if (job->common->show_boxes == NULL)
-        fprintf(job->output_file, "gsave\n%d %d %d %d boxprim clip newpath\n",
+        core_printf(job, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
-    fprintf(job->output_file, "%d %d %d beginpage\n", page.x, page.y, N_pages);
-    fprintf(job->output_file, "%g %g set_scale %d rotate %g %g translate\n",
+    core_printf(job, "%d %d %d beginpage\n", page.x, page.y, N_pages);
+    core_printf(job, "%g %g set_scale %d rotate %g %g translate\n",
 	    job->scale.x, job->scale.y,
 	    job->rotation,
 	    job->translation.x, job->translation.y);
@@ -149,7 +151,7 @@ static void psgen_begin_page(GVJ_t * job)
 	    job->common->errorfn("canvas size (%d,%d) exceeds PDF limit (%d)\n"
 		  "\t(suggest setting a bounding box size, see dot(1))\n",
 		  pbr.UR.x, pbr.UR.y, PDFMAX);
-	fprintf(job->output_file, "[ /CropBox [%d %d %d %d] /PAGES pdfmark\n",
+	core_printf(job, "[ /CropBox [%d %d %d %d] /PAGES pdfmark\n",
 		pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
     }
 }
@@ -161,22 +163,22 @@ static void psgen_end_page(GVJ_t * job)
     /* the showpage is really a no-op, but at least one PS processor
      * out there needs to see this literal token.  endpage does the real work.
      */
-    fprintf(job->output_file, "endpage\nshowpage\ngrestore\n");
-    fprintf(job->output_file, "%%%%PageTrailer\n");
-    fprintf(job->output_file, "%%%%EndPage: %d\n", job->common->viewNum);
+    core_fputs(job, "endpage\nshowpage\ngrestore\n");
+    core_fputs(job, "%%%%PageTrailer\n");
+    core_printf(job, "%%%%EndPage: %d\n", job->common->viewNum);
 }
 
 static void psgen_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    fprintf(job->output_file, "%% %s\n", obj->u.sg->name);
+    core_printf(job, "%% %s\n", obj->u.sg->name);
 
     if (obj->url &&  obj->url_map_p) {
-        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
 		obj->url_map_p[1].x, obj->url_map_p[1].y);
-        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+        core_printf(job, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
@@ -189,10 +191,10 @@ static void psgen_begin_node(GVJ_t * job)
     obj_state_t *obj = job->obj;
 
     if (obj->url && obj->url_map_p) {
-        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
 		obj->url_map_p[1].x, obj->url_map_p[1].y);
-        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+        core_printf(job, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
@@ -206,50 +208,50 @@ psgen_begin_edge(GVJ_t * job)
     obj_state_t *obj = job->obj;
 
     if (obj->url && obj->url_map_p) {
-        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
 		obj->url_map_p[1].x, obj->url_map_p[1].y);
-        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+        core_printf(job, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
 		ps_string(obj->url, isLatin1));
     }
     if (obj->tailurl && obj->tailurl_map_p) {
-        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->tailurl_map_p[0].x, obj->tailurl_map_p[0].y,
 		obj->tailurl_map_p[1].x, obj->tailurl_map_p[1].y);
-        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+        core_printf(job, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
 		ps_string(obj->tailurl, isLatin1));
     }
     if (obj->headurl && obj->headurl_map_p) {
-        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->headurl_map_p[0].x, obj->headurl_map_p[0].y,
 		obj->headurl_map_p[1].x, obj->headurl_map_p[1].y);
-        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+        core_printf(job, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
 		ps_string(obj->headurl, isLatin1));
     }
     if (obj->tailurl && obj->tailendurl_map_p) {
-        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->tailendurl_map_p[0].x, obj->tailendurl_map_p[0].y,
 		obj->tailendurl_map_p[1].x, obj->tailendurl_map_p[1].y);
-        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+        core_printf(job, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
 		ps_string(obj->tailurl, isLatin1));
     }
     if (obj->headurl && obj->headendurl_map_p) {
-        fprintf(job->output_file, "[ /Rect [ %g %g %g %g ]\n",
+        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->headendurl_map_p[0].x, obj->headendurl_map_p[0].y,
 		obj->headendurl_map_p[1].x, obj->headendurl_map_p[1].y);
-        fprintf(job->output_file, "  /Border [ 0 0 0 ]\n"
+        core_printf(job, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
@@ -309,7 +311,7 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 	  || last_color.u.HSVA[2] != color->u.HSVA[2]
 	  || last_color.u.HSVA[3] != color->u.HSVA[3]
 	  || (job->obj->type == ROOTGRAPH_OBJTYPE)) {
-	    fprintf(job->output_file, "%.3f %.3f %.3f %scolor\n",
+	    core_printf(job, "%.3f %.3f %.3f %scolor\n",
 		color->u.HSVA[0], color->u.HSVA[1], color->u.HSVA[2], objtype);
 	    last_color.u.HSVA[0] = color->u.HSVA[0];
 	    last_color.u.HSVA[1] = color->u.HSVA[1];
@@ -333,7 +335,7 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
         if (sz != last_fontsize
           || last_fontname == NULL
 	  || strcmp(para->fontname, last_fontname) != 0) {
-	    fprintf(job->output_file, "%.2f /%s set_font\n", sz, para->fontname);
+	    core_printf(job, "%.2f /%s set_font\n", sz, para->fontname);
 	    last_fontsize = sz;
 	    last_fontname = para->fontname;
 	}
@@ -352,7 +354,7 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
             p.x -= para->width / 2;
             break;
         }
-        fprintf(job->output_file, "%g %g moveto\n%s\n[%s]\nxshow\n",
+        core_printf(job, "%g %g moveto\n%s\n[%s]\nxshow\n",
                 p.x, p.y, str, para->xshow);
     } else {
         switch (para->just) {
@@ -367,7 +369,7 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
             adj = -0.5;
             break;
         }
-        fprintf(job->output_file, "%g %g moveto %g %g %s alignedtext\n",
+        core_printf(job, "%g %g moveto %g %g %s alignedtext\n",
                 p.x, p.y, para->width, adj, str);
     }
 }
@@ -378,13 +380,13 @@ static void psgen_ellipse(GVJ_t * job, pointf * A, int filled)
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
-	fprintf(job->output_file, "%g %g %g %g ellipse_path fill\n",
+	core_printf(job, "%g %g %g %g ellipse_path fill\n",
 	    A[0].x, A[0].y, fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        fprintf(job->output_file, "%g %g %g %g ellipse_path stroke\n",
+        core_printf(job, "%g %g %g %g ellipse_path stroke\n",
 	    A[0].x, A[0].y, fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
     }
 }
@@ -397,22 +399,22 @@ psgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
-	fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
+	core_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
 	for (j = 1; j < n; j += 3)
-	    fprintf(job->output_file, "%g %g %g %g %g %g curveto\n",
+	    core_printf(job, "%g %g %g %g %g %g curveto\n",
 		A[j].x, A[j].y, A[j + 1].x, A[j + 1].y, A[j + 2].x,
 		A[j + 2].y);
-	fprintf(job->output_file, "closepath fill\n");
+	core_fputs(job, "closepath fill\n");
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
+        core_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
         for (j = 1; j < n; j += 3)
-	    fprintf(job->output_file, "%g %g %g %g %g %g curveto\n",
+	    core_printf(job, "%g %g %g %g %g %g curveto\n",
 		    A[j].x, A[j].y, A[j + 1].x, A[j + 1].y, A[j + 2].x,
 		    A[j + 2].y);
-        fprintf(job->output_file, "stroke\n");
+        core_fputs(job, "stroke\n");
     }
 }
 
@@ -422,18 +424,18 @@ static void psgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
-	fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
+	core_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
 	for (j = 1; j < n; j++)
-	    fprintf(job->output_file, "%g %g lineto\n", A[j].x, A[j].y);
-	fprintf(job->output_file, "closepath fill\n");
+	    core_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
+	core_printf(job, "closepath fill\n");
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
+        core_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
         for (j = 1; j < n; j++)
-	    fprintf(job->output_file, "%g %g lineto\n", A[j].x, A[j].y);
-        fprintf(job->output_file, "closepath stroke\n");
+	    core_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
+        core_printf(job, "closepath stroke\n");
     }
 }
 
@@ -444,16 +446,18 @@ static void psgen_polyline(GVJ_t * job, pointf * A, int n)
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        fprintf(job->output_file, "newpath %g %g moveto\n", A[0].x, A[0].y);
+        core_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
         for (j = 1; j < n; j++)
-	    fprintf(job->output_file, "%g %g lineto\n", A[j].x, A[j].y);
-        fprintf(job->output_file, "stroke\n");
+	    core_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
+        core_fputs(job, "stroke\n");
     }
 }
 
 static void psgen_comment(GVJ_t * job, char *str)
 {
-    fprintf(job->output_file, "%% %s\n", str);
+    core_fputs(job, "%% ");
+    core_fputs(job, str);
+    core_fputs(job, "\n");
 }
 
 static gvrender_engine_t psgen_engine = {
