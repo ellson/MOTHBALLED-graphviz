@@ -81,23 +81,26 @@ static void xdot_points(GVJ_t *job, char c, pointf * A, int n)
     }
 }
 
-static void xdot_set_pencolor (GVJ_t *job, char *name)
+static void xdot_pencolor (GVJ_t *job)
 {
-    xdot_str (job, "c ", name);
+    xdot_str (job, "c ", job->obj->pencolor.u.string);
 }
 
-static void xdot_set_fillcolor (GVJ_t *job, char *name)
+static void xdot_fillcolor (GVJ_t *job)
 {
-    xdot_str (job, "C ", name);
+    xdot_str (job, "C ", job->obj->fillcolor.u.string);
 }
 
-static void xdot_set_style (GVJ_t *job, char **s)
+static void xdot_style (GVJ_t *job)
 {
     unsigned char buf[BUFSIZ];
     agxbuf xbuf;
-    char* p;
+    char* p, **s;
     int more;
 
+    s = job->obj->rawstyle;
+    if (!s)
+	return;
     agxbinit(&xbuf, BUFSIZ, buf);
     while ((p = *s++)) {
         agxbput(&xbuf, p);
@@ -176,6 +179,10 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
     char buf[BUFSIZ];
     int j;
     
+    sprintf(buf, "F %f ", para->fontsize);
+    agxbput(xbufs[emit_state], buf);
+    xdot_str (job, "", para->fontname);
+
     switch (para->just) {
     case 'l':
         j = -1; 
@@ -200,7 +207,14 @@ static void xdot_ellipse(GVJ_t * job, pointf * A, int filled)
     char buf[BUFSIZ];
     int rc;
 
-    rc = agxbputc(xbufs[emit_state], (filled ? 'E' : 'e'));
+    xdot_style (job);
+    xdot_pencolor (job);
+    if (filled) {
+        xdot_fillcolor (job);
+        rc = agxbputc(xbufs[emit_state], 'E');
+    }
+    else
+        rc = agxbputc(xbufs[emit_state], 'e');
     sprintf(buf, " %d %d %d %d ",
 		ROUND(A[0].x), ROUND(A[0].y), ROUND(A[1].x - A[0].x), ROUND(A[1].y - A[0].y));
     agxbput(xbufs[emit_state], buf);
@@ -208,16 +222,32 @@ static void xdot_ellipse(GVJ_t * job, pointf * A, int filled)
 
 static void xdot_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
-    xdot_points(job, (filled ? 'B' : 'b'), A, n);
+    xdot_style (job);
+    xdot_pencolor (job);
+    if (filled) {
+        xdot_fillcolor (job);
+        xdot_points(job, 'b', A, n);   /* NB - 'B' & 'b' are reversed in comparison to the other items */
+    }
+    else
+        xdot_points(job, 'B', A, n);
 }
 
 static void xdot_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
-    xdot_points(job, (filled ? 'P' : 'p'), A, n);
+    xdot_style (job);
+    xdot_pencolor (job);
+    if (filled) {
+        xdot_fillcolor (job);
+        xdot_points(job, 'P', A, n);
+    }
+    else
+        xdot_points(job, 'p', A, n);
 }
 
 static void xdot_polyline(GVJ_t * job, pointf * A, int n)
 {
+    xdot_style (job);
+    xdot_pencolor (job);
     xdot_points(job, 'L', A, n);
 }
 
