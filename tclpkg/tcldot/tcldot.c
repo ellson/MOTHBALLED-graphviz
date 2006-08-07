@@ -1090,7 +1090,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
-	gvc->active_jobs = job;
+        job = gvc->active_jobs = gvc->job;
 
 	job->surface = (void *)(&tkgendata);
 	job->external_surface = TRUE;
@@ -1122,7 +1122,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
-	gvc->active_jobs = job;
+        job = gvc->active_jobs = gvc->job;
 
 	if (!  (hdl = tclhandleXlate(GDHandleTable, argv[2]))) {
 	    Tcl_AppendResult(interp, "GD Image not found.", (char *) NULL);
@@ -1261,7 +1261,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		"\". Use one of:", s, (char *)NULL);
 	    return TCL_ERROR;
 	}
-	gvc->active_jobs = job;
+	job = gvc->active_jobs = gvc->job;
 
 	/* populate new job struct with output language and output file data */
 	job->output_lang = gvrender_select(job, job->output_langname);
