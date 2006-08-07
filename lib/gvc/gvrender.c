@@ -267,12 +267,12 @@ void gvrender_begin_graph(GVJ_t * job, graph_t * g)
 #ifdef WITH_CODEGENS
     else {
 	codegen_t *cg = job->codegen;
-	box canvas;
+	box canvasBox;
 
-	BF2B(job->canvasBox, canvas);
+	BF2B(job->canvasBox, canvasBox);
 
 	if (cg && cg->begin_graph)
-	    cg->begin_graph(gvc, g, canvas, gvc->pb);
+	    cg->begin_graph(gvc, g, canvasBox, gvc->pb);
     }
 #endif
 }

@@ -575,7 +575,7 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 
     margin = job->margin;
 
-    /* unpaginated image size in device units */
+    /* unpaginated image size in absolute units - points */
     imageSize = job->view;
     if (job->rotation)
 	imageSize = exch_xyf(imageSize);
@@ -619,12 +619,12 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 
     /* initial window size */
     if (job->rotation) {
-        job->width = (imageSize.y + 2*margin.y) * job->dpi.x / POINTS_PER_INCH;
-        job->height = (imageSize.x + 2*margin.x) * job->dpi.x / POINTS_PER_INCH;
+        job->width = (imageSize.y + 2*margin.x) * job->dpi.x / POINTS_PER_INCH;
+        job->height = (imageSize.x + 2*margin.y) * job->dpi.y / POINTS_PER_INCH;
     }
     else {
         job->width = (imageSize.x + 2*margin.x) * job->dpi.x / POINTS_PER_INCH;
-        job->height = (imageSize.y + 2*margin.y) * job->dpi.x / POINTS_PER_INCH;
+        job->height = (imageSize.y + 2*margin.y) * job->dpi.y / POINTS_PER_INCH;
     }
 
     /* determine page box including centering */
@@ -1846,16 +1846,24 @@ static void init_job_dpi(GVJ_t *job, graph_t *g)
 
 static void init_job_viewport(GVJ_t * job, graph_t * g)
 {
-    pointf UR, size;
+    GVC_t *gvc = job->gvc;
+    pointf UR, size, sz;
     char *str;
     double X, Y, Z, x, y;
     int rv;
 
-    assert((GD_bb(g).LL.x == 0) && (GD_bb(g).LL.y == 0));
-    P2PF(GD_bb(g).UR, UR);
+    assert((gvc->bb.LL.x == 0) && (gvc->bb.LL.y == 0));
+    P2PF(gvc->bb.UR, UR);
 
     /* may want to take this from an attribute someday */
     job->pad.x = job->pad.y = DEFAULT_GRAPH_PAD;
+
+    job->bb.LL.x = -job->pad.x;           /* job->bb is bb of graph and padding - graph units */
+    job->bb.LL.y = -job->pad.y;
+    job->bb.UR.x = UR.x + job->pad.x;
+    job->bb.UR.y = UR.y + job->pad.y;
+    sz.x = job->bb.UR.x - job->bb.LL.x;   /* size, including padding - graph units */
+    sz.y = job->bb.UR.y - job->bb.LL.y;
 
     /* determine final drawing size and scale to apply. */
     /* N.B. size given by user is not rotated by landscape mode */
@@ -1864,25 +1872,22 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     Z = 1.0;
     if (GD_drawing(g)->size.x > 0) {	/* graph size was given by user... */
 	P2PF(GD_drawing(g)->size, size);
-	size.x -= (2 * job->pad.x);
-	size.y -= (2 * job->pad.y);
-	if ((size.x < UR.x) || (size.y < UR.y) /* drawing is too big... */
+	if ((size.x < sz.x) || (size.y < sz.y) /* drawing is too big... */
 	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
-		&& (size.x > UR.x) && (size.y > UR.y))) /* drawing is too small... */
-	    Z = MIN(size.x/UR.x, size.y/UR.y);
+		&& (size.x > sz.x) && (size.y > sz.y))) /* drawing is too small... */
+	    Z = MIN(size.x/sz.x, size.y/sz.y);
     }
     
     /* default focus, in graph units = center of bb */
     x = UR.x / 2.;
     y = UR.y / 2.;
 
-    /* rotate and scale bb to give default device width and height */
-    if (GD_drawing(g)->landscape)
-	UR = exch_xyf(UR);
-
-    /* calculate default viewport size in points */
-    X = Z * UR.x + 2 * job->pad.x;
-    Y = Z * UR.y + 2 * job->pad.y;
+    /* rotate and scale bb to give default absolute size in points*/
+    job->rotation = job->gvc->rotation;
+    if (job->rotation)
+	 sz = exch_xyf(sz);
+    X = Z * sz.x;
+    Y = Z * sz.y;
 
     /* user can override */
     if ((str = agget(g, "viewport")))
@@ -1894,42 +1899,18 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     job->zoom = Z;              /* scaling factor */
     job->focus.x = x;           /* focus - graph units */
     job->focus.y = y;
-    job->rotation = job->gvc->rotation;
-}
 
-#define EPSILON .0001
-
-/* setup_view is called for a particular device and refresh event.
- * actual dpi is now known.
- * width and height might have changed through window resizing
- */
-static void setup_view(GVJ_t * job, graph_t * g)
-{
-    double sx, sy; /* half width, half height in graph-units */
-
-    job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
-    job->scale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
-
-    job->devscale.x = job->dpi.x / POINTS_PER_INCH;
-    job->devscale.y = job->dpi.y / POINTS_PER_INCH;
-    if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert))
-	job->devscale.y *= -1;
-
-    sx = job->width / (job->scale.x * 2.);
-    sy = job->height / (job->scale.y * 2.);
 
     /* calculate clip region in graph units */
-    if (job->rotation) {
-        job->clip.UR.x = job->focus.x + sy + EPSILON;
-        job->clip.UR.y = job->focus.y + sx + EPSILON;
-        job->clip.LL.x = job->focus.x - sy - EPSILON;
-        job->clip.LL.y = job->focus.y - sx - EPSILON;
-    } else {
-        job->clip.UR.x = job->focus.x + sx + EPSILON;
-        job->clip.UR.y = job->focus.y + sy + EPSILON;
-        job->clip.LL.x = job->focus.x - sx - EPSILON;
-        job->clip.LL.y = job->focus.y - sy - EPSILON;
-    }
+    sz.x = X / (Z * 2.);
+    sz.y = Y / (Z * 2.);
+    if (job->rotation)
+	sz = exch_xyf(sz);
+
+    job->clip.UR.x = x + sz.x;
+    job->clip.UR.y = y + sz.y;
+    job->clip.LL.x = x - sz.x;
+    job->clip.LL.y = y - sz.y;
 }
 
 static void emit_colors(GVJ_t * job, graph_t * g)
@@ -2103,7 +2084,14 @@ void emit_graph(GVJ_t * job, graph_t * g)
     int flags = job->flags;
     GVC_t *gvc = job->gvc;
 
-    setup_view(job, g);
+    /* device dpi is now known */
+    job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
+    job->scale.y = job->zoom * job->dpi.y / POINTS_PER_INCH;
+
+    job->devscale.x = job->dpi.x / POINTS_PER_INCH;
+    job->devscale.y = job->dpi.y / POINTS_PER_INCH;
+    if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert))
+	job->devscale.y *= -1;
 
     s = late_string(g, agfindattr(g, "comment"), "");
     gvrender_comment(job, s);
@@ -2707,7 +2695,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	}
 	job->common = &(gvc->common);
 	job->layout_type = gvc->layout.type;
-	job->bb = gvc->bb;
 
         job->output_lang = gvrender_select(job, job->output_langname);
         if (job->output_lang == NO_SUPPORT) {

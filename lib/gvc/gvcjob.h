@@ -281,7 +281,7 @@ typedef enum {COMPRESSION_NONE, COMPRESSION_ZLIB} compression_t;
 	point	pagesArrayElem; /* 2D coord of current page - 0,0 based */
         int	numPages;	/* number of pages */
 
-	boxf    bb;		/* bb in graph units */
+	boxf    bb;		/* graph bb with padding - graph units */
 	pointf  pad;		/* padding around bb - graph units */
 	boxf    clip;		/* clip region in graph units */
 	boxf    pageBoxClip;	/* intersection of clip and pageBox in graph units */
@@ -294,7 +294,7 @@ typedef enum {COMPRESSION_NONE, COMPRESSION_ZLIB} compression_t;
 	int	rotation;	/* viewport rotation (degrees)  0=portrait, 90=landscape */
 
 	pointf  view;		/* viewport size - points */
-	boxf	canvasBox;	/* drawing area - points */
+	boxf	canvasBox;	/* viewport area - points */
         pointf  margin;		/* job-specific margin - points */
 
 	pointf	dpi;		/* device resolution device-units-per-inch */
