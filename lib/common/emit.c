@@ -1798,6 +1798,18 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     gvc->graphname = g->name;
 }
 
+static void init_job_pad(GVJ_t *job)
+{
+    switch (job->output_lang) {
+    case GVRENDER_PLUGIN:
+	job->pad.x = job->pad.y = job->render.features->default_pad;
+	break;
+    default:
+	job->pad.x = job->pad.y = DEFAULT_GRAPH_PAD;
+	break;
+    }
+}
+
 static void init_job_margin(GVJ_t *job)
 {
     GVC_t *gvc = job->gvc;
@@ -1819,6 +1831,7 @@ static void init_job_margin(GVJ_t *job)
             break;
         }
     }
+
 }
 
 static void init_job_dpi(GVJ_t *job, graph_t *g)
@@ -1854,9 +1867,6 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 
     assert((gvc->bb.LL.x == 0) && (gvc->bb.LL.y == 0));
     P2PF(gvc->bb.UR, UR);
-
-    /* may want to take this from an attribute someday */
-    job->pad.x = job->pad.y = DEFAULT_GRAPH_PAD;
 
     job->bb.LL.x = -job->pad.x;           /* job->bb is bb of graph and padding - graph units */
     job->bb.LL.y = -job->pad.y;
@@ -2516,6 +2526,7 @@ static void emit_job(GVJ_t * job, graph_t * g)
 #endif
 
     init_job_flags(job, g);
+    init_job_pad(job);
     init_job_margin(job);
     init_job_dpi(job, g);
     init_job_viewport(job, g);

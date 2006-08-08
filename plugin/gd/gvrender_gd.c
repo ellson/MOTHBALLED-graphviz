@@ -570,6 +570,8 @@ static gvrender_features_t gdgen_features_tc = {
     GVRENDER_DOES_TRUECOLOR
 	| GVRENDER_Y_GOES_DOWN,	/* flags */
     0,				/* default margin - points */
+    4.,                         /* default pad - graph units */
+    {0,0},                      /* default height, width - device units */
     {96.,96.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
@@ -581,6 +583,8 @@ static gvrender_features_t gdgen_features_tc = {
 static gvrender_features_t gdgen_features = {
     GVRENDER_Y_GOES_DOWN,	/* flags */
     0,				/* default margin - points */
+    4.,                         /* default pad - graph units */
+    {0,0},                      /* default height, width - device units */
     {96.,96.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */

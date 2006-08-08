@@ -833,6 +833,8 @@ static gvrender_engine_t vrml_engine = {
 static gvrender_features_t vrml_features = {
     GVRENDER_DOES_Z, 		/* flags */
     0,                          /* default margin - points */
+    4.,                         /* default pad - graph units */
+    {0,0},                      /* default height, width - device units */
     {72.,72.},                  /* default dpi */
     NULL,                       /* knowncolors */
     0,                          /* sizeof knowncolors */

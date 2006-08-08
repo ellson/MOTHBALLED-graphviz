@@ -446,6 +446,8 @@ gvrender_features_t svg_features = {
 	| GVRENDER_DOES_TARGETS
 	| GVRENDER_DOES_TOOLTIPS, /* flags */
     DEFAULT_EMBED_MARGIN,	/* default margin - points */
+    4.,                         /* default pad - graph units */
+    {0,0},                      /* default height, width - device units */
     {96.,96.},			/* default dpi */
     svg_knowncolors,		/* knowncolors */
     sizeof(svg_knowncolors) / sizeof(char *),	/* sizeof knowncolors */

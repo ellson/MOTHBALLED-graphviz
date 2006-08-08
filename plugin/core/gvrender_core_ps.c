@@ -496,6 +496,8 @@ static gvrender_features_t psgen_features = {
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_MAP_RECTANGLE,
     36,				/* default margin - points */
+    4.,                         /* default pad - graph units */
+    {0,0},                      /* default height, width - device units */
     {72.,72.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */

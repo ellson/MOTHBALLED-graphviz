@@ -285,6 +285,8 @@ static gvrender_features_t map_features = {
 	| GVRENDER_DOES_MAP_CIRCLE
 	| GVRENDER_DOES_MAP_POLYGON,
     0,				/* default margin - points */
+    4.,                         /* default pad - graph units */
+    {0,0},                      /* default height, width - device units */
     {96.,96.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
@@ -301,6 +303,8 @@ static gvrender_features_t map_features_nopoly = {
 	| GVRENDER_DOES_TOOLTIPS
 	| GVRENDER_DOES_MAP_RECTANGLE,
     0,				/* default margin - points */
+    4.,                         /* default pad - graph units */
+    {0,0},                      /* default height, width - device units */
     {96.,96.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */

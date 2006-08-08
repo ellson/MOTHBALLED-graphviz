@@ -515,6 +515,8 @@ gvrender_features_t fig_features = {
     EMIT_COLORS
 	| GVRENDER_Y_GOES_DOWN,	/* flags */
     DEFAULT_EMBED_MARGIN,	/* default margin - points */
+    4.,                         /* default pad - graph units */
+    {0,0},                      /* default height, width - device units */
     {1440.,1440.},		/* default dpi */
    	 /* FIXME - this default dpi is a very strange number!!!
 	  * It was picked to make .png usershapes the right size on my screen.
