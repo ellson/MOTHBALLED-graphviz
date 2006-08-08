@@ -2527,7 +2527,7 @@ static void emit_job(GVJ_t * job, graph_t * g)
         emit_graph(job, g);
 
     /* Flush is necessary because we may be writing to a pipe. */
-    if (! job->external_surface && job->output_lang != TK)
+    if (job->output_file && ! job->external_surface && job->output_lang != TK)
         fflush(job->output_file);
 }
 

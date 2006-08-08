@@ -75,6 +75,7 @@ void core_fini_compression(GVJ_t *job)
     case COMPRESSION_ZLIB:
 #ifdef HAVE_LIBZ
         gzclose((gzFile *) (job->output_file));
+	job->output_file = NULL;
         break;
 #else
         (job->common->errorfn) ("No libz support\n");
