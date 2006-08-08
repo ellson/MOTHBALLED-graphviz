@@ -1090,7 +1090,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
-        job = gvc->active_jobs = gvc->job;
+	job = gvc->job;
 
 	job->surface = (void *)(&tkgendata);
 	job->external_surface = TRUE;
@@ -1101,8 +1101,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    tcldot_layout (gvc, g, (argc > 3) ? argv[3] : (char *) NULL);
 
 	/* render graph TK canvas commands */
+	gvc->common.viewNum = 0;
 	gvRenderJobs(gvc, g);
-
+	gvrender_end_job(job);
+	gvdevice_finalize(job);
+	fflush(job->output_file);
 	gvjobs_delete(gvc);
 	return TCL_OK;
 
@@ -1122,7 +1125,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
-        job = gvc->active_jobs = gvc->job;
+        job = gvc->job;
 
 	if (!  (hdl = tclhandleXlate(GDHandleTable, argv[2]))) {
 	    Tcl_AppendResult(interp, "GD Image not found.", (char *) NULL);
@@ -1136,8 +1139,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	if (!GD_drawing(g) || argc > 4)
 	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : (char *) NULL);
 	
+	gvc->common.viewNum = 0;
 	gvRenderJobs(gvc, g);
-
+	gvrender_end_job(job);
+	gvdevice_finalize(job);
+	fflush(job->output_file);
 	gvjobs_delete(gvc);
 	Tcl_AppendResult(interp, argv[2], (char *) NULL);
 	return TCL_OK;
@@ -1261,7 +1267,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		"\". Use one of:", s, (char *)NULL);
 	    return TCL_ERROR;
 	}
-	job = gvc->active_jobs = gvc->job;
+	job = gvc->job;
 
 	/* populate new job struct with output language and output file data */
 	job->output_lang = gvrender_select(job, job->output_langname);
@@ -1276,8 +1282,11 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    tcldot_layout(gvc, g, (argc > 4) ? argv[4] : (char *) NULL);
 	}
 
+	gvc->common.viewNum = 0;
 	gvRenderJobs(gvc, g);
-
+	gvrender_end_job(job);
+	gvdevice_finalize(job);
+	fflush(job->output_file);
 	gvjobs_delete(gvc);
 	return TCL_OK;
 
