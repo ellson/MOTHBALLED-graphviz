@@ -57,6 +57,12 @@ OBJS = dot.o
 
 all : dot
 
+renew :
+	(D=`date`; echo "#define BUILDDATE \"$$D\"" > ../../builddate.h)
+	$(CPP) -c $(CCFLAGS) $(DEFINES) $(INCS) dot.c
+	$(CPP) $(LDFLAGS) $(OBJS) $(LIBS) -o /tmp/dot
+	mv /tmp/dot dot
+
 dot : $(OBJS) $(DOTLIBS)
 	$(CPP) $(LDFLAGS) $(OBJS) $(LIBS) -o /tmp/dot
 	mv /tmp/dot dot
