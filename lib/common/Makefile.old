@@ -57,7 +57,7 @@ install: libcommon.a
 
 $(OBJS) : $(INST_HDRS) $(NOINST_HDRS)
 colxlate.o : colortbl.h
-psgen.o : ps.h
+utils.o : ps.h
 emit.o mapgen.o utils.o htmllex.o htmltable.o htmlparse.o : htmltable.h
 htmllex.o : htmlparse.h
 htmlparse.o htmllex.o : htmllex.h
