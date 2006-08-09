@@ -9,6 +9,7 @@ INCS =  -I. \
         -I../../lib/pathplan \
         -I../../lib/graph \
         -I../../lib/cdt \
+        -I../../lib/gd \
         -I../../lib/gvc 
 
 DEFINES = -DHAVE_CONFIG_H
