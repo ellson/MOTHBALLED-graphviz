@@ -207,6 +207,10 @@ typedef int ssize_t;
 #endif
 #endif
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #ifndef MAXINT
 #define MAXINT INT_MAX
 #endif
