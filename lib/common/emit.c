@@ -610,10 +610,17 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	imageSize.x = MIN(imageSize.x, pageSize.x);
 	imageSize.y = MIN(imageSize.y, pageSize.y);
     } else {
-	/* page not set by user, assume default when centering,
-	   but allow infinite page for any other interpretation */
-	pageSize.x = DEFAULT_PAGEWD - 2 * margin.x;
-	pageSize.y = DEFAULT_PAGEHT - 2 * margin.y;
+	/* page not set by user, use default from renderer */
+	if (job->render.features) {
+	    pageSize.x = job->render.features->default_pagesize.x - 2*margin.x;
+	    if (pageSize.x < 0.)
+		pageSize.x = 0.;
+	    pageSize.y = job->render.features->default_pagesize.y - 2*margin.y;
+	    if (pageSize.y < 0.)
+		pageSize.y = 0.;
+	}
+	else
+	    pageSize.x = pageSize.y = 0.;
 	job->pagesArraySize.x = job->pagesArraySize.y = job->numPages = 1;
     }
 

@@ -328,7 +328,7 @@ gvrender_features_t dot_features = {
     0,				/* flags */
     0.,				/* default margin - points */
     0.,                         /* default pad - graph units */
-    {0,0},                      /* default height, width - device units */
+    {0.,0.},			/* default page width, height - points */
     {72.,72.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */

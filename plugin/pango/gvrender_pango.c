@@ -408,7 +408,7 @@ static gvrender_features_t cairogen_features = {
 	| GVRENDER_DOES_TRANSFORM, /* flags */
     0,				/* default margin - points */
     4.,                         /* default pad - graph units */
-    {0,0},                      /* default height, width - device units */
+    {0.,0.},                    /* default page width, height - points */
     {96.,96.},			/* default dpi */
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
@@ -423,7 +423,7 @@ static gvrender_features_t cairogen_features_ps = {
 	| GVRENDER_DOES_TRANSFORM, /* flags */
     36,				/* default margin - points */
     4.,                         /* default pad - graph units */
-    {0,0},                      /* default height, width - device units */
+    {0.,0.},                    /* default page width, height - points */
     {72.,72.},			/* postscript 72 dpi */
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
@@ -439,7 +439,7 @@ static gvrender_features_t cairogen_features_x = {
 	| GVRENDER_X11_EVENTS,	/* flags */
     0,				/* default margin - points */
     4.,                         /* default pad - graph units */
-    {0,0},                      /* default height, width - device units */
+    {0.,0.},                    /* default page width, height - points */
     {72.,72.},			/* default dpi */
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
@@ -455,7 +455,7 @@ static gvrender_features_t cairogen_features_gtk = {
 	| GVRENDER_X11_EVENTS,	/* flags */
     0,				/* default margin - points */
     4.,                         /* default pad - graph units */
-    {0,0},                      /* default height, width - device units */
+    {0.,0.},                    /* default page width, height - points */
     {72.,72.},			/* default dpi */
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */

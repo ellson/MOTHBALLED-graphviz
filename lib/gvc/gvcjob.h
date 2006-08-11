@@ -68,7 +68,7 @@ extern "C" {
 	int flags;
 	double default_margin;  /* points */
 	double default_pad;	/* graph units */
-	point  default_size;	/* default height, width - device units */
+	pointf default_pagesize;/* default page width, height - points */
 	pointf default_dpi;
 	char **knowncolors;
 	int sz_knowncolors;
