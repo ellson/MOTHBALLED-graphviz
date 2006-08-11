@@ -48,6 +48,7 @@
 #endif
 
 #include <cairo.h>
+#ifdef CAIRO_HAS_XLIB_SURFACE
 #include <cairo-xlib.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/Xrender.h>
@@ -583,8 +584,11 @@ static gvdevice_engine_t device_engine_xlib = {
     initialize_xlib,
     finalize_xlib,
 };
+#endif
 
 gvplugin_installed_t gvdevice_types_xlib[] = {
+#ifdef CAIRO_HAS_XLIB_SURFACE
     {0, "xlib", 0, &device_engine_xlib, NULL},
+#endif
     {0, NULL, 0, NULL, NULL}
 };
