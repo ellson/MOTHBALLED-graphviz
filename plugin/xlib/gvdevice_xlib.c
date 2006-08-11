@@ -47,13 +47,13 @@
 #include <errno.h>
 #endif
 
+#include "gvplugin_device.h"
+
 #include <cairo.h>
 #ifdef CAIRO_HAS_XLIB_SURFACE
 #include <cairo-xlib.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/Xrender.h>
-
-#include "gvplugin_device.h"
 
 /* Don't load up the xlib plugin with all that gnome stuff */
 /*   - OTOH now we are dependent on a firefox installation */
