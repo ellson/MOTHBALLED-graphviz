@@ -730,26 +730,20 @@ void emit_background(GVJ_t * job, graph_t *g)
 
 static void setup_page(GVJ_t * job, graph_t * g)
 {
-    /* prescaled pad so that its size is constant under scaling */
-    pointf pad;
-
-    pad.x = job->pad.x / job->zoom;
-    pad.y = job->pad.y / job->zoom;
-
     /* establish current box in graph units */
-    job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - pad.x;
-    job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y - pad.y;
+    job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - job->pad.x;
+    job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y - job->pad.y;
     job->pageBox.UR.x = job->pageBox.LL.x + job->pageSize.x;
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
     /* establish pageOffset from graph origin, in graph units */
     if (job->rotation) {
-	job->pageOffset.x = -pad.x + job->pageSize.y * (job->pagesArrayElem.y +1);
-	job->pageOffset.y =  pad.y - job->pageSize.x * job->pagesArrayElem.x;
+	job->pageOffset.x = -job->pad.x + job->pageSize.y * (job->pagesArrayElem.y +1);
+	job->pageOffset.y =  job->pad.y - job->pageSize.x * job->pagesArrayElem.x;
     }
     else {
-	job->pageOffset.x =  pad.x - job->pageSize.x * job->pagesArrayElem.x;
-	job->pageOffset.y =  pad.y - job->pageSize.y * job->pagesArrayElem.y;
+	job->pageOffset.x =  job->pad.x - job->pageSize.x * job->pagesArrayElem.x;
+	job->pageOffset.y =  job->pad.y - job->pageSize.y * job->pagesArrayElem.y;
     }
 
     /* clib box for this page in graph units */
