@@ -19,9 +19,14 @@
 #endif
 
 #include <stdint.h>
+#include "gvplugin_device.h"
+
+#ifdef HAVE_GTK
 #include <gtk/gtk.h>
 
-#include "gvplugin_device.h"
+#include <cairo.h>
+#ifdef CAIRO_HAS_XLIB_SURFACE
+#include <X11/Xutil.h>
 
 #include "interface.h"
 #include "support.h"
@@ -55,15 +60,11 @@ attr_value_edited_cb(GtkCellRendererText *renderer, gchar *pathStr, gchar *newTe
 
 static void initialize_gtk(GVJ_t *firstjob)
 {
-}
-
-static void finalize_gtk(GVJ_t *firstjob)
-{
-    GVJ_t *job;
-    GtkWidget *window1, *drawingarea1, *drawingarea2, *treeview2;
-    GtkListStore *attr_store;
-    GtkCellRenderer *value_renderer;
-    GdkScreen *scr;
+    Display *dpy;
+    const char *display_name = NULL;
+    int scr;
+//    GdkScreen *scr1;
+//    GtkWidget *window1;
 
 #if 0
 #ifdef ENABLE_NLS
@@ -78,6 +79,30 @@ static void finalize_gtk(GVJ_t *firstjob)
     gtk_init (NULL, NULL);
 
 //  add_pixmap_directory (PACKAGE_DATA_DIR "/" PACKAGE "/pixmaps");
+
+//    window1 = create_window1 ();
+
+//    scr = gdk_drawable_get_screen (window1);
+//    firstjob->device_dpi.x = gdk_screen_get_width(scr) * 25.4 / gdk_screen_get_width_mm(scr);  /* pixels_per_inch */
+//    firstjob->device_dpi.y = gdk_screen_get_height(scr) * 25.4 / gdk_screen_get_height_mm(scr);
+    dpy = XOpenDisplay(display_name);
+    if (dpy == NULL) {
+        fprintf(stderr, "Failed to open XLIB display: %s\n",
+                XDisplayName(NULL));
+        return;
+    }
+    scr = DefaultScreen(dpy);
+    firstjob->device_dpi.x = DisplayWidth(dpy, scr) * 25.4 / DisplayWidthMM(dpy, scr);
+    firstjob->device_dpi.y = DisplayHeight(dpy, scr) * 25.4 / DisplayHeightMM(dpy, scr);
+    firstjob->device_sets_dpi = true;
+}
+
+static void finalize_gtk(GVJ_t *firstjob)
+{
+    GVJ_t *job;
+    GtkWidget *window1, *drawingarea1, *drawingarea2, *treeview2;
+    GtkListStore *attr_store;
+    GtkCellRenderer *value_renderer;
 
     for (job = firstjob; job; job = job->next_active) {
 	window1 = create_window1 ();
@@ -109,14 +134,6 @@ static void finalize_gtk(GVJ_t *firstjob)
 	g_object_set_data(G_OBJECT(drawingarea1), "attr_store", attr_store);
 	
 	gtk_widget_show (window1);
-
-	scr = gdk_drawable_get_screen (drawingarea1->window);
-	job->dpi.x = gdk_screen_get_width(scr) * 25.4 / gdk_screen_get_width_mm(scr);  /* pixels_per_inch */
-	job->dpi.y = gdk_screen_get_height(scr) * 25.4 / gdk_screen_get_height_mm(scr);
-
-	/* adjust width/height for real dpi */
-        job->width *= job->dpi.x / POINTS_PER_INCH;
-        job->height *= job->dpi.y / POINTS_PER_INCH;
     }
 
     gtk_main();
@@ -126,9 +143,15 @@ static gvdevice_engine_t device_engine_gtk = {
     initialize_gtk,
     finalize_gtk,
 };
+#endif
+#endif
 
 gvplugin_installed_t gvdevice_types_gtk[] = {
+#ifdef HAVE_GTK
+#ifdef CAIRO_HAS_XLIB_SURFACE
     {0, "gtk", 0, &device_engine_gtk, NULL},
+#endif
+#endif
     {0, NULL, 0, NULL, NULL}
 };
 
