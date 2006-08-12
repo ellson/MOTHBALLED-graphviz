@@ -47,7 +47,7 @@ static usershape_t *user_init(char *str)
     char line[BUFSIZ];
     FILE *fp;
     struct stat statbuf;
-    int saw_bb, must_inline;
+    int saw_bb, must_inline, rc;
     int lx, ly, ux, uy;
     usershape_t *us;
 
@@ -84,7 +84,7 @@ static usershape_t *user_init(char *str)
 	fstat(fileno(fp), &statbuf);
 	contents = us->data = N_GNEW(statbuf.st_size + 1, char);
 	fseek(fp, 0, SEEK_SET);
-	fread(contents, statbuf.st_size, 1, fp);
+	rc = fread(contents, statbuf.st_size, 1, fp);
 	contents[statbuf.st_size] = '\0';
 	fclose(fp);
 	dtinsert(EPSF_contents, us);

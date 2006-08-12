@@ -12,6 +12,7 @@ AM_CPPFLAGS = \
 
 if WITH_PANGOCAIRO
 if WITH_GTK
+noinst_HEADERS = support.h interface.h callbacks.h
 noinst_LTLIBRARIES = libgvplugin_gtk_C.la
 pkglib_LTLIBRARIES = libgvplugin_gtk.la
 endif
@@ -28,4 +29,4 @@ libgvplugin_gtk_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
 libgvplugin_gtk_la_SOURCES = $(libgvplugin_gtk_C_la_SOURCES)
 libgvplugin_gtk_la_LIBADD = $(GTK_LIBS) $(GNOMEUI_LIBS)
 
-EXTRA_DIST = gtk.glade gtk.gladep
+EXTRA_DIST = gtk.glade gtk.gladep 

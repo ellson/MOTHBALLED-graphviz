@@ -88,7 +88,7 @@ void core_fini_compression(GVJ_t *job)
 
 void core_fputs(GVJ_t * job, char *s)
 {
-    int len;
+    int len, rc;
 
     len = strlen(s);
     switch (job->compression) {
@@ -98,7 +98,7 @@ void core_fputs(GVJ_t * job, char *s)
 #endif
 	break;
     case COMPRESSION_NONE:
-	fwrite(s, sizeof(char), (unsigned) len, job->output_file);
+	rc = fwrite(s, sizeof(char), (unsigned) len, job->output_file);
 	break;
     }
 }
