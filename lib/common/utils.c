@@ -1416,7 +1416,7 @@ char* htmlEntityUTF8 (char* s)
 	    }
 	}
 	else  {
-	    agerr(AGERR, "UTF8 codes > 3 bytes are not currently supported\n");
+	    agerr(AGERR, "UTF8 codes > 3 bytes are not currently supported. Or perhaps \"-Gcharset=latin1\" is needed?\n");
 	    exit(EXIT_FAILURE);
         }
 	rc = agxbputc(&xb, c);
