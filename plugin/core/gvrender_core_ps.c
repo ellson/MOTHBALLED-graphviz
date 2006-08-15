@@ -77,14 +77,14 @@ static void psgen_begin_job(GVJ_t * job)
 
 static void psgen_end_job(GVJ_t * job)
 {
-    core_fputs(job, "%%%%Trailer\n");
+    core_fputs(job, "%%Trailer\n");
     core_printf(job, "%%%%Pages: %d\n", job->common->viewNum);
     if (job->common->show_boxes == NULL)
 	core_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
 	    job->boundingBox.LL.x, job->boundingBox.LL.y,
 	    job->boundingBox.UR.x, job->boundingBox.UR.y);
     core_fputs(job, "end\nrestore\n");
-    core_fputs(job, "%%%%EOF\n");
+    core_fputs(job, "%%EOF\n");
 }
 
 static void psgen_begin_graph(GVJ_t * job)
