@@ -2341,10 +2341,10 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	    if (((color = agget(sg, "fillcolor")) != 0) && color[0])
 		fillcolor = color;
 	}
+	if (!pencolor) pencolor = DEFAULT_COLOR;
+	if (!fillcolor) fillcolor = DEFAULT_FILL;
         B2BF(GD_bb(sg), BF);
 	if (istyle & ROUNDED) {
-	    if (!pencolor) pencolor = DEFAULT_COLOR;
-	    if (!fillcolor) fillcolor = DEFAULT_FILL;
 	    if (late_int(sg, G_peripheries, 1, 0) || filled) {
 		AF[0] = BF.LL;
 		AF[1] = BF.UR;
@@ -2356,10 +2356,8 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	    }
 	}
 	else {
-	    if (pencolor)
-    		gvrender_set_pencolor(job, pencolor);
-	    if (fillcolor)
-		gvrender_set_fillcolor(job, fillcolor);
+    	    gvrender_set_pencolor(job, pencolor);
+	    gvrender_set_fillcolor(job, fillcolor);
 	    if (late_int(sg, G_peripheries, 1, 0))
 		gvrender_box(job, BF, filled);
 	    else if (filled) { 
