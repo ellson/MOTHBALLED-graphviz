@@ -492,6 +492,7 @@ static gvrender_engine_t psgen_engine = {
 
 static gvrender_features_t psgen_features = {
     GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES
+	| GVRENDER_DOES_LAYERS
 	| GVRENDER_DOES_TRANSFORM
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_MAP_RECTANGLE,
