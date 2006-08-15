@@ -69,7 +69,7 @@ void neato_init_edge(edge_t * e)
 int user_pos(attrsym_t * posptr, attrsym_t * pinptr, node_t * np, int nG)
 {
     double *pvec;
-    char *p, c = '\0';
+    char *p, c;
     double z;
 
     if (posptr == NULL)
