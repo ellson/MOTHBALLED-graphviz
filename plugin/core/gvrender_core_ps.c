@@ -95,10 +95,10 @@ static void psgen_begin_graph(GVJ_t * job)
 
     if (job->common->viewNum == 0) {
         core_printf(job, "%%%%Title: %s\n", obj->u.g->name);
-        core_fputs(job, "%%%%Pages: (atend)\n");
+        core_fputs(job, "%%Pages: (atend)\n");
         if (job->common->show_boxes == NULL)
-            core_fputs(job, "%%%%BoundingBox: (atend)\n");
-        core_fputs(job, "%%%%EndComments\nsave\n");
+            core_fputs(job, "%%BoundingBox: (atend)\n");
+        core_fputs(job, "%%EndComments\nsave\n");
         cat_preamble(job, job->common->lib);
         epsf_define(job->output_file);
     }
