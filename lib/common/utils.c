@@ -1391,42 +1391,29 @@ char* htmlEntityUTF8 (char* s)
 			c = (v & 0x3F) | 0x80;
 		    }
 		}
-		else {
-		    c = '&';
-		}
             }
 	}
         else if (c < 0xE0) { /* copy 2 byte UTF8 characters */
-	    if ((s[1] & 0xC0) == 0x80) {
+	    if ((*s & 0xC0) == 0x80) {
 	        rc = agxbputc(&xb, c);
 	        c = *(unsigned char*)s++;
 	    }
 	    else {
-		agerr(AGERR, "Invalid UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
+		agerr(AGERR, "Invalid 2-byte UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
 		exit(EXIT_FAILURE);
 	    }
-	    /*
-	     * (if we didn't just exit)
-	     * A two-byte-character lead-byte not followed by trail-byte
-	     * represents itself.
-	     */
 	}
 	else if (c < 0xF0) { /* copy 3 byte UTF8 characters */
-	    if (((s[1] & 0xC0) == 0x80) && ((s[2] & 0xC0) == 0x80)) {
+	    if (((*s & 0xC0) == 0x80) && ((s[1] & 0xC0) == 0x80)) {
 	        rc = agxbputc(&xb, c);
 	        c = *(unsigned char*)s++;
 	        rc = agxbputc(&xb, c);
 	        c = *(unsigned char*)s++;
 	    }
 	    else {
-		agerr(AGERR, "Invalid UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
+		agerr(AGERR, "Invalid 3-byte UTF8 found in input. Perhaps \"-Gcharset=latin1\" is needed?\n");
 		exit(EXIT_FAILURE);
 	    }
-	    /*
-	     * (if we didn't just exit)
-	     * A three-byte-character lead-byte not followed by
-	     * two trail-bytes represents itself.
-	     */
 	}
 	else  {
 	    agerr(AGERR, "UTF8 codes > 3 bytes are not currently supported\n");
