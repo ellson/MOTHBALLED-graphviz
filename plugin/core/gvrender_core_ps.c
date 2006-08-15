@@ -164,7 +164,7 @@ static void psgen_end_page(GVJ_t * job)
      * out there needs to see this literal token.  endpage does the real work.
      */
     core_fputs(job, "endpage\nshowpage\ngrestore\n");
-    core_fputs(job, "%%%%PageTrailer\n");
+    core_fputs(job, "%%PageTrailer\n");
     core_printf(job, "%%%%EndPage: %d\n", job->common->viewNum);
 }
 
