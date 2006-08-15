@@ -1,6 +1,7 @@
 digraph "g" {
 	graph [
 		concentrate="true" /* Edges are merged and have common endpoints*/
+		charset=latin1
 		fontsize = "14"
 		fontname = "Helvetica"
 		fontcolor = "black"
