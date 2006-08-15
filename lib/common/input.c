@@ -483,19 +483,24 @@ static int findCharset (graph_t * g)
     char* p;
 
     p = late_nnstring(g,agfindattr(g,"charset"),"utf-8");
-    if (!strcasecmp(p,"latin1") || !strcasecmp(p,"ISO-8859-1") ||
-       !strcasecmp(p,"l1") || !strcasecmp(p,"ISO_8859-1") ||
-       !strcasecmp(p,"ISO8859-1") || !strcasecmp(p,"ISO-IR-100"))
-	enc = CHAR_LATIN1; 
-    else if (!strcasecmp(p,"big-5") || !strcasecmp(p,"big5")) 
-	enc = CHAR_BIG5; 
-    else if (!strcasecmp(p,"utf-8"))
-	enc = CHAR_UTF8; 
+    if (!strcasecmp(p,"latin-1")
+	|| !strcasecmp(p,"latin1")
+	|| !strcasecmp(p,"l1")
+	|| !strcasecmp(p,"ISO-8859-1")
+	|| !strcasecmp(p,"ISO_8859-1")
+	|| !strcasecmp(p,"ISO8859-1")
+	|| !strcasecmp(p,"ISO-IR-100"))
+		enc = CHAR_LATIN1; 
+    else if (!strcasecmp(p,"big-5")
+	|| !strcasecmp(p,"big5")) 
+		enc = CHAR_BIG5; 
+    else if (!strcasecmp(p,"utf-8")
+	|| !strcasecmp(p,"utf8"))
+		enc = CHAR_UTF8; 
     else {
 	agerr(AGWARN, "Unsupported charset \"%s\" - assuming utf-8\n", p);
 	enc = CHAR_UTF8; 
     }
-
     return enc;
 }
 
