@@ -134,7 +134,7 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	}
 
 	if (i == 0) {
-	    p_.y = p.y + (double)(b.UR.y-b.LL.y)/2 - paras[i].lfsize * 0.9 ;
+	    p_.y = p.y + (double)(b.UR.y-b.LL.y)/2. - paras[i].lfsize;
 	    tmp = ROUND(p_.y);  /* align with integer points */
 	    p_.y = (double)tmp;
 	}
@@ -173,8 +173,7 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
             ti++;
 	}
 	/* position for next para */
-	if(i != nparas-1)
-	    p_.y -= paras[i+1].lfsize * LINESPACING;
+	p_.y -= paras[i].lfsize * 1.3;
 	offset = 0.0;
     }
 
@@ -692,7 +691,6 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 		fname = env->finfo.name;
 	    }
 	    sz = textsize(g, &lp, fname, fsize);
-	    w = sz.x;
 	    free (ftxt->paras[i].items[j].str);
 	    ftxt->paras[i].items[j].str = lp.str;
 	    ftxt->paras[i].items[j].size = sz.x;
@@ -700,15 +698,13 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	    ftxt->paras[i].items[j].postscript_alias = lp.postscript_alias;
 	    ftxt->paras[i].items[j].layout = lp.layout;
 	    ftxt->paras[i].items[j].free_layout = lp.free_layout;
-	    width += w;
+	    width += sz.x;
 	    ftxt->paras[i].size = (double) width;
-	    if (fsize > lsize)
-		lsize = fsize;
+	    lsize = MAX(fsize, lsize);
 	}
 	ftxt->paras[i].lfsize = lsize;
-	if (width > xsize)
-	    xsize = width;
-	ysize += lsize * LINESPACING;
+	xsize = MAX(width, xsize);
+	ysize += sz.y;
 	width = w = 0;
 	lsize = 0;
     }

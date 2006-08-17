@@ -89,7 +89,7 @@ static void gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath
 	if (para->str && para->str[0]) {
 	    /* can't use brect on some archtectures if strlen 0 */
 	    para->width = (double) (brect[4] - brect[0]);
-	    para->height = (double) (brect[1] - brect[5]);
+	    para->height = para->fontsize * 1.3;
 	}
     }
 }

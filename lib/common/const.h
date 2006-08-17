@@ -69,7 +69,6 @@
 #define		MIN_FONTSIZE		1.0
 #define		DEFAULT_FONTNAME	"Times-Roman"
 #define		DEFAULT_FILL		"lightgrey"
-#define		LINESPACING		1.20
 
 #define		DEFAULT_NODEHEIGHT	0.5
 #define		MIN_NODEHEIGHT		0.02

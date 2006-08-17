@@ -100,8 +100,6 @@ extern "C" {
     extern void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t *);
     extern int emit_once(char *message);
     extern void emit_jobs_eof(GVC_t * gvc);
-    extern void emit_textparas(GVJ_t*, int, textpara_t*, pointf,
-              double, char*, double, char*);
     extern void enqueue_neighbors(nodequeue *, Agnode_t *, int);
     extern void endpath(path *, Agedge_t *, int, pathend_t *, bool);
     extern void epsf_init(node_t * n);

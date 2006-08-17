@@ -31,11 +31,10 @@ static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
     para->just = terminator;
     size = textsize(g, para, lp->fontname, lp->fontsize);
     lp->u.txt.nparas++;
-    /* total width = max line width */
-    if (lp->dimen.x < size.x)
-	lp->dimen.x = size.x;
-    /* recalculate total height */
-    lp->dimen.y = lp->u.txt.nparas * (int) (lp->fontsize * LINESPACING);
+    /* width = max line width */
+    lp->dimen.x = MAX(lp->dimen.x, size.x);
+    /* accumulate height */
+    lp->dimen.y += size.y;
 }
 
 /* compiles <str> into a label <lp> and returns its bounding box size.  */
@@ -45,6 +44,7 @@ static pointf label_size(graph_t * g, textlabel_t * lp)
     unsigned char byte = 0x00;
     int charset = GD_charset(g);
 
+    lp->dimen.x = lp->dimen.y = 0.0;
     if (*str == '\0')
 	return lp->dimen;
 
@@ -166,60 +166,11 @@ void free_label(textlabel_t * p)
     }
 }
 
-void 
-emit_textparas(GVJ_t* job, int nparas, textpara_t paras[], pointf p,
-              double halfwidth_x, char* fname, double fsize, char* fcolor)
-{
-    int i, paraspacing, tmp;
-    double center_x, left_x, right_x;
-
-    center_x = p.x;
-    left_x = center_x - halfwidth_x;
-    right_x = center_x + halfwidth_x;
-
-    /* set paraspacing to an exact no. of pixelrows */
-    paraspacing = (int) (fsize * LINESPACING);
-
-    /* position for first para */
-    p.y += paraspacing * (nparas - 1) / 2	/* cl of top para */
-			- fsize * 0.30; /* Empirically determined fudge factor */
-
-    gvrender_begin_context(job);
-    gvrender_set_pencolor(job, fcolor);
-    gvrender_set_font(job, fname, fsize);
-
-    for (i = 0; i < nparas; i++) {
-	switch (paras[i].just) {
-	case 'l':
-	    p.x = left_x;
-	    break;
-	case 'r':
-	    p.x = right_x;
-	    break;
-	default:
-	case 'n':
-	    p.x = center_x;
-	    break;
-	}
-
-        tmp = ROUND(p.x);  /* align with integer points */
-        p.x = (double)tmp;
-        tmp = ROUND(p.y);  /* align with integer points */
-        p.y = (double)tmp;
-
-	gvrender_textpara(job, p, &(paras[i]));
-
-	/* position for next para */
-	p.y -= paraspacing;
-    }
-
-    gvrender_end_context(job);
-}
-
 void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 {
     obj_state_t *obj = job->obj;
-    double halfwidth_x;
+    double halfwidth_x, center_x, left_x, right_x;
+    int i, tmp;
     pointf p;
     emit_state_t old_emit_state;
 
@@ -241,9 +192,42 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     /* dimensions of box for label, no padding, adjusted for resizing */
     halfwidth_x = (lp->dimen.x + lp->d.x) / 2.0;
 
-    emit_textparas(job, lp->u.txt.nparas, lp->u.txt.para, p,
-              halfwidth_x, lp->fontname, lp->fontsize, lp->fontcolor);
+    center_x = p.x;
+    left_x = center_x - halfwidth_x;
+    right_x = center_x + halfwidth_x;
 
+    /* position for first para */
+    p.y += lp->dimen.y / 2. - lp->fontsize;
+
+    gvrender_begin_context(job);
+    gvrender_set_pencolor(job, lp->fontcolor);
+    gvrender_set_font(job, lp->fontname, lp->fontsize);
+
+    for (i = 0; i < lp->u.txt.nparas; i++) {
+	switch (lp->u.txt.para[i].just) {
+	case 'l':
+	    p.x = left_x;
+	    break;
+	case 'r':
+	    p.x = right_x;
+	    break;
+	default:
+	case 'n':
+	    p.x = center_x;
+	    break;
+	}
+        tmp = ROUND(p.x);  /* align with integer points */
+        p.x = (double)tmp;
+        tmp = ROUND(p.y);  /* align with integer points */
+        p.y = (double)tmp;
+
+	gvrender_textpara(job, p, &(lp->u.txt.para[i]));
+
+	/* UL position for next para */
+	p.y -= lp->u.txt.para[i].height;
+    }
+
+    gvrender_end_context(job);
     obj->emit_state = old_emit_state;
 }
 
