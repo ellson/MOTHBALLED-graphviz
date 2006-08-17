@@ -35,7 +35,7 @@ static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
     if (lp->dimen.x < size.x)
 	lp->dimen.x = size.x;
     /* recalculate total height */
-    lp->dimen.y = lp->u.txt.nparas * (int) (size.y * LINESPACING);
+    lp->dimen.y = lp->u.txt.nparas * (int) (lp->fontsize * LINESPACING);
 }
 
 /* compiles <str> into a label <lp> and returns its bounding box size.  */
