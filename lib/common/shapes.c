@@ -1842,6 +1842,7 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
 	cy = (f->b.LL.y + f->b.UR.y) / 2.0 + ND_coord_i(n).y;
 	f->lp->p = pointof((int) cx, (int) cy);
 	emit_label(job, EMIT_NLABEL, f->lp);
+        pencolor(job, n);
     }
 
     for (i = 0; i < f->n_flds; i++) {
