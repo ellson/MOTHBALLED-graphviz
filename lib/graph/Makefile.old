@@ -23,7 +23,7 @@ lexer.o : parser.o
 
 parser.c : parser.y
 	$(YACC) -dv parser.y
-	if test $(ARCH) != "netbsd.i386"; then $(SED) 1s/#include.*// < y.tab.c | $(SED) "s/yy/ag/g" > parser.c; else $(SED) "s/yy/ag/g" < y.tab.c > parser.c; fi
+	if test $(ARCH) = "netbsd.i386" -o $(ARCH) = "osx.i386"; then $(SED) "s/yy/ag/g" < y.tab.c > parser.c; else $(SED) 1s/#include.*// < y.tab.c | $(SED) "s/yy/ag/g" > parser.c; fi
 	$(SED) "s/yy/ag/g" < y.tab.h > parser.h
 	$(RM) y.tab.c y.tab.h
 
