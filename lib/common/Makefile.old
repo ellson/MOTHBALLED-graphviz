@@ -31,7 +31,7 @@ OBJS = arrows.o colxlate.o fontmetrics.o \
 	args.o memory.o globals.o htmllex.o htmlparse.o htmltable.o input.o \
 	pointset.o postproc.o routespl.o splines.o psusershape.o \
 	timing.o labels.o ns.o shapes.o utils.o geom.o \
-	output.o emit.o ps.txt color_names $(CODEGENS)
+	output.o emit.o $(CODEGENS)
 
 libcommon.a : $(OBJS)
 	$(RM) libcommon.a
@@ -42,7 +42,7 @@ htmllex.o : htmlparse.c
 
 htmlparse.h htmlparse.c : htmlparse.y
 	$(YACC) -dv htmlparse.y
-	if test $(ARCH) != "netbsd.i386"; then $(SED) 1s/#include.*// < y.tab.c | $(SED) "s/yy/html/g" > htmlparse.c; else $(SED) "s/yy/html/g" < y.tab.c > htmlparse.c; fi
+	if test $(ARCH) = "netbsd.i386" -o $(ARCH) = "osx.i386"; then $(SED) "s/yy/html/g" < y.tab.c > htmlparse.c; else $(SED) 1s/#include.*// < y.tab.c | $(SED) "s/yy/html/g" > htmlparse.c; fi
 	$(SED) "s/yy/html/g" < y.tab.h > htmlparse.h
 	$(RM) y.tab.c y.tab.h
 
