@@ -31,6 +31,11 @@ Further details concerning the setting of attributes can be found
 in the description of the 
 <A HREF="http://www.graphviz.org/doc/info/lang.html">DOT language.</A>
 <P>
+At present, most device-independent units are either inches or
+<A NAME="points"></A>
+<A HREF="http://en.wikipedia.org/wiki/Point_(typography)">points</A>, 
+which we take as 72 points per inch.
+<P>
 <A NAME=h:undir_note><STRONG>Note:</STRONG></A> Some attributes, such as
 <A HREF=#d:dir>dir</A> or <A HREF=#d:arrowtail>arrowtail</A>, are 
 ambiguous when used in 
@@ -659,7 +664,7 @@ This field indicates which graph component uses the attribute.
   Note that fontpath is an attribute of the root graph.
 
 <DT><A NAME=d:fontsize HREF=#a:fontsize><STRONG>fontsize</STRONG></A>
-<DD>  Font size, in points, used for text.
+<DD>  Font size, <A HREF=#points>in points</A>, used for text.
 
 <DT><A NAME=d:group HREF=#a:group><STRONG>group</STRONG></A>
 <DD>  If the end points of an edge belong to the same group, i.e., have the
@@ -750,7 +755,7 @@ This field indicates which graph component uses the attribute.
   If not set, defaults to edge's fontname.
 
 <DT><A NAME=d:labelfontsize HREF=#a:labelfontsize><STRONG>labelfontsize</STRONG></A>
-<DD>  Font size, in points, used for headlabel and taillabel.
+<DD>  Font size, <A HREF=#points>in points</A>, used for headlabel and taillabel.
   If not set, defaults to edge's fontsize.
 
 <DT><A NAME=d:labeljust HREF=#a:labeljust><STRONG>labeljust</STRONG></A>
@@ -807,7 +812,8 @@ This field indicates which graph component uses the attribute.
   See <A HREF=#h:undir_note>limitation</A>.
 
 <DT><A NAME=d:lp HREF=#a:lp><STRONG>lp</STRONG></A>
-<DD>  Label position, in points.
+<DD>  Label position, <A HREF=#points>in points</A>.
+  The position indicates the center of the label.
 
 <DT><A NAME=d:ltail HREF=#a:ltail><STRONG>ltail</STRONG></A>
 <DD>  Logical tail of an edge. When <A HREF=#d:compound><B>compound</B></A> is true,
@@ -973,7 +979,8 @@ This field indicates which graph component uses the attribute.
 <DD>  This is true if the value of pack is "true" (case-insensitive) or a
   non-negative integer. If true, each connected component of the graph is 
   laid out separately, and then the graphs are packed tightly. 
-  If pack has an integral value, this is used as the size (in points) of
+  If pack has an integral value, this is used as the size,
+  in <A HREF=#points>points</A>, of
   a margin around each part; otherwise, a default margin of 8 is used.
   If pack is interpreted as false, the entire graph is laid out together.
   The granularity and method of packing is influenced by the
@@ -1026,7 +1033,8 @@ This field indicates which graph component uses the attribute.
   in the pos attribute itself (cf. the <A HREF=#d:point>point</A> type).
 
 <DT><A NAME=d:pos HREF=#a:pos><STRONG>pos</STRONG></A>
-<DD>  Position of node, or spline control points, in points.
+<DD>  Position of node, or spline control points, <A HREF=#points>in points</A>.
+  For nodes, the position indicates the center of the node.
   In neato and fdp, pos can be used to set initial position of a node.
   Concerning this, see the <A HREF=command.html#d:s>-s</A> command line flag.
 
@@ -1098,7 +1106,7 @@ This field indicates which graph component uses the attribute.
   new size. This feature only works in dot.
 
 <DT><A NAME=d:rects HREF=#a:rects><STRONG>rects</STRONG></A>
-<DD>  Rectangles for fields of records, in points.
+<DD>  Rectangles for fields of records, <A HREF=#points>in points</A>.
 
 <DT><A NAME=d:regular HREF=#a:regular><STRONG>regular</STRONG></A>
 <DD>  If true, force polygon to be regular.
@@ -1651,7 +1659,7 @@ the given types.
   The <A NAME=d:setlinewidth><TT>setlinewidth</TT></A> style value can be
   used for more control over the width of edges and node borders than is
   allowed by <TT>bold</TT>. This style value takes an argument, specifying the
-  width of the line in points. For example, <TT>style="bold"</TT> is
+  width of the line in <A HREF=#points>points</A>. For example, <TT>style="bold"</TT> is
   equivalent to <TT>style="setlinewidth(2)"</TT>. 
 
 <DT><A NAME=k:viewPort><STRONG>viewPort</STRONG></A>
@@ -1661,7 +1669,8 @@ the given types.
   Z is the zoom factor, i.e., 1 point corresponds to Z pixels.
   For example, use Z=1.34 (= 96/72) with a screen resolution of 96dpi to 
   convert 1 inch (72 points) in the graph to 1 inch on the screen.
-  The pair (x,y) give the position in the graph, in points, of the center 
+  The pair (x,y) give the position in the graph, in 
+  <A HREF=#points>points</A>, of the center 
   of the viewport. To focus on a particular node, (x,y) can be set to the 
   <A HREF=#a:pos>pos</A> attribute "x,y" of the node. 
   To center on the whole graph, use (bbx/2,bby/2), where "bbx,bby" is the
