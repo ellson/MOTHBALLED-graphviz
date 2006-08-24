@@ -1,4 +1,5 @@
 \section{Introduction}
+\label{sec:intro}
 The \gviz\ package consists of a variety of software for drawing
 attributed graphs. It implements a handful of common graph layout
 algorithms. These are: 
@@ -39,8 +40,8 @@ fairly complex but offering a good deal of application control.
 
 \subsection{String-based layouts}
 The simplest mechanism for doing this consists of using the filter
-approach in disguise. The application, perhaps using the \graph\ or
-\agraph\ library, constructs a representation of a graph in the
+approach in disguise. The application, perhaps using the \gviz\ \graph\
+library, constructs a representation of a graph in the
 \DOT\ language. The application can then invoke the desired layout
 program, e.g., using {\tt system} or {\tt popen} on a Unix system, 
 passing the graph using an intermediate file or a pipe. The layout
@@ -53,16 +54,17 @@ grappa\cite{grappa}, which
 rely on \gviz.
 
 There are several \gviz\ output formats which can be used in this
-approach. They are specified by using a {\tt -T} flag when invoking
-the layout program. 
+approach. As with all output formats, they are specified by 
+using a {\tt -T} flag when invoking the layout program. 
 The input to the programs must always be in the \DOT\ language.
 
 \subsubsection{dot}
+\label{sect:dot}
 This format relies on the \DOT\ language to describe the graphs, with attributes
 attached as name-value pairs.
 
-Both the \graph\ and \agraph\ libraries provide parsers for graphs represented
-in \DOT. Using these, it is easy to read the graphs and query the
+The \graph\ library provides a parser for graphs represented
+in \DOT. Using this, it is easy to read the graphs and query the
 desired attributes using {\tt agget} or {\tt agxget}.
 For more information on these functions, see Section~\ref{sec:attributes}.
 The string representations of the various types referred to are
@@ -74,16 +76,17 @@ If the graph has a label, its position is specified by the {\tt lp}
 attribute of type {\tt point}.
 
 Each node gets {\tt pos}, {\tt width} and {\tt height} attributes. 
-The first has type {\tt point}, and indicates the center of the node. The
+The first has type {\tt point}, and indicates the center of the node
+in points. The
 {\tt width} and {\tt height} attributes are floating point numbers
-giving the node's width and height in inches.
-If the node has record shape, the record rectangles are given in the 
+giving the width and height, in inches, of the node's bounding box.
+If the node has a record shape, the record rectangles are given in the 
 {\tt rects} attribute. This has the format of a space-separated list
 of rectangles. 
 If the node is a polygon (including ellipses) and the {\tt vertices}
 attribute is defined for nodes, this attribute will contain the 
 vertices of the node, in inches, as a space-separated list of {\tt pointf}
-values. 
+values.
 For ellipses, the curve is sampled, the number of points used being
 controlled by the {\tt samplepoints} attribute.
 The points are given relative to the center of the node.
@@ -98,14 +101,16 @@ type. If the edge has a label, the label position is given in the
 {\tt lp} of type {\tt point}. 
 
 \subsubsection{xdot}
+\label{sect:xdot}
 
 The {\tt xdot} format is a strict extension of the {\tt dot} format, in that it
 provides the same attributes as {\tt dot} as well as additional drawing
 attributes. These additional attributes specify how to draw each component of 
 the graph using primitive graphics operations. This can be particularly
 helpful in dealing with node shapes and edge arrowheads.
-Unlike the information provided by the {\tt vertices} attribute, 
-the extra attributes in {\tt xdot} provide all geometric drawing information.
+Unlike the information provided by the {\tt vertices} attribute
+described above, 
+the extra attributes in {\tt xdot} provide all geometric drawing information,
 including the various types of arrowheads and multiline labels with
 variations in alignment. In addition, all the parameters use the same
 units.
@@ -130,6 +135,10 @@ Clearly, the last four attributes are only attached to edges.
 
 The value of these attributes are strings consisting of the concatenation of 
 some (multi-)set of the 7 drawing operations listed in Table~\ref{table:xops}. 
+The color, font name, and style values supplied in the $C$, $c$, $F$,
+and $S$ operations have the same format and interpretation
+as the {\tt color}, {\tt fontname}, and
+{\tt style} attributes in the source graph.
 \begin{table}[htb]
 \centering
 \begin{tabular}[t]{|lp{4.5in}|} \hline
@@ -145,11 +154,24 @@ ${\tt L}\ n\ x_1\ y_1\ \ldots\ x_n\ y_n$ & Polyline with the
 given $n$ vertices \\
 ${\tt B}\ n\ x_1\ y_1\ \ldots\ x_n\ y_n$ & B-spline with the
 given $n$ control points. $n \equiv 1 mod 3$ and $n \geq 4$ \\
+${\tt b}\ n\ x_1\ y_1\ \ldots\ x_n\ y_n$ & Filled B-spline with the
+given $n$ control points. $n \equiv 1 mod 3$ and $n \geq 4$ \\
 ${\tt T}\ x\ y\ j\ w\ n\ {\tt -}c_{1}c_{2}\cdots c_{n}$ &
 Text drawn using the baseline point $(x,y)$. The text consists of the 
 $n$ bytes following {\tt '-'}. The text should be left-aligned (centered,
 right-aligned) on the point if $j$ is -1 (0, 1), respectively. The 
 value $w$ gives the width of the text as computed by the library.  \\
+${\tt C}\ n\ {\tt -}c_{1}c_{2}\cdots c_{n}$ & Set color used to fill closed
+regions. The
+color is specified by the $n$ characters following {\tt '-'}. \\
+${\tt c}\ n\ {\tt -}c_{1}c_{2}\cdots c_{n}$ & Set pen color, the color used
+for text and line drawing. The
+color is specified by the $n$ characters following {\tt '-'}. \\
+${\tt F}\ s\ n\ {\tt -}c_{1}c_{2}\cdots c_{n}$ & Set font. The font
+size is $s$ points. The font name
+is specified by the $n$ characters following {\tt '-'}. \\
+${\tt S}\ n\ {\tt -}c_{1}c_{2}\cdots c_{n}$ & Set style attribute. The
+style value is specified by the $n$ characters following {\tt '-'}. \\
 \hline
 \end{tabular}
 \caption{{\tt xdot} drawing operations}
@@ -160,26 +182,25 @@ In handling alignment, the application may want to recompute the string
 width using its own font drawing primitives. 
 
 The text operation is only used in the {\tt label} attributes. 
-Normally, the non-text operations are only used in the non-label attributes; 
-if, however, the {\tt decorate} attribute is set on an edge, its 
+Normally, the non-text graphics 
+operations are only used in the non-label attributes.
+If, however, a node has {\tt shape="record"} or an HTML-like label is
+involved, a label attribute may also contain various graphics operations.
+In addition, if the {\tt decorate} attribute is set on an edge, its 
 {\tt label} attribute will also contain a polyline operation. 
 
-All coordinates and sizes are in points. Additional information such a 
-line style, fill color, font name or size must be gleaned from the 
-corresponding attributes of the component. Note, though, that if an edge or 
+All coordinates and sizes are in points.
+If an edge or 
 node is invisible, no drawing operations are attached to it.
-
-At it stands, the {\tt xdot} format cannot describe some of the smaller
-scale attributes allowed in HTML-like labels (e.g., setting the color
-of an individual cell). We intend to add additional fine control, especially
-concerning fonts. This will necessitate extending the {\tt xdot}
-format to describe such drawings.
 
 \subsubsection{plain}
 
 The {\tt plain} format is line-based and very simple to parse. This works
 well for applications which need or wish to avoid using the \graph\
-and \agraph\ libraries.
+library. The price for this simplicity is that the format
+encodes very little detailed layout information beyond basic position
+information. If an application needs more than what is supplied in the
+format, it should use the {\tt dot} or {\tt xdot} format.
 
 There are four types of lines: {\tt graph}, {\tt node}, 
 {\tt edge} and {\tt stop}. The output
@@ -231,7 +252,7 @@ nodes, if a style is not defined, {\tt "solid"} is used.
 The {\tt plain-ext} format is identical with the {\tt plain} format,
 except that port names are attached to the node names in an edge,
 when applicable. It uses the usual \DOT\ representation, where port
-{\em p} of node {\em n} is given as {\tt {\em p}:{\em n}}.
+{\em p} of node {\em n} is given as {\tt {\em n}:{\em p}}.
 
 \subsubsection{GXL}
 The GXL \cite{gxl} dialect of XML is a widely accepted standard for
@@ -253,7 +274,7 @@ describe the intended API at various levels, concentrating on the purpose
 of the functions from an application standpoint, and the way the 
 library functions should be used together, e.g., that one has to call
 function A before function B. The intention is not to provide
-detailed man pages, partly because most of the functions have a high-level 
+detailed manual pages, partly because most of the functions have a high-level 
 interface, often just taking a graph pointer as the sole argument.
 The real semantic details are embedded in the
 attributes of the graph, which are described elsewhere. 
@@ -270,28 +291,15 @@ certain of the steps. For example, all of the layout algorithms can
 layout edges as splines. If the application intends to draw all edges
 as line segments, it would probably wish to avoid the spline computation,
 especially as it is moderately expensive in terms of time. 
-Section~\ref{sec:drivers} explains how an application can invoke the
-\gviz\ code generators, thereby generating a drawing of a graph in 
-a concrete graphics format such as {\em jpeg} or {\em PostScript}.
+Section~\ref{sec:layout_info} explains how an application can invoke the
+\gviz\ renderers, thereby generating a drawing of a graph in 
+a concrete graphics format such as {\em png} or {\em PostScript}.
 For an application intending to do its own rendering,
-Section~\ref{sec:codegen} recommends a technique which allows the
+Section~\ref{sec:renderers} recommends a technique which allows the
 \gviz\ library to handle all of the bookkeeping details related to
 data structures and machine-dependent representations while the
 application need only supply a few basic graphics functions.
 Section~\ref{sec:unconnect}
 discusses an auxiliary library for dealing with graphs containing
 multiple connected components.
-
-We note that the interface presented here will be evolving in the
-future.
-The libraries are described ``as-is''. Since the software was not
-built with a public library interface in mind, there are various warts
-which will become apparent in the description. With time, however,
-we hope to reform the code to provide a cleaner and more consistent
-interface. In addition, we are now pursuing two major design changes:
-evolving the \graph\ library towards the \agraph\ library,
-and moving all coordinates to floating-point
-values using a single unit. These will also cause changes to the
-library interface as described here, though minimal in comparison to
-actual changes which will occur internally.
 

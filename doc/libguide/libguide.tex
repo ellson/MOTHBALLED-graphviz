@@ -21,13 +21,14 @@
 \def\twopi{{\it twopi}}
 \def\circo{{\it circo}}
 \def\gviz{{\it Graphviz}}
-\def\graph{{\tt libgraph}}
+\def\graph{{\tt graph}}
 \def\agraph{{\tt libagraph}}
-\def\pack{{\tt libpack}}
+\def\pack{{\tt pack}}
+\def\gvc{{\tt GVC\_t}}
 
-\newcommand{\lastedited}{22 November 2004}
-\date{\lastedited}
-\newcommand{\mymark}{\gviz Drawing Library Manual, \lastedited \hfil }
+\newcommand{\lastedited}{16 August 2006}
+\date{\today}
+\newcommand{\mymark}{\gviz{} Drawing Library Manual, \today \hfil }
 \markboth{\mymark}{\mymark}
 
 \begin{document}
@@ -40,19 +41,13 @@
 \tableofcontents
 \newpage
 \input{intro}
-
 \input{basic}
-
 \input{layouts}
-
 \input{drivers}
-
 \input{codegen}
-
+\input{plugins}
 \input{unconnect}
-
 %\input{overlap}
-
 %\input{paths}
 
 \clearpage
