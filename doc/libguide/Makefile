@@ -17,7 +17,7 @@ libguide.ps : libguide.dvi
 	$(DVI) -o libguide.ps libguide
 	
 TEXS = libguide.tex intro.tex basic.tex layouts.tex drivers.tex codegen.tex \
-       unconnect.tex build.tex samples.tex types.tex
+       plugins.tex unconnect.tex build.tex samples.tex types.tex
 
 libguide.dvi : libguide.bbl $(TEXS)
 	$(TEX) libguide.tex
