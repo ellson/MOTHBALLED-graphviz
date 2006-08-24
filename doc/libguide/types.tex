@@ -1,5 +1,24 @@
-\section{String representations of types}
+\section{Some basic types and their string representations}
 \label{sec:types}
+A {\tt point} type is the structure
+\begin{verbatim}
+struct {
+  int x, y;
+}
+\end{verbatim}
+The fields can either give an absolute position or represent a
+vector displacement.
+A {\tt pointf} type is the same, with {\tt int} replaced with {\tt double}.
+A {\tt box} type is the structure
+\begin{verbatim}
+struct {
+  point LL, UR;
+}
+\end{verbatim}
+representing a rectangle. The {\tt LL} gives the coordinates of the
+lower-left corner, while the {\tt UR} is the upper-right corner.
+A {\tt boxf} type is the same, with {\tt point} replaced with {\tt pointf}.
+
 The following gives the accepted string representations 
 corresponding to values of the given types. 
 Whitespace is ignored when converting these values from strings

@@ -5,7 +5,7 @@ Each is then extended to handle the not uncommon case of having
 multiple components. Most of the time, the obvious approach is used:
 draw each component separately and then assemble the drawings into a single
 layout. The only place this is not done is in \neato\ when the mode is
-{\tt MODE\_KK} and {\tt pack} is false (cf. Section~\ref{sec:neato}).
+{\tt "KK"} and {\tt pack="false"} (cf. Section~\ref{sec:neato}).
 
 For the \dot\ algorithm, its layered drawings make the merging simple:
 the nodes on the highest rank of each component are all put
@@ -17,47 +17,34 @@ with unconnected graphs, especially by supplying a technique for
 packing arbitrary graph drawings together quickly, aesthetically and
 with efficient use of space. The following code indicates how the
 library can be integrated with the 
-basic algorithm (cf. Section~\ref{sec:twopi}).
+basic layout algorithms given an input graph {\tt g} and a \gvc\ value
+{\tt gvc}.
 
 \begin{verbatim}
-    Agnode_t*  c = NULL;
-    Agraph_t** ccs;       /* array of connected components */
-    Agraph_t*  sg;
-    Agnode_t*  c = NULL;
-    int        ncc;       /* number of connected components */
-    int        i;
+    graph_t *sg;
+    FILE *fp;
+    graph_t** cc;
+    int       i, ncc;
 
-    ccs = ccomps (g, &ncc, (char*)0);
-    if (ncc == 1) {
-      circleLayout (g,ctr);
-      adjustNodes (g);
-      spline_edges(g);
-    }
-    else {
-      pack_info pinfo;
-      pack_mode pmode = getPackMode (g,l_node);
+    cc = ccomps(g, &ncc, (char*)0);
 
-      for (i = 0; i < ncc; i++) {
-        sg = ccs[i];
-        if (ctr && agcontains (sg, ctr)) c = ctr;
-        else c = 0;
-        nodeInduce (sg);
-        circleLayout (sg,c);
-        adjustNodes (sg);
-      }
-      spline_edges(g);
-      pinfo.margin = getPack (g, CL_OFFSET, CL_OFFSET);
-      pinfo.doSplines = 1;
-      pinfo.mode = pmode;
-      pinfo.fixed = 0;
-      packSubgraphs (ncc, ccs, g, &pinfo);
-    }
     for (i = 0; i < ncc; i++) {
-      agdelete (g, ccs[i]);
+	    sg = cc[i];
+        nodeInduce (sg);
+        gvLayout(gvc, sg, "neato");
+    }
+    pack_graph (ncc, cc, g, 0);
+
+    gvRender(gvc, g, "ps", stdout);
+
+    for (i = 0; i < ncc; i++) {
+        sg = cc[i];
+        gvFreeLayout(gvc, sg);
+        agdelete(g, sg);
     }
 \end{verbatim}
 
-The call to {\tt ccomps} splits the graph into its connected
+The call to {\tt ccomps} splits the graph {\tt g} into its connected
 components. {\tt ncc} is set to the number of components. 
 The components are represented by subgraphs of the input graph, and are
 stored in the returned array. The function gives names to the components
@@ -78,48 +65,30 @@ to to true if the graph has nodes with fixed positions. In this case,
 the component containing these nodes is the first one in the returned array.
 
 Continuing with the example,
-if there is only one component, we can revert to the base implementation
-for simplicity. If there are multiple components, 
-we take one at a time, using {\tt nodeInduce} to create the 
-corresponding node-induced subgraph, laying out the component with
-{\tt circleLayout}, and removing node overlaps, if necessary, by
-calling {\tt adjustNodes}. As a technical point, if a center node
-is provided, it is only used with the component containing it. A
-better implementation would allow a center node to be specified on
-a per component basis.
+we take one component at a time, use {\tt nodeInduce} to create the 
+corresponding node-induced subgraph, and then lay out the component
+with {\tt gvLayout}. Here, we use \neato\ for each layout, but it
+is possible to use a different layout for each component.\footnote{
+At present, the \dot\ layout has a limitation that it only works on
+a root graph. Thus, to use \dot\ for a component, one needs to create
+a new copy of the subgraph, apply \dot\, and then copy the position
+attributes back to the component.}
 
-After the nodes of each component are positioned, with coordinates
-stored in the attributes {\tt pos[0]} and {\tt pos[1]}, the code
-calls {\tt spline\_edges} to generate the edge representations. 
-
-Next, it uses the \pack\ function {\tt packSubgraphs} to reassemble
+Next, we use the \pack\ function {\tt pack\_graph} to reassemble
 the graph into a single drawing. To position the components, \pack\
 uses the polyomino-based approach described by
 Freivalds et al\cite{pack}. The first three arguments to the
-function are clear. The fourth argument sets various parameters
-used in the packing. The {\tt pinfo.margin} field specifies the
-margin, in points, maintained between components. The value
-{\tt CL\_OFFSET} is defined by \gviz; it is the same amount of
-space used by \dot\ around clusters. Here, we employ the auxiliary
-function {\tt getPack}. This uses the graph attribute {\tt "pack"} to
-determine this value, which can take boolean and integer values.
-If the attribute evaluates to a non-negative integer, this value is
-returned. If the attribute evaluates to true, the third argument is
-returned. Otherwise, the function returns the second value.
+function are clear. The fourth argument indicates whether or not
+there are fixed components.
 
-The {\tt pinfo.doSplines} field, if non-zero,
-tells the function that edge representations have already been
-computed for the graph and should be used in determining the packing.
-Otherwise, the packing will treat edges as line segments connecting
-the centers of the two endpoints.
-
-The {\tt pinfo.mode} field specifies how the packing should be done. At
+The {\tt pack\_graph} function uses the graph's {\tt packmode}
+attribute to determine how the packing should be done. At
 present, packing uses the single algorithm mentioned above, but allows
-three varying granularities, represented by the values {\tt l\_node},
-{\tt l\_clust} and {\tt l\_graph}. In the first case, packing is done at
+three varying granularities, represented by the values {\tt "node"},
+{\tt "clust"} and {\tt "graph"}. In the first case, packing is done at
 the node and edge level. This provides the tightest packing, using the
 least area, but also allows a node of one component to lie between
-two nodes of another component. The second value, {\tt l\_clust}, 
+two nodes of another component. The second value, {\tt "clust"}, 
 requires that the packing treat top-level clusters with a set
 bounding box {\tt GD\_bb} value like a large node. Nodes and edges not
 entirely contained within a cluster are handled as in the previous
@@ -129,26 +98,9 @@ last case does the packing at the graph granularity. Each component
 is treated as one large node, whose size is determined by its
 bounding box.
 
-In our example, we use another library function, {\tt getPackMode},
-to set the mode value. This function uses the graph's {\tt "packmode"}
-attribute to determine the value. If this is {\tt "node"},
-{\tt "cluster"} or {\tt "graph"}, the function returns
-{\tt l\_node}, {\tt l\_clust} and {\tt l\_graph}, respectively. 
-Otherwise, the function returns its second argument.
-
-The last field, {\tt pinfo.fixed}, is used to constrain the placement
-of certain components. If non-NULL, this field should point to an
-array of {\tt ncc} booleans, where {\tt pinfo.fixed[i]} is true if
-component {\tt i} should be left at its current position. If the
-application specifies fixed components, these are placed first. Then
-the remaining components are packed into the unoccupied space, respecting
-the {\tt pinfo.mode} field. It is the application's responsibility to
-make sure that the fixed components do not overlap each other, if that
-is desired.
-
 Note that the library automatically computes the bounding box of
 each of the components. Also,
-as a side-effect, {\tt packSubgraphs} finishes by recomputing and
+as a side-effect, {\tt pack\_graph} finishes by recomputing and
 setting the bounding box attribute {\tt GD\_bb} of the graph.
 
 The final step is to free the component subgraphs.

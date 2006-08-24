@@ -1,43 +1,39 @@
 \section{A sample program: {\tt simple.c}}
 \label{sec:simple}
-This following code illustrates an application which only uses \gviz\ to
-position a graph. The application will either provide its own
-rendering, perhaps in an interactive setting, or, as in this
-case, it does not render the graph at all.
+This following code illustrates an application which uses \gviz\ to
+position a graph using the \dot\ layout and then write the output
+using the {\tt plain} format.
+An application can replace the call to {\tt gvRender} with its own
+function for rendering the graph, using the layout information
+encoded in the graph structure (cf. Section~\ref{sec:layout_info}).
 \pagebreak[4]
 \begin{verbatim}
-#include <dotneato.h>
+#include <gvc.h>
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-    Agraph_t* g;
-    Agnode_t* n;
-    FILE*     fp;
-    char      buf[BUFSIZ];
-    point     p;
+    GVC_t *gvc; 
+    graph_t *g;
+    FILE *fp;
 
-    aginit ();
+    gvc = gvContext();
 
     if (argc > 1)
-        fp = fopen (argv[1],"r");
-    else
+        fp = fopen(argv[1], "r");
+    else    
         fp = stdin;
-    g = agread (fp);
+    g = agread(fp);
 
-    dot_layout(g);
-    
-    agnodeattr(g, "pos", "");
-    for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
-        p = ND_coord_i(n);
-        sprintf(buf,"%d,%d", p.x, p.y);
-        agset(n,"pos",buf);
-        printf ("node %s at position (%s)\n", n->name, buf);
-    }
-    agwrite(g, stdout);
+    gvLayout(gvc, g, "dot");
 
-    dot_cleanup(g);
-    return 0;
-}	
+    gvRender(gvc, g, "plain", stdout);
+
+    gvFreeLayout(gvc, g);
+
+    agclose(g);
+
+    return (gvFreeContext(gvc));
+}
 \end{verbatim}
 
 \section{A sample program: {\tt dot.c}}
@@ -49,37 +45,29 @@ is precisely how the \dot\ program is written, ignoring some signal
 handling, its specific declaration of 
 the {\tt Info} data (cf. Section~\ref{sec:info}), and a few other
 minor details.
-If someone desired to write a new layout algorithm, this
-code could be copied directly, merely changing the algorithm-specific 
-layout and cleanup functions \verb+dot_layout+ and \verb+dot_cleanup+.
-A more detailed and realistic example is provided in Appendix~\ref{sec:demo}.
-
 \begin{verbatim}
-#include <dotneato.h>
-
-int main(int argc, char** argv)
-{
-    Agraph_t *g, *prev=NULL;
+#include <gvc.h>
+    
+int main(int argc, char **argv)
+{   
+    graph_t *g, *prev = NULL;
     GVC_t *gvc;
 
     gvc = gvContext();
-
-    dotneato_initialize(gvc,argc,argv);
-    while ((g = next_input_graph())) {
+    gvParseArgs(gvc, argc, argv);
+    
+    while ((g = gvNextInputGraph(gvc))) {
         if (prev) {
-            dot_cleanup(prev);
+            gvFreeLayout(gvc, prev);
             agclose(prev);
         }
+        gvLayoutJobs(gvc, g); 
+        gvRenderJobs(gvc, g);
         prev = g;
-
-        gvBindContext(gvc, g);
-
-        dot_layout(g);
-        dotneato_write(gvc);
     }
-    dotneato_terminate(gvc);
-    return 0;
+    return (gvFreeContext(gvc));
 }
+
 \end{verbatim}
 
 \section{A sample program: {\tt demo.c}}
@@ -88,52 +76,44 @@ This example provides a modification of the previous example. Again it
 relies on the \gviz\ renderers, but now it creates the graph dynamically
 rather than reading the graph from a file.   
 \begin{verbatim}
-#include <dotneato.h>
+#include <gvc.h>
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     Agraph_t *g;
-    Agnode_t *n,*m;
+    Agnode_t *n, *m;
     Agedge_t *e;
-    Agsym_t  *a;
-    GVC_t    *gvc;
+    Agsym_t *a;
+    GVC_t *gvc;
 
-    /* set up renderer context */
+    /* set up a graphviz context */
     gvc = gvContext();
 
-    /* Accept -T and -o options like dot.
-     * Input files are ignored in this demo. */
-    dotneato_initialize(gvc, argc, argv);
+    /* parse command line args - minimally argv[0] sets layout engine */
+    gvParseArgs(gvc, argc, argv);
 
     /* Create a simple digraph */
-    g = agopen("g",AGDIGRAPH);
-    n = agnode(g,"n");
-    m = agnode(g,"m");
-    e = agedge(g,n,m);
+    g = agopen("g", AGDIGRAPH);
+    n = agnode(g, "n");
+    m = agnode(g, "m");
+    e = agedge(g, n, m);
 
     /* Set an attribute - in this case one that affects the visible rendering */
-    if (!(a = agfindattr(g->proto->n, "color")))
-        a = agnodeattr(g, "color", "");
-    agxset(n, a->index, "red");
+    agsafeset(n, "color", "red", "");
 
-    /* bind graph to GV context - currently must be done before layout */
-    gvBindContext(gvc,g);
-
-    /* Compute a layout */
-    neato_layout(g);
+    /* Compute a layout using layout engine from command line args */
+    gvLayoutJobs(gvc, g);
 
     /* Write the graph according to -T and -o options */
-    dotneato_write(gvc);
+    gvRenderJobs(gvc, g);
 
-    /* Clean out layout data */
-    neato_cleanup(g);
+    /* Free layout data */
+    gvFreeLayout(gvc, g);
 
     /* Free graph structures */
     agclose(g);
 
-    /* Clean up output file and errors */
-    dotneato_terminate(gvc);
-
-    return 0;
-}    
+    /* close output file, free context, and return number of errors */
+    return (gvFreeContext(gvc));
+}
 \end{verbatim}
