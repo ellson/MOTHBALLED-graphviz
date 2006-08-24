@@ -2,6 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 
 pdfdir = $(pkgdatadir)/doc/pdf
+pkgconfigdir = $(libdir)/pkgconfig
 
 AM_CPPFLAGS = -I$(top_srcdir) \
         -I$(top_srcdir)/lib/common \
@@ -14,6 +15,7 @@ AM_CPPFLAGS = -I$(top_srcdir) \
 pkginclude_HEADERS = pack.h
 noinst_LTLIBRARIES = libpack_C.la
 pkglib_LTLIBRARIES = libpack.la
+pkgconfig_DATA = libpack.pc
 man_MANS = pack.3
 pdf_DATA = pack.pdf
 
