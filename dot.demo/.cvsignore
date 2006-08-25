@@ -2,6 +2,7 @@ dot
 simple
 demo
 example
+neatopack
 *.png
 *.o
 _gv.so
