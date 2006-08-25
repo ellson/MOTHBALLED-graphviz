@@ -4,13 +4,19 @@
 Up to now, we have used a \gviz\ context \gvc\ without
 considering its purpose. As suggested earlier, this value is used
 to store various layout information that is independent of a particular
-graph and its attributes. In particular, it maintains lists of the
+graph and its attributes. 
+It holds the data associated with plugins, parsed-command lines, 
+script engines, and anything else with a scope potentially larger 
+than one graph, up to the scope of the application.
+In addition, it maintains lists of the
 available layout algorithms and renderers; it also records the most recent
 layout algorithm applied to a graph. It can be used to specify multiple
 renderings of a given graph layout into different associated files.
 It is also used to store various global information used during
 rendering.
 
+There should be just one \gvc\ created for the entire 
+duration of an application.
 A single \gvc\ value can be used with multiple graphs, though
 with only one graph at a time. In addition, if {\tt gvLayout()}
 was invoked for a graph and \gvc, then {\tt gvFreeLayout()} should
@@ -88,8 +94,9 @@ remark holds for {\tt gvRender} and {\tt gvRenderJobs}.
 \subsection{Application-specific data}
 \label{sec:info}
 
-When possible, the code generators in the library log how an image file
-was created in the output file. To do this, they rely on 
+It is sometimes useful to supply version information.
+For example, some renderers in \gviz\ the library version used
+to create the output file. To do this, they rely on 
 the application providing an array 
 \begin{verbatim}
     extern char* Info[3];
@@ -101,7 +108,7 @@ of the application, and a build date. For example, \dot\ might provide
     char *Info[] = {
         "dot",              /* Program */
         "1.8.10",           /* Version */
-        "16 Dec 2006"        /* Build Date */
+        "16 Dec 2006"       /* Build Date */
     };
 \end{verbatim}
 

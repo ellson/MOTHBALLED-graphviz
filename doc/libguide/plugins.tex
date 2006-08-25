@@ -44,13 +44,14 @@ void *features; \\
 The fields have the following meanings.
 \begin{description}
 \item[{\tt id}]
-Unique identifier for a given plug-in within a given package and with
-a given API kind.
+Identifier for a given plug-in within a given package and with
+a given API kind. Note that the {\tt id} need only be unique within
+its plug-in package, as these packages are assumed to be independent.
 \item[{\tt type}]
 Name for a given plug-in, used during plug-in lookup.
 \item[{\tt quality}]
 An arbitrary integer used for ordering plug-ins with the same {\tt type}.
-Plug-ins with smaller values will be chosen before plug-ins with larger
+Plug-ins with larger values will be chosen before plug-ins with smaller
 values.
 \item[{\tt engine}]
 Points to the related engine structure.
@@ -128,6 +129,13 @@ In our example, the ``3'' in the library's filename gives the version number.
 
 Finally, the library must be installed in the \gviz\ library directory,
 and {\tt dot -c} must be run to add the package to the \gviz\ configuration.
+Note that both of these steps typically assume that one has installer
+privileges.\footnote{
+Normally, for builds intended for local installation {\tt dot -c} is run 
+during {\tt make install}.
+It may be necessary to run this manually if cross-compiling or otherwise 
+manually moving binaries to a different system. 
+}
 
 In the remainder of this section, we shall look at the first 
 three types of plug-in APIs in more detail.
@@ -215,13 +223,14 @@ output can contain multiple renderings \\
 {\tt GVRENDER\_DOES\_TRUECOLOR} & Supports a truecolor color model \\
 {\tt GVRENDER\_Y\_GOES\_DOWN} & Output coordinate system has the origin in
 the upper left corner \\
-{\tt GVRENDER\_X11\_EVENTS} & {\bf ASK} \\
+{\tt GVRENDER\_X11\_EVENTS} & For GUI plug-ins, defers actual rendering until
+the GUI event loop invokes {\tt job->callbacks->refresh()} \\
 {\tt GVRENDER\_DOES\_TRANSFORM} & Can handle transformation (scaling,
 translation, rotation) from universal
 to device coordinates. If false, the library will do the transformation
 before passing any coordinates to the renderer \\
 {\tt GVRENDER\_DOES\_LABELS} & Wants an object's label, if any, provided 
-as text during rendering {\bf ASK} \\
+as text during rendering \\
 {\tt GVRENDER\_DOES\_MAPS} & Supports regions to which URLs can be attached.
 If true, URLs are provided to the renderer, 
 either as part of the {\tt job->obj} or via the renderer's {\tt begin\_anchor}
