@@ -666,7 +666,10 @@ One simple way to do this is to use the position and drawing information as
 supplied by the {\tt dot} or {\tt xdot} format (see
 Sections~\ref{sect:dot} and \ref{sect:xdot}). To get this, the application
 can call the appropriate renderer, passing a NULL stream
-pointer to {\tt gvRender} as in Figure~\ref{fig:nop}.
+pointer to {\tt gvRender}\footnote{
+This convention only works, and only makes sense, with the {\tt dot} 
+and {\tt xdot} renderers. For other renders, a NULL stream will cause
+output to be written on {\tt stdout}.} as in Figure~\ref{fig:nop}.
 This will attach the information as string attributes. The application
 can then use {\tt agget} to read the attributes.
 
