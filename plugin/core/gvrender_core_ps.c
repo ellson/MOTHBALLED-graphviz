@@ -174,6 +174,7 @@ static void psgen_begin_cluster(GVJ_t * job)
 
     core_printf(job, "%% %s\n", obj->u.sg->name);
 
+    core_fputs(job, "gsave\n");
     if (obj->url &&  obj->url_map_p) {
         core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
@@ -186,10 +187,16 @@ static void psgen_begin_cluster(GVJ_t * job)
     }
 }
 
+static void psgen_end_cluster(GVJ_t * job)
+{
+    core_fputs(job, "grestore\n");
+}
+
 static void psgen_begin_node(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
+    core_fputs(job, "gsave\n");
     if (obj->url && obj->url_map_p) {
         core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
@@ -202,11 +209,17 @@ static void psgen_begin_node(GVJ_t * job)
     }
 }
 
+static void psgen_end_node(GVJ_t * job)
+{
+    core_fputs(job, "grestore\n");
+}
+
 static void
 psgen_begin_edge(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
+    core_fputs(job, "gsave\n");
     if (obj->url && obj->url_map_p) {
         core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
@@ -259,6 +272,11 @@ psgen_begin_edge(GVJ_t * job)
     }
 }
 
+static void psgen_end_edge(GVJ_t * job)
+{
+    core_fputs(job, "grestore\n");
+}
+
 static void
 ps_set_pen_style(GVJ_t *job)
 {
@@ -306,18 +324,12 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 		objtype = "sethsb";
 		break;
 	}
-	if ( last_color.u.HSVA[0] != color->u.HSVA[0]
-	  || last_color.u.HSVA[1] != color->u.HSVA[1]
-	  || last_color.u.HSVA[2] != color->u.HSVA[2]
-	  || last_color.u.HSVA[3] != color->u.HSVA[3]
-	  || (job->obj->type == ROOTGRAPH_OBJTYPE)) {
-	    core_printf(job, "%.3f %.3f %.3f %scolor\n",
-		color->u.HSVA[0], color->u.HSVA[1], color->u.HSVA[2], objtype);
-	    last_color.u.HSVA[0] = color->u.HSVA[0];
-	    last_color.u.HSVA[1] = color->u.HSVA[1];
-	    last_color.u.HSVA[2] = color->u.HSVA[2];
-	    last_color.u.HSVA[3] = color->u.HSVA[3];
-	}
+	core_printf(job, "%.3f %.3f %.3f %scolor\n",
+	    color->u.HSVA[0], color->u.HSVA[1], color->u.HSVA[2], objtype);
+	last_color.u.HSVA[0] = color->u.HSVA[0];
+	last_color.u.HSVA[1] = color->u.HSVA[1];
+	last_color.u.HSVA[2] = color->u.HSVA[2];
+	last_color.u.HSVA[3] = color->u.HSVA[3];
     }
 }
 
@@ -329,7 +341,11 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     if (job->obj->pencolor.u.HSVA[3] < .5)
 	return;  /* skip transparent text */
 
-    ps_set_color(job, &(job->obj->pencolor));
+    /* if font color differs from object color */
+    if (last_color.u.HSVA[0] != job->obj->pencolor.u.HSVA[0]
+     || last_color.u.HSVA[1] != job->obj->pencolor.u.HSVA[1]
+     || last_color.u.HSVA[2] != job->obj->pencolor.u.HSVA[2]) 
+	ps_set_color(job, &(job->obj->pencolor));
     if (para->fontname) {
 	sz = para->fontsize;
         if (sz != last_fontsize
@@ -470,15 +486,15 @@ static gvrender_engine_t psgen_engine = {
     psgen_begin_page,
     psgen_end_page,
     psgen_begin_cluster,
-    0,				/* psgen_end_cluster */
+    psgen_end_cluster,
     0,				/* psgen_begin_nodes */
     0,				/* psgen_end_nodes */
     0,				/* psgen_begin_edges */
     0,				/* psgen_end_edges */
     psgen_begin_node,
-    0,				/* psgen_end_node */
+    psgen_end_node,
     psgen_begin_edge,
-    0,				/* psgen_end_edge */
+    psgen_end_edge,
     0,				/* psgen_begin_anchor */
     0,				/* psgen_end_anchor */
     psgen_textpara,
