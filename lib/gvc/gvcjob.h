@@ -63,6 +63,7 @@ extern "C" {
 #define GVRENDER_DOES_TARGETS (1<<20)
 #define GVRENDER_DOES_Z (1<<21)
 #define LAYOUT_NOT_REQUIRED (1<<22)
+#define OUTPUT_NOT_REQUIRED (1<<23)
 
     typedef struct {
 	int flags;

@@ -158,11 +158,13 @@ static void dot_end_graph(GVJ_t *job)
 	    break;
 	case FORMAT_DOT:
 	case FORMAT_CANON:
-	    agwrite(g, job->output_file);
+	    if (!(job->flags & OUTPUT_NOT_REQUIRED))
+		agwrite(g, job->output_file);
 	    break;
 	case FORMAT_XDOT:
 	    extend_attrs(job, g, xbufs);
-	    agwrite(g, job->output_file);
+	    if (!(job->flags & OUTPUT_NOT_REQUIRED))
+		agwrite(g, job->output_file);
 	    break;
     }
 }

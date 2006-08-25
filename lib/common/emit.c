@@ -486,18 +486,18 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
 {
     switch (job->output_lang) {
     case GVRENDER_PLUGIN:
-        job->flags = chkOrder(g) | job->render.features->flags;
+        job->flags |= chkOrder(g) | job->render.features->flags;
         break;
     case VTX:
         /* output sorted, i.e. all nodes then all edges */
-        job->flags = EMIT_SORTED;
+        job->flags |= EMIT_SORTED;
         break;
     case DIA:
         /* output in preorder traversal of the graph */
-        job->flags = EMIT_PREORDER;
+        job->flags |= EMIT_PREORDER;
         break;
     default:
-        job->flags = chkOrder(g);
+        job->flags |= chkOrder(g);
         break;
     }
 }

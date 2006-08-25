@@ -154,4 +154,5 @@ void gvjobs_delete(GVC_t * gvc)
     }
     gvc->jobs = gvc->job = gvc->active_jobs = output_filename_job = output_langname_job =
 	NULL;
+    gvc->common.viewNum = 0;
 }

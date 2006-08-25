@@ -95,7 +95,6 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
     /* create a job for the required format */
     rc = gvjobs_output_langname(gvc, format);
     job = gvc->job;
-    firstjob = gvc->active_jobs;
     if (rc == NO_SUPPORT) {
         agerr (AGERR, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
                 format, gvplugin_list(gvc, API_render, format));
@@ -108,9 +107,14 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
 	return -1;
     }
     job->output_file = out;
+    if (out == NULL)
+	job->flags |= OUTPUT_NOT_REQUIRED;
     gvRenderJobs(gvc, g);
-    if (firstjob)
+    firstjob = gvc->active_jobs;
+    if (firstjob) {
+	gvrender_end_job(firstjob);
 	gvdevice_finalize(firstjob);
+    }
     gvjobs_delete(gvc);
 
     return 0;
@@ -120,13 +124,14 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
 int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
 {
     int rc;
-    GVJ_t *job = gvc->job;
-    GVJ_t *firstjob = gvc->active_jobs;
+    GVJ_t *job;
+    GVJ_t *firstjob;
 
     g = g->root;
 
     /* create a job for the required format */
     rc = gvjobs_output_langname(gvc, format);
+    job = gvc->job;
     if (rc == NO_SUPPORT) {
 	agerr(AGERR, "Renderer type: \"%s\" not recognized. Use one of:%s\n",                format, gvplugin_list(gvc, API_render, format));
 	return -1;
@@ -139,8 +144,11 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
     }
     gvjobs_output_filename(gvc, filename);
     gvRenderJobs(gvc, g);
-    if (firstjob)
+    firstjob = gvc->active_jobs;
+    if (firstjob) {
+	gvrender_end_job(firstjob);
 	gvdevice_finalize(firstjob);
+    }
     gvjobs_delete(gvc);
 
     return 0;
