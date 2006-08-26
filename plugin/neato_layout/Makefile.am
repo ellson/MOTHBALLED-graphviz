@@ -27,7 +27,6 @@ libgvplugin_neato_layout_la_LDFLAGS = -version-info @VERSION_INFO@ --no-undefine
 libgvplugin_neato_layout_la_SOURCES = $(libgvplugin_neato_layout_C_la_SOURCES)
 libgvplugin_neato_layout_la_LIBADD = $(libgvplugin_neato_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la \
-	$(top_builddir)/lib/pack/libpack.la @IPSEPCOLA_LIBS@
+	$(top_builddir)/lib/pathplan/libpathplan.la @IPSEPCOLA_LIBS@
 
 EXTRA_DIST = Makefile.old

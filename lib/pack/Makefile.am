@@ -14,18 +14,10 @@ AM_CPPFLAGS = -I$(top_srcdir) \
 
 pkginclude_HEADERS = pack.h
 noinst_LTLIBRARIES = libpack_C.la
-pkglib_LTLIBRARIES = libpack.la
-pkgconfig_DATA = libpack.pc
 man_MANS = pack.3
 pdf_DATA = pack.pdf
 
 libpack_C_la_SOURCES = ccomps.c pack.c
-
-libpack_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
-libpack_la_SOURCES = $(libpack_C_la_SOURCES)
-libpack_la_LIBADD = \
-	$(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/lib/gvc/libgvc.la
 
 .3.pdf:
 	groff -Tps -man $< | ps2pdf - - >$@

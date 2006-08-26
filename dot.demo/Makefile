@@ -1,16 +1,12 @@
 CFLAGS=`pkg-config libgvc --cflags` -Wall -g -O2
 LDFLAGS=-Wl,--rpath -Wl,`pkg-config libgvc --variable=libdir` `pkg-config libgvc --libs`
 
-# -lpack is needed only by neatopack
-LDFLAGS += -lpack
-
 all: dot demo simple example neatopack
 
 dot: dot.o
 demo: demo.o
 simple: simple.o
 example: example.o
-
 neatopack: neatopack.o
 
 clean:
