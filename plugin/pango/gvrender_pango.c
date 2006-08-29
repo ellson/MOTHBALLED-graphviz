@@ -92,6 +92,14 @@ static int dotted_len = ARRAY_SIZE(dotted);
 #include <cairo-xlib.h>
 #endif
 
+#ifdef CAIRO_HAS_QUARTZ_SURFACE
+#include <cairo-quartz.h>
+#endif
+
+#ifdef CAIRO_HAS_GLITZ
+#include <cairo-glitz.h>
+#endif
+
 #if defined(HAVE_FENV_H) && defined(HAVE_FESETENV) && defined(HAVE_FEGETENV) && defined(HAVE_FEENABLEEXCEPT)
 /* place to save fp environment temporarily */
 static fenv_t fenv; /* FIXME - not thread safe */
@@ -185,6 +193,10 @@ static void cairogen_begin_page(GVJ_t * job)
 #endif
 #ifdef CAIRO_HAS_GLITZ_SURFACE
     case FORMAT_GLITZ:
+	break;
+#endif
+#ifdef CAIRO_HAS_QUARTZ_SURFACE
+    case FORMAT_QUARTZ:
 	break;
 #endif
     default:
