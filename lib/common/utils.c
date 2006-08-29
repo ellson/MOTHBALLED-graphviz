@@ -621,7 +621,7 @@ void common_init_node(node_t * n)
     if (html)
 	str = strdup(str);
     else
-	str = strdup_and_subst_node(str, n);
+	str = strdup_and_subst_obj(str, (void*)n);
     ND_label(n) = make_label(sg->root, html, str,
 		late_double(n, N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE),
 		late_nnstring(n, N_fontname, DEFAULT_FONTNAME),
@@ -727,7 +727,7 @@ int common_init_edge(edge_t * e)
 	if (html)
 	    s = strdup(s);
 	else
-	    s = strdup_and_subst_edge(s, e);
+	    s = strdup_and_subst_obj(s, (void*)e);
 	initFontEdgeAttr(e, &fi);
 	ED_label(e) = make_label(sg->root, html, s,
 				fi.fontsize, fi.fontname, fi.fontcolor);
@@ -747,7 +747,7 @@ int common_init_edge(edge_t * e)
 	if (html)
 	    s = strdup(s);
 	else
-	    s = strdup_and_subst_edge(s, e);
+	    s = strdup_and_subst_obj(s, (void*)e);
 	initFontLabelEdgeAttr(e, &fi, &lfi);
 	ED_head_label(e) = make_label(sg->root, html, s,
 				lfi.fontsize, lfi.fontname, lfi.fontcolor);
@@ -762,7 +762,7 @@ int common_init_edge(edge_t * e)
 	if (html)
 	    s = strdup(s);
 	else
-	    s = strdup_and_subst_edge(s, e);
+	    s = strdup_and_subst_obj(s, (void*)e);
 	if (!lfi.fontname)
 	    initFontLabelEdgeAttr(e, &fi, &lfi);
 	ED_tail_label(e) = make_label(sg->root, html, s,

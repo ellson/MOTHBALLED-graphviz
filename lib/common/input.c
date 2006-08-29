@@ -752,7 +752,7 @@ void do_graph_label(graph_t * sg)
 	pointf dimen;
 
 	GD_has_labels(sg->root) |= GRAPH_LABEL;
-	GD_label(sg) = make_label(sg->root, html, strdup_and_subst_graph(p, sg),
+	GD_label(sg) = make_label(sg->root, html, strdup_and_subst_obj(p, (void*)sg),
 				  late_double(sg,
 					      agfindattr(sg, "fontsize"),
 					      DEFAULT_FONTSIZE, MIN_FONTSIZE),

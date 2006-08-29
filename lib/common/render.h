@@ -114,9 +114,7 @@ extern "C" {
 			   Agsym_t * (*fun) (Agraph_t *, char *, char *));
     extern int gvRenderJobs (GVC_t * gvc, graph_t * g);
     extern bool isPolygon(node_t *);
-    extern char *strdup_and_subst_graph(char *str, Agraph_t * g);
-    extern char *strdup_and_subst_node(char *str, Agnode_t * n);
-    extern char *strdup_and_subst_edge(char *str, Agedge_t * e);
+    extern char *strdup_and_subst_obj(char *str, void *obj);
     extern char *xml_string(char *s);
     extern void makeSelfEdge(path *, edge_t **, int, int, int, int,
 			     splineInfo *);

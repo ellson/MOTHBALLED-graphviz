@@ -91,36 +91,12 @@ static void doHTMLdata(htmldata_t * dp, point p, void *obj)
 {
     char *url = NULL, *target = NULL, *title = NULL;
     pointf p1, p2;
-    int havetitle = 0;
 
-    if ((url = dp->href) && url[0]) {
-        switch (agobjkind(obj)) {
-        case AGGRAPH:
-            url = strdup_and_subst_graph(url, (graph_t *) obj);
-            break;
-        case AGNODE:
-            url = strdup_and_subst_node(url, (node_t *) obj);
-            break;
-        case AGEDGE:
-            url = strdup_and_subst_edge(url, (edge_t *) obj);
-            break;
-        }
-    }
+    if ((url = dp->href) && url[0])
+        url = strdup_and_subst_obj(url, obj);
     target = dp->target;
-    if ((title = dp->title) && title[0]) {
-        havetitle++;
-        switch (agobjkind(obj)) {
-        case AGGRAPH:
-            title = strdup_and_subst_graph(title, (graph_t *) obj);
-            break;
-        case AGNODE:
-            title = strdup_and_subst_node(title, (node_t *) obj);
-            break;
-        case AGEDGE:
-            title = strdup_and_subst_edge(title, (edge_t *) obj);
-            break;
-        }
-    }
+    if ((title = dp->title) && title[0])
+	title = strdup_and_subst_obj(title, obj);
     if (url || title) {
         p1.x = p.x + dp->box.LL.x;
         p1.y = p.y + dp->box.LL.y;
@@ -1000,11 +976,11 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     }
     if ((flags & GVRENDER_DOES_MAPS)
         && (((s = agget(n, "href")) && s[0]) || ((s = agget(n, "URL")) && s[0]))) {
-        obj->url = strdup_and_subst_node(s, n);
+        obj->url = strdup_and_subst_obj(s, (void*)n);
     }
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if ((s = agget(n, "tooltip")) && s[0]) {
-            obj->tooltip = strdup_and_subst_node(s, n);
+            obj->tooltip = strdup_and_subst_obj(s, (void*)n);
             obj->explicit_tooltip = true;
         }
         else {
@@ -1012,7 +988,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
         }
     }
     if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(n, "target")) && s[0])) {
-        obj->target = strdup_and_subst_node(s, n);
+        obj->target = strdup_and_subst_obj(s, (void*)n);
     }
     if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
            && (obj->url || obj->explicit_tooltip)) {
@@ -1572,45 +1548,45 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
 
     if (flags & GVRENDER_DOES_MAPS) {
         if (((s = agget(e, "href")) && s[0]) || ((s = agget(e, "URL")) && s[0]))
-            obj->url = strdup_and_subst_edge(s, e);
+            obj->url = strdup_and_subst_obj(s, (void*)e);
 	if (((s = agget(e, "tailhref")) && s[0]) || ((s = agget(e, "tailURL")) && s[0]))
-            obj->tailurl = strdup_and_subst_edge(s, e);
+            obj->tailurl = strdup_and_subst_obj(s, (void*)e);
 	else if (obj->url)
 	    obj->tailurl = strdup(obj->url);
 	if (((s = agget(e, "headhref")) && s[0]) || ((s = agget(e, "headURL")) && s[0]))
-            obj->headurl = strdup_and_subst_edge(s, e);
+            obj->headurl = strdup_and_subst_obj(s, (void*)e);
 	else if (obj->url)
 	    obj->headurl = strdup(obj->url);
     } 
 
     if (flags & GVRENDER_DOES_TARGETS) {
         if ((s = agget(e, "target")) && s[0])
-            obj->target = strdup_and_subst_edge(s, e);
+            obj->target = strdup_and_subst_obj(s, (void*)e);
         if ((s = agget(e, "tailtarget")) && s[0])
-            obj->tailtarget = strdup_and_subst_edge(s, e);
+            obj->tailtarget = strdup_and_subst_obj(s, (void*)e);
 	else if (obj->target)
 	    obj->tailtarget = strdup(obj->target);
         if ((s = agget(e, "headtarget")) && s[0])
-            obj->headtarget = strdup_and_subst_edge(s, e);
+            obj->headtarget = strdup_and_subst_obj(s, (void*)e);
 	else if (obj->target)
 	    obj->headtarget = strdup(obj->target);
     } 
 
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if ((s = agget(e, "tooltip")) && s[0]) {
-            obj->tooltip = strdup_and_subst_edge(s, e);
+            obj->tooltip = strdup_and_subst_obj(s, (void*)e);
 	    obj->explicit_tooltip = true;
 	}
 	else if (obj->label)
 	    obj->tooltip = strdup(obj->label);
         if ((s = agget(e, "tailtooltip")) && s[0]) {
-            obj->tailtooltip = strdup_and_subst_edge(s, e);
+            obj->tailtooltip = strdup_and_subst_obj(s, (void*)e);
 	    obj->explicit_tailtooltip = true;
 	}
 	else if (obj->taillabel)
 	    obj->tailtooltip = strdup(obj->taillabel);
         if ((s = agget(e, "headtooltip")) && s[0]) {
-            obj->headtooltip = strdup_and_subst_edge(s, e);
+            obj->headtooltip = strdup_and_subst_obj(s, (void*)e);
 	    obj->explicit_headtooltip = true;
 	}
 	else if (obj->headlabel)
@@ -2105,11 +2081,11 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
     if ((flags & GVRENDER_DOES_MAPS)
         && (((s = agget(g, "href")) && s[0])
             || ((s = agget(g, "URL")) && s[0]))) {
-        obj->url = strdup_and_subst_graph(s, g);
+        obj->url = strdup_and_subst_obj(s, (void*)g);
     }
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if ((s = agget(g, "tooltip")) && s[0]) {
-            obj->tooltip = strdup_and_subst_graph(s, g);
+            obj->tooltip = strdup_and_subst_obj(s, (void*)g);
             obj->explicit_tooltip = true;
         }
         else if (obj->url && obj->label) {
@@ -2117,7 +2093,7 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
         }
     }
     if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(g, "target")) && s[0])) {
-        obj->target = strdup_and_subst_graph(s, g);
+        obj->target = strdup_and_subst_obj(s, (void*)g);
     }
 
 #ifdef WITH_CODEGENS
@@ -2282,14 +2258,14 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     }
     if ((flags & GVRENDER_DOES_MAPS)
         && (((s = agget(sg, "href")) && s[0]) || ((s = agget(sg, "URL")) && s[0])))
-        obj->url = strdup_and_subst_graph(s, sg);
+        obj->url = strdup_and_subst_obj(s, (void*)sg);
 
     if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(sg, "target")) && s[0]))
-        obj->target = strdup_and_subst_graph(s, sg);
+        obj->target = strdup_and_subst_obj(s, (void*)sg);
 
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if ((s = agget(sg, "tooltip")) && s[0]) {
-            obj->tooltip = strdup_and_subst_graph(s, sg);
+            obj->tooltip = strdup_and_subst_obj(s, (void*)sg);
             obj->explicit_tooltip = true;
         }
         else if (obj->label) {

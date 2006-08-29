@@ -25,9 +25,7 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 
-extern char *strdup_and_subst_graph(char *str, Agraph_t * g);
-extern char *strdup_and_subst_edge(char *str, Agedge_t * e);
-extern char *strdup_and_subst_node(char *str, Agnode_t * n);
+extern char *strdup_and_subst_obj(char *str, void * n);
 extern void emit_graph(GVJ_t * job, graph_t * g);
 extern bool overlap_edge(edge_t *e, boxf b);
 extern bool overlap_node(node_t *n, boxf b);
@@ -84,7 +82,7 @@ static void gv_graph_state(GVJ_t *job, graph_t *g)
     if (!a)
 	a = agfindattr(g->root, s_URL);
     if (a)
-	job->selected_href = strdup_and_subst_graph(agxget(g, a->index), g);
+	job->selected_href = strdup_and_subst_obj(agxget(g, a->index), (void*)g);
 }
 
 static void gv_node_state(GVJ_t *job, node_t *n)
@@ -113,7 +111,7 @@ static void gv_node_state(GVJ_t *job, node_t *n)
     if (!a)
         a = agfindattr(n->graph->proto->n, s_URL);
     if (a)
-	job->selected_href = strdup_and_subst_node(agxget(n, a->index), n);
+	job->selected_href = strdup_and_subst_obj(agxget(n, a->index), (void*)n);
 }
 
 static void gv_edge_state(GVJ_t *job, edge_t *e)
@@ -168,7 +166,7 @@ static void gv_edge_state(GVJ_t *job, edge_t *e)
     if (!a)
 	a = agfindattr(e->head->graph->proto->e, s_URL);
     if (a)
-	job->selected_href = strdup_and_subst_edge(agxget(e, a->index), e);
+	job->selected_href = strdup_and_subst_obj(agxget(e, a->index), (void*)e);
 }
 
 static void gvevent_refresh(GVJ_t * job)
@@ -266,21 +264,21 @@ static void gvevent_enter_obj(GVJ_t * job)
 	    GD_gui_state(g) |= GUI_STATE_ACTIVE;
 	    a = agfindattr(g->root, s_tooltip);
 	    if (a)
-		job->active_tooltip = strdup_and_subst_graph(agxget(g, a->index), g);
+		job->active_tooltip = strdup_and_subst_obj(agxget(g, a->index), obj);
 	    break;
         case AGNODE:
 	    n = (node_t*)obj;
 	    ND_gui_state(n) |= GUI_STATE_ACTIVE;
 	    a = agfindattr(n->graph->proto->n, s_tooltip);
 	    if (a)
-		job->active_tooltip = strdup_and_subst_node(agxget(n, a->index), n);
+		job->active_tooltip = strdup_and_subst_obj(agxget(n, a->index), obj);
 	    break;
         case AGEDGE:
 	    e = (edge_t*)obj;
 	    ED_gui_state(e) |= GUI_STATE_ACTIVE;
 	    a = agfindattr(e->head->graph->proto->e, s_tooltip);
 	    if (a)
-		job->active_tooltip = strdup_and_subst_edge(agxget(e, a->index), e);
+		job->active_tooltip = strdup_and_subst_obj(agxget(e, a->index), obj);
 	    break;
         }
     }

@@ -231,12 +231,37 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     obj->emit_state = old_emit_state;
 }
 
-
-char *strdup_and_subst_graph(char *str, Agraph_t * g)
+char *strdup_and_subst_obj(char *str, void *obj)
 {
     char c, *s, *p, *t, *newstr;
-    char *g_str = NULL;
-    int g_len = 0, newlen = 0;
+    char *g_str = "\\G", *n_str = "\\N", *e_str = "\\E", *h_str = "\\H", *t_str = "\\T";
+    int g_len = 2, n_len = 2, e_len = 2, h_len = 2, t_len = 2, newlen = 0;
+
+    switch (agobjkind(obj)) {
+	case AGGRAPH:
+	    g_str = ((graph_t *)obj)->name;
+	    g_len = strlen(g_str);
+	    break;
+	case AGNODE:
+	    g_str = ((node_t *)obj)->graph->name;
+	    g_len = strlen(g_str);
+	    n_str = ((node_t *)obj)->name;
+	    n_len = strlen(n_str);
+	    break;
+	case AGEDGE:
+	    g_str = ((edge_t *)obj)->tail->graph->root->name;
+	    g_len = strlen(g_str);
+	    t_str = ((edge_t *)obj)->tail->name;
+	    t_len = strlen(t_str);
+	    h_str = ((edge_t *)obj)->head->name;
+	    h_len = strlen(h_str);
+	    if (((edge_t *)obj)->tail->graph->root->kind & AGFLAG_DIRECTED)
+		e_str = "->";
+	    else
+		e_str = "--";
+	    e_len = t_len + 2 + h_len;
+	    break;
+    }
 
     /* two passes over str.
      *
@@ -247,154 +272,20 @@ char *strdup_and_subst_graph(char *str, Agraph_t * g)
 	if (c == '\\') {
 	    switch (c = *s++) {
 	    case 'G':
-		if (!g_str) {
-		    g_str = g->name;
-		    g_len = strlen(g_str);
-		}
-		newlen += g_len;
-		break;
-	    default:
-		newlen += 2;
-	    }
-	} else {
-	    newlen++;
-	}
-    }
-    /* allocate new string */
-    newstr = gmalloc(newlen + 1);
-
-    /* second pass over str assembles new string */
-    for (s = str, p = newstr; (c = *s++);) {
-	if (c == '\\') {
-	    switch (c = *s++) {
-	    case 'G':
-		for (t = g_str; (*p = *t++); p++);
-		break;
-
-	    default:
-		*p++ = '\\';
-		*p++ = c;
-	    }
-	} else {
-	    *p++ = c;
-	}
-    }
-    *p++ = '\0';
-    return newstr;
-}
-
-char *strdup_and_subst_node(char *str, Agnode_t * n)
-{
-    char c, *s, *p, *t, *newstr;
-    char *g_str = NULL, *n_str = NULL;
-    int g_len = 0, n_len = 0, newlen = 0;
-
-    /* two passes over str.
-     *
-     * first pass prepares substitution strings and computes 
-     * total length for newstring required from malloc.
-     */
-    for (s = str; (c = *s++);) {
-	if (c == '\\') {
-	    switch (c = *s++) {
-	    case 'G':
-		if (!g_str) {
-		    g_str = n->graph->name;
-		    g_len = strlen(g_str);
-		}
 		newlen += g_len;
 		break;
 	    case 'N':
-		if (!n_str) {
-		    n_str = n->name;
-		    n_len = strlen(n_str);
-		}
 		newlen += n_len;
 		break;
-	    default:
-		newlen += 2;
-	    }
-	} else {
-	    newlen++;
-	}
-    }
-    /* allocate new string */
-    newstr = gmalloc(newlen + 1);
-
-    /* second pass over str assembles new string */
-    for (s = str, p = newstr; (c = *s++);) {
-	if (c == '\\') {
-	    switch (c = *s++) {
-	    case 'G':
-		for (t = g_str; (*p = *t++); p++);
-		break;
-
-	    case 'N':
-		for (t = n_str; (*p = *t++); p++);
-		break;
-	    default:
-		*p++ = '\\';
-		*p++ = c;
-	    }
-	} else {
-	    *p++ = c;
-	}
-    }
-    *p++ = '\0';
-    return newstr;
-}
-
-char *strdup_and_subst_edge(char *str, Agedge_t * e)
-{
-    char c, *s, *p, *t, *newstr;
-    char *g_str = NULL, *e_str = NULL, *h_str = NULL, *t_str = NULL;
-    int g_len = 0, e_len = 0, h_len = 0, t_len = 0, newlen = 0;
-
-    /* two passes over str.
-     *
-     * first pass prepares substitution strings and computes 
-     * total length for newstring required from malloc.
-     */
-    for (s = str; (c = *s++);) {
-	if (c == '\\') {
-	    switch (c = *s++) {
-	    case 'G':
-		if (!g_str) {
-		    g_str = e->tail->graph->root->name;
-		    g_len = strlen(g_str);
-		}
-		newlen += g_len;
-		break;
 	    case 'E':
-		if (!e_str) {
-		    t_str = e->tail->name;
-		    t_len = strlen(t_str);
-		    h_str = e->head->name;
-		    h_len = strlen(h_str);
-		    if (e->tail->graph->root->kind & AGFLAG_DIRECTED)
-			e_str = "->";
-		    else
-			e_str = "--";
-		    e_len = t_len + 2 + h_len;
-		}
 		newlen += e_len;
 		break;
 	    case 'H':
-		if (!h_str) {
-		    h_str = e->head->name;
-		    h_len = strlen(h_str);
-		}
 		newlen += h_len;
 		break;
 	    case 'T':
-		if (!t_str) {
-		    t_str = e->tail->name;
-		    t_len = strlen(t_str);
-		}
 		newlen += t_len;
 		break;
-	    default:
-		newlen += 2;
 	    }
 	} else {
 	    newlen++;
@@ -409,21 +300,21 @@ char *strdup_and_subst_edge(char *str, Agedge_t * e)
 	    switch (c = *s++) {
 	    case 'G':
 		for (t = g_str; (*p = *t++); p++);
+		break;
+	    case 'N':
+		for (t = n_str; (*p = *t++); p++);
 		break;
 	    case 'E':
 		for (t = t_str; (*p = *t++); p++);
 		for (t = e_str; (*p = *t++); p++);
 		for (t = h_str; (*p = *t++); p++);
 		break;
-	    case 'H':
-		for (t = h_str; (*p = *t++); p++);
-		break;
 	    case 'T':
 		for (t = t_str; (*p = *t++); p++);
 		break;
-	    default:
-		*p++ = '\\';
-		*p++ = c;
+	    case 'H':
+		for (t = h_str; (*p = *t++); p++);
+		break;
 	    }
 	} else {
 	    *p++ = c;

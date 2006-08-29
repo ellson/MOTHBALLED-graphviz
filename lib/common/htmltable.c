@@ -631,24 +631,6 @@ int html_path(node_t * n, port* p, int side, box * rv, int *k)
     return 0;
 }
 
-static char*
-substrGFn (char* s, htmlenv_t* env)
-{
-    return strdup_and_subst_graph(s, (Agraph_t *) (env->obj));
-}
-
-static char*
-substrNFn (char* s, htmlenv_t* env)
-{
-    return strdup_and_subst_node(s, (Agnode_t *) (env->obj));
-}
-
-static char*
-substrEFn (char* s, htmlenv_t* env)
-{
-    return strdup_and_subst_edge(s, (Agedge_t *) (env->obj));
-}
-
 static int 
 size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 {
@@ -658,25 +640,10 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
     int i, j, w = 0, width = 0;
     char *fname;
     textpara_t lp;
-    char* (*substrFn) (char*, htmlenv_t* env);
-
-    switch (agobjkind(env->obj)) {
-    case AGGRAPH:
-	substrFn = substrGFn;
-	break;
-    case AGNODE:
-	substrFn = substrNFn;
-	break;
-    case AGEDGE:
-	substrFn = substrEFn;
-	break;
-    default:
-	substrFn = NULL;
-    }
 
     for (i = 0; i < ftxt->nparas; i++) {
 	for (j = 0; j < ftxt->paras[i].nitems; j++) {
-	    lp.str = substrFn (ftxt->paras[i].items[j].str, env);
+	    lp.str = strdup_and_subst_obj (ftxt->paras[i].items[j].str, env->obj);
 	    if (ftxt->paras[i].items[j].font) {
 		if (ftxt->paras[i].items[j].font->size > 0)
 		    fsize = ftxt->paras[i].items[j].font->size;
