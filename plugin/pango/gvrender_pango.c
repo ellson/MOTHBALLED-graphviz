@@ -88,12 +88,15 @@ static int dotted_len = ARRAY_SIZE(dotted);
 #include <cairo-svg.h>
 #endif
 
-#ifdef CAIRO_HAS_XLIB_SURFACE
-#include <cairo-xlib.h>
-#endif
+/* FIXME - symbol "Cursor" conflicts with X */
+#undef CAIRO_HAS_QUARTZ_SURFACE
 
 #ifdef CAIRO_HAS_QUARTZ_SURFACE
 #include <cairo-quartz.h>
+#endif
+
+#ifdef CAIRO_HAS_XLIB_SURFACE
+#include <cairo-xlib.h>
 #endif
 
 #ifdef CAIRO_HAS_GLITZ
