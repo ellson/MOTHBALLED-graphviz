@@ -15,7 +15,7 @@ lneato: ${top_srcdir}/cmd/lneato/lneato.sh
 	chmod +x lneato
 
 .1.pdf:
-	groff -Tps -man $< | ps2pdf - - >$@
+	-groff -Tps -man $< | ps2pdf - - >$@
 
 EXTRA_DIST = $(man) $(pdf) lneato.bsh lneato.ksh lneato.sh \
 	Makefile.old mswin32 

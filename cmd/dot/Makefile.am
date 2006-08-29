@@ -46,7 +46,7 @@ uninstall-hook:
 	(cd $(DESTDIR)$(libdir); rm -f config;)
 
 dot.pdf: $(top_srcdir)/cmd/dot/dot.1
-	groff -Tps -man $(top_srcdir)/cmd/dot/dot.1 | ps2pdf - - >$@
+	-groff -Tps -man $(top_srcdir)/cmd/dot/dot.1 | ps2pdf - - >$@
 
 # This automagic technique for building the list of builtins requires that the
 # symbols be in the binary image, but libtool makes it difficult

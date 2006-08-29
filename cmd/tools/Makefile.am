@@ -110,7 +110,7 @@ dijkstra_LDADD = \
 	$(top_builddir)/lib/agraph/libagraph.la
 
 .1.pdf:
-	groff -Tps -man $< | ps2pdf - - >$@
+	-groff -Tps -man $< | ps2pdf - - >$@
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old
 

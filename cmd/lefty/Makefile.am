@@ -63,7 +63,7 @@ lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 	-lXt -lXmu -lXext -lX11 @SOCKET_LIBS@ @MATH_LIBS@
 
 .1.pdf:
-	groff -Tps -man $< | ps2pdf - - >$@
+	-groff -Tps -man $< | ps2pdf - - >$@
 
 EXTRA_DIST = $(lefty_DATA) $(man) $(pdf) \
 	colors.txt Makefile.old aix_mods cs2l/*
