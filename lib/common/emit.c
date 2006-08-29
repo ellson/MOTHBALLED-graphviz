@@ -730,6 +730,10 @@ void emit_background(GVJ_t * job, graph_t *g)
 
 static void setup_page(GVJ_t * job, graph_t * g)
 {
+    obj_state_t *obj = job->obj;
+    int nump = 0, flags = job->flags;
+    pointf *p = NULL;
+
     /* establish current box in graph units */
     job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - job->pad.x;
     job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y - job->pad.y;
@@ -796,6 +800,29 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	    /* test with: -Tps */
 	    job->translation.y = -job->pageBox.LL.y + job->pageBoundingBox.LL.y / job->scale.y;
 	}
+    }
+
+    if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
+            && (obj->url || obj->explicit_tooltip)) {
+        if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
+            if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
+                obj->url_map_shape = MAP_RECTANGLE;
+                nump = 2;
+            }
+            else {
+                obj->url_map_shape = MAP_POLYGON;
+                nump = 4;
+            }
+            p = N_NEW(nump, pointf);
+            p[0] = job->pageBox.LL;
+            p[1] = job->pageBox.UR;
+            if (! (flags & (GVRENDER_DOES_MAP_RECTANGLE)))
+                rect2poly(p);
+        }
+        if (! (flags & GVRENDER_DOES_TRANSFORM))
+            gvrender_ptf_A(job, p, p, nump);
+        obj->url_map_p = p;
+        obj->url_map_n = nump;
     }
 }
 
@@ -1108,6 +1135,8 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
 #ifdef WITH_CODEGENS
     Obj = NODE;
 #endif
+    if (obj->url || obj->explicit_tooltip)
+	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
     gvrender_begin_node(job, n);
     setColorScheme (agget (n, "colorscheme"));
     gvrender_begin_context(job);
@@ -1115,8 +1144,12 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
 
 static void emit_end_node(GVJ_t * job)
 {
+    obj_state_t *obj = job->obj;
+
     gvrender_end_context(job);
     gvrender_end_node(job);
+    if (obj->url || obj->explicit_tooltip)
+	gvrender_end_anchor(job);
 #ifdef WITH_CODEGENS
     Obj = NONE;
 #endif
@@ -1288,7 +1321,6 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
     bezierf bzf;
     splinesf offspl, tmpspl;
     pointf pf0, pf1, pf2 = { 0, 0 }, pf3, *offlist, *tmplist;
-    bool saved = FALSE;
     double scale, numc2;
     char *p;
 
@@ -1313,10 +1345,8 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	color = late_string(e, E_color, "");
 
 	if (color[0] || styles) {
-	    gvrender_begin_context(job);
 	    if (styles)
 		gvrender_set_style(job, styles);
-	    saved = TRUE;
 	}
 	/* need to know how many colors separated by ':' */
 	for (p = color; *p; p++)
@@ -1483,18 +1513,6 @@ void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    }
 	}
     }
-    if (ED_label(e)) {
-	emit_label(job, EMIT_ELABEL, ED_label(e));
-	if (mapbool(late_string(e, E_decorate, "false")) && ED_spl(e))
-	    emit_attachment(job, ED_label(e), ED_spl(e));
-    }
-    if (ED_head_label(e))
-	emit_label(job, EMIT_HLABEL, ED_head_label(e));	/* vladimir */
-    if (ED_tail_label(e))
-	emit_label(job, EMIT_TLABEL, ED_tail_label(e));	/* vladimir */
-
-    if (saved)
-	gvrender_end_context(job);
 }
 
 static bool edge_in_box(edge_t *e, boxf b)
@@ -1700,12 +1718,40 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
 #ifdef WITH_CODEGENS
     Obj = EDGE;
 #endif
+    gvrender_begin_context(job);
+    if (obj->url || obj->explicit_tooltip)
+	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
     gvrender_begin_edge(job, e);
 }
 
 static void emit_end_edge(GVJ_t * job)
 {
+    obj_state_t *obj = job->obj;
+    edge_t *e = obj->u.e;
+
+    if (ED_label(e)) {
+	emit_label(job, EMIT_ELABEL, ED_label(e));
+	if (mapbool(late_string(e, E_decorate, "false")) && ED_spl(e))
+	    emit_attachment(job, ED_label(e), ED_spl(e));
+    }
+    if (ED_head_label(e)) {
+	if (obj->headurl || obj->explicit_headtooltip)
+	    gvrender_begin_anchor(job, obj->headurl, obj->headtooltip, obj->headtarget);
+	emit_label(job, EMIT_HLABEL, ED_head_label(e));	/* vladimir */
+	if (obj->headurl || obj->explicit_headtooltip)
+	    gvrender_end_anchor(job);
+    }
+    if (ED_tail_label(e)) {
+	if (obj->tailurl || obj->explicit_tailtooltip)
+	    gvrender_begin_anchor(job, obj->tailurl, obj->tailtooltip, obj->tailtarget);
+	emit_label(job, EMIT_TLABEL, ED_tail_label(e));	/* vladimir */
+	if (obj->tailurl || obj->explicit_tailtooltip)
+	    gvrender_end_anchor(job);
+    }
     gvrender_end_edge(job);
+    if (obj->url || obj->explicit_tooltip)
+	gvrender_end_anchor(job);
+    gvrender_end_context(job);
 #ifdef WITH_CODEGENS
     Obj = NONE;
 #endif
@@ -2035,7 +2081,6 @@ void emit_view(GVJ_t * job, graph_t * g, int flags)
     /* when mapping, detect events on clusters after nodes and edges */
     if (flags & EMIT_CLUSTERS_LAST)
 	emit_clusters(job, g, flags);
-    gvrender_end_page(job);
 }
 
 static void emit_begin_graph(GVJ_t * job, graph_t * g)
@@ -2090,6 +2135,7 @@ static void emit_end_graph(GVJ_t * job, graph_t * g)
 
 void emit_graph(GVJ_t * job, graph_t * g)
 {
+    obj_state_t *obj;
     node_t *n;
     char *s;
     int flags = job->flags;
@@ -2108,6 +2154,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
     gvrender_comment(job, s);
 
     emit_begin_graph(job, g);
+    obj = job->obj;
 
     if (flags & EMIT_COLORS)
 	emit_colors(job,g);
@@ -2123,6 +2170,8 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	for (firstpage(job); validpage(job); nextpage(job)) {
 	    setColorScheme (agget (g, "colorscheme"));
     	    setup_page(job, g);
+            if (obj->url || obj->explicit_tooltip)
+		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	    gvrender_begin_page(job);
 	    gvrender_set_pencolor(job, DEFAULT_COLOR);
 	    gvrender_set_fillcolor(job, DEFAULT_FILL);
@@ -2131,6 +2180,9 @@ void emit_graph(GVJ_t * job, graph_t * g)
 		emit_background(job, g);
 	    if (boxf_overlap(job->clip, job->pageBox))
 	        emit_view(job,g,flags);
+            if (obj->url || obj->explicit_tooltip)
+		gvrender_end_anchor(job);
+	    gvrender_end_page(job);
 	} 
 
 	if (job->numLayers > 1)
@@ -2268,12 +2320,18 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
 #ifdef WITH_CODEGENS
     Obj = CLST;
 #endif
+    if (obj->url || obj->explicit_tooltip)
+	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
     gvrender_begin_cluster(job, sg);
 }
 
 static void emit_end_cluster(GVJ_t * job, Agraph_t * g)
 {
+    obj_state_t *obj = job->obj;
+
     gvrender_end_cluster(job, g);
+    if (obj->url || obj->explicit_tooltip)
+	gvrender_end_anchor(job);
 #ifdef WITH_CODEGENS
     Obj = NONE;
 #endif

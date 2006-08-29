@@ -298,38 +298,8 @@ void gvrender_end_graph(GVJ_t * job)
 void gvrender_begin_page(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    obj_state_t *obj = job->obj;
-    int nump = 0, flags = job->flags;
-    pointf *p = NULL;
-
-    if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
-	    && (obj->url || obj->explicit_tooltip)) {
-        if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
-	    if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
-	        obj->url_map_shape = MAP_RECTANGLE;
-	        nump = 2;
-	    }
-	    else {
-	        obj->url_map_shape = MAP_POLYGON;
-	        nump = 4;
-	    }
-
-	    p = N_NEW(nump, pointf);
-	    p[0] = job->pageBox.LL;
-	    p[1] = job->pageBox.UR;
-
-	    if (! (flags & (GVRENDER_DOES_MAP_RECTANGLE)))
-		rect2poly(p);
-	}
-	if (! (flags & GVRENDER_DOES_TRANSFORM))
-	    gvrender_ptf_A(job, p, p, nump);
-	obj->url_map_p = p;
-	obj->url_map_n = nump;
-    }
 
     if (gvre) {
-	if (gvre->begin_anchor && (obj->url || obj->explicit_tooltip))
-	    gvre->begin_anchor(job, obj->url, obj->tooltip, obj->target);
         if (gvre->begin_page)
 	    gvre->begin_page(job);
     }
@@ -339,8 +309,6 @@ void gvrender_begin_page(GVJ_t * job)
         point offset;
 
         PF2P(job->pageOffset, offset);
-	if (cg && cg->begin_anchor && (obj->url || obj->explicit_tooltip))
-	    cg->begin_anchor(obj->url, obj->tooltip, obj->target);
         if (cg && cg->begin_page)
             cg->begin_page(job->gvc->g, job->pagesArrayElem,
                job->zoom, job->rotation, offset);
@@ -351,13 +319,10 @@ void gvrender_begin_page(GVJ_t * job)
 void gvrender_end_page(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    obj_state_t *obj = job->obj;
 
     if (gvre) {
        	if (gvre->end_page)
 	    gvre->end_page(job);
-	if (gvre->end_anchor && (obj->url || obj->explicit_tooltip))
-	    gvre->end_anchor(job);
     }
 #ifdef WITH_CODEGENS
     else {
@@ -365,8 +330,6 @@ void gvrender_end_page(GVJ_t * job)
 
 	if (cg && cg->end_page)
 	    cg->end_page();
-	if (cg && cg->end_anchor && (obj->url || obj->explicit_tooltip))
-	    cg->end_anchor();
     }
 #endif
 }
@@ -410,11 +373,8 @@ void gvrender_end_layer(GVJ_t * job)
 void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    obj_state_t *obj = job->obj;
 
     if (gvre) {
-	if (gvre->begin_anchor && (obj->url || obj->explicit_tooltip))
-	    gvre->begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	if (gvre->begin_cluster)
 	    gvre->begin_cluster(job);
     }
@@ -422,8 +382,6 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
     else {
 	codegen_t *cg = job->codegen;
 
-	if (cg && cg->begin_anchor && (obj->url || obj->explicit_tooltip))
-	    cg->begin_anchor(obj->url, obj->tooltip, obj->target);
 	if (cg && cg->begin_cluster)
 	    cg->begin_cluster(sg);
     }
@@ -433,13 +391,10 @@ void gvrender_begin_cluster(GVJ_t * job, graph_t * sg)
 void gvrender_end_cluster(GVJ_t * job, graph_t *g)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    obj_state_t *obj = job->obj;
 
     if (gvre) {
        	if (gvre->end_cluster)
 	    gvre->end_cluster(job);
-	if (gvre->end_anchor && (obj->url || obj->explicit_tooltip))
-	    gvre->end_anchor(job);
     }
 #ifdef WITH_CODEGENS
     else {
@@ -447,8 +402,6 @@ void gvrender_end_cluster(GVJ_t * job, graph_t *g)
 
 	if (cg && cg->end_cluster)
 	    cg->end_cluster();
-	if (cg && cg->end_anchor && (obj->url || obj->explicit_tooltip))
-	    cg->end_anchor();
     }
 #endif
 }
@@ -528,11 +481,8 @@ void gvrender_end_edges(GVJ_t * job)
 void gvrender_begin_node(GVJ_t * job, node_t * n)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    obj_state_t *obj = job->obj;
 
     if (gvre) {
-	if (gvre->begin_anchor && (obj->url || obj->explicit_tooltip))
-	    gvre->begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	if (gvre->begin_node)
 	    gvre->begin_node(job);
     }
@@ -540,8 +490,6 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
     else {
 	codegen_t *cg = job->codegen;
 
-	if (cg && cg->begin_anchor && (obj->url || obj->explicit_tooltip))
-	    cg->begin_anchor(obj->url, obj->tooltip, obj->target);
 	if (cg && cg->begin_node)
 	    cg->begin_node(n);
     }
@@ -551,13 +499,10 @@ void gvrender_begin_node(GVJ_t * job, node_t * n)
 void gvrender_end_node(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    obj_state_t *obj = job->obj;
 
     if (gvre) {
 	if (gvre->end_node)
 	    gvre->end_node(job);
-	if (gvre->end_anchor && (obj->url || obj->explicit_tooltip))
-	    gvre->end_anchor(job);
     }
 #ifdef WITH_CODEGENS
     else {
@@ -565,8 +510,6 @@ void gvrender_end_node(GVJ_t * job)
 
 	if (cg && cg->end_node)
 	    cg->end_node();
-	if (cg && cg->end_anchor && (obj->url || obj->explicit_tooltip))
-	    cg->end_anchor();
     }
 #endif
 }
@@ -574,11 +517,8 @@ void gvrender_end_node(GVJ_t * job)
 void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    obj_state_t *obj = job->obj;
 
     if (gvre) {
-	if (gvre->begin_anchor && (obj->url || obj->explicit_tooltip))
-	    gvre->begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	if (gvre->begin_edge)
 	    gvre->begin_edge(job);
     }
@@ -586,8 +526,6 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
     else {
 	codegen_t *cg = job->codegen;
 
-	if (cg && cg->begin_anchor && (obj->url || obj->explicit_tooltip))
-	    cg->begin_anchor(obj->url, obj->tooltip, obj->target);
 	if (cg && cg->begin_edge)
 	    cg->begin_edge(e);
     }
@@ -597,13 +535,10 @@ void gvrender_begin_edge(GVJ_t * job, edge_t * e)
 void gvrender_end_edge(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    obj_state_t *obj = job->obj;
 
     if (gvre) {
 	if (gvre->end_edge)
 	    gvre->end_edge(job);
-	if (gvre->end_anchor && (obj->url || obj->explicit_tooltip))
-	    gvre->end_anchor(job);
     }
 #ifdef WITH_CODEGENS
     else {
@@ -611,8 +546,6 @@ void gvrender_end_edge(GVJ_t * job)
 
 	if (cg && cg->end_edge)
 	    cg->end_edge();
-	if (cg && cg->end_anchor && (obj->url || obj->explicit_tooltip))
-	    cg->end_anchor();
     }
 #endif
 }
