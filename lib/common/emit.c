@@ -1507,6 +1507,29 @@ static bool edge_in_box(edge_t *e, boxf b)
     return FALSE;
 }
 
+#if 0
+static void map_label(GVJ_t *job, textlabel_t *lab)
+{
+    obj_state_t *obj = job->obj;
+    int flags = job->flags;
+
+    if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
+	obj->map_shape = MAP_RECTANGLE;
+	p = N_NEW(2, pointf);
+    }
+    else {
+	obj->map_shape = MAP_POLYGON;
+	p = N_NEW(2, pointf);
+    }
+    P2RECT(lab->p, p, lab->dimen.x / 2., lab->dimen.y / 2.);
+    if (! (flags & GVRENDER_DOES_TRANSFORM))
+	gvrender_ptf_A(job, p, p, 2);
+    if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
+	rect2poly(p);
+    obj->map_p = p;
+}
+#endif
+
 static void emit_begin_edge(GVJ_t * job, edge_t * e)
 {
     obj_state_t *obj;
