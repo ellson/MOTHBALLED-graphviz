@@ -1135,21 +1135,21 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
 #ifdef WITH_CODEGENS
     Obj = NODE;
 #endif
-    if (obj->url || obj->explicit_tooltip)
-	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
-    gvrender_begin_node(job, n);
     setColorScheme (agget (n, "colorscheme"));
     gvrender_begin_context(job);
+    gvrender_begin_node(job, n);
+    if (obj->url || obj->explicit_tooltip)
+	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 }
 
 static void emit_end_node(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    gvrender_end_context(job);
-    gvrender_end_node(job);
     if (obj->url || obj->explicit_tooltip)
 	gvrender_end_anchor(job);
+    gvrender_end_node(job);
+    gvrender_end_context(job);
 #ifdef WITH_CODEGENS
     Obj = NONE;
 #endif
@@ -1719,9 +1719,9 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
     Obj = EDGE;
 #endif
     gvrender_begin_context(job);
+    gvrender_begin_edge(job, e);
     if (obj->url || obj->explicit_tooltip)
 	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
-    gvrender_begin_edge(job, e);
 }
 
 static void emit_end_edge(GVJ_t * job)
@@ -1734,6 +1734,9 @@ static void emit_end_edge(GVJ_t * job)
 	if (mapbool(late_string(e, E_decorate, "false")) && ED_spl(e))
 	    emit_attachment(job, ED_label(e), ED_spl(e));
     }
+    if (obj->url || obj->explicit_tooltip)
+	gvrender_end_anchor(job);
+
     if (ED_head_label(e)) {
 	if (obj->headurl || obj->explicit_headtooltip)
 	    gvrender_begin_anchor(job, obj->headurl, obj->headtooltip, obj->headtarget);
@@ -1748,9 +1751,8 @@ static void emit_end_edge(GVJ_t * job)
 	if (obj->tailurl || obj->explicit_tailtooltip)
 	    gvrender_end_anchor(job);
     }
+
     gvrender_end_edge(job);
-    if (obj->url || obj->explicit_tooltip)
-	gvrender_end_anchor(job);
     gvrender_end_context(job);
 #ifdef WITH_CODEGENS
     Obj = NONE;
@@ -2170,9 +2172,9 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	for (firstpage(job); validpage(job); nextpage(job)) {
 	    setColorScheme (agget (g, "colorscheme"));
     	    setup_page(job, g);
+	    gvrender_begin_page(job);
             if (obj->url || obj->explicit_tooltip)
 		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
-	    gvrender_begin_page(job);
 	    gvrender_set_pencolor(job, DEFAULT_COLOR);
 	    gvrender_set_fillcolor(job, DEFAULT_FILL);
 	    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
@@ -2320,18 +2322,18 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
 #ifdef WITH_CODEGENS
     Obj = CLST;
 #endif
+    gvrender_begin_cluster(job, sg);
     if (obj->url || obj->explicit_tooltip)
 	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
-    gvrender_begin_cluster(job, sg);
 }
 
 static void emit_end_cluster(GVJ_t * job, Agraph_t * g)
 {
     obj_state_t *obj = job->obj;
 
-    gvrender_end_cluster(job, g);
     if (obj->url || obj->explicit_tooltip)
 	gvrender_end_anchor(job);
+    gvrender_end_cluster(job, g);
 #ifdef WITH_CODEGENS
     Obj = NONE;
 #endif
