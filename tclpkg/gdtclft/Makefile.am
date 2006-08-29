@@ -56,7 +56,7 @@ endif
 endif
 
 .n.pdf:
-	groff -Tps -man $< | ps2pdf - - >$@
+	-groff -Tps -man $< | ps2pdf - - >$@
 
 EXTRA_DIST = $(man) $(pdf) Makefile.old
 

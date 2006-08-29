@@ -126,7 +126,7 @@ pkgIndex.tcl: libtcldot.la
 endif
 
 .n.pdf:
-	groff -Tps -man $< | ps2pdf - - >$@
+	-groff -Tps -man $< | ps2pdf - - >$@
 
 EXTRA_DIST = $(man) $(pdf) $(html) README README.Tkspline Makefile.old
 

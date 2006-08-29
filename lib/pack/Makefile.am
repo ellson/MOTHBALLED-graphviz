@@ -20,7 +20,7 @@ pdf_DATA = pack.pdf
 libpack_C_la_SOURCES = ccomps.c pack.c
 
 .3.pdf:
-	groff -Tps -man $< | ps2pdf - - >$@
+	-groff -Tps -man $< | ps2pdf - - >$@
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old ptest.c
 

@@ -39,7 +39,7 @@ pkgIndex.tcl: libtkspline.la
 endif
 
 .n.pdf:
-	groff -Tps -man $< | ps2pdf - - >$@
+	-groff -Tps -man $< | ps2pdf - - >$@
 
 EXTRA_DIST = $(man) $(pdf) dllEntry.c
 
