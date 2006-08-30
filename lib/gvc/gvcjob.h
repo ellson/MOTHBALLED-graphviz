@@ -205,7 +205,7 @@ extern "C" {
 	char *tailtarget;
 	char *headtarget; 
 
-	/* primary mapped region - node shape, edge label */
+	/* primary mapped region - node shape, edge labels */
 	map_shape_t url_map_shape; 
 	int url_map_n;                  /* number of points for url map if GVRENDER_DOES_MAPS */
 	pointf *url_map_p;
@@ -216,12 +216,6 @@ extern "C" {
 	int *url_bsplinemap_n;          /* array of url_bsplinemap_poly_n ints 
 					 of number of points in each polygon */
 	pointf *url_bsplinemap_p;       /* all the polygon points */
-
-	int tailurl_map_n;              /* tail label */
-	pointf *tailurl_map_p;
-
-	int headurl_map_n;		/* head label */
-	pointf *headurl_map_p;
 
 	int tailendurl_map_n;           /* tail end intersection with node */
 	pointf *tailendurl_map_p;

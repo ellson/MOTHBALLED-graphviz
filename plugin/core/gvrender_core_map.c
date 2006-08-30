@@ -202,6 +202,7 @@ static void map_end_page(GVJ_t * job)
     }
 }
 
+#if 0
 static void map_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
@@ -243,6 +244,15 @@ map_begin_edge(GVJ_t * job)
 	j += obj->url_bsplinemap_n[i];
     }
 }
+#endif
+
+static void map_begin_anchor(GVJ_t * job, char *url, char *tooltip, char *target)
+{
+    obj_state_t *obj = job->obj;
+
+    map_output_shape(job, obj->url_map_shape, obj->url_map_p, obj->url_map_n, 
+		url, tooltip, target);
+}
 
 static gvrender_engine_t map_engine = {
     0,				/* map_begin_job */
@@ -253,17 +263,17 @@ static gvrender_engine_t map_engine = {
     0,				/* map_end_layer */
     map_begin_page,
     map_end_page,
-    map_begin_cluster,
+    0,				/* map_begin_cluster */
     0,				/* map_end_cluster */
     0,				/* map_begin_nodes */
     0,				/* map_end_nodes */
     0,				/* map_begin_edges */
     0,				/* map_end_edges */
-    map_begin_node,
+    0,				/* map_begin_node */
     0,				/* map_end_node */
-    map_begin_edge,
+    0,				/* map_begin_edge */
     0,				/* map_end_edge */
-    0,				/* map_begin_anchor */
+    map_begin_anchor,
     0,				/* map_end_anchor */
     0,				/* map_textpara */
     0,				/* map_resolve_color */

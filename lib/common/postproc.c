@@ -81,7 +81,7 @@ static void place_flip_graph_label(graph_t * g);
     closepath stroke\n\
 } def\n"
 
-point map_point(point p)
+static point map_point(point p)
 {
     p = ccwrotatep(p, Rankdir*90);
     p.x -= Offset.x;
@@ -89,7 +89,7 @@ point map_point(point p)
     return p;
 }
 
-void map_edge(edge_t * e)
+static void map_edge(edge_t * e)
 {
     int j, k;
     bezier bz;

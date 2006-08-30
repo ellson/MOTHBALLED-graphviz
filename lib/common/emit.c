@@ -68,29 +68,104 @@ static void pop_obj_state(GVJ_t *job)
 
     assert(obj);
 
-    if (obj->url) free(obj->url);
-    if (obj->tailurl) free(obj->tailurl);
-    if (obj->headurl) free(obj->headurl);
-    if (obj->tooltip) free(obj->tooltip);
-    if (obj->tailtooltip) free(obj->tailtooltip);
-    if (obj->headtooltip) free(obj->headtooltip);
-    if (obj->target) free(obj->target);
-    if (obj->tailtarget) free(obj->tailtarget);
-    if (obj->headtarget) free(obj->headtarget);
-    if (obj->url_map_p) free(obj->url_map_p);
-    if (obj->url_bsplinemap_p) free(obj->url_bsplinemap_p);
-    if (obj->url_bsplinemap_n) free(obj->url_bsplinemap_n);
-    if (obj->tailurl_map_p) free(obj->tailurl_map_p);
-    if (obj->headurl_map_p) free(obj->headurl_map_p);
+    free(obj->url);
+    free(obj->tailurl);
+    free(obj->headurl);
+    free(obj->tooltip);
+    free(obj->tailtooltip);
+    free(obj->headtooltip);
+    free(obj->target);
+    free(obj->tailtarget);
+    free(obj->headtarget);
+    free(obj->url_map_p);
+    free(obj->url_bsplinemap_p);
+    free(obj->url_bsplinemap_n);
 
     job->obj = obj->parent;
     free(obj);
 }
 
-static void doHTMLdata(htmldata_t * dp, point p, void *obj)
+static void map_point(GVJ_t *job, point P)
+{
+    obj_state_t *obj = job->obj;
+    int flags = job->flags;
+    pointf *p, pf;
+
+    if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
+	if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
+	    obj->url_map_shape = MAP_RECTANGLE;
+	    obj->url_map_n = 2;
+	}
+	else {
+	    obj->url_map_shape = MAP_POLYGON;
+	    obj->url_map_n = 4;
+	}
+	p = N_NEW(obj->url_map_n, pointf);
+	P2PF(P,pf);
+	P2RECT(pf, p, FUZZ, FUZZ);
+	if (! (flags & GVRENDER_DOES_TRANSFORM))
+	    gvrender_ptf_A(job, p, p, 2);
+	if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
+	    rect2poly(p);
+	obj->url_map_p = p;
+    }
+}
+
+static void map_rect(GVJ_t *job, point p1, point p2)
+{
+    obj_state_t *obj = job->obj;
+    int flags = job->flags;
+    pointf *p;
+
+    if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
+	if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
+	    obj->url_map_shape = MAP_RECTANGLE;
+	    obj->url_map_n = 2;
+	}
+	else {
+	    obj->url_map_shape = MAP_POLYGON;
+	    obj->url_map_n = 4;
+	}
+	p = N_NEW(obj->url_map_n, pointf);
+	P2PF(p1,p[0]);
+	P2PF(p2,p[1]);
+	if (! (flags & GVRENDER_DOES_TRANSFORM))
+	    gvrender_ptf_A(job, p, p, 2);
+	if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
+	    rect2poly(p);
+	obj->url_map_p = p;
+    }
+}
+
+static void map_label(GVJ_t *job, textlabel_t *lab)
+{
+    obj_state_t *obj = job->obj;
+    int flags = job->flags;
+    pointf *p;
+
+    if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
+	if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
+	    obj->url_map_shape = MAP_RECTANGLE;
+	    obj->url_map_n = 2;
+	}
+	else {
+	    obj->url_map_shape = MAP_POLYGON;
+	    obj->url_map_n = 4;
+	}
+	p = N_NEW(obj->url_map_n, pointf);
+	P2RECT(lab->p, p, lab->dimen.x / 2., lab->dimen.y / 2.);
+	if (! (flags & GVRENDER_DOES_TRANSFORM))
+	    gvrender_ptf_A(job, p, p, 2);
+	if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
+	    rect2poly(p);
+	obj->url_map_p = p;
+    }
+}
+
+static void doHTMLdata(GVJ_t *job, htmldata_t * dp, point p, void *obj)
 {
     char *url = NULL, *target = NULL, *title = NULL;
-    pointf p1, p2;
+    point p1, p2;
 
     if ((url = dp->href) && url[0])
         url = strdup_and_subst_obj(url, obj);
@@ -98,43 +173,44 @@ static void doHTMLdata(htmldata_t * dp, point p, void *obj)
     if ((title = dp->title) && title[0])
 	title = strdup_and_subst_obj(title, obj);
     if (url || title) {
-        p1.x = p.x + dp->box.LL.x;
-        p1.y = p.y + dp->box.LL.y;
-        p2.x = p.x + dp->box.UR.x;
-        p2.y = p.y + dp->box.UR.y;
-//  FIXME
-//        map_output_rect(p1, p2, url, target, "", title);
+	p1.x = p.x + dp->box.LL.x;
+	p1.y = p.y + dp->box.LL.y;
+	p2.x = p.x + dp->box.UR.x;
+	p2.y = p.y + dp->box.UR.y;
+	map_rect(job, p1, p2);
+	gvrender_begin_anchor(job, url, title, target);
+	gvrender_end_anchor(job);
     }
     free(url);
     free(title);
 }
 
 /* forward declaration */
-static void doHTMLcell(htmlcell_t * cp, point p, void *obj);
+static void doHTMLcell(GVJ_t *job, htmlcell_t * cp, point p, void *obj);
 
-static void doHTMLtbl(htmltbl_t * tbl, point p, void *obj)
+static void doHTMLtbl(GVJ_t *job, htmltbl_t * tbl, point p, void *obj)
 {
     htmlcell_t **cells = tbl->u.n.cells;
     htmlcell_t *cp;
 
     while ((cp = *cells++))
-        doHTMLcell(cp, p, obj);
+        doHTMLcell(job, cp, p, obj);
     if (tbl->data.href)
-        doHTMLdata(&tbl->data, p, obj);
+        doHTMLdata(job, &tbl->data, p, obj);
 }
 
-static void doHTMLcell(htmlcell_t * cp, point p, void *obj)
+static void doHTMLcell(GVJ_t *job, htmlcell_t * cp, point p, void *obj)
 {
     if (cp->child.kind == HTML_TBL)
-        doHTMLtbl(cp->child.u.tbl, p, obj);
+        doHTMLtbl(job, cp->child.u.tbl, p, obj);
     if (cp->data.href)
-        doHTMLdata(&cp->data, p, obj);
+        doHTMLdata(job, &cp->data, p, obj);
 }
 
-static void doHTMLlabel(htmllabel_t * lbl, point p, void *obj)
+static void doHTMLlabel(GVJ_t *job, htmllabel_t * lbl, point p, void *obj)
 {
     if (lbl->kind == HTML_TBL) {
-        doHTMLtbl(lbl->u.tbl, p, obj);
+        doHTMLtbl(job, lbl->u.tbl, p, obj);
     }
 }
 
@@ -971,7 +1047,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     }
     if ((flags & GVRENDER_DOES_LABELS) && ((lab = ND_label(n)))) {
         if (lab->html)
-            doHTMLlabel(lab->u.html, lab->p, (void *) n);
+            doHTMLlabel(job, lab->u.html, lab->p, (void *) n);
         obj->label = lab->text;
     }
     if ((flags & GVRENDER_DOES_MAPS)
@@ -1507,38 +1583,14 @@ static bool edge_in_box(edge_t *e, boxf b)
     return FALSE;
 }
 
-#if 0
-static void map_label(GVJ_t *job, textlabel_t *lab)
-{
-    obj_state_t *obj = job->obj;
-    int flags = job->flags;
-
-    if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
-	obj->map_shape = MAP_RECTANGLE;
-	p = N_NEW(2, pointf);
-    }
-    else {
-	obj->map_shape = MAP_POLYGON;
-	p = N_NEW(2, pointf);
-    }
-    P2RECT(lab->p, p, lab->dimen.x / 2., lab->dimen.y / 2.);
-    if (! (flags & GVRENDER_DOES_TRANSFORM))
-	gvrender_ptf_A(job, p, p, 2);
-    if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
-	rect2poly(p);
-    obj->map_p = p;
-}
-#endif
-
 static void emit_begin_edge(GVJ_t * job, edge_t * e)
 {
     obj_state_t *obj;
     int flags = job->flags;
     char *s;
     textlabel_t *lab = NULL, *tlab = NULL, *hlab = NULL;
-    pointf *p = NULL, *pt = NULL, *ph = NULL, *pte = NULL, *phe = NULL, *pbs = NULL;
+    pointf *pbs = NULL;
     int	i, nump, *pbs_n = NULL, pbs_poly_n = 0;
-    bezier bz;
 
     obj = push_obj_state(job);
     obj->type = EDGE_OBJTYPE;
@@ -1553,18 +1605,18 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
     if (flags & GVRENDER_DOES_LABELS) {
 	if ((lab = ED_label(e))) {
 	    if (lab->html)
-		doHTMLlabel(lab->u.html, lab->p, (void *) e);
+		doHTMLlabel(job, lab->u.html, lab->p, (void *) e);
 	    obj->label = lab->text;
 	}
 	obj->taillabel = obj->headlabel = obj->label;
 	if ((tlab = ED_tail_label(e))) {
 	    if (tlab->html)
-		doHTMLlabel(tlab->u.html, tlab->p, (void *) e);
+		doHTMLlabel(job, tlab->u.html, tlab->p, (void *) e);
 	    obj->taillabel = tlab->text;
 	}
 	if ((hlab = ED_head_label(e))) {
 	    if (hlab->html)
-		doHTMLlabel(hlab->u.html, hlab->p, (void *) e);
+		doHTMLlabel(job, hlab->u.html, hlab->p, (void *) e);
 	    obj->headlabel = hlab->text;
 	}
     }
@@ -1602,12 +1654,14 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
 	}
 	else if (obj->label)
 	    obj->tooltip = strdup(obj->label);
+
         if ((s = agget(e, "tailtooltip")) && s[0]) {
             obj->tailtooltip = strdup_and_subst_obj(s, (void*)e);
 	    obj->explicit_tailtooltip = true;
 	}
 	else if (obj->taillabel)
 	    obj->tailtooltip = strdup(obj->taillabel);
+
         if ((s = agget(e, "headtooltip")) && s[0]) {
             obj->headtooltip = strdup_and_subst_obj(s, (void*)e);
 	    obj->explicit_headtooltip = true;
@@ -1615,7 +1669,7 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
 	else if (obj->headlabel)
 	    obj->headtooltip = strdup(obj->headlabel);
     } 
-
+    
     if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
         if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
             if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
@@ -1627,52 +1681,6 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
 	        nump = 4;
 	    }
 
-	    if (lab && (obj->url || obj->tooltip)) {
-		obj->url_map_n = nump;
-	        p = N_NEW(nump, pointf);
-		P2RECT(lab->p, p, lab->dimen.x / 2., lab->dimen.y / 2.);
-	    }
-
-	    if (tlab && (obj->tailurl || obj->tailtooltip)) {
-		obj->tailurl_map_n = nump;
-	        pt = N_NEW(nump, pointf);
-		P2RECT(tlab->p, pt, tlab->dimen.x / 2., tlab->dimen.y / 2.);
-	    }
-
-	    if (hlab && (obj->headurl || obj->headtooltip)) {
-		obj->headurl_map_n = nump;
-	        ph = N_NEW(nump, pointf);
-		P2RECT(hlab->p, ph, hlab->dimen.x / 2., hlab->dimen.y / 2.);
-	    }
-
-           /* process intersecion with tail node */
-            if (ED_spl(e) && (obj->tailurl || obj->tailtooltip)) {
-		obj->tailendurl_map_n = nump;
-	        pte = N_NEW(nump, pointf);
-                bz = ED_spl(e)->list[0];
-                if (bz.sflag) {
-                    /* Arrow at start of splines */
-		    P2RECT(bz.sp, pte, FUZZ, FUZZ);
-                } else {
-                    /* No arrow at start of splines */
-		    P2RECT(bz.list[0], pte, FUZZ, FUZZ);
-                }
-            }
-        
-            /* process intersection with head node */
-            if (ED_spl(e) && (obj->headurl || obj->headtooltip)) {
-		obj->headendurl_map_n = nump;
-	        phe = N_NEW(nump, pointf);
-                bz = ED_spl(e)->list[ED_spl(e)->size - 1];
-                if (bz.eflag) {
-                    /* Arrow at end of splines */
-		    P2RECT(bz.ep, phe, FUZZ, FUZZ);
-                } else {
-                    /* No arrow at end of splines */
-		    P2RECT(bz.list[bz.size - 1], phe, FUZZ, FUZZ);
-                }
-            }
-
 	    if (ED_spl(e) && (obj->url || obj->tooltip) && (flags & GVRENDER_DOES_MAP_POLYGON)) {
 		int ns;
 		splines *spl;
@@ -1683,34 +1691,13 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
 		    map_output_bspline (&pbs, &pbs_n, &pbs_poly_n, spl->list+i);
 		obj->url_bsplinemap_poly_n = pbs_poly_n;
 		obj->url_bsplinemap_n = pbs_n;
-	    }
-	    
-	    if (! (flags & GVRENDER_DOES_TRANSFORM)) {
-		if (p) gvrender_ptf_A(job, p, p, 2);
-		if (pt) gvrender_ptf_A(job, pt, pt, 2);
-		if (ph) gvrender_ptf_A(job, ph, ph, 2);
-		if (pte) gvrender_ptf_A(job, pte, pte, 2);
-		if (phe) gvrender_ptf_A(job, phe, phe, 2);
-		if (pbs) {
+	        if (! (flags & GVRENDER_DOES_TRANSFORM)) {
     		    for ( nump = 0, i = 0; i < pbs_poly_n; i++)
         		nump += pbs_n[i];
 		    gvrender_ptf_A(job, pbs, pbs, nump);		
 		}
 	    }
-	    if (! (flags & GVRENDER_DOES_MAP_RECTANGLE)) {
-		if (p) rect2poly(p);
-		if (pt) rect2poly(pt);
-		if (ph) rect2poly(ph);
-		if (pte) rect2poly(pte);
-		if (phe) rect2poly(phe);
-	    }
-
 	}
-	obj->url_map_p = p;
-	obj->tailurl_map_p = pt;
-	obj->headurl_map_p = ph;
-	obj->tailendurl_map_p = pte;
-	obj->headendurl_map_p = phe;
 	obj->url_bsplinemap_p = pbs;
     }
 
@@ -1727,25 +1714,58 @@ static void emit_end_edge(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
     edge_t *e = obj->u.e;
+    bezier bz;
 
-    if (ED_label(e)) {
-	emit_label(job, EMIT_ELABEL, ED_label(e));
-	if (mapbool(late_string(e, E_decorate, "false")) && ED_spl(e))
-	    emit_attachment(job, ED_label(e), ED_spl(e));
-    }
     if (obj->url || obj->explicit_tooltip)
 	gvrender_end_anchor(job);
 
+    /* process intersecion with tail node */
+    if (ED_spl(e) && (obj->tailurl || obj->tailtooltip)) {
+	bz = ED_spl(e)->list[0];
+	if (bz.sflag) /* Arrow at start of splines */
+	    map_point(job, bz.sp);
+	else /* No arrow at start of splines */
+	    map_point(job, bz.list[0]);
+	gvrender_begin_anchor(job, obj->tailurl, obj->tailtooltip, obj->tailtarget);
+	gvrender_end_anchor(job);
+    }
+        
+    /* process intersection with head node */
+    if (ED_spl(e) && (obj->headurl || obj->headtooltip)) {
+	bz = ED_spl(e)->list[ED_spl(e)->size - 1];
+	if (bz.eflag) /* Arrow at end of splines */
+	    map_point(job, bz.ep);
+	else /* No arrow at end of splines */
+	    map_point(job, bz.list[bz.size - 1]);
+	gvrender_begin_anchor(job, obj->headurl, obj->headtooltip, obj->headtarget);
+	gvrender_end_anchor(job);
+    }
+
+    if (ED_label(e)) {
+        if (obj->url || obj->explicit_tooltip) {
+            map_label(job, ED_label(e));
+	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+        }
+	emit_label(job, EMIT_ELABEL, ED_label(e));
+	if (mapbool(late_string(e, E_decorate, "false")) && ED_spl(e))
+	    emit_attachment(job, ED_label(e), ED_spl(e));
+	if (obj->url || obj->explicit_tooltip)
+	    gvrender_end_anchor(job);
+    }
     if (ED_head_label(e)) {
-	if (obj->headurl || obj->explicit_headtooltip)
+	if (obj->headurl || obj->explicit_headtooltip) {
+	    map_label(job, ED_head_label(e));
 	    gvrender_begin_anchor(job, obj->headurl, obj->headtooltip, obj->headtarget);
+	}
 	emit_label(job, EMIT_HLABEL, ED_head_label(e));	/* vladimir */
 	if (obj->headurl || obj->explicit_headtooltip)
 	    gvrender_end_anchor(job);
     }
     if (ED_tail_label(e)) {
-	if (obj->tailurl || obj->explicit_tailtooltip)
+	if (obj->tailurl || obj->explicit_tailtooltip) {
+	    map_label(job, ED_tail_label(e));
 	    gvrender_begin_anchor(job, obj->tailurl, obj->tailtooltip, obj->tailtarget);
+	}
 	emit_label(job, EMIT_TLABEL, ED_tail_label(e));	/* vladimir */
 	if (obj->tailurl || obj->explicit_tailtooltip)
 	    gvrender_end_anchor(job);
@@ -2098,7 +2118,7 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
 
     if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g)))) {
         if (lab->html)
-            doHTMLlabel(lab->u.html, lab->p, (void *) g);
+            doHTMLlabel(job, lab->u.html, lab->p, (void *) g);
         obj->label = lab->text;
     }
     if ((flags & GVRENDER_DOES_MAPS)
@@ -2276,7 +2296,7 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
 
     if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(sg)))) {
         if (lab->html)
-            doHTMLlabel(lab->u.html, lab->p, (void *) sg);
+            doHTMLlabel(job, lab->u.html, lab->p, (void *) sg);
         obj->label = lab->text;
     }
     if ((flags & GVRENDER_DOES_MAPS)

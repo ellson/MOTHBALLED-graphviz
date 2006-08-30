@@ -120,11 +120,6 @@ extern "C" {
 			     splineInfo *);
     extern textlabel_t *make_label(graph_t *g, int html, char *str,
 				   double fontsize, char *fontname, char *fontcolor);
-    extern void map_begin_cluster(graph_t * g);
-    extern void map_begin_edge(Agedge_t * e);
-    extern void map_begin_node(Agnode_t * n);
-    extern void map_edge(Agedge_t *);
-    extern point map_point(point);
     extern bezier *new_spline(edge_t * e, int sz);
     extern void osize_label(textlabel_t *, int *, int *, int *, int *);
     extern char **parse_style(char *s);

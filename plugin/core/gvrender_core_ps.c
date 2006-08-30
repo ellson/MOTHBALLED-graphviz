@@ -220,36 +220,6 @@ psgen_begin_edge(GVJ_t * job)
     obj_state_t *obj = job->obj;
 
     core_fputs(job, "gsave\n");
-    if (obj->url && obj->url_map_p) {
-        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
-		obj->url_map_p[0].x, obj->url_map_p[0].y,
-		obj->url_map_p[1].x, obj->url_map_p[1].y);
-        core_printf(job, "  /Border [ 0 0 0 ]\n"
-		"  /Action << /Subtype /URI /URI %s >>\n"
-		"  /Subtype /Link\n"
-		"/ANN pdfmark\n",
-		ps_string(obj->url, isLatin1));
-    }
-    if (obj->tailurl && obj->tailurl_map_p) {
-        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
-		obj->tailurl_map_p[0].x, obj->tailurl_map_p[0].y,
-		obj->tailurl_map_p[1].x, obj->tailurl_map_p[1].y);
-        core_printf(job, "  /Border [ 0 0 0 ]\n"
-		"  /Action << /Subtype /URI /URI %s >>\n"
-		"  /Subtype /Link\n"
-		"/ANN pdfmark\n",
-		ps_string(obj->tailurl, isLatin1));
-    }
-    if (obj->headurl && obj->headurl_map_p) {
-        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
-		obj->headurl_map_p[0].x, obj->headurl_map_p[0].y,
-		obj->headurl_map_p[1].x, obj->headurl_map_p[1].y);
-        core_printf(job, "  /Border [ 0 0 0 ]\n"
-		"  /Action << /Subtype /URI /URI %s >>\n"
-		"  /Subtype /Link\n"
-		"/ANN pdfmark\n",
-		ps_string(obj->headurl, isLatin1));
-    }
     if (obj->tailurl && obj->tailendurl_map_p) {
         core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->tailendurl_map_p[0].x, obj->tailendurl_map_p[0].y,
@@ -275,6 +245,22 @@ psgen_begin_edge(GVJ_t * job)
 static void psgen_end_edge(GVJ_t * job)
 {
     core_fputs(job, "grestore\n");
+}
+
+static void psgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *target)
+{
+    obj_state_t *obj = job->obj;
+
+    if (url && obj->url_map_p) {
+        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
+		obj->url_map_p[0].x, obj->url_map_p[0].y,
+		obj->url_map_p[1].x, obj->url_map_p[1].y);
+        core_printf(job, "  /Border [ 0 0 0 ]\n"
+		"  /Action << /Subtype /URI /URI %s >>\n"
+		"  /Subtype /Link\n"
+		"/ANN pdfmark\n",
+		ps_string(url, isLatin1));
+    }
 }
 
 static void
@@ -495,7 +481,7 @@ static gvrender_engine_t psgen_engine = {
     psgen_end_node,
     psgen_begin_edge,
     psgen_end_edge,
-    0,				/* psgen_begin_anchor */
+    psgen_begin_anchor,
     0,				/* psgen_end_anchor */
     psgen_textpara,
     0,				/* psgen_resolve_color */
