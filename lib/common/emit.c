@@ -1033,7 +1033,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     textlabel_t *lab;
     int sides, peripheries, i, j, filled = 0, rect = 0, shape, nump = 0;
     polygon_t *poly = NULL;
-    pointf *vertices, ldimen, *p =  NULL;
+    pointf *vertices, ldimen, *p = NULL;
     point coord;
     char *s;
 
@@ -1047,7 +1047,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     }
     if ((flags & GVRENDER_DOES_LABELS) && ((lab = ND_label(n)))) {
         if (lab->html)
-            doHTMLlabel(job, lab->u.html, lab->p, (void *) n);
+            doHTMLlabel(job, lab->u.html, ND_coord_i(n), (void *) n);
         obj->label = lab->text;
     }
     if ((flags & GVRENDER_DOES_MAPS)
@@ -2118,7 +2118,7 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
 
     if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g)))) {
         if (lab->html)
-            doHTMLlabel(job, lab->u.html, lab->p, (void *) g);
+            doHTMLlabel(job, lab->u.html, GD_label(g)->p, (void *) g);
         obj->label = lab->text;
     }
     if ((flags & GVRENDER_DOES_MAPS)
@@ -2296,7 +2296,7 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
 
     if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(sg)))) {
         if (lab->html)
-            doHTMLlabel(job, lab->u.html, lab->p, (void *) sg);
+            doHTMLlabel(job, lab->u.html, GD_label(sg)->p, (void *) sg);
         obj->label = lab->text;
     }
     if ((flags & GVRENDER_DOES_MAPS)
