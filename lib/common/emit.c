@@ -2112,7 +2112,6 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
 {
     int flags = job->flags;
     obj_state_t *obj;
-    textlabel_t *lab;
     char *s;
 
     obj = push_obj_state(job);
@@ -2120,11 +2119,6 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
     obj->u.g = g;
     obj->emit_state = EMIT_GDRAW;
 
-    if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g)))) {
-        if (lab->html)
-            doHTMLlabel(job, lab->u.html, GD_label(g)->p, (void *) g);
-        obj->label = lab->text;
-    }
     if ((flags & GVRENDER_DOES_MAPS)
         && (((s = agget(g, "href")) && s[0])
             || ((s = agget(g, "URL")) && s[0]))) {
@@ -2165,6 +2159,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
     char *s;
     int flags = job->flags;
     GVC_t *gvc = job->gvc;
+    textlabel_t *lab;
     point p1, p2;
 
     /* device dpi is now known */
@@ -2197,6 +2192,12 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	    setColorScheme (agget (g, "colorscheme"));
     	    setup_page(job, g);
 	    gvrender_begin_page(job);
+	    if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g)))) {
+		/* do graph label on every page and rely on clipping to show it on the right one(s) */
+		if (lab->html)
+		    doHTMLlabel(job, lab->u.html, GD_label(g)->p, (void *) g);
+		obj->label = lab->text;
+	    }
             if (obj->url || obj->explicit_tooltip) {
 		PF2P(job->pageBoxClip.LL, p1);
 		PF2P(job->pageBoxClip.UR, p2);
