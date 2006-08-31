@@ -100,14 +100,14 @@ static void map_point(GVJ_t *job, point P)
 	    obj->url_map_shape = MAP_POLYGON;
 	    obj->url_map_n = 4;
 	}
-	p = N_NEW(obj->url_map_n, pointf);
+	free(obj->url_map_p);
+	obj->url_map_p = p = N_NEW(obj->url_map_n, pointf);
 	P2PF(P,pf);
 	P2RECT(pf, p, FUZZ, FUZZ);
 	if (! (flags & GVRENDER_DOES_TRANSFORM))
 	    gvrender_ptf_A(job, p, p, 2);
 	if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
 	    rect2poly(p);
-	obj->url_map_p = p;
     }
 }
 
@@ -126,14 +126,14 @@ static void map_rect(GVJ_t *job, point p1, point p2)
 	    obj->url_map_shape = MAP_POLYGON;
 	    obj->url_map_n = 4;
 	}
-	p = N_NEW(obj->url_map_n, pointf);
+	free(obj->url_map_p);
+	obj->url_map_p = p = N_NEW(obj->url_map_n, pointf);
 	P2PF(p1,p[0]);
 	P2PF(p2,p[1]);
 	if (! (flags & GVRENDER_DOES_TRANSFORM))
 	    gvrender_ptf_A(job, p, p, 2);
 	if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
 	    rect2poly(p);
-	obj->url_map_p = p;
     }
 }
 
@@ -152,13 +152,13 @@ static void map_label(GVJ_t *job, textlabel_t *lab)
 	    obj->url_map_shape = MAP_POLYGON;
 	    obj->url_map_n = 4;
 	}
-	p = N_NEW(obj->url_map_n, pointf);
+	free(obj->url_map_p);
+	obj->url_map_p = p = N_NEW(obj->url_map_n, pointf);
 	P2RECT(lab->p, p, lab->dimen.x / 2., lab->dimen.y / 2.);
 	if (! (flags & GVRENDER_DOES_TRANSFORM))
 	    gvrender_ptf_A(job, p, p, 2);
 	if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
 	    rect2poly(p);
-	obj->url_map_p = p;
     }
 }
 
@@ -1720,6 +1720,9 @@ static void emit_end_edge(GVJ_t * job)
 	    nump += obj->url_bsplinemap_n[i];
 	}
     }
+    obj->url_map_n = 0;       /* null out copy so that it doesn't get freed twice */
+    obj->url_map_p = NULL;
+
     /* process intersecion with tail node */
     if (ED_spl(e) && (obj->tailurl || obj->tailtooltip)) {
 	bz = ED_spl(e)->list[0];
@@ -2162,6 +2165,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
     char *s;
     int flags = job->flags;
     GVC_t *gvc = job->gvc;
+    point p1, p2;
 
     /* device dpi is now known */
     job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
@@ -2193,8 +2197,12 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	    setColorScheme (agget (g, "colorscheme"));
     	    setup_page(job, g);
 	    gvrender_begin_page(job);
-            if (obj->url || obj->explicit_tooltip)
+            if (obj->url || obj->explicit_tooltip) {
+		PF2P(job->pageBoxClip.LL, p1);
+		PF2P(job->pageBoxClip.UR, p2);
+		map_rect(job, p1, p2);
 		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	    }
 	    gvrender_set_pencolor(job, DEFAULT_COLOR);
 	    gvrender_set_fillcolor(job, DEFAULT_FILL);
 	    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
@@ -2287,8 +2295,6 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     int flags = job->flags;
     textlabel_t *lab;
     char *s;
-    int nump = 0;
-    pointf *p = NULL;
 
     obj = push_obj_state(job);
     obj->type = CLUSTER_OBJTYPE;
@@ -2317,34 +2323,14 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
         }
     }
 
-    if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
-        if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
-            if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
-                obj->url_map_shape = MAP_RECTANGLE;
-                nump = 2;
-            }
-            else {
-                obj->url_map_shape = MAP_POLYGON;
-                nump = 4;
-            }
-
-            p = N_NEW(nump, pointf);
-            P2PF(GD_bb(sg).LL, p[0]);
-            P2PF(GD_bb(sg).UR, p[1]);
-
-            if (! (flags & (GVRENDER_DOES_MAP_RECTANGLE)))
-                rect2poly(p);
-        }
-        obj->url_map_p = p;
-        obj->url_map_n = nump;
-    }
-
 #ifdef WITH_CODEGENS
     Obj = CLST;
 #endif
     gvrender_begin_cluster(job, sg);
-    if (obj->url || obj->explicit_tooltip)
+    if (obj->url || obj->explicit_tooltip) {
+	map_rect(job, GD_bb(sg).LL, GD_bb(sg).UR);
 	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+    }
 }
 
 static void emit_end_cluster(GVJ_t * job, Agraph_t * g)
