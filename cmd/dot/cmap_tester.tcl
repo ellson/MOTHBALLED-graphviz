@@ -30,7 +30,7 @@ if {[file exists $fn.gif]} {
 
 if {[file exists $fn.cmap]} {
 	set map_type cmap
-} elseif {[file exists $fn.png]} {
+} elseif {[file exists $fn.cmapx]} {
 	set map_type cmapx
 } else {
 	puts stderr "map file $fn.cmap or $fn.cmapx does not exist."
@@ -42,13 +42,21 @@ set gd [gd createFrom[string toupper $image_type] $f]
 close $f
 
 set turquoise [gd color resolve $gd 0 255 255]
+set magenta [gd color resolve $gd 255 0 255]
 
 set f [open $fn.$map_type r]
 set map [read $f [file size $fn.$map_type]]
 close $f
 
-foreach {. x1 y1 x2 y2} [regexp -all -inline {(\d*),(\d*),(\d*),(\d*)} $map] {
-	gd rectangle $gd $turquoise $x1 $y1 $x2 $y2
+foreach {. coords} [regexp -all -inline {coords="([-0-9, ]*)"} $map] {
+	set coords [split $coords ", "]
+	if {[llength $coords] == 4} {
+	    eval gd rectangle $gd $turquoise $coords
+#	    puts stderr "rect $coords"
+	} {
+	    eval gd polygon $gd $magenta $coords
+#	    puts stderr "poly $coords"
+	}
 }
 
 gd write[string toupper $image_type] $gd stdout
