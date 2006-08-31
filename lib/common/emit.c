@@ -1671,34 +1671,26 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
     } 
     
     if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
-        if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
-            if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
-	        obj->url_map_shape = MAP_RECTANGLE;
-	        nump = 2;
-	    }
-	    else { /* GVRENDER_DOES_MAP_POLYGON */
-	        obj->url_map_shape = MAP_POLYGON;
-	        nump = 4;
-	    }
+	if (ED_spl(e) && (obj->url || obj->tooltip) && (flags & GVRENDER_DOES_MAP_POLYGON)) {
+	    int ns;
+	    splines *spl;
 
-	    if (ED_spl(e) && (obj->url || obj->tooltip) && (flags & GVRENDER_DOES_MAP_POLYGON)) {
-		int ns;
-		splines *spl;
-
-		spl = ED_spl(e);
-		ns = spl->size; /* number of splines */
-		for (i = 0; i < ns; i++)
-		    map_output_bspline (&pbs, &pbs_n, &pbs_poly_n, spl->list+i);
-		obj->url_bsplinemap_poly_n = pbs_poly_n;
-		obj->url_bsplinemap_n = pbs_n;
-	        if (! (flags & GVRENDER_DOES_TRANSFORM)) {
-    		    for ( nump = 0, i = 0; i < pbs_poly_n; i++)
-        		nump += pbs_n[i];
-		    gvrender_ptf_A(job, pbs, pbs, nump);		
-		}
+	    spl = ED_spl(e);
+	    ns = spl->size; /* number of splines */
+	    for (i = 0; i < ns; i++)
+		map_output_bspline (&pbs, &pbs_n, &pbs_poly_n, spl->list+i);
+	    obj->url_bsplinemap_poly_n = pbs_poly_n;
+	    obj->url_bsplinemap_n = pbs_n;
+	    if (! (flags & GVRENDER_DOES_TRANSFORM)) {
+    		for ( nump = 0, i = 0; i < pbs_poly_n; i++)
+        	    nump += pbs_n[i];
+		gvrender_ptf_A(job, pbs, pbs, nump);		
 	    }
 	}
 	obj->url_bsplinemap_p = pbs;
+	obj->url_map_shape = MAP_POLYGON;
+	obj->url_map_p = pbs;
+	obj->url_map_n = pbs_n[0];
     }
 
 #ifdef WITH_CODEGENS
@@ -1715,10 +1707,19 @@ static void emit_end_edge(GVJ_t * job)
     obj_state_t *obj = job->obj;
     edge_t *e = obj->u.e;
     bezier bz;
+    int i, nump;
 
-    if (obj->url || obj->explicit_tooltip)
+    if (obj->url || obj->explicit_tooltip) {
 	gvrender_end_anchor(job);
-
+	for ( nump = obj->url_bsplinemap_n[0], i = 1; i < obj->url_bsplinemap_poly_n; i++) {
+	    /* additional polygon maps around remaining bezier pieces */
+            obj->url_map_n = obj->url_bsplinemap_n[i];
+            obj->url_map_p = &(obj->url_bsplinemap_p[nump]);
+	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	    gvrender_end_anchor(job);
+	    nump += obj->url_bsplinemap_n[i];
+	}
+    }
     /* process intersecion with tail node */
     if (ED_spl(e) && (obj->tailurl || obj->tailtooltip)) {
 	bz = ED_spl(e)->list[0];
