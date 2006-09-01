@@ -355,8 +355,10 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 
     /* gvrender_begin_context(); */
 
-    if (cp->data.href)
+    if (cp->data.href) {
+	emit_map_rect(job, pts.LL, pts.UR);
 	doAnchorStart(job, &cp->data);
+    }
 
     if (cp->data.bgcolor)
 	doFill(job, cp->data.bgcolor, pts);

@@ -111,7 +111,7 @@ static void map_point(GVJ_t *job, point P)
     }
 }
 
-static void map_rect(GVJ_t *job, point p1, point p2)
+void emit_map_rect(GVJ_t *job, point LL, point UR)
 {
     obj_state_t *obj = job->obj;
     int flags = job->flags;
@@ -128,8 +128,8 @@ static void map_rect(GVJ_t *job, point p1, point p2)
 	}
 	free(obj->url_map_p);
 	obj->url_map_p = p = N_NEW(obj->url_map_n, pointf);
-	P2PF(p1,p[0]);
-	P2PF(p2,p[1]);
+	P2PF(LL,p[0]);
+	P2PF(UR,p[1]);
 	if (! (flags & GVRENDER_DOES_TRANSFORM))
 	    gvrender_ptf_A(job, p, p, 2);
 	if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
@@ -159,58 +159,6 @@ static void map_label(GVJ_t *job, textlabel_t *lab)
 	    gvrender_ptf_A(job, p, p, 2);
 	if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
 	    rect2poly(p);
-    }
-}
-
-static void doHTMLdata(GVJ_t *job, htmldata_t * dp, point p, void *obj)
-{
-    char *url = NULL, *target = NULL, *title = NULL;
-    point p1, p2;
-
-    if ((url = dp->href) && url[0])
-        url = strdup_and_subst_obj(url, obj);
-    target = dp->target;
-    if ((title = dp->title) && title[0])
-	title = strdup_and_subst_obj(title, obj);
-    if (url || title) {
-	p1.x = p.x + dp->box.LL.x;
-	p1.y = p.y + dp->box.LL.y;
-	p2.x = p.x + dp->box.UR.x;
-	p2.y = p.y + dp->box.UR.y;
-	map_rect(job, p1, p2);
-	gvrender_begin_anchor(job, url, title, target);
-	gvrender_end_anchor(job);
-    }
-    free(url);
-    free(title);
-}
-
-/* forward declaration */
-static void doHTMLcell(GVJ_t *job, htmlcell_t * cp, point p, void *obj);
-
-static void doHTMLtbl(GVJ_t *job, htmltbl_t * tbl, point p, void *obj)
-{
-    htmlcell_t **cells = tbl->u.n.cells;
-    htmlcell_t *cp;
-
-    while ((cp = *cells++))
-        doHTMLcell(job, cp, p, obj);
-    if (tbl->data.href)
-        doHTMLdata(job, &tbl->data, p, obj);
-}
-
-static void doHTMLcell(GVJ_t *job, htmlcell_t * cp, point p, void *obj)
-{
-    if (cp->child.kind == HTML_TBL)
-        doHTMLtbl(job, cp->child.u.tbl, p, obj);
-    if (cp->data.href)
-        doHTMLdata(job, &cp->data, p, obj);
-}
-
-static void doHTMLlabel(GVJ_t *job, htmllabel_t * lbl, point p, void *obj)
-{
-    if (lbl->kind == HTML_TBL) {
-        doHTMLtbl(job, lbl->u.tbl, p, obj);
     }
 }
 
@@ -1045,11 +993,8 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     if (flags & GVRENDER_DOES_Z) {
         obj->z = late_double(n, N_z, 0.0, -MAXFLOAT);
     }
-    if ((flags & GVRENDER_DOES_LABELS) && ((lab = ND_label(n)))) {
-        if (lab->html)
-            doHTMLlabel(job, lab->u.html, ND_coord_i(n), (void *) n);
+    if ((flags & GVRENDER_DOES_LABELS) && ((lab = ND_label(n))))
         obj->label = lab->text;
-    }
     if ((flags & GVRENDER_DOES_MAPS)
         && (((s = agget(n, "href")) && s[0]) || ((s = agget(n, "URL")) && s[0]))) {
         obj->url = strdup_and_subst_obj(s, (void*)n);
@@ -1190,16 +1135,10 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     setColorScheme (agget (n, "colorscheme"));
     gvrender_begin_context(job);
     gvrender_begin_node(job, n);
-    if (obj->url || obj->explicit_tooltip)
-	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 }
 
 static void emit_end_node(GVJ_t * job)
 {
-    obj_state_t *obj = job->obj;
-
-    if (obj->url || obj->explicit_tooltip)
-	gvrender_end_anchor(job);
     gvrender_end_node(job);
     gvrender_end_context(job);
 #ifdef WITH_CODEGENS
@@ -1603,22 +1542,13 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
     }
 
     if (flags & GVRENDER_DOES_LABELS) {
-	if ((lab = ED_label(e))) {
-	    if (lab->html)
-		doHTMLlabel(job, lab->u.html, lab->p, (void *) e);
+	if ((lab = ED_label(e)))
 	    obj->label = lab->text;
-	}
 	obj->taillabel = obj->headlabel = obj->label;
-	if ((tlab = ED_tail_label(e))) {
-	    if (tlab->html)
-		doHTMLlabel(job, tlab->u.html, tlab->p, (void *) e);
+	if ((tlab = ED_tail_label(e)))
 	    obj->taillabel = tlab->text;
-	}
-	if ((hlab = ED_head_label(e))) {
-	    if (hlab->html)
-		doHTMLlabel(job, hlab->u.html, hlab->p, (void *) e);
+	if ((hlab = ED_head_label(e)))
 	    obj->headlabel = hlab->text;
-	}
     }
 
     if (flags & GVRENDER_DOES_MAPS) {
@@ -2194,27 +2124,24 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	    setColorScheme (agget (g, "colorscheme"));
     	    setup_page(job, g);
 	    gvrender_begin_page(job);
-	    if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g)))) {
-		/* do graph label on every page and rely on clipping to show it on the right one(s) */
-		if (lab->html)
-		    doHTMLlabel(job, lab->u.html, GD_label(g)->p, (void *) g);
-		obj->label = lab->text;
-	    }
-            if (obj->url || obj->explicit_tooltip) {
-		PF2P(job->pageBoxClip.LL, p1);
-		PF2P(job->pageBoxClip.UR, p2);
-		map_rect(job, p1, p2);
-		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
-	    }
 	    gvrender_set_pencolor(job, DEFAULT_COLOR);
 	    gvrender_set_fillcolor(job, DEFAULT_FILL);
 	    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
+	    if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g))))
+		/* do graph label on every page and rely on clipping to show it on the right one(s) */
+		obj->label = lab->text;
+            if (obj->url || obj->explicit_tooltip) {
+		PF2P(job->pageBoxClip.LL, p1);
+		PF2P(job->pageBoxClip.UR, p2);
+		emit_map_rect(job, p1, p2);
+		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	    }
 	    if (job->numLayers == 1)
 		emit_background(job, g);
-	    if (boxf_overlap(job->clip, job->pageBox))
-	        emit_view(job,g,flags);
             if (obj->url || obj->explicit_tooltip)
 		gvrender_end_anchor(job);
+	    if (boxf_overlap(job->clip, job->pageBox))
+	        emit_view(job,g,flags);
 	    gvrender_end_page(job);
 	} 
 
@@ -2304,11 +2231,9 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     obj->u.sg = sg;
     obj->emit_state = EMIT_CDRAW;
 
-    if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(sg)))) {
-        if (lab->html)
-            doHTMLlabel(job, lab->u.html, GD_label(sg)->p, (void *) sg);
+    if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(sg))))
         obj->label = lab->text;
-    }
+
     if ((flags & GVRENDER_DOES_MAPS)
         && (((s = agget(sg, "href")) && s[0]) || ((s = agget(sg, "URL")) && s[0])))
         obj->url = strdup_and_subst_obj(s, (void*)sg);
@@ -2330,18 +2255,10 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     Obj = CLST;
 #endif
     gvrender_begin_cluster(job, sg);
-    if (obj->url || obj->explicit_tooltip) {
-	map_rect(job, GD_bb(sg).LL, GD_bb(sg).UR);
-	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
-    }
 }
 
 static void emit_end_cluster(GVJ_t * job, Agraph_t * g)
 {
-    obj_state_t *obj = job->obj;
-
-    if (obj->url || obj->explicit_tooltip)
-	gvrender_end_anchor(job);
     gvrender_end_cluster(job, g);
 #ifdef WITH_CODEGENS
     Obj = NONE;
@@ -2352,12 +2269,13 @@ static void emit_end_cluster(GVJ_t * job, Agraph_t * g)
 void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 {
     int c, istyle, filled;
-    graph_t *sg;
     boxf BF;
     pointf AF[4];
     char *color, *fillcolor, *pencolor, **style;
+    graph_t *sg;
     node_t *n;
     edge_t *e;
+    obj_state_t *obj;
 
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
@@ -2367,8 +2285,13 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if (flags & EMIT_CLUSTERS_LAST)
 	    emit_clusters(job, sg, flags);
 	emit_begin_cluster(job, sg);
+	obj = job->obj;
 	setColorScheme (agget (sg, "colorscheme"));
 	gvrender_begin_context(job);
+	if (obj->url || obj->explicit_tooltip) {
+	    emit_map_rect(job, GD_bb(sg).LL, GD_bb(sg).UR);
+	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	}
 	filled = FALSE;
 	istyle = 0;
 	if ((style = checkClusterStyle(sg, &istyle))) {
@@ -2435,6 +2358,8 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		gvrender_box(job, BF, filled);
 	    }
 	}
+	if (obj->url || obj->explicit_tooltip)
+	    gvrender_end_anchor(job);
 	if (GD_label(sg))
 	    emit_label(job, EMIT_GLABEL, GD_label(sg));
 

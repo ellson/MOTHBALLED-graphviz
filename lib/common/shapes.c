@@ -1188,6 +1188,7 @@ static port poly_port(node_t * n, char *portname, char *compass)
 /* generic polygon gencode routine */
 static void poly_gencode(GVJ_t * job, node_t * n)
 {
+    obj_state_t *obj = job->obj;
     polygon_t *poly;
     double xsize, ysize;
     int i, j, peripheries, sides, style;
@@ -1197,6 +1198,9 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     static int A_size;
     bool filled;
     char *color, *name;
+
+    if (obj->url || obj->explicit_tooltip)
+	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 
     poly = (polygon_t *) ND_shape_info(n);
     vertices = poly->vertices;
@@ -1311,7 +1315,17 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	filled = FALSE;
     }
 
-    emit_label(job, EMIT_NLABEL, ND_label(n));
+    if (ND_label(n)->html) {
+        if (obj->url || obj->explicit_tooltip)
+            gvrender_end_anchor(job);
+        emit_label(job, EMIT_NLABEL, ND_label(n));
+    }
+    else {
+        emit_label(job, EMIT_NLABEL, ND_label(n));
+        if (obj->url || obj->explicit_tooltip)
+            gvrender_end_anchor(job);
+    }
+
 }
 
 /*=======================end poly======================================*/
@@ -1867,6 +1881,7 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
 
 static void record_gencode(GVJ_t * job, node_t * n)
 {
+    obj_state_t *obj = job->obj;
     boxf BF;
     pointf AF[4];
     int style;
@@ -1879,6 +1894,8 @@ static void record_gencode(GVJ_t * job, node_t * n)
     BF.UR.x += (double)(ND_coord_i(n).x);
     BF.UR.y += (double)(ND_coord_i(n).y);
     
+    if (obj->url || obj->explicit_tooltip)
+        gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
     style = stylenode(job, n);
     pencolor(job, n);
     if (style & FILLED)
@@ -1896,6 +1913,10 @@ static void record_gencode(GVJ_t * job, node_t * n)
     }
     else
 	gvrender_box(job, BF, style & FILLED);
+
+    if (obj->url || obj->explicit_tooltip)
+        gvrender_end_anchor(job);
+
     gen_fields(job, n, f);
 }
 
@@ -1969,11 +1990,14 @@ static bool epsf_inside(inside_t * inside_context, pointf p)
 
 static void epsf_gencode(GVJ_t * job, node_t * n)
 {
+    obj_state_t *obj = job->obj;
     epsf_t *desc;
 
     desc = (epsf_t *) (ND_shape_info(n));
     if (!desc)
 	return;
+    if (obj->url || obj->explicit_tooltip)
+	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
     gvrender_begin_context(job);
     if (desc)
 	fprintf(job->output_file,
@@ -1982,5 +2006,8 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
 		ND_coord_i(n).y + desc->offset.y, desc->macro_id);
     ND_label(n)->p = ND_coord_i(n);
     gvrender_end_context(job);
+    if (obj->url || obj->explicit_tooltip)
+        gvrender_end_anchor(job);
+
     emit_label(job, EMIT_NLABEL, ND_label(n));
 }

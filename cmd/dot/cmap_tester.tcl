@@ -42,7 +42,6 @@ set gd [gd createFrom[string toupper $image_type] $f]
 close $f
 
 set turquoise [gd color resolve $gd 0 255 255]
-set magenta [gd color resolve $gd 255 0 255]
 
 set f [open $fn.$map_type r]
 set map [read $f [file size $fn.$map_type]]
@@ -52,10 +51,8 @@ foreach {. coords} [regexp -all -inline {coords="([-0-9, ]*)"} $map] {
 	set coords [split $coords ", "]
 	if {[llength $coords] == 4} {
 	    eval gd rectangle $gd $turquoise $coords
-#	    puts stderr "rect $coords"
 	} {
-	    eval gd polygon $gd $magenta $coords
-#	    puts stderr "poly $coords"
+	    eval gd polygon $gd $turquoise $coords
 	}
 }
 
