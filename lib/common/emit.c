@@ -1686,11 +1686,11 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
         	    nump += pbs_n[i];
 		gvrender_ptf_A(job, pbs, pbs, nump);		
 	    }
+	    obj->url_bsplinemap_p = pbs;
+	    obj->url_map_shape = MAP_POLYGON;
+	    obj->url_map_p = pbs;
+	    obj->url_map_n = pbs_n[0];
 	}
-	obj->url_bsplinemap_p = pbs;
-	obj->url_map_shape = MAP_POLYGON;
-	obj->url_map_p = pbs;
-	obj->url_map_n = pbs_n[0];
     }
 
 #ifdef WITH_CODEGENS
@@ -1711,13 +1711,15 @@ static void emit_end_edge(GVJ_t * job)
 
     if (obj->url || obj->explicit_tooltip) {
 	gvrender_end_anchor(job);
-	for ( nump = obj->url_bsplinemap_n[0], i = 1; i < obj->url_bsplinemap_poly_n; i++) {
-	    /* additional polygon maps around remaining bezier pieces */
-            obj->url_map_n = obj->url_bsplinemap_n[i];
-            obj->url_map_p = &(obj->url_bsplinemap_p[nump]);
-	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
-	    gvrender_end_anchor(job);
-	    nump += obj->url_bsplinemap_n[i];
+	if (obj->url_bsplinemap_poly_n) {
+	    for ( nump = obj->url_bsplinemap_n[0], i = 1; i < obj->url_bsplinemap_poly_n; i++) {
+		/* additional polygon maps around remaining bezier pieces */
+		obj->url_map_n = obj->url_bsplinemap_n[i];
+		obj->url_map_p = &(obj->url_bsplinemap_p[nump]);
+		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+		gvrender_end_anchor(job);
+		nump += obj->url_bsplinemap_n[i];
+	    }
 	}
     }
     obj->url_map_n = 0;       /* null out copy so that it doesn't get freed twice */
