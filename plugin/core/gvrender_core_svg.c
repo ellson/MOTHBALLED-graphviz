@@ -142,8 +142,8 @@ static void svg_begin_graph(GVJ_t * job)
     }
     core_printf(job, " Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
 
-    core_printf(job, "<svg width=\"%dpx\" height=\"%dpx\"\n",
-	job->width, job->height);
+    core_printf(job, "<svg width=\"%.2fin\" height=\"%.2fin\"\n",
+	job->width/job->dpi.x, job->height/job->dpi.y);
     /* namespace of svg */
     core_fputs(job, " xmlns=\"http://www.w3.org/2000/svg\"");
     /* namespace of xlink */
@@ -297,7 +297,8 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
     else {
         core_printf(job, "font:%s;", para->fontname);
     }
-    core_printf(job, "font-size:%.2fpx;", para->fontsize);
+    /* FIXME - even inkscape requires a magic correction to fontsize.  Why?  */
+    core_printf(job, "font-size:%.2fpt;", para->fontsize * 0.9);
     switch (obj->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(obj->pencolor.u.string, "black"))
