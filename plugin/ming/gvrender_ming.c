@@ -104,7 +104,7 @@ static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
     SWFText_moveTo(text, p.x + offset.x, p.y + offset.y);
     SWFText_addUTF8String(text, para->str, 0);
-//    SWFMovie_add(movie, (SWFBlock)text);
+//    SWFMovie_add(movie, (SWFBlock)text);  /* FIXME - causes crash */
 }
 
 static void ming_ellipse(GVJ_t * job, pointf * A, int filled)
