@@ -524,6 +524,10 @@ gvrender_features_t fig_features = {
 	  * (I was expecting 1.3333 which is 96/72, but thats too big.)
     	  * Also 1200 is hardcoded in fig_begin_graph() instead of using job->dpi 
           */
+
+	 /* It may be TWIPS, i.e. 20 * POINT_PER_INCH 
+	  *    but that doesn't explain what the 1200 is? */
+
     fig_knowncolors,		/* knowncolors */
     sizeof(fig_knowncolors) / sizeof(char *), /* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */

@@ -18,13 +18,8 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-
 #include "gvplugin_render.h"
 
 #ifdef HAVE_LIBMING
@@ -32,86 +27,36 @@
 
 typedef enum { FORMAT_SWF } format_type; 
 
-#define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
+static void ming_begin_job(GVJ_t * job)
+{
+    SWFMovie movie;
+
+    Ming_init();
+    Ming_setSWFCompression(9);
+    movie = newSWFMovie();
+    SWFMovie_setRate(movie, 12.0);
+    SWFMovie_setDimension(movie, job->width, job->height);
+    SWFMovie_setNumberOfFrames(movie, 1);
+
+    job->surface = (void*) movie;
+}
+
+static void ming_end_job(GVJ_t * job)
+{
+    SWFMovie movie = (SWFMovie)(job->surface);
+
+    SWFMovie_output_to_stream(movie, job->output_file);
+    destroySWFMovie(movie);
+    job->surface = NULL;
+}
 
 static void ming_begin_page(GVJ_t * job)
 {
 #if 0
-    cairo_t *cr = NULL;
-    cairo_surface_t *surface;
+    SWFMovie movie = (SWFMovie)(job->surface);
+#endif
 
-    if (job->surface)
-        cr = (cairo_t *) job->surface;
-
-    switch (job->render.id) {
-#ifdef CAIRO_HAS_PNG_FUNCTIONS
-    case FORMAT_PNG:
-	if (!cr) {
-	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-			job->width, job->height);
-	    cr = cairo_create(surface);
-	    cairo_surface_destroy (surface);
-	}
-	break;
-#endif
-#ifdef CAIRO_HAS_PS_SURFACE
-    case FORMAT_PS:
-	if (!cr) {
-	    surface = cairo_ps_surface_create_for_stream (writer,
-			job->output_file, job->width, job->height);
-	    cr = cairo_create(surface);
-	    cairo_surface_destroy (surface);
-	}
-	break;
-#endif
-#ifdef CAIRO_HAS_PDF_SURFACE
-    case FORMAT_PDF:
-	if (!cr) {
-	    surface = cairo_pdf_surface_create_for_stream (writer,
-			job->output_file, job->width, job->height);
-	    cr = cairo_create(surface);
-	    cairo_surface_destroy (surface);
-	}
-	break;
-#endif
-#ifdef CAIRO_HAS_SVG_SURFACE
-    case FORMAT_SVG:
-	if (!cr) {
-	    surface = cairo_svg_surface_create_for_stream (writer,
-			job->output_file, job->width, job->height);
-	    cr = cairo_create(surface);
-	    cairo_surface_destroy (surface);
-	}
-	break;
-#endif
-#ifdef CAIRO_HAS_XLIB_SURFACE
-    case FORMAT_GTK:
-	break;
-    case FORMAT_XLIB:
-	break;
-#endif
-#ifdef CAIRO_HAS_XCB_SURFACE
-    case FORMAT_XCB:
-	break;
-#endif
-#ifdef CAIRO_HAS_SDL_SURFACE
-    case FORMAT_SDL:
-	break;
-#endif
-#ifdef CAIRO_HAS_GLITZ_SURFACE
-    case FORMAT_GLITZ:
-	break;
-#endif
-#ifdef CAIRO_HAS_QUARTZ_SURFACE
-    case FORMAT_QUARTZ:
-	break;
-#endif
-    default:
-	break;
-    }
-    job->surface = (void *) cr;
-
-    cairo_save(cr);
+#if 0
     cairo_scale(cr, job->scale.x, job->scale.y);
     cairo_rotate(cr, -job->rotation * M_PI / 180.);
     cairo_translate(cr, job->translation.x, -job->translation.y);
@@ -121,59 +66,26 @@ static void ming_begin_page(GVJ_t * job)
 static void ming_end_page(GVJ_t * job)
 {
 #if 0
-    cairo_t *cr = (cairo_t *) job->surface;
-    cairo_surface_t *surface;
-
-    switch (job->render.id) {
-#ifdef CAIRO_HAS_PNG_FUNCTIONS
-    case FORMAT_PNG:
-        surface = cairo_get_target(cr);
-	cairo_surface_write_to_png_stream(surface, writer, job->output_file);
-	break;
-#endif
-#ifdef CAIRO_HAS_PS_SURFACE
-    case FORMAT_PS:
-	cairo_show_page(cr);
-	break;
-#endif
-#ifdef CAIRO_HAS_PDF_SURFACE
-    case FORMAT_PDF:
-	cairo_show_page(cr);
-	break;
-#endif
-#ifdef CAIRO_HAS_SVG_SURFACE
-    case FORMAT_SVG:
-	cairo_show_page(cr);
-	break;
-#endif
-    default:
-	break;
-    }
-    if (job->external_surface)
-	cairo_restore(cr);
-    else {
-	cairo_destroy(cr);
-	job->surface = NULL;
-    }
-
-#if defined HAVE_FENV_H && defined HAVE_FESETENV && defined HAVE_FEGETENV && defined(HAVE_FEENABLEEXCEPT)
-    /* Restore FP environment */
-    fesetenv(&fenv);
-#endif
+    SWFMovie movie = (SWFMovie)(job->surface);
 #endif
 }
 
 static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
-#if 0
+    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFText text;
     obj_state_t *obj = job->obj;
-    cairo_t *cr = (cairo_t *) job->surface;
+    gvcolor_t pencolor = obj->pencolor;
     pointf offset;
-    PangoLayout *layout = (PangoLayout*)(para->layout);
-    PangoLayoutIter* iter;
 
-    cairo_set_dash (cr, dashed, 0, 0.0);  /* clear any dashing */
-    pango_set_color(cr, &(obj->pencolor));
+    text = newSWFText2();
+    SWFText_setFont(text, para->fontname);
+    SWFText_setHeight(text, para->fontsize * 20.);
+    SWFText_setColor(text,
+	 pencolor.u.rgba[0],
+	 pencolor.u.rgba[1],
+	 pencolor.u.rgba[2],
+	 pencolor.u.rgba[3]);
 
     switch (para->just) {
     case 'r':
@@ -188,110 +100,123 @@ static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	break;
     }
     /* offset to baseline */
-    iter = pango_layout_get_iter (layout);
-    offset.y = pango_layout_iter_get_baseline (iter) / PANGO_SCALE;
+    offset.y = 0.;
 
-    cairo_move_to (cr, p.x-offset.x, -p.y-offset.y);
-    pango_cairo_show_layout(cr, layout);
-#endif
+    SWFText_moveTo(text, p.x + offset.x, p.y + offset.y);
+    SWFText_addUTF8String(text, para->str, 0);
+//    SWFMovie_add(movie, (SWFBlock)text);
 }
 
 static void ming_ellipse(GVJ_t * job, pointf * A, int filled)
 {
-#if 0
+    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFShape shape;
+    SWFFill fill;
     obj_state_t *obj = job->obj;
-    cairo_t *cr = (cairo_t *) job->surface;
-    cairo_matrix_t matrix;
+    gvcolor_t pencolor = obj->pencolor;
+    gvcolor_t fillcolor = obj->fillcolor;
     double rx, ry;
 
-    pango_set_penstyle(job, cr);
-
-    cairo_get_matrix(cr, &matrix);
-    cairo_translate(cr, A[0].x, -A[0].y);
-
+    shape = newSWFShape();
+    SWFShape_setLineStyle(shape, obj->penwidth * 20,
+	 pencolor.u.rgba[0],
+	 pencolor.u.rgba[1],
+	 pencolor.u.rgba[2],
+	 pencolor.u.rgba[3]);
+    if (filled) {
+	fill = SWFShape_addSolidFill(shape,
+	    fillcolor.u.rgba[0],
+	    fillcolor.u.rgba[1],
+	    fillcolor.u.rgba[2],
+	    fillcolor.u.rgba[3]);
+	SWFShape_setRightFill(shape, fill);
+    }
+    SWFShape_movePenTo(shape, A[0].x, A[0].y);
     rx = A[1].x - A[0].x;
     ry = A[1].y - A[0].y;
-    cairo_scale(cr, 1, ry / rx);
-    cairo_move_to(cr, rx, 0);
-    cairo_arc(cr, 0, 0, rx, 0, 2 * M_PI);
-    cairo_close_path(cr);
-
-    cairo_set_matrix(cr, &matrix);
-
-    if (filled) {
-	pango_set_color(cr, &(obj->fillcolor));
-	cairo_fill_preserve(cr);
-    }
-    pango_set_color(cr, &(obj->pencolor));
-    cairo_stroke(cr);
-#endif
+    SWFShape_drawCircle(shape, rx);            /* FIXME */
+    SWFMovie_add(movie, (SWFBlock)shape);
 }
 
 static void
 ming_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
-#if 0
+    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFShape shape;
+    SWFFill fill;
     obj_state_t *obj = job->obj;
-    cairo_t *cr = (cairo_t *) job->surface;
+    gvcolor_t pencolor = obj->pencolor;
+    gvcolor_t fillcolor = obj->fillcolor;
     int i;
 
-    pango_set_penstyle(job, cr);
-
-    cairo_move_to(cr, A[0].x, -A[0].y);
-    for (i = 1; i < n; i++)
-	cairo_line_to(cr, A[i].x, -A[i].y);
-    cairo_close_path(cr);
+    shape = newSWFShape();
+    SWFShape_setLineStyle(shape, obj->penwidth * 20,
+	 pencolor.u.rgba[0],
+	 pencolor.u.rgba[1],
+	 pencolor.u.rgba[2],
+	 pencolor.u.rgba[3]);
     if (filled) {
-	pango_set_color(cr, &(obj->fillcolor));
-	cairo_fill_preserve(cr);
+	fill = SWFShape_addSolidFill(shape,
+	    fillcolor.u.rgba[0],
+	    fillcolor.u.rgba[1],
+	    fillcolor.u.rgba[2],
+	    fillcolor.u.rgba[3]);
+	SWFShape_setRightFill(shape, fill);
     }
-    pango_set_color(cr, &(obj->pencolor));
-    cairo_stroke(cr);
-#endif
+    SWFShape_movePenTo(shape, A[0].x, A[0].y);
+    for (i = 1; i < n; i++)
+	SWFShape_drawLineTo(shape, A[i].x, A[i].y);
+    SWFShape_drawLineTo(shape, A[0].x, A[0].y);
+    SWFMovie_add(movie, (SWFBlock)shape);
 }
 
 static void
 ming_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 		int arrow_at_end, int filled)
 {
-#if 0
+    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFShape shape;
     obj_state_t *obj = job->obj;
-    cairo_t *cr = (cairo_t *) job->surface;
+    gvcolor_t pencolor = obj->pencolor;
     int i;
 
-    pango_set_penstyle(job, cr);
-
-    cairo_move_to(cr, A[0].x, -A[0].y);
-    for (i = 1; i < n; i += 3)
-	cairo_curve_to(cr, A[i].x, -A[i].y, A[i + 1].x, -A[i + 1].y,
-		       A[i + 2].x, -A[i + 2].y);
-    pango_set_color(cr, &(obj->pencolor));
-    cairo_stroke(cr);
-#endif
+    shape = newSWFShape();
+    SWFShape_setLineStyle(shape, obj->penwidth * 20,
+	 pencolor.u.rgba[0],
+	 pencolor.u.rgba[1],
+	 pencolor.u.rgba[2],
+	 pencolor.u.rgba[3]);
+    SWFShape_movePenTo(shape, A[0].x, A[0].y);
+    for (i = 1; i < n; i+=3)
+	SWFShape_drawCubicTo(shape,
+		A[i].x, A[i].y, A[i+1].x, A[i+1].y, A[i+2].x, A[i+2].y);
+    SWFMovie_add(movie, (SWFBlock)shape);
 }
 
 static void
 ming_polyline(GVJ_t * job, pointf * A, int n)
 {
-#if 0
+    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFShape shape;
     obj_state_t *obj = job->obj;
-    cairo_t *cr = (cairo_t *) job->surface;
+    gvcolor_t pencolor = obj->pencolor;
     int i;
 
-    pango_set_penstyle(job, cr);
-
-    cairo_set_line_width (cr, obj->penwidth * job->scale.x);
-    cairo_move_to(cr, A[0].x, -A[0].y);
+    shape = newSWFShape();
+    SWFShape_setLineStyle(shape, obj->penwidth * 20,
+	 pencolor.u.rgba[0],
+	 pencolor.u.rgba[1],
+	 pencolor.u.rgba[2],
+	 pencolor.u.rgba[3]);
+    SWFShape_movePenTo(shape, A[0].x, A[0].y);
     for (i = 1; i < n; i++)
-	cairo_line_to(cr, A[i].x, -A[i].y);
-    pango_set_color(cr, &(obj->pencolor));
-    cairo_stroke(cr);
-#endif
+	SWFShape_drawLineTo(shape, A[i].x, A[i].y);
+    SWFMovie_add(movie, (SWFBlock)shape);
 }
 
 static gvrender_engine_t ming_engine = {
-    0,				/* ming_begin_job */
-    0,				/* ming_end_job */
+    ming_begin_job,
+    ming_end_job,
     0,				/* ming_begin_graph */
     0,				/* ming_end_graph */
     0,				/* ming_begin_layer */
@@ -321,15 +246,15 @@ static gvrender_engine_t ming_engine = {
 
 static gvrender_features_t ming_features = {
     GVRENDER_DOES_TRUECOLOR
-	| GVRENDER_Y_GOES_DOWN
-	| GVRENDER_DOES_TRANSFORM, /* flags */
+	| GVRENDER_Y_GOES_DOWN,
+//	| GVRENDER_DOES_TRANSFORM, /* flags */
     0,				/* default margin - points */
     4.,                         /* default pad - graph units */
     {0.,0.},                    /* default page width, height - points */
-    {72.,72.},			/* default dpi */
+    {96.,96.},			/* default dpi */
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
-    RGBA_DOUBLE,		/* color_type */
+    RGBA_BYTE,			/* color_type */
     NULL,			/* device */
     NULL,			/* gvloadimage target for usershapes */
 };
