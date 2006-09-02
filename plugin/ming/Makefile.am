@@ -10,9 +10,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt \
 	$(LIBMING_CFLAGS)
 
+if WITH_LIBMING
 noinst_LTLIBRARIES = libgvplugin_ming_C.la
-
 pkglib_LTLIBRARIES = libgvplugin_ming.la
+endif
 
 libgvplugin_ming_C_la_SOURCES = \
 	gvplugin_ming.c \
