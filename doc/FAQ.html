@@ -806,22 +806,27 @@ this as a ranked graph is quadratic in the number of nodes.
 
 
 You probably won't encounter the following, but it is also possible
-to construct graphs whose parsing takes quadratic time, by appending
-attributes to nodes and edges after the graph has been loaded.
-For example:
+to construct graphs whose parsing takes quadratic time in the number
+of attributes, by appending attributes to nodes and edges after the 
+graph has been loaded. For example:
 
 <pre>
 digraph G {
-    /* really big graph goes here... */
-    n0 -&gt; n1 -&gt; ... -&gt; n999999999;
+    /* really big graph goes here...with N+1 nodes */
+    n0 -&gt; n1 -&gt; ... -&gt; nN;
 
-    n0 [attr0="whatever"]
-    n0 [attr1="something else"]
+    n0 [attr0="whatever",
+        attr1="something else",
     /* and so on with many more attributes */
+        attrM="something again"]
 }
 </pre>
-The addition of <tt>attr0</tt> touches every node of the graph.
-Then the addition of <tt>attr1</tt> touches every node again, and so on.
+When an attribute first appears, each object is visited with possible cost
+proportional to the number of previously declared attributes. Thus,
+the running time for the above would be <I>cN</I> O(<I>M</I>)
+for some constant <I>c</I>. If there is any concern about this, the
+graph should specify the attributes first before declaring nodes or
+edges. In practice, this problem is neglible.
 <P>
 <A name=Q34a>
 <B>Q. Twopi runs forever on a certain example.</B>
