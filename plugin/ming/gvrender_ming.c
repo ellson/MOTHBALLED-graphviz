@@ -112,6 +112,7 @@ static void ming_ellipse(GVJ_t * job, pointf * A, int filled)
     SWFMovie movie = (SWFMovie)(job->surface);
     SWFShape shape;
     SWFFill fill;
+    SWFDisplayItem item;
     obj_state_t *obj = job->obj;
     gvcolor_t pencolor = obj->pencolor;
     gvcolor_t fillcolor = obj->fillcolor;
@@ -131,11 +132,13 @@ static void ming_ellipse(GVJ_t * job, pointf * A, int filled)
 	    fillcolor.u.rgba[3]);
 	SWFShape_setRightFill(shape, fill);
     }
-    SWFShape_movePenTo(shape, A[0].x, A[0].y);
+    SWFShape_movePenTo(shape, 0, 0);
     rx = A[1].x - A[0].x;
     ry = A[1].y - A[0].y;
-    SWFShape_drawCircle(shape, rx);            /* FIXME */
-    SWFMovie_add(movie, (SWFBlock)shape);
+    SWFShape_drawCircle(shape, rx);
+    item = SWFMovie_add(movie, (SWFBlock)shape);
+    SWFDisplayItem_scale(item, 1., ry/rx);
+    SWFDisplayItem_moveTo(item, A[0].x, A[0].y);
 }
 
 static void
