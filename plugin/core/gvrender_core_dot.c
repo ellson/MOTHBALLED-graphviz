@@ -184,6 +184,7 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
     sprintf(buf, "F %f ", para->fontsize);
     agxbput(xbufs[emit_state], buf);
     xdot_str (job, "", para->fontname);
+    xdot_pencolor(job);
 
     switch (para->just) {
     case 'l':
