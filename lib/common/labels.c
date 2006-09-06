@@ -315,6 +315,10 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    case 'H':
 		for (t = h_str; (*p = *t++); p++);
 		break;
+	    default:
+		*p++ = '\\';
+		*p++ = c;
+		break;
 	    }
 	} else {
 	    *p++ = c;
