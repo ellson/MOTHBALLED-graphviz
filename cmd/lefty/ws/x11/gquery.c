@@ -19,7 +19,6 @@
 #include "common.h"
 #include "g.h"
 #include "gcommon.h"
-
 #include "SF.h"
 
 #define WQU widget->u.q
@@ -81,6 +80,7 @@ int GQcreatewidget (
             return -1;
         }
         XtOverrideTranslations (w, Gqwpoptable);
+        XtOverrideTranslations (widget->w, Gqwdeltable);
         break;
     case G_QWFILE:
         widget->w = 0;
@@ -101,6 +101,7 @@ int GQcreatewidget (
             Gerr (POS, G_ERRCANNOTCREATEWIDGET);
             return -1;
         }
+        XtOverrideTranslations (widget->w, Gqwdeltable);
         break;
     }
     return 0;
@@ -189,6 +190,7 @@ int GQqueryask (
         ADD2ARGS (XtNvalue, args ? args : "");
         XtSetValues (WQU->w, argp, argn);
         XtRealizeWidget (widget->w);
+        XSetWMProtocols (Gdisplay, XtWindow (widget->w), &Gqwdelatom, 1);
         XQueryPointer (
             Gdisplay, XtWindow (widget->w),
             &rwin, &cwin, &rx, &ry, &x, &y, &mask
@@ -261,6 +263,7 @@ int GQqueryask (
                 s1++;
         }
         XtRealizeWidget (widget->w);
+        XSetWMProtocols (Gdisplay, XtWindow (widget->w), &Gqwdelatom, 1);
         XQueryPointer (
             Gdisplay, XtWindow (widget->w),
             &rwin, &cwin, &rx, &ry, &x, &y, &mask
@@ -315,6 +318,13 @@ void Gqwpopaction (Widget w, XEvent *evp, char **app, unsigned int *anp) {
     widget = findwidget (
         (unsigned long) XtParent (XtParent (w)), G_QUERYWIDGET
     );
+    WQU->state = 1;
+}
+
+void Gqwdelaction (Widget w, XEvent *evp, char **app, unsigned int *anp) {
+    Gwidget_t *widget;
+
+    widget = findwidget ((unsigned long) w, G_QUERYWIDGET);
     WQU->state = 1;
 }
 

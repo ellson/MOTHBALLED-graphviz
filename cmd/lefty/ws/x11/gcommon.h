@@ -202,14 +202,16 @@ void Glwbutaction (Widget, XEvent *, char **, unsigned int *);
 void Glwkeyaction (Widget, XEvent *, char **, unsigned int *);
 void Gtweolaction (Widget, XEvent *, char **, unsigned int *);
 void Gqwpopaction (Widget, XEvent *, char **, unsigned int *);
+void Gqwdelaction (Widget, XEvent *, char **, unsigned int *);
 void Gwmdelaction (Widget, XEvent *, char **, unsigned int *);
 extern XtTranslations Gtweoltable;
 extern XtTranslations Gqwpoptable;
 extern XtTranslations Glwanytable;
 extern XtTranslations Gcwanytable;
+extern XtTranslations Gqwdeltable;
 extern XtTranslations Gwmdeltable;
 
-extern Atom Gwmdelatom;
+extern Atom Gqwdelatom, Gwmdelatom;
 
 #endif /* _GCOMMON_H */
 

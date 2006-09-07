@@ -49,6 +49,7 @@ static XtActionsRec actiontable[] = {
     { "lwkey", Glwkeyaction },
     { "tweol", Gtweolaction },
     { "qwpop", Gqwpopaction },
+    { "qwdel", Gqwdelaction },
     { "wmdel", Gwmdelaction },
 };
 static char defcwanytrans[] = "\
@@ -63,14 +64,16 @@ static char deflwanytrans[] = "\
     <KeyUp>: lwkey()";
 static char deftweoltrans[] = "<Key>Return: newline()\n<KeyUp>Return: tweol()";
 static char defqwpoptrans[] = "<KeyDown>Return:\n<KeyUp>Return: qwpop()";
+static char defqwdeltrans[] = "<Message>WM_PROTOCOLS: qwdel()\n";
 static char defwmdeltrans[] = "<Message>WM_PROTOCOLS: wmdel()\n";
 XtTranslations Gtweoltable;
 XtTranslations Gqwpoptable;
 XtTranslations Glwanytable;
 XtTranslations Gcwanytable;
+XtTranslations Gqwdeltable;
 XtTranslations Gwmdeltable;
 
-Atom Gwmdelatom;
+Atom Gqwdelatom, Gwmdelatom;
 
 static XtAppContext appcontext;
 static XFontStruct *deffont;
@@ -174,6 +177,7 @@ int Ginitgraphics (void) {
     Gqwpoptable = XtParseTranslationTable (defqwpoptrans);
     Glwanytable = XtParseTranslationTable (deflwanytrans);
     Gcwanytable = XtParseTranslationTable (defcwanytrans);
+    Gqwdeltable = XtParseTranslationTable (defqwdeltrans);
     Gwmdeltable = XtParseTranslationTable (defwmdeltrans);
     XtRegisterGrabAction (
         Glwbutaction, True,
@@ -188,6 +192,7 @@ int Ginitgraphics (void) {
     Gdepth = DefaultDepth (Gdisplay, Gscreenn);
     deffont = XLoadQueryFont (Gdisplay, "fixed");
     Gxfd = ConnectionNumber (Gdisplay);
+    Gqwdelatom = XInternAtom (Gdisplay, "WM_DELETE_WINDOW", False);
     Gwmdelatom = XInternAtom (Gdisplay, "WM_DELETE_WINDOW", False);
     Gpopdownflag = FALSE;
     Glazyq.flag = 0;
