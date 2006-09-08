@@ -237,6 +237,7 @@ char *strdup_and_subst_obj(char *str, void *obj)
     char *g_str = "\\G", *n_str = "\\N", *e_str = "\\E", *h_str = "\\H", *t_str = "\\T";
     int g_len = 2, n_len = 2, e_len = 2, h_len = 2, t_len = 2, newlen = 0;
 
+    /* prepare substitution strings */
     switch (agobjkind(obj)) {
 	case AGGRAPH:
 	    g_str = ((graph_t *)obj)->name;
@@ -285,7 +286,9 @@ char *strdup_and_subst_obj(char *str, void *obj)
 		break;
 	    case 'T':
 		newlen += t_len;
-		break;
+		break; 
+	    default:  /* leave other escape sequences unmodified, e.g. \n \l \r */
+		newlen += 2;
 	    }
 	} else {
 	    newlen++;
@@ -315,7 +318,7 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    case 'H':
 		for (t = h_str; (*p = *t++); p++);
 		break;
-	    default:
+	    default:  /* leave other escape sequences unmodified, e.g. \n \l \r */
 		*p++ = '\\';
 		*p++ = c;
 		break;
