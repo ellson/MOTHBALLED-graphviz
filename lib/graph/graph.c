@@ -82,10 +82,11 @@ Agedge_t *e0, *e1;
     printf("compare (%s,%s:%s),(%s,%s:%s) = %d\n",
 	   e0->head ? e0->head->name : "nil",
 	   e0->tail ? e0->tail->name : "nil",
-	   e0->key ? e0->key : "nil",
+	   e0->attr && e0->attr[KEYX]? e0->attr[KEYX] : "nil",
 	   e1->head ? e1->head->name : "nil",
 	   e1->tail ? e1->tail->name : "nil",
-	   e1->key ? e1->key : "nil", rv);
+	   e1->attr && e1->attr[KEYX]? e1->attr[KEYX] : "nil",
+	   rv);
     return rv;
 }
 #endif
