@@ -1522,7 +1522,7 @@ static bool edge_in_box(edge_t *e, boxf b)
     return FALSE;
 }
 
-static void emit_begin_edge(GVJ_t * job, edge_t * e)
+void emit_begin_edge(GVJ_t * job, edge_t * e)
 {
     obj_state_t *obj;
     int flags = job->flags;
@@ -1632,7 +1632,7 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e)
 	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 }
 
-static void emit_end_edge(GVJ_t * job)
+void emit_end_edge(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
     edge_t *e = obj->u.e;

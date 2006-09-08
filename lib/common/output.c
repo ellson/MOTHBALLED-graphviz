@@ -407,7 +407,9 @@ void extend_attrs(GVJ_t * job, graph_t *g, agxbuf** xbufs)
             if (ED_spl(e) == NULL)
                 continue;
 
+            emit_begin_edge (job, e);
             emit_edge_graphics (job, e);
+            emit_end_edge (job);
             agxset(e, e_draw->index, agxbuse(xbufs[EMIT_EDRAW]));
             if (t_draw) agxset(e, t_draw->index, agxbuse(xbufs[EMIT_TDRAW]));
             if (h_draw) agxset(e, h_draw->index, agxbuse(xbufs[EMIT_HDRAW]));
