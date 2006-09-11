@@ -440,6 +440,8 @@ void extend_attrs(GVJ_t * job, graph_t *g, agxbuf** xbufs)
 
 void extend_attrs_glabel(graph_t *sg, agxbuf **xbufs)
 {
+    if (!g_draw)
+        g_draw = safe_dcl(sg->root, sg, "_draw_", "", agraphattr);
     agxset(sg, g_draw->index, agxbuse(xbufs[EMIT_CDRAW]));
     if (GD_label(sg))
 	agxset(sg, g_l_draw->index, agxbuse(xbufs[EMIT_CLABEL]));
