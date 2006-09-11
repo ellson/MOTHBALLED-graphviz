@@ -249,8 +249,9 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
                 }
 		break;
 	    case 'V':
-		fprintf(stderr, "%s version %s (%s)\n",
-			gvc->common.info[0], gvc->common.info[1], gvc->common.info[2]);
+		fprintf(stderr, "%s - %s version %s (%s)\n",
+			gvc->common.cmdname, gvc->common.info[0], 
+			gvc->common.info[1], gvc->common.info[2]);
 		exit(0);
 		break;
 	    case 'l':

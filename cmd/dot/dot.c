@@ -45,7 +45,7 @@
 #endif
 
 char *Info[] = {
-    "dot",			/* Program */
+    "Graphviz",			/* Program */
     VERSION,			/* Version */
     BUILDDATE			/* Build Date */
 };
