@@ -114,6 +114,7 @@ BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel
 #-- graphviz rpm --------------------------------------------------
 Group:		Applications/Multimedia
 Summary:	Graph Visualization Tools
+Requires:	urw-fonts
 
 %description
 A collection of tools for the manipulation and layout
@@ -143,7 +144,7 @@ if ! test -x $RPM_INSTALL_PREFIX0/bin/dot; then rm -f $RPM_INSTALL_PREFIX0/%{_li
 %package gd
 Group:		Applications/Multimedia
 Summary:	graphviz plugin for renderers based on gd
-Requires:	graphviz = %{version}-%{release} urw-fonts
+Requires:	graphviz = %{version}-%{release}
 
 %description gd
 graphviz plugin for renderers based on gd
