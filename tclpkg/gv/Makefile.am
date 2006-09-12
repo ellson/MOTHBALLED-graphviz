@@ -206,7 +206,7 @@ test: $(TESTS)
 test_sharp: libgv_sharp.la
 	-(mkdir -p test_sharp; cd test_sharp; \
 		ln -fs ../.libs/libgv_sharp.so libgv_sharp.so; \
-		ln -fs ../*.dot ../*.cs .; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.cs .; \
 		$(SHARP) *.cs -out:test.exe; \
 		mono test.exe)
 
@@ -214,14 +214,14 @@ test_sharp: libgv_sharp.la
 test_guile: libgv_guile.la
 	-(mkdir -p test_guile; cd test_guile; \
 		ln -fs ../.libs/libgv_guile.so libgv.so; \
-		ln -fs ../*.dot ../*.guile .; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.guile .; \
 		$(GUILE) -s test.guile)
 
 .PHONY: test_io
 test_io: libgv_io.la
 	-(mkdir -p test_io; cd test_io; \
 		ln -fs ../.libs/libgv_io.so libgv.so; \
-		ln -fs ../*.dot ../*.io .; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.io .; \
 		ioc *.io; \
 		LD_LIBRARY_PATH=. io test)
 
@@ -229,21 +229,22 @@ test_io: libgv_io.la
 test_java: libgv_java.la
 	-(mkdir -p test_java; cd test_java; \
 		ln -fs ../.libs/libgv_java.so libgv.so; \
-		ln -fs ../*.dot ../*.java .; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.java .; \
 		javac *.java; \
 		LD_LIBRARY_PATH=. CLASSPATH=. java test)
 
 .PHONY: test_lua
 test_lua: libgv_lua.la
 	-(mkdir -p test_lua; cd test_lua; \
-		ln -fs ../.libs/libgv_lua.so ../*.dot ../*.lua .; \
+		ln -fs ../.libs/libgv_lua.so .;\
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.lua .; \
 		$(LUA) test.lua)
 
 .PHONY: test_ocaml
 test_ocaml: libgv_ocaml.la
 	-(mkdir -p test_ocaml; cd test_ocaml; \
 		ln -fs ../.libs/libgv_ocaml.so libgv.so; \
-		ln -fs ../*.dot ../*.ocaml .; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.ocaml .; \
 		ocamlc *.ocaml; \
 		LD_LIBRARY_PATH=. ocaml test)
 
@@ -251,35 +252,35 @@ test_ocaml: libgv_ocaml.la
 test_perl: libgv_perl.la
 	-(mkdir -p test_perl; cd test_perl; \
 		ln -fs ../.libs/libgv_perl.so gv.so; \
-		ln -fs ../*.dot ../*.p[lm] .; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.p[lm] .; \
 		$(PERL) ./test.pl)
 
 .PHONY: test_php
 test_php: libgv_php.la
 	-(mkdir -p test_php; cd test_php; \
 		ln -fs ../.libs/libgv_php.so libgv.so; \
-		ln -fs ../*.dot ../*.php .; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.php .; \
 		$(PHP) ./test.php)
 
 .PHONY: test_python
 test_python: _gv.la
 	-(mkdir -p test_python; cd test_python; \
 		ln -fs ../.libs/libgv_python.so _gv.so; \
-		ln -fs ../*.dot ../*.py .; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.py .; \
 		PYTHONPATH=. $(PYTHON) test.py)
 
 .PHONY: test_ruby
 test_ruby: gv.la
 	-(mkdir -p test_ruby; cd test_ruby; \
 		ln -fs ../.libs/libgv_ruby.so gv.so; \
-		ln -fs ../.libs/gv.so ../*.dot ../*.rb .; \
+		ln -fs ../.libs/gv.so ../$(srcdir)/*.dot ../$(srcdir)/*.rb .; \
 		$(RUBY) test.rb)
 
 .PHONY: test_tcl
 test_tcl: libgv_tcl.la
 	-(mkdir -p test_tcl; cd test_tcl; \
 		ln -fs ../.libs/libgv_tcl.so libgv_tcl.so; \
-		ln -fs ../*.dot ../*.tcl .; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.tcl .; \
 		$(TCLSH) ./test.tcl)
 
 EXTRA_DIST = demo/* gv_doc_*.tcl \
