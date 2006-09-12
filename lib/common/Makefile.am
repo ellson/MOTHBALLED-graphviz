@@ -30,13 +30,13 @@ libcommon_C_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
 fontmetrics.o fontmetrics.lo: ps_font_equiv.h
 
 # ensure font names are properly sorted for bsearch operation 
-ps_font_equiv.h: ps_font_equiv.txt
-	LC_COLLATE=C $(SORT) <ps_font_equiv.txt >ps_font_equiv.h
+ps_font_equiv.h: $(srcdir)/ps_font_equiv.txt
+	LC_COLLATE=C $(SORT) <$(srcdir)/ps_font_equiv.txt >ps_font_equiv.h
 
 utils.o utils.lo : ps.h
 
-ps.h : ps.txt
-	$(AWK) -f $(top_srcdir)/awk/stringize.awk ps.txt > ps.h
+ps.h : $(srcdir)/ps.txt
+	$(AWK) -f $(top_srcdir)/awk/stringize.awk $(srcdir)/ps.txt > ps.h
 
 colxlate.o colxlate.lo : colortbl.h
 
