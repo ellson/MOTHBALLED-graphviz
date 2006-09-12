@@ -1,8 +1,8 @@
 #!/usr/bin/env tclsh
 
-source gv_doc_langs.tcl
+source [lindex $argv 0]/gv_doc_langs.tcl
 
-set TEMPLATE gv_doc_template.tcl
+set TEMPLATE [lindex $argv 0]/gv_doc_template.tcl
 
 proc gv_doc_synopsis {} {
 	global SYNOPSIS
@@ -15,9 +15,9 @@ proc gv_doc_usage {} {
 }
 
 proc gv_doc_commands {} {
-	global TYPES nameprefix paramstart paramsep paramend
+	global TYPES nameprefix paramstart paramsep paramend srcdir
 
-	set fn gv.i
+	set fn $srcdir/gv.i
 	set f [open $fn r]
 	set t [read $f [file size $fn]]
 	close $f
@@ -82,6 +82,7 @@ foreach lang [array names LANGS] {
 	foreach {nameprefix paramstart paramsep paramend} $PROPS(SYNTAX) {break}
 	set SYNOPSIS $PROPS(SYNOPSIS)
 	set USAGE $PROPS(USAGE)
+	set srcdir [lindex $argv 0]
 	set f [open gv_[set lang].man w]
 	set ft [open $TEMPLATE r]
 	puts $f [subst [read $ft [file size $TEMPLATE]]]
