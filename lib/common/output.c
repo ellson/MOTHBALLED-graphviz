@@ -443,6 +443,9 @@ void extend_attrs_glabel(graph_t *sg, agxbuf **xbufs)
     if (!g_draw)
         g_draw = safe_dcl(sg->root, sg, "_draw_", "", agraphattr);
     agxset(sg, g_draw->index, agxbuse(xbufs[EMIT_CDRAW]));
-    if (GD_label(sg))
+    if (GD_label(sg)) {
+        if (!g_l_draw)
+            g_l_draw = safe_dcl(sg->root, sg, "_ldraw_", "", agraphattr);
 	agxset(sg, g_l_draw->index, agxbuse(xbufs[EMIT_CLABEL]));
+    }
 }
