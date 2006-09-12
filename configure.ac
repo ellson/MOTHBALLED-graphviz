@@ -100,8 +100,8 @@ AM_CONFIG_HEADER(config.h)
 echo "#define BUILDDATE \"`date -u`\"" > builddate.h
 
 # only update ast_common.h (for GNU builds) from master if changed
-if ! `cmp -s ast_common.h.in ast_common.h`; then
-	cp ast_common.h.in ast_common.h;
+if ! `cmp -s $srcdir/ast_common.h.in ast_common.h`; then
+	cp $srcdir/ast_common.h.in ast_common.h;
 fi
 
 AC_PREFIX_DEFAULT([/usr/local])
@@ -229,17 +229,6 @@ fi
 if `echo ${CFLAGS} | $GREP ffast-math >/dev/null`; then
     AC_DEFINE_UNQUOTED(NO_FPERR,1,[Define if no fpu error exception handling is required.])
 fi
-
-dnl -----------------------------------
-dnl where are we in the directory structure
-
-BUILD_DIR=`pwd`
-cd ${srcdir}
-TOP_DIR=`pwd`
-cd ${BUILD_DIR}
-
-AC_SUBST(TOP_DIR)
-AC_SUBST(BUILD_DIR)
 
 dnl -----------------------------------
 dnl Check for various typedefs and provide substitutes if they don't exist.
@@ -726,8 +715,8 @@ if test `$SWIG -help 2>&1 | $GREP -c '\-ruby *- Generate'` = 0; then
 else
 AC_CHECK_PROG(RUBY,ruby,ruby)
 if test "x$RUBY" != "x"; then
-  RUBY_INCLUDES="-I`$RUBY $TOP_DIR/config/config_ruby.rb INCLUDES`"
-  RUBY_LIBS="-L`$RUBY $TOP_DIR/config/config_ruby.rb lib` -lruby"
+  RUBY_INCLUDES="-I`$RUBY $srcdir/config/config_ruby.rb INCLUDES`"
+  RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb lib` -lruby"
   save_CPPFLAGS=$CPPFLAGS
   CPPFLAGS="$CPPFLAGS $RUBY_INCLUDES"
   AC_CHECK_HEADER(ruby.h,,[
@@ -1662,7 +1651,7 @@ else
 if test -f "/usr/local/include/tclInt.h"; then
 TCLINT_INCLUDES="-I/usr/local/include"
 else
-TCLINT_INCLUDES="-I$TOP_DIR/tclpkg/tclstubs"
+TCLINT_INCLUDES="-I$(top_srcdir)/tclpkg/tclstubs"
 fi
 fi
 fi
@@ -1679,7 +1668,7 @@ else
 if test -f "/usr/local/include/tkInt.h"; then
 TKINT_INCLUDES="-I/usr/local/include"
 else
-TKINT_INCLUDES="-I$TOP_DIR/tclpkg/tkstubs"
+TKINT_INCLUDES="-I$(top_srcdir)/tclpkg/tkstubs"
 fi
 fi
 fi
