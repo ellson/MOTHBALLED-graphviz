@@ -1233,6 +1233,16 @@ AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GTK.
 
+AC_ARG_WITH(gtk,
+  [AC_HELP_STRING([--with-gtk],
+                  [use gtk+ library])])
+
+### default is to build with gtk+
+if test "x$with_gtk" != "xno"; then
+	with_gtk=yes
+fi
+
+if test "x$with_gtk" = "xyes"; then
 PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.7.0],
         [HAVE_GTK=1
         AC_DEFINE_UNQUOTED(HAVE_GTK,1,
@@ -1240,6 +1250,7 @@ PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.7.0],
         [AC_MSG_WARN(gtk+ library not available. desktop features will not be built)])
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
+fi
 AM_CONDITIONAL(WITH_GTK, [test "x$HAVE_GTK" != "x"])
 
 dnl -----------------------------------
@@ -1651,7 +1662,7 @@ else
 if test -f "/usr/local/include/tclInt.h"; then
 TCLINT_INCLUDES="-I/usr/local/include"
 else
-TCLINT_INCLUDES="-I$(top_srcdir)/tclpkg/tclstubs"
+TCLINT_INCLUDES='-I$(top_srcdir)/tclpkg/tclstubs'
 fi
 fi
 fi
@@ -1668,7 +1679,7 @@ else
 if test -f "/usr/local/include/tkInt.h"; then
 TKINT_INCLUDES="-I/usr/local/include"
 else
-TKINT_INCLUDES="-I$(top_srcdir)/tclpkg/tkstubs"
+TKINT_INCLUDES='-I$(top_srcdir)/tclpkg/tkstubs'
 fi
 fi
 fi
