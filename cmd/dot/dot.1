@@ -106,6 +106,16 @@ draws undirected graphs using a ``spring'' model. It relies on a
 force-directed approach in the spirit of Fruchterman and Reingold
 (cf. Software-Practice & Experience 21(11), 1991, pp. 1129-1164).
 .SH OUTPUT FORMATS
+Dot uses an extensible plugin mechanism for its output renderers,
+so to see what output formats your installation of dot supports
+you can use ``dot -Txxx'' (where xxx is an unlikely format)
+and check the warning message.
+Also, The plugin mechanism supports multiple implementations
+of the output formats.
+To see what variants are available, use, for example: ``dot -Tpng:''
+and to force a particular variant, use, for example: ``dot -Tpng:gd''
+.P
+Traditionally, dot supports the following:
 \fB-Tps\fP (PostScript),
 \fB-Tsvg\fP \fB-Tsvgz\fP (Structured Vector Graphics),
 \fB-Tfig\fP (XFIG graphics),
