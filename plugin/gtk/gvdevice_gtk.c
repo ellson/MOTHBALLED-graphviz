@@ -35,6 +35,7 @@
 
 #include <cairo.h>
 #ifdef CAIRO_HAS_XLIB_SURFACE
+#include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
 #include "interface.h"
