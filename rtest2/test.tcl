@@ -3,6 +3,7 @@
 set DOT ../cmd/dot/dot
 set DIFF diff
 set DIFFIMG ../contrib/diffimg/diffimg
+set TAR tar
 
 set graphdir test_graphs
 set resultdir test_results
@@ -17,7 +18,8 @@ if {$argc && [string equal [lindex $argv 0] reference]} {
   file mkdir $referencedir
   set resultdir $referencedir
 } {
-  if {[file exists $referencedir] && [file isdir $referencedir]} {
+  if {[file exists $referencedir.tgz]} {
+    exec $TAR xfz $referencedir.tgz
     set dodiff 1
   }
 }
@@ -119,4 +121,6 @@ if {$dodiff} {
   set total [expr {$pass+$fail}]
   puts ""
   puts "Summary: PASS $pass : FAIL $fail : TOTAL $total"
+} {
+  exec $TAR cfz $referencedir.tgz $referencedir
 }
