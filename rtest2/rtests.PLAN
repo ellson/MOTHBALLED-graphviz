@@ -1,0 +1,74 @@
+Command line:
+
+	argument parsing, argv0 handling, help, version, verbose
+
+	plugin mechanisms
+
+	empty graph - all layouts, all formats
+	
+Render tests:
+
+	node shapes (selected subset, single shape per test, no label)
+		peripheries, sides, skew, distort, ellipses
+	
+	label (single node, invisible box shape):
+		 various fonts, encodings, russian, chinese, german, ...
+		 text justification, single/multi lines
+
+	colors, formats, transparency, pen, fill, font, 
+	
+	html labels, table features, anchor features, font features
+
+	polylines, splines: pen styles, parallel edges
+
+	arrow shapes
+
+Layout tests:
+
+	node sizing around labels, html labels
+
+	user-shapes: sizing and format detection
+
+	node and edge positions
+
+	edge labels: main, head, tail
+
+	rankdir
+
+	clusters
+
+	mincross
+
+	splines
+
+Format-specific tests:
+
+	anchors
+		maps, ps, svg
+	
+	paging, layering, multigraphs, 
+		ps
+
+	zoom, size, dpi, margin
+		png, svg, ps, maps
+
+	colors: known colors, pen and fill combinations, transparency, color indexing
+		png, ps, svg
+
+	user-shapes: image loading, input/output format transforms, multiple instances
+		
+
+Perfomance tests:
+	
+	some benchmark test so that we can catch gross perfomance changes
+		layout
+		renderer
+		plugin loading
+
+Platform tests:
+
+	some tests that exercise platform features:
+		32 v 64 bit
+		byte ordering
+		toolchain variations: compiler, linker, lex, yacc, ...
+		floating-point variations
