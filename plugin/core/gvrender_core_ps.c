@@ -103,7 +103,13 @@ static void psgen_begin_graph(GVJ_t * job)
         epsf_define(job->output_file);
     }
     isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
-    if (isLatin1 && !setupLatin1) {
+    /* We always setup Latin1. The charset info is always output,
+     * and installing it is cheap. With it installed, we can then
+     * rely on ps_string to convert UTF-8 characters whose encoding
+     * is in the range of Latin-1 into the Latin-1 equivalent and
+     * get the expected PostScript output.
+     */
+    if (!setupLatin1) {
 	core_fputs(job, "setupLatin1\n");	/* as defined in ps header */
 	setupLatin1 = TRUE;
     }

@@ -194,17 +194,55 @@ void epsf_define(FILE * of)
     }
 }
 
+enum {ASCII, LATIN1, NONLATIN};
+
+/* charsetOf:
+ * Assuming legal utf-8 input, determine if
+ * the character value range is ascii, latin-1 or otherwise.
+ */
+static int
+charsetOf (char* s)
+{
+    int r = ASCII;
+    unsigned char c;
+
+    while ((c = *(unsigned char*)s++)) {
+	if (c < 0x7F) 
+	    continue;
+	else if ((c & 0xFC) == 0xC0) {
+	    r = LATIN1;
+	    s++; /* eat second byte */
+	}
+	else return NONLATIN;
+    }
+    return r;
+}
+
 char *ps_string(char *ins, int latin)
 {
     char *s;
     char *base;
     static agxbuf  xb;
+    static int warned;
     int rc;
 
     if (latin)
         base = utf8ToLatin1 (ins);
-    else
+    else switch (charsetOf (ins)) {
+    case ASCII :
         base = ins;
+	break;
+    case LATIN1 :
+        base = utf8ToLatin1 (ins);
+	break;
+    case NONLATIN :
+        if (!warned) {
+	    agerr (AGWARN, "UTF-8 input uses non-Latin1 characters which cannot be handled in PostScript output");
+	    warned = 1;
+	}
+        base = ins;
+	break;
+    }
 
     if (xb.buf == NULL)
         agxbinit (&xb, 0, NULL);
