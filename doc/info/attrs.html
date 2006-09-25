@@ -1569,7 +1569,7 @@ the given types.
   <TT>"n","ne","e","se","s","sw","w","nw"</TT>. This modifies the edge
   placement to aim for the corresponding compass point on the port or,
   in the second form where no <I>portname</I> is supplied, on the node
-  itself.
+  itself. 
   <P>
   This attribute can be attached to an edge using the 
   <A HREF=#k:headport>headport</A> and
@@ -1578,6 +1578,13 @@ the given types.
   <CENTER>
   <TT>node1:port1 -> node2:port5:nw;</TT>
   </CENTER>
+  <P>
+  Note that it is legal to have a portname the same as one of
+  the compass points. In this case, this reference will be resolved to
+  the port. Thus, if node <TT>A</TT> has a port <TT>w</TT>, then
+  <TT>headport=w</TT> will refer to the port and not the compass point.
+  At present, in this case, there is no way to specify that the compass
+  point should be used.
 
 <DT><A NAME=k:rankType><STRONG>rankType</STRONG></A>
 <DD>"same", "min", "source", "max", "sink"
