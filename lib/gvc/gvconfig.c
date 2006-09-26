@@ -258,9 +258,11 @@ char * gvconfig_libdir(void)
 		if (tmp) {
 		    *tmp = 0;
 		    /* Check for real /lib dir. Don't accept pre-install /.libs */
-		    if (strcmp(strrchr(path,'/'), "/graphviz") != 0)
+		    if (strcmp(strrchr(path,'/'), "/.libs") == 0)
 			continue;
-		    libdir = path;
+		    strcpy(line, tmp);  /*use line buffer for result */
+		    strcat(line, "/graphviz");  /* plugins are in "graphviz" subdirectory */
+		    libdir = line;
 		    break;
 	        }
             }
