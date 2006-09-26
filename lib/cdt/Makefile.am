@@ -5,16 +5,13 @@ pdfdir = $(pkgdatadir)/doc/pdf
 pkgextraincludedir = $(pkgincludedir)
 pkgconfigdir = $(libdir)/pkgconfig
 
-man = cdt.3
-pdf = cdt.pdf
-
 AM_CPPFLAGS = -I$(top_srcdir)
 
 pkginclude_HEADERS = cdt.h dthdr.h
 noinst_LTLIBRARIES = libcdt_C.la
-pkglib_LTLIBRARIES = libcdt.la
-man_MANS = $(man)
-pdf_DATA = $(pdf)
+lib_LTLIBRARIES = libcdt.la
+man_MANS = cdt.3
+pdf_DATA = cdt.pdf
 pkgextrainclude_DATA = $(top_builddir)/ast_common.h
 pkgconfig_DATA = libcdt.pc
 
@@ -28,6 +25,6 @@ libcdt_la_SOURCES = $(libcdt_C_la_SOURCES)
 .3.pdf:
 	-groff -Tps -man $< | ps2pdf - - >$@
 
-EXTRA_DIST = $(man) $(pdf) Makefile.old features
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old features
 
-DISTCLEANFILES = $(pdf)
+DISTCLEANFILES = $(pdf_DATA)
