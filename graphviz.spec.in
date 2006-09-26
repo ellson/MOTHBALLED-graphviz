@@ -354,11 +354,12 @@ This package contains development files for graphviz.
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/graphviz
-%{_libdir}/graphviz/*.so
+%{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/*.3*
 %exclude %{_libdir}/graphviz/*/*
 %exclude %{_libdir}/graphviz/libgvplugin*
+%exclude %{_libdir}/graphviz/*.so
 
 #-- graphviz-graphs rpm -------------------------------------------
 %package graphs
