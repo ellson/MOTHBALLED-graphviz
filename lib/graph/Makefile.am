@@ -4,19 +4,16 @@
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
-man = graph.3
-pdf = graph.pdf
-
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/cdt
 
 pkginclude_HEADERS = graph.h libgraph.h triefa.h parser.h agxbuf.h
 noinst_LTLIBRARIES = libgraph_C.la
-pkglib_LTLIBRARIES = libgraph.la
+lib_LTLIBRARIES = libgraph.la
 pkgconfig_DATA = libgraph.pc
-man_MANS = $(man)
-pdf_DATA = $(pdf)
+man_MANS = graph.3
+pdf_DATA = graph.pdf
 
 libgraph_C_la_SOURCES = \
 	attribs.c agxbuf.c edge.c graph.c graphio.c lexer.c \
@@ -44,8 +41,8 @@ y.output: $(top_srcdir)/lib/graph/parser.y
 .3.pdf:
 	-groff -Tps -man $< | ps2pdf - - > $@
 
-EXTRA_DIST = $(man) $(pdf) triefa.cP \
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) triefa.cP \
 	Makefile.old parser.c parser.h \
 	y.tab.c y.tab.h y.output
 
-DISTCLEANFILES = y.output parser.c parser.h y.tab.[ch] $(pdf)
+DISTCLEANFILES = y.output parser.c parser.h y.tab.[ch] $(pdf_DATA)
