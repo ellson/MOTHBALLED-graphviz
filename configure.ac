@@ -1904,7 +1904,9 @@ AC_CONFIG_FILES(Makefile
 	lib/circogen/Makefile
 	lib/twopigen/Makefile
 	lib/pack/Makefile
+	lib/pack/libpack.pc
 	lib/expr/Makefile
+	lib/expr/libexpr.pc
 	lib/common/Makefile
 	lib/ingraphs/Makefile
 	lib/vpsc/Makefile
