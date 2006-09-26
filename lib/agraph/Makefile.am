@@ -4,19 +4,16 @@
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
-pdf = agraph.pdf
-man = agraph.3
-
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/cdt
 
 pkginclude_HEADERS = aghdr.h agraph.h malloc.h vmstub.h grammar.h
 noinst_LTLIBRARIES = libagraph_C.la
-pkglib_LTLIBRARIES = libagraph.la
+lib_LTLIBRARIES = libagraph.la
 pkgconfig_DATA = libagraph.pc
-man_MANS = $(man)
-pdf_DATA = $(pdf)
+man_MANS = agraph.3
+pdf_DATA = agraph.pdf
 
 libagraph_C_la_SOURCES = agerror.c apply.c attr.c \
 	edge.c flatten.c grammar.y graph.c id.c imap.c io.c \
@@ -46,8 +43,8 @@ grammar.h: y.output
 .3.pdf:
 	-groff -Tps -man $< | ps2pdf - - >$@
 
-EXTRA_DIST = $(man) $(pdf) Makefile.old cmpnd.c dotdge.c \
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old cmpnd.c dotdge.c \
 	main.c tester.c README grammar.c grammar.h scan.c \
 	y.tab.c y.tab.h y.output
 
-DISTCLEANFILES = $(pdf) grammar.[ch] scan.c y.output y.tab.[ch]
+DISTCLEANFILES = $(pdf_DATA) grammar.[ch] scan.c y.output y.tab.[ch]
