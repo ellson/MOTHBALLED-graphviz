@@ -2,6 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 
 pdfdir = $(pkgdatadir)/doc/pdf
+pkgconfigdir = $(libdir)/pkgconfig
 
 AM_CPPFLAGS = \
         -I. \
@@ -13,9 +14,10 @@ AM_CPPFLAGS = \
 
 pkginclude_HEADERS = exgram.h exlib.h expr.h
 noinst_LTLIBRARIES = libexpr_C.la
-pkglib_LTLIBRARIES = libexpr.la
+lib_LTLIBRARIES = libexpr.la
 man_MANS = expr.3
 pdf_DATA = expr.pdf
+pkgconfig_DATA = libexpr.pc
 
 #### -no-undefined breaks Mac OS/X builds.
 #### libast has "extern char **environ" which remains
