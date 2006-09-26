@@ -11,4 +11,5 @@ y.output
 y.tab.c
 y.tab.h
 *.pdf
+*.pc
 CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
