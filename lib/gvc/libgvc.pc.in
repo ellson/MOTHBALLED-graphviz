@@ -1,9 +1,9 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-libdir=@libdir@/@PACKAGE@
+libdir=@libdir@
 includedir=@includedir@/@PACKAGE@
 plugins=@GVPLUGIN_VERSION@
-                                                                                       
+
 Name: libgvc
 Description: The GraphVizContext library 
 Version: @VERSION@

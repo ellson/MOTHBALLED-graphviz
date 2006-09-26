@@ -16,6 +16,7 @@ pkginclude_HEADERS = pack.h
 noinst_LTLIBRARIES = libpack_C.la
 man_MANS = pack.3
 pdf_DATA = pack.pdf
+pkgconfig_DATA = libpack.pc
 
 libpack_C_la_SOURCES = ccomps.c pack.c
 
