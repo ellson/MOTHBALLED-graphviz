@@ -228,20 +228,25 @@ char *ps_string(char *ins, int latin)
 
     if (latin)
         base = utf8ToLatin1 (ins);
-    else switch (charsetOf (ins)) {
-    case ASCII :
-        base = ins;
-	break;
-    case LATIN1 :
-        base = utf8ToLatin1 (ins);
-	break;
-    case NONLATIN :
-        if (!warned) {
-	    agerr (AGWARN, "UTF-8 input uses non-Latin1 characters which cannot be handled in PostScript output");
-	    warned = 1;
+    else {
+	switch (charsetOf (ins)) {
+	case ASCII :
+	    base = ins;
+	    break;
+	case LATIN1 :
+	    base = utf8ToLatin1 (ins);
+	    break;
+	case NONLATIN :
+	    if (!warned) {
+		agerr (AGWARN, "UTF-8 input uses non-Latin1 characters which cannot be handled in PostScript output");
+		warned = 1;
+	    }
+	    base = ins;
+	    break;
+	default:
+	    base = ins;
+	    break;
 	}
-        base = ins;
-	break;
     }
 
     if (xb.buf == NULL)
