@@ -2,7 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 
 pdfdir = $(pkgdatadir)/doc/pdf
-pkgconfigdir = $(libdir)/pkgconfig
+#pkgconfigdir = $(libdir)/pkgconfig
 
 AM_CPPFLAGS = -I$(top_srcdir) \
         -I$(top_srcdir)/lib/common \
@@ -14,15 +14,17 @@ AM_CPPFLAGS = -I$(top_srcdir) \
 
 pkginclude_HEADERS = pack.h
 noinst_LTLIBRARIES = libpack_C.la
-man_MANS = pack.3
-pdf_DATA = pack.pdf
-pkgconfig_DATA = libpack.pc
+#man_MANS = pack.3
+#pdf_DATA = pack.pdf
+#pkgconfig_DATA = libpack.pc
 
 libpack_C_la_SOURCES = ccomps.c pack.c
 
-.3.pdf:
-	-groff -Tps -man $< | ps2pdf - - >$@
+#.3.pdf:
+#	-groff -Tps -man $< | ps2pdf - - >$@
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old ptest.c
+#EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old ptest.c
 
-DISTCLEANFILES = $(pdf_DATA)
+#DISTCLEANFILES = $(pdf_DATA)
+
+EXTRA_DIST = pack.3 Makefile.old ptest.c
