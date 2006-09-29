@@ -56,19 +56,8 @@ typedef enum { FORMAT_PS, FORMAT_PS2, } format_type;
 static int isLatin1;
 static char setupLatin1;
 
-static char *last_fontname;
-static double last_fontsize;
-static gvcolor_t last_color;
-
 static void psgen_begin_job(GVJ_t * job)
 {
-    last_fontname = NULL;
-    last_fontsize = 0.0;
-    last_color.u.HSVA[0] = 0.0;
-    last_color.u.HSVA[1] = 0.0;
-    last_color.u.HSVA[2] = 0.0;
-    last_color.u.HSVA[3] = 1.0;  /* opaque */
-
     core_fputs(job, "%%!PS-Adobe-2.0\n");
     core_printf(job, "%%%%Creator: %s version %s (%s)\n",
 	    job->common->info[0], job->common->info[1], job->common->info[2]);
@@ -318,37 +307,19 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 	}
 	core_printf(job, "%.3f %.3f %.3f %scolor\n",
 	    color->u.HSVA[0], color->u.HSVA[1], color->u.HSVA[2], objtype);
-	last_color.u.HSVA[0] = color->u.HSVA[0];
-	last_color.u.HSVA[1] = color->u.HSVA[1];
-	last_color.u.HSVA[2] = color->u.HSVA[2];
-	last_color.u.HSVA[3] = color->u.HSVA[3];
     }
 }
 
 static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
-    double adj, sz;
+    double adj;
     char *str;
 
     if (job->obj->pencolor.u.HSVA[3] < .5)
 	return;  /* skip transparent text */
 
-    /* if font color differs from object color */
-    if (last_color.u.HSVA[0] != job->obj->pencolor.u.HSVA[0]
-     || last_color.u.HSVA[1] != job->obj->pencolor.u.HSVA[1]
-     || last_color.u.HSVA[2] != job->obj->pencolor.u.HSVA[2]) 
-	ps_set_color(job, &(job->obj->pencolor));
-    if (para->fontname) {
-	sz = para->fontsize;
-        if (sz != last_fontsize
-          || last_fontname == NULL
-	  || strcmp(para->fontname, last_fontname) != 0) {
-	    core_printf(job, "%.2f /%s set_font\n", sz, para->fontname);
-	    last_fontsize = sz;
-	    last_fontname = para->fontname;
-	}
-    }
-
+    ps_set_color(job, &(job->obj->pencolor));
+    core_printf(job, "%.2f /%s set_font\n", para->fontsize, para->fontname);
     str = ps_string(para->str,isLatin1);
     if (para->xshow) {
         switch (para->just) {
