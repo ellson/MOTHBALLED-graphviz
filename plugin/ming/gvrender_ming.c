@@ -245,6 +245,7 @@ static gvrender_engine_t ming_engine = {
     ming_bezier,
     ming_polyline,
     0,				/* ming_comment */
+    0,				/* ming_library_shape */
 };
 
 static gvrender_features_t ming_features = {

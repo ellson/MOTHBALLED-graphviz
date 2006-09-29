@@ -37,6 +37,7 @@
 #include "gvcproc.h"
 
 extern int emit_once(char *str);
+extern shape_desc *find_user_shape(char *name);
 
 /* storage for temporary hacks until client API is FP */
 static pointf *AF;
@@ -920,8 +921,13 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, bool filled)
     int i;
     pointf *af;
 
-    if (! (us = gvusershape_find(name)))
+    if (! (us = gvusershape_find(name))) {
+	if (find_user_shape(name)) {
+	    if (gvre && gvre->library_shape)
+	        gvre->library_shape(job, name, a, n, filled);
+	}
         return;
+    }
 
     if (job->flags & GVRENDER_DOES_TRANSFORM)
 	af = a;

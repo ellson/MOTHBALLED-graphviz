@@ -501,7 +501,8 @@ gvrender_engine_t fig_engine = {
     fig_polygon,
     fig_bezier,
     fig_polyline,
-    fig_comment
+    fig_comment,
+    0,				/* fig_library_shape */
 };
 
 

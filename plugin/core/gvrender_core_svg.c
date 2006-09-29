@@ -436,6 +436,7 @@ gvrender_engine_t svg_engine = {
     svg_bezier,
     svg_polyline,
     svg_comment,
+    0,				/* svg_library_shape */
 };
 
 gvrender_features_t svg_features = {

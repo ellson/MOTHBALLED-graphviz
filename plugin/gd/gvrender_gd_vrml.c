@@ -828,6 +828,7 @@ static gvrender_engine_t vrml_engine = {
     vrml_bezier,
     vrml_polyline,
     0,                          /* vrml_comment */
+    0,                          /* vrml_library_shape */
 };
 
 static gvrender_features_t vrml_features = {

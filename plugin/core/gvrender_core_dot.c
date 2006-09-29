@@ -312,6 +312,7 @@ gvrender_engine_t xdot_engine = {
     xdot_bezier,
     xdot_polyline,
     0,				/* xdot_comment */
+    0,				/* xdot_library_shape */
 };
 
 gvrender_features_t canon_features = {

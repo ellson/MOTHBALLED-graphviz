@@ -337,18 +337,12 @@ point gvusershape_size(graph_t * g, char *name)
         dpi = POINTS_PER_INCH;
 
     /* no shape file, no shape size */
-    if (!name || (*name == '\0')) {
+    if (!name || (*name == '\0') || !(us = gvusershape_open (name))) {
         rv.x = rv.y = -1;
-        return rv;
     }
-
-    if ((us = gvusershape_open (name))) {
+    else {
 	rv.x = us->w * dpi / us->dpi;
 	rv.y = us->h * dpi / us->dpi;
     }
-    else {
-        rv.x = rv.y = -1;
-    }
-
     return rv;
 }

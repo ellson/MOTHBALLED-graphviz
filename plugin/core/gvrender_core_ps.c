@@ -88,7 +88,9 @@ static void psgen_begin_graph(GVJ_t * job)
         if (job->common->show_boxes == NULL)
             core_fputs(job, "%%BoundingBox: (atend)\n");
         core_fputs(job, "%%EndComments\nsave\n");
+        /* include shape library */
         cat_preamble(job, job->common->lib);
+	/* include epsf */
         epsf_define(job->output_file);
     }
     isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
@@ -439,6 +441,29 @@ static void psgen_comment(GVJ_t * job, char *str)
     core_fputs(job, "\n");
 }
 
+static void psgen_library_shape(GVJ_t * job, char *name, pointf * A, int n, int filled)
+{
+    int j;
+
+    if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
+	ps_set_color(job, &(job->obj->fillcolor));
+	core_fputs(job, "[ ");
+	for (j = 0; j < n; j++)
+	    core_printf(job, "%g %g ", A[j].x, A[j].y);
+	core_printf(job, "%g %g ", A[0].x, A[0].y);
+	core_printf(job, "]  %d true %s\n", n, name);
+    }
+    if (job->obj->pencolor.u.HSVA[3] > .5) {
+        ps_set_pen_style(job);
+        ps_set_color(job, &(job->obj->pencolor));
+        core_fputs(job, "[ ");
+        for (j = 0; j < n; j++)
+	    core_printf(job, "%g %g ", A[j].x, A[j].y);
+	core_printf(job, "%g %g ", A[0].x, A[0].y);
+        core_printf(job, "]  %d false %s\n", n, name);
+    }
+}
+
 static gvrender_engine_t psgen_engine = {
     psgen_begin_job,
     psgen_end_job,
@@ -467,6 +492,7 @@ static gvrender_engine_t psgen_engine = {
     psgen_bezier,
     psgen_polyline,
     psgen_comment,
+    psgen_library_shape,
 };
 
 static gvrender_features_t psgen_features = {

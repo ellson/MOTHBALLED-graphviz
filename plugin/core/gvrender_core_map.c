@@ -282,6 +282,7 @@ static gvrender_engine_t map_engine = {
     0,				/* map_bezier */
     0,				/* map_polyline */
     0,				/* map_comment */
+    0,				/* map_library_shape */
 };
 
 static gvrender_features_t map_features = {
