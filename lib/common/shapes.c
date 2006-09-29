@@ -273,24 +273,24 @@ static char **checkStyle(node_t * n, int *flagp)
 	char *p;
 	pp = pstyle = parse_style(style);
 	while ((p = *pp)) {
-	    if (strcmp(p, "filled") == 0) {
+	    if (streq(p, "filled")) {
 		istyle |= FILLED;
 		pp++;
-	    } else if (strcmp(p, "rounded") == 0) {
+	    } else if (streq(p, "rounded")) {
 		istyle |= ROUNDED;
 		qp = pp; /* remove rounded from list passed to renderer */
 		do {
 		    qp++;
 		    *(qp-1) = *qp;
 		} while (*qp);
-	    } else if (strcmp(p, "diagonals") == 0) {
+	    } else if (streq(p, "diagonals")) {
 		istyle |= DIAGONALS;
 		qp = pp; /* remove diagonals from list passed to renderer */
 		do {
 		    qp++;
 		    *(qp-1) = *qp;
 		} while (*qp);
-	    } else if (strcmp(p, "invis") == 0) {
+	    } else if (streq(p, "invis")) {
 		istyle |= INVISIBLE;
 		pp++;
 	    }
@@ -552,7 +552,7 @@ static void poly_init(node_t * n)
                  * not custom is an adaptable user shape such as a postscript
                  * function.
                  */
-	    if (strcmp(ND_shape(n)->name, "custom") == 0) {
+	    if (streq(ND_shape(n)->name, "custom")) {
 		char *sfile = agget(n, "shapefile");
 		imagesize = gvusershape_size(n->graph, sfile);
 		if ((imagesize.x == -1) && (imagesize.y == -1)) {
@@ -1339,7 +1339,7 @@ static void point_init(node_t * n)
     if (!point_desc) {
 	shape_desc *ptr;
 	for (ptr = Shapes; ptr->name; ptr++)
-	    if (strcmp(ptr->name, "point") == 0) {
+	    if (streq(ptr->name, "point")) {
 		point_desc = ptr;
 		break;
 	    }
@@ -1743,7 +1743,7 @@ static field_t *map_rec_port(field_t * f, char *str)
     field_t *rv;
     int sub;
 
-    if (f->id && (strcmp(f->id, str) == 0))
+    if (f->id && (streq(f->id, str)))
 	rv = f;
     else {
 	rv = NULL;
@@ -1945,7 +1945,7 @@ static shape_desc *user_shape(char *name)
     *p = Shapes[0];
     p->name = strdup(name);
     p->usershape = TRUE;
-    if (Lib == NULL && strcmp(name, "custom") != 0)
+    if (Lib == NULL && ! streq(name, "custom"))
 	agerr(AGWARN, "using %s for unknown shape %s\n", Shapes[0].name,
 	      p->name);
     return p;
@@ -1958,11 +1958,11 @@ shape_desc *bind_shape(char *name, node_t * np)
 
     str = safefile(agget(np, "shapefile"));
     /* If shapefile is defined and not epsf, set shape = custom */
-    if (str && strcmp(name, "epsf") != 0)
+    if (str && ! streq(name, "epsf"))
 	name = "custom";
-    if (strcmp(name, "custom") != 0) {
+    if (! streq(name, "custom")) {
 	for (ptr = Shapes; ptr->name; ptr++) {
-	    if (strcmp(ptr->name, name) == 0) {
+	    if (streq(ptr->name, name)) {
 		rv = ptr;
 		break;
 	    }
