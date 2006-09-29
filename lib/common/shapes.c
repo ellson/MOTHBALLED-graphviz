@@ -552,10 +552,7 @@ static void poly_init(node_t * n)
                  * not custom is an adaptable user shape such as a postscript
                  * function.
                  */
-	    if (strcmp(ND_shape(n)->name, "custom")) {
-		imagesize.x = imagesize.y = 0;
-	    }
-	    else {
+	    if (strcmp(ND_shape(n)->name, "custom") == 0) {
 		char *sfile = agget(n, "shapefile");
 		imagesize = gvusershape_size(n->graph, sfile);
 		if ((imagesize.x == -1) && (imagesize.y == -1)) {
@@ -564,6 +561,9 @@ static void poly_init(node_t * n)
 		      (sfile ? sfile : "<nil>"), n->name);
 		} else
 		    GD_has_images(n->graph) = TRUE;
+	    }
+	    else {
+		imagesize.x = imagesize.y = 0;
 	    }
 	    dimen.x = MAX(dimen.x, imagesize.x);
 	    dimen.y = MAX(dimen.y, imagesize.y);
@@ -1339,7 +1339,7 @@ static void point_init(node_t * n)
     if (!point_desc) {
 	shape_desc *ptr;
 	for (ptr = Shapes; ptr->name; ptr++)
-	    if (!strcmp(ptr->name, "point")) {
+	    if (strcmp(ptr->name, "point") == 0) {
 		point_desc = ptr;
 		break;
 	    }
@@ -1945,7 +1945,7 @@ static shape_desc *user_shape(char *name)
     *p = Shapes[0];
     p->name = strdup(name);
     p->usershape = TRUE;
-    if (Lib == NULL && strcmp(name, "custom"))
+    if (Lib == NULL && strcmp(name, "custom") != 0)
 	agerr(AGWARN, "using %s for unknown shape %s\n", Shapes[0].name,
 	      p->name);
     return p;
@@ -1958,11 +1958,11 @@ shape_desc *bind_shape(char *name, node_t * np)
 
     str = safefile(agget(np, "shapefile"));
     /* If shapefile is defined and not epsf, set shape = custom */
-    if (str && strcmp(name, "epsf"))
+    if (str && strcmp(name, "epsf") != 0)
 	name = "custom";
-    if (strcmp(name, "custom")) {
+    if (strcmp(name, "custom") != 0) {
 	for (ptr = Shapes; ptr->name; ptr++) {
-	    if (!strcmp(ptr->name, name)) {
+	    if (strcmp(ptr->name, name) == 0) {
 		rv = ptr;
 		break;
 	    }
