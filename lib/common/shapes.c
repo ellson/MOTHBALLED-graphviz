@@ -18,10 +18,6 @@
 #include "htmltable.h"
 #include <limits.h>
 
-#ifdef WITH_CODEGENS
-extern codegen_t VRML_CodeGen;
-#endif
-
 #define RBCONST 12
 #define RBCURVE .5
 
@@ -58,7 +54,7 @@ static void epsf_gencode(GVJ_t * job, node_t * n);
 
 /* polygon descriptions.  "polygon" with 0 sides takes all user control */
 
-/*				      regul perip sides orien disto skew */
+/*			       regul perip sides orien disto skew */
 static polygon_t p_polygon = { FALSE, 1, 0, 0., 0., 0. };
 
 /* builtin polygon descriptions */
@@ -154,6 +150,7 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"box", &poly_fns, &p_box},
     {"polygon", &poly_fns, &p_polygon},
     {"ellipse", &poly_fns, &p_ellipse},
+    {"oval", &poly_fns, &p_ellipse},
     {"circle", &poly_fns, &p_circle},
     {"point", &point_fns, &p_circle},
     {"egg", &poly_fns, &p_egg},
