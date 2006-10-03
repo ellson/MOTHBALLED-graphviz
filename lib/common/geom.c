@@ -527,6 +527,7 @@ double ptToLine2 (pointf a, pointf b, pointf p)
   double dx = b.x-a.x;
   double dy = b.y-a.y;
   double a2 = (p.y-a.y)*dx - (p.x-a.x)*dy;
-  if (a2 < .00001) return 0.;
-  return (a2*a2) / (dx*dx + dy*dy);
+  a2 *= a2;   /* square - ensures that it is positive */
+  if (a2 < .00001) return 0.;  /* avoid 0/0 problems */
+  return a2 / (dx*dx + dy*dy);
 }
