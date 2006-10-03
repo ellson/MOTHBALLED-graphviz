@@ -282,6 +282,7 @@ gvrender_engine_t dot_engine = {
     0,				/* dot_bezier */
     0,				/* dot_polyline */
     0,				/* dot_comment */
+    0,				/* dot_library_shape */
 };
 
 gvrender_engine_t xdot_engine = {
@@ -316,8 +317,7 @@ gvrender_engine_t xdot_engine = {
 };
 
 gvrender_features_t canon_features = {
-    GVRENDER_DOES_TRANSFORM	    /* not really - uses raw graph coords */
-	| LAYOUT_NOT_REQUIRED,	/* flags */
+    LAYOUT_NOT_REQUIRED,	/* flags */
     0.,				/* default margin - points */
     0.,                         /* default pad - graph units */
     {0,0},                      /* default height, width - device units */
@@ -330,7 +330,7 @@ gvrender_features_t canon_features = {
 };
 
 gvrender_features_t dot_features = {
-    0,				/* flags */
+    GVRENDER_DOES_TRANSFORM,	/* not really - uses raw graph coords */
     0.,				/* default margin - points */
     0.,                         /* default pad - graph units */
     {0.,0.},			/* default page width, height - points */
