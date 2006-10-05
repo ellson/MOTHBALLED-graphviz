@@ -16,7 +16,7 @@
 
 
 #include <convert.h>
-/* #include <aghdr.h> */
+#include <aghdr.h>
 #include <ctype.h>
 
 #define SMALLBUF    128
