@@ -1586,7 +1586,7 @@ int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
 	unsigned char buf[SMALLBUF];
 	agxbinit(&xb, SMALLBUF, buf);
 	lp->html = FALSE;
-	lp->text = nameOf(obj, &xb);
+	lp->text = strdup(nameOf(obj, &xb));
 	size_label(env.g, lp);
 	agxbfree(&xb);
 	return rv;
