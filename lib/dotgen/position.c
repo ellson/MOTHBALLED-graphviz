@@ -57,6 +57,13 @@ dumpNS (graph_t * g)
 }
 #endif
 
+static void
+largeMinlen (int l)
+{
+    agerr (AGERR, "Edge length %d larger than maximum %u allowed.\nCheck for overwide node(s).\n", l, USHRT_MAX); 
+    exit (1);
+}
+
 /* connectGraph:
  * When source and/or sink nodes are defined, it is possible that
  * after the auxiliary edges are added, the graph may still have 2 or
@@ -170,6 +177,8 @@ edge_t *make_aux_edge(node_t * u, node_t * v, int len, int wt)
     e = NEW(edge_t);
     e->tail = u;
     e->head = v;
+    if (len > USHRT_MAX)
+	largeMinlen (len);
     ED_minlen(e) = len;
     ED_weight(e) = wt;
     fast_edge(e);
@@ -288,6 +297,8 @@ make_LR_constraints(graph_t * g)
                      * ED_dist contains the largest label width.
                      */
 		    m0 = MAX(m0, width + GD_nodesep(g) + ROUND(ED_dist(e)));
+		    if (m0 > USHRT_MAX)
+			largeMinlen (m0);
 		    ED_minlen(e0) = MAX(ED_minlen(e0), m0);
 		}
 		else if (!ED_label(e)) {
