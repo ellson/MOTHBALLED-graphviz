@@ -31,7 +31,7 @@ fontmetrics.o fontmetrics.lo: ps_font_equiv.h
 
 # ensure font names are properly sorted for bsearch operation 
 ps_font_equiv.h: $(srcdir)/ps_font_equiv.txt
-	LC_COLLATE=C $(SORT) <$(srcdir)/ps_font_equiv.txt >ps_font_equiv.h
+	LC_ALL=C $(SORT) <$(srcdir)/ps_font_equiv.txt >ps_font_equiv.h
 
 utils.o utils.lo : ps.h
 
@@ -45,7 +45,7 @@ colortbl.h : color_lib
 
 # ensure color names are properly sorted for bsearch operation 
 color_lib : brewer_lib $(top_srcdir)/lib/common/color_names
-	cat brewer_lib $(top_srcdir)/lib/common/color_names | LC_COLLATE=C $(SORT) > color_lib
+	cat brewer_lib $(top_srcdir)/lib/common/color_names | LC_ALL=C $(SORT) > color_lib
 
 brewer_lib : $(top_srcdir)/lib/common/brewer_colors  $(top_srcdir)/awk/brewer.awk
 	$(AWK) -f $(top_srcdir)/awk/brewer.awk $(top_srcdir)/lib/common/brewer_colors > brewer_lib
