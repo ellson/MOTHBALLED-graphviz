@@ -119,10 +119,6 @@ static void psgen_begin_page(GVJ_t * job)
 {
     box pbr = job->pageBoundingBox;
 
-// FIXME
-    point page = {0,0};
-    int N_pages = 0;
-
     core_printf(job, "%%%%Page: %d %d\n",
 	    job->common->viewNum + 1, job->common->viewNum + 1);
     if (job->common->show_boxes == NULL)
@@ -136,7 +132,8 @@ static void psgen_begin_page(GVJ_t * job)
     if (job->common->show_boxes == NULL)
         core_printf(job, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
-    core_printf(job, "%d %d %d beginpage\n", page.x, page.y, N_pages);
+    core_printf(job, "%d %d %d beginpage\n",
+	    job->pagesArrayElem.x, job->pagesArrayElem.y, job->numPages);
     core_printf(job, "%g %g set_scale %d rotate %g %g translate\n",
 	    job->scale.x, job->scale.y,
 	    job->rotation,
