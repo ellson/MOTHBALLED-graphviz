@@ -25,6 +25,9 @@
 #ifdef HAVE_LIBMING
 #include <ming.h>
 
+#define DEFSWFVERSION 6
+#define DEFSWFCOMPRESSION 9
+
 typedef enum { FORMAT_SWF } format_type; 
 
 static void ming_begin_job(GVJ_t * job)
@@ -32,11 +35,11 @@ static void ming_begin_job(GVJ_t * job)
     SWFMovie movie;
 
     Ming_init();
-    Ming_setSWFCompression(9);
+    Ming_useSWFVersion(DEFSWFVERSION);
+    Ming_setSWFCompression(DEFSWFCOMPRESSION);
     movie = newSWFMovie();
-    SWFMovie_setRate(movie, 12.0);
+    SWFMovie_setRate(movie, .5);
     SWFMovie_setDimension(movie, job->width, job->height);
-    SWFMovie_setNumberOfFrames(movie, 1);
 
     job->surface = (void*) movie;
 }
@@ -52,9 +55,9 @@ static void ming_end_job(GVJ_t * job)
 
 static void ming_begin_page(GVJ_t * job)
 {
-#if 0
-    SWFMovie movie = (SWFMovie)(job->surface);
-#endif
+//    SWFMovie movie = (SWFMovie)(job->surface);
+
+//    SWFMovie_setNumberOfFrames(movie, job->common->viewNum + 1);
 
 #if 0
     cairo_scale(cr, job->scale.x, job->scale.y);
@@ -65,9 +68,9 @@ static void ming_begin_page(GVJ_t * job)
 
 static void ming_end_page(GVJ_t * job)
 {
-#if 0
     SWFMovie movie = (SWFMovie)(job->surface);
-#endif
+
+    SWFMovie_nextFrame(movie);
 }
 
 static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
@@ -249,9 +252,11 @@ static gvrender_engine_t ming_engine = {
 };
 
 static gvrender_features_t ming_features = {
-    GVRENDER_DOES_TRUECOLOR
-	| GVRENDER_Y_GOES_DOWN,
-//	| GVRENDER_DOES_TRANSFORM, /* flags */
+    (	GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES
+	| GVRENDER_DOES_TRUECOLOR
+	| GVRENDER_Y_GOES_DOWN
+//	| GVRENDER_DOES_TRANSFORM
+    ),				/* feature flags */
     0,				/* default margin - points */
     4.,                         /* default pad - graph units */
     {0.,0.},                    /* default page width, height - points */
