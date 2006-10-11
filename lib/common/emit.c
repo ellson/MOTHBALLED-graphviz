@@ -2506,35 +2506,6 @@ char **parse_style(char *s)
     return parse;
 }
 
-static void emit_job(GVJ_t * job, graph_t * g)
-{
-    if (!GD_drawing(g)) {
-	agerr (AGERR, "layout was not done\n");
-	return;
-    }
-
-#ifdef WITH_CODEGENS
-    Output_file = job->output_file;
-    Output_lang = job->output_lang;
-#endif
-
-    init_job_flags(job, g);
-    init_job_pad(job);
-    init_job_margin(job);
-    init_job_dpi(job, g);
-    init_job_viewport(job, g);
-    init_job_pagination(job, g);
-
-    gvrender_begin_job(job);
-
-    if (! (job->flags & GVRENDER_X11_EVENTS))
-        emit_graph(job, g);
-
-    /* Flush is necessary because we may be writing to a pipe. */
-    if (job->output_file && ! job->external_surface && job->output_lang != TK)
-        fflush(job->output_file);
-}
-
 static FILE *file_select(char *str)
 {
     FILE *rv;
@@ -2699,12 +2670,19 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	}
 	job->common = &(gvc->common);
 	job->layout_type = gvc->layout.type;
+	if (!GD_drawing(g)) {
+	    agerr (AGERR, "layout was not done\n");
+	    return -1;
+	}
 
         job->output_lang = gvrender_select(job, job->output_langname);
         if (job->output_lang == NO_SUPPORT) {
             agerr (AGERR, "renderer for %s is unavailable\n", job->output_langname);
             return -1;
         }
+#ifdef WITH_CODEGENS
+	Output_lang = job->output_lang;
+#endif
 
 	/* if we already have an active job list and the device doesn't support mutiple output files, or we are about to write to a different output device */
         firstjob = gvc->active_jobs;
@@ -2720,6 +2698,23 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	    prevjob = NULL;
         }
 
+	if (prevjob) {
+            prevjob->next_active = job;  /* insert job in active list */
+	}
+	else {
+	    gvc->active_jobs = job;   /* first job of new list */
+	    gvdevice_initialize(job);    /* FIXME? - semantics are unclear */
+	}
+	job->next_active = NULL;      /* terminate active list */
+	job->callbacks = &gvdevice_callbacks;
+
+	init_job_flags(job, g);
+	init_job_pad(job);
+	init_job_margin(job);
+	init_job_dpi(job, g);
+	init_job_viewport(job, g);
+	init_job_pagination(job, g);
+
         if (!job->output_file) {        /* if not yet opened */
 	    if (gvc->common.auto_outfile_names)
 		auto_output_filename(job);
@@ -2727,20 +2722,19 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
                 job->output_file = file_select(job->output_filename);
             else
                 job->output_file = stdout;
+	    gvrender_begin_job(job); /* FIXME? - semantics are unclear */
         }
+#ifdef WITH_CODEGENS
+	Output_file = job->output_file;
+#endif
 
-	if (prevjob) {
-            prevjob->next_active = job;  /* insert job in active list */
+	if (! (job->flags & GVRENDER_X11_EVENTS)) {
+	    emit_graph(job, g); /* FIXME? - this should be a special case of finalize() */
+
+	    /* Flush is necessary because we may be writing to a pipe. */
+	    if (job->output_file && ! job->external_surface && job->output_lang != TK)
+	        fflush(job->output_file);
 	}
-	else {
-	    gvc->active_jobs = job;   /* first job of new list */
-	    gvdevice_initialize(job);
-	}
-	job->next_active = NULL;      /* terminate active list */
-
-	job->callbacks = &gvdevice_callbacks;
-
-        emit_job(job, g);
 
         /* the last job, after all input graphs are processed,
          *      is finalized from gvFreeContext()
