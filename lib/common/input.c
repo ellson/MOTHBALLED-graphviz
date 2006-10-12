@@ -134,7 +134,7 @@ static char* dotneato_basename (char* path)
      */
     {
 	char* dotp = strrchr (s, '.');
-	if (dotp) *dotp = '\0';
+	if (dotp && !strcmp(dotp+1,"exe")) *dotp = '\0';
     }
 #endif
     while (*s) s++; s--;
