@@ -249,12 +249,18 @@ static char *lex_gets(void)
 		continue;
 	    }
 	    Line_number++;
-	    if ((len > 1) && (clp[len - 2] == '\\')) {	/* escaped newline */
+		/* Note it is possible len == 1 and last character in
+		 * previous read was '\\'
+		 * It is also possible to have curlen=0, and read in
+		 * "\\\n". 
+		 */
+	    if (clp[len - 2] == '\\') {	/* escaped newline */
 		len = len - 2;
 		clp[len] = '\0';
 	    }
 	}
 	curlen += len;
+	/* the following test relies on having AG.linebuf[0] == '\0' */
     } while (clp[len - 1] != '\n');
 
     if (curlen > 0)
