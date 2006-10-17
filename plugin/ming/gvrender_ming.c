@@ -25,8 +25,9 @@
 #ifdef HAVE_LIBMING
 #include <ming.h>
 
-#define DEFSWFVERSION 6
-#define DEFSWFCOMPRESSION 9
+#define SWFVERSION 6
+#define SWFCOMPRESSION 9
+#define SWFFRAMERATE .5
 
 typedef enum { FORMAT_SWF } format_type; 
 
@@ -35,10 +36,10 @@ static void ming_begin_job(GVJ_t * job)
     SWFMovie movie;
 
     Ming_init();
-    Ming_useSWFVersion(DEFSWFVERSION);
-    Ming_setSWFCompression(DEFSWFCOMPRESSION);
+    Ming_useSWFVersion(SWFVERSION);
+    Ming_setSWFCompression(SWFCOMPRESSION);
     movie = newSWFMovie();
-    SWFMovie_setRate(movie, .5);
+    SWFMovie_setRate(movie, SWFFRAMERATE);
     SWFMovie_setDimension(movie, job->width, job->height);
 
     job->surface = (void*) movie;
@@ -73,41 +74,68 @@ static void ming_end_page(GVJ_t * job)
     SWFMovie_nextFrame(movie);
 }
 
+extern char* gvconfig_libdir(void);
+#define FONT "Bitstream_Vera_Serif.fdb"
+
 static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     SWFMovie movie = (SWFMovie)(job->surface);
-    SWFText text;
+    SWFTextField textfield;
+    SWFDisplayItem item;
     obj_state_t *obj = job->obj;
     gvcolor_t pencolor = obj->pencolor;
     pointf offset;
+    char *font_file_name;
+    FILE *font_file;
+    char *libdir;
+    static SWFFont font;
 
-    text = newSWFText2();
-    SWFText_setFont(text, para->fontname);
-    SWFText_setHeight(text, para->fontsize * 20.);
-    SWFText_setColor(text,
+/* FIXME - hardcoded to a Times-like font */
+    if (font == NULL) {
+    	libdir=gvconfig_libdir();
+	font_file_name = malloc(strlen(libdir)+strlen(FONT)+2);
+	strcpy(font_file_name, libdir);
+	strcat(font_file_name, "/");
+	strcat(font_file_name, FONT);
+	font_file = fopen(font_file_name, "r");
+	if (font_file == NULL ) {
+	    perror(font_file_name);
+	    free(font_file_name);
+	    exit(1);
+	}
+	font = loadSWFFontFromFile(font_file);
+	fclose(font_file);
+	free(font_file_name);
+    }
+
+    textfield = newSWFTextField();
+    SWFTextField_setFont(textfield, (SWFBlock)font);
+    SWFTextField_addChars(textfield, para->str);
+    SWFTextField_addUTF8String(textfield, para->str);
+    SWFTextField_setColor(textfield,
 	 pencolor.u.rgba[0],
 	 pencolor.u.rgba[1],
 	 pencolor.u.rgba[2],
 	 pencolor.u.rgba[3]);
+    SWFTextField_setHeight(textfield, para->fontsize);
 
     switch (para->just) {
     case 'r':
-	offset.x = para->width;
+	offset.x = 0.;
 	break;
     case 'l':
-	offset.x = 0.0;
+	offset.x = -para->width;
 	break;
     case 'n':
     default:
-	offset.x = para->width / 2.0;
+	offset.x = -para->width/2.;
 	break;
     }
     /* offset to baseline */
-    offset.y = 0.;
+    offset.y = -para->height + para->fontsize*.4;  /* empirically determined */
 
-    SWFText_moveTo(text, p.x + offset.x, p.y + offset.y);
-    SWFText_addUTF8String(text, para->str, 0);
-//    SWFMovie_add(movie, (SWFBlock)text);  /* FIXME - causes crash */
+    item = SWFMovie_add(movie, (SWFBlock)textfield);
+    SWFDisplayItem_moveTo(item, p.x + offset.x, p.y + offset.y);
 }
 
 static void ming_ellipse(GVJ_t * job, pointf * A, int filled)
