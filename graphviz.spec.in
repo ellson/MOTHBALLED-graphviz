@@ -34,7 +34,7 @@ Prefix: /usr
 %define TCL     1
 %define IPSEPCOLA --without-ipsepcola
 %define MYLIBGD --with-mylibgd
-%define LIBMING --without-libming
+%define MING --without-ming
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -406,7 +406,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
       --mandir=%{_mandir} \
       --with-x \
       --disable-static \
-      --disable-dependency-tracking %{MYLIBGD} %{IPSEPCOLA} %{LIBMING}
+      --disable-dependency-tracking %{MYLIBGD} %{IPSEPCOLA} %{MING}
 %__make %{?_smp_mflags}
 
 %install

@@ -1278,25 +1278,28 @@ AM_GLIB_GNU_GETTEXT
 dnl -----------------------------------
 dnl INCLUDES and LIBS for LIBMING (SWF renderer)
                                                                                 
-AC_ARG_WITH(libming,
-  [AC_HELP_STRING([--with-libming],
-                  [use libming library])])
+GV_PATH_MING
+AM_CONDITIONAL(WITH_MING, [ test x"$MAKESWF" != x ])
 
-### default is to build with libming
-if test "x$with_libming" != "xno"; then
-	with_libming=yes
-fi
-
-if test "x$with_libming" = "xyes"; then
-PKG_CHECK_MODULES(LIBMING, [libming >= 0.4],
-	[HAVE_LIBMING=1
-	AC_DEFINE_UNQUOTED(HAVE_LIBMING,1,
-		[Define if you have the libming library for SWF support])],
-	[AC_MSG_WARN(libming library not available)])
-AC_SUBST(LIBMING_CFAGS)
-AC_SUBST(LIBMING_LIBS)
-fi
-AM_CONDITIONAL(WITH_LIBMING, [test "x$HAVE_LIBMING" != "x"])
+#AC_ARG_WITH(libming,
+#  [AC_HELP_STRING([--with-libming],
+#                  [use libming library])])
+#
+#### default is to build with libming
+#if test "x$with_libming" != "xno"; then
+#	with_libming=yes
+#fi
+#
+#if test "x$with_libming" = "xyes"; then
+#PKG_CHECK_MODULES(LIBMING, [libming >= 0.4],
+#	[HAVE_LIBMING=1
+#	AC_DEFINE_UNQUOTED(HAVE_LIBMING,1,
+#		[Define if you have the libming library for SWF support])],
+#	[AC_MSG_WARN(libming library not available)])
+#AC_SUBST(LIBMING_CFLAGS)
+#AC_SUBST(LIBMING_LIBS)
+#fi
+#AM_CONDITIONAL(WITH_LIBMING, [test "x$HAVE_LIBMING" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
