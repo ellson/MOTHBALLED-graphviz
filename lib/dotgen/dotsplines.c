@@ -631,9 +631,10 @@ static graph_t*
 cloneGraph (graph_t* g)
 {
     Agsym_t* sym;
-    graph_t* auxg = agopen ("auxg", AGDIGRAPH);
+    graph_t* auxg;
     Agsym_t **list;
     
+    auxg = agopen ("auxg", AG_IS_DIRECTED(g)?AGDIGRAPH:AGRAPH);
     agraphattr(auxg, "rank", "");
     GD_drawing(auxg) = NEW(layout_t);
     GD_drawing(auxg)->quantum = GD_drawing(g)->quantum; 
