@@ -22,7 +22,6 @@
 #include <string.h>
 #include "gvplugin_render.h"
 
-#ifdef HAVE_LIBMING
 #include <ming.h>
 
 #define SWFVERSION 6
@@ -295,11 +294,8 @@ static gvrender_features_t ming_features = {
     NULL,			/* device */
     NULL,			/* gvloadimage target for usershapes */
 };
-#endif
 
 gvplugin_installed_t gvrender_ming_types[] = {
-#ifdef HAVE_LIBMING
     {FORMAT_SWF, "swf", 10, &ming_engine, &ming_features},
-#endif
     {0, NULL, 0, NULL, NULL}
 };
