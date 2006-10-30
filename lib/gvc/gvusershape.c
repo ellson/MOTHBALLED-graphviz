@@ -299,6 +299,8 @@ static usershape_t *gvusershape_open (char *name)
 	    case FT_NULL:
 		if (!(us->data = (void*)find_user_shape(us->name)))
 		    agerr(AGWARN, "\"%s\" was not found as a file or as a shape library member\n", us->name);
+		    free(us);
+		    return NULL;
 		break;
 	    case FT_GIF:
 	        gif_size(us);

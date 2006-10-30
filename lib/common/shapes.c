@@ -556,7 +556,7 @@ static void poly_init(node_t * n)
 		char *sfile = agget(n, "shapefile");
 		imagesize = gvusershape_size(n->graph, sfile);
 		if ((imagesize.x == -1) && (imagesize.y == -1)) {
-		    agerr(AGERR,
+		    agerr(AGWARN,
 		      "No or improper shapefile=\"%s\" for node \"%s\"\n",
 		      (sfile ? sfile : "<nil>"), n->name);
 		} else
