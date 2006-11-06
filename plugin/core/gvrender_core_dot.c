@@ -39,6 +39,7 @@ extern void attach_attrs(graph_t * g);
 extern void attach_attrs_and_arrows(graph_t*, int*, int*);
 extern char *xml_string(char *str);
 extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, bool extend);
+extern void output_point(agxbuf *xbuf, pointf p);
 
 #define GNEW(t)          (t*)malloc(sizeof(t))
 
@@ -94,10 +95,8 @@ static void xdot_points(GVJ_t *job, char c, pointf * A, int n)
     rc = agxbputc(xbufs[emit_state], c);
     sprintf(buf, " %d ", n);
     agxbput(xbufs[emit_state], buf);
-    for (i = 0; i < n; i++) {
-        sprintf(buf, "%d %d ", ROUND(A[i].x), ROUND(A[i].y));
-        agxbput(xbufs[emit_state], buf);
-    }
+    for (i = 0; i < n; i++)
+        output_point(xbufs[emit_state], A[i]);
 }
 
 static void xdot_pencolor (GVJ_t *job)
@@ -336,7 +335,9 @@ static void xdot_textpara(GVJ_t * job, pointf p, textpara_t * para)
         j = 0;
         break;
     }
-    sprintf(buf, "T %d %d %d %d ", ROUND(p.x), ROUND(p.y), j, (int) para->width);
+    agxbput(xbufs[emit_state], "T ");
+    output_point(xbufs[emit_state], p);
+    sprintf(buf, "%d %d ", j, (int) para->width);
     agxbput(xbufs[emit_state], buf);
     xdot_str (job, "", para->str);
 }
@@ -346,18 +347,17 @@ static void xdot_ellipse(GVJ_t * job, pointf * A, int filled)
     emit_state_t emit_state = job->obj->emit_state;
 
     char buf[BUFSIZ];
-    int rc;
 
     xdot_style (job);
     xdot_pencolor (job);
     if (filled) {
         xdot_fillcolor (job);
-        rc = agxbputc(xbufs[emit_state], 'E');
+        agxbput(xbufs[emit_state], "E ");
     }
     else
-        rc = agxbputc(xbufs[emit_state], 'e');
-    sprintf(buf, " %d %d %d %d ",
-		ROUND(A[0].x), ROUND(A[0].y), ROUND(A[1].x - A[0].x), ROUND(A[1].y - A[0].y));
+        agxbput(xbufs[emit_state], "e ");
+    output_point(xbufs[emit_state], A[0]);
+    sprintf(buf, " %d %d ", ROUND(A[1].x - A[0].x), ROUND(A[1].y - A[0].y));
     agxbput(xbufs[emit_state], buf);
 }
 

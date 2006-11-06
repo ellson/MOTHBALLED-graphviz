@@ -42,7 +42,4 @@
 		((side & 0x8) ? BOTTOM : (side << 1)) : \
 		((side & 0x1) ? LEFT : (side >> 1)))
 
-#define YDIR(y) (Y_invert ? (Y_off - (y)) : (y))
-#define YFDIR(y) (Y_invert ? (YF_off - (y)) : (y))
-
 #endif

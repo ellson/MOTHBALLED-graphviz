@@ -17,6 +17,11 @@
 #include "render.h"
 #include "agxbuf.h"
 
+#define YDIR(y) (Y_invert ? (Y_off - (y)) : (y))
+#define YFDIR(y) (Y_invert ? (YF_off - (y)) : (y))
+
+int Y_off;           /* ymin + ymax */
+double YF_off;       /* Y_off in inches */
 
 static void printptf(FILE * f, point pt)
 {
@@ -304,5 +309,12 @@ void attach_attrs(graph_t * g)
 {
     int e, s;
     attach_attrs_and_arrows (g, &s, &e);
+}
+
+void output_point(agxbuf *xbuf, pointf p)
+{
+    char buf[BUFSIZ];
+    sprintf(buf, "%d %d ", ROUND(p.x), YDIR(ROUND(p.y)));
+    agxbput(xbuf, buf);
 }
 

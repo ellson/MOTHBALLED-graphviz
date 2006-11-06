@@ -83,8 +83,6 @@ extern "C" {
     EXTERN double Initial_dist;
     EXTERN double Damping;
     EXTERN int Y_invert;	/* invert y in dot & plain output */
-    EXTERN int Y_off;           /* ymin + ymax */
-    EXTERN double YF_off;       /* Y_off in inches */
 
     EXTERN attrsym_t
 	*G_activepencolor, *G_activefillcolor,
