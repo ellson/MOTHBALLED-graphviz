@@ -298,7 +298,7 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
         core_printf(job, "font:%s;", para->fontname);
     }
     /* FIXME - even inkscape requires a magic correction to fontsize.  Why?  */
-    core_printf(job, "font-size:%.2fpt;", para->fontsize * 0.9);
+    core_printf(job, "font-size:%.2fpt;", para->fontsize * 0.81);
     switch (obj->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(obj->pencolor.u.string, "black"))
