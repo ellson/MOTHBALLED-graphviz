@@ -1300,7 +1300,7 @@ static char* default_pencolor(char *pencolor, char *deflt)
     return buf;
 }
 
-void emit_edge_graphics(GVJ_t * job, edge_t * e)
+static void emit_edge_graphics(GVJ_t * job, edge_t * e)
 {
     int i, j, cnum, numc = 0;
     char *color, *pencolor, *fillcolor, *style;
@@ -2361,7 +2361,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if (obj->url || obj->explicit_tooltip)
 	    gvrender_end_anchor(job);
 	if (GD_label(sg))
-	    emit_label(job, EMIT_GLABEL, GD_label(sg));
+	    emit_label(job, EMIT_CLABEL, GD_label(sg));
 
 	if (flags & EMIT_PREORDER) {
 	    for (n = agfstnode(sg); n; n = agnxtnode(sg, n)) {

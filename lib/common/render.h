@@ -96,7 +96,6 @@ extern "C" {
     extern void emit_background(GVJ_t * job, graph_t *g);
     extern void emit_clusters(GVJ_t * job, Agraph_t * g, int flags);
     extern void emit_begin_edge(GVJ_t * job, edge_t * e);
-    extern void emit_edge_graphics(GVJ_t * job, edge_t * e);
     extern void emit_end_edge(GVJ_t * job);
     extern void emit_graph(GVJ_t * job, graph_t * g);
     extern void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t *);
@@ -144,7 +143,6 @@ extern "C" {
     extern void translate_bb(Agraph_t *, int);
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
-    extern void write_extended_dot(GVJ_t * job, graph_t *g, FILE *f);
     extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, bool extend);
 
 #if defined(_BLD_dot) && defined(_DLL)

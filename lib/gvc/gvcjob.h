@@ -132,35 +132,13 @@ extern "C" {
     typedef enum {MAP_RECTANGLE, MAP_CIRCLE, MAP_POLYGON, } map_shape_t;
 
     typedef enum {ROOTGRAPH_OBJTYPE, CLUSTER_OBJTYPE, NODE_OBJTYPE, EDGE_OBJTYPE} obj_type;
-#if 0
-    typedef enum {EMIT_GDRAW, EMIT_CDRAW, EMIT_NDRAW, EMIT_EDRAW, EMIT_TDRAW, EMIT_HDRAW, 
-	EMIT_GLABEL, EMIT_CLABEL, EMIT_NLABEL, EMIT_ELABEL, EMIT_TLABEL, EMIT_HLABEL} emit_state_t;
-#else
 
-/* FIXME - There are places in the core that rely on there being exactly 6 emit_states ! */
-#define emit_state_t int
-
-/* value specifying emit state */
-#define EMIT_DRAW      0
-#define EMIT_GDRAW     EMIT_DRAW
-#define EMIT_CDRAW     EMIT_DRAW
-#define EMIT_NDRAW     EMIT_DRAW
-#define EMIT_EDRAW     EMIT_DRAW
-
-/* values specifying emit state for arrowheads */
-#define EMIT_TDRAW     1
-#define EMIT_HDRAW     2
-
-/* values specifying emit state for labels */
-#define EMIT_LABEL     3
-#define EMIT_GLABEL    EMIT_LABEL
-#define EMIT_CLABEL    EMIT_LABEL
-#define EMIT_NLABEL    EMIT_LABEL
-#define EMIT_ELABEL    EMIT_LABEL
-#define EMIT_TLABEL    4
-#define EMIT_HLABEL    5
-
-#endif
+    /* See comment in gvrender_core_dot.c */
+    typedef enum {
+	EMIT_GDRAW, EMIT_CDRAW, EMIT_TDRAW, EMIT_HDRAW, 
+	EMIT_GLABEL, EMIT_CLABEL, EMIT_TLABEL, EMIT_HLABEL,
+	EMIT_NDRAW, EMIT_EDRAW, EMIT_NLABEL, EMIT_ELABEL,  
+    } emit_state_t;
 
     typedef struct obj_state_s obj_state_t;
 
