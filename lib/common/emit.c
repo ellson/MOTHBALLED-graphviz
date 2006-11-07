@@ -733,6 +733,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
     obj_state_t *obj = job->obj;
     int nump = 0, flags = job->flags;
     pointf *p = NULL;
+    pointf sz, UR;
 
     /* establish current box in graph units */
     job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - job->pad.x;
@@ -749,6 +750,17 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	job->pageOffset.x =  job->pad.x - job->pageSize.x * job->pagesArrayElem.x;
 	job->pageOffset.y =  job->pad.y - job->pageSize.y * job->pagesArrayElem.y;
     }
+
+    /* calculate clip region in graph units */
+    sz.x = job->view.x / (job->zoom * 2.);
+    sz.y = job->view.y / (job->zoom * 2.);
+    if (job->rotation)
+        sz = exch_xyf(sz);
+
+    job->clip.UR.x = job->focus.x + sz.x;
+    job->clip.UR.y = job->focus.y + sz.y;
+    job->clip.LL.x = job->focus.x - sz.x;
+    job->clip.LL.y = job->focus.y - sz.y;
 
     /* clib box for this page in graph units */
     job->pageBoxClip.UR.x = MIN(job->clip.UR.x, job->pageBox.UR.x);
@@ -801,6 +813,11 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	    job->translation.y = -job->pageBox.LL.y + job->pageBoundingBox.LL.y / job->scale.y;
 	}
     }
+
+    P2PF(job->gvc->bb.UR, UR);
+
+    job->translation.x -= job->focus.x - (UR.x / 2.0);
+    job->translation.y -= job->focus.y - (UR.y / 2.0);
 
     if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
             && (obj->url || obj->explicit_tooltip)) {
@@ -1913,18 +1930,6 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     job->zoom = Z;              /* scaling factor */
     job->focus.x = x;           /* focus - graph units */
     job->focus.y = y;
-
-
-    /* calculate clip region in graph units */
-    sz.x = X / (Z * 2.);
-    sz.y = Y / (Z * 2.);
-    if (job->rotation)
-	sz = exch_xyf(sz);
-
-    job->clip.UR.x = x + sz.x;
-    job->clip.UR.y = y + sz.y;
-    job->clip.LL.x = x - sz.x;
-    job->clip.LL.y = y - sz.y;
 }
 
 static void emit_colors(GVJ_t * job, graph_t * g)
@@ -1975,7 +1980,7 @@ static void emit_colors(GVJ_t * job, graph_t * g)
     }
 }
 
-void emit_view(GVJ_t * job, graph_t * g, int flags)
+static void emit_view(GVJ_t * job, graph_t * g, int flags)
 {
     GVC_t * gvc = job->gvc;
     node_t *n;
