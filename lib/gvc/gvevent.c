@@ -412,7 +412,7 @@ static void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
     case 4:
 	/* scrollwheel zoom in at current mouse x,y */
 	job->fit_mode = 0;
-	job->focus.x +=  (pointer.x - job->width / 2.)
+	job->focus.x += (pointer.x - job->width / 2.)
 		* (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
 	job->focus.y += (pointer.y - job->height / 2.)
 		* (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
@@ -422,9 +422,9 @@ static void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
     case 5: /* scrollwheel zoom out at current mouse x,y */
 	job->fit_mode = 0;
 	job->zoom /= ZOOMFACTOR;
-	job->focus.x -=  (pointer.x - job->width / 2.)
+	job->focus.x -= (pointer.x - job->width / 2.)
 		* (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
-	job->focus.y -= -(pointer.y - job->height / 2.)
+	job->focus.y -= (pointer.y - job->height / 2.)
 		* (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
 	job->needs_refresh = 1;
 	break;

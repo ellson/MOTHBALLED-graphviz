@@ -259,7 +259,6 @@ typedef enum {COMPRESSION_NONE, COMPRESSION_ZLIB} compression_t;
 	boxf    bb;		/* graph bb with padding - graph units */
 	pointf  pad;		/* padding around bb - graph units */
 	boxf    clip;		/* clip region in graph units */
-	boxf    pageBoxClip;	/* intersection of clip and pageBox in graph units */
 	boxf	pageBox;	/* current page in graph units */
 	pointf	pageOffset;	/* offset for current page in graph units */
 	pointf	pageSize;	/* page size in graph units */

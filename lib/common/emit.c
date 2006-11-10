@@ -751,9 +751,10 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	job->pageOffset.y =  job->pad.y - job->pageSize.y * job->pagesArrayElem.y;
     }
 
-    /* calculate clip region in graph units */
-    sz.x = job->view.x / (job->zoom * 2.);
-    sz.y = job->view.y / (job->zoom * 2.);
+    /* calculate clip region in graph units using width/heigh since window might
+	have been resized since view was calculated */
+    sz.x = job->width / (job->scale.y * 2.);
+    sz.y = job->height / (job->scale.y * 2.);
     if (job->rotation)
         sz = exch_xyf(sz);
 
@@ -763,10 +764,10 @@ static void setup_page(GVJ_t * job, graph_t * g)
     job->clip.LL.y = job->focus.y - sz.y;
 
     /* clib box for this page in graph units */
-    job->pageBoxClip.UR.x = MIN(job->clip.UR.x, job->pageBox.UR.x);
-    job->pageBoxClip.UR.y = MIN(job->clip.UR.y, job->pageBox.UR.y);
-    job->pageBoxClip.LL.x = MAX(job->clip.LL.x, job->pageBox.LL.x);
-    job->pageBoxClip.LL.y = MAX(job->clip.LL.y, job->pageBox.LL.y);
+    job->clip.UR.x = MAX(job->clip.UR.x, job->pageBox.UR.x);
+    job->clip.UR.y = MAX(job->clip.UR.y, job->pageBox.UR.y);
+    job->clip.LL.x = MIN(job->clip.LL.x, job->pageBox.LL.x);
+    job->clip.LL.y = MIN(job->clip.LL.y, job->pageBox.LL.y);
 
     /* pageBoundingBox in device units */
     if (job->rotation) {
@@ -842,22 +843,6 @@ static void setup_page(GVJ_t * job, graph_t * g)
         obj->url_map_n = nump;
     }
 }
-
-#if 0
-static bool node_in_view(GVJ_t *job, node_t * n)
-{
-    boxf b;
-
-    if (boxf_contains(job->clip, job->pageBox) && job->numPages == 1)
-       return TRUE;
-    b.LL.x = ND_coord_i(n).x - ND_lw_i(n);
-    b.LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
-    b.UR.x = ND_coord_i(n).x + ND_rw_i(n);
-    b.UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
-
-    return boxf_overlap(job->pageBoxClip, b);
-}
-#endif
 
 static bool is_natural_number(char *sstr)
 {
@@ -984,12 +969,10 @@ static bool clust_in_layer(GVJ_t *job, graph_t * sg)
     return FALSE;
 }
 
-#if 1
 static bool node_in_box(node_t *n, boxf b)
 {
     return boxf_overlap(ND_bb(n), b);
 }
-#endif
 
 static void emit_begin_node(GVJ_t * job, node_t * n)
 {
@@ -1171,7 +1154,7 @@ static void emit_node(GVJ_t * job, node_t * n)
 
     if (ND_shape(n) 				     /* node has a shape */
 	    && node_in_layer(job, n->graph, n)       /* and is in layer */
-	    && node_in_box(n, job->pageBoxClip)      /* and is in page  */
+	    && node_in_box(n, job->clip)             /* and is in page/view */
 	    && (ND_state(n) != gvc->common.viewNum)) /* and not already drawn */
     {
 	ND_state(n) = gvc->common.viewNum; 	     /* mark node as drawn */
@@ -1249,46 +1232,6 @@ static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
     gvrender_set_pencolor(job, lp->fontcolor);
     gvrender_polyline(job, AF, 3);
 }
-
-#if 0
-static bool edge_in_view(GVJ_t *job, edge_t * e)
-{
-    int i, j, np;
-    bezier bz;
-    point *p;
-    pointf pp, pn;
-    double sx, sy;
-    boxf b;
-    textlabel_t *lp;
-
-    if (boxf_contains(job->clip, job->pageBox) && job->numPages == 1)
-       return TRUE;
-    if (ED_spl(e) == NULL)
-       return FALSE;
-    for (i = 0; i < ED_spl(e)->size; i++) {
-       bz = ED_spl(e)->list[i];
-       np = bz.size;
-       p = bz.list;
-       P2PF(p[0],pp);
-       for (j = 0; j < np; j++) {
-           P2PF(p[j],pn);
-           b = mkboxf(pp, pn);
-           if (boxf_overlap(job->pageBoxClip, b))
-               return TRUE;
-           pp = pn;
-       }
-    }
-    if ((lp = ED_label(e)) == NULL)
-       return FALSE;
-    sx = lp->dimen.x / 2.;
-    sy = lp->dimen.y / 2.;
-    b.LL.x = lp->p.x - sx;
-    b.UR.x = lp->p.x + sx;
-    b.LL.y = lp->p.y - sy;
-    b.UR.y = lp->p.y + sy;
-    return boxf_overlap(job->pageBoxClip, b);
-}
-#endif
 
 /* edges colors can be mutiple colors separated by ":"
  * so we commpute a default pencolor with the same number of colors. */
@@ -1736,7 +1679,7 @@ static void emit_edge(GVJ_t * job, edge_t * e)
 {
     char *s;
 
-    if (edge_in_box(e, job->pageBoxClip) && edge_in_layer(job, e->head->graph, e)) {
+    if (edge_in_box(e, job->clip) && edge_in_layer(job, e->head->graph, e) ) {
 
 	s = malloc(strlen(e->tail->name) + 2 + strlen(e->head->name) + 1);
 	strcpy(s,e->tail->name);
@@ -2136,8 +2079,8 @@ void emit_graph(GVJ_t * job, graph_t * g)
 		/* do graph label on every page and rely on clipping to show it on the right one(s) */
 		obj->label = lab->text;
             if (obj->url || obj->explicit_tooltip) {
-		PF2P(job->pageBoxClip.LL, p1);
-		PF2P(job->pageBoxClip.UR, p2);
+		PF2P(job->clip.LL, p1);
+		PF2P(job->clip.UR, p2);
 		emit_map_rect(job, p1, p2);
 		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	    }
@@ -2145,7 +2088,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
 		emit_background(job, g);
             if (obj->url || obj->explicit_tooltip)
 		gvrender_end_anchor(job);
-	    if (boxf_overlap(job->clip, job->pageBox))
+//	    if (boxf_overlap(job->clip, job->pageBox))
 	        emit_view(job,g,flags);
 	    gvrender_end_page(job);
 	} 
