@@ -882,11 +882,15 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 		continue;
 	    if ((v = GD_rank(g)[r].v[0]) == NULL)
 		continue;
-	    x = ND_coord_i(v).x - ND_lw_i(v);
-	    LL.x = MIN(LL.x, x);
+	    if (ND_node_type(v) == NORMAL) {
+		x = ND_coord_i(v).x - ND_lw_i(v);
+		LL.x = MIN(LL.x, x);
+	    }
 	    v = GD_rank(g)[r].v[GD_rank(g)[r].n - 1];
-	    x = ND_coord_i(v).x + ND_rw_i(v);
-	    UR.x = MAX(UR.x, x);
+	    if (ND_node_type(v) == NORMAL) {
+		x = ND_coord_i(v).x + ND_rw_i(v);
+		UR.x = MAX(UR.x, x);
+	    }
 	}
 	offset = CL_OFFSET;
 	for (c = 1; c <= GD_n_cluster(g); c++) {

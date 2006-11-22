@@ -373,8 +373,10 @@ void dot_splines(graph_t * g)
 
     /* place regular edge labels */
     for (n = GD_nlist(g); n; n = ND_next(n)) {
-	if ((ND_node_type(n) == VIRTUAL) && (ND_label(n)))
+	if ((ND_node_type(n) == VIRTUAL) && (ND_label(n))) {
 	    place_vnlabel(n);
+	    updateBB(g, ND_label(n));
+	}
     }
 
     /* normalize splines so they always go from tail to head */
