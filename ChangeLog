@@ -1,29 +1,27 @@
-October 20, 2006
-	- gvpr - Add kindOf function, plus functions to set and get default values
-	- dot (et al) - Implement esep attribute to allow graph to specify room
-	around nodes for spline routing.
-	- neato - add vpsc library and DIGCOLA
-	- neato - add IPSEPCOLA additions from Tim Dwyer
-	- dot (et al) - New pango+cairo renderer plugin
-	(was in separate graphviz-cairo tree).
+November 27, 2006
+	- release 2.10
+	- dot - New pango+cairo renderer plugin (was in separate graphviz-cairo tree).
 	  -- -Tpng now uses cairo   (-Tpng:gd for old gd based renderer)
 	  -- -Tpdf now available
 	  -- -Tps:cairo now available (-Tps is a direct ps renderer not based on cairo)
 	  -- -Tsvg:cairo now available (-Tsvg is a direct svg renderer not based on cairo)
-	- remove hard gd dependencies from dot (et al).  gd renderers now available
-	  as optional plugin.   Required for -Tjpg, -Tgif and -Tvrml.
+	  -- -Txlib now available -- "dot -Tx11 foo.dot"  watches foo.dot with inotify and updates
+	  -- -Tgtk now available -- eventually to provide a graph editing capability - not fully working
+	  -- -Tswf "Flash" now available using the ming library. Currently has incomplete font support and not yet in Fedora rpms because ming not yet available as rpm.
+	- remove hard gd dependencies from dot.  gd renderers now provided
+	  as optional plugin.   Deprecated, but required for -Tjpg, -Tgif and -Tvrml.
+	- gvpr - Add kindOf function, plus functions to set and get default values
+	- dot - Implement esep attribute to allow graph to specify room
+	around nodes for spline routing.
+	- neato - add vpsc library and DIGCOLA
+	- neato - add IPSEPCOLA additions from Tim Dwyer
 	- move: -Tps, -Tfig, -Tsvg, -Timap/ismap/cmap/cmapx, -Tdot/xdot,
 	from codegens to a "core" plugin.
-	- dot (et al) - new usershape plugin mechanism potentially supporting
+	- dot - new usershape plugin mechanism potentially supporting
 	  a wider range of input shape format -> output format combinations.
-	- dot (et al) - New -Txlib and -Tgtk renderers, based on cairo
-	  -- "dot -Tx11 foo.dot"  watches foo.dot with inotify and updates
 	display on changes
-	- dot (et al) - New -Tswf  "Flash" plugin now available
-	using the ming library.  (Currently has incomplete font support and
-	not yet in Fedora rpms because ming not yet available as rpm) 
 	- Fixes for builds on Mac OS/X
-	- dot (et al) - new -O switch to automatically generate output file
+	- dot - new -O switch to automatically generate output file
 	names based on the input filename and the -T value.
 	 e.g.  "dot -Tpng -O *.dot"   
 	Also works for case of multiple graphs in a single input file.
@@ -32,7 +30,7 @@ October 20, 2006
 	from Debian community.   Plugin .so's remain in $PREFIX/lib/graphviz.
 	- Fix bugs 882 884 886 896 902 905 906 911 918 919 933 936 938 940
 	   948 955 958 967 979 987 993 1005 1006 1011 1012 1013 1014 1016
-	   1018 1025 1030 1034 1035 debian37300
+	   1018 1025 1030 1034 1035 1039 1040 debian#37300
 
 February 3, 2006
 	- release 2.8
