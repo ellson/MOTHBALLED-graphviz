@@ -21,6 +21,7 @@
 
 #include "render.h"
 
+#ifdef DEBUG
 static int debugleveln(edge_t* e, int i)
 {
     return (GD_showboxes(e->head->graph) == i ||
@@ -49,6 +50,7 @@ static void showPoints(point ps[], int pn)
     Show_cnt = newcnt;
     Show_boxes[Show_cnt+1] = NULL;
 }
+#endif
 
 /* arrow_clip:
  * Clip arrow to node boundary.
@@ -1013,8 +1015,10 @@ selfBottom (edge_t* edges[], int ind, int cnt, int sizex, int stepy, splineInfo*
 		dx += width - stepx;
 	}
 	clip_and_install(e, e, points, pointn, sinfo);
+#ifdef DEBUG
 	if (debugleveln(e,1))
 	    showPoints (points, pointn);
+#endif
     }
 }
 
@@ -1080,8 +1084,10 @@ selfTop (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
 		dx += width - stepx;
 	}
 	clip_and_install(e, e, points, pointn, sinfo);
+#ifdef DEBUG
 	if (debugleveln(e,1))
 	    showPoints (points, pointn);
+#endif
     }
 }
 
@@ -1145,8 +1151,10 @@ selfRight (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
 		dy += height - stepy;
         }
         clip_and_install(e, e, points, pointn, sinfo);
+#ifdef DEBUG
         if (debugleveln(e,1))
 	    showPoints (points, pointn);
+#endif
     }
     return;
 }
@@ -1211,8 +1219,10 @@ selfLeft (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
     	    dy += height - stepy;
         }
         clip_and_install(e, e, points, pointn, sinfo);
+#ifdef DEBUG
         if (debugleveln(e,1))
 	    showPoints (points, pointn);
+#endif
     }
 }
 

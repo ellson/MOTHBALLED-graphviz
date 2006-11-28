@@ -110,6 +110,7 @@ static void psprintspline(Ppolyline_t spl)
     Show_cnt = newcnt;
     Show_boxes[Show_cnt+1] = NULL;
 }
+
 static void psprintline(Ppolyline_t pl)
 {
     char buf[BUFSIZ];
@@ -130,6 +131,7 @@ static void psprintline(Ppolyline_t pl)
     Show_cnt = newcnt;
     Show_boxes[Show_cnt+1] = NULL;
 }
+
 static void psprintpoly(Ppoly_t p)
 {
     char buf[BUFSIZ];
@@ -157,6 +159,7 @@ static void psprintpoly(Ppoly_t p)
     Show_cnt = newcnt;
     Show_boxes[Show_cnt+1] = NULL;
 }
+
 static void psprintboxes(int boxn, box* boxes)
 {
     char buf[BUFSIZ];
@@ -185,6 +188,7 @@ static void psprintboxes(int boxn, box* boxes)
     Show_cnt = newcnt;
     Show_boxes[Show_cnt+1] = NULL;
 }
+
 static void psprintinit (int begin)
 {
     int newcnt = Show_cnt + 1;
@@ -206,7 +210,7 @@ static int debugleveln(edge_t* realedge, int i)
 	    ND_showboxes(realedge->head) == i ||
 	    ND_showboxes(realedge->tail) == i);
 }
-#endif
+#endif  /* DEBUG */
 
 #ifdef OBSOLETE
 static point mkpt(int x, int y)
@@ -243,6 +247,7 @@ routesplinesinit()
 	abort();
     }
     maxpn = PINC;
+#ifdef DEBUG
     if (Show_boxes) {
 	int i;
         for (i = 0; Show_boxes[i]; i++)
@@ -251,6 +256,7 @@ routesplinesinit()
 	Show_boxes = NULL;
 	Show_cnt = 0;
     }
+#endif
     nedges = 0;
     nboxes = 0;
     if (Verbose)

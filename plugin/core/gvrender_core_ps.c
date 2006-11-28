@@ -92,6 +92,12 @@ static void psgen_begin_graph(GVJ_t * job)
         cat_preamble(job, job->common->lib);
 	/* include epsf */
         epsf_define(job->output_file);
+        if (job->common->show_boxes) {
+            char* args[2];
+            args[0] = job->common->show_boxes[0];
+            args[1] = NULL;
+            cat_libfile(job->output_file, NULL, args);
+        }
     }
     isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
     /* We always setup Latin1. The charset info is always output,
@@ -152,8 +158,10 @@ static void psgen_begin_page(GVJ_t * job)
 
 static void psgen_end_page(GVJ_t * job)
 {
-//    if (job->common->show_boxes)
-//	cat_libfile(job->output_file, NULL, job->common->show_boxes + 1);
+    if (job->common->show_boxes) {
+	core_fputs(job, "0 0 0 edgecolor\n");
+	cat_libfile(job->output_file, NULL, job->common->show_boxes + 1);
+    }
     /* the showpage is really a no-op, but at least one PS processor
      * out there needs to see this literal token.  endpage does the real work.
      */

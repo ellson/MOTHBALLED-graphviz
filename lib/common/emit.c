@@ -2677,6 +2677,12 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 #endif
 
 	if (! (job->flags & GVRENDER_X11_EVENTS)) {
+    		/* Show_boxes is not defined, if at all, 
+                 * until splines are generated in dot 
+                 */
+#ifdef DEBUG
+	    job->common->show_boxes = Show_boxes; 
+#endif
 	    emit_graph(job, g); /* FIXME? - this should be a special case of finalize() */
 
 	    /* Flush is necessary because we may be writing to a pipe. */
