@@ -1,0 +1,2 @@
+export CC=ncc
+:MAKE:
