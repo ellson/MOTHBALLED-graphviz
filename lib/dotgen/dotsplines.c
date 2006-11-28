@@ -1065,7 +1065,6 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt)
     node_t *tn, *hn;
     edge_t fwdedge, *e;
     int j, i, stepx, stepy, vspace, r;
-    rank_t* prevr;
     int tside, hside, pn;
     point *ps;
     pathend_t tend, hend;
@@ -1098,8 +1097,12 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt)
     g = tn->graph;
     r = ND_rank(tn);
     if (r > 0) {
-	prevr = GD_rank(g) + (r-1);
-	vspace = ND_coord_i(prevr->v[0]).y - prevr->pht1 - ND_coord_i(tn).y - GD_rank(g)[r].pht2;
+	rank_t* prevr;
+	if (GD_has_labels(g) & EDGE_LABEL)
+	    prevr = GD_rank(g) + (r-2);
+	else
+	    prevr = GD_rank(g) + (r-1);
+	vspace = ND_coord_i(prevr->v[0]).y - prevr->ht1 - ND_coord_i(tn).y - GD_rank(g)[r].ht2;
     }
     else {
 	vspace = GD_ranksep(g);
