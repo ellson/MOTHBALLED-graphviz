@@ -8,6 +8,7 @@ TCLSH=/C/tcl/bin/tclsh.exe                  # tcl
 INPKG=graphviz-win.tgz                      # input CVS package
 #WISE=/C/wisein~1/wise32.exe                 # = /Wise InstallMaker
 WISE=/C/progra~1/wisein~2/wise32.exe        # = Wise InstallMaker
+SCP=/C/progra~1/putty/pscp.exe        # scp
 SOURCEM=www.graphviz.org
 SOURCEID=ellson@www.graphviz.org
 SOURCE=/home/ellson/www.graphviz.org/pub/graphviz
@@ -51,8 +52,11 @@ function getFile
 #  ssh soohan scp -q $NSOURCEFILE .
 #  echo rcp raptor:graphviz-win.tgz . >> $LFILE 2>&1
 #  rcp raptor:graphviz-win.tgz . >> $LFILE 2>&1
-  echo ssh $SOURCEID "cat $SOURCEFILE" >> $LFILE
-  ssh $SOURCEID "cat $SOURCEFILE" > $INPKG 2>> $LFILE
+#  echo ssh $SOURCEID "cat $SOURCEFILE" >> $LFILE
+#  ssh $SOURCEID "cat $SOURCEFILE" > $INPKG 2>> $LFILE
+   echo $SCP -q $SOURCEM:$SOURCEFILE . >> $LFILE 2>&1
+   $SCP -q $SOURCEM:$SOURCEFILE . >> $LFILE 2>&1
+  
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to get source"
@@ -67,14 +71,16 @@ function putFile
 #  PID=$(ps -e | grep scp | awk '{print $1 }')
 #  sleep 10
 #  kill $PID
-  BASE=$(basename $1)
-  echo rcp $1 raptor:. >> $LFILE 2>&1
-  rcp $1 raptor:. >> $LFILE 2>&1
-  echo ssh raptor scp -q $BASE $SOURCEM:$DESTDIR  >> $LFILE 2>&1
-  ssh raptor scp -q $BASE $SOURCEM:$DESTDIR  >> $LFILE 2>&1
-  ssh raptor rm $BASE >> $LFILE 2>&1
+#  BASE=$(basename $1)
+#  echo rcp $1 raptor:. >> $LFILE 2>&1
+#  rcp $1 raptor:. >> $LFILE 2>&1
+#  echo ssh raptor scp -q $BASE $SOURCEM:$DESTDIR  >> $LFILE 2>&1
+#  ssh raptor scp -q $BASE $SOURCEM:$DESTDIR  >> $LFILE 2>&1
+#  ssh raptor rm $BASE >> $LFILE 2>&1
 #  echo "cat $1 | ssh $SOURCEID cat - $DESTDIR" >> $LFILE 
 #  cat $1 | ssh $SOURCEID "cat - > $DESTDIR/$BASE" 
+  echo "$SCP -q $1 $SOURCEM:$DESTDIR" >> $LFILE 2>&1  
+  $SCP -q $1 $SOURCEM:$DESTDIR  
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to put $1"
@@ -135,7 +141,7 @@ do
   -R )       # build official release
     shift
 	RELEASE=$1
-    INPKG=graphviz-win-${RELEASE}.tgz
+    INPKG=graphviz-win-${RELEASE}.tar.gz
     SOURCEFILE=$SOURCE/ARCHIVE/$INPKG
     DESTDIR=$SOURCE/ARCHIVE
     ;;
@@ -380,7 +386,7 @@ function Package
         finstall ingraphs.h 
 
 	# Create tgz package
-	TGZFILE=graphviz-win-${VERSION}.bin.tgz
+	TGZFILE=graphviz-win-${VERSION}.bin.tar.gz
 	if [[ $WISEFLAG == 0 ]]
 	then
 	  echo "creating tgz package" >> $LFILE
