@@ -58,7 +58,7 @@ static char setupLatin1;
 
 static void psgen_begin_job(GVJ_t * job)
 {
-    core_fputs(job, "%%!PS-Adobe-2.0\n");
+    core_fputs(job, "%!PS-Adobe-2.0\n");
     core_printf(job, "%%%%Creator: %s version %s (%s)\n",
 	    job->common->info[0], job->common->info[1], job->common->info[2]);
     core_printf(job, "%%%%For: %s\n", job->common->user);
@@ -270,9 +270,8 @@ ps_set_pen_style(GVJ_t *job)
 {
     double penwidth = job->obj->penwidth * job->zoom;
     char *p, *line, **s = job->obj->rawstyle;
-    FILE *out = job->output_file;
 
-    fprintf(out,"%g setlinewidth\n", penwidth);
+    core_printf(job,"%g setlinewidth\n", penwidth);
 
     while (s && (p = line = *s++)) {
 	if (strcmp(line, "setlinewidth") == 0)
@@ -281,14 +280,14 @@ ps_set_pen_style(GVJ_t *job)
 	    p++;
 	p++;
 	while (*p) {
-            fprintf(out,"%s ", p);
+            core_printf(job,"%s ", p);
 	    while (*p)
 		p++;
 	    p++;
 	}
 	if (strcmp(line, "invis") == 0)
 	    job->obj->penwidth = 0;
-	fprintf(out, "%s\n", line);
+	core_printf(job, "%s\n", line);
     }
 }
 
@@ -441,7 +440,7 @@ static void psgen_polyline(GVJ_t * job, pointf * A, int n)
 
 static void psgen_comment(GVJ_t * job, char *str)
 {
-    core_fputs(job, "%% ");
+    core_fputs(job, "% ");
     core_fputs(job, str);
     core_fputs(job, "\n");
 }
