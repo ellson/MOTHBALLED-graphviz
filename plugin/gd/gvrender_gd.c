@@ -326,8 +326,14 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 		    job->obj->pencolor.u.index);
     } else {
 #if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
+#ifdef HAVE_GD_FONTCONFIG
+	char* fontlist = para->fontname;
+#else
+	extern char *gd_alternate_fontlist(char *font);
+	char* fontlist = gd_alternate_fontlist(para->fontname);
+#endif
 	err = gdImageStringFTEx(im, brect, job->obj->pencolor.u.index,
-				para->fontname, para->fontsize, job->rotation ? (PI / 2) : 0,
+				fontlist, para->fontsize, job->rotation ? (PI / 2) : 0,
 				ROUND(mp.x), ROUND(mp.y), (char *)(para->str), &strex);
 #if 0
 	gdImagePolygon(im, (gdPointPtr) brect, 4,
