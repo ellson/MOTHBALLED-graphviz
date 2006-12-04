@@ -6,7 +6,7 @@ AC_PREREQ(2.54)
 dnl ===========================================================================
 
 # Package name and version number, (as distinct from shared library version)
-AC_INIT(graphviz, 2.12)
+AC_INIT(graphviz, 2.13)
 
 # libtool shared library version
 
