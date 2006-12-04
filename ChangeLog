@@ -1,3 +1,17 @@
+December 5, 2006
+	- release 2.12
+	- Bug fix release for 2.10
+	- The gd plugin for font handlers was not being used at all if the build
+	did not use fontconfig, e.g., on Windows. In addition, the code had
+	dropped the name mapping to Windows font names.
+	- PostScript output had an extraneous '%' character on the first line,
+	which would cause printing to fail.
+	- Text handling, during both sizing and layout, incorrectly handled
+	empty lines such as label="\nabc".
+	- HTML-like tables had been changed to use too much vertical space,
+	to possibly use the wrong font in calculating the height of a line,
+	and to use the wrong offset when moving the baseline from one line to
+	the next.
 November 27, 2006
 	- release 2.10
 	- dot - New pango+cairo renderer plugin (was in separate graphviz-cairo tree).
