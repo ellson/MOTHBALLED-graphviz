@@ -76,8 +76,8 @@ extern "C" {
 	textitem_t *items;
 	short nitems;
 	char just;
-	double size;   /* size of para */
-	double lfsize; /* size of largest font in para */
+	double size;   /* width of para */
+	double lfsize; /* offset from previous baseline to current one */
     } htextpara_t;
 	
     typedef struct {

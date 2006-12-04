@@ -69,6 +69,7 @@
 #define		MIN_FONTSIZE		1.0
 #define		DEFAULT_FONTNAME	"Times-Roman"
 #define		DEFAULT_FILL		"lightgrey"
+#define         LINESPACING             1.20
 
 #define		DEFAULT_NODEHEIGHT	0.5
 #define		MIN_NODEHEIGHT		0.02
@@ -206,6 +207,14 @@
 #define DIAGONALS (1 << 2)
 #define AUXLABELS (1 << 3)
 #define INVISIBLE (1 << 4)
+
+/* edge types */
+#define ET_NONE 	(0 << 1)
+#define ET_LINE 	(1 << 1)
+#define ET_PLINE 	(2 << 1)
+#define ET_ORTHO 	(3 << 1)
+#define ET_SPLINE 	(4 << 1)
+#define ET_COMPOUND 	(5 << 1)
 
 /* user-specified node position: ND_pinned */
 #define P_SET    1		/* position supplied by user */

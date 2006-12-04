@@ -21,7 +21,7 @@
 
 static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
 {
-    pointf size = {0.,0.};
+    pointf size;
     textpara_t *para;
 
     lp->u.txt.para =
@@ -31,6 +31,11 @@ static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
     para->just = terminator;
     if (line && line[0])
         size = textsize(g, para, lp->fontname, lp->fontsize);
+    else {
+	size.x = 0.0;
+	para->height = size.y = (int)(lp->fontsize * LINESPACING);
+    }
+
     lp->u.txt.nparas++;
     /* width = max line width */
     lp->dimen.x = MAX(lp->dimen.x, size.x);

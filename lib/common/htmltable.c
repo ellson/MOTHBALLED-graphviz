@@ -105,7 +105,7 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 {
     int i,j;
     double tmp, center_x, left_x, right_x, fsize_;
-    double offset=0.0;
+    double offset;
     char *fname_ , *fcolor_;
     textpara_t tl;
     pointf p_ = {0.0, 0.0};
@@ -114,6 +114,13 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
     center_x = p.x;
     left_x = center_x - halfwidth_x;
     right_x = center_x + halfwidth_x;
+
+	/* Initial p is in center of text block; set initial baseline
+ 	 * to top of text block.
+	 */
+    p_.y = p.y + (double)(b.UR.y-b.LL.y)/2.0;
+    tmp = ROUND(p_.y);  /* align with integer points */
+    p_.y = (double)tmp;
 
     gvrender_begin_context(job);
     for(i=0; i<nparas; i++) {
@@ -132,14 +139,10 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	    p.x = center_x;
 	    break;
 	}
-
-	if (i == 0) {
-	    p_.y = p.y + (double)(b.UR.y-b.LL.y)/2. - paras[i].lfsize;
-	    tmp = ROUND(p_.y);  /* align with integer points */
-	    p_.y = (double)tmp;
-	}
+	p_.y -= paras[i].lfsize;  /* move to current base line */
 
 	ti = paras[i].items;
+	offset = 0.0;
 	for(j=0; j<paras[i].nitems; j++) {
 	    if (ti->font && (ti->font->size > 0))
 		fsize_ = ti->font->size;
@@ -172,9 +175,6 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	    p_.x = p.x + offset;
             ti++;
 	}
-	/* position for next para */
-	p_.y -= paras[i].lfsize * 1.3;
-	offset = 0.0;
     }
 
     gvrender_end_context(job);
@@ -636,14 +636,20 @@ int html_path(node_t * n, port* p, int side, box * rv, int *k)
 static int 
 size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 {
-    double xsize = 0.0, ysize = 0.0;
-    double fsize, lsize = 0.0;
+    double xsize = 0.0; /* width of text block */
+    double ysize = 0.0; /* height of text block */
+    double fsize;
+    double lsize;    /* height of current line */
+    double mxfsize;  /* max. font size for the current line */
+    double curbline = 0; /* dist. of current base line from top */
     pointf sz;
-    int i, j, w = 0, width = 0;
+    int i, j, w, width;
     char *fname;
     textpara_t lp;
 
     for (i = 0; i < ftxt->nparas; i++) {
+	width = w = 0;
+	mxfsize = 0;
 	for (j = 0; j < ftxt->paras[i].nitems; j++) {
 	    lp.str = strdup_and_subst_obj (ftxt->paras[i].items[j].str, env->obj);
 	    if (ftxt->paras[i].items[j].font) {
@@ -668,17 +674,26 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	    ftxt->paras[i].items[j].layout = lp.layout;
 	    ftxt->paras[i].items[j].free_layout = lp.free_layout;
 	    width += sz.x;
-	    ftxt->paras[i].size = (double) width;
-	    lsize = MAX(fsize, lsize);
+	    mxfsize = MAX(fsize, mxfsize);
 	}
-	ftxt->paras[i].lfsize = lsize;
+	lsize = mxfsize * LINESPACING;
+	ftxt->paras[i].size = (double) width;
+	    /* ysize - curbline is the distance from the previous
+	     * baseline to the bottom of the previous line.
+	     * Then, in the current line, we set the baseline to
+	     * be 5/6 of the max. font size. Thus, lfsize gives the
+	     * distance from the previous baseline to the new one.
+	     */
+	ftxt->paras[i].lfsize = 5*mxfsize/6 + ysize - curbline;
+	curbline += ftxt->paras[i].lfsize;
 	xsize = MAX(width, xsize);
-	ysize += sz.y;
-	width = w = 0;
-	lsize = 0;
+	ysize += lsize;
     }
     ftxt->box.UR.x = xsize;
-    ftxt->box.UR.y = (int) (ysize);
+    if (ftxt->nparas == 1)
+	ftxt->box.UR.y = (int) (mxfsize);
+    else
+	ftxt->box.UR.y = (int) (ysize);
     return 0;
 }
 

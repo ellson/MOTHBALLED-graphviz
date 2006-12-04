@@ -160,7 +160,10 @@ static void gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath
 	if (para->str && para->str[0]) {
 	    /* can't use brect on some archtectures if strlen 0 */
 	    para->width = (double) (brect[4] - brect[0]);
-	    para->height = para->fontsize * 1.3;
+	    /* 1.2 specifies how much extra space to leave between lines;
+             * see LINESPACING in const.h.
+             */
+	    para->height = (int)(para->fontsize * 1.2);
 	}
     }
 }
