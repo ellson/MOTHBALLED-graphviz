@@ -2287,7 +2287,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	if (istyle & ROUNDED) {
 	    if (late_int(sg, G_peripheries, 1, 0) || filled) {
 		AF[0] = BF.LL;
-		AF[1] = BF.UR;
+		AF[2] = BF.UR;
 		AF[1].x = AF[2].x;
 		AF[1].y = AF[0].y;
 		AF[3].x = AF[0].x;
