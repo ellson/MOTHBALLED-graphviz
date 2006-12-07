@@ -55,7 +55,7 @@ stress_majorization_with_hierarchy(
 	*************************************************/
 
 	int i,j,k;
-	bool directionalityExist = FALSE;
+	boolean directionalityExist = FALSE;
 	float * lap1 = NULL;
 	float * dist_accumulator = NULL;
 	float * tmp_coords = NULL;
@@ -87,7 +87,7 @@ stress_majorization_with_hierarchy(
 	int step;
 	float val;
 	double old_stress, new_stress;
-	bool converged;
+	boolean converged;
 	int len;
     int num_levels;
     float *hierarchy_boundaries;
@@ -319,7 +319,7 @@ stress_majorization_with_hierarchy(
 	unpackedLap = unpackMatrix(lap2, n);
 	cMajEnv=initConstrainedMajorization(lap2, n, ordering, levels, num_levels);
 
-	for (converged=false,iterations=0; iterations<maxi && !converged; iterations++) {
+	for (converged=FALSE,iterations=0; iterations<maxi && !converged; iterations++) {
 
 		/* First, construct Laplacian of 1/(d_ij*|p_i-p_j|)  */
 		set_vector_val(n, 0, degrees);

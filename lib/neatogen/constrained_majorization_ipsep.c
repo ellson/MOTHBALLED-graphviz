@@ -97,7 +97,7 @@ int stress_majorization_cola(
     int step;
     float val;
     double old_stress, new_stress = 0;
-    bool converged;
+    boolean converged;
     int len;
     double nsizeScale = 0;
     float maxEdgeLen = 0;
@@ -270,7 +270,7 @@ int stress_majorization_cola(
 
     lap1 = N_GNEW(lap_length, float);
 
-    for (converged = false, iterations = 0;
+    for (converged = FALSE, iterations = 0;
 	 iterations < maxi && !converged; iterations++) {
 
 	/* First, construct Laplacian of 1/(d_ij*|p_i-p_j|)  */
@@ -376,7 +376,7 @@ int stress_majorization_cola(
 		fprintf(stderr, "nsizescale=%f,iterations=%d\n",
 			nsizeScale, iterations);
 	    iterations = 0;
-	    converged = false;
+	    converged = FALSE;
 	}
 
 
@@ -395,7 +395,7 @@ int stress_majorization_cola(
 	if (opt->noverlap == 1 && nsizeScale > 0.001) {
 	    generateNonoverlapConstraints(cMajEnvHor, nsizeScale, coords,
 					  0,
-					  nsizeScale < 0.5 ? false : true,
+					  nsizeScale < 0.5 ? FALSE : TRUE,
 					  opt);
 	}
 	if (cMajEnvHor->m > 0) {
@@ -416,7 +416,7 @@ int stress_majorization_cola(
 	}
 	if (opt->noverlap == 1 && nsizeScale > 0.001) {
 	    generateNonoverlapConstraints(cMajEnvVrt, nsizeScale, coords,
-					  1, false, opt);
+					  1, FALSE, opt);
 	}
 	if (cMajEnvVrt->m > 0) {
 #ifdef MOSEK
