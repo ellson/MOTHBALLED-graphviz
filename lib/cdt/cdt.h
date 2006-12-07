@@ -24,9 +24,17 @@
 
 #define CDT_VERSION	19991101L
 
+#define Void_t		void
+#define _ARG_(x)	x
+#ifndef NIL
+#define NIL(type) ((type)0)
+#endif
+
+#include <stdlib.h>
+
 #if _PACKAGE_ast
 #  include	<ast_std.h>
-#else
+#elif _BLD_cdt
 #  include	"ast_common.h"
 #endif
 
@@ -155,7 +163,6 @@ extern "C" {
 #define DT_DISC		3	/* discipline is about to be changed    */
 #define DT_METH		4	/* method is about to be changed        */
 
-     _BEGIN_EXTERNS_		/* public data */
 #if _BLD_cdt && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
@@ -183,7 +190,6 @@ extern "C" {
 #endif
 
 #undef extern
-     _END_EXTERNS_ _BEGIN_EXTERNS_	/* public functions */
 #if _BLD_cdt && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
@@ -210,7 +216,7 @@ extern "C" {
     extern unsigned int dtstrhash _ARG_((unsigned int, Void_t *, int));
 
 #undef extern
-     _END_EXTERNS_
+
 #define _DT_(d)		((Dt_t*)(d))
 #define dtvnext(d)	(_DT_(d)->view)
 #define dtvcount(d)	(_DT_(d)->nview)

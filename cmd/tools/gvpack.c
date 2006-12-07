@@ -67,7 +67,7 @@ typedef struct {
 } pair_t;
 
 static int margin = 8;		/* Default margin in packing */
-static bool doSplines = TRUE;	/* Use edges in packing */
+static boolean doSplines = TRUE;	/* Use edges in packing */
 static pack_mode packMode = l_clust;	/* Default packing mode - use clusters */
 static int verbose = 0;
 static char **myFiles = 0;
@@ -244,7 +244,7 @@ static void init_node_edge(Agraph_t * g)
  * libcommon. If fill is true, we use init_nop (neato -n) to
  * read in attributes relevant to the layout.
  */
-static void init_graph(Agraph_t * g, bool fill)
+static void init_graph(Agraph_t * g, boolean fill)
 {
     int d;
 
@@ -588,7 +588,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt)
     Dt_t *nnames;		/* dict of used node names */
     Agsym_t *G_bb;
     Agsym_t *rv;
-    bool doWarn = TRUE;
+    boolean doWarn = TRUE;
 
     if (verbose)
 	fprintf(stderr, "Creating clone graph\n");
