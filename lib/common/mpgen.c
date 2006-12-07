@@ -246,7 +246,7 @@ static void mp_polyline(point * A, int n)
     fprintf(Output_file, " withcolor %s;\n", S[SP].color);
 }
 
-static void mp_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
+static void mp_usershape(usershape_t *us, boxf b, point *A, int n, boolean filled)
 {
     int j;
     fprintf(Output_file, "%%GV USER SHAPE [ ");
