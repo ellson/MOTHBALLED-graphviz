@@ -98,12 +98,12 @@ arrow_clip(edge_t * fe, edge_t * le,
  * The points p are in node coordinates.
  */
 void bezier_clip(inside_t * inside_context,
-		 bool(*inside) (inside_t * inside_context, pointf p),
-		 pointf * sp, bool left_inside)
+		 boolean(*inside) (inside_t * inside_context, pointf p),
+		 pointf * sp, boolean left_inside)
 {
     pointf seg[4], best[4], pt, opt, *left, *right;
     double low, high, t, *idir, *odir;
-    bool found;
+    boolean found;
     int i;
 
     if (left_inside) {
@@ -152,7 +152,7 @@ void bezier_clip(inside_t * inside_context,
  */
 static void
 shape_clip0(inside_t * inside_context, node_t * n, point curve[4],
-	    bool left_inside)
+	    boolean left_inside)
 {
     int i, save_real_size;
     pointf c[4];
@@ -188,7 +188,7 @@ shape_clip0(inside_t * inside_context, node_t * n, point curve[4],
 void shape_clip(node_t * n, point curve[4])
 {
     int save_real_size;
-    bool left_inside;
+    boolean left_inside;
     pointf c;
     inside_t inside_context;
 
@@ -389,7 +389,7 @@ void add_box(path * P, box b)
 #define FUDGE 2
 
 void
-beginpath(path * P, edge_t * e, int et, pathend_t * endp, bool merge)
+beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 {
     int side, mask;
     node_t *n;
@@ -579,7 +579,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, bool merge)
     }    
 }
 
-void endpath(path * P, edge_t * e, int et, pathend_t * endp, bool merge)
+void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 {
     int side, mask;
     node_t *n;
@@ -1360,7 +1360,7 @@ makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, int sizex,
 }
 
 /* vladimir */
-void place_portlabel(edge_t * e, bool head_p)
+void place_portlabel(edge_t * e, boolean head_p)
 /* place the {head,tail}label (depending on HEAD_P) of edge E */
 /* N.B. Assume edges are normalized, so tail is at spl->list[0].list[0]
  * and head is at spl->list[spl->size-l].list[bez->size-1]

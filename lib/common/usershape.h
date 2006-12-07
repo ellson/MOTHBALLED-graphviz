@@ -17,6 +17,8 @@
 #ifndef USERSHAPE_H
 #define USERSHAPE_H
 
+#include <cdt.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,7 +34,7 @@ extern "C" {
 	Dtlink_t link;
 	char *name;
 	int macro_id;
-	bool must_inline;
+	boolean must_inline;
 	FILE *f;
 	imagetype_t type;
 	char *stringtype;

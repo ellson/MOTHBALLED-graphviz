@@ -118,7 +118,7 @@ char *late_nnstring(void *obj, attrsym_t * attr, char *def)
     return rv;
 }
 
-bool late_bool(void *obj, attrsym_t * attr, int def)
+boolean late_bool(void *obj, attrsym_t * attr, int def)
 {
     if (attr == NULL)
 	return def;
@@ -331,7 +331,7 @@ static char *Fgets(FILE * fp)
  */
 char *safefile(char *filename)
 {
-    static bool onetime = true;
+    static boolean onetime = TRUE;
     static char *safefilename = NULL;
     char *str, *p;
 
@@ -349,7 +349,7 @@ char *safefile(char *filename)
 		      "file loading is disabled because the environment contains: %s\n"
 		      "and there is no GV_FILE_PATH variable.\n",
 		      HTTPServerEnVar);
-		onetime = false;
+		onetime = FALSE;
 	    }
 	    return NULL;
 	}
@@ -375,7 +375,7 @@ char *safefile(char *filename)
 		  " because files are only permitted to be loaded from the \"%s\""
 		  " directory when running in an http server.\n", filename,
 		  Gvfilepath);
-	    onetime = false;
+	    onetime = FALSE;
 	}
 
 	return safefilename;
@@ -399,13 +399,13 @@ void cat_libfile(FILE * ofp, char **arglib, char **stdlib)
     FILE *fp;
     char *p, **s, *bp;
     int i;
-    bool use_stdlib = true;
+    boolean use_stdlib = TRUE;
 
     /* check for empty string to turn off stdlib */
     if (arglib) {
 	for (i = 0; use_stdlib && ((p = arglib[i])); i++) {
 	    if (*p == '\0')
-		use_stdlib = false;
+		use_stdlib = FALSE;
 	}
     }
     if (use_stdlib)
@@ -443,14 +443,14 @@ int maptoken(char *p, char **name, int *val)
     return val[i];
 }
 
-bool mapbool(char *p)
+boolean mapbool(char *p)
 {
     if (p == NULL)
-	return false;
+	return FALSE;
     if (!strcasecmp(p, "false"))
-	return false;
+	return FALSE;
     if (!strcasecmp(p, "true"))
-	return true;
+	return TRUE;
     return atoi(p);
 }
 
@@ -678,16 +678,16 @@ initFontLabelEdgeAttr(edge_t * e, struct fontinfo *fi,
  * Return true if head/tail end of edge should not be clipped
  * to node.
  */
-static bool 
+static boolean 
 noClip(edge_t *e, attrsym_t* sym)
 {
     char		*str;
-    bool		rv = false;
+    boolean		rv = FALSE;
 
     if (sym) {	/* mapbool isn't a good fit, because we want "" to mean true */
 	str = agxget(e,sym->index);
 	if (str && str[0]) rv = !mapbool(str);
-	else rv = false;
+	else rv = FALSE;
     }
     return rv;
 }
@@ -778,23 +778,23 @@ int common_init_edge(edge_t * e)
     /* We still accept ports beginning with colons but this is deprecated */
     s = agget(e, TAIL_ID);
     if (s[0])
-	ND_has_port(e->tail) = true;
+	ND_has_port(e->tail) = TRUE;
     ED_tail_port(e) = chkPort (ND_shape(e->tail)->fns->portfn,e->tail, s);
     if (noClip(e, E_tailclip))
-	ED_tail_port(e).clip = false;
+	ED_tail_port(e).clip = FALSE;
     s = agget(e, HEAD_ID);
     if (s[0])
-	ND_has_port(e->head) = true;
+	ND_has_port(e->head) = TRUE;
     ED_head_port(e) = chkPort(ND_shape(e->head)->fns->portfn,e->head, s);
     if (noClip(e, E_headclip))
-	ED_head_port(e).clip = false;
+	ED_head_port(e).clip = FALSE;
 
     return r;
 }
 
 /* addLabelBB:
  */
-static box addLabelBB(box bb, textlabel_t * lp, bool flipxy)
+static box addLabelBB(box bb, textlabel_t * lp, boolean flipxy)
 {
     int width, height;
     point p = lp->p;
@@ -1498,7 +1498,7 @@ utf8ToLatin1 (char* s)
     return ns;
 }
 
-bool overlap_node(node_t *n, boxf b)
+boolean overlap_node(node_t *n, boxf b)
 {
     boxf bb;
     inside_t ictxt;
@@ -1506,7 +1506,7 @@ bool overlap_node(node_t *n, boxf b)
 
     bb = ND_bb(n);
     if (! OVERLAP(b, bb))
-        return false;
+        return FALSE;
 
     P2PF(ND_coord_i(n),p);
 
@@ -1520,7 +1520,7 @@ bool overlap_node(node_t *n, boxf b)
     return ND_shape(n)->fns->insidefn(&ictxt, p);
 }
 
-bool overlap_label(textlabel_t *lp, boxf b)
+boolean overlap_label(textlabel_t *lp, boxf b)
 {
     double sx, sy;
     boxf bb;
@@ -1534,19 +1534,19 @@ bool overlap_label(textlabel_t *lp, boxf b)
     return OVERLAP(b, bb);
 }
 
-static bool overlap_arrow(pointf p, pointf u, double scale, int flag, boxf b)
+static boolean overlap_arrow(pointf p, pointf u, double scale, int flag, boxf b)
 {
     boxf bb;
 
     bb = arrow_bb(p, u, scale, flag);
     if (OVERLAP(b, bb)) {
 	/* FIXME - check inside arrow shape */
-	return true;
+	return TRUE;
     }
-    return false;
+    return FALSE;
 }
 
-static bool overlap_bezier(bezier bz, boxf b)
+static boolean overlap_bezier(bezier bz, boxf b)
 {
     int i;
     point pp;
@@ -1559,7 +1559,7 @@ static bool overlap_bezier(bezier bz, boxf b)
 	pp = bz.list[i];
 	P2PF(pp, p);
 	if (lineToBox(p, u, b) != -1)
-	    return true;
+	    return TRUE;
 	u = p;
     }
 
@@ -1568,18 +1568,18 @@ static bool overlap_bezier(bezier bz, boxf b)
 	P2PF(bz.sp, p);
 	P2PF(bz.list[0], u);
 	if (overlap_arrow(p, u, 1, bz.sflag, b))
-	    return true;
+	    return TRUE;
     }
     if (bz.eflag) {
 	P2PF(bz.ep, p);
 	P2PF(bz.list[bz.size - 1], u);
 	if (overlap_arrow(p, u, 1, bz.eflag, b))
-	    return true;
+	    return TRUE;
     }
-    return false;
+    return FALSE;
 }
 
-bool overlap_edge(edge_t *e, boxf b)
+boolean overlap_edge(edge_t *e, boxf b)
 {
     int i;
     splines *spl;
@@ -1589,13 +1589,13 @@ bool overlap_edge(edge_t *e, boxf b)
     if (spl && boxf_overlap(spl->bb, b))
         for (i = 0; i < spl->size; i++)
             if (overlap_bezier(spl->list[i], b))
-                return true;
+                return TRUE;
 
     lp = ED_label(e);
     if (lp && overlap_label(lp, b))
-        return true;
+        return TRUE;
 
-    return false;
+    return FALSE;
 }
 
 

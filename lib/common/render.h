@@ -61,7 +61,7 @@ extern "C" {
 	point offset;
     } epsf_t;
 
-    typedef void (*nodesizefn_t) (Agnode_t *, bool);
+    typedef void (*nodesizefn_t) (Agnode_t *, boolean);
 
     extern void add_box(path *, box);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
@@ -72,11 +72,11 @@ extern "C" {
     extern int arrowEndClip(edge_t*, point*, int, int , bezier*, int eflag);
     extern int arrowStartClip(edge_t*, point* ps, int, int, bezier*, int sflag);
     extern void attach_attrs(Agraph_t *);
-    extern void beginpath(path *, Agedge_t *, int, pathend_t *, bool);
+    extern void beginpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void bezier_clip(inside_t * inside_context,
-			    bool(*insidefn) (inside_t * inside_context,
+			    boolean(*insidefn) (inside_t * inside_context,
 						pointf p), pointf * sp,
-			    bool left_inside);
+			    boolean left_inside);
     extern shape_desc *bind_shape(char *name, node_t *);
     extern void clip_and_install(edge_t *, edge_t *, point *, int,
 				 splineInfo *);
@@ -84,7 +84,7 @@ extern "C" {
     extern char* charsetToStr (int c);
     extern point coord(node_t * n);
     extern void do_graph_label(graph_t * sg);
-    extern void graph_init(graph_t * g, bool use_rankdir);
+    extern void graph_init(graph_t * g, boolean use_rankdir);
     extern void graph_cleanup(graph_t * g);
     extern void dotneato_args_initialize(GVC_t * gvc, int, char **);
     extern void dotneato_usage(int);
@@ -103,7 +103,7 @@ extern "C" {
     extern void emit_jobs_eof(GVC_t * gvc);
     extern void emit_map_rect(GVJ_t *job, point LL, point UR);
     extern void enqueue_neighbors(nodequeue *, Agnode_t *, int);
-    extern void endpath(path *, Agedge_t *, int, pathend_t *, bool);
+    extern void endpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
     extern shape_desc *find_user_shape(char *);
@@ -115,7 +115,7 @@ extern "C" {
     extern void global_def(char *,
 			   Agsym_t * (*fun) (Agraph_t *, char *, char *));
     extern int gvRenderJobs (GVC_t * gvc, graph_t * g);
-    extern bool isPolygon(node_t *);
+    extern boolean isPolygon(node_t *);
     extern char *strdup_and_subst_obj(char *str, void *obj);
     extern char *xml_string(char *s);
     extern void makeSelfEdge(path *, edge_t **, int, int, int, int,
@@ -126,7 +126,7 @@ extern "C" {
     extern void osize_label(textlabel_t *, int *, int *, int *, int *);
     extern char **parse_style(char *s);
     extern void place_graph_label(Agraph_t *);
-    extern void place_portlabel(edge_t * e, bool head_p);
+    extern void place_portlabel(edge_t * e, boolean head_p);
     extern char *ps_string(char *s, int);
     extern int rank(graph_t * g, int balance, int maxiter);
     extern void round_corners(GVJ_t*, char*, char*, pointf*, int, int);
@@ -143,7 +143,7 @@ extern "C" {
     extern void translate_bb(Agraph_t *, int);
     extern void write_attributed_dot(graph_t *g, FILE *f);
     extern void write_canonical_dot(graph_t *g, FILE *f);
-    extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, bool extend);
+    extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend);
 
 #if defined(_BLD_dot) && defined(_DLL)
 #   define extern __EXPORT__

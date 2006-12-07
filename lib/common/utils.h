@@ -35,7 +35,7 @@ extern "C" {
     extern double late_double(void *, Agsym_t *, double, double);
     extern char *late_nnstring(void *, Agsym_t *, char *);
     extern char *late_string(void *, Agsym_t *, char *);
-    extern bool late_bool(void *, Agsym_t *, int);
+    extern boolean late_bool(void *, Agsym_t *, int);
 
     extern Agnode_t *UF_find(Agnode_t *);
     extern Agnode_t *UF_union(Agnode_t *, Agnode_t *);
@@ -47,7 +47,7 @@ extern "C" {
     extern void cat_libfile(FILE *of, char **arglib, char **stdlib);
     extern void cat_preamble(GVJ_t *job, char **arglib);
 
-    extern bool mapbool(char *);
+    extern boolean mapbool(char *);
     extern int maptoken(char *, char **, int *);
 
     extern int test_toggle(void);
@@ -58,9 +58,9 @@ extern "C" {
     extern void updateBB(graph_t * g, textlabel_t * lp);
     extern void update_bb(graph_t * g, point p);
     extern void compute_bb(Agraph_t *);
-    extern bool overlap_node(node_t *n, boxf b);
-    extern bool overlap_label(textlabel_t *lp, boxf b);
-    extern bool overlap_edge(edge_t *e, boxf b);
+    extern boolean overlap_node(node_t *n, boxf b);
+    extern boolean overlap_label(textlabel_t *lp, boxf b);
+    extern boolean overlap_edge(edge_t *e, boxf b);
 
     extern int processClusterEdges(graph_t * g);
     extern void undoClusterEdges(graph_t * g);
