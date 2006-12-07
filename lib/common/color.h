@@ -17,7 +17,7 @@
 #ifndef GV_COLOR_H
 #define GV_COLOR_H
 
-#include "arith.h"
+/* #include "arith.h" */
 
 #ifdef __cplusplus
 extern "C" {
