@@ -43,7 +43,7 @@ static int Pack;		/* If >= 0, layout components separately and pack together
 				 */
 static char *cc_pfx = "_neato_cc";
 
-void neato_nodesize(node_t * n, bool flip)
+void neato_nodesize(node_t * n, boolean flip)
 {
     int w;
 
@@ -236,7 +236,7 @@ static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g)
      /* array of arrays of node indices in each cluster */
     int **cs,*cn;
     int i,j,nclusters=0;
-    bool* assigned = N_NEW(agnnodes(g), bool);
+    boolean* assigned = N_NEW(agnnodes(g), boolean);
     cluster_data *cdata = GNEW(cluster_data);
 
     cdata->ntoplevel = agnnodes(g);
@@ -274,7 +274,7 @@ static cluster_data* cluster_map(graph_t *mastergraph, graph_t *g)
                 }
                 /* fprintf(stderr,"  node=%s, id=%d, ind=%d\n",n->name,n->id,ind); */
                 *c++=ind;
-                assigned[ind]=true;
+                assigned[ind]=TRUE;
                 cdata->ntoplevel--;
             }
         }
@@ -1365,7 +1365,7 @@ void neato_layout(Agraph_t * g)
 	    int n_cc;
 	    int i;
 	    pack_info pinfo;
-	    bool pin;
+	    boolean pin;
 
 	    cc = pccomps(g, &n_cc, cc_pfx, &pin);
 
@@ -1376,9 +1376,9 @@ void neato_layout(Agraph_t * g)
 		adjustNodes(gc);
 	    }
 	    if (n_cc > 1) {
-		bool *bp;
+		boolean *bp;
 		if (pin) {
-		    bp = N_NEW(n_cc, bool);
+		    bp = N_NEW(n_cc, boolean);
 		    bp[0] = TRUE;
 		} else
 		    bp = 0;
