@@ -25,7 +25,7 @@
 #define		UP		0
 #define		DOWN	1
 
-static bool samedir(edge_t * e, edge_t * f)
+static boolean samedir(edge_t * e, edge_t * f)
 {
     edge_t *e0, *f0;
 
@@ -39,13 +39,13 @@ static bool samedir(edge_t * e, edge_t * f)
 	    * (ND_rank(e0->tail) - ND_rank(e0->head)) > 0);
 }
 
-static bool downcandidate(node_t * v)
+static boolean downcandidate(node_t * v)
 {
     return ((ND_node_type(v) == VIRTUAL) && (ND_in(v).size == 1)
 	    && (ND_out(v).size == 1) && (ND_label(v) == NULL));
 }
 
-static bool bothdowncandidates(node_t * u, node_t * v)
+static boolean bothdowncandidates(node_t * u, node_t * v)
 {
     edge_t *e, *f;
     e = ND_in(u).list[0];
@@ -57,13 +57,13 @@ static bool bothdowncandidates(node_t * u, node_t * v)
     return FALSE;
 }
 
-static bool upcandidate(node_t * v)
+static boolean upcandidate(node_t * v)
 {
     return ((ND_node_type(v) == VIRTUAL) && (ND_out(v).size == 1)
 	    && (ND_in(v).size == 1) && (ND_label(v) == NULL));
 }
 
-static bool bothupcandidates(node_t * u, node_t * v)
+static boolean bothupcandidates(node_t * u, node_t * v)
 {
     edge_t *e, *f;
     e = ND_out(u).list[0];

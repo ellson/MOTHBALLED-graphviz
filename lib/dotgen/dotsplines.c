@@ -79,7 +79,7 @@ typedef struct {
 
 static void adjustregularpath(path *, int, int);
 static Agedge_t *bot_bound(Agedge_t *, int);
-static bool pathscross(Agnode_t *, Agnode_t *, Agedge_t *, Agedge_t *);
+static boolean pathscross(Agnode_t *, Agnode_t *, Agedge_t *, Agedge_t *);
 #ifdef OBSOLETE
 static void chooseflatsides(pathend_t *, pathend_t *, int *, int *, int *,
 			    int *, int *, int *);
@@ -109,13 +109,13 @@ static Agedge_t *top_bound(Agedge_t *, int);
 
 #define GROWEDGES (edges = ALLOC (n_edges + CHUNK, edges, edge_t*))
 
-static bool spline_merge(node_t * n)
+static boolean spline_merge(node_t * n)
 {
     return ((ND_node_type(n) == VIRTUAL)
 	    && ((ND_in(n).size > 1) || (ND_out(n).size > 1)));
 }
 
-static bool swap_ends_p(edge_t * e)
+static boolean swap_ends_p(edge_t * e)
 {
     while (ED_to_orig(e))
 	e = ED_to_orig(e);
@@ -889,7 +889,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
  */
 static void
 makeFlatEnd (spline_info_t* sp, path* P, node_t* n, edge_t* e, pathend_t* endp,
-             bool isBegin)
+             boolean isBegin)
 {
     box b;
     graph_t* g = n->graph;
@@ -908,7 +908,7 @@ makeFlatEnd (spline_info_t* sp, path* P, node_t* n, edge_t* e, pathend_t* endp,
  */
 static void
 makeBottomFlatEnd (spline_info_t* sp, path* P, node_t* n, edge_t* e, 
-	pathend_t* endp, bool isBegin)
+	pathend_t* endp, boolean isBegin)
 {
     box b;
     graph_t* g = n->graph;
@@ -2132,7 +2132,7 @@ int dir;
     return rv;
 }
 
-static bool pathscross(n0, n1, ie1, oe1)
+static boolean pathscross(n0, n1, ie1, oe1)
 node_t *n0, *n1;
 edge_t *ie1, *oe1;
 {
