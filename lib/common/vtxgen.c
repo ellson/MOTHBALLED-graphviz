@@ -598,7 +598,7 @@ static void vtx_polyline(point * A, int n)
     vtx_style();
 }
 
-static void vtx_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
+static void vtx_usershape(usershape_t *us, boxf b, point *A, int n, boolean filled)
 {
 /* FIXME */
     int i;
