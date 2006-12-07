@@ -52,7 +52,7 @@ neato_extra_args(GVC_t *gvc, int argc, char** argv)
     arg = argv[i];
     if (arg && *arg == '-') {
       switch (arg[1]) {
-      case 'x' : Reduce = true; break;
+      case 'x' : Reduce = TRUE; break;
       case 'n':
         if (arg[2]) {
           Nop = atoi(arg+2);
@@ -92,7 +92,7 @@ memtest_extra_args(GVC_t *gvc, int argc, char** argv)
     arg = argv[i];
     if (arg && *arg == '-') {
       switch (arg[1]) {
-      case 'm' : MemTest = true; break;
+      case 'm' : MemTest = TRUE; break;
       default :
         cnt++;
         if (*p != arg) *p = arg;
@@ -128,10 +128,10 @@ config_extra_args(GVC_t *gvc, int argc, char** argv)
 	  gvc->common.verbose = atoi(&arg[2]);
         break;
       case 'O' :
-          gvc->common.auto_outfile_names = true;
+          gvc->common.auto_outfile_names = TRUE;
 	  break;
       case 'c' :
-          gvc->common.config = true;
+          gvc->common.config = TRUE;
 	  break;
       default :
         cnt++;
