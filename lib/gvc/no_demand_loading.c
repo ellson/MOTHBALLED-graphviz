@@ -14,10 +14,4 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include "arith.h"
-
-const bool Demand_Loading = false;
+const int Demand_Loading = 0;
