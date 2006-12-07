@@ -38,7 +38,7 @@
 extern void attach_attrs(graph_t * g);
 extern void attach_attrs_and_arrows(graph_t*, int*, int*);
 extern char *xml_string(char *str);
-extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, bool extend);
+extern void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend);
 extern void output_point(agxbuf *xbuf, pointf p);
 
 #define GNEW(t)          (t*)malloc(sizeof(t))
@@ -293,10 +293,10 @@ static void dot_end_graph(GVJ_t *job)
 
     switch (job->render.id) {
 	case FORMAT_PLAIN:
-	    write_plain(job, g, job->output_file, false);
+	    write_plain(job, g, job->output_file, FALSE);
 	    break;
 	case FORMAT_PLAIN_EXT:
-	    write_plain(job, g, job->output_file, true);
+	    write_plain(job, g, job->output_file, TRUE);
 	    break;
 	case FORMAT_DOT:
 	case FORMAT_CANON:

@@ -111,7 +111,7 @@ static void handle_client_message(GVJ_t * job, XClientMessageEvent * cmev)
         exit(0);
 }
 
-static bool handle_keypress(GVJ_t *job, XKeyEvent *kev)
+static boolean handle_keypress(GVJ_t *job, XKeyEvent *kev)
 {
     
     int i;
@@ -477,7 +477,7 @@ static void initialize_xlib(GVJ_t *firstjob)
 
     firstjob->device_dpi.x = DisplayWidth(dpy, scr) * 25.4 / DisplayWidthMM(dpy, scr);
     firstjob->device_dpi.y = DisplayHeight(dpy, scr) * 25.4 / DisplayHeightMM(dpy, scr);
-    firstjob->device_sets_dpi = true;
+    firstjob->device_sets_dpi = TRUE;
 }
 
 static void finalize_xlib(GVJ_t *firstjob)
@@ -490,7 +490,7 @@ static void finalize_xlib(GVJ_t *firstjob)
     struct timeval timeout;
 #ifdef HAVE_SYS_INOTIFY_H
     int wd=0;
-    bool watching_p = FALSE;
+    boolean watching_p = FALSE;
     static char *dir;
     char *p, *cwd = NULL;
 

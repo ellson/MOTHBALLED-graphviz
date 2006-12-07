@@ -35,7 +35,7 @@
 typedef enum { FORMAT_GD, FORMAT_GD2, FORMAT_GIF, FORMAT_JPEG, FORMAT_PNG,
 	FORMAT_WBMP, FORMAT_XBM, } format_type;
 
-extern bool mapbool(char *);
+extern boolean mapbool(char *);
 extern char *safefile(char *shapefilename);
 extern pointf Bezier(pointf * V, int degree, double t, pointf * Left, pointf * Right);
 
@@ -67,8 +67,8 @@ static int white, black, transparent, basecolor;
 static void gdgen_begin_page(GVJ_t * job)
 {
     char *bgcolor_str = NULL, *truecolor_str = NULL;
-    bool truecolor_p = FALSE;	/* try to use cheaper paletted mode */
-    bool bg_transparent_p = FALSE;
+    boolean truecolor_p = FALSE;	/* try to use cheaper paletted mode */
+    boolean bg_transparent_p = FALSE;
     int bgcolor = 0;
     gdImagePtr im = NULL;
 

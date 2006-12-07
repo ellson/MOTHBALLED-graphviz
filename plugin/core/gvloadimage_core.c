@@ -49,7 +49,7 @@ typedef enum {
     FORMAT_PS_PS, FORMAT__PS,
 } format_type;
 
-static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled)
+static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     assert(job);
     assert(us);
@@ -71,7 +71,7 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, bool filled
     core_fputs(job, "/>\n");
 }
 
-static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, bool filled)
+static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, boolean filled)
 {
     int object_code = 2;        /* always 2 for polyline */
     int sub_type = 5;           /* always 5 for image */
@@ -113,7 +113,7 @@ static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, bool fille
 	    b.LL.x, b.LL.y);
 }
 
-static void core_loadimage_vrml(GVJ_t * job, usershape_t *us, boxf b, bool filled)
+static void core_loadimage_vrml(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     FILE *out;
     obj_state_t *obj;
@@ -156,7 +156,7 @@ static void ps_freeimage(usershape_t *us)
 }
 
 /* usershape described by a postscript file */
-static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
+static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     FILE *out;
 
@@ -193,7 +193,7 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 		us->data = malloc(statbuf.st_size);
 		read(fd, us->data, statbuf.st_size);
 #endif
-		us->must_inline = true;
+		us->must_inline = TRUE;
                 break;
             default:
                 break;
@@ -214,7 +214,7 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
 }
 
 /* usershape described by a member of a postscript library */
-static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, bool filled)
+static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     int i;
     pointf AF[4];

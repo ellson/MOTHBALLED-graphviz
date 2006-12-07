@@ -80,7 +80,7 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
     return surface;
 }
 
-static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, bool filled)
+static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     cairo_t *cr = (cairo_t *) job->surface; /* target context */
     cairo_surface_t *surface = NULL; /* source surface */
@@ -97,7 +97,7 @@ static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, bool fil
     }
 }
 
-static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
+static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     cairo_surface_t *surface = NULL; /* source surface */
     FILE *out = job->output_file;

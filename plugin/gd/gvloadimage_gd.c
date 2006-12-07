@@ -106,7 +106,7 @@ static gdImagePtr gd_loadimage(GVJ_t * job, usershape_t *us)
     return (gdImagePtr)(us->data);
 }
 
-static void gd_loadimage_gd(GVJ_t * job, usershape_t *us, boxf b, bool filled)
+static void gd_loadimage_gd(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     gdImagePtr im3, im2 = NULL, im = (gdImagePtr) job->surface;
 
@@ -126,7 +126,7 @@ static void gd_loadimage_gd(GVJ_t * job, usershape_t *us, boxf b, bool filled)
     }
 }
 
-static void gd_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, bool filled)
+static void gd_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     gdImagePtr im = NULL;
     FILE *out = job->output_file;
