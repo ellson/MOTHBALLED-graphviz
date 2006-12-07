@@ -45,19 +45,19 @@ extern "C" {
 	unsigned int margin;	/* margin left around objects, in points */
 	int doSplines;		/* use splines in constructing graph shape */
 	pack_mode mode;		/* granularity and method */
-	bool *fixed;		/* fixed[i] == true implies g[i] should not be moved */
+	boolean *fixed;		/* fixed[i] == true implies g[i] should not be moved */
     } pack_info;
 
     extern point *putGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packGraphs(int, Agraph_t **, Agraph_t *, pack_info *);
     extern int packSubgraphs(int, Agraph_t **, Agraph_t *, pack_info *);
-    extern int pack_graph(int, Agraph_t **, Agraph_t *, bool*);
+    extern int pack_graph(int, Agraph_t **, Agraph_t *, boolean*);
     extern pack_mode getPackMode(Agraph_t * g, pack_mode dflt);
     extern int getPack(Agraph_t *, int not_def, int dflt);
 
     extern int isConnected(Agraph_t *);
     extern Agraph_t **ccomps(Agraph_t *, int *, char *);
-    extern Agraph_t **pccomps(Agraph_t *, int *, char *, bool *);
+    extern Agraph_t **pccomps(Agraph_t *, int *, char *, boolean *);
     extern int nodeInduce(Agraph_t *);
 
 #ifdef __cplusplus

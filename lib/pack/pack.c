@@ -579,7 +579,7 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
     point *places;
     Dict_t *ps;
     int i;
-    bool *fixed = pinfo->fixed;
+    boolean *fixed = pinfo->fixed;
     int fixed_cnt = 0;
     box fixed_bb = { {0, 0}, {0, 0} };
     point center;
@@ -847,7 +847,7 @@ packSubgraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * info)
  * Pack subgraphs followed by postprocessing.
  */
 int 
-pack_graph(int ng, Agraph_t** gs, Agraph_t* root, bool* fixed)
+pack_graph(int ng, Agraph_t** gs, Agraph_t* root, boolean* fixed)
 {
     int ret;
     pack_info info;
