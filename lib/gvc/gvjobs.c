@@ -66,7 +66,7 @@ void gvjobs_output_filename(GVC_t * gvc, char *name)
 }
 
 /* -T switches */
-bool gvjobs_output_langname(GVC_t * gvc, char *name)
+boolean gvjobs_output_langname(GVC_t * gvc, char *name)
 {
     if (!gvc->jobs) {
 	output_langname_job = gvc->job = gvc->jobs = zmalloc(sizeof(GVJ_t));

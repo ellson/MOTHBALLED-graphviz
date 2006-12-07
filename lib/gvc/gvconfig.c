@@ -38,7 +38,7 @@
 #include	"gvcint.h"
 #include        "gvcproc.h"
 
-extern const bool Demand_Loading;
+extern const int Demand_Loading;
 
 #ifdef WITH_CODEGENS
 #ifdef QUARTZ_RENDER
@@ -388,7 +388,7 @@ codegen_info_t *next_codegen(codegen_info_t * p)
     ++p;
 
 #ifdef QUARTZ_RENDER
-    static bool unscanned = TRUE;
+    static boolean unscanned = TRUE;
     if (!p->name && unscanned) {
         /* reached end of codegens but haven't yet scanned for Quicktime codegens... */
 
@@ -443,7 +443,7 @@ codegen_info_t *next_codegen(codegen_info_t * p)
 /*
   gvconfig - parse a config file and install the identified plugins
  */
-void gvconfig(GVC_t * gvc, bool rescan)
+void gvconfig(GVC_t * gvc, boolean rescan)
 {
 #if 0
     gvplugin_library_t **libraryp;

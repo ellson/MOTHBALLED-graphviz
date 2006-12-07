@@ -28,12 +28,12 @@ extern "C" {
 /* configuration */
 
     extern char *gvconfig_libdir(void);
-    extern void gvconfig(GVC_t * gvc, bool rescan);
+    extern void gvconfig(GVC_t * gvc, boolean rescan);
     extern char *gvhostname(void);
 
 /* plugins */
 
-    extern bool gvplugin_install(GVC_t * gvc, api_t api,
+    extern boolean gvplugin_install(GVC_t * gvc, api_t api,
 		    char *typestr, int quality, char *packagename, char *path,
 		    gvplugin_installed_t * typeptr);
     extern gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *type);
@@ -46,7 +46,7 @@ extern "C" {
 /* job */
 
     extern void gvjobs_output_filename(GVC_t * gvc, char *name);
-    extern bool gvjobs_output_langname(GVC_t * gvc, char *name);
+    extern boolean gvjobs_output_langname(GVC_t * gvc, char *name);
     extern GVJ_t *gvjobs_first(GVC_t * gvc);
     extern GVJ_t *gvjobs_next(GVC_t * gvc);
     extern void gvjobs_delete(GVC_t * gvc);
@@ -57,10 +57,10 @@ extern "C" {
 /* textlayout */
 
     extern int gvtextlayout_select(GVC_t * gvc);
-    extern bool gvtextlayout(GVC_t *gvc, textpara_t *para, char **fontpath);
+    extern boolean gvtextlayout(GVC_t *gvc, textpara_t *para, char **fontpath);
 
 /* loadimage */
-    extern void gvloadimage(GVJ_t *job, usershape_t *us, boxf b, bool filled, char *target);
+    extern void gvloadimage(GVJ_t *job, usershape_t *us, boxf b, boolean filled, char *target);
     
 /* usershapes */
     extern point gvusershape_size(graph_t *g, char *name);
@@ -108,14 +108,14 @@ extern "C" {
     extern void gvrender_set_fillcolor(GVJ_t * job, char *name);
     extern void gvrender_set_style(GVJ_t * job, char **s);
     extern void gvrender_ellipse(GVJ_t * job, pointf p,
-	    		double rx, double ry, bool filled);
-    extern void gvrender_polygon(GVJ_t * job, pointf * AF, int n, bool filled);
-    extern void gvrender_box(GVJ_t * job, boxf BF, bool filled);
+	    		double rx, double ry, boolean filled);
+    extern void gvrender_polygon(GVJ_t * job, pointf * AF, int n, boolean filled);
+    extern void gvrender_box(GVJ_t * job, boxf BF, boolean filled);
     extern void gvrender_beziercurve(GVJ_t * job, pointf * AF, int n,
-			int arrow_at_start, int arrow_at_end, bool filled);
+			int arrow_at_start, int arrow_at_end, boolean filled);
     extern void gvrender_polyline(GVJ_t * job, pointf * AF, int n);
     extern void gvrender_comment(GVJ_t * job, char *str);
-    extern void gvrender_usershape(GVJ_t * job, char *name, pointf * AF, int n, bool filled);
+    extern void gvrender_usershape(GVJ_t * job, char *name, pointf * AF, int n, boolean filled);
 
 /* layout */
 
