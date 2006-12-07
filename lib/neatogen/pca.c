@@ -58,7 +58,7 @@ PCA_alloc(DistType ** coords, int dim, int n, double **new_coords,
 	}
     }
 
-    power_iteration(DD, dim, new_dim, eigs, evals, true);
+    power_iteration(DD, dim, new_dim, eigs, evals, TRUE);
 
     for (j = 0; j < new_dim; j++) {
 	for (i = 0; i < n; i++) {
@@ -78,7 +78,7 @@ PCA_alloc(DistType ** coords, int dim, int n, double **new_coords,
     free(DD);
 }
 
-bool
+boolean
 iterativePCA_1D(double **coords, int dim, int n, double *new_direction)
 {
     vtx_data *laplacian;
@@ -102,7 +102,7 @@ iterativePCA_1D(double **coords, int dim, int n, double *new_direction)
     free(mat1);
 
     /* Compute direction */
-    return power_iteration(mat, dim, 1, &new_direction, &eval, true);
+    return power_iteration(mat, dim, 1, &new_direction, &eval, TRUE);
 /* ?? When is mat freed? */
 }
 

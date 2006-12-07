@@ -26,7 +26,7 @@ extern "C" {
 #include "defs.h"
 
     extern void PCA_alloc(DistType **, int, int, double **, int);
-    extern bool iterativePCA_1D(double **, int, int, double *);
+    extern boolean iterativePCA_1D(double **, int, int, double *);
 
 #endif
 
