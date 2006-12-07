@@ -81,7 +81,7 @@ static void setbounds(node_t * v, int *bounds, int lpos, int rpos)
 		    bounds[SRB] = ord;
 	    }
 	} else {		/* forward */
-	    bool onleft, onright;
+	    boolean onleft, onright;
 	    onleft = onright = FALSE;
 	    for (i = 0; (f = ND_out(v).list[i]); i++) {
 		if (ND_order(f->head) <= lpos) {
