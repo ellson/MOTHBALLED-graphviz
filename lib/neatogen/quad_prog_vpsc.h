@@ -68,7 +68,7 @@ extern void generateNonoverlapConstraints(
         float nsizeScale,
         float** coords,
         int k,
-	bool transitiveClosure,
+	boolean transitiveClosure,
 	ipsep_options* opt
 );
 

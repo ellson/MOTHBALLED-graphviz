@@ -268,7 +268,7 @@ void IMDS_given_dim(vtx_data* graph, int n, double* given_coords,
 	double pos_i;
 	double* balance = N_GNEW(n, double);
 	double b;
-	bool converged;
+	boolean converged;
 
 #if 0
 	iterations1=mat_mult_count1=0; /* We don't compute the x-axis at all. */
@@ -352,9 +352,9 @@ void IMDS_given_dim(vtx_data* graph, int n, double* given_coords,
 		}
 	}
 
-	for (converged=false,iterations2=0; iterations2<200 && !converged; iterations2++) {
-		conjugate_gradient_f(lap, y, balance, n, conj_tol, n, true);
-		converged=true;
+	for (converged=FALSE,iterations2=0; iterations2<200 && !converged; iterations2++) {
+		conjugate_gradient_f(lap, y, balance, n, conj_tol, n, TRUE);
+		converged=TRUE;
 		for (i=0; i<n; i++) {
 			pos_i=y[i];
 			b=0;
@@ -371,7 +371,7 @@ void IMDS_given_dim(vtx_data* graph, int n, double* given_coords,
 				}
 			}
 			if ((b != balance[i]) && (fabs(1-b/balance[i])>1e-5)) {
-				converged=false;
+				converged=FALSE;
 				balance[i]=b;
 			}
 		}
