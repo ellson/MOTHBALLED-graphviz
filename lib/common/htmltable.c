@@ -339,7 +339,7 @@ emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env)
     A[3].x = A[0].x;
     A[3].y = A[2].y;
 
-    gvrender_usershape(job, cp->src, A, 4, true);
+    gvrender_usershape(job, cp->src, A, 4, TRUE);
 }
 
 static void
