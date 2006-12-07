@@ -51,11 +51,11 @@ extern boxf boxf_bb(boxf, boxf);
 extern box box_intersect(box, box);
 extern boxf boxf_intersect(boxf, boxf);
 
-extern bool box_overlap(box, box);
-extern bool boxf_overlap(boxf, boxf);
+extern int box_overlap(box, box);
+extern int boxf_overlap(boxf, boxf);
 
-extern bool box_contains(box, box);
-extern bool boxf_contains(boxf, boxf);
+extern int box_contains(box, box);
+extern int boxf_contains(boxf, boxf);
 
 extern box flip_rec_box(box b, point p);
 

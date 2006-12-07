@@ -167,7 +167,7 @@ static void map_label(GVJ_t *job, textlabel_t *lab)
  * regular rectangular shape. Rectangle is regular when
  * it is not skewed and distorted and orientation is almost zero
  */
-static bool isRect(polygon_t * p)
+static boolean isRect(polygon_t * p)
 {
     return (p->sides == 4 && (ROUND(p->orientation) % 90) == 0
             && p->distortion == 0.0 && p->skew == 0.0);
@@ -533,7 +533,7 @@ static void firstlayer(GVJ_t *job)
     job->layerNum = 1;
 }
 
-static bool validlayer(GVJ_t *job)
+static boolean validlayer(GVJ_t *job)
 {
     return (job->layerNum <= job->numLayers);
 }
@@ -671,7 +671,7 @@ static void firstpage(GVJ_t *job)
     job->pagesArrayElem = job->pagesArrayFirst;
 }
 
-static bool validpage(GVJ_t *job)
+static boolean validpage(GVJ_t *job)
 {
     return ((job->pagesArrayElem.x >= 0)
 	 && (job->pagesArrayElem.x < job->pagesArraySize.x)
@@ -691,7 +691,7 @@ static void nextpage(GVJ_t *job)
     }
 }
 
-static bool write_edge_test(Agraph_t * g, Agedge_t * e)
+static boolean write_edge_test(Agraph_t * g, Agedge_t * e)
 {
     Agraph_t *sg;
     int c;
@@ -704,7 +704,7 @@ static bool write_edge_test(Agraph_t * g, Agedge_t * e)
     return TRUE;
 }
 
-static bool write_node_test(Agraph_t * g, Agnode_t * n)
+static boolean write_node_test(Agraph_t * g, Agnode_t * n)
 {
     Agraph_t *sg;
     int c;
@@ -844,7 +844,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
     }
 }
 
-static bool is_natural_number(char *sstr)
+static boolean is_natural_number(char *sstr)
 {
     unsigned char *str = (unsigned char *) sstr;
 
@@ -870,14 +870,14 @@ static int layer_index(GVC_t *gvc, char *str, int all)
     return -1;
 }
 
-static bool selectedlayer(GVJ_t *job, char *spec)
+static boolean selectedlayer(GVJ_t *job, char *spec)
 {
     GVC_t *gvc = job->gvc;
     int n0, n1;
     unsigned char buf[SMALLBUF];
     char *w0, *w1;
     agxbuf xb;
-    bool rval = FALSE;
+    boolean rval = FALSE;
 
     agxbinit(&xb, SMALLBUF, buf);
     agxbput(&xb, spec);
@@ -909,7 +909,7 @@ static bool selectedlayer(GVJ_t *job, char *spec)
     return rval;
 }
 
-static bool node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
+static boolean node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
 {
     char *pn, *pe;
     edge_t *e;
@@ -931,7 +931,7 @@ static bool node_in_layer(GVJ_t *job, graph_t * g, node_t * n)
     return FALSE;
 }
 
-static bool edge_in_layer(GVJ_t *job, graph_t * g, edge_t * e)
+static boolean edge_in_layer(GVJ_t *job, graph_t * g, edge_t * e)
 {
     char *pe, *pn;
     int cnt;
@@ -951,7 +951,7 @@ static bool edge_in_layer(GVJ_t *job, graph_t * g, edge_t * e)
     return FALSE;
 }
 
-static bool clust_in_layer(GVJ_t *job, graph_t * sg)
+static boolean clust_in_layer(GVJ_t *job, graph_t * sg)
 {
     char *pg;
     node_t *n;
@@ -969,7 +969,7 @@ static bool clust_in_layer(GVJ_t *job, graph_t * sg)
     return FALSE;
 }
 
-static bool node_in_box(node_t *n, boxf b)
+static boolean node_in_box(node_t *n, boxf b)
 {
     return boxf_overlap(ND_bb(n), b);
 }
@@ -1002,7 +1002,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if ((s = agget(n, "tooltip")) && s[0]) {
             obj->tooltip = strdup_and_subst_obj(s, (void*)n);
-            obj->explicit_tooltip = true;
+            obj->explicit_tooltip = TRUE;
         }
         else {
             obj->tooltip = strdup(ND_label(n)->text);
@@ -1466,7 +1466,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e)
     }
 }
 
-static bool edge_in_box(edge_t *e, boxf b)
+static boolean edge_in_box(edge_t *e, boxf b)
 {
     splines *spl;
     textlabel_t *lp;
@@ -1540,21 +1540,21 @@ void emit_begin_edge(GVJ_t * job, edge_t * e)
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if ((s = agget(e, "tooltip")) && s[0]) {
             obj->tooltip = strdup_and_subst_obj(s, (void*)e);
-	    obj->explicit_tooltip = true;
+	    obj->explicit_tooltip = TRUE;
 	}
 	else if (obj->label)
 	    obj->tooltip = strdup(obj->label);
 
         if ((s = agget(e, "tailtooltip")) && s[0]) {
             obj->tailtooltip = strdup_and_subst_obj(s, (void*)e);
-	    obj->explicit_tailtooltip = true;
+	    obj->explicit_tailtooltip = TRUE;
 	}
 	else if (obj->taillabel)
 	    obj->tailtooltip = strdup(obj->taillabel);
 
         if ((s = agget(e, "headtooltip")) && s[0]) {
             obj->headtooltip = strdup_and_subst_obj(s, (void*)e);
-	    obj->explicit_headtooltip = true;
+	    obj->explicit_headtooltip = TRUE;
 	}
 	else if (obj->headlabel)
 	    obj->headtooltip = strdup(obj->headlabel);
@@ -2007,7 +2007,7 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if ((s = agget(g, "tooltip")) && s[0]) {
             obj->tooltip = strdup_and_subst_obj(s, (void*)g);
-            obj->explicit_tooltip = true;
+            obj->explicit_tooltip = TRUE;
         }
         else if (obj->url && obj->label) {
             obj->tooltip = strdup(obj->label);
@@ -2192,7 +2192,7 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     if (flags & GVRENDER_DOES_TOOLTIPS) {
         if ((s = agget(sg, "tooltip")) && s[0]) {
             obj->tooltip = strdup_and_subst_obj(s, (void*)sg);
-            obj->explicit_tooltip = true;
+            obj->explicit_tooltip = TRUE;
         }
         else if (obj->label) {
             obj->tooltip = strdup(obj->label);
@@ -2326,7 +2326,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     }
 }
 
-static bool is_style_delim(int c)
+static boolean is_style_delim(int c)
 {
     switch (c) {
     case '(':
@@ -2388,9 +2388,9 @@ static void cleanup(void)
 char **parse_style(char *s)
 {
     static char *parse[FUNLIMIT];
-    static bool is_first = TRUE;
+    static boolean is_first = TRUE;
     int fun = 0;
-    bool in_parens = FALSE;
+    boolean in_parens = FALSE;
     unsigned char buf[SMALLBUF];
     char *p;
     int c;

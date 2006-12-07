@@ -974,7 +974,7 @@ static void dia_polyline(point * A, int n)
     dia_fputs("    </dia:object>\n");
 }
 
-static void dia_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
+static void dia_usershape(usershape_t *us, boxf b, point *A, int n, boolean filled)
 {
     char *imagefile;
 

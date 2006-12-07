@@ -204,22 +204,22 @@ boxf boxf_intersect(boxf b0, boxf b1)
     return b;
 }
 
-bool box_overlap(box b0, box b1)
+int box_overlap(box b0, box b1)
 {
     return OVERLAP(b0, b1);
 }
 
-bool boxf_overlap(boxf b0, boxf b1)
+int boxf_overlap(boxf b0, boxf b1)
 {
     return OVERLAP(b0, b1);
 }
 
-bool box_contains(box b0, box b1)
+int box_contains(box b0, box b1)
 {
     return CONTAINS(b0, b1);
 }
 
-bool boxf_contains(boxf b0, boxf b1)
+int boxf_contains(boxf b0, boxf b1)
 {
     return CONTAINS(b0, b1);
 }

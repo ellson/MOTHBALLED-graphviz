@@ -17,10 +17,12 @@
 /* geometric types and macros (e.g. points and boxes) with application to, but
  * no specific dependance on graphs */
 
-#include "arith.h"
-
 #ifndef GV_GEOM_H
 #define GV_GEOM_H
+
+#ifdef HAVE_CONFIG_H
+#include "arith.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,6 +39,7 @@ typedef struct { point LL, UR; } box;
 
 typedef struct { pointf LL, UR; } boxf;
 
+#ifdef HAVE_CONFIG_H
 /* true if point p is inside box b */
 #define INSIDE(p,b)	(BETWEEN((b).LL.x,(p).x,(b).UR.x) && BETWEEN((b).LL.y,(p).y,(b).UR.y))
 /* true if boxes b0 and b1 overlap */
@@ -62,6 +65,7 @@ typedef struct { pointf LL, UR; } boxf;
 #define PF2P(pf, p) (p.x = ROUND (pf.x), p.y = ROUND (pf.y))
 #define B2BF(b, bf) (bf.LL.x = b.LL.x, bf.LL.y = b.LL.y, bf.UR.x = b.UR.x, bf.UR.y = b.UR.y)
 #define BF2B(bf, b) (b.LL.x = ROUND (bf.LL.x), b.LL.y = ROUND (bf.LL.y), b.UR.x = ROUND (bf.UR.x), b.UR.y = ROUND (bf.UR.y))
+#endif
 
 #ifdef __cplusplus
 }

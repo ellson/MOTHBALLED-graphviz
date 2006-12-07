@@ -33,8 +33,6 @@
 #endif
 #include <math.h>
 
-#include "logic.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
