@@ -554,7 +554,7 @@ static void pic_polyline(point * A, int n)
     point_list_out(A, n, FALSE);
 }
 
-static void pic_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
+static void pic_usershape(usershape_t *us, boxf b, point *A, int n, boolean filled)
 {
 /* FIXME */
     /* it's not at all clear what xxx_user_shape is supposed to do; in most xxxgen.c files it emits a message */
