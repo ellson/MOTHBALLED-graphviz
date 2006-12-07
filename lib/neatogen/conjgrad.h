@@ -37,7 +37,7 @@ extern "C" {
  ************************/
 
     extern void conjugate_gradient_f(float **, double *, double *, int,
-				     double, int, bool);
+				     double, int, boolean);
 
     extern void conjugate_gradient_mkernel(float *, float *, float *, int,
 					   double, int);

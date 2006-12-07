@@ -154,20 +154,20 @@ void initQueue(Queue * qp, int startVertex)
     qp->end = 1;
 }
 
-bool deQueue(Queue * qp, int *vertex)
+boolean deQueue(Queue * qp, int *vertex)
 {
     if (qp->start >= qp->end)
-	return false;		/* underflow */
+	return FALSE;		/* underflow */
     *vertex = qp->data[qp->start++];
-    return true;
+    return TRUE;
 }
 
-bool enQueue(Queue * qp, int vertex)
+boolean enQueue(Queue * qp, int vertex)
 {
     if (qp->end >= qp->queueSize)
-	return false;		/* overflow */
+	return FALSE;		/* overflow */
     qp->data[qp->end++] = vertex;
-    return true;
+    return TRUE;
 }
 
 #endif

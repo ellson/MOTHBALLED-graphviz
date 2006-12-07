@@ -71,9 +71,9 @@ static void freeStack(PairStack * s)
 	s->data[s->top++] = x; \
 }
 
-#define pop(s,x) ((s->top==0) ? false : (s->top--, x = s->data[s->top], true))
+#define pop(s,x) ((s->top==0) ? FALSE : (s->top--, x = s->data[s->top], TRUE))
 
-#define read_top(h,x) ((s->top==0) ? false : (x = s->data[s->top-1], true))
+#define read_top(h,x) ((s->top==0) ? FALSE : (x = s->data[s->top-1], TRUE))
 
 #define sub(h,i) (h->data[i])
 
@@ -162,16 +162,16 @@ static void initHeap(PairHeap * h, double *place, int *ordering, int n)
     }
 }
 
-static bool extractMax(PairHeap * h, Pair * max)
+static boolean extractMax(PairHeap * h, Pair * max)
 {
     if (h->heapSize == 0)
-	return false;
+	return FALSE;
 
     *max = h->data[0];
     h->data[0] = h->data[h->heapSize - 1];
     h->heapSize--;
     heapify(h, 0);
-    return true;
+    return TRUE;
 }
 
 static void insert(PairHeap * h, Pair edge)
@@ -197,11 +197,11 @@ isheap(PairHeap* h)
 	for (i=0; i<h->heapSize; i++) {
 		l=left(i); r=right(i);
 		if (insideHeap(h,l) && greaterPriority(h,l,i))
-			return false;
+			return FALSE;
 		if (insideHeap(h,r) && greaterPriority(h,r,i))
-			return false;
+			return FALSE;
 	}
-	return true;
+	return TRUE;
 }
 */
 
