@@ -55,7 +55,7 @@ constrained_majorization_vpsc(CMajEnvVPSC * e, float *b, float *place,
      * dummy vars included in lap
      */
     int n = e->nv + e->nldv;
-    bool converged = false;
+    boolean converged = FALSE;
 #ifdef CONMAJ_LOGGING
     static int call_no = 0;
 #endif				/* CONMAJ_LOGGING */
@@ -96,7 +96,7 @@ constrained_majorization_vpsc(CMajEnvVPSC * e, float *b, float *place,
 	float alpha, beta;
 	float numerator = 0, denominator = 0, r;
 	/* fprintf(stderr,"."); */
-	converged = true;
+	converged = TRUE;
 	/* find steepest descent direction */
 	for (i = 0; i < n; i++) {
 	    old_place[i] = place[i];
@@ -167,7 +167,7 @@ constrained_majorization_vpsc(CMajEnvVPSC * e, float *b, float *place,
 	prev_stress = stress;
 #endif
 	if (test > quad_prog_tol) {
-	    converged = false;
+	    converged = FALSE;
 	}
     }
 #ifdef CONMAJ_LOGGING
@@ -371,14 +371,14 @@ void generateNonoverlapConstraints(CMajEnvVPSC * e,
 				   float nsizeScale,
 				   float **coords,
 				   int k,
-				   bool transitiveClosure,
+				   boolean transitiveClosure,
 				   ipsep_options * opt)
 {
     Constraint **csol, **csolptr;
     int i, j, mol = 0;
     int n = e->nv + e->nldv;
     boxf bb[n];
-    bool genclusters = opt->clusters->nclusters > 0;
+    boolean genclusters = opt->clusters->nclusters > 0;
     if (genclusters) {
 	/* n is the number of real variables, not dummy cluster vars */
 	n -= 2 * opt->clusters->nclusters;
@@ -576,12 +576,12 @@ void removeoverlaps(int n, float **coords, ipsep_options * opt)
 {
     int i;
     CMajEnvVPSC *e = initCMajVPSC(n, NULL, NULL, opt, 0);
-    generateNonoverlapConstraints(e, 1.0, coords, 0, true, opt);
+    generateNonoverlapConstraints(e, 1.0, coords, 0, TRUE, opt);
     solveVPSC(e->vpsc);
     for (i = 0; i < n; i++) {
 	coords[0][i] = getVariablePos(e->vs[i]);
     }
-    generateNonoverlapConstraints(e, 1.0, coords, 1, false, opt);
+    generateNonoverlapConstraints(e, 1.0, coords, 1, FALSE, opt);
     solveVPSC(e->vpsc);
     for (i = 0; i < n; i++) {
 	coords[1][i] = getVariablePos(e->vs[i]);
