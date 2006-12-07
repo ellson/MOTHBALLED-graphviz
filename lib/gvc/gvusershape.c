@@ -76,7 +76,7 @@ static int imagetype (usershape_t *us)
     return FT_NULL;
 }
     
-static bool get_int_lsb_first (FILE *f, unsigned int sz, unsigned int *val)
+static boolean get_int_lsb_first (FILE *f, unsigned int sz, unsigned int *val)
 {
     int ch, i;
 
@@ -84,13 +84,13 @@ static bool get_int_lsb_first (FILE *f, unsigned int sz, unsigned int *val)
     for (i = 0; i < sz; i++) {
 	ch = fgetc(f);
 	if (feof(f))
-	    return false;
+	    return FALSE;
 	*val |= (ch << 8*i);
     }
-    return true;
+    return TRUE;
 }
 	
-static bool get_int_msb_first (FILE *f, unsigned int sz, unsigned int *val)
+static boolean get_int_msb_first (FILE *f, unsigned int sz, unsigned int *val)
 {
     int ch, i;
 
@@ -98,11 +98,11 @@ static bool get_int_msb_first (FILE *f, unsigned int sz, unsigned int *val)
     for (i = 0; i < sz; i++) {
 	ch = fgetc(f);
 	if (feof(f))
-	    return false;
+	    return FALSE;
         *val <<= 8;
 	*val |= ch;
     }
-    return true;
+    return TRUE;
 }
 
 static void png_size (usershape_t *us)
@@ -160,7 +160,7 @@ static void jpeg_size (usershape_t *us) {
     };
 
     us->dpi = DEFAULT_DPI;
-    while (true) {
+    while (TRUE) {
         /* Now we must be at a 0xff or at a series of 0xff's.
          * If that is not the case, or if we're at EOF, then there's
          * a parsing error.
@@ -221,15 +221,15 @@ static void jpeg_size (usershape_t *us) {
 static void ps_size (usershape_t *us)
 {
     char line[BUFSIZ];
-    bool saw_bb;
+    boolean saw_bb;
     int lx, ly, ux, uy;
 
     us->dpi = POINTS_PER_INCH;
     fseek(us->f, 0, SEEK_SET);
-    saw_bb = false;
+    saw_bb = FALSE;
     while (fgets(line, sizeof(line), us->f)) {
         if (sscanf (line, "%%%%BoundingBox: %d %d %d %d", &lx, &ly, &ux, &uy) == 4) {
-            saw_bb = true;
+            saw_bb = TRUE;
 	    break;
         }
     }

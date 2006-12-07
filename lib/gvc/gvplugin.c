@@ -31,7 +31,7 @@
 #include        "gvcint.h"
 #include        "gvcproc.h"
 
-extern const bool Demand_Loading;
+extern const int Demand_Loading;
 
 /*
  * Define an apis array of name strings using an enumerated api_t as index.
@@ -65,7 +65,7 @@ char *gvplugin_api_name(api_t api)
 /* install a plugin description into the list of available plugins */
 /* list is alpha sorted by type, then quality sorted within the type,
    then, if qualities are the same, last install wins */
-bool gvplugin_install(GVC_t * gvc, api_t api,
+boolean gvplugin_install(GVC_t * gvc, api_t api,
 		 char *typestr, int quality, char *packagename, char *path,
 		 gvplugin_installed_t * typeptr)
 {
@@ -262,7 +262,7 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 
 /* string buffer management
 	- FIXME - must have 20 solutions for this same thing */
-static const char *append_buf(char sep, char *str, bool new)
+static const char *append_buf(char sep, char *str, boolean new)
 {
     static char *buf;
     static int bufsz, pos;
@@ -289,7 +289,7 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
     gvplugin_available_t **pnext, **plugin, **pprev;
     const char *buf = NULL;
     char *s, *p, *typestr_last;
-    bool new = TRUE;
+    boolean new = TRUE;
 
     /* check for valid apis[] index */
     if (api < 0)

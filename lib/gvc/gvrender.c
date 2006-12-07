@@ -28,10 +28,10 @@
 #include "memory.h"
 #include "const.h"
 #include "macros.h"
+#include "colorprocs.h"
 #include "gvplugin_render.h"
 #include "graph.h"
 #include "gvcint.h"
-#include "colorprocs.h"
 #include "geom.h"
 #include "geomprocs.h"
 #include "gvcproc.h"
@@ -737,7 +737,7 @@ void gvrender_set_style(GVJ_t * job, char **s)
 #endif
 }
 
-void gvrender_ellipse(GVJ_t * job, pointf pf, double rx, double ry, bool filled)
+void gvrender_ellipse(GVJ_t * job, pointf pf, double rx, double ry, boolean filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
@@ -770,7 +770,7 @@ void gvrender_ellipse(GVJ_t * job, pointf pf, double rx, double ry, bool filled)
 #endif
 }
 
-void gvrender_polygon(GVJ_t * job, pointf * af, int n, bool filled)
+void gvrender_polygon(GVJ_t * job, pointf * af, int n, boolean filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
@@ -805,7 +805,7 @@ void gvrender_polygon(GVJ_t * job, pointf * af, int n, bool filled)
 #endif
 }
 
-void gvrender_box(GVJ_t * job, boxf B, bool filled)
+void gvrender_box(GVJ_t * job, boxf B, boolean filled)
 {
     pointf A[4];
 
@@ -820,7 +820,7 @@ void gvrender_box(GVJ_t * job, boxf B, bool filled)
 }
 
 void gvrender_beziercurve(GVJ_t * job, pointf * af, int n,
-			  int arrow_at_start, int arrow_at_end, bool filled)
+			  int arrow_at_start, int arrow_at_end, boolean filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
@@ -911,7 +911,7 @@ void gvrender_comment(GVJ_t * job, char *str)
 #endif
 }
 
-void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, bool filled)
+void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, boolean filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
     usershape_t *us;

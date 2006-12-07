@@ -49,7 +49,7 @@ int gvloadimage_select(GVJ_t * job, char *str)
     return NO_SUPPORT;
 }
 
-void gvloadimage(GVJ_t * job, usershape_t *us, boxf b, bool filled, char *target)
+void gvloadimage(GVJ_t * job, usershape_t *us, boxf b, boolean filled, char *target)
 {
     gvloadimage_engine_t *gvli;
     char type[SMALLBUF];

@@ -26,7 +26,7 @@ extern "C" {
 #endif
 
     struct gvloadimage_engine_s {
-	void (*loadimage) (GVJ_t *job, usershape_t *us, boxf b, bool filled);
+	void (*loadimage) (GVJ_t *job, usershape_t *us, boxf b, boolean filled);
     };
 
 #ifdef __cplusplus
