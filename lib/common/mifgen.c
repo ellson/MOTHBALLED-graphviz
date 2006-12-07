@@ -546,9 +546,9 @@ static void mif_polyline(point * A, int n)
     fprintf(Output_file, ">\n");
 }
 
-static void mif_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
+static void mif_usershape(usershape_t *us, boxf b, point *A, int n, boolean filled)
 {
-    static bool onetime = TRUE;
+    static boolean onetime = TRUE;
     if (onetime) {
 	agerr(AGERR, "custom shapes not available with this driver\n");
 	onetime = FALSE;
