@@ -99,7 +99,7 @@ typedef struct {
     int nedges;
     int *edges;
     DistType *edist;
-    bool free_mem;
+    boolean free_mem;
 } dist_data;
 
 static double compute_stressf(float **coords, float *lap, int dim, int n)
@@ -318,7 +318,7 @@ int stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse representa
     double *b;
     double L_ij;
     double old_stress, new_stress;
-    bool converged;
+    boolean converged;
 
 	/*************************************************
 	** Computation of full, dense, unrestricted k-D ** 
@@ -382,7 +382,7 @@ int stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse representa
 
     b = N_GNEW(n, double);
     old_stress = compute_stress(coords, Dij, dim, n);
-    for (converged = false, iterations = 0;
+    for (converged = FALSE, iterations = 0;
 	 iterations < n_iterations && !converged; iterations++) {
 
 	/* Axis-by-axis optimization: */
@@ -410,7 +410,7 @@ int stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse representa
 		}
 		b[i] += degree * coords[k][i];
 	    }
-	    conjugate_gradient_f(lap, coords[k], b, n, conj_tol, n, true);
+	    conjugate_gradient_f(lap, coords[k], b, n, conj_tol, n, TRUE);
 	}
 
 	if ((converged = (iterations % 2 == 0))) {	/* check for convergence every two iterations */
@@ -598,7 +598,7 @@ int sparse_stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse rep
     double *b;
     double L_ij;
     double old_stress, new_stress;
-    bool converged;
+    boolean converged;
 
 	/*************************************************
 	   Layout initialization  
@@ -712,7 +712,7 @@ int sparse_stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse rep
 	    distances[i].edist = N_GNEW(n - 1, DistType);
 	    distances[i].nedges = n - 1;
 	    nedges += n - 1;
-	    distances[i].free_mem = true;
+	    distances[i].free_mem = TRUE;
 	    index = CenterIndex[i];
 	    for (j = 0; j < i; j++) {
 		distances[i].edges[j] = j;
@@ -756,9 +756,9 @@ int sparse_stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse rep
 	    available_space = (dist_bound + 1) * n;
 	    storage1 = N_GNEW(available_space, int);
 	    storage2 = N_GNEW(available_space, DistType);
-	    distances[i].free_mem = true;
+	    distances[i].free_mem = TRUE;
 	} else {
-	    distances[i].free_mem = false;
+	    distances[i].free_mem = FALSE;
 	}
 	distances[i].edges = storage1;
 	distances[i].edist = storage2;
@@ -824,7 +824,7 @@ int sparse_stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse rep
 
     b = N_GNEW(n, double);
     old_stress = compute_stress1(coords, distances, dim, n), new_stress;
-    for (converged = false, iterations = 0;
+    for (converged = FALSE, iterations = 0;
 	 iterations < n_iterations && !converged; iterations++) {
 
 	/* Axis-by-axis optimization: */
@@ -962,7 +962,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
     double *b_restricted;
     double L_ij;
     double old_stress, new_stress;
-    bool converged;
+    boolean converged;
 
     for (i = 0; i < subspace_dim; i++) {
 	subspace[i] = d_storage + i * n;
@@ -1078,7 +1078,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
 	    distances[i].edist = N_GNEW(n - 1, DistType);
 	    distances[i].nedges = n - 1;
 	    nedges += n - 1;
-	    distances[i].free_mem = true;
+	    distances[i].free_mem = TRUE;
 	    index = CenterIndex[i];
 	    for (j = 0; j < i; j++) {
 		distances[i].edges[j] = j;
@@ -1122,9 +1122,9 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
 	    available_space = (dist_bound + 1) * n;
 	    storage1 = N_GNEW(available_space, int);
 	    storage2 = N_GNEW(available_space, DistType);
-	    distances[i].free_mem = true;
+	    distances[i].free_mem = TRUE;
 	} else {
-	    distances[i].free_mem = false;
+	    distances[i].free_mem = FALSE;
 	}
 	distances[i].edges = storage1;
 	distances[i].edist = storage2;
@@ -1258,7 +1258,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
     b = N_GNEW(n, double);
     b_restricted = N_GNEW(subspace_dim, double);
     old_stress = compute_stress1(coords, distances, dim, n);
-    for (converged = false, iterations = 0;
+    for (converged = FALSE, iterations = 0;
 	 iterations < n_iterations && !converged; iterations++) {
 
 	/* Axis-by-axis optimization: */
@@ -1287,7 +1287,7 @@ static int sparse_stress_subspace_majorization_kD(vtx_data * graph,	/* Input gra
 				     b_restricted);
 	    conjugate_gradient_f(matrix, directions[k], b_restricted,
 				 subspace_dim, conj_tol, subspace_dim,
-				 false);
+				 FALSE);
 	    right_mult_with_vector_transpose(subspace, n, subspace_dim,
 					     directions[k], coords[k]);
 	}
@@ -1492,7 +1492,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
     int step;
     float val;
     double old_stress, new_stress;
-    bool converged;
+    boolean converged;
     float **b;
     float *tmp_coords;
     float *dist_accumulator;
@@ -1687,7 +1687,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	start_timer();
     }
 
-    for (converged = false, iterations = 0;
+    for (converged = FALSE, iterations = 0;
 	 iterations < maxi && !converged; iterations++) {
 
 	/* First, construct Laplacian of 1/(d_ij*|p_i-p_j|)  */
