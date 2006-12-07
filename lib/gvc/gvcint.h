@@ -24,6 +24,7 @@ extern "C" {
 #endif
 
 #include "gvcommon.h"
+#include "color.h"
 
     /* active plugin headers */
     typedef struct gvplugin_active_layout_s {
@@ -71,7 +72,7 @@ extern "C" {
 	GVCOMMON_t common;
 
 	char *config_path;
-	bool config_found;
+	boolean config_found;
 
 	/* gvParseArgs */
 	char **input_filenames; /* null terminated array of input filenames */
@@ -114,7 +115,7 @@ extern "C" {
 	point pb;		/* page size - including margins (inches) */
 	boxf bb;		/* graph bb in graph units, not including margins */
 	int rotation;		/* rotation - 0 = portrait, 90 = landscape */
-	bool graph_sets_margin, graph_sets_pageSize, graph_sets_rotation;
+	boolean graph_sets_margin, graph_sets_pageSize, graph_sets_rotation;
 
 	/* layers */
 	char *layerDelims;	/* delimiters in layer names */

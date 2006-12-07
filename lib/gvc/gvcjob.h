@@ -24,6 +24,7 @@ extern "C" {
 #endif
 
 #include "gvcommon.h"
+#include "color.h"
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
@@ -175,9 +176,9 @@ extern "C" {
 	char *tooltip;          /* if GVRENDER_DOES_TOOLTIPS */
 	char *tailtooltip;
 	char *headtooltip; 
-	bool explicit_tooltip;
-	bool explicit_tailtooltip;
-	bool explicit_headtooltip;
+	boolean explicit_tooltip;
+	boolean explicit_tailtooltip;
+	boolean explicit_headtooltip;
 
 	char *target;           /* if GVRENDER_DOES_TARGETS */
 	char *tailtarget;
@@ -236,13 +237,13 @@ typedef enum {COMPRESSION_NONE, COMPRESSION_ZLIB} compression_t;
 	gvplugin_active_loadimage_t loadimage;
 	gvdevice_callbacks_t *callbacks;
 	pointf device_dpi;
-	bool device_sets_dpi;
+	boolean device_sets_dpi;
 
 	void *display;
 	int screen;
 
 	void *surface;		/* gd or cairo surface */
-	bool external_surface;	/* surface belongs to caller */
+	boolean external_surface;	/* surface belongs to caller */
 
         int flags;		/* emit_graph flags */
 
@@ -282,7 +283,7 @@ typedef enum {COMPRESSION_NONE, COMPRESSION_ZLIB} compression_t;
 	pointf  translation;    /* composite translation */
 	pointf  devscale;	/* composite device to points: dpi, y_goes_down */
 
-	bool	fit_mode,
+	boolean	fit_mode,
 		needs_refresh,
 		click,
 		has_grown,
