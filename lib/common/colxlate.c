@@ -22,6 +22,7 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "arith.h"
 #include "color.h"
 #include "colorprocs.h"
 #include "colortbl.h"
