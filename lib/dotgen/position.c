@@ -34,7 +34,7 @@ static void set_aspect(graph_t * g);
 static void expand_leaves(graph_t * g);
 static void make_lrvn(graph_t * g);
 static void contain_nodes(graph_t * g);
-static bool idealsize(graph_t * g, double);
+static boolean idealsize(graph_t * g, double);
 
 #ifdef DEBUG
 static void
@@ -942,7 +942,7 @@ static void set_aspect(graph_t * g)
 {
     double xf = 0.0, yf = 0.0, actual, desired;
     node_t *n;
-    bool scale_it, filled;
+    boolean scale_it, filled;
     point sz;
 
     rec_bb(g, g);
@@ -1210,9 +1210,9 @@ static void contain_nodes(graph_t * g)
 
 /* idealsize:
  * set g->drawing->size to a reasonable default.
- * returns a bool to indicate if drawing is to
+ * returns a boolean to indicate if drawing is to
  * be scaled and filled */
-static bool idealsize(graph_t * g, double minallowed)
+static boolean idealsize(graph_t * g, double minallowed)
 {
     double xf, yf, f, R;
     point b, relpage, margin;

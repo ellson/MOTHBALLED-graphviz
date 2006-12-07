@@ -30,7 +30,7 @@
 #define flatindex(v)	((v)->u.low)
 
 	/* forward declarations */
-static bool medians(graph_t * g, int r0, int r1);
+static boolean medians(graph_t * g, int r0, int r1);
 static int nodeposcmpf(node_t ** n0, node_t ** n1);
 static int edgeidcmpf(edge_t ** e0, edge_t ** e1);
 static void flat_breakcycles(graph_t * g);
@@ -65,7 +65,7 @@ static graph_t *Root;
 static int GlobalMinRank, GlobalMaxRank;
 static edge_t **TE_list;
 static int *TI_list;
-static bool ReMincross;
+static boolean ReMincross;
 
 /* dot_mincross:
  * Minimize edge crossings
@@ -705,7 +705,7 @@ static void init_mincross(graph_t * g)
 static void flat_search(graph_t * g, node_t * v)
 {
     int i, j;
-    bool hascl;
+    boolean hascl;
     edge_t *e, *rev;
     adjmatrix_t *M = GD_rank(g)[ND_rank(v)].flat;
 
@@ -1031,7 +1031,7 @@ static void
 reorder(graph_t * g, int r, int reverse, int hasfixed)
 {
     int changed = 0, nelt;
-    bool muststay, sawclust;
+    boolean muststay, sawclust;
     node_t **vlist = GD_rank(g)[r].v;
     node_t **lp, **rp, **ep = vlist + GD_rank(g)[r].n;
 
@@ -1263,12 +1263,12 @@ flat_mval(node_t * n)
 
 #define VAL(node,port) (MC_SCALE * (node)->u.order + (port).order)
 
-static bool medians(graph_t * g, int r0, int r1)
+static boolean medians(graph_t * g, int r0, int r1)
 {
     int i, j, j0, lm, rm, lspan, rspan, *list;
     node_t *n, **v;
     edge_t *e;
-    bool hasfixed = FALSE;
+    boolean hasfixed = FALSE;
 
     list = TI_list;
     v = GD_rank(g)[r0].v;
