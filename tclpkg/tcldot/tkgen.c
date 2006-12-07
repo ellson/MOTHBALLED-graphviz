@@ -521,10 +521,10 @@ static void tk_polyline(point * A, int n)
     }
 }
 
-static void tk_usershape(usershape_t *us, boxf b, point *A, int n, bool filled)
+static void tk_usershape(usershape_t *us, boxf b, point *A, int n, boolean filled)
 {
 /* FIXME */
-    static bool onetime = TRUE;
+    static boolean onetime = TRUE;
     if (onetime) {
 	fprintf(stderr, "custom shapes not available with this driver\n");
 	onetime = FALSE;
