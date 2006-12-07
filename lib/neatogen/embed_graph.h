@@ -31,7 +31,7 @@ extern "C" {
     void PCA(DistType ** coords, int dim, int n, double **(&new_coords),
 	     int new_dim);
     void PCA(DistType ** coords, int dim, int n, double **(&new_coords),
-	     int dim1, int dim2, bool recompute);
+	     int dim1, int dim2, boolean recompute);
     void PCA_orthog(DistType ** coords, int dim, int n,
 		    double **(&new_coords), int new_dim, double *orthog);
     void iterativePCA(DistType ** coords, int dim, int n,

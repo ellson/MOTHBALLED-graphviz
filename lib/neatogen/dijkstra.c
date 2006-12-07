@@ -34,7 +34,7 @@
 
 typedef DistType Word;
 
-#define LOOP while(true)
+#define LOOP while(TRUE)
 
 /* This heap class is suited to the Dijkstra alg.
    data[i]=vertexNum <==> index[vertexNum]=i
@@ -118,10 +118,10 @@ initHeap(heap * h, int startVertex, int index[], Word dist[], int n)
 	heapify(h, j, index, dist);
 }
 
-static bool extractMax(heap * h, int *max, int index[], Word dist[])
+static boolean extractMax(heap * h, int *max, int index[], Word dist[])
 {
     if (h->heapSize == 0)
-	return false;
+	return FALSE;
 
     *max = h->data[0];
     h->data[0] = h->data[h->heapSize - 1];
@@ -129,7 +129,7 @@ static bool extractMax(heap * h, int *max, int index[], Word dist[])
     h->heapSize--;
     heapify(h, 0, index, dist);
 
-    return true;
+    return TRUE;
 }
 
 static void
@@ -208,7 +208,7 @@ dijkstra_bounded(int vertex, vtx_data * graph, int n, DistType * dist,
 {
     int num_visited_nodes;
     int i;
-    static bool *node_in_neighborhood = NULL;
+    static boolean *node_in_neighborhood = NULL;
     static int size = 0;
     static int *index;
     Queue Q;
@@ -227,14 +227,14 @@ dijkstra_bounded(int vertex, vtx_data * graph, int n, DistType * dist,
 	bfs_bounded(vertex, graph, n, dist, &Q, bound, visited_nodes);
     if (size < n) {
 	node_in_neighborhood =
-	    (bool *) realloc(node_in_neighborhood, n * sizeof(bool));
+	    (boolean *) realloc(node_in_neighborhood, n * sizeof(boolean));
 	for (i = size; i < n; i++) {
-	    node_in_neighborhood[i] = false;
+	    node_in_neighborhood[i] = FALSE;
 	}
 	size = n;
     }
     for (i = 0; i < num_visited_nodes; i++) {
-	node_in_neighborhood[visited_nodes[i]] = true;
+	node_in_neighborhood[visited_nodes[i]] = TRUE;
     }
 
 
@@ -272,7 +272,7 @@ dijkstra_bounded(int vertex, vtx_data * graph, int n, DistType * dist,
 
     /* restore initial false-status of 'node_in_neighborhood' */
     for (i = 0; i < num_visited_nodes; i++) {
-	node_in_neighborhood[visited_nodes[i]] = false;
+	node_in_neighborhood[visited_nodes[i]] = FALSE;
     }
     freeHeap(&H);
     freeQueue(&Q);
@@ -319,10 +319,10 @@ initHeap_f(heap * h, int startVertex, int index[], float dist[], int n)
 	heapify_f(h, j, index, dist);
 }
 
-static bool extractMax_f(heap * h, int *max, int index[], float dist[])
+static boolean extractMax_f(heap * h, int *max, int index[], float dist[])
 {
     if (h->heapSize == 0)
-	return false;
+	return FALSE;
 
     *max = h->data[0];
     h->data[0] = h->data[h->heapSize - 1];
@@ -330,7 +330,7 @@ static bool extractMax_f(heap * h, int *max, int index[], float dist[])
     h->heapSize--;
     heapify_f(h, 0, index, dist);
 
-    return true;
+    return TRUE;
 }
 
 static void
