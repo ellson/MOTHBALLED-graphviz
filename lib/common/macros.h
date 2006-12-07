@@ -17,6 +17,10 @@
 #ifndef GV_MACROS_H
 #define GV_MACROS_H
 
+#ifndef NOTUSED
+#define NOTUSED(var) (void) var
+#endif
+
 #define isPinned(n)     (ND_pinned(n) == P_PIN)
 #define hasPos(n)       (ND_pinned(n) > 0)
 #define isFixed(n)      (ND_pinned(n) > P_SET)
