@@ -144,6 +144,9 @@ static void svg_begin_graph(GVJ_t * job)
 
     core_printf(job, "<svg width=\"%.2fin\" height=\"%.2fin\"\n",
 	job->width/job->dpi.x, job->height/job->dpi.y);
+    core_printf(job, " viewBox=\"%.2f %.2f %.2f\"",
+	job->canvasBox.LL.x, job->canvasBox.LL.y,
+	job->canvasBox.UR.x, job->canvasBox.UR.y);
     /* namespace of svg */
     core_fputs(job, " xmlns=\"http://www.w3.org/2000/svg\"");
     /* namespace of xlink */
@@ -298,7 +301,7 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
         core_printf(job, "font:%s;", para->fontname);
     }
     /* FIXME - even inkscape requires a magic correction to fontsize.  Why?  */
-    core_printf(job, "font-size:%.2fpt;", para->fontsize * 0.81);
+    core_printf(job, "font-size:%.2f;", para->fontsize);
     switch (obj->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(obj->pencolor.u.string, "black"))
@@ -450,7 +453,7 @@ gvrender_features_t svg_features = {
     DEFAULT_EMBED_MARGIN,	/* default margin - points */
     4.,                         /* default pad - graph units */
     {0.,0.},                    /* default page width, height - points */
-    {96.,96.},			/* default dpi */
+    {72.,72.},			/* default dpi */
     svg_knowncolors,		/* knowncolors */
     sizeof(svg_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
