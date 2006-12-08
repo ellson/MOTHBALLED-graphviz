@@ -65,8 +65,8 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean fil
             job->rotation, b.LL.x, b.UR.y);
     }
     else {
-        core_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
-            b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, b.LL.y);
+        core_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMinYMin meet\" x=\"%g\" y=\"%g\"",
+            b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, -b.UR.y);
     }
     core_fputs(job, "/>\n");
 }
