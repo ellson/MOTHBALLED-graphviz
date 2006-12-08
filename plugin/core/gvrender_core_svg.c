@@ -14,6 +14,16 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+/* Comments on the SVG coordinate system (SN 8 Dec 2006):
+   The initial <svg> element defines the SVG coordinate system so
+   that the graphviz canvas (in units of points) fits the intended
+   absolute size in inches.  After this, the situation should be
+   that "px" = "pt" in SVG, so we can dispense with stating units.
+   Also, the input units (such as fontsize) should be preserved
+   without scaling in the output SVG (as long as the graph size
+   was not constrained.)
+ */
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
