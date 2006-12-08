@@ -111,7 +111,27 @@ static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean fil
 	stride = cairo_image_surface_get_stride(surface);
 	data = cairo_image_surface_get_data(surface);
 
-        fprintf(out, "gsave\n");
+        fprintf(out, "save\n");
+
+	/* define image data as string array (one per raster line) */
+	/* see parallel code in gd_loadimage_ps().  FIXME: refactor... */
+        fprintf(out, "/myctr 0 def\n");
+        fprintf(out, "/myarray [\n");
+        for (y = 0; y < Y; y++) {
+	    fprintf(out, "<");
+	    ix = data + y * stride;
+            for (x = 0; x < X; x++) {
+		/* FIXME - this code may have endian problems */
+		blue = *ix++;
+		green = *ix++;
+		red = *ix++;
+		alpha = *ix++;
+                fprintf(out, "%02x%02x%02x", red, green, blue);
+            }
+	    fprintf(out, ">\n");
+        }
+	fprintf(out, "] def\n");
+        fprintf(out,"/myproc { myarray myctr get /myctr myctr 1 add def } def\n");
 
         /* this sets the position of the image */
         fprintf(out, "%g %g translate %% lower-left coordinate\n", b.LL.x, b.LL.y);
@@ -122,25 +142,9 @@ static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean fil
         /* xsize ysize bits-per-sample [matrix] */
         fprintf(out, "%d %d 8 [%d 0 0 %d 0 %d]\n", X, Y, X, -Y, Y);
 
-        fprintf(out, "{<\n");
+        fprintf(out, "{myproc} false 3 colorimage\n");
 
-        for (y = 0; y < Y; y++) {
-	    ix = data + y * stride;
-            for (x = 0; x < X; x++) {
-		/* FIXME - this code may have endian problems */
-		blue = *ix++;
-		green = *ix++;
-		red = *ix++;
-		alpha = *ix++;
-                fprintf(out, "%02x%02x%02x", red, green, blue);
-            }
-            fprintf(out, "\n");
-        }
-
-        fprintf(out, ">}\n");
-        fprintf(out, "false 3 colorimage\n");
-
-        fprintf(out, "grestore\n");
+        fprintf(out, "restore\n");
     }
 }
 

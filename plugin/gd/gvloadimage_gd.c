@@ -136,20 +136,14 @@ static void gd_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean filled
 	X = im->sx;
 	Y = im->sy;
 
-        fprintf(out, "gsave\n");
+        fprintf(out, "save\n");
 
-        /* this sets the position of the image */
-        fprintf(out, "%g %g translate %% lower-left coordinate\n", b.LL.x, b.LL.y);
-    
-        /* this sets the rendered size to fit the box */
-        fprintf(out,"%g %g scale\n", b.UR.x - b.LL.x, b.UR.y - b.LL.y);
-    
-        /* xsize ysize bits-per-sample [matrix] */
-        fprintf(out, "%d %d 8 [%d 0 0 %d 0 %d]\n", X, Y, X, -Y, Y);
-    
-        fprintf(out, "{<\n");
+	/* define image data as string array (one per raster line) */
+        fprintf(out, "/myctr 0 def\n");
+        fprintf(out, "/myarray [\n");
         if (im->trueColor) {
             for (y = 0; y < Y; y++) {
+		fprintf(out, "<");
                 for (x = 0; x < X; x++) {
                     px = gdImageTrueColorPixel(im, x, y);
                     fprintf(out, "%02x%02x%02x",
@@ -157,11 +151,12 @@ static void gd_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean filled
                         gdTrueColorGetGreen(px),
                         gdTrueColorGetBlue(px));
                 }
+		fprintf(out, ">\n");
             }
-            fprintf(out, "\n");
 	}
         else {
             for (y = 0; y < Y; y++) {
+		fprintf(out, "<");
                 for (x = 0; x < X; x++) {
                     px = gdImagePalettePixel(im, x, y);
                     fprintf(out, "%02x%02x%02x",
@@ -169,14 +164,24 @@ static void gd_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean filled
                         im->green[px],
                         im->blue[px]);
                 }
+		fprintf(out, ">\n");
             }
-            fprintf(out, "\n");
         }
+	fprintf(out, "] def\n");
+	fprintf(out,"/myproc { myarray myctr get /myctr myctr 1 add def } def\n");
+
+        /* this sets the position of the image */
+        fprintf(out, "%g %g translate %% lower-left coordinate\n", b.LL.x, b.LL.y);
+
+        /* this sets the rendered size to fit the box */
+        fprintf(out,"%g %g scale\n", b.UR.x - b.LL.x, b.UR.y - b.LL.y);
     
-        fprintf(out, ">}\n");
-        fprintf(out, "false 3 colorimage\n");
+        /* xsize ysize bits-per-sample [matrix] */
+        fprintf(out, "%d %d 8 [%d 0 0 %d 0 %d]\n", X, Y, X, -Y, Y);
     
-        fprintf(out, "grestore\n");
+        fprintf(out, "{myproc} false 3 colorimage\n");
+    
+        fprintf(out, "restore\n");
     }
 }
 
