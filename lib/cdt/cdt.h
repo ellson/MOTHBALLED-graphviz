@@ -30,7 +30,7 @@
 #define NIL(type) ((type)0)
 #endif
 
-#include <stdlib.h>
+#include <string.h>
 
 #if _PACKAGE_ast
 #  include	<ast_std.h>
