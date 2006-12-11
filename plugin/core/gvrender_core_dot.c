@@ -357,7 +357,7 @@ static void xdot_ellipse(GVJ_t * job, pointf * A, int filled)
     else
         agxbput(xbufs[emit_state], "e ");
     output_point(xbufs[emit_state], A[0]);
-    sprintf(buf, " %d %d ", ROUND(A[1].x - A[0].x), ROUND(A[1].y - A[0].y));
+    sprintf(buf, "%d %d ", ROUND(A[1].x - A[0].x), ROUND(A[1].y - A[0].y));
     agxbput(xbufs[emit_state], buf);
 }
 
