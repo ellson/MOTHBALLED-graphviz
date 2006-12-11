@@ -234,7 +234,7 @@ Summary:	Lua extension for graphviz
 Requires:	graphviz = %{version}-%{release} lua
 
 %description lua
-Java extension for graphviz.
+Lua extension for graphviz.
 
 %files lua
 %defattr(-,root,root,-)
@@ -427,6 +427,8 @@ rm -rf $RPM_BUILD_ROOT
 #-- changelog --------------------------------------------------
 
 %changelog
+* Mon Dec 11 2006 John Ellson <john.ellson@comcast.net>
+- fix graphviz-lua description (Fedora BZ#218191)
 * Tue Sep 13 2005 John Ellson <ellson@research.att.com>
 - split out language bindings into their own rpms so that 
     main rpm doesn't depend on (e.g.) ocaml
