@@ -330,60 +330,29 @@ function Package
 	SRCDIR=$GVIZ_HOME/lib/agraph
         finstall agraph.h
 	SRCDIR=$GVIZ_HOME/lib/cdt
-        finstall ast_common.h 
         finstall cdt.h 
-	SRCDIR=$GVIZ_HOME/lib/circogen
-        finstall circo.h 
 	SRCDIR=$GVIZ_HOME/lib/common
-        finstall arith.h
-        finstall globals.h
-        finstall const.h
-        finstall logic.h
-        finstall macros.h 
-        finstall render.h 
         finstall types.h 
-        finstall utils.h 
         finstall geom.h 
-        finstall geomprocs.h 
         finstall color.h 
-        finstall memory.h 
-	SRCDIR=$GVIZ_HOME/lib/dotgen
-        finstall dot.h 
-        finstall dotprocs.h 
-	SRCDIR=$GVIZ_HOME/lib/fdpgen
-        finstall fdp.h 
+        finstall textpara.h 
+        finstall usershape.h 
 	SRCDIR=$GVIZ_HOME/lib/gvc
         finstall gvc.h 
         finstall gvcext.h 
-        finstall gvcint.h 
         finstall gvcjob.h 
+        finstall gvcommon.h 
         finstall gvplugin.h 
-        finstall gvplugin_device.h 
         finstall gvplugin_layout.h 
         finstall gvplugin_render.h 
         finstall gvplugin_textlayout.h 
-	SRCDIR=$GVIZ_HOME/lib/neatogen
-        finstall adjust.h
-        finstall neato.h 
-        finstall neatoprocs.h 
+        finstall gvplugin_loadimage.h 
 	SRCDIR=$GVIZ_HOME/lib/pack
         finstall pack.h
-	SRCDIR=$GVIZ_HOME/lib/twopigen
-        finstall circle.h 
-	SRCDIR=$GVIZ_HOME/lib/gd
-        finstall gd.h 
-        finstall gd_io.h 
-        finstall gdfx.h 
 	SRCDIR=$GVIZ_HOME/lib/graph
         finstall graph.h 
 	SRCDIR=$GVIZ_HOME/lib/pathplan
         finstall pathgeom.h 
-        finstall pathplan.h 
-        finstall pathutil.h 
-        finstall vis.h
-        finstall vispath.h
-	SRCDIR=$GVIZ_HOME/lib/ingraphs
-        finstall ingraphs.h 
 
 	# Create tgz package
 	TGZFILE=graphviz-win-${VERSION}.bin.tar.gz

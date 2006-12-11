@@ -868,13 +868,23 @@ item: Include Script
   Pathname=%_WISE_%\INCLUDE\uninstal.wse
 end
 item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\gvplugin_usershape.h
-  Destination=%MAINDIR%\Graphviz\include\gvplugin_usershape.h
+  Source=c:\graphvizCVS\builddaemon\package\source\include\usershape.h
+  Destination=%MAINDIR%\Graphviz\include\usershape.h
   Flags=0000000010000010
 end
 item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\gvplugin_device.h
-  Destination=%MAINDIR%\Graphviz\include\gvplugin_device.h
+  Source=c:\graphvizCVS\builddaemon\package\source\include\textpara.h
+  Destination=%MAINDIR%\Graphviz\include\textpara.h
+  Flags=0000000010000010
+end
+item: Install File
+  Source=c:\graphvizCVS\builddaemon\package\source\include\gvplugin_loadimage.h
+  Destination=%MAINDIR%\Graphviz\include\gvplugin_loadimage.h
+  Flags=0000000010000010
+end
+item: Install File
+  Source=c:\graphvizCVS\builddaemon\package\source\include\gvcommon.h
+  Destination=%MAINDIR%\Graphviz\include\gvcommon.h
   Flags=0000000010000010
 end
 item: Install File
@@ -885,26 +895,6 @@ end
 item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\lib\plugin.lib
   Destination=%MAINDIR%\Graphviz\lib\plugin.lib
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\logic.h
-  Destination=%MAINDIR%\Graphviz\include\logic.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\arith.h
-  Destination=%MAINDIR%\Graphviz\include\arith.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\utils.h
-  Destination=%MAINDIR%\Graphviz\include\utils.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\memory.h
-  Destination=%MAINDIR%\Graphviz\include\memory.h
   Flags=0000000010000010
 end
 item: Install File
@@ -948,18 +938,8 @@ item: Install File
   Flags=0000000010000010
 end
 item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\gvcint.h
-  Destination=%MAINDIR%\Graphviz\include\gvcint.h
-  Flags=0000000010000010
-end
-item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\include\gvc.h
   Destination=%MAINDIR%\Graphviz\include\gvc.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\gdfx.h
-  Destination=%MAINDIR%\Graphviz\include\gdfx.h
   Flags=0000000010000010
 end
 item: Install File
@@ -970,11 +950,6 @@ end
 item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\lib\fdpgen.lib
   Destination=%MAINDIR%\Graphviz\lib\fdpgen.lib
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\fdp.h
-  Destination=%MAINDIR%\Graphviz\include\fdp.h
   Flags=0000000010000010
 end
 item: Install File
@@ -1153,38 +1128,8 @@ item: Install File
   Flags=0000000010000010
 end
 item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\vispath.h
-  Destination=%MAINDIR%\Graphviz\include\vispath.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\vis.h
-  Destination=%MAINDIR%\Graphviz\include\vis.h
-  Flags=0000000010000010
-end
-item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\include\types.h
   Destination=%MAINDIR%\Graphviz\include\types.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\renderprocs.h
-  Destination=%MAINDIR%\Graphviz\include\renderprocs.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\render.h
-  Destination=%MAINDIR%\Graphviz\include\render.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\pathutil.h
-  Destination=%MAINDIR%\Graphviz\include\pathutil.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\pathplan.h
-  Destination=%MAINDIR%\Graphviz\include\pathplan.h
   Flags=0000000010000010
 end
 item: Install File
@@ -1198,68 +1143,8 @@ item: Install File
   Flags=0000000010000010
 end
 item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\neatoprocs.h
-  Destination=%MAINDIR%\Graphviz\include\neatoprocs.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\neato.h
-  Destination=%MAINDIR%\Graphviz\include\neato.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\macros.h
-  Destination=%MAINDIR%\Graphviz\include\macros.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\ingraphs.h
-  Destination=%MAINDIR%\Graphviz\include\ingraphs.h
-  Flags=0000000010000010
-end
-item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\include\graph.h
   Destination=%MAINDIR%\Graphviz\include\graph.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\globals.h
-  Destination=%MAINDIR%\Graphviz\include\globals.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\gd_io.h
-  Destination=%MAINDIR%\Graphviz\include\gd_io.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\gd.h
-  Destination=%MAINDIR%\Graphviz\include\gd.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\dotprocs.h
-  Destination=%MAINDIR%\Graphviz\include\dotprocs.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\dot.h
-  Destination=%MAINDIR%\Graphviz\include\dot.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\const.h
-  Destination=%MAINDIR%\Graphviz\include\const.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\circo.h
-  Destination=%MAINDIR%\Graphviz\include\circo.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\circle.h
-  Destination=%MAINDIR%\Graphviz\include\circle.h
   Flags=0000000010000010
 end
 item: Install File
@@ -1268,18 +1153,8 @@ item: Install File
   Flags=0000000010000010
 end
 item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\ast_common.h
-  Destination=%MAINDIR%\Graphviz\include\ast_common.h
-  Flags=0000000010000010
-end
-item: Install File
   Source=c:\graphvizCVS\builddaemon\package\source\include\agraph.h
   Destination=%MAINDIR%\Graphviz\include\agraph.h
-  Flags=0000000010000010
-end
-item: Install File
-  Source=c:\graphvizCVS\builddaemon\package\source\include\adjust.h
-  Destination=%MAINDIR%\Graphviz\include\adjust.h
   Flags=0000000010000010
 end
 item: Install File
