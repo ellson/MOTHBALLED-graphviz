@@ -11,8 +11,17 @@ Require - but just use dot's stdin/stdout simplisticly
 	perl-Graph-Writer-GraphViz
 	perl-Graph-SocialMap
 	rpmDirectoryCheck,
+	k3d
 
-BuildRequires only
-	libxml++ (doxygen, graphviz)
-	icu (doxygen, graphviz)
-	taglib  (doxygen, graphviz)
+BuildRequires only (doxygen, graphviz)
+	libxml++
+	icu
+	taglib 
+	koffice 
+	bakery
+	cppunit
+	jrtplib
+	libburn
+	QuantLib
+	rapidsvn
+
