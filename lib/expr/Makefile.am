@@ -12,7 +12,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/ast \
 	-I$(top_srcdir)/lib/cdt
 
-pkginclude_HEADERS = exgram.h exlib.h expr.h
+noinst_HEADERS = exgram.h exlib.h expr.h
 noinst_LTLIBRARIES = libexpr_C.la
 lib_LTLIBRARIES = libexpr.la
 man_MANS = expr.3
