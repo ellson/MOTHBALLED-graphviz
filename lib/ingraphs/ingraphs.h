@@ -44,6 +44,7 @@ extern "C" {
 	void *fp;
 	ingdisc *fns;
 	char heap;
+	int errors;
     } ingraph_state;
 
     extern ingraph_state *newIngraph(ingraph_state *, char **, opengfn);
