@@ -52,8 +52,10 @@ static void nextFile(ingraph_state * sp)
 		break;
 	    } else if ((rv = sp->fns->openf(fname)) != 0)
 		break;
-	    else
+	    else {
 		fprintf(stderr, "Can't open %s\n", sp->Files[sp->ctr - 1]);
+		sp->errors++;
+	    }
 	}
     }
     if (rv)
@@ -100,6 +102,7 @@ ingraph_state *newIng(ingraph_state * sp, char **files, ingdisc * disc)
 	sp->heap = 0;
     sp->Files = files;
     sp->ctr = 0;
+    sp->errors = 0;
     sp->fp = NULL;
     sp->fns = (ingdisc *) malloc(sizeof(ingdisc));
     if (!sp->fns) {
