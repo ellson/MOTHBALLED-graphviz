@@ -7,12 +7,12 @@ pkgconfigdir = $(libdir)/pkgconfig
 
 AM_CPPFLAGS = -I$(top_srcdir)
 
-pkginclude_HEADERS = cdt.h dthdr.h
+pkginclude_HEADERS = cdt.h
+noinst_HEADERS = dthdr.h $(top_builddir)/ast_common.h
 noinst_LTLIBRARIES = libcdt_C.la
 lib_LTLIBRARIES = libcdt.la
 man_MANS = cdt.3
 pdf_DATA = cdt.pdf
-pkgextrainclude_DATA = $(top_builddir)/ast_common.h
 pkgconfig_DATA = libcdt.pc
 
 libcdt_C_la_SOURCES = dtclose.c dtdisc.c dtextract.c dtflatten.c \

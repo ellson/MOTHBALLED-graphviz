@@ -8,7 +8,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/cdt
 
-pkginclude_HEADERS = aghdr.h agraph.h malloc.h vmstub.h grammar.h
+pkginclude_HEADERS = agraph.h
+noinst_HEADERS = aghdr.h malloc.h vmstub.h grammar.h
 noinst_LTLIBRARIES = libagraph_C.la
 lib_LTLIBRARIES = libagraph.la
 pkgconfig_DATA = libagraph.pc
