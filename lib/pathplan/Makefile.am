@@ -4,8 +4,9 @@
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
-pkginclude_HEADERS = pathgeom.h pathplan.h pathutil.h solvers.h \
-	tri.h vis.h vispath.h
+pkginclude_HEADERS = pathgeom.h 
+noinst_HEADERS = pathplan.h pathutil.h solvers.h tri.h vis.h vispath.h
+
 noinst_LTLIBRARIES = libpathplan_C.la
 lib_LTLIBRARIES = libpathplan.la
 pkgconfig_DATA = libpathplan.pc
