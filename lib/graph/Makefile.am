@@ -8,7 +8,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/cdt
 
-pkginclude_HEADERS = graph.h libgraph.h triefa.h parser.h agxbuf.h
+pkginclude_HEADERS = graph.h
+noinst_HEADERS = libgraph.h triefa.h parser.h agxbuf.h
 noinst_LTLIBRARIES = libgraph_C.la
 lib_LTLIBRARIES = libgraph.la
 pkgconfig_DATA = libgraph.pc
