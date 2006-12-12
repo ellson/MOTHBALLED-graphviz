@@ -55,7 +55,7 @@ void neato_nodesize(node_t * n, boolean flip)
 void neato_init_node(node_t * n)
 {
     common_init_node(n);
-    ND_pos(n) = ALLOC(GD_ndim(n->graph), 0, double);
+    ND_pos(n) = N_NEW(GD_ndim(n->graph), double);
     neato_nodesize(n, GD_flip(n->graph));
 }
 
@@ -1297,7 +1297,7 @@ void neatoLayout(Agraph_t * mg, Agraph_t * g, int layoutMode, int layoutModel)
 	MaxIter = 100 * agnnodes(g);
 
     nG = scan_graph_mode(g, layoutMode);
-    if (!nG)
+    if (nG < 2)
 	return;
     if (layoutMode)
 	majorization(mg, g, nG, layoutMode, layoutModel, Ndim, MaxIter);
