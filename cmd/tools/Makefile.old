@@ -108,7 +108,7 @@ acyclic : $(ACYCLICOBJS)
 	$(CSLD) $(LDFLAGS) $(ACYCLICOBJS) $(LIBS) -o $@
 
 nop : $(NOPOBJS)
-	$(CSLD) $(LDFLAGS) $(NOPOBJS) $(INGLIB) $(ALIBS) -o $@
+	$(CSLD) $(LDFLAGS) $(NOPOBJS) $(INGLIB) $(LIBS) -o $@
 
 gvcolor : $(COLOROBJS)
 	$(CSLD) $(LDFLAGS) $(COLOROBJS) $(INGLIB) $(LIBS) -o $@
