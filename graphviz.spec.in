@@ -104,11 +104,14 @@ BuildRequires: libtool-ltdl libtool-ltdl-devel php-devel ruby-devel guile-devel
 %define JAVA    1
 %define OCAML   1
 %define PYTHON  1
-BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel libgcj-devel mono-core ocaml python-devel
+BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel libgcj-devel mono-core ocaml python-devel java-devel
 %endif
 %if "%fedora" >= "6"
 %define LUA     1
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel libgnomeui-devel
+%endif
+%if "%fedora" >= "7"
+BuildRequires: gtk2-devel libgnomeui-devel
 %endif
 %endif
 
@@ -215,7 +218,7 @@ Io extension for graphviz.
 %package java
 Group:		Applications/Multimedia
 Summary:	Java extension for graphviz
-Requires:	graphviz = %{version}-%{release} libgcj
+Requires:	graphviz = %{version}-%{release} libgcj java
 
 %description java
 Java extension for graphviz.
