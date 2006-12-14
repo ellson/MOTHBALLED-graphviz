@@ -108,7 +108,7 @@ BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel li
 %endif
 %if "%fedora" >= "6"
 %define LUA     1
-BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel
+BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel libgnomeui-devel
 %endif
 %endif
 
