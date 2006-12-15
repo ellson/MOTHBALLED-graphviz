@@ -854,7 +854,9 @@ This field indicates which graph component uses the attribute.
   it may cycle.
   <P>
   There are two new, experimental modes in neato, "hier", which adds a top-down
-  directionality similar to the layout used in dot, and "ipsep", which .
+  directionality similar to the layout used in dot, and "ipsep", which 
+  allows the graph to specify minimum vertical and horizontal distances
+  between nodes. (See the <A HREF=#d:sep>sep</A> attribute.)
 
 <DT><A NAME=d:model HREF=#a:model><STRONG>model</STRONG></A>
 <DD>  This value specifies how the distance matrix is computed for the input
@@ -951,7 +953,7 @@ This field indicates which graph component uses the attribute.
   <P>
   If the value is "vpsc", overlap removal is similarly to "ortho", except
   quadratic optimization is used to minimize node displacement.
-  N.B. At present, this mode on works when <A HREF=#d:mode>mode</A>="ipsep".
+  N.B. At present, this mode only works when <A HREF=#d:mode>mode</A>="ipsep".
   <P>
   Except for fdp, the layouts assume <TT>overlap="true"</TT> as the default. 
   Fdp first uses a number of passes using built-in, force-directed technique
