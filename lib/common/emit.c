@@ -586,10 +586,6 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	pageSize.x = gvc->pageSize.x - 2 * margin.x;
 	pageSize.y = gvc->pageSize.y - 2 * margin.y;
 
-	/* we don't want graph page to exceed its bounding box */
-	pageSize.x = MIN(pageSize.x, imageSize.x);
-	pageSize.y = MIN(pageSize.y, imageSize.y);
-
 	if (pageSize.x < EPSILON)
 	    job->pagesArraySize.x = 1;
 	else {
@@ -618,6 +614,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	    pageSize.y = job->render.features->default_pagesize.y - 2*margin.y;
 	    if (pageSize.y < 0.)
 		pageSize.y = 0.;
+	    if (job->rotation)
+		pageSize = exch_xyf(pageSize);
 	}
 	else
 	    pageSize.x = pageSize.y = 0.;
