@@ -34,7 +34,7 @@ void IOinit (void) {
     ion = IOINCR;
     for (ioi = 0; ioi < ion; ioi++)
         iop[ioi].inuse = FALSE;
-    for (ioi = 0; ioi < ion; ioi++)
+    for (ioi = 0; ioi < 3; ioi++)
         if (fstat (ioi, &statbuf) == 0) {
             iop[ioi].inuse = TRUE;
             iop[ioi].type = IO_FILE;
