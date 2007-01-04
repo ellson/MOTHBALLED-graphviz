@@ -210,9 +210,6 @@ eop:
 
 #else
 
-extern char ** __argv;
-extern int __argc;
-
 HANDLE hinstance, hprevinstance;
 
 int PASCAL WinMain (
