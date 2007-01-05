@@ -14,7 +14,7 @@ gc :: gc.1 gc.c -lgraph -lcdt -lingraphs
 gvcolor :: gvcolor.1 gvcolor.c colxlate.c -lgraph -lcdt -lingraphs 
 gvpack :: gvpack.1 gvpack.c -ldotgen -ltwopigen -lcircogen -lfdpgen -lgvc \
 	-lingraphs -lgvplugin_core -lgvplugin_dot_layout \
-	-lgvplugin_neato_layout -lgvplugin_gd -lgvplugin_pango 
+	-lgvplugin_neato_layout -lgvplugin_gd -lgvplugin_pango
 gxl2dot :: gxl2dot.1 gxl2dot.c dot2gxl.c cvtgxl.c -lagraph \
 	-lgraph -lcdt -lcommon -lingraphs
 nop :: nop.1 nop.c -lagraph -lcdt -lcommon -lingraphs 

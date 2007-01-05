@@ -1,2 +1,1 @@
-export CC=ncc
 :MAKE:
