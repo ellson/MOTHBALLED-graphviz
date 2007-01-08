@@ -46,6 +46,7 @@ rm -rf \
 	graphviz-win.sh
 
 find . -name "Make*" -exec rm -f {} \;
+find . -name "*.y" -exec rm -f {} \;
 
 # for now, lets try to fix these to be portable in the main tree
 # leaving: windows/config.h windows/cdt/ast_common.h
