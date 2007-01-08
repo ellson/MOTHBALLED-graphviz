@@ -86,7 +86,7 @@ static char pathbuf[1024];
 static char commandbuf[1024];
 
 static char *buildpath (char *file) {
-    struct _stat statbuf;
+    struct stat statbuf;
     char *s1, *s2;
     int mode, pathi;
 
