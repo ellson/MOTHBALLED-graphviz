@@ -27,7 +27,8 @@
 #include <fcntl.h>
 
 #include "gvplugin_render.h"
-
+#include "graph.h"	/* for agget  for truecolor test */
+#include "gvcint.h"	/* for gvc->g for agget */
 
 #ifdef HAVE_LIBGD
 #include "gd.h"
@@ -73,9 +74,8 @@ static void gdgen_begin_page(GVJ_t * job)
     gdImagePtr im = NULL;
 
 
-/* FIXME - ... */
-//    truecolor_str = agget(job->gvc->g, "truecolor");	/* allow user to force truecolor */
-//    bgcolor_str = agget(job->gvc->g, "bgcolor");
+    truecolor_str = agget((graph_t*)(job->gvc->g), "truecolor");	/* allow user to force truecolor */
+    bgcolor_str = agget((graph_t*)(job->gvc->g), "bgcolor");
 
     if (truecolor_str && truecolor_str[0])
 	truecolor_p = mapbool(truecolor_str);
@@ -86,8 +86,8 @@ static void gdgen_begin_page(GVJ_t * job)
 	    truecolor_p = TRUE;	/* force truecolor */
     }
 
-//    if (GD_has_images(job->gvc->g))
-//	truecolor_p = TRUE;	/* force truecolor */
+    if (GD_has_images(job->gvc->g))
+	truecolor_p = TRUE;	/* force truecolor */
 
     if (job->external_surface) {
 	if (job->common->verbose)
