@@ -45,6 +45,14 @@ Public Function isTwopi() As Boolean
     isTwopi = (mvarEngine And TWOPI) <> 0
 End Function
 
+Public Function isCirco() As Boolean
+    isCirco = (mvarEngine And CIRCO) <> 0
+End Function
+
+Public Function isFdp() As Boolean
+    isFdp = (mvarEngine And FDP) <> 0
+End Function
+
 Public Property Let Scope(ByVal vData As Integer)
     mvarScope = vData
 End Property
