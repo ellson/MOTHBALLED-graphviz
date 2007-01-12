@@ -29,6 +29,13 @@ static char *shellpath;
 static char *buildpath (char *);
 static void panic (char *, int, char *, char *, ...);
 
+static char* lneato =
+#ifdef LNEATO
+  "dotty.protogt.lserver='neato';";
+#else
+  "";
+#endif
+
 int PASCAL WinMain (
     HANDLE hInstance, HANDLE hPrevInstance, LPSTR lpCmdLine, int nCmdShow
 ) {
@@ -54,14 +61,13 @@ int PASCAL WinMain (
     }
     if (lpCmdLine[0] == 0)
         sprintf (
-            /* cmd, "%s -e \"load('dotty.lefty');dotty.simple(null);\"", path */
-	    cmd, "%s -e \"load('dotty.lefty');dotty.createviewandgraph(null,'file',null,null);\"", path
+	    cmd, "%s -e \"load('dotty.lefty');%sdotty.createviewandgraph(null,'file',null,null);txtview('off');\"",
+	    path, lneato
         );
     else
         sprintf (
-            /* cmd, "%s -e \"load('dotty.lefty');dotty.simple('%Ns');\"", */
-	    cmd, "%s -e \"load('dotty.lefty');dotty.createviewandgraph('%Ns','file',null,null);\"",
-            path, lpCmdLine
+	    cmd, "%s -e \"load('dotty.lefty');%sdotty.createviewandgraph('%Ns','file',null,null);txtview('off');\"",
+            path, lneato, lpCmdLine
         );
 
     CreateProcess (
