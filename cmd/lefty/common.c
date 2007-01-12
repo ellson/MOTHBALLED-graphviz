@@ -423,3 +423,23 @@ void panic2 (char *file, int line, char *func, char *fmt, ...) {
     abort ();
 }
 
+#ifdef FEATURE_MS
+int gprintf (const char *fmt, ...) {
+    va_list args;
+    char buf[10240];
+    int l;
+
+    va_start(args, fmt);
+    vsprintf (buf, fmt, args);
+    l = strlen (buf);
+    if (buf[l - 1] == '\n')
+        buf[l - 1] = 0;
+    if (buf[0]) {
+        Gnocallbacks = TRUE;
+        MessageBox ((HWND) NULL, buf, "Lefty printf", MB_APPLMODAL);
+        Gnocallbacks = FALSE;
+    }
+    va_end(args);
+}
+#endif
+
