@@ -67,6 +67,7 @@ extern "C" {
 
 #ifdef FEATURE_MS
 #include <malloc.h>
+#define printf gprintf
 #endif
 
 #define POS __FILE__, __LINE__
