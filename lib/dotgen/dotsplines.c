@@ -212,10 +212,15 @@ static void edge_normalize(graph_t * g)
     }
 }
 
-/* dot_splines:
+/* _dot_splines:
+ * Main spline routing code.
+ * The normalize parameter allows this function to be called by the
+ * recursive call in make_flat_edge without normalization occurring,
+ * so that the edge will only be normalized once in the top level call
+ * of dot_splines.
  * If the splines attribute is defined but equal to "", skip edge routing.
  */
-void dot_splines(graph_t * g)
+static void _dot_splines(graph_t * g, int normalize)
 {
     int i, j, k, n_nodes, n_edges, ind, cnt;
     node_t *n;
@@ -381,7 +386,8 @@ void dot_splines(graph_t * g)
 
     /* normalize splines so they always go from tail to head */
     /* place_portlabel relies on this being done first */
-    edge_normalize(g);
+    if (normalize)
+	edge_normalize(g);
 
     /* vladimir: place port labels */
     /* FIX: head and tail labels are not part of cluster bbox */
@@ -412,6 +418,14 @@ void dot_splines(graph_t * g)
     free(sd.Rank_box);
     routesplinesterm();
     State = GVSPLINES;
+}
+
+/* dot_splines:
+ * If the splines attribute is defined but equal to "", skip edge routing.
+ */
+void dot_splines(graph_t * g)
+{
+    _dot_splines (g, 1);
 }
 
 /* place_vnlabel:
@@ -846,7 +860,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
 	else ND_coord_i(n).y = midx;
     }
     dot_sameports(auxg);
-    dot_splines(auxg);
+    _dot_splines(auxg, 0);
     dotneato_postprocess(auxg);
 
        /* copy splines */
