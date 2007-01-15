@@ -77,6 +77,7 @@ extern "C" {
     extern point neato_closest(splines * spl, point p);
     extern point spline_at_y(splines * spl, int y);
 
+    extern void setEdgeType (graph_t* g, int dflt);
 #ifdef __cplusplus
 }
 #endif
