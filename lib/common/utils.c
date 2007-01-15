@@ -1598,4 +1598,92 @@ boolean overlap_edge(edge_t *e, boxf b)
     return FALSE;
 }
 
+/* setEdgeType:
+ * Sets graph's edge type based on the "splines" attribute.
+ * If the attribute is not defined, use default.
+ * If the attribute is "", use NONE.
+ * If attribute value matches (case indepedent), use match.
+ *   ortho => ET_ORTHO
+ *   none => ET_NONE
+ *   line => ET_LINE
+ *   polyline => ET_PLINE
+ *   spline => ET_SPLINE
+ * If attribute is boolean, true means ET_SPLINE, false means ET_LINE.
+ * Else warn and use default.
+ */
+void setEdgeType (graph_t* g, int dflt)
+{
+    char* s = agget(g, "splines");
+    int et;
+
+    if (!s) {
+	GD_flags(g) |= dflt;
+	return;
+    }
+    if (*s == '\0') {
+	et = ET_NONE;
+	return;
+    }
+    et = 0;
+    switch (*s) {
+    case '0' :    /* false */
+	et = ET_LINE;
+	break;
+    case '1' :    /* true */
+    case '2' :
+    case '3' :
+    case '4' :
+    case '5' :
+    case '6' :
+    case '7' :
+    case '8' :
+    case '9' :
+	et = ET_SPLINE;
+	break;
+    case 'c' :
+    case 'C' :
+	if (!strcasecmp (s+1, "ompound"))
+	    et = ET_COMPOUND;
+	break;
+    case 'f' :
+    case 'F' :
+	if (!strcasecmp (s+1, "alse"))
+	    et = ET_LINE;
+	break;
+    case 'l' :
+    case 'L' :
+	if (!strcasecmp (s+1, "ine"))
+	    et = ET_LINE;
+	break;
+    case 'n' :
+    case 'N' :
+	if (!strcasecmp (s+1, "one")) return;
+	break;
+    case 'o' :
+    case 'O' :
+	if (!strcasecmp (s+1, "rtho"))
+	    et = ET_ORTHO;
+	break;
+    case 'p' :
+    case 'P' :
+	if (!strcasecmp (s+1, "olyline"))
+	    et = ET_PLINE;
+	break;
+    case 's' :
+    case 'S' :
+	if (!strcasecmp (s+1, "pline"))
+	    et = ET_SPLINE;
+	break;
+    case 't' :
+    case 'T' :
+	if (!strcasecmp (s+1, "rue"))
+	    et = ET_SPLINE;
+	break;
+    }
+    if (!et) {
+	agerr(AGWARN, "Unknown \"splines\" value: \"%s\" - ignored\n", s);
+	et = dflt;
+    }
+    GD_flags(g) |= et;
+}
 
