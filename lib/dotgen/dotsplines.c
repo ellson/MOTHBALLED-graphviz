@@ -228,9 +228,8 @@ static void _dot_splines(graph_t * g, int normalize)
     edge_t *e, *e0, *e1, *ea, *eb, *le0, *le1, **edges;
     path *P;
     spline_info_t sd;
-    char* s = agget(g, "splines");
 
-    if (s && (*s == '\0')) return; 
+    if (EDGE_TYPE(g->root) == ET_NONE) return; 
 
     mark_lowclusters(g);
     routesplinesinit();

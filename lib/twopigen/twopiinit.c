@@ -61,6 +61,7 @@ static void twopi_init_node_edge(graph_t * g)
 
 void twopi_init_graph(graph_t * g)
 {
+    setEdgeType (g, ET_LINE);
     /* GD_ndim(g) = late_int(g,agfindattr(g,"dim"),2,2); */
     Ndim = GD_ndim(g) = 2;	/* The algorithm only makes sense in 2D */
     twopi_init_node_edge(g);

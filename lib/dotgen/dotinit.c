@@ -222,6 +222,7 @@ dumpRanks (graph_t * g)
 
 void dot_layout(Agraph_t * g)
 {
+    setEdgeType (g, ET_SPLINE);
     dot_init_node_edge(g);
     dot_rank(g);
     dot_mincross(g);

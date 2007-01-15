@@ -669,6 +669,7 @@ int init_nop(Agraph_t * g, int adjust)
 
 void neato_init_graphn(Agraph_t * g, int dfltdim)
 {
+    setEdgeType (g, ET_LINE);
     GD_ndim(g->root) = late_int(g, agfindattr(g, "dim"), dfltdim, 2);
     Ndim = GD_ndim(g->root) = MIN(GD_ndim(g->root), MAXDIM);
     neato_init_node_edge(g);

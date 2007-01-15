@@ -246,7 +246,7 @@ static objlist *objectList(edge_t * ep, double SEP)
  * Returns 0 on success. Failure indicates the obstacle configuration
  * for some edge had overlaps.
  */
-int compoundEdges(graph_t * g, double SEP, int splines)
+int compoundEdges(graph_t * g, double SEP, int edgetype)
 {
     node_t *n;
     node_t *head;

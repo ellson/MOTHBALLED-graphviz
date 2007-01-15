@@ -1037,6 +1037,7 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 
 void fdp_init_graph(Agraph_t * g)
 {
+    setEdgeType (g, ET_LINE);
     GD_alg(g) = (void *) NEW(gdata);	/* freed in cleanup_graph */
     g->u.ndim = late_int(g, agfindattr(g, "dim"), 2, 2);
     Ndim = g->u.ndim = MIN(g->u.ndim, MAXDIM);
@@ -1065,40 +1066,38 @@ void fdpLayout(graph_t * g)
 }
 
 static void
-fdpSplines (graph_t * g, char* str)
+fdpSplines (graph_t * g)
 {
     int trySplines = 0;
+    int et = EDGE_TYPE(g);
 
-    if (str) {
-	if (streq(str, "compound")) {
-	    trySplines = splineEdges(g, compoundEdges, 1);
+    if (et != ET_LINE) {
+	if (et == ET_COMPOUND) {
+	    trySplines = splineEdges(g, compoundEdges, ET_SPLINE);
 	    /* When doing the edges again, accept edges done by compoundEdges */
 	    if (trySplines)
 		Nop = 2;
 	}
-	if (trySplines || mapbool(str)) {
+	if (trySplines || (et == ET_SPLINE)) {
 	    if (HAS_CLUST_EDGE(g)) {
 		agerr(AGWARN,
 		      "splines and cluster edges not supported - using line segments\n");
 	    } else {
-		spline_edges1(g, 1);
+		spline_edges1(g, ET_SPLINE);
 	    }
 	}
     }
     if (State < GVSPLINES)
-	spline_edges1(g, 0);
+	spline_edges1(g, ET_LINE);
 }
 
 void fdp_layout(graph_t * g)
 {
-    char *str;
-
     fdp_init_graph(g);
     fdpLayout(g);
     neato_set_aspect(g);
 
-    str = agget(g, "splines");
-    if (!str || *str) fdpSplines (g, str); 
+    if (EDGE_TYPE(g) != ET_NONE) fdpSplines (g); 
 
     dotneato_postprocess(g);
 }

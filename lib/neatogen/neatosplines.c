@@ -524,6 +524,36 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
     return line;
 }
 
+/* makePolyline:
+ */
+static void
+makePolyline(edge_t * e)
+{
+    int i, j;
+    Ppolyline_t line = ED_path(e);
+    int npts = 4 + 3*(line.pn-2);
+    point* ispline = N_GNEW(npts, point);
+    point p;
+
+    j = i = 0;
+    PF2P (line.ps[i], p);
+    ispline[j+1] = ispline[j] = p;
+    j += 2;
+    i++;
+    for (; i < line.pn-1; i++) {
+	PF2P (line.ps[i], p);
+	ispline[j+2] = ispline[j+1] = ispline[j] = p;
+	j += 3;
+    }
+    PF2P (line.ps[i], p);
+    ispline[j+1] = ispline[j] = p;
+
+    if (Verbose > 1)
+	fprintf(stderr, "polyline %s %s\n", e->tail->name, e->head->name);
+    clip_and_install(e, e, ispline, npts, &sinfo);
+    free(ispline);
+}
+
 /* makeSpline:
  * Construct a spline connecting the endpoints of e, avoiding the npoly
  * obstacles obs.
@@ -588,7 +618,7 @@ void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
  * is not altered to reflect intra-cluster edges.
  * If Nop > 1 and the spline exists, it is just copied.
  */
-static int _spline_edges(graph_t * g, double SEP, int splines)
+static int _spline_edges(graph_t * g, double SEP, int edgetype)
 {
     node_t *n;
     edge_t *e;
@@ -599,7 +629,7 @@ static int _spline_edges(graph_t * g, double SEP, int splines)
     path *P = NULL;
 
     /* build configuration */
-    if (splines) {
+    if ((edgetype == ET_SPLINE) || (edgetype == ET_PLINE)) {
 	obs = N_NEW(agnnodes(g), Ppoly_t *);
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    obp = makeObstacle(n, SEP);
@@ -629,7 +659,8 @@ static int _spline_edges(graph_t * g, double SEP, int splines)
     /* route edges  */
     if (Verbose)
 	fprintf(stderr, "Creating edges using %s\n",
-		(vconfig ? "splines" : "line segments"));
+	    (vconfig ? (edgetype == ET_SPLINE ? "splines" : "polylines") : 
+		"line segments"));
     if (vconfig) {
 	/* path-finding pass */
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
@@ -656,7 +687,10 @@ static int _spline_edges(graph_t * g, double SEP, int splines)
 		}
 		makeSelfArcs(P, e, GD_nodesep(g));
 	    } else if (vconfig) {
-		makeSpline(e, obs, npoly, TRUE);
+		if (edgetype == ET_SPLINE)
+		    makeSpline(e, obs, npoly, TRUE);
+		else
+		    makePolyline(e);
 	    } else if (ED_count(e)) {
 		makeStraightEdge(g, e);
 	    }
@@ -679,14 +713,13 @@ static int _spline_edges(graph_t * g, double SEP, int splines)
  * Returns 0 on success.
  *
  * The edge function is given the graph, the separation to be added
- * around obstacles, and the type of edge. (At present, this is a boolean,
- * with 1 meaning splines and 0 meaning line segments.) It must guarantee 
+ * around obstacles, and the type of edge. It must guarantee 
  * that all bounding boxes are current; in particular, the bounding box of 
  * g must reflect the addition of the edges.
  */
 int
 splineEdges(graph_t * g, int (*edgefn) (graph_t *, double, int),
-	    int splines)
+	    int edgetype)
 {
     node_t *n;
     edge_t *e;
@@ -719,7 +752,7 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, double, int),
     }
     dtclose(map);
 
-    if (edgefn(g, SEP, splines))
+    if (edgefn(g, SEP, edgetype))
 	return 1;
 
     State = GVSPLINES;
@@ -730,9 +763,9 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, double, int),
  * Construct edges using default algorithm and given splines value.
  * Return 0 on success.
  */
-int spline_edges1(graph_t * g, int splines)
+int spline_edges1(graph_t * g, int edgetype)
 {
-    return splineEdges(g, _spline_edges, splines);
+    return splineEdges(g, _spline_edges, edgetype);
 }
 
 /* spline_edges0:
@@ -751,11 +784,10 @@ int spline_edges1(graph_t * g, int splines)
  */
 void spline_edges0(graph_t * g)
 {
-    char* s = agget(g, "splines");
-
+    int et = EDGE_TYPE (g->root);
     neato_set_aspect(g);
-    if (s && (*s == '\0')) return; 
-    spline_edges1(g, mapbool(s));
+    if (et == ET_NONE) return;
+    spline_edges1(g, et);
 }
 
 /* spline_edges:
