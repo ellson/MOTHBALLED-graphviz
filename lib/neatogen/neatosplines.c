@@ -124,6 +124,48 @@ static void endPoints(splines * spl, point * p, point * q)
 	*q = bz.list[bz.size - 1];
 }
 
+/* polylineMidpoint;
+ * Find midpoint of polyline.
+ * pp and pq are set to the endpoints of the line segment containing it.
+ */
+static point
+polylineMidpoint (splines* spl, point* pp, point* pq)
+{
+    bezier bz;
+    int i, j, k;
+    double d, dist = 0;
+    point m;
+    pointf pf, qf, mf;
+
+    for (i = 0; i < spl->size; i++) {
+	bz = spl->list[i];
+	for (j = 0, k=3; k < bz.size; j+=3,k+=3) {
+	    P2PF (bz.list[j],pf);
+	    P2PF (bz.list[k],qf);
+	    dist += DIST(pf,qf);
+	}
+    }
+    dist /= 2;
+    for (i = 0; i < spl->size; i++) {
+	bz = spl->list[i];
+	for (j = 0, k=3; k < bz.size; j+=3,k+=3) {
+	    P2PF (bz.list[j],pf);
+	    P2PF (bz.list[k],qf);
+	    d = DIST(pf,qf);
+	    if (d >= dist) {
+		*pp = bz.list[j];
+		*pq = bz.list[k];
+		mf.x = ((qf.x*dist) + (pf.x*(d-dist)))/d; 
+		mf.y = ((qf.y*dist) + (pf.y*(d-dist)))/d; 
+		PF2P(mf, m);
+		return m;
+	    }
+	    else
+		dist -= d;
+	}
+    }
+}
+
 #define LEFTOF(a,b,c) (((a.y - b.y)*(c.x - b.x) - (c.y - b.y)*(a.x - b.x)) > 0)
 #define MAXLABELWD  (POINTS_PER_INCH/2.0)
 
@@ -139,6 +181,7 @@ static void endPoints(splines * spl, point * p, point * q)
  */
 static void addEdgeLabels(edge_t * e, point rp, point rq)
 {
+    int et = EDGE_TYPE (e->head->graph->root);
     point p, q;
     point d;			/* midpoint of segment p-q */
     point ld;
@@ -153,14 +196,20 @@ static void addEdgeLabels(edge_t * e, point rp, point rq)
 	if ((p.x == q.x) && (p.y == q.y)) { /* degenerate spline */
 	    p = rp;
 	    q = rq;
+	    sp = p;
 	}
-	d.x = (q.x + p.x) / 2;
-	d.y = (p.y + q.y) / 2;
+	else if (et == ET_SPLINE) {
+	    d.x = (q.x + p.x) / 2;
+	    d.y = (p.y + q.y) / 2;
+	    sp = dotneato_closest(ED_spl(e), d);
+	}
+	else {   /* ET_PLINE or ET_LINE */
+	    sp = polylineMidpoint (ED_spl(e), &p, &q);
+	}
 	del.x = q.x - p.x;
 	del.y = q.y - p.y;
 	dist2 = del.x*del.x + del.y*del.y;
 	ht = (ED_label(e)->dimen.y + 2)/2.0;
-	sp = dotneato_closest(ED_spl(e), d);
 	spf.x = sp.x;
 	spf.y = sp.y;
 	if (dist2) {
@@ -529,29 +578,27 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
 static void
 makePolyline(edge_t * e)
 {
-    int i, j;
-    Ppolyline_t line = ED_path(e);
-    int npts = 4 + 3*(line.pn-2);
-    point* ispline = N_GNEW(npts, point);
-    point p;
+    int i;
+    Ppolyline_t spl, line = ED_path(e);
+    point* ispline;
+    point p1, q1;
+    Ppoint_t p0, q0;
 
-    j = i = 0;
-    PF2P (line.ps[i], p);
-    ispline[j+1] = ispline[j] = p;
-    j += 2;
-    i++;
-    for (; i < line.pn-1; i++) {
-	PF2P (line.ps[i], p);
-	ispline[j+2] = ispline[j+1] = ispline[j] = p;
-	j += 3;
+    p0 = line.ps[0];
+    q0 = line.ps[line.pn - 1];
+    make_polyline (line, &spl);
+    ispline = N_GNEW(spl.pn, point);
+    for (i=0; i < spl.pn; i++) {
+	PF2P (line.ps[i], ispline[i]);
     }
-    PF2P (line.ps[i], p);
-    ispline[j+1] = ispline[j] = p;
 
     if (Verbose > 1)
 	fprintf(stderr, "polyline %s %s\n", e->tail->name, e->head->name);
-    clip_and_install(e, e, ispline, npts, &sinfo);
+    clip_and_install(e, e, ispline, spl.pn, &sinfo);
     free(ispline);
+    PF2P(p0, p1);
+    PF2P(q0, q1);
+    addEdgeLabels(e, p1, q1);
 }
 
 /* makeSpline:
@@ -787,6 +834,12 @@ void spline_edges0(graph_t * g)
     int et = EDGE_TYPE (g->root);
     neato_set_aspect(g);
     if (et == ET_NONE) return;
+    if (et == ET_ORTHO) {
+	agerr (AGWARN, "Orthogonal edges not yet supported");
+	et = ET_PLINE; 
+	GD_flags(g->root) &= ~ET_ORTHO;
+	GD_flags(g->root) |= ET_PLINE;
+    }
     spline_edges1(g, et);
 }
 

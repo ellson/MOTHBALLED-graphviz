@@ -276,7 +276,7 @@ void routesplinesterm()
 		nedges, nboxes, elapsed_sec());
 }
 
-point *routesplines(path * pp, int *npoints)
+static point *_routesplines(path * pp, int *npoints, int polyline)
 {
     Ppoly_t poly;
     Ppolyline_t pl, spl;
@@ -446,7 +446,6 @@ point *routesplines(path * pp, int *npoints)
 #endif
     }
 
-
     if (flip) {
 	int i;
 	for (bi = 0; bi < boxn; bi++) {
@@ -471,33 +470,39 @@ point *routesplines(path * pp, int *npoints)
 	psprintline(pl);
     }
 #endif
-    if (poly.pn > edgen) {
-	edges = ALLOC(poly.pn, edges, Pedge_t);
-	edgen = poly.pn;
-    }
-    for (edgei = 0; edgei < poly.pn; edgei++) {
-	edges[edgei].a = polypoints[edgei];
-	edges[edgei].b = polypoints[(edgei + 1) % poly.pn];
-    }
-    if (pp->start.constrained) {
-	evs[0].x = cos(pp->start.theta);
-	evs[0].y = sin(pp->start.theta);
-    } else
-	evs[0].x = evs[0].y = 0;
-    if (pp->end.constrained) {
-	evs[1].x = -cos(pp->end.theta);
-	evs[1].y = -sin(pp->end.theta);
-    } else
-	evs[1].x = evs[1].y = 0;
 
-    if (Proutespline(edges, poly.pn, pl, evs, &spl) == -1)
-	abort();
-#ifdef DEBUG
-    if (debugleveln(realedge, 3)) {
-	psprintspline(spl);
-	psprintinit(0);
+    if (polyline) {
+	make_polyline (pl, &spl);
     }
+    else {
+	if (poly.pn > edgen) {
+	    edges = ALLOC(poly.pn, edges, Pedge_t);
+	    edgen = poly.pn;
+	}
+	for (edgei = 0; edgei < poly.pn; edgei++) {
+	    edges[edgei].a = polypoints[edgei];
+	    edges[edgei].b = polypoints[(edgei + 1) % poly.pn];
+	}
+	if (pp->start.constrained) {
+	    evs[0].x = cos(pp->start.theta);
+	    evs[0].y = sin(pp->start.theta);
+	} else
+	    evs[0].x = evs[0].y = 0;
+	if (pp->end.constrained) {
+	    evs[1].x = -cos(pp->end.theta);
+	    evs[1].y = -sin(pp->end.theta);
+	} else
+	    evs[1].x = evs[1].y = 0;
+
+	if (Proutespline(edges, poly.pn, pl, evs, &spl) == -1)
+	    abort();
+#ifdef DEBUG
+	if (debugleveln(realedge, 3)) {
+	    psprintspline(spl);
+	    psprintinit(0);
+	}
 #endif
+    }
     mkspacep(spl.pn);
     for (bi = 0; bi <= boxn; bi++) {
 	boxes[bi].LL.x = INT_MAX;
@@ -548,6 +553,16 @@ point *routesplines(path * pp, int *npoints)
 #endif
 
     return ps;
+}
+
+point *routesplines(path * pp, int *npoints)
+{
+    return _routesplines (pp, npoints, 0);
+}
+
+point *routepolylines(path * pp, int *npoints)
+{
+    return _routesplines (pp, npoints, 1);
 }
 
 static int overlap(int i0, int i1, int j0, int j1)

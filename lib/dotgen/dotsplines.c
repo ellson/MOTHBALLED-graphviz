@@ -93,8 +93,8 @@ static int cl_vninside(Agraph_t *, Agnode_t *);
 static void completeregularpath(path *, Agedge_t *, Agedge_t *,
 				pathend_t *, pathend_t *, box *, int, int);
 static int edgecmp(Agedge_t **, Agedge_t **);
-static void make_flat_edge(spline_info_t*, path *, Agedge_t **, int, int);
-static void make_regular_edge(spline_info_t*, path *, Agedge_t **, int, int);
+static void make_flat_edge(spline_info_t*, path *, Agedge_t **, int, int, int);
+static void make_regular_edge(spline_info_t*, path *, Agedge_t **, int, int, int);
 static box makeregularend(box, int, int);
 static box maximal_bbox(spline_info_t*, Agnode_t *, Agedge_t *, Agedge_t *);
 static Agnode_t *neighbor(Agnode_t *, Agedge_t *, Agedge_t *, int);
@@ -108,6 +108,17 @@ static Agedge_t *straight_path(Agedge_t *, int, point *, int *);
 static Agedge_t *top_bound(Agedge_t *, int);
 
 #define GROWEDGES (edges = ALLOC (n_edges + CHUNK, edges, edge_t*))
+
+static edge_t*
+getmainedge(edge_t * e)
+{
+    edge_t *le = e;
+    while (ED_to_virt(le))
+	le = ED_to_virt(le);
+    while (ED_to_orig(le))
+	le = ED_to_orig(le);
+    return le;
+}
 
 static boolean spline_merge(node_t * n)
 {
@@ -228,8 +239,9 @@ static void _dot_splines(graph_t * g, int normalize)
     edge_t *e, *e0, *e1, *ea, *eb, *le0, *le1, **edges;
     path *P;
     spline_info_t sd;
+    int et = EDGE_TYPE(g->root);
 
-    if (EDGE_TYPE(g->root) == ET_NONE) return; 
+    if (et == ET_NONE) return; 
 
     mark_lowclusters(g);
     routesplinesinit();
@@ -343,6 +355,7 @@ static void _dot_splines(graph_t * g, int normalize)
 	    if (ED_tree_index(edges[i]) & MAINGRAPH)	/* Aha! -C is on */
 		break;
 	}
+
 	if (e0->tail == e0->head) {
 	    int b, sizey, r;
 	    n = e0->tail;
@@ -369,10 +382,10 @@ static void _dot_splines(graph_t * g, int normalize)
 	    }
 	}
 	else if (ND_rank(e0->tail) == ND_rank(e0->head)) {
-	    make_flat_edge(&sd, P, edges, ind, cnt);
+	    make_flat_edge(&sd, P, edges, ind, cnt, et == ET_SPLINE);
 	}
 	else
-	    make_regular_edge(&sd, P, edges, ind, cnt);
+	    make_regular_edge(&sd, P, edges, ind, cnt, et == ET_SPLINE);
     }
 
     /* place regular edge labels */
@@ -733,10 +746,11 @@ cloneNode (graph_t* g, node_t* orign, int flipped)
 /* cloneEdge:
  */
 static edge_t*
-cloneEdge (graph_t* g, node_t* tn, node_t* hn, edge_t* orige)
+cloneEdge (graph_t* g, node_t* tn, node_t* hn, edge_t* orig)
 {
     edge_t* e = agedge(g, tn, hn);
-    agcopyattr (getmainedge(orige), e);
+    for (; ED_edge_type(orig) != NORMAL; orig = ED_to_orig(orig));
+    agcopyattr (orig, e);
 
     return e;
 }
@@ -762,7 +776,8 @@ transform (point p, point del, int flip)
  * essentially using rankdir=LR, to get the needed spline info.
  */
 static void
-make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
+make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
+                    int splines)
 {
     node_t* n;
     node_t *tn, *hn;
@@ -798,10 +813,24 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
 	for (i = 0; i < cnt; i++) {
 	    e = edges[ind + i];
 	    pointn = 0;
-	    points[pointn++] = tp;
-	    points[pointn++] = pointof((2 * tp.x + hp.x) / 3, dy);
-	    points[pointn++] = pointof((2 * hp.x + tp.x) / 3, dy);
-	    points[pointn++] = hp;
+	    if (splines) {
+		points[pointn++] = tp;
+		points[pointn++] = pointof((2 * tp.x + hp.x) / 3, dy);
+		points[pointn++] = pointof((2 * hp.x + tp.x) / 3, dy);
+		points[pointn++] = hp;
+	    }
+	    else {
+		points[pointn++] = tp;
+		points[pointn++] = tp;
+		points[pointn++] = pointof((2 * tp.x + hp.x) / 3, dy);
+		points[pointn++] = pointof((2 * tp.x + hp.x) / 3, dy);
+		points[pointn++] = pointof((2 * tp.x + hp.x) / 3, dy);
+		points[pointn++] = pointof((2 * hp.x + tp.x) / 3, dy);
+		points[pointn++] = pointof((2 * hp.x + tp.x) / 3, dy);
+		points[pointn++] = pointof((2 * hp.x + tp.x) / 3, dy);
+		points[pointn++] = hp;
+		points[pointn++] = hp;
+	    }
 	    dy += stepy;
 	    clip_and_install(e, e, points, pointn, &sinfo);
 	}
@@ -838,6 +867,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0)
     }
     agxset (hvye, E_weight->index, "10000");
     GD_gvc(auxg) = GD_gvc(g);
+    setEdgeType (auxg, ET_SPLINE);
     dot_init_node_edge(auxg);
 
     dot_rank(auxg);
@@ -941,7 +971,7 @@ makeBottomFlatEnd (spline_info_t* sp, path* P, node_t* n, edge_t* e,
 /* make_flat_labeled_edge:
  */
 static void
-make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e)
+make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e, int splines)
 {
     graph_t *g;
     node_t *tn, *hn, *ln;
@@ -991,7 +1021,8 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e)
     for (i = 0; i < boxn; i++) add_box(P, boxes[i]);
     for (i = hend.boxn - 1; i >= 0; i--) add_box(P, hend.boxes[i]);
 
-    ps = routesplines(P, &pn);
+    if (splines) ps = routesplines(P, &pn);
+    else ps = routepolylines(P, &pn);
     if (pn == 0) return;
     clip_and_install(e, e, ps, pn, &sinfo);
 }
@@ -1000,7 +1031,7 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e)
  */
 static void
 make_flat_bottom_edges(spline_info_t* sp, path * P, edge_t ** edges, int 
-	ind, int cnt, edge_t* e)
+	ind, int cnt, edge_t* e, int splines)
 {
     node_t *tn, *hn;
     int j, i, stepx, stepy, vspace, r;
@@ -1055,7 +1086,8 @@ make_flat_bottom_edges(spline_info_t* sp, path * P, edge_t ** edges, int
 	for (j = 0; j < boxn; j++) add_box(P, boxes[j]);
 	for (j = hend.boxn - 1; j >= 0; j--) add_box(P, hend.boxes[j]);
 
-	ps = routesplines(P, &pn);
+	if (splines) ps = routesplines(P, &pn);
+	else ps = routepolylines(P, &pn);
 	if (pn == 0)
 	    return;
 	clip_and_install(e, e, ps, pn, &sinfo);
@@ -1073,7 +1105,7 @@ make_flat_bottom_edges(spline_info_t* sp, path * P, edge_t ** edges, int
  *     = the rest - route along top
  */
 static void
-make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt)
+make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, int splines)
 {
     node_t *tn, *hn;
     edge_t fwdedge, *e;
@@ -1090,11 +1122,11 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt)
 	e = &fwdedge;
     }
     if (ED_adjacent(edges[ind])) {
-	make_flat_adj_edges (P, edges, ind, cnt, e);
+	make_flat_adj_edges (P, edges, ind, cnt, e, splines);
 	return;
     }
     if (ED_label(e)) {  /* edges with labels aren't multi-edges */
-	make_flat_labeled_edge (sp, P, e);
+	make_flat_labeled_edge (sp, P, e, splines);
 	return;
     }
 
@@ -1102,7 +1134,7 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt)
     hside = ED_head_port(e).side;
     if (((tside == BOTTOM) && (hside != TOP)) ||
         ((hside == BOTTOM) && (tside != TOP))) {
-	make_flat_bottom_edges (sp, P, edges, ind, cnt, e);
+	make_flat_bottom_edges (sp, P, edges, ind, cnt, e, splines);
 	return;
     }
 
@@ -1154,7 +1186,8 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt)
 	for (j = 0; j < boxn; j++) add_box(P, boxes[j]);
 	for (j = hend.boxn - 1; j >= 0; j--) add_box(P, hend.boxes[j]);
 
-	ps = routesplines(P, &pn);
+	if (splines) ps = routesplines(P, &pn);
+	else ps = routepolylines(P, &pn);
 	if (pn == 0)
 	    return;
 	clip_and_install(e, e, ps, pn, &sinfo);
@@ -1162,7 +1195,7 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt)
     }
 }
 
-static void make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt)
+static void make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, int splines)
 {
     graph_t *g;
     node_t *tn, *hn;
@@ -1176,6 +1209,7 @@ static void make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int 
 
     sl = 0;
     e = edges[ind];
+    g = e->tail->graph;
     hackflag = FALSE;
     if (ABS(ND_rank(e->tail) - ND_rank(e->head)) > 1) {
 	fwdedgea = *e;
@@ -1210,7 +1244,6 @@ static void make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int 
     boxn = 0;
     pointn = 0;
     segfirst = e;
-    g = e->tail->graph;
     tn = e->tail;
     hn = e->head;
     b = tend.nb = maximal_bbox(sp, tn, NULL, e);
@@ -1248,7 +1281,8 @@ static void make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int 
 	    hend.boxes[hend.boxn++] = b;
 	P->end.theta = PI / 2, P->end.constrained = TRUE;
 	completeregularpath(P, segfirst, e, &tend, &hend, boxes, boxn, 1);
-	ps = routesplines(P, &pn);
+	if (splines) ps = routesplines(P, &pn);
+	else ps = routepolylines (P, &pn);
 	if (pn == 0)
 	    return;
 	for (i = 0; i < pn; i++)
@@ -1280,7 +1314,8 @@ static void make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int 
 	hend.boxes[hend.boxn++] = b;
     completeregularpath(P, segfirst, e, &tend, &hend, boxes, boxn,
 			longedge);
-    ps = routesplines(P, &pn);
+    if (splines) ps = routesplines(P, &pn);
+    else ps = routepolylines (P, &pn);
     if (pn == 0)
 	return;
     for (i = 0; i < pn; i++)
@@ -2000,17 +2035,6 @@ point closest(splines * spl, point p)
 }
 
 /* common routines */
-
-edge_t*
-getmainedge(edge_t * e)
-{
-    edge_t *le = e;
-    while (ED_to_virt(le))
-	le = ED_to_virt(le);
-    while (ED_to_orig(le))
-	le = ED_to_orig(le);
-    return le;
-}
 
 static int cl_vninside(graph_t * cl, node_t * n)
 {

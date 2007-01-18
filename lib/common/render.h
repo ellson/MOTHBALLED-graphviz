@@ -133,6 +133,7 @@ extern "C" {
     extern void routesplinesinit(void);
     extern point *routesplines(path *, int *);
     extern void routesplinesterm(void);
+    extern point *routepolylines(path* pp, int* npoints);
     extern int selfRightSpace (edge_t* e);
     extern void setup_graph(GVC_t * gvc, graph_t * g);
     extern shape_kind shapeOf(node_t *);
