@@ -44,6 +44,9 @@ extern "C" {
     extern int Ppolybarriers(Ppoly_t ** polys, int npolys,
 			     Pedge_t ** barriers, int *n_barriers);
 
+/* function to convert a polyline into a spline representation */
+    extern void make_polyline(Ppolyline_t line, Ppolyline_t* sline);
+
 #undef extern
 
 #ifdef __cplusplus
