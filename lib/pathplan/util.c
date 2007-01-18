@@ -23,6 +23,8 @@
 #include "dmalloc.h"
 #endif
 
+#define ALLOC(size,ptr,type) (ptr? (type*)realloc(ptr,(size)*sizeof(type)):(type*)malloc((size)*sizeof(type)))
+
 Ppoly_t copypoly(Ppoly_t argpoly)
 {
     Ppoly_t rv;
@@ -70,3 +72,33 @@ int Ppolybarriers(Ppoly_t ** polys, int npolys, Pedge_t ** barriers,
     *n_barriers = n;
     return 1;
 }
+
+/* make_polyline:
+ */
+void
+make_polyline(Ppolyline_t line, Ppolyline_t* sline)
+{
+    static int isz = 0;
+    static Ppoint_t* ispline = 0;
+    int i, j;
+    int npts = 4 + 3*(line.pn-2);
+
+    if (npts > isz) {
+	ispline = ALLOC(npts, ispline, Ppoint_t); 
+	isz = npts;
+    }
+
+    j = i = 0;
+    ispline[j+1] = ispline[j] = line.ps[i];
+    j += 2;
+    i++;
+    for (; i < line.pn-1; i++) {
+	ispline[j+2] = ispline[j+1] = ispline[j] = line.ps[i];
+	j += 3;
+    }
+    ispline[j+1] = ispline[j] = line.ps[i];
+
+    sline->pn = npts;
+    sline->ps = ispline;
+}
+
