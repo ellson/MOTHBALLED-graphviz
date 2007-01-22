@@ -125,6 +125,7 @@ static char *getFlagOpt(int argc, char **argv, int *idx)
  */
 static char* dotneato_basename (char* path)
 {
+    char* ret;
     char* s = path;
     if (*s == '\0') return path; /* empty string */
 #ifdef WIN32
@@ -134,17 +135,29 @@ static char* dotneato_basename (char* path)
      */
     {
 	char* dotp = strrchr (s, '.');
-	if (dotp && !strcmp(dotp+1,"exe")) *dotp = '\0';
+	if (dotp && !strcasecmp(dotp+1,"exe")) *dotp = '\0';
     }
 #endif
     while (*s) s++; s--;
     /* skip over trailing slashes, nulling out as we go */
     while ((s > path) && ((*s == '/') || (*s == '\\')))
 	*s-- = '\0';
-    if (s == path) return path;
-    while ((s > path) && ((*s != '/') && (*s != '\\'))) s--;
-    if ((*s == '/') || (*s == '\\')) return (s+1);
-    else return path;
+    if (s == path) ret = path;
+    else {
+	while ((s > path) && ((*s != '/') && (*s != '\\'))) s--;
+	if ((*s == '/') || (*s == '\\')) ret = s+1;
+	else ret = path;
+    }
+#ifdef WIN32
+    /* On Windows, names are case-insensitive, so make name lower-case
+     */
+    {
+	char c;
+	for (s = ret; (c = *s); s++)
+	    *s = tolower(c);
+    }
+#endif
+    return ret;
 }
 
 static void use_library(GVC_t *gvc, char *name)
