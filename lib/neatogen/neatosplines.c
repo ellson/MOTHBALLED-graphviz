@@ -410,7 +410,7 @@ static void makeStraightEdge(graph_t * g, edge_t * e)
 	add_points(ND_coord_i(head), ED_head_port(e).p);
 
     if (e_cnt == 1) {
-	clip_and_install(e, e, dumb, 4, &sinfo);
+	clip_and_install(e, e->head, dumb, 4, &sinfo);
 	addEdgeLabels(e, p, q);
 	return;
     }
@@ -451,7 +451,7 @@ static void makeStraightEdge(graph_t * g, edge_t * e)
 		dumber[3 - j] = dumb[j];
 	    }
 	}
-	clip_and_install(e0, e0, dumber, 4, &sinfo);
+	clip_and_install(e0, e0->head, dumber, 4, &sinfo);
 	addEdgeLabels(e0, p, q);
 	e0 = ED_to_virt(e0);
 	dumb[1].x += del.x;
@@ -594,7 +594,7 @@ makePolyline(edge_t * e)
 
     if (Verbose > 1)
 	fprintf(stderr, "polyline %s %s\n", e->tail->name, e->head->name);
-    clip_and_install(e, e, ispline, spl.pn, &sinfo);
+    clip_and_install(e, e->head, ispline, spl.pn, &sinfo);
     free(ispline);
     PF2P(p0, p1);
     PF2P(q0, q1);
@@ -648,7 +648,7 @@ void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
     }
     if (Verbose > 1)
 	fprintf(stderr, "spline %s %s\n", e->tail->name, e->head->name);
-    clip_and_install(e, e, ispline, spline.pn, &sinfo);
+    clip_and_install(e, e->head, ispline, spline.pn, &sinfo);
     free(ispline);
     free(barriers);
     PF2P(p, p1);

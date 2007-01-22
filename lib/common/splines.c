@@ -60,7 +60,7 @@ static void showPoints(point ps[], int pn)
  * (e.g., with edge concentrators).
  */
 static void
-arrow_clip(edge_t * fe, edge_t * le,
+arrow_clip(edge_t * fe, node_t * hn,
 	   point * ps, int *startp, int *endp,
 	   bezier * spl, splineInfo * info)
 {
@@ -71,7 +71,7 @@ arrow_clip(edge_t * fe, edge_t * le,
 
     j = info->swapEnds(e);
     arrow_flags(e, &sflag, &eflag);
-    if (info->splineMerge(le->head))
+    if (info->splineMerge(hn))
 	eflag = ARR_NONE;
     if (info->splineMerge(fe->tail))
 	sflag = ARR_NONE;
@@ -242,17 +242,17 @@ void update_bb(graph_t * g, point pt)
 
 /* clip_and_install:
  * Given a raw spline (pn control points in ps), representing
- * a path from edge fe ending in edge le, clip the ends to
+ * a path from edge fe->tail ending in node hn, clip the ends to
  * the node boundaries and attach the resulting spline to the
  * edge.
  */
 void
-clip_and_install(edge_t * fe, edge_t * le, point * ps, int pn,
+clip_and_install(edge_t * fe, node_t * hn, point * ps, int pn,
 		 splineInfo * info)
 {
     pointf p2;
     bezier *newspl;
-    node_t *tn, *hn;
+    node_t *tn;
     int start, end, i, clipTail, clipHead;
     graph_t *g;
     edge_t *orig;
@@ -261,7 +261,6 @@ clip_and_install(edge_t * fe, edge_t * le, point * ps, int pn,
     inside_t inside_context;
 
     tn = fe->tail;
-    hn = le->head;
     g = tn->graph;
     newspl = new_spline(fe, pn);
 
@@ -319,7 +318,7 @@ clip_and_install(edge_t * fe, edge_t * le, point * ps, int pn,
     for (; end > 0; end -= 3)
 	if (ps[end].x != ps[end + 3].x || ps[end].y != ps[end + 3].y)
 	    break;
-    arrow_clip(fe, le, ps, &start, &end, newspl, info);
+    arrow_clip(fe, hn, ps, &start, &end, newspl, info);
     for (i = start; i < end + 4; i++) {
 	point pt;
 	pt = newspl->list[i - start] = ps[i];
@@ -1014,7 +1013,7 @@ selfBottom (edge_t* edges[], int ind, int cnt, int sizex, int stepy, splineInfo*
 	    if (dx + stepx < width)
 		dx += width - stepx;
 	}
-	clip_and_install(e, e, points, pointn, sinfo);
+	clip_and_install(e, e->head, points, pointn, sinfo);
 #ifdef DEBUG
 	if (debugleveln(e,1))
 	    showPoints (points, pointn);
@@ -1083,7 +1082,7 @@ selfTop (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
 	    if (dx + stepx < width)
 		dx += width - stepx;
 	}
-	clip_and_install(e, e, points, pointn, sinfo);
+	clip_and_install(e, e->head, points, pointn, sinfo);
 #ifdef DEBUG
 	if (debugleveln(e,1))
 	    showPoints (points, pointn);
@@ -1150,7 +1149,7 @@ selfRight (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
 	    if (dy + stepy < height)
 		dy += height - stepy;
         }
-        clip_and_install(e, e, points, pointn, sinfo);
+        clip_and_install(e, e->head, points, pointn, sinfo);
 #ifdef DEBUG
         if (debugleveln(e,1))
 	    showPoints (points, pointn);
@@ -1218,7 +1217,7 @@ selfLeft (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
     	if (dy + stepy < height)
     	    dy += height - stepy;
         }
-        clip_and_install(e, e, points, pointn, sinfo);
+        clip_and_install(e, e->head, points, pointn, sinfo);
 #ifdef DEBUG
         if (debugleveln(e,1))
 	    showPoints (points, pointn);
@@ -1354,7 +1353,7 @@ makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, int sizex,
 	    if (width > stepx)
 		dx += width - stepx;
 	}
-	clip_and_install(e, e, ps, pn, sinfo);
+	clip_and_install(e, e->head, ps, pn, sinfo);
     }
 #endif
 }

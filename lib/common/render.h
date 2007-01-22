@@ -78,7 +78,7 @@ extern "C" {
 						pointf p), pointf * sp,
 			    boolean left_inside);
     extern shape_desc *bind_shape(char *name, node_t *);
-    extern void clip_and_install(edge_t *, edge_t *, point *, int,
+    extern void clip_and_install(edge_t *, node_t *, point *, int,
 				 splineInfo *);
     extern char *canontoken(char *str);
     extern char* charsetToStr (int c);
