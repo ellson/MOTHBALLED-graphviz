@@ -31,7 +31,6 @@ static void twopi_init_node(node_t * n)
 
     neato_nodesize(n, GD_flip(n->graph));
     ND_pos(n) = ALLOC(GD_ndim(n->graph), 0, double);
-    ND_alg(n) = (void *) NEW(rdata);
 }
 
 static void twopi_init_edge(edge_t * e)
@@ -46,9 +45,11 @@ static void twopi_init_node_edge(graph_t * g)
     node_t *n;
     edge_t *e;
     int i = 0;
+    rdata* alg = N_NEW(agnnodes(g), rdata);
 
     GD_neato_nlist(g) = N_NEW(agnnodes(g) + 1, node_t *);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	ND_alg(n) = alg + i;
 	GD_neato_nlist(g)[i++] = n;
 	twopi_init_node(n);
     }
@@ -93,6 +94,7 @@ void twopi_layout(Agraph_t * g)
 	ccs = ccomps(g, &ncc, 0);
 	if (ncc == 1) {
 	    circleLayout(g, ctr);
+	    free(ND_alg(agfstnode(g)));
 	    adjustNodes(g);
 	    spline_edges(g);
 	} else {
@@ -109,6 +111,7 @@ void twopi_layout(Agraph_t * g)
 		circleLayout(sg, c);
 		adjustNodes(sg);
 	    }
+	    free(ND_alg(agfstnode(g)));
 	    spline_edges(g);
 	    pinfo.margin = getPack(g, CL_OFFSET, CL_OFFSET);
 	    pinfo.doSplines = 1;

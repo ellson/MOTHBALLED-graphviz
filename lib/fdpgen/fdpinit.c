@@ -67,14 +67,8 @@ static void initialPositions(graph_t * g)
 
 static void fdp_initNode(node_t * n)
 {
-    ND_alg(n) = (void *) NEW(ndata);	/* freed in cleanup_node */
-    ND_pos(n) = N_GNEW(GD_ndim(n->graph), double);
-}
-
-static void init_node(node_t * n)
-{
     neato_init_node(n);
-    fdp_initNode(n);
+    ND_pos(n) = N_GNEW(GD_ndim(n->graph), double);
 }
 
 /* init_edge:
@@ -92,16 +86,17 @@ void fdp_init_node_edge(graph_t * g)
     attrsym_t *E_len;
     node_t *n;
     edge_t *e;
-    int nn;
+    int nn = agnnodes(g);
     int i;
+    ndata* alg = N_NEW(nn, ndata);
 
     processClusterEdges(g);
 
-    nn = agnnodes(g);
     GD_neato_nlist(g) = N_NEW(nn + 1, node_t *);
 
     for (i = 0, n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	init_node(n);
+	fdp_initNode (n);
+	ND_alg(n) = alg + i;
 	GD_neato_nlist(g)[i] = n;
 	ND_id(n) = i++;
     }
