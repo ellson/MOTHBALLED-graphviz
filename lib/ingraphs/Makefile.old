@@ -20,8 +20,6 @@ libingraphs.a : ingraphs.o
 	cp libingraphs.a $(LOC_LIBDIR)
 
 install : $(ALL)
-	$(MKPATH) $(INCDIR)
-	cp ingraphs.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	cp $(ALL) $(LIBDIR)
 
