@@ -46,8 +46,6 @@ stress.o : stress.h
 $(OBJS) : ../common/types.h
 
 install: libneatogen.a 
-	$(MKPATH) $(INCDIR)
-	$(INSTALL) neato.h adjust.h neatoprocs.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libneatogen.a $(LIBDIR)
 
