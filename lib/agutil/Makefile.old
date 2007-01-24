@@ -20,8 +20,6 @@ libagutil.a : $(OBJS)
 	$(RANLIB) libagutil.a
 
 install: libagutil.a 
-	$(MKPATH) $(INCDIR)
-	$(INSTALL) agutil.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libagutil.a $(LIBDIR)
 

@@ -47,8 +47,8 @@ install : libcdt.a
 	$(MKPATH) $(INCDIR)
 	-(rm -f $(INCDIR)/cdt.h $(INCDIR)/dict.h; exit 0) >/dev/null 2>&1
 	-(rm -f $(LIBDIR)/libcdt.a $(LIBDIR)/libdict.a; exit 0) >/dev/null 2>&1
-	cp cdt.h ast_common.h $(INCDIR); ln $(INCDIR)/cdt.h $(INCDIR)/dict.h
-	cp libcdt.a $(LIBDIR); ln $(LIBDIR)/libcdt.a $(LIBDIR)/libdict.a
+	cp cdt.h $(INCDIR)
+	cp libcdt.a $(LIBDIR)
 	-(ranlib $(LIBDIR)/libcdt.a; exit 0) >/dev/null 2>&1
 
 clean :
