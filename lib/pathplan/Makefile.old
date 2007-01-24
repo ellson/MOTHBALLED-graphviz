@@ -18,7 +18,7 @@ install: libpathplan.a
 	$(INSTALL) libpathplan.a $(LIBDIR)
 #	$(SHLIB_LD) -o $(LIBDIR)/libpathplan.so.$(VERSION) $(OBJS)
 	$(MKPATH) $(INCDIR)
-	$(INSTALL) pathplan.h pathgeom.h vispath.h pathutil.h vis.h $(INCDIR)
+	$(INSTALL) pathgeom.h $(INCDIR)
 	$(MKPATH) $(LIBMANDIR)
 	$(INSTALL) pathplan.3 $(LIBMANDIR)
 
