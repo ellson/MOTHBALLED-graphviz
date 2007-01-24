@@ -27,8 +27,6 @@ libdotgen.a : $(OBJS)
 $(OBJS) : $(HFILES) ../common/types.h
 
 install: libdotgen.a
-	$(MKPATH) $(INCDIR)
-	$(INSTALL) $(HFILES) $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libdotgen.a $(LIBDIR)
 

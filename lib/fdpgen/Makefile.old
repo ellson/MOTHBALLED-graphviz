@@ -28,8 +28,6 @@ libfdpgen.a : $(OBJS)
 $(OBJS) : $(HFILES)
 
 install: libfdpgen.a
-	$(MKPATH) $(INCDIR)
-	$(INSTALL) $(HFILES) $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libfdpgen.a $(LIBDIR)
 
