@@ -27,8 +27,6 @@ libtwopigen.a : $(OBJS)
 $(OBJS) : $(HFILES) ../common/types.h
 
 install: libtwopigen.a
-	$(MKPATH) $(INCDIR)
-	$(INSTALL) circle.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libtwopigen.a $(LIBDIR)
 
