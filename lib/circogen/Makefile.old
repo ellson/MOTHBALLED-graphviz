@@ -43,8 +43,6 @@ stack.o : $(BASEH)
 $(OBJS) : ../common/types.h
 
 install: libcircogen.a
-	$(MKPATH) $(INCDIR)
-	$(INSTALL) circo.h $(INCDIR)
 	$(MKPATH) $(LIBDIR)
 	$(INSTALL) libcircogen.a $(LIBDIR)
 
