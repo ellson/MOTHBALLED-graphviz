@@ -84,6 +84,7 @@ dotty = [
                 'fontname' = 'Times-Roman';
                 'fontcolor' = 'black';
                 'color' = 'black';
+                'fillcolor' = 'lightgray';
                 'style' = 'solid';
             ];
             'edgeattr' = [
