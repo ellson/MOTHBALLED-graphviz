@@ -1322,7 +1322,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e)
 			default_pencolor(pencolor, DEFAULT_VISITEDPENCOLOR));
 	    fillcolor = late_nnstring(e, E_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
 	}
-	if (E_penwidth && agxget(e,E_penwidth->index)) {
+	if (E_penwidth && ((p=agxget(e,E_penwidth->index)) && p[0])) {
 	    penwidth = late_double(e, E_penwidth, 1.0, 0.0);
 	    gvrender_set_penwidth(job, penwidth);
 	}
