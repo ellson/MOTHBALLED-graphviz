@@ -154,7 +154,7 @@ static void svg_begin_graph(GVJ_t * job)
 
     core_printf(job, "<svg width=\"%.2fin\" height=\"%.2fin\"\n",
 	job->width/job->dpi.x, job->height/job->dpi.y);
-    core_printf(job, " viewBox=\"%.2f %.2f %.2f\"",
+    core_printf(job, " viewBox=\"%.2f %.2f %.2f %.2f\"",
 	job->canvasBox.LL.x, job->canvasBox.LL.y,
 	job->canvasBox.UR.x, job->canvasBox.UR.y);
     /* namespace of svg */
