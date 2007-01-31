@@ -116,7 +116,8 @@ extern "C" {
 	*E_headlabel, *E_taillabel,
 	*E_labelfontsize, *E_labelfontname, *E_labelfontcolor,
 	*E_labeldistance, *E_labelangle,
-	*E_tailclip, *E_headclip;
+	*E_tailclip, *E_headclip,
+	*E_penwidth;
 
     EXTERN fdpParms_t fdp_parms;
 

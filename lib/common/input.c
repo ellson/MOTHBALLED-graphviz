@@ -712,6 +712,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     E_comment = agfindattr(g->proto->e, "comment");
     E_tailclip = agfindattr(g->proto->e, "tailclip");
     E_headclip = agfindattr(g->proto->e, "headclip");
+    E_penwidth = agfindattr(g->proto->e, "penwidth");
 }
 
 void graph_cleanup(graph_t *g)

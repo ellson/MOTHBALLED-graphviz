@@ -1271,6 +1271,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e)
     splinesf offspl, tmpspl;
     pointf pf0, pf1, pf2 = { 0, 0 }, pf3, *offlist, *tmplist;
     double scale, numc2;
+    double penwidth;
     char *p;
 
 #define SEP 2.0
@@ -1293,10 +1294,8 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	scale = late_double(e, E_arrowsz, 1.0, 0.0);
 	color = late_string(e, E_color, "");
 
-	if (color[0] || styles) {
-	    if (styles)
-		gvrender_set_style(job, styles);
-	}
+	if (styles) gvrender_set_style(job, styles);
+
 	/* need to know how many colors separated by ':' */
 	for (p = color; *p; p++)
 	    if (*p == ':')
@@ -1322,6 +1321,10 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    pencolor = late_nnstring(e, E_visitedpencolor,
 			default_pencolor(pencolor, DEFAULT_VISITEDPENCOLOR));
 	    fillcolor = late_nnstring(e, E_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
+	}
+	if (E_penwidth && agxget(e,E_penwidth->index)) {
+	    penwidth = late_double(e, E_penwidth, 1.0, 0.0);
+	    gvrender_set_penwidth(job, penwidth);
 	}
 	if (pencolor != color)
     	    gvrender_set_pencolor(job, pencolor);

@@ -700,7 +700,7 @@ void gvrender_set_style(GVJ_t * job, char **s)
 
     obj->rawstyle = s;
     if (gvre) {
-	while ((p = line = *s++)) {
+	if (s) while ((p = line = *s++)) {
 	    if (streq(line, "solid"))
 		obj->pen = PEN_SOLID;
 	    else if (streq(line, "dashed"))
@@ -987,6 +987,24 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, boolean fill
 	    PF2P(a[i], A[i]);
         if (cg && cg->usershape)
             cg->usershape(us, b, A, n, filled);
+    }
+#endif
+}
+
+void gvrender_set_penwidth(GVJ_t * job, double penwidth)
+{
+    gvrender_engine_t *gvre = job->render.engine;
+
+    if (gvre) {
+    	job->obj->penwidth = penwidth;
+    	/*if (gvre->set_penwidth) gvre->set_penwidth(job, penwidth);*/
+    }
+#ifdef WITH_CODEGENS
+    else {
+	codegen_t *cg = job->codegen;
+
+	if (cg && cg->set_penwidth)
+	    cg->set_penwidth(penwidth);
     }
 #endif
 }

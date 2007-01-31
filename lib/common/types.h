@@ -228,6 +228,7 @@ extern "C" {
 	boolean bezier_has_arrows;
 	void (*comment) (char *str);
 	void (*usershape) (usershape_t *us, boxf b, point * A, int sides, boolean filled);
+	void (*set_penwidth) (double penwidth);
     };
 
     struct codegen_info_s {
