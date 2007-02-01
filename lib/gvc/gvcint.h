@@ -132,6 +132,9 @@ extern "C" {
 
 	/* render defaults set from graph */
 	gvcolor_t bgcolor;	/* background color */
+
+	/* whether to mangle font names (at least in SVG), usually false */
+	boolean fontmangling;
     };
 
 #ifdef __cplusplus

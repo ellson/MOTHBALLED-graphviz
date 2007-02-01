@@ -36,6 +36,7 @@
 #include "const.h"
 
 #include "gvplugin_render.h"
+#include "gvcint.h"
 #include "graph.h"
 
 typedef enum { FORMAT_SVG, FORMAT_SVGZ, } format_type;
@@ -298,7 +299,12 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
     }
     core_printf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
     core_fputs(job, " style=\"");
-    if (para->postscript_alias) {
+    if (para->postscript_alias && GD_fontmangling(job->gvc->g)) {
+	/* i'm disabling this as the default because mapping "Times-Roman"
+	    to "Nimbus Roman No9" does no good in the rendered SVG. in SVG
+	    the only universal font families are Serif, Sans-Serif, Monospace,
+	    Cursive and Fantasy but according to w3c, CSS can generally handle
+	    the standard Postrscript names. */
         core_printf(job, "font-family:%s;", para->postscript_alias->family);
         if (para->postscript_alias->weight)
 	    core_printf(job, "font-weight:%s;", para->postscript_alias->weight);

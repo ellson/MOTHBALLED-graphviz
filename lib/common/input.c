@@ -626,6 +626,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     GD_ranksep(g) = POINTS(xf);
 
     GD_showboxes(g) = late_int(g, agfindattr(g, "showboxes"), 0, 0);
+    GD_fontmangling(g) = mapbool(agget(g,"fontmangling"));
 
     setRatio(g);
     GD_drawing(g)->filled =
