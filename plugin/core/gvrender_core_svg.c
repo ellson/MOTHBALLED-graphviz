@@ -38,6 +38,7 @@
 #include "gvplugin_render.h"
 #include "gvcint.h"
 #include "graph.h"
+#include "types.h"		/* need the SVG font name schemes */
 
 typedef enum { FORMAT_SVG, FORMAT_SVGZ, } format_type;
 
@@ -283,6 +284,7 @@ static void svg_end_anchor(GVJ_t * job)
 static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     obj_state_t *obj = job->obj;
+    PostscriptAlias *pA;
 
     core_fputs(job, "<text");
     switch (para->just) {
@@ -299,24 +301,36 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
     }
     core_printf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
     core_fputs(job, " style=\"");
-    if (para->postscript_alias && GD_fontmangling(job->gvc->g)) {
-	/* i'm disabling this as the default because mapping "Times-Roman"
-	    to "Nimbus Roman No9" does no good in the rendered SVG. in SVG
-	    the only universal font families are Serif, Sans-Serif, Monospace,
-	    Cursive and Fantasy but according to w3c, CSS can generally handle
-	    the standard Postrscript names. */
-        core_printf(job, "font-family:%s;", para->postscript_alias->family);
-        if (para->postscript_alias->weight)
-	    core_printf(job, "font-weight:%s;", para->postscript_alias->weight);
-        if (para->postscript_alias->stretch)
-	    core_printf(job, "font-stretch:%s;", para->postscript_alias->stretch);
-        if (para->postscript_alias->style)
-	    core_printf(job, "font-style:%s;", para->postscript_alias->style);
+    pA = para->postscript_alias;
+    if (pA) {
+	char *family, *weight, *stretch, *style;
+	switch(GD_fontnames(job->gvc->g)) {
+		case NATIVEFONTS:
+		    family = pA->family;
+		    weight = pA->weight;
+		    style = pA->style;
+		    break;
+		case PSFONTS:
+		    family = pA->name;
+		    weight = pA->weight;
+		    style = pA->style;
+		    break;
+		case SVGFONTS:
+		default:
+		    family = pA->svg_font_family;
+		    weight = pA->svg_font_weight;
+		    style = pA->svg_font_style;
+		    break;
+	}
+	stretch = pA->stretch;
+
+        core_printf(job, "font-family:%s;", family);
+        if (weight) core_printf(job, "font-weight:%s;", weight);
+        if (stretch) core_printf(job, "font-stretch:%s;", stretch);
+        if (style) core_printf(job, "font-style:%s;", style);
     }
-    else {
-        core_printf(job, "font:%s;", para->fontname);
-    }
-    /* FIXME - even inkscape requires a magic correction to fontsize.  Why?  */
+    else
+	core_printf(job, "font-family:%s;", para->fontname);
     core_printf(job, "font-size:%.2f;", para->fontsize);
     switch (obj->pencolor.type) {
     case COLOR_STRING:

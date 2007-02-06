@@ -28,6 +28,9 @@ extern "C" {
         char* stretch;
         char* style;
         int xfig_code;
+	char* svg_font_family;
+	char* svg_font_weight;
+	char* svg_font_style;
     } PostscriptAlias;
 
     typedef struct textpara_t {

@@ -312,6 +312,8 @@ extern "C" {
 #define alloc_elist(n,L)      do {L.size = 0; L.list = N_NEW(n + 1,edge_t*); } while (0)
 #define free_list(L)          do {if (L.list) free(L.list);} while (0)
 
+typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
+
     typedef struct Agraphinfo_t {
 	/* to generate code */
 	layout_t *drawing;
@@ -354,7 +356,7 @@ extern "C" {
 	boolean has_flat_edges;
 	unsigned char	showboxes;
 	boolean cluster_was_collapsed;
-	boolean fontmangling;		/* to override in SVG */
+	fontname_kind fontnames;		/* to override mangling in SVG */
 
 	int nodesep, ranksep;
 	node_t *ln, *rn;	/* left, right nodes of bounding box */
@@ -420,7 +422,7 @@ extern "C" {
 #define GD_set_type(g) (g)->u.set_type
 #define GD_label_pos(g) (g)->u.label_pos
 #define GD_showboxes(g) (g)->u.showboxes
-#define GD_fontmangling(g) (g)->u.fontmangling
+#define GD_fontnames(g) (g)->u.fontnames
 #define GD_spring(g) (g)->u.spring
 #define GD_sum_t(g) (g)->u.sum_t
 #define GD_t(g) (g)->u.t

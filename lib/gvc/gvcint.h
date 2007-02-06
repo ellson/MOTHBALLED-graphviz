@@ -134,7 +134,7 @@ extern "C" {
 	gvcolor_t bgcolor;	/* background color */
 
 	/* whether to mangle font names (at least in SVG), usually false */
-	boolean fontmangling;
+	int fontrenaming;
     };
 
 #ifdef __cplusplus

@@ -105,6 +105,7 @@ extern "C" {
 			double fontsize);
     extern void gvrender_textpara(GVJ_t * job, pointf p, textpara_t * para);
     extern void gvrender_set_pencolor(GVJ_t * job, char *name);
+    extern void gvrender_set_penwidth(GVJ_t * job, double penwidth);
     extern void gvrender_set_fillcolor(GVJ_t * job, char *name);
     extern void gvrender_set_style(GVJ_t * job, char **s);
     extern void gvrender_ellipse(GVJ_t * job, pointf p,
