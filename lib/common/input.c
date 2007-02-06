@@ -561,6 +561,8 @@ void graph_init(graph_t * g, boolean use_rankdir)
     double xf;
     static char *rankname[] = { "local", "global", "none", NULL };
     static int rankcode[] = { LOCAL, GLOBAL, NOCLUST, LOCAL };
+    static char *fontnamenames[] = {"gd","ps","svg", NULL};
+    static int fontnamecodes[] = {NATIVEFONTS,PSFONTS,SVGFONTS,-1};
     int rankdir;
 
     GD_drawing(g) = NEW(layout_t);
@@ -626,7 +628,8 @@ void graph_init(graph_t * g, boolean use_rankdir)
     GD_ranksep(g) = POINTS(xf);
 
     GD_showboxes(g) = late_int(g, agfindattr(g, "showboxes"), 0, 0);
-    GD_fontmangling(g) = mapbool(agget(g,"fontmangling"));
+    p = late_string(g, agfindattr(g, "fontnames"), NULL);
+    GD_fontnames(g) = maptoken(p, fontnamenames, fontnamecodes);
 
     setRatio(g);
     GD_drawing(g)->filled =
