@@ -26,13 +26,14 @@ libcommon_C_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
 	args.c memory.c globals.c htmllex.c htmlparse.y htmltable.c input.c \
 	pointset.c postproc.c routespl.c splines.c psusershape.c \
 	timing.c labels.c ns.c shapes.c utils.c geom.c \
-	output.c emit.c ps.txt ps_font_equiv.txt color_names $(CODEGENS)
+	output.c emit.c ps.txt ps_font_equiv.txt fontmap.cfg \
+	color_names $(CODEGENS)
 
 fontmetrics.o fontmetrics.lo: ps_font_equiv.h
 
 # ensure font names are properly sorted for bsearch operation 
-ps_font_equiv.h: $(srcdir)/ps_font_equiv.txt
-	LC_ALL=C $(SORT) <$(srcdir)/ps_font_equiv.txt >ps_font_equiv.h
+ps_font_equiv.h: $(srcdir)/ps_font_equiv.txt $(srcdir)/fontmap.cfg
+	mksvgfonts.pl fontmap.cfg ps_font_equiv.txt | LC_ALL=C $(SORT) >ps_font_equiv.h
 
 utils.o utils.lo : ps.h
 
