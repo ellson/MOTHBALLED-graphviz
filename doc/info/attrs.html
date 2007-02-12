@@ -664,10 +664,11 @@ This field indicates which graph component uses the attribute.
   basic SVG font <TT>"serif"</TT>. This can be overridden by setting
   <TT>fontnames</TT> to  <TT>"ps"</TT> or  <TT>"gd"</TT>.
   In the former case, known PostScript font names such as
-  <TT>"Times-Roman"</TT> will be used in the output for such SVG viewers
-  that support these. In the latter case, the TrueType font conventions
+  <TT>"Times-Roman"</TT> will be used in the output.
+  In the latter case, the fontconfig font conventions
   are used. Thus, <TT>"Times-Roman"</TT> would be treated as
-  <TT>"Nimbus Roman No9 L"</TT>.
+  <TT>"Nimbus Roman No9 L"</TT>. These last two options are useful
+  with SVG viewers that support these richer fontname spaces.
 
 <DT><A NAME=d:fontpath HREF=#a:fontpath><STRONG>fontpath</STRONG></A>
 <DD>  Directory list used by libgd to search for bitmap fonts if Graphviz
