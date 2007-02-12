@@ -152,11 +152,10 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:fontcolor HREF=#d:fontcolor>fontcolor</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:color>color</A>
 </TD><TD ALIGN="CENTER">black</TD><TD></TD><TD></TD> </TR>
- <TR><TD><A NAME=a:fontmangling HREF=#d:fontmangling>fontmangling</A>
-</TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
-</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:fontname HREF=#d:fontname>fontname</A>
 </TD><TD>ENGC</TD><TD>string</TD><TD ALIGN="CENTER">"Times-Roman"</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:fontnames HREF=#d:fontnames>fontnames</A>
+</TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg only</TD> </TR>
  <TR><TD><A NAME=a:fontpath HREF=#d:fontpath>fontpath</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">system-dependent</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:fontsize HREF=#d:fontsize>fontsize</A>
@@ -636,11 +635,6 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:fontcolor HREF=#a:fontcolor><STRONG>fontcolor</STRONG></A>
 <DD>  Color used for text.
 
-<DT><A NAME=d:fontmangling HREF=#a:fontmangling><STRONG>fontmangling</STRONG></A>
-<DD>  If true, forces mangling of PostScript font names into
-  local system font names, which is not portable, but often 
-  compatible with local renderers and editors like Inkscape.
-
 <DT><A NAME=d:fontname HREF=#a:fontname><STRONG>fontname</STRONG></A>
 <DD>  Font used for text. This very much depends on the output format and, for 
   non-bitmap output such as PostScript or SVG, the availability of the font
@@ -661,6 +655,19 @@ This field indicates which graph component uses the attribute.
   in one of the directories specified by 
   the <A HREF=#d:fontpath>fontpath</A> attribute.
   The lookup does support various aliases for the common fonts.
+
+<DT><A NAME=d:fontnames HREF=#a:fontnames><STRONG>fontnames</STRONG></A>
+<DD>  Allows user control of how basic fontnames are represented in SVG output.
+  If <TT>fontnames</TT> is undefined or <TT>"svg"</TT>, 
+  the output will try to use known SVG fontnames. For example, the
+  default font  <TT>"Times-Roman"</TT> will be mapped to the
+  basic SVG font <TT>"serif"</TT>. This can be overridden by setting
+  <TT>fontnames</TT> to  <TT>"ps"</TT> or  <TT>"gd"</TT>.
+  In the former case, known PostScript font names such as
+  <TT>"Times-Roman"</TT> will be used in the output for such SVG viewers
+  that support these. In the latter case, the TrueType font conventions
+  are used. Thus, <TT>"Times-Roman"</TT> would be treated as
+  <TT>"Nimbus Roman No9 L"</TT>.
 
 <DT><A NAME=d:fontpath HREF=#a:fontpath><STRONG>fontpath</STRONG></A>
 <DD>  Directory list used by libgd to search for bitmap fonts if Graphviz
