@@ -1,6 +1,5 @@
 set root=<ROOT>
 set kind=Release
-set binsrc=
 mkdir %root%
 mkdir %root%\lib
 mkdir %root%\bin
@@ -68,6 +67,10 @@ copy pathplan.lib %root%\lib
 copy twopigen.lib %root%\lib
 cd ..\..\..
 
+cd plugin\%kind% 
+copy plugin.lib %root%\lib
+cd ..\..
+
 cd third-party\lib
 copy *.dll %root%\bin
 copy ft.lib %root%\lib
@@ -80,46 +83,23 @@ copy z.lib %root%\lib
 cd ..\..
 
 copy lib\agraph\agraph.h %root%\include
-copy lib\cdt\ast_common.h %root%\include
 copy lib\cdt\cdt.h %root%\include
-copy lib\circogen\circo.h %root%\include
-copy lib\common\arith.h %root%\include
-copy lib\common\globals.h %root%\include
-copy lib\common\const.h %root%\include
-copy lib\common\logic.h %root%\include
-copy lib\common\macros.h %root%\include
-copy lib\common\render.h %root%\include
-copy lib\common\types.h %root%\include
-copy lib\common\utils.h %root%\include
-copy lib\common\geom.h %root%\include
-copy lib\common\geomprocs.h %root%\include
 copy lib\common\color.h %root%\include
-copy lib\common\memory.h %root%\include
-copy lib\dotgen\dot.h %root%\include
-copy lib\dotgen\dotprocs.h %root%\include
-copy lib\fdpgen\fdp.h %root%\include
+copy lib\common\geom.h %root%\include
+copy lib\graph\graph.h %root%\include
 copy lib\gvc\gvc.h %root%\include
 copy lib\gvc\gvcext.h %root%\include
-copy lib\gvc\gvcint.h %root%\include
-copy lib\gvc\gvcproc.h  %root%\include
 copy lib\gvc\gvcjob.h %root%\include
+copy lib\gvc\gvcommon.h  %root%\include
 copy lib\gvc\gvplugin.h  %root%\include
 copy lib\gvc\gvplugin_layout.h  %root%\include
+copy lib\gvc\gvplugin_loadimage.h  %root%\include
 copy lib\gvc\gvplugin_render.h  %root%\include
 copy lib\gvc\gvplugin_textlayout.h %root%\include
-copy lib\neatogen\adjust.h %root%\include
-copy lib\neatogen\neato.h %root%\include
-copy lib\neatogen\neatoprocs.h %root%\include
-copy lib\pack\pack.h %root%\include
-copy lib\twopigen\circle.h %root%\include
-copy lib\gd\gd.h %root%\include
-copy lib\gd\gd_io.h %root%\include
-copy lib\gd\gdfx.h %root%\include
-copy lib\graph\graph.h %root%\include
-copy lib\pathplan\pathgeom.h %root%\include
-copy lib\pathplan\pathplan.h %root%\include
-copy lib\pathplan\pathutil.h %root%\include
-copy lib\pathplan\vis.h %root%\include
-copy lib\pathplan\vispath.h %root%\include
 copy lib\ingraphs\ingraphs.h %root%\include
+copy lib\pack\pack.h %root%\include
+copy lib\pathplan\pathgeom.h %root%\include
+copy lib\common\textpara.h %root%\include
+copy lib\common\types.h %root%\include
+copy lib\common\usershape.h %root%\include
 

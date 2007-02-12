@@ -51,9 +51,10 @@ cd ..
 cd ingraphs
 nmake /nologo /f ingraphs.mak CFG="ingraphs - Win32 Release"
 cd ..
+cd ..
+
 cd plugin
 nmake /nologo /f plugin.mak CFG="plugin - Win32 Release"
-cd ..
 cd ..
 
 cd cmd
