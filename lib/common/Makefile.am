@@ -33,7 +33,7 @@ fontmetrics.o fontmetrics.lo: ps_font_equiv.h
 
 # ensure font names are properly sorted for bsearch operation 
 ps_font_equiv.h: $(srcdir)/ps_font_equiv.txt $(srcdir)/fontmap.cfg
-	mksvgfonts.pl fontmap.cfg ps_font_equiv.txt | LC_ALL=C $(SORT) >ps_font_equiv.h
+	./mksvgfonts.pl fontmap.cfg ps_font_equiv.txt | LC_ALL=C $(SORT) >ps_font_equiv.h
 
 utils.o utils.lo : ps.h
 
