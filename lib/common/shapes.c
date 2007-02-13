@@ -1391,6 +1391,7 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
     char port[SMALLBUF];
     int maxf, cnt, mode, wflag, ishardspace, fi;
     graph_t *sg = n->graph;
+    textlabel_t *lbl = ND_label(n);
 
     fp = NULL;
     for (maxf = 1, cnt = 0, sp = reclblp; *sp; sp++) {
@@ -1420,10 +1421,12 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
 	case '<':
 	    if (mode & (HASTABLE | HASPORT))
 		return NULL;
+	    if (lbl->html) goto dotext;
 	    mode |= (HASPORT | INPORT);
 	    reclblp++;
 	    break;
 	case '>':
+	    if (lbl->html) goto dotext;
 	    if (!(mode & INPORT))
 		return NULL;
 	    mode &= ~INPORT;
@@ -1460,10 +1463,15 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
 		    tsp--;
 		*tsp = '\000';
 		fp->lp =
-		    make_label(sg->root, 0, strdup(text),
-			       ND_label(n)->fontsize,
-			       ND_label(n)->fontname,
-			       ND_label(n)->fontcolor);
+		    make_label(sg->root, (lbl->html ? LT_HTML : LT_NONE), 
+			strdup(text),
+			lbl->fontsize,
+			lbl->fontname,
+			lbl->fontcolor);
+		if (lbl->html) {
+		    if (make_html_label(sg->root, fp->lp, n))
+			agerr(AGPREV, "in label of node %s\n", n->name);
+		}
 		fp->LR = TRUE;
 		hstsp = tsp = text;
 	    }
@@ -1482,23 +1490,24 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
 	    if (*(reclblp + 1)) {
 		if (ISCTRL(*(reclblp + 1)))
 		    reclblp++;
-                else if (*reclblp == '\\') { /* handles escaped \ */
+		else if ((*(reclblp + 1) == ' ') && !lbl->html)
+		    ishardspace = TRUE, reclblp++;
+                else {
                     *tsp++ = '\\';
                     mode |= (INTEXT | HASTEXT);
                     reclblp++;
                 }
-		else if (*(reclblp + 1) == ' ')
-		    ishardspace = TRUE, reclblp++;
 	    }
 	    /* falling through ... */
 	default:
+dotext :
 	    if ((mode & HASTABLE) && *reclblp != ' ')
 		return NULL;
 	    if (!(mode & (INTEXT | INPORT)) && *reclblp != ' ')
 		mode |= (INTEXT | HASTEXT);
 	    if (mode & INTEXT) {
 		if (!(*reclblp == ' ' && !ishardspace &&
-		      *(tsp - 1) == ' '))
+		      *(tsp - 1) == ' ' && !lbl->html))
 		    *tsp++ = *reclblp;
 		if (ishardspace)
 		    hstsp = tsp - 1;

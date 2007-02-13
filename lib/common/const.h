@@ -208,6 +208,11 @@
 #define AUXLABELS (1 << 3)
 #define INVISIBLE (1 << 4)
 
+/* label types */
+#define LT_NONE 	(0 << 1)
+#define LT_HTML 	(1 << 1)
+#define LT_RECD 	(2 << 1)
+
 /* edge types */
 #define ET_NONE 	(0 << 1)
 #define ET_LINE 	(1 << 1)

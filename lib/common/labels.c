@@ -130,7 +130,7 @@ size_label (graph_t* g, textlabel_t* rv)
  * Assume str is freshly allocated for this instance, so it
  * can be freed in free_label.
  */
-textlabel_t *make_label(graph_t *g, int html, char *str, double fontsize,
+textlabel_t *make_label(graph_t *g, int kind, char *str, double fontsize,
 			char *fontname, char *fontcolor)
 {
     textlabel_t *rv = NEW(textlabel_t);
@@ -139,9 +139,9 @@ textlabel_t *make_label(graph_t *g, int html, char *str, double fontsize,
     rv->fontname = fontname;
     rv->fontcolor = fontcolor;
     rv->fontsize = fontsize;
-    if (html)
+    if (kind & LT_HTML)
 	rv->html = TRUE;
-    else
+    if (kind == LT_NONE)
 	size_label(g, rv);
     return rv;
 }

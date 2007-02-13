@@ -605,7 +605,7 @@ int test_toggle()
 void common_init_node(node_t * n)
 {
     char *str;
-    int html = 0;
+    int lbl_kind = LT_NONE;
     graph_t *sg = n->graph;
 
     ND_width(n) =
@@ -616,22 +616,24 @@ void common_init_node(node_t * n)
 	str = NODENAME_ESC;
     else {
 	str = agxget(n, N_label->index);
-	html = aghtmlstr(str);
+	if (aghtmlstr(str)) lbl_kind = LT_HTML;
     }
-    if (html)
+    if (lbl_kind)
 	str = strdup(str);
     else
 	str = strdup_and_subst_obj(str, (void*)n);
-    ND_label(n) = make_label(sg->root, html, str,
+    ND_shape(n) =
+	bind_shape(late_nnstring(n, N_shape, DEFAULT_NODESHAPE), n);
+    if (shapeOf(n) == SH_RECORD) 
+	lbl_kind |= LT_RECD;
+    ND_label(n) = make_label(sg->root, lbl_kind, str,
 		late_double(n, N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE),
 		late_nnstring(n, N_fontname, DEFAULT_FONTNAME),
 		late_nnstring(n, N_fontcolor, DEFAULT_COLOR));
-    if (html) {
+    if (lbl_kind == LT_HTML) {
 	if (make_html_label(sg->root, ND_label(n), n))
 	    agerr(AGPREV, "in label of node %s\n", n->name);
     }
-    ND_shape(n) =
-	bind_shape(late_nnstring(n, N_shape, DEFAULT_NODESHAPE), n);
     ND_showboxes(n) = late_int(n, N_showboxes, 0, 0);
     ND_shape(n)->fns->initfn(n);
 }
