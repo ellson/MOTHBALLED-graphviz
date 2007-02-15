@@ -369,6 +369,7 @@ indianred2 238 99 99 255
 indianred3 205 85 85 255
 indianred4 139 58 58 255
 indigo 75 0 130 255
+invis 255 255 254 0
 ivory 255 255 240 255
 ivory1 255 255 240 255
 ivory2 238 238 224 255
@@ -483,6 +484,7 @@ navajowhite3 205 179 139 255
 navajowhite4 139 121 94 255
 navy 0 0 128 255
 navyblue 0 0 128 255
+none 255 255 254 0
 oldlace 253 245 230 255
 olivedrab 107 142 35 255
 olivedrab1 192 255 62 255
