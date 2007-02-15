@@ -1180,7 +1180,7 @@ fprintf(stderr,"dpi=%d,%d metric_res=%d ptsize=%g\n",hdpi,vdpi,METRIC_RES,ptsize
 	       * ftp://ftp.ora.com/pub/examples/nutshell/ujip/doc/japan.inf-032092.sjs
 	       */
 	      ch = (*next) & 0xFF;	/* don't extend sign */
-	      next++;
+	      if (*next) next++;
 	      if (ch >= 161	/* first code of JIS-8 pair */
 		  && *next)
 		{		/* don't advance past '\0' */
