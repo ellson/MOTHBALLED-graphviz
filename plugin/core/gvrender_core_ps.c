@@ -504,6 +504,7 @@ static gvrender_features_t psgen_features = {
 	| GVRENDER_DOES_LAYERS
 	| GVRENDER_DOES_TRANSFORM
 	| GVRENDER_DOES_MAPS
+	| GVRENDER_NO_BG
 	| GVRENDER_DOES_MAP_RECTANGLE,
     36,				/* default margin - points */
     4.,                         /* default pad - graph units */

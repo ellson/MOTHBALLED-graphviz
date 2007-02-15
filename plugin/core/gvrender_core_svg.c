@@ -478,6 +478,7 @@ gvrender_features_t svg_features = {
         | GVRENDER_DOES_TRANSFORM
 	| GVRENDER_DOES_LABELS
 	| GVRENDER_DOES_MAPS
+	| GVRENDER_NO_BG
 	| GVRENDER_DOES_TARGETS
 	| GVRENDER_DOES_TOOLTIPS, /* flags */
     DEFAULT_EMBED_MARGIN,	/* default margin - points */
