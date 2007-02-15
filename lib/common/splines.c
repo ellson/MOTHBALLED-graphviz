@@ -954,9 +954,10 @@ completeselfpath(path * P, pathend_t * tendp, pathend_t * hendp,
 #endif
 
 static void
-selfBottom (edge_t* edges[], int ind, int cnt, int sizex, int stepy, splineInfo* sinfo) 
+selfBottom (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
+          splineInfo* sinfo) 
 {
-    int sgn, hy, ty;
+    int hy, ty, sgn;
     point tp, hp;
     node_t *n;
     edge_t *e;
@@ -969,10 +970,8 @@ selfBottom (edge_t* edges[], int ind, int cnt, int sizex, int stepy, splineInfo*
     e = edges[ind];
     n = e->tail;
 
-    stepy /= 2;
-    stepy = MAX(stepy, 2);
-    stepx = sizex / cnt;
-    stepx = MAX(stepx, 2);
+    stepx = (sizex / 2) / cnt;
+    stepx = MAX(stepx,2);
     pointn = 0;
     np = ND_coord_i(n);
     tp = ED_tail_port(e).p;
@@ -987,45 +986,46 @@ selfBottom (edge_t* edges[], int ind, int cnt, int sizex, int stepy, splineInfo*
     ty = MIN(dy, 3*(tp.y + dy - np.y));
     hy = MIN(dy, 3*(hp.y + dy - np.y));
     for (i = 0; i < cnt; i++) {
-	e = edges[ind++];
-	dy += stepy, ty += stepy, hy += stepy, dx += sgn*stepx;
-	pointn = 0;
-	points[pointn++] = tp;
-	points[pointn++] = pointof(tp.x + dx, tp.y - ty / 3);
-	points[pointn++] = pointof(tp.x + dx, np.y - dy);
-	points[pointn++] = pointof((tp.x+hp.x)/2, np.y - dy);
-	points[pointn++] = pointof(hp.x - dx, np.y - dy);
-	points[pointn++] = pointof(hp.x - dx, hp.y - hy / 3);
-	points[pointn++] = hp;
-	if (ED_label(e)) {
-	    if (GD_flip(e->tail->graph)) {
-		width = ED_label(e)->dimen.y;
-		height = ED_label(e)->dimen.x;
-	    } else {
-		width = ED_label(e)->dimen.x;
-		height = ED_label(e)->dimen.y;
-	    }
-	    ED_label(e)->p.y = ND_coord_i(n).y - dy - height / 2.0;
-	    ED_label(e)->p.x = ND_coord_i(n).x;
-	    ED_label(e)->set = TRUE;
-	    if (height > stepy)
-		dy += height - stepy;
-	    if (dx + stepx < width)
-		dx += width - stepx;
-	}
-	clip_and_install(e, e->head, points, pointn, sinfo);
+        e = edges[ind++];
+        dy += stepy, ty += stepy, hy += stepy, dx += sgn*stepx;
+        pointn = 0;
+        points[pointn++] = tp;
+        points[pointn++] = pointof(tp.x + dx, tp.y - ty / 3);
+        points[pointn++] = pointof(tp.x + dx, np.y - dy);
+        points[pointn++] = pointof((tp.x+hp.x)/2, np.y - dy);
+        points[pointn++] = pointof(hp.x - dx, np.y - dy);
+        points[pointn++] = pointof(hp.x - dx, hp.y - hy / 3);
+        points[pointn++] = hp;
+        if (ED_label(e)) {
+    	if (GD_flip(e->tail->graph)) {
+    	    width = ED_label(e)->dimen.y;
+    	    height = ED_label(e)->dimen.x;
+    	} else {
+    	    width = ED_label(e)->dimen.x;
+    	    height = ED_label(e)->dimen.y;
+    	}
+    	ED_label(e)->p.y = ND_coord_i(n).y - dy - height / 2.0;
+    	ED_label(e)->p.x = ND_coord_i(n).x;
+    	ED_label(e)->set = TRUE;
+    	if (height > stepy)
+    	    dy += height - stepy;
+    	if (dx + stepx < width)
+    	    dx += width - stepx;
+        }
+        clip_and_install(e, e->head, points, pointn, sinfo);
 #ifdef DEBUG
-	if (debugleveln(e,1))
+        if (debugleveln(e,1))
 	    showPoints (points, pointn);
 #endif
     }
 }
 
+
 static void
-selfTop (edge_t* edges[], int ind, int cnt, int sizex, int stepy, 
-         splineInfo* sinfo) 
+selfTop (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
+           splineInfo* sinfo) 
 {
-    int sgn, hy, ty;
+    int hy, ty, sgn;
     point tp, hp;
     node_t *n;
     edge_t *e;
@@ -1038,35 +1038,33 @@ selfTop (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
     e = edges[ind];
     n = e->tail;
 
-    stepy /= 2;
-    stepy = MAX(stepy, 2);
-    stepx = sizex / cnt;
+    stepx = (sizex / 2) / cnt;
     stepx = MAX(stepx, 2);
     pointn = 0;
     np = ND_coord_i(n);
-    tp = ED_tail_port(e).p;
+    tp  = ED_tail_port(e).p;
     tp.x += np.x;
     tp.y += np.y;
-    hp = ED_head_port(e).p;
+    hp  = ED_head_port(e).p;
     hp.x += np.x;
     hp.y += np.y;
     if (tp.x >= hp.x) sgn = 1;
     else sgn = -1;
     dy = ND_ht_i(n)/2, dx = 0;
-    ty = MIN(dy, 3*(tp.y + dy - np.y));
-    hy = MIN(dy, 3*(hp.y + dy - np.y));
+    ty = MIN(dy, 3*(np.y + dy - tp.y));
+    hy = MIN(dy, 3*(np.y + dy - hp.y));
     for (i = 0; i < cnt; i++) {
-	e = edges[ind++];
-	dy += stepy, ty += stepy, hy += stepy, dx += sgn*stepx;
-	pointn = 0;
-	points[pointn++] = tp;
-	points[pointn++] = pointof(tp.x + dx, tp.y + ty / 3);
-	points[pointn++] = pointof(tp.x + dx, np.y + dy);
-	points[pointn++] = pointof((tp.x+hp.x)/2, np.y + dy);
-	points[pointn++] = pointof(hp.x - dx, np.y + dy);
-	points[pointn++] = pointof(hp.x - dx, hp.y + hy / 3);
-	points[pointn++] = hp;
-	if (ED_label(e)) {
+        e = edges[ind++];
+        dy += stepy, ty += stepy, hy += stepy, dx += sgn*stepx;
+        pointn = 0;
+        points[pointn++] = tp;
+        points[pointn++] = pointof(tp.x + dx, tp.y + ty / 3);
+        points[pointn++] = pointof(tp.x + dx, np.y + dy);
+        points[pointn++] = pointof((tp.x+hp.x)/2, np.y + dy);
+        points[pointn++] = pointof(hp.x - dx, np.y + dy);
+        points[pointn++] = pointof(hp.x - dx, hp.y + hy / 3);
+        points[pointn++] = hp;
+        if (ED_label(e)) {
 	    if (GD_flip(e->tail->graph)) {
 		width = ED_label(e)->dimen.y;
 		height = ED_label(e)->dimen.x;
@@ -1081,13 +1079,14 @@ selfTop (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
 		dy += height - stepy;
 	    if (dx + stepx < width)
 		dx += width - stepx;
-	}
-	clip_and_install(e, e->head, points, pointn, sinfo);
+        }
+        clip_and_install(e, e->head, points, pointn, sinfo);
 #ifdef DEBUG
-	if (debugleveln(e,1))
+        if (debugleveln(e,1))
 	    showPoints (points, pointn);
 #endif
     }
+    return;
 }
 
 static void
