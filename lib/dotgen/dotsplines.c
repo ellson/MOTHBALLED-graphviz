@@ -382,7 +382,7 @@ static void _dot_splines(graph_t * g, int normalize)
 		int dwny = ND_coord_i(n).y - ND_coord_i(GD_rank(g)[r+1].v[0]).y;
 		sizey = MIN(upy, dwny);
 	    }
-	    makeSelfEdge(P, edges, ind, cnt, sd.Multisep, sizey, &sinfo);
+	    makeSelfEdge(P, edges, ind, cnt, sd.Multisep, sizey/2, &sinfo);
 	    for (b = 0; b < cnt; b++) {
 		e = edges[ind+b];
 		if (ED_label(e))
