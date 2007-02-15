@@ -719,8 +719,12 @@ void emit_background(GVJ_t * job, graph_t *g)
 {
     char *str;
 
-    if (! ((str = agget(g, "bgcolor")) && str[0]))
-	str = "white";
+    if (! ((str = agget(g, "bgcolor")) && str[0])) {
+	if (gvrender_features(job) & GVRENDER_NO_BG)
+	    str = "transparent";
+	else
+	    str = "white";
+    }
     gvrender_set_fillcolor(job, str);
     gvrender_set_pencolor(job, str);
     gvrender_box(job, job->pageBox, TRUE);	/* filled */
