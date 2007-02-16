@@ -2083,7 +2083,12 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	    if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g))))
 		/* do graph label on every page and rely on clipping to show it on the right one(s) */
 		obj->label = lab->text;
-            if (obj->url || obj->explicit_tooltip) {
+		/* If EMIT_CLUSTERS_LAST is set, we assume any URL or tooltip
+		 * attached to the root graph is emitted either in begin_page
+		 * or end_page.
+		 */
+            if (!(flags & EMIT_CLUSTERS_LAST) && 
+                  (obj->url || obj->explicit_tooltip)) {
 		PF2P(job->clip.LL, p1);
 		PF2P(job->clip.UR, p2);
 		emit_map_rect(job, p1, p2);
@@ -2091,7 +2096,8 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	    }
 	    if (job->numLayers == 1)
 		emit_background(job, g);
-            if (obj->url || obj->explicit_tooltip)
+            if (!(flags & EMIT_CLUSTERS_LAST) && 
+                  (obj->url || obj->explicit_tooltip))
 		gvrender_end_anchor(job);
 //	    if (boxf_overlap(job->clip, job->pageBox))
 	        emit_view(job,g,flags);
