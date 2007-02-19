@@ -33,7 +33,7 @@
 /* static	box		PB; */
 static int onetime = TRUE;
 
-/* static char	**U_lib; */
+static char	**U_lib;
 
 typedef struct grcontext_t {
     char *color, *font;
@@ -55,10 +55,11 @@ mp_begin_job(FILE * ofp, graph_t * g, char **lib, char *user, char *info[],
 {
     /* pages and libraries not here (yet?) */
     /* Pages = pages; */
-    /* U_lib = lib; */
+    U_lib = lib;
     /* N_pages = pages.x * pages.y; */
     /* Cur_page = 0; */
 
+    Output_file = ofp;
     fprintf(Output_file, "%%--- graphviz MetaPost input\n");
     fprintf(Output_file, "%% Created by program: %s version %s (%s)\n",
 	    info[0], info[1], info[2]);
@@ -83,10 +84,11 @@ static void mp_comment(char *str)
 static void mp_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     /* PB = bb; */
+    static char *mp_lib[] = {""};
     if (onetime) {
 	fprintf(Output_file, "%% BoundingBox: %d %d %d %d\n",
 		bb.LL.x, bb.LL.y, bb.UR.x + 1, bb.UR.y + 1);
-	/*      cat_libfile(Output_file,U_lib,mp_lib); */
+	        cat_libfile(Output_file,U_lib,mp_lib);
 	onetime = FALSE;
     }
 }
