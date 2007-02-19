@@ -135,11 +135,11 @@ static void psgen_begin_page(GVJ_t * job)
     if (job->render.id == FORMAT_PS2)
         core_printf(job, "<< /PageSize [%d %d] >> setpagedevice\n",
             pbr.UR.x, pbr.UR.y);
+    core_printf(job, "%d %d %d beginpage\n",
+	    job->pagesArrayElem.x, job->pagesArrayElem.y, job->numPages);
     if (job->common->show_boxes == NULL)
         core_printf(job, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
-    core_printf(job, "%d %d %d beginpage\n",
-	    job->pagesArrayElem.x, job->pagesArrayElem.y, job->numPages);
     core_printf(job, "%g %g set_scale %d rotate %g %g translate\n",
 	    job->scale.x, job->scale.y,
 	    job->rotation,
