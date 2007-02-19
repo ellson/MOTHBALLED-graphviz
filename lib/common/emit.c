@@ -576,9 +576,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     margin = job->margin;
 
     /* unpaginated image size in absolute units - points */
-    imageSize = job->view;
-    if (job->rotation)
-	imageSize = exch_xyf(imageSize);
+    imageSize.x = job->zoom*job->view.x;
+    imageSize.y = job->zoom*job->view.y;
 
     /* determine pagination */
     if (gvc->graph_sets_pageSize) {
@@ -817,10 +816,9 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	}
     }
 
-    P2PF(job->gvc->bb.UR, UR);
-
-    job->translation.x -= job->focus.x - (UR.x / 2.0);
-    job->translation.y -= job->focus.y - (UR.y / 2.0);
+    P2PF(job->view, UR);
+    job->translation.x -= job->focus.x + job->pad.x - (UR.x / 2.0);
+    job->translation.y -= job->focus.y + job->pad.y - (UR.y / 2.0);
 
     if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
             && (obj->url || obj->explicit_tooltip)) {
@@ -1863,20 +1861,24 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 
     /* rotate and scale bb to give default absolute size in points*/
     job->rotation = job->gvc->rotation;
-    if (job->rotation)
-	 sz = exch_xyf(sz);
-    X = Z * sz.x;
-    Y = Z * sz.y;
+    X = sz.x;
+    Y = sz.y;
 
     /* user can override */
     if ((str = agget(g, "viewport")))
 	rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
     /* rv is ignored since args retain previous values if not scanned */
 
-    job->view.x = X; 		/* viewport - points */
+ 	/* job->view gives port size in graph units, unscaled or rotated
+ 	 * job->focus gives center of port in graph units
+ 	 * job->zoom gives scaling factor for viewport in device; that is,
+	 * final image will be (view.x*zoom, view.y*zoom) (possibly
+	 * rotated).
+	 */
+    job->view.x = X;
     job->view.y = Y;
     job->zoom = Z;              /* scaling factor */
-    job->focus.x = x;           /* focus - graph units */
+    job->focus.x = x;
     job->focus.y = y;
 }
 
