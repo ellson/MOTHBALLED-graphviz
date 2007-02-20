@@ -84,7 +84,7 @@ static void mp_comment(char *str)
 static void mp_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     /* PB = bb; */
-    static char *mp_lib[] = {""};
+    static char *mp_lib[] = {0};
     if (onetime) {
 	fprintf(Output_file, "%% BoundingBox: %d %d %d %d\n",
 		bb.LL.x, bb.LL.y, bb.UR.x + 1, bb.UR.y + 1);
