@@ -483,9 +483,10 @@ static void initialize_xlib(GVJ_t *firstjob)
 static void finalize_xlib(GVJ_t *firstjob)
 {
     GVJ_t *job;
-    Display *dpy;
-    KeyCode *keycodes;
-    int scr, inotify_fd=0, xlib_fd, ret, events;
+    Display *dpy = (Display *)(firstjob->display);
+    int scr = firstjob->screen;
+    KeyCode *keycodes= firstjob->keycodes;
+    int inotify_fd=0, xlib_fd, ret, events;
     fd_set rfds;
     struct timeval timeout;
 #ifdef HAVE_SYS_INOTIFY_H
@@ -493,10 +494,6 @@ static void finalize_xlib(GVJ_t *firstjob)
     boolean watching_p = FALSE;
     static char *dir;
     char *p, *cwd = NULL;
-
-    dpy = (Display *)(firstjob->display);
-    scr = firstjob->screen;
-    keycodes = firstjob->keycodes;
 
     inotify_fd = inotify_init();
     if (inotify_fd < 0) {
