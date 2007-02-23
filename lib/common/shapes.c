@@ -250,10 +250,9 @@ char *findFill(node_t * n)
 		color = "black";
 	    }
 #ifdef WITH_CODEGENS
-	    else {
-		color = (Output_lang == MIF ? "black" : DEFAULT_FILL);
-	    }
+	    else if (Output_lang == MIF) color = "black";
 #endif
+	    else color = DEFAULT_FILL;
 	}
     }
     return color;
