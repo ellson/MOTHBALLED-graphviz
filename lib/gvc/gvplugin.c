@@ -310,8 +310,8 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
 	pprev = NULL;
 	while (*pnext) {
 	    /* list only the matching type, and only once*/
-	    if ((strcmp(s, (*pnext)->typestr) == 0)
-		    && ! (pprev && strcmp((*pnext)->packagename, (*pprev)->packagename) == 0)) {
+	    if ((strcasecmp(s, (*pnext)->typestr) == 0)
+		    && ! (pprev && strcasecmp((*pnext)->packagename, (*pprev)->packagename) == 0)) {
 		/* list each member of the matching type as "type:path" */
 		append_buf(' ', (*pnext)->typestr, new);
 		buf = append_buf(':', (*pnext)->packagename, FALSE);
@@ -328,7 +328,7 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
 	while (*pnext) {
 	    /* list only one instance of type */
 	    if (!typestr_last
-		|| strcmp(typestr_last, (*pnext)->typestr) != 0) {
+		|| strcasecmp(typestr_last, (*pnext)->typestr) != 0) {
 		/* list it as "type"  i.e. w/o ":path" */
 		buf = append_buf(' ', (*pnext)->typestr, new);
 		new = FALSE;
