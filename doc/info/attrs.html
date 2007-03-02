@@ -278,6 +278,9 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:packmode HREF=#d:packmode>packmode</A>
 </TD><TD>G</TD><TD><A HREF=#k:packMode>packMode</A>
 </TD><TD ALIGN="CENTER">node</TD><TD></TD><TD>not dot</TD> </TR>
+ <TR><TD><A NAME=a:pad HREF=#d:pad>pad</A>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
+</TD><TD ALIGN="CENTER">1<BR>18</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:page HREF=#d:page>page</A>
 </TD><TD>G</TD><TD><A HREF=#k:pointf>pointf</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
@@ -842,6 +845,12 @@ This field indicates which graph component uses the attribute.
 <DD>  For graphs, this sets x and y margins of canvas, in inches. If the margin
   is a single double, both margins are set equal to the given value.
   <P>
+  Note that the margin is not part of the drawing but just empty space 
+  left around the drawing. It basically corresponds to a translation of 
+  drawing, as would be necessary to center a drawing on a page. Nothing
+  is actually drawn in the margin. To actually extend the background of
+  a drawing, see the <A HREF=#d:pad>pad</A> attribute.
+  <P>
   For nodes, this attribute specifies space left around the node's label.
   By default, the value is <TT>0.11,0.055</TT>.
 
@@ -1012,6 +1021,17 @@ This field indicates which graph component uses the attribute.
   (cf. <A HREF=#k:packMode>packMode</A>). Note that defining
   <B>packmode</B> will automatically turn on packing as though one had
   set <B>pack=true</B>.
+
+<DT><A NAME=d:pad HREF=#a:pad><STRONG>pad</STRONG></A>
+<DD>  The pad attribute specifies how much, in inches, to extend the 
+  drawing area around the minimal area needed to draw the graph.
+  If the pad is a single double, both the x and y pad values are set 
+  equal to the given value. This area is part of the
+  drawing and will be filled with the background color, if appropriate. 
+  <P>
+  Normally, a small pad is used for aesthetic reasons, especially when
+  a background color is used, to avoid having nodes and edges abutting
+  the boundary of the drawn region.
 
 <DT><A NAME=d:page HREF=#a:page><STRONG>page</STRONG></A>
 <DD>  Width and height of output pages, in inches. If this is set and is
@@ -1232,9 +1252,12 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:splines HREF=#a:splines><STRONG>splines</STRONG></A>
 <DD>  Controls how, and if, edges are represented. If true, edges are drawn as
   splines routed around nodes; if false, edges are drawn as line segments.
-  (Note: at present (1 Jan 2006), setting <TT>splines=false</TT> has no 
-  effect in dot.)
   If set to "", no edges are drawn at all.
+  <P>
+  (1 March 2007) The values <TT>line</TT> and <TT>spline</TT> can be
+  used as synonyms for <TT>false</TT> and <TT>true</TT>, respectively.
+  In addition, the value <TT>polyline</TT> specifies that edges should be
+  drawn as polylines.
   <P>
   By default, the attribute is unset. How this is interpreted depends on
   the layout. For dot, the default is to draw edges as splines. For all
