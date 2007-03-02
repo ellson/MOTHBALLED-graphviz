@@ -392,14 +392,14 @@ static int gdgen_set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
 	for (i = 0; i < 10; i++)
 	    dashstyle[i] = obj->pencolor.u.index;
 	for (; i < 20; i++)
-	    dashstyle[i] = white;
+	    dashstyle[i] = gdTransparent;
 	gdImageSetStyle(im, dashstyle, 20);
 	pen = gdStyled;
     } else if (obj->pen == PEN_DOTTED) {
 	for (i = 0; i < 2; i++)
 	    dashstyle[i] = obj->pencolor.u.index;
 	for (; i < 14; i++)
-	    dashstyle[i] = white;
+	    dashstyle[i] = gdTransparent;
 	gdImageSetStyle(im, dashstyle, 12);
 	pen = gdStyled;
     } else {
