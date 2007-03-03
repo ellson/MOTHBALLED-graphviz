@@ -1254,6 +1254,8 @@ leftOf (point p1, point p2, point p3)
  *
  * If the endpoints are on adjacent ranks, revert to usual code by
  * returning 0.
+ * This is done because the usual code handles the interaction of
+ * multiple edges better.
  */
 static int 
 makeLineEdge(edge_t* fe, point* points, node_t** hp)
@@ -1413,7 +1415,14 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	    P->end.theta = PI / 2, P->end.constrained = TRUE;
 	    completeregularpath(P, segfirst, e, &tend, &hend, boxes, boxn, 1);
 	    if (splines) ps = routesplines(P, &pn);
-	    else ps = routepolylines (P, &pn);
+	    else {
+		ps = routepolylines (P, &pn);
+		if ((et == ET_LINE) && (pn > 4)) {
+		    ps[1] = ps[0];
+		    ps[3] = ps[2] = ps[pn-1];
+		    pn = 4;
+		}
+	    }
 	    if (pn == 0)
 	        return;
 	    for (i = 0; i < pn; i++)
@@ -1447,6 +1456,15 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	    		longedge);
 	if (splines) ps = routesplines(P, &pn);
 	else ps = routepolylines (P, &pn);
+	if ((et == ET_LINE) && (pn > 4)) {
+	    /* Here we have used the polyline case to handle
+	     * an edge between two nodes on adjacent ranks. If the
+	     * results really is a polyline, straighten it.
+	     */
+	    ps[1] = ps[0];
+	    ps[3] = ps[2] = ps[pn-1];
+	    pn = 4;
+        }
 	if (pn == 0)
 	    return;
 	for (i = 0; i < pn; i++)
