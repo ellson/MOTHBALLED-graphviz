@@ -1724,6 +1724,18 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
         }
     }
 
+    /* pad */
+    gvc->graph_sets_pad = FALSE;
+    if ((p = agget(g, "pad"))) {
+        i = sscanf(p, "%lf,%lf", &xf, &yf);
+        if (i > 0) {
+            gvc->pad.x = gvc->pad.y = xf * POINTS_PER_INCH;
+            if (i > 1)
+                gvc->pad.y = yf * POINTS_PER_INCH;
+            gvc->graph_sets_pad = TRUE;
+        }
+    }
+
     /* pagesize */
     gvc->graph_sets_pageSize = FALSE;
     P2PF(GD_drawing(g)->page, gvc->pageSize);
@@ -1767,13 +1779,20 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
 
 static void init_job_pad(GVJ_t *job)
 {
-    switch (job->output_lang) {
-    case GVRENDER_PLUGIN:
-	job->pad.x = job->pad.y = job->render.features->default_pad;
-	break;
-    default:
-	job->pad.x = job->pad.y = DEFAULT_GRAPH_PAD;
-	break;
+    GVC_t *gvc = job->gvc;
+    
+    if (gvc->graph_sets_pad) {
+	job->pad = gvc->pad;
+    }
+    else {
+	switch (job->output_lang) {
+	case GVRENDER_PLUGIN:
+	    job->pad.x = job->pad.y = job->render.features->default_pad;
+	    break;
+	default:
+	    job->pad.x = job->pad.y = DEFAULT_GRAPH_PAD;
+	    break;
+	}
     }
 }
 

@@ -111,11 +111,12 @@ extern "C" {
 	/* pagination */
 	char *pagedir;		/* pagination order */
 	pointf margin;		/* margins in graph units */
+	pointf pad;		/* pad in graph units */
 	pointf pageSize;	/* pageSize in graph units, not including margins */
 	point pb;		/* page size - including margins (inches) */
 	boxf bb;		/* graph bb in graph units, not including margins */
 	int rotation;		/* rotation - 0 = portrait, 90 = landscape */
-	boolean graph_sets_margin, graph_sets_pageSize, graph_sets_rotation;
+	boolean graph_sets_pad, graph_sets_margin, graph_sets_pageSize, graph_sets_rotation;
 
 	/* layers */
 	char *layerDelims;	/* delimiters in layer names */
