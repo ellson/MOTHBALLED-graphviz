@@ -64,17 +64,21 @@ static void pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
         pango_font_description_free (desc);
 
 	if (para->postscript_alias) {
+	    int comma=0;
 	    strcpy(buf, para->postscript_alias->family);
 	    if (para->postscript_alias->weight) {
-		strcat(buf, ", ");
+		strcat(buf, comma ? " " : ", ");
+		comma = 1;
 		strcat(buf, para->postscript_alias->weight);
 	    }
 	    if (para->postscript_alias->stretch) {
-		strcat(buf, ", ");
+		strcat(buf, comma ? " " : ", ");
+		comma = 1;
 		strcat(buf, para->postscript_alias->stretch);
 	    }
 	    if (para->postscript_alias->style) {
-		strcat(buf, ", ");
+		strcat(buf, comma ? " " : ", ");
+		comma = 1;
 		strcat(buf, para->postscript_alias->style);
 	    }
             desc = pango_font_description_from_string(buf);
