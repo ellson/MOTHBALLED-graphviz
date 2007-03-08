@@ -6,7 +6,7 @@ AC_PREREQ(2.54)
 dnl ===========================================================================
 
 # Package name and version number, (as distinct from shared library version)
-AC_INIT(graphviz, 2.13)
+AC_INIT(graphviz, 2.13.20070303.0540)
 
 # libtool shared library version
 
@@ -58,10 +58,16 @@ case "${host_os}" in
     ;;
 esac
 
+UWIN=no
 CYGWIN=no
 MINGW32=no
 DARWIN=no
 case "${host_os}" in
+  *uwin* )
+	UWIN=yes
+	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
+	PATHSEPARATOR=";"
+	;;
   *cygwin* )
 	CYGWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
@@ -206,6 +212,9 @@ else
                 *alpha*-*-linux* )
                     CFLAGS="${CFLAGS} -mieee -Wall"
                     ;;
+	        *uwin* )
+	            CFLAGS="${CFLAGS} -DWIN32 -DMSWIN32"
+	            ;;
 	        *-apple-darwin* )
 	            CFLAGS="${CFLAGS} -fno-common -Wall"
 	            ;;
