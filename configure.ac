@@ -66,6 +66,7 @@ case "${host_os}" in
   *uwin* )
 	UWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
+	CFLAGS="${CFLAGS} -DWIN32 -DMSWIN32"
 	PATHSEPARATOR=";"
 	;;
   *cygwin* )
@@ -212,9 +213,6 @@ else
                 *alpha*-*-linux* )
                     CFLAGS="${CFLAGS} -mieee -Wall"
                     ;;
-	        *uwin* )
-	            CFLAGS="${CFLAGS} -DWIN32 -DMSWIN32"
-	            ;;
 	        *-apple-darwin* )
 	            CFLAGS="${CFLAGS} -fno-common -Wall"
 	            ;;
