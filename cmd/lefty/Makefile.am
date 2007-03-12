@@ -45,6 +45,11 @@ man_MANS = $(man)
 pdf_DATA = $(pdf)
 endif
 endif
+if WITH_WIN32
+bin_PROGRAMS = lefty
+man_MANS = $(man)
+pdf_DATA = $(pdf)
+endif
 
 lefty_DATA = lefty.psp
 
@@ -55,12 +60,19 @@ lefty_SOURCES = code.c common.c display.c exec.c g.c gfxview.c internal.c \
 # NB. -lXaw must be before -lXt or strange inability-to-get-mouse-focus
 # problems can occur on some systems.
 #
+if WITH_WIN32
+lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
+	$(top_builddir)/cmd/lefty/ws/mswin32/libws.la \
+	$(top_builddir)/cmd/lefty/os/mswin32/libos.la \
+	-luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 @MATH_LIBS@
+else
 lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 	$(top_builddir)/cmd/lefty/ws/x11/libws.la \
 	$(top_builddir)/cmd/lefty/ws/x11/libfilereq/libfilereq.la \
 	$(top_builddir)/cmd/lefty/os/unix/libos.la \
 	@X_LIBS@ @XAW_LIBS@ @X_PRE_LIBS@ @XPM_LIBS@ \
 	-lXt -lXmu -lXext -lX11 @SOCKET_LIBS@ @MATH_LIBS@
+endif
 
 .1.pdf:
 	-groff -Tps -man $< | ps2pdf - - >$@

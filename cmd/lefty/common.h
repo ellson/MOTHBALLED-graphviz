@@ -32,7 +32,14 @@ extern "C" {
  */
 #define FEATURE_MINTSIZE 1 
 #define FEATURE_DOT 1
-#ifndef MSWIN32
+#ifdef MSWIN32
+#ifndef FEATURE_WIN32
+#define FEATURE_WIN32 1
+#endif
+#ifndef FEATURE_MS
+#define FEATURE_MS 1
+#endif
+#else
 #define FEATURE_X11 1
 #endif
 #endif
