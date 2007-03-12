@@ -3,7 +3,7 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/cmd/lefty 
 
-noinst_HEADERS = gcommon.h
+noinst_HEADERS = gcommon.h resource.h
 noinst_LTLIBRARIES = libws.la
 
 libws_la_SOURCES = garray.c gbutton.c gcanvas.c gcommon.c glabel.c \
