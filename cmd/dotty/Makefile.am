@@ -9,13 +9,22 @@ pdfdir = $(pkgdatadir)/doc/pdf
 
 man_MANS = $(man)
 pdf_DATA = $(pdf)
+if WITH_WIN32
+bin_PROGRAMS = dotty
+else
 bin_SCRIPTS = dotty
+endif
 lefty_DATA = dotty.lefty dotty_draw.lefty dotty_edit.lefty \
         dotty_layout.lefty dotty_ui.lefty
 
+if WITH_WIN32
+dotty_SOURCES = mswin32/dotty.c
+dotty_LDADD = -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32
+else
 dotty: $(top_srcdir)/cmd/dotty/dotty.sh
 	cp $(top_srcdir)/cmd/dotty/dotty.sh dotty
 	chmod +x dotty
+endif
 
 .1.pdf:
 	-groff -Tps -man $< | ps2pdf - - >$@
