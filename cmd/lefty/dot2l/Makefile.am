@@ -9,6 +9,9 @@ noinst_HEADERS = dot2l.h triefa.h dotparse.h
 if WITH_X
 noinst_LTLIBRARIES = libdot2l.la
 endif
+if WITH_WIN32
+noinst_LTLIBRARIES = libdot2l.la
+endif
 
 libdot2l_la_SOURCES = dot2l.c dotlex.c dotparse.y dottrie.c 
 
