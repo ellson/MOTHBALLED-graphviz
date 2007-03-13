@@ -6,7 +6,7 @@ AC_PREREQ(2.54)
 dnl ===========================================================================
 
 # Package name and version number, (as distinct from shared library version)
-AC_INIT(graphviz, 2.13)
+AC_INIT(graphviz, 2.13.20070312.1827)
 
 # libtool shared library version
 
@@ -95,6 +95,7 @@ AC_SUBST(MINGW32)
 AC_SUBST(DARWIN)
 AC_DEFINE_UNQUOTED(DEFAULT_FONTPATH,"$DEFAULT_FONTPATH",[Path to TrueType fonts.])
 AC_DEFINE_UNQUOTED(PATHSEPARATOR,"$PATHSEPARATOR",[Path separator character.])
+AM_CONDITIONAL(WITH_WIN32, [test "x$UWIN" = "xyes"])
 
 DEFAULT_DPI=96
 AC_DEFINE_UNQUOTED(DEFAULT_DPI,$DEFAULT_DPI,Default DPI.)
@@ -1937,8 +1938,10 @@ AC_CONFIG_FILES(Makefile
 	cmd/gvpr/Makefile
         cmd/lefty/ws/x11/libfilereq/Makefile
         cmd/lefty/ws/x11/Makefile
+        cmd/lefty/ws/mswin32/Makefile
         cmd/lefty/ws/Makefile
         cmd/lefty/os/unix/Makefile
+        cmd/lefty/os/mswin32/Makefile
         cmd/lefty/os/Makefile
         cmd/lefty/dot2l/Makefile
         cmd/lefty/examples/Makefile
