@@ -3,7 +3,9 @@
 
 AM_CPPFLAGS = -I$(top_srcdir)/cmd/lefty
 
+if WITH_WIN32
 noinst_LTLIBRARIES = libos.la
+endif
 
 libos_la_SOURCES = io.c
 
