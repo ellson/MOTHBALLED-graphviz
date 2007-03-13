@@ -30,14 +30,17 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/cmd/lefty/ws/mswin32 \
 	-I$(top_srcdir)/cmd/lefty/os/mswin32 \
 	-I$(top_srcdir)/cmd/lefty/dot2l @XAW_INCLUDES@
+
+AM_CFLAGS = -DHAVE_CONFIG_H @X_CFLAGS@
 else
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/cmd/lefty/ws/x11 \
 	-I$(top_srcdir)/cmd/lefty/os/unix \
 	-I$(top_srcdir)/cmd/lefty/dot2l @XAW_INCLUDES@
-endif
 
 AM_CFLAGS = -DLEFTYDATADIR=\"$(leftydir)\" -DHAVE_CONFIG_H @X_CFLAGS@
+endif
+
 
 man = lefty.1
 pdf = lefty.pdf
