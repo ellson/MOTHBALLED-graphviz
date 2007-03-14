@@ -71,7 +71,7 @@ lefty_SOURCES = code.c common.c display.c exec.c g.c gfxview.c internal.c \
 # problems can occur on some systems.
 #
 if WITH_WIN32
-lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
+lefty_LDADD = lefty.res $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 	$(top_builddir)/cmd/lefty/ws/mswin32/libws.la \
 	$(top_builddir)/cmd/lefty/os/mswin32/libos.la \
 	-luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 @MATH_LIBS@
@@ -82,6 +82,13 @@ lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 	$(top_builddir)/cmd/lefty/os/unix/libos.la \
 	@X_LIBS@ @XAW_LIBS@ @X_PRE_LIBS@ @XPM_LIBS@ \
 	-lXt -lXmu -lXext -lX11 @SOCKET_LIBS@ @MATH_LIBS@
+endif
+
+if WITH_WIN32
+RC_CPPFLAGS = -IC:\\progra~1\\micros~2\\vc\\PlatformSDK\\include
+
+lefty.res : ws/mswin32/lefty.rc
+	rc -l 0x409 -Iws/mswin32 $(RC_CPPFLAGS) -DNDEBUG -fo lefty.res ws/mswin32/lefty.rc
 endif
 
 .1.pdf:
