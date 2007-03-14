@@ -10,3 +10,5 @@ endif
 
 libws_la_SOURCES = garray.c gbutton.c gcanvas.c gcommon.c glabel.c \
 	gmenu.c gpcanvas.c gquery.c gscroll.c gtext.c gview.c
+
+EXTRA_DIST = lefty.rc
