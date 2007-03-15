@@ -1194,8 +1194,9 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     static int A_size;
     boolean filled;
     char *color, *name;
+    int doMap = (obj->url || obj->explicit_tooltip);
 
-    if (obj->url || obj->explicit_tooltip)
+    if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
 	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 
     poly = (polygon_t *) ND_shape_info(n);
@@ -1312,14 +1313,21 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     }
 
     if (ND_label(n)->html) {
-        if (obj->url || obj->explicit_tooltip)
+	if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
             gvrender_end_anchor(job);
         emit_label(job, EMIT_NLABEL, ND_label(n));
+	if (doMap && (job->flags & EMIT_CLUSTERS_LAST)) {
+	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+            gvrender_end_anchor(job);
+	}
     }
     else {
         emit_label(job, EMIT_NLABEL, ND_label(n));
-        if (obj->url || obj->explicit_tooltip)
+        if (doMap) {
+	    if (job->flags & EMIT_CLUSTERS_LAST)
+		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
             gvrender_end_anchor(job);
+	}
     }
 
 }
@@ -1891,6 +1899,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
     pointf AF[4];
     int style;
     field_t *f;
+    int doMap = (obj->url || obj->explicit_tooltip);
 
     f = (field_t *) ND_shape_info(n);
     B2BF(f->b, BF);
@@ -1899,7 +1908,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
     BF.UR.x += (double)(ND_coord_i(n).x);
     BF.UR.y += (double)(ND_coord_i(n).y);
     
-    if (obj->url || obj->explicit_tooltip)
+    if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
         gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
     style = stylenode(job, n);
     pencolor(job, n);
@@ -1919,10 +1928,14 @@ static void record_gencode(GVJ_t * job, node_t * n)
     else
 	gvrender_box(job, BF, style & FILLED);
 
-    if (obj->url || obj->explicit_tooltip)
+    if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
         gvrender_end_anchor(job);
 
     gen_fields(job, n, f);
+    if (doMap && (job->flags & EMIT_CLUSTERS_LAST)) {
+        gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+        gvrender_end_anchor(job);
+    }
 }
 
 static shape_desc **UserShape;

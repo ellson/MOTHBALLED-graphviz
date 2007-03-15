@@ -268,14 +268,28 @@ static void doFill(GVJ_t * job, char *color, box B)
     gvrender_box(job, BF, 1);
 }
 
-static void doAnchorStart(GVJ_t * job, htmldata_t * data)
+/* initAnchor:
+ * Initialize fields in job->obj pertaining to anchors.
+ * In particular, this also sets the output rectangle.
+ * If there is somethine to do, it starts the anchor and returns 1
+ * Otherwise, it returns 0.
+ *
+ * FIX: Should we provide a tooltip if none is set, as is done
+ * for nodes, edges, etc. ?
+ */
+static int
+initAnchor (GVJ_t* job, htmldata_t* data, box pts)
 {
-    gvrender_begin_anchor(job, data->href, data->title, data->target);
-}
+    obj_state_t *obj = job->obj;
 
-static void doAnchorEnd(GVJ_t * job)
-{
-    gvrender_end_anchor(job);
+    initMapData (job, NULL, data->href, data->title, data->target, obj->u.g);
+
+    if (obj->url || obj->tooltip) {
+	emit_map_rect(job, pts.LL, pts.UR);
+	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	return 1;
+    }
+    else return 0;
 }
 
 /* forward declaration */
@@ -288,6 +302,7 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     point p = env->p;
     htmlcell_t **cells = tbl->u.n.cells;
     htmlfont_t savef;
+    int inAnchor, doAnchor = (tbl->data.href || tbl->data.target);
 
     if (tbl->font)
 	pushFontInfo(env, tbl->font, &savef);
@@ -297,26 +312,30 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     pts.LL.y += p.y;
     pts.UR.y += p.y;
 
-    /* gvrender_begin_context(job); */
-
-    if (tbl->data.href)
-	doAnchorStart(job, &tbl->data);
+    if (doAnchor && !(job->flags & EMIT_CLUSTERS_LAST))
+	inAnchor = initAnchor(job, &tbl->data, pts);
+    else
+	inAnchor = 0;
 
     if (tbl->data.bgcolor)
 	doFill(job, tbl->data.bgcolor, pts);
+
+    if (tbl->data.border)
+	doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
+
+    if (inAnchor)
+	gvrender_end_anchor(job);
 
     while (*cells) {
 	emit_html_cell(job, *cells, env);
 	cells++;
     }
 
-    if (tbl->data.border)
-	doBorder(job, tbl->data.pencolor, tbl->data.border, pts);
+    if (doAnchor && (job->flags & EMIT_CLUSTERS_LAST)) {
+	if (initAnchor(job, &tbl->data, pts))
+	    gvrender_end_anchor(job);
+    }
 
-    if (tbl->data.href)
-	doAnchorEnd(job);
-
-    /* gvrender_end_context(job); */
     if (tbl->font)
 	popFontInfo(env, &savef);
 }
@@ -347,21 +366,27 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 {
     box pts = cp->data.box;
     point p = env->p;
+    int inAnchor, doAnchor = (cp->data.href || cp->data.target);
 
     pts.LL.x += p.x;
     pts.UR.x += p.x;
     pts.LL.y += p.y;
     pts.UR.y += p.y;
 
-    /* gvrender_begin_context(); */
+    if (doAnchor && !(job->flags & EMIT_CLUSTERS_LAST))
+	inAnchor = initAnchor(job, &cp->data, pts);
+    else
+	inAnchor = 0;
 
-    if (cp->data.href) {
-	emit_map_rect(job, pts.LL, pts.UR);
-	doAnchorStart(job, &cp->data);
+    if (cp->data.bgcolor) {
+	doFill(job, cp->data.bgcolor, pts);
     }
 
-    if (cp->data.bgcolor)
-	doFill(job, cp->data.bgcolor, pts);
+    if (cp->data.border)
+	doBorder(job, cp->data.pencolor, cp->data.border, pts);
+
+    if (inAnchor)
+	gvrender_end_anchor(job);
 
     if (cp->child.kind == HTML_TBL)
 	emit_html_tbl(job, cp->child.u.tbl, env);
@@ -370,13 +395,52 @@ emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
     else
 	emit_html_txt(job, cp->child.u.txt, env);
 
-    if (cp->data.border)
-	doBorder(job, cp->data.pencolor, cp->data.border, pts);
+    if (doAnchor && (job->flags & EMIT_CLUSTERS_LAST)) {
+	if (initAnchor(job, &cp->data, pts))
+	    gvrender_end_anchor(job);
+    }
+}
 
-    if (cp->data.href)
-	doAnchorEnd(job);
+/* allocObj:
+ * Push new obj on stack to be used in common by all 
+ * html elements with anchors.
+ * This inherits the type, emit_state, and object of the
+ * parent.
+ */
+static void
+allocObj (GVJ_t * job)
+{
+    obj_state_t *obj;
 
-    /* gvrender_end_context(); */
+    obj = push_obj_state(job);
+    obj->type = obj->parent->type;
+    obj->emit_state = obj->parent->emit_state;
+    switch (obj->type) {
+    case NODE_OBJTYPE :
+	obj->u.n = obj->parent->u.n;
+#ifdef WITH_CODEGENS
+	Obj = NODE;
+#endif
+	break;
+    case ROOTGRAPH_OBJTYPE :
+	obj->u.g = obj->parent->u.g;
+#ifdef WITH_CODEGENS
+	Obj = NONE;
+#endif
+	break;
+    case CLUSTER_OBJTYPE :
+	obj->u.sg = obj->parent->u.sg;
+#ifdef WITH_CODEGENS
+	Obj = CLST;
+#endif
+	break;
+    case EDGE_OBJTYPE :
+	obj->u.e = obj->parent->u.e;
+#ifdef WITH_CODEGENS
+	Obj = EDGE;
+#endif
+	break;
+    }
 }
 
 /* emit_html_label:
@@ -386,6 +450,7 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
 {
     htmlenv_t env;
 
+    allocObj (job);
     env.p = tp->p;
     env.finfo.color = tp->fontcolor;
     env.finfo.name = tp->fontname;
@@ -406,6 +471,7 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
     } else {
 	emit_html_txt(job, lp->u.txt, &env);
     }
+    pop_obj_state(job);
 }
 
 void free_html_font(htmlfont_t * fp)

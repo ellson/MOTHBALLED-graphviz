@@ -35,7 +35,7 @@
 static char *defaultlinestyle[3] = { "solid\0", "setlinewidth\0001\0", 0 };
 
 /* push empty graphic state for current object */
-static obj_state_t* push_obj_state(GVJ_t *job)
+obj_state_t* push_obj_state(GVJ_t *job)
 {
     obj_state_t *obj, *parent;
 
@@ -62,7 +62,7 @@ static obj_state_t* push_obj_state(GVJ_t *job)
 }
 
 /* pop graphic state of current object */
-static void pop_obj_state(GVJ_t *job)
+void pop_obj_state(GVJ_t *job)
 {
     obj_state_t *obj = job->obj;
 
@@ -83,6 +83,55 @@ static void pop_obj_state(GVJ_t *job)
 
     job->obj = obj->parent;
     free(obj);
+}
+
+void
+initMapData (GVJ_t* job, char* lbl, char* url, char* tooltip, char* target,
+  void* gobj)
+{
+    obj_state_t *obj = job->obj;
+    int flags = job->flags;
+
+    if ((flags & GVRENDER_DOES_LABELS) && lbl)
+        obj->label = lbl;
+    if (obj->url) free (obj->url);
+    if ((flags & GVRENDER_DOES_MAPS) && url && url[0]) {
+        obj->url = strdup_and_subst_obj(url, gobj);
+    }
+    else
+        obj->url = NULL;
+    if (obj->tooltip) free (obj->tooltip);
+    if (flags & GVRENDER_DOES_TOOLTIPS) {
+        if (tooltip && tooltip[0]) {
+            obj->tooltip = strdup_and_subst_obj(tooltip, gobj);
+            obj->explicit_tooltip = TRUE;
+        }
+        else if (obj->label) {
+            obj->tooltip = strdup(obj->label);
+        }
+    }
+    else
+        obj->tooltip = NULL;
+    if (obj->target) free (obj->target);
+    if ((flags & GVRENDER_DOES_TARGETS) && target && target[0]) {
+        obj->target = strdup_and_subst_obj(target, gobj);
+    }
+    else
+        obj->target = NULL;
+}
+
+static void
+initObjMapData (GVJ_t* job, textlabel_t *lab, void* gobj)
+{
+    char* lbl;
+    char* url = agget(gobj, "href");
+    char* tooltip = agget(gobj, "tooltip");
+    char* target = agget(gobj, "target");
+
+    if (lab) lbl = lab->text;
+    else lbl = NULL;
+    if (!url || !*url) url = agget(gobj, "URL");
+    initMapData (job, lbl, url, tooltip, target, gobj);
 }
 
 static void map_point(GVJ_t *job, point P)
@@ -978,7 +1027,6 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
 {
     obj_state_t *obj;
     int flags = job->flags;
-    textlabel_t *lab;
     int sides, peripheries, i, j, filled = 0, rect = 0, shape, nump = 0;
     polygon_t *poly = NULL;
     pointf *vertices, ldimen, *p = NULL;
@@ -993,24 +1041,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     if (flags & GVRENDER_DOES_Z) {
         obj->z = late_double(n, N_z, 0.0, -MAXFLOAT);
     }
-    if ((flags & GVRENDER_DOES_LABELS) && ((lab = ND_label(n))))
-        obj->label = lab->text;
-    if ((flags & GVRENDER_DOES_MAPS)
-        && (((s = agget(n, "href")) && s[0]) || ((s = agget(n, "URL")) && s[0]))) {
-        obj->url = strdup_and_subst_obj(s, (void*)n);
-    }
-    if (flags & GVRENDER_DOES_TOOLTIPS) {
-        if ((s = agget(n, "tooltip")) && s[0]) {
-            obj->tooltip = strdup_and_subst_obj(s, (void*)n);
-            obj->explicit_tooltip = TRUE;
-        }
-        else {
-            obj->tooltip = strdup(ND_label(n)->text);
-        }
-    }
-    if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(n, "target")) && s[0])) {
-        obj->target = strdup_and_subst_obj(s, (void*)n);
-    }
+    initObjMapData (job, ND_label(n), n);
     if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
            && (obj->url || obj->explicit_tooltip)) {
 
@@ -2016,32 +2047,14 @@ static void emit_view(GVJ_t * job, graph_t * g, int flags)
 
 static void emit_begin_graph(GVJ_t * job, graph_t * g)
 {
-    int flags = job->flags;
     obj_state_t *obj;
-    char *s;
 
     obj = push_obj_state(job);
     obj->type = ROOTGRAPH_OBJTYPE;
     obj->u.g = g;
     obj->emit_state = EMIT_GDRAW;
 
-    if ((flags & GVRENDER_DOES_MAPS)
-        && (((s = agget(g, "href")) && s[0])
-            || ((s = agget(g, "URL")) && s[0]))) {
-        obj->url = strdup_and_subst_obj(s, (void*)g);
-    }
-    if (flags & GVRENDER_DOES_TOOLTIPS) {
-        if ((s = agget(g, "tooltip")) && s[0]) {
-            obj->tooltip = strdup_and_subst_obj(s, (void*)g);
-            obj->explicit_tooltip = TRUE;
-        }
-        else if (obj->url && obj->label) {
-            obj->tooltip = strdup(obj->label);
-        }
-    }
-    if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(g, "target")) && s[0])) {
-        obj->target = strdup_and_subst_obj(s, (void*)g);
-    }
+    initObjMapData (job, GD_label(g), g);
 
 #ifdef WITH_CODEGENS
     Obj = NONE;
@@ -2106,7 +2119,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
 		obj->label = lab->text;
 		/* If EMIT_CLUSTERS_LAST is set, we assume any URL or tooltip
 		 * attached to the root graph is emitted either in begin_page
-		 * or end_page.
+		 * or end_page of renderer.
 		 */
             if (!(flags & EMIT_CLUSTERS_LAST) && 
                   (obj->url || obj->explicit_tooltip)) {
@@ -2202,34 +2215,13 @@ static char **checkClusterStyle(graph_t* sg, int *flagp)
 static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
 {
     obj_state_t *obj;
-    int flags = job->flags;
-    textlabel_t *lab;
-    char *s;
 
     obj = push_obj_state(job);
     obj->type = CLUSTER_OBJTYPE;
     obj->u.sg = sg;
     obj->emit_state = EMIT_CDRAW;
 
-    if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(sg))))
-        obj->label = lab->text;
-
-    if ((flags & GVRENDER_DOES_MAPS)
-        && (((s = agget(sg, "href")) && s[0]) || ((s = agget(sg, "URL")) && s[0])))
-        obj->url = strdup_and_subst_obj(s, (void*)sg);
-
-    if ((flags & GVRENDER_DOES_TARGETS) && ((s = agget(sg, "target")) && s[0]))
-        obj->target = strdup_and_subst_obj(s, (void*)sg);
-
-    if (flags & GVRENDER_DOES_TOOLTIPS) {
-        if ((s = agget(sg, "tooltip")) && s[0]) {
-            obj->tooltip = strdup_and_subst_obj(s, (void*)sg);
-            obj->explicit_tooltip = TRUE;
-        }
-        else if (obj->label) {
-            obj->tooltip = strdup(obj->label);
-        }
-    }
+    initObjMapData (job, GD_label(sg), sg);
 
 #ifdef WITH_CODEGENS
     Obj = CLST;
@@ -2256,6 +2248,8 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     node_t *n;
     edge_t *e;
     obj_state_t *obj;
+    textlabel_t *lab;
+    int doAnchor, inAnchor;
 
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
@@ -2266,12 +2260,15 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	    emit_clusters(job, sg, flags);
 	emit_begin_cluster(job, sg);
 	obj = job->obj;
+	doAnchor = (obj->url || obj->explicit_tooltip);
 	setColorScheme (agget (sg, "colorscheme"));
 	gvrender_begin_context(job);
-	if (obj->url || obj->explicit_tooltip) {
+	if (doAnchor && !(flags & EMIT_CLUSTERS_LAST)) {
+	    inAnchor = 1;
 	    emit_map_rect(job, GD_bb(sg).LL, GD_bb(sg).UR);
 	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	}
+	else inAnchor = 0;
 	filled = FALSE;
 	istyle = 0;
 	if ((style = checkClusterStyle(sg, &istyle))) {
@@ -2307,7 +2304,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		fillcolor = pencolor = color;
 	    /* bgcolor is supported for backward compatability */
 	    else if (((color = agget(sg, "bgcolor")) != 0) && color[0]) {
-		fillcolor = pencolor = color;
+		fillcolor = color;
 	        filled = TRUE;
             }
 	    if (((color = agget(sg, "fillcolor")) != 0) && color[0])
@@ -2338,10 +2335,20 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 		gvrender_box(job, BF, filled);
 	    }
 	}
-	if (obj->url || obj->explicit_tooltip)
+	if ((lab = GD_label(sg))) {
+	    if (lab->html && inAnchor) {
+		gvrender_end_anchor(job);
+		inAnchor = 0;
+	    }
+	    emit_label(job, EMIT_CLABEL, lab);
+	}
+	if (doAnchor && (flags & EMIT_CLUSTERS_LAST)) {
+	    inAnchor = 1;
+	    emit_map_rect(job, GD_bb(sg).LL, GD_bb(sg).UR);
+	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	}
+	if (doAnchor)
 	    gvrender_end_anchor(job);
-	if (GD_label(sg))
-	    emit_label(job, EMIT_CLABEL, GD_label(sg));
 
 	if (flags & EMIT_PREORDER) {
 	    for (n = agfstnode(sg); n; n = agnxtnode(sg, n)) {

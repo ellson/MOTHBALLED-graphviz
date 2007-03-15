@@ -115,6 +115,7 @@ extern "C" {
     extern void global_def(char *,
 			   Agsym_t * (*fun) (Agraph_t *, char *, char *));
     extern int gvRenderJobs (GVC_t * gvc, graph_t * g);
+    extern void initMapData (GVJ_t*, char*, char*, char*, char*, void*);
     extern boolean isPolygon(node_t *);
     extern char *strdup_and_subst_obj(char *str, void *obj);
     extern char *xml_string(char *s);
@@ -128,6 +129,8 @@ extern "C" {
     extern void place_graph_label(Agraph_t *);
     extern void place_portlabel(edge_t * e, boolean head_p);
     extern char *ps_string(char *s, int);
+    extern void pop_obj_state(GVJ_t *job);
+    extern obj_state_t* push_obj_state(GVJ_t *job);
     extern int rank(graph_t * g, int balance, int maxiter);
     extern void round_corners(GVJ_t*, char*, char*, pointf*, int, int);
     extern void routesplinesinit(void);
