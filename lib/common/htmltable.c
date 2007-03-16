@@ -1191,9 +1191,35 @@ void sizeArray(htmltbl_t * tbl)
 
 static void pos_html_tbl(htmltbl_t *, box, int);  /* forward declaration */
 
+/* pos_html_img:
+ * Place image in cell. 
+ * If enough space, center; if not, fill.
+ * TODO: Allow fill even if plenty of space
+ *       Allow user control of alignment
+ */
 static void pos_html_img(htmlimg_t * cp, box pos)
 {
-    cp->box = pos;
+    int cw = pos.UR.x - pos.LL.x;
+    int ch = pos.UR.y - pos.LL.y;
+    int delx = cw - cp->box.UR.x;
+    int dely = ch - cp->box.UR.y;
+
+    if (delx > 0) {
+	cp->box.LL.x = pos.LL.x + delx/2;
+	cp->box.UR.x += cp->box.LL.x;
+    }
+    else {
+	cp->box.LL.x = pos.LL.x;
+	cp->box.UR.x = pos.UR.x;
+    }
+    if (dely > 0) {
+	cp->box.LL.y = pos.LL.y + dely/2;
+	cp->box.UR.y += cp->box.LL.y;
+    }
+    else {
+	cp->box.LL.y = pos.LL.y;
+	cp->box.UR.y = pos.UR.y;
+    }
 }
 
 /* pos_html_txt:
