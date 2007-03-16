@@ -37,7 +37,7 @@ install-data-hook:
 # run "dot -c", if possible, to create plugin config
 install-exec-hook:
 	(cd $(DESTDIR)$(bindir); for i in $(linkedprogram); do rm -f $$i; $(LN_S) dot $$i; done;)
-	if test "x$(DESTDIR)" = "x"; then (cd $(bindir); ./dot -c;); fi
+	if test "x$(DESTDIR)" = "x"; then if test -x $(bindir)/dot; then /sbin/ldconfig; $(bindir)/dot -c; else $(bindir)/dot_static -c; fi; fi
 
 uninstall-hook:
 	(cd $(DESTDIR)$(man1dir); for i in $(linkedman); do rm -f $$i; done;)
