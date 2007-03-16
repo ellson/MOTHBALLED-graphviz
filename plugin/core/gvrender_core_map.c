@@ -126,7 +126,7 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
         core_fputs(job, " coords=\"");
         switch (map_shape) {
         case MAP_CIRCLE:
-            core_printf(job, "%d,%d,%d", A[0].x, A[0].y, A[1].x);
+            core_printf(job, "%d,%d,%d", A[0].x, A[0].y, A[1].x-A[0].x);
             break;
         case MAP_RECTANGLE:
 	    /* Y_GOES_DOWN so need UL to LR */
