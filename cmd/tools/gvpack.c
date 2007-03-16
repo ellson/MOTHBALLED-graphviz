@@ -30,6 +30,7 @@
 #endif
 
 #include <assert.h>
+#include <gvc.h>
 #include <render.h>
 #include <neatoprocs.h>
 #include <ingraphs.h>
@@ -668,7 +669,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt)
  * combined graph will be strict; other, the combined graph will
  * be non-strict.
  */
-static Agraph_t **readGraphs(int *cp)
+static Agraph_t **readGraphs(int *cp, GVC_t* gvc)
 {
     Agraph_t *g;
     Agraph_t **gs = 0;
@@ -682,6 +683,7 @@ static Agraph_t **readGraphs(int *cp)
 
     newIngraph(&ig, myFiles, agread);
     while ((g = nextGraph(&ig)) != 0) {
+	GD_gvc(g) = gvc;
 	if (verbose)
 	    fprintf(stderr, "Reading graph %s\n", g->name);
 	if (cnt >= sz) {
@@ -766,10 +768,12 @@ int main(int argc, char *argv[])
     int cnt;
     pack_info pinfo;
     box bb;
+    GVC_t * gvc;
 
     init(argc, argv);
 
-    gs = readGraphs(&cnt);
+    gvc = gvNEWcontext(Info, gvUsername());
+    gs = readGraphs(&cnt, gvc);
     if (cnt == 0)
 	exit(0);
 
