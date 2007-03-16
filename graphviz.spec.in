@@ -70,7 +70,7 @@ BuildRequires: fontconfig-devel tcl-devel tk-devel
 %if "%rhel" >= "4"
 %define PHP     1
 %define RUBY    1
-BuildRequires: xorg-x11-devel php-devel ruby-devel
+BuildRequires: php-devel ruby-devel
 %endif
 %if "%rhel" >= "5"
 BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
@@ -439,3 +439,5 @@ rm -rf $RPM_BUILD_ROOT
 - imported various fixes from the Fedora-Extras .spec by Oliver Falk <oliver@linux-kernel.at>
 * Wed Jul 20 2005 John Ellson <ellson@research.att.com>
 - release 2.4
+* Fri Mar 16 2007 Stephen North <north@research.att.com>
+- remove xorg-X11-devel from rhel >= 5
