@@ -59,7 +59,6 @@ mp_begin_job(FILE * ofp, graph_t * g, char **lib, char *user, char *info[],
     /* N_pages = pages.x * pages.y; */
     /* Cur_page = 0; */
 
-    Output_file = ofp;
     fprintf(Output_file, "%%--- graphviz MetaPost input\n");
     fprintf(Output_file, "%% Created by program: %s version %s (%s)\n",
 	    info[0], info[1], info[2]);
