@@ -2709,11 +2709,11 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
                 job->output_file = file_select(job->output_filename);
             else
                 job->output_file = stdout;
+#ifdef WITH_CODEGENS
+	    Output_file = job->output_file;
+#endif
 	    gvrender_begin_job(job); /* FIXME? - semantics are unclear */
         }
-#ifdef WITH_CODEGENS
-	Output_file = job->output_file;
-#endif
 
 	if (! (job->flags & GVRENDER_X11_EVENTS)) {
     		/* Show_boxes is not defined, if at all, 
