@@ -329,5 +329,7 @@ gvplugin_installed_t gvrender_core_map_types[] = {
     {FORMAT_CMAP, "cmap", 1, &map_engine, &map_features},
     {FORMAT_IMAP, "imap", 1, &map_engine, &map_features},
     {FORMAT_CMAPX, "cmapx", 1, &map_engine, &map_features},
+    {FORMAT_IMAP, "imap_np", 1, &map_engine, &map_features_nopoly},
+    {FORMAT_CMAPX, "cmapx_np", 1, &map_engine, &map_features_nopoly},
     {0, NULL, 0, NULL, NULL}
 };
