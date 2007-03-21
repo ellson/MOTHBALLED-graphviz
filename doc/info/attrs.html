@@ -81,8 +81,8 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:K HREF=#d:K>K</A>
 </TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER">0.3</TD><TD>0</TD><TD>fdp only</TD> </TR>
  <TR><TD><A NAME=a:URL HREF=#d:URL>URL</A>
-</TD><TD>ENGC</TD><TD><A HREF=#k:escString>escString</A>
-<BR>string</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
+</TD><TD>ENGC</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
  <TR><TD><A NAME=a:arrowhead HREF=#d:arrowhead>arrowhead</A>
 </TD><TD>E</TD><TD><A HREF=#k:arrowType>arrowType</A>
 </TD><TD ALIGN="CENTER">normal</TD><TD></TD><TD></TD> </TR>
@@ -139,6 +139,18 @@ This field indicates which graph component uses the attribute.
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>-100.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:dpi HREF=#d:dpi>dpi</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">96.0<BR>0.0</TD><TD></TD><TD>svg, bitmap output only</TD> </TR>
+ <TR><TD><A NAME=a:edgeURL HREF=#d:edgeURL>edgeURL</A>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
+ <TR><TD><A NAME=a:edgehref HREF=#d:edgehref>edgehref</A>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
+ <TR><TD><A NAME=a:edgetarget HREF=#d:edgetarget>edgetarget</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
+</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
+ <TR><TD><A NAME=a:edgetooltip HREF=#d:edgetooltip>edgetooltip</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
  <TR><TD><A NAME=a:epsilon HREF=#d:epsilon>epsilon</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">.0001 * # nodes(mode == KK)<BR>.0001(mode == major)</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:esep HREF=#d:esep>esep</A>
@@ -163,14 +175,14 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:group HREF=#d:group>group</A>
 </TD><TD>N</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:headURL HREF=#d:headURL>headURL</A>
-</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>map only</TD> </TR>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:headclip HREF=#d:headclip>headclip</A>
 </TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:headhref HREF=#d:headhref>headhref</A>
-</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>map only</TD> </TR>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:headlabel HREF=#d:headlabel>headlabel</A>
 </TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
@@ -179,18 +191,21 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER">center</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:headtarget HREF=#d:headtarget>headtarget</A>
 </TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
-</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>map only</TD> </TR>
+</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:headtooltip HREF=#d:headtooltip>headtooltip</A>
 </TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>cmap only</TD> </TR>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
  <TR><TD><A NAME=a:height HREF=#d:height>height</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.5</TD><TD>0.02</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:href HREF=#d:href>href</A>
-</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
  <TR><TD><A NAME=a:label HREF=#d:label>label</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">"N"</TD><TD>(nodes)<BR>"" (otherwise)</TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:labelURL HREF=#d:labelURL>labelURL</A>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:labelangle HREF=#d:labelangle>labelangle</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">-25.0</TD><TD>-180.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:labeldistance HREF=#d:labeldistance>labeldistance</A>
@@ -205,10 +220,19 @@ This field indicates which graph component uses the attribute.
 </TD><TD>E</TD><TD>string</TD><TD ALIGN="CENTER">"Times-Roman"</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:labelfontsize HREF=#d:labelfontsize>labelfontsize</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">14.0</TD><TD>1.0</TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:labelhref HREF=#d:labelhref>labelhref</A>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:labeljust HREF=#d:labeljust>labeljust</A>
 </TD><TD>GC</TD><TD>string</TD><TD ALIGN="CENTER">"c"</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:labelloc HREF=#d:labelloc>labelloc</A>
 </TD><TD>GC</TD><TD>string</TD><TD ALIGN="CENTER">"t"</TD><TD>clusters)<BR>"b"(root graphs)</TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:labeltarget HREF=#d:labeltarget>labeltarget</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
+</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
+ <TR><TD><A NAME=a:labeltooltip HREF=#d:labeltooltip>labeltooltip</A>
+</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
  <TR><TD><A NAME=a:landscape HREF=#d:landscape>landscape</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
@@ -364,14 +388,14 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:stylesheet HREF=#d:stylesheet>stylesheet</A>
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg only</TD> </TR>
  <TR><TD><A NAME=a:tailURL HREF=#d:tailURL>tailURL</A>
-</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>map only</TD> </TR>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:tailclip HREF=#d:tailclip>tailclip</A>
 </TD><TD>E</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:tailhref HREF=#d:tailhref>tailhref</A>
-</TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>map only</TD> </TR>
+</TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:taillabel HREF=#d:taillabel>taillabel</A>
 </TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
@@ -380,16 +404,16 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER">center</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:tailtarget HREF=#d:tailtarget>tailtarget</A>
 </TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
-</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>map only</TD> </TR>
+</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:tailtooltip HREF=#d:tailtooltip>tailtooltip</A>
 </TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>cmap only</TD> </TR>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
  <TR><TD><A NAME=a:target HREF=#d:target>target</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:escString>escString</A>
 <BR>string</TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
  <TR><TD><A NAME=a:tooltip HREF=#d:tooltip>tooltip</A>
 </TD><TD>NEC</TD><TD><A HREF=#k:escString>escString</A>
-</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>cmap only</TD> </TR>
+</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, cmap only</TD> </TR>
  <TR><TD><A NAME=a:truecolor HREF=#d:truecolor>truecolor</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD>bitmap output only</TD> </TR>
@@ -443,15 +467,13 @@ This field indicates which graph component uses the attribute.
   overlap the related node, and the edge URL dominates.
   If the edge has a label, this will also be active. 
   Finally, if the edge has a head or tail label, this will also be active.
-  Note, however, that if the edge has a <A HREF=#d:headURL>headURL</A> 
-  attribute, it is this value that is used near the head node and on
-  the head label, if defined. The similar restriction holds when
-  <A HREF=#d:tailURL>tailURL</A> is defined.
+  <P>
+  Note that, for edges, the attributes <A HREF=#d:headURL>headURL</A>,
+  <A HREF=#d:tailURL>tailURL</A>, <A HREF=#d:labelURL>labelURL</A> and
+  <A HREF=#d:edgeURL>edgeURL</A> allow control of various parts of an
+  edge.
   Also note that, if active areas of two edges overlap, it is unspecified 
   which area dominates.
-  <P>
-  The URL of the root graph is only treated as an
-  <A HREF=#k:escString>escString</A> if the output format is cmap.
 
 <DT><A NAME=d:arrowhead HREF=#a:arrowhead><STRONG>arrowhead</STRONG></A>
 <DD>  Style of arrowhead on the head node of an edge. 
@@ -604,6 +626,32 @@ This field indicates which graph component uses the attribute.
   it is used to guarantee that the dimensions in the output correspond to
   the correct number of points or inches.
 
+<DT><A NAME=d:edgeURL HREF=#a:edgeURL><STRONG>edgeURL</STRONG></A>
+<DD>  If <B>edgeURL</B> is defined, this is the link used for the non-label
+  parts of an edge. This value overrides any <A HREF=#d:URL>URL</A>
+  defined for the edge.
+  Also, this value is used near the head or tail node unless overridden
+  by a <A HREF=#d:headURL>headURL</A> or <A HREF=#d:tailURL>tailURL</A> value,
+  respectively.
+  See <A HREF=#h:undir_note>limitation</A>.
+
+<DT><A NAME=d:edgehref HREF=#a:edgehref><STRONG>edgehref</STRONG></A>
+<DD>  Synonym for <A HREF=#d:edgeURL>edgeURL</A>.
+
+<DT><A NAME=d:edgetarget HREF=#a:edgetarget><STRONG>edgetarget</STRONG></A>
+<DD>  If the edge has a <A HREF=#d:URL>URL</A> or <A HREF=#d:edgeURL>edgeURL</A>
+  attribute, this attribute determines which window of the 
+  browser is used
+  for the URL attached to the non-label part of the edge. 
+  Setting it to "_graphviz" will open a new window if it 
+  doesn't already exist, or reuse it if it does.
+  If undefined, the value of the <A HREF=#d:target>target</A> is used.
+
+<DT><A NAME=d:edgetooltip HREF=#a:edgetooltip><STRONG>edgetooltip</STRONG></A>
+<DD>  Tooltip annotation attached to the non-label part of an edge. 
+  This is used only if the edge has a <A HREF=#d:URL>URL</A> 
+  or <A HREF=#d:edgeURL>edgeURL</A> attribute.
+
 <DT><A NAME=d:epsilon HREF=#a:epsilon><STRONG>epsilon</STRONG></A>
 <DD>  Terminating condition. If the length squared of all energy gradients are
   < <B>epsilon</B>, the algorithm stops.
@@ -691,8 +739,10 @@ This field indicates which graph component uses the attribute.
   the edges straight.
 
 <DT><A NAME=d:headURL HREF=#a:headURL><STRONG>headURL</STRONG></A>
-<DD>  For the output format imap or cmap, if <B>headURL</B> is defined, it is
+<DD>  If <B>headURL</B> is defined, it is
   output as part of the head label of the edge. 
+  Also, this value is used near the head node, overriding any
+  <A HREF=#d:URL>URL</A> value.
   See <A HREF=#h:undir_note>limitation</A>.
 
 <DT><A NAME=d:headclip HREF=#a:headclip><STRONG>headclip</STRONG></A>
@@ -742,6 +792,11 @@ This field indicates which graph component uses the attribute.
   have a <A HREF=shapes.html#record>special format</A> 
   which describes the record layout.
 
+<DT><A NAME=d:labelURL HREF=#a:labelURL><STRONG>labelURL</STRONG></A>
+<DD>  If <B>labelURL</B> is defined, this is the link used for the label
+  of an edge. This value overrides any <A HREF=#d:URL>URL</A>
+  defined for the edge.
+
 <DT><A NAME=d:labelangle HREF=#a:labelangle><STRONG>labelangle</STRONG></A>
 <DD>  This, along with <A HREF=#d:labeldistance>labeldistance</A>, determine 
   where the
@@ -777,6 +832,9 @@ This field indicates which graph component uses the attribute.
 <DD>  Font size, <A HREF=#points>in points</A>, used for headlabel and taillabel.
   If not set, defaults to edge's fontsize.
 
+<DT><A NAME=d:labelhref HREF=#a:labelhref><STRONG>labelhref</STRONG></A>
+<DD>  Synonym for <A HREF=#d:labelURL>labelURL</A>.
+
 <DT><A NAME=d:labeljust HREF=#a:labeljust><STRONG>labeljust</STRONG></A>
 <DD>  Justification for cluster labels. If "r", the label
   is right-justified within bounding rectangle; if "l", left-justified;
@@ -794,6 +852,20 @@ This field indicates which graph component uses the attribute.
   Note that a subgraph inherits attributes from its parent. Thus, if
   the root graph sets <B>labelloc</B> to "b", the subgraph inherits
   this value.
+
+<DT><A NAME=d:labeltarget HREF=#a:labeltarget><STRONG>labeltarget</STRONG></A>
+<DD>  If the edge has a <A HREF=#d:URL>URL</A> or <A HREF=#d:labelURL>labelURL</A>
+  attribute, this attribute determines which window of the 
+  browser is used
+  for the URL attached to the label.
+  Setting it to "_graphviz" will open a new window if it 
+  doesn't already exist, or reuse it if it does.
+  If undefined, the value of the <A HREF=#d:target>target</A> is used.
+
+<DT><A NAME=d:labeltooltip HREF=#a:labeltooltip><STRONG>labeltooltip</STRONG></A>
+<DD>  Tooltip annotation attached to label of an edge. 
+  This is used only if the edge has a <A HREF=#d:URL>URL</A> 
+  or <A HREF=#d:labelURL>labelURL</A> attribute.
 
 <DT><A NAME=d:landscape HREF=#a:landscape><STRONG>landscape</STRONG></A>
 <DD>  If true, the graph is rendered in landscape mode. Synonymous with
@@ -1281,8 +1353,10 @@ This field indicates which graph component uses the attribute.
 <DD>  A URL or pathname specifying an XML style sheet, used in SVG output.
 
 <DT><A NAME=d:tailURL HREF=#a:tailURL><STRONG>tailURL</STRONG></A>
-<DD>  When the output format is imap or cmap, if <B>tailURL</B> is defined, it is
+<DD>  If <B>tailURL</B> is defined, it is
   output as part of the tail label of the edge.
+  Also, this value is used near the tail node, overriding any
+  <A HREF=#d:URL>URL</A> value.
   See <A HREF=#h:undir_note>limitation</A>.
 
 <DT><A NAME=d:tailclip HREF=#a:tailclip><STRONG>tailclip</STRONG></A>
