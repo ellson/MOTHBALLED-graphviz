@@ -171,19 +171,29 @@ extern "C" {
 	char *headlabel; 
 
 	char *url;              /* if GVRENDER_DOES_MAPS */
+	char *labelurl;
 	char *tailurl;
 	char *headurl; 
 
 	char *tooltip;          /* if GVRENDER_DOES_TOOLTIPS */
+	char *labeltooltip;
 	char *tailtooltip;
 	char *headtooltip; 
-	boolean explicit_tooltip;
-	boolean explicit_tailtooltip;
-	boolean explicit_headtooltip;
 
 	char *target;           /* if GVRENDER_DOES_TARGETS */
+	char *labeltarget;
 	char *tailtarget;
 	char *headtarget; 
+
+	int explicit_tooltip:1;
+	int explicit_tailtooltip:1;
+	int explicit_headtooltip:1;
+	int explicit_labeltooltip:1;
+	int explicit_tailtarget:1;
+	int explicit_headtarget:1;
+	int explicit_edgetarget:1;
+	int explicit_tailurl:1;
+	int explicit_headurl:1;
 
 	/* primary mapped region - node shape, edge labels */
 	map_shape_t url_map_shape; 

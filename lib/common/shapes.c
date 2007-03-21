@@ -1312,24 +1312,12 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	filled = FALSE;
     }
 
-    if (ND_label(n)->html) {
-	if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
-            gvrender_end_anchor(job);
-        emit_label(job, EMIT_NLABEL, ND_label(n));
-	if (doMap && (job->flags & EMIT_CLUSTERS_LAST)) {
+    emit_label(job, EMIT_NLABEL, ND_label(n));
+    if (doMap) {
+	if (job->flags & EMIT_CLUSTERS_LAST)
 	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
-            gvrender_end_anchor(job);
-	}
+        gvrender_end_anchor(job);
     }
-    else {
-        emit_label(job, EMIT_NLABEL, ND_label(n));
-        if (doMap) {
-	    if (job->flags & EMIT_CLUSTERS_LAST)
-		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
-            gvrender_end_anchor(job);
-	}
-    }
-
 }
 
 /*=======================end poly======================================*/
@@ -1928,12 +1916,11 @@ static void record_gencode(GVJ_t * job, node_t * n)
     else
 	gvrender_box(job, BF, style & FILLED);
 
-    if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
-        gvrender_end_anchor(job);
-
     gen_fields(job, n, f);
-    if (doMap && (job->flags & EMIT_CLUSTERS_LAST)) {
-        gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+
+    if (doMap) {
+	if (job->flags & EMIT_CLUSTERS_LAST)
+            gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
         gvrender_end_anchor(job);
     }
 }
@@ -2010,11 +1997,13 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
 {
     obj_state_t *obj = job->obj;
     epsf_t *desc;
+    int doMap = (obj->url || obj->explicit_tooltip);
 
     desc = (epsf_t *) (ND_shape_info(n));
     if (!desc)
 	return;
-    if (obj->url || obj->explicit_tooltip)
+
+    if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
 	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
     gvrender_begin_context(job);
     if (desc)
@@ -2024,8 +2013,11 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
 		ND_coord_i(n).y + desc->offset.y, desc->macro_id);
     ND_label(n)->p = ND_coord_i(n);
     gvrender_end_context(job);
-    if (obj->url || obj->explicit_tooltip)
-        gvrender_end_anchor(job);
 
     emit_label(job, EMIT_NLABEL, ND_label(n));
+    if (doMap) {
+	if (job->flags & EMIT_CLUSTERS_LAST)
+	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+        gvrender_end_anchor(job);
+    }
 }

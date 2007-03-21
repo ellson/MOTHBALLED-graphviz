@@ -115,7 +115,7 @@ extern "C" {
     extern void global_def(char *,
 			   Agsym_t * (*fun) (Agraph_t *, char *, char *));
     extern int gvRenderJobs (GVC_t * gvc, graph_t * g);
-    extern void initMapData (GVJ_t*, char*, char*, char*, char*, void*);
+    extern int initMapData (GVJ_t*, char*, char*, char*, char*, void*);
     extern boolean isPolygon(node_t *);
     extern char *strdup_and_subst_obj(char *str, void *obj);
     extern char *xml_string(char *s);

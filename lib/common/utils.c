@@ -716,24 +716,26 @@ chkPort (port (*pf)(node_t*, char*, char*), node_t* n, char* s)
 int common_init_edge(edge_t * e)
 {
     char *s;
-    int html = 0, r = 0;
+    int r = 0;
     struct fontinfo fi;
     struct fontinfo lfi;
     graph_t *sg = e->tail->graph;
+    int lbl_kind;
 
     fi.fontname = NULL;
     lfi.fontname = NULL;
     if (E_label && (s = agxget(e, E_label->index)) && (s[0])) {
 	r = 1;
-	html = aghtmlstr(s);
-	if (html)
+	if (aghtmlstr(s)) lbl_kind = LT_HTML;
+        else lbl_kind = LT_NONE;
+	if (lbl_kind)
 	    s = strdup(s);
 	else
 	    s = strdup_and_subst_obj(s, (void*)e);
 	initFontEdgeAttr(e, &fi);
-	ED_label(e) = make_label(sg->root, html, s,
+	ED_label(e) = make_label(sg->root, lbl_kind, s,
 				fi.fontsize, fi.fontname, fi.fontcolor);
-	if (html) {
+	if (lbl_kind == LT_HTML) {
 	    if (make_html_label(sg->root, ED_label(e), e) == 1)
 		edgeError(e, "label");
 	}
@@ -745,31 +747,33 @@ int common_init_edge(edge_t * e)
 
     /* vladimir */
     if (E_headlabel && (s = agxget(e, E_headlabel->index)) && (s[0])) {
-	html = aghtmlstr(s);
-	if (html)
+	if (aghtmlstr(s)) lbl_kind = LT_HTML;
+        else lbl_kind = LT_NONE;
+	if (lbl_kind)
 	    s = strdup(s);
 	else
 	    s = strdup_and_subst_obj(s, (void*)e);
 	initFontLabelEdgeAttr(e, &fi, &lfi);
-	ED_head_label(e) = make_label(sg->root, html, s,
+	ED_head_label(e) = make_label(sg->root, lbl_kind, s,
 				lfi.fontsize, lfi.fontname, lfi.fontcolor);
-	if (html) {
+	if (lbl_kind) {
 	    if (make_html_label(sg->root, ED_head_label(e), e) == 1)
 		edgeError(e, "head label");
 	}
 	GD_has_labels(sg) |= HEAD_LABEL;
     }
     if (E_taillabel && (s = agxget(e, E_taillabel->index)) && (s[0])) {
-	html = aghtmlstr(s);
-	if (html)
+	if (aghtmlstr(s)) lbl_kind = LT_HTML;
+        else lbl_kind = LT_NONE;
+	if (lbl_kind)
 	    s = strdup(s);
 	else
 	    s = strdup_and_subst_obj(s, (void*)e);
 	if (!lfi.fontname)
 	    initFontLabelEdgeAttr(e, &fi, &lfi);
-	ED_tail_label(e) = make_label(sg->root, html, s,
+	ED_tail_label(e) = make_label(sg->root, lbl_kind, s,
 				lfi.fontsize, lfi.fontname, lfi.fontcolor);
-	if (html) {
+	if (lbl_kind) {
 	    if (make_html_label(sg->root, ED_tail_label(e), e) == 1)
 		edgeError(e, "tail label");
 	}
