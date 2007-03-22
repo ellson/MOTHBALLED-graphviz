@@ -39,11 +39,13 @@
 extern void core_fputs(GVJ_t * job, char *s);
 extern void core_printf(GVJ_t * job, const char *format, ...);
 
+extern void core_loadimage_xdot(GVJ_t*, usershape_t*, boxf, boolean);
 extern void epsf_emit_body(usershape_t *us, FILE *of);
 extern shape_desc *find_user_shape(char *name);
 
 typedef enum {
     FORMAT_PNG_SVG, FORMAT_GIF_SVG, FORMAT_JPEG_SVG,
+    FORMAT_PNG_XDOT, FORMAT_GIF_XDOT, FORMAT_JPEG_XDOT,
     FORMAT_PNG_FIG, FORMAT_GIF_FIG, FORMAT_JPEG_FIG,
     FORMAT_PNG_VRML, FORMAT_GIF_VRML, FORMAT_JPEG_VRML,
     FORMAT_PS_PS, FORMAT__PS,
@@ -274,6 +276,10 @@ static gvloadimage_engine_t engine_pslib = {
     core_loadimage_pslib
 };
 
+static gvloadimage_engine_t engine_xdot = {
+    core_loadimage_xdot
+};
+
 gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_PNG_SVG, "png2svg", 1, &engine_svg, NULL},
     {FORMAT_GIF_SVG, "gif2svg", 1, &engine_svg, NULL},
@@ -286,5 +292,8 @@ gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_JPEG_VRML, "jpeg2vrml", 1, &engine_vrml, NULL},
     {FORMAT_PS_PS, "ps2ps", 1, &engine_ps, NULL},
     {FORMAT__PS, "2ps", 1, &engine_pslib, NULL},
+    {FORMAT_PNG_XDOT, "png2xdot", 1, &engine_xdot, NULL},
+    {FORMAT_GIF_XDOT, "gif2xdot", 1, &engine_xdot, NULL},
+    {FORMAT_JPEG_XDOT, "jpeg2xdot", 1, &engine_xdot, NULL},
     {0, NULL, 0, NULL, NULL}
 };

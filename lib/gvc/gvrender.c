@@ -911,15 +911,20 @@ void gvrender_comment(GVJ_t * job, char *str)
 #endif
 }
 
-void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, boolean filled)
+/* gvrender_usershape:
+ * If expand is true, if necessary expand user image to fill polygon a,
+ * maintaining aspect ratio.
+ */
+void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, 
+    boolean filled, boolean expand)
 {
     gvrender_engine_t *gvre = job->render.engine;
     usershape_t *us;
-    double iw, ih, pw, ph, tw, th;  
+    double iw, ih, pw, ph;
     double scalex, scaley;  /* scale factors */
     boxf b;		    /* target box */
     int i;
-    pointf *af;
+    point  isz;
 
     if (! (us = gvusershape_find(name))) {
 	if (find_user_shape(name)) {
@@ -929,48 +934,58 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, boolean fill
         return;
     }
 
-    if (job->flags & GVRENDER_DOES_TRANSFORM)
-	af = a;
-    else {
-        if (sizeAF < n) {
-	    sizeAF = n+10;
-	    AF = grealloc(AF, sizeAF * sizeof(pointf));
-        }
-	gvrender_ptf_A(job, a, AF, n);
-	af = AF;
-    }
+    isz = gvusershape_size_dpi (us, job->dpi);
+    if ((isz.x <= 0) && (isz.y <= 0)) return;
 
     /* compute bb of polygon */
-    b.LL = b.UR = af[0];
+    b.LL = b.UR = a[0];
     for (i = 1; i < n; i++) {
-	EXPANDBP(b, af[i]);
+	EXPANDBP(b, a[i]);
     }
 
-    ih = (double)us->h;
-    iw = (double)us->w;
     pw = b.UR.x - b.LL.x;
     ph = b.UR.y - b.LL.y;
-    scalex = pw / iw;
-    scaley = ph / ih;
-
+    ih = (double)isz.y;
+    iw = (double)isz.x;
+    if (expand) {
+	scalex = pw / iw;
+	scaley = ph / ih;
     /* keep aspect ratio fixed by just using the smaller scale */
-    if (scalex < scaley) {
-	tw = iw * scalex;
-	th = ih * scalex;
-    } else {
-	tw = iw * scaley;
-	th = ih * scaley;
-    }
-    /* if image is smaller than target area then center it */
-    if (tw < pw) {
-	b.LL.x += (pw - tw) / 2.0;
-	b.UR.x -= (pw - tw) / 2.0;
-    }
-    if (th < ph) {
-	b.LL.y += (ph - th) / 2.0;
-	b.UR.y -= (ph - th) / 2.0;
+	if (scalex < scaley) {
+	    iw *= scalex;
+	    ih *= scalex;
+	} else {
+	    iw *= scaley;
+	    ih *= scaley;
+	}
     }
 
+    /* if image is smaller than target area then center it */
+    if (iw < pw) {
+	    b.LL.x += (pw - iw) / 2.0;
+	    b.UR.x -= (pw - iw) / 2.0;
+    }
+    if (ih < ph) {
+	    b.LL.y += (ph - ih) / 2.0;
+	    b.UR.y -= (ph - ih) / 2.0;
+    }
+
+    /* convert from graph to device coordinates */
+    if (!(job->flags & GVRENDER_DOES_TRANSFORM)) {
+	b.LL = gvrender_ptf(job, b.LL);
+	b.UR = gvrender_ptf(job, b.UR);
+    }
+
+    if (b.LL.x > b.UR.x) {
+	double d = b.LL.x;
+	b.LL.x = b.UR.x;
+	b.UR.x = d;
+    }
+    if (b.LL.y > b.UR.y) {
+	double d = b.LL.y;
+	b.LL.y = b.UR.y;
+	b.UR.y = d;
+    }
     if (gvre) {
 	if (job->render.features->loadimage_target)
 	    gvloadimage(job, us, b, filled, job->render.features->loadimage_target);

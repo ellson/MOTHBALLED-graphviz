@@ -45,7 +45,7 @@ extern void output_point(agxbuf *xbuf, pointf p);
 
 typedef enum { FORMAT_DOT, FORMAT_CANON, FORMAT_PLAIN, FORMAT_PLAIN_EXT, FORMAT_XDOT } format_type;
 
-#define XDOTVERSION "1.1"
+#define XDOTVERSION "1.2"
 
 #define NUMXBUFS (EMIT_HLABEL+1)
 /* There are as many xbufs as there are values of emit_state_t.
@@ -392,6 +392,18 @@ static void xdot_polyline(GVJ_t * job, pointf * A, int n)
     xdot_points(job, 'L', A, n);
 }
 
+void core_loadimage_xdot(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
+{
+    emit_state_t emit_state = job->obj->emit_state;
+    char buf[BUFSIZ];
+    
+    agxbput(xbufs[emit_state], "I ");
+    output_point(xbufs[emit_state], b.LL);
+    sprintf(buf, "%d %d ", ROUND(b.UR.x - b.LL.x), ROUND(b.UR.y - b.LL.y));
+    agxbput(xbufs[emit_state], buf);
+    xdot_str (job, "", us->name);
+}
+
 gvrender_engine_t dot_engine = {
     0,				/* dot_begin_job */
     0,				/* dot_end_job */
@@ -480,11 +492,24 @@ gvrender_features_t dot_features = {
     NULL,                       /* gvloadimage target for usershapes */
 };
 
+gvrender_features_t xdot_features = {
+    GVRENDER_DOES_TRANSFORM,	/* not really - uses raw graph coords */
+    0.,				/* default margin - points */
+    0.,                         /* default pad - graph units */
+    {0.,0.},			/* default page width, height - points */
+    {72.,72.},			/* default dpi */
+    NULL,			/* knowncolors */
+    0,				/* sizeof knowncolors */
+    COLOR_STRING,		/* color_type */
+    NULL,                       /* device */
+    "xdot",                     /* gvloadimage target for usershapes */
+};
+
 gvplugin_installed_t gvrender_core_dot_types[] = {
     {FORMAT_DOT, "dot", 1, &dot_engine, &dot_features},
     {FORMAT_CANON, "canon", 1, &dot_engine, &canon_features},
     {FORMAT_PLAIN, "plain", 1, &dot_engine, &dot_features},
     {FORMAT_PLAIN_EXT, "plain-ext", 1, &dot_engine, &dot_features},
-    {FORMAT_XDOT, "xdot", 1, &xdot_engine, &dot_features},
+    {FORMAT_XDOT, "xdot", 1, &xdot_engine, &xdot_features},
     {0, NULL, 0, NULL, NULL}
 };

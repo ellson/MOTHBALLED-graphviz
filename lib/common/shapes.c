@@ -564,8 +564,8 @@ static void poly_init(node_t * n)
 	    else {
 		imagesize.x = imagesize.y = 0;
 	    }
-	    dimen.x = MAX(dimen.x, imagesize.x);
-	    dimen.y = MAX(dimen.y, imagesize.y);
+	    dimen.x = MAX(dimen.x, imagesize.x+2);
+	    dimen.y = MAX(dimen.y, imagesize.y+2);
 	}
     }
 
@@ -1261,7 +1261,41 @@ static void poly_gencode(GVJ_t * job, node_t * n)
         pencolor(job, n);	/* emit pen color */
     }
 
+    /* if no boundary but filled, set boundary color to fill color */
+    if ((peripheries == 0) && filled) {
+	char *color;
+	peripheries = 1;
+	color = findFill(n);
+	if (color[0])
+	    gvrender_set_pencolor(job, color);
+    }
     if (ND_shape(n)->usershape) {
+	int shapefilled = filled;
+	if (filled) {
+	    for (i = 0; i < sides; i++) {
+		P = vertices[i];
+		AF[i].x = P.x * xsize;
+		AF[i].y = P.y * ysize;
+		if (sides > 2) {
+		AF[i].x += (double)ND_coord_i(n).x;
+		AF[i].y += (double)ND_coord_i(n).y;
+		}
+	    }
+	    if (sides <= 2) {
+		pointf PF;
+
+		P2PF(ND_coord_i(n), PF);
+		gvrender_ellipse(job, PF, AF[0].x, AF[0].y, filled);
+		if (style & DIAGONALS) {
+		    Mcircle_hack(job, n);
+		}
+	    } else if (style & (ROUNDED | DIAGONALS)) {
+		node_round_corners(job, n, AF, sides, style);
+	    } else {
+		gvrender_polygon(job, AF, sides, filled);
+	    }
+	    filled = FALSE;
+	}
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i];
 	    AF[i].x = P.x * xsize;
@@ -1274,17 +1308,9 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	name = ND_shape(n)->name;
 	if (streq(name, "custom"))
 	    name = agget(n, "shapefile");
-	gvrender_usershape(job, name, AF, sides, filled);
-	filled = FALSE;
+	gvrender_usershape(job, name, AF, sides, shapefilled, FALSE);
     }
-    /* if no boundary but filled, set boundary color to fill color */
-    if ((peripheries == 0) && filled) {
-	char *color;
-	peripheries = 1;
-	color = findFill(n);
-	if (color[0])
-	    gvrender_set_pencolor(job, color);
-    }
+
     for (j = 0; j < peripheries; j++) {
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i + j * sides];

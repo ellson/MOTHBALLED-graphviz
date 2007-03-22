@@ -109,7 +109,7 @@ static void png_size (usershape_t *us)
 {
     unsigned int w, h;
 
-    us->dpi = DEFAULT_DPI;
+    us->dpi = 0;
     fseek(us->f, 16, SEEK_SET);
     if (get_int_msb_first(us->f, 4, &w) && get_int_msb_first(us->f, 4, &h)) {
         us->w = w;
@@ -121,7 +121,7 @@ static void gif_size (usershape_t *us)
 {
     unsigned int w, h;
 
-    us->dpi = DEFAULT_DPI;
+    us->dpi = 0;
     fseek(us->f, 6, SEEK_SET);
     if (get_int_lsb_first(us->f, 2, &w) && get_int_lsb_first(us->f, 2, &h)) {
         us->w = w;
@@ -132,7 +132,7 @@ static void gif_size (usershape_t *us)
 static void bmp_size (usershape_t *us) {
     unsigned int size_x_msw, size_x_lsw, size_y_msw, size_y_lsw;
 
-    us->dpi = DEFAULT_DPI;
+    us->dpi = 0;
     fseek (us->f, 16, SEEK_SET);
     if ( get_int_lsb_first (us->f, 2, &size_x_msw) &&
          get_int_lsb_first (us->f, 2, &size_x_lsw) &&
@@ -159,7 +159,7 @@ static void jpeg_size (usershape_t *us) {
         0
     };
 
-    us->dpi = DEFAULT_DPI;
+    us->dpi = 0;
     while (TRUE) {
         /* Now we must be at a 0xff or at a series of 0xff's.
          * If that is not the case, or if we're at EOF, then there's
@@ -328,23 +328,46 @@ static usershape_t *gvusershape_open (char *name)
     return us;
 }
 
-point gvusershape_size(graph_t * g, char *name)
+/* gvusershape_size_dpi:
+ * Return image size in points.
+ */
+point 
+gvusershape_size_dpi (usershape_t* us, pointf dpi)
 {
     point rv;
-    usershape_t *us;
-    double dpi;
 
-    dpi = GD_drawing(g)->dpi;
-    if (dpi < 1.0)
-        dpi = POINTS_PER_INCH;
-
-    /* no shape file, no shape size */
-    if (!name || (*name == '\0') || !(us = gvusershape_open (name))) {
+    if (!us) {
         rv.x = rv.y = -1;
     }
     else {
-	rv.x = us->w * dpi / us->dpi;
-	rv.y = us->h * dpi / us->dpi;
+	if (us->dpi != 0) {
+	    dpi.x = dpi.y = us->dpi;
+	}
+	rv.x = us->w * POINTS_PER_INCH / dpi.x;
+	rv.y = us->h * POINTS_PER_INCH / dpi.y;
     }
     return rv;
+}
+
+/* gvusershape_size:
+ * Loads user image from file name if not already loaded.
+ * Return image size in points.
+ */
+point gvusershape_size(graph_t * g, char *name)
+{
+    point rv;
+    pointf dpi;
+
+    /* no shape file, no shape size */
+    if (!name || (*name == '\0')) {
+        rv.x = rv.y = -1;
+	return rv;
+    }
+
+    if ((dpi.y = GD_drawing(g)->dpi) >= 1.0)
+	dpi.x = dpi.y;
+    else
+	dpi.x = dpi.y = (double)DEFAULT_DPI;
+
+    return gvusershape_size_dpi (gvusershape_open (name), dpi);
 }

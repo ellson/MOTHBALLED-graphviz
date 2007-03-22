@@ -63,6 +63,7 @@ extern "C" {
     extern void gvloadimage(GVJ_t *job, usershape_t *us, boxf b, boolean filled, char *target);
     
 /* usershapes */
+    extern point gvusershape_size_dpi(usershape_t*, pointf);
     extern point gvusershape_size(graph_t *g, char *name);
     extern usershape_t *gvusershape_find(char *name);
 
@@ -116,7 +117,7 @@ extern "C" {
 			int arrow_at_start, int arrow_at_end, boolean filled);
     extern void gvrender_polyline(GVJ_t * job, pointf * AF, int n);
     extern void gvrender_comment(GVJ_t * job, char *str);
-    extern void gvrender_usershape(GVJ_t * job, char *name, pointf * AF, int n, boolean filled);
+    extern void gvrender_usershape(GVJ_t * job, char *name, pointf * AF, int n, boolean filled, boolean expand);
 
 /* layout */
 
