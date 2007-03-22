@@ -436,6 +436,8 @@ dotty.protogt.unpackdraw = function (gt, attr) {
                 } else
                     continue;
             }
+        } else if (t[i] == 'I') {
+            i = i + 7;
         } else {
             dotty.message (0, concat ('draw language parser error: ', t[i]));
             return null;
