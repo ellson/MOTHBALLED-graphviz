@@ -168,6 +168,13 @@ formats need to be interpreted in this manner.
     <TD>Set style attribute. The style value consists of the
     n characters following '-'. The syntax of the value is the same as
     specified for a <B>styleItem</B> in <A HREF=attrs.html#k:style>style</A>.
+  <TR><TD>I x y w h n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
+    <TD>Externally-specified image drawn in the box with lower left
+    corner (x,y) and upper right corner (x+w,y+h). The name of the image
+    consists of the n characters following '-'. This is usually a bitmap 
+    image. Note that the image size, even when converted from pixels to
+    points, might be different from the required size (w,h). It is 
+    assumed the renderer will perform the necessary scaling.
   </TABLE>
   <SPACER TYPE=VERTICAL size=10>
   In handling alignment, the application may want to recompute the
