@@ -117,8 +117,12 @@ formats need to be interpreted in this manner.
   The <B>xdot</B> format extends the
   <B>dot</B> format by providing much more detailed information about
   how graph components are drawn. It relies on additional attributes
-  for nodes, edges and graphs. The format is preliminary; comments and
+  for nodes, edges and graphs.
+  <P>
+  The format is preliminary; comments and
   suggestions for better representations are welcome.
+  To allow for changes in the format, Graphviz attaches the attribute
+  <TT>xdotversion</TT> to the graph.
   <P>
   At present, additional drawing attributes are only attached to nodes
   and edges. There are six new attributes:
@@ -134,6 +138,9 @@ formats need to be interpreted in this manner.
   <P>
   The value of these attributes consists of the concatenation of some
   (multi-)set of the following 12 rendering or attribute operations.
+  (The number is parentheses gives the xdot version when the operation
+  was added to the format. If no version number is given, the operation
+  was in the original specification.)
   <SPACER TYPE=VERTICAL size=10>
   <TABLE border bgcolor=beige>
   <TR><TD>E x<sub>0</sub> y<sub>0</sub> w h
@@ -149,7 +156,7 @@ formats need to be interpreted in this manner.
   <TR><TD>B n x<sub>1</sub> y<sub>1</sub> ... x<sub>n</sub> y<sub>n</sub>
     <TD>B-spline using the given n control points
   <TR><TD>b n x<sub>1</sub> y<sub>1</sub> ... x<sub>n</sub> y<sub>n</sub>
-    <TD>Filled B-spline using the given n control points
+    <TD>Filled B-spline using the given n control points (1.1)
   <TR><TD>T x y j w n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
     <TD>Text drawn using the baseline point (x,y). The text consists of the
     n characters following '-'. The text should be left-aligned (centered,
@@ -157,24 +164,24 @@ formats need to be interpreted in this manner.
     w gives the width of the text as computed by the library.
   <TR><TD>C n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
     <TD>Set fill color. The color value consists of the
-    n characters following '-'.
+    n characters following '-'. (1.1)
   <TR><TD>c n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
     <TD>Set pen color. The color value consists of the
-    n characters following '-'.
+    n characters following '-'. (1.1)
   <TR><TD>F s n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
     <TD>Set font. The font size is s points. The font name consists of the
-    n characters following '-'.
+    n characters following '-'. (1.1)
   <TR><TD>S n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
     <TD>Set style attribute. The style value consists of the
     n characters following '-'. The syntax of the value is the same as
-    specified for a <B>styleItem</B> in <A HREF=attrs.html#k:style>style</A>.
+    specified for a <B>styleItem</B> in <A HREF=attrs.html#k:style>style</A>. (1.1)
   <TR><TD>I x y w h n -<I>c<sub>1</sub>c<sub>2</sub>...c<sub>n</sub><I>
     <TD>Externally-specified image drawn in the box with lower left
     corner (x,y) and upper right corner (x+w,y+h). The name of the image
     consists of the n characters following '-'. This is usually a bitmap 
     image. Note that the image size, even when converted from pixels to
     points, might be different from the required size (w,h). It is 
-    assumed the renderer will perform the necessary scaling.
+    assumed the renderer will perform the necessary scaling. (1.2)
   </TABLE>
   <SPACER TYPE=VERTICAL size=10>
   In handling alignment, the application may want to recompute the
