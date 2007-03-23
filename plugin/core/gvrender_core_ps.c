@@ -177,6 +177,7 @@ static void psgen_begin_cluster(GVJ_t * job)
     core_printf(job, "%% %s\n", obj->u.sg->name);
 
     core_fputs(job, "gsave\n");
+#if 0
     if (obj->url &&  obj->url_map_p) {
         core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
@@ -187,6 +188,7 @@ static void psgen_begin_cluster(GVJ_t * job)
 		"/ANN pdfmark\n",
 		ps_string(obj->url, isLatin1));
     }
+#endif
 }
 
 static void psgen_end_cluster(GVJ_t * job)
@@ -199,6 +201,7 @@ static void psgen_begin_node(GVJ_t * job)
     obj_state_t *obj = job->obj;
 
     core_fputs(job, "gsave\n");
+#if 0
     if (obj->url && obj->url_map_p) {
         core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
@@ -209,6 +212,7 @@ static void psgen_begin_node(GVJ_t * job)
 		"/ANN pdfmark\n",
 		ps_string(obj->url, isLatin1));
     }
+#endif
 }
 
 static void psgen_end_node(GVJ_t * job)
@@ -222,6 +226,7 @@ psgen_begin_edge(GVJ_t * job)
     obj_state_t *obj = job->obj;
 
     core_fputs(job, "gsave\n");
+#if 0
     if (obj->tailurl && obj->tailendurl_map_p) {
         core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->tailendurl_map_p[0].x, obj->tailendurl_map_p[0].y,
@@ -242,6 +247,7 @@ psgen_begin_edge(GVJ_t * job)
 		"/ANN pdfmark\n",
 		ps_string(obj->headurl, isLatin1));
     }
+#endif
 }
 
 static void psgen_end_edge(GVJ_t * job)
