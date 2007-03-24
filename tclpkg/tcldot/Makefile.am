@@ -43,80 +43,55 @@ endif
 
 libtcldot_la_SOURCES = tcldot.c $(CODEGENS) $(GDTCLFT)
 libtcldot_la_LDFLAGS = -no-undefined
+
+libtcldot_la_LIBADD = $(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
+	$(top_builddir)/lib/gvc/libgvc.la 
+
+# GDTCLFT requires gd libs to be builtin
 if WITH_LIBGD
 if WITH_MYLIBGD
-libtcldot_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(top_builddir)/lib/gvc/libgvc.la \
-        $(top_builddir)/lib/gd/libgvgd_C.la \
-	@PANGOCAIRO_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
+libtcldot_la_LIBADD += $(top_builddir)/lib/gd/libgvgd_C.la
 else
-libtcldot_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(top_builddir)/lib/gvc/libgvc.la \
-	@PANGOCAIRO_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
+libtcldot_la_LIBADD += @GD_LIBS@
 endif
-else
-libtcldot_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(top_builddir)/lib/gvc/libgvc.la \
-	@PANGOCAIRO_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @ICONV_LIBS@ @MATH_LIBS@
+libtcldot_la_LIBADD += @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
 endif
 
+libtcldot_la_LIBADD += @LIBGEN_LIBS@ @LIBLTDL@ @ICONV_LIBS@ @MATH_LIBS@
 
 libtcldot_builtin_la_SOURCES = \
 	tcldot.c $(CODEGENS) $(GDTCLFT) \
 	$(top_srcdir)/lib/gvc/dot_builtins.c \
 	$(top_srcdir)/lib/gvc/no_demand_loading.c 
 libtcldot_builtin_la_LDFLAGS = -no-undefined
+
+libtcldot_builtin_la_LIBADD = \
+	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
+	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout_C.la \
+	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
+	$(top_builddir)/plugin/core/libgvplugin_core_C.la \
+	$(top_builddir)/lib/gvc/libgvc_C.la \
+	$(top_builddir)/lib/graph/libgraph_C.la \
+	$(top_builddir)/lib/cdt/libcdt_C.la \
+	$(top_builddir)/lib/pathplan/libpathplan_C.la
+
+if WITH_PANGOCAIRO
+libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/pango/libgvplugin_pango_C.la @PANGOCAIRO_LIBS@
+endif
+
 if WITH_LIBGD
+libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/gd/libgvplugin_gd_C.la
 if WITH_MYLIBGD
-libtcldot_builtin_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout_C.la \
-	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
-	$(top_builddir)/plugin/core/libgvplugin_core_C.la \
-	$(top_builddir)/plugin/gd/libgvplugin_gd_C.la \
-	$(top_builddir)/plugin/pango/libgvplugin_pango_C.la \
-	$(top_builddir)/lib/gvc/libgvc_C.la \
-	$(top_builddir)/lib/graph/libgraph_C.la \
-	$(top_builddir)/lib/cdt/libcdt_C.la \
-	$(top_builddir)/lib/pathplan/libpathplan_C.la \
-	$(top_builddir)/lib/gd/libgvgd_C.la \
-	@PANGOCAIRO_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+libtcldot_builtin_la_LIBADD += $(top_builddir)/lib/gd/libgvgd_C.la
 else
-libtcldot_builtin_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout_C.la \
-	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
-	$(top_builddir)/plugin/core/libgvplugin_core_C.la \
-	$(top_builddir)/plugin/gd/libgvplugin_gd_C.la \
-	$(top_builddir)/plugin/pango/libgvplugin_pango_C.la \
-	$(top_builddir)/lib/gvc/libgvc_C.la \
-	$(top_builddir)/lib/graph/libgraph_C.la \
-	$(top_builddir)/lib/cdt/libcdt_C.la \
-	$(top_builddir)/lib/pathplan/libpathplan_C.la \
-	@PANGOCAIRO_LIBS@ @GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+libtcldot_builtin_la_LIBADD += @GD_LIBS@
 endif
-else
-libtcldot_builtin_la_LIBADD = \
-	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
-	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout_C.la \
-	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
-	$(top_builddir)/plugin/core/libgvplugin_core_C.la \
-	$(top_builddir)/plugin/pango/libgvplugin_pango_C.la \
-	$(top_builddir)/lib/gvc/libgvc_C.la \
-	$(top_builddir)/lib/graph/libgraph_C.la \
-	$(top_builddir)/lib/cdt/libcdt_C.la \
-	$(top_builddir)/lib/pathplan/libpathplan_C.la \
-	@PANGOCAIRO_LIBS@ @ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+libtcldot_builtin_la_LIBADD += @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
 endif
+
+libtcldot_builtin_la_LIBADD += @ICONV_LIBS@ @EXPAT_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 
 if WITH_TCL
 all-local: pkgIndex.tcl

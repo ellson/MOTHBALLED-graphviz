@@ -10,9 +10,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt \
 	$(PANGOCAIRO_CFLAGS)
 
+if WITH_PANGOCAIRO
 noinst_LTLIBRARIES = libgvplugin_pango_C.la
-
 pkglib_LTLIBRARIES = libgvplugin_pango.la
+endif
 
 libgvplugin_pango_C_la_SOURCES = \
 	gvplugin_pango.c \

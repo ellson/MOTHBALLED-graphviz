@@ -35,6 +35,7 @@ Prefix: /usr
 %define IPSEPCOLA --without-ipsepcola
 %define MYLIBGD --with-mylibgd
 %define MING --without-ming
+%define PANGOCAIRO --without-pangocairo
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -108,6 +109,7 @@ BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel li
 %endif
 %if "%fedora" >= "6"
 %define LUA     1
+%define PANGOCAIRO  --with-pangocairo
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel libgnomeui-devel
 %endif
 %if "%fedora" >= "7"
@@ -409,7 +411,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
       --mandir=%{_mandir} \
       --with-x \
       --disable-static \
-      --disable-dependency-tracking %{MYLIBGD} %{IPSEPCOLA} %{MING}
+      --disable-dependency-tracking %{MYLIBGD} %{IPSEPCOLA} %{MING} %{PANGOCAIRO}
 %__make %{?_smp_mflags}
 
 %install
