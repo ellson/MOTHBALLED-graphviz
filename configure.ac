@@ -1156,6 +1156,9 @@ CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(XAW_INCLUDES)
 AC_SUBST(XAW_LIBS)
 AM_CONDITIONAL(WITH_XAW, [test "x$with_xaw" != "xno"])
+if test "x$with_xaw" = "xno" && "X$no_x" != Xyes; then
+	AC_MSG_WARN(Lefty cannot be built)
+fi
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for Z
