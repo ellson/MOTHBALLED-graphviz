@@ -10,6 +10,7 @@ and link the program with the necessary libraries.
 
 For linking, the application should use the \gviz\ libraries 
 \begin{itemize}
+\item {\tt gvc}
 \item {\tt common}
 \item {\tt dotgen}
 \item {\tt neatogen}
@@ -17,9 +18,9 @@ For linking, the application should use the \gviz\ libraries
 \item {\tt twopigen}
 \item {\tt circogen}
 \item {\tt pack}
-\item {\tt gvc}
 \item {\tt vpsc}\footnote{
 Only if \gviz\ was built with IPSEPCOLA defined.}
+\item {\tt plugin}
 \item {\tt pathplan}
 \item {\tt gd}\footnote{
 The {\tt gd} library provided by \gviz\ is essentially
@@ -30,6 +31,11 @@ version may be named {\tt gvgd}.
 \item {\tt graph}
 \item {\tt cdt}
 \end{itemize}
+On non-Windows sytems, the first 9, from {\tt gvc} to {\tt vpsc},
+are combined into a single {\tt gvc} library. In addition, if the
+system was compiled to use plug-ins, the linker need to reference
+the plug-in libraries, as these will be dynamically loaded on demand. 
+
 In addition, the following additional libraries may be necessary, depending
 on the options set when \gviz\ was built.
 \begin{itemize}
