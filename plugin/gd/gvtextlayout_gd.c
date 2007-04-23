@@ -78,11 +78,11 @@ char *gd_alternate_fontlist(char *font)
 
     else if ((strcasecmp(font, "arial-bold") == 0)
 	     || (strcasecmp(fontbuf, "arialb") == 0))
-	fontlist = "arialb;Alialb;ARIALB";
+	fontlist = "arialb;Arialb;ARIALB";
 
     else if ((strcasecmp(font, "arial-italic") == 0)
 	     || (strcasecmp(fontbuf, "ariali") == 0))
-	fontlist = "ariali;Aliali;ARIALI";
+	fontlist = "ariali;Ariali;ARIALI";
 
     else if (strcasecmp(fontbuf, "helvetica") == 0)
 	fontlist = "helvetica;Helvetica;HELVETICA;arial;Arial;ARIAL";
