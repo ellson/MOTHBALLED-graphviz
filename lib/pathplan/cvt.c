@@ -108,6 +108,7 @@ void Pobsclose(vconfig_t * config)
     free(config->next);
     free(config->prev);
     free(config->vis);
+    free(config);
 }
 
 int Pobspath(vconfig_t * config, Ppoint_t p0, int poly0, Ppoint_t p1,
