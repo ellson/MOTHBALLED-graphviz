@@ -34,7 +34,7 @@ libexpr_C_la_LIBADD = \
 
 libexpr_la_LDFLAGS = -version-info @VERSION_INFO@
 libexpr_la_SOURCES = $(libexpr_C_la_SOURCES)
-libexpr_la_LIBADD = $(libexpr_C_la_LIBADD)
+libexpr_la_LIBADD = $(libexpr_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la
 
 $(libexpr_la_OBJECTS): exparse.h exparse.c exgram.h exop.h
