@@ -1112,6 +1112,11 @@ This field indicates which graph component uses the attribute.
   aligned in the lower-left corner, thereby partitioning the layout
   into pages. The pages are then produced one at a time, in
   <A HREF=#d:pagedir>pagedir</A> order.
+  <P>
+  At present, this only works for PostScript output. For other types of
+  output, one should use another tool to split the output into multiple
+  output files. Or use the <A HREF=#d:viewport>viewport</A> to generate
+  multiple files.
 
 <DT><A NAME=d:pagedir HREF=#a:pagedir><STRONG>pagedir</STRONG></A>
 <DD>  If the <A HREF=#d:page>page</A> attribute is set and applicable,
