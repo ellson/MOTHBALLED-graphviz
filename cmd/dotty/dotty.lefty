@@ -318,7 +318,7 @@ dotty.protogt.erasegraph = function (gt, protogt, protovt) {
     gt.undoarray = ['level' = 0; 'entries' = [];];
 };
 dotty.protogt.layoutgraph = function (gt) {
-    if (gt.graph.graphattr.bb) {
+    if (gt.graph.graphattr.xdotversion) {
         gt.unpacklayout (gt, gt.graph);
         gt.setviewsize (gt.views, gt.graph.rect);
         gt.redrawgraph (gt, gt.views);
