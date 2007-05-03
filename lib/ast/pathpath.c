@@ -30,10 +30,18 @@
 
 #include <ast.h>
 #include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#else
+#include <compat_unistd.h>
+#endif
 
 /* #include <option.h> */
+#ifdef WIN32
+#define environ _environ
+#else
 extern char **environ;
+#endif
 char **opt_info_argv;
 
 char *pathpath(register char *path, const char *p, const char *a, int mode)
