@@ -22,10 +22,25 @@
 
 #ifdef ENABLE_LTDL
 #include	<sys/types.h>
-#include	<regex.h>
-#include	<sys/stat.h>
-#include	<unistd.h>
+#ifdef WIN32
+#include        <regex_win32.c>
+typedef struct {
+    int gl_pathc;           /* count of total paths so far */
+    int gl_matchc;          /* count of paths matching pattern */
+    int gl_offs;            /* reserved at beginning of gl_pathv */
+    int gl_flags;           /* returned flags */
+    char **gl_pathv;        /* list of paths matching pattern */
+} glob_t;
+static void globfree (glob_t* pglob);
+static int glob (char*, int, int (*errfunc)(const char *, int), glob_t*);
+#else
+#include        <regex.h>
 #include	<glob.h>
+#endif 
+#include	<sys/stat.h>
+#ifdef HAVE_UNISTD_H
+#include	<unistd.h>
+#endif
 #endif
 
 #include        "memory.h"
@@ -242,6 +257,12 @@ char * gvconfig_libdir(void)
 
     if (!libdir) {
 
+#ifdef WIN32
+        /* this code has to be modified to read value from 
+         * registry or argg[0] -- +/lib etc method.  FIX
+         */
+        libdir="C:/unix/local/lib/Graphviz";
+#else
         /* this only works on linux, other systems will get GVLIBDIR only */
 	libdir = GVLIBDIR;
         f = fopen ("/proc/self/maps", "r");
@@ -268,6 +289,7 @@ char * gvconfig_libdir(void)
             }
             fclose (f);
         }
+#endif
     }
     return libdir;
 }
@@ -530,3 +552,68 @@ void gvconfig(GVC_t * gvc, boolean rescan)
 #endif
     gvtextlayout_select(gvc);   /* choose best available textlayout plugin immediately */
 }
+
+#ifdef ENABLE_LTDL
+#ifdef WIN32
+#include <windows.h>
+#define GLOB_NOSPACE    1   /* Ran out of memory.  */
+#define GLOB_ABORTED    2   /* Read error.  */
+#define GLOB_NOMATCH    3   /* No matches found.  */
+#define GLOB_NOSORT     4
+#define DMKEY "Software\\Microsoft" //key to look for library dir
+
+/* Emulating windows glob */
+
+/* glob:
+ * Assumes only GLOB_NOSORT flag given. That is, there is no offset,
+ * and no previous call to glob.
+ */
+char * gvconfig_libdir(void);
+
+static int
+glob (char* pattern, int flags, int (*errfunc)(const char *, int),
+         glob_t *pglob)
+{
+    char* libdir;
+    WIN32_FIND_DATA wfd;
+    HANDLE h;
+    char** str=0;
+    int arrsize=0;
+    int cnt = 0;
+    h = FindFirstFile (pattern, &wfd);
+    if (h == INVALID_HANDLE_VALUE) return GLOB_NOMATCH;
+    libdir = gvconfig_libdir();
+    do {
+      if (cnt >= arrsize-1) {
+        arrsize += 512;
+        if (str) str = (char**)realloc (str, arrsize*sizeof(char*));
+        else str = (char**)malloc (arrsize*sizeof(char*));
+        if (!str) return GLOB_NOSPACE;
+      }
+      str[cnt] = (char*)malloc (strlen(libdir)+1+strlen(wfd.cFileName)+1);
+      if (!str[cnt]) return GLOB_NOSPACE;
+	(str[cnt])[0]="/0";
+
+      strcpy(str[cnt],libdir);
+      strcat(str[cnt],"/");
+      strcat(str[cnt],wfd.cFileName);
+      cnt++;
+    } while (FindNextFile (h, &wfd));
+    str[cnt] = 0;
+
+    pglob->gl_pathc = cnt;
+    pglob->gl_pathv = (char**)realloc(str, (cnt+1)*sizeof(char*));
+    
+    return 0;
+}
+
+static void
+globfree (glob_t* pglob)
+{
+    int i;
+    for (i = 0; i < pglob->gl_pathc; i++)
+      free (pglob->gl_pathv[i]);
+    free (pglob->gl_pathv);
+}
+#endif
+#endif

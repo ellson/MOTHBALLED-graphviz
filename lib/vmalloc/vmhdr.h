@@ -23,6 +23,9 @@ extern "C" {
 #ifndef _BLD_vmalloc
 #define _BLD_vmalloc	1
 #endif
+#ifdef WIN32
+#include <io.h>
+#endif
 
 /*	Common types, and macros for vmalloc functions.
 **
@@ -437,8 +440,13 @@ extern "C" {
 #if !_PACKAGE_ast
 
     extern size_t getpagesize _ARG_((void));
+
+#ifdef WIN32
+typedef unsigned int ssize_t;
+#else
     extern void abort _ARG_((void));
     extern ssize_t write _ARG_((int, const void *, size_t));
+#endif
 
 #if !__STDC__ && !_hdr_stdlib
     extern size_t strlen _ARG_((const char *));
@@ -458,13 +466,17 @@ extern "C" {
 #endif
 
 /* for malloc.c */
+#ifndef WIN32
     extern int creat _ARG_((const char *, int));
     extern int close _ARG_((int));
+#endif
     extern int getpid _ARG_((void));
 
 /* for vmexit.c */
+#ifndef WIN32
     extern int onexit _ARG_((void (*)(void)));
     extern void _exit _ARG_((int));
+#endif
     extern void _cleanup _ARG_((void));
 
 #endif				/*!PACKAGE_ast */

@@ -1147,10 +1147,6 @@ size_t align;
     return (Void_t *) data;
 }
 
-#if defined(_WIN32)
-#include	<windows.h>
-#endif /*_WIN32*/
-
 /*	A discipline to get memory using sbrk() or VirtualAlloc on win32 */
 #if __STD_C
 static Void_t *sbrkmem(Vmalloc_t * vm, Void_t * caddr,

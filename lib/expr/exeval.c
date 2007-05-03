@@ -29,6 +29,12 @@
 #include "exop.h"
 #include <string.h>
 #include <time.h>
+#ifdef WIN32
+#include <stdlib.h>
+#define srand48 srand
+#define drand48 rand
+#endif
+
 
 static Extype_t eval(Expr_t *, Exnode_t *, void *);
 
