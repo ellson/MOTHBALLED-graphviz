@@ -27,6 +27,8 @@
 #include <ast.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#else
+#include <compat_unistd.h>
 #endif
 #ifdef HAVE_STRINGS_H
 #include <strings.h>

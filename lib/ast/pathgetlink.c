@@ -31,7 +31,9 @@
 #endif
 
 #ifdef HAVE_UNISTD_H
-# include <unistd.h>
+#include <unistd.h>
+#else
+#include <compat_unistd.h>
 #endif
 
 /*
@@ -41,6 +43,9 @@
 
 int pathgetlink(const char *name, char *buf, int siz)
 {
+#ifdef WIN32
+	return (-1);
+#else
     int n;
 
     if ((n = readlink(name, buf, siz)) < 0)
@@ -94,4 +99,5 @@ int pathgetlink(const char *name, char *buf, int siz)
     }
 #endif
     return (n);
+#endif
 }
