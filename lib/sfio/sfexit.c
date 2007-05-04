@@ -126,6 +126,7 @@ typedef struct _wait_ {
 
 static Waitpid_t *Wait;
 
+#ifndef WIN32
 #if __STD_C
 waitpid(int pid, int *status, int options)
 #else
@@ -187,3 +188,4 @@ int options;
 #endif /*_lib_waitpid*/
 
 #endif				/*!PACKAGE_ast */
+#endif
