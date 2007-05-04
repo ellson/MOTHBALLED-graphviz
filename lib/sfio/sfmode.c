@@ -263,8 +263,10 @@ reg Sfio_t *f;			/* stream to close */
 #if _PACKAGE_ast
 	sigcritical(1);
 #endif
+#ifndef WIN32
 	while ((pid = waitpid(p->pid, &status, 0)) == -1
 	       && errno == EINTR);
+#endif
 	if (pid < 0)
 	    status = -1;
 #if _PACKAGE_ast

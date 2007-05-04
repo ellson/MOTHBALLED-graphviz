@@ -15,6 +15,9 @@
 **********************************************************/
 
 #include	"sfhdr.h"
+#ifdef WIN32
+#include	"io.h"
+#endif
 
 /*	Open a file/string for IO.
 **	If f is not nil, it is taken as an existing stream that should be
@@ -39,6 +42,8 @@ reg char *mode;			/* mode of the stream */
 	return NIL(Sfio_t *);
 
     /* usually used on the standard streams to change control flags */
+
+#ifndef WIN32	
     if (f && !file && (f->mode & SF_INIT)) {
 	SFMTXSTART(f, NIL(Sfio_t *));
 
@@ -48,7 +53,6 @@ reg char *mode;			/* mode of the stream */
 		ctl = (ctl & ~(O_TEXT | O_BINARY | O_APPEND)) | oflags;
 		fcntl(f->file, F_SETFL, ctl);
 	    }
-
 	    /* set all non read-write flags */
 	    f->flags |= (sflags & (SF_FLAGS & ~SF_RDWR));
 
@@ -72,6 +76,7 @@ reg char *mode;			/* mode of the stream */
 	    SFMTXRETURN(f, NIL(Sfio_t *));
     }
 
+#endif
     if (sflags & SF_STRING) {
 	f = sfnew(f, (char *) file,
 		  file ? (size_t) strlen((char *) file) : (size_t)
