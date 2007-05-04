@@ -984,8 +984,10 @@ extern "C" {
 
 /* for portable encoding of double values */
 #if !__STDC__
+#ifndef WIN32
     extern double frexp _ARG_((double, int *));
     extern double ldexp _ARG_((double, int));
+#endif
 #endif
 
 #if !_hdr_mman && !_sys_mman
@@ -1019,6 +1021,11 @@ extern "C" {
 #endif
 #endif				/* !__STDC__ && !_hdr_stdlib */
 
+#ifdef WIN32
+#undef SF_ERROR
+#include <io.h>
+#define SF_ERROR	0000400	/* an error happened                    */
+#else
 #if !_hdr_unistd
     extern int close _ARG_((int));
     extern ssize_t read _ARG_((int, void *, size_t));
@@ -1040,6 +1047,7 @@ extern "C" {
 #endif
 
 #endif /*_hdr_unistd*/
+#endif /* WIN32 */
 
 #if _lib_bcopy && !_proto_bcopy
     extern void bcopy _ARG_((const void *, void *, size_t));
@@ -1050,7 +1058,9 @@ extern "C" {
 
     extern time_t time _ARG_((time_t *));
     extern int waitpid _ARG_((int, int *, int));
+#ifndef WIN32
     extern void _exit _ARG_((int));
+#endif
     typedef int (*Onexit_f) _ARG_((void));
     extern Onexit_f onexit _ARG_((Onexit_f));
 
