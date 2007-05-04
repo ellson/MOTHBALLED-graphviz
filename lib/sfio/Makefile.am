@@ -1,7 +1,7 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = Sfio_dc Sfio_f
+SUBDIRS = Sfio_f
 
 AM_CPPFLAGS = -I$(top_srcdir)/lib/ast
 
@@ -23,7 +23,6 @@ libsfio_C_la_SOURCES = sfclose.c sfclrlock.c sfcvt.c sfdisc.c \
 	sfvscanf.c sfwr.c sfwrite.c
 
 libsfio_C_la_DEPENDENCIES = \
-	Sfio_dc/libsfiodc_C.la \
 	Sfio_f/libsfiof_C.la
 
 $(top_builddir)/FEATURE/sfio: $(top_srcdir)/lib/sfio/features/sfio
