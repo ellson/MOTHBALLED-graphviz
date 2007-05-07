@@ -1909,7 +1909,6 @@ AC_CONFIG_FILES(Makefile
 	lib/pathplan/libpathplan.pc
 	lib/ast/Makefile
 	lib/sfio/Makefile
-	lib/sfio/Sfio_dc/Makefile
 	lib/sfio/Sfio_f/Makefile
 	lib/vmalloc/Makefile
 	lib/dotgen/Makefile
