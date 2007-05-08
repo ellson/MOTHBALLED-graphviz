@@ -1267,6 +1267,17 @@ AM_CONDITIONAL(WITH_GTK, [test "x$HAVE_GTK" != "x"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GNOMEUI.
 
+AC_ARG_WITH(gnomeui,
+  [AC_HELP_STRING([--with-gnomeui],
+                  [use gnomeui library])])
+
+### default is to build with gnomeui
+if test "x$with_gnomeui" != "xno"; then
+	with_gnomeui=yes
+fi
+
+if test "x$with_gnomeui" = "xyes"; then
+
 PKG_CHECK_MODULES(GNOMEUI, [libgnomeui-2.0],
         [HAVE_GNOMEUI=1
         AC_DEFINE_UNQUOTED(HAVE_GNOMEUI,1,
@@ -1274,6 +1285,7 @@ PKG_CHECK_MODULES(GNOMEUI, [libgnomeui-2.0],
         [AC_MSG_WARN(gnomeui library not available. using alternate code for firefox interaction)])
 AC_SUBST(GNOMEUI_CFLAGS)
 AC_SUBST(GNOMEUI_LIBS)
+fi
 AM_CONDITIONAL(WITH_GNOMEUI, [test "x$HAVE_GNOMEUI" != "x"])
 
 dnl -----------------------------------
