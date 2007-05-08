@@ -48,7 +48,7 @@ typedef struct {
 #define PDF_MAGIC  "%PDF-"
 #define EPS_MAGIC  "\xC5\xD0\xD3\xC6"
 
-knowntype_t knowntypes[] = {
+static knowntype_t knowntypes[] = {
     { PNG_MAGIC,  sizeof(PNG_MAGIC)-1,  FT_PNG,  "png",  },
     { PS_MAGIC,   sizeof(PS_MAGIC)-1,   FT_PS,   "ps",   },
     { BMP_MAGIC,  sizeof(BMP_MAGIC)-1,  FT_BMP,  "bmp",  },

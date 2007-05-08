@@ -45,7 +45,7 @@ static int cmppair(Dt_t * d, point * key1, point * key2, Dtdisc_t * disc)
 	return 0;
 }
 
-Dtdisc_t intPairDisc = {
+static Dtdisc_t intPairDisc = {
     offsetof(pair, id),
     sizeof(point),
     offsetof(pair, link),
@@ -147,7 +147,7 @@ static void freeMPair(Dt_t * d, mpair * ap, MPairDisc * disc)
     disc->flist = ap;
 }
 
-Dtdisc_t intMPairDisc = {
+static Dtdisc_t intMPairDisc = {
     offsetof(mpair, id),
     sizeof(point),
     offsetof(mpair, link),
