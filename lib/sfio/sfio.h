@@ -277,6 +277,9 @@ extern "C" {
 
      _BEGIN_EXTERNS_ extern ssize_t _Sfi;
 
+#if !_BLD_sfio && defined(_WIN32)
+#define extern	__declspec(dllimport)
+#endif
 /* standard in/out/err streams */
     extern Sfio_t *sfstdin;
     extern Sfio_t *sfstdout;
@@ -284,6 +287,7 @@ extern "C" {
     extern Sfio_t _Sfstdin;
     extern Sfio_t _Sfstdout;
     extern Sfio_t _Sfstderr;
+#undef extern
 
 #if _DLL && _DLL_INDIRECT_DATA
 /* The Uwin shared library environment requires these to be defined

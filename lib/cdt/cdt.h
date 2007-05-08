@@ -166,6 +166,9 @@ extern "C" {
 #if _BLD_cdt && defined(__EXPORT__)
 #define extern	__EXPORT__
 #endif
+#if !_BLD_cdt && defined(_WIN32)
+#define extern	__declspec(dllimport)
+#endif
 #if !_BLD_cdt && defined(__IMPORT__)
 #define extern	__IMPORT__
 #endif

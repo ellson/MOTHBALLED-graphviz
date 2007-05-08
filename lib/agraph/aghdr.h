@@ -21,6 +21,7 @@ extern "C" {
 
 #ifndef ATT_GRAPHPVT_H
 #define ATT_GRAPHPVT_H 1
+#define _BLD_agraph 1
 
 #ifndef EXTERN
 #define EXTERN extern
