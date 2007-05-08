@@ -56,6 +56,9 @@
 
 #include <ctype.h>
 
+/* For graphviz, only unthreaded */
+#define vt_threaded 0
+
 #include "sfhdr.h"
 
 #define QL		01
