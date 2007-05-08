@@ -21,7 +21,7 @@
 #include "dmalloc.h"
 #endif
 
-COORD unseen = (double) INT_MAX;
+static COORD unseen = (double) INT_MAX;
 
 /* shortestPath:
  * Given a VxV weighted adjacency matrix, compute the shortest
