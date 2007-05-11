@@ -277,7 +277,7 @@ extern "C" {
 
      _BEGIN_EXTERNS_ extern ssize_t _Sfi;
 
-#if !_BLD_sfio && defined(_WIN32)
+#if !_BLD_sfio && defined(GVDLL)
 #define extern	__declspec(dllimport)
 #endif
 /* standard in/out/err streams */
