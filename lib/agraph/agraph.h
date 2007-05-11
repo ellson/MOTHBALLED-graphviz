@@ -398,7 +398,7 @@ for the name. */
 #	define extern  __IMPORT__
 #   endif
 #endif
-#if !defined(_BLD_agraph) && defined(_WIN32)
+#if !defined(_BLD_agraph) && defined(GVDLL)
 #define extern	__declspec(dllimport)
 #endif
 
