@@ -768,7 +768,11 @@ if test `$SWIG -help 2>&1 | $GREP -c '\-php[[5 ]]*- Generate'` = 0; then
 	AC_MSG_WARN([swig does not support php. The PHP packages will not be built])
 else
 AC_CHECK_PROG(PHP,php,php)
-PHP_INCLUDES="-I/usr/include/php5 -I/usr/include/php5/main -I/usr/include/php5/Zend -I/usr/include/php5/TSRM -I/usr/include/php5 -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
+if test -d /usr/include/php5; then
+PHP_INCLUDES="-I/usr/include/php5 -I/usr/include/php5/main -I/usr/include/php5/Zend -I/usr/include/php5/TSRM"
+else
+PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
+fi
 PHP_LIBS=
 save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $PHP_INCLUDES"
