@@ -7,7 +7,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
-	-I$(top_srcdir)/lib/pathplan $(PERL_INCLUDES) $(OCAML_INCLUDES) $(PHP_INCLUDES) $(PYTHON_INCLUDES) $(RUBY_INCLUDES) $(TCL_INCLUDES) 
+	-I$(top_srcdir)/lib/pathplan $(PERL_INCLUDES) $(OCAML_INCLUDES) $(PHP_INCLUDES) $(PYTHON_INCLUDES) $(RUBY_INCLUDES) $(TCL_INCLUDES) $(LUA_INCLUDES) $(GUILE_INCLUDES)
 
 LIBS =  @LIBS@ -lc
 
