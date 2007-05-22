@@ -553,20 +553,146 @@ if test "x$enable_lua" != "xno"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-lua *- Generate'` = 0; then
 	LUA=
 	AC_MSG_WARN([swig does not support lua. The LUA packages will not be built])
-else
-AC_CHECK_PROG(LUA,lua,lua)
-LUA_INCLUDES=
-LUA_LIBS=
-AC_CHECK_HEADER(lua.h,,[
-  AC_MSG_WARN([Unable to find header lua.h. The LUA packages will not be built])
-  LUA=
-  ])
-AC_SUBST(LUA_INCLUDES)
-AC_SUBST(LUA_LIBS)
+	enable_lua=no
+#else
+#AC_CHECK_PROG(LUA,lua,lua)
+#LUA_INCLUDES=
+#LUA_LIBS=
+#AC_CHECK_HEADER(lua.h,,[
+#  AC_MSG_WARN([Unable to find header lua.h. The LUA packages will not be built])
+#  LUA=
+#  ])
+#AC_SUBST(LUA_INCLUDES)
+#AC_SUBST(LUA_LIBS)
 fi
 fi
 fi
-AM_CONDITIONAL(WITH_LUA, [test "x$LUA" != "x"])
+
+#Lua is enabled by default
+if test "x$enable_lua" != "xno" ; then
+    # Not needed for Graphviz: enable_plugins="yes"
+
+    ac_save_CPPFLAGS="$CPPFLAGS"
+    ac_save_CFLAGS="$CFLAGS"
+    ac_save_LDFLAGS="$LDFLAGS"
+
+    LUA_INCLUDES=""
+    LUA_LIBS=""
+
+    if test -n "$lua_inc"; then
+       CFLAGS="$CFLAGS -I$lua_inc"
+       CPPFLAGS="$CPPFLAGS -I$lua_inc"
+    fi
+    if test -n "$lua_lib"; then
+       LDFLAGS="$LDFLAGS -L$lua_lib"
+    fi
+
+    if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
+        PKGCONFIG=""
+        AC_CHECK_PROGS(PKGCONFIG, pkg-config)
+        if test "x$PKGCONFIG" != "x"; then
+	    AC_MSG_CHECKING(for Lua headers and librairies with pkg-config)
+	    echo
+	    for l in "$lua_suffix" "" "51" "5.1" "50" "5.0" ; do
+	        pkgconfig_lua_found=`$PKGCONFIG --exists lua$l 2>/dev/null`
+	        if test "x$?" = "x0" ; then
+		    LUA_VERSION=`$PKGCONFIG --modversion lua$l`
+                    LUA_INCLUDES="$LUA_CFLAGS "`$PKGCONFIG --cflags lua$l`
+                    LUA_LIBS="$LUA_LFLAGS "`$PKGCONFIG --libs lua$l`
+
+		    pkgconfig_lualib_found=`$PKGCONFIG --exists lualib$l 2>/dev/null`
+		    if test  "x$?" = "x0"; then
+		       LUA_INCLUDES="$LUA_CFLAGS "`$PKGCONFIG --cflags lualib$l`
+		       LUA_LIBS="$LUA_LFLAGS "`$PKGCONFIG --libs lualib$l`
+		    fi
+                    break
+                fi
+            done
+        fi
+    fi
+
+    if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
+        LUACONFIG=""
+        AC_CHECK_PROGS(LUACONFIG, lua-config lua-config51 lua-config5.1 lua-config50 lua-config5.0)
+        if test "x$LUACONFIG" != "x" ; then
+            AC_MSG_CHECKING(for Lua headers and librairies with lua-config)
+	    echo
+            LUA_INCLUDES=`$LUACONFIG --include`
+            LUA_LIBS=`$LUACONFIG --libs`
+	    LUA_VERSION="5.0.x"
+        fi
+    fi
+
+    if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
+        AC_MSG_CHECKING(for Lua headers and librairies)
+	echo
+        AC_CHECK_HEADER(lua.h,ac_found_lua_header="yes",ac_found_lua_header="no")
+        AC_CHECK_HEADER(lualib.h,ac_found_liblua_header="yes",ac_found_liblua_header="no")
+        if test "x$ac_found_lua_header" = "xyes" -a "x$ac_found_liblua_header" = "xyes"; then
+            LUA_INCLUDES="$CFLAGS"
+        fi
+        for l in "$lua_suffix" "" "51" "5.1" "50" "5.0" ; do
+            AC_CHECK_LIB(lua$l,lua_call,ac_found_lua_lib="yes",ac_found_lua_lib="no")
+            if test "x$ac_found_lua_lib" = "xyes" ; then
+	        LUA_VERSION=">=5.1.0"
+
+	        LUA_LIBS="$LDFLAGS -llua$l -lm"
+
+		ac2_save_LDFLAGS="$LDFLAGS"
+		LDFLAGS="$LDFLAGS -llua$l -lm"
+
+		if echo "$host_os" | grep "^linux" 1>/dev/null 2>&1 ; then
+		   LDFLAGS="$LDFLAGS -ldl"
+		fi
+
+		AC_CHECK_LIB(lualib$l,luaL_openlib,ac_found_liblua_lib="yes",ac_found_liblua_lib="no")
+		if test "x$ac_found_liblua_lib" = "xyes" ; then
+		   LUA_VERSION="5.0.x"
+
+		   LUA_LIBS="$LUA_LFLAGS -llualib$l"
+
+		   if echo "$host_os" | grep "^linux" 1>/dev/null 2>&1 ; then
+		      LUA_LIBS="$LUA_LFLAGS -ldl"
+		   fi
+		fi
+
+		LDFLAGS="$ac2_save_LDFLAGS"
+		break
+	    fi
+        done
+    fi
+
+    AC_MSG_CHECKING(for Lua compiling and linking)
+    LUA_TEST=`LT=luatest.c ; echo "#include <lua.h>" > $LT;  echo "#include <lualib.h>" >> $LT; echo "int main() { luaopen_base((lua_State *)lua_open()); return 0; }" >> $LT ; $CC -Wall $LT -o $LT.out $LUA_INCLUDES $LUA_LIBS $CFLAGS $LDFLAGS 1>/dev/null 2>&1 ; echo $?; rm -f $LT $LT.out 1>/dev/null 2>&1`
+    if test "x$LUA_TEST" != "x0" ; then
+        AC_MSG_RESULT(no)
+        AC_MSG_WARN([
+*** Lua (>=5.0) headers and/or librairies couldn't be found in your system.
+*** Try to install liblua, liblualib and liblua-dev with your software package manager.
+*** Graphviz will be built without Lua support.])
+        enable_lua="no"
+        not_found="$not_found lua"
+    else
+        AC_MSG_RESULT(yes)
+    fi
+
+    CFLAGS="$ac_save_CFLAGS"
+    CPPFLAGS="$ac_save_CPPFLAGS"
+    LDFLAGS="$ac_save_LDFLAGS"
+fi
+
+if test "x$enable_lua" = "xyes" ; then
+    : # needed because if AC_SUBST is expanded to nothing, syntax error
+    AC_SUBST(LUA_INCLUDES)
+    AC_SUBST(LUA_LIBS)
+    # Not needed for Graphviz: AC_DEFINE(PLUGIN_LUA)
+fi
+
+# --->8--- weechat --->8---
+
+#echo "WE HAVE HERE: $enable_lua" > "/tmp/IAMAFOOL"
+AM_CONDITIONAL(WITH_LUA, [test "x$enable_lua" = "xyes"])
+
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for OCAML
