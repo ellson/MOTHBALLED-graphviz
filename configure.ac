@@ -850,7 +850,7 @@ else
 AC_CHECK_PROG(RUBY,ruby,ruby)
 if test "x$RUBY" != "x"; then
   RUBY_INCLUDES="-I`$RUBY $srcdir/config/config_ruby.rb INCLUDES`"
-  RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb lib` -lruby"
+  RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb lib` `$RUBY -rrbconfig -e \"puts Config::CONFIG[['LIBRUBYARG_SHARED']]\"`"
   save_CPPFLAGS=$CPPFLAGS
   CPPFLAGS="$CPPFLAGS $RUBY_INCLUDES"
   AC_CHECK_HEADER(ruby.h,,[
