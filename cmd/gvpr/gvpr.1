@@ -7,19 +7,19 @@ gvpr \- graph pattern scanning and processing language
 )
 .SH SYNOPSIS
 .B gvpr
-[\fB-icV?\fP]
+[\fB\-icV?\fP]
 [
-.BI -o
+.BI \-o
 .I outfile
 ]
 [
-.BI -a
+.BI \-a
 .I args
 ]
 [
 .I 'prog'
 |
-.BI -f
+.BI \-f
 .I progfile
 ]
 [ 
@@ -39,7 +39,7 @@ dot language.
 Basically,
 .B gvpr
 traverses each input graph, denoted by \fB$G\fP, visiting each node and edge,
-matching it with the predicate-action rules supplied in the input program.
+matching it with the predicate\(hyaction rules supplied in the input program.
 The rules are evaluated in order.
 For each predicate evaluating to true, the corresponding 
 action is performed. 
@@ -57,21 +57,21 @@ on the command line.
 The following options are supported:
 .TP
 .BI \-a " args"
-The string \fIargs\fP is split into whitespace-separated tokens, 
+The string \fIargs\fP is split into whitespace\(hyseparated tokens, 
 with the individual tokens
 available as strings in the \fBgvpr\fP program 
-as \fBARGV[\fI0\fP],...,ARGV[ARGC-1]\fR.
+as \fBARGV[\fI0\fP],...,ARGV[ARGC\-1]\fR.
 Whitespace characters within single or double quoted substrings, or
 preceded by a backslash, are ignored as separators. 
 In general, a backslash character turns off any special meaning of the
 following character.
-Note that the tokens derived from multiple \fB-a\fP flags are concatenated.
+Note that the tokens derived from multiple \fB\-a\fP flags are concatenated.
 .TP
 .B \-c
 Use the source graph as the output graph.
 .TP
 .B \-i
-Derive the node-induced subgraph extension of the output graph in the context 
+Derive the node\(hyinduced subgraph extension of the output graph in the context 
 of its root graph.
 .TP
 .BI \-o " outfile"
@@ -87,7 +87,7 @@ for the file. If
 .B \-f
 is not given,
 .B gvpr
-will use the first non-option argument as the program.
+will use the first non\(hyoption argument as the program.
 .TP
 .B \-V
 Causes the program to print version information and exit.
@@ -100,13 +100,13 @@ The following operand is supported:
 .I files
 Names of files containing 1 or more graphs in the dot language.
 If no
-.B -f
+.B \-f
 option is given, the first name is removed from the list and used 
 as the input program. If the list of files is empty, \fBstdin\fP will be used.
 .SH PROGRAMS
 A
 .B gvpr
-program consists of a list of predicate-action clauses, having one
+program consists of a list of predicate\(hyaction clauses, having one
 of the forms:
 .IP
 .BI "BEGIN { "  action " }"
@@ -125,7 +125,7 @@ A program can contain at most one of each of the \fBBEGIN\fP, \fBBEG_G\fP,
 \fBEND_G\fP and \fBEND\fP clauses. 
 There can be any number of \fBN\fP and \fBE\fP statements,
 the first applied to nodes, the second to edges.
-The top-level semantics of a \fBgvpr\fP program are:
+The top\(hylevel semantics of a \fBgvpr\fP program are:
 .PP
 .ta \w'\f(CWdelete array[expression]'u
 .RS
@@ -161,18 +161,18 @@ supported by the
 library.
 The only difference between predicates and actions is that the former
 must have a type that may interpreted as either true or false.
-Here the usual C convention is followed, in which a non-zero value is
-considered true. This would include non-empty strings and non-empty
+Here the usual C convention is followed, in which a non\(hyzero value is
+considered true. This would include non\(hyempty strings and non\(hyempty
 references to nodes, edges, etc. However, if a string can be 
 converted to an integer, this value is used.
 .PP
 In addition to the usual C base types
-(\f5void\fP, \f5int\fP, \f5char\fP, \f5float\fP, \f5long\fP, 
-\f5unsigned\fP and \f5double\fP), 
-\fBgvpr\fP \fRprovides \f5string\fP as a synonym for \f5char*\fP, and 
-the graph-based types \f5node_t\fP,
-\f5edge_t\fP, \f5graph_t\fP and \f5obj_t\fP.
-The \f5obj_t\fP type can be viewed as a supertype of the other 3 concrete types;
+(\fbvoid\fP, \fbint\fP, \fbchar\fP, \fbfloat\fP, \fblong\fP, 
+\fbunsigned\fP and \fbdouble\fP), 
+\fBgvpr\fP \fRprovides \fbstring\fP as a synonym for \fbchar*\fP, and 
+the graph\(hybased types \fbnode_t\fP,
+\fbedge_t\fP, \fbgraph_t\fP and \fbobj_t\fP.
+The \fbobj_t\fP type can be viewed as a supertype of the other 3 concrete types;
 the correct base type is maintained dynamically.
 Besides these base types, the only other supported type expressions
 are (associative) arrays. 
@@ -183,7 +183,7 @@ interpreted as patterns for the purpose of regular expression matching.
 Patterns use
 .IR ksh (1)
 file match pattern syntax.
-\fBgvpr\fP accepts C++ comments as well as cpp-type comments.
+\fBgvpr\fP accepts C++ comments as well as cpp\(hytype comments.
 For the latter, if a line begins with a '#' character, the rest of
 the line is ignored.
 .PP
@@ -234,7 +234,7 @@ treat the right hand operand as a pattern.
 \fBgvpr\fP will attempt to use an expression as a string or numeric value 
 as appropriate.
 .PP
-Expressions of graphical type (i.e., \f5graph_t, node_t,
+Expressions of graphical type (i.e., \fBgraph_t, node_t,
 edge_t, obj_t\fP) may be followed by a field reference in the
 form of \fB.\fP\fIname\fP. The resulting value is the value
 of the attribute named \fIname\fP of the given object.
@@ -247,11 +247,11 @@ clauses.
 .PP
 As usual in the 
 .IR libagraph (3)
-model, attributes are string-valued.
+model, attributes are string\(hyvalued.
 In addition,
 .B gvpr
-supports certain pseudo-attributes of graph objects, not necessarily
-string-valued. These reflect intrinsic properties of the graph objects
+supports certain pseudo\(hyattributes of graph objects, not necessarily
+string\(hyvalued. These reflect intrinsic properties of the graph objects
 and cannot be set by the user.
 .TP
 \fBhead\fR : \fBnode_t\fR
@@ -262,10 +262,10 @@ the tail of an edge.
 .TP
 \fBname\fR : \fBstring\fR
 the name of an edge, node or graph. The name of an edge has the
-form "\fI<tail-name><edge-op><head-name>\fB[\fI<key>\fB]\fR",
-where \fI<edge-op>\fP is "\fB->\fP" or "\fB--\fP" depending on
+form "\fI<tail\(hyname><edge\(hyop><head\(hyname>\fB[\fI<key>\fB]\fR",
+where \fI<edge\(hyop>\fP is "\fB\->\fP" or "\fB\-\-\fP" depending on
 whether the graph is directed or not. The bracket part \fB[\fI<key>\fB]\fR
-only appears if the edge has a non-trivial key.
+only appears if the edge has a non\(hytrivial key.
 .TP
 \fBindegree\fR : \fBint\fR
 the indegree of a node.
@@ -291,11 +291,11 @@ the number of edges in the graph
 the number of nodes in the graph
 .TP
 \fBdirected\fR : \fBint\fR
-true (non-zero) if the graph is directed
+true (non\(hyzero) if the graph is directed
 .TP
 \fBstrict\fR : \fBint\fR
-true (non-zero) if the graph is strict
-.SH "BUILT-IN FUNCTIONS"
+true (non\(hyzero) if the graph is strict
+.SH "BUILT\(hyIN FUNCTIONS"
 .PP
 The following functions are built into \fBgvpr\fP. Those functions
 returning references to graph objects return \fBNULL\fP in case of failure.
@@ -304,9 +304,9 @@ returning references to graph objects return \fBNULL\fP in case of failure.
 \fBgraph\fP(\fIs\fP : \fBstring\fP, \fIt\fP : \fBstring\fP) : \fBgraph_t\fP
 creates a graph whose name is \fIs\fP and whose type is
 specified by the string \fIt\fP. Ignoring case, the characters
-\f5U, D, S, N\fR have the interpretation undirected, directed,
-strict, and non-strict, respectively. If \fIt\fP is empty,
-a directed, non-strict graph is generated.
+\fBU, D, S, N\fR have the interpretation undirected, directed,
+strict, and non\(hystrict, respectively. If \fIt\fP is empty,
+a directed, non\(hystrict graph is generated.
 .TP
 \fBsubg\fP(\fIg\fP : \fBgraph_t\fP, \fIs\fP : \fBstring\fP) : \fBgraph_t\fP
 creates a subgraph in graph \fIg\fP with name \fIs\fP. If the subgraph
@@ -445,7 +445,7 @@ copies the attributes of object \fIsrc\fP to object \fItgt\fP, overwriting
 any attribute values \fItgt\fP may initially have.
 .TP
 \fBinduce\fP(\fIg\fP : \fBgraph_t\fP) : \fBvoid\fP
-extends \fIg\fP to its node-induced subgraph extension in its root graph.
+extends \fIg\fP to its node\(hyinduced subgraph extension in its root graph.
 .TP
 \fBaget\fP(\fIsrc\fP : \fBobj_t\fP, \fIname\fP : \fBstring\fP) : \fBstring\fP
 returns the value of attribute \fIname\fP in object \fIsrc\fP. This is
@@ -455,7 +455,7 @@ Returns \fBNULL\fP on failure or if the attribute is not defined.
 .TP
 \fBaset\fP(\fIsrc\fP : \fBobj_t\fP, \fIname\fP : \fBstring\fP, \fIvalue\fP : \fBstring\fP) : \fBint\fP
 sets the value of attribute \fIname\fP in object \fIsrc\fP to \fIvalue\fP.
-Returns 0 on success, non-zero on failure. See \fBaget\fP above.
+Returns 0 on success, non\(hyzero on failure. See \fBaget\fP above.
 .TP
 \fBgetDflt\fP(\fIg\fP : \fBgraph_t\fP, \fIkind\fP : \fBstring\fP, \fIname\fP : \fBstring\fP) : \fBstring\fP
 returns the default value of attribute \fIname\fP in objects in \fIg\fP of
@@ -468,7 +468,7 @@ sets the default value of attribute \fIname\fP to \fIvalue\fP in
 objects in \fIg\fP of
 the given \fIkind\fP. For nodes, edges, and graphs, \fIkind\fP
 should be "N", "E", and "G", respectively.
-Returns 0 on success, non-zero on failure. See \fBsetDflt\fP above.
+Returns 0 on success, non\(hyzero on failure. See \fBsetDflt\fP above.
 .TP
 \fBcompOf\fP(\fIg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBgraph_t\fP
 returns the connected component of the graph \fIg\fP containing node \fIn\fP,
@@ -529,12 +529,12 @@ returns the length of the string \fIs\fP.
 .TP
 \fBindex\fP(\fIs\fP : \fBstring\fP, \fIt\fP : \fBstring\fP) : \fBint\fP
 returns the index of the character in string \fIs\fP where the leftmost
-copy of string \fIt\fP can be found, or -1 if \fIt\fP is not a 
+copy of string \fIt\fP can be found, or \-1 if \fIt\fP is not a 
 substring of \fIs\fP.
 .TP
 \fBmatch\fP(\fIs\fP : \fBstring\fP, \fIp\fP : \fBstring\fP) : \fBint\fP
 returns the index of the character in string \fIs\fP where the leftmost
-match of pattern \fIp\fP can be found, or -1 if no substring of \fIs\fP
+match of pattern \fIp\fP can be found, or \-1 if no substring of \fIs\fP
 matches \fIp\fP.
 .TP
 \fBcanon\fP(\fIs\fP : \fBstring\fP) : \fBstring\fP
@@ -611,7 +611,7 @@ opens the file \fIs\fP as an I/O stream. The string argument \fIt\fP
 specifies how the file is opened. The arguments are the same as for
 the C function
 .IR fopen (3).
-It returns an integer denoting the stream, or -1 on error.
+It returns an integer denoting the stream, or \-1 on error.
 .sp
 As usual, streams 0, 1 and 2 are already open as \fBstdin\fP, \fBstdout\fP,
 and \fBstderr\fP, respectively. Since \fBgvpr\fP may use \fBstdin\fP to
@@ -647,7 +647,7 @@ returns the cosine of \fId\fP.
 returns the sine of \fId\fP.
 .TP
 \fBatan2\fP(\fIy\fP : \fBdouble\fP, \fIx\fP : \fBdouble\fP) : \fBdouble\fP
-returns the arctangent of \fIy/x\fP in the range -pi to pi.
+returns the arctangent of \fIy/x\fP in the range \-pi to pi.
 .SS "Miscellaneous"
 .TP
 \fBexit\fP() : \fBvoid\fP
@@ -661,7 +661,7 @@ to exit with the exit code
 defaults to 0 if omitted.
 .TP
 \fBrand\fP() : \fBdouble\fP
-returns a pseudo-random double between 0 and 1.
+returns a pseudo\(hyrandom double between 0 and 1.
 .TP
 \fBsrand\fP() : \fBint\fP
 .TP
@@ -670,10 +670,10 @@ sets a seed for the random number generator. The optional argument gives
 the seed; if it is omitted, the current time is used. The previous seed
 value is returned. \fBsrand\fP should be called before any calls to
 \fBrand\fP.
-.SH "BUILT-IN VARIABLES"
+.SH "BUILT\(hyIN VARIABLES"
 .PP
 .B gvpr
-provides certain special, built-in variables, whose values are set
+provides certain special, built\(hyin variables, whose values are set
 automatically by \fBgvpr\fP depending on the context. Except as noted,
 the user cannot modify their values.
 .TP
@@ -691,7 +691,7 @@ in \fBBEGIN\fP or \fBEND\fP clauses.
 \fB$O\fP : \fBgraph_t\fP
 denotes the output graph. Before graph traversal, it is initialized
 to the target graph. After traversal and any \fBEND_G\fP actions,
-if it refers to a non-empty graph, that graph is printed onto the output stream.
+if it refers to a non\(hyempty graph, that graph is printed onto the output stream.
 It is only valid in \fBN\fP, \fBE\fP and \fBEND_G\fP clauses.
 The output graph may be set by the user.
 .TP
@@ -701,7 +701,7 @@ and is available only in \fBN\fP, \fBE\fP and \fBEND_G\fP clauses.
 .TP
 \fB$tgtname\fP : \fBstring\fP
 denotes the name of the target graph. 
-By default, it is set to \f5"gvpr_result"\fP.
+By default, it is set to \fB"gvpr_result"\fP.
 If used multiple times during the execution of
 .BR gvpr ,
 the name will be appended with an integer. 
@@ -709,7 +709,7 @@ This variable may be set by the user.
 .TP
 \fB$tvroot\fP : \fBnode_t\fP
 indicates the starting node for a (directed or undirected)
-depth-first traversal of the
+depth\(hyfirst traversal of the
 graph (cf. \fB$tvtype\fP below).
 The default value is \fBNULL\fP for each input graph.
 .TP
@@ -722,14 +722,14 @@ The meaning of these values is discussed below.
 .TP
 \fBARGC\fP : \fBint\fP
 denotes the number of arguments specified by the 
-\fB-a\fP \fIargs\fP command-line argument.
+\fB\-a\fP \fIargs\fP command\(hyline argument.
 .TP
 \fBARGV\fP : \fBstring array\fP
 denotes the array of arguments specified by the 
-\fB-a\fP \fIargs\fP
-command-line argument. The \fIi\fPth argument is given
+\fB\-a\fP \fIargs\fP
+command\(hyline argument. The \fIi\fPth argument is given
 by \fBARGV[\fIi\fP]\fR.
-.SH "BUILT-IN CONSTANTS"
+.SH "BUILT\(hyIN CONSTANTS"
 .PP
 There are several symbolic constants defined by \fBgvpr\fP.
 .TP
@@ -749,7 +749,7 @@ a traversal which first visits all of the edges, then all
 of the nodes.
 .TP
 \fBTV_dfs\fR : \fItvtype_t\fR
-a traversal of the graph using a depth-first search on the
+a traversal of the graph using a depth\(hyfirst search on the
 underlying undirected graph. 
 To do the traversal, \fBgvpr\fP will check the value of
 \fB$tvroot\fP. If this has the same value that it had previously
@@ -761,11 +761,11 @@ if \fB$tvroot\fP is \fBNULL\fP, the traversal will stop. Note that using
 \fBTV_dfs\fP and \fB$tvroot\fP, it is possible to create an infinite loop.
 .TP
 \fBTV_fwd\fR : \fItvtype_t\fR
-a traversal of the graph using a depth-first search on the
+a traversal of the graph using a depth\(hyfirst search on the
 graph following only forward arcs. In
 .TP
 \fBTV_bfs\fR : \fItvtype_t\fR
-a traversal of the graph using a bread-first search on the
+a traversal of the graph using a bread\(hyfirst search on the
 graph ignoring edge directions. See the item on \fBTV_dfs\fR above
 for the role of \fB$tvroot\fP.
 .IR libagraph (3),
@@ -774,7 +774,7 @@ used for this traversal. The choice of roots for the traversal is the
 same as described for \fBTV_dfs\fR above.
 .TP
 \fBTV_rev\fR : \fItvtype_t\fR
-a traversal of the graph using a depth-first search on the
+a traversal of the graph using a depth\(hyfirst search on the
 graph following only reverse arcs. In
 .IR libagraph (3),
 edges in undirected graphs are given an arbitrary direction, which is
@@ -785,17 +785,17 @@ same as described for \fBTV_dfs\fR above.
 .ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
-\f5gvpr -i 'N[color=="blue"]' file.dot\fP
+\fBgvpr \-i 'N[color=="blue"]' file.dot\fP
 .fi
 .RE
 .DT
 .PP
-Generate the node-induced subgraph of all nodes with color blue.
+Generate the node\(hyinduced subgraph of all nodes with color blue.
 .PP
 .ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
-\f5gvpr -c 'N[color=="blue"]{color = "red"}' file.dot\fP
+\fBgvpr \-c 'N[color=="blue"]{color = "red"}' file.dot\fP
 .fi
 .RE
 .DT
@@ -805,7 +805,7 @@ Make all blue nodes red.
 .ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
-\f5BEGIN { int n, e; int tot_n = 0; int tot_e = 0; }
+\fBBEGIN { int n, e; int tot_n = 0; int tot_e = 0; }
 BEG_G {
   n = nNodes($G);
   e = nEdges($G);
@@ -823,7 +823,7 @@ Version of the program \fBgc\fP.
 .ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
-\f5gvpr -c ""\fP
+\fBgvpr \-c ""\fP
 .fi
 .RE
 .DT
@@ -833,7 +833,7 @@ Equivalent to \fBnop\fP.
 .ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
-\f5BEG_G { graph_t g = graph ("merge", "S"); }
+\fBBEG_G { graph_t g = graph ("merge", "S"); }
 E {
   node_t h = clone(g,$.head);
   node_t t = clone(g,$.tail);
@@ -851,7 +851,7 @@ of an edge indicates how many edges from the input graph the edge represents.
 .ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
-\f5BEGIN {node_t n; int deg[]}
+\fBBEGIN {node_t n; int deg[]}
 E{deg[head]++; deg[tail]++; }
 END_G {
   for (deg[n]) {
@@ -866,8 +866,8 @@ Computes the degrees of nodes with edges.
 .SH ENVIRONMENT
 .TP
 .B GPRPATH
-Colon-separated list of directories to be searched to find
-the file specified by the -f option.
+Colon\(hyseparated list of directories to be searched to find
+the file specified by the \-f option.
 .SH BUGS
 When the program is given as a command line argument, the usual
 shell interpretation takes place, which may affect some of the
