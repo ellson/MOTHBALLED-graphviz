@@ -134,6 +134,7 @@ of graphs (as in nodes and edges, not as in barcharts).
 %{_libdir}/*.so.*
 %{_libdir}/graphviz/*.so.*
 %{_mandir}/man1/*.1*
+%{_mandir}/man7/*.7*
 %dir %{_datadir}/graphviz
 %{_datadir}/graphviz/lefty
 %exclude %{_libdir}/graphviz/*/*
