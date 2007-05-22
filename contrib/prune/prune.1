@@ -10,7 +10,7 @@
 .TH prune 1
 
 .SH NAME
-prune - Prune directed graphs
+prune \- Prune directed graphs
 .SH SYNOPSIS
 .B prune
 [
@@ -32,7 +32,7 @@ but can be given attributes so that they can be easily located by a
 graph stream editor such as
 .B gpr(1).
 .B prune
-correctly handles cycles, loops and multi-edges.
+correctly handles cycles, loops and multi\(hyedges.
 
 Both options can appear multiple times on the command line. All
 subgraphs rooted at the respective nodes given will then be
@@ -62,31 +62,31 @@ of the form
 .PP
 	digraph DG {
 .br
-	  A -> B;
+	  A \-> B;
 .br
-	  A -> C;
+	  A \-> C;
 .br
 
 .br
-	  B -> D;
+	  B \-> D;
 .br
-	  B -> E;
+	  B \-> E;
 .br
 	}
 .br
 
 , processed by the command
 .PP
-	prune -n B test.dot
+	prune \-n B test.dot
 .PP
 would produce the following output (the actual code might be formatted
 in a slightly different way).
 .PP
 	digraph DG {
 .br
-	  A -> B;
+	  A \-> B;
 .br
-	  A -> C;
+	  A \-> C;
 .br
 	}
 .br
@@ -97,19 +97,19 @@ of the form
 .PP
 	digraph DG {
 .br
-	  A -> B;
+	  A \-> B;
 .br
-	  A -> C;
-.br
-
-.br
-	  B -> D;
-.br
-	  B -> E;
+	  A \-> C;
 .br
 
 .br
-	  C -> E;
+	  B \-> D;
+.br
+	  B \-> E;
+.br
+
+.br
+	  C \-> E;
 .br
 	}
 .br
@@ -120,7 +120,7 @@ to
 .I E
 ), processed by the command
 .PP
-	prune -n B -N color=red test.dot
+	prune \-n B \-N color=red test.dot
 .PP
 results in
 .PP
@@ -128,11 +128,11 @@ results in
 .br
 	  B [color=red];
 .br
-	  A -> B;
+	  A \-> B;
 .br
-	  A -> C;
+	  A \-> C;
 .br
-	  C -> E;
+	  C \-> E;
 .br
 	}
 .br

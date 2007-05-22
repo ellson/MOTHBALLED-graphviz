@@ -12,7 +12,7 @@ gvcolor \- flow colors through a ranked digraph
 ]
 .SH "USAGE"
 .ft 5
-dot file.dot | gvcolor | dot -T\fI<format>\fP
+dot file.dot | gvcolor | dot \-T\fI<format>\fP
 .ft
 .SH DESCRIPTION
 .B gvcolor
@@ -29,7 +29,7 @@ attribute of a node.  It is often effective to
 assign colors to a few key source or sink nodes, manually setting
 their colors by editing the graph file.
 Color names are as in \fIdot(1)\fP: symbolic names or RGB triples.
-It is best to choose some easily-distinguished but related colors;
+It is best to choose some easily\(hydistinguished but related colors;
 not necessarily spaced evenly around the color wheel.  For example,
 blue_green, green, and light_yellow looks better than red, green, blue.
 .PP

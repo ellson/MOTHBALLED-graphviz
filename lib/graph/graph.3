@@ -65,16 +65,16 @@ defined at compile time.
 These allow efficient representation and direct access to values
 such as marks, weights, and pointers for writing graph algorithms.
 External attributes, on the other hand, are character strings
-(name-value pairs) dynamically allocated at runtime and accessed
+(name\(hyvalue pairs) dynamically allocated at runtime and accessed
 through \fIlibgraph\fP calls.  External attributes are used in
 graph file I/O; internal attributes are not.  Conversion between
 internal and external attributes must be explicitly programmed.
 
 The subgraphs in a main graph are represented by an auxiliary directed
-graph (a meta-graph).  Meta-nodes correspond to subgraphs, and meta-edges
+graph (a meta\(hygraph).  Meta\(hynodes correspond to subgraphs, and meta\(hyedges
 signify containment of one subgraph in another. 
 \f5agmetanode\fP and \f5agusergraph\fP map between
-subgraphs and meta-nodes.  The nodes and edges of the meta-graph may
+subgraphs and meta\(hynodes.  The nodes and edges of the meta\(hygraph may
 be traversed by the usual \fIlibgraph\fP functions for this purpose.
 
 .SH USE
@@ -86,10 +86,10 @@ including \f5<graphviz/graph.h>\fP.
 (This is a macro that calls \f5aginitlib()\fP to define the sizes
 of Agraphinfo_t, Agnodeinfo_t, and Agedgeinfo_t.)
 
-3. Compile with -lgraph -lcdt.
+3. Compile with \-lgraph \-lcdt.
 
 Except for the \fBu\fP fields, \fIlibgraph\fP
-data structures must be considered read-only.
+data structures must be considered read\(hyonly.
 Corrupting their contents by direct updates can cause
 catastrophic errors.
 
@@ -123,13 +123,13 @@ A graph \fIkind\fP is one of:
 AGRAPH, AGRAPHSTRICT, AGDIGRAPH, or AGDIGRAPHSTRICT.
 There are related macros for testing the properties of a graph:
 AG_IS_DIRECTED(g) and AG_IS_STRICT(g).
-Strict graphs cannot have self-arcs or multi-edges.
+Strict graphs cannot have self\(hyarcs or multi\(hyedges.
 \fBattr\fP is the array of external attribute values.
 \fBuniv\fP points to values shared by all subgraphs of a main graph.
 \fBnodes\fP, \fBinedges\fP, and \fBoutedges\fP are sets maintained
 by \fBcdt(3)\fP.  Normally you don't access these dictionaries
-directly, though the edge dictionaries may be re-ordered to support
-programmer-defined ordered edges (see \f5dtreorder\fP in \fIcdt(3)\fP).
+directly, though the edge dictionaries may be re\(hyordered to support
+programmer\(hydefined ordered edges (see \f5dtreorder\fP in \fIcdt(3)\fP).
 \fBproto\fP is a stack of templates for node and edge initialization.
 The attributes of these nodes and edges are set in the usual way (\f5agget\fP,
 \f5agset\fP, etc.) to set defaults.
@@ -168,7 +168,7 @@ typedef struct Agnode_t {
 \f5agnode\fP attempts to create a node.
 If one with the requested name already exists, the old node 
 is returned unmodified.
-Otherwise a new node is created, with attributed copied from g->proto->n.
+Otherwise a new node is created, with attributed copied from g\->proto\->n.
 \f5agfstnode\fP (\f5agnxtnode\fP) return the first (next) element
 in the node set of a graph, respectively, or NULL.
 \f5aglstnode\fP (\f5agprvnode\fP) return the last (previous) element
@@ -184,20 +184,20 @@ typedef struct Agedge_t {
 } Agedge_t;
 \fP
 .fi
-\f5agedge\fP creates a new edge with the attributes of g->proto->e
+\f5agedge\fP creates a new edge with the attributes of g\->proto\->e
 including its key if not empty.
 \f5agfindedge\fP finds the first (u,v) edge in \f5g\fP.
 \f5agfstedge\fP (\f5agnxtedge\fP) return the first (next) element
 in the edge set of a graph, respectively, or NULL.
 \f5agfstin\fP, \f5agnxtin\fP, \f5agfstout\fP, \f5agnxtout\fP
-refer to in- or out-edge sets.
+refer to in\(hy or out\(hyedge sets.
 The idiomatic usage in a directed graph is:
 .sp
 \f5    for (e = agfstout(g,n); e; e = agnextout(g,e)) your_fun(e);\fP
 .P
 An edge is uniquely identified by its endpoints and its \f5key\fP
 attribute (if there are multiple edges).
-If the \f5key\fP of \f5g->proto->e\fP is empty,
+If the \f5key\fP of \f5g\->proto\->e\fP is empty,
 new edges are assigned an internal value.
 Edges also have \f5tailport\fP and \f5headport\fP values.
 These have special syntax in the graph file language but are
@@ -236,25 +236,25 @@ and is NULL terminated.
 Here is a program fragment to print node attribute names:
 .nf
     \f5attrsym_t *aptr;
-    for (i = 0; aptr = g->univ->nodedict->list[i]; i++) puts(aptr->name);\fP
+    for (i = 0; aptr = g\->univ\->nodedict\->list[i]; i++) puts(aptr\->name);\fP
 .fi
 .SH EXAMPLE GRAPH FILES
 .nf
 graph any_name {            /* an undirected graph */
-    a -- b;                 /* a simple edge */
-    a -- x1 -- x2 -- x3;    /* a chain of edges */
-    "x3.a!" -- a;           /* quotes protect special characters */
-    b -- {q r s t};         /* edges that fan out */
+    a \-\- b;                 /* a simple edge */
+    a \-\- x1 \-\- x2 \-\- x3;    /* a chain of edges */
+    "x3.a!" \-\- a;           /* quotes protect special characters */
+    b \-\- {q r s t};         /* edges that fan out */
     b [color="red",size=".5,.5"];   /* set various node attributes */
     node [color=blue];      /* set default attributes */
-    b -- c [weight=25];     /* set edge attributes */
+    b \-\- c [weight=25];     /* set edge attributes */
     subgraph sink_nodes {a b c};    /* make a subgraph */
 }
 
 digraph G {
     size="8.5,11";            /* sets a graph attribute */
-    a -> b;                 /* makes a directed edge */
-    chip12.pin1 -> chip28.pin3; /* uses named node "ports" */
+    a \-> b;                 /* makes a directed edge */
+    chip12.pin1 \-> chip28.pin3; /* uses named node "ports" */
 }
 .fi
 
@@ -264,7 +264,7 @@ digraph G {
 .BR libdict (3)
 .br
 S. C. North and K. P. Vo, "Dictionary and Graph Libraries''
-1993 Winter USENIX Conference Proceedings, pp. 1-11.
+1993 Winter USENIX Conference Proceedings, pp. 1\(hy11.
 
 .SH AUTHOR
 Stephen North (north@ulysses.att.com), AT&T Bell Laboratories.

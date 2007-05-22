@@ -12,11 +12,11 @@
 extern GVC_t *gvNEWcontext(char **info, char *user);
 extern char *gvUsername(void);
 
-/*  set up a graphviz context - alternative */
+/*  set up a graphviz context \(hy alternative */
 /*     (wraps the above two functions using info built into libgvc) */
 extern GVC_t *gvContext(void);
 
-/* parse command line args - minimally argv[0] sets layout engine */
+/* parse command line args \(hy minimally argv[0] sets layout engine */
 extern int gvParseArgs(GVC_t *gvc, int argc, char **argv);
 extern graph_t *gvNextInputGraph(GVC_t *gvc);
 
@@ -39,10 +39,10 @@ extern int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out);
 /* Render layout in a specified format to an open FILE */
 extern int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename);
 
-/* Render layout according to -T and -o options found by gvParseArgs */
+/* Render layout according to \-T and \-o options found by gvParseArgs */
 extern int gvRenderJobs(GVC_t *gvc, graph_t *g);
 
-/* Clean up layout data structures - layouts are not nestable (yet) */
+/* Clean up layout data structures \(hy layouts are not nestable (yet) */
 extern int gvFreeLayout(GVC_t *gvc, graph_t *g);
 
 /* Clean up graphviz context */
