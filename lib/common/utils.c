@@ -279,6 +279,8 @@ char *gvUsername(void)
     }
 #endif
     if (user == NULL)
+	user = getenv ("USERNAME");
+    if (user == NULL)
 	user = "Bill Gates";
     return user;
 }
