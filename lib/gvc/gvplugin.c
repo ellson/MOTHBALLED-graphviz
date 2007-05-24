@@ -310,8 +310,10 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
 	pprev = NULL;
 	while (*pnext) {
 	    /* list only the matching type, and only once*/
-	    if ((strcasecmp(s, (*pnext)->typestr) == 0)
-		    && ! (pprev && strcasecmp((*pnext)->packagename, (*pprev)->packagename) == 0)) {
+	    if (strcasecmp(s, (*pnext)->typestr) == 0
+		&& !(pprev
+		    && strcasecmp(s, (*pprev)->typestr) == 0
+		    && strcasecmp((*pprev)->packagename, (*pnext)->packagename) == 0)) {
 		/* list each member of the matching type as "type:path" */
 		append_buf(' ', (*pnext)->typestr, new);
 		buf = append_buf(':', (*pnext)->packagename, FALSE);
