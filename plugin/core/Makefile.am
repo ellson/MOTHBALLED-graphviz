@@ -21,6 +21,7 @@ libgvplugin_core_C_la_SOURCES = \
 	gvrender_core_ps.c \
 	gvrender_core_fig.c \
 	gvrender_core_svg.c \
+	gvrender_core_vml.c \
 	gvrender_core_map.c \
 	gvloadimage_core.c
 
