@@ -18,6 +18,10 @@
 #include "config.h"
 #endif
 
+#if defined(GVDLL)
+#define _BLD_dotneato 1
+#else
 #define EXTERN
+#endif
 #include "types.h"
 #include "globals.h"
