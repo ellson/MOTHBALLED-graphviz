@@ -297,4 +297,4 @@ CLEANFILES = test_*/* gv_*.man \
 	gv_php.cpp $(PHP_hdr) \
 	gv_python.cpp $(PYTHON_hdr) gv.pyc \
 	gv_ruby.cpp $(RUBY_hdr) \
-	gv_tcl.cpp $(TCL_hdr)
+	gv_tcl.cpp $(TCL_hdr) pkgIndex.tcl
