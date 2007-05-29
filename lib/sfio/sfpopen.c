@@ -128,6 +128,7 @@ char *argcmd;
 
 #endif /*_PACKAGE_ast*/
 
+#ifndef WIN32
 #if __STD_C
 Sfio_t *sfpopen(Sfio_t * f, const char *command, const char *mode)
 #else
@@ -296,3 +297,4 @@ char *mode;			/* mode of the stream */
     }
 #endif /*_PACKAGE_ast*/
 }
+#endif
