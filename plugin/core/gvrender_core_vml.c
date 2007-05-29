@@ -38,6 +38,19 @@ extern void core_printf(GVJ_t * job, const char *format, ...);
 
 char graphcoords[256];
 
+#ifdef WIN32
+static int
+snprintf (char *str, int n, char *fmt, ...)
+{
+int ret;
+va_list a;
+va_start (a, fmt);
+ret = vsnprintf (str, n, fmt, a);
+va_end (a);
+return ret;
+}
+#endif
+
 static void vml_bzptarray(GVJ_t * job, pointf * A, int n)
 {
     int i;
