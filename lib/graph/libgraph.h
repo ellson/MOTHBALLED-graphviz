@@ -61,6 +61,11 @@ extern "C" {
 #ifndef _BLD_graph
 #define _BLD_graph 1
 #endif
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "graph.h"
 
 #ifdef offsetof
