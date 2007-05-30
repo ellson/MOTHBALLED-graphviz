@@ -45,7 +45,7 @@ snprintf (char *str, int n, char *fmt, ...)
 int ret;
 va_list a;
 va_start (a, fmt);
-ret = vsnprintf (str, n, fmt, a);
+ret = _vsnprintf (str, n, fmt, a);
 va_end (a);
 return ret;
 }
