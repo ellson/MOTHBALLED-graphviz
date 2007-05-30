@@ -36,7 +36,12 @@ extern "C" {
 	void* address;
     } lt_symlist_t;
 
+
+#if defined(GVDLL) && !defined(ENABLE_LTDL)
+    extern lt_symlist_t lt_preloaded_symbols[];
+#else
     extern const lt_symlist_t lt_preloaded_symbols[];
+#endif
 
 #ifdef __cplusplus
 }
