@@ -38,10 +38,6 @@
 #   define external __IMPORT__
 #endif
 #endif
-#if !_BLD_dotneato && defined(GVDLL)
-#define external	__declspec(dllimport)
-#define EXTERN	__declspec(dllimport)
-#endif
 
 #ifndef external
 #   define external   extern
