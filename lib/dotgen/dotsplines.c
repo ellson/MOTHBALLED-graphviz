@@ -1019,7 +1019,7 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e, int et)
     else {
 	lb.LL.x = ND_coord_i(ln).x - ND_lw_i(ln);
 	lb.UR.x = ND_coord_i(ln).x + ND_rw_i(ln);
-	lb.UR.y = ND_coord_i(ln).y - ND_ht_i(ln)/2;
+	lb.UR.y = ND_coord_i(ln).y + ND_ht_i(ln)/2;
 	ydelta = ND_coord_i(ln).y - GD_rank(g)[ND_rank(tn)].ht1 -
 		ND_coord_i(tn).y + GD_rank(g)[ND_rank(tn)].ht2;
 	ydelta /= 6;
