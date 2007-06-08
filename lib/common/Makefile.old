@@ -64,8 +64,9 @@ htmlparse.o htmllex.o : htmllex.h
 fontmetrics.o: ps_font_equiv.h
 
 # ensure font names are properly sorted for bsearch operation 
-ps_font_equiv.h: ps_font_equiv.txt
-	./mksvgfonts.pl fontmap.cfg ps_font_equiv.txt | LC_ALL=C $(SORT) >ps_font_equiv.h
+ps_font_equiv.h: ps_font_equiv.txt ps_fontmap.txt ps_fontmap.txt
+	cp ps_fontmap.txt ps_font_equiv.h
+	./mksvgfonts.pl fontmap.cfg ps_font_equiv.txt | LC_ALL=C $(SORT) >>ps_font_equiv.h
 
 ps.h : ps.txt
 	$(AWK) -f $(AWKDIR)/stringize.awk ps.txt > ps.h
