@@ -215,6 +215,14 @@ static void cairogen_end_page(GVJ_t * job)
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
     case FORMAT_PNG:
         surface = cairo_get_target(cr);
+#ifdef HAVE_SETMODE
+#ifdef O_BINARY
+	/*
+	 * Windows will do \n -> \r\n  translations on stdout
+	 * unless told otherwise.  */
+	setmode(fileno(job->output_file), O_BINARY);
+#endif
+#endif
 	cairo_surface_write_to_png_stream(surface, writer, job->output_file);
 	break;
 #endif
