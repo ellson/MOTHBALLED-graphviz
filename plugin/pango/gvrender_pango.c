@@ -24,6 +24,7 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+#include <fcntl.h>
 
 #if defined(HAVE_FENV_H) && defined(HAVE_FESETENV) && defined(HAVE_FEGETENV) && defined(HAVE_FEENABLEEXCEPT)
 
