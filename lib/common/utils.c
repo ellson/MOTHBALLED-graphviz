@@ -1073,6 +1073,7 @@ checkCompound(edge_t * e, graph_t * clg, agxbuf * xb, Dt_t * map)
     edge_t *ce;
     item *ip;
 
+    if (IS_CLUST_NODE(h)) return;
     tg = MAPC(t);
     hg = MAPC(h);
     if (!tg && !hg)
@@ -1136,6 +1137,7 @@ int processClusterEdges(graph_t * g)
 {
     int rv;
     node_t *n;
+    node_t *nxt;
     edge_t *e;
     graph_t *clg;
     agxbuf xb;
@@ -1146,6 +1148,7 @@ int processClusterEdges(graph_t * g)
     clg = agsubg(g, "__clusternodes");
     agxbinit(&xb, SMALLBUF, buf);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	if (IS_CLUST_NODE(n)) continue;
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    checkCompound(e, clg, &xb, map);
 	}
@@ -1153,7 +1156,8 @@ int processClusterEdges(graph_t * g)
     agxbfree(&xb);
     dtclose(map);
     rv = agnnodes(clg);
-    for (n = agfstnode(clg); n; n = agnxtnode(clg, n)) {
+    for (n = agfstnode(clg); n; n = nxt) {
+	nxt = agnxtnode(clg, n);
 	agdelete(g, n);
     }
     agclose(clg);
