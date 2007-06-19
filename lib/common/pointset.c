@@ -129,7 +129,7 @@ typedef struct {
 
 static mpair *mkMPair(Dt_t * d, mpair * obj, MPairDisc * disc)
 {
-    mpair *ap = GNEW(mpair);
+    mpair *ap;
 
     if (disc->flist) {
 	ap = disc->flist;
@@ -180,11 +180,11 @@ void freePM(PointMap * ps)
     mpair *p;
     mpair *next;
 
+    dtclose(ps);
     for (p = dp->flist; p; p = next) {
 	next = (mpair *) (p->link.right);
 	free(p);
     }
-    dtclose(ps);
     free(dp);
 }
 
