@@ -1401,6 +1401,7 @@ void neato_layout(Agraph_t * g)
 		free_scan_graph(gc);
 		agdelete(g, gc);
 	    }
+	    free (cc);
 #ifdef IPSEPCOLA
             {
                 graph_t *mg, *subg;
