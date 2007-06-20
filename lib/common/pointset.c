@@ -31,6 +31,11 @@ static pair *mkPair(point p)
     return pp;
 }
 
+static void freePair(Dt_t * d, pair* pp, Dtdisc_t * disc)
+{
+    free (pp);
+}
+
 static int cmppair(Dt_t * d, point * key1, point * key2, Dtdisc_t * disc)
 {
     if (key1->x > key2->x)
@@ -50,7 +55,7 @@ static Dtdisc_t intPairDisc = {
     sizeof(point),
     offsetof(pair, link),
     0,
-    0,
+    (Dtfree_f) freePair,
     (Dtcompar_f) cmppair,
     0,
     0,
