@@ -113,7 +113,6 @@ void fdp_init_node_edge(graph_t * g)
 
 static void fdp_cleanup_node(node_t * n)
 {
-    free(ND_alg(n));
     free(ND_pos(n));
     if (ND_shape(n))
 	ND_shape(n)->fns->freefn(n);
@@ -173,7 +172,9 @@ void fdp_cleanup(graph_t * g)
     node_t *n;
     edge_t *e;
 
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+    n = agfstnode(g);
+    free(ND_alg(n));
+    for (; n; n = agnxtnode(g, n)) {
 	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
 	    fdp_cleanup_edge(e);
 	}

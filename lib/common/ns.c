@@ -444,6 +444,17 @@ static void scan_and_normalize(void)
     }
 }
 
+static void
+freeTreeList (graph_t* g)
+{
+    node_t *n;
+    for (n = GD_nlist(G); n; n = ND_next(n)) {
+	free_list(ND_tree_in(n));
+	free_list(ND_tree_out(n));
+	ND_mark(n) = FALSE;
+    }
+}
+
 static void LR_balance(void)
 {
     int i, delta;
@@ -470,6 +481,7 @@ static void LR_balance(void)
 	free_list(ND_tree_out(n));
 	ND_mark(n) = FALSE;
     }
+    freeTreeList (G);
 }
 
 static void TB_balance(void)
@@ -586,15 +598,20 @@ int rank(graph_t * g, int balance, int maxiter)
     feasible = init_graph(g);
     if (!feasible)
 	init_rank();
-    if (maxiter <= 0)
+    if (maxiter <= 0) {
+	freeTreeList (g);
 	return 0;
+    }
 
     if ((s = agget(g, "searchsize")))
 	Search_size = atoi(s);
     else
 	Search_size = SEARCHSIZE;
 
-    if (feasible_tree()) return 1;
+    if (feasible_tree()) {
+	freeTreeList (g);
+	return 1;
+    }
     while ((e = leave_edge())) {
 	f = enter_edge(e);
 	update(e, f);

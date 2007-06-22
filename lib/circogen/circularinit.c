@@ -282,6 +282,10 @@ void circoLayout(Agraph_t * g)
 	    for (i = 0; i < ncc; i++)
 		copyPosns(ccs[i]);
 	}
+	for (i = 0; i < ncc; i++) {
+	    agdelete(g, ccs[i]);
+	}
+	free(ccs);
     }
 }
 

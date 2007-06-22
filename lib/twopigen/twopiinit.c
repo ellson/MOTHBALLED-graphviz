@@ -130,7 +130,6 @@ void twopi_layout(Agraph_t * g)
 
 static void twopi_cleanup_node(node_t * n)
 {
-    free(ND_alg(n));
     if (ND_shape(n))
 	ND_shape(n)->fns->freefn(n);
     free_label(ND_label(n));
