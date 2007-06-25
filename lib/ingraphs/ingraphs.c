@@ -190,7 +190,7 @@ char *fileName(ingraph_state * sp)
 #include "config.h"
 #endif
 
-#ifndef HAVE_GETOPT_H
+#ifndef HAVE_GETOPT_DECL
 /*
 public domain AT&T getopt source
 */
