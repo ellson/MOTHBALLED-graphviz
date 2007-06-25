@@ -205,6 +205,8 @@ static void freeDerivedGraph(graph_t * g, graph_t ** cc)
 {
     graph_t *cg;
     node_t *dn;
+    node_t *dnxt;
+    edge_t *e;
 
     while ((cg = *cc++)) {
 	freeGData(cg);
@@ -212,8 +214,13 @@ static void freeDerivedGraph(graph_t * g, graph_t ** cc)
     if (PORTS(g))
 	free(PORTS(g));
     freeGData(g);
-    for (dn = agfstnode(g); dn; dn = agnxtnode(g, dn))
+    for (dn = agfstnode(g); dn; dn = dnxt) {
+	dnxt = agnxtnode(g, dn);
+	for (e = agfstout(g, dn); e; e = agnxtout(g, e)) {
+	    free (ED_to_virt(e));
+	}
 	freeDeriveNode(dn);
+    }
     agclose(g);
 }
 
