@@ -458,7 +458,6 @@ freeTreeList (graph_t* g)
 static void LR_balance(void)
 {
     int i, delta;
-    node_t *n;
     edge_t *e, *f;
 
     for (i = 0; i < Tree_edge.size; i++) {
@@ -475,11 +474,6 @@ static void LR_balance(void)
 	    else
 		rerank(e->head, -delta / 2);
 	}
-    }
-    for (n = GD_nlist(G); n; n = ND_next(n)) {
-	free_list(ND_tree_in(n));
-	free_list(ND_tree_out(n));
-	ND_mark(n) = FALSE;
     }
     freeTreeList (G);
 }
