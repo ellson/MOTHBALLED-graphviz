@@ -23,9 +23,9 @@ static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
 {
     pointf size;
     textpara_t *para;
+    int oldsz = lp->u.txt.nparas + 1;
 
-    lp->u.txt.para =
-	ZALLOC(lp->u.txt.nparas + 2, lp->u.txt.para, textpara_t);
+    lp->u.txt.para = ZALLOC(oldsz + 1, lp->u.txt.para, textpara_t, oldsz);
     para = &(lp->u.txt.para[lp->u.txt.nparas]);
     para->str = line;
     para->just = terminator;
