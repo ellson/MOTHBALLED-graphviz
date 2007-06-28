@@ -68,7 +68,6 @@ static void initialPositions(graph_t * g)
 static void fdp_initNode(node_t * n)
 {
     neato_init_node(n);
-    ND_pos(n) = N_GNEW(GD_ndim(n->graph), double);
 }
 
 /* init_edge:

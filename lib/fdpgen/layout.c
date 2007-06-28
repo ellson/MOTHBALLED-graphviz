@@ -932,6 +932,7 @@ setClustNodes(graph_t* root)
 
     /* set bounding box of dg and reposition nodes */
     finalCC(dg, c_cnt, cc, pts, g, infop);
+    free (pts);
 
     /* record positions from derived graph to input graph */
     /* At present, this does not record port node info */
