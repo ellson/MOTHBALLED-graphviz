@@ -20,9 +20,9 @@ for a partial list of compatible tools and packages.
 
 <h2>General</h2>
 
-<A name=Q1>
-<B>Q. Where can I see a list of all the attributes that control dot or neato?</B>
-</A>
+<A name=Q1 HREF=#Q1>
+<B>Q1</A>. Where can I see a list of all the attributes that control dot or neato?</B>
+
 </A>
 <P>
 See <A HREF="info/attrs.html">
@@ -33,9 +33,9 @@ command-line usage</A> and
 output formats</A>.
 <p>
 <a name="mailinglist"></a>
-<A name=Q2>
-<B>Q. Where can I discuss Graphviz?</B>
-</A>
+<A name=Q2 HREF=#Q2>
+<B>Q2</A>. Where can I discuss Graphviz?</B>
+
 <p>
 We run a mailing list.
 <p>
@@ -83,9 +83,9 @@ text form</A>, fill in the fields, and email it to
 <a href="mailto:gviz-bugs@research.att.com">gviz-bugs@research.att.com</a>.
 </UL>
 <p>
-<A name=Q3>
-<B>Q. I'm trying to make a layout larger. How?</B>
-</A>
+<A name=Q3 HREF=#Q3>
+<B>Q3</A>. I'm trying to make a layout larger. How?</B>
+
 <p>
 There are various ways to increase the size of a layout. In doing this,
 one has to decide if the sizes of the nodes and text should be 
@@ -139,9 +139,9 @@ manually adding a command such as <tt>2 2 scale</tt> where the
 Postscript environment is set up.  Make sure to adjust the
 <tt>BoundingBox</tt> too if your tools look at this header.
 <p>
-<A name=Q4>
-<B>Q. How can I join or merge certain edge routes in dot?</B>
-</A>
+<A name=Q4 HREF=#Q4>
+<B>Q4</A>. How can I join or merge certain edge routes in dot?</B>
+
 <p>
 You can try running <tt>dot -Gconcentrate=true</tt> or you can
 introduce your own virtual nodes drawn as tiny circles where
@@ -195,9 +195,9 @@ Set the label at the end of the graph (before the closing brace), after all
 its contents have been defined. (We admit it seems desirable to define some
 special syntax for non-inherited attribute settings.)
 <p>
-<A name=Q5>
-<B>Q. How can I draw multiple parallel edges in neato?</B>
-</A>
+<A name=Q5 HREF=#Q5>
+<B>Q5</A>. How can I draw multiple parallel edges in neato?</B>
+
 <p>
 This is possible when the <tt>splines</tt> attribute is false, which
 is the default. When <tt>splines=true</tt>, we have no good answer but
@@ -262,17 +262,17 @@ A similar check is done for logical tails. In
 these cases, the edge
 is drawn between the real nodes as usual.
 <p>
-<A name=Q6>
-<B>Q. Clusters are hard to see.</B>
-</A>
+<A name=Q6 HREF=#Q6>
+<B>Q6</A>. Clusters are hard to see.</B>
+
 <P>
 Set <tt>bgcolor=grey</tt>
 (or some other color)
 in the cluster.
 <P>
-<A name=Q7>
-<B>Q. How can I symmetrize (balance) tree layouts?</B>
-</A>
+<A name=Q7 HREF=#Q7>
+<B>Q7</A>. How can I symmetrize (balance) tree layouts?</B>
+
 <P>
 When a tree node has an even number of children, it isn't necessarily
 centered above the two middle ones.  If you know the order of the children,
@@ -298,9 +298,9 @@ layouts other than trees, too).
 
 <H2>Output features</H2>
 
-<A name=Q8>
-<B>Q. How can I get high quality (antialiased) output?</B>
-</A>
+<A name=Q8 HREF=#Q8>
+<B>Q8</A>. How can I get high quality (antialiased) output?</B>
+
 <P>
 The easiest thing may be to make the layout in Postscript (option <tt>-Tps</tt>),
 then run through <A HREF="http://www.cs.wisc.edu/~ghost/">Ghostview</A> with
@@ -328,18 +328,18 @@ built from source, and binary RPMs for Fedora Core 5 (test 2) are available.
 Then you need to install the optional <A HREF="http://www.graphviz.org/pub/graphviz/CURRENT/">graphviz-cairo</A> plugin.  (n.b. we tried
 cairo-1.0.2-1.fc4.remi for FC4 - it has errors.)
 <P>
-<A name=Q9>
-<B>Q. I can only get 11x17 output.</B>
-</A>
+<A name=Q9 HREF=#Q9>
+<B>Q9</A>. I can only get 11x17 output.</B>
+
 <P>
 It's not us!  It's probably your printer setup.  If you don't
 believe this, run <tt>dot -Tps</tt> and look at the
 <tt>BoundingBox</tt> header.  The coords are in 1/72ths of an inch.
  
 <P>
-<A name=Q10>
-<B>Q. How do I create special symbols and accents in labels?</B>
-</A>
+<A name=Q10 HREF=#Q10>
+<B>Q10</A>. How do I create special symbols and accents in labels?</B>
+
 <P>
 The following solution only works with the
 raster drivers that load Truetype or Type1
@@ -459,9 +459,9 @@ the effect you want. The intention is to support arbitrary font changes
 within running text in the not-too-distant future.
  
 <P>
-<A name=Q12>
-<B>Q. In plain format, splines do not touch the nodes (arrowheads are missing).</B>
-</A>
+<A name=Q12 HREF=#Q12>
+<B>Q12</A>. In plain format, splines do not touch the nodes (arrowheads are missing).</B>
+
 <P>
 Edges are specified as the main spline and, if necessary, arrowheads
 which actually abut the node. If the arrowheads are not given, drawing
@@ -475,9 +475,9 @@ A workaround is to set
 Since the edges have no arrowheads, the spline specification will go
 all the way to both nodes. 
 <P>
-<A name=Q13>
-<B>Q. Record nodes are drawn differently in dot and neato when rankdir=LR.</B>
-</A>
+<A name=Q13 HREF=#Q13>
+<B>Q13</A>. Record nodes are drawn differently in dot and neato when rankdir=LR.</B>
+
 <P>
 It's true.  dot -Grankdir=LR rotates record nodes so that their top level
 fields are still listed across levels.  rankdir=LR has no effect in neato.
@@ -489,9 +489,9 @@ record labels in { } to rotate/unrotate the record contents. See also,
 <A HREF="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dnhfact/html/hfactor8_5.asp">How To Avoid Foolish Consistency</A>
 by Scott Berkun (Microsoft Corp.)
 <P>
-<A name=Q14>
-<B>Q. How can I print a big graph on multiple pages?</B>
-</A>
+<A name=Q14 HREF=#Q14>
+<B>Q14</A>. How can I print a big graph on multiple pages?</B>
+
 <P>
 The <tt>page</tt> attribute, if set, tells Graphviz to print the
 graph as an array of pages of the given size. Thus, the graph
@@ -523,9 +523,9 @@ eventually remove the JPEG driver, but North
 is reluctant to change anything that people
 might already rely on.
 <P>
-<A name=Q16>
-<B>Q. How can I get custom shapes or images in my graph?</B>
-</A>
+<A name=Q16 HREF=#Q16>
+<B>Q16</A>. How can I get custom shapes or images in my graph?</B>
+
 <P>
 Please see the
 <A HREF="http://www.graphviz.org/Documentation/html/shapehowto.html">
@@ -544,9 +544,9 @@ Check that the NUMLOCK key is off.  It's a
 <A HREF="http://www.research.att.com/~erg/graphviz/bugs/b524.html">
 known bug</A>.
 <P>
-<A name=Q18>
-<B>Q. Why does dotty report a syntax error on a legal dot file?</B>
-</A>
+<A name=Q18 HREF=#Q18>
+<B>Q18</A>. Why does dotty report a syntax error on a legal dot file?</B>
+
 <P>
 Typically this error is reported as:
 <pre>
@@ -648,22 +648,22 @@ use dotty to render it.  How?</B>
 <P>
 Just run dotty on it. Dotty will use the given pos attributes.
 <P>
-<A name=Q25>
-<B>Q. Same as above, but I have only node coords, not edges.</B>
-</A>
+<A name=Q25 HREF=#Q25>
+<B>Q25</A>. Same as above, but I have only node coords, not edges.</B>
+
 <P>
 <tt>neato -n</tt> is some help, but neato doesn't handle
 spline-based parallel edges. 
 <P>
-<A name=Q26>
-<B>Q. How can I make client-side image maps?</B>
-</A>
+<A name=Q26 HREF=#Q26>
+<B>Q26</A>. How can I make client-side image maps?</B>
+
 <P>
 Use the -Tcmap command line option (only version 1.8.9 and beyond!)
 <P>
-<A name=Q27>
-<B>Q. Why aren't my server-side maps being recognized? I've checked the HTML!</B>
-</A>
+<A name=Q27 HREF=#Q27>
+<B>Q27</A>. Why aren't my server-side maps being recognized? I've checked the HTML!</B>
+
 <P>
 Make sure that your server has map files enabled. For example, if running
 apache, check that httpd.conf has a line like the following:
@@ -690,9 +690,9 @@ Someone has also suggested using the
 <A HREF="http://search.cpan.org/search?query=graphviz&amp;mode=all">
 Perl module for Graphviz</A>.
 <P>
-<A name=Q29>
-<B>Q. How can I get 3D output?</B>
-</A>
+<A name=Q29 HREF=#Q29>
+<B>Q29</A>. How can I get 3D output?</B>
+
 <P>
 The Graphviz authors have qualms about the gratuitous use of 3D.
 <p>
@@ -710,15 +710,15 @@ This would need some (minor) driver work and a good 7-dimensional viewer. Well,
 <tt>dim=3</tt> ought to be possible.
 
 <H2>Problems</H2>
-<A name=Q30>
-<B>Q. How can I avoid node overlaps in neato?</B>
-</A>
+<A name=Q30 HREF=#Q30>
+<B>Q30</A>. How can I avoid node overlaps in neato?</B>
+
 <P>
 Use the graph attribute <A HREF="info/attrs.html#d:overlap"><tt>overlap</tt></A>.
 <P>
-<A name=Q31>
-<B>Q. How can I avoid node-edge overlaps in neato?</B>
-</A>
+<A name=Q31 HREF=#Q31>
+<B>Q31</A>. How can I avoid node-edge overlaps in neato?</B>
+
 <P>
 Use the <tt>overlap</tt> attribute to leave room among the nodes, then
 use <tt>-Gsplines=true</tt>.
@@ -734,9 +734,9 @@ The actual value may require some tinkering.
 slows down neato, so should be used sparingly and only
 with modest-sized graphs.
 <P>
-<A name=Q32>
-<B>Q. Neato runs forever on a certain example.</B>
-</A>
+<A name=Q32 HREF=#Q32>
+<B>Q32</A>. Neato runs forever on a certain example.</B>
+
 <P>
 First, how big is your graph? Neato is a quadratic algorithm, roughly
 equivalent to statistical multidimensional scaling. If you
@@ -772,18 +772,18 @@ Note that, if you have a large graph, the generation of edges as splines
 is a cubic algorithm, so you would do well to avoid using <tt>splines=true</tt>.
 (This commment applies to circo, fdp and twopi as well.)
 <P>
-<A name=Q33>
-<B>Q. Edge label placement in neato is bad.</b>
-</A>
+<A name=Q33 HREF=#Q33>
+<B>Q33</A>. Edge label placement in neato is bad.</b>
+
 <p>
 Difficult problem.  We're working on it.
 If anyone has some general
 label placement code (e.g. a simulated annealer based on the Marks et al.
 technique in <I>Graphics Gems IV</I>), please get in touch.
 <P>
-<A name=Q34>
-<B>Q. Dot runs forever on a certain example.</B>
-</A>
+<A name=Q34 HREF=#Q34>
+<B>Q34</A>. Dot runs forever on a certain example.</B>
+
 <p>
 Try dot -v to observe its progress.
 <p>
@@ -858,9 +858,9 @@ In particular, note that there are no guarantees that neato will produce
 a planar layout of a planar graph, or expose all or most of a graph's
 symmetries.
 <P>
-<A name=Q36>
-<B>Q. Webdot doesn't work.</B>
-</A>
+<A name=Q36 HREF=#Q36>
+<B>Q36</A>. Webdot doesn't work.</B>
+
 <P>
 We assume you're using Apache and have <A HREF="http://www.tcl.tk/">TCL</A> installed.
 If you don't, it's probably better to just use the
@@ -926,9 +926,9 @@ of a graph as a cgi-bin argument, so it wouldn't need
 permission to fetch a graph remotely.
 This is left as an exercise for the Open Source Community.
 <P>
-<A name=Q37>
-<B>Q. I have "Font not found" errors, or text labels missing in webdot.</B>
-</A>
+<A name=Q37 HREF=#Q37>
+<B>Q37</A>. I have "Font not found" errors, or text labels missing in webdot.</B>
+
 <P>
 Firstly, recent versions of graphviz will use fontconfig if it is available
 on your platform.  With fontconfig, this error should not occur, so you
@@ -953,9 +953,9 @@ the webdot script, or recompile Graphviz with the correct DEFAULT_FONTPATH
 (or set <tt>fontpath="/your/font/directory"</tt> in every graph you lay out,
 but that's pretty clumsy.)
 <P>
-<A name=Q38>
-<B>Q. My browser doesn't recognize SVG.</B>
-</A>
+<A name=Q38 HREF=#Q38>
+<B>Q38</A>. My browser doesn't recognize SVG.</B>
+
 <P>
 The correct MIME type for svg images is: <tt>image/svg+xml</tt>   (note "+" not "-").
 <P>
@@ -994,9 +994,9 @@ No, this is a false positive reported by various security software.
 See <A HREF="http://www.pcreview.co.uk/forums/thread-1689630.php">http://www.pcreview.co.uk/forums/thread-1689630.php</A> or
 <A HREF="http://spywareblog.com/index.php/2004/11/24/is_libexpat_dll_spyware">http://spywareblog.com/index.php/2004/11/24/is_libexpat_dll_spyware</A>.
 <P>
-<A name=Q40>
-<B>Q. What is the coordinate transformation between the graph bb and a .png image?</B>
-</A>
+<A name=Q40 HREF=#Q40>
+<B>Q40</A>. What is the coordinate transformation between the graph bb and a .png image?</B>
+
 <OL>
 <LI>
 The bb is expanded by 4 graph-units in all directions (pad) to allow for finite line widths.
