@@ -873,7 +873,6 @@ AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for TCL
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(tcl,
   [AC_HELP_STRING([--disable-tcl], [don't support tcl language bindings])])
 if test "x$enable_tcl" != "xno"; then
@@ -882,12 +881,6 @@ HAVE_TCL=1
 else
 HAVE_TCL=0
 fi
-fi
-
-if test `$SWIG -help 2>&1 | $GREP -c '\-tcl *- Generate'` = 0; then
-	HAVE_TCL=0
-	AC_MSG_WARN([swig does not support tcl. The TCL packages will not be built])
-else
 
 AC_ARG_WITH(tclsh,
     [  --with-tclsh=PROG       build graphviz for specific tclsh],
@@ -901,12 +894,10 @@ if test "x$TCLSH" = "x"; then
             AC_PATH_PROG(TCLSH,tclsh)
         fi
     fi
-fi
-
-if test "x$TCLSH" = "x"; then
-    AC_MSG_WARN([Unable to find a tclsh. The Tcl packages will not be built])
-    HAVE_TCL=0
-fi
+    if test "x$TCLSH" = "x"; then
+        AC_MSG_WARN([Unable to find a tclsh. The Tcl packages will not be built])
+        HAVE_TCL=0
+    fi
 fi
 
 if test "$HAVE_TCL" = "1"; then
@@ -1844,21 +1835,25 @@ AC_SUBST(TKINT_INCLUDES)
 # ----------------------------------
 # tcl/tk pkgIndex.tcl generation
 
+TCL_PKGINDEX=""
+TCL_PKGINDEX_GD=""
+TCL_PKGINDEX_SWIG=""
+TK_PKGINDEX=""
 if test "$HAVE_TCL" = "1"; then
+    TCL_PKGINDEX="tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl"
     if test "x$with_libgd" = "xyes"; then
-	TCL_PKGINDEX="gdtclft/pkgIndex.tcl tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl gv/pkgIndex.tcl"
-    else
-	TCL_PKGINDEX="tcldot/pkgIndex.tcl tclpathplan/pkgIndex.tcl gv/pkgIndex.tcl"
+	TCL_PKGINDEX_GD="gdtclft/pkgIndex.tcl"
     fi
-else
-    TCL_PKGINDEX=""
-fi
-if test "$HAVE_TK" = "1"; then
-    TK_PKGINDEX="tkspline/pkgIndex.tcl"
-else
-    TK_PKGINDEX=""
+    if test "x$SWIG" != "x"; then
+	TCL_PKGINDEX_SWIG="gv/pkgIndex.tcl"
+    fi
+    if test "$HAVE_TK" = "1"; then
+        TK_PKGINDEX="tkspline/pkgIndex.tcl"
+    fi
 fi
 AC_SUBST(TCL_PKGINDEX)
+AC_SUBST(TCL_PKGINDEX_GD)
+AC_SUBST(TCL_PKGINDEX_SWIG)
 AC_SUBST(TK_PKGINDEX)
 
 # -----------------------------------
