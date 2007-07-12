@@ -181,6 +181,10 @@ static char* fullColor (char* prefix, char* str)
 
 /* resolveColor:
  * Resolve input color str allowing color scheme namespaces.
+ *  0) "black" => "black" 
+ *    NB: This is something of a hack due to the remaining codegen.
+ *        Once these are gone, this case could be removed and all references
+ *        to "black" could be replaced by "/X11/black".
  *  1) No initial / => 
  *          if colorscheme is defined and no "X11", return /colorscheme/str
  *          else return str
@@ -215,7 +219,8 @@ static char* resolveColor (char* str)
     char* ss;   /* second slash */
     char* c2;   /* second char */
 
-    if (*str == '/') {   /* if begins with '/' */
+    if ((*str == 'b') || !strncmp(str+1,"lack",4)) return str;
+    else if (*str == '/') {   /* if begins with '/' */
 	c2 = str+1;
         if ((ss = strchr(c2, '/'))) {  /* if has second '/' */
 	    if (*c2 == '/') {    /* if second '/' is second character */
