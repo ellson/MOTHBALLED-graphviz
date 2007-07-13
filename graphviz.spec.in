@@ -7,14 +7,15 @@
 #-- graphviz src.rpm --------------------------------------------------------
 Name:		graphviz
 Version:	@VERSION@
-Release:	1%{dist}
+Release:	1%{?dist}
 
 License:	CPL
 URL:		http://www.graphviz.org/
 Source:		http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
 
-# graphviz is relocatable
-Prefix: /usr
+# graphviz is relocatable - but this is rumored to be broken in rpms
+#    not valuable anyway
+#Prefix: /usr
 
 #-- feature and package selection -------------------------------------------
 #        depends on %dist and %fedora (or %rhl or %rhel) which are set
@@ -71,7 +72,7 @@ BuildRequires: fontconfig-devel tcl-devel tk-devel
 %if "%rhel" >= "4"
 %define PHP     1
 %define RUBY    1
-BuildRequires: php-devel ruby-devel
+BuildRequires: php-devel ruby ruby-devel
 %endif
 %if "%rhel" >= "5"
 BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
@@ -98,7 +99,7 @@ BuildRequires: xorg-x11-devel
 %define PHP     1
 %define RUBY    1
 %define GUILE   1
-BuildRequires: libtool-ltdl libtool-ltdl-devel php-devel ruby-devel guile-devel 
+BuildRequires: libtool-ltdl libtool-ltdl-devel php-devel ruby ruby-devel guile-devel 
 %endif
 %if "%fedora" >= "5"
 %define SHARP   1
@@ -121,6 +122,8 @@ BuildRequires: gtk2-devel libgnomeui-devel
 Group:		Applications/Multimedia
 Summary:	Graph Visualization Tools
 Requires:	urw-fonts
+Requires(post):        /sbin/ldconfig
+Requires(postun):      /sbin/ldconfig
 
 %description
 A collection of tools for the manipulation and layout
@@ -142,31 +145,38 @@ of graphs (as in nodes and edges, not as in barcharts).
 
 # run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
 %post
-LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
+/sbin/ldconfig
+%{_bindir}/dot -c
 
-# if there is no dot after everything else is done, the remove config
+# if there is no dot after everything else is done, then remove config
 %postun
-if ! test -x $RPM_INSTALL_PREFIX0/bin/dot; then rm -f $RPM_INSTALL_PREFIX0/%{_lib}/graphviz/config; fi
+if ! test -x %{_bindir}/dot; then rm -f %{_libdir}/graphviz/config; fi
+/sbin/ldconfig
 
 #-- graphviz-gd rpm --------------------------------------------------
 %package gd
 Group:		Applications/Multimedia
-Summary:	graphviz plugin for renderers based on gd
+Summary:	Graphviz plugin for renderers based on gd
 Requires:	graphviz = %{version}-%{release}
 
 %description gd
-graphviz plugin for renderers based on gd
+Graphviz plugin for renderers based on gd.  (Unless you absolutely have
+to use GIF, you are recommended to use the PNG format instead because
+of the better quality anti-aliased lines provided by the cairo+pango
+based renderer.)
 
 %files gd
 %{_libdir}/graphviz/libgvplugin_gd.so.*
 
 # run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
 %post gd
-LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
+/sbin/ldconfig
+%{_bindir}/dot -c
 
-# if there is not dot after everything else is done, the remove config
+# if there is no dot after everything else is done, then remove config
 %postun gd
-if ! test -x $RPM_INSTALL_PREFIX0/bin/dot; then rm -f $RPM_INSTALL_PREFIX0/%{_lib}/graphviz/config; fi
+if ! test -x %{_bindir}/dot; then rm -f %{_libdir}/graphviz/config; fi
+/sbin/ldconfig
 
 #-- graphviz-sharp rpm --------------------------------------------
 %if %{SHARP}
