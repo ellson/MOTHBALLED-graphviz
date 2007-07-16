@@ -416,19 +416,12 @@ if test "x$SWIG" != "x"; then
   SWIG_VERSION=`$SWIG -version 2>&1 | $GREP Version | cut -d ' ' -f 3`
   SWIG_VERSION_MAJOR=`echo $SWIG_VERSION | cut -d '.' -f 1`
   SWIG_VERSION_MINOR=`echo $SWIG_VERSION | cut -d '.' -f 2`
-  SWIG_VERSION_PATCH=`echo $SWIG_VERSION | cut -d '.' -f 3`
   if test $SWIG_VERSION_MAJOR -lt 2; then
     if test $SWIG_VERSION_MAJOR -lt 1; then
 	SWIG=
     else
-      if test $SWIG_VERSION_MINOR -lt 4; then
-         if test $SWIG_VERSION_MINOR -lt 3; then
-	   SWIG=
-         else
-	   if test $SWIG_VERSION_PATCH -lt 22 ; then
-	      SWIG=
-	   fi
-         fi
+      if test $SWIG_VERSION_MINOR -lt 3; then
+	SWIG=
       fi
     fi
   fi
