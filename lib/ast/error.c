@@ -18,12 +18,29 @@
  * standalone mini error implementation
  */
 
+#ifdef WIN32
+#include <config.h>
+
+#ifdef GVDLL
+#define _BLD_sfio 1
+#endif
+#endif
+
 #include <ast.h>
 #include <error.h>
 #include <string.h>
 #include <errno.h>
 
 Error_info_t error_info;
+
+void setErrorLine (int line) { error_info.line = line; }
+void setErrorFileLine (char* src, int line) {
+    error_info.file = src;
+    error_info.line = line;
+}
+void setErrorId (char* id) { error_info.id = id; }
+void setErrorErrors (int errors) { error_info.errors = errors; }
+int  getErrorErrors () { return error_info.errors; }
 
 void errorv(const char *id, int level, va_list ap)
 {
