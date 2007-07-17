@@ -24,7 +24,11 @@
 
 #include "builddate.h"
 #include "gvc.h"
+#ifdef GVDLL
+__declspec(dllimport) boolean MemTest;
+#else
 #include "globals.h"
+#endif
 
 #include <time.h>
 #ifdef HAVE_UNISTD_H
