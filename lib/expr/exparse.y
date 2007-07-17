@@ -26,6 +26,14 @@
  * NOTE: procedure arguments not implemented yet
  */
 
+#ifdef WIN32
+#include <config.h>
+
+#ifdef GVDLL
+#define _BLD_sfio 1
+#endif
+#endif
+
 #include <stdio.h>
 #include <ast.h>
 
