@@ -25,6 +25,10 @@
 #include "config.h"
 #endif
 
+#ifdef GVDLL
+#define _BLD_sfio 1
+#endif
+
 #include "exlib.h"
 #include "exop.h"
 #include <string.h>
