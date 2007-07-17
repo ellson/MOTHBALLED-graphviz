@@ -174,11 +174,16 @@ for the name. */
     };
 
     /* default resource disciplines */
+#if !defined(_BLD_agraph) && defined(GVDLL)
+#define extern	__declspec(dllimport)
+#endif
+
     extern Agmemdisc_t AgMemDisc;
     extern Agiddisc_t AgIdDisc;
     extern Agiodisc_t AgIoDisc;
 
     extern Agdisc_t AgDefaultDisc;
+#undef extern
 
     struct Agdstate_s {
 	void *mem;
