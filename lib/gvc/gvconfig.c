@@ -23,6 +23,12 @@
 #ifdef ENABLE_LTDL
 #include	<sys/types.h>
 #ifdef WIN32
+#include <windows.h>
+#define GLOB_NOSPACE    1   /* Ran out of memory.  */
+#define GLOB_ABORTED    2   /* Read error.  */
+#define GLOB_NOMATCH    3   /* No matches found.  */
+#define GLOB_NOSORT     4
+#define DMKEY "Software\\Microsoft" //key to look for library dir
 #include        <regex_win32.c>
 typedef struct {
     int gl_pathc;           /* count of total paths so far */
@@ -561,12 +567,6 @@ void gvconfig(GVC_t * gvc, boolean rescan)
 
 #ifdef ENABLE_LTDL
 #ifdef WIN32
-#include <windows.h>
-#define GLOB_NOSPACE    1   /* Ran out of memory.  */
-#define GLOB_ABORTED    2   /* Read error.  */
-#define GLOB_NOMATCH    3   /* No matches found.  */
-#define GLOB_NOSORT     4
-#define DMKEY "Software\\Microsoft" //key to look for library dir
 
 /* Emulating windows glob */
 
