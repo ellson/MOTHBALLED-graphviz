@@ -239,7 +239,11 @@ static void scanArgs(int argc, char **argv)
     options.useFile = 0;
     options.argv = 0;
     options.argc = 0;
+#ifdef GVDLL
+    setErrorId (options.cmdName);
+#else
     error_info.id = options.cmdName;
+#endif
 
     while ((c = getopt(argc, argv, ":?Vcia:f:o:")) != -1) {
 	switch (c) {
@@ -284,7 +288,11 @@ static void scanArgs(int argc, char **argv)
     if (options.useFile == 0) {
 	if (argc == 0) {
 	    error(2, "No program supplied via argument or -f option");
+#ifdef GVDLL
+	    setErrorErrors (1);
+#else
 	    error_info.errors = 1;
+#endif
 	} else {
 	    options.program = *argv++;
 	    argc--;
@@ -299,7 +307,11 @@ static void scanArgs(int argc, char **argv)
     else
 	options.outFile = sfstdout;
 
+#ifdef GVDLL
+    if (getErrorErrors ())
+#else
     if (error_info.errors)
+#endif
 	error(ERROR_USAGE | 4, "%s", usage);
 }
 
@@ -590,7 +602,11 @@ static int ing_close(void *fp)
     return sfclose((Sfio_t *) fp);
 }
 
+#ifdef GVDLL
+static ingdisc ingDisc = { ing_open, ing_read, ing_close, 0 };
+#else
 static ingdisc ingDisc = { ing_open, ing_read, ing_close, &_Sfstdin };
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -600,6 +616,9 @@ int main(int argc, char *argv[])
     Gpr_t *state;
     gpr_info info;
 
+#ifdef GVDLL
+    ingDisc.dflt = &_Sfstdin;
+#endif
     scanArgs(argc, argv);
 
     prog = parseProg(options.program, options.useFile);

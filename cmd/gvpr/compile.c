@@ -1750,8 +1750,12 @@ static void checkGuard(Exnode_t * gp, char *src, int line)
     gp = exnoncast(gp);
     if (gp && exisAssign(gp)) {
 	if (src) {
+#ifdef GVDLL
+	    setErrorFileLine (src, line);
+#else
 	    error_info.file = src;
 	    error_info.line = line;
+#endif
 	}
 	error(ERROR_WARNING, "assignment used as bool in guard");
     }
@@ -1868,7 +1872,11 @@ comp_prog *compileProg(parse_prog * inp, Gpr_t * state, int flags)
 	p->end_stmt = compile(p->prog, inp->source, inp->end_stmt,
 			      inp->l_end, "_end_", 0, VOID);
     sfclose(tmps);
+#ifdef GVDLL
+    setErrorLine (0);
+#else
     error_info.line = 0;	/* execution errors have no line numbers */
+#endif
     return p;
 }
 
@@ -1913,7 +1921,11 @@ static int ioflush(void *chan)
 
 static Agiodisc_t gprIoDisc = { iofread, ioputstr, ioflush };
 
+#ifdef GVDLL
+static Agdisc_t gprDisc = { 0, 0, &gprIoDisc };
+#else
 static Agdisc_t gprDisc = { &AgMemDisc, &AgIdDisc, &gprIoDisc };
+#endif
 
 /* readG:
  * Read graph from file and initialize
@@ -1923,6 +1935,10 @@ Agraph_t *readG(Sfio_t * fp)
 {
     Agraph_t *g;
 
+#ifdef GVDLL
+    gprDisc.mem = &AgMemDisc;
+    gprDisc.id = &AgIdDisc;
+#endif
     g = agread(fp, &gprDisc);
     if (g) {
 	aginit(g, AGRAPH, UDATA, sizeof(gdata), 0);
