@@ -1,9 +1,12 @@
 July 6, 2007
-	- Fixed bugs: 1024, 1057, 1064, 1065, 1066, 1069, 1072, 1074, 1079,
-		1085, 1086, 1089, 1091, 1092, 1093, 1094, 1096, 1107, 1123,
-		1124, 1130, 1138, 1145, 1151
+	- Fixed bugs: 364, 489, 530, 551, 577, 667, 668, 669, 676, 746,
+		755, 756, 765, 780, 822, 928, 948, 950, 1024, 1057, 1064,
+		1065, 1066, 1069, 1072, 1074, 1079, 1085, 1086, 1089, 1091,
+		1092, 1093, 1094, 1096, 1107, 1111, 1123, 1124, 1130, 1138,
+		1145, 1151, 1152, 1156
 	- Fixed Redhat bugs: 218191, 237497
-	- Fixed Debian bugs: 422862, 422873
+	- Fixed Debian bugs: 321128, 422862, 422873
+	- Fixed Gentoo bugs: 173676
 	- Updated GVGUI viewer for Windows
 	- Windows build process now uses GNU autoconf and UWIN
 	- Added support for selection of edge routing types:
