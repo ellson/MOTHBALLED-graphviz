@@ -1,14 +1,6 @@
-#ifdef WIN32
 #define TIMES "Times New Roman"
 #define COURIER "Courier"
 #define HELVETICA "Arial"
 #define HELVETICA "Arial"
 #define SYMBOL "Symbol"
 #define PALATINO "Palatino Linotype"
-#else
-#define TIMES "Nimbus Roman No9 L"
-#define COURIER "Nimbus Mono L"
-#define HELVETICA "Nimbus Sans L"
-#define SYMBOL "Standard Symbols L"
-#define PALATINO "URW Palladio L"
-#endif
