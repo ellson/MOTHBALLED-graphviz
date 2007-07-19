@@ -317,9 +317,10 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 		    break;
 		case SVGFONTS:
 		default:
-		    family = pA->svg_font_family;
-		    weight = pA->svg_font_weight;
-		    style = pA->svg_font_style;
+		    /* same as NATIVEFONTS - jce */
+		    family = pA->family;
+		    weight = pA->weight;
+		    style = pA->style;
 		    break;
 	}
 	stretch = pA->stretch;
