@@ -97,9 +97,8 @@ char *gd_alternate_fontlist(char *font)
 }
 #endif				/* HAVE_GD_FONTCONFIG */
 
-static void gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath)
+static boolean gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath)
 {
-    static char *fntpath;
     char *err;
     char *fontlist;
     int brect[8];
@@ -124,8 +123,7 @@ static void gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath
 
     if (para->fontname) {
 	if (para->fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
-	    /* OK, but ignore text entirely */
-	    return;
+	    return TRUE; /* OK, but ignore text entirely */
 	} else if (para->fontsize <= FONTSIZE_TOO_SMALL) {
 	    /* draw line in place of text */
 	    /* fake a finite fontsize so that line length is calculated */
@@ -143,8 +141,7 @@ static void gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath
 
 	if (err) {
 	    fprintf(stderr,"%s\n", err);
-	    *fontpath = NULL;   /* indicate error */
-	    return;
+	    return FALSE; /* indicate error */
 	}
 
 	if (strex.xshow) {
@@ -153,9 +150,8 @@ static void gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath
 	    strex.xshow = NULL;
 	}
 
-	if (fntpath)
-	    free(fntpath);
-	*fontpath = fntpath = strex.fontpath;
+	if (fontpath)
+	    *fontpath = strex.fontpath;
 
 	if (para->str && para->str[0]) {
 	    /* can't use brect on some archtectures if strlen 0 */
@@ -166,6 +162,7 @@ static void gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath
 	    para->height = (int)(para->fontsize * 1.2);
 	}
     }
+    return TRUE;
 }
 
 static gvtextlayout_engine_t gd_textlayout_engine = {

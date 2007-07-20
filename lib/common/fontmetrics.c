@@ -134,7 +134,7 @@ static void
 estimate_textlayout(graph_t *g, textpara_t * para, char **fontpath)
 {
     double *Fontwidth;
-    char c, *p;
+    char c, *p, *fp;
 
     para->width = 0.0;
     para->height = para->fontsize * LINESPACING;
@@ -143,16 +143,18 @@ estimate_textlayout(graph_t *g, textpara_t * para, char **fontpath)
     para->free_layout = NULL;
 
     if (!strncasecmp(para->fontname, "cour", 4)) {
-	*fontpath = "[internal courier]";
+	fp = "[internal courier]";
 	Fontwidth = courFontWidth;
     } else if (!strncasecmp(para->fontname, "arial", 5)
 	       || !strncasecmp(para->fontname, "helvetica", 9)) {
-	*fontpath = "[internal arial]";
+	fp = "[internal arial]";
 	Fontwidth = arialFontWidth;
     } else {
-	*fontpath = "[internal times]";
+	fp = "[internal times]";
 	Fontwidth = timesFontWidth;
     }
+    if (fontpath)
+	*fontpath = fp;
     if ((p = para->str)) {
 	while ((c = *p++))
 	    para->width += Fontwidth[(unsigned char) c];
@@ -194,7 +196,7 @@ static PostscriptAlias* translate_postscript_fontname(char* fontname)
 
 pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
 {
-    char *fontpath = NULL;
+    char **fp = NULL, *fontpath = NULL;
     pointf size;
 
     para->fontname = fontname;
@@ -202,15 +204,16 @@ pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
 
     para->postscript_alias = translate_postscript_fontname(fontname);
 
-    if (! gvtextlayout(GD_gvc(g), para, &fontpath) || !fontpath)
-	estimate_textlayout(g, para, &fontpath);
+    if (Verbose && emit_once(para->fontname))
+	fp = &fontpath;
 
-    if (Verbose) {
-	if (emit_once(para->fontname)) {
-	    fprintf(stderr, "%s: fontname \"%s\" resolved to \"%s\"\n",
+    if (! gvtextlayout(GD_gvc(g), para, fp))
+	estimate_textlayout(g, para, fp);
+
+    if (fp)
+	fprintf(stderr, "%s: fontname \"%s\" resolved to: %s\n",
 		    GD_gvc(g)->common.cmdname, para->fontname, fontpath);
-	}
-    }
+
     size.x = para->width;
     size.y = para->height;
     return size;
