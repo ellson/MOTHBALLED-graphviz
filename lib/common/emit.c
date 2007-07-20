@@ -667,22 +667,15 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	    pageSize.y = job->render.features->default_pagesize.y - 2*margin.y;
 	    if (pageSize.y < 0.)
 		pageSize.y = 0.;
-	    if (job->rotation)
-		pageSize = exch_xyf(pageSize);
 	}
 	else
 	    pageSize.x = pageSize.y = 0.;
 	job->pagesArraySize.x = job->pagesArraySize.y = job->numPages = 1;
-    }
-
-    /* initial window size */
-    if (job->rotation) {
-        job->width = (imageSize.y + 2*margin.x) * job->dpi.x / POINTS_PER_INCH;
-        job->height = (imageSize.x + 2*margin.y) * job->dpi.y / POINTS_PER_INCH;
-    }
-    else {
-        job->width = (imageSize.x + 2*margin.x) * job->dpi.x / POINTS_PER_INCH;
-        job->height = (imageSize.y + 2*margin.y) * job->dpi.y / POINTS_PER_INCH;
+        
+        if (pageSize.x < imageSize.x)
+	    pageSize.x = imageSize.x;
+        if (pageSize.y < imageSize.y)
+	    pageSize.y = imageSize.y;
     }
 
     /* determine page box including centering */
@@ -692,6 +685,15 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	if (pageSize.y > imageSize.y)
 	    margin.y += (pageSize.y - imageSize.y) / 2;
     }
+
+    if (job->rotation) {
+	pageSize = exch_xyf(pageSize);
+	margin = exch_xyf(margin);
+    }
+
+    /* initial window size */
+    job->width = pageSize.x * job->dpi.x / POINTS_PER_INCH;
+    job->height = pageSize.y * job->dpi.y / POINTS_PER_INCH;
 
     /* canvas area, centered if necessary */
     job->canvasBox.LL.x = margin.x;
