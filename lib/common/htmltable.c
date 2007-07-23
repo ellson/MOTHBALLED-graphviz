@@ -775,8 +775,8 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
     double ysize = 0.0; /* height of text block */
     double fsize;
     double lsize;    /* height of current line */
-    double mxfsize;  /* max. font size for the current line */
-    double curbline = 0; /* dist. of current base line from top */
+    double mxfsize = 0.0;  /* max. font size for the current line */
+    double curbline = 0.0; /* dist. of current base line from top */
     pointf sz;
     int i, j, w, width;
     char *fname;
