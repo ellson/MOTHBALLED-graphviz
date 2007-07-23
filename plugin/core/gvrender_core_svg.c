@@ -303,21 +303,16 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
     core_fputs(job, " style=\"");
     pA = para->postscript_alias;
     if (pA) {
-	char *family, *weight, *stretch, *style;
+	char *family=NULL, *weight=NULL, *stretch=NULL, *style=NULL;
 	switch(GD_fontnames(job->gvc->g)) {
-		case NATIVEFONTS:
-		    family = pA->family;
-		    weight = pA->weight;
-		    style = pA->style;
-		    break;
 		case PSFONTS:
 		    family = pA->name;
 		    weight = pA->weight;
 		    style = pA->style;
 		    break;
-		case SVGFONTS:
+		case NATIVEFONTS:
+		case SVGFONTS: /* same as NATIVEFONTS - jce */
 		default:
-		    /* same as NATIVEFONTS - jce */
 		    family = pA->family;
 		    weight = pA->weight;
 		    style = pA->style;

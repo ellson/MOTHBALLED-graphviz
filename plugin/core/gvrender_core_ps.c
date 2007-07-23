@@ -198,7 +198,9 @@ static void psgen_end_cluster(GVJ_t * job)
 
 static void psgen_begin_node(GVJ_t * job)
 {
+#if 0
     obj_state_t *obj = job->obj;
+#endif
 
     core_fputs(job, "gsave\n");
 #if 0
@@ -223,7 +225,9 @@ static void psgen_end_node(GVJ_t * job)
 static void
 psgen_begin_edge(GVJ_t * job)
 {
+#if 0
     obj_state_t *obj = job->obj;
+#endif
 
     core_fputs(job, "gsave\n");
 #if 0
