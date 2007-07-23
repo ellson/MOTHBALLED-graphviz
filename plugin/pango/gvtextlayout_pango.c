@@ -19,7 +19,9 @@
 #endif
 
 #include <string.h>
+#ifdef HAVE_FONTCONFIG
 #include <fontconfig/fontconfig.h>
+#endif
 #include "gvplugin_textlayout.h"
 
 #ifdef HAVE_PANGOCAIRO
