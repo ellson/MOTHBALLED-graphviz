@@ -61,7 +61,7 @@ extern "C" {
     extern void setErrorFileLine (char*, int);
     extern void setErrorId (char*);
     extern void setErrorErrors (int);
-    extern int  getErrorErrors ();
+    extern int  getErrorErrors (void);
 
     extern void error(int, ...);
     extern void errorf(void *, void *, int, ...);
