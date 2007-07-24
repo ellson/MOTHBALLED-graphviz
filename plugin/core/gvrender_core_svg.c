@@ -157,8 +157,8 @@ static void svg_begin_graph(GVJ_t * job)
     core_printf(job, "<svg width=\"%.2fin\" height=\"%.2fin\"\n",
 	job->width/job->dpi.x, job->height/job->dpi.y);
     core_printf(job, " viewBox=\"%.2f %.2f %.2f %.2f\"",
-	job->canvasBox.LL.x, job->canvasBox.LL.y,
-	job->canvasBox.UR.x, job->canvasBox.UR.y);
+        job->boundingBox.LL.x, job->boundingBox.LL.y,
+        job->boundingBox.UR.x, job->boundingBox.UR.y);
     /* namespace of svg */
     core_fputs(job, " xmlns=\"http://www.w3.org/2000/svg\"");
     /* namespace of xlink */
