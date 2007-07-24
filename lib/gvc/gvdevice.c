@@ -112,8 +112,10 @@ void gvdevice_finalize(GVJ_t * firstjob)
 	if (job->output_filename
 	  && job->output_file != stdout 
 	  && ! job->external_surface) {
-	    fclose(job->output_file);
-	    job->output_file = NULL;
+	    if (job->output_file) {
+	        fclose(job->output_file);
+	        job->output_file = NULL;
+	    }
             job->output_filename = NULL;
 	}
     }
