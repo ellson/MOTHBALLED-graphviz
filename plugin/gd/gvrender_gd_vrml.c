@@ -338,7 +338,7 @@ static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
     int brect[8];
     extern gdFontPtr gdFontSmall;
 
-    if (! obj->u.n)
+    if (! obj->u.n || ! im)   /* if not a node - or if no im (e.g. for cluster) */
 	return;
 
     switch (para->just) {
