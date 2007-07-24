@@ -1363,6 +1363,29 @@ fi
 AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for FONTCONFIG
+                                                                                
+AC_ARG_WITH(fontconfig,
+  [AC_HELP_STRING([--with-fontconfig],
+                  [use fontconfig library])])
+
+### default is to build with fontconfig
+if test "x$with_fontconfig" != "xno"; then
+	with_fontconfig=yes
+fi
+
+if test "x$with_fontconfig" = "xyes"; then
+PKG_CHECK_MODULES(FONTCONFIG, [fontconfig >= 1.0],
+	[HAVE_FONTCONFIG=1
+	AC_DEFINE_UNQUOTED(HAVE_FONTCONFIG,1,
+		[Define if you have the fontconfig library])],
+	[AC_MSG_WARN(fontconfig library not available)])
+AC_SUBST(FONTCONFIG_CFLAGS)
+AC_SUBST(FONTCONFIG_LIBS)
+fi
+AM_CONDITIONAL(WITH_FONTCONFIG, [test "x$HAVE_FONTCONFIG" != "x"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for GTK.
 
 AC_ARG_WITH(gtk,
@@ -1659,64 +1682,11 @@ dnl ----------------------------------
 dnl INCLUDES and LIBS for FONTCONFIG (only with mylibgd)
 
 if test "x$with_mylibgd" = "xyes"; then
-
-AC_ARG_WITH(fontconfig,
-  [AC_HELP_STRING([--with-fontconfig],
-                  [use fontconfig library])])
-
-### default is to build with fontconfig
-if test "x$with_fontconfig" != "xno"; then
-	with_fontconfig=yes
-fi
-
-if test "x$with_fontconfig" = "xyes"; then
-save_CPPFLAGS=$CPPFLAGS
-save_LDFLAGS=$LDFLAGS
-FC_INCLUDES=""
-FC_LIBS=""
-AC_PATH_PROG(FONTCONFIG_CONFIG,fontconfig-config)
-if test -n "$FONTCONFIG_CONFIG"; then
-        fc_cflags=`$FONTCONFIG_CONFIG --cflags`
-	if test "$fc_cflags" != "-I/usr/include" ; then
-		FC_INCLUDES="$fc_cflags"
-	fi
-	fc_prefix=`$FONTCONFIG_CONFIG --prefix`
-	if test "$fc_prefix" != "/usr" ; then
-		FC_LIBS="-L${fc_prefix}/lib"
-	fi
-fi
-
-PKG_CHECK_MODULES(FONTCONFIG, fontconfig,
-	[AC_DEFINE_UNQUOTED(HAVE_FONTCONFIG,1,
-                 [Define if you have the fontconfig library])],
-	[AC_MSG_WARN(Optional fontconfig library not available)])
-
-if test "x$HAVE_FONTCONFIG" = "x1"; then
-	FC_INCLUDES=$(FONTCONFIG_INCLUDES)
-	FC_LIBS=$(FONTCONFIG_LIBS)
-fi
-
-AC_ARG_WITH(fontconfigincludedir,
-	[  --with-fontconfigincludedir=DIR use FONTCONFIG includes from DIR],
-	FC_INCLUDES="-I$withval")
-CPPFLAGS="$CPPFLAGS $FC_INCLUDES"
-AC_ARG_WITH(fontconfiglibdir,
-	[  --with-fontconfiglibdir=DIR use FONTCONFIG libraries from DIR],
-	[FC_LIBS="-L$withval"])
-LDFLAGS="$LDFLAGS $FC_LIBS"
-AC_CHECK_HEADERS(fontconfig/fontconfig.h)
-if test `eval echo '${'$as_ac_Header'}'` = yes; then
-	AC_CHECK_LIB(fontconfig,FcGetVersion,
-		[FC_LIBS="$FC_LIBS -lfontconfig"
-		AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library has the GD_FONTCONFIG feature])
-
-		AC_DEFINE_UNQUOTED(HAVE_LIBFONTCONFIG,1,[Define if you have the FONTCONFIG library])],
-		[AC_MSG_WARN(Optional FONTCONFIG library not available - no libfontconfig.)])
-else
-	AC_MSG_WARN(Optional FONTCONFIG library not available - no fontconfig/fontconfig.h)
-fi
-CPPFLAGS=$save_CPPFLAGS
-LDFLAGS=$save_LDFLAGS
+if test "x$HAVE_FONTCONFIG" != "x"; then
+FC_INCLUDES="$FONTCONFIG_INCLUDES"
+FC_LIBS="$FONTCONFIG_LIBS"
+AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library has the GD_FONTCONFIG feature])
+AC_DEFINE_UNQUOTED(HAVE_LIBFONTCONFIG,1,[Define if you have the FONTCONFIG library])],
 AC_SUBST(FC_INCLUDES)
 AC_SUBST(FC_LIBS)
 fi

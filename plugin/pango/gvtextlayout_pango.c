@@ -19,13 +19,13 @@
 #endif
 
 #include <string.h>
-#ifdef HAVE_FONTCONFIG
-#include <fontconfig/fontconfig.h>
-#endif
 #include "gvplugin_textlayout.h"
 
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
+#ifdef HAVE_FONTCONFIG
+#include <fontconfig/fontconfig.h>
+#endif
 
 static void pango_free_layout (void *layout)
 {
@@ -88,6 +88,7 @@ static boolean pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fo
 	desc = pango_font_description_from_string(fnt);
 
         if (fontpath) {  /* -v support */
+#ifdef HAVE_FONTCONFIG
 	    FcPattern *pat, *match;
 	    FcFontSet *fs;
 	    FcResult result;
@@ -122,6 +123,9 @@ static boolean pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fo
 	    }
             *fontpath = buf;
 	    FcFontSetDestroy(fs);
+#else
+	    *fontpath = fnt;
+#endif
         }
     }
     pango_font_description_set_size (desc, (gint)(para->fontsize * PANGO_SCALE));
