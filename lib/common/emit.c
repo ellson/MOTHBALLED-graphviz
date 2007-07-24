@@ -692,8 +692,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     }
 
     /* initial window size */
-    job->width = pageSize.x * job->dpi.x / POINTS_PER_INCH;
-    job->height = pageSize.y * job->dpi.y / POINTS_PER_INCH;
+    job->width = (pageSize.x + 2*margin.x) * job->dpi.x / POINTS_PER_INCH;
+    job->height = (pageSize.y + 2*margin.y) * job->dpi.y / POINTS_PER_INCH;
 
     /* canvas area, centered if necessary */
     job->canvasBox.LL.x = margin.x;
@@ -2693,7 +2693,7 @@ static void auto_output_filename(GVJ_t *job)
     static char *buf;
     static int bufsz;
     char gidx[100];  /* large enough for '.' plus any integer */
-    char *fn;
+    char *fn, *p;
     int len;
 
     if (job->graph_index)
@@ -2714,7 +2714,14 @@ static void auto_output_filename(GVJ_t *job)
     strcpy(buf, fn);
     strcat(buf, gidx);
     strcat(buf, ".");
-    strcat(buf, job->output_langname);
+    if ((p = strchr(job->output_langname, ':'))) {
+        strcat(buf, p+1);
+	strcat(buf, ".");
+	strncat(buf, job->output_langname, (p - job->output_langname));
+    }
+    else {
+        strcat(buf, job->output_langname);
+    }
 
     job->output_filename = buf;
 }

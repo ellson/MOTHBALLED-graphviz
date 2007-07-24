@@ -450,6 +450,21 @@ static gvrender_features_t cairogen_features_ps = {
     "cairo",			/* gvloadimage target for usershapes */
 };
 
+static gvrender_features_t cairogen_features_svg = {
+    GVRENDER_DOES_TRUECOLOR
+	| GVRENDER_Y_GOES_DOWN
+	| GVRENDER_DOES_TRANSFORM, /* flags */
+    0,				/* default margin - points */
+    4.,                         /* default pad - graph units */
+    {0.,0.},                    /* default page width, height - points */
+    {72.,72.},			/* postscript 72 dpi */
+    0,				/* knowncolors */
+    0,				/* sizeof knowncolors */
+    RGBA_DOUBLE,		/* color_type */
+    0,				/* device */
+    "cairo",			/* gvloadimage target for usershapes */
+};
+
 static gvrender_features_t cairogen_features_x = {
     GVRENDER_DOES_TRUECOLOR
 	| GVRENDER_Y_GOES_DOWN
@@ -495,7 +510,7 @@ gvplugin_installed_t gvrender_pango_types[] = {
     {FORMAT_PDF, "pdf", 1, &cairogen_engine, &cairogen_features_ps},
 #endif
 #ifdef CAIRO_HAS_SVG_SURFACE
-    {FORMAT_SVG, "svg", -10, &cairogen_engine, &cairogen_features_ps},
+    {FORMAT_SVG, "svg", -10, &cairogen_engine, &cairogen_features_svg},
 #endif
 #ifdef CAIRO_HAS_XCB_SURFACE
     {FORMAT_XCB, "xcb", 0, &cairogen_engine, &cairogen_features_x},
