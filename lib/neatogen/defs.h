@@ -73,7 +73,6 @@ extern "C" {
 #define NOTUSED(var)      (void) var
 
 #include <macros.h>
-    extern void *gmalloc(size_t);
 
 #ifdef USE_STYLES
     typedef enum { regular, invisible } Style;
