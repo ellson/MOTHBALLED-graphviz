@@ -80,7 +80,6 @@ extern "C" {
     extern shape_desc *bind_shape(char *name, node_t *);
     extern void clip_and_install(edge_t *, node_t *, point *, int,
 				 splineInfo *);
-    extern char *canontoken(char *str);
     extern char* charsetToStr (int c);
     extern point coord(node_t * n);
     extern void do_graph_label(graph_t * sg);
