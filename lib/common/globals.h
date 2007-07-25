@@ -126,6 +126,7 @@ extern "C" {
 
 #undef external
 #undef EXTERN
+#undef extern
 
 #ifdef __cplusplus
 }
