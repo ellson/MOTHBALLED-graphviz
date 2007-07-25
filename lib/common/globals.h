@@ -37,6 +37,9 @@
 #if !defined(_BLD_dotneato) && defined(__IMPORT__)
 #   define external __IMPORT__
 #endif
+#if !defined(_BLD_common) && defined(GVDLL)
+#define extern	__declspec(dllimport)
+#endif
 #endif
 
 #ifndef external
@@ -56,7 +59,7 @@ extern "C" {
     EXTERN char *CmdName;
     EXTERN char *specificFlags;
     EXTERN char *specificItems;
-    external char *Gvfilepath;	/* Path of files allowed in 'shapefile' attrib  (also ps libs) */
+    EXTERN char *Gvfilepath;	/* Path of files allowed in 'shapefile' attrib  (also ps libs) */
 
 #ifdef WITH_CODEGENS
     EXTERN int Output_lang;	/* POSTSCRIPT, DOT, etc. */

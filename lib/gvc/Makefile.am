@@ -48,12 +48,7 @@ libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 #  		and with the plugins themselves, e.g.
 #  -lgvplugin_dot_layout -lgvplugin_neato_layout -lgvplugin_gd -lgvplugin_pangocairo
 libgvc_builtins_la_LDFLAGS = -version-info @VERSION_INFO@
-if WITH_WIN32
-libgvc_builtins_la_SOURCES = $(libgvc_C_la_SOURCES) dot_builtins.c no_demand_loading.c
-else
 libgvc_builtins_la_SOURCES = $(libgvc_C_la_SOURCES)
-endif
-
 libgvc_builtins_la_LIBADD = $(libgvc_la_LIBADD)
 
 .3.pdf:
