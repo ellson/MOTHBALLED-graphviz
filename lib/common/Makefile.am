@@ -10,6 +10,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt @GD_INCLUDES@ @EXPAT_INCLUDES@ @Z_INCLUDES@
 
+if HAVE_WIN32
+AM_CFLAGS = -D_BLD_common=1
+endif
+
 pkginclude_HEADERS = geom.h color.h types.h textpara.h usershape.h
 noinst_HEADERS = render.h utils.h memory.h \
 	geomprocs.h colorprocs.h colortbl.h entities.h \
