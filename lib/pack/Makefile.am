@@ -12,6 +12,10 @@ AM_CPPFLAGS = -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt
 
+if HAVE_WIN32
+AM_CFLAGS = -D_BLD_common=1
+endif
+
 pkginclude_HEADERS = pack.h
 noinst_LTLIBRARIES = libpack_C.la
 #man_MANS = pack.3
