@@ -142,8 +142,6 @@ of graphs (as in nodes and edges, not as in barcharts).
 %{_datadir}/graphviz/lefty
 %exclude %{_libdir}/graphviz/*/*
 %exclude %{_libdir}/graphviz/libgvplugin_gd.*
-%exclude %{_bindir}/dot_static
-%exclude %{_bindir}/dot_builtins
 
 # run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
 %post
