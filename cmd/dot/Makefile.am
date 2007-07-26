@@ -16,12 +16,14 @@ AM_CPPFLAGS = \
 
 if ENABLE_STATIC
 if ENABLE_SHARED
-bin_PROGRAMS = dot dot_static
+bin_PROGRAMS = dot dot_builtins dot_static
 else
 bin_PROGRAMS = dot_static
 endif
 else
-bin_PROGRAMS = dot
+if ENABLE_SHARED
+bin_PROGRAMS = dot dot_builtins
+endif
 endif
 man_MANS = dot.1 
 pdf_DATA = dot.pdf
@@ -54,7 +56,6 @@ dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 # Workaround is to link explicity to the .libs/libxxx.a
 # A better approach is probably to provide an explicit list of builtins
 # like $(top_srcdir)/lib/gvc/dot_builtins.c
-#
 dot_static_SOURCES = dot.c $(top_srcdir)/lib/gvc/no_demand_loading.c
 dot_static_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
 if WITH_MYLIBGD
@@ -98,6 +99,50 @@ dot_static_LDADD = \
        	@GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
 endif
 
+dot_builtins_SOURCES = dot.c $(top_srcdir)/lib/gvc/dot_builtins.c $(top_srcdir)/lib/gvc/no_demand_loading.c
+if WITH_MYLIBGD
+if WITH_PANGOCAIRO
+dot_builtins_LDADD = \
+	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout.la \
+	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la \
+	$(top_builddir)/plugin/core/libgvplugin_core.la \
+	$(top_builddir)/plugin/gd/libgvplugin_gd.la \
+	$(top_builddir)/plugin/pango/libgvplugin_pango.la \
+	$(top_builddir)/lib/gvc/libgvc_builtins.la \
+	$(top_builddir)/lib/pathplan/libpathplan.la \
+	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/gd/libgvgd_C.la \
+       	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
+else
+dot_builtins_LDADD = \
+	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout.la \
+	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la \
+	$(top_builddir)/plugin/core/libgvplugin_core.la \
+	$(top_builddir)/plugin/gd/libgvplugin_gd.la \
+	$(top_builddir)/lib/gvc/libgvc_builtins.la \
+	$(top_builddir)/lib/pathplan/libpathplan.la \
+	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/gd/libgvgd_C.la \
+       	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+endif
+else
+dot_builtins_LDADD = \
+	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout.la \
+	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la \
+	$(top_builddir)/plugin/core/libgvplugin_core.la \
+	$(top_builddir)/plugin/gd/libgvplugin_gd.la \
+	$(top_builddir)/plugin/pango/libgvplugin_pango.la \
+	$(top_builddir)/lib/gvc/libgvc_builtins.la \
+	$(top_builddir)/lib/pathplan/libpathplan.la \
+	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la \
+       	@GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
+endif
+
+
 EXTRA_DIST = Makefile.old dot.1 dot.pdf
 
 DISTCLEANFILES = dot.pdf
+#
