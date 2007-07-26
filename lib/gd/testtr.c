@@ -11,7 +11,7 @@
 int
 main (int argc, char *argv[])
 {
-#ifdef HAVE_LIBFREETYPE
+#ifdef HAVE_FREETYPE2
   	FILE *out;
 	int transparent, green, black;
 	gdImagePtr im;
@@ -49,5 +49,5 @@ main (int argc, char *argv[])
 #else
 	fprintf(stderr, "Compiled without freetype support\n");
 	return 0;
-#endif /* HAVE_LIBFREETYPE */
+#endif /* HAVE_FREETYPE2 */
 }

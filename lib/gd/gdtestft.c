@@ -26,8 +26,8 @@
 int
 main (int argc, char *argv[])
 {
-#ifndef HAVE_LIBFREETYPE
-  fprintf (stderr, "gd was not compiled with HAVE_LIBFREETYPE defined.\n");
+#ifndef HAVE_FREETYPE2
+  fprintf (stderr, "gd was not compiled with HAVE_FREETYPE2 defined.\n");
   fprintf (stderr, "Install the FreeType library, including the\n");
   fprintf (stderr, "header files. Then edit the gd Makefile, type\n");
   fprintf (stderr, "make clean, and type make again.\n");
@@ -202,5 +202,5 @@ main (int argc, char *argv[])
   gdImageDestroy (im);
 
   return 0;
-#endif /* HAVE_LIBFREETYPE */
+#endif /* HAVE_FREETYPE2 */
 }

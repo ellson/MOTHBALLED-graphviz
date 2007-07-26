@@ -1,13 +1,13 @@
 <!-- REMEMBER TO EDIT index.html.source -->
 <head>
-<TITLE>gd 2.0.33</TITLE>
+<TITLE>gd 2.0.34</TITLE>
 </head>
 <body bgcolor="#FFFFFF">
 <!-- BANNER HERE -->
 <H2>gd 2.0.33</H2>
 <H3>A graphics library for fast image creation</H3>
 <H3>Follow this link to the
-<A HREF="http://www.boutell.com/gd/">latest version
+<A HREF="http://libgd.org">latest version
 of this document</A>.</H3>
 <blockquote>
 <strong>UPGRADING UNIX USERS: READ THIS FIRST!</strong>
@@ -60,7 +60,7 @@ information. Thank you!
 <H3>Table of Contents</H3>
 <UL>
 <LI><A HREF="#notice">Credits and license terms</A>
-<LI><A HREF="#whatsnew2.0.33">What's new in version "XYZ" of GD?</A>
+<LI><A HREF="#whatsnew2.0.34">What's new in version "XYZ" of GD?</A>
 <LI><A HREF="#whatis">What is gd?</A>
 <LI><A HREF="#gdother">What if I want to use another programming language?</A>
 <LI><A HREF="#required">What else do I need to use gd?</A>
@@ -73,17 +73,17 @@ information. Thank you!
 <LI><A HREF="#informing"><strong>Please</strong>
  tell us you're using gd!</A>
 <LI><A HREF="#support">How do I get support?</A>
+<LI><A HREF="#issues">How do I report issues, bugs or features request?</A>
 <LI><A HREF="#index">Alphabetical quick index</A>
 </UL>
-<P><A HREF="http://www.boutell.com/">
-Up to the <EM>Boutell.Com, Inc. Home Page</EM></A>
+<P><A HREF="http://www.libgd.org/">
+Up to the <EM>LibGD Homepage</EM></A>
 <A NAME="notice"><H3>Credits and license terms</A></H3>
 <P>
 In order to resolve any possible confusion regarding the authorship
 of gd, the following copyright statement covers all of the authors
 who have required such a statement. <strong>If you are aware of any oversights
-in this copyright notice, please contact
-<a href="http://www.boutell.com/contact">Thomas Boutell</a> who will be
+in this copyright notice, please contact <A HREF="http://libgd.org/Contact">Pierre-A. Joye</A> who will be
 pleased to correct them.</strong>
 <pre>
 COPYRIGHT STATEMENT FOLLOWS THIS LINE
@@ -103,6 +103,9 @@ Portions relating to PNG copyright 1999, 2000, 2001, 2002, 2003, 2004 Greg Roelo
 Portions relating to gdttf.c copyright 1999, 2000, 2001, 2002, 2003, 2004 John Ellson (ellson@graphviz.org).
 <p>
 Portions relating to gdft.c copyright 2001, 2002, 2003, 2004 John Ellson (ellson@graphviz.org).
+<p>
+Portions copyright 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007 Pierre-Alain Joye (pierre@libgd.org).  
+
 <p>
 Portions relating to JPEG and to color quantization copyright 2000, 2001, 2002, 2003, 2004, Doug Becker and copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004 Thomas G. Lane.  This software is based 
 in part on the work of the Independent JPEG Group. See the file
@@ -173,7 +176,7 @@ with 2.0.33.
 <h4>PHP</h4>
 A variant of gd 2.x is included in PHP 4.3.0. It is also possible
 to patch PHP 4.2.3 for use with gd 2.0.33; see the
-<a href="http://www.boutell.com/gd/">gd home page</a> for a link to
+<a href="http://www.libgd.org/">gd home page</a> for a link to
 that information. It would be a Good Idea to merge all of the things
 that are better in mainstream gd and all of the things that are
 better in PHP gd at some point in the near future. 
@@ -207,6 +210,11 @@ invoke the interpreter.
 <ul>
 <li><a href="http://martin.gleeson.com/fly/">fly</a>, by Martin Gleeson
 </ul>
+<p>
+<A NAME="whatsnew2.0.34"><h3>What's new in version 2.0.34?</h3></a>
+<p>
+From 2.0.34 and later, please check the ISSUES and ChangeLog as well as 
+the releases announcements.
 <p>
 <A NAME="whatsnew2.0.33"><h3>What's new in version 2.0.33?</h3></a>
 <p>
@@ -1254,13 +1262,13 @@ saving of alpha channel information to the file instead.
 <A NAME="getgd"><H3>How do I get gd?</H3></A>
 <h4>Binaries (DLL for Windows programmers):</h4>
 <ul>
-<li><a href="http://www.boutell.com/gd/http/gdwin32.zip">.ZIP File of DLL, Headers, Et Cetera</a>
+<li><a href="http://www.libgd.org/Downloads">.ZIP File of DLL, Headers, Et Cetera</a>
 <p>
 </ul>
 <h4>Source Code:</h4>
 <ul>
-<li><a href="http://www.boutell.com/gd/http/gd-2.0.33.tar.gz">Gzipped Tar File (Unix)</a>
-<li><a href="http://www.boutell.com/gd/http/gd-2.0.33.zip">.ZIP File of SOURCE CODE (Windows)</a>
+<li><a href="http://www.libgd.org/Downloads">Gzipped Tar File (Unix)</a>
+<li><a href="http://www.boutell.com/gd/http/gd-2.0.33.tar.gz">.ZIP File of SOURCE CODE (Windows)</a>
 </ul>
 <P>
 <A NAME="buildgd"><H3>How do I build gd?</H3></A>
@@ -4127,7 +4135,7 @@ See also <a href="#gdImageStringFTEx">gdImageStringFTEx</a>.
 <DT><A NAME="gdImageStringFTEx">
 char *gdImageStringFTEx(gdImagePtr im, int *brect,
   int fg, char *fontname, double ptsize, double angle,
-  int x, int y, gdFTStringExtraPtr strex)</A>
+  int x, int y, char *string, gdFTStringExtraPtr strex)</A>
 <STRONG>(FUNCTION)</STRONG>
 <DD>
 <strong>New in 2.0.5,</strong> also found in common third-party versions
@@ -4175,8 +4183,8 @@ include <code>gdFTEX_CHARMAP</code> in the setting of
 flags |= gdFTEX_CHARMAP;
 </pre>
 And set <code>charmap</code> to the desired value, which can be
-any of gdFTEX_Unicode, gdFTEX_Shift_JIS, or gdFTEX_Big5. If you do not
-specify a preference, Unicode will be tried first. If the preferred
+any of gdFTEX_Unicode, gdFTEX_Shift_JIS, gdFTEX_Big5, or gdFTEX_Adobe_Custom.
+If you do not specify a preference, Unicode will be tried first. If the preferred
 character mapping is not found in the font, other character mappings 
 are attempted.
 <p>
@@ -5427,23 +5435,26 @@ as welcome.
 <A NAME="support"><H3>How do I get support?</H3></A>
 <h4>Free Support</h4>
 
-Anyone can mail questions about the gd library to
-<a href="http://www.boutell.com/contact">Thomas Boutell</a>. However, 
-I receive a very large volume of email on
-many subjects, and while I do my best to respond to all queries this can
-take some time. Sometimes the response must take the form of an eventual
-new release or an addition to a FAQ or other document, as opposed to an
-detailed individual response.
+Anyone can mail questions about the gd library using the 
+<a href="http://www.libgd.org/Wiki/Support">LibGD support</a>. However, 
+we receive a very large volume of email on many subjects, and while we do
+our best to respond to all queries this can take some time. Sometimes 
+the response must take the form of an eventual new release or
+ an addition to a FAQ or other document, as opposed to an detailed individual response.
 
 <h4>Hourly Support</h4>
 Those requiring support in detail may arrange for direct support
-from the author, Thomas Boutell, at the rate of $50/hr, billed
+from the maintaines, at the rate of $50/hr, billed
 directly by credit card. Purchase orders are also accepted from
 Fortune 500 corporations and institutions in good standing.
-To make arrangements, contact 
-<a href="http://www.boutell.com/contact">Boutell.Com support</a>. To avoid delay
-and/or confusion, be sure to specifically mention that you wish to
-purchase gd support at the hourly rate above.
+To make arrangements, contact <A HREF="http://www.libgd.org/Contact">Pierre-A. Joye</A>. To avoid delay
+and/or confusion, be sure to specifically mention that you wish to purchase gd support at the
+hourly rate above.
+
+<A NAME="issues"><H3>How do I report issues, bugs or features request?</H3></A>
+Bugs, feature requests or other issues can be reported using the 
+<A HREF="http://bugs.libgd.org">libGD.org issues tracker.</A> as well as using
+one of our support channels: <a href="http://www.libgd.org/Wiki/Support">LibGD support</a>
 
 <H3><A NAME="index">Alphabetical quick index</A></H3>
 <A HREF="#gdAntiAliased">gdAntiAliased</A> |
@@ -5576,7 +5587,7 @@ purchase gd support at the hourly rate above.
 <A HREF="#gdTiled">gdTiled</A> |
 <A HREF="#gdTransparent">gdTransparent</A>
 <P>
-<em><A HREF="http://www.boutell.com/">
-Boutell.Com, Inc.</A></em>
+<em><A HREF="http://www.libgd.org/">
+www.libgd.org</A></em>
 </body>
 

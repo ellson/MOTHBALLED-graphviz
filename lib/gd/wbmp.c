@@ -242,7 +242,7 @@ readwbmp (int (*getin) (void *in), void *in, Wbmp ** return_wbmp)
    **
    ** Why not just giving a filedescriptor to this function?
    ** Well, the incentive to write this function was the complete
-   ** integration in gd library from www.boutell.com. They use
+   ** integration in gd library from www.libgd.org. They use
    ** their own io functions, so the passing of a function seemed to be 
    ** a logic(?) decision ...
    **

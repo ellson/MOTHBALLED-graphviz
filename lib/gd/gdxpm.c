@@ -47,6 +47,9 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromXpm (char *filename)
     return 0;
 
   number = image.ncolors;
+	if (overflow2(sizeof (int), number)) {
+		return 0;
+	}
   colors = (int *) gdMalloc (sizeof (int) * number);
   if (colors == NULL)
     return (0);
