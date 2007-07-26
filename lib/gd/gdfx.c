@@ -1,7 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "gd.h"
 #include <math.h>
 
@@ -232,25 +228,15 @@ main (int argc, char *argv[])
   /* Create an image of text on a circle, with an
      alpha channel so that we can copy it onto a
      background */
-
-  im = NULL;
-
-/* What is this eleanor.jpg stuff doing here anyway?
- * There is no such file in the gd-2.0.33 sources. */
-#if 0
-#if HAVE_LIBJPEG
   in = fopen ("eleanor.jpg", "rb");
-  if (in)
+  if (!in)
+    {
+      im = gdImageCreateTrueColor (300, 300);
+    }
+  else
     {
       im = gdImageCreateFromJpeg (in);
       fclose (in);
-    }
-#endif
-#endif
-
-  if (!im)
-    {
-      im = gdImageCreateTrueColor (300, 300);
     }
   if (gdImageSX (im) < gdImageSY (im))
     {
@@ -521,3 +507,4 @@ gdImageSharpen (gdImagePtr im, int pct)
 	}
     }
 }
+
