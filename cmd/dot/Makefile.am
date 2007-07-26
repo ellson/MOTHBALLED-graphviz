@@ -14,17 +14,21 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt
 
+if ENABLE_SHARED
+if ENABLE_LTDL
+bin_PROGRAMS = dot
+endif
+endif
+
+# dot_builtins and dot_static work w/wo ltdl
 if ENABLE_STATIC
 if ENABLE_SHARED
-bin_PROGRAMS = dot dot_builtins dot_static
+noinst_PROGRAMS = dot_builtins dot_static
 else
-bin_PROGRAMS = dot_static
-endif
-else
-if ENABLE_SHARED
-bin_PROGRAMS = dot dot_builtins
+noinst_PROGRAMS = dot_static
 endif
 endif
+
 man_MANS = dot.1 
 pdf_DATA = dot.pdf
 
