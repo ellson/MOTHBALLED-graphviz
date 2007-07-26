@@ -1363,6 +1363,29 @@ fi
 AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for FREETYPE2
+                                                                                
+AC_ARG_WITH(freetype2,
+  [AC_HELP_STRING([--with-freetype2],
+                  [use freetype2 library])])
+
+### default is to build with freetype2
+if test "x$with_freetype2" != "xno"; then
+	with_freetype2=yes
+fi
+
+if test "x$with_freetype2" = "xyes"; then
+PKG_CHECK_MODULES(FREETYPE2, [freetype2],
+	[HAVE_FREETYPE2=1
+	AC_DEFINE_UNQUOTED(HAVE_FREETYPE2,1,
+		[Define if you have the freetype2 library])],
+	[AC_MSG_WARN(freetype2 library not available)])
+AC_SUBST(FREETYPE2_CFLAGS)
+AC_SUBST(FREETYPE2_LIBS)
+fi
+AM_CONDITIONAL(WITH_FREETYPE2, [test "x$HAVE_FREETYPE2" != "x"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for FONTCONFIG
                                                                                 
 AC_ARG_WITH(fontconfig,
@@ -1375,7 +1398,7 @@ if test "x$with_fontconfig" != "xno"; then
 fi
 
 if test "x$with_fontconfig" = "xyes"; then
-PKG_CHECK_MODULES(FONTCONFIG, [fontconfig >= 1.0],
+PKG_CHECK_MODULES(FONTCONFIG, [fontconfig],
 	[HAVE_FONTCONFIG=1
 	AC_DEFINE_UNQUOTED(HAVE_FONTCONFIG,1,
 		[Define if you have the fontconfig library])],
@@ -1567,6 +1590,24 @@ AC_SUBST(HAVE_LIBGD)
 AM_CONDITIONAL(WITH_LIBGD, [test "x$with_libgd" = "xyes"])
 AM_CONDITIONAL(WITH_MYLIBGD, [test "x$with_mylibgd" = "xyes"])
 
+dnl ----------------------------------
+dnl INCLUDES and LIBS for FREETYPE2 (only with mylibgd)
+
+if test "x$with_mylibgd" = "xyes"; then
+if test "x$HAVE_FREETYPE2" != "x"; then
+AC_DEFINE_UNQUOTED(HAVE_GD_FREETYPE,1,[Define if the GD library has the GD_FREETYPE feature])
+fi
+fi
+
+dnl ----------------------------------
+dnl INCLUDES and LIBS for FONTCONFIG (only with mylibgd)
+
+if test "x$with_mylibgd" = "xyes"; then
+if test "x$HAVE_FONTCONFIG" != "x"; then
+AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library has the GD_FONTCONFIG feature])
+fi
+fi
+
 dnl -----------------------------------
 dnl INCLUDES and LIBS for ICONV (only with mylibgd)
 
@@ -1604,92 +1645,6 @@ CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(ICONV_INCLUDES)
 AC_SUBST(ICONV_LIBS)
 
-fi
-
-dnl ----------------------------------
-dnl INCLUDES and LIBS for FREETYPE (only with mylibgd)
-
-if test "x$with_mylibgd" = "xyes"; then
-
-dnl FreeType configure tests snarfed from libgd ..from libwmf ..
-
-  FREETYPE_DIR="yes" 
-  AC_ARG_WITH(freetype,
-  [  --with-freetype=DIR     where to find the freetype 2.x library],
-	FREETYPE_DIR=$withval)
-
-  ### default is to build with freetype
-  if test "x$with_freetype" = "xno"; then
-    AC_MSG_WARN(Optional FREETYPE library disabled)
-  else
-
-    if test "x$FREETYPE_DIR" = "xyes"; then
-      AC_PATH_PROG(FREETYPE_CONFIG,freetype-config)
-    else
-      AC_PATH_PROG(FREETYPE_CONFIG,freetype-config,,[$FREETYPE_DIR/bin:$PATH])
-    fi
-
-    if test -n "$FREETYPE_CONFIG"; then
-      if test "x$FREETYPE_DIR" != "xyes"; then
-        FT_INCLUDES="`$FREETYPE_CONFIG --cflags` -I$FREETYPE_DIR/include"
-      else
-        FT_INCLUDES=`$FREETYPE_CONFIG --cflags`
-      fi
-      ft_libtool=`$FREETYPE_CONFIG --libtool`
-      # check that it really exists (FreeBSD apparently forgot to insttall it!)
-      if test -f "$ft_libtool"; then
-	FT_LIBTOOL="$ft_libtool"
-      else
-	FT_LIBTOOL=""
-      fi
-      FT_LIBS=`$FREETYPE_CONFIG --libs`
-      FT_LDFLAGS=`echo " $FT_LIBS" |sed 's/ -l[[^ ]][[^ ]]*//g'`
-    else
-      if test "x$FREETYPE_DIR" != "xyes"; then
-        FT_INCLUDES="-I$FREETYPE_DIR/include/freetype2 -I$FREETYPE_DIR/include"
-        FT_LDFLAGS="-L$FREETYPE_DIR/lib"
-        FT_LIBS="-lfreetype"
-      else
-        FT_INCLUDES=""
-        FT_LDFLAGS=""
-        FT_LIBS=""
-      fi
-      FT_LIBTOOL=""
-    fi
-
-    save_CPPFLAGS=$CPPFLAGS
-    save_LDFLAGS=$LDFLAGS
-    CPPFLAGS="$CPPFLAGS $FT_INCLUDES"
-    LDFLAGS="$LDFLAGS $FT_LDFLAGS"
-    AC_CHECK_HEADERS(ft2build.h)
-    if test `eval echo '${'$as_ac_Header'}'` = yes; then
-	AC_CHECK_LIB(freetype,main,
-		[FT_LIBS="$FT_LIBTOOL $FT_LIBS"
-		AC_DEFINE_UNQUOTED(HAVE_GD_FREETYPE,1,[Define if the GD library has the GD_FREETYPE feature])
-		AC_DEFINE_UNQUOTED(HAVE_LIBFREETYPE,1,[Define if you have the FREETYPE2 library])],
-		[AC_MSG_WARN(Optional FREETYPE2 library not available - no libfreetype.)])
-    else
-	AC_MSG_WARN(Optional FREETYPE2 library not available - no ft2build.h)
-    fi
-    CPPFLAGS=$save_CPPFLAGS
-    LDFLAGS=$save_LDFLAGS
-    AC_SUBST(FT_INCLUDES)
-    AC_SUBST(FT_LIBS)
-  fi
-fi
-
-dnl ----------------------------------
-dnl INCLUDES and LIBS for FONTCONFIG (only with mylibgd)
-
-if test "x$with_mylibgd" = "xyes"; then
-if test "x$HAVE_FONTCONFIG" != "x"; then
-FC_INCLUDES="$FONTCONFIG_INCLUDES"
-FC_LIBS="$FONTCONFIG_LIBS"
-AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library has the GD_FONTCONFIG feature])
-AC_DEFINE_UNQUOTED(HAVE_LIBFONTCONFIG,1,[Define if you have the FONTCONFIG library])],
-AC_SUBST(FC_INCLUDES)
-AC_SUBST(FC_LIBS)
-fi
 fi
 
 dnl -----------------------------------

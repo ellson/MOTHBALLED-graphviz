@@ -115,6 +115,8 @@ BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel 
 %endif
 %if "%fedora" >= "7"
 BuildRequires: gtk2-devel libgnomeui-devel
+BuildRequires: gd gd-devel
+%define MYLIBGD --without-mylibgd
 %endif
 %endif
 

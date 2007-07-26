@@ -81,7 +81,7 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/graph/libgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
 	$(top_builddir)/lib/gd/libgvgd_C.la \
-       	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
+       	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
 else
 dot_static_LDADD = \
 	$(top_builddir)/plugin/dot_layout/.libs/libgvplugin_dot_layout_C.a \
@@ -93,7 +93,7 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/graph/libgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
 	$(top_builddir)/lib/gd/libgvgd_C.la \
-       	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+       	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 endif
 else
 dot_static_LDADD = \
@@ -106,7 +106,7 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/graph/libgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
-       	@GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
+       	@GD_LIBS@ @ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
 endif
 
 dot_builtins_SOURCES = dot.c $(top_srcdir)/lib/gvc/dot_builtins.c $(top_srcdir)/lib/gvc/no_demand_loading.c
@@ -123,7 +123,7 @@ dot_builtins_LDADD = \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/gd/libgvgd_C.la \
-       	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
+       	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
 else
 dot_builtins_LDADD = \
 	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout.la \
@@ -135,7 +135,7 @@ dot_builtins_LDADD = \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
 	$(top_builddir)/lib/gd/libgvgd_C.la \
-       	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+       	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 endif
 else
 dot_builtins_LDADD = \
@@ -148,7 +148,7 @@ dot_builtins_LDADD = \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-       	@GD_LIBS@ @ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
+       	@GD_LIBS@ @ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
 endif
 
 
