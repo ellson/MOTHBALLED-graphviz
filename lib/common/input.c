@@ -18,8 +18,6 @@
 #include "render.h"
 #include "htmltable.h"
 
-char *Gvfilepath;
-
 #if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE)
 codegen_t *Output_codegen;
 #endif
