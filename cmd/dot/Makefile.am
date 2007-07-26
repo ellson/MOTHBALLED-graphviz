@@ -16,18 +16,24 @@ AM_CPPFLAGS = \
 
 if ENABLE_SHARED
 if ENABLE_LTDL
+if ENABLE_STATIC
+bin_PROGRAMS = dot dot_static
+else
 bin_PROGRAMS = dot
+endif
+else
+if ENABLE_STATIC
+bin_PROGRAMS = dot_builtins dot_static
+else
+bin_PROGRAMS = dot_builtins
+endif
+endif
+else
+if ENABLE_STATIC
+bin_PROGRAMS = dot_static
 endif
 endif
 
-# dot_builtins and dot_static work w/wo ltdl
-if ENABLE_STATIC
-if ENABLE_SHARED
-noinst_PROGRAMS = dot_builtins dot_static
-else
-noinst_PROGRAMS = dot_static
-endif
-endif
 
 man_MANS = dot.1 
 pdf_DATA = dot.pdf
