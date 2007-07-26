@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt @GD_INCLUDES@ @EXPAT_INCLUDES@ @Z_INCLUDES@
 
-if HAVE_WIN32
+if WITH_WIN32
 AM_CFLAGS = -D_BLD_common=1
 endif
 
