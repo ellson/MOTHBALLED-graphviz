@@ -101,7 +101,7 @@ sourceGetbuf (gdIOCtx * ctx, void *buf, int size)
 
   if (res == 0)
     {
-      return EOF;
+      return 0;
     }
   else if (res < 0)
     {

@@ -1,6 +1,6 @@
 /*
  * gd_jpeg.c: Read and write JPEG (JFIF) format image files using the
- * gd graphics library (http://www.boutell.com/gd/).
+ * gd graphics library (http://www.libgd.org).
  * 
  * This software is based in part on the work of the Independent JPEG
  * Group.  For more information on the IJG JPEG software (and JPEG

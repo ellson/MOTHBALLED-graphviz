@@ -292,7 +292,11 @@ dynamicGetbuf (gdIOCtxPtr ctx, void *buf, int len)
     {
       if (remain == 0)
 	{
-	  return EOF;
+	/* 2.0.34: EOF is incorrect. We use 0 for
+		 errors and EOF, just like fileGetbuf,
+		 which is a simple fread() wrapper. 
+		 TBB. Original bug report: Daniel Cowgill. */
+     return 0; /* NOT EOF */
 	}
       rlen = remain;
     }

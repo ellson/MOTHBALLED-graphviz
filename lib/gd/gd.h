@@ -5,6 +5,13 @@ extern "C" {
 #ifndef GD_H
 #define GD_H 1
 
+#define GD_MAJOR_VERSION 2
+#define GD_MINOR_VERSION 0
+#define GD_RELEASE_VERSION 35
+#define GD_EXTRA_VERSION ""
+#define GD_VERSION_STRING "2.0.35"
+
+
 /* Do the DLL dance: dllexport when building the DLL,
 	dllimport when importing from it, nothing when
 	not on Silly Silly Windows (tm Aardman Productions). */
@@ -55,6 +62,11 @@ extern "C"
 #endif
 
 /* some might want to set DEFAULT_FONTPATH from configure in config.h */
+#ifdef NETWARE
+/* default fontpath for netware systems, could probably be handled in configure for 2.1 */
+#define DEFAULT_FONTPATH "sys:/java/nwgfx/lib/x11/fonts/ttf;."
+#define PATHSEPARATOR ";"
+#endif
 
 /* 2.0.23: more Type 1 fonts */
 #ifndef DEFAULT_FONTPATH
@@ -390,7 +402,8 @@ BGD_DECLARE(char *) gdImageStringFT (gdImage * im, int *brect, int fg, char *fon
     int flags;			/* Logical OR of gdFTEX_ values */
     double linespacing;		/* fine tune line spacing for '\n' */
     int charmap;		/* TBB: 2.0.12: may be gdFTEX_Unicode,
-				   gdFTEX_Shift_JIS, or gdFTEX_Big5;
+				   gdFTEX_Shift_JIS, gdFTEX_Big5,
+				   or gdFTEX_Adobe_Custom;
 				   when not specified, maps are searched
 				   for in the above order. */
     int hdpi;                   /* if (flags & gdFTEX_RESOLUTION) */
@@ -446,6 +459,7 @@ BGD_DECLARE(int) gdFTUseFontConfig(int flag);
 #define gdFTEX_Unicode 0
 #define gdFTEX_Shift_JIS 1
 #define gdFTEX_Big5 2
+#define gdFTEX_Adobe_Custom 3
 
 BGD_DECLARE(char *) gdImageStringFTEx (gdImage * im, int *brect, int fg, char *fontlist,
 			   double ptsize, double angle, int x, int y,
@@ -645,6 +659,7 @@ BGD_DECLARE(void) gdImageFilledArc (gdImagePtr im, int cx, int cy, int w, int h,
 			 int e, int color, int style);
 BGD_DECLARE(void) gdImageArc (gdImagePtr im, int cx, int cy, int w, int h, int s, int e,
 		   int color);
+BGD_DECLARE(void) gdImageEllipse(gdImagePtr im, int cx, int cy, int w, int h, int color);
 BGD_DECLARE(void) gdImageFilledEllipse (gdImagePtr im, int cx, int cy, int w, int h,
 			     int color);
 BGD_DECLARE(void) gdImageFillToBorder (gdImagePtr im, int x, int y, int border,

@@ -5,9 +5,6 @@
 #include <stdio.h>
 #include "gd.h"
 
-/* 2.0.22: oops, we need config.h */
-#include "config.h"
-
 int
 main (int argc, char *argv[])
 {

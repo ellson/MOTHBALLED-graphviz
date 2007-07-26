@@ -1,7 +1,3 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
@@ -139,7 +135,7 @@ BGD_DECLARE(void) gdImageGifCtx(gdImagePtr im, gdIOCtxPtr out)
 	BitsPerPixel = colorstobpp(tim->colorsTotal);
 	/* All set, let's do it. */
 	GIFEncode(
-		out, tim->sx, tim->sy, interlace, 0, transparent, BitsPerPixel,
+		out, tim->sx, tim->sy, interlace, 0, tim->transparent, BitsPerPixel,
 		tim->red, tim->green, tim->blue, tim);
 	if (pim) {
 		/* Destroy palette based temporary image. */
@@ -450,6 +446,9 @@ BGD_DECLARE(void) gdImageGifAnimEnd(FILE *outFile)
 BGD_DECLARE(void *) gdImageGifAnimEndPtr (int *size)
 {
   char *rv = (char *) gdMalloc (1);
+  if (!rv) {
+    return 0;
+  }
   *rv = ';';
   *size = 1;
   return (void *)rv;

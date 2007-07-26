@@ -171,6 +171,9 @@ _gd2GetHeader (gdIOCtxPtr in, int *sx, int *sy,
       GD2_DBG (printf ("Reading %d chunk index entries\n", nc));
       sidx = sizeof (t_chunk_info) * nc;
       cidx = gdCalloc (sidx, 1);
+			if (!cidx) {
+				goto fail1;
+			}
       for (i = 0; i < nc; i++)
 	{
 	  if (gdGetInt (&cidx[i].offset, in) != 1)
@@ -322,7 +325,8 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromGd2Ctx (gdIOCtxPtr in)
   if (im == NULL)
     {
       return 0;
-    };
+    }
+
   bytesPerPixel = im->trueColor ? 4 : 1;
   nc = ncx * ncy;
 
@@ -342,7 +346,14 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromGd2Ctx (gdIOCtxPtr in)
       /* Allocate buffers */
       chunkMax = cs * bytesPerPixel * cs;
       chunkBuf = gdCalloc (chunkMax, 1);
+			if (!chunkBuf) {
+				goto fail2;
+			}
       compBuf = gdCalloc (compMax, 1);
+			if (!compBuf) {
+				goto fail2;
+			}
+
       GD2_DBG (printf ("Largest compressed chunk is %d bytes\n", compMax));
     };
 
@@ -462,11 +473,17 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromGd2Ctx (gdIOCtxPtr in)
 
 fail2:
   gdImageDestroy (im);
-  gdFree (chunkBuf);
-  gdFree (compBuf);
-  gdFree (chunkIdx);
+fail1:
+	if (chunkBuf) {
+		gdFree (chunkBuf);
+	}
+	if (compBuf) {
+		gdFree (compBuf);
+	} 
+	if (chunkIdx) {
+		gdFree (chunkIdx);
+	}
   return 0;
-
 }
 
 BGD_DECLARE(gdImagePtr) gdImageCreateFromGd2Part (FILE * inFile, int srcx, int srcy, int w, int h)
@@ -571,7 +588,14 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromGd2PartCtx (gdIOCtx * in, int srcx, int
 	  chunkMax = cs * cs;
 	}
       chunkBuf = gdCalloc (chunkMax, 1);
+			if (!chunkBuf) {
+				goto fail2;
+			}
       compBuf = gdCalloc (compMax, 1);
+			if (!compBuf) {
+				goto fail2;
+			}
+
     };
 
 /*      Don't bother with this... */
@@ -748,10 +772,15 @@ BGD_DECLARE(gdImagePtr) gdImageCreateFromGd2PartCtx (gdIOCtx * in, int srcx, int
 fail2:
   gdImageDestroy (im);
 fail1:
-  gdFree (chunkBuf);
-  gdFree (compBuf);
-  gdFree (chunkIdx);
-
+	if (chunkBuf) {
+	  gdFree (chunkBuf);
+	}
+	if (compBuf) {
+	  gdFree (compBuf);
+	}
+	if (chunkIdx) {
+  	gdFree (chunkIdx);
+	}
   return 0;
 
 }
@@ -851,7 +880,13 @@ _gdImageGd2 (gdImagePtr im, gdIOCtx * out, int cs, int fmt)
       /* Allocate the buffers.  */
       /* */
       chunkData = gdCalloc (cs * bytesPerPixel * cs, 1);
+			if (!chunkData) {
+				goto fail;
+			}
       compData = gdCalloc (compMax, 1);
+			if (!compData) {
+				goto fail;
+			}
 
       /* */
       /* Save the file position of chunk index, and allocate enough space for */
@@ -863,6 +898,9 @@ _gdImageGd2 (gdImagePtr im, gdIOCtx * out, int cs, int fmt)
       gdSeek (out, idxPos + idxSize);
 
       chunkIdx = gdCalloc (idxSize * sizeof (t_chunk_info), 1);
+      if (!chunkIdx) {
+        goto fail;
+      }
     };
 
   _gdPutColors (im, out);
@@ -984,13 +1022,20 @@ _gdImageGd2 (gdImagePtr im, gdIOCtx * out, int cs, int fmt)
       gdSeek (out, posSave);
     };
 
-  GD2_DBG (printf ("Freeing memory\n"));
-  gdFree (chunkData);
-  gdFree (compData);
-  gdFree (chunkIdx);
-  GD2_DBG (printf ("Done\n"));
-
   /*printf("Memory block size is %d\n",gdTell(out)); */
+fail:
+  GD2_DBG (printf ("Freeing memory\n"));
+
+	if (chunkData) {
+		gdFree (chunkData);
+	}
+	if (compData) {
+		gdFree (compData);
+	} 
+	if (chunkIdx) {
+		gdFree (chunkIdx);
+	}
+  GD2_DBG (printf ("Done\n"));
 
 }
 

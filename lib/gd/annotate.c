@@ -19,7 +19,7 @@ enum
 int
 main (int argc, char *argv[])
 {
-#ifndef HAVE_LIBFREETYPE
+#ifndef HAVE_FREETYPE2
   /* 2.0.12 */
   fprintf (stderr, "annotate is not useful without freetype.\n"
 	   "Install freetype, then './configure; make clean; make install'\n"
@@ -207,5 +207,5 @@ main (int argc, char *argv[])
   gdImageDestroy (im);
   fclose (out);
   return 0;
-#endif /* HAVE_LIBFREETYPE */
+#endif /* HAVE_FREETYPE2 */
 }
