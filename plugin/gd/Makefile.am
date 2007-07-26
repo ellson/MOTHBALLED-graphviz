@@ -26,7 +26,7 @@ libgvplugin_gd_la_SOURCES = $(libgvplugin_gd_C_la_SOURCES)
 if WITH_MYLIBGD
 libgvplugin_gd_la_LIBADD = \
 	$(top_builddir)/lib/gd/libgvgd_C.la \
-	@ICONV_LIBS@ @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @MATH_LIBS@
+	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @MATH_LIBS@
 else
 libgvplugin_gd_la_LIBADD = @GD_LIBS@ @MATH_LIBS@
 endif

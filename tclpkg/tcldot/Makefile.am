@@ -55,7 +55,7 @@ libtcldot_la_LIBADD += $(top_builddir)/lib/gd/libgvgd_C.la
 else
 libtcldot_la_LIBADD += @GD_LIBS@
 endif
-libtcldot_la_LIBADD += @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
+libtcldot_la_LIBADD += @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
 endif
 
 libtcldot_la_LIBADD += @LIBGEN_LIBS@ @LIBLTDL@ @ICONV_LIBS@ @MATH_LIBS@
@@ -88,7 +88,7 @@ libtcldot_builtin_la_LIBADD += $(top_builddir)/lib/gd/libgvgd_C.la
 else
 libtcldot_builtin_la_LIBADD += @GD_LIBS@
 endif
-libtcldot_builtin_la_LIBADD += @FC_LIBS@ @FT_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
+libtcldot_builtin_la_LIBADD += @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
 endif
 
 libtcldot_builtin_la_LIBADD += @ICONV_LIBS@ @EXPAT_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@

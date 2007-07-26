@@ -242,7 +242,7 @@ void gdgen_missingfont(char *err, char *fontreq)
     if (n_errors >= 20)
 	return;
     if ((lastmissing == 0) || (strcmp(lastmissing, fontreq))) {
-#if defined(HAVE_LIBFONTCONFIG) && defined(HAVE_GD_FONTCONFIG)
+#ifdef HAVE_GD_FONTCONFIG
 #if 0
 /* FIXME - error function */
 	agerr(AGERR, "%s : %s\n", err, fontreq);
@@ -276,7 +276,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     pointf mp, ep;
     double parawidth = para->width * job->scale.x;
     gdFTStringExtra strex;
-#if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
+#ifdef HAVE_GD_FREETYPE
     char *err;
     int brect[8];
 #endif
@@ -325,7 +325,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 		    ROUND(ep.x), ROUND(ep.y),
 		    job->obj->pencolor.u.index);
     } else {
-#if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
+#ifdef HAVE_GD_FREETYPE
 #ifdef HAVE_GD_FONTCONFIG
 	char* fontlist = para->fontname;
 #else
@@ -377,7 +377,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 			      (unsigned char *)para->str,
 			      job->obj->pencolor.u.index);
 	    }
-#if defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
+#ifdef HAVE_GD_FREETYPE
 	}
 #endif
     }
