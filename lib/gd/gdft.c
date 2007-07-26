@@ -17,7 +17,7 @@
 #include "gdhelpers.h"
 #include "entities.h"
 
-/* 2.0.10: WIN32 */
+/* 2.0.10: WIN32, not MSWIN32 */
 #ifndef WIN32
 #include <unistd.h>
 #else
@@ -79,7 +79,7 @@ BGD_DECLARE(char *) gdImageStringTTF (gdImage * im, int *brect, int fg, char *fo
 			  angle, x, y, string);
 }
 
-#ifndef HAVE_LIBFREETYPE
+#ifndef HAVE_FREETYPE2
 BGD_DECLARE(char *) gdImageStringFTEx (gdImage * im, int *brect, int fg, char *fontlist,
 		   double ptsize, double angle, int x, int y, char *string,
 		   gdFTStringExtraPtr strex)
@@ -94,26 +94,20 @@ BGD_DECLARE(char *) gdImageStringFT (gdImage * im, int *brect, int fg, char *fon
 }
 #else
 
-#ifndef HAVE_LIBFONTCONFIG
+#ifndef HAVE_FONTCONFIG
 static char * font_pattern(char **fontpath, char *fontpattern)
 {
   return "libgd was not built with FontConfig support\n";
 }
-#endif /* HAVE_LIBFONTCONFIG */
+#endif /* HAVE_FONTCONFIG */
 
 #include "gdcache.h"
 /* 2.0.16 Christophe Thomas: starting with FreeType 2.1.6, this is
   mandatory, and it has been supported for a long while. */
-#ifdef HAVE_FT2BUILD_H
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 #include FT_SIZES_H
-#else
-#include <freetype/freetype.h>
-#include <freetype/ftglyph.h>
-#include <freetype/ftsizes.h>
-#endif
 
 /* number of fonts cached before least recently used is replaced */
 #define FONTCACHESIZE 6
@@ -216,6 +210,16 @@ static int comp_entities(const void *e1, const void *e2) {
   struct entities_s *en2 = (struct entities_s *) e2;
   return strcmp(en1->name, en2->name);
 }
+
+extern int any2eucjp (char *, char *, unsigned int);
+
+/* Persistent font cache until explicitly cleared */
+/* Fonts can be used across multiple images */
+
+/* 2.0.16: thread safety (the font cache is shared) */
+gdMutexDeclare (gdFontCacheMutex);
+static gdCache_head_t *fontCache;
+static FT_Library library;
 
 #define Tcl_UniChar int
 #define TCL_UTF_MAX 3
@@ -439,19 +443,23 @@ fontFetch (char **error, void *key)
   *error = NULL;
 
   a = (font_t *) gdMalloc (sizeof (font_t));
+	if (!a) {
+		return NULL;
+	}
+
   a->fontlist = strdup (b->fontlist);
   a->flags = b->flags;
   a->library = b->library;
   a->fontpath = NULL;
 
-#ifdef HAVE_LIBFONTCONFIG
+#ifdef HAVE_FONTCONFIG
   if (!useFontConfig(b->flags)) 
   	*error = font_path(&(a->fontpath), a->fontlist);
               else
   	*error = font_pattern(&(a->fontpath), a->fontlist);
 #else
   *error = font_path(&(a->fontpath), a->fontlist);
-#endif /* HAVE_LIBFONTCONFIG */
+#endif /* HAVE_FONTCONFIG */
   if (*error || !a->fontpath || !a->fontpath[0])
                 {
       /* 2.0.12: TBB: free these. Thanks to Frank Faubert. */
@@ -538,10 +546,14 @@ tweenColorFetch (char **error, void *key)
   gdImagePtr im;
 
   a = (tweencolor_t *) gdMalloc (sizeof (tweencolor_t));
+	if (!a) {
+		return NULL;
+	}
+
   pixel = a->pixel = b->pixel;
   bg = a->bgcolor = b->bgcolor;
   fg = a->fgcolor = b->fgcolor;
-  im = b->im;
+  im = a->im = b->im;
 
   /* if fg is specified by a negative color idx, then don't antialias */
   if (fg < 0)
@@ -767,16 +779,6 @@ gdft_draw_bitmap (gdCache_head_t * tc_cache, gdImage * im, int fg,
   return (char *) NULL;
 }
 
-extern int any2eucjp (char *, char *, unsigned int);
-
-/* Persistent font cache until explicitly cleared */
-/* Fonts can be used across multiple images */
-
-/* 2.0.16: thread safety (the font cache is shared) */
-gdMutexDeclare (gdFontCacheMutex);
-static gdCache_head_t *fontCache;
-static FT_Library library;
-
 BGD_DECLARE(void) gdFreeFontCache ()
 {
   gdFontCacheShutdown ();
@@ -786,11 +788,13 @@ BGD_DECLARE(void) gdFontCacheShutdown ()
 {
   if (fontCache)
     {
-      gdMutexShutdown (gdFontCacheMutex);
+			gdMutexLock(gdFontCacheMutex);
       gdCacheDelete (fontCache);
-      FT_Done_FreeType (library);
       /* 2.0.16: Gustavo Scotti: make sure we don't free this twice */
       fontCache = 0;
+			gdMutexUnlock(gdFontCacheMutex);
+      gdMutexShutdown (gdFontCacheMutex);
+      FT_Done_FreeType (library);
     }
 }
 
@@ -818,6 +822,9 @@ BGD_DECLARE(int) gdFontCacheSetup (void)
       return -1;
     }
   fontCache = gdCacheCreate (FONTCACHESIZE, fontTest, fontFetch, fontRelease);
+	if (!fontCache) {
+		return -2;
+	}
   return 0;
 }
 
@@ -905,6 +912,12 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImage * im, int *brect, int fg, char *f
   face = font->face;		/* shortcut */
   slot = face->glyph;		/* shortcut */
 
+   if (brect)
+     {
+       total_min.x = total_min.y = 0;
+       total_max.x = total_max.y = 0;
+     }
+
   /*
    * Added hdpi and vdpi to support images at non-screen resolutions, i.e. 300 dpi TIFF,
    *    or 100h x 50v dpi FAX format. 2.0.23.
@@ -945,9 +958,6 @@ BGD_DECLARE(char *) gdImageStringFTEx (gdImage * im, int *brect, int fg, char *f
   /* set rotation transform */
   FT_Set_Transform (face, &matrix, NULL);
 
-#if 0
-fprintf(stderr, "fontsize=%g resolution=%d,%d\n", ptsize, METRIC_RES, METRIC_RES );
-#endif
   FT_New_Size (face, &platform_independent);
   FT_Activate_Size (platform_independent);
   if (FT_Set_Char_Size (face, 0, (FT_F26Dot6)(ptsize*64), METRIC_RES, METRIC_RES))
@@ -959,23 +969,18 @@ fprintf(stderr, "fontsize=%g resolution=%d,%d\n", ptsize, METRIC_RES, METRIC_RES
 
   if (render)
     {
-#if 0
-fprintf(stderr, "fontsize=%g dpi=%d,%d\n", ptsize, hdpi, vdpi );
-#endif
       FT_New_Size (face, &platform_specific);
       FT_Activate_Size (platform_specific);
       if (FT_Set_Char_Size (face, 0, (FT_F26Dot6)(ptsize*64), hdpi, vdpi))
         {
           gdCacheDelete (tc_cache);
           gdMutexUnlock (gdFontCacheMutex);
-          return "Could not set character size (render)";
+          return "Could not set character size";
         }
     }
 
-#if 0
-    if (fg < 0)
-	render_mode |= FT_LOAD_MONOCHROME;
-#endif
+  if (fg < 0)
+      render_mode |= FT_LOAD_MONOCHROME;
 
   /* find requested charmap */
   encodingfound = 0;
@@ -990,6 +995,14 @@ fprintf(stderr, "fontsize=%g dpi=%d,%d\n", ptsize, hdpi, vdpi );
 	      || charmap->encoding == FT_ENCODING_UNICODE
 	      || charmap->encoding == FT_ENCODING_ADOBE_CUSTOM
 	      || charmap->encoding == FT_ENCODING_ADOBE_STANDARD)
+	    {
+	      encodingfound++;
+	      break;
+	    }
+	}
+      else if (encoding == gdFTEX_Adobe_Custom)
+	{
+	  if (charmap->encoding == FT_ENCODING_ADOBE_CUSTOM)
 	    {
 	      encodingfound++;
 	      break;
@@ -1169,7 +1182,7 @@ fprintf(stderr,"dpi=%d,%d metric_res=%d ptsize=%g\n",hdpi,vdpi,METRIC_RES,ptsize
 		{
 		  ch = c & 0xFF;	/* don't extend sign */
 		}
-	      next++;
+				if (*next) next++;
 	    }
 	    break;
 	  case gdFTEX_Big5:
@@ -1180,7 +1193,7 @@ fprintf(stderr,"dpi=%d,%d metric_res=%d ptsize=%g\n",hdpi,vdpi,METRIC_RES,ptsize
 	       * ftp://ftp.ora.com/pub/examples/nutshell/ujip/doc/japan.inf-032092.sjs
 	       */
 	      ch = (*next) & 0xFF;	/* don't extend sign */
-	      if (*next) next++;
+	      next++;
 	      if (ch >= 161	/* first code of JIS-8 pair */
 		  && *next)
 		{		/* don't advance past '\0' */
@@ -1189,6 +1202,12 @@ fprintf(stderr,"dpi=%d,%d metric_res=%d ptsize=%g\n",hdpi,vdpi,METRIC_RES,ptsize
 		  next++;
 		}
 	    }
+	    break;
+
+	  case gdFTEX_Adobe_Custom:
+	  default:
+			ch &= 0xFF;
+	    next++;
 	    break;
 	  }
 
@@ -1215,15 +1234,19 @@ fprintf(stderr,"dpi=%d,%d metric_res=%d ptsize=%g\n",hdpi,vdpi,METRIC_RES,ptsize
 	  /* make sure we have enough allocation for two numbers
 		so we don't have to recheck for the terminating number */
 	  if (! xshow_alloc) {
-		xshow_alloc = 100;
-		strex->xshow = gdMalloc(xshow_alloc);
-		xshow_pos = 0;
+			xshow_alloc = 100;
+			strex->xshow = gdMalloc(xshow_alloc);
+			if (!strex->xshow) {
+				return 0;
+			}
+			xshow_pos = 0;
 	  } 
 	  else if (xshow_pos + 20 > xshow_alloc) {
 		xshow_alloc += 100;
-		strex->xshow = realloc(strex->xshow, xshow_alloc);
-		if (! strex->xshow)
-	  	    return "Problem allocating memory with realloc";
+		strex->xshow = gdRealloc(strex->xshow, xshow_alloc);
+		if (!strex->xshow) {
+			return 0;
+		}
 	}
 	  xshow_pos += sprintf(strex->xshow + xshow_pos, "%g ",
 		(double)(penf.x - oldpenf.x) * hdpi / (64 * METRIC_RES));
@@ -1332,8 +1355,8 @@ fprintf(stderr,"dpi=%d,%d metric_res=%d ptsize=%g\n",hdpi,vdpi,METRIC_RES,ptsize
 
   if (brect)
     {				/* only if need brect */
-      double scalex = (double)hdpi / (64 * METRIC_RES);
-      double scaley = (double)vdpi / (64 * METRIC_RES);
+			double scalex = (double)hdpi / (64 * METRIC_RES);
+			double scaley = (double)vdpi / (64 * METRIC_RES);
 
       /* increase by 1 pixel to allow for rounding */
       total_min.x -= METRIC_RES;
@@ -1342,9 +1365,9 @@ fprintf(stderr,"dpi=%d,%d metric_res=%d ptsize=%g\n",hdpi,vdpi,METRIC_RES,ptsize
       total_max.y += METRIC_RES;
  
       /* rotate bounding rectangle, scale and round to int pixels, and translate */
-      brect[0] = x + (total_min.x * cos_a + total_max.y * sin_a)*scalex;
-      brect[1] = y - (total_min.x * sin_a - total_max.y * cos_a)*scaley;
-      brect[2] = x + (total_max.x * cos_a + total_max.y * sin_a)*scalex;
+			brect[0] = x + (total_min.x * cos_a + total_max.y * sin_a)*scalex;
+			brect[1] = y - (total_min.x * sin_a - total_max.y * cos_a)*scaley;
+			brect[2] = x + (total_max.x * cos_a + total_max.y * sin_a)*scalex;
       brect[3] = y - (total_max.x * sin_a - total_max.y * cos_a)*scaley;
       brect[4] = x + (total_max.x * cos_a + total_min.y * sin_a)*scalex;
       brect[5] = y - (total_max.x * sin_a - total_min.y * cos_a)*scaley;
@@ -1363,9 +1386,9 @@ fprintf(stderr,"dpi=%d,%d metric_res=%d ptsize=%g\n",hdpi,vdpi,METRIC_RES,ptsize
   return (char *) NULL;
 }
 
-#endif /* HAVE_LIBFREETYPE */
+#endif /* HAVE_FREETYPE2 */
 
-#ifdef HAVE_LIBFONTCONFIG
+#ifdef HAVE_FONTCONFIG
 /* Code to find font path, with special mapping for Postscript font names.
  *
  * Dag Lem <dag@nimrod.no>
@@ -1516,7 +1539,7 @@ static char * font_pattern(char **fontpath, char *fontpattern)
   return NULL;
 }
 
-#endif /* HAVE_LIBFONTCONFIG */
+#endif /* HAVE_FONTCONFIG */
 
 #ifdef WIN32
 #define FONTSFX "\\FONTS"
@@ -1617,9 +1640,14 @@ static char * font_path(char **fontpath, char *name_list)
       fullname = gdRealloc (fullname,
                           strlen (fontsearchpath) + strlen (name) + 8);
       /* if name is an absolute or relative pathname then test directly */
+#ifdef NETWARE
+      /* netware uses the format "volume:/path" or the standard "/path" */
+      if (name[0] != 0 && (strstr(name, ":/") || name[0] == '/'))
+#else
       if (strchr (name, '/')
 	  || (name[0] != 0 && name[1] == ':'
 	      && (name[2] == '/' || name[2] == '\\')))
+#endif
 	{
 	  sprintf (fullname, "%s", name);
 	  if (access (fullname, R_OK) == 0)
@@ -1678,7 +1706,7 @@ static char * font_path(char **fontpath, char *name_list)
   gdFree (fontlist);
   if (!font_found)
     {
-      free (fullname);
+      gdFree (fullname);
       return "Could not find/open font";
     }
 
@@ -1688,11 +1716,11 @@ static char * font_path(char **fontpath, char *name_list)
 
 BGD_DECLARE(int) gdFTUseFontConfig(int flag)
 {
-#ifdef HAVE_LIBFONTCONFIG
+#ifdef HAVE_FONTCONFIG
 	fontConfigFlag = 1;
 	return 1;
 #else
 	return 0;
-#endif /* HAVE_LIBFONTCONFIG */
+#endif /* HAVE_FONTCONFIG */
 }
 
