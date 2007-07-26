@@ -12,39 +12,46 @@ EXTRA_DIST = $(GRAPHS)
 CLEANFILES = core *.dot.* *.png .xvpics/* 
 
 test:
-	for i in $(GRAPHS); do \
-		echo "neato $$i"; \
-		$(top_builddir)/cmd/dot/dot -Kneato \
-			-Tcanon -o$$i.canon \
-			-Tcmap -o$$i.cmap \
-			-Tcmapx -o$$i.cmapx \
-			-Tdia -o$$i.dia \
-			-Tdot -o$$i.dot \
-			-Tfig -o$$i.fig \
-			-Tgd -o$$i.gd \
-			-Tgd2 -o$$i.gd2 \
-			-Tgif -o$$i.gif \
-			-Thpgl -o$$i.hpgl \
-			-Tismap -o$$i.ismap \
-			-Timap -o$$i.imap \
-			-Tjpg -o$$i.jpg \
-			-Tmif -o$$i.mif \
-			-Tmp -o$$i.mp \
-			-Tpcl -o$$i.pcl \
-			-Tpic -o$$i.pic \
-			-Tplain -o$$i.plain \
-			-Tplain-ext -o$$i.plain-ext \
-			-Tpng -o$$i.png \
-			-Tps -o$$i.ps \
-			-Tps2 -o$$i.ps2 \
-			-Tsvg -o$$i.svg \
-			-Tsvgz -o$$i.svgz \
-			-Twbmp -o$$i.wbmp \
-			-Tvrml -o$$i.vrml \
-			-Tvtx -o$$i.vtx \
-			-Txdot -o$$i.xdot \
-				$(top_srcdir)/graphs/undirected/$$i; \
-	done
+	$(top_builddir)/cmd/dot/dot -Kneato -Tcanon -Tcmap -Tcmapx \
+                -Tdia -Tdot -Tfig -Tgd -Tgd2 -Tgif -Thpgl \
+                -Tismap -Timap -Tjpg -Tmif -Tmp -Tpcl -Tpdf -Tpic \
+                -Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:cairo -Tsvg \
+                -Tsvg:cairo -Tsvgz -Tvrml -Twbmp -Tvtx -Txdot \
+                -O $(GRAPHS) 
+
+#	for i in $(GRAPHS); do \
+#		echo "neato $$i"; \
+#		$(top_builddir)/cmd/dot/dot -Kneato \
+#			-Tcanon -o$$i.canon \
+#			-Tcmap -o$$i.cmap \
+#			-Tcmapx -o$$i.cmapx \
+#			-Tdia -o$$i.dia \
+#			-Tdot -o$$i.dot \
+#			-Tfig -o$$i.fig \
+#			-Tgd -o$$i.gd \
+#			-Tgd2 -o$$i.gd2 \
+#			-Tgif -o$$i.gif \
+#			-Thpgl -o$$i.hpgl \
+#			-Tismap -o$$i.ismap \
+#			-Timap -o$$i.imap \
+#			-Tjpg -o$$i.jpg \
+#			-Tmif -o$$i.mif \
+#			-Tmp -o$$i.mp \
+#			-Tpcl -o$$i.pcl \
+#			-Tpic -o$$i.pic \
+#			-Tplain -o$$i.plain \
+#			-Tplain-ext -o$$i.plain-ext \
+#			-Tpng -o$$i.png \
+#			-Tps -o$$i.ps \
+#			-Tps2 -o$$i.ps2 \
+#			-Tsvg -o$$i.svg \
+#			-Tsvgz -o$$i.svgz \
+#			-Twbmp -o$$i.wbmp \
+#			-Tvrml -o$$i.vrml \
+#			-Tvtx -o$$i.vtx \
+#			-Txdot -o$$i.xdot \
+#				$(top_srcdir)/graphs/undirected/$$i; \
+#	done
 
 canon:
 	for i in $(GRAPHS); do echo "neato $$i"; \
