@@ -18,10 +18,6 @@
 #include "render.h"
 #include "htmltable.h"
 
-#if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE)
-codegen_t *Output_codegen;
-#endif
-
 static char *usageFmt =
     "Usage: %s [-Vv?] [-(GNE)name=val] [-(KTlso)<val>] <dot files>\n";
 
@@ -327,10 +323,6 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 	v = gvjobs_output_langname(gvc, "dot");
 	assert(v);  /* "dot" should always be available as an output format */
     }
-
-#if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE)
-    Output_codegen = gvc->jobs->codegen;
-#endif
 
     /* set persistent attributes here (if not already set from command line options) */
     if (!(agfindattr(agprotograph()->proto->n, "label")))

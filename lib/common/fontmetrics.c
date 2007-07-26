@@ -120,7 +120,6 @@ static double courFontWidth[] = {
 };
 
 #if defined(WITH_CODEGENS) && !defined(HAVE_GD_FREETYPE) && defined(HAVE_LIBGD)
-extern codegen_t *Output_codegen;
 extern codegen_t GD_CodeGen;
 #endif
 
