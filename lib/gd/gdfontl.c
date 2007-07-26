@@ -11,9 +11,6 @@
    "Libor Skarvada, libor@informatics.muni.cz"
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #include "gdfontl.h"
 

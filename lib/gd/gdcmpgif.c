@@ -4,7 +4,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef WIN32
 #include <unistd.h> /* For unlink function */
+#endif
 
 #include "gd.h"
 
