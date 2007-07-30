@@ -626,16 +626,24 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     pointf pageSize;	/* page size for the graph - points*/
     pointf imageSize;	/* image size on one page of the graph - points */
     pointf margin;	/* margin for a page of the graph - points */
+    pointf centering = {0.0, 0.0}; /* centering offset - points */
 
-    margin = job->margin;
-
-    /* unpaginated image size in absolute units - points */
+    /* unpaginated image size - in points - in graph orientation */
     imageSize.x = job->zoom*job->view.x;
     imageSize.y = job->zoom*job->view.y;
+
+    /* rotate imageSize to page orientation */
+    if (job->rotation)
+	imageSize = exch_xyf(imageSize);
+
+    /* margin - in points - in page orientation */
+    margin = job->margin;
 
     /* determine pagination */
     if (gvc->graph_sets_pageSize) {
 	/* page was set by user */
+
+        /* determine size of page for image */
 	pageSize.x = gvc->pageSize.x - 2 * margin.x;
 	pageSize.y = gvc->pageSize.y - 2 * margin.y;
 
@@ -678,32 +686,9 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	    pageSize.y = imageSize.y;
     }
 
-    /* determine page box including centering */
-    if (GD_drawing(g)->centered) {
-	if (pageSize.x > imageSize.x)
-	    margin.x += (pageSize.x - imageSize.x) / 2;
-	if (pageSize.y > imageSize.y)
-	    margin.y += (pageSize.y - imageSize.y) / 2;
-    }
-
-    if (job->rotation) {
-	pageSize = exch_xyf(pageSize);
-	margin = exch_xyf(margin);
-    }
-
     /* initial window size */
-    job->width = (pageSize.x + 2*margin.x) * job->dpi.x / POINTS_PER_INCH;
-    job->height = (pageSize.y + 2*margin.y) * job->dpi.y / POINTS_PER_INCH;
-
-    /* canvas area, centered if necessary */
-    job->canvasBox.LL.x = margin.x;
-    job->canvasBox.LL.y = margin.y;
-    job->canvasBox.UR.x = margin.x + imageSize.x;
-    job->canvasBox.UR.y = margin.y + imageSize.y;
-
-    /* size of one page in graph units */
-    job->pageSize.x = imageSize.x / job->zoom;
-    job->pageSize.y = imageSize.y / job->zoom;
+    job->width = ROUND((pageSize.x + 2*margin.x) * job->dpi.x / POINTS_PER_INCH);
+    job->height = ROUND((pageSize.y + 2*margin.y) * job->dpi.y / POINTS_PER_INCH);
 
     /* set up pagedir */
     job->pagesArrayMajor.x = job->pagesArrayMajor.y 
@@ -717,6 +702,32 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
 	job->pagesArrayMinor = pagecode(job, 'L');
 	agerr(AGWARN, "pagedir=%s ignored\n", gvc->pagedir);
     }
+
+    /* determine page box including centering */
+    if (GD_drawing(g)->centered) {
+	if (pageSize.x > imageSize.x)
+	    centering.x = (pageSize.x - imageSize.x) / 2;
+	if (pageSize.y > imageSize.y)
+	    centering.y = (pageSize.y - imageSize.y) / 2;
+    }
+
+    /* rotate back into graph orientation */
+    if (job->rotation) {
+	imageSize = exch_xyf(imageSize);
+	pageSize = exch_xyf(pageSize);
+	margin = exch_xyf(margin);
+	centering = exch_xyf(centering);
+    }
+
+    /* canvas area, centered if necessary */
+    job->canvasBox.LL.x = margin.x + centering.x;
+    job->canvasBox.LL.y = margin.y + centering.y;
+    job->canvasBox.UR.x = margin.x + centering.x + imageSize.x;
+    job->canvasBox.UR.y = margin.y + centering.y + imageSize.y;
+
+    /* size of one page in graph units */
+    job->pageSize.x = imageSize.x / job->zoom;
+    job->pageSize.y = imageSize.y / job->zoom;
 }
 
 static void firstpage(GVJ_t *job)
@@ -791,6 +802,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
     int nump = 0, flags = job->flags;
     pointf *p = NULL;
     pointf sz, UR;
+    box cbb;
 
     /* establish current box in graph units */
     job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - job->pad.x;
@@ -826,21 +838,20 @@ static void setup_page(GVJ_t * job, graph_t * g)
     job->clip.LL.x = MIN(job->clip.LL.x, job->pageBox.LL.x);
     job->clip.LL.y = MIN(job->clip.LL.y, job->pageBox.LL.y);
 
-    /* pageBoundingBox in device units */
-    if (job->rotation) {
-        job->pageBoundingBox.LL.x = ROUND(job->canvasBox.LL.y * job->dpi.x / POINTS_PER_INCH);
-        job->pageBoundingBox.LL.y = ROUND(job->canvasBox.LL.x * job->dpi.y / POINTS_PER_INCH);
-        job->pageBoundingBox.UR.x = ROUND(job->canvasBox.UR.y * job->dpi.x / POINTS_PER_INCH);
-        job->pageBoundingBox.UR.y = ROUND(job->canvasBox.UR.x * job->dpi.y / POINTS_PER_INCH);
-    }
-    else {
-        job->pageBoundingBox.LL.x = ROUND(job->canvasBox.LL.x * job->dpi.x / POINTS_PER_INCH);
-        job->pageBoundingBox.LL.y = ROUND(job->canvasBox.LL.y * job->dpi.y / POINTS_PER_INCH);
-        job->pageBoundingBox.UR.x = ROUND(job->canvasBox.UR.x * job->dpi.x / POINTS_PER_INCH);
-        job->pageBoundingBox.UR.y = ROUND(job->canvasBox.UR.y * job->dpi.y / POINTS_PER_INCH);
-    }
+    /* canvasBox in device units in graph orientation */
+    cbb.LL.x = ROUND(job->canvasBox.LL.x * job->dpi.x / POINTS_PER_INCH);
+    cbb.LL.y = ROUND(job->canvasBox.LL.y * job->dpi.y / POINTS_PER_INCH);
+    cbb.UR.x = ROUND(job->canvasBox.UR.x * job->dpi.x / POINTS_PER_INCH);
+    cbb.UR.y = ROUND(job->canvasBox.UR.y * job->dpi.y / POINTS_PER_INCH);
 
-    /* boundingBox in device units */
+    /* pageBoundingBox in device units and page orientation */
+    job->pageBoundingBox = cbb;
+    if (job->rotation) {
+	job->pageBoundingBox.LL = exch_xy(job->pageBoundingBox.LL);
+	job->pageBoundingBox.UR = exch_xy(job->pageBoundingBox.UR);
+    }
+	
+    /* maximum boundingBox in device units and page orientation */
     if (job->common->viewNum == 0)
         job->boundingBox = job->pageBoundingBox;
     else
@@ -849,26 +860,25 @@ static void setup_page(GVJ_t * job, graph_t * g)
     /* CAUTION - This block was difficult to get right. */
     /* Test with and without assymetric margins, e.g: -Gmargin="1,0" */
     if (job->rotation) {
+	job->translation.y = -job->pageBox.UR.y - cbb.LL.y / job->scale.y;
 	if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert)) {
 	    /* test with: -Glandscape -Tgif -Tsvg -Tpng */
-	    job->translation.x = -job->pageBox.UR.x - job->pageBoundingBox.LL.x / job->scale.x;
-	    job->translation.y = -job->pageBox.UR.y - job->pageBoundingBox.LL.y / job->scale.y;
+	    job->translation.x = -job->pageBox.UR.x - cbb.LL.x / job->scale.x;
 	}
 	else {
 	    /* test with: -Glandscape -Tps */
-	    job->translation.x = -job->pageBox.LL.x + job->pageBoundingBox.LL.y / job->scale.y;
-	    job->translation.y = -job->pageBox.UR.y - job->pageBoundingBox.LL.x / job->scale.x;
+	    job->translation.x = -job->pageBox.LL.x + cbb.LL.x / job->scale.x;
 	}
     }
     else {
-	job->translation.x = -job->pageBox.LL.x + job->pageBoundingBox.LL.x / job->scale.x;
+	job->translation.x = -job->pageBox.LL.x + cbb.LL.x / job->scale.x;
 	if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert)) {
 	    /* test with: -Tgif -Tsvg -Tpng */
-	    job->translation.y = -job->pageBox.UR.y - job->pageBoundingBox.LL.y / job->scale.y;
+	    job->translation.y = -job->pageBox.UR.y - cbb.LL.y / job->scale.y;
 	}
 	else {
 	    /* test with: -Tps */
-	    job->translation.y = -job->pageBox.LL.y + job->pageBoundingBox.LL.y / job->scale.y;
+	    job->translation.y = -job->pageBox.LL.y + cbb.LL.y / job->scale.y;
 	}
     }
 
@@ -1869,20 +1879,14 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     /* pagesize */
     gvc->graph_sets_pageSize = FALSE;
     P2PF(GD_drawing(g)->page, gvc->pageSize);
-    if ((GD_drawing(g)->page.x > 0) && (GD_drawing(g)->page.y > 0)) {
+    if ((GD_drawing(g)->page.x > 0) && (GD_drawing(g)->page.y > 0))
         gvc->graph_sets_pageSize = TRUE;
-    }
 
     /* rotation */
-    if (GD_drawing(g)->landscape) {
+    if (GD_drawing(g)->landscape)
 	gvc->rotation = 90;
-	/* we expect the user to have swapped x,y coords of pagesize and margin */
-	gvc->pageSize = exch_xyf(gvc->pageSize);
-	gvc->margin = exch_xyf(gvc->margin);
-    }
-    else {
+    else 
 	gvc->rotation = 0;
-    }
 
     /* pagedir */
     gvc->pagedir = "BL";
