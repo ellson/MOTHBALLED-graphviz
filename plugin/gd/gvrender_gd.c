@@ -70,7 +70,6 @@ static void gdgen_begin_page(GVJ_t * job)
     char *bgcolor_str = NULL, *truecolor_str = NULL;
     boolean truecolor_p = FALSE;	/* try to use cheaper paletted mode */
     boolean bg_transparent_p = FALSE;
-    int bgcolor = 0;
     gdImagePtr im = NULL;
 
 
@@ -116,39 +115,17 @@ static void gdgen_begin_page(GVJ_t * job)
 	return;
     }
 
-    white = gdImageColorResolveAlpha(im,
-				     gdRedMax, gdGreenMax, gdBlueMax,
-				     gdAlphaOpaque);
-    black = gdImageColorResolveAlpha(im, 0, 0, 0, gdAlphaOpaque);
+    /* first color is the default background color */
     transparent = gdImageColorResolveAlpha(im,
 					   gdRedMax - 1, gdGreenMax,
 					   gdBlueMax, gdAlphaTransparent);
     gdImageColorTransparent(im, transparent);
 
-    if (bgcolor_str && bgcolor_str[0])
-	if (bg_transparent_p) {
-	    bgcolor = transparent;
-	} else {
-#if 0
-/* FIXME - colorxlation only available to gvrender.c ... */
-	    bgcolor = gd_resolve_color(bgcolor_str);
-#endif
-    } else {
-	bgcolor = white;
-    }
+    white = gdImageColorResolveAlpha(im,
+				     gdRedMax, gdGreenMax, gdBlueMax,
+				     gdAlphaOpaque);
 
-#if 0
-/* FIXME - ??? */
-    cstk[0].fillcolor = bgcolor;
-#endif
-
-    /* Blending must be off to lay a transparent basecolor.
-       Nothing to blend with anyway. */
-    gdImageAlphaBlending(im, FALSE);
-    gdImageFill(im, im->sx / 2, im->sy / 2, bgcolor);
-    /* Blend everything else together,
-       especially fonts over non-transparent backgrounds */
-    gdImageAlphaBlending(im, TRUE);
+    black = gdImageColorResolveAlpha(im, 0, 0, 0, gdAlphaOpaque);
 }
 
 static void gdgen_end_page(GVJ_t * job)
