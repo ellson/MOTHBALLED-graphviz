@@ -29,30 +29,38 @@ int overflow2(int a, int b);
 
 /* 2.0.16: portable mutex support for thread safety. */
 
-#ifdef WIN32
+#ifdef DISABLE_THREADS
+#  define gdMutexDeclare(x)
+#  define gdMutexSetup(x)
+#  define gdMutexShutdown(x)
+#  define gdMutexLock(x)
+#  define gdMutexUnlock(x)
+#else
+#  ifdef WIN32
 /* 2.0.18: must include windows.h to get CRITICAL_SECTION. */
-#include <windows.h>
-#define gdMutexDeclare(x) CRITICAL_SECTION x
-#define gdMutexSetup(x) InitializeCriticalSection(&x)
-#define gdMutexShutdown(x) DeleteCriticalSection(&x)
-#define gdMutexLock(x) EnterCriticalSection(&x)
-#define gdMutexUnlock(x) LeaveCriticalSection(&x)
-#else
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#define gdMutexDeclare(x) pthread_mutex_t x
-#define gdMutexSetup(x) pthread_mutex_init(&x, 0)
-#define gdMutexShutdown(x) pthread_mutex_destroy(&x)
-#define gdMutexLock(x) pthread_mutex_lock(&x)
-#define gdMutexUnlock(x) pthread_mutex_unlock(&x)
-#else
-#define gdMutexDeclare(x)
-#define gdMutexSetup(x) 
-#define gdMutexShutdown(x) 
-#define gdMutexLock(x) 
-#define gdMutexUnlock(x) 
-#endif /* HAVE_PTHREAD */
-#endif /* WIN32 */
+#    include <windows.h>
+#    define gdMutexDeclare(x) CRITICAL_SECTION x
+#    define gdMutexSetup(x) InitializeCriticalSection(&x)
+#    define gdMutexShutdown(x) DeleteCriticalSection(&x)
+#    define gdMutexLock(x) EnterCriticalSection(&x)
+#    define gdMutexUnlock(x) LeaveCriticalSection(&x)
+#  else
+#    ifdef HAVE_PTHREAD
+#      include <pthread.h>
+#      define gdMutexDeclare(x) pthread_mutex_t x
+#      define gdMutexSetup(x) pthread_mutex_init(&x, 0)
+#      define gdMutexShutdown(x) pthread_mutex_destroy(&x)
+#      define gdMutexLock(x) pthread_mutex_lock(&x)
+#      define gdMutexUnlock(x) pthread_mutex_unlock(&x)
+#    else
+#      define gdMutexDeclare(x)
+#      define gdMutexSetup(x) 
+#      define gdMutexShutdown(x) 
+#      define gdMutexLock(x) 
+#      define gdMutexUnlock(x) 
+#    endif /* HAVE_PTHREAD */
+#  endif /* WIN32 */
+#endif /* DISABLE_THREADS */
 
 #endif /* GDHELPERS_H */
 
