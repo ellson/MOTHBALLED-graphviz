@@ -201,6 +201,7 @@ extern "C" {
 
 /* Define if you have the freetype library (-lfreetype),  */
 #define	HAVE_LIBFREETYPE   1
+#define	HAVE_FREETYPE2   1
 
 /* Define if you have the XAW library */
 /* #define HAVE_LIBXAW 1 */
