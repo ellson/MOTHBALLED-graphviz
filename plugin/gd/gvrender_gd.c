@@ -116,6 +116,7 @@ static void gdgen_begin_page(GVJ_t * job)
     }
 
     /* first color is the default background color */
+    /*   - used for margins - if any */
     transparent = gdImageColorResolveAlpha(im,
 					   gdRedMax - 1, gdGreenMax,
 					   gdBlueMax, gdAlphaTransparent);
@@ -126,6 +127,14 @@ static void gdgen_begin_page(GVJ_t * job)
 				     gdAlphaOpaque);
 
     black = gdImageColorResolveAlpha(im, 0, 0, 0, gdAlphaOpaque);
+
+    /* Blending must be off to lay a transparent basecolor.
+       Nothing to blend with anyway. */
+    gdImageAlphaBlending(im, FALSE);
+    gdImageFill(im, im->sx / 2, im->sy / 2, transparent);
+    /* Blend everything else together,
+       especially fonts over non-transparent backgrounds */
+    gdImageAlphaBlending(im, TRUE);
 }
 
 static void gdgen_end_page(GVJ_t * job)
