@@ -423,6 +423,7 @@ void cat_libfile(FILE * ofp, char **arglib, char **stdlib)
 	    if ((fp = fopen(p, "r"))) {
 		while ((bp = Fgets(fp)))
 		    fputs(bp, ofp);
+		fputc('\n', ofp); /* append a newline just in case */
 	    } else
 		agerr(AGWARN, "can't open library file %s\n", p);
 	}
