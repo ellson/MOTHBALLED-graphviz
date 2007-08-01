@@ -1192,6 +1192,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     static pointf *AF;
     static int A_size;
     boolean filled;
+    boolean pfilled; /* true if fill not handled by user shape */
     char *color, *name;
     int doMap = (obj->url || obj->explicit_tooltip);
 
@@ -1259,8 +1260,9 @@ static void poly_gencode(GVJ_t * job, node_t * n)
         pencolor(job, n);	/* emit pen color */
     }
 
+    pfilled = !ND_shape(n)->usershape || streq(ND_shape(n)->name, "custom");
     /* if no boundary but filled, set boundary color to fill color */
-    if ((peripheries == 0) && filled) {
+    if ((peripheries == 0) && filled && pfilled) {
 	char *color;
 	peripheries = 1;
 	color = findFill(n);
@@ -1268,8 +1270,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    gvrender_set_pencolor(job, color);
     }
     if (ND_shape(n)->usershape) {
-	int shapefilled = filled;
-	if (filled) {
+	if (filled && pfilled) {
 	    for (i = 0; i < sides; i++) {
 		P = vertices[i];
 		AF[i].x = P.x * xsize;
@@ -1292,7 +1293,6 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    } else {
 		gvrender_polygon(job, AF, sides, filled);
 	    }
-	    filled = FALSE;
 	}
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i];
@@ -1306,7 +1306,8 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	name = ND_shape(n)->name;
 	if (streq(name, "custom"))
 	    name = agget(n, "shapefile");
-	gvrender_usershape(job, name, AF, sides, shapefilled, FALSE);
+	gvrender_usershape(job, name, AF, sides, filled, FALSE);
+	filled = FALSE;  /* with user shapes, we've done the fill if needed */
     }
 
     for (j = 0; j < peripheries; j++) {
