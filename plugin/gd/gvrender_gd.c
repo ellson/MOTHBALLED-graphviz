@@ -50,16 +50,22 @@ extern pointf Bezier(pointf * V, int degree, double t, pointf * Left, pointf * R
 static void gdgen_resolve_color(GVJ_t * job, gvcolor_t * color)
 {
     gdImagePtr im = (gdImagePtr) job->surface;
+    int alpha;
 
     if (!im)
 	return;
 
-    /* seems gd alpha is "transparency" rather than the usual "opacity" */
-    color->u.index = gdImageColorResolveAlpha(im,
+    /* convert alpha (normally an "opacity" value) to gd's "transparency" */
+    alpha = (255 - color->u.rgba[3]) * gdAlphaMax / 255;
+
+    if(alpha == gdAlphaMax)
+	color->u.index = gdImageGetTransparent(im);
+    else
+        color->u.index = gdImageColorResolveAlpha(im,
 			  color->u.rgba[0],
 			  color->u.rgba[1],
 			  color->u.rgba[2],
-			  (255 - color->u.rgba[3]) * gdAlphaMax / 255);
+			  alpha);
     color->type = COLOR_INDEX;
 }
 
@@ -427,6 +433,8 @@ gdgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	return;
 
     pen = gdgen_set_penstyle(job, im, brush);
+    if (pen == gdImageGetTransparent(im))
+	return;
 
     V[3] = A[0];
     PF2P(A[0], F[0]);
@@ -463,6 +471,8 @@ static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 	return;
 
     pen = gdgen_set_penstyle(job, im, brush);
+    if (pen == gdImageGetTransparent(im))
+	return;
 
     points = malloc(n * sizeof(gdPoint));
     for (i = 0; i < n; i++) {
@@ -490,6 +500,9 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
 	return;
 
     pen = gdgen_set_penstyle(job, im, brush);
+fprintf(stderr,"ellipse pen=%d\n", pen);
+    if (pen == gdImageGetTransparent(im))
+	return;
 
     dx = 2 * (A[1].x - A[0].x);
     dy = 2 * (A[1].y - A[0].y);
@@ -516,6 +529,8 @@ static void gdgen_polyline(GVJ_t * job, pointf * A, int n)
 	return;
 
     pen = gdgen_set_penstyle(job, im, brush);
+    if (pen == gdImageGetTransparent(im))
+	return;
 
     p = A[0];
     for (i = 1; i < n; i++) {
