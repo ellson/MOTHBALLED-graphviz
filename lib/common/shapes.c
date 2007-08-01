@@ -1189,7 +1189,6 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     double xsize, ysize;
     int i, j, peripheries, sides, style;
     pointf P, *vertices;
-    static point *A;
     static pointf *AF;
     static int A_size;
     boolean filled;
@@ -1205,7 +1204,6 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     peripheries = poly->peripheries;
     if (A_size < sides) {
 	A_size = sides + 5;
-	A = ALLOC(A_size, A, point);
 	AF = ALLOC(A_size, AF, pointf);
     }
 
