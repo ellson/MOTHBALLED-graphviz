@@ -177,18 +177,6 @@ static void psgen_begin_cluster(GVJ_t * job)
     core_printf(job, "%% %s\n", obj->u.sg->name);
 
     core_fputs(job, "gsave\n");
-#if 0
-    if (obj->url &&  obj->url_map_p) {
-        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
-		obj->url_map_p[0].x, obj->url_map_p[0].y,
-		obj->url_map_p[1].x, obj->url_map_p[1].y);
-        core_printf(job, "  /Border [ 0 0 0 ]\n"
-		"  /Action << /Subtype /URI /URI %s >>\n"
-		"  /Subtype /Link\n"
-		"/ANN pdfmark\n",
-		ps_string(obj->url, isLatin1));
-    }
-#endif
 }
 
 static void psgen_end_cluster(GVJ_t * job)
@@ -198,23 +186,7 @@ static void psgen_end_cluster(GVJ_t * job)
 
 static void psgen_begin_node(GVJ_t * job)
 {
-#if 0
-    obj_state_t *obj = job->obj;
-#endif
-
     core_fputs(job, "gsave\n");
-#if 0
-    if (obj->url && obj->url_map_p) {
-        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
-		obj->url_map_p[0].x, obj->url_map_p[0].y,
-		obj->url_map_p[1].x, obj->url_map_p[1].y);
-        core_printf(job, "  /Border [ 0 0 0 ]\n"
-		"  /Action << /Subtype /URI /URI %s >>\n"
-		"  /Subtype /Link\n"
-		"/ANN pdfmark\n",
-		ps_string(obj->url, isLatin1));
-    }
-#endif
 }
 
 static void psgen_end_node(GVJ_t * job)
@@ -225,33 +197,7 @@ static void psgen_end_node(GVJ_t * job)
 static void
 psgen_begin_edge(GVJ_t * job)
 {
-#if 0
-    obj_state_t *obj = job->obj;
-#endif
-
     core_fputs(job, "gsave\n");
-#if 0
-    if (obj->tailurl && obj->tailendurl_map_p) {
-        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
-		obj->tailendurl_map_p[0].x, obj->tailendurl_map_p[0].y,
-		obj->tailendurl_map_p[1].x, obj->tailendurl_map_p[1].y);
-        core_printf(job, "  /Border [ 0 0 0 ]\n"
-		"  /Action << /Subtype /URI /URI %s >>\n"
-		"  /Subtype /Link\n"
-		"/ANN pdfmark\n",
-		ps_string(obj->tailurl, isLatin1));
-    }
-    if (obj->headurl && obj->headendurl_map_p) {
-        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
-		obj->headendurl_map_p[0].x, obj->headendurl_map_p[0].y,
-		obj->headendurl_map_p[1].x, obj->headendurl_map_p[1].y);
-        core_printf(job, "  /Border [ 0 0 0 ]\n"
-		"  /Action << /Subtype /URI /URI %s >>\n"
-		"  /Subtype /Link\n"
-		"/ANN pdfmark\n",
-		ps_string(obj->headurl, isLatin1));
-    }
-#endif
 }
 
 static void psgen_end_edge(GVJ_t * job)
