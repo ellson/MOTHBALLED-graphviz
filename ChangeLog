@@ -14,6 +14,8 @@ July 6, 2007
 	- Fixed Redhat bugs: 218191, 237497
 	- Fixed Debian bugs: 321128, 422862, 422873
 	- Fixed Gentoo bugs: 173676
+	- Using system version of libgd if gd-2.0.34 or later. (Fedora 7 and 8 distros)
+	        internal copy of gd updated to gd-2.0.35.
 	- Updated GVGUI viewer for Windows
 	- Windows build process now uses GNU autoconf and UWIN
 	- Added support for selection of edge routing types:
