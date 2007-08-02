@@ -577,7 +577,7 @@ static Dtdisc_t pairdisc = {
  * Create and return a new graph which is the logical union
  * of the graphs gs. 
  */
-static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt)
+static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt, GVC_t * gvc)
 {
     Agraph_t *root;
     Agraph_t *g;
@@ -594,6 +594,7 @@ static Agraph_t *cloneGraph(Agraph_t ** gs, int cnt)
     if (verbose)
 	fprintf(stderr, "Creating clone graph\n");
     root = agopen("root", kind);
+    GD_gvc(root) = gvc;
     initAttrs(root, gs, cnt);
     G_bb = agfindattr(root, "bb");
     if (DOPACK) assert(G_bb);
@@ -790,7 +791,7 @@ int main(int argc, char *argv[])
     }
 
     /* create union graph and copy attributes */
-    g = cloneGraph(gs, cnt);
+    g = cloneGraph(gs, cnt, gvc);
 
     /* compute new top-level bb and set */
     if (DOPACK) {
