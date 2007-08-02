@@ -132,29 +132,38 @@ static FILE *nodefile(char *filename, node_t * n)
     return rv;
 }
 
+#define NODE_PAD 1
+
 static pointf vrml_node_point(GVJ_t *job, node_t *n, pointf p)
 {
     pointf rv;
 
-    /* make mp relative to PNG canvas */
+    /* make rv relative to PNG canvas */
     if (job->rotation) {
-	rv.x = ( p.y - ND_coord_i(n).y + ND_lw_i(n)     ) * Scale;
-	rv.y = (-p.x + ND_coord_i(n).x + ND_ht_i(n) / 2.) * Scale;
+	rv.x = ( (p.y - job->pad.y) - ND_coord_i(n).y + ND_lw_i(n)     ) * Scale + NODE_PAD;
+	rv.y = (-(p.x - job->pad.x) + ND_coord_i(n).x + ND_ht_i(n) / 2.) * Scale + NODE_PAD;
     } else {
-	rv.x = ( p.x - ND_coord_i(n).x + ND_lw_i(n)     ) * Scale;
-	rv.y = (-p.y + ND_coord_i(n).y + ND_ht_i(n) / 2.) * Scale;
+	rv.x = ( (p.x - job->pad.x) - ND_coord_i(n).x + ND_lw_i(n)     ) * Scale + NODE_PAD;
+	rv.y = (-(p.y - job->pad.y) + ND_coord_i(n).y + ND_ht_i(n) / 2.) * Scale + NODE_PAD;
     }
     return rv;
 }
 
 static int color_index(gdImagePtr im, gvcolor_t color)
 {
-    /* seems gd alpha is "transparency" rather than the usual "opacity" */
-    return (gdImageColorResolveAlpha(im,
-		color.u.rgba[0],
-		color.u.rgba[1],
-		color.u.rgba[2],
-		(255 - color.u.rgba[3]) * gdAlphaMax / 255));
+    int alpha;
+
+    /* convert alpha (normally an "opacity" value) to gd's "transparency" */
+    alpha = (255 - color.u.rgba[3]) * gdAlphaMax / 255;
+
+    if(alpha == gdAlphaMax)
+        return (gdImageGetTransparent(im));
+    else
+        return (gdImageColorResolveAlpha(im,
+		    color.u.rgba[0],
+		    color.u.rgba[1],
+		    color.u.rgba[2],
+		    alpha));
 }
 
 static int set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
@@ -246,16 +255,19 @@ static void vrml_begin_node(GVJ_t *job)
     int transparent;
 
     fprintf(out, "# node %s\n", n->name);
-    if (z < MinZ) MinZ = z;
+    if (z < MinZ)
+	MinZ = z;
     if (shapeOf(n) != SH_POINT) {
 	PNGfile = nodefile(job->output_filename, n);
 
-	width = (ND_lw_i(n) + ND_rw_i(n)) * Scale + 3;
-	height = (ND_ht_i(n)) * Scale + 3;
+	width  = (ND_lw_i(n) + ND_rw_i(n)) * Scale + 2 * NODE_PAD;
+	height = (ND_ht_i(n)             ) * Scale + 2 * NODE_PAD;
 	im = gdImageCreate(width, height);
 
-	/* make backround transparent */
-	transparent = gdImageColorResolve(im, 255, 255, 254);
+	/* make background transparent */
+	transparent = gdImageColorResolveAlpha(im,
+                                           gdRedMax - 1, gdGreenMax,
+                                           gdBlueMax, gdAlphaTransparent);
 	gdImageColorTransparent(im, transparent);
     }
 }
@@ -717,7 +729,7 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
     double z = obj->z;
     double rx, ry;
     int dx, dy;
-    pointf npf, nqf, mp;
+    pointf npf, nqf;
     point np;
     int pen;
     gdImagePtr brush = NULL;
@@ -731,8 +743,6 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	break;
     case NODE_OBJTYPE:
 	n = obj->u.n;
-        P2PF(ND_coord_i(n), mp);
-
 	if (shapeOf(n) == SH_POINT) {
 	    doSphere (job, n, A[0], z, rx, ry);
 	    return;
@@ -755,7 +765,7 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	    gdImageDestroy(brush);
 
 	fprintf(out, "Transform {\n");
-	fprintf(out, "  translation %.3f %.3f %.3f\n", mp.x, mp.y, z);
+	fprintf(out, "  translation %.3f %.3f %.3f\n", A[0].x, A[0].y, z);
 	fprintf(out, "  scale %.3f %.3f 1\n", rx, ry);
 	fprintf(out, "  children [\n");
 	fprintf(out, "    Transform {\n");
