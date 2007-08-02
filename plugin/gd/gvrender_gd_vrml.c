@@ -57,7 +57,6 @@ typedef enum { FORMAT_VRML, } format_type;
 
 /* static int	N_pages; */
 /* static point	Pages; */
-static double Scale;
 static double MinZ;
 /* static int	onetime = TRUE; */
 static int Saw_skycolor;
@@ -136,11 +135,11 @@ static pointf vrml_node_point(GVJ_t *job, node_t *n, pointf p)
 
     /* make rv relative to PNG canvas */
     if (job->rotation) {
-	rv.x = ( (p.y - job->pad.y) - ND_coord_i(n).y + ND_lw_i(n)     ) * Scale + NODE_PAD;
-	rv.y = (-(p.x - job->pad.x) + ND_coord_i(n).x + ND_ht_i(n) / 2.) * Scale + NODE_PAD;
+	rv.x =  (p.y - job->pad.y) - ND_coord_i(n).y + ND_lw_i(n)      + NODE_PAD;
+	rv.y = -(p.x - job->pad.x) + ND_coord_i(n).x + ND_ht_i(n) / 2. + NODE_PAD;
     } else {
-	rv.x = ( (p.x - job->pad.x) - ND_coord_i(n).x + ND_lw_i(n)     ) * Scale + NODE_PAD;
-	rv.y = (-(p.y - job->pad.y) + ND_coord_i(n).y + ND_ht_i(n) / 2.) * Scale + NODE_PAD;
+	rv.x =  (p.x - job->pad.x) - ND_coord_i(n).x + ND_lw_i(n)      + NODE_PAD;
+	rv.y = -(p.y - job->pad.y) + ND_coord_i(n).y + ND_ht_i(n) / 2. + NODE_PAD;
     }
     return rv;
 }
@@ -208,14 +207,13 @@ static void vrml_begin_page(GVJ_t *job)
 {
     FILE *out = job->output_file;
 
-    Scale = (double) DEFAULT_DPI / POINTS_PER_INCH;
     fprintf(out, "#VRML V2.0 utf8\n");
 
     Saw_skycolor = FALSE;
     MinZ = MAXDOUBLE;
     fprintf(out, "Group { children [\n");
     fprintf(out, "  Transform {\n");
-    fprintf(out, "    scale %.3f %.3f %.3f\n", .0278, .0278, .0278);
+    fprintf(out, "    scale %.3f %.3f %.3f\n", 2./72., 2./72., 2./72.);
     fprintf(out, "    children [\n");
 }
 
@@ -235,9 +233,9 @@ static void vrml_end_page(GVJ_t *job)
 	fprintf(out, " Background { skyColor 1 1 1 }\n");
     fprintf(out, "  ] }\n");
     fprintf(out, "  Viewpoint {position %.3f %.3f %.3f}\n",
-	    Scale * (bb.UR.x + bb.LL.x) / 72.,
-	    Scale * (bb.UR.y + bb.LL.y) / 72.,
-	    Scale * 2 * z / 72.);
+	    (bb.UR.x + bb.LL.x) / 72.,
+	    (bb.UR.y + bb.LL.y) / 72.,
+	    2 * z / 72.);
     fprintf(out, "] }\n");
 }
 
@@ -256,8 +254,8 @@ static void vrml_begin_node(GVJ_t *job)
     if (shapeOf(n) != SH_POINT) {
 	PNGfile = nodefile(job->output_filename, n);
 
-	width  = (ND_lw_i(n) + ND_rw_i(n)) * Scale + 2 * NODE_PAD;
-	height = (ND_ht_i(n)             ) * Scale + 2 * NODE_PAD;
+	width  = ND_lw_i(n) + ND_rw_i(n) + 2 * NODE_PAD;
+	height = ND_ht_i(n)              + 2 * NODE_PAD;
 	im = gdImageCreate(width, height);
 
 	/* make background transparent */
@@ -368,7 +366,7 @@ static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
     gdgen_text(im, spf, epf,
 	color_index(im, obj->pencolor),
 	para->fontsize,
-        DEFAULT_DPI,
+        POINTS_PER_INCH,
 	job->rotation ? (PI / 2) : 0,
 	para->fontname,
 	para->str);
