@@ -312,7 +312,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     if (para->fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
 	/* ignore entirely */
     } else if (para->fontsize <= FONTSIZE_TOO_SMALL) {
-	/* draw para in place of text */
+	/* draw line in place of text */
 	gdImageLine(im, ROUND(mp.x), ROUND(mp.y),
 		    ROUND(ep.x), ROUND(ep.y),
 		    job->obj->pencolor.u.index);
