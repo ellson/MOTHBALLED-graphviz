@@ -53,10 +53,6 @@ extern pointf Bezier(pointf * V, int degree, double t, pointf * Left, pointf * R
 
 typedef enum { FORMAT_VRML, } format_type;
 
-#ifndef MAXFLOAT
-#define MAXFLOAT 10000000.
-#endif
-
 #define BEZIERSUBDIVISION 10
 
 /* static int	N_pages; */
@@ -342,13 +338,12 @@ static void vrml_end_edge(GVJ_t *job)
     fprintf(job->output_file, "] }\n");
 }
 
+extern void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fontsize, int fontdpi, double fontangle, char *fontname, unsigned char *str);
+
 static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
 {
     obj_state_t *obj = job->obj;
-    char *err;
-    pointf mp;
-    int brect[8];
-    extern gdFontPtr gdFontSmall;
+    pointf spf, epf, q;
 
     if (! obj->u.n || ! im)   /* if not a node - or if no im (e.g. for cluster) */
 	return;
@@ -364,20 +359,19 @@ static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
 	p.x -= para->width / 2;
 	break;
     }
+    q.x = p.x + para->width;
+    q.y = p.y;
 
-    mp = vrml_node_point(job, obj->u.n, p);
+    spf = vrml_node_point(job, obj->u.n, p);
+    epf = vrml_node_point(job, obj->u.n, q);
 
-    err = gdImageStringFT(im, brect,
-	    color_index(im, obj->pencolor),
-	    para->fontname, para->fontsize, job->rotation ? PI/2 : 0,
-	    ROUND(mp.x), ROUND(mp.y), (char*)para->str);
-    if (err) {
-	/* revert to builtin fonts */
-	gdImageString(im,
-	       	gdFontSmall, ROUND(mp.x), ROUND(mp.y),
-		(unsigned char *) para->str,
-		color_index(im, obj->pencolor));
-    }
+    gdgen_text(im, spf, epf,
+	color_index(im, obj->pencolor),
+	para->fontsize,
+        DEFAULT_DPI,
+	job->rotation ? (PI / 2) : 0,
+	para->fontname,
+	para->str);
 }
 
 /* interpolate_zcoord:
