@@ -61,12 +61,12 @@ int PASCAL WinMain (
     }
     if (lpCmdLine[0] == 0)
         sprintf (
-	    cmd, "%s -e \"load('dotty.lefty');%sdotty.createviewandgraph(null,'file',null,null);txtview('off');\"",
+	    cmd, "%s -e \"load('dotty.lefty');%sdotty.init();dotty.createviewandgraph(null,'file',null,null);txtview('off');\"",
 	    path, lneato
         );
     else
         sprintf (
-	    cmd, "%s -e \"load('dotty.lefty');%sdotty.createviewandgraph('%Ns','file',null,null);txtview('off');\"",
+	    cmd, "%s -e \"load('dotty.lefty');%sdotty.init();dotty.createviewandgraph('%Ns','file',null,null);txtview('off');\"",
             path, lneato, lpCmdLine
         );
 
