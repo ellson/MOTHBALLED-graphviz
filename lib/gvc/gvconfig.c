@@ -273,7 +273,7 @@ char * gvconfig_libdir(void)
         /* this code has to be modified to read value from 
          * registry or argg[0] -- +/lib etc method.  FIX
          */
-        libdir="C:/unix/local/lib/Graphviz";
+        libdir="C:/graphviz/local/lib";
 #else
         /* this only works on linux, other systems will get GVLIBDIR only */
 	libdir = GVLIBDIR;
@@ -316,10 +316,16 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     int i, rc, re_status;
     gvplugin_library_t *library;
     regex_t re;
+#ifndef WIN32
     char *plugin_glob = "libgvplugin_*";
+#endif
 #if defined(DARWIN_DYLIB)
     char *plugin_re_beg = "[^0-9]\\.";
     char *plugin_re_end = "\\.dylib$";
+#elif defined(WIN32)
+    char *plugin_glob = "gvplugin_*";
+    char *plugin_re_beg = "[^0-9]";
+    char *plugin_re_end = "\\.dll$"; 
 #elif defined(__CYGWIN__)
     plugin_glob = "cyggvplugin_*";
     char *plugin_re_beg = "[^0-9]-";
@@ -346,7 +352,9 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     libdir = gvconfig_libdir();
 
     config_re = gmalloc(strlen(plugin_re_beg) + 20 + strlen(plugin_re_end) + 1);
-#ifdef GVPLUGIN_VERSION
+#if defined(WIN32)
+    sprintf(config_re,"%s%s", plugin_re_beg, plugin_re_end);
+#elif defined(GVPLUGIN_VERSION)
     sprintf(config_re,"%s%d%s", plugin_re_beg, GVPLUGIN_VERSION, plugin_re_end);
 #else
     sprintf(config_re,"%s[0-9]+%s", plugin_re_beg, plugin_re_end);
@@ -598,8 +606,6 @@ glob (char* pattern, int flags, int (*errfunc)(const char *, int),
       }
       str[cnt] = (char*)malloc (strlen(libdir)+1+strlen(wfd.cFileName)+1);
       if (!str[cnt]) return GLOB_NOSPACE;
-	(str[cnt])[0]="/0";
-
       strcpy(str[cnt],libdir);
       strcat(str[cnt],"/");
       strcat(str[cnt],wfd.cFileName);
