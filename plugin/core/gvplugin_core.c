@@ -16,21 +16,33 @@
 
 #include "gvplugin.h"
 
+extern gvplugin_installed_t gvrender_core_dia_types;
 extern gvplugin_installed_t gvrender_core_dot_types;
-extern gvplugin_installed_t gvrender_core_ps_types;
 extern gvplugin_installed_t gvrender_core_fig_types;
+extern gvplugin_installed_t gvrender_core_hpgl_types;
+extern gvplugin_installed_t gvrender_core_mif_types;
+extern gvplugin_installed_t gvrender_core_map_types;
+extern gvplugin_installed_t gvrender_core_mp_types;
+extern gvplugin_installed_t gvrender_core_pic_types;
+extern gvplugin_installed_t gvrender_core_ps_types;
 extern gvplugin_installed_t gvrender_core_svg_types;
 extern gvplugin_installed_t gvrender_core_vml_types;
-extern gvplugin_installed_t gvrender_core_map_types;
+extern gvplugin_installed_t gvrender_core_vtx_types;
 extern gvplugin_installed_t gvloadimage_core_types;
 
 static gvplugin_api_t apis[] = {
+    {API_render, &gvrender_core_dia_types},
     {API_render, &gvrender_core_dot_types},
-    {API_render, &gvrender_core_ps_types},
     {API_render, &gvrender_core_fig_types},
+    {API_render, &gvrender_core_hpgl_types},
+    {API_render, &gvrender_core_mif_types},
+    {API_render, &gvrender_core_map_types},
+    {API_render, &gvrender_core_mp_types},
+    {API_render, &gvrender_core_pic_types},
+    {API_render, &gvrender_core_ps_types},
     {API_render, &gvrender_core_svg_types},
     {API_render, &gvrender_core_vml_types},
-    {API_render, &gvrender_core_map_types},
+    {API_render, &gvrender_core_vtx_types},
     {API_loadimage, &gvloadimage_core_types},
     {(api_t)0, 0},
 };
