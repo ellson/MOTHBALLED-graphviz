@@ -7,9 +7,9 @@ prune reads directed graphs in the same format used by dot(1) and
 removes subgraphs rooted at nodes specified on the commandline via
 options. These nodes themselves will not be removed, but can be given
 attributes so that they can be easily located by a graph stream editor
-such as gpr(1).
+such as gvpr(1).
 
-dot and gpr are part of graphviz (http://www.graphviz.org), a graph
+dot and gvpr are part of graphviz (http://www.graphviz.org), a graph
 processing software by AT&T.
 
 Installation
