@@ -7,7 +7,7 @@ Makefile.in
 pkgIndex.tcl
 *.pdf
 gv_*.cpp
-gv_*.man
+gv_*.n
 SWIGTYPE_p_*
 gv.cs
 gv.java
