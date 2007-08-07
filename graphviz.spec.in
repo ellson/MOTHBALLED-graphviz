@@ -411,6 +411,39 @@ Provides some additional PDF and HTML documentation for graphviz.
 %setup -q
 
 %build
+%if ! %{SHARP}
+%define NO_SHARP --disable-sharp
+%endif
+%if ! %{GUILE}
+%define NO_GUILE --disable-guile
+%endif
+%if ! %{_IO}
+%define NO_IO --disable-io
+%endif
+%if ! %{JAVA}
+%define NO_JAVA --disable-java
+%endif
+%if ! %{LUA}
+%define NO_LUA --disable-lua
+%endif
+%if ! %{OCAML}
+%define NO_OCAML --disable-ocaml
+%endif
+%if ! %{PERL}
+%define NO_PERL --disable-perl
+%endif
+%if ! %{PHP}
+%define NO_PHP --disable-php
+%endif
+%if ! %{PYTHON}
+%define NO_PYTHON --disable-python
+%endif
+%if ! %{RUBY}
+%define NO_RUBY --disable-ruby
+%endif
+%if ! %{TCL}
+%define NO_TCL --disable-tcl
+%endif
 # XXX ix86 only used to have -ffast-math, let's use everywhere
 %{expand: %%define optflags %{optflags} -ffast-math}
 # %%configure is broken in RH7.3 rpmbuild
@@ -424,7 +457,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
       --mandir=%{_mandir} \
       --with-x \
       --disable-static \
-      --disable-dependency-tracking %{MYLIBGD} %{IPSEPCOLA} %{MING} %{PANGOCAIRO}
+      --disable-dependency-tracking %{MYLIBGD} %{IPSEPCOLA} %{MING} %{PANGOCAIRO} %{?NO_SHARP} %{?NO_GUILE} %{?NO_IO} %{?NO_JAVA} %{?NO_LUA} %{?NO_OCAML} %{?NO_PERL} %{?NO_PHP} %{?NO_PYTHON} %{?NO_RUBY} %{?NO_TCL}
 %__make %{?_smp_mflags}
 
 %install
