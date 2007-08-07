@@ -1,6 +1,8 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+pdfdir = $(pkgdatadir)/doc/pdf
+
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/gvc \
@@ -15,172 +17,196 @@ BASESOURCES = gv.cpp gv.i
 BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
 
 pkgsharpdir = $(pkglibdir)/sharp
-SHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs SWIGTYPE_p_p_void.cs
-nodist_libgv_sharp_la_SOURCES = gv_sharp.cpp $(SHARP_hdr)
+SHARP_data = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs SWIGTYPE_p_p_void.cs
+nodist_libgv_sharp_la_SOURCES = gv_sharp.cpp $(SHARP_data)
 libgv_sharp_la_SOURCES = $(BASESOURCES)
 libgv_sharp_la_LIBADD = $(BASELIBS) @SHARP_LIBS@ 
 libgv_sharp_la_LDFLAGS = 
-$(SHARP_hdr): gv_sharp.cpp
+$(SHARP_data): gv_sharp.cpp
 gv_sharp.cpp: gv.i
 	$(SWIG) -c++ -csharp -namespace gv -o gv_sharp.cpp $(srcdir)/gv.i
 
 pkgguiledir = $(pkglibdir)/guile
-GUILE_hdr = 
-nodist_libgv_guile_la_SOURCES = gv_guile.cpp $(GUILE_hdr)
+GUILE_data = 
+nodist_libgv_guile_la_SOURCES = gv_guile.cpp $(GUILE_data)
 libgv_guile_la_SOURCES = $(BASESOURCES)
 libgv_guile_la_LIBADD = $(BASELIBS) @GUILE_LIBS@
 libgv_guile_la_LDFLAGS = 
-$(GUILE_hdr): gv_guile.cpp
+$(GUILE_data): gv_guile.cpp
 gv_guile.cpp: gv.i
 	$(SWIG) -c++ -guile -o gv_guile.cpp $(srcdir)/gv.i
 	$(SED) -e 's/SWIG_GUILE_INIT_STATIC void/void/' <gv_guile.cpp >t
 	mv -f t gv_guile.cpp
 
 pkgiodir = $(pkglibdir)/io
-IO_hdr = 
-nodist_libgv_io_la_SOURCES = gv_io.cpp $(IO_hdr)
+IO_data = 
+nodist_libgv_io_la_SOURCES = gv_io.cpp $(IO_data)
 libgv_io_la_SOURCES = $(BASESOURCES)
 libgv_io_la_LIBADD = $(BASELIBS) @IO_LIBS@
 libgv_io_la_LDFLAGS = 
-$(IO_hdr): gv_io.cpp
+$(IO_data): gv_io.cpp
 gv_io.cpp: gv.i
 	$(SWIG) -c++ -io -o gv_io.cpp $(srcdir)/gv.i
 
 pkgjavadir = $(pkglibdir)/java
-JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java SWIGTYPE_p_FILE.java SWIGTYPE_p_p_void.java
+JAVA_data = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java SWIGTYPE_p_FILE.java SWIGTYPE_p_p_void.java
 nodist_libgv_java_la_SOURCES = gv_java.cpp
 libgv_java_la_SOURCES = $(BASESOURCES) 
 libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
 libgv_java_la_LDFLAGS = 
-$(JAVA_hdr): gv_java.cpp
+$(JAVA_data): gv_java.cpp
 gv_java.cpp: gv.i
 	$(SWIG) -c++ -java -o gv_java.cpp $(srcdir)/gv.i
 
 pkgluadir = $(pkglibdir)/lua
-LUA_hdr = 
-nodist_libgv_lua_la_SOURCES = gv_lua.cpp $(LUA_hdr)
+LUA_data = 
+nodist_libgv_lua_la_SOURCES = gv_lua.cpp $(LUA_data)
 libgv_lua_la_SOURCES = $(BASESOURCES)
 libgv_lua_la_LIBADD = $(BASELIBS) @LUA_LIBS@
 libgv_lua_la_LDFLAGS = 
-$(LUA_hdr): gv_lua.cpp
+$(LUA_data): gv_lua.cpp
 gv_lua.cpp: gv.i
 	$(SWIG) -c++ -lua -o gv_lua.cpp $(srcdir)/gv.i
 
 pkgocamldir = $(pkglibdir)/ocaml
-OCAML_hdr = gv.ml gv.mli
-nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_hdr)
+OCAML_data = gv.ml gv.mli
+nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_data)
 libgv_ocaml_la_SOURCES = $(BASESOURCES)
 libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@
 libgv_ocaml_la_LDFLAGS = 
-$(OCAML_hdr): gv_ocaml.cpp
+$(OCAML_data): gv_ocaml.cpp
 gv_ocaml.cpp: gv.i
 	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp $(srcdir)/gv.i
 
 pkgperldir = $(pkglibdir)/perl
-PERL_hdr = gv.pm
-nodist_libgv_perl_la_SOURCES = gv_perl.cpp $(PERL_hdr)
+PERL_data = gv.pm
+nodist_libgv_perl_la_SOURCES = gv_perl.cpp $(PERL_data)
 libgv_perl_la_SOURCES = $(BASESOURCES)
 libgv_perl_la_LIBADD = $(BASELIBS) @PERL_LIBS@
 libgv_perl_la_LDFLAGS = 
-$(PERL_hdr): gv_perl.cpp
+$(PERL_data): gv_perl.cpp
 gv_perl.cpp: gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp $(srcdir)/gv.i
 
 pkgphpdir = $(pkglibdir)/php
-PHP_hdr = gv.php php_gv.h
-nodist_libgv_php_la_SOURCES = gv_php.cpp $(PHP_hdr)
+PHP_data = gv.php php_gv.h
+nodist_libgv_php_la_SOURCES = gv_php.cpp $(PHP_data)
 libgv_php_la_SOURCES = $(BASESOURCES)
 libgv_php_la_LIBADD = $(BASELIBS) @PHP_LIBS@
 libgv_php_la_LDFLAGS = 
-$(PHP_hdr): gv_php.cpp
+$(PHP_data): gv_php.cpp
 gv_php.cpp: gv.i
 	$(SWIG) -c++ -php -o gv_php.cpp $(srcdir)/gv.i
 
 pkgpythondir = $(pkglibdir)/python
-PYTHON_hdr = gv.py
-nodist_libgv_python_la_SOURCES = gv_python.cpp $(PYTHON_hdr)
+PYTHON_data = gv.py
+nodist_libgv_python_la_SOURCES = gv_python.cpp $(PYTHON_data)
 libgv_python_la_SOURCES = $(BASESOURCES)
 libgv_python_la_LIBADD = $(BASELIBS) @PYTHON_LIBS@
 libgv_python_la_LDFLAGS = 
-gv_python.cpp $(PYTHON_hdr): gv.i
+gv_python.cpp $(PYTHON_data): gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
 
 pkgrubydir = $(pkglibdir)/ruby
-RUBY_hdr = 
-nodist_libgv_ruby_la_SOURCES = gv_ruby.cpp $(RUBY_hdr)
+RUBY_data = 
+nodist_libgv_ruby_la_SOURCES = gv_ruby.cpp $(RUBY_data)
 libgv_ruby_la_SOURCES = $(BASESOURCES)
 libgv_ruby_la_LIBADD = $(BASELIBS) @RUBY_LIBS@
 libgv_ruby_la_LDFLAGS = 
-$(RUBY_hdr): gv_ruby.cpp
+$(RUBY_data): gv_ruby.cpp
 gv_ruby.cpp: gv.i
 	$(SWIG) -c++ -ruby -o gv_ruby.cpp $(srcdir)/gv.i
 
 pkgtcldir = $(pkglibdir)/tcl
-TCL_hdr = 
-nodist_libgv_tcl_la_SOURCES = gv_tcl.cpp $(TCL_hdr)
+TCL_data = 
+nodist_libgv_tcl_la_SOURCES = gv_tcl.cpp $(TCL_data)
 libgv_tcl_la_SOURCES = $(BASESOURCES)
 libgv_tcl_la_LIBADD = $(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la $(BASELIBS) @TCL_LIBS@
 libgv_tcl_la_LDFLAGS = 
-$(TCL_hdr): gv_tcl.cpp
+$(TCL_data): gv_tcl.cpp
 gv_tcl.cpp: gv.i
 	$(SWIG) -c++ -tcl -namespace -o gv_tcl.cpp $(srcdir)/gv.i
 
 pkginclude_DATA = gv.i gv.cpp
 pkglib_LTLIBRARIES = 
+man_MANS =
+pdf_DATA = 
 TESTS =
 if WITH_SWIG
 if WITH_SHARP
-pkgsharp_DATA = $(SHARP_hdr) gv_sharp.man
+pkgsharp_DATA = $(SHARP_data)
+man_MANS += gv_sharp.n
+pdf_DATA += gv_sharp.pdf
 pkgsharp_LTLIBRARIES = libgv_sharp.la
 TESTS += test_sharp
 endif
 if WITH_GUILE
-pkgguile_DATA = $(GUILE_hdr) gv_guile.man
+pkgguile_DATA = $(GUILE_data)
+man_MANS += gv_guile.n
+pdf_DATA += gv_guile.pdf
 pkgguile_LTLIBRARIES = libgv_guile.la
 TESTS += test_guile
 endif
 if WITH_IO
-pkgio_DATA = $(IO_hdr) gv_io.man
+pkgio_DATA = $(IO_data)
+man_MANS += gv_io.n
+pdf_DATA += gv_io.pdf
 pkgio_LTLIBRARIES = libgv_io.la
 TESTS += test_io
 endif
 if WITH_JAVA
-pkgjava_DATA = $(JAVA_hdr) gv_java.man
+pkgjava_DATA = $(JAVA_data)
+man_MANS += gv_java.n
+pdf_DATA += gv_java.pdf
 pkgjava_LTLIBRARIES = libgv_java.la
 TESTS += test_java
 endif
 if WITH_LUA
-pkglua_DATA = $(LUA_hdr) gv_lua.man
+pkglua_DATA = $(LUA_data)
+man_MANS += gv_lua.n
+pdf_DATA += gv_lua.pdf
 pkglua_LTLIBRARIES = libgv_lua.la
 TESTS += test_lua
 endif
 if WITH_OCAML
-pkgocaml_DATA = $(OCAML_hdr) gv_ocaml.man
+pkgocaml_DATA = $(OCAML_data)
+man_MANS += gv_ocaml.n
+pdf_DATA += gv_ocaml.pdf
 pkgocaml_LTLIBRARIES = libgv_ocaml.la
 TESTS += test_ocaml
 endif
 if WITH_PERL
-pkgperl_DATA = $(PERL_hdr) gv_perl.man
+pkgperl_DATA = $(PERL_data)
+man_MANS += gv_perl.n
+pdf_DATA += gv_perl.pdf
 pkgperl_LTLIBRARIES = libgv_perl.la
 TESTS += test_perl
 endif
 if WITH_PHP
-pkgphp_DATA = $(PHP_hdr) gv_php.man
+pkgphp_DATA = $(PHP_data)
+man_MANS += gv_php.n
+pdf_DATA += gv_php.pdf
 pkgphp_LTLIBRARIES = libgv_php.la
 TESTS += test_php
 endif
 if WITH_PYTHON
-pkgpython_DATA = $(PYTHON_hdr) gv_python.man
+pkgpython_DATA = $(PYTHON_data)
+man_MANS += gv_python.n
+pdf_DATA += gv_python.pdf
 pkgpython_LTLIBRARIES = libgv_python.la
 TESTS += test_python
 endif
 if WITH_RUBY
-pkgruby_DATA = $(RUBY_hdr) gv_ruby.man
+pkgruby_DATA = $(RUBY_data)
+man_MANS += gv_ruby.n
+pdf_DATA += gv_ruby.pdf
 pkgruby_LTLIBRARIES = libgv_ruby.la
 TESTS += test_ruby
 endif
 if WITH_TCL
-pkgtcl_DATA = $(TCL_hdr) gv_tcl.man
+pkgtcl_DATA = $(TCL_data)
+man_MANS += gv_tcl.n
+pdf_DATA += gv_tcl.pdf
 pkgtcl_LTLIBRARIES = libgv_tcl.la
 TESTS += test_tcl
 
@@ -191,10 +217,17 @@ pkgIndex.tcl: libgv_tcl.la
 endif
 endif
 
-gv_sharp.man gv_guile.man gv_io.man gv_java.man gv_lua.man \
-gv_ocaml.man gv_perl.man gv_php.man gv_python.man gv_ruby.man \
-gv_tcl.man: gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
+man = gv_sharp.n gv_guile.n gv_io.n gv_java.n gv_lua.n gv_ocaml.n \
+	gv_perl.n gv_php.n gv_python.n gv_ruby.n gv_tcl.n
+
+pdf = gv_sharp.pdf gv_guile.pdf gv_io.pdf gv_java.pdf gv_lua.pdf gv_ocaml.pdf \
+	gv_perl.pdf gv_php.pdf gv_python.pdf gv_ruby.pdf gv_tcl.pdf
+
+$(man): gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
 	$(TCLSH) $(srcdir)/gv_doc_writer.tcl "$(srcdir)"
+
+.n.pdf:
+	-groff -Tps -man $< | ps2pdf - - >$@
 
 install-data-hook:
 	(cd $(DESTDIR)$(pkgluadir);    rm -f gv.so;  $(LN_S) libgv_lua.so gv.so;)
@@ -293,18 +326,20 @@ test_tcl: libgv_tcl.la
 		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.tcl .; \
 		$(TCLSH) ./test.tcl)
 
-EXTRA_DIST = demo/* gv_doc_*.tcl \
-	gv_sharp.cpp $(SHARP_hdr)
+EXTRA_DIST = demo/* $(man) $(pdf) gv_doc_*.tcl
 
-CLEANFILES = test_*/* gv_*.man \
-	gv_sharp.cpp $(SHARP_hdr) \
-	gv_guile.cpp $(GUILE_hdr) \
-	gv_io.cpp $(IO_hdr) \
-	gv_java.cpp $(JAVA_hdr) \
-	gv_lua.cpp $(LUA_hdr) \
-	gv_ocaml.cpp $(OCAML_hdr) \
-	gv_perl.cpp $(PERL_hdr) \
-	gv_php.cpp $(PHP_hdr) \
-	gv_python.cpp $(PYTHON_hdr) gv.pyc \
-	gv_ruby.cpp $(RUBY_hdr) \
-	gv_tcl.cpp $(TCL_hdr) pkgIndex.tcl
+CLEANFILES = test_*/* pkgIndex.tcl \
+	gv_sharp.cpp $(SHARP_data) \
+	gv_guile.cpp $(GUILE_data) \
+	gv_io.cpp $(IO_data) \
+	gv_java.cpp $(JAVA_data) \
+	gv_lua.cpp $(LUA_data) \
+	gv_ocaml.cpp $(OCAML_data) \
+	gv_perl.cpp $(PERL_data) \
+	gv_php.cpp $(PHP_data) \
+	gv_python.cpp $(PYTHON_data) gv.pyc \
+	gv_ruby.cpp $(RUBY_data) \
+	gv_tcl.cpp $(TCL_data) pkgIndex.tcl
+
+DISTCLEANFILES = gv_*.n gv_*.pdf
+

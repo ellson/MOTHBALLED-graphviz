@@ -83,7 +83,7 @@ foreach lang [array names LANGS] {
 	set SYNOPSIS $PROPS(SYNOPSIS)
 	set USAGE $PROPS(USAGE)
 	set srcdir [lindex $argv 0]
-	set f [open gv_[set lang].man w]
+	set f [open gv_[set lang].n w]
 	set ft [open $TEMPLATE r]
 	puts $f [subst [read $ft [file size $TEMPLATE]]]
 	close $ft

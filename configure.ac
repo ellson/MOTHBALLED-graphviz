@@ -591,7 +591,7 @@ if test "x$enable_lua" != "xno" ; then
         PKGCONFIG=""
         AC_CHECK_PROGS(PKGCONFIG, pkg-config)
         if test "x$PKGCONFIG" != "x"; then
-	    AC_MSG_CHECKING(for Lua headers and librairies with pkg-config)
+	    AC_MSG_CHECKING(for Lua headers and libraries with pkg-config)
 	    echo
 	    for l in "$lua_suffix" "" "51" "5.1" "50" "5.0" ; do
 	        pkgconfig_lua_found=`$PKGCONFIG --exists lua$l 2>/dev/null`
@@ -615,7 +615,7 @@ if test "x$enable_lua" != "xno" ; then
         LUACONFIG=""
         AC_CHECK_PROGS(LUACONFIG, lua-config lua-config51 lua-config5.1 lua-config50 lua-config5.0)
         if test "x$LUACONFIG" != "x" ; then
-            AC_MSG_CHECKING(for Lua headers and librairies with lua-config)
+            AC_MSG_CHECKING(for Lua headers and libraries with lua-config)
 	    echo
             LUA_INCLUDES=`$LUACONFIG --include`
             LUA_LIBS=`$LUACONFIG --libs`
@@ -624,7 +624,7 @@ if test "x$enable_lua" != "xno" ; then
     fi
 
     if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
-        AC_MSG_CHECKING(for Lua headers and librairies)
+        AC_MSG_CHECKING(for Lua headers and libraries)
 	echo
         AC_CHECK_HEADER(lua.h,ac_found_lua_header="yes",ac_found_lua_header="no")
         AC_CHECK_HEADER(lualib.h,ac_found_liblua_header="yes",ac_found_liblua_header="no")
@@ -667,7 +667,7 @@ if test "x$enable_lua" != "xno" ; then
     if test "x$LUA_TEST" != "x0" ; then
         AC_MSG_RESULT(no)
         AC_MSG_WARN([
-*** Lua (>=5.0) headers and/or librairies couldn't be found in your system.
+*** Lua (>=5.0) headers and/or libraries could not be found in your system.
 *** Try to install liblua, liblualib and liblua-dev with your software package manager.
 *** Graphviz will be built without Lua support.])
         enable_lua="no"
@@ -681,7 +681,7 @@ if test "x$enable_lua" != "xno" ; then
     LDFLAGS="$ac_save_LDFLAGS"
 fi
 
-if test "x$enable_lua" = "xyes" ; then
+if test "x$enable_lua" != "xno" ; then
     : # needed because if AC_SUBST is expanded to nothing, syntax error
     AC_SUBST(LUA_INCLUDES)
     AC_SUBST(LUA_LIBS)
@@ -691,7 +691,7 @@ fi
 # --->8--- weechat --->8---
 
 #echo "WE HAVE HERE: $enable_lua" > "/tmp/IAMAFOOL"
-AM_CONDITIONAL(WITH_LUA, [test "x$enable_lua" = "xyes"])
+AM_CONDITIONAL(WITH_LUA, [test "x$enable_lua" != "xno"])
 
 
 dnl -----------------------------------
