@@ -123,7 +123,11 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
 	    p = gmalloc(lenp);
     }
 	
+#ifdef WIN32
+    if (path[1] == ':') {
+#else
     if (path[0] == '/') {
+#endif
 	strcpy(p, path);
     } else {
 	strcpy(p, libdir);
@@ -137,7 +141,7 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
     }
     hndl = lt_dlopen (p);
     if (!hndl) {
-        agerr(AGWARN, (char*)lt_dlerror());
+        agerr(AGWARN, "Could not load \"%s\" - %s\n", p, (char*)lt_dlerror());
         return NULL;
     }
     if (gvc->common.verbose >= 2)
@@ -145,12 +149,20 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
 
     s = strrchr(p, '/');
     len = strlen(s); 
+#ifdef WIN32
+    if (len < strlen("/gvplugin_x")) {
+#else
     if (len < strlen("/libgvplugin_x")) {
+#endif
 	agerr (AGERR,"invalid plugin path \"%s\"\n", p);
 	return NULL;
     }
     sym = gmalloc(len + strlen(suffix) + 1);
+#ifdef WIN32
+    strcpy(sym, s+1);         /* strip leading "/"  */
+#else
     strcpy(sym, s+4);         /* strip leading "/lib" or "/cyg" */
+#endif
 #ifdef __CYGWIN__
     s = strchr(sym, '-');     /* strip trailing "-1.dll" */
 #else 

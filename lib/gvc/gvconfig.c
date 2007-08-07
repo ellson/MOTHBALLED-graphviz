@@ -273,7 +273,9 @@ char * gvconfig_libdir(void)
         /* this code has to be modified to read value from 
          * registry or argg[0] -- +/lib etc method.  FIX
          */
-        libdir="C:/graphviz/local/lib";
+        libdir=getenv("GRAPHVIZBIN");
+	if (!libdir)
+            libdir="C:/graphviz/local/bin";
 #else
         /* this only works on linux, other systems will get GVLIBDIR only */
 	libdir = GVLIBDIR;
