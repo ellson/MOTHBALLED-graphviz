@@ -69,13 +69,22 @@ BuildRequires: XFree86-devel
 %define IPSEPCOLA --with-ipsepcola
 BuildRequires: fontconfig-devel tcl-devel tk-devel
 %endif
+%if "%rhel" == "4"
+BuildRequires: xorg-x11-devel
+%endif
 %if "%rhel" >= "4"
 %define PHP     1
 %define RUBY    1
-BuildRequires: php-devel ruby ruby-devel
+%define GUILE   1
+%define PYTHON  1
+BuildRequires: php-devel ruby ruby-devel guile-devel python-devel
 %endif
 %if "%rhel" >= "5"
-BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel
+%define JAVA	1
+%define PANGOCAIRO --with-pangocairo
+BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel
+BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel libgnomeu
+i-devel
 %endif
 %endif
 
@@ -99,14 +108,14 @@ BuildRequires: xorg-x11-devel
 %define PHP     1
 %define RUBY    1
 %define GUILE   1
-BuildRequires: libtool-ltdl libtool-ltdl-devel php-devel ruby ruby-devel guile-devel 
+%define PYTHON  1
+BuildRequires: libtool-ltdl libtool-ltdl-devel php-devel ruby ruby-devel guile-devel python-devel
 %endif
 %if "%fedora" >= "5"
 %define SHARP   1
 %define JAVA    1
 %define OCAML   1
-%define PYTHON  1
-BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel libgcj-devel mono-core ocaml python-devel java-devel
+BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel libgcj-devel mono-core ocaml java-devel
 %endif
 %if "%fedora" >= "6"
 %define LUA     1
@@ -236,7 +245,7 @@ Io extension for graphviz.
 %package java
 Group:		Applications/Multimedia
 Summary:	Java extension for graphviz
-Requires:	graphviz = %{version}-%{release} libgcj java
+Requires:	graphviz = %{version}-%{release} java
 
 %description java
 Java extension for graphviz.
