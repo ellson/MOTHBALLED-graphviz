@@ -130,83 +130,83 @@ gv_tcl.cpp: gv.i
 pkginclude_DATA = gv.i gv.cpp
 pkglib_LTLIBRARIES = 
 man_MANS =
-pdf_DATA = 
+#pdf_DATA = 
 TESTS =
 if WITH_SWIG
 if WITH_SHARP
 pkgsharp_DATA = $(SHARP_data)
 man_MANS += gv_sharp.n
-pdf_DATA += gv_sharp.pdf
+#pdf_DATA += gv_sharp.pdf
 pkgsharp_LTLIBRARIES = libgv_sharp.la
 TESTS += test_sharp
 endif
 if WITH_GUILE
 pkgguile_DATA = $(GUILE_data)
 man_MANS += gv_guile.n
-pdf_DATA += gv_guile.pdf
+#pdf_DATA += gv_guile.pdf
 pkgguile_LTLIBRARIES = libgv_guile.la
 TESTS += test_guile
 endif
 if WITH_IO
 pkgio_DATA = $(IO_data)
 man_MANS += gv_io.n
-pdf_DATA += gv_io.pdf
+#pdf_DATA += gv_io.pdf
 pkgio_LTLIBRARIES = libgv_io.la
 TESTS += test_io
 endif
 if WITH_JAVA
 pkgjava_DATA = $(JAVA_data)
 man_MANS += gv_java.n
-pdf_DATA += gv_java.pdf
+#pdf_DATA += gv_java.pdf
 pkgjava_LTLIBRARIES = libgv_java.la
 TESTS += test_java
 endif
 if WITH_LUA
 pkglua_DATA = $(LUA_data)
 man_MANS += gv_lua.n
-pdf_DATA += gv_lua.pdf
+#pdf_DATA += gv_lua.pdf
 pkglua_LTLIBRARIES = libgv_lua.la
 TESTS += test_lua
 endif
 if WITH_OCAML
 pkgocaml_DATA = $(OCAML_data)
 man_MANS += gv_ocaml.n
-pdf_DATA += gv_ocaml.pdf
+#pdf_DATA += gv_ocaml.pdf
 pkgocaml_LTLIBRARIES = libgv_ocaml.la
 TESTS += test_ocaml
 endif
 if WITH_PERL
 pkgperl_DATA = $(PERL_data)
 man_MANS += gv_perl.n
-pdf_DATA += gv_perl.pdf
+#pdf_DATA += gv_perl.pdf
 pkgperl_LTLIBRARIES = libgv_perl.la
 TESTS += test_perl
 endif
 if WITH_PHP
 pkgphp_DATA = $(PHP_data)
 man_MANS += gv_php.n
-pdf_DATA += gv_php.pdf
+#pdf_DATA += gv_php.pdf
 pkgphp_LTLIBRARIES = libgv_php.la
 TESTS += test_php
 endif
 if WITH_PYTHON
 pkgpython_DATA = $(PYTHON_data)
 man_MANS += gv_python.n
-pdf_DATA += gv_python.pdf
+#pdf_DATA += gv_python.pdf
 pkgpython_LTLIBRARIES = libgv_python.la
 TESTS += test_python
 endif
 if WITH_RUBY
 pkgruby_DATA = $(RUBY_data)
 man_MANS += gv_ruby.n
-pdf_DATA += gv_ruby.pdf
+#pdf_DATA += gv_ruby.pdf
 pkgruby_LTLIBRARIES = libgv_ruby.la
 TESTS += test_ruby
 endif
 if WITH_TCL
 pkgtcl_DATA = $(TCL_data)
 man_MANS += gv_tcl.n
-pdf_DATA += gv_tcl.pdf
+#pdf_DATA += gv_tcl.pdf
 pkgtcl_LTLIBRARIES = libgv_tcl.la
 TESTS += test_tcl
 
@@ -220,8 +220,8 @@ endif
 man = gv_sharp.n gv_guile.n gv_io.n gv_java.n gv_lua.n gv_ocaml.n \
 	gv_perl.n gv_php.n gv_python.n gv_ruby.n gv_tcl.n
 
-pdf = gv_sharp.pdf gv_guile.pdf gv_io.pdf gv_java.pdf gv_lua.pdf gv_ocaml.pdf \
-	gv_perl.pdf gv_php.pdf gv_python.pdf gv_ruby.pdf gv_tcl.pdf
+#pdf = gv_sharp.pdf gv_guile.pdf gv_io.pdf gv_java.pdf gv_lua.pdf gv_ocaml.pdf \
+#	gv_perl.pdf gv_php.pdf gv_python.pdf gv_ruby.pdf gv_tcl.pdf
 
 $(man): gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
 	$(TCLSH) $(srcdir)/gv_doc_writer.tcl "$(srcdir)"
