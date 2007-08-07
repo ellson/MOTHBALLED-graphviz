@@ -1956,6 +1956,7 @@ AC_CONFIG_FILES(Makefile
 	contrib/prune/Makefile
 	contrib/diffimg/Makefile
 	contrib/xdot/Makefile
+	contrib/xdot/libxdot.pc
 	graphs/Makefile
 	graphs/directed/Makefile
 	graphs/undirected/Makefile
