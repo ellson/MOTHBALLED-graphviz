@@ -124,7 +124,7 @@ static void init(int argc, char *argv[])
     int c;
 
     aginit();
-    while ((c = getopt(argc, argv, ":o:xCX:nsv")) != -1) {
+    while ((c = getopt(argc, argv, ":o:xCX:nsv?")) != -1) {
 	switch (c) {
 	case 'o':
 	    outfile = optarg;
