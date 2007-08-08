@@ -266,10 +266,8 @@ extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge, gdFontG
 
 void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fontsize, int fontdpi, double fontangle, char *fontname, unsigned char *str)
 {
-    int brect[8];
     gdFTStringExtra strex;
     point sp, ep; /* start point, end point, in pixels */
-    char *err;
 
     PF2P(spf, sp);
     PF2P(epf, ep);
@@ -289,6 +287,8 @@ void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fon
         gdImageLine(im, sp.x, sp.y, ep.x, ep.y, fontcolor);
     } else {
 #ifdef HAVE_GD_FREETYPE
+        char *err;
+        int brect[8];
 #ifdef HAVE_GD_FONTCONFIG
         char* fontlist = fontname;
 #else
@@ -325,11 +325,6 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     gdImagePtr im = (gdImagePtr) job->surface;
     pointf spf, epf;
     double parawidth = para->width * job->scale.x;
-    gdFTStringExtra strex;
-#ifdef HAVE_GD_FREETYPE
-    char *err;
-    int brect[8];
-#endif
 
     if (!im)
 	return;
