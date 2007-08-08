@@ -102,7 +102,7 @@ static void init(int argc, char *argv[])
 
     aginit();
     CmdName = argv[0];
-    while ((c = getopt(argc, argv, ":")) != -1) {
+    while ((c = getopt(argc, argv, ":?")) != -1) {
 	switch (c) {
 	case '?':
 	    if (optopt == '?')

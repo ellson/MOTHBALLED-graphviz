@@ -164,7 +164,7 @@ static char **scanargs(int argc, char **argv)
 
     cmd = argv[0];
 
-    while ((c = getopt(argc, argv, ":fl:c:o:")) != -1) {
+    while ((c = getopt(argc, argv, ":fl:c:o:?")) != -1) {
 	switch (c) {
 	case 'f':
 	    Do_fans = 1;
