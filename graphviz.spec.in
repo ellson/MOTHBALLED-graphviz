@@ -148,6 +148,11 @@ of graphs (as in nodes and edges, not as in barcharts).
 if ! test -x %{_bindir}/dot; then
 	rm -f %{_libdir}/graphviz/config || :
 fi
+# "belt and braces"
+# be sure that config is removed if main package is gone
+if [ $1 -eq 0 ]; then
+	rm -f %{_libdir}/graphviz/config || :
+fi
 /sbin/ldconfig
 
 %files
