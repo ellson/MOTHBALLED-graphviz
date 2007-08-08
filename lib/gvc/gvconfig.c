@@ -260,22 +260,41 @@ static void gvconfig_write_library_config(char *path, gvplugin_library_t *librar
     fputs ("}\n", f);
 }
 
+#define BSZ 1024
+
 char * gvconfig_libdir(void)
 {
-    static char line[1024];
+    static char line[BSZ];
     static char *libdir;
     char *path, *tmp;
     FILE *f;
 
     if (!libdir) {
-
 #ifdef WIN32
-        /* this code has to be modified to read value from 
-         * registry or argg[0] -- +/lib etc method.  FIX
-         */
-        libdir=getenv("GRAPHVIZBIN");
-	if (!libdir)
-            libdir="C:/graphviz/local/bin";
+#define CHKDLL "gvc.dll"
+        libdir=getenv("GVBINDIR");
+	if (!libdir) {
+	    int r;
+	    char* s;
+	    HMODULE hm = GetModuleHandle (CHKDLL);
+	    if (!hm) {
+		agerr(AGERR,"failed to get handle for %s.\n", CHKDLL);
+		return 0;
+	    }
+	    r = GetModuleFileName (hm, line, BSZ);
+	    if (!r || (r == BSZ)) {
+		agerr(AGERR,"failed to get path for %s.\n", CHKDLL);
+		return 0;
+	    }
+	    s = strrchr(line,'\\');
+	    if (!s) s = strrchr(line,'/');
+	    if (!s) {
+		agerr(AGERR,"no slash in path %s.\n", line);
+		return 0;
+	    }
+	    *s = '\0';
+	    libdir = line;
+	}
 #else
         /* this only works on linux, other systems will get GVLIBDIR only */
 	libdir = GVLIBDIR;
