@@ -53,15 +53,12 @@ BuildRequires:	/bin/ksh bison m4 flex tk tcl >= 8.3 swig
 BuildRequires:	/usr/include/tcl.h /usr/include/tk.h
 
 %if 0%{?rhl}
-%define PERL    1
 %define TCL     1
-BuildRequires: XFree86-devel perl
+BuildRequires: XFree86-devel
 %endif
 
 %if 0%{?rhel}
-%define PERL    1
 %define TCL     1
-BuildRequires: perl
 %if "%rhel" < "4"
 BuildRequires: XFree86-devel
 %endif
@@ -73,11 +70,13 @@ BuildRequires: fontconfig-devel tcl-devel tk-devel
 BuildRequires: xorg-x11-devel
 %endif
 %if "%rhel" >= "4"
+# PERL is available earlier, but a suitable SWIG isn't
+%define PERL    1
 %define PHP     1
 %define RUBY    1
 %define GUILE   1
 %define PYTHON  1
-BuildRequires: php-devel ruby ruby-devel guile-devel python-devel
+BuildRequires: perl php-devel ruby ruby-devel guile-devel python-devel
 %endif
 %if "%rhel" >= "5"
 %define JAVA	1
@@ -90,7 +89,7 @@ BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel libgnomeui
 %if 0%{?fedora}
 %define PERL    1
 %define TCL     1
-BuildRequires: fontconfig-devel tcl-devel tk-devel 
+BuildRequires: fontconfig-devel perl tcl-devel tk-devel 
 %if "%fedora" < "3"
 BuildRequires: XFree86-devel
 %endif
@@ -374,10 +373,10 @@ Various tcl packages (extensions) for the graphviz tools.
 %{_libdir}/graphviz/tcl/*
 %{_libdir}/graphviz/pkgIndex.tcl
 %{_datadir}/graphviz/demo
-%{_mandir}/mann/tcldot.n*
-%{_mandir}/mann/gdtclft.n*
+# hack to include gv_tcl.n only if available
+#  always includes tcldot.n, gdtclft.n
+%{_mandir}/mann/*tcl*.n*
 %{_mandir}/mann/tkspline.n*
-%{_mandir}/mann/gv_tcl.n*
 %endif
 
 #-- graphviz-devel rpm --------------------------------------------
