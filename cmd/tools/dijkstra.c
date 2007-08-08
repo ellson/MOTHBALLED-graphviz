@@ -221,7 +221,7 @@ static void init(int argc, char *argv[])
     int i, j, c;
 
     CmdName = argv[0];
-    while ((c = getopt(argc, argv, ":a")) != -1) {
+    while ((c = getopt(argc, argv, ":a?")) != -1) {
 	switch (c) {
 	case 'a':
 	    setall = 1;
