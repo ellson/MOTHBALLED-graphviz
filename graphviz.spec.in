@@ -138,6 +138,18 @@ Requires(postun):      /sbin/ldconfig
 A collection of tools for the manipulation and layout
 of graphs (as in nodes and edges, not as in barcharts).
 
+# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+%post
+/sbin/ldconfig
+%{_bindir}/dot -c
+
+# if there is no dot after everything else is done, then remove config
+%postun
+if ! test -x %{_bindir}/dot; then
+	rm -f %{_libdir}/graphviz/config || :
+fi
+/sbin/ldconfig
+
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING ChangeLog NEWS README
@@ -152,16 +164,6 @@ of graphs (as in nodes and edges, not as in barcharts).
 %exclude %{_libdir}/graphviz/*/*
 %exclude %{_libdir}/graphviz/libgvplugin_gd.*
 
-# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
-%post
-/sbin/ldconfig
-%{_bindir}/dot -c
-
-# if there is no dot after everything else is done, then remove config
-%postun
-if ! test -x %{_bindir}/dot; then rm -f %{_libdir}/graphviz/config; fi
-/sbin/ldconfig
-
 #-- graphviz-gd rpm --------------------------------------------------
 %package gd
 Group:		Applications/Multimedia
@@ -174,18 +176,28 @@ to use GIF, you are recommended to use the PNG format instead because
 of the better quality anti-aliased lines provided by the cairo+pango
 based renderer.)
 
-%files gd
-%{_libdir}/graphviz/libgvplugin_gd.so.*
-
 # run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
 %post gd
 /sbin/ldconfig
 %{_bindir}/dot -c
 
 # if there is no dot after everything else is done, then remove config
+#    (this can happen for "rpm -e graphviz graphviz-gd" where the ordering
+#    of the package removals is undetermined.)
 %postun gd
-if ! test -x %{_bindir}/dot; then rm -f %{_libdir}/graphviz/config; fi
+if ! test -x %{_bindir}/dot; then
+	rm -f %{_libdir}/graphviz/config || :
+fi
+# OTOH - if there is still a working dot, then the config file
+#   needs to be regenerated to account for the plugin removal
+# 
+if test -x %{_bindir}/dot; then
+%{_bindir}/dot -c
+fi
 /sbin/ldconfig
+
+%files gd
+%{_libdir}/graphviz/libgvplugin_gd.so.*
 
 #-- graphviz-sharp rpm --------------------------------------------
 %if %{SHARP}
