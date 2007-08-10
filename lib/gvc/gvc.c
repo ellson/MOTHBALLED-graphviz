@@ -153,3 +153,6 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
 
     return 0;
 }
+
+char **gvcInfo(GVC_t* gvc) { return gvc->common.info; }
+char *gvcUsername(GVC_t* gvc) { return gvc->common.user; }
