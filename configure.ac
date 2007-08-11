@@ -1352,7 +1352,8 @@ if test "x$with_pangocairo" != "xno"; then
 fi
 
 if test "x$with_pangocairo" = "xyes"; then
-PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.0],
+# require at least the version available on fc5
+PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.12.4],
 	[HAVE_PANGOCAIRO=1
 	AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
 		[Define if you have the pango library with cairo support])],
