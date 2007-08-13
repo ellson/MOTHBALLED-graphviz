@@ -1,4 +1,4 @@
-# Doxyfile 1.3.8
+# Doxyfile 1.4.6-20060507
 
 # This file describes the settings to be used by the documentation system
 # doxygen (www.doxygen.org) for a project
@@ -35,9 +35,9 @@ OUTPUT_DIRECTORY       = doxygen
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 
 # 4096 sub-directories (in 2 levels) under the output directory of each output 
 # format and will distribute the generated files over these directories. 
-# Enabling this option can be useful when feeding doxygen a huge amount of source 
-# files, where putting all generated files in the same directory would otherwise 
-# cause performance problems for the file system.
+# Enabling this option can be useful when feeding doxygen a huge amount of 
+# source files, where putting all generated files in the same directory would 
+# otherwise cause performance problems for the file system.
 
 CREATE_SUBDIRS         = NO
 
@@ -80,11 +80,12 @@ REPEAT_BRIEF           = YES
 # This tag implements a quasi-intelligent brief description abbreviator 
 # that is used to form the text in various listings. Each string 
 # in this list, if found as the leading text of the brief description, will be 
-# stripped from the text and the result after processing the whole list, is used 
-# as the annotated text. Otherwise, the brief description is used as-is. If left 
-# blank, the following values are used ("$name" is automatically replaced with the 
-# name of the entity): "The $name class" "The $name widget" "The $name file" 
-# "is" "provides" "specifies" "contains" "represents" "a" "an" "the"
+# stripped from the text and the result after processing the whole list, is 
+# used as the annotated text. Otherwise, the brief description is used as-is. 
+# If left blank, the following values are used ("$name" is automatically 
+# replaced with the name of the entity): "The $name class" "The $name widget" 
+# "The $name file" "is" "provides" "specifies" "contains" 
+# "represents" "a" "an" "the"
 
 ABBREVIATE_BRIEF       = 
 
@@ -94,10 +95,10 @@ ABBREVIATE_BRIEF       =
 
 ALWAYS_DETAILED_SEC    = NO
 
-# If the INLINE_INHERITED_MEMB tag is set to YES, doxygen will show all inherited 
-# members of a class in the documentation of that class as if those members were 
-# ordinary class members. Constructors, destructors and assignment operators of 
-# the base classes will not be shown.
+# If the INLINE_INHERITED_MEMB tag is set to YES, doxygen will show all 
+# inherited members of a class in the documentation of that class as if those 
+# members were ordinary class members. Constructors, destructors and assignment 
+# operators of the base classes will not be shown.
 
 INLINE_INHERITED_MEMB  = NO
 
@@ -160,12 +161,11 @@ DETAILS_AT_TOP         = NO
 
 INHERIT_DOCS           = YES
 
-# If member grouping is used in the documentation and the DISTRIBUTE_GROUP_DOC 
-# tag is set to YES, then doxygen will reuse the documentation of the first 
-# member in the group (if any) for the other members of the group. By default 
-# all members of a group must be documented explicitly.
+# If the SEPARATE_MEMBER_PAGES tag is set to YES, then doxygen will produce 
+# a new page for each member. If set to NO, the documentation of a member will 
+# be part of the file/class/namespace that contains it.
 
-DISTRIBUTE_GROUP_DOC   = NO
+SEPARATE_MEMBER_PAGES  = NO
 
 # The TAB_SIZE tag can be used to set the number of spaces in a tab. 
 # Doxygen uses this value to replace tabs by spaces in code fragments.
@@ -181,19 +181,35 @@ TAB_SIZE               = 8
 
 ALIASES                = 
 
-# Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C sources 
-# only. Doxygen will then generate output that is more tailored for C. 
+# Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C 
+# sources only. Doxygen will then generate output that is more tailored for C. 
 # For instance, some of the names that are used will be different. The list 
 # of all members will be omitted, etc.
 
 OPTIMIZE_OUTPUT_FOR_C  = YES
 
-# Set the OPTIMIZE_OUTPUT_JAVA tag to YES if your project consists of Java sources 
-# only. Doxygen will then generate output that is more tailored for Java. 
+# Set the OPTIMIZE_OUTPUT_JAVA tag to YES if your project consists of Java 
+# sources only. Doxygen will then generate output that is more tailored for Java. 
 # For instance, namespaces will be presented as packages, qualified scopes 
 # will look different, etc.
 
 OPTIMIZE_OUTPUT_JAVA   = NO
+
+# If you use STL classes (i.e. std::string, std::vector, etc.) but do not want to 
+# include (a tag file for) the STL sources as input, then you should 
+# set this tag to YES in order to let doxygen match functions declarations and 
+# definitions whose arguments contain STL classes (e.g. func(std::string); v.s. 
+# func(std::string) {}). This also make the inheritance and collaboration 
+# diagrams that involve STL classes more complete and accurate.
+
+BUILTIN_STL_SUPPORT    = NO
+
+# If member grouping is used in the documentation and the DISTRIBUTE_GROUP_DOC 
+# tag is set to YES, then doxygen will reuse the documentation of the first 
+# member in the group (if any) for the other members of the group. By default 
+# all members of a group must be documented explicitly.
+
+DISTRIBUTE_GROUP_DOC   = NO
 
 # Set the SUBGROUPING tag to YES (the default) to allow class member groups of 
 # the same type (for instance a group of public functions) to be put as a 
@@ -367,6 +383,22 @@ MAX_INITIALIZER_LINES  = 30
 
 SHOW_USED_FILES        = YES
 
+# If the sources in your project are distributed over multiple directories 
+# then setting the SHOW_DIRECTORIES tag to YES will show the directory hierarchy 
+# in the documentation. The default is NO.
+
+SHOW_DIRECTORIES       = NO
+
+# The FILE_VERSION_FILTER tag can be used to specify a program or script that 
+# doxygen should invoke to get the current version for each file (typically from the 
+# version control system). Doxygen will invoke the program by executing (via 
+# popen()) the command <command> <input-file>, where <command> is the value of 
+# the FILE_VERSION_FILTER tag, and <input-file> is the name of an input file 
+# provided by doxygen. Whatever the program writes to standard output 
+# is used as the file version. See the manual for examples.
+
+FILE_VERSION_FILTER    = 
+
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------
@@ -395,10 +427,20 @@ WARN_IF_UNDOCUMENTED   = YES
 
 WARN_IF_DOC_ERROR      = YES
 
+# This WARN_NO_PARAMDOC option can be abled to get warnings for 
+# functions that are documented, but have no documentation for their parameters 
+# or return value. If set to NO (the default) doxygen will only warn about 
+# wrong or incomplete parameter documentation, but not about the absence of 
+# documentation.
+
+WARN_NO_PARAMDOC       = NO
+
 # The WARN_FORMAT tag determines the format of the warning messages that 
 # doxygen can produce. The string should contain the $file, $line, and $text 
 # tags, which will be replaced by the file and line number from which the 
-# warning originated and the warning text.
+# warning originated and the warning text. Optionally the format may contain 
+# $version, which will be replaced by the version of the file (if it could 
+# be obtained via FILE_VERSION_FILTER)
 
 WARN_FORMAT            = 
 
@@ -417,30 +459,30 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT = cmd/dot \
-	lib/cdt \
-	lib/circogen \
-	lib/common \
-	lib/dotgen \
-	lib/fdpgen \
-	lib/graph \
-	lib/gvc \
-	lib/neatogen \
-	lib/pack \
-	lib/pathplan \
-	lib/twopigen \
-	plugin/core \
-	plugin/pango \
-	plugin/dot_layout \
-	plugin/neato_layout \
-	tclpkg/gv
+INPUT                  = cmd/dot \
+                         lib/cdt \
+                         lib/circogen \
+                         lib/common \
+                         lib/dotgen \
+                         lib/fdpgen \
+                         lib/graph \
+                         lib/gvc \
+                         lib/neatogen \
+                         lib/pack \
+                         lib/pathplan \
+                         lib/twopigen \
+                         plugin/core \
+                         plugin/pango \
+                         plugin/dot_layout \
+                         plugin/neato_layout \
+                         tclpkg/gv
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
 # and *.h) to filter out the source-files in the directories. If left 
 # blank the following patterns are tested: 
-# *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx *.hpp 
-# *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm
+# *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx 
+# *.hpp *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm *.py
 
 FILE_PATTERNS          = *.c \
                          *.cpp \
@@ -458,14 +500,17 @@ RECURSIVE              = NO
 
 EXCLUDE                = 
 
-# The EXCLUDE_SYMLINKS tag can be used select whether or not files or directories 
-# that are symbolic links (a Unix filesystem feature) are excluded from the input.
+# The EXCLUDE_SYMLINKS tag can be used select whether or not files or 
+# directories that are symbolic links (a Unix filesystem feature) are excluded 
+# from the input.
 
 EXCLUDE_SYMLINKS       = NO
 
 # If the value of the INPUT tag contains directories, you can use the 
 # EXCLUDE_PATTERNS tag to specify one or more wildcard patterns to exclude 
-# certain files from those directories.
+# certain files from those directories. Note that the wildcards are matched 
+# against the file with absolute path, so to exclude all test directories 
+# for example use the pattern */test/*
 
 EXCLUDE_PATTERNS       = 
 
@@ -553,6 +598,21 @@ REFERENCED_BY_RELATION = YES
 # called/used by that function will be listed.
 
 REFERENCES_RELATION    = YES
+
+# If the REFERENCES_LINK_SOURCE tag is set to YES (the default)
+# and SOURCE_BROWSER tag is set to YES, then the hyperlinks from
+# functions in REFERENCES_RELATION and REFERENCED_BY_RELATION lists will
+# link to the source code.  Otherwise they will link to the documentstion.
+
+REFERENCES_LINK_SOURCE = YES
+
+# If the USE_HTAGS tag is set to YES then the references to source code 
+# will point to the HTML generated by the htags(1) tool instead of doxygen 
+# built-in source browser. The htags tool is part of GNU's global source 
+# tagging system (see http://www.gnu.org/software/global/global.html). You 
+# will need version 4.8.6 or higher.
+
+USE_HTAGS              = NO
 
 # If the VERBATIM_HEADERS tag is set to YES (the default) then Doxygen 
 # will generate a verbatim copy of the header file for each class for 
@@ -940,7 +1000,7 @@ MACRO_EXPANSION        = NO
 
 # If the EXPAND_ONLY_PREDEF and MACRO_EXPANSION tags are both set to YES 
 # then the macro expansion is limited to the macros specified with the 
-# PREDEFINED and EXPAND_AS_PREDEFINED tags.
+# PREDEFINED and EXPAND_AS_DEFINED tags.
 
 EXPAND_ONLY_PREDEF     = NO
 
@@ -966,7 +1026,9 @@ INCLUDE_FILE_PATTERNS  =
 # are defined before the preprocessor is started (similar to the -D option of 
 # gcc). The argument of the tag is a list of macros of the form: name 
 # or name=definition (no spaces). If the definition and the = are 
-# omitted =1 is assumed.
+# omitted =1 is assumed. To prevent a macro definition from being 
+# undefined via #undef or recursively expanded use the := operator 
+# instead of the = operator.
 
 PREDEFINED             = 
 
@@ -980,8 +1042,8 @@ EXPAND_AS_DEFINED      =
 # If the SKIP_FUNCTION_MACROS tag is set to YES (the default) then 
 # doxygen's preprocessor will remove all function-like macros that are alone 
 # on a line, have an all uppercase name, and do not end with a semicolon. Such 
-# function macros are typically used for boiler-plate code, and will confuse the 
-# parser if not removed.
+# function macros are typically used for boiler-plate code, and will confuse 
+# the parser if not removed.
 
 SKIP_FUNCTION_MACROS   = YES
 
@@ -1033,10 +1095,11 @@ PERL_PATH              =
 #---------------------------------------------------------------------------
 
 # If the CLASS_DIAGRAMS tag is set to YES (the default) Doxygen will 
-# generate a inheritance diagram (in HTML, RTF and LaTeX) for classes with base or 
-# super classes. Setting the tag to NO turns the diagrams off. Note that this 
-# option is superseded by the HAVE_DOT option below. This is only a fallback. It is 
-# recommended to install and use dot, since it yields more powerful graphs.
+# generate a inheritance diagram (in HTML, RTF and LaTeX) for classes with base 
+# or super classes. Setting the tag to NO turns the diagrams off. Note that 
+# this option is superseded by the HAVE_DOT option below. This is only a 
+# fallback. It is recommended to install and use dot, since it yields more 
+# powerful graphs.
 
 CLASS_DIAGRAMS         = YES
 
@@ -1053,8 +1116,6 @@ HIDE_UNDOC_RELATIONS   = YES
 
 HAVE_DOT               = YES
 
-DOT_MULTI_TARGETS      = YES
-
 # If the CLASS_GRAPH and HAVE_DOT tags are set to YES then doxygen 
 # will generate a graph for each documented class showing the direct and 
 # indirect inheritance relations. Setting this tag to YES will force the 
@@ -1068,6 +1129,11 @@ CLASS_GRAPH            = YES
 # class references variables) of the class with other documented classes.
 
 COLLABORATION_GRAPH    = YES
+
+# If the GROUP_GRAPHS and HAVE_DOT tags are set to YES then doxygen 
+# will generate a graph for groups, showing the direct groups dependencies
+
+GROUP_GRAPHS           = YES
 
 # If the UML_LOOK tag is set to YES doxygen will generate inheritance and 
 # collaboration diagrams in a style similar to the OMG's Unified Modeling 
@@ -1102,10 +1168,25 @@ INCLUDED_BY_GRAPH      = YES
 
 CALL_GRAPH             = NO
 
+# If the CALLER_GRAPH and HAVE_DOT tags are set to YES then doxygen will 
+# generate a caller dependency graph for every global function or class method. 
+# Note that enabling this option will significantly increase the time of a run. 
+# So in most cases it will be better to enable caller graphs for selected 
+# functions only using the \callergraph command.
+
+CALLER_GRAPH           = NO
+
 # If the GRAPHICAL_HIERARCHY and HAVE_DOT tags are set to YES then doxygen 
 # will graphical hierarchy of all classes instead of a textual one.
 
 GRAPHICAL_HIERARCHY    = YES
+
+# If the DIRECTORY_GRAPH, SHOW_DIRECTORIES and HAVE_DOT tags are set to YES 
+# then doxygen will show the dependencies a directory has on other directories 
+# in a graphical way. The dependency relations are determined by the #include
+# relations between the files in the directories.
+
+DIRECTORY_GRAPH        = YES
 
 # The DOT_IMAGE_FORMAT tag can be used to set the image format of the images 
 # generated by dot. Possible values are png, jpg, or gif
@@ -1114,9 +1195,9 @@ GRAPHICAL_HIERARCHY    = YES
 DOT_IMAGE_FORMAT       = png
 
 # The tag DOT_PATH can be used to specify the path where the dot tool can be 
-# found. If left blank, it is assumed the dot tool can be found on the path.
+# found. If left blank, it is assumed the dot tool can be found in the path.
 
-DOT_PATH               =
+DOT_PATH               = 
 
 # The DOTFILE_DIRS tag can be used to specify one or more directories that 
 # contain dot files that are included in the documentation (see the 
@@ -1142,14 +1223,30 @@ MAX_DOT_GRAPH_HEIGHT   = 1024
 
 # The MAX_DOT_GRAPH_DEPTH tag can be used to set the maximum depth of the 
 # graphs generated by dot. A depth value of 3 means that only nodes reachable 
-# from the root by following a path via at most 3 edges will be shown. Nodes that 
-# lay further from the root node will be omitted. Note that setting this option to 
-# 1 or 2 may greatly reduce the computation time needed for large code bases. Also 
-# note that a graph may be further truncated if the graph's image dimensions are 
-# not sufficient to fit the graph (see MAX_DOT_GRAPH_WIDTH and MAX_DOT_GRAPH_HEIGHT). 
-# If 0 is used for the depth value (the default), the graph is not depth-constrained.
+# from the root by following a path via at most 3 edges will be shown. Nodes 
+# that lay further from the root node will be omitted. Note that setting this 
+# option to 1 or 2 may greatly reduce the computation time needed for large 
+# code bases. Also note that a graph may be further truncated if the graph's 
+# image dimensions are not sufficient to fit the graph (see MAX_DOT_GRAPH_WIDTH 
+# and MAX_DOT_GRAPH_HEIGHT). If 0 is used for the depth value (the default), 
+# the graph is not depth-constrained.
 
 MAX_DOT_GRAPH_DEPTH    = 0
+
+# Set the DOT_TRANSPARENT tag to YES to generate images with a transparent 
+# background. This is disabled by default, which results in a white background. 
+# Warning: Depending on the platform used, enabling this option may lead to 
+# badly anti-aliased labels on the edges of a graph (i.e. they become hard to 
+# read).
+
+DOT_TRANSPARENT        = NO
+
+# Set the DOT_MULTI_TARGETS tag to YES allow dot to generate multiple output 
+# files in one run (i.e. multiple -o and -T options on the command line). This 
+# makes dot run faster, but since only newer versions of dot (>1.8.10) 
+# support this, this feature is disabled by default.
+
+DOT_MULTI_TARGETS      = YES
 
 # If the GENERATE_LEGEND tag is set to YES (the default) Doxygen will 
 # generate a legend page explaining the meaning of the various boxes and 
