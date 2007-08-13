@@ -63,6 +63,8 @@ extern GVC_t *gvContext(void);
 
 /* get information associated with a graphviz context */
 extern char **gvcInfo(GVC_t*);
+extern char *gvcVersion(GVC_t*);
+extern char *gvcBuildDate(GVC_t*);
 extern char *gvcUsername(GVC_t*);
 
 /* parse command line args - minimally argv[0] sets layout engine */
