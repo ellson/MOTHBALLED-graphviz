@@ -7,7 +7,12 @@
 Name:    graphviz
 Summary: Graph Visualization Tools
 Version: @VERSION@
-Release: 1%{?dist}
+
+%define truerelease 1
+%{?distroagnostic: %define release %{truerelease}}
+%{!?distroagnostic: %define release %{truerelease}%{?dist}}
+
+Release: %{?release}
 
 Group:   Applications/Multimedia
 License: CPL
