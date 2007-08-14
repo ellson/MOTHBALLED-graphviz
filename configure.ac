@@ -67,6 +67,7 @@ case "${host_os}" in
 	UWIN=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
 	CFLAGS="${CFLAGS} -DWIN32 -DMSWIN32"
+	CXXFLAGS="${CXXFLAGS} -DWIN32 -DMSWIN32"
 	PATHSEPARATOR=";"
 	;;
   *cygwin* )
