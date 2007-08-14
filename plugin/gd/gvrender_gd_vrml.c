@@ -338,7 +338,7 @@ static void vrml_end_edge(GVJ_t *job)
     fprintf(job->output_file, "] }\n");
 }
 
-extern void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fontsize, int fontdpi, double fontangle, char *fontname, unsigned char *str);
+extern void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fontsize, int fontdpi, double fontangle, char *fontname, char *str);
 
 static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
 {

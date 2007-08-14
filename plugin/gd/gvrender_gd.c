@@ -264,7 +264,7 @@ extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge, gdFontG
 
 extern gdFontPtr gdFontTiny, gdFontSmall, gdFontMediumBold, gdFontLarge, gdFontGiant;
 
-void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fontsize, int fontdpi, double fontangle, char *fontname, unsigned char *str)
+void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fontsize, int fontdpi, double fontangle, char *fontname, char *str)
 {
     gdFTStringExtra strex;
     point sp, ep; /* start point, end point, in pixels */
@@ -304,15 +304,15 @@ void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fon
 #endif
             sp.y += 2;
             if (fontsize <= 8.5) {
-                gdImageString(im, gdFontTiny, sp.x, sp.y - 9, str, fontcolor);
+                gdImageString(im, gdFontTiny, sp.x, sp.y - 9, (unsigned char*)str, fontcolor);
             } else if (fontsize <= 9.5) {
-                gdImageString(im, gdFontSmall, sp.x, sp.y - 12, str, fontcolor);
+                gdImageString(im, gdFontSmall, sp.x, sp.y - 12, (unsigned char*)str, fontcolor);
             } else if (fontsize <= 10.5) {
-                gdImageString(im, gdFontMediumBold, sp.x, sp.y - 13, str, fontcolor);
+                gdImageString(im, gdFontMediumBold, sp.x, sp.y - 13, (unsigned char*)str, fontcolor);
             } else if (fontsize <= 11.5) {
-                gdImageString(im, gdFontLarge, sp.x, sp.y - 14, str, fontcolor);
+                gdImageString(im, gdFontLarge, sp.x, sp.y - 14, (unsigned char*)str, fontcolor);
             } else {
-                gdImageString(im, gdFontGiant, sp.x, sp.y - 15, str, fontcolor);
+                gdImageString(im, gdFontGiant, sp.x, sp.y - 15, (unsigned char*)str, fontcolor);
             }
 #ifdef HAVE_GD_FREETYPE
         }
