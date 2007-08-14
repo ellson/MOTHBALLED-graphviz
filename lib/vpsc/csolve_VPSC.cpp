@@ -15,6 +15,7 @@
  * Adaptagrams repository.
  */
 
+
 #include <iostream>
 #include <variable.h>
 #include <constraint.h>
@@ -37,18 +38,29 @@ VPSC* newIncVPSC(int n, Variable* vs[], int m, Constraint* cs[]) {
 }
 
 int genXConstraints(int n, boxf* bb, Variable** vs, Constraint*** cs,int transitiveClosure) {
+#ifdef WIN32
+	Rectangle** rs = new Rectangle* [n];
+#else
 	Rectangle* rs[n];
+#endif
 	for(int i=0;i<n;i++) {
 		rs[i]=new Rectangle(bb[i].LL.x,bb[i].UR.x,bb[i].LL.y,bb[i].UR.y);
 	}
-	int m = generateXConstraints(n,rs,vs,*cs,transitiveClosure);
+	int m = generateXConstraints(n,rs,vs,*cs,transitiveClosure?true:false);
 	for(int i=0;i<n;i++) {
 		delete rs[i];
 	}
+#ifdef WIN32
+    delete [] rs;
+#endif
 	return m;
 }
 int genYConstraints(int n, boxf* bb, Variable** vs, Constraint*** cs) {
+#ifdef WIN32
+	Rectangle** rs = new Rectangle* [n];
+#else
 	Rectangle* rs[n];
+#endif
 	for(int i=0;i<n;i++) {
 		rs[i]=new Rectangle(bb[i].LL.x,bb[i].UR.x,bb[i].LL.y,bb[i].UR.y);
 	}
@@ -56,6 +68,9 @@ int genYConstraints(int n, boxf* bb, Variable** vs, Constraint*** cs) {
 	for(int i=0;i<n;i++) {
 		delete rs[i];
 	}
+#ifdef WIN32
+    delete [] rs;
+#endif
 	return m;
 }
 
