@@ -17,10 +17,10 @@ presenting all available tools in the graphviz package.
 .SS "Graph layout programs"
 .TP
 .B dot
-filter for drawing directed graphs
+filter for hierarchical layouts of graphs
 .TP
 .B neato
-filter for drawing undirected graphs
+filter for symmetric layouts of graphs
 .TP
 .B twopi
 filter for radial layouts of graphs
@@ -29,8 +29,15 @@ filter for radial layouts of graphs
 filter for circular layout of graphs
 .TP
 .B fdp
-filter for drawing undirected graphs
-
+filter for symmetric layouts of graphs
+.PP
+All of the filters work with either directed or undirected graphs, though
+.B dot
+is typically used for directed graphs and
+.B neato
+for undirected graphs.
+Note also that \fBneato -n[2]\fP can be used to render layouts produced
+by the other filters.
 .SS "Graph drawing programs"
 .TP
 .B lefty
@@ -40,7 +47,7 @@ A Programmable Graphics Editor
 lefty + neato
 .TP
 .B dotty
-lefty + dotty
+lefty + dot
 
 
 .SS "Graph layout enhancement"
