@@ -126,6 +126,7 @@ Agraph_t **circomps(Agraph_t * g, int *cnt)
 #endif
 
     dg = agopen("derived", AGFLAG_STRICT);
+    GD_alg(g) = dg;  /* store derived graph for closing later */
 #ifdef USER_BLOCKS
     sg = g->meta_node->graph;
     for (me = agfstout(sg, g->meta_node); me; me = agnxtout(sg, me)) {
@@ -296,6 +297,7 @@ void circo_layout(Agraph_t * g)
     if (agnnodes(g) == 0) return;
     circo_init_graph(g);
     circoLayout(g);
+	/* Release ND_alg as we need to reuse it during edge routing */
     free(ND_alg(agfstnode(g)));
     spline_edges(g);
     dotneato_postprocess(g);
@@ -338,7 +340,7 @@ void circo_cleanup(graph_t * g)
     if (n == NULL)
 	return;			/* g is empty */
 
-    closeDerivedGraph(DNODE(n)->graph);	/* delete derived graph */
+    closeDerivedGraph((graph_t*)GD_alg(g));	/* delete derived graph */
 
     for (; n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
