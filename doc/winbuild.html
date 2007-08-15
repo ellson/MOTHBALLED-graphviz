@@ -5,9 +5,55 @@
 <body bgcolor=#ffffff>
 <h2>Graphviz Build Instructions for Windows</h2>
 <P>
-(Graphviz versions &gt;= 2.3)
+(Graphviz versions &gt; 2.14)
 <P>
-Currently we build Graphviz on Windows using the MS Visual C++ 6.0 compiler 
+To simplify our build process, especially as most Windows users only
+want a binary version of the software, the Graphviz build for Windows
+now uses <A HREF="http://www.research.att.com/sw/tools/uwin/"><B>uwin</B></A>, 
+an open-source Unix layer on top of Windows. In this
+environment, we can use essentially the same tools and process
+used on Unix. In particular, we do not have to maintain multiple build
+files. 
+<P>
+To build Graphviz:
+<OL>
+<LI>
+Install the third-party libraries. This is most easily done by installing
+a Windows binary verion of <A HREF="http://www.gtk.org">GTK 2.0</A> or later. 
+<LI>
+Download the Graphviz source package:<BR>Go to
+<A HREF=http://www.graphviz.org/Download_source.php>http://www.graphviz.org/Download_source.php</A>
+and copy over either the stable release <TT>graphviz-</TT><I>VERSION</I><TT>.tar.gz</TT>
+or the development source package <TT>graphviz-working.tar.gz</TT>.
+<LI>
+Unwrap the package:<BR>
+You can use, for example,<BR><BR>
+<TT>gunzip < graphviz-working.tar.gz | tar xf -</TT><BR>
+<SPACER TYPE=VERTICAL SIZE=10>
+<BR>
+Let <TT>$ROOT</TT> be the directory in which you stored the Graphviz source.
+<LI>
+Configure the package for your system:<BR><BR>
+<TT>cd $ROOT</TT><BR>
+<TT>configure --disable-shared --enable-static --with-mylibgd --disable-swig --without-x  --without-tclsh --with-codegens --disable-ltdl</TT><BR><BR>
+You will probably want to provide additional arguments to 
+<TT>configure</TT> to indicate where you have installed GTK, where
+you want the results installed (<TT>--prefix</TT>) and which
+additional optional packages you want built. Run <TT>configure --help</TT>
+to see the available set of arguments.
+<LI>
+Build Graphviz:<BR><BR>
+<TT>make install</TT><BR><BR>
+</OL>
+<P>
+Presumably, a similar approach would work with Cygwin or Mingw. If you
+desire to build directly using Visual Studio or other non-Unix-based
+environment, you will need to derive the necessary information from the
+supplied Makefiles.
+<P>
+(2.14 &gt;= Graphviz versions &gt;= 2.3)
+<P>
+We build Graphviz on Windows using the MS Visual C++ 6.0 compiler 
 only. The simplest way to build the software from source on Windows is as 
 follows:
 <OL>
