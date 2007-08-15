@@ -22,7 +22,8 @@ dotty = [
         'fname'  = 'fontname';
         'fsize'  = 'fontsize';
         'fcolor' = 'fontcolor';
-        'color'  = 'color';
+        'dcolor' = 'drawcolor';
+        'bcolor' = 'fillcolor';
     ];
     'maps' = [
         'X11' = [
@@ -76,21 +77,18 @@ dotty = [
                 'fontsize' = '14';
                 'fontname' = 'Times-Roman';
                 'fontcolor' = 'black';
-                'color' = 'black';
             ];
             'nodeattr' = [
                 'shape' = 'ellipse';
                 'fontsize' = '14';
                 'fontname' = 'Times-Roman';
                 'fontcolor' = 'black';
-                'color' = 'black';
                 'style' = 'solid';
             ];
             'edgeattr' = [
                 'fontsize' = '14';
                 'fontname' = 'Times-Roman';
                 'fontcolor' = 'black';
-                'color' = 'black';
                 'style' = 'solid';
             ];
             'graphdict' = [];
@@ -604,7 +602,7 @@ dotty.protogt.printorsave = function (gt, vt, otype, name, mode, ptype) {
     if (otype == 'printer') {
         if (~getenv ('TMPDIR'))
             name = concat (getenv ('HOME'), '/.dottyout.ps');
-        else 
+        else
             name = concat (getenv ('TMPDIR'), '/.dottyout.ps', random (10000));
         if (getenv ('LEFTYWINSYS') ~= 'mswin' & ~pr)
             if (~(pr = ask ('printer command', 'string', 'lpr')))
