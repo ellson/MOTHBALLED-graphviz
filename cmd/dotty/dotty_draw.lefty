@@ -99,8 +99,8 @@ dotty.protogt.drawsgraph = function (gt, views, sgraph) {
         'fontname' = sgraph.fontname;
         'fontsize' = sgraph.fontsize;
         'fontcolor' = sgraph.fontcolor;
-        'drawcolor' = sgraph.color;
-        'fillcolor' = sgraph.color;
+        'drawcolor' = sgraph.drawcolor;
+        'fillcolor' = sgraph.fillcolor;
     ]);
 };
 dotty.protogt.undrawsgraph = function (gt, views, sgraph) {
@@ -125,8 +125,8 @@ dotty.protogt.drawnode = function (gt, views, node) {
         'fontname' = node.fontname;
         'fontsize' = node.fontsize;
         'fontcolor' = node.fontcolor;
-        'drawcolor' = node.color;
-        'fillcolor' = node.color;
+        'drawcolor' = node.drawcolor;
+        'fillcolor' = node.fillcolor;
     ]);
     for (vid in views)
         setpick (views[vid].canvas, node, node.rect);
@@ -177,8 +177,8 @@ dotty.protogt.drawedge = function (gt, views, edge) {
         'fontname' = edge.fontname;
         'fontsize' = edge.fontsize;
         'fontcolor' = edge.fontcolor;
-        'drawcolor' = edge.color;
-        'fillcolor' = edge.color;
+        'drawcolor' = edge.drawcolor;
+        'fillcolor' = edge.fillcolor;
     ]);
     for (vid in views) {
         canvas = views[vid].canvas;
@@ -447,10 +447,18 @@ dotty.protogt.unpacksgraphattr = function (gt, sgraph) {
         sgraph[dotty.keys.fname] = attr.fontname;
     sgraph[dotty.keys.fsize] = ston (attr.fontsize);
     sgraph[dotty.keys.fcolor] = gt.getcolor (gt.views, attr.fontcolor);
-    if (attr.style == 'filled' & attr.color == 'black')
-        sgraph[dotty.keys.color] = gt.getcolor (gt.views, 'grey');
+    if (attr.color)
+        sgraph[dotty.keys.dcolor] = gt.getcolor (gt.views, attr.color);
     else
-        sgraph[dotty.keys.color] = gt.getcolor (gt.views, attr.color);
+        sgraph[dotty.keys.dcolor] = gt.getcolor (gt.views, 'black');
+    if (attr.style == 'filled') {
+        if (attr.fillcolor)
+            sgraph[dotty.keys.bcolor] = gt.getcolor (gt.views, attr.fillcolor);
+        else if (attr.color)
+            sgraph[dotty.keys.bcolor] = gt.getcolor (gt.views, attr.color);
+        else
+            sgraph[dotty.keys.bcolor] = gt.getcolor (gt.views, 'lightgrey');
+    }
 };
 dotty.protogt.unpacknodeattr = function (gt, node) {
     local attr;
@@ -462,10 +470,18 @@ dotty.protogt.unpacknodeattr = function (gt, node) {
         node[dotty.keys.fname] = attr.fontname;
     node[dotty.keys.fsize] = ston (attr.fontsize);
     node[dotty.keys.fcolor] = gt.getcolor (gt.views, attr.fontcolor);
-    if (attr.style == 'filled' & attr.color == 'black')
-        node[dotty.keys.color] = gt.getcolor (gt.views, 'grey');
+    if (attr.color)
+        node[dotty.keys.dcolor] = gt.getcolor (gt.views, attr.color);
     else
-        node[dotty.keys.color] = gt.getcolor (gt.views, attr.color);
+        node[dotty.keys.dcolor] = gt.getcolor (gt.views, 'black');
+    if (attr.style == 'filled') {
+        if (attr.fillcolor)
+            node[dotty.keys.bcolor] = gt.getcolor (gt.views, attr.fillcolor);
+        else if (attr.color)
+            node[dotty.keys.bcolor] = gt.getcolor (gt.views, attr.color);
+        else
+            node[dotty.keys.bcolor] = gt.getcolor (gt.views, 'lightgrey');
+    }
 };
 dotty.protogt.unpackedgeattr = function (gt, edge) {
     local attr;
@@ -477,10 +493,18 @@ dotty.protogt.unpackedgeattr = function (gt, edge) {
         edge[dotty.keys.fname] = attr.fontname;
     edge[dotty.keys.fsize] = ston (attr.fontsize);
     edge[dotty.keys.fcolor] = gt.getcolor (gt.views, attr.fontcolor);
-    if (attr.style == 'filled' & attr.color == 'black')
-        edge[dotty.keys.color] = gt.getcolor (gt.views, 'grey');
+    if (attr.color)
+        edge[dotty.keys.dcolor] = gt.getcolor (gt.views, attr.color);
     else
-        edge[dotty.keys.color] = gt.getcolor (gt.views, attr.color);
+        edge[dotty.keys.dcolor] = gt.getcolor (gt.views, 'black');
+    if (attr.style == 'filled') {
+        if (attr.fillcolor)
+            edge[dotty.keys.bcolor] = gt.getcolor (gt.views, attr.fillcolor);
+        else if (attr.color)
+            edge[dotty.keys.bcolor] = gt.getcolor (gt.views, attr.color);
+        else
+            edge[dotty.keys.bcolor] = gt.getcolor (gt.views, 'lightgrey');
+    }
 };
 dotty.protogt.unpackattr = function (gt) {
     local gid, sgraph, nid, node, eid, edge, graph, attr;
@@ -493,10 +517,18 @@ dotty.protogt.unpackattr = function (gt) {
         graph[dotty.keys.fname] = attr.fontname;
     graph[dotty.keys.fsize] = ston (attr.fontsize);
     graph[dotty.keys.fcolor] = gt.getcolor (gt.views, attr.fontcolor);
-    if (attr.style == 'filled' & attr.color == 'black')
-        graph[dotty.keys.color] = gt.getcolor (gt.views, 'grey');
+    if (attr.color)
+        graph[dotty.keys.dcolor] = gt.getcolor (gt.views, attr.color);
     else
-        graph[dotty.keys.color] = gt.getcolor (gt.views, attr.color);
+        graph[dotty.keys.dcolor] = gt.getcolor (gt.views, 'black');
+    if (attr.style == 'filled') {
+        if (attr.fillcolor)
+            graph[dotty.keys.bcolor] = gt.getcolor (gt.views, attr.fillcolor);
+        else if (attr.color)
+            graph[dotty.keys.bcolor] = gt.getcolor (gt.views, attr.color);
+        else
+            graph[dotty.keys.bcolor] = gt.getcolor (gt.views, 'lightgrey');
+    }
     if (attr.bgcolor & attr.bgcolor ~= '')
         gt.setbgcolor (gt.views, attr.bgcolor);
     for (gid in graph.graphdict) {
@@ -508,10 +540,20 @@ dotty.protogt.unpackattr = function (gt) {
             sgraph[dotty.keys.fname] = attr.fontname;
         sgraph[dotty.keys.fsize] = ston (attr.fontsize);
         sgraph[dotty.keys.fcolor] = gt.getcolor (gt.views, attr.fontcolor);
-        if (attr.style == 'filled' & attr.color == 'black')
-            sgraph[dotty.keys.color] = gt.getcolor (gt.views, 'grey');
+        if (attr.color)
+            sgraph[dotty.keys.dcolor] = gt.getcolor (gt.views, attr.color);
         else
-            sgraph[dotty.keys.color] = gt.getcolor (gt.views, attr.color);
+            sgraph[dotty.keys.dcolor] = gt.getcolor (gt.views, 'black');
+        if (attr.style == 'filled') {
+            if (attr.fillcolor)
+                sgraph[dotty.keys.bcolor] = gt.getcolor (
+                    gt.views, attr.fillcolor
+                );
+            else if (attr.color)
+                sgraph[dotty.keys.bcolor] = gt.getcolor (gt.views, attr.color);
+            else
+                sgraph[dotty.keys.bcolor] = gt.getcolor (gt.views, 'lightgrey');
+        }
     }
     for (nid in graph.nodedict) {
         node = graph.nodes[graph.nodedict[nid]];
@@ -522,10 +564,20 @@ dotty.protogt.unpackattr = function (gt) {
             node[dotty.keys.fname] = attr.fontname;
         node[dotty.keys.fsize] = ston (attr.fontsize);
         node[dotty.keys.fcolor] = gt.getcolor (gt.views, attr.fontcolor);
-        if (attr.style == 'filled' & attr.color == 'black')
-            node[dotty.keys.color] = gt.getcolor (gt.views, 'grey');
+        if (attr.color)
+            node[dotty.keys.dcolor] = gt.getcolor (gt.views, attr.color);
         else
-            node[dotty.keys.color] = gt.getcolor (gt.views, attr.color);
+            node[dotty.keys.dcolor] = gt.getcolor (gt.views, 'black');
+        if (attr.style == 'filled') {
+            if (attr.fillcolor)
+                node[dotty.keys.bcolor] = gt.getcolor (
+                    gt.views, attr.fillcolor
+                );
+            else if (attr.color)
+                node[dotty.keys.bcolor] = gt.getcolor (gt.views, attr.color);
+            else
+                node[dotty.keys.bcolor] = gt.getcolor (gt.views, 'lightgrey');
+        }
     }
     for (eid in graph.edges) {
         edge = graph.edges[eid];
@@ -536,6 +588,9 @@ dotty.protogt.unpackattr = function (gt) {
             edge[dotty.keys.fname] = attr.fontname;
         edge[dotty.keys.fsize] = ston (attr.fontsize);
         edge[dotty.keys.fcolor] = gt.getcolor (gt.views, attr.fontcolor);
-        edge[dotty.keys.color] = gt.getcolor (gt.views, attr.color);
+        if (attr.color)
+            edge[dotty.keys.dcolor] = gt.getcolor (gt.views, attr.color);
+        else
+            edge[dotty.keys.dcolor] = gt.getcolor (gt.views, 'black');
     }
 };
