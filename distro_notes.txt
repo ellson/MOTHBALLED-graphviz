@@ -1,0 +1,2 @@
+Fedora maintainer: Patrick "Jima" Laughton <jima@beer.tclug.org>
+
