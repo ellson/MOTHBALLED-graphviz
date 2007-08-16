@@ -5,6 +5,7 @@ Requires
 	doxygen
 	R
 	ImageMagick
+	anjuta
 
 Require - but just use dot's stdin/stdout simplisticly
 	perl-GraphViz
