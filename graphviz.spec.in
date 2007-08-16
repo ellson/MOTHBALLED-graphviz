@@ -509,6 +509,10 @@ rm -rf %{buildroot}
 #-- changelog --------------------------------------------------
 
 %changelog
+* Wed Aug 15 2007 John Ellson <ellson@research.att.com>
+- release 2.14.1 - see ChangeLog for details
+* Wed Aug 2 2007 John Ellson <ellson@research.att.com>
+- release 2.14 - see ChangeLog for details
 * Fri Mar 16 2007 Stephen North <north@research.att.com>
 - remove xorg-X11-devel from rhel >= 5
 * Mon Dec 11 2006 John Ellson <john.ellson@comcast.net>

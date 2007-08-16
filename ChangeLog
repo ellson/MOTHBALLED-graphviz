@@ -1,3 +1,12 @@
+August 15, 2007
+	- release 2.14.1
+	- Fixed bugs: 1163, 1167
+	- Windows build fixes
+	- Add xdot parsing library to source distros
+	- graphviz.spec fixes for rpm distros from Gareth Armstrong
+	- moved language binding man pages to mann (gv_php.n, gv_ocaml.n, etc.)
+	- New access functions for version info in GVC_t - permits gvcint.h to
+	be private.
 August 2, 2007
 	- release 2.14
 	- Fixed (or otherwised closed) bugs:
