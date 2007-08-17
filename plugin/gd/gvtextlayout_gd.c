@@ -26,7 +26,7 @@
 #ifdef HAVE_LIBGD
 #include "gd.h"
 
-#if defined(HAVE_LIBGD) && defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
+#if defined(HAVE_LIBGD) && defined(HAVE_GD_FREETYPE)
 
 /* fontsize at which text is omitted entirely */
 #define FONTSIZE_MUCH_TOO_SMALL 0.15
@@ -172,7 +172,7 @@ static gvtextlayout_engine_t gd_textlayout_engine = {
 #endif
 
 gvplugin_installed_t gvtextlayout_gd_types[] = {
-#if defined(HAVE_LIBGD) && defined(HAVE_LIBFREETYPE) && defined(HAVE_GD_FREETYPE)
+#if defined(HAVE_LIBGD) && defined(HAVE_GD_FREETYPE)
     {0, "textlayout", 2, &gd_textlayout_engine, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}
