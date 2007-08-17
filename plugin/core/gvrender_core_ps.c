@@ -139,7 +139,7 @@ static void psgen_begin_page(GVJ_t * job)
 	    job->pagesArrayElem.x, job->pagesArrayElem.y, job->numPages);
     if (job->common->show_boxes == NULL)
         core_printf(job, "gsave\n%d %d %d %d boxprim clip newpath\n",
-	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
+	    pbr.LL.x, pbr.LL.y, pbr.UR.x-pbr.LL.x, pbr.UR.y-pbr.LL.y);
     core_printf(job, "%g %g set_scale %d rotate %g %g translate\n",
 	    job->scale.x, job->scale.y,
 	    job->rotation,
