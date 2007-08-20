@@ -7,7 +7,7 @@
 <A NAME="top"></A>
 <H1 ALIGN=CENTER>Command-line Invocation</H1>
 <HR>
-All GraphViz programs have a similar invocation:<BR>
+All Graphviz programs have a similar invocation:<BR>
 <TABLE><TR><TD>
 <CODE><I>cmd</I> [ <I>flags</I> ] [ <I>input files</I> ]<CODE>
 </TR></TABLE>
@@ -20,9 +20,19 @@ If no input files are supplied, the program reads from <STRONG>stdin</STRONG>.
 <DD>Set a default node attribute, with default <I>value</I> = <TT>true</TT>.
 <DT><STRONG>-E</STRONG><I>name</I>[=<I>value</I>]
 <DD>Set a default edge attribute, with default <I>value</I> = <TT>true</TT>.
-<DT><STRONG>-T</STRONG><I>format</I>       
+<DT><STRONG>-T</STRONG><I>format</I>>[:<I>renderer</I>]       
 <DD>Set output language to one of the <A HREF=output.html>supported formats</A>.
 By default, <A HREF=output.html#d:dot>attributed dot</A> is produced.
+<P>
+Depending on how Graphviz was built, there may be multiple renderers for
+generating a particular output format. For example, a typical installation
+can produce <A HREF="http://www.graphviz.org/doc/info/output.html#d:png">PNG</A>
+output using either the Cairo or GD library. The desired rendering engine
+can be specified after a colon. Thus, <TT>-Tpng:cairo</T> specifies PNG
+output produced by Cairo. If no renderer is specified, the default one
+is invoked. The flag <TT>-T<I>format</I>:</TT> produces a list of all
+of the renderers available for the specified <I>format</I>, the first one
+listed being the default.
 <DT><STRONG>-V</STRONG>             
 <DD>Emit version information and exit.
 <DT><STRONG>-l</STRONG><I>library</I>
