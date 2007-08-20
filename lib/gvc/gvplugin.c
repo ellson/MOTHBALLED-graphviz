@@ -98,6 +98,38 @@ boolean gvplugin_install(GVC_t * gvc, api_t api,
     return TRUE;
 }
 
+/* Activate a plugin description in the list of available plugins.
+ * This is used when a plugin-library loaded because of demand for
+ * one of its plugins. It updates the available plugin data with
+ * pointers into the loaded library.
+ * NB the quality value is not replaced as it might have been
+ * manually changed in the config file.
+ */
+static boolean gvplugin_activate(GVC_t * gvc, api_t api,
+		 char *typestr, char *packagename, char *path,
+		 gvplugin_installed_t * typeptr)
+{
+    gvplugin_available_t **pnext;
+
+
+    if (api < 0)
+	return FALSE;
+
+    /* point to the beginning of the linked list of plugins for this api */
+    pnext = &(gvc->apis[api]);
+
+    while (*pnext) {
+	if ( (strcasecmp(typestr, (*pnext)->typestr) == 0)
+	  && (strcasecmp(packagename, (*pnext)->packagename) == 0)
+	  && (strcasecmp(path, (*pnext)->path) == 0)) {
+	    (*pnext)->typeptr = typeptr;
+	    return TRUE;
+	}
+	pnext = &((*pnext)->next);
+    }
+    return FALSE;
+}
+
 gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
 {
 #ifdef ENABLE_LTDL
@@ -228,20 +260,14 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 	library = gvplugin_library_load(gvc, (*pnext)->path);
 	if (library) {
 
-	    /*
-	     * FIXME - would be cleaner to here remove the entries from the
-	     * config data for the uninstalled library - i.e. the entries
-	     * without type ptrs.   It works without because the real library
-	     * data is inserted ahead of, and so supercedes, the config data.
-	     */
-
-            /* Now reinsert the library with real type ptrs */
+            /* Now activate the library with real type ptrs */
             for (apis = library->apis; (types = apis->types); apis++) {
 		for (i = 0; types[i].type; i++) {
-                    gvplugin_install(gvc,
+		    /* NB. quality is not checked or replaced
+ 		     *   in case user has manually edited quality in config */
+                    gvplugin_activate(gvc,
 				apis->api,
 				types[i].type,
-				types[i].quality,
 				library->packagename,
 				(*pnext)->path,
 				&types[i]);
