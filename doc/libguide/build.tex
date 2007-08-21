@@ -11,48 +11,20 @@ and link the program with the necessary libraries.
 For linking, the application should use the \gviz\ libraries 
 \begin{itemize}
 \item {\tt gvc}
-\item {\tt common}
-\item {\tt dotgen}
-\item {\tt neatogen}
-\item {\tt fdpgen}
-\item {\tt twopigen}
-\item {\tt circogen}
-\item {\tt pack}
-\item {\tt vpsc}\footnote{
-Only if \gviz\ was built with IPSEPCOLA defined.}
-\item {\tt plugin}
-\item {\tt pathplan}
-\item {\tt gd}\footnote{
-The {\tt gd} library provided by \gviz\ is essentially
-the same as the standard version. Whether or not the \gviz\ version is built
-depends on how the software is configured at build time. Also, the \gviz\
-version may be named {\tt gvgd}.
-}
 \item {\tt graph}
-\item {\tt cdt}
+\item {\tt cdt}\footnote{
+For completeness, we note that it may be necessary to explicitly
+link in the following additional libraries, depending
+on the options set when \gviz\ was built:
+{\tt expat},
+{\tt fontconfig},
+{\tt freetype2},
+{\tt jpeg},
+{\tt png},
+{\tt z}, and
+{\tt ltdl}.
+Typically, though, most builds handle these implicitly.}
 \end{itemize}
-On non-Windows sytems, the first 9, from {\tt gvc} to {\tt vpsc},
-are combined into a single {\tt gvc} library. In addition, if the
-system was compiled to use plug-ins, the linker need to reference
-the plug-in libraries, as these will be dynamically loaded on demand. 
-
-In addition, the following additional libraries may be necessary, depending
-on the options set when \gviz\ was built.
-\begin{itemize}
-\item {\tt expat}
-\item {\tt fontconfig}
-\item {\tt freetype2}
-\item {\tt jpeg}
-\item {\tt png}
-\item {\tt z}
-\item {\tt ltdl}
-\end{itemize}
-For Windows, the \gviz\ binary package provides these latter libraries as
-{\tt ft.lib libexpat.lib libexpatw.lib jpeg.lib png.lib z.lib}.\footnote{
-At present, the Windows version of \gviz\ does not support {\tt fontconfig}
-or {\tt ltdl}.}
-Also, in some environments, it may be necessary to link
-in the standard C math library.
 
 If \gviz\ is built and installed with the GNU build tools, 
 there is a {\tt pkg-config} program created in the {\tt bin} 
