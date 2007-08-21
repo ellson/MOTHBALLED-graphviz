@@ -30,6 +30,7 @@
 #include "macros.h"
 #include "colorprocs.h"
 #include "gvplugin_render.h"
+#include "gvplugin_formatter.h"
 #include "graph.h"
 #include "gvcint.h"
 #include "geom.h"
@@ -53,7 +54,7 @@ int gvrender_select(GVJ_t * job, char *str)
     GVC_t *gvc = job->gvc;
     gvplugin_available_t *plugin;
     gvplugin_installed_t *typeptr;
-    char *device;
+    char *device, *formatter, *p, buf[40]; 
 #ifdef WITH_CODEGENS
     codegen_info_t *cg_info;
 #endif
@@ -73,6 +74,29 @@ int gvrender_select(GVJ_t * job, char *str)
 	    job->render.engine = (gvrender_engine_t *) (typeptr->engine);
 	    job->render.features = (gvrender_features_t *) (typeptr->features);
 	    job->render.id = typeptr->id;
+
+	    formatter = job->render.features->formatter;
+	    if (formatter) {
+		strcpy(buf, formatter);
+		strcat(buf, "2");
+		strcat(buf, str);
+		if ((p=strchr(buf, ':')))
+			*p = '\0';
+		formatter = buf;
+		plugin = gvplugin_load(gvc, API_formatter, formatter);
+		if (! plugin) {
+		    job->formatter.engine = NULL;
+		    return NO_SUPPORT;  /* FIXME - should differentiate no device from no renderer */
+		}
+	        typeptr = plugin->typeptr;
+		job->formatter.engine = (gvformatter_engine_t *) (typeptr->engine);
+	        job->formatter.features = (gvformatter_features_t *) (typeptr->features);
+	        job->formatter.id = typeptr->id;
+	    }
+	    else {
+		job->formatter.engine = NULL;
+	    }
+
 	    device = job->render.features->device;
 	    if (device) {
 		plugin = gvplugin_load(gvc, API_device, device);
@@ -88,6 +112,7 @@ int gvrender_select(GVJ_t * job, char *str)
 	    else {
 		job->device.engine = NULL;
 	    }
+
 	    return GVRENDER_PLUGIN;
 #ifdef WITH_CODEGENS
 	}
@@ -320,6 +345,10 @@ void gvrender_begin_page(GVJ_t * job)
 void gvrender_end_page(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
+    gvformatter_engine_t *gvfe = job->formatter.engine;
+
+    if (gvfe && gvfe->format)
+	    gvfe->format(job);
 
     if (gvre) {
        	if (gvre->end_page)
@@ -987,8 +1016,8 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n,
 	b.UR.y = d;
     }
     if (gvre) {
-	if (job->render.features->loadimage_target)
-	    gvloadimage(job, us, b, filled, job->render.features->loadimage_target);
+	if (job->render.features->imageloader)
+	    gvloadimage(job, us, b, filled, job->render.features->imageloader);
     }
 #ifdef WITH_CODEGENS
     else {

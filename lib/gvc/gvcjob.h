@@ -29,6 +29,7 @@ extern "C" {
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
     typedef struct gvdevice_engine_s gvdevice_engine_t;
+    typedef struct gvformatter_engine_s gvformatter_engine_t;
     typedef struct gvrender_engine_s gvrender_engine_t;
     typedef struct gvlayout_engine_s gvlayout_engine_t;
     typedef struct gvtextlayout_engine_s gvtextlayout_engine_t;
@@ -76,17 +77,26 @@ extern "C" {
 	char **knowncolors;
 	int sz_knowncolors;
 	color_type_t color_type;
-	char *device;
-	char *loadimage_target;
+	char *device, *imageloader, *formatter;
     } gvrender_features_t;
 
     typedef struct {
 	int flags;
     } gvdevice_features_t;
 
+    typedef struct {
+	int flags;
+    } gvformatter_features_t;
+
 #define LAYOUT_USES_RANKDIR (1<<0)
 
     /* active plugin headers */
+    typedef struct gvplugin_active_formatter_s {
+        gvformatter_engine_t *engine;
+        int id;
+        gvformatter_features_t *features;
+    } gvplugin_active_formatter_t;
+
     typedef struct gvplugin_active_device_s {
         gvdevice_engine_t *engine;
         int id;
@@ -245,6 +255,7 @@ typedef enum {COMPRESSION_NONE, COMPRESSION_ZLIB} compression_t;
 
 	gvplugin_active_render_t render;
 	gvplugin_active_device_t device;
+	gvplugin_active_formatter_t formatter;
 	gvplugin_active_loadimage_t loadimage;
 	gvdevice_callbacks_t *callbacks;
 	pointf device_dpi;

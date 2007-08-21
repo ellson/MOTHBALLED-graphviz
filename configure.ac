@@ -11,7 +11,7 @@ AC_INIT(graphviz, 2.15)
 # libtool shared library version
 
 # Increment if the interface has additions, changes, removals.
-LT_CURRENT=4
+LT_CURRENT=5
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
@@ -1219,6 +1219,41 @@ AC_SUBST(EXPAT_INCLUDES)
 AC_SUBST(EXPAT_LIBS)
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for DEVIL
+
+save_CPPFLAGS=$CPPFLAGS
+save_LDFLAGS=$LDFLAGS
+AC_ARG_WITH(devilincludedir,
+	[  --with-devilincludedir=DIR use DEVIL includes from DIR],
+	[DEVIL_INCLUDES="-I$withval"])
+CPPFLAGS="$CPPFLAGS $DEVIL_INCLUDES"
+AC_ARG_WITH(devillibdir,
+	[  --with-devillibdir=DIR    use DEVIL libraries from DIR],
+	[DEVIL_LIBS="-L$withval"])
+LDFLAGS="$LDFLAGS $DEVIL_LIBS"
+AC_CHECK_HEADERS([IL/il.h],
+		 [],
+		 [with_devil=no
+		  AC_MSG_WARN(Optional DevIL library not available - missing headers)],
+		  [])
+if test "x$with_devil" != "xno"; then
+AC_CHECK_LIB(IL,main,
+	     [DEVIL_LIBS="$DEVIL_LIBS -lIL -lILU"],
+	     [with_devil=no
+	      AC_MSG_WARN(Optional DevIL library not available)],
+	      [])
+fi
+LDFLAGS=$save_LDFLAGS
+CPPFLAGS=$save_CPPFLAGS
+if test "x$with_devil" != "xno"; then
+     AC_DEFINE_UNQUOTED(HAVE_DEVIL,1,[Define if you have the DevIL library])
+fi
+AC_SUBST(HAVE_DEVIL)
+AC_SUBST(DEVIL_INCLUDES)
+AC_SUBST(DEVIL_LIBS)
+AM_CONDITIONAL(WITH_DEVIL, [test "x$with_devil" != "xno"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for XPM
 #
 # we don't want an X11 dependency in libgd
@@ -1409,6 +1444,29 @@ AC_SUBST(FONTCONFIG_CFLAGS)
 AC_SUBST(FONTCONFIG_LIBS)
 fi
 AM_CONDITIONAL(WITH_FONTCONFIG, [test "x$HAVE_FONTCONFIG" != "x"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for GDK_PIXBUF.
+
+AC_ARG_WITH(gdk-pixbuf,
+  [AC_HELP_STRING([--with-gdk-pixbuf],
+                  [use gdk-pixbuf library])])
+
+### default is to build with gdk-pixbuf
+if test "x$with_gdk_pixbuf" != "xno"; then
+	with_gdk_pixbuf=yes
+fi
+
+if test "x$with_gdk_pixbuf" = "xyes"; then
+PKG_CHECK_MODULES(GDK_PIXBUF, [gdk-pixbuf-2.0],
+        [HAVE_GDK_PIXBUF=1
+        AC_DEFINE_UNQUOTED(HAVE_GDK_PIXBUF,1,
+                [Define if you have the gdk-pixbuf library])],
+        [AC_MSG_WARN(gdk-pixbuf library not available.)])
+AC_SUBST(GDK_PIXBUF_CFLAGS)
+AC_SUBST(GDK_PIXBUF_LIBS)
+fi
+AM_CONDITIONAL(WITH_GDK_PIXBUF, [test "x$HAVE_GDK_PIXBUF" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GTK.
@@ -1993,6 +2051,8 @@ AC_CONFIG_FILES(Makefile
 	lib/gvc/libgvc_builtins.pc
 	plugin/Makefile
 	plugin/core/Makefile
+	plugin/devil/Makefile
+	plugin/gdk_pixbuf/Makefile
 	plugin/gd/Makefile
 	plugin/pango/Makefile
 	plugin/ming/Makefile

@@ -39,6 +39,8 @@ Source0: http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
 %define MYLIBGD --with-mylibgd
 %define MING --without-ming
 %define PANGOCAIRO --without-pangocairo
+%define DEVIL --without-devil
+%define GDK_PIXBUF --without-gdk-pixbuf
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -131,6 +133,7 @@ BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel 
 %if "%fedora" >= "7"
 BuildRequires: gd gd-devel
 %define MYLIBGD --without-mylibgd
+%define GDK_PIXBUF --with-gdk-pixbuf
 %endif
 %endif
 
@@ -486,10 +489,10 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --datadir=%{_datadir} \
         --mandir=%{_mandir} \
         --with-x \
-        --disable-static \
-        --disable-dependency-tracking %{MYLIBGD} %{IPSEPCOLA} %{MING} %{PANGOCAIRO} \
-        %{?NO_SHARP} %{?NO_GUILE} %{?NO_IO} %{?NO_JAVA} %{?NO_LUA} %{?NO_OCAML} \
-        %{?NO_PERL} %{?NO_PHP} %{?NO_PYTHON} %{?NO_RUBY} %{?NO_TCL}
+	--disable-static \
+        --disable-dependency-tracking \
+	%{MYLIBGD} %{IPSEPCOLA} %{MING} %{PANGOCAIRO} %{DEVIL} %{GDK_PIXBUF} \
+        %{?NO_SHARP} %{?NO_GUILE} %{?NO_IO} %{?NO_JAVA} %{?NO_LUA} %{?NO_OCAML} %{?NO_PERL} %{?NO_PHP} %{?NO_PYTHON} %{?NO_RUBY} %{?NO_TCL}
 make %{?_smp_mflags}
 
 %install
