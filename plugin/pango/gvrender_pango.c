@@ -56,17 +56,22 @@
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
 
-typedef enum { FORMAT_PNG,
+typedef enum {
+		FORMAT_BMP,
+		FORMAT_GLITZ,
+		FORMAT_GTK,
+		FORMAT_ICO,
+		FORMAT_JPEG,
+		FORMAT_PNG,
 		FORMAT_PS,
 		FORMAT_PDF,
+		FORMAT_QUARTZ,
+		FORMAT_SDL,
 		FORMAT_SVG,
-		FORMAT_GTK,
+		FORMAT_TIFF,
+		FORMAT_WIN32,
 		FORMAT_XLIB,
 		FORMAT_XCB,
-		FORMAT_SDL,
-		FORMAT_GLITZ,
-		FORMAT_QUARTZ,
-		FORMAT_WIN32,
     } format_type;
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
@@ -136,6 +141,8 @@ static void cairogen_begin_page(GVJ_t * job)
     switch (job->render.id) {
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
     case FORMAT_PNG:
+#endif
+    case FORMAT_JPEG:
 	if (!cr) {
 	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 			job->width, job->height);
@@ -143,7 +150,6 @@ static void cairogen_begin_page(GVJ_t * job)
 	    cairo_surface_destroy (surface);
 	}
 	break;
-#endif
 #ifdef CAIRO_HAS_PS_SURFACE
     case FORMAT_PS:
 	if (!cr) {
@@ -431,8 +437,9 @@ static gvrender_features_t cairogen_features = {
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
-    0,				/* device */
-    "cairo",			/* gvloadimage target for usershapes */
+    NULL,			/* device */
+    "cairo",			/* imageloader for usershapes */
+    NULL,			/* formatter */
 };
 
 static gvrender_features_t cairogen_features_ps = {
@@ -446,8 +453,9 @@ static gvrender_features_t cairogen_features_ps = {
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
-    0,				/* device */
-    "cairo",			/* gvloadimage target for usershapes */
+    NULL,			/* device */
+    "cairo",			/* imageloader for usershapes */
+    NULL,			/* formatter */
 };
 
 static gvrender_features_t cairogen_features_svg = {
@@ -461,8 +469,9 @@ static gvrender_features_t cairogen_features_svg = {
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
-    0,				/* device */
-    "cairo",			/* gvloadimage target for usershapes */
+    NULL,			/* device */
+    "cairo",			/* imageloader for usershapes */
+    NULL,			/* formatter */
 };
 
 static gvrender_features_t cairogen_features_x = {
@@ -478,7 +487,8 @@ static gvrender_features_t cairogen_features_x = {
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
     "xlib",			/* device */
-    "cairo",			/* gvloadimage target for usershapes */
+    "cairo",			/* imageloader for usershapes */
+    NULL,			/* formatter */
 };
 
 static gvrender_features_t cairogen_features_gtk = {
@@ -494,8 +504,26 @@ static gvrender_features_t cairogen_features_gtk = {
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
     "gtk",			/* device */
-    "cairo",			/* gvloadimage target for usershapes */
+    "cairo",			/* imageloader for usershapes */
+    NULL,			/* formatter */
 };
+
+static gvrender_features_t cairogen_features_formatter = {
+    GVRENDER_DOES_TRUECOLOR
+	| GVRENDER_Y_GOES_DOWN
+	| GVRENDER_DOES_TRANSFORM, /* flags */
+    0,				/* default margin - points */
+    4.,                         /* default pad - graph units */
+    {0.,0.},                    /* default page width, height - points */
+    {96.,96.},			/* default dpi */
+    0,				/* knowncolors */
+    0,				/* sizeof knowncolors */
+    RGBA_DOUBLE,		/* color_type */
+    NULL,			/* device */
+    "cairo",			/* imageloader for usershapes */
+    "cairo",			/* formatter */
+};
+
 #endif
 
 gvplugin_installed_t gvrender_pango_types[] = {
@@ -531,6 +559,9 @@ gvplugin_installed_t gvrender_pango_types[] = {
     {FORMAT_GTK, "gtk", 0, &cairogen_engine, &cairogen_features_gtk},
     {FORMAT_XLIB, "xlib", 0, &cairogen_engine, &cairogen_features_x},
 #endif
+    {FORMAT_JPEG, "jpe", 10, &cairogen_engine, &cairogen_features_formatter},
+    {FORMAT_JPEG, "jpeg", 10, &cairogen_engine, &cairogen_features_formatter},
+    {FORMAT_JPEG, "jpg", 10, &cairogen_engine, &cairogen_features_formatter},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

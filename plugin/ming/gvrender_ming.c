@@ -292,7 +292,8 @@ static gvrender_features_t ming_features = {
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     NULL,			/* device */
-    NULL,			/* gvloadimage target for usershapes */
+    NULL,			/* imageloader for usershapes */
+    NULL,			/* formatter */
 };
 
 gvplugin_installed_t gvrender_ming_types[] = {
