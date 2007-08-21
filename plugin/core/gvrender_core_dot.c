@@ -476,7 +476,8 @@ gvrender_features_t canon_features = {
     0,				/* sizeof knowncolors */
     COLOR_STRING,		/* color_type */
     NULL,                       /* device */
-    NULL,                       /* gvloadimage target for usershapes */
+    NULL,                       /* imageloader for usershapes */
+    NULL,                       /* formatter */
 };
 
 gvrender_features_t dot_features = {
@@ -489,7 +490,8 @@ gvrender_features_t dot_features = {
     0,				/* sizeof knowncolors */
     COLOR_STRING,		/* color_type */
     NULL,                       /* device */
-    NULL,                       /* gvloadimage target for usershapes */
+    NULL,                       /* imageloader for usershapes */
+    NULL,                       /* formatter */
 };
 
 gvrender_features_t xdot_features = {
@@ -502,7 +504,8 @@ gvrender_features_t xdot_features = {
     0,				/* sizeof knowncolors */
     COLOR_STRING,		/* color_type */
     NULL,                       /* device */
-    "xdot",                     /* gvloadimage target for usershapes */
+    "xdot",                     /* imageloader for usershapes */
+    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_dot_types[] = {

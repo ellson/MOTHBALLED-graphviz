@@ -470,7 +470,8 @@ static gvrender_features_t psgen_features = {
     0,				/* sizeof knowncolors */
     HSVA_DOUBLE,		/* color_type */
     NULL,                       /* device */
-    "ps",                       /* gvloadimage target for usershapes */
+    "ps",                       /* imageloader for usershapes */
+    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_ps_types[] = {

@@ -484,7 +484,8 @@ gvrender_features_t svg_features = {
     sizeof(svg_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     NULL,                       /* device */
-    "svg",                      /* gvloadimage target for usershapes */
+    "svg",                      /* imageloader for usershapes */
+    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_svg_types[] = {

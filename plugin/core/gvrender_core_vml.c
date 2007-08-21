@@ -432,7 +432,8 @@ gvrender_features_t vml_features = {
     sizeof(vml_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     NULL,                       /* device */
-    "vml",                      /* gvloadimage target for usershapes */
+    "vml",                      /* imageloader for usershapes */
+    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_vml_types[] = {

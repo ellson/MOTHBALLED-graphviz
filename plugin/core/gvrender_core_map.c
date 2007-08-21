@@ -303,7 +303,8 @@ static gvrender_features_t map_features = {
     0,				/* sizeof knowncolors */
     0,				/* color_type */
     NULL,                       /* device */
-    NULL,                       /* gvloadimage target for usershapes */
+    NULL,                       /* imageloader for usershapes */
+    NULL,                       /* formatter */
 };
 
 static gvrender_features_t map_features_nopoly = {
@@ -321,7 +322,8 @@ static gvrender_features_t map_features_nopoly = {
     0,				/* sizeof knowncolors */
     0,				/* color_type */
     NULL,                       /* device */
-    NULL,                       /* gvloadimage target for usershapes */
+    NULL,                       /* imageloader target for usershapes */
+    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_map_types[] = {

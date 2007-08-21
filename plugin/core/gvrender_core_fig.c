@@ -533,7 +533,8 @@ gvrender_features_t fig_features = {
     sizeof(fig_knowncolors) / sizeof(char *), /* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     NULL,                       /* device */
-    "fig",                      /* gvloadimage target for usershapes */
+    "fig",                      /* imageloader for usershapes */
+    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_fig_types[] = {
