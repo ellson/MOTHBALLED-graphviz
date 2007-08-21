@@ -14,7 +14,7 @@ INCS =  -I. \
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = gvrender_gd_vrml.o gvplugin_gd.o gvrender_gd.o gvtextlayout_gd.o gvloadimage_gd.o
+OBJS = gvrender_gd_vrml.o gvplugin_gd.o gvrender_gd.o gvtextlayout_gd.o gvloadimage_gd.o gvformatter_gd.o
 
 libgvplugin_gd.a : $(OBJS)
 	$(RM) libgvplugin_gd.a

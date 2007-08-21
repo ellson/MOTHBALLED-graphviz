@@ -588,7 +588,8 @@ static gvrender_features_t gdgen_features_tc = {
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     NULL,			/* device */
-    "gd",			/* gvloadimage target for usershapes */
+    "gd",			/* imageloader for usershapes */
+    NULL,			/* formatter */
 };
 
 static gvrender_features_t gdgen_features = {
@@ -601,7 +602,8 @@ static gvrender_features_t gdgen_features = {
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     NULL,			/* device */
-    "gd",			/* gvloadimage target for usershapes */
+    "gd",			/* imageloader for usershapes */
+    NULL,			/* formatter */
 };
 
 #endif
