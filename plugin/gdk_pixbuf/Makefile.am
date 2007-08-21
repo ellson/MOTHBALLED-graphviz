@@ -23,7 +23,7 @@ libgvplugin_gdk_pixbuf_C_la_SOURCES = \
 
 libgvplugin_gdk_pixbuf_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
 libgvplugin_gdk_pixbuf_la_SOURCES = $(libgvplugin_gdk_pixbuf_C_la_SOURCES)
-libgvplugin_gdk_pixbuf_la_LIBADD = @PANGOCAIRO_LIBS@ @FONTCONFIG_LIBS@ @MATH_LIBS@ @GDK_PIXBUF_LIBS@
+libgvplugin_gdk_pixbuf_la_LIBADD = @GDK_PIXBUF_LIBS@
 
 EXTRA_DIST = Makefile.old
 

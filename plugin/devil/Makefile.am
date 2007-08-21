@@ -23,7 +23,7 @@ libgvplugin_devil_C_la_SOURCES = \
 
 libgvplugin_devil_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
 libgvplugin_devil_la_SOURCES = $(libgvplugin_devil_C_la_SOURCES)
-libgvplugin_devil_la_LIBADD = @PANGOCAIRO_LIBS@ @FONTCONFIG_LIBS@ @MATH_LIBS@ @DEVIL_LIBS@
+libgvplugin_devil_la_LIBADD = @DEVIL_LIBS@
 
 EXTRA_DIST = Makefile.old
 
