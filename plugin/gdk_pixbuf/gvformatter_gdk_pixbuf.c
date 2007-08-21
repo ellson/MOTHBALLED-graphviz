@@ -78,17 +78,17 @@ writer ( const gchar *buf, gsize count, GError **error, gpointer data)
 static void
 cairo_surface_write_to_gdk_pixbuf(cairo_surface_t *surface, const char *format, FILE *f) 
 {
-        GdkPixbuf *pixbuf;
-        unsigned int width, height;
-        unsigned char *data;
+    GdkPixbuf *pixbuf;
+    unsigned int width, height;
+    unsigned char *data;
 
-        width = cairo_image_surface_get_width(surface);
-        height = cairo_image_surface_get_height(surface);
-        data = cairo_image_surface_get_data(surface);
+    width = cairo_image_surface_get_width(surface);
+    height = cairo_image_surface_get_height(surface);
+    data = cairo_image_surface_get_data(surface);
 
-        argb2rgba(width, height, data);
+    argb2rgba(width, height, data);
 
-        pixbuf = gdk_pixbuf_new_from_data(
+    pixbuf = gdk_pixbuf_new_from_data(
                 data,                   // data
                 GDK_COLORSPACE_RGB,     // colorspace
                 TRUE,                   // has_alpha
@@ -100,9 +100,9 @@ cairo_surface_write_to_gdk_pixbuf(cairo_surface_t *surface, const char *format, 
                 NULL                    // destroy_fn_data
                );
 
-        gdk_pixbuf_save_to_callback(pixbuf, writer, f, format, NULL, NULL);
+    gdk_pixbuf_save_to_callback(pixbuf, writer, f, format, NULL, NULL);
 
-        gdk_pixbuf_unref(pixbuf);
+    gdk_pixbuf_unref(pixbuf);
 }
 
 static void gdk_pixbuf_formatter(GVJ_t * job)
