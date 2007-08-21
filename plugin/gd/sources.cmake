@@ -15,4 +15,5 @@ SET(gvplugin_gd_SRCS
 	${gvplugin_gd_SRCDIR}/gvrender_gd.c
 	${gvplugin_gd_SRCDIR}/gvtextlayout_gd.c
 	${gvplugin_gd_SRCDIR}/gvloadimage_gd.c
+	${gvplugin_gd_SRCDIR}/gvformatter_gd.c
 )
