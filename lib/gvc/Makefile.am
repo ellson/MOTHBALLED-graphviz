@@ -16,7 +16,7 @@ AM_CPPFLAGS = \
 LIBS = $(LIBLTDL) $(SOCKET_LIBS)
 
 pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h \
-	gvcommon.h gvplugin_render.h gvplugin_layout.h \
+	gvcommon.h gvplugin_render.h gvplugin_layout.h gvplugin_formatter.h \
 	gvplugin_textlayout.h gvplugin_device.h gvplugin_loadimage.h \
 	dot_builtins.c demand_loading.c no_demand_loading.c
 noinst_HEADERS = gvcint.h gvcproc.h
