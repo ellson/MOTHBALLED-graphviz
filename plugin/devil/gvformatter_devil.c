@@ -48,51 +48,49 @@ Y_inv ( unsigned int width, unsigned int height, unsigned char *data)
 static void
 cairo_surface_write_to_devil(cairo_surface_t *surface, ILenum format, FILE *f) 
 {
-	ILuint	ImgId;
-	ILenum	Error;
-	ILboolean rc;
+    ILuint	ImgId;
+    ILenum	Error;
+    ILboolean rc;
+    unsigned int width, height;
+    unsigned char *data;
 
-	// Check if the shared lib's version matches the executable's version.
-	if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION ||
-		iluGetInteger(ILU_VERSION_NUM) < ILU_VERSION) {
-		fprintf(stderr, "DevIL version is different...exiting!\n");
-	}
+    // Check if the shared lib's version matches the executable's version.
+    if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION ||
+    	iluGetInteger(ILU_VERSION_NUM) < ILU_VERSION) {
+    	fprintf(stderr, "DevIL version is different...exiting!\n");
+    }
 
-	// Initialize DevIL.
-	ilInit();
+    // Initialize DevIL.
+    ilInit();
 
-	// Generate the main image name to use.
-	ilGenImages(1, &ImgId);
+    // Generate the main image name to use.
+    ilGenImages(1, &ImgId);
 
-	// Bind this image name.
-	ilBindImage(ImgId);
+    // Bind this image name.
+    ilBindImage(ImgId);
 
-
-	Y_inv (
-			cairo_image_surface_get_width(surface),
-			cairo_image_surface_get_height(surface),
-			cairo_image_surface_get_data(surface)
-			);
-
-	rc = ilTexImage( 
-			cairo_image_surface_get_width(surface),	// Width
-			cairo_image_surface_get_height(surface),// Height
-			1,					// Depth
-			4,					// Bpp
-			IL_BGRA,				// Format
-			IL_UNSIGNED_BYTE,			// Type
-			cairo_image_surface_get_data(surface)	// Data
-		       );
-
-	ilSaveF(format, f);
-
-	// We're done with the image, so let's delete it.
-	ilDeleteImages(1, &ImgId);
-
-	// Simple Error detection loop that displays the Error to the user in a human-readable form.
-	while ((Error = ilGetError())) {
-		fprintf(stderr, "Error: %s\n", iluErrorString(Error));
-	}
+    width = cairo_image_surface_get_width(surface);
+    height = cairo_image_surface_get_height(surface);
+    data = cairo_image_surface_get_data(surface);
+    
+    Y_inv ( width, height, data );
+    
+    rc = ilTexImage( width, height,
+    		1,		// Depth
+    		4,		// Bpp
+    		IL_BGRA,	// Format
+    		IL_UNSIGNED_BYTE,// Type
+    		data);
+    
+    ilSaveF(format, f);
+    
+    // We're done with the image, so let's delete it.
+    ilDeleteImages(1, &ImgId);
+    
+    // Simple Error detection loop that displays the Error to the user in a human-readable form.
+    while ((Error = ilGetError())) {
+    	fprintf(stderr, "Error: %s\n", iluErrorString(Error));
+    }
 }
 
 static void devil_formatter(GVJ_t * job)
