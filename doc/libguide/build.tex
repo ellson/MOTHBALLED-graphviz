@@ -26,12 +26,13 @@ on the options set when \gviz\ was built:
 Typically, though, most builds handle these implicitly.}
 \end{itemize}
 
-If \gviz\ is built and installed with the GNU build tools, 
-there is a {\tt pkg-config} program created in the {\tt bin} 
-directory which can be used
+If \gviz\ is built and installed with the GNU build tools
+(This includes the current Windows binary package),
+there are package configure files created in the {\tt lib/pkgconfig} 
+directory which can be used with the {\tt pkg-config} program
 to obtain the include file and library information for 
 a given installation.
-If GNU {\tt make} is used, a sample {\tt Makefile} for building the
+Assuming a Unix-like environment, a sample {\tt Makefile} for building the
 programs listed in Appendices~\ref{sec:simple}, \ref{sec:dot} 
 and \ref{sec:demo}\footnote{They
 can also be found, along with the {\tt Makefile}, in the
