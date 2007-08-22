@@ -163,9 +163,9 @@ gvplugin_installed_t gvformatter_gd_types[] = {
 #endif
 
 #ifdef HAVE_GD_JPEG
-    {FORMAT_JPEG, "cairo2jpe", -1, &gd_engine, &gd_features},
-    {FORMAT_JPEG, "cairo2jpeg", -1, &gd_engine, &gd_features},
-    {FORMAT_JPEG, "cairo2jpg", -1, &gd_engine, &gd_features},
+    {FORMAT_JPEG, "cairo2jpe", 5, &gd_engine, &gd_features},
+    {FORMAT_JPEG, "cairo2jpeg", 5, &gd_engine, &gd_features},
+    {FORMAT_JPEG, "cairo2jpg", 5, &gd_engine, &gd_features},
 #endif
 
 #if 0
