@@ -42,21 +42,20 @@ static void
 cairo_surface_write_to_gd(cairo_surface_t *surface, format_type format, FILE *f)
 {
     gdImagePtr im;
-    unsigned char *data, r, g, b, a;
-    unsigned int width, height, x, y;
+    unsigned int width, height, x, y, *data, color;
 
     width = cairo_image_surface_get_width(surface);
     height = cairo_image_surface_get_height(surface);
-    data = cairo_image_surface_get_data(surface);
+    data = (unsigned int*)cairo_image_surface_get_data(surface);
 
     im = gdImageCreateTrueColor(width, height);
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
-	    b = *data++;
-	    g = *data++;
-	    r = *data++;
-	    a = *data++;
-	    gdImageSetPixel (im, x, y, ((((255 - a) >> 1) << 24) | (r << 16) | (g << 8) | b) );
+	    color = *data++;
+	    /* gd uses a transparency alpha instead of the more typical opacity */
+	    /* gd's max alpha is 127 */
+	    color = (color & 0xffffff) | ((127 - (color >> 25)) << 24);
+	    gdImageSetPixel (im, x, y, color);
 	}
     }
 
