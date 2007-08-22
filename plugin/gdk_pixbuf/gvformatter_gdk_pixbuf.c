@@ -49,7 +49,7 @@ argb2rgba ( unsigned int width, unsigned int height, unsigned char *data)
 #define Bb 2
 #define Ab 3
 
-    for (y = 0; y < height/2; y++) {
+    for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
             r = data[Ra];
             g = data[Ga];

@@ -58,6 +58,7 @@
 
 typedef enum {
 		FORMAT_BMP,
+		FORMAT_GIF,
 		FORMAT_GLITZ,
 		FORMAT_GTK,
 		FORMAT_ICO,
@@ -68,6 +69,7 @@ typedef enum {
 		FORMAT_QUARTZ,
 		FORMAT_SDL,
 		FORMAT_SVG,
+		FORMAT_TGA,
 		FORMAT_TIFF,
 		FORMAT_WIN32,
 		FORMAT_XLIB,
@@ -139,10 +141,12 @@ static void cairogen_begin_page(GVJ_t * job)
         cr = (cairo_t *) job->surface;
 
     switch (job->render.id) {
-#ifdef CAIRO_HAS_PNG_FUNCTIONS
-    case FORMAT_PNG:
-#endif
+    case FORMAT_BMP:
+    case FORMAT_GIF:
+    case FORMAT_ICO:
     case FORMAT_JPEG:
+    case FORMAT_PNG:
+    case FORMAT_TIFF:
 	if (!cr) {
 	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 			job->width, job->height);
@@ -559,9 +563,18 @@ gvplugin_installed_t gvrender_pango_types[] = {
     {FORMAT_GTK, "gtk", 0, &cairogen_engine, &cairogen_features_gtk},
     {FORMAT_XLIB, "xlib", 0, &cairogen_engine, &cairogen_features_x},
 #endif
+    {FORMAT_BMP, "bmp", 10, &cairogen_engine, &cairogen_features_formatter},
+    {FORMAT_GIF, "gif", 10, &cairogen_engine, &cairogen_features_formatter},
+    {FORMAT_ICO, "ico", 10, &cairogen_engine, &cairogen_features_formatter},
     {FORMAT_JPEG, "jpe", 10, &cairogen_engine, &cairogen_features_formatter},
     {FORMAT_JPEG, "jpeg", 10, &cairogen_engine, &cairogen_features_formatter},
     {FORMAT_JPEG, "jpg", 10, &cairogen_engine, &cairogen_features_formatter},
+#ifndef CAIRO_HAS_PNG_FUNCTIONS
+    {FORMAT_PNG, "png", 10, &cairogen_engine, &cairogen_features_formatter},
+#endif
+    {FORMAT_TIFF, "tif", 10, &cairogen_engine, &cairogen_features_formatter},
+    {FORMAT_TIFF, "tiff", 10, &cairogen_engine, &cairogen_features_formatter},
+//    {FORMAT_TGA, "tga", 10, &cairogen_engine, &cairogen_features_formatter},
 #endif
     {0, NULL, 0, NULL, NULL}
 };
