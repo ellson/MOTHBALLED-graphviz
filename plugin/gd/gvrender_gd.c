@@ -33,8 +33,17 @@
 #ifdef HAVE_LIBGD
 #include "gd.h"
 
-typedef enum { FORMAT_GD, FORMAT_GD2, FORMAT_GIF, FORMAT_JPEG, FORMAT_PNG,
-	FORMAT_WBMP, FORMAT_XBM, } format_type;
+typedef enum {
+	FORMAT_GIF,
+	FORMAT_JPEG,
+	FORMAT_PNG,
+	FORMAT_WBMP,
+#if 0
+	FORMAT_GD,
+	FORMAT_GD2,
+	FORMAT_XBM,
+#endif
+} format_type;
 
 extern boolean mapbool(char *);
 extern char *safefile(char *shapefilename);
@@ -164,18 +173,6 @@ static void gdgen_end_page(GVJ_t * job)
 	   was blended so there is no useful alpha info */
 	gdImageSaveAlpha(im, (basecolor == transparent));
 	switch (job->render.id) {
-#if 0
-	case FORMAT_GD:
-	    gdImageGd(im, job->output_file);
-	    break;
-	case FORMAT_GD2:
-#define GD2_CHUNKSIZE 128
-#define GD2_RAW 1
-#define GD2_COMPRESSED 2
-	    gdImageGd2(im, job->output_file, GD2_CHUNKSIZE,
-		       GD2_COMPRESSED);
-	    break;
-#endif
 	case FORMAT_GIF:
 #ifdef HAVE_GD_GIF
 	    gdImageTrueColorToPalette(im, 0, 256);
@@ -205,13 +202,23 @@ static void gdgen_end_page(GVJ_t * job)
 	    /* Use black for the foreground color for the B&W wbmp image. */
 	    gdImageWBMP(im, black, job->output_file);
 	    break;
-	case FORMAT_XBM:
 #if 0
+	case FORMAT_GD:
+	    gdImageGd(im, job->output_file);
+	    break;
+	case FORMAT_GD2:
+#define GD2_CHUNKSIZE 128
+#define GD2_RAW 1
+#define GD2_COMPRESSED 2
+	    gdImageGd2(im, job->output_file, GD2_CHUNKSIZE,
+		       GD2_COMPRESSED);
+	    break;
+	case FORMAT_XBM:
 #ifdef HAVE_GD_XPM
 	    gdImageXbm(im, job->output_file);
 #endif
-#endif
 	    break;
+#endif
 	}
 	gdImageDestroy(im);
 #ifdef MYTRACE
@@ -610,8 +617,6 @@ static gvrender_features_t gdgen_features = {
 
 gvplugin_installed_t gvrender_gd_types[] = {
 #ifdef HAVE_LIBGD
-    {FORMAT_GD, "gd", 1, &gdgen_engine, &gdgen_features_tc},
-    {FORMAT_GD2, "gd2", 1, &gdgen_engine, &gdgen_features_tc},
 #ifdef HAVE_GD_GIF
     {FORMAT_GIF, "gif", 1, &gdgen_engine, &gdgen_features},
 #endif
@@ -623,8 +628,12 @@ gvplugin_installed_t gvrender_gd_types[] = {
     {FORMAT_PNG, "png", 1, &gdgen_engine, &gdgen_features_tc},
 #endif
     {FORMAT_WBMP, "wbmp", 1, &gdgen_engine, &gdgen_features},
+#if 0
+    {FORMAT_GD, "gd", 1, &gdgen_engine, &gdgen_features_tc},
+    {FORMAT_GD2, "gd2", 1, &gdgen_engine, &gdgen_features_tc},
 #ifdef HAVE_GD_XPM
     {FORMAT_XBM, "xbm", 1, &gdgen_engine, &gdgen_features},
+#endif
 #endif
 #endif
     {0, NULL, 0, NULL, NULL}
