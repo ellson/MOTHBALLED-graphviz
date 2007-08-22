@@ -118,11 +118,11 @@ if test "x${prefix}" = "xNONE"; then
 	AC_SUBST(prefix)
 fi
 
-# automatically check for other dependencies in $PREFIX first
+# automatically check for other dependencies in $prefix first
 if test "x${prefix}" != "x/usr"; then
 	CPPFLAGS="$CPPFLAGS -I${prefix}/include"
 	LDFLAGS="$LDFLAGS -L${prefix}/lib"
-	PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig:$PKG_CONFIG_PATH"
+	PKG_CONFIG_PATH="$prefix/lib/pkgconfig$PATHSEPARATOR$PKG_CONFIG_PATH"
 	export PKG_CONFIG_PATH
 fi
 
