@@ -83,10 +83,10 @@ boolean gvjobs_output_langname(GVC_t * gvc, char *name)
     output_langname_job->output_langname = name;
     output_langname_job->gvc = gvc;
 
-//    /* load it now to check that it exists */
-//    if (gvplugin_load(gvc, API_render, name))
+    /* load it now to check that it exists */
+    if (gvplugin_load(gvc, API_render, name))
 	return TRUE;
-//    return FALSE;
+    return FALSE;
 }
 
 GVJ_t *gvjobs_first(GVC_t * gvc)
