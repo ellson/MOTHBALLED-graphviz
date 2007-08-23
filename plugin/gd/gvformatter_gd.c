@@ -42,7 +42,7 @@ static void
 cairo_surface_write_to_gd(cairo_surface_t *surface, format_type format, FILE *f)
 {
     gdImagePtr im;
-    unsigned int width, height, x, y, *data, color;
+    unsigned int width, height, x, y, *data, color, alpha;
 
     width = cairo_image_surface_get_width(surface);
     height = cairo_image_surface_get_height(surface);
@@ -52,9 +52,12 @@ cairo_surface_write_to_gd(cairo_surface_t *surface, format_type format, FILE *f)
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
 	    color = *data++;
-	    /* gd uses a transparency alpha instead of the more typical opacity */
 	    /* gd's max alpha is 127 */
-	    color = (color & 0xffffff) | ((127 - (color >> 25)) << 24);
+	    if ((alpha = (color >> 25) & 0x7f))
+	        /* gd's alpha is transparency instead of opacity */
+	    	color = (color & 0xffffff) | ((127 - alpha) << 24);
+	    else
+		color = im->transparent;
 	    gdImageSetPixel (im, x, y, color);
 	}
     }
