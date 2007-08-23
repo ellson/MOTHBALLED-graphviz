@@ -90,6 +90,11 @@ BuildRequires: perl php-devel ruby ruby-devel guile-devel python-devel
 BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel libgnomeui-devel
 %endif
+%if "%rhel" >= "6"
+%define MYLIBGD --without-mylibgd
+%define GDK_PIXBUF --with-gdk-pixbuf
+BuildRequires: gd gd-devel perl-devel
+%endif
 %endif
 
 #-- Fedora specific Build Requirements --------------------------------------
@@ -131,9 +136,9 @@ BuildRequires: mono-core ocaml
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel libgnomeui-devel
 %endif
 %if "%fedora" >= "7"
-BuildRequires: gd gd-devel
 %define MYLIBGD --without-mylibgd
 %define GDK_PIXBUF --with-gdk-pixbuf
+BuildRequires: gd gd-devel perl-devel
 %endif
 %endif
 
