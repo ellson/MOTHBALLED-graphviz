@@ -82,7 +82,14 @@ cairo_surface_write_to_devil(cairo_surface_t *surface, ILenum format, FILE *f)
     		IL_UNSIGNED_BYTE,// Type
     		data);
     
+#if 1
     ilSaveF(format, f);
+#endif
+
+#if 0
+    ilEnable(IL_FILE_OVERWRITE);
+    ilSaveImage("test-devil.bmp");
+#endif
     
     // We're done with the image, so let's delete it.
     ilDeleteImages(1, &ImgId);
@@ -110,7 +117,7 @@ static void devil_formatter(GVJ_t * job)
 #endif
     switch (job->formatter.id) {
     case IL_BMP:
-    case IL_GIF:
+//    case IL_GIF:
     case IL_JPG:
     case IL_PNG:
     case IL_TGA:
@@ -132,7 +139,7 @@ static gvformatter_features_t devil_features = {
 
 gvplugin_installed_t gvformatter_devil_types[] = {
     {IL_BMP, "cairo2bmp", -1, &devil_engine, &devil_features},
-    {IL_GIF, "cairo2gif", -1, &devil_engine, &devil_features},
+//    {IL_GIF, "cairo2gif", -1, &devil_engine, &devil_features},
     {IL_JPG, "cairo2jpg", -1, &devil_engine, &devil_features},
     {IL_JPG, "cairo2jpeg", -1, &devil_engine, &devil_features},
     {IL_PNG, "cairo2png", -1, &devil_engine, &devil_features},
