@@ -295,6 +295,13 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 	rv = NULL;
     free(s);
     gvc->api[api] = rv;
+
+    if (gvc->common.verbose >= 1)
+	fprintf(stderr, "Using plugin: %s %s %s\n",
+		api_names[api],
+		rv->typestr,
+		rv->path ? rv->path : "<builtin>" );
+
     return rv;
 }
 
