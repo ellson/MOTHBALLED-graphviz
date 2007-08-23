@@ -14,10 +14,12 @@ AM_CPPFLAGS = \
 
 noinst_HEADERS = exgram.h exlib.h expr.h
 noinst_LTLIBRARIES = libexpr_C.la
-lib_LTLIBRARIES = libexpr.la
-man_MANS = expr.3
-pdf_DATA = expr.pdf
-pkgconfig_DATA = libexpr.pc
+
+### expr.h includes ast.h and vmalloc.h which we don't install
+#lib_LTLIBRARIES = libexpr.la
+#man_MANS = expr.3
+#pdf_DATA = expr.pdf
+#pkgconfig_DATA = libexpr.pc
 
 #### -no-undefined breaks Mac OS/X builds.
 #### libast has "extern char **environ" which remains

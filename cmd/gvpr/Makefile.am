@@ -26,7 +26,7 @@ gvpr_LDADD = \
 	$(top_builddir)/lib/vmalloc/libvmalloc_C.la \
 	$(top_builddir)/lib/sfio/libsfio_C.la \
         $(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/expr/libexpr.la \
+	$(top_builddir)/lib/expr/libexpr_C.la \
 	$(top_builddir)/lib/agraph/libagraph.la @MATH_LIBS@
 
 gvpr_DEPENDENCIES = \
