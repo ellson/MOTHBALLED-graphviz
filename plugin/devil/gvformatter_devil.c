@@ -19,7 +19,6 @@
 #endif
 
 #include "gvplugin_formatter.h"
-#include <pango/pangocairo.h>
 #include <IL/il.h>
 #include <IL/ilu.h>
 
@@ -45,14 +44,21 @@ Y_inv ( unsigned int width, unsigned int height, unsigned char *data)
         }
 }
 
-static void
-cairo_surface_write_to_devil(cairo_surface_t *surface, ILenum format, FILE *f) 
+static void devil_formatter(GVJ_t * job, unsigned int width, unsigned int height, unsigned char *data)
 {
     ILuint	ImgId;
     ILenum	Error;
     ILboolean rc;
-    unsigned int width, height;
-    unsigned char *data;
+
+#ifdef HAVE_SETMODE
+#ifdef O_BINARY
+    /*
+     * Windows will do \n -> \r\n  translations on stdout
+     * unless told otherwise.
+     */
+    setmode(fileno(job->output_file), O_BINARY);
+#endif
+#endif
 
     // Check if the shared lib's version matches the executable's version.
     if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION ||
@@ -69,10 +75,6 @@ cairo_surface_write_to_devil(cairo_surface_t *surface, ILenum format, FILE *f)
     // Bind this image name.
     ilBindImage(ImgId);
 
-    width = cairo_image_surface_get_width(surface);
-    height = cairo_image_surface_get_height(surface);
-    data = cairo_image_surface_get_data(surface);
-    
     Y_inv ( width, height, data );
     
     rc = ilTexImage( width, height,
@@ -83,7 +85,7 @@ cairo_surface_write_to_devil(cairo_surface_t *surface, ILenum format, FILE *f)
     		data);
     
 #if 1
-    ilSaveF(format, f);
+    ilSaveF(job->formatter.id, job->output_file);
 #endif
 
 #if 0
@@ -97,35 +99,6 @@ cairo_surface_write_to_devil(cairo_surface_t *surface, ILenum format, FILE *f)
     // Simple Error detection loop that displays the Error to the user in a human-readable form.
     while ((Error = ilGetError())) {
     	fprintf(stderr, "Error: %s\n", iluErrorString(Error));
-    }
-}
-
-static void devil_formatter(GVJ_t * job)
-{
-    cairo_t *cr = (cairo_t *) job->surface;
-    cairo_surface_t *surface;
-
-    surface = cairo_get_target(cr);
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-    /*
-     * Windows will do \n -> \r\n  translations on stdout
-     * unless told otherwise.
-     */
-    setmode(fileno(job->output_file), O_BINARY);
-#endif
-#endif
-    switch (job->formatter.id) {
-    case IL_BMP:
-//    case IL_GIF:
-    case IL_JPG:
-    case IL_PNG:
-    case IL_TGA:
-    case IL_TIF:
-	cairo_surface_write_to_devil(surface, job->formatter.id, job->output_file);
-	break;
-    default:
-	break;
     }
 }
 

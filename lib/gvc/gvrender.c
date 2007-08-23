@@ -30,7 +30,6 @@
 #include "macros.h"
 #include "colorprocs.h"
 #include "gvplugin_render.h"
-#include "gvplugin_formatter.h"
 #include "graph.h"
 #include "gvcint.h"
 #include "geom.h"
@@ -345,10 +344,6 @@ void gvrender_begin_page(GVJ_t * job)
 void gvrender_end_page(GVJ_t * job)
 {
     gvrender_engine_t *gvre = job->render.engine;
-    gvformatter_engine_t *gvfe = job->formatter.engine;
-
-    if (gvfe && gvfe->format)
-	    gvfe->format(job);
 
     if (gvre) {
        	if (gvre->end_page)

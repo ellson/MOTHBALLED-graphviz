@@ -8,13 +8,11 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
-	$(PANGOCAIRO_CFLAGS) $(GDK_PIXBUF_CFLAGS)
+	$(GDK_PIXBUF_CFLAGS)
 
-if WITH_PANGOCAIRO
 if WITH_GDK_PIXBUF
 noinst_LTLIBRARIES = libgvplugin_gdk_pixbuf_C.la
 pkglib_LTLIBRARIES = libgvplugin_gdk_pixbuf.la
-endif
 endif
 
 libgvplugin_gdk_pixbuf_C_la_SOURCES = \

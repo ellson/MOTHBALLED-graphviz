@@ -10,11 +10,9 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt \
 	$(PANGOCAIRO_CFLAGS) $(DEVIL_CFLAGS)
 
-if WITH_PANGOCAIRO
 if WITH_DEVIL
 noinst_LTLIBRARIES = libgvplugin_devil_C.la
 pkglib_LTLIBRARIES = libgvplugin_devil.la
-endif
 endif
 
 libgvplugin_devil_C_la_SOURCES = \

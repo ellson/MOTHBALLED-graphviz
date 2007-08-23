@@ -8,7 +8,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
-	$(GD_INCLUDES) $(PANGOCAIRO_CFLAGS) $(LIBGVC_CFLAGS)
+	$(GD_INCLUDES) $(LIBGVC_CFLAGS)
 
 noinst_LTLIBRARIES = libgvplugin_gd_C.la
 

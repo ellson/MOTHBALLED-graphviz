@@ -22,36 +22,38 @@
 #include "gvplugin_formatter.h"
 
 #ifdef HAVE_LIBGD
-#ifdef HAVE_PANGOCAIRO
-#include <pango/pangocairo.h>
 #include "gd.h"
 
 typedef enum {
 	FORMAT_GIF,
 	FORMAT_JPEG,
-#if 0
 	FORMAT_PNG,
 	FORMAT_WBMP,
 	FORMAT_GD,
 	FORMAT_GD2,
 	FORMAT_XBM,
-#endif
 } format_type;
 
-static void
-cairo_surface_write_to_gd(cairo_surface_t *surface, format_type format, FILE *f)
+static void gd_formatter(GVJ_t * job, unsigned int width, unsigned int height, unsigned char *data)
 {
     gdImagePtr im;
-    unsigned int width, height, x, y, *data, color, alpha;
+    unsigned int x, y, *intdata, color, alpha;
 
-    width = cairo_image_surface_get_width(surface);
-    height = cairo_image_surface_get_height(surface);
-    data = (unsigned int*)cairo_image_surface_get_data(surface);
+#ifdef HAVE_SETMODE
+#ifdef O_BINARY
+    /*
+     * Windows will do \n -> \r\n  translations on stdout
+     * unless told otherwise.
+     */
+    setmode(fileno(job->output_file), O_BINARY);
+#endif
+#endif
 
+    intdata = (unsigned int*)data;
     im = gdImageCreateTrueColor(width, height);
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
-	    color = *data++;
+	    color = *intdata++;
 	    /* gd's max alpha is 127 */
 	    if ((alpha = (color >> 25) & 0x7f))
 	        /* gd's alpha is transparency instead of opacity */
@@ -62,11 +64,11 @@ cairo_surface_write_to_gd(cairo_surface_t *surface, format_type format, FILE *f)
 	}
     }
 
-    switch (format) {
+    switch (job->formatter.id) {
 #ifdef HAVE_GD_GIF
     case FORMAT_GIF:
 	gdImageTrueColorToPalette(im, 0, 256);
-	gdImageGif(im, f);
+	gdImageGif(im, job->output_file);
         break;
 #endif
 
@@ -82,7 +84,7 @@ cairo_surface_write_to_gd(cairo_surface_t *surface, format_type format, FILE *f)
 	 * library documentation for more details.
 	 */ 
 #define JPEG_QUALITY -1
-	gdImageJpeg(im, f, JPEG_QUALITY);
+	gdImageJpeg(im, job->output_file, JPEG_QUALITY);
 	break;
 #endif
 
@@ -90,32 +92,32 @@ cairo_surface_write_to_gd(cairo_surface_t *surface, format_type format, FILE *f)
 
 #ifdef HAVE_GD_PNG
     case FORMAT_PNG:
-	gdImagePng(im, f);
+	gdImagePng(im, job->formatter.id);
         break;
 #endif
 
     case FORMAT_GD:
-	gdImageGd(im, f);
+	gdImageGd(im, job->formatter.id);
 	break;
 
     case FORMAT_GD2:
 #define GD2_CHUNKSIZE 128
 #define GD2_RAW 1
 #define GD2_COMPRESSED 2
-	gdImageGd2(im, f, GD2_CHUNKSIZE, GD2_COMPRESSED);
+	gdImageGd2(im, job->formatter.id, GD2_CHUNKSIZE, GD2_COMPRESSED);
 	break;
 
 #ifdef HAVE_GD_GIF
     case FORMAT_WBMP:
 	/* Use black for the foreground color for the B&W wbmp image. */
 //FIXME - black not defined - is it really needed? 
-	gdImageWBMP(im, black, f);
+	gdImageWBMP(im, black, job->formatter.id);
 	break;
 #endif
 
 #ifdef HAVE_GD_XPM
     case FORMAT_XBM:
-	gdImageXbm(im, f);
+	gdImageXbm(im, job->formatter.id);
 #endif
 
 #endif
@@ -127,25 +129,6 @@ cairo_surface_write_to_gd(cairo_surface_t *surface, format_type format, FILE *f)
     gdImageDestroy(im);
 }
 
-static void gd_formatter(GVJ_t * job)
-{
-    cairo_t *cr = (cairo_t *) job->surface;
-    cairo_surface_t *surface;
-
-    surface = cairo_get_target(cr);
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-    /*
-     * Windows will do \n -> \r\n  translations on stdout
-     * unless told otherwise.
-     */
-    setmode(fileno(job->output_file), O_BINARY);
-#endif
-#endif
-
-    cairo_surface_write_to_gd(surface, job->formatter.id, job->output_file);
-}
-
 static gvformatter_engine_t gd_engine = {
     gd_formatter,
 };
@@ -155,10 +138,8 @@ static gvformatter_features_t gd_features = {
 };
 
 #endif
-#endif
 
 gvplugin_installed_t gvformatter_gd_types[] = {
-#ifdef HAVE_PANGOCAIRO
 #ifdef HAVE_LIBGD
 
 #ifdef HAVE_GD_GIF
@@ -173,21 +154,23 @@ gvplugin_installed_t gvformatter_gd_types[] = {
 
 #if 0
 
+    {FORMAT_GD, "cairo2gd", -1, &gd_engine, &gd_features},
+    {FORMAT_GD2, "cairo2gd2", -1, &gd_engine, &gd_features},
+
 #ifdef HAVE_GD_PNG
     {FORMAT_PNG, "cairo2png", -1, &gd_engine, &gd_features},
 #endif
 
-    {FORMAT_GD, "cairo2gd", -1, &gd_engine, &gd_features},
-    {FORMAT_GD2, "cairo2gd2", -1, &gd_engine, &gd_features},
 #ifdef HAVE_GD_GIF
     {FORMAT_WBMP, "cairo2wbmp", -1, &gd_engine, &gd_features},
 #endif
+
 #ifdef HAVE_GD_XPM
     {FORMAT_XBM, "cairo2xbm", -1, &gd_engine, &gd_features},
 #endif
-#endif
 
 #endif
+
 #endif
     {0, NULL, 0, NULL, NULL}
 };

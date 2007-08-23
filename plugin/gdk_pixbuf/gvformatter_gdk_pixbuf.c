@@ -19,7 +19,6 @@
 #endif
 
 #include "gvplugin_formatter.h"
-#include <pango/pangocairo.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 typedef enum {
@@ -75,16 +74,37 @@ writer ( const gchar *buf, gsize count, GError **error, gpointer data)
     return FALSE;
 }
 
-static void
-cairo_surface_write_to_gdk_pixbuf(cairo_surface_t *surface, const char *format, FILE *f) 
+static void gdk_pixbuf_formatter(GVJ_t * job, unsigned int width, unsigned int height, unsigned char *data)
 {
+    char *format_str = "";
     GdkPixbuf *pixbuf;
-    unsigned int width, height;
-    unsigned char *data;
 
-    width = cairo_image_surface_get_width(surface);
-    height = cairo_image_surface_get_height(surface);
-    data = cairo_image_surface_get_data(surface);
+#ifdef HAVE_SETMODE
+#ifdef O_BINARY
+    /*
+     * Windows will do \n -> \r\n  translations on stdout
+     * unless told otherwise.
+     */
+    setmode(fileno(job->output_file), O_BINARY);
+#endif
+#endif
+    switch (job->formatter.id) {
+    case FORMAT_BMP:
+	format_str = "bmp";
+	break;
+    case FORMAT_ICO:
+	format_str = "ico";
+	break;
+    case FORMAT_JPEG:
+	format_str = "jpeg";
+	break;
+    case FORMAT_PNG:
+	format_str = "png";
+	break;
+    case FORMAT_TIFF:
+	format_str = "tiff";
+	break;
+    }
 
     argb2rgba(width, height, data);
 
@@ -100,45 +120,9 @@ cairo_surface_write_to_gdk_pixbuf(cairo_surface_t *surface, const char *format, 
                 NULL                    // destroy_fn_data
                );
 
-    gdk_pixbuf_save_to_callback(pixbuf, writer, f, format, NULL, NULL);
+    gdk_pixbuf_save_to_callback(pixbuf, writer, job->output_file, format_str, NULL, NULL);
 
     gdk_pixbuf_unref(pixbuf);
-}
-
-static void gdk_pixbuf_formatter(GVJ_t * job)
-{
-    cairo_t *cr = (cairo_t *) job->surface;
-    cairo_surface_t *surface;
-
-    surface = cairo_get_target(cr);
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-    /*
-     * Windows will do \n -> \r\n  translations on stdout
-     * unless told otherwise.
-     */
-    setmode(fileno(job->output_file), O_BINARY);
-#endif
-#endif
-    switch (job->formatter.id) {
-    case FORMAT_BMP:
-	cairo_surface_write_to_gdk_pixbuf(surface, "bmp", job->output_file);
-	break;
-    case FORMAT_ICO:
-	cairo_surface_write_to_gdk_pixbuf(surface, "ico", job->output_file);
-	break;
-    case FORMAT_JPEG:
-	cairo_surface_write_to_gdk_pixbuf(surface, "jpeg", job->output_file);
-	break;
-    case FORMAT_PNG:
-	cairo_surface_write_to_gdk_pixbuf(surface, "png", job->output_file);
-	break;
-    case FORMAT_TIFF:
-	cairo_surface_write_to_gdk_pixbuf(surface, "tiff", job->output_file);
-	break;
-    default:
-	break;
-    }
 }
 
 static gvformatter_engine_t gdk_pixbuf_engine = {

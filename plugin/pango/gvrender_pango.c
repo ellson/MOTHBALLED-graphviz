@@ -52,28 +52,25 @@
 #endif
 
 #include "gvplugin_render.h"
+#include "gvplugin_formatter.h"
 
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
 
 typedef enum {
-		FORMAT_BMP,
-		FORMAT_GIF,
 		FORMAT_GLITZ,
-		FORMAT_GTK,
-		FORMAT_ICO,
-		FORMAT_JPEG,
 		FORMAT_PNG,
 		FORMAT_PS,
 		FORMAT_PDF,
 		FORMAT_QUARTZ,
-		FORMAT_SDL,
 		FORMAT_SVG,
-		FORMAT_TGA,
-		FORMAT_TIFF,
-		FORMAT_WIN32,
+		FORMAT_GTK,
 		FORMAT_XLIB,
-		FORMAT_XCB,
+		FORMAT_GIF,
+		FORMAT_JPEG,
+		FORMAT_TIFF,
+		FORMAT_ICO,
+		FORMAT_BMP,
     } format_type;
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
@@ -141,12 +138,12 @@ static void cairogen_begin_page(GVJ_t * job)
         cr = (cairo_t *) job->surface;
 
     switch (job->render.id) {
-    case FORMAT_BMP:
-    case FORMAT_GIF:
-    case FORMAT_ICO:
     case FORMAT_JPEG:
-    case FORMAT_PNG:
+    case FORMAT_GIF:
     case FORMAT_TIFF:
+    case FORMAT_ICO:
+    case FORMAT_BMP:
+    case FORMAT_PNG:
 	if (!cr) {
 	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 			job->width, job->height);
@@ -154,7 +151,6 @@ static void cairogen_begin_page(GVJ_t * job)
 	    cairo_surface_destroy (surface);
 	}
 	break;
-#ifdef CAIRO_HAS_PS_SURFACE
     case FORMAT_PS:
 	if (!cr) {
 	    surface = cairo_ps_surface_create_for_stream (writer,
@@ -163,8 +159,6 @@ static void cairogen_begin_page(GVJ_t * job)
 	    cairo_surface_destroy (surface);
 	}
 	break;
-#endif
-#ifdef CAIRO_HAS_PDF_SURFACE
     case FORMAT_PDF:
 	if (!cr) {
 	    surface = cairo_pdf_surface_create_for_stream (writer,
@@ -173,8 +167,6 @@ static void cairogen_begin_page(GVJ_t * job)
 	    cairo_surface_destroy (surface);
 	}
 	break;
-#endif
-#ifdef CAIRO_HAS_SVG_SURFACE
     case FORMAT_SVG:
 	if (!cr) {
 	    surface = cairo_svg_surface_create_for_stream (writer,
@@ -183,29 +175,6 @@ static void cairogen_begin_page(GVJ_t * job)
 	    cairo_surface_destroy (surface);
 	}
 	break;
-#endif
-#ifdef CAIRO_HAS_XLIB_SURFACE
-    case FORMAT_GTK:
-	break;
-    case FORMAT_XLIB:
-	break;
-#endif
-#ifdef CAIRO_HAS_XCB_SURFACE
-    case FORMAT_XCB:
-	break;
-#endif
-#ifdef CAIRO_HAS_SDL_SURFACE
-    case FORMAT_SDL:
-	break;
-#endif
-#ifdef CAIRO_HAS_GLITZ_SURFACE
-    case FORMAT_GLITZ:
-	break;
-#endif
-#ifdef CAIRO_HAS_QUARTZ_SURFACE
-    case FORMAT_QUARTZ:
-	break;
-#endif
     default:
 	break;
     }
@@ -222,7 +191,9 @@ static void cairogen_end_page(GVJ_t * job)
     cairo_t *cr = (cairo_t *) job->surface;
     cairo_surface_t *surface;
 
+
     switch (job->render.id) {
+
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
     case FORMAT_PNG:
         surface = cairo_get_target(cr);
@@ -237,24 +208,36 @@ static void cairogen_end_page(GVJ_t * job)
 	cairo_surface_write_to_png_stream(surface, writer, job->output_file);
 	break;
 #endif
-#ifdef CAIRO_HAS_PS_SURFACE
+
     case FORMAT_PS:
-	cairo_show_page(cr);
-	break;
-#endif
-#ifdef CAIRO_HAS_PDF_SURFACE
     case FORMAT_PDF:
-	cairo_show_page(cr);
-	break;
-#endif
-#ifdef CAIRO_HAS_SVG_SURFACE
     case FORMAT_SVG:
 	cairo_show_page(cr);
 	break;
-#endif
+
+    case FORMAT_JPEG:
+    case FORMAT_GIF:
+    case FORMAT_ICO:
+    case FORMAT_TIFF:
+    case FORMAT_BMP:
+	{
+	    gvformatter_engine_t *gvfe = job->formatter.engine;
+	    unsigned int width, height;
+	    unsigned char *data;
+ 
+	    if (gvfe && gvfe->format) {
+                surface = cairo_get_target(cr);
+		width = cairo_image_surface_get_width(surface);
+		height = cairo_image_surface_get_height(surface);
+		data = cairo_image_surface_get_data(surface);
+		gvfe->format(job, width, height, data);
+	    }
+	}
+
     default:
 	break;
     }
+
     if (job->external_surface)
 	cairo_restore(cr);
     else {
@@ -534,34 +517,8 @@ gvplugin_installed_t gvrender_pango_types[] = {
 #ifdef HAVE_PANGOCAIRO
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
     {FORMAT_PNG, "png", 10, &cairogen_engine, &cairogen_features},
-#endif
-#ifdef CAIRO_HAS_PS_SURFACE
-    {FORMAT_PS, "ps", -10, &cairogen_engine, &cairogen_features_ps},
-#endif
-#ifdef CAIRO_HAS_PDF_SURFACE
-    {FORMAT_PDF, "pdf", 1, &cairogen_engine, &cairogen_features_ps},
-#endif
-#ifdef CAIRO_HAS_SVG_SURFACE
-    {FORMAT_SVG, "svg", -10, &cairogen_engine, &cairogen_features_svg},
-#endif
-#ifdef CAIRO_HAS_XCB_SURFACE
-    {FORMAT_XCB, "xcb", 0, &cairogen_engine, &cairogen_features_x},
-#endif
-#ifdef CAIRO_HAS_SDL_SURFACE
-    {FORMAT_SDL, "sdl", 0, &cairogen_engine, &cairogen_features_x},
-#endif
-#ifdef CAIRO_HAS_GLITZ_SURFACE
-    {FORMAT_GLITZ, "glitz", 0, &cairogen_engine, &cairogen_features_x},
-#endif
-#ifdef CAIRO_HAS_QUARTZ_SURFACE
-    {FORMAT_QUARTZ, "quartz", 0, &cairogen_engine, &cairogen_features_x},
-#endif
-#ifdef CAIRO_HAS_WIN32_SURFACE
-    {FORMAT_WIN32, "win32", 0, &cairogen_engine, &cairogen_features_x},
-#endif
-#ifdef CAIRO_HAS_XLIB_SURFACE
-    {FORMAT_GTK, "gtk", 0, &cairogen_engine, &cairogen_features_gtk},
-    {FORMAT_XLIB, "xlib", 0, &cairogen_engine, &cairogen_features_x},
+#else
+    {FORMAT_PNG, "png", 10, &cairogen_engine, &cairogen_features_formatter},
 #endif
     {FORMAT_BMP, "bmp", 10, &cairogen_engine, &cairogen_features_formatter},
     {FORMAT_GIF, "gif", 10, &cairogen_engine, &cairogen_features_formatter},
@@ -569,12 +526,38 @@ gvplugin_installed_t gvrender_pango_types[] = {
     {FORMAT_JPEG, "jpe", 10, &cairogen_engine, &cairogen_features_formatter},
     {FORMAT_JPEG, "jpeg", 10, &cairogen_engine, &cairogen_features_formatter},
     {FORMAT_JPEG, "jpg", 10, &cairogen_engine, &cairogen_features_formatter},
-#ifndef CAIRO_HAS_PNG_FUNCTIONS
-    {FORMAT_PNG, "png", 10, &cairogen_engine, &cairogen_features_formatter},
-#endif
     {FORMAT_TIFF, "tif", 10, &cairogen_engine, &cairogen_features_formatter},
     {FORMAT_TIFF, "tiff", 10, &cairogen_engine, &cairogen_features_formatter},
 //    {FORMAT_TGA, "tga", 10, &cairogen_engine, &cairogen_features_formatter},
+
+#ifdef CAIRO_HAS_PS_SURFACE
+    {FORMAT_PS, "ps", -10, &cairogen_engine, &cairogen_features_ps},
+#endif
+#ifdef CAIRO_HAS_PDF_SURFACE
+    {FORMAT_PDF, "pdf", 10, &cairogen_engine, &cairogen_features_ps},
+#endif
+#ifdef CAIRO_HAS_SVG_SURFACE
+    {FORMAT_SVG, "svg", -10, &cairogen_engine, &cairogen_features_svg},
+#endif
+//#ifdef CAIRO_HAS_XCB_SURFACE
+//    {FORMAT_XCB, "xcb", 0, &cairogen_engine, &cairogen_features_x},
+//#endif
+//#ifdef CAIRO_HAS_SDL_SURFACE
+//    {FORMAT_SDL, "sdl", 0, &cairogen_engine, &cairogen_features_x},
+//#endif
+//#ifdef CAIRO_HAS_GLITZ_SURFACE
+//    {FORMAT_GLITZ, "glitz", 0, &cairogen_engine, &cairogen_features_x},
+//#endif
+//#ifdef CAIRO_HAS_QUARTZ_SURFACE
+//    {FORMAT_QUARTZ, "quartz", 0, &cairogen_engine, &cairogen_features_x},
+//#endif
+//#ifdef CAIRO_HAS_WIN32_SURFACE
+//    {FORMAT_WIN32, "win32", 0, &cairogen_engine, &cairogen_features_x},
+//#endif
+#ifdef CAIRO_HAS_XLIB_SURFACE
+    {FORMAT_GTK, "gtk", 0, &cairogen_engine, &cairogen_features_gtk},
+    {FORMAT_XLIB, "xlib", 0, &cairogen_engine, &cairogen_features_x},
+#endif
 #endif
     {0, NULL, 0, NULL, NULL}
 };

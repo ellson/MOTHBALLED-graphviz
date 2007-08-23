@@ -26,7 +26,7 @@ extern "C" {
 #endif
 
     struct gvformatter_engine_s {
-	void (*format) (GVJ_t * job);
+	void (*format) (GVJ_t * job, unsigned int width, unsigned int height, unsigned char *data);
     };
 
 #ifdef __cplusplus

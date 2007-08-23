@@ -290,13 +290,14 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 	    rv = *pnext;
         }
     }
+    free(s);
+
     /* one last check for succesfull load */
     if ((*pnext) && (*pnext)->typeptr == NULL)
 	rv = NULL;
-    free(s);
     gvc->api[api] = rv;
 
-    if (gvc->common.verbose >= 1)
+    if (rv && gvc->common.verbose >= 1)
 	fprintf(stderr, "Using plugin: %s %s %s\n",
 		api_names[api],
 		rv->typestr,
