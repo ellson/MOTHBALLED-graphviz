@@ -14,7 +14,9 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "render.h"
 
@@ -25,6 +27,7 @@
 #ifdef HAVE_LIBZ
 #include <zlib.h>
 #ifdef WIN32
+#include <fcntl.h>
 #include <io.h>
 #endif
 #endif

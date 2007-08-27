@@ -18,6 +18,10 @@
 #include "config.h"
 #endif
 
+#ifdef WIN32
+#include <fcntl.h>
+#include <io.h>
+#endif
 #include <stdlib.h>
 #include "gvplugin_formatter.h"
 

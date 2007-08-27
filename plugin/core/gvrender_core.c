@@ -32,6 +32,7 @@
 
 #ifdef WIN32
 #include <io.h>
+#include <fcntl.h>
 #include "compat.h"
 #endif
 

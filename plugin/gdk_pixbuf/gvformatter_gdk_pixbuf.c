@@ -18,6 +18,10 @@
 #include "config.h"
 #endif
 
+#ifdef WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 #include "gvplugin_formatter.h"
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
