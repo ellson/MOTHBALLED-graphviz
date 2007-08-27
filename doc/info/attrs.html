@@ -1148,10 +1148,20 @@ This field indicates which graph component uses the attribute.
   in the pos attribute itself (cf. the <A HREF=#d:point>point</A> type).
 
 <DT><A NAME=d:pos HREF=#a:pos><STRONG>pos</STRONG></A>
-<DD>  Position of node, or spline control points, <A HREF=#points>in points</A>.
+<DD>  Position of node, or spline control points.
   For nodes, the position indicates the center of the node.
-  In neato and fdp, pos can be used to set initial position of a node.
-  Concerning this, see the <A HREF=command.html#d:s>-s</A> command line flag.
+  On output, the coordinates are in <A HREF=#points>points</A>.
+  <P>
+  In neato and fdp, pos can be used to set the initial position of a node.
+  By default, the coordinates are assumed to be in inches. However, the
+  <A HREF=command.html#d:s>-s</A> command line flag can be used to specify
+  different units.
+  <P>
+  When the <A HREF=command.html#d:n>-n</A> command line flag is used with
+  neato, it is assumed the positions have been set by one of the layout
+  programs, and are therefore in points. Thus, <TT>neato -n</TT> can accept
+  input correctly without requiring a <TT>-s</TT> flag and, in fact, 
+  ignores any such flag.
 
 <DT><A NAME=d:quantum HREF=#a:quantum><STRONG>quantum</STRONG></A>
 <DD>  If <B>quantum</B> > 0.0, node label dimensions
