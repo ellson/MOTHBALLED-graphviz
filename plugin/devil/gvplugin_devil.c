@@ -16,10 +16,10 @@
 
 #include "gvplugin.h"
 
-extern gvplugin_installed_t gvformatter_devil_types;
+extern gvplugin_installed_t gvdevice_devil_types;
 
 static gvplugin_api_t apis[] = {
-    {API_formatter, &gvformatter_devil_types},
+    {API_device, &gvdevice_devil_types},
     {(api_t)0, 0},
 };
 
