@@ -17,8 +17,10 @@
 #include "gvplugin.h"
 
 extern gvplugin_installed_t gvrender_ming_types;
+extern gvplugin_installed_t gvdevice_ming_types;
 
 static gvplugin_api_t apis[] = {
+    {API_device, &gvdevice_ming_types},
     {API_render, &gvrender_ming_types},
     {(api_t)0, 0},
 };
