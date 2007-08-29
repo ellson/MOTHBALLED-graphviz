@@ -17,7 +17,7 @@ endif
 
 libgvplugin_gdk_pixbuf_C_la_SOURCES = \
 	gvplugin_gdk_pixbuf.c \
-	gvformatter_gdk_pixbuf.c
+	gvdevice_gdk_pixbuf.c
 
 libgvplugin_gdk_pixbuf_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
 libgvplugin_gdk_pixbuf_la_SOURCES = $(libgvplugin_gdk_pixbuf_C_la_SOURCES)

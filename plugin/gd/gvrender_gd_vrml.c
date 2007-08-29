@@ -844,9 +844,7 @@ static gvrender_features_t vrml_features = {
     NULL,                       /* knowncolors */
     0,                          /* sizeof knowncolors */
     RGBA_BYTE,                  /* color_type */
-    NULL,                       /* device */
     "vrml",                     /* imageloader for usershapes */
-    NULL,                       /* formatter */
 };
 #endif				/* HAVE_GD_PNG */
 #endif				/* HAVE_LIBGD */

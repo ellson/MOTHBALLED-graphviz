@@ -27,6 +27,7 @@
 #include <fcntl.h>
 
 #include "gvplugin_render.h"
+#include "gvplugin_device.h"
 #include "graph.h"	/* for agget  for truecolor test */
 #include "gvcint.h"	/* for gvc->g for agget */
 
@@ -38,11 +39,9 @@ typedef enum {
 	FORMAT_JPEG,
 	FORMAT_PNG,
 	FORMAT_WBMP,
-#if 0
 	FORMAT_GD,
 	FORMAT_GD2,
 	FORMAT_XBM,
-#endif
 } format_type;
 
 extern boolean mapbool(char *);
@@ -81,7 +80,6 @@ static void gdgen_begin_page(GVJ_t * job)
     boolean truecolor_p = FALSE;	/* try to use cheaper paletted mode */
     boolean bg_transparent_p = FALSE;
     gdImagePtr im = NULL;
-
 
     truecolor_str = agget((graph_t*)(job->gvc->g), "truecolor");	/* allow user to force truecolor */
     bgcolor_str = agget((graph_t*)(job->gvc->g), "bgcolor");
@@ -198,11 +196,12 @@ static void gdgen_end_page(GVJ_t * job)
 	    gdImagePng(im, job->output_file);
 #endif
 	    break;
+
+#if 0
 	case FORMAT_WBMP:
 	    /* Use black for the foreground color for the B&W wbmp image. */
 	    gdImageWBMP(im, black, job->output_file);
 	    break;
-#if 0
 	case FORMAT_GD:
 	    gdImageGd(im, job->output_file);
 	    break;
@@ -594,9 +593,7 @@ static gvrender_features_t gdgen_features_tc = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
-    NULL,			/* device */
     "gd",			/* imageloader for usershapes */
-    NULL,			/* formatter */
 };
 
 static gvrender_features_t gdgen_features = {
@@ -608,33 +605,43 @@ static gvrender_features_t gdgen_features = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
-    NULL,			/* device */
     "gd",			/* imageloader for usershapes */
-    NULL,			/* formatter */
 };
 
 #endif
 
 gvplugin_installed_t gvrender_gd_types[] = {
 #ifdef HAVE_LIBGD
+    {FORMAT_GD, "gd", 1, &gdgen_engine, &gdgen_features},
+#endif
+    {0, NULL, 0, NULL, NULL}
+};
+
+gvplugin_installed_t gvdevice_gd_types2[] = {
+#ifdef HAVE_LIBGD
 #ifdef HAVE_GD_GIF
-    {FORMAT_GIF, "gif", 1, &gdgen_engine, &gdgen_features},
+    {FORMAT_GIF, "gif:gd", 1, NULL, &gdgen_features},
 #endif
 #ifdef HAVE_GD_JPEG
-    {FORMAT_JPEG, "jpg", 1, &gdgen_engine, &gdgen_features_tc},
-    {FORMAT_JPEG, "jpeg", 1, &gdgen_engine, &gdgen_features_tc},
+    {FORMAT_JPEG, "jpe:gd", 1, NULL, &gdgen_features_tc},
+    {FORMAT_JPEG, "jpeg:gd", 1, NULL, &gdgen_features_tc},
+    {FORMAT_JPEG, "jpg:gd", 1, NULL, &gdgen_features_tc},
 #endif
 #ifdef HAVE_GD_PNG
-    {FORMAT_PNG, "png", 1, &gdgen_engine, &gdgen_features_tc},
+    {FORMAT_PNG, "png:gd", 1, NULL, &gdgen_features_tc},
 #endif
-    {FORMAT_WBMP, "wbmp", 1, &gdgen_engine, &gdgen_features},
+
 #if 0
-    {FORMAT_GD, "gd", 1, &gdgen_engine, &gdgen_features_tc},
-    {FORMAT_GD2, "gd2", 1, &gdgen_engine, &gdgen_features_tc},
+    {FORMAT_GD, "gd:gd", 1, NULL, &gdgen_features_tc},
+    {FORMAT_GD2, "gd2:gd", 1, NULL, &gdgen_features_tc},
+#ifdef HAVE_GD_GIF
+    {FORMAT_WBMP, "wbmp:gd", 1, NULL, &gdgen_features},
+#endif
 #ifdef HAVE_GD_XPM
-    {FORMAT_XBM, "xbm", 1, &gdgen_engine, &gdgen_features},
+    {FORMAT_XBM, "xbm:gd", 1, NULL, &gdgen_features},
 #endif
 #endif
+
 #endif
     {0, NULL, 0, NULL, NULL}
 };

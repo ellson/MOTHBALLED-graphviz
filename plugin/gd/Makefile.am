@@ -20,7 +20,7 @@ libgvplugin_gd_C_la_SOURCES = \
 	gvrender_gd_vrml.c \
 	gvtextlayout_gd.c \
 	gvloadimage_gd.c \
-	gvformatter_gd.c
+	gvdevice_gd.c
 
 libgvplugin_gd_la_LDFLAGS = -version-info @VERSION_INFO@ --no-undefined
 libgvplugin_gd_la_SOURCES = $(libgvplugin_gd_C_la_SOURCES)
