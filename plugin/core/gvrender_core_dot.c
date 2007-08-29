@@ -43,7 +43,14 @@ extern void output_point(agxbuf *xbuf, pointf p);
 
 #define GNEW(t)          (t*)malloc(sizeof(t))
 
-typedef enum { FORMAT_DOT, FORMAT_CANON, FORMAT_PLAIN, FORMAT_PLAIN_EXT, FORMAT_XDOT } format_type;
+typedef enum {
+	FORMAT_DOT,
+	FORMAT_CANON,
+	FORMAT_PLAIN,
+	FORMAT_PLAIN_EXT,
+	FORMAT_XDOT
+} format_type;
+
 
 #define XDOTVERSION "1.2"
 
@@ -475,9 +482,7 @@ gvrender_features_t canon_features = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     COLOR_STRING,		/* color_type */
-    NULL,                       /* device */
     NULL,                       /* imageloader for usershapes */
-    NULL,                       /* formatter */
 };
 
 gvrender_features_t dot_features = {
@@ -489,9 +494,7 @@ gvrender_features_t dot_features = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     COLOR_STRING,		/* color_type */
-    NULL,                       /* device */
     NULL,                       /* imageloader for usershapes */
-    NULL,                       /* formatter */
 };
 
 gvrender_features_t xdot_features = {
@@ -503,16 +506,20 @@ gvrender_features_t xdot_features = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     COLOR_STRING,		/* color_type */
-    NULL,                       /* device */
     "xdot",                     /* imageloader for usershapes */
-    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_dot_types[] = {
-    {FORMAT_DOT, "dot", 1, &dot_engine, &dot_features},
-    {FORMAT_CANON, "canon", 1, &dot_engine, &canon_features},
-    {FORMAT_PLAIN, "plain", 1, &dot_engine, &dot_features},
-    {FORMAT_PLAIN_EXT, "plain-ext", 1, &dot_engine, &dot_features},
-    {FORMAT_XDOT, "xdot", 1, &xdot_engine, &xdot_features},
+    {FORMAT_DOT, "core_dot", 1, &dot_engine, NULL},
+    {FORMAT_XDOT, "core_xdot", 1, &xdot_engine, NULL},
+    {0, NULL, 0, NULL, NULL}
+};
+
+gvplugin_installed_t gvdevice_core_dot_types[] = {
+    {FORMAT_DOT, "dot:core_dot", 1, NULL, &dot_features},
+    {FORMAT_CANON, "canon:core_dot", 1, NULL, &canon_features},
+    {FORMAT_PLAIN, "plain:core_dot", 1, NULL, &dot_features},
+    {FORMAT_PLAIN_EXT, "plain-ext:core_dot", 1, NULL, &dot_features},
+    {FORMAT_XDOT, "xdot:core_xdot", 1, NULL, &xdot_features},
     {0, NULL, 0, NULL, NULL}
 };

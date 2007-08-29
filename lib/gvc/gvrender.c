@@ -53,71 +53,49 @@ int gvrender_select(GVJ_t * job, char *str)
     GVC_t *gvc = job->gvc;
     gvplugin_available_t *plugin;
     gvplugin_installed_t *typeptr;
-    char *device, *formatter, *p, buf[40]; 
 #ifdef WITH_CODEGENS
     codegen_info_t *cg_info;
 #endif
 
-    plugin = gvplugin_load(gvc, API_render, str);
+    gvplugin_load(gvc, API_device, str);
+
+    plugin = gvc->api[API_device];
     if (plugin) {
 #ifdef WITH_CODEGENS
 	if (strcmp(plugin->packagename, "cg") == 0) {
 	    cg_info = (codegen_info_t *) (plugin->typeptr);
 	    job->codegen = cg_info->cg;
 	    job->render.engine = NULL;
-	    job->device.engine = NULL;
 	    return cg_info->id;
-	} else {
-#endif
-	    typeptr = plugin->typeptr;
-	    job->render.engine = (gvrender_engine_t *) (typeptr->engine);
-	    job->render.features = (gvrender_features_t *) (typeptr->features);
-	    job->render.id = typeptr->id;
-
-	    formatter = job->render.features->formatter;
-	    if (formatter) {
-		strcpy(buf, formatter);
-		strcat(buf, "2");
-		strcat(buf, str);
-		if ((p=strchr(buf, ':')))
-			*p = '\0';
-		formatter = buf;
-		plugin = gvplugin_load(gvc, API_formatter, formatter);
-		if (! plugin) {
-		    job->formatter.engine = NULL;
-		    return NO_SUPPORT;  /* FIXME - should differentiate no device from no renderer */
-		}
-	        typeptr = plugin->typeptr;
-		job->formatter.engine = (gvformatter_engine_t *) (typeptr->engine);
-	        job->formatter.features = (gvformatter_features_t *) (typeptr->features);
-	        job->formatter.id = typeptr->id;
-	    }
-	    else {
-		job->formatter.engine = NULL;
-	    }
-
-	    device = job->render.features->device;
-	    if (device) {
-		plugin = gvplugin_load(gvc, API_device, device);
-		if (! plugin) {
-		    job->device.engine = NULL;
-		    return NO_SUPPORT;  /* FIXME - should differentiate no device from no renderer */
-		}
-	        typeptr = plugin->typeptr;
-		job->device.engine = (gvdevice_engine_t *) (typeptr->engine);
-	        job->device.features = (gvdevice_features_t *) (typeptr->features);
-	        job->device.id = typeptr->id;
-	    }
-	    else {
-		job->device.engine = NULL;
-	    }
-
-	    return GVRENDER_PLUGIN;
-#ifdef WITH_CODEGENS
 	}
 #endif
+        typeptr = plugin->typeptr;
+        job->device.engine = (gvdevice_engine_t *) (typeptr->engine);
+        job->device.features = (gvdevice_features_t *) (typeptr->features);
+        job->device.id = typeptr->id;
     }
-    return NO_SUPPORT;
+    else
+	return NO_SUPPORT;  /* FIXME - should differentiate problem */
+    
+    plugin = gvc->api[API_render];
+    if (plugin) {
+        typeptr = plugin->typeptr;
+        job->render.engine = (gvrender_engine_t *) (typeptr->engine);
+
+        if (job->device.engine) {
+            job->render.features = (gvrender_features_t *) (typeptr->features);
+            job->render.id = typeptr->id;
+	}
+	else {
+	    /* a null device engine indicates that the renderer provides
+		the id and features */
+            job->render.features = (gvrender_features_t *) (job->device.features);
+            job->render.id = job->device.id;
+	}
+        return GVRENDER_PLUGIN;
+    }
+    job->render.engine = NULL;
+    return NO_SUPPORT;  /* FIXME - should differentiate problem */
 }
 
 int gvrender_features(GVJ_t * job)

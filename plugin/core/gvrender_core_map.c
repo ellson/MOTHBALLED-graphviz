@@ -302,9 +302,7 @@ static gvrender_features_t map_features = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     0,				/* color_type */
-    NULL,                       /* device */
     NULL,                       /* imageloader for usershapes */
-    NULL,                       /* formatter */
 };
 
 static gvrender_features_t map_features_nopoly = {
@@ -321,17 +319,20 @@ static gvrender_features_t map_features_nopoly = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     0,				/* color_type */
-    NULL,                       /* device */
     NULL,                       /* imageloader target for usershapes */
-    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_map_types[] = {
-    {FORMAT_ISMAP, "ismap", 1, &map_engine, &map_features_nopoly},
-    {FORMAT_CMAP, "cmap", 1, &map_engine, &map_features},
-    {FORMAT_IMAP, "imap", 1, &map_engine, &map_features},
-    {FORMAT_CMAPX, "cmapx", 1, &map_engine, &map_features},
-    {FORMAT_IMAP, "imap_np", 1, &map_engine, &map_features_nopoly},
-    {FORMAT_CMAPX, "cmapx_np", 1, &map_engine, &map_features_nopoly},
+    {FORMAT_ISMAP, "core_map", 1, &map_engine, NULL},
+    {0, NULL, 0, NULL, NULL}
+};
+
+gvplugin_installed_t gvdevice_core_map_types[] = {
+    {FORMAT_ISMAP, "ismap:core_map", 1, NULL, &map_features_nopoly},
+    {FORMAT_CMAP, "cmap:core_map", 1, NULL, &map_features},
+    {FORMAT_IMAP, "imap:core_map", 1, NULL, &map_features},
+    {FORMAT_CMAPX, "cmapx:core_map", 1, NULL, &map_features},
+    {FORMAT_IMAP, "imap_np:core_map", 1, NULL, &map_features_nopoly},
+    {FORMAT_CMAPX, "cmapx_np:core_map", 1, NULL, &map_features_nopoly},
     {0, NULL, 0, NULL, NULL}
 };

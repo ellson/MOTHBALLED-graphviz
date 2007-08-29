@@ -532,12 +532,15 @@ gvrender_features_t fig_features = {
     fig_knowncolors,		/* knowncolors */
     sizeof(fig_knowncolors) / sizeof(char *), /* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
-    NULL,                       /* device */
     "fig",                      /* imageloader for usershapes */
-    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_fig_types[] = {
-    {FORMAT_FIG, "fig", 1, &fig_engine, &fig_features},
+    {FORMAT_FIG, "core_fig", 1, &fig_engine, NULL},
+    {0, NULL, 0, NULL, NULL}
+};
+
+gvplugin_installed_t gvdevice_core_fig_types[] = {
+    {FORMAT_FIG, "fig:core_fig", 1, NULL, &fig_features},
     {0, NULL, 0, NULL, NULL}
 };

@@ -16,6 +16,12 @@
 
 #include "gvplugin.h"
 
+extern gvplugin_installed_t gvdevice_core_dot_types;
+extern gvplugin_installed_t gvdevice_core_ps_types;
+extern gvplugin_installed_t gvdevice_core_fig_types;
+extern gvplugin_installed_t gvdevice_core_svg_types;
+extern gvplugin_installed_t gvdevice_core_vml_types;
+extern gvplugin_installed_t gvdevice_core_map_types;
 extern gvplugin_installed_t gvrender_core_dot_types;
 extern gvplugin_installed_t gvrender_core_ps_types;
 extern gvplugin_installed_t gvrender_core_fig_types;
@@ -25,6 +31,12 @@ extern gvplugin_installed_t gvrender_core_map_types;
 extern gvplugin_installed_t gvloadimage_core_types;
 
 static gvplugin_api_t apis[] = {
+    {API_device, &gvdevice_core_dot_types},
+    {API_device, &gvdevice_core_ps_types},
+    {API_device, &gvdevice_core_fig_types},
+    {API_device, &gvdevice_core_svg_types},
+    {API_device, &gvdevice_core_vml_types},
+    {API_device, &gvdevice_core_map_types},
     {API_render, &gvrender_core_dot_types},
     {API_render, &gvrender_core_ps_types},
     {API_render, &gvrender_core_fig_types},

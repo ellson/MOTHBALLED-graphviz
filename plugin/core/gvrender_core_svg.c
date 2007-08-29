@@ -483,15 +483,18 @@ gvrender_features_t svg_features = {
     svg_knowncolors,		/* knowncolors */
     sizeof(svg_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
-    NULL,                       /* device */
     "svg",                      /* imageloader for usershapes */
-    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_svg_types[] = {
-    {FORMAT_SVG, "svg", 1, &svg_engine, &svg_features},
+    {FORMAT_SVG, "core_svg", 1, &svg_engine, NULL},
+    {0, NULL, 0, NULL, NULL}
+};
+
+gvplugin_installed_t gvdevice_core_svg_types[] = {
+    {FORMAT_SVG, "svg:core_svg", 1, NULL, &svg_features},
 #if HAVE_LIBZ
-    {FORMAT_SVGZ, "svgz", 1, &svg_engine, &svg_features},
+    {FORMAT_SVGZ, "svgz:core_svg", 1, NULL, &svg_features},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

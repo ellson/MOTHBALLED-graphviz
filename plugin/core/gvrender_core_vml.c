@@ -431,15 +431,18 @@ gvrender_features_t vml_features = {
     vml_knowncolors,		/* knowncolors */
     sizeof(vml_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
-    NULL,                       /* device */
     "vml",                      /* imageloader for usershapes */
-    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_vml_types[] = {
-    {FORMAT_VML, "vml", 1, &vml_engine, &vml_features},
+    {FORMAT_VML, "core_vml", 1, &vml_engine, NULL},
+    {0, NULL, 0, NULL, NULL}
+};
+
+gvplugin_installed_t gvdevice_core_vml_types[] = {
+    {FORMAT_VML, "vml:core_vml", 1, NULL, &vml_features},
 #if HAVE_LIBZ
-    {FORMAT_VMLZ, "vmlz", 1, &vml_engine, &vml_features},
+    {FORMAT_VMLZ, "vmlz:core_vml", 1, NULL, &vml_features},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

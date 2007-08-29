@@ -469,13 +469,16 @@ static gvrender_features_t psgen_features = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     HSVA_DOUBLE,		/* color_type */
-    NULL,                       /* device */
     "ps",                       /* imageloader for usershapes */
-    NULL,                       /* formatter */
 };
 
 gvplugin_installed_t gvrender_core_ps_types[] = {
-    {FORMAT_PS, "ps", 1, &psgen_engine, &psgen_features},
-    {FORMAT_PS2, "ps2", 1, &psgen_engine, &psgen_features},
+    {FORMAT_PS, "core_ps", 1, &psgen_engine, NULL},
+    {0, NULL, 0, NULL, NULL}
+};
+
+gvplugin_installed_t gvdevice_core_ps_types[] = {
+    {FORMAT_PS, "ps:core_ps", 1, NULL, &psgen_features},
+    {FORMAT_PS2, "ps2:core_ps", 1, NULL, &psgen_features},
     {0, NULL, 0, NULL, NULL}
 };

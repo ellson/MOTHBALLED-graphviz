@@ -218,46 +218,69 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
 
 
 /* load a plugin of type=str
-	where str can optionally contain a ":packagename" modifier */
+	the str can optionally contain one or more ":dependencies" 
+
+	examples:
+	        png
+		png:cairo
+        fully qualified:
+		png:cairo:cairo
+		png:cairo:gd
+		png:gd:gd
+      
+*/
 gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 {
     gvplugin_available_t **pnext, *rv;
     gvplugin_library_t *library;
     gvplugin_api_t *apis;
     gvplugin_installed_t *types;
-    char *s, *p;
+#define TYPBUFSIZ 64
+    char reqtyp[TYPBUFSIZ], typ[TYPBUFSIZ];
+    char *reqdep, *dep = NULL, *reqpkg;
     int i;
-
+    api_t apidep;
 
     /* check for valid apis[] index */
     if (api < 0)
 	return NULL;
 
-    /* does str have a :packagename modifier? */
-    s = strdup(str);
-    p = strchr(s, ':');
-    if (p)
-	*p++ = '\0';
+    if (api == API_device) /* api dependencies - FIXME - find better way to code these *s */
 
-    /* point to the beginning of the linked list of plugins for this api */
-    pnext = &(gvc->apis[api]);
+        apidep = API_render;	
+    else
+	apidep = api;
 
-    while (*pnext) {
-	if (strcmp(s, (*pnext)->typestr) == 0) {
-	    if (p) {
-		if (strcmp(p, (*pnext)->packagename) == 0)
-		    break;
-	    }
-	    else
-		break;
-	}
-	pnext = &((*pnext)->next);
+    strncpy(reqtyp, str, TYPBUFSIZ-1);
+    reqdep = strchr(reqtyp, ':');
+    if (reqdep) {
+	*reqdep++ = '\0';
+        reqpkg = strchr(reqdep, ':');
+        if (reqpkg)
+            *reqpkg++ = '\0';
+    }
+    else
+	reqpkg = NULL;
+
+    /* iterate the linked list of plugins for this api */
+    for (pnext = &(gvc->apis[api]); *pnext; pnext = &((*pnext)->next)) {
+        strncpy(typ, (*pnext)->typestr, TYPBUFSIZ-1);
+	dep = strchr(typ, ':');
+	if (dep) 
+	    *dep++ = '\0';
+	if (! typ || ! reqtyp || strcmp(typ, reqtyp)) 
+	    continue;  /* types empty or mismatched */
+ 	if (dep && reqdep && strcmp(dep, reqdep))
+	    continue;  /* dependencies not empty, but mismatched */
+	if (! reqpkg)
+	    break; /* found with no packagename constraints */
+	if (strcmp(reqpkg, (*pnext)->packagename) == 0)
+	    break;  /* found with required matching packagname */
     }
 
     rv = *pnext;
-    if ((*pnext) && (*pnext)->typeptr == NULL) {
-        rv = NULL;
-	library = gvplugin_library_load(gvc, (*pnext)->path);
+    if (rv && rv->typeptr == NULL) {
+	library = gvplugin_library_load(gvc, rv->path);
 	if (library) {
 
             /* Now activate the library with real type ptrs */
@@ -269,40 +292,32 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 				apis->api,
 				types[i].type,
 				library->packagename,
-				(*pnext)->path,
+				rv->path,
 				&types[i]);
 		}
             }
-	    
-	    /* Now search again for the specific plugin type */
-	    pnext = &(gvc->apis[api]);
-	    while (*pnext) {
-		if (strcmp(s, (*pnext)->typestr) == 0) {
-		    if (p) {
-			if (strcmp(p, (*pnext)->packagename) == 0)
-			    break;
-		    }
-		    else
-			break;
-		}
-		pnext = &((*pnext)->next);
-	    }
-	    rv = *pnext;
+    	    if (gvc->common.verbose >= 1)
+		fprintf(stderr, "Activated plugin library: %s\n",
+			rv->path ? rv->path : "<builtin>");
         }
     }
-    free(s);
 
-    /* one last check for succesfull load */
-    if ((*pnext) && (*pnext)->typeptr == NULL)
+    if (dep && (apidep != api)) /* load dependency if needed */
+	if (! (gvplugin_load(gvc, apidep, dep)))
+	    rv = NULL;
+
+    /* one last check for successfull load */
+    if (rv && rv->typeptr == NULL)
 	rv = NULL;
-    gvc->api[api] = rv;
 
     if (rv && gvc->common.verbose >= 1)
-	fprintf(stderr, "Using plugin: %s %s %s\n",
+	fprintf(stderr, "Using %s: %s:%s\n",
 		api_names[api],
 		rv->typestr,
-		rv->path ? rv->path : "<builtin>" );
+		rv->packagename
+		);
 
+    gvc->api[api] = rv;
     return rv;
 }
 
@@ -332,9 +347,9 @@ static const char *append_buf(char sep, char *str, boolean new)
 /* assemble a string list of available plugins */
 const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
 {
-    gvplugin_available_t **pnext, **plugin, **pprev;
+    gvplugin_available_t **pnext, **plugin;
     const char *buf = NULL;
-    char *s, *p, *typestr_last;
+    char *s, *p, *q, *typestr_last;
     boolean new = TRUE;
 
     /* check for valid apis[] index */
@@ -352,40 +367,41 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
 
     if (p) {	/* if str contains a ':', and if we find a match for the type,
 		   then just list the alternative paths for the plugin */
-	pnext = plugin;
-	pprev = NULL;
-	while (*pnext) {
-	    /* list only the matching type, and only once*/
-	    if (strcasecmp(s, (*pnext)->typestr) == 0
-		&& !(pprev
-		    && strcasecmp(s, (*pprev)->typestr) == 0
-		    && strcasecmp((*pprev)->packagename, (*pnext)->packagename) == 0)) {
+	for (pnext = plugin; *pnext; pnext = &((*pnext)->next)) {
+            q = strdup((*pnext)->typestr);
+	    if ((p = strchr(q, ':')))
+                *p++ = '\0';
+	    /* list only the matching type */
+	    if (strcasecmp(s, q) == 0) {
 		/* list each member of the matching type as "type:path" */
 		append_buf(' ', (*pnext)->typestr, new);
 		buf = append_buf(':', (*pnext)->packagename, FALSE);
 		new = FALSE;
 	    }
-	    pprev = pnext;
-	    pnext = &((*pnext)->next);
-	}
-    }
-    if (new) {			/* if the type was not found, or if str without ':',
-				   then just list available types */
-	pnext = plugin;
-	typestr_last = NULL;
-	while (*pnext) {
-	    /* list only one instance of type */
-	    if (!typestr_last
-		|| strcasecmp(typestr_last, (*pnext)->typestr) != 0) {
-		/* list it as "type"  i.e. w/o ":path" */
-		buf = append_buf(' ', (*pnext)->typestr, new);
-		new = FALSE;
-	    }
-	    typestr_last = (*pnext)->typestr;
-	    pnext = &((*pnext)->next);
+	    free(q);
 	}
     }
     free(s);
+    if (new) {			/* if the type was not found, or if str without ':',
+				   then just list available types */
+	typestr_last = NULL;
+	for (pnext = plugin; *pnext; pnext = &((*pnext)->next)) {
+	    /* list only one instance of type */
+	    q = strdup((*pnext)->typestr);
+	    if ((p = strchr(q, ':')))
+		*p++ = '\0';
+	    if (!typestr_last || strcasecmp(typestr_last, q) != 0) {
+		/* list it as "type"  i.e. w/o ":path" */
+		buf = append_buf(' ', q, new);
+		new = FALSE;
+	    }
+	    if(!typestr_last)
+		free(typestr_last);
+	    typestr_last = q;
+	}
+	if(!typestr_last)
+	    free(typestr_last);
+    }
     if (!buf)
 	buf = "";
     return buf;
