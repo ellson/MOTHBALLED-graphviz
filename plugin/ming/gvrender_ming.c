@@ -291,12 +291,15 @@ static gvrender_features_t ming_features = {
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
-    NULL,			/* device */
     NULL,			/* imageloader for usershapes */
-    NULL,			/* formatter */
 };
 
 gvplugin_installed_t gvrender_ming_types[] = {
-    {FORMAT_SWF, "swf", 10, &ming_engine, &ming_features},
+    {FORMAT_SWF, "ming", 10, &ming_engine, NULL},
+    {0, NULL, 0, NULL, NULL}
+};
+
+gvplugin_installed_t gvdevice_ming_types[] = {
+    {FORMAT_SWF, "swf:ming", 10, NULL, &ming_features},
     {0, NULL, 0, NULL, NULL}
 };
