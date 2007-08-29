@@ -849,10 +849,19 @@ static gvrender_features_t vrml_features = {
 #endif				/* HAVE_GD_PNG */
 #endif				/* HAVE_LIBGD */
 
-gvplugin_installed_t gvrender_vrml_types[] = {
+gvplugin_installed_t gvrender_gd_vrml_types[] = {
 #ifdef HAVE_LIBGD
 #ifdef HAVE_GD_PNG
-    {FORMAT_VRML, "vrml", 1, &vrml_engine, &vrml_features},
+    {FORMAT_VRML, "gd_vrml", 1, &vrml_engine, NULL},
+#endif
+#endif
+    {0, NULL, 0, NULL, NULL}
+};
+
+gvplugin_installed_t gvdevice_vrml_types[] = {
+#ifdef HAVE_LIBGD
+#ifdef HAVE_GD_PNG
+    {FORMAT_VRML, "vrml:gd_vrml", 1, NULL, &vrml_features},
 #endif
 #endif
     {0, NULL, 0, NULL, NULL}
