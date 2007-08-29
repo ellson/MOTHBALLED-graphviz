@@ -579,13 +579,14 @@ static void finalize_xlib(GVJ_t *firstjob)
 
 static gvdevice_engine_t device_engine_xlib = {
     initialize_xlib,
+    NULL,
     finalize_xlib,
 };
 #endif
 
 gvplugin_installed_t gvdevice_types_xlib[] = {
 #ifdef CAIRO_HAS_XLIB_SURFACE
-    {0, "xlib", 0, &device_engine_xlib, NULL},
+    {0, "xlib:cairox", 0, &device_engine_xlib, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

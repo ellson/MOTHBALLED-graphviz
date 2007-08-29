@@ -1086,7 +1086,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 
         rc = gvjobs_output_langname(gvc, "tk");
 	if (rc == NO_SUPPORT) {
-	    Tcl_AppendResult(interp, " Renderer type: \"tk\" not recognized.\n",
+	    Tcl_AppendResult(interp, " Format: \"tk\" not recognized.\n",
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
@@ -1121,7 +1121,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 	rc = gvjobs_output_langname(gvc, "gd");
 	if (rc == NO_SUPPORT) {
-	    Tcl_AppendResult(interp, " Renderer type: \"gd\" not recognized.\n",
+	    Tcl_AppendResult(interp, " Format: \"gd\" not recognized.\n",
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
