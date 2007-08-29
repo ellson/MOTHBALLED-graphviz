@@ -443,27 +443,11 @@ static gvrender_features_t cairogen_features_svg = {
     RGBA_DOUBLE,		/* color_type */
     "cairo",			/* imageloader for usershapes */
 };
-
-static gvrender_features_t cairogen_features_x = {
-    GVRENDER_DOES_TRUECOLOR
-	| GVRENDER_Y_GOES_DOWN
-	| GVRENDER_DOES_TRANSFORM
-	| GVRENDER_X11_EVENTS,	/* flags */
-    0,				/* default margin - points */
-    4.,                         /* default pad - graph units */
-    {0.,0.},                    /* default page width, height - points */
-    {72.,72.},			/* default dpi */
-    0,				/* knowncolors */
-    0,				/* sizeof knowncolors */
-    RGBA_DOUBLE,		/* color_type */
-    "cairo",			/* imageloader for usershapes */
-};
 #endif
 
 gvplugin_installed_t gvrender_pango_types[] = {
 #ifdef HAVE_PANGOCAIRO
     {FORMAT_CAIRO, "cairo", 10, &cairogen_engine, &cairogen_features},
-    {FORMAT_CAIRO, "cairox", 10, &cairogen_engine, &cairogen_features_x},
 #endif
     {0, NULL, 0, NULL, NULL}
 };
@@ -483,19 +467,19 @@ gvplugin_installed_t gvdevice_pango_types[] = {
     {FORMAT_SVG, "svg:cairo", -10, NULL, &cairogen_features_svg},
 #endif
 //#ifdef CAIRO_HAS_XCB_SURFACE
-//    {FORMAT_XCB, "xcb:cairo", 0, NULL, &cairogen_features_x},
+//    {FORMAT_XCB, "xcb:cairo", 0, NULL, &cairogen_features},
 //#endif
 //#ifdef CAIRO_HAS_SDL_SURFACE
-//    {FORMAT_SDL, "sdl:cairo", 0, NULL, &cairogen_features_x},
+//    {FORMAT_SDL, "sdl:cairo", 0, NULL, &cairogen_features},
 //#endif
 //#ifdef CAIRO_HAS_GLITZ_SURFACE
-//    {FORMAT_GLITZ, "glitz:cairo", 0, NULL, &cairogen_features_x},
+//    {FORMAT_GLITZ, "glitz:cairo", 0, NULL, &cairogen_features},
 //#endif
 //#ifdef CAIRO_HAS_QUARTZ_SURFACE
-//    {FORMAT_QUARTZ, "quartz:cairo", 0, NULL, &cairogen_features_x},
+//    {FORMAT_QUARTZ, "quartz:cairo", 0, NULL, &cairogen_features},
 //#endif
 //#ifdef CAIRO_HAS_WIN32_SURFACE
-//    {FORMAT_WIN32, "win32:cairo", 0, NULL, &cairogen_features_x},
+//    {FORMAT_WIN32, "win32:cairo", 0, NULL, &cairogen_features},
 //#endif
 #endif
     {0, NULL, 0, NULL, NULL}

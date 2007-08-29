@@ -78,7 +78,7 @@ writer ( const gchar *buf, gsize count, GError **error, gpointer data)
     return FALSE;
 }
 
-static void gdk_pixbuf_formatter(GVJ_t * job, unsigned int width, unsigned int height, unsigned char *data)
+static void gdk_pixbuf_format(GVJ_t * job, unsigned int width, unsigned int height, unsigned char *data)
 {
     char *format_str = "";
     GdkPixbuf *pixbuf;
@@ -131,11 +131,11 @@ static void gdk_pixbuf_formatter(GVJ_t * job, unsigned int width, unsigned int h
 
 static gvdevice_engine_t gdk_pixbuf_engine = {
     NULL,
-    gdk_pixbuf_formatter,
+    gdk_pixbuf_format,
     NULL,
 };
 
-static gvformatter_features_t gdk_pixbuf_features = {
+static gvdevice_features_t gdk_pixbuf_features = {
     0,  /* flags */
 };
 

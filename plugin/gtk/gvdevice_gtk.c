@@ -149,6 +149,10 @@ static void finalize_gtk(GVJ_t *firstjob)
     gtk_main();
 }
 
+static gvdevice_features_t device_features_gtk = {
+    GVDEVICE_EVENTS,    
+};
+
 static gvdevice_engine_t device_engine_gtk = {
     initialize_gtk,
     NULL,
@@ -160,9 +164,8 @@ static gvdevice_engine_t device_engine_gtk = {
 gvplugin_installed_t gvdevice_types_gtk[] = {
 #ifdef HAVE_GTK
 #ifdef CAIRO_HAS_XLIB_SURFACE
-    {0, "gtk:cairox", 0, &device_engine_gtk, NULL},
+    {0, "gtk:cairox", 0, &device_engine_gtk, &device_features_gtk},
 #endif
 #endif
     {0, NULL, 0, NULL, NULL}
 };
-

@@ -540,7 +540,9 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
 {
     switch (job->output_lang) {
     case GVRENDER_PLUGIN:
-        job->flags |= chkOrder(g) | job->render.features->flags;
+        job->flags |= chkOrder(g)
+		      | job->render.features->flags
+		      | job->device.features->flags;
         break;
     case VTX:
         /* output sorted, i.e. all nodes then all edges */
@@ -2778,7 +2780,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	/* if we already have an active job list and the device doesn't support mutiple output files, or we are about to write to a different output device */
         firstjob = gvc->active_jobs;
         if (firstjob
-	    && (!(firstjob->flags & GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES)
+	    && (!(firstjob->flags & GVRENDER_DOES_MULTIGRAPHS)
 	      || (strcmp(job->output_langname,firstjob->output_langname)))) {
 
 	    gvrender_end_job(firstjob);
@@ -2819,7 +2821,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	    gvrender_begin_job(job); /* FIXME? - semantics are unclear */
         }
 
-	if (! (job->flags & GVRENDER_X11_EVENTS)) {
+	if (! (job->flags & GVDEVICE_EVENTS)) {
     		/* Show_boxes is not defined, if at all, 
                  * until splines are generated in dot 
                  */

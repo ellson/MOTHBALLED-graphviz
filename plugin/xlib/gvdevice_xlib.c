@@ -577,6 +577,10 @@ static void finalize_xlib(GVJ_t *firstjob)
     firstjob->keycodes = NULL;
 }
 
+static gvdevice_features_t device_features_xlib = {
+    GVDEVICE_EVENTS,
+};
+
 static gvdevice_engine_t device_engine_xlib = {
     initialize_xlib,
     NULL,
@@ -586,7 +590,7 @@ static gvdevice_engine_t device_engine_xlib = {
 
 gvplugin_installed_t gvdevice_types_xlib[] = {
 #ifdef CAIRO_HAS_XLIB_SURFACE
-    {0, "xlib:cairox", 0, &device_engine_xlib, NULL},
+    {0, "xlib:cairox", 0, &device_engine_xlib, &device_features_xlib},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

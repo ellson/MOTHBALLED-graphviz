@@ -279,7 +279,7 @@ static gvrender_engine_t ming_engine = {
 };
 
 static gvrender_features_t ming_features = {
-    (	GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES
+    (	GVRENDER_DOES_MULTIGRAPHS
 	| GVRENDER_DOES_TRUECOLOR
 	| GVRENDER_Y_GOES_DOWN
 //	| GVRENDER_DOES_TRANSFORM

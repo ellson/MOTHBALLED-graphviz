@@ -49,10 +49,10 @@ extern "C" {
 #define EMIT_EDGE_SORTED (1<<4)
 #define GVRENDER_DOES_ARROWS (1<<5)
 #define GVRENDER_DOES_LAYERS (1<<6)
-#define GVRENDER_DOES_MULTIGRAPH_OUTPUT_FILES (1<<7)
+#define GVRENDER_DOES_MULTIGRAPHS (1<<7)
 #define GVRENDER_DOES_TRUECOLOR (1<<8)
 #define GVRENDER_Y_GOES_DOWN (1<<9)
-#define GVRENDER_X11_EVENTS (1<<10)
+#define GVDEVICE_EVENTS (1<<10)
 #define GVRENDER_DOES_TRANSFORM (1<<11)
 #define GVRENDER_DOES_LABELS (1<<12)
 #define GVRENDER_DOES_MAPS (1<<13)
@@ -84,18 +84,7 @@ extern "C" {
 	int flags;
     } gvdevice_features_t;
 
-    typedef struct {
-	int flags;
-    } gvformatter_features_t;
-
 #define LAYOUT_USES_RANKDIR (1<<0)
-
-    /* active plugin headers */
-    typedef struct gvplugin_active_formatter_s {
-        gvformatter_engine_t *engine;
-        int id;
-        gvformatter_features_t *features;
-    } gvplugin_active_formatter_t;
 
     typedef struct gvplugin_active_device_s {
         gvdevice_engine_t *engine;
@@ -255,7 +244,6 @@ typedef enum {COMPRESSION_NONE, COMPRESSION_ZLIB} compression_t;
 
 	gvplugin_active_render_t render;
 	gvplugin_active_device_t device;
-	gvplugin_active_formatter_t formatter;
 	gvplugin_active_loadimage_t loadimage;
 	gvdevice_callbacks_t *callbacks;
 	pointf device_dpi;
