@@ -16,10 +16,10 @@
 
 #include "gvplugin.h"
 
-extern gvplugin_installed_t gvformatter_gdk_pixbuf_types;
+extern gvplugin_installed_t gvdevice_gdk_pixbuf_types;
 
 static gvplugin_api_t apis[] = {
-    {API_formatter, &gvformatter_gdk_pixbuf_types},
+    {API_device, &gvdevice_gdk_pixbuf_types},
     {(api_t)0, 0},
 };
 
