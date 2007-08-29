@@ -532,7 +532,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
     codegen_info_t *p;
 
     for (p = cg; p->name; ++p)
-        gvplugin_install(gvc, API_render, p->name, 0,
+        gvplugin_install(gvc, API_device, p->name, 0,
                         "cg", NULL, (gvplugin_installed_t *) p);
 #endif
 

@@ -96,8 +96,8 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
     rc = gvjobs_output_langname(gvc, format);
     job = gvc->job;
     if (rc == NO_SUPPORT) {
-        agerr (AGERR, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
-                format, gvplugin_list(gvc, API_render, format));
+        agerr (AGERR, "Format: \"%s\" not recognized. Use one of:%s\n",
+                format, gvplugin_list(gvc, API_device, format));
         return -1;
     }
 
@@ -133,7 +133,7 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
     rc = gvjobs_output_langname(gvc, format);
     job = gvc->job;
     if (rc == NO_SUPPORT) {
-	agerr(AGERR, "Renderer type: \"%s\" not recognized. Use one of:%s\n",                format, gvplugin_list(gvc, API_render, format));
+	agerr(AGERR, "Format: \"%s\" not recognized. Use one of:%s\n",                format, gvplugin_list(gvc, API_device, format));
 	return -1;
     }
 

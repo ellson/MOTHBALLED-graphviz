@@ -236,8 +236,8 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 		}
 		v = gvjobs_output_langname(gvc, val);
 		if (!v) {
-		    fprintf(stderr, "Renderer type: \"%s\" not recognized. Use one of:%s\n",
-			val, gvplugin_list(gvc, API_render, val));
+		    fprintf(stderr, "Format: \"%s\" not recognized. Use one of:%s\n",
+			val, gvplugin_list(gvc, API_device, val));
 		    exit(1);
 		}
 		break;
