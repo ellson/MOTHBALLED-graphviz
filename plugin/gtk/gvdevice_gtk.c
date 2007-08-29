@@ -164,7 +164,7 @@ static gvdevice_engine_t device_engine_gtk = {
 gvplugin_installed_t gvdevice_types_gtk[] = {
 #ifdef HAVE_GTK
 #ifdef CAIRO_HAS_XLIB_SURFACE
-    {0, "gtk:cairox", 0, &device_engine_gtk, &device_features_gtk},
+    {0, "gtk:cairo", 0, &device_engine_gtk, &device_features_gtk},
 #endif
 #endif
     {0, NULL, 0, NULL, NULL}
