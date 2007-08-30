@@ -188,7 +188,7 @@ static void tk_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     double dpi = GD_drawing(g)->dpi;
 
-    Tkgendata = (tkgendata_t *)gvc->job->surface;
+    Tkgendata = (tkgendata_t *)gvc->job->context;
 
     if (dpi < 1.0)
 	dpi = DEFAULT_DPI;
