@@ -232,7 +232,6 @@ static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->context;
     pointf offset;
-    PangoLayout *layout = (PangoLayout*)(para->layout);
 
     cairo_set_dash (cr, dashed, 0, 0.0);  /* clear any dashing */
     cairogen_set_color(cr, &(obj->pencolor));
@@ -249,9 +248,10 @@ static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	offset.x = para->width / 2.0;
 	break;
     }
+    offset.y = para->yoffset;
 
-    cairo_move_to (cr, p.x-offset.x, -p.y - para->yoffset);
-    pango_cairo_show_layout(cr, layout);
+    cairo_move_to (cr, p.x-offset.x, -p.y-offset.y);
+    pango_cairo_show_layout(cr, (PangoLayout*)(para->layout));
 }
 
 static void cairogen_set_penstyle(GVJ_t *job, cairo_t *cr)

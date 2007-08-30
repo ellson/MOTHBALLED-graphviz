@@ -69,7 +69,7 @@ extern "C" {
 	void *layout;
 	void (*free_layout) (void *layout);
 	htmlfont_t *font;
-	double size;  /* size of text item according to font */
+	double size, dpi, yoffset;  /* size of text item according to font */
     } textitem_t;
 	
     typedef struct {
