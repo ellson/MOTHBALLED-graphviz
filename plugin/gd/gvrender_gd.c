@@ -52,7 +52,7 @@ extern pointf Bezier(pointf * V, int degree, double t, pointf * Left, pointf * R
 
 static void gdgen_resolve_color(GVJ_t * job, gvcolor_t * color)
 {
-    gdImagePtr im = (gdImagePtr) job->surface;
+    gdImagePtr im = (gdImagePtr) job->context;
     int alpha;
 
     if (!im)
@@ -96,10 +96,10 @@ static void gdgen_begin_page(GVJ_t * job)
     if (GD_has_images(job->gvc->g))
 	truecolor_p = TRUE;	/* force truecolor */
 
-    if (job->external_surface) {
+    if (job->external_context) {
 	if (job->common->verbose)
 	    fprintf(stderr, "%s: using existing GD image\n", job->common->cmdname);
-	im = (gdImagePtr) (job->surface);
+	im = (gdImagePtr) (job->context);
     } else {
 	if (truecolor_p) {
 	    if (job->common->verbose)
@@ -115,7 +115,7 @@ static void gdgen_begin_page(GVJ_t * job)
 			job->common->cmdname, ROUND(job->width * job->height / 1024.));
 	    im = gdImageCreate(job->width, job->height);
 	}
-        job->surface = (void *) im;
+        job->context = (void *) im;
     }
 
     if (!im) {
@@ -147,11 +147,11 @@ static void gdgen_begin_page(GVJ_t * job)
 
 static void gdgen_end_page(GVJ_t * job)
 {
-    gdImagePtr im = (gdImagePtr) job->surface;
+    gdImagePtr im = (gdImagePtr) job->context;
 
     if (!im)
 	return;
-    if (job->external_surface) {
+    if (job->external_context) {
 	/* leave image in memory to be handled by Gdtclft output routines */
 #ifdef MYTRACE
 	fprintf(stderr, "gdgen_end_graph (to memory)\n");
@@ -223,7 +223,7 @@ static void gdgen_end_page(GVJ_t * job)
 #ifdef MYTRACE
 	fprintf(stderr, "gdgen_end_graph (to file)\n");
 #endif
-	job->surface = NULL;
+	job->context = NULL;
     }
 }
 
@@ -328,7 +328,7 @@ void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fon
 
 static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
-    gdImagePtr im = (gdImagePtr) job->surface;
+    gdImagePtr im = (gdImagePtr) job->context;
     pointf spf, epf;
     double parawidth = para->width * job->scale.x;
 
@@ -417,7 +417,7 @@ gdgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	     int arrow_at_end, int filled)
 {
     obj_state_t *obj = job->obj;
-    gdImagePtr im = (gdImagePtr) job->surface;
+    gdImagePtr im = (gdImagePtr) job->context;
     pointf p0, p1, V[4];
     int i, j, step, pen;
     boolean pen_ok, fill_ok;
@@ -462,7 +462,7 @@ static int points_allocated;
 static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
     obj_state_t *obj = job->obj;
-    gdImagePtr im = (gdImagePtr) job->surface;
+    gdImagePtr im = (gdImagePtr) job->context;
     gdImagePtr brush = NULL;
     int i;
     int pen;
@@ -497,7 +497,7 @@ static void gdgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     obj_state_t *obj = job->obj;
-    gdImagePtr im = (gdImagePtr) job->surface;
+    gdImagePtr im = (gdImagePtr) job->context;
     double dx, dy;
     int pen;
     boolean pen_ok, fill_ok;
@@ -526,7 +526,7 @@ static void gdgen_ellipse(GVJ_t * job, pointf * A, int filled)
 
 static void gdgen_polyline(GVJ_t * job, pointf * A, int n)
 {
-    gdImagePtr im = (gdImagePtr) job->surface;
+    gdImagePtr im = (gdImagePtr) job->context;
     pointf p, p1;
     int i;
     int pen;

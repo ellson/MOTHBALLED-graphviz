@@ -2214,6 +2214,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	    setColorScheme (agget (g, "colorscheme"));
     	    setup_page(job, g);
 	    gvrender_begin_page(job);
+	    gvdevice_prepare(job);
 	    gvrender_set_pencolor(job, DEFAULT_COLOR);
 	    gvrender_set_fillcolor(job, DEFAULT_FILL);
 	    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
@@ -2240,6 +2241,7 @@ void emit_graph(GVJ_t * job, graph_t * g)
 		gvrender_end_anchor(job);
 //	    if (boxf_overlap(job->clip, job->pageBox))
 	        emit_view(job,g,flags);
+	    gvdevice_format(job);
 	    gvrender_end_page(job);
 	} 
 
@@ -2831,7 +2833,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	    emit_graph(job, g); /* FIXME? - this should be a special case of finalize() */
 
 	    /* Flush is necessary because we may be writing to a pipe. */
-	    if (job->output_file && ! job->external_surface && job->output_lang != TK)
+	    if (job->output_file && ! job->external_context && job->output_lang != TK)
 	        fflush(job->output_file);
 	}
 

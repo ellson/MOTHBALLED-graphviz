@@ -156,6 +156,7 @@ static gvdevice_features_t device_features_gtk = {
 static gvdevice_engine_t device_engine_gtk = {
     initialize_gtk,
     NULL,
+    NULL,
     finalize_gtk,
 };
 #endif

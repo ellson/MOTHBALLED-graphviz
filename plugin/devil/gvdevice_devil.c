@@ -48,7 +48,7 @@ Y_inv ( unsigned int width, unsigned int height, unsigned char *data)
         }
 }
 
-static void devil_format(GVJ_t * job, unsigned int width, unsigned int height, unsigned char *data)
+static void devil_format(GVJ_t * job)
 {
     ILuint	ImgId;
     ILenum	Error;
@@ -79,14 +79,14 @@ static void devil_format(GVJ_t * job, unsigned int width, unsigned int height, u
     // Bind this image name.
     ilBindImage(ImgId);
 
-    Y_inv ( width, height, data );
+    Y_inv ( job->width, job->height, job->imagedata );
     
-    rc = ilTexImage( width, height,
+    rc = ilTexImage( job->width, job->height,
     		1,		// Depth
     		4,		// Bpp
     		IL_BGRA,	// Format
     		IL_UNSIGNED_BYTE,// Type
-    		data);
+    		job->imagedata);
     
 #if 1
     ilSaveF(job->device.id, job->output_file);
@@ -107,6 +107,7 @@ static void devil_format(GVJ_t * job, unsigned int width, unsigned int height, u
 }
 
 static gvdevice_engine_t devil_engine = {
+    NULL,
     NULL,
     devil_format,
     NULL,

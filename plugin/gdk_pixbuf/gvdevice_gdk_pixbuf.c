@@ -106,7 +106,7 @@ writer ( const gchar *buf, gsize count, GError **error, gpointer data)
     return FALSE;
 }
 
-static void gdk_pixbuf_format(GVJ_t * job, unsigned int width, unsigned int height, unsigned char *data)
+static void gdk_pixbuf_format(GVJ_t * job)
 {
     char *format_str = "";
     GdkPixbuf *pixbuf;
@@ -138,16 +138,16 @@ static void gdk_pixbuf_format(GVJ_t * job, unsigned int width, unsigned int heig
 	break;
     }
 
-    argb2rgba(width, height, data);
+    argb2rgba(job->width, job->height, job->imagedata);
 
     pixbuf = gdk_pixbuf_new_from_data(
-                data,                   // data
+                job->imagedata,         // data
                 GDK_COLORSPACE_RGB,     // colorspace
                 TRUE,                   // has_alpha
                 8,                      // bits_per_sample
-                width,                  // width
-                height,                 // height
-                4 * width,              // rowstride
+                job->width,             // width
+                job->height,            // height
+                4 * job->width,         // rowstride
                 NULL,                   // destroy_fn
                 NULL                    // destroy_fn_data
                );
@@ -158,6 +158,7 @@ static void gdk_pixbuf_format(GVJ_t * job, unsigned int width, unsigned int heig
 }
 
 static gvdevice_engine_t gdk_pixbuf_engine = {
+    NULL,
     NULL,
     gdk_pixbuf_format,
     NULL,

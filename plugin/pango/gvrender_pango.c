@@ -131,8 +131,8 @@ static void cairogen_begin_page(GVJ_t * job)
     fedisableexcept(FE_ALL_EXCEPT);
 #endif
 
-    if (job->surface)
-        cr = (cairo_t *) job->surface;
+    if (job->context)
+        cr = (cairo_t *) job->context;
 
     switch (job->render.id) {
     case FORMAT_CAIRO:
@@ -141,6 +141,7 @@ static void cairogen_begin_page(GVJ_t * job)
 	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 			job->width, job->height);
 	    cr = cairo_create(surface);
+	    job->imagedata = cairo_image_surface_get_data(surface);	
 	    cairo_surface_destroy (surface);
 	}
 	break;
@@ -171,7 +172,7 @@ static void cairogen_begin_page(GVJ_t * job)
     default:
 	break;
     }
-    job->surface = (void *) cr;
+    job->context = (void *) cr;
 
     cairo_save(cr);
     cairo_scale(cr, job->scale.x, job->scale.y);
@@ -181,7 +182,7 @@ static void cairogen_begin_page(GVJ_t * job)
 
 static void cairogen_end_page(GVJ_t * job)
 {
-    cairo_t *cr = (cairo_t *) job->surface;
+    cairo_t *cr = (cairo_t *) job->context;
     cairo_surface_t *surface;
 
 
@@ -189,7 +190,6 @@ static void cairogen_end_page(GVJ_t * job)
 
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
     case FORMAT_PNG:
-        surface = cairo_get_target(cr);
 #ifdef HAVE_SETMODE
 #ifdef O_BINARY
 	/*
@@ -198,6 +198,7 @@ static void cairogen_end_page(GVJ_t * job)
 	setmode(fileno(job->output_file), O_BINARY);
 #endif
 #endif
+        surface = cairo_get_target(cr);
 	cairo_surface_write_to_png_stream(surface, writer, job->output_file);
 	break;
 #endif
@@ -208,30 +209,16 @@ static void cairogen_end_page(GVJ_t * job)
 	cairo_show_page(cr);
 	break;
 
-    case FORMAT_CAIRO:
-	{
-	    gvdevice_engine_t *gvde = job->device.engine;
-	    unsigned int width, height;
-	    unsigned char *data;
- 
-	    if (gvde && gvde->format) {
-                surface = cairo_get_target(cr);
-		width = cairo_image_surface_get_width(surface);
-		height = cairo_image_surface_get_height(surface);
-		data = cairo_image_surface_get_data(surface);
-		gvde->format(job, width, height, data);
-	    }
-	}
-
+    case FORMAT_CAIRO:  /* formatting already done by gvdevice_format() */
     default:
 	break;
     }
 
-    if (job->external_surface)
+    if (job->external_context)
 	cairo_restore(cr);
     else {
 	cairo_destroy(cr);
-	job->surface = NULL;
+	job->context = NULL;
     }
 
 #if defined HAVE_FENV_H && defined HAVE_FESETENV && defined HAVE_FEGETENV && defined(HAVE_FEENABLEEXCEPT)
@@ -243,7 +230,7 @@ static void cairogen_end_page(GVJ_t * job)
 static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     obj_state_t *obj = job->obj;
-    cairo_t *cr = (cairo_t *) job->surface;
+    cairo_t *cr = (cairo_t *) job->context;
     pointf offset;
     PangoLayout *layout = (PangoLayout*)(para->layout);
 
@@ -285,7 +272,7 @@ static void cairogen_set_penstyle(GVJ_t *job, cairo_t *cr)
 static void cairogen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     obj_state_t *obj = job->obj;
-    cairo_t *cr = (cairo_t *) job->surface;
+    cairo_t *cr = (cairo_t *) job->context;
     cairo_matrix_t matrix;
     double rx, ry;
 
@@ -315,7 +302,7 @@ static void
 cairogen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
     obj_state_t *obj = job->obj;
-    cairo_t *cr = (cairo_t *) job->surface;
+    cairo_t *cr = (cairo_t *) job->context;
     int i;
 
     cairogen_set_penstyle(job, cr);
@@ -337,7 +324,7 @@ cairogen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 		int arrow_at_end, int filled)
 {
     obj_state_t *obj = job->obj;
-    cairo_t *cr = (cairo_t *) job->surface;
+    cairo_t *cr = (cairo_t *) job->context;
     int i;
 
     cairogen_set_penstyle(job, cr);
@@ -354,7 +341,7 @@ static void
 cairogen_polyline(GVJ_t * job, pointf * A, int n)
 {
     obj_state_t *obj = job->obj;
-    cairo_t *cr = (cairo_t *) job->surface;
+    cairo_t *cr = (cairo_t *) job->context;
     int i;
 
     cairogen_set_penstyle(job, cr);

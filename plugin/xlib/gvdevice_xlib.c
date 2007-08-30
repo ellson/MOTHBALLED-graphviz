@@ -263,7 +263,7 @@ static void update_display(GVJ_t *job, Display *dpy)
 	surface = cairo_xlib_surface_create(dpy,
 			window->pix, window->visual,
 			job->width, job->height);
-    	job->surface = (void *)cairo_create(surface);
+    	job->context = (void *)cairo_create(surface);
 	cairo_surface_destroy(surface);
         (job->callbacks->refresh)(job);
 	XCopyArea(dpy, window->pix, window->win, window->gc,
@@ -583,6 +583,7 @@ static gvdevice_features_t device_features_xlib = {
 
 static gvdevice_engine_t device_engine_xlib = {
     initialize_xlib,
+    NULL,
     NULL,
     finalize_xlib,
 };

@@ -252,8 +252,9 @@ typedef enum {COMPRESSION_NONE, COMPRESSION_ZLIB} compression_t;
 	void *display;
 	int screen;
 
-	void *surface;		/* gd or cairo surface */
-	boolean external_surface;	/* surface belongs to caller */
+	void *context;		/* gd or cairo surface */
+	boolean external_context;	/* context belongs to caller */
+	unsigned char *imagedata; /* location of imagedata */
 
         int flags;		/* emit_graph flags */
 

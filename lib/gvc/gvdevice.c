@@ -81,11 +81,24 @@ void gvdevice_initialize(GVJ_t * firstjob)
 {
     gvdevice_engine_t *gvde = firstjob->device.engine;
 
-    if (gvde) {
-	if (gvde->initialize) {
-	    gvde->initialize(firstjob);
-	}
-    }
+    if (gvde && gvde->initialize)
+	gvde->initialize(firstjob);
+}
+
+void gvdevice_prepare(GVJ_t * job)
+{
+    gvdevice_engine_t *gvde = job->device.engine;
+
+    if (gvde && gvde->prepare)
+	gvde->prepare(job);
+}
+
+void gvdevice_format(GVJ_t * job)
+{
+    gvdevice_engine_t *gvde = job->device.engine;
+
+    if (gvde && gvde->format)
+	gvde->format(job);
 }
 
 void gvdevice_finalize(GVJ_t * firstjob)
@@ -111,7 +124,7 @@ void gvdevice_finalize(GVJ_t * firstjob)
     for (job = firstjob; job; job = job->next_active) {
 	if (job->output_filename
 	  && job->output_file != stdout 
-	  && ! job->external_surface) {
+	  && ! job->external_context) {
 	    if (job->output_file) {
 	        fclose(job->output_file);
 	        job->output_file = NULL;

@@ -27,7 +27,8 @@ extern "C" {
 
     struct gvdevice_engine_s {
 	void (*initialize) (GVJ_t * firstjob);
-	void (*format) (GVJ_t * firstjob, unsigned int width, unsigned int height, unsigned char *data);
+	void (*prepare) (GVJ_t * firstjob);
+	void (*format) (GVJ_t * firstjob);
 	void (*finalize) (GVJ_t * firstjob);
     };
 

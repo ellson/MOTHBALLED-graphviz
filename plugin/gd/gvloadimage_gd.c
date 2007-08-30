@@ -108,7 +108,7 @@ static gdImagePtr gd_loadimage(GVJ_t * job, usershape_t *us)
 
 static void gd_loadimage_gd(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
-    gdImagePtr im3, im2 = NULL, im = (gdImagePtr) job->surface;
+    gdImagePtr im3, im2 = NULL, im = (gdImagePtr) job->context;
 
     if ((im2 = gd_loadimage(job, us))) {
         if (job->rotation) {

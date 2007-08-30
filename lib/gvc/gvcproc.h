@@ -70,6 +70,8 @@ extern "C" {
 /* device */
 
     extern void gvdevice_initialize(GVJ_t * job);
+    extern void gvdevice_prepare(GVJ_t * job);
+    extern void gvdevice_format(GVJ_t * job);
     extern void gvdevice_finalize(GVJ_t * job);
 
 /* render */

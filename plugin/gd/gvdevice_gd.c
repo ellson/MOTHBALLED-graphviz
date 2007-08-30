@@ -38,10 +38,13 @@ typedef enum {
 	FORMAT_XBM,
 } format_type;
 
-static void gd_format(GVJ_t * job, unsigned int width, unsigned int height, unsigned char *data)
+static void gd_format(GVJ_t * job)
 {
     gdImagePtr im;
-    unsigned int x, y, *intdata, color, alpha;
+    unsigned int x, y, color, alpha;
+    unsigned int *data = (unsigned int*)(job->imagedata);
+    unsigned int width = job->width;
+    unsigned int height = job->height;
 
 #ifdef HAVE_SETMODE
 #ifdef O_BINARY
@@ -53,11 +56,10 @@ static void gd_format(GVJ_t * job, unsigned int width, unsigned int height, unsi
 #endif
 #endif
 
-    intdata = (unsigned int*)data;
     im = gdImageCreateTrueColor(width, height);
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
-	    color = *intdata++;
+	    color = *data++;
 	    /* gd's max alpha is 127 */
 	    if ((alpha = (color >> 25) & 0x7f))
 	        /* gd's alpha is transparency instead of opacity */
@@ -133,6 +135,7 @@ static void gd_format(GVJ_t * job, unsigned int width, unsigned int height, unsi
 }
 
 static gvdevice_engine_t gd_engine = {
+    NULL,
     NULL,
     gd_format,
     NULL,

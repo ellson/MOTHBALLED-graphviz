@@ -41,21 +41,21 @@ static void ming_begin_job(GVJ_t * job)
     SWFMovie_setRate(movie, SWFFRAMERATE);
     SWFMovie_setDimension(movie, job->width, job->height);
 
-    job->surface = (void*) movie;
+    job->context = (void*) movie;
 }
 
 static void ming_end_job(GVJ_t * job)
 {
-    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFMovie movie = (SWFMovie)(job->context);
 
     SWFMovie_output_to_stream(movie, job->output_file);
     destroySWFMovie(movie);
-    job->surface = NULL;
+    job->context = NULL;
 }
 
 static void ming_begin_page(GVJ_t * job)
 {
-//    SWFMovie movie = (SWFMovie)(job->surface);
+//    SWFMovie movie = (SWFMovie)(job->context);
 
 //    SWFMovie_setNumberOfFrames(movie, job->common->viewNum + 1);
 
@@ -68,7 +68,7 @@ static void ming_begin_page(GVJ_t * job)
 
 static void ming_end_page(GVJ_t * job)
 {
-    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFMovie movie = (SWFMovie)(job->context);
 
     SWFMovie_nextFrame(movie);
 }
@@ -78,7 +78,7 @@ extern char* gvconfig_libdir(void);
 
 static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
-    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFMovie movie = (SWFMovie)(job->context);
     SWFTextField textfield;
     SWFDisplayItem item;
     obj_state_t *obj = job->obj;
@@ -139,7 +139,7 @@ static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
 static void ming_ellipse(GVJ_t * job, pointf * A, int filled)
 {
-    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFMovie movie = (SWFMovie)(job->context);
     SWFShape shape;
     SWFFill fill;
     SWFDisplayItem item;
@@ -174,7 +174,7 @@ static void ming_ellipse(GVJ_t * job, pointf * A, int filled)
 static void
 ming_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
-    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFMovie movie = (SWFMovie)(job->context);
     SWFShape shape;
     SWFFill fill;
     obj_state_t *obj = job->obj;
@@ -207,7 +207,7 @@ static void
 ming_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 		int arrow_at_end, int filled)
 {
-    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFMovie movie = (SWFMovie)(job->context);
     SWFShape shape;
     obj_state_t *obj = job->obj;
     gvcolor_t pencolor = obj->pencolor;
@@ -229,7 +229,7 @@ ming_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 static void
 ming_polyline(GVJ_t * job, pointf * A, int n)
 {
-    SWFMovie movie = (SWFMovie)(job->surface);
+    SWFMovie movie = (SWFMovie)(job->context);
     SWFShape shape;
     obj_state_t *obj = job->obj;
     gvcolor_t pencolor = obj->pencolor;
