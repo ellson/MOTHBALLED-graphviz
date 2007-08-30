@@ -1092,8 +1092,8 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 	job = gvc->job;
 
-	job->surface = (void *)(&tkgendata);
-	job->external_surface = TRUE;
+	job->context = (void *)(&tkgendata);
+	job->external_context = TRUE;
 
 	/* make sure that layout is done */
 	g = g->root;
@@ -1131,8 +1131,8 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    Tcl_AppendResult(interp, "GD Image not found.", (char *) NULL);
 	    return TCL_ERROR;
 	}
-	job->surface = *hdl;
-	job->external_surface = TRUE;
+	job->context = *hdl;
+	job->external_context = TRUE;
 
 	/* make sure that layout is done */
 	g = g->root;
