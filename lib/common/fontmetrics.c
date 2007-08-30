@@ -137,6 +137,7 @@ estimate_textlayout(graph_t *g, textpara_t * para, char **fontpath)
 
     para->width = 0.0;
     para->height = para->fontsize * LINESPACING;
+    para->yoffset = 0.0;
     para->xshow = NULL;
     para->layout = para->fontname;
     para->free_layout = NULL;
@@ -200,6 +201,10 @@ pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
 
     para->fontname = fontname;
     para->fontsize = fontsize;
+
+    para->dpi = GD_drawing(g)->dpi;
+    if (para->dpi < 1.)
+	para->dpi = (double)POINTS_PER_INCH;
 
     para->postscript_alias = translate_postscript_fontname(fontname);
 

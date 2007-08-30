@@ -40,7 +40,7 @@ extern "C" {
 	char *xshow;
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
-	double fontsize, width, height;
+	double fontsize, width, height, dpi, yoffset;
 	char just;
     } textpara_t;
 
