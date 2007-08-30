@@ -97,17 +97,18 @@ char *gd_alternate_fontlist(char *font)
 }
 #endif				/* HAVE_GD_FONTCONFIG */
 
-static boolean gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath)
+static boolean gd_textlayout(textpara_t * para, char **fontpath)
 {
     char *err;
     char *fontlist;
     int brect[8];
     gdFTStringExtra strex;
+    double fontsize;
 
     strex.flags = gdFTEX_XSHOW
 	| gdFTEX_RETURNFONTPATHNAME | gdFTEX_RESOLUTION;
     strex.xshow = NULL;
-    strex.hdpi = strex.vdpi = 72;
+    strex.hdpi = strex.vdpi = (int)para->dpi;
 
     if (strstr(para->fontname, "/"))
 	strex.flags |= gdFTEX_FONTPATHNAME;
@@ -116,18 +117,21 @@ static boolean gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
 
     para->width = 0.0;
     para->height = 0.0;
+    para->yoffset = 0.0;
     para->xshow = NULL;
 
     para->layout = NULL;
     para->free_layout = NULL;
 
+    fontsize = para->fontsize * POINTS_PER_INCH / para->dpi;
+
     if (para->fontname) {
-	if (para->fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
+	if (fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
 	    return TRUE; /* OK, but ignore text entirely */
-	} else if (para->fontsize <= FONTSIZE_TOO_SMALL) {
+	} else if (fontsize <= FONTSIZE_TOO_SMALL) {
 	    /* draw line in place of text */
 	    /* fake a finite fontsize so that line length is calculated */
-	    para->fontsize = FONTSIZE_TOO_SMALL;
+	    fontsize = FONTSIZE_TOO_SMALL;
 	}
 	/* call gdImageStringFT with null *im to get brect and to set font cache */
 #ifdef HAVE_GD_FONTCONFIG
@@ -137,7 +141,7 @@ static boolean gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
 #endif
 
 	err = gdImageStringFTEx(NULL, brect, -1, fontlist,
-				para->fontsize, 0, 0, 0, para->str, &strex);
+				fontsize, 0, 0, 0, para->str, &strex);
 
 	if (err) {
 	    fprintf(stderr,"%s\n", err);
@@ -160,6 +164,7 @@ static boolean gd_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontp
              * see LINESPACING in const.h.
              */
 	    para->height = (int)(para->fontsize * 1.2);
+            para->yoffset = 0.0;
 	}
     }
     return TRUE;

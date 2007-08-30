@@ -32,7 +32,7 @@ static void pango_free_layout (void *layout)
     g_object_unref((PangoLayout*)layout);
 }
 
-static boolean pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fontpath)
+static boolean pango_textlayout(textpara_t * para, char **fontpath)
 {
     static char buf[1024];  /* returned in fontpath, only good until next call */
     static PangoFontMap *fontmap;
@@ -42,9 +42,9 @@ static boolean pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fo
     char *fnt;
     PangoLayout *layout;
     PangoRectangle ink_rect, logical_rect;
+    PangoLayoutIter* iter;
 #if ENABLE_PANGO_XSHOW
     PangoRectangle char_rect;
-    PangoLayoutIter* iter;
 #endif
 #ifdef ENABLE_PANGO_MARKUP
     PangoAttrList *attrs;
@@ -54,7 +54,7 @@ static boolean pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fo
 
     if (!fontmap)
 	fontmap = pango_cairo_font_map_get_default();
-    pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(fontmap), (double)POINTS_PER_INCH);
+    pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(fontmap), para->dpi);
     if (!context)
 	context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
 
@@ -128,7 +128,8 @@ static boolean pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fo
 #endif
         }
     }
-    pango_font_description_set_size (desc, (gint)(para->fontsize * PANGO_SCALE));
+    pango_font_description_set_size (desc,
+	(gint)(para->fontsize * PANGO_SCALE * POINTS_PER_INCH / para->dpi));
 
 
 #ifdef ENABLE_PANGO_MARKUP
@@ -154,14 +155,16 @@ static boolean pango_textlayout(GVCOMMON_t *common, textpara_t * para, char **fo
     if (logical_rect.width == 0)
 	logical_rect.height = 0;
 
-    para->width = (double)logical_rect.width / PANGO_SCALE;
-    para->height = (double)logical_rect.height / PANGO_SCALE;
+    para->width = logical_rect.width / PANGO_SCALE;
+    para->height = logical_rect.height / PANGO_SCALE;
+
+    iter = pango_layout_get_iter (layout);
+    para->yoffset = pango_layout_iter_get_baseline (iter) / PANGO_SCALE;
 
     /* determine position of each character in the layout */
     para->xshow = NULL;
 #ifdef ENABLE_PANGO_XSHOW
 /* FIXME - unfinished code */
-    iter = pango_layout_get_iter (layout);
     do {
 	pango_layout_iter_get_char_extents (iter, &char_rect);
 	char_rect.x /= PANGO_SCALE;
