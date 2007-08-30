@@ -46,6 +46,6 @@ boolean gvtextlayout(GVC_t *gvc, textpara_t *para, char **fontpath)
     gvtextlayout_engine_t *gvte = gvc->textlayout.engine;
 
     if (gvte && gvte->textlayout)
-	return gvte->textlayout(&(gvc->common), para, fontpath);
+	return gvte->textlayout(para, fontpath);
     return FALSE;
 }
