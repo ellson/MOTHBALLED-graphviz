@@ -277,8 +277,12 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 	if (strcmp(reqpkg, (*pnext)->packagename) == 0)
 	    break;  /* found with required matching packagname */
     }
-
     rv = *pnext;
+
+    if (dep && (apidep != api)) /* load dependency if needed */
+	if (! (gvplugin_load(gvc, apidep, dep)))
+	    rv = NULL;
+
     if (rv && rv->typeptr == NULL) {
 	library = gvplugin_library_load(gvc, rv->path);
 	if (library) {
@@ -301,10 +305,6 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 			rv->path ? rv->path : "<builtin>");
         }
     }
-
-    if (dep && (apidep != api)) /* load dependency if needed */
-	if (! (gvplugin_load(gvc, apidep, dep)))
-	    rv = NULL;
 
     /* one last check for successfull load */
     if (rv && rv->typeptr == NULL)

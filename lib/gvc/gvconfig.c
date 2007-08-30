@@ -243,7 +243,7 @@ static void gvconfig_plugin_install_builtins(GVC_t * gvc)
 }
 
 #ifdef ENABLE_LTDL
-static void gvconfig_write_library_config(char *path, gvplugin_library_t *library, FILE *f)
+static void gvconfig_write_library_config(GVC_t *gvc, char *path, gvplugin_library_t *library, FILE *f)
 {
     gvplugin_api_t *apis;
     gvplugin_installed_t *types;
@@ -253,6 +253,14 @@ static void gvconfig_write_library_config(char *path, gvplugin_library_t *librar
     for (apis = library->apis; (types = apis->types); apis++) {
         fprintf(f, "\t%s {\n", gvplugin_api_name(apis->api));
 	for (i = 0; types[i].type; i++) {
+#if 0
+/* this was a good idea, but fails because we need a config to load
+ * by plugin name, and were still generating the config.
+ */
+	    /* verify that dependencies are available */
+            if (! (gvplugin_load(gvc, apis->api, types[i].type)))
+		fprintf(f, "#FAILS");
+#endif
 	    fprintf(f, "\t\t%s %d\n", types[i].type, types[i].quality);
 	}
 	fputs ("\t}\n", f);
@@ -408,9 +416,8 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 		    path = strrchr(globbuf.gl_pathv[i],'/');
 		    if (path)
 			path++;
-		    if (f && path) {
-			gvconfig_write_library_config(path, library, f);
-		    }
+		    if (f && path)
+			gvconfig_write_library_config(gvc, path, library, f);
 		}
 	    }
 	}
