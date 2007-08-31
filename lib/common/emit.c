@@ -1512,6 +1512,11 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e)
 			arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
 				scale, bz.eflag);
 		    }
+                    /* arrow_gen resets the job style 
+                     * If we have more splines to do, restore the old one.
+                     */
+		    if ((ED_spl(e)->size>1) && (bz.sflag||bz.eflag) && styles) 
+			gvrender_set_style(job, styles);
 		}
 		free(bzf.list);
 	    }
