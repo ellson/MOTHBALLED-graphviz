@@ -21,10 +21,10 @@ CLEANFILES = core *.dot.* *.png .xvpics/*
 
 test:
 	$(top_builddir)/cmd/dot/dot -Tcanon -Tcmap -Tcmapx \
-		-Tdia -Tdot -Tfig -Tgd -Tgd2 -Tgif -Thpgl \
+		-Tdia -Tdot -Tfig -Tgif -Thpgl \
 		-Tismap -Timap -Tjpg -Tmif -Tmp -Tpcl -Tpdf -Tpic \
 		-Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:cairo -Tsvg \
-		-Tsvg:cairo -Tsvgz -Tvrml -Twbmp -Tvtx -Txdot \
+		-Tsvg:cairo -Tsvgz -Tvrml -Tvtx -Txdot \
 		-O $(GRAPHS) 
 
 #	for i in $(GRAPHS); do \
