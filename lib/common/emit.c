@@ -540,10 +540,10 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
 {
     switch (job->output_lang) {
     case GVRENDER_PLUGIN:
-        job->flags |= chkOrder(g)
-		      | job->render.features->flags
-		      | job->device.features->flags;
-        break;
+	job->flags |= chkOrder(g)
+		| job->render.features->flags
+		| job->device.features->flags;
+	break;
     case VTX:
         /* output sorted, i.e. all nodes then all edges */
         job->flags |= EMIT_SORTED;
@@ -580,7 +580,7 @@ static void firstlayer(GVJ_t *job)
 {
     job->numLayers = job->gvc->numLayers;
     if ((job->numLayers > 1)
-		&& (! (gvrender_features(job) & GVRENDER_DOES_LAYERS))) {
+		&& (! (gvrender_features(job) & GVDEVICE_DOES_LAYERS))) {
 	agerr(AGWARN, "layers not supported in %s output\n",
 		job->output_langname);
 	job->numLayers = 1;
@@ -671,10 +671,10 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     } else {
 	/* page not set by user, use default from renderer */
 	if (job->render.features) {
-	    pageSize.x = job->render.features->default_pagesize.x - 2*margin.x;
+	    pageSize.x = job->device.features->default_pagesize.x - 2*margin.x;
 	    if (pageSize.x < 0.)
 		pageSize.x = 0.;
-	    pageSize.y = job->render.features->default_pagesize.y - 2*margin.y;
+	    pageSize.y = job->device.features->default_pagesize.y - 2*margin.y;
 	    if (pageSize.y < 0.)
 		pageSize.y = 0.;
 	}
@@ -1943,7 +1943,7 @@ static void init_job_margin(GVJ_t *job)
         /* set default margins depending on format */
         switch (job->output_lang) {
         case GVRENDER_PLUGIN:
-            job->margin.x = job->margin.y = job->render.features->default_margin;
+            job->margin = job->device.features->default_margin;
             break;
         case HPGL: case PCL: case MIF: case METAPOST: case VTX: case QPDF:
             job->margin.x = job->margin.y = DEFAULT_PRINT_MARGIN;
@@ -1970,7 +1970,7 @@ static void init_job_dpi(GVJ_t *job, graph_t *g)
         /* set default margins depending on format */
         switch (job->output_lang) {
         case GVRENDER_PLUGIN:
-            job->dpi = job->render.features->default_dpi;
+            job->dpi = job->device.features->default_dpi;
             break;
         default:
             job->dpi.x = job->dpi.y = (double)(DEFAULT_DPI);
@@ -2782,7 +2782,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	/* if we already have an active job list and the device doesn't support mutiple output files, or we are about to write to a different output device */
         firstjob = gvc->active_jobs;
         if (firstjob
-	    && (!(firstjob->flags & GVRENDER_DOES_MULTIGRAPHS)
+	    && (!(firstjob->flags & GVDEVICE_DOES_PAGES)
 	      || (strcmp(job->output_langname,firstjob->output_langname)))) {
 
 	    gvrender_end_job(firstjob);

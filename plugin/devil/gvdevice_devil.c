@@ -113,19 +113,22 @@ static gvdevice_engine_t devil_engine = {
     NULL,
 };
 
-static gvdevice_features_t devil_features = {
-    0,  /* flags */
+static gvdevice_features_t device_features_devil = {
+        GVDEVICE_DOES_TRUECOLOR,    /* flags */
+	{0.,0.},                    /* default margin - points */
+	{0.,0.},                    /* default page width, height - points */
+	{96.,96.},                  /* svg 72 dpi */
 };
 
 gvplugin_installed_t gvdevice_devil_types[] = {
-    {IL_BMP, "bmp:cairo", -1, &devil_engine, &devil_features},
-//    {IL_GIF, "gif:cairo", -1, &devil_engine, &devil_features},
-    {IL_JPG, "jpg:cairo", -1, &devil_engine, &devil_features},
-    {IL_JPG, "jpe:cairo", -1, &devil_engine, &devil_features},
-    {IL_JPG, "jpeg:cairo", -1, &devil_engine, &devil_features},
-    {IL_PNG, "png:cairo", -1, &devil_engine, &devil_features},
-    {IL_TIF, "tif:cairo", -1, &devil_engine, &devil_features},
-    {IL_TIF, "tiff:cairo", -1, &devil_engine, &devil_features},
-    {IL_TGA, "tga:cairo", -1, &devil_engine, &devil_features},
+    {IL_BMP, "bmp:cairo", -1, &devil_engine, &device_features_devil},
+//    {IL_GIF, "gif:cairo", -1, &devil_engine, &device_features_devil},
+    {IL_JPG, "jpg:cairo", -1, &devil_engine, &device_features_devil},
+    {IL_JPG, "jpe:cairo", -1, &devil_engine, &device_features_devil},
+    {IL_JPG, "jpeg:cairo", -1, &devil_engine, &device_features_devil},
+    {IL_PNG, "png:cairo", -1, &devil_engine, &device_features_devil},
+    {IL_TIF, "tif:cairo", -1, &devil_engine, &device_features_devil},
+    {IL_TIF, "tiff:cairo", -1, &devil_engine, &device_features_devil},
+    {IL_TGA, "tga:cairo", -1, &devil_engine, &device_features_devil},
     {0, NULL, 0, NULL, NULL}
 };

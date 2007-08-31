@@ -47,13 +47,13 @@ extern "C" {
 #define EMIT_CLUSTERS_LAST (1<<2)
 #define EMIT_PREORDER (1<<3)
 #define EMIT_EDGE_SORTED (1<<4)
-#define GVRENDER_DOES_ARROWS (1<<5)
-#define GVRENDER_DOES_LAYERS (1<<6)
-#define GVRENDER_DOES_MULTIGRAPHS (1<<7)
-#define GVRENDER_DOES_TRUECOLOR (1<<8)
+#define GVDEVICE_DOES_PAGES (1<<5)
+#define GVDEVICE_DOES_LAYERS (1<<6)
+#define GVDEVICE_EVENTS (1<<7)
+#define GVDEVICE_DOES_TRUECOLOR (1<<8)
 #define GVRENDER_Y_GOES_DOWN (1<<9)
-#define GVDEVICE_EVENTS (1<<10)
-#define GVRENDER_DOES_TRANSFORM (1<<11)
+#define GVRENDER_DOES_TRANSFORM (1<<10)
+#define GVRENDER_DOES_ARROWS (1<<11)
 #define GVRENDER_DOES_LABELS (1<<12)
 #define GVRENDER_DOES_MAPS (1<<13)
 #define GVRENDER_DOES_MAP_RECTANGLE (1<<14)
@@ -70,10 +70,7 @@ extern "C" {
 
     typedef struct {
 	int flags;
-	double default_margin;  /* points */
 	double default_pad;	/* graph units */
-	pointf default_pagesize;/* default page width, height - points */
-	pointf default_dpi;
 	char **knowncolors;
 	int sz_knowncolors;
 	color_type_t color_type;
@@ -82,6 +79,9 @@ extern "C" {
 
     typedef struct {
 	int flags;
+	pointf default_margin;  /* left/right, top/bottom - points */
+	pointf default_pagesize;/* default page width, height - points */
+	pointf default_dpi;
     } gvdevice_features_t;
 
 #define LAYOUT_USES_RANKDIR (1<<0)

@@ -835,16 +835,20 @@ static gvrender_engine_t vrml_engine = {
     0,                          /* vrml_library_shape */
 };
 
-static gvrender_features_t vrml_features = {
+static gvrender_features_t render_features_gd_vrml = {
     GVRENDER_DOES_Z, 		/* flags */
-    0,                          /* default margin - points */
     4.,                         /* default pad - graph units */
-    {0.,0.},                    /* default page width, height - points */
-    {72.,72.},                  /* default dpi */
     NULL,                       /* knowncolors */
     0,                          /* sizeof knowncolors */
     RGBA_BYTE,                  /* color_type */
     "vrml",                     /* imageloader for usershapes */
+};
+
+static gvdevice_features_t device_features_gd_vrml = {
+    0,		 		/* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {72.,72.},                  /* default dpi */
 };
 #endif				/* HAVE_GD_PNG */
 #endif				/* HAVE_LIBGD */
@@ -852,7 +856,7 @@ static gvrender_features_t vrml_features = {
 gvplugin_installed_t gvrender_gd_vrml_types[] = {
 #ifdef HAVE_LIBGD
 #ifdef HAVE_GD_PNG
-    {FORMAT_VRML, "gd_vrml", 1, &vrml_engine, NULL},
+    {FORMAT_VRML, "gd_vrml", 1, &vrml_engine, &render_features_gd_vrml},
 #endif
 #endif
     {0, NULL, 0, NULL, NULL}
@@ -861,7 +865,7 @@ gvplugin_installed_t gvrender_gd_vrml_types[] = {
 gvplugin_installed_t gvdevice_vrml_types[] = {
 #ifdef HAVE_LIBGD
 #ifdef HAVE_GD_PNG
-    {FORMAT_VRML, "vrml:gd_vrml", 1, NULL, &vrml_features},
+    {FORMAT_VRML, "vrml:gd_vrml", 1, NULL, &device_features_gd_vrml},
 #endif
 #endif
     {0, NULL, 0, NULL, NULL}

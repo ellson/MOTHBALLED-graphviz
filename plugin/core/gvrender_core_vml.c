@@ -416,33 +416,36 @@ gvrender_engine_t vml_engine = {
     0,				/* vml_library_shape */
 };
 
-gvrender_features_t vml_features = {
-    GVRENDER_DOES_TRUECOLOR
-	| GVRENDER_Y_GOES_DOWN
+gvrender_features_t render_features_vml = {
+    GVRENDER_Y_GOES_DOWN
         | GVRENDER_DOES_TRANSFORM
 	| GVRENDER_DOES_LABELS
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_TARGETS
 	| GVRENDER_DOES_TOOLTIPS, /* flags */
-    DEFAULT_EMBED_MARGIN,	/* default margin - points */
     4.,                         /* default pad - graph units */
-    {0.,0.},                    /* default page width, height - points */
-    {96.,96.},			/* default dpi */
     vml_knowncolors,		/* knowncolors */
     sizeof(vml_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     "vml",                      /* imageloader for usershapes */
 };
 
+gvdevice_features_t device_features_vml = {
+    GVDEVICE_DOES_TRUECOLOR,	/* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {96.,96.},			/* default dpi */
+};
+
 gvplugin_installed_t gvrender_core_vml_types[] = {
-    {FORMAT_VML, "core_vml", 1, &vml_engine, NULL},
+    {FORMAT_VML, "core_vml", 1, &vml_engine, &render_features_vml},
     {0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_core_vml_types[] = {
-    {FORMAT_VML, "vml:core_vml", 1, NULL, &vml_features},
+    {FORMAT_VML, "vml:core_vml", 1, NULL, &device_features_vml},
 #if HAVE_LIBZ
-    {FORMAT_VMLZ, "vmlz:core_vml", 1, NULL, &vml_features},
+    {FORMAT_VMLZ, "vmlz:core_vml", 1, NULL, &device_features_vml},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

@@ -141,39 +141,41 @@ static gvdevice_engine_t gd_engine = {
     NULL,
 };
 
-static gvdevice_features_t gd_features = {
-    0,  /* flags */
+static gvdevice_features_t device_features_gd = {
+    GVDEVICE_DOES_TRUECOLOR,    /* flags */
+    {0.,0.},                    /* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {96.,96.},                  /* dpi */
 };
-
 #endif
 
 gvplugin_installed_t gvdevice_gd_types[] = {
 #ifdef HAVE_LIBGD
 
 #ifdef HAVE_GD_GIF
-    {FORMAT_GIF, "gif:cairo", 10, &gd_engine, &gd_features},
+    {FORMAT_GIF, "gif:cairo", 10, &gd_engine, &device_features_gd},
 #endif
 
 #ifdef HAVE_GD_JPEG
-    {FORMAT_JPEG, "jpe:cairo", 5, &gd_engine, &gd_features},
-    {FORMAT_JPEG, "jpeg:cairo", 5, &gd_engine, &gd_features},
-    {FORMAT_JPEG, "jpg:cairo", 5, &gd_engine, &gd_features},
+    {FORMAT_JPEG, "jpe:cairo", 5, &gd_engine, &device_features_gd},
+    {FORMAT_JPEG, "jpeg:cairo", 5, &gd_engine, &device_features_gd},
+    {FORMAT_JPEG, "jpg:cairo", 5, &gd_engine, &device_features_gd},
 #endif
 
 #ifdef HAVE_GD_PNG
-    {FORMAT_PNG, "png:cairo", -1, &gd_engine, &gd_features},
+    {FORMAT_PNG, "png:cairo", -1, &gd_engine, &device_features_gd},
 #endif
 
 #if 0
-    {FORMAT_GD, "gd:cairo", -1, &gd_engine, &gd_features},
-    {FORMAT_GD2, "gd2:cairo", -1, &gd_engine, &gd_features},
+    {FORMAT_GD, "gd:cairo", -1, &gd_engine, &device_features_gd},
+    {FORMAT_GD2, "gd2:cairo", -1, &gd_engine, &device_features_gd},
 
 #ifdef HAVE_GD_GIF
-    {FORMAT_WBMP, "wbmp:cairo", -1, &gd_engine, &gd_features},
+    {FORMAT_WBMP, "wbmp:cairo", -1, &gd_engine, &device_features_gd},
 #endif
 
 #ifdef HAVE_GD_XPM
-    {FORMAT_XBM, "xbm:cairo", -1, &gd_engine, &gd_features},
+    {FORMAT_XBM, "xbm:cairo", -1, &gd_engine, &device_features_gd},
 #endif
 #endif
 

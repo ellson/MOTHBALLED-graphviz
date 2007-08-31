@@ -455,30 +455,33 @@ static gvrender_engine_t psgen_engine = {
     psgen_library_shape,
 };
 
-static gvrender_features_t psgen_features = {
-    GVRENDER_DOES_MULTIGRAPHS
-	| GVRENDER_DOES_LAYERS
-	| GVRENDER_DOES_TRANSFORM
+static gvrender_features_t render_features_ps = {
+    GVRENDER_DOES_TRANSFORM
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_NO_BG
 	| GVRENDER_DOES_MAP_RECTANGLE,
-    36,				/* default margin - points */
     4.,                         /* default pad - graph units */
-    {612.,792.},                /* default page width, height - points */
-    {72.,72.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     HSVA_DOUBLE,		/* color_type */
     "ps",                       /* imageloader for usershapes */
 };
 
+static gvdevice_features_t device_features_ps = {
+    GVDEVICE_DOES_PAGES
+	| GVDEVICE_DOES_LAYERS,	/* flags */
+    {36.,36.},			/* default margin - points */
+    {612.,792.},                /* default page width, height - points */
+    {72.,72.},			/* default dpi */
+};
+
 gvplugin_installed_t gvrender_core_ps_types[] = {
-    {FORMAT_PS, "core_ps", 1, &psgen_engine, NULL},
+    {FORMAT_PS, "core_ps", 1, &psgen_engine, &render_features_ps},
     {0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_core_ps_types[] = {
-    {FORMAT_PS, "ps:core_ps", 1, NULL, &psgen_features},
-    {FORMAT_PS2, "ps2:core_ps", 1, NULL, &psgen_features},
+    {FORMAT_PS, "ps:core_ps", 1, NULL, &device_features_ps},
+    {FORMAT_PS2, "ps2:core_ps", 1, NULL, &device_features_ps},
     {0, NULL, 0, NULL, NULL}
 };

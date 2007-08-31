@@ -77,21 +77,21 @@ int gvrender_select(GVJ_t * job, char *str)
     else
 	return NO_SUPPORT;  /* FIXME - should differentiate problem */
     
+    /* The device plugin has a dependency on a render plugin,
+     * so the render plugin should be available as well now */
     plugin = gvc->api[API_render];
     if (plugin) {
         typeptr = plugin->typeptr;
         job->render.engine = (gvrender_engine_t *) (typeptr->engine);
+        job->render.features = (gvdevice_features_t *) (typeptr->features);
 
-        if (job->device.engine) {
-            job->render.features = (gvrender_features_t *) (typeptr->features);
+        if (job->device.engine)
             job->render.id = typeptr->id;
-	}
-	else {
-	    /* a null device engine indicates that the renderer provides
-		the id and features */
-            job->render.features = (gvrender_features_t *) (job->device.features);
+	else
+	    /* A null device engine indicates that the device id is also the renderer id
+	     * and that the renderer doesn't need "device" functions.
+	     * Device "features" settings are still available */
             job->render.id = job->device.id;
-	}
         return GVRENDER_PLUGIN;
     }
     job->render.engine = NULL;
@@ -114,7 +114,7 @@ int gvrender_features(GVJ_t * job)
 	    if (cg->bezier_has_arrows)
 		features |= GVRENDER_DOES_ARROWS;
 	    if (cg->begin_layer)
-		features |= GVRENDER_DOES_LAYERS;
+		features |= GVDEVICE_DOES_LAYERS;
 	}
     }
 #endif

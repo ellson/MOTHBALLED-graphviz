@@ -164,18 +164,21 @@ static gvdevice_engine_t gdk_pixbuf_engine = {
     NULL,
 };
 
-static gvdevice_features_t gdk_pixbuf_features = {
-    0,  /* flags */
+static gvdevice_features_t device_features_gdk_pixbuf = {
+    GVDEVICE_DOES_TRUECOLOR,    /* flags */
+    {0.,0.},                    /* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {96.,96.},                  /* dpi */
 };
 
 gvplugin_installed_t gvdevice_gdk_pixbuf_types[] = {
-    {FORMAT_BMP, "bmp:cairo", 10, &gdk_pixbuf_engine, &gdk_pixbuf_features},
-    {FORMAT_ICO, "ico:cairo", 10, &gdk_pixbuf_engine, &gdk_pixbuf_features},
-    {FORMAT_JPEG, "jpe:cairo", 10, &gdk_pixbuf_engine, &gdk_pixbuf_features},
-    {FORMAT_JPEG, "jpeg:cairo", 10, &gdk_pixbuf_engine, &gdk_pixbuf_features},
-    {FORMAT_JPEG, "jpg:cairo", 10, &gdk_pixbuf_engine, &gdk_pixbuf_features},
-    {FORMAT_PNG, "png:cairo", 5, &gdk_pixbuf_engine, &gdk_pixbuf_features},
-    {FORMAT_TIFF, "tif:cairo", 10, &gdk_pixbuf_engine, &gdk_pixbuf_features},
-    {FORMAT_TIFF, "tiff:cairo", 10, &gdk_pixbuf_engine, &gdk_pixbuf_features},
+    {FORMAT_BMP, "bmp:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_ICO, "ico:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_JPEG, "jpe:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_JPEG, "jpeg:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_JPEG, "jpg:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_PNG, "png:cairo", 5, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_TIFF, "tif:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_TIFF, "tiff:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
     {0, NULL, 0, NULL, NULL}
 };

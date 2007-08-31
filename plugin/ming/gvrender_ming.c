@@ -278,28 +278,29 @@ static gvrender_engine_t ming_engine = {
     0,				/* ming_library_shape */
 };
 
-static gvrender_features_t ming_features = {
-    (	GVRENDER_DOES_MULTIGRAPHS
-	| GVRENDER_DOES_TRUECOLOR
-	| GVRENDER_Y_GOES_DOWN
-//	| GVRENDER_DOES_TRANSFORM
-    ),				/* feature flags */
-    0,				/* default margin - points */
+static gvrender_features_t render_features_ming = {
+    GVRENDER_Y_GOES_DOWN,	/* flags */
     4.,                         /* default pad - graph units */
-    {0.,0.},                    /* default page width, height - points */
-    {96.,96.},			/* default dpi */
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     NULL,			/* imageloader for usershapes */
 };
 
+static gvdevice_features_t device_features_ming = {
+    GVDEVICE_DOES_PAGES
+	| GVDEVICE_DOES_TRUECOLOR, /* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {96.,96.},			/* default dpi */
+};
+
 gvplugin_installed_t gvrender_ming_types[] = {
-    {FORMAT_SWF, "ming", 10, &ming_engine, NULL},
+    {FORMAT_SWF, "ming", 10, &ming_engine, &render_features_ming},
     {0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_ming_types[] = {
-    {FORMAT_SWF, "swf:ming", 10, NULL, &ming_features},
+    {FORMAT_SWF, "swf:ming", 10, NULL, &device_features_ming},
     {0, NULL, 0, NULL, NULL}
 };

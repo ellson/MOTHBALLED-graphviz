@@ -285,54 +285,47 @@ static gvrender_engine_t map_engine = {
     0,				/* map_library_shape */
 };
 
-static gvrender_features_t map_features = {
+static gvrender_features_t render_features_map = {
     EMIT_CLUSTERS_LAST
         | GVRENDER_Y_GOES_DOWN
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_LABELS
 	| GVRENDER_DOES_TOOLTIPS
 	| GVRENDER_DOES_TARGETS
-	| GVRENDER_DOES_MAP_RECTANGLE
-	| GVRENDER_DOES_MAP_CIRCLE
-	| GVRENDER_DOES_MAP_POLYGON,
-    0,				/* default margin - points */
+	| GVRENDER_DOES_MAP_RECTANGLE, /* flags */
     4.,                         /* default pad - graph units */
-    {0.,0.},                    /* default page width, height - points */
-    {96.,96.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     0,				/* color_type */
     NULL,                       /* imageloader for usershapes */
 };
 
-static gvrender_features_t map_features_nopoly = {
-    EMIT_CLUSTERS_LAST
-        | GVRENDER_Y_GOES_DOWN
-	| GVRENDER_DOES_MAPS
-	| GVRENDER_DOES_LABELS
-	| GVRENDER_DOES_TOOLTIPS
-	| GVRENDER_DOES_MAP_RECTANGLE,
-    0,				/* default margin - points */
-    4.,                         /* default pad - graph units */
+static gvdevice_features_t device_features_map = {
+    GVRENDER_DOES_MAP_CIRCLE
+	| GVRENDER_DOES_MAP_POLYGON, /* flags */
+    {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},			/* default dpi */
-    NULL,			/* knowncolors */
-    0,				/* sizeof knowncolors */
-    0,				/* color_type */
-    NULL,                       /* imageloader target for usershapes */
+};
+
+static gvdevice_features_t device_features_map_nopoly = {
+    0,				/* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {96.,96.},			/* default dpi */
 };
 
 gvplugin_installed_t gvrender_core_map_types[] = {
-    {FORMAT_ISMAP, "core_map", 1, &map_engine, NULL},
+    {FORMAT_ISMAP, "core_map", 1, &map_engine, &render_features_map},
     {0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_core_map_types[] = {
-    {FORMAT_ISMAP, "ismap:core_map", 1, NULL, &map_features_nopoly},
-    {FORMAT_CMAP, "cmap:core_map", 1, NULL, &map_features},
-    {FORMAT_IMAP, "imap:core_map", 1, NULL, &map_features},
-    {FORMAT_CMAPX, "cmapx:core_map", 1, NULL, &map_features},
-    {FORMAT_IMAP, "imap_np:core_map", 1, NULL, &map_features_nopoly},
-    {FORMAT_CMAPX, "cmapx_np:core_map", 1, NULL, &map_features_nopoly},
+    {FORMAT_ISMAP, "ismap:core_map", 1, NULL, &device_features_map_nopoly},
+    {FORMAT_CMAP, "cmap:core_map", 1, NULL, &device_features_map},
+    {FORMAT_IMAP, "imap:core_map", 1, NULL, &device_features_map},
+    {FORMAT_CMAPX, "cmapx:core_map", 1, NULL, &device_features_map},
+    {FORMAT_IMAP, "imap_np:core_map", 1, NULL, &device_features_map_nopoly},
+    {FORMAT_CMAPX, "cmapx_np:core_map", 1, NULL, &device_features_map_nopoly},
     {0, NULL, 0, NULL, NULL}
 };

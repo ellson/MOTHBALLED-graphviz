@@ -150,7 +150,11 @@ static void finalize_gtk(GVJ_t *firstjob)
 }
 
 static gvdevice_features_t device_features_gtk = {
-    GVDEVICE_EVENTS,    
+    GVDEVICE_DOES_TRUECOLOR
+	| GVDEVICE_EVENTS,      /* flags */
+    {0.,0.},                    /* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {96.,96.},                  /* dpi */
 };
 
 static gvdevice_engine_t device_engine_gtk = {

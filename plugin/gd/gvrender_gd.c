@@ -89,7 +89,7 @@ static void gdgen_begin_page(GVJ_t * job)
 
     if (bgcolor_str && strcmp(bgcolor_str, "transparent") == 0) {
 	bg_transparent_p = TRUE;
-	if (job->render.features->flags & GVRENDER_DOES_TRUECOLOR)
+	if (job->render.features->flags & GVDEVICE_DOES_TRUECOLOR)
 	    truecolor_p = TRUE;	/* force truecolor */
     }
 
@@ -583,36 +583,34 @@ static gvrender_engine_t gdgen_engine = {
     0,				/* gdgen_library_shape */
 };
 
-static gvrender_features_t gdgen_features_tc = {
-    GVRENDER_DOES_TRUECOLOR
-	| GVRENDER_Y_GOES_DOWN,	/* flags */
-    0,				/* default margin - points */
+static gvrender_features_t render_features_gd = {
+    GVRENDER_Y_GOES_DOWN,	/* flags */
     4.,                         /* default pad - graph units */
-    {0.,0.},                    /* default page width, height - points */
-    {96.,96.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     "gd",			/* imageloader for usershapes */
 };
 
-static gvrender_features_t gdgen_features = {
-    GVRENDER_Y_GOES_DOWN,	/* flags */
-    0,				/* default margin - points */
-    4.,                         /* default pad - graph units */
+static gvdevice_features_t device_features_gd = {
+    0,				/* flags */
+    {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},			/* default dpi */
-    NULL,			/* knowncolors */
-    0,				/* sizeof knowncolors */
-    RGBA_BYTE,			/* color_type */
-    "gd",			/* imageloader for usershapes */
+};
+
+static gvdevice_features_t device_features_gd_tc = {
+    GVDEVICE_DOES_TRUECOLOR,	/* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {96.,96.},			/* default dpi */
 };
 
 #endif
 
 gvplugin_installed_t gvrender_gd_types[] = {
 #ifdef HAVE_LIBGD
-    {FORMAT_GD, "gd", 1, &gdgen_engine, &gdgen_features},
+    {FORMAT_GD, "gd", 1, &gdgen_engine, &render_features_gd},
 #endif
     {0, NULL, 0, NULL, NULL}
 };
@@ -620,25 +618,25 @@ gvplugin_installed_t gvrender_gd_types[] = {
 gvplugin_installed_t gvdevice_gd_types2[] = {
 #ifdef HAVE_LIBGD
 #ifdef HAVE_GD_GIF
-    {FORMAT_GIF, "gif:gd", 1, NULL, &gdgen_features},
+    {FORMAT_GIF, "gif:gd", 1, NULL, &device_features_gd},
 #endif
 #ifdef HAVE_GD_JPEG
-    {FORMAT_JPEG, "jpe:gd", 1, NULL, &gdgen_features_tc},
-    {FORMAT_JPEG, "jpeg:gd", 1, NULL, &gdgen_features_tc},
-    {FORMAT_JPEG, "jpg:gd", 1, NULL, &gdgen_features_tc},
+    {FORMAT_JPEG, "jpe:gd", 1, NULL, &device_features_gd_tc},
+    {FORMAT_JPEG, "jpeg:gd", 1, NULL, &device_features_gd_tc},
+    {FORMAT_JPEG, "jpg:gd", 1, NULL, &device_features_gd_tc},
 #endif
 #ifdef HAVE_GD_PNG
-    {FORMAT_PNG, "png:gd", 1, NULL, &gdgen_features_tc},
+    {FORMAT_PNG, "png:gd", 1, NULL, &device_features_gd_tc},
 #endif
 
 #if 0
-    {FORMAT_GD, "gd:gd", 1, NULL, &gdgen_features_tc},
-    {FORMAT_GD2, "gd2:gd", 1, NULL, &gdgen_features_tc},
+    {FORMAT_GD, "gd:gd", 1, NULL, &device_features_gd_tc},
+    {FORMAT_GD2, "gd2:gd", 1, NULL, &device_features_gd_tc},
 #ifdef HAVE_GD_GIF
-    {FORMAT_WBMP, "wbmp:gd", 1, NULL, &gdgen_features},
+    {FORMAT_WBMP, "wbmp:gd", 1, NULL, &device_features_gd},
 #endif
 #ifdef HAVE_GD_XPM
-    {FORMAT_XBM, "xbm:gd", 1, NULL, &gdgen_features},
+    {FORMAT_XBM, "xbm:gd", 1, NULL, &device_features_gd},
 #endif
 #endif
 

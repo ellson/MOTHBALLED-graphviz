@@ -473,53 +473,49 @@ gvrender_engine_t xdot_engine = {
     0,				/* xdot_library_shape */
 };
 
-gvrender_features_t canon_features = {
-    LAYOUT_NOT_REQUIRED,	/* flags */
-    0.,				/* default margin - points */
+gvrender_features_t render_features_dot = {
+    GVRENDER_DOES_TRANSFORM,	/* not really - uses raw graph coords */  /* flags */
     0.,                         /* default pad - graph units */
-    {0,0},                      /* default height, width - device units */
-    {72.,72.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     COLOR_STRING,		/* color_type */
     NULL,                       /* imageloader for usershapes */
 };
 
-gvrender_features_t dot_features = {
-    GVRENDER_DOES_TRANSFORM,	/* not really - uses raw graph coords */
-    0.,				/* default margin - points */
+gvrender_features_t render_features_xdot = {
+    GVRENDER_DOES_TRANSFORM,	/* not really - uses raw graph coords */  /* flags */
     0.,                         /* default pad - graph units */
-    {0.,0.},			/* default page width, height - points */
-    {72.,72.},			/* default dpi */
-    NULL,			/* knowncolors */
-    0,				/* sizeof knowncolors */
-    COLOR_STRING,		/* color_type */
-    NULL,                       /* imageloader for usershapes */
-};
-
-gvrender_features_t xdot_features = {
-    GVRENDER_DOES_TRANSFORM,	/* not really - uses raw graph coords */
-    0.,				/* default margin - points */
-    0.,                         /* default pad - graph units */
-    {0.,0.},			/* default page width, height - points */
-    {72.,72.},			/* default dpi */
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     COLOR_STRING,		/* color_type */
     "xdot",                     /* imageloader for usershapes */
 };
 
+gvdevice_features_t device_features_canon = {
+    LAYOUT_NOT_REQUIRED,	/* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},                    /* default height, width - device units */
+    {72.,72.},			/* default dpi */
+};
+
+gvdevice_features_t device_features_dot = {
+    0,				/* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},			/* default page width, height - points */
+    {72.,72.},			/* default dpi */
+};
+
 gvplugin_installed_t gvrender_core_dot_types[] = {
-    {FORMAT_DOT, "core_dot", 1, &dot_engine, NULL},
-    {FORMAT_XDOT, "core_xdot", 1, &xdot_engine, NULL},
+    {FORMAT_DOT, "core_dot", 1, &dot_engine, &render_features_dot},
+    {FORMAT_XDOT, "core_xdot", 1, &xdot_engine, &render_features_xdot},
     {0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_core_dot_types[] = {
-    {FORMAT_DOT, "dot:core_dot", 1, NULL, &dot_features},
-    {FORMAT_CANON, "canon:core_dot", 1, NULL, &canon_features},
-    {FORMAT_PLAIN, "plain:core_dot", 1, NULL, &dot_features},
-    {FORMAT_PLAIN_EXT, "plain-ext:core_dot", 1, NULL, &dot_features},
-    {FORMAT_XDOT, "xdot:core_xdot", 1, NULL, &xdot_features},
+    {FORMAT_DOT, "dot:core_dot", 1, NULL, &device_features_dot},
+    {FORMAT_CANON, "canon:core_dot", 1, NULL, &device_features_canon},
+    {FORMAT_PLAIN, "plain:core_dot", 1, NULL, &device_features_dot},
+    {FORMAT_PLAIN_EXT, "plain-ext:core_dot", 1, NULL, &device_features_dot},
+    {FORMAT_XDOT, "xdot:core_xdot", 1, NULL, &device_features_dot},
     {0, NULL, 0, NULL, NULL}
 };

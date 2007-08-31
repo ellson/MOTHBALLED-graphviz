@@ -468,33 +468,36 @@ gvrender_engine_t svg_engine = {
     0,				/* svg_library_shape */
 };
 
-gvrender_features_t svg_features = {
-    GVRENDER_DOES_TRUECOLOR
-	| GVRENDER_Y_GOES_DOWN
+gvrender_features_t render_features_svg = {
+    GVRENDER_Y_GOES_DOWN
         | GVRENDER_DOES_TRANSFORM
 	| GVRENDER_DOES_LABELS
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_DOES_TARGETS
 	| GVRENDER_DOES_TOOLTIPS, /* flags */
-    DEFAULT_EMBED_MARGIN,	/* default margin - points */
     4.,                         /* default pad - graph units */
-    {0.,0.},                    /* default page width, height - points */
-    {72.,72.},			/* default dpi */
     svg_knowncolors,		/* knowncolors */
     sizeof(svg_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
     "svg",                      /* imageloader for usershapes */
 };
 
+gvdevice_features_t device_features_svg = {
+    GVDEVICE_DOES_TRUECOLOR,	/* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {72.,72.},			/* default dpi */
+};
+
 gvplugin_installed_t gvrender_core_svg_types[] = {
-    {FORMAT_SVG, "core_svg", 1, &svg_engine, NULL},
+    {FORMAT_SVG, "core_svg", 1, &svg_engine, &render_features_svg},
     {0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_core_svg_types[] = {
-    {FORMAT_SVG, "svg:core_svg", 1, NULL, &svg_features},
+    {FORMAT_SVG, "svg:core_svg", 1, NULL, &device_features_svg},
 #if HAVE_LIBZ
-    {FORMAT_SVGZ, "svgz:core_svg", 1, NULL, &svg_features},
+    {FORMAT_SVGZ, "svgz:core_svg", 1, NULL, &device_features_svg},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

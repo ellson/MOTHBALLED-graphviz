@@ -512,11 +512,20 @@ static char *fig_knowncolors[] = {
 };
 
 
-gvrender_features_t fig_features = {
+gvrender_features_t render_features_fig = {
     EMIT_COLORS
 	| GVRENDER_Y_GOES_DOWN,	/* flags */
-    DEFAULT_EMBED_MARGIN,	/* default margin - points */
     4.,                         /* default pad - graph units */
+    fig_knowncolors,		/* knowncolors */
+    sizeof(fig_knowncolors) / sizeof(char *), /* sizeof knowncolors */
+    RGBA_BYTE,			/* color_type */
+    "fig",                      /* imageloader for usershapes */
+};
+
+gvdevice_features_t device_features_fig = {
+    EMIT_COLORS
+	| GVRENDER_Y_GOES_DOWN,	/* flags */
+    {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {1440.,1440.},		/* default dpi */
    	 /* FIXME - this default dpi is a very strange number!!!
@@ -528,19 +537,14 @@ gvrender_features_t fig_features = {
 
 	 /* It may be TWIPS, i.e. 20 * POINT_PER_INCH 
 	  *    but that doesn't explain what the 1200 is? */
-
-    fig_knowncolors,		/* knowncolors */
-    sizeof(fig_knowncolors) / sizeof(char *), /* sizeof knowncolors */
-    RGBA_BYTE,			/* color_type */
-    "fig",                      /* imageloader for usershapes */
 };
 
 gvplugin_installed_t gvrender_core_fig_types[] = {
-    {FORMAT_FIG, "core_fig", 1, &fig_engine, NULL},
+    {FORMAT_FIG, "core_fig", 1, &fig_engine, &render_features_fig},
     {0, NULL, 0, NULL, NULL}
 };
 
 gvplugin_installed_t gvdevice_core_fig_types[] = {
-    {FORMAT_FIG, "fig:core_fig", 1, NULL, &fig_features},
+    {FORMAT_FIG, "fig:core_fig", 1, NULL, &device_features_fig},
     {0, NULL, 0, NULL, NULL}
 };
