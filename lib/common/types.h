@@ -176,8 +176,7 @@ extern "C" {
 	void (*codefn) (GVJ_t * job, node_t * n);	/* emits graphics code for node */
     } shape_functions;
 
-    typedef enum { SH_UNSET, SH_POLY, SH_RECORD, SH_POINT, SH_EPSF,
-	    SH_USER } shape_kind;
+    typedef enum { SH_UNSET, SH_POLY, SH_RECORD, SH_POINT, SH_EPSF} shape_kind;
 
     typedef struct shape_desc {	/* read-only shape descriptor */
 	char *name;		/* as read from graph file */

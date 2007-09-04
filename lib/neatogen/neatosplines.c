@@ -470,8 +470,6 @@ static void makeStraightEdge(graph_t * g, edge_t * e)
  *
  * The polygon has its vertices in CW order.
  * 
- * N.B. Point, epsf and user shapes are not handled. Point should
- * be easy, and user shapes are boxes. FIX
  */
 Ppoly_t *makeObstacle(node_t * n, double SEP)
 {
@@ -483,9 +481,11 @@ Ppoly_t *makeObstacle(node_t * n, double SEP)
     box b;
     point pt;
     field_t *fld;
+    epsf_t *desc;
 
     switch (shapeOf(n)) {
     case SH_POLY:
+    case SH_POINT:
 	obs = NEW(Ppoly_t);
 	poly = (polygon_t *) ND_shape_info(n);
 	if (poly->sides >= 3) {
@@ -524,6 +524,18 @@ Ppoly_t *makeObstacle(node_t * n, double SEP)
 	obs->ps[1] = recPt(b.LL.x, b.UR.y, pt, SEP);
 	obs->ps[2] = recPt(b.UR.x, b.UR.y, pt, SEP);
 	obs->ps[3] = recPt(b.UR.x, b.LL.y, pt, SEP);
+	break;
+    case SH_EPSF:
+	desc = (epsf_t *) (ND_shape_info(n));
+	obs = NEW(Ppoly_t);
+	obs->pn = 4;
+	obs->ps = N_NEW(4, Ppoint_t);
+	/* CW order */
+	pt = ND_coord_i(n);
+	obs->ps[0] = recPt(-ND_lw_i(n), -ND_ht_i(n), pt, SEP);
+	obs->ps[1] = recPt(-ND_lw_i(n), ND_ht_i(n), pt, SEP);
+	obs->ps[2] = recPt(ND_rw_i(n), ND_ht_i(n), pt, SEP);
+	obs->ps[3] = recPt(ND_rw_i(n), -ND_ht_i(n), pt, SEP);
 	break;
     default:
 	obs = NULL;

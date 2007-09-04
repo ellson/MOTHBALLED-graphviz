@@ -454,8 +454,10 @@ shape_kind shapeOf(node_t * n)
 	return SH_RECORD;
     else if (ifn == point_init)
 	return SH_POINT;
+    else if (ifn == epsf_init)
+	return SH_EPSF;
     else
-	return SH_USER;
+	return SH_UNSET;
 }
 
 boolean isPolygon(node_t * n)
