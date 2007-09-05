@@ -7,6 +7,6 @@ plugins=@GVPLUGIN_VERSION@
 Name: libgvc
 Description: The GraphVizContext library 
 Version: @VERSION@
-Libs: -L${libdir} -lgvc
+Libs: -L${libdir} -lgvc -lgraph -lcdt
 Cflags: -I${includedir}
 
