@@ -20,19 +20,28 @@ If no input files are supplied, the program reads from <STRONG>stdin</STRONG>.
 <DD>Set a default node attribute, with default <I>value</I> = <TT>true</TT>.
 <DT><STRONG>-E</STRONG><I>name</I>[=<I>value</I>]
 <DD>Set a default edge attribute, with default <I>value</I> = <TT>true</TT>.
-<DT><STRONG>-T</STRONG><I>format</I>>[:<I>renderer</I>]       
+<DT><A NAME=d:T><STRONG>-T</STRONG></A><I>format</I>[:<I>renderer</I>[:<I>formatter</I>]]       
 <DD>Set output language to one of the <A HREF=output.html>supported formats</A>.
 By default, <A HREF=output.html#d:dot>attributed dot</A> is produced.
 <P>
 Depending on how Graphviz was built, there may be multiple renderers for
-generating a particular output format. For example, a typical installation
+generating a particular output format, and multiple formatters for 
+creating the final output. For example, a typical installation
 can produce <A HREF="http://www.graphviz.org/doc/info/output.html#d:png">PNG</A>
 output using either the Cairo or GD library. The desired rendering engine
-can be specified after a colon. Thus, <TT>-Tpng:cairo</TT> specifies PNG
-output produced by Cairo. If no renderer is specified, the default one
+can be specified after a colon. If there are multiple formatting engines
+available, the desired one can be specified in a similar fashion after
+the rendering engine. Thus, <TT>-Tpng:cairo</TT> specifies PNG
+output produced by Cairo (using the Cairo's default formatter), and 
+<TT>-Tpng:cairo:gd</TT> specifies PNG
+output produced by Cairo formatted using the GD library.
+<P>
+If no renderer is specified, or a renderer but no formatter, the default one
 is invoked. The flag <TT>-T<I>format</I>:</TT> produces a list of all
 of the renderers available for the specified <I>format</I>, the first one
-listed being the default.
+listed with a prefix matching <I>format</I> being the default.
+Using the <TT>-v</TT> flag, described below, will print which format,
+renderer, and formatter are actually used.
 <DT><STRONG>-V</STRONG>             
 <DD>Emit version information and exit.
 <DT><STRONG>-l</STRONG><I>library</I>

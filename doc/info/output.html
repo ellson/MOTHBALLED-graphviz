@@ -14,6 +14,12 @@ The output format is specified with the <STRONG>-T</STRONG><I>lang</I>
 flag on the <A HREF=command.html>command line</A>, where <I>lang</I>
 is one of the parameters listed below.
 <P>
+The formats actually available in a given Graphviz system depend on 
+how the system was built and the presence of additional libraries.
+To see what formats <b>dot</b> supports, run <TT>dot -T?</TT>.
+See the <A HREF=command.html#d.T> description of the -T</A> 
+flag for additional information.
+<P>
 Note that the internal coordinate system has the origin 
 in the lower left corner.
 Thus, positions in the
@@ -26,6 +32,8 @@ formats need to be interpreted in this manner.
 <P>
 <TABLE ALIGN=CENTER>
 <TR><TH>Command-line<BR>parameter</TH><TH>Format</TH></TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:bmp HREF=#d:bmp>bmp</A>
+</TD><TD>Windows Bitmap Format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:canon HREF=#d:canon>canon</A>
 <BR><A NAME=a:dot HREF=#d:dot>dot</A>
 <BR><A NAME=a:xdot HREF=#d:xdot>xdot</A>
@@ -41,8 +49,12 @@ formats need to be interpreted in this manner.
 </TD><TD>GD/GD2 formats</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:gif HREF=#d:gif>gif</A>
 </TD><TD>GIF</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:gtk HREF=#d:gtk>gtk</A>
+</TD><TD>GTK canvas</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:hpgl HREF=#d:hpgl>hpgl</A>
 </TD><TD>HP-GL/2</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:ico HREF=#d:ico>ico</A>
+</TD><TD>Icon Image File Format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:imap HREF=#d:imap>imap</A>
 <BR><A NAME=a:cmapx HREF=#d:cmapx>cmapx</A>
 </TD><TD>Server-side and client-side imagemaps</TD> </TR>
@@ -53,13 +65,16 @@ formats need to be interpreted in this manner.
 </TD><TD>Server-side imagemap (deprecated)</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:jpg HREF=#d:jpg>jpg</A>
 <BR><A NAME=a:jpeg HREF=#d:jpeg>jpeg</A>
-</TD><TD>JPEG (deprecated - 8 May 2006 - will no longer be supported)</TD> </TR>
+<BR><A NAME=a:jpe HREF=#d:jpe>jpe</A>
+</TD><TD>JPEG</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:mif HREF=#d:mif>mif</A>
 </TD><TD>FrameMaker MIF format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:mp HREF=#d:mp>mp</A>
 </TD><TD>MetaPost</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:pcl HREF=#d:pcl>pcl</A>
 </TD><TD>PCL</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:pdf HREF=#d:pdf>pdf</A>
+</TD><TD>Portable Document Format (PDF)</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:pic HREF=#d:pic>pic</A>
 </TD><TD>PIC</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:plain HREF=#d:plain>plain</A>
@@ -74,16 +89,27 @@ formats need to be interpreted in this manner.
  <TR><TD ALIGN=CENTER><A NAME=a:svg HREF=#d:svg>svg</A>
 <BR><A NAME=a:svgz HREF=#d:svgz>svgz</A>
 </TD><TD>Scalable Vector Graphics</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:tif HREF=#d:tif>tif</A>
+<BR><A NAME=a:tiff HREF=#d:tiff>tiff</A>
+</TD><TD>TIFF (Tag Image File Format)</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:vml HREF=#d:vml>vml</A>
+<BR><A NAME=a:vmlz HREF=#d:vmlz>vmlz</A>
+</TD><TD>Vector Markup Language (VML)</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:vrml HREF=#d:vrml>vrml</A>
 </TD><TD>VRML</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:vtx HREF=#d:vtx>vtx</A>
 </TD><TD>Visual Thought format</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:wbmp HREF=#d:wbmp>wbmp</A>
 </TD><TD>Wireless BitMap format</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:xlib HREF=#d:xlib>xlib</A>
+</TD><TD>Xlib canvas</TD> </TR>
 </TABLE>
 <HR>
 <H2>Format Descriptions</H2>
 <DL>
+<DT><A NAME=d:bmp HREF=#a:bmp><STRONG>bmp</STRONG></A>
+<DD>  Outputs images in the Windows <A HREF="http://en.wikipedia.org/wiki/Bitmap">BMP</A> format.
+
 <DT><A NAME=d:canon HREF=#a:canon><STRONG>canon</STRONG></A>
 ,<DT><A NAME=d:dot HREF=#a:dot><STRONG>dot</STRONG></A>
 ,<DT><A NAME=d:xdot HREF=#a:xdot><STRONG>xdot</STRONG></A>
@@ -227,8 +253,14 @@ formats need to be interpreted in this manner.
 <DT><A NAME=d:gif HREF=#a:gif><STRONG>gif</STRONG></A>
 <DD>  Outputs GIF bitmap images.
 
+<DT><A NAME=d:gtk HREF=#a:gtk><STRONG>gtk</STRONG></A>
+<DD>  Creates a <A HREF="http://www.gtk.org/">GTK</A> window and displays the output there.
+
 <DT><A NAME=d:hpgl HREF=#a:hpgl><STRONG>hpgl</STRONG></A>
 <DD>  Produces output in the HP-GL/2 vector graphic printer language.
+
+<DT><A NAME=d:ico HREF=#a:ico><STRONG>ico</STRONG></A>
+<DD>  Outputs images in the Windows <A HREF="http://en.wikipedia.org/wiki/ICO_(icon_image_file_format)">ICO format</A>.
 
 <DT><A NAME=d:imap HREF=#a:imap><STRONG>imap</STRONG></A>
 ,<DT><A NAME=d:cmapx HREF=#a:cmapx><STRONG>cmapx</STRONG></A>
@@ -304,8 +336,8 @@ formats need to be interpreted in this manner.
 
 <DT><A NAME=d:jpg HREF=#a:jpg><STRONG>jpg</STRONG></A>
 ,<DT><A NAME=d:jpeg HREF=#a:jpeg><STRONG>jpeg</STRONG></A>
+,<DT><A NAME=d:jpe HREF=#a:jpe><STRONG>jpe</STRONG></A>
 <DD>  Output JPEG compressed image files.
-  This format relies on the installation having the JPEG library.
 
 <DT><A NAME=d:mif HREF=#a:mif><STRONG>mif</STRONG></A>
 <DD>  Generates Frame Maker MIF files.
@@ -318,6 +350,11 @@ formats need to be interpreted in this manner.
   <A HREF=#d:hpgl>HP-GL</A> is a subset of
   PCL, so that PCL output is the same as HP-GL, wrapped with some initial
   and final commands to set the printer to and from HP-GL mode.
+
+<DT><A NAME=d:pdf HREF=#a:pdf><STRONG>pdf</STRONG></A>
+<DD>  Produces <A HREF="http://www.adobe.com/devnet/pdf/">PDF</A> output.
+  Alternatively, one can use the <A HREF="#d:ps2">ps2</A> to produce PDF-compatible
+  PostScript, and then use a ps-to-pdf converter.
 
 <DT><A NAME=d:pic HREF=#a:pic><STRONG>pic</STRONG></A>
 <DD>  Outputs in PIC, the picture description language in the troff-family
@@ -412,7 +449,6 @@ formats need to be interpreted in this manner.
 
 <DT><A NAME=d:png HREF=#a:png><STRONG>png</STRONG></A>
 <DD>   Produces output in the PNG (Portable Network Graphics) format.
-   PNG relies on having libz and the PNG library.
 
 <DT><A NAME=d:ps HREF=#a:ps><STRONG>ps</STRONG></A>
 <DD>  Produces PostScript output.
@@ -433,7 +469,15 @@ formats need to be interpreted in this manner.
 ,<DT><A NAME=d:svgz HREF=#a:svgz><STRONG>svgz</STRONG></A>
 <DD>  Produce <A HREF="http://www.adobe.com/svg/">SVG</A> output, 
   the latter in compressed format.
-  SVG relies on having libz.
+
+<DT><A NAME=d:tif HREF=#a:tif><STRONG>tif</STRONG></A>
+,<DT><A NAME=d:tiff HREF=#a:tiff><STRONG>tiff</STRONG></A>
+<DD>  Produces <A HREF="http://www.libtiff.org/">TIFF</A> output.
+
+<DT><A NAME=d:vml HREF=#a:vml><STRONG>vml</STRONG></A>
+,<DT><A NAME=d:vmlz HREF=#a:vmlz><STRONG>vmlz</STRONG></A>
+<DD>  Produces <A HREF="http://www.w3.org/TR/NOTE-VML/">VML</A> output,
+  the latter in compressed format.
 
 <DT><A NAME=d:vrml HREF=#a:vrml><STRONG>vrml</STRONG></A>
 <DD>  Outputs graphs in the <A HREF="http://www.vrml.org/">VRML</A> format.
@@ -455,6 +499,9 @@ formats need to be interpreted in this manner.
 <DT><A NAME=d:wbmp HREF=#a:wbmp><STRONG>wbmp</STRONG></A>
 <DD>  Produces output in the Wireless BitMap (WBMP) format, optimized for
   mobile computing.
+
+<DT><A NAME=d:xlib HREF=#a:xlib><STRONG>xlib</STRONG></A>
+<DD>  Creates an <A HREF="http://en.wikipedia.org/wiki/Xlib/">Xlib</A> window and displays the output there.
 
 </DL>
 <HR>
