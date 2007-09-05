@@ -12,7 +12,6 @@ INPKG=graphviz-working.tar.gz
 SOURCEFILE=$SOURCE/CURRENT/$INPKG
 DESTDIR=$SOURCE/CURRENT
 VERSION=$(date +%K)
-CONFARG=-PL
 USER=${USER:-erg}
 SFX=
 export nativepp=-1
@@ -41,7 +40,7 @@ function ErrorEx
 function PutFile
 {
   echo pscp $1 $SOURCEM:$DESTDIR  >> $LFILE 2>&1
-#  pscp -q  $1 $SOURCEM:$DESTDIR  >> $LFILE 2>&1
+  pscp -q  $1 $SOURCEM:$DESTDIR  >> $LFILE 2>&1
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to put $1"
@@ -67,16 +66,20 @@ function Get
      ErrorEx "failure in unwrapping"
   fi
 
+  echo rm -rf $GVIZ_HOME >> $LFILE
   rm -rf $GVIZ_HOME
   if [[ $? != 0 ]]
   then
      ErrorEx "failure in removing old gviz directory"
   fi
+
+  echo mv graphviz-[1-9]*[0-9] $GVIZ_HOME >> $LFILE
   mv graphviz-[1-9]*[0-9] $GVIZ_HOME
   if [[ ! -d $GVIZ_HOME ]]
   then
      ErrorEx "could not create $GVIZ_HOME"
   fi
+  echo "Finish Get" >> $LFILE
 }
 
 function mkDir {
@@ -132,6 +135,8 @@ function Setup
   fi
 
   cd $GVIZ_HOME
+  cp configure xxx
+  sed '/PKG_CONFIG_PATH=/d' xxx > configure
   echo ../runconf.sh $CONFARG >> $LFILE 2>&1
   ../runconf.sh $CONFARG > conf.log 2>&1
   if [[ $? != "0" ]]
@@ -153,12 +158,10 @@ function Setup
     cp lib/gd/gd.h xx
     sed 's/#ifndef WIN32/#define NONDLL 1\n#define DISABLE_THREADS 1\n#ifndef WIN32/' xx > lib/gd/gd.h
   fi
-
-  # fix makefiles 
-  if grep vpsc lib/Makefile > /dev/null
+  if grep 'define NO_POSTSCRIPT_ALIAS' lib/gd/gdft.c > /dev/null
   then
-    cp lib/Makefile xx
-    sed 's/vpsc//' xx > lib/Makefile
+    cp lib/gd/gdft.c xx
+    sed 's/^.*define NO_POSTSCRIPT_ALIAS.*$/#define NO_POSTSCRIPT_ALIAS 1/' xx > lib/gd/gdft.c
   fi
 
   if [[ $USE_DLL != 0 ]]
@@ -166,6 +169,7 @@ function Setup
     echo "\n#define GVDLL 1" >> config.h
   fi
 
+  echo "Finish Setup" >> $LFILE
 }
 
 # To build libltdl:
@@ -336,12 +340,14 @@ function Build
     mkDLL pathplan
     mkDLL graph -lcdt
     mkDLL agraph -lcdt
+    cp $GVIZ_HOME/lib/expr/.libs/libexpr_C.a libexpr.a
     mkDLL expr -lcdt
     mkDLL gvc "-L/c/gtk/2.0/lib -lpathplan -lgraph -lcdt -lexpat -lz -lltdl" 
     mkDLL gvplugin_core "-L/c/gtk/2.0/lib -lgvc -lgraph -lcdt -lexpat -lz -lltdl"
    mkDLL gvplugin_dot_layout "-L/c/gtk/2.0/lib -lgvc -lgraph -lpathplan -lcdt -lexpat -lz -lltdl"
     mkDLL gvplugin_neato_layout "-L/c/gtk/2.0/lib -lgvc -lpathplan -lgraph -lcdt -lexpat -lz -lltdl"
-    mkDLL gvplugin_gd "-L/c/gtk/2.0/lib -lgvc -lpathplan -lgraph -lcdt -lpng -ljpeg -lfontconfig -lfreetype -liconv -lexpat -lz -lltdl" 
+    mkDLL gvplugin_gd "-L/c/gtk/2.0/lib -lgvc -lpathplan -lgraph -lcdt -lpng -ljpeg -lfontconfig -lfreetype -lcairo -liconv -lexpat -lz -lltdl" 
+    mkDLL gvplugin_gdk_pixbuf "-L/c/gtk/2.0/lib -lcairo -lgdk_pixbuf-2.0 -lltdl" 
     mkDLL gvplugin_pango "-L/C/GTK/2.0/lib -lfontconfig  -lfreetype  -ljpeg  -lpng  -lexpat  -lz -lcairo -lpango-1.0 -lpangocairo-1.0 -lgobject-2.0 -lgtk-win32-2.0 -lglib-2.0 -lgdk-win32-2.0 -latk-1.0 -lgdk_pixbuf-2.0"  
   fi 
 
@@ -413,10 +419,10 @@ function mkDLL
   return 0
 }
 
-GTKDLLS="iconv intl jpeg62 libcairo-2 libexpat libfontconfig-1 \
+GTKDLLS="fontconfig iconv intl jpeg62 libcairo-2 libexpat libfontconfig-1 \
 libfreetype-6 libglib-2.0-0 libgmodule-2.0-0 libgobject-2.0-0 \
 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpangowin32-1.0-0 \
-libpng12 libxml2 zlib1"
+libpng12 libxml2 zlib1 libgdk_pixbuf-2.0-0"
 
 # Add additional software (DLLs, manuals, examples, etc.) to tree
 function Install
@@ -434,6 +440,7 @@ function Install
   # Add extra software
   cd $ROOT/add-on
   cp Uninstall.exe $INSTALLROOT
+  cp fonts.conf $INSTALLROOT/etc/fonts
   cp props.txt GVedit.exe GVedit.html GVUI.exe $INSTALLROOT/bin
 
 # Create "soft" links. At present, hard links appear necessary for
@@ -443,7 +450,7 @@ function Install
   cp dot.exe neato.exe
   cp dot.exe twopi.exe
   cp dot.exe circo.exe
-  cp dot.exe fep.exe
+  cp dot.exe fdp.exe
   cp gxl2dot.exe dot2gxl.exe
 
   if [[ $USE_DLL == 2 ]]
@@ -456,7 +463,6 @@ function Install
   fi
   
   cd $ROOT
-
   echo "Install extra files" >> $LFILE 2>&1   
   cp -r $GVIZ_HOME/graphs $INSTALLROOT
   cp -r $GVIZ_HOME/dot.demo $INSTALLROOT
@@ -501,6 +507,12 @@ function Install
     cd ..
   fi
   
+    # Remove makefiles
+  cd $INSTALLROOT
+  rm -f $(find graphs -name Makefile* -print)
+  rm -f $(find contrib -name Makefile -print)
+  rm -f $(find contrib -name Makefile.in -print)
+
 }
 
 function PackageTar
@@ -508,7 +520,7 @@ function PackageTar
   cd $ROOT
 
     # Create tgz package
-  TGZFILE=graphviz-win-${VERSION}.bin.tgz
+  TGZFILE=graphviz-win-${VERSION}.bin.tar.gz
   echo "creating tgz local" >> $LFILE
   pax -w -x tar -s/local/graphviz-${VERSION}/ local | gzip > $TGZFILE
   if [[ -f $TGZFILE ]]
@@ -573,6 +585,7 @@ BUILD=0      # build all of the software
 INSTALL=0    # install the software locally
 PACKAGE=0    # make main package and copy all software to cvs machine
 USE_DLL=2
+CONFARG=-PL
 
 Usage='build [-CDLGSBIP] [-R<relno>] \n
  -C : core package \n
@@ -687,7 +700,7 @@ fi
 if [[ $PACKAGE == 1 ]]
 then
   Package
-#  PackageTar
+  PackageTar
 #  PutLog
 fi
 

@@ -36,5 +36,5 @@ do
 esac
 done
 
-echo configure -C --prefix=$INSTALLROOT --with-mylibgd --disable-swig --without-x  --without-tclsh --with-codegens $SHAREFLAGS --with-freetype=/c/gtk/2.0/lib $LTDLFLAGS $PANGOFLAGS
-configure -C --prefix=$INSTALLROOT --with-mylibgd --disable-swig --without-x  --without-tclsh --with-codegens $SHAREFLAGS --with-freetype=/c/gtk/2.0/lib $LTDLFLAGS $PANGOFLAGS
+echo configure -C --prefix=$INSTALLROOT --without-gdk-pixbuf --with-mylibgd --disable-swig --without-x  --without-tclsh --with-codegens $SHAREFLAGS --with-freetype=/c/gtk/2.0/lib $LTDLFLAGS $PANGOFLAGS
+configure -C --prefix=$INSTALLROOT --without-gdk-pixbuf --with-mylibgd --disable-swig --without-x  --without-tclsh --with-codegens $SHAREFLAGS --with-freetype=/c/gtk/2.0/lib $LTDLFLAGS $PANGOFLAGS
