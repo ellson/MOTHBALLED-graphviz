@@ -62,28 +62,36 @@ char *gvplugin_api_name(api_t api)
     return api_names[api];
 }
 
-/* install a plugin description into the list of available plugins */
-/* list is alpha sorted by type, then quality sorted within the type,
-   then, if qualities are the same, last install wins */
+/* install a plugin description into the list of available plugins
+ * list is alpha sorted by type (not including :dependency), then
+ * quality sorted within the type, then, if qualities are the same,
+ * last install wins.
+ */
 boolean gvplugin_install(GVC_t * gvc, api_t api,
 		 char *typestr, int quality, char *packagename, char *path,
 		 gvplugin_installed_t * typeptr)
 {
     gvplugin_available_t *plugin, **pnext;
-
+    char *p;
+    int len;
 
     if (api < 0)
 	return FALSE;
 
+    if ((p = strchr(typestr, ':')))
+	len = p - typestr;
+    else
+	len = strlen(typestr);
+    
     /* point to the beginning of the linked list of plugins for this api */
     pnext = &(gvc->apis[api]);
 
     /* keep alpha-sorted and insert new duplicates ahead of old */
-    while (*pnext && strcmp(typestr, (*pnext)->typestr) > 0)
+    while (*pnext && (strncmp(typestr, (*pnext)->typestr, len) > 0))
 	pnext = &((*pnext)->next);
 
-    /* keep quality sorted within type and inster new duplicates ahead of old */
-    while (*pnext && strcmp(typestr, (*pnext)->typestr) == 0 && quality < (*pnext)->quality)
+    /* keep quality sorted within type and insert new duplicates ahead of old */
+    while (*pnext && strncmp(typestr, (*pnext)->typestr, len) == 0 && quality < (*pnext)->quality)
 	pnext = &((*pnext)->next);
 
     plugin = GNEW(gvplugin_available_t);
