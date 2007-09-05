@@ -131,50 +131,37 @@ static void cairogen_begin_page(GVJ_t * job)
     fedisableexcept(FE_ALL_EXCEPT);
 #endif
 
-    if (job->context)
+    if (job->external_context && job->context) {
         cr = (cairo_t *) job->context;
-
-    switch (job->render.id) {
-    case FORMAT_CAIRO:
-    case FORMAT_PNG:
-	if (!cr) {
-	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-			job->width, job->height);
-	    cr = cairo_create(surface);
-	    job->imagedata = cairo_image_surface_get_data(surface);	
-	    cairo_surface_destroy (surface);
-	}
-	break;
-    case FORMAT_PS:
-	if (!cr) {
+        cairo_save(cr);
+    }
+    else {
+        switch (job->render.id) {
+        case FORMAT_PS:
 	    surface = cairo_ps_surface_create_for_stream (writer,
 			job->output_file, job->width, job->height);
-	    cr = cairo_create(surface);
-	    cairo_surface_destroy (surface);
-	}
-	break;
-    case FORMAT_PDF:
-	if (!cr) {
+	    break;
+        case FORMAT_PDF:
 	    surface = cairo_pdf_surface_create_for_stream (writer,
 			job->output_file, job->width, job->height);
-	    cr = cairo_create(surface);
-	    cairo_surface_destroy (surface);
-	}
-	break;
-    case FORMAT_SVG:
-	if (!cr) {
+	    break;
+        case FORMAT_SVG:
 	    surface = cairo_svg_surface_create_for_stream (writer,
 			job->output_file, job->width, job->height);
-	    cr = cairo_create(surface);
-	    cairo_surface_destroy (surface);
-	}
-	break;
-    default:
-	break;
+	    break;
+        case FORMAT_CAIRO:
+        case FORMAT_PNG:
+        default:
+	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+			job->width, job->height);
+	    job->imagedata = cairo_image_surface_get_data(surface);	
+	    break;
+        }
+        cr = cairo_create(surface);
+        cairo_surface_destroy (surface);
+        job->context = (void *) cr;
     }
-    job->context = (void *) cr;
 
-    cairo_save(cr);
     cairo_scale(cr, job->scale.x, job->scale.y);
     cairo_rotate(cr, -job->rotation * M_PI / 180.);
     cairo_translate(cr, job->translation.x, -job->translation.y);
@@ -184,7 +171,6 @@ static void cairogen_end_page(GVJ_t * job)
 {
     cairo_t *cr = (cairo_t *) job->context;
     cairo_surface_t *surface;
-
 
     switch (job->render.id) {
 
@@ -214,8 +200,9 @@ static void cairogen_end_page(GVJ_t * job)
 	break;
     }
 
-    if (job->external_context)
+    if (job->external_context) {
 	cairo_restore(cr);
+    }
     else {
 	cairo_destroy(cr);
 	job->context = NULL;
