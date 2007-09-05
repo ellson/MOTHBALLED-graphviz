@@ -116,6 +116,8 @@ static void svg_comment(GVJ_t * job, char *str)
 
 static void svg_begin_job(GVJ_t * job)
 {
+    char *s;
+
     switch (job->render.id) {
     case FORMAT_SVGZ:
 	core_init_compression(job, COMPRESSION_ZLIB);
@@ -126,6 +128,11 @@ static void svg_begin_job(GVJ_t * job)
     }
 
     core_fputs(job, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n");
+    if ((s = agget(job->gvc->g, "stylesheet")) && s[0]) {
+        core_fputs(job, "<?xml-stylesheet href=\"");
+        core_fputs(job, s);
+        core_fputs(job, "\" type=\"text/css\"?>\n");
+    }
     core_fputs(job, "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN\"\n");
     core_fputs(job, " \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\"");
 
