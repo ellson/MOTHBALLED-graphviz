@@ -164,6 +164,8 @@ polylineMidpoint (splines* spl, point* pp, point* pq)
 		dist -= d;
 	}
     }
+    assert (FALSE);   /* should never get here */
+    return m;
 }
 
 #define LEFTOF(a,b,c) (((a.y - b.y)*(c.x - b.x) - (c.y - b.y)*(a.x - b.x)) > 0)
