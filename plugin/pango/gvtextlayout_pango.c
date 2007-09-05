@@ -32,6 +32,8 @@ static void pango_free_layout (void *layout)
     g_object_unref((PangoLayout*)layout);
 }
 
+#define FONT_DPI 96
+
 static boolean pango_textlayout(textpara_t * para, char **fontpath)
 {
     static char buf[1024];  /* returned in fontpath, only good until next call */
@@ -54,9 +56,9 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 
     if (!fontmap)
 	fontmap = pango_cairo_font_map_get_default();
-    pango_cairo_font_map_set_resolution(PANGO_CAIRO_FONT_MAP(fontmap), para->dpi);
     if (!context)
 	context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
+    pango_cairo_context_set_resolution(context, FONT_DPI);   /* fixed dpi */
 
     if (!fontname || strcmp(fontname, para->fontname)) {
 	fontname = para->fontname;
@@ -129,8 +131,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
         }
     }
     pango_font_description_set_size (desc,
-	(gint)(para->fontsize * PANGO_SCALE * POINTS_PER_INCH / para->dpi));
-
+	(gint)(para->fontsize * PANGO_SCALE * para->dpi / FONT_DPI));
 
 #ifdef ENABLE_PANGO_MARKUP
     if (! pango_parse_markup (para->str, -1, 0, &attrs, &text, NULL, &error))
@@ -159,7 +160,8 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     para->height = logical_rect.height / PANGO_SCALE;
 
     iter = pango_layout_get_iter (layout);
-    para->yoffset = pango_layout_iter_get_baseline (iter) / PANGO_SCALE;
+    para->yoffset = para->fontsize * 0.05
+	+ (pango_layout_iter_get_baseline (iter) / PANGO_SCALE) * POINTS_PER_INCH / para->dpi;
 
     /* determine position of each character in the layout */
     para->xshow = NULL;
