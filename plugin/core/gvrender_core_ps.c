@@ -224,7 +224,7 @@ static void psgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *targe
 static void
 ps_set_pen_style(GVJ_t *job)
 {
-    double penwidth = job->obj->penwidth * job->zoom;
+    double penwidth = job->obj->penwidth;
     char *p, *line, **s = job->obj->rawstyle;
 
     core_printf(job,"%g setlinewidth\n", penwidth);

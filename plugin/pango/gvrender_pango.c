@@ -249,7 +249,7 @@ static void cairogen_set_penstyle(GVJ_t *job, cairo_t *cr)
     } else {
 	cairo_set_dash (cr, dashed, 0, 0.0);
     }
-    cairo_set_line_width (cr, obj->penwidth * job->scale.x);
+    cairo_set_line_width (cr, obj->penwidth);
 
 }
 
