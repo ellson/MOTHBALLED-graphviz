@@ -1587,7 +1587,30 @@ if test "x$with_mylibgd" != "xyes"; then
         GD_MINORVERSION=`$GDLIB_CONFIG --minorversion`
         GD_REVISION=`$GDLIB_CONFIG --revision`
         for f in `$GDLIB_CONFIG --features` ; do
-                AC_DEFINE_UNQUOTED(HAVE_$f,1,[Define if the GD library has the $f feature])
+	    if test "$f" = "GD_PNG"; then
+                AC_DEFINE_UNQUOTED(HAVE_GD_PNG,1,[Define if the GD library supports PNG])
+	    fi
+	    if test "$f" = "GD_JPEG"; then
+                AC_DEFINE_UNQUOTED(HAVE_GD_JPEG,1,[Define if the GD library supports JPEG])
+	    fi
+	    if test "$f" = "GD_XPM"; then
+                AC_DEFINE_UNQUOTED(HAVE_GD_XPM,1,[Define if the GD library supports XPM])
+	    fi
+	    if test "$f" = "GD_FONTCONFIG"; then
+                AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library supports FONTCONFIG])
+	    fi
+	    if test "$f" = "GD_FREETYPE"; then
+                AC_DEFINE_UNQUOTED(HAVE_GD_FREETYPE,1,[Define if the GD library supports FREETYPE])
+	    fi
+	    if test "$f" = "GD_GIF"; then
+                AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library supports GIF])
+	    fi
+	    if test "$f" = "GD_GIFANIM"; then
+                AC_DEFINE_UNQUOTED(HAVE_GD_GIFANIM,1,[Define if the GD library supports GIFANIM])
+	    fi
+	    if test "$f" = "GD_OPENPOLYGON"; then
+                AC_DEFINE_UNQUOTED(HAVE_GD_OPENPOLYGON,1,[Define if the GD library supports OPENPOLYGON])
+	    fi
         done
 
         # GD version check >= 2.0.34  else revert to --with-mylibgd
@@ -1651,8 +1674,7 @@ else
 fi
 AC_SUBST(GD_INCLUDES)
 AC_SUBST(GD_LIBS)
-AC_SUBST(HAVE_LIBGD)
-                                                                                
+
 AM_CONDITIONAL(WITH_LIBGD, [test "x$with_libgd" = "xyes"])
 AM_CONDITIONAL(WITH_MYLIBGD, [test "x$with_mylibgd" = "xyes"])
 
@@ -1718,6 +1740,7 @@ dnl INCLUDES and LIBS for PNG (only with mylibgd)
 
 if test "x$with_mylibgd" = "xyes"; then
 
+AC_MSG_WARN(Why are we here?)
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
 AC_PATH_PROG(LIBPNG_CONFIG,libpng-config)
