@@ -18,10 +18,6 @@
 #include "config.h"
 #endif
 
-#ifdef WIN32
-#include <io.h>
-#include <fcntl.h>
-#endif
 #include "gvplugin_device.h"
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
@@ -111,15 +107,6 @@ static void gdk_pixbuf_format(GVJ_t * job)
     char *format_str = "";
     GdkPixbuf *pixbuf;
 
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-    /*
-     * Windows will do \n -> \r\n  translations on stdout
-     * unless told otherwise.
-     */
-    setmode(fileno(job->output_file), O_BINARY);
-#endif
-#endif
     switch (job->device.id) {
     case FORMAT_BMP:
 	format_str = "bmp";
@@ -165,7 +152,8 @@ static gvdevice_engine_t gdk_pixbuf_engine = {
 };
 
 static gvdevice_features_t device_features_gdk_pixbuf = {
-    GVDEVICE_DOES_TRUECOLOR,    /* flags */
+    GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_DOES_TRUECOLOR,/* flags */
     {0.,0.},                    /* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},                  /* dpi */

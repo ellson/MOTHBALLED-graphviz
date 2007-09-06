@@ -31,8 +31,6 @@
 #endif
 
 #ifdef WIN32
-#include <io.h>
-#include <fcntl.h>
 #include "compat.h"
 #endif
 
@@ -49,16 +47,6 @@ void core_init_compression(GVJ_t *job, compression_t compression)
 #if HAVE_LIBZ
         /* open dup so can gzclose independent of FILE close */
         fd = dup(fileno(job->output_file));
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-        /*
-	 * Windows will do \n -> \r\n  translations on
-	 * stdout unless told otherwise.
-	 */
-        setmode(fd, O_BINARY);
-#endif
-#endif
-
         job->output_file = (FILE *) (gzdopen(fd, "wb"));
         if (!job->output_file) {
             (job->common->errorfn) ("Error initializing compression on output file\n");

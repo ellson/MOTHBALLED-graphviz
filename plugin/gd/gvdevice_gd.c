@@ -18,11 +18,6 @@
 #include "config.h"
 #endif
 
-#ifdef WIN32
-#include <fcntl.h>
-#include <io.h>
-#endif
-#include <stdlib.h>
 #include "gvplugin_device.h"
 
 #ifdef HAVE_LIBGD
@@ -45,16 +40,6 @@ static void gd_format(GVJ_t * job)
     unsigned int *data = (unsigned int*)(job->imagedata);
     unsigned int width = job->width;
     unsigned int height = job->height;
-
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-    /*
-     * Windows will do \n -> \r\n  translations on stdout
-     * unless told otherwise.
-     */
-    setmode(fileno(job->output_file), O_BINARY);
-#endif
-#endif
 
     im = gdImageCreateTrueColor(width, height);
     for (y = 0; y < height; y++) {
@@ -144,7 +129,8 @@ static gvdevice_engine_t gd_engine = {
 };
 
 static gvdevice_features_t device_features_gd = {
-    GVDEVICE_DOES_TRUECOLOR,    /* flags */
+    GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_DOES_TRUECOLOR,/* flags */
     {0.,0.},                    /* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},                  /* dpi */

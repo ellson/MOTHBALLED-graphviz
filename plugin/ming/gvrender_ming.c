@@ -48,16 +48,6 @@ static void ming_end_job(GVJ_t * job)
 {
     SWFMovie movie = (SWFMovie)(job->context);
 
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-    /*
-     * Windows will do \n -> \r\n  translations on stdout
-     * unless told otherwise.
-     */
-    setmode(fileno(job->output_file), O_BINARY);
-#endif
-#endif
-
     SWFMovie_output_to_stream(movie, job->output_file);
     destroySWFMovie(movie);
     job->context = NULL;

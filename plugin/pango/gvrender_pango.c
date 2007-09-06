@@ -25,9 +25,6 @@
 #include <string.h>
 #endif
 #include <fcntl.h>
-#ifdef WIN32
-#include <io.h>
-#endif
 
 #if defined(HAVE_FENV_H) && defined(HAVE_FESETENV) && defined(HAVE_FEGETENV) && defined(HAVE_FEENABLEEXCEPT)
 
@@ -176,14 +173,6 @@ static void cairogen_end_page(GVJ_t * job)
 
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
     case FORMAT_PNG:
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-	/*
-	 * Windows will do \n -> \r\n  translations on stdout
-	 * unless told otherwise.  */
-	setmode(fileno(job->output_file), O_BINARY);
-#endif
-#endif
         surface = cairo_get_target(cr);
 	cairo_surface_write_to_png_stream(surface, writer, job->output_file);
 	break;
@@ -382,8 +371,9 @@ static gvrender_features_t render_features_cairo = {
     "cairo",			/* imageloader for usershapes */
 };
 
-static gvdevice_features_t device_features_bitmaps = {
-    GVDEVICE_DOES_TRUECOLOR,    /* flags */
+static gvdevice_features_t device_features_png = {
+    GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_DOES_TRUECOLOR,/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},			/* typical monitor dpi */
@@ -414,7 +404,7 @@ gvplugin_installed_t gvrender_pango_types[] = {
 gvplugin_installed_t gvdevice_pango_types[] = {
 #ifdef HAVE_PANGOCAIRO
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
-    {FORMAT_PNG, "png:cairo", 10, NULL, &device_features_bitmaps},
+    {FORMAT_PNG, "png:cairo", 10, NULL, &device_features_png},
 #endif
 #ifdef CAIRO_HAS_PS_SURFACE
     {FORMAT_PS, "ps:cairo", -10, NULL, &device_features_ps},
@@ -426,19 +416,19 @@ gvplugin_installed_t gvdevice_pango_types[] = {
     {FORMAT_SVG, "svg:cairo", -10, NULL, &device_features_svg},
 #endif
 //#ifdef CAIRO_HAS_XCB_SURFACE
-//    {FORMAT_XCB, "xcb:cairo", 0, NULL, &device_features_bitmaps},
+//    {FORMAT_XCB, "xcb:cairo", 0, NULL, &device_features_xcb},
 //#endif
 //#ifdef CAIRO_HAS_SDL_SURFACE
-//    {FORMAT_SDL, "sdl:cairo", 0, NULL, &device_features_bitmaps},
+//    {FORMAT_SDL, "sdl:cairo", 0, NULL, &device_features_sdl},
 //#endif
 //#ifdef CAIRO_HAS_GLITZ_SURFACE
-//    {FORMAT_GLITZ, "glitz:cairo", 0, NULL, &device_features_bitmaps},
+//    {FORMAT_GLITZ, "glitz:cairo", 0, NULL, &device_features_glitz},
 //#endif
 //#ifdef CAIRO_HAS_QUARTZ_SURFACE
-//    {FORMAT_QUARTZ, "quartz:cairo", 0, NULL, &device_features_bitmaps},
+//    {FORMAT_QUARTZ, "quartz:cairo", 0, NULL, &device_features_quartz},
 //#endif
 //#ifdef CAIRO_HAS_WIN32_SURFACE
-//    {FORMAT_WIN32, "win32:cairo", 0, NULL, &device_features_bitmaps},
+//    {FORMAT_WIN32, "win32:cairo", 0, NULL, &device_features_win32},
 //#endif
 #endif
     {0, NULL, 0, NULL, NULL}

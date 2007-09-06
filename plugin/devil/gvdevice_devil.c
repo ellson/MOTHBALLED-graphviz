@@ -18,10 +18,6 @@
 #include "config.h"
 #endif
 
-#ifdef WIN32
-#include <io.h>
-#include <fcntl.h>
-#endif
 #include "gvplugin_device.h"
 #include <IL/il.h>
 #include <IL/ilu.h>
@@ -53,16 +49,6 @@ static void devil_format(GVJ_t * job)
     ILuint	ImgId;
     ILenum	Error;
     ILboolean rc;
-
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-    /*
-     * Windows will do \n -> \r\n  translations on stdout
-     * unless told otherwise.
-     */
-    setmode(fileno(job->output_file), O_BINARY);
-#endif
-#endif
 
     // Check if the shared lib's version matches the executable's version.
     if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION ||
@@ -114,7 +100,8 @@ static gvdevice_engine_t devil_engine = {
 };
 
 static gvdevice_features_t device_features_devil = {
-        GVDEVICE_DOES_TRUECOLOR,    /* flags */
+	GVDEVICE_BINARY_FORMAT        
+          | GVDEVICE_DOES_TRUECOLOR,/* flags */
 	{0.,0.},                    /* default margin - points */
 	{0.,0.},                    /* default page width, height - points */
 	{96.,96.},                  /* svg 72 dpi */

@@ -496,6 +496,14 @@ gvdevice_features_t device_features_svg = {
     {72.,72.},			/* default dpi */
 };
 
+gvdevice_features_t device_features_svgz = {
+    GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_DOES_TRUECOLOR,/* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {72.,72.},			/* default dpi */
+};
+
 gvplugin_installed_t gvrender_svg_types[] = {
     {FORMAT_SVG, "svg", 1, &svg_engine, &render_features_svg},
     {0, NULL, 0, NULL, NULL}
@@ -504,7 +512,7 @@ gvplugin_installed_t gvrender_svg_types[] = {
 gvplugin_installed_t gvdevice_svg_types[] = {
     {FORMAT_SVG, "svg:svg", 1, NULL, &device_features_svg},
 #if HAVE_LIBZ
-    {FORMAT_SVGZ, "svgz:svg", 1, NULL, &device_features_svg},
+    {FORMAT_SVGZ, "svgz:svg", 1, NULL, &device_features_svgz},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

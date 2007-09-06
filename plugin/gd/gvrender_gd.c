@@ -157,15 +157,6 @@ static void gdgen_end_page(GVJ_t * job)
 	fprintf(stderr, "gdgen_end_graph (to memory)\n");
 #endif
     } else {
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-	/*
-	 * Windows will do \n -> \r\n  translations on stdout
-	 * unless told otherwise.  */
-	setmode(fileno(job->output_file), O_BINARY);
-#endif
-#endif
-
 	/* Only save the alpha channel in outputs that support it if
 	   the base color was transparent.   Otherwise everything
 	   was blended so there is no useful alpha info */
@@ -197,11 +188,16 @@ static void gdgen_end_page(GVJ_t * job)
 #endif
 	    break;
 
-#if 0
+#ifdef HAVE_GD_GIF
 	case FORMAT_WBMP:
-	    /* Use black for the foreground color for the B&W wbmp image. */
-	    gdImageWBMP(im, black, job->output_file);
+	    {
+	        /* Use black for the foreground color for the B&W wbmp image. */
+		int black = gdImageColorResolveAlpha(im, 0, 0, 0, gdAlphaOpaque);
+	        gdImageWBMP(im, black, job->output_file);
+	    }
 	    break;
+#endif
+
 	case FORMAT_GD:
 	    gdImageGd(im, job->output_file);
 	    break;
@@ -213,11 +209,13 @@ static void gdgen_end_page(GVJ_t * job)
 		       GD2_COMPRESSED);
 	    break;
 	case FORMAT_XBM:
+#if 0
+/* libgd support only reading .xpm files */
 #ifdef HAVE_GD_XPM
 	    gdImageXbm(im, job->output_file);
 #endif
-	    break;
 #endif
+	    break;
 	}
 	gdImageDestroy(im);
 #ifdef MYTRACE
@@ -619,22 +617,24 @@ gvplugin_installed_t gvdevice_gd_types2[] = {
 #ifdef HAVE_LIBGD
 #ifdef HAVE_GD_GIF
     {FORMAT_GIF, "gif:gd", 1, NULL, &device_features_gd},
+    {FORMAT_WBMP, "wbmp:gd", 1, NULL, &device_features_gd},
 #endif
+
 #ifdef HAVE_GD_JPEG
     {FORMAT_JPEG, "jpe:gd", 1, NULL, &device_features_gd_tc},
     {FORMAT_JPEG, "jpeg:gd", 1, NULL, &device_features_gd_tc},
     {FORMAT_JPEG, "jpg:gd", 1, NULL, &device_features_gd_tc},
 #endif
+
 #ifdef HAVE_GD_PNG
     {FORMAT_PNG, "png:gd", 1, NULL, &device_features_gd_tc},
 #endif
 
-#if 0
     {FORMAT_GD, "gd:gd", 1, NULL, &device_features_gd_tc},
     {FORMAT_GD2, "gd2:gd", 1, NULL, &device_features_gd_tc},
-#ifdef HAVE_GD_GIF
-    {FORMAT_WBMP, "wbmp:gd", 1, NULL, &device_features_gd},
-#endif
+
+#if 0
+/* libgd has no support for xbm as output */
 #ifdef HAVE_GD_XPM
     {FORMAT_XBM, "xbm:gd", 1, NULL, &device_features_gd},
 #endif

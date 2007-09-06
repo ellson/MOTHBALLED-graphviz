@@ -22,6 +22,11 @@
 #include "config.h"
 #endif
 
+#ifdef WIN32
+#include <fcntl.h>
+#include <io.h>
+#endif
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "render.h"
@@ -541,8 +546,8 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
     switch (job->output_lang) {
     case GVRENDER_PLUGIN:
 	job->flags |= chkOrder(g)
-		| job->render.features->flags
-		| job->device.features->flags;
+		   | job->render.features->flags
+		   | job->device.features->flags;
 	break;
     case VTX:
         /* output sorted, i.e. all nodes then all edges */
@@ -550,7 +555,8 @@ static void init_job_flags(GVJ_t * job, graph_t * g)
         break;
     case DIA:
         /* output in preorder traversal of the graph */
-        job->flags |= EMIT_PREORDER;
+        job->flags |= EMIT_PREORDER
+		   | GVDEVICE_BINARY_FORMAT;
         break;
     default:
         job->flags |= chkOrder(g);
@@ -2599,17 +2605,6 @@ char **parse_style(char *s)
     return parse;
 }
 
-static FILE *file_select(char *str)
-{
-    FILE *rv;
-    rv = fopen(str, "w");  /* binary formats add O_BINARY later */
-    if (rv == NULL) {
-        perror(str);
-        exit(1);
-    }
-    return rv;
-}
-
 static boxf bezier_bb(bezier bz)
 {
     int i;
@@ -2818,14 +2813,26 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
         if (!job->output_file) {        /* if not yet opened */
 	    if (gvc->common.auto_outfile_names)
 		auto_output_filename(job);
-            if (job->output_filename)
-                job->output_file = file_select(job->output_filename);
+            if (job->output_filename) {
+		job->output_file = fopen(job->output_filename, "w");
+		if (job->output_file == NULL) {
+		    perror(job->output_filename);
+		    exit(1);
+		}
+	    }
             else
                 job->output_file = stdout;
 #ifdef WITH_CODEGENS
 	    Output_file = job->output_file;
 #endif
-	    gvrender_begin_job(job); /* FIXME? - semantics are unclear */
+
+#ifdef HAVE_SETMODE
+#ifdef O_BINARY
+	    if (job->flags & GVDEVICE_BINARY_FORMAT)
+		setmode(fileno(job->output_file), O_BINARY);
+#endif
+#endif
+	    gvrender_begin_job(job);
         }
 
 	if (! (job->flags & GVDEVICE_EVENTS)) {

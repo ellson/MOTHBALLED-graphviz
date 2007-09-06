@@ -26,10 +26,6 @@
 #endif
 #ifdef HAVE_LIBZ
 #include <zlib.h>
-#ifdef WIN32
-#include <fcntl.h>
-#include <io.h>
-#endif
 #endif
 
 /* DIA font modifiers */
@@ -302,17 +298,6 @@ dia_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
 
     fd = dup(fileno(Output_file));	/* open dup so can gzclose 
 					   independent of FILE close */
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-    /*
-     * Windows will do \n -> \r\n  translations on
-     * stdout unless told otherwise.
-     */
-    setmode(fd, O_BINARY);
-#endif
-#endif
-
-
     Zfile = gzdopen(fd, "wb");
     if (!Zfile) {
 	agerr(AGERR, "Error opening compressed output file\n");
