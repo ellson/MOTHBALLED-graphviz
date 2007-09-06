@@ -1740,7 +1740,6 @@ dnl INCLUDES and LIBS for PNG (only with mylibgd)
 
 if test "x$with_mylibgd" = "xyes"; then
 
-AC_MSG_WARN(Why are we here?)
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
 AC_PATH_PROG(LIBPNG_CONFIG,libpng-config)
