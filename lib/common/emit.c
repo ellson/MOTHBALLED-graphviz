@@ -2602,7 +2602,7 @@ char **parse_style(char *s)
 static FILE *file_select(char *str)
 {
     FILE *rv;
-    rv = fopen(str, "wb");
+    rv = fopen(str, "w");  /* binary formats add O_BINARY later */
     if (rv == NULL) {
         perror(str);
         exit(1);
