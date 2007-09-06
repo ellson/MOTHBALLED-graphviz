@@ -496,15 +496,15 @@ gvdevice_features_t device_features_svg = {
     {72.,72.},			/* default dpi */
 };
 
-gvplugin_installed_t gvrender_core_svg_types[] = {
-    {FORMAT_SVG, "core_svg", 1, &svg_engine, &render_features_svg},
+gvplugin_installed_t gvrender_svg_types[] = {
+    {FORMAT_SVG, "svg", 1, &svg_engine, &render_features_svg},
     {0, NULL, 0, NULL, NULL}
 };
 
-gvplugin_installed_t gvdevice_core_svg_types[] = {
-    {FORMAT_SVG, "svg:core_svg", 1, NULL, &device_features_svg},
+gvplugin_installed_t gvdevice_svg_types[] = {
+    {FORMAT_SVG, "svg:svg", 1, NULL, &device_features_svg},
 #if HAVE_LIBZ
-    {FORMAT_SVGZ, "svgz:core_svg", 1, NULL, &device_features_svg},
+    {FORMAT_SVGZ, "svgz:svg", 1, NULL, &device_features_svg},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

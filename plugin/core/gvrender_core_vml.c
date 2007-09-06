@@ -437,15 +437,15 @@ gvdevice_features_t device_features_vml = {
     {96.,96.},			/* default dpi */
 };
 
-gvplugin_installed_t gvrender_core_vml_types[] = {
-    {FORMAT_VML, "core_vml", 1, &vml_engine, &render_features_vml},
+gvplugin_installed_t gvrender_vml_types[] = {
+    {FORMAT_VML, "vml", 1, &vml_engine, &render_features_vml},
     {0, NULL, 0, NULL, NULL}
 };
 
-gvplugin_installed_t gvdevice_core_vml_types[] = {
-    {FORMAT_VML, "vml:core_vml", 1, NULL, &device_features_vml},
+gvplugin_installed_t gvdevice_vml_types[] = {
+    {FORMAT_VML, "vml:vml", 1, NULL, &device_features_vml},
 #if HAVE_LIBZ
-    {FORMAT_VMLZ, "vmlz:core_vml", 1, NULL, &device_features_vml},
+    {FORMAT_VMLZ, "vmlz:vml", 1, NULL, &device_features_vml},
 #endif
     {0, NULL, 0, NULL, NULL}
 };

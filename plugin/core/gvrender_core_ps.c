@@ -475,13 +475,13 @@ static gvdevice_features_t device_features_ps = {
     {72.,72.},			/* default dpi */
 };
 
-gvplugin_installed_t gvrender_core_ps_types[] = {
-    {FORMAT_PS, "core_ps", 1, &psgen_engine, &render_features_ps},
+gvplugin_installed_t gvrender_ps_types[] = {
+    {FORMAT_PS, "ps", 1, &psgen_engine, &render_features_ps},
     {0, NULL, 0, NULL, NULL}
 };
 
-gvplugin_installed_t gvdevice_core_ps_types[] = {
-    {FORMAT_PS, "ps:core_ps", 1, NULL, &device_features_ps},
-    {FORMAT_PS2, "ps2:core_ps", 1, NULL, &device_features_ps},
+gvplugin_installed_t gvdevice_ps_types[] = {
+    {FORMAT_PS, "ps:ps", 1, NULL, &device_features_ps},
+    {FORMAT_PS2, "ps2:ps", 1, NULL, &device_features_ps},
     {0, NULL, 0, NULL, NULL}
 };

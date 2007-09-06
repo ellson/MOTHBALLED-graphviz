@@ -505,17 +505,17 @@ gvdevice_features_t device_features_dot = {
     {72.,72.},			/* default dpi */
 };
 
-gvplugin_installed_t gvrender_core_dot_types[] = {
-    {FORMAT_DOT, "core_dot", 1, &dot_engine, &render_features_dot},
-    {FORMAT_XDOT, "core_xdot", 1, &xdot_engine, &render_features_xdot},
+gvplugin_installed_t gvrender_dot_types[] = {
+    {FORMAT_DOT, "dot", 1, &dot_engine, &render_features_dot},
+    {FORMAT_XDOT, "xdot", 1, &xdot_engine, &render_features_xdot},
     {0, NULL, 0, NULL, NULL}
 };
 
-gvplugin_installed_t gvdevice_core_dot_types[] = {
-    {FORMAT_DOT, "dot:core_dot", 1, NULL, &device_features_dot},
-    {FORMAT_CANON, "canon:core_dot", 1, NULL, &device_features_canon},
-    {FORMAT_PLAIN, "plain:core_dot", 1, NULL, &device_features_dot},
-    {FORMAT_PLAIN_EXT, "plain-ext:core_dot", 1, NULL, &device_features_dot},
-    {FORMAT_XDOT, "xdot:core_xdot", 1, NULL, &device_features_dot},
+gvplugin_installed_t gvdevice_dot_types[] = {
+    {FORMAT_DOT, "dot:dot", 1, NULL, &device_features_dot},
+    {FORMAT_CANON, "canon:dot", 1, NULL, &device_features_canon},
+    {FORMAT_PLAIN, "plain:dot", 1, NULL, &device_features_dot},
+    {FORMAT_PLAIN_EXT, "plain-ext:dot", 1, NULL, &device_features_dot},
+    {FORMAT_XDOT, "xdot:xdot", 1, NULL, &device_features_dot},
     {0, NULL, 0, NULL, NULL}
 };

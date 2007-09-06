@@ -315,17 +315,17 @@ static gvdevice_features_t device_features_map_nopoly = {
     {96.,96.},			/* default dpi */
 };
 
-gvplugin_installed_t gvrender_core_map_types[] = {
-    {FORMAT_ISMAP, "core_map", 1, &map_engine, &render_features_map},
+gvplugin_installed_t gvrender_map_types[] = {
+    {FORMAT_ISMAP, "map", 1, &map_engine, &render_features_map},
     {0, NULL, 0, NULL, NULL}
 };
 
-gvplugin_installed_t gvdevice_core_map_types[] = {
-    {FORMAT_ISMAP, "ismap:core_map", 1, NULL, &device_features_map_nopoly},
-    {FORMAT_CMAP, "cmap:core_map", 1, NULL, &device_features_map},
-    {FORMAT_IMAP, "imap:core_map", 1, NULL, &device_features_map},
-    {FORMAT_CMAPX, "cmapx:core_map", 1, NULL, &device_features_map},
-    {FORMAT_IMAP, "imap_np:core_map", 1, NULL, &device_features_map_nopoly},
-    {FORMAT_CMAPX, "cmapx_np:core_map", 1, NULL, &device_features_map_nopoly},
+gvplugin_installed_t gvdevice_map_types[] = {
+    {FORMAT_ISMAP, "ismap:map", 1, NULL, &device_features_map_nopoly},
+    {FORMAT_CMAP, "cmap:map", 1, NULL, &device_features_map},
+    {FORMAT_IMAP, "imap:map", 1, NULL, &device_features_map},
+    {FORMAT_CMAPX, "cmapx:map", 1, NULL, &device_features_map},
+    {FORMAT_IMAP, "imap_np:map", 1, NULL, &device_features_map_nopoly},
+    {FORMAT_CMAPX, "cmapx_np:map", 1, NULL, &device_features_map_nopoly},
     {0, NULL, 0, NULL, NULL}
 };

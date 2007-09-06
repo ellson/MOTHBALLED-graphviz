@@ -539,12 +539,12 @@ gvdevice_features_t device_features_fig = {
 	  *    but that doesn't explain what the 1200 is? */
 };
 
-gvplugin_installed_t gvrender_core_fig_types[] = {
-    {FORMAT_FIG, "core_fig", 1, &fig_engine, &render_features_fig},
+gvplugin_installed_t gvrender_fig_types[] = {
+    {FORMAT_FIG, "fig", 1, &fig_engine, &render_features_fig},
     {0, NULL, 0, NULL, NULL}
 };
 
-gvplugin_installed_t gvdevice_core_fig_types[] = {
-    {FORMAT_FIG, "fig:core_fig", 1, NULL, &device_features_fig},
+gvplugin_installed_t gvdevice_fig_types[] = {
+    {FORMAT_FIG, "fig:fig", 1, NULL, &device_features_fig},
     {0, NULL, 0, NULL, NULL}
 };
