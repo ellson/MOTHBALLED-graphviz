@@ -34,6 +34,14 @@ static objstack_t	*SP;
 static Agraph_t		*Gstack[32];
 static int			GSP;
 
+static void subgraph_warn ()
+{
+    agerr (AGWARN, "The use of \"subgraph %s\", line %d, without a body is deprecated.\n",
+	G->name, aglinenumber());
+    agerr (AGPREV, "This may cause unexpected behavior or crash the program.\n");
+    agerr (AGPREV, "Please use a single definition of the subgraph within the context of its parent graph \"%s\"\n", Gstack[GSP-2]->name);
+}
+
 static void push_subg(Agraph_t *g)
 {
 	G = Gstack[GSP++] = g;
@@ -452,7 +460,7 @@ edgeRHS		:	T_edgeop node_id {mid_edgestmt($2);}
 subg_stmt	:	subg_hdr '{' stmt_list '}'%prec '{' {$$ = pop_gobj();}
 		|	T_subgraph '{' { anonsubg(); } stmt_list '}' {$$ = pop_gobj();}
 		|	'{' { anonsubg(); } stmt_list '}' {$$ = pop_gobj();}
-		|	subg_hdr %prec T_subgraph {$$ = pop_gobj();}
+		|	subg_hdr %prec T_subgraph {subgraph_warn(); $$ = pop_gobj();}
 		;
 
 subg_hdr	:	T_subgraph symbol

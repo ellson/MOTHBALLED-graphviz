@@ -33,7 +33,7 @@ static int LineBufSize;
 static uchar In_comment;
 static uchar Comment_start;
 static uchar Start_html_string;
-static int Line_number;
+int Line_number;
 static char *InputFile;
 static gets_f Lexer_gets;
 
@@ -43,6 +43,11 @@ static gets_f Lexer_gets;
 void agreadline(int n)
 {
     Line_number = n - 1;
+}
+
+int aglinenumber ()
+{
+    return Line_number;
 }
 
   /* (Re)set file:
