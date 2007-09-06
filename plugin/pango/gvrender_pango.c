@@ -44,11 +44,13 @@
 #define __USE_GNU
 #endif
 
+#if 0
 # include <fenv.h>
 #elif HAVE_FPU_CONTROL_H
 # include <fpu_control.h>
 #elif HAVE_SYS_FPU_H
 # include <sys/fpu.h>
+#endif
 #endif
 
 #include "gvplugin_render.h"
@@ -95,9 +97,11 @@ static int dotted_len = ARRAY_SIZE(dotted);
 #include <cairo-glitz.h>
 #endif
 
+#if 0
 #if defined(HAVE_FENV_H) && defined(HAVE_FESETENV) && defined(HAVE_FEGETENV) && defined(HAVE_FEENABLEEXCEPT)
 /* place to save fp environment temporarily */
 static fenv_t fenv; /* FIXME - not thread safe */
+#endif
 #endif
 
 static void cairogen_set_color(cairo_t * cr, gvcolor_t * color)
@@ -119,6 +123,7 @@ static void cairogen_begin_page(GVJ_t * job)
     cairo_t *cr = NULL;
     cairo_surface_t *surface;
 
+#if 0
 #if defined(HAVE_FENV_H) && defined(HAVE_FESETENV) && defined(HAVE_FEGETENV) && defined(HAVE_FEDISABLEEXCEPT)
     /* cairo generates FE_INVALID and other exceptions we 
      * want to ignore for now.  Save the current fenv and
@@ -126,6 +131,7 @@ static void cairogen_begin_page(GVJ_t * job)
      * The fenv is restored in cairogen_end_graph  */
     fegetenv(&fenv);
     fedisableexcept(FE_ALL_EXCEPT);
+#endif
 #endif
 
     if (job->external_context && job->context) {
@@ -197,9 +203,11 @@ static void cairogen_end_page(GVJ_t * job)
 	job->context = NULL;
     }
 
+#if 0
 #if defined HAVE_FENV_H && defined HAVE_FESETENV && defined HAVE_FEGETENV && defined(HAVE_FEENABLEEXCEPT)
     /* Restore FP environment */
     fesetenv(&fenv);
+#endif
 #endif
 }
 
