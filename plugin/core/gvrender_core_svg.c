@@ -498,6 +498,7 @@ gvdevice_features_t device_features_svg = {
 
 gvdevice_features_t device_features_svgz = {
     GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_COMPRESSED_FORMAT
       | GVDEVICE_DOES_TRUECOLOR,/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
