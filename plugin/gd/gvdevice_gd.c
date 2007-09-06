@@ -142,7 +142,7 @@ gvplugin_installed_t gvdevice_gd_types[] = {
 
 #ifdef HAVE_GD_GIF
     {FORMAT_GIF, "gif:cairo", 10, &gd_engine, &device_features_gd},
-    {FORMAT_WBMP, "wbmp:cairo", -1, &gd_engine, &device_features_gd},
+    {FORMAT_WBMP, "wbmp:cairo", 5, &gd_engine, &device_features_gd},
 #endif
 
 #ifdef HAVE_GD_JPEG
@@ -152,16 +152,16 @@ gvplugin_installed_t gvdevice_gd_types[] = {
 #endif
 
 #ifdef HAVE_GD_PNG
-    {FORMAT_PNG, "png:cairo", -1, &gd_engine, &device_features_gd},
+    {FORMAT_PNG, "png:cairo", 5, &gd_engine, &device_features_gd},
 #endif
 
-    {FORMAT_GD, "gd:cairo", -1, &gd_engine, &device_features_gd},
-    {FORMAT_GD2, "gd2:cairo", -1, &gd_engine, &device_features_gd},
+    {FORMAT_GD, "gd:cairo", 5, &gd_engine, &device_features_gd},
+    {FORMAT_GD2, "gd2:cairo", 5, &gd_engine, &device_features_gd},
 
 #if 0
 /* libgd only supports reading of xpm files */
 #ifdef HAVE_GD_XPM
-    {FORMAT_XBM, "xbm:cairo", -1, &gd_engine, &device_features_gd},
+    {FORMAT_XBM, "xbm:cairo", 5, &gd_engine, &device_features_gd},
 #endif
 #endif
 
