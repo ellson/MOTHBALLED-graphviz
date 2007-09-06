@@ -100,7 +100,6 @@ static void gd_format(GVJ_t * job)
         break;
 #endif
 
-#if 0
     case FORMAT_GD:
 	gdImageGd(im, job->output_file);
 	break;
@@ -114,17 +113,20 @@ static void gd_format(GVJ_t * job)
 
 #ifdef HAVE_GD_GIF
     case FORMAT_WBMP:
-	/* Use black for the foreground color for the B&W wbmp image. */
-//FIXME - black not defined - is it really needed? 
-	gdImageWBMP(im, black, job->output_file);
+	{
+	    /* Use black for the foreground color for the B&W wbmp image. */
+            int black = gdImageColorResolveAlpha(im, 0, 0, 0, gdAlphaOpaque);
+	    gdImageWBMP(im, black, job->output_file);
+	}
 	break;
 #endif
 
+#if 0
+/* libgd only supports reading of xpm files */
 #ifdef HAVE_GD_XPM
     case FORMAT_XBM:
 	gdImageXbm(im, job->output_file);
 #endif
-
 #endif
 	break;
     default:
@@ -154,6 +156,7 @@ gvplugin_installed_t gvdevice_gd_types[] = {
 
 #ifdef HAVE_GD_GIF
     {FORMAT_GIF, "gif:cairo", 10, &gd_engine, &device_features_gd},
+    {FORMAT_WBMP, "wbmp:cairo", -1, &gd_engine, &device_features_gd},
 #endif
 
 #ifdef HAVE_GD_JPEG
@@ -166,14 +169,11 @@ gvplugin_installed_t gvdevice_gd_types[] = {
     {FORMAT_PNG, "png:cairo", -1, &gd_engine, &device_features_gd},
 #endif
 
-#if 0
     {FORMAT_GD, "gd:cairo", -1, &gd_engine, &device_features_gd},
     {FORMAT_GD2, "gd2:cairo", -1, &gd_engine, &device_features_gd},
 
-#ifdef HAVE_GD_GIF
-    {FORMAT_WBMP, "wbmp:cairo", -1, &gd_engine, &device_features_gd},
-#endif
-
+#if 0
+/* libgd only supports reading of xpm files */
 #ifdef HAVE_GD_XPM
     {FORMAT_XBM, "xbm:cairo", -1, &gd_engine, &device_features_gd},
 #endif
