@@ -138,7 +138,8 @@ BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel 
 %if "%fedora" >= "7"
 %define MYLIBGD --without-mylibgd
 %define GDK_PIXBUF --with-gdk-pixbuf
-BuildRequires: gd gd-devel perl-devel
+%define DEVIL --with-devil
+BuildRequires: gd gd-devel perl-devel DevIL-devel
 %endif
 %endif
 
@@ -176,6 +177,7 @@ fi
 %{_datadir}/graphviz/lefty
 %exclude %{_libdir}/graphviz/*/*
 %exclude %{_libdir}/graphviz/libgvplugin_gd.*
+%exclude %{_libdir}/graphviz/libgvplugin_devil.*
 
 #-- graphviz-gd rpm --------------------------------------------------
 %package gd
@@ -202,6 +204,31 @@ based renderer.)
 
 %files gd
 %{_libdir}/graphviz/libgvplugin_gd.so.*
+
+#-- graphviz-devil rpm --------------------------------------------------
+%package devil
+Group:            Applications/Multimedia
+Summary:          Graphviz plugin for renderers based on DevIL
+Requires:         graphviz = %{version}-%{release}
+Requires(post):   %{_bindir}/dot /sbin/ldconfig
+Requires(postun): %{_bindir}/dot /sbin/ldconfig
+
+%description devil
+Graphviz plugin for renderers based on DevIL.  (Unless you absolutely have
+to use BMP, TIF, or TGA, you are recommended to use the PNG format instead
+support directly by the cairo+pango based renderer in the base graphviz rpm.)
+
+# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+%post devil
+/sbin/ldconfig
+%{_bindir}/dot -c
+
+%postun devil
+/sbin/ldconfig
+[ -x %{_bindir}/dot ] && %{_bindir}/dot -c || :
+
+%files devil
+%{_libdir}/graphviz/libgvplugin_devil.so.*
 
 #-- graphviz-sharp rpm --------------------------------------------
 %if %{SHARP}
