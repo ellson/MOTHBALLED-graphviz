@@ -34,7 +34,7 @@ static objstack_t	*SP;
 static Agraph_t		*Gstack[32];
 static int			GSP;
 
-static void subgraph_warn ()
+static void subgraph_warn (void)
 {
     agerr (AGWARN, "The use of \"subgraph %s\", line %d, without a body is deprecated.\n",
 	G->name, aglinenumber());
