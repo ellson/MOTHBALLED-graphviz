@@ -36,9 +36,9 @@ static void
 argb2rgba ( unsigned int width, unsigned int height, unsigned char *data)
 {
 /* define indexes to color bytes in each format */
-#define Ra 2
-#define Ga 1
 #define Ba 0
+#define Ga 1
+#define Ra 2
 #define Aa 3
 
 #define Rb 0
@@ -46,49 +46,14 @@ argb2rgba ( unsigned int width, unsigned int height, unsigned char *data)
 #define Bb 2
 #define Ab 3
 
-/* only need to process those bytes whose index is different */
-#if (Ra != Rb)
-    unsigned char r;
-#endif
-#if (Ga != Gb)
-    unsigned char g;
-#endif
-#if (Ba != Bb)
-    unsigned char b;
-#endif
-#if (Aa != Ab)
-    unsigned char a;
-#endif
     unsigned int x, y;
 
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++) {
-#if (Ra != Rb)
-            r = data[Ra];
-#endif
-#if (Ga != Gb)
-            g = data[Ga];
-#endif
-#if (Ba != Bb)
-            b = data[Ba];
-#endif
-#if (Aa != Ab)
-            a = data[Aa];
-#endif
-
-#if (Ra != Rb)
-            data[Rb] = r;
-#endif
-#if (Ga != Gb)
-            data[Gb] = g;
-#endif
-#if (Ba != Bb)
-            data[Bb] = b;
-#endif
-#if (Aa != Ab)
-            data[Ab] = a;
-#endif
-
+            /* swap red and blue */
+            unsigned char r = data[Ra];
+            data[Bb] = data[Ba];
+	    data[Rb] = r;
             data += 4;
         }
     }

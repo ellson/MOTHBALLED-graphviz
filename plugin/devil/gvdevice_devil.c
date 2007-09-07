@@ -25,22 +25,17 @@
 static void
 Y_inv ( unsigned int width, unsigned int height, unsigned char *data)
 {
-        unsigned int x, y, rowsize, i;
-        unsigned char tmp, *data2;
+        unsigned int x, y, *a, *b, t;
 
-#define STRIDE 4
-
-        rowsize = width * STRIDE;
-        data2 = data + (height-1) * rowsize;
+	a = (unsigned int*)data;
+        b = a + (height-1) * width;
         for (y = 0; y < height/2; y++) {
                 for (x = 0; x < width; x++) {
-                        for (i = 0; i < STRIDE; i++) {
-                                tmp = *data;
-                                *data++ = *data2;
-                                *data2++ = tmp;
-                        }
+			t = *a;
+			*a++ = *b;
+			*b++ = t;
                 }
-                data2 -= 2*rowsize;
+                b -= 2*width;
         }
 }
 
