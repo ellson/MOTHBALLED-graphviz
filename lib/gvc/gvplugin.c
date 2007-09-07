@@ -72,27 +72,40 @@ boolean gvplugin_install(GVC_t * gvc, api_t api,
 		 gvplugin_installed_t * typeptr)
 {
     gvplugin_available_t *plugin, **pnext;
-    char *p;
-    int len;
+#define TYPSIZ 63
+    char *p, pins[TYPSIZ+1], pnxt[TYPSIZ+1];
 
     if (api < 0)
 	return FALSE;
 
-    if ((p = strchr(typestr, ':')))
-	len = p - typestr;
-    else
-	len = strlen(typestr);
+    strncpy(pins, typestr, TYPSIZ);
+    if ((p = strchr(pins, ':')))
+	*p = '\0';
     
     /* point to the beginning of the linked list of plugins for this api */
     pnext = &(gvc->apis[api]);
 
     /* keep alpha-sorted and insert new duplicates ahead of old */
-    while (*pnext && (strncmp(typestr, (*pnext)->typestr, len) > 0))
+    while (*pnext) {
+	strncpy(pnxt, (*pnext)->typestr, TYPSIZ);
+	if ((p = strchr(pnxt, ':')))
+	    *p = '\0';
+	if (strcmp(pins, pnxt) <= 0)
+	    break;
 	pnext = &((*pnext)->next);
+    }
 
     /* keep quality sorted within type and insert new duplicates ahead of old */
-    while (*pnext && strncmp(typestr, (*pnext)->typestr, len) == 0 && quality < (*pnext)->quality)
+    while (*pnext) {
+	strncpy(pnxt, (*pnext)->typestr, TYPSIZ);
+	if ((p = strchr(pnxt, ':')))
+	    *p = '\0';
+	if (strcmp(pins, pnxt) != 0)
+	    break;
+	if (quality >= (*pnext)->quality)
+	    break;
 	pnext = &((*pnext)->next);
+    }
 
     plugin = GNEW(gvplugin_available_t);
     plugin->next = *pnext;
