@@ -71,7 +71,7 @@ static int imagetype (usershape_t *us)
 	    }
         }
     }
-    us->stringtype = "";
+    us->stringtype = "(lib)";
     us->type = FT_NULL;
     return FT_NULL;
 }

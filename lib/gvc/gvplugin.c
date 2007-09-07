@@ -266,7 +266,8 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
     if (api < 0)
 	return NULL;
 
-    if (api == API_device) /* api dependencies - FIXME - find better way to code these *s */
+    if (api == API_device
+	|| api == API_loadimage) /* api dependencies - FIXME - find better way to code these *s */
 
         apidep = API_render;	
     else
@@ -392,8 +393,8 @@ const char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
             q = strdup((*pnext)->typestr);
 	    if ((p = strchr(q, ':')))
                 *p++ = '\0';
-	    /* list only the matching type */
-	    if (strcasecmp(s, q) == 0) {
+	    /* list only the matching type, or all types if s is an empty string */
+	    if (!s[0] || strcasecmp(s, q) == 0) {
 		/* list each member of the matching type as "type:path" */
 		append_buf(' ', (*pnext)->typestr, new);
 		buf = append_buf(':', (*pnext)->packagename, FALSE);
@@ -446,6 +447,10 @@ void gvplugin_write_status(GVC_t * gvc)
 #endif
 
     for (api = 0; api < ARRAY_SIZE(api_names); api++) {
-	fprintf(stderr,"    %s\t: %s\n", api_names[api], gvplugin_list(gvc, api, ":"));
+	if (gvc->common.verbose >= 2) 
+	    fprintf(stderr,"    %s\t: %s\n", api_names[api], gvplugin_list(gvc, api, ":"));
+	else
+	    fprintf(stderr,"    %s\t: %s\n", api_names[api], gvplugin_list(gvc, api, "?"));
     }
+
 }

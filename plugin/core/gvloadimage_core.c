@@ -48,7 +48,7 @@ typedef enum {
     FORMAT_PNG_XDOT, FORMAT_GIF_XDOT, FORMAT_JPEG_XDOT,
     FORMAT_PNG_FIG, FORMAT_GIF_FIG, FORMAT_JPEG_FIG,
     FORMAT_PNG_VRML, FORMAT_GIF_VRML, FORMAT_JPEG_VRML,
-    FORMAT_PS_PS, FORMAT__PS,
+    FORMAT_PS_PS, FORMAT_PSLIB_PS,
 } format_type;
 
 static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
@@ -281,19 +281,27 @@ static gvloadimage_engine_t engine_xdot = {
 };
 
 gvplugin_installed_t gvloadimage_core_types[] = {
-    {FORMAT_PNG_SVG, "png2svg", 1, &engine_svg, NULL},
-    {FORMAT_GIF_SVG, "gif2svg", 1, &engine_svg, NULL},
-    {FORMAT_JPEG_SVG, "jpeg2svg", 1, &engine_svg, NULL},
-    {FORMAT_PNG_FIG, "png2fig", 1, &engine_fig, NULL},
-    {FORMAT_GIF_FIG, "gif2fig", 1, &engine_fig, NULL},
-    {FORMAT_JPEG_FIG, "jpeg2fig", 1, &engine_fig, NULL},
-    {FORMAT_PNG_VRML, "png2vrml", 1, &engine_vrml, NULL},
-    {FORMAT_GIF_VRML, "gif2vrml", 1, &engine_vrml, NULL},
-    {FORMAT_JPEG_VRML, "jpeg2vrml", 1, &engine_vrml, NULL},
-    {FORMAT_PS_PS, "ps2ps", 1, &engine_ps, NULL},
-    {FORMAT__PS, "2ps", 1, &engine_pslib, NULL},
-    {FORMAT_PNG_XDOT, "png2xdot", 1, &engine_xdot, NULL},
-    {FORMAT_GIF_XDOT, "gif2xdot", 1, &engine_xdot, NULL},
-    {FORMAT_JPEG_XDOT, "jpeg2xdot", 1, &engine_xdot, NULL},
+    {FORMAT_PNG_SVG, "png:svg", 1, &engine_svg, NULL},
+    {FORMAT_GIF_SVG, "gif:svg", 1, &engine_svg, NULL},
+    {FORMAT_JPEG_SVG, "jpeg:svg", 1, &engine_svg, NULL},
+    {FORMAT_JPEG_SVG, "jpe:svg", 1, &engine_svg, NULL},
+    {FORMAT_JPEG_SVG, "jpg:svg", 1, &engine_svg, NULL},
+    {FORMAT_PNG_FIG, "png:fig", 1, &engine_fig, NULL},
+    {FORMAT_GIF_FIG, "gif:fig", 1, &engine_fig, NULL},
+    {FORMAT_JPEG_FIG, "jpeg:fig", 1, &engine_fig, NULL},
+    {FORMAT_JPEG_FIG, "jpe:fig", 1, &engine_fig, NULL},
+    {FORMAT_JPEG_FIG, "jpg:fig", 1, &engine_fig, NULL},
+    {FORMAT_PNG_VRML, "png:vrml", 1, &engine_vrml, NULL},
+    {FORMAT_GIF_VRML, "gif:vrml", 1, &engine_vrml, NULL},
+    {FORMAT_JPEG_VRML, "jpeg:vrml", 1, &engine_vrml, NULL},
+    {FORMAT_JPEG_VRML, "jpe:vrml", 1, &engine_vrml, NULL},
+    {FORMAT_JPEG_VRML, "jpg:vrml", 1, &engine_vrml, NULL},
+    {FORMAT_PS_PS, "ps:ps", 1, &engine_ps, NULL},
+    {FORMAT_PSLIB_PS, "(lib):ps", 1, &engine_pslib, NULL},  /* for pslib */
+    {FORMAT_PNG_XDOT, "png:xdot", 1, &engine_xdot, NULL},
+    {FORMAT_GIF_XDOT, "gif:xdot", 1, &engine_xdot, NULL},
+    {FORMAT_JPEG_XDOT, "jpeg:xdot", 1, &engine_xdot, NULL},
+    {FORMAT_JPEG_XDOT, "jpe:xdot", 1, &engine_xdot, NULL},
+    {FORMAT_JPEG_XDOT, "jpg:xdot", 1, &engine_xdot, NULL},
     {0, NULL, 0, NULL, NULL}
 };

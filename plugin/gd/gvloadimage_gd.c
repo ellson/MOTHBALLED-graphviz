@@ -35,8 +35,8 @@
 #include "gd.h"
 
 typedef enum {
-    FORMAT_PNG_GD, FORMAT_GIF_GD, FORMAT_JPG_GD, FORMAT_GD_GD, FORMAT_GD2_GD, FORMAT_XPM_GD, FORMAT_WBMP_GD,
-    FORMAT_PNG_PS, FORMAT_GIF_PS, FORMAT_JPG_PS, FORMAT_GD_PS, FORMAT_GD2_PS, FORMAT_XPM_PS, FORMAT_WBMP_PS,
+    FORMAT_PNG_GD, FORMAT_GIF_GD, FORMAT_JPG_GD, FORMAT_GD_GD, FORMAT_GD2_GD, FORMAT_XPM_GD, FORMAT_WBMP_GD, FORMAT_XBM_GD,
+    FORMAT_PNG_PS, FORMAT_GIF_PS, FORMAT_JPG_PS, FORMAT_GD_PS, FORMAT_GD2_PS, FORMAT_XPM_PS, FORMAT_WBMP_PS, FORMAT_XBM_PS,
 } format_type;
 
 
@@ -197,47 +197,43 @@ static gvloadimage_engine_t engine_ps = {
 
 gvplugin_installed_t gvloadimage_gd_types[] = {
 #ifdef HAVE_LIBGD
-#if 0
-    {FORMAT_GD_GD, "gd2gd", 1, &engine, NULL},
-    {FORMAT_GD2_GD, "gd22gd", 1, &engine, NULL},
-#endif
+    {FORMAT_GD_GD, "gd:gd", 1, &engine, NULL},
+    {FORMAT_GD2_GD, "gd2:gd", 1, &engine, NULL},
 #ifdef HAVE_GD_GIF
-    {FORMAT_GIF_GD, "gif2gd", 1, &engine, NULL},
+    {FORMAT_GIF_GD, "gif:gd", 1, &engine, NULL},
 #endif
 #ifdef HAVE_GD_JPEG
-    {FORMAT_JPG_GD, "jpeg2gd", 1, &engine, NULL},
+    {FORMAT_JPG_GD, "jpeg:gd", 1, &engine, NULL},
+    {FORMAT_JPG_GD, "jpe:gd", 1, &engine, NULL},
+    {FORMAT_JPG_GD, "jpg:gd", 1, &engine, NULL},
 #endif
 #ifdef HAVE_GD_PNG
-    {FORMAT_PNG_GD, "png2gd", 1, &engine, NULL},
+    {FORMAT_PNG_GD, "png:gd", 1, &engine, NULL},
 #endif
-#if 0
 #ifdef HAVE_GD_WBMP
-    {FORMAT_WBMP_GD, "wbmp2gd", 1, &engine, NULL},
+    {FORMAT_WBMP_GD, "wbmp:gd", 1, &engine, NULL},
 #endif
 #ifdef HAVE_GD_XPM
-    {FORMAT_XBM_GD, "xbm2gd", 1, &engine, NULL},
+    {FORMAT_XBM_GD, "xbm:gd", 1, &engine, NULL},
 #endif
-#endif
-#if 0
-    {FORMAT_GD_PS, "gd2ps", 1, &engine_ps, NULL},
-    {FORMAT_GD2_PS, "gd22ps", 1, &engine_ps, NULL},
-#endif
+    {FORMAT_GD_PS, "gd:ps", 1, &engine_ps, NULL},
+    {FORMAT_GD2_PS, "gd2:ps", 1, &engine_ps, NULL},
 #ifdef HAVE_GD_GIF
-    {FORMAT_GIF_PS, "gif2ps", 1, &engine_ps, NULL},
+    {FORMAT_GIF_PS, "gif:ps", 1, &engine_ps, NULL},
 #endif
 #ifdef HAVE_GD_JPEG
-    {FORMAT_JPG_PS, "jpeg2ps", 1, &engine_ps, NULL},
+    {FORMAT_JPG_PS, "jpeg:ps", 1, &engine_ps, NULL},
+    {FORMAT_JPG_PS, "jpg:ps", 1, &engine_ps, NULL},
+    {FORMAT_JPG_PS, "jpe:ps", 1, &engine_ps, NULL},
 #endif
 #ifdef HAVE_GD_PNG
-    {FORMAT_PNG_PS, "png2ps", 1, &engine_ps, NULL},
+    {FORMAT_PNG_PS, "png:ps", 1, &engine_ps, NULL},
 #endif
-#if 0
 #ifdef HAVE_GD_WBMP
-    {FORMAT_WBMP_PS, "wbmp2ps", 1, &engine_ps, NULL},
+    {FORMAT_WBMP_PS, "wbmp:ps", 1, &engine_ps, NULL},
 #endif
 #ifdef HAVE_GD_XPM
-    {FORMAT_XBM_PS, "xbm2ps", 1, &engine_ps, NULL},
-#endif
+    {FORMAT_XBM_PS, "xbm:ps", 1, &engine_ps, NULL},
 #endif
 #endif
     {0, NULL, 0, NULL, NULL}

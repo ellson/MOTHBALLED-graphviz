@@ -989,8 +989,7 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n,
 	b.UR.y = d;
     }
     if (gvre) {
-	if (job->render.features->imageloader)
-	    gvloadimage(job, us, b, filled, job->render.features->imageloader);
+	gvloadimage(job, us, b, filled, job->render.type);
     }
 #ifdef WITH_CODEGENS
     else {
