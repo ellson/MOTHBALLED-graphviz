@@ -34,7 +34,7 @@
 /* for agerr() */
 #include "graph.h"
 
-int gvloadimage_select(GVJ_t * job, char *str)
+static int gvloadimage_select(GVJ_t * job, char *str)
 {
     gvplugin_available_t *plugin;
     gvplugin_installed_t *typeptr;
@@ -55,7 +55,7 @@ void gvloadimage(GVJ_t * job, usershape_t *us, boxf b, boolean filled, char *tar
     char type[SMALLBUF];
 
     strcpy(type, us->stringtype);
-    strcat(type, "2");
+    strcat(type, ":");
     strcat(type, target);
 
     if (gvloadimage_select(job, type) == NO_SUPPORT)
