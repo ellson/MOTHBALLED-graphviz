@@ -60,8 +60,10 @@ static void devil_format(GVJ_t * job)
     // Bind this image name.
     ilBindImage(ImgId);
 
+    // cairo's inmemory image format needs inverting for DevIL 
     Y_inv ( job->width, job->height, job->imagedata );
     
+    // let the DevIL do its thing
     rc = ilTexImage( job->width, job->height,
     		1,		// Depth
     		4,		// Bpp
@@ -69,16 +71,10 @@ static void devil_format(GVJ_t * job)
     		IL_UNSIGNED_BYTE,// Type
     		job->imagedata);
     
-#if 1
+    // output to the provided open file handle
     ilSaveF(job->device.id, job->output_file);
-#endif
-
-#if 0
-    ilEnable(IL_FILE_OVERWRITE);
-    ilSaveImage("test-devil.bmp");
-#endif
     
-    // We're done with the image, so let's delete it.
+    // We're done with the image, so delete it.
     ilDeleteImages(1, &ImgId);
     
     // Simple Error detection loop that displays the Error to the user in a human-readable form.
