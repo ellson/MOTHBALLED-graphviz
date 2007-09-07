@@ -662,9 +662,12 @@ tclGdWriteCmd(Tcl_Interp * interp, GdData * gdData, int argc,
 	   color for the B&W wbmp image. */
 	int foreground = gdImageColorClosest(im, 0, 0, 0);
 	gdImageWBMP(im, foreground, filePtr);
+#if 0
+/* libgd only supports reading xbm format */
 #ifdef HAVE_GD_XPM
     } else if (strcmp(&cmd[5], "XBM") == 0) {
 	gdImageXbm(im, filePtr);
+#endif
 #endif
     } else {
 	/* cannot happen - but would result in an empty output file */
