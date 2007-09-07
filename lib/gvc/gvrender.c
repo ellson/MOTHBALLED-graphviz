@@ -83,7 +83,7 @@ int gvrender_select(GVJ_t * job, char *str)
     if (plugin) {
         typeptr = plugin->typeptr;
         job->render.engine = (gvrender_engine_t *) (typeptr->engine);
-        job->render.features = (gvdevice_features_t *) (typeptr->features);
+        job->render.features = (gvrender_features_t *) (typeptr->features);
 
         if (job->device.engine)
             job->render.id = typeptr->id;
