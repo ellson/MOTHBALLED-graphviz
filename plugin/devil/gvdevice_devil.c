@@ -104,7 +104,6 @@ static gvdevice_features_t device_features_devil = {
 
 gvplugin_installed_t gvdevice_devil_types[] = {
     {IL_BMP, "bmp:cairo", -1, &devil_engine, &device_features_devil},
-//    {IL_GIF, "gif:cairo", -1, &devil_engine, &device_features_devil},
     {IL_JPG, "jpg:cairo", -1, &devil_engine, &device_features_devil},
     {IL_JPG, "jpe:cairo", -1, &devil_engine, &device_features_devil},
     {IL_JPG, "jpeg:cairo", -1, &devil_engine, &device_features_devil},
