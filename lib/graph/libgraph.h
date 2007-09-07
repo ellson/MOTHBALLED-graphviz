@@ -167,7 +167,7 @@ extern "C" {
     void agpushproto(Agraph_t *);
     char *agstrdup_html(char *s);
     int agtoken(char *);
-    int aglinenumber ();
+    int aglinenumber(void);
     void agwredge(Agraph_t *, FILE *, Agedge_t *, int);
     void agwrnode(Agraph_t *, FILE *, Agnode_t *, int, int);
     extern Dtdisc_t agNamedisc, agNodedisc, agOutdisc, agIndisc,
