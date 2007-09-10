@@ -11,7 +11,7 @@ AC_INIT(graphviz, 2.15)
 # libtool shared library version
 
 # Increment if the interface has additions, changes, removals.
-LT_CURRENT=5
+LT_CURRENT=4
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
@@ -27,6 +27,13 @@ AC_SUBST(VERSION_INFO)
 
 dnl ===========================================================================
 
+# plugin version
+
+# Increment if the interface has additions, changes, removals.
+GVPLUGIN_CURRENT=5
+
+dnl ===========================================================================
+
 AC_CONFIG_SRCDIR(configure.ac)
 AC_CONFIG_AUX_DIR(config)
 
@@ -38,10 +45,10 @@ AC_CANONICAL_HOST
 # This nonsense drives me crazy!!
 case "${host_os}" in
   *irix* | *nonstopux* )
-    GVPLUGIN_VERSION=`expr $LT_CURRENT + 1`
+    GVPLUGIN_VERSION=`expr $GVPLUGIN_CURRENT + 1`
     ;;
   * )
-    GVPLUGIN_VERSION=$LT_CURRENT
+    GVPLUGIN_VERSION=$GVPLUGIN_CURRENT
     ;;
 esac
 AC_DEFINE_UNQUOTED(GVPLUGIN_VERSION,$GVPLUGIN_VERSION,[Compatibility version number for plugins.])
