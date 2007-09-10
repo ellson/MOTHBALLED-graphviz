@@ -22,7 +22,7 @@ libgvplugin_gd_C_la_SOURCES = \
 	gvloadimage_gd.c \
 	gvdevice_gd.c
 
-libgvplugin_gd_la_LDFLAGS = -version-info @VERSION_INFO@ --no-undefined
+libgvplugin_gd_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ --no-undefined
 libgvplugin_gd_la_SOURCES = $(libgvplugin_gd_C_la_SOURCES)
 if WITH_MYLIBGD
 libgvplugin_gd_la_LIBADD = \

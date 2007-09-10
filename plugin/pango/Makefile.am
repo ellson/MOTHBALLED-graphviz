@@ -21,7 +21,7 @@ libgvplugin_pango_C_la_SOURCES = \
 	gvtextlayout_pango.c \
 	gvloadimage_pango.c
 
-libgvplugin_pango_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libgvplugin_pango_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
 libgvplugin_pango_la_SOURCES = $(libgvplugin_pango_C_la_SOURCES)
 libgvplugin_pango_la_LIBADD = @PANGOCAIRO_LIBS@ @FONTCONFIG_LIBS@ @MATH_LIBS@
 

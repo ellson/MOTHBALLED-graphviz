@@ -19,7 +19,7 @@ libgvplugin_devil_C_la_SOURCES = \
 	gvplugin_devil.c \
 	gvdevice_devil.c
 
-libgvplugin_devil_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libgvplugin_devil_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
 libgvplugin_devil_la_SOURCES = $(libgvplugin_devil_C_la_SOURCES)
 libgvplugin_devil_la_LIBADD = @DEVIL_LIBS@
 

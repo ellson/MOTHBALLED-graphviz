@@ -3,12 +3,12 @@
 # Process this file with autoconf to produce a configure script
 AC_PREREQ(2.54)
 
-dnl ===========================================================================
-
 # Package name and version number, (as distinct from shared library version)
 AC_INIT(graphviz, 2.15)
 
-# libtool shared library version
+dnl ===========================================================================
+
+# libtool shared library version for main libs (cdt, graph, gvc)
 
 # Increment if the interface has additions, changes, removals.
 LT_CURRENT=4
@@ -24,15 +24,27 @@ LT_AGE=0
 
 VERSION_INFO="$LT_CURRENT:$LT_REVISION:$LT_AGE"
 AC_SUBST(VERSION_INFO)
-
 dnl ===========================================================================
 
-# plugin version
+# libtool shared library version for plugins
 
 # Increment if the interface has additions, changes, removals.
 GVPLUGIN_CURRENT=5
 
+# Increment any time the source changes; set to
+# 0 if you increment CURRENT
+GVPLUGIN_REVISION=0
+
+# Increment if any interfaces have been added; set to 0
+# if any interfaces have been removed. removal has
+# precedence over adding, so set to 0 if both happened.
+GVPLUGIN_AGE=0
+
+GVPLUGIN_VERSION_INFO="$GVPLUGIN_CURRENT:$GVPLUGIN_REVISION:$GVPLUGIN_AGE"
+AC_SUBST(GVPLUGIN_VERSION_INFO)
+
 dnl ===========================================================================
+
 
 AC_CONFIG_SRCDIR(configure.ac)
 AC_CONFIG_AUX_DIR(config)
@@ -1355,10 +1367,12 @@ AC_SUBST(Z_INCLUDES)
 AC_SUBST(Z_LIBS)
 
 dnl -----------------------------------
-dnl DIGCOLA (enabled by default)
+dnl DIGCOLA 
+
 AC_ARG_WITH(digcola,
   [AC_HELP_STRING([--with-digcola],
                   [with DIGCOLA features in neato layout engine])])
+
 if test "x$with_digcola" != "xno"; then
 	AC_DEFINE_UNQUOTED(DIGCOLA,1,[Define if you want DIGCOLA])
 else
@@ -1366,19 +1380,17 @@ else
 fi
 
 dnl -----------------------------------
-dnl IPSEPCOLA (disable by default)
+dnl IPSEPCOLA 
 AC_ARG_WITH(ipsepcola,
   [AC_HELP_STRING([--with-ipsepcola],
                   [with IPSEPCOLA features in neato layout engine])])
-if test "x$with_digcola" = "xno"; then
-	with_ipsepcola=no
 
+
+if test "x$with_digcola" != "xno"; then
+	with_ipsepcola=yes
 fi
-if test "x$with_ipsepcola" != "xyes"; then
-	IPSEPCOLA_INCLUDES=
-	IPSEPCOLA_LIBS=
-else
-	AC_MSG_WARN(Optional IPSEPCOLA is enabled)
+
+if test "x$with_ipsepcola" = "xyes"; then
 	AC_DEFINE_UNQUOTED(IPSEPCOLA,1,[Define if you want IPSEPCOLA])
 	IPSEPCOLA_INCLUDES='-I$(top_srcdir)/lib/vpsc'
 	IPSEPCOLA_LIBS='$(top_builddir)/lib/vpsc/libvpsc_C.la -lstdc++'
@@ -1544,25 +1556,25 @@ dnl INCLUDES and LIBS for LIBMING (SWF renderer)
 GV_PATH_MING
 AM_CONDITIONAL(WITH_MING, [ test x"$MAKESWF" != x ])
 
-#AC_ARG_WITH(libming,
-#  [AC_HELP_STRING([--with-libming],
-#                  [use libming library])])
-#
-#### default is to build with libming
-#if test "x$with_libming" != "xno"; then
-#	with_libming=yes
-#fi
-#
-#if test "x$with_libming" = "xyes"; then
-#PKG_CHECK_MODULES(LIBMING, [libming >= 0.4],
-#	[HAVE_LIBMING=1
-#	AC_DEFINE_UNQUOTED(HAVE_LIBMING,1,
-#		[Define if you have the libming library for SWF support])],
-#	[AC_MSG_WARN(libming library not available)])
-#AC_SUBST(LIBMING_CFLAGS)
-#AC_SUBST(LIBMING_LIBS)
-#fi
-#AM_CONDITIONAL(WITH_LIBMING, [test "x$HAVE_LIBMING" != "x"])
+AC_ARG_WITH(libming,
+  [AC_HELP_STRING([--with-libming],
+                  [use libming library])])
+
+### default is to build with libming
+if test "x$with_libming" != "xno"; then
+	with_libming=yes
+fi
+
+if test "x$with_libming" = "xyes"; then
+PKG_CHECK_MODULES(LIBMING, [libming >= 0.4],
+	[HAVE_LIBMING=1
+	AC_DEFINE_UNQUOTED(HAVE_LIBMING,1,
+		[Define if you have the libming library for SWF support])],
+	[AC_MSG_WARN(libming library not available)])
+AC_SUBST(LIBMING_CFLAGS)
+AC_SUBST(LIBMING_LIBS)
+fi
+AM_CONDITIONAL(WITH_LIBMING, [test "x$HAVE_LIBMING" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GD

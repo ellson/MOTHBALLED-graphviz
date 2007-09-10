@@ -20,7 +20,7 @@ libgvplugin_ming_C_la_SOURCES = \
 	gvplugin_ming.c \
 	gvrender_ming.c
 
-libgvplugin_ming_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libgvplugin_ming_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
 libgvplugin_ming_la_SOURCES = $(libgvplugin_ming_C_la_SOURCES)
 libgvplugin_ming_la_LIBADD = @MING_LIBS@ @MATH_LIBS@
 
