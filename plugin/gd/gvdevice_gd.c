@@ -139,6 +139,7 @@ static gvdevice_features_t device_features_gd = {
 
 gvplugin_installed_t gvdevice_gd_types[] = {
 #ifdef HAVE_LIBGD
+#ifdef HAVE_PANGOCAIRO
 
 #ifdef HAVE_GD_GIF
     {FORMAT_GIF, "gif:cairo", 10, &gd_engine, &device_features_gd},
@@ -165,6 +166,7 @@ gvplugin_installed_t gvdevice_gd_types[] = {
 #endif
 #endif
 
+#endif
 #endif
     {0, NULL, 0, NULL, NULL}
 };
