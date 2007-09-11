@@ -1373,7 +1373,12 @@ AC_ARG_WITH(digcola,
   [AC_HELP_STRING([--with-digcola],
                   [with DIGCOLA features in neato layout engine])])
 
+### default is to build with digcola
 if test "x$with_digcola" != "xno"; then
+	with_digcola=yes
+fi
+
+if test "x$with_digcola" == "xyes"; then
 	AC_DEFINE_UNQUOTED(DIGCOLA,1,[Define if you want DIGCOLA])
 else
 	AC_MSG_WARN(Optional DIGCOLA is disabled)
@@ -1386,8 +1391,14 @@ AC_ARG_WITH(ipsepcola,
                   [with IPSEPCOLA features in neato layout engine])])
 
 
-if test "x$with_digcola" != "xno"; then
+### default is to build with digcola
+if test "x$with_ipsepcola" != "xno"; then
 	with_ipsepcola=yes
+fi
+
+### unless digcola was not enabled since ipsecola depends on it
+if test "x$with_digcola" == "xno"; then
+	with_ipsepcola=no
 fi
 
 if test "x$with_ipsepcola" = "xyes"; then
