@@ -20,6 +20,7 @@
 
 #include "gvplugin_device.h"
 
+#ifdef HAVE_PANGOCAIRO
 #ifdef HAVE_LIBGD
 #include "gd.h"
 
@@ -136,10 +137,11 @@ static gvdevice_features_t device_features_gd = {
     {96.,96.},                  /* dpi */
 };
 #endif
+#endif
 
 gvplugin_installed_t gvdevice_gd_types[] = {
-#ifdef HAVE_LIBGD
 #ifdef HAVE_PANGOCAIRO
+#ifdef HAVE_LIBGD
 
 #ifdef HAVE_GD_GIF
     {FORMAT_GIF, "gif:cairo", 10, &gd_engine, &device_features_gd},
