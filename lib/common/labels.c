@@ -222,11 +222,6 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 	    p.x = center_x;
 	    break;
 	}
-        tmp = ROUND(p.x);  /* align with integer points */
-        p.x = (double)tmp;
-        tmp = ROUND(p.y);  /* align with integer points */
-        p.y = (double)tmp;
-
 	gvrender_textpara(job, p, &(lp->u.txt.para[i]));
 
 	/* UL position for next para */

@@ -71,6 +71,9 @@ typedef enum {
 
 #define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0]))
 
+/* FIXME - FONT_DPI also defined in gvtextlayout_pango.c - need shared header */
+#define FONT_DPI 96.
+
 static double dashed[] = {6.};
 static int dashed_len = ARRAY_SIZE(dashed);
 
@@ -235,7 +238,10 @@ static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     offset.y = para->yoffset;
 
     cairo_move_to (cr, p.x-offset.x, -p.y-offset.y);
+    cairo_save(cr);
+    cairo_scale(cr, POINTS_PER_INCH / FONT_DPI, POINTS_PER_INCH / FONT_DPI);
     pango_cairo_show_layout(cr, (PangoLayout*)(para->layout));
+    cairo_restore(cr);
 }
 
 static void cairogen_set_penstyle(GVJ_t *job, cairo_t *cr)

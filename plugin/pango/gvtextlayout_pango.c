@@ -32,7 +32,7 @@ static void pango_free_layout (void *layout)
     g_object_unref((PangoLayout*)layout);
 }
 
-#define FONT_DPI 96
+#define FONT_DPI 96.
 
 static boolean pango_textlayout(textpara_t * para, char **fontpath)
 {
@@ -43,7 +43,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     static char *fontname;
     char *fnt;
     PangoLayout *layout;
-    PangoRectangle ink_rect, logical_rect;
+    PangoRectangle logical_rect;
     PangoLayoutIter* iter;
 #if ENABLE_PANGO_XSHOW
     PangoRectangle char_rect;
@@ -53,12 +53,13 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     GError *error = NULL;
 #endif
     char *text;
+    double textlayout_scale;
 
-    if (!fontmap)
+    if (!context) {
 	fontmap = pango_cairo_font_map_get_default();
-    if (!context)
 	context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
-    pango_cairo_context_set_resolution(context, FONT_DPI);   /* fixed dpi */
+	g_object_unref(fontmap);
+    }
 
     if (!fontname || strcmp(fontname, para->fontname)) {
 	fontname = para->fontname;
@@ -130,8 +131,8 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 #endif
         }
     }
-    pango_font_description_set_size (desc,
-	(gint)(para->fontsize * PANGO_SCALE * para->dpi / FONT_DPI));
+    /* all text layout is done at a scale of 96ppi */
+    pango_font_description_set_size (desc, (gint)(para->fontsize * PANGO_SCALE));
 
 #ifdef ENABLE_PANGO_MARKUP
     if (! pango_parse_markup (para->str, -1, 0, &attrs, &text, NULL, &error))
@@ -150,18 +151,20 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     pango_layout_set_attributes (layout, attrs);
 #endif
 
-    pango_layout_get_extents (layout, &ink_rect, &logical_rect);
+    pango_layout_get_extents (layout, NULL, &logical_rect);
 
     /* if pango doesn't like the font then it sets width=0 but height = garbage */
     if (logical_rect.width == 0)
 	logical_rect.height = 0;
 
-    para->width = logical_rect.width / PANGO_SCALE;
-    para->height = logical_rect.height / PANGO_SCALE;
+    textlayout_scale = POINTS_PER_INCH / (FONT_DPI * PANGO_SCALE);
+    para->width = logical_rect.width * textlayout_scale;
+    para->height = logical_rect.height * textlayout_scale;
 
     iter = pango_layout_get_iter (layout);
-    para->yoffset = para->fontsize * 0.05
-	+ (pango_layout_iter_get_baseline (iter) / PANGO_SCALE) * POINTS_PER_INCH / para->dpi;
+    para->yoffset = pango_layout_iter_get_baseline (iter) * textlayout_scale
+	+.1 * para->fontsize;  /* In labels.c y is already midline 
+			 * 0.15 is the distance below midline for y centering */
 
     /* determine position of each character in the layout */
     para->xshow = NULL;
@@ -169,8 +172,8 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 /* FIXME - unfinished code */
     do {
 	pango_layout_iter_get_char_extents (iter, &char_rect);
-	char_rect.x /= PANGO_SCALE;
-	char_rect.y /= PANGO_SCALE;
+	char_rect.x *= fontlayout_scale;
+	char_rect.y *= fontlayout_scale;
     } while (pango_layout_iter_next_char (iter));
     pango_layout_iter_free (iter);
 #endif
