@@ -173,7 +173,6 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	    tl.fontname = fname_;
 	    tl.fontsize = fsize_;
 	    tl.xshow = ti->xshow;
-	    tl.dpi = ti->dpi;
 	    tl.yoffset = ti->yoffset;
 	    tl.postscript_alias = ti->postscript_alias;
 	    tl.layout = ti->layout;
@@ -807,7 +806,6 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	    ftxt->paras[i].items[j].str = lp.str;
 	    ftxt->paras[i].items[j].size = sz.x;
 	    ftxt->paras[i].items[j].xshow = lp.xshow;
-	    ftxt->paras[i].items[j].dpi = lp.dpi;
 	    ftxt->paras[i].items[j].yoffset = lp.yoffset;
 	    ftxt->paras[i].items[j].postscript_alias = lp.postscript_alias;
 	    ftxt->paras[i].items[j].layout = lp.layout;

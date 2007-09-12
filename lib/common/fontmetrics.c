@@ -202,10 +202,6 @@ pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
     para->fontname = fontname;
     para->fontsize = fontsize;
 
-    para->dpi = GD_drawing(g)->dpi;
-    if (para->dpi < 1.)
-	para->dpi = (double)POINTS_PER_INCH;
-
     para->postscript_alias = translate_postscript_fontname(fontname);
 
     if (Verbose && emit_once(para->fontname))

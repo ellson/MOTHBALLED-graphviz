@@ -108,7 +108,7 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
     strex.flags = gdFTEX_XSHOW
 	| gdFTEX_RETURNFONTPATHNAME | gdFTEX_RESOLUTION;
     strex.xshow = NULL;
-    strex.hdpi = strex.vdpi = (int)para->dpi;
+    strex.hdpi = strex.vdpi = POINTS_PER_INCH;
 
     if (strstr(para->fontname, "/"))
 	strex.flags |= gdFTEX_FONTPATHNAME;
@@ -123,7 +123,7 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
     para->layout = NULL;
     para->free_layout = NULL;
 
-    fontsize = para->fontsize * POINTS_PER_INCH / para->dpi;
+    fontsize = para->fontsize;
 
     if (para->fontname) {
 	if (fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
