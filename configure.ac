@@ -395,14 +395,8 @@ dnl -----------------------------------
 dnl old codegens
 
 AC_ARG_WITH(codegens,
-  [AC_HELP_STRING([--with-codegens],
-                  [use old codegens])])
-
-### default is to build with codegens
-if test "x$with_codegens" != "xno"; then
-	with_codegens=yes
-fi
-
+  [AC_HELP_STRING([--with-codegens=yes], [use old codegens])],
+  [],[with_codegens=yes])
 if test "x$with_codegens" = "xyes"; then
   AC_DEFINE(WITH_CODEGENS,1,[Define if you want the old codegens])
 fi
@@ -412,10 +406,9 @@ dnl -----------------------------------
 dnl ElectricFence support for debugging
 
 AC_ARG_WITH(efence,
-	 [  --with-efence           use efence for debugging memory use],
-	EFENCE=true,)
-
-if test "x${EFENCE}" != "x"; then
+   [AC_HELP_STRING([--with-efence=no], [use efence for debugging memory use])],
+   [],[with_efence=no])
+if test "x$with_efence" = "xyes"; then
 	LIBS="$LIBS -lefence"
 fi
 
@@ -425,18 +418,19 @@ dnl if X isn't available.
 dnl Checks for X header files.
 
 AC_PATH_XTRA
-if test "X$no_x" = Xyes; then
+if test "x$no_x" = xyes; then
   AC_MSG_WARN([X11 not available.])
   X_SUBDIRS=""
 fi
-AM_CONDITIONAL(WITH_X, [test "X$no_x" != "Xyes"])
+AM_CONDITIONAL(WITH_X, [test "x$no_x" != "xyes"])
 
 dnl -----------------------------------
 dnl check for SWIG - needed for script-language bindings
 
 AC_ARG_ENABLE(swig,
-  [AC_HELP_STRING([--disable-swig], [don't support any swig-generated language bindings])])
-if test "x$enable_swig" != "xno"; then
+  [AC_HELP_STRING([--enable-swig=yes], [swig-generated language bindings])],
+  [],[enable_swig=yes])
+if test "x$enable_swig" = "xyes"; then
 AC_CHECK_PROG(SWIG,swig,swig)
 if test "x$SWIG" != "x"; then
   SWIG_VERSION=`$SWIG -version 2>&1 | $GREP Version | cut -d ' ' -f 3`
@@ -464,8 +458,9 @@ dnl INCLUDES and LIBS for C#
 
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(sharp,
-  [AC_HELP_STRING([--disable-sharp], [don't support C# language bindings])])
-if test "x$enable_sharp" != "xno"; then
+  [AC_HELP_STRING([--enable-sharp=yes], [C# language bindings])],
+  [],[enable_sharp=yes])
+if test "x$enable_sharp" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-csharp *- Generate'` = 0; then
 	SHARP=
 	AC_MSG_WARN([swig does not support csharp. The SHARP packages will not be built])
@@ -485,8 +480,9 @@ dnl INCLUDES and LIBS for GUILE
 
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(guile,
-  [AC_HELP_STRING([--disable-guile], [don't support guile language bindings])])
-if test "x$enable_guile" != "xno"; then
+  [AC_HELP_STRING([--enable-guile=yes], [guile language bindings])],
+  [],[enable_guile=yes])
+if test "x$enable_guile" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-guile *- Generate'` = 0; then
 	GUILE=
 	AC_MSG_WARN([swig does not support guile. The GUILE packages will not be built])
@@ -524,12 +520,13 @@ fi
 AM_CONDITIONAL(WITH_GUILE, [test "x$GUILE" != "x"])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for IO
+dnl INCLUDES and LIBS for IO   (disbled until supported by swig)
 
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(io,
-  [AC_HELP_STRING([--disable-io], [don't support io language bindings])])
-if test "x$enable_io" != "xno"; then
+  [AC_HELP_STRING([--enable-io=no], [io language bindings])],
+  [], [enable_io=no])
+if test "x$enable_io" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-io *- Generate'` = 0; then
 	IO=
 	AC_MSG_WARN([swig does not support io. The IO packages will not be built])
@@ -549,8 +546,9 @@ dnl INCLUDES and LIBS for JAVA
 
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(java,
-  [AC_HELP_STRING([--disable-java], [don't support java language bindings])])
-if test "x$enable_java" != "xno"; then
+  [AC_HELP_STRING([--enable-java=yes], [java language bindings])],
+  [], [enable_java=yes])
+if test "x$enable_java" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-java *- Generate'` = 0; then
 	JAVA=
 	AC_MSG_WARN([swig does not support java. The JAVA packages will not be built])
@@ -574,30 +572,18 @@ dnl INCLUDES and LIBS for LUA
 
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(lua,
-  [AC_HELP_STRING([--disable-lua], [don't support lua language bindings])])
-if test "x$enable_lua" != "xno"; then
+  [AC_HELP_STRING([--enable-lua=yes], [lua language bindings])],
+  [], [enable_lua=yes])
+if test "x$enable_lua" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-lua *- Generate'` = 0; then
 	LUA=
 	AC_MSG_WARN([swig does not support lua. The LUA packages will not be built])
 	enable_lua=no
-#else
-#AC_CHECK_PROG(LUA,lua,lua)
-#LUA_INCLUDES=
-#LUA_LIBS=
-#AC_CHECK_HEADER(lua.h,,[
-#  AC_MSG_WARN([Unable to find header lua.h. The LUA packages will not be built])
-#  LUA=
-#  ])
-#AC_SUBST(LUA_INCLUDES)
-#AC_SUBST(LUA_LIBS)
 fi
 fi
 fi
 
-#Lua is enabled by default
-if test "x$enable_lua" != "xno" ; then
-    # Not needed for Graphviz: enable_plugins="yes"
-
+if test "x$enable_lua" = "xyes" ; then
     ac_save_CPPFLAGS="$CPPFLAGS"
     ac_save_CFLAGS="$CFLAGS"
     ac_save_LDFLAGS="$LDFLAGS"
@@ -707,7 +693,7 @@ if test "x$enable_lua" != "xno" ; then
     LDFLAGS="$ac_save_LDFLAGS"
 fi
 
-if test "x$enable_lua" != "xno" ; then
+if test "x$enable_lua" = "xyes" ; then
     : # needed because if AC_SUBST is expanded to nothing, syntax error
     AC_SUBST(LUA_INCLUDES)
     AC_SUBST(LUA_LIBS)
@@ -717,7 +703,7 @@ fi
 # --->8--- weechat --->8---
 
 #echo "WE HAVE HERE: $enable_lua" > "/tmp/IAMAFOOL"
-AM_CONDITIONAL(WITH_LUA, [test "x$enable_lua" != "xno"])
+AM_CONDITIONAL(WITH_LUA, [test "x$enable_lua" = "xyes"])
 
 
 dnl -----------------------------------
@@ -725,8 +711,9 @@ dnl INCLUDES and LIBS for OCAML
 
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(ocaml,
-  [AC_HELP_STRING([--disable-ocaml], [don't support ocaml language bindings])])
-if test "x$enable_ocaml" != "xno"; then
+  [AC_HELP_STRING([--enable-ocaml=yes], [ocaml language bindings])],
+  [], [enable_ocaml=yes])
+if test "x$enable_ocaml" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-ocaml *- Generate'` = 0; then
 	OCAML=
 	AC_MSG_WARN([swig does not support ocaml. The OCAML packages will not be built])
@@ -753,8 +740,9 @@ dnl INCLUDES and LIBS for PERL
 
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(perl,
-  [AC_HELP_STRING([--disable-perl], [don't support perl language bindings])])
-if test "x$enable_perl" != "xno"; then
+  [AC_HELP_STRING([--enable-perl=yes], [perl language bindings])],
+  [], [enable_perl=yes])
+if test "x$enable_perl" = "xyes"; then
 AC_CHECK_PROG(PERL,perl,perl)
 if test -n "$PERL" && $PERL -e 'exit !($] <= 5.004)' > /dev/null 2>&1 ; then
 	PERL=
@@ -787,8 +775,9 @@ dnl INCLUDES and LIBS for PHP
 
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(php,
-  [AC_HELP_STRING([--disable-php], [don't support php language bindings])])
-if test "x$enable_php" != "xno"; then
+  [AC_HELP_STRING([--enable-php=yes], [php language bindings])],
+  [], [enable_php=yes])
+if test "x$enable_php" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-php[[5 ]]*- Generate'` = 0; then
 	PHP=
 	AC_MSG_WARN([swig does not support php. The PHP packages will not be built])
@@ -819,8 +808,9 @@ dnl INCLUDES and LIBS for PYTHON
 
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(python,
-  [AC_HELP_STRING([--disable-python], [don't support python language bindings])])
-if test "x$enable_python" != "xno"; then
+  [AC_HELP_STRING([--enable-python=yes], [python language bindings])],
+  [], [enable_python=yes])
+if test "x$enable_python" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
 	PYTHON=
 	AC_MSG_WARN([swig does not support python. The PYTHON packages will not be built])
@@ -871,8 +861,9 @@ dnl INCLUDES and LIBS for RUBY
 
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(ruby,
-  [AC_HELP_STRING([--disable-ruby], [don't support ruby language bindings])])
-if test "x$enable_ruby" != "xno"; then
+  [AC_HELP_STRING([--enable-ruby=yes], [ruby language bindings])],
+  [], [enable_ruby=yes])
+if test "x$enable_ruby" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-ruby *- Generate'` = 0; then
 	RUBY=
 	AC_MSG_WARN([swig does not support ruby. The RUBY packages will not be built])
@@ -900,8 +891,9 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for TCL
 
 AC_ARG_ENABLE(tcl,
-  [AC_HELP_STRING([--disable-tcl], [don't support tcl language bindings])])
-if test "x$enable_tcl" != "xno"; then
+  [AC_HELP_STRING([--enable-tcl=yes], [tcl language bindings])],
+  [], [enable_tcl=yes])
+if test "x$enable_tcl" = "xyes"; then
 # start by assuming we have it
 HAVE_TCL=1 
 else
@@ -909,7 +901,7 @@ HAVE_TCL=0
 fi
 
 AC_ARG_WITH(tclsh,
-    [  --with-tclsh=PROG       build graphviz for specific tclsh],
+    [AC_HELP_STRING([--with-tcl=PROG], [use a specific tclsh])],
     TCLSH=$withval,)
 
 if test "x$TCLSH" = "x"; then
@@ -1057,7 +1049,7 @@ HAVE_TK=$HAVE_TCL
                                                                                 
 if test "$HAVE_TK" = "1"; then
     AC_ARG_WITH(wish,
-        [  --with-wish=PROG        build graphviz for specific wish],
+        [AC_HELP_STRING([--with-wish=PROG], [use a specific wish])],
         WISH=$withval,)
     if test "x$WISH" = "x"; then
         AC_PATH_PROG(WISH,wish8.4)
@@ -1171,13 +1163,12 @@ dnl -----------------------------------
 dnl Support for generic "extra" search paths for includes and libraries
 
 AC_ARG_WITH(extraincludedir,
-  [  --with-extraincludedir=DIR use extra includes from DIR],
-  [EXTRAINCLUDEDIR=$withval
-   CPPFLAGS="$CPPFLAGS -I$withval"],)
+  [AC_HELP_STRING([--with-extraincludedir=DIR], [use extra includes from DIR])],
+  [CPPFLAGS="$CPPFLAGS -I$withval"])
 
 AC_ARG_WITH(extralibdir,
-  [  --with-extralibdir=DIR  use extra libraries from DIR],
-  LDFLAGS="$LDFLAGS -L$withval",)
+  [AC_HELP_STRING([--with-extralibdir=DIR], [use extra libraries from DIR])],
+  [LDFLAGS="$LDFLAGS -L$withval"])
 
 dnl -----------------------------------
 dnl ...borrow test for -lsocket -lnsl from tk8.3.3/unix/configure.in
@@ -1216,13 +1207,13 @@ else
 	EXPAT_LIBS=""
 fi
 AC_ARG_WITH(expatincludedir,
-	[  --with-expatincludedir=DIR use EXPAT includes from DIR],
-	[EXPAT_INCLUDES="-I$withval"])
+  [AC_HELP_STRING([--with-expatincludedir=DIR], [use EXPAT includes from DIR])],
+  [EXPAT_INCLUDES="-I$withval"])
 CPPFLAGS="$CPPFLAGS $EXPAT_INCLUDES"
 EXPAT_LIBDIR="/usr/lib$LIBPOSTFIX"
 AC_ARG_WITH(expatlibdir,
-	[  --with-expatlibdir=DIR  use EXPAT libraries from DIR],
-	[EXPAT_LIBDIR="$withval"])
+  [AC_HELP_STRING([--with-expatlibdir=DIR], [use EXPAT libraries from DIR])],
+  [EXPAT_LIBDIR="$withval"])
 if test "$EXPAT_LIBDIR" != "/usr/lib$LIBPOSTFIX"; then
 	EXPAT_LIBS="-L$EXPAT_LIBDIR"
 	LDFLAGS="$LDFLAGS $EXPAT_LIBS"
@@ -1246,37 +1237,42 @@ AC_SUBST(EXPAT_LIBS)
 dnl -----------------------------------
 dnl INCLUDES and LIBS for DEVIL
 
-save_CPPFLAGS=$CPPFLAGS
-save_LDFLAGS=$LDFLAGS
+AC_ARG_WITH(devil,
+  [AC_HELP_STRING([--with-devil=yes], [DevIL plugin])],
+  [],[with_devil=yes])
 AC_ARG_WITH(devilincludedir,
-	[  --with-devilincludedir=DIR use DEVIL includes from DIR],
-	[DEVIL_INCLUDES="-I$withval"])
-CPPFLAGS="$CPPFLAGS $DEVIL_INCLUDES"
+  [AC_HELP_STRING([--with-devilincludedir=DIR], [use DevIL includes from DIR])],
+  [DEVIL_INCLUDES="-I$withval"])
 AC_ARG_WITH(devillibdir,
-	[  --with-devillibdir=DIR    use DEVIL libraries from DIR],
-	[DEVIL_LIBS="-L$withval"])
-LDFLAGS="$LDFLAGS $DEVIL_LIBS"
-AC_CHECK_HEADERS([IL/il.h],
-		 [],
-		 [with_devil=no
-		  AC_MSG_WARN(Optional DevIL library not available - missing headers)],
-		  [])
-if test "x$with_devil" != "xno"; then
-AC_CHECK_LIB(IL,main,
-	     [DEVIL_LIBS="$DEVIL_LIBS -lIL -lILU"],
-	     [with_devil=no
-	      AC_MSG_WARN(Optional DevIL library not available)],
-	      [])
+  [AC_HELP_STRING([--with-devillibdir=DIR], [use DevIL libraries from DIR])],
+  [DEVIL_LIBS="-L$withval"])
+
+if test "x$with_devil" = "xyes"; then
+  save_CPPFLAGS=$CPPFLAGS
+  save_LDFLAGS=$LDFLAGS
+  CPPFLAGS="$CPPFLAGS $DEVIL_INCLUDES"
+  LDFLAGS="$LDFLAGS $DEVIL_LIBS"
+  AC_CHECK_HEADERS([IL/il.h],
+    [],
+    [with_devil=no
+     AC_MSG_WARN(Optional DevIL library not available - missing headers)],
+    [])
+  AC_CHECK_LIB(IL,main,
+    [DEVIL_LIBS="$DEVIL_LIBS -lIL -lILU"],
+    [with_devil=no
+     AC_MSG_WARN(Optional DevIL library not available)],
+    [])
+  LDFLAGS=$save_LDFLAGS
+  CPPFLAGS=$save_CPPFLAGS
 fi
-LDFLAGS=$save_LDFLAGS
-CPPFLAGS=$save_CPPFLAGS
-if test "x$with_devil" != "xno"; then
+
+if test "x$with_devil" = "xyes"; then
      AC_DEFINE_UNQUOTED(HAVE_DEVIL,1,[Define if you have the DevIL library])
 fi
 AC_SUBST(HAVE_DEVIL)
 AC_SUBST(DEVIL_INCLUDES)
 AC_SUBST(DEVIL_LIBS)
-AM_CONDITIONAL(WITH_DEVIL, [test "x$with_devil" != "xno"])
+AM_CONDITIONAL(WITH_DEVIL, [test "x$with_devil" = "xyes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for XPM
@@ -1285,20 +1281,21 @@ dnl INCLUDES and LIBS for XPM
 # so we set HAVE_LIBXPMFORLEFTY instead of the usual HAVE_LIBXPM
 #
 
+AC_ARG_WITH(Xpmincludedir,
+  [AC_HELP_STRING([--with-Xpmincludedir=DIR], [use Xpm includes from DIR])],
+  [XPM_INCLUDES="-I$withval"])
+AC_ARG_WITH(Xpmlibdir,
+  [AC_HELP_STRING([--with-Xpmlibdir=DIR], [use Xpm libraries from DIR])],
+  [XPM_LIBS="-L$withval"])
+
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
-AC_ARG_WITH(Xpmincludedir,
-	[  --with-Xpmincludedir=DIR use Xpm includes from DIR],
-	[XPM_INCLUDES="-I$withval"])
-AC_ARG_WITH(Xpmlibdir,
-	[  --with-Xpmlibdir=DIR    use Xpm libraries from DIR],
-	[XPM_LIBS="-L$withval"])
 CPPFLAGS="$CPPFLAGS $XPM_INCLUDES $X_CFLAGS"
 LDFLAGS="$LDFLAGS $XPM_LIBS $X_LIBS $X_EXTRA_LIBS $X_PRE_LIBS $SOCKET_LIBS"
 AC_CHECK_LIB(Xpm,main,
-	[XPM_LIBS="$XPM_LIBS -lXpm"
-	AC_DEFINE_UNQUOTED(HAVE_LIBXPMFORLEFTY,1,[Define if you have the XPM library])],
-		AC_MSG_WARN(Optional Xpm library not available), [-lXmu -lXt -lX11 -lXext $SOCKET_LIBS])
+  [XPM_LIBS="$XPM_LIBS -lXpm"
+   AC_DEFINE_UNQUOTED(HAVE_LIBXPMFORLEFTY,1,[Define if you have the XPM library])],
+   AC_MSG_WARN(Optional Xpm library not available), [-lXmu -lXt -lX11 -lXext $SOCKET_LIBS])
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(XPM_INCLUDES)
@@ -1307,15 +1304,15 @@ AC_SUBST(XPM_LIBS)
 dnl -----------------------------------
 dnl INCLUDES and LIBS for XAW
 
+AC_ARG_WITH(Xawincludedir,
+  [AC_HELP_STRING([--with-Xawincludedir=DIR], [use Xaw includes from DIR])],
+  [XAW_INCLUDES="-I$withval"])
+AC_ARG_WITH(Xawlibdir,
+  [AC_HELP_STRING([--with-Xawlibdir=DIR], [use Xaw libraries from DIR])],
+  [XAW_LIBS="-L$withval"])
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
-AC_ARG_WITH(Xawincludedir,
-	[  --with-Xawincludedir=DIR use XAW includes from DIR],
-	[XAW_INCLUDES="-I$withval"])
 CPPFLAGS="$CPPFLAGS $XAW_INCLUDES $X_CFLAGS"
-AC_ARG_WITH(Xawlibdir,
-	[  --with-Xawlibdir=DIR    use XAW libraries from DIR],
-	[XAW_LIBS="-L$withval"])
 LDFLAGS="$LDFLAGS $XAW_LIBS $XPM_LIBS $X_LIBS $X_EXTRA_LIBS $X_PRE_LIBS $SOCKET_LIBS"
 AC_CHECK_HEADERS([X11/Intrinsic.h])
 AC_CHECK_HEADERS([X11/Xaw/Text.h],
@@ -1338,22 +1335,23 @@ CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(XAW_INCLUDES)
 AC_SUBST(XAW_LIBS)
 AM_CONDITIONAL(WITH_XAW, [test "x$with_xaw" != "xno"])
-if test "x$with_xaw" = "xno" && "X$no_x" != Xyes; then
+if test "x$with_xaw" = "xno" && "x$no_x" != xyes; then
 	AC_MSG_WARN(Lefty cannot be built)
 fi
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for Z
 
+AC_ARG_WITH(zincludedir,
+  [AC_HELP_STRING([--with-zincludedir=DIR], [use Z includes from DIR])],
+  [Z_INCLUDES="-I$withval"])
+AC_ARG_WITH(zlibdir,
+  [AC_HELP_STRING([--with-zlibdir=DIR], [use Z libraries from DIR])],
+  [Z_LIBS="-L$withval"])
+
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
-AC_ARG_WITH(zincludedir,
-	[  --with-zincludedir=DIR  use Z includes from DIR],
-	[Z_INCLUDES="-I$withval"])
 CPPFLAGS="$CPPFLAGS $Z_INCLUDES"
-AC_ARG_WITH(zlibdir,
-	[  --with-zlibdir=DIR      use Z libraries from DIR],
-	[Z_LIBS="-L$withval"])
 LDFLAGS="$LDFLAGS $Z_LIBS"
 AC_CHECK_HEADER(zlib.h,
 	[AC_CHECK_LIB(z,main,
@@ -1370,15 +1368,10 @@ dnl -----------------------------------
 dnl DIGCOLA 
 
 AC_ARG_WITH(digcola,
-  [AC_HELP_STRING([--with-digcola],
-                  [with DIGCOLA features in neato layout engine])])
+  [AC_HELP_STRING([--with-digcola=yes], [DIGCOLA features in neato layout engine])],
+  [], [with_digcola=yes])
 
-### default is to build with digcola
-if test "x$with_digcola" != "xno"; then
-	with_digcola=yes
-fi
-
-if test "x$with_digcola" == "xyes"; then
+if test "x$with_digcola" = "xyes"; then
 	AC_DEFINE_UNQUOTED(DIGCOLA,1,[Define if you want DIGCOLA])
 else
 	AC_MSG_WARN(Optional DIGCOLA is disabled)
@@ -1387,17 +1380,13 @@ fi
 dnl -----------------------------------
 dnl IPSEPCOLA 
 AC_ARG_WITH(ipsepcola,
-  [AC_HELP_STRING([--with-ipsepcola],
-                  [with IPSEPCOLA features in neato layout engine])])
-
-
-### default is to build with digcola
-if test "x$with_ipsepcola" != "xno"; then
-	with_ipsepcola=yes
-fi
+  [AC_HELP_STRING([--with-ipsepcola=yes],
+	[IPSEPCOLA features in neato layout engine])],
+  [], [with_ipsepcola=yes])
 
 ### unless digcola was not enabled since ipsecola depends on it
-if test "x$with_digcola" == "xno"; then
+if test "x$with_digcola" = "xno"; then
+	AC_MSG_WARN(Optional IPSEPCOLA is disabled - depends on DIGCOLA)
 	with_ipsepcola=no
 fi
 
@@ -1405,27 +1394,21 @@ if test "x$with_ipsepcola" = "xyes"; then
 	AC_DEFINE_UNQUOTED(IPSEPCOLA,1,[Define if you want IPSEPCOLA])
 	IPSEPCOLA_INCLUDES='-I$(top_srcdir)/lib/vpsc'
 	IPSEPCOLA_LIBS='$(top_builddir)/lib/vpsc/libvpsc_C.la -lstdc++'
-fi
 AC_SUBST(IPSEPCOLA_INCLUDES)
 AC_SUBST(IPSEPCOLA_LIBS)
-                                                                                
+fi
 AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$with_ipsepcola" = "xyes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PANGO, CAIRO et.al.
                                                                                 
 AC_ARG_WITH(pangocairo,
-  [AC_HELP_STRING([--with-pangocairo],
-                  [use pangocairo library])])
-
-### default is to build with pangocairo
-if test "x$with_pangocairo" != "xno"; then
-	with_pangocairo=yes
-fi
+  [AC_HELP_STRING([--with-pangocairo=yes], [pangocairo library])],
+  [], [with_pangocairo=yes])
 
 if test "x$with_pangocairo" = "xyes"; then
-# require at least the version available on fc5
-PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.12.4],
+# require at least the version available on fc6
+PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.14.10],
 	[HAVE_PANGOCAIRO=1
 	AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
 		[Define if you have the pango library with cairo support])],
@@ -1439,13 +1422,8 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for FREETYPE2
                                                                                 
 AC_ARG_WITH(freetype2,
-  [AC_HELP_STRING([--with-freetype2],
-                  [use freetype2 library])])
-
-### default is to build with freetype2
-if test "x$with_freetype2" != "xno"; then
-	with_freetype2=yes
-fi
+  [AC_HELP_STRING([--with-freetype2=yes], [freetype2 library])],
+  [], [with_freetype2=yes])
 
 if test "x$with_freetype2" = "xyes"; then
 PKG_CHECK_MODULES(FREETYPE2, [freetype2],
@@ -1453,22 +1431,17 @@ PKG_CHECK_MODULES(FREETYPE2, [freetype2],
 	AC_DEFINE_UNQUOTED(HAVE_FREETYPE2,1,
 		[Define if you have the freetype2 library])],
 	[AC_MSG_WARN(freetype2 library not available)])
+fi
 AC_SUBST(FREETYPE2_CFLAGS)
 AC_SUBST(FREETYPE2_LIBS)
-fi
 AM_CONDITIONAL(WITH_FREETYPE2, [test "x$HAVE_FREETYPE2" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for FONTCONFIG
                                                                                 
 AC_ARG_WITH(fontconfig,
-  [AC_HELP_STRING([--with-fontconfig],
-                  [use fontconfig library])])
-
-### default is to build with fontconfig
-if test "x$with_fontconfig" != "xno"; then
-	with_fontconfig=yes
-fi
+  [AC_HELP_STRING([--with-fontconfig=yes], [use fontconfig library])],
+  [], [with_fontconfig=yes])
 
 if test "x$with_fontconfig" = "xyes"; then
 PKG_CHECK_MODULES(FONTCONFIG, [fontconfig],
@@ -1476,22 +1449,17 @@ PKG_CHECK_MODULES(FONTCONFIG, [fontconfig],
 	AC_DEFINE_UNQUOTED(HAVE_FONTCONFIG,1,
 		[Define if you have the fontconfig library])],
 	[AC_MSG_WARN(fontconfig library not available)])
+fi
 AC_SUBST(FONTCONFIG_CFLAGS)
 AC_SUBST(FONTCONFIG_LIBS)
-fi
 AM_CONDITIONAL(WITH_FONTCONFIG, [test "x$HAVE_FONTCONFIG" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GDK_PIXBUF.
 
 AC_ARG_WITH(gdk-pixbuf,
-  [AC_HELP_STRING([--with-gdk-pixbuf],
-                  [use gdk-pixbuf library])])
-
-### default is to build with gdk-pixbuf
-if test "x$with_gdk_pixbuf" != "xno"; then
-	with_gdk_pixbuf=yes
-fi
+  [AC_HELP_STRING([--with-gdk-pixbuf=yes], [gdk-pixbuf library])],
+  [], [with_gdk_pixbuf=yes])
 
 if test "x$with_gdk_pixbuf" = "xyes"; then
 PKG_CHECK_MODULES(GDK_PIXBUF, [gdk-pixbuf-2.0],
@@ -1499,22 +1467,17 @@ PKG_CHECK_MODULES(GDK_PIXBUF, [gdk-pixbuf-2.0],
         AC_DEFINE_UNQUOTED(HAVE_GDK_PIXBUF,1,
                 [Define if you have the gdk-pixbuf library])],
         [AC_MSG_WARN(gdk-pixbuf library not available.)])
+fi
 AC_SUBST(GDK_PIXBUF_CFLAGS)
 AC_SUBST(GDK_PIXBUF_LIBS)
-fi
 AM_CONDITIONAL(WITH_GDK_PIXBUF, [test "x$HAVE_GDK_PIXBUF" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GTK.
 
 AC_ARG_WITH(gtk,
-  [AC_HELP_STRING([--with-gtk],
-                  [use gtk+ library])])
-
-### default is to build with gtk+
-if test "x$with_gtk" != "xno"; then
-	with_gtk=yes
-fi
+  [AC_HELP_STRING([--with-gtk=yes], [gtk+ library])],
+  [], [with_gtk=yes])
 
 if test "x$with_gtk" = "xyes"; then
 PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.7.0],
@@ -1522,33 +1485,27 @@ PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.7.0],
         AC_DEFINE_UNQUOTED(HAVE_GTK,1,
                 [Define if you have the gtk+ library])],
         [AC_MSG_WARN(gtk+ library not available. desktop features will not be built)])
+fi
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
-fi
 AM_CONDITIONAL(WITH_GTK, [test "x$HAVE_GTK" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GNOMEUI.
 
 AC_ARG_WITH(gnomeui,
-  [AC_HELP_STRING([--with-gnomeui],
-                  [use gnomeui library])])
-
-### default is to build with gnomeui
-if test "x$with_gnomeui" != "xno"; then
-	with_gnomeui=yes
-fi
+  [AC_HELP_STRING([--with-gnomeui=yes], [gnomeui library])],
+  [], [with_gnomeui=yes])
 
 if test "x$with_gnomeui" = "xyes"; then
-
 PKG_CHECK_MODULES(GNOMEUI, [libgnomeui-2.0],
         [HAVE_GNOMEUI=1
         AC_DEFINE_UNQUOTED(HAVE_GNOMEUI,1,
                 [Define if you have the gnomeui library])],
         [AC_MSG_WARN(gnomeui library not available. using alternate code for firefox interaction)])
+fi
 AC_SUBST(GNOMEUI_CFLAGS)
 AC_SUBST(GNOMEUI_LIBS)
-fi
 AM_CONDITIONAL(WITH_GNOMEUI, [test "x$HAVE_GNOMEUI" != "x"])
 
 dnl -----------------------------------
@@ -1562,19 +1519,14 @@ ALL_LINGUAS=""
 AM_GLIB_GNU_GETTEXT
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for LIBMING (SWF renderer)
-                                                                                
+dnl INCLUDES and LIBS for MING (SWF renderer)
+
 GV_PATH_MING
 AM_CONDITIONAL(WITH_MING, [ test x"$MAKESWF" != x ])
 
 AC_ARG_WITH(libming,
-  [AC_HELP_STRING([--with-libming],
-                  [use libming library])])
-
-### default is to build with libming
-if test "x$with_libming" != "xno"; then
-	with_libming=yes
-fi
+  [AC_HELP_STRING([--with-libming=yes], [libming library (plugin for -Tswf)])],
+  [], [with_libming=yes])
 
 if test "x$with_libming" = "xyes"; then
 PKG_CHECK_MODULES(LIBMING, [libming >= 0.4],
@@ -1582,32 +1534,29 @@ PKG_CHECK_MODULES(LIBMING, [libming >= 0.4],
 	AC_DEFINE_UNQUOTED(HAVE_LIBMING,1,
 		[Define if you have the libming library for SWF support])],
 	[AC_MSG_WARN(libming library not available)])
+fi
 AC_SUBST(LIBMING_CFLAGS)
 AC_SUBST(LIBMING_LIBS)
-fi
 AM_CONDITIONAL(WITH_LIBMING, [test "x$HAVE_LIBMING" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
                                                                                 
 AC_ARG_WITH(libgd,
-  [AC_HELP_STRING([--with-libgd],
-                  [use gd library])])
+  [AC_HELP_STRING([--with-libgd=yes], [use gd library])],
+  [], [with_gd=yes])
 
 AC_ARG_WITH(mylibgd,
-  [AC_HELP_STRING([--with-mylibgd],
-                  [use internal gd library in preference to any installed libgd])])
+  [AC_HELP_STRING([--with-mylibgd=no],
+	[use internal gd library in preference to any installed libgd])],
+  [], [with_mylibgd=no])
 
-### default is to build with libgd
-if test "x$with_libgd" != "xno"; then
-	with_libgd=yes
-fi
 if test "x$with_mylibgd" = "xyes"; then
 	with_libgd=yes
 fi
 
 if test "x$with_libgd" = "xyes"; then
-if test "x$with_mylibgd" != "xyes"; then
+if test "x$with_mylibgd" = "xno"; then
     AC_PATH_PROG(GDLIB_CONFIG,gdlib-config)
     if test -n "$GDLIB_CONFIG"; then
         GD_INCLUDES=`$GDLIB_CONFIG --includes`
@@ -1672,18 +1621,18 @@ if test "x$with_mylibgd" != "xyes"; then
 fi
 fi
 
-if test "x$with_mylibgd" != "xyes"; then
+if test "x$with_mylibgd" = "xno"; then
 if test "x$with_libgd" = "xyes"; then
 # see if we can use the external gd lib
     save_CPPFLAGS=$CPPFLAGS
     save_LDFLAGS=$LDFLAGS
     AC_ARG_WITH(gdincludedir,
-        [  --with-gdincludedir=DIR use GD includes from DIR],
-        GD_INCLUDES="-I$withval")
+      [AC_HELP_STRING([--with-gdincludedir=DIR], [use GD includes from DIR])],
+      GD_INCLUDES="-I$withval")
     CPPFLAGS="$CPPFLAGS $GD_INCLUDES"
     AC_ARG_WITH(gdlibdir,
-        [  --with-gdlibdir=DIR     use GD libraries from DIR],
-        [GD_LDFLAGS="-L$withval"])
+      [AC_HELP_STRING([--with-gdlibdir=DIR], [use GD libraries from DIR])],
+      [GD_LDFLAGS="-L$withval"])
     LDFLAGS="$LDFLAGS $GD_LDFLAGS"
     AC_CHECK_HEADER(gd.h,
     AC_CHECK_LIB(gd,main,
@@ -1704,7 +1653,6 @@ else
 fi
 AC_SUBST(GD_INCLUDES)
 AC_SUBST(GD_LIBS)
-
 AM_CONDITIONAL(WITH_LIBGD, [test "x$with_libgd" = "xyes"])
 AM_CONDITIONAL(WITH_MYLIBGD, [test "x$with_mylibgd" = "xyes"])
 
@@ -1734,12 +1682,12 @@ if test "x$with_mylibgd" = "xyes"; then
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
 AC_ARG_WITH(iconvincludedir,
-     [  --with-iconvincludedir=DIR use ICONV includes from DIR],
-     [ICONV_INCLUDES="-I$withval"])
+  [AC_HELP_STRING([--with-iconvincludedir=DIR], [use ICONV includes from DIR])],
+  [ICONV_INCLUDES="-I$withval"])
 CPPFLAGS="$CPPFLAGS $ICONV_INCLUDES"
 AC_ARG_WITH(iconvlibdir,
-     [  --with-iconvlibdir=DIR  use ICONV libraries from DIR],
-     [ICONV_LIBS="-L$withval"])
+  [AC_HELP_STRING([--with-iconvlibdir=DIR], [use ICONV libraries from DIR])],
+  [ICONV_LIBS="-L$withval"])
 LDFLAGS="$LDFLAGS $ICONV_LIBS"
 
 # Some systems have iconv in a separate library (e.g. Tru64 UNIX)
@@ -1783,12 +1731,12 @@ else
 	PNG_INCLUDES=""
 fi
 AC_ARG_WITH(pngincludedir,
-	[  --with-pngincludedir=DIR use PNG includes from DIR],
-	PNG_INCLUDES="-I$withval")
+  [AC_HELP_STRING([--with-pngincludedir=DIR], [use PNG includes from DIR])],
+  [PNG_INCLUDES="-I$withval"])
 CPPFLAGS="$CPPFLAGS $PNG_INCLUDES $Z_INCLUDES"
 AC_ARG_WITH(pnglibdir,
-	[  --with-pnglibdir=DIR    use PNG libraries from DIR],
-	[PNG_LIBS="-L$withval"])
+  [AC_HELP_STRING([--with-pnglibdir=DIR], [use PNG libraries from DIR])],
+  [PNG_LIBS="-L$withval"])
 LDFLAGS="$LDFLAGS $PNG_LIBS $Z_LIBS"
 AC_CHECK_HEADER(png.h,
 	AC_CHECK_LIB(png,main,
@@ -1813,13 +1761,13 @@ if test "x$with_mylibgd" = "xyes"; then
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
 AC_ARG_WITH(jpegincludedir,
-	[  --with-jpegincludedir=DIR use JPEG includes from DIR],
-	[JPEG_INCLUDES="-I$withval"])
+  [AC_HELP_STRING([--with-jpegincludedir=DIR], [use JPEG includes from DIR])],
+  [JPEG_INCLUDES="-I$withval"])
 CPPFLAGS="$CPPFLAGS $JPEG_INCLUDES"
 JPEG_LIBDIR="/usr/lib$LIBPOSTFIX"
 AC_ARG_WITH(jpeglibdir,
-	[  --with-jpeglibdir=DIR   use JPEG libraries from DIR],
-	[JPEG_LIBDIR="$withval"])
+  [AC_HELP_STRING([--with-jpeglibdir=DIR], [use JPEG libraries from DIR])],
+  [JPEG_LIBDIR="$withval"])
 if test "$JPEG_LIBDIR" != "/usr/lib$LIBPOSTFIX"; then
 	JPEG_LIBS="-L$JPEG_LIBDIR"
 	LDFLAGS="$LDFLAGS $JPEG_LIBS"
