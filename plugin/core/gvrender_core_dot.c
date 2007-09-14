@@ -479,7 +479,6 @@ gvrender_features_t render_features_dot = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     COLOR_STRING,		/* color_type */
-    NULL,                       /* imageloader for usershapes */
 };
 
 gvrender_features_t render_features_xdot = {
@@ -488,7 +487,6 @@ gvrender_features_t render_features_xdot = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     COLOR_STRING,		/* color_type */
-    "xdot",                     /* imageloader for usershapes */
 };
 
 gvdevice_features_t device_features_canon = {
