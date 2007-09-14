@@ -76,7 +76,6 @@ extern "C" {
 	char **knowncolors;
 	int sz_knowncolors;
 	color_type_t color_type;
-	char *imageloader;
     } gvrender_features_t;
 
     typedef struct {
