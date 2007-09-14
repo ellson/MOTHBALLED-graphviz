@@ -284,7 +284,6 @@ static gvrender_features_t render_features_ming = {
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
-    NULL,			/* imageloader for usershapes */
 };
 
 static gvdevice_features_t device_features_ming = {

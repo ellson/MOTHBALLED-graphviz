@@ -519,7 +519,6 @@ gvrender_features_t render_features_fig = {
     fig_knowncolors,		/* knowncolors */
     sizeof(fig_knowncolors) / sizeof(char *), /* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
-    "fig",                      /* imageloader for usershapes */
 };
 
 gvdevice_features_t device_features_fig = {

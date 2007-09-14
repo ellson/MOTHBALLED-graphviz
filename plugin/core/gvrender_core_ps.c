@@ -464,7 +464,6 @@ static gvrender_features_t render_features_ps = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     HSVA_DOUBLE,		/* color_type */
-    "ps",                       /* imageloader for usershapes */
 };
 
 static gvdevice_features_t device_features_ps = {

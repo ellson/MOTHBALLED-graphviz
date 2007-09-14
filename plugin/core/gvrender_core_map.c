@@ -297,7 +297,6 @@ static gvrender_features_t render_features_map = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     0,				/* color_type */
-    NULL,                       /* imageloader for usershapes */
 };
 
 static gvdevice_features_t device_features_map = {

@@ -486,7 +486,6 @@ gvrender_features_t render_features_svg = {
     svg_knowncolors,		/* knowncolors */
     sizeof(svg_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
-    "svg",                      /* imageloader for usershapes */
 };
 
 gvdevice_features_t device_features_svg = {

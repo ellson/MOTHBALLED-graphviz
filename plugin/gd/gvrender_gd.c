@@ -587,7 +587,6 @@ static gvrender_features_t render_features_gd = {
     NULL,			/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
-    "gd",			/* imageloader for usershapes */
 };
 
 static gvdevice_features_t device_features_gd = {

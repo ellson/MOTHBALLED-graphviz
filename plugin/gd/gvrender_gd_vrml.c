@@ -841,7 +841,6 @@ static gvrender_features_t render_features_vrml = {
     NULL,                       /* knowncolors */
     0,                          /* sizeof knowncolors */
     RGBA_BYTE,                  /* color_type */
-    "vrml",                     /* imageloader for usershapes */
 };
 
 static gvdevice_features_t device_features_vrml = {

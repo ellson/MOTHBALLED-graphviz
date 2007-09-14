@@ -382,7 +382,6 @@ static gvrender_features_t render_features_cairo = {
     0,				/* knowncolors */
     0,				/* sizeof knowncolors */
     RGBA_DOUBLE,		/* color_type */
-    "cairo",			/* imageloader for usershapes */
 };
 
 static gvdevice_features_t device_features_png = {

@@ -427,7 +427,6 @@ gvrender_features_t render_features_vml = {
     vml_knowncolors,		/* knowncolors */
     sizeof(vml_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
-    "vml",                      /* imageloader for usershapes */
 };
 
 gvdevice_features_t device_features_vml = {
