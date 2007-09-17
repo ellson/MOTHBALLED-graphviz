@@ -22,6 +22,8 @@
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 #undef PACKAGE_NAME
+#undef TRUE
+#undef FALSE
 
 #include "gvc.h"
 %}
