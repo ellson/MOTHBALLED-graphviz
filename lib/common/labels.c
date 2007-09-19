@@ -176,7 +176,7 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 {
     obj_state_t *obj = job->obj;
     double halfwidth_x, center_x, left_x, right_x;
-    int i, tmp;
+    int i;
     pointf p;
     emit_state_t old_emit_state;
 
