@@ -85,7 +85,6 @@ static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
     gvcolor_t pencolor = obj->pencolor;
     pointf offset;
     char *font_file_name;
-    FILE *font_file;
     char *libdir;
     static SWFFont font;
 
@@ -96,14 +95,7 @@ static void ming_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	strcpy(font_file_name, libdir);
 	strcat(font_file_name, "/");
 	strcat(font_file_name, FONT);
-	font_file = fopen(font_file_name, "r");
-	if (font_file == NULL ) {
-	    perror(font_file_name);
-	    free(font_file_name);
-	    exit(1);
-	}
-	font = loadSWFFontFromFile(font_file);
-	fclose(font_file);
+	font = newSWFFont_fromFile(font_file_name);
 	free(font_file_name);
     }
 
@@ -149,7 +141,7 @@ static void ming_ellipse(GVJ_t * job, pointf * A, int filled)
     double rx, ry;
 
     shape = newSWFShape();
-    SWFShape_setLineStyle(shape, obj->penwidth * 20,
+    SWFShape_setLine(shape, obj->penwidth,
 	 pencolor.u.rgba[0],
 	 pencolor.u.rgba[1],
 	 pencolor.u.rgba[2],
@@ -183,7 +175,7 @@ ming_polygon(GVJ_t * job, pointf * A, int n, int filled)
     int i;
 
     shape = newSWFShape();
-    SWFShape_setLineStyle(shape, obj->penwidth * 20,
+    SWFShape_setLine(shape, obj->penwidth,
 	 pencolor.u.rgba[0],
 	 pencolor.u.rgba[1],
 	 pencolor.u.rgba[2],
@@ -214,7 +206,7 @@ ming_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     int i;
 
     shape = newSWFShape();
-    SWFShape_setLineStyle(shape, obj->penwidth * 20,
+    SWFShape_setLine(shape, obj->penwidth,
 	 pencolor.u.rgba[0],
 	 pencolor.u.rgba[1],
 	 pencolor.u.rgba[2],
@@ -236,7 +228,7 @@ ming_polyline(GVJ_t * job, pointf * A, int n)
     int i;
 
     shape = newSWFShape();
-    SWFShape_setLineStyle(shape, obj->penwidth * 20,
+    SWFShape_setLine(shape, obj->penwidth,
 	 pencolor.u.rgba[0],
 	 pencolor.u.rgba[1],
 	 pencolor.u.rgba[2],
