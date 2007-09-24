@@ -1,3 +1,16 @@
+September 24, 2007
+	- preparing for release 2.16
+	- Fixed bugs: 1179, 1181, 1196
+	- replace arith.h in distro
+	- add functions to access version info to avoid need for gvcint.h
+	- Fix problem with irregular character spacing at 96dpi in pango/cairo output formats.
+	- Add gdk_pixbuf plugin providing: .bmp .ico .jpg .png .tif 
+	- Add DevIL plugin providing: .bmp .jpg .png .tif .tga
+	- Extend GD plugin to provide a backend to cairo for: .gif .jpg .png .gd .gd2 .wbmp  <- gifs are now antialiased
+	- Rework plugin framework to separate device from renderer, and to autoload load dependendent plugins
+	- show defaults in output from: ./configure --help
+	- add more info to dot -v  and dot -v2 debug outputs
+	- various issues with CR/LF in windows, but not in binary outputs.
 August 15, 2007
 	- release 2.14.1
 	- Fixed bugs: 1163, 1167
@@ -9,7 +22,7 @@ August 15, 2007
 	be private.
 August 2, 2007
 	- release 2.14
-	- Fixed (or otherwised closed) bugs:
+	- Fixed (or otherwise closed) bugs:
 		74, 130, 162, 184, 190, 197, 219, 223, 281, 295, 311, 316,
 		324, 352, 364, 385, 393, 404, 420, 447, 455, 474, 489, 507,
 		530, 532, 537, 543, 551, 564, 571, 574, 577, 583, 587, 588,
