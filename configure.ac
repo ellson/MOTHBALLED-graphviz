@@ -1544,7 +1544,7 @@ dnl INCLUDES and LIBS for GD
                                                                                 
 AC_ARG_WITH(libgd,
   [AC_HELP_STRING([--with-libgd=yes], [use gd library])],
-  [], [with_gd=yes])
+  [], [with_libgd=yes])
 
 AC_ARG_WITH(mylibgd,
   [AC_HELP_STRING([--with-mylibgd=no],
