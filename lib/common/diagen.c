@@ -777,96 +777,97 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
     dia_printf("        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
 	       llp.x - .11, llp.y - .11, urp.x + .11, urp.y + .11);
     dia_fputs("      </dia:attribute>\n");
-    if (!Curedge) return;
 
-    conn_h = conn_t = -1;
+    if (Curedge) {
+        conn_h = conn_t = -1;
 
-    head = Curedge->head;
-    tail = Curedge->tail;
+        head = Curedge->head;
+        tail = Curedge->tail;
 
-    shape_t = ND_shape(tail)->name;
+        shape_t = ND_shape(tail)->name;
 
-    /* arrowheads */
-    if (arrow_at_start) {
-	dia_fputs("      <dia:attribute name=\"start_arrow\">\n");
-	dia_fputs("          <dia:enum val=\"3\"/>\n");
-	dia_fputs("      </dia:attribute>\n");
-	dia_fputs("      <dia:attribute name=\"start_arrow_length\">\n");
-	dia_fputs("      	<dia:real val=\"0.8\"/>\n");
-	dia_fputs("      </dia:attribute>\n");
-	dia_fputs
-	    ("		 <dia:attribute name=\"start_arrow_width\">\n");
-	dia_fputs("			<dia:real val=\"0.8\"/>\n");
-	dia_fputs("      </dia:attribute>\n");
+        /* arrowheads */
+        if (arrow_at_start) {
+	    dia_fputs("      <dia:attribute name=\"start_arrow\">\n");
+	    dia_fputs("          <dia:enum val=\"3\"/>\n");
+	    dia_fputs("      </dia:attribute>\n");
+	    dia_fputs("      <dia:attribute name=\"start_arrow_length\">\n");
+	    dia_fputs("      	<dia:real val=\"0.8\"/>\n");
+	    dia_fputs("      </dia:attribute>\n");
+	    dia_fputs
+	        ("		 <dia:attribute name=\"start_arrow_width\">\n");
+	    dia_fputs("			<dia:real val=\"0.8\"/>\n");
+	    dia_fputs("      </dia:attribute>\n");
+        }
+        if (arrow_at_end) {
+	    dia_fputs("      <dia:attribute name=\"end_arrow\">\n");
+	    dia_fputs("          <dia:enum val=\"3\"/>\n");
+	    dia_fputs("      </dia:attribute>\n");
+	    dia_fputs("      <dia:attribute name=\"end_arrow_length\">\n");
+	    dia_fputs("      	<dia:real val=\"0.8\"/>\n");
+	    dia_fputs("      </dia:attribute>\n");
+	    dia_fputs
+	        ("		 <dia:attribute name=\"end_arrow_width\">\n");
+	    dia_fputs("			<dia:real val=\"0.8\"/>\n");
+	    dia_fputs("      </dia:attribute>\n");
+        }
+    
+        dia_fputs("      <dia:attribute name=\"conn_endpoints\">\n");
+        dia_printf("        <dia:point val=\"%g,%g\"/>\n", diapt(A[0]).x,
+	           diapt(A[0]).y);
+        dia_printf("        <dia:point val=\"%g,%g\"/>\n", diapt(A[n - 1]).x,
+	           diapt(A[n - 1]).y);
+        dia_fputs("      </dia:attribute>\n");
+        dia_fputs("      <dia:connections>\n");
+    
+        if ((strcmp(shape_t, "ellipse") == 0)
+	    || (strcmp(shape_t, "circle") == 0)
+	    || (strcmp(shape_t, "doublecircle") == 0)) {
+	    cp_h = diapt(ND_coord_i(head));
+	    if (AG_IS_DIRECTED(Rootgraph))
+	        conn_h = ellipse_connection(cp_h, diapt(A[n - 1]));
+	    else
+	        conn_h = ellipse_connection(cp_h, diapt(A[0]));
+        } else {
+	    if (AG_IS_DIRECTED(Rootgraph))
+	        conn_h = box_connection(head, diapt(A[n - 1]));
+	    else
+	        conn_h = box_connection(head, diapt(A[0]));
+        }
+    
+        if ((strcmp(shape_t, "ellipse") == 0)
+	    || (strcmp(shape_t, "circle") == 0)
+	    || (strcmp(shape_t, "doublecircle") == 0)) {
+	    cp_t = diapt(ND_coord_i(tail));
+	    if (AG_IS_DIRECTED(Rootgraph))
+	        conn_t = ellipse_connection(cp_t, diapt(A[0]));
+	    else
+	        conn_t = ellipse_connection(cp_t, diapt(A[n - 1]));
+        } else {
+	    if (AG_IS_DIRECTED(Rootgraph))
+	        conn_t = box_connection(tail, diapt(A[0]));
+	    else
+	        conn_t = box_connection(tail, diapt(A[n - 1]));
+        }
+
+        if (arrow_at_start) {
+	    dia_printf
+	        ("        <dia:connection handle=\"0\" to=\"%d\" connection=\"%d\"/>\n",
+	         head->id, conn_h);
+	    dia_printf
+	        ("        <dia:connection handle=\"%d\" to=\"%d\" connection=\"%d\"/>\n",
+	         (n - 1), tail->id, conn_t);
+        } else {
+	    dia_printf
+	        ("        <dia:connection handle=\"0\" to=\"%d\" connection=\"%d\"/>\n",
+	         tail->id, conn_t);
+	    dia_printf
+	        ("        <dia:connection handle=\"%d\" to=\"%d\" connection=\"%d\"/>\n",
+	         (n - 1), head->id, conn_h);
+        }
+    
+        dia_fputs("      </dia:connections>\n");
     }
-    if (arrow_at_end) {
-	dia_fputs("      <dia:attribute name=\"end_arrow\">\n");
-	dia_fputs("          <dia:enum val=\"3\"/>\n");
-	dia_fputs("      </dia:attribute>\n");
-	dia_fputs("      <dia:attribute name=\"end_arrow_length\">\n");
-	dia_fputs("      	<dia:real val=\"0.8\"/>\n");
-	dia_fputs("      </dia:attribute>\n");
-	dia_fputs
-	    ("		 <dia:attribute name=\"end_arrow_width\">\n");
-	dia_fputs("			<dia:real val=\"0.8\"/>\n");
-	dia_fputs("      </dia:attribute>\n");
-    }
-
-    dia_fputs("      <dia:attribute name=\"conn_endpoints\">\n");
-    dia_printf("        <dia:point val=\"%g,%g\"/>\n", diapt(A[0]).x,
-	       diapt(A[0]).y);
-    dia_printf("        <dia:point val=\"%g,%g\"/>\n", diapt(A[n - 1]).x,
-	       diapt(A[n - 1]).y);
-    dia_fputs("      </dia:attribute>\n");
-    dia_fputs("      <dia:connections>\n");
-
-    if ((strcmp(shape_t, "ellipse") == 0)
-	|| (strcmp(shape_t, "circle") == 0)
-	|| (strcmp(shape_t, "doublecircle") == 0)) {
-	cp_h = diapt(ND_coord_i(head));
-	if (AG_IS_DIRECTED(Rootgraph))
-	    conn_h = ellipse_connection(cp_h, diapt(A[n - 1]));
-	else
-	    conn_h = ellipse_connection(cp_h, diapt(A[0]));
-    } else {
-	if (AG_IS_DIRECTED(Rootgraph))
-	    conn_h = box_connection(head, diapt(A[n - 1]));
-	else
-	    conn_h = box_connection(head, diapt(A[0]));
-    }
-
-    if ((strcmp(shape_t, "ellipse") == 0)
-	|| (strcmp(shape_t, "circle") == 0)
-	|| (strcmp(shape_t, "doublecircle") == 0)) {
-	cp_t = diapt(ND_coord_i(tail));
-	if (AG_IS_DIRECTED(Rootgraph))
-	    conn_t = ellipse_connection(cp_t, diapt(A[0]));
-	else
-	    conn_t = ellipse_connection(cp_t, diapt(A[n - 1]));
-    } else {
-	if (AG_IS_DIRECTED(Rootgraph))
-	    conn_t = box_connection(tail, diapt(A[0]));
-	else
-	    conn_t = box_connection(tail, diapt(A[n - 1]));
-    }
-
-    if (arrow_at_start) {
-	dia_printf
-	    ("        <dia:connection handle=\"0\" to=\"%d\" connection=\"%d\"/>\n",
-	     head->id, conn_h);
-	dia_printf
-	    ("        <dia:connection handle=\"%d\" to=\"%d\" connection=\"%d\"/>\n",
-	     (n - 1), tail->id, conn_t);
-    } else {
-	dia_printf
-	    ("        <dia:connection handle=\"0\" to=\"%d\" connection=\"%d\"/>\n",
-	     tail->id, conn_t);
-	dia_printf
-	    ("        <dia:connection handle=\"%d\" to=\"%d\" connection=\"%d\"/>\n",
-	     (n - 1), head->id, conn_h);
-    }
-
-    dia_fputs("      </dia:connections>\n");
     dia_fputs("    </dia:object>\n");
 }
 
