@@ -1119,7 +1119,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 			     (char *) NULL);
 	    return TCL_ERROR;
 	}
-	rc = gvjobs_output_langname(gvc, "gd");
+	rc = gvjobs_output_langname(gvc, "gd:gd:gd");
 	if (rc == NO_SUPPORT) {
 	    Tcl_AppendResult(interp, " Format: \"gd\" not recognized.\n",
                                      (char *) 0);
