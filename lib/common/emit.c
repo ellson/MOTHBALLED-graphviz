@@ -637,8 +637,7 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     pointf centering = {0.0, 0.0}; /* centering offset - points */
 
     /* unpaginated image size - in points - in graph orientation */
-    imageSize.x = job->zoom*job->view.x;
-    imageSize.y = job->zoom*job->view.y;
+    imageSize = job->view;
 
     /* rotate imageSize to page orientation */
     if (job->rotation)
@@ -808,8 +807,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
 {
     obj_state_t *obj = job->obj;
     int nump = 0, flags = job->flags;
-    pointf *p = NULL;
-    pointf sz, UR;
+    pointf sz, *p = NULL;
     box cbb;
 
     /* establish current box in graph units */
@@ -828,9 +826,9 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	job->pageOffset.y =  job->pad.y - job->pageSize.y * job->pagesArrayElem.y;
     }
 
-    /* calculate clip region in graph units using width/heigh since window might
-	have been resized since view was calculated */
-    sz.x = job->width / (job->scale.y * 2.);
+    /* calculate clip region in graph units using width/height since window
+     * might have been resized since view was calculated */
+    sz.x = job->width / (job->scale.x * 2.);
     sz.y = job->height / (job->scale.y * 2.);
     if (job->rotation)
         sz = exch_xyf(sz);
@@ -890,9 +888,8 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	}
     }
 
-    P2PF(job->view, UR);
-    job->translation.x -= job->focus.x + job->pad.x - (UR.x / 2.0);
-    job->translation.y -= job->focus.y + job->pad.y - (UR.y / 2.0);
+    job->translation.x -= job->focus.x + job->pad.x - job->view.x / (job->zoom * 2.0);
+    job->translation.y -= job->focus.y + job->pad.y - job->view.y / (job->zoom * 2.0);
 
     if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
             && (obj->url || obj->explicit_tooltip)) {
@@ -2027,8 +2024,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 
     /* rotate and scale bb to give default absolute size in points*/
     job->rotation = job->gvc->rotation;
-    X = sz.x;
-    Y = sz.y;
+    X = sz.x * Z;
+    Y = sz.y * Z;
 
     /* user can override */
     if ((str = agget(g, "viewport")))
@@ -2036,10 +2033,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     /* rv is ignored since args retain previous values if not scanned */
 
  	/* job->view gives port size in graph units, unscaled or rotated
- 	 * job->focus gives center of port in graph units
- 	 * job->zoom gives scaling factor for viewport in device; that is,
-	 * final image will be (view.x*zoom, view.y*zoom) (possibly
-	 * rotated).
+ 	 * job->zoom gives scaling factor.
+ 	 * job->focus gives the position in the graph of the center of the port
 	 */
     job->view.x = X;
     job->view.y = Y;
