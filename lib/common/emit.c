@@ -637,7 +637,8 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     pointf centering = {0.0, 0.0}; /* centering offset - points */
 
     /* unpaginated image size - in points - in graph orientation */
-    imageSize = job->view;
+    imageSize.x = job->zoom*job->view.x;
+    imageSize.y = job->zoom*job->view.y;
 
     /* rotate imageSize to page orientation */
     if (job->rotation)
@@ -2036,7 +2037,9 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 
  	/* job->view gives port size in graph units, unscaled or rotated
  	 * job->focus gives center of port in graph units
- 	 * job->zoom gives scaling factor for viewpor
+ 	 * job->zoom gives scaling factor for viewport in device; that is,
+	 * final image will be (view.x*zoom, view.y*zoom) (possibly
+	 * rotated).
 	 */
     job->view.x = X;
     job->view.y = Y;
