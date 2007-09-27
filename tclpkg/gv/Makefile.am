@@ -306,7 +306,7 @@ test_php: libgv_php.la
 		$(PHP) ./test.php)
 
 .PHONY: test_python
-test_python: _gv.la
+test_python: libgv_python.la
 	-(mkdir -p test_python; cd test_python; \
 		ln -fs ../.libs/libgv_python.so _gv.so; \
 		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.py .; \
