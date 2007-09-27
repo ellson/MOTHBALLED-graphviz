@@ -4,8 +4,7 @@
 
 # author: John Ellson <ellson@research.att.com>
 
-$:.push("/usr/lib/graphviz/ruby")
-require 'gv'
+require '/usr/lib/graphviz/ruby/gv.so'
 
 G = Gv.digraph("G")
 N = Gv.protonode(G)
