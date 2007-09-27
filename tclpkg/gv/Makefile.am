@@ -313,10 +313,10 @@ test_python: _gv.la
 		PYTHONPATH=. $(PYTHON) test.py)
 
 .PHONY: test_ruby
-test_ruby: gv.la
+test_ruby: libgv_ruby.la
 	-(mkdir -p test_ruby; cd test_ruby; \
 		ln -fs ../.libs/libgv_ruby.so gv.so; \
-		ln -fs ../.libs/gv.so ../$(srcdir)/*.dot ../$(srcdir)/*.rb .; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.rb .; \
 		$(RUBY) test.rb)
 
 .PHONY: test_tcl
