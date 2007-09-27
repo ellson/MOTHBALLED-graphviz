@@ -588,6 +588,8 @@ if test "x$enable_lua" = "xyes" ; then
     ac_save_CFLAGS="$CFLAGS"
     ac_save_LDFLAGS="$LDFLAGS"
 
+    AC_CHECK_PROG(LUA,lua,lua)
+
     LUA_INCLUDES=""
     LUA_LIBS=""
 

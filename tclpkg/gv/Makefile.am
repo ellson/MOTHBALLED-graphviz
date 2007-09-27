@@ -279,7 +279,7 @@ test_java: libgv_java.la
 .PHONY: test_lua
 test_lua: libgv_lua.la
 	-(mkdir -p test_lua; cd test_lua; \
-		ln -fs ../.libs/libgv_lua.so .;\
+		ln -fs ../.libs/libgv_lua.so gv.so;\
 		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.lua .; \
 		$(LUA) test.lua)
 
