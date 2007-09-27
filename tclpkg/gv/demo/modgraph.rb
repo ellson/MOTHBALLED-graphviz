@@ -4,6 +4,7 @@
 
 # author: John Ellson <ellson@research.att.com>
 
+$:.push("/usr/lib/graphviz/ruby")
 require 'gv'
 
 G = Gv.digraph("G")
