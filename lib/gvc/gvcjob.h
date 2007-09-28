@@ -91,6 +91,7 @@ extern "C" {
         gvdevice_engine_t *engine;
         int id;
         gvdevice_features_t *features;
+        char *type;
     } gvplugin_active_device_t;
 
     typedef struct gvplugin_active_render_s {

@@ -73,6 +73,7 @@ int gvrender_select(GVJ_t * job, char *str)
         job->device.engine = (gvdevice_engine_t *) (typeptr->engine);
         job->device.features = (gvdevice_features_t *) (typeptr->features);
         job->device.id = typeptr->id;
+        job->device.type = plugin->typestr;
     }
     else
 	return NO_SUPPORT;  /* FIXME - should differentiate problem */
@@ -84,6 +85,7 @@ int gvrender_select(GVJ_t * job, char *str)
         typeptr = plugin->typeptr;
         job->render.engine = (gvrender_engine_t *) (typeptr->engine);
         job->render.features = (gvrender_features_t *) (typeptr->features);
+        job->render.type = plugin->typestr;
 
         if (job->device.engine)
             job->render.id = typeptr->id;
