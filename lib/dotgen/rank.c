@@ -195,8 +195,8 @@ node_induce(graph_t * par, graph_t * g)
     }
 }
 
-static void 
-scan_ranks(graph_t * g)
+void 
+dot_scan_ranks(graph_t * g)
 {
     node_t *n, *leader = NULL;
     GD_minrank(g) = MAXSHORT;
@@ -261,7 +261,7 @@ collapse_cluster(graph_t * g, graph_t * subg)
 	dot_rank(subg);
 	cluster_leader(subg);
     } else
-	scan_ranks(subg);
+	dot_scan_ranks(subg);
 }
 
 /* Execute union commands for "same rank" subgraphs and clusters. */

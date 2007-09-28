@@ -146,7 +146,7 @@ static void rebuild_vlists(graph_t * g)
 
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++)
 	GD_rankleader(g)[r] = NULL;
-
+    dot_scan_ranks(g);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	infuse(g, n);
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
