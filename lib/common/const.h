@@ -208,6 +208,9 @@
 #define AUXLABELS (1 << 3)
 #define INVISIBLE (1 << 4)
 #define DOGEAR (1 << 5)
+#define TAB (1 << 6)
+#define BOX3D (1 << 7)
+#define COMPONENT (1 << 8)
 
 /* label types */
 #define LT_NONE 	(0 << 1)

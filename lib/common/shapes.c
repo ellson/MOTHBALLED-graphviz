@@ -73,6 +73,9 @@ static polygon_t p_hexagon = { FALSE, 1, 6, 0., 0., 0. };
 static polygon_t p_septagon = { FALSE, 1, 7, 0., 0., 0. };
 static polygon_t p_octagon = { FALSE, 1, 8, 0., 0., 0. };
 static polygon_t p_note = { FALSE, 1, 4, 0., 0., 0., DOGEAR };
+static polygon_t p_tab = { FALSE, 1, 4, 0., 0., 0., TAB };
+static polygon_t p_box3d = { FALSE, 1, 4, 0., 0., 0., BOX3D };
+static polygon_t p_component = { FALSE, 1, 4, 0., 0., 0., COMPONENT };
 
 /* redundant and undocumented builtin polygons */
 static polygon_t p_doublecircle = { TRUE, 2, 1, 0., 0., 0. };
@@ -88,6 +91,10 @@ static polygon_t p_Mcircle =
     { TRUE, 1, 1, 0., 0., 0., DIAGONALS | AUXLABELS };
 
 #define IS_BOX(n) (ND_shape(n)->polygon == &p_box)
+
+/* True if style requires processing through node_round_corners. */
+#define SPECIAL_CORNERS(style) \
+	((style) & (ROUNDED | DIAGONALS | DOGEAR | TAB | BOX3D | COMPONENT))
 
 /*
  * every shape has these functions:
@@ -167,6 +174,9 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"septagon", &poly_fns, &p_septagon},
     {"octagon", &poly_fns, &p_octagon},
     {"note", &poly_fns, &p_note},
+    {"tab", &poly_fns, &p_tab},
+    {"box3d", &poly_fns, &p_box3d},
+    {"component", &poly_fns, &p_component},
     {"rect", &poly_fns, &p_box},
     {"rectangle", &poly_fns, &p_box},
     {"doublecircle", &poly_fns, &p_doublecircle},
@@ -346,14 +356,14 @@ static pointf interpolate(double t, pointf p0, pointf p1)
 void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF, 
 			int sides, int style)
 {
-    pointf *B, C[3], *D, p0, p1;
+    pointf *B, C[4], *D, p0, p1;
     double d, dx, dy, t;
     int i, seg, mode;
 
     if (style & DIAGONALS)
 	mode = DIAGONALS;
-    else if (style & DOGEAR)
-	mode = DOGEAR;
+    else if (style & (DOGEAR | TAB | BOX3D | COMPONENT))
+	mode = style & (DOGEAR | TAB | BOX3D | COMPONENT);
     else
 	mode = ROUNDED;
     B = N_NEW(4 * sides + 4, pointf);
@@ -369,6 +379,10 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	d = sqrt(dx * dx + dy * dy);
 	/*t = ((mode == ROUNDED)? RBCONST / d : .5); */
 	t = RBCONST / d;
+	if (style & (BOX3D | COMPONENT))
+		t /= 3;
+	else if (style & DOGEAR)
+		t /= 2;
 	if (mode != ROUNDED)
 	    B[i++] = p0;
 	if (mode == ROUNDED)
@@ -447,6 +461,117 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	gvrender_polyline(job, C + 1, 2);
 	C[1] = C[2];
 	gvrender_polyline(job, C, 2);
+	break;
+    case TAB:
+	gvrender_set_pencolor(job, penc);
+	if (style & FILLED)
+	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
+	/* Add the tab edges. */
+	D = N_NEW(sides + 2, pointf);
+	D[0] = AF[0];
+	D[1] = B[2];
+	D[2].x = B[2].x + B[3].x - B[4].x;
+	D[2].y = B[3].y + (B[3].y - B[4].y) / 2;
+	D[3].x = B[3].x;
+	D[3].y = B[3].y + (B[3].y - B[4].y) / 2;
+	for (seg = 4; seg < sides + 2; seg++)
+	    D[seg] = AF[seg - 2];
+	gvrender_polygon(job, D, sides + 2, style & FILLED);
+	free(D);
+
+
+	/* Draw the inner edge. */
+	C[0] = B[3];
+	C[1] = B[2];
+	gvrender_polyline(job, C, 2);
+	break;
+    case BOX3D:
+	assert(sides == 4);
+	gvrender_set_pencolor(job, penc);
+	if (style & FILLED)
+	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
+	/* Adjust for the cutoff edges. */
+	D = N_NEW(sides + 2, pointf);
+	D[0] = AF[0];
+	D[1] = B[2];
+	D[2] = B[4];
+	D[3] = AF[2];
+	D[4] = B[8];
+	D[5] = B[10];
+	gvrender_polygon(job, D, sides + 2, style & FILLED);
+	free(D);
+
+	/* Draw the inner vertices. */
+	C[0].x = B[0].x - (B[0].x - B[1].x);
+	C[0].y = B[0].y - (B[3].y - B[4].y);
+	C[1] = B[4];
+	gvrender_polyline(job, C, 2);
+	C[1] = B[8];
+	gvrender_polyline(job, C, 2);
+	C[1] = B[0];
+	gvrender_polyline(job, C, 2);
+	break;
+    case COMPONENT:
+	assert(sides == 4);
+	gvrender_set_pencolor(job, penc);
+	if (style & FILLED)
+	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
+	/*
+	 * Adjust the perimeter for the protrusions.
+	 *
+	 *  D[1] +----------------+ D[0]
+	 *       |                |
+	 *  3+---+2               |
+	 *   |                    |
+	 *  4+---+5               |
+	 *       |                |
+	 *  7+---+6               |
+	 *   |                    |
+	 *  8+---+9               |
+	 *       |                |
+	 *     10+----------------+ D[11]
+	 *
+	 */
+	D = N_NEW(sides + 8, pointf);
+	D[0] = AF[0];
+	D[1] = AF[1];
+	D[2].x = B[3].x - (B[3].x - B[4].x);
+	D[2].y = B[0].y - (B[3].y - B[4].y);
+	D[3].x = B[3].x - (B[2].x - B[3].x);
+	D[3].y = B[0].y - (B[3].y - B[4].y);
+	D[4].x = B[3].x - (B[2].x - B[3].x);
+	D[4].y = B[0].y - (B[3].y - B[4].y) * 2;
+	D[5].x = B[3].x - (B[3].x - B[4].x);
+	D[5].y = B[0].y - (B[3].y - B[4].y) * 2;
+	D[6].x = B[6].x - (B[3].x - B[4].x);
+	D[6].y = B[6].y + (B[3].y - B[4].y) * 2;
+	D[7].x = B[6].x - (B[2].x - B[3].x);
+	D[7].y = B[6].y + (B[3].y - B[4].y) * 2;
+	D[8].x = B[6].x - (B[2].x - B[3].x);
+	D[8].y = B[6].y + (B[3].y - B[4].y);
+	D[9].x = B[6].x - (B[3].x - B[4].x);
+	D[9].y = B[6].y + (B[3].y - B[4].y);
+	D[10] = AF[2];
+	D[11] = AF[3];
+	gvrender_polygon(job, D, sides + 8, style & FILLED);
+	free(D);
+
+	/* Draw the internal vertices. */
+	C[0] = D[2];
+	C[1].x = B[3].x + (B[2].x - B[3].x);
+	C[1].y = B[0].y - (B[3].y - B[4].y);
+	C[2].x = B[3].x + (B[2].x - B[3].x);
+	C[2].y = B[0].y - (B[3].y - B[4].y) * 2;
+	C[3] = D[5];
+	gvrender_polyline(job, C, 4);
+	C[0] = D[6];
+	C[1].x = B[6].x + (B[2].x - B[3].x);
+	C[1].y = B[6].y + (B[3].y - B[4].y) * 2;
+	C[2].x = B[6].x + (B[2].x - B[3].x);
+	C[2].y = B[6].y + (B[3].y - B[4].y);
+	C[3] = D[9];
+	gvrender_polyline(job, C, 4);
+	break;
     }
     free(B);
 }
@@ -1360,7 +1485,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    if (style & DIAGONALS) {
 		Mcircle_hack(job, n);
 	    }
-	} else if (style & (ROUNDED | DIAGONALS | DOGEAR)) {
+	} else if (SPECIAL_CORNERS(style)) {
 	    node_round_corners(job, n, AF, sides, style);
 	} else {
 	    gvrender_polygon(job, AF, sides, filled);
@@ -1961,7 +2086,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
 	gvrender_set_fillcolor(job, findFill(n)); /* emit fill color */
     if (streq(ND_shape(n)->name, "Mrecord"))
 	style |= ROUNDED;
-    if (style & (ROUNDED | DIAGONALS | DOGEAR)) {
+    if (SPECIAL_CORNERS(style)) {
         AF[0] = BF.LL;
         AF[2] = BF.UR;
         AF[1].x = AF[2].x;
