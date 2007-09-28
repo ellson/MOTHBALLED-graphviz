@@ -1296,8 +1296,10 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:shapefile HREF=#a:shapefile><STRONG>shapefile</STRONG></A>
 <DD>  If defined, shapefile specifies a file containing user-supplied node content. 
   The <A HREF=#d:shape><B>shape</B></A> of the node is set to box. 
-  The image in the shapefile must be
-  rectangular. The image formats supported as well as the precise semantics of 
+  The image in the shapefile must be rectangular.
+  The image will take its natural size in the output with the box scaled around it, unless <A HREF=#a:fixedsize><B>fixedsize</B></A>=TRUE and <A HREF=#a:width><B>width</B></A>, <A HREF=#a:height><B>height</B></A> are used to force a scaling.
+  <P>
+  The image formats supported as well as the precise semantics of 
   how the file is used depends on the
   <A HREF="http://www.graphviz.org/doc/info/output.html">output format</A>.  For further details, see
   <A HREF=http://www.graphviz.org/Documentation/html/shapehowto.html#ext_image>External PostScript files</A>.
