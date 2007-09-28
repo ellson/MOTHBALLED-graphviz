@@ -207,6 +207,7 @@
 #define DIAGONALS (1 << 2)
 #define AUXLABELS (1 << 3)
 #define INVISIBLE (1 << 4)
+#define DOGEAR (1 << 5)
 
 /* label types */
 #define LT_NONE 	(0 << 1)

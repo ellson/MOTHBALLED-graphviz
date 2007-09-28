@@ -72,6 +72,7 @@ static polygon_t p_pentagon = { FALSE, 1, 5, 0., 0., 0. };
 static polygon_t p_hexagon = { FALSE, 1, 6, 0., 0., 0. };
 static polygon_t p_septagon = { FALSE, 1, 7, 0., 0., 0. };
 static polygon_t p_octagon = { FALSE, 1, 8, 0., 0., 0. };
+static polygon_t p_note = { FALSE, 1, 4, 0., 0., 0., DOGEAR };
 
 /* redundant and undocumented builtin polygons */
 static polygon_t p_doublecircle = { TRUE, 2, 1, 0., 0., 0. };
@@ -165,6 +166,7 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"hexagon", &poly_fns, &p_hexagon},
     {"septagon", &poly_fns, &p_septagon},
     {"octagon", &poly_fns, &p_octagon},
+    {"note", &poly_fns, &p_note},
     {"rect", &poly_fns, &p_box},
     {"rectangle", &poly_fns, &p_box},
     {"doublecircle", &poly_fns, &p_doublecircle},
@@ -344,12 +346,14 @@ static pointf interpolate(double t, pointf p0, pointf p1)
 void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF, 
 			int sides, int style)
 {
-    pointf *B, C[2], p0, p1;
+    pointf *B, C[3], *D, p0, p1;
     double d, dx, dy, t;
     int i, seg, mode;
 
     if (style & DIAGONALS)
 	mode = DIAGONALS;
+    else if (style & DOGEAR)
+	mode = DOGEAR;
     else
 	mode = ROUNDED;
     B = N_NEW(4 * sides + 4, pointf);
@@ -378,7 +382,8 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
     B[i++] = B[1];
     B[i++] = B[2];
 
-    if (mode == ROUNDED) {
+    switch (mode) {
+    case ROUNDED:
 	if (style & FILLED) {
 	    int j = 0;
 	    pointf* pts = N_GNEW(2*sides,pointf);
@@ -401,11 +406,14 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	    gvrender_polyline(job, B + 4 * seg + 1, 2);
 	    gvrender_beziercurve(job, B + 4 * seg + 2, 4, FALSE, FALSE, FALSE);
 	}
-    } else {			/* diagonals are weird.  rewrite someday. */
+	break;
+    case DIAGONALS:
+	/* diagonals are weird.  rewrite someday. */
 	gvrender_set_pencolor(job, penc);
 	if (style & FILLED)
 	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
 	gvrender_polygon(job, AF, sides, style & FILLED);
+
 	for (seg = 0; seg < sides; seg++) {
 #ifdef NOTDEF
 	    C[0] = B[3 * seg];
@@ -416,6 +424,29 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	    C[1] = B[3 * seg + 4];
 	    gvrender_polyline(job, C, 2);
 	}
+	break;
+    case DOGEAR:
+	gvrender_set_pencolor(job, penc);
+	if (style & FILLED)
+	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
+	/* Add the cutoff edge. */
+	D = N_NEW(sides + 1, pointf);
+	for (seg = 1; seg < sides; seg++)
+	    D[seg] = AF[seg];
+	D[0] = B[3 * (sides - 1) + 4];
+	D[sides] = B[3 * (sides - 1) + 2];
+	gvrender_polygon(job, D, sides + 1, style & FILLED);
+	free(D);
+
+	/* Draw the inner edge. */
+	seg = sides - 1;
+	C[0] = B[3 * seg + 2];
+	C[1] = B[3 * seg + 4];
+	C[2].x = C[0].x + B[3 * seg + 4].x - B[3 * seg + 3].x;
+	C[2].y = C[0].y + B[3 * seg + 3].y - B[3 * seg + 4].y;
+	gvrender_polyline(job, C + 1, 2);
+	C[1] = C[2];
+	gvrender_polyline(job, C, 2);
     }
     free(B);
 }
@@ -1330,7 +1361,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	    if (style & DIAGONALS) {
 		Mcircle_hack(job, n);
 	    }
-	} else if (style & (ROUNDED | DIAGONALS)) {
+	} else if (style & (ROUNDED | DIAGONALS | DOGEAR)) {
 	    node_round_corners(job, n, AF, sides, style);
 	} else {
 	    gvrender_polygon(job, AF, sides, filled);
@@ -1931,7 +1962,7 @@ static void record_gencode(GVJ_t * job, node_t * n)
 	gvrender_set_fillcolor(job, findFill(n)); /* emit fill color */
     if (streq(ND_shape(n)->name, "Mrecord"))
 	style |= ROUNDED;
-    if (style & (ROUNDED | DIAGONALS)) {
+    if (style & (ROUNDED | DIAGONALS | DOGEAR)) {
         AF[0] = BF.LL;
         AF[2] = BF.UR;
         AF[1].x = AF[2].x;
