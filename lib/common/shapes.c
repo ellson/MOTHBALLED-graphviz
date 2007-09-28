@@ -499,6 +499,7 @@ boolean isPolygon(node_t * n)
 static void poly_init(node_t * n)
 {
     pointf dimen, bb;
+    point imagesize;
     pointf P, Q, R;
     pointf *vertices;
     char *p;
@@ -570,36 +571,34 @@ static void poly_init(node_t * n)
 	    PAD(dimen);
     }
 
+    imagesize.x = imagesize.y = 0;
+    if (ND_shape(n)->usershape) {
+	    /* custom requires a shapefile
+             * not custom is an adaptable user shape such as a postscript
+             * function.
+             */
+	if (streq(ND_shape(n)->name, "custom")) {
+	    char *sfile = agget(n, "shapefile");
+	    imagesize = gvusershape_size(n->graph, sfile);
+	    if ((imagesize.x == -1) && (imagesize.y == -1)) {
+		agerr(AGWARN,
+		      "No or improper shapefile=\"%s\" for node \"%s\"\n",
+		      (sfile ? sfile : "<nil>"), n->name);
+	    	imagesize.x = imagesize.y = 0;
+	    } else
+		GD_has_images(n->graph) = TRUE;
+	}
+    }
     if (mapbool(late_string(n, N_fixed, "false"))) {
 	if ((width < dimen.x) || (height < dimen.y))
 	    agerr(AGWARN,
 		  "node '%s', graph '%s' size too small for label\n",
 		  n->name, n->graph->name);
 	dimen.x = dimen.y = 0;
-    } else {
-	if (ND_shape(n)->usershape) {
-	    point imagesize;
-
-		/* custom requires a shapefile
-                 * not custom is an adaptable user shape such as a postscript
-                 * function.
-                 */
-	    if (streq(ND_shape(n)->name, "custom")) {
-		char *sfile = agget(n, "shapefile");
-		imagesize = gvusershape_size(n->graph, sfile);
-		if ((imagesize.x == -1) && (imagesize.y == -1)) {
-		    agerr(AGWARN,
-		      "No or improper shapefile=\"%s\" for node \"%s\"\n",
-		      (sfile ? sfile : "<nil>"), n->name);
-		} else
-		    GD_has_images(n->graph) = TRUE;
-	    }
-	    else {
-		imagesize.x = imagesize.y = 0;
-	    }
-	    dimen.x = MAX(dimen.x, imagesize.x+2);
-	    dimen.y = MAX(dimen.y, imagesize.y+2);
-	}
+    }
+    else {
+	dimen.x = MAX(dimen.x, imagesize.x+2);
+	dimen.y = MAX(dimen.y, imagesize.y+2);
     }
 
     /* quantization */
