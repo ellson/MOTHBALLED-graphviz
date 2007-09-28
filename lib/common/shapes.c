@@ -554,7 +554,6 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	D[10] = AF[2];
 	D[11] = AF[3];
 	gvrender_polygon(job, D, sides + 8, style & FILLED);
-	free(D);
 
 	/* Draw the internal vertices. */
 	C[0] = D[2];
@@ -571,6 +570,8 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	C[2].y = B[6].y + (B[3].y - B[4].y);
 	C[3] = D[9];
 	gvrender_polyline(job, C, 4);
+
+	free(D);
 	break;
     }
     free(B);
