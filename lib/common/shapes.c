@@ -456,8 +456,8 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	seg = sides - 1;
 	C[0] = B[3 * seg + 2];
 	C[1] = B[3 * seg + 4];
-	C[2].x = C[0].x + B[3 * seg + 4].x - B[3 * seg + 3].x;
-	C[2].y = C[0].y + B[3 * seg + 3].y - B[3 * seg + 4].y;
+	C[2].x = C[1].x + (C[0].x - B[3 * seg + 3].x);
+	C[2].y = C[1].y + (C[0].y - B[3 * seg + 3].y);
 	gvrender_polyline(job, C + 1, 2);
 	C[1] = C[2];
 	gvrender_polyline(job, C, 2);
@@ -470,10 +470,10 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	D = N_NEW(sides + 2, pointf);
 	D[0] = AF[0];
 	D[1] = B[2];
-	D[2].x = B[2].x + B[3].x - B[4].x;
-	D[2].y = B[3].y + (B[3].y - B[4].y) / 2;
-	D[3].x = B[3].x;
-	D[3].y = B[3].y + (B[3].y - B[4].y) / 2;
+	D[2].x = B[2].x + (B[3].x - B[4].x) / 3;
+	D[2].y = B[2].y + (B[3].y - B[4].y) / 3;
+	D[3].x = B[3].x + (B[3].x - B[4].x) / 3;
+	D[3].y = B[3].y + (B[3].y - B[4].y) / 3;
 	for (seg = 4; seg < sides + 2; seg++)
 	    D[seg] = AF[seg - 2];
 	gvrender_polygon(job, D, sides + 2, style & FILLED);
@@ -502,8 +502,8 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	free(D);
 
 	/* Draw the inner vertices. */
-	C[0].x = B[0].x - (B[0].x - B[1].x);
-	C[0].y = B[0].y - (B[3].y - B[4].y);
+	C[0].x = B[1].x + (B[11].x - B[0].x);
+	C[0].y = B[1].y + (B[11].y - B[0].y);
 	C[1] = B[4];
 	gvrender_polyline(job, C, 2);
 	C[1] = B[8];
@@ -535,39 +535,41 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	D = N_NEW(sides + 8, pointf);
 	D[0] = AF[0];
 	D[1] = AF[1];
-	D[2].x = B[3].x - (B[3].x - B[4].x);
-	D[2].y = B[0].y - (B[3].y - B[4].y);
-	D[3].x = B[3].x - (B[2].x - B[3].x);
-	D[3].y = B[0].y - (B[3].y - B[4].y);
-	D[4].x = B[3].x - (B[2].x - B[3].x);
-	D[4].y = B[0].y - (B[3].y - B[4].y) * 2;
-	D[5].x = B[3].x - (B[3].x - B[4].x);
-	D[5].y = B[0].y - (B[3].y - B[4].y) * 2;
-	D[6].x = B[6].x - (B[3].x - B[4].x);
-	D[6].y = B[6].y + (B[3].y - B[4].y) * 2;
-	D[7].x = B[6].x - (B[2].x - B[3].x);
-	D[7].y = B[6].y + (B[3].y - B[4].y) * 2;
-	D[8].x = B[6].x - (B[2].x - B[3].x);
-	D[8].y = B[6].y + (B[3].y - B[4].y);
-	D[9].x = B[6].x - (B[3].x - B[4].x);
-	D[9].y = B[6].y + (B[3].y - B[4].y);
+	D[2].x = B[3].x + (B[4].x - B[3].x);
+	D[2].y = B[3].y + (B[4].y - B[3].y);
+	D[3].x = D[2].x + (B[3].x - B[2].x);
+	D[3].y = D[2].y + (B[3].y - B[2].y);
+	D[4].x = D[3].x + (B[4].x - B[3].x);
+	D[4].y = D[3].y + (B[4].y - B[3].y);
+	D[5].x = D[4].x + (D[2].x - D[3].x);
+	D[5].y = D[4].y + (D[2].y - D[3].y);
+
+	D[9].x = B[6].x + (B[5].x - B[6].x);
+	D[9].y = B[6].y + (B[5].y - B[6].y);
+	D[8].x = D[9].x + (B[6].x - B[7].x);
+	D[8].y = D[9].y + (B[6].y - B[7].y);
+	D[7].x = D[8].x + (B[5].x - B[6].x);
+	D[7].y = D[8].y + (B[5].y - B[6].y);
+	D[6].x = D[7].x + (D[9].x - D[8].x);
+	D[6].y = D[7].y + (D[9].y - D[8].y);
+
 	D[10] = AF[2];
 	D[11] = AF[3];
 	gvrender_polygon(job, D, sides + 8, style & FILLED);
 
 	/* Draw the internal vertices. */
 	C[0] = D[2];
-	C[1].x = B[3].x + (B[2].x - B[3].x);
-	C[1].y = B[0].y - (B[3].y - B[4].y);
-	C[2].x = B[3].x + (B[2].x - B[3].x);
-	C[2].y = B[0].y - (B[3].y - B[4].y) * 2;
+	C[1].x = D[2].x - (D[3].x - D[2].x);
+	C[1].y = D[2].y - (D[3].y - D[2].y);
+	C[2].x = C[1].x + (D[4].x - D[3].x);
+	C[2].y = C[1].y + (D[4].y - D[3].y);
 	C[3] = D[5];
 	gvrender_polyline(job, C, 4);
 	C[0] = D[6];
-	C[1].x = B[6].x + (B[2].x - B[3].x);
-	C[1].y = B[6].y + (B[3].y - B[4].y) * 2;
-	C[2].x = B[6].x + (B[2].x - B[3].x);
-	C[2].y = B[6].y + (B[3].y - B[4].y);
+	C[1].x = D[6].x - (D[7].x - D[6].x);
+	C[1].y = D[6].y - (D[7].y - D[6].y);
+	C[2].x = C[1].x + (D[8].x - D[7].x);
+	C[2].y = C[1].y + (D[8].y - D[7].y);
 	C[3] = D[9];
 	gvrender_polyline(job, C, 4);
 
