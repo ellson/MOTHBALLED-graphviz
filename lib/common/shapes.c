@@ -1476,7 +1476,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 		gvrender_polygon(job, AF, sides, filled);
 	    }
 	}
-	gvrender_usershape(job, name, AF, sides, filled, FALSE);
+	gvrender_usershape(job, name, AF, sides, filled, mapbool(late_string(n, N_fixed, "false")));
 	filled = FALSE;  /* with user shapes, we have done the fill if needed */
     }
 
