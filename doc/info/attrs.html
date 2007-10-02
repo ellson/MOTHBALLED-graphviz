@@ -202,7 +202,9 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
  <TR><TD><A NAME=a:label HREF=#d:label>label</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:lblString>lblString</A>
-</TD><TD ALIGN="CENTER">"N"</TD><TD>(nodes)<BR>"" (otherwise)</TD><TD></TD> </TR>
+</TD><TD ALIGN="CENTER">"\N" (nodes)<BR>"" (otherwise)</TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:image HREF=#d:image>image</A>
+</TD><TD>N</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:labelURL HREF=#d:labelURL>labelURL</A>
 </TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, map only</TD> </TR>
@@ -786,6 +788,15 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:href HREF=#a:href><STRONG>href</STRONG></A>
 <DD>  Synonym for <A HREF=#d:URL>URL</A>.
 
+<DT><A NAME=d:image HREF=#a:image><STRONG>image</STRONG></A>
+<DD>  If defined, image specifies a file containing user-supplied node content. 
+  Unlike <A HREF="#d:shapefile">shapefile</A>, the <A HREF=#d:shape><B>shape</B></A> of the node is processed normally and overlayed on the image.
+  The image will take its natural size in the output with the shape scaled around it, unless <A HREF=#a:fixedsize><B>fixedsize</B></A>=TRUE and <A HREF=#a:width><B>width</B></A>, <A HREF=#a:height><B>height</B></A> are used to force a scaling.
+  <P>
+  The image formats supported as well as the precise semantics of 
+  how the file is used depends on the
+  <A HREF="http://www.graphviz.org/doc/info/output.html">output format</A>.  
+
 <DT><A NAME=d:label HREF=#a:label><STRONG>label</STRONG></A>
 <DD>  Text label attached to objects.
   If a node's <A HREF=#d:shape>shape</A> is record, then the label can
@@ -1296,7 +1307,6 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:shapefile HREF=#a:shapefile><STRONG>shapefile</STRONG></A>
 <DD>  If defined, shapefile specifies a file containing user-supplied node content. 
   The <A HREF=#d:shape><B>shape</B></A> of the node is set to box. 
-  The image in the shapefile must be rectangular.
   The image will take its natural size in the output with the box scaled around it, unless <A HREF=#a:fixedsize><B>fixedsize</B></A>=TRUE and <A HREF=#a:width><B>width</B></A>, <A HREF=#a:height><B>height</B></A> are used to force a scaling.
   <P>
   The image formats supported as well as the precise semantics of 
