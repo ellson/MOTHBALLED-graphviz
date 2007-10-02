@@ -448,11 +448,14 @@ static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, int flag)
 static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, int flag)
 {
     double r;
+    pointf AF[2];
 
     r = sqrt(u.x * u.x + u.y * u.y) / 2.;
-    p.x += u.x / 2.;
-    p.y += u.y / 2.;
-    gvrender_ellipse(job, p, r, r, !(flag & ARR_MOD_OPEN));
+    AF[0].x = p.x + u.x / 2. - r;
+    AF[0].y = p.y + u.y / 2. - r;
+    AF[1].x = p.x + u.x / 2. + r;
+    AF[1].y = p.y + u.y / 2. + r;
+    gvrender_ellipse(job, AF, 2, !(flag & ARR_MOD_OPEN));
 }
 
 static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, int flag)

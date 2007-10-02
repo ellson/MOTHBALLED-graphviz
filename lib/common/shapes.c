@@ -630,7 +630,7 @@ static void poly_init(node_t * n)
     point imagesize;
     pointf P, Q, R;
     pointf *vertices;
-    char *p;
+    char *p, *sfile;
     double temp, alpha, beta, gamma, delta;
     double orientation, distortion, skew;
     double sectorangle, sidelength, skewdist, gdistortion, gskew;
@@ -706,7 +706,7 @@ static void poly_init(node_t * n)
              * function.
              */
 	if (streq(ND_shape(n)->name, "custom")) {
-	    char *sfile = agget(n, "shapefile");
+	    sfile = agget(n, "shapefile");
 	    imagesize = gvusershape_size(n->graph, sfile);
 	    if ((imagesize.x == -1) && (imagesize.y == -1)) {
 		agerr(AGWARN,
@@ -719,8 +719,7 @@ static void poly_init(node_t * n)
 	    }
 	}
     }
-    else {
-	char *sfile = agget(n, "image");
+    else  if ((sfile = agget(n, "image"))) {
 	imagesize = gvusershape_size(n->graph, sfile);
 	if ((imagesize.x == -1) && (imagesize.y == -1)) {
             agerr(AGWARN,
@@ -805,11 +804,13 @@ static void poly_init(node_t * n)
     if (peripheries < 1)
 	outp = 1;
     if (sides < 3) {		/* ellipses */
-	sides = 1;
-	vertices = N_NEW(outp, pointf);
+	sides = 2;
+	vertices = N_NEW(outp * sides, pointf);
 	P.x = bb.x / 2.;
 	P.y = bb.y / 2.;
-	vertices[0] = P;
+	vertices[1] = P;
+	vertices[0].x = -P.x;
+	vertices[0].y = -P.y;
 	if (peripheries > 1) {
 	    for (j = 1; j < peripheries; j++) {
 		P.x += GAP;
@@ -1459,20 +1460,13 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	/* get coords of innermost periphery */
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i];
-	    AF[i].x = P.x * xsize;
-	    AF[i].y = P.y * ysize;
-	    if (sides > 2) {
-		AF[i].x += (double)ND_coord_i(n).x;
-		AF[i].y += (double)ND_coord_i(n).y;
-	    }
+	    AF[i].x = P.x * xsize + (double)ND_coord_i(n).x;
+	    AF[i].y = P.y * ysize + (double)ND_coord_i(n).y;
 	}
 	/* lay down fill first */
 	if (filled && pfilled) {
 	    if (sides <= 2) {
-		pointf PF;
-
-		P2PF(ND_coord_i(n), PF);
-		gvrender_ellipse(job, PF, AF[0].x, AF[0].y, filled);
+		gvrender_ellipse(job, AF, sides, filled);
 		if (style & DIAGONALS) {
 		    Mcircle_hack(job, n);
 		}
@@ -1482,34 +1476,18 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 		gvrender_polygon(job, AF, sides, filled);
 	    }
 	}
-	if (sides <=2) {
-	    pointf PF;
-
-	    P2PF(ND_coord_i(n), PF);
-	    AF[1].x = PF.x - AF[0].x;
-	    AF[1].y = PF.y - AF[0].y;
-	    AF[0].x += PF.x;
-	    AF[0].y += PF.y;
-	}
-	gvrender_usershape(job, name, AF, 2, filled, FALSE);
+	gvrender_usershape(job, name, AF, sides, filled, FALSE);
 	filled = FALSE;  /* with user shapes, we have done the fill if needed */
     }
 
     for (j = 0; j < peripheries; j++) {
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i + j * sides];
-	    AF[i].x = P.x * xsize;
-	    AF[i].y = P.y * ysize;
-	    if (sides > 2) {
-		AF[i].x += (double)ND_coord_i(n).x;
-		AF[i].y += (double)ND_coord_i(n).y;
-	    }
+	    AF[i].x = P.x * xsize + (double)ND_coord_i(n).x;
+	    AF[i].y = P.y * ysize + (double)ND_coord_i(n).y;
 	}
 	if (sides <= 2) {
-	    pointf PF;
-
-	    P2PF(ND_coord_i(n), PF);
-	    gvrender_ellipse(job, PF, AF[0].x, AF[0].y, filled);
+	    gvrender_ellipse(job, AF, sides, filled);
 	    if (style & DIAGONALS) {
 		Mcircle_hack(job, n);
 	    }

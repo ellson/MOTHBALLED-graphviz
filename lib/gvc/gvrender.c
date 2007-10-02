@@ -741,7 +741,7 @@ void gvrender_set_style(GVJ_t * job, char **s)
 #endif
 }
 
-void gvrender_ellipse(GVJ_t * job, pointf pf, double rx, double ry, boolean filled)
+void gvrender_ellipse(GVJ_t * job, pointf * pf, int n, boolean filled)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
@@ -750,10 +750,10 @@ void gvrender_ellipse(GVJ_t * job, pointf pf, double rx, double ry, boolean fill
 	    pointf af[2];
 
 	    /* center */
-	    af[0] = pf;
+	    af[0].x = (pf[0].x + pf[1].x)/2.;
+	    af[0].y = (pf[0].y + pf[1].y)/2.;
 	    /* corner */
-	    af[1].x = pf.x + rx;
-	    af[1].y = pf.y + ry;
+	    af[1] = pf[1];
 
 	    if (! (job->flags & GVRENDER_DOES_TRANSFORM))
 	        gvrender_ptf_A(job, af, af, 2);
@@ -765,10 +765,19 @@ void gvrender_ellipse(GVJ_t * job, pointf pf, double rx, double ry, boolean fill
 	codegen_t *cg = job->codegen;
 
 	if (cg && cg->ellipse) {
-	    point p;
+	    pointf af[2];
+	    point p, r;
 
-	    PF2P(pf, p);
-	    cg->ellipse(p, ROUND(rx), ROUND(ry), filled);
+	    /* center */
+	    af[0].x = (pf[0].x + pf[1].x)/2.;
+	    af[0].y = (pf[0].y + pf[1].y)/2.;
+	    /* radius */
+	    af[1].x = pf[1].x - af[0].x;
+	    af[1].y = pf[1].y - af[0].y;
+
+	    PF2P(af[0], p);
+	    PF2P(af[1], r);
+	    cg->ellipse(p, r.x, r.y, filled);
 	}
     }
 #endif
