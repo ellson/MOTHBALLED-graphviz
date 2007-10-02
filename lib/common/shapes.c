@@ -713,8 +713,23 @@ static void poly_init(node_t * n)
 		      "No or improper shapefile=\"%s\" for node \"%s\"\n",
 		      (sfile ? sfile : "<nil>"), n->name);
 	    	imagesize.x = imagesize.y = 0;
-	    } else
+	    }
+	    else {
 		GD_has_images(n->graph) = TRUE;
+	    }
+	}
+    }
+    else {
+	char *sfile = agget(n, "image");
+	imagesize = gvusershape_size(n->graph, sfile);
+	if ((imagesize.x == -1) && (imagesize.y == -1)) {
+            agerr(AGWARN,
+                "No or improper image=\"%s\" for node \"%s\"\n",
+                (sfile ? sfile : "<nil>"), n->name);
+            imagesize.x = imagesize.y = 0;
+        }
+	else {
+            GD_has_images(n->graph) = TRUE;
 	}
     }
     if (mapbool(late_string(n, N_fixed, "false"))) {
@@ -1352,6 +1367,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     static pointf *AF;
     static int A_size;
     boolean filled;
+    boolean usershape_p;
     boolean pfilled; /* true if fill not handled by user shape */
     char *color, *name;
     int doMap = (obj->url || obj->explicit_tooltip);
@@ -1429,17 +1445,29 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	if (color[0])
 	    gvrender_set_pencolor(job, color);
     }
+    usershape_p = FALSE;
     if (ND_shape(n)->usershape) {
-	if (filled && pfilled) {
-	    for (i = 0; i < sides; i++) {
-		P = vertices[i];
-		AF[i].x = P.x * xsize;
-		AF[i].y = P.y * ysize;
-		if (sides > 2) {
+	name = ND_shape(n)->name;
+	if (streq(name, "custom"))
+	    name = agget(n, "shapefile");
+        usershape_p = TRUE;
+    }
+    else if ((name = agget(n, "image"))) {
+	usershape_p = TRUE;
+    }
+    if (usershape_p) {  
+	/* get coords of innermost periphery */
+	for (i = 0; i < sides; i++) {
+	    P = vertices[i];
+	    AF[i].x = P.x * xsize;
+	    AF[i].y = P.y * ysize;
+	    if (sides > 2) {
 		AF[i].x += (double)ND_coord_i(n).x;
 		AF[i].y += (double)ND_coord_i(n).y;
-		}
 	    }
+	}
+	/* lay down fill first */
+	if (filled && pfilled) {
 	    if (sides <= 2) {
 		pointf PF;
 
@@ -1454,20 +1482,17 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 		gvrender_polygon(job, AF, sides, filled);
 	    }
 	}
-	for (i = 0; i < sides; i++) {
-	    P = vertices[i];
-	    AF[i].x = P.x * xsize;
-	    AF[i].y = P.y * ysize;
-	    if (sides > 2) {
-		AF[i].x += (double)ND_coord_i(n).x;
-		AF[i].y += (double)ND_coord_i(n).y;
-	    }
+	if (sides <=2) {
+	    pointf PF;
+
+	    P2PF(ND_coord_i(n), PF);
+	    AF[1].x = PF.x - AF[0].x;
+	    AF[1].y = PF.y - AF[0].y;
+	    AF[0].x += PF.x;
+	    AF[0].y += PF.y;
 	}
-	name = ND_shape(n)->name;
-	if (streq(name, "custom"))
-	    name = agget(n, "shapefile");
-	gvrender_usershape(job, name, AF, sides, filled, FALSE);
-	filled = FALSE;  /* with user shapes, we've done the fill if needed */
+	gvrender_usershape(job, name, AF, 2, filled, FALSE);
+	filled = FALSE;  /* with user shapes, we have done the fill if needed */
     }
 
     for (j = 0; j < peripheries; j++) {
