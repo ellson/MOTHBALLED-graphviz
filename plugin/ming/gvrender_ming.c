@@ -24,6 +24,10 @@
 
 #include <ming.h>
 
+static char *script = 
+    "createTextField(\"greet\", 0, 0, 0, 100, 100);\n"
+    "greet.text = \"Hello, world!\";\n";
+	
 #define SWFVERSION 6
 #define SWFCOMPRESSION 9
 #define SWFFRAMERATE .5
@@ -33,6 +37,7 @@ typedef enum { FORMAT_SWF } format_type;
 static void ming_begin_job(GVJ_t * job)
 {
     SWFMovie movie;
+    SWFAction action;
 
     Ming_init();
     Ming_useSWFVersion(SWFVERSION);
@@ -40,6 +45,9 @@ static void ming_begin_job(GVJ_t * job)
     movie = newSWFMovie();
     SWFMovie_setRate(movie, SWFFRAMERATE);
     SWFMovie_setDimension(movie, job->width, job->height);
+
+    action = newSWFAction(script);
+    SWFMovie_add(movie, (SWFBlock)action);
 
     job->context = (void*) movie;
 }
@@ -50,6 +58,7 @@ static void ming_end_job(GVJ_t * job)
 
     SWFMovie_output_to_stream(movie, job->output_file);
     destroySWFMovie(movie);
+//    destroySWFAction(action);
     job->context = NULL;
 }
 

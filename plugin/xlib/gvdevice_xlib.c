@@ -441,7 +441,7 @@ static int handle_file_events(GVJ_t *job, int inotify_fd)
 }
 #endif
 
-static void initialize_xlib(GVJ_t *firstjob)
+static void xlib_initialize(GVJ_t *firstjob)
 {
     Display *dpy;
     KeySym keysym;
@@ -480,7 +480,7 @@ static void initialize_xlib(GVJ_t *firstjob)
     firstjob->device_sets_dpi = TRUE;
 }
 
-static void finalize_xlib(GVJ_t *firstjob)
+static void xlib_finalize(GVJ_t *firstjob)
 {
     GVJ_t *job;
     Display *dpy = (Display *)(firstjob->display);
@@ -586,10 +586,9 @@ static gvdevice_features_t device_features_xlib = {
 };
 
 static gvdevice_engine_t device_engine_xlib = {
-    initialize_xlib,
-    NULL,
-    NULL,
-    finalize_xlib,
+    xlib_initialize,
+    NULL,		/* xlib_format */
+    xlib_finalize,
 };
 #endif
 
