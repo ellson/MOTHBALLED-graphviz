@@ -68,7 +68,7 @@ attr_value_edited_cb(GtkCellRendererText *renderer, gchar *pathStr, gchar *newTe
 	gtk_tree_path_free(path);
 }
 
-static void initialize_gtk(GVJ_t *firstjob)
+static void gtk_initialize(GVJ_t *firstjob)
 {
     Display *dpy;
     const char *display_name = NULL;
@@ -107,7 +107,7 @@ static void initialize_gtk(GVJ_t *firstjob)
     firstjob->device_sets_dpi = TRUE;
 }
 
-static void finalize_gtk(GVJ_t *firstjob)
+static void gtk_finalize(GVJ_t *firstjob)
 {
     GVJ_t *job;
     GtkWidget *window1, *drawingarea1, *drawingarea2, *treeview2;
@@ -158,10 +158,9 @@ static gvdevice_features_t device_features_gtk = {
 };
 
 static gvdevice_engine_t device_engine_gtk = {
-    initialize_gtk,
-    NULL,
-    NULL,
-    finalize_gtk,
+    gtk_initialize,
+    NULL,			/* gtk_format */
+    gtk_finalize,
 };
 #endif
 #endif
