@@ -126,13 +126,13 @@ static gvdevice_features_t device_features_gdk_pixbuf = {
 };
 
 gvplugin_installed_t gvdevice_gdk_pixbuf_types[] = {
-    {FORMAT_BMP, "bmp:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_ICO, "ico:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_JPEG, "jpe:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_JPEG, "jpeg:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_JPEG, "jpg:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_PNG, "png:cairo", 5, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_TIFF, "tif:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
-    {FORMAT_TIFF, "tiff:cairo", 10, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_BMP, "bmp:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_ICO, "ico:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_JPEG, "jpe:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_JPEG, "jpeg:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_JPEG, "jpg:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_PNG, "png:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_TIFF, "tif:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
+    {FORMAT_TIFF, "tiff:cairo", 4, &gdk_pixbuf_engine, &device_features_gdk_pixbuf},
     {0, NULL, 0, NULL, NULL}
 };
