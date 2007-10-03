@@ -2735,7 +2735,8 @@ extern gvdevice_callbacks_t gvdevice_callbacks;
 
 int gvRenderJobs (GVC_t * gvc, graph_t * g)
 {
-    GVJ_t *job, *prevjob, *firstjob;
+    static GVJ_t *prevjob;
+    GVJ_t *job, *firstjob;
 
     if (!GD_drawing(g)) {
         agerr (AGERR, "Layout was not done.  Missing layout plugins? \n");
@@ -2748,7 +2749,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 
     gvc->keybindings = gvevent_key_binding;
     gvc->numkeys = gvevent_key_binding_size;
-    prevjob = NULL;
     for (job = gvjobs_first(gvc); job; job = gvjobs_next(gvc)) {
 	if (gvc->gvg) {
 	    job->input_filename = gvc->gvg->input_filename;
@@ -2794,6 +2794,31 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	else {
 	    gvc->active_jobs = job;   /* first job of new list */
 	    gvdevice_initialize(job);    /* FIXME? - semantics are unclear */
+
+            if (!job->output_file) {        /* if not yet opened */
+	        if (gvc->common.auto_outfile_names)
+		    auto_output_filename(job);
+                if (job->output_filename) {
+		    job->output_file = fopen(job->output_filename, "w");
+		    if (job->output_file == NULL) {
+		        perror(job->output_filename);
+		        exit(1);
+		    }
+	        }
+                else
+                    job->output_file = stdout;
+#ifdef WITH_CODEGENS
+	        Output_file = job->output_file;
+#endif
+
+#ifdef HAVE_SETMODE
+#ifdef O_BINARY
+	        if (job->flags & GVDEVICE_BINARY_FORMAT)
+		    setmode(fileno(job->output_file), O_BINARY);
+#endif
+#endif
+            }
+	    gvrender_begin_job(job);
 	}
 	job->next_active = NULL;      /* terminate active list */
 	job->callbacks = &gvdevice_callbacks;
@@ -2805,31 +2830,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	init_job_viewport(job, g);
 	init_job_pagination(job, g);
 
-        if (!job->output_file) {        /* if not yet opened */
-	    if (gvc->common.auto_outfile_names)
-		auto_output_filename(job);
-            if (job->output_filename) {
-		job->output_file = fopen(job->output_filename, "w");
-		if (job->output_file == NULL) {
-		    perror(job->output_filename);
-		    exit(1);
-		}
-	    }
-            else
-                job->output_file = stdout;
-#ifdef WITH_CODEGENS
-	    Output_file = job->output_file;
-#endif
-
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-	    if (job->flags & GVDEVICE_BINARY_FORMAT)
-		setmode(fileno(job->output_file), O_BINARY);
-#endif
-#endif
-	    gvrender_begin_job(job);
-        }
-
 	if (! (job->flags & GVDEVICE_EVENTS)) {
     		/* Show_boxes is not defined, if at all, 
                  * until splines are generated in dot 
@@ -2837,7 +2837,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 #ifdef DEBUG
 	    job->common->show_boxes = Show_boxes; 
 #endif
-	    emit_graph(job, g); /* FIXME? - this should be a special case of finalize() */
+	    emit_graph(job, g); /* FIXME? - should this be a special case of finalize() ? */
 
 	    /* Flush is necessary because we may be writing to a pipe. */
 	    if (job->output_file && ! job->external_context && job->output_lang != TK)
