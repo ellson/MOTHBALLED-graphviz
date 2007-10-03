@@ -16,7 +16,6 @@ pkglib_LTLIBRARIES = libgvplugin_core.la
 
 libgvplugin_core_C_la_SOURCES = \
 	gvplugin_core.c \
-	gvrender_core.c \
 	gvrender_core_dot.c \
 	gvrender_core_ps.c \
 	gvrender_core_fig.c \

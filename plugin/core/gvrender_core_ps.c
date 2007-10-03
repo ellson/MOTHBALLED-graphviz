@@ -48,8 +48,6 @@
 
 extern void epsf_define(FILE * of);
 extern char *ps_string(char *ins, int latin);
-extern void core_fputs(GVJ_t * job, char *s);
-extern void core_printf(GVJ_t * job, const char *format, ...);
 
 typedef enum { FORMAT_PS, FORMAT_PS2, } format_type;
 
@@ -58,22 +56,22 @@ static char setupLatin1;
 
 static void psgen_begin_job(GVJ_t * job)
 {
-    core_fputs(job, "%!PS-Adobe-2.0\n");
-    core_printf(job, "%%%%Creator: %s version %s (%s)\n",
+    gvdevice_fputs(job, "%!PS-Adobe-2.0\n");
+    gvdevice_printf(job, "%%%%Creator: %s version %s (%s)\n",
 	    job->common->info[0], job->common->info[1], job->common->info[2]);
-    core_printf(job, "%%%%For: %s\n", job->common->user);
+    gvdevice_printf(job, "%%%%For: %s\n", job->common->user);
 }
 
 static void psgen_end_job(GVJ_t * job)
 {
-    core_fputs(job, "%%Trailer\n");
-    core_printf(job, "%%%%Pages: %d\n", job->common->viewNum);
+    gvdevice_fputs(job, "%%Trailer\n");
+    gvdevice_printf(job, "%%%%Pages: %d\n", job->common->viewNum);
     if (job->common->show_boxes == NULL)
-	core_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
+	gvdevice_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
 	    job->boundingBox.LL.x, job->boundingBox.LL.y,
 	    job->boundingBox.UR.x, job->boundingBox.UR.y);
-    core_fputs(job, "end\nrestore\n");
-    core_fputs(job, "%%EOF\n");
+    gvdevice_fputs(job, "end\nrestore\n");
+    gvdevice_fputs(job, "%%EOF\n");
 }
 
 static void psgen_begin_graph(GVJ_t * job)
@@ -83,11 +81,11 @@ static void psgen_begin_graph(GVJ_t * job)
     setupLatin1 = FALSE;
 
     if (job->common->viewNum == 0) {
-        core_printf(job, "%%%%Title: %s\n", obj->u.g->name);
-        core_fputs(job, "%%Pages: (atend)\n");
+        gvdevice_printf(job, "%%%%Title: %s\n", obj->u.g->name);
+        gvdevice_fputs(job, "%%Pages: (atend)\n");
         if (job->common->show_boxes == NULL)
-            core_fputs(job, "%%BoundingBox: (atend)\n");
-        core_fputs(job, "%%EndComments\nsave\n");
+            gvdevice_fputs(job, "%%BoundingBox: (atend)\n");
+        gvdevice_fputs(job, "%%EndComments\nsave\n");
         /* include shape library */
         cat_preamble(job, job->common->lib);
 	/* include epsf */
@@ -107,40 +105,40 @@ static void psgen_begin_graph(GVJ_t * job)
      * get the expected PostScript output.
      */
     if (!setupLatin1) {
-	core_fputs(job, "setupLatin1\n");	/* as defined in ps header */
+	gvdevice_fputs(job, "setupLatin1\n");	/* as defined in ps header */
 	setupLatin1 = TRUE;
     }
     /*  Set base URL for relative links (for Distiller >= 3.0)  */
     if (obj->url)
-	core_printf(job, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
+	gvdevice_printf(job, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
 		"/PUT pdfmark\n", obj->url);
 }
 
 static void psgen_begin_layer(GVJ_t * job, char *layername, int layerNum, int numLayers)
 {
-    core_printf(job, "%d %d setlayer\n", layerNum, numLayers);
+    gvdevice_printf(job, "%d %d setlayer\n", layerNum, numLayers);
 }
 
 static void psgen_begin_page(GVJ_t * job)
 {
     box pbr = job->pageBoundingBox;
 
-    core_printf(job, "%%%%Page: %d %d\n",
+    gvdevice_printf(job, "%%%%Page: %d %d\n",
 	    job->common->viewNum + 1, job->common->viewNum + 1);
     if (job->common->show_boxes == NULL)
-        core_printf(job, "%%%%PageBoundingBox: %d %d %d %d\n",
+        gvdevice_printf(job, "%%%%PageBoundingBox: %d %d %d %d\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
-    core_printf(job, "%%%%PageOrientation: %s\n",
+    gvdevice_printf(job, "%%%%PageOrientation: %s\n",
 	    (job->rotation ? "Landscape" : "Portrait"));
     if (job->render.id == FORMAT_PS2)
-        core_printf(job, "<< /PageSize [%d %d] >> setpagedevice\n",
+        gvdevice_printf(job, "<< /PageSize [%d %d] >> setpagedevice\n",
             pbr.UR.x, pbr.UR.y);
-    core_printf(job, "%d %d %d beginpage\n",
+    gvdevice_printf(job, "%d %d %d beginpage\n",
 	    job->pagesArrayElem.x, job->pagesArrayElem.y, job->numPages);
     if (job->common->show_boxes == NULL)
-        core_printf(job, "gsave\n%d %d %d %d boxprim clip newpath\n",
+        gvdevice_printf(job, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x-pbr.LL.x, pbr.UR.y-pbr.LL.y);
-    core_printf(job, "%g %g set_scale %d rotate %g %g translate\n",
+    gvdevice_printf(job, "%g %g set_scale %d rotate %g %g translate\n",
 	    job->scale.x, job->scale.y,
 	    job->rotation,
 	    job->translation.x, job->translation.y);
@@ -151,7 +149,7 @@ static void psgen_begin_page(GVJ_t * job)
 	    job->common->errorfn("canvas size (%d,%d) exceeds PDF limit (%d)\n"
 		  "\t(suggest setting a bounding box size, see dot(1))\n",
 		  pbr.UR.x, pbr.UR.y, PDFMAX);
-	core_printf(job, "[ /CropBox [%d %d %d %d] /PAGES pdfmark\n",
+	gvdevice_printf(job, "[ /CropBox [%d %d %d %d] /PAGES pdfmark\n",
 		pbr.LL.x, pbr.LL.y, pbr.UR.x, pbr.UR.y);
     }
 }
@@ -159,50 +157,50 @@ static void psgen_begin_page(GVJ_t * job)
 static void psgen_end_page(GVJ_t * job)
 {
     if (job->common->show_boxes) {
-	core_fputs(job, "0 0 0 edgecolor\n");
+	gvdevice_fputs(job, "0 0 0 edgecolor\n");
 	cat_libfile(job->output_file, NULL, job->common->show_boxes + 1);
     }
     /* the showpage is really a no-op, but at least one PS processor
      * out there needs to see this literal token.  endpage does the real work.
      */
-    core_fputs(job, "endpage\nshowpage\ngrestore\n");
-    core_fputs(job, "%%PageTrailer\n");
-    core_printf(job, "%%%%EndPage: %d\n", job->common->viewNum);
+    gvdevice_fputs(job, "endpage\nshowpage\ngrestore\n");
+    gvdevice_fputs(job, "%%PageTrailer\n");
+    gvdevice_printf(job, "%%%%EndPage: %d\n", job->common->viewNum);
 }
 
 static void psgen_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    core_printf(job, "%% %s\n", obj->u.sg->name);
+    gvdevice_printf(job, "%% %s\n", obj->u.sg->name);
 
-    core_fputs(job, "gsave\n");
+    gvdevice_fputs(job, "gsave\n");
 }
 
 static void psgen_end_cluster(GVJ_t * job)
 {
-    core_fputs(job, "grestore\n");
+    gvdevice_fputs(job, "grestore\n");
 }
 
 static void psgen_begin_node(GVJ_t * job)
 {
-    core_fputs(job, "gsave\n");
+    gvdevice_fputs(job, "gsave\n");
 }
 
 static void psgen_end_node(GVJ_t * job)
 {
-    core_fputs(job, "grestore\n");
+    gvdevice_fputs(job, "grestore\n");
 }
 
 static void
 psgen_begin_edge(GVJ_t * job)
 {
-    core_fputs(job, "gsave\n");
+    gvdevice_fputs(job, "gsave\n");
 }
 
 static void psgen_end_edge(GVJ_t * job)
 {
-    core_fputs(job, "grestore\n");
+    gvdevice_fputs(job, "grestore\n");
 }
 
 static void psgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *target)
@@ -210,10 +208,10 @@ static void psgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *targe
     obj_state_t *obj = job->obj;
 
     if (url && obj->url_map_p) {
-        core_printf(job, "[ /Rect [ %g %g %g %g ]\n",
+        gvdevice_printf(job, "[ /Rect [ %g %g %g %g ]\n",
 		obj->url_map_p[0].x, obj->url_map_p[0].y,
 		obj->url_map_p[1].x, obj->url_map_p[1].y);
-        core_printf(job, "  /Border [ 0 0 0 ]\n"
+        gvdevice_printf(job, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
 		"/ANN pdfmark\n",
@@ -227,7 +225,7 @@ ps_set_pen_style(GVJ_t *job)
     double penwidth = job->obj->penwidth;
     char *p, *line, **s = job->obj->rawstyle;
 
-    core_printf(job,"%g setlinewidth\n", penwidth);
+    gvdevice_printf(job,"%g setlinewidth\n", penwidth);
 
     while (s && (p = line = *s++)) {
 	if (strcmp(line, "setlinewidth") == 0)
@@ -236,14 +234,14 @@ ps_set_pen_style(GVJ_t *job)
 	    p++;
 	p++;
 	while (*p) {
-            core_printf(job,"%s ", p);
+            gvdevice_printf(job,"%s ", p);
 	    while (*p)
 		p++;
 	    p++;
 	}
 	if (strcmp(line, "invis") == 0)
 	    job->obj->penwidth = 0;
-	core_printf(job, "%s\n", line);
+	gvdevice_printf(job, "%s\n", line);
     }
 }
 
@@ -267,7 +265,7 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 		objtype = "sethsb";
 		break;
 	}
-	core_printf(job, "%.3f %.3f %.3f %scolor\n",
+	gvdevice_printf(job, "%.3f %.3f %.3f %scolor\n",
 	    color->u.HSVA[0], color->u.HSVA[1], color->u.HSVA[2], objtype);
     }
 }
@@ -281,7 +279,7 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	return;  /* skip transparent text */
 
     ps_set_color(job, &(job->obj->pencolor));
-    core_printf(job, "%.2f /%s set_font\n", para->fontsize, para->fontname);
+    gvdevice_printf(job, "%.2f /%s set_font\n", para->fontsize, para->fontname);
     str = ps_string(para->str,isLatin1);
     if (para->xshow) {
         switch (para->just) {
@@ -295,7 +293,7 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
             p.x -= para->width / 2;
             break;
         }
-        core_printf(job, "%g %g moveto\n%s\n[%s]\nxshow\n",
+        gvdevice_printf(job, "%g %g moveto\n%s\n[%s]\nxshow\n",
                 p.x, p.y, str, para->xshow);
     } else {
         switch (para->just) {
@@ -310,7 +308,7 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
             adj = -0.5;
             break;
         }
-        core_printf(job, "%g %g moveto %g %g %s alignedtext\n",
+        gvdevice_printf(job, "%g %g moveto %g %g %s alignedtext\n",
                 p.x, p.y, para->width, adj, str);
     }
 }
@@ -321,13 +319,13 @@ static void psgen_ellipse(GVJ_t * job, pointf * A, int filled)
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
-	core_printf(job, "%g %g %g %g ellipse_path fill\n",
+	gvdevice_printf(job, "%g %g %g %g ellipse_path fill\n",
 	    A[0].x, A[0].y, fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        core_printf(job, "%g %g %g %g ellipse_path stroke\n",
+        gvdevice_printf(job, "%g %g %g %g ellipse_path stroke\n",
 	    A[0].x, A[0].y, fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
     }
 }
@@ -340,22 +338,22 @@ psgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
-	core_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
+	gvdevice_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
 	for (j = 1; j < n; j += 3)
-	    core_printf(job, "%g %g %g %g %g %g curveto\n",
+	    gvdevice_printf(job, "%g %g %g %g %g %g curveto\n",
 		A[j].x, A[j].y, A[j + 1].x, A[j + 1].y, A[j + 2].x,
 		A[j + 2].y);
-	core_fputs(job, "closepath fill\n");
+	gvdevice_fputs(job, "closepath fill\n");
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        core_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
+        gvdevice_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
         for (j = 1; j < n; j += 3)
-	    core_printf(job, "%g %g %g %g %g %g curveto\n",
+	    gvdevice_printf(job, "%g %g %g %g %g %g curveto\n",
 		    A[j].x, A[j].y, A[j + 1].x, A[j + 1].y, A[j + 2].x,
 		    A[j + 2].y);
-        core_fputs(job, "stroke\n");
+        gvdevice_fputs(job, "stroke\n");
     }
 }
 
@@ -365,18 +363,18 @@ static void psgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
-	core_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
+	gvdevice_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
 	for (j = 1; j < n; j++)
-	    core_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
-	core_printf(job, "closepath fill\n");
+	    gvdevice_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
+	gvdevice_printf(job, "closepath fill\n");
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        core_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
+        gvdevice_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
         for (j = 1; j < n; j++)
-	    core_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
-        core_printf(job, "closepath stroke\n");
+	    gvdevice_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
+        gvdevice_printf(job, "closepath stroke\n");
     }
 }
 
@@ -387,18 +385,18 @@ static void psgen_polyline(GVJ_t * job, pointf * A, int n)
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        core_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
+        gvdevice_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
         for (j = 1; j < n; j++)
-	    core_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
-        core_fputs(job, "stroke\n");
+	    gvdevice_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
+        gvdevice_fputs(job, "stroke\n");
     }
 }
 
 static void psgen_comment(GVJ_t * job, char *str)
 {
-    core_fputs(job, "% ");
-    core_fputs(job, str);
-    core_fputs(job, "\n");
+    gvdevice_fputs(job, "% ");
+    gvdevice_fputs(job, str);
+    gvdevice_fputs(job, "\n");
 }
 
 static void psgen_library_shape(GVJ_t * job, char *name, pointf * A, int n, int filled)
@@ -407,20 +405,20 @@ static void psgen_library_shape(GVJ_t * job, char *name, pointf * A, int n, int 
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
-	core_fputs(job, "[ ");
+	gvdevice_fputs(job, "[ ");
 	for (j = 0; j < n; j++)
-	    core_printf(job, "%g %g ", A[j].x, A[j].y);
-	core_printf(job, "%g %g ", A[0].x, A[0].y);
-	core_printf(job, "]  %d true %s\n", n, name);
+	    gvdevice_printf(job, "%g %g ", A[j].x, A[j].y);
+	gvdevice_printf(job, "%g %g ", A[0].x, A[0].y);
+	gvdevice_printf(job, "]  %d true %s\n", n, name);
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        core_fputs(job, "[ ");
+        gvdevice_fputs(job, "[ ");
         for (j = 0; j < n; j++)
-	    core_printf(job, "%g %g ", A[j].x, A[j].y);
-	core_printf(job, "%g %g ", A[0].x, A[0].y);
-        core_printf(job, "]  %d false %s\n", n, name);
+	    gvdevice_printf(job, "%g %g ", A[j].x, A[j].y);
+	gvdevice_printf(job, "%g %g ", A[0].x, A[0].y);
+        gvdevice_printf(job, "]  %d false %s\n", n, name);
     }
 }
 

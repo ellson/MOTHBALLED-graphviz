@@ -36,9 +36,6 @@
 /* for n->name */
 #include "graph.h"
 
-extern void core_fputs(GVJ_t * job, char *s);
-extern void core_printf(GVJ_t * job, const char *format, ...);
-
 extern void core_loadimage_xdot(GVJ_t*, usershape_t*, boxf, boolean);
 extern void epsf_emit_body(usershape_t *us, FILE *of);
 extern shape_desc *find_user_shape(char *name);
@@ -58,19 +55,19 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean fil
     assert(us->name);
     assert(us->f);
 
-    core_fputs(job, "<image xlink:href=\"");
-    core_fputs(job, us->name);
+    gvdevice_fputs(job, "<image xlink:href=\"");
+    gvdevice_fputs(job, us->name);
     if (job->rotation) {
-        core_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+        gvdevice_printg (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
             b.UR.y - b.LL.y, b.UR.x - b.LL.x, b.LL.x, b.UR.y);
-        core_printf (job, " transform=\"rotate(%d %g %g)\"",
+        gvdevice_printg (job, " transform=\"rotate(%d %g %g)\"",
             job->rotation, b.LL.x, b.UR.y);
     }
     else {
-        core_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMinYMin meet\" x=\"%g\" y=\"%g\"",
+        gvdevice_printg (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMinYMin meet\" x=\"%g\" y=\"%g\"",
             b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, -b.UR.y);
     }
-    core_fputs(job, "/>\n");
+    gvdevice_fputs(job, "/>\n");
 }
 
 static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, boolean filled)
@@ -102,12 +99,12 @@ static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, boolean fi
 
     BF2B(bf, b);
 
-    core_printf(job, "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n %d %s\n",
+    gvdevice_printg(job, "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n %d %s\n",
             object_code, sub_type, line_style, thickness, pen_color,
             fill_color, depth, pen_style, area_fill, style_val, join_style,
             cap_style, radius, forward_arrow, backward_arrow, npoints,
             flipped, us->name);
-    core_printf(job," %d %d %d %d %d %d %d %d %d %d\n",
+    gvdevice_printg(job," %d %d %d %d %d %d %d %d %d %d\n",
 	    b.LL.x, b.LL.y,
 	    b.LL.x, b.UR.y,
 	    b.UR.x, b.UR.y,

@@ -24,12 +24,23 @@
 #include "config.h"
 #endif
 
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #ifdef WIN32
 #include <fcntl.h>
 #include <io.h>
+#include "compat.h"
 #endif
-#include <stdlib.h>
-#include <string.h>
+
+#ifdef HAVE_LIBZ
+#include <zlib.h>
+#endif
 
 #include "const.h"
 #include "gvplugin_device.h"
@@ -37,50 +48,45 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 
-#if 0
-/* This code is not used - see gvrender_select() in gvrender.c */
+/* gvdevice selection is done in gvrender_select() in gvrender.c */
 
-int gvdevice_select(GVC_t * gvc, char *str)
+void gvdevice_fputs(GVJ_t * job, char *s)
 {
-    gvplugin_available_t *plugin;
-    gvplugin_installed_t *typeptr;
-#ifdef WITH_CODEGENS
-    codegen_info_t *cg_info;
-#endif
+    int len, rc;
 
-    plugin = gvplugin_load(gvc, API_device, str);
-    if (plugin) {
-#ifdef WITH_CODEGENS
-	if (strcmp(plugin->packagename, "cg") == 0) {
-	    cg_info = (codegen_info_t *) (plugin->typeptr);
-	    gvc->codegen = cg_info->cg;
-	    return cg_info->id;
-	} else {
-#endif
-	    typeptr = plugin->typeptr;
-	    gvc->device.engine = (gvdevice_engine_t *) (typeptr->engine);
-	    gvc->device.features =
-		(gvdevice_features_t *) (typeptr->features);
-	    gvc->device.id = typeptr->id;
-	    return GVRENDER_PLUGIN;
-#ifdef WITH_CODEGENS
-	}
+    len = strlen(s);
+    if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
+#ifdef HAVE_LIBZ
+        gzwrite((gzFile *) (job->output_file), s, (unsigned) len);
 #endif
     }
-    return NO_SUPPORT;
+    else
+        rc = fwrite(s, sizeof(char), (unsigned) len, job->output_file);
 }
 
-int gvdevice_features(GVC_t * gvc)
+/* gvdevice_printf:
+ * Note that this function is unsafe due to the fixed buffer size.
+ * It should only be used when the caller is sure the input will not
+ * overflow the buffer. In particular, it should be avoided for
+ * input coming from users. Also, if vsnprintf is available, the
+ * code should check for return values to use it safely.
+ */
+void gvdevice_printf(GVJ_t * job, const char *format, ...)
 {
-    gvdevice_engine_t *gvde = gvc->device.engine;
-    int features = 0;
+    char buf[BUFSIZ];
+    va_list argp;
 
-    if (gvde)
-	features = gvc->device.features->flags;
-    return features;
+    va_start(argp, format);
+#ifdef HAVE_VSNPRINTF
+    (void) vsnprintf(buf, sizeof(buf), format, argp);
+#else
+    (void) vsprintf(buf, format, argp);
+#endif
+    va_end(argp);
+
+    gvdevice_fputs(job, buf);
 }
 
-#endif
 
 static void auto_output_filename(GVJ_t *job)
 {
@@ -157,6 +163,23 @@ void gvdevice_initialize(GVJ_t * job)
                 setmode(fileno(job->output_file), O_BINARY);
 #endif
 #endif
+
+            if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
+#if HAVE_LIBZ
+		int fd;
+
+		/* open dup so can gzclose independent of FILE close */
+		fd = dup(fileno(job->output_file));
+		job->output_file = (FILE *) (gzdopen(fd, "wb"));
+		if (!job->output_file) {
+		    (job->common->errorfn) ("Error initializing compression on output file\n");
+		    exit(1);
+		}
+#else
+		(job->common->errorfn) ("No libz support.\n");
+		exit(1);
+#endif
+	    }
         }
     }
 }
@@ -167,7 +190,10 @@ void gvdevice_format(GVJ_t * job)
 
     if (gvde && gvde->format)
 	gvde->format(job);
-    if (job->output_file && ! job->external_context && job->output_lang != TK)
+    if (job->output_file
+      && ! job->external_context
+      && job->output_lang != TK
+      && ! job->flags & GVDEVICE_COMPRESSED_FORMAT)
 	fflush(job->output_file);
 }
 
@@ -195,6 +221,15 @@ void gvdevice_finalize(GVJ_t * firstjob)
     if (! finalized_p) {
         /* if the device has no finalization then it uses file output */
         for (job = firstjob; job; job = job->next_active) {
+	    if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
+#ifdef HAVE_LIBZ
+		gzclose((gzFile *) (job->output_file));
+		job->output_file = NULL;
+#else
+		(job->common->errorfn) ("No libz support\n");
+		exit(1);
+#endif
+	    }
 	    if (job->output_filename
 	      && job->output_file != stdout 
 	      && ! job->external_context) {

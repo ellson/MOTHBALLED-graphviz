@@ -215,8 +215,6 @@ extern "C" {
 	pointf *headendurl_map_p;
     };
 
-typedef enum {COMPRESSION_NONE, COMPRESSION_ZLIB} compression_t;
-
 /* Note on units:
  *     points  - a physical distance (1/72 inch) unaffected by zoom or dpi.
  *     graph units - related to physical distance by zoom.  Equals points at zoom=1
@@ -241,8 +239,6 @@ typedef enum {COMPRESSION_NONE, COMPRESSION_ZLIB} compression_t;
 	char *output_langname;
 	FILE *output_file;
 	int output_lang;
-
-	compression_t compression;
 
 	gvplugin_active_render_t render;
 	gvplugin_active_device_t device;

@@ -13,7 +13,7 @@ AM_CPPFLAGS = \
 	$(INCLTDL) -I$(top_srcdir)/libltdl \
 	-DGVLIBDIR=\"$(pkglibdir)\"
 
-LIBS = $(LIBLTDL) $(SOCKET_LIBS)
+LIBS = $(LIBLTDL) $(SOCKET_LIBS) $(Z_LIBS)
 
 pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h \
 	gvcommon.h gvplugin_render.h gvplugin_layout.h \

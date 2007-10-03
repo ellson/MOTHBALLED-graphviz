@@ -287,7 +287,7 @@ test_lua: libgv_lua.la
 test_ocaml: libgv_ocaml.la
 	-(mkdir -p test_ocaml; cd test_ocaml; \
 		ln -fs ../.libs/libgv_ocaml.so libgv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.ocaml .; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.ml ../$(srcdir)/*.mli .; \
 		ocamlc *.ocaml; \
 		LD_LIBRARY_PATH=. ocaml test)
 

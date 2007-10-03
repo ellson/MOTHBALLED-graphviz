@@ -2730,6 +2730,8 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	Output_lang = job->output_lang;
 #endif
 
+	init_job_flags(job, g);
+
 	/* if we already have an active job list and the device doesn't support mutiple output files, or we are about to write to a different output device */
         firstjob = gvc->active_jobs;
         if (firstjob
@@ -2755,7 +2757,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	job->next_active = NULL;      /* terminate active list */
 	job->callbacks = &gvdevice_callbacks;
 
-	init_job_flags(job, g);
 	init_job_pad(job);
 	init_job_margin(job);
 	init_job_dpi(job, g);

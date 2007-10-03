@@ -69,8 +69,10 @@ extern "C" {
 
 /* device */
 
+    extern void gvdevice_fputs(GVJ_t * job, char *s);
+    extern void gvdevice_printf(GVJ_t * job, const char *format, ...);
+
     extern void gvdevice_initialize(GVJ_t * job);
-    extern void gvdevice_prepare(GVJ_t * job);
     extern void gvdevice_format(GVJ_t * job);
     extern void gvdevice_finalize(GVJ_t * job);
 
