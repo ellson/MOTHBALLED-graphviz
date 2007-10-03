@@ -59,10 +59,12 @@ argb2rgba ( unsigned int width, unsigned int height, unsigned char *data)
     }
 }
 
+extern size_t gvdevice_write(GVJ_t * job, char *s, unsigned int len);
+
 static gboolean
 writer ( const gchar *buf, gsize count, GError **error, gpointer data)
 {
-    if (count == fwrite(buf, 1, count, (FILE *)data))
+    if (count == gvdevice_write((GVJ_t *)data, (char*)buf, count))
         return TRUE;
     return FALSE;
 }
@@ -104,7 +106,7 @@ static void gdk_pixbuf_format(GVJ_t * job)
                 NULL                    // destroy_fn_data
                );
 
-    gdk_pixbuf_save_to_callback(pixbuf, writer, job->output_file, format_str, NULL, NULL);
+    gdk_pixbuf_save_to_callback(pixbuf, writer, job, format_str, NULL, NULL);
 
     gdk_pixbuf_unref(pixbuf);
 }
