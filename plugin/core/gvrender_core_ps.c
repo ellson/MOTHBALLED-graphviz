@@ -18,18 +18,8 @@
 #include "config.h"
 #endif
 
-#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef HAVE_LIBZ
-#include <zlib.h>
-#endif
-
-#ifdef WIN32
-#include <io.h>
-#include "compat.h"
-#endif
 
 #include "gvplugin_render.h"
 #include "graph.h"

@@ -20,13 +20,7 @@
 
 #include <stdlib.h>
 #include <sys/types.h>
-#ifdef WIN32
-#include <io.h>
-#endif
 #include <sys/stat.h>
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 #if HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif
@@ -58,13 +52,13 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean fil
     gvdevice_fputs(job, "<image xlink:href=\"");
     gvdevice_fputs(job, us->name);
     if (job->rotation) {
-        gvdevice_printg (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+        gvdevice_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
             b.UR.y - b.LL.y, b.UR.x - b.LL.x, b.LL.x, b.UR.y);
-        gvdevice_printg (job, " transform=\"rotate(%d %g %g)\"",
+        gvdevice_printf (job, " transform=\"rotate(%d %g %g)\"",
             job->rotation, b.LL.x, b.UR.y);
     }
     else {
-        gvdevice_printg (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMinYMin meet\" x=\"%g\" y=\"%g\"",
+        gvdevice_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMinYMin meet\" x=\"%g\" y=\"%g\"",
             b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, -b.UR.y);
     }
     gvdevice_fputs(job, "/>\n");
@@ -99,12 +93,12 @@ static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, boolean fi
 
     BF2B(bf, b);
 
-    gvdevice_printg(job, "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n %d %s\n",
+    gvdevice_printf(job, "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n %d %s\n",
             object_code, sub_type, line_style, thickness, pen_color,
             fill_color, depth, pen_style, area_fill, style_val, join_style,
             cap_style, radius, forward_arrow, backward_arrow, npoints,
             flipped, us->name);
-    gvdevice_printg(job," %d %d %d %d %d %d %d %d %d %d\n",
+    gvdevice_printf(job," %d %d %d %d %d %d %d %d %d %d\n",
 	    b.LL.x, b.LL.y,
 	    b.LL.x, b.UR.y,
 	    b.UR.x, b.UR.y,

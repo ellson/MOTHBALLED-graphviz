@@ -22,13 +22,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#ifdef HAVE_LIBZ
-#include <zlib.h>
-#ifdef WIN32
-#include <io.h>
-#endif
-#endif
-
 #include "gvplugin_loadimage.h"
 
 #ifdef HAVE_LIBGD

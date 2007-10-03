@@ -21,6 +21,9 @@
 #include "gvplugin.h"
 #include "gvcjob.h"
 
+extern void gvdevice_fputs(GVJ_t * job, char *s);
+extern void gvdevice_printf(GVJ_t * job, const char *format, ...);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
