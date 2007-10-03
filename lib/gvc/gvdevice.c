@@ -200,21 +200,20 @@ void gvdevice_format(GVJ_t * job)
 	fflush(job->output_file);
 }
 
-void gvdevice_finalize(GVJ_t * firstjob)
+void gvdevice_finalize(GVJ_t * job)
 {
-    gvdevice_engine_t *gvde = firstjob->device.engine;
-    GVJ_t *job;
+    gvdevice_engine_t *gvde = job->device.engine;
     boolean finalized_p = FALSE;
 
     if (gvde) {
 	if (gvde->finalize) {
-	    gvde->finalize(firstjob);
+	    gvde->finalize(job);
 	    finalized_p = TRUE;
 	}
     }
 #ifdef WITH_CODEGENS
     else {
-	codegen_t *cg = firstjob->codegen;
+	codegen_t *cg = job->codegen;
 
 	if (cg && cg->reset)
 	    cg->reset();
@@ -223,25 +222,23 @@ void gvdevice_finalize(GVJ_t * firstjob)
 
     if (! finalized_p) {
         /* if the device has no finalization then it uses file output */
-        for (job = firstjob; job; job = job->next_active) {
-	    if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
+	if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
-		gzclose((gzFile *) (job->output_file));
-		job->output_file = NULL;
+	    gzclose((gzFile *) (job->output_file));
+	    job->output_file = NULL;
 #else
-		(job->common->errorfn) ("No libz support\n");
-		exit(1);
+	    (job->common->errorfn) ("No libz support\n");
+	    exit(1);
 #endif
+	}
+	if (job->output_filename
+	  && job->output_file != stdout 
+	  && ! job->external_context) {
+	    if (job->output_file) {
+	        fclose(job->output_file);
+	        job->output_file = NULL;
 	    }
-	    if (job->output_filename
-	      && job->output_file != stdout 
-	      && ! job->external_context) {
-	        if (job->output_file) {
-	            fclose(job->output_file);
-	            job->output_file = NULL;
-	        }
-                job->output_filename = NULL;
-	    }
-        }
+            job->output_filename = NULL;
+	}
     }
 }

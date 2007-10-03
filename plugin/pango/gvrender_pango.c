@@ -142,6 +142,8 @@ static void cairogen_begin_page(GVJ_t * job)
         cairo_save(cr);
     }
     else {
+	if (cr)
+	    cairo_destroy(cr);
         switch (job->render.id) {
         case FORMAT_PS:
 	    surface = cairo_ps_surface_create_for_stream (writer,
@@ -160,7 +162,6 @@ static void cairogen_begin_page(GVJ_t * job)
         default:
 	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 			job->width, job->height);
-	    job->imagedata = cairo_image_surface_get_data(surface);	
 	    break;
         }
         cr = cairo_create(surface);
@@ -193,18 +194,18 @@ static void cairogen_end_page(GVJ_t * job)
 	cairo_show_page(cr);
 	break;
 
-    case FORMAT_CAIRO:  /* formatting already done by gvdevice_format() */
+    case FORMAT_CAIRO:
     default:
+        surface = cairo_get_target(cr);
+	job->imagedata = cairo_image_surface_get_data(surface);	
 	break;
+       	/* formatting will be done by gvdevice_format() */
     }
 
-    if (job->external_context) {
+    if (job->external_context)
 	cairo_restore(cr);
-    }
-    else {
-	cairo_destroy(cr);
+    else
 	job->context = NULL;
-    }
 
 #if 0
 #if defined HAVE_FENV_H && defined HAVE_FESETENV && defined HAVE_FEGETENV && defined(HAVE_FEENABLEEXCEPT)
