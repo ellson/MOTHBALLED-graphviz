@@ -48,20 +48,23 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 
+
+size_t gvdevice_write (GVJ_t * job, char *s, unsigned int len)
+{
+    if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
+#ifdef HAVE_LIBZ
+	return gzwrite((gzFile *) (job->output_file), s, len);
+#endif
+    }
+    else
+	return fwrite(s, sizeof(char), len, job->output_file);
+}
+
 /* gvdevice selection is done in gvrender_select() in gvrender.c */
 
 void gvdevice_fputs(GVJ_t * job, char *s)
 {
-    int len, rc;
-
-    len = strlen(s);
-    if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
-#ifdef HAVE_LIBZ
-        gzwrite((gzFile *) (job->output_file), s, (unsigned) len);
-#endif
-    }
-    else
-        rc = fwrite(s, sizeof(char), (unsigned) len, job->output_file);
+    gvdevice_write (job, s, strlen(s));
 }
 
 /* gvdevice_printf:
@@ -74,19 +77,19 @@ void gvdevice_fputs(GVJ_t * job, char *s)
 void gvdevice_printf(GVJ_t * job, const char *format, ...)
 {
     char buf[BUFSIZ];
+    unsigned int len;
     va_list argp;
 
     va_start(argp, format);
 #ifdef HAVE_VSNPRINTF
-    (void) vsnprintf(buf, sizeof(buf), format, argp);
+    len = vsnprintf(buf, sizeof(buf), format, argp);
 #else
-    (void) vsprintf(buf, format, argp);
+    len = vsprintf(buf, format, argp);
 #endif
     va_end(argp);
 
-    gvdevice_fputs(job, buf);
+    gvdevice_write(job, buf, len);
 }
-
 
 static void auto_output_filename(GVJ_t *job)
 {
@@ -139,7 +142,7 @@ void gvdevice_initialize(GVJ_t * job)
 	gvde->initialize(job);
     }
     else {
-        /* if the device has now initialization then it uses file output */
+        /* if the device has no initialization then it uses file output */
         if (!job->output_file) {        /* if not yet opened */
             if (gvc->common.auto_outfile_names)
                  auto_output_filename(job);
