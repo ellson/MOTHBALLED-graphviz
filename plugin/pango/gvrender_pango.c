@@ -107,6 +107,8 @@ static fenv_t fenv; /* FIXME - not thread safe */
 #endif
 #endif
 
+extern size_t gvdevice_write(GVJ_t * job, char *s, unsigned int len);
+
 static void cairogen_set_color(cairo_t * cr, gvcolor_t * color)
 {
     cairo_set_source_rgba(cr, color->u.RGBA[0], color->u.RGBA[1],
@@ -116,7 +118,7 @@ static void cairogen_set_color(cairo_t * cr, gvcolor_t * color)
 static cairo_status_t
 writer (void *closure, const unsigned char *data, unsigned int length)
 {
-    if (length == fwrite(data, 1, length, (FILE *)closure))
+    if (length == gvdevice_write((GVJ_t *)closure, data, length))
 	return CAIRO_STATUS_SUCCESS;
     return CAIRO_STATUS_WRITE_ERROR;
 }
@@ -147,15 +149,15 @@ static void cairogen_begin_page(GVJ_t * job)
         switch (job->render.id) {
         case FORMAT_PS:
 	    surface = cairo_ps_surface_create_for_stream (writer,
-			job->output_file, job->width, job->height);
+			job, job->width, job->height);
 	    break;
         case FORMAT_PDF:
 	    surface = cairo_pdf_surface_create_for_stream (writer,
-			job->output_file, job->width, job->height);
+			job, job->width, job->height);
 	    break;
         case FORMAT_SVG:
 	    surface = cairo_svg_surface_create_for_stream (writer,
-			job->output_file, job->width, job->height);
+			job, job->width, job->height);
 	    break;
         case FORMAT_CAIRO:
         case FORMAT_PNG:
@@ -184,7 +186,7 @@ static void cairogen_end_page(GVJ_t * job)
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
     case FORMAT_PNG:
         surface = cairo_get_target(cr);
-	cairo_surface_write_to_png_stream(surface, writer, job->output_file);
+	cairo_surface_write_to_png_stream(surface, writer, job);
 	break;
 #endif
 
