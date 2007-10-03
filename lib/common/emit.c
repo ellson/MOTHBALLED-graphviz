@@ -22,11 +22,6 @@
 #include "config.h"
 #endif
 
-#ifdef WIN32
-#include <fcntl.h>
-#include <io.h>
-#endif
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "render.h"
@@ -2220,7 +2215,6 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	    setColorScheme (agget (g, "colorscheme"));
     	    setup_page(job, g);
 	    gvrender_begin_page(job);
-	    gvdevice_prepare(job);
 	    gvrender_set_pencolor(job, DEFAULT_COLOR);
 	    gvrender_set_fillcolor(job, DEFAULT_FILL);
 	    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
@@ -2247,8 +2241,8 @@ void emit_graph(GVJ_t * job, graph_t * g)
 		gvrender_end_anchor(job);
 //	    if (boxf_overlap(job->clip, job->pageBox))
 	        emit_view(job,g,flags);
-	    gvdevice_format(job);
 	    gvrender_end_page(job);
+	    gvdevice_format(job);
 	} 
 
 	if (job->numLayers > 1)
@@ -2691,44 +2685,6 @@ static void init_bb(graph_t *g)
 		        init_bb_node(g, n);
 }
 
-static void auto_output_filename(GVJ_t *job)
-{
-    static char *buf;
-    static int bufsz;
-    char gidx[100];  /* large enough for '.' plus any integer */
-    char *fn, *p;
-    int len;
-
-    if (job->graph_index)
-	sprintf(gidx, ".%d", job->graph_index + 1);
-    else
-	gidx[0] = '\0';
-    if (!(fn = job->input_filename))
-	fn = "noname.dot";
-    len = strlen(fn)			/* typically "something.dot" */
-	+ strlen(gidx) 			/* "", ".2", ".3", ".4", ... */
-	+ 1 				/* "." */
-	+ strlen(job->output_langname)  /* e.g. "png" */
-	+ 1; 				/* null terminaor */
-    if (bufsz < len) {
-	    bufsz = len + 10;
-	    buf = realloc(buf, bufsz * sizeof(char));
-    }
-    strcpy(buf, fn);
-    strcat(buf, gidx);
-    strcat(buf, ".");
-    if ((p = strchr(job->output_langname, ':'))) {
-        strcat(buf, p+1);
-	strcat(buf, ".");
-	strncat(buf, job->output_langname, (p - job->output_langname));
-    }
-    else {
-        strcat(buf, job->output_langname);
-    }
-
-    job->output_filename = buf;
-}
-
 extern gvevent_key_binding_t gvevent_key_binding[];
 extern int gvevent_key_binding_size;
 extern gvdevice_callbacks_t gvdevice_callbacks;
@@ -2793,31 +2749,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	}
 	else {
 	    gvc->active_jobs = job;   /* first job of new list */
-	    gvdevice_initialize(job);    /* FIXME? - semantics are unclear */
-
-            if (!job->output_file) {        /* if not yet opened */
-	        if (gvc->common.auto_outfile_names)
-		    auto_output_filename(job);
-                if (job->output_filename) {
-		    job->output_file = fopen(job->output_filename, "w");
-		    if (job->output_file == NULL) {
-		        perror(job->output_filename);
-		        exit(1);
-		    }
-	        }
-                else
-                    job->output_file = stdout;
-#ifdef WITH_CODEGENS
-	        Output_file = job->output_file;
-#endif
-
-#ifdef HAVE_SETMODE
-#ifdef O_BINARY
-	        if (job->flags & GVDEVICE_BINARY_FORMAT)
-		    setmode(fileno(job->output_file), O_BINARY);
-#endif
-#endif
-            }
+	    gvdevice_initialize(job); /* open device or file output */
 	    gvrender_begin_job(job);
 	}
 	job->next_active = NULL;      /* terminate active list */
@@ -2838,10 +2770,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	    job->common->show_boxes = Show_boxes; 
 #endif
 	    emit_graph(job, g); /* FIXME? - should this be a special case of finalize() ? */
-
-	    /* Flush is necessary because we may be writing to a pipe. */
-	    if (job->output_file && ! job->external_context && job->output_lang != TK)
-	        fflush(job->output_file);
 	}
 
         /* the last job, after all input graphs are processed,
