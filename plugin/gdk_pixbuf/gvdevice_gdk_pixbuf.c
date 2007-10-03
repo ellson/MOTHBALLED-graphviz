@@ -110,10 +110,9 @@ static void gdk_pixbuf_format(GVJ_t * job)
 }
 
 static gvdevice_engine_t gdk_pixbuf_engine = {
-    NULL,
-    NULL,
+    NULL,		/* gdk_pixbuf_initialize */
     gdk_pixbuf_format,
-    NULL,
+    NULL,		/* gdk_pixbuf_finalize */
 };
 
 static gvdevice_features_t device_features_gdk_pixbuf = {

@@ -84,10 +84,9 @@ static void devil_format(GVJ_t * job)
 }
 
 static gvdevice_engine_t devil_engine = {
-    NULL,
-    NULL,
+    NULL,		/* devil_initialize */
     devil_format,
-    NULL,
+    NULL,		/* devil_finalize */
 };
 
 static gvdevice_features_t device_features_devil = {

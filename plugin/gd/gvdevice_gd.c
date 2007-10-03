@@ -123,10 +123,9 @@ static void gd_format(GVJ_t * job)
 }
 
 static gvdevice_engine_t gd_engine = {
-    NULL,
-    NULL,
+    NULL,		/* gd_initialize */
     gd_format,
-    NULL,
+    NULL,		/* gd_finalize */
 };
 
 static gvdevice_features_t device_features_gd = {
