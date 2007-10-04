@@ -289,6 +289,7 @@ static gvrender_features_t render_features_ming = {
 
 static gvdevice_features_t device_features_ming = {
     GVDEVICE_DOES_PAGES
+	| GVDEVICE_NO_WRITER
 	| GVDEVICE_DOES_TRUECOLOR, /* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */

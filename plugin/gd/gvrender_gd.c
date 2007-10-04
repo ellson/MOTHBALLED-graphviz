@@ -657,6 +657,14 @@ static gvdevice_features_t device_features_gd_tc = {
     {96.,96.},			/* default dpi */
 };
 
+static gvdevice_features_t device_features_gd_tc_no_writer = {
+    GVDEVICE_DOES_TRUECOLOR
+      | GVDEVICE_NO_WRITER,	/* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {96.,96.},			/* default dpi */
+};
+
 #endif
 
 gvplugin_installed_t gvrender_gd_types[] = {
@@ -683,8 +691,8 @@ gvplugin_installed_t gvdevice_gd_types2[] = {
     {FORMAT_PNG, "png:gd", 1, NULL, &device_features_gd_tc},
 #endif
 
-    {FORMAT_GD, "gd:gd", 1, NULL, &device_features_gd_tc},
-    {FORMAT_GD2, "gd2:gd", 1, NULL, &device_features_gd_tc},
+    {FORMAT_GD, "gd:gd", 1, NULL, &device_features_gd_tc_no_writer},
+    {FORMAT_GD2, "gd2:gd", 1, NULL, &device_features_gd_tc_no_writer},
 
 #if 0
 /* libgd has no support for xbm as output */

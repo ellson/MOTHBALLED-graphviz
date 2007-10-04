@@ -189,6 +189,15 @@ static gvdevice_features_t device_features_gd = {
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},                  /* dpi */
 };
+
+static gvdevice_features_t device_features_gd_no_writer = {
+    GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_NO_WRITER
+      | GVDEVICE_DOES_TRUECOLOR,/* flags */
+    {0.,0.},                    /* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {96.,96.},                  /* dpi */
+};
 #endif
 #endif
 
@@ -211,8 +220,8 @@ gvplugin_installed_t gvdevice_gd_types[] = {
     {FORMAT_PNG, "png:cairo", 5, &gd_engine, &device_features_gd},
 #endif
 
-    {FORMAT_GD, "gd:cairo", 5, &gd_engine, &device_features_gd},
-    {FORMAT_GD2, "gd2:cairo", 5, &gd_engine, &device_features_gd},
+    {FORMAT_GD, "gd:cairo", 5, &gd_engine, &device_features_gd_no_writer},
+    {FORMAT_GD2, "gd2:cairo", 5, &gd_engine, &device_features_gd_no_writer},
 
 #if 0
 /* libgd only supports reading of xpm files */

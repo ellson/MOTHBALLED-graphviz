@@ -107,13 +107,13 @@ static fenv_t fenv; /* FIXME - not thread safe */
 #endif
 #endif
 
-extern size_t gvdevice_write(GVJ_t * job, char *s, unsigned int len);
-
 static void cairogen_set_color(cairo_t * cr, gvcolor_t * color)
 {
     cairo_set_source_rgba(cr, color->u.RGBA[0], color->u.RGBA[1],
                         color->u.RGBA[2], color->u.RGBA[3]);
 }
+
+extern size_t gvdevice_write(GVJ_t * job, char *s, unsigned int len);
 
 static cairo_status_t
 writer (void *closure, const unsigned char *data, unsigned int length)
