@@ -34,6 +34,32 @@ typedef enum {
 	FORMAT_XBM,
 } format_type;
 
+extern size_t gvdevice_write(GVJ_t * job, char * s, unsigned int len);
+
+#if 0
+static int gd_sink (void *context, const char *buffer, int len)
+{
+    if (len == gvdevice_write((GVJ_t *)context, (char *)buffer, (unsigned int)len))
+	return 0;
+    return -1;
+}
+#endif
+
+#if 1
+static int gd_putBuf (gdIOCtx *context, const void *buffer, int len)
+{
+    return gvdevice_write((GVJ_t *)(context->tell), (char *)buffer, (unsigned int)len);
+}
+
+/* used by gif output */
+static void gd_putC (gdIOCtx *context, int C)
+{
+    char c = C;
+
+    gvdevice_write((GVJ_t *)(context->tell), &c, 1);
+}
+#endif
+
 static void gd_format(GVJ_t * job)
 {
     gdImagePtr im;
@@ -41,6 +67,21 @@ static void gd_format(GVJ_t * job)
     unsigned int *data = (unsigned int*)(job->imagedata);
     unsigned int width = job->width;
     unsigned int height = job->height;
+
+#if 0
+    gdSink sink;
+
+    sink.sink = gd_sink;
+    sink.context = job;
+#endif
+
+#if 1
+    gdIOCtx ctx;
+
+    ctx.putBuf = gd_putBuf;
+    ctx.putC = gd_putC;
+    ctx.tell = (void*)job;    /* hide *job here */
+#endif
 
     im = gdImageCreateTrueColor(width, height);
     for (y = 0; y < height; y++) {
@@ -60,7 +101,10 @@ static void gd_format(GVJ_t * job)
 #ifdef HAVE_GD_GIF
     case FORMAT_GIF:
 	gdImageTrueColorToPalette(im, 0, 256);
+#if 0
 	gdImageGif(im, job->output_file);
+#endif
+	gdImageGifCtx(im, &ctx);
         break;
 #endif
 
@@ -76,13 +120,20 @@ static void gd_format(GVJ_t * job)
 	 * library documentation for more details.
 	 */ 
 #define JPEG_QUALITY -1
+#if 0
 	gdImageJpeg(im, job->output_file, JPEG_QUALITY);
+#endif
+	gdImageJpegCtx(im, &ctx, JPEG_QUALITY);
 	break;
 #endif
 
 #ifdef HAVE_GD_PNG
     case FORMAT_PNG:
+#if 0
 	gdImagePng(im, job->output_file);
+	gdImagePngToSink(im, &sink);
+#endif
+	gdImagePngCtx(im, &ctx);
         break;
 #endif
 
@@ -102,7 +153,10 @@ static void gd_format(GVJ_t * job)
 	{
 	    /* Use black for the foreground color for the B&W wbmp image. */
             int black = gdImageColorResolveAlpha(im, 0, 0, 0, gdAlphaOpaque);
+#if 0
 	    gdImageWBMP(im, black, job->output_file);
+#endif
+	    gdImageWBMPCtx(im, black, &ctx);
 	}
 	break;
 #endif

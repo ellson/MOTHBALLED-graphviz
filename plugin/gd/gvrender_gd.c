@@ -145,9 +145,50 @@ static void gdgen_begin_page(GVJ_t * job)
     gdImageAlphaBlending(im, TRUE);
 }
 
+extern size_t gvdevice_write(GVJ_t * job, char * s, unsigned int len);
+
+#if 0
+static int gd_sink (void *context, const char *buffer, int len)
+{
+    if (len == gvdevice_write((GVJ_t *)context, (char *)buffer, (unsigned int)len))
+	return 0;
+    return -1;
+}
+#endif
+
+#if 1
+static int gd_putBuf (gdIOCtx *context, const void *buffer, int len)
+{
+    return gvdevice_write((GVJ_t *)(context->tell), (char *)buffer, (unsigned int)len);
+}
+
+/* used by gif output */
+static void gd_putC (gdIOCtx *context, int C)
+{
+    char c = C;
+
+    gvdevice_write((GVJ_t *)(context->tell), &c, 1);
+}
+#endif
+
 static void gdgen_end_page(GVJ_t * job)
 {
     gdImagePtr im = (gdImagePtr) job->context;
+
+#if 0
+    gdSink sink;
+
+    sink.sink = gd_sink;
+    sink.context = job;
+#endif
+
+#if 1
+    gdIOCtx ctx;
+
+    ctx.putBuf = gd_putBuf;
+    ctx.putC = gd_putC;
+    ctx.tell = (void*)job;    /* hide *job here */
+#endif
 
     if (!im)
 	return;
@@ -165,7 +206,10 @@ static void gdgen_end_page(GVJ_t * job)
 	case FORMAT_GIF:
 #ifdef HAVE_GD_GIF
 	    gdImageTrueColorToPalette(im, 0, 256);
+#if 0
 	    gdImageGif(im, job->output_file);
+#endif
+	    gdImageGifCtx(im, &ctx);
 #endif
 	    break;
 	case FORMAT_JPEG:
@@ -179,12 +223,20 @@ static void gdgen_end_page(GVJ_t * job)
 	     * be near optimal for many applications).  See the IJG JPEG
 	     * library documentation for more details.  */
 #define JPEG_QUALITY -1
+#if 0
 	    gdImageJpeg(im, job->output_file, JPEG_QUALITY);
 #endif
+	    gdImageJpegCtx(im, &ctx, JPEG_QUALITY);
+#endif
+
 	    break;
 	case FORMAT_PNG:
 #ifdef HAVE_GD_PNG
+#if 0
 	    gdImagePng(im, job->output_file);
+	    gdImagePngToSink(im, &sink);
+#endif
+	    gdImagePngCtx(im, &ctx);
 #endif
 	    break;
 
@@ -193,7 +245,10 @@ static void gdgen_end_page(GVJ_t * job)
 	    {
 	        /* Use black for the foreground color for the B&W wbmp image. */
 		int black = gdImageColorResolveAlpha(im, 0, 0, 0, gdAlphaOpaque);
-	        gdImageWBMP(im, black, job->output_file);
+#if 0
+		gdImageWBMP(im, black, job->output_file);
+#endif
+		gdImageWBMPCtx(im, black, &ctx);
 	    }
 	    break;
 #endif
@@ -205,8 +260,7 @@ static void gdgen_end_page(GVJ_t * job)
 #define GD2_CHUNKSIZE 128
 #define GD2_RAW 1
 #define GD2_COMPRESSED 2
-	    gdImageGd2(im, job->output_file, GD2_CHUNKSIZE,
-		       GD2_COMPRESSED);
+	    gdImageGd2(im, job->output_file, GD2_CHUNKSIZE, GD2_COMPRESSED);
 	    break;
 	case FORMAT_XBM:
 #if 0
