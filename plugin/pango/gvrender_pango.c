@@ -118,7 +118,7 @@ extern size_t gvdevice_write(GVJ_t * job, char *s, unsigned int len);
 static cairo_status_t
 writer (void *closure, const unsigned char *data, unsigned int length)
 {
-    if (length == gvdevice_write((GVJ_t *)closure, data, length))
+    if (length == gvdevice_write((GVJ_t *)closure, (char*)data, length))
 	return CAIRO_STATUS_SUCCESS;
     return CAIRO_STATUS_WRITE_ERROR;
 }
