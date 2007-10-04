@@ -272,9 +272,9 @@ static void vrml_end_node(GVJ_t *job)
 {
     if (im) {
 	gdImagePng(im, PNGfile);
+	fclose(PNGfile);
 	gdImageDestroy(im);
 	im = NULL;
-	fclose(PNGfile);
     }
 }
 

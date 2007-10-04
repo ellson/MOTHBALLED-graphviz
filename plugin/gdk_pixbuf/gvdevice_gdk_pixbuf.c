@@ -59,12 +59,12 @@ argb2rgba ( unsigned int width, unsigned int height, unsigned char *data)
     }
 }
 
-extern size_t gvdevice_write(GVJ_t * job, char *s, unsigned int len);
+extern size_t gvdevice_write(GVJ_t * job, const unsigned char *s, unsigned int len);
 
 static gboolean
 writer ( const gchar *buf, gsize count, GError **error, gpointer data)
 {
-    if (count == gvdevice_write((GVJ_t *)data, (char*)buf, count))
+    if (count == gvdevice_write((GVJ_t *)data, (const unsigned char*)buf, count))
         return TRUE;
     return FALSE;
 }

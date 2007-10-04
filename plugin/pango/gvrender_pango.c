@@ -113,12 +113,12 @@ static void cairogen_set_color(cairo_t * cr, gvcolor_t * color)
                         color->u.RGBA[2], color->u.RGBA[3]);
 }
 
-extern size_t gvdevice_write(GVJ_t * job, char *s, unsigned int len);
+extern size_t gvdevice_write(GVJ_t * job, const unsigned char *s, unsigned int len);
 
 static cairo_status_t
 writer (void *closure, const unsigned char *data, unsigned int length)
 {
-    if (length == gvdevice_write((GVJ_t *)closure, (char*)data, length))
+    if (length == gvdevice_write((GVJ_t *)closure, data, length))
 	return CAIRO_STATUS_SUCCESS;
     return CAIRO_STATUS_WRITE_ERROR;
 }

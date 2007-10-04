@@ -49,7 +49,7 @@
 #include "gvcproc.h"
 
 
-size_t gvdevice_write (GVJ_t * job, char *s, unsigned int len)
+size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 {
     if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
@@ -60,11 +60,9 @@ size_t gvdevice_write (GVJ_t * job, char *s, unsigned int len)
 	return fwrite(s, sizeof(char), len, job->output_file);
 }
 
-/* gvdevice selection is done in gvrender_select() in gvrender.c */
-
 void gvdevice_fputs(GVJ_t * job, char *s)
 {
-    gvdevice_write (job, s, strlen(s));
+    gvdevice_write (job, (unsigned char*)s, strlen(s));
 }
 
 /* gvdevice_printf:
@@ -76,15 +74,15 @@ void gvdevice_fputs(GVJ_t * job, char *s)
  */
 void gvdevice_printf(GVJ_t * job, const char *format, ...)
 {
-    char buf[BUFSIZ];
+    unsigned char buf[BUFSIZ];
     unsigned int len;
     va_list argp;
 
     va_start(argp, format);
 #ifdef HAVE_VSNPRINTF
-    len = vsnprintf(buf, sizeof(buf), format, argp);
+    len = vsnprintf((char *)buf, sizeof(buf), format, argp);
 #else
-    len = vsprintf(buf, format, argp);
+    len = vsprintf((char *)buf, format, argp);
 #endif
     va_end(argp);
 

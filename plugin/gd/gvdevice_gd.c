@@ -34,17 +34,17 @@ typedef enum {
 	FORMAT_XBM,
 } format_type;
 
-extern size_t gvdevice_write(GVJ_t * job, char * s, unsigned int len);
+extern size_t gvdevice_write(GVJ_t * job, const unsigned char * s, unsigned int len);
 
 int gvdevice_gd_putBuf (gdIOCtx *context, const void *buffer, int len)
 {
-    return gvdevice_write((GVJ_t *)(context->tell), (char *)buffer, (unsigned int)len);
+    return gvdevice_write((GVJ_t *)(context->tell), buffer, (unsigned int)len);
 }
 
 /* used by gif output */
 void gvdevice_gd_putC (gdIOCtx *context, int C)
 {
-    char c = C;
+    unsigned char c = C;
 
     gvdevice_write((GVJ_t *)(context->tell), &c, 1);
 }
