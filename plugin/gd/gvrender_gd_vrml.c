@@ -844,7 +844,8 @@ static gvrender_features_t render_features_vrml = {
 };
 
 static gvdevice_features_t device_features_vrml = {
-    GVDEVICE_BINARY_FORMAT,	/* flags */
+    GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_NO_WRITER,	/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {72.,72.},                  /* default dpi */
