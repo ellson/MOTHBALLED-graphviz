@@ -183,7 +183,6 @@ static void vml_begin_graph(GVJ_t * job)
 static void vml_end_graph(GVJ_t * job)
 {
     gvdevice_fputs(job, "</div>\n</body>\n");
-    core_fini_compression(job);
 }
 
 static void
@@ -423,6 +422,14 @@ gvdevice_features_t device_features_vml = {
     {96.,96.},			/* default dpi */
 };
 
+gvdevice_features_t device_features_vmlz = {
+    GVDEVICE_DOES_TRUECOLOR
+      | GVDEVICE_COMPRESSED_FORMAT,	/* flags */
+    {0.,0.},			/* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {96.,96.},			/* default dpi */
+};
+
 gvplugin_installed_t gvrender_vml_types[] = {
     {FORMAT_VML, "vml", 1, &vml_engine, &render_features_vml},
     {0, NULL, 0, NULL, NULL}
@@ -431,7 +438,7 @@ gvplugin_installed_t gvrender_vml_types[] = {
 gvplugin_installed_t gvdevice_vml_types[] = {
     {FORMAT_VML, "vml:vml", 1, NULL, &device_features_vml},
 #if HAVE_LIBZ
-    {FORMAT_VMLZ, "vmlz:vml", 1, NULL, &device_features_vml},
+    {FORMAT_VMLZ, "vmlz:vml", 1, NULL, &device_features_vmlz},
 #endif
     {0, NULL, 0, NULL, NULL}
 };
