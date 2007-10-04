@@ -91,6 +91,7 @@ static gvdevice_engine_t devil_engine = {
 
 static gvdevice_features_t device_features_devil = {
 	GVDEVICE_BINARY_FORMAT        
+          | GVDEVICE_NO_WRITER
           | GVDEVICE_DOES_TRUECOLOR,/* flags */
 	{0.,0.},                    /* default margin - points */
 	{0.,0.},                    /* default page width, height - points */
