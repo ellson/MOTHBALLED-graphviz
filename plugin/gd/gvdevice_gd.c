@@ -20,19 +20,8 @@
 
 #include "gvplugin_device.h"
 
-#ifdef HAVE_PANGOCAIRO
 #ifdef HAVE_LIBGD
 #include "gd.h"
-
-typedef enum {
-	FORMAT_GIF,
-	FORMAT_JPEG,
-	FORMAT_PNG,
-	FORMAT_WBMP,
-	FORMAT_GD,
-	FORMAT_GD2,
-	FORMAT_XBM,
-} format_type;
 
 extern size_t gvdevice_write(GVJ_t * job, const unsigned char * s, unsigned int len);
 
@@ -48,6 +37,17 @@ void gvdevice_gd_putC (gdIOCtx *context, int C)
 
     gvdevice_write((GVJ_t *)(context->tell), &c, 1);
 }
+
+#ifdef HAVE_PANGOCAIRO
+typedef enum {
+	FORMAT_GIF,
+	FORMAT_JPEG,
+	FORMAT_PNG,
+	FORMAT_WBMP,
+	FORMAT_GD,
+	FORMAT_GD2,
+	FORMAT_XBM,
+} format_type;
 
 static void gd_format(GVJ_t * job)
 {
@@ -168,8 +168,8 @@ static gvdevice_features_t device_features_gd_no_writer = {
 #endif
 
 gvplugin_installed_t gvdevice_gd_types[] = {
-#ifdef HAVE_PANGOCAIRO
 #ifdef HAVE_LIBGD
+#ifdef HAVE_PANGOCAIRO
 
 #ifdef HAVE_GD_GIF
     {FORMAT_GIF, "gif:cairo", 10, &gd_engine, &device_features_gd},
