@@ -48,18 +48,6 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 
-
-size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
-{
-    if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
-#ifdef HAVE_LIBZ
-	return gzwrite((gzFile *) (job->output_file), s, len);
-#endif
-    }
-    else
-	return fwrite(s, sizeof(char), len, job->output_file);
-}
-
 void gvdevice_fputs(GVJ_t * job, char *s)
 {
     gvdevice_write (job, (unsigned char*)s, strlen(s));
@@ -87,6 +75,17 @@ void gvdevice_printf(GVJ_t * job, const char *format, ...)
     va_end(argp);
 
     gvdevice_write(job, buf, len);
+}
+
+size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
+{
+    if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
+#ifdef HAVE_LIBZ
+	return gzwrite((gzFile *) (job->output_file), s, len);
+#endif
+    }
+    else
+	return fwrite(s, sizeof(char), len, job->output_file);
 }
 
 static void auto_output_filename(GVJ_t *job)
