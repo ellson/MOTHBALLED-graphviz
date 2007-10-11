@@ -26,7 +26,8 @@ libgvplugin_core_C_la_SOURCES = \
 
 libgvplugin_core_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_core_la_SOURCES = $(libgvplugin_core_C_la_SOURCES)
-libgvplugin_core_la_LIBADD = 
+libgvplugin_core_la_LIBADD = \
+	$(top_builddir)/lib/graph/libgraph.la
 
 EXTRA_DIST = Makefile.old
 
