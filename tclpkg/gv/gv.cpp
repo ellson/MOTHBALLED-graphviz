@@ -871,3 +871,22 @@ void render(Agraph_t *g, char *format, void **data)
 //
 //    err = gvRenderData(gvc, g, format, data);
 }
+
+void write(Agraph_t *g, FILE *f)
+{
+    int err;
+
+    err = agwrite(g, f);
+}
+
+void write(Agraph_t *g, char *filename)
+{
+    FILE *f;
+    int err;
+
+    f = fopen(filename, "w");
+    if (!f)
+	return;
+    err = agwrite(g, f);
+    fclose(f);
+}
