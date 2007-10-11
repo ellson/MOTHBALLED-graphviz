@@ -20,7 +20,7 @@ libgvplugin_dot_layout_C_la_SOURCES = \
 libgvplugin_dot_layout_C_la_LIBADD = \
 	$(top_builddir)/lib/dotgen/libdotgen_C.la
 
-libgvplugin_dot_layout_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ --no-undefined
+libgvplugin_dot_layout_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_dot_layout_la_SOURCES = $(libgvplugin_dot_layout_C_la_SOURCES)
 libgvplugin_dot_layout_la_LIBADD = $(libgvplugin_dot_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/gvc/libgvc.la \

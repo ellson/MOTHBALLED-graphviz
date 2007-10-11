@@ -42,7 +42,7 @@ GDTCLFT = $(top_srcdir)/tclpkg/gdtclft/gdtclft.c
 endif
 
 libtcldot_la_SOURCES = tcldot.c $(CODEGENS) $(GDTCLFT)
-libtcldot_la_LDFLAGS = -no-undefined
+libtcldot_la_LDFLAGS = -no-undefined 
 
 libtcldot_la_LIBADD = $(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
 	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
@@ -64,7 +64,7 @@ libtcldot_builtin_la_SOURCES = \
 	tcldot.c $(CODEGENS) $(GDTCLFT) \
 	$(top_srcdir)/lib/gvc/dot_builtins.c \
 	$(top_srcdir)/lib/gvc/no_demand_loading.c 
-libtcldot_builtin_la_LDFLAGS = -no-undefined
+libtcldot_builtin_la_LDFLAGS =
 
 libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
