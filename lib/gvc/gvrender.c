@@ -59,6 +59,7 @@ int gvrender_select(GVJ_t * job, char *str)
 
     gvplugin_load(gvc, API_device, str);
 
+    job->flags = 0;
     plugin = gvc->api[API_device];
     if (plugin) {
 #ifdef WITH_CODEGENS
@@ -74,6 +75,8 @@ int gvrender_select(GVJ_t * job, char *str)
         job->device.features = (gvdevice_features_t *) (typeptr->features);
         job->device.id = typeptr->id;
         job->device.type = plugin->typestr;
+
+        job->flags |= job->device.features->flags;
     }
     else
 	return NO_SUPPORT;  /* FIXME - should differentiate problem */
@@ -86,6 +89,8 @@ int gvrender_select(GVJ_t * job, char *str)
         job->render.engine = (gvrender_engine_t *) (typeptr->engine);
         job->render.features = (gvrender_features_t *) (typeptr->features);
         job->render.type = plugin->typestr;
+
+        job->flags |= job->render.features->flags;
 
         if (job->device.engine)
             job->render.id = typeptr->id;

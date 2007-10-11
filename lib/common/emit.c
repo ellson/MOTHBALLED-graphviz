@@ -536,29 +536,6 @@ static int chkOrder(graph_t * g)
     return 0;
 }
 
-static void init_job_flags(GVJ_t * job, graph_t * g)
-{
-    switch (job->output_lang) {
-    case GVRENDER_PLUGIN:
-	job->flags |= chkOrder(g)
-		   | job->render.features->flags
-		   | job->device.features->flags;
-	break;
-    case VTX:
-        /* output sorted, i.e. all nodes then all edges */
-        job->flags |= EMIT_SORTED;
-        break;
-    case DIA:
-        /* output in preorder traversal of the graph */
-        job->flags |= EMIT_PREORDER
-		   | GVDEVICE_BINARY_FORMAT;
-        break;
-    default:
-        job->flags |= chkOrder(g);
-        break;
-    }
-}
-
 static void init_layering(GVC_t * gvc, graph_t * g)
 {
     char *str;
@@ -2730,7 +2707,20 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	Output_lang = job->output_lang;
 #endif
 
-	init_job_flags(job, g);
+        switch (job->output_lang) {
+        case VTX:
+            /* output sorted, i.e. all nodes then all edges */
+            job->flags |= EMIT_SORTED;
+            break;
+        case DIA:
+            /* output in preorder traversal of the graph */
+            job->flags |= EMIT_PREORDER
+		       | GVDEVICE_BINARY_FORMAT;
+            break;
+        default:
+            job->flags |= chkOrder(g);
+            break;
+        }
 
 	/* if we already have an active job list and the device doesn't support mutiple output files, or we are about to write to a different output device */
         firstjob = gvc->active_jobs;
