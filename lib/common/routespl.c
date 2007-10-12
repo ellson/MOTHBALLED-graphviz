@@ -291,6 +291,7 @@ static point *_routesplines(path * pp, int *npoints, int polyline)
     int boxn;
     edge_t* realedge;
     int flip;
+    int delta = 10;
 
     nedges++;
     nboxes += pp->nbox;
@@ -504,7 +505,7 @@ static point *_routesplines(path * pp, int *npoints, int polyline)
 #endif
     }
     mkspacep(spl.pn);
-    for (bi = 0; bi <= boxn; bi++) {
+    for (bi = 0; bi < boxn; bi++) {
 	boxes[bi].LL.x = INT_MAX;
 	boxes[bi].UR.x = INT_MIN;
     }
@@ -512,9 +513,11 @@ static point *_routesplines(path * pp, int *npoints, int polyline)
 	ps[splinepi].x = spl.ps[splinepi].x;
 	ps[splinepi].y = spl.ps[splinepi].y;
     }
+REDO:
     for (splinepi = 0; splinepi + 3 < spl.pn; splinepi += 3) {
-	for (si = 0; si <= 10 * boxn; si++) {
-	    t = si / (10.0 * boxn);
+	int num_div = delta * boxn;
+	for (si = 0; si <= num_div; si++) {
+	    t = si / ((double)num_div);
 	    sp[0] = ps[splinepi];
 	    sp[1] = ps[splinepi + 1];
 	    sp[2] = ps[splinepi + 2];
@@ -539,6 +542,17 @@ static point *_routesplines(path * pp, int *npoints, int polyline)
 			boxes[bi].UR.x = sp[0].x;
 		}
 	    }
+	}
+    }
+    /* The following check is necessary because if a box is not very 
+     * high, it is possible that the sampling above might miss it.
+     * Therefore, we make the sample finer until all boxes have
+     * valid values. cf. bug 456. Would making sp[] pointfs help?
+     */
+    for (bi = 0; bi < boxn; bi++) {
+	if ((boxes[bi].LL.x == INT_MAX) || (boxes[bi].UR.x == INT_MIN)) {
+	    delta *= 2;
+	    goto REDO;
 	}
     }
     *npoints = spl.pn;
