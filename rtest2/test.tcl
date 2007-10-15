@@ -12,6 +12,7 @@ set referencedir test_reference
 file delete -force $graphdir $resultdir
 file mkdir $graphdir $resultdir
 
+set FAIL 0
 set dodiff 0
 if {$argc && [string equal [lindex $argv 0] reference]} {
   file delete -force $referencedir
