@@ -22,6 +22,14 @@
 #include <string.h>
 #include "gvplugin_render.h"
 
+/* from config.h - would conflict with ming.h definitions */
+#undef PACKAGE
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#undef VERSION
+
 #include <ming.h>
 
 static char *script = 
