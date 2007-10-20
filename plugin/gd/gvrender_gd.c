@@ -599,21 +599,23 @@ static gvrender_features_t render_features_gd = {
 };
 
 static gvdevice_features_t device_features_gd = {
-    0,				/* flags */
+    GVDEVICE_BINARY_FORMAT,	/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},			/* default dpi */
 };
 
 static gvdevice_features_t device_features_gd_tc = {
-    GVDEVICE_DOES_TRUECOLOR,	/* flags */
+    GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_DOES_TRUECOLOR,/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {96.,96.},			/* default dpi */
 };
 
 static gvdevice_features_t device_features_gd_tc_no_writer = {
-    GVDEVICE_DOES_TRUECOLOR
+    GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_DOES_TRUECOLOR
       | GVDEVICE_NO_WRITER,	/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
