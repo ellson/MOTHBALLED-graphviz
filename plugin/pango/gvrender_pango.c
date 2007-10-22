@@ -139,10 +139,10 @@ static void cairogen_begin_page(GVJ_t * job)
 #endif
 #endif
 
-    if (job->external_context && job->context) {
-        cr = (cairo_t *) job->context;
+    if (job->context) 
+	cr = (cairo_t *) job->context;
+    if (job->external_context && cr)
         cairo_save(cr);
-    }
     else {
 	if (cr)
 	    cairo_destroy(cr);
@@ -194,6 +194,8 @@ static void cairogen_end_page(GVJ_t * job)
     case FORMAT_PDF:
     case FORMAT_SVG:
 	cairo_show_page(cr);
+	cairo_destroy(cr);
+	job->context = NULL;
 	break;
 
     case FORMAT_CAIRO:
@@ -206,8 +208,6 @@ static void cairogen_end_page(GVJ_t * job)
 
     if (job->external_context)
 	cairo_restore(cr);
-    else
-	job->context = NULL;
 
 #if 0
 #if defined HAVE_FENV_H && defined HAVE_FESETENV && defined HAVE_FEGETENV && defined(HAVE_FEENABLEEXCEPT)
