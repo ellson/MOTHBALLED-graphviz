@@ -69,7 +69,7 @@ gv_lua.cpp: gv.i
 	$(SWIG) -c++ -lua -o gv_lua.cpp $(srcdir)/gv.i
 
 pkgocamldir = $(pkglibdir)/ocaml
-OCAML_data = gv.ml gv.mli
+OCAML_data = gv.ml gv.mli swig.mli swig.ml gv.cma gv.cmx gv.cmxa
 nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_data)
 libgv_ocaml_la_SOURCES = $(BASESOURCES)
 libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@
@@ -77,6 +77,17 @@ libgv_ocaml_la_LDFLAGS = -module -avoid-version
 $(OCAML_data): gv_ocaml.cpp
 gv_ocaml.cpp: gv.i
 	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp $(srcdir)/gv.i
+swig.mli swig.ml swig.cmo gv.cmo gv.cma:
+	$(SWIG) -ocaml -co swig.mli
+	$(SWIG) -ocaml -co swig.ml
+	ocamlc -c swig.mli
+	ocamlc -c gv.mli
+	ocamlc -c swig.ml
+	ocamlc -c gv.ml
+	ocamlc -a -dllib dllgv.so -custom -o gv.cma swig.cmo gv.cmo
+gv.cmx  gv.cmxa: gv.cma
+	ocamlopt -c gv.ml
+	ocamlopt -a -o gv.cmxa gv.cmx
 
 pkgperldir = $(pkglibdir)/perl
 PERL_data = gv.pm
