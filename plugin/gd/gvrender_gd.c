@@ -364,7 +364,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     else {
 	spf.x += p.x;
 	epf.x += p.x;
-	epf.y = spf.y = p.y;
+	epf.y = spf.y = p.y - para->yoffset_centerline * job->scale.y;
     }
 
     gdgen_text(im, spf, epf,

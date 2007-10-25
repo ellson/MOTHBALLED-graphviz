@@ -221,26 +221,25 @@ static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     obj_state_t *obj = job->obj;
     cairo_t *cr = (cairo_t *) job->context;
-    pointf offset;
 
     cairo_set_dash (cr, dashed, 0, 0.0);  /* clear any dashing */
     cairogen_set_color(cr, &(obj->pencolor));
 
     switch (para->just) {
     case 'r':
-	offset.x = para->width;
+	p.x -= para->width;
 	break;
     case 'l':
-	offset.x = 0.0;
+	p.x -= 0.0;
 	break;
     case 'n':
     default:
-	offset.x = para->width / 2.0;
+	p.x -= para->width / 2.0;
 	break;
     }
-    offset.y = para->yoffset;
+    p.y += para->yoffset_centerline + para->yoffset_layout;
 
-    cairo_move_to (cr, p.x-offset.x, -p.y-offset.y);
+    cairo_move_to (cr, p.x, -p.y);
     cairo_save(cr);
     cairo_scale(cr, POINTS_PER_INCH / FONT_DPI, POINTS_PER_INCH / FONT_DPI);
     pango_cairo_show_layout(cr, (PangoLayout*)(para->layout));

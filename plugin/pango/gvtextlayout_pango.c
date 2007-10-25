@@ -161,10 +161,12 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     para->width = logical_rect.width * textlayout_scale;
     para->height = logical_rect.height * textlayout_scale;
 
+    /* The y offset from baseline to 0,0 of the bitmap representation */
     iter = pango_layout_get_iter (layout);
-    para->yoffset = pango_layout_iter_get_baseline (iter) * textlayout_scale
-	+.1 * para->fontsize;  /* In labels.c y is already midline 
-			 * 0.1 is the distance below midline for y centering */
+    para->yoffset_layout = pango_layout_iter_get_baseline (iter) * textlayout_scale;
+
+    /* The distance below midline for y centering of text strings */
+    para->yoffset_centerline = 0.1 * para->fontsize;
 
     /* determine position of each character in the layout */
     para->xshow = NULL;

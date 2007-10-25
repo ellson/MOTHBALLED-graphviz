@@ -117,13 +117,14 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 
     para->width = 0.0;
     para->height = 0.0;
-    para->yoffset = 0.0;
+    para->yoffset_layout = 0.0;
     para->xshow = NULL;
 
     para->layout = NULL;
     para->free_layout = NULL;
 
     fontsize = para->fontsize;
+    para->yoffset_centerline = 0.1 * fontsize;
 
     if (para->fontname) {
 	if (fontsize <= FONTSIZE_MUCH_TOO_SMALL) {
@@ -164,7 +165,6 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
              * see LINESPACING in const.h.
              */
 	    para->height = (int)(para->fontsize * 1.2);
-            para->yoffset = 0.0;
 	}
     }
     return TRUE;

@@ -291,8 +291,7 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	gvdevice_fputs(job, " text-anchor=\"middle\"");
 	break;
     }
-    /* don't use para->yoffset because we don't need the baseline offset */
-    p.y += .1 * para->fontsize;
+    p.y += para->yoffset_centerline;
     gvdevice_printf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
     gvdevice_fputs(job, " style=\"");
     pA = para->postscript_alias;

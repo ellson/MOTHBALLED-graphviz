@@ -271,8 +271,7 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     ps_set_color(job, &(job->obj->pencolor));
     gvdevice_printf(job, "%.2f /%s set_font\n", para->fontsize, para->fontname);
     str = ps_string(para->str,isLatin1);
-    /* don't use para->yoffset because we don't need the baseline offset */
-    p.y += .1 * para->fontsize;
+    p.y += para->yoffset_centerline;
     if (para->xshow) {
         switch (para->just) {
         case 'l':

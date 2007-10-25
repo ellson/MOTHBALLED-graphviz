@@ -137,7 +137,8 @@ estimate_textlayout(graph_t *g, textpara_t * para, char **fontpath)
 
     para->width = 0.0;
     para->height = para->fontsize * LINESPACING;
-    para->yoffset = 0.0;
+    para->yoffset_layout = 0.0;
+    para->yoffset_centerline = 0.1 * para->fontsize;
     para->xshow = NULL;
     para->layout = para->fontname;
     para->free_layout = NULL;
