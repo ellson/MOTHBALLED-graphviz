@@ -18,6 +18,7 @@
 #include "config.h"
 #endif
 
+#include <stdlib.h>
 #include <string.h>
 #include "gvplugin_textlayout.h"
 
@@ -45,8 +46,10 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     PangoLayout *layout;
     PangoRectangle logical_rect;
     PangoLayoutIter* iter;
-#if ENABLE_PANGO_XSHOW
+#define ENABLE_PANGO_XSHOW
+#ifdef ENABLE_PANGO_XSHOW
     PangoRectangle char_rect;
+    int xshow_alloc, xshow_pos;
 #endif
 #ifdef ENABLE_PANGO_MARKUP
     PangoAttrList *attrs;
@@ -169,16 +172,24 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     para->yoffset_centerline = 0.1 * para->fontsize;
 
     /* determine position of each character in the layout */
-    para->xshow = NULL;
 #ifdef ENABLE_PANGO_XSHOW
-/* FIXME - unfinished code */
+    xshow_alloc = 128;
+    xshow_pos = 0;
+    para->xshow = malloc(xshow_alloc);
+    para->xshow[0] = '\0';
     do {
 	pango_layout_iter_get_char_extents (iter, &char_rect);
-	char_rect.x *= fontlayout_scale;
-	char_rect.y *= fontlayout_scale;
+        if (xshow_alloc < xshow_pos + 16) {
+		xshow_alloc += 128;
+		para->xshow = realloc(para->xshow, xshow_alloc);
+	}
+	if (xshow_pos) para->xshow[xshow_pos++] = ' ';
+        xshow_pos += sprintf(para->xshow+xshow_pos, "%g", char_rect.width * textlayout_scale);
     } while (pango_layout_iter_next_char (iter));
-    pango_layout_iter_free (iter);
+#else
+    para->xshow = NULL;
 #endif
+    pango_layout_iter_free (iter);
     if (logical_rect.width == 0)
 	return FALSE;
     return TRUE;
