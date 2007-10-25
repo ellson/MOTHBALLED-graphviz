@@ -1,0 +1,67 @@
+LIBNAME = libxcgraph.a
+
+all:	$(LIBNAME)
+
+include $(HOME)/src/graphviz2/Config.mk.old
+include $(HOME)/src/graphviz2/makearch/$(ARCH)
+
+INCS =	-I. -I$(HOME)/arch/$(ARCH)/include
+CCFLAGS = -g
+
+DEFINES = -DHAVE_CONFIG_H
+
+OBJS = apply.o attr.o edge.o agerror.o flatten.o \
+	grammar.o graph.o id.o imap.o io.o mem.o \
+	node.o obj.o pend.o rec.o refstr.o scan.o \
+	subg.o utils.o write.o
+
+$(LIBNAME): $(OBJS)
+	$(AR) cr $(LIBNAME) $(OBJS)
+	$(RANLIB) $(LIBNAME)
+
+# this is a home-made tool
+# trie.c : trie_input
+#	triegen  < trie_input > trie.c
+
+lexer.o : grammar.o
+
+grammar.c : grammar.y
+	$(YACC) -dv grammar.y
+	$(SED) "s/yy/aag/g" < y.tab.c > grammar.c
+	$(SED) "s/yy/aag/g" < y.tab.h > grammar.h
+	$(RM) y.tab.c y.tab.h
+
+scan.c : scan.l
+	$(FLEX) -i scan.l
+	$(SED) "s/yy/aag/g" < lex.yy.c > scan.c
+	$(RM) lex.yy.c
+
+install: $(LIBNAME)
+	$(MKPATH) $(LIBDIR)
+	$(INSTALL) $(LIBNAME) $(LIBDIR)
+#	$(SHLIB_LD) -o $(LIBDIR)/libcgraph.so.$(VERSION) $(OBJS)
+	$(MKPATH) $(INCDIR)
+	$(INSTALL) cgraph.h $(INCDIR)
+	$(MKPATH) $(LIBMANDIR)
+	$(INSTALL) cgraph.3 $(LIBMANDIR)
+
+clean:
+	$(RM) *.o core grammar.[ch] scan.c
+
+distclean: clean
+	$(RM) *.a lib*.so.*
+
+tester:  tester.c $(LIBNAME)
+	$(CC) -static tester.c $(INCS) $(LIBNAME) -L$(HOME)/arch/$(ARCH)/lib/ -lcdt -o tester
+
+main1:  main1.c $(LIBNAME)
+	$(CC) $(CCFLAGS) main1.c $(INCS) $(LIBNAME) -L$(HOME)/arch/$(ARCH)/lib -lcdt -o main1
+
+main2:  main2.c $(LIBNAME)
+	$(CC) $(CCFLAGS) main2.c $(INCS) $(LIBNAME) -L$(HOME)/arch/$(ARCH)/lib -lcdt -o main2
+
+main3:  main3.c $(LIBNAME)
+	$(CC) $(CCFLAGS) main3.c $(INCS) $(LIBNAME) -L$(HOME)/arch/$(ARCH)/lib -lcdt -o main3
+
+main:  main.c $(LIBNAME)
+	$(CC) $(CCFLAGS) main.c $(INCS) $(LIBNAME) -L$(HOME)/arch/$(ARCH)/lib -lcdt -o main
