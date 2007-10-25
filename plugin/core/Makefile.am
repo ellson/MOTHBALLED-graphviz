@@ -11,7 +11,6 @@ AM_CPPFLAGS = \
 	$(LIBGVC_CFLAGS)
 
 noinst_LTLIBRARIES = libgvplugin_core_C.la
-
 pkglib_LTLIBRARIES = libgvplugin_core.la
 
 libgvplugin_core_C_la_SOURCES = \
@@ -26,8 +25,7 @@ libgvplugin_core_C_la_SOURCES = \
 
 libgvplugin_core_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_core_la_SOURCES = $(libgvplugin_core_C_la_SOURCES)
-libgvplugin_core_la_LIBADD = \
-	$(top_builddir)/lib/graph/libgraph.la
+libgvplugin_core_la_LIBADD = $(top_builddir)/lib/gvc/libgvc.la
 
 EXTRA_DIST = Makefile.old
 
