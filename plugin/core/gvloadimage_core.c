@@ -197,7 +197,7 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean fill
 
     if (us->data) {
         fprintf(out, "gsave %g %g translate newpath\n",
-		b.LL.x - us->x, b.LL.y - us->y);
+		b.LL.x - (double)(us->x), b.LL.y - (double)(us->y));
         if (us->must_inline)
             epsf_emit_body(us, out);
         else

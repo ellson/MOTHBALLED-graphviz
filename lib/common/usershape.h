@@ -38,7 +38,7 @@ extern "C" {
 	FILE *f;
 	imagetype_t type;
 	char *stringtype;
-	unsigned int x, y, w, h, dpi;
+	int x, y, w, h, dpi;
 	void *data;                   /* data loaded by a renderer */
 	size_t datasize;              /* size of data (if mmap'ed) */
 	void (*datafree)(usershape_t *us); /* renderer's function for freeing data */
