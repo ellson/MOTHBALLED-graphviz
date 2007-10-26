@@ -23,7 +23,9 @@ libgvplugin_pango_C_la_SOURCES = \
 
 libgvplugin_pango_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_pango_la_SOURCES = $(libgvplugin_pango_C_la_SOURCES)
-libgvplugin_pango_la_LIBADD = @PANGOCAIRO_LIBS@ @FONTCONFIG_LIBS@ @MATH_LIBS@
+libgvplugin_pango_la_LIBADD = \
+	$(top_builddir)/lib/gvc/libgvc.la @PANGOCAIRO_LIBS@ @FONTCONFIG_LIBS@ @MATH_LIBS@
+
 
 EXTRA_DIST = Makefile.old
 

@@ -27,9 +27,11 @@ libgvplugin_gd_la_SOURCES = $(libgvplugin_gd_C_la_SOURCES)
 if WITH_MYLIBGD
 libgvplugin_gd_la_LIBADD = \
 	$(top_builddir)/lib/gd/libgvgd_C.la \
+	$(top_builddir)/lib/gvc/libgvc.la \
 	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @MATH_LIBS@
 else
-libgvplugin_gd_la_LIBADD = @GD_LIBS@ @MATH_LIBS@
+libgvplugin_gd_la_LIBADD = \
+	$(top_builddir)/lib/gvc/libgvc.la @GD_LIBS@ @MATH_LIBS@
 endif
 
 EXTRA_DIST = Makefile.old

@@ -21,7 +21,8 @@ libgvplugin_gdk_pixbuf_C_la_SOURCES = \
 
 libgvplugin_gdk_pixbuf_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_gdk_pixbuf_la_SOURCES = $(libgvplugin_gdk_pixbuf_C_la_SOURCES)
-libgvplugin_gdk_pixbuf_la_LIBADD = @GDK_PIXBUF_LIBS@
+libgvplugin_gdk_pixbuf_la_LIBADD = \
+	$(top_builddir)/lib/gvc/libgvc.la @GDK_PIXBUF_LIBS@
 
 EXTRA_DIST = Makefile.old
 
