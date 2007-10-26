@@ -19,6 +19,10 @@ License: CPL
 URL:     http://www.graphviz.org/
 Source0: http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
 
+# graphviz is relocatable - Caution: this feature is used in AT&T,
+#   but probably will not be supported in Redhat/Fedora/Centos distros
+Prefix: /usr
+
 #-- feature and package selection -------------------------------------------
 #   depends on %dist and %fedora (or %rhl or %rhel) which are set
 #   in .rpmmacros on each build host
@@ -153,15 +157,17 @@ Requires(postun): /sbin/ldconfig
 A collection of tools for the manipulation and layout
 of graphs (as in nodes and edges, not as in barcharts).
 
-# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+# run "dot -c" to generate plugin config in %{libdir}/graphviz/config
+# (don't rely on ldconfig to find libraries since it won't
+#  help if --prefix was used to relocate binaries)
 %post
+LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 /sbin/ldconfig
-%{_bindir}/dot -c
 
 # if there is no dot after everything else is done, then remove config
 %postun
 if [ $1 -eq 0 ]; then
-        rm -f %{_libdir}/graphviz/config || :
+        rm -f $RPM_INSTALL_PREFIX0/%{_lib}/graphviz/config || :
 fi
 /sbin/ldconfig
 
@@ -190,8 +196,6 @@ fi
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for renderers based on gd
 Requires:         graphviz = %{version}-%{release}
-Requires(post):   %{_bindir}/dot /sbin/ldconfig
-Requires(postun): %{_bindir}/dot /sbin/ldconfig
 
 %description gd
 Graphviz plugin for renderers based on gd.  (Unless you absolutely have
@@ -201,12 +205,10 @@ based renderer.)
 
 # run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
 %post gd
-/sbin/ldconfig
-%{_bindir}/dot -c
+LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
 %postun gd
-/sbin/ldconfig
-[ -x %{_bindir}/dot ] && %{_bindir}/dot -c || :
+[ -x $RPM_INSTALL_PREFIX0/bin/dot ] && LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c || :
 
 %files gd
 %{_libdir}/graphviz/libgvplugin_gd.so.*
@@ -217,8 +219,6 @@ based renderer.)
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for renderers based on DevIL
 Requires:         graphviz = %{version}-%{release}
-Requires(post):   %{_bindir}/dot /sbin/ldconfig
-Requires(postun): %{_bindir}/dot /sbin/ldconfig
 
 %description devil
 Graphviz plugin for renderers based on DevIL.  (Unless you absolutely have
@@ -227,12 +227,10 @@ support directly by the cairo+pango based renderer in the base graphviz rpm.)
 
 # run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
 %post devil
-/sbin/ldconfig
-%{_bindir}/dot -c
+LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
 %postun devil
-/sbin/ldconfig
-[ -x %{_bindir}/dot ] && %{_bindir}/dot -c || :
+[ -x $RPM_INSTALL_PREFIX0/bin/dot ] && LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c || :
 
 %files devil
 %{_libdir}/graphviz/libgvplugin_devil.so.*
@@ -244,20 +242,16 @@ support directly by the cairo+pango based renderer in the base graphviz rpm.)
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for flash renderer based on ming
 Requires:         graphviz = %{version}-%{release}
-Requires(post):   %{_bindir}/dot /sbin/ldconfig
-Requires(postun): %{_bindir}/dot /sbin/ldconfig
 
 %description ming
 Graphviz plugin for -Tswf (flash) renderer based on ming.
 
 # run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
 %post ming
-/sbin/ldconfig
-%{_bindir}/dot -c
+LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
 %postun ming
-/sbin/ldconfig
-[ -x %{_bindir}/dot ] && %{_bindir}/dot -c || :
+[ -x $RPM_INSTALL_PREFIX0/bin/dot ] && LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c || :
 
 %files ming
 %{_libdir}/graphviz/libgvplugin_ming.so.*
@@ -583,6 +577,8 @@ rm -rf %{buildroot}
 #-- changelog --------------------------------------------------
 
 %changelog
+* Fri Oct 26 2007 John Ellson <ellson@research.att.com>
+- reinstated binary relocatability in AT&T's rpms since we need it internally
 * Wed Aug 15 2007 John Ellson <ellson@research.att.com>
 - release 2.14.1 - see ChangeLog for details
 * Wed Aug 2 2007 John Ellson <ellson@research.att.com>
