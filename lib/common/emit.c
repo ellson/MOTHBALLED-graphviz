@@ -558,7 +558,7 @@ static void firstlayer(GVJ_t *job)
 {
     job->numLayers = job->gvc->numLayers;
     if ((job->numLayers > 1)
-		&& (! (gvrender_features(job) & GVDEVICE_DOES_LAYERS))) {
+		&& (! (job->flags & GVDEVICE_DOES_LAYERS))) {
 	agerr(AGWARN, "layers not supported in %s output\n",
 		job->output_langname);
 	job->numLayers = 1;
@@ -763,16 +763,17 @@ static boolean write_node_test(Agraph_t * g, Agnode_t * n)
 void emit_background(GVJ_t * job, graph_t *g)
 {
     char *str;
-
+    
     if (! ((str = agget(g, "bgcolor")) && str[0])) {
-	if (gvrender_features(job) & GVRENDER_NO_BG)
+	if (job->flags & GVRENDER_NO_BG)
 	    str = "transparent";
 	else
 	    str = "white";
     }
+
     gvrender_set_fillcolor(job, str);
     gvrender_set_pencolor(job, str);
-    gvrender_box(job, job->pageBox, TRUE);	/* filled */
+    gvrender_box(job, job->clip, TRUE);	/* filled */
 }
 
 static void setup_page(GVJ_t * job, graph_t * g)
@@ -1473,7 +1474,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e)
 		bzf.list = malloc(sizeof(pointf) * bzf.size);
 		for (j = 0; j < bz.size; j++)
 		    P2PF(bz.list[j], bzf.list[j]);
-		if (gvrender_features(job) & GVRENDER_DOES_ARROWS) {
+		if (job->flags & GVRENDER_DOES_ARROWS) {
 		    gvrender_beziercurve(job, bzf.list, bz.size, bz.sflag,
 					 bz.eflag, FALSE);
 		} else {
