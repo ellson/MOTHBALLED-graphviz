@@ -102,11 +102,11 @@ Reference
           
    gd color new <gdhandle> <red> <green> <blue>
           Allocate a new color with the given RGB values.  Returns the
-          color_idx, or -1 on failure (256 colors already allocated).
+          color_idx, or \-1 on failure (256 colors already allocated).
           
    gd color exact <gdhandle> <red> <green> <blue>
           Find a color_idx in the image that exactly matches the given RGB 
-          color.  Returns the color_idx, or -1 if no exact match.
+          color.  Returns the color_idx, or \-1 if no exact match.
           
    gd color closest <gdhandle> <red> <green> <blue>
           Find a color in the image that is closest to the given RGB color.
@@ -115,8 +115,8 @@ Reference
    gd color resolve <gdhandle> <red> <green> <blue>
           Return the index of the best possible effort to get a color.
           Guaranteed to return a color idx.   Equivalent to:
-               if {[set idx [gd color exact $gd $r $g $b]] == -1} {
-                   if {[set idx [gd color neW $Gd $r $g $b]] == -1} {
+               if {[set idx [gd color exact $gd $r $g $b]] == \-1} {
+                   if {[set idx [gd color neW $Gd $r $g $b]] == \-1} {
                        set idx [gd color closest $gd $r $g $b]
                    }
                } 
