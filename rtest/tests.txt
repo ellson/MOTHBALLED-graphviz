@@ -1,0 +1,258 @@
+# Graphviz test suite
+# Tests are separated by blank or comment lines.
+# Tests have the following syntax:
+#  testname
+#  Test input (one-line graph or name of dot file or =)
+#    In the last case, the input file is taken as testname.dot
+#  One or more subtests of the form: 
+#     layout_alg output_format additional_flags
+#  
+# For example, the test
+#   shapes
+#   shapes.dot
+#   dot ps
+#   neato png "-Gsize=3,3 -Ncolor=red"
+# specifies the "shapes" test, using shapes.dot as input, and
+# run "dot -Tps" and "neato -Tpng -Gsize=3,3 -Ncolor=red" on the input.
+
+shapes
+=
+dot dot
+dot ps
+
+crazy
+=
+dot png
+dot ps
+
+arrows
+=
+dot dot
+dot ps
+
+arrowsize
+=
+dot png
+
+center
+=
+dot ps
+dot png -Gmargin=1
+
+# color encodings
+# multiple edge colors
+color
+=
+dot png
+dot png - Gbgcolor = lightblue
+
+decorate
+=
+dot png
+
+record
+= 
+dot dot 
+dot ps 
+
+html 
+= 
+dot dot 
+dot ps 
+
+html2 
+= 
+dot dot 
+dot ps
+
+pslib
+=
+dot ps -lgraphs/sdl
+
+user_shapes
+=
+dot ps
+dot png:gd
+#dot png - doesn't work: Warning: No loadimage plugin for "gif:cairo"
+
+ps_user_shapes
+=
+dot ps -Nshapefile=graphs/dice.ps
+dot ps -Nshape=epsf -Nshapefile=graphs/dice.ps
+
+colorscheme
+=
+dot ps
+dot png
+
+compound
+=
+dot dot
+
+dir
+=
+dot ps
+
+clustlabel
+=
+dot ps "-Glabelloc=t -Glabeljust=r" 
+dot ps "-Glabelloc=b -Glabeljust=r" 
+dot ps "-Glabelloc=t -Glabeljust=l" 
+dot ps "-Glabelloc=b -Glabeljust=l" 
+dot ps "-Glabelloc=t -Glabeljust=c" 
+dot ps "-Glabelloc=b -Glabeljust=c" 
+dot ps "-Glabelloc=t"
+dot ps "-Glabelloc=b"
+
+rootlabel
+=
+dot ps "-Glabelloc=t -Glabeljust=r" 
+dot ps "-Glabelloc=b -Glabeljust=r" 
+dot ps "-Glabelloc=t -Glabeljust=l" 
+dot ps "-Glabelloc=b -Glabeljust=l" 
+dot ps "-Glabelloc=t -Glabeljust=c" 
+dot ps "-Glabelloc=b -Glabeljust=c" 
+dot ps "-Glabelloc=t"
+dot ps "-Glabelloc=b"
+
+layers
+=
+dot ps
+
+# check mode=hier
+mode
+=
+neato ps -Gmode=KK
+neato ps -Gmode=hier
+neato ps "-Gmode=hier -Glevelsgap=1"
+
+model
+mode.dot
+neato ps -Gmodel=circuit
+neato ps -Gmodel=subset
+
+# cairo versions have problems
+nojustify
+=
+dot png
+dot png:gd
+dot ps
+dot ps:cairo
+
+# bug
+ordering
+=
+dot dot -Gordering=in 
+dot dot -Gordering=out 
+
+overlap
+=
+neato dot -Goverlap=false
+neato dot -Goverlap=scale
+
+pack
+=
+neato dot
+neato dot -Gpack=20
+neato dot -Gpackmode=graph
+
+page
+mode.dot
+neato ps "-Gpage=8.5,11"
+neato ps "-Gpage=8.5,11 -Gpagedir=TL"
+neato ps "-Gpage=8.5,11 -Gpagedir=TR"
+
+# pencolor, fontcolor, fillcolor
+colors
+=
+dot ps
+
+ports
+=
+dot dot
+
+rotate
+crazy.dot
+dot png -Glandscape
+dot ps -Glandscape
+dot png -Grotate=90
+dot ps -Grotate=90
+
+rankdir
+crazy.dot
+dot dot -Grankdir=LR
+dot dot -Grankdir=BT
+dot dot -Grankdir=RL
+
+url
+=
+dot ps2
+dot svg -Gstylesheet=stylesheet
+dot imap
+dot cmapx
+dot imap_np
+dot cmapx_np
+
+viewport
+=
+neato png "-Gviewport=300,300 -n2"
+neato ps "-Gviewport=300,300 -n2"
+neato png "-Gviewport=300,300,1,200,620 -n2"
+neato ps "-Gviewport=300,300,1,200,620 -n2"
+neato png "-Gviewport=300,300,2,200,620 -n2"
+neato ps "-Gviewport=300,300,2,200,620 -n2"
+
+rowcolsep
+=
+dot dot -Tnodesep=0.5
+dot dot -Tranksep=1.5
+
+size
+mode.dot
+neato ps "-Gsize=5,5"
+neato png "-Gsize=5,5"
+
+# size with !
+size_ex
+root.dot
+dot ps "-Gsize=6,6!"
+dot png "-Gsize=6,6!"
+
+dotsplines
+size.dot
+dot dot -Gsplines=line
+dot dot -Gsplines=polyline
+#dot dot -Gsplines=ortho
+
+# bug with splines=polyline
+neatosplines
+overlap.dot
+neato dot -Goverlap=false -Gsplines=splines
+neato dot -Goverlap=false -Gsplines=polyline
+#neato dot -Goverlap=false -Gsplines=ortho
+
+style
+=
+dot ps
+dot png
+
+# edge clipping
+edgeclip
+=
+dot dot
+
+# edge weight
+weight
+=
+dot dot
+
+root
+=
+twopi dot
+circo dot
+
+cairo
+=
+dot -Tps:cairo 
+dot -Tpng:cairo 
+dot -Tsvg:cairo 
