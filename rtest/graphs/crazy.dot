@@ -1,5 +1,5 @@
 digraph "unix" {
-	graph [	fontname = "Helvetica-Oblique",
+	graph [	fontname = "Helvetica",
 		fontsize = 36,
 		label = "\n\n\n\nObject Oriented Graphs\nStephen North, 3/19/93",
 		size = "6,6" ];
@@ -10,7 +10,7 @@ digraph "unix" {
 		skew = "0.0",
 		color = white,
 		style = filled,
-		fontname = "Helvetica-Outline" ];
+		fontname = "Helvetica" ];
 	"5th Edition" [sides=9, distortion="0.936354", orientation=28, skew="-0.126818", color=salmon2];
 	"6th Edition" [sides=5, distortion="0.238792", orientation=11, skew="0.995935", color=deepskyblue];
 	"PWB 1.0" [sides=8, distortion="0.019636", orientation=79, skew="-0.440424", color=goldenrod2];
