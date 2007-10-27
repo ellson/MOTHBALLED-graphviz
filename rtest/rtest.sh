@@ -1,6 +1,8 @@
 #! /bin/ksh
 # TODO:
-#  Fix to 
+#  Fix to allow multiple test data sets depending
+# on architecture, etc. Maintain common ones in REFDIR.
+#  Report differences with shared version and with new output. 
 
 TESTFILE=tests.txt     # Test specifications
 GRAPHDIR=graphs        # Directory of input graphs and data
