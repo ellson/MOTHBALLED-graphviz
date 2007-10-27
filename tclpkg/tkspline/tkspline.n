@@ -62,7 +62,7 @@
 '\" SCCS: @(#) man.macros 1.8 96/02/15 20:02:24
 '\"
 '\"	# Set up traps and other miscellaneous stuff for Tcl/Tk man pages.
-.if t .wh -1.3i ^B
+.if t .wh \-1.3i ^B
 .nr ^l \n(.l
 .ad b
 '\"	# Start an argument description
@@ -97,7 +97,7 @@
 .nr )C \\n()Bu+\\w'(in/out)'u+2n
 ..
 .AS Tcl_Interp Tcl_CreateInterp in/out
-'\"	# BS - start boxed text
+'\"	# BS \- start boxed text
 '\"	# ^y = starting y location
 '\"	# ^b = 1
 .de BS
@@ -109,7 +109,7 @@
 .if n \l'\\n(.lu\(ul'
 .if n .fi
 ..
-'\"	# BE - end boxed text (draw box now)
+'\"	# BE \- end boxed text (draw box now)
 .de BE
 .nf
 .ti 0
@@ -118,18 +118,18 @@
 .el \{\
 .\"	Draw four-sided box normally, but don't draw top of
 .\"	box if the box started on an earlier page.
-.ie !\\n(^b-1 \{\
-\h'-1.5n'\L'|\\n(^yu-1v'\l'\\n(^lu+3n\(ul'\L'\\n(^tu+1v-\\n(^yu'\l'|0u-1.5n\(ul'
+.ie !\\n(^b\-1 \{\
+\h'\-1.5n'\L'|\\n(^yu\-1v'\l'\\n(^lu+3n\(ul'\L'\\n(^tu+1v\-\\n(^yu'\l'|0u\-1.5n\(ul'
 .\}
 .el \}\
-\h'-1.5n'\L'|\\n(^yu-1v'\h'\\n(^lu+3n'\L'\\n(^tu+1v-\\n(^yu'\l'|0u-1.5n\(ul'
+\h'\-1.5n'\L'|\\n(^yu\-1v'\h'\\n(^lu+3n'\L'\\n(^tu+1v\-\\n(^yu'\l'|0u\-1.5n\(ul'
 .\}
 .\}
 .fi
 .br
 .nr ^b 0
 ..
-'\"	# VS - start vertical sidebar
+'\"	# VS \- start vertical sidebar
 '\"	# ^Y = starting y location
 '\"	# ^v = 1 (for troff;  for nroff this doesn't matter)
 .de VS
@@ -138,7 +138,7 @@
 .ie n 'mc \s12\(br\s0
 .el .nr ^v 1u
 ..
-'\"	# VE - end of vertical sidebar
+'\"	# VE \- end of vertical sidebar
 .de VE
 .ie n 'mc
 .el \{\
@@ -146,8 +146,8 @@
 .nf
 .ti 0
 .mk ^t
-\h'|\\n(^lu+3n'\L'|\\n(^Yu-1v\(bv'\v'\\n(^tu+1v-\\n(^Yu'\h'-|\\n(^lu+3n'
-.sp -1
+\h'|\\n(^lu+3n'\L'|\\n(^Yu\-1v\(bv'\v'\\n(^tu+1v\-\\n(^Yu'\h'\-|\\n(^lu+3n'
+.sp \-1
 .fi
 .ev
 .\}
@@ -164,12 +164,12 @@
 .if \\n(^b \{\
 .\"	Draw three-sided box if this is the box's first page,
 .\"	draw two sides but no top otherwise.
-.ie !\\n(^b-1 \h'-1.5n'\L'|\\n(^yu-1v'\l'\\n(^lu+3n\(ul'\L'\\n(^tu+1v-\\n(^yu'\h'|0u'\c
-.el \h'-1.5n'\L'|\\n(^yu-1v'\h'\\n(^lu+3n'\L'\\n(^tu+1v-\\n(^yu'\h'|0u'\c
+.ie !\\n(^b\-1 \h'\-1.5n'\L'|\\n(^yu\-1v'\l'\\n(^lu+3n\(ul'\L'\\n(^tu+1v\-\\n(^yu'\h'|0u'\c
+.el \h'\-1.5n'\L'|\\n(^yu\-1v'\h'\\n(^lu+3n'\L'\\n(^tu+1v\-\\n(^yu'\h'|0u'\c
 .\}
 .if \\n(^v \{\
-.nr ^x \\n(^tu+1v-\\n(^Yu
-\kx\h'-\\nxu'\h'|\\n(^lu+3n'\ky\L'-\\n(^xu'\v'\\n(^xu'\h'|0u'\c
+.nr ^x \\n(^tu+1v\-\\n(^Yu
+\kx\h'\-\\nxu'\h'|\\n(^lu+3n'\ky\L'\-\\n(^xu'\v'\\n(^xu'\h'|0u'\c
 .\}
 .bp
 'fi
@@ -182,19 +182,19 @@
 .mk ^Y
 .\}
 ..
-'\"	# DS - begin display
+'\"	# DS \- begin display
 .de DS
 .RS
 .nf
 .sp
 ..
-'\"	# DE - end display
+'\"	# DE \- end display
 .de DE
 .fi
 .RE
 .sp
 ..
-'\"	# SO - start of list of standard options
+'\"	# SO \- start of list of standard options
 .de SO
 .SH "STANDARD OPTIONS"
 .LP
@@ -202,31 +202,31 @@
 .ta 4c 8c 12c
 .ft B
 ..
-'\"	# SE - end of list of standard options
+'\"	# SE \- end of list of standard options
 .de SE
 .fi
 .ft R
 .LP
 See the \\fBoptions\\fR manual entry for details on the standard options.
 ..
-'\"	# OP - start of full description for a single option
+'\"	# OP \- start of full description for a single option
 .de OP
 .LP
 .nf
 .ta 4c
-Command-Line Name:	\\fB\\$1\\fR
+Command\-Line Name:	\\fB\\$1\\fR
 Database Name:	\\fB\\$2\\fR
 Database Class:	\\fB\\$3\\fR
 .fi
 .IP
 ..
-'\"	# CS - begin code excerpt
+'\"	# CS \- begin code excerpt
 .de CS
 .RS
 .nf
 .ta .25i .5i .75i 1i
 ..
-'\"	# CE - end code excerpt
+'\"	# CE \- end code excerpt
 .de CE
 .fi
 .RE
@@ -235,7 +235,7 @@ Database Class:	\\fB\\$3\\fR
 \\$1\l'|0\(ul'\\$2
 ..
 .lf 2 spline.n
-.TH spline n 8.0 Tk "Tk Spline - An additional smoothing method for canvas items "
+.TH spline n 8.0 Tk "Tk Spline \- An additional smoothing method for canvas items "
 .BS
 '\" Note:  do not modify the .SH NAME line immediately below!
 .SH NAME
@@ -244,13 +244,13 @@ Database Class:	\\fB\\$3\\fR
 .nf
 	package require Tkspline
 	...
-	.c create line ... -smooth spline ...
-	.c create polygon ... -smooth spline ...
+	.c create line ... \-smooth spline ...
+	.c create polygon ... \-smooth spline ...
 .fo
 .BE
 .SH INTRODUCTION
 .PP
-The new option value: \fB-smooth spline\fR provides an additional smoothing method to
+The new option value: \fB\-smooth spline\fR provides an additional smoothing method to
 \fBline\fR and \fBpolygon\fR canvas items.
 
 .PP
@@ -261,7 +261,7 @@ is understood to be the same as the first in order to close the polygon).
 
 .PP
 In \fBline\fR and \fBpolygon\fR items, the curves generated with the standard
-\fB-smooth true\fR option have the following properties:
+\fB\-smooth true\fR option have the following properties:
 .TP 3
 -
 the curve is always tangential to a straight line between consecutive points.
@@ -273,7 +273,7 @@ the curve is only guaranteed to intersect the first and last points of \fBline\f
 the curve is not guaranteed to intersect any points of \fBpolygon\fRs.
 
 .PP
-With \fB-smooth spline\fR (and the right number of coordinates) 
+With \fB\-smooth spline\fR (and the right number of coordinates) 
 the curves generated have the following different properties:
 .TP 3
 -

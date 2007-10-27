@@ -1,4 +1,4 @@
-.TH TCLDOT N "02 December 1996"
+.TH TCLDOT n "02 December 1996"
 
 .SH NAME
 
@@ -331,9 +331,9 @@ will return an arbitrary edge from the set.
 \fIedgeHandle\fR \fBshowname\fR
 
 Each return the name of the item.  Edge names are of the form:
-"a->b" where "a" and "b" are the names of the nodes and the connector
-"->" indicates the tail-to-head direction of the edge. In undirected
-graphs the connector "--" is used.
+"a\->b" where "a" and "b" are the names of the nodes and the connector
+"\->" indicates the tail-to-head direction of the edge. In undirected
+graphs the connector "\-\-" is used.
 
 .TP
 \fIgraphHandle\fR \fBsetnodeattributes\fR \fIattributeName attributeValue ?...?\fR
