@@ -1,8 +1,14 @@
 #! /bin/ksh
+#
+# Graphviz regression test driver
+#
+# Assumes the programs dot and diffimg are in PATH.
+# Also relies on strps.awk.
+#
 # TODO:
 #  Fix to allow multiple test data sets depending
 # on architecture, etc. Maintain common ones in REFDIR.
-#  Report differences with shared version and with new output. 
+#  Report differences with shared version and with new output.
 
 TESTFILE=tests.txt     # Test specifications
 GRAPHDIR=graphs        # Directory of input graphs and data
@@ -127,7 +133,7 @@ function doDiff
     ps )
       mv $FILE1 $TMPFILE 
       awk -f strps.awk $TMPFILE > $FILE1
-      awk -f strps.awk $FILE22 > $TMPFILE
+      awk -f strps.awk $FILE2 > $TMPFILE
       diff -q $FILE1 $TMPFILE > /dev/null 
       ;;
     svg )
@@ -158,15 +164,15 @@ function genOutname
 {
   if [[ $3 == *:* ]]
   then
-    FMT=${3%%:*}
-    XFMT=${3#$FMT}
+    F=${3%%:*}
+    XFMT=${3#$F}
     XFMT=${XFMT/:/_}
   else
-    FMT=$3
+    F=$3
     XFMT=""
   fi
 
-  IDX="$2$XFMT$FMT"
+  IDX="$2$XFMT$F"
   j=${TESTTYPES[$IDX]}
   if (( j == 0 ))
   then
@@ -176,7 +182,7 @@ function genOutname
     TESTTYPES[$IDX]=$(( j+1 ))
     J=$j
   fi 
-  OUTFILE="$1_$2$XFMT$J.$FMT"
+  OUTFILE="$1_$2$XFMT$J.$F"
 }
 
 function doTest
@@ -202,12 +208,6 @@ function doTest
       ;;
   esac
 
-  # clear TESTTYPES
-  for x in ${!TESTYPES[@]}
-  do
-    TESTTYPES[$x]=0
-  done
-
   for ((i=0;i<SUBTESTCNT;i++))
   do
     genOutname $TESTNAME ${ALG[$i]} ${FMT[$i]}
@@ -222,19 +222,24 @@ function doTest
     fi
     
     dot -K${ALG[$i]} -T${FMT[$i]} ${FLAGS[$i]} -o$OUTPATH $INFILE 2> errout
+    RVAL=$?
 
-    if [[ $GENERATE == 1 ]]
+    if [[ $RVAL != 0 || ! -s $OUTPATH ]]
+    then
+      print -u 2 "Test $TESTNAME:$i : == Layout failed =="
+    elif [[ $GENERATE == 1 ]]
     then
       continue
-    fi
-    
-    if [[ $? != 0 || -s errout ]]
-    then
-      print -u 2 "Test $TESTNAME:$i : == Crashed =="
     else
       doDiff $TESTNAME $i ${FMT[$i]}
     fi
   done
+
+  # clear TESTTYPES
+  for W in ${!TESTTYPES[@]}
+  do
+    TESTTYPES[$W]=0
+  done 
 }
 
 trap 'rm -f $TMPFILE $TMPINFILE errout; exit' 0 1 2 3 15
@@ -256,7 +261,7 @@ do
     ;;
   g )
     GENERATE=1
-    if [[! -d "$REFDIR" ]]
+    if [[ ! -d "$REFDIR" ]]
     then
 		mkdir $REFDIR
     fi
@@ -278,6 +283,26 @@ do
   esac
 done
 shift $((OPTIND-1))
+
+# Check environment and initialize
+
+if [[ ! -d "$REFDIR" ]]
+then
+  print -u 2 "Test data directory $REFDIR does not exit"
+  exit 1
+fi
+
+if [[ ! -d "$OUTDIR" ]]
+then
+  mkdir $OUTDIR
+fi
+
+if ! whence diffimg > /dev/null
+then
+  print -u 2 "diffimg program is not in your PATH"
+  exit 1
+fi
+exit
 
 exec 3< $TESTFILE
 while readTest
