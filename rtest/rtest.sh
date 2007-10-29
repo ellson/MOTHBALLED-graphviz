@@ -186,6 +186,16 @@ function genOutname
   OUTFILE="$1_$2$XFMT$J.$F"
 }
 
+# clear out all entries of associated array
+function aunset #name
+{
+	typeset i
+	nameref v=$1
+	for i in ${!v[@]}
+	do	unset v[$i]
+	done
+}
+
 function doTest
 {
   if (( SUBTESTCNT == 0 ))
@@ -231,16 +241,20 @@ function doTest
     elif [[ $GENERATE == 1 ]]
     then
       continue
-    else
+    elif [[ -r $REFDIR/$OUTFILE ]]
+    then
       doDiff $TESTNAME $i ${FMT[$i]}
+    else
+      print -u 2 "Test $TESTNAME:$i : == No file $REFDIR/$OUTFILE for comparison =="
     fi
   done
 
   # clear TESTTYPES
-  for W in ${!TESTTYPES[@]}
-  do
-    TESTTYPES[$W]=0
-  done 
+  aunset TESTTYPES
+#  for W in ${!TESTTYPES[@]}
+#  do
+#    TESTTYPES[$W]=0
+#  done 
 }
 
 trap 'rm -f $TMPFILE $TMPINFILE errout; exit' 0 1 2 3 15
