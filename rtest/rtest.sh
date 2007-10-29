@@ -131,7 +131,7 @@ function doDiff
    FILE2=$REFDIR/$OUTFILE
    F=${3%%:*}
    case $F in
-    ps )
+    ps | ps2 )
       mv $FILE1 $TMPFILE 
       awk -f strps.awk $TMPFILE > $FILE1
       awk -f strps.awk $FILE2 > $TMPFILE
