@@ -603,7 +603,7 @@ makePolyline(edge_t * e)
     make_polyline (line, &spl);
     ispline = N_GNEW(spl.pn, point);
     for (i=0; i < spl.pn; i++) {
-	PF2P (line.ps[i], ispline[i]);
+	PF2P (spl.ps[i], ispline[i]);
     }
 
     if (Verbose > 1)
@@ -683,14 +683,18 @@ static int _spline_edges(graph_t * g, double SEP, int edgetype)
 {
     node_t *n;
     edge_t *e;
-    Ppoly_t **obs;
+    Ppoly_t **obs = 0;
     Ppoly_t *obp;
     int i = 0, npoly;
-    vconfig_t *vconfig;
+    vconfig_t *vconfig = 0;
     path *P = NULL;
+    int useEdges = (Nop > 1);
+#ifdef ORTHO
+    extern void orthoEdges (Agraph_t* g, int useLbls, splineInfo* sinfo);
+#endif
 
     /* build configuration */
-    if ((edgetype == ET_SPLINE) || (edgetype == ET_PLINE)) {
+    if (edgetype != ET_LINE) {
 	obs = N_NEW(agnnodes(g), Ppoly_t *);
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    obp = makeObstacle(n, SEP);
@@ -706,20 +710,18 @@ static int _spline_edges(graph_t * g, double SEP, int edgetype)
     }
     npoly = i;
     if (obs) {
-	if (Plegal_arrangement(obs, npoly))
-	    vconfig = Pobsopen(obs, npoly);
-	else {
-	    if (Verbose)
-		fprintf(stderr,
-			"nodes touch - falling back to straight line edges\n");
-	    vconfig = 0;
+	if (Plegal_arrangement(obs, npoly)) {
+	    if (edgetype != ET_ORTHO) vconfig = Pobsopen(obs, npoly);
 	}
-    } else
-	vconfig = 0;
+	else if (Verbose)
+	    fprintf(stderr,
+		"nodes touch - falling back to straight line edges\n");
+    }
 
     /* route edges  */
     if (Verbose)
 	fprintf(stderr, "Creating edges using %s\n",
+	    (edgetype == ET_ORTHO) ? "orthogonal lines" :
 	    (vconfig ? (edgetype == ET_SPLINE ? "splines" : "polylines") : 
 		"line segments"));
     if (vconfig) {
@@ -730,12 +732,18 @@ static int _spline_edges(graph_t * g, double SEP, int edgetype)
 	    }
 	}
     }
+#ifdef ORTHO
+    else if (edgetype == ET_ORTHO) {
+	orthoEdges (g, 0, &sinfo);
+	useEdges = 1;
+    }
+#endif
 
     /* spline-drawing pass */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
 	    node_t *head = e->head;
-	    if ((Nop > 1) && ED_spl(e)) {
+	    if (useEdges && ED_spl(e)) {
 		addEdgeLabels(e,
 			      add_points(ND_coord_i(n), ED_tail_port(e).p),
 			      add_points(ND_coord_i(head),
@@ -758,9 +766,16 @@ static int _spline_edges(graph_t * g, double SEP, int edgetype)
 	}
     }
 
+    if (vconfig)
+	Pobsclose (vconfig);
     if (P) {
 	free(P->boxes);
 	free(P);
+    }
+    if (obs) {
+	for (i=0; i < npoly; i++)
+	    free (obs[i]);
+	free (obs);
     }
     return 0;
 }
@@ -848,12 +863,14 @@ void spline_edges0(graph_t * g)
     int et = EDGE_TYPE (g->root);
     neato_set_aspect(g);
     if (et == ET_NONE) return;
+#ifndef ORTHO
     if (et == ET_ORTHO) {
-	agerr (AGWARN, "Orthogonal edges not yet supported");
+	agerr (AGWARN, "Orthogonal edges not yet supported\n");
 	et = ET_PLINE; 
 	GD_flags(g->root) &= ~ET_ORTHO;
 	GD_flags(g->root) |= ET_PLINE;
     }
+#endif
     spline_edges1(g, et);
 }
 
