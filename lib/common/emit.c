@@ -1944,7 +1944,7 @@ static void init_job_dpi(GVJ_t *job, graph_t *g)
     if (GD_drawing(g)->dpi != 0) {
         job->dpi.x = job->dpi.y = (double)(GD_drawing(g)->dpi);
     }
-    else if (firstjob->device_sets_dpi) {
+    else if (firstjob && firstjob->device_sets_dpi) {
         job->dpi = firstjob->device_dpi;   /* some devices set dpi in initialize() */
     }
     else {
@@ -2725,15 +2725,19 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 
 	/* if we already have an active job list and the device doesn't support mutiple output files, or we are about to write to a different output device */
         firstjob = gvc->active_jobs;
-        if (firstjob
-	    && (!(firstjob->flags & GVDEVICE_DOES_PAGES)
-	      || (strcmp(job->output_langname,firstjob->output_langname)))) {
+        if (firstjob) {
+	    if (! (firstjob->flags & GVDEVICE_DOES_PAGES)
+	      || (strcmp(job->output_langname,firstjob->output_langname))) {
 
-	    gvrender_end_job(firstjob);
-            gvdevice_finalize(firstjob); /* finalize previous jobs */
+	        gvrender_end_job(firstjob);
+            	gvdevice_finalize(firstjob); /* finalize previous jobs */
 	    
-            gvc->active_jobs = NULL; /* clear active list */
-	    gvc->common.viewNum = 0;
+            	gvc->active_jobs = NULL; /* clear active list */
+	    	gvc->common.viewNum = 0;
+	    	prevjob = NULL;
+            }
+        }
+        else {
 	    prevjob = NULL;
         }
 

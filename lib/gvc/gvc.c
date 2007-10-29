@@ -88,7 +88,6 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
 {
     int rc;
     GVJ_t *job;
-    GVJ_t *firstjob;
 
     g = g->root;
 
@@ -110,11 +109,9 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
     if (out == NULL)
 	job->flags |= OUTPUT_NOT_REQUIRED;
     gvRenderJobs(gvc, g);
-    firstjob = gvc->active_jobs;
-    if (firstjob) {
-	gvrender_end_job(firstjob);
-	gvdevice_finalize(firstjob);
-    }
+    gvrender_end_job(job);
+    gvdevice_finalize(job);
+    fflush(job->output_file);
     gvjobs_delete(gvc);
 
     return 0;
@@ -125,7 +122,6 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
 {
     int rc;
     GVJ_t *job;
-    GVJ_t *firstjob;
 
     g = g->root;
 
@@ -145,11 +141,9 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
     }
     gvjobs_output_filename(gvc, filename);
     gvRenderJobs(gvc, g);
-    firstjob = gvc->active_jobs;
-    if (firstjob) {
-	gvrender_end_job(firstjob);
-	gvdevice_finalize(firstjob);
-    }
+    gvrender_end_job(job);
+    gvdevice_finalize(job);
+    fflush(job->output_file);
     gvjobs_delete(gvc);
 
     return 0;
