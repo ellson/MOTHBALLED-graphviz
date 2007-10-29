@@ -2100,6 +2100,7 @@ AC_CONFIG_FILES(Makefile
 	tclpkg/tkspline/Makefile
 	tclpkg/tkspline/demo/Makefile
 	tclpkg/gv/Makefile
+	rtest/Makefile
 	graphviz.spec
 	Doxyfile
 	)

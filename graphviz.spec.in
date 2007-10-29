@@ -495,6 +495,22 @@ Provides some additional PDF and HTML documentation for graphviz.
 %defattr(-,root,root,-)
 %doc __doc/*
 
+#-- graphviz-rtest rpm ----------------------------------------------
+%package rtest
+Group:          Applications/Multimedia
+Summary:        Regression tests
+
+%description rtest
+Provides a regression test script and data files for graphviz tools
+
+%files rtest
+%defattr(-,root,root,-)
+%dir %{_datadir}/graphviz
+%{_datadir}/graphviz/rtest
+%{_datadir}/graphviz/rtest/graphs
+%{_datadir}/graphviz/rtest/nshare
+
+
 #-- building --------------------------------------------------
 
 %prep
