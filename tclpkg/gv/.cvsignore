@@ -13,6 +13,15 @@ gv.cs
 gv.java
 gv.ml
 gv.mli
+gv.cma
+gv.cmi
+gv.cmo
+gv.cmx
+gv.cmxa
+swig.cmi
+swig.cmo
+swig.ml
+swig.mli
 gv.php
 gv.pm
 gv.py
