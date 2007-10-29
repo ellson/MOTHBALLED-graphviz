@@ -2031,10 +2031,12 @@ AC_CONFIG_FILES(Makefile
 	lib/Makefile
 	lib/cdt/Makefile
 	lib/cdt/libcdt.pc
-	lib/agraph/Makefile
-	lib/agraph/libagraph.pc
 	lib/graph/Makefile
 	lib/graph/libgraph.pc
+	lib/agraph/Makefile
+	lib/agraph/libagraph.pc
+	lib/cgraph/Makefile
+	lib/cgraph/libcgraph.pc
 	lib/agutil/Makefile
 	lib/gd/Makefile
 	lib/pathplan/Makefile
