@@ -225,11 +225,10 @@ dot dot -Gsplines=line
 dot dot -Gsplines=polyline
 #dot dot -Gsplines=ortho
 
-# bug with splines=polyline
 neatosplines
 overlap.dot
 neato dot -Goverlap=false -Gsplines=splines
-#neato dot -Goverlap=false -Gsplines=polyline
+neato dot -Goverlap=false -Gsplines=polyline
 #neato dot -Goverlap=false -Gsplines=ortho
 
 style
