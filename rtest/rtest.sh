@@ -302,7 +302,6 @@ then
   print -u 2 "diffimg program is not in your PATH"
   exit 1
 fi
-exit
 
 exec 3< $TESTFILE
 while readTest
