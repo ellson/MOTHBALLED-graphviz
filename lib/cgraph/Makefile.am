@@ -13,8 +13,8 @@ noinst_HEADERS = agxbuf.h bla.h cghdr.h malloc.h vmstub.h
 noinst_LTLIBRARIES = libcgraph_C.la
 lib_LTLIBRARIES = libcgraph.la
 pkgconfig_DATA = libcgraph.pc
-#man_MANS = cgraph.3
-#pdf_DATA = cgraph.pdf
+man_MANS = cgraph.3
+pdf_DATA = cgraph.pdf
 
 libcgraph_C_la_SOURCES = agerror.c agxbuf.c apply.c attr.c edge.c \
 	flatten.c graph.c grammar.y id.c imap.c io.c main.c mem.c node.c \
