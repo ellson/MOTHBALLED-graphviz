@@ -1,0 +1,13 @@
+digraph G {
+	graph [nodesep="0.5"];
+	node [label="\N", shape=box];
+	graph [bb="0,0,144,108"];
+	aaa [pos="27,90", width="0.75", height="0.50"];
+	bbb [pos="27,18", width="0.75", height="0.50"];
+	BBB [pos="117,18", width="0.75", height="0.50"];
+	AAA [pos="117,90", width="0.75", height="0.50"];
+	aaa -> bbb [pos="e,27,36 27,72 27,64 27,55 27,46"];
+	aaa -> BBB [pos="e,95,36 50,72 61,63 75,52 87,42"];
+	AAA -> BBB [pos="e,117,36 117,72 117,64 117,55 117,46"];
+	AAA -> bbb [pos="e,49,36 94,72 83,63 69,52 57,42"];
+}
