@@ -1,0 +1,87 @@
+digraph G {
+	graph [ranksep="1.5", splines=true, overlap=false];
+	node [label="\N", shape=circle, width="0.5"];
+	edge [dir=none, labeldistance=3];
+	graph [bb="0,0,900,324"];
+	{
+		graph [bb=""];
+		node [label=""];
+		edge [samehead=ahead,
+			samearrowhead=1];
+		a [width="0.50", pos="18,306", height="0.50"];
+		Z [width="0.50", pos="450,162", height="0.50"];
+		b [width="0.50", pos="72,306", height="0.50"];
+		c [width="0.50", pos="126,306", height="0.50"];
+		d [width="0.50", pos="180,306", height="0.50"];
+		e [width="0.50", pos="234,306", height="0.50"];
+		f [width="0.50", pos="288,306", height="0.50"];
+		g [width="0.50", pos="342,306", height="0.50"];
+		h [width="0.50", pos="396,306", height="0.50"];
+		i [width="0.50", pos="450,306", height="0.50"];
+		j [width="0.50", pos="504,306", height="0.50"];
+		k [width="0.50", pos="558,306", height="0.50"];
+		l [width="0.50", pos="612,306", height="0.50"];
+		m [width="0.50", pos="666,306", height="0.50"];
+		n [width="0.50", pos="720,306", height="0.50"];
+		o [width="0.50", pos="774,306", height="0.50"];
+		p [width="0.50", pos="828,306", height="0.50"];
+		q [width="0.50", pos="882,306", height="0.50"];
+		a -> Z [arrowtail=none, taillabel=none, pos="32,295 36,292 41,290 45,288 215,211 450,180 450,180", tail_lp="47,269"];
+		b -> Z [arrowtail=normal, taillabel=normal, pos="s,86,295 95,290 96,289 98,289 99,288 247,217 450,180 450,180", tail_lp="104,271"];
+		c -> Z [arrowtail=inv, taillabel=inv, pos="s,141,295 150,290 151,289 152,289 153,288 279,224 450,180 450,180", tail_lp="159,271"];
+		d -> Z [arrowtail=dot, taillabel=dot, pos="s,195,295 202,291 204,290 205,289 207,288 311,231 450,180 450,180", tail_lp="212,271"];
+		e -> Z [arrowtail=odot, taillabel=odot, pos="s,249,296 256,291 257,290 259,289 261,288 344,237 450,180 450,180", tail_lp="264,270"];
+		f -> Z [arrowtail=invdot, taillabel=invdot, pos="s,302,295 316,284 363,248 450,180 450,180", tail_lp="316,268"];
+		g -> Z [arrowtail=invodot, taillabel=invodot, pos="s,354,292 366,278 397,241 450,180 450,180", tail_lp="362,263"];
+		h -> Z [arrowtail=open, taillabel=open, pos="s,403,289 407,279 423,243 450,180 450,180", tail_lp="401,259"];
+		i -> Z [arrowtail=halfopen, taillabel=halfopen, arrowhead=inv, headlabel=samehead, pos="s,450,288 e,450,180 450,278 450,250 450,209 450,190", head_lp="463,207", tail_lp="437,261"];
+		j -> Z [arrowtail=empty, taillabel=empty, pos="s,497,289 493,279 477,243 450,180 450,180", tail_lp="475,268"];
+		k -> Z [arrowtail=invempty, taillabel=invempty, pos="s,546,292 539,284 508,248 450,180 450,180", tail_lp="519,280"];
+		l -> Z [arrowtail=diamond, taillabel=diamond, pos="s,598,295 588,288 543,252 450,180 450,180", tail_lp="568,290"];
+		m -> Z [arrowtail=odiamond, taillabel=odiamond, pos="s,651,296 641,289 640,289 640,288 639,288 556,237 450,180 450,180", tail_lp="621,291"];
+		n -> Z [arrowtail=box, taillabel=box, pos="s,705,295 696,290 695,289 694,289 693,288 589,231 450,180 450,180", tail_lp="675,293"];
+		o -> Z [arrowtail=obox, taillabel=obox, pos="s,759,295 750,290 749,289 748,289 747,288 621,224 450,180 450,180", tail_lp="729,293"];
+		p -> Z [arrowtail=tee, taillabel=tee, pos="s,814,295 809,292 806,291 804,289 801,288 653,217 450,180 450,180", tail_lp="784,292"];
+		q -> Z [arrowtail=crow, taillabel=crow, pos="s,868,295 859,290 858,289 856,289 855,288 685,211 450,180 450,180", tail_lp="838,293"];
+	}
+	{
+		graph [bb=""];
+		node [label=""];
+		edge [sametail=atail,
+			samearrowtail=1];
+		A [width="0.50", pos="18,18", height="0.50"];
+		B [width="0.50", pos="72,18", height="0.50"];
+		C [width="0.50", pos="126,18", height="0.50"];
+		D [width="0.50", pos="180,18", height="0.50"];
+		E [width="0.50", pos="234,18", height="0.50"];
+		F [width="0.50", pos="288,18", height="0.50"];
+		G [width="0.50", pos="342,18", height="0.50"];
+		H [width="0.50", pos="396,18", height="0.50"];
+		I [width="0.50", pos="450,18", height="0.50"];
+		J [width="0.50", pos="504,18", height="0.50"];
+		K [width="0.50", pos="558,18", height="0.50"];
+		L [width="0.50", pos="612,18", height="0.50"];
+		M [width="0.50", pos="666,18", height="0.50"];
+		N [width="0.50", pos="720,18", height="0.50"];
+		O [width="0.50", pos="774,18", height="0.50"];
+		P [width="0.50", pos="828,18", height="0.50"];
+		Q [width="0.50", pos="882,18", height="0.50"];
+		Z -> A [arrowhead=none, headlabel=none, pos="450,144 450,144 215,112 45,36 41,34 36,31 32,29", head_lp="62,30"];
+		Z -> B [arrowhead=normal, headlabel=normal, pos="e,87,29 450,144 450,144 247,106 99,36 98,35 97,35 96,34", head_lp="117,31"];
+		Z -> C [arrowhead=inv, headlabel=inv, pos="e,141,28 450,144 450,144 279,99 153,36 152,35 150,35 149,34", head_lp="170,34"];
+		Z -> D [arrowhead=dot, headlabel=dot, pos="e,195,28 450,144 450,144 311,92 207,36 205,35 203,34 202,33", head_lp="224,33"];
+		Z -> E [arrowhead=odot, headlabel=odot, pos="e,249,28 450,144 450,144 344,86 261,36 259,35 257,34 256,32", head_lp="279,30"];
+		Z -> F [arrowhead=invdot, headlabel=invdot, pos="e,302,29 450,144 450,144 363,76 316,40", head_lp="331,36"];
+		Z -> G [arrowhead=invodot, headlabel=invodot, pos="e,354,32 450,144 450,144 397,83 366,46", head_lp="381,44"];
+		Z -> H [arrowhead=open, headlabel=open, pos="e,403,35 450,144 450,144 423,81 407,45", head_lp="425,56"];
+		Z -> I [arrowtail=inv, taillabel=sametail, arrowhead=halfopen, headlabel=halfopen, pos="s,450,144 e,450,36 450,134 450,115 450,74 450,46", head_lp="463,63", tail_lp="437,117"];
+		Z -> J [arrowhead=empty, headlabel=empty, pos="e,497,35 450,144 450,144 477,81 493,45", head_lp="499,65"];
+		Z -> K [arrowhead=invempty, headlabel=invempty, pos="e,546,32 450,144 450,144 508,76 539,40", head_lp="538,61"];
+		Z -> L [arrowhead=diamond, headlabel=diamond, pos="e,598,29 450,144 450,144 543,72 588,36", head_lp="583,55"];
+		Z -> M [arrowhead=odiamond, headlabel=odiamond, pos="e,651,28 450,144 450,144 556,86 639,36 640,36 640,35 641,35", head_lp="636,54"];
+		Z -> N [arrowhead=box, headlabel=box, pos="e,705,28 450,144 450,144 589,92 693,36 694,35 696,35 697,34", head_lp="691,54"];
+		Z -> O [arrowhead=obox, headlabel=obox, pos="e,759,28 450,144 450,144 621,99 747,36 748,35 750,35 751,34", head_lp="745,54"];
+		Z -> P [arrowhead=tee, headlabel=tee, pos="e,813,29 450,144 450,144 653,106 801,36 804,35 806,33 809,32", head_lp="799,55"];
+		Z -> Q [arrowhead=crow, headlabel=crow, pos="e,868,29 450,144 450,144 685,112 855,36 856,35 858,35 859,34", head_lp="850,53"];
+	}
+}
