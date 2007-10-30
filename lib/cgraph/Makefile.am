@@ -17,8 +17,8 @@ man_MANS = cgraph.3
 pdf_DATA = cgraph.pdf
 
 libcgraph_C_la_SOURCES = agerror.c agxbuf.c apply.c attr.c edge.c \
-	flatten.c graph.c grammar.y id.c imap.c io.c main.c mem.c node.c \
-	pend.c rec.c refstr.c scan.l subg.c utils.c write.c
+	flatten.c graph.c grammar.y id.c imap.c io.c mem.c node.c \
+	obj.c pend.c rec.c refstr.c scan.l subg.c utils.c write.c
 
 libcgraph_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
 libcgraph_la_SOURCES = $(libcgraph_C_la_SOURCES)
