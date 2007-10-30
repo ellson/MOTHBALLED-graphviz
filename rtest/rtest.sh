@@ -28,7 +28,8 @@ typeset ALG[10]
 typeset FMT[10]
 typeset FLAGS[10]
 TMPINFILE=tmp$$.dot
-TMPFILE=tmpout$$
+TMPFILE1=tmpnew$$
+TMPFILE2=tmpref$$
 
 # Read single line, storing it in LINE and update count.
 # Return 0 on success.
@@ -132,16 +133,14 @@ function doDiff
    F=${3%%:*}
    case $F in
     ps | ps2 )
-      mv $FILE1 $TMPFILE 
-      awk -f strps.awk $TMPFILE > $FILE1
-      awk -f strps.awk $FILE2 > $TMPFILE
-      diff -q $FILE1 $TMPFILE > /dev/null 
+      awk -f strps.awk $FILE1 > $TMPFILE1
+      awk -f strps.awk $FILE2 > $TMPFILE2
+      diff -q $TMPFILE1 $TMPFILE2 > /dev/null 
       ;;
     svg )
-      mv $FILE1 $TMPFILE 
-      sed '/^<!--/d' < $TMPFILE | sed '/-->$/d' > $FILE1
-      sed '/^<!--/d' < $FILE2 | sed '/-->$/d' > $TMPFILE
-      diff -q $FILE1 $TMPFILE > /dev/null 
+      sed '/^<!--/d' < $FILE1 | sed '/-->$/d' > $TMPFILE1
+      sed '/^<!--/d' < $FILE2 | sed '/-->$/d' > $TMPFILE2
+      diff -q $TMPFILE1 $TMPFILE2 > /dev/null 
       ;;
     png )
       diffimg $FILE1 $FILE2 > /dev/null 
@@ -257,7 +256,7 @@ function doTest
 #  done 
 }
 
-trap 'rm -f $TMPFILE $TMPINFILE errout; exit' 0 1 2 3 15
+trap 'rm -f $TMPFILE1 $TMPFILE2 $TMPINFILE errout; exit' 0 1 2 3 15
 
 Usage='rtest [-gvn]\n
  -g : generate test data\n
