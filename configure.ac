@@ -859,6 +859,165 @@ fi
 AM_CONDITIONAL(WITH_PYTHON, [test "x$PYTHON" != "x"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for PYTHON23
+
+if test "x$SWIG" != "x"; then
+AC_ARG_ENABLE(python23,
+  [AC_HELP_STRING([--enable-python23=no], [python23 language bindings])],
+  [], [enable_python23=no])
+if test "x$enable_python23" = "xyes"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+	PYTHON23=
+	AC_MSG_WARN([swig does not support python23. The PYTHON23 packages will not be built])
+else
+AC_CHECK_PROG(PYTHON23,python2.3,python2.3)
+if test "x$PYTHON23" != "x"; then
+  PYTHON23_VERSION=`$PYTHON23 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+  if test "x$PYTHON23_VERSION" = "x"; then
+    PYTHON23=
+  else
+    PYTHON23_VERSION_MAJOR=`echo $PYTHON23_VERSION | cut -d '.' -f 1`
+    PYTHON23_VERSION_MINOR=`echo $PYTHON23_VERSION | cut -d '.' -f 2`
+    PYTHON23_VERSION_SHORT=$PYTHON23_VERSION_MAJOR.$PYTHON23_VERSION_MINOR
+    if test $PYTHON23_VERSION_MAJOR -lt 3; then
+      if test $PYTHON23_VERSION_MAJOR -lt 2; then
+	PYTHON23=
+      else
+        if test $PYTHON23_VERSION_MINOR -lt 3; then
+	  PYTHON23=
+        fi
+      fi
+    fi
+  fi
+  if test "x$PYTHON23" = "x"; then
+      AC_MSG_WARN([Can't use Python version $PYTHON23_VERSION  The Python packages will not be built])
+  else
+    PYTHON23_PREFIX=`$PYTHON23 -c "import sys; print sys.prefix"`
+    PYTHON23_INCLUDES=-I$PYTHON23_PREFIX/include/python$PYTHON23_VERSION_SHORT
+    PYTHON23_LIBS="-L$PYTHON23_PREFIX/lib$LIBPOSTFIX"
+    save_CPPFLAGS=$CPPFLAGS
+    CPPFLAGS="$CPPFLAGS $PYTHON23_INCLUDES"
+    AC_CHECK_HEADER(Python.h,,[
+      AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
+      PYTHON23=
+      ])
+    CPPFLAGS=$save_CPPFLAGS
+  fi
+fi
+AC_SUBST(PYTHON23_INCLUDES)
+AC_SUBST(PYTHON23_LIBS)
+fi
+fi
+fi
+AM_CONDITIONAL(WITH_PYTHON23, [test "x$PYTHON23" != "x"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for PYTHON24
+
+if test "x$SWIG" != "x"; then
+AC_ARG_ENABLE(python24,
+  [AC_HELP_STRING([--enable-python24=no], [python24 language bindings])],
+  [], [enable_python24=no])
+if test "x$enable_python24" = "xyes"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+	PYTHON24=
+	AC_MSG_WARN([swig does not support python24. The PYTHON24 packages will not be built])
+else
+AC_CHECK_PROG(PYTHON24,python2.4,python2.4)
+if test "x$PYTHON24" != "x"; then
+  PYTHON24_VERSION=`$PYTHON24 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+  if test "x$PYTHON24_VERSION" = "x"; then
+    PYTHON24=
+  else
+    PYTHON24_VERSION_MAJOR=`echo $PYTHON24_VERSION | cut -d '.' -f 1`
+    PYTHON24_VERSION_MINOR=`echo $PYTHON24_VERSION | cut -d '.' -f 2`
+    PYTHON24_VERSION_SHORT=$PYTHON24_VERSION_MAJOR.$PYTHON24_VERSION_MINOR
+    if test $PYTHON24_VERSION_MAJOR -lt 3; then
+      if test $PYTHON24_VERSION_MAJOR -lt 2; then
+	PYTHON24=
+      else
+        if test $PYTHON24_VERSION_MINOR -lt 3; then
+	  PYTHON24=
+        fi
+      fi
+    fi
+  fi
+  if test "x$PYTHON24" = "x"; then
+      AC_MSG_WARN([Can't use Python version $PYTHON24_VERSION  The Python packages will not be built])
+  else
+    PYTHON24_PREFIX=`$PYTHON24 -c "import sys; print sys.prefix"`
+    PYTHON24_INCLUDES=-I$PYTHON24_PREFIX/include/python$PYTHON24_VERSION_SHORT
+    PYTHON24_LIBS="-L$PYTHON24_PREFIX/lib$LIBPOSTFIX"
+    save_CPPFLAGS=$CPPFLAGS
+    CPPFLAGS="$CPPFLAGS $PYTHON24_INCLUDES"
+    AC_CHECK_HEADER(Python.h,,[
+      AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
+      PYTHON24=
+      ])
+    CPPFLAGS=$save_CPPFLAGS
+  fi
+fi
+AC_SUBST(PYTHON24_INCLUDES)
+AC_SUBST(PYTHON24_LIBS)
+fi
+fi
+fi
+AM_CONDITIONAL(WITH_PYTHON24, [test "x$PYTHON24" != "x"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for PYTHON25
+
+if test "x$SWIG" != "x"; then
+AC_ARG_ENABLE(python25,
+  [AC_HELP_STRING([--enable-python25=no], [python25 language bindings])],
+  [], [enable_python25=no])
+if test "x$enable_python25" = "xyes"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+	PYTHON25=
+	AC_MSG_WARN([swig does not support python25. The PYTHON25 packages will not be built])
+else
+AC_CHECK_PROG(PYTHON25,python2.5,python2.5)
+if test "x$PYTHON25" != "x"; then
+  PYTHON25_VERSION=`$PYTHON25 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+  if test "x$PYTHON25_VERSION" = "x"; then
+    PYTHON25=
+  else
+    PYTHON25_VERSION_MAJOR=`echo $PYTHON25_VERSION | cut -d '.' -f 1`
+    PYTHON25_VERSION_MINOR=`echo $PYTHON25_VERSION | cut -d '.' -f 2`
+    PYTHON25_VERSION_SHORT=$PYTHON25_VERSION_MAJOR.$PYTHON25_VERSION_MINOR
+    if test $PYTHON25_VERSION_MAJOR -lt 3; then
+      if test $PYTHON25_VERSION_MAJOR -lt 2; then
+	PYTHON25=
+      else
+        if test $PYTHON25_VERSION_MINOR -lt 3; then
+	  PYTHON25=
+        fi
+      fi
+    fi
+  fi
+  if test "x$PYTHON25" = "x"; then
+      AC_MSG_WARN([Can't use Python version $PYTHON25_VERSION  The Python packages will not be built])
+  else
+    PYTHON25_PREFIX=`$PYTHON25 -c "import sys; print sys.prefix"`
+    PYTHON25_INCLUDES=-I$PYTHON25_PREFIX/include/python$PYTHON25_VERSION_SHORT
+    PYTHON25_LIBS="-L$PYTHON25_PREFIX/lib$LIBPOSTFIX"
+    save_CPPFLAGS=$CPPFLAGS
+    CPPFLAGS="$CPPFLAGS $PYTHON25_INCLUDES"
+    AC_CHECK_HEADER(Python.h,,[
+      AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
+      PYTHON25=
+      ])
+    CPPFLAGS=$save_CPPFLAGS
+  fi
+fi
+AC_SUBST(PYTHON25_INCLUDES)
+AC_SUBST(PYTHON25_LIBS)
+fi
+fi
+fi
+AM_CONDITIONAL(WITH_PYTHON25, [test "x$PYTHON25" != "x"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for RUBY
 
 if test "x$SWIG" != "x"; then

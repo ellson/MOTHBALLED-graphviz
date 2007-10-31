@@ -118,6 +118,33 @@ libgv_python_la_LDFLAGS = -module -avoid-version
 gv_python.cpp $(PYTHON_data): gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
 
+pkgpython23dir = $(pkglibdir)/python23
+PYTHON23_data = gv.py
+nodist_libgv_python23_la_SOURCES = gv_python23.cpp $(PYTHON23_data)
+libgv_python23_la_SOURCES = $(BASESOURCES)
+libgv_python23_la_LIBADD = $(BASELIBS) @PYTHON23_LIBS@
+libgv_python23_la_LDFLAGS = -module -avoid-version
+gv_python23.cpp $(PYTHON23_data): gv.i
+	$(SWIG) -c++ -python -o gv_python23.cpp $(srcdir)/gv.i
+
+pkgpython24dir = $(pkglibdir)/python24
+PYTHON24_data = gv.py
+nodist_libgv_python24_la_SOURCES = gv_python24.cpp $(PYTHON24_data)
+libgv_python24_la_SOURCES = $(BASESOURCES)
+libgv_python24_la_LIBADD = $(BASELIBS) @PYTHON24_LIBS@
+libgv_python24_la_LDFLAGS = -module -avoid-version
+gv_python24.cpp $(PYTHON24_data): gv.i
+	$(SWIG) -c++ -python -o gv_python24.cpp $(srcdir)/gv.i
+
+pkgpython25dir = $(pkglibdir)/python25
+PYTHON25_data = gv.py
+nodist_libgv_python25_la_SOURCES = gv_python25.cpp $(PYTHON25_data)
+libgv_python25_la_SOURCES = $(BASESOURCES)
+libgv_python25_la_LIBADD = $(BASELIBS) @PYTHON25_LIBS@
+libgv_python25_la_LDFLAGS = -module -avoid-version
+gv_python25.cpp $(PYTHON25_data): gv.i
+	$(SWIG) -c++ -python -o gv_python25.cpp $(srcdir)/gv.i
+
 pkgrubydir = $(pkglibdir)/ruby
 RUBY_data = 
 nodist_libgv_ruby_la_SOURCES = gv_ruby.cpp $(RUBY_data)
@@ -207,6 +234,27 @@ man_MANS += gv_python.n
 pkgpython_LTLIBRARIES = libgv_python.la
 TESTS += test_python
 endif
+if WITH_PYTHON23
+pkgpython23_DATA = $(PYTHON23_data)
+man_MANS += gv_python.n
+#pdf_DATA += gv_python.pdf
+pkgpython23_LTLIBRARIES = libgv_python23.la
+#TESTS += test_python23
+endif
+if WITH_PYTHON24
+pkgpython24_DATA = $(PYTHON24_data)
+man_MANS += gv_python.n
+#pdf_DATA += gv_python.pdf
+pkgpython24_LTLIBRARIES = libgv_python24.la
+#TESTS += test_python24
+endif
+if WITH_PYTHON25
+pkgpython25_DATA = $(PYTHON25_data)
+man_MANS += gv_python.n
+#pdf_DATA += gv_python.pdf
+pkgpython25_LTLIBRARIES = libgv_python25.la
+#TESTS += test_python25
+endif
 if WITH_RUBY
 pkgruby_DATA = $(RUBY_data)
 man_MANS += gv_ruby.n
@@ -244,6 +292,9 @@ install-data-hook:
 	(cd $(DESTDIR)$(pkgluadir);    rm -f gv.so;  $(LN_S) libgv_lua.so gv.so;)
 	(cd $(DESTDIR)$(pkgperldir);   rm -f gv.so;  $(LN_S) libgv_perl.so gv.so;)
 	(cd $(DESTDIR)$(pkgpythondir); rm -f _gv.so; $(LN_S) libgv_python.so _gv.so;)
+	(cd $(DESTDIR)$(pkgpython23dir); rm -f _gv.so; $(LN_S) libgv_python.so _gv.so;)
+	(cd $(DESTDIR)$(pkgpython24dir); rm -f _gv.so; $(LN_S) libgv_python.so _gv.so;)
+	(cd $(DESTDIR)$(pkgpython25dir); rm -f _gv.so; $(LN_S) libgv_python.so _gv.so;)
 	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;  $(LN_S) libgv_ruby.so gv.so;)
 	(cd $(DESTDIR)$(pkgtcldir);    rm -f gv.so;  $(LN_S) libgv_tcl.so gv.so;)
 
@@ -251,6 +302,9 @@ uninstall-hook:
 	(cd $(DESTDIR)$(pkgluadir);    rm -f gv.so;)
 	(cd $(DESTDIR)$(pkgperldir);   rm -f gv.so;)
 	(cd $(DESTDIR)$(pkgpythondir); rm -f _gv.so;)
+	(cd $(DESTDIR)$(pkgpython23dir); rm -f _gv.so;)
+	(cd $(DESTDIR)$(pkgpython24dir); rm -f _gv.so;)
+	(cd $(DESTDIR)$(pkgpython25dir); rm -f _gv.so;)
 	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;)
 	(cd $(DESTDIR)$(pkgtcldir);    rm -f gv.so;)
 
@@ -349,6 +403,9 @@ CLEANFILES = test_*/* pkgIndex.tcl \
 	gv_perl.cpp $(PERL_data) \
 	gv_php.cpp $(PHP_data) \
 	gv_python.cpp $(PYTHON_data) gv.pyc \
+	gv_python23.cpp $(PYTHON23_data) gv.pyc \
+	gv_python24.cpp $(PYTHON24_data) gv.pyc \
+	gv_python25.cpp $(PYTHON25_data) gv.pyc \
 	gv_ruby.cpp $(RUBY_data) \
 	gv_tcl.cpp $(TCL_data) pkgIndex.tcl
 
