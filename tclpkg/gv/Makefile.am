@@ -119,31 +119,22 @@ gv_python.cpp $(PYTHON_data): gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
 
 pkgpython23dir = $(pkglibdir)/python23
-PYTHON23_data = gv.py
-nodist_libgv_python23_la_SOURCES = gv_python23.cpp $(PYTHON23_data)
+nodist_libgv_python23_la_SOURCES = $(libgv_python_la_SOURCES)
 libgv_python23_la_SOURCES = $(BASESOURCES)
 libgv_python23_la_LIBADD = $(BASELIBS) @PYTHON23_LIBS@
 libgv_python23_la_LDFLAGS = -module -avoid-version
-gv_python23.cpp $(PYTHON23_data): gv.i
-	$(SWIG) -c++ -python -o gv_python23.cpp $(srcdir)/gv.i
 
 pkgpython24dir = $(pkglibdir)/python24
-PYTHON24_data = gv.py
-nodist_libgv_python24_la_SOURCES = gv_python24.cpp $(PYTHON24_data)
+nodist_libgv_python24_la_SOURCES = $(libgv_python_la_SOURCES)
 libgv_python24_la_SOURCES = $(BASESOURCES)
 libgv_python24_la_LIBADD = $(BASELIBS) @PYTHON24_LIBS@
 libgv_python24_la_LDFLAGS = -module -avoid-version
-gv_python24.cpp $(PYTHON24_data): gv.i
-	$(SWIG) -c++ -python -o gv_python24.cpp $(srcdir)/gv.i
 
 pkgpython25dir = $(pkglibdir)/python25
-PYTHON25_data = gv.py
-nodist_libgv_python25_la_SOURCES = gv_python25.cpp $(PYTHON25_data)
+nodist_libgv_python25_la_SOURCES = $(libgv_python_la_SOURCES)
 libgv_python25_la_SOURCES = $(BASESOURCES)
 libgv_python25_la_LIBADD = $(BASELIBS) @PYTHON25_LIBS@
 libgv_python25_la_LDFLAGS = -module -avoid-version
-gv_python25.cpp $(PYTHON25_data): gv.i
-	$(SWIG) -c++ -python -o gv_python25.cpp $(srcdir)/gv.i
 
 pkgrubydir = $(pkglibdir)/ruby
 RUBY_data = 
