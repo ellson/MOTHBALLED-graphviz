@@ -23,6 +23,9 @@
 #include <string.h>
 #include "gvplugin_textlayout.h"
 
+typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
+extern int agerr(agerrlevel_t level, char *fmt, ...);
+
 #ifdef HAVE_LIBGD
 #include "gd.h"
 
@@ -145,7 +148,7 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 				fontsize, 0, 0, 0, para->str, &strex);
 
 	if (err) {
-	    fprintf(stderr,"%s\n", err);
+	    agerr(AGERR,"%s\n", err);
 	    return FALSE; /* indicate error */
 	}
 
