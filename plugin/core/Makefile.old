@@ -15,7 +15,7 @@ DEFINES = -DHAVE_CONFIG_H
 
 OBJS = gvplugin_core.o gvrender_core_ps.o gvrender_core_svg.o \
           gvrender_core_map.o gvloadimage_core.o gvrender_core_fig.o \
-          gvrender_core.o gvrender_core_dot.o gvrender_core_vml.o
+          gvrender_core_dot.o gvrender_core_vml.o
 
 libgvplugin_core.a : $(OBJS)
 	$(RM) libgvplugin_core.a
