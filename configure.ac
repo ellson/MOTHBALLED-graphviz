@@ -1682,9 +1682,6 @@ AM_GLIB_GNU_GETTEXT
 dnl -----------------------------------
 dnl INCLUDES and LIBS for MING (SWF renderer)
 
-GV_PATH_MING
-AM_CONDITIONAL(WITH_MING, [ test x"$MAKESWF" != x ])
-
 AC_ARG_WITH(libming,
   [AC_HELP_STRING([--with-libming=yes], [libming library (plugin for -Tswf)])],
   [], [with_libming=yes])

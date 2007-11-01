@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt \
 	$(MING_CFLAGS)
 
-if WITH_MING
+if WITH_LIBMING
 noinst_LTLIBRARIES = libgvplugin_ming_C.la
 pkglib_LTLIBRARIES = libgvplugin_ming.la
 pkglib_DATA = Bitstream_Vera_Sans.fdb  Bitstream_Vera_Serif.fdb
