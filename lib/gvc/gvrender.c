@@ -932,12 +932,12 @@ void gvrender_comment(GVJ_t * job, char *str)
 
 static imagescale_t get_imagescale(char *s)
 {
-        if (*s == '\0') return IMAGESCALE_YES;
+        if (*s == '\0') return IMAGESCALE_FALSE;
         if (!strcasecmp(s, "width")) return IMAGESCALE_WIDTH;
         if (!strcasecmp(s, "height")) return IMAGESCALE_HEIGHT;
         if (!strcasecmp(s, "both")) return IMAGESCALE_BOTH;
-        if (mapbool(s)) return IMAGESCALE_YES;
-        return IMAGESCALE_NO;
+        if (mapbool(s)) return IMAGESCALE_TRUE;
+        return IMAGESCALE_FALSE;
 }
 
 /* gvrender_usershape:
@@ -980,7 +980,7 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n,
     scaley = ph / ih;
 
     switch (get_imagescale(imagescale)) {
-    case IMAGESCALE_YES:
+    case IMAGESCALE_TRUE:
         /* keep aspect ratio fixed by just using the smaller scale */
 	if (scalex < scaley) {
 	    iw *= scalex;
@@ -1000,7 +1000,7 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n,
 	iw *= scalex;
 	ih *= scaley;
 	break;
-    case IMAGESCALE_NO:
+    case IMAGESCALE_FALSE:
     default:
 	break;
     }
