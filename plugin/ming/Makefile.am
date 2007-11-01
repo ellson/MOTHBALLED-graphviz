@@ -8,9 +8,9 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
-	$(LIBMING_CFLAGS)
+	$(MING_CFLAGS)
 
-if WITH_LIBMING
+if WITH_MING
 noinst_LTLIBRARIES = libgvplugin_ming_C.la
 pkglib_LTLIBRARIES = libgvplugin_ming.la
 pkglib_DATA = Bitstream_Vera_Sans.fdb  Bitstream_Vera_Serif.fdb
@@ -22,6 +22,6 @@ libgvplugin_ming_C_la_SOURCES = \
 
 libgvplugin_ming_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_ming_la_SOURCES = $(libgvplugin_ming_C_la_SOURCES)
-libgvplugin_ming_la_LIBADD = @LIBMING_LIBS@ @MATH_LIBS@
+libgvplugin_ming_la_LIBADD = @MING_LIBS@ @MATH_LIBS@
 
 EXTRA_DIST = Makefile.old Bitstream_Vera_Sans.fdb Bitstream_Vera_Serif.fdb

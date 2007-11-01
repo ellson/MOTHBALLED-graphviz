@@ -41,7 +41,6 @@ Prefix: /usr
 %define TCL    1
 %define IPSEPCOLA --without-ipsepcola
 %define MYLIBGD --with-mylibgd
-%define MING --without-ming
 %define PANGOCAIRO --without-pangocairo
 %define DEVIL 0
 %define MING 0
@@ -145,6 +144,10 @@ BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel 
 %define MYLIBGD --without-mylibgd
 %define GDK_PIXBUF --with-gdk-pixbuf
 BuildRequires: gd gd-devel perl-devel DevIL-devel
+%endif
+%if "%fedora" >= "9"
+%define MING 1
+BuildRequires: ming ming-devel
 %endif
 %endif
 

@@ -1682,20 +1682,20 @@ AM_GLIB_GNU_GETTEXT
 dnl -----------------------------------
 dnl INCLUDES and LIBS for MING (SWF renderer)
 
-AC_ARG_WITH(libming,
-  [AC_HELP_STRING([--with-libming=yes], [libming library (plugin for -Tswf)])],
-  [], [with_libming=yes])
+AC_ARG_WITH(ming,
+  [AC_HELP_STRING([--with-ming=yes], [ming library (plugin for -Tswf)])],
+  [], [with_ming=yes])
 
-if test "x$with_libming" = "xyes"; then
-PKG_CHECK_MODULES(LIBMING, [libming >= 0.4],
-	[HAVE_LIBMING=1
-	AC_DEFINE_UNQUOTED(HAVE_LIBMING,1,
-		[Define if you have the libming library for SWF support])],
-	[AC_MSG_WARN(libming library not available)])
+if test "x$with_ming" = "xyes"; then
+PKG_CHECK_MODULES(MING, [libming >= 0.4],
+	[HAVE_MING=1
+	AC_DEFINE_UNQUOTED(HAVE_MING,1,
+		[Define if you have the ming library for SWF support])],
+	[AC_MSG_WARN(ming library not available)])
 fi
-AC_SUBST(LIBMING_CFLAGS)
-AC_SUBST(LIBMING_LIBS)
-AM_CONDITIONAL(WITH_LIBMING, [test "x$HAVE_LIBMING" != "x"])
+AC_SUBST(MING_CFLAGS)
+AC_SUBST(MING_LIBS)
+AM_CONDITIONAL(WITH_MING, [test "x$HAVE_MING" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
