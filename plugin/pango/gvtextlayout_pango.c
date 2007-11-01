@@ -46,7 +46,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     PangoLayout *layout;
     PangoRectangle logical_rect;
     PangoLayoutIter* iter;
-#define ENABLE_PANGO_XSHOW
+/* #define ENABLE_PANGO_XSHOW */
 #ifdef ENABLE_PANGO_XSHOW
     PangoRectangle char_rect;
     int xshow_alloc, xshow_pos;
