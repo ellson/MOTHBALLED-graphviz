@@ -200,6 +200,11 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:href HREF=#d:href>href</A>
 </TD><TD>E</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">""</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
+ <TR><TD><A NAME=a:image HREF=#d:image>image</A>
+</TD><TD>N</TD><TD>string</TD><TD ALIGN="CENTER">""</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:imagescale HREF=#d:imagescale>imagescale</A>
+</TD><TD>N</TD><TD><A HREF=#k:bool>bool</A>
+<BR>string</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:label HREF=#d:label>label</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">"N"</TD><TD>(nodes)<BR>"" (otherwise)</TD><TD></TD> </TR>
@@ -786,6 +791,40 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:href HREF=#a:href><STRONG>href</STRONG></A>
 <DD>  Synonym for <A HREF=#d:URL>URL</A>.
 
+<DT><A NAME=d:image HREF=#a:image><STRONG>image</STRONG></A>
+<DD>  Gives the name of a file containing an image to be displayed inside
+  a node. The image file must be in one of the recognized formats, 
+  typically JPEG, PNG, GIF or Postscript.  
+  <P>
+  Unlike with the <A HREF=#d:shapefile>shapefile</A> attribute, 
+  the image is treated as node
+  content rather than the entire node. In particular, an image can
+  be contained in a node of any shape, not just a rectangle.
+
+<DT><A NAME=d:imagescale HREF=#a:imagescale><STRONG>imagescale</STRONG></A>
+<DD>  Attribute controlling how an image interacts with the size of its
+  containing node. By default, the image is given its natural size,
+  (cf. <A HREF=#d:dpi>dpi</A>)
+  and the node size is determined by the size of its image, its
+  label, its margin, and its peripheries. 
+  <P>
+  In the non-default cases, the size of the node is calculated as
+  if no image were present. Then, when the node is
+  drawn, the image is scaled to the node size. 
+  When <TT>imagescale=true</TT>,
+  the image is uniformly scaled to fit inside the node. 
+  At least one dimension of the image will be as large as possible
+  given the size of the node.
+  When <TT>imagescale=width</TT>,
+  the width of the image is scaled to fill the node width.
+  The corresponding property holds when <TT>imagescale=height</TT>.
+  When <TT>imagescale=both</TT>,
+  both the height and the width are scaled separately to fill the node.
+  <P>
+  In all cases, if a dimension of the image is larger than the
+  corresponding dimension of the image, that dimension of the
+  image is scaled down to fit the node.
+
 <DT><A NAME=d:label HREF=#a:label><STRONG>label</STRONG></A>
 <DD>  Text label attached to objects.
   If a node's <A HREF=#d:shape>shape</A> is record, then the label can
@@ -1294,7 +1333,7 @@ This field indicates which graph component uses the attribute.
 <DD>  Set the shape of a node.
 
 <DT><A NAME=d:shapefile HREF=#a:shapefile><STRONG>shapefile</STRONG></A>
-<DD>  If defined, shapefile specifies a file containing user-supplied node content. 
+<DD>  (Deprecated) If defined, shapefile specifies a file containing user-supplied node content. 
   The <A HREF=#d:shape><B>shape</B></A> of the node is set to box. 
   The image in the shapefile must be
   rectangular. The image formats supported as well as the precise semantics of 
