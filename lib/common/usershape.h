@@ -28,6 +28,14 @@ extern "C" {
 		FT_PDF, FT_PS, FT_EPS
     } imagetype_t;
 
+    typedef enum {
+	IMAGESCALE_NO,     /* no image scaling */
+	IMAGESCALE_YES,    /* scale image to fit but keep aspect ratio */
+	IMAGESCALE_WIDTH,  /* scale image width to fit, keep height fixed */
+	IMAGESCALE_HEIGHT, /* scale image height to fit, keep width fixed */
+	IMAGESCALE_BOTH    /* scale image to fit without regard for aspect ratio */
+    } imagescale_t;
+
     typedef struct usershape_s usershape_t;
 
     struct usershape_s {

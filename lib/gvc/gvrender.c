@@ -38,6 +38,7 @@
 
 extern int emit_once(char *str);
 extern shape_desc *find_user_shape(char *name);
+extern boolean mapbool(char *s);
 
 /* storage for temporary hacks until client API is FP */
 static pointf *AF;
@@ -929,12 +930,21 @@ void gvrender_comment(GVJ_t * job, char *str)
 #endif
 }
 
+static imagescale_t get_imagescale(char *s)
+{
+        if (*s == '\0') return IMAGESCALE_YES;
+        if (!strcasecmp(s, "width")) return IMAGESCALE_WIDTH;
+        if (!strcasecmp(s, "height")) return IMAGESCALE_HEIGHT;
+        if (!strcasecmp(s, "both")) return IMAGESCALE_BOTH;
+        if (mapbool(s)) return IMAGESCALE_YES;
+        return IMAGESCALE_NO;
+}
+
 /* gvrender_usershape:
- * If expand is true, if necessary expand user image to fill polygon a,
- * maintaining aspect ratio.
+ * Scale image to fill polygon bounding box according to "imagescale"
  */
 void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n, 
-    boolean filled, boolean expand)
+    boolean filled, char *imagescale)
 {
     gvrender_engine_t *gvre = job->render.engine;
     usershape_t *us;
@@ -965,10 +975,13 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n,
     ph = b.UR.y - b.LL.y;
     ih = (double)isz.y;
     iw = (double)isz.x;
-    if (expand) {
-	scalex = pw / iw;
-	scaley = ph / ih;
-    /* keep aspect ratio fixed by just using the smaller scale */
+
+    scalex = pw / iw;
+    scaley = ph / ih;
+
+    switch (get_imagescale(imagescale)) {
+    case IMAGESCALE_YES:
+        /* keep aspect ratio fixed by just using the smaller scale */
 	if (scalex < scaley) {
 	    iw *= scalex;
 	    ih *= scalex;
@@ -976,6 +989,20 @@ void gvrender_usershape(GVJ_t * job, char *name, pointf * a, int n,
 	    iw *= scaley;
 	    ih *= scaley;
 	}
+	break;
+    case IMAGESCALE_WIDTH:
+	iw *= scalex;
+	break;
+    case IMAGESCALE_HEIGHT:
+	ih *= scaley;
+	break;
+    case IMAGESCALE_BOTH:
+	iw *= scalex;
+	ih *= scaley;
+	break;
+    case IMAGESCALE_NO:
+    default:
+	break;
     }
 
     /* if image is smaller than target area then center it */

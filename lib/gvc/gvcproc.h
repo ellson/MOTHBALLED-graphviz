@@ -121,7 +121,7 @@ extern "C" {
 			int arrow_at_start, int arrow_at_end, boolean filled);
     extern void gvrender_polyline(GVJ_t * job, pointf * AF, int n);
     extern void gvrender_comment(GVJ_t * job, char *str);
-    extern void gvrender_usershape(GVJ_t * job, char *name, pointf * AF, int n, boolean filled, boolean expand);
+    extern void gvrender_usershape(GVJ_t * job, char *name, pointf * AF, int n, boolean filled, char *imagescale);
 
 /* layout */
 

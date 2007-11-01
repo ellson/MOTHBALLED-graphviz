@@ -669,6 +669,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     N_orientation = agfindattr(g->proto->n, "orientation");
     N_distortion = agfindattr(g->proto->n, "distortion");
     N_fixed = agfindattr(g->proto->n, "fixedsize");
+    N_imagescale = agfindattr(g->proto->n, "imagescale");
     N_nojustify = agfindattr(g->proto->n, "nojustify");
     N_layer = agfindattr(g->proto->n, "layer");
     N_group = agfindattr(g->proto->n, "group");
