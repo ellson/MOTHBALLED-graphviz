@@ -21,10 +21,11 @@ gv.render(G)
 
 # do something with the layout
 n = gv.firstnode(G)
-while gv.ok(n) :
+# while gv.ok(n) : << gv.ok() is not needed as python accepts pointers as boolean 
+while n :
     print 'node '+gv.nameof(n)+' is at '+gv.getv(n,'pos')
     e = gv.firstout(n)
-    while gv.ok(e) :
+    while e :
 	print 'edge '+gv.nameof(gv.tailof(e))+'->'+gv.nameof(gv.headof(e))+' is at '+gv.getv(e,'pos')
 	e = gv.nextout(n,e)
     n = gv.nextnode(G,n)
