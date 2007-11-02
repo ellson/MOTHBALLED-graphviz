@@ -2220,7 +2220,6 @@ void emit_graph(GVJ_t * job, graph_t * g)
 //	    if (boxf_overlap(job->clip, job->pageBox))
 	        emit_view(job,g,flags);
 	    gvrender_end_page(job);
-	    gvdevice_format(job);
 	} 
 
 	if (job->numLayers > 1)
@@ -2730,7 +2729,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	      || (strcmp(job->output_langname,firstjob->output_langname))) {
 
 	        gvrender_end_job(firstjob);
-            	gvdevice_finalize(firstjob); /* finalize previous jobs */
 	    
             	gvc->active_jobs = NULL; /* clear active list */
 	    	gvc->common.viewNum = 0;
@@ -2746,7 +2744,6 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	}
 	else {
 	    gvc->active_jobs = job;   /* first job of new list */
-	    gvdevice_initialize(job); /* open device or file output */
 	    gvrender_begin_job(job);
 	}
 	job->next_active = NULL;      /* terminate active list */
@@ -2759,13 +2756,13 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 	init_job_pagination(job, g);
 
 	if (! (job->flags & GVDEVICE_EVENTS)) {
+#ifdef DEBUG
     		/* Show_boxes is not defined, if at all, 
                  * until splines are generated in dot 
                  */
-#ifdef DEBUG
 	    job->common->show_boxes = Show_boxes; 
 #endif
-	    emit_graph(job, g); /* FIXME? - should this be a special case of finalize() ? */
+	    emit_graph(job, g);
 	}
 
         /* the last job, after all input graphs are processed,
