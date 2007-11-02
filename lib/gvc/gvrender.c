@@ -134,6 +134,7 @@ void gvrender_begin_job(GVJ_t * job)
     GVC_t *gvc = job->gvc;
     gvrender_engine_t *gvre = job->render.engine;
 
+    gvdevice_initialize(job);
     if (gvre) {
         if (gvre->begin_job)
 	    gvre->begin_job(job);
@@ -169,6 +170,7 @@ void gvrender_end_job(GVJ_t * job)
     }
 #endif
     job->gvc->common.lib = NULL;    /* FIXME - minimally this doesn't belong here */
+    gvdevice_finalize(job);
 }
 
 /* font modifiers */
@@ -343,6 +345,7 @@ void gvrender_end_page(GVJ_t * job)
 	    cg->end_page();
     }
 #endif
+    gvdevice_format(job);
 }
 
 void gvrender_begin_layer(GVJ_t * job)
