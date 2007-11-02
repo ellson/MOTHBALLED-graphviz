@@ -89,6 +89,7 @@ extern "C" {
     typedef struct {
 	box box;
 	char *src;
+	char *scale;
     } htmlimg_t;
 
     typedef struct {

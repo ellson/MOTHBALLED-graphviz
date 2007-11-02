@@ -48,6 +48,7 @@ typedef struct {
     htmlfont_t finfo;
     void *obj;
     graph_t *g;
+    char* imgscale;
 } htmlenv_t;
 
 typedef struct {
@@ -393,11 +394,17 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 	popFontInfo(env, &savef);
 }
 
+/* emit_html_img:
+ * The image will be centered in the given box.
+ * Scaling is determined by either the image's scale attribute,
+ * or the imagescale attribute of the graph object being drawn.
+ */
 static void
 emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env)
 {
     pointf A[4];
     box bb = cp->box;
+    char* scale;
 
     bb.LL.x += env->p.x;
     bb.LL.y += env->p.y;
@@ -411,7 +418,11 @@ emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env)
     A[3].x = A[0].x;
     A[3].y = A[2].y;
 
-    gvrender_usershape(job, cp->src, A, 4, TRUE, "");
+    if (cp->scale)
+	scale = cp->scale;
+    else
+	scale = env->imgscale;
+    gvrender_usershape(job, cp->src, A, 4, TRUE, scale);
 }
 
 static void
@@ -526,6 +537,10 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
     env.finfo.color = tp->fontcolor;
     env.finfo.name = tp->fontname;
     env.finfo.size = tp->fontsize;
+    env.finfo.size = tp->fontsize;
+    env.imgscale = agget (job->obj->u.n, "imagescale");
+    if ((env.imgscale == NULL) || (*env.imgscale == '\0'))
+	env.imgscale = "false";
     if (lp->kind == HTML_TBL) {
 	htmltbl_t *tbl = lp->u.tbl;
 
@@ -1265,34 +1280,13 @@ void sizeArray(htmltbl_t * tbl)
 static void pos_html_tbl(htmltbl_t *, box, int);  /* forward declaration */
 
 /* pos_html_img:
- * Place image in cell. 
- * If enough space, center; if not, fill.
- * TODO: Allow fill even if plenty of space
- *       Allow user control of alignment
+ * Place image in cell
+ * storing allowed space handed by parent cell.
+ * How this space is used is handled in emit_html_img.
  */
 static void pos_html_img(htmlimg_t * cp, box pos)
 {
-    int cw = pos.UR.x - pos.LL.x;
-    int ch = pos.UR.y - pos.LL.y;
-    int delx = cw - cp->box.UR.x;
-    int dely = ch - cp->box.UR.y;
-
-    if (delx > 0) {
-	cp->box.LL.x = pos.LL.x + delx/2;
-	cp->box.UR.x += cp->box.LL.x;
-    }
-    else {
-	cp->box.LL.x = pos.LL.x;
-	cp->box.UR.x = pos.UR.x;
-    }
-    if (dely > 0) {
-	cp->box.LL.y = pos.LL.y + dely/2;
-	cp->box.UR.y += cp->box.LL.y;
-    }
-    else {
-	cp->box.LL.y = pos.LL.y;
-	cp->box.UR.y = pos.UR.y;
-    }
+    cp->box = pos;
 }
 
 /* pos_html_txt:
@@ -1758,7 +1752,6 @@ int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
     env.finfo.size = lp->fontsize;
     env.finfo.name = lp->fontname;
     env.finfo.color = lp->fontcolor;
-
     lbl = parseHTML(lp->text, &rv, GD_charset(env.g));
     if (!lbl) {
 	/* Parse of label failed; revert to simple text label */
@@ -1803,3 +1796,4 @@ int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
 
     return rv;
 }
+

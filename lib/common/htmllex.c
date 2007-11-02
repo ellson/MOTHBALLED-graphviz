@@ -358,6 +358,12 @@ static int srcfn(htmlimg_t * p, char *v)
     return 0;
 }
 
+static int scalefn(htmlimg_t * p, char *v)
+{
+    p->scale = strdup(v);
+    return 0;
+}
+
 static int alignfn(int *p, char *v)
 {
     int rv = 0;
@@ -421,6 +427,7 @@ static attr_item font_items[] = {
 };
 
 static attr_item img_items[] = {
+    {"scale", (attrFn) scalefn},
     {"src", (attrFn) srcfn},
 };
 
