@@ -149,6 +149,51 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
     return 0;
 }
 
+/* Render layout in a specified format to a malloc'ed string */
+int gvRenderData(GVC_t *gvc, graph_t *g, char *format, char **result)
+{
+    int rc;
+    GVJ_t *job;
+
+    g = g->root;
+
+    /* create a job for the required format */
+    rc = gvjobs_output_langname(gvc, format);
+    job = gvc->job;
+    if (rc == NO_SUPPORT) {
+	agerr(AGERR, "Format: \"%s\" not recognized. Use one of:%s\n",
+                format, gvplugin_list(gvc, API_device, format));
+	return -1;
+    }
+
+    job->output_lang = gvrender_select(job, job->output_langname);
+    if (!GD_drawing(g) && !(job->flags & LAYOUT_NOT_REQUIRED)) {
+	fprintf(stderr, "Layout was not done\n");
+	return -1;
+    }
+
+#define OUTPUT_DATA_INITIAL_ALLOCATION 1000
+
+    if(!result || !(*result = malloc(OUTPUT_DATA_INITIAL_ALLOCATION))) {
+	agerr(AGERR, "failure malloc'ing for result string");
+	return -1;
+    }
+
+    **result = '\0';
+    job->output_data = *result;
+    job->output_data_allocated = OUTPUT_DATA_INITIAL_ALLOCATION;
+    job->output_data_position = 0;
+
+    gvRenderJobs(gvc, g);
+    gvrender_end_job(job);
+    gvdevice_finalize(job);
+
+    *result = job->output_data;
+    gvjobs_delete(gvc);
+
+    return 0;
+}
+
 char **gvcInfo(GVC_t* gvc) { return gvc->common.info; }
 char *gvcUsername(GVC_t* gvc) { return gvc->common.user; }
 char *gvcVersion(GVC_t* gvc) { return gvc->common.info[1]; }

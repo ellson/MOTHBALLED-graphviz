@@ -190,7 +190,7 @@ extern void render(Agraph_t *g);
 extern void render(Agraph_t *g, char *format);
 extern void render(Agraph_t *g, char *format, char *filename);
 extern void render(Agraph_t *g, char *format, FILE *f);
-extern void render(Agraph_t *g, char *format, void **data);
+extern char* renderdata(Agraph_t *g, char *format);
 
 /*** Writing graph back to file */
 void write(Agraph_t *g, FILE *f);

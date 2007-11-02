@@ -862,14 +862,14 @@ void render(Agraph_t *g, char *format, FILE *f)
     err = gvRender(gvc, g, format, f);
 }
 
-// FIXME - render to a caller provided memory blob
-void render(Agraph_t *g, char *format, void **data)
+// render to a data string
+char* renderdata(Agraph_t *g, char *format)
 {
-//    FIXME
-//
-//    int err;
-//
-//    err = gvRenderData(gvc, g, format, data);
+    int err;
+    char *data;
+
+    err = gvRenderData(gvc, g, format, &data);
+    return data;
 }
 
 void write(Agraph_t *g, FILE *f)

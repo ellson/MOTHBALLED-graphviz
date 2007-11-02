@@ -84,6 +84,18 @@ size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 	return gzwrite((gzFile *) (job->output_file), s, len);
 #endif
     }
+    else if (job->output_data) {
+	if (len > (job->output_data_allocated - (job->output_data_position + 1))) {
+	    job->output_data_allocated = job->output_data_position + len + 1000;
+	    job->output_data = realloc(job->output_data, job->output_data_allocated);
+	    if (!job->output_data) {
+		fprintf(stderr, "failure realloc'ing for result string\n");
+		return 0;
+	    }
+	}
+	strcpy(job->output_data + job->output_data_position, s);
+        job->output_data_position += len;
+    }
     else
 	return fwrite(s, sizeof(char), len, job->output_file);
 }
@@ -138,48 +150,48 @@ void gvdevice_initialize(GVJ_t * job)
     if (gvde && gvde->initialize) {
 	gvde->initialize(job);
     }
-    else {
-        /* if the device has no initialization then it uses file output */
-        if (!job->output_file) {        /* if not yet opened */
-            if (gvc->common.auto_outfile_names)
-                 auto_output_filename(job);
-            if (job->output_filename) {
-                 job->output_file = fopen(job->output_filename, "w");
-                 if (job->output_file == NULL) {
-                     perror(job->output_filename);
-                     exit(1);
-                 }
+    else if (job->output_data) {
+    }
+    /* if the device has no initialization then it uses file output */
+    else if (!job->output_file) {        /* if not yet opened */
+        if (gvc->common.auto_outfile_names)
+            auto_output_filename(job);
+        if (job->output_filename) {
+            job->output_file = fopen(job->output_filename, "w");
+            if (job->output_file == NULL) {
+                perror(job->output_filename);
+                exit(1);
             }
-            else
-                 job->output_file = stdout;
+        }
+        else
+            job->output_file = stdout;
 
 #ifdef WITH_CODEGENS
-            Output_file = job->output_file;
+        Output_file = job->output_file;
 #endif
 
 #ifdef HAVE_SETMODE
 #ifdef O_BINARY
-            if (job->flags & GVDEVICE_BINARY_FORMAT)
-                setmode(fileno(job->output_file), O_BINARY);
+        if (job->flags & GVDEVICE_BINARY_FORMAT)
+            setmode(fileno(job->output_file), O_BINARY);
 #endif
 #endif
 
-            if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
+        if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #if HAVE_LIBZ
-		int fd;
+	    int fd;
 
-		/* open dup so can gzclose independent of FILE close */
-		fd = dup(fileno(job->output_file));
-		job->output_file = (FILE *) (gzdopen(fd, "wb"));
-		if (!job->output_file) {
-		    (job->common->errorfn) ("Error initializing compression on output file\n");
-		    exit(1);
-		}
-#else
-		(job->common->errorfn) ("No libz support.\n");
+	    /* open dup so can gzclose independent of FILE close */
+	    fd = dup(fileno(job->output_file));
+	    job->output_file = (FILE *) (gzdopen(fd, "wb"));
+	    if (!job->output_file) {
+		(job->common->errorfn) ("Error initializing compression on output file\n");
 		exit(1);
-#endif
 	    }
+#else
+	    (job->common->errorfn) ("No libz support.\n");
+	    exit(1);
+#endif
         }
     }
 }

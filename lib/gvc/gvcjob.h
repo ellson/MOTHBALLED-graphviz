@@ -237,8 +237,12 @@ extern "C" {
 	char *layout_type;
 
 	char *output_filename;
-	char *output_langname;
 	FILE *output_file;
+	char *output_data;
+	unsigned int output_data_allocated;
+	unsigned int output_data_position;
+
+	char *output_langname;
 	int output_lang;
 
 	gvplugin_active_render_t render;
