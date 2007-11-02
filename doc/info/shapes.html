@@ -435,13 +435,6 @@ Attribute values must appear in double quotes.
 &gt;
 </PRE>
 <P>
-<PRE>&lt;TR
-<!--
-    The TR element has no additional attributes.
--->
-&gt;
-</PRE>
-<P>
 <PRE>&lt;TD
   ALIGN="CENTER|LEFT|RIGHT|TEXT"
   BALIGN="CENTER|LEFT|RIGHT"
@@ -479,6 +472,7 @@ Attribute values must appear in double quotes.
 
 <P>
 <PRE>&lt;IMG
+  SCALE="FALSE|TRUE|WIDTH|HEIGHT|BOTH"
   SRC="<I>value</I>"
 &gt;
 </PRE>
@@ -632,6 +626,26 @@ or tail of an edge, so that the end attaches directly to the object.
 <BLOCKQUOTE>
 specifies the number of rows spanned by the cell. The default is 1.
 The maximum value is 65535.
+</BLOCKQUOTE>
+
+<B><I><FONT SIZE=-1>SCALE</FONT></I></B>
+<BLOCKQUOTE>
+specifies how an image will use any extra space available in its cell.
+Allowed values are
+<ul>
+<LI>FALSE : keep image its natural size. (Default) </LI>
+<LI>TRUE : scale image uniformly to fit.</LI>
+<LI>WIDTH : expand image width to fill  </LI>
+<LI>HEIGHT : expand image height to fill  </LI>
+<LI>BOTH : expand both image width height to fill  </LI>
+</ul>
+If this attribute is undefined, 
+the image inherits the <A HREF=attrs.html#d:imagescale>imagescale</A> 
+attribute of the graph object being drawn.
+As with the <A HREF=attrs.html#d:imagescale>imagescale</A>
+attribute, if the cell has a fixed size and the image is too large,
+any offending dimension will be shrunk to fit the space, the
+scaling being uniform in width and height if <I>SCALE=<TT>"true"</TT></I>.
 </BLOCKQUOTE>
 
 <B><I><FONT SIZE=-1>SRC="value"</FONT></I></B>

@@ -807,8 +807,9 @@ This field indicates which graph component uses the attribute.
   (cf. <A HREF=#d:dpi>dpi</A>),
   and the node size is made large enough to contain its image, its
   label, its margin, and its peripheries. 
-  Its width and height will also be at least as large as it 
-  minimum width and height. If, however, <TT>fixedsize=true</TT>,
+  Its width and height will also be at least as large as its
+  minimum <A HREF=#d:width>width</A> and <A HREF=#d:height>height</A>. 
+  If, however, <TT>fixedsize=true</TT>,
   the width and height attributes specify the exact size of the node. 
   <P>
   During rendering, in the default case (<TT>imagescale=false</TT>),
@@ -824,8 +825,10 @@ This field indicates which graph component uses the attribute.
   both the height and the width are scaled separately to fill the node.
   <P>
   In all cases, if a dimension of the image is larger than the
-  corresponding dimension of the image, that dimension of the
-  image is scaled down to fit the node.
+  corresponding dimension of the node, that dimension of the
+  image is scaled down to fit the node. As with the case of
+  expansion, if  <TT>imagescale=true</TT>, width and height are
+  scaled uniformly.
 
 <DT><A NAME=d:label HREF=#a:label><STRONG>label</STRONG></A>
 <DD>  Text label attached to objects.
