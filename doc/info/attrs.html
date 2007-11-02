@@ -802,16 +802,18 @@ This field indicates which graph component uses the attribute.
   be contained in a node of any shape, not just a rectangle.
 
 <DT><A NAME=d:imagescale HREF=#a:imagescale><STRONG>imagescale</STRONG></A>
-<DD>  Attribute controlling how an image interacts with the size of its
-  containing node. By default, the image is given its natural size,
-  (cf. <A HREF=#d:dpi>dpi</A>)
-  and the node size is determined by the size of its image, its
+<DD>  Attribute controlling how an image fills its
+  containing node. In general, the image is given its natural size,
+  (cf. <A HREF=#d:dpi>dpi</A>),
+  and the node size is made large enough to contain its image, its
   label, its margin, and its peripheries. 
+  Its width and height will also be at least as large as it 
+  minimum width and height. If, however, <TT>fixedsize=true</TT>,
+  the width and height attributes specify the exact size of the node. 
   <P>
-  In the non-default cases, the size of the node is calculated as
-  if no image were present. Then, when the node is
-  drawn, the image is scaled to the node size. 
-  When <TT>imagescale=true</TT>,
+  During rendering, in the default case (<TT>imagescale=false</TT>),
+  the image retains its natural size.
+  If <TT>imagescale=true</TT>,
   the image is uniformly scaled to fit inside the node. 
   At least one dimension of the image will be as large as possible
   given the size of the node.
