@@ -142,7 +142,7 @@ getRotation(block_t * sn, Agraph_t * g, double x, double y, double theta)
 
 
 /* applyDelta:
- * Recursively apply rotation rotate followed by tranlation (x,y)
+ * Recursively apply rotation rotate followed by translation (x,y)
  * to block sn and its children.
  */
 static void applyDelta(block_t * sn, double x, double y, double rotate)
