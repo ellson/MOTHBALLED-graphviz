@@ -784,16 +784,6 @@ static void setup_page(GVJ_t * job, graph_t * g)
     job->pageBox.UR.x = job->pageBox.LL.x + job->pageSize.x;
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
-    /* establish pageOffset from graph origin, in graph units */
-    if (job->rotation) {
-	job->pageOffset.x = -job->pad.x + job->pageSize.y * (job->pagesArrayElem.y +1);
-	job->pageOffset.y =  job->pad.y - job->pageSize.x * job->pagesArrayElem.x;
-    }
-    else {
-	job->pageOffset.x =  job->pad.x - job->pageSize.x * job->pagesArrayElem.x;
-	job->pageOffset.y =  job->pad.y - job->pageSize.y * job->pagesArrayElem.y;
-    }
-
     /* pageBoundingBox in device units and page orientation */
     job->pageBoundingBox.LL.x = ROUND(job->canvasBox.LL.x * job->dpi.x / POINTS_PER_INCH);
     job->pageBoundingBox.LL.y = ROUND(job->canvasBox.LL.y * job->dpi.y / POINTS_PER_INCH);
@@ -814,8 +804,10 @@ static void setup_page(GVJ_t * job, graph_t * g)
     /* CAUTION - job->translation was difficult to get right. */
     /* Test with and without assymetric margins, e.g: -Gmargin="1,0" */
     if (job->rotation) {
-        job->clip.LL.x = job->focus.x - job->pageSize.x / 2.;
-        job->clip.UR.y = job->focus.y + job->pageSize.y / 2.;
+	job->pageOffset.x =   job->pageSize.y * job->pagesArrayElem.y;
+	job->pageOffset.y = - job->pageSize.x * job->pagesArrayElem.x;
+        job->clip.LL.x = job->focus.x + job->pageOffset.x - job->pagesArraySize.x * job->pageSize.x / 2.;
+        job->clip.UR.y = job->focus.y + job->pageOffset.y + job->pagesArraySize.y * job->pageSize.y / 2.;
         job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.y;
         job->clip.LL.y = job->clip.UR.y - job->view.y + 2 * job->margin.x;
 	job->translation.y = - job->clip.UR.y - job->canvasBox.LL.y;
@@ -825,8 +817,10 @@ static void setup_page(GVJ_t * job, graph_t * g)
             job->translation.x = - job->clip.LL.x + job->canvasBox.LL.x;
     }
     else {
-        job->clip.LL.x = job->focus.x - job->pageSize.x / 2.;
-        job->clip.LL.y = job->focus.y - job->pageSize.y / 2.;
+	job->pageOffset.x = - job->pageSize.x * job->pagesArrayElem.x;
+	job->pageOffset.y = - job->pageSize.y * job->pagesArrayElem.y;
+	job->clip.LL.x = job->focus.x - job->pageOffset.x - job->pagesArraySize.x * job->pageSize.x / 2.;
+	job->clip.LL.y = job->focus.y - job->pageOffset.y - job->pagesArraySize.y * job->pageSize.y / 2.;
         job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.x;
         job->clip.UR.y = job->clip.LL.y + job->view.y - 2 * job->margin.y;
         job->translation.x = - job->clip.LL.x + job->canvasBox.LL.x;
