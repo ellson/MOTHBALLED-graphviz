@@ -808,29 +808,30 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	job->pageOffset.y = - job->pageSize.x * job->pagesArrayElem.x;
         job->clip.LL.x = job->focus.x + job->pageOffset.x - job->pagesArraySize.x * job->pageSize.x / 2.;
         job->clip.UR.y = job->focus.y + job->pageOffset.y + job->pagesArraySize.y * job->pageSize.y / 2.;
-        job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.y;
-        job->clip.LL.y = job->clip.UR.y - job->view.y + 2 * job->margin.x;
-	job->translation.y = - job->clip.UR.y - job->canvasBox.LL.y;
+        job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.y / job->zoom;
+        job->clip.LL.y = job->clip.UR.y - job->view.y + 2 * job->margin.x / job->zoom;
+	job->translation.y = - job->clip.UR.y - job->canvasBox.LL.y / job->zoom;
         if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert))
-            job->translation.x = - job->clip.UR.x - job->canvasBox.LL.x;
+            job->translation.x = - job->clip.UR.x - job->canvasBox.LL.x / job->zoom;
         else
-            job->translation.x = - job->clip.LL.x + job->canvasBox.LL.x;
+            job->translation.x = - job->clip.LL.x + job->canvasBox.LL.x / job->zoom;
     }
     else {
 	job->pageOffset.x = - job->pageSize.x * job->pagesArrayElem.x;
 	job->pageOffset.y = - job->pageSize.y * job->pagesArrayElem.y;
 	job->clip.LL.x = job->focus.x - job->pageOffset.x - job->pagesArraySize.x * job->pageSize.x / 2.;
 	job->clip.LL.y = job->focus.y - job->pageOffset.y - job->pagesArraySize.y * job->pageSize.y / 2.;
-        job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.x;
-        job->clip.UR.y = job->clip.LL.y + job->view.y - 2 * job->margin.y;
-        job->translation.x = - job->clip.LL.x + job->canvasBox.LL.x;
+        job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.x / job->zoom;
+        job->clip.UR.y = job->clip.LL.y + job->view.y - 2 * job->margin.y / job->zoom;
+	/* pre unscale margins to keep them constant under scaling */
+        job->translation.x = - job->clip.LL.x + job->canvasBox.LL.x / job->zoom;
         if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert))
-            job->translation.y = - job->clip.UR.y - job->canvasBox.LL.y;
+            job->translation.y = - job->clip.UR.y - job->canvasBox.LL.y / job->zoom;
         else
-            job->translation.y = - job->clip.LL.y + job->canvasBox.LL.y;
+            job->translation.y = - job->clip.LL.y + job->canvasBox.LL.y / job->zoom;
     }
 
-#if 0
+#if 1
 fprintf(stderr,"width=%d height=%d dpi=%g,%g\npad=%g,%g focus=%g,%g view=%g,%g zoom=%g\npageBox=%g,%g,%g,%g pageSize=%g,%g canvasBox=%g,%g,%g,%g pageOffset=%g,%g\ntranslation=%g,%g clip=%g,%g,%g,%g margin=%g,%g\n",
 	job->width, job->height,
 	job->dpi.x, job->dpi.y,
