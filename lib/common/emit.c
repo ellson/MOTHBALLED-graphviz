@@ -778,11 +778,6 @@ void emit_background(GVJ_t * job, graph_t *g)
 
 static void setup_page(GVJ_t * job, graph_t * g)
 {
-    obj_state_t *obj = job->obj;
-    int nump = 0, flags = job->flags;
-    pointf sz, *p = NULL;
-    box cbb;
-
     /* establish current box in graph units */
     job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - job->pad.x;
     job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y - job->pad.y;
@@ -799,32 +794,11 @@ static void setup_page(GVJ_t * job, graph_t * g)
 	job->pageOffset.y =  job->pad.y - job->pageSize.y * job->pagesArrayElem.y;
     }
 
-    /* calculate clip region in graph units using width/height since window
-     * might have been resized since view was calculated */
-    sz.x = job->width / (job->scale.x * 2.);
-    sz.y = job->height / (job->scale.y * 2.);
-    if (job->rotation)
-        sz = exch_xyf(sz);
-
-    job->clip.UR.x = job->focus.x + sz.x;
-    job->clip.UR.y = job->focus.y + sz.y;
-    job->clip.LL.x = job->focus.x - sz.x;
-    job->clip.LL.y = job->focus.y - sz.y;
-
-    /* clib box for this page in graph units */
-    job->clip.UR.x = MAX(job->clip.UR.x, job->pageBox.UR.x);
-    job->clip.UR.y = MAX(job->clip.UR.y, job->pageBox.UR.y);
-    job->clip.LL.x = MIN(job->clip.LL.x, job->pageBox.LL.x);
-    job->clip.LL.y = MIN(job->clip.LL.y, job->pageBox.LL.y);
-
-    /* canvasBox in device units in graph orientation */
-    cbb.LL.x = ROUND(job->canvasBox.LL.x * job->dpi.x / POINTS_PER_INCH);
-    cbb.LL.y = ROUND(job->canvasBox.LL.y * job->dpi.y / POINTS_PER_INCH);
-    cbb.UR.x = ROUND(job->canvasBox.UR.x * job->dpi.x / POINTS_PER_INCH);
-    cbb.UR.y = ROUND(job->canvasBox.UR.y * job->dpi.y / POINTS_PER_INCH);
-
     /* pageBoundingBox in device units and page orientation */
-    job->pageBoundingBox = cbb;
+    job->pageBoundingBox.LL.x = ROUND(job->canvasBox.LL.x * job->dpi.x / POINTS_PER_INCH);
+    job->pageBoundingBox.LL.y = ROUND(job->canvasBox.LL.y * job->dpi.y / POINTS_PER_INCH);
+    job->pageBoundingBox.UR.x = ROUND(job->canvasBox.UR.x * job->dpi.x / POINTS_PER_INCH);
+    job->pageBoundingBox.UR.y = ROUND(job->canvasBox.UR.y * job->dpi.y / POINTS_PER_INCH);
     if (job->rotation) {
 	job->pageBoundingBox.LL = exch_xy(job->pageBoundingBox.LL);
 	job->pageBoundingBox.UR = exch_xy(job->pageBoundingBox.UR);
@@ -836,56 +810,48 @@ static void setup_page(GVJ_t * job, graph_t * g)
     else
         EXPANDBB(job->boundingBox, job->pageBoundingBox);
 
-    /* CAUTION - This block was difficult to get right. */
+
+    /* CAUTION - job->translation was difficult to get right. */
     /* Test with and without assymetric margins, e.g: -Gmargin="1,0" */
     if (job->rotation) {
-	job->translation.y = -job->pageBox.UR.y - cbb.LL.y / job->scale.y;
-	if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert)) {
-	    /* test with: -Glandscape -Tgif -Tsvg -Tpng */
-	    job->translation.x = -job->pageBox.UR.x - cbb.LL.x / job->scale.x;
-	}
-	else {
-	    /* test with: -Glandscape -Tps */
-	    job->translation.x = -job->pageBox.LL.x + cbb.LL.x / job->scale.x;
-	}
+        job->clip.LL.x = job->focus.x - job->pageSize.x / 2.;
+        job->clip.UR.y = job->focus.y + job->pageSize.y / 2.;
+        job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.y;
+        job->clip.LL.y = job->clip.UR.y - job->view.y + 2 * job->margin.x;
+	job->translation.y = - job->clip.UR.y - job->canvasBox.LL.y;
+        if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert))
+            job->translation.x = - job->clip.UR.x - job->canvasBox.LL.x;
+        else
+            job->translation.x = - job->clip.LL.x + job->canvasBox.LL.x;
     }
     else {
-	job->translation.x = -job->pageBox.LL.x + cbb.LL.x / job->scale.x;
-	if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert)) {
-	    /* test with: -Tgif -Tsvg -Tpng */
-	    job->translation.y = -job->pageBox.UR.y - cbb.LL.y / job->scale.y;
-	}
-	else {
-	    /* test with: -Tps */
-	    job->translation.y = -job->pageBox.LL.y + cbb.LL.y / job->scale.y;
-	}
+        job->clip.LL.x = job->focus.x - job->pageSize.x / 2.;
+        job->clip.LL.y = job->focus.y - job->pageSize.y / 2.;
+        job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.x;
+        job->clip.UR.y = job->clip.LL.y + job->view.y - 2 * job->margin.y;
+        job->translation.x = - job->clip.LL.x + job->canvasBox.LL.x;
+        if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert))
+            job->translation.y = - job->clip.UR.y - job->canvasBox.LL.y;
+        else
+            job->translation.y = - job->clip.LL.y + job->canvasBox.LL.y;
     }
 
-    job->translation.x -= job->focus.x + job->pad.x - job->view.x / (job->zoom * 2.0);
-    job->translation.y -= job->focus.y + job->pad.y - job->view.y / (job->zoom * 2.0);
-
-    if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
-            && (obj->url || obj->explicit_tooltip)) {
-        if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
-            if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
-                obj->url_map_shape = MAP_RECTANGLE;
-                nump = 2;
-            }
-            else {
-                obj->url_map_shape = MAP_POLYGON;
-                nump = 4;
-            }
-            p = N_NEW(nump, pointf);
-            p[0] = job->pageBox.LL;
-            p[1] = job->pageBox.UR;
-            if (! (flags & (GVRENDER_DOES_MAP_RECTANGLE)))
-                rect2poly(p);
-        }
-        if (! (flags & GVRENDER_DOES_TRANSFORM))
-            gvrender_ptf_A(job, p, p, nump);
-        obj->url_map_p = p;
-        obj->url_map_n = nump;
-    }
+#if 0
+fprintf(stderr,"width=%d height=%d dpi=%g,%g\npad=%g,%g focus=%g,%g view=%g,%g zoom=%g\npageBox=%g,%g,%g,%g pageSize=%g,%g canvasBox=%g,%g,%g,%g pageOffset=%g,%g\ntranslation=%g,%g clip=%g,%g,%g,%g margin=%g,%g\n",
+	job->width, job->height,
+	job->dpi.x, job->dpi.y,
+	job->pad.x, job->pad.y,
+	job->focus.x, job->focus.y,
+	job->view.x, job->view.y,
+	job->zoom,
+	job->pageBox.LL.x, job->pageBox.LL.y, job->pageBox.UR.x, job->pageBox.UR.y,
+	job->pageSize.x, job->pageSize.y,
+	job->canvasBox.LL.x, job->canvasBox.LL.y, job->canvasBox.UR.x, job->canvasBox.UR.y,
+	job->pageOffset.x, job->pageOffset.y,
+	job->translation.x, job->translation.y,
+	job->clip.LL.x, job->clip.LL.y, job->clip.UR.x, job->clip.UR.y,
+	job->margin.x, job->margin.y);
+#endif
 }
 
 static boolean is_natural_number(char *sstr)
@@ -2014,6 +1980,12 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     job->zoom = Z;              /* scaling factor */
     job->focus.x = x;
     job->focus.y = y;
+#if 0
+fprintf(stderr, "view=%g,%g, zoom=%g, focus=%g,%g\n",
+	job->view.x, job->view.y,
+	job->zoom,
+	job->focus.x, job->focus.y);
+#endif
 }
 
 static void emit_colors(GVJ_t * job, graph_t * g)
@@ -2153,15 +2125,71 @@ static void emit_end_graph(GVJ_t * job, graph_t * g)
     pop_obj_state(job);
 }
 
+static void emit_page(GVJ_t * job, graph_t * g)
+{
+    GVC_t *gvc = job->gvc;
+    obj_state_t *obj = job->obj;
+    int nump = 0, flags = job->flags;
+    textlabel_t *lab;
+    point p1, p2;
+    pointf *p = NULL;
+
+    setColorScheme (agget (g, "colorscheme"));
+    setup_page(job, g);
+    gvrender_begin_page(job);
+    gvrender_set_pencolor(job, DEFAULT_COLOR);
+    gvrender_set_fillcolor(job, DEFAULT_FILL);
+    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
+    if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
+	    && (obj->url || obj->explicit_tooltip)) {
+	if (flags & (GVRENDER_DOES_MAP_RECTANGLE | GVRENDER_DOES_MAP_POLYGON)) {
+	    if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
+		obj->url_map_shape = MAP_RECTANGLE;
+		nump = 2;
+	    }
+	    else {
+		obj->url_map_shape = MAP_POLYGON;
+		nump = 4;
+	    }
+	    p = N_NEW(nump, pointf);
+	    p[0] = job->pageBox.LL;
+	    p[1] = job->pageBox.UR;
+	    if (! (flags & (GVRENDER_DOES_MAP_RECTANGLE)))
+		rect2poly(p);
+	}
+	if (! (flags & GVRENDER_DOES_TRANSFORM))
+	    gvrender_ptf_A(job, p, p, nump);
+	obj->url_map_p = p;
+	obj->url_map_n = nump;
+    }
+    if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g))))
+	/* do graph label on every page and rely on clipping to show it on the right one(s) */
+	obj->label = lab->text;
+	/* If EMIT_CLUSTERS_LAST is set, we assume any URL or tooltip
+	 * attached to the root graph is emitted either in begin_page
+	 * or end_page of renderer.
+	 */
+    if (!(flags & EMIT_CLUSTERS_LAST) && (obj->url || obj->explicit_tooltip)) {
+	PF2P(job->clip.LL, p1);
+	PF2P(job->clip.UR, p2);
+	emit_map_rect(job, p1, p2);
+	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+    }
+    if (job->numLayers == 1)
+	emit_background(job, g);
+    if (GD_label(g))
+	emit_label(job, EMIT_GLABEL, GD_label(g));
+    if (!(flags & EMIT_CLUSTERS_LAST) && (obj->url || obj->explicit_tooltip))
+	gvrender_end_anchor(job);
+    emit_view(job,g,flags);
+    gvrender_end_page(job);
+}
+
 void emit_graph(GVJ_t * job, graph_t * g)
 {
-    obj_state_t *obj;
     node_t *n;
     char *s;
     int flags = job->flags;
-    GVC_t *gvc = job->gvc;
-    textlabel_t *lab;
-    point p1, p2;
 
     /* device dpi is now known */
     job->scale.x = job->zoom * job->dpi.x / POINTS_PER_INCH;
@@ -2172,15 +2200,25 @@ void emit_graph(GVJ_t * job, graph_t * g)
     if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert))
 	job->devscale.y *= -1;
 
+    /* compute current view in graph units */
+    if (job->rotation) {
+	job->view.y = job->width / job->scale.x;
+	job->view.x = job->height / job->scale.y;
+    }
+    else {
+	job->view.x = job->width / job->scale.x;
+	job->view.y = job->height / job->scale.y;
+    }
+
     s = late_string(g, agfindattr(g, "comment"), "");
     gvrender_comment(job, s);
 
     emit_begin_graph(job, g);
-    obj = job->obj;
 
     if (flags & EMIT_COLORS)
 	emit_colors(job,g);
 
+    /* reset node state */
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	ND_state(n) = 0;
     /* iterate layers */
@@ -2189,38 +2227,8 @@ void emit_graph(GVJ_t * job, graph_t * g)
 	    gvrender_begin_layer(job);
 
 	/* iterate pages */
-	for (firstpage(job); validpage(job); nextpage(job)) {
-	    setColorScheme (agget (g, "colorscheme"));
-    	    setup_page(job, g);
-	    gvrender_begin_page(job);
-	    gvrender_set_pencolor(job, DEFAULT_COLOR);
-	    gvrender_set_fillcolor(job, DEFAULT_FILL);
-	    gvrender_set_font(job, gvc->defaultfontname, gvc->defaultfontsize);
-	    if ((flags & GVRENDER_DOES_LABELS) && ((lab = GD_label(g))))
-		/* do graph label on every page and rely on clipping to show it on the right one(s) */
-		obj->label = lab->text;
-		/* If EMIT_CLUSTERS_LAST is set, we assume any URL or tooltip
-		 * attached to the root graph is emitted either in begin_page
-		 * or end_page of renderer.
-		 */
-            if (!(flags & EMIT_CLUSTERS_LAST) && 
-                  (obj->url || obj->explicit_tooltip)) {
-		PF2P(job->clip.LL, p1);
-		PF2P(job->clip.UR, p2);
-		emit_map_rect(job, p1, p2);
-		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
-	    }
-	    if (job->numLayers == 1)
-		emit_background(job, g);
-	    if (GD_label(g))
-		emit_label(job, EMIT_GLABEL, GD_label(g));
-            if (!(flags & EMIT_CLUSTERS_LAST) && 
-                  (obj->url || obj->explicit_tooltip))
-		gvrender_end_anchor(job);
-//	    if (boxf_overlap(job->clip, job->pageBox))
-	        emit_view(job,g,flags);
-	    gvrender_end_page(job);
-	} 
+	for (firstpage(job); validpage(job); nextpage(job))
+	    emit_page(job, g);
 
 	if (job->numLayers > 1)
 	    gvrender_end_layer(job);
