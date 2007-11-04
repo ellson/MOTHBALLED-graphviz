@@ -831,7 +831,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
             job->translation.y = - job->clip.LL.y + job->canvasBox.LL.y / job->zoom;
     }
 
-#if 1
+#if 0
 fprintf(stderr,"width=%d height=%d dpi=%g,%g\npad=%g,%g focus=%g,%g view=%g,%g zoom=%g\npageBox=%g,%g,%g,%g pageSize=%g,%g canvasBox=%g,%g,%g,%g pageOffset=%g,%g\ntranslation=%g,%g clip=%g,%g,%g,%g margin=%g,%g\n",
 	job->width, job->height,
 	job->dpi.x, job->dpi.y,
