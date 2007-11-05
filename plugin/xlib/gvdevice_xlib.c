@@ -270,8 +270,9 @@ static void update_display(GVJ_t *job, Display *dpy)
 			window->pix, window->visual,
 			job->width, job->height);
     	job->context = (void *)cairo_create(surface);
-	cairo_surface_destroy(surface);
+	job->external_context = TRUE;
         (job->callbacks->refresh)(job);
+	cairo_surface_destroy(surface);
 	XCopyArea(dpy, window->pix, window->win, window->gc,
 			0, 0, job->width, job->height, 0, 0);
         job->needs_refresh = 0;
