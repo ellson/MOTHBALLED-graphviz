@@ -1,10 +1,9 @@
 digraph polypoly {
 	
-    size="7,9.5";
-    page="8.5,11";
-    ratio=fill;
+    /* size="7,9.5"; */
+    /* page="8.5,11"; */
+    /* ratio=fill; */
     node [shape=polygon];
-
     { rank=same;
       node [sides=0];
       node [peripheries=1];
@@ -158,5 +157,42 @@ digraph polypoly {
       node [orientation=315.];
       9017 [label="M"];
     }
-    9000->8000;
+    { rank=same;
+      node [shape=ellipse]
+      node [peripheries=1];
+      10000 [label="M"];
+      10001 [label="MMMMMMMMMM"];
+      10002 [label="M\nM\nM\nM\nM\nM"];
+      10003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM"];
+      node [peripheries=2];
+      10010 [label="M"]
+      10011 [label="MMMMMMMMMM"];
+      10012 [label="M\nM\nM\nM\nM\nM"];
+      10013 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM"];
+      node [peripheries=3];
+      10014 [label="M"];
+      10015 [label="MMMMMMMMMM"];
+      10016 [label="M\nM\nM\nM\nM\nM"];
+      10017 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM"];
+    }
+    { rank=same;
+      node [shape=circle]
+      node [peripheries=1];
+      20000 [label="M"];
+      20001 [label="MMMMMMMMMM"];
+      20002 [label="M\nM\nM\nM\nM\nM"];
+      20003 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM"];
+      node [peripheries=2];
+      20010 [label="M"];
+      20011 [label="MMMMMMMMMM"];
+      20012 [label="M\nM\nM\nM\nM\nM"];
+      20013 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM"];
+      node [peripheries=3];
+      20014 [label="M"];
+      20015 [label="MMMMMMMMMM"];
+      20016 [label="M\nM\nM\nM\nM\nM"];
+      20017 [label="MMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM\nMMMMMMMMMM"];
+    }
+    0000 -> 10000
+    10000 -> 20000
 }
