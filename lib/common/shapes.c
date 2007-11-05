@@ -258,11 +258,13 @@ char *findFill(node_t * n)
 	/* for backward compatibilty, default fill is same as pen */
 	color = late_nnstring(n, N_color, "");
 	if (!color[0]) {
+	    if (ND_shape(n) == point_desc) {
+		color = "black";
+	    }
 #ifdef WITH_CODEGENS
-	    if (Output_lang == MIF) color = "black";
-	    else
+	    else if (Output_lang == MIF) color = "black";
 #endif
-	    color = DEFAULT_FILL;
+	    else color = DEFAULT_FILL;
 	}
     }
     return color;
@@ -1521,7 +1523,6 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 static void point_init(node_t * n)
 {
     textlabel_t *p;
-    char* color;
 
     if (!point_desc) {
 	shape_desc *ptr;
@@ -1554,9 +1555,6 @@ static void point_init(node_t * n)
     } else
 	ND_width(n) = ND_height(n) = DEF_POINT;
 
-    color = late_nnstring(n, N_color, "");
-    if (!color[0])
-	agsafeset(n, "color", "black", "");
     poly_init(n);
 }
 
