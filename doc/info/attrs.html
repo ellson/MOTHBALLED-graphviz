@@ -794,7 +794,8 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:image HREF=#a:image><STRONG>image</STRONG></A>
 <DD>  Gives the name of a file containing an image to be displayed inside
   a node. The image file must be in one of the recognized formats, 
-  typically JPEG, PNG, GIF or Postscript.  
+  typically JPEG, PNG, GIF or Postscript, and be able to be converted
+  into the desired output format.  
   <P>
   Unlike with the <A HREF=#d:shapefile>shapefile</A> attribute, 
   the image is treated as node
@@ -815,7 +816,8 @@ This field indicates which graph component uses the attribute.
   During rendering, in the default case (<TT>imagescale=false</TT>),
   the image retains its natural size.
   If <TT>imagescale=true</TT>,
-  the image is uniformly scaled to fit inside the node. 
+  the image is uniformly scaled (i.e., its aspect ration is
+  preserved) to fit inside the node. 
   At least one dimension of the image will be as large as possible
   given the size of the node.
   When <TT>imagescale=width</TT>,
