@@ -1,6 +1,10 @@
-September 24, 2007
+November 5, 2007
 	- preparing for release 2.16
-	- Fixed bugs: 1179, 1181, 1196
+	- Fixed bugs: 456, 473, 1160, 1179, 1181, 1182, 1196, 1199, 1210, 1219
+	- new regression test suite
+	- new cgraph library 
+	- add "image" and "imagescale" for simpler support for images in nodes
+	- add "tab" "box3d" and "component" shapes.  - Diomidis Spinellis
 	- replace arith.h in distro
 	- add functions to access version info to avoid need for gvcint.h
 	- Fix problem with irregular character spacing at 96dpi in pango/cairo output formats.
