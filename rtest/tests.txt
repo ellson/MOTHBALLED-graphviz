@@ -168,6 +168,11 @@ colors
 =
 dot ps
 
+polypoly
+=
+dot ps
+dot png
+
 ports
 =
 dot dot
