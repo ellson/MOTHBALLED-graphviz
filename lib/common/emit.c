@@ -778,9 +778,16 @@ void emit_background(GVJ_t * job, graph_t *g)
 
 static void setup_page(GVJ_t * job, graph_t * g)
 {
+    point pagesArrayElem = job->pagesArrayElem, pagesArraySize = job->pagesArraySize;
+	
+    if (job->rotation) {
+	pagesArrayElem = exch_xy(pagesArrayElem);
+	pagesArraySize = exch_xy(pagesArraySize);
+    }
+
     /* establish current box in graph units */
-    job->pageBox.LL.x = job->pagesArrayElem.x * job->pageSize.x - job->pad.x;
-    job->pageBox.LL.y = job->pagesArrayElem.y * job->pageSize.y - job->pad.y;
+    job->pageBox.LL.x = pagesArrayElem.x * job->pageSize.x - job->pad.x;
+    job->pageBox.LL.y = pagesArrayElem.y * job->pageSize.y - job->pad.y;
     job->pageBox.UR.x = job->pageBox.LL.x + job->pageSize.x;
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
@@ -803,11 +810,11 @@ static void setup_page(GVJ_t * job, graph_t * g)
 
     /* CAUTION - job->translation was difficult to get right. */
     /* Test with and without assymetric margins, e.g: -Gmargin="1,0" */
+    job->pageOffset.x = - job->pageSize.x * pagesArrayElem.x;
+    job->pageOffset.y = - job->pageSize.y * pagesArrayElem.y;
     if (job->rotation) {
-	job->pageOffset.x =   job->pageSize.y * job->pagesArrayElem.y;
-	job->pageOffset.y = - job->pageSize.x * job->pagesArrayElem.x;
-        job->clip.LL.x = job->focus.x + job->pageOffset.x - job->pagesArraySize.x * job->pageSize.x / 2.;
-        job->clip.UR.y = job->focus.y + job->pageOffset.y + job->pagesArraySize.y * job->pageSize.y / 2.;
+        job->clip.LL.x = job->focus.x - job->pageOffset.x - pagesArraySize.x * job->pageSize.x / 2.;
+        job->clip.UR.y = job->focus.y + job->pageOffset.y + pagesArraySize.y * job->pageSize.y / 2.;
         job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.y / job->zoom;
         job->clip.LL.y = job->clip.UR.y - job->view.y + 2 * job->margin.x / job->zoom;
 	job->translation.y = - job->clip.UR.y - job->canvasBox.LL.y / job->zoom;
@@ -817,10 +824,8 @@ static void setup_page(GVJ_t * job, graph_t * g)
             job->translation.x = - job->clip.LL.x + job->canvasBox.LL.x / job->zoom;
     }
     else {
-	job->pageOffset.x = - job->pageSize.x * job->pagesArrayElem.x;
-	job->pageOffset.y = - job->pageSize.y * job->pagesArrayElem.y;
-	job->clip.LL.x = job->focus.x - job->pageOffset.x - job->pagesArraySize.x * job->pageSize.x / 2.;
-	job->clip.LL.y = job->focus.y - job->pageOffset.y - job->pagesArraySize.y * job->pageSize.y / 2.;
+	job->clip.LL.x = job->focus.x - job->pageOffset.x - pagesArraySize.x * job->pageSize.x / 2.;
+	job->clip.LL.y = job->focus.y - job->pageOffset.y - pagesArraySize.y * job->pageSize.y / 2.;
         job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.x / job->zoom;
         job->clip.UR.y = job->clip.LL.y + job->view.y - 2 * job->margin.y / job->zoom;
 	/* pre unscale margins to keep them constant under scaling */
@@ -832,7 +837,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
     }
 
 #if 0
-fprintf(stderr,"width=%d height=%d dpi=%g,%g\npad=%g,%g focus=%g,%g view=%g,%g zoom=%g\npageBox=%g,%g,%g,%g pageSize=%g,%g canvasBox=%g,%g,%g,%g pageOffset=%g,%g\ntranslation=%g,%g clip=%g,%g,%g,%g margin=%g,%g\n",
+fprintf(stderr,"width=%d height=%d dpi=%g,%g\npad=%g,%g focus=%g,%g view=%g,%g zoom=%g\npageBox=%g,%g,%g,%g pagesArraySize=%d,%d pageSize=%g,%g canvasBox=%g,%g,%g,%g pageOffset=%g,%g\ntranslation=%g,%g clip=%g,%g,%g,%g margin=%g,%g\n",
 	job->width, job->height,
 	job->dpi.x, job->dpi.y,
 	job->pad.x, job->pad.y,
@@ -840,6 +845,7 @@ fprintf(stderr,"width=%d height=%d dpi=%g,%g\npad=%g,%g focus=%g,%g view=%g,%g z
 	job->view.x, job->view.y,
 	job->zoom,
 	job->pageBox.LL.x, job->pageBox.LL.y, job->pageBox.UR.x, job->pageBox.UR.y,
+	job->pagesArraySize.x, job->pagesArraySize.y,
 	job->pageSize.x, job->pageSize.y,
 	job->canvasBox.LL.x, job->canvasBox.LL.y, job->canvasBox.UR.x, job->canvasBox.UR.y,
 	job->pageOffset.x, job->pageOffset.y,
