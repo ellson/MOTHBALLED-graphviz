@@ -542,6 +542,12 @@ static int zoom_out_cb(GVJ_t * job)
 
 static int toggle_fit_cb(GVJ_t * job)
 {
+/*FIXME - should allow for margins */
+/*      - similar zoom_to_fit code exists in: */
+/*      plugin/gtk/callbacks.c */
+/*      plugin/xlib/gvdevice_xlib.c */
+/*      lib/gvc/gvevent.c */
+
     job->fit_mode = !job->fit_mode;
     if (job->fit_mode) {
 	/* FIXME - this code looks wrong */

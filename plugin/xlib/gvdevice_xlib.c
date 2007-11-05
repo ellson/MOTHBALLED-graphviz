@@ -82,6 +82,12 @@ typedef struct window_xlib_s {
 
 static void handle_configure_notify(GVJ_t * job, XConfigureEvent * cev)
 {
+/*FIXME - should allow for margins */
+/*	- similar zoom_to_fit code exists in: */
+/*	plugin/gtk/callbacks.c */
+/*	plugin/xlib/gvdevice_xlib.c */
+/*	lib/gvc/gvevent.c */
+
     if (job->fit_mode)
         job->zoom = MIN((double) cev->width / (double) job->width,
 			(double) cev->height / (double) job->height);

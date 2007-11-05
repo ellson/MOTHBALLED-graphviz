@@ -332,6 +332,12 @@ on_drawingarea1_configure_event        (GtkWidget       *widget,
     GVJ_t *job;
     double zoom_to_fit;
 
+/*FIXME - should allow for margins */
+/*      - similar zoom_to_fit code exists in: */
+/*      plugin/gtk/callbacks.c */
+/*      plugin/xlib/gvdevice_xlib.c */
+/*      lib/gvc/gvevent.c */
+
     job = (GVJ_t *)g_object_get_data(G_OBJECT(widget),"job");
     if (! job->has_been_rendered) {
 	zoom_to_fit = MIN((double) event->width / (double) job->width,
