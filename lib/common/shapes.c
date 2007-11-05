@@ -806,14 +806,19 @@ static void poly_init(node_t * n)
 	vertices = N_NEW(outp * sides, pointf);
 	P.x = bb.x / 2.;
 	P.y = bb.y / 2.;
-	vertices[1] = P;
 	vertices[0].x = -P.x;
 	vertices[0].y = -P.y;
+	vertices[1] = P;
 	if (peripheries > 1) {
-	    for (j = 1; j < peripheries; j++) {
-		P.x += GAP;
-		P.y += GAP;
-		vertices[j] = P;
+	    for (j = 1, i = 2; j < peripheries; j++) {
+	        P.x += GAP;
+	        P.y += GAP;
+                vertices[i].x = -P.x;
+                vertices[i].y = -P.y;
+	        i++;
+                vertices[i].x = P.x;
+                vertices[i].y = P.y;
+	        i++;
 	    }
 	    bb.x = 2. * P.x;
 	    bb.y = 2. * P.y;
