@@ -207,11 +207,13 @@ load_store_with_attrs(GtkListStore *model, GVJ_t *job)
 
         gtk_list_store_clear(model);
 
+#if 0
         for (i = 0; i < attrs_len; i+=3) {
                 gtk_list_store_append(model, &iter);
                 gtk_list_store_set(model, &iter, 0, attrs[i], 1, g_strdup(attrs[i+1]), -1);
                 type = (gvattr_t)attrs[i+2];
         }
+#endif
 }
 
 
