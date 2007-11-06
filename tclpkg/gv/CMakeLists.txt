@@ -250,7 +250,7 @@ INSTALL_FILES(FILES
 #BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
 #
 #pkgsharpdir = $(pkglibdir)/sharp
-#SHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs SWIGTYPE_p_p_void.cs
+#SHARP_hdr = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs
 #nodist_libgv_sharp_la_SOURCES = gv_sharp.cpp $(SHARP_hdr)
 #libgv_sharp_la_SOURCES = $(BASESOURCES)
 #libgv_sharp_la_LIBADD = $(BASELIBS) @SHARP_LIBS@ 
@@ -279,7 +279,7 @@ INSTALL_FILES(FILES
 #	$(SWIG) -c++ -io -o gv_io.cpp gv.i
 #
 #pkgjavadir = $(pkglibdir)/java
-#JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java SWIGTYPE_p_FILE.java SWIGTYPE_p_p_void.java
+#JAVA_hdr = gv.java gvJNI.java SWIGTYPE_p_Agraph_t.java SWIGTYPE_p_Agnode_t.java SWIGTYPE_p_Agedge_t.java SWIGTYPE_p_Agsym_t.java SWIGTYPE_p_FILE.java
 #nodist_libgv_java_la_SOURCES = gv_java.cpp
 #libgv_java_la_SOURCES = $(BASESOURCES) 
 #libgv_java_la_LIBADD = $(BASELIBS) @JAVA_LIBS@
