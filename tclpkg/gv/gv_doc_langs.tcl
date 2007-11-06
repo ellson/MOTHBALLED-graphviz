@@ -8,7 +8,6 @@ array set LANGS {
                 	char* string
                 	FILE* SWIGTYPE_p_FILE
                 	bool bool
-                	void** SWIGTYPE_p_p_void
                 	void {}
 		}
 		SYNTAX {
@@ -107,7 +106,6 @@ array set LANGS {
 			char* string
 			FILE* SWIGTYPE_p_FILE
 			bool bool
-			void** SWIGTYPE_p_p_void
 			void {}
 		}
 		SYNTAX {
