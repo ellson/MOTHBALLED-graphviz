@@ -69,26 +69,29 @@ gv_lua.cpp: gv.i
 	$(SWIG) -c++ -lua -o gv_lua.cpp $(srcdir)/gv.i
 
 pkgocamldir = $(pkglibdir)/ocaml
-OCAML_data = gv.ml gv.mli swig.mli swig.ml gv.cma gv.cmx gv.cmxa
+OCAML_data = gv.cma gv.cmi
 nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_data)
 libgv_ocaml_la_SOURCES = $(BASESOURCES)
 libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@
 libgv_ocaml_la_LDFLAGS = -module -avoid-version
-$(OCAML_data): gv_ocaml.cpp
-gv_ocaml.cpp: gv.i
-	rm -f swig.cmo swig.cmi gv.a gv.cmo gv.cmi
+gv.ml gv.mli gv_ocaml.cpp: gv.i
 	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp $(srcdir)/gv.i
-swig.mli swig.ml swig.cmo gv.cmo gv.cma:
+swig.mli:
 	$(SWIG) -ocaml -co swig.mli
+swig.ml:
 	$(SWIG) -ocaml -co swig.ml
+swig.cmi: swig.mli
 	ocamlc -c swig.mli
-	ocamlc -c gv.mli
+swig.cmo: swig.ml swig.cmi
 	ocamlc -c swig.ml
+gv.cmi: gv.mli 
+	ocamlc -c gv.mli
+gv.cmo: gv.ml gv.cmi
 	ocamlc -c gv.ml
+gv.cma: swig.cmo gv.cmo
 	ocamlc -a -dllib dllgv.so -custom -o gv.cma swig.cmo gv.cmo
-gv.cmx  gv.cmxa: gv.cma
-	ocamlopt -c gv.ml
-	ocamlopt -a -o gv.cmxa gv.cmx
+gv.cmxa gv.a: gv.cma
+	ocamlopt -a -o gv.cmxa
 
 pkgperldir = $(pkglibdir)/perl
 PERL_data = gv.pm
@@ -391,7 +394,7 @@ CLEANFILES = test_*/* pkgIndex.tcl \
 	gv_io.cpp $(IO_data) \
 	gv_java.cpp $(JAVA_data) \
 	gv_lua.cpp $(LUA_data) \
-	gv_ocaml.cpp $(OCAML_data) gv.cmo swig.cmo gv.cmi swig.cmi gv.a \
+	gv_ocaml.cpp $(OCAML_data) swig.mli swig.ml swig.cmi swig.cmo gv.ml gv.mli gv.cmi gv.cmo gv.cmxa gv.a gv.cma \
 	gv_perl.cpp $(PERL_data) \
 	gv_php.cpp $(PHP_data) \
 	gv_python.cpp $(PYTHON_data) gv.pyc \
