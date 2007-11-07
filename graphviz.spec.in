@@ -576,8 +576,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/doc
 
 %clean
 # regression test
-export LD_LIBRARY_PATH=%{buildroot}/usr/lib:$LD_LIBRARY_PATH
-export PATH=%{buildroot}/usr/bin:$PATH
+LD_LIBRARY_PATH=%{buildroot}%{_libdir}:$LD_LIBRARY_PATH
+PATH=%{buildroot}%{_bindir}:$PATH
+export LD_LIBRARY_PATH PATH
 dot -c
 cd rtest
 ksh rtest.sh
