@@ -76,6 +76,7 @@ libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@
 libgv_ocaml_la_LDFLAGS = -module -avoid-version
 $(OCAML_data): gv_ocaml.cpp
 gv_ocaml.cpp: gv.i
+	rm -f swig.cmo swig.cmi gv.a gv.cmo gv.cmi
 	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp $(srcdir)/gv.i
 swig.mli swig.ml swig.cmo gv.cmo gv.cma:
 	$(SWIG) -ocaml -co swig.mli
@@ -390,7 +391,7 @@ CLEANFILES = test_*/* pkgIndex.tcl \
 	gv_io.cpp $(IO_data) \
 	gv_java.cpp $(JAVA_data) \
 	gv_lua.cpp $(LUA_data) \
-	gv_ocaml.cpp $(OCAML_data) gv.cmo swig.cmo \
+	gv_ocaml.cpp $(OCAML_data) gv.cmo swig.cmo gv.cmi swig.cmi gv.a \
 	gv_perl.cpp $(PERL_data) \
 	gv_php.cpp $(PHP_data) \
 	gv_python.cpp $(PYTHON_data) gv.pyc \
