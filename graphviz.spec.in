@@ -575,6 +575,13 @@ cp -a %{buildroot}%{_datadir}/%{name}/doc __doc
 rm -rf %{buildroot}%{_datadir}/%{name}/doc
 
 %clean
+# regression test
+export LD_LIBRARY_PATH=%{buildroot}/lib:$LD_LIBRARY_PATH
+export PATH=%{buildroot}/bin:$PATH
+dot -c
+cd rtest
+ksh rtest.sh
+# clean up temporary installation
 rm -rf %{buildroot}
 
 #-- changelog --------------------------------------------------
