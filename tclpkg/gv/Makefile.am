@@ -390,7 +390,7 @@ CLEANFILES = test_*/* pkgIndex.tcl \
 	gv_io.cpp $(IO_data) \
 	gv_java.cpp $(JAVA_data) \
 	gv_lua.cpp $(LUA_data) \
-	gv_ocaml.cpp $(OCAML_data) \
+	gv_ocaml.cpp $(OCAML_data) gv.cmo swig.cmo \
 	gv_perl.cpp $(PERL_data) \
 	gv_php.cpp $(PHP_data) \
 	gv_python.cpp $(PYTHON_data) gv.pyc \
