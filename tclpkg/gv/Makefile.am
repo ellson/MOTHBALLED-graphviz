@@ -84,7 +84,7 @@ swig.cmi: swig.mli
 	ocamlc -c swig.mli
 swig.cmo: swig.ml swig.cmi
 	ocamlc -c swig.ml
-gv.cmi: gv.mli 
+gv.cmi: gv.mli swig.cmi
 	ocamlc -c gv.mli
 gv.cmo: gv.ml gv.cmi
 	ocamlc -c gv.ml
