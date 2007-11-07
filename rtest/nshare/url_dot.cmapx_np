@@ -1,6 +1,6 @@
 <map id="G" name="G">
 <area shape="rect" href="http://www.graphviz.org/doc/info/lang.html" title="lang" alt="" coords="251,5,323,53"/>
-<area shape="rect" href="http://www.graphviz.org/doc/info/colors.html" title="&lt;TABLE&gt;" alt="" coords="25,160,89,195"/>
+<area shape="rect" href="http://www.graphviz.org/doc/info/colors.html" title="&lt;TABLE&gt;" alt="" coords="25,160,89,194"/>
 <area shape="rect" href="http://www.graphviz.org/doc/info/output.html" title="&lt;TABLE&gt;" alt="" coords="5,145,109,209"/>
 <area shape="rect" href="lang&#45;&gt;colors" title="self" alt="" coords="249,36,257,44"/>
 <area shape="rect" href="lang&#45;&gt;colors" title="self" alt="" coords="75,144,83,152"/>
@@ -8,18 +8,18 @@
 <area shape="rect" href="http://www.graphviz.org/doc/info/shapes.html" alt="" coords="283,49,291,57"/>
 <area shape="rect" href="http://www.graphviz.org/doc/info/shapes.html" alt="" coords="283,149,291,157"/>
 <area shape="rect" href="headurl" title="headurl" alt="" coords="301,45,309,53"/>
-<area shape="rect" href="headurl" title="headurl" alt="" coords="384,151,392,159"/>
-<area shape="rect" href="headurl" title="size" alt="" coords="371,130,402,152"/>
+<area shape="rect" href="headurl" title="headurl" alt="" coords="384,150,392,158"/>
+<area shape="rect" href="headurl" title="size" alt="" coords="372,130,402,152"/>
 <area shape="rect" href="G name" title="name" alt="" coords="133,153,208,201"/>
-<area shape="rect" href="tailurl" title="size" alt="" coords="455,48,463,56"/>
+<area shape="rect" href="tailurl" title="size" alt="" coords="456,48,464,56"/>
 <area shape="rect" href="tailurl" alt="" coords="408,149,416,157"/>
-<area shape="rect" href="tailurl" title="size" alt="" coords="433,50,464,72"/>
-<area shape="rect" href="labelurl" title="garf" alt="" coords="469,49,477,57"/>
-<area shape="rect" href="labelurl" title="garf" alt="" coords="488,149,496,157"/>
-<area shape="rect" href="garf" title="garf" alt="" coords="480,77,512,99"/>
+<area shape="rect" href="tailurl" title="size" alt="" coords="434,49,464,71"/>
+<area shape="rect" href="labelurl" title="garf" alt="" coords="471,49,479,57"/>
+<area shape="rect" href="labelurl" title="garf" alt="" coords="489,149,497,157"/>
+<area shape="rect" href="garf" title="garf" alt="" coords="481,77,512,99"/>
 <area shape="rect" href="tailURL" title="tailtooltip" alt="" coords="589,49,597,57"/>
 <area shape="rect" href="headURL" title="headtooltip" alt="" coords="589,149,597,157"/>
-<area shape="rect" href="garf" title="garf" alt="" coords="593,77,625,99"/>
+<area shape="rect" href="garf" title="garf" alt="" coords="593,77,624,99"/>
 <area shape="rect" href="headURL" title="headtooltip" alt="" coords="562,130,636,152"/>
 <area shape="rect" href="tailURL" title="tailtooltip" alt="" coords="558,54,619,76"/>
 <area shape="rect" href="http://www.graphviz.org/doc/info/arrows.html" title="arrows" alt="" coords="123,109,352,212"/>
