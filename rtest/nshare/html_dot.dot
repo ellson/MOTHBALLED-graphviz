@@ -4,7 +4,7 @@ digraph structs {
 	struct1 [label=<
 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
   <TR><TD>left</TD><TD PORT="f1">mid dle</TD><TD PORT="f2">right</TD></TR>
-</TABLE>>, pos="77,134", width="1.69", height="0.50"];
+</TABLE>>, pos="76,134", width="1.69", height="0.50"];
 	struct2 [label=<
 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
   <TR><TD PORT="f0">one</TD><TD>two</TD></TR>
