@@ -135,23 +135,23 @@ function doDiff
     ps | ps2 )
       awk -f strps.awk $FILE1 > $TMPFILE1
       awk -f strps.awk $FILE2 > $TMPFILE2
-      diff -q $TMPFILE1 $TMPFILE2 > /dev/null 
+      diff -q $TMPFILE2 $TMPFILE1 > /dev/null 
       ;;
     svg )
       sed '/^<!--/d' < $FILE1 | sed '/-->$/d' > $TMPFILE1
       sed '/^<!--/d' < $FILE2 | sed '/-->$/d' > $TMPFILE2
-      diff -q $TMPFILE1 $TMPFILE2 > /dev/null 
+      diff -q $TMPFILE2 $TMPFILE1 > /dev/null 
       ;;
     png )
-      diffimg $FILE1 $FILE2 > /dev/null 
+      diffimg $FILE2 $FILE1 > /dev/null 
       ;;
     * )
-      diff -q $FILE1 $FILE2 > /dev/null 
+      diff -q $FILE2 $FILE1 > /dev/null 
       ;;
     esac
     if [[ $? != 0 ]]
     then
-      print -u 2 "Test $1:$2 : == Failed =="
+	    print -u 2 "Test $1:$2 : == Failed == $OUTFILE"
     fi
 }
 
