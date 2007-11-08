@@ -129,6 +129,12 @@ void agfreeid(Agraph_t * g, int objtype, unsigned long id)
     (AGDISC(g, id)->free) (AGCLOS(g, id), objtype, id);
 }
 
+/* agnameof:
+ * Return string representation of object.
+ * In general, returns the name of node or graph,
+ * and the key of an edge. If edge is anonymous, returns NULL.
+ * Uses static buffer for anonymous graphs.
+ */
 char *agnameof(void *obj)
 {
     Agraph_t *g;
@@ -145,9 +151,11 @@ char *agnameof(void *obj)
 	     AGDISC(g, id)->print(AGCLOS(g, id), AGTYPE(obj), AGID(obj))))
 	    return rv;
     }
-    if (AGTYPE(obj) != AGEDGE)
+    if (AGTYPE(obj) != AGEDGE) {
 	sprintf(buf, "%c%ld", LOCALNAMEPREFIX, AGID(obj));
+	rv = buf;
+    }
     else
-	buf[0] = 0;
-    return buf;
+	rv = 0;
+    return rv;
 }
