@@ -271,37 +271,21 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     ps_set_color(job, &(job->obj->pencolor));
     gvdevice_printf(job, "%.2f /%s set_font\n", para->fontsize, para->fontname);
     str = ps_string(para->str,isLatin1);
-    p.y += para->yoffset_centerline;
-    if (para->xshow) {
-        switch (para->just) {
-        case 'l':
-            break;
-        case 'r':
-            p.x -= para->width;
-            break;
-        default:
-        case 'n':
-            p.x -= para->width / 2;
-            break;
-        }
-        gvdevice_printf(job, "%g %g moveto\n%s\n[%s]\nxshow\n",
-                p.x, p.y, str, para->xshow);
-    } else {
-        switch (para->just) {
-        case 'l':
-            adj = 0.0;
-            break;
-        case 'r':
-            adj = -1.0;
-            break;
-        default:
-        case 'n':
-            adj = -0.5;
-            break;
-        }
-        gvdevice_printf(job, "%g %g moveto %g %g %s alignedtext\n",
-                p.x, p.y, para->width, adj, str);
+    switch (para->just) {
+    case 'r':
+        p.x -= para->width;
+        break;
+    case 'l':
+        p.x -= 0.0;
+        break;
+    case 'n':
+    default:
+        p.x -= para->width / 2.0;
+        break;
     }
+    p.y += para->yoffset_centerline;
+    gvdevice_printf(job, "%g %g moveto %g %s alignedtext\n",
+	    p.x, p.y, para->width, str);
 }
 
 static void psgen_ellipse(GVJ_t * job, pointf * A, int filled)
