@@ -69,7 +69,7 @@ gv_lua.cpp: gv.i
 	$(SWIG) -c++ -lua -o gv_lua.cpp $(srcdir)/gv.i
 
 pkgocamldir = $(pkglibdir)/ocaml
-OCAML_data = gv.cma gv.cmi
+OCAML_data = gv.cma gv.cmi gv.cma gv.cmi gv.a gv.cmx gv.cmxa gv.mli META.gv
 nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_data)
 libgv_ocaml_la_SOURCES = $(BASESOURCES)
 libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@
@@ -90,6 +90,8 @@ gv.cmo: gv.ml gv.cmi
 	ocamlc -c gv.ml
 gv.cma: swig.cmo gv.cmo
 	ocamlc -a -dllib dllgv.so -custom -o gv.cma swig.cmo gv.cmo
+gv.cmx: gv.ml gv.cma
+	ocamlopt -c gv.ml
 gv.cmxa gv.a: gv.cma
 	ocamlopt -a -o gv.cmxa
 
@@ -394,7 +396,7 @@ CLEANFILES = test_*/* pkgIndex.tcl \
 	gv_io.cpp $(IO_data) \
 	gv_java.cpp $(JAVA_data) \
 	gv_lua.cpp $(LUA_data) \
-	gv_ocaml.cpp $(OCAML_data) swig.mli swig.ml swig.cmi swig.cmo gv.ml gv.mli gv.cmi gv.cmo gv.cmxa gv.a gv.cma \
+	gv_ocaml.cpp gv.cma gv.cmi gv.cma gv.cmi gv.a gv.cmx gv.cmxa gv.mli swig.mli swig.ml swig.cmi swig.cmo gv.ml gv.mli gv.cmi gv.cmo gv.cmx gv.cmxa gv.a gv.o gv.cma \
 	gv_perl.cpp $(PERL_data) \
 	gv_php.cpp $(PHP_data) \
 	gv_python.cpp $(PYTHON_data) gv.pyc \
