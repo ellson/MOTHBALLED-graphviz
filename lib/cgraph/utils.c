@@ -63,6 +63,7 @@ Dict_t *agdtopen(Agraph_t * g, Dtdisc_t * disc, Dtmethod_t * method)
     Ag_dictop_G = g;
     d = dtopen(disc, method);
     disc->memoryf = memf;
+    Ag_dictop_G = NIL(Agraph_t*);
     return d;
 }
 
@@ -90,6 +91,7 @@ void agdtclose(Agraph_t * g, Dict_t * dict)
     if (dtclose(dict))
 	abort();
     disc->memoryf = memf;
+    Ag_dictop_G = NIL(Agraph_t*);
 }
 
 void agdtdisc(Agraph_t * g, Dict_t * dict, Dtdisc_t * disc)
