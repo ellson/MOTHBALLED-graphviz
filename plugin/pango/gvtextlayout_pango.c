@@ -35,6 +35,8 @@ static void pango_free_layout (void *layout)
 
 #define FONT_DPI 96.
 
+extern char* psfontResolve (PostscriptAlias* pa);
+
 static boolean pango_textlayout(textpara_t * para, char **fontpath)
 {
     static char buf[1024];  /* returned in fontpath, only good until next call */
@@ -69,24 +71,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	pango_font_description_free (desc);
 
 	if (para->postscript_alias) {
-	    int comma=0;
-	    strcpy(buf, para->postscript_alias->family);
-	    if (para->postscript_alias->weight) {
-		strcat(buf, comma ? " " : ", ");
-		comma = 1;
-		strcat(buf, para->postscript_alias->weight);
-	    }
-	    if (para->postscript_alias->stretch) {
-		strcat(buf, comma ? " " : ", ");
-		comma = 1;
-		strcat(buf, para->postscript_alias->stretch);
-	    }
-	    if (para->postscript_alias->style) {
-		strcat(buf, comma ? " " : ", ");
-		comma = 1;
-		strcat(buf, para->postscript_alias->style);
-	    }
-	    fnt = buf;
+	    fnt = psfontResolve (para->postscript_alias);
 	}
 	else
 	    fnt = fontname;

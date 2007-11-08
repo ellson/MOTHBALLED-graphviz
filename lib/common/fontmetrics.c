@@ -219,3 +219,46 @@ pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize)
     size.y = para->height;
     return size;
 }
+
+/* psfontResolve:
+ * Construct alias for postscript fontname.
+ * NB. Uses a static array - non-reentrant.
+ */ 
+
+#define ADD_ATTR(a) \
+  if (a) { \
+	strcat(buf, comma ? " " : ", "); \
+	comma = 1; \
+	strcat(buf, a); \
+  }
+
+char* psfontResolve (PostscriptAlias* pa)
+{
+    static char buf[1024];
+    int comma=0;
+    strcpy(buf, pa->family);
+
+    ADD_ATTR(pa->weight);
+    ADD_ATTR(pa->stretch);
+    ADD_ATTR(pa->style);
+/*
+    if (pa->weight) {
+	strcat(buf, comma ? " " : ", ");
+	comma = 1;
+	strcat(buf, pa->weight);
+    }
+    if (pa->stretch) {
+	strcat(buf, comma ? " " : ", ");
+	comma = 1;
+	strcat(buf, pa->stretch);
+    }
+    if (pa->style) {
+                strcat(buf, comma ? " " : ", ");
+                comma = 1;
+                strcat(buf, pa->style);
+    }
+*/
+
+    return buf;
+}
+

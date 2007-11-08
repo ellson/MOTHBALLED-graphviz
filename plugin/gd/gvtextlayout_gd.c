@@ -100,6 +100,8 @@ char *gd_alternate_fontlist(char *font)
 }
 #endif				/* HAVE_GD_FONTCONFIG */
 
+extern char* psfontResolve (PostscriptAlias* pa);
+
 static boolean gd_textlayout(textpara_t * para, char **fontpath)
 {
     char *err;
@@ -139,7 +141,10 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 	}
 	/* call gdImageStringFT with null *im to get brect and to set font cache */
 #ifdef HAVE_GD_FONTCONFIG
-	fontlist = para->fontname;
+	if (para->postscript_alias)
+	    fontlist = psfontResolve (para->postscript_alias);
+	else
+	    fontlist = para->fontname;
 #else
 	fontlist = gd_alternate_fontlist(para->fontname);
 #endif

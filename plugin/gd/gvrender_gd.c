@@ -333,11 +333,14 @@ void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fon
     }
 }
 
+extern char* psfontResolve (PostscriptAlias* pa);
+
 static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     gdImagePtr im = (gdImagePtr) job->context;
     pointf spf, epf;
     double parawidth = para->width * job->scale.x;
+    char* fontname;
 
     if (!im)
 	return;
@@ -367,12 +370,19 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	epf.y = spf.y = p.y - para->yoffset_centerline * job->scale.y;
     }
 
+#ifdef HAVE_GD_FONTCONFIG
+    if (para->postscript_alias)
+	fontname = psfontResolve (para->postscript_alias);
+    else
+#endif
+	fontname = para->fontname;
+
     gdgen_text(im, spf, epf,
             job->obj->pencolor.u.index,
             para->fontsize,
             ROUND(POINTS_PER_INCH * job->scale.x),
             job->rotation ? (PI / 2) : 0,
-            para->fontname,
+            fontname,
             para->str);
 }
 
