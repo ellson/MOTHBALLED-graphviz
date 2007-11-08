@@ -440,8 +440,8 @@ int agsafeset(void* obj, char* name, char* value, char* def)
 {
     Agsym_t* a;
 
-	a = agattr(agraphof(obj),AGTYPE(obj),value,0);
-	if (!a) a = agattr(agraphof(obj),AGTYPE(obj),value,def);
+	a = agattr(agraphof(obj),AGTYPE(obj),name,0);
+	if (!a) a = agattr(agraphof(obj),AGTYPE(obj),name,def);
     return agxset(obj, a, value);
 }
 
