@@ -288,12 +288,12 @@ static int check_control_points(pointf *cp)
 }
 
 #ifdef DEBUG
-static void psmapOutput (point* ps, int n)
+static void psmapOutput (pointf* ps, int n)
 {
    int i;
-   fprintf (stdout, "newpath %d %d moveto\n", ps[0].x, ps[0].y);
+   fprintf (stdout, "newpath %f %f moveto\n", ps[0].x, ps[0].y);
    for (i=1; i < n; i++)
-        fprintf (stdout, "%d %d lineto\n", ps[i].x, ps[i].y);
+        fprintf (stdout, "%f %f lineto\n", ps[i].x, ps[i].y);
    fprintf (stdout, "closepath stroke\n");
 }
 #endif
