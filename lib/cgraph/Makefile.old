@@ -1,11 +1,13 @@
-LIBNAME = libxcgraph.a
+LIBNAME = libcgraph.a
 
 all:	$(LIBNAME)
 
-include $(HOME)/src/graphviz2/Config.mk.old
-include $(HOME)/src/graphviz2/makearch/$(ARCH)
+ROOT=../..
 
-INCS =	-I. -I$(HOME)/arch/$(ARCH)/include
+include $(ROOT)/Config.mk
+include $(ROOT)/makearch/$(ARCH)
+
+INCS =	-I. -I../cdt -I$(ROOT)
 CCFLAGS = -g
 
 DEFINES = -DHAVE_CONFIG_H
