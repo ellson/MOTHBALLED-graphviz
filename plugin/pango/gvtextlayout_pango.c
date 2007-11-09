@@ -48,6 +48,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     PangoLayout *layout;
     PangoRectangle logical_rect;
     PangoLayoutIter* iter;
+	cairo_font_options_t* options;
 /* #define ENABLE_PANGO_XSHOW */
 #ifdef ENABLE_PANGO_XSHOW
     PangoRectangle char_rect;
@@ -63,6 +64,13 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     if (!context) {
 	fontmap = pango_cairo_font_map_get_default();
 	context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP(fontmap));
+	options=cairo_font_options_create();
+	cairo_font_options_set_antialias(options,CAIRO_ANTIALIAS_GRAY);
+	cairo_font_options_set_hint_style(options,CAIRO_HINT_STYLE_FULL);
+	cairo_font_options_set_hint_metrics(options,CAIRO_HINT_METRICS_ON);
+	cairo_font_options_set_subpixel_order(options,CAIRO_SUBPIXEL_ORDER_BGR);
+	pango_cairo_context_set_font_options(context, options);
+
 	g_object_unref(fontmap);
     }
 
