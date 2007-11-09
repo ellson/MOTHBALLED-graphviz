@@ -562,6 +562,7 @@ static void write_body(Agraph_t * g, iochan_t * ofile)
 
 int agwrite(Agraph_t * g, void *ofile)
 {
+    Level = 0; /* re-initialize tab level */
     write_hdr(g, ofile, TRUE);
     write_body(g, ofile);
     write_trl(g, ofile);
