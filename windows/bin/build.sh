@@ -12,7 +12,10 @@ INPKG=graphviz-working.tar.gz
 SOURCEFILE=$SOURCE/CURRENT/$INPKG
 DESTDIR=$SOURCE/CURRENT
 VERSION=$(date +%K)
-USER=${USER:-erg}
+export GTKDIR=/c/gtk
+typeset -l USER=${USER:-erg}
+WINDBG="erg"
+#WINDBG="erg arif ellson"
 SFX=
 export nativepp=-1
 
@@ -31,16 +34,16 @@ function SetVersion
 
 function ErrorEx
 {
-  scp -q $LFILE penguin:/home/$USER/build.log.$VERSION
-  ssh penguin "echo $1 | mail $USER"
+  scp -q $LFILE $USER@penguin:/home/$USER/build.log.$VERSION
+  ssh $USER@penguin "echo $1 | mail $WINDBG -s'Windows build failure'"
   exit 1
 }  
 
 # Copy file to graphviz machine
 function PutFile
 {
-  echo pscp $1 $SOURCEM:$DESTDIR  >> $LFILE 2>&1
-  pscp -q  $1 $SOURCEM:$DESTDIR  >> $LFILE 2>&1
+  echo scp $1 $SOURCEM:$DESTDIR  >> $LFILE 2>&1
+  scp -q  $1 $SOURCEM:$DESTDIR  >> $LFILE 2>&1
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to put $1"
@@ -49,8 +52,8 @@ function PutFile
 
 function Get 
 {
-  echo pscp $SOURCEM:$SOURCEFILE . >> $LFILE
-  pscp -q  $SOURCEM:$SOURCEFILE . >> $LFILE 2>&1
+  echo scp $SOURCEM:$SOURCEFILE . >> $LFILE
+  scp -q  $SOURCEM:$SOURCEFILE . >> $LFILE 2>&1
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to get source"
@@ -143,12 +146,15 @@ function Setup
   then
     ErrorEx "configure failed"
   fi
+  chmod 664 config.h
 
   # make source fixes for Windows
   if [[ ! -f lib/agraph/unistd.h ]]
   then
     > lib/agraph/unistd.h  # for scan.c
+    > lib/cgraph/unistd.h  # for scan.c
     > lib/gd/unistd.h      # for fontconfig.h
+    > plugin/pango/unistd.h      # for fontconfig.h
   fi
   mv ast_common.h xx
   sed '/#define _typ_ssize_t/d' xx > ast_common.h
@@ -209,8 +215,8 @@ function mkDot
   then
     return 1
   fi 
-  echo "ncc -g -o dot.exe dot.o  -L$INSTALLROOT/lib -L/c/gtk/2.0/lib -lgvc -lgraph -lpathplan -lexpat -lz -lltdl" 
-  ncc -g -o dot.exe dot.o  -L$INSTALLROOT/lib -L/c/gtk/2.0/lib -lgvc -lgraph -lpathplan -lexpat -lz -lltdl
+  echo "ncc -g -o dot.exe dot.o  -L$INSTALLROOT/lib -L$GTKDIR/lib -lgvc -lgraph -lpathplan -lexpat -lz -lltdl" 
+  ncc -g -o dot.exe dot.o  -L$INSTALLROOT/lib -L$GTKDIR/lib -lgvc -lgraph -lpathplan -lexpat -lz -lltdl
   if [[ $? != 0 ]]
   then
     return 1
@@ -274,7 +280,7 @@ function mkTools
   then
     return 1
   fi 
-  mkTool gxl2dot "-L/c/gtk/2.0/lib -lagraph -lgraph -lexpat" "cvtgxl.o dot2gxl.o" 
+  mkTool gxl2dot "-L$GTKDIR/lib -lagraph -lgraph -lexpat" "cvtgxl.o dot2gxl.o" 
   if [[ $? != 0 ]]
   then
     return 1
@@ -342,13 +348,13 @@ function Build
     mkDLL agraph -lcdt
     cp $GVIZ_HOME/lib/expr/.libs/libexpr_C.a libexpr.a
     mkDLL expr -lcdt
-    mkDLL gvc "-L/c/gtk/2.0/lib -lpathplan -lgraph -lcdt -lexpat -lz -lltdl" 
-    mkDLL gvplugin_core "-L/c/gtk/2.0/lib -lgvc -lgraph -lcdt -lexpat -lz -lltdl"
-   mkDLL gvplugin_dot_layout "-L/c/gtk/2.0/lib -lgvc -lgraph -lpathplan -lcdt -lexpat -lz -lltdl"
-    mkDLL gvplugin_neato_layout "-L/c/gtk/2.0/lib -lgvc -lpathplan -lgraph -lcdt -lexpat -lz -lltdl"
-    mkDLL gvplugin_gd "-L/c/gtk/2.0/lib -lgvc -lpathplan -lgraph -lcdt -lpng -ljpeg -lfontconfig -lfreetype -lcairo -liconv -lexpat -lz -lltdl" 
-    mkDLL gvplugin_gdk_pixbuf "-L/c/gtk/2.0/lib -lcairo -lgdk_pixbuf-2.0 -lltdl" 
-    mkDLL gvplugin_pango "-L/C/GTK/2.0/lib -lfontconfig  -lfreetype  -ljpeg  -lpng  -lexpat  -lz -lcairo -lpango-1.0 -lpangocairo-1.0 -lgobject-2.0 -lgtk-win32-2.0 -lglib-2.0 -lgdk-win32-2.0 -latk-1.0 -lgdk_pixbuf-2.0"  
+    mkDLL gvc "-L$GTKDIR/lib -lpathplan -lgraph -lcdt -lexpat -lz -lltdl" 
+    mkDLL gvplugin_core "-L$GTKDIR/lib -lgvc -lgraph -lcdt -lexpat -lz -lltdl"
+   mkDLL gvplugin_dot_layout "-L$GTKDIR/lib -lgvc -lgraph -lpathplan -lcdt -lexpat -lz -lltdl"
+    mkDLL gvplugin_neato_layout "-L$GTKDIR/lib -lgvc -lpathplan -lgraph -lcdt -lexpat -lz -lltdl"
+    mkDLL gvplugin_gd "-L$GTKDIR/lib -lgvc -lpathplan -lgraph -lcdt -lpng -ljpeg -lfontconfig -lfreetype -lcairo -liconv -lexpat -lz -lltdl" 
+#    mkDLL gvplugin_gdk_pixbuf "-L$GTKDIR/lib -lcairo -lgdk_pixbuf-2.0 -lltdl" 
+    mkDLL gvplugin_pango "-L$GTKDIR/lib -lgvc -lfontconfig  -lfreetype  -ljpeg  -lpng  -lexpat  -lz -lcairo -lpango-1.0 -lpangocairo-1.0 -lgobject-2.0 -lgtk-win32-2.0 -lglib-2.0 -lgdk-win32-2.0 -latk-1.0 -lgdk_pixbuf-2.0"  
   fi 
 
   cd $GVIZ_HOME/cmd
@@ -419,7 +425,7 @@ function mkDLL
   return 0
 }
 
-GTKDLLS="fontconfig iconv intl jpeg62 libcairo-2 libexpat libfontconfig-1 \
+GTKDLLS="iconv intl jpeg62 libcairo-2 libexpat libfontconfig-1 \
 libfreetype-6 libglib-2.0-0 libgmodule-2.0-0 libgobject-2.0-0 \
 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpangowin32-1.0-0 \
 libpng12 libxml2 zlib1 libgdk_pixbuf-2.0-0"
@@ -429,13 +435,13 @@ function Install
 {
 # Add 3rd party libraries
   echo "Copying 3rd party libraries" >> $LFILE 2>&1   
-  cd /c/gtk/2.0/bin
+  cd $GTKDIR/bin
   for l in $GTKDLLS
   do
     cp $l.dll $INSTALLROOT/bin
   done
-  cp -r /c/gtk/2.0/lib/pango $INSTALLROOT/lib
-  cp -r /c/gtk/2.0/etc $INSTALLROOT
+  cp -r $GTKDIR/lib/pango $INSTALLROOT/lib
+  cp -r $GTKDIR/etc $INSTALLROOT
 
   # Add extra software
   cd $ROOT/add-on
@@ -597,17 +603,19 @@ Usage='build [-CDLGSBIP] [-R<relno>] \n
  -I : install in local tree \n
  -P : create package and ship'
 
-while getopts :CDLGSBIPR: c
+while getopts :XCDLGSBIPR: c
 do
   case $c in
+  X )       # Remove when pixbuf is fixed
+    PFX=x
+    CONFARG="$CONFARG -X"
+    ;;
   D )       # build with dlls
     CONFARG=-P
     USE_DLL=1
-#    SFX='.dy'
     ;;
   L )       # use ltdl
     USE_DLL=2
-#    SFX='.dy'
     CONFARG=-PL
     ;;
   C )       # no pango/cairo/fontconfig
@@ -657,9 +665,9 @@ done
 
 shift $((OPTIND-1))
 
-LFILE=$ROOT/build.log${SFX}
-GVIZ_HOME=$ROOT/gviz${SFX}
-INSTALLROOT=$ROOT/local${SFX}
+LFILE=$ROOT/${PFX}build.log
+GVIZ_HOME=$ROOT/${PFX}gviz
+INSTALLROOT=$ROOT/${PFX}local
 
 if [[ $# > 0 ]]
 then
