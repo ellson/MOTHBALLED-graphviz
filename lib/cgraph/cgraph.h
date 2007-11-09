@@ -329,7 +329,7 @@ struct Agdatadict_s {		/* set of dictionaries per graph */
 extern Agsym_t *agattr(Agraph_t * g, int kind, char *name, char *value);
 extern Agsym_t *agattrsym(void *obj, char *name);
 extern Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr);
-extern int      agcopyattr(void *, void *);
+extern int      agcopyattr(void *old, void *new);
 
 extern void *agbindrec(void *obj, char *name, unsigned int size,
 		       int move_to_front);
