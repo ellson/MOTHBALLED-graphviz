@@ -291,7 +291,6 @@ extern int agdelete(Agraph_t * g, void *obj);
 extern long agdelsubg(Agraph_t * g, Agraph_t * sub);	/* could be agclose */
 extern int agdelnode(Agraph_t * g, Agnode_t * arg_n);
 extern int agdeledge(Agraph_t * g, Agedge_t * arg_e);
-extern Agobj_t *agrebind(Agraph_t * g, Agobj_t * obj);
 extern int agobjkind(void *);
 
 /* strings */
