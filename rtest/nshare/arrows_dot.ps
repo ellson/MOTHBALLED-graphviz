@@ -1,5 +1,5 @@
 %!PS-Adobe-2.0
-%%Creator: Graphviz version 2.15 (Sat Nov  3 14:12:46 UTC 2007)
+%%Creator: Graphviz version 2.16 (Sat Nov 10 02:02:40 UTC 2007)
 %%For: (ellson) John Ellson
 %%Title: G
 %%Pages: (atend)
@@ -88,17 +88,15 @@ cleartomark
 	scalefont setfont
 } def
 
-% draw aligned label in bounding box aligned to current point
-/alignedtext {			% width adj text
+% draw text fitted to its expected width
+/alignedtext {			% width text
 	/text exch def
-	/adj exch def
 	/width exch def
 	gsave
 		width 0 gt {
-			text stringwidth pop adj mul 0 rmoveto
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
 		} if
-		[] 0 setdash
-		text show
 	grestore
 } def
 
@@ -209,7 +207,7 @@ newpath 32 295 moveto
 stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-47 264.65 moveto 27.75 -0.5 (none) alignedtext
+33.125 264.65 moveto 27.75 (none) alignedtext
 grestore
 % A
 gsave
@@ -227,7 +225,7 @@ newpath 450 144 moveto
 stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-62 25.65 moveto 27.75 -0.5 (none) alignedtext
+48.125 25.65 moveto 27.75 (none) alignedtext
 grestore
 % B
 gsave
@@ -257,7 +255,7 @@ newpath 97.4414 30.7969 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-117 26.65 moveto 39.75 -0.5 (normal) alignedtext
+97.125 26.65 moveto 39.75 (normal) alignedtext
 grestore
 % C
 gsave
@@ -287,7 +285,7 @@ newpath 143.1 25.2 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-170 29.65 moveto 17.25 -0.5 (inv) alignedtext
+161.375 29.65 moveto 17.25 (inv) alignedtext
 grestore
 % D
 gsave
@@ -311,7 +309,7 @@ solid
 198.255 30.325 4.00002 4.00002 ellipse_path stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-224 28.65 moveto 18.75 -0.5 (dot) alignedtext
+214.625 28.65 moveto 18.75 (dot) alignedtext
 grestore
 % E
 gsave
@@ -333,7 +331,7 @@ solid
 252.473 29.9846 4.00002 4.00002 ellipse_path stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-279 25.65 moveto 26.25 -0.5 (odot) alignedtext
+265.875 25.65 moveto 26.25 (odot) alignedtext
 grestore
 % F
 gsave
@@ -368,7 +366,7 @@ solid
 313.008 37.6495 4.00001 4.00001 ellipse_path stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-331 31.65 moveto 36 -0.5 (invdot) alignedtext
+313 31.65 moveto 36 (invdot) alignedtext
 grestore
 % G
 gsave
@@ -401,7 +399,7 @@ solid
 363.111 42.6296 4.00001 4.00001 ellipse_path stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-381 39.65 moveto 43.5 -0.5 (invodot) alignedtext
+359.25 39.65 moveto 43.5 (invodot) alignedtext
 grestore
 % H
 gsave
@@ -438,7 +436,7 @@ newpath 403 35 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-425 51.65 moveto 27.75 -0.5 (open) alignedtext
+411.125 51.65 moveto 27.75 (open) alignedtext
 grestore
 % I
 gsave
@@ -483,10 +481,10 @@ newpath 450 36 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-463 58.65 moveto 49.5 -0.5 (halfopen) alignedtext
+438.25 58.65 moveto 49.5 (halfopen) alignedtext
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-437 112.65 moveto 48 -0.5 (sametail) alignedtext
+413 112.65 moveto 48 (sametail) alignedtext
 grestore
 % J
 gsave
@@ -510,7 +508,7 @@ newpath 496.536 45.5847 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-499 60.65 moveto 34.5 -0.5 (empty) alignedtext
+481.75 60.65 moveto 34.5 (empty) alignedtext
 grestore
 % K
 gsave
@@ -534,7 +532,7 @@ newpath 548.634 34.3048 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-538 56.65 moveto 51.75 -0.5 (invempty) alignedtext
+512.125 56.65 moveto 51.75 (invempty) alignedtext
 grestore
 % L
 gsave
@@ -565,7 +563,7 @@ newpath 588.169 35.8816 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-583 50.65 moveto 50.25 -0.5 (diamond) alignedtext
+557.875 50.65 moveto 50.25 (diamond) alignedtext
 grestore
 % M
 gsave
@@ -591,7 +589,7 @@ newpath 641.169 34.8816 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-636 49.65 moveto 57.75 -0.5 (odiamond) alignedtext
+607.125 49.65 moveto 57.75 (odiamond) alignedtext
 grestore
 % N
 gsave
@@ -629,7 +627,7 @@ newpath 698.6 32.8 moveto
 stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-691 49.65 moveto 21 -0.5 (box) alignedtext
+680.5 49.65 moveto 21 (box) alignedtext
 grestore
 % O
 gsave
@@ -661,7 +659,7 @@ newpath 752.6 32.8 moveto
 stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-745 49.65 moveto 28.5 -0.5 (obox) alignedtext
+730.75 49.65 moveto 28.5 (obox) alignedtext
 grestore
 % P
 gsave
@@ -699,7 +697,7 @@ newpath 813 29 moveto
 stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-799 50.65 moveto 17.25 -0.5 (tee) alignedtext
+790.375 50.65 moveto 17.25 (tee) alignedtext
 grestore
 % Q
 gsave
@@ -737,7 +735,7 @@ newpath 859.258 33.8565 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-850 48.65 moveto 28.5 -0.5 (crow) alignedtext
+835.75 48.65 moveto 28.5 (crow) alignedtext
 grestore
 % b
 gsave
@@ -767,7 +765,7 @@ newpath 93.0418 287.084 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-104 266.65 moveto 39.75 -0.5 (normal) alignedtext
+84.125 266.65 moveto 39.75 (normal) alignedtext
 grestore
 % c
 gsave
@@ -797,7 +795,7 @@ newpath 139.3 291.94 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-159 266.65 moveto 17.25 -0.5 (inv) alignedtext
+150.375 266.65 moveto 17.25 (inv) alignedtext
 grestore
 % d
 gsave
@@ -821,7 +819,7 @@ solid
 198.473 293.015 4.00002 4.00002 ellipse_path stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-212 266.65 moveto 18.75 -0.5 (dot) alignedtext
+202.625 266.65 moveto 18.75 (dot) alignedtext
 grestore
 % e
 gsave
@@ -843,7 +841,7 @@ solid
 252.255 293.675 4.00002 4.00002 ellipse_path stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-264 265.65 moveto 26.25 -0.5 (odot) alignedtext
+250.875 265.65 moveto 26.25 (odot) alignedtext
 grestore
 % f
 gsave
@@ -878,7 +876,7 @@ solid
 313.008 286.35 4.00001 4.00001 ellipse_path stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-316 263.65 moveto 36 -0.5 (invdot) alignedtext
+298 263.65 moveto 36 (invdot) alignedtext
 grestore
 % g
 gsave
@@ -911,7 +909,7 @@ solid
 363.111 281.37 4.00001 4.00001 ellipse_path stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-362 258.65 moveto 43.5 -0.5 (invodot) alignedtext
+340.25 258.65 moveto 43.5 (invodot) alignedtext
 grestore
 % h
 gsave
@@ -948,7 +946,7 @@ newpath 403 289 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-401 254.65 moveto 27.75 -0.5 (open) alignedtext
+387.125 254.65 moveto 27.75 (open) alignedtext
 grestore
 % i
 gsave
@@ -993,10 +991,10 @@ newpath 453.5 180 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-463 202.65 moveto 57.75 -0.5 (samehead) alignedtext
+434.125 202.65 moveto 57.75 (samehead) alignedtext
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-437 256.65 moveto 49.5 -0.5 (halfopen) alignedtext
+412.25 256.65 moveto 49.5 (halfopen) alignedtext
 grestore
 % j
 gsave
@@ -1020,7 +1018,7 @@ newpath 490.036 281.015 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-475 263.65 moveto 34.5 -0.5 (empty) alignedtext
+457.75 263.65 moveto 34.5 (empty) alignedtext
 grestore
 % k
 gsave
@@ -1044,7 +1042,7 @@ newpath 543.366 294.305 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-519 275.65 moveto 51.75 -0.5 (invempty) alignedtext
+493.125 275.65 moveto 51.75 (invempty) alignedtext
 grestore
 % l
 gsave
@@ -1075,7 +1073,7 @@ newpath 588.169 288.118 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-568 285.65 moveto 50.25 -0.5 (diamond) alignedtext
+542.875 285.65 moveto 50.25 (diamond) alignedtext
 grestore
 % m
 gsave
@@ -1101,7 +1099,7 @@ newpath 641.169 289.118 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-621 286.65 moveto 57.75 -0.5 (odiamond) alignedtext
+592.125 286.65 moveto 57.75 (odiamond) alignedtext
 grestore
 % n
 gsave
@@ -1139,7 +1137,7 @@ newpath 698.007 291.115 moveto
 stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-675 288.65 moveto 21 -0.5 (box) alignedtext
+664.5 288.65 moveto 21 (box) alignedtext
 grestore
 % o
 gsave
@@ -1171,7 +1169,7 @@ newpath 752.007 291.115 moveto
 stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-729 288.65 moveto 28.5 -0.5 (obox) alignedtext
+714.75 288.65 moveto 28.5 (obox) alignedtext
 grestore
 % p
 gsave
@@ -1209,7 +1207,7 @@ newpath 814 295 moveto
 stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-784 287.65 moveto 17.25 -0.5 (tee) alignedtext
+775.375 287.65 moveto 17.25 (tee) alignedtext
 grestore
 % q
 gsave
@@ -1247,7 +1245,7 @@ newpath 859.258 290.144 moveto
 closepath stroke
 0.000 0.000 0.000 edgecolor
 14.00 /Times-Roman set_font
-838 288.65 moveto 28.5 -0.5 (crow) alignedtext
+823.75 288.65 moveto 28.5 (crow) alignedtext
 grestore
 endpage
 showpage

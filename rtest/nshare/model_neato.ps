@@ -1,5 +1,5 @@
 %!PS-Adobe-2.0
-%%Creator: Graphviz version 2.15 (Sat Nov  3 14:12:46 UTC 2007)
+%%Creator: Graphviz version 2.16 (Sat Nov 10 02:02:40 UTC 2007)
 %%For: (ellson) John Ellson
 %%Title: G
 %%Pages: (atend)
@@ -88,17 +88,15 @@ cleartomark
 	scalefont setfont
 } def
 
-% draw aligned label in bounding box aligned to current point
-/alignedtext {			% width adj text
+% draw text fitted to its expected width
+/alignedtext {			% width text
 	/text exch def
-	/adj exch def
 	/width exch def
 	gsave
 		width 0 gt {
-			text stringwidth pop adj mul 0 rmoveto
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
 		} if
-		[] 0 setdash
-		text show
 	grestore
 } def
 
@@ -200,7 +198,7 @@ gsave
 930 533 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-930 530.525 moveto 27 -0.5 (341411) alignedtext
+916.5 530.525 moveto 27 (341411) alignedtext
 grestore
 % fcfpr1_1_2t_17->341411
 gsave
@@ -385,7 +383,7 @@ gsave
 912 502 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-912 499.525 moveto 27 -0.5 (358866) alignedtext
+898.5 499.525 moveto 27 (358866) alignedtext
 grestore
 % rtafpr1_1_3t_6->358866
 gsave
@@ -414,7 +412,7 @@ gsave
 788 529 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-788 526.525 moveto 27 -0.5 (358930) alignedtext
+774.5 526.525 moveto 27 (358930) alignedtext
 grestore
 % rtafpr1_1_3t_6->358930
 gsave
@@ -443,7 +441,7 @@ gsave
 863 644 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-863 641.525 moveto 27 -0.5 (371943) alignedtext
+849.5 641.525 moveto 27 (371943) alignedtext
 grestore
 % rtafpr1_1_3t_6->371943
 gsave
@@ -472,7 +470,7 @@ gsave
 809 553 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-809 550.525 moveto 27 -0.5 (374300) alignedtext
+795.5 550.525 moveto 27 (374300) alignedtext
 grestore
 % rtafpr1_1_3t_6->374300
 gsave
@@ -599,7 +597,7 @@ gsave
 715 473 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-715 470.525 moveto 27 -0.5 (371942) alignedtext
+701.5 470.525 moveto 27 (371942) alignedtext
 grestore
 % fcfpr1_1_3t_9->371942
 gsave
@@ -628,7 +626,7 @@ gsave
 736 503 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-736 500.525 moveto 27 -0.5 (374700) alignedtext
+722.5 500.525 moveto 27 (374700) alignedtext
 grestore
 % fcfpr1_1_3t_9->374700
 gsave
@@ -657,7 +655,7 @@ gsave
 757 505 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-757 502.525 moveto 27 -0.5 (374741) alignedtext
+743.5 502.525 moveto 27 (374741) alignedtext
 grestore
 % fcfpr1_1_3t_9->374741
 gsave
@@ -686,7 +684,7 @@ gsave
 775 540 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-775 537.525 moveto 27 -0.5 (374886) alignedtext
+761.5 537.525 moveto 27 (374886) alignedtext
 grestore
 % fcfpr1_1_3t_9->374886
 gsave
@@ -715,7 +713,7 @@ gsave
 773 491 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-773 488.525 moveto 27 -0.5 (375039) alignedtext
+759.5 488.525 moveto 27 (375039) alignedtext
 grestore
 % fcfpr1_1_3t_9->375039
 gsave
@@ -744,7 +742,7 @@ gsave
 735 549 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-735 546.525 moveto 27 -0.5 (375507) alignedtext
+721.5 546.525 moveto 27 (375507) alignedtext
 grestore
 % fcfpr1_1_3t_9->375507
 gsave
@@ -773,7 +771,7 @@ gsave
 762 553 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-762 550.525 moveto 27 -0.5 (375508) alignedtext
+748.5 550.525 moveto 27 (375508) alignedtext
 grestore
 % fcfpr1_1_3t_9->375508
 gsave
@@ -802,7 +800,7 @@ gsave
 780 510 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-780 507.525 moveto 27 -0.5 (375519) alignedtext
+766.5 507.525 moveto 27 (375519) alignedtext
 grestore
 % fcfpr1_1_3t_9->375519
 gsave
@@ -831,7 +829,7 @@ gsave
 827 472 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-827 469.525 moveto 27 -0.5 (377380) alignedtext
+813.5 469.525 moveto 27 (377380) alignedtext
 grestore
 % fcfpr1_1_3t_9->377380
 gsave
@@ -860,7 +858,7 @@ gsave
 749 623 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-749 620.525 moveto 27 -0.5 (377719) alignedtext
+735.5 620.525 moveto 27 (377719) alignedtext
 grestore
 % fcfpr1_1_3t_9->377719
 gsave
@@ -889,7 +887,7 @@ gsave
 712 585 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-712 582.525 moveto 27 -0.5 (377763) alignedtext
+698.5 582.525 moveto 27 (377763) alignedtext
 grestore
 % fcfpr1_1_3t_9->377763
 gsave
@@ -918,7 +916,7 @@ gsave
 757 486 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-757 483.525 moveto 27 -0.5 (379848) alignedtext
+743.5 483.525 moveto 27 (379848) alignedtext
 grestore
 % fcfpr1_1_3t_9->379848
 gsave
@@ -947,7 +945,7 @@ gsave
 686 556 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-686 553.525 moveto 27 -0.5 (380571) alignedtext
+672.5 553.525 moveto 27 (380571) alignedtext
 grestore
 % fcfpr1_1_3t_9->380571
 gsave
@@ -976,7 +974,7 @@ gsave
 726 524 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-726 521.525 moveto 27 -0.5 (380604) alignedtext
+712.5 521.525 moveto 27 (380604) alignedtext
 grestore
 % fcfpr1_1_3t_9->380604
 gsave
@@ -1005,7 +1003,7 @@ gsave
 750 557 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-750 554.525 moveto 27 -0.5 (381211) alignedtext
+736.5 554.525 moveto 27 (381211) alignedtext
 grestore
 % fcfpr1_1_3t_9->381211
 gsave
@@ -1034,7 +1032,7 @@ gsave
 760 446 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-760 443.525 moveto 27 -0.5 (381835) alignedtext
+746.5 443.525 moveto 27 (381835) alignedtext
 grestore
 % fcfpr1_1_3t_9->381835
 gsave
@@ -1063,7 +1061,7 @@ gsave
 794 593 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-794 590.525 moveto 27 -0.5 (381897) alignedtext
+780.5 590.525 moveto 27 (381897) alignedtext
 grestore
 % fcfpr1_1_3t_9->381897
 gsave
@@ -1092,7 +1090,7 @@ gsave
 743 490 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-743 487.525 moveto 27 -0.5 (381901) alignedtext
+729.5 487.525 moveto 27 (381901) alignedtext
 grestore
 % fcfpr1_1_3t_9->381901
 gsave
@@ -1121,7 +1119,7 @@ gsave
 722 512 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-722 509.525 moveto 27 -0.5 (382103) alignedtext
+708.5 509.525 moveto 27 (382103) alignedtext
 grestore
 % fcfpr1_1_3t_9->382103
 gsave
@@ -1150,7 +1148,7 @@ gsave
 832 500 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-832 497.525 moveto 27 -0.5 (382161) alignedtext
+818.5 497.525 moveto 27 (382161) alignedtext
 grestore
 % fcfpr1_1_3t_9->382161
 gsave
@@ -1179,7 +1177,7 @@ gsave
 745 536 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-745 533.525 moveto 27 -0.5 (383174) alignedtext
+731.5 533.525 moveto 27 (383174) alignedtext
 grestore
 % fcfpr1_1_3t_9->383174
 gsave
@@ -1280,7 +1278,7 @@ gsave
 788 483 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-788 480.525 moveto 27 -0.5 (352010) alignedtext
+774.5 480.525 moveto 27 (352010) alignedtext
 grestore
 % fpfpr1_1_3g_1->352010
 gsave
@@ -1555,7 +1553,7 @@ gsave
 683 509 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-683 506.525 moveto 27 -0.5 (382409) alignedtext
+669.5 506.525 moveto 27 (382409) alignedtext
 grestore
 % fpfpr1_1_3t_1->382409
 gsave
@@ -1584,7 +1582,7 @@ gsave
 782 442 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-782 439.525 moveto 27 -0.5 (382827) alignedtext
+768.5 439.525 moveto 27 (382827) alignedtext
 grestore
 % fpfpr1_1_3t_1->382827
 gsave
@@ -1613,7 +1611,7 @@ gsave
 778 555 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-778 552.525 moveto 27 -0.5 (382928) alignedtext
+764.5 552.525 moveto 27 (382928) alignedtext
 grestore
 % fpfpr1_1_3t_1->382928
 gsave
@@ -1928,7 +1926,7 @@ gsave
 561 470 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-561 467.525 moveto 27 -0.5 (358224) alignedtext
+547.5 467.525 moveto 27 (358224) alignedtext
 grestore
 % tymsgfpr1_1_3t_3->358224
 gsave
@@ -1957,7 +1955,7 @@ gsave
 649 383 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-649 380.525 moveto 27 -0.5 (358900) alignedtext
+635.5 380.525 moveto 27 (358900) alignedtext
 grestore
 % tymsgfpr1_1_3t_3->358900
 gsave
@@ -1986,7 +1984,7 @@ gsave
 704 321 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-704 318.525 moveto 27 -0.5 (372568) alignedtext
+690.5 318.525 moveto 27 (372568) alignedtext
 grestore
 % tymsgfpr1_1_3t_3->372568
 gsave
@@ -2015,7 +2013,7 @@ gsave
 619 399 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-619 396.525 moveto 27 -0.5 (375557) alignedtext
+605.5 396.525 moveto 27 (375557) alignedtext
 grestore
 % tymsgfpr1_1_3t_3->375557
 gsave
@@ -2210,7 +2208,7 @@ gsave
 828 453 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-828 450.525 moveto 27 -0.5 (376956) alignedtext
+814.5 450.525 moveto 27 (376956) alignedtext
 grestore
 % rtafpr1_1_3t_7->376956
 gsave
@@ -2239,7 +2237,7 @@ gsave
 770 607 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-770 604.525 moveto 27 -0.5 (379339) alignedtext
+756.5 604.525 moveto 27 (379339) alignedtext
 grestore
 % rtafpr1_1_3t_7->379339
 gsave
@@ -2268,7 +2266,7 @@ gsave
 712 609 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-712 606.525 moveto 27 -0.5 (379422) alignedtext
+698.5 606.525 moveto 27 (379422) alignedtext
 grestore
 % rtafpr1_1_3t_7->379422
 gsave
@@ -2297,7 +2295,7 @@ gsave
 673 540 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-673 537.525 moveto 27 -0.5 (383039) alignedtext
+659.5 537.525 moveto 27 (383039) alignedtext
 grestore
 % rtafpr1_1_3t_7->383039
 gsave
@@ -2378,7 +2376,7 @@ gsave
 886 706 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-886 703.525 moveto 27 -0.5 (359471) alignedtext
+872.5 703.525 moveto 27 (359471) alignedtext
 grestore
 % fcfpr1_1_1t_18->359471
 gsave
@@ -2433,7 +2431,7 @@ gsave
 697 627 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-697 624.525 moveto 27 -0.5 (384096) alignedtext
+683.5 624.525 moveto 27 (384096) alignedtext
 grestore
 % fcfpr1_1_3t_42->384096
 gsave
@@ -2944,7 +2942,7 @@ gsave
 464 489 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-464 486.525 moveto 27 -0.5 (354290) alignedtext
+450.5 486.525 moveto 27 (354290) alignedtext
 grestore
 % rcfpr0_0_1t_9->354290
 gsave
@@ -2999,7 +2997,7 @@ gsave
 512 663 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-512 660.525 moveto 27 -0.5 (379864) alignedtext
+498.5 660.525 moveto 27 (379864) alignedtext
 grestore
 % rcfpr1_1_1t_5->379864
 gsave
@@ -3178,7 +3176,7 @@ gsave
 647 342 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-647 339.525 moveto 27 -0.5 (382574) alignedtext
+633.5 339.525 moveto 27 (382574) alignedtext
 grestore
 % rcfpr1_1_1t_100->382574
 gsave
@@ -3351,7 +3349,7 @@ gsave
 639 224 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-639 221.525 moveto 27 -0.5 (370706) alignedtext
+625.5 221.525 moveto 27 (370706) alignedtext
 grestore
 % rcfpr1_1_1t_30->370706
 gsave
@@ -3380,7 +3378,7 @@ gsave
 624 211 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-624 208.525 moveto 27 -0.5 (377908) alignedtext
+610.5 208.525 moveto 27 (377908) alignedtext
 grestore
 % rcfpr1_1_1t_30->377908
 gsave
@@ -3409,7 +3407,7 @@ gsave
 658 206 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-658 203.525 moveto 27 -0.5 (377924) alignedtext
+644.5 203.525 moveto 27 (377924) alignedtext
 grestore
 % rcfpr1_1_1t_30->377924
 gsave
@@ -3438,7 +3436,7 @@ gsave
 724 190 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-724 187.525 moveto 27 -0.5 (377971) alignedtext
+710.5 187.525 moveto 27 (377971) alignedtext
 grestore
 % rcfpr1_1_1t_30->377971
 gsave
@@ -3467,7 +3465,7 @@ gsave
 735 267 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-735 264.525 moveto 27 -0.5 (377980) alignedtext
+721.5 264.525 moveto 27 (377980) alignedtext
 grestore
 % rcfpr1_1_1t_30->377980
 gsave
@@ -3496,7 +3494,7 @@ gsave
 658 179 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-658 176.525 moveto 27 -0.5 (378362) alignedtext
+644.5 176.525 moveto 27 (378362) alignedtext
 grestore
 % rcfpr1_1_1t_30->378362
 gsave
@@ -3525,7 +3523,7 @@ gsave
 685 175 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-685 172.525 moveto 27 -0.5 (378656) alignedtext
+671.5 172.525 moveto 27 (378656) alignedtext
 grestore
 % rcfpr1_1_1t_30->378656
 gsave
@@ -3554,7 +3552,7 @@ gsave
 753 206 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-753 203.525 moveto 27 -0.5 (378666) alignedtext
+739.5 203.525 moveto 27 (378666) alignedtext
 grestore
 % rcfpr1_1_1t_30->378666
 gsave
@@ -3583,7 +3581,7 @@ gsave
 683 265 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-683 262.525 moveto 27 -0.5 (379169) alignedtext
+669.5 262.525 moveto 27 (379169) alignedtext
 grestore
 % rcfpr1_1_1t_30->379169
 gsave
@@ -3612,7 +3610,7 @@ gsave
 743 238 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-743 235.525 moveto 27 -0.5 (379341) alignedtext
+729.5 235.525 moveto 27 (379341) alignedtext
 grestore
 % rcfpr1_1_1t_30->379341
 gsave
@@ -3641,7 +3639,7 @@ gsave
 706 182 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-706 179.525 moveto 27 -0.5 (379972) alignedtext
+692.5 179.525 moveto 27 (379972) alignedtext
 grestore
 % rcfpr1_1_1t_30->379972
 gsave
@@ -3670,7 +3668,7 @@ gsave
 795 237 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-795 234.525 moveto 27 -0.5 (380298) alignedtext
+781.5 234.525 moveto 27 (380298) alignedtext
 grestore
 % rcfpr1_1_1t_30->380298
 gsave
@@ -3699,7 +3697,7 @@ gsave
 636 192 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-636 189.525 moveto 27 -0.5 (380448) alignedtext
+622.5 189.525 moveto 27 (380448) alignedtext
 grestore
 % rcfpr1_1_1t_30->380448
 gsave
@@ -3728,7 +3726,7 @@ gsave
 743 281 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-743 278.525 moveto 27 -0.5 (380475) alignedtext
+729.5 278.525 moveto 27 (380475) alignedtext
 grestore
 % rcfpr1_1_1t_30->380475
 gsave
@@ -3757,7 +3755,7 @@ gsave
 804 250 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-804 247.525 moveto 27 -0.5 (380526) alignedtext
+790.5 247.525 moveto 27 (380526) alignedtext
 grestore
 % rcfpr1_1_1t_30->380526
 gsave
@@ -3892,7 +3890,7 @@ gsave
 677 198 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-677 195.525 moveto 27 -0.5 (357430) alignedtext
+663.5 195.525 moveto 27 (357430) alignedtext
 grestore
 % odfpr1_1_1t_31->357430
 gsave
@@ -3999,7 +3997,7 @@ gsave
 566 321 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-566 318.525 moveto 27 -0.5 (379968) alignedtext
+552.5 318.525 moveto 27 (379968) alignedtext
 grestore
 % rcfpr1_1_1t_11->379968
 gsave
@@ -4334,7 +4332,7 @@ gsave
 966 845 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-966 842.525 moveto 27 -0.5 (359100) alignedtext
+952.5 842.525 moveto 27 (359100) alignedtext
 grestore
 % ccsfpr2_0_1t_99->359100
 gsave
@@ -4363,7 +4361,7 @@ gsave
 1064 732 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-1064 729.525 moveto 27 -0.5 (376529) alignedtext
+1050.5 729.525 moveto 27 (376529) alignedtext
 grestore
 % ccsfpr2_0_1t_99->376529
 gsave
@@ -4392,7 +4390,7 @@ gsave
 1054 758 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-1054 755.525 moveto 27 -0.5 (377801) alignedtext
+1040.5 755.525 moveto 27 (377801) alignedtext
 grestore
 % ccsfpr2_0_1t_99->377801
 gsave
@@ -4421,7 +4419,7 @@ gsave
 1017 810 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-1017 807.525 moveto 27 -0.5 (379126) alignedtext
+1003.5 807.525 moveto 27 (379126) alignedtext
 grestore
 % ccsfpr2_0_1t_99->379126
 gsave
@@ -4450,7 +4448,7 @@ gsave
 940 857 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-940 854.525 moveto 27 -0.5 (379212) alignedtext
+926.5 854.525 moveto 27 (379212) alignedtext
 grestore
 % ccsfpr2_0_1t_99->379212
 gsave
@@ -4479,7 +4477,7 @@ gsave
 1039 785 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-1039 782.525 moveto 27 -0.5 (380285) alignedtext
+1025.5 782.525 moveto 27 (380285) alignedtext
 grestore
 % ccsfpr2_0_1t_99->380285
 gsave
@@ -4508,7 +4506,7 @@ gsave
 991 830 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-991 827.525 moveto 27 -0.5 (380963) alignedtext
+977.5 827.525 moveto 27 (380963) alignedtext
 grestore
 % ccsfpr2_0_1t_99->380963
 gsave
@@ -4537,7 +4535,7 @@ gsave
 1072 707 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-1072 704.525 moveto 27 -0.5 (384909) alignedtext
+1058.5 704.525 moveto 27 (384909) alignedtext
 grestore
 % ccsfpr2_0_1t_99->384909
 gsave
@@ -4592,7 +4590,7 @@ gsave
 297 471 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-297 468.525 moveto 27 -0.5 (358471) alignedtext
+283.5 468.525 moveto 27 (358471) alignedtext
 grestore
 % tlfpr1_0_4g_4->358471
 gsave
@@ -4621,7 +4619,7 @@ gsave
 381 620 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-381 617.525 moveto 27 -0.5 (375024) alignedtext
+367.5 617.525 moveto 27 (375024) alignedtext
 grestore
 % tlfpr1_0_4g_4->375024
 gsave
@@ -4650,7 +4648,7 @@ gsave
 387 598 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-387 595.525 moveto 27 -0.5 (375027) alignedtext
+373.5 595.525 moveto 27 (375027) alignedtext
 grestore
 % tlfpr1_0_4g_4->375027
 gsave
@@ -4731,7 +4729,7 @@ gsave
 817 188 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-817 185.525 moveto 27 -0.5 (381710) alignedtext
+803.5 185.525 moveto 27 (381710) alignedtext
 grestore
 % rcfpr1_1_1t_110->381710
 gsave
@@ -4760,7 +4758,7 @@ gsave
 790 163 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-790 160.525 moveto 27 -0.5 (381775) alignedtext
+776.5 160.525 moveto 27 (381775) alignedtext
 grestore
 % rcfpr1_1_1t_110->381775
 gsave
@@ -4789,7 +4787,7 @@ gsave
 779 97 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-779 94.525 moveto 27 -0.5 (382436) alignedtext
+765.5 94.525 moveto 27 (382436) alignedtext
 grestore
 % rcfpr1_1_1t_110->382436
 gsave
@@ -4818,7 +4816,7 @@ gsave
 742 84 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-742 81.525 moveto 27 -0.5 (382528) alignedtext
+728.5 81.525 moveto 27 (382528) alignedtext
 grestore
 % rcfpr1_1_1t_110->382528
 gsave
@@ -4847,7 +4845,7 @@ gsave
 828 115 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-828 112.525 moveto 27 -0.5 (382566) alignedtext
+814.5 112.525 moveto 27 (382566) alignedtext
 grestore
 % rcfpr1_1_1t_110->382566
 gsave
@@ -4876,7 +4874,7 @@ gsave
 860 141 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-860 138.525 moveto 27 -0.5 (382572) alignedtext
+846.5 138.525 moveto 27 (382572) alignedtext
 grestore
 % rcfpr1_1_1t_110->382572
 gsave
@@ -4997,7 +4995,7 @@ gsave
 251 283 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-251 280.525 moveto 27 -0.5 (353506) alignedtext
+237.5 280.525 moveto 27 (353506) alignedtext
 grestore
 % odfpr0_0_1t_7->353506
 gsave
@@ -5026,7 +5024,7 @@ gsave
 195 295 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-195 292.525 moveto 27 -0.5 (370509) alignedtext
+181.5 292.525 moveto 27 (370509) alignedtext
 grestore
 % odfpr0_0_1t_7->370509
 gsave
@@ -5055,7 +5053,7 @@ gsave
 215 284 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-215 281.525 moveto 27 -0.5 (370510) alignedtext
+201.5 281.525 moveto 27 (370510) alignedtext
 grestore
 % odfpr0_0_1t_7->370510
 gsave
@@ -5136,7 +5134,7 @@ gsave
 192 507 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-192 504.525 moveto 27 -0.5 (354546) alignedtext
+178.5 504.525 moveto 27 (354546) alignedtext
 grestore
 % odfpr1_0_3t_18->354546
 gsave
@@ -5165,7 +5163,7 @@ gsave
 195 480 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-195 477.525 moveto 27 -0.5 (354757) alignedtext
+181.5 477.525 moveto 27 (354757) alignedtext
 grestore
 % odfpr1_0_3t_18->354757
 gsave
@@ -5194,7 +5192,7 @@ gsave
 219 452 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-219 449.525 moveto 27 -0.5 (354766) alignedtext
+205.5 449.525 moveto 27 (354766) alignedtext
 grestore
 % odfpr1_0_3t_18->354766
 gsave
@@ -5223,7 +5221,7 @@ gsave
 216 537 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-216 534.525 moveto 27 -0.5 (354771) alignedtext
+202.5 534.525 moveto 27 (354771) alignedtext
 grestore
 % odfpr1_0_3t_18->354771
 gsave
@@ -5252,7 +5250,7 @@ gsave
 213 487 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-213 484.525 moveto 27 -0.5 (354785) alignedtext
+199.5 484.525 moveto 27 (354785) alignedtext
 grestore
 % odfpr1_0_3t_18->354785
 gsave
@@ -5281,7 +5279,7 @@ gsave
 223 500 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-223 497.525 moveto 27 -0.5 (354878) alignedtext
+209.5 497.525 moveto 27 (354878) alignedtext
 grestore
 % odfpr1_0_3t_18->354878
 gsave
@@ -5310,7 +5308,7 @@ gsave
 250 468 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-250 465.525 moveto 27 -0.5 (355080) alignedtext
+236.5 465.525 moveto 27 (355080) alignedtext
 grestore
 % odfpr1_0_3t_18->355080
 gsave
@@ -5339,7 +5337,7 @@ gsave
 215 469 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-215 466.525 moveto 27 -0.5 (355288) alignedtext
+201.5 466.525 moveto 27 (355288) alignedtext
 grestore
 % odfpr1_0_3t_18->355288
 gsave
@@ -5368,7 +5366,7 @@ gsave
 270 460 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-270 457.525 moveto 27 -0.5 (355800) alignedtext
+256.5 457.525 moveto 27 (355800) alignedtext
 grestore
 % odfpr1_0_3t_18->355800
 gsave
@@ -5397,7 +5395,7 @@ gsave
 288 502 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-288 499.525 moveto 27 -0.5 (356116) alignedtext
+274.5 499.525 moveto 27 (356116) alignedtext
 grestore
 % odfpr1_0_3t_18->356116
 gsave
@@ -5426,7 +5424,7 @@ gsave
 286 491 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-286 488.525 moveto 27 -0.5 (356741) alignedtext
+272.5 488.525 moveto 27 (356741) alignedtext
 grestore
 % odfpr1_0_3t_18->356741
 gsave
@@ -5455,7 +5453,7 @@ gsave
 288 516 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-288 513.525 moveto 27 -0.5 (357340) alignedtext
+274.5 513.525 moveto 27 (357340) alignedtext
 grestore
 % odfpr1_0_3t_18->357340
 gsave
@@ -5484,7 +5482,7 @@ gsave
 254 539 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-254 536.525 moveto 27 -0.5 (357538) alignedtext
+240.5 536.525 moveto 27 (357538) alignedtext
 grestore
 % odfpr1_0_3t_18->357538
 gsave
@@ -5513,7 +5511,7 @@ gsave
 269 537 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-269 534.525 moveto 27 -0.5 (357769) alignedtext
+255.5 534.525 moveto 27 (357769) alignedtext
 grestore
 % odfpr1_0_3t_18->357769
 gsave
@@ -5542,7 +5540,7 @@ gsave
 233 524 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-233 521.525 moveto 27 -0.5 (357793) alignedtext
+219.5 521.525 moveto 27 (357793) alignedtext
 grestore
 % odfpr1_0_3t_18->357793
 gsave
@@ -5571,7 +5569,7 @@ gsave
 275 515 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-275 512.525 moveto 27 -0.5 (358155) alignedtext
+261.5 512.525 moveto 27 (358155) alignedtext
 grestore
 % odfpr1_0_3t_18->358155
 gsave
@@ -5600,7 +5598,7 @@ gsave
 279 529 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-279 526.525 moveto 27 -0.5 (358157) alignedtext
+265.5 526.525 moveto 27 (358157) alignedtext
 grestore
 % odfpr1_0_3t_18->358157
 gsave
@@ -5629,7 +5627,7 @@ gsave
 277 482 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-277 479.525 moveto 27 -0.5 (358159) alignedtext
+263.5 479.525 moveto 27 (358159) alignedtext
 grestore
 % odfpr1_0_3t_18->358159
 gsave
@@ -5658,7 +5656,7 @@ gsave
 260 455 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-260 452.525 moveto 27 -0.5 (358584) alignedtext
+246.5 452.525 moveto 27 (358584) alignedtext
 grestore
 % odfpr1_0_3t_18->358584
 gsave
@@ -5687,7 +5685,7 @@ gsave
 260 526 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-260 523.525 moveto 27 -0.5 (360104) alignedtext
+246.5 523.525 moveto 27 (360104) alignedtext
 grestore
 % odfpr1_0_3t_18->360104
 gsave
@@ -5716,7 +5714,7 @@ gsave
 243 532 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-243 529.525 moveto 27 -0.5 (360144) alignedtext
+229.5 529.525 moveto 27 (360144) alignedtext
 grestore
 % odfpr1_0_3t_18->360144
 gsave
@@ -5745,7 +5743,7 @@ gsave
 243 455 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-243 452.525 moveto 27 -0.5 (360672) alignedtext
+229.5 452.525 moveto 27 (360672) alignedtext
 grestore
 % odfpr1_0_3t_18->360672
 gsave
@@ -5774,7 +5772,7 @@ gsave
 277 469 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-277 466.525 moveto 27 -0.5 (360839) alignedtext
+263.5 466.525 moveto 27 (360839) alignedtext
 grestore
 % odfpr1_0_3t_18->360839
 gsave
@@ -5803,7 +5801,7 @@ gsave
 239 405 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-239 402.525 moveto 27 -0.5 (371187) alignedtext
+225.5 402.525 moveto 27 (371187) alignedtext
 grestore
 % odfpr1_0_3t_18->371187
 gsave
@@ -5832,7 +5830,7 @@ gsave
 175 435 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-175 432.525 moveto 27 -0.5 (373300) alignedtext
+161.5 432.525 moveto 27 (373300) alignedtext
 grestore
 % odfpr1_0_3t_18->373300
 gsave
@@ -5861,7 +5859,7 @@ gsave
 156 503 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-156 500.525 moveto 27 -0.5 (375134) alignedtext
+142.5 500.525 moveto 27 (375134) alignedtext
 grestore
 % odfpr1_0_3t_18->375134
 gsave
@@ -5890,7 +5888,7 @@ gsave
 227 566 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-227 563.525 moveto 27 -0.5 (375319) alignedtext
+213.5 563.525 moveto 27 (375319) alignedtext
 grestore
 % odfpr1_0_3t_18->375319
 gsave
@@ -5919,7 +5917,7 @@ gsave
 215 410 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-215 407.525 moveto 27 -0.5 (375499) alignedtext
+201.5 407.525 moveto 27 (375499) alignedtext
 grestore
 % odfpr1_0_3t_18->375499
 gsave
@@ -5948,7 +5946,7 @@ gsave
 234 592 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-234 589.525 moveto 27 -0.5 (377220) alignedtext
+220.5 589.525 moveto 27 (377220) alignedtext
 grestore
 % odfpr1_0_3t_18->377220
 gsave
@@ -5977,7 +5975,7 @@ gsave
 185 531 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-185 528.525 moveto 27 -0.5 (377562) alignedtext
+171.5 528.525 moveto 27 (377562) alignedtext
 grestore
 % odfpr1_0_3t_18->377562
 gsave
@@ -6006,7 +6004,7 @@ gsave
 257 593 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-257 590.525 moveto 27 -0.5 (378108) alignedtext
+243.5 590.525 moveto 27 (378108) alignedtext
 grestore
 % odfpr1_0_3t_18->378108
 gsave
@@ -7133,7 +7131,7 @@ gsave
 26 578 24.9871 13.6118 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 9.00 /Times-Roman set_font
-26 575.525 moveto 27 -0.5 (354221) alignedtext
+12.5 575.525 moveto 27 (354221) alignedtext
 grestore
 % odfpr1_0_5t_20->354221
 gsave

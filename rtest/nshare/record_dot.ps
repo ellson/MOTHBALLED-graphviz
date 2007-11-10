@@ -1,5 +1,5 @@
 %!PS-Adobe-2.0
-%%Creator: Graphviz version 2.15 (Sat Nov  3 14:12:46 UTC 2007)
+%%Creator: Graphviz version 2.16 (Sat Nov 10 02:02:40 UTC 2007)
 %%For: (ellson) John Ellson
 %%Title: Alf
 %%Pages: (atend)
@@ -88,17 +88,15 @@ cleartomark
 	scalefont setfont
 } def
 
-% draw aligned label in bounding box aligned to current point
-/alignedtext {			% width adj text
+% draw text fitted to its expected width
+/alignedtext {			% width text
 	/text exch def
-	/adj exch def
 	/width exch def
 	gsave
 		width 0 gt {
-			text stringwidth pop adj mul 0 rmoveto
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
 		} if
-		[] 0 setdash
-		text show
 	grestore
 } def
 
@@ -198,7 +196,7 @@ newpath 475 0 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-496 29.65 moveto 27 -0.5 (Decl) alignedtext
+482.5 29.65 moveto 27 (Decl) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 518 0 moveto
@@ -206,7 +204,7 @@ newpath 518 0 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-575 82.65 moveto 30.75 -0.5 (name) alignedtext
+559.625 82.65 moveto 30.75 (name) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 518 75 moveto
@@ -214,7 +212,7 @@ newpath 518 75 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-575 57.65 moveto 39 -0.5 (access) alignedtext
+555.5 57.65 moveto 39 (access) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 518 50 moveto
@@ -222,7 +220,7 @@ newpath 518 50 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-575 32.65 moveto 60 -0.5 (decl_flags) alignedtext
+545 32.65 moveto 60 (decl_flags) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 518 25 moveto
@@ -230,7 +228,7 @@ newpath 518 25 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-575 7.65 moveto 98.25 -0.5 (extern_c_linkage) alignedtext
+525.875 7.65 moveto 98.25 (extern_c_linkage) alignedtext
 grestore
 % Nontype_decl
 gsave
@@ -243,7 +241,7 @@ newpath 342 136 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-390 149.65 moveto 79.5 -0.5 (Nontype_decl) alignedtext
+350.25 149.65 moveto 79.5 (Nontype_decl) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 438 136 moveto
@@ -251,7 +249,7 @@ newpath 438 136 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-458 149.65 moveto 24 -0.5 (type) alignedtext
+446 149.65 moveto 24 (type) alignedtext
 grestore
 % Nontype_decl->Decl
 gsave
@@ -284,7 +282,7 @@ newpath 139 208 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-185 221.65 moveto 77.25 -0.5 (Defined_decl) alignedtext
+146.375 221.65 moveto 77.25 (Defined_decl) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 232 208 moveto
@@ -292,7 +290,7 @@ newpath 232 208 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-261 221.65 moveto 42.75 -0.5 (linkage) alignedtext
+239.625 221.65 moveto 42.75 (linkage) alignedtext
 grestore
 % Defined_decl->Nontype_decl
 gsave
@@ -325,7 +323,7 @@ newpath 0 287 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-37 300.65 moveto 58.5 -0.5 (Data_decl) alignedtext
+7.75 300.65 moveto 58.5 (Data_decl) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 75 287 moveto
@@ -333,7 +331,7 @@ newpath 75 287 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-122 300.65 moveto 78.75 -0.5 (storage_class) alignedtext
+82.625 300.65 moveto 78.75 (storage_class) alignedtext
 grestore
 % Data_decl->Defined_decl
 gsave
@@ -366,7 +364,7 @@ newpath 260 280 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-308 300.65 moveto 81 -0.5 (Function_decl) alignedtext
+267.5 300.65 moveto 81 (Function_decl) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 357 280 moveto
@@ -374,7 +372,7 @@ newpath 357 280 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-388 312.65 moveto 43.5 -0.5 (formals) alignedtext
+366.25 312.65 moveto 43.5 (formals) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 357 305 moveto
@@ -382,7 +380,7 @@ newpath 357 305 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-388 287.65 moveto 45.75 -0.5 (defaults) alignedtext
+365.125 287.65 moveto 45.75 (defaults) alignedtext
 grestore
 % Function_decl->Defined_decl
 gsave
@@ -415,7 +413,7 @@ newpath 92 366 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-113 379.65 moveto 27 -0.5 (Data) alignedtext
+99.5 379.65 moveto 27 (Data) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 135 366 moveto
@@ -423,7 +421,7 @@ newpath 135 366 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-169 379.65 moveto 53.25 -0.5 (initializer) alignedtext
+142.375 379.65 moveto 53.25 (initializer) alignedtext
 grestore
 % Data->Data_decl
 gsave
@@ -456,7 +454,7 @@ newpath 188 287 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-215 300.65 moveto 27.75 -0.5 (Defn) alignedtext
+201.125 300.65 moveto 27.75 (Defn) alignedtext
 grestore
 % Data->Defn
 gsave
@@ -489,7 +487,7 @@ newpath 222 366 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-255 379.65 moveto 49.5 -0.5 (Function) alignedtext
+230.25 379.65 moveto 49.5 (Function) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 288 366 moveto
@@ -497,7 +495,7 @@ newpath 288 366 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-310 379.65 moveto 28.5 -0.5 (body) alignedtext
+295.75 379.65 moveto 28.5 (body) alignedtext
 grestore
 % Function->Function_decl
 gsave
@@ -550,7 +548,7 @@ newpath 90 438 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-132 451.65 moveto 67.5 -0.5 (Constructor) alignedtext
+98.25 451.65 moveto 67.5 (Constructor) alignedtext
 1 setlinewidth
 0.000 0.000 0.000 nodecolor
 newpath 174 438 moveto
@@ -558,7 +556,7 @@ newpath 174 438 moveto
 stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-238 451.65 moveto 111.75 -0.5 (member_initializers) alignedtext
+182.125 451.65 moveto 111.75 (member_initializers) alignedtext
 grestore
 % Constructor->Function
 gsave
@@ -591,7 +589,7 @@ newpath 523 208 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-561 221.65 moveto 60.75 -0.5 (Aggregate) alignedtext
+530.625 221.65 moveto 60.75 (Aggregate) alignedtext
 grestore
 % Type_decl
 gsave
@@ -604,7 +602,7 @@ newpath 606 136 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-644 149.65 moveto 60 -0.5 (Type_decl) alignedtext
+614 149.65 moveto 60 (Type_decl) alignedtext
 grestore
 % Aggregate->Type_decl
 gsave
@@ -657,7 +655,7 @@ newpath 498 287 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-525 300.65 moveto 32.25 -0.5 (Class) alignedtext
+508.875 300.65 moveto 32.25 (Class) alignedtext
 grestore
 % Class->Aggregate
 gsave
@@ -690,7 +688,7 @@ newpath 570 287 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-597 300.65 moveto 35.25 -0.5 (Union) alignedtext
+579.375 300.65 moveto 35.25 (Union) alignedtext
 grestore
 % Union->Aggregate
 gsave
@@ -743,7 +741,7 @@ newpath 309 208 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-357 221.65 moveto 79.5 -0.5 (Data_member) alignedtext
+317.25 221.65 moveto 79.5 (Data_member) alignedtext
 grestore
 % Data_member->Nontype_decl
 gsave
@@ -776,7 +774,7 @@ newpath 617 208 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-644 221.65 moveto 33 -0.5 (Enum) alignedtext
+627.5 221.65 moveto 33 (Enum) alignedtext
 grestore
 % Enum->Type_decl
 gsave
@@ -809,7 +807,7 @@ newpath 423 208 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-464 221.65 moveto 66.75 -0.5 (Enumerator) alignedtext
+430.625 221.65 moveto 66.75 (Enumerator) alignedtext
 grestore
 % Enumerator->Nontype_decl
 gsave
@@ -842,7 +840,7 @@ newpath 320 438 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-358 451.65 moveto 60 -0.5 (Destructor) alignedtext
+328 451.65 moveto 60 (Destructor) alignedtext
 grestore
 % Destructor->Function
 gsave
@@ -875,7 +873,7 @@ newpath 689 208 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-752 221.65 moveto 109.5 -0.5 (Template_type_arg) alignedtext
+697.25 221.65 moveto 109.5 (Template_type_arg) alignedtext
 grestore
 % Template_type_arg->Type_decl
 gsave
@@ -908,7 +906,7 @@ newpath 833 208 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-864 221.65 moveto 47.25 -0.5 (Typedef) alignedtext
+840.375 221.65 moveto 47.25 (Typedef) alignedtext
 grestore
 % Typedef->Type_decl
 gsave

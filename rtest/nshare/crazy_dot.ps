@@ -1,5 +1,5 @@
 %!PS-Adobe-2.0
-%%Creator: Graphviz version 2.15 (Sat Nov  3 14:12:46 UTC 2007)
+%%Creator: Graphviz version 2.16 (Sat Nov 10 02:02:40 UTC 2007)
 %%For: (ellson) John Ellson
 %%Title: unix
 %%Pages: (atend)
@@ -88,17 +88,15 @@ cleartomark
 	scalefont setfont
 } def
 
-% draw aligned label in bounding box aligned to current point
-/alignedtext {			% width adj text
+% draw text fitted to its expected width
+/alignedtext {			% width text
 	/text exch def
-	/adj exch def
 	/width exch def
 	gsave
 		width 0 gt {
-			text stringwidth pop adj mul 0 rmoveto
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
 		} if
-		[] 0 setdash
-		text show
 	grestore
 } def
 
@@ -189,10 +187,10 @@ gsave
 0.330528 0.330528 set_scale 0 rotate 112.917 112.917 translate
 0.000 0.000 0.000 graphcolor
 36.00 /Helvetica set_font
-597 53.85 moveto 381 -0.5 (Object Oriented Graphs) alignedtext
+406.5 53.85 moveto 381 (Object Oriented Graphs) alignedtext
 0.000 0.000 0.000 graphcolor
 36.00 /Helvetica set_font
-597 12.6 moveto 373.5 -0.5 (Stephen North, 3/19/93) alignedtext
+410.25 12.6 moveto 373.5 (Stephen North, 3/19/93) alignedtext
 % 5th Edition
 gsave
 0.035 0.588 0.933 nodecolor
@@ -221,7 +219,7 @@ newpath 813.622 1276.42 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-758 1271.28 moveto 69 -0.5 (5th Edition) alignedtext
+723.5 1271.28 moveto 69 (5th Edition) alignedtext
 grestore
 % 6th Edition
 gsave
@@ -243,7 +241,7 @@ newpath 670.128 1207.13 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-574 1189.28 moveto 69.75 -0.5 (6th Edition) alignedtext
+539.125 1189.28 moveto 69.75 (6th Edition) alignedtext
 grestore
 % 5th Edition->6th Edition
 gsave
@@ -291,7 +289,7 @@ newpath 898.693 1212.23 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-873 1189.28 moveto 56.25 -0.5 (PWB 1.0) alignedtext
+844.875 1189.28 moveto 56.25 (PWB 1.0) alignedtext
 grestore
 % 5th Edition->PWB 1.0
 gsave
@@ -341,7 +339,7 @@ newpath 809.141 1102.35 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-767 1096.28 moveto 26.25 -0.5 (LSX) alignedtext
+753.875 1096.28 moveto 26.25 (LSX) alignedtext
 grestore
 % 6th Edition->LSX
 gsave
@@ -388,7 +386,7 @@ newpath 229.933 1106.12 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-191 1096.28 moveto 40.5 -0.5 (1 BSD) alignedtext
+170.75 1096.28 moveto 40.5 (1 BSD) alignedtext
 grestore
 % 6th Edition->1 BSD
 gsave
@@ -429,7 +427,7 @@ newpath 541.212 1124.75 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-505 1096.28 moveto 56.25 -0.5 (Mini Unix) alignedtext
+476.875 1096.28 moveto 56.25 (Mini Unix) alignedtext
 grestore
 % 6th Edition->Mini Unix
 gsave
@@ -471,7 +469,7 @@ newpath 656.765 1123.14 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-644 1096.28 moveto 75.75 -0.5 (Wollongong) alignedtext
+606.125 1096.28 moveto 75.75 (Wollongong) alignedtext
 grestore
 % 6th Edition->Wollongong
 gsave
@@ -511,7 +509,7 @@ newpath 360.823 1134.44 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-355 1096.28 moveto 59.25 -0.5 (Interdata) alignedtext
+325.375 1096.28 moveto 59.25 (Interdata) alignedtext
 grestore
 % 6th Edition->Interdata
 gsave
@@ -557,7 +555,7 @@ newpath 890.636 1131.36 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-873 1096.28 moveto 55.5 -0.5 (PWB 1.2) alignedtext
+845.25 1096.28 moveto 55.5 (PWB 1.2) alignedtext
 grestore
 % PWB 1.0->PWB 1.2
 gsave
@@ -597,7 +595,7 @@ newpath 1042.07 1134.12 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-1015 1096.28 moveto 52.5 -0.5 (USG 1.0) alignedtext
+988.75 1096.28 moveto 52.5 (USG 1.0) alignedtext
 grestore
 % PWB 1.0->USG 1.0
 gsave
@@ -643,7 +641,7 @@ newpath 121.075 619.626 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-109 597.275 moveto 40.5 -0.5 (2 BSD) alignedtext
+88.75 597.275 moveto 40.5 (2 BSD) alignedtext
 grestore
 % 1 BSD->2 BSD
 gsave
@@ -693,7 +691,7 @@ newpath 880.622 797.599 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-802 777.275 moveto 72.75 -0.5 (Unix/TS 3.0) alignedtext
+765.625 777.275 moveto 72.75 (Unix/TS 3.0) alignedtext
 grestore
 % Interdata->Unix/TS 3.0
 gsave
@@ -739,7 +737,7 @@ newpath 810.796 1011.88 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-746 989.275 moveto 56.25 -0.5 (PWB 2.0) alignedtext
+717.875 989.275 moveto 56.25 (PWB 2.0) alignedtext
 grestore
 % Interdata->PWB 2.0
 gsave
@@ -793,7 +791,7 @@ newpath 398.237 1001.77 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-355 989.275 moveto 69 -0.5 (7th Edition) alignedtext
+320.5 989.275 moveto 69 (7th Edition) alignedtext
 grestore
 % Interdata->7th Edition
 gsave
@@ -845,7 +843,7 @@ newpath 907.773 623.181 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-845 597.275 moveto 42.75 -0.5 (TS 4.0) alignedtext
+823.625 597.275 moveto 42.75 (TS 4.0) alignedtext
 grestore
 % Unix/TS 3.0->TS 4.0
 gsave
@@ -906,7 +904,7 @@ newpath 629.518 517.062 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-644 492.275 moveto 69.75 -0.5 (8th Edition) alignedtext
+609.125 492.275 moveto 69.75 (8th Edition) alignedtext
 grestore
 % 7th Edition->8th Edition
 gsave
@@ -956,7 +954,7 @@ newpath 571.725 888.296 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-530 878.275 moveto 24 -0.5 (32V) alignedtext
+518 878.275 moveto 24 (32V) alignedtext
 grestore
 % 7th Edition->32V
 gsave
@@ -1009,7 +1007,7 @@ newpath 95.8951 788.382 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-48 777.275 moveto 28.5 -0.5 (V7M) alignedtext
+33.75 777.275 moveto 28.5 (V7M) alignedtext
 grestore
 % 7th Edition->V7M
 gsave
@@ -1062,7 +1060,7 @@ newpath 170.416 378.491 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-116 380.275 moveto 51.75 -0.5 (Ultrix-11) alignedtext
+90.125 380.275 moveto 51.75 (Ultrix-11) alignedtext
 grestore
 % 7th Edition->Ultrix-11
 gsave
@@ -1113,7 +1111,7 @@ newpath 288.207 901.773 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-246 878.275 moveto 34.5 -0.5 (Xenix) alignedtext
+228.75 878.275 moveto 34.5 (Xenix) alignedtext
 grestore
 % 7th Edition->Xenix
 gsave
@@ -1159,7 +1157,7 @@ newpath 446.781 897.78 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-387 878.275 moveto 55.5 -0.5 (UniPlus+) alignedtext
+359.25 878.275 moveto 55.5 (UniPlus+) alignedtext
 grestore
 % 7th Edition->UniPlus+
 gsave
@@ -1205,7 +1203,7 @@ newpath 716.702 399.428 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-673 380.275 moveto 69.75 -0.5 (9th Edition) alignedtext
+638.125 380.275 moveto 69.75 (9th Edition) alignedtext
 grestore
 % 8th Edition->9th Edition
 gsave
@@ -1257,7 +1255,7 @@ newpath 559.187 777.879 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-517 777.275 moveto 40.5 -0.5 (3 BSD) alignedtext
+496.75 777.275 moveto 40.5 (3 BSD) alignedtext
 grestore
 % 32V->3 BSD
 gsave
@@ -1318,7 +1316,7 @@ newpath 260.157 519.577 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-262 492.275 moveto 52.5 -0.5 (2.8 BSD) alignedtext
+235.75 492.275 moveto 52.5 (2.8 BSD) alignedtext
 grestore
 % 2 BSD->2.8 BSD
 gsave
@@ -1378,7 +1376,7 @@ newpath 236.889 404.316 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-262 380.275 moveto 52.5 -0.5 (2.9 BSD) alignedtext
+235.75 380.275 moveto 52.5 (2.9 BSD) alignedtext
 grestore
 % 2.8 BSD->2.9 BSD
 gsave
@@ -1420,7 +1418,7 @@ newpath 528.258 708.435 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-495 689.275 moveto 41.25 -0.5 (4 BSD) alignedtext
+474.375 689.275 moveto 41.25 (4 BSD) alignedtext
 grestore
 % 3 BSD->4 BSD
 gsave
@@ -1460,7 +1458,7 @@ newpath 474.804 628.988 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-458 597.275 moveto 52.5 -0.5 (4.1 BSD) alignedtext
+431.75 597.275 moveto 52.5 (4.1 BSD) alignedtext
 grestore
 % 4 BSD->4.1 BSD
 gsave
@@ -1552,7 +1550,7 @@ newpath 522.21 519.976 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-447 492.275 moveto 52.5 -0.5 (4.2 BSD) alignedtext
+420.75 492.275 moveto 52.5 (4.2 BSD) alignedtext
 grestore
 % 4.1 BSD->4.2 BSD
 gsave
@@ -1604,7 +1602,7 @@ newpath 596.09 397.713 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-561 380.275 moveto 52.5 -0.5 (4.3 BSD) alignedtext
+534.75 380.275 moveto 52.5 (4.3 BSD) alignedtext
 grestore
 % 4.2 BSD->4.3 BSD
 gsave
@@ -1644,7 +1642,7 @@ newpath 452.255 407.173 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-427 380.275 moveto 52.5 -0.5 (Ultrix-32) alignedtext
+400.75 380.275 moveto 52.5 (Ultrix-32) alignedtext
 grestore
 % 4.2 BSD->Ultrix-32
 gsave
@@ -1714,7 +1712,7 @@ newpath 1143.16 1002 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-1086 989.275 moveto 61.5 -0.5 (CB Unix 1) alignedtext
+1055.25 989.275 moveto 61.5 (CB Unix 1) alignedtext
 grestore
 % USG 1.0->CB Unix 1
 gsave
@@ -1754,7 +1752,7 @@ newpath 895.239 1029.67 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-912 989.275 moveto 52.5 -0.5 (USG 2.0) alignedtext
+885.75 989.275 moveto 52.5 (USG 2.0) alignedtext
 grestore
 % USG 1.0->USG 2.0
 gsave
@@ -1806,7 +1804,7 @@ newpath 1170.6 881.45 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-1126 878.275 moveto 61.5 -0.5 (CB Unix 2) alignedtext
+1095.25 878.275 moveto 61.5 (CB Unix 2) alignedtext
 grestore
 % CB Unix 1->CB Unix 2
 gsave
@@ -1846,7 +1844,7 @@ newpath 803.852 907.118 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-802 878.275 moveto 52.5 -0.5 (USG 3.0) alignedtext
+775.75 878.275 moveto 52.5 (USG 3.0) alignedtext
 grestore
 % USG 2.0->USG 3.0
 gsave
@@ -1898,7 +1896,7 @@ newpath 1089.94 780.321 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-1042 777.275 moveto 61.5 -0.5 (CB Unix 3) alignedtext
+1011.25 777.275 moveto 61.5 (CB Unix 3) alignedtext
 grestore
 % CB Unix 2->CB Unix 3
 gsave
@@ -1942,7 +1940,7 @@ newpath 1007.19 701.047 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-940 689.275 moveto 66 -0.5 (Unix/TS++) alignedtext
+907 689.275 moveto 66 (Unix/TS++) alignedtext
 grestore
 % CB Unix 3->Unix/TS++
 gsave
@@ -1992,7 +1990,7 @@ newpath 1156.81 698.713 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-1091 689.275 moveto 88.5 -0.5 (PDP-11 Sys V) alignedtext
+1046.75 689.275 moveto 88.5 (PDP-11 Sys V) alignedtext
 grestore
 % CB Unix 3->PDP-11 Sys V
 gsave
@@ -2093,7 +2091,7 @@ newpath 937.483 908.755 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-971 878.275 moveto 72.75 -0.5 (Unix/TS 1.0) alignedtext
+934.625 878.275 moveto 72.75 (Unix/TS 1.0) alignedtext
 grestore
 % Unix/TS 1.0->Unix/TS 3.0
 gsave
@@ -2143,7 +2141,7 @@ newpath 914.809 498.999 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-845 492.275 moveto 72 -0.5 (System V.0) alignedtext
+809 492.275 moveto 72 (System V.0) alignedtext
 grestore
 % TS 4.0->System V.0
 gsave
@@ -2187,7 +2185,7 @@ newpath 925.303 403.041 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-845 380.275 moveto 71.25 -0.5 (System V.2) alignedtext
+809.375 380.275 moveto 71.25 (System V.2) alignedtext
 grestore
 % System V.0->System V.2
 gsave
@@ -2233,7 +2231,7 @@ newpath 895.936 307.373 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Helvetica set_font
-845 282.275 moveto 71.25 -0.5 (System V.3) alignedtext
+809.375 282.275 moveto 71.25 (System V.3) alignedtext
 grestore
 % System V.2->System V.3
 gsave

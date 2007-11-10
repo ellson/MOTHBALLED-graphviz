@@ -1,5 +1,5 @@
 %!PS-Adobe-2.0
-%%Creator: Graphviz version 2.15 (Sat Nov  3 14:12:46 UTC 2007)
+%%Creator: Graphviz version 2.16 (Sat Nov 10 02:02:40 UTC 2007)
 %%For: (ellson) John Ellson
 %%Title: structs
 %%Pages: (atend)
@@ -88,17 +88,15 @@ cleartomark
 	scalefont setfont
 } def
 
-% draw aligned label in bounding box aligned to current point
-/alignedtext {			% width adj text
+% draw text fitted to its expected width
+/alignedtext {			% width text
 	/text exch def
-	/adj exch def
 	/width exch def
 	gsave
 		width 0 gt {
-			text stringwidth pop adj mul 0 rmoveto
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
 		} if
-		[] 0 setdash
-		text show
 	grestore
 } def
 
@@ -199,7 +197,7 @@ newpath 23 124 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-35.5 130.733 moveto 18 -0.5 (left) alignedtext
+26.5 130.733 moveto 18 (left) alignedtext
 1 setlinewidth
 solid
 0.000 0.000 0.000 nodecolor
@@ -210,7 +208,7 @@ newpath 48 124 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-72.5 130.733 moveto 43 -0.5 (mid dle) alignedtext
+51 130.733 moveto 43 (mid dle) alignedtext
 1 setlinewidth
 solid
 0.000 0.000 0.000 nodecolor
@@ -221,7 +219,7 @@ newpath 97 124 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-113 130.733 moveto 26 -0.5 (right) alignedtext
+100 130.733 moveto 26 (right) alignedtext
 grestore
 % struct2
 gsave
@@ -235,7 +233,7 @@ newpath 8 30 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-21.5 36.7333 moveto 21 -0.5 (one) alignedtext
+11 36.7333 moveto 21 (one) alignedtext
 1 setlinewidth
 solid
 0.000 0.000 0.000 nodecolor
@@ -246,7 +244,7 @@ newpath 35 30 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-48.5 36.7333 moveto 21 -0.5 (two) alignedtext
+38 36.7333 moveto 21 (two) alignedtext
 grestore
 % struct1->struct2
 gsave
@@ -280,10 +278,10 @@ newpath 96 4 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-118 46.7333 moveto 28 -0.5 (hello) alignedtext
+104 46.7333 moveto 28 (hello) alignedtext
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-118 29.9333 moveto 33 -0.5 (world) alignedtext
+101.5 29.9333 moveto 33 (world) alignedtext
 1 setlinewidth
 solid
 0.000 0.000 0.000 nodecolor
@@ -294,7 +292,7 @@ newpath 140 52 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-164.5 60.7333 moveto 6 -0.5 (b) alignedtext
+161.5 60.7333 moveto 6 (b) alignedtext
 1 setlinewidth
 solid
 0.000 0.000 0.000 nodecolor
@@ -305,7 +303,7 @@ newpath 189 4 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-197.5 36.7333 moveto 7 -0.5 (g) alignedtext
+194 36.7333 moveto 7 (g) alignedtext
 1 setlinewidth
 solid
 0.000 0.000 0.000 nodecolor
@@ -316,7 +314,7 @@ newpath 206 4 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-214 36.7333 moveto 6 -0.5 (h) alignedtext
+211 36.7333 moveto 6 (h) alignedtext
 1 setlinewidth
 solid
 0.000 0.000 0.000 nodecolor
@@ -327,7 +325,7 @@ newpath 140 28 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-148 36.7333 moveto 6 -0.5 (c) alignedtext
+145 36.7333 moveto 6 (c) alignedtext
 1 setlinewidth
 solid
 0.000 0.000 0.000 nodecolor
@@ -338,7 +336,7 @@ newpath 156 28 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-164.5 36.7333 moveto 7 -0.5 (d) alignedtext
+161 36.7333 moveto 7 (d) alignedtext
 1 setlinewidth
 solid
 0.000 0.000 0.000 nodecolor
@@ -349,7 +347,7 @@ newpath 173 28 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-181 36.7333 moveto 6 -0.5 (e) alignedtext
+178 36.7333 moveto 6 (e) alignedtext
 1 setlinewidth
 solid
 0.000 0.000 0.000 nodecolor
@@ -360,7 +358,7 @@ newpath 140 4 moveto
 closepath stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-164.5 12.7333 moveto 4 -0.5 (f) alignedtext
+162.5 12.7333 moveto 4 (f) alignedtext
 grestore
 % struct1->struct3
 gsave

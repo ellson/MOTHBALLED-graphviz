@@ -1,5 +1,5 @@
 %!PS-Adobe-2.0
-%%Creator: Graphviz version 2.15 (Sat Nov  3 14:12:46 UTC 2007)
+%%Creator: Graphviz version 2.16 (Sat Nov 10 02:02:40 UTC 2007)
 %%For: (ellson) John Ellson
 %%Title: test
 %%Pages: (atend)
@@ -88,17 +88,15 @@ cleartomark
 	scalefont setfont
 } def
 
-% draw aligned label in bounding box aligned to current point
-/alignedtext {			% width adj text
+% draw text fitted to its expected width
+/alignedtext {			% width text
 	/text exch def
-	/adj exch def
 	/width exch def
 	gsave
 		width 0 gt {
-			text stringwidth pop adj mul 0 rmoveto
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
 		} if
-		[] 0 setdash
-		text show
 	grestore
 } def
 
@@ -197,7 +195,7 @@ filled
 [ 64 108 3.19744e-14 108 0 72 64 72 64 108 ]  4 false sdl_task
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-32 85.65 moveto 48 -0.5 (sdl_task) alignedtext
+8 85.65 moveto 48 (sdl_task) alignedtext
 grestore
 % sdl_task2
 gsave
@@ -206,7 +204,7 @@ gsave
 [ 64 36 3.19744e-14 36 0 1.77636e-14 64 3.55271e-15 64 36 ]  4 false sdl_task
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-32 13.65 moveto 48 -0.5 (sdl_task) alignedtext
+8 13.65 moveto 48 (sdl_task) alignedtext
 grestore
 % sdl_task->sdl_task2
 gsave
@@ -238,7 +236,7 @@ filled
 [ 223.752 108 90.2481 108 90.2481 72 223.752 72 223.752 108 ]  4 false sdl_input_from_right
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-157 85.65 moveto 118.5 -0.5 (sdl_input_from_right) alignedtext
+97.75 85.65 moveto 118.5 (sdl_input_from_right) alignedtext
 grestore
 % sdl_input_from_right2
 gsave
@@ -247,7 +245,7 @@ gsave
 [ 231.75 36 82.25 36 82.25 1.77636e-14 231.75 3.55271e-15 231.75 36 ]  4 false sdl_input_from_right
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-157 13.65 moveto 133.5 -0.5 (sdl_input_from_right    ) alignedtext
+90.25 13.65 moveto 133.5 (sdl_input_from_right    ) alignedtext
 grestore
 % sdl_input_from_right->sdl_input_from_right2
 gsave
@@ -279,7 +277,7 @@ filled
 [ 384 108 258 108 258 72 384 72 384 108 ]  4 false sdl_input_from_left
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-321 85.65 moveto 111 -0.5 (sdl_input_from_left) alignedtext
+265.5 85.65 moveto 111 (sdl_input_from_left) alignedtext
 grestore
 % sdl_input_from_left2
 gsave
@@ -288,7 +286,7 @@ gsave
 [ 392 36 250 36 250 1.77636e-14 392 3.55271e-15 392 36 ]  4 false sdl_input_from_left
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-321 13.65 moveto 126 -0.5 (    sdl_input_from_left) alignedtext
+258 13.65 moveto 126 (    sdl_input_from_left) alignedtext
 grestore
 % sdl_input_from_left->sdl_input_from_left2
 gsave
@@ -320,7 +318,7 @@ filled
 [ 601.25 108 418.75 108 418.75 72 601.25 72 601.25 108 ]  4 false sdl_priority_input_from_right
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-510 85.65 moveto 166.5 -0.5 (sdl_priority_input_from_right) alignedtext
+426.75 85.65 moveto 166.5 (sdl_priority_input_from_right) alignedtext
 grestore
 % sdl_priority_input_from_right2
 gsave
@@ -329,7 +327,7 @@ gsave
 [ 610.124 36 409.876 36 409.876 1.77636e-14 610.124 3.55271e-15 610.124 36 ]  4 false sdl_priority_input_from_right
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-510 13.65 moveto 185.25 -0.5 (sdl_priority_input_from_right     ) alignedtext
+417.375 13.65 moveto 185.25 (sdl_priority_input_from_right     ) alignedtext
 grestore
 % sdl_priority_input_from_right->sdl_priority_input_from_right2
 gsave
@@ -361,7 +359,7 @@ filled
 [ 812 108 638 108 638 72 812 72 812 108 ]  4 false sdl_priority_input_from_left
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-725 85.65 moveto 159 -0.5 (sdl_priority_input_from_left) alignedtext
+645.5 85.65 moveto 159 (sdl_priority_input_from_left) alignedtext
 grestore
 % sdl_priority_input_from_left2
 gsave
@@ -370,7 +368,7 @@ gsave
 [ 821.875 36 628.125 36 628.125 1.77636e-14 821.875 3.55271e-15 821.875 36 ]  4 false sdl_priority_input_from_left
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-725 13.65 moveto 177.75 -0.5 (     sdl_priority_input_from_left) alignedtext
+636.125 13.65 moveto 177.75 (     sdl_priority_input_from_left) alignedtext
 grestore
 % sdl_priority_input_from_left->sdl_priority_input_from_left2
 gsave
@@ -402,7 +400,7 @@ filled
 [ 909.877 108 846.123 108 846.123 72 909.877 72 909.877 108 ]  4 false sdl_start
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-878 85.65 moveto 48.75 -0.5 (sdl_start) alignedtext
+853.625 85.65 moveto 48.75 (sdl_start) alignedtext
 grestore
 % sdl_start2
 gsave
@@ -411,7 +409,7 @@ gsave
 [ 916 36 840 36 840 1.77636e-14 916 3.55271e-15 916 36 ]  4 false sdl_start
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-878 13.65 moveto 60 -0.5 (                ) alignedtext
+848 13.65 moveto 60 (                ) alignedtext
 grestore
 % sdl_start->sdl_start2
 gsave
@@ -443,7 +441,7 @@ filled
 [ 1056.12 108 927.876 108 927.876 72 1056.12 72 1056.12 108 ]  4 false sdl_procedure_start
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-992 85.65 moveto 113.25 -0.5 (sdl_procedure_start) alignedtext
+935.375 85.65 moveto 113.25 (sdl_procedure_start) alignedtext
 grestore
 % sdl_procedure_start2
 gsave
@@ -452,7 +450,7 @@ gsave
 [ 1030 36 954 36 954 1.77636e-14 1030 3.55271e-15 1030 36 ]  4 false sdl_procedure_start
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-992 13.65 moveto 60 -0.5 (                ) alignedtext
+962 13.65 moveto 60 (                ) alignedtext
 grestore
 % sdl_procedure_start->sdl_procedure_start2
 gsave
@@ -484,7 +482,7 @@ filled
 [ 1140 108 1074 108 1074 72 1140 72 1140 108 ]  4 false sdl_state
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1107 85.65 moveto 51 -0.5 (sdl_state) alignedtext
+1081.5 85.65 moveto 51 (sdl_state) alignedtext
 grestore
 % sdl_state2
 gsave
@@ -493,7 +491,7 @@ gsave
 [ 1143.88 36 1070.12 36 1070.12 1.77636e-14 1143.88 3.55271e-15 1143.88 36 ]  4 false sdl_state
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1107 13.65 moveto 57.75 -0.5 (sdl_state2) alignedtext
+1078.12 13.65 moveto 57.75 (sdl_state2) alignedtext
 grestore
 % sdl_state->sdl_state2
 gsave
@@ -525,7 +523,7 @@ filled
 [ 1292.12 108 1165.88 108 1165.88 72 1292.12 72 1292.12 108 ]  4 false sdl_output_to_right
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1229 85.65 moveto 110.25 -0.5 (sdl_output_to_right) alignedtext
+1173.88 85.65 moveto 110.25 (sdl_output_to_right) alignedtext
 grestore
 % sdl_output_to_right2
 gsave
@@ -534,7 +532,7 @@ gsave
 [ 1295.88 36 1162.12 36 1162.12 1.77636e-14 1295.88 3.55271e-15 1295.88 36 ]  4 false sdl_output_to_right
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1229 13.65 moveto 117.75 -0.5 (sdl_output_to_right  ) alignedtext
+1170.12 13.65 moveto 117.75 (sdl_output_to_right  ) alignedtext
 grestore
 % sdl_output_to_right->sdl_output_to_right2
 gsave
@@ -566,7 +564,7 @@ filled
 [ 1435.88 108 1318.12 108 1318.12 72 1435.88 72 1435.88 108 ]  4 false sdl_output_to_left
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1377 85.65 moveto 102.75 -0.5 (sdl_output_to_left) alignedtext
+1325.62 85.65 moveto 102.75 (sdl_output_to_left) alignedtext
 grestore
 % sdl_output_to_left2
 gsave
@@ -575,7 +573,7 @@ gsave
 [ 1440.12 36 1313.88 36 1313.88 1.77636e-14 1440.12 3.55271e-15 1440.12 36 ]  4 false sdl_output_to_left
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1377 13.65 moveto 110.25 -0.5 (  sdl_output_to_left) alignedtext
+1321.88 13.65 moveto 110.25 (  sdl_output_to_left) alignedtext
 grestore
 % sdl_output_to_left->sdl_output_to_left2
 gsave
@@ -607,7 +605,7 @@ filled
 [ 1559 108 1465 108 1465 72 1559 72 1559 108 ]  4 false sdl_condition
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1512 85.65 moveto 78 -0.5 (sdl_condition) alignedtext
+1473 85.65 moveto 78 (sdl_condition) alignedtext
 grestore
 % sdl_condition2
 gsave
@@ -616,7 +614,7 @@ gsave
 [ 1566 36 1458 36 1458 1.77636e-14 1566 3.55271e-15 1566 36 ]  4 false sdl_condition
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1512 13.65 moveto 93 -0.5 (  sdl_condition  ) alignedtext
+1465.5 13.65 moveto 93 (  sdl_condition  ) alignedtext
 grestore
 % sdl_condition->sdl_condition2
 gsave
@@ -648,7 +646,7 @@ filled
 [ 1657.12 108 1590.88 108 1590.88 72 1657.12 72 1657.12 108 ]  4 false sdl_save
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1624 85.65 moveto 50.25 -0.5 (sdl_save) alignedtext
+1598.88 85.65 moveto 50.25 (sdl_save) alignedtext
 grestore
 % sdl_save2
 gsave
@@ -657,7 +655,7 @@ gsave
 [ 1664.12 36 1583.88 36 1583.88 1.77636e-14 1664.12 3.55271e-15 1664.12 36 ]  4 false sdl_save
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1624 13.65 moveto 65.25 -0.5 (  sdl_save  ) alignedtext
+1591.38 13.65 moveto 65.25 (  sdl_save  ) alignedtext
 grestore
 % sdl_save->sdl_save2
 gsave
@@ -686,7 +684,7 @@ gsave
 [ 1741 108 1677 108 1677 72 1741 72 1741 108 ]  4 false sdl_stop
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1709 85.65 moveto 48 -0.5 (sdl_stop) alignedtext
+1685 85.65 moveto 48 (sdl_stop) alignedtext
 grestore
 % sdl_stop2
 gsave
@@ -712,7 +710,7 @@ filled
 [ 1831 108 1759 108 1759 72 1831 72 1831 108 ]  4 false sdl_return
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1795 85.65 moveto 57 -0.5 (sdl_return) alignedtext
+1766.5 85.65 moveto 57 (sdl_return) alignedtext
 grestore
 % sdl_return2
 gsave
@@ -750,7 +748,7 @@ filled
 [ 1923.12 108 1848.88 108 1848.88 72 1923.12 72 1923.12 108 ]  4 false sdl_create
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1886 85.65 moveto 59.25 -0.5 (sdl_create) alignedtext
+1856.38 85.65 moveto 59.25 (sdl_create) alignedtext
 grestore
 % sdl_create2
 gsave
@@ -759,7 +757,7 @@ gsave
 [ 1927 36 1845 36 1845 1.77636e-14 1927 3.55271e-15 1927 36 ]  4 false sdl_create
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1886 13.65 moveto 66 -0.5 (sdl_create2) alignedtext
+1853 13.65 moveto 66 (sdl_create2) alignedtext
 grestore
 % sdl_create->sdl_create2
 gsave
@@ -791,7 +789,7 @@ filled
 [ 2013 108 1953 108 1953 72 2013 72 2013 108 ]  4 false sdl_call
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1983 85.65 moveto 45 -0.5 (sdl_call) alignedtext
+1960.5 85.65 moveto 45 (sdl_call) alignedtext
 grestore
 % sdl_call2
 gsave
@@ -800,7 +798,7 @@ gsave
 [ 2021 36 1945 36 1945 1.77636e-14 2021 3.55271e-15 2021 36 ]  4 false sdl_call
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-1983 13.65 moveto 60 -0.5 (  sdl_call  ) alignedtext
+1953 13.65 moveto 60 (  sdl_call  ) alignedtext
 grestore
 % sdl_call->sdl_call2
 gsave
@@ -832,7 +830,7 @@ filled
 [ 2103 108 2043 108 2043 72 2103 72 2103 108 ]  4 false sdl_text
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2073 85.65 moveto 45 -0.5 (sdl_text) alignedtext
+2050.5 85.65 moveto 45 (sdl_text) alignedtext
 grestore
 % sdl_text2
 gsave
@@ -841,7 +839,7 @@ gsave
 [ 2106.88 36 2039.12 36 2039.12 1.77636e-14 2106.88 3.55271e-15 2106.88 36 ]  4 false sdl_text
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2073 13.65 moveto 51.75 -0.5 (sdl_text2) alignedtext
+2047.12 13.65 moveto 51.75 (sdl_text2) alignedtext
 grestore
 % sdl_text->sdl_text2
 gsave
@@ -873,7 +871,7 @@ filled
 [ 2309.88 108 2128.12 108 2128.12 72 2309.88 72 2309.88 108 ]  4 false sdl_text_extension_from_left
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2219 85.65 moveto 165.75 -0.5 (sdl_text_extension_from_left) alignedtext
+2136.12 85.65 moveto 165.75 (sdl_text_extension_from_left) alignedtext
 grestore
 % sdl_text_extension_from_left2
 gsave
@@ -882,7 +880,7 @@ gsave
 [ 2312.75 36 2125.25 36 2125.25 1.77636e-14 2312.75 3.55271e-15 2312.75 36 ]  4 false sdl_text_extension_from_left
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2219 13.65 moveto 172.5 -0.5 (sdl_text_extension_from_left2) alignedtext
+2132.75 13.65 moveto 172.5 (sdl_text_extension_from_left2) alignedtext
 grestore
 % sdl_text_extension_from_left->sdl_text_extension_from_left2
 gsave
@@ -914,7 +912,7 @@ filled
 [ 2523.12 108 2334.88 108 2334.88 72 2523.12 72 2523.12 108 ]  4 false sdl_text_extension_from_right
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2429 85.65 moveto 173.25 -0.5 (sdl_text_extension_from_right) alignedtext
+2342.38 85.65 moveto 173.25 (sdl_text_extension_from_right) alignedtext
 grestore
 % sdl_text_extension_from_right2
 gsave
@@ -923,7 +921,7 @@ gsave
 [ 2527 36 2331 36 2331 1.77636e-14 2527 3.55271e-15 2527 36 ]  4 false sdl_text_extension_from_right
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2429 13.65 moveto 180 -0.5 (sdl_text_extension_from_right2) alignedtext
+2339 13.65 moveto 180 (sdl_text_extension_from_right2) alignedtext
 grestore
 % sdl_text_extension_from_right->sdl_text_extension_from_right2
 gsave
@@ -955,7 +953,7 @@ filled
 [ 2699.88 108 2548.12 108 2548.12 72 2699.88 72 2699.88 108 ]  4 false sdl_comment_from_left
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2624 85.65 moveto 135.75 -0.5 (sdl_comment_from_left) alignedtext
+2556.12 85.65 moveto 135.75 (sdl_comment_from_left) alignedtext
 grestore
 % sdl_comment_from_left2
 gsave
@@ -965,7 +963,7 @@ dashed
 [ 2702.75 36 2545.25 36 2545.25 1.77636e-14 2702.75 3.55271e-15 2702.75 36 ]  4 false sdl_comment_from_left
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2624 13.65 moveto 142.5 -0.5 (sdl_comment_from_left2) alignedtext
+2552.75 13.65 moveto 142.5 (sdl_comment_from_left2) alignedtext
 grestore
 % sdl_comment_from_left->sdl_comment_from_left2
 gsave
@@ -997,7 +995,7 @@ filled
 [ 2883.12 108 2724.88 108 2724.88 72 2883.12 72 2883.12 108 ]  4 false sdl_comment_from_right
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2804 85.65 moveto 143.25 -0.5 (sdl_comment_from_right) alignedtext
+2732.38 85.65 moveto 143.25 (sdl_comment_from_right) alignedtext
 grestore
 % sdl_comment_from_right2
 gsave
@@ -1007,7 +1005,7 @@ dashed
 [ 2887 36 2721 36 2721 1.77636e-14 2887 3.55271e-15 2887 36 ]  4 false sdl_comment_from_right
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2804 13.65 moveto 150 -0.5 (sdl_comment_from_right2) alignedtext
+2729 13.65 moveto 150 (sdl_comment_from_right2) alignedtext
 grestore
 % sdl_comment_from_right->sdl_comment_from_right2
 gsave
@@ -1039,7 +1037,7 @@ filled
 [ 3005 108 2909 108 2909 72 3005 72 3005 108 ]  4 false sdl_connector
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2957 85.65 moveto 81 -0.5 (sdl_connector) alignedtext
+2916.5 85.65 moveto 81 (sdl_connector) alignedtext
 grestore
 % sdl_connector2
 gsave
@@ -1048,7 +1046,7 @@ gsave
 [ 3008.88 36 2905.12 36 2905.12 1.77636e-14 3008.88 3.55271e-15 3008.88 36 ]  4 false sdl_connector
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-2957 13.65 moveto 87.75 -0.5 (sdl_connector2) alignedtext
+2913.12 13.65 moveto 87.75 (sdl_connector2) alignedtext
 grestore
 % sdl_connector->sdl_connector2
 gsave
@@ -1080,7 +1078,7 @@ filled
 [ 3093.75 108 3038.25 108 3038.25 72 3093.75 72 3093.75 108 ]  4 false sdl_set
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-3066 85.65 moveto 40.5 -0.5 (sdl_set) alignedtext
+3045.75 85.65 moveto 40.5 (sdl_set) alignedtext
 grestore
 % sdl_set2
 gsave
@@ -1089,7 +1087,7 @@ gsave
 [ 3105.12 36 3026.88 36 3026.88 1.77636e-14 3105.12 3.55271e-15 3105.12 36 ]  4 false sdl_set
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-3066 13.65 moveto 62.25 -0.5 (    sdl_set2) alignedtext
+3034.88 13.65 moveto 62.25 (    sdl_set2) alignedtext
 grestore
 % sdl_set->sdl_set2
 gsave
@@ -1121,7 +1119,7 @@ filled
 [ 3201.88 108 3134.12 108 3134.12 72 3201.88 72 3201.88 108 ]  4 false sdl_reset
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-3168 85.65 moveto 51.75 -0.5 (sdl_reset) alignedtext
+3142.12 85.65 moveto 51.75 (sdl_reset) alignedtext
 grestore
 % sdl_reset2
 gsave
@@ -1130,7 +1128,7 @@ gsave
 [ 3212.75 36 3123.25 36 3123.25 1.77636e-14 3212.75 3.55271e-15 3212.75 36 ]  4 false sdl_reset
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-3168 13.65 moveto 73.5 -0.5 (    sdl_reset2) alignedtext
+3131.25 13.65 moveto 73.5 (    sdl_reset2) alignedtext
 grestore
 % sdl_reset->sdl_reset2
 gsave
@@ -1162,7 +1160,7 @@ filled
 [ 3314 108 3238 108 3238 72 3314 72 3314 108 ]  4 false sdl_export
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-3276 85.65 moveto 60 -0.5 (sdl_export) alignedtext
+3246 85.65 moveto 60 (sdl_export) alignedtext
 grestore
 % sdl_export2
 gsave
@@ -1171,7 +1169,7 @@ gsave
 [ 3321 36 3231 36 3231 1.77636e-14 3321 3.55271e-15 3321 36 ]  4 false sdl_export
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-3276 13.65 moveto 75 -0.5 (    sdl_export) alignedtext
+3238.5 13.65 moveto 75 (    sdl_export) alignedtext
 grestore
 % sdl_export->sdl_export2
 gsave

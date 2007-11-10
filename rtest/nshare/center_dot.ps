@@ -1,5 +1,5 @@
 %!PS-Adobe-2.0
-%%Creator: Graphviz version 2.15 (Sat Nov  3 14:12:46 UTC 2007)
+%%Creator: Graphviz version 2.16 (Sat Nov 10 02:02:40 UTC 2007)
 %%For: (ellson) John Ellson
 %%Title: G
 %%Pages: (atend)
@@ -88,17 +88,15 @@ cleartomark
 	scalefont setfont
 } def
 
-% draw aligned label in bounding box aligned to current point
-/alignedtext {			% width adj text
+% draw text fitted to its expected width
+/alignedtext {			% width text
 	/text exch def
-	/adj exch def
 	/width exch def
 	gsave
 		width 0 gt {
-			text stringwidth pop adj mul 0 rmoveto
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
 		} if
-		[] 0 setdash
-		text show
 	grestore
 } def
 
@@ -194,7 +192,7 @@ gsave
 63 90 27 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-63 85.65 moveto 6.75 -0.5 (a) alignedtext
+59.625 85.65 moveto 6.75 (a) alignedtext
 grestore
 % b
 gsave
@@ -203,7 +201,7 @@ gsave
 27 18 27 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-27 13.65 moveto 6.75 -0.5 (b) alignedtext
+23.625 13.65 moveto 6.75 (b) alignedtext
 grestore
 % a->b
 gsave
@@ -232,7 +230,7 @@ gsave
 99 18 27 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-99 13.65 moveto 6.75 -0.5 (c) alignedtext
+95.625 13.65 moveto 6.75 (c) alignedtext
 grestore
 % a->c
 gsave

@@ -1,5 +1,5 @@
 %!PS-Adobe-2.0
-%%Creator: Graphviz version 2.15 (Sat Nov  3 14:12:46 UTC 2007)
+%%Creator: Graphviz version 2.16 (Sat Nov 10 02:02:40 UTC 2007)
 %%For: (ellson) John Ellson
 %%Title: G
 %%Pages: (atend)
@@ -88,17 +88,15 @@ cleartomark
 	scalefont setfont
 } def
 
-% draw aligned label in bounding box aligned to current point
-/alignedtext {			% width adj text
+% draw text fitted to its expected width
+/alignedtext {			% width text
 	/text exch def
-	/adj exch def
 	/width exch def
 	gsave
 		width 0 gt {
-			text stringwidth pop adj mul 0 rmoveto
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
 		} if
-		[] 0 setdash
-		text show
 	grestore
 } def
 
@@ -189,7 +187,7 @@ gsave
 1 1 set_scale 0 rotate 40 40 translate
 0.000 0.000 0.000 graphcolor
 14.00 /Times-Roman set_font
-124 7.65 moveto 63.75 -0.5 (label demo) alignedtext
+92.125 7.65 moveto 63.75 (label demo) alignedtext
 % cluster0
 gsave
 1 setlinewidth
@@ -201,7 +199,7 @@ newpath 8 33 moveto
 closepath stroke
 0.000 0.000 0.000 graphcolor
 14.00 /Times-Roman set_font
-47 40.65 moveto 45.75 -0.5 (cluster0) alignedtext
+24.125 40.65 moveto 45.75 (cluster0) alignedtext
 grestore
 % cluster1
 gsave
@@ -214,7 +212,7 @@ newpath 86 58 moveto
 closepath stroke
 0.000 0.000 0.000 graphcolor
 14.00 /Times-Roman set_font
-126 190.65 moveto 45 -0.5 (cluster1) alignedtext
+103.5 190.65 moveto 45 (cluster1) alignedtext
 grestore
 % a
 gsave
@@ -223,7 +221,7 @@ gsave
 43 156 27 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-43 151.65 moveto 6.75 -0.5 (a) alignedtext
+39.625 151.65 moveto 6.75 (a) alignedtext
 grestore
 % b
 gsave
@@ -232,7 +230,7 @@ gsave
 43 84 27 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-43 79.65 moveto 6.75 -0.5 (b) alignedtext
+39.625 79.65 moveto 6.75 (b) alignedtext
 grestore
 % a->b
 gsave
@@ -261,7 +259,7 @@ gsave
 121 156 27 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-121 151.65 moveto 6.75 -0.5 (c) alignedtext
+117.625 151.65 moveto 6.75 (c) alignedtext
 grestore
 % d
 gsave
@@ -270,7 +268,7 @@ gsave
 121 84 27 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-121 79.65 moveto 7.5 -0.5 (d) alignedtext
+117.25 79.65 moveto 7.5 (d) alignedtext
 grestore
 % c->d
 gsave

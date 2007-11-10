@@ -1,5 +1,5 @@
 %!PS-Adobe-2.0
-%%Creator: Graphviz version 2.15 (Sat Nov  3 14:12:46 UTC 2007)
+%%Creator: Graphviz version 2.16 (Sat Nov 10 02:02:40 UTC 2007)
 %%For: (ellson) John Ellson
 %%Title: G
 %%Pages: (atend)
@@ -88,17 +88,15 @@ cleartomark
 	scalefont setfont
 } def
 
-% draw aligned label in bounding box aligned to current point
-/alignedtext {			% width adj text
+% draw text fitted to its expected width
+/alignedtext {			% width text
 	/text exch def
-	/adj exch def
 	/width exch def
 	gsave
 		width 0 gt {
-			text stringwidth pop adj mul 0 rmoveto
+			[] 0 setdash
+			text stringwidth pop width exch sub text length div 0 text ashow
 		} if
-		[] 0 setdash
-		text show
 	grestore
 } def
 
@@ -195,7 +193,7 @@ gsave
 108 90 30.1959 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-108 85.65 moveto 35.25 -0.5 (node2) alignedtext
+90.375 85.65 moveto 35.25 (node2) alignedtext
 grestore
 endpage
 showpage
@@ -217,7 +215,7 @@ gsave
 30 90 30.1959 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-30 85.65 moveto 35.25 -0.5 (node1) alignedtext
+12.375 85.65 moveto 35.25 (node1) alignedtext
 grestore
 % node2
 gsave
@@ -226,7 +224,7 @@ gsave
 108 90 30.1959 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-108 85.65 moveto 35.25 -0.5 (node2) alignedtext
+90.375 85.65 moveto 35.25 (node2) alignedtext
 grestore
 % node3
 gsave
@@ -235,7 +233,7 @@ gsave
 68 18 30.1959 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-68 13.65 moveto 35.25 -0.5 (node3) alignedtext
+50.375 13.65 moveto 35.25 (node3) alignedtext
 grestore
 % node2->node3
 gsave
@@ -277,7 +275,7 @@ gsave
 108 90 30.1959 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-108 85.65 moveto 35.25 -0.5 (node2) alignedtext
+90.375 85.65 moveto 35.25 (node2) alignedtext
 grestore
 % node3
 gsave
@@ -286,7 +284,7 @@ gsave
 68 18 30.1959 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-68 13.65 moveto 35.25 -0.5 (node3) alignedtext
+50.375 13.65 moveto 35.25 (node3) alignedtext
 grestore
 % node2->node3
 gsave
@@ -315,7 +313,7 @@ gsave
 147 18 30.9499 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-147 13.65 moveto 36.75 -0.5 (node4) alignedtext
+128.625 13.65 moveto 36.75 (node4) alignedtext
 grestore
 % node2->node4
 gsave
@@ -357,7 +355,7 @@ gsave
 108 90 30.1959 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-108 85.65 moveto 35.25 -0.5 (node2) alignedtext
+90.375 85.65 moveto 35.25 (node2) alignedtext
 grestore
 % node3
 gsave
@@ -366,7 +364,7 @@ gsave
 68 18 30.1959 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-68 13.65 moveto 35.25 -0.5 (node3) alignedtext
+50.375 13.65 moveto 35.25 (node3) alignedtext
 grestore
 % node2->node3
 gsave
@@ -408,7 +406,7 @@ gsave
 108 90 30.1959 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-108 85.65 moveto 35.25 -0.5 (node2) alignedtext
+90.375 85.65 moveto 35.25 (node2) alignedtext
 grestore
 % node3
 gsave
@@ -417,7 +415,7 @@ gsave
 68 18 30.1959 18 ellipse_path stroke
 0.000 0.000 0.000 nodecolor
 14.00 /Times-Roman set_font
-68 13.65 moveto 35.25 -0.5 (node3) alignedtext
+50.375 13.65 moveto 35.25 (node3) alignedtext
 grestore
 % node2->node3
 gsave
