@@ -4,7 +4,7 @@
 AC_PREREQ(2.54)
 
 # Package name and version number, (as distinct from shared library version)
-AC_INIT(graphviz, 2.15)
+AC_INIT(graphviz, 2.16)
 
 dnl ===========================================================================
 
@@ -1474,7 +1474,7 @@ AC_ARG_WITH(Xawlibdir,
 save_CPPFLAGS=$CPPFLAGS
 save_LDFLAGS=$LDFLAGS
 CPPFLAGS="$CPPFLAGS $XAW_INCLUDES $X_CFLAGS"
-LDFLAGS="$LDFLAGS $XAW_LIBS $XPM_LIBS $X_LIBS $X_EXTRA_LIBS $X_PRE_LIBS $SOCKET_LIBS"
+LDFLAGS="$LDFLAGS $X_LIBS $XAW_LIBS $XPM_LIBS $X_EXTRA_LIBS $X_PRE_LIBS $SOCKET_LIBS"
 AC_CHECK_HEADERS([X11/Intrinsic.h])
 AC_CHECK_HEADERS([X11/Xaw/Text.h],
 		 [],
@@ -1486,10 +1486,10 @@ AC_CHECK_HEADERS([X11/Xaw/Text.h],
 		  ])
 if test "x$with_xaw" != "xno"; then
 AC_CHECK_LIB(Xaw,main,
-	     [XAW_LIBS="$XAW_LIBS -lXaw"],
+	     [XAW_LIBS="$X_LIBS $XAW_LIBS -lXaw"],
 	     [with_xaw=no
 	      AC_MSG_WARN(Optional Xaw library not available)],
-	      [-lXmu -lXt -lX11 -lXext $SOCKET_LIBS])
+	      [$X_LIBS -lXmu -lXt -lX11 -lXext $SOCKET_LIBS])
 fi
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS

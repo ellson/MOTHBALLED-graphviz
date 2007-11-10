@@ -1,8 +1,11 @@
-November 5, 2007
-	- preparing for release 2.16
-	- Fixed bugs: 456, 473, 1160, 1179, 1181, 1182, 1196, 1199, 1210, 1219
+November 9, 2007
+	- Release 2.16
+	- Fixed bugs: 456, 473, 1021, 1153, 1154, 1155, 1159, 1160, 1162,
+	1165, 1166, 1168, 1169, 1170, 1172, 1173, 1174, 1175, 1177, 1178,
+	1179, 1181, 1182, 1183, 1185, 1187, 1189, 1192, 1193, 1195, 1196,
+	1199, 1204, 1207, 1210, 1215, 1216, 1217, 1218, 1219, 1220, 1223
 	- new regression test suite
-	- new cgraph library 
+	- new cgraph library (will eventually replace graph and agraph)
 	- add "image" and "imagescale" for simpler support for images in nodes
 	- add "tab" "box3d" and "component" shapes.  - Diomidis Spinellis
 	- replace arith.h in distro
