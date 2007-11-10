@@ -22,6 +22,7 @@ swig.cmi
 swig.cmo
 swig.ml
 swig.mli
+META.gv
 gv.php
 gv.pm
 gv.py

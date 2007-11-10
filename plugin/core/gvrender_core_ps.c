@@ -262,7 +262,6 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 
 static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
-    double adj;
     char *str;
 
     if (job->obj->pencolor.u.HSVA[3] < .5)

@@ -93,11 +93,13 @@ size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 		return 0;
 	    }
 	}
-	strcpy(job->output_data + job->output_data_position, s);
+	strcpy(job->output_data + job->output_data_position, (char*)s);
         job->output_data_position += len;
+	return len;
     }
     else
 	return fwrite(s, sizeof(char), len, job->output_file);
+    return 0;
 }
 
 static void auto_output_filename(GVJ_t *job)
