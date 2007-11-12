@@ -440,7 +440,7 @@ int stress_majorization_cola(
     deleteCMajEnvVPSC(cMajEnvVrt);
 
     if (opt->noverlap == 2) {
-	fprintf(stderr, "Removing overlaps as post-process...\n");
+	/* fprintf(stderr, "Removing overlaps as post-process...\n"); */
 	removeoverlaps(orig_n, coords, opt);
     }
 
