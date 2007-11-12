@@ -722,7 +722,8 @@ static adjust_data *getAdjustMode(char *s)
 
 adjust_data *graphAdjustMode(graph_t *G)
 {
-    return (getAdjustMode (agget(G, "overlap")));
+    char* am = agget(G, "overlap");
+    return (getAdjustMode (am ? am : ""));
 }
 
 /* removeOverlapAs:
