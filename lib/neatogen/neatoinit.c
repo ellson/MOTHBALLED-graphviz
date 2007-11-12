@@ -453,6 +453,15 @@ static int chkBB(Agraph_t * g, attrsym_t * G_bb)
 
     s = agxget(g, G_bb->index);
     if (sscanf(s, BS, &bb.LL.x, &bb.LL.y, &bb.UR.x, &bb.UR.y) == 4) {
+	if (bb.LL.y > bb.UR.y) {
+	/* If the LL.y coordinate is bigger than the UR.y coordinate,
+         * we assume the input was produced using -y, so we normalize
+	 * the bb. 
+	 */
+	    int tmp = bb.LL.y;
+	    bb.LL.y = bb.UR.y;
+	    bb.UR.y = tmp;
+	}
 	GD_bb(g) = bb;
 	return 1;
     } else
