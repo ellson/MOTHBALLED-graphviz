@@ -192,6 +192,7 @@ fi
 %endif
 %if %{MING}
 %exclude %{_libdir}/graphviz/libgvplugin_ming.*
+%exclude %{_libdir}/graphviz/*fdb
 %endif
 
 #-- graphviz-gd rpm --------------------------------------------------
@@ -258,6 +259,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 
 %files ming
 %{_libdir}/graphviz/libgvplugin_ming.so.*
+%{_libdir}/graphviz/*fdb
 %endif
 
 #-- graphviz-sharp rpm --------------------------------------------
