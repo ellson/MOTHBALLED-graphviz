@@ -1,13 +1,14 @@
+void agflatten(Agraph_t * g, int flag);
 typedef Agsubnode_t	Agnoderef_t;
 typedef Dtlink_t	Agedgeref_t;
 
-#define FIRSTNREF(g)	(agflatten(g), (Agnoderef_t*)(dtfirst((g)->n_seq)))
+#define FIRSTNREF(g)	(agflatten(g,1), (Agnoderef_t*)(dtfirst((g)->n_seq)))
 #define NEXTNREF(rep)  	((Agnoderef_t*)((rep)->seq_link.right?(rep)->seq_link.right - offsetof(Agsubnode_t,seq_link):0))
 #define PREVNREF(rep)  	((rep)->seq_link.left)  FIXME
 #define NODEOF(rep)		((rep)->node)
 
-#define FIRSTOUTREF(g,sn)	(agflatten(g), (sn)->out_seq)
-#define FIRSTINREF(g,sn)	(agflatten(g), (sn)->in_seq)
+#define FIRSTOUTREF(g,sn)	(agflatten(g,1), (sn)->out_seq)
+#define FIRSTINREF(g,sn)	(agflatten(g,1), (sn)->in_seq)
 #define NEXTEREF(sn,rep)  	((rep)->right)
 #define PREVEREF(sn,rep)  	((rep)->left)
 /* this is expedient but a bit slimey because it "knows" that dict entries of both nodes
