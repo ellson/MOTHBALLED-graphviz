@@ -1,30 +1,48 @@
 #!/usr/bin/php
 
+<!-- FIXME  - I don't know how to extend php's paths.  Needs:
+   ln -s /usr/lib64/graphviz/php/libgv_php.so /usr/lib64/php/modules/libgv_php.so
+   ln -s /usr/lib64/graphviz/php/php/gv.php /usr/share/php/gv.php
+-->
+
+<?
 dl("libgv_php.so");
-include("gv.php")
+include("gv.php");
 
-$g = Gv::digraph "G";
+$g = digraph("G");
 
-#print gv::setv($g, "aaa", "xxx"), "\n";
-#print gv::getv($g, "aaa"), "\n";
-#$n = gv::node $g, "hello";
-#print gv::getv($n,"label"), "\n";
-#print gv::setv($n, "aaa", "xxx"), "\n";
-#print gv::getv($n, "aaa"), "\n";
-#$m = gv::node $g, "world";
-#print gv::getv($m, "aaa"), "\n";
-#$e = gv::edge $n, $m;
-#print gv::setv($e, "aaa", "xxx"), "\n";
-#print gv::getv($e, "aaa"), "\n";
-#gv::rm $e;
-#gv::rm $n;
-#gv::rm $m;
-#gv::rm $g;
-#
-#$g = gv::readstring "digraph G {a->b}";
-#gv::rm $g;
-#
-#$g = gv::read "hello.dot";
-#gv::layout($g, "dot");
-#gv::render($g, "png", "hello.png");
-#gv::rm $g;
+print setv($g, "aaa", "xxx");
+print "\n";
+print getv($g, "aaa");
+print "\n";
+$n = node($g, "hello");
+print getv($n,"label");
+print "\n";
+print setv($n, "aaa", "xxx");
+print "\n";
+print getv($n, "aaa");
+print "\n";
+$m = node($g, "world");
+print getv($m, "aaa");
+print "\n";
+$e = edge($n, $m);
+print setv($e, "aaa", "xxx");
+print "\n";
+print getv($e, "aaa");
+print "\n";
+rm($e);
+rm($n);
+rm($m);
+rm($g);
+
+$g = readstring("digraph G {a->b}");
+layout($g, "dot");
+render($g, "png", "ab.png");
+rm($g);
+
+$g = read("hello.dot");
+layout($g, "dot");
+render($g, "png", "hello.png");
+rm($g);
+
+?>
