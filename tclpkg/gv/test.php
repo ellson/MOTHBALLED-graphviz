@@ -1,12 +1,9 @@
 #!/usr/bin/php
-
-<!-- FIXME  - I don't know how to extend php's paths.  Needs:
-   ln -s /usr/lib64/graphviz/php/libgv_php.so /usr/lib64/php/modules/libgv_php.so
-   ln -s /usr/lib64/graphviz/php/php/gv.php /usr/share/php/gv.php
--->
-
 <?
-dl("libgv_php.so");
+#FIXME  - I don't know how to extend php's paths.  Needs:
+#   ln -s /usr/lib64/graphviz/php/libgv_php.so /usr/lib64/php/modules/gv.so
+#   ln -s /usr/lib64/graphviz/php/php/gv.php /usr/share/php/gv.php
+
 include("gv.php");
 
 $g = digraph("G");
