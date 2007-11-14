@@ -113,7 +113,7 @@ libgv_php_la_LIBADD = $(BASELIBS) @PHP_LIBS@
 libgv_php_la_LDFLAGS = -module -avoid-version
 $(PHP_data): gv_php.cpp
 gv_php.cpp: gv.i
-	$(SWIG) -c++ -php -o gv_php.cpp $(srcdir)/gv.i
+	$(SWIG) -c++ -php5 -o gv_php.cpp $(srcdir)/gv.i
 
 pkgpythondir = $(pkglibdir)/python
 PYTHON_data = gv.py

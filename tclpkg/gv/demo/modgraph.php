@@ -10,19 +10,19 @@ include("gv.php");
 
 # author: John Ellson <ellson@research.att.com>
 
-$G = digraph("G");
-$N = protonode($G);
-$E = protoedge($G);
+$G = gv::digraph("G");
+$N = gv::protonode($G);
+$E = gv::protoedge($G);
 
-setv($G, "rankdir", "LR");
-setv($G, "nodesep", "0.05");
-setv($N, "shape", "box");
-setv($N, "width", "0");
-setv($N, "height", "0");
-setv($N, "margin", ".03");
-setv($N, "fontsize", "8");
-setv($N, "fontname", "helvetica");
-setv($E, "arrowsize", ".4");
+gv::setv($G, "rankdir", "LR");
+gv::setv($G, "nodesep", "0.05");
+gv::setv($N, "shape", "box");
+gv::setv($N, "width", "0");
+gv::setv($N, "height", "0");
+gv::setv($N, "margin", ".03");
+gv::setv($N, "fontsize", "8");
+gv::setv($N, "fontname", "helvetica");
+gv::setv($E, "arrowsize", ".4");
 
 $f = fopen("/proc/modules", "r");
 while ( ! feof($f)) {
@@ -40,7 +40,7 @@ while ( ! feof($f)) {
 }
 fclose($f);
 
-#layout($G, "dot");
-#render($G, "png");
+#gv::layout($G, "dot");
+#gv::render($G, "png");
 
 ?>
