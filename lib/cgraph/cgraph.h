@@ -109,8 +109,8 @@ string name at its time of creation, or it is permissible to pass NIL(char*)
 for the name. */
 
 struct Agsubnode_s {		/* the node-per-graph-or-subgraph record */
+    Dtlink_t seq_link;		/* must be first */
     Dtlink_t id_link;
-    Dtlink_t seq_link;
     Agnode_t *node;		/* the object */
     Dtlink_t *in_id, *out_id;	/* by node/ID for random access */
     Dtlink_t *in_seq, *out_seq;	/* by node/sequence for serial access */
