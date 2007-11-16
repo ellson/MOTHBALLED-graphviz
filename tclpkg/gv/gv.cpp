@@ -17,47 +17,48 @@
 #include <string.h>
 #include "gvc.h"
 
+extern void gv_binding_init(GVC_t *gvc);
+
 static GVC_t *gvc;
+
+static void gv_init(void) {
+	gvc = gvContext();
+	gv_binding_init(gvc);
+}
 
 Agraph_t *graph(char *name)
 {
-    if (!gvc)
-	gvc = gvContext();
+    if (!gvc) gv_init();
     return agopen(name, AGRAPH);
 }
 
 Agraph_t *digraph(char *name)
 {
-    if (!gvc)
-	gvc = gvContext();
+    if (!gvc) gv_init();
     return agopen(name, AGDIGRAPH);
 }
 
 Agraph_t *strictgraph(char *name)
 {
-    if (!gvc)
-	gvc = gvContext();
+    if (!gvc) gv_init();
     return agopen(name, AGRAPHSTRICT);
 }
 
 Agraph_t *strictdigraph(char *name)
 {
-    if (!gvc)
-	gvc = gvContext();
+    if (!gvc) gv_init();
     return agopen(name, AGDIGRAPHSTRICT);
 }
 
 Agraph_t *readstring(char *string)
 {
-    if (!gvc)
-	gvc = gvContext();
+    if (!gvc) gv_init();
     return agmemread(string);
 }
 
 Agraph_t *read(FILE *f)
 {
-    if (!gvc)
-	gvc = gvContext();
+    if (!gvc) gv_init();
     return agread(f);
 }
 
@@ -67,10 +68,8 @@ Agraph_t *read(char *filename)
     Agraph_t *g;
 
     f = fopen(filename, "r");
-    if (!f)
-	return NULL;
-    if (!gvc)
-	gvc = gvContext();
+    if (!f) return NULL;
+    if (!gvc) gv_init();
     g = agread(f);
     fclose(f);
     return g;
@@ -79,8 +78,7 @@ Agraph_t *read(char *filename)
 //-------------------------------------------------
 Agraph_t *graph(Agraph_t *g, char *name)
 {
-    if (!gvc)
-	return NULL;
+    if (!gvc) gv_init();
     return agsubg(g, name);
 }
 
@@ -788,7 +786,7 @@ Agsym_t *nextattr(Agedge_t *e, Agsym_t *a)
     return g->univ->edgeattr->list[i];
 }
 
-void rm(Agraph_t *g)
+bool rm(Agraph_t *g)
 {
     Agedge_t *e;
 
@@ -802,64 +800,72 @@ void rm(Agraph_t *g)
         } else {
             agdelete(g->meta_node->graph, g->meta_node);
         }
-    } else {
-        fprintf(stderr, "subgraph has no meta_node\n");
+	return true;
     }
+    fprintf(stderr, "subgraph has no meta_node\n");
+    return false;
 }
 
-void rm(Agnode_t *n)
+bool rm(Agnode_t *n)
 {
     // removal of the protonode is not permitted
     if (n->name[0] == '\001' && strcmp (n->name, "\001proto") ==0)
-	return;
+	return false;
     agdelete(n->graph, n);
+    return true;
 }
 
-void rm(Agedge_t *e)
+bool rm(Agedge_t *e)
 {
     // removal of the protoedge is not permitted
     if ((e->head->name[0] == '\001' && strcmp (e->head->name, "\001proto") == 0)
      || (e->tail->name[0] == '\001' && strcmp (e->tail->name, "\001proto") == 0))
-	return;
+	return false;
     agdelete(e->head->graph->root, e);
+    return true;
 }
 
-void layout(Agraph_t *g, char *engine)
+bool layout(Agraph_t *g, char *engine)
 {
     int err;
 
-    err = gvFreeLayout(gvc, g);
+    err = gvFreeLayout(gvc, g);  /* ignore errors */
     err = gvLayout(gvc, g, engine);
+    return (! err);
 }
 
 // annotate the graph with layout information
-void render(Agraph_t *g)
+bool render(Agraph_t *g)
 {
     attach_attrs(g);
+    return true;
 }
 
 // render to a filename
-void render(Agraph_t *g, char *format, char *filename)
+bool render(Agraph_t *g, char *format, char *filename)
 {
     int err;
 
     err = gvRenderFilename(gvc, g, format, filename);
+    return (! err);
 }
 
 // render to stdout
-void render(Agraph_t *g, char *format)
+bool render(Agraph_t *g, char *format)
 {
     int err;
 
     err = gvRender(gvc, g, format, stdout);
+    return (! err);
 }
 
 // render to a FILE
-void render(Agraph_t *g, char *format, FILE *f)
+bool render(Agraph_t *g, char *format, FILE *f)
 {
     int err;
 
     err = gvRender(gvc, g, format, f);
+    return (! err);
 }
 
 // render to a data string
@@ -869,24 +875,26 @@ char* renderdata(Agraph_t *g, char *format)
     char *data;
 
     err = gvRenderData(gvc, g, format, &data);
+    if (err) return NULL;
     return data;
 }
 
-void write(Agraph_t *g, FILE *f)
+bool write(Agraph_t *g, FILE *f)
 {
     int err;
 
     err = agwrite(g, f);
+    return (! err);
 }
 
-void write(Agraph_t *g, char *filename)
+bool write(Agraph_t *g, char *filename)
 {
     FILE *f;
     int err;
 
     f = fopen(filename, "w");
-    if (!f)
-	return;
+    if (!f) return false;
     err = agwrite(g, f);
     fclose(f);
+    return (! err);
 }

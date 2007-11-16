@@ -174,26 +174,26 @@ extern Agsym_t *firstattr(Agnode_t *n);
 extern Agsym_t *nextattr(Agnode_t *n, Agsym_t *a);
 
 /** Remove graph objects */
-extern void rm(Agraph_t *g);
-extern void rm(Agnode_t *n);
-extern void rm(Agedge_t *e);
+extern bool rm(Agraph_t *g);
+extern bool rm(Agnode_t *n);
+extern bool rm(Agedge_t *e);
 
 /** Layout */
 /*** Annotate a graph with layout attributes and values using a specific layout engine */
-extern void layout(Agraph_t *g, char *engine);
+extern bool layout(Agraph_t *g, char *engine);
 
 /** Render */
 /*** Render a layout into attributes of the graph */
-extern void render(Agraph_t *g); 
+extern bool render(Agraph_t *g); 
 
 /*** Render a layout in a specific format */
-extern void render(Agraph_t *g, char *format);
-extern void render(Agraph_t *g, char *format, char *filename);
-extern void render(Agraph_t *g, char *format, FILE *f);
+extern bool render(Agraph_t *g, char *format);
+extern bool render(Agraph_t *g, char *format, char *filename);
+extern bool render(Agraph_t *g, char *format, FILE *f);
 extern char* renderdata(Agraph_t *g, char *format);
 
 /*** Writing graph back to file */
-void write(Agraph_t *g, FILE *f);
-void write(Agraph_t *g, char *filename);
+bool write(Agraph_t *g, FILE *f);
+bool write(Agraph_t *g, char *filename);
 
 %}
