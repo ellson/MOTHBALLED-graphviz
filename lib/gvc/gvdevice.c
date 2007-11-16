@@ -79,6 +79,8 @@ void gvdevice_printf(GVJ_t * job, const char *format, ...)
 
 size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 {
+    if (job->gvc->write_fn)   /* externally provided write dicipline */
+	return (job->gvc->write_fn)(s, len);
     if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
 	return gzwrite((gzFile *) (job->output_file), s, len);

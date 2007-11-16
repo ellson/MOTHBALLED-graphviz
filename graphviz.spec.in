@@ -227,7 +227,7 @@ Requires:         graphviz = %{version}-%{release}
 %description devil
 Graphviz plugin for renderers based on DevIL.  (Unless you absolutely have
 to use BMP, TIF, or TGA, you are recommended to use the PNG format instead
-support directly by the cairo+pango based renderer in the base graphviz rpm.)
+supported directly by the cairo+pango based renderer in the base graphviz rpm.)
 
 # run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
 %post devil

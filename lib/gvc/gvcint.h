@@ -93,6 +93,9 @@ extern "C" {
 	int numkeys;
 	void *keycodes;
 
+        /* externally provided write() displine */
+	size_t (*write_fn) (const char *s, int len);
+
 /* FIXME - everything below should probably move to GVG_t */
 
 	/* gvrender_config() */
