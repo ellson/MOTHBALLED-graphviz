@@ -1846,20 +1846,23 @@ the given types.
   equivalent to <TT>style="setlinewidth(2)"</TT>. 
 
 <DT><A NAME=k:viewPort><STRONG>viewPort</STRONG></A>
-<DD>"%lf,%lf,%lf,%lf,%lf" The viewPort "W,H,Z,x,y" 
+<DD>"%lf,%lf,%lf,%lf,%lf" or  "%lf,%lf,%lf,'%s'"
+  <P>
+  The viewPort <TT>W,H,Z,x,y</TT> or <TT>W,H,Z,N</TT>
   specifies a viewport for the final image. The pair (W,H) gives the
   dimensions (width and height) of the viewport image, in
   <A HREF=#points>points</A>,
   in the original graph drawing.
   The optional Z is the zoom factor, i.e., the resulting image will be
   Z*W by Z*H points in size. By default, Z is 1.
-  The optional pair (x,y) give the position in the graph, in 
-  <A HREF=#points>points</A>, of the center 
-  of the viewport. To focus on a particular node, (x,y) can be set to the 
-  <A HREF=#a:pos>pos</A> attribute "x,y" of the node. 
-  By default, (x,y) is the center of the graph bounding box, i.e.,
+  The optional last part is either a pair (x,y) giving the position in the graph, in 
+  <A HREF=#points>points</A>, of the center of the viewport, or the name N
+  of a node whose center should used as the focus.
+  By default, the focus is the center of the graph bounding box, i.e.,
   (bbx/2,bby/2), where "bbx,bby" is the
   value of the bounding box attribute <A HREF=#a:bb>bb</A>.
+  <P>
+  Sample values: <TT>50,50,.5,'2.8 BSD'</T> or <TT>100,100,2,450,300</TT>
 
 </DL>
 </BODY>
