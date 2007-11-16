@@ -1934,6 +1934,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     char *str;
     double X, Y, Z, x, y;
     int rv;
+    Agnode_t *n;
+    char *nodename = NULL;
 
     assert((gvc->bb.LL.x == 0) && (gvc->bb.LL.y == 0));
     P2PF(gvc->bb.UR, UR);
@@ -1968,14 +1970,27 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     Y = sz.y * Z;
 
     /* user can override */
-    if ((str = agget(g, "viewport")))
-	rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
+    if ((str = agget(g, "viewport"))) {
+        nodename = malloc(strlen(str)+1);
+	rv = sscanf(str, "%lf,%lf,%lf,%[^\"]", &X, &Y, &Z, nodename);
+	if (rv == 4) {
+	    n = agfindnode(g->root, nodename);
+	    if (n) {
+		x = ND_coord_i(n).x;
+		y = ND_coord_i(n).y;
+	    }
+	}
+	else {
+	    rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
+        }
+	free (nodename);
+    }
     /* rv is ignored since args retain previous values if not scanned */
 
- 	/* job->view gives port size in graph units, unscaled or rotated
- 	 * job->zoom gives scaling factor.
- 	 * job->focus gives the position in the graph of the center of the port
-	 */
+    /* job->view gives port size in graph units, unscaled or rotated
+     * job->zoom gives scaling factor.
+     * job->focus gives the position in the graph of the center of the port
+     */
     job->view.x = X;
     job->view.y = Y;
     job->zoom = Z;              /* scaling factor */
