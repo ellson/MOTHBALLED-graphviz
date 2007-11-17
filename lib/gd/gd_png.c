@@ -7,7 +7,6 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <setjmp.h>
 #include "gd.h"
 
 /* JCE: Arrange HAVE_LIBPNG so that it can be set in gd.h */
@@ -15,6 +14,7 @@
 
 #include "gdhelpers.h"
 #include "png.h"		/* includes zlib.h and setjmp.h */
+#include <setjmp.h>  /* or maybe not */
 
 #define TRUE 1
 #define FALSE 0
