@@ -17,6 +17,10 @@ REFDIR=nshare          # Directory for expected test output
 GENERATE=              # If set, generate test data
 VERBOSE=               # If set, give verbose output
 NOOP=                  # If set, just print list of tests
+DOT=dot                # Installed dot with dynamic plugins
+#DOT=../../cmd/dot/dot # build tree version, but has no plugins
+#DOT=../../cmd/dot/dot_static   # build tree version with builtin set of plugins
+		       # should be $(top_builddir)/cmd/dot/dot_static
 
 TESTNAME=   # name of test
 GRAPH=      # graph specification
@@ -222,16 +226,21 @@ function doTest
   do
     genOutname $TESTNAME ${ALG[$i]} ${FMT[$i]}
     OUTPATH=$OUTDIR/$OUTFILE
+    KFLAGS=${ALG[$i]}
+    TFLAGS=${FMT[$i]}
+    test -z "$KFLAGS" || KFLAGS="-K$KFLAGS"
+    test -z "$TFLAGS" || TFLAGS="-T$TFLAGS"
+    testcmd="$DOT $KFLAGS $TFLAGS ${FLAGS[$i]} -o$OUTPATH $INFILE"
     if [[ -n "$VERBOSE" ]]
     then
-      print dot -K${ALG[$i]} -T${FMT[$i]} ${FLAGS[$i]} -o$OUTPATH $INFILE
+      print $testcmd
     fi
     if [[ $NOOP == 1 ]]
     then
       continue
     fi
     
-    dot -K${ALG[$i]} -T${FMT[$i]} ${FLAGS[$i]} -o$OUTPATH $INFILE 2> errout
+    $testcmd 2> errout
     RVAL=$?
 
     if [[ $RVAL != 0 || ! -s $OUTPATH ]]
