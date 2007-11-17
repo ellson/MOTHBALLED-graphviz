@@ -279,7 +279,7 @@ dnl Checks for header files
 # AC_HAVE_HEADERS(string.h)
 AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
 	search.h getopt.h pthread.h values.h float.h limits.h termios.h \
-	errno.h time.h unistd.h fenv.h strings.h inttypes.h \
+	errno.h time.h unistd.h fenv.h strings.h inttypes.h setjmp.h \
 	sys/time.h sys/times.h sys/types.h sys/select.h fpu_control.h \
 	sys/fpu.h strings.h sys/socket.h sys/stat.h sys/mman.h \
 	sys/ioctl.h sys/inotify.h)
