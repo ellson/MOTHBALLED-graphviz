@@ -2,7 +2,6 @@
 #
 # Graphviz regression test driver
 #
-# Assumes the programs dot and diffimg are in PATH.
 # Also relies on strps.awk.
 #
 # TODO:
@@ -17,10 +16,9 @@ REFDIR=nshare          # Directory for expected test output
 GENERATE=              # If set, generate test data
 VERBOSE=               # If set, give verbose output
 NOOP=                  # If set, just print list of tests
-DOT=dot                # Installed dot with dynamic plugins
-#DOT=../../cmd/dot/dot # build tree version, but has no plugins
-#DOT=../../cmd/dot/dot_static   # build tree version with builtin set of plugins
+DOT=../cmd/dot/dot_builtins # build tree version with a builtin set of plugins
 		       # should be $(top_builddir)/cmd/dot/dot_static
+DIFFIMG=../contrib/diffimg/diffimg # build tree version
 
 TESTNAME=   # name of test
 GRAPH=      # graph specification
@@ -147,7 +145,7 @@ function doDiff
       diff -q $TMPFILE2 $TMPFILE1 > /dev/null 
       ;;
     png )
-      diffimg $FILE2 $FILE1 > /dev/null 
+      $DIFFIMG $FILE2 $FILE1 > /dev/null 
       ;;
     * )
       diff -q $FILE2 $FILE1 > /dev/null 
@@ -320,11 +318,18 @@ then
   mkdir $OUTDIR
 fi
 
-if ! whence diffimg > /dev/null
+if [[ ! -x $DOT ]]
 then
-  print -u 2 "diffimg program is not in your PATH"
+  print -u 2 "$DOT program is not executable"
   exit 1
 fi
+
+if [[ ! -x $DIFFIMG ]]
+then
+  print -u 2 "$DIFFIMG program is not executable"
+  exit 1
+fi
+
 
 exec 3< $TESTFILE
 while readTest
