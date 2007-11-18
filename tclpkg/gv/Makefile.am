@@ -166,105 +166,105 @@ pkginclude_DATA = gv.i gv.cpp
 pkglib_LTLIBRARIES = 
 man_MANS =
 #pdf_DATA = 
-TESTS =
+DEVTSTS =
 if WITH_SWIG
 if WITH_SHARP
 pkgsharp_DATA = $(SHARP_data)
 man_MANS += gv_sharp.n
 #pdf_DATA += gv_sharp.pdf
 pkgsharp_LTLIBRARIES = libgv_sharp.la
-TESTS += test_sharp
+DEVTSTS += test_sharp
 endif
 if WITH_GUILE
 pkgguile_DATA = $(GUILE_data)
 man_MANS += gv_guile.n
 #pdf_DATA += gv_guile.pdf
 pkgguile_LTLIBRARIES = libgv_guile.la
-TESTS += test_guile
+DEVTSTS += test_guile
 endif
 if WITH_IO
 pkgio_DATA = $(IO_data)
 man_MANS += gv_io.n
 #pdf_DATA += gv_io.pdf
 pkgio_LTLIBRARIES = libgv_io.la
-TESTS += test_io
+DEVTSTS += test_io
 endif
 if WITH_JAVA
 pkgjava_DATA = $(JAVA_data)
 man_MANS += gv_java.n
 #pdf_DATA += gv_java.pdf
 pkgjava_LTLIBRARIES = libgv_java.la
-TESTS += test_java
+DEVTSTS += test_java
 endif
 if WITH_LUA
 pkglua_DATA = $(LUA_data)
 man_MANS += gv_lua.n
 #pdf_DATA += gv_lua.pdf
 pkglua_LTLIBRARIES = libgv_lua.la
-TESTS += test_lua
+DEVTSTS += test_lua
 endif
 if WITH_OCAML
 pkgocaml_DATA = $(OCAML_data)
 man_MANS += gv_ocaml.n
 #pdf_DATA += gv_ocaml.pdf
 pkgocaml_LTLIBRARIES = libgv_ocaml.la
-TESTS += test_ocaml
+DEVTSTS += test_ocaml
 endif
 if WITH_PERL
 pkgperl_DATA = $(PERL_data)
 man_MANS += gv_perl.n
 #pdf_DATA += gv_perl.pdf
 pkgperl_LTLIBRARIES = libgv_perl.la
-TESTS += test_perl
+DEVTSTS += test_perl
 endif
 if WITH_PHP
 pkgphp_DATA = $(PHP_data)
 man_MANS += gv_php.n
 #pdf_DATA += gv_php.pdf
 pkgphp_LTLIBRARIES = libgv_php.la
-TESTS += test_php
+DEVTSTS += test_php
 endif
 if WITH_PYTHON
 pkgpython_DATA = $(PYTHON_data)
 man_MANS += gv_python.n
 #pdf_DATA += gv_python.pdf
 pkgpython_LTLIBRARIES = libgv_python.la
-TESTS += test_python
+DEVTSTS += test_python
 endif
 if WITH_PYTHON23
 pkgpython23_DATA = $(PYTHON23_data)
 man_MANS += gv_python.n
 #pdf_DATA += gv_python.pdf
 pkgpython23_LTLIBRARIES = libgv_python23.la
-#TESTS += test_python23
+#DEVTSTS += test_python23
 endif
 if WITH_PYTHON24
 pkgpython24_DATA = $(PYTHON24_data)
 man_MANS += gv_python.n
 #pdf_DATA += gv_python.pdf
 pkgpython24_LTLIBRARIES = libgv_python24.la
-#TESTS += test_python24
+#DEVTSTS += test_python24
 endif
 if WITH_PYTHON25
 pkgpython25_DATA = $(PYTHON25_data)
 man_MANS += gv_python.n
 #pdf_DATA += gv_python.pdf
 pkgpython25_LTLIBRARIES = libgv_python25.la
-#TESTS += test_python25
+#DEVTSTS += test_python25
 endif
 if WITH_RUBY
 pkgruby_DATA = $(RUBY_data)
 man_MANS += gv_ruby.n
 #pdf_DATA += gv_ruby.pdf
 pkgruby_LTLIBRARIES = libgv_ruby.la
-TESTS += test_ruby
+DEVTSTS += test_ruby
 endif
 if WITH_TCL
 pkgtcl_DATA = $(TCL_data)
 man_MANS += gv_tcl.n
 #pdf_DATA += gv_tcl.pdf
 pkgtcl_LTLIBRARIES = libgv_tcl.la
-TESTS += test_tcl
+DEVTSTS += test_tcl
 
 all-local: pkgIndex.tcl
 
@@ -305,7 +305,7 @@ uninstall-hook:
 	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;)
 	(cd $(DESTDIR)$(pkgtcldir);    rm -f gv.so;)
 
-test: $(TESTS)
+devtsts: $(DEVTSTS)
 
 .PHONY: test_sharp
 test_sharp: libgv_sharp.la
