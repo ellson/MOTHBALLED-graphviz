@@ -82,11 +82,10 @@ BuildRequires: xorg-x11-devel
 %if "%rhel" >= "4"
 # PERL is available earlier, but a suitable SWIG isn't
 %define PERL   1
-%define PHP    1
 %define RUBY   1
 %define GUILE  1
 %define PYTHON 1
-BuildRequires: perl php-devel ruby ruby-devel guile-devel python-devel
+BuildRequires: perl ruby-devel guile-devel python-devel
 %endif
 %if "%rhel" >= "5"
 %define JAVA   1
@@ -95,9 +94,10 @@ BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-d
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel libgnomeui-devel
 %endif
 %if "%rhel" >= "6"
+%define PHP    1
 %define MYLIBGD --without-mylibgd
 %define GDK_PIXBUF --with-gdk-pixbuf
-BuildRequires: gd gd-devel perl-devel
+BuildRequires: gd gd-devel perl-devel php-devel
 %endif
 %endif
 
@@ -119,15 +119,15 @@ BuildRequires: xorg-x11-devel
 %define IPSEPCOLA --with-ipsepcola
 %endif
 %if "%fedora" >= "4"
-%define PHP    1
 %define RUBY   1
 %define GUILE  1
 %define PYTHON 1
-BuildRequires: libtool-ltdl libtool-ltdl-devel php-devel ruby ruby-devel guile-devel python-devel
+BuildRequires: libtool-ltdl libtool-ltdl-devel ruby ruby-devel guile-devel python-devel
 %endif
 %if "%fedora" >= "5"
+%define PHP    1
 %define JAVA   1
-BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel
+BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel php-devel
 %ifnarch ppc64
 %define SHARP  1
 %define OCAML  1

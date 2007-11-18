@@ -782,7 +782,7 @@ AC_ARG_ENABLE(php,
 if test "x$enable_php" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-php5[[ ]]*- Generate'` = 0; then
 	PHP=
-	AC_MSG_WARN([swig does not support php. The PHP packages will not be built])
+	AC_MSG_WARN([swig does not support php5. The PHP packages will not be built])
 else
 AC_CHECK_PROG(PHP,php,php)
 if test -d /usr/include/php5; then
