@@ -28,19 +28,18 @@ $f = fopen("/proc/modules", "r");
 while ( ! feof($f)) {
 	$rec = fgets($f);
 
-#    for mod, usedbylist in string.gfind(rec, "([_%w]+) %w+ %w+ ([-,_%w]+)") do
-#       n = gv.node(G, mod)
-#       for usedby in string.gfind(usedbylist, "([-_%w]+)") do
-#          if (usedby ~= '-') and (usedby ~= '') then
-#             gv.edge(n, gv.node(G, usedby))
-#          end
-#       end
-#    end
-#
+	$matches = preg_split("/[\s]+/", $rec, -1, PREG_SPLIT_NO_EMPTY);
+	$n = gv::node($G,$matches[0]);
+	$usedbylist = preg_split("/[,]/", $matches[3], -1, PREG_SPLIT_NO_EMPTY);
+	foreach ($usedbylist as $i => $usedby) {
+		if ($usedby != "-") {
+			gv::edge($n, gv::node($G, $usedby));
+		}
+	}
 }
 fclose($f);
 
-#gv::layout($G, "dot");
-#gv::render($G, "png");
+gv::layout($G, "dot");
+gv::render($G, "png");
 
 ?>
