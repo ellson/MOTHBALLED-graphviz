@@ -69,7 +69,10 @@ gv_lua.cpp: gv.i
 	$(SWIG) -c++ -lua -o gv_lua.cpp $(srcdir)/gv.i
 
 pkgocamldir = $(pkglibdir)/ocaml
-OCAML_data = gv.cma gv.cmi gv.cma gv.cmi gv.a gv.cmx gv.cmxa gv.mli META.gv
+OCAML_data = gv.cmo gv.cma gv.cmi gv.mli META.gv
+if WITH_OCAMLOPT
+OCAML_data += gv.a gv.cmx gv.cmxa
+endif
 nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_data)
 libgv_ocaml_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@

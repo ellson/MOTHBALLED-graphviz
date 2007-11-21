@@ -721,6 +721,7 @@ if test `$SWIG -help 2>&1 | $GREP -c '\-ocaml *- Generate'` = 0; then
 	AC_MSG_WARN([swig does not support ocaml. The OCAML packages will not be built])
 else
 AC_CHECK_PROG(OCAML,ocaml,ocaml)
+AC_CHECK_PROG(OCAML_OPT,ocamlopt,ocamlopt)
 OCAML_INCLUDES=-I/usr/lib$LIBPOSTFIX/ocaml
 OCAML_LIBS=-L/usr/lib$LIBPOSTFIX/ocaml
 save_CPPFLAGS=$CPPFLAGS
@@ -736,6 +737,7 @@ fi
 fi
 fi
 AM_CONDITIONAL(WITH_OCAML, [test "x$OCAML" != "x"])
+AM_CONDITIONAL(WITH_OCAMLOPT, [test "x$OCAML_OPT" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PERL
