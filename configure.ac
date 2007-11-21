@@ -1587,7 +1587,9 @@ AC_ARG_WITH(freetype2,
   [], [with_freetype2=yes])
 
 if test "x$with_freetype2" = "xyes"; then
-PKG_CHECK_MODULES(FREETYPE2, [freetype2], [HAVE_FREETYPE2=1])
+PKG_CHECK_MODULES(FREETYPE2, [freetype2],
+	  [HAVE_FREETYPE2=1],
+	  [AC_MSG_WARN(pkg-config did not find a freetype2.pc.  Looking for freetype-config.)])
 
 # pkgconfig for freetype2 did not exist in redhat[78]
 if test "x$HAVE_FREETYPE2" != "x1"; then
@@ -1626,7 +1628,9 @@ AC_ARG_WITH(fontconfig,
   [], [with_fontconfig=yes])
 
 if test "x$with_fontconfig" = "xyes"; then
-PKG_CHECK_MODULES(FONTCONFIG, [fontconfig], [HAVE_FONTCONFIG=1])
+PKG_CHECK_MODULES(FONTCONFIG, [fontconfig],
+	  [HAVE_FONTCONFIG=1],
+	  [AC_MSG_WARN(pkg-config did not find a fontconfig.pc.  Looking for fontconfig-config.)])
 
 # just in case pkgconfig for fontconfig does not exist
 if test "x$HAVE_FONTCONFIG" != "x1"; then
