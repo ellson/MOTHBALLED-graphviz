@@ -1587,11 +1587,32 @@ AC_ARG_WITH(freetype2,
   [], [with_freetype2=yes])
 
 if test "x$with_freetype2" = "xyes"; then
-PKG_CHECK_MODULES(FREETYPE2, [freetype2],
-	[HAVE_FREETYPE2=1
-	AC_DEFINE_UNQUOTED(HAVE_FREETYPE2,1,
-		[Define if you have the freetype2 library])],
-	[AC_MSG_WARN(freetype2 library not available)])
+PKG_CHECK_MODULES(FREETYPE2, [freetype2], [HAVE_FREETYPE2=1])
+
+# pkgconfig for freetype2 did not exist in redhat[78]
+if test "x$HAVE_FREETYPE2" != "x1"; then
+    if test "x$FREETYPE_DIR" = "xyes"; then
+	AC_PATH_PROG(FREETYPE_CONFIG,freetype-config)
+    else
+	AC_PATH_PROG(FREETYPE_CONFIG,freetype-config,,[$FREETYPE_DIR/bin:$PATH])
+    fi
+
+    if test -n "$FREETYPE_CONFIG"; then
+        if test "x$FREETYPE_DIR" != "xyes"; then
+	    FREETYPE2_CFLAGS="`$FREETYPE_CONFIG --cflags` -I$FREETYPE_DIR/include"
+	else
+	    FREETYPE2_CFLAGS=`$FREETYPE_CONFIG --cflags`
+	fi
+	FREETYPE2_LIBS=`$FREETYPE_CONFIG --libs`
+	HAVE_FREETYPE2=1
+    fi
+fi
+
+if test "x$HAVE_FREETYPE2" != "x"; then
+	AC_DEFINE_UNQUOTED(HAVE_FREETYPE2,1,[Define if you have the freetype2 library])
+else
+	AC_MSG_WARN(freetype2 library not available)
+fi
 fi
 AC_SUBST(FREETYPE2_CFLAGS)
 AC_SUBST(FREETYPE2_LIBS)
@@ -1605,11 +1626,32 @@ AC_ARG_WITH(fontconfig,
   [], [with_fontconfig=yes])
 
 if test "x$with_fontconfig" = "xyes"; then
-PKG_CHECK_MODULES(FONTCONFIG, [fontconfig],
-	[HAVE_FONTCONFIG=1
-	AC_DEFINE_UNQUOTED(HAVE_FONTCONFIG,1,
-		[Define if you have the fontconfig library])],
-	[AC_MSG_WARN(fontconfig library not available)])
+PKG_CHECK_MODULES(FONTCONFIG, [fontconfig], [HAVE_FONTCONFIG=1])
+
+# just in case pkgconfig for fontconfig does not exist
+if test "x$HAVE_FONTCONFIG" != "x1"; then
+    if test "x$FONTCONFIG_DIR" = "xyes"; then
+	AC_PATH_PROG(FONTCONFIG_CONFIG,fontconfig-config)
+    else
+	AC_PATH_PROG(FONTCONFIG_CONFIG,fontconfig-config,,[$FONTCONFIG_DIR/bin:$PATH])
+    fi
+
+    if test -n "$FONTCONFIG_CONFIG"; then
+        if test "x$FONTCONFIG_DIR" != "xyes"; then
+	    FONTCONFIG_CFLAGS="`$FONTCONFIG_CONFIG --cflags` -I$FONTCONFIG_DIR/include"
+	else
+	    FONTCONFIG_CFLAGS=`$FONTCONFIG_CONFIG --cflags`
+	fi
+	FONTCONFIG_LIBS=`$FONTCONFIG_CONFIG --libs`
+	HAVE_FONTCONFIG=1
+    fi
+fi
+
+if test "x$HAVE_FONTCONFIG" != "x"; then
+	AC_DEFINE_UNQUOTED(HAVE_FONTCONFIG,1,[Define if you have the fontconfig library])
+else
+	AC_MSG_WARN(fontconfig library not available)
+fi
 fi
 AC_SUBST(FONTCONFIG_CFLAGS)
 AC_SUBST(FONTCONFIG_LIBS)
