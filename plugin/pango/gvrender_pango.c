@@ -408,6 +408,14 @@ static gvdevice_features_t device_features_ps = {
     {72.,72.},			/* postscript 72 dpi */
 };
 
+static gvdevice_features_t device_features_pdf = {
+    GVDEVICE_BINARY_FORMAT
+      | GVDEVICE_DOES_TRUECOLOR,/* flags */
+    {36.,36.},			/* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {72.,72.},			/* postscript 72 dpi */
+};
+
 static gvdevice_features_t device_features_svg = {
     GVDEVICE_DOES_TRUECOLOR,    /* flags */
     {0.,0.},			/* default margin - points */
@@ -432,7 +440,7 @@ gvplugin_installed_t gvdevice_pango_types[] = {
     {FORMAT_PS, "ps:cairo", -10, NULL, &device_features_ps},
 #endif
 #ifdef CAIRO_HAS_PDF_SURFACE
-    {FORMAT_PDF, "pdf:cairo", 10, NULL, &device_features_ps},
+    {FORMAT_PDF, "pdf:cairo", 10, NULL, &device_features_pdf},
 #endif
 #ifdef CAIRO_HAS_SVG_SURFACE
     {FORMAT_SVG, "svg:cairo", -10, NULL, &device_features_svg},
