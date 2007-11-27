@@ -31,6 +31,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "macros.h"
 #include "const.h"
@@ -110,6 +111,18 @@ static void svg_comment(GVJ_t * job, char *str)
     gvdevice_fputs(job, " -->\n");
 }
 
+/* isAscii:
+ * Return true if all characters in the string are ascii.
+ */
+static int isAscii (char* s)
+{
+    int c;
+    while ((c = *s++) != '\0') {
+	if (!isascii (c)) return 0;
+    }
+    return 1;
+}
+
 static void svg_begin_job(GVJ_t * job)
 {
     char *s;
@@ -131,8 +144,17 @@ static void svg_begin_job(GVJ_t * job)
     gvdevice_fputs(job, xml_string(job->common->info[1]));
     gvdevice_fputs(job, " (");
     gvdevice_fputs(job, xml_string(job->common->info[2]));
-    gvdevice_fputs(job, ")\n     For user: ");
-    gvdevice_fputs(job, xml_string(job->common->user));
+    /* We have absolutely no idea what character set the username
+     * may be in. To be conservative, we only output the username
+     * if it is all ascii. Since SVG output is UTF-8, we could check
+     * if the string appears to be in this format and allow it.
+     */
+    if (isAscii (job->common->user)) {
+	gvdevice_fputs(job, ")\n     For user: ");
+	gvdevice_fputs(job, xml_string(job->common->user));
+    }
+    else
+	gvdevice_fputs(job, ")\n");
     gvdevice_fputs(job, " -->\n");
 }
 
