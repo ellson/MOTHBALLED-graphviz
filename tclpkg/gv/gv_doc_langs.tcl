@@ -324,6 +324,26 @@ array set LANGS {
 		USAGE {
 		}
 	}
+	r {
+		TYPES {
+			Agraph_t* SWIGTYPE_p_Agraph_t
+			Agnode_t* SWIGTYPE_p_Agnode_t
+			Agedge_t* SWIGTYPE_p_Agedge_t
+			Agsym_t* SWIGTYPE_p_Agsym_t
+			char* string
+			FILE* SWIGTYPE_p_FILE
+			bool bool
+			void {}
+		}
+		SYNTAX {
+			gv.  (  {, }   {);}
+		}
+		SYNOPSIS {
+			{System.loadLibrary("gv");}
+		}
+		USAGE {
+		}
+	}
 	ruby {
 		TYPES {
 			{Agraph_t* g} graph_handle

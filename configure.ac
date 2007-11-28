@@ -463,7 +463,7 @@ AC_ARG_ENABLE(sharp,
 if test "x$enable_sharp" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-csharp *- Generate'` = 0; then
 	SHARP=
-	AC_MSG_WARN([swig does not support csharp. The SHARP packages will not be built])
+	AC_MSG_WARN([swig does not support -csharp. The SHARP packages will not be built])
 else
 AC_CHECK_PROG(SHARP,mcs,mcs)
 SHARP_INCLUDES=
@@ -485,7 +485,7 @@ AC_ARG_ENABLE(guile,
 if test "x$enable_guile" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-guile *- Generate'` = 0; then
 	GUILE=
-	AC_MSG_WARN([swig does not support guile. The GUILE packages will not be built])
+	AC_MSG_WARN([swig does not support -guile. The GUILE packages will not be built])
 else
 AC_CHECK_PROG(GUILE,guile,guile)
 if test "x$GUILE" != "x"; then
@@ -529,7 +529,7 @@ AC_ARG_ENABLE(io,
 if test "x$enable_io" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-io *- Generate'` = 0; then
 	IO=
-	AC_MSG_WARN([swig does not support io. The IO packages will not be built])
+	AC_MSG_WARN([swig does not support -io. The IO packages will not be built])
 else
 AC_CHECK_PROG(IO,io,io)
 IO_INCLUDES=
@@ -551,7 +551,7 @@ AC_ARG_ENABLE(java,
 if test "x$enable_java" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-java *- Generate'` = 0; then
 	JAVA=
-	AC_MSG_WARN([swig does not support java. The JAVA packages will not be built])
+	AC_MSG_WARN([swig does not support -java. The JAVA packages will not be built])
 else
 AC_CHECK_PROG(JAVA,java,java)
 JAVA_INCLUDES=
@@ -577,7 +577,7 @@ AC_ARG_ENABLE(lua,
 if test "x$enable_lua" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-lua *- Generate'` = 0; then
 	LUA=
-	AC_MSG_WARN([swig does not support lua. The LUA packages will not be built])
+	AC_MSG_WARN([swig does not support -lua. The LUA packages will not be built])
 	enable_lua=no
 fi
 fi
@@ -718,7 +718,7 @@ AC_ARG_ENABLE(ocaml,
 if test "x$enable_ocaml" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-ocaml *- Generate'` = 0; then
 	OCAML=
-	AC_MSG_WARN([swig does not support ocaml. The OCAML packages will not be built])
+	AC_MSG_WARN([swig does not support -ocaml. The OCAML packages will not be built])
 else
 AC_CHECK_PROG(OCAML,ocaml,ocaml)
 AC_CHECK_PROG(OCAML_OPT,ocamlopt,ocamlopt)
@@ -754,7 +754,7 @@ if test -n "$PERL" && $PERL -e 'exit !($] <= 5.004)' > /dev/null 2>&1 ; then
 fi
 if test `$SWIG -help 2>&1 | $GREP -c '\-perl *- Generate'` = 0; then
 	PERL=
-	AC_MSG_WARN([swig does not support perl. The PERL packages will not be built])
+	AC_MSG_WARN([swig does not support -perl. The PERL packages will not be built])
 fi
 if test "x$PERL" != "x"; then
   PERL_ARCHLIB=`$PERL -e 'use Config; print $Config{archlib};'`
@@ -784,7 +784,7 @@ AC_ARG_ENABLE(php,
 if test "x$enable_php" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-php5[[ ]]*- Generate'` = 0; then
 	PHP=
-	AC_MSG_WARN([swig does not support php5. The PHP packages will not be built])
+	AC_MSG_WARN([swig does not support -php5. The PHP packages will not be built])
 else
 AC_CHECK_PROG(PHP,php,php)
 if test -d /usr/include/php5; then
@@ -817,7 +817,7 @@ AC_ARG_ENABLE(python,
 if test "x$enable_python" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
 	PYTHON=
-	AC_MSG_WARN([swig does not support python. The PYTHON packages will not be built])
+	AC_MSG_WARN([swig does not support -python. The PYTHON packages will not be built])
 else
 AC_CHECK_PROG(PYTHON,python,python)
 if test "x$PYTHON" != "x"; then
@@ -870,7 +870,7 @@ AC_ARG_ENABLE(python23,
 if test "x$enable_python23" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
 	PYTHON23=
-	AC_MSG_WARN([swig does not support python23. The PYTHON23 packages will not be built])
+	AC_MSG_WARN([swig does not support -python. The PYTHON23 packages will not be built])
 else
 AC_CHECK_PROG(PYTHON23,python2.3,python2.3)
 if test "x$PYTHON23" != "x"; then
@@ -923,7 +923,7 @@ AC_ARG_ENABLE(python24,
 if test "x$enable_python24" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
 	PYTHON24=
-	AC_MSG_WARN([swig does not support python24. The PYTHON24 packages will not be built])
+	AC_MSG_WARN([swig does not support -python. The PYTHON24 packages will not be built])
 else
 AC_CHECK_PROG(PYTHON24,python2.4,python2.4)
 if test "x$PYTHON24" != "x"; then
@@ -976,7 +976,7 @@ AC_ARG_ENABLE(python25,
 if test "x$enable_python25" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
 	PYTHON25=
-	AC_MSG_WARN([swig does not support python25. The PYTHON25 packages will not be built])
+	AC_MSG_WARN([swig does not support -python. The PYTHON25 packages will not be built])
 else
 AC_CHECK_PROG(PYTHON25,python2.5,python2.5)
 if test "x$PYTHON25" != "x"; then
@@ -1020,6 +1020,29 @@ fi
 AM_CONDITIONAL(WITH_PYTHON25, [test "x$PYTHON25" != "x"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for R (disabled for now - swig generated gv_r.cpp doesn't compile)
+
+if test "x$SWIG" != "x"; then
+AC_ARG_ENABLE(r,
+  [AC_HELP_STRING([--enable-r=no], [R language bindings])],
+  [], [enable_r=no])
+if test "x$enable_r" = "xyes"; then
+if test `$SWIG -help 2>&1 | $GREP -c '\-r *- Generate'` = 0; then
+	AC_MSG_WARN([swig does not support -r. The R packages will not be built])
+else
+PKG_CHECK_MODULES(R, [libR],
+        [R=1],
+        [AC_MSG_WARN(R library not available.)])
+
+
+fi
+fi
+fi
+AC_SUBST(R_CFLAGS)
+AC_SUBST(R_LIBS)
+AM_CONDITIONAL(WITH_R, [test "x$R" != "x"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for RUBY
 
 if test "x$SWIG" != "x"; then
@@ -1029,7 +1052,7 @@ AC_ARG_ENABLE(ruby,
 if test "x$enable_ruby" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-ruby *- Generate'` = 0; then
 	RUBY=
-	AC_MSG_WARN([swig does not support ruby. The RUBY packages will not be built])
+	AC_MSG_WARN([swig does not support -ruby. The RUBY packages will not be built])
 else
 AC_CHECK_PROG(RUBY,ruby,ruby)
 if test "x$RUBY" != "x"; then

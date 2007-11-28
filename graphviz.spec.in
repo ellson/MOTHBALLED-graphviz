@@ -38,6 +38,7 @@ Prefix: /usr
 %define PHP    0
 %define PYTHON 0
 %define RUBY   0
+%define R_LANG 0
 %define TCL    1
 %define IPSEPCOLA --without-ipsepcola
 %define MYLIBGD --with-mylibgd
@@ -144,6 +145,10 @@ BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel 
 %define MYLIBGD --without-mylibgd
 %define GDK_PIXBUF --with-gdk-pixbuf
 BuildRequires: gd gd-devel perl-devel DevIL-devel
+%endif
+%if "%fedora" >= "8"
+#define R_LANG 1
+#BuildRequires: R
 %endif
 %if "%fedora" >= "9"
 %define MING 1
@@ -415,6 +420,23 @@ Python extension for graphviz.
 %{_mandir}/mann/gv_python.n*
 %endif
 
+#-- graphviz-r rpm ---------------------------------------------
+%if %{R_LANG}
+%package r
+Group:          Applications/Multimedia
+Summary:        R extension for graphviz
+Requires:       graphviz = %{version}-%{release} r
+
+%description r
+R extension for graphviz.
+
+%files r
+%defattr(-,root,root,-)
+%dir %{_libdir}/graphviz/r
+%{_libdir}/graphviz/r/*
+%{_mandir}/mann/gv_r.n*
+%endif
+
 #-- graphviz-ruby rpm ---------------------------------------------
 %if %{RUBY}
 %package ruby
@@ -533,6 +555,9 @@ Provides some additional PDF and HTML documentation for graphviz.
 %if ! %{PYTHON}
 %define NO_PYTHON --disable-python
 %endif
+%if ! %{R_LANG}
+%define NO_R_LANG --disable-r
+%endif
 %if ! %{RUBY}
 %define NO_RUBY --disable-ruby
 %endif
@@ -562,7 +587,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
 	--disable-static \
         --disable-dependency-tracking \
 	%{MYLIBGD} %{IPSEPCOLA} %{PANGOCAIRO} %{GDK_PIXBUF} \
-        %{?NO_SHARP} %{?NO_GUILE} %{?NO_IO} %{?NO_JAVA} %{?NO_LUA} %{?NO_OCAML} %{?NO_PERL} %{?NO_PHP} %{?NO_PYTHON} %{?NO_RUBY} %{?NO_TCL} %{?NO_DEVIL} %{?NO_MING}
+        %{?NO_SHARP} %{?NO_GUILE} %{?NO_IO} %{?NO_JAVA} %{?NO_LUA} %{?NO_OCAML} %{?NO_PERL} %{?NO_PHP} %{?NO_PYTHON} %{?NO_R_LANG} %{?NO_RUBY} %{?NO_TCL} %{?NO_DEVIL} %{?NO_MING}
 make %{?_smp_mflags}
 
 %install
