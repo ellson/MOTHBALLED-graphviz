@@ -1022,6 +1022,7 @@ AM_CONDITIONAL(WITH_PYTHON25, [test "x$PYTHON25" != "x"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for R (disabled for now - swig generated gv_r.cpp doesn't compile)
 
+R=
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(r,
   [AC_HELP_STRING([--enable-r=no], [R language bindings])],
