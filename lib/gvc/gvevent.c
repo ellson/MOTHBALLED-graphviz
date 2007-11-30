@@ -284,7 +284,23 @@ static void gvevent_enter_obj(GVJ_t * job)
     }
 }
 
-/* CLOSEENOUGH is in window units - probably should be a feature... */
+static pointf pointer2graph (GVJ_t *job, pointf pointer)
+{
+    pointf p;
+
+    /* transform position in device units to position in graph units */
+    if (job->rotation) {
+        p.x = pointer.y / (job->zoom * job->devscale.y) - job->translation.x;
+        p.y = -pointer.x / (job->zoom * job->devscale.x) - job->translation.y;
+    }
+    else {
+        p.x = pointer.x / (job->zoom * job->devscale.x) - job->translation.x;
+        p.y = pointer.y / (job->zoom * job->devscale.y) - job->translation.y;
+    }
+    return p;
+}
+
+/* CLOSEENOUGH is in 1/72 - probably should be a feature... */
 #define CLOSEENOUGH 1
 
 static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
@@ -292,32 +308,12 @@ static void gvevent_find_current_obj(GVJ_t * job, pointf pointer)
     void *obj;
     boxf b;
     double closeenough;
-    pointf p, translation, scale;
+    pointf p;
 
-    translation = job->translation;
-    scale.x = job->zoom * job->devscale.x;
-    scale.y = job->zoom * job->devscale.y;
-
-    /* transform position in device units to poition in graph units */
-    if (job->rotation) {
-	p.x = pointer.y / scale.y - translation.x; 
-	p.y = -pointer.x / scale.x - translation.y; 
-    }
-    else {
-	p.x = pointer.x / scale.x - translation.x; 
-	p.y = pointer.y / scale.y - translation.y; 
-    }
-
-#if 0
-fprintf(stderr,"pointer = %g,%g scale = %g,%g translation = %g,%g, graphpoint = %g,%g\n",
-	pointer.x, pointer.y,
-	scale.x, scale.y,
-	translation.x, translation.y,
-	p.x, p.y);
-#endif
+    p =  pointer2graph (job, pointer);
 
     /* convert window point to graph coordinates */
-    closeenough = CLOSEENOUGH / scale.x;
+    closeenough = CLOSEENOUGH / job->zoom;
 
     b.UR.x = p.x + closeenough;
     b.UR.y = p.y + closeenough;
@@ -410,40 +406,41 @@ static void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
 	job->needs_refresh = 1;
 	break;
     case 4:
-	/* scrollwheel zoom in at current mouse x,y */
-	job->fit_mode = 0;
-	if (job->rotation) {
-	    job->focus.x -= (pointer.y - job->height / 2.)
-		    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
-	    job->focus.y += (pointer.x - job->width / 2.)
-		    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
-	}
-	else {
-	    job->focus.x += (pointer.x - job->width / 2.)
-		    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
-	    job->focus.y += (pointer.y - job->height / 2.)
-		    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
-	}
-	job->zoom *= ZOOMFACTOR;
-	job->needs_refresh = 1;
-	break;
+        /* scrollwheel zoom in at current mouse x,y */
+/* FIXME - should code window 0,0 point as feature with Y_GOES_DOWN */
+        job->fit_mode = 0;
+        if (job->rotation) {
+            job->focus.x -= (pointer.y - job->height)
+                    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
+            job->focus.y += (pointer.x)
+                    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
+        }
+        else {
+            job->focus.x += (pointer.x)
+                    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
+            job->focus.y += (pointer.y - job->height)
+                    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
+        }
+        job->zoom *= ZOOMFACTOR;
+        job->needs_refresh = 1;
+        break;
     case 5: /* scrollwheel zoom out at current mouse x,y */
-	job->fit_mode = 0;
-	job->zoom /= ZOOMFACTOR;
-	if (job->rotation) {
-	    job->focus.x += (pointer.y - job->height / 2.)
-		    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
-	    job->focus.y -= (pointer.x - job->width / 2.)
-		    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
-	}
-	else {
-	    job->focus.x -= (pointer.x - job->width / 2.)
-		    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
-	    job->focus.y -= (pointer.y - job->height / 2.)
-		    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
-	}
-	job->needs_refresh = 1;
-	break;
+        job->fit_mode = 0;
+        job->zoom /= ZOOMFACTOR;
+        if (job->rotation) {
+            job->focus.x += (pointer.y - job->height)
+                    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
+            job->focus.y -= (pointer.x)
+                    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
+        }
+        else {
+            job->focus.x -= (pointer.x)
+                    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
+            job->focus.y -= (pointer.y - job->height)
+                    * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
+        }
+        job->needs_refresh = 1;
+        break;
     }
     job->oldpointer = pointer;
 }
