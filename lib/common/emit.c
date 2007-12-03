@@ -2765,6 +2765,7 @@ int gvRenderJobs (GVC_t * gvc, graph_t * g)
 
 	if (prevjob) {
             prevjob->next_active = job;  /* insert job in active list */
+	    job->output_file = prevjob->output_file;  /* FIXME - this is dumb ! */
 	}
 	else {
 	    gvc->active_jobs = job;   /* first job of new list */
