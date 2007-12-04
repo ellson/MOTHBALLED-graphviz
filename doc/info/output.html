@@ -355,8 +355,12 @@ formats need to be interpreted in this manner.
 
 <DT><A NAME=d:pdf HREF=#a:pdf><STRONG>pdf</STRONG></A>
 <DD>  Produces <A HREF="http://www.adobe.com/devnet/pdf/">PDF</A> output.
-  Alternatively, one can use the <A HREF="#d:ps2">ps2</A> to produce PDF-compatible
-  PostScript, and then use a ps-to-pdf converter.
+  (This option assumes Graphviz includes the Cairo renderer.)
+  Alternatively, one can use the <A HREF="#d:ps2">ps2</A> option to 
+  produce PDF-compatible PostScript, and then use a ps-to-pdf converter.
+  <P>
+  Note: At present, this option does not support anchors, etc. To get these
+  included in your PDF output, use <A HREF="#d:ps2">ps2</A>. 
 
 <DT><A NAME=d:pic HREF=#a:pic><STRONG>pic</STRONG></A>
 <DD>  Outputs in PIC, the picture description language in the troff-family
@@ -454,6 +458,11 @@ formats need to be interpreted in this manner.
 
 <DT><A NAME=d:ps HREF=#a:ps><STRONG>ps</STRONG></A>
 <DD>  Produces PostScript output.
+  <P>
+  Note: The default PostScript renderer can only handle the Latin-1
+  character set. To get non-Latin-1 characters into PostScript output,
+  use <TT>-Tps:cairo</TT>, assuming your version was built with the
+  Cairo renderer.
 
 <DT><A NAME=d:ps2 HREF=#a:ps2><STRONG>ps2</STRONG></A>
 <DD>  Produces PostScript output with PDF notations. It is assumed the output
