@@ -306,6 +306,7 @@ void gvrender_end_graph(GVJ_t * job)
 	    cg->end_graph();
     }
 #endif
+    gvdevice_format(job);
 }
 
 void gvrender_begin_page(GVJ_t * job)
@@ -345,7 +346,6 @@ void gvrender_end_page(GVJ_t * job)
 	    cg->end_page();
     }
 #endif
-    gvdevice_format(job);
 }
 
 void gvrender_begin_layer(GVJ_t * job)

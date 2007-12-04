@@ -209,7 +209,7 @@ void gvdevice_format(GVJ_t * job)
     if (job->output_file
       && ! job->external_context
       && job->output_lang != TK
-      && ! job->flags & GVDEVICE_COMPRESSED_FORMAT)
+      && ! (job->flags & GVDEVICE_COMPRESSED_FORMAT))
 	fflush(job->output_file);
 }
 
