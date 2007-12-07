@@ -1565,11 +1565,11 @@ else
 fi
 
 dnl -----------------------------------
-dnl IPSEPCOLA 
+dnl IPSEPCOLA   /* disabled by default due to C++ issues on some platforms */
 AC_ARG_WITH(ipsepcola,
-  [AC_HELP_STRING([--with-ipsepcola=yes],
+  [AC_HELP_STRING([--with-ipsepcola=no],
 	[IPSEPCOLA features in neato layout engine])],
-  [], [with_ipsepcola=yes])
+  [], [with_ipsepcola=no])
 
 ### unless digcola was not enabled since ipsecola depends on it
 if test "x$with_digcola" = "xno"; then
