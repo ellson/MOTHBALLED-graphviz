@@ -155,7 +155,10 @@ void dot_nodesize(node_t * n, boolean flip)
     if (ps < 1)
 	ps = 1;
     ND_lw_i(n) = ND_rw_i(n) = ps;
-    ND_ht_i(n) = POINTS(y);
+    if (x == y)
+	ND_ht_i(n) = 2*ps;
+    else
+	ND_ht_i(n) = POINTS(y);
 }
 
 /* translate_drawing:
