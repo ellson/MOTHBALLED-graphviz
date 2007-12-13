@@ -1,3 +1,12 @@
+December 12, 2007
+	- Release 2.16.1
+	- Fixed bugs: 1228, 1234, 1238, 1239, 1245
+	- Improvements to PHP binding
+	- Improvements to OCAML binding
+	- Make regression tests run from the build tree, rather than require installation
+	- Repair freetype detection on RedHat-7 (Yes, people still use it!!)
+	- Fix zoom-at-mouse-location in -Txlib and -Tgtk
+	- Fix some dotty regressions
 November 9, 2007
 	- Release 2.16
 	- Fixed bugs: 456, 473, 1021, 1153, 1154, 1155, 1159, 1160, 1162,

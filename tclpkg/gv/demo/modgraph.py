@@ -34,5 +34,4 @@ for rec in modules:
          gv.edge(n, gv.node(G, usedby))
 
 gv.layout(G, 'dot')
-# The 'gtk' renderer is provided by graphviz-cairo
-gv.render(G, 'png', 'modgraph.png')
+gv.render(G, 'xlib')
