@@ -1,0 +1,217 @@
+Graphviz and fonts.
+===================
+
+The graphviz layout engines (dot, neato, etc) create layouts with nodes sized
+to enclose the text labels.  This requires knowing the size of the text blocks,
+which in turn requires knowing the metrics of the font glyphs and their
+composition into words, taking into account wordspacing, kerning, hinting, etc.
+
+The font is normally selected by family name, and any other required properties,
+(see: FAQ item: "Font selection") then fontconfig is used to match the font request
+to a specific font available on the system.  (see FAQ item: "No fontconfig.")
+
+[Note.  In older versions of dot, fontname was a font filename, which was
+exact, and which either existed or it didn't.   With fontconfig, fontnames are
+now family names, which fontconfig will match to the closest font it can find.
+This should always succeed, but unfortunately sometimes produces surprising
+results if its idea of "close" doesn't match yours.]
+
+Text layout is normally performed by pango, which accepts text and
+produces a layout with metrics which we can use to size the node shapes.
+(See FAQ item: "No pango.")
+
+Line drawing is provided by cairo for many output formats, and likely more in
+the future, however font rendering is passed though cairo to freetype.  The same
+is true if gd is used for drawing.  (See FAQ items: "No cairo," "No gd.")
+
+Font rendering is provided by freetype, which provides antialiasing, hinting,
+kerning, and other low-level font features.
+(See FAQ item: "No freetype.")
+
+The font metrics are obtained using fonts available on the system running dot.
+This works fine, except for outputs like -Tps and -Tsvg where the final rendering
+may be done on a different platform altogether, where the same fonts might not
+be available.  For these cases (in PostScript only at this time) we pass down the
+expected metrics of the text block to the renderer and ask it to make a final
+stretch (or squeeze) to make the text fit the metrics that were used at layout time.
+
+Default fonts and PostScript fonts.
+===================================
+
+The default font in graphviz is, and always has been, Times-Roman.
+Unfortunately, fontconfig doesn't recognize this PostScript-style font
+specification directly, so we have custom mappings from a basic set of
+PostScipt fontnames into fontconfig family names for use in all cairo and gd
+based renderers. In -Tps output, these fonts are used without name
+translation.
+
+The supported PostScript fontnames are:
+	AvantGarde-Book
+	AvantGarde-BookOblique
+	AvantGarde-Demi
+	AvantGarde-DemiOblique
+	Bookman-Demi
+	Bookman-DemiItalic
+	Bookman-Light
+	Bookman-LightItalic
+	Courier
+	Courier-Bold
+	Courier-BoldOblique
+	Courier-Oblique
+	Helvetica
+	Helvetica-Bold
+	Helvetica-BoldOblique
+	Helvetica-Narrow
+	Helvetica-Narrow-Bold
+	Helvetica-Narrow-BoldOblique
+	Helvetica-Narrow-Oblique
+	Helvetica-Oblique
+	NewCenturySchlbk-Bold
+	NewCenturySchlbk-BoldItalic
+	NewCenturySchlbk-Italic
+	NewCenturySchlbk-Roman
+	Palatino-Bold
+	Palatino-BoldItalic
+	Palatino-Italic
+	Palatino-Roman
+	Symbol
+	Times-Bold
+	Times-BoldItalic
+	Times-Italic
+	Times-Roman
+	ZapfChancery-MediumItalic
+	ZapfDingbats
+
+Font selection.
+===============
+
+The fontname attribute in .dot graphs is a fontconfig style
+specification.  From: http://www.fontconfig.org/fontconfig-user.html
+
+	Fontconfig provides a textual representation for patterns that the library can
+	both accept and generate. The representation is in three parts, first a list
+	of family names, second a list of point sizes and finally a list of additional
+	properties:
+
+	<families>-<point sizes>:<name1>=<values1>:<name2>=<values2>...
+    
+
+	Values in a list are separated with commas. The name needn't include either
+	families or point sizes; they can be elided. In addition, there are symbolic
+	constants that simultaneously indicate both a name and a value. Here are some
+	examples:
+
+  	Name                            Meaning
+  	----------------------------------------------------------
+  	Times-12                        12 point Times Roman
+  	Times-12:bold                   12 point Times Bold
+  	Courier:italic                  Courier Italic in the default size
+  	Monospace:matrix=1 .1 0 1       The users preferred monospace font
+                                  	with artificial obliquing
+
+In graphviz we currently have a seperate attribute for specififying fontsize.
+
+[ FIXME
+  We should allow the fontconfig style specification.  "Times-20" does not
+  currently result in a 20pt font.
+
+  This is probably because of special treatment of '-' for postscript font
+  names.
+]
+
+[ FIXME
+  We seem to have a bug with use of ':' in fontnames, probably because of
+  special treatment for filenames in Windows.
+
+  In fontnames, use <space> instead of ':' to separate values.
+
+  -Nfontname="Courier:italic" doesn't produce an italic font in graphviz-2.16.1, but:
+  -Nfontname="Courier italic" works, but 
+  -Nfontname="Monospace matrix=1 .1 0 1" doesn't.
+]
+
+
+Font management with fontconfig.
+================================
+
+How can I tell what fonts are available?
+	$ fc-list
+
+How can I tell what fonts dot is using;
+	$ dot foo.dot -Tpng -o foo.png -v 2>&1 | grep font
+
+How can I add a new font?
+	$ mkdir -p ~/.fonts
+	$ cp foo.ttf ~/.fonts/
+	$ fc-cache
+
+How can I ... font?
+	See: http://www.fontconfig.org/fontconfig-user.html
+
+Can I specifiy a font by filename instead of by familyname?
+	Not if fontconfig is enabled.
+[ FIXME
+  I thought we still recognized any fontname containing a path separator ( '/'
+  or '\') as a font filename.   This doesn't seem to work anymore.
+]
+
+How can I be sure that a specific font is selected?
+	Provide enough specification in the fontname, and test it with
+	fc-match to ensure that your desired font is selected.
+	(Note, this will not ensure that the same font is used in -Tps or
+	-Tsvg renderings where we rely on the fonts available on the final
+	printer or computer.)
+
+
+No freetype.
+============
+
+If graphviz is built on systems without freetype, then only the gd renderer
+will be available for bitmap outputs, and all fonts will revert to a set of
+builtin bitmap fonts.  The poor quality of these fonts will be evident, 
+also, "dot ... -v 2>&1 | grep font"  will indicate that the font is "<internal>"
+
+
+No fontconfig.
+==============
+
+If graphviz is built on systems without fontconfig (e.g. Redhat-7) then the
+fontname attribute will accept a filename for a fontfile and use gd and
+freetype to obtain metrics and render the font.  The PATH searched for fonts
+can be specified with the GDFONTPATH environment variable.
+
+No pango/cairo renderers will be available without fontconfig support.
+
+
+Disabling fontconfig.
+=====================
+
+Pango/cairo depends on fontconfig, so to disable fontconfig you also have
+to disable pango/cairo.    The easiest way to do this temporarily is to
+edit /usr/lib/graphviz/config and remove the entire "libpango" block.
+[ Note that any changes to this file will be lost the next time graphviz
+is updated, or "dot -c" is run with installer priviledges.]
+
+With pango disabled, graphviz will use gd which, even if it was built
+with fontconfig support, will still allow fontnames to be given as filenames.
+
+
+No pango/cairo.
+===============
+
+Without pango/cairo many of the renderers will available only via gd
+which produces lower quality output.
+
+Looking forward, we expect to depend more on pango for things like: line
+wrapping, multiple fonts per label, bidi. text and other internationalization
+features.
+
+
+No gd
+=====
+
+We have been trying to move graphviz to the newer pango/cairo libraries, but
+gd still offers some features that are hard to replace, such as JPGs, GIFs and
+paletted color bitmap outputs.   However, font support is fully functional without gd
+so long as pango, cairo, fontconfig, freetype are available.
+
