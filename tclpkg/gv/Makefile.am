@@ -124,7 +124,8 @@ nodist_libgv_python_la_SOURCES = gv_python.cpp $(PYTHON_data)
 libgv_python_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_python_la_LIBADD = $(BASELIBS) @PYTHON_LIBS@
 libgv_python_la_LDFLAGS = -module -avoid-version
-gv_python.cpp $(PYTHON_data): gv.i
+$(PYTHON_data): gv_python.cpp
+gv_python.cpp: gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
 
 pkgpython23dir = $(pkglibdir)/python23
