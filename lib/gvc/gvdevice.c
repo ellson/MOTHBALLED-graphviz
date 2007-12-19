@@ -48,6 +48,33 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 
+size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
+{
+    if (job->gvc->write_fn && job->output_file == stdout)   /* externally provided write dicipline */
+	return (job->gvc->write_fn)((char*)s, len);
+    if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
+#ifdef HAVE_LIBZ
+	return gzwrite((gzFile *) (job->output_file), s, len);
+#endif
+    }
+    else if (job->output_data) {
+	if (len > (job->output_data_allocated - (job->output_data_position + 1))) {
+	    job->output_data_allocated = job->output_data_position + len + 1000;
+	    job->output_data = realloc(job->output_data, job->output_data_allocated);
+	    if (!job->output_data) {
+		fprintf(stderr, "failure realloc'ing for result string\n");
+		return 0;
+	    }
+	}
+	strcpy(job->output_data + job->output_data_position, (char*)s);
+        job->output_data_position += len;
+	return len;
+    }
+    else
+	return fwrite(s, sizeof(char), len, job->output_file);
+    return 0;
+}
+
 void gvdevice_fputs(GVJ_t * job, char *s)
 {
     gvdevice_write (job, (unsigned char*)s, strlen(s));
@@ -77,32 +104,26 @@ void gvdevice_printf(GVJ_t * job, const char *format, ...)
     gvdevice_write(job, buf, len);
 }
 
-size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
+void gvdevice_printnum(GVJ_t * job, double num)
 {
-    if (job->gvc->write_fn && job->output_file == stdout)   /* externally provided write dicipline */
-	return (job->gvc->write_fn)((char*)s, len);
-    if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
-#ifdef HAVE_LIBZ
-	return gzwrite((gzFile *) (job->output_file), s, len);
-#endif
-    }
-    else if (job->output_data) {
-	if (len > (job->output_data_allocated - (job->output_data_position + 1))) {
-	    job->output_data_allocated = job->output_data_position + len + 1000;
-	    job->output_data = realloc(job->output_data, job->output_data_allocated);
-	    if (!job->output_data) {
-		fprintf(stderr, "failure realloc'ing for result string\n");
-		return 0;
-	    }
-	}
-	strcpy(job->output_data + job->output_data_position, (char*)s);
-        job->output_data_position += len;
-	return len;
-    }
-    else
-	return fwrite(s, sizeof(char), len, job->output_file);
-    return 0;
-}
+    char *buf;
+    int len;
+
+    buf = gvprintnum(&len, num);
+    gvdevice_write(job, buf, len);
+} 
+
+void gvdevice_printpointf(GVJ_t * job, pointf p)
+{
+    char *buf;
+    int len;
+
+    buf = gvprintnum(&len, p.x);
+    gvdevice_write(job, buf, len);
+    gvdevice_write(job, " ", 1);
+    buf = gvprintnum(&len, p.y);
+    gvdevice_write(job, buf, len);
+} 
 
 static void auto_output_filename(GVJ_t *job)
 {
