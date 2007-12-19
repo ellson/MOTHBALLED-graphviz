@@ -24,32 +24,35 @@
 
 #define DECPLACES 2
 #define DECPLACES_SCALE 100
-#define MAXNUM                999999999999999.99
-static char *maxnegnumstr = "-999999999999999.99";
 
-int gvprintnum (char *buf, double number)
+/* use macro so maxnegnum is stated just once for both double and string versions */
+#define val_str(n, x) static double n = x; static char n##str[] = #x;
+val_str(maxnegnum, -999999999999999.99)
+
+/* Note.  Returned string is only good until the next call to gvprintnum */
+char * gvprintnum (int *len, double number)
 {
-    char tmpbuf[20];
-    char *result = tmpbuf+20;
+    static char tmpbuf[sizeof(maxnegnumstr)];   /* buffer big enough for worst case */
+    char *result = tmpbuf+sizeof(maxnegnumstr); /* init result to end of tmpbuf */
     long int N;
     bool showzeros, negative;
     int digit, i;
 
     /*
-        number limited to a working range: -MAXNUM >= n >= MAXNUM
+        number limited to a working range: maxnegnum >= n >= -maxnegnum
 	N = number * DECPLACES_SCALE rounded towards zero,
 	printing to buffer in reverse direction,
 	printing "." after DECPLACES
 	suppressing trailing "0" and "."
      */
 
-    if (number < -MAXNUM) {		/* -ve limit */
-	result = maxnegnumstr;
-	goto fin;
+    if (number < maxnegnum) {		/* -ve limit */
+	*len = sizeof(maxnegnumstr)-1;  /* len doesn't include terminator */
+	return maxnegnumstr;;
     }
-    if (number > MAXNUM) {		/* +ve limit */
-	result = maxnegnumstr+1;	/* +1 to skip the '-' sign */
-	goto fin;
+    if (number > -maxnegnum) {		/* +ve limit */
+	*len = sizeof(maxnegnumstr)-2;  /* len doesn't include terminator or sign */
+	return maxnegnumstr+1;		/* +1 to skip the '-' sign */
     }
     number *= DECPLACES_SCALE;		/* scale by DECPLACES_SCALE */
     if (number < 0.0)			/* round towards zero */
@@ -57,8 +60,8 @@ int gvprintnum (char *buf, double number)
     else
         N = number + 0.5;
     if (N == 0) {			/* special case for exactly 0 */
-	result = "0";
-	goto fin;
+	*len = 1;
+	return "0";
     }
     if ((negative = (N < 0)))		/* avoid "-0" by testing rounded int */
         N = -N;				/* make number +ve */
@@ -81,32 +84,31 @@ int gvprintnum (char *buf, double number)
     }
     if (negative)			/* print "-" if needed */
         *--result = '-';
-fin:
-    strcpy(buf,result);			/* copy result to user's buffer */
-    return (strlen(result));				
+    *len = tmpbuf+sizeof(maxnegnumstr)-1 - result;
+    return result;				
 }
 
 
 #ifdef GVPRINTNUM_TEST
 int main (int argc, char *argv[])
 {
-    char buf[50];
+    char *buf;
     int len;
 
     double test[] = {
-	MAXNUM*1.1, MAXNUM*.9,
+	-maxnegnum*1.1, -maxnegnum*.9,
 	1e8, 10.008, 10, 1, .1, .01,
 	.006, .005, .004, .001, 1e-8, 
 	0, -0,
 	-1e-8, -.001, -.004, -.005, -.006,
 	-.01, -.1, -1, -10, -10.008, -1e8,
-	-MAXNUM*.9, -MAXNUM*1.1
+	maxnegnum*.9, maxnegnum*1.1
     };
     int i = sizeof(test) / sizeof(test[0]);
 
     while (i--) {
-	len = gvprintnum(buf, test[i]);
-        fprintf (stdout, "%g = %s\n", test[i], buf);
+	buf = gvprintnum(&len, test[i]);
+        fprintf (stdout, "%g = %s %d\n", test[i], buf, len);
     }
 
     return 0;

@@ -77,6 +77,8 @@ extern "C" {
     extern void gvdevice_format(GVJ_t * job);
     extern void gvdevice_finalize(GVJ_t * job);
 
+    extern char * gvprintnum(int *len, double num);
+
 /* render */
 
     extern pointf gvrender_ptf(GVJ_t *job, pointf p);
