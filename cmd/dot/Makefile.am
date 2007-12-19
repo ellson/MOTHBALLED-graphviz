@@ -70,91 +70,42 @@ dot.pdf: $(top_srcdir)/cmd/dot/dot.1
 # like $(top_srcdir)/lib/gvc/dot_builtins.c
 dot_static_SOURCES = dot.c $(top_srcdir)/lib/gvc/no_demand_loading.c
 dot_static_LDFLAGS = -export-dynamic -dlpreopen self -export-symbols-regex '.*_LTX_library'
-if WITH_MYLIBGD
-if WITH_PANGOCAIRO
 dot_static_LDADD = \
 	$(top_builddir)/plugin/dot_layout/.libs/libgvplugin_dot_layout_C.a \
 	$(top_builddir)/plugin/neato_layout/.libs/libgvplugin_neato_layout_C.a \
 	$(top_builddir)/plugin/core/.libs/libgvplugin_core_C.a \
-	$(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a \
-	$(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/graph/libgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
-	$(top_builddir)/lib/gd/libgvgd_C.la \
-       	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
-else
-dot_static_LDADD = \
-	$(top_builddir)/plugin/dot_layout/.libs/libgvplugin_dot_layout_C.a \
-	$(top_builddir)/plugin/neato_layout/.libs/libgvplugin_neato_layout_C.a \
-	$(top_builddir)/plugin/core/.libs/libgvplugin_core_C.a \
-	$(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a \
-	$(top_builddir)/lib/gvc/libgvc_C.la \
-	$(top_builddir)/lib/pathplan/libpathplan_C.la \
-	$(top_builddir)/lib/graph/libgraph_C.la \
-	$(top_builddir)/lib/cdt/libcdt_C.la \
-	$(top_builddir)/lib/gd/libgvgd_C.la \
-       	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
-endif
-else
-dot_static_LDADD = \
-	$(top_builddir)/plugin/dot_layout/.libs/libgvplugin_dot_layout_C.a \
-	$(top_builddir)/plugin/neato_layout/.libs/libgvplugin_neato_layout_C.a \
-	$(top_builddir)/plugin/core/.libs/libgvplugin_core_C.a \
-	$(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a \
-	$(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a \
-	$(top_builddir)/lib/gvc/libgvc_C.la \
-	$(top_builddir)/lib/pathplan/libpathplan_C.la \
-	$(top_builddir)/lib/graph/libgraph_C.la \
-	$(top_builddir)/lib/cdt/libcdt_C.la \
-       	@GD_LIBS@ @ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
-endif
+       	@ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 
 dot_builtins_SOURCES = dot.c $(top_srcdir)/lib/gvc/dot_builtins.c $(top_srcdir)/lib/gvc/no_demand_loading.c
+dot_builtins_LDADD = \
+	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout.la \
+	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la \
+	$(top_builddir)/plugin/core/libgvplugin_core.la \
+	$(top_builddir)/lib/gvc/libgvc_builtins.la \
+	$(top_builddir)/lib/pathplan/libpathplan.la \
+	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la \
+       	@ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+
+if WITH_LIBGD
 if WITH_MYLIBGD
-if WITH_PANGOCAIRO
-dot_builtins_LDADD = \
-	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout.la \
-	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la \
-	$(top_builddir)/plugin/core/libgvplugin_core.la \
-	$(top_builddir)/plugin/gd/libgvplugin_gd.la \
-	$(top_builddir)/plugin/pango/libgvplugin_pango.la \
-	$(top_builddir)/lib/gvc/libgvc_builtins.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la \
-	$(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/lib/cdt/libcdt.la \
-	$(top_builddir)/lib/gd/libgvgd_C.la \
-       	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
+dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd_C.a $(top_builddir)/lib/gd/libgvgd_C.la @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
+dot_builtins_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd.la $(top_builddir)/lib/gd/libgvgd_C.la @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
 else
-dot_builtins_LDADD = \
-	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout.la \
-	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la \
-	$(top_builddir)/plugin/core/libgvplugin_core.la \
-	$(top_builddir)/plugin/gd/libgvplugin_gd.la \
-	$(top_builddir)/lib/gvc/libgvc_builtins.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la \
-	$(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/lib/cdt/libcdt.la \
-	$(top_builddir)/lib/gd/libgvgd_C.la \
-       	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+dot_static_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd.la @GD_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
+dot_builtins_LDADD += $(top_builddir)/plugin/gd/.libs/libgvplugin_gd.la @GD_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
 endif
-else
-dot_builtins_LDADD = \
-	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout.la \
-	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la \
-	$(top_builddir)/plugin/core/libgvplugin_core.la \
-	$(top_builddir)/plugin/gd/libgvplugin_gd.la \
-	$(top_builddir)/plugin/pango/libgvplugin_pango.la \
-	$(top_builddir)/lib/gvc/libgvc_builtins.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la \
-	$(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/lib/cdt/libcdt.la \
-       	@GD_LIBS@ @ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @PANGOCAIRO_LIBS@ @MATH_LIBS@
 endif
 
+if WITH_PANGOCAIRO
+dot_static_LDADD += $(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a @PANGOCAIRO_LIBS@
+dot_builtins_LDADD += $(top_builddir)/plugin/pango/libgvplugin_pango.la @PANGOCAIRO_LIBS@
+endif
 
 EXTRA_DIST = Makefile.old dot.1 dot.pdf
 
 DISTCLEANFILES = dot.pdf
-#
