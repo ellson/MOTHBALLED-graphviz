@@ -35,7 +35,8 @@ EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 	graphviz.7 Doxyfile.in Doxyfile \
 	makearch features awk windows \
 	config/config_perl.pl config/config_python.py \
-	config/config_ruby.rb config/config_tcl.tcl dot.demo
+	config/config_ruby.rb config/config_tcl.tcl dot.demo \
+	macbuild macosx
 
 .PHONY: rpm
 rpm: dist
