@@ -26,14 +26,14 @@
 #define DECPLACES_SCALE 100
 
 /* use macro so maxnegnum is stated just once for both double and string versions */
-#define val_str(n, x) static double n = x; static char n##str[] = #x;
+#define val_str(n, x) static double n = x; static unsigned char n##str[] = #x;
 val_str(maxnegnum, -999999999999999.99)
 
 /* Note.  Returned string is only good until the next call to gvprintnum */
-char * gvprintnum (int *len, double number)
+unsigned char * gvprintnum (int *len, double number)
 {
-    static char tmpbuf[sizeof(maxnegnumstr)];   /* buffer big enough for worst case */
-    char *result = tmpbuf+sizeof(maxnegnumstr); /* init result to end of tmpbuf */
+    static unsigned char tmpbuf[sizeof(maxnegnumstr)];   /* buffer big enough for worst case */
+    unsigned char *result = tmpbuf+sizeof(maxnegnumstr); /* init result to end of tmpbuf */
     long int N;
     bool showzeros, negative;
     int digit, i;
@@ -61,7 +61,7 @@ char * gvprintnum (int *len, double number)
         N = number + 0.5;
     if (N == 0) {			/* special case for exactly 0 */
 	*len = 1;
-	return "0";
+	return (unsigned char *)"0";
     }
     if ((negative = (N < 0)))		/* avoid "-0" by testing rounded int */
         N = -N;				/* make number +ve */
@@ -92,7 +92,7 @@ char * gvprintnum (int *len, double number)
 #ifdef GVPRINTNUM_TEST
 int main (int argc, char *argv[])
 {
-    char *buf;
+    unsigned char *buf;
     int len;
 
     double test[] = {

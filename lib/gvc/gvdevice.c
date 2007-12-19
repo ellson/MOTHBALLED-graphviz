@@ -106,7 +106,7 @@ void gvdevice_printf(GVJ_t * job, const char *format, ...)
 
 void gvdevice_printnum(GVJ_t * job, double num)
 {
-    char *buf;
+    unsigned char *buf;
     int len;
 
     buf = gvprintnum(&len, num);
@@ -115,14 +115,25 @@ void gvdevice_printnum(GVJ_t * job, double num)
 
 void gvdevice_printpointf(GVJ_t * job, pointf p)
 {
-    char *buf;
+    unsigned char *buf;
     int len;
 
     buf = gvprintnum(&len, p.x);
     gvdevice_write(job, buf, len);
-    gvdevice_write(job, " ", 1);
+    gvdevice_write(job, (unsigned char*)" ", 1);
     buf = gvprintnum(&len, p.y);
     gvdevice_write(job, buf, len);
+} 
+
+void gvdevice_printpointflist(GVJ_t * job, pointf *p, int n)
+{
+    int i = 0;
+
+    while (TRUE) {
+	gvdevice_printpointf(job, p[i]);
+        if (++i >= n) break;
+        gvdevice_write(job, (unsigned char*)" ", 1);
+    }
 } 
 
 static void auto_output_filename(GVJ_t *job)
