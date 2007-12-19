@@ -128,10 +128,10 @@ static void psgen_begin_page(GVJ_t * job)
     if (job->common->show_boxes == NULL)
         gvdevice_printf(job, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x-pbr.LL.x, pbr.UR.y-pbr.LL.y);
-    gvdevice_printf(job, "%g %g set_scale %d rotate %g %g translate\n",
-	    job->scale.x, job->scale.y,
-	    job->rotation,
-	    job->translation.x, job->translation.y);
+    gvdevice_printpointf(job, job->scale);
+    gvdevice_printf(job, " set_scale %d rotate ", job->rotation);
+    gvdevice_printpointf(job, job->translation);
+    gvdevice_fputs(job, " translate\n");
 
     /*  Define the size of the PS canvas  */
     if (job->render.id == FORMAT_PS2) {
@@ -198,9 +198,9 @@ static void psgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *targe
     obj_state_t *obj = job->obj;
 
     if (url && obj->url_map_p) {
-        gvdevice_printf(job, "[ /Rect [ %g %g %g %g ]\n",
-		obj->url_map_p[0].x, obj->url_map_p[0].y,
-		obj->url_map_p[1].x, obj->url_map_p[1].y);
+        gvdevice_fputs(job, "[ /Rect [ ");
+	gvdevice_printpointflist(job, obj->url_map_p, 2);
+        gvdevice_fputs(job, " ]\n");
         gvdevice_printf(job, "  /Border [ 0 0 0 ]\n"
 		"  /Action << /Subtype /URI /URI %s >>\n"
 		"  /Subtype /Link\n"
@@ -215,7 +215,8 @@ ps_set_pen_style(GVJ_t *job)
     double penwidth = job->obj->penwidth;
     char *p, *line, **s = job->obj->rawstyle;
 
-    gvdevice_printf(job,"%g setlinewidth\n", penwidth);
+    gvdevice_printnum(job, penwidth);
+    gvdevice_fputs(job," setlinewidth\n");
 
     while (s && (p = line = *s++)) {
 	if (strcmp(line, "setlinewidth") == 0)
@@ -268,7 +269,8 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	return;  /* skip transparent text */
 
     ps_set_color(job, &(job->obj->pencolor));
-    gvdevice_printf(job, "%.2f /%s set_font\n", para->fontsize, para->fontname);
+    gvdevice_printnum(job, para->fontsize);
+    gvdevice_printf(job, " /%s set_font\n", para->fontname);
     str = ps_string(para->str,isLatin1);
     switch (para->just) {
     case 'r':
@@ -283,24 +285,31 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
         break;
     }
     p.y += para->yoffset_centerline;
-    gvdevice_printf(job, "%g %g moveto %g %s alignedtext\n",
-	    p.x, p.y, para->width, str);
+    gvdevice_printpointf(job, p);
+    gvdevice_fputs(job, " moveto ");
+    gvdevice_printnum(job, para->width);
+    gvdevice_printf(job, " %s alignedtext\n", str);
 }
 
 static void psgen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     /* A[] contains 2 points: the center and corner. */
+    pointf AA[2];
+
+    AA[0] = A[0];
+    AA[1].x = A[1].x - A[0].x;
+    AA[1].y = A[1].y - A[0].y;
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
-	gvdevice_printf(job, "%g %g %g %g ellipse_path fill\n",
-	    A[0].x, A[0].y, fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
+	gvdevice_printpointflist(job, AA, 2);
+	gvdevice_fputs(job, " ellipse_path fill\n");
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        gvdevice_printf(job, "%g %g %g %g ellipse_path stroke\n",
-	    A[0].x, A[0].y, fabs(A[1].x - A[0].x), fabs(A[1].y - A[0].y));
+	gvdevice_printpointflist(job, AA, 2);
+	gvdevice_fputs(job, " ellipse_path stroke\n");
     }
 }
 
@@ -312,21 +321,25 @@ psgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
-	gvdevice_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
-	for (j = 1; j < n; j += 3)
-	    gvdevice_printf(job, "%g %g %g %g %g %g curveto\n",
-		A[j].x, A[j].y, A[j + 1].x, A[j + 1].y, A[j + 2].x,
-		A[j + 2].y);
+	gvdevice_fputs(job, "newpath ");
+	gvdevice_printpointf(job, A[0]);
+	gvdevice_fputs(job, " moveto\n");
+	for (j = 1; j < n; j += 3) {
+	    gvdevice_printpointflist(job, &A[j], 3);
+	    gvdevice_fputs(job, " curveto\n");
+	}
 	gvdevice_fputs(job, "closepath fill\n");
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        gvdevice_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
-        for (j = 1; j < n; j += 3)
-	    gvdevice_printf(job, "%g %g %g %g %g %g curveto\n",
-		    A[j].x, A[j].y, A[j + 1].x, A[j + 1].y, A[j + 2].x,
-		    A[j + 2].y);
+	gvdevice_fputs(job, "newpath ");
+	gvdevice_printpointf(job, A[0]);
+	gvdevice_fputs(job, " moveto\n");
+	for (j = 1; j < n; j += 3) {
+	    gvdevice_printpointflist(job, &A[j], 3);
+	    gvdevice_fputs(job, " curveto\n");
+	}
         gvdevice_fputs(job, "stroke\n");
     }
 }
@@ -337,18 +350,26 @@ static void psgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
-	gvdevice_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
-	for (j = 1; j < n; j++)
-	    gvdevice_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
-	gvdevice_printf(job, "closepath fill\n");
+	gvdevice_fputs(job, "newpath ");
+	gvdevice_printpointf(job, A[0]);
+	gvdevice_fputs(job, " moveto\n");
+	for (j = 1; j < n; j++) {
+	    gvdevice_printpointf(job, A[j]);
+	    gvdevice_fputs(job, " lineto\n");
+        }
+	gvdevice_fputs(job, "closepath fill\n");
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        gvdevice_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
-        for (j = 1; j < n; j++)
-	    gvdevice_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
-        gvdevice_printf(job, "closepath stroke\n");
+	gvdevice_fputs(job, "newpath ");
+	gvdevice_printpointf(job, A[0]);
+	gvdevice_fputs(job, " moveto\n");
+        for (j = 1; j < n; j++) {
+	    gvdevice_printpointf(job, A[j]);
+	    gvdevice_fputs(job, " lineto\n");
+	}
+        gvdevice_fputs(job, "closepath stroke\n");
     }
 }
 
@@ -359,9 +380,13 @@ static void psgen_polyline(GVJ_t * job, pointf * A, int n)
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
-        gvdevice_printf(job, "newpath %g %g moveto\n", A[0].x, A[0].y);
-        for (j = 1; j < n; j++)
-	    gvdevice_printf(job, "%g %g lineto\n", A[j].x, A[j].y);
+	gvdevice_fputs(job, "newpath ");
+	gvdevice_printpointf(job, A[0]);
+	gvdevice_fputs(job, " moveto\n");
+        for (j = 1; j < n; j++) {
+	    gvdevice_printpointf(job, A[j]);
+	    gvdevice_fputs(job, " lineto\n");
+	}
         gvdevice_fputs(job, "stroke\n");
     }
 }
@@ -375,24 +400,22 @@ static void psgen_comment(GVJ_t * job, char *str)
 
 static void psgen_library_shape(GVJ_t * job, char *name, pointf * A, int n, int filled)
 {
-    int j;
-
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
 	gvdevice_fputs(job, "[ ");
-	for (j = 0; j < n; j++)
-	    gvdevice_printf(job, "%g %g ", A[j].x, A[j].y);
-	gvdevice_printf(job, "%g %g ", A[0].x, A[0].y);
-	gvdevice_printf(job, "]  %d true %s\n", n, name);
+        gvdevice_printpointflist(job, A, n);
+        gvdevice_fputs(job, " ");
+        gvdevice_printpointf(job, A[0]);
+	gvdevice_printf(job, " ]  %d true %s\n", n, name);
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
         ps_set_pen_style(job);
         ps_set_color(job, &(job->obj->pencolor));
         gvdevice_fputs(job, "[ ");
-        for (j = 0; j < n; j++)
-	    gvdevice_printf(job, "%g %g ", A[j].x, A[j].y);
-	gvdevice_printf(job, "%g %g ", A[0].x, A[0].y);
-        gvdevice_printf(job, "]  %d false %s\n", n, name);
+        gvdevice_printpointflist(job, A, n);
+        gvdevice_fputs(job, " ");
+        gvdevice_printpointf(job, A[0]);
+        gvdevice_printf(job, " ]  %d false %s\n", n, name);
     }
 }
 
