@@ -117,6 +117,9 @@ void gvdevice_printf(GVJ_t * job, const char *format, ...)
 #define val_str(n, x) static double n = x; static unsigned char n##str[] = #x;
 val_str(maxnegnum, -999999999999999.99)
 
+/* we use len and don't need the string to be terminated */
+/* #define TERMINATED_NUMBER_STRING */
+
 /* Note.  Returned string is only good until the next call to gvprintnum */
 static unsigned char * gvprintnum (int *len, double number)
 {
@@ -153,7 +156,9 @@ static unsigned char * gvprintnum (int *len, double number)
     }
     if ((negative = (N < 0)))		/* avoid "-0" by testing rounded int */
         N = -N;				/* make number +ve */
+#ifdef TERMINATED_NUMBER_STRING
     *--result = '\0';			/* terminate the result string */
+#endif
     showzeros = false;			/* don't print trailing zeros */
     for (i = DECPLACES; N || i > 0; i--) {  /* non zero remainder,
 						or still in fractional part */
@@ -172,7 +177,11 @@ static unsigned char * gvprintnum (int *len, double number)
     }
     if (negative)			/* print "-" if needed */
         *--result = '-';
+#ifdef TERMINATED_NUMBER_STRING
     *len = tmpbuf+sizeof(maxnegnumstr)-1 - result;
+#else
+    *len = tmpbuf+sizeof(maxnegnumstr) - result;
+#endif
     return result;				
 }
 
