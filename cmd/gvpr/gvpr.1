@@ -194,12 +194,15 @@ is a single scope. Array declarations have the form:
 .ta \w'\f(CWdelete array[expression]'u
 .RS
 .nf
-\fI type array \fB[\fP var \fB]\fR
+\fI type array \fB[\fP type0 \fB]\fR
 .fi
 .RE
 .DT
 .PP
-where the \fI var \fP is optional. As in C, variables and arrays must
+where the \fI type0 \fP is optional. If it is supplied, the parser will
+enforce that all array subscripts have the specified type. If it is
+not supplied, objects of all types can be used as subscripts.
+As in C, variables and arrays must
 be declared. In particular, an undeclared variable will be interpreted
 as the name of an attribute of a node, edge or graph, depending on the
 context.
