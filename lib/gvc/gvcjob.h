@@ -42,6 +42,46 @@ extern "C" {
 #define PENWIDTH_BOLD 2.
     typedef enum { GVATTR_STRING, GVATTR_BOOL, GVATTR_COLOR } gvattr_t;
 
+/* The -T output formats listed below are examples only, they are not definitive or inclusive,
+ other outputs may use the flags now, or in the future 
+
+                   Default emit order is breadth first graph walk order 
+ EMIT_SORTED			emits nodes before edges		
+ EMIT_COLORS			emits colors before nodes or edge -Tfig 
+ EMIT_CLUSTERS_LAST		emits cluster after nodes and edges 	
+ EMIT_PREORDER			emit in preorder traversal ???		
+ EMIT_EDGE_SORTED		emits edges before nodes		
+
+ GVDEVICE_DOES_PAGES		provides pagination support -Tps	
+ GVDEVICE_DOES_LAYERS		provides support for layers -Tps	
+ GVDEVICE_EVENTS		supports mouse events -Tgtk, -Txlib	
+ GVDEVICE_DOES_TRUECOLOR	supports alph channel -Tpng, -Tgtk, -Txlib 
+ GVDEVICE_BINARY_FORMAT		Suppresses \r\n substitution for linends 
+ GVDEVICE_COMPRESSED_FORMAT	controls libz compression		
+ GVDEVICE_NO_WRITER		used when gvdevice is not used because device uses its own writer, -Tming, devil outputs   (FIXME seems to overlap OUTPUT_NOT_REQUIRED)
+
+ GVRENDER_Y_GOES_DOWN		device origin top left, y goes down, otherwise
+  				device origin lower left, y goes up	
+ GVRENDER_DOES_TRANSFORM	device uses scale, translate, rotate to do its own
+ 				coordinate transformations, otherwise coordinates 
+  				are pre-transformed			
+ GVRENDER_DOES_ARROWS		renderer has its own idea of arrow shapes (deprecated) 
+ GVRENDER_DOES_LABELS		basically, maps don't need labels	
+ GVRENDER_DOES_MAPS		renderer encodes mapping information for mouse events -Tcmapx -Tsvg 
+ GVRENDER_DOES_MAP_RECTANGLE	supports a 2 coord rectngle optimization 
+ GVRENDER_DOES_MAP_CIRCLE	supports a 1 coord + radius circle optimization	
+ GVRENDER_DOES_MAP_POLYGON	supports polygons (basically, -Tsvg uses anchors, so doesn't need to support any map shapes) 
+ GVRENDER_DOES_MAP_ELLIPSE	supports a 2 coord ellipse optimization	
+ GVRENDER_DOES_MAP_BSPLINE	supports mapping of splines		
+ GVRENDER_DOES_TOOLTIPS		can represent tooltip info -Tcmapx, -Tsvg		
+ GVRENDER_DOES_TARGETS		can represent target info (open link in a new tab or window) 
+ GVRENDER_DOES_Z		render support 2.5D representation -Tvrml 
+ GVRENDER_NO_BG			don't paint white background, assumes white paper -Tps 
+ LAYOUT_NOT_REQUIRED 		don't perform layout -Tcanon 		
+ OUTPUT_NOT_REQUIRED		don't use gvdevice for output (basically when agwrite() used instead) -Tcanon, -Txdot 
+ */
+
+
 #define EMIT_SORTED (1<<0)
 #define EMIT_COLORS (1<<1)
 #define EMIT_CLUSTERS_LAST (1<<2)
