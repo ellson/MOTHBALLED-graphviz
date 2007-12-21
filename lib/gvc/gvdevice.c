@@ -42,6 +42,7 @@
 #include <zlib.h>
 #endif
 
+#include "logic.h"
 #include "const.h"
 #include "gvplugin_device.h"
 #include "gvcjob.h"
