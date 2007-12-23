@@ -1,6 +1,6 @@
 #!/usr/bin/tclsh
 
-load libgv_tcl.so gv
+load [pwd]/libgv_tcl.so gv
 
 set g [gv::digraph G]
 puts [gv::setv $g aaa xxx]
