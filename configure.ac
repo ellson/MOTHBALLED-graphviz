@@ -1271,7 +1271,7 @@ if test "$HAVE_TK" = "1"; then
     WISH_EXEC_PREFIX=`echo $WISH|sed -e 's%/bin/wish.*$%%'`
 
     if test -f ${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/tk.h; then
-	TK_INCLUDES="-I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND} -I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/generic"
+	TK_INCLUDES="-I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND} -I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/generic -I${WISH_EXEC_PREFIX}/include/tk${TK_VERSION_FOUND}/unix"
     else
         if test "x${WISH_EXEC_PREFIX}" != "x/usr" -a -f ${WISH_EXEC_PREFIX}/include/tk.h; then
 	    TK_INCLUDES=-I${WISH_EXEC_PREFIX}/include
@@ -2045,7 +2045,7 @@ AC_SUBST(TCLINT_INCLUDES)
 # -----------------------------------
 # tkInt.h
 if test -f "$TK_SRC_DIR/generic/tkInt.h"; then
-TKINT_INCLUDES="-I$TK_SRC_DIR/generic"
+TKINT_INCLUDES="-I$TK_SRC_DIR/generic -I$TK_SRC_DIR/unix"
 else
 if test -f "/usr/include/tkInt.h"; then
 TKINT_INCLUDES=""
