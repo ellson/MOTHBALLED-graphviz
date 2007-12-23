@@ -1092,12 +1092,15 @@ AC_ARG_WITH(tclsh,
     TCLSH=$withval,)
 
 if test "x$TCLSH" = "x"; then
-    AC_PATH_PROG(TCLSH,tclsh8.4)
+    AC_PATH_PROG(TCLSH,tclsh8.5)
     if test "x$TCLSH" = "x"; then
-        AC_PATH_PROG(TCLSH,tclsh8.3)
+        AC_PATH_PROG(TCLSH,tclsh8.4)
         if test "x$TCLSH" = "x"; then
-            AC_PATH_PROG(TCLSH,tclsh)
-        fi
+            AC_PATH_PROG(TCLSH,tclsh8.3)
+            if test "x$TCLSH" = "x"; then
+                AC_PATH_PROG(TCLSH,tclsh)
+            fi
+	fi
     fi
     if test "x$TCLSH" = "x"; then
         AC_MSG_WARN([Unable to find a tclsh. The Tcl packages will not be built])
@@ -1239,13 +1242,16 @@ if test "$HAVE_TK" = "1"; then
         [AC_HELP_STRING([--with-wish=PROG], [use a specific wish])],
         WISH=$withval,)
     if test "x$WISH" = "x"; then
-        AC_PATH_PROG(WISH,wish8.4)
+        AC_PATH_PROG(WISH,wish8.5)
         if test "x$WISH" = "x"; then
-    	    AC_PATH_PROG(WISH,wish8.3)
-    	    if test "x$WISH" = "x"; then
-                AC_PATH_PROG(WISH,wish)
+            AC_PATH_PROG(WISH,wish8.4)
+            if test "x$WISH" = "x"; then
+    	        AC_PATH_PROG(WISH,wish8.3)
+    	        if test "x$WISH" = "x"; then
+                    AC_PATH_PROG(WISH,wish)
+                fi
             fi
-        fi
+	fi
     fi
     if test "x$WISH" = "x"; then
         AC_MSG_WARN([Unable to find a wish. The Tk packages will not be built])
