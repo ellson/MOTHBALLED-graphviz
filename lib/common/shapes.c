@@ -736,7 +736,8 @@ static void poly_init(node_t * n)
 	    agerr(AGWARN,
 		  "node '%s', graph '%s' size too small for label\n",
 		  n->name, n->graph->name);
-	dimen.x = dimen.y = 0;
+	dimen.x = width;
+	dimen.y = height;
     }
     else {
 	dimen.x = MAX(dimen.x, imagesize.x+2);
