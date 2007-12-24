@@ -332,6 +332,10 @@ cairogen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     for (i = 1; i < n; i += 3)
 	cairo_curve_to(cr, A[i].x, -A[i].y, A[i + 1].x, -A[i + 1].y,
 		       A[i + 2].x, -A[i + 2].y);
+    if (filled) {
+	cairogen_set_color(cr, &(obj->fillcolor));
+	cairo_fill_preserve(cr);
+    }
     cairogen_set_color(cr, &(obj->pencolor));
     cairo_stroke(cr);
 }
