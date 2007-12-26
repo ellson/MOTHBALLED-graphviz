@@ -77,7 +77,8 @@ nodist_libgv_ocaml_la_SOURCES = gv_ocaml.cpp $(OCAML_data)
 libgv_ocaml_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_ocaml_la_LIBADD = $(BASELIBS) @OCAML_LIBS@
 libgv_ocaml_la_LDFLAGS = -module -avoid-version
-gv.ml gv.mli gv_ocaml.cpp: gv.i
+gv.ml gv.mli: gv_ocaml.cpp
+gv_ocaml.cpp: gv.i
 	$(SWIG) -c++ -ocaml -o gv_ocaml.cpp $(srcdir)/gv.i
 swig.mli:
 	$(SWIG) -ocaml -co swig.mli
