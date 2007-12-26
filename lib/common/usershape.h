@@ -25,7 +25,7 @@ extern "C" {
 
     typedef enum { FT_NULL,
 		FT_BMP, FT_GIF, FT_PNG, FT_JPEG,
-		FT_PDF, FT_PS, FT_EPS
+		FT_PDF, FT_PS, FT_EPS, FT_SVG
     } imagetype_t;
 
     typedef enum {

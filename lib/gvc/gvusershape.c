@@ -48,6 +48,9 @@ typedef struct {
 #define PDF_MAGIC  "%PDF-"
 #define EPS_MAGIC  "\xC5\xD0\xD3\xC6"
 
+#define XML_MAGIC  "<?xml"
+#define SVG_MAGIC  "<svg"
+
 static knowntype_t knowntypes[] = {
     { PNG_MAGIC,  sizeof(PNG_MAGIC)-1,  FT_PNG,  "png",  },
     { PS_MAGIC,   sizeof(PS_MAGIC)-1,   FT_PS,   "ps",   },
@@ -61,7 +64,31 @@ static knowntype_t knowntypes[] = {
 static int imagetype (usershape_t *us)
 {
     char header[HDRLEN];
+    char line[200];
     int i;
+
+    int firstLine = 1;
+
+// check for SVG first
+
+    while (fgets(line, sizeof(line), us->f) != NULL) {
+
+		if (firstLine == 1) {
+			if (!memcmp(line, XML_MAGIC, sizeof(XML_MAGIC)-1)) {
+				firstLine = 0;
+				continue;
+			} else {
+				break;
+			}
+		}	
+
+		if (!memcmp(line, SVG_MAGIC, sizeof(SVG_MAGIC)-1)) {
+    			us->stringtype = "svg";
+			return (us->type = FT_SVG);
+		}
+    }
+
+    rewind(us->f);
 
     if (us->f && fread(header, 1, HDRLEN, us->f) == HDRLEN) {
         for (i = 0; i < sizeof(knowntypes) / sizeof(knowntype_t); i++) {
@@ -71,6 +98,7 @@ static int imagetype (usershape_t *us)
 	    }
         }
     }
+
     us->stringtype = "(lib)";
     us->type = FT_NULL;
     return FT_NULL;
@@ -103,6 +131,63 @@ static boolean get_int_msb_first (FILE *f, unsigned int sz, unsigned int *val)
 	*val |= ch;
     }
     return TRUE;
+}
+
+static void svg_size (usershape_t *us)
+{
+	unsigned int w, h;
+	float iw, ih;
+
+	char *token;
+    
+	char line[200];
+
+	int wFlag = 0;
+	int hFlag = 0;
+
+	us->dpi = POINTS_PER_INCH;
+
+	rewind(us->f);
+
+	while (fgets(line, sizeof(line), us->f) != NULL) {
+		if (!memcmp(line, SVG_MAGIC, sizeof(SVG_MAGIC)-1)) {
+			break;
+		}
+	}
+
+	token = strtok(line, " ");
+
+	while (token != NULL) {
+		if (strncmp(token, "width", 5) == 0) {
+			if (sscanf(token, "width=\"%fin\"", &iw) == 0 ) {
+				sscanf(token, "width=\"%dpx\"", &w);
+			} else {
+				w = (int)(iw * POINTS_PER_INCH);
+			}
+
+			wFlag = 1;
+		}
+
+		if (strncmp(token, "height", 6) == 0) {
+			if (sscanf(token, "height=\"%fin\"", &ih) == 0 ) {
+				sscanf(token, "height=\"%dpx\"", &h);
+			} else {
+				h = (int)(ih * POINTS_PER_INCH);
+			}
+
+			hFlag = 1;
+		}
+
+
+		if (wFlag == 1 && hFlag == 1) {
+			break;
+		}
+
+		token =  strtok(NULL, " ");
+	}
+
+	us->w = w;
+	us->h = h;
 }
 
 static void png_size (usershape_t *us)
@@ -316,6 +401,9 @@ static usershape_t *gvusershape_open (char *name)
 	        break;
 	    case FT_PS:
 	        ps_size(us);
+	        break;
+	    case FT_SVG:
+	        svg_size(us);
 	        break;
 	    case FT_PDF:   /* no pdf_size code available */
 	    case FT_EPS:   /* no eps_size code available */

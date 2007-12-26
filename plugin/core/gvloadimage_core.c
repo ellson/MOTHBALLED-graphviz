@@ -39,7 +39,7 @@ typedef enum {
     FORMAT_PNG_XDOT, FORMAT_GIF_XDOT, FORMAT_JPEG_XDOT,
     FORMAT_PNG_FIG, FORMAT_GIF_FIG, FORMAT_JPEG_FIG,
     FORMAT_PNG_VRML, FORMAT_GIF_VRML, FORMAT_JPEG_VRML,
-    FORMAT_PS_PS, FORMAT_PSLIB_PS,
+    FORMAT_PS_PS, FORMAT_PSLIB_PS, FORMAT_SVG_SVG,
 } format_type;
 
 static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
@@ -294,5 +294,6 @@ gvplugin_installed_t gvloadimage_core_types[] = {
     {FORMAT_JPEG_XDOT, "jpeg:xdot", 1, &engine_xdot, NULL},
     {FORMAT_JPEG_XDOT, "jpe:xdot", 1, &engine_xdot, NULL},
     {FORMAT_JPEG_XDOT, "jpg:xdot", 1, &engine_xdot, NULL},
+    {FORMAT_SVG_SVG, "svg:svg", 1, &engine_svg, NULL},
     {0, NULL, 0, NULL, NULL}
 };
