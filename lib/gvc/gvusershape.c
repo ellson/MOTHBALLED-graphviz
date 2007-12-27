@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "types.h"
+#include "logic.h"
 #include "memory.h"
 #include "graph.h"
 #include "agxbuf.h"
@@ -47,7 +48,6 @@ typedef struct {
 #define JPEG_MAGIC "\xFF\xD8\xFF\xE0"
 #define PDF_MAGIC  "%PDF-"
 #define EPS_MAGIC  "\xC5\xD0\xD3\xC6"
-
 #define XML_MAGIC  "<?xml"
 #define SVG_MAGIC  "<svg"
 
@@ -59,6 +59,8 @@ static knowntype_t knowntypes[] = {
     { JPEG_MAGIC, sizeof(JPEG_MAGIC)-1, FT_JPEG, "jpeg", },
     { PDF_MAGIC,  sizeof(PDF_MAGIC)-1,  FT_PDF,  "pdf",  },
     { EPS_MAGIC,  sizeof(EPS_MAGIC)-1,  FT_EPS,  "eps",  },
+    { SVG_MAGIC,  sizeof(SVG_MAGIC)-1,  FT_SVG,  "svg",  },
+    { XML_MAGIC,  sizeof(XML_MAGIC)-1,  FT_XML,  "xml",  },
 };
 
 static int imagetype (usershape_t *us)
@@ -67,40 +69,27 @@ static int imagetype (usershape_t *us)
     char line[200];
     int i;
 
-    int firstLine = 1;
-
-// check for SVG first
-
-    while (fgets(line, sizeof(line), us->f) != NULL) {
-
-		if (firstLine == 1) {
-			if (!memcmp(line, XML_MAGIC, sizeof(XML_MAGIC)-1)) {
-				firstLine = 0;
-				continue;
-			} else {
-				break;
-			}
-		}	
-
-		if (!memcmp(line, SVG_MAGIC, sizeof(SVG_MAGIC)-1)) {
-    			us->stringtype = "svg";
-			return (us->type = FT_SVG);
-		}
-    }
-
-    rewind(us->f);
-
     if (us->f && fread(header, 1, HDRLEN, us->f) == HDRLEN) {
         for (i = 0; i < sizeof(knowntypes) / sizeof(knowntype_t); i++) {
 	    if (!memcmp (header, knowntypes[i].template, knowntypes[i].size)) {
 	        us->stringtype = knowntypes[i].stringtype;
-	        return (us->type = knowntypes[i].type);
+		us->type = knowntypes[i].type;
+		if (us->type != FT_XML)
+		    return us->type;
+		/* check for SVG in case of XML */
+		while (fgets(line, sizeof(line), us->f) != NULL) {
+		    if (!memcmp(line, SVG_MAGIC, sizeof(SVG_MAGIC)-1)) {
+    			us->stringtype = "svg";
+			return (us->type = FT_SVG);
+		    }
+		}
 	    }
         }
     }
 
     us->stringtype = "(lib)";
     us->type = FT_NULL;
+
     return FT_NULL;
 }
     
@@ -133,61 +122,52 @@ static boolean get_int_msb_first (FILE *f, unsigned int sz, unsigned int *val)
     return TRUE;
 }
 
+static unsigned int svg_units_convert(double n, char *u)
+{
+    if (strcmp(u, "in") == 0)
+	return ROUND(n * POINTS_PER_INCH);
+    if (strcmp(u, "px") == 0)
+        return ROUND(n * POINTS_PER_INCH / 96);
+    if (strcmp(u, "pc") == 0)
+        return ROUND(n * POINTS_PER_INCH / 6); 
+    if (strcmp(u, "pt") == 0)
+        return ROUND(n);
+    if (strcmp(u, "cm") == 0)
+        return ROUND(n * POINTS_PER_CM);
+    if (strcmp(u, "mm") == 0)
+        return ROUND(n * POINTS_PER_MM);
+    return 0;
+}
+
 static void svg_size (usershape_t *us)
 {
-	unsigned int w, h;
-	float iw, ih;
+    unsigned int w = 0, h = 0;
+    double n;
+    char u[10];
+    char *token;
+    char line[200];
+    bool wFlag = false, hFlag = false;
 
-	char *token;
-    
-	char line[200];
-
-	int wFlag = 0;
-	int hFlag = 0;
-
-	us->dpi = POINTS_PER_INCH;
-
-	rewind(us->f);
-
-	while (fgets(line, sizeof(line), us->f) != NULL) {
-		if (!memcmp(line, SVG_MAGIC, sizeof(SVG_MAGIC)-1)) {
-			break;
-		}
-	}
-
-	token = strtok(line, " ");
-
-	while (token != NULL) {
-		if (strncmp(token, "width", 5) == 0) {
-			if (sscanf(token, "width=\"%fin\"", &iw) == 0 ) {
-				sscanf(token, "width=\"%dpx\"", &w);
-			} else {
-				w = (int)(iw * POINTS_PER_INCH);
-			}
-
-			wFlag = 1;
-		}
-
-		if (strncmp(token, "height", 6) == 0) {
-			if (sscanf(token, "height=\"%fin\"", &ih) == 0 ) {
-				sscanf(token, "height=\"%dpx\"", &h);
-			} else {
-				h = (int)(ih * POINTS_PER_INCH);
-			}
-
-			hFlag = 1;
-		}
-
-
-		if (wFlag == 1 && hFlag == 1) {
-			break;
-		}
-
-		token =  strtok(NULL, " ");
-	}
-
-	us->w = w;
-	us->h = h;
+    fseek(us->f, -strlen(line), SEEK_CUR);
+    while (fgets(line, sizeof(line), us->f) != NULL && (!wFlag || !hFlag)) {
+        token = strtok(line, " ");
+        while (token != NULL && token[strlen(token)-1] != '>') {
+	    if (sscanf(token, "width=\"%lf%2s\"", &n, u) == 2) {
+	        w = svg_units_convert(n, u);
+	        wFlag = true;
+	    }
+	    if (sscanf(token, "height=\"%lf%2s\"", &n, u) == 2) {
+	        h = svg_units_convert(n, u);
+	        hFlag = true;
+	    }
+            if (wFlag && hFlag)
+		break;
+            token =  strtok(NULL, " ");
+        }
+    }
+    us->dpi = 72;
+    us->w = w;
+    us->h = h;
 }
 
 static void png_size (usershape_t *us)
