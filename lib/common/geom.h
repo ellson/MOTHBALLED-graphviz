@@ -58,6 +58,10 @@ typedef struct { pointf LL, UR; } boxf;
 #define DIST(p1,p2) (sqrt(DIST2((p1),(p2))))
 
 #define POINTS_PER_INCH	72
+#define POINTS_PER_PC ((double)POINTS_PER_INCH / 6)
+#define POINTS_PER_CM ((double)POINTS_PER_INCH * 0.393700787)
+#define POINTS_PER_MM ((double)POINTS_PER_INCH * 0.0393700787)
+
 #define POINTS(f_inch)	(ROUND((f_inch)*POINTS_PER_INCH))
 #define PS2INCH(ps)		((ps)/(double)POINTS_PER_INCH)
 
@@ -65,6 +69,7 @@ typedef struct { pointf LL, UR; } boxf;
 #define PF2P(pf, p) (p.x = ROUND (pf.x), p.y = ROUND (pf.y))
 #define B2BF(b, bf) (bf.LL.x = b.LL.x, bf.LL.y = b.LL.y, bf.UR.x = b.UR.x, bf.UR.y = b.UR.y)
 #define BF2B(bf, b) (b.LL.x = ROUND (bf.LL.x), b.LL.y = ROUND (bf.LL.y), b.UR.x = ROUND (bf.UR.x), b.UR.y = ROUND (bf.UR.y))
+
 #endif
 
 #ifdef __cplusplus
