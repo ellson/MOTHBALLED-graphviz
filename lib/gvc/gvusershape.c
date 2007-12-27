@@ -59,7 +59,7 @@ static knowntype_t knowntypes[] = {
     { JPEG_MAGIC, sizeof(JPEG_MAGIC)-1, FT_JPEG, "jpeg", },
     { PDF_MAGIC,  sizeof(PDF_MAGIC)-1,  FT_PDF,  "pdf",  },
     { EPS_MAGIC,  sizeof(EPS_MAGIC)-1,  FT_EPS,  "eps",  },
-    { SVG_MAGIC,  sizeof(SVG_MAGIC)-1,  FT_SVG,  "svg",  },
+/*    { SVG_MAGIC,  sizeof(SVG_MAGIC)-1,  FT_SVG,  "svg",  },  - viewers expect xml preamble */
     { XML_MAGIC,  sizeof(XML_MAGIC)-1,  FT_XML,  "xml",  },
 };
 
@@ -130,7 +130,7 @@ static unsigned int svg_units_convert(double n, char *u)
         return ROUND(n * POINTS_PER_INCH / 96);
     if (strcmp(u, "pc") == 0)
         return ROUND(n * POINTS_PER_INCH / 6); 
-    if (strcmp(u, "pt") == 0)
+    if (strcmp(u, "pt") == 0 || strcmp(u, "\"") == 0)   /* ugly!!  - if there are no inits then the %2s get the trailing '"' */
         return ROUND(n);
     if (strcmp(u, "cm") == 0)
         return ROUND(n * POINTS_PER_CM);
@@ -155,13 +155,15 @@ static void svg_size (usershape_t *us)
 	    if (sscanf(token, "width=\"%lf%2s\"", &n, u) == 2) {
 	        w = svg_units_convert(n, u);
 	        wFlag = true;
+		if (hFlag)
+		    break;
 	    }
 	    if (sscanf(token, "height=\"%lf%2s\"", &n, u) == 2) {
 	        h = svg_units_convert(n, u);
 	        hFlag = true;
+                if (wFlag)
+		    break;
 	    }
-            if (wFlag && hFlag)
-		break;
             token =  strtok(NULL, " ");
         }
     }
