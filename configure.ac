@@ -1601,8 +1601,8 @@ AC_ARG_WITH(pangocairo,
   [], [with_pangocairo=yes])
 
 if test "x$with_pangocairo" = "xyes"; then
-# require at least the version available on fc6
-PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.14.10],
+# require at least the version available on centos5 (fc6 has 1.14.10)
+PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.14.9],
 	[HAVE_PANGOCAIRO=1
 	AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
 		[Define if you have the pango library with cairo support])],
