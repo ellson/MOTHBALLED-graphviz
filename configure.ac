@@ -1594,6 +1594,24 @@ fi
 AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$with_ipsepcola" = "xyes"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for SVG
+                                                                                
+AC_ARG_WITH(rsvg,
+  [AC_HELP_STRING([--with-rsvg=yes], [rsvg library])],
+  [], [with_rsvg=yes])
+
+if test "x$with_rsvg" = "xyes"; then
+PKG_CHECK_MODULES(RSVG, [librsvg-2.0],
+	[HAVE_RSVG=1
+	AC_DEFINE_UNQUOTED(HAVE_RSVG,1,
+		[Define if you have the rsvg library])],
+	[AC_MSG_WARN(rsvg library not available)])
+AC_SUBST(RSVG_CFLAGS)
+AC_SUBST(RSVG_LIBS)
+fi
+AM_CONDITIONAL(WITH_RSVG, [test "x$HAVE_RSVG" != "x"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for PANGO, CAIRO et.al.
                                                                                 
 AC_ARG_WITH(pangocairo,
@@ -2298,6 +2316,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/core/Makefile
 	plugin/devil/Makefile
 	plugin/gdk_pixbuf/Makefile
+	plugin/rsvg/Makefile
 	plugin/gd/Makefile
 	plugin/pango/Makefile
 	plugin/ming/Makefile
