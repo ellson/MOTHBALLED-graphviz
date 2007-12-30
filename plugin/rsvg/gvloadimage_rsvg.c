@@ -19,6 +19,7 @@
 #endif
 
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "gvplugin_loadimage.h"
 
@@ -26,6 +27,7 @@
 #ifdef HAVE_RSVG
 #include <librsvg/rsvg.h>
 #include <librsvg/rsvg-cairo.h>
+#include <cairo/cairo-svg.h>
 
 #ifdef WIN32
 #define NUL_FILE "nul"
@@ -37,23 +39,22 @@ typedef enum {
     FORMAT_SVG_CAIRO,
 } format_type;
 
-static cairo_status_t
-reader (void *closure, unsigned char *data, unsigned int length)
+
+static void gvloadimage_rsvg_free(usershape_t *us)
 {
-    if (length == fread(data, 1, length, (FILE *)closure)
-     || feof((FILE *)closure))
-        return CAIRO_STATUS_SUCCESS;
-    return CAIRO_STATUS_READ_ERROR;
+    rsvg_handle_close((RsvgHandle*)us->data, NULL);
 }
 
-static void cairo_freeimage(usershape_t *us)
-{
-    cairo_destroy((cairo_t*)us->data);
-}
-
-static RsvgHandle* cairo_loadimage(GVJ_t * job, usershape_t *us)
+static RsvgHandle* gvloadimage_rsvg_load(GVJ_t * job, usershape_t *us)
 {
     RsvgHandle* rsvgh = NULL;
+    guchar *fileBuf = NULL;
+    GError *err = NULL;
+    gsize fileSize;
+    gint result;
+
+    int fd;
+    struct stat stbuf;
 
     assert(job);
     assert(us);
@@ -61,7 +62,7 @@ static RsvgHandle* cairo_loadimage(GVJ_t * job, usershape_t *us)
     assert(us->f);
 
     if (us->data) {
-        if (us->datafree == cairo_freeimage)
+        if (us->datafree == gvloadimage_rsvg_free)
              rsvgh = (RsvgHandle*)(us->data); /* use cached data */
         else {
              us->datafree(us);        /* free incompatible cache data */
@@ -75,12 +76,46 @@ static RsvgHandle* cairo_loadimage(GVJ_t * job, usershape_t *us)
             case FT_SVG:
 
 		rsvg_init();
-       		rsvgh = rsvg_handle_new_from_file(us->name, NULL);
+
+      		rsvgh = rsvg_handle_new();
 		
 		if (rsvgh == NULL) {
+			fprintf(stderr, "rsvg_handle_new_from_file returned an error: %s\n", err->message);
 			rsvg_term();
+			return NULL;
+		} 
+
+	 	fd = fileno(us->f);
+		fstat(fd, &stbuf);
+  		fileSize = stbuf.st_size;	
+
+		fileBuf = calloc(fileSize + 1, sizeof(guchar));
+
+		if (fileBuf == NULL) {
+			rsvg_handle_free(rsvgh);
+			rsvg_term();
+			return NULL;
 		}
 	
+		rewind(us->f);
+
+		if ((result = fread(fileBuf, 1, fileSize, us->f)) < fileSize) {
+			rsvg_handle_free(rsvgh);
+			rsvg_term();
+			return NULL;
+		}
+
+		if (rsvg_handle_write(rsvgh, (const guchar *)fileBuf, (gsize)fileSize, &err) == FALSE) {
+			fprintf(stderr, "rsvg_handle_write returned an error: %s\n", err->message);
+			free(fileBuf);
+			rsvg_handle_free(rsvgh);
+			rsvg_term();
+			return NULL;
+		} 
+
+		free(fileBuf);
+
+		rsvg_handle_close(rsvgh, &err);
 		rsvg_handle_set_dpi(rsvgh, POINTS_PER_INCH);
 
                 break;
@@ -90,15 +125,16 @@ static RsvgHandle* cairo_loadimage(GVJ_t * job, usershape_t *us)
 
         if (rsvgh) {
             us->data = (void*)rsvgh;
-            us->datafree = cairo_freeimage;
+            us->datafree = gvloadimage_rsvg_free;
         }
     }
+
     return rsvgh;
 }
 
-static void rsvg_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
+static void gvloadimage_rsvg_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
-    RsvgHandle* rsvgh = cairo_loadimage(job, us);
+    RsvgHandle* rsvgh = gvloadimage_rsvg_load(job, us);
 
     cairo_t *cr = (cairo_t *) job->context; /* target context */
     cairo_surface_t *surface;	 /* source surface */
@@ -116,7 +152,6 @@ static void rsvg_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean f
         cairo_scale(cr, (b.UR.x - b.LL.x) / us->w,
                        (b.UR.y - b.LL.y) / us->h);
 
-
 	rsvg_handle_render_cairo(rsvgh, cr);
 
         cairo_paint (cr);
@@ -125,7 +160,7 @@ static void rsvg_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean f
 }
 
 static gvloadimage_engine_t engine_cairo = {
-    rsvg_loadimage_cairo
+    gvloadimage_rsvg_cairo
 };
 #endif
 #endif
