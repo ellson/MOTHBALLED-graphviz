@@ -27,6 +27,12 @@
 #include <librsvg/rsvg.h>
 #include <librsvg/rsvg-cairo.h>
 
+#ifdef WIN32
+#define NUL_FILE "nul"
+#else
+#define NUL_FILE "/dev/null"
+#endif
+
 typedef enum {
     FORMAT_SVG_CAIRO,
 } format_type;
@@ -45,9 +51,9 @@ static void cairo_freeimage(usershape_t *us)
     cairo_destroy((cairo_t*)us->data);
 }
 
-static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
+static RsvgHandle* cairo_loadimage(GVJ_t * job, usershape_t *us)
 {
-    cairo_surface_t *surface = NULL; /* source surface */
+    RsvgHandle* rsvgh = NULL;
 
     assert(job);
     assert(us);
@@ -56,44 +62,63 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
 
     if (us->data) {
         if (us->datafree == cairo_freeimage)
-             surface = (cairo_surface_t*)(us->data); /* use cached data */
+             rsvgh = (RsvgHandle*)(us->data); /* use cached data */
         else {
              us->datafree(us);        /* free incompatible cache data */
              us->data = NULL;
         }
+
     }
-    if (!surface) { /* read file into cache */
-        fseek(us->f, 0, SEEK_SET);
+
+    if (!rsvgh) { /* read file into cache */
         switch (us->type) {
-#ifdef CAIRO_HAS_PNG_FUNCTIONS
-            case FT_PNG:
-                surface = cairo_image_surface_create_from_png_stream(reader, us->f);
-                cairo_surface_reference(surface);
+            case FT_SVG:
+
+		rsvg_init();
+       		rsvgh = rsvg_handle_new_from_file(us->name, NULL);
+		
+		if (rsvgh == NULL) {
+			rsvg_term();
+		}
+	
+		rsvg_handle_set_dpi(rsvgh, POINTS_PER_INCH);
+
                 break;
-#endif
             default:
-                surface = NULL;
+                rsvgh = NULL;
         }
-        if (surface) {
-            us->data = (void*)surface;
+
+        if (rsvgh) {
+            us->data = (void*)rsvgh;
             us->datafree = cairo_freeimage;
         }
     }
-    return surface;
+    return rsvgh;
 }
 
 static void rsvg_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
+    RsvgHandle* rsvgh = cairo_loadimage(job, us);
+
     cairo_t *cr = (cairo_t *) job->context; /* target context */
     cairo_surface_t *surface;	 /* source surface */
 
-    surface = cairo_loadimage(job, us);
-    if (surface) {
+    if (rsvgh) {
         cairo_save(cr);
+
+       	surface = cairo_svg_surface_create(NUL_FILE, us->w, us->h); 
+
+	cairo_surface_reference(surface);
+
+        cairo_set_source_surface(cr, surface, 0, 0);
+
         cairo_translate(cr, ROUND(b.LL.x), ROUND(-b.UR.y));
         cairo_scale(cr, (b.UR.x - b.LL.x) / us->w,
-                        (b.UR.y - b.LL.y) / us->h);
-        cairo_set_source_surface (cr, surface, 0, 0);
+                       (b.UR.y - b.LL.y) / us->h);
+
+
+	rsvg_handle_render_cairo(rsvgh, cr);
+
         cairo_paint (cr);
         cairo_restore(cr);
     }
