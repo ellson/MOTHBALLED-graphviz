@@ -99,7 +99,7 @@ gv.cmx: gv.ml gv.cma
 gv.cmxa gv.a: gv.cma
 	ocamlopt -a -o gv.cmxa
 
-pkgperldir = $(pkglibdir)/perl
+pkgperldir = @PERL_INSTALL_DIR@
 PERL_data = gv.pm
 nodist_libgv_perl_la_SOURCES = gv_perl.cpp $(PERL_data)
 libgv_perl_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
@@ -119,7 +119,7 @@ $(PHP_data): gv_php.cpp
 gv_php.cpp: gv.i
 	$(SWIG) -c++ -php5 -o gv_php.cpp $(srcdir)/gv.i
 
-pkgpythondir = $(pkglibdir)/python
+pkgpythondir = @PYTHON_INSTALL_DIR@
 PYTHON_data = gv.py
 nodist_libgv_python_la_SOURCES = gv_python.cpp $(PYTHON_data)
 libgv_python_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
@@ -129,19 +129,19 @@ $(PYTHON_data): gv_python.cpp
 gv_python.cpp: gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
 
-pkgpython23dir = $(pkglibdir)/python23
+pkgpython23dir = @PYTHON23_INSTALL_DIR@
 nodist_libgv_python23_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python23_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_python23_la_LIBADD = $(BASELIBS) @PYTHON23_LIBS@
 libgv_python23_la_LDFLAGS = -module -avoid-version
 
-pkgpython24dir = $(pkglibdir)/python24
+pkgpython24dir = @PYTHON24_INSTALL_DIR@
 nodist_libgv_python24_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python24_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_python24_la_LIBADD = $(BASELIBS) @PYTHON24_LIBS@
 libgv_python24_la_LDFLAGS = -module -avoid-version
 
-pkgpython25dir = $(pkglibdir)/python25
+pkgpython25dir = @PYTHON25_INSTALL_DIR@
 nodist_libgv_python25_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python25_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_python25_la_LIBADD = $(BASELIBS) @PYTHON25_LIBS@
@@ -157,7 +157,7 @@ $(R_data): gv_r.cpp
 gv_r.cpp: gv.i
 	$(SWIG) -c++ -r -o gv_r.cpp $(srcdir)/gv.i
 
-pkgrubydir = $(pkglibdir)/ruby
+pkgrubydir = @RUBY_INSTALL_DIR@
 RUBY_data = 
 nodist_libgv_ruby_la_SOURCES = gv_ruby.cpp $(RUBY_data)
 libgv_ruby_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
@@ -308,15 +308,33 @@ $(man): gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
 	-groff -Tps -man $< | ps2pdf - - >$@
 
 install-data-hook:
+if WITH_LUA
 	(cd $(DESTDIR)$(pkgluadir);    rm -f gv.so;  $(LN_S) libgv_lua.so gv.so;)
+endif
+if WITH_PERL
 	(cd $(DESTDIR)$(pkgperldir);   rm -f gv.so;  $(LN_S) libgv_perl.so gv.so;)
+endif
+if WITH_PYTHON
 	(cd $(DESTDIR)$(pkgpythondir); rm -f _gv.so; $(LN_S) libgv_python.so _gv.so;)
+endif
+if WITH_PYTHON23
 	(cd $(DESTDIR)$(pkgpython23dir); rm -f _gv.so; $(LN_S) libgv_python23.so _gv.so;)
+endif
+if WITH_PYTHON24
 	(cd $(DESTDIR)$(pkgpython24dir); rm -f _gv.so; $(LN_S) libgv_python24.so _gv.so;)
+endif
+if WITH_PYTHON25
 	(cd $(DESTDIR)$(pkgpython25dir); rm -f _gv.so; $(LN_S) libgv_python25.so _gv.so;)
+endif
+if WITH_R
 	(cd $(DESTDIR)$(pkgrdir);   rm -f gv.so;  $(LN_S) libgv_r.so gv.so;)
+endif
+if WITH_RUBY
 	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;  $(LN_S) libgv_ruby.so gv.so;)
+endif
+if WITH_TCL
 	(cd $(DESTDIR)$(pkgtcldir);    rm -f gv.so;  $(LN_S) libgv_tcl.so gv.so;)
+endif
 
 uninstall-hook:
 	(cd $(DESTDIR)$(pkgluadir);    rm -f gv.so;)

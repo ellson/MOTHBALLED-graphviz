@@ -761,6 +761,7 @@ if test "x$PERL" != "x"; then
   PERL_ARCHLIB=`$PERL -e 'use Config; print $Config{archlib};'`
   PERL_INCLUDES=-I$PERL_ARCHLIB/CORE
   PERL_LIBS="-L$PERL_ARCHLIB/CORE -lperl"
+  PERL_INSTALL_DIR="`$PERL -e 'use Config; print $Config{vendorarch};'`"
   save_CPPFLAGS=$CPPFLAGS
   CPPFLAGS="$CPPFLAGS $PERL_INCLUDES"
   AC_CHECK_HEADER(EXTERN.h,,[
@@ -771,6 +772,7 @@ if test "x$PERL" != "x"; then
 fi
 AC_SUBST(PERL_INCLUDES)
 AC_SUBST(PERL_LIBS)
+AC_SUBST(PERL_INSTALL_DIR)
 fi
 fi
 AM_CONDITIONAL(WITH_PERL, [test "x$PERL" != "x"])
@@ -845,6 +847,7 @@ if test "x$PYTHON" != "x"; then
     PYTHON_PREFIX=`$PYTHON -c "import sys; print sys.prefix"`
     PYTHON_INCLUDES=-I$PYTHON_PREFIX/include/python$PYTHON_VERSION_SHORT
     PYTHON_LIBS="-L$PYTHON_PREFIX/lib$LIBPOSTFIX/python$PYTHON_VERSION_SHORT/config"
+    PYTHON_INSTALL_DIR="`$PYTHON $srcdir/config/config_python.py archsitelib`"
     save_CPPFLAGS=$CPPFLAGS
     CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
     AC_CHECK_HEADER(Python.h,,[
@@ -856,6 +859,7 @@ if test "x$PYTHON" != "x"; then
 fi
 AC_SUBST(PYTHON_INCLUDES)
 AC_SUBST(PYTHON_LIBS)
+AC_SUBST(PYTHON_INSTALL_DIR)
 fi
 fi
 fi
@@ -898,6 +902,7 @@ if test "x$PYTHON23" != "x"; then
     PYTHON23_PREFIX=`$PYTHON23 -c "import sys; print sys.prefix"`
     PYTHON23_INCLUDES=-I$PYTHON23_PREFIX/include/python$PYTHON23_VERSION_SHORT
     PYTHON23_LIBS="-L$PYTHON23_PREFIX/lib$LIBPOSTFIX"
+    PYTHON23_INSTALL_DIR="`$PYTHON23 $srcdir/config/config_python.py archsitelib`"
     save_CPPFLAGS=$CPPFLAGS
     CPPFLAGS="$CPPFLAGS $PYTHON23_INCLUDES"
     AC_CHECK_HEADER(Python.h,,[
@@ -909,6 +914,7 @@ if test "x$PYTHON23" != "x"; then
 fi
 AC_SUBST(PYTHON23_INCLUDES)
 AC_SUBST(PYTHON23_LIBS)
+AC_SUBST(PYTHON23_INSTALL_DIR)
 fi
 fi
 fi
@@ -951,6 +957,7 @@ if test "x$PYTHON24" != "x"; then
     PYTHON24_PREFIX=`$PYTHON24 -c "import sys; print sys.prefix"`
     PYTHON24_INCLUDES=-I$PYTHON24_PREFIX/include/python$PYTHON24_VERSION_SHORT
     PYTHON24_LIBS="-L$PYTHON24_PREFIX/lib$LIBPOSTFIX"
+    PYTHON24_INSTALL_DIR="`$PYTHON24 $srcdir/config/config_python.py archsitelib`"
     save_CPPFLAGS=$CPPFLAGS
     CPPFLAGS="$CPPFLAGS $PYTHON24_INCLUDES"
     AC_CHECK_HEADER(Python.h,,[
@@ -962,6 +969,7 @@ if test "x$PYTHON24" != "x"; then
 fi
 AC_SUBST(PYTHON24_INCLUDES)
 AC_SUBST(PYTHON24_LIBS)
+AC_SUBST(PYTHON24_INSTALL_DIR)
 fi
 fi
 fi
@@ -1004,6 +1012,7 @@ if test "x$PYTHON25" != "x"; then
     PYTHON25_PREFIX=`$PYTHON25 -c "import sys; print sys.prefix"`
     PYTHON25_INCLUDES=-I$PYTHON25_PREFIX/include/python$PYTHON25_VERSION_SHORT
     PYTHON25_LIBS="-L$PYTHON25_PREFIX/lib$LIBPOSTFIX"
+    PYTHON25_INSTALL_DIR="`$PYTHON25 $srcdir/config/config_python.py archsitelib`"
     save_CPPFLAGS=$CPPFLAGS
     CPPFLAGS="$CPPFLAGS $PYTHON25_INCLUDES"
     AC_CHECK_HEADER(Python.h,,[
@@ -1015,6 +1024,7 @@ if test "x$PYTHON25" != "x"; then
 fi
 AC_SUBST(PYTHON25_INCLUDES)
 AC_SUBST(PYTHON25_LIBS)
+AC_SUBST(PYTHON25_INSTALL_DIR)
 fi
 fi
 fi
@@ -1035,8 +1045,6 @@ else
 PKG_CHECK_MODULES(R, [libR],
         [R=1],
         [AC_MSG_WARN(R library not available.)])
-
-
 fi
 fi
 fi
@@ -1060,6 +1068,7 @@ AC_CHECK_PROG(RUBY,ruby,ruby)
 if test "x$RUBY" != "x"; then
   RUBY_INCLUDES="-I`$RUBY $srcdir/config/config_ruby.rb INCLUDES`"
   RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb lib` `$RUBY -rrbconfig -e \"puts Config::CONFIG[['LIBRUBYARG_SHARED']]\"`"
+  RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb archsitelib`"
   save_CPPFLAGS=$CPPFLAGS
   CPPFLAGS="$CPPFLAGS $RUBY_INCLUDES"
   AC_CHECK_HEADER(ruby.h,,[
@@ -1070,6 +1079,7 @@ if test "x$RUBY" != "x"; then
 fi
 AC_SUBST(RUBY_INCLUDES)
 AC_SUBST(RUBY_LIBS)
+AC_SUBST(RUBY_INSTALL_DIR)
 fi
 fi
 fi
