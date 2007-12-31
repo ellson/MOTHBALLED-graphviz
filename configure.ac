@@ -1031,13 +1031,13 @@ fi
 AM_CONDITIONAL(WITH_PYTHON25, [test "x$PYTHON25" != "x"])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for R (disabled for now - swig generated gv_r.cpp doesn't compile)
+dnl INCLUDES and LIBS for R
 
 R=
 if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(r,
-  [AC_HELP_STRING([--enable-r=no], [R language bindings])],
-  [], [enable_r=no])
+  [AC_HELP_STRING([--enable-r=yes], [R language bindings])],
+  [], [enable_r=yes])
 if test "x$enable_r" = "xyes"; then
 if test `$SWIG -help 2>&1 | $GREP -c '\-r *- Generate'` = 0; then
 	AC_MSG_WARN([swig does not support -r. The R packages will not be built])
