@@ -423,21 +423,21 @@ Python extension for graphviz.
 %{_mandir}/mann/gv_python.n*
 %endif
 
-#-- graphviz-r rpm ---------------------------------------------
+#-- graphviz-R rpm ---------------------------------------------
 %if %{R_LANG}
-%package r
+%package R
 Group:          Applications/Multimedia
 Summary:        R extension for graphviz
-Requires:       graphviz = %{version}-%{release} r
+Requires:       graphviz = %{version}-%{release} R
 
-%description r
+%description R
 R extension for graphviz.
 
-%files r
+%files R
 %defattr(-,root,root,-)
-%dir %{_libdir}/graphviz/r
-%{_libdir}/graphviz/r/*
-%{_mandir}/mann/gv_r.n*
+%dir %{_libdir}/graphviz/R
+%{_libdir}/graphviz/R/*
+%{_mandir}/mann/gv_R.n*
 %endif
 
 #-- graphviz-ruby rpm ---------------------------------------------

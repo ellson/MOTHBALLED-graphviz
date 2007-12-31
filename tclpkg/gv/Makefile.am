@@ -147,15 +147,15 @@ libgv_python25_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_python25_la_LIBADD = $(BASELIBS) @PYTHON25_LIBS@
 libgv_python25_la_LDFLAGS = -module -avoid-version
 
-pkgrdir = $(pkglibdir)/r
+pkgRdir = $(pkglibdir)/R
 R_data = 
-nodist_libgv_r_la_SOURCES = gv_r.cpp $(R_data)
-libgv_r_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
-libgv_r_la_LIBADD = $(BASELIBS) @R_LIBS@
-libgv_r_la_LDFLAGS = -module -avoid-version
-$(R_data): gv_r.cpp
-gv_r.cpp: gv.i
-	$(SWIG) -c++ -r -o gv_r.cpp $(srcdir)/gv.i
+nodist_libgv_R_la_SOURCES = gv_R.cpp $(R_data)
+libgv_R_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
+libgv_R_la_LIBADD = $(BASELIBS) @R_LIBS@
+libgv_R_la_LDFLAGS = -module -avoid-version
+$(R_data): gv_R.cpp
+gv_R.cpp: gv.i
+	$(SWIG) -c++ -r -o gv_R.cpp $(srcdir)/gv.i
 
 pkgrubydir = @RUBY_INSTALL_DIR@
 RUBY_data = 
@@ -268,11 +268,11 @@ pkgpython25_LTLIBRARIES = libgv_python25.la
 #DEVTSTS += test_python25
 endif
 if WITH_R
-pkgr_DATA = $(R_data)
-man_MANS += gv_r.n
-#pdf_DATA += gv_r.pdf
-pkgr_LTLIBRARIES = libgv_r.la
-DEVTSTS += test_r
+pkgR_DATA = $(R_data)
+man_MANS += gv_R.n
+#pdf_DATA += gv_R.pdf
+pkgR_LTLIBRARIES = libgv_R.la
+DEVTSTS += test_R
 endif
 if WITH_RUBY
 pkgruby_DATA = $(RUBY_data)
@@ -296,10 +296,10 @@ endif
 endif
 
 man = gv_sharp.n gv_guile.n gv_io.n gv_java.n gv_lua.n gv_ocaml.n \
-	gv_perl.n gv_php.n gv_python.n gv_r.n gv_ruby.n gv_tcl.n
+	gv_perl.n gv_php.n gv_python.n gv_R.n gv_ruby.n gv_tcl.n
 
 #pdf = gv_sharp.pdf gv_guile.pdf gv_io.pdf gv_java.pdf gv_lua.pdf gv_ocaml.pdf \
-#	gv_perl.pdf gv_php.pdf gv_python.pdf gv_ruby.pdf gv_tcl.pdf
+#	gv_perl.pdf gv_php.pdf gv_python.pdf gv_R.pdf gv_ruby.pdf gv_tcl.pdf
 
 $(man): gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
 	$(TCLSH) $(srcdir)/gv_doc_writer.tcl "$(srcdir)"
@@ -327,7 +327,7 @@ if WITH_PYTHON25
 	(cd $(DESTDIR)$(pkgpython25dir); rm -f _gv.so; $(LN_S) libgv_python25.so _gv.so;)
 endif
 if WITH_R
-	(cd $(DESTDIR)$(pkgrdir);   rm -f gv.so;  $(LN_S) libgv_r.so gv.so;)
+	(cd $(DESTDIR)$(pkgRdir);   rm -f gv.so;  $(LN_S) libgv_R.so gv.so;)
 endif
 if WITH_RUBY
 	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;  $(LN_S) libgv_ruby.so gv.so;)
@@ -343,7 +343,7 @@ uninstall-hook:
 	(cd $(DESTDIR)$(pkgpython23dir); rm -f _gv.so;)
 	(cd $(DESTDIR)$(pkgpython24dir); rm -f _gv.so;)
 	(cd $(DESTDIR)$(pkgpython25dir); rm -f _gv.so;)
-	(cd $(DESTDIR)$(pkgrdir);   rm -f gv.so;)
+	(cd $(DESTDIR)$(pkgRdir);   rm -f gv.so;)
 	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;)
 	(cd $(DESTDIR)$(pkgtcldir);    rm -f gv.so;)
 
@@ -416,12 +416,12 @@ test_python: libgv_python.la
 		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.py .; \
 		PYTHONPATH=. $(PYTHON) test.py)
 
-.PHONY: test_r
-test_r: libgv_r.la
-	-(mkdir -p test_r; cd test_r; \
-		ln -fs ../.libs/libgv_ruby.so gv.so; \
-		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.rb .; \
-		$(R) test.rb)
+.PHONY: test_R
+test_R: libgv_R.la
+	-(mkdir -p test_R; cd test_R; \
+		ln -fs ../.libs/libgv_R.so gv.so; \
+		ln -fs ../$(srcdir)/*.dot ../$(srcdir)/*.R .; \
+		$(R) test.R)
 
 .PHONY: test_ruby
 test_ruby: libgv_ruby.la
@@ -452,7 +452,7 @@ CLEANFILES = test_*/* pkgIndex.tcl \
 	gv_python23.cpp $(PYTHON23_data) gv.pyc \
 	gv_python24.cpp $(PYTHON24_data) gv.pyc \
 	gv_python25.cpp $(PYTHON25_data) gv.pyc \
-	gv_r.cpp $(R_data) \
+	gv_R.cpp $(R_data) \
 	gv_ruby.cpp $(RUBY_data) \
 	gv_tcl.cpp $(TCL_data) pkgIndex.tcl
 
