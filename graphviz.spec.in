@@ -454,7 +454,7 @@ Ruby extension for graphviz.
 
 %files ruby
 %defattr(-,root,root,-)
-%{_libdir}/ruby*
+%{_libdir}/*ruby*
 %{_mandir}/mann/gv_ruby.n*
 %endif
 
