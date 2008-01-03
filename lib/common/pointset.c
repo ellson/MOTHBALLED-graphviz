@@ -15,7 +15,7 @@
 **********************************************************/
 
 
-#include <pointset.h>
+#include "pointset.h"
 
 typedef struct {
     Dtlink_t link;

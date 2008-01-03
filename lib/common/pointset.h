@@ -23,7 +23,7 @@ extern "C" {
 #ifndef _POINTSET_H
 #define _POINTSET_H 1
 
-#include <render.h>
+#include "render.h"
 
     typedef Dict_t PointSet;
     typedef Dict_t PointMap;
