@@ -17,7 +17,7 @@
 #ifndef USERSHAPE_H
 #define USERSHAPE_H
 
-#include <cdt.h>
+#include "cdt.h"
 
 #ifdef __cplusplus
 extern "C" {
