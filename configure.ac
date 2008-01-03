@@ -1098,6 +1098,7 @@ else
 HAVE_TCL=0
 fi
 
+if test "$HAVE_TCL" = "1"; then
 AC_ARG_WITH(tclsh,
     [AC_HELP_STRING([--with-tcl=PROG], [use a specific tclsh])],
     TCLSH=$withval,)
@@ -1117,6 +1118,7 @@ if test "x$TCLSH" = "x"; then
         AC_MSG_WARN([Unable to find a tclsh. The Tcl packages will not be built])
         HAVE_TCL=0
     fi
+fi
 fi
 
 if test "$HAVE_TCL" = "1"; then
