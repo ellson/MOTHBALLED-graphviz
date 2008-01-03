@@ -4,7 +4,6 @@
 
 # author: John Ellson <ellson@research.att.com>
 
-use lib "/usr/lib/graphviz/perl";
 use gv;
 
 $G = gv::digraph("G");
@@ -40,4 +39,4 @@ gv::setv($E, "arrowsize", ".4");
 #f.close
 
 gv::layout($G, "dot");
-gv::render($G, "gtk");
+gv::render($G, "xlib");

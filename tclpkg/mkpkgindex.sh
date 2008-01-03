@@ -22,4 +22,4 @@ case "$1" in
     echo "	package require Tk 8.3" >>pkgIndex.tcl
     ;;
 esac
-echo "	load [file join \$dir tcl $lib] $2\"" >>pkgIndex.tcl
+echo "	load [file join \$dir $lib] $2\"" >>pkgIndex.tcl
