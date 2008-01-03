@@ -6,7 +6,7 @@ SUBDIRS = demo
 pdfdir = $(pkgdatadir)/doc/pdf
 htmldir = $(pkgdatadir)/doc/html
 
-pkgtcldir = @TCL_INSTALL_DIR@
+pkgtcldir = @TCL_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@
 
 AM_CPPFLAGS = \
         -I$(top_srcdir) \

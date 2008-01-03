@@ -99,7 +99,7 @@ gv.cmx: gv.ml gv.cma
 gv.cmxa gv.a: gv.cma
 	ocamlopt -a -o gv.cmxa
 
-pkgperldir = @PERL_INSTALL_DIR@
+pkgperldir = @PERL_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@
 PERL_data = gv.pm
 nodist_libgv_perl_la_SOURCES = gv_perl.cpp $(PERL_data)
 libgv_perl_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
@@ -119,7 +119,7 @@ $(PHP_data): gv_php.cpp
 gv_php.cpp: gv.i
 	$(SWIG) -c++ -php5 -o gv_php.cpp $(srcdir)/gv.i
 
-pkgpythondir = @PYTHON_INSTALL_DIR@
+pkgpythondir = @PYTHON_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@
 PYTHON_data = gv.py
 nodist_libgv_python_la_SOURCES = gv_python.cpp $(PYTHON_data)
 libgv_python_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
@@ -129,19 +129,19 @@ $(PYTHON_data): gv_python.cpp
 gv_python.cpp: gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
 
-pkgpython23dir = @PYTHON23_INSTALL_DIR@
+pkgpython23dir = @PYTHON23_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@
 nodist_libgv_python23_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python23_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_python23_la_LIBADD = $(BASELIBS) @PYTHON23_LIBS@
 libgv_python23_la_LDFLAGS = -module -avoid-version
 
-pkgpython24dir = @PYTHON24_INSTALL_DIR@
+pkgpython24dir = @PYTHON24_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@
 nodist_libgv_python24_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python24_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_python24_la_LIBADD = $(BASELIBS) @PYTHON24_LIBS@
 libgv_python24_la_LDFLAGS = -module -avoid-version
 
-pkgpython25dir = @PYTHON25_INSTALL_DIR@
+pkgpython25dir = @PYTHON25_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@
 nodist_libgv_python25_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python25_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_python25_la_LIBADD = $(BASELIBS) @PYTHON25_LIBS@
@@ -157,7 +157,7 @@ $(R_data): gv_R.cpp
 gv_R.cpp: gv.i
 	$(SWIG) -c++ -r -o gv_R.cpp $(srcdir)/gv.i
 
-pkgrubydir = @RUBY_INSTALL_DIR@
+pkgrubydir = @RUBY_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@
 RUBY_data = 
 nodist_libgv_ruby_la_SOURCES = gv_ruby.cpp $(RUBY_data)
 libgv_ruby_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
@@ -167,7 +167,7 @@ $(RUBY_data): gv_ruby.cpp
 gv_ruby.cpp: gv.i
 	$(SWIG) -c++ -ruby -o gv_ruby.cpp $(srcdir)/gv.i
 
-pkgtcldir = @TCL_INSTALL_DIR@
+pkgtcldir = @TCL_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@
 TCL_data = 
 nodist_libgv_tcl_la_SOURCES = gv_tcl.cpp $(TCL_data)
 libgv_tcl_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
