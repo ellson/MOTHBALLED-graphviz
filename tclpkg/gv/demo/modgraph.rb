@@ -4,7 +4,7 @@
 
 # author: John Ellson <ellson@research.att.com>
 
-require '/usr/lib/graphviz/ruby/gv.so'
+require 'gv.so'
 
 G = Gv.digraph("G")
 N = Gv.protonode(G)
@@ -39,4 +39,4 @@ end
 f.close
 
 Gv.layout(G, 'dot')
-Gv.render(G, 'gtk')
+Gv.render(G, 'xlib')
