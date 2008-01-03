@@ -6,8 +6,6 @@
 #  based on: modgraph.tcl by John Ellson <ellson@research.att.com>
 
 import sys
-sys.path.append('/usr/lib64/graphviz/python')
-sys.path.append('/usr/lib/graphviz/python')
 import gv
 
 modules = open("/proc/modules", 'r').readlines()
