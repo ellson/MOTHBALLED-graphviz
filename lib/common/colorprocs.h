@@ -17,7 +17,7 @@
 #ifndef GV_COLORPROCS_H
 #define GV_COLORPROCS_H
 
-#include <color.h>
+#include "color.h"
 
 #ifdef __cplusplus
 extern "C" {
