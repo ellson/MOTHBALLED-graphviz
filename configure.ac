@@ -1160,6 +1160,11 @@ if test "$HAVE_TCL" = "1"; then
             fi
         fi
     fi
+    if test -d ${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}/; then
+	TCL_INSTALL_DIR=${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}/AC_PACKAGE_NAME-AC_PACKAGE_VERSION
+    else
+	TCL_INSTALL_DIR=${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/AC_PACKAGE_NAME/tcl
+    fi
     if test "x$TCLCONFIG" != "x"; then
         AC_MSG_RESULT([using $TCLCONFIG])
         file=${TCLCONFIG}
@@ -1179,6 +1184,7 @@ if test "$HAVE_TCL" = "1"; then
 fi
 
 AC_SUBST(HAVE_TCL)
+AC_SUBST(TCL_INSTALL_DIR)
 
 AM_CONDITIONAL(WITH_TCL, [test "x${HAVE_TCL}" = "x1"])
 

@@ -4,7 +4,7 @@
 SUBDIRS = demo
 
 pdfdir = $(pkgdatadir)/doc/pdf
-pkgtcldir = $(pkglibdir)/tcl
+pkgtcldir = @TCL_INSTALL_DIR@
 
 AM_CPPFLAGS = \
 	 -I$(top_srcdir) \

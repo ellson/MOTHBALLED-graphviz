@@ -3,7 +3,7 @@
 
 SUBDIRS = demo
 
-pkgtcldir = $(pkglibdir)/tcl
+pkgtcldir = @TCL_INSTALL_DIR@
 pdfdir = $(pkgdatadir)/doc/pdf
 
 man = tkspline.n

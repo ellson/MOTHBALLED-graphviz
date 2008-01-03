@@ -468,9 +468,7 @@ Various tcl packages (extensions) for the graphviz tools.
 
 %files tcl
 %defattr(-,root,root,-)
-%dir %{_libdir}/graphviz/tcl
-%{_libdir}/graphviz/tcl/*
-%{_libdir}/graphviz/pkgIndex.tcl
+%{_libdir}/tcl*
 %{_datadir}/graphviz/demo
 # hack to include gv_tcl.n only if available
 #  always includes tcldot.n, gdtclft.n

@@ -167,7 +167,7 @@ $(RUBY_data): gv_ruby.cpp
 gv_ruby.cpp: gv.i
 	$(SWIG) -c++ -ruby -o gv_ruby.cpp $(srcdir)/gv.i
 
-pkgtcldir = $(pkglibdir)/tcl
+pkgtcldir = @TCL_INSTALL_DIR@
 TCL_data = 
 nodist_libgv_tcl_la_SOURCES = gv_tcl.cpp $(TCL_data)
 libgv_tcl_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp

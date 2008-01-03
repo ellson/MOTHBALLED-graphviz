@@ -1,7 +1,7 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-pkgindexdir = $(libdir)/@PACKAGE@
+pkgindexdir = @TCL_INSTALL_DIR@
 pkgindex_DATA = pkgIndex.tcl
 
 SUBDIRS = tclstubs tkstubs tclhandle gdtclft tcldot tclpathplan tkspline gv
