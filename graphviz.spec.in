@@ -195,7 +195,6 @@ fi
 %{_mandir}/man7/*.7*
 %dir %{_datadir}/graphviz
 %{_datadir}/graphviz/lefty
-%exclude %{_libdir}/graphviz/*/*
 %exclude %{_libdir}/graphviz/libgvplugin_gd.*
 %if %{DEVIL}
 %exclude %{_libdir}/graphviz/libgvplugin_devil.*
@@ -493,7 +492,6 @@ This package contains development files for graphviz.
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/*.3*
-%exclude %{_libdir}/graphviz/*/*
 %exclude %{_libdir}/graphviz/libgvplugin*
 %exclude %{_libdir}/graphviz/*.so
 
