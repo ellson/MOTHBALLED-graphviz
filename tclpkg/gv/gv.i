@@ -25,6 +25,9 @@
 #undef TRUE
 #undef FALSE
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "gvc.h"
 %}
 
