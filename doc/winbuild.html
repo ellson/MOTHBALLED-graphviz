@@ -46,7 +46,77 @@ Build Graphviz:<BR><BR>
 <TT>make install</TT><BR><BR>
 </OL>
 <P>
-Presumably, a similar approach would work with Cygwin or Mingw. If you
+Presumably, a similar approach would work with Cygwin or Mingw. 
+The following are some notes by
+<A HREF="https://mailman.research.att.com/pipermail/graphviz-devel/2007/000444.html">Steve Roush</A> 
+describing how he
+made a static build of the libraries on Mingw.
+<MENU>
+<LI> Install MinGW and Msys.  This gives a mini GNU-like compile environment 
+that produces Windows-compatible results.
+<LI> You may need to configure and build in Windows "Safe mode".  Try 
+./configure in normal mode; if it dies with "fork" problems, use Safe mode.
+<LI> Edit the "configure" file.<BR>
+ after this line:<BR>
+     <CODE>DEFS=-DHAVE_CONFIG_H</CODE><BR>
+ add these lines:<BR>
+<CODE>
+<PRE>
+    case "$host_os" in
+     mingw*)
+       DEFS="$DEFS -DWIN32 -DMSWIN32"
+       ;;
+     esac
+</PRE>
+</CODE>
+<LI> run configure:<BR>
+<CODE>
+<PRE>
+   ./configure  --enable-static=yes --enable-shared=no 
+--prefix=/usr/local/ --with-libgd=no --enable-ltdl=no --disable-swig  
+--disable-sharp --disable-guile --disable-io --disable-java 
+--disable-lua --disable-ocaml --disable-perl --disable-php 
+--disable-python --disable-ruby --disable-tcl
+</PRE>
+</CODE>
+<LI> edit lib/Makefile<BR>
+ replace these lines:<BR>
+<CODE>
+<PRE>
+ SUBDIRS = cdt graph agraph gd pathplan agutil sfio vmalloc ast vpsc \
+     circogen dotgen fdpgen neatogen twopigen common pack gvc \
+     ingraphs expr
+</PRE>
+</CODE>
+
+ with these lines:<BR>
+<CODE>
+<PRE>
+ SUBDIRS = cdt graph agraph gd pathplan  vpsc \
+    circogen dotgen fdpgen neatogen twopigen common pack gvc \
+    ingraphs
+
+make  # builds most of "lib" (see Makefile changes), cmd/dot and 
+cmd/tools - stops on cmd/gvpr
+make install
+</PRE>
+</CODE>
+</MENU>
+here is the command line I used to build "simple.c" (dot.demo/simple.c), 
+after adding a few lines based on 
+https://mailman.research.att.com/pipermail/graphviz-interest/2006q2/003586.html 
+
+
+<CODE>
+<PRE>
+X=simple;gcc -v -I'/usr/local/include/graphviz' -I'/usr/local/include' 
+-o $X -O $X.c  -L/usr/local/lib -L/usr/local/lib/graphviz -lgvc  -lgraph 
+-lpathplan -lcdt -lgvplugin_core -lgvplugin_dot_layout 
+-lgvplugin_neao_layout -lgvplugin_gd -lgvplugin_pango -lgvc -lpathplan
+</PRE>
+</CODE>
+<P>
+If you
 desire to build directly using Visual Studio or other non-Unix-based
 environment, you will need to derive the necessary information from the
 supplied Makefiles.
