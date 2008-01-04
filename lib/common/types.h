@@ -22,9 +22,15 @@
 #include <signal.h>
 
 typedef unsigned char boolean;
+#ifndef NOT
 #define NOT(v) (!(v))
+#endif
+#ifndef FALSE
 #define FALSE 0
+#endif
+#ifndef TRUE
 #define TRUE NOT(FALSE)
+#endif
 
 #include "geom.h"
 #include "gvcext.h"
