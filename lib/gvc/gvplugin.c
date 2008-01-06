@@ -290,7 +290,7 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 	dep = strchr(typ, ':');
 	if (dep) 
 	    *dep++ = '\0';
-	if (! typ || ! reqtyp || strcmp(typ, reqtyp)) 
+	if (strcmp(typ, reqtyp)) 
 	    continue;  /* types empty or mismatched */
  	if (dep && reqdep && strcmp(dep, reqdep))
 	    continue;  /* dependencies not empty, but mismatched */
