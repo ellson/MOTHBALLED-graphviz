@@ -1257,13 +1257,13 @@ if test "$HAVE_TK" = "1"; then
         [AC_HELP_STRING([--with-wish=PROG], [use a specific wish])],
         WISH=$withval,)
     if test "x$WISH" = "x"; then
-        AC_PATH_PROG(WISH,wish8.5)
+        AC_PATH_PROG(WISH,wish)
         if test "x$WISH" = "x"; then
-            AC_PATH_PROG(WISH,wish8.4)
+            AC_PATH_PROG(WISH,wish8.5)
             if test "x$WISH" = "x"; then
-    	        AC_PATH_PROG(WISH,wish8.3)
+    	        AC_PATH_PROG(WISH,wish8.4)
     	        if test "x$WISH" = "x"; then
-                    AC_PATH_PROG(WISH,wish)
+                    AC_PATH_PROG(WISH,wish8.3)
                 fi
             fi
 	fi
