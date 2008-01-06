@@ -1162,9 +1162,6 @@ if test "$HAVE_TCL" = "1"; then
             fi
         fi
     fi
-    if test -d ${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}/; then
-	TCL_INSTALL_DIR="${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}"
-    fi
     if test "x$TCLCONFIG" != "x"; then
         AC_MSG_RESULT([using $TCLCONFIG])
         file=${TCLCONFIG}
@@ -1173,6 +1170,7 @@ if test "$HAVE_TCL" = "1"; then
         AC_MSG_WARN([Unable to find tclConfig.sh. The Tcl packages will not be built])
         HAVE_TCL=0
     fi
+    TCL_INSTALL_DIR="${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}"
 fi
 
 if test "$HAVE_TCL" = "1"; then
