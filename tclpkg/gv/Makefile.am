@@ -111,7 +111,7 @@ $(PERL_data): gv_perl.cpp
 gv_perl.cpp: gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp $(srcdir)/gv.i
 
-pkgphpdir = $(pkglibdir)/php
+pkgphpdir = @PHP_INSTALL_DIR@
 PHP_data = gv.php php_gv.h
 nodist_libgv_php_la_SOURCES = gv_php.cpp $(PHP_data)
 libgv_php_la_SOURCES = $(BASESOURCES) gv_php_init.cpp

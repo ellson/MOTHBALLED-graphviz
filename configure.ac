@@ -795,6 +795,7 @@ PHP_INCLUDES="-I/usr/include/php5 -I/usr/include/php5/main -I/usr/include/php5/Z
 else
 PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
 fi
+PHP_INSTALL_DIR="/usr/lib${LIBPOSTFIX}/php"
 PHP_LIBS=
 save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $PHP_INCLUDES"
@@ -803,6 +804,7 @@ AC_CHECK_HEADER(zend.h,,[
   PHP=
   ])
 CPPFLAGS=$save_CPPFLAGS
+AC_SUBST(PHP_INSTALL_DIR)
 AC_SUBST(PHP_INCLUDES)
 AC_SUBST(PHP_LIBS)
 fi
