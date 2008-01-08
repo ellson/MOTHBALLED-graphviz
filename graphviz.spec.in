@@ -401,8 +401,7 @@ PHP extension for graphviz.
 
 %files php
 %defattr(-,root,root,-)
-%dir %{_libdir}/graphviz/php
-%{_libdir}/graphviz/php/*
+%{_libdir}/php*/*
 %{_mandir}/mann/gv_php.n*
 %endif
 
