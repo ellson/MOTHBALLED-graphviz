@@ -112,12 +112,13 @@ gv_perl.cpp: gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp $(srcdir)/gv.i
 
 pkgphpdir = @PHP_INSTALL_DIR@
-PHP_data = gv.php php_gv.h
-nodist_libgv_php_la_SOURCES = gv_php.cpp $(PHP_data)
+PHP_data = gv.php
+nodist_libgv_php_la_SOURCES = gv_php.cpp php_gv.h
 libgv_php_la_SOURCES = $(BASESOURCES) gv_php_init.cpp
 libgv_php_la_LIBADD = $(BASELIBS) @PHP_LIBS@
 libgv_php_la_LDFLAGS = -module -avoid-version
-$(PHP_data): gv_php.cpp
+gv.php: gv_php.cpp
+php_gv.h: gv_php.cpp
 gv_php.cpp: gv.i
 	$(SWIG) -c++ -php5 -o gv_php.cpp $(srcdir)/gv.i
 
