@@ -191,7 +191,7 @@ extern "C" {
 	boolean usershape;
     } shape_desc;
 
-#include <usershape.h>		/* usershapes needed by gvc even w/o CODEGENS */
+#include "usershape.h"		/* usershapes needed by gvc even w/o CODEGENS */
 #ifdef WITH_CODEGENS
 
     struct codegen_s {
