@@ -28,8 +28,11 @@ GRAPHFILES =  \
         tree.pdf \
 	$(SHAPEFILES) $(ARROWHEADFILES)
 
+# The following used to work, but it broke when graphviz -Tps went to
+# BoundingBox: (atend) as the epstopdf script explicitly says it does
+# not handle this case!  Let's hope that we have native -Tpdf in dot.
 %.pdf : %.dot
-	dot -Tps $< | epstopdf --filter --outfile=$@
+	dot -Tps2 $< -o $<.ps; ps2pdf $<.ps $@
 
 dotguide.pdf : dotguide.tex dotguide.bbl $(GRAPHFILES)
 	pdflatex dotguide.tex
