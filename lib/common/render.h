@@ -108,7 +108,6 @@ extern "C" {
     extern shape_desc *find_user_shape(char *);
     extern void free_line(textpara_t *);
     extern void free_label(textlabel_t *);
-    extern char *gd_alternate_fontlist(char *font);
     extern void getdouble(graph_t * g, char *name, double *result);
     extern splines *getsplinepoints(edge_t * e);
     extern void global_def(char *,
