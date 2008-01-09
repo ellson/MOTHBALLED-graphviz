@@ -22,7 +22,11 @@ extern "C" {
 #define GPRSTATE_H
 
 #include <sfio.h>
+#ifdef USE_CGRAPH
+#include <cgraph.h>
+#else
 #include <agraph.h>
+#endif
 #include <ast.h>
 #include <vmalloc.h>
 
