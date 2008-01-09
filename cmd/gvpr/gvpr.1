@@ -199,7 +199,7 @@ is a single scope. Array declarations have the form:
 .RE
 .DT
 .PP
-where the \fI type0 \fP is optional. If it is supplied, the parser will
+where \fI type0 \fP is optional. If it is supplied, the parser will 
 enforce that all array subscripts have the specified type. If it is
 not supplied, objects of all types can be used as subscripts.
 As in C, variables and arrays must
@@ -349,18 +349,46 @@ inserts the node \fIn\fP into the subgraph \fIg\fP. Returns the node.
 returns the first node in graph \fIg\fP, or \fBNULL\fP if none exists.
 .TP
 \fBnxtnode\fP(\fIn\fP : \fBnode_t\fP) : \fBnode_t\fP
-returns the next node after \fIn\fP, or \fBNULL\fP.
+returns the next node after \fIn\fP in the root graph, or \fBNULL\fP.
+.TP
+\fBnxtnode_sg\fP(\fIsg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBnode_t\fP
+returns the next node after \fIn\fP in \fIsg\fP, or \fBNULL\fP.
+(\fBCurrently unsupported\fP)
 .TP
 \fBisNode\fP(\fIsg\fP : \fBgraph_t\fP, \fIs\fP : \fBstring\fP) : \fBnode_t\fP
-looks for a node in graph \fIg\fP of name \fIs\fP. If such a node
+looks for a node in (sub)graph \fIsg\fP of name \fIs\fP. If such a node
 exists, it is returned. Otherwise, \fBNULL\fP is returned.
+.TP
+\fBisSubnode\fP(\fIsg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBint\fP
+returns non-zero if node \fIn\fP is in (sub)graph \fIsg\fP, or zero
+otherwise.
+(\fBCurrently unsupported\fP)
+.TP
+\fBindegreeOf\fP(\fIsg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBint\fP
+returns the indegree of node \fIn\fP in (sub)graph \fIsg\fP.
+(\fBCurrently unsupported\fP)
+.TP
+\fBoutdegreeOf\fP(\fIsg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBint\fP
+returns the outdegree of node \fIn\fP in (sub)graph \fIsg\fP.
+(\fBCurrently unsupported\fP)
+.TP
+\fBdegreeOf\fP(\fIsg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBint\fP
+returns the degree of node \fIn\fP in (sub)graph \fIsg\fP.
+(\fBCurrently unsupported\fP)
 .SS "Edges"
 .TP
 \fBedge\fP(\fIt\fP : \fBnode_t\fP, \fIh\fP : \fBnode_t\fP, \fIs\fP : \fBstring\fP) : \fBedge_t\fP
 creates an edge with tail node \fIt\fP, head node \fIh\fP and
-name \fIs\fP. If the graph is undirected, the distinction between
+name \fIs\fP in the root graph. If the graph is undirected, the 
+distinction between head and tail nodes is unimportant.
+If such an edge already exists, it is returned.
+.TP
+\fBedge_sg\fP(\fIsg\fP : \fBgraph_t\fP, \fIt\fP : \fBnode_t\fP, \fIh\fP : \fBnode_t\fP, \fIs\fP : \fBstring\fP) : \fBedge_t\fP
+creates an edge with tail node \fIt\fP, head node \fIh\fP and name \fIs\fP 
+in (sub)graph \fIsg\fP (and all parent graphs). If the graph is undirected, the distinction between
 head and tail nodes is unimportant.
 If such an edge already exists, it is returned.
+(\fBCurrently unsupported\fP)
 .TP
 \fBsubedge\fP(\fIg\fP : \fBgraph_t\fP, \fIe\fP : \fBedge_t\fP) : \fBedge_t\fP
 inserts the edge \fIe\fP into the subgraph \fIg\fP. Returns the edge.
@@ -371,23 +399,59 @@ name \fIs\fP. If the graph is undirected, the distinction between
 head and tail nodes is unimportant.
 If such an edge exists, it is returned. Otherwise, \fBNULL\fP is returned.
 .TP
+\fBisEdge_sg\fP(\fIsg\fP : \fBgraph_t\fP, \fIt\fP : \fBnode_t\fP, \fIh\fP : \fBnode_t\fP, \fIs\fP : \fBstring\fP) : \fBedge_t\fP
+looks for an edge with tail node \fIt\fP, head node \fIh\fP and
+name \fIs\fP in (sub)graph \fIsg\fP. If the graph is undirected, the distinction between
+head and tail nodes is unimportant.
+If such an edge exists, it is returned. Otherwise, \fBNULL\fP is returned.
+(\fBCurrently unsupported\fP)
+.TP
+\fBisSubedge\fP(\fIg\fP : \fBgraph_t\fP, \fIe\fP : \fBedge_t\fP) : \fBint\fP
+returns non-zero if edge \fIe\fP is in (sub)graph \fIsg\fP, or zero
+otherwise.
+(\fBCurrently unsupported\fP)
+.TP
 \fBfstout\fP(\fIn\fP : \fBnode_t\fP) : \fBedge_t\fP
-returns the first out edge of node \fIn\fP.
+returns the first outedge of node \fIn\fP in the root graph.
+.TP
+\fBfstout_sg\fP(\fIsg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBedge_t\fP
+returns the first outedge of node \fIn\fP in (sub)graph \fIsg\fP.
+(\fBCurrently unsupported\fP)
 .TP
 \fBnxtout\fP(\fIe\fP : \fBedge_t\fP) : \fBedge_t\fP
-returns the next out edge after \fIe\fP.
+returns the next outedge after \fIe\fP in the root graph.
+.TP
+\fBnxtout_sg\fP(\fIsg\fP : \fBgraph_t\fP, \fIe\fP : \fBedge_t\fP) : \fBedge_t\fP
+returns the next outedge after \fIe\fP in graph \fIsg\fP.
+(\fBCurrently unsupported\fP)
 .TP
 \fBfstin\fP(\fIn\fP : \fBnode_t\fP) : \fBedge_t\fP
-returns the first in edge of node \fIn\fP.
+returns the first inedge of node \fIn\fP in the root graph.
+.TP
+\fBfstin_sg\fP(\fIsg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBedge_t\fP
+returns the first inedge of node \fIn\fP in graph \fIsg\fP.
+(\fBCurrently unsupported\fP)
 .TP
 \fBnxtin\fP(\fIe\fP : \fBedge_t\fP) : \fBedge_t\fP
-returns the next in edge after \fIe\fP.
+returns the next inedge after \fIe\fP in the root graph.
+.TP
+\fBnxtin_sg\fP(\fIsg\fP : \fBgraph_t\fP, \fIe\fP : \fBedge_t\fP) : \fBedge_t\fP
+returns the next inedge after \fIe\fP in graph \fIsg\fP.
+(\fBCurrently unsupported\fP)
 .TP
 \fBfstedge\fP(\fIn\fP : \fBnode_t\fP) : \fBedge_t\fP
-returns the first edge of node \fIn\fP.
+returns the first edge of node \fIn\fP in the root graph.
+.TP
+\fBfstedge_sg\fP(\fIsg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBedge_t\fP
+returns the first edge of node \fIn\fP in graph \fIsg\fP.
+(\fBCurrently unsupported\fP)
 .TP
 \fBnxtedge\fP(\fIe\fP : \fBedge_t\fP, \fBnode_t\fP) : \fBedge_t\fP
-returns the next edge after \fIe\fP.
+returns the next edge after \fIe\fP in the root graph.
+.TP
+\fBnxtedge_sg\fP(\fIsg\fP : \fBgraph_t\fP, \fIe\fP : \fBedge_t\fP, \fBnode_t\fP) : \fBedge_t\fP
+returns the next edge after \fIe\fP in the graph \fIsg\fP.
+(\fBCurrently unsupported\fP)
 .SS "Graph I/O"
 .TP
 \fBwrite\fP(\fIg\fP : \fBgraph_t\fP) : \fBvoid\fP
