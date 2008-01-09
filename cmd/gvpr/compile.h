@@ -82,7 +82,7 @@ extern "C" {
     extern Agraph_t *openG(char *name, Agdesc_t);
     extern Agraph_t *openSubg(Agraph_t * g, char *name);
     extern Agnode_t *openNode(Agraph_t * g, char *name);
-    extern Agedge_t *openEdge(Agnode_t * t, Agnode_t * h, char *key);
+    extern Agedge_t *openEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key);
 
 #endif
 
