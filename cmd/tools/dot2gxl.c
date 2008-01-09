@@ -16,7 +16,9 @@
 
 
 #include <convert.h>
+#ifndef USE_CGRAPH
 #include <aghdr.h>
+#endif
 #include <ctype.h>
 
 #define SMALLBUF    128
@@ -723,14 +725,22 @@ static void writeBody(gxlstate_t * stp, Agraph_t * g, FILE * gxlFile)
 
     writeSubgs(stp, g, gxlFile);
     dd = (Agdatadict_t *) agdatadict(g);
+#ifdef USE_CGRAPH
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+#else
     for (n = agfstnode(g); n; n = agnxtnode(n)) {
+#endif
 	realn = agidnode(stp->root, AGID(n), 0);
 	if (!writeval(realn)) {
 	    writeval(realn) = 1;
 	    writeNode(stp, n, gxlFile, dd->dict.n);
 	}
 
+#ifdef USE_CGRAPH
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+#else
 	for (e = agfstout(n); e; e = agnxtout(e)) {
+#endif
 	    if (writeEdgeTest(g, e))
 		writeEdge(stp, e, gxlFile, dd->dict.e);
 	}
@@ -771,7 +781,11 @@ static void iterateBody(gxlstate_t * stp, Agraph_t * g)
     Agedge_t *e;
 
     iterate_subgs(stp, g);
+#ifdef USE_CGRAPH
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+#else
     for (n = agfstnode(g); n; n = agnxtnode(n)) {
+#endif
 	char *gxlId;
 	char *nodename = agnameof(n);
 
@@ -786,7 +800,11 @@ static void iterateBody(gxlstate_t * stp, Agraph_t * g)
 	    addToMap(stp->nodeMap, nodename, gxlId);
 	}
 
+#ifdef USE_CGRAPH
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+#else
 	for (e = agfstout(n); e; e = agnxtout(e)) {
+#endif
 	    if (writeEdgeTest(g, e)) {
 		char *edge_id = agget(e, GXL_ID);
 		if (!EMPTY(edge_id))
