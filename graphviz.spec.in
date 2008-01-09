@@ -385,6 +385,8 @@ Perl extension for graphviz.
 
 %files perl
 %defattr(-,root,root,-)
+%dir %{_libdir}/graphviz/perl
+%{_libdir}/graphviz/perl/*
 %{_libdir}/perl*/*
 %{_mandir}/mann/gv_perl.n*
 %endif
@@ -401,6 +403,8 @@ PHP extension for graphviz.
 
 %files php
 %defattr(-,root,root,-)
+%dir %{_libdir}/graphviz/php
+%{_libdir}/graphviz/php/*
 %{_libdir}/php*/*
 %{_mandir}/mann/gv_php.n*
 %endif
@@ -417,6 +421,8 @@ Python extension for graphviz.
 
 %files python
 %defattr(-,root,root,-)
+%dir %{_libdir}/graphviz/python
+%{_libdir}/graphviz/python/*
 %{_libdir}/python*/*
 %{_mandir}/mann/gv_python.n*
 %endif
@@ -450,6 +456,8 @@ Ruby extension for graphviz.
 
 %files ruby
 %defattr(-,root,root,-)
+%dir %{_libdir}/graphviz/ruby
+%{_libdir}/graphviz/ruby/*
 %{_libdir}/*ruby*/*
 %{_mandir}/mann/gv_ruby.n*
 %endif
@@ -466,6 +474,8 @@ Various tcl packages (extensions) for the graphviz tools.
 
 %files tcl
 %defattr(-,root,root,-)
+%dir %{_libdir}/graphviz/tcl
+%{_libdir}/graphviz/tcl/*
 %{_libdir}/tcl*/*
 %{_datadir}/graphviz/demo
 # hack to include gv_tcl.n only if available
