@@ -27,6 +27,19 @@
 /* if NC changes, a bunch of scanf calls below are in trouble */
 #define	NC	3		/* size of HSB color vector */
 
+#ifdef USE_CGRAPH
+#include <cgraph.h>
+#include <stdlib.h>
+typedef struct Agnodeinfo_t {
+    Agrec_t h;
+    double relrank;	/* coordinate of its rank, smaller means lower rank */
+    double x[NC];	/* color vector */
+} Agnodeinfo_t;
+
+#define ND_relrank(n) (((Agnodeinfo_t*)((n)->base.data))->relrank)
+#define ND_x(n) (((Agnodeinfo_t*)((n)->base.data))->x)
+
+#else
 typedef struct Agnodeinfo_t {
     double relrank;		/* coordinate of its rank, smaller means lower rank */
     double x[NC];		/* color vector */
@@ -41,8 +54,11 @@ typedef struct Agraphinfo_t {
 
 #define ND_relrank(n) (n)->u.relrank
 #define ND_x(n) (n)->u.x
+#define aghead(e) ((e)->head)
+#define agtail(e) ((e)->tail)
 
 #include <graph.h>
+#endif
 #include <ingraphs.h>
 #include <stdio.h>
 #ifdef HAVE_UNISTD_H
@@ -68,7 +84,7 @@ extern char *colorxlate(char *str, char *buf);
 static int cmpf(Agnode_t ** n0, Agnode_t ** n1)
 {
     double t;
-    t = ((*n0)->u.relrank - (*n1)->u.relrank);
+    t = ND_relrank(*n0) - ND_relrank(*n1);
     if (t < 0.0)
 	return -1;
     if (t > 0.0)
@@ -128,13 +144,23 @@ static void color(Agraph_t * g)
     double x, y, maxrank = 0.0;
     double sum[NC], d, lowsat, highsat;
 
+#ifdef USE_CGRAPH
+    if (agattr(g, AGNODE, "pos", 0) == NULL) {
+#else
     if (agfindattr(g->proto->n, "pos") == NULL) {
+#endif
 	fprintf(stderr,
 		"graph must be run through 'dot' before 'gvcolor'\n");
 	exit(1);
     }
+#ifdef USE_CGRAPH
+    aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
+    if (agattr(g, AGNODE, "style", 0) == NULL)
+	agattr(g, AGNODE, "style", "filled");
+#else
     if (agfindattr(g->proto->n, "style") == NULL)
 	agnodeattr(g, "style", "filled");
+#endif
     if ((p = agget(g, "Defcolor")))
 	setcolor(p, Defcolor);
 
@@ -188,9 +214,9 @@ static void color(Agraph_t * g)
 	    sum[j] = 0.0;
 	cnt = 0;
 	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	    v = e->head;
+	    v = aghead(e);
 	    if (v == n)
-		v = e->tail;
+		v = agtail(e);
 	    d = ND_relrank(v) - ND_relrank(n) - 0.01;
 	    if (d < 0) {
 		double t = 0.0;
@@ -239,14 +265,25 @@ static void color(Agraph_t * g)
     }
 }
 
+#ifdef USE_CGRAPH
+static Agraph_t *gread(FILE * fp)
+{
+    return agread(fp, (Agdisc_t *) 0);
+}
+#endif
+
 int main(int argc, char **argv)
 {
     Agraph_t *g;
     ingraph_state ig;
 
     init(argc, argv);
+#ifdef USE_CGRAPH
+    newIngraph(&ig, Files, gread);
+#else
     newIngraph(&ig, Files, agread);
     aginit();
+#endif
 
     while ((g = nextGraph(&ig)) != 0) {
 	color(g);

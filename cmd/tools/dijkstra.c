@@ -21,7 +21,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#ifdef USE_CGRAPH
+#include <cgraph.h>
+#else
 #include <agraph.h>
+#endif
 #include <ingraphs.h>
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
@@ -155,7 +159,11 @@ static void post(Agraph_t * g)
     if (setall)
 	sprintf(dflt, "%.3lf", HUGE);
 
+#ifdef USE_CGRAPH
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+#else
     for (v = agfstnode(g); v; v = agnxtnode(v)) {
+#endif
 	dist = getdist(v);
 	if (dist) {
 	    dist--;
@@ -197,7 +205,11 @@ void dijkstra(Dict_t * Q, Agraph_t * G, Agnode_t * n)
     setdist(n, 1);
     dtinsert(Q, n);
     while ((u = extract_min(Q))) {
+#ifdef USE_CGRAPH
+	for (e = agfstedge(G, u); e; e = agnxtedge(G, e, u)) {
+#else
 	for (e = agfstedge(u); e; e = agnxtedge(e, u)) {
+#endif
 	    update(Q, e->node, u, getlength(e));
 	}
     }

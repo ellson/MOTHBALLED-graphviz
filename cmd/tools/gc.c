@@ -29,6 +29,16 @@
 #endif
 #include <string.h>
 
+#ifdef USE_CGRAPH
+#include <cgraph.h>
+#include <cghdr.h>
+typedef struct {
+    Agrec_t h;
+    int dfs_mark;
+} Agnodeinfo_t;
+
+#define ND_dfs_mark(n) (((Agnodeinfo_t*)(n->base.data))->dfs_mark)
+#else
 typedef struct {
     int cl_cnt;
 } Agraphinfo_t;
@@ -39,8 +49,12 @@ typedef struct {
 
 #define GD_cl_cnt(g) (g)->u.cl_cnt
 #define ND_dfs_mark(n) (n)->u.dfs_mark
+#define agtail(e) ((e)->tail)
+#define aghead(e) ((e)->head)
+#define agnameof(g) ((g)->name)
 
 #include <graph.h>
+#endif
 #include <ingraphs.h>
 
 #ifdef HAVE_GETOPT_H
@@ -97,7 +111,9 @@ static void init(int argc, char *argv[])
 {
     unsigned int c;
 
+#ifndef USE_CGRAPH
     aginit();
+#endif
 
     while ((c = getopt(argc, argv, ":necCaDUrsv?")) != -1) {
 	switch (c) {
@@ -160,15 +176,24 @@ static void cc_dfs(Agraph_t * g, Agnode_t * n)
 
     ND_dfs_mark(n) = 1;
     for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	if (n == e->tail)
-	    nxt = e->head;
+	if (n == agtail(e))
+	    nxt = aghead(e);
 	else
-	    nxt = e->tail;
+	    nxt = agtail(e);
 	if (ND_dfs_mark(nxt) == 0)
 	    cc_dfs(g, nxt);
     }
 }
 
+#ifdef USE_CGRAPH
+static void cntCluster (Agraph_t * g, Agobj_t* sg, void* arg)
+{
+    char* sgname = agnameof ((Agraph_t*)sg);
+
+    if (strncmp(sgname, "cluster", 7) == 0)
+	*(int*)(arg) += 1;
+}
+#else
 static void cl_count(Agraph_t * g)
 {
     Agraph_t *mg;
@@ -188,6 +213,7 @@ static void cl_count(Agraph_t * g)
     }
     GD_cl_cnt(g) = sum;
 }
+#endif
 
 static int cc_decompose(Agraph_t * g)
 {
@@ -235,7 +261,7 @@ wcp(int nnodes, int nedges, int ncc, int ncl, char *gname, char *fname)
 	printf(" %s\n", gname);
 }
 
-static void emit(Agraph_t * g, int root)
+static void emit(Agraph_t * g, int root, int cl_count)
 {
     int n_edges = agnedges(g);
     int n_nodes = agnnodes(g);
@@ -247,11 +273,15 @@ static void emit(Agraph_t * g, int root)
 	n_cc = cc_decompose(g);
 
     if (flags & CL)
+#ifdef USE_CGRAPH
+	n_cl = cl_count;
+#else
 	n_cl = GD_cl_cnt(g);
+#endif
 
     if (root)
 	file = fname;
-    wcp(n_nodes, n_edges, n_cc, n_cl, g->name, file);
+    wcp(n_nodes, n_edges, n_cc, n_cl, agnameof(g), file);
 
     if (root) {
 	n_graphs++;
@@ -262,6 +292,37 @@ static void emit(Agraph_t * g, int root)
     }
 }
 
+#ifdef USE_CGRAPH
+#define GTYPE(g) (agisdirected(g)?DIRECTED:UNDIRECTED)
+
+static int eval(Agraph_t * g, int root)
+{
+    Agraph_t *subg;
+    int cl_count;
+
+    if (root && !(GTYPE(g) & gtype))
+	return 1;
+
+    if (root) {
+	aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
+    }
+
+    if ((flags & CL) && root) {
+	cl_count = 0;
+	agapply (g, (Agobj_t *)g, cntCluster, &cl_count, 0);
+    }
+
+    emit(g, root, cl_count);
+
+    if (recurse) {
+	n_indent++;
+	for (subg = agfstsubg (g); subg; subg = agnxtsubg (subg))
+	    eval(subg, 0);
+	n_indent--;
+    }
+    return 0;
+}
+#else
 #define GTYPE(g) (AG_IS_DIRECTED(g)?DIRECTED:UNDIRECTED)
 
 static int eval(Agraph_t * g, int root)
@@ -277,7 +338,7 @@ static int eval(Agraph_t * g, int root)
     if ((flags & CL) && root)
 	cl_count(g);
 
-    emit(g, root);
+    emit(g, root, 0);
     if (recurse) {
 	n_indent++;
 	mg = g->meta_node->graph;
@@ -290,6 +351,14 @@ static int eval(Agraph_t * g, int root)
     }
     return 0;
 }
+#endif
+
+#ifdef USE_CGRAPH
+static Agraph_t *gread(FILE * fp)
+{
+    return agread(fp, (Agdisc_t *) 0);
+}
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -298,12 +367,16 @@ int main(int argc, char *argv[])
     int rv = 0;
 
     init(argc, argv);
+#ifdef USE_CGRAPH
+    newIngraph(&ig, Files, gread);
+#else
     newIngraph(&ig, Files, agread);
+#endif
 
     while ((g = nextGraph(&ig)) != 0) {
 	fname = fileName(&ig);
 	if (verbose)
-	    fprintf(stderr, "Process graph %s in file %s\n", g->name,
+	    fprintf(stderr, "Process graph %s in file %s\n", agnameof(g),
 		    fname);
 	rv |= eval(g, 1);
 	agclose(g);

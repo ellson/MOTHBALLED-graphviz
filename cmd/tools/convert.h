@@ -25,7 +25,12 @@ extern "C" {
 #include "config.h"
 #endif
 
+#ifdef USE_CGRAPH
+#include <cgraph.h>
+#include <cghdr.h>
+#else
 #include <agraph.h>
+#endif
 #include <stdio.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
