@@ -3,7 +3,7 @@
 
 SUBDIRS = demo
 
-pkgtcldir = @TCL_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@
+pkgtcldir = $(pkglibdir)/tcl
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
