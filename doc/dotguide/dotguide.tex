@@ -51,7 +51,7 @@ The figures should probably be regenerated using dot, and we might
 want to redo the timing for the abstract figure.}
 \fi
 
-\dot\ draws directed graphs.  It reads attributed graph text files and
+\dot\ draws directed graphs. It reads attributed graph text files and
 writes drawings, either as graph files or in a graphics format
 such as GIF, PNG, SVG or PostScript (which can be converted to PDF).
 
@@ -90,9 +90,9 @@ subset of nodes and edges.
 Figure~\ref{fig:graph1} is an example graph in the \DOT\ language. 
 Line 1 gives the graph name and type.
 The lines that follow create nodes, edges, or subgraphs,
-and set attributes.  Names of all these objects may be
+and set attributes. Names of all these objects may be
 C identifiers, numbers, or quoted C strings.
-Quotes protect punctuation and white space.  
+Quotes protect punctuation and white space.
 
 \begin{figure}[p]
 \begin{verbatim}
@@ -354,8 +354,14 @@ For example, \verb"Times-Italic", \verb"Times-Bold", and \verb"Courier"
 are portable; {\tt AvanteGarde\-DemiOblique} isn't.
 
 For bitmap output, such as GIF or JPG, \dot\ relies on having these
-fonts available during layout. The {\tt fontpath} attribute can
-specify a list of directories\footnote{For Unix-based systems, this is
+fonts available during layout. Most precompiled installations of
+Graphviz use the fontconfig library for matching font names to
+available fontfiles. fontconfig comes with a set of utilities for
+showing matches and installing fonts. Please refer to the fontconfig
+documentation, or the external Graphviz FontFAQ or for further details.
+If Graphviz is built without fontconfig (which usually means you
+compiled it from source code on your own), the {\tt fontpath} attribute
+can specify a list of directories\footnote{For Unix-based systems, this is
 a concatenated list of pathnames, separated by colons. For Windows-based
 systems, the pathnames are separated by semi-colons.} which should be 
 searched for the font files. If this is not set, 
@@ -1268,14 +1274,14 @@ The format {\tt ismap} is a predecessor of the {\tt imap} format.
 loaded into FrameMaker and edited manually. MIF is limited to 8 basic colors.
 \item[{\tt mp}] MetaPost output.
 \item[{\tt pcl}] PCL-5 output for HP laser writers.
+\item[{\tt pdf}] Adobe PDF via the Cairo library. We have seen problems when embedding into other documents. Instead, use -Tps2 as described below.
 \item[{\tt pic}] PIC output.
 \item[{\tt plain}] Simple, line-based ASCII format. Appendix~\ref{app:plain}
 describes this output. An alternate format is {\tt plain-ext}, which 
 provides port names on the head and tail nodes of edges.
 \item[{\tt png}] PNG (Portable Network Graphics) output.
 \item[{\tt ps}] PostScript (EPSF) output.
-\item[{\tt ps2}] PostScript (EPSF) output with PDF annotations. It is
-assumed that this output will be distilled into PDF.
+\item[{\tt ps2}] PostScript (EPSF) output with PDF annotations. This output can be distilled into PDF, such as for pdflatex. (Use ps2pdf; epstopdf doesn't handle \verb"%%BoundingBox: (atend)".)
 \item[{\tt svg}] SVG output. The alternate form {\tt svgz} produces
 compressed SVG.
 \item[{\tt vrml}] VRML output.
