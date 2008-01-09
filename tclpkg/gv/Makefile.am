@@ -101,7 +101,7 @@ gv.cmx: gv.ml gv.cma
 gv.cmxa gv.a: gv.cma
 	ocamlopt -a -o gv.cmxa
 
-pkgperldir = @PERL_INSTALL_DIR@
+pkgperldir = $(pkglibdir)/perl
 PERL_data = gv.pm
 nodist_libgv_perl_la_SOURCES = gv_perl.cpp $(PERL_data)
 libgv_perl_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
@@ -111,7 +111,7 @@ $(PERL_data): gv_perl.cpp
 gv_perl.cpp: gv.i
 	$(SWIG) -c++ -perl -o gv_perl.cpp $(srcdir)/gv.i
 
-pkgphpdir = @PHP_INSTALL_DIR@
+pkgphpdir = $(pkglibdir)/php
 PHP_data = gv.php
 nodist_libgv_php_la_SOURCES = gv_php.cpp php_gv.h
 libgv_php_la_SOURCES = $(BASESOURCES) gv_php_init.cpp
@@ -122,7 +122,7 @@ php_gv.h: gv_php.cpp
 gv_php.cpp: gv.i
 	$(SWIG) -c++ -php5 -o gv_php.cpp $(srcdir)/gv.i
 
-pkgpythondir = @PYTHON_INSTALL_DIR@
+pkgpythondir = $(pkglibdir)/python
 PYTHON_data = gv.py
 nodist_libgv_python_la_SOURCES = gv_python.cpp $(PYTHON_data)
 libgv_python_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
@@ -132,19 +132,19 @@ $(PYTHON_data): gv_python.cpp
 gv_python.cpp: gv.i
 	$(SWIG) -c++ -python -o gv_python.cpp $(srcdir)/gv.i
 
-pkgpython23dir = @PYTHON23_INSTALL_DIR@
+pkgpython23dir = $(pkglibdir)/python23
 nodist_libgv_python23_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python23_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_python23_la_LIBADD = $(BASELIBS) @PYTHON23_LIBS@
 libgv_python23_la_LDFLAGS = -module -avoid-version
 
-pkgpython24dir = @PYTHON24_INSTALL_DIR@
+pkgpython24dir = $(pkglibdir)/python24
 nodist_libgv_python24_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python24_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_python24_la_LIBADD = $(BASELIBS) @PYTHON24_LIBS@
 libgv_python24_la_LDFLAGS = -module -avoid-version
 
-pkgpython25dir = @PYTHON25_INSTALL_DIR@
+pkgpython25dir = $(pkglibdir)/python25
 nodist_libgv_python25_la_SOURCES = $(nodist_libgv_python_la_SOURCES)
 libgv_python25_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
 libgv_python25_la_LIBADD = $(BASELIBS) @PYTHON25_LIBS@
@@ -160,7 +160,7 @@ $(R_data): gv_R.cpp
 gv_R.cpp: gv.i
 	$(SWIG) -c++ -r -o gv_R.cpp $(srcdir)/gv.i
 
-pkgrubydir = @RUBY_INSTALL_DIR@
+pkgrubydir = $(pkglibdir)/ruby
 RUBY_data = 
 nodist_libgv_ruby_la_SOURCES = gv_ruby.cpp $(RUBY_data)
 libgv_ruby_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
@@ -170,7 +170,7 @@ $(RUBY_data): gv_ruby.cpp
 gv_ruby.cpp: gv.i
 	$(SWIG) -c++ -ruby -o gv_ruby.cpp $(srcdir)/gv.i
 
-pkgtcldir = @TCL_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@
+pkgtcldir = $(pkglibdir)/tcl
 TCL_data = 
 nodist_libgv_tcl_la_SOURCES = gv_tcl.cpp $(TCL_data)
 libgv_tcl_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
@@ -317,6 +317,9 @@ endif
 if WITH_PERL
 	(cd $(DESTDIR)$(pkgperldir);   rm -f gv.so;  $(LN_S) libgv_perl.so gv.so;)
 endif
+if WITH_PHP
+	(cd $(DESTDIR)$(pkgphpdir);   rm -f gv.so;  $(LN_S) libgv_php.so gv.so;)
+endif
 if WITH_PYTHON
 	(cd $(DESTDIR)$(pkgpythondir); rm -f _gv.so; $(LN_S) libgv_python.so _gv.so;)
 endif
@@ -335,20 +338,22 @@ endif
 if WITH_RUBY
 	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;  $(LN_S) libgv_ruby.so gv.so;)
 endif
-if WITH_TCL
-	(cd $(DESTDIR)$(pkgtcldir);    rm -f gv.so;  $(LN_S) libgv_tcl.so gv.so;)
-endif
 
 uninstall-hook:
-	(cd $(DESTDIR)$(pkgluadir);    rm -f gv.so;)
-	(cd $(DESTDIR)$(pkgperldir);   rm -f gv.so;)
-	(cd $(DESTDIR)$(pkgpythondir); rm -f _gv.so;)
-	(cd $(DESTDIR)$(pkgpython23dir); rm -f _gv.so;)
-	(cd $(DESTDIR)$(pkgpython24dir); rm -f _gv.so;)
-	(cd $(DESTDIR)$(pkgpython25dir); rm -f _gv.so;)
-	(cd $(DESTDIR)$(pkgRdir);   rm -f gv.so;)
-	(cd $(DESTDIR)$(pkgrubydir);   rm -f gv.so;)
-	(cd $(DESTDIR)$(pkgtcldir);    rm -f gv.so;)
+	rm -rf $(DESTDIR)$(pkgsharpdir);
+	rm -rf $(DESTDIR)$(pkgguiledir);
+	rm -rf $(DESTDIR)$(pkgiodir);
+	rm -rf $(DESTDIR)$(pkgjavadir);
+	rm -rf $(DESTDIR)$(pkgluadir);
+	rm -rf $(DESTDIR)$(pkgperldir);
+	rm -rf $(DESTDIR)$(pkgpythondir);
+	rm -rf $(DESTDIR)$(pkgpython23dir);
+	rm -rf $(DESTDIR)$(pkgpython24dir);
+	rm -rf $(DESTDIR)$(pkgpython25dir);
+	rm -rf $(DESTDIR)$(pkgRdir);
+	rm -rf $(DESTDIR)$(pkgrubydir);
+	rm -rf $(DESTDIR)$(pkgtcldir);
+	rm -rf $(DESTDIR)$(pkgphpdir);
 
 devtsts: $(DEVTSTS)
 
