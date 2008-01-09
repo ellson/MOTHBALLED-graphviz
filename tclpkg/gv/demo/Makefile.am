@@ -62,3 +62,5 @@ endif
 if WITH_TCL
 demotcl_SCRIPTS = modgraph.tcl
 endif
+
+EXTRA_DIST = modgraph.*
