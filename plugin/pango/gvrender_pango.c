@@ -206,6 +206,7 @@ static void cairogen_end_page(GVJ_t * job)
 	cairo_destroy(cr);
 	job->context = NULL;
 	cairo_surface_finish(surface);
+	status = cairo_surface_status(surface);
 	cairo_surface_destroy(surface);
 	if (status != CAIRO_STATUS_SUCCESS)
 	    fprintf(stderr, "cairo: %s\n", cairo_status_to_string(status));
