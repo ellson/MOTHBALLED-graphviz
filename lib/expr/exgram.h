@@ -479,17 +479,16 @@ extern "C" {
 			vmstrdup(p->vm, sfstruse(p->tmp));
 		    break;
 		case S2F:
-		    x->data.constant.value.floating =
-			strtod(x->data.constant.value.string, &e);
+		    s = x->data.constant.value.string;
+		    x->data.constant.value.floating = strtod (s, &e);
 		    if (*e)
-			x->data.constant.value.floating =
-			    *x->data.constant.value.string != 0;
+			x->data.constant.value.floating = (*s != 0);
 		    break;
 		case S2I:
 		    s = x->data.constant.value.string;
 		    x->data.constant.value.integer = strToL(s, &e);
 		    if (*e)
-			x->data.constant.value.integer = *s != 0;
+			x->data.constant.value.integer = (*s != 0);
 		    break;
 		default:
 		    exerror("internal error: %d: unknown cast op", t2t);

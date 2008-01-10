@@ -456,6 +456,7 @@ dcl_item	:	dcl_name {checkName ($1); expr.id=$1;} array initialize
 			if ($4 && $4->op == PROCEDURE)
 			{
 				$1->lex = PROCEDURE;
+				$1->type = $4->type;
 				$1->value = $4;
 			}
 			else
