@@ -187,6 +187,7 @@ static void cairogen_end_page(GVJ_t * job)
 {
     cairo_t *cr = (cairo_t *) job->context;
     cairo_surface_t *surface;
+    cairo_status_t status;
 
     switch (job->render.id) {
 
@@ -201,8 +202,13 @@ static void cairogen_end_page(GVJ_t * job)
     case FORMAT_PDF:
     case FORMAT_SVG:
 	cairo_show_page(cr);
+	surface = cairo_surface_reference(cairo_get_target(cr));
 	cairo_destroy(cr);
 	job->context = NULL;
+	cairo_surface_finish(surface);
+	cairo_surface_destroy(surface);
+	if (status != CAIRO_STATUS_SUCCESS)
+	    fprintf(stderr, "cairo: %s\n", cairo_status_to_string(status));
 	break;
 
     case FORMAT_CAIRO:
