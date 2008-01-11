@@ -1,4 +1,4 @@
-/* $Id$ $Revision$ */
+/* $id: shapes.c,v 1.82 2007/12/24 04:50:36 ellson Exp $ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
 
 /**********************************************************
@@ -24,12 +24,17 @@
 static port Center = { {0, 0}, -1, 0, 0, 0, 1, 0, 0 };
 
 #define ATTR_SET(a,n) ((a) && (*(agxget(n,a->index)) != '\0'))
+  /* Default point size = 0.05 inches or 3.6 points */
 #define DEF_POINT 0.05
+  /* Minimum point size = 0.0003 inches or 0.02 points
+   * This will make the radius 0.01 points, which is the smallest
+   * non-zero number output by gvprintnum in gvdevice.c
+   */
+#define MIN_POINT 0.0003
   /* extra null character needed to avoid style emitter from thinking
    * there are arguments.
    */
 static char *point_style[3] = { "invis\0", "filled\0", 0 };
-static shape_desc *point_desc;
 
 /* forward declarations of functions used in shapes tables */
 
@@ -48,6 +53,8 @@ static int record_path(node_t* n, port* p, int side, box rv[], int *kptr);
 static void record_gencode(GVJ_t * job, node_t * n);
 
 static void point_init(node_t * n);
+static void point_gencode(GVJ_t * job, node_t * n);
+static boolean point_inside(inside_t * inside_context, pointf p);
 
 static boolean epsf_inside(inside_t * inside_context, pointf p);
 static void epsf_gencode(GVJ_t * job, node_t * n);
@@ -133,9 +140,9 @@ static shape_functions point_fns = {
     point_init,
     poly_free,
     poly_port,
-    poly_inside,
+    point_inside,
     NULL,
-    poly_gencode
+    point_gencode
 };
 static shape_functions record_fns = {
     record_init,
@@ -249,7 +256,7 @@ char* findPen(node_t * n)
 }
 
 static
-char *findFill(node_t * n)
+char *findFillDflt(node_t * n, char* dflt)
 {
     char *color;
 
@@ -258,16 +265,20 @@ char *findFill(node_t * n)
 	/* for backward compatibilty, default fill is same as pen */
 	color = late_nnstring(n, N_color, "");
 	if (!color[0]) {
-	    if (ND_shape(n) == point_desc) {
-		color = "black";
-	    }
 #ifdef WITH_CODEGENS
-	    else if (Output_lang == MIF) color = "black";
+	    if (Output_lang == MIF) color = "black";
+	    else
 #endif
-	    else color = DEFAULT_FILL;
+	    color = dflt;
 	}
     }
     return color;
+}
+
+static
+char *findFill (node_t * n)
+{
+    return (findFillDflt (n, DEFAULT_FILL));
 }
 
 static char **checkStyle(node_t * n, int *flagp)
@@ -1395,16 +1406,8 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     xsize = (double)(ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n));
     ysize = (double)ND_ht_i(n) / POINTS(ND_height(n));
 
-    if (ND_shape(n) == point_desc) {
-	checkStyle(n, &style);
-	if (style & INVISIBLE)
-	    gvrender_set_style(job, point_style);
-	else
-	    gvrender_set_style(job, &point_style[1]);
-	style = FILLED;
-    } else {
-	style = stylenode(job, n);
-    }
+    style = stylenode(job, n);
+
     if (ND_gui_state(n) & GUI_STATE_ACTIVE) {
         color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
         gvrender_set_pencolor(job, color);
@@ -1523,42 +1526,170 @@ static void poly_gencode(GVJ_t * job, node_t * n)
  */
 static void point_init(node_t * n)
 {
-    textlabel_t *p;
-
-    if (!point_desc) {
-	shape_desc *ptr;
-	for (ptr = Shapes; ptr->name; ptr++)
-	    if (streq(ptr->name, "point")) {
-		point_desc = ptr;
-		break;
-	    }
-	assert(point_desc);
-    }
-
-    /* adjust label to "" */
-    p = ND_label(n);
-    free_label(p);
-    ND_label(n) = NEW(textlabel_t);	/* allocate empty label that can be freed later */
-    ND_label(n)->text = strdup("");
+    polygon_t *poly = NEW(polygon_t);
+    int sides, outp, peripheries = ND_shape(n)->polygon->peripheries;
+    double sz;
+    pointf P, *vertices;
+    int i, j;
 
     /* set width and height, and make them equal
      * if user has set weight or height, use it.
      * if both are set, use smallest.
      * if neither, use default
      */
-    if (ATTR_SET(N_width, n)) {
-	if (ATTR_SET(N_height, n)) {
-	    ND_width(n) = ND_height(n) = MIN(ND_width(n), ND_height(n));
-	} else
-	    ND_height(n) = ND_width(n);
-    } else if (ATTR_SET(N_height, n)) {
-	ND_width(n) = ND_height(n);
-    } else
-	ND_width(n) = ND_height(n) = DEF_POINT;
+    ND_width(n) = late_double(n, N_width, DEF_POINT, MIN_POINT);
+    ND_height(n) = late_double(n, N_height, DEF_POINT, MIN_POINT);
+    ND_width(n) = ND_height(n) = MIN(ND_width(n), ND_height(n));
 
-    poly_init(n);
+    sz = ND_width(n)*POINTS_PER_INCH; 
+    peripheries = late_int(n, N_peripheries, peripheries, 0);
+    if (peripheries < 1) outp = 1;
+    else outp = peripheries;
+    sides = 2;
+    vertices = N_NEW(outp * sides, pointf);
+    P.y = P.x = sz / 2.;
+    vertices[0].x = -P.x;
+    vertices[0].y = -P.y;
+    vertices[1] = P;
+    if (peripheries > 1) {
+        for (j = 1, i = 2; j < peripheries; j++) {
+	    P.x += GAP;
+	    P.y += GAP;
+	    vertices[i].x = -P.x;
+	    vertices[i].y = -P.y;
+	    i++;
+	    vertices[i].x = P.x;
+	    vertices[i].y = P.y;
+	    i++;
+	}
+        sz = 2. * P.x;
+    }
+    poly->regular = 1;
+    poly->peripheries = peripheries;
+    poly->sides = 2;
+    poly->orientation = 0;
+    poly->skew = 0;
+    poly->distortion = 0;
+    poly->vertices = vertices;
+
+    ND_height(n) = ND_width(n) = PS2INCH(sz);
+    ND_shape_info(n) = (void *) poly;
 }
 
+static boolean 
+point_inside(inside_t* inside_context, pointf p)
+{
+    static node_t *lastn;	/* last node argument */
+    static double radius;
+    pointf P;
+    node_t *n = inside_context->s.n;
+
+    P = ccwrotatepf(p, 90*GD_rankdir(n->graph));
+
+    if (n != lastn) {
+        int outp;
+        polygon_t *poly = (polygon_t *) ND_shape_info(n);
+
+	/* index to outer-periphery */
+	outp = 2*(poly->peripheries - 1);
+	if (outp < 0) outp = 0;
+
+	radius = poly->vertices[outp+1].x;
+	lastn = n;
+    }
+
+    /* inside bounding box? */
+    if ((fabs(P.x) > radius) || (fabs(P.y) > radius))
+	return FALSE;
+
+    return (hypot(P.x, P.y) <= radius);
+}
+
+static void point_gencode(GVJ_t * job, node_t * n)
+{
+    obj_state_t *obj = job->obj;
+    polygon_t *poly;
+    int i, j, sides, peripheries, style;
+    pointf P, *vertices;
+    static pointf *AF;
+    static int A_size;
+    boolean filled;
+    char *color;
+    int doMap = (obj->url || obj->explicit_tooltip);
+
+    if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
+	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+
+    poly = (polygon_t *) ND_shape_info(n);
+    vertices = poly->vertices;
+    sides = poly->sides;
+    peripheries = poly->peripheries;
+    if (A_size < sides) {
+	A_size = sides + 2;
+	AF = ALLOC(A_size, AF, pointf);
+    }
+
+    checkStyle(n, &style);
+    if (style & INVISIBLE)
+        gvrender_set_style(job, point_style);
+    else
+        gvrender_set_style(job, &point_style[1]);
+
+    if (ND_gui_state(n) & GUI_STATE_ACTIVE) {
+        color = late_nnstring(n, N_activepencolor, DEFAULT_ACTIVEPENCOLOR);
+        gvrender_set_pencolor(job, color);
+        color = late_nnstring(n, N_activefillcolor, DEFAULT_ACTIVEFILLCOLOR);
+        gvrender_set_fillcolor(job, color);
+    }
+    else if (ND_gui_state(n) & GUI_STATE_SELECTED) {
+        color = late_nnstring(n, N_selectedpencolor, DEFAULT_SELECTEDPENCOLOR);
+        gvrender_set_pencolor(job, color);
+        color = late_nnstring(n, N_selectedfillcolor, DEFAULT_SELECTEDFILLCOLOR);
+        gvrender_set_fillcolor(job, color);
+    }
+    else if (ND_gui_state(n) & GUI_STATE_DELETED) {
+        color = late_nnstring(n, N_deletedpencolor, DEFAULT_DELETEDPENCOLOR);
+        gvrender_set_pencolor(job, color);
+        color = late_nnstring(n, N_deletedfillcolor, DEFAULT_DELETEDFILLCOLOR);
+        gvrender_set_fillcolor(job, color);
+    }
+    else if (ND_gui_state(n) & GUI_STATE_VISITED) {
+        color = late_nnstring(n, N_visitedpencolor, DEFAULT_VISITEDPENCOLOR);
+        gvrender_set_pencolor(job, color);
+        color = late_nnstring(n, N_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
+        gvrender_set_fillcolor(job, color);
+    }
+    else {
+        color = findFillDflt (n, "black");
+	gvrender_set_fillcolor(job, color); /* emit fill color */
+        pencolor(job, n);	/* emit pen color */
+    }
+    filled = TRUE;
+
+    /* if no boundary but filled, set boundary color to fill color */
+    if (peripheries == 0) {
+	peripheries = 1;
+	if (color[0])
+	    gvrender_set_pencolor(job, color);
+    }
+
+    for (j = 0; j < peripheries; j++) {
+	for (i = 0; i < sides; i++) {
+	    P = vertices[i + j * sides];
+	    AF[i].x = P.x + (double)ND_coord_i(n).x;
+	    AF[i].y = P.y + (double)ND_coord_i(n).y;
+	}
+	gvrender_ellipse(job, AF, sides, filled);
+	/* fill innermost periphery only */
+	filled = FALSE;
+    }
+
+    if (doMap) {
+	if (job->flags & EMIT_CLUSTERS_LAST)
+	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+        gvrender_end_anchor(job);
+    }
+}
 
 /* the "record" shape is a rudimentary table formatter */
 
