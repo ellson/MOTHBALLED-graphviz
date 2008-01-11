@@ -1,10 +1,19 @@
-#!/usr/bin/perl
-
-# display the kernel module dependencies
-
-# author: John Ellson <ellson@research.att.com>
-
+#!/usr/bin/perl -w
+# #!/usr/local/bin/perl -w
+# Change ^^ to the version of Perl you installed the SWIG modules / Graphviz with
+#
+# Change this to point to your installed graphviz lib dir
+#   Normally either /usr/local/lib/graphviz/perl or /usr/lib/graphviz/perl
+#use lib '/home/maxb/lib/graphviz/perl';
 use gv;
+
+use Getopt::Long;
+GetOptions(\%Args, 'h|help','d|debug');
+$Debug   = $Args{d} || 0;
+$Modules = shift @ARGV || '/proc/modules';
+
+die &usage if $Args{h};
+die "Cannot read $Modules. $!\n" unless (-r $Modules);
 
 $G = gv::digraph("G");
 $N = gv::protonode($G);
@@ -20,23 +29,49 @@ gv::setv($N, "fontsize", "8");
 gv::setv($N, "fontname", "helvetica");
 gv::setv($E, "arrowsize", ".4");
 
-#FIXME - complete translation to perl
+open (M,"<$Modules") or die "Can't open $Modules. $!\n";
+while (<M>) {
+    chomp;
+    # parport                36832   1 (autoclean) [parport_pc lp]
+    my @f = split(/\s+/);
+    # Should be at least three columns
+    next unless scalar @f >= 3;
 
-#f = File.open('/proc/modules', mode="r")
-#while ! f.eof do
-#	rec = f.gets()
-#
-#    for mod, usedbylist in string.gfind(rec, "([_%w]+) %w+ %w+ ([-,_%w]+)") do
-#       n = gv.node(G, mod)
-#       for usedby in string.gfind(usedbylist, "([-_%w]+)") do
-#          if (usedby ~= '-') and (usedby ~= '') then
-#             gv.edge(n, gv.node(G, usedby))
-#          end
-#       end
-#    end
-#
-#end	
-#f.close
+    my $module  = shift @f;
+    my $size    = shift @f;
+    my $used_by = shift @f;
+    my $deps    = join (' ',@f);
+
+    Debug("$module");
+    my $n = gv::node($G,$module);
+
+    # look for and get rid of brackets.  ignore parens, etc.
+    if ($deps =~ s/\[(.*)\]/$1/) {
+        foreach my $dep (split(/\s+/,$deps)) {
+            Debug(" $dep -> $module");
+            gv::edge($n, gv::node($G, $dep) );
+        }
+    }
+}
 
 gv::layout($G, "dot");
 gv::render($G, "xlib");
+
+sub Debug {
+    return unless $Debug;
+    warn join(" ",@_), "\n";
+}
+
+sub usage {
+    return << "end_usage";
+modgraph.pl
+
+Displays Linux kernel module dependencies from $Modules
+
+Author:    John Ellson <ellson\@research.att.com>
+Perl Port: Max Baker <max\@warped.org>
+
+Usage: $0 [--debug] [/proc/modules]
+
+end_usage
+}
