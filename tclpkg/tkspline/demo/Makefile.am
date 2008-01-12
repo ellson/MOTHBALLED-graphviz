@@ -4,8 +4,8 @@
 demodir = $(pkgdatadir)/demo
 
 if WITH_TK
-demo_SCRIPTS = spline
-demo_DATA = spline.README
+demo_SCRIPTS = spline.tcl
+demo_DATA = spline.tcl.README
 endif
 
-EXTRA_DIST = spline spline.README
+EXTRA_DIST = spline.tcl spline.tcl.README
