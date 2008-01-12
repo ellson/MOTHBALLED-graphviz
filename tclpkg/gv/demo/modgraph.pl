@@ -1,5 +1,4 @@
 #!/usr/bin/perl -w
-# #!/usr/local/bin/perl -w
 # Change ^^ to the version of Perl you installed the SWIG modules / Graphviz with
 #
 # Change this to point to your installed graphviz lib dir
@@ -30,27 +29,31 @@ gv::setv($N, "fontname", "helvetica");
 gv::setv($E, "arrowsize", ".4");
 
 open (M,"<$Modules") or die "Can't open $Modules. $!\n";
+
 while (<M>) {
     chomp;
-    # parport                36832   1 (autoclean) [parport_pc lp]
     my @f = split(/\s+/);
     # Should be at least three columns
     next unless scalar @f >= 3;
 
+    # Linux 2.4 : parport 36832 1 (autoclean) [parport_pc lp]
+    # Linux 2.6 : eeprom 14929 0 - Live 0xffffffff88cc5000
     my $module  = shift @f;
     my $size    = shift @f;
     my $used_by = shift @f;
+    # this is ugly, needed to clean up the list of deps from 2.4 or 2.6
     my $deps    = join (' ',@f);
+    $deps =~ s/ Live.*//;
+    $deps =~ s/[\[\]\-(),]/ /g;
 
     Debug("$module");
     my $n = gv::node($G,$module);
 
-    # look for and get rid of brackets.  ignore parens, etc.
-    if ($deps =~ s/\[(.*)\]/$1/) {
-        foreach my $dep (split(/\s+/,$deps)) {
-            Debug(" $dep -> $module");
-            gv::edge($n, gv::node($G, $dep) );
-        }
+    foreach my $d ( split(/\s+/,$deps) ){
+        # gv::node($G, $d)  creates the node, if needed,
+	#      but doesn't complain if it already exists
+        Debug(" $d -> $module");
+        gv::edge($n, gv::node($G, $d) );
     }
 }
 
