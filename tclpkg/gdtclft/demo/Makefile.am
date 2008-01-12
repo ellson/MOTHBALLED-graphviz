@@ -4,8 +4,8 @@
 demodir = $(datadir)/@PACKAGE@/demo
 
 if WITH_TCL
-demo_SCRIPTS = entities
-demo_DATA = entities.README entities.html
+demo_SCRIPTS = entities.tcl
+demo_DATA = entities.tcl.README entities.tcl.html
 endif
 
-EXTRA_DIST = entities entities.README entities.html
+EXTRA_DIST = entities.tcl entities.tcl.README entities.tcl.html
