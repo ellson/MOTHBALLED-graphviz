@@ -4,8 +4,8 @@
 demodir = $(pkgdatadir)/demo
 
 if WITH_TCL
-demo_SCRIPTS = doted gcat
-demo_DATA = doted.README gcat.README
+demo_SCRIPTS = doted.tcl gcat.tcl
+demo_DATA = doted.tcl.README gcat.tcl.README
 endif
 
-EXTRA_DIST = doted gcat doted.README gcat.README
+EXTRA_DIST = doted.tcl gcat.tcl doted.tcl.README gcat.tcl.README
