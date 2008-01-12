@@ -353,6 +353,7 @@ Lua extension for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/lua
 %{_libdir}/graphviz/lua/*
+%{_datadir}/graphviz/demo/*.lua*
 %{_mandir}/mann/gv_lua.n*
 %endif
 
@@ -388,6 +389,7 @@ Perl extension for graphviz.
 %dir %{_libdir}/graphviz/perl
 %{_libdir}/graphviz/perl/*
 %{_libdir}/perl*/*
+%{_datadir}/graphviz/demo/*.pl*
 %{_mandir}/mann/gv_perl.n*
 %endif
 
@@ -406,6 +408,8 @@ PHP extension for graphviz.
 %dir %{_libdir}/graphviz/php
 %{_libdir}/graphviz/php/*
 %{_libdir}/php*/*
+%{_datadir}/php*/*
+%{_datadir}/graphviz/demo/*.php*
 %{_mandir}/mann/gv_php.n*
 %endif
 
@@ -424,6 +428,7 @@ Python extension for graphviz.
 %dir %{_libdir}/graphviz/python
 %{_libdir}/graphviz/python/*
 %{_libdir}/python*/*
+%{_datadir}/graphviz/demo/*.py*
 %{_mandir}/mann/gv_python.n*
 %endif
 
@@ -459,6 +464,7 @@ Ruby extension for graphviz.
 %dir %{_libdir}/graphviz/ruby
 %{_libdir}/graphviz/ruby/*
 %{_libdir}/*ruby*/*
+%{_datadir}/graphviz/demo/*.rb*
 %{_mandir}/mann/gv_ruby.n*
 %endif
 
@@ -477,7 +483,8 @@ Various tcl packages (extensions) for the graphviz tools.
 %dir %{_libdir}/graphviz/tcl
 %{_libdir}/graphviz/tcl/*
 %{_libdir}/tcl*/*
-%{_datadir}/graphviz/demo
+%{_datadir}/graphviz/demo/*.tcl*
+%{_datadir}/graphviz/demo/*_data
 # hack to include gv_tcl.n only if available
 #  always includes tcldot.n, gdtclft.n
 %{_mandir}/mann/*tcl*.n*

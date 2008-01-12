@@ -49,10 +49,17 @@ if WITH_PHP
 	-mkdir -p $(DESTDIR)@PHP_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PHP_INSTALL_DIR@; then \
 		(cd $(DESTDIR)@PHP_INSTALL_DIR@; \
-			$(LN_S) $(pkgphpdir)/libgv_php.so gv.so; \
-			$(LN_S) $(pkgphpdir)/gv.php gv.php;) \
+			$(LN_S) $(pkgphpdir)/libgv_php.so gv.so;) \
 	else \
 		echo "Warning: @PHP_INSTALL_DIR@ is not writable."; \
+		echo "Skipping system installation of php binding."; \
+	fi
+	-mkdir -p $(DESTDIR)@PHP_INSTALL_DATADIR@;
+	if test -w $(DESTDIR)@PHP_INSTALL_DATADIR@; then \
+		(cd $(DESTDIR)@PHP_INSTALL_DATADIR@; \
+			$(LN_S) $(pkgphpdir)/gv.php gv.php;) \
+	else \
+		echo "Warning: @PHP_INSTALL_DATADIR@ is not writable."; \
 		echo "Skipping system installation of php binding."; \
 	fi
 endif
