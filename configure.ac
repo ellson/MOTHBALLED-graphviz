@@ -1813,6 +1813,24 @@ AC_SUBST(MING_LIBS)
 AM_CONDITIONAL(WITH_MING, [test "x$HAVE_MING" != "x"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for QUARTZ 
+
+AC_ARG_WITH(quartz,
+  [AC_HELP_STRING([--with-quartz=no], [quartz library])],
+  [], [with_quartz=no])
+
+if test "x$with_quartz" = "xyes"; then
+PKG_CHECK_MODULES(QUARTZ, [libquartz >= 0.4],
+	[HAVE_QUARTZ=1
+	AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,
+		[Define if you have the quartz library for SWF support])],
+	[AC_MSG_WARN(quartz library not available)])
+fi
+AC_SUBST(QUARTZ_CFLAGS)
+AC_SUBST(QUARTZ_LIBS)
+AM_CONDITIONAL(WITH_QUARTZ, [test "x$HAVE_QUARTZ" != "x"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
                                                                                 
 AC_ARG_WITH(libgd,
@@ -2338,6 +2356,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/gd/Makefile
 	plugin/pango/Makefile
 	plugin/ming/Makefile
+	plugin/quartz/Makefile
 	plugin/dot_layout/Makefile
 	plugin/neato_layout/Makefile
 	plugin/xlib/Makefile
