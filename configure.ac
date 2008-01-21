@@ -1820,11 +1820,19 @@ AC_ARG_WITH(quartz,
   [], [with_quartz=no])
 
 if test "x$with_quartz" = "xyes"; then
-PKG_CHECK_MODULES(QUARTZ, [libquartz >= 0.4],
-	[HAVE_QUARTZ=1
-	AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,
-		[Define if you have the quartz library for SWF support])],
-	[AC_MSG_WARN(quartz library not available)])
+#PKG_CHECK_MODULES(QUARTZ, [libquartz >= 0.4],
+#	[HAVE_QUARTZ=1
+#	AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,
+#		[Define if you have the quartz library for SWF support])],
+#	[AC_MSG_WARN(quartz library not available)])
+
+if test -d "/System/Library/Frameworks/ApplicationServices.framework"; then
+HAVE_QUARTZ=1
+AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,[Define if you have the quartz library for SWF support])
+QUARTZ_CFLAGS = '-I/usr/include/quartz'
+QUARTZ_CFLAGS = '-L/usr/lib -lquartz'
+fi
+
 fi
 AC_SUBST(QUARTZ_CFLAGS)
 AC_SUBST(QUARTZ_LIBS)
