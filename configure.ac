@@ -1829,8 +1829,8 @@ if test "x$with_quartz" = "xyes"; then
 if test -d "/System/Library/Frameworks/ApplicationServices.framework"; then
 HAVE_QUARTZ=1
 AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,[Define if you have the quartz library for SWF support])
-QUARTZ_CFLAGS = '-I/usr/include/quartz'
-QUARTZ_CFLAGS = '-L/usr/lib -lquartz'
+QUARTZ_CFLAGS='-I/usr/include/quartz'
+QUARTZ_LIBS='-L/usr/lib -lquartz'
 fi
 
 fi
