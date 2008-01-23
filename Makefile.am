@@ -15,7 +15,7 @@ html_DATA = $(html)
 man_MANS = graphviz.7
 
 # $(subdirs) contains the list from: AC_CONFIG_SUBDIRS
-SUBDIRS = $(subdirs) lib plugin cmd tclpkg doc contrib graphs rtest
+SUBDIRS = $(subdirs) lib plugin cmd tclpkg doc contrib share graphs rtest
 
 .PHONY: doxygen
 doxygen:
