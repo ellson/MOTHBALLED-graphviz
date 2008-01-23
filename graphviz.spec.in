@@ -44,6 +44,7 @@ Prefix: /usr
 %define MYLIBGD --with-mylibgd
 %define PANGOCAIRO --without-pangocairo
 %define RSVG --without-rsvg
+%define SMYRNA --without-smyrna
 %define DEVIL 0
 %define MING 0
 %define GDK_PIXBUF --without-gdk-pixbuf

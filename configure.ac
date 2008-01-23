@@ -1,7 +1,7 @@
 # $Id$ $Revision$
 
 # Process this file with autoconf to produce a configure script
-AC_PREREQ(2.54)
+AC_PREREQ([2.61])
 
 # Package name and version number, (as distinct from shared library version)
 AC_INIT(graphviz, 2.17)
@@ -268,22 +268,23 @@ fi
 dnl -----------------------------------
 dnl Check for various typedefs and provide substitutes if they don't exist.
                                                                                 
+AC_C_CONST
 AC_TYPE_MODE_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
 AC_TYPE_UID_T
 
 dnl -----------------------------------
 dnl Checks for header files
 
 # AC_STDC_HEADERS
-# AC_HAVE_HEADERS(string.h)
 AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
 	search.h getopt.h pthread.h values.h float.h limits.h termios.h \
-	errno.h time.h unistd.h fenv.h strings.h inttypes.h setjmp.h \
+	errno.h time.h unistd.h fenv.h string.h strings.h inttypes.h setjmp.h \
 	sys/time.h sys/times.h sys/types.h sys/select.h fpu_control.h \
-	sys/fpu.h strings.h sys/socket.h sys/stat.h sys/mman.h \
-	sys/ioctl.h sys/inotify.h)
+	sys/fpu.h sys/socket.h sys/stat.h sys/mman.h \
+	sys/ioctl.h sys/inotify.h langinfo.h libintl.h)
 AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_STDBOOL
@@ -372,7 +373,8 @@ AC_FUNC_ALLOCA
 
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
 	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
-	strtoul strtoll strtoull uname])
+	strtoul strtoll strtoull uname memset nl_langinfo pow sqrt \
+	strchr strdup strerror strstr])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp])
 
@@ -391,6 +393,27 @@ AM_CONDITIONAL(ENABLE_LTDL, [test "x$enable_ltdl" != "xno"])
 AC_SUBST(INCLTDL)
 AC_SUBST(LIBLTDL)
 AM_PROG_LIBTOOL
+
+# Checks for libraries.
+AC_CHECK_LIB([ICE], [main])
+AC_CHECK_LIB([SM], [main])
+AC_CHECK_LIB([Xaw], [main])
+AC_CHECK_LIB([Xpm], [main])
+AC_CHECK_LIB([art_lgpl_2], [main])
+AC_CHECK_LIB([cairo], [main])
+AC_CHECK_LIB([dl], [main])
+AC_CHECK_LIB([fl], [main])
+AC_CHECK_LIB([fontconfig], [main])
+AC_CHECK_LIB([freetype], [main])
+AC_CHECK_LIB([iconv], [main])
+AC_CHECK_LIB([intl], [main])
+AC_CHECK_LIB([jpeg], [main])
+AC_CHECK_LIB([m], [main])
+AC_CHECK_LIB([perl], [main])
+AC_CHECK_LIB([png], [main])
+AC_CHECK_LIB([popt], [main])
+AC_CHECK_LIB([xml2], [main])
+AC_CHECK_LIB([z], [main])
 
 dnl -----------------------------------
 dnl old codegens
@@ -1577,6 +1600,20 @@ AC_SUBST(Z_INCLUDES)
 AC_SUBST(Z_LIBS)
 
 dnl -----------------------------------
+dnl SMYRNA 
+
+AC_ARG_WITH(smyrna,
+  [AC_HELP_STRING([--with-smyrna=no], [SMYRNA large graph viewer])],
+  [], [with_smyrna=no])
+
+if test "x$with_smyrna" = "xyes"; then
+	AC_DEFINE_UNQUOTED(SMYRNA,1,[Define if you want SMYRNA])
+else
+	AC_MSG_WARN(Optional SMYRNA is disabled)
+fi
+AM_CONDITIONAL(WITH_SMYRNA, [test "x$with_smyrna" = "xyes"])
+
+dnl -----------------------------------
 dnl DIGCOLA 
 
 AC_ARG_WITH(digcola,
@@ -1765,6 +1802,61 @@ fi
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
 AM_CONDITIONAL(WITH_GTK, [test "x$HAVE_GTK" != "x"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for GTKGL.
+
+AC_ARG_WITH(gtkgl,
+  [AC_HELP_STRING([--with-gtkgl=yes], [gtkgl library])],
+  [], [with_gtkgl=yes])
+
+if test "x$with_gtkgl" = "xyes"; then
+PKG_CHECK_MODULES(GTKGL, [gtkgl-2.0],
+        [HAVE_GTKGL=1
+        AC_DEFINE_UNQUOTED(HAVE_GTKGL,1,
+                [Define if you have the gtkgl library])],
+        [AC_MSG_WARN(gtkgl library not available. desktop features will not be built)])
+fi
+AC_SUBST(GTKGL_CFLAGS)
+AC_SUBST(GTKGL_LIBS)
+AM_CONDITIONAL(WITH_GTKGL, [test "x$HAVE_GTKGL" != "x"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for GTKGLEXT.
+
+AC_ARG_WITH(gtkglext,
+  [AC_HELP_STRING([--with-gtkglext=yes], [gtkglext library])],
+  [], [with_gtkglext=yes])
+
+if test "x$with_gtkglext" = "xyes"; then
+PKG_CHECK_MODULES(GTKGLEXT, [gtkglext-1.0],
+        [HAVE_GTKGLEXT=1
+        AC_DEFINE_UNQUOTED(HAVE_GTKGLEXT,1,
+                [Define if you have the gtkglext library])],
+        [AC_MSG_WARN(gtkglext library not available. desktop features will not be built)])
+fi
+AC_SUBST(GTKGLEXT_CFLAGS)
+AC_SUBST(GTKGLEXT_LIBS)
+AM_CONDITIONAL(WITH_GTKGLEXT, [test "x$HAVE_GTKGLEXT" != "x"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for GLADE.
+
+AC_ARG_WITH(glade,
+  [AC_HELP_STRING([--with-glade=yes], [glade library])],
+  [], [with_glade=yes])
+
+if test "x$with_glade" = "xyes"; then
+PKG_CHECK_MODULES(GLADE, [libglade-2.0],
+        [HAVE_GLADE=1
+        AC_DEFINE_UNQUOTED(HAVE_GLADE,1,
+                [Define if you have the glade library])],
+        [AC_MSG_WARN(glade library not available. desktop features will not be built)])
+fi
+AC_SUBST(GLADE_CFLAGS)
+AC_SUBST(GLADE_LIBS)
+AM_CONDITIONAL(WITH_GLADE, [test "x$HAVE_GLADE" != "x"])
+
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GNOMEUI.
@@ -2356,6 +2448,10 @@ AC_CONFIG_FILES(Makefile
 	lib/gvc/Makefile
 	lib/gvc/libgvc.pc
 	lib/gvc/libgvc_builtins.pc
+	lib/utilities/Makefile
+	lib/gui/Makefile
+	lib/xdot/Makefile
+	lib/filter/Makefile
 	plugin/Makefile
 	plugin/core/Makefile
 	plugin/devil/Makefile
@@ -2385,6 +2481,7 @@ AC_CONFIG_FILES(Makefile
         cmd/lefty/Makefile
         cmd/lneato/Makefile
         cmd/dotty/Makefile
+        cmd/smyrna/Makefile
 	tclpkg/Makefile
 	tclpkg/tclstubs/Makefile
 	tclpkg/tkstubs/Makefile
@@ -2402,6 +2499,10 @@ AC_CONFIG_FILES(Makefile
 	tclpkg/gv/demo/Makefile
 	tclpkg/gv/META.gv
 	rtest/Makefile
+	share/Makefile
+	share/examples/Makefile
+	share/icons/Makefile
+	share/gui/Makefile
 	graphviz.spec
 	Doxyfile
 	)
