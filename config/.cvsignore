@@ -8,3 +8,4 @@ missing
 mkinstalldirs
 ylwrap
 CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
+link-warning.h
