@@ -21,7 +21,7 @@ noinst_HEADERS = draw.h glTemplate.h materials.h support.h topview.h trackball.h
 bin_PROGRAMS = smyrna
 endif
 
-smyrna_SOURCES = topview.c viewport.c draw.c glTemplate.c main.c support.c template.c trackball.c tvnodes.c hier.o
+smyrna_SOURCES = topview.c viewport.c draw.c glTemplate.c main.c support.c template.c trackball.c tvnodes.c hier.c
 
 smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/cdt/libcdt_C.la \
