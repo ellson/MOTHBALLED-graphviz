@@ -10,7 +10,7 @@
   focus_t* fs;
   int ne;
   vtx_data* graph = makeGraph (topview*, &ne);
-  hierarchy = makeHier(topview*, graph, x_coords, y_coords);
+  hierarchy = makeHier(topview->NodeCount, ne, graph, x_coords, y_coords);
   freeGraph (graph);
   fs = initFocus (topview->Nodecount); // create focus set
 
@@ -167,12 +167,10 @@ makeGraph (topview* tv, int* nedges)
 }
 
 Hierarchy*
-makeHier (topview* tv, vtx_data* graph, double* x_coords, double* y_coords)
+makeHier (int nn, int ne, vtx_data* graph, double* x_coords, double* y_coords)
 {
     vtx_data* delaunay;
     ex_vtx_data* geom_graph;
-    int nn = tv->Nodecount;
-    int ne = tv->Edgecount;
     int ngeom_edges;
     Hierarchy* hp = NEW(Hierarchy);
 

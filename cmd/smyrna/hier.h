@@ -21,6 +21,6 @@ typedef struct {
 
 void positionAllItems (Hierarchy* hp, focus_t* fs, hierparms_t* parms);
 vtx_data* makeGraph (topview* tv, int* nedges);
-Hierarchy* makeHier (topview*, vtx_data*, double*, double*);
+Hierarchy* makeHier (int nnodes, int nedges, vtx_data*, double*, double*);
 
 #endif
