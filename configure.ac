@@ -2452,6 +2452,7 @@ AC_CONFIG_FILES(Makefile
 	lib/gui/Makefile
 	lib/xdot/Makefile
 	lib/filter/Makefile
+	lib/topfish/Makefile
 	plugin/Makefile
 	plugin/core/Makefile
 	plugin/devil/Makefile

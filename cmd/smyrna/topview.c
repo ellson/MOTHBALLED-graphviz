@@ -13,7 +13,7 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
-
+#define DEFINE_MATERIALS
 #include "topview.h"
 #include "math.h"
 #include "btree.h"

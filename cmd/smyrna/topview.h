@@ -23,6 +23,7 @@
 
 #include "viewport.h"
 #include "gui.h"
+#include "hierarchy.h"
 #include "tvnodes.h"
 
 #ifdef	WIN32	//this shit is needed on WIN32 to get libglade see the callback
@@ -111,4 +112,6 @@ extern char** hostregex;
 double dist(double x1, double y1, double x2, double y2);
 double G(double x);
 extern int fisheye_distortion_fac;
+
+extern Hierarchy* makeHier (topview*, vtx_data*, double*, double*);
 #endif
