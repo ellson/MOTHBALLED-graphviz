@@ -113,5 +113,4 @@ double dist(double x1, double y1, double x2, double y2);
 double G(double x);
 extern int fisheye_distortion_fac;
 
-extern Hierarchy* makeHier (topview*, vtx_data*, double*, double*);
 #endif
