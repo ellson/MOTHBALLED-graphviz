@@ -168,13 +168,24 @@ How can I tell what fonts dot is using;
 	$ dot foo.dot -Tpng -o foo.png -v 2>&1 | grep font
 
 How can I add a custom font?
-(Note, in current versions of Graphviz with fontconfig, Cairo and
-Pango this cannot be done by simply putting a file in the
-current directory or setting the DOTFONTPATH path variable.
-Your custom font must be explicitly installed by fontconfig tools.)
+  In the current version of Graphviz with fontconfig, Cairo and
+  Pango, this cannot be done by simply putting a file in the
+  current directory or setting the DOTFONTPATH path variable.
+  Your custom font must be explicitly installed by fontconfig tools.
+
+  For a single font, e.g., foo.ttf:
 	$ mkdir -p ~/.fonts
 	$ cp foo.ttf ~/.fonts/
 	$ fc-cache
+
+  For a new font directory, e.g., /Library/Fonts, add a new <dir> element
+
+    <dir>/Library/Fonts</dir>
+
+  to a .conf file. Note that the file must have a correct xml structure
+  as specified by the fontconfig fonts.dtd. Possible choices for the
+  .conf file are local.conf in the same directory as the system-wide
+  fonts.conf file, or .fonts.conf in your home directory. 
 
 How can I ... font?
 	See: http://www.fontconfig.org/fontconfig-user.html
@@ -185,10 +196,8 @@ Can I specifiy a font by filename instead of by familyname?
 	fontconfig is called, and this can't be done when fonts
 	are being looked up by Pango.)
 
-[ FIXME
-  I thought we still recognized any fontname containing a path separator (
-  '/' or '\') as a font filename.   This doesn't seem to work anymore.
-]
+    Some versions of fontconfig appear to recognize pathnames and
+    attempt to use that, but this isn't always the case.
 
 How can I be sure that a specific font is selected?
 	Provide enough specification in the fontname, and test it
