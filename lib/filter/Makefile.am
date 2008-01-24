@@ -5,6 +5,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/utilities \
 	-I$(top_srcdir)/lib/gui \
+	-I$(top_srcdir)/lib/topfish \
 	-I$(top_srcdir)/cmd/smyrna \
 	-I$(top_srcdir)/lib/xdot \
 	-I$(top_srcdir)/lib/cgraph \
