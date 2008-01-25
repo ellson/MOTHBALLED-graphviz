@@ -58,7 +58,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     PangoAttrList *attrs;
     GError *error = NULL;
 #endif
-    char *text;
+    char *text, *tfnt, *pos;
     double textlayout_scale;
 
     if (!context) {
@@ -84,7 +84,12 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	else
 	    fnt = fontname;
 
-	desc = pango_font_description_from_string(fnt);
+    	/* suppress any extents - like in FreeSans.ttf (doxygen backwards compat) */
+	tfnt = strdup(fnt);
+	if ((pos = strrchr(tfnt, '.')))
+	    *pos = '\0';
+
+	desc = pango_font_description_from_string(tfnt);
 
         if (fontpath) {  /* -v support */
 #ifdef HAVE_FONTCONFIG
@@ -92,10 +97,12 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    FcFontSet *fs;
 	    FcResult result;
     
-            if (! FcInit())
+            if (! FcInit()) {
+		free(tfnt);
 	        return FALSE;
+	    }
     
-	    pat = FcNameParse((FcChar8 *) fnt);
+	    pat = FcNameParse((FcChar8 *) tfnt);
 	    FcConfigSubstitute (0, pat, FcMatchPattern);
 	    FcDefaultSubstitute (pat);
 	    fs = FcFontSetCreate();
@@ -126,6 +133,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    *fontpath = fnt;
 #endif
         }
+	free(tfnt);
     }
     /* all text layout is done at a scale of 96ppi */
     pango_font_description_set_size (desc, (gint)(para->fontsize * PANGO_SCALE));
