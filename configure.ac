@@ -395,25 +395,25 @@ AC_SUBST(LIBLTDL)
 AM_PROG_LIBTOOL
 
 # Checks for libraries.
-AC_CHECK_LIB([ICE], [main])
-AC_CHECK_LIB([SM], [main])
-AC_CHECK_LIB([Xaw], [main])
-AC_CHECK_LIB([Xpm], [main])
-AC_CHECK_LIB([art_lgpl_2], [main])
-AC_CHECK_LIB([cairo], [main])
-AC_CHECK_LIB([dl], [main])
-AC_CHECK_LIB([fl], [main])
-AC_CHECK_LIB([fontconfig], [main])
-AC_CHECK_LIB([freetype], [main])
-AC_CHECK_LIB([iconv], [main])
-AC_CHECK_LIB([intl], [main])
-AC_CHECK_LIB([jpeg], [main])
-AC_CHECK_LIB([m], [main])
-AC_CHECK_LIB([perl], [main])
-AC_CHECK_LIB([png], [main])
-AC_CHECK_LIB([popt], [main])
-AC_CHECK_LIB([xml2], [main])
-AC_CHECK_LIB([z], [main])
+#AC_CHECK_LIB([ICE], [main])
+#AC_CHECK_LIB([SM], [main])
+#AC_CHECK_LIB([Xaw], [main])
+#AC_CHECK_LIB([Xpm], [main])
+#AC_CHECK_LIB([art_lgpl_2], [main])
+#AC_CHECK_LIB([cairo], [main])
+#AC_CHECK_LIB([dl], [main])
+#AC_CHECK_LIB([fl], [main])
+#AC_CHECK_LIB([fontconfig], [main])
+#AC_CHECK_LIB([freetype], [main])
+#AC_CHECK_LIB([iconv], [main])
+#AC_CHECK_LIB([intl], [main])
+#AC_CHECK_LIB([jpeg], [main])
+#AC_CHECK_LIB([m], [main])
+#AC_CHECK_LIB([perl], [main])
+#AC_CHECK_LIB([png], [main])
+#AC_CHECK_LIB([popt], [main])
+#AC_CHECK_LIB([xml2], [main])
+#AC_CHECK_LIB([z], [main])
 
 dnl -----------------------------------
 dnl old codegens
@@ -1877,7 +1877,7 @@ AC_SUBST(GNOMEUI_LIBS)
 AM_CONDITIONAL(WITH_GNOMEUI, [test "x$HAVE_GNOMEUI" != "x"])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for GLADE.
+dnl INCLUDES and LIBS for GETTEXT.
 
 GETTEXT_PACKAGE=glade-2.0
 AC_SUBST(GETTEXT_PACKAGE)
