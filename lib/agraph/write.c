@@ -34,7 +34,6 @@ static void ioput(Agraph_t * g, iochan_t * ofile, char *str)
 
 static void write_body(Agraph_t * g, iochan_t * ofile);
 static int Level;
-static unsigned char Attrs_not_written_flag;
 static Agsym_t *Tailport, *Headport;
 
 static void indent(Agraph_t * g, iochan_t * ofile)
@@ -248,7 +247,6 @@ static void write_hdr(Agraph_t * g, iochan_t * ofile, int top)
     char *name, *sep, *kind, *strict;
     int root = 0;
 
-    Attrs_not_written_flag = AGATTRWF(g);
     strict = "";
     if (NOT(top) && agparent(g))
 	kind = "sub";
@@ -281,7 +279,7 @@ static void write_hdr(Agraph_t * g, iochan_t * ofile, int top)
     ioput(g, ofile, "{\n");
     Level++;
     write_dicts(g, ofile);
-    AGATTRWF(g) = NOT(AGATTRWF(g));
+	AGATTRWF(g) = TRUE;
 }
 
 static void write_trl(Agraph_t * g, iochan_t * ofile)
@@ -446,7 +444,7 @@ static void write_nondefault_attrs(void *obj, iochan_t * ofile,
 	ioput(g, ofile, "]");
 	Level--;
     }
-    AGATTRWF((Agobj_t *) obj) = NOT(AGATTRWF((Agobj_t *) obj));
+    AGATTRWF((Agobj_t *) obj) = TRUE;
 }
 
 static void write_nodename(Agnode_t * n, iochan_t * ofile)
@@ -466,7 +464,7 @@ static void write_nodename(Agnode_t * n, iochan_t * ofile)
 
 static int attrs_written(void *obj)
 {
-    return NOT(AGATTRWF((Agobj_t *) obj) == Attrs_not_written_flag);
+    return (AGATTRWF((Agobj_t *) obj));
 }
 
 static void write_node(Agnode_t * n, iochan_t * ofile, Dict_t * d)
@@ -583,8 +581,28 @@ static void write_body(Agraph_t * g, iochan_t * ofile)
     }
 }
 
+static void set_attrwf(Agraph_t *g, int toplevel, int value)
+{
+    Agraph_t *subg;
+	Agnode_t *n;
+	Agedge_t *e;
+
+    AGATTRWF(g) = value;
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+	set_attrwf(subg, FALSE, value);
+    }
+    if (toplevel) {
+	for (n = agfstnode(g); n; n = agnxtnode(n)) {
+	AGATTRWF(n) = value;
+	for (e = agfstout(n); e; e = agnxtout(e))
+	    AGATTRWF(e) = value;
+	}
+    }
+}
+
 int agwrite(Agraph_t * g, void *ofile)
 {
+    set_attrwf(g,TRUE,FALSE);
     write_hdr(g, ofile, TRUE);
     write_body(g, ofile);
     write_trl(g, ofile);
