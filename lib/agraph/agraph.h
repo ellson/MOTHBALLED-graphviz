@@ -81,7 +81,7 @@ for a given node or edges, there is only one unique ID (per main graph).  */
     struct Agtag_s {
 	unsigned objtype:2;	/* see literal tags below */
 	unsigned mtflock:1;	/* move-to-front lock, see above */
-	unsigned attrwf:1;	/* attrs written (parity, write.c) */
+	unsigned attrwf:1;	/* non-default attrs written */
 	unsigned seq:(sizeof(unsigned) * 8 - 6);	/* sequence no. */
 	unsigned long id;	/* client  ID */
     };
