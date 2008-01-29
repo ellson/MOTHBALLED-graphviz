@@ -662,6 +662,7 @@ void graph_init(graph_t * g, boolean use_rankdir)
     N_fontcolor = agfindattr(g->proto->n, "fontcolor");
     N_label = agfindattr(g->proto->n, "label");
     N_showboxes = agfindattr(g->proto->n, "showboxes");
+    N_penwidth = agfindattr(g->proto->n, "penwidth");
     /* attribs for polygon shapes */
     N_sides = agfindattr(g->proto->n, "sides");
     N_peripheries = agfindattr(g->proto->n, "peripheries");
