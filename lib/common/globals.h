@@ -103,7 +103,8 @@ extern "C" {
 	*N_label, *N_nojustify, *N_style, *N_showboxes,
 	*N_sides, *N_peripheries, *N_orientation,
 	*N_skew, *N_distortion, *N_fixed, *N_imagescale, *N_layer,
-	*N_group, *N_comment, *N_vertices, *N_z;
+	*N_group, *N_comment, *N_vertices, *N_z,
+	*N_penwidth;
     EXTERN attrsym_t
 	*E_weight, *E_minlen, *E_color,
 	*E_activepencolor, *E_activefillcolor,
