@@ -176,7 +176,13 @@ How can I add a custom font?
   For a single font, e.g., foo.ttf:
 	$ mkdir -p ~/.fonts
 	$ cp foo.ttf ~/.fonts/
+
+  One can run fc-cache to speed up the use of fontconfig.
 	$ fc-cache
+
+  For Windows users, one can go to the C:\windows\fonts
+  folder and use File -> Install New Font from the pull-down menus
+  to install the font.
 
   For a new font directory, e.g., /Library/Fonts, add a new <dir> element
 
