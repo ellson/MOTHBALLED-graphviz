@@ -262,14 +262,17 @@ static char *lex_gets(void)
 	if (clp[len - 1] == '\n') {	/* have physical line */
 	    if ((clp[0] == '#') && (curlen == 0)) {
 		/* comment line or cpp line sync */
-		int cnt;
+		int r, cnt;
 		char buf[2];
-		int r = sscanf(clp + 1, "%d %1[\"]%n", &Line_number, buf, &cnt);
+                char* s = clp + 1;
+
+		if (strncmp(s, "line", 4) == 0) s += 4;
+		r = sscanf(s, "%d %1[\"]%n", &Line_number, buf, &cnt);
 		if (r <= 0) Line_number++;
 		else { /* got line number */ 
 		    Line_number--;
 		    if (r > 1) { /* saw quote */
-			char* p = clp + 1 + cnt;
+			char* p = s + cnt;
 			char* e = p;
 			while (*e && (*e != '"')) e++; 
 			if (e != p) {

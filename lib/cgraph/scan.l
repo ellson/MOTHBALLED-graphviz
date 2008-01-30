@@ -104,14 +104,16 @@ storeFileName (char* fname, int len)
  */
 static void ppDirective ()
 {
-    int cnt, lineno;
+    int r, cnt, lineno;
     char buf[2];
-    int r = sscanf(yytext + 1, "%d %1[\"]%n", &lineno, buf, &cnt);
+    char* s = yytext + 1;  /* skip initial # */
 
+    if (strncmp(s, "line", 4) == 0) s += 4;
+    r = sscanf(s, "%d %1[\"]%n", &lineno, buf, &cnt);
     if (r > 0) { /* got line number */ 
 	line_num = lineno - 1;
 	if (r > 1) { /* saw quote */
-	    char* p = yytext + 1 + cnt;
+	    char* p = s + cnt;
 	    char* e = p;
 	    while (*e && (*e != '"')) e++; 
 	    if (e != p) {
