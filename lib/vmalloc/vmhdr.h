@@ -441,9 +441,7 @@ extern "C" {
 
     extern size_t getpagesize _ARG_((void));
 
-#ifdef WIN32
-typedef unsigned int ssize_t;
-#else
+#ifndef WIN32
     extern void abort _ARG_((void));
     extern ssize_t write _ARG_((int, const void *, size_t));
 #endif
