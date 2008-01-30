@@ -60,6 +60,7 @@ utils.o : ps.h
 emit.o mapgen.o utils.o htmllex.o htmltable.o htmlparse.o : htmltable.h
 htmllex.o : htmlparse.h
 htmlparse.o htmllex.o : htmllex.h
+globals.o : globals.h
 
 fontmetrics.o: ps_font_equiv.h
 
