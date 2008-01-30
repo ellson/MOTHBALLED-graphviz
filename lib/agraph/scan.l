@@ -31,6 +31,7 @@ static int html_nest = 0;  /* nesting level for html strings */
 static char* InputFile;
 static Agdisc_t	*Disc;
 static void 	*Ifile;
+static int graphType;
 
   /* Reset line number */
 void agreadline(int n) { line_num = n; }
@@ -86,6 +87,45 @@ static void endstr_html(void) {
 	yylval.str = (char*)agstrdup_html(Ag_G_global,Sbuf);
 }
 
+static void
+storeFileName (char* fname, int len)
+{
+    static int cnt;
+    static char* buf;
+
+    if (len > cnt) {
+	if (cnt) buf = (char*)realloc (buf, len+1);
+	else buf = (char*)malloc (len+1);
+	cnt = len;
+    }
+    strcpy (buf, fname);
+    InputFile = buf;
+}
+
+/* ppDirective:
+ * Process a possible preprocessor line directive.
+ * yytext = #.*
+ */
+static void ppDirective ()
+{
+    int cnt, lineno;
+    char buf[2];
+    int r = sscanf(yytext + 1, "%d %1[\"]%n", &lineno, buf, &cnt);
+
+    if (r > 0) { /* got line number */ 
+	line_num = lineno - 1;
+	if (r > 1) { /* saw quote */
+	    char* p = yytext + 1 + cnt;
+	    char* e = p;
+	    while (*e && (*e != '"')) e++; 
+	    if (e != p) {
+ 		*e = '\0';
+		storeFileName (p, e-p);
+	    }
+	}
+    }
+}
+
 /* chkNum:
  * The regexp for NUMBER allows a terminating letter.
  * This way we can catch a number immediately followed by a name
@@ -128,15 +168,17 @@ ID		({NAME}|{NUMBER})
 <comment>"*"+[^*/\n]*	/* eat up '*'s not followed by '/'s */
 <comment>"*"+"/"	BEGIN(INITIAL);
 "//".*			/* ignore C++-style comments */
+^"#".*			ppDirective ();
 "#".*			/* ignore shell-like comments */
 [\000-\040\177]		/* ignore whitespace */
 "node"			return(T_node);		/* see tokens in agcanonstr */
 "edge"			return(T_edge);
-"graph"			return(T_graph);
-"digraph"		return(T_digraph);
+"graph"			graphType = T_graph; return(T_graph);
+"digraph"		graphType = T_digraph; return(T_digraph);
 "strict"		return(T_strict);
 "subgraph"		return(T_subgraph);
-"->"|"--"		return(T_edgeop);
+"->"			if (graphType == T_digraph) return(T_edgeop); else return ('-');
+"--"			if (graphType == T_graph) return(T_edgeop); else return ('-');
 {NAME}			{ yylval.str = (char*)agstrdup(Ag_G_global,yytext); return(T_atom); }
 {NUMBER}		{ if (chkNum()) yyless(yyleng-1); yylval.str = (char*)agstrdup(Ag_G_global,yytext); return(T_atom); }
 ["]			BEGIN(qstring); beginstr();
@@ -155,10 +197,10 @@ void yyerror(char *str)
 {
 	char	buf[BUFSIZ];
 	if (InputFile)
-		sprintf(buf,"%s:%d: %s in line %d near '%s'",InputFile, line_num,
+		sprintf(buf,"%s:%d: %s in line %d near '%s'\n",InputFile, line_num,
 			str,line_num,yytext);
 	else
-		sprintf(buf," %s in line %d near '%s'", str,line_num,yytext);
+		sprintf(buf," %s in line %d near '%s'\n", str,line_num,yytext);
 	agerror(AGERROR_SYNTAX,buf);
 }
 /* must be here to see flex's macro defns */

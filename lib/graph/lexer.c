@@ -37,6 +37,21 @@ int Line_number;
 static char *InputFile;
 static gets_f Lexer_gets;
 
+static void
+storeFileName (char* fname, int len)
+{
+    static int cnt;
+    static char* buf;
+
+    if (len > cnt) {
+	if (cnt) buf = (char*)realloc (buf, len+1);
+	else buf = (char*)malloc (len+1);
+	cnt = len;
+    }
+    strcpy (buf, fname);
+    InputFile = buf;
+}
+
   /* Reset line number.
    * Argument n is indexed from 1, so we decrement it.
    */
@@ -247,10 +262,24 @@ static char *lex_gets(void)
 	if (clp[len - 1] == '\n') {	/* have physical line */
 	    if ((clp[0] == '#') && (curlen == 0)) {
 		/* comment line or cpp line sync */
-		if (sscanf(clp + 1, "%d", &Line_number) == 0)
-		    Line_number++;
+		int cnt;
+		char buf[2];
+		int r = sscanf(clp + 1, "%d %1[\"]%n", &Line_number, buf, &cnt);
+		if (r <= 0) Line_number++;
+		else { /* got line number */ 
+		    Line_number--;
+		    if (r > 1) { /* saw quote */
+			char* p = clp + 1 + cnt;
+			char* e = p;
+			while (*e && (*e != '"')) e++; 
+			if (e != p) {
+		 	    *e = '\0';
+			    storeFileName (p, e-p);
+			}
+		    }
+		}
 		clp[0] = 0;
-		len = 1;	/* this will make the while test below succeed */
+		len = 1;    /* this will make the while test below succeed */
 		continue;
 	    }
 	    Line_number++;
