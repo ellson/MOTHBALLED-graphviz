@@ -384,13 +384,13 @@ static double bisect (pointf pp, pointf cp, pointf np)
 /* mkSegPts:
  * Determine polygon points related to 2 segments prv-cur and cur-nxt.
  * The points lie on the bisector of the 2 segments, passing through cur,
- * and distance HW from cur. The points are stored in p1 and p2.
+ * and distance w2 from cur. The points are stored in p1 and p2.
  * If p1 is NULL, we use the normal to cur-nxt.
  * If p2 is NULL, we use the normal to prv-cur.
  * Assume at least one of prv or nxt is non-NULL.
  */
 static void mkSegPts (segitem_t* prv, segitem_t* cur, segitem_t* nxt,
-        pointf* p1, pointf* p2)
+        pointf* p1, pointf* p2, double w2)
 {
     pointf cp, pp, np;
     double theta, delx, dely;
@@ -416,8 +416,8 @@ static void mkSegPts (segitem_t* prv, segitem_t* cur, segitem_t* nxt,
         pp.y = 2*cp.y - np.y;
     }
     theta = bisect(pp,cp,np);
-    delx = HW*cos(theta);
-    dely = HW*sin(theta);
+    delx = w2*cos(theta);
+    dely = w2*sin(theta);
     p.x = cp.x + delx;
     p.y = cp.y + dely;
     *p1 = p;
@@ -434,7 +434,7 @@ static void mkSegPts (segitem_t* prv, segitem_t* cur, segitem_t* nxt,
  * In cmapx, polygons are limited to 100 points, so we output polygons
  * in chunks of 100.
  */
-static void map_output_bspline (pointf **pbs, int **pbs_n, int *pbs_poly_n, bezier* bp)
+static void map_output_bspline (pointf **pbs, int **pbs_n, int *pbs_poly_n, bezier* bp, double w2)
 {
     segitem_t* segl = GNEW(segitem_t);
     segitem_t* segp = segl;
@@ -459,7 +459,7 @@ static void map_output_bspline (pointf **pbs, int **pbs_n, int *pbs_poly_n, bezi
     cnt = 0;
     while (segp) {
         segnext = segp->next;
-        mkSegPts (segprev, segp, segnext, pt1+cnt, pt2+cnt);
+        mkSegPts (segprev, segp, segnext, pt1+cnt, pt2+cnt, w2);
         cnt++;
         if ((segnext == NULL) || (cnt == 50)) {
             map_bspline_poly (pbs, pbs_n, pbs_poly_n, cnt, pt1, pt2);
@@ -1254,43 +1254,25 @@ static char* default_pencolor(char *pencolor, char *deflt)
     return buf;
 }
 
-static void emit_edge_graphics(GVJ_t * job, edge_t * e)
+static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 {
     int i, j, cnum, numc = 0;
-    char *color, *pencolor, *fillcolor, *style;
+    char *color, *pencolor, *fillcolor;
     char *headcolor, *tailcolor, *lastcolor;
     char *colors = NULL;
-    char **styles = 0;
-    char **sp;
     bezier bz = { 0, 0, 0, 0 };
     bezierf bzf;
     splinesf offspl, tmpspl;
     pointf pf0, pf1, pf2 = { 0, 0 }, pf3, *offlist, *tmplist;
     double scale, numc2;
-    double penwidth;
-    char *p;
+    char* p;
 
 #define SEP 2.0
 
-    style = late_string(e, E_style, "");
-    /* We shortcircuit drawing an invisible edge because the arrowhead
-     * code resets the style to solid, and most of the code generators
-     * (except PostScript) won't honor a previous style of invis.
-     */
-    if (style[0]) {
-	styles = parse_style(style);
-	sp = styles;
-	while ((p = *sp++)) {
-	    if (streq(p, "invis"))
-		return;
-	}
-    }
     setColorScheme (agget (e, "colorscheme"));
     if (ED_spl(e)) {
 	scale = late_double(e, E_arrowsz, 1.0, 0.0);
 	color = late_string(e, E_color, "");
-
-	if (styles) gvrender_set_style(job, styles);
 
 	/* need to know how many colors separated by ':' */
 	for (p = color; *p; p++)
@@ -1317,10 +1299,6 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e)
 	    pencolor = late_nnstring(e, E_visitedpencolor,
 			default_pencolor(pencolor, DEFAULT_VISITEDPENCOLOR));
 	    fillcolor = late_nnstring(e, E_visitedfillcolor, DEFAULT_VISITEDFILLCOLOR);
-	}
-	if (E_penwidth && ((p=agxget(e,E_penwidth->index)) && p[0])) {
-	    penwidth = late_double(e, E_penwidth, 1.0, 0.0);
-	    gvrender_set_penwidth(job, penwidth);
 	}
 	if (pencolor != color)
     	    gvrender_set_pencolor(job, pencolor);
@@ -1484,7 +1462,7 @@ static boolean edge_in_box(edge_t *e, boxf b)
     return FALSE;
 }
 
-void emit_begin_edge(GVJ_t * job, edge_t * e)
+static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
 {
     obj_state_t *obj;
     int flags = job->flags;
@@ -1494,11 +1472,22 @@ void emit_begin_edge(GVJ_t * job, edge_t * e)
     int	i, nump, *pbs_n = NULL, pbs_poly_n = 0;
     char* dflt_url = NULL;
     char* dflt_target = NULL;
+    double penwidth;
 
     obj = push_obj_state(job);
     obj->type = EDGE_OBJTYPE;
     obj->u.e = e;
     obj->emit_state = EMIT_EDRAW;
+
+    /* We handle the edge style and penwidth here because the width
+     * is needed below for calculating polygonal image maps
+     */
+    if (styles && ED_spl(e)) gvrender_set_style(job, styles);
+
+    if (E_penwidth && ((s=agxget(e,E_penwidth->index)) && s[0])) {
+	penwidth = late_double(e, E_penwidth, 1.0, 0.0);
+	gvrender_set_penwidth(job, penwidth);
+    }
 
     if (flags & GVRENDER_DOES_Z) {
         obj->tail_z= late_double(e->tail, N_z, 0.0, -1000.0);
@@ -1605,11 +1594,12 @@ void emit_begin_edge(GVJ_t * job, edge_t * e)
 	if (ED_spl(e) && (obj->url || obj->tooltip) && (flags & GVRENDER_DOES_MAP_POLYGON)) {
 	    int ns;
 	    splines *spl;
+	    double w2 = MAX(job->obj->penwidth/2.0,2.0);
 
 	    spl = ED_spl(e);
 	    ns = spl->size; /* number of splines */
 	    for (i = 0; i < ns; i++)
-		map_output_bspline (&pbs, &pbs_n, &pbs_poly_n, spl->list+i);
+		map_output_bspline (&pbs, &pbs_n, &pbs_poly_n, spl->list+i, w2);
 	    obj->url_bsplinemap_poly_n = pbs_poly_n;
 	    obj->url_bsplinemap_n = pbs_n;
 	    if (! (flags & GVRENDER_DOES_TRANSFORM)) {
@@ -1706,7 +1696,7 @@ nodeIntersect (GVJ_t * job, point p,
     }
 }
 
-void emit_end_edge(GVJ_t * job)
+static void emit_end_edge(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
     edge_t *e = obj->u.e;
@@ -1772,6 +1762,10 @@ void emit_end_edge(GVJ_t * job)
 static void emit_edge(GVJ_t * job, edge_t * e)
 {
     char *s;
+    char *style;
+    char **styles = 0;
+    char **sp;
+    char *p;
 
     if (edge_in_box(e, job->clip) && edge_in_layer(job, e->head->graph, e) ) {
 
@@ -1789,8 +1783,21 @@ static void emit_edge(GVJ_t * job, edge_t * e)
 	if (s[0])
 	    gvrender_comment(job, s);
 
-	emit_begin_edge(job, e);
-	emit_edge_graphics (job, e);
+	style = late_string(e, E_style, "");
+	/* We shortcircuit drawing an invisible edge because the arrowhead
+	 * code resets the style to solid, and most of the code generators
+	 * (except PostScript) won't honor a previous style of invis.
+	 */
+	if (style[0]) {
+	    styles = parse_style(style);
+	    sp = styles;
+	    while ((p = *sp++)) {
+		if (streq(p, "invis")) return;
+	    }
+	}
+
+	emit_begin_edge(job, e, styles);
+	emit_edge_graphics (job, e, styles);
 	emit_end_edge(job);
     }
 }
