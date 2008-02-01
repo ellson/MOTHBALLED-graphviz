@@ -3,8 +3,10 @@
 #
 
 examplesdir = $(pkgdatadir)/examples
+examples = 4elt.dot world.dot
+
 if WITH_SMYRNA
-examples_DATA = 4elt.dot world.dot
+examples_DATA = $(examples)
 endif
 
-EXTRA_DIST = $(examples_DATA)
+EXTRA_DIST = $(examples)
