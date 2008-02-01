@@ -3,7 +3,7 @@
 PACKAGEMAKER="/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker"
 
 # configure for Universal Binaries
-./configure --disable-dependency-tracking CFLAGS="-arch i386 -arch ppc" LDFLAGS="-arch i386 -arch ppc"
+./configure --disable-dependency-tracking --with-quartz CFLAGS="-arch i386 -arch ppc" LDFLAGS="-arch i386 -arch ppc"
 make
 
 # make into the macosx build directory

@@ -1908,21 +1908,16 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for QUARTZ 
 
 AC_ARG_WITH(quartz,
-  [AC_HELP_STRING([--with-quartz=no], [quartz library])],
+  [AC_HELP_STRING([--with-quartz=no], [Quartz framework (Mac OS X)])],
   [], [with_quartz=no])
 
 if test "x$with_quartz" = "xyes"; then
-#PKG_CHECK_MODULES(QUARTZ, [libquartz >= 0.4],
-#	[HAVE_QUARTZ=1
-#	AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,
-#		[Define if you have the quartz library for SWF support])],
-#	[AC_MSG_WARN(quartz library not available)])
 
 if test -d "/System/Library/Frameworks/ApplicationServices.framework"; then
 HAVE_QUARTZ=1
-AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,[Define if you have the quartz library for SWF support])
-QUARTZ_CFLAGS='-I/usr/include/quartz'
-QUARTZ_LIBS='-L/usr/lib -lquartz'
+AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,[Define if you have the Quartz framework for Mac OS X])
+QUARTZ_CFLAGS=''
+QUARTZ_LIBS='-framework ApplicationServices'
 fi
 
 fi
