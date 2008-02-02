@@ -150,7 +150,7 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
 }
 
 /* Render layout in a specified format to a malloc'ed string */
-int gvRenderData(GVC_t *gvc, graph_t *g, char *format, char **result)
+int gvRenderData(GVC_t *gvc, graph_t *g, char *format, char **result, unsigned int *length)
 {
     int rc;
     GVJ_t *job;
@@ -172,14 +172,14 @@ int gvRenderData(GVC_t *gvc, graph_t *g, char *format, char **result)
 	return -1;
     }
 
-#define OUTPUT_DATA_INITIAL_ALLOCATION 1000
+/* page size on Linux, Mac OS X and Windows */
+#define OUTPUT_DATA_INITIAL_ALLOCATION 4096
 
     if(!result || !(*result = malloc(OUTPUT_DATA_INITIAL_ALLOCATION))) {
 	agerr(AGERR, "failure malloc'ing for result string");
 	return -1;
     }
 
-    **result = '\0';
     job->output_data = *result;
     job->output_data_allocated = OUTPUT_DATA_INITIAL_ALLOCATION;
     job->output_data_position = 0;
@@ -189,6 +189,7 @@ int gvRenderData(GVC_t *gvc, graph_t *g, char *format, char **result)
     gvdevice_finalize(job);
 
     *result = job->output_data;
+	*length = job->output_data_position;
     gvjobs_delete(gvc);
 
     return 0;
