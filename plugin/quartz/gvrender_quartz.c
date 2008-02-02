@@ -62,35 +62,17 @@ static CFStringRef format_uti [] = {
 	CFSTR("com.truevision.tga-image")
 };
 
-static size_t file_data_consumer_put_bytes (void *info, const void *buffer, size_t count)
+extern size_t gvdevice_write(GVJ_t *job, const unsigned char *s, unsigned int len);
+
+static size_t device_data_consumer_put_bytes (void *info, const void *buffer, size_t count)
 {
-	return fwrite(buffer, 1, count, (FILE*)info);
+	return gvdevice_write((GVJ_t *)info, (const unsigned char*)buffer, count);
 }
 
-static void file_data_consumer_release_info (void *info)
-{
-	fflush((FILE*)info);
-}
-
-static CGDataConsumerRef create_data_consumer(char *filename)
-{
-	static CGDataConsumerCallbacks file_data_consumer_callbacks = {
-		file_data_consumer_put_bytes,
-		file_data_consumer_release_info
-	};
-	
-	CGDataConsumerRef data_consumer;
-	if (filename) {
-		/* create a data consumer directly from the file URL */
-		CFURLRef file_url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault, (const UInt8 *)filename, strlen(filename), false);
-		data_consumer = CGDataConsumerCreateWithURL(file_url);
-		CFRelease(file_url);
-	}
-	else
-		/* create a data consumer that uses callbacks on a FILE* */
-		data_consumer = CGDataConsumerCreate(stdout, &file_data_consumer_callbacks);
-	return data_consumer;
-}
+static CGDataConsumerCallbacks device_data_consumer_callbacks = {
+	device_data_consumer_put_bytes,
+	NULL
+};
 
 static void quartzgen_begin_job(GVJ_t *job)
 {
@@ -112,7 +94,7 @@ static void quartzgen_end_job(GVJ_t *job)
 		default:	/* bitmap formats */
 			{
 				/* create an image destination */
-				CGDataConsumerRef data_consumer = create_data_consumer(job->output_filename);
+				CGDataConsumerRef data_consumer = CGDataConsumerCreate(job, &device_data_consumer_callbacks);
 				CGImageDestinationRef image_destination = CGImageDestinationCreateWithDataConsumer(data_consumer, format_uti[job->device.id], 1, NULL);
 				
 				/* add the bitmap image to the destination and save it */
@@ -163,7 +145,7 @@ static void quartzgen_begin_page(GVJ_t *job)
 				);
 				
 				/* create a PDF for drawing into */
-				CGDataConsumerRef data_consumer = create_data_consumer(job->output_filename);
+				CGDataConsumerRef data_consumer = CGDataConsumerCreate(job, &device_data_consumer_callbacks);
 				job->context = CGPDFContextCreate(data_consumer, &bounds, auxiliaryInfo);
 				
 				/* clean up */
