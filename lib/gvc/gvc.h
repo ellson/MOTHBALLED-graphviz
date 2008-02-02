@@ -91,7 +91,7 @@ extern int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out);
 extern int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename);
 
 /* Render layout in a specified format to a malloc'ed string */
-extern int gvRenderData(GVC_t *gvc, graph_t *g, char *format, char **result);
+extern int gvRenderData(GVC_t *gvc, graph_t *g, char *format, char **result, unsigned int *length);
 
 /* Render layout according to -T and -o options found by gvParseArgs */
 extern int gvRenderJobs(GVC_t *gvc, graph_t *g);

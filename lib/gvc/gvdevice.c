@@ -49,6 +49,8 @@
 #include "gvcint.h"
 #include "gvcproc.h"
 
+static const int PAGE_ALIGN = 4095;		/* align to a 4K boundary (less one), typical for Linux, Mac OS X and Windows memory allocation */
+
 size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 {
     if (job->gvc->write_fn && job->output_file == stdout)   /* externally provided write dicipline */
@@ -59,15 +61,15 @@ size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 #endif
     }
     else if (job->output_data) {
-	if (len > (job->output_data_allocated - (job->output_data_position + 1))) {
-	    job->output_data_allocated = job->output_data_position + len + 1000;
+	if (len > job->output_data_allocated - job->output_data_position) {
+	    job->output_data_allocated = (job->output_data_position + len + PAGE_ALIGN) & ~PAGE_ALIGN;
 	    job->output_data = realloc(job->output_data, job->output_data_allocated);
 	    if (!job->output_data) {
 		fprintf(stderr, "failure realloc'ing for result string\n");
 		return 0;
 	    }
 	}
-	strcpy(job->output_data + job->output_data_position, (char*)s);
+	memcpy(job->output_data + job->output_data_position, s, len);
         job->output_data_position += len;
 	return len;
     }

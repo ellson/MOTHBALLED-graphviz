@@ -873,9 +873,12 @@ char* renderdata(Agraph_t *g, char *format)
 {
     int err;
     char *data;
+	unsigned int length;
 
-    err = gvRenderData(gvc, g, format, &data);
+    err = gvRenderData(gvc, g, format, &data, &length);
     if (err) return NULL;
+	data = (char*)realloc(data, length + 1);
+	if (data) data[length] = '\0';
     return data;
 }
 
