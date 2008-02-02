@@ -27,27 +27,11 @@ Prefix: /usr
 #   depends on %dist and %fedora (or %rhl or %rhel) which are set
 #   in .rpmmacros on each build host
 
-# All features are off by default
-%undefine SHARP
-%undefine GUILE
-%undefine _IO
-%undefine JAVA
-%undefine LUA
-%undefine OCAML
-%undefine PERL
-%undefine PHP
-%undefine PYTHON
-%undefine RUBY
-%undefine R_LANG
-%undefine TCL
-%undefine IPSEPCOLA
-%undefine MYLIBGD
-%undefine PANGOCAIRO
-%undefine RSVG
-%undefine SMYRNA
-%undefine DEVIL
-%undefine MING
-%undefine GDK_PIXBUF
+# All features are off (undefined) by default
+# To enable, use: <percent>define FEATURE 1
+# Available features are:
+#    SHARP GUILE _IO JAVA LUA OCAML PERL PHP PYTHON RUBY R_LANG
+#    TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG SMYRNA DEVIL MING GDK_PIXBUF
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -55,12 +39,12 @@ Prefix: /usr
 
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires: zlib-devel libpng-devel libjpeg-devel expat-devel freetype-devel >= 2
-BuildRequires: /bin/ksh bison m4 flex swig
+BuildRequires: zlib-devel libpng-devel libjpeg-devel expat-devel
+BuildRequires: /bin/ksh bison m4 flex swig freetype-devel >= 2
 
 #-- Red Hat Linux specific Build Requirements -------------------------------
 %if 0%{?rhl}
-%define TCL    1
+%define TCL 1
 BuildRequires: XFree86-devel tk tcl >= 8.3
 # This just indicates the requirement for tcl.h, tk.h, but doesn't identify
 # where to get them from. In RH9 and earlier they were in the tcl, tk,
@@ -70,7 +54,7 @@ BuildRequires:  /usr/include/tcl.h /usr/include/tk.h
 
 #-- Red Hat Enterprise Linux specific Build Requirements --------------------
 %if 0%{?rhel}
-%define TCL    1
+%define TCL 1
 %if "%rhel" < "4"
 BuildRequires:  XFree86-devel tk tcl >= 8.3
 # This just indicates the requirement for tcl.h, tk.h, but doesn't identify
@@ -87,14 +71,14 @@ BuildRequires: xorg-x11-devel
 %endif
 %if "%rhel" >= "4"
 # PERL is available earlier, but a suitable SWIG isn't
-%define PERL   1
-%define RUBY   1
-%define GUILE  1
+%define PERL 1
+%define RUBY 1
+%define GUILE 1
 %define PYTHON 1
 BuildRequires: perl ruby-devel guile-devel python-devel
 %endif
 %if "%rhel" >= "5"
-%define JAVA   1
+%define JAVA 1
 %define PANGOCAIRO 1
 %define RSVG 1
 BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel
@@ -102,7 +86,7 @@ BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel libgnomeui
 BuildRequires: librsvg2-devel
 %endif
 %if "%rhel" >= "6"
-%define PHP    1
+%define PHP 1
 %define MYLIBGD 1
 %define GDK_PIXBUF 1
 BuildRequires: gd gd-devel perl-devel php-devel
@@ -111,8 +95,8 @@ BuildRequires: gd gd-devel perl-devel php-devel
 
 #-- Fedora specific Build Requirements --------------------------------------
 %if 0%{?fedora}
-%define PERL   1
-%define TCL    1
+%define PERL 1
+%define TCL 1
 BuildRequires: fontconfig-devel tcl-devel tk-devel 
 %if "%fedora" < "3"
 BuildRequires: XFree86-devel
@@ -127,25 +111,25 @@ BuildRequires: xorg-x11-devel
 %define IPSEPCOLA 1
 %endif
 %if "%fedora" >= "4"
-%define RUBY   1
-%define GUILE  1
+%define RUBY 1
+%define GUILE 1
 %define PYTHON 1
 BuildRequires: libtool-ltdl libtool-ltdl-devel ruby ruby-devel guile-devel python-devel
 %endif
 %if "%fedora" >= "5"
-%define PHP    1
-%define JAVA   1
+%define PHP 1
+%define JAVA 1
 BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel php-devel
 %ifnarch ppc64
-%define SHARP  1
-%define OCAML  1
+%define SHARP 1
+%define OCAML 1
 BuildRequires: mono-core ocaml
 %endif
 %endif
 %if "%fedora" >= "6"
-%define LUA    1
+%define LUA 1
 %define PANGOCAIRO 1
-%define RSVG   1
+%define RSVG 1
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel libgnomeui-devel
 BuildRequires: librsvg2-devel
 %endif
@@ -552,26 +536,6 @@ Provides some additional PDF and HTML documentation for graphviz.
 %setup -q
 
 %build
-%define CFG_SHARP  --enable-sharp%{!?SHARP:=no}
-%define CFG_GUILE  --enable-guile%{!?GUILE:=no}
-%define CFG_IO     --enable-io%{!?_IO:=no}
-%define CFG_JAVA   --enable-sharp%{!?JAVA:=no}
-%define CFG_LUA    --enable-lua%{!?LUA:=no}
-%define CFG_OCAML  --enable-ocaml%{!?OCAML:=no}
-%define CFG_PERL   --enable-perl%{!?PERL:=no}
-%define CFG_PHP    --enable-php%{!?PHP:=no}
-%define CFG_PYTHON --enable-python%{!?PYTHON:=no}
-%define CFG_R_LANG --enable-r%{!?R_LANG:=no}
-%define CFG_RUBY   --enable-ruby%{!?RUBY:=no}
-%define CFG_TCL    --enable-tcl%{!?TCL:=no}
-%define CFG_DEVIL  --with%{!?DEVIL:out}-devil
-%define CFG_IPSEPCOLA --with%{!?IPSEPCOLA:out}-ipsepcola
-%define CFG_MING   --with%{!?MING:out}-ming
-%define CFG_SMYRNA --with%{!?SMYRNA:out}-smyrna
-%define CFG_PANGOCAIRO --with%{!?PANGOCAIRO:out}-pangocairo
-%define CFG_RSVG   --with%{!?RSVG:out}-rsvg
-%define CFG_GDK_PIXBUF --with%{!?GDK_PIXBUF:out}-gdk-pixbuf
-
 # XXX ix86 only used to have -ffast-math, let's use everywhere
 %{expand: %%define optflags %{optflags} -ffast-math}
 
@@ -587,10 +551,25 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --with-x \
 	--disable-static \
         --disable-dependency-tracking \
-	%{CFG_IPSEPCOLA} %{CFG_SMYRNA} %{CFG_PANGOCAIRO} %{CFG_GDK_PIXBUF} \
-	%{CFG_SHARP} %{CFG_GUILE} %{CFG_IO} %{CFG_JAVA} %{CFG_LUA} \
-	%{CFG_OCAML} %{CFG_PERL} %{CFG_PHP} %{CFG_PYTHON} %{CFG_R_LANG} \
-	%{CFG_RUBY} %{CFG_TCL} %{CFG_DEVIL} %{CFG_MING}
+	--enable-sharp%{!?SHARP:=no} \
+	--enable-guile%{!?GUILE:=no} \
+	--enable-io%{!?_IO:=no} \
+	--enable-sharp%{!?JAVA:=no} \
+	--enable-lua%{!?LUA:=no} \
+	--enable-ocaml%{!?OCAML:=no} \
+	--enable-perl%{!?PERL:=no} \
+	--enable-php%{!?PHP:=no} \
+	--enable-python%{!?PYTHON:=no} \
+	--enable-r%{!?R_LANG:=no} \
+	--enable-ruby%{!?RUBY:=no} \
+	--enable-tcl%{!?TCL:=no} \
+	--with%{!?DEVIL:out}-devil \
+	--with%{!?IPSEPCOLA:out}-ipsepcola \
+	--with%{!?MING:out}-ming \
+	--with%{!?SMYRNA:out}-smyrna \
+	--with%{!?PANGOCAIRO:out}-pangocairo \
+	--with%{!?RSVG:out}-rsvg \
+	--with%{!?GDK_PIXBUF:out}-gdk-pixbuf
 make %{?_smp_mflags}
 
 %install
