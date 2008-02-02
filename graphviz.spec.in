@@ -27,27 +27,27 @@ Prefix: /usr
 #   depends on %dist and %fedora (or %rhl or %rhel) which are set
 #   in .rpmmacros on each build host
 
-# Define a default set of features incase none of the conditionals apply
-%define SHARP  0
-%define GUILE  0
-%define _IO    0
-%define JAVA   0
-%define LUA    0
-%define OCAML  0
-%define PERL   0
-%define PHP    0
-%define PYTHON 0
-%define RUBY   0
-%define R_LANG 0
-%define TCL    1
-%define IPSEPCOLA --without-ipsepcola
-%define MYLIBGD --with-mylibgd
-%define PANGOCAIRO --without-pangocairo
-%define RSVG --without-rsvg
-%define SMYRNA 0
-%define DEVIL 0
-%define MING 0
-%define GDK_PIXBUF --without-gdk-pixbuf
+# All features are off by default
+%undefine SHARP
+%undefine GUILE
+%undefine _IO
+%undefine JAVA
+%undefine LUA
+%undefine OCAML
+%undefine PERL
+%undefine PHP
+%undefine PYTHON
+%undefine RUBY
+%undefine R_LANG
+%undefine TCL
+%undefine IPSEPCOLA
+%undefine MYLIBGD
+%undefine PANGOCAIRO
+%undefine RSVG
+%undefine SMYRNA
+%undefine DEVIL
+%undefine MING
+%undefine GDK_PIXBUF
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -56,28 +56,31 @@ Prefix: /usr
 BuildRoot:     %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: zlib-devel libpng-devel libjpeg-devel expat-devel freetype-devel >= 2
-BuildRequires: /bin/ksh bison m4 flex tk tcl >= 8.3 swig
-
-# This just indicates the requirement for tcl.h, tk.h, but doesn't identify
-# where to get them from. In RH9 and earlier they were in the tcl, tk,
-# base packages which are always BR'd anyway (above).
-BuildRequires:  /usr/include/tcl.h /usr/include/tk.h
+BuildRequires: /bin/ksh bison m4 flex swig
 
 #-- Red Hat Linux specific Build Requirements -------------------------------
 %if 0%{?rhl}
 %define TCL    1
-BuildRequires: XFree86-devel
+BuildRequires: XFree86-devel tk tcl >= 8.3
+# This just indicates the requirement for tcl.h, tk.h, but doesn't identify
+# where to get them from. In RH9 and earlier they were in the tcl, tk,
+# base packages which are always BR'd anyway (above).
+BuildRequires:  /usr/include/tcl.h /usr/include/tk.h
 %endif
 
 #-- Red Hat Enterprise Linux specific Build Requirements --------------------
 %if 0%{?rhel}
 %define TCL    1
 %if "%rhel" < "4"
-BuildRequires:  XFree86-devel
+BuildRequires:  XFree86-devel tk tcl >= 8.3
+# This just indicates the requirement for tcl.h, tk.h, but doesn't identify
+# where to get them from. In RH9 and earlier they were in the tcl, tk,
+# base packages which are always BR'd anyway (above).
+BuildRequires:  /usr/include/tcl.h /usr/include/tk.h
 %endif
 %if "%rhel" >= "3"
-%define IPSEPCOLA --with-ipsepcola
-BuildRequires: fontconfig-devel tcl-devel tk-devel
+%define IPSEPCOLA 1
+BuildRequires: fontconfig-devel tcl-devel tk-devel 
 %endif
 %if "%rhel" == "4"
 BuildRequires: xorg-x11-devel
@@ -92,16 +95,16 @@ BuildRequires: perl ruby-devel guile-devel python-devel
 %endif
 %if "%rhel" >= "5"
 %define JAVA   1
-%define PANGOCAIRO --with-pangocairo
-%define RSVG --with-rsvg
+%define PANGOCAIRO 1
+%define RSVG 1
 BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel libgnomeui-devel
 BuildRequires: librsvg2-devel
 %endif
 %if "%rhel" >= "6"
 %define PHP    1
-%define MYLIBGD --without-mylibgd
-%define GDK_PIXBUF --with-gdk-pixbuf
+%define MYLIBGD 1
+%define GDK_PIXBUF 1
 BuildRequires: gd gd-devel perl-devel php-devel
 %endif
 %endif
@@ -121,7 +124,7 @@ BuildRequires: xorg-x11-devel
 BuildRequires: xorg-x11-devel
 %endif
 %if "%fedora" >= "3"
-%define IPSEPCOLA --with-ipsepcola
+%define IPSEPCOLA 1
 %endif
 %if "%fedora" >= "4"
 %define RUBY   1
@@ -141,15 +144,14 @@ BuildRequires: mono-core ocaml
 %endif
 %if "%fedora" >= "6"
 %define LUA    1
-%define PANGOCAIRO --with-pangocairo
-%define RSVG --with-rsvg
+%define PANGOCAIRO 1
+%define RSVG   1
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel libgnomeui-devel
 BuildRequires: librsvg2-devel
 %endif
 %if "%fedora" >= "7"
 %define DEVIL 1
-%define MYLIBGD --without-mylibgd
-%define GDK_PIXBUF --with-gdk-pixbuf
+%define GDK_PIXBUF 1
 BuildRequires: gd gd-devel perl-devel DevIL-devel
 %endif
 %if "%fedora" >= "8"
@@ -159,7 +161,7 @@ BuildRequires: R-devel swig >= 1.3.33
 BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
 %endif
 %if "%fedora" >= "9"
-%define MING 0
+#define MING 1
 #BuildRequires: ming ming-devel
 %endif
 %endif
@@ -199,14 +201,14 @@ fi
 %dir %{_datadir}/graphviz
 %{_datadir}/graphviz/lefty
 %exclude %{_libdir}/graphviz/libgvplugin_gd.*
-%if %{DEVIL}
+%if 0%{?DEVIL}
 %exclude %{_libdir}/graphviz/libgvplugin_devil.*
 %endif
-%if %{MING}
+%if 0%{?MING}
 %exclude %{_libdir}/graphviz/libgvplugin_ming.*
 %exclude %{_libdir}/graphviz/*fdb
 %endif
-%if %{SMYRNA}
+%if 0%{?SMYRNA}
 %{_datadir}/graphviz/gui
 %{_datadir}/graphviz/icons
 %{_datadir}/graphviz/examples
@@ -235,7 +237,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %{_libdir}/graphviz/libgvplugin_gd.so.*
 
 #-- graphviz-devil rpm --------------------------------------------------
-%if %{DEVIL}
+%if 0%{?DEVIL}
 %package devil
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for renderers based on DevIL
@@ -258,7 +260,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %endif
 
 #-- graphviz-ming rpm --------------------------------------------------
-%if %{MING}
+%if 0%{?MING}
 %package ming
 Group:            Applications/Multimedia
 Summary:          Graphviz plugin for flash renderer based on ming
@@ -280,7 +282,7 @@ LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
 %endif
 
 #-- graphviz-sharp rpm --------------------------------------------
-%if %{SHARP}
+%if 0%{?SHARP}
 %package sharp
 Group:          Applications/Multimedia
 Summary:        C# extension for graphviz
@@ -297,7 +299,7 @@ C# extension for graphviz.
 %endif
 
 #-- graphviz-guile rpm --------------------------------------------
-%if %{GUILE}
+%if 0%{?GUILE}
 %package guile
 Group:          Applications/Multimedia
 Summary:        Guile extension for graphviz
@@ -314,7 +316,7 @@ Guile extension for graphviz.
 %endif
 
 #-- graphviz-io rpm -----------------------------------------------
-%if %{_IO}
+%if 0%{?_IO}
 %package io
 Group:          Applications/Multimedia
 Summary:        Io extension for graphviz
@@ -331,7 +333,7 @@ Io extension for graphviz.
 %endif
 
 #-- graphviz-java rpm ---------------------------------------------
-%if %{JAVA}
+%if 0%{?JAVA}
 %package java
 Group:          Applications/Multimedia
 Summary:        Java extension for graphviz
@@ -348,7 +350,7 @@ Java extension for graphviz.
 %endif
 
 #-- graphviz-lua rpm ----------------------------------------------
-%if %{LUA}
+%if 0%{?LUA}
 %package lua
 Group:          Applications/Multimedia
 Summary:        Lua extension for graphviz
@@ -366,7 +368,7 @@ Lua extension for graphviz.
 %endif
 
 #-- graphviz-ocaml rpm --------------------------------------------
-%if %{OCAML}
+%if 0%{?OCAML}
 %package ocaml
 Group:          Applications/Multimedia
 Summary:        Ocaml extension for graphviz
@@ -383,7 +385,7 @@ Ocaml extension for graphviz.
 %endif
 
 #-- graphviz-perl rpm ---------------------------------------------
-%if %{PERL}
+%if 0%{?PERL}
 %package perl
 Group:          Applications/Multimedia
 Summary:        Perl extension for graphviz
@@ -402,7 +404,7 @@ Perl extension for graphviz.
 %endif
 
 #-- graphviz-php rpm ----------------------------------------------
-%if %{PHP}
+%if 0%{?PHP}
 %package php
 Group:          Applications/Multimedia
 Summary:        PHP extension for graphviz
@@ -422,7 +424,7 @@ PHP extension for graphviz.
 %endif
 
 #-- graphviz-python rpm -------------------------------------------
-%if %{PYTHON}
+%if 0%{?PYTHON}
 %package python
 Group:          Applications/Multimedia
 Summary:        Python extension for graphviz
@@ -441,7 +443,7 @@ Python extension for graphviz.
 %endif
 
 #-- graphviz-R rpm ---------------------------------------------
-%if %{R_LANG}
+%if 0%{?R_LANG}
 %package R
 Group:          Applications/Multimedia
 Summary:        R extension for graphviz
@@ -458,7 +460,7 @@ R extension for graphviz.
 %endif
 
 #-- graphviz-ruby rpm ---------------------------------------------
-%if %{RUBY}
+%if 0%{?RUBY}
 %package ruby
 Group:          Applications/Multimedia
 Summary:        Ruby extension for graphviz
@@ -477,7 +479,7 @@ Ruby extension for graphviz.
 %endif
 
 #-- graphviz-tcl rpm ----------------------------------------------
-%if %{TCL}
+%if 0%{?TCL}
 %package tcl
 Group:          Applications/Multimedia
 Summary:        Tcl extension & tools for graphviz
@@ -550,53 +552,25 @@ Provides some additional PDF and HTML documentation for graphviz.
 %setup -q
 
 %build
-%if ! %{SHARP}
-%define NO_SHARP --disable-sharp
-%endif
-%if ! %{GUILE}
-%define NO_GUILE --disable-guile
-%endif
-%if ! %{_IO}
-%define NO_IO --disable-io
-%endif
-%if ! %{JAVA}
-%define NO_JAVA --disable-java
-%endif
-%if ! %{LUA}
-%define NO_LUA --disable-lua
-%endif
-%if ! %{OCAML}
-%define NO_OCAML --disable-ocaml
-%endif
-%if ! %{PERL}
-%define NO_PERL --disable-perl
-%endif
-%if ! %{PHP}
-%define NO_PHP --disable-php
-%endif
-%if ! %{PYTHON}
-%define NO_PYTHON --disable-python
-%endif
-%if ! %{R_LANG}
-%define NO_R_LANG --disable-r
-%endif
-%if ! %{RUBY}
-%define NO_RUBY --disable-ruby
-%endif
-%if ! %{TCL}
-%define NO_TCL --disable-tcl
-%endif
-%if ! %{DEVIL}
-%define NO_DEVIL --without-devil
-%endif
-%if ! %{MING}
-%define NO_MING --without-ming
-%endif
-%if %{SMYRNA}
-%define CFG_SMYRNA --with-smyrna
-%else
-%define CFG_SMYRNA --without-smyrna
-%endif
+%define CFG_SHARP  --enable-sharp%{!?SHARP:=no}
+%define CFG_GUILE  --enable-guile%{!?GUILE:=no}
+%define CFG_IO     --enable-io%{!?_IO:=no}
+%define CFG_JAVA   --enable-sharp%{!?JAVA:=no}
+%define CFG_LUA    --enable-lua%{!?LUA:=no}
+%define CFG_OCAML  --enable-ocaml%{!?OCAML:=no}
+%define CFG_PERL   --enable-perl%{!?PERL:=no}
+%define CFG_PHP    --enable-php%{!?PHP:=no}
+%define CFG_PYTHON --enable-python%{!?PYTHON:=no}
+%define CFG_R_LANG --enable-r%{!?R_LANG:=no}
+%define CFG_RUBY   --enable-ruby%{!?RUBY:=no}
+%define CFG_TCL    --enable-tcl%{!?TCL:=no}
+%define CFG_DEVIL  --with%{!?DEVIL:out}-devil
+%define CFG_IPSEPCOLA --with%{!?IPSEPCOLA:out}-ipsepcola
+%define CFG_MING   --with%{!?MING:out}-ming
+%define CFG_SMYRNA --with%{!?SMYRNA:out}-smyrna
+%define CFG_PANGOCAIRO --with%{!?PANGOCAIRO:out}-pangocairo
+%define CFG_RSVG   --with%{!?RSVG:out}-rsvg
+%define CFG_GDK_PIXBUF --with%{!?GDK_PIXBUF:out}-gdk-pixbuf
 
 # XXX ix86 only used to have -ffast-math, let's use everywhere
 %{expand: %%define optflags %{optflags} -ffast-math}
@@ -613,8 +587,10 @@ CFLAGS="$RPM_OPT_FLAGS" \
         --with-x \
 	--disable-static \
         --disable-dependency-tracking \
-	%{MYLIBGD} %{IPSEPCOLA} %{CFG_SMYRNA} %{PANGOCAIRO} %{GDK_PIXBUF} \
-        %{?NO_SHARP} %{?NO_GUILE} %{?NO_IO} %{?NO_JAVA} %{?NO_LUA} %{?NO_OCAML} %{?NO_PERL} %{?NO_PHP} %{?NO_PYTHON} %{?NO_R_LANG} %{?NO_RUBY} %{?NO_TCL} %{?NO_DEVIL} %{?NO_MING}
+	%{CFG_IPSEPCOLA} %{CFG_SMYRNA} %{CFG_PANGOCAIRO} %{CFG_GDK_PIXBUF} \
+	%{CFG_SHARP} %{CFG_GUILE} %{CFG_IO} %{CFG_JAVA} %{CFG_LUA} \
+	%{CFG_OCAML} %{CFG_PERL} %{CFG_PHP} %{CFG_PYTHON} %{CFG_R_LANG} \
+	%{CFG_RUBY} %{CFG_TCL} %{CFG_DEVIL} %{CFG_MING}
 make %{?_smp_mflags}
 
 %install
