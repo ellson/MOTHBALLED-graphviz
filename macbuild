@@ -1,6 +1,7 @@
 #!/bin/sh
 
 PACKAGEMAKER="/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker"
+XCODEBUILD="xcodebuild"
 
 # configure for Universal Binaries
 ./configure --disable-dependency-tracking --with-quartz CFLAGS="-arch i386 -arch ppc" LDFLAGS="-arch i386 -arch ppc"
@@ -9,6 +10,9 @@ make
 # make into the macosx build directory
 rm -rf macosx/build/usr/local/*
 make DESTDIR=$PWD/macosx/build install
+
+# build the GUI application
+$XCODEBUILD -project macosx/graphviz.xcodeproj -configuration Release
 
 # convert the build directory into a package
 $PACKAGEMAKER --doc macosx/graphviz.pmdoc --out $1
