@@ -257,7 +257,11 @@ static void fig_textpara(GVJ_t * job, pointf p, textpara_t * para)
     int font = -1;		/* init to xfig's default font */
     double font_size = para->fontsize * job->zoom;
     double angle = job->rotation ? (PI / 2.0) : 0.0;
-    int font_flags = 4;		/* PostScript font */
+    int font_flags = 6;		/* PostScript font + Special text */
+/* Special text indicates that latex markup may exist
+ * in the output - but note that dot knows nothing about latex,
+ * so the node sizes may be wrong.
+ */
     double height = 0.0;
     double length = 0.0;
 
