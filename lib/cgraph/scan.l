@@ -40,7 +40,7 @@ void agsetfile(char* f) { InputFile = f; line_num = 1; }
  * requires pushing back whatever was previously read.
  * There probably is a right way of doing this.
  */
-void aglexinit(Agdisc_t *disc, void *ifile) { Disc = disc; Ifile = ifile;}
+void aglexinit(Agdisc_t *disc, void *ifile) { Disc = disc; Ifile = ifile; graphType = 0;}
 
 #ifndef YY_INPUT
 #define YY_INPUT(buf,result,max_size) \
@@ -171,8 +171,8 @@ ID		({NAME}|{NUMBER})
 [ \t\r]					/* ignore whitespace */
 "node"					return(T_node);			/* see tokens in agcanonstr */
 "edge"					return(T_edge);
-"graph"					graphType = T_graph; return(T_graph);
-"digraph"				graphType = T_digraph; return(T_digraph);
+"graph"					if (!graphType) graphType = T_graph; return(T_graph);
+"digraph"				if (!graphType) graphType = T_digraph; return(T_digraph);
 "strict"				return(T_strict);
 "subgraph"				return(T_subgraph);
 "->"				if (graphType == T_digraph) return(T_edgeop); else return('-');
