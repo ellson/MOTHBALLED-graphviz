@@ -1274,7 +1274,8 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	scale = late_double(e, E_arrowsz, 1.0, 0.0);
 	color = late_string(e, E_color, "");
 
-	scale *= job->obj->penwidth / PENWIDTH_NORMAL;
+	if (job->obj->penwidth > 4)
+	    scale *= job->obj->penwidth / 4;
 
 	/* need to know how many colors separated by ':' */
 	for (p = color; *p; p++)
