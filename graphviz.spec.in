@@ -141,10 +141,10 @@ BuildRequires: gd gd-devel perl-devel DevIL-devel
 %if "%fedora" >= "8"
 %define R_LANG 1
 BuildRequires: R-devel swig >= 1.3.33
-%endif
-%if "%fedora" >= "9"
 %define SMYRNA 1
 BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
+%endif
+%if "%fedora" >= "9"
 #define MING 1
 #BuildRequires: ming ming-devel
 %endif
