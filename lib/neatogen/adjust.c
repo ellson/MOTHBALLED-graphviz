@@ -28,6 +28,11 @@
 #include "site.h"
 #include "heap.h"
 #include "hedges.h"
+#include "digcola.h"
+#ifdef IPSEPCOLA
+#include <csolve_VPSC.h>
+#include "quad_prog_vpsc.h"
+#endif
 
 static double margin = 0.05;	/* Create initial bounding box by adding
 				 * margin * dimension around box enclosing
@@ -637,6 +642,65 @@ static void updateGraph(Agraph_t * graph)
     }
 }
 
+#ifdef IPSEPCOLA
+static int
+vpscAdjust(graph_t* G)
+{
+    int dim = 2;
+    int nnodes = agnnodes(G);
+    ipsep_options opt;
+    pointf* nsize = N_GNEW(nnodes, pointf);
+    float** coords = N_GNEW(dim, float*);
+    float* f_storage = N_GNEW(dim * nnodes, float);
+    int i, j;
+    Agnode_t* v;
+    char* str;
+
+    for (i = 0; i < dim; i++) {
+	coords[i] = f_storage + i * nnodes;
+    }
+
+    j = 0;
+    for (v = agfstnode(G); v; v = agnxtnode(G, v)) {
+	for (i = 0; i < dim; i++) {
+	    coords[i][j] =  (float) (ND_pos(v)[i]);
+	}
+	nsize[j].x = ND_width(v);
+	nsize[j].y = ND_height(v);
+	j++;
+    }
+
+    opt.diredges = 0;
+    opt.edge_gap = 0;
+    opt.noverlap = 2;
+    opt.clusters = NEW(cluster_data);
+    if ((str = agget(G, "sep")) && 
+	(i = sscanf(str, "%lf,%lf", &opt.gap.x, &opt.gap.y))) {
+	    if (i == 1) opt.gap.y = opt.gap.x;
+	    if(Verbose)
+		fprintf(stderr,"gap=%f,%f\n",opt.gap.x,opt.gap.y);
+    }
+    else opt.gap.x = opt.gap.y = PS2INCH(10);
+    opt.nsize = nsize;
+
+    removeoverlaps(nnodes, coords, &opt);
+
+    j = 0;
+    for (v = agfstnode(G); v; v = agnxtnode(G, v)) {
+	for (i = 0; i < dim; i++) {
+	    ND_pos(v)[i] = coords[i][j];
+	}
+	j++;
+    }
+
+    free (opt.clusters);
+    free (f_storage);
+    free (coords);
+    free (nsize);
+    return 0;
+}
+#endif
+
 /* normalize:
  * If normalize is set, move first node to origin, then
  * rotate graph so that first edge is horizontal.
@@ -779,6 +843,11 @@ removeOverlapAs(graph_t * G, char* flag)
 	case AM_COMPRESS:
 	    ret = scAdjust(G, -1);
 	    break;
+#ifdef IPSEPCOLA
+	case AM_VPSC:
+	    ret = vpscAdjust(G);
+	    break;
+#endif
 	default:		/* to silence warnings */
 	    break;
 	}
