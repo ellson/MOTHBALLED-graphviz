@@ -76,14 +76,14 @@ BuildRequires: xorg-x11-devel
 %define GUILE 1
 %define PYTHON 1
 BuildRequires: perl ruby-devel guile-devel python-devel
+%define PANGOCAIRO 1
+BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel
+BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel libgnomeui-devel
+%define RSVG 1
+BuildRequires: librsvg2-devel
 %endif
 %if "%rhel" >= "5"
 %define JAVA 1
-%define PANGOCAIRO 1
-%define RSVG 1
-BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel
-BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel libgnomeui-devel
-BuildRequires: librsvg2-devel
 %endif
 %if "%rhel" >= "6"
 %define PHP 1
