@@ -1264,7 +1264,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
     bezierf bzf;
     splinesf offspl, tmpspl;
     pointf pf0, pf1, pf2 = { 0, 0 }, pf3, *offlist, *tmplist;
-    double scale, numc2;
+    double scale, wscale = 1., numc2;
     char* p;
 
 #define SEP 2.0
@@ -1275,7 +1275,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	color = late_string(e, E_color, "");
 
 	if (job->obj->penwidth > 4)
-	    scale *= job->obj->penwidth / 4;
+	    wscale = job->obj->penwidth / 4;
 
 	/* need to know how many colors separated by ':' */
 	for (p = color; *p; p++)
@@ -1386,7 +1386,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		    }
 		}
 		arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0],
-			scale, bz.sflag);
+			scale, wscale, bz.sflag);
 	    }
 	    if (bz.eflag) {
 		if (color != headcolor) {
@@ -1397,7 +1397,7 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		    }
 		}
 		arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
-			scale, bz.eflag);
+			scale, wscale, bz.eflag);
 	    }
 	    free(colors);
 	    for (i = 0; i < offspl.size; i++) {
@@ -1431,11 +1431,11 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 					 FALSE, FALSE);
 		    if (bz.sflag) {
 			arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0],
-				scale, bz.sflag);
+				scale, wscale, bz.sflag);
 		    }
 		    if (bz.eflag) {
 			arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
-				scale, bz.eflag);
+				scale, wscale, bz.eflag);
 		    }
                     /* arrow_gen resets the job style 
                      * If we have more splines to do, restore the old one.

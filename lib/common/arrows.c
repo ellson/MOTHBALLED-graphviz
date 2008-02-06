@@ -99,16 +99,16 @@ static arrowname_t Arrownames[] = {
 typedef struct arrowtype_t {
     int type;
     double lenfact;		/* ratio of length of this arrow type to standards arrow */
-    void (*gen) (GVJ_t * job, pointf p, pointf u, int flag);	/* generator function for type */
+    void (*gen) (GVJ_t * job, pointf p, pointf u, double wscale, int flag);	/* generator function for type */
 } arrowtype_t;
 
 /* forward declaration of functions used in Arrowtypes[] */
-static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, int flag);
-static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, int flag);
-static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, int flag);
-static void arrow_type_box(GVJ_t * job, pointf p, pointf u, int flag);
-static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, int flag);
-static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, int flag);
+static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, double wscale, int flag);
+static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, double wscale, int flag);
+static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, double wscale, int flag);
+static void arrow_type_box(GVJ_t * job, pointf p, pointf u, double wscale, int flag);
+static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, double wscale, int flag);
+static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, double wscale, int flag);
 
 static arrowtype_t Arrowtypes[] = {
     {ARR_TYPE_NORM, 1.0, arrow_type_normal},
@@ -289,12 +289,12 @@ int arrowStartClip(edge_t* e, point * ps, int startp,
     return startp;
 }
 
-static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, int flag)
+static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, double wscale, int flag)
 {
     pointf q, v, a[5];
 
-    v.x = -u.y * 0.35;
-    v.y = u.x * 0.35;
+    v.x = -u.y * 0.35 * wscale;
+    v.y = u.x * 0.35 * wscale;
     q.x = p.x + u.x;
     q.y = p.y + u.y;
     if (flag & ARR_MOD_INV) {
@@ -320,7 +320,7 @@ static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, int flag)
 	gvrender_polygon(job, &a[1], 3, !(flag & ARR_MOD_OPEN));
 }
 
-static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, int flag)
+static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, double wscale, int flag)
 {
     pointf m, n, q, v, a[7];
 
@@ -357,7 +357,7 @@ static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, int flag)
 	gvrender_polygon(job, a, 7, 1);
 }
 
-static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, int flag)
+static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, double wscale, int flag)
 {
     pointf m, n, q, v, a[4];
 
@@ -390,7 +390,7 @@ static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, int flag)
     gvrender_polyline(job, a, 2);
 }
 
-static void arrow_type_box(GVJ_t * job, pointf p, pointf u, int flag)
+static void arrow_type_box(GVJ_t * job, pointf p, pointf u, double wscale, int flag)
 {
     pointf m, q, v, a[4];
 
@@ -421,7 +421,7 @@ static void arrow_type_box(GVJ_t * job, pointf p, pointf u, int flag)
     gvrender_polyline(job, a, 2);
 }
 
-static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, int flag)
+static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, double wscale, int flag)
 {
     pointf q, r, v, a[5];
 
@@ -445,7 +445,7 @@ static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, int flag)
 	gvrender_polygon(job, a, 4, !(flag & ARR_MOD_OPEN));
 }
 
-static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, int flag)
+static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, double wscale, int flag)
 {
     double r;
     pointf AF[2];
@@ -458,7 +458,7 @@ static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, int flag)
     gvrender_ellipse(job, AF, 2, !(flag & ARR_MOD_OPEN));
 }
 
-static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, int flag)
+static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, double wscale, int flag)
 {
     int f;
     arrowtype_t *arrowtype;
@@ -468,7 +468,7 @@ static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, int flag)
 	if (f == arrowtype->type) {
 	    u.x *= arrowtype->lenfact;
 	    u.y *= arrowtype->lenfact;
-	    (arrowtype->gen) (job, p, u, flag);
+	    (arrowtype->gen) (job, p, u, wscale, flag);
 	    p.x = p.x + u.x;
 	    p.y = p.y + u.y;
 	    break;
@@ -515,7 +515,7 @@ boxf arrow_bb(pointf p, pointf u, double scale, int flag)
     return bb;
 }
 
-void arrow_newgen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, double scale, int flag)
+void arrow_newgen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, double scale, double wscale, int flag)
 {
     obj_state_t *obj = job->obj;
     double s;
@@ -542,12 +542,12 @@ void arrow_newgen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, doub
 
     /* arrow head closest to node */
     f = flag & ((1 << 16) - 1);
-    p = arrow_gen_type(job, p, u, f);
+    p = arrow_gen_type(job, p, u, wscale, f);
 
     /* arrow head furthest from node */
     /*   start where first one ended */
     f = (flag >> 16) & ((1 << 16) - 1);
-    arrow_gen_type(job, p, u, f);
+    arrow_gen_type(job, p, u, wscale, f);
 
     gvrender_end_context(job);
 
@@ -555,11 +555,11 @@ void arrow_newgen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, doub
 }
 
 /* FIXME emit.c and output.c require wrapper for int point coords */
-void arrow_gen(GVJ_t * job, emit_state_t emit_state, point p, point u, double scale, int flag)
+void arrow_gen(GVJ_t * job, emit_state_t emit_state, point p, point u, double scale, double wscale, int flag)
 {
     pointf P, U;
 
     P2PF(p, P);
     P2PF(u, U);
-    arrow_newgen(job, emit_state, P, U, scale, flag);
+    arrow_newgen(job, emit_state, P, U, scale, wscale, flag);
 }
