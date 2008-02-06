@@ -164,6 +164,11 @@ static void cairogen_begin_page(GVJ_t * job)
         default:
 	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 			job->width, job->height);
+            if (job->common->verbose)
+                fprintf(stderr,
+                        "%s: allocating a %dK cairo image surface\n",
+                        job->common->cmdname,
+                        ROUND(job->width * job->height * 4 / 1024.));
 	    break;
         }
         cr = cairo_create(surface);
