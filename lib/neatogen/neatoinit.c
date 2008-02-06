@@ -1307,7 +1307,7 @@ void neatoLayout(Agraph_t * mg, Agraph_t * g, int layoutMode, int layoutModel)
 	MaxIter = 100 * agnnodes(g);
 
     nG = scan_graph_mode(g, layoutMode);
-    if (nG < 2)
+    if ((nG < 2) || (MaxIter <=0))
 	return;
     if (layoutMode)
 	majorization(mg, g, nG, layoutMode, layoutModel, Ndim, MaxIter);
