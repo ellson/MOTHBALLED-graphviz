@@ -1860,6 +1860,8 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
     /* clusters have peripheries */
     G_peripheries = agfindattr(g, "peripheries");
 
+    G_penwidth = agfindattr(g, "penwidth");
+
     /* default font */
     gvc->defaultfontname = late_nnstring(g->proto->n,
                 N_fontname, DEFAULT_FONTNAME);
@@ -2362,13 +2364,14 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     int c, istyle, filled;
     boxf BF;
     pointf AF[4];
-    char *color, *fillcolor, *pencolor, **style;
+    char *color, *fillcolor, *pencolor, **style, *s;
     graph_t *sg;
     node_t *n;
     edge_t *e;
     obj_state_t *obj;
     textlabel_t *lab;
     int doAnchor;
+    double penwidth;
 
     for (c = 1; c <= GD_n_cluster(g); c++) {
 	sg = GD_clust(g)[c];
@@ -2429,6 +2432,12 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	}
 	if (!pencolor) pencolor = DEFAULT_COLOR;
 	if (!fillcolor) fillcolor = DEFAULT_FILL;
+
+	if (G_penwidth && ((s=agxget(sg, G_penwidth->index)) && s[0])) {
+	    penwidth = late_double(sg, G_penwidth, 1.0, 0.0);
+            gvrender_set_penwidth(job, penwidth);
+	}
+
         B2BF(GD_bb(sg), BF);
 	if (istyle & ROUNDED) {
 	    if (late_int(sg, G_peripheries, 1, 0) || filled) {
