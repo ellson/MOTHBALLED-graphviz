@@ -92,7 +92,7 @@ extern "C" {
 	*G_selectedpencolor, *G_selectedfillcolor,
 	*G_visitedpencolor, *G_visitedfillcolor,
 	*G_deletedpencolor, *G_deletedfillcolor,
-	*G_peripheries;
+	*G_peripheries, *G_penwidth;
     EXTERN attrsym_t
 	*N_height, *N_width, *N_shape, *N_color, *N_fillcolor,
 	*N_activepencolor, *N_activefillcolor,
