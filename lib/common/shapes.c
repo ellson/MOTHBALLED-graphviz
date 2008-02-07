@@ -328,11 +328,17 @@ static char **checkStyle(node_t * n, int *flagp)
 
 static int stylenode(GVJ_t * job, node_t * n)
 {
-    char **pstyle;
-    int istyle;
+    char **pstyle, *s;
+    int istyle, penwidth;
 
     if ((pstyle = checkStyle(n, &istyle)))
 	gvrender_set_style(job, pstyle);
+
+    if (N_penwidth && ((s=agxget(n, N_penwidth->index)) && s[0])) {
+        penwidth = late_double(n, N_penwidth, 1.0, 0.0);
+        gvrender_set_penwidth(job, penwidth);
+    }
+
     return istyle;
 }
 
