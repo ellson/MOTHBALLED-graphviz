@@ -14,6 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#include <limits.h>
 
 #include "libgraph.h"
 
@@ -214,22 +215,33 @@ static Agraph_t *agNEWgraph(char *name, Agraph_t * parent, int kind)
 	g->univ = agnewdata();
 	g->root = g;
 	nobj = dtsize(g->univ->globattr->dict);
-	if (nobj)
+	if (nobj) {
 	    g->attr = N_NEW(nobj, char *);
-	else
+		g->didset = N_NEW((nobj + CHAR_BIT - 1) / CHAR_BIT, char);
+		memset(g->didset, 0, (nobj + CHAR_BIT - 1) / CHAR_BIT);
+	}
+	else {
 	    g->attr = NULL;
+		g->didset = NULL;
+	}
 	for (i = 0; i < nobj; i++)
 	    g->attr[i] = agstrdup(AG.proto_g->attr[i]);
-    } else {
+	} else {
 	g->univ = parent->univ;
 	g->root = parent->root;
 	nobj = dtsize(parent->univ->globattr->dict);
-	if (nobj)
+	if (nobj) {
 	    g->attr = N_NEW(nobj, char *);
-	else
+		g->didset = N_NEW((nobj + CHAR_BIT - 1) / CHAR_BIT, char);
+		memset(g->didset, 0, (nobj + CHAR_BIT - 1) / CHAR_BIT);
+	}
+	else {
 	    g->attr = NULL;
+		g->didset = NULL;
+	}
 	for (i = 0; i < nobj; i++)
 	    g->attr[i] = agstrdup(parent->attr[i]);
+
     }
 
     g->meta_node = NULL;
@@ -363,6 +375,8 @@ void agclose(Agraph_t * g)
     }
     if (g->attr)
 	free(g->attr);
+	if (g->didset)
+		free(g->didset);
     if (g == g->root) {
 	for (n = agfstnode(g); n; n = nn) {
 	    nn = agnxtnode(g, n);

@@ -65,6 +65,7 @@ extern "C" {
 	int kind:4;
 	int handle:24;
 	char **attr;
+	char *didset;
 	char *name;
 	Agdata_t *univ;
 	Dict_t *nodes, *inedges, *outedges;
@@ -79,6 +80,7 @@ extern "C" {
 	int pad:4;
 	int handle:24;
 	char **attr;
+	char *didset;
 	char *name;
 	int id;
 	Agraph_t *graph;
@@ -90,6 +92,7 @@ extern "C" {
 	int printkey:4;
 	int handle:24;
 	char **attr;
+	char *didset;
 	Agnode_t *head, *tail;
 	int id;
 	Agedgeinfo_t u;

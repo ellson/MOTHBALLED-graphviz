@@ -14,6 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#include <limits.h>
 
 #include "libgraph.h"
 
@@ -118,13 +119,18 @@ Agnode_t *agNEWnode(Agraph_t * subg, char *name, Agnode_t * proto)
     n->id = subg->univ->max_node_id++;
     n->graph = subg->root;
     nobj = dtsize(subg->univ->nodeattr->dict);
-    if (nobj)
-	n->attr = N_NEW(nobj, char *);
-    else
-	n->attr = NULL;
+    if (nobj) {
+		n->attr = N_NEW(nobj, char *);
+		n->didset = N_NEW((nobj + CHAR_BIT - 1) / CHAR_BIT, char);
+		memset(n->didset, 0, (nobj + CHAR_BIT - 1) / CHAR_BIT);
+	}
+    else {
+		n->attr = NULL;
+		n->didset = NULL;
+	}
     for (i = 0; i < nobj; i++)
-	n->attr[i] = agstrdup(proto ? proto->attr[i] :
-			      subg->univ->nodeattr->list[i]->value);
+		n->attr[i] = agstrdup(proto ? proto->attr[i] :
+			subg->univ->nodeattr->list[i]->value);
     return n;
 }
 
@@ -143,5 +149,6 @@ void agFREEnode(Agnode_t * n)
 	    agstrfree(n->attr[i]);
     }
     free(n->attr);
+	free(n->didset);
     free(n);
 }

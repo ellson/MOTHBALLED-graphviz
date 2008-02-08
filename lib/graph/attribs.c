@@ -14,6 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#include <limits.h>
 
 #define EXTERN
 #include "libgraph.h"
@@ -57,47 +58,59 @@ Agsym_t *agNEWsym(Agdict_t * dict, char *name, char *value)
     return a;
 }
 
-static void obj_init_attr(void *obj, Agsym_t * attr)
+static void obj_init_attr(void *obj, Agsym_t * attr, int isnew)
 {
     int i;
     Agraph_t *gobj;		/* generic object */
 
     gobj = (Agraph_t *) obj;
     i = attr->index;
-    gobj->attr = ALLOC(i + 1, gobj->attr, char *);
-    gobj->attr[i] = agstrdup(attr->value);
+	if (isnew) {
+		gobj->attr = ALLOC(i + 1, gobj->attr, char *);
+		gobj->attr[i] = agstrdup(attr->value);
+		if (i % CHAR_BIT == 0) {
+			/* allocate in chunks of CHAR_BIT bits */
+			gobj->didset = ALLOC(i / CHAR_BIT + 1, gobj->didset, char);
+			gobj->didset[i / CHAR_BIT] = 0;
+		}
+	}
+	else if ((gobj->didset[i / CHAR_BIT] & (1 << (i % CHAR_BIT))) == 0) {
+		/* the i-th attr was not set by agxset, so we can replace it */
+		agstrfree(gobj->attr[i]);
+		gobj->attr[i] = agstrdup(attr->value);
+	}
 }
 
-static void add_graph_attr(Agraph_t * g, Agsym_t * attr)
+static void add_graph_attr(Agraph_t * g, Agsym_t * attr, int isnew)
 {
     Agnode_t *n;
 
     if (g->meta_node) {
 	for (n = agfstnode(g->meta_node->graph); n;
 	     n = agnxtnode(g->meta_node->graph, n))
-	    obj_init_attr(agusergraph(n), attr);
+	    obj_init_attr(agusergraph(n), attr, isnew);
     } else
-	obj_init_attr(g, attr);
+	obj_init_attr(g, attr, isnew);
 }
 
-static void add_node_attr(Agraph_t * g, Agsym_t * attr)
+static void add_node_attr(Agraph_t * g, Agsym_t * attr, int isnew)
 {
     Agnode_t *n;
     Agproto_t *proto;
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
-	obj_init_attr(n, attr);
+	obj_init_attr(n, attr, isnew);
     if (g->meta_node) {
 	for (n = agfstnode(g->meta_node->graph); n;
 	     n = agnxtnode(g->meta_node->graph, n))
 	    for (proto = agusergraph(n)->proto; proto; proto = proto->prev)
-		obj_init_attr(proto->n, attr);
+		obj_init_attr(proto->n, attr, isnew);
     } else
 	for (proto = g->proto; proto; proto = proto->prev)
-	    obj_init_attr(proto->n, attr);
+	    obj_init_attr(proto->n, attr, isnew);
 }
 
-static void add_edge_attr(Agraph_t * g, Agsym_t * attr)
+static void add_edge_attr(Agraph_t * g, Agsym_t * attr, int isnew)
 {
     Agnode_t *n;
     Agedge_t *e;
@@ -105,41 +118,44 @@ static void add_edge_attr(Agraph_t * g, Agsym_t * attr)
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n))
 	for (e = agfstout(g, n); e; e = agnxtout(g, e))
-	    obj_init_attr(e, attr);
+	    obj_init_attr(e, attr, isnew);
     if (g->meta_node) {
 	for (n = agfstnode(g->meta_node->graph); n;
 	     n = agnxtnode(g->meta_node->graph, n))
 	    for (proto = agusergraph(n)->proto; proto; proto = proto->prev)
-		obj_init_attr(proto->e, attr);
+		obj_init_attr(proto->e, attr, isnew);
     } else
 	for (proto = g->proto; proto; proto = proto->prev)
-	    obj_init_attr(proto->e, attr);
+	    obj_init_attr(proto->e, attr, isnew);
 }
 
 static Agsym_t *dcl_attr(void *obj, char *name, char *value)
 {
     Agsym_t *rv;
+	int isnew = 1;
 
     rv = agfindattr(obj, name);
     if (rv) {
 	if (strcmp(rv->value, value)) {
-	    agerr(AGWARN,
-		  "Attribute %s=\"%s\" cannot be redeclared as \"%s\"\n",
-		  name, rv->value, value);
+		agstrfree(rv->value);
+		rv->value = agstrdup(value);
+		isnew = 0;
 	}
-	return rv;
+	else
+		return rv;
     }
-    rv = agNEWsym(agdictof(obj), name, value);
+	else
+		rv = agNEWsym(agdictof(obj), name, value);
     if (rv) {
 	switch (TAG_OF(obj)) {
 	case TAG_GRAPH:
-	    add_graph_attr((Agraph_t *) obj, rv);
+	    add_graph_attr((Agraph_t *) obj, rv, isnew);
 	    break;
 	case TAG_NODE:
-	    add_node_attr(((Agnode_t *) obj)->graph, rv);
+	    add_node_attr(((Agnode_t *) obj)->graph, rv, isnew);
 	    break;
 	case TAG_EDGE:
-	    add_edge_attr(((Agedge_t *) obj)->head->graph, rv);
+	    add_edge_attr(((Agedge_t *) obj)->head->graph, rv, isnew);
 	    break;
 	}
     }
@@ -317,11 +333,14 @@ char *agxget(void *obj, int index)
 
 int agxset(void *obj, int index, char *buf)
 {
-    char **p;
+	char **p;
     if (index >= 0) {
-	p = ((Agraph_t *) obj)->attr;
+	Agraph_t *gobj = (Agraph_t *)obj;
+	p = gobj->attr;
 	agstrfree(p[index]);
 	p[index] = agstrdup(buf);
+	/* the index-th attr was set by agxset */
+	gobj->didset[index / CHAR_BIT] |= 1 << (index % CHAR_BIT);
 	return 0;
     } else
 	return -1;

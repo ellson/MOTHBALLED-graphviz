@@ -14,7 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-
+#include <limits.h>
 
 #include "libgraph.h"
 
@@ -208,14 +208,19 @@ Agedge_t *agNEWedge(Agraph_t * subg, Agnode_t * tail, Agnode_t * head,
     e->id = subg->univ->max_edge_id++;
 
     nobj = dtsize(subg->univ->edgeattr->dict);
-    if (nobj)
-	e->attr = N_NEW(nobj, char *);
-    else
-	e->attr = NULL;
+    if (nobj) {
+		e->attr = N_NEW(nobj, char *);
+		e->didset = N_NEW((nobj + CHAR_BIT - 1) / CHAR_BIT, char);
+		memset(e->didset, 0, (nobj + CHAR_BIT - 1) / CHAR_BIT);
+	}
+    else {
+		e->attr = NULL;
+		e->didset = NULL;
+	}
     for (i = 0; i < nobj; i++)
-	e->attr[i] =
-	    agstrdup(proto ? proto->attr[i] : subg->univ->edgeattr->
-		     list[i]->value);
+		e->attr[i] =
+			agstrdup(proto ? proto->attr[i] : subg->univ->edgeattr->
+				 list[i]->value);
     return e;
 }
 
@@ -270,6 +275,7 @@ void agFREEedge(Agedge_t * e)
     for (i = 0; i < nobj; i++)
 	agstrfree(e->attr[i]);
     free(e->attr);
+	free(e->didset);
     free(e);
 }
 
