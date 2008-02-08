@@ -373,8 +373,7 @@ static gvrender_engine_t quartzgen_engine = {
 static gvrender_features_t render_features_quartz = {
     GVRENDER_DOES_MAPS
 		| GVRENDER_DOES_MAP_RECTANGLE
-		| GVRENDER_DOES_TRANSFORM
-		| GVRENDER_NO_BG,	/* flags */
+		| GVRENDER_DOES_TRANSFORM, /* flags */
     4.,							/* default pad - graph units */
     NULL,						/* knowncolors */
     0,							/* sizeof knowncolors */
@@ -392,7 +391,8 @@ static gvdevice_features_t device_features_quartz = {
 static gvdevice_features_t device_features_quartz_paged = {
 	GVDEVICE_DOES_PAGES
 	  | GVDEVICE_BINARY_FORMAT
-      | GVDEVICE_DOES_TRUECOLOR,/* flags */
+      | GVDEVICE_DOES_TRUECOLOR
+	  | GVRENDER_NO_BG,			/* flags */
     {36.,36.},                    /* default margin - points */
     {0.,0.},                    /* default page width, height - points */
     {72.,72.}                  /* dpi */
