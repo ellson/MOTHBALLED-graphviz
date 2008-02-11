@@ -17,17 +17,14 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
-#include <graphviz/types.h>
-#include <graphviz/graph.h>
+@class GVGraph;
 
 @interface GVDocument : NSDocument
 {
-	graph_t *_graph;
+	GVGraph *_graph;
 }
 
-@property(readonly) graph_t *graph;
-
-+ (void)initialize;
+@property(readonly) GVGraph *graph;
 
 - (id)init;
 

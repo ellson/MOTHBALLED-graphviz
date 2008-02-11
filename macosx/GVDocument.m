@@ -15,96 +15,43 @@
 **********************************************************/
 
 #import "GVDocument.h"
+#import "GVGraph.h"
 #import "GVWindowController.h"
 
 @implementation GVDocument
 
 @synthesize graph = _graph;
 
-+ (void)initialize
-{
-	aginit();
-}
-
 - (id)init
 {
 	if (self = [super init]) {
-		_graph = NULL;
+		_graph = nil;
 	}
     return self;
 }
 
 - (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
 {
-	if ([absoluteURL isFileURL]) {
-		/* open a FILE* on the file URL */
-		FILE *file = fopen([[absoluteURL path] fileSystemRepresentation], "r");
-		if (!file) {
-			if (outError)
-				*outError = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:nil];
-			return NO;
-		}
-		
-		if (_graph)
-			agclose(_graph);
-		_graph = agread(file);
-		fclose(file);
-		
-		return YES;
-	}
-	else {
-		/* read the URL into memory */
-		NSMutableData *memory = [NSMutableData dataWithContentsOfURL:absoluteURL options:0 error:outError];
-		if (!memory)
-			return NO;
-		
-		/* null terminate the data */
-		char nullByte = '\0';
-		[memory appendBytes:&nullByte length:1];
-		
-		if (_graph)
-			agclose(_graph);
-		_graph = agmemread((char*)[memory bytes]);
-		
-		return YES;
-	}
+	[_graph release];
+	_graph = [[GVGraph alloc] initWithURL:absoluteURL error:outError];
+	[_graph.arguments setValue:@"dot" forKey:@"layout"];
+	
+	return _graph != nil;
 }
 
 - (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
 {
-	if ([absoluteURL isFileURL]) {
-		/* open a FILE* on the file URL */
-		FILE *file = fopen([[absoluteURL path] fileSystemRepresentation], "w");
-		if (!file) {
-			if (outError)
-				*outError = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:nil];
-			return NO;
-		}
-		
-		/* write it out */
-		if (agwrite(_graph, file) != 0) {
-			if (outError)
-				*outError = [NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:nil];
-			return NO;
-		}
-		
-		fclose(file);
-		return YES;
-	}
-	else
-		/* can't write out to non-file URL */
-		return NO;
+	return [_graph writeToURL:absoluteURL error:outError];
 }
 
 - (void)makeWindowControllers
 {
-	[self addWindowController: [[[GVWindowController alloc] initWithWindowNibName: @"Document"] autorelease]];
+	[self addWindowController: [[[GVWindowController alloc] init] autorelease]];
 }
 
 - (void)dealloc
 {
-	if (_graph)
-		agclose(_graph);
+	[_graph release];
 	[super dealloc];
 }
 
