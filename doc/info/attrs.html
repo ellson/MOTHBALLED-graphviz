@@ -320,7 +320,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD>C</TD><TD><A HREF=#k:color>color</A>
 </TD><TD ALIGN="CENTER">black</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:penwidth HREF=#d:penwidth>penwidth</A>
-</TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0.0</TD><TD></TD> </TR>
+</TD><TD>CNE</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:peripheries HREF=#d:peripheries>peripheries</A>
 </TD><TD>NC</TD><TD>int</TD><TD ALIGN="CENTER">shape default(nodes)<BR>1(clusters)</TD><TD>0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:pin HREF=#d:pin>pin</A>
@@ -1183,12 +1183,15 @@ This field indicates which graph component uses the attribute.
   <B>color</B> or <B>bgcolor</B> attribute set for the cluster.
 
 <DT><A NAME=d:penwidth HREF=#a:penwidth><STRONG>penwidth</STRONG></A>
-<DD>  Specifies the width of the pen, in points, used to draw lines and curves.
+<DD>  Specifies the width of the pen, in points, used to draw lines and curves,
+  including the boundaries of edges and clusters. The value is inherited
+  by subclusters.
   It has no effect on text. 
   <P>
   Previous to 31 January 2008, the effect of <TT>penwidth=<I>W</I></TT> 
   was achieved by including <TT>setlinewidth(<I>W</I>)</TT>
   as part of a <A HREF=#d:style><TT>style</TT></A> specification.
+  If both are used, <TT>penwidth</TT> will be used.
 
 <DT><A NAME=d:peripheries HREF=#a:peripheries><STRONG>peripheries</STRONG></A>
 <DD>  Set number of peripheries used in polygonal shapes and cluster
