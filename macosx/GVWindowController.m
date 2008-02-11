@@ -15,20 +15,61 @@
 **********************************************************/
 
 #import "GVWindowController.h"
-#import "GVContext.h"
+#import "GVGraph.h"
 #import "GVDocument.h"
 
 @implementation GVWindowController
 
-- (void)windowDidLoad
+@synthesize graph = _graph;
+
+- (id)init
 {
-	GVDocument *graphDocument = [self document];
-	if ([graphDocument respondsToSelector:@selector(graph)]) {
-		graph_t *graph = [graphDocument graph];
-		GVContext* context = [GVContext sharedContext];
-		[context layoutGraph:graph withEngine:@"dot"];
-		[documentView setDocument:[[[PDFDocument alloc] initWithData:[context renderGraph:graph withFormat:@"pdf:quartz"]] autorelease]];
+	if (self = [super initWithWindowNibName: @"Document"])
+		_graph = nil;
+	return self;
+}
+
+- (void)setDocument: (NSDocument *)document
+{
+	if ([document respondsToSelector:@selector(graph)]) {
+		GVGraph *newGraph = [(GVDocument *)document graph];
+		if (_graph != newGraph) {
+			/* retain the new document graph and start observing any changes from it */
+			NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+			if (_graph) {
+				[defaultCenter removeObserver:self name:@"GVGraphDidChange" object:_graph];
+				[_graph release];
+			}
+			_graph = nil;
+			if (newGraph) {
+				_graph = [newGraph retain];
+				[defaultCenter addObserver:self selector:@selector(graphDidChange:) name:@"GVGraphDidChange" object:newGraph];
+			}
+		}
 	}
+	
+	[super setDocument:document];
+}
+
+- (void)awakeFromNib
+{
+	[self graphDidChange:nil];
+}
+
+- (void)graphDidChange:(NSNotification*)notification
+{
+	/* whenever the graph changes, rerender its PDF and display that */
+	[documentView setDocument:[[[PDFDocument alloc] initWithData:[_graph renderWithFormat:@"pdf:quartz"]] autorelease]];
+}
+
+- (void)dealloc
+{
+	if (_graph) {
+		[[NSNotificationCenter defaultCenter] removeObserver:self name:@"GVGraphDidChange" object:_graph];
+		[_graph release];
+	}
+
+	[super dealloc];
 }
 
 @end

@@ -15,25 +15,30 @@
 **********************************************************/
 
 #import <Foundation/Foundation.h>
-#import <AppKit/AppKit.h>
-#import <Quartz/Quartz.h>
+
+#include <graphviz/types.h>
+#include <graphviz/graph.h>
 
 @class GVGraph;
 
-@interface GVWindowController : NSWindowController
+@interface GVGraphDefaultAttributes : NSMutableDictionary
 {
-	IBOutlet PDFView *documentView;
-	
 	GVGraph *_graph;
+	Agdict_t *_defaultAttributes;
+	Agsym_t *(*_attributeDeclaration)(Agraph_t *, char *, char *);
 }
 
-@property(readonly) GVGraph *graph;
+@property(readonly) NSString *name;
 
-- (id)init;
-- (void)setDocument: (NSDocument *)document;
-- (void)awakeFromNib;
+- (id)initWithGraph:(GVGraph *)graph defaultAttributes:(Agdict_t *)defaultAttributes attributeDeclaration:(Agsym_t *(*)(Agraph_t *, char *, char *))attributeDeclaration;
 
-- (void)graphDidChange:(NSNotification*)notification;
+/* dictionary primitive methods */
+- (NSUInteger)count;
+- (NSEnumerator *)keyEnumerator;
+- (id)objectForKey:(id)aKey;
 
-- (void)dealloc;
+/* mutable dictionary primitive methods */
+- (void)setObject:(id)anObject forKey:(id)aKey;
+- (void)removeObjectForKey:(id)aKey;
+
 @end
