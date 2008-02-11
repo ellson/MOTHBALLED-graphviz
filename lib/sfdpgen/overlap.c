@@ -75,6 +75,13 @@ static int comp_scan_points(const void *p, const void *q){
     return 1;
   } else if (pp->x < qq->x){
     return -1;
+  } else {
+    if (pp->node > qq->node){
+      return 1;
+    } else if (pp->node < qq->node){
+      return -1;
+    }
+    return 0;
   }
   return 0;
 }
@@ -87,13 +94,8 @@ void NodeDest(void* a) {
 
 
 int NodeComp(const void* a,const void* b) {
-  scan_point *aa, *bb;
+  return comp_scan_points(a,b);
 
-  aa = (scan_point *) a;
-  bb = (scan_point *) b;
-  if( aa->x > bb->x) return(1);
-  if( aa->x < bb->x) return(-1);
-  return(0);
 }
 
 void NodePrint(const void* a) {
@@ -147,19 +149,25 @@ static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width){
   treey = RBTreeCreate(NodeComp,NodeDest,InfoDest,NodePrint,InfoPrint);
 
   for (i = 0; i < 2*n; i++){
+#ifdef DEBUG_RBTREE
     fprintf(stderr," k = %d node = %d x====%f\n",(scanpointsx[i].node)%n, (scanpointsx[i].node), (scanpointsx[i].x));
+#endif
 
     k = (scanpointsx[i].node)%n;
 
 
     if (scanpointsx[i].status == INTV_OPEN){
+#ifdef DEBUG_RBTREE
       fprintf(stderr, "inserting...");
       treey->PrintKey(&(scanpointsy[k]));
+#endif
 
       RBTreeInsert(treey, &(scanpointsy[k]), NULL); /* add both open and close int for y */
 
-       fprintf(stderr, "inserting2...");
-       treey->PrintKey(&(scanpointsy[k+n]));
+#ifdef DEBUG_RBTREE
+      fprintf(stderr, "inserting2...");
+      treey->PrintKey(&(scanpointsy[k+n]));
+#endif
 
       RBTreeInsert(treey, &(scanpointsy[k+n]), NULL);
     } else {
@@ -167,24 +175,33 @@ static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width){
 
       newNode = newNode0 = RBExactQuery(treey, &(scanpointsy[k + n]));
 
+#ifdef DEBUG_RBTREE
       fprintf(stderr, "poping..%d....", scanpointsy[k + n].node);
       treey->PrintKey(newNode->key);
+#endif
 
       assert(treey->nil != newNode);
       while (((newNode = TreePredecessor(treey, newNode)) != treey->nil) && ((scan_point *)newNode->key)->node != k){
 	neighbor = (((scan_point *)newNode->key)->node)%n;
 	A = SparseMatrix_coordinate_form_add_entries(A, 1, &neighbor, &k, &one);
+#ifdef DEBUG_RBTREE
 	fprintf(stderr,"%d %d\n",k,neighbor);
+#endif
+
       }
 
-          fprintf(stderr, "deleteing...");
+#ifdef DEBUG_RBTREE
+      fprintf(stderr, "deleteing...");
       treey->PrintKey(newNode0->key);
+#endif
 
       RBDelete(treey,newNode0);
       if (newNode != treey->nil && newNode != newNode0) {
 
+#ifdef DEBUG_RBTREE
 	fprintf(stderr, "deleteing2...");
-		treey->PrintKey(newNode->key);
+	treey->PrintKey(newNode->key)
+#endif
 
 	RBDelete(treey,newNode);
       }
@@ -378,7 +395,7 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
   *flag = 0;
 
   for (i = 0; i < ntry; i++){
-    if (Verbose || 0) print_bounding_box(A->m, dim, x);
+    if (Verbose || 1) print_bounding_box(A->m, dim, x);
     sm = OverlapSmoother_new(A, dim, lambda, x, label_sizes, include_original_graph, neighborhood_only,
 			     &max_overlap); 
     if (Verbose || 1) fprintf(stderr, "overlap removal neighbors only?= %d iter -- %d, overlap factor = %g\n", neighborhood_only, i, max_overlap - 1);
