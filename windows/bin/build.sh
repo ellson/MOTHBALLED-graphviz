@@ -2,7 +2,7 @@
 #
 
 PATH=$PATH:"/c/Program Files/putty:/msdev/vc/bin"
-export ROOT=/c/graphviz
+export ROOT=$PWD
 export INSTALLROOT=$ROOT/local
 GVIZ_HOME=$ROOT/gviz       
 LFILE=$ROOT/build.log    # log file
@@ -14,9 +14,10 @@ DESTDIR=$SOURCE/CURRENT
 VERSION=$(date +%K)
 export GTKDIR=/c/gtk
 typeset -l USER=${USER:-erg}
-WINDBG="erg"
-#WINDBG="erg arif ellson"
+#WINDBG="erg"
+WINDBG="erg arif ellson"
 SFX=
+SUBJECT="-s'Windows build failure'"
 export nativepp=-1
 
 function SetVersion 
@@ -32,10 +33,15 @@ function SetVersion
   fi
 }
 
+function WarnEx
+{
+  ssh erg@penguin "echo $1 | mail erg $SUBJECT"
+}  
+
 function ErrorEx
 {
   scp -q $LFILE $USER@penguin:/home/$USER/build.log.$VERSION
-  ssh $USER@penguin "echo $1 | mail $WINDBG -s'Windows build failure'"
+  ssh $USER@penguin "echo $1 | mail $WINDBG $SUBJECT"
   exit 1
 }  
 
@@ -73,7 +79,14 @@ function Get
   rm -rf $GVIZ_HOME
   if [[ $? != 0 ]]
   then
-     ErrorEx "failure in removing old gviz directory"
+     ls -ld $GVIZ_HOME >> errfile
+     echo $USER >> errfile
+     WarnEx "Warning: failure in removing old gviz directory"
+     mv $GVIZ_HOME gviz$$
+     if [[ $? != 0 ]]
+     then
+       ErrorEx "failure in removing old gviz directory"
+     fi
   fi
 
   echo mv graphviz-[1-9]*[0-9] $GVIZ_HOME >> $LFILE
@@ -156,8 +169,11 @@ function Setup
     > lib/gd/unistd.h      # for fontconfig.h
     > plugin/pango/unistd.h      # for fontconfig.h
   fi
-  mv ast_common.h xx
-  sed '/#define _typ_ssize_t/d' xx > ast_common.h
+#  if grep _typ_ssize_t ast_common.h > /dev/null 
+#  then
+#    mv ast_common.h xx
+#    sed '/#define _typ_ssize_t/d' xx > ast_common.h
+#  fi
 
   if ! grep DISABLE_THREADS lib/gd/gd.h > /dev/null
   then
@@ -173,6 +189,11 @@ function Setup
   if [[ $USE_DLL != 0 ]]
   then
     echo "\n#define GVDLL 1" >> config.h
+  fi
+  if [[ $USE_DLL != 2 ]]
+  then
+    cp cmd/dot/Makefile xx
+    sed '/dot -c/d' xx > cmd/dot/Makefile
   fi
 
   echo "Finish Setup" >> $LFILE
@@ -339,7 +360,6 @@ function Build
   cd ..
   rm -rf graphviz
 
-  
   if [[ $USE_DLL != 0 ]]
   then
     mkDLL cdt
@@ -350,7 +370,7 @@ function Build
     mkDLL expr -lcdt
     mkDLL gvc "-L$GTKDIR/lib -lpathplan -lgraph -lcdt -lexpat -lz -lltdl" 
     mkDLL gvplugin_core "-L$GTKDIR/lib -lgvc -lgraph -lcdt -lexpat -lz -lltdl"
-   mkDLL gvplugin_dot_layout "-L$GTKDIR/lib -lgvc -lgraph -lpathplan -lcdt -lexpat -lz -lltdl"
+    mkDLL gvplugin_dot_layout "-L$GTKDIR/lib -lgvc -lgraph -lpathplan -lcdt -lexpat -lz -lltdl"
     mkDLL gvplugin_neato_layout "-L$GTKDIR/lib -lgvc -lpathplan -lgraph -lcdt -lexpat -lz -lltdl"
     mkDLL gvplugin_gd "-L$GTKDIR/lib -lgvc -lpathplan -lgraph -lcdt -lpng -ljpeg -lfontconfig -lfreetype -lcairo -liconv -lexpat -lz -lltdl" 
 #    mkDLL gvplugin_gdk_pixbuf "-L$GTKDIR/lib -lcairo -lgdk_pixbuf-2.0 -lltdl" 
@@ -380,21 +400,36 @@ function Build
   fi 
 
   cd ../gvpr
-  mkGvpr >> $LFILE 2>&1 
+  if [[ $USE_DLL != 0 ]]
+  then
+    mkGvpr >> $LFILE 2>&1 
+  else
+    make install >> $LFILE 2>&1
+  fi
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to make gvpr"
   fi 
 
   cd ../tools
-  mkTools >> $LFILE 2>&1 
+  if [[ $USE_DLL != 0 ]]
+  then
+    mkTools >> $LFILE 2>&1 
+  else
+    make install >> $LFILE 2>&1
+  fi
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to make tools"
   fi 
 
   cd ../dot
-  mkDot >> $LFILE 2>&1 
+  if [[ $USE_DLL != 0 ]]
+  then
+    mkDot >> $LFILE 2>&1 
+  else
+    make install >> $LFILE 2>&1
+  fi
   if [[ $? != 0 ]]
   then
     ErrorEx "failure to make dot"
@@ -425,6 +460,8 @@ function mkDLL
   return 0
 }
 
+GTKPROGS="fc-cache fc-cat fc-list fc-match"
+
 GTKDLLS="iconv intl jpeg62 libcairo-2 libexpat libfontconfig-1 \
 libfreetype-6 libglib-2.0-0 libgmodule-2.0-0 libgobject-2.0-0 \
 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpangowin32-1.0-0 \
@@ -433,9 +470,14 @@ libpng12 libxml2 zlib1 libgdk_pixbuf-2.0-0"
 # Add additional software (DLLs, manuals, examples, etc.) to tree
 function Install
 {
-# Add 3rd party libraries
-  echo "Copying 3rd party libraries" >> $LFILE 2>&1   
+# Add 3rd party programs and libraries
   cd $GTKDIR/bin
+  echo "Copying 3rd party programs" >> $LFILE 2>&1   
+  for l in $GTKPROGS
+  do
+    cp $l.exe $INSTALLROOT/bin
+  done
+  echo "Copying 3rd party libraries" >> $LFILE 2>&1   
   for l in $GTKDLLS
   do
     cp $l.dll $INSTALLROOT/bin
@@ -443,15 +485,32 @@ function Install
   cp -r $GTKDIR/lib/pango $INSTALLROOT/lib
   cp -r $GTKDIR/etc $INSTALLROOT
 
+  # For some reasson, fc-cache and fc-list are linked against
+  # fontconfig.dll rather than libfontconfig-1.dll, so we make a copy.
+  cd $INSTALLROOT/bin
+  cp libfontconfig-1.dll fontconfig.dll
+  
   # Add extra software
   cd $ROOT/add-on
   cp Uninstall.exe $INSTALLROOT
   cp fonts.conf $INSTALLROOT/etc/fonts
-  cp props.txt GVedit.exe GVedit.html GVUI.exe $INSTALLROOT/bin
+  cp props.txt GVedit.exe GVedit.html GVUI.exe Settings.ini $INSTALLROOT/bin
+  cp comdlg32.ocx $INSTALLROOT/bin
 
+  if [[ $USE_DLL == 0 ]]
+  then
+    cd $INSTALLROOT/bin
+    if [[ -f dot_static.exe ]]
+    then
+      mv dot_static.exe dot.exe
+    fi
+    cd ..
+  fi
+  
 # Create "soft" links. At present, hard links appear necessary for
 # GVedit and GVUI. It is hoped this will change with the new GVUI.
   echo "Create soft links" >> $LFILE 2>&1   
+  echo cd $INSTALLROOT/bin >> $LFILE 2>&1
   cd $INSTALLROOT/bin
   cp dot.exe neato.exe
   cp dot.exe twopi.exe
@@ -477,18 +536,31 @@ function Install
 
   echo "Install man pages" >> $LFILE 2>&1   
   cp $GVIZ_HOME/cmd/dot/dot.pdf $INSTALLROOT/doc/man
+  cp $GVIZ_HOME/cmd/gvpr/gvpr.pdf $INSTALLROOT/doc/man
+  cp $GVIZ_HOME/cmd/dotty/dotty.pdf $INSTALLROOT/doc/man
+  cp $GVIZ_HOME/cmd/lefty/lefty.pdf $INSTALLROOT/doc/man
+  cp $GVIZ_HOME/cmd/lneato/lneato.pdf $INSTALLROOT/doc/man
   cp $GVIZ_HOME/cmd/dot/dot.pdf $INSTALLROOT/doc/man/neato.pdf
   cp $GVIZ_HOME/cmd/dot/dot.pdf $INSTALLROOT/doc/man/twopi.pdf
   cp $GVIZ_HOME/cmd/dot/dot.pdf $INSTALLROOT/doc/man/circo.pdf
   cp $GVIZ_HOME/cmd/dot/dot.pdf $INSTALLROOT/doc/man/fdp.pdf
   cp $GVIZ_HOME/cmd/tools/*.pdf $INSTALLROOT/doc/man
   cp $GVIZ_HOME/cmd/tools/gxl2dot.pdf $INSTALLROOT/doc/man/dot2gxl.pdf
+  cp $GVIZ_HOME/lib/agraph/agraph.pdf $INSTALLROOT/doc/man
+  cp $GVIZ_HOME/lib/cdt/cdt.pdf $INSTALLROOT/doc/man
+  cp $GVIZ_HOME/lib/graph/graph.pdf $INSTALLROOT/doc/man
+  cp $GVIZ_HOME/lib/gvc/gvc.pdf $INSTALLROOT/doc/man
+  cp $GVIZ_HOME/lib/pathplan/pathplan.pdf $INSTALLROOT/doc/man
 
   if [[ -d $INSTALLROOT/share ]]
   then
     echo "Install share software" >> $LFILE 2>&1   
+    echo "cd $INSTALLROOT/share/graphviz" >> $LFILE 2>&1
     cd $INSTALLROOT/share/graphviz
-    mv lefty ../../lib
+    if [[ -d lefty ]]
+    then
+      mv lefty ../../lib
+    fi
 
     cd ../..
     rm -rf share
@@ -503,32 +575,30 @@ function Install
     mv ginclude include
   fi
 
-  if [[ $USE_DLL == 0 ]]
-  then
-    cd $INSTALLROOT/bin
-    if [[ -f dot_static.exe ]]
-    then
-      mv dot_static.exe dot.exe
-    fi
-    cd ..
-  fi
-  
     # Remove makefiles
   cd $INSTALLROOT
   rm -f $(find graphs -name Makefile* -print)
   rm -f $(find contrib -name Makefile -print)
   rm -f $(find contrib -name Makefile.in -print)
 
+  echo "Finish Install" >> $LFILE 2>&1   
 }
 
 function PackageTar
 {
   cd $ROOT
 
+  if [[ -n "$RELEASE" ]]
+  then
+    localstr=local.$RELEASE
+  else
+    localstr=local
+  fi
+
     # Create tgz package
-  TGZFILE=graphviz-win-${VERSION}.bin.tar.gz
-  echo "creating tgz local" >> $LFILE
-  pax -w -x tar -s/local/graphviz-${VERSION}/ local | gzip > $TGZFILE
+  TGZFILE=graphviz-win-${VERSION}${STATIC}.bin.tar.gz
+  echo "creating tgz $localstr" >> $LFILE
+  pax -w -x tar -s/$localstr/graphviz-${VERSION}/ $localstr | gzip > $TGZFILE
   if [[ -f $TGZFILE ]]
   then
     echo "SUCCESS : tgz file created" >> $LFILE
@@ -554,10 +624,10 @@ function Package
   cp Setup.exe Selfstbv.exe $ROOT/release
   sed "s/XXX/$SHORTVERSION/" Graphviz.ini > $ROOT/release/Graphviz.ini
   cd $ROOT
-  ./gsetup.sh >> $LFILE 2>&1
+  ./gsetup.sh $ROOT "${RELEASE}" >> $LFILE 2>&1
  
   # now copy it to the webserver
-  UPLOADFILE=graphviz-${VERSION}.exe
+  UPLOADFILE=graphviz-${VERSION}${STATIC}.exe
   PACKAGEDFILE=$ROOT/release/graphvizw.exe
   
   if [[ -f $PACKAGEDFILE ]]
@@ -592,6 +662,8 @@ INSTALL=0    # install the software locally
 PACKAGE=0    # make main package and copy all software to cvs machine
 USE_DLL=2
 CONFARG=-PL
+STATIC=
+RELEASE=
 
 Usage='build [-CDLGSBIP] [-R<relno>] \n
  -C : core package \n
@@ -606,10 +678,6 @@ Usage='build [-CDLGSBIP] [-R<relno>] \n
 while getopts :XCDLGSBIPR: c
 do
   case $c in
-  X )       # Remove when pixbuf is fixed
-    PFX=x
-    CONFARG="$CONFARG -X"
-    ;;
   D )       # build with dlls
     CONFARG=-P
     USE_DLL=1
@@ -618,8 +686,11 @@ do
     USE_DLL=2
     CONFARG=-PL
     ;;
-  C )       # no pango/cairo/fontconfig
-    CONFARG=
+  C )       # general static package
+    STATIC=".static"
+    SUBJECT="-s'Static windows build failure'"
+    CONFARG=-P
+    USE_DLL=0
     ;;
   G )       # get
     SETOPTS=1
@@ -646,6 +717,8 @@ do
     INPKG=graphviz-${RELEASE}.tar.gz
     SOURCEFILE=$SOURCE/ARCHIVE/$INPKG
     DESTDIR=$SOURCE/ARCHIVE
+    INSTALLROOT=$ROOT/local.${RELEASE}
+    GVIZ_HOME=$ROOT/gviz.${RELEASE}       
     ;;
   :)
     echo $OPTARG requires a value
@@ -665,9 +738,6 @@ done
 
 shift $((OPTIND-1))
 
-LFILE=$ROOT/${PFX}build.log
-GVIZ_HOME=$ROOT/${PFX}gviz
-INSTALLROOT=$ROOT/${PFX}local
 
 if [[ $# > 0 ]]
 then

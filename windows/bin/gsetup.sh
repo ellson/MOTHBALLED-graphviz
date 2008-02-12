@@ -21,9 +21,20 @@
 # If all goes well, this script should create a file with the 
 # name "Graphviz.exe" in the relase folder
 
+# $1 is ROOT of build tree, having the form /c/AAA
+# Set PFX to AAA
+PFX=${1#/*/}
+
+# $2 is release tag or ""
+if [[ -n "$2" ]]
+then
+  GraphvizTree=C:/$PFX/local.$2
+else
+  GraphvizTree=C:/$PFX/local
+fi
+
 PATH=$PATH:/c/progra~1/7-Zip
-GraphvizTree=C:/graphviz/local
-ReleaseFolder=C:/graphviz/release
+ReleaseFolder=C:/$PFX/release
 
 #7z a -tzip -r $ReleaseFolder/graphviz.zip $GraphvizTree/*
 #7z a -tzip -r '-x!self*.exe' $ReleaseFolder/graphvizw.zip $ReleaseFolder/*

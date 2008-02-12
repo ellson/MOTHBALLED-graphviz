@@ -12,8 +12,8 @@ fi
 
 PANGOFLAGS=
 LTDLFLAGS=--disable-ltdl 
-#SHAREFLAGS="--disable-shared --enable-static "
-SHAREFLAGS="--enable-shared --disable-static "
+SHAREFLAGS="--disable-shared --enable-static "
+#SHAREFLAGS="--enable-shared --disable-static "
 # Removed if pixbuf gets fixed
 GDKPIXBUF=--without-gdk-pixbuf
 export CPPFLAGS="-I$GTKDIR/include -I$GTKDIR/include/freetype2" 
@@ -46,5 +46,5 @@ do
 esac
 done
 
-echo configure -C --prefix=$INSTALLROOT $GDKPIXBUF --with-mylibgd --disable-swig --without-x  --without-tclsh --without-ipsepcola --with-codegens $SHAREFLAGS --with-freetype=$GTKDIR/lib $LTDLFLAGS $PANGOFLAGS
-configure -C --prefix=$INSTALLROOT $GDKPIXBUF --with-mylibgd --disable-swig --without-x  --without-tclsh --without-ipsepcola --with-codegens $SHAREFLAGS --with-freetype=$GTKDIR/lib $LTDLFLAGS $PANGOFLAGS
+echo ./configure -C --prefix=$INSTALLROOT $GDKPIXBUF --with-mylibgd --disable-swig --without-x  --without-tclsh --without-ipsepcola --with-codegens $SHAREFLAGS --with-freetype=$GTKDIR/lib $LTDLFLAGS $PANGOFLAGS
+./configure -C --prefix=$INSTALLROOT $GDKPIXBUF --with-mylibgd --disable-swig --without-x  --without-tclsh --without-ipsepcola --with-codegens $SHAREFLAGS --with-freetype=$GTKDIR/lib $LTDLFLAGS $PANGOFLAGS
