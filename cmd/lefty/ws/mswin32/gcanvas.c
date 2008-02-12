@@ -1228,7 +1228,7 @@ static void setgattr (Gwidget_t *widget, Ggattr_t *ap) {
         WCU->gattr.width = width, flag = TRUE;
     style = ap->style;
     if (style != WCU->gattr.style)
-        WCU->gattr.style = style, style = TRUE;
+        WCU->gattr.style = style, flag = TRUE;
 
     if (!flag)
         return;
