@@ -2016,10 +2016,8 @@ static void record_init(node_t * n)
     char *textbuf;		/* temp buffer for storing labels */
     int sides = BOTTOM | RIGHT | TOP | LEFT; 
 
-    if (Nop)
-	flip = NOT(GD_realflip(n->graph));
-    else
-	flip = NOT(GD_flip(n->graph));
+    /* Always use rankdir to determine how records are laid out */
+    flip = NOT(GD_realflip(n->graph));
     reclblp = ND_label(n)->text;
     len = strlen(reclblp);
     textbuf = N_NEW(len + 1, char);
