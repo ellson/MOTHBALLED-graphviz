@@ -173,6 +173,14 @@ horizontal. Thus, a record with label "A | B | C | D" will have 4 fields
 oriented left to right, while "{A | B | C | D}" will have them 
 from top to bottom and "A | { B | C } | D" will have "B" over "C", with
 "A" to the left and "D" to the right of "B" and "C".
+<P> 
+The initial orientation of a record node depends on the
+<A HREF="attrs.html#d:rankdir">rankdir</A> attribute. If this attribute
+is <TT>TB</TT> (the default) or <TT>TB</TT>, corresponding to vertical
+layouts, the top-level fields in a record are displayed horizontally.
+If, however, this attribute is <TT>LR</TT> or <TT>RL</TT>, 
+corresponding to horizontal layouts, the top-level fields are 
+displayed vertically.
 <P>
 As an example of a record node, the dot input
 <XMP>
@@ -188,6 +196,13 @@ digraph structs {
 
 yields the figure<BR>
 <IMG SRC=record.gif>
+<P>
+If we add the line
+<XMP>
+    rankdir=LR
+</XMP>
+we get the layout<BR>
+<IMG SRC=record2.gif>
 <P>
 If we change node <TT>struct1</TT> to have shape <TT>Mrecord</TT>,
 it then looks like:<BR>
