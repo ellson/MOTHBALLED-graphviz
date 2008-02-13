@@ -16,7 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include <graphviz/gvc.h>
+#include "gvc.h"
 
 @class GVGraphArguments;
 @class GVGraphDefaultAttributes;

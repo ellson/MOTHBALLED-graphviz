@@ -16,8 +16,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include <graphviz/types.h>
-#include <graphviz/graph.h>
+#include "types.h"
+#include "graph.h"
 
 @class GVGraph;
 
