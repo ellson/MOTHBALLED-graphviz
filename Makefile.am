@@ -41,5 +41,10 @@ EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 .PHONY: rpm
 rpm: dist
 	rpmbuild -ta graphviz-@VERSION@.tar.gz
+	
+.PHONY: pkg
+pkg: dist
+	./macbuild --prep=graphviz-@VERSION@.tar.gz
+
 
 DISTCLEANFILES = config.cache builddate.h ast_common.h FEATURE/* graphviz-@VERSION@*
