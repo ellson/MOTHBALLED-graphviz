@@ -5,6 +5,7 @@ XCODEBUILD="xcodebuild"
 
 GRAPHVIZ_BUILDING=
 PACKAGE=
+PUT=
 
 # first pass -- getting + prepping
 
@@ -18,15 +19,16 @@ do
 			cat <<EOF
 Usage: macbuild [options]
 
-	--help			display this help and exit
+    --help          display this help and exit
 
 Choose one of the following for each project to build:
-	--get=URL		get the url, prep, build and package
-	--prep=TARBALL	prep the tarball, build and package
-	--build=DIR		build the dir and package
+    --get=URL       get the URL, prep, build and package
+    --prep=TARBALL  prep the TARBALL, build and package
+    --build=DIR     build the DIR and package
 	
-Optionally specify the following for the output:
-	--package=PACK	output a OS X flat package
+Then optionally choose one of the following for the output:
+    --package=PACK  output a OS X flat package at PACK
+    --put=URL       put the package at the URL		
 	
 EOF
 			exit 0
@@ -41,7 +43,10 @@ EOF
 			BUILD=${ARG#*=}
 			;;
 		--package=* )
-			PACKAGE=${ARG$*=}
+			PACKAGE=${ARG#*=}
+			;;
+		--put=* )
+			PUT=${ARG#*=}
 			;;
 	esac
 
@@ -147,7 +152,7 @@ do
 	popd
 done
 
-# third pass -- package everything up
+# third pass -- package everything up and ship if necessary
 
 if [[ $PACKAGE == "" ]]
 then
@@ -159,3 +164,14 @@ echo "PACKAGING $PACKAGE ..."
 echo
 
 $PACKAGEMAKER --doc "$GRAPHVIZ_BUILDING/macosx/graphviz.pmdoc" --out $PACKAGE
+
+if [[ $PUT != "" ]]
+then
+	if [[ ${PUT%%://*} == "scp" ]]
+	then
+		HOSTFILE="${PUT#scp://}"
+		scp "$PACKAGE" "${HOSTFILE%%/*}:${HOSTFILE#*/}"
+	else
+		curl --url "$PUT" --upload-file "$PACKAGE"
+	fi
+fi
