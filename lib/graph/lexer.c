@@ -30,9 +30,9 @@
 static FILE *Lexer_fp;
 static char *LexPtr, *TokenBuf;
 static int LineBufSize;
-static uchar In_comment;
-static uchar Comment_start;
-static uchar Start_html_string;
+static unsigned char In_comment;
+static unsigned char Comment_start;
+static unsigned char Start_html_string;
 int Line_number;
 static char *InputFile;
 static gets_f Lexer_gets;
