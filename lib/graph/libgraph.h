@@ -37,9 +37,6 @@ extern "C" {
 #ifndef EXTERN
 #define EXTERN extern
 #endif
-#ifndef uchar
-#define uchar	unsigned char
-#endif
 
 #ifndef NIL
 #define NIL(t)	((t)0)
@@ -119,7 +116,7 @@ extern "C" {
 	char *edge_op;
 	char *linebuf;
 	short syntax_errors;
-	uchar accepting_state, init_called;
+	unsigned char accepting_state, init_called;
     } AG;
 
 /* follow structs used in graph parser */
