@@ -44,7 +44,7 @@ int _STUB_malloc;
 #endif
 #endif
 
-#ifdef S_IRUSR
+#if defined(S_IRUSR)&&defined(S_IWUSR)&&defined(S_IRGRP)&&defined(S_IROTH)
 #define CREAT_MODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
 #else
 #define CREAT_MODE	0644
@@ -362,6 +362,9 @@ reg size_t size;
 #define realloc	______realloc
 
 #include	<malloc.h>
+
+/* in Windows, this is a macro defined in malloc.h and not a function */
+#undef alloca
 
 #if _lib_mallopt
 #if __STD_C

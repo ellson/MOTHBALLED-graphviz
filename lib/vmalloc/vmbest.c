@@ -16,6 +16,11 @@
 
 #include	"vmhdr.h"
 
+/* for VirtualAlloc and friends */
+#if defined(_WIN32)
+#include <windows.h>
+#endif
+
 /*	Best-fit allocation method. This is based on a best-fit strategy
 **	using a splay tree for storage of lists of free blocks of the same
 **	size. Recent free blocks may be cached for fast reuse.
