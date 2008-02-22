@@ -34,7 +34,7 @@ extern char *xml_string(char *str);
 
 char graphcoords[256];
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__MINGW32_VERSION)	/* MinGW already defines snprintf */
 static int
 snprintf (char *str, int n, char *fmt, ...)
 {
