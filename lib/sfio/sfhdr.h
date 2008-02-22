@@ -415,7 +415,7 @@ extern "C" {
 #	endif
 #endif
 
-#ifdef S_IRUSR
+#if defined(S_IRUSR) && defined(S_IWUSR) && defined(S_IRGRP) && defined(S_IWGRP) && defined(S_IROTH) && defined(S_IWOTH)
 #define SF_CREATMODE	(S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)
 #else
 #define SF_CREATMODE	0666

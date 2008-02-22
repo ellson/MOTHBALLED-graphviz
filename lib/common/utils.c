@@ -243,7 +243,7 @@ edge_t *debug_getedge(graph_t * g, char *s0, char *s1)
 }
 #endif
 
-#ifndef MSWIN32
+#if !defined(MSWIN32) && !defined(WIN32)
 #include	<pwd.h>
 static unsigned char userbuf[SMALLBUF];
 static agxbuf xb;
@@ -257,7 +257,7 @@ static void cleanup(void)
 char *gvUsername(void)
 {
     char *user = NULL;
-#ifndef MSWIN32
+#if !defined(MSWIN32) && !defined(WIN32)
     static int first = 1;
     struct passwd *p;
     if (first) {
@@ -595,7 +595,7 @@ static int Tflag;
 void gvToggle(int s)
 {
     Tflag = !Tflag;
-#ifndef MSWIN32
+#if !defined(MSWIN32) && !defined(WIN32)
     signal(SIGUSR1, gvToggle);
 #endif
 }
