@@ -36,7 +36,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#ifdef WIN32
+#define EX_USAGE		64
+#define EX_DATAERR		65
+#define EX_NOINPUT		66
+#define EX_UNAVAILABLE	69
+#else
 #include <sysexits.h>
+#endif
 #include <gd.h>
 #if defined HAVE_STDBOOL_H && ! defined __cplusplus
 #include <stdbool.h>
