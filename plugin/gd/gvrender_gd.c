@@ -211,12 +211,16 @@ static void gdgen_end_page(GVJ_t * job)
 	case FORMAT_GD:
 	    gdImageGd(im, job->output_file);
 	    break;
+
+#ifdef HAVE_LIBZ
 	case FORMAT_GD2:
 #define GD2_CHUNKSIZE 128
 #define GD2_RAW 1
 #define GD2_COMPRESSED 2
 	    gdImageGd2(im, job->output_file, GD2_CHUNKSIZE, GD2_COMPRESSED);
 	    break;
+#endif
+
 	case FORMAT_XBM:
 #if 0
 /* libgd support only reading .xpm files */
@@ -659,7 +663,10 @@ gvplugin_installed_t gvdevice_gd_types2[] = {
 #endif
 
     {FORMAT_GD, "gd:gd", 1, NULL, &device_features_gd_tc_no_writer},
+    
+#ifdef HAVE_LIBZ
     {FORMAT_GD2, "gd2:gd", 1, NULL, &device_features_gd_tc_no_writer},
+#endif
 
 #if 0
 /* libgd has no support for xbm as output */
