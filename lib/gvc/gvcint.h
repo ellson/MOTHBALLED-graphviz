@@ -141,6 +141,12 @@ extern "C" {
 	int fontrenaming;
     };
 
+#ifdef WIN32
+#define DIRSEP "\\"
+#else
+#define DIRSEP "/"
+#endif
+
 #ifdef __cplusplus
 }
 #endif

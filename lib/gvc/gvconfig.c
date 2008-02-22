@@ -279,23 +279,21 @@ char * gvconfig_libdir(void)
 
     if (!libdir) {
 #ifdef WIN32
-#define CHKDLL "gvc.dll"
         libdir=getenv("GVBINDIR");
 	if (!libdir) {
 	    int r;
 	    char* s;
-	    HMODULE hm = GetModuleHandle (CHKDLL);
+	    HMODULE hm = GetModuleHandle (NULL);
 	    if (!hm) {
-		agerr(AGERR,"failed to get handle for %s.\n", CHKDLL);
+		agerr(AGERR,"failed to get handle for executable.\n");
 		return 0;
 	    }
 	    r = GetModuleFileName (hm, line, BSZ);
 	    if (!r || (r == BSZ)) {
-		agerr(AGERR,"failed to get path for %s.\n", CHKDLL);
+		agerr(AGERR,"failed to get path for executable.\n");
 		return 0;
 	    }
 	    s = strrchr(line,'\\');
-	    if (!s) s = strrchr(line,'/');
 	    if (!s) {
 		agerr(AGERR,"no slash in path %s.\n", line);
 		return 0;
@@ -351,18 +349,19 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 #if defined(DARWIN_DYLIB)
     char *plugin_re_beg = "[^0-9]\\.";
     char *plugin_re_end = "\\.dylib$";
-#elif defined(WIN32)
-    char *plugin_glob = "gvplugin_*";
-    char *plugin_re_beg = "[^0-9]";
+#elif defined(__MINGW32__)
+	char *plugin_glob = "libgvplugin_*";
+	char *plugin_re_beg = "[^0-9]-";
     char *plugin_re_end = "\\.dll$"; 
 #elif defined(__CYGWIN__)
     plugin_glob = "cyggvplugin_*";
     char *plugin_re_beg = "[^0-9]-";
     char *plugin_re_end = "\\.dll$"; 
-#elif defined(__hpux__)
-    char *plugin_re_beg = "\\.sl\\.";
-    char *plugin_re_end = "$"; 
-#elif defined(__hpux)   
+#elif defined(WIN32)
+    char *plugin_glob = "gvplugin_*";
+    char *plugin_re_beg = "[^0-9]";
+    char *plugin_re_end = "\\.dll$"; 
+#elif defined(__hpux__) || defined(__hpux)
     char *plugin_re_beg = "\\.sl\\.";
     char *plugin_re_end = "$"; 
 #else
@@ -387,7 +386,8 @@ static void config_rescan(GVC_t *gvc, char *config_path)
     libdir = gvconfig_libdir();
 
     config_re = gmalloc(strlen(plugin_re_beg) + 20 + strlen(plugin_re_end) + 1);
-#if defined(WIN32)
+
+#if defined(WIN32) && !defined(__MINGW32__) && !defined(__CYGWIN__)
     sprintf(config_re,"%s%s", plugin_re_beg, plugin_re_end);
 #elif defined(GVPLUGIN_VERSION)
     sprintf(config_re,"%s%d%s", plugin_re_beg, GVPLUGIN_VERSION, plugin_re_end);
@@ -401,7 +401,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 
     config_glob = gmalloc(strlen(libdir) + 1 + strlen(plugin_glob) + 1);
     strcpy(config_glob, libdir);
-    strcat(config_glob, "/");
+	strcat(config_glob, DIRSEP);
     strcat(config_glob, plugin_glob);
 
     /* load all libraries even if can't save config */
@@ -413,7 +413,7 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 		library = gvplugin_library_load(gvc, globbuf.gl_pathv[i]);
 		if (library) {
 		    gvconfig_plugin_install_from_library(gvc, globbuf.gl_pathv[i], library);
-		    path = strrchr(globbuf.gl_pathv[i],'/');
+		    path = strrchr(globbuf.gl_pathv[i],DIRSEP[0]);
 		    if (path)
 			path++;
 		    if (f && path)
@@ -560,7 +560,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
         if (! gvc->config_path) {
             gvc->config_path = gmalloc(strlen(libdir) + 1 + strlen(config_file_name) + 1);
             strcpy(gvc->config_path, libdir);
-            strcat(gvc->config_path, "/");
+            strcat(gvc->config_path, DIRSEP);
             strcat(gvc->config_path, config_file_name);
         }
     	
@@ -628,6 +628,10 @@ glob (char* pattern, int flags, int (*errfunc)(const char *, int),
     char** str=0;
     int arrsize=0;
     int cnt = 0;
+    
+    pglob->gl_pathc = 0;
+    pglob->gl_pathv = NULL;
+    
     h = FindFirstFile (pattern, &wfd);
     if (h == INVALID_HANDLE_VALUE) return GLOB_NOMATCH;
     libdir = gvconfig_libdir();
@@ -641,7 +645,7 @@ glob (char* pattern, int flags, int (*errfunc)(const char *, int),
       str[cnt] = (char*)malloc (strlen(libdir)+1+strlen(wfd.cFileName)+1);
       if (!str[cnt]) return GLOB_NOSPACE;
       strcpy(str[cnt],libdir);
-      strcat(str[cnt],"/");
+      strcat(str[cnt],DIRSEP);
       strcat(str[cnt],wfd.cFileName);
       cnt++;
     } while (FindNextFile (h, &wfd));
@@ -659,7 +663,8 @@ globfree (glob_t* pglob)
     int i;
     for (i = 0; i < pglob->gl_pathc; i++)
       free (pglob->gl_pathv[i]);
-    free (pglob->gl_pathv);
+    if (pglob->gl_pathv)
+		free (pglob->gl_pathv);
 }
 #endif
 #endif
