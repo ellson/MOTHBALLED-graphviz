@@ -14,6 +14,7 @@ diffimg_SOURCES = diffimg.c
 if WITH_MYLIBGD
 diffimg_LDADD = $(top_builddir)/lib/gd/libgvgd_C.la \
 	@FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@ @MATH_LIBS@
+AM_CPPFLAGS += -DNONDLL
 else
 diffimg_LDADD = @GD_LIBS@ @MATH_LIBS@
 endif

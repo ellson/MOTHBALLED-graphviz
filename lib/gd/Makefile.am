@@ -12,6 +12,7 @@ noinst_HEADERS = gd.h gd_io.h gdcache.h gdfontg.h gdfontl.h gdfontmb.h \
 	gdfonts.h gdfontt.h gdhelpers.h jisx0208.h wbmp.h gdfx.h entities.h
 noinst_LTLIBRARIES = libgvgd_C.la
 html_DATA = $(html)
+AM_CPPFLAGS += -DNONDLL
 endif
 
 libgvgd_C_la_SOURCES = \
