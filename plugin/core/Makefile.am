@@ -11,7 +11,11 @@ AM_CPPFLAGS = \
 	$(LIBGVC_CFLAGS)
 
 noinst_LTLIBRARIES = libgvplugin_core_C.la
+if WITH_WIN32
+lib_LTLIBRARIES = libgvplugin_core.la
+else
 pkglib_LTLIBRARIES = libgvplugin_core.la
+endif
 
 libgvplugin_core_C_la_SOURCES = \
 	gvplugin_core.c \
@@ -23,9 +27,9 @@ libgvplugin_core_C_la_SOURCES = \
 	gvrender_core_map.c \
 	gvloadimage_core.c
 
-libgvplugin_core_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
+libgvplugin_core_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
 libgvplugin_core_la_SOURCES = $(libgvplugin_core_C_la_SOURCES)
-libgvplugin_core_la_LIBADD = $(top_builddir)/lib/gvc/libgvc.la
+libgvplugin_core_la_LIBADD = $(top_builddir)/lib/gvc/libgvc.la $(top_builddir)/lib/graph/libgraph.la
 
 EXTRA_DIST = Makefile.old
 

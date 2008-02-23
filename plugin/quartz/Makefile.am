@@ -12,13 +12,17 @@ AM_CPPFLAGS = \
 
 if WITH_QUARTZ
 noinst_LTLIBRARIES = libgvplugin_quartz_C.la
+if WITH_WIN32
+lib_LTLIBRARIES = libgvplugin_quartz.la
+else
 pkglib_LTLIBRARIES = libgvplugin_quartz.la
+endif
 endif
 
 libgvplugin_quartz_C_la_SOURCES = \
 	gvplugin_quartz.c \
 	gvrender_quartz.c
 
-libgvplugin_quartz_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
+libgvplugin_quartz_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
 libgvplugin_quartz_la_SOURCES = $(libgvplugin_quartz_C_la_SOURCES)
 libgvplugin_quartz_la_LIBADD = @QUARTZ_LIBS@

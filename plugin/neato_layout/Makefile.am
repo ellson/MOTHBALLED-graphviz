@@ -12,7 +12,11 @@ AM_CPPFLAGS = \
 
 noinst_LTLIBRARIES = libgvplugin_neato_layout_C.la
 
+if WITH_WIN32
+lib_LTLIBRARIES = libgvplugin_neato_layout.la
+else
 pkglib_LTLIBRARIES = libgvplugin_neato_layout.la
+endif
 
 libgvplugin_neato_layout_C_la_SOURCES = \
 	gvplugin_neato_layout.c \
@@ -23,10 +27,12 @@ libgvplugin_neato_layout_C_la_LIBADD = \
 	$(top_builddir)/lib/fdpgen/libfdpgen_C.la \
 	$(top_builddir)/lib/circogen/libcircogen_C.la
 
-libgvplugin_neato_layout_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
+libgvplugin_neato_layout_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
 libgvplugin_neato_layout_la_SOURCES = $(libgvplugin_neato_layout_C_la_SOURCES)
 libgvplugin_neato_layout_la_LIBADD = $(libgvplugin_neato_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la @IPSEPCOLA_LIBS@
+	$(top_builddir)/lib/pathplan/libpathplan.la \
+	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la @IPSEPCOLA_LIBS@
 
 EXTRA_DIST = Makefile.old

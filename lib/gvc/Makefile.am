@@ -34,7 +34,7 @@ libgvc_C_la_LIBADD = $(top_builddir)/lib/common/libcommon_C.la \
 
 #For use with plugins.
 #   so it is linked with an empty table of builtins.
-libgvc_la_LDFLAGS = -version-info @VERSION_INFO@ 
+libgvc_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
 libgvc_la_SOURCES = $(libgvc_C_la_SOURCES) no_builtins.c demand_loading.c
 libgvc_la_LIBADD = $(libgvc_C_la_LIBADD) \
 	$(top_builddir)/lib/cdt/libcdt.la \

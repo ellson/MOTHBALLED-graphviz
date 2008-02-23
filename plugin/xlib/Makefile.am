@@ -13,7 +13,11 @@ AM_CPPFLAGS = \
 if WITH_PANGOCAIRO
 if WITH_X
 noinst_LTLIBRARIES = libgvplugin_xlib_C.la
+if WITH_WIN32
+lib_LTLIBRARIES = libgvplugin_xlib.la
+else
 pkglib_LTLIBRARIES = libgvplugin_xlib.la
+endif
 endif
 endif
 
@@ -21,6 +25,6 @@ libgvplugin_xlib_C_la_SOURCES = \
 	gvplugin_xlib.c \
 	gvdevice_xlib.c
 
-libgvplugin_xlib_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
+libgvplugin_xlib_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
 libgvplugin_xlib_la_SOURCES = $(libgvplugin_xlib_C_la_SOURCES)
 libgvplugin_xlib_la_LIBADD = @PANGOCAIRO_LIBS@ @X_LIBS@ -lX11 @SOCKET_LIBS@ @MATH_LIBS@

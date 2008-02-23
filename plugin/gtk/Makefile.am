@@ -14,7 +14,11 @@ if WITH_PANGOCAIRO
 if WITH_GTK
 noinst_HEADERS = support.h interface.h callbacks.h
 noinst_LTLIBRARIES = libgvplugin_gtk_C.la
+if WITH_WIN32
+lib_LTLIBRARIES = libgvplugin_gtk.la
+else
 pkglib_LTLIBRARIES = libgvplugin_gtk.la
+endif
 endif
 endif
 
@@ -25,7 +29,7 @@ libgvplugin_gtk_C_la_SOURCES = \
         interface.c \
         callbacks.c 
 
-libgvplugin_gtk_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
+libgvplugin_gtk_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
 libgvplugin_gtk_la_SOURCES = $(libgvplugin_gtk_C_la_SOURCES)
 libgvplugin_gtk_la_LIBADD = $(GTK_LIBS) $(GNOMEUI_LIBS)
 
