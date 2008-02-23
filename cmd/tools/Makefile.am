@@ -28,12 +28,12 @@ install-data-hook:
 	(cd $(DESTDIR)$(pdfdir); rm -f dot2gxl.pdf; $(LN_S) gxl2dot.pdf dot2gxl.pdf;)
 
 install-exec-hook:
-	(cd $(DESTDIR)$(bindir); rm -f dot2gxl; $(LN_S) gxl2dot dot2gxl;)
+	(cd $(DESTDIR)$(bindir); rm -f dot2gxl$(EXEEXT); $(LN_S) gxl2dot$(EXEEXT) dot2gxl$(EXEEXT);)
 
 uninstall-hook:
 	(cd $(DESTDIR)$(man1dir); rm -f dot2gxl.1;)
 	(cd $(DESTDIR)$(pdfdir); rm -f dot2gxl.pdf;)
-	(cd $(DESTDIR)$(bindir); rm -f dot2gxl;)
+	(cd $(DESTDIR)$(bindir); rm -f dot2gxl$(EXEEXT);)
 
 gxl2dot_SOURCES = cvtgxl.c dot2gxl.c gxl2dot.c
 
