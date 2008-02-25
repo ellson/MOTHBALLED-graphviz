@@ -39,8 +39,9 @@
 /* #include <option.h> */
 #ifdef WIN32
 #define environ _environ
-#endif
+#else
 extern char **environ;
+#endif
 char **opt_info_argv;
 
 char *pathpath(register char *path, const char *p, const char *a, int mode)
