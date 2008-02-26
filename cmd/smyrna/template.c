@@ -1,30 +1,4 @@
-/**************************************************************************
- * template.c
- *
- * Copyright (c) 2002 Alif Wahid <awah005@users.sourceforge.net>
- *
- * This is a template of the essential source code to write useful but
- * simple programs using GtkGLExt and Gtk. It compiles into an executable
- * but obviously the lack of any OpenGL functions in this demonstrates
- * the generic nature. It's heavily commented to aid beginners (especially
- * tertiary students like myself). So use/change it at will.
- *
- * This program is in the public domain and you are using it at
- * your own risk.
- *
- **************************************************************************/
 
-/* 
- * Follow the GTK coding style.
- * Changed idle function management codes.
- * Added popup menu.
- * Added quit button.
- *   Naofumi Yasufuku  <naofumi@users.sourceforge.net>
- */
-
-/**************************************************************************
- * Header file inclusions.
- **************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,8 +31,6 @@
  ***/
 #define DEFAULT_WIDTH  200
 #define DEFAULT_HEIGHT 200
-#define DEFAULT_TITLE  "GtkGLExt Template"
-
 #define TIMEOUT_INTERVAL 10
 
 
@@ -66,7 +38,6 @@
  * Global variable declarations.
  **************************************************************************/
 
-static gboolean animate = FALSE;
 
 
 /**************************************************************************
@@ -388,9 +359,6 @@ map_event (GtkWidget *widget,
 	   gpointer   data)
 {
   g_print ("%s: \"map_event\":\n", gtk_widget_get_name (widget));
-  if (animate)
-    timeout_add (widget);
-
   return TRUE;
 }
 
@@ -419,40 +387,10 @@ visibility_notify_event (GtkWidget          *widget,
 			 GdkEventVisibility *event,
 			 gpointer            data)
 {
-  if (animate)
-    {
-      if (event->state == GDK_VISIBILITY_FULLY_OBSCURED)
-	timeout_remove (widget);
-      else
-	timeout_add (widget);
-    }
 
   return TRUE;
 }
 
-
-/**************************************************************************
- * The following section contains some miscellaneous utility functions.
- **************************************************************************/
-
-/***
- *** Toggle animation.
- ***/
-static void
-toggle_animation (GtkWidget *widget)
-{
-  animate = !animate;
-
-  if (animate)
-    {
-      timeout_add (widget);
-    }
-  else
-    {
-      timeout_remove (widget);
-      gdk_window_invalidate_rect (widget->window, &widget->allocation, FALSE);
-    }
-}
 
 
 /**************************************************************************
@@ -504,8 +442,8 @@ create_window (GdkGLConfig *glconfig)
    * Top-level window.
    */
 
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (window), DEFAULT_TITLE);
+//  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+//  gtk_window_set_title (GTK_WINDOW (window), DEFAULT_TITLE);
 
   /* Get automatically redrawn if any of their children changed allocation. */
   gtk_container_set_reallocate_redraws (GTK_CONTAINER (window), TRUE);
@@ -632,38 +570,3 @@ configure_gl (void)
 
   return glconfig;
 }
-
-
-/**************************************************************************
- * The main function is rather trivial.
- **************************************************************************/
-
-/*int
-main (int   argc,
-      char *argv[])
-{
-  GtkWidget *window;
-  GdkGLConfig *glconfig;
-
-  /* Initialize GTK. */
-/*  gtk_init (&argc, &argv);
-
-  /* Initialize GtkGLExt. */
-/*  gtk_gl_init (&argc, &argv);
-
-  /* Configure OpenGL framebuffer. */
-/*  glconfig = configure_gl ();
-
-  /* Create and show the application window. */
-/*  window = create_window (glconfig);
-  gtk_widget_show (window);
-
-  gtk_main ();
-
-  return 0;
-}*/
-
-
-/**************************************************************************
- * End of file.
- **************************************************************************/

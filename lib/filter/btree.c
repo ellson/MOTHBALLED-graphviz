@@ -16,7 +16,7 @@
 
 #include "btree.h"
 #include "regex.h"
-#include "topview.h"
+#include "viewport.h"
 btree_node* new_node(char* attribute,char* regex, float min, float max)
 {
 	btree_node* n;
@@ -293,13 +293,13 @@ int evaluate_filter_atom(char* string,btree_node* Nodes[],char* op)
 		c_cursor++;
 	}
 	
-	n=new_node(attrs[0],values[0],atof(values[1]),atof(values[2]));
+	n=new_node(attrs[0],values[0],(float)atof(values[1]),(float)atof(values[2]));
 	n->node_type=2;
 	Nodes[0]=n;
 
 	if (attrs_count >5)
 	{
-		n=new_node(attrs[3],values[3],atof(values[4]),atof(values[5]));
+		n=new_node(attrs[3],values[3],(float)atof(values[4]),(float)atof(values[5]));
 		n->node_type=2;
 		Nodes[1]=n;
 	}
@@ -320,8 +320,6 @@ int  evaluate_expresions (tv_node* TV_Node,btree_node* n)
 {
 	regex_t preg;
 	char* data;
-	char buff1[1024];
-	char buff2[1024];
 	int i=0;
 	int ii=0;
 	if (!n)
@@ -340,7 +338,7 @@ int  evaluate_expresions (tv_node* TV_Node,btree_node* n)
 	}
 	if (n->node_type==2)
 	{
-		data=agget(Topview.Nodes[TV_Node->index].Node,n->attr_name);
+		data=agget(view->Topview->Nodes[TV_Node->index].Node,n->attr_name);
 		if (data)
 		{
 				regcomp(&preg,n->regex,REG_NOSUB);

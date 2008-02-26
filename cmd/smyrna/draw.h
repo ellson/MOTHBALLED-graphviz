@@ -16,28 +16,20 @@
 
 #ifndef DRAW_H
 #define DRAW_H
-#include "viewport.h"
+#include "smyrnadefs.h"
 #include <gtk/gtkgl.h>
+#include "xdot.h"
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <pango/pangoft2.h>
 
-//#include "xdot.h"
+#define Z_MIDDLE_PLANE  -0.00200
+#define Z_BACK_PLANE	-0.00201
+#define Z_FORWARD_PLANE -0.00199
 
-#define ANGLE   30.0
-/* tan (ANGLE * PI / 180.0) */
-#define TANGENT 0.57735
-
-#define TEXT_Z_NEAR  2.0
-#define TEXT_Z_FAR  0.0
-#define TEXT_Z_DIFF  0.005
-
-static GLfloat text_z = TEXT_Z_NEAR;
-static const char *text = "ABCD adasd";
-static PangoContext *ft2_context=NULL;
-
-//DRAWING FUNCTIONS
+/*DRAWING FUNCTIONS 
+these are opengl based xdot drawing functions 
+topview drawings are not here*/
 void DrawBezier(GLfloat* xp,GLfloat* yp,GLfloat* zp, int filled, int param);
 void DrawBeziers(xdot_op* op,int param);
 void DrawEllipse(xdot_op* op,int param);
@@ -52,15 +44,17 @@ void EmbedText(xdot_op* op,int param);
 void InsertImage(xdot_op* op,int param);
 void load_raw_texture ( char *file_name, int width, int height, int depth, GLenum colour_type, GLenum filter_type ); //function to load .raw files
 int load_bitmap(char *filename);
-void draw_selection_box();
+void drawGraph(Agraph_t *g);
+void draw_selection_box(ViewInfo* view);
 void set_options(xdot_op*,int param);
 void relocate_spline(xdot_op*,int param);
-void draw_letter(GLfloat x,GLfloat y,char c);
-int font_display_list();
-void draw_cached_letter(GLfloat x,GLfloat y,int letter);
-void draw_magnifier();
+void draw_magnifier(ViewInfo* view);
 void draw_circle(float originX,float originY,float radius);
-void draw_fisheye_magnifier();
-//int point_within_ellipse(float ex,float ey,float ea,float eb,float px,float py);
+void draw_fisheye_magnifier(ViewInfo* view);
+int randomize_color(RGBColor* c,int brightness);
+void drawCircle(float x,float y,float radius,float zdepth);
+RGBColor GetRGBColor(char* color);
+void drawBorders(ViewInfo* view);
+
 #endif
 

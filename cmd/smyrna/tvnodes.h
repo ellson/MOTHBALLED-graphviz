@@ -18,7 +18,6 @@
 #define TVNODES_H
 
 #include "gui.h"
-
 #define MAX_NODE_PER_PAGE 100
 #define LOCATION_X_CHKSELECTED 16
 #define LOCATION_X_IDLABEL 45

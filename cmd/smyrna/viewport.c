@@ -19,6 +19,7 @@
 #endif
 #include "compat.h"
 #include "viewport.h"
+#include "draw.h"
 #include "color.h"
 #include <glade/glade.h>
 #include "gui.h"
@@ -26,24 +27,27 @@
 
 #define countof( array ) ( sizeof( array )/sizeof( array[0] ) )
 
-char* globalString;
-ViewInfo	view;
-Agraph_t* tempG;	//helper graph for default attr values,
-int SignalBlock;
-
-float TopViewPointsX [50000];
-float TopViewPointsY [50000];
-
-float TopViewEdgesHeadX[50000];
-float TopViewEdgesHeadY[50000];
-float TopViewEdgesTailX[50000];
-float TopViewEdgesTailY[50000];
-
-int	TopViewNodeCount;
-int	TopViewEdgeCount;
+ViewInfo*	view;
+/*these two global variables should be wrapped in somethign else*/
 GtkMessageDialog*  Dlg;
 int respond;
 
+void clear_viewport(ViewInfo* view)
+{
+	int ind=0;
+	/*free topview if there is one*/
+	if(view->graphCount)
+	{
+		cleartopview(view->Topview);
+		/*all cgraph graphs should be freed*/
+		for (ind=0;ind < view->graphCount;ind ++)
+		{
+			agclose(view->g[ind]);
+		}
+		/*frees itself*/
+		free(view);
+	}
+}
 void init_viewport(ViewInfo* view)
 {
 
@@ -59,17 +63,18 @@ void init_viewport(ViewInfo* view)
 	view->bdzBottom=0;
 	view->bdzTop=0;
 
-	view->bdA=1;
-	view->bdR=1;
-	view->bdG=0;
-	view->bdB=0;
-	view->bdVisible=0;		//show borders red
+	view->borderColor.R=1;
+	view->borderColor.G=0;
+	view->borderColor.B=0;
+	view->borderColor.A=1;
+
+	view->bdVisible=1;		//show borders red
 	
 	view->gridSize=10;
-	view->grR=0.5;	
-	view->grG=0.5;	
-	view->grB=0.5;	
-	view->grA=1;
+	view->gridColor.R=0.5;
+	view->gridColor.G=0.5;
+	view->gridColor.B=0.5;
+	view->gridColor.A=1;
 	view->gridVisible=0;	//show grids in light gray
 
 	//mouse mode=pan
@@ -111,10 +116,9 @@ void init_viewport(ViewInfo* view)
 
 	view->zoom=-20;
 	view->texture=1;
-	view->font_textures=NULL;
-	view->font_texture_count=0;	//number of openGL textures, used internally
 	view->FontSize=52;
-		
+
+	view->topviewusermode =TOP_VIEW_USER_NOVICE_MODE;	//for demo
 	view->mg.active=0;
 	view->mg.x=0;
 	view->mg.y=0;
@@ -125,13 +129,14 @@ void init_viewport(ViewInfo* view)
 	view->fmg.active=0;
 	view->mouse.mouse_down=0;
 	view->activeGraph=-1;
-	SignalBlock=0;
+	view->SignalBlock=0;
 	view->Selection.Active=0;
 	view->Selection.SelectionColor.R=0.5;
-	view->Selection.SelectionColor.G=0.2;
+	view->Selection.SelectionColor.G=(float)0.2;
 	view->Selection.SelectionColor.B=1;
 	view->Selection.SelectionColor.A=1;
 	view->Selection.Anti=0;
+	view->Topview=malloc(sizeof(topview));
 }
 
 int add_graph_to_viewport_from_file (char* fileName)
@@ -141,12 +146,12 @@ int add_graph_to_viewport_from_file (char* fileName)
 	graph=loadGraph(fileName);
 	if(graph)
 	{
-		view.graphCount = view.graphCount + 1; 
-		view.g= (Agraph_t**)realloc(view.g,sizeof(Agraph_t*)*view.graphCount);
-		view.g[view.graphCount-1]=graph;
-		view.activeGraph=view.graphCount-1;
+		view->graphCount = view->graphCount + 1; 
+		view->g= (Agraph_t**)realloc(view->g,sizeof(Agraph_t*)*view->graphCount);
+		view->g[view->graphCount-1]=graph;
+		view->activeGraph=view->graphCount-1;
 		//GUI update , graph combo box on top-right should be updated
-		refreshControls(&view);
+		refreshControls(view);
 		return 1;
 	}
 	else
@@ -161,9 +166,9 @@ int add_new_graph_to_viewport()
 	graph=(Agraph_t*) malloc(sizeof(Agraph_t));
 	if(graph)
 	{
-		view.graphCount = view.graphCount + 1; 
-		view.g[view.graphCount-1]=graph;
-		return (view.graphCount-1);
+		view->graphCount = view->graphCount + 1; 
+		view->g[view->graphCount-1]=graph;
+		return (view->graphCount-1);
 	}
 	else
 		return -1;
@@ -181,9 +186,9 @@ void refreshControls(ViewInfo* v)
 	{
 		gtk_combo_box_append_text(widget,((custom_graph_data*)(AGDATA(v->g[i])))->GraphFileName);
 	}
-	SignalBlock=1;	//HACK
-	gtk_combo_box_set_active (widget,view.activeGraph);
-	SignalBlock=0;
+	view->SignalBlock=1;	//HACK
+	gtk_combo_box_set_active (widget,view->activeGraph);
+	view->SignalBlock=0;
 
 
 	//change button colors
@@ -194,7 +199,7 @@ void refreshControls(ViewInfo* v)
 	Color_Widget_bg ("gray",glade_xml_get_widget(xml, "btnFdp"));	
 
 
-	switch( ((custom_graph_data*)(AGDATA(view.g[view.activeGraph])))->Engine )
+	switch( ((custom_graph_data*)(AGDATA(view->g[view->activeGraph])))->Engine )
 	{
 		case 0: 
 			Color_Widget_bg ("red",glade_xml_get_widget(xml, "btnDot"));	
@@ -218,7 +223,7 @@ void refreshControls(ViewInfo* v)
 
 
 	}
-	expose_event (drawing_area,NULL,NULL);
+	expose_event (view->drawing_area,NULL,NULL);
 
 		
 
@@ -285,9 +290,9 @@ void load_graph_params(Agraph_t* graph)	//run once right after loading graph
 	
 	
 /*		if(agget((void*)g, "xdotversion"))	//xdot exists
-			((custom_graph_data*)AGDATA(g))->TopView=0; //need to check xdot version attribute
-		else		//we dont know if it is topview or simply a graph with no xdot, for testing i ll use topview
-			((custom_graph_data*)AGDATA(g))->TopView=1;  */
+			((custom_graph_data*)AGDATA(g))->view->Topview=0; //need to check xdot version attribute
+		else		//we dont know if it is view->Topview or simply a graph with no xdot, for testing i ll use view->Topview
+			((custom_graph_data*)AGDATA(g))->view->Topview=1;  */
 
 
 
@@ -298,22 +303,23 @@ void load_graph_params(Agraph_t* graph)	//run once right after loading graph
 int save_graph()	//save without prompt
 {
 	//check if there is an active graph
-	if(view.activeGraph > -1)
+	if(view->activeGraph > -1)
 	{
 		//check if active graph has a file name
-		if (((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->GraphFileName)
+		if (((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->GraphFileName)
 		{
-			return save_graph_with_file_name(view.g[view.activeGraph],((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->GraphFileName);
+			return save_graph_with_file_name(view->g[view->activeGraph],((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->GraphFileName);
 		}
 		else
 			return save_as_graph();
 	}
+	return 1;
 
 }
 int save_as_graph() //save with prompt
 {
 	//check if there is an active graph
-	if(view.activeGraph > -1)
+	if(view->activeGraph > -1)
 	{
 		GtkWidget *dialog;
 		dialog = gtk_file_chooser_dialog_new ("Save File",
@@ -327,7 +333,7 @@ int save_as_graph() //save with prompt
 		{
 			char *filename;
 			filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-			save_graph_with_file_name(view.g[view.activeGraph],filename);
+			save_graph_with_file_name(view->g[view->activeGraph],filename);
 			g_free (filename);
 			gtk_widget_destroy (dialog);
 
@@ -339,6 +345,7 @@ int save_as_graph() //save with prompt
 			return 0;
 		}
 	}
+	return 0;
 }
 int save_graph_with_file_name(Agraph_t* graph,char* fileName)	//saves graph with file name,if file name is NULL save as is ++
 {
@@ -368,6 +375,7 @@ int save_graph_with_file_name(Agraph_t* graph,char* fileName)	//saves graph with
 		g_print("%s sucessfully saved \n", fileName);
 			return 1;
 	}
+	return 0;
 }
 
 int create_xdot_for_graph(Agraph_t* graph,int keeppos)
@@ -435,6 +443,8 @@ int create_xdot_for_graph(Agraph_t* graph,int keeppos)
 	else
 		return FALSE;
 
+	return 0;
+
 }
 int do_graph_layout(Agraph_t* graph,int Engine,int keeppos) //changes the layout, all user relocations are reset unless keeppos is set to 1
 {
@@ -445,36 +455,36 @@ int do_graph_layout(Agraph_t* graph,int Engine,int keeppos) //changes the layout
 	int cnt;*/
 //	mydata *p;
 	FILE* input_file;
-	char* _filename=(char*)malloc((strlen(((custom_graph_data*)(AGDATA(view.g[view.activeGraph])))->GraphFileName)+1)*sizeof(char));
-		strcpy(_filename,((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->GraphFileName); 
+	char* _filename=(char*)malloc((strlen(((custom_graph_data*)(AGDATA(view->g[view->activeGraph])))->GraphFileName)+1)*sizeof(char));
+		strcpy(_filename,((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->GraphFileName); 
 
 	
-	((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->Engine=Engine;
-		create_xdot_for_graph(view.g[view.activeGraph],keeppos);
+	((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->Engine=Engine;
+		create_xdot_for_graph(view->g[view->activeGraph],keeppos);
 
 #ifdef _WIN32
 	input_file = fopen("c:/__tempfile.xdot", "r");
 #else
 	input_file = fopen("/tmp/__tempfile.xdot", "r");
 #endif
-	clear_graph(view.g[view.activeGraph]);
-	agclose(view.g[view.activeGraph]);
+	clear_graph(view->g[view->activeGraph]);
+	agclose(view->g[view->activeGraph]);
 	if (input_file  == NULL)
 		g_print("temp file Cannot open n");
-	else if (view.g[view.activeGraph]= agread(input_file,NIL(Agdisc_t*)))
+	else if (view->g[view->activeGraph]= agread(input_file,NIL(Agdisc_t*)))
 	{
 		fclose(input_file);
 		//attaching rec for graph fields
-		attach_object_custom_data_to_graph(view.g[view.activeGraph]);
+		attach_object_custom_data_to_graph(view->g[view->activeGraph]);
 		//set real file name
-		((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->GraphFileName=(char*)malloc((strlen(_filename)+1)*sizeof(char)); 
-		load_graph_params(view.g[view.activeGraph]);	//init glparams
-		strcpy(((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->GraphFileName,_filename); 
+		((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->GraphFileName=(char*)malloc((strlen(_filename)+1)*sizeof(char)); 
+		load_graph_params(view->g[view->activeGraph]);	//init glparams
+		strcpy(((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->GraphFileName,_filename); 
 		free(_filename);
 		//set engine
-		((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->Engine=Engine;
-		((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->Modified=1;
-		refreshControls(&view);
+		((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->Engine=Engine;
+		((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->Modified=1;
+		refreshControls(view);
 		return 1;
 	}
 	else
@@ -484,7 +494,7 @@ int do_graph_layout(Agraph_t* graph,int Engine,int keeppos) //changes the layout
 	}
 
 	
-
+	return 0;
 
 }
 
@@ -498,11 +508,6 @@ void clear_graph(Agraph_t* graph)
 Agraph_t* loadGraph(char* filename)
 {
 	Agraph_t *g;
-	Agnode_t *v;
-	Agedge_t *e;
-	Agsym_t *attr;
-	Dict_t *d;
-	int cnt;
 //	mydata *p;
 	FILE* input_file;
 	input_file = fopen(filename, "r");
@@ -555,26 +560,26 @@ Agraph_t* loadGraph(char* filename)
 		((custom_graph_data*)AGDATA(g))->GraphFileName=(char*)malloc((strlen(filename)+1)*sizeof(char)); 
 		//attaching rec for graph objects
 		strcpy(((custom_graph_data*)AGDATA(g))->GraphFileName,filename); 
-		printf("topview:%s------",agget(g, "TopView"));
-		if(strcasecmp(agget(g, "TopView"),"1")==0)
+		printf("Topview:%s------",agget(g, "TopView"));
+		/*if(strcasecmp(agget(g, "TopView"),"1")==0)
 		{
-			if(TopViewNodeCount > 0)
+			if(
+				TopviewNodeCount > 0)
 			{
 				Dlg=gtk_message_dialog_new (NULL,
 									GTK_DIALOG_MODAL,
 	                                  GTK_MESSAGE_WARNING,
 									GTK_BUTTONS_OK,
-									"For Performance issues , this program does not support multiple topview graphs!");
+									"For Performance issues , this program does not support multiple Topview graphs!");
 				respond=gtk_dialog_run (Dlg);
 				gtk_object_destroy (Dlg);
 				agclose(g);
 				return 0;
 			}
 			else
-			{
 				PrepareTopview(g);
-			}
-		}
+		}*/
+		preparetopview(g,view->Topview);
 		return g;
 	}
 	else
@@ -582,7 +587,7 @@ Agraph_t* loadGraph(char* filename)
 		printf("failed to load %s\n",filename);
 		return 0;
 	}
-
+	return 0;
 }
 int clear_object_xdot(void* obj)
 {
@@ -661,8 +666,8 @@ int attach_object_custom_data_to_graph(Agraph_t* graph)
 			init_object_custom_data(graph,e);	//attach to edge
 		}
 	}
+	return 1;
 	
-
 }
 
 
@@ -771,24 +776,23 @@ void move_node(void* obj,float dx,float dy)
 void move_nodes(Agraph_t* g)	//move selected nodes 
 {
 	Agnode_t* obj;
-	Agedge_t* e;
 
 	float dx,dy;
 	xdot* bf;
 	int i=0;
-	dx=view.GLx-view.GLx2;
-	dy=view.GLy-view.GLy2;
+	dx=view->GLx-view->GLx2;
+	dy=view->GLy-view->GLy2;
 
-	if(((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->TopView == 0)
+	if(((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->TopView == 0)
 	{
 		for (i=0;i < ((custom_graph_data*)AGDATA(g))->selectedNodesCount;i++)
 		{	
 			obj=((custom_graph_data*)AGDATA(g))->selectedNodes[i];
 			bf=parseXDot (agget(obj,"_draw_"));
-			agset(obj,"_draw_",move_xdot(obj,bf,(int)dx,(int)dy,0.00));
+			agset(obj,"_draw_",move_xdot(obj,bf,(int)dx,(int)dy,0));
 			free(bf);
 			bf=parseXDot (agget(obj,"_ldraw_"));
-			agset(obj,"_ldraw_",move_xdot(obj,bf,(int)dx,(int)dy,0.00));
+			agset(obj,"_ldraw_",move_xdot(obj,bf,(int)dx,(int)dy,0));
 			free(bf);
 			move_node(obj,dx,dy);
 			//iterate edges
@@ -829,39 +833,24 @@ void move_nodes(Agraph_t* g)	//move selected nodes
 
 
 
-RGBColor GetRGBColor(char* color)
-{
-	gvcolor_t cl;	
-	RGBColor c;
-	if(color != '\0')
-	{
-		colorxlate(color, &cl, RGBA_DOUBLE);
-		c.R=cl.u.RGBA[0];
-		c.G=cl.u.RGBA[1];
-		c.B=cl.u.RGBA[2];
-		c.A=cl.u.RGBA[3];
-	}
-	else
-	{
-		c.R=view.penColor.R;
-		c.G=view.penColor.G;
-		c.B=view.penColor.B;
-		c.A=view.penColor.A;
-	}
-	return c;
-}
 int SetGdkColor(GdkColor* c,char* color)
 {
 	gvcolor_t cl;	
 	if (color != '\0')
 	{
 		colorxlate(color, &cl, RGBA_DOUBLE);
-		c->red=cl.u.RGBA[0]*65535;
-		c->green=cl.u.RGBA[1]*65535;
-		c->blue=cl.u.RGBA[2]*65535;
+		c->red=(int)(cl.u.RGBA[0]*65535.0);
+		c->green=(int)(cl.u.RGBA[1]*65535.0);
+		c->blue=(int)(cl.u.RGBA[2]*65535.0);
 		return 1;
 	}
 	else
 		return 0;
 
 }
+
+void glexpose()
+{
+	expose_event (view->drawing_area,NULL,NULL);
+}
+

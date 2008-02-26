@@ -21,23 +21,26 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 */
 #include "draw.h"
 #include "topview.h"
+#include "color.h"
+#include "glutils.h"
+#include "math.h"
+
+
 //delta values
 static float dx=0.0;
 static float dy=0.0;
-
 
 GLubyte rasters [24]={
 	0xc0,0x00,0xc0,0x00,0xc0,0x00,0xc0,0x00,0xc0,0x00,0xff,0x00,0xff,0x00,
 	0xc0,0x00,0xc0,0x00,0xc0,0x00,0xff,0xc0,0xff,0xc0};
 
 
+
+
 void DrawBezier(GLfloat* xp,GLfloat* yp,GLfloat* zp, int filled,int param)
 {
 	/*copied from NEHE */
-	//Written by: David Nikdel ( ogapo@ithink.net ) 
-	//
-	
-	// Control points (substitute these values with your own if you like)
+	/*Written by: David Nikdel ( ogapo@ithink.net )*/ 
 	double Ax = xp[0]; double Ay = yp[0]; double Az = zp[0];
 	double Bx = xp[1]; double By = yp[1]; double Bz = zp[1];
 	double Cx = xp[2]; double Cy = yp[2]; double Cz = zp[2];
@@ -49,31 +52,30 @@ void DrawBezier(GLfloat* xp,GLfloat* yp,GLfloat* zp, int filled,int param)
 	// Variable
 	double a = 1.0;
 	double b = 1.0 - a;
-	// Tell OGL to start drawing a line strip
-	glLineWidth(view.LineWidth);
+	/* Tell OGL to start drawing a line strip*/
+	glLineWidth(view->LineWidth);
 	if (!filled)
 	{
 
 		if (param==0)
-			glColor4f(view.penColor.R,view.penColor.G,view.penColor.B,view.penColor.A);
+			glColor4f(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
 		if (param==1)	//selected
-			glColor4f(view.selectColor.R,view.selectColor.G,view.selectColor.B,view.selectColor.A);
-
+			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
 		glBegin(GL_LINE_STRIP);
 	}
 	else
 	{
 		if (param==0)
-			glColor4f(view.fillColor.R,view.fillColor.G,view.fillColor.B,view.penColor.A);
+			glColor4f(view->fillColor.R,view->fillColor.G,view->fillColor.B,view->penColor.A);
 		if (param==1)	//selected
-			glColor4f(view.selectColor.R,view.selectColor.G,view.selectColor.B,view.selectColor.A);
+			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
 		glBegin(GL_POLYGON);
 	}
 	/* We will not actually draw a curve, but we will divide the curve into small
 	points and draw a line between each point. If the points are close enough, it
 	will appear as a curved line. 20 points are plenty, and since the variable goes
 	from 1.0 to 0.0 we must change it by 1/20 = 0.05 each time */
-	for(i = 0; i <= 20; i++)
+	for(i = 0; i <= 20; i++)	
 	{
 	  // Get a point on the curve
 		X = Ax*a*a*a + Bx*3*a*a*b + Cx*3*a*b*b + Dx*b*b*b;
@@ -99,7 +101,6 @@ void DrawBeziers(xdot_op* op,int param)
 	int temp=0;
 	int filled;
 	int i=0;
-	float spline_kts=0;
 	SelectBeziers(op);
 	relocate_spline(op,param);
 	if(op->kind == xd_filled_bezier)
@@ -112,27 +113,27 @@ void DrawBeziers(xdot_op* op,int param)
 		if (temp==4)
 		{
 			DrawBezier(tempX,tempY,tempZ,filled,param);
-			tempX[0]=op->u.bezier.pts[i-1].x;
-			tempY[0]=op->u.bezier.pts[i-1].y;
-			tempZ[0]=op->u.bezier.pts[i-1].z;
+			tempX[0]=(GLfloat)op->u.bezier.pts[i-1].x;
+			tempY[0]=(GLfloat)op->u.bezier.pts[i-1].y;
+			tempZ[0]=(GLfloat)op->u.bezier.pts[i-1].z;
 			temp=1;
-			tempX[temp]=op->u.bezier.pts[i].x;			
-			tempY[temp]=op->u.bezier.pts[i].y;			
-			tempZ[temp]=op->u.bezier.pts[i].z;			
+			tempX[temp]=(GLfloat)op->u.bezier.pts[i].x;			
+			tempY[temp]=(GLfloat)op->u.bezier.pts[i].y;			
+			tempZ[temp]=(GLfloat)op->u.bezier.pts[i].z;			
 			temp=temp+1;
 		}
 		else
 		{
-			tempX[temp]=op->u.bezier.pts[i].x;
-			tempY[temp]=op->u.bezier.pts[i].y;
-			tempZ[temp]=op->u.bezier.pts[i].z;
+			tempX[temp]=(GLfloat)op->u.bezier.pts[i].x;
+			tempY[temp]=(GLfloat)op->u.bezier.pts[i].y;
+			tempZ[temp]=(GLfloat)op->u.bezier.pts[i].z;
 			temp=temp+1;
 		}
 	}
 	DrawBezier(tempX,tempY,tempZ,filled,param);
 }
 
-//function to load .raw files
+/*function to load .raw files*/
 void load_raw_texture ( char *file_name, int width, int height, int depth, GLenum colour_type, GLenum filter_type )
 { 
 	//Line 3 creates a pointer to an (as yet unallocated) array of gl unsigned bytes - 
@@ -181,58 +182,12 @@ void load_raw_texture ( char *file_name, int width, int height, int depth, GLenu
 	free ( raw_bitmap );
 }
 
-//loads texture from bitmap files, bmp
-//hopefully
-int load_bitmap(char *filename) 
-{ 
-#ifdef _WIN32
-	unsigned char *l_texture;
-	int i, j=0;
-	FILE *l_file;
-	BITMAPFILEHEADER fileheader; 
-	BITMAPINFOHEADER infoheader;
-	RGBTRIPLE rgb;
-	l_file = fopen(filename, "r");
-	if(l_file==NULL)
-	{
-		printf("file could not be loaded!.\n");
-		return (-1);
-	}
-	fread(&fileheader, sizeof(fileheader), 1, l_file);
-	fseek(l_file, sizeof(fileheader), SEEK_SET);
-	fread(&infoheader, sizeof(infoheader), 1, l_file);
-	l_texture = (GLubyte *) malloc(infoheader.biWidth * infoheader.biHeight * 4);
-	memset(l_texture, 0, infoheader.biWidth * infoheader.biHeight * 4);
-	for (i=0; i < infoheader.biWidth*infoheader.biHeight; i++)
-	{ 
-		fread(&rgb, sizeof(rgb), 1, l_file); 
-		l_texture[j+0] = rgb.rgbtRed; // Red component
-		l_texture[j+1] = rgb.rgbtRed; // Green component
-		l_texture[j+2] = rgb.rgbtBlue; // Blue component
-		l_texture[j+3] = 255; // Alpha value
-		j += 4; // Go to the next position
-	}
-	glBindTexture(GL_TEXTURE_2D, view.font_texture_count);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_REPEAT );
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, infoheader.biWidth, infoheader.biHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, l_texture);
-	gluBuild2DMipmaps(GL_TEXTURE_2D, 4, infoheader.biWidth, infoheader.biHeight, GL_RGBA, GL_UNSIGNED_BYTE, l_texture);
-	free(l_texture);
-	return (view.font_texture_count);
-#else
-	return 0;
-#endif
-}
 
 //Draws a ellpise made out of points.
 //void DrawEllipse(xdot_point* xpoint,GLfloat xradius, GLfloat yradius,int filled)
 void DrawEllipse(xdot_op* op,int param)
-//void DrawEllipse(GLfloat x,GLfloat y,GLfloat xradius, GLfloat yradius,int filled)
 {
-	//if xradius and yradius are same values, output is circle
+	//to draw a circle set xradius and yradius same values
 	GLfloat x,y,xradius,yradius;
 	int i=0;
 	int filled;
@@ -245,23 +200,23 @@ void DrawEllipse(xdot_op* op,int param)
 	if(op->kind == xd_filled_ellipse)
 	{
 		if (param==0)	
-			glColor4f(view.fillColor.R,view.fillColor.G,view.fillColor.B,view.fillColor.A);
+			glColor4f(view->fillColor.R,view->fillColor.G,view->fillColor.B,view->fillColor.A);
 		if (param==1)	//selected
-			glColor4f(view.selectColor.R,view.selectColor.G,view.selectColor.B,view.selectColor.A);
+			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
 
 		filled=1;
 	}
 	else
 	{
 		if (param==0)
-			glColor4f(view.penColor.R,view.penColor.G,view.penColor.B,view.penColor.A);
+			glColor4f(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
 		if (param==1)	//selected
-			glColor4f(view.selectColor.R,view.selectColor.G,view.selectColor.B,view.selectColor.A);
+			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
 
 		filled=0;
 	}
 
-	glLineWidth(view.LineWidth);
+	glLineWidth(view->LineWidth);
 	if (!filled)
 		glBegin(GL_LINE_LOOP);
 	else
@@ -280,16 +235,15 @@ void DrawPolygon(xdot_op* op,int param)
 {
 	int i=0;
 	int filled;
-	int select=0;
 	SelectPolygon(op);
 	set_options(op,param);
 
 	if(op->kind == xd_filled_polygon)
 	{
 		if(param==0)
-			glColor4f(view.fillColor.R,view.fillColor.G,view.fillColor.B,view.fillColor.A);
+			glColor4f(view->fillColor.R,view->fillColor.G,view->fillColor.B,view->fillColor.A);
 		if (param==1)	//selected
-			glColor4f(view.selectColor.R,view.selectColor.G,view.selectColor.B,view.selectColor.A);
+			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
 
 		filled=1;
 	}
@@ -297,46 +251,45 @@ void DrawPolygon(xdot_op* op,int param)
 	{	
 		filled=0;
 		if(param==0)
-			glColor4f(view.penColor.R,view.penColor.G,view.penColor.B,view.penColor.A);
+			glColor4f(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
 		if (param==1)	//selected
-			glColor4f(view.selectColor.R,view.selectColor.G,view.selectColor.B,view.selectColor.A);
+			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
 
 	}
-	glLineWidth(view.LineWidth);
+	glLineWidth(view->LineWidth);
 	if (!filled)
 		glBegin(GL_LINE_STRIP);
 	else
 		glBegin(GL_POLYGON);
 	for (i=0;i < op->u.polygon.cnt ; i=i+1)
 	{
-		glVertex3f(op->u.polygon.pts[i].x-dx,op->u.polygon.pts[i].y-dy,op->u.polygon.pts[i].z);
+		glVertex3f((GLfloat)op->u.polygon.pts[i].x-dx,(GLfloat)op->u.polygon.pts[i].y-dy,(GLfloat)op->u.polygon.pts[i].z);
 	}	
-	glVertex3f(op->u.polygon.pts[0].x-dx,op->u.polygon.pts[0].y-dy,op->u.polygon.pts[0].z);	//close the polygon
+	glVertex3f((GLfloat)op->u.polygon.pts[0].x-dx,(GLfloat)op->u.polygon.pts[0].y-dy,(GLfloat)op->u.polygon.pts[0].z);	//close the polygon
 	glEnd();
 }
 
 void DrawPolyline(xdot_op* op,int param)
 {
 	int i=0;
-	int select=0;
 	if(param==0)	
-		glColor4f(view.penColor.R,view.penColor.G,view.penColor.B,view.penColor.A);
+		glColor4f(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
 	if (param==1)	//selected
-		glColor4f(view.selectColor.R,view.selectColor.G,view.selectColor.B,view.selectColor.A);
+		glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
 	SelectPolyline(op);
 	set_options(op,param);
-	glLineWidth(view.LineWidth);
+	glLineWidth(view->LineWidth);
 	glBegin(GL_LINE_STRIP);
 	for (i=0;i < op->u.polyline.cnt ; i=i+1)
 	{
-		glVertex3f(op->u.polyline.pts[i].x-dx,op->u.polyline.pts[i].y-dy,op->u.polyline.pts[i].z);
+		glVertex3f((GLfloat)op->u.polyline.pts[i].x-dx,(GLfloat)op->u.polyline.pts[i].y-dy,(GLfloat)op->u.polyline.pts[i].z);
 	}	
 	glEnd();
 }
 
 void DrawBitmap(GLfloat bmpX,GLfloat bmpY,GLfloat bmpW,GLfloat bmpH)
 {
-  if(view.texture)
+  if(view->texture)
 	  glEnable( GL_TEXTURE_2D );
   else
 	  glDisable( GL_TEXTURE_2D );
@@ -355,19 +308,19 @@ void SetFillColor(xdot_op* op,int param)
 {
 	RGBColor c;
 	c=GetRGBColor(op->u.color);
-	view.fillColor.R=c.R;
-	view.fillColor.G=c.G;
-	view.fillColor.B=c.B;
-	view.fillColor.A=c.A;
+	view->fillColor.R=c.R;
+	view->fillColor.G=c.G;
+	view->fillColor.B=c.B;
+	view->fillColor.A=c.A;
 }
 void SetPenColor(xdot_op* op,int param)
 {
 	RGBColor c;
 	c=GetRGBColor(op->u.color);
-	view.penColor.R=c.R;
-	view.penColor.G=c.G;
-	view.penColor.B=c.B;
-	view.penColor.A=c.A;
+	view->penColor.R=c.R;
+	view->penColor.G=c.G;
+	view->penColor.B=c.B;
+	view->penColor.A=c.A;
 }
 
 void SetStyle(xdot_op* op,int param)
@@ -378,8 +331,8 @@ void SetStyle(xdot_op* op,int param)
 
 void SetFont(xdot_op* op,int param)
 {
-//	view.FontName=ABSet(op->u.font.name);
-	view.FontSize=op->u.font.size;
+//	view->FontName=ABSet(op->u.font.name);
+	view->FontSize=op->u.font.size;
 }
 
 void InsertImage(xdot_op* op,int param)
@@ -393,39 +346,39 @@ void EmbedText(xdot_op* op,int param)
 	SelectText(op);
 	set_options(op,param);
 	if (op->u.text.align == 1)
-		x=op->u.text.x-op->u.text.width/2;
+		x=(GLfloat)op->u.text.x-(GLfloat)op->u.text.width/2.0;
 	if (op->u.text.align == 0)
-		x=op->u.text.x;
+		x=(GLfloat)op->u.text.x;
 	if (op->u.text.align == -1)
-		x=op->u.text.x+op->u.text.width;
-	fontSize (view.FontSize);
+		x=(GLfloat)op->u.text.x+op->u.text.width;
+	fontSize (view->FontSize);
 	if(param==0)
-		fontColor (view.penColor.R,view.penColor.G,view.penColor.B);
+		fontColor (view->penColor.R,view->penColor.G,view->penColor.B);
 	if (param==1)	//selected
-		fontColor (view.selectColor.R,view.selectColor.G,view.selectColor.B);
+		fontColor (view->selectColor.R,view->selectColor.G,view->selectColor.B);
 
-	fontDrawString (x-dx,op->u.text.y-dy,op->u.text.text,op->u.text.width);
+	fontDrawString ((int)(x-dx),op->u.text.y-(int)dy,op->u.text.text,op->u.text.width);
 }
 
 
-void draw_selection_box()
+void draw_selection_box(ViewInfo* view)
 {
-	if(view.mouse.mouse_down==1) 	//rectangle selection
+	if(((view->mouse.mouse_mode==4) || (view->mouse.mouse_mode==5))&& view->mouse.mouse_down)
 	{
-		glColor4f(view.Selection.SelectionColor.R,view.Selection.SelectionColor.G,view.Selection.SelectionColor.B,view.Selection.SelectionColor.A);
-		if(view.mouse.mouse_mode==5)
+		glColor4f(view->Selection.SelectionColor.R,view->Selection.SelectionColor.G,view->Selection.SelectionColor.B,view->Selection.SelectionColor.A);
+		if(view->mouse.mouse_mode==5)
 		{
 			glEnable(GL_LINE_STIPPLE);
 			glLineStipple(1,15);
 		}
 		glBegin(GL_LINE_STRIP);
-		glVertex3f(view.GLx,view.GLy,0.001);
-		glVertex3f(view.GLx,view.GLy2,0.001);
-		glVertex3f(view.GLx2,view.GLy2,0.001);
-		glVertex3f(view.GLx2,view.GLy,0.001);
-		glVertex3f(view.GLx,view.GLy,0.001);
+		glVertex3f((GLfloat)view->GLx,(GLfloat)view->GLy,(GLfloat)0.001);
+		glVertex3f((GLfloat)view->GLx,(GLfloat)view->GLy2,(GLfloat)0.001);
+		glVertex3f((GLfloat)view->GLx2,(GLfloat)view->GLy2,(GLfloat)0.001);
+		glVertex3f((GLfloat)view->GLx2,(GLfloat)view->GLy,(GLfloat)0.001);
+		glVertex3f((GLfloat)view->GLx,(GLfloat)view->GLy,(GLfloat)0.001);
 		glEnd();
-		if(view.mouse.mouse_mode==5)
+		if(view->mouse.mouse_mode==5)
 			glDisable(GL_LINE_STIPPLE);
 
 	}
@@ -434,10 +387,10 @@ void draw_selection_box()
 void set_options(xdot_op* op,int param)
 {
 	
-	if ((param==1) && (view.mouse.mouse_mode==10) && (view.mouse.mouse_down==1))	//selected, if there is move move it, experimental
+	if ((param==1) && (view->mouse.mouse_mode==10) && (view->mouse.mouse_down==1))	//selected, if there is move, move it
 	{
-		dx=view.GLx-view.GLx2;
-		dy=view.GLy-view.GLy2;
+		dx=view->GLx-view->GLx2;
+		dy=view->GLy-view->GLy2;
 	}
 	else
 	{
@@ -464,14 +417,14 @@ void relocate_spline(xdot_op* op,int param)
 			{
 				if((dx != 0) || (dy != 0))
 				{
-					op->u.bezier.pts[i].x=op->u.bezier.pts[i].x-(dx*(float)i/(float)(op->u.bezier.cnt));
-					op->u.bezier.pts[i].y=op->u.bezier.pts[i].y-(dy*(float)i/(float)(op->u.bezier.cnt));
+					op->u.bezier.pts[i].x=op->u.bezier.pts[i].x-(int)(dx*(float)i/(float)(op->u.bezier.cnt));
+					op->u.bezier.pts[i].y=op->u.bezier.pts[i].y-(int)(dy*(float)i/(float)(op->u.bezier.cnt));
 				}
 			}
 			if((dx != 0) || (dy != 0))
 			{
-				op->u.bezier.pts[op->u.bezier.cnt-1].x=op->u.bezier.pts[op->u.bezier.cnt-1].x-dx;
-				op->u.bezier.pts[op->u.bezier.cnt-1].y=op->u.bezier.pts[op->u.bezier.cnt-1].y-dy;
+				op->u.bezier.pts[op->u.bezier.cnt-1].x=op->u.bezier.pts[op->u.bezier.cnt-1].x-(int)dx;
+				op->u.bezier.pts[op->u.bezier.cnt-1].y=op->u.bezier.pts[op->u.bezier.cnt-1].y-(int)dy;
 			}
 		}
 		if ( (((custom_object_data*)AGDATA(hn))->Selected==0)&&(((custom_object_data*)AGDATA(tn))->Selected==1))
@@ -481,14 +434,14 @@ void relocate_spline(xdot_op* op,int param)
 			{
 				if((dx != 0) || (dy != 0))
 				{
-					op->u.bezier.pts[i].x=op->u.bezier.pts[i].x-(dx*(float)(op->u.bezier.cnt-i)/(float)(op->u.bezier.cnt));
-					op->u.bezier.pts[i].y=op->u.bezier.pts[i].y-(dy*(float)(op->u.bezier.cnt-i)/(float)(op->u.bezier.cnt));
+					op->u.bezier.pts[i].x=op->u.bezier.pts[i].x-(int)(dx*(float)(op->u.bezier.cnt-i)/(float)(op->u.bezier.cnt));
+					op->u.bezier.pts[i].y=op->u.bezier.pts[i].y-(int)(dy*(float)(op->u.bezier.cnt-i)/(float)(op->u.bezier.cnt));
 				}
 			}
 			if((dx != 0) || (dy != 0))
 			{
-				op->u.bezier.pts[0].x=op->u.bezier.pts[0].x-dx;
-				op->u.bezier.pts[0].y=op->u.bezier.pts[0].y-dy;
+				op->u.bezier.pts[0].x=op->u.bezier.pts[0].x-(int)dx;
+				op->u.bezier.pts[0].y=op->u.bezier.pts[0].y-(int)dy;
 			}
 		}
 
@@ -499,8 +452,8 @@ void relocate_spline(xdot_op* op,int param)
 			{
 				if((dx != 0) || (dy != 0))
 				{
-					op->u.bezier.pts[i].x=op->u.bezier.pts[i].x-dx;
-					op->u.bezier.pts[i].y=op->u.bezier.pts[i].y-dy;
+					op->u.bezier.pts[i].x=op->u.bezier.pts[i].x-(int)dx;
+					op->u.bezier.pts[i].y=op->u.bezier.pts[i].y-(int)dy;
 				}
 			}
 		}
@@ -510,61 +463,40 @@ void relocate_spline(xdot_op* op,int param)
 
 }
 
-void draw_letter(GLfloat x,GLfloat y,char c)
-{
-	glRasterPos2i((int)x,(int)y);
-	glBitmap(10,12,0.0,0.0,0.0,0.0,rasters);
-}
-int font_display_list()
-{
-	int a;
-	a=glGenLists(6);
-	//draw 5 Fs
-	glNewList(a,GL_COMPILE);
-	draw_letter(0,0,0);
-	draw_letter(0,0,0);
-	draw_letter(0,0,0);
-	draw_letter(0,0,0);
-	draw_letter(0,0,0);
-	draw_letter(0,0,0);
-	glEndList();
-	return a;
-}
-void draw_cached_letter(GLfloat x,GLfloat y,int letter)
-{
-/*	glPushMatrix();
-	glTranslatef (view.panx+x,view.pany+y,view.zoom);
-	glCallList (view.fontbase+letter-1);
-	glPopMatrix(); */
-
-}
-void draw_magnifier()
+void draw_magnifier(ViewInfo* view)
 {
 	
-	if((view.mouse.mouse_mode==MM_MAGNIFIER) && (view.mouse.mouse_down))
+	if((view->mouse.mouse_mode==MM_MAGNIFIER) && (view->mouse.mouse_down))
 	{
 
 		GLfloat mg_x,mg_y,mg_z,mg_width,mg_height;
 		float a;
 		int winX,winY,winW,winH;
 		//converting screen pixel distaances to GL distances
-		view.mg.GLwidth=GetOGLDistance(view.mg.width)/2.0;
-		view.mg.GLheight=GetOGLDistance(view.mg.height)/2.0;
-		GetOGLPosRef(view.mouse.mouse_X,view.mouse.mouse_Y,&mg_x,&mg_y,&mg_z);//retrieving mouse coords as GL coordinates
-		view.mg.x=mg_x;
-		view.mg.y=mg_y;
+		view->mg.GLwidth=GetOGLDistance(view->mg.width)/2.0;
+		view->mg.GLheight=GetOGLDistance(view->mg.height)/2.0;
+		GetOGLPosRef(view->mouse.mouse_X,view->mouse.mouse_Y,&mg_x,&mg_y,&mg_z);//retrieving mouse coords as GL coordinates
+		view->mg.x=mg_x;
+		view->mg.y=mg_y;
 		glLineWidth(4);
-		local_zoom(&Topview);
+		local_zoom(&view->Topview);
 		//drawing the magnifier borders
 		glBegin(GL_LINE_STRIP);
-		glColor4f(0.3,0.1,0.8,1);
-		glVertex3f(view.mg.x-view.mg.GLwidth,view.mg.y-view.mg.GLheight,0.0);
-		glVertex3f(view.mg.x+view.mg.GLwidth,view.mg.y-view.mg.GLheight,0.0);
-		glVertex3f(view.mg.x+view.mg.GLwidth,view.mg.y+view.mg.GLheight,0.0);
-		glVertex3f(view.mg.x-view.mg.GLwidth,view.mg.y+view.mg.GLheight,0.0);
-		glVertex3f(view.mg.x-view.mg.GLwidth,view.mg.y-view.mg.GLheight,0.0);
+		glColor4f((GLfloat)0.3,(GLfloat)0.1,(GLfloat)0.8,(GLfloat)1);
+		glVertex3f(view->mg.x-view->mg.GLwidth,view->mg.y-view->mg.GLheight,Z_MIDDLE_PLANE);
+		glVertex3f(view->mg.x+view->mg.GLwidth,view->mg.y-view->mg.GLheight,Z_MIDDLE_PLANE);
+		glVertex3f(view->mg.x+view->mg.GLwidth,view->mg.y+view->mg.GLheight,Z_MIDDLE_PLANE);
+		glVertex3f(view->mg.x-view->mg.GLwidth,view->mg.y+view->mg.GLheight,Z_MIDDLE_PLANE);
+		glVertex3f(view->mg.x-view->mg.GLwidth,view->mg.y-view->mg.GLheight,Z_MIDDLE_PLANE);
 		glEnd();
-
+		glBegin(GL_TRIANGLE_FAN);
+		glColor4f(1,1,1,1);
+		glVertex3f(view->mg.x-view->mg.GLwidth+1,view->mg.y-view->mg.GLheight+1,Z_MIDDLE_PLANE);
+		glVertex3f(view->mg.x+view->mg.GLwidth-1,view->mg.y-view->mg.GLheight+1,Z_MIDDLE_PLANE);
+		glVertex3f(view->mg.x+view->mg.GLwidth-1,view->mg.y+view->mg.GLheight-1,Z_MIDDLE_PLANE);
+		glVertex3f(view->mg.x-view->mg.GLwidth+1,view->mg.y+view->mg.GLheight-1,Z_MIDDLE_PLANE);
+		glVertex3f(view->mg.x-view->mg.GLwidth+1,view->mg.y-view->mg.GLheight+1,Z_MIDDLE_PLANE);
+		glEnd();
 		glLineWidth(1);
 	}
 
@@ -572,23 +504,23 @@ void draw_magnifier()
 
 
 
-void draw_fisheye_magnifier()
+void draw_fisheye_magnifier(ViewInfo* view)
 {
-	if((view.mouse.mouse_mode==21)  && (view.mouse.mouse_down))
+	if((view->mouse.mouse_mode==21)  && (view->mouse.mouse_down))
 	{
 		float a;
 		GLfloat mg_x,mg_y,mg_z,mg_width,mg_height;
-		a=GetOGLDistance(250);
-		view.fmg.R=a;
-		GetOGLPosRef(view.mouse.mouse_X,view.mouse.mouse_Y,&mg_x,&mg_y,&mg_z);
+		a=GetOGLDistance((int)250);
+		view->fmg.R=a;
+		GetOGLPosRef(view->mouse.mouse_X,view->mouse.mouse_Y,&mg_x,&mg_y,&mg_z);
 		glColor4f(0.3,0.1,0.8,1);
-		if ((view.fmg.x != mg_x) || (view.fmg.y != mg_y))
+		if ((view->fmg.x != mg_x) || (view->fmg.y != mg_y))
 		{
-			fisheye_polar(mg_x, mg_y,&Topview);
+			fisheye_polar(mg_x, mg_y,view->Topview);
 			draw_circle(mg_x,mg_y,a);
 		}
-		view.fmg.x=mg_x;
-		view.fmg.y=mg_y;
+		view->fmg.x=mg_x;
+		view->fmg.y=mg_y;
 
 	}
 }
@@ -602,28 +534,144 @@ void draw_circle(float originX,float originY,float radius)
 	vectorX1=originX;
 	glLineWidth(4);
 	glBegin(GL_LINE_STRIP);			
-	for(angle=0.0f;angle<=(2.1f*3.14159);angle+=0.1f)
+	for(angle=0.0;angle<=(2.1*3.14159);angle+=0.1)
 	{		
-		vectorX=originX+(radius*(float)sin((double)angle));
-		vectorY=originY+(radius*(float)cos((double)angle));		
+		vectorX=originX+radius*sin(angle);
+		vectorY=originY+radius*cos(angle);		
 		glVertex2d(vectorX1,vectorY1);
-		vectorY1=vectorY;
-	vectorX1=vectorX;			
+			vectorY1=vectorY;
+			vectorX1=vectorX;			
 	}
 	glEnd();
 	glLineWidth(1);
 
 }
-
-int point_within_ellips_with_coords(float ex,float ey,float ea,float eb,float px,float py)
+void drawBorders(ViewInfo* view)
 {
+	if(view->bdVisible)
+	{
+		glColor4f(0.8,0.1,0.1,1);
+		glLineWidth(3);
+		glBegin(GL_LINE_STRIP);			
+		glVertex2d(view->bdxLeft,view->bdyBottom);
+		glVertex2d(view->bdxRight,view->bdyBottom);
+		glVertex2d(view->bdxRight,view->bdyTop);
+		glVertex2d(view->bdxLeft,view->bdyTop);
+		glVertex2d(view->bdxLeft,view->bdyBottom);
+		glEnd();
+		glLineWidth(1);
+	}
 
-	float dx,dy;
-	float a;
-	dx = px - ex;
-	dy = py - ey;
-	a=(dx*dx)/(ea*ea) + (dy*dy)/(eb*eb);
-	return (a <= 1);
+
 }
+
+
+void drawGraph(Agraph_t *g)
+{
+	Agnode_t *v;
+	Agedge_t *e;
+	Agraph_t *s;
+	int param=0;
+
+	for (s = agfstsubg(g); s; s = agnxtsubg(s))
+	{
+
+			((custom_object_data*)AGDATA(s))->selectionflag=0;
+			if( ((custom_object_data*)AGDATA(s))->Selected==1)
+				param=1;
+			else
+				param=0;
+			drawXdotwithattrs(s,param);
+	}
+		
+	for (v = agfstnode(g); v; v = agnxtnode(g, v))
+	{
+		if( ((custom_object_data*)AGDATA(v))->Selected==1)
+			param=1;
+		else
+			param=0;
+		((custom_object_data*)AGDATA(v))->selectionflag=0;
+		drawXdotwithattr(v,"_draw_",param);
+		drawXdotwithattr(v,"_ldraw_",param);
+		for (e = agfstout(g,v) ; e ; e = agnxtout (g,e))
+		{
+			((custom_object_data*)AGDATA(e))->selectionflag=0;
+			if( ((custom_object_data*)AGDATA(e))->Selected==1)
+				param=1;
+			else
+				param=0;
+
+			drawXdotwithattrs(e,param);
+
+		}
+	}
+	if((view->Selection.Active>0) && (!view->SignalBlock))
+	{
+		view->Selection.Active=0;
+		drawGraph(g);
+		view->SignalBlock=1;
+			expose_event (view->drawing_area,NULL,NULL);
+		view->SignalBlock=0;
+	}
+
+}
+
+int randomize_color(RGBColor* c,int brightness)
+{
+	float R,B,G;
+	float add;
+	R=(float)(rand() % 255) / 255.0;
+	G=(float)(rand() % 255) / 255.0;
+	B=(float)(rand() % 255) / 255.0;
+	add=(brightness-(R+G+B))/3;
+	R = R;
+	G = G;
+	B = B;
+	c->R=R;
+	c->G=G;
+	c->B=B;
+}
+
+
+void drawCircle(float x,float y,float radius,float zdepth)
+{
+	int i;
+	if(radius <0.3)
+		radius=0.4;
+	glBegin(GL_POLYGON);
+	for (i=0; i < 360; i=i+10)
+   {
+      float degInRad = i*DEG2RAD;
+      glVertex3f(x+cos(degInRad)*radius,y+sin(degInRad)*radius,zdepth);
+   }
+ 
+   glEnd();
+}
+
+RGBColor GetRGBColor(char* color)
+{
+	gvcolor_t cl;	
+	RGBColor c;
+	if(color != '\0')
+	{
+		colorxlate(color, &cl, RGBA_DOUBLE);
+		c.R=(float)cl.u.RGBA[0];
+		c.G=(float)cl.u.RGBA[1];
+		c.B=(float)cl.u.RGBA[2];
+		c.A=(float)cl.u.RGBA[3];
+	}
+	else
+	{
+		c.R=view->penColor.R;
+		c.G=view->penColor.G;
+		c.B=view->penColor.B;
+		c.A=view->penColor.A;
+	}
+	return c;
+}
+
+
+
+
 
 

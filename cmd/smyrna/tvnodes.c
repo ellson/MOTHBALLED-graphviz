@@ -17,6 +17,7 @@
 #include "topview.h"
 #include "tvnodes.h"
 #include "btree.h"
+#include "viewport.h"
 tv_nodes TV_Nodes;
 static char buf [255];
 int MP_Flag=0;
@@ -89,19 +90,19 @@ extern int set_filter(tv_filter* TV_Filter,char* MinData1,char* MaxData1,char* M
 int reverse_selection()
 {
 	int i=0;
-	for (i; i < Topview.Nodecount ; i ++)
+	for (i; i < view->Topview->Nodecount ; i ++)
 	{
-		if (((custom_object_data*)AGDATA(Topview.Nodes[i].Node))->Selected )
-			deselect_node(view.g[view.activeGraph],Topview.Nodes[i].Node);
+		if (((custom_object_data*)AGDATA(view->Topview->Nodes[i].Node))->Selected )
+			deselect_node(view->g[view->activeGraph],view->Topview->Nodes[i].Node);
 		else
-			select_node(view.g[view.activeGraph],Topview.Nodes[i].Node);
+			select_node(view->g[view->activeGraph],view->Topview->Nodes[i].Node);
 	}
-	for (i=0; i < Topview.Edgecount ; i ++)
+	for (i=0; i < view->Topview->Edgecount ; i ++)
 	{
-		if (((custom_object_data*)AGDATA(Topview.Edges[i].Edge))->Selected )
-			deselect_edge(view.g[view.activeGraph],Topview.Edges[i].Edge);
+		if (((custom_object_data*)AGDATA(view->Topview->Edges[i].Edge))->Selected )
+			deselect_edge(view->g[view->activeGraph],view->Topview->Edges[i].Edge);
 		else
-			select_edge(view.g[view.activeGraph],Topview.Edges[i].Edge);
+			select_edge(view->g[view->activeGraph],view->Topview->Edges[i].Edge);
 	}
 }
 int validate_node(tv_node* TV_Node)
@@ -113,8 +114,8 @@ int validate_node(tv_node* TV_Node)
 	char* data2;
 //		n=tree_from_filter_string("([IP=\"^10.*\",min=\"0\",max=\"0\"])");
 	// get attributes from graph
-	data_attr1=agget(view.g[view.activeGraph],"DataAttribute1");
-	data_attr2=agget(view.g[view.activeGraph],"DataAttribute2");
+	data_attr1=agget(view->g[view->activeGraph],"DataAttribute1");
+	data_attr2=agget(view->g[view->activeGraph],"DataAttribute2");
 
 
 	if (TV_Nodes.filtered)
@@ -124,23 +125,23 @@ int validate_node(tv_node* TV_Node)
 		{
 			n=tree_from_filter_string(TV_Nodes.filter.filter_string);
 			MP_Flag=0;
-			if (strcmp(TV_Nodes.filter.min_data1,  agget(Topview.Nodes[TV_Node->index].Node,data_attr1)   ))
+			if (strcmp(TV_Nodes.filter.min_data1,  agget(view->Topview->Nodes[TV_Node->index].Node,data_attr1)   ))
 				valid=0;
 		}
-		if (data_attr1 && TV_Nodes.filter.max_data1 && agget(Topview.Nodes[TV_Node->index].Node,data_attr1))
+		if (data_attr1 && TV_Nodes.filter.max_data1 && agget(view->Topview->Nodes[TV_Node->index].Node,data_attr1))
 		{
-			if (strcmp(agget(Topview.Nodes[TV_Node->index].Node,data_attr1),TV_Nodes.filter.min_data1))
+			if (strcmp(agget(view->Topview->Nodes[TV_Node->index].Node,data_attr1),TV_Nodes.filter.min_data1))
 				valid=0;
 		}
 		//string data checks attr2
-		if (data_attr2 && TV_Nodes.filter.min_data2 && agget(Topview.Nodes[TV_Node->index].Node,data_attr2))
+		if (data_attr2 && TV_Nodes.filter.min_data2 && agget(view->Topview->Nodes[TV_Node->index].Node,data_attr2))
 		{
-			if (strcmp(TV_Nodes.filter.min_data2,  agget(Topview.Nodes[TV_Node->index].Node,data_attr2)   ))
+			if (strcmp(TV_Nodes.filter.min_data2,  agget(view->Topview->Nodes[TV_Node->index].Node,data_attr2)   ))
 				valid=0;
 		}
-		if (data_attr2 && TV_Nodes.filter.max_data2 && agget(Topview.Nodes[TV_Node->index].Node,data_attr2))
+		if (data_attr2 && TV_Nodes.filter.max_data2 && agget(view->Topview->Nodes[TV_Node->index].Node,data_attr2))
 		{
-			if (agget(Topview.Nodes[TV_Node->index].Node,data_attr2),TV_Nodes.filter.min_data2)
+			if (agget(view->Topview->Nodes[TV_Node->index].Node,data_attr2),TV_Nodes.filter.min_data2)
 				valid=0;
 		}
 		if (strlen(TV_Nodes.filter.filter_string)>0)
@@ -148,19 +149,19 @@ int validate_node(tv_node* TV_Node)
 		//if show only highlighted 
 		if (TV_Nodes.filter.highlighted >= 0)	
 		{
-			if(((custom_object_data*)AGDATA(Topview.Nodes[TV_Node->index].Node))->Highlighted!= TV_Nodes.filter.highlighted)
+			if(((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Highlighted!= TV_Nodes.filter.highlighted)
 				valid=0;
 		}
 		//if show only visibles
 		if (TV_Nodes.filter.visible >= 0)	
 		{
-			if(((custom_object_data*)AGDATA(Topview.Nodes[TV_Node->index].Node))->Visible!= TV_Nodes.filter.visible)
+			if(((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Visible!= TV_Nodes.filter.visible)
 				valid=0;
 		}
 		//if show only selected
 		if (TV_Nodes.filter.selected >= 0)	
 		{
-			if(((custom_object_data*)AGDATA(Topview.Nodes[TV_Node->index].Node))->Selected!= TV_Nodes.filter.selected)
+			if(((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Selected!= TV_Nodes.filter.selected)
 				valid=0;
 		}
 		return valid;
@@ -177,8 +178,8 @@ int update_node_gui_objects(tv_node* TV_Node)
 	GtkLayout* layout;
 
 	// get attributes from graph
-	data_attr1=agget(view.g[view.activeGraph],"DataAttribute1");
-	data_attr2=agget(view.g[view.activeGraph],"DataAttribute2");
+	data_attr1=agget(view->g[view->activeGraph],"DataAttribute1");
+	data_attr2=agget(view->g[view->activeGraph],"DataAttribute2");
 
 	//create if objects are null	
 	layout=glade_xml_get_widget(xml, "layoutTVData");
@@ -189,7 +190,7 @@ int update_node_gui_objects(tv_node* TV_Node)
 		gtk_layout_put	(layout,TV_Node->chkSelected,LOCATION_X_CHKSELECTED,TV_Nodes.Y);
 	}
 	gtk_widget_show(TV_Node->chkSelected);
-	gtk_toggle_button_set_active(TV_Node->chkSelected,((custom_object_data*)AGDATA(Topview.Nodes[TV_Node->index].Node))->Selected);
+	gtk_toggle_button_set_active(TV_Node->chkSelected,((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Selected);
 
 	//Id Label
 	if (!TV_Node->IDLabel)
@@ -209,7 +210,7 @@ int update_node_gui_objects(tv_node* TV_Node)
 	}
 
 	gtk_widget_show(TV_Node->chkVisible);
-	gtk_toggle_button_set_active(TV_Node->chkVisible,((custom_object_data*)AGDATA(Topview.Nodes[TV_Node->index].Node))->Visible);
+	gtk_toggle_button_set_active(TV_Node->chkVisible,((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Visible);
 	//highlighted
 	if (!TV_Node->chkHighlighted)
 	{
@@ -217,7 +218,7 @@ int update_node_gui_objects(tv_node* TV_Node)
 		gtk_layout_put	(layout,TV_Node->chkHighlighted,LOCATION_X_CHKHIGHLIGHTED,TV_Nodes.Y);
 	}
 	gtk_widget_show(TV_Node->chkHighlighted);
-	gtk_toggle_button_set_active(TV_Node->chkHighlighted,((custom_object_data*)AGDATA(Topview.Nodes[TV_Node->index].Node))->Highlighted);
+	gtk_toggle_button_set_active(TV_Node->chkHighlighted,((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Highlighted);
 
 	
 	//DATA 1
@@ -230,7 +231,7 @@ int update_node_gui_objects(tv_node* TV_Node)
 	}
 	if(data_attr1)
 	{
-		gtk_entry_set_text (TV_Node->Data1,agget(Topview.Nodes[TV_Node->index].Node,data_attr1));
+		gtk_entry_set_text (TV_Node->Data1,agget(view->Topview->Nodes[TV_Node->index].Node,data_attr1));
 	}
 	else
 		gtk_entry_set_text (TV_Node->Data1,"");
@@ -245,7 +246,7 @@ int update_node_gui_objects(tv_node* TV_Node)
 	}
 	if(data_attr2)
 	{
-		gtk_entry_set_text (TV_Node->Data2,agget(Topview.Nodes[TV_Node->index].Node,data_attr2));
+		gtk_entry_set_text (TV_Node->Data2,agget(view->Topview->Nodes[TV_Node->index].Node,data_attr2));
 	}
 	else
 		gtk_entry_set_text (TV_Node->Data2,"");
@@ -290,11 +291,11 @@ extern int tv_nodes_goto_page(int page)
 	}
 	else
 		return 0;
-	while ((TV_Nodes.page_data_index < TV_Nodes.recordperpage)&&(TV_Nodes.page_data_node_index < Topview.Nodecount))
+	while ((TV_Nodes.page_data_index < TV_Nodes.recordperpage)&&(TV_Nodes.page_data_node_index < view->Topview->Nodecount))
 	{
 		tvn=&TV_Nodes.TV_Node[TV_Nodes.page_data_index];
 		tvn->index=TV_Nodes.page_data_node_index;
-		if(Topview.Nodes[TV_Nodes.page_data_node_index].valid==1)
+		if(view->Topview->Nodes[TV_Nodes.page_data_node_index].valid==1)
 		{
 			TV_Nodes.page_data_index++;
 			update_node_gui_objects(tvn);
@@ -416,16 +417,16 @@ extern int prepare_page_history()
 	reset_page_History();
 	push_to_page_history(0);
 	
-	for (i;i < Topview.Nodecount ; i++)
+	for (i;i < view->Topview->Nodecount ; i++)
 	{
 		tvn.index=i;
 		if(validate_node(&tvn))
 		{
 			count ++;
-			Topview.Nodes[i].valid=1;
+			view->Topview->Nodes[i].valid=1;
 		}
 		else
-			Topview.Nodes[i].valid=0;
+			view->Topview->Nodes[i].valid=0;
 		if (count== TV_Nodes.recordperpage)
 		{
 			push_to_page_history(i+1);
@@ -451,21 +452,21 @@ static int set_data_attributes()
 	char* data_attr2;
 	char buf[255];
 	// get attributes from graph
-	data_attr1=agget(view.g[view.activeGraph],"DataAttribute1");
-	data_attr2=agget(view.g[view.activeGraph],"DataAttribute2");
+	data_attr1=agget(view->g[view->activeGraph],"DataAttribute1");
+	data_attr2=agget(view->g[view->activeGraph],"DataAttribute2");
 	if (!data_attr1)
 	{
-		agattr(view.g[view.activeGraph],AGRAPH,"DataAttribute1","DATA1");
-		agattr(view.g[view.activeGraph],AGNODE,"DATA1","");
+		agattr(view->g[view->activeGraph],AGRAPH,"DataAttribute1","DATA1");
+		agattr(view->g[view->activeGraph],AGNODE,"DATA1","");
 	}
 	if (!data_attr2)
 	{
-		agattr(view.g[view.activeGraph],AGRAPH,"DataAttribute2","DATA2");
-		agattr(view.g[view.activeGraph],AGNODE,"DATA2","");
+		agattr(view->g[view->activeGraph],AGRAPH,"DataAttribute2","DATA2");
+		agattr(view->g[view->activeGraph],AGNODE,"DATA2","");
 	}
 
-	data_attr1=agget(view.g[view.activeGraph],"DataAttribute1");
-	data_attr2=agget(view.g[view.activeGraph],"DataAttribute2");
+	data_attr1=agget(view->g[view->activeGraph],"DataAttribute1");
+	data_attr2=agget(view->g[view->activeGraph],"DataAttribute2");
 
 	lblData1=glade_xml_get_widget(xml, "lblTVData1");
 	lblData2=glade_xml_get_widget(xml, "lblTVData2");
@@ -482,51 +483,51 @@ extern int update_TV_data_from_gui()
 	char* data_attr1;
 	char* data_attr2;
 	// get attributes from graph
-	data_attr1=agget(view.g[view.activeGraph],"DataAttribute1");
-	data_attr2=agget(view.g[view.activeGraph],"DataAttribute2");
+	data_attr1=agget(view->g[view->activeGraph],"DataAttribute1");
+	data_attr2=agget(view->g[view->activeGraph],"DataAttribute2");
 
 	for (i;i < TV_Nodes.recordperpage ; i++)
 	{
 		index=TV_Nodes.TV_Node[i].index;
-		if (index < Topview.Nodecount)
+		if (index < view->Topview->Nodecount)
 		{
 			// apply if selected
 			if(gtk_toggle_button_get_active(TV_Nodes.TV_Node[i].chkSelected))
 			{
-				if (!((custom_object_data*)AGDATA(Topview.Nodes[index].Node))->Selected)
-					select_node(view.g[view.activeGraph],Topview.Nodes[index].Node);					
+				if (!((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Selected)
+					select_node(view->g[view->activeGraph],view->Topview->Nodes[index].Node);					
 			}
 			else
 			{
-				if (((custom_object_data*)AGDATA(Topview.Nodes[index].Node))->Selected)
-					deselect_node(view.g[view.activeGraph],Topview.Nodes[index].Node);					
+				if (((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Selected)
+					deselect_node(view->g[view->activeGraph],view->Topview->Nodes[index].Node);					
 			}
 			// apply if Visible
 			if(gtk_toggle_button_get_active(TV_Nodes.TV_Node[i].chkVisible))
 			{
-				if (!((custom_object_data*)AGDATA(Topview.Nodes[index].Node))->Visible)
-					((custom_object_data*)AGDATA(Topview.Nodes[index].Node))->Visible=1;
+				if (!((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Visible)
+					((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Visible=1;
 			}
 			else
 			{
-				if (((custom_object_data*)AGDATA(Topview.Nodes[index].Node))->Visible)
-					((custom_object_data*)AGDATA(Topview.Nodes[index].Node))->Visible=0;
+				if (((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Visible)
+					((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Visible=0;
 			}
 			// apply if Highlighted
 			if(gtk_toggle_button_get_active(TV_Nodes.TV_Node[i].chkHighlighted))
 			{
-				if (!((custom_object_data*)AGDATA(Topview.Nodes[index].Node))->Highlighted)
-					((custom_object_data*)AGDATA(Topview.Nodes[index].Node))->Highlighted=1;
+				if (!((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Highlighted)
+					((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Highlighted=1;
 			}
 			else
 			{
-				if (((custom_object_data*)AGDATA(Topview.Nodes[index].Node))->Highlighted)
-					((custom_object_data*)AGDATA(Topview.Nodes[index].Node))->Highlighted=0;
+				if (((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Highlighted)
+					((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Highlighted=0;
 			}
 			//Data1 
-			agset(Topview.Nodes[index].Node,data_attr1,gtk_entry_get_text (TV_Nodes.TV_Node[i].Data1));
+			agset(view->Topview->Nodes[index].Node,data_attr1,gtk_entry_get_text (TV_Nodes.TV_Node[i].Data1));
 			//Data2 
-			agset(Topview.Nodes[index].Node,data_attr2,gtk_entry_get_text (TV_Nodes.TV_Node[i].Data2));
+			agset(view->Topview->Nodes[index].Node,data_attr2,gtk_entry_get_text (TV_Nodes.TV_Node[i].Data2));
 
 		}
 	}
@@ -578,12 +579,12 @@ extern int tv_select_all()
 
 	tv_node tvn;
 	int i=0;
-	for (i;i < Topview.Nodecount ; i++)
+	for (i;i < view->Topview->Nodecount ; i++)
 	{
 		tvn.index=i;
 		if(validate_node(&tvn))
 		{
-			select_node(view.g[view.activeGraph],Topview.Nodes[i].Node);
+			select_node(view->g[view->activeGraph],view->Topview->Nodes[i].Node);
 		}
 	}
 	apply_filter_from_gui();
@@ -593,12 +594,12 @@ extern int tv_unselect_all()
 
 	tv_node tvn;
 	int i=0;
-	for (i;i < Topview.Nodecount ; i++)
+	for (i;i < view->Topview->Nodecount ; i++)
 	{
 		tvn.index=i;
 		if(validate_node(&tvn))
 		{
-			deselect_node(view.g[view.activeGraph],Topview.Nodes[i].Node);
+			deselect_node(view->g[view->activeGraph],view->Topview->Nodes[i].Node);
 		}
 	}
 	apply_filter_from_gui();
@@ -607,12 +608,12 @@ extern int tv_highligh_all()
 {
 	tv_node tvn;
 	int i=0;
-	for (i;i < Topview.Nodecount ; i++)
+	for (i;i < view->Topview->Nodecount ; i++)
 	{
 		tvn.index=i;
 		if(validate_node(&tvn))
 		{
-			((custom_object_data*)AGDATA(Topview.Nodes[i].Node))->Highlighted=1;
+			((custom_object_data*)AGDATA(view->Topview->Nodes[i].Node))->Highlighted=1;
 		}
 	}
 	apply_filter_from_gui();
@@ -624,12 +625,12 @@ extern int tv_unhighligh_all()
 {
 	tv_node tvn;
 	int i=0;
-	for (i;i < Topview.Nodecount ; i++)
+	for (i;i < view->Topview->Nodecount ; i++)
 	{
 		tvn.index=i;
 		if(validate_node(&tvn))
 		{
-			((custom_object_data*)AGDATA(Topview.Nodes[i].Node))->Highlighted=0;
+			((custom_object_data*)AGDATA(view->Topview->Nodes[i].Node))->Highlighted=0;
 		}
 	}
 	apply_filter_from_gui();
@@ -640,12 +641,12 @@ extern int tv_show_all()
 {
 	tv_node tvn;
 	int i=0;
-	for (i;i < Topview.Nodecount ; i++)
+	for (i;i < view->Topview->Nodecount ; i++)
 	{
 		tvn.index=i;
 		if(validate_node(&tvn))
 		{
-			((custom_object_data*)AGDATA(Topview.Nodes[i].Node))->Visible=1;
+			((custom_object_data*)AGDATA(view->Topview->Nodes[i].Node))->Visible=1;
 		}
 	}
 	apply_filter_from_gui();
@@ -658,12 +659,12 @@ extern int tv_hide_all()
 {
 	tv_node tvn;
 	int i=0;
-	for (i;i < Topview.Nodecount ; i++)
+	for (i;i < view->Topview->Nodecount ; i++)
 	{
 		tvn.index=i;
 		if(validate_node(&tvn))
 		{
-			((custom_object_data*)AGDATA(Topview.Nodes[i].Node))->Visible=0;
+			((custom_object_data*)AGDATA(view->Topview->Nodes[i].Node))->Visible=0;
 		}
 	}
 	apply_filter_from_gui();
