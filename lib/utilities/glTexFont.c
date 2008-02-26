@@ -109,20 +109,20 @@ void fontDrawChar (char c, int x, int y, int size, int shadow)
 
     glBegin (GL_QUADS);
 		glTexCoord2f (tPoints[(int)c][0], tPoints[(int)c][1]);
-		glVertex2i (x, y);
+		glVertex3i (x, y,0);
 
     	glTexCoord2f (tPoints[(int)c][0] + font.tIncX, tPoints[(int)c][1]);
-		glVertex2i (x + size, y);
+		glVertex3i (x + size, y,0);
 
         if (!shadow)
             glColor4fv (font.fgColor);
         else glColor4fv (font.bgColor);
 
         glTexCoord2f (tPoints[(int)c][0] + font.tIncX, tPoints[(int)c][1] + font.tIncY);
-		glVertex2i (x + size + font.italic, y + size);
+		glVertex3i (x + size + font.italic, y + size,0);
 
         glTexCoord2f (tPoints[(int)c][0], tPoints[(int)c][1] + font.tIncY);
-		glVertex2i (x + font.italic, y + size);
+		glVertex3i (x + font.italic, y + size,0);
 	glEnd ();
 }
 /*
@@ -242,6 +242,10 @@ Sets the font size.
 void fontSize (int size)
 {
     font.size = size;
+}
+void fontzdepth(float zdepth)
+{
+	font.zdepth=zdepth;
 }
 /*
 =============
