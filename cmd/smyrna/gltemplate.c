@@ -19,11 +19,12 @@
 #include "gui.h"
 #include "viewport.h"
 #include "topview.h"
-#include "gltemplate.h"
+#include "glTemplate.h"
 #include "glutils.h"
 #include "glexpose.h"
 #include "glmenu.h"
 #include "selection.h"
+#include "glcompset.h"
 static float begin_x = 0.0;
 static float begin_y = 0.0;
 static float dx = 0.0;
@@ -117,12 +118,12 @@ static void realize (GtkWidget *widget,gpointer   data)
 
 
 #ifdef WIN32
-#define SMYRNA_FONT "c:/arial.tga"
+#define SMYRNA_OPENGL_FONT "c:/arial.tga"
 // #else
-// using -DSMYRNA_FONT from Makefile.am and configure.ac
+// using -DGTKTOPVIEW_FONT from Makefile.am and configure.ac
 #endif
 
-  g_print("loading font....%i\n",fontLoad(SMYRNA_FONT));
+  g_print("loading font....%i\n",fontLoad(SMYRNA_OPENGL_FONT));
 
   /*** OpenGL BEGIN ***/
   if (!gdk_gl_drawable_gl_begin (gldrawable, glcontext))
@@ -320,6 +321,8 @@ static gboolean motion_notify_event (GtkWidget* widget,GdkEventMotion *event,gpo
 	float h = widget->allocation.height;
 	float x = event->x;
 	float y = event->y;
+	char buf[50];
+
 
 	gboolean redraw = FALSE;
   	dx = x - begin_x;
@@ -345,11 +348,16 @@ static gboolean motion_notify_event (GtkWidget* widget,GdkEventMotion *event,gpo
 	/*zooming*/
     if ((event->state & GDK_BUTTON1_MASK) && (view->mouse.mouse_mode==MM_ZOOM))
 	{	
+		float x;
 		view->zoom=view->zoom+dx/10*(view->zoom*-1/20);
 			if(view->zoom > MAX_ZOOM)
 				view->zoom=MAX_ZOOM;
 			if(view->zoom < MIN_ZOOM)
 				view->zoom=MIN_ZOOM;
+		/*set label to new zoom value*/
+			x=(100.0-1.0)*(view->zoom-MIN_ZOOM)/(MAX_ZOOM-MIN_ZOOM)+1;
+			sprintf(buf,"%i",(int)x);
+			glCompLabelSetText((glCompLabel*)view->Topview->customptr,buf);
 			redraw = TRUE;
 	}
 

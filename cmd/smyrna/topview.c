@@ -985,6 +985,7 @@ glCompSet* glcreate_gl_topview_menu()
 	b->callbackfunc=menu_click_data;
 	glCompSetAddButton(s,b);
 
+
 	b=glCompButtonNew(165,7,75,25,"HIDE",'\0',0,0);
 	b->color.R=1;
 	b->customptr=view;
@@ -1056,6 +1057,7 @@ glCompSet* glcreate_gl_topview_menu()
 	l->panel=p;
 	l->fontsizefactor=0.4;
 	glCompSetAddLabel(s,l);
+	view->Topview->customptr=l;
 	l=glCompLabelNew(93,65,20,"zoom");
 	l->panel=p;
 	l->fontsizefactor=0.4;

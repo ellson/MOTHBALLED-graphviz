@@ -551,7 +551,7 @@ void drawBorders(ViewInfo* view)
 	if(view->bdVisible)
 	{
 		glColor4f(0.8,0.1,0.1,1);
-		glLineWidth(3);
+		glLineWidth(2);
 		glBegin(GL_LINE_STRIP);			
 		glVertex2d(view->bdxLeft,view->bdyBottom);
 		glVertex2d(view->bdxRight,view->bdyBottom);
