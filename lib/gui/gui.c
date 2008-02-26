@@ -26,6 +26,7 @@
 #include <glade/glade.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
+#include "viewport.h"
 
 static char guibuffer[255];	//general purpose buffer
 
@@ -62,7 +63,7 @@ void create_object_properties()
 	char* data4="TEST4";
 	GladeXML *xml;
     GtkWidget *widget;
-    xml = glade_xml_new(SMYRNA_GLADE, NULL, NULL);
+    xml = glade_xml_new(GTKTOPVIEW_GLADE, NULL, NULL);
 
 	widget = glade_xml_get_widget(xml, "listPoints");
 	gtk_clist_set_column_title          (widget,0,"Def");
@@ -103,9 +104,8 @@ void graph_properties_init(int newgraph)	//initialize little open graph dialog
 
 
 	gint result=0;
-	xml = glade_xml_new(SMYRNA_GLADE, NULL, NULL);
+	xml = glade_xml_new(GTKTOPVIEW_GLADE, NULL, NULL);
 	gladewidget = glade_xml_get_widget(xml, "entryGraphFileName");
-	globalString=gtk_entry_get_text(gladewidget);
 
 	//signals
 	//OK
@@ -197,11 +197,11 @@ int update_graph_properties(Agraph_t* graph) //updates graph from gui
 	int respond=0;
 	int id=0;
 	//check the graph name	should not be duplicated graph names
-	for (id=0;id < view.graphCount ; id ++)
+	for (id=0;id < view->graphCount ; id ++)
 	{
-		if (graph != view.g[id])	
+		if (graph != view->g[id])	
 		{
-			if(strcasecmp (gtk_entry_get_text(glade_xml_get_widget(xml, "entryGraphName")),((custom_graph_data*)AGDATA(view.g[id]))->GraphName ) == 0)
+			if(strcasecmp (gtk_entry_get_text(glade_xml_get_widget(xml, "entryGraphName")),((custom_graph_data*)AGDATA(view->g[id]))->GraphName ) == 0)
 			{
 				
 							Dlg=gtk_message_dialog_new (NULL,
@@ -545,7 +545,7 @@ void load_attributes()
 	int ind=0;
 	int attrcount=0;
 	//loads attributes from a text file
-	file = fopen (SMYRNA_ATTRS, "r");
+	file = fopen (GTKTOPVIEW_ATTRS, "r");
 	if ( file != NULL )
 	{
 		while ( fgets ( line, sizeof line, file ) != NULL )
