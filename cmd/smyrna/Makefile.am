@@ -8,9 +8,11 @@ AM_CPPFLAGS = \
         -I$(top_srcdir) \
         -I$(top_srcdir)/lib/cgraph \
         -I$(top_srcdir)/lib/cdt \
+        -I$(top_srcdir)/lib/glcomp \
         -I$(top_srcdir)/lib/filter \
         -I$(top_srcdir)/lib/utilities \
         -I$(top_srcdir)/lib/xdot \
+        -I$(top_srcdir)/lib/glcomp \
         -I$(top_srcdir)/lib/topfish \
         -I$(top_srcdir)/lib/gui \
         -I$(top_srcdir)/lib/common \
@@ -29,6 +31,7 @@ smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/cdt/libcdt_C.la \
 		$(top_builddir)/lib/utilities/libutilities_C.la \
 		$(top_builddir)/lib/xdot/libxdot_C.la \
+		$(top_builddir)/lib/glcomp/libglcomp_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/filter/libfilter_C.la \
 		$(top_builddir)/lib/gui/libgui_C.la \

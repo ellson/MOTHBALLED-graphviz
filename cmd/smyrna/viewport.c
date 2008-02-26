@@ -388,7 +388,7 @@ int create_xdot_for_graph(Agraph_t* graph,int keeppos)
 	int r=0;
 	FILE* output_file;
 	update_graph_params(graph);
-#ifdef _WIN3
+#ifdef _WIN32
 	if(output_file = fopen("c:/__tempfile.dot", "w"))
 #else
 	if(output_file = fopen("/tmp/__tempfile.dot", "w"))
