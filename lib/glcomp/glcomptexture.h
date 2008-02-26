@@ -12,3 +12,4 @@ typedef struct{
 glCompTexture* glCompCreateTextureFromRaw(char* filename,int width,int height,int wrap);
 int glCompDeleteTexture(glCompTexture* t);
 #endif
+
