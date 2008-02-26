@@ -19,7 +19,7 @@
 #include "gui.h"
 #include "viewport.h"
 #include "topview.h"
-#include "glTemplate.h"
+#include "gltemplate.h"
 #include "glutils.h"
 #include "glexpose.h"
 #include "glmenu.h"
@@ -118,12 +118,12 @@ static void realize (GtkWidget *widget,gpointer   data)
 
 
 #ifdef WIN32
-#define SMYRNA_OPENGL_FONT "c:/arial.tga"
+#define SMYRNA_FONT "c:/arial.tga"
 // #else
-// using -DGTKTOPVIEW_FONT from Makefile.am and configure.ac
+// using -DSMYRNA_FONT from Makefile.am and configure.ac
 #endif
 
-  g_print("loading font....%i\n",fontLoad(SMYRNA_OPENGL_FONT));
+  g_print("loading font....%i\n",fontLoad(SMYRNA_FONT));
 
   /*** OpenGL BEGIN ***/
   if (!gdk_gl_drawable_gl_begin (gldrawable, glcontext))

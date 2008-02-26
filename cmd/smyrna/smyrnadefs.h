@@ -93,6 +93,7 @@ typedef struct {
 	int limits[4];
 	glCompSet* topviewmenu;	//for novice user open gl menu
 	topviewdata* TopviewData;
+	void *customptr;
 } topview;
 enum
 {
