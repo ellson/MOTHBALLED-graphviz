@@ -1,6 +1,8 @@
 #ifndef GLUTILS_H
 #define GLUTILS_H
+#ifdef _WIN32
 #include "windows.h"
+#endif
 #include <GL/gl.h>
 #include <GL/glu.h>							
 
