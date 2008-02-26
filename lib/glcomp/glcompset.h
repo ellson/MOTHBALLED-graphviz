@@ -140,7 +140,7 @@ void glCompDrawBegin();	//pushes a gl stack
 void glCompDrawEnd();	//pops the gl stack 
 int glCompDrawPanel(glCompPanel* p);
 int glCompSetClick(glCompSet* s,int x,int y);
-int glCompSetRelease(glCompSet* s);
+int glCompSetRelease(glCompSet* s, int x, int y);
 void glCompSetGetPos(int x, int y,float* X,float* Y,float* Z);
 int glCompPointInButton(glCompButton* p,float x,float y);
 void glCompButtonClick(glCompButton* p);
