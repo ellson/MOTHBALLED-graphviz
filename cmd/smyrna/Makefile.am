@@ -16,16 +16,19 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/topfish \
         -I$(top_srcdir)/lib/gui \
         -I$(top_srcdir)/lib/common \
+        -I$(top_srcdir)/cmd/smyrna/gui \
 	$(GTK_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS)
 
 if WITH_SMYRNA
 noinst_HEADERS = draw.h gltemplate.h hier.h materials.h support.h topview.h \
-	trackball.h tvnodes.h viewport.h smyrnadefs.h
+	trackball.h tvnodes.h viewport.h smyrnadefs.h glexpose.h topviewdata.h \
+	topviewdefs.h gui/glmenu.h
 bin_PROGRAMS = smyrna
 endif
 
 smyrna_SOURCES = draw.c gltemplate.c hier.c main.c support.c template.c \
-	topview.c trackball.c tvnodes.c viewport.c
+	topview.c trackball.c tvnodes.c viewport.c glexpose.c topviewdata.c \
+	gui/glmenu.c
 
 smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/cdt/libcdt_C.la \
