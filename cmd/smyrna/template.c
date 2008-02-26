@@ -301,7 +301,7 @@ key_press_event (GtkWidget   *widget,
 
     case GDK_a:
       g_print ("a key\n");
-      toggle_animation (widget);
+//      toggle_animation (widget);
       break;
 
     case GDK_Escape:
@@ -411,8 +411,8 @@ create_popup_menu (GtkWidget *drawing_area)
   /* Toggle animation */
   menu_item = gtk_menu_item_new_with_label ("Toggle Animation");
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-  g_signal_connect_swapped (G_OBJECT (menu_item), "activate",
-			    G_CALLBACK (toggle_animation), drawing_area);
+//  g_signal_connect_swapped (G_OBJECT (menu_item), "activate",
+//			    G_CALLBACK (toggle_animation), drawing_area);
   gtk_widget_show (menu_item);
 
   /* Quit */
