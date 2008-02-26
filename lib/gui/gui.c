@@ -63,7 +63,7 @@ void create_object_properties()
 	char* data4="TEST4";
 	GladeXML *xml;
     GtkWidget *widget;
-    xml = glade_xml_new(GTKTOPVIEW_GLADE, NULL, NULL);
+    xml = glade_xml_new(SMYRNA_GLADE, NULL, NULL);
 
 	widget = glade_xml_get_widget(xml, "listPoints");
 	gtk_clist_set_column_title          (widget,0,"Def");
@@ -104,7 +104,7 @@ void graph_properties_init(int newgraph)	//initialize little open graph dialog
 
 
 	gint result=0;
-	xml = glade_xml_new(GTKTOPVIEW_GLADE, NULL, NULL);
+	xml = glade_xml_new(SMYRNA_GLADE, NULL, NULL);
 	gladewidget = glade_xml_get_widget(xml, "entryGraphFileName");
 
 	//signals
@@ -545,7 +545,7 @@ void load_attributes()
 	int ind=0;
 	int attrcount=0;
 	//loads attributes from a text file
-	file = fopen (GTKTOPVIEW_ATTRS, "r");
+	file = fopen (SMYRNA_ATTRS, "r");
 	if ( file != NULL )
 	{
 		while ( fgets ( line, sizeof line, file ) != NULL )
