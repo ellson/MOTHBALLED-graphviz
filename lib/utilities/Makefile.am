@@ -6,6 +6,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/cmd/smyrna \
 	-I$(top_srcdir)/lib/utilities \
 	-I$(top_srcdir)/lib/xdot \
+	-I$(top_srcdir)/lib/glcomp \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
 	$(GTK_CFLAGS) $(GTKGL_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS)
