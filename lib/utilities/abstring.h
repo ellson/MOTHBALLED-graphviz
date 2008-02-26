@@ -18,7 +18,6 @@
 //supports memory allocation
 //this library works with \0 terminated strings
 
-#include "viewport.h"
 int ABLength(char* s);
 char* ABSet(char* s);
 char* ABJoin(char* s1,char* s2);

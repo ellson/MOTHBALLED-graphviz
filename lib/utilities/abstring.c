@@ -17,7 +17,9 @@
 //string utilities
 //supports memory allocation
 //this library works with \0 terminated strings
+#include <stdlib.h>
 #include "stdio.h"
+#include <string.h>
 #include "abstring.h"
 #define MAXSTRINGLENGTH	1000
 int ABLength(char* s)
@@ -33,9 +35,6 @@ int ABLength(char* s)
 }
 char* ABSet(char* s)
 {
-	char* a;
-	a=(char*)realloc(a, ABLength(s)+1);	
-	strcpy(a,s);
 }
 char* ABJoin(char* s1,char* s2)
 {
