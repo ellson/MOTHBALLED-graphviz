@@ -1,0 +1,126 @@
+#include "glutils.h"
+
+
+
+/* at given depth value, tranforms 2d Window location to 3d gl coords*/
+int GetFixedOGLPos(int x, int y,float kts,GLfloat* X,GLfloat* Y, GLfloat* Z)
+{
+	GLdouble wwinX;
+	GLdouble wwinY;
+	GLdouble wwinZ;
+
+	GLint viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+	GLfloat winX, winY;
+	GLdouble posX, posY, posZ;
+
+	glBegin(GL_POINTS);
+		glVertex3f(10.00,10.00,0.00);
+	glEnd();
+
+	glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+	glGetDoublev( GL_PROJECTION_MATRIX, projection );
+	glGetIntegerv( GL_VIEWPORT, viewport );
+
+	gluProject(10.0,10.0,0.00,modelview,projection,viewport,&wwinX,&wwinY,&wwinZ );
+
+	winX = (float)x;
+	winY = (float)viewport[3] - (float)y;
+	gluUnProject( winX, winY, wwinZ, modelview, projection, viewport, &posX, &posY, &posZ);
+	*X=(GLfloat)posX;
+	*Y=(GLfloat)posY;
+	*Z=(GLfloat)posZ;
+
+	return 1;
+
+}
+
+/*transforms 2d windows location to 3d gl coords but depth is calculated unlike the previous function*/
+int GetOGLPosRef(int x, int y,float* X,float* Y,float* Z)
+{
+
+	GLdouble wwinX;
+	GLdouble wwinY;
+	GLdouble wwinZ;
+	GLdouble posX, posY, posZ;
+
+
+	int ind;
+	GLdouble depth[5];
+	GLdouble raster[5];
+	GLint viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+	GLfloat winX, winY;
+	GLfloat winZ[36];
+	char buffer [200];
+	float kts=1;
+	//glTranslatef (0.0,0.0,0.0);
+	glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+	glGetDoublev( GL_PROJECTION_MATRIX, projection );
+	glGetIntegerv( GL_VIEWPORT, viewport );
+
+	//draw a point	to a not important location to get window coordinates
+	glBegin(GL_POINTS);
+		glVertex3f(10.00,10.00,0.00);
+	glEnd();
+    gluProject(10.0,10.0,0.00,modelview,projection,viewport,&wwinX,&wwinY,&wwinZ );
+	winX = (float)x;
+	winY = (float)viewport[3] - (float)y;
+	gluUnProject( winX, winY, wwinZ, modelview, projection, viewport, &posX, &posY, &posZ);
+
+	*X=posX;
+	*Y=posY;
+	*Z=posZ;
+	return 1;
+
+}
+
+
+float GetOGLDistance(int l)
+{
+
+	int x,y;
+	float*  X,Y, Z;
+	GLdouble wwinX;
+	GLdouble wwinY;
+	GLdouble wwinZ;
+	GLdouble posX, posY, posZ;
+	GLdouble posXX, posYY, posZZ;
+
+
+	int ind;
+	GLdouble depth[5];
+	GLdouble raster[5];
+	GLint viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+	GLfloat winX, winY;
+	GLfloat winZ[36];
+	char buffer [200];
+	float kts=1;
+	//glTranslatef (0.0,0.0,0.0);
+	glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+	glGetDoublev( GL_PROJECTION_MATRIX, projection );
+	glGetIntegerv( GL_VIEWPORT, viewport );
+
+	//draw a point	to a not important location to get window coordinates
+	glBegin(GL_POINTS);
+		glVertex3f(10.00,10.00,0.00);
+	glEnd();
+    gluProject(10.0,10.0,0.00,modelview,projection,viewport,&wwinX,&wwinY,&wwinZ );
+	x=50;
+	y=50;
+	winX = (float)x;
+	winY = (float)viewport[3] - (float)y;
+	gluUnProject( winX, winY, wwinZ, modelview, projection, viewport, &posX, &posY, &posZ);
+	x=x+l;
+	y=50;
+	winX = (float)x;
+	winY = (float)viewport[3] - (float)y;
+	gluUnProject( winX, winY, wwinZ, modelview, projection, viewport, &posXX, &posYY, &posZZ);
+	printf ("return value:%f\n:",((float)posXX-(float)posX));
+	return ((float)(posXX-posX));
+
+}
