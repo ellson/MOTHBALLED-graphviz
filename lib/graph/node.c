@@ -122,7 +122,6 @@ Agnode_t *agNEWnode(Agraph_t * subg, char *name, Agnode_t * proto)
     if (nobj) {
 		n->attr = N_NEW(nobj, char *);
 		n->didset = N_NEW((nobj + CHAR_BIT - 1) / CHAR_BIT, char);
-		memset(n->didset, 0, (nobj + CHAR_BIT - 1) / CHAR_BIT);
 	}
     else {
 		n->attr = NULL;

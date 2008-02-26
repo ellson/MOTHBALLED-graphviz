@@ -218,7 +218,6 @@ static Agraph_t *agNEWgraph(char *name, Agraph_t * parent, int kind)
 	if (nobj) {
 	    g->attr = N_NEW(nobj, char *);
 		g->didset = N_NEW((nobj + CHAR_BIT - 1) / CHAR_BIT, char);
-		memset(g->didset, 0, (nobj + CHAR_BIT - 1) / CHAR_BIT);
 	}
 	else {
 	    g->attr = NULL;
@@ -233,7 +232,6 @@ static Agraph_t *agNEWgraph(char *name, Agraph_t * parent, int kind)
 	if (nobj) {
 	    g->attr = N_NEW(nobj, char *);
 		g->didset = N_NEW((nobj + CHAR_BIT - 1) / CHAR_BIT, char);
-		memset(g->didset, 0, (nobj + CHAR_BIT - 1) / CHAR_BIT);
 	}
 	else {
 	    g->attr = NULL;
