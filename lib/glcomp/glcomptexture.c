@@ -3,7 +3,11 @@
 glCompTexture* glCompCreateTextureFromRaw(char* filename,int width,int height,int wrap)
 {
 	glCompTexture* t;	
+#ifdef _WIN32
 	BYTE * data;
+#else
+	unsigned char *data;
+#endif
 	FILE * file;
 	t=malloc(sizeof(glCompTexture));
 	glGenTextures( 1, &t->id );

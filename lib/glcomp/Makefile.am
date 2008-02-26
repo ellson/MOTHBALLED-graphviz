@@ -11,7 +11,7 @@ AM_CPPFLAGS = \
 
 if WITH_SMYRNA
 noinst_HEADERS = glcompset.h glcomptexture.h glutils.h
-noinst_LTLIBRARIES = libglcomp.la
+noinst_LTLIBRARIES = libglcomp_C.la
 endif
 
 libglcomp_C_la_SOURCES = glcompset.c glcomptexture.c glutils.c
