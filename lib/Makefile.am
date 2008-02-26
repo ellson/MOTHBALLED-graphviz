@@ -3,6 +3,6 @@
 
 SUBDIRS = cdt graph agraph gd pathplan agutil sfio vmalloc ast vpsc \
 	circogen dotgen fdpgen neatogen twopigen common pack gvc \
-	ingraphs expr cgraph utilities xdot gui filter topfish
+	ingraphs expr cgraph utilities xdot gui filter topfish glcomp
 
 EXTRA_DIST = Makefile.old

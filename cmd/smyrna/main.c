@@ -59,7 +59,7 @@ int main (int argc, char *argv[])
 #ifdef _WIN32
 #define GTKTOPVIEW_ICONSDIR "C:\\Projects\\ATT\\GTK\\GTKTest2\\GUI\\images\\"
 #endif
-	xml = glade_xml_new(GTKTOPVIEW_GLADE, NULL, NULL);
+	xml = glade_xml_new(SMYRNA_GLADE, NULL, NULL);
 	gladewidget = glade_xml_get_widget(xml, "frmMain");
     gtk_widget_show (gladewidget);
 	g_signal_connect ((gpointer) gladewidget, "destroy", G_CALLBACK(mQuitSlot),
