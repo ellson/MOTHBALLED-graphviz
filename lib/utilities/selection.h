@@ -22,11 +22,17 @@
 #define	SELECTION_SEGMENT_DIVIDER	5.0	//control points count to check if a line segment is withing clipping rect
 #define SINGLE_SELECTION_WIDTH	10	//width of the rect clip for single selections , higher values more catches less sensitivity
 
+typedef struct {
+    double x, y;
+} pointf;
+extern int intersect (pointf a, pointf b, pointf c, pointf d, pointf* x);
+
 int lineintersects(float X1,float X2,float Y1,float Y2);
 int rectintersects(float x,float y,float W,float H);
 int point_within_ellipse( xdot_op* op);
 int point_within_ellips_with_coords(float ex,float ey,float ea,float eb,float px,float py);
 int point_within_polygon(xdot_op* op);
+int line_intersects (float* x,float* y,float* X,float* Y);
 
 int is_point_in_rectangle(float X,float Y,float RX,float RY,float RW,float RH);
 int within_bezier(GLfloat* xp,GLfloat* yp,GLfloat* zp,int isx);

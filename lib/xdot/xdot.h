@@ -20,12 +20,10 @@
 #include <windows.h>
 #include <strcasecmp.h>
 #endif
-//#include "draw.h"
 #include <GL/gl.h>
 
-//#include <viewport.h>
 #include "cgraph.h"
-
+#define MAXIMUM_POS_COUNT	100	
 typedef struct _TextTexture {
   GLuint  name;
   GLsizei size;
@@ -51,7 +49,6 @@ typedef struct {
 
 
 typedef struct {
-  TextTexture* texture;
   int x, y;
   xdot_align align;
   int width;
@@ -113,10 +110,7 @@ extern char* sprintXDot (xdot*);
 extern void fprintXDot (FILE*, xdot*);
 extern void freeXDot (xdot*);
 extern void drawXdot (xdot*,int param);
-extern void drawGraph(Agraph_t *g);
-extern void drawTopViewGraph3(Agraph_t *g);
 extern Agnode_t* createNode(char* label,xdot_point);
-extern void PrepareTopview2(Agraph_t *g);
 extern char* move_xdot(void* obj,xdot* x,int dx,int dy,int dz);
 extern char* offset_spline(xdot* x,float dx,float dy,float headx,float heady);
 #endif

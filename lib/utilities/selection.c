@@ -22,11 +22,11 @@ int rectintersects(float x,float y,float W,float H)
 	//-1 if completely out
 
 	int s[4];
-	s[0]=( ((x >=view.Selection.X)&& (x <= (view.Selection.X + view.Selection.W) ))) ? 1:0;
-	s[1]=( (((x+W) >=view.Selection.X)&& ((x+W) <= (view.Selection.X + view.Selection.W) ))) ? 1:0;
+	s[0]=( ((x >=view->Selection.X)&& (x <= (view->Selection.X + view->Selection.W) ))) ? 1:0;
+	s[1]=( (((x+W) >=view->Selection.X)&& ((x+W) <= (view->Selection.X + view->Selection.W) ))) ? 1:0;
 
-	s[2]=( ((y >=view.Selection.Y)&& (y <= (view.Selection.Y + view.Selection.H) ))) ? 1:0;
-	s[3]=( (((y+H) >=view.Selection.Y)&& ((y+H) <= (view.Selection.Y + view.Selection.H) ))) ? 1:0;
+	s[2]=( ((y >=view->Selection.Y)&& (y <= (view->Selection.Y + view->Selection.H) ))) ? 1:0;
+	s[3]=( (((y+H) >=view->Selection.Y)&& ((y+H) <= (view->Selection.Y + view->Selection.H) ))) ? 1:0;
 
 	
 	if (s[0] && s[1] && s[2] && s[3])
@@ -51,10 +51,10 @@ int lineintersects(float X1,float X2,float Y1,float Y2)
 	float x,y,m,iter;
 	float RX,RY,RW,RH;
 	int intersects,in;
-	RX=view.Selection.X;
-	RY=view.Selection.Y;
-	RW=view.Selection.W;
-	RH=view.Selection.H;
+	RX=view->Selection.X;
+	RY=view->Selection.Y;
+	RW=view->Selection.W;
+	RH=view->Selection.H;
 	if((is_point_in_rectangle(X1,Y1,RX,RY,RW,RH)) && (is_point_in_rectangle(X2,Y2,RX,RY,RW,RH)))
 		return 1;
 	if((is_point_in_rectangle(X1,Y1,RX,RY,RW,RH)) || (is_point_in_rectangle(X2,Y2,RX,RY,RW,RH)))
@@ -104,26 +104,26 @@ int is_point_in_rectangle(float X,float Y,float RX,float RY,float RW,float RH)
 
 int SelectBeziers(xdot_op* op)
 {
-	if(!view.Selection.Active)
+	if(!view->Selection.Active)
 		return 0;
-	switch (view.Selection.Type)
+	switch (view->Selection.Type)
 	{
 	case 0:
-		if (view.Selection.AlreadySelected)
+		if (view->Selection.AlreadySelected)
 			return 0;
 		if( spline_x_rect(op))
 		{
 			if ( ((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected==0)
 			{
 				((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-				select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-				view.Selection.AlreadySelected=1;
+				select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+				view->Selection.AlreadySelected=1;
 			}
 			else
 			{
 				((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=0;
-				deselect_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-				view.Selection.AlreadySelected=1;
+				deselect_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+				view->Selection.AlreadySelected=1;
 			}
 		}
 			break;
@@ -133,14 +133,14 @@ int SelectBeziers(xdot_op* op)
 		if(  ( ((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->selectionflag  != -1 )  &&       (spline_in_rect(op)) )
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Preselected=1;
-//      		  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-			  view.Selection.AlreadySelected=1;
+//      		  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+			  view->Selection.AlreadySelected=1;
 		}
 		else
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Preselected=0;
-//      		  deselect_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-			  view.Selection.AlreadySelected=1;
+//      		  deselect_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+			  view->Selection.AlreadySelected=1;
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->selectionflag = -1;			
 		}
 		break;
@@ -150,8 +150,8 @@ int SelectBeziers(xdot_op* op)
 		if(spline_x_rect(op))
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-      		  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-			  view.Selection.AlreadySelected=1;
+      		  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+			  view->Selection.AlreadySelected=1;
 		}
 		break;
 	default:
@@ -163,12 +163,12 @@ int SelectBeziers(xdot_op* op)
 int SelectPolygon(xdot_op* op)
 {
 
-	if(!view.Selection.Active)
+	if(!view->Selection.Active)
 		return 0;
-	switch (view.Selection.Type)
+	switch (view->Selection.Type)
 	{
 	case 0:
-		if (view.Selection.AlreadySelected)
+		if (view->Selection.AlreadySelected)
 			return 0;
 
 		
@@ -178,15 +178,15 @@ int SelectPolygon(xdot_op* op)
 				if ( ((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected==0)
 				{
 					((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-					  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-					  view.Selection.AlreadySelected=1;
+					  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+					  view->Selection.AlreadySelected=1;
 
 				}
 				else
 				{
 					((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=0;
-					  deselect_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-					  view.Selection.AlreadySelected=1;
+					  deselect_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+					  view->Selection.AlreadySelected=1;
 
 				}
 			}
@@ -197,15 +197,15 @@ int SelectPolygon(xdot_op* op)
 		if(  ( ((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->selectionflag  != -1 )  &&       (polygon_in_rect(op)) )
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Preselected=1;
-//      		  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-//			  view.Selection.AlreadySelected=1;
+//      		  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+//			  view->Selection.AlreadySelected=1;
 
 		}
 		else
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Preselected=0;
-//			deselect_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-			view.Selection.AlreadySelected=1;
+//			deselect_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+			view->Selection.AlreadySelected=1;
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->selectionflag = -1;			
 		}
 	
@@ -217,8 +217,8 @@ int SelectPolygon(xdot_op* op)
 		if(polygon_x_rect(op))
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-      		  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-			  view.Selection.AlreadySelected=1;
+      		  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+			  view->Selection.AlreadySelected=1;
 
 		}
 		break;
@@ -229,12 +229,12 @@ int SelectPolygon(xdot_op* op)
 
 int SelectPolyline(xdot_op* op)
 {
-	if(!view.Selection.Active)
+	if(!view->Selection.Active)
 		return 0;
-	switch (view.Selection.Type)
+	switch (view->Selection.Type)
 	{
 	case 0:
-		if (view.Selection.AlreadySelected)
+		if (view->Selection.AlreadySelected)
 			return 0;
 
 		
@@ -244,15 +244,15 @@ int SelectPolyline(xdot_op* op)
 				if ( ((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected==0)
 				{
 					((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-					  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-					  view.Selection.AlreadySelected=1;
+					  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+					  view->Selection.AlreadySelected=1;
 
 				}
 				else
 				{
 					((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=0;
-					  deselect_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-					  view.Selection.AlreadySelected=1;
+					  deselect_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+					  view->Selection.AlreadySelected=1;
 
 				}
 			}
@@ -268,7 +268,7 @@ int SelectPolyline(xdot_op* op)
 		else
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Preselected=0;
-			view.Selection.AlreadySelected=1;
+			view->Selection.AlreadySelected=1;
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->selectionflag = -1;			
 		}
 	
@@ -280,8 +280,8 @@ int SelectPolyline(xdot_op* op)
 		if(polyline_x_rect(op))
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-      		  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-			  view.Selection.AlreadySelected=1;
+      		  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+			  view->Selection.AlreadySelected=1;
 
 		}
 		break;
@@ -294,12 +294,12 @@ int SelectPolyline(xdot_op* op)
 }
 int SelectEllipse(xdot_op* op)
 {
-	if(!view.Selection.Active)
+	if(!view->Selection.Active)
 		return 0;
-	switch (view.Selection.Type)
+	switch (view->Selection.Type)
 	{
 	case 0:
-		if (view.Selection.AlreadySelected)
+		if (view->Selection.AlreadySelected)
 			return 0;
 
 			if( point_within_ellipse(op))		
@@ -307,15 +307,15 @@ int SelectEllipse(xdot_op* op)
 				if ( ((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected==0)
 				{
 					((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-					  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-					  view.Selection.AlreadySelected=1;
+					  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+					  view->Selection.AlreadySelected=1;
 
 				}
 				else
 				{
 					((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=0;
-					  deselect_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-					  view.Selection.AlreadySelected=1;
+					  deselect_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+					  view->Selection.AlreadySelected=1;
 
 				}
 			}
@@ -325,15 +325,15 @@ int SelectEllipse(xdot_op* op)
 				if ( ((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected==0)
 				{
 					((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-					  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-					  view.Selection.AlreadySelected=1;
+					  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+					  view->Selection.AlreadySelected=1;
 
 				}
 				else
 				{
 					((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=0;
-					  deselect_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-					  view.Selection.AlreadySelected=1;
+					  deselect_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+					  view->Selection.AlreadySelected=1;
 
 				}
 			}
@@ -344,13 +344,13 @@ int SelectEllipse(xdot_op* op)
 		if(  ( ((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->selectionflag  != -1 )  &&  (ellipse_in_rect(op)) )
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Preselected=1;
-			  view.Selection.AlreadySelected=1;
+			  view->Selection.AlreadySelected=1;
 
 		}
 		else
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Preselected=0;
-			view.Selection.AlreadySelected=1;
+			view->Selection.AlreadySelected=1;
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->selectionflag = -1;			
 		}
 
@@ -361,8 +361,8 @@ int SelectEllipse(xdot_op* op)
 		if(ellipse_x_rect(op))
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-      		  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-			  view.Selection.AlreadySelected=1;
+      		  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+			  view->Selection.AlreadySelected=1;
 
 		}
 		break;
@@ -374,12 +374,12 @@ int SelectEllipse(xdot_op* op)
 
 int SelectText(xdot_op* op)
 {
-	if(!view.Selection.Active)
+	if(!view->Selection.Active)
 		return 0;
-	switch (view.Selection.Type)
+	switch (view->Selection.Type)
 	{
 	case 0:
-		if (view.Selection.AlreadySelected)
+		if (view->Selection.AlreadySelected)
 			return 0;
 			if( text_x_rect(op))
 			{
@@ -396,8 +396,8 @@ int SelectText(xdot_op* op)
 		if(text_in_rect(op))
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-      		  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-			  view.Selection.AlreadySelected=1;
+      		  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+			  view->Selection.AlreadySelected=1;
 
 		}
 		break;
@@ -407,8 +407,8 @@ int SelectText(xdot_op* op)
 		if(text_x_rect(op))
 		{
 			((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-      		  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-			  view.Selection.AlreadySelected=1;
+      		  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+			  view->Selection.AlreadySelected=1;
 		}
 		break;
 	default:
@@ -420,12 +420,12 @@ int SelectText(xdot_op* op)
 
 int SelectImage(xdot_op* op)
 {
-	if(!view.Selection.Active)
+	if(!view->Selection.Active)
 		return 0;
-	switch (view.Selection.Type)
+	switch (view->Selection.Type)
 	{
 	case 0:
-		if (view.Selection.AlreadySelected)
+		if (view->Selection.AlreadySelected)
 			return 0;
 			if( image_x_rect(op))
 			{
@@ -433,8 +433,8 @@ int SelectImage(xdot_op* op)
 				if ( ((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected==0)
 				{
 					((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=1;
-	      		  select_object (view.g[view.activeGraph],((xdot*)(op->parentxdot))->obj);
-					view.Selection.AlreadySelected=1;
+	      		  select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
+					view->Selection.AlreadySelected=1;
 				}
 				else
 					((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected=0;
@@ -723,8 +723,8 @@ int point_within_ellipse( xdot_op* op)
 	ey=op->u.ellipse.y;
 	ea=op->u.ellipse.w;
 	eb=op->u.ellipse.h;
-	px=view.Selection.X+SINGLE_SELECTION_WIDTH/2;
-	py=view.Selection.Y+SINGLE_SELECTION_WIDTH/2;
+	px=view->Selection.X+SINGLE_SELECTION_WIDTH/2;
+	py=view->Selection.Y+SINGLE_SELECTION_WIDTH/2;
 	dx = px - ex;
 	dy = py - ey;
 	a=(dx*dx)/(ea*ea) + (dy*dy)/(eb*eb);
@@ -739,8 +739,8 @@ int point_within_polygon(xdot_op* op)
 	float x,y;
 	op->u.polygon.pts[i].y;
 	op->u.polygon.pts[i].x;
-	x=view.Selection.X+SINGLE_SELECTION_WIDTH/2;
-	y=view.Selection.Y+SINGLE_SELECTION_WIDTH/2;
+	x=view->Selection.X+SINGLE_SELECTION_WIDTH/2;
+	y=view->Selection.Y+SINGLE_SELECTION_WIDTH/2;
 
 	for (i = 0, j = npol-1; i < npol; j = i++) {
 		
@@ -998,7 +998,44 @@ int deselect_all(Agraph_t* g)
 	deselect_all_graphs(g);
 	return 1;
 }
+int line_intersects (float* x,float* y,float* X,float* Y)
+{
+	//x,y are arrayf of float for two lines parameters theyt hold 4 points with x and y
+	//limitx and limity are float arrays with two points, thse points are the end points of the second line
+	//X,Y are the variables to put intersection point coordinates in
+	pointf pA,pB,pC,pD,pX;
+	pA.x=x[0];pA.y=y[0];
+	pB.x=x[1];pB.y=y[1];
+	pC.x=x[2];pC.y=y[2];
+	pD.x=x[3];pD.y=y[3];
 
+	if(intersect (pA, pB, pC, pD, &pX))
+	{
+		*X=pX.x;
+		*Y=pX.y;
+		if ( (pX.x >=x[2]-0.01)	&&	(pX.x <x[3]+0.01) &&
+			(pX.y >=y[2]-0.01)	&&	(pX.x <y[3]+0.01))
+		{
+			return 1;
 
+		}
+		return 0;
+
+	}
+	else
+		return 0;
+
+}
+
+int point_within_ellips_with_coords(float ex,float ey,float ea,float eb,float px,float py)
+{
+
+	float dx,dy;
+	float a;
+	dx = px - ex;
+	dy = py - ey;
+	a=(dx*dx)/(ea*ea) + (dy*dy)/(eb*eb);
+	return (a <= 1);
+}
 
 

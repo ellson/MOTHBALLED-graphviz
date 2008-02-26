@@ -6,12 +6,10 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/utilities \
-	-I$(top_srcdir)/cmd/smyrna \
+	-I$(top_srcdir)/cmd/gtktopview \
 	$(GTK_CFLAGS) $(GTKGL_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS)
 
-if WITH_SMYRNA
 noinst_HEADERS = xdot.h
 noinst_LTLIBRARIES = libxdot_C.la
-endif
 
 libxdot_C_la_SOURCES = xdot.c

@@ -23,6 +23,8 @@
 #include <assert.h>
 #include <sys/types.h>
 #include <time.h>
+#include "draw.h"
+
 
 
 #define NEW(t)           (t*)malloc(sizeof(t))
@@ -172,7 +174,6 @@ parseOp (xdot_op* op, char* s)
 	s = parseAlign (s, &op->u.text.align);
 	s = parseInt (s, &op->u.text.width);
 	s = parseString (s, &op->u.text.text);
-	op->u.text.texture=NULL;
 	op->drawfunc=EmbedText;
 	break;
     
@@ -523,7 +524,7 @@ extern char* move_xdot(void* obj,xdot* x,int dx,int dy,int dz)
 	int j=0;
 	int a=0;
 	char* pch;
-	int pos[100];	//maximum pos count hopefully does not exceed 100
+	int pos[MAXIMUM_POS_COUNT];	//maximum pos count hopefully does not exceed 100
 	if (!x)
 		return "\0";
 	
@@ -561,8 +562,8 @@ extern char* move_xdot(void* obj,xdot* x,int dx,int dy,int dz)
 			break;
 		}
 	}
-	view.GLx=view.GLx2;
-	view.GLy=view.GLy2;
+	view->GLx=view->GLx2;
+	view->GLy=view->GLy2;
 	return sprintXDot (x);
 
 
@@ -603,7 +604,6 @@ extern char* offset_spline(xdot* x,float dx,float dy,float headx,float heady)
 
 
 
-//OpenGL extension
 void drawXdot (xdot* xDot,int param)
 {
 	int id=0;
@@ -616,7 +616,7 @@ void drawXdot (xdot* xDot,int param)
 	
 	}
 	if ( ((custom_object_data*)AGDATA(xDot->obj))->Preselected == 1)
-		select_object (view.g[view.activeGraph],xDot->obj);
+		select_object (view->g[view->activeGraph],xDot->obj);
 	((custom_object_data*)AGDATA(xDot->obj))->Preselected =0;
 }
 void execOp (xdot_op* op,int param)
@@ -637,175 +637,10 @@ void drawXdotwithattr(void* p,char* attr,int param)
 }
 void drawXdotwithattrs(void* e,int param)
 {
-
-
 	drawXdotwithattr(e,"_draw_",param);
 	drawXdotwithattr(e,"_ldraw_",param);
 	drawXdotwithattr(e,"_hdraw_",param);
 	drawXdotwithattr(e,"_tdraw_",param);
 	drawXdotwithattr(e,"_hldraw_",param);
 	drawXdotwithattr(e,"_tldraw_",param);
-
-}
-void drawGraph(Agraph_t *g)
-{
-	Agnode_t *v;
-	Agedge_t *e;
-	Agraph_t *s;
-	int param=0;
-
-	for (s = agfstsubg(g); s; s = agnxtsubg(s))
-	{
-
-			((custom_object_data*)AGDATA(s))->selectionflag=0;
-			if( ((custom_object_data*)AGDATA(s))->Selected==1)
-				param=1;
-			else
-				param=0;
-			drawXdotwithattrs(s,param);
-	}
-		
-	for (v = agfstnode(g); v; v = agnxtnode(g, v))
-	{
-		if( ((custom_object_data*)AGDATA(v))->Selected==1)
-			param=1;
-		else
-			param=0;
-		((custom_object_data*)AGDATA(v))->selectionflag=0;
-		drawXdotwithattr(v,"_draw_",param);
-		drawXdotwithattr(v,"_ldraw_",param);
-		for (e = agfstout(g,v) ; e ; e = agnxtout (g,e))
-		{
-			((custom_object_data*)AGDATA(e))->selectionflag=0;
-			if( ((custom_object_data*)AGDATA(e))->Selected==1)
-				param=1;
-			else
-				param=0;
-
-			drawXdotwithattrs(e,param);
-
-		}
-	}
-	if((view.Selection.Active>0) && (!SignalBlock))
-	{
-		view.Selection.Active=0;
-		drawGraph(g);
-		SignalBlock=1;
-			expose_event (drawing_area,NULL,NULL);
-		SignalBlock=0;
-	}
-
-}
-void drawTopViewGraph3(Agraph_t *g)
-{
-//	DWORD t1,t2;
-	char* pch;
-	Agnode_t *v;
-	Agedge_t *e;
-	Agraph_t *s;
-	char buf [100];
-	GLfloat a,b;
-	glPointSize(2);
-//	t1=GetTickCount();
-//	glBegin(GL_POINTS);
-	for (v = agfstnode(g); v; v = agnxtnode(g, v))
-	{
-		//use pos to put dots
-/*		if( ((custom_object_data*)AGDATA(v))->Selected==1)
-			glColor4f(view.selectColor.R,view.selectColor.G,view.selectColor.B,view.selectColor.A);
-		else
-			glColor4f(view.penColor.R,view.penColor.G,view.penColor.B,view.penColor.A);
-		strcpy(buf,agget(v, "pos"));
-		a=atof(strtok (buf,"," ));
-		b=atof(strtok (NULL,"," ));
-		glVertex3f(a ,b,0.0); */
-
-	}
-//	glEnd();
-//	t2=GetTickCount();
-//	printf("recorded tickcounts  %d-%d \n", t1,t2);
-//	printf("iterating time (NODES):%d \n", t2-t1);
-
-
-	//draw edges
-/*	glBegin(GL_LINES);
-	for (v = agfstnode(g); v; v = agnxtnode(g, v))
-	{
-		for (e = agfstout(g,v) ; e ; e = agnxtout (g,e))
-		{
-			if( ((custom_object_data*)AGDATA(e))->Selected==1)
-				glColor4f(view.selectColor.R,view.selectColor.G,view.selectColor.B,view.selectColor.A);
-			else
-				glColor4f(view.penColor.R,view.penColor.G,view.penColor.B,view.penColor.A);
-			strcpy(buf,agget(aghead(e), "pos"));
-				a=atof(strtok (buf,"," ));
-				b=atof(strtok (NULL,"," ));
-				glVertex3f(a ,b,0.0);
-			strcpy(buf,agget(agtail(e), "pos"));
-				a=atof(strtok (buf,"," ));
-				b=atof(strtok (NULL,"," ));
-				glVertex3f(a ,b,0.0);
-		}
-	}
-	glEnd(); */
-}
-void PrepareTopview2(Agraph_t *g)
-{
-	float a,b;
-	char* pch;
-	Agnode_t *v;
-	Agedge_t *e;
-	int ind,ind2;
-	char buf[100];
-	ind=0;ind2=0;
-	for (v = agfstnode(g); v; v = agnxtnode(g, v))
-	{
-		
-		strcpy(buf,agget(v, "pos"));
-		a=atof(strtok (buf,"," ));
-		b=atof(strtok (NULL,"," ));
-
-		TopViewPointsX[ind]=a;
-		TopViewPointsY[ind]=b;
-
-
-		for (e = agfstout(g,v) ; e ; e = agnxtout (g,e))
-		{
-			strcpy(buf,agget(aghead(e), "pos"));
-				a=atof(strtok (buf,"," ));
-				b=atof(strtok (NULL,"," ));
-				TopViewEdgesHeadX[ind2]=a;
-				TopViewEdgesHeadY[ind2]=b;
-			strcpy(buf,agget(agtail(e), "pos"));
-				a=atof(strtok (buf,"," ));
-				b=atof(strtok (NULL,"," ));
-				TopViewEdgesTailX[ind2]=a;
-				TopViewEdgesTailY[ind2]=b;
-			ind2++;
-		}
-		ind++;
-	}
-	TopViewNodeCount=ind;
-	TopViewEdgeCount=ind2;
-}
-void drawTopViewGraph2(Agraph_t *g)
-{
-//	DWORD t1,t2;
-	int ind=0;
-	glPointSize(3);
-	glBegin(GL_POINTS);
-	for (ind=0;ind < TopViewNodeCount;ind ++)
-	{
-		glVertex3f(TopViewPointsX[ind] ,TopViewPointsY[ind],0.0);
-	}
-	glEnd();
-	glBegin(GL_LINES);
-	for (ind=0;ind < TopViewEdgeCount;ind ++)
-	{
-//    	glColor4f(view.selectColor.R,view.selectColor.G,view.selectColor.B,view.selectColor.A);
-		glVertex3f(TopViewEdgesHeadX[ind],TopViewEdgesHeadY[ind],0.0);
-		glVertex3f(TopViewEdgesTailX[ind],TopViewEdgesTailY[ind],0.0);
-			
-	}
-	glEnd(); 
 }
