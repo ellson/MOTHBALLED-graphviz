@@ -47,6 +47,7 @@ typedef struct
     int blockRow;       /* characters per row */
     int blockCol;       /* characters per col */
     unsigned int texId; /* texture id */
+	float zdepth;	//third dimension , depth of fonts
 } texFont_t;
 
 #endif
@@ -96,6 +97,10 @@ Sets the font size.
 =============
 */
 void fontSize (int size);
+
+
+void fontzdepth(float zdepth);
+
 /*
 =============
 fontShadow
