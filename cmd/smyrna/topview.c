@@ -946,7 +946,11 @@ void menu_click_alpha_plus(void* p)
 }
 
 #ifdef _WIN32
-#define SMYRNA_ICONSDIR c:
+#define SMYRNA_ICON_PAN "c:/pan.raw"
+#define SMYRNA_ICON_ZOOM "c:/zoom.raw"
+#define SMYRNA_ICON_ZOOMPLUS "c:/zomplus.raw"
+#define SMYRNA_ICON_ZOOMMINUS "c:/zoomminus.raw"
+#define SMYRNA_ICON_FISHEYE "c:/fisheye.raw"
 #endif
 
 
@@ -1022,35 +1026,35 @@ glCompSet* glcreate_gl_topview_menu()
 	b->groupid=2;
 	glCompSetAddButton(s,b);
 	//pan button
-	b=glCompButtonNew(5,120,72,72,"adasasds","SMYRNA_ICONSDIR/pan.raw",72,72);
+	b=glCompButtonNew(5,120,72,72,"adasasds",SMYRNA_ICON_PAN,72,72);
 	b->groupid=3;
 	b->customptr=view;
 	b->panel=p;
 	b->callbackfunc=menu_click_pan;
 	glCompSetAddButton(s,b);
 	//zoom
-	b=glCompButtonNew(85,120,72,72,"adasasds","SMYRNA_ICONSDIR/zoom.raw",72,72);
+	b=glCompButtonNew(85,120,72,72,"adasasds",SMYRNA_ICON_ZOOM,72,72);
 	b->groupid=3;
 	b->customptr=view;
 	b->panel=p;
 	b->callbackfunc=menu_click_zoom;
 	glCompSetAddButton(s,b);
 	//zoom +
-	b=glCompButtonNew(85,82,36,36,"adasasds","SMYRNA_ICONSDIR/zoomplus.raw",36,36);
+	b=glCompButtonNew(85,82,36,36,"adasasds",SMYRNA_ICON_ZOOMPLUS,36,36);
 	b->groupid=0;
 	b->customptr=view;
 	b->panel=p;
 	b->callbackfunc=menu_click_zoom_plus;
 	glCompSetAddButton(s,b);
 	//zoom -
-	b=glCompButtonNew(121,82,36,36,"adasasds","SMYRNA_ICONSDIR/zoomminus.raw",36,36);
+	b=glCompButtonNew(121,82,36,36,"adasasds",SMYRNA_ICON_ZOOMMINUS,36,36);
 	b->groupid=0;
 	b->panel=p;
 	b->customptr=view;
 	b->callbackfunc=menu_click_zoom_minus;
 	glCompSetAddButton(s,b);
 
-	b=glCompButtonNew(5,45,72,72,"adasasds","SMYRNA_ICONSDIR/fisheye.raw",72,72);
+	b=glCompButtonNew(5,45,72,72,"adasasds",SMYRNA_ICON_FISHEYE,72,72);
 	b->groupid=3;
 	b->panel=p;
 	b->customptr=view;
@@ -1074,13 +1078,13 @@ glCompSet* glcreate_gl_topview_menu()
 	p->data=2;		//data panel
 	glCompSetAddPanel(s,p);
 	//alpha plus button
-	b=glCompButtonNew(75,3,36,36,"","SMYRNA_ICONSDIR/zoomplus.raw",36,36);
+	b=glCompButtonNew(75,3,36,36,"",SMYRNA_ICON_ZOOMPLUS,36,36);
 	b->groupid=0;
 	b->panel=p;
 	b->callbackfunc=menu_click_alpha_plus;
 	glCompSetAddButton(s,b);
 	//alpha minus button
-	b=glCompButtonNew(113,3,36,36,"","SMYRNA_ICONSDIR/zoomminus.raw",36,36);
+	b=glCompButtonNew(113,3,36,36,"",SMYRNA_ICON_ZOOMMINUS,36,36);
 	b->groupid=0;
 	b->panel=p;
 	b->callbackfunc=menu_click_alpha_plus;

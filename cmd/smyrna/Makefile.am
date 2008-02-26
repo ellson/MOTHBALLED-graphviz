@@ -4,7 +4,11 @@ icondir = $(pkgdatadir)/icons
 AM_CPPFLAGS = \
 	-DSMYRNA_GLADE=\""$(guidir)/smyrna.glade"\" \
 	-DSMYRNA_FONT=\""$(guidir)/arial.tga"\" \
-	-DSMYRNA_ICONSDIR=\""$(iconsdir)"\" \
+	-DSMYRNA_ICON_PAN=\""$(icondir)/pan.raw"\" \
+	-DSMYRNA_ICON_ZOOM=\""$(icondir)/zoom.raw"\" \
+	-DSMYRNA_ICON_ZOOMPLUS=\""$(icondir)/zoomplus.raw"\" \
+	-DSMYRNA_ICON_ZOOMMINUS=\""$(icondir)/zoomminus.raw"\" \
+	-DSMYRNA_ICON_FISHEYE=\""$(icondir)/fisheye.raw"\" \
         -I$(top_srcdir) \
         -I$(top_srcdir)/lib/cgraph \
         -I$(top_srcdir)/lib/cdt \
