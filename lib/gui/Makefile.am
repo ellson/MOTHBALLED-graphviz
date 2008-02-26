@@ -2,22 +2,25 @@
 # ## Process this file with automake to produce Makefile.in
 #
 
-gladedir = $(datadir)/gtktopview/glade
+guidir = $(pkgdatadir)/gui
 
 AM_CPPFLAGS = \
-	-DGTKTOPVIEW_GLADE=\""$(gladedir)/gtktopview.glade"\" \
-	-DGTKTOPVIEW_ATTRS=\""$(gladedir)/attrs.txt"\" \
+	-DSMYRNA_GLADE=\""$(guidir)/smyrna.glade"\" \
+	-DSMYRNA_ATTRS=\""$(guidir)/attrs.txt"\" \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/xdot \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/utilities \
-	-I$(top_srcdir)/cmd/gtktopview \
+	-I$(top_srcdir)/lib/topfish \
+	-I$(top_srcdir)/cmd/smyrna \
 	$(GTK_CFLAGS) $(GTKGL_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS)
 
-noinst_HEADERS = callbacks.h datalistcallbacks.h gui.h \
+if WITH_SMYRNA
+noinst_HEADERS = callbacks.h datalistcallbacks.h filterscallbacks.h gui.h \
 	menucallbacks.h toolboxcallbacks.h
-noinst_LTLIBRARIES = libGUI_C.la
+noinst_LTLIBRARIES = libgui_C.la
+endif
 
-libGUI_C_la_SOURCES = gui.c callbacks.c datalistcallbacks.c \
-	menucallbacks.c toolboxcallbacks.c
+libgui_C_la_SOURCES = callbacks.c datalistcallbacks.c filterscallbacks.c \
+	gui.c menucallbacks.c toolboxcallbacks.c
