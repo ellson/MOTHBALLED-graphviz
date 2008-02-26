@@ -19,7 +19,7 @@
 #include "gui.h"
 #include "viewport.h"
 #include "topview.h"
-#include "glTemplate.h"
+#include "gltemplate.h"
 #include "glutils.h"
 #include "glexpose.h"
 #include "glmenu.h"
