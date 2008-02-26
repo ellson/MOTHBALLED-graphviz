@@ -17,7 +17,6 @@
 #ifndef TOOLBOXCALLBACKS_H
 #define TOOLBOXCALLBACKS_H
 #include <gtk/gtk.h>
-#include "viewport.h"
 #include "gui.h"
 #if WIN32
 #define _BB  __declspec(dllexport)

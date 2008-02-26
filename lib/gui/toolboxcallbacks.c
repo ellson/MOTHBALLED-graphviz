@@ -15,37 +15,38 @@
 **********************************************************/
 
 #include "toolboxcallbacks.h"
+#include "viewport.h"
 
 
 void btnToolSingleSelect_clicked(GtkWidget *widget,gpointer user_data)
 {
-	deselect_all(view.g[view.activeGraph]);
+	deselect_all(view->g[view->activeGraph]);
 	switch_Mouse (NULL,3);	
 }
 void btnToolRectSelect_clicked(GtkWidget *widget,gpointer user_data)
 {
 
-	deselect_all(view.g[view.activeGraph]);
-	view.Selection.Anti=0;
+	deselect_all(view->g[view->activeGraph]);
+	view->Selection.Anti=0;
 	switch_Mouse (NULL,4);	
 }
 
 void btnToolRectXSelect_clicked (GtkWidget *widget,gpointer user_data)
 {
-	deselect_all(view.g[view.activeGraph]);
-	view.Selection.Anti=0;
+	deselect_all(view->g[view->activeGraph]);
+	view->Selection.Anti=0;
 	switch_Mouse (NULL,5);	
 }
 
 void btnToolAntiRectSelect_clicked                       (GtkWidget *widget,gpointer user_data)
 {
-	view.Selection.Anti=1;
+	view->Selection.Anti=1;
 	switch_Mouse (NULL,4);	
 	
 }
 void btnToolAntiRectXSelect_clicked                       (GtkWidget *widget,gpointer user_data)
 {
-	view.Selection.Anti=1;
+	view->Selection.Anti=1;
 	switch_Mouse (NULL,5);	
 
 }
@@ -61,18 +62,18 @@ void btnToolZoom_clicked                       (GtkWidget *widget,gpointer user_
 }
 void btnToolZoomIn_clicked                       (GtkWidget *widget,gpointer user_data)
 {
-	view.zoom = view.zoom + ZOOM_STEP;
-	if(view.zoom > MAX_ZOOM)
-		view.zoom=MAX_ZOOM;
-	expose_event (drawing_area,NULL,NULL);
+	view->zoom = view->zoom + ZOOM_STEP;
+	if(view->zoom > MAX_ZOOM)
+		view->zoom=MAX_ZOOM;
+	expose_event (view->drawing_area,NULL,NULL);
 
 }
 void btnToolZoomOut_clicked                       (GtkWidget *widget,gpointer user_data)
 {
-	view.zoom = view.zoom - ZOOM_STEP;
-	if(view.zoom < MIN_ZOOM)
-		view.zoom=MIN_ZOOM;
-	expose_event (drawing_area,NULL,NULL);
+	view->zoom = view->zoom - ZOOM_STEP;
+	if(view->zoom < MIN_ZOOM)
+		view->zoom=MIN_ZOOM;
+	expose_event (view->drawing_area,NULL,NULL);
 }
 void btnToolFit_clicked                       (GtkWidget *widget,gpointer user_data)
 {
@@ -105,5 +106,5 @@ void btnToolDeleteEdge_clicked                       (GtkWidget *widget,gpointer
 void btnToolFindEdge_clicked                       (GtkWidget *widget,gpointer user_data)
 {
 	printf("btnToolFindEdge_clicked\n");
-	printf("zoom :%f\n",view.zoom);
+	printf("zoom :%f\n",view->zoom);
 }

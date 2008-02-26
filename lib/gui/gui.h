@@ -17,27 +17,29 @@
 #ifndef GUI_H
 #define GUI_H
 
+#include "smyrnadefs.h"
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtkgl.h>
 #include <glade/glade.h>
 #include "callbacks.h"
-#include "viewport.h"
+#include "cgraph.h"
 
 
 
-#ifdef	WIN32	//this shit is needed on WIN32 to get libglade see the callback
+
+#ifdef	WIN32	//this  is needed on WIN32 to get libglade see the callback
 #define _BB  __declspec(dllexport)
 #else
 #define _BB  
 #endif
 
 #ifdef _WIN32
-#define SMYRNA_GLADE "C:\\Projects\\ATT\\GTK\\smyrna\\lib\\GUI\\smyrna.glade"
-#define SMYRNA_ATTRS "C:\\Projects\\ATT\\GTK\\GTKTest2\\attrs.txt"
+#define GTKTOPVIEW_GLADE "c:\\Projects\\ATT\\GTK\\gtktopview\\lib\\GUI\\smyrna.glade"
+#define GTKTOPVIEW_ATTRS "c:\\Projects\\ATT\\GTK\\GTKTest2\\attrs.txt"
 // #else
-// using -DSMYRNA_GLADE from Makefile.am and configure.ac
-// using -DSMYRNA_ATTRS from Makefile.am and configure.ac
+// using -DGTKTOPVIEW_GLADE from Makefile.am and configure.ac
+// using -DGTKTOPVIEW_ATTRS from Makefile.am and configure.ac
 #endif
 
 #define MAXIMUM_WIDGET_COUNT	97

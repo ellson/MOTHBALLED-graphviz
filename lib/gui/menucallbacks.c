@@ -15,6 +15,7 @@
 **********************************************************/
 
 #include "menucallbacks.h"
+#include "viewport.h"
 #include "tvnodes.h"
 
 //file
@@ -72,13 +73,13 @@ void mNewSlot (GtkWidget *widget,gpointer user_data)
 	//1 check all graphs 1 by 1 to see any unsaved
 	int respond;
 	int gIndex=0;
-	int active_graph=view.activeGraph ; //stores the active graph in case quit aborted
-	for (gIndex ; gIndex < view.graphCount ; gIndex++)
+	int active_graph=view->activeGraph ; //stores the active graph in case quit aborted
+	for (gIndex ; gIndex < view->graphCount ; gIndex++)
 	{
-		view.activeGraph=gIndex;
-		if(((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->Modified)
+		view->activeGraph=gIndex;
+		if(((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->Modified)
 		{
-			sprintf(buf,"graph %s has been modified \n , would you like to save it before quitting the the program?",((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->GraphName);
+			sprintf(buf,"graph %s has been modified \n , would you like to save it before quitting the the program?",((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->GraphName);
 			Dlg = gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
@@ -170,9 +171,9 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 {
 	int respond;
 	//there has to be an active graph to open the graph prop page
-	if(view.activeGraph > -1)
+	if(view->activeGraph > -1)
 	{
-		load_graph_properties(view.g[view.activeGraph]);//load from graph to gui		
+		load_graph_properties(view->g[view->activeGraph]);//load from graph to gui		
 		gtk_dialog_set_response_sensitive   (glade_xml_get_widget(xml, "dlgOpenGraph"),1,1);
 		gtk_dialog_set_response_sensitive   (glade_xml_get_widget(xml, "dlgOpenGraph"),2,1);
 		respond=gtk_dialog_run (glade_xml_get_widget(xml, "dlgOpenGraph"));
@@ -182,11 +183,11 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 }
   void mClusterPropertiesSlot (GtkWidget *widget,gpointer user_data)
 {
-	if(  ((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->selectedGraphsCount > 0)
+	if(  ((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->selectedGraphsCount > 0)
 	{
 		gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 		gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
-		load_object_properties(1,view.g[view.activeGraph]);
+		load_object_properties(1,view->g[view->activeGraph]);
 	}
 	else
 	{
@@ -202,11 +203,11 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 }
   void mNodePropertiesSlot (GtkWidget *widget,gpointer user_data)
 {
-	if(  ((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->selectedNodesCount > 0)
+	if(  ((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->selectedNodesCount > 0)
 	{
 		gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 		gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
-		load_object_properties(2,view.g[view.activeGraph]);
+		load_object_properties(2,view->g[view->activeGraph]);
 	}
 	else
 	{
@@ -222,11 +223,11 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 }
   void mEdgePropertiesSlot (GtkWidget *widget,gpointer user_data)
 {
-	if(  ((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->selectedEdgesCount > 0)
+	if(  ((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->selectedEdgesCount > 0)
 	{
 		gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 		gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
-		load_object_properties(3,view.g[view.activeGraph]);
+		load_object_properties(3,view->g[view->activeGraph]);
 	}
 	else
 	{
@@ -258,12 +259,12 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 
 	respond=gtk_dialog_run (Dlg);
 	if (respond == GTK_RESPONSE_YES)	
-		do_graph_layout(view.g[view.activeGraph],0,0);
+		do_graph_layout(view->g[view->activeGraph],0,0);
 	gtk_object_destroy (Dlg);
 
 	cursor = gdk_cursor_new(GDK_HAND2);
 	w=glade_xml_get_widget(xml, "frmMain");
-   gdk_window_set_cursor ((GTK_WIDGET(drawing_area)->window), cursor);
+   gdk_window_set_cursor ((GTK_WIDGET(view->drawing_area)->window), cursor);
 	gdk_cursor_destroy(cursor);
 }
 
@@ -276,7 +277,7 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
                                   "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
 	respond=gtk_dialog_run (Dlg);
 	if (respond == GTK_RESPONSE_YES)	
-		do_graph_layout(view.g[view.activeGraph],1,0);
+		do_graph_layout(view->g[view->activeGraph],1,0);
 	gtk_object_destroy (Dlg);
 }
 
@@ -290,7 +291,7 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 
 	respond=gtk_dialog_run (Dlg);
 	if (respond == GTK_RESPONSE_YES)	
-		do_graph_layout(view.g[view.activeGraph],2,0);
+		do_graph_layout(view->g[view->activeGraph],2,0);
 	gtk_object_destroy (Dlg);
 
 }
@@ -305,7 +306,7 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 
 	respond=gtk_dialog_run (Dlg);
 	if (respond == GTK_RESPONSE_YES)	
-		do_graph_layout(view.g[view.activeGraph],3,0);
+		do_graph_layout(view->g[view->activeGraph],3,0);
 	gtk_object_destroy (Dlg);
 }
 
@@ -321,52 +322,52 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 
 	respond=gtk_dialog_run (Dlg);
 	if (respond == GTK_RESPONSE_YES)	
-		do_graph_layout(view.g[view.activeGraph],4,0);
+		do_graph_layout(view->g[view->activeGraph],4,0);
 	gtk_object_destroy (Dlg);
 }
 
 //select
   void  mSelectAllSlot(GtkWidget *widget,gpointer user_data)
 {
-	select_all(view.g[view.activeGraph]);
+	select_all(view->g[view->activeGraph]);
 }
 
 
   void  mUnselectAllSlot(GtkWidget *widget,gpointer user_data)
 {
-	deselect_all(view.g[view.activeGraph]);
+	deselect_all(view->g[view->activeGraph]);
 }
 
   void mSelectAllNodesSlot(GtkWidget *widget,gpointer user_data)
 {
-	select_all_nodes(view.g[view.activeGraph]);
+	select_all_nodes(view->g[view->activeGraph]);
 }
 
   void mSelectAllEdgesSlot(GtkWidget *widget,gpointer user_data)
 {
-	select_all_edges(view.g[view.activeGraph]);
+	select_all_edges(view->g[view->activeGraph]);
 }
 
 void mSelectAllClustersSlot(GtkWidget *widget,gpointer user_data)
 {
-	select_all_graphs(view.g[view.activeGraph]);
+	select_all_graphs(view->g[view->activeGraph]);
 }
 
 
 void mUnselectAllNodesSlot(GtkWidget *widget,gpointer user_data)
 {
-	deselect_all_nodes(view.g[view.activeGraph]);
+	deselect_all_nodes(view->g[view->activeGraph]);
 }
 
 void mUnselectAllEdgesSlot(GtkWidget *widget,gpointer user_data)
 {
-	deselect_all_edges(view.g[view.activeGraph]);
+	deselect_all_edges(view->g[view->activeGraph]);
 }
 
 
 void mUnselectAllClustersSlot(GtkWidget *widget,gpointer user_data)
 {
-	deselect_all_graphs(view.g[view.activeGraph]);
+	deselect_all_graphs(view->g[view->activeGraph]);
 }
 
 void mSingleSelectSlot(GtkWidget *widget,gpointer user_data)
