@@ -14,6 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+//#include <assert.h>
 #include "btree.h"
 #include "regex.h"
 #include "viewport.h"
@@ -258,7 +259,7 @@ int evaluate_filter_atom(char* string,btree_node* Nodes[],char* op)
 				values=realloc(values,(values_count+1)*sizeof(char*));
 				values[values_count]=strdup(buff_value);
 				values_count++;
-				buff_attr[0]='/0';buff_value[0]='/0';
+				buff_attr[0]='\0';buff_value[0]='\0';
 				c_buff_attr=0;c_buff_value=0;
 			}
 			if ( (*c_cursor != '=') &&(*c_cursor != ',')&&(*c_cursor != '\"'))
@@ -338,21 +339,25 @@ int  evaluate_expresions (tv_node* TV_Node,btree_node* n)
 	}
 	if (n->node_type==2)
 	{
+//assert(n);
+//assert(n->attr_name);
+//fprintf(stderr,"agget(%d,%s)", TV_Node->index , n->attr_name);
 		data=agget(view->Topview->Nodes[TV_Node->index].Node,n->attr_name);
+//fprintf(stderr,"  = %s\n", data);
 		if (data)
 		{
-				regcomp(&preg,n->regex,REG_NOSUB);
+			regcomp(&preg,n->regex,REG_NOSUB);
 			if (regexec(&preg,data,0,0,0)==0)
 				n->value=1;
 			else
 				n->value=0;
+			regfree(&preg);	
 		}
 		else
 			n->value=1;	//no attribute return 1
 	}
 	else
 		n->value=ii;
-	regfree(&preg);	
 	return n->value;
 
 }
