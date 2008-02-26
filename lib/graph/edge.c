@@ -211,7 +211,6 @@ Agedge_t *agNEWedge(Agraph_t * subg, Agnode_t * tail, Agnode_t * head,
     if (nobj) {
 		e->attr = N_NEW(nobj, char *);
 		e->didset = N_NEW((nobj + CHAR_BIT - 1) / CHAR_BIT, char);
-		memset(e->didset, 0, (nobj + CHAR_BIT - 1) / CHAR_BIT);
 	}
     else {
 		e->attr = NULL;
