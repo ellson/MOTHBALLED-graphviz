@@ -14,12 +14,13 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#define _CRT_SECURE_NO_DEPRECATE 1 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
 #endif
 #include <gtk/gtk.h>
 #include "callbacks.h"
-#include "topview.h"
+#include "viewport.h"
 
 
 
@@ -46,8 +47,8 @@ void
 save_graph_clicked                       (GtkWidget     *widget,
                                         gpointer         user_data)
 {
-	if(view.activeGraph > -1)
-		save_graph(view.g[view.activeGraph],NULL);
+	if(view->activeGraph > -1)
+		save_graph(view->g[view->activeGraph],NULL);
 }
 
 
@@ -69,7 +70,7 @@ save_as_graph_clicked                       (GtkWidget     *widget,
 	{
 		char *filename;
 		filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-		save_graph(view.g[view.activeGraph],filename);
+		save_graph(view->g[view->activeGraph],filename);
 		g_free (filename);
 	}
 	gtk_widget_destroy (dialog);
@@ -93,7 +94,7 @@ btn_dot_clicked                       (GtkWidget     *widget,
 {
 	GdkCursor* cursor;
 	GdkWindow* w;
-	Dlg = gtk_message_dialog_new (NULL,
+	Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_YES_NO,
@@ -101,13 +102,13 @@ btn_dot_clicked                       (GtkWidget     *widget,
 
 	respond=gtk_dialog_run (Dlg);
 	if (respond == GTK_RESPONSE_YES)	
-		do_graph_layout(view.g[view.activeGraph],0,0);
+		do_graph_layout(view->g[view->activeGraph],0,0);
 	gtk_object_destroy (Dlg);
 
 	cursor = gdk_cursor_new(GDK_HAND2);
 	w=glade_xml_get_widget(xml, "frmMain");
 //	gdk_window_set_cursor(w, cursor);
-   gdk_window_set_cursor ((GTK_WIDGET(drawing_area)->window), cursor);
+   gdk_window_set_cursor ((GTK_WIDGET(view->drawing_area)->window), cursor);
 //	gdk_window_set_title((GTK_WIDGET(widget)->window),"adasdasdasdassada");
 	gdk_cursor_destroy(cursor);
 
@@ -128,7 +129,7 @@ btn_neato_clicked                       (GtkWidget     *widget,
 
 	respond=gtk_dialog_run (Dlg);
 	if (respond == GTK_RESPONSE_YES)	
-		do_graph_layout(view.g[view.activeGraph],1,0);
+		do_graph_layout(view->g[view->activeGraph],1,0);
 	gtk_object_destroy (Dlg);
 	gtk_button_set_image(GTK_BUTTON(glade_xml_get_widget(xml, "btn_neato")), gtk_image_new_from_file("c:\fonts.png"));
 
@@ -147,7 +148,7 @@ btn_twopi_clicked                       (GtkWidget     *widget,
 
 	respond=gtk_dialog_run (Dlg);
 	if (respond == GTK_RESPONSE_YES)	
-		do_graph_layout(view.g[view.activeGraph],2,0);
+		do_graph_layout(view->g[view->activeGraph],2,0);
 	gtk_object_destroy (Dlg);
 
 }
@@ -165,7 +166,7 @@ btn_circo_clicked                       (GtkWidget     *widget,
 
 	respond=gtk_dialog_run (Dlg);
 	if (respond == GTK_RESPONSE_YES)	
-		do_graph_layout(view.g[view.activeGraph],3,0);
+		do_graph_layout(view->g[view->activeGraph],3,0);
 	gtk_object_destroy (Dlg);
 }
 
@@ -184,7 +185,7 @@ btn_fdp_clicked                       (GtkWidget     *widget,
 
 	respond=gtk_dialog_run (Dlg);
 	if (respond == GTK_RESPONSE_YES)	
-		do_graph_layout(view.g[view.activeGraph],4,0);
+		do_graph_layout(view->g[view->activeGraph],4,0);
 	gtk_object_destroy (Dlg);
 
 
@@ -237,14 +238,14 @@ void                graph_select_change                   (GtkWidget *widget,
 	gint active_graph;
 
 
-	if(!SignalBlock)
+	if(!view->SignalBlock)
 	{
 		active_graph=gtk_combo_box_get_active(widget);
 
 		if (active_graph > -1)
 		{
-			view.activeGraph=active_graph;
-			refreshControls(&view);
+			view->activeGraph=active_graph;
+			refreshControls(view);
 		}
 	}
 }
@@ -264,7 +265,7 @@ void                on_dlgOpenGraph_btnOK_clicked             (GtkWidget *widget
 	GTK_RESPONSE_APPLY  = -10,
 	GTK_RESPONSE_HELP   = -11 */
 	
-	if(update_graph_properties(view.g[view.activeGraph]))
+	if(update_graph_properties(view->g[view->activeGraph]))
 		gtk_dialog_response(glade_xml_get_widget(xml, "dlgOpenGraph"),GTK_RESPONSE_OK);
 }
 //dlgOpenGraph btncancelclicked
@@ -300,12 +301,12 @@ void frmObjectBtnOK_clicked (GtkWidget *widget,gpointer     user_data)
 {
 	//call function to update object values
 	update_object_properties(frmObjectTypeIndex,frmObjectg);
-	if(((custom_graph_data*)AGDATA(view.g[view.activeGraph]))->TopView == 0)
-		do_graph_layout(view.g[view.activeGraph],0,1);
+	if(((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->TopView == 0)
+		do_graph_layout(view->g[view->activeGraph],0,1);
 	else
 	{
-		set_update_required(&Topview);
-		deselect_all(view.g[view.activeGraph]);
+		set_update_required(&view->Topview);
+		deselect_all(view->g[view->activeGraph]);
 	}
 
 	gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));

@@ -16,7 +16,6 @@
 
 #include <gtk/gtk.h>
 #include "toolboxcallbacks.h"
-#include "viewport.h"
 #include "gui.h"
 
 
