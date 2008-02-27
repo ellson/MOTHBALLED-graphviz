@@ -63,6 +63,8 @@ int load_host_buttons(topview* t,Agraph_t *g,glCompSet* s)
 		p->color.B=0,2;
 		glCompSetAddPanel(s,p);
 	}
+    else return 0;
+
 	for (i=0;i < btncount ; i++)
 	{
 		sprintf(hostbtncaption,"hostbtncaption%i",i);
