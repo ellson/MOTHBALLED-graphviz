@@ -954,7 +954,7 @@ void menu_click_alpha_plus(void* p)
 #ifdef _WIN32
 #define SMYRNA_ICON_PAN "c:/pan.raw"
 #define SMYRNA_ICON_ZOOM "c:/zoom.raw"
-#define SMYRNA_ICON_ZOOMPLUS "c:/zomplus.raw"
+#define SMYRNA_ICON_ZOOMPLUS "c:/zoomplus.raw"
 #define SMYRNA_ICON_ZOOMMINUS "c:/zoomminus.raw"
 #define SMYRNA_ICON_FISHEYE "c:/fisheye.raw"
 #endif
