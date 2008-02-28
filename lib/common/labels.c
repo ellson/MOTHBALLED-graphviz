@@ -366,7 +366,7 @@ char *xml_string(char *s)
 {
     static char *buf = NULL;
     static int bufsize = 0;
-    char *p, *sub;
+    char *p, *sub, *prev = NULL;
     int len, pos = 0;
 
     if (!buf) {
@@ -398,6 +398,10 @@ char *xml_string(char *s)
 	} else if (*s == '\'') {
 	    sub = "&#39;";
 	    len = 5;
+	} else if (*s == ' ' && prev && *prev == ' ') {
+	    /* substitute 2nd and subsequent spaces with required_spaces */
+	    sub = "&#160;";  /* inkscape doesn't recognise &nbsp; */
+	    len = 6;
 	}
 	/* escape '&' only if not part of a legal entity sequence */
 	else if (*s == '&' && !(xml_isentity(s))) {
@@ -411,6 +415,7 @@ char *xml_string(char *s)
 	    *p++ = *sub++;
 	    pos++;
 	}
+	prev = s;
 	s++;
     }
     *p = '\0';
