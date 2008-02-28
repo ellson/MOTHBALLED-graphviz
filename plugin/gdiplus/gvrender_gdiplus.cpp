@@ -26,7 +26,7 @@
 #include "graph.h"
 
 #include <windows.h>
-#include "Gdiplus.h"
+#include "GdiPlus.h"
 
 #include <memory>
 #include <vector>
@@ -39,6 +39,7 @@ using namespace Gdiplus;
 typedef enum {
 	FORMAT_BMP,
 	FORMAT_EMF,
+	FORMAT_EMFPLUS,
 	FORMAT_GIF,
 	FORMAT_JPEG,
 	FORMAT_PNG,
@@ -48,6 +49,7 @@ typedef enum {
 /* class id corresponding to each format_type */
 static GUID format_id [] = {
 	ImageFormatBMP,
+	ImageFormatEMF,
 	ImageFormatEMF,
 	ImageFormatGIF,
 	ImageFormatJPEG,
@@ -105,6 +107,7 @@ static void gdiplusgen_end_job(GVJ_t *job)
 		
 		switch (job->device.id) {
 			case FORMAT_EMF:
+			case FORMAT_EMFPLUS:
 				break;
 			default:
 				/* search the encoders for one that matches our device id, then save the bitmap there */
@@ -157,12 +160,14 @@ static void gdiplusgen_begin_page(GVJ_t *job)
 		switch (job->device.id) {
 		
 		case FORMAT_EMF:
+		case FORMAT_EMFPLUS:
 			/* EMF image */
 			image = new Metafile (stream,
 				DeviceContext().hdc,
 				RectF(0.0f, 0.0f, job->width, job->height),
 				MetafileFrameUnitPixel,
-				EmfTypeEmfPlusDual);	/* output in EMF for wider compatibility, abd also in EMF+ for antialiasing etc. */
+				job->device.id == FORMAT_EMFPLUS ? EmfTypeEmfPlusOnly : EmfTypeEmfOnly);
+				/* output in EMF for wider compatibility; output in EMF+ for antialiasing etc. */
 			break;
 			
 		default:
@@ -383,6 +388,7 @@ gvplugin_installed_t gvrender_gdiplus_types[] = {
 gvplugin_installed_t gvdevice_gdiplus_types[] = {
 	{FORMAT_BMP, "bmp:gdiplus", 8, NULL, &device_features_gdiplus},
 	{FORMAT_EMF, "emf:gdiplus", 8, NULL, &device_features_gdiplus},
+	{FORMAT_EMFPLUS, "emfplus:gdiplus", 8, NULL, &device_features_gdiplus},
 	{FORMAT_GIF, "gif:gdiplus", 8, NULL, &device_features_gdiplus},
 	{FORMAT_JPEG, "jpe:gdiplus", 8, NULL, &device_features_gdiplus},
 	{FORMAT_JPEG, "jpeg:gdiplus", 8, NULL, &device_features_gdiplus},
