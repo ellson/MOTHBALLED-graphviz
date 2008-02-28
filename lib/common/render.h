@@ -67,7 +67,7 @@ extern "C" {
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
     extern boxf arrow_bb(pointf p, pointf u, double scale, int flag);
     extern void arrow_gen(GVJ_t * job, emit_state_t emit_state, point p, point u,
-			  double scale, double wscale, int flag);
+			  double scale, double penwidth, int flag);
     extern double arrow_length(edge_t * e, int flag);
     extern int arrowEndClip(edge_t*, point*, int, int , bezier*, int eflag);
     extern int arrowStartClip(edge_t*, point* ps, int, int, bezier*, int sflag);
