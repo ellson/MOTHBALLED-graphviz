@@ -47,6 +47,7 @@ void preparetopview(Agraph_t *g,topview* t)
 	char* pch;
 	Agnode_t *v;
 	Agedge_t *e;
+	Agsym_t *sym;
 	GtkTreeIter iter;
 	int ind,ind2,data_type_count;	//number of columns for custom view->Topview data ,IP ,HOST, etc
 	char buf[256];
@@ -55,6 +56,12 @@ void preparetopview(Agraph_t *g,topview* t)
 	gtk_widget_hide(glade_xml_get_widget(xml, "menubar1"));	//hide menu
 	data_type_count=0;
 	d_attr1=agget(g, "DataAttribute1");
+	if (d_attr1) {
+		if (!strcmp (d_attr1, "\\N"))
+			sym = 0;
+		else if (!(sym = agattr (g, AGNODE, d_attr1, 0)))
+			d_attr1 = 0;
+	}
 	d_attr2=agget(g, "DataAttribute2");
 	
 	t->Edges=NULL;
@@ -104,12 +111,11 @@ void preparetopview(Agraph_t *g,topview* t)
 		t->Nodes[ind].node_alpha=log((float)t->Nodes[ind].degree+0.3);
 		if(d_attr1)
 		{
-			str=agget(v,d_attr1);
-			if(str)
-			{
-				t->Nodes[ind].Label=strdup(str);
-
-			}
+			if (sym)
+				str = agxget(v,sym);
+			else
+				str = agnameof(v);
+			t->Nodes[ind].Label=strdup(str);
 
 		}
 		if(d_attr2)
