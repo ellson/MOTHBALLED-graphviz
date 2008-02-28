@@ -62,11 +62,6 @@ static int glob (char*, int, int (*errfunc)(const char *, int), glob_t*);
 extern const int Demand_Loading;
 
 #ifdef WITH_CODEGENS
-#ifdef QUARTZ_RENDER
-#include <QuickTime/QuickTime.h>
-
-    extern codegen_t QPDF_CodeGen, QEPDF_CodeGen, QBM_CodeGen;
-#endif
     extern codegen_t HPGL_CodeGen, MIF_CodeGen, MP_CodeGen, PIC_CodeGen, DIA_CodeGen, VTX_CodeGen;
 #endif
 
@@ -440,12 +435,6 @@ static codegen_info_t cg[MAX_CODEGENS] = {
     {&HPGL_CodeGen, "pcl", PCL},
     {&MIF_CodeGen, "mif", MIF},
     {&PIC_CodeGen, "pic", PIC_format},
-
-#ifdef QUARTZ_RENDER
-    {&QPDF_CodeGen, "pdf", QPDF},
-    {&QEPDF_CodeGen, "epdf", QEPDF},
-#endif                          /* QUARTZ_RENDER */
-
     {&VTX_CodeGen, "vtx", VTX},
     {&MP_CodeGen, "mp", METAPOST},
 #ifdef HAVE_LIBZ
@@ -462,56 +451,6 @@ codegen_info_t *first_codegen(void)
 codegen_info_t *next_codegen(codegen_info_t * p)
 {
     ++p;
-
-#ifdef QUARTZ_RENDER
-    static boolean unscanned = TRUE;
-    if (!p->name && unscanned) {
-        /* reached end of codegens but haven't yet scanned for Quicktime codegens... */
-
-        unscanned = FALSE;              /* don't scan again */
-
-        ComponentDescription criteria;
-        criteria.componentType = GraphicsExporterComponentType;
-        criteria.componentSubType = 0;
-        criteria.componentManufacturer = 0;
-        criteria.componentFlags = 0;
-        criteria.componentFlagsMask = graphicsExporterIsBaseExporter;
-
-        codegen_info_t *next_cg;
-        int next_id;
-        Component next_component;
-
-        /* make each discovered Quicktime format into a codegen */
-        for (next_cg = p, next_id = QBM_FIRST, next_component =
-             FindNextComponent(0, &criteria);
-             next_cg < cg + MAX_CODEGENS - 1 && next_id <= QBM_LAST
-             && next_component;
-             ++next_cg, ++next_id, next_component =
-             FindNextComponent(next_component, &criteria)) {
-            next_cg->cg = &QBM_CodeGen;
-            next_cg->id = next_id;
-            next_cg->info = next_component;
-
-            /* get four chars of extension, trim and convert to lower case */
-            char extension[5];
-            GraphicsExportGetDefaultFileNameExtension((GraphicsExportComponent) next_component, (OSType *) & extension);
-            extension[4] = '\0';
-
-            char *extension_ptr;
-            for (extension_ptr = extension; *extension_ptr;
-                 ++extension_ptr)
-                *extension_ptr =
-                    *extension_ptr == ' ' ? '\0' : tolower(*extension_ptr);
-            next_cg->name = strdup(extension);
-        }
-
-        /* add new sentinel at end of dynamic codegens */
-        next_cg->cg = (codegen_t *) 0;
-        next_cg->id = 0;
-        next_cg->info = (void *) 0;
-        next_cg->name = (char *) 0;
-    }
-#endif
     return p;
 }
 #endif
