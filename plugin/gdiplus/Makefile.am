@@ -19,8 +19,8 @@ endif
 endif
 
 libgvplugin_gdiplus_C_la_SOURCES = \
-	gvplugin_gdiplus.c \
-	gvrender_gdiplus.c
+	gvplugin_gdiplus.cpp \
+	gvrender_gdiplus.cpp
 
 libgvplugin_gdiplus_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO -L "$(PLATFORMSDK)/lib"
 libgvplugin_gdiplus_la_SOURCES = $(libgvplugin_gdiplus_C_la_SOURCES)
@@ -30,6 +30,6 @@ if WITH_WIN32
 libgvplugin_gdiplus_la_LDFLAGS += -no-undefined
 endif
 
-Gdiplus.h : $(PLATFORMSDK)/include/Gdiplus*.h gdiplus.diff
-	cp $(PLATFORMSDK)/include/Gdiplus*.h .
+GdiPlus.h : $(PLATFORMSDK)/include/GdiPlus*.h gdiplus.diff
+	cp $(PLATFORMSDK)/include/GdiPlus*.h .
 	patch gdiplus.diff
