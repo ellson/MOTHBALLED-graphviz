@@ -1926,6 +1926,30 @@ AC_SUBST(QUARTZ_LIBS)
 AM_CONDITIONAL(WITH_QUARTZ, [test "x$HAVE_QUARTZ" != "x"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for GDIPLUS 
+
+AC_ARG_WITH(gdiplus,
+  [AC_HELP_STRING([--with-gdiplus=no], [GDIPLUS framework (Windows)])],
+  [], [with_gdiplus=no])
+
+if test "x$with_gdiplus" = "xyes"; then
+
+GDIPLUS_PLATFORMSDK="$VS80COMNTOOLS/../../VC/PlatformSDK"
+
+if test -d "$GDIPLUS_PLATFORMSDK"; then
+HAVE_GDIPLUS=1
+AC_DEFINE_UNQUOTED(HAVE_GDIPLUS,1,[Define if you have the GdiPlus framework for Windows])
+GDIPLUS_CFLAGS=''
+GDIPLUS_LIBS=''
+fi
+
+fi
+AC_SUBST(GDIPLUS_PLATFORMSDK)
+AC_SUBST(GDIPLUS_CFLAGS)
+AC_SUBST(GDIPLUS_LIBS)
+AM_CONDITIONAL(WITH_GDIPLUS, [test "x$HAVE_GDIPLUS" != "x"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
                                                                                 
 AC_ARG_WITH(libgd,
@@ -2461,6 +2485,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/pango/Makefile
 	plugin/ming/Makefile
 	plugin/quartz/Makefile
+	plugin/gdiplus/Makefile
 	plugin/dot_layout/Makefile
 	plugin/neato_layout/Makefile
 	plugin/xlib/Makefile
