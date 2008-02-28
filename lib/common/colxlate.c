@@ -25,7 +25,7 @@
 #include "arith.h"
 #include "color.h"
 #include "colorprocs.h"
-#include "colortbl.h"
+//#include "colortbl.h"
 #include "memory.h"
 
 static char* colorscheme;
