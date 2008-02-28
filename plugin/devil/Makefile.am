@@ -23,9 +23,13 @@ libgvplugin_devil_C_la_SOURCES = \
 	gvplugin_devil.c \
 	gvdevice_devil.c
 
-libgvplugin_devil_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
+libgvplugin_devil_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_devil_la_SOURCES = $(libgvplugin_devil_C_la_SOURCES)
 libgvplugin_devil_la_LIBADD = @DEVIL_LIBS@
+
+if WITH_WIN32
+libgvplugin_devil_la_LDFLAGS += -no-undefined
+endif
 
 EXTRA_DIST = Makefile.old
 

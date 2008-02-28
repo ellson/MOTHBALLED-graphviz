@@ -25,10 +25,14 @@ libgvplugin_gdk_pixbuf_C_la_SOURCES = \
 	gvplugin_gdk_pixbuf.c \
 	gvdevice_gdk_pixbuf.c
 
-libgvplugin_gdk_pixbuf_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
+libgvplugin_gdk_pixbuf_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_gdk_pixbuf_la_SOURCES = $(libgvplugin_gdk_pixbuf_C_la_SOURCES)
 libgvplugin_gdk_pixbuf_la_LIBADD = \
 	$(top_builddir)/lib/gvc/libgvc.la @GDK_PIXBUF_LIBS@
+	
+if WITH_WIN32
+libgvplugin_gdk_pixbuf_la_LDFLAGS += -no-undefined
+endif
 
 EXTRA_DIST = Makefile.old
 

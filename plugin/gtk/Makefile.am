@@ -29,8 +29,12 @@ libgvplugin_gtk_C_la_SOURCES = \
         interface.c \
         callbacks.c 
 
-libgvplugin_gtk_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
+libgvplugin_gtk_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_gtk_la_SOURCES = $(libgvplugin_gtk_C_la_SOURCES)
 libgvplugin_gtk_la_LIBADD = $(GTK_LIBS) $(GNOMEUI_LIBS)
+
+if WITH_WIN32
+libgvplugin_gtk_la_LDFLAGS = -no-undefined
+endif
 
 EXTRA_DIST = gtk.glade gtk.gladep 

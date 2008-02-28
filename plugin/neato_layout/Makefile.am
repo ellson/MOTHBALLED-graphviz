@@ -31,8 +31,11 @@ libgvplugin_neato_layout_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_neato_layout_la_SOURCES = $(libgvplugin_neato_layout_C_la_SOURCES)
 libgvplugin_neato_layout_la_LIBADD = $(libgvplugin_neato_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la \
-	$(top_builddir)/lib/graph/libgraph.la \
-	$(top_builddir)/lib/cdt/libcdt.la @IPSEPCOLA_LIBS@
+	$(top_builddir)/lib/pathplan/libpathplan.la @IPSEPCOLA_LIBS@
+	
+if WITH_WIN32
+libgvplugin_neato_layout_la_LDFLAGS += -no-undefined
+libgvplugin_neato_layout_la_LIBADD += $(top_builddir)/lib/graph/libgraph.la $(top_builddir)/lib/cdt/libcdt.la
+endif
 
 EXTRA_DIST = Makefile.old

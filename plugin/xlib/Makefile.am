@@ -25,6 +25,10 @@ libgvplugin_xlib_C_la_SOURCES = \
 	gvplugin_xlib.c \
 	gvdevice_xlib.c
 
-libgvplugin_xlib_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@ -no-undefined
+libgvplugin_xlib_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_xlib_la_SOURCES = $(libgvplugin_xlib_C_la_SOURCES)
 libgvplugin_xlib_la_LIBADD = @PANGOCAIRO_LIBS@ @X_LIBS@ -lX11 @SOCKET_LIBS@ @MATH_LIBS@
+
+if WITH_WIN32
+libgvplugin_xlib_la_LDFLAGS += -no-undefined
+endif
