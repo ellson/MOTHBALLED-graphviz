@@ -99,16 +99,16 @@ static arrowname_t Arrownames[] = {
 typedef struct arrowtype_t {
     int type;
     double lenfact;		/* ratio of length of this arrow type to standard arrow */
-    void (*gen) (GVJ_t * job, pointf p, pointf u, double penwidth, int flag);	/* generator function for type */
+    void (*gen) (GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);	/* generator function for type */
 } arrowtype_t;
 
 /* forward declaration of functions used in Arrowtypes[] */
-static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, double penwidth, int flag);
-static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, double penwidth, int flag);
-static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, double penwidth, int flag);
-static void arrow_type_box(GVJ_t * job, pointf p, pointf u, double penwidth, int flag);
-static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, double penwidth, int flag);
-static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, double penwidth, int flag);
+static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
+static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
+static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
+static void arrow_type_box(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
+static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
+static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag);
 
 static arrowtype_t Arrowtypes[] = {
     {ARR_TYPE_NORM, 1.0, arrow_type_normal},
@@ -289,7 +289,7 @@ int arrowStartClip(edge_t* e, point * ps, int startp,
     return startp;
 }
 
-static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, double penwidth, int flag)
+static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
 {
     pointf q, v, a[5];
     double arrowwidth;
@@ -325,18 +325,18 @@ static void arrow_type_normal(GVJ_t * job, pointf p, pointf u, double penwidth, 
 	gvrender_polygon(job, &a[1], 3, !(flag & ARR_MOD_OPEN));
 }
 
-static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, double penwidth, int flag)
+static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
 {
-    pointf m, n, q, v, w, a[9];
+    pointf m, q, v, w, a[9];
     double arrowwidth, shaftwidth;
 
     arrowwidth = 0.45;
-    if (penwidth > 4)
-        arrowwidth *= penwidth / 4;
+    if (penwidth > (4 * arrowsize) && (flag & ARR_MOD_INV))
+        arrowwidth *= penwidth / (4 * arrowsize);
 
     shaftwidth = 0;
-    if (penwidth > 1)
-	shaftwidth = 0.05 * (penwidth - 1);
+    if (penwidth > 1 && (flag & ARR_MOD_INV))
+	shaftwidth = 0.05 * (penwidth - 1) / arrowsize;   /* arrowsize to cancel the arrowsize term already in u */
 
     v.x = -u.y * arrowwidth;
     v.y = u.x * arrowwidth;
@@ -344,11 +344,9 @@ static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, double penwidth, in
     w.y = u.x * shaftwidth;
     q.x = p.x + u.x;
     q.y = p.y + u.y;
-    m.x = p.x + u.x * 0.3;
-    m.y = p.y + u.y * 0.3;
-    n.x = p.x + u.x * 0.7;
-    n.y = p.y + u.y * 0.7;
-    if (flag & ARR_MOD_INV) {
+    m.x = p.x + u.x * 0.5;
+    m.y = p.y + u.y * 0.5;
+    if (flag & ARR_MOD_INV) {  /* vee */
 	a[0] = a[8] = p;
 	a[1].x = q.x - v.x;
 	a[1].y = q.y - v.y;
@@ -363,19 +361,19 @@ static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, double penwidth, in
 	a[6].y = m.y + w.y;
 	a[7].x = q.x + v.x;
 	a[7].y = q.y + v.y;
-    } else {
+    } else {                     /* crow */
 	a[0] = a[8] = q;
 	a[1].x = p.x - v.x;
 	a[1].y = p.y - v.y;
-	a[2].x = n.x - w.x;
-	a[2].y = n.y - w.y;
+	a[2].x = m.x - w.x;
+	a[2].y = m.y - w.y;
 	a[3].x = p.x;
 	a[3].y = p.y;
 	a[4] = p;
 	a[5].x = p.x;
 	a[5].y = p.y;
-	a[6].x = n.x + w.x;
-	a[6].y = n.y + w.y;
+	a[6].x = m.x + w.x;
+	a[6].y = m.y + w.y;
 	a[7].x = p.x + v.x;
 	a[7].y = p.y + v.y;
     }
@@ -387,7 +385,7 @@ static void arrow_type_crow(GVJ_t * job, pointf p, pointf u, double penwidth, in
 	gvrender_polygon(job, a, 9, 1);
 }
 
-static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, double penwidth, int flag)
+static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
 {
     pointf m, n, q, v, a[4];
 
@@ -420,7 +418,7 @@ static void arrow_type_tee(GVJ_t * job, pointf p, pointf u, double penwidth, int
     gvrender_polyline(job, a, 2);
 }
 
-static void arrow_type_box(GVJ_t * job, pointf p, pointf u, double penwidth, int flag)
+static void arrow_type_box(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
 {
     pointf m, q, v, a[4];
 
@@ -451,7 +449,7 @@ static void arrow_type_box(GVJ_t * job, pointf p, pointf u, double penwidth, int
     gvrender_polyline(job, a, 2);
 }
 
-static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, double penwidth, int flag)
+static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
 {
     pointf q, r, v, a[5];
 
@@ -475,7 +473,7 @@ static void arrow_type_diamond(GVJ_t * job, pointf p, pointf u, double penwidth,
 	gvrender_polygon(job, a, 4, !(flag & ARR_MOD_OPEN));
 }
 
-static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, double penwidth, int flag)
+static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
 {
     double r;
     pointf AF[2];
@@ -488,7 +486,7 @@ static void arrow_type_dot(GVJ_t * job, pointf p, pointf u, double penwidth, int
     gvrender_ellipse(job, AF, 2, !(flag & ARR_MOD_OPEN));
 }
 
-static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, double penwidth, int flag)
+static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, double arrowsize, double penwidth, int flag)
 {
     int f;
     arrowtype_t *arrowtype;
@@ -496,9 +494,9 @@ static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, double penwidth, i
     f = flag & ((1 << 8) - 1);
     for (arrowtype = Arrowtypes; arrowtype->type; arrowtype++) {
 	if (f == arrowtype->type) {
-	    u.x *= arrowtype->lenfact;
-	    u.y *= arrowtype->lenfact;
-	    (arrowtype->gen) (job, p, u, penwidth, flag);
+	    u.x *= arrowtype->lenfact * arrowsize;
+	    u.y *= arrowtype->lenfact * arrowsize;
+	    (arrowtype->gen) (job, p, u, arrowsize, penwidth, flag);
 	    p.x = p.x + u.x;
 	    p.y = p.y + u.y;
 	    break;
@@ -507,7 +505,7 @@ static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, double penwidth, i
     return p;
 }
 
-boxf arrow_bb(pointf p, pointf u, double scale, int flag)
+boxf arrow_bb(pointf p, pointf u, double arrowsize, int flag)
 {
     double s;
     boxf bb;
@@ -518,7 +516,7 @@ boxf arrow_bb(pointf p, pointf u, double scale, int flag)
     u.x -= p.x;
     u.y -= p.y;
     /* the EPSILONs are to keep this stable as length of u approaches 0.0 */
-    s = ARROW_LENGTH * scale / (sqrt(u.x * u.x + u.y * u.y) + EPSILON);
+    s = ARROW_LENGTH * arrowsize / (sqrt(u.x * u.x + u.y * u.y) + EPSILON);
     u.x += (u.x >= 0.0) ? EPSILON : -EPSILON;
     u.y += (u.y >= 0.0) ? EPSILON : -EPSILON;
     u.x *= s;
@@ -545,7 +543,7 @@ boxf arrow_bb(pointf p, pointf u, double scale, int flag)
     return bb;
 }
 
-void arrow_newgen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, double scale, double penwidth, int flag)
+void arrow_newgen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, double arrowsize, double penwidth, int flag)
 {
     obj_state_t *obj = job->obj;
     double s;
@@ -564,7 +562,7 @@ void arrow_newgen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, doub
     u.x -= p.x;
     u.y -= p.y;
     /* the EPSILONs are to keep this stable as length of u approaches 0.0 */
-    s = ARROW_LENGTH * scale / (sqrt(u.x * u.x + u.y * u.y) + EPSILON);
+    s = ARROW_LENGTH / (sqrt(u.x * u.x + u.y * u.y) + EPSILON);
     u.x += (u.x >= 0.0) ? EPSILON : -EPSILON;
     u.y += (u.y >= 0.0) ? EPSILON : -EPSILON;
     u.x *= s;
@@ -572,12 +570,12 @@ void arrow_newgen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, doub
 
     /* arrow head closest to node */
     f = flag & ((1 << 16) - 1);
-    p = arrow_gen_type(job, p, u, penwidth, f);
+    p = arrow_gen_type(job, p, u, arrowsize, penwidth, f);
 
     /* arrow head furthest from node */
     /*   start where first one ended */
     f = (flag >> 16) & ((1 << 16) - 1);
-    arrow_gen_type(job, p, u, penwidth, f);
+    arrow_gen_type(job, p, u, arrowsize, penwidth, f);
 
     gvrender_end_context(job);
 
@@ -585,11 +583,11 @@ void arrow_newgen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, doub
 }
 
 /* FIXME emit.c and output.c require wrapper for int point coords */
-void arrow_gen(GVJ_t * job, emit_state_t emit_state, point p, point u, double scale, double penwidth, int flag)
+void arrow_gen(GVJ_t * job, emit_state_t emit_state, point p, point u, double arrowsize, double penwidth, int flag)
 {
     pointf P, U;
 
     P2PF(p, P);
     P2PF(u, U);
-    arrow_newgen(job, emit_state, P, U, scale, penwidth, flag);
+    arrow_newgen(job, emit_state, P, U, arrowsize, penwidth, flag);
 }
