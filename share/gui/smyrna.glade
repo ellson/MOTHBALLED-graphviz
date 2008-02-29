@@ -692,6 +692,7 @@ topview</property>
               <widget class="GtkMenuItem" id="menuitem5">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Graph</property>
+                <property name="use_underline">True</property>
                 <child>
                   <widget class="GtkMenu" id="menu4">
                     <property name="visible">True</property>
@@ -1675,7 +1676,7 @@ topview</property>
                 <property name="width_request">79</property>
                 <property name="height_request">25</property>
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Higlight All</property>
+                <property name="label" translatable="yes">Highlight All</property>
                 <signal name="clicked" handler="btnTVHighlightAll_clicked_cb"/>
               </widget>
               <packing>
@@ -1688,7 +1689,7 @@ topview</property>
                 <property name="width_request">100</property>
                 <property name="height_request">25</property>
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Unhiglight All</property>
+                <property name="label" translatable="yes">Unhighlight All</property>
                 <signal name="clicked" handler="btnTVUnhighlightAll_clicked_cb"/>
               </widget>
               <packing>
@@ -2118,7 +2119,7 @@ topview</property>
                 <property name="height_request">20</property>
                 <property name="visible">True</property>
                 <property name="xalign">0</property>
-                <property name="label" translatable="yes">FILTER CRITERIAS</property>
+                <property name="label" translatable="yes">FILTER CRITERIA</property>
               </widget>
             </child>
             <child>
