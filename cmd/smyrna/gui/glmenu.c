@@ -1,4 +1,5 @@
 #include "glmenu.h"
+#include "gltemplate.h"
 /*
 	creates the right click menu for open gl canvas
 	params:gtk widget to assign menu

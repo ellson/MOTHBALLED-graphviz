@@ -32,22 +32,6 @@
 #include <gtk/gtkgl.h>
 #include <gdk/gdkcursor.h>
 
-
-
-
-
-//mouse modes
-#define MM_PAN					0
-#define MM_ZOOM					1
-#define MM_ROTATE				2
-#define MM_SINGLE_SELECT		3
-#define MM_RECTANGULAR_SELECT	4
-#define MM_RECTANGULAR_X_SELECT	5
-#define MM_MOVE					10
-#define MM_MAGNIFIER			20
-#define MM_FISHEYE_MAGNIFIER	21
-
-
 void examine_gl_config_attrib (GdkGLConfig *glconfig);
 void print_gl_config_attrib (GdkGLConfig *glconfig,const gchar *attrib_str,int attrib,gboolean is_boolean);
 static void realize (GtkWidget *widget,gpointer   data);

@@ -53,7 +53,7 @@ void preparetopview(Agraph_t *g,topview* t)
 	char buf[256];
 	ind=0;ind2=0;
 	gtk_widget_hide(glade_xml_get_widget(xml, "layout6"));	//hide top panel
-	gtk_widget_hide(glade_xml_get_widget(xml, "menubar1"));	//hide menu
+//	gtk_widget_hide(glade_xml_get_widget(xml, "menubar1"));	//hide menu
 	data_type_count=0;
 	d_attr1=agget(g, "DataAttribute1");
 	if (d_attr1) {

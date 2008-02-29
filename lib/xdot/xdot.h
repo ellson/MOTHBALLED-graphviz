@@ -18,10 +18,8 @@
 #include <stdio.h>
 #ifdef _WIN32
 #include <windows.h>
-#include <strcasecmp.h>
 #endif
 #include <GL/gl.h>
-
 #include "cgraph.h"
 #define MAXIMUM_POS_COUNT	100	
 typedef struct _TextTexture {

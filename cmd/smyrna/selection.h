@@ -17,7 +17,7 @@
 #ifndef SELECTION_H
 #define SELECTION_H
 
-#include "viewport.h"
+#include "xdot.h"
 
 #define	SELECTION_SEGMENT_DIVIDER	5.0	//control points count to check if a line segment is withing clipping rect
 #define SINGLE_SELECTION_WIDTH	10	//width of the rect clip for single selections , higher values more catches less sensitivity

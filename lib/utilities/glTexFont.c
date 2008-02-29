@@ -19,7 +19,6 @@
 #include "glTexFontTGA.h"
 #include "glTexFontDefs.h"
 #include "glTexFontInclude.h"
-#include "viewport.h"
 
 
 /* just a global for our default colors */

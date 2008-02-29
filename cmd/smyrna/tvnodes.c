@@ -112,6 +112,7 @@ int validate_node(tv_node* TV_Node)
 	char* data_attr2;
 	char* data1;
 	char* data2;
+	char* buf;
 //		n=tree_from_filter_string("([IP=\"^10.*\",min=\"0\",max=\"0\"])");
 	// get attributes from graph
 	data_attr1=agget(view->g[view->activeGraph],"DataAttribute1");
@@ -125,8 +126,12 @@ int validate_node(tv_node* TV_Node)
 		{
 			n=tree_from_filter_string(TV_Nodes.filter.filter_string);
 			MP_Flag=0;
-			if (strcmp(TV_Nodes.filter.min_data1,  agget(view->Topview->Nodes[TV_Node->index].Node,data_attr1)   ))
-				valid=0;
+			buf=agget(view->Topview->Nodes[TV_Node->index].Node,data_attr1);
+			if(buf)
+			{
+				if (strcmp(TV_Nodes.filter.min_data1,buf))
+					valid=0;
+			}
 		}
 		if (data_attr1 && TV_Nodes.filter.max_data1 && agget(view->Topview->Nodes[TV_Node->index].Node,data_attr1))
 		{

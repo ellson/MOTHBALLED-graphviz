@@ -8,7 +8,7 @@
 #include "glTexFontTGA.h"
 #include "glTexFontDefs.h"
 #include "glTexFontInclude.h"
-#include "gltemplate.h"
+//#include "gltemplate.h"
 #include "glcomptexture.h"
 
 #define	GLCOMPSET_PANEL_COLOR_R		0.16
