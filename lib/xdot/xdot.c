@@ -108,6 +108,103 @@ parseAlign (char* s, xdot_align* ap)
     return s;
 }
 
+#ifdef NEWXDOT
+static char*
+parseOp (xdot_op* op, char* s, drawfunc_t ops[])
+{
+    while (isspace(*s)) s++;
+    switch (*s++) {
+    case 'E' :	
+	op->kind = xd_filled_ellipse;
+	s = parseRect (s, &op->u.ellipse);
+	op->drawfunc=ops[xop_ellipse];
+	break;
+
+	case 'e' :	
+	op->kind = xd_unfilled_ellipse;
+	s = parseRect (s, &op->u.ellipse);
+	op->drawfunc=ops[xop_ellipse];
+	break;
+
+	case 'P' :
+	op->kind = xd_filled_polygon;
+	s = parsePolyline (s, &op->u.polygon);
+	op->drawfunc=ops[xop_polygon];
+	break;
+
+	case 'p' :
+	op->kind = xd_unfilled_polygon;
+	s = parsePolyline (s, &op->u.polygon);
+	op->drawfunc=ops[xop_polygon];
+	break;
+
+	case 'b' :
+	op->kind = xd_filled_bezier;
+	s = parsePolyline (s, &op->u.bezier);
+	op->drawfunc=ops[xop_bezier];
+	break;
+    
+	case 'B' :
+	op->kind = xd_unfilled_bezier;
+	s = parsePolyline (s, &op->u.bezier);
+	op->drawfunc=ops[xop_bezier];
+	break;
+    
+	case 'c' :
+	op->kind = xd_pen_color;
+	s = parseString (s, &op->u.color);
+	op->drawfunc=ops[xop_pen_color];
+	break;
+    
+	case 'C' :
+	op->kind = xd_fill_color;
+	s = parseString (s, &op->u.color);
+	op->drawfunc=ops[xop_fill_color];
+	break;
+    
+	case 'L' :
+	op->kind = xd_polyline;
+	s = parsePolyline (s, &op->u.polyline);
+	op->drawfunc=ops[xop_polyline];
+	break;
+    
+	case 'T' :
+	op->kind = xd_text;
+	s = parseInt (s, &op->u.text.x);
+	s = parseInt (s, &op->u.text.y);
+	s = parseAlign (s, &op->u.text.align);
+	s = parseInt (s, &op->u.text.width);
+	s = parseString (s, &op->u.text.text);
+	op->drawfunc=ops[xop_text];
+	break;
+    
+	case 'F' :
+	op->kind = xd_font;
+	s = parseFloat (s, &op->u.font.size);
+	s = parseString (s, &op->u.font.name);
+	op->drawfunc=ops[xop_font];
+	break;
+    
+	case 'S' :
+	op->kind = xd_style;
+	s = parseString (s, &op->u.style);
+	op->drawfunc=ops[xop_style];
+	break;
+    
+	case 'I' :
+	op->kind = xd_image;
+	s = parseRect (s, &op->u.image.pos);
+	s = parseString (s, &op->u.image.name);
+	op->drawfunc=ops[xop_image];
+	break;
+    
+	default :
+	s = 0;
+	break;
+    }
+    return s;
+}
+#else
 static char*
 parseOp (xdot_op* op, char* s)
 {
@@ -203,19 +300,56 @@ parseOp (xdot_op* op, char* s)
     }
     return s;
 }
+#endif
 
 #define XDBSIZE 100
+
+#ifdef NEWXDOT
+xdot*
+parseXDotF (char* s, drawfunc_t fns[])
+{
+    xdot* x;
+    xdot_op op;
+    xdot_op* ops;
+    int bufsz = XDBSIZE;
+    if (!s) return NULL;	
+    x = NEW(xdot);
+    ops = N_NEW(XDBSIZE, xdot_op);
+
+    x->cnt = 0;
+    while ((s = parseOp (&op, s, fns))) {
+	if (x->cnt == bufsz) {
+	    bufsz += XDBSIZE;
+	    ops = RALLOC (bufsz, ops, xdot_op);
+	} 
+	ops[x->cnt] = op;
+	x->cnt++;
+    }
+    if (x->cnt)
+	x->ops = RALLOC (x->cnt, ops, xdot_op);
+    else {
+	free (x);
+	x = 0;
+    }
+    return x;
+}
 
 xdot*
 parseXDot (char* s)
 {
-	xdot* x;
+    return parseXDotF (s, 0);
+}
+
+#else
+xdot*
+parseXDot (char* s)
+{
+    xdot* x;
     xdot_op op;
-	xdot_op* ops;
-	int bufsz = XDBSIZE;
-	if (!s)
-		return NULL;	
-	x = NEW(xdot);
+    xdot_op* ops;
+    int bufsz = XDBSIZE;
+    if (!s) return NULL;	
+    x = NEW(xdot);
     ops = N_NEW(XDBSIZE, xdot_op);
 
     x->cnt = 0;
@@ -235,6 +369,7 @@ parseXDot (char* s)
     }
     return x;
 }
+#endif
 
 typedef void (*pf)(char*, void*);
 
@@ -266,7 +401,7 @@ printString (char* p, pf print, void* info)
 {
     char buf[30];
 
-    sprintf (buf, " %d -", strlen(p));
+    sprintf (buf, " %d -", (int)strlen(p));
     print (buf, info);
     print (p, info);
 }
@@ -372,6 +507,7 @@ printXDot_Op (xdot_op* op, pf print, void* info)
     }
 }
 
+static void
 _printXDot (xdot* x, pf print, void* info)
 {
     int i;
@@ -506,6 +642,8 @@ freeXOpData (xdot_op* x)
     case xd_image :
 	free (x->u.image.name);
 	break;
+    default :
+	break;
     }
 }
 
@@ -518,13 +656,13 @@ freeXDot (xdot* x)
     free (x);
 }
 
-extern char* move_xdot(void* obj,xdot* x,int dx,int dy,int dz)
+char* move_xdot(void* obj,xdot* x,int dx,int dy,int dz)
 {
 	int i=0;
 	int j=0;
-	int a=0;
-	char* pch;
-	int pos[MAXIMUM_POS_COUNT];	//maximum pos count hopefully does not exceed 100
+	/* int a=0; */
+	/* char* pch; */
+	/* int pos[MAXIMUM_POS_COUNT];	//maximum pos count hopefully does not exceed 100 */
 	if (!x)
 		return "\0";
 	
@@ -560,6 +698,8 @@ extern char* move_xdot(void* obj,xdot* x,int dx,int dy,int dz)
 				x->ops[i].u.image.pos.y=x->ops[i].u.image.pos.y-dy;
 	//			x->ops[i].u.image.pos.z=x->ops[i].u.image.pos.z-dz;
 			break;
+			default :
+			break;
 		}
 	}
 	view->GLx=view->GLx2;
@@ -568,9 +708,10 @@ extern char* move_xdot(void* obj,xdot* x,int dx,int dy,int dz)
 
 
 }
-extern char* offset_spline(xdot* x,float dx,float dy,float headx,float heady)
+char* offset_spline(xdot* x,float dx,float dy,float headx,float heady)
 {
-/*	int i=0;
+#if 0
+	int i=0;
 	Agnode_t* headn,tailn;
 	Agedge_t* e;
 	e=x->obj;		//assume they are all edges, check function name
@@ -598,7 +739,9 @@ extern char* offset_spline(xdot* x,float dx,float dy,float headx,float heady)
 					}
 				}
 			break;
-	}*/
+	}
+#endif
+    return 0;
 }
 
 
@@ -606,18 +749,16 @@ extern char* offset_spline(xdot* x,float dx,float dy,float headx,float heady)
 
 void drawXdot (xdot* xDot,int param)
 {
-	int id=0;
-	int id2=0;
+    int id=0;
 
-	for (id=0; id < xDot->cnt ; id ++)
-	{
-		xDot->ops[id].parentxdot=xDot;
-		execOp (&xDot->ops[id],param);
+    for (id=0; id < xDot->cnt ; id ++) {
+	xDot->ops[id].parentxdot=xDot;
+	execOp (&xDot->ops[id],param);
 	
-	}
-	if ( ((custom_object_data*)AGDATA(xDot->obj))->Preselected == 1)
-		select_object (view->g[view->activeGraph],xDot->obj);
-	((custom_object_data*)AGDATA(xDot->obj))->Preselected =0;
+    }
+    if ( ((custom_object_data*)AGDATA(xDot->obj))->Preselected == 1)
+	select_object (view->g[view->activeGraph],xDot->obj);
+    ((custom_object_data*)AGDATA(xDot->obj))->Preselected =0;
 }
 void execOp (xdot_op* op,int param)
 {
@@ -627,13 +768,12 @@ void execOp (xdot_op* op,int param)
 
 void drawXdotwithattr(void* p,char* attr,int param)
 {
-		xdot* xDot;
-		if(xDot=parseXDot (agget(p, attr)))
-		{
-			xDot->obj=p;
-			drawXdot(xDot,param);
-			freeXDot (xDot);
-		}
+    xdot* xDot;
+    if((xDot=parseXDot (agget(p, attr)))) {
+	xDot->obj=p;
+	drawXdot(xDot,param);
+	freeXDot (xDot);
+    }
 }
 void drawXdotwithattrs(void* e,int param)
 {

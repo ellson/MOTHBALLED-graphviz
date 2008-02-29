@@ -74,7 +74,14 @@ typedef enum {
     xd_fill_color,     xd_pen_color, xd_font, xd_style, xd_image
 } xdot_kind; 
     
-
+typedef enum {
+    xop_ellipse,
+    xop_polygon,
+    xop_bezier,
+    xop_polyline,       xop_text,
+    xop_fill_color,     xop_pen_color, xop_font, xop_style, xop_image
+} xop_kind; 
+    
 typedef struct _xdot_op xdot_op;
 typedef void (*drawfunc_t)(xdot_op*, int);
 
@@ -91,8 +98,8 @@ struct _xdot_op{
       xdot_font font;          /* xd_font */
       char* style;             /* xd_style */
     } u;
-	drawfunc_t drawfunc;
-	void* parentxdot;	//points to owner xdot
+    drawfunc_t drawfunc;
+    void* parentxdot;	//points to owner xdot
 };
 
 void execOp (xdot_op* op,int param);
@@ -103,6 +110,10 @@ typedef struct {
 	int selectionflag;		//used for rectangular selection (not x) if -1 cannot be selected
 } xdot;
 
+/* ops are indexed by xop_kind */
+#ifdef NEWXDOT
+extern xdot* parseXDotF (char*, drawfunc_t ops[]);
+#endif
 extern xdot* parseXDot (char*);
 extern char* sprintXDot (xdot*);
 extern void fprintXDot (FILE*, xdot*);
