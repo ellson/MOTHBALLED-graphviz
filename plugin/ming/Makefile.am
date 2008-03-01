@@ -29,7 +29,7 @@ libgvplugin_ming_la_SOURCES = $(libgvplugin_ming_C_la_SOURCES)
 libgvplugin_ming_la_LIBADD = @MING_LIBS@ @MATH_LIBS@
 
 if WITH_WIN32
-libgvplugin_ming_la_LDFLAGS = -no-undefined
+libgvplugin_ming_la_LDFLAGS += -no-undefined
 endif
 
 EXTRA_DIST = Makefile.old Bitstream_Vera_Sans.fdb Bitstream_Vera_Serif.fdb
