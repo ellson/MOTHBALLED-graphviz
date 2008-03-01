@@ -24,15 +24,15 @@ AM_CPPFLAGS = \
 	$(GTK_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS)
 
 if WITH_SMYRNA
-noinst_HEADERS = draw.h gltemplate.h hier.h materials.h support.h topview.h \
-	trackball.h tvnodes.h viewport.h smyrnadefs.h glexpose.h topviewdata.h \
-	topviewdefs.h gui/glmenu.h
+noinst_HEADERS = btree.h draw.h filter.h gltemplate.h hier.h materials.h \
+	selection.h support.h topview.h trackball.h tvnodes.h viewport.h \
+	smyrnadefs.h glexpose.h topviewdata.h topviewdefs.h gui/glmenu.h 
 bin_PROGRAMS = smyrna
 endif
 
-smyrna_SOURCES = draw.c gltemplate.c hier.c main.c support.c template.c \
-	topview.c trackball.c tvnodes.c viewport.c glexpose.c topviewdata.c \
-	gui/glmenu.c
+smyrna_SOURCES = btree.c draw.c filter.c gltemplate.c hier.c main.c support.c \
+	template.c topview.c trackball.c tvnodes.c viewport.c glexpose.c \
+	topviewdata.c gui/glmenu.c
 
 smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/cdt/libcdt_C.la \
