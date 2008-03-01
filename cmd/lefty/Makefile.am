@@ -85,10 +85,14 @@ lefty_LDADD = $(top_builddir)/cmd/lefty/dot2l/libdot2l.la \
 endif
 
 if WITH_WIN32
-RC_CPPFLAGS = '-IC:\\progra~1\\microsoft visual studio 8\\vc\\PlatformSDK\\include'
-
+if RC_IS_RC
 lefty.res : ws/mswin32/lefty.rc
-	rc -l 0x409 -Iws/mswin32 $(RC_CPPFLAGS) -DNDEBUG -fo lefty.res ws/mswin32/lefty.rc
+	rc -l 0x409 -Iws/mswin32 '-IC:\\progra~1\\microsoft visual studio 8\\vc\\PlatformSDK\\include' -DNDEBUG -fo lefty.res ws/mswin32/lefty.rc
+endif
+if RC_IS_WINDRES
+lefty.res : ws/mswin32/lefty.rc
+	windres -l 0x409 -Iws/mswin32 -DNDEBUG -Ocoff -o lefty.res ws/mswin32/lefty.rc
+endif
 endif
 
 .1.pdf:
