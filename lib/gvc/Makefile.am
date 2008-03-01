@@ -54,6 +54,6 @@ libgvc_builtins_la_LIBADD = $(libgvc_la_LIBADD)
 .3.pdf:
 	-groff -Tps -man $< | ps2pdf - - > $@
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old regex_win32.h regex_win32.c
 
 DISTCLEANFILES = $(pdf_DATA)
