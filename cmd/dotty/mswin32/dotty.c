@@ -36,8 +36,8 @@ static char* lneato =
   "";
 #endif
 
-int PASCAL WinMain (
-    HANDLE hInstance, HANDLE hPrevInstance, LPSTR lpCmdLine, int nCmdShow
+int APIENTRY WinMain (
+    HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow
 ) {
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
