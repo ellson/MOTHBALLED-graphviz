@@ -210,10 +210,10 @@ eop:
 
 #else
 
-HANDLE hinstance, hprevinstance;
+HINSTANCE hinstance, hprevinstance;
 
-int PASCAL WinMain (
-    HANDLE hInstance, HANDLE hPrevInstance, LPSTR lpCmdLine, int nCmdShow
+int APIENTRY WinMain (
+    HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow
 ) {
     Tobj co;
     Psrc_t src;
