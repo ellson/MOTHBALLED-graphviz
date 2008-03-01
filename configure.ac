@@ -197,6 +197,10 @@ PKG_PROG_PKG_CONFIG
 #AC_CYGWIN
 #AC_MINGW32
 
+AC_CHECK_PROGS(RC,rc windres,false)
+AM_CONDITIONAL(RC_IS_RC, [test "x$RC" = "xrc"])
+AM_CONDITIONAL(RC_IS_WINDRES, [test "x$RC" = "xwindres"])
+
 dnl -----------------------------------
 dnl checks for compilers
 
