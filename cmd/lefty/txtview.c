@@ -78,7 +78,7 @@ static int txtwi, queryws[G_QWMODES + 1], listwi, scrollwi, arraywi, cmdwi;
 
 static Psrc_t src;
 
-#define max(a, b) (((a) >= (b)) ? (a) : (b))
+#define __max(a, b) (((a) >= (b)) ? (a) : (b))
 
 static void viewon (void);
 static void viewoff (void);
@@ -405,7 +405,7 @@ static void buildlist (txtnode_t *pnode) {
 
     pnode->u.f.t.n = ((Ttable_t *) pnode->vo)->n;
     if (!(pnode->u.f.t.list = malloc (
-        max (pnode->u.f.t.n, 1) * sizeof (txtnode_t)
+        __max (pnode->u.f.t.n, 1) * sizeof (txtnode_t)
     )))
         panic1 (POS, "buildlist", "list malloc failed");
 
@@ -446,7 +446,7 @@ static void rebuildlist (txtnode_t *pnode) {
     on = pnode->u.f.t.n;
     pnode->u.f.t.n = ((Ttable_t *) pnode->vo)->n;
     if (!(pnode->u.f.t.list = malloc (
-        max (pnode->u.f.t.n, 1) * sizeof (txtnode_t)
+        __max (pnode->u.f.t.n, 1) * sizeof (txtnode_t)
     )))
         panic1 (POS, "rebuildlist", "list malloc failed");
 
