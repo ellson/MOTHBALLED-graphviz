@@ -81,6 +81,7 @@ static polygon_t p_septagon = { FALSE, 1, 7, 0., 0., 0. };
 static polygon_t p_octagon = { FALSE, 1, 8, 0., 0., 0. };
 static polygon_t p_note = { FALSE, 1, 4, 0., 0., 0., DOGEAR };
 static polygon_t p_tab = { FALSE, 1, 4, 0., 0., 0., TAB };
+static polygon_t p_folder = { FALSE, 1, 4, 0., 0., 0., FOLDER };
 static polygon_t p_box3d = { FALSE, 1, 4, 0., 0., 0., BOX3D };
 static polygon_t p_component = { FALSE, 1, 4, 0., 0., 0., COMPONENT };
 
@@ -101,7 +102,7 @@ static polygon_t p_Mcircle =
 
 /* True if style requires processing through node_round_corners. */
 #define SPECIAL_CORNERS(style) \
-	((style) & (ROUNDED | DIAGONALS | DOGEAR | TAB | BOX3D | COMPONENT))
+	((style) & (ROUNDED | DIAGONALS | DOGEAR | TAB | FOLDER | BOX3D | COMPONENT))
 
 /*
  * every shape has these functions:
@@ -182,6 +183,7 @@ static shape_desc Shapes[] = {	/* first entry is default for no such shape */
     {"octagon", &poly_fns, &p_octagon},
     {"note", &poly_fns, &p_note},
     {"tab", &poly_fns, &p_tab},
+    {"folder", &poly_fns, &p_folder},
     {"box3d", &poly_fns, &p_box3d},
     {"component", &poly_fns, &p_component},
     {"rect", &poly_fns, &p_box},
@@ -379,8 +381,8 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 
     if (style & DIAGONALS)
 	mode = DIAGONALS;
-    else if (style & (DOGEAR | TAB | BOX3D | COMPONENT))
-	mode = style & (DOGEAR | TAB | BOX3D | COMPONENT);
+    else if (style & (DOGEAR | TAB | FOLDER | BOX3D | COMPONENT))
+	mode = style & (DOGEAR | TAB | FOLDER | BOX3D | COMPONENT);
     else
 	mode = ROUNDED;
     B = N_NEW(4 * sides + 4, pointf);
@@ -480,6 +482,19 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	gvrender_polyline(job, C, 2);
 	break;
     case TAB:
+      /*
+       * Adjust the perimeter for the protrusions.
+       *
+       *  D[3] +--+ D[2]
+       *       |  |          B[1]
+       *  B[3] +  +----------+--+ AF[0]=B[0]=D[0]
+       *       |  B[2]=D[1]     |
+       *  B[4] +                |
+       *       |                |
+       *  B[5] +                |
+       *       +----------------+
+       *
+       */
 	gvrender_set_pencolor(job, penc);
 	if (style & FILLED)
 	    gvrender_set_fillcolor(job, fillc); /* emit fill color */
@@ -501,6 +516,39 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	C[0] = B[3];
 	C[1] = B[2];
 	gvrender_polyline(job, C, 2);
+      break;
+    case FOLDER:
+      /*
+       * Adjust the perimeter for the protrusions.
+       *
+       *            D[2] +----+ D[1]
+       *  B[3]=         /      \
+       *  D[4] +--+----+     +  + AF[0]=B[0]=D[0]
+       *       |  B[2] D[3] B[1]|
+       *  B[4] +                |
+       *       |                |
+       *  B[5] +                |
+       *       +----------------+
+       *
+       */
+      gvrender_set_pencolor(job, penc);
+      if (style & FILLED)
+          gvrender_set_fillcolor(job, fillc); /* emit fill color */
+      /* Add the folder edges. */
+      D = N_NEW(sides + 3, pointf);
+      D[0] = AF[0];
+      D[1].x = AF[0].x - (AF[0].x - B[1].x) / 4;
+      D[1].y = AF[0].y + (B[3].y - B[4].y) / 3;
+      D[2].x = AF[0].x - 2 * (AF[0].x - B[1].x);
+      D[2].y = D[1].y;
+      D[3].x = AF[0].x - 2.25 * (AF[0].x - B[1].x);
+      D[3].y = B[3].y;
+      D[4].x = B[3].x;
+      D[4].y = B[3].y;
+      for (seg = 4; seg < sides + 3; seg++)
+          D[seg] = AF[seg - 3];
+      gvrender_polygon(job, D, sides + 3, style & FILLED);
+      free(D);
 	break;
     case BOX3D:
 	assert(sides == 4);
