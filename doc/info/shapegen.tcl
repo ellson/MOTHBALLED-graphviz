@@ -31,6 +31,7 @@ set shapes {
 	none { }
 	note {}
 	tab {}
+	folder {}
 	box3d {}
 	component {}
 }
@@ -63,6 +64,6 @@ foreach {shape attrs} $shapes {
 
 	file delete $shape.dot
 }
-	puts $h "  </TR>"
-	puts $h "</TABLE>"
-	close $h
+puts $h "  </TR>"
+puts $h "</TABLE>"
+close $h
