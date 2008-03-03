@@ -15,6 +15,7 @@
 **********************************************************/
 
 #include "selection.h"
+#include "viewport.h"
 int rectintersects(float x,float y,float W,float H)
 {
 	//returns 1 if rect is completely in the clip rect
