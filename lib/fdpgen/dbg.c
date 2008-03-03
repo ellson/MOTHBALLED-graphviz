@@ -199,8 +199,7 @@ double ArrowScale = 1.0;
 
 #define         ARROW_LENGTH    10
 #define         ARROW_WIDTH      5
-/* #define DEGREES(rad)   ((rad)/PI * 180.0) */
-/* #define PI                      3.14159265 */
+/* #define DEGREES(rad)   ((rad)/M_PI * 180.0) */
 
 static char *plog = "%%!PS-Adobe-2.0\n\n\
 /Times-Roman findfont 14 scalefont setfont\n\
