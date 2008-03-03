@@ -48,10 +48,10 @@ typedef struct _glCompPoint
 	GLfloat x,y;
 }glCompPoint;
 typedef struct{
-	float R;
-	float G;
-	float B;
-	float A;	//Alpha
+	GLfloat R;
+	GLfloat G;
+	GLfloat B;
+	GLfloat A;	//Alpha
 } glCompColor;
 
 typedef struct _glCompPanel

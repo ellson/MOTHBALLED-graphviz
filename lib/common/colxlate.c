@@ -15,8 +15,12 @@
 **********************************************************/
 
 #include <stdio.h>
+
+
 #include <stdlib.h>
 #ifdef WIN32
+#include <string.h>
+#include <ctype.h>
 #include "compat.h"
 #endif
 #include <string.h>
@@ -29,6 +33,25 @@
 #include "memory.h"
 
 static char* colorscheme;
+
+#ifdef WIN32
+int strncasecmp(char *s1 , char *s2 ,size_t n)
+{
+  if (n == 0)
+    return 0;
+
+  while (n-- != 0 && tolower(*s1) == tolower(*s2))
+    {
+      if (n == 0 || *s1 == '\0' || *s2 == '\0')
+	break;
+      s1++;
+      s2++;
+    }
+
+  return tolower(*(unsigned char *) s1) - tolower(*(unsigned char *) s2);
+}
+#endif
+
 
 static void hsv2rgb(double h, double s, double v,
 			double *r, double *g, double *b)
@@ -476,3 +499,6 @@ void setColorScheme (char* s)
 {
     colorscheme = s;
 }
+
+
+

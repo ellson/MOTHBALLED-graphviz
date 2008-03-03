@@ -43,20 +43,21 @@ int glCompDrawPanel(glCompPanel* p)
 	glEnd();
 	glBegin(GL_LINE_STRIP);
 		glColor4f(p->shadowcolor.R,p->shadowcolor.G,p->shadowcolor.B,p->color.A);
-		glVertex3f(p->pos.x,p->pos.y,p->bevel + GLCOMPSET_BEVEL_DIFF);
-		glVertex3f(p->pos.x+p->width,p->pos.y,p->bevel+GLCOMPSET_BEVEL_DIFF);
-		glVertex3f(p->pos.x+p->width,p->pos.y+p->height,p->bevel+GLCOMPSET_BEVEL_DIFF);
-		glVertex3f(p->pos.x,p->pos.y+p->height,p->bevel+GLCOMPSET_BEVEL_DIFF);
+		glVertex3f(p->pos.x,p->pos.y,p->bevel + (GLfloat)GLCOMPSET_BEVEL_DIFF);
+		glVertex3f(p->pos.x+p->width,p->pos.y,p->bevel+(GLfloat)GLCOMPSET_BEVEL_DIFF);
+		glVertex3f(p->pos.x+p->width,p->pos.y+p->height,p->bevel+(GLfloat)GLCOMPSET_BEVEL_DIFF);
+		glVertex3f(p->pos.x,p->pos.y+p->height,p->bevel+(GLfloat)GLCOMPSET_BEVEL_DIFF);
 		glVertex3f(p->pos.x,p->pos.y,p->bevel);
 	glEnd();
 	glLineWidth(p->shadowwidth);
 	glBegin(GL_LINE_STRIP);
-		glColor4f(p->shadowcolor.R,p->shadowcolor.G,p->shadowcolor.B,p->shadowcolor.A);
-		glVertex3f(p->pos.x+ p->shadowwidth/2.0,p->pos.y-p->shadowwidth/2.0,p->bevel);
-		glVertex3f(p->pos.x+ p->shadowwidth/2.0+p->width,p->pos.y-p->shadowwidth/2.0,p->bevel);
-		glVertex3f(p->pos.x+ p->shadowwidth/2.0+p->width,p->pos.y-p->shadowwidth/2.0+p->height,p->bevel);
+		glColor4f((GLfloat)p->shadowcolor.R,(GLfloat)p->shadowcolor.G,(GLfloat)p->shadowcolor.B,(GLfloat)p->shadowcolor.A);
+		glVertex3f(p->pos.x+ p->shadowwidth/((GLfloat)2.0),p->pos.y-p->shadowwidth/((GLfloat)2.0),p->bevel);
+		glVertex3f(p->pos.x+ p->shadowwidth/(GLfloat)2.0+p->width,p->pos.y-p->shadowwidth/(GLfloat)2.0,p->bevel);
+		glVertex3f(p->pos.x+ p->shadowwidth/(GLfloat)2.0+p->width,p->pos.y-p->shadowwidth/(GLfloat)2.0+p->height,p->bevel);
 	glEnd();
 	glLineWidth(1);
+	return 1;
 }
 
 glCompPanel* glCompPanelNew(GLfloat x,GLfloat y,GLfloat w,GLfloat h)
@@ -172,7 +173,7 @@ int glCompSetDraw(glCompSet* s)
 	glCompDrawBegin();
 	glCompSetDrawPanels(s);
 	glCompDrawEnd();
-
+	return 1;
 }
 int glCompSetDrawPanels(glCompSet* s)
 {
@@ -189,6 +190,8 @@ int glCompSetDrawPanels(glCompSet* s)
 	{
 		glCompDrawLabel(s->labels[ind]);
 	}
+	return 1;
+
 }
 int glCompSetHide(glCompSet* s)
 {
@@ -205,6 +208,8 @@ int glCompSetHide(glCompSet* s)
 	{
 		s->labels[ind]->visible=0;
 	}
+	return 1;
+
 }
 int glCompSetShow(glCompSet* s)
 {
@@ -221,6 +226,8 @@ int glCompSetShow(glCompSet* s)
 	{
 		s->labels[ind]->visible=1;
 	}
+	return 1;
+
 }
 
 
@@ -416,6 +423,7 @@ int glCompDrawButton(glCompButton* p)
 		p->pos.y=p->pos.y-p->panel->pos.y;
 	}
 
+	return 1;
 
 
 }
@@ -596,6 +604,8 @@ int glCompPanelHide(glCompPanel* p)
 				((glCompSet*)p->parentset)->labels[ind]->visible=0;
 		}
 		p->visible=0;
+	return 1;
+
 
 }
 
@@ -614,6 +624,7 @@ int glCompPanelShow(glCompPanel* p)
 				((glCompSet*)p->parentset)->labels[ind]->visible=1;
 		}
 		p->visible=1;
+	return 1;
 
 }
 
