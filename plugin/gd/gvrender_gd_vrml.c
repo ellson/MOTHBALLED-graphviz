@@ -226,10 +226,10 @@ static void vrml_end_page(GVJ_t *job)
     box bb = job->boundingBox;
 
     d = MAX(bb.UR.x - bb.LL.x,bb.UR.y - bb.LL.y);
-    /* Roughly fill 3/4 view assuming FOV angle of PI/4.
+    /* Roughly fill 3/4 view assuming FOV angle of M_PI/4.
      * Small graphs and non-square aspect ratios will upset this.
      */
-    z = (0.6667*d)/tan(PI/8.0) + MinZ;  /* fill 3/4 of view */
+    z = (0.6667*d)/tan(M_PI/8.0) + MinZ;  /* fill 3/4 of view */
 
     if (!Saw_skycolor)
 	fprintf(out, " Background { skyColor 1 1 1 }\n");
@@ -317,7 +317,7 @@ finishSegment (FILE *out, edge_t *e)
     y -= o_y;
     z -= o_z;
     if (p0.y > p1.y)
-	theta = acos(2*y/EdgeLen) + PI;
+	theta = acos(2*y/EdgeLen) + M_PI;
     else
 	theta = acos(2*y/EdgeLen);
     if (!x && !z)   /* parallel  to y-axis */
@@ -369,7 +369,7 @@ static void vrml_textpara(GVJ_t *job, pointf p, textpara_t * para)
 	color_index(im, obj->pencolor),
 	para->fontsize,
         DEFAULT_DPI,
-	job->rotation ? (PI / 2) : 0,
+	job->rotation ? (M_PI / 2) : 0,
 	para->fontname,
 	para->str);
 }
@@ -537,7 +537,7 @@ static void doArrowhead (GVJ_t *job, pointf * A)
     if (DIST2(A[1], tp) < DIST2(A[1], hp)) {
 	TailHt = ht;
 	fprintf(out, "  translation 0 %.3f 0\n", -y);
-	fprintf(out, "  rotation 0 0 1 %.3f\n", PI);
+	fprintf(out, "  rotation 0 0 1 %.3f\n", M_PI);
     }
     else {
 	HeadHt = ht;
@@ -649,7 +649,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	/* it is bad to know that A[1] is the aiming point, but we do */
 	theta =
 	    atan2((A[0].y + A[2].y) / 2.0 - A[1].y,
-		  (A[0].x + A[2].x) / 2.0 - A[1].x) + PI / 2.0;
+		  (A[0].x + A[2].x) / 2.0 - A[1].x) + M_PI / 2.0;
 
 	/* this is gruesome, but how else can we get z coord */
 	if (DIST2(p, ND_coord_i(e->tail)) < DIST2(p, ND_coord_i(e->head)))

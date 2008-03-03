@@ -385,7 +385,7 @@ static void gdgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
             job->obj->pencolor.u.index,
             para->fontsize,
             ROUND(POINTS_PER_INCH * job->scale.x),
-            job->rotation ? (PI / 2) : 0,
+            job->rotation ? (M_PI / 2) : 0,
             fontname,
             para->str);
 }
