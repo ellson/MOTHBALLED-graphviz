@@ -212,7 +212,7 @@ static void setChildSubtreeSpans(Agraph_t * g, Agnode_t * n)
 
 static void setSubtreeSpans(Agraph_t * sg, Agnode_t * center)
 {
-    SPAN(center) = 2 * PI;
+    SPAN(center) = 2 * M_PI;
     setChildSubtreeSpans(sg, center);
 }
 
