@@ -59,6 +59,7 @@ int polygon_x_rect(xdot_op* op);
 int polyline_in_rect(xdot_op* op);
 int polyline_x_rect(xdot_op* op);
 
+
 int text_in_rect(xdot_op* op);
 int text_x_rect(xdot_op* op);
 

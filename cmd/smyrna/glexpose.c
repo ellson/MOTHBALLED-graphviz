@@ -1,6 +1,8 @@
 #include "glexpose.h"
 #include "draw.h"
 #include "topview.h"
+#include "glutils.h"
+#include "topview.h"
 /*
 	refreshes camera settings using view parameters such as pan zoom etc
 	params:ViewInfo	, global view variable defined in viewport.c

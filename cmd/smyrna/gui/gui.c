@@ -66,11 +66,11 @@ void create_object_properties()
     xml = glade_xml_new(SMYRNA_GLADE, NULL, NULL);
 
 	widget = glade_xml_get_widget(xml, "listPoints");
-	gtk_clist_set_column_title          (widget,0,"Def");
-	gtk_clist_set_column_title          (widget,1,"x");
-	gtk_clist_set_column_title          (widget,2,"y");
-	gtk_clist_set_column_title          (widget,3,"z");
-	gtk_clist_column_titles_show(widget);
+	gtk_clist_set_column_title          ((GtkCList*)widget,0,"Def");
+	gtk_clist_set_column_title          ((GtkCList*)widget,1,"x");
+	gtk_clist_set_column_title          ((GtkCList*)widget,2,"y");
+	gtk_clist_set_column_title          ((GtkCList*)widget,3,"z");
+	gtk_clist_column_titles_show((GtkCList*)widget);
 	gtk_widget_show (widget);
 	widget = glade_xml_get_widget(xml, "win");
 	gtk_widget_show (widget);
@@ -120,16 +120,16 @@ void graph_properties_init(int newgraph)	//initialize little open graph dialog
 	if(newgraph)
 	{
 		gladewidget = glade_xml_get_widget(xml, "entryGraphName");
-		gtk_entry_set_text (gladewidget,"Untitled");
+		gtk_entry_set_text ((GtkEntry*)gladewidget,"Untitled");
 		gladewidget = glade_xml_get_widget(xml, "entryGraphFileName");
-		gtk_entry_set_text (gladewidget,"Untitled.dot");
+		gtk_entry_set_text ((GtkEntry*)gladewidget,"Untitled.dot");
 	}
 	else
 	{
 		gladewidget = glade_xml_get_widget(xml, "entryGraphName");
-		gtk_entry_set_text (gladewidget,"");
+		gtk_entry_set_text ((GtkEntry*)gladewidget,"");
 		gladewidget = glade_xml_get_widget(xml, "entryGraphFileName");
-		gtk_entry_set_text (gladewidget,"");
+		gtk_entry_set_text ((GtkEntry*)gladewidget,"");
 	}
 	gladewidget = glade_xml_get_widget(xml, "dlgOpenGraph");
 	result = gtk_dialog_run (GTK_DIALOG (gladewidget));
@@ -141,13 +141,13 @@ GtkComboBox* get_SelectGraph()
 	if (!cbSelectGraph)
 	{
 
-		cb=gtk_combo_box_new_text();
-		gtk_widget_show (cb);
+		cb=(GtkComboBox*)gtk_combo_box_new_text();
+		gtk_widget_show ((GtkWidget*)cb);
 	    gladewidget = glade_xml_get_widget(xml, "layout6");	
-	    gtk_box_pack_start (GTK_BOX (gladewidget), cb, FALSE, FALSE, 0);
+	    gtk_box_pack_start (GTK_BOX (gladewidget),(GtkWidget*) cb, FALSE, FALSE, 0);
 
 		
-		gtk_layout_put                  (gladewidget,cb,780,3);
+		gtk_layout_put                  ((GtkLayout*)gladewidget,(GtkWidget*)cb,780,3);
 		//signal
 		g_signal_connect ((gpointer) cb, "changed", G_CALLBACK(graph_select_change),
 	                    NULL);
@@ -182,13 +182,13 @@ void Color_Widget_fg (int r, int g, int b, GtkWidget *widget)
 void load_graph_properties(Agraph_t* graph)
 {
 	//dlgOpenGraph , GtkDialog
-	gtk_entry_set_text(glade_xml_get_widget(xml, "entryGraphName"),((custom_graph_data*)AGDATA(graph))->GraphName);
-	gtk_entry_set_text(glade_xml_get_widget(xml, "entryGraphFileName"),((custom_graph_data*)AGDATA(graph))->GraphFileName);
+	gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "entryGraphName"),((custom_graph_data*)AGDATA(graph))->GraphName);
+	gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "entryGraphFileName"),((custom_graph_data*)AGDATA(graph))->GraphFileName);
 
-	gtk_combo_box_set_active (glade_xml_get_widget(xml, "cbLayout"),((custom_graph_data*)AGDATA(graph))->Engine);
-	gtk_toggle_button_set_active(glade_xml_get_widget(xml, "chkVisible"),((custom_graph_data*)AGDATA(graph))->AlwaysShow);
-	gtk_toggle_button_set_active(glade_xml_get_widget(xml, "chkLocked"),((custom_graph_data*)AGDATA(graph))->Locked);
-	gtk_toggle_button_set_active(glade_xml_get_widget(xml, "chkTopView"),((custom_graph_data*)AGDATA(graph))->TopView);
+	gtk_combo_box_set_active ((GtkComboBox*)glade_xml_get_widget(xml, "cbLayout"),((custom_graph_data*)AGDATA(graph))->Engine);
+	gtk_toggle_button_set_active((GtkToggleButton*)glade_xml_get_widget(xml, "chkVisible"),((custom_graph_data*)AGDATA(graph))->AlwaysShow);
+	gtk_toggle_button_set_active((GtkToggleButton*)glade_xml_get_widget(xml, "chkLocked"),((custom_graph_data*)AGDATA(graph))->Locked);
+	gtk_toggle_button_set_active((GtkToggleButton*)glade_xml_get_widget(xml, "chkTopView"),((custom_graph_data*)AGDATA(graph))->TopView);
 }
 
 int update_graph_properties(Agraph_t* graph) //updates graph from gui
@@ -201,16 +201,16 @@ int update_graph_properties(Agraph_t* graph) //updates graph from gui
 	{
 		if (graph != view->g[id])	
 		{
-			if(strcasecmp (gtk_entry_get_text(glade_xml_get_widget(xml, "entryGraphName")),((custom_graph_data*)AGDATA(view->g[id]))->GraphName ) == 0)
+			if(strcasecmp (gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "entryGraphName")),((custom_graph_data*)AGDATA(view->g[id]))->GraphName ) == 0)
 			{
 				
-							Dlg=gtk_message_dialog_new (NULL,
+							Dlg=(GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_WARNING,
                                   GTK_BUTTONS_OK,
                                   "There is another graph with this name!");
-						respond=gtk_dialog_run (Dlg);
-						gtk_object_destroy (Dlg);
+						respond=gtk_dialog_run ((GtkDialog*)Dlg);
+						gtk_object_destroy ((GtkObject*)Dlg);
 					return 0;
 
 			}
@@ -219,36 +219,38 @@ int update_graph_properties(Agraph_t* graph) //updates graph from gui
 	}
 
 	//check if file is changed
-	if (strcasecmp (gtk_entry_get_text(glade_xml_get_widget(xml, "entryGraphFileName")),((custom_graph_data*)AGDATA(graph))->GraphFileName ) != 0)
+	if (strcasecmp (gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "entryGraphFileName")),((custom_graph_data*)AGDATA(graph))->GraphFileName ) != 0)
 	{
 	
 	
-		if (file = fopen(gtk_entry_get_text(glade_xml_get_widget(xml, "entryGraphFileName")), "r"))
+		if (file = fopen(gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "entryGraphFileName")), "r"))
 	    {
 			fclose(file);
-			Dlg = gtk_message_dialog_new (NULL,
+			Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 									GTK_DIALOG_MODAL,
 									GTK_MESSAGE_QUESTION,
 	                                  GTK_BUTTONS_YES_NO,
 									"File name you have entered already exists\n,this will cause overwriting on existing file.\nAre you sure?");
-				respond=gtk_dialog_run (Dlg);
-				gtk_object_destroy (Dlg);
+				respond=gtk_dialog_run ((GtkDialog*)Dlg);
+				gtk_object_destroy ((GtkObject*)Dlg);
 	
 				if (respond==GTK_RESPONSE_NO)
 					return 0;
 		}
 		//now check if filename is legal, try to open it to write
-	    if (file = fopen(gtk_entry_get_text(glade_xml_get_widget(xml, "entryGraphFileName")), "w"))
+	    if (file = fopen(gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "entryGraphFileName")), "w"))
 	        fclose(file);
 		else
 		{
-								Dlg=gtk_message_dialog_new (NULL,
+								Dlg=(GtkMessageDialog*)gtk_message_dialog_new (NULL,
 									GTK_DIALOG_MODAL,
 	                                  GTK_MESSAGE_WARNING,
 									GTK_BUTTONS_OK,
 									"File name is invalid or I/O error!");
-				respond=gtk_dialog_run (Dlg);
-				gtk_object_destroy (Dlg);
+
+				respond=gtk_dialog_run ((GtkDialog*)Dlg);
+				gtk_object_destroy ((GtkObject*)Dlg);
+				GTK_DIALOG (Dlg);
 
 			return 0;
 		}
@@ -261,26 +263,26 @@ int update_graph_properties(Agraph_t* graph) //updates graph from gui
 
 
 
-	((custom_graph_data*)AGDATA(graph))->GraphName=gtk_entry_get_text(glade_xml_get_widget(xml, "entryGraphName"));
-	((custom_graph_data*)AGDATA(graph))->GraphFileName=gtk_entry_get_text(glade_xml_get_widget(xml, "entryGraphFileName"));
+	((custom_graph_data*)AGDATA(graph))->GraphName=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "entryGraphName"));
+	((custom_graph_data*)AGDATA(graph))->GraphFileName=(char*)gtk_entry_get_text((GtkEntry*)glade_xml_get_widget(xml, "entryGraphFileName"));
 
-	((custom_graph_data*)AGDATA(graph))->AlwaysShow=gtk_toggle_button_get_active(glade_xml_get_widget(xml, "chkVisible"));
-	((custom_graph_data*)AGDATA(graph))->Locked=gtk_toggle_button_get_active(glade_xml_get_widget(xml, "chkLocked"));
-	((custom_graph_data*)AGDATA(graph))->TopView=gtk_toggle_button_get_active(glade_xml_get_widget(xml, "chkTopView"));
+	((custom_graph_data*)AGDATA(graph))->AlwaysShow=gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "chkVisible"));
+	((custom_graph_data*)AGDATA(graph))->Locked=gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "chkLocked"));
+	((custom_graph_data*)AGDATA(graph))->TopView=gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml, "chkTopView"));
 
 
 	//check if the engine has been changed, if so do new layout
-	if( ((custom_graph_data*)AGDATA(graph))->Engine != gtk_combo_box_get_active (glade_xml_get_widget(xml, "cbLayout")) )
+	if( ((custom_graph_data*)AGDATA(graph))->Engine != gtk_combo_box_get_active ((GtkComboBox*)glade_xml_get_widget(xml, "cbLayout")) )
 	{
-			Dlg = gtk_message_dialog_new (NULL,
+			Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_YES_NO,
                                   "You have changed the layout of the graph,this will change the graph layout\n all your position changes will be lost\n Are you sure?");
-						respond=gtk_dialog_run (Dlg);
+						respond=gtk_dialog_run ((GtkDialog*)Dlg);
 					if (respond == GTK_RESPONSE_YES)	
-						do_graph_layout(graph,gtk_combo_box_get_active (glade_xml_get_widget(xml, "cbLayout")),0);
-					gtk_object_destroy (Dlg);
+						do_graph_layout(graph,gtk_combo_box_get_active ((GtkComboBox*)glade_xml_get_widget(xml, "cbLayout")),0);
+					gtk_object_destroy ((GtkObject*)Dlg);
 	}
 	return 1;
 }
@@ -309,7 +311,7 @@ int load_object_properties(int typeIndex,Agraph_t* g)	//load  from object to gui
 	char line [ 128 ];
 	float a,b;
 	char* pch;
-	layout=glade_xml_get_widget(xml, "layout4");
+	layout=(GtkLayout*)glade_xml_get_widget(xml, "layout4");
 	frmObjectTypeIndex=typeIndex;
 	frmObjectg=g;
 	widgetcounter=0;
@@ -340,19 +342,19 @@ int load_object_properties(int typeIndex,Agraph_t* g)	//load  from object to gui
 				{
 				case 'F':	//float
 					AttrWidgets[widgetcounter]=gtk_spin_button_new_with_range(0,100,0.001);
-					g_signal_connect ((gpointer) AttrWidgets[widgetcounter], "value-changed", G_CALLBACK(attr_widgets_modifiedSlot),widgetcounter);
+					g_signal_connect ((gpointer) AttrWidgets[widgetcounter], "value-changed", G_CALLBACK(attr_widgets_modifiedSlot),(gpointer)widgetcounter);
                     
 					break;
 				case 'C':	//color box
 					AttrWidgets[widgetcounter]=gtk_color_button_new();
 					gtk_widget_set_size_request(AttrWidgets[widgetcounter],50,23);
-					g_signal_connect ((gpointer) AttrWidgets[widgetcounter], "color-set", G_CALLBACK(attr_widgets_modifiedSlot),widgetcounter);
+					g_signal_connect ((gpointer) AttrWidgets[widgetcounter], "color-set", G_CALLBACK(attr_widgets_modifiedSlot),(gpointer)widgetcounter);
 
 					break;
 				default:	//alphanumreric		GTK Entry
 					AttrWidgets[widgetcounter]=gtk_entry_new();
 					gtk_widget_set_size_request(AttrWidgets[widgetcounter],130,23);
-					g_signal_connect ((gpointer) AttrWidgets[widgetcounter], "changed", G_CALLBACK(attr_widgets_modifiedSlot),widgetcounter);
+					g_signal_connect ((gpointer) AttrWidgets[widgetcounter], "changed", G_CALLBACK(attr_widgets_modifiedSlot),(gpointer)widgetcounter);
 
 					break;					
 				}
@@ -370,9 +372,9 @@ int load_object_properties(int typeIndex,Agraph_t* g)	//load  from object to gui
 				{
 				case 'F':
 					if (agget(obj, attr[widgetcounter].Name))
-						gtk_spin_button_set_value    (AttrWidgets[widgetcounter],atof(agget(obj, attr[widgetcounter].Name)) );					
+						gtk_spin_button_set_value    ((GtkSpinButton*)AttrWidgets[widgetcounter],atof(agget(obj, attr[widgetcounter].Name)) );					
 					else
-						gtk_spin_button_set_value    (AttrWidgets[widgetcounter],atof(attr[widgetcounter].Default) );					
+						gtk_spin_button_set_value    ((GtkSpinButton*)AttrWidgets[widgetcounter],atof(attr[widgetcounter].Default) );					
 					break;
 				case 'C':
 					if (agget(obj, attr[widgetcounter].Name))
@@ -380,13 +382,13 @@ int load_object_properties(int typeIndex,Agraph_t* g)	//load  from object to gui
 					else
 						SetGdkColor(&color,attr[widgetcounter].Default);
 
-					gtk_color_button_set_color(AttrWidgets[widgetcounter],&color);
+					gtk_color_button_set_color((GtkColorButton*)AttrWidgets[widgetcounter],&color);
 					break;
 				default:						
 					if (agget(obj, attr[widgetcounter].Name))
-						gtk_entry_set_text(AttrWidgets[widgetcounter],agget(obj, attr[widgetcounter].Name));				
+						gtk_entry_set_text((GtkEntry*)AttrWidgets[widgetcounter],agget(obj, attr[widgetcounter].Name));				
 					else
-						gtk_entry_set_text(AttrWidgets[widgetcounter],attr[widgetcounter].Default);				
+						gtk_entry_set_text((GtkEntry*)AttrWidgets[widgetcounter],attr[widgetcounter].Default);				
 
 				}
 				gtk_widget_show(AttrWidgets[widgetcounter]);
@@ -409,12 +411,12 @@ int load_object_properties(int typeIndex,Agraph_t* g)	//load  from object to gui
 		
 	//first part, common attributes
 	sprintf (buf, "%i", ((custom_object_data*)AGDATA(obj))->ID);
-	gtk_entry_set_text(glade_xml_get_widget(xml, "objEntryName"),((custom_object_data*)AGDATA(obj))->ObjName);
-	gtk_entry_set_text(glade_xml_get_widget(xml, "objEntryLabel"),agnameof(obj));
+	gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "objEntryName"),((custom_object_data*)AGDATA(obj))->ObjName);
+	gtk_entry_set_text((GtkEntry*)glade_xml_get_widget(xml, "objEntryLabel"),agnameof(obj));
 
-	gtk_toggle_button_set_active(glade_xml_get_widget(xml, "frmObjectchkVisible"),((custom_object_data*)AGDATA(obj))->Visible);
-	gtk_toggle_button_set_active(glade_xml_get_widget(xml, "frmObjectchkLocked"),((custom_object_data*)AGDATA(obj))->Locked);
-	gtk_toggle_button_set_active(glade_xml_get_widget(xml, "frmObjectchkHighlighted"),((custom_object_data*)AGDATA(obj))->Highlighted);
+	gtk_toggle_button_set_active((GtkToggleButton*)glade_xml_get_widget(xml, "frmObjectchkVisible"),((custom_object_data*)AGDATA(obj))->Visible);
+	gtk_toggle_button_set_active((GtkToggleButton*)glade_xml_get_widget(xml, "frmObjectchkLocked"),((custom_object_data*)AGDATA(obj))->Locked);
+	gtk_toggle_button_set_active((GtkToggleButton*)glade_xml_get_widget(xml, "frmObjectchkHighlighted"),((custom_object_data*)AGDATA(obj))->Highlighted);
 	//get the position info // show only one item is selected
 	if (
 		 ( (((custom_graph_data*)AGDATA(g))->selectedNodesCount == 1) && (typeIndex==2) ) 
@@ -428,14 +430,14 @@ int load_object_properties(int typeIndex,Agraph_t* g)	//load  from object to gui
 			sprintf (line, "%s", agget(obj,"pos"));
 			a=atof(strtok (line,"," ));
 			b=atof(strtok (NULL,"," ));
-			gtk_spin_button_set_value (glade_xml_get_widget(xml,"frmObjectPosX"), a );					
-			gtk_spin_button_set_value (glade_xml_get_widget(xml,"frmObjectPosY"), b );					
-			gtk_spin_button_set_value (glade_xml_get_widget(xml,"frmObjectPosZ"), 0 );					
+			gtk_spin_button_set_value ((GtkSpinButton*)glade_xml_get_widget(xml,"frmObjectPosX"), a );					
+			gtk_spin_button_set_value ((GtkSpinButton*)glade_xml_get_widget(xml,"frmObjectPosY"), b );					
+			gtk_spin_button_set_value ((GtkSpinButton*)glade_xml_get_widget(xml,"frmObjectPosZ"), 0 );					
 			gtk_widget_show (glade_xml_get_widget(xml,"frmObjectPosX"));
 			gtk_widget_show (glade_xml_get_widget(xml,"frmObjectPosY"));
 			gtk_widget_show (glade_xml_get_widget(xml,"frmObjectPosZ"));
 			gtk_widget_show (glade_xml_get_widget(xml,"frmObjectlabel3"));
-			gtk_label_set_text(  glade_xml_get_widget(xml,"frmObjectPosLabelX"),"X:");
+			gtk_label_set_text(  (GtkLabel*)glade_xml_get_widget(xml,"frmObjectPosLabelX"),"X:");
 			
 		 }
 	else
@@ -449,13 +451,13 @@ int load_object_properties(int typeIndex,Agraph_t* g)	//load  from object to gui
 			switch (typeIndex)	//typeindex 0 means new object
 			{
 				case 1:	//graph  sub graph (cluster)
-					gtk_label_set_text(glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected Clusters1");
+					gtk_label_set_text((GtkLabel*)glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected Clusters1");
 				break;
 				case 2:	//Node
-					gtk_label_set_text(glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected Nodes!");
+					gtk_label_set_text((GtkLabel*)glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected Nodes!");
 				break;
 				case 3:	//Edge
-					gtk_label_set_text(glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected Edges!");
+					gtk_label_set_text((GtkLabel*)glade_xml_get_widget(xml,"frmObjectPosLabelX"),"Changes that you make will be applied to all selected Edges!");
 				break;
 			}
 	}
@@ -491,16 +493,16 @@ char* get_attribute_string_value_from_widget(attribute* att)
 	switch(att->Type)
 	{
 		case 'F':
-			sprintf(guibuffer,"%f",gtk_spin_button_get_value(att->attrWidget));			
+			sprintf(guibuffer,"%f",gtk_spin_button_get_value((GtkSpinButton*)att->attrWidget));			
 			return guibuffer;
 			break;
 		case 'C':
-			gtk_color_button_get_color(att->attrWidget,&color);
+			gtk_color_button_get_color((GtkColorButton*)att->attrWidget,&color);
 			sprintf(guibuffer,"#%x%x%x",color.red/255,color.green/255,color.blue/255);
 			return guibuffer;
 			break;
 		default:						
-			strcpy(guibuffer,gtk_entry_get_text(att->attrWidget));
+			strcpy(guibuffer,gtk_entry_get_text((GtkEntry*)att->attrWidget));
 			return guibuffer;
 	}
 }

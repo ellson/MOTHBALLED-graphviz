@@ -18,9 +18,11 @@
 #include "tvnodes.h"
 #include "btree.h"
 #include "viewport.h"
+#include "selection.h"
 tv_nodes TV_Nodes;
 static char buf [255];
 int MP_Flag=0;
+
 tv_filter* create_tv_filter()
 {
 	tv_filter* f;
@@ -86,6 +88,7 @@ extern int set_filter(tv_filter* TV_Filter,char* MinData1,char* MaxData1,char* M
 	TV_Filter->max_data2=MaxData2;
 	TV_Filter->filter_string=Filter_String;
 	TV_Nodes.filtered=1;
+	return 1;
 }
 int reverse_selection()
 {
@@ -110,8 +113,6 @@ int validate_node(tv_node* TV_Node)
 	static btree_node* n=0;
 	char* data_attr1;
 	char* data_attr2;
-	char* data1;
-	char* data2;
 	char* buf;
 //		n=tree_from_filter_string("([IP=\"^10.*\",min=\"0\",max=\"0\"])");
 	// get attributes from graph
@@ -187,51 +188,51 @@ int update_node_gui_objects(tv_node* TV_Node)
 	data_attr2=agget(view->g[view->activeGraph],"DataAttribute2");
 
 	//create if objects are null	
-	layout=glade_xml_get_widget(xml, "layoutTVData");
+	layout=(GtkLayout*)glade_xml_get_widget(xml, "layoutTVData");
 	//select box
 	if (!TV_Node->chkSelected)
 	{
-		TV_Node->chkSelected=gtk_check_button_new();
-		gtk_layout_put	(layout,TV_Node->chkSelected,LOCATION_X_CHKSELECTED,TV_Nodes.Y);
+		TV_Node->chkSelected=(GtkCheckButton*)gtk_check_button_new();
+		gtk_layout_put	(layout,(GtkWidget*)TV_Node->chkSelected,LOCATION_X_CHKSELECTED,TV_Nodes.Y);
 	}
-	gtk_widget_show(TV_Node->chkSelected);
-	gtk_toggle_button_set_active(TV_Node->chkSelected,((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Selected);
+	gtk_widget_show((GtkWidget*)TV_Node->chkSelected);
+	gtk_toggle_button_set_active((GtkToggleButton*)TV_Node->chkSelected,((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Selected);
 
 	//Id Label
 	if (!TV_Node->IDLabel)
 	{
-		TV_Node->IDLabel=gtk_label_new("");
-		gtk_layout_put	(layout,TV_Node->IDLabel,LOCATION_X_IDLABEL,TV_Nodes.Y);
+		TV_Node->IDLabel=(GtkLabel*)gtk_label_new("");
+		gtk_layout_put	(layout,(GtkWidget*)TV_Node->IDLabel,LOCATION_X_IDLABEL,TV_Nodes.Y);
 	}
 	sprintf(buf, "%d", TV_Node->index);
 	gtk_label_set_text (TV_Node->IDLabel,buf);
-	gtk_widget_show(TV_Node->IDLabel);
+	gtk_widget_show((GtkWidget*)TV_Node->IDLabel);
 
 	//visible
 	if (!TV_Node->chkVisible)
 	{		
-		TV_Node->chkVisible=gtk_check_button_new();
-		gtk_layout_put	(layout,TV_Node->chkVisible,LOCATION_X_CHKVISIBLE,TV_Nodes.Y);
+		TV_Node->chkVisible=(GtkCheckButton*)gtk_check_button_new();
+		gtk_layout_put	(layout,(GtkWidget*)TV_Node->chkVisible,LOCATION_X_CHKVISIBLE,TV_Nodes.Y);
 	}
 
-	gtk_widget_show(TV_Node->chkVisible);
-	gtk_toggle_button_set_active(TV_Node->chkVisible,((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Visible);
+	gtk_widget_show((GtkWidget*)TV_Node->chkVisible);
+	gtk_toggle_button_set_active((GtkToggleButton*)TV_Node->chkVisible,((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Visible);
 	//highlighted
 	if (!TV_Node->chkHighlighted)
 	{
-		TV_Node->chkHighlighted=gtk_check_button_new();
-		gtk_layout_put	(layout,TV_Node->chkHighlighted,LOCATION_X_CHKHIGHLIGHTED,TV_Nodes.Y);
+		TV_Node->chkHighlighted=(GtkCheckButton*)gtk_check_button_new();
+		gtk_layout_put	(layout,(GtkWidget*)TV_Node->chkHighlighted,LOCATION_X_CHKHIGHLIGHTED,TV_Nodes.Y);
 	}
-	gtk_widget_show(TV_Node->chkHighlighted);
-	gtk_toggle_button_set_active(TV_Node->chkHighlighted,((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Highlighted);
+	gtk_widget_show((GtkWidget*)TV_Node->chkHighlighted);
+	gtk_toggle_button_set_active((GtkToggleButton*)TV_Node->chkHighlighted,((custom_object_data*)AGDATA(view->Topview->Nodes[TV_Node->index].Node))->Highlighted);
 
 	
 	//DATA 1
 	if (!TV_Node->Data1)
 	{
-		TV_Node->Data1=gtk_entry_new();
-		gtk_layout_put	(layout,TV_Node->Data1,LOCATION_X_DATA1,TV_Nodes.Y);
-		gtk_widget_set_size_request(TV_Node->Data1,300,23);
+		TV_Node->Data1=(GtkEntry*)gtk_entry_new();
+		gtk_layout_put	(layout,(GtkWidget*)TV_Node->Data1,LOCATION_X_DATA1,TV_Nodes.Y);
+		gtk_widget_set_size_request((GtkWidget*)TV_Node->Data1,300,23);
 
 	}
 	if(data_attr1)
@@ -240,14 +241,14 @@ int update_node_gui_objects(tv_node* TV_Node)
 	}
 	else
 		gtk_entry_set_text (TV_Node->Data1,"");
-	gtk_widget_show(TV_Node->Data1);
+	gtk_widget_show((GtkWidget*)TV_Node->Data1);
 
 	//DATA 2
 	if (!TV_Node->Data2)
 	{
-		TV_Node->Data2=gtk_entry_new();
-		gtk_layout_put	(layout,TV_Node->Data2,LOCATION_X_DATA2,TV_Nodes.Y);
-		gtk_widget_set_size_request(TV_Node->Data2,300,23);
+		TV_Node->Data2=(GtkEntry*)gtk_entry_new();
+		gtk_layout_put	(layout,(GtkWidget*)TV_Node->Data2,LOCATION_X_DATA2,TV_Nodes.Y);
+		gtk_widget_set_size_request((GtkWidget*)TV_Node->Data2,300,23);
 	}
 	if(data_attr2)
 	{
@@ -255,7 +256,9 @@ int update_node_gui_objects(tv_node* TV_Node)
 	}
 	else
 		gtk_entry_set_text (TV_Node->Data2,"");
-	gtk_widget_show(TV_Node->Data2);
+	gtk_widget_show((GtkWidget*)TV_Node->Data2);
+	return 1;
+
 }
 
 
@@ -308,10 +311,10 @@ extern int tv_nodes_goto_page(int page)
 		}
    		TV_Nodes.page_data_node_index++;
 	}
-	lblTVPage=glade_xml_get_widget(xml, "lblTVPage");
+	lblTVPage=(GtkLabel*)glade_xml_get_widget(xml, "lblTVPage");
 	sprintf(buf,"(%i / %i)", TV_Nodes.activepage+1,TV_Nodes.pagecount+1);
 	gtk_label_set_text(lblTVPage,buf);
-	spn=glade_xml_get_widget(xml, "spnTVGotopage");
+	spn=(GtkSpinButton*)glade_xml_get_widget(xml, "spnTVGotopage");
 	gtk_spin_button_set_value(spn,page+1);
 
 
@@ -322,8 +325,6 @@ extern int tv_nodes_goto_page(int page)
 
 extern int tv_nodes_prior_page()
 {
-	tv_node* tvn;
-	GtkLabel* lblTVPage;
 	if (TV_Nodes.activepage >0)
 	{
 		return tv_nodes_goto_page(TV_Nodes.activepage -1);
@@ -335,8 +336,6 @@ extern int tv_nodes_prior_page()
 
 extern int tv_nodes_next_page()
 {
-	tv_node* tvn;
-	GtkLabel* lblTVPage;
 	if (TV_Nodes.activepage < TV_Nodes.pagecount)
 	{
 		return tv_nodes_goto_page(TV_Nodes.activepage +1);
@@ -368,14 +367,15 @@ static int hide_data_widgets()
 	{
 		if (TV_Nodes.TV_Node[i].chkHighlighted) 
 		{		
-			gtk_widget_hide(TV_Nodes.TV_Node[i].chkHighlighted);
-			gtk_widget_hide(TV_Nodes.TV_Node[i].chkSelected);
-			gtk_widget_hide(TV_Nodes.TV_Node[i].chkVisible);
-			gtk_widget_hide(TV_Nodes.TV_Node[i].Data1);
-			gtk_widget_hide(TV_Nodes.TV_Node[i].Data2);
-			gtk_widget_hide(TV_Nodes.TV_Node[i].IDLabel);
+			gtk_widget_hide((GtkWidget*)TV_Nodes.TV_Node[i].chkHighlighted);
+			gtk_widget_hide((GtkWidget*)TV_Nodes.TV_Node[i].chkSelected);
+			gtk_widget_hide((GtkWidget*)TV_Nodes.TV_Node[i].chkVisible);
+			gtk_widget_hide((GtkWidget*)TV_Nodes.TV_Node[i].Data1);
+			gtk_widget_hide((GtkWidget*)TV_Nodes.TV_Node[i].Data2);
+			gtk_widget_hide((GtkWidget*)TV_Nodes.TV_Node[i].IDLabel);
 		}
 	}
+	return 1;
 	
 
 }
@@ -388,6 +388,8 @@ extern int reset_page_History()
 	}*/
 	TV_Nodes.page_history_count=0;
 	TV_Nodes.page_history=realloc(TV_Nodes.page_history,sizeof(int) * TV_Nodes.page_history_count);
+	return 1;
+
 
 }
 static int push_to_page_history(int index)
@@ -439,15 +441,17 @@ extern int prepare_page_history()
 			count=0;
 		}
 	}
-	spn=glade_xml_get_widget(xml, "spnTVGotopage");
+	spn=(GtkSpinButton*)glade_xml_get_widget(xml, "spnTVGotopage");
 	gtk_spin_button_set_value(spn,0);
 	gtk_spin_button_set_range(spn,0,TV_Nodes.pagecount+1);
 
 
-	lblTVPage=glade_xml_get_widget(xml, "lblTVPage");
+	lblTVPage=(GtkLabel*)glade_xml_get_widget(xml, "lblTVPage");
 	sprintf(buf,"(%i / %i)", 1,TV_Nodes.pagecount+1);
 	gtk_label_set_text(lblTVPage,buf);
 	set_data_attributes();
+	return 1;
+
 }
 static int set_data_attributes()
 {
@@ -455,7 +459,6 @@ static int set_data_attributes()
 	GtkLabel* lblData2;
 	char* data_attr1;
 	char* data_attr2;
-	char buf[255];
 	// get attributes from graph
 	data_attr1=agget(view->g[view->activeGraph],"DataAttribute1");
 	data_attr2=agget(view->g[view->activeGraph],"DataAttribute2");
@@ -473,8 +476,8 @@ static int set_data_attributes()
 	data_attr1=agget(view->g[view->activeGraph],"DataAttribute1");
 	data_attr2=agget(view->g[view->activeGraph],"DataAttribute2");
 
-	lblData1=glade_xml_get_widget(xml, "lblTVData1");
-	lblData2=glade_xml_get_widget(xml, "lblTVData2");
+	lblData1=(GtkLabel*)glade_xml_get_widget(xml, "lblTVData1");
+	lblData2=(GtkLabel*)glade_xml_get_widget(xml, "lblTVData2");
 	gtk_label_set_text (lblData1,data_attr1);
 	gtk_label_set_text (lblData2,data_attr2);
 	return 1;
@@ -497,7 +500,7 @@ extern int update_TV_data_from_gui()
 		if (index < view->Topview->Nodecount)
 		{
 			// apply if selected
-			if(gtk_toggle_button_get_active(TV_Nodes.TV_Node[i].chkSelected))
+			if(gtk_toggle_button_get_active((GtkToggleButton*)TV_Nodes.TV_Node[i].chkSelected))
 			{
 				if (!((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Selected)
 					select_node(view->g[view->activeGraph],view->Topview->Nodes[index].Node);					
@@ -508,7 +511,7 @@ extern int update_TV_data_from_gui()
 					deselect_node(view->g[view->activeGraph],view->Topview->Nodes[index].Node);					
 			}
 			// apply if Visible
-			if(gtk_toggle_button_get_active(TV_Nodes.TV_Node[i].chkVisible))
+			if(gtk_toggle_button_get_active((GtkToggleButton*)TV_Nodes.TV_Node[i].chkVisible))
 			{
 				if (!((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Visible)
 					((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Visible=1;
@@ -519,7 +522,7 @@ extern int update_TV_data_from_gui()
 					((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Visible=0;
 			}
 			// apply if Highlighted
-			if(gtk_toggle_button_get_active(TV_Nodes.TV_Node[i].chkHighlighted))
+			if(gtk_toggle_button_get_active((GtkToggleButton*)TV_Nodes.TV_Node[i].chkHighlighted))
 			{
 				if (!((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Highlighted)
 					((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Highlighted=1;
@@ -530,12 +533,14 @@ extern int update_TV_data_from_gui()
 					((custom_object_data*)AGDATA(view->Topview->Nodes[index].Node))->Highlighted=0;
 			}
 			//Data1 
-			agset(view->Topview->Nodes[index].Node,data_attr1,gtk_entry_get_text (TV_Nodes.TV_Node[i].Data1));
+			agset((void*)view->Topview->Nodes[index].Node,data_attr1,(char*)gtk_entry_get_text (TV_Nodes.TV_Node[i].Data1));
 			//Data2 
-			agset(view->Topview->Nodes[index].Node,data_attr2,gtk_entry_get_text (TV_Nodes.TV_Node[i].Data2));
+			agset(view->Topview->Nodes[index].Node,data_attr2,(char*)gtk_entry_get_text (TV_Nodes.TV_Node[i].Data2));
 
 		}
 	}
+		return 1;
+
 
 }
 
@@ -545,32 +550,32 @@ extern int apply_filter_from_gui()
 	int visible;
 	int highlighted;
 
-	if(gtk_toggle_button_get_active(glade_xml_get_widget(xml,"rbTVFilterSel1")))	
+	if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterSel1")))	
 			selected=-1;
-		if(gtk_toggle_button_get_active(glade_xml_get_widget(xml,"rbTVFilterSel2")))	
+		if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterSel2")))	
 			selected=1;
-		if(gtk_toggle_button_get_active(glade_xml_get_widget(xml,"rbTVFilterSel3")))	
+		if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterSel3")))	
 			selected=0;
 
-		if(gtk_toggle_button_get_active(glade_xml_get_widget(xml,"rbTVFilterVisible1")))	
+		if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterVisible1")))	
 			visible=-1;
-		if(gtk_toggle_button_get_active(glade_xml_get_widget(xml,"rbTVFilterVisible2")))	
+		if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterVisible2")))	
 			visible=1;
-		if(gtk_toggle_button_get_active(glade_xml_get_widget(xml,"rbTVFilterVisible3")))	
+		if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterVisible3")))	
 			visible=0;
 
-		if(gtk_toggle_button_get_active(glade_xml_get_widget(xml,"rbTVFilterHigh1")))	
+		if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterHigh1")))	
 			highlighted=-1;
-		if(gtk_toggle_button_get_active(glade_xml_get_widget(xml,"rbTVFilterHigh2")))	
+		if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterHigh2")))	
 			highlighted=1;
-		if(gtk_toggle_button_get_active(glade_xml_get_widget(xml,"rbTVFilterHigh3")))	
+		if(gtk_toggle_button_get_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterHigh3")))	
 			highlighted=0;
 		set_filter(&TV_Nodes.filter,
-		gtk_entry_get_text ( glade_xml_get_widget(xml,"edtTVFilterMinData1") ),
-		gtk_entry_get_text ( glade_xml_get_widget(xml,"edtTVFilterMaxData1") ),
-		gtk_entry_get_text ( glade_xml_get_widget(xml,"edtTVFilterMinData2") ),
-		gtk_entry_get_text ( glade_xml_get_widget(xml,"edtTVFilterMaxData2") ),
-		gtk_entry_get_text ( glade_xml_get_widget(xml,"edtTVFilterString") ),
+		(char*)gtk_entry_get_text ((GtkEntry*)glade_xml_get_widget(xml,"edtTVFilterMinData1") ),
+		(char*)gtk_entry_get_text ((GtkEntry*)glade_xml_get_widget(xml,"edtTVFilterMaxData1") ),
+		(char*)gtk_entry_get_text ((GtkEntry*)glade_xml_get_widget(xml,"edtTVFilterMinData2") ),
+		(char*)gtk_entry_get_text ((GtkEntry*)glade_xml_get_widget(xml,"edtTVFilterMaxData2") ),
+		(char*)gtk_entry_get_text ((GtkEntry*)glade_xml_get_widget(xml,"edtTVFilterString") ),
 			selected,visible,highlighted);
 		MP_Flag=1;
 		prepare_page_history();
@@ -593,6 +598,8 @@ extern int tv_select_all()
 		}
 	}
 	apply_filter_from_gui();
+	return 1;
+
 }
 extern int tv_unselect_all()
 {
@@ -608,6 +615,8 @@ extern int tv_unselect_all()
 		}
 	}
 	apply_filter_from_gui();
+	return 1;
+
 }
 extern int tv_highligh_all()
 {

@@ -27,6 +27,7 @@
 
 void cleartopview(topview* t);
 void preparetopview(Agraph_t *g,topview* t);
+void drawTopViewGraph(Agraph_t *g);
 int select_topview_node(topview_node *n);
 int select_topview_edge(topview_edge *e);
 int update_topview_node_from_cgraph(topview_node* Node);
@@ -38,6 +39,7 @@ void set_boundries(topview* t);
 int get_color_from_edge(topview_edge *e);
 int node_visible(Agnode_t* n);
 int move_TVnodes();
+void local_zoom(topview* t);
 void originate_distorded_coordinates(topview* t);
 _BB void on_host_alpha_change (GtkWidget *widget,gpointer     user_data);
 double dist(double x1, double y1, double x2, double y2);

@@ -23,6 +23,7 @@
 #include "viewport.h"
 #include "draw.h"
 #include "selection.h"
+#include "topviewdata.h"
 
 static float dx=0.0;
 static float dy=0.0;
@@ -44,11 +45,9 @@ void preparetopview(Agraph_t *g,topview* t)
 	char* d_attr1;
 	char* d_attr2;
 	float a,b,c;
-	char* pch;
 	Agnode_t *v;
 	Agedge_t *e;
 	Agsym_t *sym;
-	GtkTreeIter iter;
 	int ind,ind2,data_type_count;	//number of columns for custom view->Topview data ,IP ,HOST, etc
 	char buf[256];
 	ind=0;ind2=0;
@@ -89,13 +88,13 @@ void preparetopview(Agraph_t *g,topview* t)
 		strcpy(buf,agget(v, "pos"));
 		if(strlen(buf))
 		{
-			a=atof(strtok (buf,"," ));
-			b=atof(strtok (NULL,"," ));
+			a=(float)atof(strtok (buf,"," ));
+			b=(float)atof(strtok (NULL,"," ));
 			str=strtok (NULL,"," );
 			if(str)
-				c=atof(str);
+				c=(float)atof(str);
 			else
-				c=0.0;
+				c=(float)0.0;
 		}
 		/*initialize group index, -1 means no group*/		
 		t->Nodes[ind].GroupIndex=-1;
@@ -108,7 +107,7 @@ void preparetopview(Agraph_t *g,topview* t)
 		t->Nodes[ind].distorted_y=b;
 		t->Nodes[ind].zoom_factor=1;
 		t->Nodes[ind].degree=agdegree(g,v,1,1);
-		t->Nodes[ind].node_alpha=log((float)t->Nodes[ind].degree+0.3);
+		t->Nodes[ind].node_alpha=(float)log((double)t->Nodes[ind].degree+(double)0.3);
 		if(d_attr1)
 		{
 			if (sym)
@@ -135,13 +134,13 @@ void preparetopview(Agraph_t *g,topview* t)
 			strcpy(buf,agget(aghead(e), "pos"));
 			if(strlen(buf))
 			{
-				a=atof(strtok (buf,"," ));
-				b=atof(strtok (NULL,"," ));
+				a=(float)atof(strtok (buf,"," ));
+				b=(float)atof(strtok (NULL,"," ));
 				str=strtok (NULL,"," );
 				if(str)
-					c=atof(str);
+					c=(float)atof(str);
 				else
-					c=0.0;
+					c=(float)0.0;
 
 				t->Edges[ind2].x1=a;
 				t->Edges[ind2].y1=b;
@@ -150,13 +149,13 @@ void preparetopview(Agraph_t *g,topview* t)
 			strcpy(buf,agget(agtail(e), "pos"));
 			if(strlen(buf))
 			{
-				a=atof(strtok (buf,"," ));
-				b=atof(strtok (NULL,"," ));
+				a=(float)atof(strtok (buf,"," ));
+				b=(float)atof(strtok (NULL,"," ));
 				str=strtok (NULL,"," );
 				if(str)
-					c=atof(str);
+					c=(float)atof(str);
 				else
-					c=0.0;
+					c=(float)0.0;
 				t->Edges[ind2].x2=a;
 				t->Edges[ind2].y2=b;
 				t->Edges[ind2].z2=c;
@@ -192,15 +191,12 @@ void preparetopview(Agraph_t *g,topview* t)
 }
 void drawTopViewGraph(Agraph_t *g)
 {
-	RGBColor c;
 //	DWORD t1,t2;
 	topview_node *v;
 	topview_edge *e;
 	float ddx,ddy;
 	float dddx,dddy;
 	int ind=0;
-	char buf[50];
-	GLfloat a,b;
 	if(view->zoom > NODE_ZOOM_LIMIT)
 	{
 		glPointSize(15/view->zoom*-1);
@@ -251,9 +247,9 @@ void drawTopViewGraph(Agraph_t *g)
 					}
 
 					if (v->distorted_x!=v->x)
-						zdepth=Z_FORWARD_PLANE;
+						zdepth=(float)Z_FORWARD_PLANE;
 					else
-						zdepth=Z_BACK_PLANE;
+						zdepth=(float)Z_BACK_PLANE;
 					if(view->zoom < NODE_CIRCLE_LIMIT)
 						glVertex3f(v->distorted_x-ddx,v->distorted_y-ddy,zdepth); 
 					else
@@ -293,13 +289,13 @@ void drawTopViewGraph(Agraph_t *g)
 
 			//zdepth
 			if (e->Node1->distorted_x!=e->Node1->x)
-						zdepth1=Z_FORWARD_PLANE;
+						zdepth1=(float)Z_FORWARD_PLANE;
 					else
-						zdepth1=Z_BACK_PLANE;
+						zdepth1=(float)Z_BACK_PLANE;
 			if (e->Node2->distorted_x!=e->Node2->x)
-						zdepth2=Z_FORWARD_PLANE;
+						zdepth2=(float)Z_FORWARD_PLANE;
 					else
-						zdepth2=Z_BACK_PLANE;
+						zdepth2=(float)Z_BACK_PLANE;
 
 
 			if(get_color_from_edge(e))
@@ -315,7 +311,7 @@ void drawTopViewGraph(Agraph_t *g)
 			view->Selection.Active=0;
 			drawTopViewGraph(g);
 			view->SignalBlock=1;
-			expose_event (view->drawing_area,NULL,NULL);
+			glexpose();
 			view->SignalBlock=0;
 	}
 
@@ -361,6 +357,7 @@ int select_topview_node(topview_node *n)
 
 		}
 	}
+	return 1;
 }
 int select_topview_edge(topview_edge *e)
 {
@@ -386,29 +383,10 @@ int select_topview_edge(topview_edge *e)
 			}
 			break;
 
-/*		case 1:
-		case 2:
-			if(view->Selection.Anti==0)
-			{
-				select_object (view->g[view->activeGraph],n->Node);
-				view->Selection.AlreadySelected=1;
-			}
-			else
-			{
-				deselect_object (view->g[view->activeGraph],n->Node);
-				view->Selection.AlreadySelected=1;
-			}
-			break;*/
-
 		}
 	}
+		return 1;
 
-
-/*	else if (view->Selection.Type==0)
-	{
-			deselect_object (view->g[view->activeGraph],n->Node);
-			view->Selection.AlreadySelected=1;
-	} */
 }
 int update_topview_node_from_cgraph(topview_node* Node)
 {
@@ -428,6 +406,7 @@ int update_topview_node_from_cgraph(topview_node* Node)
 		Node->Color.A=view->penColor.A;
 	}*/
 	Node->update_required=0;
+	return 1;
 }
 int update_topview_edge_from_cgraph(topview_edge* Edge)
 {
@@ -445,6 +424,7 @@ int update_topview_edge_from_cgraph(topview_edge* Edge)
 		Edge->Color.A=view->penColor.A;
 	}
 	Edge->update_required=0;
+	return 1;
 }
 
 
@@ -452,7 +432,6 @@ int update_topview_edge_from_cgraph(topview_edge* Edge)
 int set_update_required(topview* t)
 {
 	int i=0;
-	char buf[124];
 	int ilimit;
 	ilimit=	(t->Nodecount > t->Edgecount) ? t->Nodecount : t->Edgecount;
 
@@ -464,6 +443,7 @@ int set_update_required(topview* t)
 		if( t->Edgecount > i)
 			t->Edges[i].update_required=1;
 	}
+	return 1;
 
 }
 
@@ -480,7 +460,7 @@ int draw_topview_label(topview_node* v,float zdepth)
 	if((v->distorted_x > view->clipX1) && (v->distorted_x < view->clipX2) &&(v->distorted_y > view->clipY1)&&(v->distorted_y < view->clipY2))
 	{
 
-		fs=(v->degree==1) ?log((double)v->degree+1)*7:log((double)v->degree+0.5)*7;
+		fs=(v->degree==1) ?(float)(log((double)v->degree+1)*(double)7):(float)(log((double)v->degree+(double)0.5)*(double)7);
 		fs=fs*v->zoom_factor;
 /*		if(fs > 12)
 			fs=24;*/
@@ -489,14 +469,14 @@ int draw_topview_label(topview_node* v,float zdepth)
 			ddx=dx;ddy=dy;
 		}
 
-		fontSize (fs);
+		fontSize ((int)fs);
 		if ((log((float)v->degree)*-0.6*view->zoom) >0)
-			fontColorA (log((double)v->degree+1),view->penColor.G,view->penColor.B,view->penColor.A/log((float)v->degree)*-0.6*view->zoom);
+			fontColorA ((float)log((double)v->degree+(double)1),view->penColor.G,view->penColor.B,view->penColor.A/(float)log((double)v->degree)*(float)-0.6*(float)view->zoom);
 		else
-			fontColorA (log((double)v->degree+1),view->penColor.G,view->penColor.B,1);
+			fontColorA ((float)log((double)v->degree+(double)1),view->penColor.G,view->penColor.B,1);
 
 //		printf("%f \n",view->penColor.A/log((float)v->degree)*-0.02*view->zoom);
-		fontDrawString (v->distorted_x-ddx,v->distorted_y-ddy,v->Label,fs*5);
+		fontDrawString ((int)(v->distorted_x-ddx),(int)(v->distorted_y-ddy),v->Label,(int)(fs*5));
 
 		return 1;
 	}
@@ -563,8 +543,8 @@ int get_color_from_edge(topview_edge *e)
 	char* color_string;
 	int return_value=0;
 	float Alpha=0;
-	GtkHScale* AlphaScale=glade_xml_get_widget(xml, "frmHostAlphaScale");
-	Alpha=gtk_range_get_value((GtkRange*) AlphaScale);
+	GtkHScale* AlphaScale=(GtkHScale*)glade_xml_get_widget(xml, "frmHostAlphaScale");
+	Alpha=(float)gtk_range_get_value((GtkRange*) AlphaScale);
 
 	//check visibility;
 	if(	(node_visible(e->Node1->Node))
@@ -597,14 +577,14 @@ int get_color_from_edge(topview_edge *e)
 		if (view->Topview->TopviewData->hostactive[e->Node1->GroupIndex]==1)
 		{
 			gtk_color_button_get_color(view->Topview->TopviewData->gtkhostcolor[e->Node1->GroupIndex],&color);
-			glColor4f(color.red/65535.0,color.green/65535.0,color.blue/65535.0,1);
+			glColor4f((GLfloat)color.red/(GLfloat)65535.0,(GLfloat)color.green/(GLfloat)65535.0,(GLfloat)color.blue/(GLfloat)65535.0,(GLfloat)1);
 			return return_value;
 		}else
 		{
 			if (view->Topview->TopviewData->hostactive[e->Node2->GroupIndex]==1)
 			{
 				gtk_color_button_get_color(view->Topview->TopviewData->gtkhostcolor[e->Node2->GroupIndex],&color);
-				glColor4f(color.red/65535.0,color.green/65535.0,color.blue/65535.0,1);
+				glColor4f((GLfloat)color.red/(GLfloat)65535.0,(GLfloat)color.green/(GLfloat)65535.0,(GLfloat)color.blue/(GLfloat)65535.0,(GLfloat)1);
 				return return_value;
 			}
 		}
@@ -639,6 +619,7 @@ int move_TVnodes()
 			v->y=v->y-dy;
 		}
 	}
+	return 1;
 }
 
 
@@ -744,10 +725,6 @@ int move_TVnodes()
 int validate_group_node(tv_node* TV_Node,char* regex_string)
 {
 	btree_node* n=0;
-	char* data_attr1;
-	char* data_attr2;
-	char* data1;
-	char* data2;
 //		n=tree_from_filter_string("([IP=\"^10.*\",min=\"0\",max=\"0\"])");
 	int valid=0;
 	n=tree_from_filter_string(regex_string);
@@ -761,7 +738,7 @@ int validate_group_node(tv_node* TV_Node,char* regex_string)
 void
 on_host_alpha_change (GtkWidget *widget,gpointer     user_data)
 {
-	expose_event (view->drawing_area,NULL,NULL);
+	glexpose();
 }
 
 void local_zoom(topview* t)
@@ -779,11 +756,11 @@ void local_zoom(topview* t)
 			dely=t->Nodes[i].y-view->mg.y;
 			tempx=view->mg.x+delx*view->mg.kts;
 			tempy=view->mg.y+dely*view->mg.kts;
-			if(is_point_in_rectangle(tempx,tempy,view->mg.x-view->mg.GLwidth,view->mg.y-view->mg.GLheight,
-				view->mg.GLwidth*2,view->mg.GLheight*2))
+			if(is_point_in_rectangle((GLfloat)tempx,(GLfloat)tempy,view->mg.x-view->mg.GLwidth,view->mg.y-view->mg.GLheight,
+				view->mg.GLwidth*(GLfloat)2,view->mg.GLheight*(GLfloat)2))
 			{
-				t->Nodes[i].distorted_x=view->mg.x+delx*view->mg.kts;
-				t->Nodes[i].distorted_y=view->mg.y+dely*view->mg.kts;
+				t->Nodes[i].distorted_x=view->mg.x+(GLfloat)delx*view->mg.kts;
+				t->Nodes[i].distorted_y=view->mg.y+(GLfloat)dely*view->mg.kts;
 				t->Nodes[i].zoom_factor=view->mg.kts;
 			}
 			else//get intersections and move nodes to edges of magnifier box
@@ -810,7 +787,7 @@ void fisheye_polar(double x_focus, double y_focus,topview* t)
 	range=0;
 	for (i=1; i< t->Nodecount; i++) 
 	{
-		if(point_within_ellips_with_coords(x_focus,y_focus,view->fmg.R,view->fmg.R,t->Nodes[i].x,t->Nodes[i].y))
+		if(point_within_ellips_with_coords((float)x_focus,(float)y_focus,(float)view->fmg.R,(float)view->fmg.R,t->Nodes[i].x,t->Nodes[i].y))
 		{
 			range = MAX(range,dist(t->Nodes[i].x,t->Nodes[i].y, x_focus, y_focus));
 		}
@@ -819,7 +796,7 @@ void fisheye_polar(double x_focus, double y_focus,topview* t)
 	for (i=1; i< t->Nodecount; i++) 
 	{
 
-		if(point_within_ellips_with_coords(x_focus,y_focus,view->fmg.R,view->fmg.R,t->Nodes[i].x,t->Nodes[i].y))
+		if(point_within_ellips_with_coords((float)x_focus,(float)y_focus,(float)view->fmg.R,(float)view->fmg.R,t->Nodes[i].x,t->Nodes[i].y))
 		{
 			distance = dist(t->Nodes[i].x, t->Nodes[i].y, x_focus, y_focus);
 			distorted_distance = G(distance/range)*range;
@@ -829,9 +806,9 @@ void fisheye_polar(double x_focus, double y_focus,topview* t)
 			else {
 				ratio = 0;
 			}
-			t->Nodes[i].distorted_x = x_focus +(t->Nodes[i].x-x_focus)*ratio;
-			t->Nodes[i].distorted_y = y_focus + (t->Nodes[i].y-y_focus)*ratio;
-			t->Nodes[i].zoom_factor=1*distorted_distance/distance;
+			t->Nodes[i].distorted_x = (float)x_focus +(t->Nodes[i].x-(float)x_focus)*(float)ratio;
+			t->Nodes[i].distorted_y = (float)y_focus + (t->Nodes[i].y-(float)y_focus)*(float)ratio;
+			t->Nodes[i].zoom_factor=(float)1*(float)distorted_distance/(float)distance;
 		}
 		else
 		{
@@ -939,7 +916,7 @@ void menu_click_zoom_plus(void* p)
 	if((view->zoom + ZOOM_STEP) < MAX_ZOOM)
 		view->zoom=view->zoom+ZOOM_STEP;
 	else
-		view->zoom=MAX_ZOOM;
+		view->zoom=(float)MAX_ZOOM;
 
 }
 void menu_click_alpha_plus(void* p)
@@ -947,7 +924,7 @@ void menu_click_alpha_plus(void* p)
 	if((view->zoom + ZOOM_STEP) < MAX_ZOOM)
 		view->zoom=view->zoom+ZOOM_STEP;
 	else
-		view->zoom=MAX_ZOOM;
+		view->zoom=(float)MAX_ZOOM;
 
 }
 
@@ -1017,7 +994,7 @@ glCompSet* glcreate_gl_topview_menu()
 	b=glCompButtonNew(5,7,75,25,"NORMAL",'\0',0,0);
 	b->color.R=0;
 	b->color.G=1;
-	b->color.B=0.1;
+	b->color.B=(float)0.1;
 	b->customptr=view;
 	b->panel=p;
 	b->groupid=2;
@@ -1026,7 +1003,7 @@ glCompSet* glcreate_gl_topview_menu()
 	b=glCompButtonNew(85,7,75,25,"FISHEYE",'\0',0,0);
 	b->color.R=0;
 	b->color.G=1;
-	b->color.B=0.1;
+	b->color.B=(float)0.1;
 	b->customptr=view;
 	b->panel=p;
 	b->groupid=2;
@@ -1069,12 +1046,12 @@ glCompSet* glcreate_gl_topview_menu()
 	//zoom percantage label
 	l=glCompLabelNew(100,45,24,"100");
 	l->panel=p;
-	l->fontsizefactor=0.4;
+	l->fontsizefactor=(float)0.4;
 	glCompSetAddLabel(s,l);
 	view->Topview->customptr=l;
 	l=glCompLabelNew(93,65,20,"zoom");
 	l->panel=p;
-	l->fontsizefactor=0.4;
+	l->fontsizefactor=(float)0.4;
 	glCompSetAddLabel(s,l);
 
 	glCompPanelHide(p);

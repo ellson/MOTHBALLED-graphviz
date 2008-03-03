@@ -21,6 +21,9 @@
 #include <gtk/gtk.h>
 #include "callbacks.h"
 #include "viewport.h"
+#include "topview.h"
+#include "selection.h"
+
 
 
 
@@ -100,13 +103,13 @@ btn_dot_clicked                       (GtkWidget     *widget,
                                   GTK_BUTTONS_YES_NO,
                                   "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
 
-	respond=gtk_dialog_run (Dlg);
+	respond=gtk_dialog_run ((GtkDialog*)Dlg);
 	if (respond == GTK_RESPONSE_YES)	
 		do_graph_layout(view->g[view->activeGraph],0,0);
-	gtk_object_destroy (Dlg);
+	gtk_object_destroy ((GtkObject*)Dlg);
 
 	cursor = gdk_cursor_new(GDK_HAND2);
-	w=glade_xml_get_widget(xml, "frmMain");
+	w=(GdkWindow*)glade_xml_get_widget(xml, "frmMain");
 //	gdk_window_set_cursor(w, cursor);
    gdk_window_set_cursor ((GTK_WIDGET(view->drawing_area)->window), cursor);
 //	gdk_window_set_title((GTK_WIDGET(widget)->window),"adasdasdasdassada");
@@ -121,16 +124,16 @@ btn_neato_clicked                       (GtkWidget     *widget,
                                         gpointer         user_data)
 
 {
-	Dlg = gtk_message_dialog_new (NULL,
+	Dlg = (GtkMessageDialog*) gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_YES_NO,
                                   "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
 
-	respond=gtk_dialog_run (Dlg);
+	respond=gtk_dialog_run ((GtkDialog*)Dlg);
 	if (respond == GTK_RESPONSE_YES)	
 		do_graph_layout(view->g[view->activeGraph],1,0);
-	gtk_object_destroy (Dlg);
+	gtk_object_destroy ((GtkObject*)Dlg);
 	gtk_button_set_image(GTK_BUTTON(glade_xml_get_widget(xml, "btn_neato")), gtk_image_new_from_file("c:\fonts.png"));
 
 }
@@ -140,16 +143,16 @@ btn_twopi_clicked                       (GtkWidget     *widget,
                                         gpointer         user_data)
 
 {
-	Dlg = gtk_message_dialog_new (NULL,
+	Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_YES_NO,
                                   "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
 
-	respond=gtk_dialog_run (Dlg);
+	respond=gtk_dialog_run ((GtkDialog*)Dlg);
 	if (respond == GTK_RESPONSE_YES)	
 		do_graph_layout(view->g[view->activeGraph],2,0);
-	gtk_object_destroy (Dlg);
+	gtk_object_destroy ((GtkObject*)Dlg);
 
 }
 
@@ -158,16 +161,16 @@ btn_circo_clicked                       (GtkWidget     *widget,
                                         gpointer         user_data)
 
 {
-	Dlg = gtk_message_dialog_new (NULL,
+	Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_YES_NO,
                                   "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
 
-	respond=gtk_dialog_run (Dlg);
+	respond=gtk_dialog_run ((GtkDialog*)Dlg);
 	if (respond == GTK_RESPONSE_YES)	
 		do_graph_layout(view->g[view->activeGraph],3,0);
-	gtk_object_destroy (Dlg);
+	gtk_object_destroy ((GtkObject*)Dlg);
 }
 
 void
@@ -177,16 +180,16 @@ btn_fdp_clicked                       (GtkWidget     *widget,
 {
 	int ind=0;
 	
-	Dlg = gtk_message_dialog_new (NULL,
+	Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_YES_NO,
                                   "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
 
-	respond=gtk_dialog_run (Dlg);
+	respond=gtk_dialog_run ((GtkDialog*)Dlg);
 	if (respond == GTK_RESPONSE_YES)	
 		do_graph_layout(view->g[view->activeGraph],4,0);
-	gtk_object_destroy (Dlg);
+	gtk_object_destroy ((GtkObject*)Dlg);
 
 
 }
@@ -240,7 +243,7 @@ void                graph_select_change                   (GtkWidget *widget,
 
 	if(!view->SignalBlock)
 	{
-		active_graph=gtk_combo_box_get_active(widget);
+		active_graph=gtk_combo_box_get_active((GtkComboBox*)widget);
 
 		if (active_graph > -1)
 		{
@@ -266,13 +269,13 @@ void                on_dlgOpenGraph_btnOK_clicked             (GtkWidget *widget
 	GTK_RESPONSE_HELP   = -11 */
 	
 	if(update_graph_properties(view->g[view->activeGraph]))
-		gtk_dialog_response(glade_xml_get_widget(xml, "dlgOpenGraph"),GTK_RESPONSE_OK);
+		gtk_dialog_response((GtkDialog*)glade_xml_get_widget(xml, "dlgOpenGraph"),GTK_RESPONSE_OK);
 }
 //dlgOpenGraph btncancelclicked
 void                on_dlgOpenGraph_btncancel_clicked             (GtkWidget *widget,
                                                         gpointer     user_data)
 {
-	gtk_dialog_response(glade_xml_get_widget(xml, "dlgOpenGraph"),GTK_RESPONSE_CANCEL);
+	gtk_dialog_response((GtkDialog*)glade_xml_get_widget(xml, "dlgOpenGraph"),GTK_RESPONSE_CANCEL);
 
 }
 

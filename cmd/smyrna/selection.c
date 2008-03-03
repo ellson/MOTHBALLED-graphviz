@@ -72,7 +72,7 @@ int lineintersects(float X1,float X2,float Y1,float Y2)
 	}
 	x=X1;
 	//iter
-	iter=RW/SELECTION_SEGMENT_DIVIDER;
+	iter=RW/(float)SELECTION_SEGMENT_DIVIDER;
 	m=(Y2-Y1)/(X2-X1);
 
 	in=1;
@@ -158,6 +158,7 @@ int SelectBeziers(xdot_op* op)
 	default:
 		return 0;
 	}
+	return 1;
 
 }
 
@@ -226,6 +227,7 @@ int SelectPolygon(xdot_op* op)
 	default:
 		return 0;
 	}
+	return 1;
 }
 
 int SelectPolyline(xdot_op* op)
@@ -290,7 +292,7 @@ int SelectPolyline(xdot_op* op)
 		return 0;
 	}
 
-
+	return 1;
 
 }
 int SelectEllipse(xdot_op* op)
@@ -370,6 +372,7 @@ int SelectEllipse(xdot_op* op)
 	default:
 		return 0;
 	}
+	return 1;
 }
 
 
@@ -415,7 +418,7 @@ int SelectText(xdot_op* op)
 	default:
 		return 0;
 	}
-
+	return 1;
 
 }
 
@@ -456,7 +459,7 @@ int SelectImage(xdot_op* op)
 	default:
 		return 0;
 	}
-
+	return 1;
 
 }
 
@@ -466,9 +469,9 @@ int SelectImage(xdot_op* op)
 int spline_in_rect(xdot_op* op)
 {
 	//JUST SEND ALL CONTROL POINTS IN 3D ARRAYS
-	GLfloat tempX[4];
-	GLfloat tempY[4];
-	GLfloat tempZ[4];
+	float tempX[4];
+	float tempY[4];
+	float tempZ[4];
 	int temp=0;
 	int i=0;
 	for (i=0;i < op->u.bezier.cnt ; i= i + 1)
@@ -477,20 +480,20 @@ int spline_in_rect(xdot_op* op)
 		{
 			if(!within_bezier(tempX,tempY,tempZ,0))
 				return 0;
-			tempX[0]=op->u.bezier.pts[i-1].x;
-			tempY[0]=op->u.bezier.pts[i-1].y;
-			tempZ[0]=op->u.bezier.pts[i-1].z;
+			tempX[0]=(float)op->u.bezier.pts[i-1].x;
+			tempY[0]=(float)op->u.bezier.pts[i-1].y;
+			tempZ[0]=(float)op->u.bezier.pts[i-1].z;
 			temp=1;
-			tempX[temp]=op->u.bezier.pts[i].x;			
-			tempY[temp]=op->u.bezier.pts[i].y;			
-			tempZ[temp]=op->u.bezier.pts[i].z;			
+			tempX[temp]=(float)op->u.bezier.pts[i].x;			
+			tempY[temp]=(float)op->u.bezier.pts[i].y;			
+			tempZ[temp]=(float)op->u.bezier.pts[i].z;			
 			temp=temp+1;
 		}
 		else
 		{
-			tempX[temp]=op->u.bezier.pts[i].x;
-			tempY[temp]=op->u.bezier.pts[i].y;
-			tempZ[temp]=op->u.bezier.pts[i].z;
+			tempX[temp]=(float)op->u.bezier.pts[i].x;
+			tempY[temp]=(float)op->u.bezier.pts[i].y;
+			tempZ[temp]=(float)op->u.bezier.pts[i].z;
 			temp=temp+1;
 		}
 	}
@@ -502,9 +505,9 @@ int spline_in_rect(xdot_op* op)
 int spline_x_rect(xdot_op* op)
 {
 	//JUST SEND ALL CONTROL POINTS IN 3D ARRAYS
-	GLfloat tempX[4];
-	GLfloat tempY[4];
-	GLfloat tempZ[4];
+	float tempX[4];
+	float tempY[4];
+	float tempZ[4];
 	int temp=0;
 	int i=0;
 	for (i=0;i < op->u.bezier.cnt ; i= i + 1)
@@ -513,20 +516,20 @@ int spline_x_rect(xdot_op* op)
 		{
 			if(within_bezier(tempX,tempY,tempZ,1))
 				return 1;
-			tempX[0]=op->u.bezier.pts[i-1].x;
-			tempY[0]=op->u.bezier.pts[i-1].y;
-			tempZ[0]=op->u.bezier.pts[i-1].z;
+			tempX[0]=(float)op->u.bezier.pts[i-1].x;
+			tempY[0]=(float)op->u.bezier.pts[i-1].y;
+			tempZ[0]=(float)op->u.bezier.pts[i-1].z;
 			temp=1;
-			tempX[temp]=op->u.bezier.pts[i].x;			
-			tempY[temp]=op->u.bezier.pts[i].y;			
-			tempZ[temp]=op->u.bezier.pts[i].z;			
+			tempX[temp]=(float)op->u.bezier.pts[i].x;			
+			tempY[temp]=(float)op->u.bezier.pts[i].y;			
+			tempZ[temp]=(float)op->u.bezier.pts[i].z;			
 			temp=temp+1;
 		}
 		else
 		{
-			tempX[temp]=op->u.bezier.pts[i].x;
-			tempY[temp]=op->u.bezier.pts[i].y;
-			tempZ[temp]=op->u.bezier.pts[i].z;
+			tempX[temp]=(float)op->u.bezier.pts[i].x;
+			tempY[temp]=(float)op->u.bezier.pts[i].y;
+			tempZ[temp]=(float)op->u.bezier.pts[i].z;
 			temp=temp+1;
 		}
 	}
@@ -540,7 +543,7 @@ int polygon_in_rect(xdot_op* op)
 	int ind=0;
 	for (ind=0;ind < op->u.polygon.cnt-1;ind ++)
 	{
-		if( lineintersects(op->u.polygon.pts[ind].x,op->u.polygon.pts[ind+1].x,op->u.polygon.pts[ind].y,op->u.polygon.pts[ind+1].y)!=1)
+		if( lineintersects((float)op->u.polygon.pts[ind].x,(float)op->u.polygon.pts[ind+1].x,(float)op->u.polygon.pts[ind].y,(float)op->u.polygon.pts[ind+1].y)!=1)
 			return 0;
 	};
 	return 1;
@@ -550,7 +553,7 @@ int polygon_x_rect(xdot_op* op)
 	int ind=0;
 	for (ind=0;ind < op->u.polygon.cnt-1;ind ++)
 	{
-		if( lineintersects(op->u.polygon.pts[ind].x,op->u.polygon.pts[ind+1].x,op->u.polygon.pts[ind].y,op->u.polygon.pts[ind+1].y)>=0)
+		if( lineintersects((float)op->u.polygon.pts[ind].x,(float)op->u.polygon.pts[ind+1].x,(float)op->u.polygon.pts[ind].y,(float)op->u.polygon.pts[ind+1].y)>=0)
 			return 1;
 	};
 	return 0;
@@ -560,7 +563,7 @@ int polyline_in_rect(xdot_op* op)
 	int ind=0;
 	for (ind=0;ind < op->u.polygon.cnt-1;ind ++)
 	{
-		if( lineintersects(op->u.polygon.pts[ind].x,op->u.polygon.pts[ind+1].x,op->u.polygon.pts[ind].y,op->u.polygon.pts[ind+1].y)!=1)
+		if( lineintersects((float)op->u.polygon.pts[ind].x,(float)op->u.polygon.pts[ind+1].x,(float)op->u.polygon.pts[ind].y,(float)op->u.polygon.pts[ind+1].y)!=1)
 			return 0;
 	};
 	return 1;
@@ -570,34 +573,34 @@ int polyline_x_rect(xdot_op* op)
 	int ind=0;
 	for (ind=0;ind < op->u.polygon.cnt-1;ind ++)
 	{
-		if( lineintersects(op->u.polygon.pts[ind].x,op->u.polygon.pts[ind+1].x,op->u.polygon.pts[ind].y,op->u.polygon.pts[ind+1].y)>=1)
+		if( lineintersects((float)op->u.polygon.pts[ind].x,(float)op->u.polygon.pts[ind+1].x,(float)op->u.polygon.pts[ind].y,(float)op->u.polygon.pts[ind+1].y)>=1)
 			return 1;
 	};
 	return 0;
 }
 int text_in_rect(xdot_op* op)
 {
-	if( rectintersects(op->u.text.x,op->u.text.y,op->u.text.x+op->u.text.width,op->u.text.y+op->u.text.size)==1 )
+	if( rectintersects((float)op->u.text.x,(float)op->u.text.y,(float)op->u.text.x+op->u.text.width,(float)op->u.text.y+(float)op->u.text.size)==1 )
 		return 1;
 	return 0;
 
 }
 int text_x_rect(xdot_op* op)
 {
-	if( rectintersects(op->u.text.x,op->u.text.y,op->u.text.x+op->u.text.width,op->u.text.y+op->u.text.size)>=1 )
+	if( rectintersects((float)op->u.text.x,(float)op->u.text.y,(float)op->u.text.x+op->u.text.width,(float)op->u.text.y+(float)op->u.text.size)>=1 )
 		return 1;
 	return 0;
 
 }
 int image_in_rect(xdot_op* op)
 {
-	if( rectintersects(op->u.image.pos.x  ,op->u.image.pos.y,op->u.image.pos.w,op->u.image.pos.h)==1)
+	if( rectintersects((float)op->u.image.pos.x  ,(float)op->u.image.pos.y,(float)op->u.image.pos.w,(float)op->u.image.pos.h)==1)
 		return 1;
 	return 0;
 }
 int image_x_rect(xdot_op* op)
 {
-	if( rectintersects(op->u.image.pos.x  ,op->u.image.pos.y,op->u.image.pos.w,op->u.image.pos.h)>=0)
+	if( rectintersects((float)op->u.image.pos.x  ,(float)op->u.image.pos.y,(float)op->u.image.pos.w,(float)op->u.image.pos.h)>=0)
 		return 1;
 	return 0;
 }
@@ -628,12 +631,12 @@ int within_bezier(GLfloat* xp,GLfloat* yp,GLfloat* zp,int isx)
 		Z = Az*a*a*a + Bz*3*a*a*b + Cz*3*a*b*b + Dz*b*b*b;
 		if (i>0)
 		{
-			if(lineintersects(Xprev,X,Yprev,Y) >=0)	//intersection
+			if(lineintersects((float)Xprev,(float)X,(float)Yprev,(float)Y) >=0)	//intersection
 			{
 				if(isx)
 					return 1;
 			}
-			if(!(lineintersects(Xprev,X,Yprev,Y)==1))	//withing the rect
+			if(!(lineintersects((float)Xprev,(float)X,(float)Yprev,(float)Y)==1))	//withing the rect
 			{
 				if(!isx)
 					return 0;
@@ -656,24 +659,24 @@ int within_bezier(GLfloat* xp,GLfloat* yp,GLfloat* zp,int isx)
 
 int ellipse_x_rect(xdot_op* op)
 {
-	GLfloat x,y,xradius,yradius;
+	float x,y,xradius,yradius;
 
 	double Xprev;
 	double Yprev;
 	double Zprev;
 
 	int i=0;
-	x=op->u.ellipse.x;
-	y=op->u.ellipse.y;
-	xradius=(GLfloat)op->u.ellipse.w;
-	yradius=(GLfloat)op->u.ellipse.h;
+	x=(float)op->u.ellipse.x;
+	y=(float)op->u.ellipse.y;
+	xradius=(float)op->u.ellipse.w;
+	yradius=(float)op->u.ellipse.h;
 	for (i=0; i < 360; i=i+1)
 	{
       //convert degrees into radians
-		float degInRad = i*DEG2RAD;
+		float degInRad = i*(float)DEG2RAD;
 		if (i>0)
 		{
-			if(lineintersects(Xprev,x+cos(degInRad)*xradius,Yprev,y+sin(degInRad)*yradius) >=0)	//intersection
+			if(lineintersects((float)Xprev,x+(float)cos(degInRad)*xradius,(float)Yprev,y+(float)sin(degInRad)*yradius) >=0)	//intersection
 					return 1;
 		}
 
@@ -686,24 +689,24 @@ int ellipse_x_rect(xdot_op* op)
 
 int ellipse_in_rect(xdot_op* op)
 {
-	GLfloat x,y,xradius,yradius;
+	float x,y,xradius,yradius;
 
 	double Xprev;
 	double Yprev;
 	double Zprev;
 
 	int i=0;
-	x=op->u.ellipse.x;
-	y=op->u.ellipse.y;
-	xradius=(GLfloat)op->u.ellipse.w;
-	yradius=(GLfloat)op->u.ellipse.h;
+	x=(float)op->u.ellipse.x;
+	y=(float)op->u.ellipse.y;
+	xradius=(float)op->u.ellipse.w;
+	yradius=(float)op->u.ellipse.h;
 	for (i=0; i < 360; i=i+1)
 	{
       //convert degrees into radians
-		float degInRad = i*DEG2RAD;
+		float degInRad = (float)i*(float)DEG2RAD;
 		if (i>0)
 		{
-			if(!(lineintersects(Xprev,x+cos(degInRad)*xradius,Yprev,y+sin(degInRad)*yradius)==1))	//withing the rect
+			if(!(lineintersects((float)Xprev,(float)x+(float)cos(degInRad)*xradius,(float)Yprev,y+(float)sin(degInRad)*yradius)==1))	//withing the rect
 					return 0;
 		}
 
@@ -720,12 +723,12 @@ int point_within_ellipse( xdot_op* op)
 	float dx,dy,ex,ey,ea,eb,px,py ;
 	float a;
 	
-	ex=op->u.ellipse.x;
-	ey=op->u.ellipse.y;
-	ea=op->u.ellipse.w;
-	eb=op->u.ellipse.h;
-	px=view->Selection.X+SINGLE_SELECTION_WIDTH/2;
-	py=view->Selection.Y+SINGLE_SELECTION_WIDTH/2;
+	ex=(float)op->u.ellipse.x;
+	ey=(float)op->u.ellipse.y;
+	ea=(float)op->u.ellipse.w;
+	eb=(float)op->u.ellipse.h;
+	px=view->Selection.X+(float)SINGLE_SELECTION_WIDTH/(float)2;
+	py=view->Selection.Y+(float)SINGLE_SELECTION_WIDTH/(float)2;
 	dx = px - ex;
 	dy = py - ey;
 	a=(dx*dx)/(ea*ea) + (dy*dy)/(eb*eb);
@@ -770,7 +773,7 @@ int select_node(Agraph_t* g,Agnode_t* N)
 	((custom_graph_data*)AGDATA(g))->selectedNodes[((custom_graph_data*)AGDATA(g))->selectedNodesCount]=N;
 	((custom_graph_data*)AGDATA(g))->selectedNodesCount++;
 	((custom_object_data*)AGDATA(N))->Selected=1;
-	printf("Node Selecteed \n");
+	return 1;
 }
 int select_edge(Agraph_t* g,Agedge_t* E)
 {
@@ -786,6 +789,7 @@ int select_edge(Agraph_t* g,Agedge_t* E)
 	((custom_graph_data*)AGDATA(g))->selectedEdges[((custom_graph_data*)AGDATA(g))->selectedEdgesCount]=E;
 	((custom_graph_data*)AGDATA(g))->selectedEdgesCount++;
 	((custom_object_data*)AGDATA(E))->Selected=1;
+	return 1;
 
 }
 int select_object (Agraph_t* g,void* obj)
@@ -804,6 +808,7 @@ int select_object (Agraph_t* g,void* obj)
 	default:
 		break;
 	}
+	return 1;
 }
 int deselect_object (Agraph_t* g,void* obj)
 {
@@ -821,6 +826,7 @@ int deselect_object (Agraph_t* g,void* obj)
 	default:
 		break;
 	}
+	return 1;
 }
 
 //select functions
@@ -838,6 +844,7 @@ int select_graph(Agraph_t* g,Agraph_t* G)
 	((custom_graph_data*)AGDATA(g))->selectedGraphs[((custom_graph_data*)AGDATA(g))->selectedGraphsCount]=G;
 	((custom_graph_data*)AGDATA(g))->selectedGraphsCount++;
 	((custom_object_data*)AGDATA(G))->Selected=1;
+	return 1;
 }
 int deselect_node(Agraph_t* g,Agnode_t* N)
 {
@@ -859,7 +866,7 @@ int deselect_node(Agraph_t* g,Agnode_t* N)
 		((custom_object_data*)AGDATA(N))->Selected=0;
 		((custom_object_data*)AGDATA(N))->selectionflag=0;
 	}
-	
+	return 1;	
 
 }
 int deselect_edge(Agraph_t* g,Agedge_t* E)
@@ -883,6 +890,7 @@ int deselect_edge(Agraph_t* g,Agedge_t* E)
 		((custom_object_data*)AGDATA(E))->selectionflag=0;
 
 	}
+	return 1;
 }
 int deselect_graph(Agraph_t* g,Agraph_t* G)
 {
@@ -905,6 +913,7 @@ int deselect_graph(Agraph_t* g,Agraph_t* G)
 		((custom_object_data*)AGDATA(G))->selectionflag=0;
 
 	}
+	return 1;
 }
 
 int select_all_nodes(Agraph_t* g)
@@ -1012,8 +1021,8 @@ int line_intersects (float* x,float* y,float* X,float* Y)
 
 	if(intersect (pA, pB, pC, pD, &pX))
 	{
-		*X=pX.x;
-		*Y=pX.y;
+		*X=(float)pX.x;
+		*Y=(float)pX.y;
 		if ( (pX.x >=x[2]-0.01)	&&	(pX.x <x[3]+0.01) &&
 			(pX.y >=y[2]-0.01)	&&	(pX.x <y[3]+0.01))
 		{

@@ -41,7 +41,7 @@ void mNewSlot (GtkWidget *widget,gpointer user_data)
 				      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 				      NULL);
 
-	gtk_file_chooser_set_filter(dialog,filter);
+	gtk_file_chooser_set_filter((GtkFileChooser*)dialog,filter);
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT)
 	  {
 		char *filename;
@@ -51,7 +51,7 @@ void mNewSlot (GtkWidget *widget,gpointer user_data)
 	}
 	
 	gtk_widget_destroy (dialog);
-	gtk_widget_destroy (filter);
+	gtk_widget_destroy ((GtkWidget*)filter);
 }
   void mSaveSlot (GtkWidget *widget,gpointer user_data)
 {
@@ -80,16 +80,16 @@ void mNewSlot (GtkWidget *widget,gpointer user_data)
 		if(((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->Modified)
 		{
 			sprintf(buf,"graph %s has been modified \n , would you like to save it before quitting the the program?",((custom_graph_data*)AGDATA(view->g[view->activeGraph]))->GraphName);
-			Dlg = gtk_message_dialog_new (NULL,
+			Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_NONE,
                                   buf);
-			gtk_dialog_add_button (Dlg,"YES",100);
-			gtk_dialog_add_button (Dlg,"NO",101);
-			gtk_dialog_add_button (Dlg,"Cancel",102);
+			gtk_dialog_add_button ((GtkDialog*)Dlg,"YES",100);
+			gtk_dialog_add_button ((GtkDialog*)Dlg,"NO",101);
+			gtk_dialog_add_button ((GtkDialog*)Dlg,"Cancel",102);
 			
-			respond=gtk_dialog_run (Dlg);
+			respond=gtk_dialog_run ((GtkDialog*)Dlg);
 			if (respond == 100)	//save and continue
 			{
 				if(!save_graph())
@@ -134,7 +134,7 @@ void mNewSlot (GtkWidget *widget,gpointer user_data)
 		
 	    gtk_widget_hide(glade_xml_get_widget(xml, "frmToolBox"));
 		gtk_widget_show(glade_xml_get_widget(xml, "frmToolBox"));
-		gtk_window_set_keep_above           (glade_xml_get_widget(xml, "frmToolBox"),1);
+		gtk_window_set_keep_above           ((GtkWindow*)glade_xml_get_widget(xml, "frmToolBox"),1);
 	
 }
 void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
@@ -142,7 +142,7 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 		
 	    gtk_widget_hide(glade_xml_get_widget(xml, "frmHostSelection"));
 		gtk_widget_show(glade_xml_get_widget(xml, "frmHostSelection"));
-		gtk_window_set_keep_above           (glade_xml_get_widget(xml, "frmHostSelection"),1);
+		gtk_window_set_keep_above           ((GtkWindow*)glade_xml_get_widget(xml, "frmHostSelection"),1);
 	
 }
 
@@ -174,9 +174,9 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 	if(view->activeGraph > -1)
 	{
 		load_graph_properties(view->g[view->activeGraph]);//load from graph to gui		
-		gtk_dialog_set_response_sensitive   (glade_xml_get_widget(xml, "dlgOpenGraph"),1,1);
-		gtk_dialog_set_response_sensitive   (glade_xml_get_widget(xml, "dlgOpenGraph"),2,1);
-		respond=gtk_dialog_run (glade_xml_get_widget(xml, "dlgOpenGraph"));
+		gtk_dialog_set_response_sensitive   ((GtkDialog*)glade_xml_get_widget(xml, "dlgOpenGraph"),1,1);
+		gtk_dialog_set_response_sensitive   ((GtkDialog*)glade_xml_get_widget(xml, "dlgOpenGraph"),2,1);
+		respond=gtk_dialog_run ((GtkDialog*)glade_xml_get_widget(xml, "dlgOpenGraph"));
 		//need to hide the dialog , again freaking GTK!!!!
 		gtk_widget_hide(glade_xml_get_widget(xml, "dlgOpenGraph"));
 	}
@@ -191,13 +191,13 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 	}
 	else
 	{
-		Dlg = gtk_message_dialog_new (NULL,
+		Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_OK,
                                   "You need to select some clusters first!");
-		respond=gtk_dialog_run (Dlg);
-		gtk_widget_hide(Dlg);
+		respond=gtk_dialog_run ((GtkDialog*)Dlg);
+		gtk_widget_hide((GtkWidget*)Dlg);
 
 	}
 }
@@ -211,13 +211,13 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 	}
 	else
 	{
-		Dlg = gtk_message_dialog_new (NULL,
+		Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_OK,
                                   "You need to select some nodes first!");
-		respond=gtk_dialog_run (Dlg);
-		gtk_widget_hide(Dlg);
+		respond=gtk_dialog_run ((GtkDialog*)Dlg);
+		gtk_widget_hide((GtkWidget*)Dlg);
 
 	}
 }
@@ -231,13 +231,13 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 	}
 	else
 	{
-		Dlg = gtk_message_dialog_new (NULL,
+		Dlg =(GtkMessageDialog*) gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_OK,
                                   "You need to select some Edges first!");
-		respond=gtk_dialog_run (Dlg);
-		gtk_widget_hide(Dlg);
+		respond=gtk_dialog_run ((GtkDialog*)Dlg);
+		gtk_widget_hide((GtkWidget*)Dlg);
 	}
 
 }
@@ -251,79 +251,79 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 {
 	GdkCursor* cursor;
 	GdkWindow* w;
-	Dlg = gtk_message_dialog_new (NULL,
+	Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_YES_NO,
                                   "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
 
-	respond=gtk_dialog_run (Dlg);
+	respond=gtk_dialog_run ((GtkDialog*)Dlg);
 	if (respond == GTK_RESPONSE_YES)	
 		do_graph_layout(view->g[view->activeGraph],0,0);
-	gtk_object_destroy (Dlg);
+	gtk_object_destroy ((GtkObject*)Dlg);
 
 	cursor = gdk_cursor_new(GDK_HAND2);
-	w=glade_xml_get_widget(xml, "frmMain");
-   gdk_window_set_cursor ((GTK_WIDGET(view->drawing_area)->window), cursor);
+	w=(GdkWindow*)glade_xml_get_widget(xml, "frmMain");
+   gdk_window_set_cursor ((GdkWindow*)view->drawing_area->window, cursor);
 	gdk_cursor_destroy(cursor);
 }
 
   void mNeatoSlot (GtkWidget *widget,gpointer user_data)
 {
-	Dlg = gtk_message_dialog_new (NULL,
+	Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_YES_NO,
                                   "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
-	respond=gtk_dialog_run (Dlg);
+	respond=gtk_dialog_run ((GtkDialog*)Dlg);
 	if (respond == GTK_RESPONSE_YES)	
 		do_graph_layout(view->g[view->activeGraph],1,0);
-	gtk_object_destroy (Dlg);
+	gtk_object_destroy ((GtkObject*)Dlg);
 }
 
   void mTwopiSlot (GtkWidget *widget,gpointer user_data)
 {
-	Dlg = gtk_message_dialog_new (NULL,
+	Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_YES_NO,
                                   "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
 
-	respond=gtk_dialog_run (Dlg);
+	respond=gtk_dialog_run ((GtkDialog*)Dlg);
 	if (respond == GTK_RESPONSE_YES)	
 		do_graph_layout(view->g[view->activeGraph],2,0);
-	gtk_object_destroy (Dlg);
+	gtk_object_destroy ((GtkObject*)Dlg);
 
 }
 
   void mCircoSlot (GtkWidget *widget,gpointer user_data)
 {
-	Dlg = gtk_message_dialog_new (NULL,
+	Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_YES_NO,
                                   "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
 
-	respond=gtk_dialog_run (Dlg);
+	respond=gtk_dialog_run ((GtkDialog*)Dlg);
 	if (respond == GTK_RESPONSE_YES)	
 		do_graph_layout(view->g[view->activeGraph],3,0);
-	gtk_object_destroy (Dlg);
+	gtk_object_destroy ((GtkObject*)Dlg);
 }
 
   void mFdpSlot (GtkWidget *widget,gpointer user_data)
 {
 	int ind=0;
 	
-	Dlg = gtk_message_dialog_new (NULL,
+	Dlg = (GtkMessageDialog*)gtk_message_dialog_new (NULL,
 								GTK_DIALOG_MODAL,
                                   GTK_MESSAGE_QUESTION,
                                   GTK_BUTTONS_YES_NO,
                                   "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
 
-	respond=gtk_dialog_run (Dlg);
+	respond=gtk_dialog_run ((GtkDialog*)Dlg);
 	if (respond == GTK_RESPONSE_YES)	
 		do_graph_layout(view->g[view->activeGraph],4,0);
-	gtk_object_destroy (Dlg);
+	gtk_object_destroy ((GtkObject*)Dlg);
 }
 
 //select

@@ -76,6 +76,7 @@ int delete_node(btree_node* n)
 	}
 	n->parent->childs=realloc(n->parent->childs,sizeof(btree_node*)*n->parent->child_count);
 	delete_node_recursive(n);
+	return 1;
 }
 
 btree_node* look_up_node_with_string(btree_node* n,char* string_to_lookup)
@@ -106,7 +107,7 @@ int validate_lookup(btree_node* n,char* string_to_lookup)	//it can be anything, 
 int print_tree(btree_node* root)
 {
 	static rank=0;
-	//printf("Node data:%s\n",
+	return 1;
 }
 int print_children(btree_node* n)
 {
@@ -155,6 +156,8 @@ int sample_tree()
 	delete_node(kurbanlik);
 	print_children(root);
     print_children(tree_from_filter_string("(()(())((())()))"));
+	return 1;
+
  
 }
 

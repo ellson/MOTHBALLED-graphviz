@@ -23,9 +23,6 @@
 #include <string.h>
 #include <math.h>
 
-#define Z_MIDDLE_PLANE  -0.00200
-#define Z_BACK_PLANE	-0.00201
-#define Z_FORWARD_PLANE -0.00199
 
 /*DRAWING FUNCTIONS 
 these are opengl based xdot drawing functions 

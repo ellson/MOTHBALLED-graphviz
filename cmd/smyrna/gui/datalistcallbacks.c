@@ -27,11 +27,10 @@ void btnTVDelete_clicked_cb (GtkWidget *widget,gpointer user_data)
 void btnTVFilter_clicked_cb (GtkWidget *widget,gpointer user_data)
 {
 	int respond;
-	int selected,visible,highlighted;
 
 //	gtk_dialog_set_response_sensitive   (glade_xml_get_widget(xml, "dlgOpenGraph"),1,1);
 //	gtk_dialog_set_response_sensitive   (glade_xml_get_widget(xml, "dlgOpenGraph"),2,1);
-	respond=gtk_dialog_run (glade_xml_get_widget(xml, "dlgTVFilter"));
+	respond=gtk_dialog_run ((GtkDialog*)glade_xml_get_widget(xml, "dlgTVFilter"));
 //	respond=gtk_dialog_run (glade_xml_get_widget(xml, "dlgFilters"));
 	gtk_widget_hide(glade_xml_get_widget(xml, "dlgTVFilter"));
 	if(respond == 1)
@@ -57,7 +56,7 @@ void btnTVGotopage_clicked_cb (GtkWidget *widget,gpointer user_data)
 {
 	GtkSpinButton* spn;
 	int p;
-	spn=glade_xml_get_widget(xml, "spnTVGotopage");
+	spn=(GtkSpinButton*)glade_xml_get_widget(xml, "spnTVGotopage");
 	p=gtk_spin_button_get_value_as_int(spn);
 	tv_nodes_goto_page(p-1);
 }
@@ -91,21 +90,21 @@ void btnTVFilterApply_clicked_cb (GtkWidget *widget,gpointer user_data)
 	GTK_RESPONSE_APPLY  = -10,
 	GTK_RESPONSE_HELP   = -11 */
 	
-	gtk_dialog_response(glade_xml_get_widget(xml, "dlgTVFilter"),GTK_RESPONSE_OK);
+	gtk_dialog_response((GtkDialog*)glade_xml_get_widget(xml, "dlgTVFilter"),GTK_RESPONSE_OK);
 
 }
 void btnTVFilterClear_clicked_cb (GtkWidget *widget,gpointer user_data)
 {
-	gtk_entry_set_text (glade_xml_get_widget(xml,"edtTVFilterMinData1"),"" );
-	gtk_entry_set_text ( glade_xml_get_widget(xml,"edtTVFilterMaxData1"),"" );
-	gtk_entry_set_text ( glade_xml_get_widget(xml,"edtTVFilterMinData2"),"" );
-	gtk_entry_set_text ( glade_xml_get_widget(xml,"edtTVFilterMaxData2"),"" );
-	gtk_entry_set_text ( glade_xml_get_widget(xml,"edtTVFilterString"),"" );
+	gtk_entry_set_text ((GtkEntry*)glade_xml_get_widget(xml,"edtTVFilterMinData1"),"" );
+	gtk_entry_set_text ((GtkEntry*) glade_xml_get_widget(xml,"edtTVFilterMaxData1"),"" );
+	gtk_entry_set_text ((GtkEntry*) glade_xml_get_widget(xml,"edtTVFilterMinData2"),"" );
+	gtk_entry_set_text ((GtkEntry*) glade_xml_get_widget(xml,"edtTVFilterMaxData2"),"" );
+	gtk_entry_set_text ((GtkEntry*) glade_xml_get_widget(xml,"edtTVFilterString"),"" );
 
 
-	gtk_toggle_button_set_active(glade_xml_get_widget(xml,"rbTVFilterHigh1"),1);
-	gtk_toggle_button_set_active(glade_xml_get_widget(xml,"rbTVFilterSel1"),1);
-	gtk_toggle_button_set_active(glade_xml_get_widget(xml,"rbTVFilterVisible1"),1);
+	gtk_toggle_button_set_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterHigh1"),1);
+	gtk_toggle_button_set_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterSel1"),1);
+	gtk_toggle_button_set_active((GtkToggleButton*)glade_xml_get_widget(xml,"rbTVFilterVisible1"),1);
 	apply_filter_from_gui();
 }
 

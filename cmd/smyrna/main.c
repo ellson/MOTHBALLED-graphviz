@@ -29,6 +29,7 @@
 #include "gui.h"
 #include "viewport.h"
 #include "menucallbacks.h"
+#include "gltemplate.h"
 
 gchar *package_prefix ;
 gchar *package_data_dir;

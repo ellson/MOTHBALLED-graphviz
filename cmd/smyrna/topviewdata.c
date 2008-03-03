@@ -17,11 +17,12 @@ int prepare_nodes_for_groups(topview* t,topviewdata* td,int groupindex)
 			count ++;
 			gtk_color_button_get_color(td->gtkhostcolor[groupindex],&color);
 			t->Nodes[i].GroupIndex=groupindex;
-			t->Nodes[i].GroupColor.R=color.red/65535.0;
-			t->Nodes[i].GroupColor.G=color.green/65535.0;
-			t->Nodes[i].GroupColor.B=color.blue/65535.0;
+			t->Nodes[i].GroupColor.R=(float)color.red/(float)65535.0;
+			t->Nodes[i].GroupColor.G=(float)color.green/(float)65535.0;
+			t->Nodes[i].GroupColor.B=(float)color.blue/(float)65535.0;
 		}
 	}
+	return 1;
 }
 
 int load_host_buttons(topview* t,Agraph_t *g,glCompSet* s)
@@ -29,7 +30,6 @@ int load_host_buttons(topview* t,Agraph_t *g,glCompSet* s)
 	GtkLayout* layout;
 	int btncount=0;
 	int i=0;
-	char buf[255];
 	char *str;
 	char hostbtncaption[50];
 	char hostbtnregex[50];
@@ -43,7 +43,7 @@ int load_host_buttons(topview* t,Agraph_t *g,glCompSet* s)
 	glCompPanel* p;
 	glCompButton* b;
 
-	layout=glade_xml_get_widget(xml, "frmHostSelectionFixed");
+	layout=(GtkLayout*)glade_xml_get_widget(xml, "frmHostSelectionFixed");
 	str='\0';
 	str=agget(g, "hostbtncount");
 	if (str)	
@@ -59,8 +59,8 @@ int load_host_buttons(topview* t,Agraph_t *g,glCompSet* s)
 	{
 		p=glCompPanelNew(25,75,165,400);
 		p->data=2;		//data panel
-		p->color.R=0.80;
-		p->color.B=0,2;
+		p->color.R=(float)0.80;
+		p->color.B=(float)0.2;
 		glCompSetAddPanel(s,p);
 	}
     else return 0;
@@ -82,50 +82,51 @@ int load_host_buttons(topview* t,Agraph_t *g,glCompSet* s)
 			agget(g,hostbtncolorA));
 		t->TopviewData->hostregex[i]=agget(g,hostbtnregex);
 
-		b=glCompButtonNew(5,7+(i+1)*36,150,35,agget(g,hostbtncaption ),'\0',0,0);
-		b->color.R=atof(agget(g,hostbtncolorR));
-		b->color.G=atof(agget(g,hostbtncolorG));
-		b->color.B=atof(agget(g,hostbtncolorB));
-		b->color.A=1;
+		b=glCompButtonNew((GLfloat)5,(GLfloat)7+((GLfloat)i+(GLfloat)1)*(GLfloat)36,(GLfloat)150,(GLfloat)35,agget(g,hostbtncaption ),'\0',0,0);
+		b->color.R=(float)atof(agget(g,hostbtncolorR));
+		b->color.G=(float)atof(agget(g,hostbtncolorG));
+		b->color.B=(float)atof(agget(g,hostbtncolorB));
+		b->color.A=(float)1;
 		b->panel=p;
 		b->groupid=-1;
 		b->callbackfunc=glhost_button_clicked_Slot;
 		b->data=i;
 		glCompSetAddButton(s,b);
 
-		t->TopviewData->gtkhostbtn[i]=gtk_button_new_with_label(agget(g,hostbtncaption ));
-		g_signal_connect ((gpointer) t->TopviewData->gtkhostbtn[i], "clicked", G_CALLBACK(host_button_clicked_Slot),i);
+		t->TopviewData->gtkhostbtn[i]=(GtkButton*)gtk_button_new_with_label(agget(g,hostbtncaption ));
+		g_signal_connect ((gpointer) t->TopviewData->gtkhostbtn[i], "clicked", G_CALLBACK(host_button_clicked_Slot),(gpointer)i);
 
-		color.blue=65535*atof(agget(g,hostbtncolorB));
-		color.red=65535*atof(agget(g,hostbtncolorR));
-		color.green=65535*atof(agget(g,hostbtncolorG));
+		color.blue=65535*atoi(agget(g,hostbtncolorB));
+		color.red=65535*atoi(agget(g,hostbtncolorR));
+		color.green=65535*atoi(agget(g,hostbtncolorG));
 
-		t->TopviewData->gtkhostcolor[i]=gtk_color_button_new_with_color(&color);
+		t->TopviewData->gtkhostcolor[i]=(GtkColorButton*)gtk_color_button_new_with_color(&color);
 
-		gtk_color_button_set_alpha(t->TopviewData->gtkhostbtn[i],65535*atof(agget(g,hostbtncolorA)));
+		gtk_color_button_set_alpha((GtkColorButton*)t->TopviewData->gtkhostbtn[i],65535*atoi(agget(g,hostbtncolorA)));
 
 
-		gtk_layout_put	(layout,t->TopviewData->gtkhostbtn[i],X,Y);
-		gtk_widget_set_size_request(t->TopviewData->gtkhostbtn[i],200,35);
+		gtk_layout_put	(layout,(GtkWidget*)t->TopviewData->gtkhostbtn[i],X,Y);
+		gtk_widget_set_size_request((GtkWidget*)t->TopviewData->gtkhostbtn[i],200,35);
 
-		gtk_layout_put	(layout,t->TopviewData->gtkhostcolor[i],X+225,Y);
-		gtk_widget_set_size_request(t->TopviewData->gtkhostcolor[i],40,35);
+		gtk_layout_put	(layout,(GtkWidget*)t->TopviewData->gtkhostcolor[i],X+225,Y);
+		gtk_widget_set_size_request((GtkWidget*)t->TopviewData->gtkhostcolor[i],40,35);
 
-		gtk_widget_show(t->TopviewData->gtkhostbtn[i]);
-		gtk_widget_show(t->TopviewData->gtkhostcolor[i]);
+		gtk_widget_show((GtkWidget*)t->TopviewData->gtkhostbtn[i]);
+		gtk_widget_show((GtkWidget*)t->TopviewData->gtkhostcolor[i]);
 		Y=Y+40;
 		t->TopviewData->hostactive[i]=0;
 	}
-	p->height=15+(btncount+1)*36;
+	p->height=(GLfloat)15+(GLfloat)(btncount+1)*(GLfloat)36;
 	for (i=0;i < btncount ; i++)
 	{
 		prepare_nodes_for_groups(t,t->TopviewData,i);
 	}
+	return 1;
 }
 void glhost_button_clicked_Slot(void* p)
 {
 	//negative active
-	int i,user_data;
+	int user_data;
 	user_data=((glCompButton*)p)->data;
 	if(view->Topview->TopviewData->hostactive[user_data]==0)
 		view->Topview->TopviewData->hostactive[user_data]=1;
@@ -136,7 +137,6 @@ void glhost_button_clicked_Slot(void* p)
 void host_button_clicked_Slot(GtkWidget *widget,gpointer     user_data)
 {
 	//negative active
-	int i;
 	if(view->Topview->TopviewData->hostactive[(int)user_data]==0)
 		view->Topview->TopviewData->hostactive[(int)user_data]=1;
 	else

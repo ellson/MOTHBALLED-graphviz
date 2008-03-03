@@ -21,9 +21,12 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 */
 #include "draw.h"
 #include "topview.h"
-#include "color.h"
+#include "colorprocs.h"
 #include "glutils.h"
 #include "math.h"
+#include "selection.h"
+#include "xdot.h"
+#include "viewport.h"
 
 
 //delta values
@@ -224,8 +227,8 @@ void DrawEllipse(xdot_op* op,int param)
    for (i=0; i < 360; i=i+1)
    {
       //convert degrees into radians
-      float degInRad = i*DEG2RAD;
-	  glVertex2f(x+cos(degInRad)*xradius,y+sin(degInRad)*yradius);
+      float degInRad = (float)(i*DEG2RAD);
+	  glVertex2f((GLfloat)(x+cos(degInRad)*xradius),(GLfloat)(y+sin(degInRad)*yradius));
    }
    glEnd();
 }
@@ -332,7 +335,7 @@ void SetStyle(xdot_op* op,int param)
 void SetFont(xdot_op* op,int param)
 {
 //	view->FontName=ABSet(op->u.font.name);
-	view->FontSize=op->u.font.size;
+	view->FontSize=(int)op->u.font.size;
 }
 
 void InsertImage(xdot_op* op,int param)
@@ -346,7 +349,7 @@ void EmbedText(xdot_op* op,int param)
 	SelectText(op);
 	set_options(op,param);
 	if (op->u.text.align == 1)
-		x=(GLfloat)op->u.text.x-(GLfloat)op->u.text.width/2.0;
+		x=(GLfloat)op->u.text.x-(GLfloat)(op->u.text.width/2.0);
 	if (op->u.text.align == 0)
 		x=(GLfloat)op->u.text.x;
 	if (op->u.text.align == -1)
@@ -469,17 +472,15 @@ void draw_magnifier(ViewInfo* view)
 	if((view->mouse.mouse_mode==MM_MAGNIFIER) && (view->mouse.mouse_down))
 	{
 
-		GLfloat mg_x,mg_y,mg_z,mg_width,mg_height;
-		float a;
-		int winX,winY,winW,winH;
+		GLfloat mg_x,mg_y,mg_z;
 		//converting screen pixel distaances to GL distances
-		view->mg.GLwidth=GetOGLDistance(view->mg.width)/2.0;
-		view->mg.GLheight=GetOGLDistance(view->mg.height)/2.0;
+		view->mg.GLwidth=GetOGLDistance(view->mg.width)/(float)2.0;
+		view->mg.GLheight=GetOGLDistance(view->mg.height)/(float)2.0;
 		GetOGLPosRef(view->mouse.mouse_X,view->mouse.mouse_Y,&mg_x,&mg_y,&mg_z);//retrieving mouse coords as GL coordinates
 		view->mg.x=mg_x;
 		view->mg.y=mg_y;
 		glLineWidth(4);
-		local_zoom(&view->Topview);
+		local_zoom(view->Topview);
 		//drawing the magnifier borders
 		glBegin(GL_LINE_STRIP);
 		glColor4f((GLfloat)0.3,(GLfloat)0.1,(GLfloat)0.8,(GLfloat)1);
@@ -509,11 +510,11 @@ void draw_fisheye_magnifier(ViewInfo* view)
 	if((view->mouse.mouse_mode==21)  && (view->mouse.mouse_down))
 	{
 		float a;
-		GLfloat mg_x,mg_y,mg_z,mg_width,mg_height;
+		GLfloat mg_x,mg_y,mg_z;
 		a=GetOGLDistance((int)250);
-		view->fmg.R=a;
+		view->fmg.R=(int)a;
 		GetOGLPosRef(view->mouse.mouse_X,view->mouse.mouse_Y,&mg_x,&mg_y,&mg_z);
-		glColor4f(0.3,0.1,0.8,1);
+		glColor4f((GLfloat)0.3,(GLfloat)0.1,(GLfloat)0.8,(GLfloat)1);
 		if ((view->fmg.x != mg_x) || (view->fmg.y != mg_y))
 		{
 			fisheye_polar(mg_x, mg_y,view->Topview);
@@ -534,10 +535,10 @@ void draw_circle(float originX,float originY,float radius)
 	vectorX1=originX;
 	glLineWidth(4);
 	glBegin(GL_LINE_STRIP);			
-	for(angle=0.0;angle<=(2.1*3.14159);angle+=0.1)
+	for(angle=(float)0.0;angle<=(float)(2.1*3.14159);angle+=(float)0.1)
 	{		
-		vectorX=originX+radius*sin(angle);
-		vectorY=originY+radius*cos(angle);		
+		vectorX=originX+radius*(float)sin(angle);
+		vectorY=originY+radius*(float)cos(angle);		
 		glVertex2d(vectorX1,vectorY1);
 			vectorY1=vectorY;
 			vectorX1=vectorX;			
@@ -550,7 +551,7 @@ void drawBorders(ViewInfo* view)
 {
 	if(view->bdVisible)
 	{
-		glColor4f(0.8,0.1,0.1,1);
+		glColor4f((float)0.8,(float)0.1,(float)0.1,(float)1);
 		glLineWidth(2);
 		glBegin(GL_LINE_STRIP);			
 		glVertex2d(view->bdxLeft,view->bdyBottom);
@@ -610,7 +611,7 @@ void drawGraph(Agraph_t *g)
 		view->Selection.Active=0;
 		drawGraph(g);
 		view->SignalBlock=1;
-			expose_event (view->drawing_area,NULL,NULL);
+		glexpose();
 		view->SignalBlock=0;
 	}
 
@@ -620,9 +621,9 @@ int randomize_color(RGBColor* c,int brightness)
 {
 	float R,B,G;
 	float add;
-	R=(float)(rand() % 255) / 255.0;
-	G=(float)(rand() % 255) / 255.0;
-	B=(float)(rand() % 255) / 255.0;
+	R=(float)(rand() % 255) / (float)255.0;
+	G=(float)(rand() % 255) / (float)255.0;
+	B=(float)(rand() % 255) / (float)255.0;
 	add=(brightness-(R+G+B))/3;
 	R = R;
 	G = G;
@@ -630,6 +631,7 @@ int randomize_color(RGBColor* c,int brightness)
 	c->R=R;
 	c->G=G;
 	c->B=B;
+	return 1;
 }
 
 
@@ -637,12 +639,12 @@ void drawCircle(float x,float y,float radius,float zdepth)
 {
 	int i;
 	if(radius <0.3)
-		radius=0.4;
+		radius=(float)0.4;
 	glBegin(GL_POLYGON);
 	for (i=0; i < 360; i=i+10)
    {
-      float degInRad = i*DEG2RAD;
-      glVertex3f(x+cos(degInRad)*radius,y+sin(degInRad)*radius,zdepth);
+      float degInRad = (float)(i*DEG2RAD);
+      glVertex3f((GLfloat)(x+cos(degInRad)*radius),(GLfloat)(y+sin(degInRad)*radius),(GLfloat)zdepth);
    }
  
    glEnd();
@@ -654,6 +656,7 @@ RGBColor GetRGBColor(char* color)
 	RGBColor c;
 	if(color != '\0')
 	{
+
 		colorxlate(color, &cl, RGBA_DOUBLE);
 		c.R=(float)cl.u.RGBA[0];
 		c.G=(float)cl.u.RGBA[1];

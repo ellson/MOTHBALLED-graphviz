@@ -19,18 +19,23 @@
 int clear_filter(tv_filter* f)
 {
 	delete_node(f->root);
+	return 1;
 }
 
 int init_filters(tv_filters* filters)
 {
 	filters->filter_count=0;
 	filters->filters=0;
+	return 1;
+
 }
 int add_filter_to_filters(tv_filters* filters,tv_filter* filter)
 {
 	filters->filters=realloc(filters->filters,sizeof(tv_filter*)*(filters->filter_count+1));
 	filters->filters[filters->filter_count]=filter;
 	filters->filter_count++;
+	return 1;
+
 }
 int clear_filters(tv_filters* filters)
 {
@@ -42,9 +47,16 @@ int clear_filters(tv_filters* filters)
 		free(filters->filters[ind]);
 	}
 	filters->filter_count=0;
+	return 1;
+
 }
 int union_filter(tv_filter* f1,tv_filter* f2)
 {
+	return 1;
 		
 }
-int intersect_filter(tv_filter* f1,tv_filter* f2);
+int intersect_filter(tv_filter* f1,tv_filter* f2)
+{
+		return 1;
+
+}

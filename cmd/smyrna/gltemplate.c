@@ -226,18 +226,18 @@ static gboolean button_press_event (GtkWidget* widget,GdkEventButton *event,gpoi
 {
 	 if(view->graphCount)
 	 {
-		if(glCompSetClick(view->Topview->topviewmenu,event->x,event->y))
+		if(glCompSetClick(view->Topview->topviewmenu,(int)event->x,(int)event->y))
 			expose_event (view->drawing_area,NULL,NULL);
 	 }
 
-	begin_x = event->x;
-	begin_y = event->y;
+	begin_x = (float)event->x;
+	begin_y = (float)event->y;
 
 
 		if(event->button==1)	//left click
 		{
 			view->mouse.mouse_down=1;
-			if(GetOGLPosRef(begin_x,begin_y,&(view->GLx),&(view->GLy),&(view->GLz)))
+			if(GetOGLPosRef((int)begin_x,(int)begin_y,&(view->GLx),&(view->GLy),&(view->GLz)))
 			{
 				if (view->mouse.mouse_mode == MM_SINGLE_SELECT)	//single select
 				{
@@ -264,7 +264,7 @@ static gboolean button_release_event (GtkWidget* widget,GdkEventButton *event,gp
 {
 	if(event->button==1)	//left click release
 	{
-		if(glCompSetRelease(view->Topview->topviewmenu,event->x_root,event->y_root))
+		if(glCompSetRelease(view->Topview->topviewmenu,(int)event->x_root,(int)event->y_root))
 			expose_event (view->drawing_area,NULL,NULL);
 
 		view->mouse.mouse_down=0;
@@ -318,10 +318,10 @@ static gboolean button_release_event (GtkWidget* widget,GdkEventButton *event,gp
 */
 static gboolean motion_notify_event (GtkWidget* widget,GdkEventMotion *event,gpointer data)
 {
-	float w = widget->allocation.width;
-	float h = widget->allocation.height;
-	float x = event->x;
-	float y = event->y;
+	float w = (float)widget->allocation.width;
+	float h = (float)widget->allocation.height;
+	float x = (float)event->x;
+	float y = (float)event->y;
 	char buf[50];
 
 
@@ -332,18 +332,18 @@ static gboolean motion_notify_event (GtkWidget* widget,GdkEventMotion *event,gpo
     if ((event->state & GDK_BUTTON1_MASK) && (view->mouse.mouse_mode==MM_PAN))
 	{	
 		float a,b;
-		a=view->panx-dx*pow(view->zoom*-1,(1/1));
-		b=(view->bdxRight-view->bdxLeft)/2.0;
+		a=view->panx-dx*(float)pow(view->zoom*-1,(1/1));
+		b=(view->bdxRight-view->bdxLeft)/(float)2.0;
 		if (ABS(a) < ABS(b))
 			view->panx=a;
 		else
-			view->panx=(view->bdxRight-view->bdxLeft)/2.0*ABS(a)/a;
-		a=view->pany+dy*pow(view->zoom*-1,(1/1));
-		b=(view->bdyTop-view->bdyBottom)/2.0;
+			view->panx=(view->bdxRight-view->bdxLeft)/(float)2.0*ABS(a)/a;
+		a=view->pany+dy*(float)(pow(view->zoom*-1,(1/1)));
+		b=(view->bdyTop-view->bdyBottom)/(float)2.0;
 		if (ABS(a) < ABS(b))
 			view->pany=a;
 		else
-			view->pany=(view->bdyTop-view->bdyBottom)/2.0*ABS(a)/a;
+			view->pany=(view->bdyTop-view->bdyBottom)/(float)2.0*ABS(a)/a;
 		redraw = TRUE;
 	}
 	/*zooming*/
@@ -352,11 +352,11 @@ static gboolean motion_notify_event (GtkWidget* widget,GdkEventMotion *event,gpo
 		float x;
 		view->zoom=view->zoom+dx/10*(view->zoom*-1/20);
 			if(view->zoom > MAX_ZOOM)
-				view->zoom=MAX_ZOOM;
+				view->zoom=(float)MAX_ZOOM;
 			if(view->zoom < MIN_ZOOM)
-				view->zoom=MIN_ZOOM;
+				view->zoom=(float)MIN_ZOOM;
 		/*set label to new zoom value*/
-			x=(100.0-1.0)*(view->zoom-MIN_ZOOM)/(MAX_ZOOM-MIN_ZOOM)+1;
+			x=((float)100.0-(float)1.0)*(view->zoom-(float)MIN_ZOOM)/((float)MAX_ZOOM-(float)MIN_ZOOM)+(float)1.0;
 			sprintf(buf,"%i",(int)x);
 			glCompLabelSetText((glCompLabel*)view->Topview->customptr,buf);
 			redraw = TRUE;
@@ -376,8 +376,8 @@ static gboolean motion_notify_event (GtkWidget* widget,GdkEventMotion *event,gpo
 	if ((event->state & GDK_BUTTON1_MASK) && ((view->mouse.mouse_mode==MM_MAGNIFIER)
 		||(view->mouse.mouse_mode==MM_FISHEYE_MAGNIFIER) ))
 	{	
-	    view->mouse.mouse_X=x;
-		view->mouse.mouse_Y=y;
+	    view->mouse.mouse_X=(int)x;
+		view->mouse.mouse_Y=(int)y;
 		redraw = TRUE;
 	}
 
