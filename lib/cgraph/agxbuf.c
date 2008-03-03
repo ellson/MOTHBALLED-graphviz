@@ -53,7 +53,7 @@ int agxbmore(agxbuf * xb, unsigned int ssz)
 
     size = xb->eptr - xb->buf;
     nsize = 2 * size;
-    if (size + ssz > nsize)
+    if (size + (int)ssz > nsize)
 	nsize = size + ssz;
     cnt = xb->ptr - xb->buf;
     if (xb->dyna) {
