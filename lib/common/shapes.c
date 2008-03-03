@@ -781,6 +781,8 @@ static void poly_init(node_t * n)
 	    }
 	    else {
 		GD_has_images(n->graph) = TRUE;
+	        imagesize.x += 2; /* some fixed padding */
+	        imagesize.y += 2;
 	    }
 	}
     }
@@ -794,33 +796,25 @@ static void poly_init(node_t * n)
         }
 	else {
             GD_has_images(n->graph) = TRUE;
+	    imagesize.x += 2; /* some fixed padding */
+	    imagesize.y += 2;
 	}
     }
-    if (mapbool(late_string(n, N_fixed, "false"))) {
-	if ((width < dimen.x) || (height < dimen.y))
-	    agerr(AGWARN,
-		  "node '%s', graph '%s' size too small for label\n",
-		  n->name, n->graph->name);
-	dimen.x = width;
-	dimen.y = height;
-    }
-    else {
-	dimen.x = MAX(dimen.x, imagesize.x+2);
-	dimen.y = MAX(dimen.y, imagesize.y+2);
-    }
+    bb.x = MAX(dimen.x, imagesize.x);  /* init shape bb to larger of image or label */
+    bb.y = MAX(dimen.y, imagesize.y);
 
     /* quantization */
     if ((temp = GD_drawing(n->graph)->quantum) > 0.0) {
 	temp = POINTS(temp);
-	dimen.x = quant(dimen.x, temp);
-	dimen.y = quant(dimen.y, temp);
+	bb.x = quant(bb.x, temp);
+	bb.y = quant(bb.y, temp);
     }
 
-    /* If regular, make label dimensions the same.
+    /* If regular, make dimensions the same.
      * Need this to guarantee final node size is regular.
      */
     if (regular) {
-	dimen.x = dimen.y = MAX(dimen.x, dimen.y);
+	bb.x = bb.y = MAX(bb.x, bb.y);
     }
 
     /* I don't know how to distort or skew ellipses in postscript */
@@ -829,15 +823,17 @@ static void poly_init(node_t * n)
 	sides = 120;
     }
 
+#define SQRT2MINUS1 0.41421356237
+
     /* add extra padding to allow for the shape */
     if (sides <= 2) {
-	/* for ellipses, add padding based on the smaller radii */
-	if (dimen.y > dimen.x)
-	    temp = dimen.x * (sqrt(2.) - 1.);
+	/* for ellipses, add padding based on the larger radii */
+	if (bb.y > bb.x)
+	    temp = bb.y * SQRT2MINUS1;
 	else
-	    temp = dimen.y * (sqrt(2.) - 1.);
-	dimen.x += temp;
-	dimen.y += temp;
+	    temp = bb.x * SQRT2MINUS1;
+	bb.x += temp;
+	bb.y += temp;
     } else if (sides == 4 && (ROUND(orientation) % 90) == 0
 	       && distortion == 0. && skew == 0.) {
 	/* for regular boxes the fit should be exact */
@@ -845,25 +841,37 @@ static void poly_init(node_t * n)
 	/* for all other polygon shapes, compute the inner ellipse
 	   and then pad for that  */
 	temp = cos(PI / sides);
-	dimen.x /= temp;
-	dimen.y /= temp;
-	/* add padding based on the smaller radii */
-	if (dimen.y > dimen.x)
-	    temp = dimen.x * (sqrt(2.) - 1.);
+	bb.x /= temp;
+	bb.y /= temp;
+	/* add padding based on the larger radii */
+	if (bb.y > bb.x)
+	    temp = bb.y * SQRT2MINUS1;
 	else
-	    temp = dimen.y * (sqrt(2.) - 1.);
-	dimen.x += temp;
-	dimen.y += temp;
+	    temp = bb.x * SQRT2MINUS1;
+	bb.x += temp;
+	bb.y += temp;
     }
-
-    /* increase node size to width/height if needed */
-    bb.x = width = MAX(width, dimen.x);
-    bb.y = height = MAX(height, dimen.y);
 
     /* adjust text justification */
     if (!mapbool(late_string(n, N_nojustify, "false"))) {
-	ND_label(n)->d.x = bb.x - dimen.x;
-	ND_label(n)->d.y = bb.y - dimen.y;
+	if (width > bb.x)
+		ND_label(n)->d.x = width - bb.x;
+	if (height > bb.y)
+		ND_label(n)->d.y = height - bb.y;
+    }
+
+    /* increase node size to width/height if needed */
+    if (mapbool(late_string(n, N_fixed, "false"))) {
+	if ((width < bb.x) || (height < bb.y))
+	    agerr(AGWARN,
+		  "node '%s', graph '%s' size too small for label\n",
+		  n->name, n->graph->name);
+	bb.x = width;
+	bb.y = height;
+    }
+    else {
+	bb.x = width = MAX(width, bb.x);
+	bb.y = height = MAX(height, bb.y);
     }
 
     outp = peripheries;
@@ -892,11 +900,14 @@ static void poly_init(node_t * n)
 	    bb.y = 2. * P.y;
 	}
     } else {
+
+# define SQRT2 1.41421356237
+
 	vertices = N_NEW(outp * sides, pointf);
 	sectorangle = 2. * PI / sides;
 	sidelength = sin(sectorangle / 2.);
 	skewdist = hypot(fabs(distortion) + fabs(skew), 1.);
-	gdistortion = distortion * sqrt(2.) / cos(sectorangle / 2.);
+	gdistortion = distortion * SQRT2 / cos(sectorangle / 2.);
 	gskew = skew / 2.;
 	angle = (sectorangle - PI) / 2.;
 	sincos(angle, &sinx, &cosx);
