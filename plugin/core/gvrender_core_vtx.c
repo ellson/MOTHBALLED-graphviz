@@ -258,7 +258,7 @@ static void vtx_textpara(GVJ_t * job, pointf p, textpara_t * para)
     int pen_style = 0;          /* not used */
     int font = -1;		/* init to xfig's default font */
     double font_size = para->fontsize * job->zoom;
-    double angle = job->rotation ? (PI / 2.0) : 0.0;
+    double angle = job->rotation ? (M_PI / 2.0) : 0.0;
     int font_flags = 4;		/* PostScript font */
     double height = 0.0;
     double length = 0.0;
