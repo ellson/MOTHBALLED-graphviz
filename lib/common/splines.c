@@ -403,7 +403,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     P->start.p = add_points(ND_coord_i(n), ED_tail_port(e).p);
     P->ulpp = P->urpp = P->llpp = P->lrpp = NULL;
     if (merge) {
-	/*P->start.theta = - PI / 2; */
+	/*P->start.theta = - M_PI / 2; */
 	P->start.theta = conc_slope(e->tail);
 	P->start.constrained = TRUE;
     } else {
@@ -592,9 +592,9 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	pboxfn = NULL;
     P->end.p = add_points(ND_coord_i(n), ED_head_port(e).p);
     if (merge) {
-	/*P->end.theta = PI / 2; */
-	P->end.theta = conc_slope(e->head) + PI;
-	assert(P->end.theta < 2 * PI);
+	/*P->end.theta = M_PI / 2; */
+	P->end.theta = conc_slope(e->head) + M_PI;
+	assert(P->end.theta < 2 * M_PI);
 	P->end.constrained = TRUE;
     } else {
 	if (ED_head_port(e).constrained) {

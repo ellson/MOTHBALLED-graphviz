@@ -840,7 +840,7 @@ static void poly_init(node_t * n)
     } else {
 	/* for all other polygon shapes, compute the inner ellipse
 	   and then pad for that  */
-	temp = cos(PI / sides);
+	temp = cos(M_PI / sides);
 	dimen.x /= temp;
 	dimen.y /= temp;
 	/* add padding based on the smaller radii */
@@ -907,21 +907,18 @@ static void poly_init(node_t * n)
 	    bb.y = 2. * P.y;
 	}
     } else {
-
-# define SQRT2 1.41421356237
-
 	vertices = N_NEW(outp * sides, pointf);
-	sectorangle = 2. * PI / sides;
+	sectorangle = 2. * M_PI / sides;
 	sidelength = sin(sectorangle / 2.);
 	skewdist = hypot(fabs(distortion) + fabs(skew), 1.);
 	gdistortion = distortion * SQRT2 / cos(sectorangle / 2.);
 	gskew = skew / 2.;
-	angle = (sectorangle - PI) / 2.;
+	angle = (sectorangle - M_PI) / 2.;
 	sincos(angle, &sinx, &cosx);
 	R.x = .5 * cosx;
 	R.y = .5 * sinx;
 	xmax = ymax = 0.;
-	angle += (PI - sectorangle) / 2.;
+	angle += (M_PI - sectorangle) / 2.;
 	for (i = 0; i < sides; i++) {
 
 	    /*next regular vertex */
@@ -980,7 +977,7 @@ static void poly_init(node_t * n)
 		R = vertices[(i + 1) % sides];
 		alpha = beta;
 		beta = atan2(R.y - Q.y, R.x - Q.x);
-		gamma = (alpha + PI - beta) / 2.;
+		gamma = (alpha + M_PI - beta) / 2.;
 
 		/*find distance along bisector to */
 		/*intersection of next periphery */
@@ -1205,24 +1202,24 @@ static double invflip_angle (double angle, int rankdir)
 	angle *= -1; 
 	break;
     case RANKDIR_LR:
-	angle -= PI * 0.5;
+	angle -= M_PI * 0.5;
 	break;
     case RANKDIR_RL:
-	if (angle == PI)
-	    angle = -0.5 * PI;
-	else if (angle == PI * 0.75)
-	    angle = -0.25 * PI;
-	else if (angle == PI * 0.5)
+	if (angle == M_PI)
+	    angle = -0.5 * M_PI;
+	else if (angle == M_PI * 0.75)
+	    angle = -0.25 * M_PI;
+	else if (angle == M_PI * 0.5)
 	    angle = 0;
-	else if (angle == PI * 0.25)
+	else if (angle == M_PI * 0.25)
 	    angle = angle;
 	else if (angle == 0)
-	    angle = PI * 0.5;
-	else if (angle == PI * -0.25)
-	    angle = PI * 0.75;
-	else if (angle == PI * -0.5)
-	    angle = PI;
-	else if (angle == PI * -0.75)
+	    angle = M_PI * 0.5;
+	else if (angle == M_PI * -0.25)
+	    angle = M_PI * 0.75;
+	else if (angle == M_PI * -0.5)
+	    angle = M_PI;
+	else if (angle == M_PI * -0.75)
 	    angle = angle;
 	break;
     }
@@ -1322,19 +1319,19 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	    clip = FALSE;
 	    switch (*compass) {
 	    case '\0':
-		theta = -PI * 0.5;
+		theta = -M_PI * 0.5;
 		defined = TRUE;
 	        side = sides & BOTTOM;
 		break;
 	    case 'e':
-		theta = -PI * 0.25;
+		theta = -M_PI * 0.25;
 		defined = TRUE;
 		if (ictxt) p = compassPoint (ictxt, -INT_MAX, INT_MAX);
 		else p.x = b.UR.x;
 	        side = sides & (BOTTOM | RIGHT);
 		break;
 	    case 'w':
-		theta = -PI * 0.75;
+		theta = -M_PI * 0.75;
 		defined = TRUE;
 		if (ictxt) p = compassPoint (ictxt, -INT_MAX, -INT_MAX);
 		else p.x = b.LL.x;
@@ -1350,7 +1347,7 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	    break;
 	case 'w':
 	    p.x = b.LL.x;
-	    theta = PI;
+	    theta = M_PI;
 	    constrain = TRUE;
 	    defined = TRUE;
 	    clip = FALSE;
@@ -1363,19 +1360,19 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	    switch (*compass) {
 	    case '\0':
 		defined = TRUE;
-		theta = PI * 0.5;
+		theta = M_PI * 0.5;
 	        side = sides & TOP;
 		break;
 	    case 'e':
 		defined = TRUE;
-		theta = PI * 0.25;
+		theta = M_PI * 0.25;
 		if (ictxt) p = compassPoint (ictxt, INT_MAX, INT_MAX);
 		else p.x = b.UR.x;
 	        side = sides & (TOP | RIGHT);
 		break;
 	    case 'w':
 		defined = TRUE;
-		theta = PI * 0.75;
+		theta = M_PI * 0.75;
 		if (ictxt) p = compassPoint (ictxt, INT_MAX, -INT_MAX);
 		else p.x = b.LL.x;
 	        side = sides & (TOP | LEFT);
@@ -1402,9 +1399,9 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	pp->order = MC_SCALE/2;
     else {
 	/* compute angle with 0 at north pole, increasing CCW */
-	double angle = atan2(p.y,p.x) + 1.5*PI;
-	if (angle >= 2*PI) angle -= 2*PI;
-	pp->order = (int)((MC_SCALE * angle) / (2*PI));
+	double angle = atan2(p.y,p.x) + 1.5*M_PI;
+	if (angle >= 2*M_PI) angle -= 2*M_PI;
+	pp->order = (int)((MC_SCALE * angle) / (2*M_PI));
     }
     pp->constrained = constrain;
     pp->defined = defined;

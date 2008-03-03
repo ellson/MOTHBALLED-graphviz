@@ -1420,7 +1420,7 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	    	       ND_coord_i(hn).y + GD_rank(hn->graph)[ND_rank(hn)].ht2);
 	    if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
 	        hend.boxes[hend.boxn++] = b;
-	    P->end.theta = PI / 2, P->end.constrained = TRUE;
+	    P->end.theta = M_PI / 2, P->end.constrained = TRUE;
 	    completeregularpath(P, segfirst, e, &tend, &hend, boxes, boxn, 1);
 	    if (splines) ps = routesplines(P, &pn);
 	    else {
@@ -1447,7 +1447,7 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	    	       ND_coord_i(tn).y - GD_rank(tn->graph)[ND_rank(tn)].ht1);
 	    if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
 	        tend.boxes[tend.boxn++] = b;
-	    P->start.theta = -PI / 2, P->start.constrained = TRUE;
+	    P->start.theta = -M_PI / 2, P->start.constrained = TRUE;
 	    smode = FALSE;
 	}
 	boxes[boxn++] = rank_box(sp, g, ND_rank(tn));
