@@ -18,11 +18,6 @@ pkglib_LTLIBRARIES = libgvplugin_gdiplus.la
 endif
 endif
 
-nodist_libgvplugin_gdiplus_C_la_SOURCES = \
-	GdiPlusEnums.h \
-	GdiPlusHeaders.h \
-	GdiPlusImaging.h \
-	GdiPlusimageAttributes.h
 libgvplugin_gdiplus_C_la_SOURCES = \
 	gvplugin_gdiplus.cpp \
 	gvrender_gdiplus.cpp
@@ -36,20 +31,12 @@ if WITH_WIN32
 libgvplugin_gdiplus_la_LDFLAGS += -no-undefined
 endif
 
-# these targets are built on the build platform, not on the dist platform,
-#    because they are included in the nodist...SOURCES list above
-GdiPlusEnums.h : $(GDIPLUS_PLATFORMSDK)/include/GdiPlusEnums.h GdiPlusEnums.h.patch
-	cp $(GDIPLUS_PLATFORMSDK)/include/GdiPlusEnums.h .
-	patch -p0 < GdiPlusEnums.h.patch
+libgvplugin_gdiplus.la libgvplugin_gdiplus_C.la: GdiPlusHeaders
 
-GdiPlusHeaders.h : $(GDIPLUS_PLATFORMSDK)/include/GdiPlusHeaders.h GdiPlusHeaders.h.patch
-	cp $(GDIPLUS_PLATFORMSDK)/include/GdiPlusHeaders.h .
-	patch -p0 < GdiPlusHeaders.h.patch
+# these targets are created on the build platform, not on the dist platform
+.PHONY: GdiPlusHeaders
+GdiPlusHeaders: gdiplus.diff
+	cp $(GDIPLUS_PLATFORMSDK)/include/*.h .
+	patch -p0 < gdiplus.diff
 
-GdiPlusImaging.h : $(GDIPLUS_PLATFORMSDK)/include/GdiPlusImaging.h GdiPlusImaging.h.patch
-	cp $(GDIPLUS_PLATFORMSDK)/include/GdiPlusImaging.h .
-	patch -p0 < GdiPlusImaging.h.patch
-
-GdiPlusimageAttributes.h : $(GDIPLUS_PLATFORMSDK)/include/GdiPlusimageAttributes.h GdiPlusimageAttributes.h.patch
-	cp $(GDIPLUS_PLATFORMSDK)/include/GdiPlusimageAttributes.h .
-	patch -p0 < GdiPlusimageAttributes.h.patch
+EXTRA_DIST = gdiplus.diff
