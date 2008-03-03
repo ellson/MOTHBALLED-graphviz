@@ -823,33 +823,19 @@ static void poly_init(node_t * n)
 	sides = 120;
     }
 
-#define SQRT2MINUS1 0.41421356237
-
     /* add extra padding to allow for the shape */
     if (sides <= 2) {
-	/* for ellipses, add padding based on the smaller radii */
-	if (dimen.y > dimen.x)
-	    temp = dimen.x * SQRT2MINUS1;
-	else
-	    temp = dimen.y * SQRT2MINUS1;
-	dimen.x += temp;
-	dimen.y += temp;
+	dimen.x *= SQRT2;
+	dimen.y *= SQRT2;
     } else if (sides == 4 && (ROUND(orientation) % 90) == 0
 	       && distortion == 0. && skew == 0.) {
 	/* for regular boxes the fit should be exact */
     } else {
 	/* for all other polygon shapes, compute the inner ellipse
 	   and then pad for that  */
-	temp = cos(M_PI / sides);
-	dimen.x /= temp;
-	dimen.y /= temp;
-	/* add padding based on the smaller radii */
-	if (dimen.y > dimen.x)
-	    temp = dimen.x * SQRT2MINUS1;
-	else
-	    temp = dimen.y * SQRT2MINUS1;
-	dimen.x += temp;
-	dimen.y += temp;
+	temp = SQRT2 / cos(M_PI / sides);
+	dimen.x *= temp;
+	dimen.y *= temp;
     }
 
     /* adjust text justification */
