@@ -203,7 +203,7 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     right_x = center_x + halfwidth_x;
 
     /* position for first para */
-    p.y += lp->dimen.y / 2. - lp->fontsize;
+    p.y += (lp->dimen.y + lp->d.y) / 2.0 - lp->fontsize;
 
     gvrender_begin_context(job);
     gvrender_set_pencolor(job, lp->fontcolor);
