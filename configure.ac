@@ -1938,7 +1938,11 @@ AC_ARG_WITH(gdiplus,
 
 if test "x$with_gdiplus" = "xyes"; then
 
+if test "x$PLATFORMSDK" != x; then
+GDIPLUS_PLATFORMSDK="$PLATFORMSDK"
+else
 GDIPLUS_PLATFORMSDK="$VS80COMNTOOLS/../../VC/PlatformSDK"
+fi
 
 if test -d "$GDIPLUS_PLATFORMSDK"; then
 HAVE_GDIPLUS=1
