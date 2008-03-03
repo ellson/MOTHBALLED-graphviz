@@ -800,21 +800,21 @@ static void poly_init(node_t * n)
 	    imagesize.y += 2;
 	}
     }
-    bb.x = MAX(dimen.x, imagesize.x);  /* init shape bb to larger of image or label */
-    bb.y = MAX(dimen.y, imagesize.y);
+    dimen.x = MAX(dimen.x, imagesize.x);
+    dimen.y = MAX(dimen.y, imagesize.y);
 
     /* quantization */
     if ((temp = GD_drawing(n->graph)->quantum) > 0.0) {
 	temp = POINTS(temp);
-	bb.x = quant(bb.x, temp);
-	bb.y = quant(bb.y, temp);
+	dimen.x = quant(dimen.x, temp);
+	dimen.y = quant(dimen.y, temp);
     }
 
     /* If regular, make dimensions the same.
      * Need this to guarantee final node size is regular.
      */
     if (regular) {
-	bb.x = bb.y = MAX(bb.x, bb.y);
+	dimen.x = dimen.y = MAX(dimen.x, dimen.y);
     }
 
     /* I don't know how to distort or skew ellipses in postscript */
@@ -827,13 +827,13 @@ static void poly_init(node_t * n)
 
     /* add extra padding to allow for the shape */
     if (sides <= 2) {
-	/* for ellipses, add padding based on the larger radii */
-	if (bb.y > bb.x)
-	    temp = bb.y * SQRT2MINUS1;
+	/* for ellipses, add padding based on the smaller radii */
+	if (dimen.y > dimen.x)
+	    temp = dimen.x * SQRT2MINUS1;
 	else
-	    temp = bb.x * SQRT2MINUS1;
-	bb.x += temp;
-	bb.y += temp;
+	    temp = dimen.y * SQRT2MINUS1;
+	dimen.x += temp;
+	dimen.y += temp;
     } else if (sides == 4 && (ROUND(orientation) % 90) == 0
 	       && distortion == 0. && skew == 0.) {
 	/* for regular boxes the fit should be exact */
@@ -841,27 +841,27 @@ static void poly_init(node_t * n)
 	/* for all other polygon shapes, compute the inner ellipse
 	   and then pad for that  */
 	temp = cos(PI / sides);
-	bb.x /= temp;
-	bb.y /= temp;
-	/* add padding based on the larger radii */
-	if (bb.y > bb.x)
-	    temp = bb.y * SQRT2MINUS1;
+	dimen.x /= temp;
+	dimen.y /= temp;
+	/* add padding based on the smaller radii */
+	if (dimen.y > dimen.x)
+	    temp = dimen.x * SQRT2MINUS1;
 	else
-	    temp = bb.x * SQRT2MINUS1;
-	bb.x += temp;
-	bb.y += temp;
+	    temp = dimen.y * SQRT2MINUS1;
+	dimen.x += temp;
+	dimen.y += temp;
     }
 
     /* adjust text justification */
     if (!mapbool(late_string(n, N_nojustify, "false"))) {
-	if (width > bb.x)
-	    ND_label(n)->d.x = width - bb.x;
-	if (height > bb.y) {
+	if (width > dimen.x)
+	    ND_label(n)->d.x = width - dimen.x;
+	if (height > dimen.y) {
 	    p = agget(n, "labelloc");
             if (p && (p[0] == 'b'))
-		ND_label(n)->d.y = -(height - bb.y);
+		ND_label(n)->d.y = -(height - dimen.y);
 	    else if (p && (p[0] == 't'))
-		ND_label(n)->d.y = height - bb.y;
+		ND_label(n)->d.y = height - dimen.y;
 	    else
 		ND_label(n)->d.y = 0;
 	}
@@ -869,7 +869,7 @@ static void poly_init(node_t * n)
 
     /* increase node size to width/height if needed */
     if (mapbool(late_string(n, N_fixed, "false"))) {
-	if ((width < bb.x) || (height < bb.y))
+	if ((width < dimen.x) || (height < dimen.y))
 	    agerr(AGWARN,
 		  "node '%s', graph '%s' size too small for label\n",
 		  n->name, n->graph->name);
@@ -877,8 +877,8 @@ static void poly_init(node_t * n)
 	bb.y = height;
     }
     else {
-	bb.x = width = MAX(width, bb.x);
-	bb.y = height = MAX(height, bb.y);
+	bb.x = width = MAX(width, dimen.x);
+	bb.y = height = MAX(height, dimen.y);
     }
 
     outp = peripheries;
