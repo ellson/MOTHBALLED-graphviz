@@ -505,8 +505,8 @@ Ppoly_t *makeObstacle(node_t * n, double SEP)
 		polyp.y = poly->vertices[j].y * SEP;
 	    } else {
 		double c, s;
-		c = cos(2.0 * PI * j / sides + adj);
-		s = sin(2.0 * PI * j / sides + adj);
+		c = cos(2.0 * M_PI * j / sides + adj);
+		s = sin(2.0 * M_PI * j / sides + adj);
 		polyp.x = SEP * c * (ND_lw_i(n) + ND_rw_i(n)) / 2.0;
 		polyp.y = SEP * s * ND_ht_i(n) / 2.0;
 	    }

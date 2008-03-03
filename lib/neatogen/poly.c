@@ -81,7 +81,7 @@ static void inflate(Point * prev, Point * cur, Point * next, double margin)
     double theta = atan2(prev->y - cur->y, prev->x - cur->x);
     double phi = atan2(next->y - cur->y, next->x - cur->x);
     double beta = (theta + phi) / 2.0;
-    double gamma = (PI + phi - theta) / 2.0;
+    double gamma = (M_PI + phi - theta) / 2.0;
     double denom;
 
     denom = cos(gamma);
@@ -165,9 +165,9 @@ static Point *genRound(Agnode_t * n, int *sidep)
     verts = N_GNEW(sides, Point);
     for (i = 0; i < sides; i++) {
 	verts[i].x =
-	    ND_width(n) / 2.0 * cos(i / (double) sides * PI * 2.0);
+	    ND_width(n) / 2.0 * cos(i / (double) sides * M_PI * 2.0);
 	verts[i].y =
-	    ND_height(n) / 2.0 * sin(i / (double) sides * PI * 2.0);
+	    ND_height(n) / 2.0 * sin(i / (double) sides * M_PI * 2.0);
     }
     *sidep = sides;
     return verts;

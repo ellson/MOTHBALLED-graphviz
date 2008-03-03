@@ -598,7 +598,7 @@ static int ecmp(const void *v1, const void *v2)
 	return 0;
 }
 
-#define ANG (PI/90)		/* Maximum angular change: 2 degrees */
+#define ANG (M_PI/90)		/* Maximum angular change: 2 degrees */
 
 /* getEdgeList:
  * Generate list of edges in derived graph g using
@@ -647,7 +647,7 @@ static erec *getEdgeList(node_t * n, graph_t * g)
 		i = j;
 	    else {
 		if (j == deg)
-		    bnd = PI;	/* all values equal up to end */
+		    bnd = M_PI;	/* all values equal up to end */
 		else
 		    bnd = erecs[j].alpha;
 		delta = (bnd - a) / (j - i);
@@ -749,7 +749,7 @@ static graph_t *expandCluster(node_t * n, graph_t * cg)
 	    if (next->e)
 		bnd = next->alpha;
 	    else
-		bnd = 2 * PI + es->alpha;
+		bnd = 2 * M_PI + es->alpha;
 	    idx = genPorts(n, ep, pp, idx, bnd);
 	    ep = next;
 	}

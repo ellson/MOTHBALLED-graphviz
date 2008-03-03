@@ -1003,7 +1003,7 @@ static void initRegular(graph_t * G, int nG)
     node_t *np;
 
     a = 0.0;
-    da = (2 * PI) / nG;
+    da = (2 * M_PI) / nG;
     for (np = agfstnode(G); np; np = agnxtnode(G, np)) {
 	ND_pos(np)[0] = nG * Spring_coeff * cos(a);
 	ND_pos(np)[1] = nG * Spring_coeff * sin(a);
