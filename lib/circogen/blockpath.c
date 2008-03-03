@@ -646,7 +646,7 @@ nodelist_t *layout_block(Agraph_t * g, block_t * sn, double min_dist)
     if (N == 1)
 	radius = 0;
     else
-	radius = (N * (min_dist + largest_node)) / (2 * PI);
+	radius = (N * (min_dist + largest_node)) / (2 * M_PI);
 
     for (item = longest_path->first; item; item = item->next) {
 	n = item->curr;
@@ -662,7 +662,7 @@ nodelist_t *layout_block(Agraph_t * g, block_t * sn, double min_dist)
 	n = item->curr;
 	POSITION(n) = k;
 	PSI(n) = 0.0;
-	theta = k * ((2.0 * PI) / N);
+	theta = k * ((2.0 * M_PI) / N);
 
 	ND_pos(n)[0] = radius * cos(theta);
 	ND_pos(n)[1] = radius * sin(theta);

@@ -48,10 +48,10 @@
  * actual block. Then, the angle to rotate the coalesced block to
  * that the edge from the parent is tangent to the neighbor on the
  * actual child block circle is
- *    alpha = theta + PI/2 - phi - arcsin((l/R)*(sin B))
- * where l = r - rho/(cos phi) and beta = PI/2 + phi.
+ *    alpha = theta + M_PI/2 - phi - arcsin((l/R)*(sin B))
+ * where l = r - rho/(cos phi) and beta = M_PI/2 + phi.
  * Thus, 
- *    alpha = theta + PI/2 - phi - arcsin((l/R)*(cos phi))
+ *    alpha = theta + M_PI/2 - phi - arcsin((l/R)*(cos phi))
  */
 static double
 getRotation(block_t * sn, Agraph_t * g, double x, double y, double theta)
@@ -72,16 +72,16 @@ getRotation(block_t * sn, Agraph_t * g, double x, double y, double theta)
     list = sn->circle_list;
 
     if (sn->parent_pos >= 0) {
-	theta += PI - sn->parent_pos;
+	theta += M_PI - sn->parent_pos;
 	if (theta < 0)
-	    theta += 2 * PI;
+	    theta += 2 * M_PI;
 
 	return theta;
     }
 
     count = sizeNodelist(list);
     if (count == 2) {
-	return (theta - PI / 2.0);
+	return (theta - M_PI / 2.0);
     }
 
     /* Find node in block connected to block's parent */
@@ -128,12 +128,12 @@ getRotation(block_t * sn, Agraph_t * g, double x, double y, double theta)
 	    double phi = atan2(n_y, n_x + r);
 	    double l = r - rho / (cos(phi));
 
-	    theta += PI / 2.0 - phi - asin((l / R) * (cos(phi)));
+	    theta += M_PI / 2.0 - phi - asin((l / R) * (cos(phi)));
 	} else {		/* Origin still at center of this block */
 	    double phi = atan2(ND_pos(neighbor)[1], ND_pos(neighbor)[0]);
-	    theta += PI - phi - PSI(neighbor);
-	    if (theta > 2 * PI)
-		theta -= 2 * PI;
+	    theta += M_PI - phi - PSI(neighbor);
+	    if (theta > 2 * M_PI)
+		theta -= 2 * M_PI;
 	}
     } else
 	theta = 0;
@@ -247,7 +247,7 @@ doParent(Agraph_t * g, double theta, Agnode_t * n,
     else
 	childAngle = theta - stp->nodeAngle / 2;
 
-    childRadius = length * diameter / (2 * PI);
+    childRadius = length * diameter / (2 * M_PI);
 
     /* FIX: If the parent block stp has only 1 child, we should probably
      * also set childRadius to mindistance. In this case, can 1 prove that
@@ -338,7 +338,7 @@ position(Agraph_t * g, int childCount, int length, nodelist_t * path,
     state.subtreeR = sn->radius;
     state.radius = sn->radius;
     state.neighbor = CHILD(sn);
-    state.nodeAngle = 2 * PI / length;
+    state.nodeAngle = 2 * M_PI / length;
     state.firstAngle = -1;
     state.lastAngle = -1;
 
@@ -367,7 +367,7 @@ position(Agraph_t * g, int childCount, int length, nodelist_t * path,
     } else
 	sn->radius = state.subtreeR;
 
-    angle = (state.firstAngle + state.lastAngle) / 2.0 - PI;
+    angle = (state.firstAngle + state.lastAngle) / 2.0 - M_PI;
     return angle;
 }
 
@@ -379,7 +379,7 @@ static void doBlock(Agraph_t * g, block_t * sn, double min_dist)
     block_t *child;
     nodelist_t *longest_path;
     int childCount, length;
-    double centerAngle = PI;
+    double centerAngle = M_PI;
 
     /* layout child subtrees */
     childCount = 0;
@@ -401,7 +401,7 @@ static void doBlock(Agraph_t * g, block_t * sn, double min_dist)
     if ((length == 1) && (BLK_PARENT(sn))) {
 	sn->parent_pos = centerAngle;
 	if (sn->parent_pos < 0)
-	    sn->parent_pos += 2 * PI;
+	    sn->parent_pos += 2 * M_PI;
     }
 }
 
