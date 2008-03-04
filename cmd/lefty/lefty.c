@@ -362,7 +362,7 @@ static int processinput (int waitflag) {
             GFXmonitorfile (ioi), n--;
 #else
     for (ioi = 0, n = 0, evn = 0; ioi < ion; ioi++) {
-        if (!iop[ioi].inuse || !IOismonitored (ioi, inputfds))
+        if (!iop[ioi].inuse || !IOismonitored (ioi))
             continue;
         if (
             (iop[ioi].type == IO_FILE && canread (iop[ioi].ifp)) ||
