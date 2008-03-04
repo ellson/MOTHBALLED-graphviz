@@ -28,7 +28,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>	
 #include <gtk/gtkgl.h>
-#include "glCompset.h"
+#include "glcompset.h"
 
 #define IS_TEST_MODE_ON				0
 #define	DEFAULT_MAGNIFIER_WIDTH		300
