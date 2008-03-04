@@ -1,15 +1,34 @@
 #ifndef SMYRNADEFS_H
 #define SMYRNADEFS_H
 
-#ifdef _WIN32
+#ifdef WIN32
 #include "windows.h"
+#define	SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
+#define	SMYRNA_ATTRS "c:/Projects/graphviz2/share/gui/attrs.txt"
 #endif
+#ifdef _WIN32
+#define GTKTOPVIEW_GLADE "c:\\Projects\\ATT\\GTK\\gtktopview\\lib\\GUI\\smyrna.glade"
+#define GTKTOPVIEW_ATTRS "c:\\Projects\\ATT\\GTK\\GTKTest2\\attrs.txt"
+// #else
+// using -DGTKTOPVIEW_GLADE from Makefile.am and configure.ac
+// using -DGTKTOPVIEW_ATTRS from Makefile.am and configure.ac
+#endif
+#ifdef	WIN32	//this  is needed on WIN32 to get libglade see the callback
+#define _BB  __declspec(dllexport)
+#else
+#define _BB  
+#endif
+
+
+
+
+
 #include <gtk/gtk.h>
 #include "cgraph.h"
 #include <GL/gl.h>
 #include <GL/glu.h>	
 #include <gtk/gtkgl.h>
-#include "glcompset.h"
+#include "glCompset.h"
 
 #define IS_TEST_MODE_ON				0
 #define	DEFAULT_MAGNIFIER_WIDTH		300
@@ -19,6 +38,17 @@
 #define TOP_VIEW_USER_ADVANCED_MODE	0
 #define TOP_VIEW_USER_NOVICE_MODE	1
 
+//mouse modes
+#define MM_PAN					0
+#define MM_ZOOM					1
+#define MM_ROTATE				2
+#define MM_SINGLE_SELECT		3
+#define MM_RECTANGULAR_SELECT	4
+#define MM_RECTANGULAR_X_SELECT	5
+#define MM_MOVE					10
+#define MM_MAGNIFIER			20
+#define MM_FISHEYE_MAGNIFIER	21
+
 #define MAX_ZOOM	-1.000033
 #define MIN_ZOOM	-89.00000
 #define ZOOM_STEP	5
@@ -26,6 +56,7 @@
 
 #define UNHIGHLIGHTED_ALPHA	0.3
 #define Z_FORWARD_PLANE -0.00201
+#define Z_MIDDLE_PLANE 0.0000
 #define Z_BACK_PLANE -0.00199
 
 #define NODE_ZOOM_LIMIT	-25.3
@@ -73,12 +104,12 @@ typedef struct{
 	Agnode_t* Tnode;	//Tail node
 	Agnode_t* Hnode;	//Tail node
 	Agedge_t *Edge;		//edge itself
-	GLfloat x1;
-	GLfloat y1;
-	GLfloat z1;
-	GLfloat x2;
-	GLfloat y2;
-	GLfloat z2;
+	float x1;
+	float y1;
+	float z1;
+	float x2;
+	float y2;
+	float z2;
 	topview_node* Node1;
 	topview_node* Node2;
 	RGBColor Color;
@@ -93,7 +124,7 @@ typedef struct {
 	int limits[4];
 	glCompSet* topviewmenu;	//for novice user open gl menu
 	topviewdata* TopviewData;
-	void *customptr;
+	void* customptr;
 } topview;
 enum
 {
