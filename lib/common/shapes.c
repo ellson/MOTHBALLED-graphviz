@@ -810,13 +810,6 @@ static void poly_init(node_t * n)
 	dimen.y = quant(dimen.y, temp);
     }
 
-    /* If regular, make dimensions the same.
-     * Need this to guarantee final node size is regular.
-     */
-    if (regular) {
-	dimen.x = dimen.y = MAX(dimen.x, dimen.y);
-    }
-
     /* I don't know how to distort or skew ellipses in postscript */
     /* Convert request to a polygon with a large number of sides */
     if ((sides <= 2) && ((distortion != 0.) || (skew != 0.))) {
@@ -836,22 +829,11 @@ static void poly_init(node_t * n)
 	temp = SQRT2 / cos(M_PI / sides);
 	dimen.x *= temp;
 	dimen.y *= temp;
+	/* FIXME - for odd-sided polygons, e.g. triangles, there
+	would be a better fit with some vertical adjustment of the shape */
     }
 
-    /* adjust text justification */
-    if (!mapbool(late_string(n, N_nojustify, "false"))) {
-	if (width > dimen.x)
-	    ND_label(n)->d.x = width - dimen.x;
-    }
-    if (height > dimen.y) {
-	p = agget(n, "labelloc");
-        if (p && (p[0] == 'b'))
-	    ND_label(n)->d.y = -(height - dimen.y);
-	else if (p && (p[0] == 't'))
-	    ND_label(n)->d.y = height - dimen.y;
-	else
-	    ND_label(n)->d.y = 0;
-    }
+    /* at this point, dimen is the minimum size of node that can hold the label */
 
     /* increase node size to width/height if needed */
     if (mapbool(late_string(n, N_fixed, "false"))) {
@@ -865,6 +847,28 @@ static void poly_init(node_t * n)
     else {
 	bb.x = width = MAX(width, dimen.x);
 	bb.y = height = MAX(height, dimen.y);
+    }
+
+    /* If regular, make dimensions the same.
+     * Need this to guarantee final node size is regular.
+     */
+    if (regular) {
+	bb.x = bb.y = MAX(bb.x, bb.y);
+    }
+
+    /* adjust text justification */
+    if (!mapbool(late_string(n, N_nojustify, "false"))) {
+	if (bb.x > dimen.x)
+	    ND_label(n)->d.x = bb.x - dimen.x;
+    }
+    if (bb.y > dimen.y) {
+	p = agget(n, "labelloc");
+        if (p && (p[0] == 'b'))
+	    ND_label(n)->d.y = -(bb.y - dimen.y);
+	else if (p && (p[0] == 't'))
+	    ND_label(n)->d.y = bb.y - dimen.y;
+	else
+	    ND_label(n)->d.y = 0;
     }
 
     outp = peripheries;
