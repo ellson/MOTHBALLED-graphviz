@@ -1930,29 +1930,41 @@ AC_SUBST(QUARTZ_LIBS)
 AM_CONDITIONAL(WITH_QUARTZ, [test "x$HAVE_QUARTZ" != "x"])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for GDIPLUS 
+dnl INCLUDES and LIBS for PLATFORMSDK
+
+AC_ARG_WITH(platformsdkincludedir,
+  [AC_HELP_STRING([--with-platformsdkincludedir=DIR], [use Platform SDK (Windows) includes from DIR])],
+  [PLATFORMSDKINCLUDE=$withval; PLATFORMSDKINCLUDE_ESCAPED=${PLATFORMSDKINCLUDE//'\\'/\\\\}; PLATFORMSDKINCLUDE_ESCAPED=${PLATFORMSDKINCLUDE_ESCAPED// /\\ }])
+
+AC_ARG_WITH(platformsdklibdir,
+  [AC_HELP_STRING([--with-platformsdklibdir=DIR], [use Platform SDK (Windows) libraries from DIR])],
+  [PLATFORMSDKLIB=$withval])
+
+AC_SUBST(PLATFORMSDKINCLUDE)
+AC_SUBST(PLATFORMSDKINCLUDE_ESCAPED)
+AC_SUBST(PLATFORMSDKLIB) 
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for GDI+ 
 
 AC_ARG_WITH(gdiplus,
-  [AC_HELP_STRING([--with-gdiplus=no], [GDIPLUS framework (Windows)])],
+  [AC_HELP_STRING([--with-gdiplus=no], [GDI+ framework (Windows)])],
   [], [with_gdiplus=no])
 
 if test "x$with_gdiplus" = "xyes"; then
 
-if test "x$PLATFORMSDK" != x; then
-GDIPLUS_PLATFORMSDK="$PLATFORMSDK"
-else
-GDIPLUS_PLATFORMSDK="$VS80COMNTOOLS/../../VC/PlatformSDK"
-fi
-
-if test -d "$GDIPLUS_PLATFORMSDK"; then
+if test -f "$PLATFORMSDKINCLUDE\GdiPlus.h" -a -f "$PLATFORMSDKLIB\GdiPlus.lib"; then
 HAVE_GDIPLUS=1
-AC_DEFINE_UNQUOTED(HAVE_GDIPLUS,1,[Define if you have the GdiPlus framework for Windows])
+AC_DEFINE_UNQUOTED(HAVE_GDIPLUS,1,[Define if you have the GDI+ framework for Windows])
+GDIPLUS_HEADS=`cd "$PLATFORMSDKINCLUDE" && echo GdiPlus*.h`
 GDIPLUS_CFLAGS=''
 GDIPLUS_LIBS=''
+else
+AC_MSG_WARN(--with-gdiplus requires valid --with-platformsdkincludedir and --with-platformsdklibdir.)
 fi
 
 fi
-AC_SUBST(GDIPLUS_PLATFORMSDK)
+AC_SUBST(GDIPLUS_HEADS)
 AC_SUBST(GDIPLUS_CFLAGS)
 AC_SUBST(GDIPLUS_LIBS)
 AM_CONDITIONAL(WITH_GDIPLUS, [test "x$HAVE_GDIPLUS" != "x"])
