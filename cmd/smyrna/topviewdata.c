@@ -73,13 +73,12 @@ int load_host_buttons(topview* t,Agraph_t *g,glCompSet* s)
 		sprintf(hostbtncolorG,"hostbtncolorG%i",i);
 		sprintf(hostbtncolorB,"hostbtncolorB%i",i);
 		sprintf(hostbtncolorA,"hostbtncolorA%i",i);
-		printf ("caption:%s regex:%s Color(%s,%s,%s,%s)\n",
 			agget(g,hostbtncaption ),
 			agget(g,hostbtnregex),
 			agget(g,hostbtncolorR),
 			agget(g,hostbtncolorG),
 			agget(g,hostbtncolorB),
-			agget(g,hostbtncolorA));
+			agget(g,hostbtncolorA);
 		t->TopviewData->hostregex[i]=agget(g,hostbtnregex);
 
 		b=glCompButtonNew((GLfloat)5,(GLfloat)7+((GLfloat)i+(GLfloat)1)*(GLfloat)36,(GLfloat)150,(GLfloat)35,agget(g,hostbtncaption ),'\0',0,0);

@@ -53,7 +53,7 @@ int SelectImage(xdot_op* op);
 int spline_in_rect(xdot_op* op);
 int spline_x_rect(xdot_op* op);
 
-int polygon_int_rect(xdot_op* op);
+int polygon_in_rect(xdot_op* op);
 int polygon_x_rect(xdot_op* op);
 
 int polyline_in_rect(xdot_op* op);
@@ -85,7 +85,7 @@ int select_all_graphs(Agraph_t* g);
 
 int deselect_all_nodes(Agraph_t* g);
 int deselect_all_edges(Agraph_t* g);
-int deselect_all_gprahs(Agraph_t* g);
+int deselect_all_graphs(Agraph_t* g);
 
 int select_all(Agraph_t* g);
 int deselect_all(Agraph_t* g);

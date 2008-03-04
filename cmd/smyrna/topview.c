@@ -66,14 +66,19 @@ void preparetopview(Agraph_t *g,topview* t)
 	t->Edges=NULL;
 	t->Nodes=NULL;
 	/*initialize node and edge array*/
-	printf ("edge memory required %i \n",sizeof(topview_edge)*agnedges(g));
 	t->Edges=malloc(sizeof(topview_edge)*agnedges(g));
-	if (t->Edges)
-		printf ("Edge malloc is ok\n");
+	if (!t->Edges)
+	{
+		printf ("memory allocation problem\n");
+		exit(1);
+	}
 
 	t->Nodes=malloc(sizeof(topview_node)*agnnodes(g));
-	if (t->Nodes)
-		printf ("Nodes malloc is ok\n");
+	if (!t->Nodes)
+	{
+		printf ("memory allocation problem\n");
+		exit(1);
+	}
 
 	printf ("# of edges :%i\n",agnnodes(g));
 	printf ("# of edges :%i\n",agnedges(g));
@@ -475,7 +480,6 @@ int draw_topview_label(topview_node* v,float zdepth)
 		else
 			fontColorA ((float)log((double)v->degree+(double)1),view->penColor.G,view->penColor.B,1);
 
-//		printf("%f \n",view->penColor.A/log((float)v->degree)*-0.02*view->zoom);
 		fontDrawString ((int)(v->distorted_x-ddx),(int)(v->distorted_y-ddy),v->Label,(int)(fs*5));
 
 		return 1;
@@ -528,10 +532,6 @@ void set_boundries(topview* t)
 	view->bdyBottom=bottom;
 	view->bdzTop=0;
 	view->bdzBottom=0;
-/*	printf("top view graph boundries\n");
-	printf("------------------------\n");
-	printf("lower left (%f,%f)\n",view->bdxLeft,view->bdyBottom);
-	printf("upper right(%f,%f)\n",view->bdxRight,view->bdyTop);*/
 }
 
 
@@ -846,7 +846,6 @@ double G(double x)
 
 void test_callback()
 {
-	printf ("test button click\n");
 }
 void menu_click_control(void* p)
 {

@@ -7,7 +7,6 @@
 */
 GtkWidget* create_popup_menu (GtkWidget* drawing_area)
 {
-  GtkWidget *shapes_menu;
   GtkWidget *actions_menu;
   GtkWidget *editing_menu;
   GtkWidget *menu;

@@ -216,13 +216,6 @@ on_newNode                     (GtkWidget     *button,
 	int* b;
 	a=(int*) malloc (sizeof(int));
 	b=(int*) malloc (sizeof(int));
-	if(gdk_gl_query_version(a,b))
-	{
-		printf ("min ver:%i\n",a);
-		printf ("min ver:%i\n",b);
-
-
-	}
 }
 
 
@@ -308,7 +301,7 @@ void frmObjectBtnOK_clicked (GtkWidget *widget,gpointer     user_data)
 		do_graph_layout(view->g[view->activeGraph],0,1);
 	else
 	{
-		set_update_required(&view->Topview);
+		set_update_required(view->Topview);
 		deselect_all(view->g[view->activeGraph]);
 	}
 

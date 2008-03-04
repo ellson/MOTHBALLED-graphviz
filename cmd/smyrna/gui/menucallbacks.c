@@ -17,12 +17,13 @@
 #include "menucallbacks.h"
 #include "viewport.h"
 #include "tvnodes.h"
+#include "selection.h"
+
 
 //file
 char buf[255];
 void mNewSlot (GtkWidget *widget,gpointer user_data)
 {
-	printf("mNewSlot \n");
 }
 
   void mOpenSlot (GtkWidget *widget,gpointer user_data)
@@ -30,7 +31,6 @@ void mNewSlot (GtkWidget *widget,gpointer user_data)
 	GtkWidget *dialog;
 	GtkFileFilter* filter;
 
-	printf("mOpenSlot \n");
 
 	filter=gtk_file_filter_new ();
 	gtk_file_filter_add_pattern(filter,"*.dot");
@@ -65,7 +65,6 @@ void mNewSlot (GtkWidget *widget,gpointer user_data)
 }
   void mOptionsSlot (GtkWidget *widget,gpointer user_data)
 {
-	printf("mOptionsSlot\n");
 }
 
   void mQuitSlot (GtkWidget *widget,gpointer user_data)
@@ -108,22 +107,18 @@ void mNewSlot (GtkWidget *widget,gpointer user_data)
 //edit
   void mCutSlot (GtkWidget *widget,gpointer user_data)
 {
-	printf("mCutSlot\n");
 }
 
   void mCopySlot (GtkWidget *widget,gpointer user_data)
 {
-	printf("mCopySlot\n");
 }
 
   void mPasteSlot (GtkWidget *widget,gpointer user_data)
 {
-	printf("mPasteSlot\n");
 }
 
   void mDeleteSlot (GtkWidget *widget,gpointer user_data)
 {
-	printf("mDeleteSlot\n");
 }
 
 
@@ -155,16 +150,13 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 
   void mNewNodeSlot (GtkWidget *widget,gpointer user_data)
 {
-	printf("mNewNodeSlot\n");
 }
 
   void mNewEdgeSlot (GtkWidget *widget,gpointer user_data)
 {
-	printf("mNewEdgeSlot\n");
 }
   void mNewClusterSlot (GtkWidget *widget,gpointer user_data)
 {
-	printf("mNewClusterSlot\n");
 }
 
   void mGraphPropertiesSlot (GtkWidget *widget,gpointer user_data)
@@ -245,7 +237,6 @@ void mShowHostSelectionSlot(GtkWidget *widget,gpointer user_data)
 
   void mShowCodeSlot (GtkWidget *widget,gpointer user_data)
 {
-	printf("mShowCodeSlot\n");
 }
   void mDotSlot (GtkWidget *widget,gpointer user_data)
 {
@@ -372,27 +363,22 @@ void mUnselectAllClustersSlot(GtkWidget *widget,gpointer user_data)
 
 void mSingleSelectSlot(GtkWidget *widget,gpointer user_data)
 {
-	printf("mSingleSelectSlot\n");
 }
 
 void mSelectAreaSlot(GtkWidget *widget,gpointer user_data)
 {
-	printf("mSelectAreaSlot\n");
 }
 
 void mSelectAreaXSlot(GtkWidget *widget,gpointer user_data)
 {
-	printf("mSelectAreaXSlot\n");
 
 }
 
 //help
 void mAbout(GtkWidget *widget,gpointer user_data)
 {
-	printf("mAbout\n");
 }
 
 void mHelp(GtkWidget *widget,gpointer user_data)
 {
-	printf("mHelp\n");
 }

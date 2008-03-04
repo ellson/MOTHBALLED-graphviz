@@ -16,6 +16,8 @@
 
 #include "toolboxcallbacks.h"
 #include "viewport.h"
+#include "selection.h"
+#include "gltemplate.h"
 
 
 void btnToolSingleSelect_clicked(GtkWidget *widget,gpointer user_data)
@@ -64,8 +66,8 @@ void btnToolZoomIn_clicked                       (GtkWidget *widget,gpointer use
 {
 	view->zoom = view->zoom + ZOOM_STEP;
 	if(view->zoom > MAX_ZOOM)
-		view->zoom=MAX_ZOOM;
-	expose_event (view->drawing_area,NULL,NULL);
+		view->zoom=(float)MAX_ZOOM;
+	glexpose();
 
 }
 void btnToolZoomOut_clicked                       (GtkWidget *widget,gpointer user_data)
@@ -77,7 +79,6 @@ void btnToolZoomOut_clicked                       (GtkWidget *widget,gpointer us
 }
 void btnToolFit_clicked                       (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnToolFit_clicked\n");
 }
 void btnToolMove_clicked                       (GtkWidget *widget,gpointer user_data)
 {
@@ -85,26 +86,19 @@ void btnToolMove_clicked                       (GtkWidget *widget,gpointer user_
 }
 void btnToolAddNode_clicked                       (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnToolAddNode_clicked\n");
 }
 void btnToolDeleteNode_clicked                       (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnToolDeleteNode_clicked\n");
 }
 void btnToolFindNode_clicked                       (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnToolFindNode_clicked\n");
 }
 void btnToolAddEdge_clicked                       (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnToolAddEdge_clicked\n");
 }
 void btnToolDeleteEdge_clicked                       (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnToolDeleteEdge_clicked\n");
 }
 void btnToolFindEdge_clicked                       (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnToolFindEdge_clicked\n");
-	printf("zoom :%f\n",view->zoom);
 }

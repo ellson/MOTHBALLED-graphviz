@@ -18,11 +18,9 @@
 #include "tvnodes.h"
 void btnTVEdit_clicked_cb (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnTVEdit_clicked_cb\n");
 }
 void btnTVDelete_clicked_cb (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnTVDelete_clicked_cb\n");
 }
 void btnTVFilter_clicked_cb (GtkWidget *widget,gpointer user_data)
 {
@@ -62,7 +60,6 @@ void btnTVGotopage_clicked_cb (GtkWidget *widget,gpointer user_data)
 }
 void btnTVCancel_clicked_cb (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnTVCancel_clicked_cb\n");
 }
 void btnTVOK_clicked_cb (GtkWidget *widget,gpointer user_data)
 {
@@ -71,11 +68,9 @@ void btnTVOK_clicked_cb (GtkWidget *widget,gpointer user_data)
 }
 void btnTVReverse_clicked_cb (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnTVEdit_clicked_cb\n");
 }
 void cgbTVSelect_toggled_cb (GtkWidget *widget,gpointer user_data)
 {
-	printf("btnTVEdit_clicked_cb\n");
 }
 
 

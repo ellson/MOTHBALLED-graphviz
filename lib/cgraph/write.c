@@ -21,6 +21,12 @@
 #define EMPTY(s)		((s == 0) || (s)[0] == '\0')
 #define MAX(a,b)     ((a)>(b)?(a):(b))
 
+#ifdef WIN32
+extern int strcasecmp(const char *s1, const char *s2);
+extern int strncasecmp(const char *s1, const char *s2, unsigned int n);
+#endif
+
+
 typedef void iochan_t;
 
 static void ioput(Agraph_t * g, iochan_t * ofile, char *str)

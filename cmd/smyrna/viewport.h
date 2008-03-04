@@ -60,4 +60,5 @@ void glexpose();
 void move_nodes(Agraph_t* g);	//move selected nodes 
 //helper functions
 int SetGdkColor(GdkColor* c,char* color);
+int init_object_custom_data(Agraph_t* graph,void* obj);//creates a custom_object_data 
 #endif

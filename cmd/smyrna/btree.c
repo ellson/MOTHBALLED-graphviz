@@ -15,7 +15,7 @@
 **********************************************************/
 
 #include "btree.h"
-#include "regex.h"
+#include "regex_win32.h"
 btree_node* new_node(char* attribute,char* regex, float min, float max)
 {
 	btree_node* n;
@@ -99,7 +99,6 @@ btree_node* look_up_node_with_string(btree_node* n,char* string_to_lookup)
 }
 int validate_lookup(btree_node* n,char* string_to_lookup)	//it can be anything, in this case attr_name
 {
-	printf ("%s == %s\n",n->attr_name,string_to_lookup);
 	if (strcmp(n->attr_name,string_to_lookup)==0)
 		return 1;
 	return 0;

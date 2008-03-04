@@ -24,6 +24,10 @@
 #include <glade/glade.h>
 #include "gui.h"
 #include "string.h"
+#include "topview.h"
+#include "gltemplate.h"
+#include "colorprocs.h"
+
 
 #define countof( array ) ( sizeof( array )/sizeof( array[0] ) )
 
@@ -223,7 +227,7 @@ void refreshControls(ViewInfo* v)
 
 
 	}
-	expose_event (view->drawing_area,NULL,NULL);
+	glexpose();
 
 		
 
@@ -489,7 +493,6 @@ int do_graph_layout(Agraph_t* graph,int Engine,int keeppos) //changes the layout
 	}
 	else
 	{
-		printf("failed to read temp filen");
 		return 0;
 	}
 
@@ -515,13 +518,6 @@ Agraph_t* loadGraph(char* filename)
 		g_print("Cannot open %s\n", filename);
 	else if (g = agread(input_file,NIL(Agdisc_t*)))
 	{
-		printf("%s has been loaded sucessfully\n",filename);
-		printf("Graph statistics\n");
-		printf("----------------\n");
-		printf("# of edges %i\n",agnnodes(g));
-		printf("# of nodes %i\n",agnedges(g));
-		printf("checking xdot data\n");
-		printf("binding graph record\n");
 		attach_object_custom_data_to_graph(g);
 		load_graph_params(g);
 
@@ -560,7 +556,6 @@ Agraph_t* loadGraph(char* filename)
 		((custom_graph_data*)AGDATA(g))->GraphFileName=(char*)malloc((strlen(filename)+1)*sizeof(char)); 
 		//attaching rec for graph objects
 		strcpy(((custom_graph_data*)AGDATA(g))->GraphFileName,filename); 
-		printf("Topview:%s------",agget(g, "TopView"));
 		/*if(strcasecmp(agget(g, "TopView"),"1")==0)
 		{
 			if(
@@ -584,7 +579,6 @@ Agraph_t* loadGraph(char* filename)
 	}
 	else
 	{
-		printf("failed to load %s\n",filename);
 		return 0;
 	}
 	return 0;
@@ -755,7 +749,6 @@ void move_node(void* obj,float dx,float dy)
 	{
 		//tokenize 
 		strcpy(buf,agget(obj, "pos"));
-		printf ("org pos: %s\n",buf);
 
 		pch=strtok (buf,"," );
 		while (pch != NULL)
@@ -768,7 +761,6 @@ void move_node(void* obj,float dx,float dy)
 			i++;
 		}
 		buf2[strlen(buf2)-1]='\0';
-		printf ("new pos: %s\n",buf2);
 		agset(obj,"pos",buf2);
 	}
 }

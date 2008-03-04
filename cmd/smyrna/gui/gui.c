@@ -30,6 +30,11 @@
 
 static char guibuffer[255];	//general purpose buffer
 
+#ifdef WIN32
+extern int strcasecmp(const char *s1, const char *s2);
+extern int strncasecmp(const char *s1, const char *s2, unsigned int n);
+#endif
+
 GdkWindow* window1;
 GtkWidget *statusbar1;
 
@@ -55,7 +60,6 @@ attribute attr[MAXIMUM_WIDGET_COUNT];
 //call this function only ones
 void create_object_properties()
 {
-	char** testRows;
 	char* data0="TEST0";
 	char* data1="TEST1";
 	char* data2="TEST2";
@@ -80,8 +84,6 @@ void create_object_properties()
 //call this after create_object_properties()
 void object_properties_node_init()
 {
-	GladeXML *xml;
-	GtkWidget *widget;
 	
 }
 void object_properties_edge_init()	//customize window for Edges
@@ -295,10 +297,7 @@ int load_object_properties(int typeIndex,Agraph_t* g)	//load  from object to gui
 	//load attr from first selected object
 	GtkLayout* layout;
 	GdkColor color;
-	FILE * file;
     char buf[100];
-	char string [100];
-	char *ss;
 	int ind=0;
 	int Y=45;
 	int X=90;
@@ -310,7 +309,6 @@ int load_object_properties(int typeIndex,Agraph_t* g)	//load  from object to gui
 	void* obj;
 	char line [ 128 ];
 	float a,b;
-	char* pch;
 	layout=(GtkLayout*)glade_xml_get_widget(xml, "layout4");
 	frmObjectTypeIndex=typeIndex;
 	frmObjectg=g;
@@ -428,8 +426,8 @@ int load_object_properties(int typeIndex,Agraph_t* g)	//load  from object to gui
 		 )
 		 {
 			sprintf (line, "%s", agget(obj,"pos"));
-			a=atof(strtok (line,"," ));
-			b=atof(strtok (NULL,"," ));
+			a=(float)atof(strtok (line,"," ));
+			b=(float)atof(strtok (NULL,"," ));
 			gtk_spin_button_set_value ((GtkSpinButton*)glade_xml_get_widget(xml,"frmObjectPosX"), a );					
 			gtk_spin_button_set_value ((GtkSpinButton*)glade_xml_get_widget(xml,"frmObjectPosY"), b );					
 			gtk_spin_button_set_value ((GtkSpinButton*)glade_xml_get_widget(xml,"frmObjectPosZ"), 0 );					
