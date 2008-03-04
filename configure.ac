@@ -2488,7 +2488,6 @@ AC_CONFIG_FILES(Makefile
 	lib/gvc/libgvc.pc
 	lib/gvc/libgvc_builtins.pc
 	lib/utilities/Makefile
-	lib/gui/Makefile
 	lib/xdot/Makefile
 	lib/filter/Makefile
 	lib/topfish/Makefile
