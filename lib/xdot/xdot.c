@@ -711,7 +711,7 @@ char* move_xdot(void* obj,xdot* x,int dx,int dy,int dz)
 char* offset_spline(xdot* x,float dx,float dy,float headx,float heady)
 {
 #if 0
-	int i=0;
+	/*int i=0;
 	Agnode_t* headn,tailn;
 	Agedge_t* e;
 	e=x->obj;		//assume they are all edges, check function name
@@ -739,7 +739,7 @@ char* offset_spline(xdot* x,float dx,float dy,float headx,float heady)
 					}
 				}
 			break;
-	}
+	}*/
 #endif
     return 0;
 }

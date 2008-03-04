@@ -124,4 +124,5 @@ extern char* move_xdot(void* obj,xdot* x,int dx,int dy,int dz);
 extern char* offset_spline(xdot* x,float dx,float dy,float headx,float heady);
 void drawXdotwithattrs(void* e,int param);
 void drawXdotwithattr(void* p,char* attr,int param);
+extern int select_object (Agraph_t* g,void* obj);
 #endif
