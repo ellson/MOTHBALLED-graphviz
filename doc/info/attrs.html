@@ -232,6 +232,8 @@ This field indicates which graph component uses the attribute.
 </TD><TD>GC</TD><TD>string</TD><TD ALIGN="CENTER">"c"</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:labelloc HREF=#d:labelloc>labelloc</A>
 </TD><TD>GC</TD><TD>string</TD><TD ALIGN="CENTER">"t"(clusters)<BR>"b"(root graphs)</TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=aa:labelloc HREF=#dd:labelloc>labelloc</A>
+</TD><TD>N</TD><TD>string</TD><TD ALIGN="CENTER">"c"(clusters)</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:labeltarget HREF=#d:labeltarget>labeltarget</A>
 </TD><TD>E</TD><TD><A HREF=#k:escString>escString</A>
 </TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, map only</TD> </TR>
@@ -900,6 +902,12 @@ This field indicates which graph component uses the attribute.
   Note that a subgraph inherits attributes from its parent. Thus, if
   the root graph sets <B>labelloc</B> to "b", the subgraph inherits
   this value.
+
+<DT><A NAME=dd:labelloc HREF=#aa:labelloc><STRONG>labelloc</STRONG></A>
+<DD>  Vertical placement of node label. By default, if the height of a node
+  is larger than the height of its label, the label is vertically centered.
+  If <TT>labelloc</TT> is set to "t", "c", or "b", the label is aligned
+  with the top, centered, or aligned with the bottom of the node, respectively.
 
 <DT><A NAME=d:labeltarget HREF=#a:labeltarget><STRONG>labeltarget</STRONG></A>
 <DD>  If the edge has a <A HREF=#d:URL>URL</A> or <A HREF=#d:labelURL>labelURL</A>
