@@ -842,15 +842,15 @@ static void poly_init(node_t * n)
     if (!mapbool(late_string(n, N_nojustify, "false"))) {
 	if (width > dimen.x)
 	    ND_label(n)->d.x = width - dimen.x;
-	if (height > dimen.y) {
-	    p = agget(n, "labelloc");
-            if (p && (p[0] == 'b'))
-		ND_label(n)->d.y = -(height - dimen.y);
-	    else if (p && (p[0] == 't'))
-		ND_label(n)->d.y = height - dimen.y;
-	    else
-		ND_label(n)->d.y = 0;
-	}
+    }
+    if (height > dimen.y) {
+	p = agget(n, "labelloc");
+        if (p && (p[0] == 'b'))
+	    ND_label(n)->d.y = -(height - dimen.y);
+	else if (p && (p[0] == 't'))
+	    ND_label(n)->d.y = height - dimen.y;
+	else
+	    ND_label(n)->d.y = 0;
     }
 
     /* increase node size to width/height if needed */
