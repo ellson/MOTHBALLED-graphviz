@@ -46,15 +46,10 @@ int GetOGLPosRef(int x, int y,float* X,float* Y,float* Z)
 	GLdouble posX, posY, posZ;
 
 
-	int ind;
-	GLdouble depth[5];
-	GLdouble raster[5];
 	GLint viewport[4];
 	GLdouble modelview[16];
 	GLdouble projection[16];
 	GLfloat winX, winY;
-	GLfloat winZ[36];
-	char buffer [200];
 	float kts=1;
 	//glTranslatef (0.0,0.0,0.0);
 	glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
@@ -70,9 +65,9 @@ int GetOGLPosRef(int x, int y,float* X,float* Y,float* Z)
 	winY = (float)viewport[3] - (float)y;
 	gluUnProject( winX, winY, wwinZ, modelview, projection, viewport, &posX, &posY, &posZ);
 
-	*X=posX;
-	*Y=posY;
-	*Z=posZ;
+	*X=(float)posX;
+	*Y=(float)posY;
+	*Z=(float)posZ;
 	return 1;
 
 }
@@ -82,7 +77,6 @@ float GetOGLDistance(int l)
 {
 
 	int x,y;
-	float*  X,Y, Z;
 	GLdouble wwinX;
 	GLdouble wwinY;
 	GLdouble wwinZ;
@@ -90,15 +84,10 @@ float GetOGLDistance(int l)
 	GLdouble posXX, posYY, posZZ;
 
 
-	int ind;
-	GLdouble depth[5];
-	GLdouble raster[5];
 	GLint viewport[4];
 	GLdouble modelview[16];
 	GLdouble projection[16];
 	GLfloat winX, winY;
-	GLfloat winZ[36];
-	char buffer [200];
 	float kts=1;
 	//glTranslatef (0.0,0.0,0.0);
 	glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
@@ -120,7 +109,6 @@ float GetOGLDistance(int l)
 	winX = (float)x;
 	winY = (float)viewport[3] - (float)y;
 	gluUnProject( winX, winY, wwinZ, modelview, projection, viewport, &posXX, &posYY, &posZZ);
-	printf ("return value:%f\n:",((float)posXX-(float)posX));
 	return ((float)(posXX-posX));
 
 }

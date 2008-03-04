@@ -35,9 +35,9 @@ glCompTexture* glCompCreateTextureFromRaw(char* filename,int width,int height,in
     // if wrap is true, the texture wraps over at the edges (repeat)
     //       ... false, the texture ends at the edges (clamp)
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                     wrap ? GL_REPEAT : GL_CLAMP );
+                     (GLfloat)wrap ? (GLfloat)GL_REPEAT : GL_CLAMP );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                     wrap ? GL_REPEAT : GL_CLAMP );
+                     (GLfloat)wrap ? (GLfloat)GL_REPEAT : GL_CLAMP );
 
 /*	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_REPEAT );
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -54,8 +54,8 @@ glCompTexture* glCompCreateTextureFromRaw(char* filename,int width,int height,in
 
     // free buffer
     free( data );
-	t->w=width;
-	t->h=height;
+	t->w=(float)width;
+	t->h=(float)height;
 	return t;
 }
 int glCompDeleteTexture(glCompTexture* t)

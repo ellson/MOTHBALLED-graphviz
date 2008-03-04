@@ -147,10 +147,10 @@ int glCompDrawLabel(glCompLabel* p)
 			p->pos.y=p->pos.y+p->panel->pos.y;
 		}
 
-		fontSize (p->size);
+		fontSize ((int)p->size);
 		fontColorA (p->color.R,p->color.G,p->color.B,p->color.A);
 
-		fontDrawString 	( p->pos.x,p->pos.y,p->text,p->size*p->fontsizefactor*strlen(p->text));
+		fontDrawString 	( (int)p->pos.x,(int)p->pos.y,p->text,(int)(p->size*p->fontsizefactor*strlen(p->text)));
 		if (p->panel)
 		{
 			p->pos.x=p->pos.x-p->panel->pos.x;
@@ -323,8 +323,8 @@ int glCompDrawButton(glCompButton* p)
 	if (p->status==1)
 	{
 		color_fac=GLCOMPSET_BUTTON_BEVEL_BRIGHTNESS;
-		glColor4f(p->color.R/1.2,p->color.G/1.2,p->color.B/1.2,p->color.A);
-		p->thickness=p->thickness/1.2;
+		glColor4f(p->color.R/(GLfloat)1.2,p->color.G/(GLfloat)1.2,p->color.B/(GLfloat)1.2,p->color.A);
+		p->thickness=p->thickness/(GLfloat)1.2;
 
 	}
 
@@ -332,7 +332,7 @@ int glCompDrawButton(glCompButton* p)
 	{
 		color_fac=1/GLCOMPSET_BUTTON_BEVEL_BRIGHTNESS;
 		glColor4f(p->color.R,p->color.G,p->color.B,p->color.A);
-		p->thickness=p->thickness*1.2;
+		p->thickness=p->thickness*(GLfloat)1.2;
 	}
 	if (!p->hasglyph)
 	{
@@ -378,20 +378,20 @@ int glCompDrawButton(glCompButton* p)
 		glVertex3f(p->pos.x+p->thickness,p->pos.y+p->height-p->thickness,p->bevel);
 		glEnd();
 		//draw caption
-		fontx=(p->width-p->thickness*2-p->fontsize*strlen(p->caption)*GLCOMPSET_FONT_SIZE_FACTOR)/2.0+p->pos.x+p->thickness;
-		fonty=(p->height-p->thickness*2-p->fontsize)/2.0+p->pos.y+p->thickness;
-		fontSize (p->fontsize);
+		fontx=(p->width-p->thickness*(GLfloat)2-p->fontsize*strlen(p->caption)*GLCOMPSET_FONT_SIZE_FACTOR)/(GLfloat)2.0+p->pos.x+p->thickness;
+		fonty=(p->height-p->thickness*(GLfloat)2-p->fontsize)/(GLfloat)2.0+p->pos.y+p->thickness;
+		fontSize ((int)p->fontsize);
 //		fontColorA (p->fontcolor.R,p->fontcolor.B,p->fontcolor.G,p->fontcolor.A);
 		fontColorA (0,0,0,1);
-		fontDrawString (fontx,fonty,p->caption,p->fontsize*strlen(p->caption)*GLCOMPSET_FONT_SIZE_FACTOR);
+		fontDrawString ((int)fontx,(int)fonty,p->caption,(int)(p->fontsize*strlen(p->caption)*GLCOMPSET_FONT_SIZE_FACTOR));
 	}
 	//put glyph
 	else
 	{
 
 		glEnable( GL_TEXTURE_2D );
-		fontx=(p->width-p->thickness*2-p->glyphwidth)/2.0+p->pos.x+p->thickness;
-		fonty=(p->height-p->thickness*2-p->glyphheight)/2.0+p->pos.y+p->thickness;
+		fontx=(p->width-p->thickness*(GLfloat)2-p->glyphwidth)/(GLfloat)2.0+p->pos.x+p->thickness;
+		fonty=(p->height-p->thickness*(GLfloat)2-p->glyphheight)/(GLfloat)2.0+p->pos.y+p->thickness;
 		glBindTexture( GL_TEXTURE_2D, p->glyph->id);
 		glColor4f(1,1,1,1);
 		glBegin(GL_QUADS);
@@ -464,7 +464,6 @@ int glCompSetRelease(glCompSet* s,int x,int y)
 {
 	
 	int ind=0;
-	printf("in release\n");
 	for (ind=0 ; ind < s->buttoncount; ind ++)
 	{
 		if((s->buttons[ind]->visible) && (s->buttons[ind]->enabled))
@@ -511,15 +510,10 @@ void glCompSetGetPos(int x, int y,float* X,float* Y,float* Z)
 	GLdouble posX, posY, posZ;
 
 
-	int ind;
-	GLdouble depth[5];
-	GLdouble raster[5];
 	GLint viewport[4];
 	GLdouble modelview[16];
 	GLdouble projection[16];
 	GLfloat winX, winY;
-	GLfloat winZ[36];
-	char buffer [200];
 	float kts=1;
 	glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
 	glGetDoublev( GL_PROJECTION_MATRIX, projection );
@@ -534,9 +528,9 @@ void glCompSetGetPos(int x, int y,float* X,float* Y,float* Z)
 	winY = (float)viewport[3] - (float)y;
 	gluUnProject( winX, winY, wwinZ, modelview, projection, viewport, &posX, &posY, &posZ);
 
-	*X=posX;
-	*Y=posY;
-	*Z=posZ;
+	*X=(float)posX;
+	*Y=(float)posY;
+	*Z=(float)posZ;
 }
 
 
