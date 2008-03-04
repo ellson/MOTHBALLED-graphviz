@@ -350,7 +350,7 @@ void fontWalkString (char *buffPtr, int xpos, int ypos, int *vPort,float width)
 	int charCount;
 	int maxcharCount;
 	char* tempC;
-	float charGap;
+	int charGap;
 	xMax = vPort[0] + vPort[2];
 
     carrage = fontGetCharHits (buffPtr, '\n');
@@ -400,7 +400,7 @@ void fontWalkString (char *buffPtr, int xpos, int ypos, int *vPort,float width)
 	}
 	if (charCount > maxcharCount)
 		maxcharCount=charCount;
-	charGap=width / (float)maxcharCount;
+	charGap=(int)(width / (float)maxcharCount);
 
 
 	for ( ; *buffPtr; *buffPtr ++, x += charGap) //size*0.7 is the distance between2 characters
@@ -422,7 +422,7 @@ void fontWalkString (char *buffPtr, int xpos, int ypos, int *vPort,float width)
 
 
 		if(*buffPtr==' ')		//SPACE
-			x = x - size*0.40;
+			x = x - size;
 
 		switch (*buffPtr)
 		{
@@ -492,7 +492,7 @@ void fontDrawString (int xpos, int ypos, char *s,int width,...)
     /* draw the string */
 
 
-	fontWalkString (buffer, xpos, ypos, vPort,width);
+	fontWalkString (buffer, xpos, ypos, vPort,(float)width);
 	
 /*	glMatrixMode (GL_PROJECTION);
 	glPopMatrix ();

@@ -71,10 +71,10 @@ main ()
     int ax, ay, bx, by, cx, cy, dx, dy;
     char buf[1024];
     while (1) {
-	  printf ("> "); fflush(stdin);
+	  fflush(stdin);
       fgets (buf, 1024, stdin);
       sscanf (buf, "%d %d %d %d", &ax, &ay, &bx, &by);
-	  printf ("> "); fflush(stdin);
+	   fflush(stdin);
       fgets (buf, 1024, stdin);
       sscanf (buf, "%d %d %d %d", &cx, &cy, &dx, &dy);
       a.x = ax;
