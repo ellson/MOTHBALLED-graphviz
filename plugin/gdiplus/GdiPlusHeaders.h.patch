@@ -1,0 +1,11 @@
+--- /d/Program Files (x86)/Microsoft Visual Studio 8/VC/PlatformSDK/include/GdiPlusHeaders.h	Thu Apr 14 16:54:44 2005
++++ ./GdiPlusHeaders.h	Mon Feb 25 17:20:22 2008
+@@ -650,7 +650,7 @@
+ 
+ class CachedBitmap : public GdiplusBase
+ {
+-    friend Graphics;
++    friend class Graphics;
+ 
+ public:
+     CachedBitmap(IN Bitmap *bitmap,
