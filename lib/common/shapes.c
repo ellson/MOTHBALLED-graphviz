@@ -1590,15 +1590,20 @@ static void point_init(node_t * n)
     double sz;
     pointf P, *vertices;
     int i, j;
+    double w, h;
 
     /* set width and height, and make them equal
      * if user has set weight or height, use it.
      * if both are set, use smallest.
      * if neither, use default
      */
-    ND_width(n) = late_double(n, N_width, DEF_POINT, MIN_POINT);
-    ND_height(n) = late_double(n, N_height, DEF_POINT, MIN_POINT);
-    ND_width(n) = ND_height(n) = MIN(ND_width(n), ND_height(n));
+    w = late_double(n, N_width, MAXDOUBLE, MIN_POINT);
+    h = late_double(n, N_height, MAXDOUBLE, MIN_POINT);
+    w = MIN(w,h);
+    if ((w == MAXDOUBLE) && (h == MAXDOUBLE)) /* neither defined */
+	ND_width(n) = ND_height(n) = DEF_POINT;
+    else
+	ND_width(n) = ND_height(n) = w;
 
     sz = ND_width(n)*POINTS_PER_INCH; 
     peripheries = late_int(n, N_peripheries, peripheries, 0);
