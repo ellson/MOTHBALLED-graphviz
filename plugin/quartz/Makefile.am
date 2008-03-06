@@ -23,7 +23,7 @@ libgvplugin_quartz_C_la_SOURCES = \
 	gvplugin_quartz.c \
 	gvrender_quartz.c
 
-libgvplugin_quartz_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO
+libgvplugin_quartz_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_quartz_la_SOURCES = $(libgvplugin_quartz_C_la_SOURCES)
 libgvplugin_quartz_la_LIBADD = @QUARTZ_LIBS@
 
