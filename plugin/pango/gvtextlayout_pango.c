@@ -112,7 +112,13 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
             if (! FcInit())
 	        return FALSE;
     
-	    pat = FcNameParse((FcChar8 *) tfont);
+//	    pat = FcNameParse((FcChar8 *) tfont);
+	    pat = FcPatternBuild (0,
+		FC_FAMILY, FcTypeString, pango_font_description_get_family(tdesc),
+//		FC_STYLE, FcTypeString, pango_font_description_get_style(tdesc),
+//		FC_WEIGHT, FcTypeString, pango_font_description_get_weight(tdesc),
+		(char *) 0);
+
 	    FcConfigSubstitute (0, pat, FcMatchPattern);
 	    FcDefaultSubstitute (pat);
 	    fs = FcFontSetCreate();
