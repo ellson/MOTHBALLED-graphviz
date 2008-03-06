@@ -37,7 +37,6 @@ extern "C" {
 	char *str;      /* stored in utf-8 */
 	char *fontname; 
 	PostscriptAlias *postscript_alias; 
-	char *xshow;
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
 	double fontsize, width, height, yoffset_layout, yoffset_centerline;
