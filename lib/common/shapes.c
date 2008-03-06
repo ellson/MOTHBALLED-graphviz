@@ -696,7 +696,7 @@ static void poly_init(node_t * n)
     pointf P, Q, R;
     pointf *vertices;
     char *p, *sfile;
-    double temp, alpha, beta, gamma, delta, dy;
+    double temp, alpha, beta, gamma;
     double orientation, distortion, skew;
     double sectorangle, sidelength, skewdist, gdistortion, gskew;
     double angle, sinx, cosx, xmax, ymax, scalex, scaley;
@@ -863,7 +863,6 @@ static void poly_init(node_t * n)
             /* FIXME - for odd-sided polygons, e.g. triangles, there
 	     * would be a better fit with some vertical adjustment of the shape */
         }
-        bb.y = height;
     }
 
     /* at this point, bb is the minimum size of node that can hold the label */
@@ -892,16 +891,22 @@ static void poly_init(node_t * n)
 
     /* adjust text horizontal justification */
     if (!mapbool(late_string(n, N_nojustify, "false"))) {
-	if (bb.x > min_bb.x)
-	    ND_label(n)->d.x = bb.x - min_bb.x;
+        temp = bb.x - min_bb.x;
+        if (dimen.x < imagesize.x)
+ 	    temp += imagesize.x - dimen.x;
+	if (temp > 0) 
+	    ND_label(n)->d.x = temp;
     }
 
     /* adjust text vertical location */
-    if ((dy = bb.y - min_bb.y) > 0) {
+    temp = bb.y - min_bb.y;
+    if (dimen.y < (double)imagesize.y)
+	temp += imagesize.y - dimen.y;
+    if (temp > 0) {
         if (labelloc < 0)
-	    ND_label(n)->d.y = -dy;
+	    ND_label(n)->d.y = -temp;
 	else if (labelloc > 0)
-	    ND_label(n)->d.y = dy;
+	    ND_label(n)->d.y = temp;
 	else
 	    ND_label(n)->d.y = 0;
     }
@@ -1009,8 +1014,7 @@ static void poly_init(node_t * n)
 		temp = GAP / sin(gamma);
 
 		/*convert this distance to x and y */
-		delta = alpha - gamma;
-		sincos(delta, &sinx, &cosx);
+		sincos((alpha - gamma), &sinx, &cosx);
 		sinx *= temp;
 		cosx *= temp;
 
