@@ -85,18 +85,33 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    fnt = fontname;
 
 	desc = pango_font_description_from_string(fnt);
+        /* all text layout is done at a scale of 96ppi */
+        pango_font_description_set_size (desc, (gint)(para->fontsize * PANGO_SCALE));
 
         if (fontpath) {  /* -v support */
+	    PangoFont *font;
+    	    PangoFontDescription *tdesc;
+	    char *tfont;
+
+            font = pango_font_map_load_font(fontmap, context, desc);
+	    tdesc = pango_font_describe(font);
+	    tfont = pango_font_description_to_string(tdesc);
+	    strcpy(buf, "\"");
+	    strcat(buf, tfont);
+	    strcat(buf, "\" ");
+	    if (psfnt)
+		strcat(buf, "(PostScript) ");
+	    else
+		strcat(buf, "(non-PS    ) ");
+
 #ifdef HAVE_FONTCONFIG
 	    FcPattern *pat, *match;
 	    FcFontSet *fs;
 	    FcResult result;
-	    char *tfont;
     
             if (! FcInit())
 	        return FALSE;
     
-	    tfont = pango_font_description_to_filename(desc);
 	    pat = FcNameParse((FcChar8 *) tfont);
 	    FcConfigSubstitute (0, pat, FcMatchPattern);
 	    FcDefaultSubstitute (pat);
@@ -105,7 +120,6 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    if (match)
 	        FcFontSetAdd (fs, match);
 	    FcPatternDestroy (pat);
-	    strcpy(buf,"");
 	    if (fs) {
 	        FcChar8 *family, *style, *file;
     
@@ -115,13 +129,6 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 		    family = (FcChar8 *) "<unknown font family>";
 	        if (FcPatternGetString (fs->fonts[0], FC_STYLE, 0, &style) != FcResultMatch)
 		    style = (FcChar8 *) "<unknown font style>";
-	        strcat(buf, "\"");
-		strcpy(buf, tfont);
-		strcat(buf, "\" ");
-		if (psfnt)
-		    strcat(buf, "(PostScript) ");
-		else
-		    strcat(buf, "(non-PS    ) ");
 		strcat(buf, "\"");
 	        strcat(buf, (char *)family);
 	        strcat(buf, ", ");
@@ -129,16 +136,12 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	        strcat(buf, "\" ");
 	        strcat(buf, (char *)file);
 	    }
+	    FcFontSetDestroy(fs);
+#endif
             *fontpath = buf;
 	    g_free(tfont);
-	    FcFontSetDestroy(fs);
-#else
-	    *fontpath = fnt;
-#endif
         }
     }
-    /* all text layout is done at a scale of 96ppi */
-    pango_font_description_set_size (desc, (gint)(para->fontsize * PANGO_SCALE));
 
 #ifdef ENABLE_PANGO_MARKUP
     if (! pango_parse_markup (para->str, -1, 0, &attrs, &text, NULL, &error))
