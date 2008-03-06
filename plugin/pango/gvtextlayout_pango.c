@@ -44,7 +44,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     static PangoContext *context;
     static PangoFontDescription *desc;
     static char *fontname;
-    char *fnt;
+    char *fnt, *psfnt = NULL;
     PangoLayout *layout;
     PangoRectangle logical_rect;
     PangoLayoutIter* iter;
@@ -79,7 +79,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	pango_font_description_free (desc);
 
 	if (para->postscript_alias) {
-	    fnt = psfontResolve (para->postscript_alias);
+	    psfnt = fnt = psfontResolve (para->postscript_alias);
 	}
 	else
 	    fnt = fontname;
@@ -91,11 +91,13 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    FcPattern *pat, *match;
 	    FcFontSet *fs;
 	    FcResult result;
+	    char *tfont;
     
             if (! FcInit())
 	        return FALSE;
     
-	    pat = FcNameParse((FcChar8 *) fnt);
+	    tfont = pango_font_description_to_filename(desc);
+	    pat = FcNameParse((FcChar8 *) tfont);
 	    FcConfigSubstitute (0, pat, FcMatchPattern);
 	    FcDefaultSubstitute (pat);
 	    fs = FcFontSetCreate();
@@ -114,6 +116,13 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	        if (FcPatternGetString (fs->fonts[0], FC_STYLE, 0, &style) != FcResultMatch)
 		    style = (FcChar8 *) "<unknown font style>";
 	        strcat(buf, "\"");
+		strcpy(buf, tfont);
+		strcat(buf, "\" ");
+		if (psfnt)
+		    strcat(buf, "(PostScript) ");
+		else
+		    strcat(buf, "(non-PS    ) ");
+		strcat(buf, "\"");
 	        strcat(buf, (char *)family);
 	        strcat(buf, ", ");
 	        strcat(buf, (char *)style);
@@ -121,6 +130,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	        strcat(buf, (char *)file);
 	    }
             *fontpath = buf;
+	    g_free(tfont);
 	    FcFontSetDestroy(fs);
 #else
 	    *fontpath = fnt;
