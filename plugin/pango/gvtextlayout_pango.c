@@ -174,24 +174,6 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     /* The distance below midline for y centering of text strings */
     para->yoffset_centerline = 0.1 * para->fontsize;
 
-    /* determine position of each character in the layout */
-#ifdef ENABLE_PANGO_XSHOW
-    xshow_alloc = 128;
-    xshow_pos = 0;
-    para->xshow = malloc(xshow_alloc);
-    para->xshow[0] = '\0';
-    do {
-	pango_layout_iter_get_char_extents (iter, &char_rect);
-        if (xshow_alloc < xshow_pos + 16) {
-		xshow_alloc += 128;
-		para->xshow = realloc(para->xshow, xshow_alloc);
-	}
-	if (xshow_pos) para->xshow[xshow_pos++] = ' ';
-        xshow_pos += sprintf(para->xshow+xshow_pos, "%g", char_rect.width * textlayout_scale);
-    } while (pango_layout_iter_next_char (iter));
-#else
-    para->xshow = NULL;
-#endif
     pango_layout_iter_free (iter);
     if (logical_rect.width == 0)
 	return FALSE;

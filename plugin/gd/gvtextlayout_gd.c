@@ -110,9 +110,7 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
     gdFTStringExtra strex;
     double fontsize;
 
-    strex.flags = gdFTEX_XSHOW
-	| gdFTEX_RETURNFONTPATHNAME | gdFTEX_RESOLUTION;
-    strex.xshow = NULL;
+    strex.flags = gdFTEX_RETURNFONTPATHNAME | gdFTEX_RESOLUTION;
     strex.hdpi = strex.vdpi = POINTS_PER_INCH;
 
     if (strstr(para->fontname, "/"))
@@ -123,7 +121,6 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
     para->width = 0.0;
     para->height = 0.0;
     para->yoffset_layout = 0.0;
-    para->xshow = NULL;
 
     para->layout = NULL;
     para->free_layout = NULL;
@@ -155,12 +152,6 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 	if (err) {
 	    agerr(AGERR,"%s\n", err);
 	    return FALSE; /* indicate error */
-	}
-
-	if (strex.xshow) {
-	    /* transfer malloc'ed xshow string to para */
-	    para->xshow = strex.xshow;
-	    strex.xshow = NULL;
 	}
 
 	if (fontpath)
