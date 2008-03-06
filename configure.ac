@@ -2495,6 +2495,7 @@ AC_CONFIG_FILES(Makefile
 	macosx/Info.plist
 	macosx/graphviz.pmdoc/01local.xml
 	macosx/graphviz.pmdoc/02graphviz.xml
+	windows/graphviz.wxs
 	plugin/Makefile
 	plugin/core/Makefile
 	plugin/devil/Makefile
