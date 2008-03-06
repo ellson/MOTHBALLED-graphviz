@@ -691,18 +691,18 @@ boolean isPolygon(node_t * n)
 
 static void poly_init(node_t * n)
 {
-    pointf dimen, bb;
+    pointf dimen, min_bb, bb;
     point imagesize;
     pointf P, Q, R;
     pointf *vertices;
     char *p, *sfile;
-    double temp, alpha, beta, gamma, delta;
+    double temp, alpha, beta, gamma, delta, dy;
     double orientation, distortion, skew;
     double sectorangle, sidelength, skewdist, gdistortion, gskew;
     double angle, sinx, cosx, xmax, ymax, scalex, scaley;
     double width, height, marginx, marginy;
     int regular, peripheries, sides;
-    int i, j, outp;
+    int i, j, outp, labelloc;
     polygon_t *poly = NEW(polygon_t);
 
     regular = ND_shape(n)->polygon->regular;
@@ -763,6 +763,12 @@ static void poly_init(node_t * n)
 	} else
 	    PAD(dimen);
     }
+    /* quantization */
+    if ((temp = GD_drawing(n->graph)->quantum) > 0.0) {
+	temp = POINTS(temp);
+	dimen.x = quant(dimen.x, temp);
+	dimen.y = quant(dimen.y, temp);
+    }
 
     imagesize.x = imagesize.y = 0;
     if (ND_shape(n)->usershape) {
@@ -800,15 +806,10 @@ static void poly_init(node_t * n)
 	    imagesize.y += 2;
 	}
     }
-    dimen.x = MAX(dimen.x, imagesize.x);
-    dimen.y = MAX(dimen.y, imagesize.y);
 
-    /* quantization */
-    if ((temp = GD_drawing(n->graph)->quantum) > 0.0) {
-	temp = POINTS(temp);
-	dimen.x = quant(dimen.x, temp);
-	dimen.y = quant(dimen.y, temp);
-    }
+    /* initialize node bb to labelsize */
+    bb.x = MAX(dimen.x, imagesize.x);
+    bb.y = MAX(dimen.y, imagesize.y);
 
     /* I don't know how to distort or skew ellipses in postscript */
     /* Convert request to a polygon with a large number of sides */
@@ -816,10 +817,23 @@ static void poly_init(node_t * n)
 	sides = 120;
     }
 
+    /* extra sizing depends on if label is centered vertically */
+    p = agget(n, "labelloc");
+    if (p && p[0] == 't')
+	labelloc = +1;
+    else if (p && p[0] == 'b')
+	labelloc = -1;
+    else
+	labelloc = 0;
+
+    /* save labelsize in case we need a second pass */
+    min_bb = bb; 
+
     /* add extra padding to allow for the shape */
     if (sides <= 2) {
-	dimen.x *= SQRT2;
-	dimen.y *= SQRT2;
+	bb.x *= SQRT2;
+	bb.y *= SQRT2;
+	/* FIXME - use less x expansion if labelloc==0 and extra height */
     } else if (sides == 4 && (ROUND(orientation) % 90) == 0
 	       && distortion == 0. && skew == 0.) {
 	/* for regular boxes the fit should be exact */
@@ -827,17 +841,37 @@ static void poly_init(node_t * n)
 	/* for all other polygon shapes, compute the inner ellipse
 	   and then pad for that  */
 	temp = SQRT2 / cos(M_PI / sides);
-	dimen.x *= temp;
-	dimen.y *= temp;
+	bb.x *= temp;
+	bb.y *= temp;
+	/* FIXME - use less x expansion if labelloc==0 and extra height */
 	/* FIXME - for odd-sided polygons, e.g. triangles, there
 	would be a better fit with some vertical adjustment of the shape */
     }
 
-    /* at this point, dimen is the minimum size of node that can hold the label */
+    if (height >= bb.y) {
+        bb = min_bb;
+        /* add extra horizontal padding to allow for the shape */
+	if (sides <= 2) {
+            bb.x *= sqrt(1. / (1. - SQR(bb.y / height)));
+        } else if (sides == 4 && (ROUND(orientation) % 90) == 0
+                   && distortion == 0. && skew == 0.) {
+            /* for regular boxes the fit should be exact */
+        } else {
+            /* for all other polygon shapes, compute the inner ellipse
+             * and then pad for that  */
+            bb.x *= sqrt(1. / (1. - SQR(bb.y / height))) / cos(M_PI / sides);
+            /* FIXME - for odd-sided polygons, e.g. triangles, there
+	     * would be a better fit with some vertical adjustment of the shape */
+        }
+        bb.y = height;
+    }
+
+    /* at this point, bb is the minimum size of node that can hold the label */
+    min_bb = bb;
 
     /* increase node size to width/height if needed */
     if (mapbool(late_string(n, N_fixed, "false"))) {
-	if ((width < dimen.x) || (height < dimen.y))
+	if ((width < bb.x) || (height < bb.y))
 	    agerr(AGWARN,
 		  "node '%s', graph '%s' size too small for label\n",
 		  n->name, n->graph->name);
@@ -845,8 +879,8 @@ static void poly_init(node_t * n)
 	bb.y = height;
     }
     else {
-	bb.x = width = MAX(width, dimen.x);
-	bb.y = height = MAX(height, dimen.y);
+	bb.x = width = MAX(width, bb.x);
+	bb.y = height = MAX(height, bb.y);
     }
 
     /* If regular, make dimensions the same.
@@ -856,17 +890,18 @@ static void poly_init(node_t * n)
 	bb.x = bb.y = MAX(bb.x, bb.y);
     }
 
-    /* adjust text justification */
+    /* adjust text horizontal justification */
     if (!mapbool(late_string(n, N_nojustify, "false"))) {
-	if (bb.x > dimen.x)
-	    ND_label(n)->d.x = bb.x - dimen.x;
+	if (bb.x > min_bb.x)
+	    ND_label(n)->d.x = bb.x - min_bb.x;
     }
-    if (bb.y > dimen.y) {
-	p = agget(n, "labelloc");
-        if (p && (p[0] == 'b'))
-	    ND_label(n)->d.y = -(bb.y - dimen.y);
-	else if (p && (p[0] == 't'))
-	    ND_label(n)->d.y = bb.y - dimen.y;
+
+    /* adjust text vertical location */
+    if ((dy = bb.y - min_bb.y) > 0) {
+        if (labelloc < 0)
+	    ND_label(n)->d.y = -dy;
+	else if (labelloc > 0)
+	    ND_label(n)->d.y = dy;
 	else
 	    ND_label(n)->d.y = 0;
     }
