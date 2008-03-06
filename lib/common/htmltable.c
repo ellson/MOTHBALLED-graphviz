@@ -173,7 +173,6 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	    tl.str = ti->str;
 	    tl.fontname = fname_;
 	    tl.fontsize = fsize_;
-	    tl.xshow = ti->xshow;
 	    tl.yoffset_layout = ti->yoffset_layout;
 	    tl.yoffset_centerline = ti->yoffset_centerline;
 	    tl.postscript_alias = ti->postscript_alias;
@@ -595,7 +594,6 @@ void free_html_text(htmltxt_t* t)
 	for (i = 0; i < t->nparas; i++) {
 	    for (j = 0; j < tl->nitems; j++) {
 		if (ti->str) free (ti->str);
-		if (ti->xshow) free (ti->xshow);
 		if (ti->font) free_html_font(ti->font);
 		if (ti->layout && ti->free_layout) ti->free_layout (ti->layout);
 		ti++;
@@ -821,7 +819,6 @@ size_html_txt(graph_t *g, htmltxt_t* ftxt, htmlenv_t* env)
 	    free (ftxt->paras[i].items[j].str);
 	    ftxt->paras[i].items[j].str = lp.str;
 	    ftxt->paras[i].items[j].size = sz.x;
-	    ftxt->paras[i].items[j].xshow = lp.xshow;
 	    ftxt->paras[i].items[j].yoffset_layout = lp.yoffset_layout;
 	    ftxt->paras[i].items[j].yoffset_centerline = lp.yoffset_centerline;
 	    ftxt->paras[i].items[j].postscript_alias = lp.postscript_alias;

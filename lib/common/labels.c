@@ -151,8 +151,6 @@ static void free_textpara(textpara_t * tl)
     if (tl) {
 	if (tl->str)
 	    free(tl->str);
-	if (tl->xshow)
-	    free(tl->xshow);
 	if (tl->layout && tl->free_layout)
 	    tl->free_layout (tl->layout);
 	free(tl);
