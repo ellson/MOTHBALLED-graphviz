@@ -124,12 +124,17 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	            strcat(buf, "*not using fontconfig*");
 	    }
 #else
-	    tdesc = pango_font_describe(font);
-	    tfont = pango_font_description_to_string(tdesc);
-	    strcat(buf, "\"");
-	    strcat(buf, tfont);
-	    strcat(buf, "\" ");
-	    g_free(tfont);
+	    {
+    		PangoFontDescription *tdesc;
+		char *tfont;
+		
+	        tdesc = pango_font_describe(font);
+	        tfont = pango_font_description_to_string(tdesc);
+	        strcat(buf, "\"");
+	        strcat(buf, tfont);
+	        strcat(buf, "\" ");
+	        g_free(tfont);
+	    }
 #endif
             *fontpath = buf;
         }
