@@ -89,32 +89,41 @@ string_field (const FieldMap *map, int n_elements, int val)
 	  return map[i].str;;
   return "";
 }
-
-typedef struct
-{
-  int value;
-  int weight;
-} WeightFieldMap;
-
-static const WeightFieldMap weight_map[] = {
-  { PANGO_WEIGHT_ULTRALIGHT, FC_WEIGHT_ULTRALIGHT},
-  { PANGO_WEIGHT_LIGHT, FC_WEIGHT_LIGHT },
-  { PANGO_WEIGHT_NORMAL, FC_WEIGHT_NORMAL },
-  { 500, FC_WEIGHT_MEDIUM },
-  { PANGO_WEIGHT_SEMIBOLD, FC_WEIGHT_SEMIBOLD },
-  { PANGO_WEIGHT_BOLD, FC_WEIGHT_BOLD },
-  { PANGO_WEIGHT_ULTRABOLD, FC_WEIGHT_ULTRABOLD },
-  { PANGO_WEIGHT_HEAVY, FC_WEIGHT_HEAVY }
-};
+/* Borrowed from pango/pangofc-fontmap.c */
 
 static int
-weight_field (const WeightFieldMap *map, int n_elements, int val)
+pango_fc_convert_weight_to_fc (PangoWeight pango_weight)
 {
-  int i;
-  for (i=0; i<n_elements; i++)
-      if (map[i].value == val)
-	  return map[i].weight;
-  return FC_WEIGHT_MEDIUM;
+#ifdef FC_WEIGHT_ULTRABOLD
+  /* fontconfig 2.1 only had light/medium/demibold/bold/black */
+  if (pango_weight < (PANGO_WEIGHT_ULTRALIGHT + PANGO_WEIGHT_LIGHT) / 2)
+    return FC_WEIGHT_ULTRALIGHT;
+  else if (pango_weight < (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2)
+    return FC_WEIGHT_LIGHT;
+  else if (pango_weight < (PANGO_WEIGHT_NORMAL + 500 /* PANGO_WEIGHT_MEDIUM */) / 2)
+    return FC_WEIGHT_NORMAL;
+  else if (pango_weight < (500 /* PANGO_WEIGHT_MEDIUM */ + PANGO_WEIGHT_SEMIBOLD) / 2)
+    return FC_WEIGHT_MEDIUM;
+  else if (pango_weight < (PANGO_WEIGHT_SEMIBOLD + PANGO_WEIGHT_BOLD) / 2)
+    return FC_WEIGHT_DEMIBOLD;
+  else if (pango_weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
+    return FC_WEIGHT_BOLD;
+  else if (pango_weight < (PANGO_WEIGHT_ULTRABOLD + PANGO_WEIGHT_HEAVY) / 2)
+    return FC_WEIGHT_ULTRABOLD;
+  else
+    return FC_WEIGHT_BLACK;
+#else  /* fontconfig < 2.2 */
+  if (pango_weight < (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2)
+    return FC_WEIGHT_LIGHT;
+  else if (pango_weight < (500 /* PANGO_WEIGHT_MEDIUM */ + PANGO_WEIGHT_SEMIBOLD) / 2)
+    return FC_WEIGHT_MEDIUM;
+  else if (pango_weight < (PANGO_WEIGHT_SEMIBOLD + PANGO_WEIGHT_BOLD) / 2)
+    return FC_WEIGHT_DEMIBOLD;
+  else if (pango_weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
+    return FC_WEIGHT_BOLD;
+  else
+    return FC_WEIGHT_BLACK;
+#endif
 }
 
 /******************************************/
@@ -197,7 +206,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 		    string_field( style_map, ARRAY_SIZE(style_map),
 			pango_font_description_get_style(tdesc) ),
 		FC_WEIGHT, FcTypeInteger,
-		    weight_field( weight_map, ARRAY_SIZE(weight_map),
+		    pango_fc_convert_weight_to_fc(
 			pango_font_description_get_weight(tdesc) ),
 		(char *) 0);
 
