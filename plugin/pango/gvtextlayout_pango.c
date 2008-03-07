@@ -1,4 +1,4 @@
-/* $Id$ $Revision$ */
+  /* $Id$ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
 
 /*********************************************************
@@ -37,6 +37,88 @@ static void pango_free_layout (void *layout)
 
 extern char* psfontResolve (PostscriptAlias* pa);
 
+/******************************************/
+/* Based on snippet from fonts.c in pango sources */
+
+typedef struct
+{
+  int value;
+  const char str[16];
+} FieldMap;
+
+static const FieldMap style_map[] = {
+  { PANGO_STYLE_NORMAL, "" },
+  { PANGO_STYLE_OBLIQUE, "Oblique" },
+  { PANGO_STYLE_ITALIC, "Italic" }
+};
+
+static const FieldMap variant_map[] = {
+  { PANGO_VARIANT_NORMAL, "" },
+  { PANGO_VARIANT_SMALL_CAPS, "Small-Caps" }
+};
+
+static const FieldMap stretch_map[] = {
+  { PANGO_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed" },
+  { PANGO_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
+  { PANGO_STRETCH_CONDENSED,       "Condensed" },
+  { PANGO_STRETCH_SEMI_CONDENSED,  "Semi-Condensed" },
+  { PANGO_STRETCH_NORMAL,          "" },
+  { PANGO_STRETCH_SEMI_EXPANDED,   "Semi-Expanded" },
+  { PANGO_STRETCH_EXPANDED,        "Expanded" },
+  { PANGO_STRETCH_EXTRA_EXPANDED,  "Extra-Expanded" },
+  { PANGO_STRETCH_ULTRA_EXPANDED,  "Ultra-Expanded" }
+};
+
+static const FieldMap gravity_map[] = {
+  { PANGO_GRAVITY_SOUTH, "Not-Rotated" },
+  { PANGO_GRAVITY_SOUTH, "South" },
+  { PANGO_GRAVITY_SOUTH, "Upside-Down" },
+  { PANGO_GRAVITY_NORTH, "North" },
+  { PANGO_GRAVITY_EAST,  "Rotated-Left" },
+  { PANGO_GRAVITY_EAST,  "East" },
+  { PANGO_GRAVITY_WEST,  "Rotated-Right" },
+  { PANGO_GRAVITY_WEST,  "West" }
+};
+
+static const char*
+string_field (const FieldMap *map, int n_elements, int val)
+{
+  int i;
+  for (i=0; i<n_elements; i++)
+      if (map[i].value == val)
+	  return map[i].str;;
+  return "";
+}
+
+typedef struct
+{
+  int value;
+  int weight;
+} WeightFieldMap;
+
+static const WeightFieldMap weight_map[] = {
+  { PANGO_WEIGHT_ULTRALIGHT, FC_WEIGHT_ULTRALIGHT},
+  { PANGO_WEIGHT_LIGHT, FC_WEIGHT_LIGHT },
+  { PANGO_WEIGHT_NORMAL, FC_WEIGHT_NORMAL },
+  { 500, FC_WEIGHT_MEDIUM },
+  { PANGO_WEIGHT_SEMIBOLD, FC_WEIGHT_SEMIBOLD },
+  { PANGO_WEIGHT_BOLD, FC_WEIGHT_BOLD },
+  { PANGO_WEIGHT_ULTRABOLD, FC_WEIGHT_ULTRABOLD },
+  { PANGO_WEIGHT_HEAVY, FC_WEIGHT_HEAVY }
+};
+
+static int
+weight_field (const WeightFieldMap *map, int n_elements, int val)
+{
+  int i;
+  for (i=0; i<n_elements; i++)
+      if (map[i].value == val)
+	  return map[i].weight;
+  return FC_WEIGHT_MEDIUM;
+}
+
+/******************************************/
+
 static boolean pango_textlayout(textpara_t * para, char **fontpath)
 {
     static char buf[1024];  /* returned in fontpath, only good until next call */
@@ -49,11 +131,6 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     PangoRectangle logical_rect;
     PangoLayoutIter* iter;
 	cairo_font_options_t* options;
-/* #define ENABLE_PANGO_XSHOW */
-#ifdef ENABLE_PANGO_XSHOW
-    PangoRectangle char_rect;
-    int xshow_alloc, xshow_pos;
-#endif
 #ifdef ENABLE_PANGO_MARKUP
     PangoAttrList *attrs;
     GError *error = NULL;
@@ -96,13 +173,12 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
             font = pango_font_map_load_font(fontmap, context, desc);
 	    tdesc = pango_font_describe(font);
 	    tfont = pango_font_description_to_string(tdesc);
-	    strcpy(buf, "\"");
+	    buf[0] = '\0';
+	    if (psfnt)
+		strcat(buf, "(ps) ");
+	    strcat(buf, "\"");
 	    strcat(buf, tfont);
 	    strcat(buf, "\" ");
-	    if (psfnt)
-		strcat(buf, "(PostScript) ");
-	    else
-		strcat(buf, "(non-PS    ) ");
 
 #ifdef HAVE_FONTCONFIG
 	    FcPattern *pat, *match;
@@ -111,12 +187,18 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     
             if (! FcInit())
 	        return FALSE;
-    
-//	    pat = FcNameParse((FcChar8 *) tfont);
+
+#define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0])) 
+
 	    pat = FcPatternBuild (0,
-		FC_FAMILY, FcTypeString, pango_font_description_get_family(tdesc),
-//		FC_STYLE, FcTypeString, pango_font_description_get_style(tdesc),
-//		FC_WEIGHT, FcTypeString, pango_font_description_get_weight(tdesc),
+		FC_FAMILY, FcTypeString,
+		    pango_font_description_get_family(tdesc),
+		FC_STYLE, FcTypeString,
+		    string_field( style_map, ARRAY_SIZE(style_map),
+			pango_font_description_get_style(tdesc) ),
+		FC_WEIGHT, FcTypeInteger,
+		    weight_field( weight_map, ARRAY_SIZE(weight_map),
+			pango_font_description_get_weight(tdesc) ),
 		(char *) 0);
 
 	    FcConfigSubstitute (0, pat, FcMatchPattern);
