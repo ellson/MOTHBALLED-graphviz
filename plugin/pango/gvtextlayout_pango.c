@@ -37,97 +37,6 @@ static void pango_free_layout (void *layout)
 
 extern char* psfontResolve (PostscriptAlias* pa);
 
-/******************************************/
-/* Based on snippet from fonts.c in pango sources */
-
-typedef struct
-{
-  int value;
-  const char str[16];
-} FieldMap;
-
-static const FieldMap style_map[] = {
-  { PANGO_STYLE_NORMAL, "" },
-  { PANGO_STYLE_OBLIQUE, "Oblique" },
-  { PANGO_STYLE_ITALIC, "Italic" }
-};
-
-static const FieldMap variant_map[] = {
-  { PANGO_VARIANT_NORMAL, "" },
-  { PANGO_VARIANT_SMALL_CAPS, "Small-Caps" }
-};
-
-static const FieldMap stretch_map[] = {
-  { PANGO_STRETCH_ULTRA_CONDENSED, "Ultra-Condensed" },
-  { PANGO_STRETCH_EXTRA_CONDENSED, "Extra-Condensed" },
-  { PANGO_STRETCH_CONDENSED,       "Condensed" },
-  { PANGO_STRETCH_SEMI_CONDENSED,  "Semi-Condensed" },
-  { PANGO_STRETCH_NORMAL,          "" },
-  { PANGO_STRETCH_SEMI_EXPANDED,   "Semi-Expanded" },
-  { PANGO_STRETCH_EXPANDED,        "Expanded" },
-  { PANGO_STRETCH_EXTRA_EXPANDED,  "Extra-Expanded" },
-  { PANGO_STRETCH_ULTRA_EXPANDED,  "Ultra-Expanded" }
-};
-
-static const FieldMap gravity_map[] = {
-  { PANGO_GRAVITY_SOUTH, "Not-Rotated" },
-  { PANGO_GRAVITY_SOUTH, "South" },
-  { PANGO_GRAVITY_SOUTH, "Upside-Down" },
-  { PANGO_GRAVITY_NORTH, "North" },
-  { PANGO_GRAVITY_EAST,  "Rotated-Left" },
-  { PANGO_GRAVITY_EAST,  "East" },
-  { PANGO_GRAVITY_WEST,  "Rotated-Right" },
-  { PANGO_GRAVITY_WEST,  "West" }
-};
-
-static const char*
-string_field (const FieldMap *map, int n_elements, int val)
-{
-  int i;
-  for (i=0; i<n_elements; i++)
-      if (map[i].value == val)
-	  return map[i].str;;
-  return "";
-}
-/* Borrowed from pango/pangofc-fontmap.c */
-
-static int
-pango_fc_convert_weight_to_fc (PangoWeight pango_weight)
-{
-#ifdef FC_WEIGHT_ULTRABOLD
-  /* fontconfig 2.1 only had light/medium/demibold/bold/black */
-  if (pango_weight < (PANGO_WEIGHT_ULTRALIGHT + PANGO_WEIGHT_LIGHT) / 2)
-    return FC_WEIGHT_ULTRALIGHT;
-  else if (pango_weight < (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2)
-    return FC_WEIGHT_LIGHT;
-  else if (pango_weight < (PANGO_WEIGHT_NORMAL + 500 /* PANGO_WEIGHT_MEDIUM */) / 2)
-    return FC_WEIGHT_NORMAL;
-  else if (pango_weight < (500 /* PANGO_WEIGHT_MEDIUM */ + PANGO_WEIGHT_SEMIBOLD) / 2)
-    return FC_WEIGHT_MEDIUM;
-  else if (pango_weight < (PANGO_WEIGHT_SEMIBOLD + PANGO_WEIGHT_BOLD) / 2)
-    return FC_WEIGHT_DEMIBOLD;
-  else if (pango_weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
-    return FC_WEIGHT_BOLD;
-  else if (pango_weight < (PANGO_WEIGHT_ULTRABOLD + PANGO_WEIGHT_HEAVY) / 2)
-    return FC_WEIGHT_ULTRABOLD;
-  else
-    return FC_WEIGHT_BLACK;
-#else  /* fontconfig < 2.2 */
-  if (pango_weight < (PANGO_WEIGHT_LIGHT + PANGO_WEIGHT_NORMAL) / 2)
-    return FC_WEIGHT_LIGHT;
-  else if (pango_weight < (500 /* PANGO_WEIGHT_MEDIUM */ + PANGO_WEIGHT_SEMIBOLD) / 2)
-    return FC_WEIGHT_MEDIUM;
-  else if (pango_weight < (PANGO_WEIGHT_SEMIBOLD + PANGO_WEIGHT_BOLD) / 2)
-    return FC_WEIGHT_DEMIBOLD;
-  else if (pango_weight < (PANGO_WEIGHT_BOLD + PANGO_WEIGHT_ULTRABOLD) / 2)
-    return FC_WEIGHT_BOLD;
-  else
-    return FC_WEIGHT_BLACK;
-#endif
-}
-
-/******************************************/
-
 static boolean pango_textlayout(textpara_t * para, char **fontpath)
 {
     static char buf[1024];  /* returned in fontpath, only good until next call */
@@ -176,8 +85,6 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 
         if (fontpath) {  /* -v support */
 	    PangoFont *font;
-    	    PangoFontDescription *tdesc;
-	    char *tfont;
 
             font = pango_font_map_load_font(fontmap, context, desc);
 
