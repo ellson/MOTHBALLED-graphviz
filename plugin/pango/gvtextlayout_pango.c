@@ -25,7 +25,7 @@
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
 #ifdef HAVE_FONTCONFIG
-#include <fontconfig/fontconfig.h>
+#include <pango/pangofc-font.h>
 #endif
 
 static void pango_free_layout (void *layout)
@@ -180,63 +180,51 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    char *tfont;
 
             font = pango_font_map_load_font(fontmap, context, desc);
-	    tdesc = pango_font_describe(font);
-	    tfont = pango_font_description_to_string(tdesc);
+
 	    buf[0] = '\0';
 	    if (psfnt)
 		strcat(buf, "(ps) ");
+#ifdef HAVE_FONTCONFIG
+	    {
+	        FT_Face face;
+	        PangoFcFont *fcfont;
+	        FT_Stream stream;
+	        FT_StreamDesc streamdesc;
+	        fcfont = PANGO_FC_FONT(font);
+	        if (fcfont) {
+	            face = pango_fc_font_lock_face(fcfont);
+	            if (face) {
+		        strcat(buf, "\"");
+		        strcat(buf, face->family_name);
+		        strcat(buf, ", ");
+		        strcat(buf, face->style_name);
+		        strcat(buf, "\" ");
+    
+		        stream = face->stream;
+		        if (stream) {
+			    streamdesc = stream->pathname;
+			    if (streamdesc.pointer)
+			        strcat(buf, (char*)streamdesc.pointer);
+		            else
+			        strcat(buf, "*no pathname available*");
+		        }
+		        else
+			    strcat(buf, "*no stream available*");
+		    }
+	            pango_fc_font_unlock_face(fcfont);
+	        }
+	        else
+	            strcat(buf, "*not using fontconfig*");
+	    }
+#else
+	    tdesc = pango_font_describe(font);
+	    tfont = pango_font_description_to_string(tdesc);
 	    strcat(buf, "\"");
 	    strcat(buf, tfont);
 	    strcat(buf, "\" ");
-
-#ifdef HAVE_FONTCONFIG
-	    FcPattern *pat, *match;
-	    FcFontSet *fs;
-	    FcResult result;
-    
-            if (! FcInit())
-	        return FALSE;
-
-#define ARRAY_SIZE(A) (sizeof(A)/sizeof(A[0])) 
-
-	    pat = FcPatternBuild (0,
-		FC_FAMILY, FcTypeString,
-		    pango_font_description_get_family(tdesc),
-		FC_STYLE, FcTypeString,
-		    string_field( style_map, ARRAY_SIZE(style_map),
-			pango_font_description_get_style(tdesc) ),
-		FC_WEIGHT, FcTypeInteger,
-		    pango_fc_convert_weight_to_fc(
-			pango_font_description_get_weight(tdesc) ),
-		(char *) 0);
-
-	    FcConfigSubstitute (0, pat, FcMatchPattern);
-	    FcDefaultSubstitute (pat);
-	    fs = FcFontSetCreate();
-	    match = FcFontMatch (0, pat, &result);
-	    if (match)
-	        FcFontSetAdd (fs, match);
-	    FcPatternDestroy (pat);
-	    if (fs) {
-	        FcChar8 *family, *style, *file;
-    
-	        if (FcPatternGetString (fs->fonts[0], FC_FILE, 0, &file) != FcResultMatch)
-		    file = (FcChar8 *) "<unknown font filename>";
-	        if (FcPatternGetString (fs->fonts[0], FC_FAMILY, 0, &family) != FcResultMatch)
-		    family = (FcChar8 *) "<unknown font family>";
-	        if (FcPatternGetString (fs->fonts[0], FC_STYLE, 0, &style) != FcResultMatch)
-		    style = (FcChar8 *) "<unknown font style>";
-		strcat(buf, "\"");
-	        strcat(buf, (char *)family);
-	        strcat(buf, ", ");
-	        strcat(buf, (char *)style);
-	        strcat(buf, "\" ");
-	        strcat(buf, (char *)file);
-	    }
-	    FcFontSetDestroy(fs);
+	    g_free(tfont);
 #endif
             *fontpath = buf;
-	    g_free(tfont);
         }
     }
 

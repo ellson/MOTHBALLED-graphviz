@@ -8,7 +8,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
-	$(PANGOCAIRO_CFLAGS) $(LIBGVC_CFLAGS)
+	$(PANGOCAIRO_CFLAGS) $(FREETYPE2_CFLAGS) $(LIBGVC_CFLAGS)
 
 if WITH_PANGOCAIRO
 noinst_LTLIBRARIES = libgvplugin_pango_C.la
