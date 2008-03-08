@@ -28,9 +28,9 @@
 static void freesym(Dict_t * d, Void_t * obj, Dtdisc_t * disc);
 
 Dtdisc_t AgDataDictDisc = {
-    (int) offsetof(Agsym_t, name),	/* use symbol name as key */
+    offsetof(Agsym_t, name),	/* use symbol name as key */
     -1,
-    (int) offsetof(Agsym_t, link),
+    offsetof(Agsym_t, link),
     NIL(Dtmake_f),
     freesym,
     NIL(Dtcompar_f),

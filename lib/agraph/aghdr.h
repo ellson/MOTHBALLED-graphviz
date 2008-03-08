@@ -51,6 +51,12 @@ extern "C" {
 # ifdef HAVE_UNISTD_H
 #  include		<unistd.h>
 # endif				/* HAVE_UNISTD_H */
+# ifdef HAVE_STDINT_H
+#  include <stdint.h>
+# endif
+# ifdef HAVE_INTTYPES_H
+#  include <inttypes.h>
+# endif
 #endif				/* HAVE_AST */
 
 #ifdef DEBUG
@@ -65,7 +71,11 @@ extern "C" {
 #ifdef offsetof
 #undef offsetof
 #endif
+#ifdef HAVE_INTPTR_T
+#define offsetof(typ,fld)  ((intptr_t)(&(((typ*)0)->fld)))
+#else
 #define offsetof(typ,fld)  ((int)(&(((typ*)0)->fld)))
+#endif
 #define NOTUSED(var)	(void) var
 
 #define NILgraph			NIL(Agraph_t*)
