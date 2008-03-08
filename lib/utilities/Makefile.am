@@ -14,11 +14,10 @@ AM_CPPFLAGS = \
 if WITH_SMYRNA
 noinst_HEADERS = \
 	abstring.h cclass.h cname.h glTexFont.h glTexFontDefs.h \
-	glTexFontInclude.h glTexFontTGA.h opengl_pango.h utils.h
+	glTexFontInclude.h glTexFontTGA.h utils.h
 
 noinst_LTLIBRARIES = libutilities_C.la
 endif
 
 libutilities_C_la_SOURCES = \
-	abstring.c glTexFont.c glTexFontColor.c glTexFontTGA.c \
-	opengl_pango.c intersect.c
+	abstring.c glTexFont.c glTexFontColor.c glTexFontTGA.c intersect.c
