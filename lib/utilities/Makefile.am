@@ -21,4 +21,4 @@ endif
 
 libutilities_C_la_SOURCES = \
 	abstring.c glTexFont.c glTexFontColor.c glTexFontTGA.c \
-	opengl_pango.c pangotest.c intersect.c
+	opengl_pango.c intersect.c
