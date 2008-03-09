@@ -1,3 +1,15 @@
+March 8, 2008
+	- Fixed bugs: 1249, 1255, 1256, 1268, 1276, 1289, 1295, 1300, 
+		Fedora BZ#247376, 
+	- in -Tps use a new number formatter that suppresses trailing 0.
+	- support tcl/tk-8.5
+	- support gcc-4.3
+	- support for node usershapes/images in svg format (thanks Alex Poylisher)
+	- install: perl, php, python, ruby, tcl, bindings in language-specified directories
+	- add arrowhead scaling with edge penwidth
+	- add "folder" node shape (thanks Pander)
+	- many windows and mac fixes (thanks Glen)
+	- add "smyna" large graph view (thanks Arif) (not yet included in binary distros)
 December 12, 2007
 	- Release 2.16.1
 	- Fixed bugs: 1228, 1234, 1238, 1239, 1245
