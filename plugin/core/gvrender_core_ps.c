@@ -128,10 +128,10 @@ static void psgen_begin_page(GVJ_t * job)
     if (job->common->show_boxes == NULL)
         gvdevice_printf(job, "gsave\n%d %d %d %d boxprim clip newpath\n",
 	    pbr.LL.x, pbr.LL.y, pbr.UR.x-pbr.LL.x, pbr.UR.y-pbr.LL.y);
-    gvdevice_printpointf(job, job->scale);
-    gvdevice_printf(job, " set_scale %d rotate ", job->rotation);
-    gvdevice_printpointf(job, job->translation);
-    gvdevice_fputs(job, " translate\n");
+    gvdevice_printf(job, "%g %g set_scale %d rotate %g %g translate\n",
+	    job->scale.x, job->scale.y,
+	    job->rotation,
+	    job->translation.x, job->translation.y);
 
     /*  Define the size of the PS canvas  */
     if (job->render.id == FORMAT_PS2) {
