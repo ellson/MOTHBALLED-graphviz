@@ -826,43 +826,31 @@ static void poly_init(node_t * n)
     else
 	labelloc = 0;
 
-    /* save labelsize in case we need a second pass */
-    min_bb = bb; 
-
-    /* add extra padding to allow for the shape */
-    if (sides <= 2) {
-	bb.x *= SQRT2;
-	bb.y *= SQRT2;
-	/* FIXME - use less x expansion if labelloc==0 and extra height */
-    } else if (sides == 4 && (ROUND(orientation) % 90) == 0
+    if (sides == 4 && (ROUND(orientation) % 90) == 0
 	       && distortion == 0. && skew == 0.) {
 	/* for regular boxes the fit should be exact */
     } else {
-	/* for all other polygon shapes, compute the inner ellipse
+	/* for all other shapes, compute the inner ellipse
 	   and then pad for that  */
-	temp = SQRT2 / cos(M_PI / sides);
-	bb.x *= temp;
-	bb.y *= temp;
-	/* FIXME - use less x expansion if labelloc==0 and extra height */
-	/* FIXME - for odd-sided polygons, e.g. triangles, there
-	would be a better fit with some vertical adjustment of the shape */
-    }
-
-    if (height >= bb.y) {
-        bb = min_bb;
-        /* add extra horizontal padding to allow for the shape */
-	if (sides <= 2) {
-            bb.x *= sqrt(1. / (1. - SQR(bb.y / height)));
-        } else if (sides == 4 && (ROUND(orientation) % 90) == 0
-                   && distortion == 0. && skew == 0.) {
-            /* for regular boxes the fit should be exact */
-        } else {
-            /* for all other polygon shapes, compute the inner ellipse
-             * and then pad for that  */
-            bb.x *= sqrt(1. / (1. - SQR(bb.y / height))) / cos(M_PI / sides);
-            /* FIXME - for odd-sided polygons, e.g. triangles, there
-	     * would be a better fit with some vertical adjustment of the shape */
-        }
+	temp = bb.y * SQRT2;
+	/* if there is height to spare and the label is centered vertically */
+	if (height > temp && labelloc == 0) {
+	    bb.x *= sqrt(1. / (1. - SQR(bb.y / height)));
+	    bb.y = height;
+	}
+	else {
+	    bb.x *= SQRT2;
+	    bb.y = temp;
+	}
+#if 0
+	if (sides > 2) {
+	    temp = cos(M_PI / sides);
+	    bb.x /= temp;
+	    bb.y /= temp;
+	    /* FIXME - for odd-sided polygons, e.g. triangles, there
+	    would be a better fit with some vertical adjustment of the shape */
+	}
+#endif
     }
 
     /* at this point, bb is the minimum size of node that can hold the label */
@@ -900,7 +888,7 @@ static void poly_init(node_t * n)
 
     /* adjust text vertical location */
     temp = bb.y - min_bb.y;
-    if (dimen.y < (double)imagesize.y)
+    if (dimen.y < imagesize.y)
 	temp += imagesize.y - dimen.y;
     if (temp > 0) {
         if (labelloc < 0)
