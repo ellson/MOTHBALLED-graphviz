@@ -44,6 +44,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
     static PangoContext *context;
     static PangoFontDescription *desc;
     static char *fontname;
+    static double fontsize;
     char *fnt, *psfnt = NULL;
     PangoLayout *layout;
     PangoRectangle logical_rect;
@@ -69,8 +70,9 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	g_object_unref(fontmap);
     }
 
-    if (!fontname || strcmp(fontname, para->fontname)) {
+    if (!fontname || strcmp(fontname, para->fontname) != 0 || fontsize != para->fontsize) {
 	fontname = para->fontname;
+	fontsize = para->fontsize;
 	pango_font_description_free (desc);
 
 	if (para->postscript_alias) {
@@ -81,7 +83,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 
 	desc = pango_font_description_from_string(fnt);
         /* all text layout is done at a scale of 96ppi */
-        pango_font_description_set_size (desc, (gint)(para->fontsize * PANGO_SCALE));
+        pango_font_description_set_size (desc, (gint)(fontsize * PANGO_SCALE));
 
         if (fontpath) {  /* -v support */
 	    PangoFont *font;
