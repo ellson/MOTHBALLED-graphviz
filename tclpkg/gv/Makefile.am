@@ -98,8 +98,9 @@ gv.cma: swig.cmo gv.cmo
 	ocamlc -a -dllib dllgv.so -custom -o gv.cma swig.cmo gv.cmo
 gv.cmx: gv.ml gv.cma
 	ocamlopt -c gv.ml
-gv.cmxa gv.a: gv.cma
+gv.cmxa: gv.cma
 	ocamlopt -a -o gv.cmxa
+gv.a:	gv.cmxa
 
 pkgperldir = $(pkglibdir)/perl
 PERL_data = gv.pm
