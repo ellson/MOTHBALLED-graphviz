@@ -1,4 +1,5 @@
-March 8, 2008
+March 10, 2008
+	- Release 2.18
 	- Fixed bugs: 1249, 1255, 1256, 1268, 1276, 1289, 1295, 1300, 
 		Fedora BZ#247376, 
 	- in -Tps use a new number formatter that suppresses trailing 0.

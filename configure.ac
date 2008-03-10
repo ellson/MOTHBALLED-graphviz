@@ -4,7 +4,7 @@
 AC_PREREQ([2.61])
 
 # Package name and version number, (as distinct from shared library version)
-AC_INIT(graphviz, 2.17)
+AC_INIT(graphviz, 2.18)
 
 dnl ===========================================================================
 
