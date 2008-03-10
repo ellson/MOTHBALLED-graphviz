@@ -111,7 +111,7 @@ do
 		echo "CONFIGURING $BUILDING ..."
 		echo
 		
-		./configure --disable-dependency-tracking --with-quartz CFLAGS="-arch i386 -arch ppc -I$GRAPHVIZ_BUILDING/macosx/build/usr/local/include" LDFLAGS="-arch i386 -arch ppc -L$GRAPHVIZ_BUILDING/macosx/build/usr/local/lib"
+		./configure --disable-dependency-tracking --with-ipsepcola --with-quartz CFLAGS="-arch i386 -arch ppc -I$GRAPHVIZ_BUILDING/macosx/build/usr/local/include" LDFLAGS="-arch i386 -arch ppc -L$GRAPHVIZ_BUILDING/macosx/build/usr/local/lib"
 		
 		echo
 		echo "MAKING $BUILDING ..."
@@ -129,7 +129,7 @@ do
 		echo "INSTALLING $BUILDING ..."
 		echo
 		
-		make DESTDIR="$GRAPHVIZ_BUILDING/macosx/build" install
+		make DESTDIR="$GRAPHVIZ_BUILDING/macosx/build" install-strip
 	else
 		echo
 		echo "CONFIGURING $BUILDING ..."
@@ -147,7 +147,7 @@ do
 		echo "INSTALLING $BUILDING ..."
 		echo
 		
-		make DESTDIR="$GRAPHVIZ_BUILDING/macosx/build" install
+		make DESTDIR="$GRAPHVIZ_BUILDING/macosx/build" install-strip
 	fi
 	popd
 done
