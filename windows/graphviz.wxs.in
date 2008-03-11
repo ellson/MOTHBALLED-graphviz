@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Product
 		Id="*"
@@ -46,7 +46,12 @@
 			<Directory Id="ProgramFilesFolder">
 				<Directory Id="ApplicationFolder" Name="Graphviz">
 					<!-- referenced by the directories in the heated wxs -->
-					<Directory Id="bin" Name="bin" />
+					<Directory Id="bin" Name="bin">
+						<!-- need to remove the config file when uninstalling -->
+						<Component Id="config" Guid="DAD3E382-59B2-429A-9292-0C28A12783C3">
+							<RemoveFile Id="config" Name="config" On="uninstall" />
+						</Component>
+					</Directory>
 					<Directory Id="include" Name="include" />
 					<Directory Id="lib" Name="lib" />
 					<Directory Id="share" Name="share" />
@@ -60,12 +65,16 @@
 			<ComponentGroupRef Id="include" />
 			<ComponentGroupRef Id="lib" />
 			<ComponentGroupRef Id="share" />
+			<ComponentRef Id="config" />
 		</Feature>
 
 		<CustomAction Id="PreventDowngrading" Error="Same or newer version already installed." />
+		<CustomAction Id="ConfigurePlugins" FileKey="dot.exe" ExeCommand="-c" Execute="deferred"/>
 
 		<InstallExecuteSequence>
 			<Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+			<!-- scan for plugins and save into config file when installing, reinstalling or repairing, uninstall will remove this file -->
+			<Custom Action="ConfigurePlugins" After="InstallFiles">NOT(REMOVE="ALL")</Custom>
 			<RemoveExistingProducts After="InstallFinalize" />
 		</InstallExecuteSequence>
 
