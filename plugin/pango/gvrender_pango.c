@@ -24,34 +24,6 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
-#include <fcntl.h>
-
-#if defined(HAVE_FENV_H) && defined(HAVE_FESETENV) && defined(HAVE_FEGETENV) && defined(HAVE_FEENABLEEXCEPT)
-
-/* _GNU_SOURCE is needed (supposedly) for the feenableexcept
- * prototype to be defined in fenv.h on GNU systems.
- * Presumably it will do no harm on other systems.
- */
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-
-/* We are not supposed to need __USE_GNU, but I can't see
- * how to get the prototype for fedisableexcept from
- * /usr/include/fenv.h without it.
- */
-#ifndef __USE_GNU
-#define __USE_GNU
-#endif
-
-#if 0
-# include <fenv.h>
-#elif HAVE_FPU_CONTROL_H
-# include <fpu_control.h>
-#elif HAVE_SYS_FPU_H
-# include <sys/fpu.h>
-#endif
-#endif
 
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
@@ -60,12 +32,10 @@
 #include <pango/pangocairo.h>
 
 typedef enum {
-		FORMAT_GLITZ,
 		FORMAT_CAIRO,
 		FORMAT_PNG,
 		FORMAT_PS,
 		FORMAT_PDF,
-		FORMAT_QUARTZ,
 		FORMAT_SVG,
     } format_type;
 
@@ -92,21 +62,6 @@ static int dotted_len = ARRAY_SIZE(dotted);
 #include <cairo-svg.h>
 #endif
 
-#ifdef CAIRO_HAS_QUARTZ_SURFACE
-#include <cairo-quartz.h>
-#endif
-
-#ifdef CAIRO_HAS_GLITZ
-#include <cairo-glitz.h>
-#endif
-
-#if 0
-#if defined(HAVE_FENV_H) && defined(HAVE_FESETENV) && defined(HAVE_FEGETENV) && defined(HAVE_FEENABLEEXCEPT)
-/* place to save fp environment temporarily */
-static fenv_t fenv; /* FIXME - not thread safe */
-#endif
-#endif
-
 static void cairogen_set_color(cairo_t * cr, gvcolor_t * color)
 {
     cairo_set_source_rgba(cr, color->u.RGBA[0], color->u.RGBA[1],
@@ -127,17 +82,6 @@ static void cairogen_begin_page(GVJ_t * job)
 {
     cairo_t *cr = NULL;
     cairo_surface_t *surface;
-
-#if 0
-#if defined(HAVE_FENV_H) && defined(HAVE_FESETENV) && defined(HAVE_FEGETENV) && defined(HAVE_FEDISABLEEXCEPT)
-    /* cairo generates FE_INVALID and other exceptions we 
-     * want to ignore for now.  Save the current fenv and
-     * set one just for cairo.
-     * The fenv is restored in cairogen_end_graph  */
-    fegetenv(&fenv);
-    fedisableexcept(FE_ALL_EXCEPT);
-#endif
-#endif
 
     if (job->context) 
 	cr = (cairo_t *) job->context;
@@ -227,13 +171,6 @@ static void cairogen_end_page(GVJ_t * job)
 
     if (job->external_context)
 	cairo_restore(cr);
-
-#if 0
-#if defined HAVE_FENV_H && defined HAVE_FESETENV && defined HAVE_FEGETENV && defined(HAVE_FEENABLEEXCEPT)
-    /* Restore FP environment */
-    fesetenv(&fenv);
-#endif
-#endif
 }
 
 static void cairogen_textpara(GVJ_t * job, pointf p, textpara_t * para)
@@ -461,21 +398,6 @@ gvplugin_installed_t gvdevice_pango_types[] = {
 #ifdef CAIRO_HAS_SVG_SURFACE
     {FORMAT_SVG, "svg:cairo", -10, NULL, &device_features_svg},
 #endif
-//#ifdef CAIRO_HAS_XCB_SURFACE
-//    {FORMAT_XCB, "xcb:cairo", 0, NULL, &device_features_xcb},
-//#endif
-//#ifdef CAIRO_HAS_SDL_SURFACE
-//    {FORMAT_SDL, "sdl:cairo", 0, NULL, &device_features_sdl},
-//#endif
-//#ifdef CAIRO_HAS_GLITZ_SURFACE
-//    {FORMAT_GLITZ, "glitz:cairo", 0, NULL, &device_features_glitz},
-//#endif
-//#ifdef CAIRO_HAS_QUARTZ_SURFACE
-//    {FORMAT_QUARTZ, "quartz:cairo", 0, NULL, &device_features_quartz},
-//#endif
-//#ifdef CAIRO_HAS_WIN32_SURFACE
-//    {FORMAT_WIN32, "win32:cairo", 0, NULL, &device_features_win32},
-//#endif
 #endif
     {0, NULL, 0, NULL, NULL}
 };
