@@ -1690,6 +1690,24 @@ fi
 AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for GLITZ
+                                                                                
+AC_ARG_WITH(glitz,
+  [AC_HELP_STRING([--with-glitz=no], [glitz library])],
+  [], [with_glitz=no])
+
+if test "x$with_glitz" = "xyes"; then
+PKG_CHECK_MODULES(GLITZ, [glitz],
+	[HAVE_GLITZ=1
+	AC_DEFINE_UNQUOTED(HAVE_GLITZ,1,
+		[Define if you have the glitz library with cairo support])],
+	[AC_MSG_WARN(glitz library not available)])
+AC_SUBST(GLITZ_CFLAGS)
+AC_SUBST(GLITZ_LIBS)
+fi
+AM_CONDITIONAL(WITH_GLITZ, [test "x$HAVE_GLITZ" != "x"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for FREETYPE2
                                                                                 
 AC_ARG_WITH(freetype2,
@@ -2506,6 +2524,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/ming/Makefile
 	plugin/quartz/Makefile
 	plugin/gdiplus/Makefile
+	plugin/glitz/Makefile
 	plugin/dot_layout/Makefile
 	plugin/neato_layout/Makefile
 	plugin/xlib/Makefile

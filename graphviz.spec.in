@@ -31,7 +31,7 @@ Prefix: /usr
 # To enable, use: <percent>define FEATURE 1
 # Available features are:
 #    SHARP GUILE _IO JAVA LUA OCAML PERL PHP PYTHON RUBY R_LANG
-#    TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG SMYRNA DEVIL MING GDK_PIXBUF
+#    TCL IPSEPCOLA MYLIBGD PANGOCAIRO RSVG GLITZ SMYRNA DEVIL MING GDK_PIXBUF
 
 # SuSE uses a different mechanism to generate BuildRequires
 # norootforbuild
@@ -146,6 +146,8 @@ BuildRequires: R-devel swig >= 1.3.33
 #
 # <percent>define SMYRNA 1
 # BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
+# <percent>define GLITZ 1
+# BuildRequires: glitz-devel
 %endif
 %if "%fedora" >= "9"
 #define MING 1
@@ -570,6 +572,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
 	--with%{!?IPSEPCOLA:out}-ipsepcola \
 	--with%{!?MING:out}-ming \
 	--with%{!?SMYRNA:out}-smyrna \
+	--with%{!?GLITZ:out}-glitz \
 	--with%{!?PANGOCAIRO:out}-pangocairo \
 	--with%{!?RSVG:out}-rsvg \
 	--with%{!?GDK_PIXBUF:out}-gdk-pixbuf
