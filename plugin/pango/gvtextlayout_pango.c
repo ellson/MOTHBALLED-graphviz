@@ -93,7 +93,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    buf[0] = '\0';
 	    if (psfnt)
 		strcat(buf, "(ps) ");
-#ifdef HAVE_FONTCONFIG
+#ifdef PANGO_TYPE_FC_FONT
 	    {
 	        FT_Face face;
 	        PangoFcFont *fcfont;
