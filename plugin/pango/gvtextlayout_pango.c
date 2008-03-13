@@ -24,7 +24,7 @@
 
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
-#ifdef HAVE_FONTCONFIG
+#ifdef HAVE_PANGO_FC_FONT_LOCK_FACE
 #include <pango/pangofc-font.h>
 #endif
 
@@ -93,7 +93,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    buf[0] = '\0';
 	    if (psfnt)
 		strcat(buf, "(ps) ");
-#ifdef PANGO_TYPE_FC_FONT
+#ifdef HAVE_PANGO_FC_FONT_LOCK_FACE
 	    {
 	        FT_Face face;
 	        PangoFcFont *fcfont;

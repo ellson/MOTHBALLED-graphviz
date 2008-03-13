@@ -1689,6 +1689,14 @@ AC_SUBST(PANGOCAIRO_LIBS)
 fi
 AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
 
+# see if pango uses a fontconfig/freetype2 backend
+if test "x$HAVE_PANGOCAIRO" != "x"; then
+    save_LIBS=$LIBS
+    LIBS="$LIBS $PANGOCAIRO_LIBS"
+    AC_CHECK_FUNCS([pango_fc_font_lock_face pango_fc_font_unlock_face])
+    LIBS=$save_LIBS
+fi
+
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GLITZ
                                                                                 
