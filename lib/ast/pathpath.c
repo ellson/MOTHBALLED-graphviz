@@ -37,10 +37,18 @@
 #endif
 
 /* #include <option.h> */
+#ifdef HAVE_CRT_EXTERNS_H
+#include <crt_externs.h>
+#endif
+
 #ifdef WIN32
 #define environ _environ
 #else
+#ifdef HAVE__NSGETENVIRON
+#define environ (*_NSGetEnviron())
+#else
 extern char **environ;
+#endif
 #endif
 char **opt_info_argv;
 
