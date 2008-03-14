@@ -28,7 +28,9 @@ libgvplugin_dot_layout_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_dot_layout_la_SOURCES = $(libgvplugin_dot_layout_C_la_SOURCES)
 libgvplugin_dot_layout_la_LIBADD = $(libgvplugin_dot_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la
+	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la \
+	$(top_builddir)/lib/pathplan/libpathplan.la @MATH_LIBS@
 	
 if WITH_WIN32
 libgvplugin_dot_layout_la_LDFLAGS += -no-undefined

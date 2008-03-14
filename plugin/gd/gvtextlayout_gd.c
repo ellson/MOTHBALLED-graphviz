@@ -52,7 +52,7 @@ char *gd_alternate_fontlist(char *font)
     len = strlen(font) + 1;
     if (len > fontbufsz) {
 	fontbufsz = 2 * len;
-	if (fontbuf)
+	if (fontbuf == NULL)
 	    fontbuf = malloc(fontbufsz);
 	else
 	    fontbuf = realloc(fontbuf, fontbufsz);

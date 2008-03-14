@@ -16,7 +16,9 @@ AM_CPPFLAGS = \
 LIBS =  @LIBS@ -lc
 
 BASESOURCES = gv.cpp gv.i
-BASELIBS = $(top_builddir)/lib/gvc/libgvc.la
+BASELIBS = $(top_builddir)/lib/gvc/libgvc.la \
+	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la
 
 pkgsharpdir = $(pkglibdir)/sharp
 SHARP_data = gv.cs gvPINVOKE.cs SWIGTYPE_p_Agraph_t.cs SWIGTYPE_p_Agnode_t.cs SWIGTYPE_p_Agedge_t.cs SWIGTYPE_p_Agsym_t.cs SWIGTYPE_p_FILE.cs

@@ -29,7 +29,9 @@ libgvplugin_core_C_la_SOURCES = \
 
 libgvplugin_core_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_core_la_SOURCES = $(libgvplugin_core_C_la_SOURCES)
-libgvplugin_core_la_LIBADD = $(top_builddir)/lib/gvc/libgvc.la
+libgvplugin_core_la_LIBADD = $(top_builddir)/lib/gvc/libgvc.la \
+				$(top_builddir)/lib/graph/libgraph.la \
+				$(top_builddir)/lib/cdt/libcdt.la
 
 if WITH_WIN32
 libgvplugin_core_la_LDFLAGS += -no-undefined

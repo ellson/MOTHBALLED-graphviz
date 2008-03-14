@@ -32,11 +32,15 @@ if WITH_MYLIBGD
 libgvplugin_gd_la_LIBADD = \
 	$(top_builddir)/lib/gd/libgvgd_C.la \
 	$(top_builddir)/lib/gvc/libgvc.la \
+	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la \
 	@ICONV_LIBS@ @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @MATH_LIBS@
 AM_CPPFLAGS += -DNONDLL
 else
 libgvplugin_gd_la_LIBADD = \
-	$(top_builddir)/lib/gvc/libgvc.la @GD_LIBS@ @MATH_LIBS@
+	$(top_builddir)/lib/gvc/libgvc.la \
+	$(top_builddir)/lib/graph/libgraph.la \
+	$(top_builddir)/lib/cdt/libcdt.la @GD_LIBS@ @MATH_LIBS@
 endif
 
 if WITH_WIN32

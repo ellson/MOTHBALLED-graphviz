@@ -75,7 +75,7 @@ libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/graph/libgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
-	$(top_builddir)/lib/pathplan/libpathplan_C.la
+	$(top_builddir)/lib/pathplan/libpathplan_C.la @TCL_LIBS@
 
 if WITH_PANGOCAIRO
 libtcldot_builtin_la_LIBADD += $(top_builddir)/plugin/pango/libgvplugin_pango_C.la @PANGOCAIRO_LIBS@
