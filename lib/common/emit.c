@@ -807,16 +807,18 @@ static void setup_page(GVJ_t * job, graph_t * g)
     else
         EXPANDBB(job->boundingBox, job->pageBoundingBox);
 
+#ifdef WITH_CODEGENS
+    job->pageOffset.x = - job->pageSize.x * pagesArrayElem.x;
+    job->pageOffset.y = - job->pageSize.y * pagesArrayElem.y;
+#endif
+    job->clip.LL.x = job->focus.x + job->pageSize.x * (pagesArrayElem.x - pagesArraySize.x / 2.);
+    job->clip.LL.y = job->focus.y + job->pageSize.y * (pagesArrayElem.y - pagesArraySize.y / 2.);
+    job->clip.UR.x = job->clip.LL.x + job->pageSize.x;
+    job->clip.UR.y = job->clip.LL.y + job->pageSize.y;
 
     /* CAUTION - job->translation was difficult to get right. */
     /* Test with and without assymetric margins, e.g: -Gmargin="1,0" */
-    job->pageOffset.x = - job->pageSize.x * pagesArrayElem.x;
-    job->pageOffset.y = - job->pageSize.y * pagesArrayElem.y;
     if (job->rotation) {
-        job->clip.LL.x = job->focus.x - job->pageOffset.x - pagesArraySize.x * job->pageSize.x / 2.;
-        job->clip.UR.y = job->focus.y + job->pageOffset.y + pagesArraySize.y * job->pageSize.y / 2.;
-        job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.y / job->zoom;
-        job->clip.LL.y = job->clip.UR.y - job->view.y + 2 * job->margin.x / job->zoom;
 	job->translation.y = - job->clip.UR.y - job->canvasBox.LL.y / job->zoom;
         if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert))
             job->translation.x = - job->clip.UR.x - job->canvasBox.LL.x / job->zoom;
@@ -824,10 +826,6 @@ static void setup_page(GVJ_t * job, graph_t * g)
             job->translation.x = - job->clip.LL.x + job->canvasBox.LL.x / job->zoom;
     }
     else {
-	job->clip.LL.x = job->focus.x - job->pageOffset.x - pagesArraySize.x * job->pageSize.x / 2.;
-	job->clip.LL.y = job->focus.y - job->pageOffset.y - pagesArraySize.y * job->pageSize.y / 2.;
-        job->clip.UR.x = job->clip.LL.x + job->view.x - 2 * job->margin.x / job->zoom;
-        job->clip.UR.y = job->clip.LL.y + job->view.y - 2 * job->margin.y / job->zoom;
 	/* pre unscale margins to keep them constant under scaling */
         job->translation.x = - job->clip.LL.x + job->canvasBox.LL.x / job->zoom;
         if ((job->flags & GVRENDER_Y_GOES_DOWN) || (Y_invert))
