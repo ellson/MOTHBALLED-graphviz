@@ -1966,7 +1966,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	P2PF(GD_drawing(g)->size, size);
 	if ((size.x < sz.x) || (size.y < sz.y) /* drawing is too big... */
 	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
-		&& (size.x > sz.x) && (size.y > sz.y))) /* drawing is too small... */
+		&& ((size.x > sz.x) || (size.y > sz.y)))) /* drawing is too small... */
 	    Z = MIN(size.x/sz.x, size.y/sz.y);
     }
     
