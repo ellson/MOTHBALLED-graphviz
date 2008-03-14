@@ -288,7 +288,7 @@ AC_CHECK_HEADERS(stdarg.h stddef.h stddef.h stdlib.h stdint.h malloc.h \
 	errno.h time.h unistd.h fenv.h string.h strings.h inttypes.h setjmp.h \
 	sys/time.h sys/times.h sys/types.h sys/select.h fpu_control.h \
 	sys/fpu.h sys/socket.h sys/stat.h sys/mman.h \
-	sys/ioctl.h sys/inotify.h langinfo.h libintl.h)
+	sys/ioctl.h sys/inotify.h langinfo.h libintl.h crt_externs.h)
 AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_STDBOOL
@@ -378,7 +378,7 @@ AC_FUNC_ALLOCA
 AC_CHECK_FUNCS([lrand48 drand48 srand48 setmode setenv getenv \
 	__freadable _sysconf getrusage strerror cbrt lsqrt vsnprintf \
 	strtoul strtoll strtoull uname memset nl_langinfo pow sqrt \
-	strchr strdup strerror strstr])
+	strchr strdup strerror strstr _NSGetEnviron])
 
 AC_REPLACE_FUNCS([strcasecmp strncasecmp])
 
