@@ -126,6 +126,7 @@ vtx_data *UG_graph(double *x, double *y, int n, int accurate_computation)
     double dist_ij, dist_ik, dist_jk, x_i, y_i, x_j, y_j;
     int j, k, neighbor_j, neighbor_k;
     int removed;
+    int source, dest;
 
     in.pointlist = N_NEW(2 * n, REAL);
     for (i = 0; i < n; i++) {
@@ -208,7 +209,6 @@ vtx_data *UG_graph(double *x, double *y, int n, int accurate_computation)
 	delaunay[i].edges[0] = i;
 	delaunay[i].nedges = 1;
     }
-    int source, dest;
     for (i = 0; i < nedges; i++) {
 	source = out.edgelist[2 * i];
 	dest = out.edgelist[2 * i + 1];

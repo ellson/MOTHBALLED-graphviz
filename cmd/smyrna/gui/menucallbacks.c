@@ -18,6 +18,7 @@
 #include "viewport.h"
 #include "tvnodes.h"
 #include "selection.h"
+#include "topviewsettings.h"
 
 
 //file
@@ -119,6 +120,10 @@ void mNewSlot (GtkWidget *widget,gpointer user_data)
 
   void mDeleteSlot (GtkWidget *widget,gpointer user_data)
 {
+}
+void mTopviewSettingsSlot (GtkWidget *widget,gpointer user_data)
+{
+	show_settings_form();
 }
 
 

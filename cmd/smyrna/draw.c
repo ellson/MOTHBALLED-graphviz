@@ -63,7 +63,7 @@ void DrawBezier(GLfloat* xp,GLfloat* yp,GLfloat* zp, int filled,int param)
 		if (param==0)
 			glColor4f(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
 		if (param==1)	//selected
-			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
+			glColor4f(view->selectedNodeColor.R,view->selectedNodeColor.G,view->selectedNodeColor.B,view->selectedNodeColor.A);
 		glBegin(GL_LINE_STRIP);
 	}
 	else
@@ -71,7 +71,7 @@ void DrawBezier(GLfloat* xp,GLfloat* yp,GLfloat* zp, int filled,int param)
 		if (param==0)
 			glColor4f(view->fillColor.R,view->fillColor.G,view->fillColor.B,view->penColor.A);
 		if (param==1)	//selected
-			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
+			glColor4f(view->selectedNodeColor.R,view->selectedNodeColor.G,view->selectedNodeColor.B,view->selectedNodeColor.A);
 		glBegin(GL_POLYGON);
 	}
 	/* We will not actually draw a curve, but we will divide the curve into small
@@ -205,7 +205,7 @@ void DrawEllipse(xdot_op* op,int param)
 		if (param==0)	
 			glColor4f(view->fillColor.R,view->fillColor.G,view->fillColor.B,view->fillColor.A);
 		if (param==1)	//selected
-			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
+			glColor4f(view->selectedNodeColor.R,view->selectedNodeColor.G,view->selectedNodeColor.B,view->selectedNodeColor.A);
 
 		filled=1;
 	}
@@ -214,7 +214,7 @@ void DrawEllipse(xdot_op* op,int param)
 		if (param==0)
 			glColor4f(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
 		if (param==1)	//selected
-			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
+			glColor4f(view->selectedNodeColor.R,view->selectedNodeColor.G,view->selectedNodeColor.B,view->selectedNodeColor.A);
 
 		filled=0;
 	}
@@ -246,7 +246,7 @@ void DrawPolygon(xdot_op* op,int param)
 		if(param==0)
 			glColor4f(view->fillColor.R,view->fillColor.G,view->fillColor.B,view->fillColor.A);
 		if (param==1)	//selected
-			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
+			glColor4f(view->selectedNodeColor.R,view->selectedNodeColor.G,view->selectedNodeColor.B,view->selectedNodeColor.A);
 
 		filled=1;
 	}
@@ -256,7 +256,7 @@ void DrawPolygon(xdot_op* op,int param)
 		if(param==0)
 			glColor4f(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
 		if (param==1)	//selected
-			glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
+			glColor4f(view->selectedNodeColor.R,view->selectedNodeColor.G,view->selectedNodeColor.B,view->selectedNodeColor.A);
 
 	}
 	glLineWidth(view->LineWidth);
@@ -278,7 +278,7 @@ void DrawPolyline(xdot_op* op,int param)
 	if(param==0)	
 		glColor4f(view->penColor.R,view->penColor.G,view->penColor.B,view->penColor.A);
 	if (param==1)	//selected
-		glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
+		glColor4f(view->selectedNodeColor.R,view->selectedNodeColor.G,view->selectedNodeColor.B,view->selectedNodeColor.A);
 	SelectPolyline(op);
 	set_options(op,param);
 	glLineWidth(view->LineWidth);
@@ -358,7 +358,7 @@ void EmbedText(xdot_op* op,int param)
 	if(param==0)
 		fontColor (view->penColor.R,view->penColor.G,view->penColor.B);
 	if (param==1)	//selected
-		fontColor (view->selectColor.R,view->selectColor.G,view->selectColor.B);
+		fontColor (view->selectedNodeColor.R,view->selectedNodeColor.G,view->selectedNodeColor.B);
 
 	fontDrawString ((int)(x-dx),op->u.text.y-(int)dy,op->u.text.text,op->u.text.width);
 }

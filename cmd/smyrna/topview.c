@@ -24,6 +24,7 @@
 #include "draw.h"
 #include "selection.h"
 #include "topviewdata.h"
+#include "hier.h"
 
 static float dx=0.0;
 static float dy=0.0;
@@ -189,7 +190,8 @@ void preparetopview(Agraph_t *g,topview* t)
 	set_boundries(t);
 	set_update_required(t);
 	t->topviewmenu=glcreate_gl_topview_menu();
-	load_host_buttons(t,g,t->topviewmenu);
+	//load_host_buttons(t,g,t->topviewmenu);
+	prepare_topological_fisheye(t);
 
 
 
@@ -240,7 +242,7 @@ void drawTopViewGraph(Agraph_t *g)
 						update_topview_node_from_cgraph(v);
 					if( ((custom_object_data*)AGDATA(v->Node))->Selected==1)
 					{
-						glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
+						glColor4f(view->selectedNodeColor.R,view->selectedNodeColor.G,view->selectedNodeColor.B,view->selectedNodeColor.A);
 						ddx=dx;ddy=dy;
 					}
 					else		//get the color from node
@@ -559,7 +561,7 @@ int get_color_from_edge(topview_edge *e)
 			)
 	{
 //		glColor4f(0,0,1,1);
-		glColor4f(view->selectColor.R,view->selectColor.G,view->selectColor.B,view->selectColor.A);
+		glColor4f(view->selectedNodeColor.R,view->selectedNodeColor.G,view->selectedNodeColor.B,view->selectedNodeColor.A);
 		return return_value;
 	}
 	if(		( ((custom_object_data*)AGDATA(e->Node1->Node))->Highlighted==1)
@@ -1081,7 +1083,75 @@ glCompSet* glcreate_gl_topview_menu()
 	return s;
 
 }
-//calbacks
+
+void prepare_topological_fisheye(topview* t)
+{
+/* To use:
+  double* x_coords; // initial x coordinates
+  double* y_coords; // initial y coordinates
+  focus_t* fs;
+  int ne;
+  vtx_data* graph = makeGraph (topview*, &ne);
+  hierarchy = makeHier(topview->NodeCount, ne, graph, x_coords, y_coords);
+  freeGraph (graph);
+  fs = initFocus (topview->Nodecount); // create focus set
+
+  In loop, 
+    update fs.
+      For example, if user clicks mouse at (p.x,p.y) to pick a single new focus,
+        int closest_fine_node;
+        find_closest_active_node(hierarchy, p.x, p.y, &closest_fine_node);
+        fs->num_foci = 1;
+        fs->foci_nodes[0] = closest_fine_node;
+        fs->x_foci[0] = hierarchy->geom_graphs[cur_level][closest_fine_node].x_coord; 
+        fs->y_foci[0] = hierarchy->geom_graphs[cur_level][closest_fine_node].y_coord;
+
+
+      
+    set_active_levels(hierarchy, fs->foci_nodes, fs->num_foci);
+    positionAllItems(hierarchy, fs, parms)
+
+  When done:
+    release (hierarchy);
+*/
+	double* x_coords=0; // initial x coordinates
+	double* y_coords=0; // initial y coordinates
+	focus_t* fs;
+	int ne;
+	int ind;
+	int closest_fine_node;
+	int cur_level=0;
+	hierparms_t parms;
+	vtx_data* graph = makeGraph (t, &ne);
+	t->h = makeHier(t->Nodecount, ne, graph, x_coords, y_coords);
+	freeGraph (graph);
+	fs = initFocus (t->Nodecount); // create focus set
+
+	find_closest_active_node(t->h, 50.0, 50.0, &closest_fine_node);
+	fs->num_foci = 1;
+	fs->foci_nodes[0] = closest_fine_node;
+	fs->x_foci[0] = t->h->geom_graphs[cur_level][closest_fine_node].x_coord; 
+	fs->y_foci[0] = t->h->geom_graphs[cur_level][closest_fine_node].y_coord;
+
+      
+    set_active_levels(t->h, fs->foci_nodes, fs->num_foci);
+    positionAllItems(t->h, fs, &parms);
+	//DEBUG
+	//show coordinates and active levels
+	for (ind ; ind < t->Nodecount;ind ++)
+	{
+		
+		printf ("original coords (%f,%f)\n",t->Nodes[ind].x,t->Nodes[ind].y);
+		printf ("local coords (%f,%f)\n",t->h->geom_graphs[cur_level][ind].local_x_coord,t->h->geom_graphs[cur_level][ind].local_y_coord);
+		printf ("physical coords (%f,%f)\n",t->h->geom_graphs[cur_level][ind].new_physical_x_coord,t->h->geom_graphs[cur_level][ind].new_physical_y_coord);
+		printf ("local coords (%f,%f)\n",t->h->geom_graphs[cur_level][ind].local_x_coord,t->h->geom_graphs[cur_level][ind].local_y_coord);
+	}
+
+
+
+
+}
+
 
 
 

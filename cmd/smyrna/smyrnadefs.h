@@ -3,11 +3,12 @@
 
 #ifdef WIN32
 #include "windows.h"
-#define	SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
+//#define	SMYRNA_GLADE "C:/Projects/graphviz2/share/gui/smyrna.glade"
 #define	SMYRNA_ATTRS "c:/Projects/graphviz2/share/gui/attrs.txt"
 #endif
 #ifdef _WIN32
-#define GTKTOPVIEW_GLADE "c:\\Projects\\ATT\\GTK\\gtktopview\\lib\\GUI\\smyrna.glade"
+//#define GTKTOPVIEW_GLADE "c:\\Projects\\ATT\\GTK\\gtktopview\\lib\\GUI\\smyrna.glade"
+#define SMYRNA_GLADE "c:\\Projects\\ATT\\GTK\\gtktopview\\lib\\GUI\\smyrna.glade"
 #define GTKTOPVIEW_ATTRS "c:\\Projects\\ATT\\GTK\\GTKTest2\\attrs.txt"
 // #else
 // using -DGTKTOPVIEW_GLADE from Makefile.am and configure.ac
@@ -29,6 +30,8 @@
 #include <GL/glu.h>	
 #include <gtk/gtkgl.h>
 #include "glcompset.h"
+#include "hierarchy.h"
+
 
 #define IS_TEST_MODE_ON				0
 #define	DEFAULT_MAGNIFIER_WIDTH		300
@@ -125,6 +128,9 @@ typedef struct {
 	glCompSet* topviewmenu;	//for novice user open gl menu
 	topviewdata* TopviewData;
 	void* customptr;
+	Hierarchy* h;
+
+
 } topview;
 enum
 {
@@ -255,10 +261,18 @@ typedef struct _ViewInfo
 	RGBColor penColor;
 	/*default fill color*/
 	RGBColor fillColor;
-	/*selection color, selected items appear in this color*/
-	RGBColor selectColor;
+	/*highlighted Node Color*/
+	RGBColor highlightedNodeColor;
+	/*highlighted Edge Color*/
+	RGBColor highlightedEdgeColor;
 	/*grid color*/
 	RGBColor gridColor;	//grid color
+	/*border color*/
+	RGBColor borderColor;
+	/*selected node color*/
+	RGBColor selectedNodeColor;
+	/*selected edge color*/
+	RGBColor selectedEdgeColor;
 
 	/*default line width*/
 	float LineWidth;
@@ -270,9 +284,10 @@ typedef struct _ViewInfo
 
 	/*draws a border in border colors if it is 1*/
 	int bdVisible;	//if borders are visible (boundries of the drawing,
-	/*border color*/
-	RGBColor borderColor;
 	/*border coordinates, needs to be calculated for each graph*/
+
+
+
 	float bdxLeft,bdyTop,bdzTop;	
 	float bdxRight,bdyBottom,bdzBottom; 
 

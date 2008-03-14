@@ -84,9 +84,10 @@ static double *smooth_vec(double *vec, int *ordering, int n, int interval,
 {
 // smooth 'vec' by setting each components to the average of is 'interval'-neighborhood in 'ordering'
     int len, i, n1;
+	double sum;
     smoothed_vec = RALLOC(n, smoothed_vec, double);
     n1 = MIN(1 + interval, n);
-    double sum = 0;
+    sum = 0;
     for (i = 0; i < n1; i++) {
 	sum += vec[ordering[i]];
     }

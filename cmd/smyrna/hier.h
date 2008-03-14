@@ -1,9 +1,8 @@
 #ifndef HIER_H
 #define HIER_H
 
-#include "topview.h"
 #include "hierarchy.h"
-
+#include "topview.h"
 typedef struct {
     int num_foci;
     int* foci_nodes;
@@ -22,5 +21,6 @@ typedef struct {
 void positionAllItems (Hierarchy* hp, focus_t* fs, hierparms_t* parms);
 vtx_data* makeGraph (topview* tv, int* nedges);
 Hierarchy* makeHier (int nnodes, int nedges, vtx_data*, double*, double*);
+focus_t* initFocus (int ncnt);
 
 #endif

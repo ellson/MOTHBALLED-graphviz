@@ -464,13 +464,16 @@ int glCompSetRelease(glCompSet* s,int x,int y)
 {
 	
 	int ind=0;
-	for (ind=0 ; ind < s->buttoncount; ind ++)
+	if (s)
 	{
-		if((s->buttons[ind]->visible) && (s->buttons[ind]->enabled))
+		for (ind=0 ; ind < s->buttoncount; ind ++)
 		{
-			if((glCompPointInButton(s->buttons[ind],s->clickedX,s->clickedY)))
+			if((s->buttons[ind]->visible) && (s->buttons[ind]->enabled))
 			{
-				glCompButtonClick(s->buttons[ind]);
+				if((glCompPointInButton(s->buttons[ind],s->clickedX,s->clickedY)))
+				{
+					glCompButtonClick(s->buttons[ind]);
+				}
 			}
 		}
 	}

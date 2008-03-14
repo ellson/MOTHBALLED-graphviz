@@ -164,11 +164,21 @@ static int maxmatch(vtx_data * graph,	/* array of vtx data for graph */
     int neighbor;		/* neighbor of a vertex */
     int nmerged = 0;		/* number of edges in matching */
     int i, j;			/* loop counters */
+    float max_norm_edge_weight;
+    double inv_size;
+    double *matchability = N_NEW(nvtxs, double);
+    double min_edge_len;
+    double closest_val = -1, val;
+    int closest_neighbor;
+    float *vtx_vec = N_NEW(nvtxs, float);
+    float *weighted_vtx_vec = N_NEW(nvtxs, float);
+    float sum_weights;
 
     // gather statistics, to enable normalizing the values
     double avg_edge_len = 0, avg_deg_2 = 0;
     int nedges = 0;
-    for (i = 0; i < nvtxs; i++) {
+
+	for (i = 0; i < nvtxs; i++) {
 	avg_deg_2 += graph[i].nedges;
 	for (j = 1; j < graph[i].nedges; j++) {
 	    avg_edge_len += dist(geom_graph, i, graph[i].edges[j]);
@@ -182,8 +192,6 @@ static int maxmatch(vtx_data * graph,	/* array of vtx data for graph */
     // the normalized edge weight of edge <v,u> is defined as:
     // weight(<v,u>)/sqrt(size(v)*size(u))
     // Now we compute the maximal normalized weight
-    float max_norm_edge_weight;
-    double inv_size;
     if (graph[0].ewgts != NULL) {
 	max_norm_edge_weight = -1;
 	for (i = 0; i < nvtxs; i++) {
@@ -221,8 +229,6 @@ static int maxmatch(vtx_data * graph,	/* array of vtx data for graph */
 	}
 */
     // Option 2: sort the nodes begining with the ones highly approriate for matching
-    double *matchability = N_NEW(nvtxs, double);
-    double min_edge_len;
     for (i = 0; i < nvtxs; i++) {
 	vtx = order[i];
 	matchability[vtx] = graph[vtx].nedges;	// we less want to match high degree nodes
@@ -241,11 +247,6 @@ static int maxmatch(vtx_data * graph,	/* array of vtx data for graph */
     free(matchability);
 
     // Start determining the matched pairs
-    double closest_val = -1, val;
-    int closest_neighbor;
-    float *vtx_vec = N_NEW(nvtxs, float);
-    float *weighted_vtx_vec = N_NEW(nvtxs, float);
-    float sum_weights;
     for (i = 0; i < nvtxs; i++) {
 	vtx_vec[i] = 0;
     }
@@ -1364,15 +1365,16 @@ static int
 isActiveAncestorOfNeighbors(Hierarchy * hierarchy, int node, int level,
 			    int activeAncestorIdx)
 {
-    int i;
-    vtx_data neighborsInLevel;
+    int i,	active_level ;
+
+	vtx_data neighborsInLevel;
     int neighbor, neighborLevel;
     assert(hierarchy);
     neighborsInLevel = hierarchy->graphs[level][node];
 
     for (i = 1; i < neighborsInLevel.nedges; i++) {
 	neighbor = neighborsInLevel.edges[i];
-	int active_level =
+	active_level =
 	    hierarchy->geom_graphs[level][neighbor].active_level;
 	if (active_level > level) {
 	    // ancestor of neighbor is active
@@ -1402,7 +1404,7 @@ findGlobalIndexesOfActiveNeighbors(Hierarchy * hierarchy, int index,
     int numNeighbors = 0;
     int *neighbors;
     int i, j;
-    int level, node;
+    int level, node,active_level,found;
     vtx_data neighborsInLevel;
     int nAllocNeighbors;
     int *stack;			// 4*hierarchy->nlevels should be enough for the DFS scan
@@ -1423,7 +1425,7 @@ findGlobalIndexesOfActiveNeighbors(Hierarchy * hierarchy, int index,
 
     for (i = 1; i < neighborsInLevel.nedges; i++) {
 	neighbor = neighborsInLevel.edges[i];
-	int active_level =
+	active_level =
 	    hierarchy->geom_graphs[level][neighbor].active_level;
 	if (active_level == level) {
 	    // neighbor is active - add it
@@ -1442,7 +1444,7 @@ findGlobalIndexesOfActiveNeighbors(Hierarchy * hierarchy, int index,
 		neighbor = hierarchy->v2cv[neighborLevel][neighbor];
 		neighborLevel++;
 	    } while (active_level > neighborLevel);
-	    int found = 0;
+	    found = 0;
 	    for (j = 0; j < numNeighbors && !found; j++) {
 		if (neighbors[j] ==
 		    hierarchy->geom_graphs[neighborLevel][neighbor].

@@ -29,7 +29,7 @@
     set_active_levels(hierarchy, fs->foci_nodes, fs->num_foci);
     positionAllItems(hierarchy, fs, parms)
 
-  When done:
+  When done:973 377 2462
     release (hierarchy);
 */
 
@@ -185,5 +185,14 @@ makeHier (int nn, int ne, vtx_data* graph, double* x_coords, double* y_coords)
     set_horizontal_active_level(hp, 0);
 
     return hp;
+}
+focus_t* initFocus (int ncnt)
+{
+    focus_t* fs = NEW(focus_t);
+    fs->num_foci = 0;
+    fs->foci_nodes = N_NEW(ncnt, int);
+    fs->x_foci = N_NEW(ncnt, double);
+    fs->y_foci = N_NEW(ncnt,double);
+    return fs;
 }
 

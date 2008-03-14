@@ -46,6 +46,7 @@ double dist(double x1, double y1, double x2, double y2);
 double G(double x);
 glCompSet* glcreate_gl_topview_menu();
 void fisheye_polar(double x_focus, double y_focus,topview* t);
+void prepare_topological_fisheye(topview* t);
 
 
 #endif

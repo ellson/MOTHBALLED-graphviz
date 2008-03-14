@@ -100,10 +100,10 @@ void init_viewport(ViewInfo* view)
 	view->bgColor.A=1;
 
 	//selected objets are drawn with this color
-	view->selectColor.R=1;
-	view->selectColor.G=0;
-	view->selectColor.B=0;
-	view->selectColor.A=1;
+	view->selectedNodeColor.R=1;
+	view->selectedNodeColor.G=0;
+	view->selectedNodeColor.B=0;
+	view->selectedNodeColor.A=1;
 
 	//default line width;
 	view->LineWidth=1;
@@ -141,6 +141,7 @@ void init_viewport(ViewInfo* view)
 	view->Selection.SelectionColor.A=1;
 	view->Selection.Anti=0;
 	view->Topview=malloc(sizeof(topview));
+	view->Topview->topviewmenu='\0';
 }
 
 int add_graph_to_viewport_from_file (char* fileName)
