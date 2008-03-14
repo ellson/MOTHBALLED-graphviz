@@ -190,8 +190,8 @@ void preparetopview(Agraph_t *g,topview* t)
 	set_boundries(t);
 	set_update_required(t);
 	t->topviewmenu=glcreate_gl_topview_menu();
-	//load_host_buttons(t,g,t->topviewmenu);
-	prepare_topological_fisheye(t);
+	load_host_buttons(t,g,t->topviewmenu);
+//	prepare_topological_fisheye(t);
 
 
 
