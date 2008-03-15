@@ -63,12 +63,11 @@ extern "C" {
     extern void gvloadimage(GVJ_t *job, usershape_t *us, boxf b, boolean filled, char *target);
     
 /* usershapes */
-    extern point gvusershape_size_dpi(usershape_t*, pointf);
+    extern point gvusershape_size_dpi(usershape_t *us, pointf dpi);
     extern point gvusershape_size(graph_t *g, char *name);
     extern usershape_t *gvusershape_find(char *name);
 
 /* device */
-
     extern size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len);
     extern void gvdevice_fputs(GVJ_t * job, char *s);
     extern void gvdevice_printf(GVJ_t * job, const char *format, ...);

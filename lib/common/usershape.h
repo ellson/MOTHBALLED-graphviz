@@ -43,6 +43,7 @@ extern "C" {
 	char *name;
 	int macro_id;
 	boolean must_inline;
+	boolean nocache;
 	FILE *f;
 	imagetype_t type;
 	char *stringtype;
