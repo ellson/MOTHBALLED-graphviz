@@ -23,6 +23,8 @@
 
 extern void gvdevice_fputs(GVJ_t * job, char *s);
 extern void gvdevice_printf(GVJ_t * job, const char *format, ...);
+extern boolean gvusershape_file_access(usershape_t *us);
+extern void gvusershape_file_release(usershape_t *us);
 
 #ifdef __cplusplus
 extern "C" {
