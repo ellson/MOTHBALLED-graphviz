@@ -50,7 +50,6 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
     assert(job);
     assert(us);
     assert(us->name);
-    assert(us->f);
 
     if (us->data) {
         if (us->datafree == cairo_freeimage)
@@ -61,7 +60,8 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
         }
     }
     if (!surface) { /* read file into cache */
-        fseek(us->f, 0, SEEK_SET);
+	if (!gvusershape_file_access(us))
+	    return NULL;
         switch (us->type) {
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
             case FT_PNG:
@@ -76,6 +76,7 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
             us->data = (void*)surface;
             us->datafree = cairo_freeimage;
         }
+	gvusershape_file_release(us);
     }
     return surface;
 }
@@ -100,12 +101,17 @@ static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean 
 static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     cairo_surface_t *surface; 	/* source surface */
+    cairo_format_t format;
     FILE *out = job->output_file;
     int X, Y, x, y, stride;
     unsigned char *data, *ix, alpha, red, green, blue;
 
     surface = cairo_loadimage(job, us);
-    if (surface && (cairo_image_surface_get_format(surface) == CAIRO_FORMAT_ARGB32)) {
+    if (surface) {
+       	format = cairo_image_surface_get_format(surface);
+        if ((format != CAIRO_FORMAT_ARGB32) && (format != CAIRO_FORMAT_RGB24))
+	    return;
+
 	X = cairo_image_surface_get_width(surface);
 	Y = cairo_image_surface_get_height(surface);
 	stride = cairo_image_surface_get_stride(surface);

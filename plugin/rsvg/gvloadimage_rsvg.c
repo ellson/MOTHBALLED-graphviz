@@ -59,7 +59,6 @@ static RsvgHandle* gvloadimage_rsvg_load(GVJ_t * job, usershape_t *us)
     assert(job);
     assert(us);
     assert(us->name);
-    assert(us->f);
 
     if (us->data) {
         if (us->datafree == gvloadimage_rsvg_free)
@@ -72,6 +71,8 @@ static RsvgHandle* gvloadimage_rsvg_load(GVJ_t * job, usershape_t *us)
     }
 
     if (!rsvgh) { /* read file into cache */
+	if (!gvusershape_file_access(us))
+	    return;
         switch (us->type) {
             case FT_SVG:
 
@@ -127,6 +128,8 @@ static RsvgHandle* gvloadimage_rsvg_load(GVJ_t * job, usershape_t *us)
             us->data = (void*)rsvgh;
             us->datafree = gvloadimage_rsvg_free;
         }
+
+	gvusershape_file_release(us);
     }
 
     return rsvgh;

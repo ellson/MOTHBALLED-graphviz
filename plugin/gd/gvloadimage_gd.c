@@ -43,7 +43,6 @@ static gdImagePtr gd_loadimage(GVJ_t * job, usershape_t *us)
     assert(job);
     assert(us);
     assert(us->name);
-    assert(us->f);
 
     if (us->data) {
 	if (us->datafree != gd_freeimage) {
@@ -53,7 +52,8 @@ static gdImagePtr gd_loadimage(GVJ_t * job, usershape_t *us)
 	}
     }
     if (!us->data) { /* read file into cache */
-	fseek(us->f, 0, SEEK_SET);
+	if (!gvusershape_file_access(us))
+	    return;
 	switch (us->type) {
 #if 0
 	    case FT_GD:
@@ -95,6 +95,8 @@ static gdImagePtr gd_loadimage(GVJ_t * job, usershape_t *us)
 	}
         if (us->data)
 	    us->datafree = gd_freeimage;
+
+	gvusershape_file_release(us);
     }
     return (gdImagePtr)(us->data);
 }

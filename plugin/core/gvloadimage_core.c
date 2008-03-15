@@ -47,7 +47,6 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean fil
     assert(job);
     assert(us);
     assert(us->name);
-    assert(us->f);
 
     gvdevice_fputs(job, "<image xlink:href=\"");
     gvdevice_fputs(job, us->name);
@@ -89,7 +88,6 @@ static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, boolean fi
     assert(job);
     assert(us);
     assert(us->name);
-    assert(us->f);
 
     BF2B(bf, b);
 
@@ -121,7 +119,6 @@ static void core_loadimage_vrml(GVJ_t * job, usershape_t *us, boxf b, boolean fi
 
     assert(us);
     assert(us->name);
-    assert(us->f);
 
     n = job->obj->u.n;
     assert(n);
@@ -135,8 +132,6 @@ static void core_loadimage_vrml(GVJ_t * job, usershape_t *us, boxf b, boolean fi
     fprintf(out, "    texture ImageTexture { url \"%s\" }\n", us->name);
     fprintf(out, "  }\n");
     fprintf(out, "}\n");
-
-
 }
 
 static void ps_freeimage(usershape_t *us)
@@ -156,7 +151,6 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean fill
     assert(job);
     assert(us);
     assert(us->name);
-    assert(us->f);
 
     out = job->output_file;
     assert(out);
@@ -171,10 +165,12 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean fill
     }
 
     if (!us->data) { /* read file into cache */
-        int fd = fileno(us->f);
+        int fd;
 	struct stat statbuf;
 
-        fseek(us->f, 0, SEEK_SET);
+	if (!gvusershape_file_access(us))
+	    return;
+	fd = fileno(us->f);
         switch (us->type) {
             case FT_PS:
             case FT_EPS:
@@ -193,6 +189,7 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean fill
         }
         if (us->data)
             us->datafree = ps_freeimage;
+	gvusershape_file_release(us);
     }
 
     if (us->data) {
@@ -217,7 +214,6 @@ static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, boolean f
     assert(job);
     assert(us);
     assert(us->name);
-    assert(!(us->f));
 
     out = job->output_file;
     assert(out);
