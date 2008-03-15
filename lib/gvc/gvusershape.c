@@ -20,6 +20,7 @@
 
 #include <stddef.h>
 #include <string.h>
+#include <errno.h>
 
 #include "types.h"
 #include "logic.h"
@@ -361,6 +362,12 @@ static usershape_t *gvusershape_open (char *name)
 #else
 	    us->f = fopen(fn, "rb");
 #endif
+	    if (us->f == NULL) {
+		agerr(AGWARN, "%s while opening %s\n",
+			strerror(errno), fn);
+		free(us);
+		return NULL;
+	    }
 	}
         switch(imagetype(us)) {
 	    case FT_NULL:
