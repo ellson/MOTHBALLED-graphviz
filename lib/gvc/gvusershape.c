@@ -343,10 +343,50 @@ usershape_t *gvusershape_find(char *name)
     return (dtsearch(ImageDict, &probe));
 }
 
+#define MAX_USERSHAPE_FILES_OPEN 50
+boolean gvusershape_file_access(usershape_t *us)
+{
+    static int usershape_files_open_cnt;
+    char *fn;
+
+    assert(us);
+    assert(us->name);
+
+    if (us->f)
+	fseek(us->f, 0, SEEK_SET);
+    else {
+        if ((fn = safefile(us->name))) {
+#ifndef WIN32
+	    us->f = fopen(fn, "r");
+#else
+	    us->f = fopen(fn, "rb");
+#endif
+	    if (us->f == NULL) {
+		agerr(AGWARN, "%s while opening %s\n", strerror(errno), fn);
+		return false;
+	    }
+	    if (usershape_files_open_cnt >= MAX_USERSHAPE_FILES_OPEN)
+		us->nocache = true;
+	    else
+	        usershape_files_open_cnt++;
+	}
+    }
+    return true;
+}
+
+void gvusershape_file_release(usershape_t *us)
+{
+    if (us->nocache) {
+	if (us->f) {
+	    fclose(us->f);
+	    us->f = NULL;
+	}
+    }
+}
+
 static usershape_t *gvusershape_open (char *name)
 {
     usershape_t *us;
-    char *fn;
 
     if (!ImageDict)
         ImageDict = dtopen(&ImageDictDisc, Dttree);
@@ -356,19 +396,9 @@ static usershape_t *gvusershape_open (char *name)
 	    return NULL;
 
 	us->name = name;
-	if ((fn = safefile(name))) {
-#ifndef WIN32
-	    us->f = fopen(fn, "r");
-#else
-	    us->f = fopen(fn, "rb");
-#endif
-	    if (us->f == NULL) {
-		agerr(AGWARN, "%s while opening %s\n",
-			strerror(errno), fn);
-		free(us);
-		return NULL;
-	    }
-	}
+	if (!gvusershape_file_access(us)) 
+	    return NULL;
+
         switch(imagetype(us)) {
 	    case FT_NULL:
 		if (!(us->data = (void*)find_user_shape(us->name)))
@@ -401,6 +431,8 @@ static usershape_t *gvusershape_open (char *name)
         }
         dtinsert(ImageDict, us);
     }
+
+    gvusershape_file_release(us);
 
     return us;
 }
