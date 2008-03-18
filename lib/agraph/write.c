@@ -290,20 +290,10 @@ static void write_trl(Agraph_t * g, iochan_t * ofile)
     ioput(g, ofile, "}\n");
 }
 
-static int localsize(Dict_t * d)
-{
-    int rv;
-    Dict_t *view;
-    view = dtview(d, NIL(Dict_t *));
-    rv = dtsize(d);
-    dtview(d, view);
-    return rv;
-}
-
 static int irrelevant_subgraph(Agraph_t * g)
 {
     int i, n;
-    Agattr_t *sdata, *pdata;
+    Agattr_t *sdata, *pdata, *rdata;
     Agdatadict_t *dd;
 
     char *name;
@@ -312,14 +302,15 @@ static int irrelevant_subgraph(Agraph_t * g)
     if (name && name[0] != LOCALNAMEPREFIX)
 	return FALSE;
     if ((sdata = agattrrec(g)) && (pdata = agattrrec(agparent(g)))) {
-	n = dtsize(sdata->dict);
+	rdata = agattrrec(agroot(g));
+	n = dtsize(rdata->dict);
 	for (i = 0; i < n; i++)
 	    if (sdata->str[i] && pdata->str[i]
 		&& strcmp(sdata->str[i], pdata->str[i]))
 		return FALSE;
     }
     dd = agdatadict(g);
-    if ((localsize(dd->dict.n) > 0) || (localsize(dd->dict.e) > 0))
+    if ((dtsize(dd->dict.n) > 0) || (dtsize(dd->dict.e) > 0))
 	return FALSE;
     return TRUE;
 }
