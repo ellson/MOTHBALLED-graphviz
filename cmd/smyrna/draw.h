@@ -23,35 +23,24 @@
 #include <string.h>
 #include <math.h>
 
+typedef struct {
+    xdot_op op;
+    void *obj;
+    int size;
+} sdot_op;
 
-/*DRAWING FUNCTIONS 
-these are opengl based xdot drawing functions 
-topview drawings are not here*/
-void DrawBezier(GLfloat* xp,GLfloat* yp,GLfloat* zp, int filled, int param);
-void DrawBeziers(xdot_op* op,int param);
-void DrawEllipse(xdot_op* op,int param);
-void DrawPolygon(xdot_op* op,int param);
-void DrawPolyline(xdot_op* op,int param);
-void DrawBitmap(GLfloat bmpX,GLfloat bmpY,GLfloat bmpW,GLfloat bmpH);
-void SetFillColor(xdot_op* op,int param);
-void SetPenColor(xdot_op* op,int param);
-void SetStyle(xdot_op* op,int param);
-void SetFont(xdot_op* op,int param);
-void EmbedText(xdot_op* op,int param);
-void InsertImage(xdot_op* op,int param);
-void load_raw_texture ( char *file_name, int width, int height, int depth, GLenum colour_type, GLenum filter_type ); //function to load .raw files
-int load_bitmap(char *filename);
-void drawGraph(Agraph_t *g);
-void draw_selection_box(ViewInfo* view);
-void set_options(xdot_op*,int param);
-void relocate_spline(xdot_op*,int param);
-void draw_magnifier(ViewInfo* view);
-void draw_circle(float originX,float originY,float radius);
-void draw_fisheye_magnifier(ViewInfo* view);
-int randomize_color(RGBColor* c,int brightness);
-void drawCircle(float x,float y,float radius,float zdepth);
-RGBColor GetRGBColor(char* color);
-void drawBorders(ViewInfo* view);
+/* DRAWING FUNCTIONS 
+ * these are opengl based xdot drawing functions 
+ * topview drawings are not here
+ */
+extern drawfunc_t OpFns[];
+extern void drawGraph(Agraph_t * g);
+void draw_selection_box(ViewInfo * view);
+void draw_magnifier(ViewInfo * view);
+void draw_fisheye_magnifier(ViewInfo * view);
+extern int randomize_color(RGBColor * c, int brightness);
+extern void drawCircle(float x, float y, float radius, float zdepth);
+extern RGBColor GetRGBColor(char *color);
+extern void drawBorders(ViewInfo * view);
 
 #endif
-
