@@ -14,8 +14,6 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/cgraph \
         -I$(top_srcdir)/lib/cdt \
         -I$(top_srcdir)/lib/glcomp \
-        -I$(top_srcdir)/lib/filter \
-        -I$(top_srcdir)/lib/utilities \
         -I$(top_srcdir)/lib/xdot \
         -I$(top_srcdir)/lib/glcomp \
         -I$(top_srcdir)/lib/topfish \
@@ -28,7 +26,8 @@ noinst_HEADERS = btree.h draw.h filter.h glexpose.h gltemplate.h hier.h \
 	materials.h selection.h smyrnadefs.h support.h topview.h \
 	topviewdata.h topviewdefs.h trackball.h tvnodes.h viewport.h \
 	gui/callbacks.h gui/datalistcallbacks.h gui/filterscallbacks.h \
-	gui/glmenu.h gui/gui.h gui/menucallbacks.h gui/toolboxcallbacks.h
+	gui/glmenu.h gui/gui.h gui/menucallbacks.h gui/toolboxcallbacks.h \
+	gui/topviewsettings.h
 bin_PROGRAMS = smyrna
 endif
 
@@ -36,7 +35,8 @@ smyrna_SOURCES = btree.c draw.c filter.c glexpose.c gltemplate.c hier.c \
 	main.c selection.c support.c template.c topview.c topviewdata.c \
 	trackball.c tvnodes.c viewport.c \
 	gui/callbacks.c gui/datalistcallbacks.c gui/filterscallbacks.c \
-	gui/glmenu.c gui/gui.c gui/menucallbacks.c gui/toolboxcallbacks.c
+	gui/glmenu.c gui/gui.c gui/menucallbacks.c gui/toolboxcallbacks.c \
+	gui/topviewsettings.c
 
 smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/cdt/libcdt_C.la \
