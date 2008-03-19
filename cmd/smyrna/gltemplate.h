@@ -26,23 +26,26 @@
 #include <windows.h>
 #endif
 #include <GL/gl.h>
-#include <GL/glu.h>							
+#include <GL/glu.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtkgl.h>
 #include <gdk/gdkcursor.h>
 
-void examine_gl_config_attrib (GdkGLConfig *glconfig);
-void print_gl_config_attrib (GdkGLConfig *glconfig,const gchar *attrib_str,int attrib,gboolean is_boolean);
-static void realize (GtkWidget *widget,gpointer   data);
-static gboolean configure_event (GtkWidget *widget,GdkEventConfigure *event, gpointer data);
-gboolean expose_event (GtkWidget *widget,GdkEventExpose *event,gpointer data);
-static gboolean button_press_event (GtkWidget *widget,GdkEventButton *event,gpointer data);
-static gboolean button_release_event (GtkWidget *widget,GdkEventButton *event,gpointer data);
-static gboolean motion_notify_event (GtkWidget *widget,GdkEventMotion *event,gpointer data);
-static gboolean key_press_event (GtkWidget *widget, GdkEventKey *event,gpointer data);
-void switch_Mouse (GtkMenuItem *menuitem,int mouse_mode);
-static gboolean button_press_event_popup_menu (GtkWidget *widget,GdkEventButton *event,gpointer data);
-extern GdkGLConfig *configure_gl (void);
-void create_window (GdkGLConfig *glconfig,GtkWidget* vbox);
+void examine_gl_config_attrib(GdkGLConfig * glconfig);
+void print_gl_config_attrib(GdkGLConfig * glconfig,
+			    const gchar * attrib_str, int attrib,
+			    gboolean is_boolean);
+/* static void realize (GtkWidget *widget,gpointer   data); */
+/* static gboolean configure_event (GtkWidget *widget,GdkEventConfigure *event, gpointer data); */
+gboolean expose_event(GtkWidget * widget, GdkEventExpose * event,
+		      gpointer data);
+/* static gboolean button_press_event (GtkWidget *widget,GdkEventButton *event,gpointer data); */
+/* static gboolean button_release_event (GtkWidget *widget,GdkEventButton *event,gpointer data); */
+/* static gboolean motion_notify_event (GtkWidget *widget,GdkEventMotion *event,gpointer data); */
+/* static gboolean key_press_event (GtkWidget *widget, GdkEventKey *event,gpointer data); */
+void switch_Mouse(GtkMenuItem * menuitem, int mouse_mode);
+/* static gboolean button_press_event_popup_menu (GtkWidget *widget,GdkEventButton *event,gpointer data); */
+extern GdkGLConfig *configure_gl(void);
+void create_window(GdkGLConfig * glconfig, GtkWidget * vbox);
 #endif
