@@ -24,6 +24,8 @@
 extern "C" {
 #endif
 
+#include <geom.h>
+
 extern point pointof(int, int);
 extern pointf pointfof(double, double);
 
@@ -71,6 +73,7 @@ extern pointf cwrotatepf(pointf p, int cwrot);
 
 extern void rect2poly(pointf *p);
 
+extern int intersect (pointf a, pointf b, pointf c, pointf d, pointf* x);
 #ifdef __cplusplus
 }
 #endif
