@@ -30,58 +30,63 @@
 #include "viewport.h"
 #include "menucallbacks.h"
 #include "gltemplate.h"
+#ifdef ENABLE_NLS
+#include "libintl.h"
+#endif
 
-gchar *package_prefix ;
+gchar *package_prefix;
 gchar *package_data_dir;
 gchar *package_locale_dir;
 
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	GdkGLConfig *glconfig;
-	load_attributes();
+    GdkGLConfig *glconfig;
+    load_attributes();
 
 #ifdef G_OS_WIN32
-	package_prefix = g_win32_get_package_installation_directory (NULL, NULL);
-	package_data_dir = g_build_filename (package_prefix, "share", NULL);
-	package_locale_dir = g_build_filename (package_prefix, "share", "locale", NULL);
-#endif#
+    package_prefix =
+	g_win32_get_package_installation_directory(NULL, NULL);
+    package_data_dir = g_build_filename(package_prefix, "share", NULL);
+    package_locale_dir =
+	g_build_filename(package_prefix, "share", "locale", NULL);
+#endif	/* # */
 #ifdef ENABLE_NLS
-	bindtextdomain (GETTEXT_PACKAGE, package_locale_dir);
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-	textdomain (GETTEXT_PACKAGE);
+    bindtextdomain(GETTEXT_PACKAGE, package_locale_dir);
+    bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+    textdomain(GETTEXT_PACKAGE);
 #endif
-	view=malloc(sizeof(ViewInfo));
-	init_viewport(view);
+    view = malloc(sizeof(ViewInfo));
+    init_viewport(view);
 
 
-	gtk_set_locale ();
-	gtk_init (&argc, &argv);
+    gtk_set_locale();
+    gtk_init(&argc, &argv);
 
 #ifdef _WIN32
 #define GTKTOPVIEW_ICONSDIR "C:\\Projects\\ATT\\GTK\\GTKTest2\\GUI\\images\\"
 #endif
-	xml = glade_xml_new(SMYRNA_GLADE, NULL, NULL);
-	gladewidget = glade_xml_get_widget(xml, "frmMain");
-    gtk_widget_show (gladewidget);
-	g_signal_connect ((gpointer) gladewidget, "destroy", G_CALLBACK(mQuitSlot),
-                    NULL);
-	glade_xml_signal_autoconnect(xml);
-	gtk_gl_init (0,0);
-	/* Configure OpenGL framebuffer. */
-	glconfig = configure_gl ();
-	gladewidget = glade_xml_get_widget(xml, "vbox2");
-	create_window (glconfig,gladewidget);
-	/*first arg is used as file name*/
-	if(argc>1)
-		add_graph_to_viewport_from_file (argv[1]);
-	gtk_main ();
+    xml = glade_xml_new(SMYRNA_GLADE, NULL, NULL);
+    gladewidget = glade_xml_get_widget(xml, "frmMain");
+    gtk_widget_show(gladewidget);
+    g_signal_connect((gpointer) gladewidget, "destroy",
+		     G_CALLBACK(mQuitSlot), NULL);
+    glade_xml_signal_autoconnect(xml);
+    gtk_gl_init(0, 0);
+    /* Configure OpenGL framebuffer. */
+    glconfig = configure_gl();
+    gladewidget = glade_xml_get_widget(xml, "vbox2");
+    create_window(glconfig, gladewidget);
+    /*first arg is used as file name */
+    if (argc > 1)
+	add_graph_to_viewport_from_file(argv[1]);
+    gtk_main();
 
 
 #ifdef G_OS_WIN32
-	g_free (package_prefix);
-	g_free (package_data_dir);
-	g_free (package_locale_dir);
+    g_free(package_prefix);
+    g_free(package_data_dir);
+    g_free(package_locale_dir);
 #endif
-	clear_viewport(view);
-	return 0;
+    clear_viewport(view);
+    return 0;
 }
