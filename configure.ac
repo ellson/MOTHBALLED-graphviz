@@ -2522,6 +2522,7 @@ AC_CONFIG_FILES(Makefile
 	macosx/graphviz.pmdoc/01local.xml
 	macosx/graphviz.pmdoc/02graphviz.xml
 	windows/graphviz.wxs
+	windows/Properties/AssemblyInfo.cs
 	plugin/Makefile
 	plugin/core/Makefile
 	plugin/devil/Makefile
