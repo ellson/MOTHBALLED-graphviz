@@ -15,21 +15,14 @@
 
 
 #include <xdot.h>
-//#include <viewport.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
 #include <sys/types.h>
+#include <memory.h>
 #include <time.h>
-#include "draw.h"
-
-
-
-#define NEW(t)           (t*)malloc(sizeof(t))
-#define N_NEW(n,t)       (t*)malloc((n)*sizeof(t))
-#define RALLOC(size,ptr,type) ((type*)realloc(ptr,(size)*sizeof(type)))
 
 static char*
 parseFloat (char* s, float* fp)
@@ -108,103 +101,7 @@ parseAlign (char* s, xdot_align* ap)
     return s;
 }
 
-#ifdef NEWXDOT
-static char*
-parseOp (xdot_op* op, char* s, drawfunc_t ops[])
-{
-    while (isspace(*s)) s++;
-    switch (*s++) {
-    case 'E' :	
-	op->kind = xd_filled_ellipse;
-	s = parseRect (s, &op->u.ellipse);
-	op->drawfunc=ops[xop_ellipse];
-	break;
-
-	case 'e' :	
-	op->kind = xd_unfilled_ellipse;
-	s = parseRect (s, &op->u.ellipse);
-	op->drawfunc=ops[xop_ellipse];
-	break;
-
-	case 'P' :
-	op->kind = xd_filled_polygon;
-	s = parsePolyline (s, &op->u.polygon);
-	op->drawfunc=ops[xop_polygon];
-	break;
-
-	case 'p' :
-	op->kind = xd_unfilled_polygon;
-	s = parsePolyline (s, &op->u.polygon);
-	op->drawfunc=ops[xop_polygon];
-	break;
-
-	case 'b' :
-	op->kind = xd_filled_bezier;
-	s = parsePolyline (s, &op->u.bezier);
-	op->drawfunc=ops[xop_bezier];
-	break;
-    
-	case 'B' :
-	op->kind = xd_unfilled_bezier;
-	s = parsePolyline (s, &op->u.bezier);
-	op->drawfunc=ops[xop_bezier];
-	break;
-    
-	case 'c' :
-	op->kind = xd_pen_color;
-	s = parseString (s, &op->u.color);
-	op->drawfunc=ops[xop_pen_color];
-	break;
-    
-	case 'C' :
-	op->kind = xd_fill_color;
-	s = parseString (s, &op->u.color);
-	op->drawfunc=ops[xop_fill_color];
-	break;
-    
-	case 'L' :
-	op->kind = xd_polyline;
-	s = parsePolyline (s, &op->u.polyline);
-	op->drawfunc=ops[xop_polyline];
-	break;
-    
-	case 'T' :
-	op->kind = xd_text;
-	s = parseInt (s, &op->u.text.x);
-	s = parseInt (s, &op->u.text.y);
-	s = parseAlign (s, &op->u.text.align);
-	s = parseInt (s, &op->u.text.width);
-	s = parseString (s, &op->u.text.text);
-	op->drawfunc=ops[xop_text];
-	break;
-    
-	case 'F' :
-	op->kind = xd_font;
-	s = parseFloat (s, &op->u.font.size);
-	s = parseString (s, &op->u.font.name);
-	op->drawfunc=ops[xop_font];
-	break;
-    
-	case 'S' :
-	op->kind = xd_style;
-	s = parseString (s, &op->u.style);
-	op->drawfunc=ops[xop_style];
-	break;
-    
-	case 'I' :
-	op->kind = xd_image;
-	s = parseRect (s, &op->u.image.pos);
-	s = parseString (s, &op->u.image.name);
-	op->drawfunc=ops[xop_image];
-	break;
-    
-	default :
-	s = 0;
-	break;
-    }
-    return s;
-}
-#else
+#ifdef OLDXDOT
 static char*
 parseOp (xdot_op* op, char* s)
 {
@@ -300,76 +197,142 @@ parseOp (xdot_op* op, char* s)
     }
     return s;
 }
+#else
+static char*
+parseOp (xdot_op* op, char* s, drawfunc_t ops[])
+{
+    while (isspace(*s)) s++;
+    switch (*s++) {
+    case 'E' :	
+	op->kind = xd_filled_ellipse;
+	s = parseRect (s, &op->u.ellipse);
+	if (ops) op->drawfunc=ops[xop_ellipse];
+	break;
+
+	case 'e' :	
+	op->kind = xd_unfilled_ellipse;
+	s = parseRect (s, &op->u.ellipse);
+	if (ops) op->drawfunc=ops[xop_ellipse];
+	break;
+
+	case 'P' :
+	op->kind = xd_filled_polygon;
+	s = parsePolyline (s, &op->u.polygon);
+	if (ops) op->drawfunc=ops[xop_polygon];
+	break;
+
+	case 'p' :
+	op->kind = xd_unfilled_polygon;
+	s = parsePolyline (s, &op->u.polygon);
+	if (ops) op->drawfunc=ops[xop_polygon];
+	break;
+
+	case 'b' :
+	op->kind = xd_filled_bezier;
+	s = parsePolyline (s, &op->u.bezier);
+	if (ops) op->drawfunc=ops[xop_bezier];
+	break;
+    
+	case 'B' :
+	op->kind = xd_unfilled_bezier;
+	s = parsePolyline (s, &op->u.bezier);
+	if (ops) op->drawfunc=ops[xop_bezier];
+	break;
+    
+	case 'c' :
+	op->kind = xd_pen_color;
+	s = parseString (s, &op->u.color);
+	if (ops) op->drawfunc=ops[xop_pen_color];
+	break;
+    
+	case 'C' :
+	op->kind = xd_fill_color;
+	s = parseString (s, &op->u.color);
+	if (ops) op->drawfunc=ops[xop_fill_color];
+	break;
+    
+	case 'L' :
+	op->kind = xd_polyline;
+	s = parsePolyline (s, &op->u.polyline);
+	if (ops) op->drawfunc=ops[xop_polyline];
+	break;
+    
+	case 'T' :
+	op->kind = xd_text;
+	s = parseInt (s, &op->u.text.x);
+	s = parseInt (s, &op->u.text.y);
+	s = parseAlign (s, &op->u.text.align);
+	s = parseInt (s, &op->u.text.width);
+	s = parseString (s, &op->u.text.text);
+	if (ops) op->drawfunc=ops[xop_text];
+	break;
+    
+	case 'F' :
+	op->kind = xd_font;
+	s = parseFloat (s, &op->u.font.size);
+	s = parseString (s, &op->u.font.name);
+	if (ops) op->drawfunc=ops[xop_font];
+	break;
+    
+	case 'S' :
+	op->kind = xd_style;
+	s = parseString (s, &op->u.style);
+	if (ops) op->drawfunc=ops[xop_style];
+	break;
+    
+	case 'I' :
+	op->kind = xd_image;
+	s = parseRect (s, &op->u.image.pos);
+	s = parseString (s, &op->u.image.name);
+	if (ops) op->drawfunc=ops[xop_image];
+	break;
+    
+	default :
+	s = 0;
+	break;
+    }
+    return s;
+}
 #endif
 
 #define XDBSIZE 100
 
-#ifdef NEWXDOT
 xdot*
-parseXDotF (char* s, drawfunc_t fns[])
+parseXDotF (char* s, drawfunc_t fns[], int sz)
 {
     xdot* x;
     xdot_op op;
-    xdot_op* ops;
+    char* ops;
     int bufsz = XDBSIZE;
     if (!s) return NULL;	
     x = NEW(xdot);
-    ops = N_NEW(XDBSIZE, xdot_op);
+    if (sz <= 0) sz = sizeof(xdot_op);
+    ops = (char*)gmalloc(XDBSIZE*sz);
 
     x->cnt = 0;
     while ((s = parseOp (&op, s, fns))) {
 	if (x->cnt == bufsz) {
 	    bufsz += XDBSIZE;
-	    ops = RALLOC (bufsz, ops, xdot_op);
+	    ops = (char*)grealloc (ops, bufsz*sz);
 	} 
-	ops[x->cnt] = op;
+	*(xdot_op*)(ops + (x->cnt*sz)) = op;
 	x->cnt++;
     }
     if (x->cnt)
-	x->ops = RALLOC (x->cnt, ops, xdot_op);
+	x->ops = (xdot_op*)grealloc (ops, x->cnt*sz);
     else {
 	free (x);
 	x = 0;
     }
+    free (x);
     return x;
 }
 
 xdot*
 parseXDot (char* s)
 {
-    return parseXDotF (s, 0);
+    return parseXDotF (s, 0, 0);
 }
-
-#else
-xdot*
-parseXDot (char* s)
-{
-    xdot* x;
-    xdot_op op;
-    xdot_op* ops;
-    int bufsz = XDBSIZE;
-    if (!s) return NULL;	
-    x = NEW(xdot);
-    ops = N_NEW(XDBSIZE, xdot_op);
-
-    x->cnt = 0;
-    while ((s = parseOp (&op, s))) {
-	if (x->cnt == bufsz) {
-	    bufsz += XDBSIZE;
-	    ops = RALLOC (bufsz, ops, xdot_op);
-	} 
-	ops[x->cnt] = op;
-	x->cnt++;
-    }
-    if (x->cnt)
-	x->ops = RALLOC (x->cnt, ops, xdot_op);
-    else {
-	free (x);
-	x = 0;
-    }
-    return x;
-}
-#endif
 
 typedef void (*pf)(char*, void*);
 
@@ -656,131 +619,11 @@ freeXDot (xdot* x)
     free (x);
 }
 
-char* move_xdot(void* obj,xdot* x,int dx,int dy,int dz)
-{
-	int i=0;
-	int j=0;
-	/* int a=0; */
-	/* char* pch; */
-	/* int pos[MAXIMUM_POS_COUNT];	//maximum pos count hopefully does not exceed 100 */
-	if (!x)
-		return "\0";
-	
-	for (i=0;i < x->cnt ; i ++)
-	{
-		switch (x->ops[i].kind)
-		{
-			case xd_filled_polygon :
-			case xd_unfilled_polygon :
-			case xd_filled_bezier:
-			case xd_unfilled_bezier:
-			case xd_polyline:
-				for (j=0;j < x->ops[i].u.polygon.cnt; j++)
-				{
-					x->ops[i].u.polygon.pts[j].x=x->ops[i].u.polygon.pts[j].x-dx;
-					x->ops[i].u.polygon.pts[j].y=x->ops[i].u.polygon.pts[j].y-dy;
-					x->ops[i].u.polygon.pts[j].z=x->ops[i].u.polygon.pts[j].z-dz;
-				}
-			break;
-			case xd_filled_ellipse :
-			case xd_unfilled_ellipse :
-				x->ops[i].u.ellipse.x=x->ops[i].u.ellipse.x-dx;
-				x->ops[i].u.ellipse.y=x->ops[i].u.ellipse.y-dy;
-	//			x->ops[i].u.ellipse.z=x->ops[i].u.ellipse.z-dz;
-				break;
-			case xd_text:
-				x->ops[i].u.text.x=x->ops[i].u.text.x-dx;
-				x->ops[i].u.text.y=x->ops[i].u.text.y-dy;
-	//			x->ops[i].u.text.z=x->ops[i].u.text.z-dz;
-				break;
-			case xd_image :
-				x->ops[i].u.image.pos.x=x->ops[i].u.image.pos.x-dx;
-				x->ops[i].u.image.pos.y=x->ops[i].u.image.pos.y-dy;
-	//			x->ops[i].u.image.pos.z=x->ops[i].u.image.pos.z-dz;
-			break;
-			default :
-			break;
-		}
-	}
-	view->GLx=view->GLx2;
-	view->GLy=view->GLy2;
-	return sprintXDot (x);
-
-
-}
-char* offset_spline(xdot* x,float dx,float dy,float headx,float heady)
-{
 #if 0
-	/*int i=0;
-	Agnode_t* headn,tailn;
-	Agedge_t* e;
-	e=x->obj;		//assume they are all edges, check function name
-	headn=aghead(e);
-	tailn=agtail(e);
-
-	for (i=0; i < x->cnt ; i ++)		//more than 1 splines ,possible
-	{
-		switch (x->ops[i].kind)
-		{
-			case xd_filled_polygon :
-			case xd_unfilled_polygon :
-			case xd_filled_bezier:
-			case xd_unfilled_bezier:
-			case xd_polyline:
-				if( ((custom_object_data*)AGDATA((headn)->obj))->Selected==1) &&
-					((custom_object_data*)AGDATA((tailn)->obj))->Selected==1)  )
-				{
-					for (j=0;j < x->ops[i].u.polygon.cnt; j++)
-					{
-
-						x->ops[i].u.polygon.pts[j].x=x->ops[i].u.polygon.pts[j].x+dx;
-						x->ops[i].u.polygon.pts[j].y=x->ops[i].u.polygon.pts[j].y+dy;
-						x->ops[i].u.polygon.pts[j].z=x->ops[i].u.polygon.pts[j].z+dz;
-					}
-				}
-			break;
-	}*/
+static void 
+execOp (xdot_op* op,int param)
+{
+    op->drawfunc(op,param);
+}
 #endif
-    return 0;
-}
 
-
-
-
-void drawXdot (xdot* xDot,int param)
-{
-    int id=0;
-
-    for (id=0; id < xDot->cnt ; id ++) {
-	xDot->ops[id].parentxdot=xDot;
-	execOp (&xDot->ops[id],param);
-	
-    }
-    if ( ((custom_object_data*)AGDATA(xDot->obj))->Preselected == 1)
-	select_object (view->g[view->activeGraph],xDot->obj);
-    ((custom_object_data*)AGDATA(xDot->obj))->Preselected =0;
-}
-void execOp (xdot_op* op,int param)
-{
-	op->drawfunc(op,param);
-}
-
-
-void drawXdotwithattr(void* p,char* attr,int param)
-{
-    xdot* xDot;
-    if((xDot=parseXDot (agget(p, attr)))) {
-	xDot->obj=p;
-	drawXdot(xDot,param);
-	freeXDot (xDot);
-    }
-}
-void drawXdotwithattrs(void* e,int param)
-{
-	drawXdotwithattr(e,"_draw_",param);
-	drawXdotwithattr(e,"_ldraw_",param);
-	drawXdotwithattr(e,"_hdraw_",param);
-	drawXdotwithattr(e,"_tdraw_",param);
-	drawXdotwithattr(e,"_hldraw_",param);
-	drawXdotwithattr(e,"_tldraw_",param);
-}

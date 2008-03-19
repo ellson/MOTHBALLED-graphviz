@@ -19,14 +19,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#include <GL/gl.h>
 #include "cgraph.h"
-#define MAXIMUM_POS_COUNT	100	
-typedef struct _TextTexture {
-  GLuint  name;
-  GLsizei size;
-  GLvoid *texels;
-} TextTexture; 
 
 typedef enum {
     xd_left, xd_center, xd_right
@@ -45,15 +38,11 @@ typedef struct {
     xdot_point* pts;
 } xdot_polyline;
 
-
 typedef struct {
   int x, y;
   xdot_align align;
   int width;
   char* text;
-  GLuint  name;
-  GLsizei size;
-  GLvoid *texels;
 } xdot_text;
 
 typedef struct {
@@ -85,7 +74,7 @@ typedef enum {
 typedef struct _xdot_op xdot_op;
 typedef void (*drawfunc_t)(xdot_op*, int);
 
-struct _xdot_op{
+struct _xdot_op {
     xdot_kind kind;
     union {
       xdot_rect ellipse;       /* xd_filled_ellipse, xd_unfilled_ellipse */
@@ -99,30 +88,17 @@ struct _xdot_op{
       char* style;             /* xd_style */
     } u;
     drawfunc_t drawfunc;
-    void* parentxdot;	//points to owner xdot
 };
 
-void execOp (xdot_op* op,int param);
 typedef struct {
     int cnt;
-	xdot_op* ops;
-	void* obj;		//cgraph object, used for selection
-	int selectionflag;		//used for rectangular selection (not x) if -1 cannot be selected
+    xdot_op* ops;
 } xdot;
 
 /* ops are indexed by xop_kind */
-#ifdef NEWXDOT
-extern xdot* parseXDotF (char*, drawfunc_t ops[]);
-#endif
+extern xdot* parseXDotF (char*, drawfunc_t ops[], int sz);
 extern xdot* parseXDot (char*);
 extern char* sprintXDot (xdot*);
 extern void fprintXDot (FILE*, xdot*);
 extern void freeXDot (xdot*);
-extern void drawXdot (xdot*,int param);
-extern Agnode_t* createNode(char* label,xdot_point);
-extern char* move_xdot(void* obj,xdot* x,int dx,int dy,int dz);
-extern char* offset_spline(xdot* x,float dx,float dy,float headx,float heady);
-void drawXdotwithattrs(void* e,int param);
-void drawXdotwithattr(void* p,char* attr,int param);
-extern int select_object (Agraph_t* g,void* obj);
 #endif
