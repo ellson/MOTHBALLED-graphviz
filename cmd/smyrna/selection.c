@@ -1024,7 +1024,7 @@ static int line_intersects(float *x, float *y, float *X, float *Y)
     pD.x = x[3];
     pD.y = y[3];
 
-    if (intersect(pA, pB, pC, pD, &pX)) {
+    if (seg_intersect(pA, pB, pC, pD, &pX)) {
 	*X = (float) pX.x;
 	*Y = (float) pX.y;
 	if ((pX.x >= x[2] - 0.01) && (pX.x < x[3] + 0.01) &&

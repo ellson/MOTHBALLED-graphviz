@@ -73,7 +73,7 @@ extern pointf cwrotatepf(pointf p, int cwrot);
 
 extern void rect2poly(pointf *p);
 
-extern int intersect (pointf a, pointf b, pointf c, pointf d, pointf* x);
+extern int seg_intersect (pointf a, pointf b, pointf c, pointf d, pointf* x);
 #ifdef __cplusplus
 }
 #endif

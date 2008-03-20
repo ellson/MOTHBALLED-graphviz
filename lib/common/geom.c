@@ -576,7 +576,7 @@ scale (double c, pointf a)
  * Returns 0 if no intersection (lines parallel), 1 otherwise.
  */
 int
-intersect (pointf a, pointf b, pointf c, pointf d, pointf* x)
+seg_intersect (pointf a, pointf b, pointf c, pointf d, pointf* x)
 {
     pointf mv = subPt (b,a);
     pointf lv = subPt (d,c);
