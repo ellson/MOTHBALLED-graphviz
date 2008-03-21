@@ -143,19 +143,20 @@ static double dist(ex_vtx_data * geom_graph, int v, int u)
 
 extern void quicksort_place(double *, int *, int first, int last);
 
-static int maxmatch(vtx_data * graph,	/* array of vtx data for graph */
-		    ex_vtx_data * geom_graph,	/* array of vtx data for graph */
-		    int nvtxs,	/* number of vertices in graph */
-		    int *mflag	/* flag indicating vtx selected or not */
+static int 
+maxmatch(vtx_data * graph,	/* array of vtx data for graph */
+	ex_vtx_data * geom_graph,	/* array of vtx data for graph */
+	int nvtxs,	/* number of vertices in graph */
+	int *mflag	/* flag indicating vtx selected or not */
     )
 /* 
-	Compute a matching of the nodes set. 
-	The matching is not based only on the edge list of 'graph', 
-	which might be too small, 
-	but on the wider edge list of 'geom_graph' (that includes 'graph''s edges)
-	
-	We match nodes that are close both in the graph-theoretical sense and 
-	in the geometry sense  (in the layout)
+    Compute a matching of the nodes set. 
+    The matching is not based only on the edge list of 'graph', 
+    which might be too small, 
+    but on the wider edge list of 'geom_graph' (that includes 'graph''s edges)
+
+    We match nodes that are close both in the graph-theoretical sense and 
+    in the geometry sense  (in the layout)
 */
 {
     int *order;			/* random ordering of vertices */
@@ -632,25 +633,26 @@ static int make_coarse_ex_graph(ex_vtx_data * graph,	/* array of vtx data for gr
     return cnedges;
 }
 
-static void coarsen_match(vtx_data * graph,	/* graph to be matched */
-			  ex_vtx_data * geom_graph,	/* another graph (with coords) on the same nodes */
-			  int nvtxs,	/* number of vertices in graph */
-			  int nedges,	/* number of edges in graph */
-			  int geom_nedges,	/* number of edges in geom_graph */
-			  vtx_data ** cgraph,	/* coarsened version of graph */
-			  ex_vtx_data ** cgeom_graph,	/* coarsened version of geom_graph */
-			  int *cnp,	/* number of vtxs in coarsened graph */
-			  int *cnedges,	/* number of edges in coarsened graph */
-			  int *cgeom_nedges,	/* number of edges in coarsened geom_graph */
-			  int **v2cvp,	/* reference from vertices to coarse vertices */
-			  int **cv2vp	/* reference from vertices to coarse vertices */
+static void 
+coarsen_match(vtx_data * graph,	/* graph to be matched */
+	ex_vtx_data * geom_graph,	/* another graph (with coords) on the same nodes */
+	int nvtxs,	/* number of vertices in graph */
+	int nedges,	/* number of edges in graph */
+	int geom_nedges,	/* number of edges in geom_graph */
+	vtx_data ** cgraph,	/* coarsened version of graph */
+	ex_vtx_data ** cgeom_graph,	/* coarsened version of geom_graph */
+	int *cnp,	/* number of vtxs in coarsened graph */
+	int *cnedges,	/* number of edges in coarsened graph */
+	int *cgeom_nedges,	/* number of edges in coarsened geom_graph */
+	int **v2cvp,	/* reference from vertices to coarse vertices */
+	int **cv2vp	/* reference from vertices to coarse vertices */
     )
 
-					/*
-					   This function gets two graphs with the same node set and
-					   constructs two corresponding coarsened graphs of about 
-					   half the size
-					 */
+/*
+ * This function gets two graphs with the same node set and
+ * constructs two corresponding coarsened graphs of about 
+ * half the size
+ */
 {
     int *mflag;			/* flag indicating vtx matched or not */
     int nmerged;		/* number of edges contracted */
