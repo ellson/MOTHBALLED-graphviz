@@ -122,8 +122,7 @@ static double *smooth_vec(double *vec, int *ordering, int n, int interval,
 static void
 split_by_place(double *place, int *nodes, int first, int last, int *middle)
 {
-    unsigned int splitter =
-	rand() * ((unsigned) (last - first)) / RAND_MAX + (unsigned) first;
+    unsigned int splitter=((unsigned int)rand()|((unsigned int)rand())<<16)%(unsigned int)(last-first+1)+(unsigned int)first;
     int val;
     double place_val;
     int left = first + 1;
