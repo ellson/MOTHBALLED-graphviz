@@ -102,7 +102,7 @@ storeFileName (char* fname, int len)
  * Process a possible preprocessor line directive.
  * yytext = #.*
  */
-static void ppDirective ()
+static void ppDirective (void)
 {
     int r, cnt, lineno;
     char buf[2];
