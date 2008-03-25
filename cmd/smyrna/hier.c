@@ -197,7 +197,7 @@ Hierarchy *makeHier(int nn, int ne, vtx_data * graph, double *x_coords,
     vtx_data *delaunay;
     ex_vtx_data *geom_graph;
     int ngeom_edges;
-    Hierarchy *hp = NEW(Hierarchy);
+    Hierarchy *hp;
 
     delaunay = UG_graph(x_coords, y_coords, nn, 0);
 
