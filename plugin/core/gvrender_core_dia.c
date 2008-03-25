@@ -227,17 +227,16 @@ static void dia_comment(GVJ_t * job, char *str)
 static void
 dia_begin_job(GVJ_t *job)
 {
-    core_init_compression(job, COMPRESSION_ZLIB);
     gvdevice_printf(job, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 }
 
 static void dia_end_job(GVJ_t *job)
 {
-    core_fini_compression(job);
 }
 
 static void dia_begin_graph(GVJ_t * job)
 {
+#if 0
     Rootgraph = g;
     PB.LL.x = PB.LL.y = 0;
     PB.UR.x = (bb.UR.x - bb.LL.x + 2 * GD_drawing(g)->margin.x) * SCALE;
@@ -310,6 +309,7 @@ static void dia_begin_graph(GVJ_t * job)
     gvdevice_fputs(job, "    </dia:attribute>\n");
 
     gvdevice_fputs(job, "  </dia:diagramdata>\n");
+#endif
 }
 
 static void dia_end_graph(GVJ_t * job)
@@ -320,9 +320,6 @@ static void dia_end_graph(GVJ_t * job)
 static void
 dia_begin_page(GVJ_t * job)
 {
-    Scale = scale * SCALE;
-    Rot = rot;
-
     gvdevice_printf(job, "  <dia:layer name=\"Background\" visible=\"true\">\n");
 }
 
@@ -398,6 +395,7 @@ static void dia_set_fillcolor(char *name)
 
 static void dia_set_style(char **s)
 {
+#if 0
     char *line, *p;
     context_t *cp;
 
@@ -429,10 +427,12 @@ static void dia_set_style(char **s)
 	cp->style_was_set = TRUE;
     }
     /* if (cp->style_was_set) dia_style(cp); */
+#endif
 }
 
 static void dia_textpara(GVJ_t * job, point p, textpara_t * para)
 {
+#if 0
     int anchor;
     pointf mp;
     context_t *cp;
@@ -490,10 +490,12 @@ static void dia_textpara(GVJ_t * job, point p, textpara_t * para)
 	       mp.x + (Scale * (para->width) / 2.), mp.y + 0.4);
     gvdevice_fputs(job, "      </dia:attribute>\n");
     gvdevice_fputs(job, "    </dia:object>\n");
+#endif
 }
 
 static void dia_ellipse(GVJ_t * job, pointf *A, int filled)
 {
+#if 0
     pointf cp, rp;
     int nodeId;
 
@@ -546,13 +548,14 @@ static void dia_ellipse(GVJ_t * job, pointf *A, int filled)
     dia_style(job, &cstk[SP]);
     dia_stylefill(job, &cstk[SP], filled);
     gvdevice_fputs(job, "    </dia:object>\n");
+#endif
 }
 
 
 int ellipse_connection(pointf cp, pointf p)
 {
     int conn = 0;
-
+#if 0
     if (cp.x == p.x) {
 	if (cp.y > p.y)
 	    conn = 1;
@@ -574,13 +577,15 @@ int ellipse_connection(pointf cp, pointf p)
 	else
 	    conn = 0;
     }
-
+#endif
     return conn;
 }
 
 
 int box_connection(node_t * n, pointf p)
 {
+    int conn = 0;
+#if 0
     int i = 0, j, sides, conn = 0, peripheries, z;
     double xsize, ysize, mindist2 = 0.0, dist2;
     polygon_t *poly;
@@ -641,7 +646,7 @@ int box_connection(node_t * n, pointf p)
 	}
 	z++;
     }
-
+#endif
     return conn;
 }
 
@@ -649,6 +654,7 @@ int box_connection(node_t * n, pointf p)
 static void
 dia_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
+#if 0
     int i, conn_h, conn_t;
     pointf p, firstp = { 0, 0 }, llp = {
     0, 0}, urp = {
@@ -776,12 +782,14 @@ dia_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end, 
 
     gvdevice_fputs(job, "      </dia:connections>\n");
     gvdevice_fputs(job, "    </dia:object>\n");
+#endif
 }
 
 
 
 static void dia_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
+#if 0
     int i;
     pointf p, firstp = { 0, 0 }, llp = {
     0, 0}, urp = {
@@ -834,10 +842,12 @@ static void dia_polygon(GVJ_t * job, pointf * A, int n, int filled)
     dia_style(job, &cstk[SP]);
     dia_stylefill(job, &cstk[SP], filled);
     gvdevice_fputs(job, "    </dia:object>\n");
+#endif
 }
 
 static void dia_polyline(GVJ_t * job, pointf * A, int n)
 {
+#if 0
     int i;
     pointf p, firstp = { 0, 0 }, llp = {
     0, 0}, urp = {
@@ -871,6 +881,7 @@ static void dia_polyline(GVJ_t * job, pointf * A, int n)
 	       llp.x - .11, llp.y - .11, urp.x + .11, urp.y + .11);
     gvdevice_fputs(job, "      </dia:attribute>\n");
     gvdevice_fputs(job, "    </dia:object>\n");
+#endif
 }
 
 gvrender_engine_t dia_engine = {
@@ -891,26 +902,28 @@ gvrender_engine_t dia_engine = {
     0, 			/* dia_library_shape */
 };
 
-/* NB.  List must be LANG_C sorted */
-static char *dia_knowncolors[] = {
-    "black", "blue", "cyan", "green", "magenta", "red", "white", "yellow",
-};
-
-
-gvrender_features_t dia_features = {
-    GVDEVICE_BINARY_FORMAT
-    GVDEVICE_COMPRESSED_FORMAT
-      | GVRENDER_Y_GOES_DOWN,	/* flags */
-    DEFAULT_EMBED_MARGIN,	/* default margin - points */
+static gvrender_features_t render_features_dia = {
+    0,                          /* flags */
     4.,                         /* default pad - graph units */
-    {0.,0.},                    /* default page width, height - points */
-    {72.,72.},			/* default dpi */
-    dia_knowncolors,		/* knowncolors */
-    sizeof(dia_knowncolors) / sizeof(char *), /* sizeof knowncolors */
-    RGBA_BYTE,			/* color_type */
+    NULL,                       /* knowncolors */
+    0,                          /* sizeof knowncolors */
+    HSVA_DOUBLE,                /* color_type */
 };
 
-gvplugin_installed_t gvrender_core_dia_types[] = {
-    {FORMAT_DIA, "dia", -1, &dia_engine, &dia_features},
+static gvdevice_features_t device_features_dia = {
+    0,                          /* flags */
+    {0.,0.},                    /* default margin - points */
+    {0.,0.},                    /* default page width, height - points */
+    {72.,72.},                  /* default dpi */
+};
+
+gvplugin_installed_t gvrender_dia_types[] = {
+    {FORMAT_DIA, "dia", -1, &dia_engine, &render_features_dia},
     {0, NULL, 0, NULL, NULL}
 };
+
+gvplugin_installed_t gvdevice_dia_types[] = {
+    {FORMAT_DIA, "dia:dia", -1, NULL, &device_features_dia},
+    {0, NULL, 0, NULL, NULL}
+};
+

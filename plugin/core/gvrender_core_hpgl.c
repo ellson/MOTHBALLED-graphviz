@@ -504,37 +504,27 @@ gvrender_engine_t hpgl_engine = {
     0,				/* hpgl_library_shape */
 };
 
-
-/* NB.  List must be LANG_C sorted */
-static char *hpgl_knowncolors[] = {
-    "black", "blue", "cyan", "green", "magenta", "red", "white", "yellow",
+static gvrender_features_t render_features_hpgl = {
+    0,                          /* flags */
+    4.,                         /* default pad - graph units */
+    NULL,                       /* knowncolors */
+    0,                          /* sizeof knowncolors */
+    HSVA_DOUBLE,                /* color_type */
 };
 
-
-gvrender_features_t hpgl_features = {
-    EMIT_COLORS
-	| GVRENDER_Y_GOES_DOWN,	/* flags */
-    DEFAULT_EMBED_MARGIN,	/* default margin - points */
-    4.,                         /* default pad - graph units */
+static gvdevice_features_t device_features_hpgl = {
+    0,                          /* flags */
+    {0.,0.},                    /* default margin - points */
     {0.,0.},                    /* default page width, height - points */
-    {1440.,1440.},		/* default dpi */
-   	 /* FIXME - this default dpi is a very strange number!!!
-	  * It was picked to make .png usershapes the right size on my screen.
-	  * It happens to be 1.2 * 1200, but I can't explain the 1.2.
-	  * (I was expecting 1.3333 which is 96/72, but thats too big.)
-    	  * Also 1200 is hardcoded in hpgl_begin_graph() instead of using job->dpi 
-          */
-
-	 /* It may be TWIPS, i.e. 20 * POINT_PER_INCH 
-	  *    but that doesn't explain what the 1200 is? */
-
-    hpgl_knowncolors,		/* knowncolors */
-    sizeof(hpgl_knowncolors) / sizeof(char *), /* sizeof knowncolors */
-    RGBA_BYTE,			/* color_type */
-    "hpgl",                     /* imageloader for usershapes */
+    {72.,72.},                  /* default dpi */
 };
 
 gvplugin_installed_t gvrender_hpgl_types[] = {
-    {FORMAT_HPGL, "hpgl", -1, &hpgl_engine, &hpgl_features},
+    {FORMAT_HPGL, "hpgl", -1, &hpgl_engine, &render_features_hpgl},
+    {0, NULL, 0, NULL, NULL}
+};
+
+gvplugin_installed_t gvdevice_hpgl_types[] = {
+    {FORMAT_HPGL, "hpgl:hpgl", -1, NULL, &device_features_hpgl},
     {0, NULL, 0, NULL, NULL}
 };
