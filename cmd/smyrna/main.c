@@ -30,18 +30,36 @@
 #include "viewport.h"
 #include "menucallbacks.h"
 #include "gltemplate.h"
+#include "memory.h"
 #ifdef ENABLE_NLS
 #include "libintl.h"
 #endif
 
+#ifdef G_OS_WIN32
 gchar *package_prefix;
 gchar *package_data_dir;
+#endif
 gchar *package_locale_dir;
+static char* smyrnaDir;
+char* smyrnaGlade;
+
+char*
+smyrnaPath (char* suffix)
+{
+    char* buf;
+    if (!smyrnaDir) return NULL;
+    buf = N_NEW(strlen(smyrnaDir)+strlen(suffix)+2,char);
+    sprintf (buf, "%s/%s", smyrnaDir, suffix);
+    return buf;
+}
 
 int main(int argc, char *argv[])
 {
     GdkGLConfig *glconfig;
+    char* smyrnaDir;
     load_attributes();
+
+    smyrnaDir = getenv ("SMYRNA_PATH");
 
 #ifdef G_OS_WIN32
     package_prefix =
@@ -49,6 +67,11 @@ int main(int argc, char *argv[])
     package_data_dir = g_build_filename(package_prefix, "share", NULL);
     package_locale_dir =
 	g_build_filename(package_prefix, "share", "locale", NULL);
+#else
+    if (smyrnaDir)
+	package_locale_dir = g_build_filename(smyrnaDir, "locale", NULL);
+    else
+	package_locale_dir = g_build_filename(SMYRNA_PATH, "locale", NULL);
 #endif	/* # */
 #ifdef ENABLE_NLS
     bindtextdomain(GETTEXT_PACKAGE, package_locale_dir);
@@ -65,7 +88,10 @@ int main(int argc, char *argv[])
 #ifdef _WIN32
 #define GTKTOPVIEW_ICONSDIR "C:\\Projects\\ATT\\GTK\\GTKTest2\\GUI\\images\\"
 #endif
-    xml = glade_xml_new(SMYRNA_GLADE, NULL, NULL);
+    if (!(smyrnaGlade = smyrnaPath ("gui/smyrna.glade"))) {
+	smyrnaGlade = SMYRNA_GLADE;
+    }
+    xml = glade_xml_new(smyrnaGlade, NULL, NULL);
     gladewidget = glade_xml_get_widget(xml, "frmMain");
     gtk_widget_show(gladewidget);
     g_signal_connect((gpointer) gladewidget, "destroy",
@@ -85,8 +111,8 @@ int main(int argc, char *argv[])
 #ifdef G_OS_WIN32
     g_free(package_prefix);
     g_free(package_data_dir);
-    g_free(package_locale_dir);
 #endif
+    g_free(package_locale_dir);
     clear_viewport(view);
     return 0;
 }

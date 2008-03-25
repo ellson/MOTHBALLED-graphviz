@@ -2,6 +2,7 @@ guidir = $(pkgdatadir)/gui
 icondir = $(pkgdatadir)/icons
 
 AM_CPPFLAGS = \
+	-DSMYRNA_PATH=\""$(pkgdatadir)"\" \
 	-DSMYRNA_GLADE=\""$(guidir)/smyrna.glade"\" \
 	-DSMYRNA_ATTRS=\""$(guidir)/attrs.txt"\" \
 	-DSMYRNA_FONT=\""$(guidir)/arial.tga"\" \

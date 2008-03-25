@@ -351,6 +351,8 @@ typedef struct _ViewInfo {
 extern ViewInfo *view;
 extern GtkMessageDialog *Dlg;
 extern int respond;
+extern char* smyrnaPath (char* suffix);
+extern char* smyrnaGlade;
 
 extern void glexpose();
 

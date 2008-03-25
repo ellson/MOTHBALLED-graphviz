@@ -954,6 +954,13 @@ void menu_click_alpha_plus(void *p)
 #define SMYRNA_ICON_FISHEYE "c:/fisheye.raw"
 #endif
 
+static char* smyrna_icon_pan;
+static char* smyrna_icon_zoom;
+static char* smyrna_icon_zoomplus;
+static char* smyrna_icon_zoomminus;
+static char* smyrna_icon_fisheye;
+
+#define SET_PATH(var,sfx,dflt) if (!(var=smyrnaPath(sfx))) var = dflt
 
 glCompSet *glcreate_gl_topview_menu()
 {
@@ -961,6 +968,15 @@ glCompSet *glcreate_gl_topview_menu()
     glCompPanel *p;
     glCompButton *b;
     glCompLabel *l;
+
+    if (!smyrna_icon_pan) {
+	SET_PATH(smyrna_icon_pan,"icons/pan.raw",SMYRNA_ICON_PAN);
+	SET_PATH(smyrna_icon_zoom,"icons/zoom.raw",SMYRNA_ICON_ZOOM);
+	SET_PATH(smyrna_icon_zoomplus,"icons/zoomplus.raw",SMYRNA_ICON_ZOOMPLUS);
+	SET_PATH(smyrna_icon_zoomminus,"icons/zoomminus.raw",SMYRNA_ICON_ZOOMMINUS);
+	SET_PATH(smyrna_icon_fisheye,"icons/fisheye.raw",SMYRNA_ICON_FISHEYE);
+    }
+
     s->panelcount = 0;
     s->panels = '\0';
     s->buttoncount = 0;
