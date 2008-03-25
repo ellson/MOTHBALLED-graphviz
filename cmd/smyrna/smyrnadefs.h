@@ -43,13 +43,14 @@
 #include "glcompset.h"
 #include "hierarchy.h"
 
-#define IS_TEST_MODE_ON				0
-#define	DEFAULT_MAGNIFIER_WIDTH		300
-#define	DEFAULT_MAGNIFIER_HEIGHT	225
-#define DEFAULT_MAGNIFIER_KTS		3	//x3
-#define DEFAULT_FISHEYE_MAGNIFIER_RADIUS 250;
-#define TOP_VIEW_USER_ADVANCED_MODE	0
-#define TOP_VIEW_USER_NOVICE_MODE	1
+#define IS_TEST_MODE_ON							0
+#define	DEFAULT_MAGNIFIER_WIDTH					300
+#define	DEFAULT_MAGNIFIER_HEIGHT				225
+#define DEFAULT_MAGNIFIER_KTS					3	//x3
+#define DEFAULT_FISHEYE_MAGNIFIER_RADIUS		250
+#define TOP_VIEW_USER_ADVANCED_MODE				0
+#define TOP_VIEW_USER_NOVICE_MODE				1
+#define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"C:\\GTK\\2.0\\bin\\attr_template.dot"
 
 //mouse modes
 #define MM_PAN					0
@@ -75,7 +76,7 @@
 #define NODE_ZOOM_LIMIT	-25.3
 #define NODE_CIRCLE_LIMIT	-7.3
 
-
+enum { nodshapedot,nodeshapecircle} node_shape;
 
 typedef struct {
     float R;
@@ -83,6 +84,7 @@ typedef struct {
     float B;
     float A;			//Alpha
 } RGBColor;
+
 typedef struct {
     GtkButton **gtkhostbtn;
     int gtkhostbtncount;
@@ -127,8 +129,8 @@ typedef struct {
     topview_node *Node2;
     RGBColor Color;
     int update_required;
-
 } topview_edge;
+
 typedef struct {
     topview_node *Nodes;
     topview_edge *Edges;
@@ -139,9 +141,8 @@ typedef struct {
     topviewdata *TopviewData;
     void *customptr;
     Hierarchy *h;
-
-
 } topview;
+
 enum {
     COL_NAME = 0,
     COL_FILENAME,
@@ -248,105 +249,126 @@ typedef struct _fisheye_magnifier {
     int fisheye_distortion_fac;
 } fisheye_magnifier;
 
-typedef struct _ViewInfo {
-    /*view variables */
-    float panx;
-    float pany;
-    float panz;
-    float prevpanx;
-    float prevpany;
-    float prevpanz;
-    float zoom;
+typedef struct _ViewInfo
+{
+	/*view variables*/
+	float panx;
+	float pany;
+	float panz;
+	float prevpanx;
+	float prevpany;
+	float prevpanz;
+	float zoom;
 
-    /*clipping coordinates, to avoid unnecesarry rendering */
-    float clipX1, clipX2, clipY1, clipY2, clipZ1, clipZ2;
+	/*clipping coordinates, to avoid unnecesarry rendering*/
+	float clipX1,clipX2,clipY1,clipY2,clipZ1,clipZ2;
 
-    /*background color */
-    RGBColor bgColor;
-    /*default pen color */
-    RGBColor penColor;
-    /*default fill color */
-    RGBColor fillColor;
-    /*highlighted Node Color */
-    RGBColor highlightedNodeColor;
-    /*highlighted Edge Color */
-    RGBColor highlightedEdgeColor;
-    /*grid color */
-    RGBColor gridColor;		//grid color
-    /*border color */
-    RGBColor borderColor;
-    /*selected node color */
-    RGBColor selectedNodeColor;
-    /*selected edge color */
-    RGBColor selectedEdgeColor;
+	/*background color*/
+	RGBColor bgColor;
+	/*default pen color*/
+	RGBColor penColor;
+	/*default fill color*/
+	RGBColor fillColor;
+	/*highlighted Node Color*/
+	RGBColor highlightedNodeColor;
+	/*highlighted Edge Color*/
+	RGBColor highlightedEdgeColor;
+	/*grid color*/
+	RGBColor gridColor;	//grid color
+	/*border color*/
+	RGBColor borderColor;
+	/*selected node color*/
+	RGBColor selectedNodeColor;
+	/*selected edge color*/
+	RGBColor selectedEdgeColor;
 
-    /*default line width */
-    float LineWidth;
+	/*default line width*/
+	float LineWidth;
+	
+	/*grid is drawn if this variable is 1*/
+	int gridVisible;	
+	/*grid cell size in gl coords system*/
+	float gridSize;	//grid cell size
 
-    /*grid is drawn if this variable is 1 */
-    int gridVisible;
-    /*grid cell size in gl coords system */
-    float gridSize;		//grid cell size
+	/*draws a border in border colors if it is 1*/
+	int bdVisible;	//if borders are visible (boundries of the drawing,
+	/*border coordinates, needs to be calculated for each graph*/
 
-    /*draws a border in border colors if it is 1 */
-    int bdVisible;		//if borders are visible (boundries of the drawing,
-    /*border coordinates, needs to be calculated for each graph */
+	/*randomize node colors or use default node color*/
+	int rndNodeColor;
+
+	/*randomize edge colors or use default edge color*/
+	int rndEdgeColor;
+	/*Font Size*/
+	int FontSize;
 
 
+	float bdxLeft,bdyTop,bdzTop;	
+	float bdxRight,bdyBottom,bdzBottom; 
 
-    float bdxLeft, bdyTop, bdzTop;
-    float bdxRight, bdyBottom, bdzBottom;
+	/*reserved , not being used yet*/
+	enum GEunit unit;	//default pixels :0  
 
-    /*reserved , not being used yet */
-    enum GEunit unit;		//default pixels :0  
+	/*variable to hold mouse coordinates temporarily*/
+	float GLx,GLy,GLz;		
+	/*this is second  set of mouse coordinates holder for, it is needed to draw a rectangle with mouse*/
+	float GLx2,GLy2,GLz2;		
 
-    /*variable to hold mouse coordinates temporarily */
-    float GLx, GLy, GLz;
-    /*this is second  set of mouse coordinates holder for, it is needed to draw a rectangle with mouse */
-    float GLx2, GLy2, GLz2;
+	/*screen window size in 2d*/	
+	int w,h;
+	/*graph pointer to hold loaded graphs*/
+	Agraph_t** g;
+	/*number of graphs loaded*/
+	int graphCount;		
+	/*active graph*/
+	int activeGraph; 
 
-    /*screen window size in 2d */
-    int w, h;
-    /*graph pointer to hold loaded graphs */
-    Agraph_t **g;
-    /*number of graphs loaded */
-    int graphCount;
-    /*active graph */
-    int activeGraph;
+	/*texture data*/
+	int texture;	/*1 texturing enabled, 0 disabled*/	
+	/*opengl depth value to convert mouse to GL coords*/
+	float GLDepth;		
 
-     /**/ int FontSize;
-    /*texture data */
-    int texture;		/*1 texturing enabled, 0 disabled */
-    /*opengl depth value to convert mouse to GL coords */
-    float GLDepth;
+	/*stores the info about status of mouse,pressed? what button ? where?*/
+	mouse_attr mouse;
 
-    /*stores the info about status of mouse,pressed? what button ? where? */
-    mouse_attr mouse;
+	/*selection object,refer to smyrnadefs.h for more info*/
+	selection Selection;
 
-    /*selection object,refer to smyrnadefs.h for more info */
-    selection Selection;
+	/*rectangular magnifier object*/
+	magnifier mg;
+	/*fisheye magnifier object*/
+	fisheye_magnifier fmg;
 
-    /*rectangular magnifier object */
-    magnifier mg;
-    /*fisheye magnifier object */
-    fisheye_magnifier fmg;
+	/*data attributes are read from graph's attributes DataAttribute1 and DataAttribute2*/
+	char* node_data_attribute1;	/*for topview graphs this is the node data attribute to put as label*/
+	char* node_data_attribute2;	/*for topview graphs this is the node data attribute to be stored and used for something else*/
 
-    /*data attributes are read from graph's attributes DataAttribute1 and DataAttribute2 */
-    char *node_data_attribute1;	/*for topview graphs this is the node data attribute to put as label */
-    char *node_data_attribute2;	/*for topview graphs this is the node data attribute to be stored and used for something else */
+	/*0 advanced users with editing options 1 nonice users just navigate (glmenu system)*/
+	int topviewusermode;	
+	/*this should not be confused with graphviz node shapes, it can be dot or circles (dots are rendered mych faster, circle looks handsome, if graph is ulta large go with dot*/
+//	node_shape nodeshape;
+	/*if true and nodeshape is nodeshapecircle , radius of nodes changes with degree*/
+	int nodesizewithdegree;
 
-    /*0 advanced users with editing options 1 nonice users just navigate (glmenu system) */
-    int topviewusermode;
+	/*open gl canvas, used to be a globa variable before looks better wrapped in viewinfo*/
+	GtkWidget *drawing_area; 
 
-    /*open gl canvas, used to be a globa variable before looks better wrapped in viewinfo */
-    GtkWidget *drawing_area;
+	/*some boolean variable for variety hacks used in the software*/
+	int SignalBlock;
 
-    /*some boolean variable for variety hacks used in the software */
-    int SignalBlock;
-
-    /*Topview data structure, refer topview.h for more info */
-    topview *Topview;
-} ViewInfo;
+	/*Topview data structure, refer topview.h for more info*/
+	topview* Topview;
+	/*listed default visual graph attributes are stored in this graph
+	bgcolor;
+	bordercolor;
+	gridcolor;
+	highlightednodecolor;
+	selectednodecolor;
+	selectededgecolor;
+	bdvisible;
+	gridvisible; */
+	Agraph_t* default_attributes;
+}ViewInfo;
 
 extern ViewInfo *view;
 extern GtkMessageDialog *Dlg;
@@ -355,5 +377,6 @@ extern char* smyrnaPath (char* suffix);
 extern char* smyrnaGlade;
 
 extern void glexpose();
+
 
 #endif

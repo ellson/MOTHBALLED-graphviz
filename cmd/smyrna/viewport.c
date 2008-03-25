@@ -27,6 +27,8 @@
 #include "topview.h"
 #include "gltemplate.h"
 #include "colorprocs.h"
+#include "topviewsettings.h"
+
 
 
 #define countof( array ) ( sizeof( array )/sizeof( array[0] ) )
@@ -53,7 +55,9 @@ void clear_viewport(ViewInfo * view)
 void init_viewport(ViewInfo * view)
 {
 
-    //init graphs
+    FILE *input_file;
+
+	//init graphs
     view->g = NULL;		//no graph, gl screen should check it
     view->graphCount = 0;	//and disable interactivity if count is zero
 
@@ -140,6 +144,20 @@ void init_viewport(ViewInfo * view)
     view->Selection.Anti = 0;
     view->Topview = malloc(sizeof(topview));
     view->Topview->topviewmenu = '\0';
+	/*loading default visual attributes*/
+    input_file = fopen(DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE, "r");
+    if (input_file == NULL)
+	{
+		g_print("default attributes template graph is not found! Program is being terminated....");
+		exit(-1);
+	}
+
+	else if (!(view->default_attributes = agread(input_file, NIL(Agdisc_t *))))
+	{
+		g_print("Could not load default attributes template graph! Program is being terminated....");
+		exit(-1);
+	}
+
 }
 
 int add_graph_to_viewport_from_file(char *fileName)
@@ -155,12 +173,14 @@ int add_graph_to_viewport_from_file(char *fileName)
 	view->g[view->graphCount - 1] = graph;
 	view->activeGraph = view->graphCount - 1;
 	//GUI update , graph combo box on top-right should be updated
+	load_settings_from_graph(view->default_attributes);
 	refreshControls(view);
 	return 1;
     } else
 	return 0;
 
 }
+
 
 int add_new_graph_to_viewport()
 {
@@ -967,3 +987,6 @@ int SetGdkColor(GdkColor * c, char *color) {
 void glexpose() {
     expose_event(view->drawing_area, NULL, NULL);
 }
+
+
+
