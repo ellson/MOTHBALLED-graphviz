@@ -19,6 +19,7 @@
 #include "glTexFontInclude.h"
 #include "topview.h"
 #include "math.h"
+#include "memory.h"
 #include "btree.h"
 #include "viewport.h"
 #include "draw.h"
@@ -188,9 +189,6 @@ void preparetopview(Agraph_t * g, topview * t)
     t->topviewmenu = glcreate_gl_topview_menu();
     load_host_buttons(t, g, t->topviewmenu);
 //      prepare_topological_fisheye(t);
-
-
-
 }
 
 void drawTopViewGraph(Agraph_t * g)
@@ -802,6 +800,17 @@ void local_zoom(topview * t)
 	}
     }
 }
+static double dist(double x1, double y1, double x2, double y2)
+{
+    return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+}
+static double G(double x)
+{
+    // distortion function for fisheye display
+    return (view->fmg.fisheye_distortion_fac +
+	    1) * x / (view->fmg.fisheye_distortion_fac * x + 1);
+}
+
 void fisheye_polar(double x_focus, double y_focus, topview * t)
 {
     int i;
@@ -855,21 +864,6 @@ void originate_distorded_coordinates(topview * t)
 	t->Nodes[i].distorted_y = t->Nodes[i].y;
 	t->Nodes[i].zoom_factor = 1;
     }
-}
-
-
-
-
-
-double dist(double x1, double y1, double x2, double y2)
-{
-    return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-}
-double G(double x)
-{
-    // distortion function for fisheye display
-    return (view->fmg.fisheye_distortion_fac +
-	    1) * x / (view->fmg.fisheye_distortion_fac * x + 1);
 }
 
 void test_callback()
@@ -1142,17 +1136,25 @@ void prepare_topological_fisheye(topview * t)
   When done:
     release (hierarchy);
 */
-    double *x_coords = 0;	// initial x coordinates
-    double *y_coords = 0;	// initial y coordinates
+    double *x_coords = N_NEW(t->Nodecount,double);  // initial x coordinates
+    double *y_coords = N_NEW(t->Nodecount,double);  // initial y coordinates
     focus_t *fs;
     int ne;
-    int ind;
+    int i, ind;
     int closest_fine_node;
     int cur_level = 0;
     hierparms_t parms;
+    topview_node* np;
     vtx_data *graph = makeGraph(t, &ne);
+
+    for (i = 0, np = t->Nodes; i < t->Nodecount; i++, np++) {
+	x_coords[i] = np->x; 
+	y_coords[i] = np->y; 
+    }
     t->h = makeHier(t->Nodecount, ne, graph, x_coords, y_coords);
     freeGraph(graph);
+    free (x_coords);
+    free (y_coords);
     fs = initFocus(t->Nodecount);	// create focus set
 
     find_closest_active_node(t->h, 50.0, 50.0, &closest_fine_node);
@@ -1163,27 +1165,22 @@ void prepare_topological_fisheye(topview * t)
     fs->y_foci[0] =
 	t->h->geom_graphs[cur_level][closest_fine_node].y_coord;
 
-
     set_active_levels(t->h, fs->foci_nodes, fs->num_foci);
     positionAllItems(t->h, fs, &parms);
     //DEBUG
     //show coordinates and active levels
     for (ind; ind < t->Nodecount; ind++) {
 
-	printf("original coords (%f,%f)\n", t->Nodes[ind].x,
+	fprintf(stderr, "original coords (%f,%f)\n", t->Nodes[ind].x,
 	       t->Nodes[ind].y);
-	printf("local coords (%f,%f)\n",
+	fprintf(stderr, "local coords (%f,%f)\n",
 	       t->h->geom_graphs[cur_level][ind].local_x_coord,
 	       t->h->geom_graphs[cur_level][ind].local_y_coord);
-	printf("physical coords (%f,%f)\n",
+	fprintf(stderr, "physical coords (%f,%f)\n",
 	       t->h->geom_graphs[cur_level][ind].new_physical_x_coord,
 	       t->h->geom_graphs[cur_level][ind].new_physical_y_coord);
-	printf("local coords (%f,%f)\n",
+	fprintf(stderr, "local coords (%f,%f)\n",
 	       t->h->geom_graphs[cur_level][ind].local_x_coord,
 	       t->h->geom_graphs[cur_level][ind].local_y_coord);
     }
-
-
-
-
 }
