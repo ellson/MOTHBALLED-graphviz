@@ -986,14 +986,14 @@ glCompSet *glcreate_gl_topview_menu()
     p->data = 0;
     glCompSetAddPanel(s, p);
 
-    b = glCompButtonNew(5, 7, 75, 25, "CONTROL", '\0', 0, 0);
+    b = glCompButtonNew(5, 7, 75, 25, "BROWSE", '\0', 0, 0);
     b->panel = p;
     b->groupid = 1;
     b->customptr = view;
     glCompSetAddButton(s, b);
     b->callbackfunc = menu_click_control;
 
-    b = glCompButtonNew(85, 7, 75, 25, "DATA", '\0', 0, 0);
+    b = glCompButtonNew(85, 7, 75, 25, "SHOW", '\0', 0, 0);
     b->panel = p;
     b->customptr = view;
     b->groupid = 1;
