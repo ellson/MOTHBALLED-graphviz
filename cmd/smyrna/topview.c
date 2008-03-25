@@ -118,14 +118,18 @@ void preparetopview(Agraph_t * g, topview * t)
 	    else
 		str = agnameof(v);
 	    t->Nodes[ind].Label = strdup(str);
-
 	}
+	else
+		t->Nodes[ind].Label ='\0';
 	if (d_attr2) {
 	    str = agget(v, d_attr2);
 	    if (str) {
 		t->Nodes[ind].Label2 = strdup(str);
 	    }
 	}
+	else
+		t->Nodes[ind].Label2 ='\0';
+
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
 	    aghead(e);
 	    t->Edges[ind2].Hnode = aghead(e);
@@ -964,6 +968,7 @@ static char* smyrna_icon_fisheye;
 
 glCompSet *glcreate_gl_topview_menu()
 {
+
     glCompSet *s = malloc(sizeof(glCompSet));
     glCompPanel *p;
     glCompButton *b;
@@ -1002,6 +1007,7 @@ glCompSet *glcreate_gl_topview_menu()
     b->customptr = view;
     glCompSetAddButton(s, b);
     b->callbackfunc = menu_click_control;
+
 
     b = glCompButtonNew(85, 7, 75, 25, "SHOW", '\0', 0, 0);
     b->panel = p;
@@ -1185,7 +1191,7 @@ void prepare_topological_fisheye(topview * t)
     positionAllItems(t->h, fs, &parms);
     //DEBUG
     //show coordinates and active levels
-    for (ind; ind < t->Nodecount; ind++) {
+    for (ind=0; ind < t->Nodecount; ind++) {
 
 	fprintf(stderr, "original coords (%f,%f)\n", t->Nodes[ind].x,
 	       t->Nodes[ind].y);
