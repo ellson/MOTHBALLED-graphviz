@@ -248,10 +248,12 @@ edge_t *debug_getedge(graph_t * g, char *s0, char *s1)
 static unsigned char userbuf[SMALLBUF];
 static agxbuf xb;
 
+#if 0
 static void cleanup(void)
 {
     agxbfree(&xb);
 }
+#endif
 #endif
 
 char *gvUsername(void)
@@ -262,7 +264,9 @@ char *gvUsername(void)
     struct passwd *p;
     if (first) {
 	agxbinit(&xb, SMALLBUF, userbuf);
+#if 0
 	atexit(cleanup);
+#endif
 	first = 0;
     }
     p = (struct passwd *) getpwuid(getuid());

@@ -2528,10 +2528,12 @@ static int style_token(char **s, agxbuf * xb)
 static unsigned char outbuf[SMALLBUF];
 static agxbuf ps_xb;
 
+#if 0
 static void cleanup(void)
 {
     agxbfree(&ps_xb);
 }
+#endif
 
 /* parse_style:
  * This is one of the worse internal designs in graphviz.
@@ -2554,7 +2556,9 @@ char **parse_style(char *s)
 
     if (is_first) {
 	agxbinit(&ps_xb, SMALLBUF, outbuf);
+#if 0
 	atexit(cleanup);
+#endif
 	is_first = FALSE;
     }
 
