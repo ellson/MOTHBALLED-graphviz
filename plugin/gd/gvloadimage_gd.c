@@ -53,7 +53,7 @@ static gdImagePtr gd_loadimage(GVJ_t * job, usershape_t *us)
     }
     if (!us->data) { /* read file into cache */
 	if (!gvusershape_file_access(us))
-	    return;
+	    return NULL;
 	switch (us->type) {
 #if 0
 	    case FT_GD:
