@@ -5,3 +5,4 @@
 .libs
 Makefile
 Makefile.in
+*.h
