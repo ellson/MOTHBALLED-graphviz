@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
 {
     GdkGLConfig *glconfig;
     char* smyrnaDir;
-    load_attributes();
+
+	load_attributes();
 
     smyrnaDir = getenv ("SMYRNA_PATH");
 
@@ -82,7 +83,9 @@ int main(int argc, char *argv[])
     init_viewport(view);
 
 
-    gtk_set_locale();
+
+
+	gtk_set_locale();
     gtk_init(&argc, &argv);
 
 #ifdef _WIN32

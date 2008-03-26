@@ -27,6 +27,7 @@
 
 
 void init_viewport(ViewInfo * view);
+void set_viewport_settings_from_template  (ViewInfo * view,Agraph_t *g);
 void clear_viewport(ViewInfo * view);
 int add_graph_to_viewport_from_file(char *fileName);	//returns 1 if successfull else 0 ++
 int add_new_graph_to_viewport();	//returns graph index , otherwise -1

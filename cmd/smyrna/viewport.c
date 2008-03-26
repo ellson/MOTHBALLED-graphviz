@@ -57,6 +57,22 @@ void init_viewport(ViewInfo * view)
 
     FILE *input_file;
 
+	/*loading default visual attributes*/
+    input_file = fopen(DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE, "r");
+    if (input_file == NULL)
+	{
+		g_print("default attributes template graph is not found! Program is being terminated....");
+		exit(-1);
+	}
+
+	else if (!(view->default_attributes = agread(input_file, NIL(Agdisc_t *))))
+	{
+		g_print("Could not load default attributes template graph! Program is being terminated....");
+		exit(-1);
+	}
+
+
+
 	//init graphs
     view->g = NULL;		//no graph, gl screen should check it
     view->graphCount = 0;	//and disable interactivity if count is zero
@@ -74,7 +90,7 @@ void init_viewport(ViewInfo * view)
     view->borderColor.B = 0;
     view->borderColor.A = 1;
 
-    view->bdVisible = 1;	//show borders red
+    view->bdVisible =1;	//show borders red
 
     view->gridSize = 10;
     view->gridColor.R = 0.5;
@@ -144,21 +160,142 @@ void init_viewport(ViewInfo * view)
     view->Selection.Anti = 0;
     view->Topview = malloc(sizeof(topview));
     view->Topview->topviewmenu = '\0';
-	/*loading default visual attributes*/
-    input_file = fopen(DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE, "r");
-    if (input_file == NULL)
-	{
-		g_print("default attributes template graph is not found! Program is being terminated....");
-		exit(-1);
-	}
-
-	else if (!(view->default_attributes = agread(input_file, NIL(Agdisc_t *))))
-	{
-		g_print("Could not load default attributes template graph! Program is being terminated....");
-		exit(-1);
-	}
+	set_viewport_settings_from_template  (view,view->default_attributes);
 
 }
+static char* get_attribute_value(char* attr,ViewInfo * view,Agraph_t *g)
+{
+	char* buf;
+	buf=agget(g,attr);
+	if ((!buf)||(strcmp(buf,"")==0))
+		buf=agget(view->default_attributes,attr);
+	return buf;
+
+}
+void set_viewport_settings_from_template  (ViewInfo * view,Agraph_t *g)
+{
+    gvcolor_t cl;
+	char* buf;
+	/*graph [antialiasing=1,
+		bgcolor="#ffffff",
+		bordercolor="#38eb29",
+		bordercoloralpha="1",
+		bordervisible=1,
+		defaultfontname=1,
+		defaultfontsize=52,
+		gridcolor="#6033d8",
+		gridcoloralpha="1",
+		gridvisible=1,
+		highlightededgecolor="#c41b50",
+		highlightededgecoloralpha="1",
+		highlightednodecolor="#d1cd24",
+		highlightednodecoloralpha="1",
+		defaultlinewidth=1
+		nodesizewithdegree=1,
+		randomizeedgecolors=1,
+		randomizenodecolors=1,
+		selectededgecolor="#ffc0cb",
+		selectededgecoloralpha="1",
+		selectednodecolor="#8ce61d",
+		selectednodecoloralpha
+		gridcoloralpha="1",
+		defaultmagnifierwidth="300",
+		defaultmagnifierheight="200",
+		defaultmagnifierkts="5",
+		defaultfisheyemagnifierradius="250"
+		usermode=1
+	];
+	border color*/
+	colorxlate(get_attribute_value("bordercolor",view,g), &cl, RGBA_DOUBLE);
+	view->borderColor.R = (float)cl.u.RGBA[0];
+    view->borderColor.G = (float)cl.u.RGBA[1];
+    view->borderColor.B = (float)cl.u.RGBA[2];
+
+	view->borderColor.A = (float)atof(get_attribute_value("bordercoloralpha",view,g));
+
+
+	view->bdVisible = (float)atof(get_attribute_value("bordervisible",view,g));
+	
+
+	buf=get_attribute_value("gridcolor",view,g);
+	colorxlate(buf, &cl, RGBA_DOUBLE);
+	view->gridColor.R = (float)cl.u.RGBA[0];
+    view->gridColor.G = (float)cl.u.RGBA[1];
+    view->gridColor.B = (float)cl.u.RGBA[2];
+	view->gridColor.A = (float)atof(get_attribute_value("gridcoloralpha",view,g));
+
+	
+	
+	view->gridSize = (float)atof(buf=get_attribute_value("gridsize",view,g));
+
+	view->gridVisible = atoi(get_attribute_value("gridvisible",view,g));
+
+    //mouse mode=pan
+
+    //background color , default white
+	colorxlate(get_attribute_value("bgcolor",view,g), &cl, RGBA_DOUBLE);
+
+	view->bgColor.R = (float)cl.u.RGBA[0];
+    view->bgColor.G = (float)cl.u.RGBA[1];
+    view->bgColor.B =(float) cl.u.RGBA[2];
+    view->bgColor.A = 1;
+
+    //selected nodes are drawn with this color
+	colorxlate(get_attribute_value("selectednodecolor",view,g), &cl, RGBA_DOUBLE);
+	view->selectedNodeColor.R = (float)cl.u.RGBA[0];
+    view->selectedNodeColor.G = (float)cl.u.RGBA[1];
+    view->selectedNodeColor.B = (float)cl.u.RGBA[2];
+    view->selectedNodeColor.A = (float)atof(get_attribute_value("selectednodecoloralpha",view,g));
+	//selected edge are drawn with this color
+	colorxlate(get_attribute_value("selectededgecolor",view,g), &cl, RGBA_DOUBLE);
+	view->selectedEdgeColor.R = (float)cl.u.RGBA[0];
+    view->selectedEdgeColor.G = (float)cl.u.RGBA[1];
+    view->selectedEdgeColor.B = (float)cl.u.RGBA[2];
+    view->selectedEdgeColor.A = (float)atof(get_attribute_value("selectededgecoloralpha",view,g));
+
+
+	colorxlate(get_attribute_value("highlightednodecolor",view,g), &cl, RGBA_DOUBLE);
+	view->highlightedNodeColor.R = (float)cl.u.RGBA[0];
+    view->highlightedNodeColor.G = (float)cl.u.RGBA[1];
+    view->highlightedNodeColor.B = (float)cl.u.RGBA[2];
+    view->highlightedNodeColor.A = (float)atof(get_attribute_value("highlightednodecoloralpha",view,g));
+
+	buf=agget(g,"highlightededgecolor");
+	colorxlate(get_attribute_value("highlightededgecolor",view,g), &cl, RGBA_DOUBLE);
+	view->highlightedEdgeColor.R = (float)cl.u.RGBA[0];
+    view->highlightedEdgeColor.G = (float)cl.u.RGBA[1];
+    view->highlightedEdgeColor.B = (float)cl.u.RGBA[2];
+    view->highlightedEdgeColor.A = (float)atof(get_attribute_value("highlightededgecoloralpha",view,g));
+
+
+/*
+
+but here i am, on the road again
+here i am, up on the stage
+here i go, playing the star again
+there i go, turn the page
+
+*/
+
+	
+	
+	/*default line width*/
+    view->LineWidth = (float)atof(get_attribute_value("defaultlinewidth",view,g));
+	view->FontSize = atoi(get_attribute_value("defaultfontsize",view,g));
+
+	view->topviewusermode = atoi(get_attribute_value("usermode",view,g));
+	get_attribute_value("defaultmagnifierwidth",view,g);
+	view->mg.width = atoi(get_attribute_value("defaultmagnifierwidth",view,g));
+	view->mg.height = atoi(get_attribute_value("defaultmagnifierheight",view,g));
+
+	view->mg.kts = (float)atof(get_attribute_value("defaultmagnifierkts",view,g));
+
+	view->fmg.R = atoi(get_attribute_value("defaultfisheyemagnifierradius",view,g));
+
+	glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
+
+}
+
 
 int add_graph_to_viewport_from_file(char *fileName)
 {

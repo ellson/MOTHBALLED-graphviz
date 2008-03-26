@@ -203,6 +203,7 @@ static gboolean configure_event(GtkWidget * widget,
     glMatrixMode(GL_MODELVIEW);
     gdk_gl_drawable_gl_end(gldrawable);
 	/*** OpenGL END ***/
+
     return TRUE;
 }
 
