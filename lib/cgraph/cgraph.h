@@ -19,6 +19,10 @@
 
 #include		<cdt.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef FALSE
 #define FALSE (0)
 #endif
@@ -328,7 +332,7 @@ struct Agdatadict_s {		/* set of dictionaries per graph */
 extern Agsym_t *agattr(Agraph_t * g, int kind, char *name, char *value);
 extern Agsym_t *agattrsym(void *obj, char *name);
 extern Agsym_t *agnxtattr(Agraph_t * g, int kind, Agsym_t * attr);
-extern int      agcopyattr(void *old, void *new);
+extern int      agcopyattr(void *oldobj, void *newobj);
 
 extern void *agbindrec(void *obj, char *name, unsigned int size,
 		       int move_to_front);
@@ -433,5 +437,8 @@ and edges are embedded in main graph objects but allocated separately in subgrap
 #undef extern
 #if _PACKAGE_ast
 _END_EXTERNS_
+#endif
+#ifdef __cplusplus
+}
 #endif
 #endif
