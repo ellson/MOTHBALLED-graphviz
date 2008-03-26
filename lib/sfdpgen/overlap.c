@@ -232,7 +232,7 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int dim, real lambda0, real 
   SparseMatrix B;
   real *lambda, *d, *w, diag_d, diag_w, dist;
 
-  assert(SparseMatrix_is_symmetric(A, FALSE));
+  assert((!A) || SparseMatrix_is_symmetric(A, FALSE));
 
   sm = MALLOC(sizeof(struct OverlapSmoother_struct));
   lambda = sm->lambda = MALLOC(sizeof(real)*m);
@@ -343,8 +343,9 @@ static void scale_to_edge_length(int dim, SparseMatrix A, real *x, real avg_labe
   real dist;
   int i;
 
+  if (!A) return;
   dist = average_edge_length(A, dim, x);
-  fprintf(stderr,"avg edge len=%f avg_label-size= %f\n", dist, avg_label_size);
+  if (Verbose) fprintf(stderr,"avg edge len=%f avg_label-size= %f\n", dist, avg_label_size);
 
 
   dist = avg_label_size/MAX(dist, MACHINEACC);
@@ -388,10 +389,10 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
 
   avg_label_size = 0;
   for (i = 0; i < A->m; i++) avg_label_size += label_sizes[i*dim]+label_sizes[i*dim+1];
+  /*  for (i = 0; i < A->m; i++) avg_label_size += 2*MAX(label_sizes[i*dim],label_sizes[i*dim+1]);*/
   avg_label_size /= A->m;
 
   scale_to_edge_length(dim, A, x,4*avg_label_size);
-
   *flag = 0;
 
   for (i = 0; i < ntry; i++){
