@@ -144,7 +144,10 @@ split_by_place(double *place, int *nodes, int first, int last, int *middle)
     while (left < right) {
 	while (left < right && place[nodes[left]] <= place_val)
 	    left++;
-	while (left < right && place[nodes[right]] >= place_val)
+        /* use here ">" and not ">=" to enable robustness
+         * by ensuring that ALL equal values move to the same side
+         */
+	while (left < right && place[nodes[right]] > place_val)
 	    right--;
 	if (left < right) {
 	    temp = nodes[left];
@@ -155,13 +158,17 @@ split_by_place(double *place, int *nodes, int first, int last, int *middle)
 
 	}
     }
-    /* in this point either, left==right (meeting), or left=right+1 (because of (1)) */
-    /* we have to decide to which part the meeting point (or left) belongs. */
+    /* at this point either, left==right (meeting), or 
+     * left=right+1 (because of (1)) 
+     * we have to decide to which part the meeting point (or left) belongs.
+     *
+     * notice that always left>first, because of its initialization
+     */
     if (place[nodes[left]] > place_val)
-	left = left - 1;	/* notice that always left>first, because of its initialization */
+	left = left - 1;
     *middle = left;
-    nodes[first] = nodes[*middle];
-    nodes[*middle] = val;
+    nodes[first] = nodes[left];
+    nodes[left] = val;
 }
 
 double distance_kD(double **coords, int dim, int i, int j)
@@ -195,6 +202,18 @@ void quicksort_placef(float *place, int *ordering, int first, int last)
     }
 }
 
+static int 
+sorted_place(double * place, int * ordering, int first,int last)
+{
+    int i, isSorted = 1; 
+    for (i=first+1; i<=last && isSorted; i++) {
+        if (place[ordering[i-1]]>place[ordering[i]]) {
+            isSorted = 0;
+        }
+    }
+    return isSorted;
+}
+
 /* quicksort_place:
  * For now, we keep the current implementation for stability, but
  * we should consider replacing this with an implementation similar to
@@ -211,6 +230,15 @@ void quicksort_place(double *place, int *ordering, int first, int last)
 #endif
 	quicksort_place(place, ordering, first, middle - 1);
 	quicksort_place(place, ordering, middle + 1, last);
+        /* Checking for "already sorted" dramatically improves running time 
+	 * and robustness (against uneven recursion) when not all values are 
+         * distinct (thefore we expect emerging chunks of equal values)
+	 * it never increased running time even when values were distinct
+         */
+	if (!sorted_place(place,ordering,first,middle-1))
+	    quicksort_place(place,ordering,first,middle-1);
+	if (!sorted_place(place,ordering,middle+1,last))
+	    quicksort_place(place,ordering,middle+1,last);
     }
 }
 
