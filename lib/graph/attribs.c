@@ -129,7 +129,7 @@ static void add_edge_attr(Agraph_t * g, Agsym_t * attr, int isnew)
 	    obj_init_attr(proto->e, attr, isnew);
 }
 
-static Agsym_t *dcl_attr(void *obj, char *name, char *value)
+Agsym_t *agattr(void *obj, char *name, char *value)
 {
     Agsym_t *rv;
 	int isnew = 1;
@@ -167,19 +167,31 @@ Agraph_t *agprotograph()
     return AG.proto_g;
 }
 
+Agnode_t *agprotonode(Agraph_t *g)
+{
+	return g->proto->n;
+}
+
+
+Agedge_t *agprotoedge(Agraph_t *g)
+{
+	return g->proto->e;
+}
+
+
 static void initproto(void)
 {
     Agsym_t *a;
     Agraph_t *g;
     g = AG.proto_g = agopen("ProtoGraph", AGRAPH);
-    a = dcl_attr(g->proto->e, KEY_ID, "");
+    a = agattr(g->proto->e, KEY_ID, "");
     if (a->index != KEYX)
 	abort();
-    a = dcl_attr(g->proto->e, TAIL_ID, "");
+    a = agattr(g->proto->e, TAIL_ID, "");
     if (a->index != TAILX)
 	abort();
     a->printed = FALSE;
-    a = dcl_attr(g->proto->e, HEAD_ID, "");
+    a = agattr(g->proto->e, HEAD_ID, "");
     if (a->index != HEADX)
 	abort();
     a->printed = FALSE;
@@ -191,7 +203,7 @@ Agsym_t *agraphattr(Agraph_t * g, char *name, char *value)
 	g = AG.proto_g;
     if (g != g->root)
 	return NULL;
-    return dcl_attr(g, name, value);
+    return agattr(g, name, value);
 }
 
 Agsym_t *agnodeattr(Agraph_t * g, char *name, char *value)
@@ -200,7 +212,7 @@ Agsym_t *agnodeattr(Agraph_t * g, char *name, char *value)
 	g = AG.proto_g;
     if (g != g->root)
 	return NULL;
-    return dcl_attr(g->proto->n, name, value);
+    return agattr(g->proto->n, name, value);
 }
 
 Agsym_t *agedgeattr(Agraph_t * g, char *name, char *value)
@@ -209,7 +221,7 @@ Agsym_t *agedgeattr(Agraph_t * g, char *name, char *value)
 	g = AG.proto_g;
     if (g != g->root)
 	return NULL;
-    return dcl_attr(g->proto->e, name, value);
+    return agattr(g->proto->e, name, value);
 }
 
 /* attribute dictionaries */
@@ -286,6 +298,30 @@ Agsym_t *agfindattr(void *obj, char *name)
 
     rv = (Agsym_t *) dtmatch(dict->dict, name);
     return rv;
+}
+
+Agsym_t *agfstattr(void *obj)
+{
+	Agdict_t *dict = agdictof(obj);
+	return (Agsym_t *)dtfirst(dict->dict);
+}
+
+Agsym_t *agnxtattr(void *obj, Agsym_t *a)
+{
+	Agdict_t *dict = agdictof(obj);
+	return (Agsym_t *)dtnext(dict->dict, a);
+}
+
+Agsym_t *aglstattr(void *obj)
+{
+	Agdict_t *dict = agdictof(obj);
+	return (Agsym_t *)dtlast(dict->dict);
+}
+
+Agsym_t *agprvattr(void *obj, Agsym_t *a)
+{
+	Agdict_t *dict = agdictof(obj);
+	return (Agsym_t *)dtprev(dict->dict, a);
 }
 
 	/* this is normally called by the aginit() macro */
