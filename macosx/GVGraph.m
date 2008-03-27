@@ -48,8 +48,6 @@ static GVC_t *_graphContext = nil;
 				return nil;
 			}
 			
-			if (_graph)
-				agclose(_graph);
 			_graph = agread(file);
 			fclose(file);
 		}
@@ -65,16 +63,14 @@ static GVC_t *_graphContext = nil;
 			char nullByte = '\0';
 			[memory appendBytes:&nullByte length:1];
 			
-			if (_graph)
-				agclose(_graph);
 			_graph = agmemread((char*)[memory bytes]);
 		}
 
 		_freeLastLayout = NO;
 		_arguments = [[GVGraphArguments alloc] initWithGraph:self];
-		_graphAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self defaultAttributes:_graph->univ->globattr attributeDeclaration:agraphattr];
-		_defaultNodeAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self defaultAttributes:_graph->univ->nodeattr attributeDeclaration:agnodeattr];
-		_defaultEdgeAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self defaultAttributes:_graph->univ->edgeattr attributeDeclaration:agedgeattr];
+		_graphAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self prototype:_graph];
+		_defaultNodeAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self prototype:agprotonode(_graph)];
+		_defaultEdgeAttributes = [[GVGraphDefaultAttributes alloc] initWithGraph:self prototype:agprotoedge(_graph)];
 	}
 	
 	return self;
