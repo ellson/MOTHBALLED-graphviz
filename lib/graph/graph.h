@@ -157,6 +157,8 @@ extern "C" {
     extern int agwrite(Agraph_t *, FILE *);
     extern int agerrors(void);
     extern Agraph_t *agprotograph(void);
+    extern Agnode_t *agprotonode(Agraph_t *);
+    extern Agedge_t *agprotoedge(Agraph_t *);
     extern Agraph_t *agusergraph(Agnode_t *);
     extern int agnnodes(Agraph_t *);
     extern int agnedges(Agraph_t *);
@@ -166,7 +168,6 @@ extern "C" {
     extern int agcontains(Agraph_t *, void *);
 
     extern Agnode_t *agnode(Agraph_t *, char *);
-    extern Agsym_t *agnodeattr(Agraph_t *, char *, char *);
     extern Agnode_t *agfindnode(Agraph_t *, char *);
     extern Agnode_t *agfstnode(Agraph_t *);
     extern Agnode_t *agnxtnode(Agraph_t *, Agnode_t *);
@@ -174,7 +175,6 @@ extern "C" {
     extern Agnode_t *agprvnode(Agraph_t *, Agnode_t *);
 
     extern Agedge_t *agedge(Agraph_t *, Agnode_t *, Agnode_t *);
-    extern Agsym_t *agedgeattr(Agraph_t *, char *, char *);
     extern Agedge_t *agfindedge(Agraph_t *, Agnode_t *, Agnode_t *);
     extern Agedge_t *agfstedge(Agraph_t *, Agnode_t *);
     extern Agedge_t *agnxtedge(Agraph_t *, Agedge_t *, Agnode_t *);
@@ -183,11 +183,16 @@ extern "C" {
     extern Agedge_t *agfstout(Agraph_t *, Agnode_t *);
     extern Agedge_t *agnxtout(Agraph_t *, Agedge_t *);
 
+    extern Agsym_t *agattr(void *, char *, char *);
     extern Agsym_t *agraphattr(Agraph_t *, char *, char *);
     extern Agsym_t *agnodeattr(Agraph_t *, char *, char *);
     extern Agsym_t *agedgeattr(Agraph_t *, char *, char *);
     extern Agsym_t *agfindattr(void *, char *);
-    extern int      agcopyattr(void *, void *);
+    extern Agsym_t *agfstattr(void *);
+    extern Agsym_t *agnxtattr(void *, Agsym_t *);
+    extern Agsym_t *aglstattr(void *);
+    extern Agsym_t *agprvattr(void *, Agsym_t *);
+    extern int      agcopyattr(void *, void *);	
 
     typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
     extern agerrlevel_t agerrno;
