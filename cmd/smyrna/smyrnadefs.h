@@ -244,7 +244,8 @@ typedef struct _magnifier {
 typedef struct _fisheye_magnifier {
     float x, y;			//center coords of active circle
     float distortion_factor;	//distortion factor ,default 1
-    int R;			//radius of  the magnifier referenced from windows
+    int R;			//radius of  the magnifier 
+	int constantR;	//radius of  the magnifier referenced from windows
     int active;
     int fisheye_distortion_fac;
 } fisheye_magnifier;

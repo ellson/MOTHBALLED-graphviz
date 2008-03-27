@@ -580,8 +580,9 @@ void draw_fisheye_magnifier(ViewInfo * view)
     if ((view->mouse.mouse_mode == 21) && (view->mouse.mouse_down)) {
 	float a;
 	GLfloat mg_x, mg_y, mg_z;
-	a = GetOGLDistance((int) 250);
+	a = GetOGLDistance((int) view->fmg.constantR);
 	view->fmg.R = (int) a;
+	printf("fmg->constantR:%i   fmg->R:%i    fmg->factor:%i\n ",view->fmg.constantR,view->fmg.R,view->fmg.fisheye_distortion_fac);
 	GetOGLPosRef(view->mouse.mouse_X, view->mouse.mouse_Y, &mg_x,
 		     &mg_y, &mg_z);
 	glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,

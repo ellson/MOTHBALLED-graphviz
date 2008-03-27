@@ -92,13 +92,36 @@ static int get_checkbox_widget_to_attribute(char* attribute,char* widget_name,Ag
 	agattr(g, AGRAPH,attribute,itoa(value,buf,10));
 	return 1;
 }
-
+static int set_spinbtn_widget(char* attribute,char* widget_name)
+{
+	char* buf;
+	float value;
+	buf=agget(view->g[view->activeGraph],attribute);
+	if ((!buf)||(strcmp(buf,"")==0))
+		buf=agget(view->default_attributes,attribute);
+	if (buf)
+	{
+		value=(float)atof(buf);
+		gtk_spin_button_set_value((GtkSpinButton*)glade_xml_get_widget(xml, widget_name),value);
+		return 1;
+	}
+	return 0;
+}
+static int get_spinbtn_widget_to_attribute(char* attribute,char* widget_name,Agraph_t * g)
+{
+	float value;
+	char buf[25];
+	value=(float)gtk_spin_button_get_value ((GtkSpinButton*)glade_xml_get_widget(xml, widget_name));
+	sprintf(buf,"%f",value);
+	//	agattr(
+	agattr(g, AGRAPH,attribute,buf);
+	return 1;
+}
 
 
 int load_settings_from_graph(Agraph_t * g)
 {
 	char* buf;
-	int value;
 
 	set_color_button_widget("bgcolor","settingsColorBtn1");
 	set_color_button_widget("bordercolor","settingsColorBtn2");
@@ -107,6 +130,13 @@ int load_settings_from_graph(Agraph_t * g)
 	set_color_button_widget("highlightededgecolor","settingsColorBtn7");
 	set_color_button_widget("selectednodecolor","settingsColorBtn8");
 	set_color_button_widget("selectededgecolor","settingsColorBtn9");
+	get_color_button_widget_to_attribute("topologicaltopviewfinestcolor","settingsColorBtn9",g);
+	get_color_button_widget_to_attribute("topologicaltopviewcoarsestcolor","settingsColorBtn9",g);
+
+	set_color_button_widget("topologicaltopviewfinestcolor","settingsColorBtn10");
+	set_color_button_widget("topologicaltopviewcoarsestcolor","settingsColorBtn11");
+
+
 	set_checkbox_widget("bordervisible","settingsChkBox2");
 	set_checkbox_widget("gridvisible","settingsChkBox3");
 	set_checkbox_widget("randomizenodecolors","settingsChkBox4");
@@ -115,6 +145,23 @@ int load_settings_from_graph(Agraph_t * g)
 	set_checkbox_widget("nodesizewithdegree","settingsChkBox11");
 	set_checkbox_widget("antialiasing","settingsChkBox12");
 
+	set_checkbox_widget("topologicalfisheyedist2limit","settingsChkBox13");
+	set_checkbox_widget("topologicalfisheyeanimate","settingsChkBox14");
+	set_checkbox_widget("topologicalfisheyelabelfinenodes","settingsChkBox15");
+	set_checkbox_widget("topologicalfisheyecolornodes","settingsChkBox16");
+	set_checkbox_widget("topologicalfisheyecoloredges","settingsChkBox17");
+	set_checkbox_widget("topologicalfisheyelabelfocus","settingsChkBox18");
+
+	set_spinbtn_widget("defaultmagnifierwidth","settingsspinbutton1");
+	set_spinbtn_widget("defaultmagnifierheight","settingsspinbutton2");
+	set_spinbtn_widget("defaultmagnifierkts","settingsspinbutton3");
+	set_spinbtn_widget("defaultfisheyemagnifierradius","settingsspinbutton4");
+	set_spinbtn_widget("defaultfisheyemagnifierdistort","settingsspinbutton5");
+	set_spinbtn_widget("topologicalfisheyefinenodes","settingsspinbutton6");
+	set_spinbtn_widget("topologicalfisheyecoarseningfactor","settingsspinbutton7");
+	set_spinbtn_widget("topologicalfisheyedistortionfactor","settingsspinbutton8");
+
+		
 	/*font selection box*/
 	buf=agget(view->g[view->activeGraph],"defaultfontname");
 	if (!buf)
@@ -133,7 +180,8 @@ int load_settings_from_graph(Agraph_t * g)
 	return 1;
 }
 
-
+/*burak
+917 749 6080*/
 
 
 int update_graph_from_settings(Agraph_t * g)
@@ -154,6 +202,31 @@ int update_graph_from_settings(Agraph_t * g)
 	get_color_button_widget_to_attribute("highlightededgecolor","settingsColorBtn7",g);
 	get_color_button_widget_to_attribute("selectednodecolor","settingsColorBtn8",g);
 	get_color_button_widget_to_attribute("selectededgecolor","settingsColorBtn9",g);
+
+		/*
+		defaultmagnifierwidth="300",
+		defaultmagnifierheight="200",
+		defaultmagnifierkts="5",
+		defaultfisheyemagnifierradius="250"
+		defaultfisheyemagnifierdistort="5",
+
+		topologicalfisheyefinenodes="50",
+		topologicalfisheyecoarseningfactor="2.5",
+		topologicalfisheyedistortionfactor="1",
+
+		topologicalfisheyedist2limit="1",
+		topologicalfisheyeanimate="1",
+		topologicalfisheyelabelfinenodes="1",
+		topologicalfisheyecolornodes="1",
+		topologicalfisheyecoloredges="1",
+		topologicalfisheyelabelfocus="1",
+
+		topologicalfisheyefinestcolor="red",
+		topologicalfisheyecoarsestcolor="green"*/
+
+	get_color_button_widget_to_attribute("topologicalfisheyefinestcolor","settingsColorBtn10",g);
+	get_color_button_widget_to_attribute("topologicalfisheyecoarsestcolor","settingsColorBtn11",g);
+
 	get_checkbox_widget_to_attribute("bordervisible","settingsChkBox2",g);
 	get_checkbox_widget_to_attribute("gridvisible","settingsChkBox3",g);
 	get_checkbox_widget_to_attribute("randomizenodecolors","settingsChkBox4",g);
@@ -162,7 +235,22 @@ int update_graph_from_settings(Agraph_t * g)
 	get_checkbox_widget_to_attribute("nodesizewithdegree","settingsChkBox11",g);
 	get_checkbox_widget_to_attribute("antialiasing","settingsChkBox12",g);
 
-//	free (buf);
+	get_checkbox_widget_to_attribute("topologicalfisheyedist2limit","settingsChkBox13",g);
+	get_checkbox_widget_to_attribute("topologicalfisheyeanimate","settingsChkBox14",g);
+	get_checkbox_widget_to_attribute("topologicalfisheyelabelfinenodes","settingsChkBox15",g);
+	get_checkbox_widget_to_attribute("topologicalfisheyecolornodes","settingsChkBox16",g);
+	get_checkbox_widget_to_attribute("topologicalfisheyecoloredges","settingsChkBox17",g);
+	get_checkbox_widget_to_attribute("topologicalfisheyelabelfocus","settingsChkBox18",g);
+
+	get_spinbtn_widget_to_attribute("defaultmagnifierwidth","settingsspinbutton1",g);
+	get_spinbtn_widget_to_attribute("defaultmagnifierheight","settingsspinbutton2",g);
+	get_spinbtn_widget_to_attribute("defaultmagnifierkts","settingsspinbutton3",g);
+	get_spinbtn_widget_to_attribute("defaultfisheyemagnifierradius","settingsspinbutton4",g);
+	get_spinbtn_widget_to_attribute("defaultfisheyemagnifierdistort","settingsspinbutton5",g);
+	get_spinbtn_widget_to_attribute("topologicalfisheyefinenodes","settingsspinbutton6",g);
+	get_spinbtn_widget_to_attribute("topologicalfisheyecoarseningfactor","settingsspinbutton7",g);
+	get_spinbtn_widget_to_attribute("topologicalfisheyedistortionfactor","settingsspinbutton8",g);
+
 	return 1;
 }
 
