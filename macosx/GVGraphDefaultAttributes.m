@@ -19,11 +19,11 @@
 
 @interface GVGraphDefaultAttributeKeyEnumerator : NSEnumerator
 {
-	Agsym_t **_nextSymbol;
-	Agsym_t **_lastSymbol;
+	void *_proto;
+	Agsym_t *_nextSymbol;
 }
 
-- (id)initWithSymbols:(Agsym_t **)symbols count:(NSUInteger)count;
+- (id)initWithPrototype:(void *)proto;
 - (NSArray *)allObjects;
 - (id)nextObject;
 
@@ -31,11 +31,11 @@
 
 @implementation GVGraphDefaultAttributeKeyEnumerator
 
-- (id)initWithSymbols:(Agsym_t **)symbols count:(NSUInteger)count
+- (id)initWithPrototype:(void *)proto
 {
 	if (self = [super init]) {
-		_nextSymbol = symbols;
-		_lastSymbol = symbols + count;
+		_proto = proto;
+		_nextSymbol = agfstattr(_proto);
 	}
 	return self;
 }
@@ -43,78 +43,74 @@
 - (NSArray *)allObjects
 {
 	NSMutableArray* all = [NSMutableArray array];
-	for (; _nextSymbol < _lastSymbol; ++_nextSymbol)
-		if ((*_nextSymbol)->value && *(*_nextSymbol)->value)
-			[all addObject:[NSString stringWithUTF8String:(*_nextSymbol)->name]];
+	for (; _nextSymbol; _nextSymbol = agnxtattr(_proto, _nextSymbol)) {
+		char *attributeValue = _nextSymbol->value;
+		if (attributeValue && *attributeValue)
+			[all addObject:[NSString stringWithUTF8String:attributeValue]];
+	}
 			
 	return all;
 }
 
 - (id)nextObject
 {
-	char* nextName = NULL;
-	for (; _nextSymbol < _lastSymbol && !nextName; ++_nextSymbol)
-		if ((*_nextSymbol)->value && *(*_nextSymbol)->value)
-			nextName = (*_nextSymbol)->name;
-		
-	return nextName ? [NSString stringWithUTF8String:nextName] : nil;
+	for (; _nextSymbol; _nextSymbol = agnxtattr(_proto, _nextSymbol)) {
+		char *attributeValue = _nextSymbol->value;
+		if (attributeValue && *attributeValue)
+			return [NSString stringWithUTF8String:attributeValue];
+	}
+	return nil;
 }
 
 @end
 
 @implementation GVGraphDefaultAttributes
 
-- (id)initWithGraph:(GVGraph *)graph defaultAttributes:(Agdict_t *)defaultAttributes attributeDeclaration:(Agsym_t *(*)(Agraph_t *, char *, char *))attributeDeclaration
+- (id)initWithGraph:(GVGraph *)graph prototype:(void *)proto
 {
 	if (self = [super init]) {
 		_graph = graph;	/* not retained to avoid a retain cycle */
-		_defaultAttributes = defaultAttributes;
-		_attributeDeclaration = attributeDeclaration;
+		_proto = proto;
 	}
 	return self;
-}
-
-- (NSString*)name
-{
-	return _defaultAttributes->name ? [NSString stringWithUTF8String:_defaultAttributes->name] : nil;
 }
 
 - (NSUInteger)count
 {
 	NSUInteger symbolCount = 0;
-	Agsym_t **nextSymbol, **lastSymbol;
-	for (nextSymbol = _defaultAttributes->list, lastSymbol = _defaultAttributes->list + dtsize(_defaultAttributes->dict); nextSymbol < lastSymbol; ++nextSymbol)
-		if ((*nextSymbol)->value && *(*nextSymbol)->value)
+	Agsym_t *nextSymbol;
+	for (nextSymbol = agfstattr(_proto); nextSymbol; nextSymbol = agnxtattr(_proto, nextSymbol))
+		if (nextSymbol->value && *(nextSymbol->value))
 			++symbolCount;
 	return symbolCount;
 }
 
 - (NSEnumerator *)keyEnumerator
 {
-	return [[[GVGraphDefaultAttributeKeyEnumerator alloc] initWithSymbols: _defaultAttributes->list count:dtsize(_defaultAttributes->dict)] autorelease];
+	return [[[GVGraphDefaultAttributeKeyEnumerator alloc] initWithPrototype:_proto] autorelease];
 }
 
 - (id)objectForKey:(id)aKey
 {
 	id object = nil;
-	Agsym_t *attributeSymbol = dtmatch(_defaultAttributes->dict, [aKey UTF8String]);
+	Agsym_t *attributeSymbol = agfindattr(_proto, (char*)[aKey UTF8String]);
 	if (attributeSymbol) {
 		char *attributeValue = attributeSymbol->value;
 		if (attributeValue && *attributeValue)
-			object = [NSString stringWithUTF8String:attributeSymbol->value];
+			object = [NSString stringWithUTF8String:attributeValue];
 	}
 	return object;
 }
 
 - (void)setObject:(id)anObject forKey:(id)aKey
 {
-	_attributeDeclaration([_graph graph], (char *)[aKey UTF8String], (char *)[anObject UTF8String]);
+	agattr(_proto, (char *)[aKey UTF8String], (char *)[anObject UTF8String]);
 	[_graph noteChanged:YES];
 }
 
 - (void)removeObjectForKey:(id)aKey
 {
-	_attributeDeclaration([_graph graph], (char *)[aKey UTF8String], "");
+	agattr(_proto, (char *)[aKey UTF8String], "");
 	[_graph noteChanged:YES];
 }
 @end

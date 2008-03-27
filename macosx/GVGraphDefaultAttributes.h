@@ -24,13 +24,10 @@
 @interface GVGraphDefaultAttributes : NSMutableDictionary
 {
 	GVGraph *_graph;
-	Agdict_t *_defaultAttributes;
-	Agsym_t *(*_attributeDeclaration)(Agraph_t *, char *, char *);
+	void *_proto;
 }
 
-@property(readonly) NSString *name;
-
-- (id)initWithGraph:(GVGraph *)graph defaultAttributes:(Agdict_t *)defaultAttributes attributeDeclaration:(Agsym_t *(*)(Agraph_t *, char *, char *))attributeDeclaration;
+- (id)initWithGraph:(GVGraph *)graph prototype:(void *)proto;
 
 /* dictionary primitive methods */
 - (NSUInteger)count;
