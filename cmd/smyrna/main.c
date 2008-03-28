@@ -56,11 +56,14 @@ smyrnaPath (char* suffix)
 int main(int argc, char *argv[])
 {
     GdkGLConfig *glconfig;
-    char* smyrnaDir;
-
-	load_attributes();
 
     smyrnaDir = getenv ("SMYRNA_PATH");
+#ifndef _WIN32
+    if (!smyrnaDir)
+	smyrnaDir = SMYRNA_PATH;
+#endif
+
+    load_attributes();
 
 #ifdef G_OS_WIN32
     package_prefix =
@@ -79,13 +82,10 @@ int main(int argc, char *argv[])
     bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
     textdomain(GETTEXT_PACKAGE);
 #endif
-    view = malloc(sizeof(ViewInfo));
+    view = NEW(ViewInfo);
     init_viewport(view);
 
-
-
-
-	gtk_set_locale();
+    gtk_set_locale();
     gtk_init(&argc, &argv);
 
 #ifdef _WIN32
