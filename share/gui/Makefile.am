@@ -3,7 +3,7 @@
 #
 
 guidir = $(pkgdatadir)/gui
-gui = smyrna.glade attrs.txt arial.tga
+gui = smyrna.glade attrs.txt arial.tga template.dot
 
 if WITH_SMYRNA
 gui_DATA = $(gui)

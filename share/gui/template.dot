@@ -1,0 +1,19 @@
+strict digraph template {
+	graph [bgcolor=white,
+    bordercolor=green,
+    gridcolor=grey,
+    highlightednodecolor=blue,
+    highlightededgecolor=green,
+    selectednodecolor=red,
+    selectededgecolor=pink,
+    bordervisible=1,
+    gridvisible=1,
+    randomizenodecolors=1,
+    randomizeedgecolors=1,
+    usermode=1,
+    nodesizewithdegree=1,
+    antialiasing=1,
+    defaultfontname="Arial 16",
+    defaultnodeshape=1];
+	A -> B;
+}
