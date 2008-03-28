@@ -132,7 +132,7 @@ static int dist3(vtx_data * graph, int node1, int node2)
 #define C 3.0
 #define D 1.0
 
-static double dist(ex_vtx_data * geom_graph, int v, int u)
+static double ddist(ex_vtx_data * geom_graph, int v, int u)
 {
 // Euclidean distance between nodes 'v' and 'u'
     double x_v = geom_graph[v].x_coord, y_v = geom_graph[v].y_coord,
@@ -179,10 +179,10 @@ maxmatch(vtx_data * graph,	/* array of vtx data for graph */
     double avg_edge_len = 0, avg_deg_2 = 0;
     int nedges = 0;
 
-	for (i = 0; i < nvtxs; i++) {
+    for (i = 0; i < nvtxs; i++) {
 	avg_deg_2 += graph[i].nedges;
 	for (j = 1; j < graph[i].nedges; j++) {
-	    avg_edge_len += dist(geom_graph, i, graph[i].edges[j]);
+	    avg_edge_len += ddist(geom_graph, i, graph[i].edges[j]);
 	    nedges++;
 	}
     }
@@ -238,7 +238,7 @@ maxmatch(vtx_data * graph,	/* array of vtx data for graph */
 	for (j = 1; j < graph[vtx].nedges; j++) {
 	    min_edge_len =
 		MIN(min_edge_len,
-		    dist(geom_graph, vtx,
+		    ddist(geom_graph, vtx,
 			 graph[vtx].edges[j]) / avg_edge_len);
 	}
 	matchability[vtx] += min_edge_len;	// we less want to match distant nodes
@@ -296,7 +296,7 @@ maxmatch(vtx_data * graph,	/* array of vtx data for graph */
 
 
 	    // (3)
-	    val += C * avg_edge_len / dist(geom_graph, vtx, neighbor);
+	    val += C * avg_edge_len / ddist(geom_graph, vtx, neighbor);
 
 	    // (4)
 	    val +=
@@ -855,9 +855,9 @@ dist_from_foci(ex_vtx_data * graph, int node, int *foci, int num_foci)
 {
 // compute minimum distance of 'node' from the set 'foci'
     int i;
-    double distance = dist(graph, node, foci[0]);
+    double distance = ddist(graph, node, foci[0]);
     for (i = 1; i < num_foci; i++) {
-	distance = MIN(distance, dist(graph, node, foci[i]));
+	distance = MIN(distance, ddist(graph, node, foci[i]));
     }
 
     return distance;
