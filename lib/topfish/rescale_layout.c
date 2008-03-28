@@ -119,9 +119,10 @@ static double *smooth_vec(double *vec, int *ordering, int n, int interval,
 /* quicksort_place:
  * Available in lib/neatogen.
  */
-static void
-split_by_place(double *place, int *nodes, int first, int last, int *middle)
+static int
+split_by_place(double *place, int *nodes, int first, int last)
 {
+    int middle;
     unsigned int splitter=((unsigned int)rand()|((unsigned int)rand())<<16)%(unsigned int)(last-first+1)+(unsigned int)first;
     int val;
     double place_val;
@@ -137,7 +138,10 @@ split_by_place(double *place, int *nodes, int first, int last, int *middle)
     while (left < right) {
 	while (left < right && place[nodes[left]] <= place_val)
 	    left++;
-	while (left < right && place[nodes[right]] >= place_val)
+        /* use here ">" and not ">=" to enable robustness
+         * by ensuring that ALL equal values move to the same side
+         */
+	while (left < right && place[nodes[right]] > place_val)
 	    right--;
 	if (left < right) {
 	    temp = nodes[left];
@@ -148,22 +152,45 @@ split_by_place(double *place, int *nodes, int first, int last, int *middle)
 
 	}
     }
-    /* in this point either, left==right (meeting), or left=right+1 (because of (1)) */
-    /* we have to decide to which part the meeting point (or left) belongs. */
+    /* at this point either, left==right (meeting), or 
+     * left=right+1 (because of (1)) 
+     * we have to decide to which part the meeting point (or left) belongs.
+     *
+     * notice that always left>first, because of its initialization
+     */
     if (place[nodes[left]] > place_val)
-	left = left - 1;	/* notice that always left>first, because of its initialization */
-    *middle = left;
-    nodes[first] = nodes[*middle];
-    nodes[*middle] = val;
+	left = left - 1;
+    middle = left;
+    nodes[first] = nodes[middle];
+    nodes[middle] = val;
+    return middle;
+}
+
+static int 
+sorted_place(double * place, int * ordering, int first, int last)
+{
+    int i, isSorted = 1; 
+    for (i=first+1; i<=last && isSorted; i++) {
+        if (place[ordering[i-1]]>place[ordering[i]]) {
+            isSorted = 0;
+        }
+    }
+    return isSorted;
 }
 
 void quicksort_place(double *place, int *ordering, int first, int last)
 {
     if (first < last) {
-	int middle;
-	split_by_place(place, ordering, first, last, &middle);
-	quicksort_place(place, ordering, first, middle - 1);
-	quicksort_place(place, ordering, middle + 1, last);
+	int middle = split_by_place(place, ordering, first, last);
+        /* Checking for "already sorted" dramatically improves running time 
+	 * and robustness (against uneven recursion) when not all values are 
+         * distinct (thefore we expect emerging chunks of equal values)
+	 * it never increased running time even when values were distinct
+         */
+	if (!sorted_place(place,ordering,first,middle-1))
+	    quicksort_place(place,ordering,first,middle-1);
+	if (!sorted_place(place,ordering,middle+1,last))
+	    quicksort_place(place,ordering,middle+1,last);
     }
 }
 
