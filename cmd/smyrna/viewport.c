@@ -16,6 +16,9 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <io.h>
+#else
+#include "unistd.h"
 #endif
 #include "compat.h"
 #include "viewport.h"
@@ -27,6 +30,7 @@
 #include "topview.h"
 #include "gltemplate.h"
 #include "colorprocs.h"
+#include "memory.h"
 #include "topviewsettings.h"
 
   /* Forward declarations */
@@ -122,10 +126,8 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->borderColor.A =
 	(float) atof(get_attribute_value("bordercoloralpha", view, g));
 
-
     view->bdVisible =
 	(float) atof(get_attribute_value("bordervisible", view, g));
-
 
     buf = get_attribute_value("gridcolor", view, g);
     colorxlate(buf, &cl, RGBA_DOUBLE);
@@ -134,8 +136,6 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->gridColor.B = (float) cl.u.RGBA[2];
     view->gridColor.A =
 	(float) atof(get_attribute_value("gridcoloralpha", view, g));
-
-
 
     view->gridSize = (float) atof(buf =
 				  get_attribute_value("gridsize", view,
@@ -151,7 +151,7 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->bgColor.R = (float) cl.u.RGBA[0];
     view->bgColor.G = (float) cl.u.RGBA[1];
     view->bgColor.B = (float) cl.u.RGBA[2];
-    view->bgColor.A = 1;
+    view->bgColor.A = (float)1;
 
     //selected nodes are drawn with this color
     colorxlate(get_attribute_value("selectednodecolor", view, g), &cl,
@@ -224,7 +224,11 @@ there i go, turn the page
 	atoi(get_attribute_value
 	     ("defaultfisheyemagnifierdistort", view, g));
 
+#if 0
+FIXME: I don't think an openGL function can be called before it
+       is initialized.
     glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
+#endif
 }
 
 void init_viewport(ViewInfo * view)
@@ -480,7 +484,6 @@ static int clear_graph_xdot(Agraph_t * graph)
     Agedge_t *e;
     Agraph_t *s;
 
-
     clear_object_xdot(graph);
     n = agfstnode(graph);
 
@@ -494,12 +497,11 @@ static int clear_graph_xdot(Agraph_t * graph)
 	}
     }
     return 1;
-
-
 }
 
 /* clear_graph:
  * clears custom data binded
+ * FIXME: memory leak - free allocated storage
  */
 static void clear_graph(Agraph_t * graph)
 {
@@ -507,84 +509,111 @@ static void clear_graph(Agraph_t * graph)
 }
 
 /* create_xdot_for_graph:
- * 0 failed , 1 successful
+ * Returns (malloced) temp filename for output data
+ * or NULL on error.
+ * Calling program needs to remove file and free storage:
+ *    fname = create_xdot_for_graph (...)
+ *       ... use fname ...
+ *    unlink (fname);
+ *    free (fname);
  */
-static int create_xdot_for_graph(Agraph_t * graph, int keeppos)
+#define FMT "%s%s -Txdot%s %s -o%s"
+
+static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
 {
-    //0 failed , 1 successfull
-    //save graph to __temp.dot
-    //run dot/neato whatever to create the xdot version __temp.xdot
-    //delete temp files
-    //use this function to do layouts too   
+    static char buf[BUFSIZ];
+    static char* cmd = buf;
+    static int buflen = BUFSIZ;
+    int len;
     int r = 0;
     FILE *output_file;
+    char* dotfile;
+    char* xdotfile;
+    char* fix;
+    char* alg;
+    char* path;
+
     update_graph_params(graph);
-#ifdef _WIN32
-    if (output_file = fopen("c:/__tempfile.dot", "w"))
-#else
-    if ((output_file = fopen("/tmp/__tempfile.dot", "w")))
-#endif
-    {
-	clear_graph_xdot(graph);
-	agwrite(graph, (void *) output_file);	//save graph
-	fclose(output_file);	//close file desc
+    if (!(dotfile = tempnam(0,"_dot"))) return 0;
+    if (!(xdotfile = tempnam(0,"_xdot"))) {
+	free (dotfile);
+	return 0;
+    }
+    if (!(output_file = fopen(dotfile, "w"))) {
+	free (xdotfile);
+	free (dotfile);
+	return 0;
+    }
 
-	if (keeppos == 0) {
-#ifdef _WIN32
-	    if (((custom_graph_data *) AGDATA(graph))->Engine == 0)
-		system
-		    ("\"C:/Program Files/Graphviz2.15/bin/dot.exe\" -Txdot -Kdot c:/__tempfile.dot -oc:/__tempfile.xdot");
-	    if (((custom_graph_data *) AGDATA(graph))->Engine == 1)
-		system
-		    ("\"C:/Program Files/Graphviz2.15/bin/dot.exe\" -Txdot -Kneato c:/__tempfile.dot -oc:/__tempfile.xdot");
-	    if (((custom_graph_data *) AGDATA(graph))->Engine == 2)
-		system
-		    ("\"C:/Program Files/Graphviz2.15/bin/dot.exe\" -Txdot -Ktwopi c:/__tempfile.dot -oc:/__tempfile.xdot");
-	    if (((custom_graph_data *) AGDATA(graph))->Engine == 3)
-		system
-		    ("\"C:/Program Files/Graphviz2.15/bin/dot.exe\" -Txdot -Kcirco c:/__tempfile.dot -oc:/__tempfile.xdot");
-	    if (((custom_graph_data *) AGDATA(graph))->Engine == 4)
-		system
-		    ("\"C:/Program Files/Graphviz2.15/bin/dot.exe\" -Txdot -Kfdp c:/__tempfile.dot -oc:/__tempfile.xdot");
-#else
-	    if (((custom_graph_data *) AGDATA(graph))->Engine == 0)
-		system
-		    ("\"dot\" -Txdot -Kdot /tmp/__tempfile.dot -o/tmp/__tempfile.xdot");
-	    if (((custom_graph_data *) AGDATA(graph))->Engine == 1)
-		system
-		    ("\"dot\" -Txdot -Kneato /tmp/__tempfile.dot -o/tmp/__tempfile.xdot");
-	    if (((custom_graph_data *) AGDATA(graph))->Engine == 2)
-		system
-		    ("\"dot\" -Txdot -Ktwopi /tmp/__tempfile.dot -o/tmp/__tempfile.xdot");
-	    if (((custom_graph_data *) AGDATA(graph))->Engine == 3)
-		system
-		    ("\"dot\" -Txdot -Kcirco /tmp/__tempfile.dot -o/tmp/__tempfile.xdot");
-	    if (((custom_graph_data *) AGDATA(graph))->Engine == 4)
-		system
-		    ("\"dot\" -Txdot -Kfdp /tmp/__tempfile.dot -o/tmp/__tempfile.xdot");
-#endif
+    clear_graph_xdot(graph);
+    agwrite(graph, (void *) output_file);
+    fclose(output_file);
+
+    if (keeppos) {
+	fix = " -n2";
+	alg = " -Kneato";
+    }
+    else {
+	fix = "";
+	switch (GD_Engine(graph)) {
+	case GVK_DOT :
+	    alg = " -Kdot";
+	    break;
+	case GVK_NEATO :
+	    alg = " -Kneato";
+	    break;
+	case GVK_TWOPI :
+	    alg = " -Ktwopi";
+	    break;
+	case GVK_CIRCO :
+	    alg = " -Kcirco";
+	    break;
+	case GVK_FDP :
+	    alg = " -Kfdp";
+	    break;
+	default :
+	    unlink (dotfile);
+	    free (dotfile);
+	    return 0;
+	    break;
 	}
-	//no position change
-	else
+    } 
+
 #ifdef _WIN32
-	    system
-		("\"C:/Program Files/Graphviz2.15/bin/neato.exe\" -n2 -Txdot  c:/__tempfile.dot -oc:/__tempfile.xdot");
+    path = "\"C:/Program Files/Graphviz2.15/bin/dot.exe\" ";
 #else
-	    system
-		("\"neato\" -n2 -Txdot  /tmp/__tempfile.dot -o/tmp/__tempfile.xdot");
+    path = "dot ";
 #endif
+    
+    len = strlen(path) + strlen(fix) + strlen(alg) + strlen(dotfile) +
+	strlen(xdotfile) + sizeof(FMT);
+    if (len > buflen) {
+	buflen = len + BUFSIZ;
+	if (cmd == buf) cmd = N_GNEW(buflen, char);
+	else cmd = RALLOC (buflen, cmd, char);
+    }
+    sprintf (cmd, FMT, path, fix, alg, dotfile, xdotfile);
+    r = system (cmd);
+    unlink (dotfile);
+    free (dotfile);
 
-	if (r)			//load the new graph and change file name
-	{
-	    clear_graph(graph);	//i am not sure about this, need to talk to North
-	    return TRUE;
+    if (r) { // something went wrong
+	unlink (xdotfile);
+	free (xdotfile);
+	return 0;
+    }
+    else return xdotfile;
+}
 
-	}
-    } else
-	return FALSE;
-
-    return 0;
-
+static int mapbool(char *p)
+{
+    if (p == NULL)
+        return 0;
+    if (!strcasecmp(p, "false"))
+        return 0;
+    if (!strcasecmp(p, "true"))
+        return 1;
+    return atoi(p);
 }
 
 /* loadGraph:
@@ -593,50 +622,45 @@ static int create_xdot_for_graph(Agraph_t * graph, int keeppos)
 static Agraph_t *loadGraph(char *filename)
 {
     Agraph_t *g;
-//      mydata *p;
     FILE *input_file;
-    input_file = fopen(filename, "r");
-    if (input_file == NULL)
+    char *infile;
+    if (!(input_file = fopen(filename, "r"))) {
 	g_print("Cannot open %s\n", filename);
-    else if ((g = agread(input_file, NIL(Agdisc_t *)))) {
-	attach_object_custom_data_to_graph(g);
-	load_graph_params(g);
+	return 0;
+    }
+    fclose (input_file);
+    if (!(g = agread(input_file, NIL(Agdisc_t *)))) {
+	g_print("Cannot read graph in  %s\n", filename);
+	fclose (input_file);
+	return 0;
+    }
 
-	if ((!agget(g, "xdotversion"))
-	    && ((agget(g, "TopView") == "0")
-		|| !agget(g, "TopView")
-	    )
+	/* If xdot is not available in g and TopView is false,
+         * run layout with -Txdot
+         */
+    if ((!agget(g, "xdotversion")) && !mapbool (agget(g, "TopView"))) {
+	if (!(infile = create_xdot_for_graph(g, 0))) return 0;
 
-	    ) {
-	    create_xdot_for_graph(g, 0);
-	    fclose(input_file);
-#ifdef _WIN32
-	    input_file = fopen("c:/__tempfile.xdot", "r");
-#else
-	    input_file = fopen("/tmp/__tempfile.xdot", "r");
-#endif
-	    while (input_file == NULL)	//HACK!!!!
-	    {
-		input_file = fopen("c:/__tempfile.xdot", "r");
-//                      g_print("Cannot open xdot  error %si\n",strerror(errno));
+	while (!(input_file = fopen(infile, "r"))) {	//HACK!!!!
+//                   g_print("Cannot open xdot  error %si\n",strerror(errno));
 
-	    }
-	    g = agread(input_file, NIL(Agdisc_t *));
-	    g_print("xdot is being loaded\n");
-	    //attaching rec for graph fields
-	    attach_object_custom_data_to_graph(g);
-	    load_graph_params(g);
-	    //      fclose(input_file);
 	}
-	((custom_graph_data *) AGDATA(g))->GraphFileName =
-	    (char *) malloc((strlen(filename) + 1) * sizeof(char));
-	//attaching rec for graph objects
-	strcpy(((custom_graph_data *) AGDATA(g))->GraphFileName, filename);
-	/*if(strcasecmp(agget(g, "TopView"),"1")==0)
-	   {
-	   if(
-	   TopviewNodeCount > 0)
-	   {
+	agclose (g);
+	g = agread(input_file, NIL(Agdisc_t *));
+	g_print ("xdot is being loaded\n");
+	fclose (input_file);
+	unlink (infile);  // Remove temp file
+	free (infile);    // Free storage for temp file name
+    }
+
+    attach_object_custom_data_to_graph(g);
+    load_graph_params(g);
+
+    GD_GraphFileName(g) = strdup (filename);
+
+#if 0
+    if(strcasecmp(agget(g, "TopView"),"1")==0) {
+	if(TopviewNodeCount > 0) {
 	   Dlg=gtk_message_dialog_new (NULL,
 	   GTK_DIALOG_MODAL,
 	   GTK_MESSAGE_WARNING,
@@ -646,16 +670,14 @@ static Agraph_t *loadGraph(char *filename)
 	   gtk_object_destroy (Dlg);
 	   agclose(g);
 	   return 0;
-	   }
-	   else
-	   PrepareTopview(g);
-	   } */
-	preparetopview(g, view->Topview);
-	return g;
-    } else {
-	return 0;
+	}
+	else {
+	    PrepareTopview(g);
+	}
     }
-    return 0;
+#endif
+    preparetopview(g, view->Topview);
+    return g;
 }
 
 /* add_graph_to_viewport_from_file:
@@ -847,66 +869,52 @@ int save_as_graph()
 /* do_graph_layout:
  * changes the layout. all user relocations are reset unless 
  * keeppos is set to 1
+ * FIXME: the graph parameter is never used.
  */
 int do_graph_layout(Agraph_t * graph, int Engine, int keeppos)
 {
-/*	Agnode_t *v;
-	Agedge_t *e;
-	Agsym_t *attr;
-	Dict_t *d;
-	int cnt;*/
-//      mydata *p;
-    FILE *input_file;
-    char *_filename = (char *)
-	malloc((strlen
-		(((custom_graph_data
-		   *) (AGDATA(view->g[view->activeGraph])))->
-		 GraphFileName) + 1) * sizeof(char));
-    strcpy(_filename,
-	   ((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	   GraphFileName);
-
-
-    ((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->Engine =
-	Engine;
-    create_xdot_for_graph(view->g[view->activeGraph], keeppos);
-
-#ifdef _WIN32
-    input_file = fopen("c:/__tempfile.xdot", "r");
-#else
-    input_file = fopen("/tmp/__tempfile.xdot", "r");
+#if 0
+    Agnode_t *v;
+    Agedge_t *e;
+    Agsym_t *attr;
+    Dict_t *d;
+    int cnt;
+    mydata *p;
 #endif
-    clear_graph(view->g[view->activeGraph]);
-    agclose(view->g[view->activeGraph]);
-    if (input_file == NULL)
-	g_print("temp file Cannot open n");
-    else if ((view->g[view->activeGraph] =
-	      agread(input_file, NIL(Agdisc_t *)))) {
-	fclose(input_file);
-	//attaching rec for graph fields
-	attach_object_custom_data_to_graph(view->g[view->activeGraph]);
-	//set real file name
-	((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	    GraphFileName =
-	    (char *) malloc((strlen(_filename) + 1) * sizeof(char));
-	load_graph_params(view->g[view->activeGraph]);	//init glparams
-	strcpy(((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	       GraphFileName, _filename);
-	free(_filename);
-	//set engine
-	((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	    Engine = Engine;
-	((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	    Modified = 1;
-	refreshControls(view);
-	return 1;
-    } else {
-	return 0;
+    FILE *input_file;
+    char* infile;
+    Agraph_t* oldg = view->g[view->activeGraph];
+    Agraph_t* newg;
+
+    GD_Engine(oldg) = Engine;
+    create_xdot_for_graph(oldg, keeppos);
+    if (!(infile = create_xdot_for_graph(oldg, keeppos))) return 0;
+    while (!(input_file = fopen(infile, "r"))) {	//HACK!!!!
+	/* g_print("Cannot open xdot  error %si\n",strerror(errno)); */
     }
 
+    newg = agread(input_file, NIL(Agdisc_t *));
+    fclose (input_file);
+    unlink (infile);
+    free (infile);
 
-    return 0;
+    if (!newg) return 0;
+	//attaching rec for graph fields
+    attach_object_custom_data_to_graph(newg);
+	//set real file name
+    GD_GraphFileName(newg) = GD_GraphFileName(oldg); 
+    load_graph_params(newg);	//init glparams
+	//set engine
+    GD_Engine(newg) = GD_Engine(oldg); 
+    GD_Modified(newg) = 1;
 
+    clear_graph(oldg);
+    agclose(oldg);
+    view->g[view->activeGraph] = newg;
+
+    refreshControls(view);
+
+    return 1;
 }
 
 #if 0
