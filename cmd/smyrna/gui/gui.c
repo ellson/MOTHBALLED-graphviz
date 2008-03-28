@@ -440,10 +440,10 @@ int load_object_properties(int typeIndex, Agraph_t * g)	//load  from object to g
 		break;
 	    case 'C':
 		if (agget(obj, attr[widgetcounter].Name))
-		    SetGdkColor(&color,
+		    setGdkColor(&color,
 				agget(obj, attr[widgetcounter].Name));
 		else
-		    SetGdkColor(&color, attr[widgetcounter].Default);
+		    setGdkColor(&color, attr[widgetcounter].Default);
 
 		gtk_color_button_set_color((GtkColorButton *)
 					   AttrWidgets[widgetcounter],

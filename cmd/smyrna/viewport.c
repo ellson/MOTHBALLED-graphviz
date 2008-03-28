@@ -29,12 +29,13 @@
 #include "colorprocs.h"
 #include "topviewsettings.h"
 
-
+  /* Forward declarations */
+static int init_object_custom_data(Agraph_t * graph, void *obj);
 
 #define countof( array ) ( sizeof( array )/sizeof( array[0] ) )
 
 ViewInfo *view;
-/*these two global variables should be wrapped in somethign else*/
+/* these two global variables should be wrapped in something else */
 GtkMessageDialog *Dlg;
 int respond;
 
@@ -52,31 +53,206 @@ void clear_viewport(ViewInfo * view)
 	free(view);
     }
 }
+
+static char *get_attribute_value(char *attr, ViewInfo * view, Agraph_t * g)
+{
+    char *buf;
+    buf = agget(g, attr);
+    if ((!buf) || (strcmp(buf, "") == 0))
+	buf = agget(view->default_attributes, attr);
+    return buf;
+
+}
+
+void
+set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
+{
+    gvcolor_t cl;
+    char *buf;
+#if 0
+    graph[antialiasing = 1,
+	  bgcolor = "#ffffff",
+	  bordercolor = "#38eb29",
+	  bordercoloralpha = "1",
+	  bordervisible = "1",
+	  defaultfontname = "1",
+	  defaultfontsize = "52",
+	  gridcolor = "#6033d8",
+	  gridcoloralpha = "1",
+	  gridvisible = "1",
+	  highlightededgecolor = "#c41b50",
+	  highlightededgecoloralpha = "1",
+	  highlightednodecolor = "#d1cd24",
+	  highlightednodecoloralpha = "1",
+	  defaultlinewidth = "1"
+	  nodesizewithdegree = "1",
+	  randomizeedgecolors = "1",
+	  randomizenodecolors = "1",
+	  selectededgecolor = "#ffc0cb",
+	  selectededgecoloralpha = "1",
+	  selectednodecolor = "#8ce61d",
+	  selectednodecoloralpha = "1",
+	  gridcoloralpha = "1",
+	  defaultmagnifierwidth = "300",
+	  defaultmagnifierheight = "200",
+	  defaultmagnifierkts = "5",
+	  defaultfisheyemagnifierradius = "250"
+	  defaultfisheyemagnifierdistort = "5",
+	  usermode = "1",
+	  topologicalfisheyefinenodes = "50",
+	  topologicalfisheyecoarseningfactor = "2.5",
+	  topologicalfisheyedistortionfactor = "1",
+	  topologicalfisheyedist2limit = "1",
+	  topologicalfisheyeanimate = "1",
+	  topologicalfisheyelabelfinenodes = "1",
+	  topologicalfisheyecolornodes = "1",
+	  topologicalfisheyecoloredges = "1",
+	  topologicalfisheyelabelfocus = "1",
+	  topologicalfisheyefinestcolor = "red",
+	  topologicalfisheyecoarsestcolor = "green"];
+
+    border color
+#endif
+     colorxlate(get_attribute_value("bordercolor", view, g), &cl,
+		RGBA_DOUBLE);
+    view->borderColor.R = (float) cl.u.RGBA[0];
+    view->borderColor.G = (float) cl.u.RGBA[1];
+    view->borderColor.B = (float) cl.u.RGBA[2];
+
+    view->borderColor.A =
+	(float) atof(get_attribute_value("bordercoloralpha", view, g));
+
+
+    view->bdVisible =
+	(float) atof(get_attribute_value("bordervisible", view, g));
+
+
+    buf = get_attribute_value("gridcolor", view, g);
+    colorxlate(buf, &cl, RGBA_DOUBLE);
+    view->gridColor.R = (float) cl.u.RGBA[0];
+    view->gridColor.G = (float) cl.u.RGBA[1];
+    view->gridColor.B = (float) cl.u.RGBA[2];
+    view->gridColor.A =
+	(float) atof(get_attribute_value("gridcoloralpha", view, g));
+
+
+
+    view->gridSize = (float) atof(buf =
+				  get_attribute_value("gridsize", view,
+						      g));
+
+    view->gridVisible = atoi(get_attribute_value("gridvisible", view, g));
+
+    //mouse mode=pan
+
+    //background color , default white
+    colorxlate(get_attribute_value("bgcolor", view, g), &cl, RGBA_DOUBLE);
+
+    view->bgColor.R = (float) cl.u.RGBA[0];
+    view->bgColor.G = (float) cl.u.RGBA[1];
+    view->bgColor.B = (float) cl.u.RGBA[2];
+    view->bgColor.A = 1;
+
+    //selected nodes are drawn with this color
+    colorxlate(get_attribute_value("selectednodecolor", view, g), &cl,
+	       RGBA_DOUBLE);
+    view->selectedNodeColor.R = (float) cl.u.RGBA[0];
+    view->selectedNodeColor.G = (float) cl.u.RGBA[1];
+    view->selectedNodeColor.B = (float) cl.u.RGBA[2];
+    view->selectedNodeColor.A =
+	(float)
+	atof(get_attribute_value("selectednodecoloralpha", view, g));
+    //selected edge are drawn with this color
+    colorxlate(get_attribute_value("selectededgecolor", view, g), &cl,
+	       RGBA_DOUBLE);
+    view->selectedEdgeColor.R = (float) cl.u.RGBA[0];
+    view->selectedEdgeColor.G = (float) cl.u.RGBA[1];
+    view->selectedEdgeColor.B = (float) cl.u.RGBA[2];
+    view->selectedEdgeColor.A =
+	(float)
+	atof(get_attribute_value("selectededgecoloralpha", view, g));
+
+    colorxlate(get_attribute_value("highlightednodecolor", view, g), &cl,
+	       RGBA_DOUBLE);
+    view->highlightedNodeColor.R = (float) cl.u.RGBA[0];
+    view->highlightedNodeColor.G = (float) cl.u.RGBA[1];
+    view->highlightedNodeColor.B = (float) cl.u.RGBA[2];
+    view->highlightedNodeColor.A =
+	(float)
+	atof(get_attribute_value("highlightednodecoloralpha", view, g));
+
+    buf = agget(g, "highlightededgecolor");
+    colorxlate(get_attribute_value("highlightededgecolor", view, g), &cl,
+	       RGBA_DOUBLE);
+    view->highlightedEdgeColor.R = (float) cl.u.RGBA[0];
+    view->highlightedEdgeColor.G = (float) cl.u.RGBA[1];
+    view->highlightedEdgeColor.B = (float) cl.u.RGBA[2];
+    view->highlightedEdgeColor.A =
+	(float)
+	atof(get_attribute_value("highlightededgecoloralpha", view, g));
+
+
+/*
+
+but here i am, on the road again
+here i am, up on the stage
+here i go, playing the star again
+there i go, turn the page
+
+*/
+
+    /*default line width */
+    view->LineWidth =
+	(float) atof(get_attribute_value("defaultlinewidth", view, g));
+    view->FontSize = atoi(get_attribute_value("defaultfontsize", view, g));
+
+    view->topviewusermode = atoi(get_attribute_value("usermode", view, g));
+    get_attribute_value("defaultmagnifierwidth", view, g);
+    view->mg.width =
+	atoi(get_attribute_value("defaultmagnifierwidth", view, g));
+    view->mg.height =
+	atoi(get_attribute_value("defaultmagnifierheight", view, g));
+
+    view->mg.kts =
+	(float) atof(get_attribute_value("defaultmagnifierkts", view, g));
+
+    view->fmg.constantR =
+	atoi(get_attribute_value
+	     ("defaultfisheyemagnifierradius", view, g));
+
+    view->fmg.fisheye_distortion_fac =
+	atoi(get_attribute_value
+	     ("defaultfisheyemagnifierdistort", view, g));
+
+    glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
+}
+
 void init_viewport(ViewInfo * view)
 {
-
+    char *template_file;
     FILE *input_file;
 
-	/*loading default visual attributes*/
-    input_file = fopen(DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE, "r");
-    if (input_file == NULL)
-	{
-		g_print("default attributes template graph is not found! Program is being terminated....");
-		exit(-1);
-	}
+    /*loading default visual attributes */
+#ifdef _WIN32
+    template_file = DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE;
+#else
+    template_file = smyrnaPath ("gui/template.dot");
+#endif
+    input_file = fopen(template_file, "r");
+    if (!input_file) {
+	fprintf (stderr, "default attributes template graph file \"%s\" not found\n", template_file);
+	exit(-1);
+    } else if (!(view->default_attributes = agread(input_file, 0))) {
+	fprintf (stderr, "could not load default attributes template graph file \"%s\"\n", template_file);
+	exit(-1);
+    }
+#ifndef _WIN32
+    free (template_file);
+#endif
 
-	else if (!(view->default_attributes = agread(input_file, NIL(Agdisc_t *))))
-	{
-		g_print("Could not load default attributes template graph! Program is being terminated....");
-		exit(-1);
-	}
-
-
-
-	//init graphs
+    //init graphs
     view->g = NULL;		//no graph, gl screen should check it
     view->graphCount = 0;	//and disable interactivity if count is zero
-
 
     view->bdxLeft = 0;
     view->bdxRight = 500;
@@ -90,7 +266,7 @@ void init_viewport(ViewInfo * view)
     view->borderColor.B = 0;
     view->borderColor.A = 1;
 
-    view->bdVisible =1;	//show borders red
+    view->bdVisible = 1;	//show borders red
 
     view->gridSize = 10;
     view->gridColor.R = 0.5;
@@ -160,280 +336,14 @@ void init_viewport(ViewInfo * view)
     view->Selection.Anti = 0;
     view->Topview = malloc(sizeof(topview));
     view->Topview->topviewmenu = '\0';
-	set_viewport_settings_from_template  (view,view->default_attributes);
-
-}
-static char* get_attribute_value(char* attr,ViewInfo * view,Agraph_t *g)
-{
-	char* buf;
-	buf=agget(g,attr);
-	if ((!buf)||(strcmp(buf,"")==0))
-		buf=agget(view->default_attributes,attr);
-	return buf;
-
-}
-void set_viewport_settings_from_template  (ViewInfo * view,Agraph_t *g)
-{
-    gvcolor_t cl;
-	char* buf;
-	/*
-	graph [antialiasing=1,
-		bgcolor="#ffffff",
-		bordercolor="#38eb29",
-		bordercoloralpha="1",
-		bordervisible="1",
-		defaultfontname="1",
-		defaultfontsize="52",
-		gridcolor="#6033d8",
-		gridcoloralpha="1",
-		gridvisible="1",
-		highlightededgecolor="#c41b50",
-		highlightededgecoloralpha="1",
-		highlightednodecolor="#d1cd24",
-		highlightednodecoloralpha="1",
-		defaultlinewidth="1"
-		nodesizewithdegree="1",
-		randomizeedgecolors="1",
-		randomizenodecolors="1",
-		selectededgecolor="#ffc0cb",
-		selectededgecoloralpha="1",
-		selectednodecolor="#8ce61d",
-		selectednodecoloralpha="1",
-		gridcoloralpha="1",
-		defaultmagnifierwidth="300",
-		defaultmagnifierheight="200",
-		defaultmagnifierkts="5",
-		defaultfisheyemagnifierradius="250"
-		defaultfisheyemagnifierdistort="5",
-		usermode="1",
-		topologicalfisheyefinenodes="50",
-		topologicalfisheyecoarseningfactor="2.5",
-		topologicalfisheyedistortionfactor="1",
-		topologicalfisheyedist2limit="1",
-		topologicalfisheyeanimate="1",
-		topologicalfisheyelabelfinenodes="1",
-		topologicalfisheyecolornodes="1",
-		topologicalfisheyecoloredges="1",
-		topologicalfisheyelabelfocus="1",
-		topologicalfisheyefinestcolor="red",
-		topologicalfisheyecoarsestcolor="green"
-	];
-
-	border color*/
-	colorxlate(get_attribute_value("bordercolor",view,g), &cl, RGBA_DOUBLE);
-	view->borderColor.R = (float)cl.u.RGBA[0];
-    view->borderColor.G = (float)cl.u.RGBA[1];
-    view->borderColor.B = (float)cl.u.RGBA[2];
-
-	view->borderColor.A = (float)atof(get_attribute_value("bordercoloralpha",view,g));
-
-
-	view->bdVisible = (float)atof(get_attribute_value("bordervisible",view,g));
-	
-
-	buf=get_attribute_value("gridcolor",view,g);
-	colorxlate(buf, &cl, RGBA_DOUBLE);
-	view->gridColor.R = (float)cl.u.RGBA[0];
-    view->gridColor.G = (float)cl.u.RGBA[1];
-    view->gridColor.B = (float)cl.u.RGBA[2];
-	view->gridColor.A = (float)atof(get_attribute_value("gridcoloralpha",view,g));
-
-	
-	
-	view->gridSize = (float)atof(buf=get_attribute_value("gridsize",view,g));
-
-	view->gridVisible = atoi(get_attribute_value("gridvisible",view,g));
-
-    //mouse mode=pan
-
-    //background color , default white
-	colorxlate(get_attribute_value("bgcolor",view,g), &cl, RGBA_DOUBLE);
-
-	view->bgColor.R = (float)cl.u.RGBA[0];
-    view->bgColor.G = (float)cl.u.RGBA[1];
-    view->bgColor.B =(float) cl.u.RGBA[2];
-    view->bgColor.A = 1;
-
-    //selected nodes are drawn with this color
-	colorxlate(get_attribute_value("selectednodecolor",view,g), &cl, RGBA_DOUBLE);
-	view->selectedNodeColor.R = (float)cl.u.RGBA[0];
-    view->selectedNodeColor.G = (float)cl.u.RGBA[1];
-    view->selectedNodeColor.B = (float)cl.u.RGBA[2];
-    view->selectedNodeColor.A = (float)atof(get_attribute_value("selectednodecoloralpha",view,g));
-	//selected edge are drawn with this color
-	colorxlate(get_attribute_value("selectededgecolor",view,g), &cl, RGBA_DOUBLE);
-	view->selectedEdgeColor.R = (float)cl.u.RGBA[0];
-    view->selectedEdgeColor.G = (float)cl.u.RGBA[1];
-    view->selectedEdgeColor.B = (float)cl.u.RGBA[2];
-    view->selectedEdgeColor.A = (float)atof(get_attribute_value("selectededgecoloralpha",view,g));
-
-
-	colorxlate(get_attribute_value("highlightednodecolor",view,g), &cl, RGBA_DOUBLE);
-	view->highlightedNodeColor.R = (float)cl.u.RGBA[0];
-    view->highlightedNodeColor.G = (float)cl.u.RGBA[1];
-    view->highlightedNodeColor.B = (float)cl.u.RGBA[2];
-    view->highlightedNodeColor.A = (float)atof(get_attribute_value("highlightednodecoloralpha",view,g));
-
-	buf=agget(g,"highlightededgecolor");
-	colorxlate(get_attribute_value("highlightededgecolor",view,g), &cl, RGBA_DOUBLE);
-	view->highlightedEdgeColor.R = (float)cl.u.RGBA[0];
-    view->highlightedEdgeColor.G = (float)cl.u.RGBA[1];
-    view->highlightedEdgeColor.B = (float)cl.u.RGBA[2];
-    view->highlightedEdgeColor.A = (float)atof(get_attribute_value("highlightededgecoloralpha",view,g));
-
-
-/*
-
-but here i am, on the road again
-here i am, up on the stage
-here i go, playing the star again
-there i go, turn the page
-
-*/
-
-	
-	
-	/*default line width*/
-    view->LineWidth = (float)atof(get_attribute_value("defaultlinewidth",view,g));
-	view->FontSize = atoi(get_attribute_value("defaultfontsize",view,g));
-
-	view->topviewusermode = atoi(get_attribute_value("usermode",view,g));
-	get_attribute_value("defaultmagnifierwidth",view,g);
-	view->mg.width = atoi(get_attribute_value("defaultmagnifierwidth",view,g));
-	view->mg.height = atoi(get_attribute_value("defaultmagnifierheight",view,g));
-
-	view->mg.kts = (float)atof(get_attribute_value("defaultmagnifierkts",view,g));
-
-	view->fmg.constantR = atoi(get_attribute_value("defaultfisheyemagnifierradius",view,g));
-
-	view->fmg.fisheye_distortion_fac=atoi(get_attribute_value("defaultfisheyemagnifierdistort",view,g));
-
-
-
-	glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
-
+    set_viewport_settings_from_template(view, view->default_attributes);
 }
 
 
-int add_graph_to_viewport_from_file(char *fileName)
-{
-    //returns 1 if successfull else 0
-    Agraph_t *graph;
-    graph = loadGraph(fileName);
-    if (graph) {
-	view->graphCount = view->graphCount + 1;
-	view->g =
-	    (Agraph_t **) realloc(view->g,
-				  sizeof(Agraph_t *) * view->graphCount);
-	view->g[view->graphCount - 1] = graph;
-	view->activeGraph = view->graphCount - 1;
-	//GUI update , graph combo box on top-right should be updated
-	load_settings_from_graph(view->default_attributes);
-	refreshControls(view);
-	return 1;
-    } else
-	return 0;
-
-}
-
-
-int add_new_graph_to_viewport()
-{
-    //returns graph index , otherwise -1
-    Agraph_t *graph;
-    graph = (Agraph_t *) malloc(sizeof(Agraph_t));
-    if (graph) {
-	view->graphCount = view->graphCount + 1;
-	view->g[view->graphCount - 1] = graph;
-	return (view->graphCount - 1);
-    } else
-	return -1;
-}
-
-
-void refreshControls(ViewInfo * v)
-{
-
-    int i = 0;
-    GtkComboBox *widget;
-    widget = get_SelectGraph();
-    //load graph names to combobox
-    for (i = 0; i < v->graphCount; i++) {
-	gtk_combo_box_append_text(widget,
-				  ((custom_graph_data
-				    *) (AGDATA(v->g[i])))->GraphFileName);
-    }
-    view->SignalBlock = 1;	//HACK
-    gtk_combo_box_set_active(widget, view->activeGraph);
-    view->SignalBlock = 0;
-
-
-    //change button colors
-    Color_Widget_bg("gray", glade_xml_get_widget(xml, "btnDot"));
-    Color_Widget_bg("gray", glade_xml_get_widget(xml, "btnNeato"));
-    Color_Widget_bg("gray", glade_xml_get_widget(xml, "btnTwopi"));
-    Color_Widget_bg("gray", glade_xml_get_widget(xml, "btnCirco"));
-    Color_Widget_bg("gray", glade_xml_get_widget(xml, "btnFdp"));
-
-
-    switch (((custom_graph_data *) (AGDATA(view->g[view->activeGraph])))->
-	    Engine) {
-    case 0:
-	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnDot"));
-	break;
-
-    case 1:
-	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnNeato"));
-	break;
-
-    case 2:
-	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnTwopi"));
-	break;
-
-    case 3:
-	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnCirco"));
-	break;
-
-    case 4:
-	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnFdp"));
-	break;
-
-
-    }
-    glexpose();
-
-
-
-
-
-}
-
-
-void update_graph_params(Agraph_t * graph)	//adds gledit params 
-{
-
-
-    char tempString[100];
-    agattr(graph, AGRAPH, "GraphFileName",
-	   ((custom_graph_data *) (AGDATA(graph)))->GraphFileName);
-    agattr(graph, AGRAPH, "GraphName",
-	   ((custom_graph_data *) (AGDATA(graph)))->GraphName);
-    sprintf(tempString, "%i",
-	    ((custom_graph_data *) (AGDATA(graph)))->AlwaysShow);
-    agattr(graph, AGRAPH, "AlwaysShow", tempString);
-    sprintf(tempString, "%i",
-	    ((custom_graph_data *) (AGDATA(graph)))->TopView);
-    agattr(graph, AGRAPH, "TopView", tempString);
-    sprintf(tempString, "%i",
-	    ((custom_graph_data *) (AGDATA(graph)))->Locked);
-    agattr(graph, AGRAPH, "Locked", tempString);
-    sprintf(tempString, "%i",
-	    ((custom_graph_data *) (AGDATA(graph)))->Engine);
-    agattr(graph, AGRAPH, "Engine", tempString);
-
-}
-
-void load_graph_params(Agraph_t * graph)	//run once right after loading graph
+/* load_graph_params:
+ * run once right after loading graph
+ */
+static void load_graph_params(Agraph_t * graph)
 {
     //file may or may have not gl edit attributes
     //first defaults are set in loading function
@@ -484,92 +394,122 @@ void load_graph_params(Agraph_t * graph)	//run once right after loading graph
 		else		//we dont know if it is view->Topview or simply a graph with no xdot, for testing i ll use view->Topview
 			((custom_graph_data*)AGDATA(g))->view->Topview=1;  */
 
-
-
-
-
 }
 
-int save_graph()		//save without prompt
+/* attach_object_custom_data_to_graph:
+ * run once or to reset all data !! prev data is removed
+ */
+static int attach_object_custom_data_to_graph(Agraph_t * graph)
 {
-    //check if there is an active graph
-    if (view->activeGraph > -1) {
-	//check if active graph has a file name
-	if (((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	    GraphFileName) {
-	    return save_graph_with_file_name(view->g[view->activeGraph],
-					     ((custom_graph_data *)
-					      AGDATA(view->
-						     g[view->
-						       activeGraph]))->
-					     GraphFileName);
-	} else
-	    return save_as_graph();
+    Agnode_t *n;
+    Agedge_t *e;
+    Agraph_t *s;
+
+    agbindrec(graph, "custom_graph_data", sizeof(custom_graph_data), TRUE);	//graph custom data
+    init_object_custom_data(graph, graph);	//attach to graph itself
+
+    n = agfstnode(graph);
+
+    for (s = agfstsubg(graph); s; s = agnxtsubg(s))
+	init_object_custom_data(graph, s);	//attach to subgraph 
+
+    for (n = agfstnode(graph); n; n = agnxtnode(graph, n)) {
+	init_object_custom_data(graph, n);	//attach to node
+	for (e = agfstout(graph, n); e; e = agnxtout(graph, e)) {
+	    init_object_custom_data(graph, e);	//attach to edge
+	}
     }
     return 1;
 
 }
 
-int save_as_graph()		//save with prompt
+/* update_graph_params:
+ * adds gledit params
+ */
+static void update_graph_params(Agraph_t * graph)
 {
-    //check if there is an active graph
-    if (view->activeGraph > -1) {
-	GtkWidget *dialog;
-	dialog = gtk_file_chooser_dialog_new("Save File",
-					     NULL,
-					     GTK_FILE_CHOOSER_ACTION_SAVE,
-					     GTK_STOCK_CANCEL,
-					     GTK_RESPONSE_CANCEL,
-					     GTK_STOCK_SAVE,
-					     GTK_RESPONSE_ACCEPT, NULL);
-	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER
-						       (dialog), TRUE);
-	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
-	    char *filename;
-	    filename =
-		gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-	    save_graph_with_file_name(view->g[view->activeGraph],
-				      filename);
-	    g_free(filename);
-	    gtk_widget_destroy(dialog);
+    char tempString[100];
+    agattr(graph, AGRAPH, "GraphFileName",
+	   ((custom_graph_data *) (AGDATA(graph)))->GraphFileName);
+    agattr(graph, AGRAPH, "GraphName",
+	   ((custom_graph_data *) (AGDATA(graph)))->GraphName);
+    sprintf(tempString, "%i",
+	    ((custom_graph_data *) (AGDATA(graph)))->AlwaysShow);
+    agattr(graph, AGRAPH, "AlwaysShow", tempString);
+    sprintf(tempString, "%i",
+	    ((custom_graph_data *) (AGDATA(graph)))->TopView);
+    agattr(graph, AGRAPH, "TopView", tempString);
+    sprintf(tempString, "%i",
+	    ((custom_graph_data *) (AGDATA(graph)))->Locked);
+    agattr(graph, AGRAPH, "Locked", tempString);
+    sprintf(tempString, "%i",
+	    ((custom_graph_data *) (AGDATA(graph)))->Engine);
+    agattr(graph, AGRAPH, "Engine", tempString);
 
-	    return 1;
-	} else {
-	    gtk_widget_destroy(dialog);
-	    return 0;
-	}
-    }
-    return 0;
 }
-int save_graph_with_file_name(Agraph_t * graph, char *fileName)	//saves graph with file name,if file name is NULL save as is ++
+
+/* clear_object_xdot:
+ * clear single object's xdot info
+ */ 
+static int clear_object_xdot(void *obj)
 {
-    //if file name is NULL save to graph's filename
-    //else use file name, this implements save as..
-    FILE *output_file;
-    update_graph_params(graph);
-    if (fileName)
-	output_file = fopen(fileName, "w");
-    else {
-	if (((custom_graph_data *) (AGDATA(graph)))->GraphFileName)
-	    output_file =
-		fopen(((custom_graph_data *) (AGDATA(graph)))->
-		      GraphFileName, "w");
-	else {
-	    g_print("there is no file name to save! Programmer error\n");
-	    return 0;
-	}
-    }
-    if (output_file == NULL) {
-	g_print("Cannot create file \n");
-	return 0;
-    } else if (agwrite(graph, (void *) output_file)) {
-	g_print("%s sucessfully saved \n", fileName);
+    if (obj) {
+	if (agattrsym(obj, "_draw_"))
+	    agset(obj, "_draw_", "");
+	if (agattrsym(obj, "_ldraw_"))
+	    agset(obj, "_ldraw_", "");
+	if (agattrsym(obj, "_hdraw_"))
+	    agset(obj, "_hdraw_", "");
+	if (agattrsym(obj, "_tdraw_"))
+	    agset(obj, "_tdraw_", "");
+	if (agattrsym(obj, "_hldraw_"))
+	    agset(obj, "_hldraw_", "");
+	if (agattrsym(obj, "_tldraw_"))
+	    agset(obj, "_tldraw_", "");
 	return 1;
     }
     return 0;
 }
 
-int create_xdot_for_graph(Agraph_t * graph, int keeppos)
+/* clear_graph_xdot:
+ * clears all xdot  attributes, used especially before layout change
+ */
+static int clear_graph_xdot(Agraph_t * graph)
+{
+    Agnode_t *n;
+    Agedge_t *e;
+    Agraph_t *s;
+
+
+    clear_object_xdot(graph);
+    n = agfstnode(graph);
+
+    for (s = agfstsubg(graph); s; s = agnxtsubg(s))
+	clear_object_xdot(s);
+
+    for (n = agfstnode(graph); n; n = agnxtnode(graph, n)) {
+	clear_object_xdot(n);
+	for (e = agfstout(graph, n); e; e = agnxtout(graph, e)) {
+	    clear_object_xdot(e);
+	}
+    }
+    return 1;
+
+
+}
+
+/* clear_graph:
+ * clears custom data binded
+ */
+static void clear_graph(Agraph_t * graph)
+{
+
+}
+
+/* create_xdot_for_graph:
+ * 0 failed , 1 successful
+ */
+static int create_xdot_for_graph(Agraph_t * graph, int keeppos)
 {
     //0 failed , 1 successfull
     //save graph to __temp.dot
@@ -646,7 +586,269 @@ int create_xdot_for_graph(Agraph_t * graph, int keeppos)
     return 0;
 
 }
-int do_graph_layout(Agraph_t * graph, int Engine, int keeppos)	//changes the layout, all user relocations are reset unless keeppos is set to 1
+
+/* loadGraph:
+ * dont use directly, use add_graph_to_viewport_from_file instead
+ */
+static Agraph_t *loadGraph(char *filename)
+{
+    Agraph_t *g;
+//      mydata *p;
+    FILE *input_file;
+    input_file = fopen(filename, "r");
+    if (input_file == NULL)
+	g_print("Cannot open %s\n", filename);
+    else if ((g = agread(input_file, NIL(Agdisc_t *)))) {
+	attach_object_custom_data_to_graph(g);
+	load_graph_params(g);
+
+	if ((!agget(g, "xdotversion"))
+	    && ((agget(g, "TopView") == "0")
+		|| !agget(g, "TopView")
+	    )
+
+	    ) {
+	    create_xdot_for_graph(g, 0);
+	    fclose(input_file);
+#ifdef _WIN32
+	    input_file = fopen("c:/__tempfile.xdot", "r");
+#else
+	    input_file = fopen("/tmp/__tempfile.xdot", "r");
+#endif
+	    while (input_file == NULL)	//HACK!!!!
+	    {
+		input_file = fopen("c:/__tempfile.xdot", "r");
+//                      g_print("Cannot open xdot  error %si\n",strerror(errno));
+
+	    }
+	    g = agread(input_file, NIL(Agdisc_t *));
+	    g_print("xdot is being loaded\n");
+	    //attaching rec for graph fields
+	    attach_object_custom_data_to_graph(g);
+	    load_graph_params(g);
+	    //      fclose(input_file);
+	}
+	((custom_graph_data *) AGDATA(g))->GraphFileName =
+	    (char *) malloc((strlen(filename) + 1) * sizeof(char));
+	//attaching rec for graph objects
+	strcpy(((custom_graph_data *) AGDATA(g))->GraphFileName, filename);
+	/*if(strcasecmp(agget(g, "TopView"),"1")==0)
+	   {
+	   if(
+	   TopviewNodeCount > 0)
+	   {
+	   Dlg=gtk_message_dialog_new (NULL,
+	   GTK_DIALOG_MODAL,
+	   GTK_MESSAGE_WARNING,
+	   GTK_BUTTONS_OK,
+	   "For Performance issues , this program does not support multiple Topview graphs!");
+	   respond=gtk_dialog_run (Dlg);
+	   gtk_object_destroy (Dlg);
+	   agclose(g);
+	   return 0;
+	   }
+	   else
+	   PrepareTopview(g);
+	   } */
+	preparetopview(g, view->Topview);
+	return g;
+    } else {
+	return 0;
+    }
+    return 0;
+}
+
+/* add_graph_to_viewport_from_file:
+ * returns 1 if successfull else 0
+ */
+int add_graph_to_viewport_from_file(char *fileName)
+{
+    //returns 1 if successfull else 0
+    Agraph_t *graph;
+    graph = loadGraph(fileName);
+    if (graph) {
+	view->graphCount = view->graphCount + 1;
+	view->g =
+	    (Agraph_t **) realloc(view->g,
+				  sizeof(Agraph_t *) * view->graphCount);
+	view->g[view->graphCount - 1] = graph;
+	view->activeGraph = view->graphCount - 1;
+	//GUI update , graph combo box on top-right should be updated
+	load_settings_from_graph(view->default_attributes);
+	refreshControls(view);
+	return 1;
+    } else
+	return 0;
+
+}
+
+#if 0
+/* add_new_graph_to_viewport:
+ * returns graph index , otherwise -1
+ */
+int add_new_graph_to_viewport()
+{
+    //returns graph index , otherwise -1
+    Agraph_t *graph;
+    graph = (Agraph_t *) malloc(sizeof(Agraph_t));
+    if (graph) {
+	view->graphCount = view->graphCount + 1;
+	view->g[view->graphCount - 1] = graph;
+	return (view->graphCount - 1);
+    } else
+	return -1;
+}
+#endif
+
+void refreshControls(ViewInfo * v)
+{
+
+    int i = 0;
+    GtkComboBox *widget;
+    widget = get_SelectGraph();
+    //load graph names to combobox
+    for (i = 0; i < v->graphCount; i++) {
+	gtk_combo_box_append_text(widget,
+				  ((custom_graph_data
+				    *) (AGDATA(v->g[i])))->GraphFileName);
+    }
+    view->SignalBlock = 1;	//HACK
+    gtk_combo_box_set_active(widget, view->activeGraph);
+    view->SignalBlock = 0;
+
+
+    //change button colors
+    Color_Widget_bg("gray", glade_xml_get_widget(xml, "btnDot"));
+    Color_Widget_bg("gray", glade_xml_get_widget(xml, "btnNeato"));
+    Color_Widget_bg("gray", glade_xml_get_widget(xml, "btnTwopi"));
+    Color_Widget_bg("gray", glade_xml_get_widget(xml, "btnCirco"));
+    Color_Widget_bg("gray", glade_xml_get_widget(xml, "btnFdp"));
+
+
+    switch (((custom_graph_data *) (AGDATA(view->g[view->activeGraph])))->
+	    Engine) {
+    case 0:
+	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnDot"));
+	break;
+
+    case 1:
+	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnNeato"));
+	break;
+
+    case 2:
+	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnTwopi"));
+	break;
+
+    case 3:
+	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnCirco"));
+	break;
+
+    case 4:
+	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnFdp"));
+	break;
+
+
+    }
+    glexpose();
+
+
+
+
+
+}
+
+/* save_graph_with_file_name:
+ * saves graph with file name; if file name is NULL save as is
+ */
+static int save_graph_with_file_name(Agraph_t * graph, char *fileName)
+{
+    FILE *output_file;
+    update_graph_params(graph);
+    if (fileName)
+	output_file = fopen(fileName, "w");
+    else {
+	if (((custom_graph_data *) (AGDATA(graph)))->GraphFileName)
+	    output_file =
+		fopen(((custom_graph_data *) (AGDATA(graph)))->
+		      GraphFileName, "w");
+	else {
+	    g_print("there is no file name to save! Programmer error\n");
+	    return 0;
+	}
+    }
+    if (output_file == NULL) {
+	g_print("Cannot create file \n");
+	return 0;
+    } else if (agwrite(graph, (void *) output_file)) {
+	g_print("%s sucessfully saved \n", fileName);
+	return 1;
+    }
+    return 0;
+}
+
+/* save_graph:
+ * save without prompt
+ */
+int save_graph()
+{
+    //check if there is an active graph
+    if (view->activeGraph > -1) {
+	//check if active graph has a file name
+	if (((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
+	    GraphFileName) {
+	    return save_graph_with_file_name(view->g[view->activeGraph],
+					     ((custom_graph_data *)
+					      AGDATA(view->
+						     g[view->
+						       activeGraph]))->
+					     GraphFileName);
+	} else
+	    return save_as_graph();
+    }
+    return 1;
+
+}
+
+/* save_as_graph:
+ * save with prompt
+ */
+int save_as_graph()
+{
+    //check if there is an active graph
+    if (view->activeGraph > -1) {
+	GtkWidget *dialog;
+	dialog = gtk_file_chooser_dialog_new("Save File",
+					     NULL,
+					     GTK_FILE_CHOOSER_ACTION_SAVE,
+					     GTK_STOCK_CANCEL,
+					     GTK_RESPONSE_CANCEL,
+					     GTK_STOCK_SAVE,
+					     GTK_RESPONSE_ACCEPT, NULL);
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER
+						       (dialog), TRUE);
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+	    char *filename;
+	    filename =
+		gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+	    save_graph_with_file_name(view->g[view->activeGraph],
+				      filename);
+	    g_free(filename);
+	    gtk_widget_destroy(dialog);
+
+	    return 1;
+	} else {
+	    gtk_widget_destroy(dialog);
+	    return 0;
+	}
+    }
+    return 0;
+}
+
+/* do_graph_layout:
+ * changes the layout. all user relocations are reset unless 
+ * keeppos is set to 1
+ */
+int do_graph_layout(Agraph_t * graph, int Engine, int keeppos)
 {
 /*	Agnode_t *v;
 	Agedge_t *e;
@@ -655,8 +857,7 @@ int do_graph_layout(Agraph_t * graph, int Engine, int keeppos)	//changes the lay
 	int cnt;*/
 //      mydata *p;
     FILE *input_file;
-    char *_filename =
-	(char *)
+    char *_filename = (char *)
 	malloc((strlen
 		(((custom_graph_data
 		   *) (AGDATA(view->g[view->activeGraph])))->
@@ -708,159 +909,24 @@ int do_graph_layout(Agraph_t * graph, int Engine, int keeppos)	//changes the lay
 
 }
 
-void clear_graph(Agraph_t * graph)
-//clears custom data binded
+#if 0
+void listg(Agraph_t * g)
 {
-
-
+    Agnode_t *v;
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	fprintf(stderr, "%s\n", agnameof(v));
+    }
 }
-
-Agraph_t *loadGraph(char *filename)
-{
-    Agraph_t *g;
-//      mydata *p;
-    FILE *input_file;
-    input_file = fopen(filename, "r");
-    if (input_file == NULL)
-	g_print("Cannot open %s\n", filename);
-    else if ((g = agread(input_file, NIL(Agdisc_t *)))) {
-	attach_object_custom_data_to_graph(g);
-	load_graph_params(g);
-
-	if ((!agget(g, "xdotversion"))
-	    && ((agget(g, "TopView") == "0")
-		|| !agget(g, "TopView")
-	    )
-
-	    )
-	{
-	    create_xdot_for_graph(g, 0);
-	    fclose(input_file);
-#ifdef _WIN32
-	    input_file = fopen("c:/__tempfile.xdot", "r");
-#else
-	    input_file = fopen("/tmp/__tempfile.xdot", "r");
 #endif
-	    while (input_file == NULL)	//HACK!!!!
-	    {
-		input_file = fopen("c:/__tempfile.xdot", "r");
-//                      g_print("Cannot open xdot  error %si\n",strerror(errno));
-
-	    }
-	    g = agread(input_file, NIL(Agdisc_t *));
-	    g_print("xdot is being loaded\n");
-	    //attaching rec for graph fields
-	    attach_object_custom_data_to_graph(g);
-	    load_graph_params(g);
-	    //      fclose(input_file);
-	}
-	((custom_graph_data *) AGDATA(g))->GraphFileName =
-	    (char *) malloc((strlen(filename) + 1) * sizeof(char));
-	//attaching rec for graph objects
-	strcpy(((custom_graph_data *) AGDATA(g))->GraphFileName, filename);
-	/*if(strcasecmp(agget(g, "TopView"),"1")==0)
-	   {
-	   if(
-	   TopviewNodeCount > 0)
-	   {
-	   Dlg=gtk_message_dialog_new (NULL,
-	   GTK_DIALOG_MODAL,
-	   GTK_MESSAGE_WARNING,
-	   GTK_BUTTONS_OK,
-	   "For Performance issues , this program does not support multiple Topview graphs!");
-	   respond=gtk_dialog_run (Dlg);
-	   gtk_object_destroy (Dlg);
-	   agclose(g);
-	   return 0;
-	   }
-	   else
-	   PrepareTopview(g);
-	   } */
-	preparetopview(g, view->Topview);
-	return g;
-    } else {
-	return 0;
-    }
-    return 0;
-}
-int clear_object_xdot(void *obj)
-{
-    if (obj) {
-	if (agattrsym(obj, "_draw_"))
-	    agset(obj, "_draw_", "");
-	if (agattrsym(obj, "_ldraw_"))
-	    agset(obj, "_ldraw_", "");
-	if (agattrsym(obj, "_hdraw_"))
-	    agset(obj, "_hdraw_", "");
-	if (agattrsym(obj, "_tdraw_"))
-	    agset(obj, "_tdraw_", "");
-	if (agattrsym(obj, "_hldraw_"))
-	    agset(obj, "_hldraw_", "");
-	if (agattrsym(obj, "_tldraw_"))
-	    agset(obj, "_tldraw_", "");
-	return 1;
-    }
-    return 0;
-}
-
-
-int clear_graph_xdot(Agraph_t * graph)	//clears all xdot  attributes, used especially before layout change
-{
-    Agnode_t *n;
-    Agedge_t *e;
-    Agraph_t *s;
-
-
-    clear_object_xdot(graph);
-    n = agfstnode(graph);
-
-    for (s = agfstsubg(graph); s; s = agnxtsubg(s))
-	clear_object_xdot(s);
-
-    for (n = agfstnode(graph); n; n = agnxtnode(graph, n)) {
-	clear_object_xdot(n);
-	for (e = agfstout(graph, n); e; e = agnxtout(graph, e)) {
-	    clear_object_xdot(e);
-	}
-    }
-    return 1;
-
-
-}
 
 /*
+ * Object Custom Data Functions
+ */
 
-Object Custom Data Functions
-
-*/
-
-
-int attach_object_custom_data_to_graph(Agraph_t * graph)
-{
-    Agnode_t *n;
-    Agedge_t *e;
-    Agraph_t *s;
-
-    agbindrec(graph, "custom_graph_data", sizeof(custom_graph_data), TRUE);	//graph custom data
-    init_object_custom_data(graph, graph);	//attach to graph itself
-
-    n = agfstnode(graph);
-
-    for (s = agfstsubg(graph); s; s = agnxtsubg(s))
-	init_object_custom_data(graph, s);	//attach to subgraph 
-
-    for (n = agfstnode(graph); n; n = agnxtnode(graph, n)) {
-	init_object_custom_data(graph, n);	//attach to node
-	for (e = agfstout(graph, n); e; e = agnxtout(graph, e)) {
-	    init_object_custom_data(graph, e);	//attach to edge
-	}
-    }
-    return 1;
-
-}
-
-
-int init_object_custom_data(Agraph_t * graph, void *obj)	//creates a custom_object_data 
+/* init_object_custom_data:
+ * creates a custom_object_data
+ */
+static int init_object_custom_data(Agraph_t * graph, void *obj)
 {
     agdelrec(graph, "custom_object_data");
     agbindrec(obj, "custom_object_data", sizeof(custom_object_data), TRUE);
@@ -878,14 +944,41 @@ int init_object_custom_data(Agraph_t * graph, void *obj)	//creates a custom_obje
     return 1;
 }
 
+#if 0
+static int clear_string_data_from_object_custom_data(void *obj)
+{
+    if (obj != NULL) {
+	int ind = 0;
+	for (ind = 0;
+	     ind < ((custom_object_data *) AGDATA(obj))->StrDataCount;
+	     ind++) {
+	    free(((custom_object_data *) AGDATA(obj))->StrData[ind]);
+	}
+	free(((custom_object_data *) AGDATA(obj))->StrData);
+	return 1;
+    }
+    return 0;
+}
 
-int clear_object_custom_data(void *obj)	//frees memory allocated for cutom object data
+/* clear_object_custom_data:
+ * frees memory allocated for cutom object data
+ */
+static int clear_numeric_data_from_object_custom_data(void *obj)
+{
+    if (obj != NULL) {
+	free(((custom_object_data *) AGDATA(obj))->NumData);
+	return 1;
+    }
+    return 0;
+}
+
+static int clear_object_custom_data(void *obj)
 {
     return ((clear_string_data_from_object_custom_data(obj))
 	    || (clear_numeric_data_from_object_custom_data(obj)));
 }
 
-int add_string_data_to_object_custom_data(void *obj, char *data)
+static int add_string_data_to_object_custom_data(void *obj, char *data)
 {
     if ((obj != NULL) && (data != NULL)) {
 	((custom_object_data *) AGDATA(obj))->StrData =
@@ -921,30 +1014,10 @@ int add_numeric_data_to_object_custom_data(void *obj, float data)
     }
     return 0;
 }
+#endif
 
-int clear_string_data_from_object_custom_data(void *obj)
-{
-    if (obj != NULL) {
-	int ind = 0;
-	for (ind = 0;
-	     ind < ((custom_object_data *) AGDATA(obj))->StrDataCount;
-	     ind++) {
-	    free(((custom_object_data *) AGDATA(obj))->StrData[ind]);
-	}
-	free(((custom_object_data *) AGDATA(obj))->StrData);
-	return 1;
-    }
-    return 0;
-}
-
-int clear_numeric_data_from_object_custom_data(void *obj)
-{
-    if (obj != NULL) {
-	free(((custom_object_data *) AGDATA(obj))->NumData);
-	return 1;
-    }
-    return 0;
-}
+/* move_node:
+ */ 
 void move_node(void *obj, float dx, float dy)
 {
     char buf[512];
@@ -1063,7 +1136,10 @@ static char *offset_spline(xdot * x, float dx, float dy, float headx,
 }
 #endif
 
-void move_nodes(Agraph_t * g)	//move selected nodes 
+/* move_nodes:
+ * move selected nodes 
+ */
+void move_nodes(Agraph_t * g)
 {
     Agnode_t *obj;
 
@@ -1123,10 +1199,7 @@ void move_nodes(Agraph_t * g)	//move selected nodes
     }
 }
 
-
-
-
-int SetGdkColor(GdkColor * c, char *color) {
+int setGdkColor(GdkColor * c, char *color) {
     gvcolor_t cl;
     if (color != '\0') {
 	colorxlate(color, &cl, RGBA_DOUBLE);
@@ -1142,6 +1215,3 @@ int SetGdkColor(GdkColor * c, char *color) {
 void glexpose() {
     expose_event(view->drawing_area, NULL, NULL);
 }
-
-
-
