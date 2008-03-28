@@ -267,7 +267,7 @@ void mDotSlot(GtkWidget * widget, gpointer user_data)
 
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], 0, 0);
+	do_graph_layout(view->g[view->activeGraph], GVK_DOT, 0);
     gtk_object_destroy((GtkObject *) Dlg);
 
     cursor = gdk_cursor_new(GDK_HAND2);
@@ -286,7 +286,7 @@ void mNeatoSlot(GtkWidget * widget, gpointer user_data)
 						      "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], 1, 0);
+	do_graph_layout(view->g[view->activeGraph], GVK_NEATO, 0);
     gtk_object_destroy((GtkObject *) Dlg);
 }
 
@@ -300,7 +300,7 @@ void mTwopiSlot(GtkWidget * widget, gpointer user_data)
 
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], 2, 0);
+	do_graph_layout(view->g[view->activeGraph], GVK_TWOPI, 0);
     gtk_object_destroy((GtkObject *) Dlg);
 
 }
@@ -315,7 +315,7 @@ void mCircoSlot(GtkWidget * widget, gpointer user_data)
 
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], 3, 0);
+	do_graph_layout(view->g[view->activeGraph], GVK_CIRCO, 0);
     gtk_object_destroy((GtkObject *) Dlg);
 }
 
@@ -330,7 +330,7 @@ void mFdpSlot(GtkWidget * widget, gpointer user_data)
 
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], 4, 0);
+	do_graph_layout(view->g[view->activeGraph], GVK_FDP, 0);
     gtk_object_destroy((GtkObject *) Dlg);
 }
 

@@ -168,6 +168,8 @@ typedef struct _attribute {
 
 } attribute;
 
+typedef enum { GVK_DOT,GVK_NEATO,GVK_TWOPI,GVK_CIRCO,GVK_FDP } gvk_layout;
+
 //bind this to cgraph g
 typedef struct _custom_graph_data {
     Agrec_t h;
@@ -176,7 +178,7 @@ typedef struct _custom_graph_data {
     int AlwaysShow;		//active or not draw it 
     int TopView;		//default 0, 1 for topview data, dots and lines
     int Locked;
-    int Engine;			//enum GVEngine{DOT,NEATO,TWOPI,CIRCO,FDP};
+    gvk_layout Engine;
     //graph's location, change these to move the whole graph
     int Modified;		//if graph has been modified after loading
     float offsetx;
@@ -192,10 +194,11 @@ typedef struct _custom_graph_data {
     int selectedEdgesCount;
 } custom_graph_data;
 
+#define GD_Engine(g) (((custom_graph_data*)AGDATA(g))->Engine)
+#define GD_GraphFileName(g) (((custom_graph_data*)AGDATA(g))->GraphFileName)
+#define GD_Modified(g) (((custom_graph_data*)AGDATA(g))->Modified)
 
-
-enum GEunit { GEpixels, GEinches, GEmm };
-
+typedef enum { GEpixels, GEinches, GEmm } GEunit;
 
 typedef struct _custom_object_data	//has to be attached to every Node, Edge, Graph and cluster
 {
@@ -308,7 +311,7 @@ typedef struct _ViewInfo
 	float bdxRight,bdyBottom,bdzBottom; 
 
 	/*reserved , not being used yet*/
-	enum GEunit unit;	//default pixels :0  
+	GEunit unit;	//default pixels :0  
 
 	/*variable to hold mouse coordinates temporarily*/
 	float GLx,GLy,GLz;		

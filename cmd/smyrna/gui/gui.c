@@ -710,21 +710,21 @@ void load_attributes()
 		    break;
 		case 4:
 		    if (strstr(ss, "ALL_ENGINES")) {
-			attr[attrcount].Engine[0] = 1;
-			attr[attrcount].Engine[1] = 1;
-			attr[attrcount].Engine[2] = 1;
-			attr[attrcount].Engine[3] = 1;
-			attr[attrcount].Engine[4] = 1;
+			attr[attrcount].Engine[GVK_DOT] = 1;
+			attr[attrcount].Engine[GVK_NEATO] = 1;
+			attr[attrcount].Engine[GVK_TWOPI] = 1;
+			attr[attrcount].Engine[GVK_CIRCO] = 1;
+			attr[attrcount].Engine[GVK_FDP] = 1;
 		    } else {
-			attr[attrcount].Engine[0] =
+			attr[attrcount].Engine[GVK_DOT] =
 			    strstr(ss, "DOT") ? 1 : 0;
-			attr[attrcount].Engine[1] =
+			attr[attrcount].Engine[GVK_NEATO] =
 			    strstr(ss, "NEATO") ? 1 : 0;
-			attr[attrcount].Engine[2] =
+			attr[attrcount].Engine[GVK_TWOPI] =
 			    strstr(ss, "TWOPI") ? 1 : 0;
-			attr[attrcount].Engine[3] =
+			attr[attrcount].Engine[GVK_CIRCO] =
 			    strstr(ss, "CIRCO") ? 1 : 0;
-			attr[attrcount].Engine[4] =
+			attr[attrcount].Engine[GVK_FDP] =
 			    strstr(ss, "FDP") ? 1 : 0;
 		    }
 		    break;

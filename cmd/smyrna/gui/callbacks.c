@@ -91,7 +91,7 @@ void btn_dot_clicked(GtkWidget * widget, gpointer user_data)
 
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], 0, 0);
+	do_graph_layout(view->g[view->activeGraph], GVK_DOT, 0);
     gtk_object_destroy((GtkObject *) Dlg);
 
     cursor = gdk_cursor_new(GDK_HAND2);
@@ -116,7 +116,7 @@ void btn_neato_clicked(GtkWidget * widget, gpointer user_data)
 
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], 1, 0);
+	do_graph_layout(view->g[view->activeGraph], GVK_NEATO, 0);
     gtk_object_destroy((GtkObject *) Dlg);
     gtk_button_set_image(GTK_BUTTON
 			 (glade_xml_get_widget(xml, "btn_neato")),
@@ -134,7 +134,7 @@ void btn_twopi_clicked(GtkWidget * widget, gpointer user_data)
 
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], 2, 0);
+	do_graph_layout(view->g[view->activeGraph], GVK_TWOPI, 0);
     gtk_object_destroy((GtkObject *) Dlg);
 
 }
@@ -149,7 +149,7 @@ void btn_circo_clicked(GtkWidget * widget, gpointer user_data)
 
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], 3, 0);
+	do_graph_layout(view->g[view->activeGraph], GVK_CIRCO, 0);
     gtk_object_destroy((GtkObject *) Dlg);
 }
 
@@ -164,7 +164,7 @@ void btn_fdp_clicked(GtkWidget * widget, gpointer user_data)
 
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], 4, 0);
+	do_graph_layout(view->g[view->activeGraph], GVK_FDP, 0);
     gtk_object_destroy((GtkObject *) Dlg);
 
 
