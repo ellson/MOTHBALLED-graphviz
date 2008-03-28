@@ -41,10 +41,8 @@ smyrna_SOURCES = btree.c draw.c filter.c glexpose.c gltemplate.c hier.c \
 
 smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/cdt/libcdt_C.la \
-		$(top_builddir)/lib/utilities/libutilities_C.la \
 		$(top_builddir)/lib/xdot/libxdot_C.la \
 		$(top_builddir)/lib/glcomp/libglcomp_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
-		$(top_builddir)/lib/filter/libfilter_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
 		$(GTK_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS)
