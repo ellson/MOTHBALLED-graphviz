@@ -22,9 +22,9 @@
 #define	SMYRNA_ATTRS "c:/Projects/graphviz2/share/gui/attrs.txt"
 #endif
 #ifdef _WIN32
-//#define GTKTOPVIEW_GLADE "c:\\Projects\\ATT\\GTK\\gtktopview\\lib\\GUI\\smyrna.glade"
 #define SMYRNA_GLADE "c:\\Projects\\ATT\\GTK\\gtktopview\\lib\\GUI\\smyrna.glade"
 #define GTKTOPVIEW_ATTRS "c:\\Projects\\ATT\\GTK\\GTKTest2\\attrs.txt"
+#define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"C:\\GTK\\2.0\\bin\\attr_template.dot"
 // #else
 // using -DGTKTOPVIEW_GLADE from Makefile.am and configure.ac
 // using -DGTKTOPVIEW_ATTRS from Makefile.am and configure.ac
@@ -50,7 +50,6 @@
 #define DEFAULT_FISHEYE_MAGNIFIER_RADIUS		250
 #define TOP_VIEW_USER_ADVANCED_MODE				0
 #define TOP_VIEW_USER_NOVICE_MODE				1
-#define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"C:\\GTK\\2.0\\bin\\attr_template.dot"
 
 //mouse modes
 #define MM_PAN					0
@@ -76,7 +75,7 @@
 #define NODE_ZOOM_LIMIT	-25.3
 #define NODE_CIRCLE_LIMIT	-7.3
 
-enum { nodshapedot,nodeshapecircle} node_shape;
+typedef enum { nodshapedot,nodeshapecircle} node_shape;
 
 typedef struct {
     float R;
@@ -220,6 +219,7 @@ typedef struct _custom_object_data	//has to be attached to every Node, Edge, Gra
 
 } custom_object_data;
 
+#define OD_id(p) (((custom_object_data*)AGDATA(p))->TVRef)
 #define OD_Selected(p) (((custom_object_data*)AGDATA(p))->Selected)
 #define OD_Preselected(p) (((custom_object_data*)AGDATA(p))->Preselected)
 #define OD_SelFlag(p) (((custom_object_data*)AGDATA(p))->selectionflag)
