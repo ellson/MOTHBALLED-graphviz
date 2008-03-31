@@ -1,19 +1,58 @@
-strict digraph template {
-	graph [bgcolor=white,
-    bordercolor=green,
-    gridcolor=grey,
-    highlightednodecolor=blue,
-    highlightededgecolor=green,
-    selectednodecolor=red,
-    selectededgecolor=pink,
-    bordervisible=1,
-    gridvisible=1,
-    randomizenodecolors=1,
-    randomizeedgecolors=1,
-    usermode=1,
-    nodesizewithdegree=1,
-    antialiasing=1,
-    defaultfontname="Arial 16",
-    defaultnodeshape=1];
-	A -> B;
+graph template {
+    bgcolor = "#ffffff"
+    bordercolor = "#38eb29"
+    bordercoloralpha = "1"
+    bordervisible = "1"
+    defaultfontname="Arial 16"
+    /* defaultfontname = "1" */
+    defaultfontsize = "52"
+    gridcolor = "#6033d8"
+    gridcoloralpha = "1"
+    gridsize = "10"
+    gridvisible = "1"
+    highlightededgecolor = "#c41b50"
+    highlightededgecoloralpha = "1"
+    highlightednodecolor = "#d1cd24" 
+    highlightednodecoloralpha = "1"
+    defaultlinewidth = "1"
+    nodesizewithdegree = "1"
+    randomizeedgecolors = "1"
+    randomizenodecolors = "1"
+    selectededgecolor = "#ffc0cb"
+    selectededgecoloralpha = "1"
+    selectednodecolor = "#8ce61d"
+    selectednodecoloralpha = "1"
+    gridcoloralpha = "1"
+    defaultmagnifierwidth = "300"
+    defaultmagnifierheight = "200"
+    defaultmagnifierkts = "5"
+    defaultfisheyemagnifierradius = "250"
+    defaultfisheyemagnifierdistort = "5"
+    usermode = "1"
+    topologicalfisheyefinenodes = "50"
+    topologicalfisheyecoarseningfactor = "2.5"
+    topologicalfisheyedistortionfactor = "1"
+    topologicalfisheyedist2limit = "1"
+    topologicalfisheyeanimate = "1"
+    topologicalfisheyelabelfinenodes = "1"
+    topologicalfisheyecolornodes = "1"
+    topologicalfisheyecoloredges = "1"
+    topologicalfisheyelabelfocus = "1"
+    topologicalfisheyefinestcolor = "red"
+    topologicalfisheyecoarsestcolor = "green"
+    bordercolor=green
+/*
+    gridcolor=grey
+    highlightednodecolor=blue
+    highlightededgecolor=green
+    selectednodecolor=red
+    selectededgecolor=pink
+    bordervisible=1
+    gridvisible=1
+    randomizenodecolors=1
+    randomizeedgecolors=1
+    usermode=1
+    nodesizewithdegree=1
+    antialiasing=1
+*/
 }
