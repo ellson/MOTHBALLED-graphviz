@@ -978,7 +978,7 @@ set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci)
 }
 
 /* findClosestActiveNode:
- * Find 
+ * 
  */
 static double
 findClosestActiveNode(Hierarchy * hierarchy, int node,
@@ -1041,8 +1041,8 @@ find_closest_active_node(Hierarchy * hierarchy, double x, double y,
     double min_dist = 1e20;
 
     for (i = 0; i < hierarchy->nvtxs[top_level]; i++) {
-	findClosestActiveNode(hierarchy, i, top_level, x, y, min_dist,
-			      &closest_node, &closest_node_level);
+	min_dist = findClosestActiveNode(hierarchy, i, top_level, x, y, 
+	    min_dist, &closest_node, &closest_node_level);
     }
     *closest_fine_node =
 	find_leftmost_descendant(hierarchy, closest_node,
