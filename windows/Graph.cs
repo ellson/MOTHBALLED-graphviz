@@ -31,6 +31,28 @@ namespace Graphviz
 			}
 		}
 		
+		public event EventHandler Changed;
+		
+		public IDictionary<string, string> Arguments
+		{
+			get { return _arguments; }
+		}
+
+		public IDictionary<string, string> GraphAttributes
+		{
+			get { return _graphAttributes; }
+		}
+
+		public IDictionary<string, string> DefaultNodeAttributes
+		{
+			get { return _defaultNodeAttributes; }
+		}
+
+		public IDictionary<string, string> DefaultEdgeAttributes
+		{
+			get { return _defaultEdgeAttributes; }
+		}
+				
 		public Graph(string filename)
 		{
 			IntPtr file = fopen(filename, "r");
@@ -40,6 +62,12 @@ namespace Graphviz
 			if (_graph == IntPtr.Zero)
 				throw new Win32Exception();
 			fclose(file);
+			
+			_freeLastLayout = false;
+			_arguments = new GraphArguments(this);
+			_graphAttributes = new GraphDefaultAttributes(this, _graph);
+			_defaultNodeAttributes = new GraphDefaultAttributes(this, agprotonode(_graph));
+			_defaultEdgeAttributes = new GraphDefaultAttributes(this, agprotoedge(_graph));
 		}
 		
 		public void Save(string filename)
@@ -52,12 +80,6 @@ namespace Graphviz
 			fclose(file);
 		}
 		
-		public void Layout(string engine)
-		{
-			if (gvLayout(_context, _graph, engine) != 0)
-				throw new Exception("bad layout");
-		}
-		
 		public Stream Render(string format)
 		{
 			unsafe {
@@ -67,6 +89,26 @@ namespace Graphviz
 					throw new Exception("bad render");
 				return new RenderStream(result, length);
 			}
+		}
+		
+		public void NoteChanged(bool relayout)
+		{
+			if (relayout) {
+				string layout;
+				Arguments.TryGetValue("layout", out layout);
+				if (layout != null) {
+					if (_freeLastLayout)
+						gvFreeLayout(_context, _graph);
+						
+					if (gvLayout(_context, _graph, layout) != 0)
+						throw new Exception("bad layout");
+						
+					_freeLastLayout = true;
+				}
+			}
+			
+			if (Changed != null)
+				Changed(this, EventArgs.Empty);
 		}
 		
 		void IDisposable.Dispose()
@@ -94,6 +136,12 @@ namespace Graphviz
 		[DllImport("libgraph-4.dll", SetLastError = true)]
 		private static extern void agclose(IntPtr file);
 
+		[DllImport("libgraph-4.dll")]
+		private static extern IntPtr agprotonode(IntPtr graph);
+
+		[DllImport("libgraph-4.dll")]
+		private static extern IntPtr agprotoedge(IntPtr graph);
+
 		[DllImport("libgraph-4.dll", SetLastError = true)]
 		private static extern IntPtr agread(IntPtr file);
 
@@ -102,6 +150,9 @@ namespace Graphviz
 		
 		[DllImport("libgvc-4.dll")]
 		private static extern IntPtr gvContext();
+
+		[DllImport("libgvc-4.dll")]
+		private static extern int gvFreeLayout(IntPtr context, IntPtr graph);
 
 		[DllImport("libgvc-4.dll")]
 		private static extern int gvLayout(IntPtr context, IntPtr graph, string engine);
@@ -122,6 +173,12 @@ namespace Graphviz
 		private static extern unsafe void free(byte* pointer);
 
 		private static readonly IntPtr _context = gvContext();
+		
 		private readonly IntPtr _graph;
+		private bool _freeLastLayout;
+		private readonly GraphArguments _arguments;
+		private readonly GraphDefaultAttributes _graphAttributes;
+		private readonly GraphDefaultAttributes _defaultNodeAttributes;
+		private readonly GraphDefaultAttributes _defaultEdgeAttributes;
 	}
 }
