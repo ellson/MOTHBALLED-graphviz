@@ -60,6 +60,9 @@
 							</File>
 							<RemoveFolder Id="ApplicationProgramMenuFolder" Directory="ApplicationProgramMenuFolder" On="uninstall" />
 						</Component>
+						<Component Id="attributes.xml" Guid="7740171C-8A24-4720-9168-87575F6EF963">
+							<File Id="attributes.xml" Name="attributes.xml" KeyPath="yes" Source="..\doc\schema\attributes.xml" />
+						</Component>
 					</Directory>
 					<Directory Id="include" Name="include" />
 					<Directory Id="lib" Name="lib" />
@@ -83,6 +86,7 @@
 		<Feature Id="gui" Title="Viewer Application" Level="1">
 			<!-- refer to the viewer application -->
 			<ComponentRef Id="Graphviz.exe" />
+			<ComponentRef Id="attributes.xml"/>
 		</Feature>
 
 		<CustomAction Id="PreventDowngrading" Error="Same or newer version already installed." />
