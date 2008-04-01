@@ -153,7 +153,7 @@ maxmatch(vtx_data * graph,	/* array of vtx data for graph */
     Compute a matching of the nodes set. 
     The matching is not based only on the edge list of 'graph', 
     which might be too small, 
-    but on the wider edge list of 'geom_graph' (that includes 'graph''s edges)
+    but on the wider edge list of 'geom_graph' (which includes 'graph''s edges)
 
     We match nodes that are close both in the graph-theoretical sense and 
     in the geometry sense  (in the layout)
@@ -221,14 +221,16 @@ maxmatch(vtx_data * graph,	/* array of vtx data for graph */
     }
 
     // Option 1: random permutation
-/*	int temp;
-	for (i=0; i<nvtxs-1; i++) {
-		j=i+long_rand()%(nvtxs-i); // use long_rand() (not rand()), as n may be greater than RAND_MAX
-		temp=order[i];
-		order[i]=order[j];
-		order[j]=temp;
-	}
-*/
+#if 0
+    int temp;
+    for (i=0; i<nvtxs-1; i++) {
+          // use long_rand() (not rand()), as n may be greater than RAND_MAX
+	j=i+long_rand()%(nvtxs-i); 
+	temp=order[i];
+	order[i]=order[j];
+	order[j]=temp;
+    }
+#endif
     // Option 2: sort the nodes begining with the ones highly approriate for matching
     for (i = 0; i < nvtxs; i++) {
 	vtx = order[i];
@@ -328,7 +330,7 @@ maxmatch(vtx_data * graph,	/* array of vtx data for graph */
 }
 
 /* Construct mapping from original graph nodes to coarsened graph nodes */
-static void makev2cv(int *mflag,	/* flag indicating vtx selected or not */
+static void makev2cv(int *mflag, /* flag indicating vtx selected or not */
 		     int nvtxs,	/* number of vtxs in original graph */
 		     int *v2cv,	/* mapping from vtxs to coarsened vtxs */
 		     int *cv2v	/* mapping from coarsened vtxs to vtxs */
@@ -551,14 +553,16 @@ static int make_coarse_graph(vtx_data * graph,	/* array of vtx data for graph */
     return cnedges;
 }
 
-static int make_coarse_ex_graph(ex_vtx_data * graph,	/* array of vtx data for graph */
-				int nvtxs,	/* number of vertices in graph */
-				int nedges,	/* number of edges in graph */
-				ex_vtx_data ** cgp,	/* coarsened version of graph */
-				int cnvtxs,	/* number of vtxs in coarsened graph */
-				int *v2cv,	/* mapping from vtxs to coarsened vtxs */
-				int *cv2v	/* mapping from coarsened vtxs to vtxs */
-    )
+static int 
+make_coarse_ex_graph (
+    ex_vtx_data * graph, /* array of vtx data for graph */
+    int nvtxs,	/* number of vertices in graph */
+    int nedges,	/* number of edges in graph */
+    ex_vtx_data ** cgp,	/* coarsened version of graph */
+    int cnvtxs,	/* number of vtxs in coarsened graph */
+    int *v2cv,	/* mapping from vtxs to coarsened vtxs */
+    int *cv2v	/* mapping from coarsened vtxs to vtxs */
+)
 // This function takes the information about matched pairs
 // and use it to contract these pairs and build a coarse ex_graph
 {
@@ -634,19 +638,20 @@ static int make_coarse_ex_graph(ex_vtx_data * graph,	/* array of vtx data for gr
 }
 
 static void 
-coarsen_match(vtx_data * graph,	/* graph to be matched */
-	ex_vtx_data * geom_graph,	/* another graph (with coords) on the same nodes */
-	int nvtxs,	/* number of vertices in graph */
-	int nedges,	/* number of edges in graph */
-	int geom_nedges,	/* number of edges in geom_graph */
-	vtx_data ** cgraph,	/* coarsened version of graph */
-	ex_vtx_data ** cgeom_graph,	/* coarsened version of geom_graph */
-	int *cnp,	/* number of vtxs in coarsened graph */
-	int *cnedges,	/* number of edges in coarsened graph */
-	int *cgeom_nedges,	/* number of edges in coarsened geom_graph */
-	int **v2cvp,	/* reference from vertices to coarse vertices */
-	int **cv2vp	/* reference from vertices to coarse vertices */
-    )
+coarsen_match (
+    vtx_data * graph,	/* graph to be matched */
+    ex_vtx_data* geom_graph, /* another graph (with coords) on the same nodes */
+    int nvtxs,	/* number of vertices in graph */
+    int nedges,	/* number of edges in graph */
+    int geom_nedges,	/* number of edges in geom_graph */
+    vtx_data ** cgraph,	/* coarsened version of graph */
+    ex_vtx_data ** cgeom_graph,	/* coarsened version of geom_graph */
+    int *cnp,	/* number of vtxs in coarsened graph */
+    int *cnedges,	/* number of edges in coarsened graph */
+    int *cgeom_nedges,	/* number of edges in coarsened geom_graph */
+    int **v2cvp,	/* reference from vertices to coarse vertices */
+    int **cv2vp	/* reference from vertices to coarse vertices */
+)
 
 /*
  * This function gets two graphs with the same node set and
@@ -686,6 +691,9 @@ coarsen_match(vtx_data * graph,	/* graph to be matched */
 			     cnvtxs, v2cv, cv2v);
 }
 
+/* release:
+ * Free memory resources for hierarchy.
+ */
 void release(Hierarchy * hierarchy)
 {
     vtx_data *graph;
@@ -849,7 +857,6 @@ Hierarchy *create_hierarchy(vtx_data * graph, int nvtxs, int nedges,
     return hierarchy;
 }
 
-
 static double
 dist_from_foci(ex_vtx_data * graph, int node, int *foci, int num_foci)
 {
@@ -900,9 +907,10 @@ set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci)
     // sort nodes according to their distance from foci
     quicksort_place(distances, nodes, 0, n - 1);
 
-    // compute *desired* levels of fine nodes
-    // by distributing them into buckets
-    // The sizes of the buckets is a geometric series with factor: 'coarsening_rate'
+    /* compute *desired* levels of fine nodes by distributing them into buckets
+     * The sizes of the buckets is a geometric series with 
+     * factor: 'coarsening_rate'
+     */
     level = min_level;
     group_size = num_fine_nodes * num_foci;
     thresh = group_size;
@@ -916,13 +924,13 @@ set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci)
 	graph[vtx].active_level = level;
     }
 
-
     // Fine-to-coarse sweep:
     //----------------------
-    // Propagate levels to all coarse nodes and determine final levels at lowest meeting points
-    // Note that nodes can be active in lower (finer) levels than what originally desired,
-    // since if 'u' and 'v' are merged, than the active level of '{u,v}' will be the minimum
-    // of the active levels of 'u' and 'v'
+    // Propagate levels to all coarse nodes and determine final levels 
+    // at lowest meeting points. Note that nodes can be active in 
+    // lower (finer) levels than what originally desired, since if 'u' 
+    // and 'v' are merged, than the active level of '{u,v}' will be 
+    // the minimum of the active levels of 'u' and 'v'
     for (level = min_level + 1; level < hierarchy->nlevels; level++) {
 	cgraph = hierarchy->geom_graphs[level];
 	graph = hierarchy->geom_graphs[level - 1];
@@ -951,7 +959,6 @@ set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci)
 	}
     }
 
-
     // Coarse-to-fine sweep:
     //----------------------
     // Propagate final levels all the way to fine nodes
@@ -978,7 +985,10 @@ set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci)
 }
 
 /* findClosestActiveNode:
- * 
+ * Given (x,y) in physical coords, check if node is closer to this point
+ * than previous setting. If so, reset values.
+ * If node is not active, recurse down finer levels.
+ * Return closest distance squared. 
  */
 static double
 findClosestActiveNode(Hierarchy * hierarchy, int node,
@@ -991,14 +1001,10 @@ findClosestActiveNode(Hierarchy * hierarchy, int node,
     graph = hierarchy->geom_graphs[level];
 
     if (graph[node].active_level == level) {	// node is active
-	double dist =
-	    (x - graph[node].physical_x_coord) * (x -
-						  graph[node].
-						  physical_x_coord) + (y -
-								       graph
-								       [node].
-								       physical_y_coord)
-	    * (y - graph[node].physical_y_coord);
+	double delx = x - graph[node].physical_x_coord;
+	double dely = y - graph[node].physical_y_coord;
+	double dist = delx*delx + dely*dely;
+
 	if (dist < closest_dist) {
 	    closest_dist = dist;
 	    *closest_node = node;
@@ -1022,7 +1028,11 @@ findClosestActiveNode(Hierarchy * hierarchy, int node,
     return closest_dist;
 }
 
-int
+/* find_leftmost_descendant:
+ * Given coarse node in given level, return representative node
+ * in lower level cur_level.
+ */
+static int
 find_leftmost_descendant(Hierarchy * hierarchy, int node, int level,
 			 int cur_level)
 {
@@ -1032,6 +1042,11 @@ find_leftmost_descendant(Hierarchy * hierarchy, int node, int level,
     return node;
 }
 
+/* find_closest_active_node:
+ * Given x and y in physical coordinate system, determine closest
+ * actual node in graph. Store this in closest_fine_node, and return
+ * distance squared.
+ */
 double
 find_closest_active_node(Hierarchy * hierarchy, double x, double y,
 			 int *closest_fine_node)
@@ -1105,7 +1120,7 @@ init_ex_graph(vtx_data * graph1, vtx_data * graph2, int n,
 		    break;
 		}
 	    }
-	    if (l == first_nedges) {	// neighbor hasn't found
+	    if (l == first_nedges) {	// neighbor wasn't found
 		edges[k++] = neighbor;
 	    }
 	}
@@ -1117,12 +1132,17 @@ init_ex_graph(vtx_data * graph1, vtx_data * graph2, int n,
     return nedges;
 }
 
+/* extract_active_logical_coords:
+ * Preorder scan the hierarchy tree, and extract the logical coordinates of 
+ * all active nodes
+ * Store (universal) coords in x_coords and y_coords and increment index.
+ * Return index.
+ */
 int
 extract_active_logical_coords(Hierarchy * hierarchy, int node,
 			      int level, double *x_coords,
 			      double *y_coords, int counter)
 {
-// Preorder scan the hierarchy tree, and extract the logical coordinates of allactive nodes
 
     ex_vtx_data *graph = hierarchy->geom_graphs[level];
 
@@ -1149,11 +1169,14 @@ extract_active_logical_coords(Hierarchy * hierarchy, int node,
     return counter;
 }
 
+/* set_active_physical_coords:
+ * Preorder scan the hierarchy tree, and set the physical coordinates 
+ * of all active nodes
+ */
 int
 set_active_physical_coords(Hierarchy * hierarchy, int node, int level,
 			   double *x_coords, double *y_coords, int counter)
 {
-// Preorder scan the hierarchy tree, and set the physical coordinates of allactive nodes
 
     ex_vtx_data *graph = hierarchy->geom_graphs[level];
 
@@ -1165,48 +1188,15 @@ set_active_physical_coords(Hierarchy * hierarchy, int node, int level,
 
     counter =
 	set_active_physical_coords(hierarchy,
-				   hierarchy->cv2v[level][2 * node],
+				   hierarchy->cv2v[level][2*node],
 				   level - 1, x_coords, y_coords, counter);
 
     if (hierarchy->cv2v[level][2 * node + 1] >= 0) {
 	counter =
 	    set_active_physical_coords(hierarchy,
-				       hierarchy->cv2v[level][2 * node +
-							      1],
+				       hierarchy->cv2v[level][2*node + 1],
 				       level - 1, x_coords, y_coords,
 				       counter);
-    }
-    return counter;
-}
-
-int
-extract_new_active_logical_coords(Hierarchy * hierarchy, int node,
-				  int level, double *x_coords,
-				  double *y_coords, int counter)
-{
-// Preorder scan the hierarchy tree, and extract the logical coordinates of allactive nodes
-    ex_vtx_data *graph = hierarchy->geom_graphs[level];
-
-    if (graph[node].new_active_level == level) {	// node is active
-	x_coords[counter] = graph[node].x_coord;
-	y_coords[counter++] = graph[node].y_coord;
-	return counter;
-    }
-
-    counter =
-	extract_new_active_logical_coords(hierarchy,
-					  hierarchy->cv2v[level][2 * node],
-					  level - 1, x_coords, y_coords,
-					  counter);
-
-    if (hierarchy->cv2v[level][2 * node + 1] >= 0) {
-	counter =
-	    extract_new_active_logical_coords(hierarchy,
-					      hierarchy->cv2v[level][2 *
-								     node +
-								     1],
-					      level - 1, x_coords,
-					      y_coords, counter);
     }
     return counter;
 }
@@ -1214,27 +1204,22 @@ extract_new_active_logical_coords(Hierarchy * hierarchy, int node,
 static int countActiveNodes(Hierarchy * hierarchy, int node, int level)
 {
     ex_vtx_data *graph = hierarchy->geom_graphs[level];
+    int cnt, other;
 
     if (graph[node].active_level == level) {	// node is active
 	return 1;
-    } else if (hierarchy->cv2v[level][2 * node + 1] >= 0) {
-	return countActiveNodes(hierarchy,
-				hierarchy->cv2v[level][2 * node],
-				level - 1) + countActiveNodes(hierarchy,
-							      hierarchy->
-							      cv2v[level][2
-									  *
-									  node
-									  +
-									  1],
-							      level - 1);
-    } else {
-	return countActiveNodes(hierarchy,
-				hierarchy->cv2v[level][2 * node],
-				level - 1);
-    }
+    } 
+    cnt = countActiveNodes(hierarchy, hierarchy->cv2v[level][2*node], level-1);
+
+    if ((other = hierarchy->cv2v[level][2 * node + 1]) >= 0) {
+	cnt += countActiveNodes(hierarchy, other, level - 1);
+    } 
+    return cnt;
 }
 
+/* count_active_nodes:
+ * Return number of active nodes.
+ */
 int count_active_nodes(Hierarchy * hierarchy)
 {
     int i = 0;
@@ -1246,92 +1231,11 @@ int count_active_nodes(Hierarchy * hierarchy)
     return sum;
 }
 
-int
-set_new_active_physical_coords(Hierarchy * hierarchy, int node, int level,
-			       double *x_coords, double *y_coords,
-			       int counter)
-{
-// Preorder scan the hierarchy tree, and set the physical coordinates of allactive nodes
-    ex_vtx_data *graph = hierarchy->geom_graphs[level];
-
-    if (graph[node].new_active_level == level) {	// node is active
-	graph[node].new_physical_x_coord = (float) x_coords[counter];
-	graph[node].new_physical_y_coord = (float) y_coords[counter++];
-	return counter;
-    }
-
-    counter =
-	set_new_active_physical_coords(hierarchy,
-				       hierarchy->cv2v[level][2 * node],
-				       level - 1, x_coords, y_coords,
-				       counter);
-
-    if (hierarchy->cv2v[level][2 * node + 1] >= 0) {
-	counter =
-	    set_new_active_physical_coords(hierarchy,
-					   hierarchy->cv2v[level][2 *
-								  node +
-								  1],
-					   level - 1, x_coords, y_coords,
-					   counter);
-    }
-    return counter;
-}
-
-void
-derive_old_new_active_physical_coords(Hierarchy * hierarchy, int node,
-				      int level, double new_x,
-				      double new_y, double old_x,
-				      double old_y)
-{
-    ex_vtx_data *graph = hierarchy->geom_graphs[level];
-    if (graph[node].old_active_level == level) {
-	old_x = graph[node].old_physical_x_coord;
-	old_y = graph[node].old_physical_y_coord;
-    }
-    if (graph[node].new_active_level == level) {
-	new_x = graph[node].new_physical_x_coord;
-	new_y = graph[node].new_physical_y_coord;
-    }
-
-    if (graph[node].active_level == level) {
-	graph[node].old_physical_x_coord = (float) (old_x);
-	graph[node].old_physical_y_coord = (float) (old_y);
-	graph[node].new_physical_x_coord = (float) (new_x);
-	graph[node].new_physical_y_coord = (float) (new_y);
-    } else {
-	derive_old_new_active_physical_coords(hierarchy,
-					      hierarchy->cv2v[level][2 *
-								     node],
-					      level - 1, new_x, new_y,
-					      old_x, old_y);
-	if (hierarchy->cv2v[level][2 * node + 1] >= 0) {
-	    derive_old_new_active_physical_coords(hierarchy,
-						  hierarchy->
-						  cv2v[level][2 * node +
-							      1],
-						  level - 1, new_x, new_y,
-						  old_x, old_y);
-	}
-    }
-}
-
-
-void set_horizontal_active_level(Hierarchy * hierarchy, int cur_level)
-{
-    int i, j;
-    ex_vtx_data *graph;
-    for (i = 0; i < hierarchy->nlevels; i++) {
-	graph = hierarchy->geom_graphs[i];
-	for (j = 0; j < hierarchy->nvtxs[i]; j++) {
-	    graph[j].active_level = cur_level;
-	}
-    }
-}
-
 /* locateByIndex:
+ * Given global index, find level and index on level.
+ * Return -1 if no such node.
  */
-int locateByIndex(Hierarchy * hierarchy, int index, int *lp, int *node)
+int locateByIndex(Hierarchy * hierarchy, int index, int *lp)
 {
     int globalIndex;
     int level;
@@ -1347,15 +1251,13 @@ int locateByIndex(Hierarchy * hierarchy, int index, int *lp, int *node)
     if (level < nlevels && index >= 0
 	&& hierarchy->geom_graphs[level][index].globalIndex ==
 	globalIndex) {
-	*node = index;
 	*lp = level;
-	return 1;
+	return index;
     } else {
 	// index not found
 	// return an arbitrary node
-	*node = 0;
 	*lp = 0;
-	return 0;
+	return -1;
     }
 }
 
@@ -1417,7 +1319,8 @@ findGlobalIndexesOfActiveNeighbors(Hierarchy * hierarchy, int index,
 	return -1;
     }
 
-    locateByIndex(hierarchy, index, &level, &node);
+    if ((node = locateByIndex(hierarchy, index, &level)) < 0) 
+	node = 0;
 
     neighborsInLevel = hierarchy->graphs[level][node];
     nAllocNeighbors = 2 * neighborsInLevel.nedges;
@@ -1526,11 +1429,13 @@ findGlobalIndexesOfActiveNeighbors(Hierarchy * hierarchy, int index,
     return numNeighbors;
 }
 
+/* find_physical_coords:
+ * find the 'physical_coords' of the active-ancestor of 'node'
+ */
 void
 find_physical_coords(Hierarchy * hierarchy, int level, int node, double *x,
 		     double *y)
 {
-// find the 'physical_coords' of the active-ancestor of 'node'
     int active_level = hierarchy->geom_graphs[level][node].active_level;
     while (active_level > level) {
 	node = hierarchy->v2cv[level][node];
@@ -1541,48 +1446,23 @@ find_physical_coords(Hierarchy * hierarchy, int level, int node, double *x,
     *y = hierarchy->geom_graphs[level][node].physical_y_coord;
 }
 
-void
-find_new_physical_coords(Hierarchy * hierarchy, int level, int node,
-			 double *x, double *y)
-{
-// find the new 'physical_coords' of the active-ancestor of 'node'
-    int active_level = hierarchy->geom_graphs[level][node].active_level;
-    while (active_level > level) {
-	node = hierarchy->v2cv[level][node];
-	level++;
-    }
-
-    *x = hierarchy->geom_graphs[level][node].new_physical_x_coord;
-    *y = hierarchy->geom_graphs[level][node].new_physical_y_coord;
-}
-
-void find_old_physical_coords(Hierarchy * hierarchy, int level, int node,
-			      double *x, double *y)
-{
-// find the old 'physical_coords' of the active-ancestor of 'node'
-    int active_level = hierarchy->geom_graphs[level][node].active_level;
-    while (active_level > level) {
-	node = hierarchy->v2cv[level][node];
-	level++;
-    }
-
-    *x = hierarchy->geom_graphs[level][node].old_physical_x_coord;
-    *y = hierarchy->geom_graphs[level][node].old_physical_y_coord;
-}
-
+/* find_active_ancestor:
+ * find the 'ancestorIndex' of the active-ancestor of 'node'
+ * Return negative if node's active_level < level.
+ */
 int
-find_active_ancestor(Hierarchy * hierarchy, int level, int node,
-		     int *ancestorIndex)
+find_active_ancestor(Hierarchy * hierarchy, int level, int node)
 {
-// find the 'ancestorIndex' of the active-ancestor of 'node'
     int active_level = hierarchy->geom_graphs[level][node].active_level;
     while (active_level > level) {
 	node = hierarchy->v2cv[level][node];
 	level++;
     }
-    *ancestorIndex = hierarchy->geom_graphs[level][node].globalIndex;
 
-    return active_level == level;	// may return 'false' if node is a predecessor of active node(s)
+    if (active_level == level) 
+	return hierarchy->geom_graphs[level][node].globalIndex;
+    else
+	return -1;
 }
 
 void freeGraph(vtx_data * graph)
@@ -1597,3 +1477,17 @@ void freeGraph(vtx_data * graph)
 	free(graph);
     }
 }
+
+void init_active_level(Hierarchy* hierarchy, int level) 
+{
+    int i,j;
+    ex_vtx_data* graph;
+    for (i=0; i<hierarchy->nlevels; i++) {
+        graph = hierarchy->geom_graphs[i];
+        for (j=0; j<hierarchy->nvtxs[i]; j++) {
+            graph->active_level = level;
+	    graph++;
+        }
+    }
+}
+

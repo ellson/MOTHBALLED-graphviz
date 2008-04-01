@@ -20,17 +20,19 @@
 #include "topview.h"
 typedef struct {
     int num_foci;
-    int *foci_nodes;
-    double *x_foci;
+    int *foci_nodes;  /* Nodes in real graph */ 
+    double *x_foci;   /* Universal coordinates */
     double *y_foci;
 } focus_t;
+
+typedef enum {NoRescale, Scale, Polar, Rectilinear} RescaleType;
 
 typedef struct {
     int graphSize;
     int ClientWidth;
     int ClientHeight;
     int margin;
-    RescaleType rescale_type;	// use Polar by default
+    RescaleType rescale_type;
 } hierparms_t;
 
 void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms);

@@ -131,7 +131,6 @@ void preparetopview(Agraph_t * g, topview * t)
 		t->Nodes[ind].Label2 ='\0';
 
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
-	    aghead(e);
 	    t->Edges[ind2].Hnode = aghead(e);
 	    t->Edges[ind2].Tnode = agtail(e);
 	    t->Edges[ind2].Edge = e;
@@ -192,7 +191,7 @@ void preparetopview(Agraph_t * g, topview * t)
     set_update_required(t);
     t->topviewmenu = glcreate_gl_topview_menu();
     load_host_buttons(t, g, t->topviewmenu);
-//      prepare_topological_fisheye(t);
+    prepare_topological_fisheye(t);
 }
 
 void drawTopViewGraph(Agraph_t * g)
@@ -1149,8 +1148,6 @@ void prepare_topological_fisheye(topview * t)
         fs->foci_nodes[0] = closest_fine_node;
         fs->x_foci[0] = hierarchy->geom_graphs[cur_level][closest_fine_node].x_coord; 
         fs->y_foci[0] = hierarchy->geom_graphs[cur_level][closest_fine_node].y_coord;
-
-
       
     set_active_levels(hierarchy, fs->foci_nodes, fs->num_foci);
     positionAllItems(hierarchy, fs, parms)
@@ -1189,20 +1186,4 @@ void prepare_topological_fisheye(topview * t)
 
     set_active_levels(t->h, fs->foci_nodes, fs->num_foci);
     positionAllItems(t->h, fs, &parms);
-    //DEBUG
-    //show coordinates and active levels
-    for (ind=0; ind < t->Nodecount; ind++) {
-
-	fprintf(stderr, "original coords (%f,%f)\n", t->Nodes[ind].x,
-	       t->Nodes[ind].y);
-	fprintf(stderr, "local coords (%f,%f)\n",
-	       t->h->geom_graphs[cur_level][ind].local_x_coord,
-	       t->h->geom_graphs[cur_level][ind].local_y_coord);
-	fprintf(stderr, "physical coords (%f,%f)\n",
-	       t->h->geom_graphs[cur_level][ind].new_physical_x_coord,
-	       t->h->geom_graphs[cur_level][ind].new_physical_y_coord);
-	fprintf(stderr, "local coords (%f,%f)\n",
-	       t->h->geom_graphs[cur_level][ind].local_x_coord,
-	       t->h->geom_graphs[cur_level][ind].local_y_coord);
-    }
 }

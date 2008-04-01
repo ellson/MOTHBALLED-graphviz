@@ -248,19 +248,19 @@ rescaleLayout(vtx_data * graph, int n, double *x_coords, double *y_coords,
 
 void
 rescale_layout(double *x_coords, double *y_coords,
-	       int n, int interval, int ClientWidth, int ClientHeight,
+	       int n, int interval, int width, int height,
 	       int margin)
 {
     // Rectlinear distortion - main function
     int i;
     double minX, maxX, minY, maxY;
-    double aspect_ratio = (maxX - minX) / (maxY - minY);
+    double aspect_ratio;
     vtx_data *graph;
     double scaleX;
     double scale_ratio;
 
-    ClientWidth -= 2 * margin;
-    ClientHeight -= 2 * margin;
+    width -= 2 * margin;
+    height -= 2 * margin;
 
     // compute original aspect ratio
     minX = maxX = x_coords[0];
@@ -311,8 +311,8 @@ rescale_layout(double *x_coords, double *y_coords,
 
     // scale the layout to fit full drawing area:
     scale_ratio =
-	MIN((ClientWidth) / (aspect_ratio * (maxY - minY)),
-	    (ClientHeight) / (maxY - minY));
+	MIN((width) / (aspect_ratio * (maxY - minY)),
+	    (height) / (maxY - minY));
     for (i = 0; i < n; i++) {
 	x_coords[i] *= scale_ratio;
 	y_coords[i] *= scale_ratio;
@@ -402,8 +402,8 @@ rescale_layout_polarFocus(vtx_data * graph, int n,
 void
 rescale_layout_polar(double *x_coords, double *y_coords,
 		     double *x_foci, double *y_foci, int num_foci,
-		     int n, int interval, int ClientWidth,
-		     int ClientHeight, int margin)
+		     int n, int interval, int width,
+		     int height, int margin)
 {
     // Polar distortion - main function
     int i;
@@ -413,8 +413,8 @@ rescale_layout_polar(double *x_coords, double *y_coords,
     double scaleX;
     double scale_ratio;
 
-    ClientWidth -= 2 * margin;
-    ClientHeight -= 2 * margin;
+    width -= 2 * margin;
+    height -= 2 * margin;
 
     // compute original aspect ratio
     minX = maxX = x_coords[0];
@@ -492,8 +492,8 @@ rescale_layout_polar(double *x_coords, double *y_coords,
 
     // scale the layout to fit full drawing area:
     scale_ratio =
-	MIN((ClientWidth) / (aspect_ratio * (maxY - minY)),
-	    (ClientHeight) / (maxY - minY));
+	MIN((width) / (aspect_ratio * (maxY - minY)),
+	    (height) / (maxY - minY));
     for (i = 0; i < n; i++) {
 	x_coords[i] *= scale_ratio;
 	y_coords[i] *= scale_ratio;

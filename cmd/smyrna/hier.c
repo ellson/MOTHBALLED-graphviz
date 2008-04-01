@@ -43,10 +43,12 @@
     set_active_levels(hierarchy, fs->foci_nodes, fs->num_foci);
     positionAllItems(hierarchy, fs, parms)
 
-  When done:973 377 2462
+  When done:
     release (hierarchy);
 */
 
+/* scale_coords:
+ */
 static void
 scale_coords(double *x_coords, double *y_coords, int n,
 	     hierparms_t * parms)
@@ -102,7 +104,7 @@ void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms)
 {
     int i;
     int interval = 20;
-    int counter = 0;
+    int counter = 0; /* no. of active nodes */
     double *x_coords = N_NEW(hp->nvtxs[0], double);
     double *y_coords = N_NEW(hp->nvtxs[0], double);
     int max_level = hp->nlevels - 1;	// coarsest level
@@ -121,7 +123,8 @@ void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms)
      * (equivalent to concentrating on the focus area)
      */
     if (fs->num_foci == 0) {
-	scale_coords(x_coords, y_coords, counter, parms);
+	if (parms->rescale_type == Scale)
+	    scale_coords(x_coords, y_coords, counter, parms);
     } else
 	switch (parms->rescale_type) {
 	case Polar:
@@ -134,8 +137,10 @@ void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms)
 	    rescale_layout(x_coords, y_coords, counter, interval,
 			   ClientWidth, ClientHeight, margin);
 	    break;
-	case NoRescale:
+	case Scale:
 	    scale_coords(x_coords, y_coords, counter, parms);
+	    break;
+	case NoRescale:
 	    break;
 	}
 
@@ -156,7 +161,7 @@ vtx_data *makeGraph(topview * tv, int *nedges)
     int ne = tv->Edgecount;	/* upper bound */
     int nv = tv->Nodecount;
     vtx_data *graph = N_NEW(nv, vtx_data);
-    int *edges = N_NEW(2 * ne + nv, int);	/* reserve space for self loops */
+    int *edges = N_NEW(2 * ne + nv, int);  /* reserve space for self loops */
     Agnode_t *np;
     Agedge_t *ep;
     Agraph_t *g = NULL;
@@ -180,6 +185,7 @@ vtx_data *makeGraph(topview * tv, int *nedges)
 	    /* FIX: handle multiedges */
 	    vp = (tp == np ? hp : tp);
 	    ne++;
+	    i_nedges++;
 	    *edges++ = ((custom_object_data *) AGDATA(vp))->TVRef;
 	}
 
@@ -190,6 +196,43 @@ vtx_data *makeGraph(topview * tv, int *nedges)
     *nedges = ne;
     return graph;
 }
+#ifdef DEBUG
+static void
+dumpG (int nn, vtx_data * graph)
+{
+    int i, j;
+    for (i=0; i < nn; i++) {
+ 	fprintf (stderr, "[%d]", i);
+	for (j=1; j < graph->nedges; j++)
+ 	    fprintf (stderr, " %d", graph->edges[j]);
+ 	fprintf (stderr, "\n");
+	graph++;
+    }
+}
+
+static void
+dumpHier (Hierarchy* hier)
+{
+    int i;
+
+    for (i = 0; i < hier->nlevels; i++)
+        fprintf (stderr, "[%d] %d %d \n", i, hier->nvtxs[i], hier->nedges[i]);
+}
+
+static void
+dumpEG (int nn, ex_vtx_data * graph)
+{
+    int i, j;
+    for (i=0; i < nn; i++) {
+        fprintf (stderr, "[%d](%d,%d,%d)(%f,%f)", i, graph->size, graph->active_level,
+           graph->globalIndex, graph->x_coord, graph->y_coord);
+        for (j=1; j < graph->nedges; j++)
+            fprintf (stderr, " %d", graph->edges[j]);
+        fprintf (stderr, "\n");
+        graph++;
+    }
+}
+#endif
 
 Hierarchy *makeHier(int nn, int ne, vtx_data * graph, double *x_coords,
 		    double *y_coords)
@@ -211,7 +254,7 @@ Hierarchy *makeHier(int nn, int ne, vtx_data * graph, double *x_coords,
     free(geom_graph[0].edges);
     free(geom_graph);
 
-    set_horizontal_active_level(hp, 0);
+    init_active_level(hp, 0);
 
     return hp;
 }
