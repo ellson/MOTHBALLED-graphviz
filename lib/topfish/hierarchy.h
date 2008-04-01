@@ -77,11 +77,11 @@ vtx_data *UG_graph(double *x, double *y, int n, int accurate_computation);
 
 // layout distortion:
 void rescale_layout(double *x_coords, double *y_coords,
-    int n, int interval, int width, int height,
-    int margin);
+    int n, int interval, double width, double height,
+    double margin);
 void rescale_layout_polar(double * x_coords, double * y_coords, 
     double * x_foci, double * y_foci, int num_foci,
-    int n, int interval, int width, int height, int margin);
+    int n, int interval, double width, double height, double margin);
 
 void find_physical_coords(Hierarchy*, int, int, double *x, double *y);
 int find_active_ancestor(Hierarchy*, int, int);

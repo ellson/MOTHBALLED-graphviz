@@ -1185,5 +1185,7 @@ void prepare_topological_fisheye(topview * t)
 	t->h->geom_graphs[cur_level][closest_fine_node].y_coord;
 
     set_active_levels(t->h, fs->foci_nodes, fs->num_foci);
+
+    parms.rescale = NoRescale;
     positionAllItems(t->h, fs, &parms);
 }

@@ -25,14 +25,25 @@ typedef struct {
     double *y_foci;
 } focus_t;
 
+/* Conversion from logical to physical coordinates:
+ * NoRescale - simple copy
+ * For Scale, Polar and Rectilinear, the coordinates are all
+ * scaled and translated to map into the rectangle
+ *   ((margin,margin),(w,h)) 
+ * where w = width*graphSize/100 - 2*margin
+ * and   h = height*graphSize/100 - 2*margin
+ * 
+ * For Scale, this is all that is done.
+ * For Polar and Rectilinear, more space is provided around the foci. 
+ */
 typedef enum {NoRescale, Scale, Polar, Rectilinear} RescaleType;
 
 typedef struct {
-    int graphSize;
-    int ClientWidth;
-    int ClientHeight;
-    int margin;
-    RescaleType rescale_type;
+    int width;      /* viewport width */
+    int height;     /* viewport height */
+    int margin;     /* viewport margin */
+    int graphSize;  /* viewport scale : 0 -- 100 */
+    RescaleType rescale;
 } hierparms_t;
 
 void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms);

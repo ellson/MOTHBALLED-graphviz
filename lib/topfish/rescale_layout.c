@@ -248,8 +248,8 @@ rescaleLayout(vtx_data * graph, int n, double *x_coords, double *y_coords,
 
 void
 rescale_layout(double *x_coords, double *y_coords,
-	       int n, int interval, int width, int height,
-	       int margin)
+	       int n, int interval, double width, double height,
+	       double margin)
 {
     // Rectlinear distortion - main function
     int i;
@@ -402,8 +402,8 @@ rescale_layout_polarFocus(vtx_data * graph, int n,
 void
 rescale_layout_polar(double *x_coords, double *y_coords,
 		     double *x_foci, double *y_foci, int num_foci,
-		     int n, int interval, int width,
-		     int height, int margin)
+		     int n, int interval, double width,
+		     double height, double margin)
 {
     // Polar distortion - main function
     int i;

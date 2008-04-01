@@ -37,8 +37,6 @@
         fs->foci_nodes[0] = closest_fine_node;
         fs->x_foci[0] = hierarchy->geom_graphs[cur_level][closest_fine_node].x_coord; 
         fs->y_foci[0] = hierarchy->geom_graphs[cur_level][closest_fine_node].y_coord;
-
-
       
     set_active_levels(hierarchy, fs->foci_nodes, fs->num_foci);
     positionAllItems(hierarchy, fs, parms)
@@ -51,19 +49,14 @@
  */
 static void
 scale_coords(double *x_coords, double *y_coords, int n,
-	     hierparms_t * parms)
+	     double w, double h, double margin)
 {
     int i;
-    double w = parms->ClientWidth;
-    double h = parms->ClientHeight;
-    double margin = parms->margin;
     double minX, maxX, minY, maxY;
     double scale_ratioX;
     double scale_ratioY;
     double scale_ratio;
 
-    w *= parms->graphSize / 100.0;
-    h *= parms->graphSize / 100.0;
     w -= 2 * margin;
     h -= 2 * margin;
 
@@ -108,9 +101,9 @@ void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms)
     double *x_coords = N_NEW(hp->nvtxs[0], double);
     double *y_coords = N_NEW(hp->nvtxs[0], double);
     int max_level = hp->nlevels - 1;	// coarsest level
-    int ClientWidth = parms->ClientWidth;
-    int ClientHeight = parms->ClientHeight;
-    int margin = parms->margin;
+    double width = parms->width;
+    double height = parms->height;
+    double margin = parms->margin;
 
     /* get all logical coordinates of active nodes */
     for (i = 0; i < hp->nvtxs[max_level]; i++) {
@@ -122,23 +115,24 @@ void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms)
     /* distort logical coordinates in order to get uniform density
      * (equivalent to concentrating on the focus area)
      */
+    width *= parms->graphSize / 100.0;
+    height *= parms->graphSize / 100.0;
     if (fs->num_foci == 0) {
-	if (parms->rescale_type == Scale)
-	    scale_coords(x_coords, y_coords, counter, parms);
+	if (parms->rescale == Scale)
+	    scale_coords(x_coords, y_coords, counter, width, height, margin);
     } else
-	switch (parms->rescale_type) {
+	switch (parms->rescale) {
 	case Polar:
 	    rescale_layout_polar(x_coords, y_coords, fs->x_foci,
 				 fs->y_foci, fs->num_foci, counter,
-				 interval, ClientWidth, ClientHeight,
-				 margin);
+				 interval, width, height, margin);
 	    break;
 	case Rectilinear:
 	    rescale_layout(x_coords, y_coords, counter, interval,
-			   ClientWidth, ClientHeight, margin);
+			   width, height, margin);
 	    break;
 	case Scale:
-	    scale_coords(x_coords, y_coords, counter, parms);
+	    scale_coords(x_coords, y_coords, counter, width, height, margin);
 	    break;
 	case NoRescale:
 	    break;
