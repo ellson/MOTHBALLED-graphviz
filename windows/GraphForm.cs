@@ -18,43 +18,60 @@ using System;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace Graphviz
 {
-	public partial class GraphForm : Form
+	public partial class GraphForm : Form, FormController.IMenus
 	{
-		public ToolStripMenuItem OpenMenuItem
+		public Graph Graph
 		{
-			get { return openToolStripMenuItem; }
+			get { return _graph; }
 		}
 		
-		public ToolStripMenuItem WindowMenuItem
-		{
-			get { return windowToolStripMenuItem; }
-		}
-		
-		public GraphForm(string filename)
+		public GraphForm(string fileName)
 		{
 			InitializeComponent();
 		
-			_graph = new Graph(filename);
-			Text = Path.GetFileName(filename);
-			_graph.Layout("dot");
+			_graph = new Graph(fileName);
+		
+			/* whenever graph changes, rerender and display the graph */
+			_graph.Changed += delegate(object sender, EventArgs e)
+		{
 			using (Stream stream = _graph.Render("emfplus:gdiplus"))
 				graphControl.Image = new Metafile(stream);
+			};
+			_graph.Arguments["layout"] = "dot";
 		}
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
 		{
+			/* when form closes, clean up graph too */
 			((IDisposable)_graph).Dispose();
 			base.OnFormClosed(e);
 		}
-		
-		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+
+		ToolStripMenuItem FormController.IMenus.ExitMenuItem
 		{
-			Application.Exit();
+			get { return exitToolStripMenuItem; }
+		}
+
+		ToolStripMenuItem FormController.IMenus.OpenMenuItem
+		{
+			get { return openToolStripMenuItem; }
+		}
+
+		ToolStripMenuItem FormController.IMenus.ShowAttributesMenuItem
+		{
+			get { return showAttributesToolStripMenuItem; }
+		}
+
+		ToolStripMenuItem FormController.IMenus.WindowMenuItem
+		{
+			get { return windowToolStripMenuItem; }
 		}
 		
 		private readonly Graph _graph;
+
 	}
 }
