@@ -628,7 +628,6 @@ static Agraph_t *loadGraph(char *filename)
 	g_print("Cannot open %s\n", filename);
 	return 0;
     }
-    fclose (input_file);
     if (!(g = agread(input_file, NIL(Agdisc_t *)))) {
 	g_print("Cannot read graph in  %s\n", filename);
 	fclose (input_file);
