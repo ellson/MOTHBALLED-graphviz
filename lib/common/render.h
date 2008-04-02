@@ -117,6 +117,7 @@ extern "C" {
     extern boolean isPolygon(node_t *);
     extern char *strdup_and_subst_obj(char *str, void *obj);
     extern char *xml_string(char *s);
+    extern char *xml_url_string(char *s);
     extern void makeSelfEdge(path *, edge_t **, int, int, int, int,
 			     splineInfo *);
     extern textlabel_t *make_label(graph_t *g, int html, char *str,

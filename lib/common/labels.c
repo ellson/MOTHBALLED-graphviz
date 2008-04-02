@@ -359,7 +359,6 @@ static int xml_isentity(char *s)
     return 0;
 }
 
-
 char *xml_string(char *s)
 {
     static char *buf = NULL;
@@ -379,33 +378,108 @@ char *xml_string(char *s)
 	    buf = grealloc(buf, bufsize);
 	    p = buf + pos;
 	}
-	/* these are safe even if string is already UTF-8 coded
+	/* escape '&' only if not part of a legal entity sequence */
+	if (*s == '&' && !(xml_isentity(s))) {
+	    sub = "&amp;";
+	    len = 5;
+	}
+	/* '<' '>' are safe to substitute even if string is already UTF-8 coded
 	 * since UTF-8 strings won't contain '<' or '>' */
-	if (*s == '<') {
+	else if (*s == '<') {
 	    sub = "&lt;";
 	    len = 4;
-	} else if (*s == '>') {
+	}
+	else if (*s == '>') {
 	    sub = "&gt;";
 	    len = 4;
-	} else if (*s == '"') {
-	    sub = "&quot;";
-	    len = 6;
-	} else if (*s == '-') {	/* can't be used in xml comment strings */
+	}
+	else if (*s == '-') {	/* can't be used in xml comment strings */
 	    sub = "&#45;";
 	    len = 5;
-	} else if (*s == '\'') {
-	    sub = "&#39;";
-	    len = 5;
-	} else if (*s == ' ' && prev && *prev == ' ') {
+	}
+	else if (*s == ' ' && prev && *prev == ' ') {
 	    /* substitute 2nd and subsequent spaces with required_spaces */
 	    sub = "&#160;";  /* inkscape doesn't recognise &nbsp; */
 	    len = 6;
 	}
+	else if (*s == '"') {
+	    sub = "&quot;";
+	    len = 6;
+	}
+	else if (*s == '\'') {
+	    sub = "&#39;";
+	    len = 5;
+	}
+	else {
+	    sub = s;
+	    len = 1;
+	}
+	while (len--) {
+	    *p++ = *sub++;
+	    pos++;
+	}
+	prev = s;
+	s++;
+    }
+    *p = '\0';
+    return buf;
+}
+
+/* a variant of xml_string for urls in hrefs */
+char *xml_url_string(char *s)
+{
+    static char *buf = NULL;
+    static int bufsize = 0;
+    char *p, *sub, *prev = NULL;
+    int len, pos = 0;
+
+    if (!buf) {
+	bufsize = 64;
+	buf = gmalloc(bufsize);
+    }
+
+    p = buf;
+    while (s && *s) {
+	if (pos > (bufsize - 8)) {
+	    bufsize *= 2;
+	    buf = grealloc(buf, bufsize);
+	    p = buf + pos;
+	}
 	/* escape '&' only if not part of a legal entity sequence */
-	else if (*s == '&' && !(xml_isentity(s))) {
+	if (*s == '&' && !(xml_isentity(s))) {
 	    sub = "&amp;";
 	    len = 5;
-	} else {
+	}
+#if 0
+	/* '<' '>' are safe to substitute even if string is already UTF-8 coded
+	 * since UTF-8 strings won't contain '<' or '>' */
+	else if (*s == '<') {
+	    sub = "&lt;";
+	    len = 4;
+	}
+	else if (*s == '>') {
+	    sub = "&gt;";
+	    len = 4;
+	}
+	else if (*s == '-') {	/* can't be used in xml comment strings */
+	    sub = "&#45;";
+	    len = 5;
+	}
+	else if (*s == ' ' && prev && *prev == ' ') {
+	    /* substitute 2nd and subsequent spaces with required_spaces */
+	    sub = "&#160;";  /* inkscape doesn't recognise &nbsp; */
+	    len = 6;
+	}
+#endif
+	else if (*s == '"') {
+	    sub = "&quot;";
+	    len = 6;
+	}
+	else if (*s == '\'') {
+	    sub = "&#39;";
+	    len = 5;
+	}
+	else {
 	    sub = s;
 	    len = 1;
 	}
