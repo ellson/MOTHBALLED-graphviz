@@ -44,6 +44,7 @@
 typedef enum { FORMAT_SVG, FORMAT_SVGZ, } format_type;
 
 extern char *xml_string(char *str);
+extern char *xml_url_string(char *str);
 
 /* SVG dash array */
 static char *sdarray = "5,2";
@@ -282,7 +283,7 @@ svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
 {
     gvdevice_fputs(job, "<a");
     if (href && href[0])
-	gvdevice_printf(job, " xlink:href=\"%s\"", xml_string(href));
+	gvdevice_printf(job, " xlink:href=\"%s\"", xml_url_string(href));
     if (tooltip && tooltip[0])
 	gvdevice_printf(job, " xlink:title=\"%s\"", xml_string(tooltip));
     if (target && target[0])
