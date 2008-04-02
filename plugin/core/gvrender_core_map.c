@@ -24,6 +24,7 @@
 #include "graph.h"
 
 extern char *xml_string(char *str);
+extern char *xml_url_string(char *str);
 
 typedef enum { FORMAT_IMAP, FORMAT_ISMAP, FORMAT_CMAP, FORMAT_CMAPX, } format_type;
 
@@ -96,7 +97,7 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
         }
         if (url && url[0]) {
             gvdevice_fputs(job, " href=\"");
-	    gvdevice_fputs(job, xml_string(url));
+	    gvdevice_fputs(job, xml_url_string(url));
 	    gvdevice_fputs(job, "\"");
 	}
         if (target && target[0]) {
