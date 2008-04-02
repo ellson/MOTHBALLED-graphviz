@@ -450,7 +450,6 @@ char *xml_url_string(char *s)
 	    sub = "&amp;";
 	    len = 5;
 	}
-#if 0
 	/* '<' '>' are safe to substitute even if string is already UTF-8 coded
 	 * since UTF-8 strings won't contain '<' or '>' */
 	else if (*s == '<') {
@@ -461,6 +460,7 @@ char *xml_url_string(char *s)
 	    sub = "&gt;";
 	    len = 4;
 	}
+#if 0
 	else if (*s == '-') {	/* can't be used in xml comment strings */
 	    sub = "&#45;";
 	    len = 5;
