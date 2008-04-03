@@ -5,6 +5,7 @@
 #include "overlap.h"
 #include "call_tri.h"
 #include "red_black_tree.h"
+#include <time.h>
 
 static void ideal_distance_avoid_overlap(int dim, SparseMatrix A, real *x, real *width, real *ideal_distance, real *tmax){
   /*  if (x1>x2 && y1 > y2) we want either x1 + t (x1-x2) - x2 > (width1+width2), or y1 + t (y1-y2) - y2 > (height1+height2),
@@ -216,7 +217,7 @@ static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width){
   SparseMatrix_delete(A);
   A = SparseMatrix_symmetrize(B, FALSE);
   SparseMatrix_delete(B);
-  if (Verbose || 1) fprintf(stderr, "found %d clashes\n", A->nz);
+  if (Verbose) fprintf(stderr, "found %d clashes\n", A->nz);
   return A;
 }
 
@@ -327,8 +328,9 @@ void OverlapSmoother_delete(OverlapSmoother sm){
 }
 
 void OverlapSmoother_smooth(OverlapSmoother sm, int dim, real *x){
-
-  StressMajorizationSmoother_smooth(sm, dim, x);
+  int maxit_sm = 1;/* only using 1 iteration of stress majorization 
+		      is found to give better results and save time! */
+  StressMajorizationSmoother_smooth(sm, dim, x, maxit_sm);
 #ifdef DEBUG
   {FILE *fp;
   fp = fopen("/tmp/222","w");
@@ -384,8 +386,16 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
   real avg_label_size;
   real max_overlap = 0;
   int neighborhood_only = TRUE;
+ 
+#ifdef TIME
+  clock_t  cpu;
+#endif
 
-  if (!label_sizes) return;
+#ifdef TIME
+  cpu = clock();
+#endif
+
+ if (!label_sizes) return;
 
   avg_label_size = 0;
   for (i = 0; i < A->m; i++) avg_label_size += label_sizes[i*dim]+label_sizes[i*dim+1];
@@ -393,13 +403,27 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
   avg_label_size /= A->m;
 
   scale_to_edge_length(dim, A, x,4*avg_label_size);
+
+ if (!ntry) return;
+
   *flag = 0;
 
+#ifdef OVERLAP
+  _statistics[0] = _statistics[1] = 0.;
+  {FILE*fp;
+  fp = fopen("x1","w");
+  for (i = 0; i < A->m; i++){
+    fprintf(fp, "%f %f\n",x[i*2],x[i*2+1]);
+  }
+  fclose(fp);
+  }
+#endif
+
   for (i = 0; i < ntry; i++){
-    if (Verbose || 1) print_bounding_box(A->m, dim, x);
+    if (Verbose) print_bounding_box(A->m, dim, x);
     sm = OverlapSmoother_new(A, dim, lambda, x, label_sizes, include_original_graph, neighborhood_only,
 			     &max_overlap); 
-    if (Verbose || 1) fprintf(stderr, "overlap removal neighbors only?= %d iter -- %d, overlap factor = %g\n", neighborhood_only, i, max_overlap - 1);
+    if (Verbose) fprintf(stderr, "overlap removal neighbors only?= %d iter -- %d, overlap factor = %g\n", neighborhood_only, i, max_overlap - 1);
     if (max_overlap <= 1){
       OverlapSmoother_delete(sm);
       if (neighborhood_only == FALSE){
@@ -414,10 +438,26 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
     OverlapSmoother_delete(sm);
   }
 
+#ifdef OVERLAP
+  fprintf(stderr," number of cg iter = %f, number of stress majorization iter = %f number of overlap removal try = %d\n",
+	  _statistics[0], _statistics[1], i - 1);
+
+  {FILE*fp;
+  fp = fopen("x2","w");
+  for (i = 0; i < A->m; i++){
+    fprintf(fp, "%f %f\n",x[i*2],x[i*2+1]);
+  }
+  fclose(fp);
+  }
+#endif
+
 #ifdef DEBUG
   {FILE*fp;
   fp = fopen("/tmp/m","w");
   export_embedding(fp, dim, A, x, label_sizes);
   }
+#endif
+#ifdef OVERLAP
+  fprintf(stderr, "post processing %f\n",((real) (clock() - cpu)) / CLOCKS_PER_SEC);
 #endif
 }
