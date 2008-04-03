@@ -131,10 +131,12 @@ namespace Graphviz
 							MainFormChanged(_mainForm, EventArgs.Empty);
 					};
 
-					/* when form closed, remove it from our list */
+					/* when form closed, remove it from our list; exit when all closed */
 					foundForm.FormClosed += delegate(object sender, FormClosedEventArgs e)
 					{
 						_documentForms.Remove(canonicalPath);
+						if (_documentForms.Count == 0)
+							Application.Exit();
 					};
 
 					/* window title is the filename portion */
