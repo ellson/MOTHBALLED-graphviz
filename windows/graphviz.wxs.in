@@ -54,7 +54,7 @@
 						</Component>
 						<!-- viewer application sourced from graphviz.csproj build directory, include shortcuts in the start menu and desktop -->
 						<Component Id="Graphviz.exe" Guid="25FE550B-3D8B-435B-AB35-553D2628171D">
-							<File Id="Graphviz.exe" Name="Graphviz.exe" KeyPath="yes" Source="bin\x86\Release\Graphviz.exe">
+							<File Id="Graphviz.exe" Name="Graphviz.exe" KeyPath="yes" Source="build\x86\Release\Graphviz.exe">
 								<Shortcut Id="ApplicationProgramMenu" Name="Graphviz" Directory="ApplicationProgramMenuFolder" Advertise="yes" />
 								<Shortcut Id="ApplicationDesktop" Name="Graphviz" Directory="DesktopFolder" Advertise="yes" />
 							</File>
