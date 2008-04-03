@@ -267,7 +267,7 @@ label can specify a table similar to those provided by HTML,
 with different graphical attributes at each level.
 <P>
 <B>NOTE:</B> The features and syntax supported by these labels are
-inspired by HTML. However, there are many aspects that are relevant
+modeled by HTML. However, there are many aspects that are relevant
 to Graphviz labels that are not in HTML and, conversely, HTML allows
 various constructs which are meaningless in Graphviz. We will generally
 refer to these labels as "HTML labels" rather than the cumbersome
@@ -284,9 +284,14 @@ shape. On the other hand, if the node has any other shape (except
 same way an ordinary label would be.
 <P>
 The following is an abstract grammar for HTML labels.
-Terminals are shown in bold font and nonterminals in italics.
+Terminals, corresponding to elements, are shown in bold font,
+and nonterminals in italics.
 Square brackets [ and ] enclose optional items.
 Vertical bars | separate alternatives.
+Note that, as in HTML, element and attribute names are case-insensitive
+(cf. sections 3.2.1 and 3.2.2 of the 
+<A HREF="http://www.w3.org/TR/html401">HTML 4.01 specification</A>).
+
 <TABLE>
 <TR>
   <TD ALIGN=RIGHT><I>label</I></TD>
