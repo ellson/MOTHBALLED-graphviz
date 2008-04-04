@@ -194,10 +194,10 @@ static gboolean configure_event(GtkWidget * widget,
     glLoadIdentity();
     if (view->w > view->h) {
 	aspect = (float) view->w / (float) view->h;
-	glFrustum(-aspect * 100, aspect * 100, -100.0, 100.0, 1, 90);
+	glOrtho(-aspect * GL_VIEWPORT_FACTOR, aspect * GL_VIEWPORT_FACTOR, GL_VIEWPORT_FACTOR*-1, GL_VIEWPORT_FACTOR, -1500, 1500);
     } else {
 	aspect = (float) view->h / (float) view->w;
-	glFrustum(-100.0, 100.0, -aspect * 100, aspect * 100, 1, 90);
+	glOrtho(GL_VIEWPORT_FACTOR*-1, GL_VIEWPORT_FACTOR, -aspect * GL_VIEWPORT_FACTOR, aspect * GL_VIEWPORT_FACTOR, -1500, 1500);
     }
 
     glMatrixMode(GL_MODELVIEW);
@@ -251,9 +251,13 @@ static gboolean button_press_event(GtkWidget * widget,
     begin_y = (float) event->y;
 
 
+
     if (event->button == 1)	//left click
     {
-	view->mouse.mouse_down = 1;
+		view->prevpanx = view->panx;
+		view->prevpany = view->pany;
+
+		view->mouse.mouse_down = 1;
 	if (GetOGLPosRef
 	    ((int) begin_x, (int) begin_y, &(view->GLx), &(view->GLy),
 	     &(view->GLz))) {
@@ -319,8 +323,8 @@ static gboolean button_release_event(GtkWidget * widget,
 		move_nodes(view->g[view->activeGraph]);
 	    else
 		move_TVnodes();
-
 	}
+
 	if ((view->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER) || (view->mouse.mouse_mode == MM_MAGNIFIER))	//fisheye mag mouse release, stop distortion
 	{
 	    originate_distorded_coordinates(view->Topview);
@@ -347,29 +351,25 @@ static gboolean motion_notify_event(GtkWidget * widget,
     char buf[50];
 
 
-    gboolean redraw = FALSE;
+	float gldx,gldy;
+	gboolean redraw = FALSE;
     dx = x - begin_x;
     dy = y - begin_y;
     /*panning */
     if ((event->state & GDK_BUTTON1_MASK)
-	&& (view->mouse.mouse_mode == MM_PAN)) {
-	float a, b;
-	a = view->panx - dx * (float) pow(view->zoom * -1, (1 / 1));
-	b = (view->bdxRight - view->bdxLeft) / (float) 2.0;
-	if (ABS(a) < ABS(b))
-	    view->panx = a;
-	else
-	    view->panx =
-		(view->bdxRight - view->bdxLeft) / (float) 2.0 *ABS(a) / a;
-	a = view->pany + dy * (float) (pow(view->zoom * -1, (1 / 1)));
-	b = (view->bdyTop - view->bdyBottom) / (float) 2.0;
-	if (ABS(a) < ABS(b))
-	    view->pany = a;
-	else
-	    view->pany =
-		(view->bdyTop - view->bdyBottom) / (float) 2.0 *ABS(a) / a;
-	redraw = TRUE;
-    }
+	&& (view->mouse.mouse_mode == MM_PAN))
+	{
+		gldx=GetOGLDistance(dx)/view->zoom*10*-1;
+		gldy=GetOGLDistance(dy)/view->zoom*10*-1;
+		view->panx=view->panx-gldx;
+		view->pany=view->pany+gldy;
+		printf ("pan     x:%f  y:%f\n",view->panx,view->pany);
+		printf ("prev    x:%f  y:%f\n",view->prevpanx,view->prevpany);
+		printf ("GL      x:%f  y:%f\n",view->GLx,view->GLy);
+		printf ("GL2     x:%f  y:%f\n",view->GLx2,view->GLy2);
+		printf ("------------------\n");
+		redraw = TRUE;
+	}
     /*zooming */
     if ((event->state & GDK_BUTTON1_MASK)
 	&& (view->mouse.mouse_mode == MM_ZOOM)) {

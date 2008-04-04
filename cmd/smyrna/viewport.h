@@ -23,19 +23,23 @@
 #include "xdot.h"
 #include "cgraph.h"
 
-extern void init_viewport(ViewInfo * view);
-extern void set_viewport_settings_from_template(ViewInfo * view, Agraph_t *);
-extern void clear_viewport(ViewInfo * view);
-extern int add_graph_to_viewport_from_file(char *fileName);
-extern int save_graph();
-extern int save_as_graph();
+void init_viewport(ViewInfo * view);
+void set_viewport_settings_from_template(ViewInfo * view, Agraph_t *);
+void clear_viewport(ViewInfo * view);
+int add_graph_to_viewport_from_file(char *fileName);
+int save_graph();
+int save_as_graph();
 
-extern int do_graph_layout(Agraph_t * graph, int Engine, int keeppos);
-extern void refreshControls(ViewInfo * v);
+int do_graph_layout(Agraph_t * graph, int Engine, int keeppos);
+void refreshControls(ViewInfo * v);
 
-extern void move_node(void *n, float dx, float dy);
-extern void glexpose();
-extern void move_nodes(Agraph_t * g);
+void move_node(void *n, float dx, float dy);
+void glexpose();
+void move_nodes(Agraph_t * g);
+
+viewport_camera* add_camera_to_viewport(ViewInfo * view);
+int delete_camera_from_viewport(ViewInfo * view,viewport_camera* c);
+int activate_viewport_camera (ViewInfo * view,int cam_index);
 
  /* helper functions */
 extern int setGdkColor(GdkColor * c, char *color);

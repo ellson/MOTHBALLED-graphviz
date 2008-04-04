@@ -203,8 +203,10 @@ void drawTopViewGraph(Agraph_t * g)
     float dddx, dddy;
     int ind = 0;
     if (view->zoom > NODE_ZOOM_LIMIT) {
-	glPointSize(15 / view->zoom * -1);
-	//draw nodes
+//	glPointSize(15 / view->zoom * -1);
+	glPointSize(5);
+
+		//draw nodes
 	set_topview_options();
 	if (view->zoom < NODE_CIRCLE_LIMIT)
 	    glBegin(GL_POINTS);
@@ -219,16 +221,17 @@ void drawTopViewGraph(Agraph_t * g)
 	    draw_topview_label(v, 1);
 
 	}
-	for (ind = 0; ind < view->Topview->Nodecount; ind++) {
+	for (ind = 0; ind < view->Topview->Nodecount; ind++)
+	{
 
-	    if ((view->Topview->Nodes[ind].x > view->clipX1)
-		&& (view->Topview->Nodes[ind].x < view->clipX2)
-		&& (view->Topview->Nodes[ind].y > view->clipY1)
-		&& (view->Topview->Nodes[ind].y < view->clipY2)) {
-		float zdepth;
-
-		if (1) {
-		    v = &view->Topview->Nodes[ind];
+	    /*if ((view->Topview->Nodes[ind].x/view->zoom*10*-1 > view->clipX1)
+		&& (view->Topview->Nodes[ind].x/view->zoom*10*-1 < view->clipX2)
+		&& (view->Topview->Nodes[ind].y/view->zoom*10*-1 > view->clipY1)
+		&& (view->Topview->Nodes[ind].y/view->zoom*10*-1 < view->clipY2))*/
+		if(1)
+		{
+			float zdepth;
+			v = &view->Topview->Nodes[ind];
 		    if (!node_visible(v->Node))
 			break;
 
@@ -237,36 +240,37 @@ void drawTopViewGraph(Agraph_t * g)
 		    if (v->update_required)
 			update_topview_node_from_cgraph(v);
 		    if (((custom_object_data *) AGDATA(v->Node))->
-			Selected == 1) {
-			glColor4f(view->selectedNodeColor.R,
-				  view->selectedNodeColor.G,
-				  view->selectedNodeColor.B,
-				  view->selectedNodeColor.A);
-			ddx = dx;
-			ddy = dy;
-		    } else	//get the color from node
+			Selected == 1)
+			{
+				glColor4f(view->selectedNodeColor.R,
+					  view->selectedNodeColor.G,
+					  view->selectedNodeColor.B,
+					  view->selectedNodeColor.A);
+				ddx = dx;	
+				ddy = dy;
+			} 
+			else	//get the color from node
 		    {
-			glColor4f(v->Color.R, v->Color.G, v->Color.B,
+				glColor4f(v->Color.R, v->Color.G, v->Color.B,
 				  v->node_alpha);
 			//                                      glColor4f(1,0,0,v->node_alpha);
 			//                              glColor4f (log((double)v->degree+0.5),v->Color.G,v->Color.B,);
-			ddx = 0;
-			ddy = 0;
-		    }
+				ddx = 0;
+				ddy = 0;
+			}
 
 		    if (v->distorted_x != v->x)
 			zdepth = (float) Z_FORWARD_PLANE;
 		    else
 			zdepth = (float) Z_BACK_PLANE;
 		    if (view->zoom < NODE_CIRCLE_LIMIT)
-			glVertex3f(v->distorted_x - ddx,
+				glVertex3f(v->distorted_x - ddx,
 				   v->distorted_y - ddy, zdepth);
 		    else
 			drawCircle(v->distorted_x - ddx,
 				   v->distorted_y - ddy,
 				   v->node_alpha * v->zoom_factor, zdepth);
 		}
-	    }
 	}
 	if (view->zoom < NODE_CIRCLE_LIMIT)
 	    glEnd();
@@ -278,16 +282,18 @@ void drawTopViewGraph(Agraph_t * g)
     glBegin(GL_LINES);
     set_topview_options();
     for (ind = 0; ind < view->Topview->Edgecount; ind++) {
-	if (((view->Topview->Edges[ind].x1 > view->clipX1)
-	     && (view->Topview->Edges[ind].x1 < view->clipX2)
-	     && (view->Topview->Edges[ind].y1 > view->clipY1)
-	     && (view->Topview->Edges[ind].y1 < view->clipY2))
-	    || ((view->Topview->Edges[ind].x2 > view->clipX1)
-		&& (view->Topview->Edges[ind].x2 < view->clipX2)
-		&& (view->Topview->Edges[ind].y2 > view->clipY1)
-		&& (view->Topview->Edges[ind].y2 < view->clipY2))
+	/*if (((view->Topview->Edges[ind].x1/view->zoom*10*-1  > view->clipX1)
+	     && (view->Topview->Edges[ind].x1/view->zoom*10*-1  < view->clipX2)
+	     && (view->Topview->Edges[ind].y1/view->zoom*10*-1  > view->clipY1)
+	     && (view->Topview->Edges[ind].y1/view->zoom*10*-1  < view->clipY2))
+	    || ((view->Topview->Edges[ind].x2/view->zoom*10*-1  > view->clipX1)
+		&& (view->Topview->Edges[ind].x2/view->zoom*10*-1  < view->clipX2)
+		&& (view->Topview->Edges[ind].y2/view->zoom*10*-1  > view->clipY1)
+		&& (view->Topview->Edges[ind].y2/view->zoom*10*-1  < view->clipY2))
+	    )*/
+		if(1)
 
-	    ) {
+	{
 	    float zdepth1, zdepth2;
 	    e = &view->Topview->Edges[ind];
 	    select_topview_edge(e);

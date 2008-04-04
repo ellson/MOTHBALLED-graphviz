@@ -14,6 +14,7 @@
 **********************************************************/
 
 #include "glutils.h"
+#include "viewport.h"
 
 
 
@@ -32,14 +33,14 @@ int GetFixedOGLPos(int x, int y, float kts, GLfloat * X, GLfloat * Y,
     GLdouble posX, posY, posZ;
 
     glBegin(GL_POINTS);
-    glVertex3f(10.00, 10.00, 0.00);
+    glVertex3f(10.00, 10.00, 1.00);
     glEnd();
-
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
-    gluProject(10.0, 10.0, 0.00, modelview, projection, viewport, &wwinX,
+    gluProject(10.0, 10.0, 1.00, modelview, projection, viewport, &wwinX,
 	       &wwinY, &wwinZ);
 
     winX = (float) x;
@@ -104,21 +105,23 @@ float GetOGLDistance(int l)
     GLdouble posXX, posYY, posZZ;
 
 
-    GLint viewport[4];
+
+	GLint viewport[4];
     GLdouble modelview[16];
     GLdouble projection[16];
     GLfloat winX, winY;
     float kts = 1;
     //glTranslatef (0.0,0.0,0.0);
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
     glGetIntegerv(GL_VIEWPORT, viewport);
 
     //draw a point  to a not important location to get window coordinates
-    glBegin(GL_POINTS);
-    glVertex3f(10.00, 10.00, 0.00);
+	glBegin(GL_POINTS);
+    glVertex3f(10.00, 10.00, 1.00);
     glEnd();
-    gluProject(10.0, 10.0, 0.00, modelview, projection, viewport, &wwinX,
+    gluProject(10.0, 10.0, 1.00, modelview, projection, viewport, &wwinX,
 	       &wwinY, &wwinZ);
     x = 50;
     y = 50;

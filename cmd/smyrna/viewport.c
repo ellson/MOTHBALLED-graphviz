@@ -13,7 +13,6 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
-
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
@@ -127,7 +126,7 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 	(float) atof(get_attribute_value("bordercoloralpha", view, g));
 
     view->bdVisible =
-	(float) atof(get_attribute_value("bordervisible", view, g));
+	 atoi(get_attribute_value("bordervisible", view, g));
 
     buf = get_attribute_value("gridcolor", view, g);
     colorxlate(buf, &cl, RGBA_DOUBLE);
@@ -924,9 +923,36 @@ void listg(Agraph_t * g)
 	fprintf(stderr, "%s\n", agnameof(v));
     }
 }
+
+Agraph_t *loadGraph(char *filename)
+{
+    Agraph_t *g;
+//      mydata *p;
+    FILE *input_file;
+    input_file = fopen(filename, "r");
+    if (input_file == NULL)
+	g_print("Cannot open %s\n", filename);
+    else if ((g = agread(input_file, NIL(Agdisc_t *)))) {
+	attach_object_custom_data_to_graph(g);
+	load_graph_params(g);
+
+	if ((!agget(g, "xdotversion"))
+	    && ((agget(g, "TopView") == "0")
+		|| !agget(g, "TopView")
+	    )
+
+		)
+	{
+	    create_xdot_for_graph(g, 0);
+	    fclose(input_file);
+#ifdef _WIN32
+	    input_file = fopen("c:/__tempfile.xdot", "r");
+#else
+	    input_file = fopen("/tmp/__tempfile.xdot", "r");
 #endif
 
-/*
+#endif
+		/*
  * Object Custom Data Functions
  */
 
@@ -1222,3 +1248,54 @@ int setGdkColor(GdkColor * c, char *color) {
 void glexpose() {
     expose_event(view->drawing_area, NULL, NULL);
 }
+
+
+
+
+
+static viewport_camera* new_viewport_camera(ViewInfo * view)
+{
+	viewport_camera* c=malloc(sizeof(viewport_camera));
+	return c;
+}
+
+viewport_camera* add_camera_to_viewport(ViewInfo * view)
+{
+	//view->cameras=
+		//(*viewport_camera)
+			realloc(view->cameras,sizeof(*viewport_camera)*view->camera_count);
+	view->cameras[view->camera_count]=new_viewport_camera(view);
+	view->camera_count++;
+	return view->cameras[view->camera_count-1];
+}
+int delete_camera_from_viewport(ViewInfo * view,viewport_camera* c)
+{
+    int ind = 0;
+    int found = 0;
+    for (ind; ind < view->camera_count - 1; ind++)
+	{
+		if ((view->cameras[ind] == c) && found == 0)
+		    found = 1;
+		if (found == 1)
+			view->cameras[ind] =view->cameras[ind + 1];
+    }
+    if (found)
+	{
+		free(c);
+		view->camera_count--;
+		view->cameras =
+			realloc(view->cameras, sizeof(viewport_camera*) * view->camera_count);
+		return 1;
+    }
+    return 0;
+}
+int activate_viewport_camera (ViewInfo * view,int cam_index)
+{
+	if (cam_index < view);
+
+
+
+}
+
+
+

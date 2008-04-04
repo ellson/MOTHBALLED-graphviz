@@ -26,13 +26,18 @@
 int glupdatecamera(ViewInfo * view)
 {
 
-    gluLookAt(view->panx, view->pany, view->zoom * -1, view->panx,
+	glLoadIdentity();
+	gluLookAt(view->panx, view->pany, view->zoom * -1, view->panx,
 	      view->pany, 0.0, 0.0, 1.0, 0.0);
-    GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
+/*	gluLookAt(view->panx, view->pany, view->zoom * -1, 0,
+	      0, 0.0, 0.0, 1.0, 0.0);
+*/
+
+	GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
 		 &(view->clipZ1));
     GetOGLPosRef(view->w - 1, 1, &(view->clipX2), &(view->clipY2),
 		 &(view->clipZ2));
-    return 1;
+	return 1;
 }
 
 /*
@@ -45,13 +50,31 @@ int glexpose_main(ViewInfo * view)
 {
     if (!glupdatecamera(view))
 	return 0;
-    glexpose_grid(view);
+	glScalef(1/view->zoom*10*-1,1/view->zoom*10*-1,1/view->zoom*10*-1);
+	glexpose_grid(view);
     draw_fisheye_magnifier(view);
     draw_magnifier(view);
     glexpose_drawgraph(view);
     draw_selection_box(view);
     drawBorders(view);
-    return 1;
+	/*DEBUG*/
+/*	if (view->mouse.mouse_mode == MM_PAN)
+	{
+		glBegin(GL_LINE_STRIP);
+		glColor4f((GLfloat) 1, (GLfloat) 0.0, (GLfloat) 0.0,
+			(GLfloat) 1);
+		glVertex3f((GLfloat) view->GLx, (GLfloat) view->GLy,
+			(GLfloat) 0.001);
+		glVertex3f((GLfloat) view->GLx2, (GLfloat) view->GLy2,
+			(GLfloat) 0.001);
+
+
+		glEnd();
+	}*/
+
+	/*DEBUG*/
+
+	return 1;
 }
 
 /*

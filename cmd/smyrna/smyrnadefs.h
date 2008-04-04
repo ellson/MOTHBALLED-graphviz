@@ -50,7 +50,7 @@
 #define DEFAULT_FISHEYE_MAGNIFIER_RADIUS		250
 #define TOP_VIEW_USER_ADVANCED_MODE				0
 #define TOP_VIEW_USER_NOVICE_MODE				1
-
+#define GL_VIEWPORT_FACTOR						100
 //mouse modes
 #define MM_PAN					0
 #define MM_ZOOM					1
@@ -62,8 +62,8 @@
 #define MM_MAGNIFIER			20
 #define MM_FISHEYE_MAGNIFIER	21
 
-#define MAX_ZOOM	-1.000033
-#define MIN_ZOOM	-89.00000
+#define MAX_ZOOM	-0.000033
+#define MIN_ZOOM	-1500.00000
 #define ZOOM_STEP	5
 #define DEG2RAD  G_PI/180
 
@@ -129,6 +129,26 @@ typedef struct {
     RGBColor Color;
     int update_required;
 } topview_edge;
+
+typedef enum { CAM_PERSPECTIVE,CAM_ORTHO} cam_t;
+
+typedef struct _viewport_camera{
+	float x;
+	float y;
+	float z;
+
+	float targetx;
+	float targety;
+	float targetz;
+
+	cam_t type; //
+	float panx;
+	float pany;
+	float panz;
+	float zoom;
+} viewport_camera;
+
+
 
 typedef struct {
     topview_node *Nodes;
@@ -343,6 +363,10 @@ typedef struct _ViewInfo
 	/*fisheye magnifier object*/
 	fisheye_magnifier fmg;
 
+	viewport_camera** cameras;
+	int camera_count; //number of cameras
+	int active_camera;
+
 	/*data attributes are read from graph's attributes DataAttribute1 and DataAttribute2*/
 	char* node_data_attribute1;	/*for topview graphs this is the node data attribute to put as label*/
 	char* node_data_attribute2;	/*for topview graphs this is the node data attribute to be stored and used for something else*/
@@ -362,15 +386,6 @@ typedef struct _ViewInfo
 
 	/*Topview data structure, refer topview.h for more info*/
 	topview* Topview;
-	/*listed default visual graph attributes are stored in this graph
-	bgcolor;
-	bordercolor;
-	gridcolor;
-	highlightednodecolor;
-	selectednodecolor;
-	selectededgecolor;
-	bdvisible;
-	gridvisible; */
 	Agraph_t* default_attributes;
 }ViewInfo;
 
