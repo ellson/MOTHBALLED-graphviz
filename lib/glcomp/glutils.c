@@ -14,9 +14,6 @@
 **********************************************************/
 
 #include "glutils.h"
-#include "viewport.h"
-
-
 
 /* at given depth value, tranforms 2d Window location to 3d gl coords*/
 int GetFixedOGLPos(int x, int y, float kts, GLfloat * X, GLfloat * Y,
