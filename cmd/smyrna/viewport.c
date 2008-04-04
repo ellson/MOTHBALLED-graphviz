@@ -1261,9 +1261,7 @@ static viewport_camera* new_viewport_camera(ViewInfo * view)
 
 viewport_camera* add_camera_to_viewport(ViewInfo * view)
 {
-	//view->cameras=
-		//(*viewport_camera)
-			realloc(view->cameras,sizeof(*viewport_camera)*view->camera_count);
+	view->cameras= RALLOC(view->camera_count,view->cameras,viewport_camera*);
 	view->cameras[view->camera_count]=new_viewport_camera(view);
 	view->camera_count++;
 	return view->cameras[view->camera_count-1];
