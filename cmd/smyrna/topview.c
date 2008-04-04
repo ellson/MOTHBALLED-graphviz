@@ -224,11 +224,10 @@ void drawTopViewGraph(Agraph_t * g)
 	for (ind = 0; ind < view->Topview->Nodecount; ind++)
 	{
 
-	    /*if ((view->Topview->Nodes[ind].x/view->zoom*10*-1 > view->clipX1)
+	    if ((view->Topview->Nodes[ind].x/view->zoom*10*-1 > view->clipX1)
 		&& (view->Topview->Nodes[ind].x/view->zoom*10*-1 < view->clipX2)
 		&& (view->Topview->Nodes[ind].y/view->zoom*10*-1 > view->clipY1)
-		&& (view->Topview->Nodes[ind].y/view->zoom*10*-1 < view->clipY2))*/
-		if(1)
+		&& (view->Topview->Nodes[ind].y/view->zoom*10*-1 < view->clipY2))
 		{
 			float zdepth;
 			v = &view->Topview->Nodes[ind];
@@ -282,7 +281,7 @@ void drawTopViewGraph(Agraph_t * g)
     glBegin(GL_LINES);
     set_topview_options();
     for (ind = 0; ind < view->Topview->Edgecount; ind++) {
-	/*if (((view->Topview->Edges[ind].x1/view->zoom*10*-1  > view->clipX1)
+	if (((view->Topview->Edges[ind].x1/view->zoom*10*-1  > view->clipX1)
 	     && (view->Topview->Edges[ind].x1/view->zoom*10*-1  < view->clipX2)
 	     && (view->Topview->Edges[ind].y1/view->zoom*10*-1  > view->clipY1)
 	     && (view->Topview->Edges[ind].y1/view->zoom*10*-1  < view->clipY2))
@@ -290,7 +289,7 @@ void drawTopViewGraph(Agraph_t * g)
 		&& (view->Topview->Edges[ind].x2/view->zoom*10*-1  < view->clipX2)
 		&& (view->Topview->Edges[ind].y2/view->zoom*10*-1  > view->clipY1)
 		&& (view->Topview->Edges[ind].y2/view->zoom*10*-1  < view->clipY2))
-	    )*/
+	    )
 		if(1)
 
 	{
