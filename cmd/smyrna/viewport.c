@@ -339,6 +339,10 @@ void init_viewport(ViewInfo * view)
     view->Selection.Anti = 0;
     view->Topview = malloc(sizeof(topview));
     view->Topview->topviewmenu = '\0';
+	view->cameras='\0';;
+	view->camera_count=0;
+	view->active_camera=-1;
+
     set_viewport_settings_from_template(view, view->default_attributes);
 }
 
@@ -1248,52 +1252,3 @@ int setGdkColor(GdkColor * c, char *color) {
 void glexpose() {
     expose_event(view->drawing_area, NULL, NULL);
 }
-
-
-
-
-
-static viewport_camera* new_viewport_camera(ViewInfo * view)
-{
-	viewport_camera* c=malloc(sizeof(viewport_camera));
-	return c;
-}
-
-viewport_camera* add_camera_to_viewport(ViewInfo * view)
-{
-	view->cameras= RALLOC(view->camera_count,view->cameras,viewport_camera*);
-	view->cameras[view->camera_count]=new_viewport_camera(view);
-	view->camera_count++;
-	return view->cameras[view->camera_count-1];
-}
-int delete_camera_from_viewport(ViewInfo * view,viewport_camera* c)
-{
-    int ind = 0;
-    int found = 0;
-    for (ind; ind < view->camera_count - 1; ind++)
-	{
-		if ((view->cameras[ind] == c) && found == 0)
-		    found = 1;
-		if (found == 1)
-			view->cameras[ind] =view->cameras[ind + 1];
-    }
-    if (found)
-	{
-		free(c);
-		view->camera_count--;
-		view->cameras =
-			realloc(view->cameras, sizeof(viewport_camera*) * view->camera_count);
-		return 1;
-    }
-    return 0;
-}
-int activate_viewport_camera (ViewInfo * view,int cam_index)
-{
-	if (cam_index < view);
-
-
-
-}
-
-
-

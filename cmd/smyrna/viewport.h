@@ -37,9 +37,6 @@ void move_node(void *n, float dx, float dy);
 void glexpose();
 void move_nodes(Agraph_t * g);
 
-viewport_camera* add_camera_to_viewport(ViewInfo * view);
-int delete_camera_from_viewport(ViewInfo * view,viewport_camera* c);
-int activate_viewport_camera (ViewInfo * view,int cam_index);
 
  /* helper functions */
 extern int setGdkColor(GdkColor * c, char *color);

@@ -142,10 +142,6 @@ typedef struct _viewport_camera{
 	float targetz;
 
 	cam_t type; //
-	float panx;
-	float pany;
-	float panz;
-	float zoom;
 } viewport_camera;
 
 

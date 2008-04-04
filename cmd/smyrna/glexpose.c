@@ -27,12 +27,14 @@ int glupdatecamera(ViewInfo * view)
 {
 
 	glLoadIdentity();
-	gluLookAt(view->panx, view->pany, view->zoom * -1, view->panx,
-	      view->pany, 0.0, 0.0, 1.0, 0.0);
-/*	gluLookAt(view->panx, view->pany, view->zoom * -1, 0,
-	      0, 0.0, 0.0, 1.0, 0.0);
-*/
+	if (view->active_camera==-1)
+		gluLookAt(view->panx, view->pany, view->zoom * -1, view->panx,
+			view->pany, 0.0, 0.0, 1.0, 0.0);
 
+	else
+		gluLookAt(view->cameras[view->active_camera]->x,view->cameras[view->active_camera]->y,view->cameras[view->active_camera]->z,
+		view->cameras[view->active_camera]->targetx,view->cameras[view->active_camera]->targety,view->cameras[view->active_camera]->targetz,
+					  0.0, 1.0, 0.0);
 	GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
 		 &(view->clipZ1));
     GetOGLPosRef(view->w - 1, 1, &(view->clipX2), &(view->clipY2),

@@ -954,6 +954,16 @@ void menu_click_alpha_plus(void *p)
 	view->zoom = (float) MAX_ZOOM;
 
 }
+void menu_click_3d_view(void *p)
+{
+    if ((view->zoom + ZOOM_STEP) < MAX_ZOOM)
+	view->zoom = view->zoom + ZOOM_STEP;
+    else
+	view->zoom = (float) MAX_ZOOM;
+
+}
+
+
 
 #ifdef _WIN32
 #define SMYRNA_ICON_PAN "c:/pan.raw"
@@ -1002,7 +1012,7 @@ glCompSet *glcreate_gl_topview_menu()
      */
 
     //small panel left bottom
-    p = glCompPanelNew(25, 25, 245, 40);
+    p = glCompPanelNew(25, 25, 325, 40);
     p->data = 0;
     glCompSetAddPanel(s, p);
 
@@ -1022,13 +1032,21 @@ glCompSet *glcreate_gl_topview_menu()
     glCompSetAddButton(s, b);
 
 
-    b = glCompButtonNew(165, 7, 75, 25, "HIDE", '\0', 0, 0);
+    b = glCompButtonNew(165, 7, 75, 25, "CAMERAS", '\0', 0, 0);
+    b->customptr = view;
+    b->panel = p;
+    b->groupid = 1;
+    b->callbackfunc = menu_click_3d_view;
+    glCompSetAddButton(s, b);
+
+    b = glCompButtonNew(245, 7, 75, 25, "HIDE", '\0', 0, 0);
     b->color.R = 1;
     b->customptr = view;
     b->panel = p;
     b->groupid = 1;
     b->callbackfunc = menu_click_hide;
     glCompSetAddButton(s, b);
+
 
     //control panel
     p = glCompPanelNew(25, 75, 165, 200);
