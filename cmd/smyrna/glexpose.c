@@ -20,6 +20,7 @@
 #include "topview.h"
 /*
 	refreshes camera settings using view parameters such as pan zoom etc
+	if a camera is selected viewport is switched to 3D
 	params:ViewInfo	, global view variable defined in viewport.c
 	return value:always 1
 */
@@ -28,17 +29,24 @@ int glupdatecamera(ViewInfo * view)
 
 	glLoadIdentity();
 	if (view->active_camera==-1)
+	{
 		gluLookAt(view->panx, view->pany, view->zoom * -1, view->panx,
 			view->pany, 0.0, 0.0, 1.0, 0.0);
+	}
 
+
+	/*toggle to active camera*/
 	else
+	{
 		gluLookAt(view->cameras[view->active_camera]->x,view->cameras[view->active_camera]->y,view->cameras[view->active_camera]->z,
 		view->cameras[view->active_camera]->targetx,view->cameras[view->active_camera]->targety,view->cameras[view->active_camera]->targetz,
 					  0.0, 1.0, 0.0);
+	}
 	GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
 		 &(view->clipZ1));
     GetOGLPosRef(view->w - 1, 1, &(view->clipX2), &(view->clipY2),
 		 &(view->clipZ2));
+	glScalef(1/view->zoom*-1,1/view->zoom*-1,1/view->zoom*-1);
 	return 1;
 }
 
@@ -52,7 +60,7 @@ int glexpose_main(ViewInfo * view)
 {
     if (!glupdatecamera(view))
 	return 0;
-	glScalef(1/view->zoom*10*-1,1/view->zoom*10*-1,1/view->zoom*10*-1);
+
 	glexpose_grid(view);
     draw_fisheye_magnifier(view);
     draw_magnifier(view);

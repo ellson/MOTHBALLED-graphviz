@@ -22,6 +22,7 @@
 #include "memory.h"
 #include "btree.h"
 #include "viewport.h"
+#include "viewportcamera.h"
 #include "draw.h"
 #include "selection.h"
 #include "topviewdata.h"
@@ -190,6 +191,7 @@ void preparetopview(Agraph_t * g, topview * t)
     set_boundries(t);
     set_update_required(t);
     t->topviewmenu = glcreate_gl_topview_menu();
+	attach_camera_widget(view);
     load_host_buttons(t, g, t->topviewmenu);
     prepare_topological_fisheye(t);
 }
@@ -203,9 +205,7 @@ void drawTopViewGraph(Agraph_t * g)
     float dddx, dddy;
     int ind = 0;
     if (view->zoom > NODE_ZOOM_LIMIT) {
-//	glPointSize(15 / view->zoom * -1);
-	glPointSize(5);
-
+	glPointSize(15 / view->zoom * -1);
 		//draw nodes
 	set_topview_options();
 	if (view->zoom < NODE_CIRCLE_LIMIT)
@@ -224,10 +224,10 @@ void drawTopViewGraph(Agraph_t * g)
 	for (ind = 0; ind < view->Topview->Nodecount; ind++)
 	{
 
-	    if ((view->Topview->Nodes[ind].x/view->zoom*10*-1 > view->clipX1)
-		&& (view->Topview->Nodes[ind].x/view->zoom*10*-1 < view->clipX2)
-		&& (view->Topview->Nodes[ind].y/view->zoom*10*-1 > view->clipY1)
-		&& (view->Topview->Nodes[ind].y/view->zoom*10*-1 < view->clipY2))
+	    if ((view->Topview->Nodes[ind].x/view->zoom*-1 > view->clipX1)
+		&& (view->Topview->Nodes[ind].x/view->zoom*-1 < view->clipX2)
+		&& (view->Topview->Nodes[ind].y/view->zoom*-1 > view->clipY1)
+		&& (view->Topview->Nodes[ind].y/view->zoom*-1 < view->clipY2) || (view->active_camera>=0))
 		{
 			float zdepth;
 			v = &view->Topview->Nodes[ind];
@@ -281,14 +281,15 @@ void drawTopViewGraph(Agraph_t * g)
     glBegin(GL_LINES);
     set_topview_options();
     for (ind = 0; ind < view->Topview->Edgecount; ind++) {
-	if (((view->Topview->Edges[ind].x1/view->zoom*10*-1  > view->clipX1)
-	     && (view->Topview->Edges[ind].x1/view->zoom*10*-1  < view->clipX2)
-	     && (view->Topview->Edges[ind].y1/view->zoom*10*-1  > view->clipY1)
-	     && (view->Topview->Edges[ind].y1/view->zoom*10*-1  < view->clipY2))
-	    || ((view->Topview->Edges[ind].x2/view->zoom*10*-1  > view->clipX1)
-		&& (view->Topview->Edges[ind].x2/view->zoom*10*-1  < view->clipX2)
-		&& (view->Topview->Edges[ind].y2/view->zoom*10*-1  > view->clipY1)
-		&& (view->Topview->Edges[ind].y2/view->zoom*10*-1  < view->clipY2))
+	if (((view->Topview->Edges[ind].x1/view->zoom*-1  > view->clipX1)
+	     && (view->Topview->Edges[ind].x1/view->zoom*-1  < view->clipX2)
+	     && (view->Topview->Edges[ind].y1/view->zoom*-1  > view->clipY1)
+	     && (view->Topview->Edges[ind].y1/view->zoom*-1  < view->clipY2))
+	    || ((view->Topview->Edges[ind].x2/view->zoom*-1  > view->clipX1)
+		&& (view->Topview->Edges[ind].x2/view->zoom*-1  < view->clipX2)
+		&& (view->Topview->Edges[ind].y2/view->zoom*-1  > view->clipY1)
+		&& (view->Topview->Edges[ind].y2/view->zoom*-1  < view->clipY2))
+		||   (view->active_camera>=0)
 	    )
 		if(1)
 
@@ -473,9 +474,9 @@ int draw_topview_label(topview_node * v, float zdepth)
 	return 0;
     if ((view->zoom * -1 / v->degree / v->zoom_factor) > 2)
 	return 0;
-    if ((v->distorted_x > view->clipX1) && (v->distorted_x < view->clipX2)
-	&& (v->distorted_y > view->clipY1)
-	&& (v->distorted_y < view->clipY2)) {
+    if ((v->distorted_x/view->zoom*-1  > view->clipX1) && (v->distorted_x/view->zoom*-1  < view->clipX2)
+	&& (v->distorted_y/view->zoom*-1  > view->clipY1)
+	&& (v->distorted_y/view->zoom*-1  < view->clipY2)) {
 
 	fs = (v->degree ==
 	      1) ? (float) (log((double) v->degree +
@@ -484,8 +485,6 @@ int draw_topview_label(topview_node * v, float zdepth)
 						       (double) 0.5) *
 						   (double) 7);
 	fs = fs * v->zoom_factor;
-/*		if(fs > 12)
-			fs=24;*/
 	if (((custom_object_data *) AGDATA(v->Node))->Selected == 1) {
 	    ddx = dx;
 	    ddy = dy;
@@ -955,11 +954,18 @@ void menu_click_alpha_plus(void *p)
 }
 void menu_click_3d_view(void *p)
 {
-    if ((view->zoom + ZOOM_STEP) < MAX_ZOOM)
-	view->zoom = view->zoom + ZOOM_STEP;
-    else
-	view->zoom = (float) MAX_ZOOM;
-
+    glCompSet *s;
+    int ind = 0;
+    s = ((glCompButton *) p)->parentset;
+    for (ind = 0; ind < s->panelcount; ind++) {
+	if (s->panels[ind]->data > 0)
+	    glCompPanelHide(s->panels[ind]);	//hide all panels
+	if (s->panels[ind]->data == 3)	//cameras panel
+	{
+	    glCompPanelShow(s->panels[ind]);
+	}
+    }
+ 
 }
 
 

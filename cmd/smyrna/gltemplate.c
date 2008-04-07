@@ -359,15 +359,10 @@ static gboolean motion_notify_event(GtkWidget * widget,
     if ((event->state & GDK_BUTTON1_MASK)
 	&& (view->mouse.mouse_mode == MM_PAN))
 	{
-		gldx=GetOGLDistance(dx)/view->zoom*10*-1;
-		gldy=GetOGLDistance(dy)/view->zoom*10*-1;
+		gldx=GetOGLDistance(dx)/view->zoom*-1;
+		gldy=GetOGLDistance(dy)/view->zoom*-1;
 		view->panx=view->panx-gldx;
 		view->pany=view->pany+gldy;
-		printf ("pan     x:%f  y:%f\n",view->panx,view->pany);
-		printf ("prev    x:%f  y:%f\n",view->prevpanx,view->prevpany);
-		printf ("GL      x:%f  y:%f\n",view->GLx,view->GLy);
-		printf ("GL2     x:%f  y:%f\n",view->GLx2,view->GLy2);
-		printf ("------------------\n");
 		redraw = TRUE;
 	}
     /*zooming */
