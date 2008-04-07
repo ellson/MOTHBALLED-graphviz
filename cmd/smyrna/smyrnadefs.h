@@ -140,6 +140,7 @@ typedef struct _viewport_camera{
 	float targetx;
 	float targety;
 	float targetz;
+	int index;
 
 	cam_t type; //
 } viewport_camera;
@@ -362,6 +363,7 @@ typedef struct _ViewInfo
 	viewport_camera** cameras;
 	int camera_count; //number of cameras
 	int active_camera;
+	viewport_camera* selected_camera;	//selected camera does not have to nec. be active one 
 
 	/*data attributes are read from graph's attributes DataAttribute1 and DataAttribute2*/
 	char* node_data_attribute1;	/*for topview graphs this is the node data attribute to put as label*/
