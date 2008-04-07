@@ -39,14 +39,14 @@
 extern void epsf_define(FILE * of);
 extern char *ps_string(char *ins, int latin);
 
-typedef enum { FORMAT_PS, FORMAT_PS2, } format_type;
+typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
 
 static int isLatin1;
 static char setupLatin1;
 
 static void psgen_begin_job(GVJ_t * job)
 {
-    gvdevice_fputs(job, "%!PS-Adobe-2.0\n");
+    gvdevice_fputs(job, "%!PS-Adobe-3.0 EPSF-3.0\n");
     gvdevice_printf(job, "%%%%Creator: %s version %s (%s)\n",
 	    job->common->info[0], job->common->info[1], job->common->info[2]);
     gvdevice_printf(job, "%%%%For: %s\n", job->common->user);
@@ -55,11 +55,13 @@ static void psgen_begin_job(GVJ_t * job)
 static void psgen_end_job(GVJ_t * job)
 {
     gvdevice_fputs(job, "%%Trailer\n");
-    gvdevice_printf(job, "%%%%Pages: %d\n", job->common->viewNum);
+    if (job->render.id != FORMAT_EPS)
+        gvdevice_printf(job, "%%%%Pages: %d\n", job->common->viewNum);
     if (job->common->show_boxes == NULL)
-	gvdevice_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
-	    job->boundingBox.LL.x, job->boundingBox.LL.y,
-	    job->boundingBox.UR.x, job->boundingBox.UR.y);
+        if (job->render.id != FORMAT_EPS)
+	    gvdevice_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
+	        job->boundingBox.LL.x, job->boundingBox.LL.y,
+	        job->boundingBox.UR.x, job->boundingBox.UR.y);
     gvdevice_fputs(job, "end\nrestore\n");
     gvdevice_fputs(job, "%%EOF\n");
 }
@@ -72,9 +74,18 @@ static void psgen_begin_graph(GVJ_t * job)
 
     if (job->common->viewNum == 0) {
         gvdevice_printf(job, "%%%%Title: %s\n", obj->u.g->name);
-        gvdevice_fputs(job, "%%Pages: (atend)\n");
-        if (job->common->show_boxes == NULL)
-            gvdevice_fputs(job, "%%BoundingBox: (atend)\n");
+    	if (job->render.id != FORMAT_EPS)
+            gvdevice_fputs(job, "%%Pages: (atend)\n");
+	else
+	    gvdevice_fputs(job, "%%Pages: 1\n");
+        if (job->common->show_boxes == NULL) {
+    	    if (job->render.id != FORMAT_EPS)
+                gvdevice_fputs(job, "%%BoundingBox: (atend)\n");
+	    else
+	        gvdevice_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
+	            job->pageBoundingBox.LL.x, job->pageBoundingBox.LL.y,
+	            job->pageBoundingBox.UR.x, job->pageBoundingBox.UR.y);
+	}
         gvdevice_fputs(job, "%%EndComments\nsave\n");
         /* include shape library */
         cat_preamble(job, job->common->lib);
@@ -469,6 +480,13 @@ static gvdevice_features_t device_features_ps = {
     {72.,72.},			/* default dpi */
 };
 
+static gvdevice_features_t device_features_eps = {
+    0,				/* flags */
+    {36.,36.},			/* default margin - points */
+    {612.,792.},                /* default page width, height - points */
+    {72.,72.},			/* default dpi */
+};
+
 gvplugin_installed_t gvrender_ps_types[] = {
     {FORMAT_PS, "ps", 1, &psgen_engine, &render_features_ps},
     {0, NULL, 0, NULL, NULL}
@@ -477,5 +495,6 @@ gvplugin_installed_t gvrender_ps_types[] = {
 gvplugin_installed_t gvdevice_ps_types[] = {
     {FORMAT_PS, "ps:ps", 1, NULL, &device_features_ps},
     {FORMAT_PS2, "ps2:ps", 1, NULL, &device_features_ps},
+    {FORMAT_EPS, "eps:ps", 1, NULL, &device_features_eps},
     {0, NULL, 0, NULL, NULL}
 };
