@@ -42,6 +42,8 @@ formats need to be interpreted in this manner.
 </TD><TD>Client-side imagemap (deprecated)</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:dia HREF=#d:dia>dia</A>
 </TD><TD>Dia format</TD> </TR>
+ <TR><TD ALIGN=CENTER><A NAME=a:eps HREF=#d:eps>eps</A>
+</TD><TD>Encapsulated PostScript</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:fig HREF=#d:fig>fig</A>
 </TD><TD>FIG</TD> </TR>
  <TR><TD ALIGN=CENTER><A NAME=a:gd HREF=#d:gd>gd</A>
@@ -243,6 +245,12 @@ to processing by XML tools. In particular, the cmapx output is wrapped in
 
 <DT><A NAME=d:dia HREF=#a:dia><STRONG>dia</STRONG></A>
 <DD>Produces <A HREF="http://www.gnome.org/projects/dia/">Dia</A> output.
+
+<DT><A NAME=d:eps HREF=#a:eps><STRONG>eps</STRONG></A>
+<DD>Produces Encapsulated PostScript output.
+At present, this is only guaranteed to be correct for a single
+input graph since the Bounding Box information has to appear
+at the beginning of the output, and this will be based on the first graph.
 
 <DT><A NAME=d:fig HREF=#a:fig><STRONG>fig</STRONG></A>
 <DD>Outputs graphs in the FIG graphics language.
