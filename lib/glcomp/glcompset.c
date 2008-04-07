@@ -129,10 +129,10 @@ int glCompSetRemovePanel(glCompSet * s, glCompPanel * p)
 {
     int ind = 0;
     int found = 0;
-    for (ind; ind < s->panelcount - 1; ind++) {
+	for (ind; ind < s->panelcount; ind++) {
 	if ((s->panels[ind] == p) && found == 0)
 	    found = 1;
-	if (found == 1)
+	if ((found == 1)&&(ind <(s->panelcount-1)))
 	    s->panels[ind] = s->panels[ind + 1];
     }
     if (found) {
@@ -316,10 +316,10 @@ int glCompSetRemoveButton(glCompSet * s, glCompButton * p)
 {
     int ind = 0;
     int found = 0;
-    for (ind; ind < s->buttoncount - 1; ind++) {
+    for (ind; ind < s->buttoncount ; ind++) {
 	if ((s->buttons[ind] == p) && found == 0)
 	    found = 1;
-	if (found == 1)
+	if ((found == 1) &&(ind <= (s->buttoncount-1)))
 	    s->buttons[ind] = s->buttons[ind + 1];
     }
     if (found) {
@@ -530,6 +530,7 @@ int glCompSetRelease(glCompSet * s, int x, int y)
 		if ((glCompPointInButton
 		     (s->buttons[ind], s->clickedX, s->clickedY))) {
 		    glCompButtonClick(s->buttons[ind]);
+			break;
 		}
 	    }
 	}
