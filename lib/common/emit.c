@@ -707,6 +707,16 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     /* size of one page in graph units */
     job->pageSize.x = imageSize.x / job->zoom;
     job->pageSize.y = imageSize.y / job->zoom;
+
+    /* pageBoundingBox in device units and page orientation */
+    job->pageBoundingBox.LL.x = ROUND(job->canvasBox.LL.x * job->dpi.x / POINTS_PER_INCH);
+    job->pageBoundingBox.LL.y = ROUND(job->canvasBox.LL.y * job->dpi.y / POINTS_PER_INCH);
+    job->pageBoundingBox.UR.x = ROUND(job->canvasBox.UR.x * job->dpi.x / POINTS_PER_INCH);
+    job->pageBoundingBox.UR.y = ROUND(job->canvasBox.UR.y * job->dpi.y / POINTS_PER_INCH);
+    if (job->rotation) {
+	job->pageBoundingBox.LL = exch_xy(job->pageBoundingBox.LL);
+	job->pageBoundingBox.UR = exch_xy(job->pageBoundingBox.UR);
+    }
 }
 
 static void firstpage(GVJ_t *job)
@@ -791,16 +801,6 @@ static void setup_page(GVJ_t * job, graph_t * g)
     job->pageBox.UR.x = job->pageBox.LL.x + job->pageSize.x;
     job->pageBox.UR.y = job->pageBox.LL.y + job->pageSize.y;
 
-    /* pageBoundingBox in device units and page orientation */
-    job->pageBoundingBox.LL.x = ROUND(job->canvasBox.LL.x * job->dpi.x / POINTS_PER_INCH);
-    job->pageBoundingBox.LL.y = ROUND(job->canvasBox.LL.y * job->dpi.y / POINTS_PER_INCH);
-    job->pageBoundingBox.UR.x = ROUND(job->canvasBox.UR.x * job->dpi.x / POINTS_PER_INCH);
-    job->pageBoundingBox.UR.y = ROUND(job->canvasBox.UR.y * job->dpi.y / POINTS_PER_INCH);
-    if (job->rotation) {
-	job->pageBoundingBox.LL = exch_xy(job->pageBoundingBox.LL);
-	job->pageBoundingBox.UR = exch_xy(job->pageBoundingBox.UR);
-    }
-	
     /* maximum boundingBox in device units and page orientation */
     if (job->common->viewNum == 0)
         job->boundingBox = job->pageBoundingBox;
