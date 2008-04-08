@@ -22,8 +22,9 @@ extern "C" {
 #define CLUSTEREDGES_H
 
 #include <render.h>
+#include <adjust.h>
 
-    extern int compoundEdges(graph_t * g, double SEP, int splines);
+    extern int compoundEdges(graph_t * g, expand_t* pm, int splines);
 
 #endif
 
