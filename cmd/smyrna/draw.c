@@ -586,10 +586,16 @@ void draw_fisheye_magnifier(ViewInfo * view)
 		     &mg_y, &mg_z);
 	glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,
 		  (GLfloat) 1);
-	if ((view->fmg.x != mg_x) || (view->fmg.y != mg_y)) {
-	    fisheye_polar(mg_x, mg_y, view->Topview);
+	if (((view->fmg.x != mg_x) || (view->fmg.y != mg_y))&&(view->active_camera==-1)) {
+		fisheye_polar(mg_x, mg_y, view->Topview);
 	    draw_circle(mg_x, mg_y, a);
 	}
+	if (((view->fmg.x != mg_x) || (view->fmg.y != mg_y))&&(view->active_camera>-1)) {
+		fisheye_spherical(mg_x, mg_y,0.00,view->Topview);
+	    draw_circle(mg_x, mg_y, a);
+	}
+
+
 	view->fmg.x = mg_x;
 	view->fmg.y = mg_y;
 

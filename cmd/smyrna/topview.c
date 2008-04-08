@@ -307,17 +307,21 @@ void drawTopViewGraph(Agraph_t * g)
 	    {
 		ddx = dx;
 		ddy = dy;
+		ddz=0;
 	    } else {
 		ddx = 0;
 		ddy = 0;
+		ddz=0;
 	    }
 	    if (((custom_object_data *) AGDATA(e->Node2->Node))->Selected == 1)	//head
 	    {
 		dddx = dx;
 		dddy = dy;
+		dddz=0;
 	    } else {
 		dddx = 0;
 		dddy = 0;
+		dddz=0;
 	    }
 
 	    if (get_color_from_edge(e)) {
@@ -807,6 +811,12 @@ static double dist(double x1, double y1, double x2, double y2)
 {
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }
+static double dist3d(double x1, double y1,double z1, double x2, double y2,double z2)
+{
+    return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)+(z1 - z2) * (z1 - z2));
+}
+
+
 static double G(double x)
 {
     // distortion function for fisheye display
@@ -858,6 +868,62 @@ void fisheye_polar(double x_focus, double y_focus, topview * t)
 	}
     }
 }
+void fisheye_spherical(double x_focus, double y_focus,double z_focus, topview * t)
+{
+    int i;
+    double distance, distorted_distance, ratio, range;
+
+    range = 0;
+    for (i = 1; i < t->Nodecount; i++) {
+	if (	point_within_sphere_with_coords((float) x_focus, (float) y_focus, (float)z_focus, (float) view->fmg.R
+								,t->Nodes[i].x, t->Nodes[i].y,t->Nodes[i].z))
+	{
+		
+		
+	    range =
+		MAX(range,
+		    dist3d(t->Nodes[i].x, t->Nodes[i].y,t->Nodes[i].z, x_focus, y_focus,z_focus));
+	}
+    }
+
+    for (i = 1; i < t->Nodecount; i++) {
+
+
+	if (
+			point_within_sphere_with_coords((float) x_focus, (float) y_focus, (float)z_focus, (float) view->fmg.R
+								,t->Nodes[i].x, t->Nodes[i].y,t->Nodes[i].z))
+	{
+	    distance =
+		dist3d(t->Nodes[i].x, t->Nodes[i].y,t->Nodes[i].z, x_focus, y_focus,z_focus);
+	    distorted_distance = G(distance / range) * range;
+	    if (distance != 0) {
+		ratio = distorted_distance / distance;
+	    } else {
+		ratio = 0;
+	    }
+	    t->Nodes[i].distorted_x =
+		(float) x_focus + (t->Nodes[i].x -
+				   (float) x_focus) * (float) ratio;
+	    t->Nodes[i].distorted_y =
+		(float) y_focus + (t->Nodes[i].y -
+				   (float) y_focus) * (float) ratio;
+	    t->Nodes[i].distorted_z =
+		(float) z_focus + (t->Nodes[i].z -
+				   (float) z_focus) * (float) ratio;
+	    t->Nodes[i].zoom_factor =
+		(float) 1 *(float) distorted_distance / (float) distance;
+	} else {
+	    t->Nodes[i].distorted_x = t->Nodes[i].x;
+	    t->Nodes[i].distorted_y = t->Nodes[i].y;
+	    t->Nodes[i].distorted_z = t->Nodes[i].z;
+	    t->Nodes[i].zoom_factor = 1;
+	}
+    }
+}
+
+
+
+
 void originate_distorded_coordinates(topview * t)
 {
     //sets original coordinates values to distorded coords. this happens when lieft mouse click is released in geometrical fisyehey mode
