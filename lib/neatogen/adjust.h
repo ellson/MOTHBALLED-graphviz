@@ -23,6 +23,10 @@
 extern "C" {
 #endif
 
+#include <geom.h>
+
+#define DFLT_MARGIN     4   /* 4 points */
+
 typedef enum {
     AM_NONE, AM_VOR, AM_COMPRESS,
     AM_SCALE, AM_NSCALE, AM_SCALEXY, AM_PUSH, AM_PUSHPULL,
@@ -37,7 +41,13 @@ typedef struct {
     char *print;
 } adjust_data;
 
-    extern double expFactor(graph_t * G);
+typedef struct {
+    float x, y;
+    boolean doAdd;  /* if true, x and y are in points */
+} expand_t;
+
+    extern expand_t sepFactor(graph_t * G);
+    extern expand_t esepFactor(graph_t * G);
     extern int adjustNodes(graph_t * G);
     extern void normalize(graph_t * g);
     extern int removeOverlap(graph_t * G);

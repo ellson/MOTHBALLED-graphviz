@@ -22,6 +22,7 @@
 #include "neato.h"
 #include "agxbuf.h"
 #include "utils.h"
+#include "ctype.h"
 #include "voronoi.h"
 #include "info.h"
 #include "edges.h"
@@ -34,6 +35,8 @@
 #include "quad_prog_vpsc.h"
 #endif
 
+#define SEPFACT         0.8  /* default esep/sep */
+
 static double margin = 0.05;	/* Create initial bounding box by adding
 				 * margin * dimension around box enclosing
 				 * nodes.
@@ -41,7 +44,6 @@ static double margin = 0.05;	/* Create initial bounding box by adding
 static double incr = 0.05;	/* Increase bounding box by adding
 				 * incr * dimension around box.
 				 */
-static double pmargin = 5.0 / POINTS_PER_INCH;	/* Margin around polygons, in inches */
 static int iterations = -1;	/* Number of iterations */
 static int useIter = 0;		/* Use specified number of iterations */
 
@@ -151,6 +153,8 @@ static void makeInfo(Agraph_t * graph)
     Agnode_t *node;
     int i;
     Info_t *ip;
+    expand_t pmargin;
+    void (*polyf)(Poly *, Agnode_t *, float, float);
 
     nsites = agnnodes(graph);
     geominit();
@@ -160,12 +164,21 @@ static void makeInfo(Agraph_t * graph)
     node = agfstnode(graph);
     ip = nodeInfo;
 
-    pmargin = expFactor (graph);
+    pmargin = sepFactor (graph);
+
+    if (pmargin.doAdd) {
+	polyf = makeAddPoly;
+	/* we need inches for makeAddPoly */
+	pmargin.x = PS2INCH(pmargin.x);
+	pmargin.y = PS2INCH(pmargin.y);
+    }
+	
+    else polyf = makePoly;
     for (i = 0; i < nsites; i++) {
 	ip->site.coord.x = ND_pos(node)[0];
 	ip->site.coord.y = ND_pos(node)[1];
 
-	makePoly(&ip->poly, node, pmargin);
+	polyf(&ip->poly, node, pmargin.x, pmargin.y);
 
 	ip->site.sitenbr = i;
 	ip->site.refcnt = 1;
@@ -654,7 +667,7 @@ vpscAdjust(graph_t* G)
     float* f_storage = N_GNEW(dim * nnodes, float);
     int i, j;
     Agnode_t* v;
-    char* str;
+    expand_t margin;
 
     for (i = 0; i < dim; i++) {
 	coords[i] = f_storage + i * nnodes;
@@ -674,13 +687,14 @@ vpscAdjust(graph_t* G)
     opt.edge_gap = 0;
     opt.noverlap = 2;
     opt.clusters = NEW(cluster_data);
-    if ((str = agget(G, "sep")) && 
-	(i = sscanf(str, "%lf,%lf", &opt.gap.x, &opt.gap.y))) {
-	    if (i == 1) opt.gap.y = opt.gap.x;
-	    if(Verbose)
-		fprintf(stderr,"gap=%f,%f\n",opt.gap.x,opt.gap.y);
+    margin = sepFactor (G);
+    if (margin.doAdd) {
+	opt.gap.x = PS2INCH(margin.x);
+	opt.gap.y = PS2INCH(margin.y);
     }
-    else opt.gap.x = opt.gap.y = PS2INCH(10);
+    else {
+	opt.gap.x = opt.gap.y = PS2INCH(DFLT_MARGIN);
+    }
     opt.nsize = nsize;
 
     removeoverlaps(nnodes, coords, &opt);
@@ -898,21 +912,81 @@ int adjustNodes(graph_t * G)
     return removeOverlap (G);
 }
 
-/* expFactor:
- * Return factor by which to scale up nodes.
+/* parseFactor:
+ * Convert "sep" attribute into expand_t.
+ * Input "+x,y" becomes {x,y,true}
+ * Input "x,y" becomes {1 + x/sepfact,1 + y/sepfact,false}
+ * Return 1 on success, 0 on failure
  */
-double 
-expFactor(graph_t* g)
+static int
+parseFactor (char* s, expand_t* pp, float sepfact)
 {
-    double pmargin;
+    int i;
+    float x, y;
+
+    while (isspace(*s)) s++;
+    if (*s == '+') {
+	s++;
+	pp->doAdd = 1;
+    }
+    else pp->doAdd = 0;
+
+    if ((i = sscanf(s, "%f,%f", &x, &y))) {
+	if (i == 1) y = x;
+	if (pp->doAdd) {
+	    pp->x = x/sepfact;
+	    pp->y = y/sepfact;
+	}
+	else {
+	    pp->x = 1.0 + x/sepfact;
+	    pp->y = 1.0 + y/sepfact;
+	}
+	return 1;
+    }
+    else return 0;
+}
+
+/* sepFactor:
+ */
+expand_t
+sepFactor(graph_t* g)
+{
+    expand_t pmargin;
     char*  marg;
 
-    if ((marg = agget(g, "sep")))
-	pmargin = 1.0 + atof(marg);
-    else if ((marg = agget(g, "esep")))
-	pmargin = 1.0 + atof(marg)/SEPFACT;
-    else
-	pmargin = 1.1;
+    if ((marg = agget(g, "sep")) && parseFactor(marg, &pmargin, 1.0)) {
+    }
+    else if ((marg = agget(g, "esep")) && parseFactor(marg, &pmargin, SEPFACT)) {
+    }
+    else { /* default */
+	pmargin.x = pmargin.y = DFLT_MARGIN;
+	pmargin.doAdd = 1;
+    }
+    if (Verbose)
+	fprintf (stderr, "Node separation: add %d (%f,%f)\n",
+	    pmargin.doAdd, pmargin.x, pmargin.y);
     return pmargin;
 }
 
+/* esepFactor:
+ * This value should be independent of the sep value used to expand
+ * nodes during adjustment. If not, when the adjustment pass produces
+ * a fairly tight layout, the spline code will find that some nodes
+ * still overlap.
+ */
+expand_t
+esepFactor(graph_t* g)
+{
+    expand_t pmargin;
+    char*  marg;
+
+    if ((marg = agget(g, "esep")) && parseFactor(marg, &pmargin, 1.0)) {
+	return pmargin;
+    }
+    if ((marg = agget(g, "sep")) && parseFactor(marg, &pmargin, 1.0/SEPFACT)) {
+	return pmargin;
+    }
+    pmargin.x = pmargin.y = SEPFACT*DFLT_MARGIN;
+    pmargin.doAdd = 1;
+    return pmargin;
+}
