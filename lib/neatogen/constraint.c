@@ -569,13 +569,21 @@ static int overlaps(nitem * p, int cnt)
 
 /* initItem:
  */
-static void initItem(node_t * n, nitem * p, double margin)
+static void initItem(node_t * n, nitem * p, expand_t margin)
 {
     int x = POINTS(SCALE * ND_pos(n)[0]);
     int y = POINTS(SCALE * ND_pos(n)[1]);
-    int w2 = POINTS(margin * SCALE2 * ND_width(n));
-    int h2 = POINTS(margin * SCALE2 * ND_height(n));
+    int w2, h2;
     box b;
+
+    if (margin.doAdd) {
+	w2 = SCALE * (POINTS(ND_width(n)/2.0) + margin.x);
+	h2 = SCALE * (POINTS(ND_height(n)/2.0) + margin.y);
+    }
+    else {
+	w2 = POINTS(margin.x * SCALE2 * ND_width(n));
+	h2 = POINTS(margin.y * SCALE2 * ND_height(n));
+    }
 
     b.LL.x = x - w2;
     b.LL.y = y - h2;
@@ -623,13 +631,13 @@ static void initItem(node_t * n, nitem * p, double margin)
  */
 int cAdjust(graph_t * g, int mode)
 {
-    double margin;
+    expand_t margin;
     int ret, i, nnodes = agnnodes(g);
     nitem *nlist = N_GNEW(nnodes, nitem);
     nitem *p = nlist;
     node_t *n;
 
-    margin = expFactor (g);
+    margin = sepFactor (g);
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	initItem(n, p, margin);
@@ -864,15 +872,27 @@ int scAdjust(graph_t * g, int equal)
     node_t *n;
     pointf s;
     int i;
-    double margin;
+    expand_t margin;
     pointf *aarr;
     int m;
 
-    margin = expFactor (g);
+    margin = sepFactor (g);
+    if (margin.doAdd) {
+	/* we use inches below */
+	margin.x = PS2INCH(margin.x);
+	margin.y = PS2INCH(margin.y);
+    }
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	double w2 = margin * ND_width(n) / 2.0;
-	double h2 = margin * ND_height(n) / 2.0;
+	double w2, h2;
+	if (margin.doAdd) {
+	    w2 = (ND_width(n) / 2.0) + margin.x;
+	    h2 = (ND_height(n) / 2.0) + margin.y;
+	}
+	else {
+	    w2 = margin.x * ND_width(n) / 2.0;
+	    h2 = margin.y * ND_height(n) / 2.0;
+	}
 	p->pos.x = ND_pos(n)[0];
 	p->pos.y = ND_pos(n)[1];
 	p->bb.LL.x = p->pos.x - w2;
