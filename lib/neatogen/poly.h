@@ -18,8 +18,6 @@
 extern "C" {
 #endif
 
-
-
 #ifndef POLY_H
 #define POLY_H
 
@@ -35,7 +33,8 @@ extern "C" {
 
     extern void polyFree(void);
     extern int polyOverlap(Point, Poly *, Point, Poly *);
-    extern void makePoly(Poly *, Agnode_t *, double);
+    extern void makePoly(Poly *, Agnode_t *, float, float);
+    extern void makeAddPoly(Poly *, Agnode_t *, float, float);
     extern void breakPoly(Poly *);
 
 #endif
