@@ -20,6 +20,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include <adjust.h>
 
     extern int allow_edits(int);
     extern void avoid_cycling(graph_t *, Agnode_t *, double *);
@@ -41,7 +42,7 @@ extern "C" {
     extern int init_port(Agnode_t *, Agedge_t *, char *, boolean);
     extern void jitter3d(Agnode_t *, int);
     extern void jitter_d(Agnode_t *, int, int);
-    extern Ppoly_t *makeObstacle(node_t * n, double SEP);
+    extern Ppoly_t *makeObstacle(node_t * n, expand_t* );
     extern void makeSelfArcs(path * P, edge_t * e, int stepx);
     extern void makeSpline(edge_t *, Ppoly_t **, int, boolean);
     extern void make_spring(graph_t *, Agnode_t *, Agnode_t *, double);
@@ -77,7 +78,7 @@ extern "C" {
     extern void spline_edges0(Agraph_t *);
     extern int spline_edges1(graph_t * g, int);
     extern int splineEdges(graph_t *,
-			   int (*edgefn) (graph_t *, double, int), int);
+			   int (*edgefn) (graph_t *, expand_t*, int), int);
     extern void neato_set_aspect(graph_t * g);
     extern void toggle(int);
     extern int user_pos(Agsym_t *, Agsym_t *, Agnode_t *, int);

@@ -1136,6 +1136,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     int i;
     node_t *v;
     vtx_data *gp;
+    expand_t margin;
 
     int init;
 
@@ -1207,13 +1208,14 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
                     fprintf(stderr,"Using Mosek for constraint optimization...\n");
             }
 #endif /* MOSEK */
-            if ((str = agget(g, "sep")) && 
-                (i = sscanf(str, "%lf,%lf", &opt.gap.x, &opt.gap.y))) {
-		    if (i == 1) opt.gap.y = opt.gap.x;
-                    if(Verbose)
-                        fprintf(stderr,"gap=%f,%f\n",opt.gap.x,opt.gap.y);
-            }
-            else opt.gap.x = opt.gap.y = 0;
+	    margin = sepFactor (g);
+	    if (margin.doAdd) {
+		opt.gap.x = PS2INCH(margin.x);
+		opt.gap.y = PS2INCH(margin.y);
+	    }
+            else opt.gap.x = opt.gap.y = PS2INCH(DFLT_MARGIN);
+	    if(Verbose)
+		fprintf(stderr,"gap=%f,%f\n",opt.gap.x,opt.gap.y);
             for (i=0, v = agfstnode(g); v; v = agnxtnode(g, v),i++) {
                 nsize[i].x = ND_width(v);
                 nsize[i].y = ND_height(v);
