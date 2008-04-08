@@ -1945,7 +1945,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     Agnode_t *n;
     char *nodename = NULL;
 
-    assert((gvc->bb.LL.x == 0) && (gvc->bb.LL.y == 0));
+//    assert((gvc->bb.LL.x == 0) && (gvc->bb.LL.y == 0));
     P2PF(gvc->bb.UR, UR);
 
     job->bb.LL.x = -job->pad.x;           /* job->bb is bb of graph and padding - graph units */
@@ -2617,14 +2617,25 @@ char **parse_style(char *s)
 static boxf bezier_bb(bezier bz)
 {
     int i;
-    point p;
+    point p, p1, p2;
     box bb;
     boxf bbf;
 
     assert(bz.size > 0);
     bb.LL = bb.UR = bz.list[0];
-    for (i = 1; i < bz.size; i++) {
+    for (i = 1; i < bz.size;) {
 	p=bz.list[i];
+        EXPANDBP(bb,p);
+	i++;
+	if ( i >= bz.size)
+	    break;
+	/* take mid-point between two control points for bb calculation */
+	p1=bz.list[i];
+	i++;
+	p2=bz.list[i];
+	i++;
+	p.x = ( p1.x + p2.x ) / 2;
+	p.y = ( p1.y + p2.y ) / 2;
         EXPANDBP(bb,p);
     }
     B2BF(bb, bbf);
