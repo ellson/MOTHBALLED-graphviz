@@ -936,9 +936,20 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
 	    bz->eflag = auxbz->eflag;
 	    bz->ep = transform(auxbz->ep, del, 0);
 	}
-	for (j = 0; j <  auxbz->size; j++) {
-	    point pt;
+	for (j = 0; j <  auxbz->size; ) {
+	    point pt, pt1, pt2;
 	    pt = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
+	    j++;
+	    update_bb(g, pt);
+	    if ( j >= auxbz->size ) 
+		break;
+	    /* take the mid-point between the two control points in bb calculation */
+	    pt1 = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
+	    j++;
+	    pt2 = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
+	    j++;
+	    pt.x = ( pt1.x + pt2.x ) / 2;
+	    pt.y = ( pt1.y + pt2.y ) / 2;
 	    update_bb(g, pt);
         }
 	if (ED_label(e)) {

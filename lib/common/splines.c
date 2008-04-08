@@ -319,9 +319,20 @@ clip_and_install(edge_t * fe, node_t * hn, point * ps, int pn,
 	if (ps[end].x != ps[end + 3].x || ps[end].y != ps[end + 3].y)
 	    break;
     arrow_clip(fe, hn, ps, &start, &end, newspl, info);
-    for (i = start; i < end + 4; i++) {
-	point pt;
+    for (i = start; i < end + 4; ) {
+	point pt, pt1, pt2;
 	pt = newspl->list[i - start] = ps[i];
+	i++;
+	update_bb(g, pt);
+	if ( i >= end + 4) 
+	    break;
+	/* take the mid-point between the two control points in bb calculation */
+	pt1 = newspl->list[i - start] = ps[i];
+	i++;
+	pt2 = newspl->list[i - start] = ps[i];
+	i++;
+	pt.x = ( pt1.x + pt2.x ) / 2;
+	pt.y = ( pt1.y + pt2.y ) / 2;
 	update_bb(g, pt);
     }
     newspl->size = end - start + 4;
