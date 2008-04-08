@@ -81,16 +81,29 @@ make_barriers(Ppoly_t ** poly, int npoly, int pp, int qp,
     *n_barriers = n;
 }
 
-/* recPt:
+/* genPt:
  */
-static Ppoint_t recPt(double x, double y, point c, double sep)
+static Ppoint_t genPt(double x, double y, point c)
 {
     Ppoint_t p;
 
-    p.x = (x * sep) + c.x;
-    p.y = (y * sep) + c.y;
+    p.x = x + c.x;
+    p.y = y + c.y;
     return p;
 }
+
+
+/* recPt:
+ */
+static Ppoint_t recPt(double x, double y, point c, expand_t* m)
+{
+    Ppoint_t p;
+
+    p.x = (x * m->x) + c.x;
+    p.y = (y * m->y) + c.y;
+    return p;
+}
+
 
 static void makePortLabels(edge_t * e)
 {
@@ -463,9 +476,11 @@ static void makeStraightEdge(graph_t * g, edge_t * e)
     }
 }
 
+#define LEN(x,y) sqrt((x)*(x)+(y)*(y))
+
 /* makeObstacle:
  * Given a node, return an obstacle reflecting the
- * node's geometry. SEP specifies how much space to allow
+ * node's geometry. pmargin specifies how much space to allow
  * around the polygon. 
  * Returns the constructed polygon on success, NULL on failure.
  * Failure means the node shape is not supported. 
@@ -473,7 +488,7 @@ static void makeStraightEdge(graph_t * g, edge_t * e)
  * The polygon has its vertices in CW order.
  * 
  */
-Ppoly_t *makeObstacle(node_t * n, double SEP)
+Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
 {
     Ppoly_t *obs;
     polygon_t *poly;
@@ -500,15 +515,53 @@ Ppoly_t *makeObstacle(node_t * n, double SEP)
 	obs->ps = N_NEW(sides, Ppoint_t);
 	/* assuming polys are in CCW order, and pathplan needs CW */
 	for (j = 0; j < sides; j++) {
+	    double xmargin, ymargin;
 	    if (poly->sides >= 3) {
-		polyp.x = poly->vertices[j].x * SEP;
-		polyp.y = poly->vertices[j].y * SEP;
+		if (pmargin->doAdd) {
+		    if (poly->sides == 4) {
+			switch (j) {
+			case 0 :
+			    xmargin = pmargin->x;
+			    ymargin = pmargin->y;
+			    break;
+			case 1 :
+			    xmargin = -pmargin->x;
+			    ymargin = pmargin->y;
+			    break;
+			case 2 :
+			    xmargin = -pmargin->x;
+			    ymargin = -pmargin->y;
+			    break;
+			case 3 :
+			    xmargin = pmargin->x;
+			    ymargin = -pmargin->y;
+			    break;
+			}
+			polyp.x = poly->vertices[j].x + xmargin;
+			polyp.y = poly->vertices[j].y + ymargin;
+		    }
+		    else {
+			double h = LEN(poly->vertices[j].x,poly->vertices[j].y);
+			polyp.x = poly->vertices[j].x * (1.0 + pmargin->x/h);
+			polyp.y = poly->vertices[j].y * (1.0 + pmargin->y/h);
+		    }
+		}
+		else {
+		    polyp.x = poly->vertices[j].x * pmargin->x;
+		    polyp.y = poly->vertices[j].y * pmargin->y;
+		}
 	    } else {
 		double c, s;
 		c = cos(2.0 * M_PI * j / sides + adj);
 		s = sin(2.0 * M_PI * j / sides + adj);
-		polyp.x = SEP * c * (ND_lw_i(n) + ND_rw_i(n)) / 2.0;
-		polyp.y = SEP * s * ND_ht_i(n) / 2.0;
+		if (pmargin->doAdd) {
+		    polyp.x =  c*(ND_lw_i(n)+ND_rw_i(n)+pmargin->x) / 2.0;
+		    polyp.y =  s*(ND_ht_i(n)+pmargin->y) / 2.0;
+		}
+		else {
+		    polyp.x = pmargin->x * c * (ND_lw_i(n) + ND_rw_i(n)) / 2.0;
+		    polyp.y = pmargin->y * s * ND_ht_i(n) / 2.0;
+		}
 	    }
 	    obs->ps[sides - j - 1].x = polyp.x + ND_coord_i(n).x;
 	    obs->ps[sides - j - 1].y = polyp.y + ND_coord_i(n).y;
@@ -522,10 +575,18 @@ Ppoly_t *makeObstacle(node_t * n, double SEP)
 	obs->ps = N_NEW(4, Ppoint_t);
 	/* CW order */
 	pt = ND_coord_i(n);
-	obs->ps[0] = recPt(b.LL.x, b.LL.y, pt, SEP);
-	obs->ps[1] = recPt(b.LL.x, b.UR.y, pt, SEP);
-	obs->ps[2] = recPt(b.UR.x, b.UR.y, pt, SEP);
-	obs->ps[3] = recPt(b.UR.x, b.LL.y, pt, SEP);
+	if (pmargin->doAdd) {
+	    obs->ps[0] = genPt(b.LL.x-pmargin->x, b.LL.y-pmargin->y, pt);
+	    obs->ps[1] = genPt(b.LL.x-pmargin->x, b.UR.y+pmargin->y, pt);
+	    obs->ps[2] = genPt(b.UR.x+pmargin->x, b.UR.y+pmargin->y, pt);
+	    obs->ps[3] = genPt(b.UR.x+pmargin->x, b.LL.y-pmargin->y, pt);
+	}
+	else {
+	    obs->ps[0] = recPt(b.LL.x, b.LL.y, pt, pmargin);
+	    obs->ps[1] = recPt(b.LL.x, b.UR.y, pt, pmargin);
+	    obs->ps[2] = recPt(b.UR.x, b.UR.y, pt, pmargin);
+	    obs->ps[3] = recPt(b.UR.x, b.LL.y, pt, pmargin);
+	}
 	break;
     case SH_EPSF:
 	desc = (epsf_t *) (ND_shape_info(n));
@@ -534,10 +595,18 @@ Ppoly_t *makeObstacle(node_t * n, double SEP)
 	obs->ps = N_NEW(4, Ppoint_t);
 	/* CW order */
 	pt = ND_coord_i(n);
-	obs->ps[0] = recPt(-ND_lw_i(n), -ND_ht_i(n), pt, SEP);
-	obs->ps[1] = recPt(-ND_lw_i(n), ND_ht_i(n), pt, SEP);
-	obs->ps[2] = recPt(ND_rw_i(n), ND_ht_i(n), pt, SEP);
-	obs->ps[3] = recPt(ND_rw_i(n), -ND_ht_i(n), pt, SEP);
+	if (pmargin->doAdd) {
+	    obs->ps[0] = genPt(-ND_lw_i(n)-pmargin->x, -ND_ht_i(n)-pmargin->y,pt);
+	    obs->ps[1] = genPt(-ND_lw_i(n)-pmargin->x, ND_ht_i(n)+pmargin->y,pt);
+	    obs->ps[2] = genPt(ND_rw_i(n)+pmargin->x, ND_ht_i(n)+pmargin->y,pt);
+	    obs->ps[3] = genPt(ND_rw_i(n)+pmargin->x, -ND_ht_i(n)-pmargin->y,pt);
+	}
+	else {
+	    obs->ps[0] = recPt(-ND_lw_i(n), -ND_ht_i(n), pt, pmargin);
+	    obs->ps[1] = recPt(-ND_lw_i(n), ND_ht_i(n), pt, pmargin);
+	    obs->ps[2] = recPt(ND_rw_i(n), ND_ht_i(n), pt, pmargin);
+	    obs->ps[3] = recPt(ND_rw_i(n), -ND_ht_i(n), pt, pmargin);
+	}
 	break;
     default:
 	obs = NULL;
@@ -679,7 +748,7 @@ void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
  * is not altered to reflect intra-cluster edges.
  * If Nop > 1 and the spline exists, it is just copied.
  */
-static int _spline_edges(graph_t * g, double SEP, int edgetype)
+static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 {
     node_t *n;
     edge_t *e;
@@ -697,7 +766,7 @@ static int _spline_edges(graph_t * g, double SEP, int edgetype)
     if (edgetype != ET_LINE) {
 	obs = N_NEW(agnnodes(g), Ppoly_t *);
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    obp = makeObstacle(n, SEP);
+	    obp = makeObstacle(n, pmargin);
 	    if (obp) {
 		ND_lim(n) = i; 
 		obs[i++] = obp;
@@ -794,25 +863,15 @@ static int _spline_edges(graph_t * g, double SEP, int edgetype)
  * g must reflect the addition of the edges.
  */
 int
-splineEdges(graph_t * g, int (*edgefn) (graph_t *, double, int),
+splineEdges(graph_t * g, int (*edgefn) (graph_t *, expand_t*, int),
 	    int edgetype)
 {
     node_t *n;
     edge_t *e;
-    double SEP;
+    expand_t margin;
     Dt_t *map;
-    char* marg;
 
-    /* This value should be independent of the sep value used to expand
-     * nodes during adjustment. If not, when the adjustment pass produces
-     * a fairly tight layout, the spline code will find that some nodes
-     * still overlap.
-     */
-    if ((marg = agget(g, "esep")))
-	SEP = 1.0 + atof(marg);
-    else 
-          /* expFactor = 1 + "sep" value */
-	SEP = 1.0 + SEPFACT*(expFactor(g) - 1.0); 
+    margin = esepFactor (g);
 
     /* find equivalent edges */
     map = dtopen(&edgeItemDisc, Dtoset);
@@ -828,7 +887,7 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, double, int),
     }
     dtclose(map);
 
-    if (edgefn(g, SEP, edgetype))
+    if (edgefn(g, &margin, edgetype))
 	return 1;
 
     State = GVSPLINES;
