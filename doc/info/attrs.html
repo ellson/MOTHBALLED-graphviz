@@ -154,7 +154,8 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:epsilon HREF=#d:epsilon>epsilon</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">.0001 * # nodes(mode == KK)<BR>.0001(mode == major)</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:esep HREF=#d:esep>esep</A>
-</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.8*sep</TD><TD></TD><TD>not dot</TD> </TR>
+</TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
+</TD><TD ALIGN="CENTER">+3</TD><TD></TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:fillcolor HREF=#d:fillcolor>fillcolor</A>
 </TD><TD>NC</TD><TD><A HREF=#k:color>color</A>
 </TD><TD ALIGN="CENTER">lightgrey(nodes)<BR>black(clusters)</TD><TD></TD><TD></TD> </TR>
@@ -370,7 +371,7 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">30</TD><TD></TD><TD>dot only</TD> </TR>
  <TR><TD><A NAME=a:sep HREF=#d:sep>sep</A>
 </TD><TD>G</TD><TD>double<BR><A HREF=#k:pointf>pointf</A>
-</TD><TD ALIGN="CENTER">0.1</TD><TD></TD><TD>not dot</TD> </TR>
+</TD><TD ALIGN="CENTER">+4</TD><TD></TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:shape HREF=#d:shape>shape</A>
 </TD><TD>N</TD><TD><A HREF=#k:shape>shape</A>
 </TD><TD ALIGN="CENTER">ellipse</TD><TD></TD><TD></TD> </TR>
@@ -666,10 +667,9 @@ This field indicates which graph component uses the attribute.
   < <B>epsilon</B>, the algorithm stops.
 
 <DT><A NAME=d:esep HREF=#a:esep><STRONG>esep</STRONG></A>
-<DD>  Fraction to increase polygons (multiply
-  coordinates by 1 + esep) for purposes of spline edge routing.
-  This should normally be strictly less than
-  <A HREF=#d:sep>sep</A>.
+<DD>  Margin used around polygons for purposes of spline edge routing.
+  The interpretation is the same as given for <A HREF=#d:sep>sep</A>.
+  This should normally be strictly less than <A HREF=#d:sep>sep</A>.
 
 <DT><A NAME=d:fillcolor HREF=#a:fillcolor><STRONG>fillcolor</STRONG></A>
 <DD>  Color used to fill the background of a node or cluster
@@ -1356,17 +1356,21 @@ This field indicates which graph component uses the attribute.
   to search when looking for one with minimum cut value.
 
 <DT><A NAME=d:sep HREF=#a:sep><STRONG>sep</STRONG></A>
-<DD>  Fraction to increase polygons (multiply
-  coordinates by 1 + sep) for purposes of determining overlap. Guarantees
-  a minimal non-zero distance between nodes.
-  If unset but <A HREF=#d:esep>esep</A> is defined, <tt>sep</tt> will be
-  set to <tt>esep/0.8</tt>. If <tt>esep</tt> is unset, the default value
-  is used.
+<DD>  Specifies margin to leave around nodes when removing node overlap.
+  This guarantees a minimal non-zero distance between nodes.
   <P>
-  When <A HREF=#d:overlap>overlap</A>="ipsep" or "vpsc",
-  <tt>sep</tt> gives a minimum distance, in inches, to be left between nodes.
-  In this case, if <tt>sep</tt> is a pointf, the x and y separations can be
-  specified separately.
+  If the attribute begins with a plus sign '+', an additive margin is
+  specified. That is, "+w,h" causes the node's bounding box to be increased 
+  by w
+  points on the left and right sides, and by h points on the top and bottom.
+  Without a plus sign, the node is scaled by 1 + w in the x coordinate
+  and 1 + h in the y coordinate.
+  <P>
+  If only a single number is given, this is used for both dimensions.
+  <P>
+  If unset but <A HREF=#d:esep>esep</A> is defined, the <tt>sep</tt> values
+  will be set to the <tt>esep</tt> values divided by <tt>0.8</tt>. 
+  If <tt>esep</tt> is unset, the default value is used.
 
 <DT><A NAME=d:shape HREF=#a:shape><STRONG>shape</STRONG></A>
 <DD>  Set the shape of a node.
