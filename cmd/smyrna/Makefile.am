@@ -24,8 +24,8 @@ AM_CPPFLAGS = \
 
 if WITH_SMYRNA
 noinst_HEADERS = btree.h draw.h filter.h glexpose.h gltemplate.h hier.h \
-	materials.h selection.h smyrnadefs.h support.h topview.h \
-	topviewdata.h topviewdefs.h trackball.h tvnodes.h viewport.h \
+	materials.h selection.h smyrnadefs.h support.h topview.h topviewdata.h \
+	topviewdefs.h trackball.h tvnodes.h viewport.h viewportcamera.h \
 	gui/callbacks.h gui/datalistcallbacks.h gui/filterscallbacks.h \
 	gui/glmenu.h gui/gui.h gui/menucallbacks.h gui/toolboxcallbacks.h \
 	gui/topviewsettings.h
@@ -34,7 +34,7 @@ endif
 
 smyrna_SOURCES = btree.c draw.c filter.c glexpose.c gltemplate.c hier.c \
 	main.c selection.c support.c template.c topview.c topviewdata.c \
-	trackball.c tvnodes.c viewport.c \
+	trackball.c tvnodes.c viewport.c viewportcamera.c \
 	gui/callbacks.c gui/datalistcallbacks.c gui/filterscallbacks.c \
 	gui/glmenu.c gui/gui.c gui/menucallbacks.c gui/toolboxcallbacks.c \
 	gui/topviewsettings.c
