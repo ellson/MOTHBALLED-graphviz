@@ -3,6 +3,7 @@
 #include "smyrnadefs.h"
 #include "glcompset.h"
 viewport_camera* add_camera_to_viewport(ViewInfo * view);
+void set_camera_x_y(viewport_camera* c);
 int delete_camera_from_viewport(ViewInfo * view,viewport_camera* c);
 int activate_viewport_camera (ViewInfo * view,int cam_index);
 int refresh_viewport_camera (ViewInfo * view);

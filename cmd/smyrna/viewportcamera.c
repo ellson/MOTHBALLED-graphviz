@@ -1,5 +1,6 @@
 #include "viewportcamera.h"
 #include "gui.h"
+#include "math.h"
 
 static viewport_camera* new_viewport_camera(ViewInfo * view)
 {
@@ -21,9 +22,19 @@ viewport_camera* add_camera_to_viewport(ViewInfo * view)
 	view->camera_count++;
 	view->cameras=(viewport_camera**)realloc(view->cameras,sizeof(viewport_camera *)*view->camera_count);
 	view->cameras[view->camera_count-1]=new_viewport_camera(view);
+	view->active_camera=view->camera_count-1;
 	viewport_update_camera_indexes(view);
 	return view->cameras[view->camera_count-1];
 }
+void set_camera_x_y(viewport_camera* c)
+{
+	c->x=c->r*cos((float)DEG2RAD*c->anglexy)*sin((float)DEG2RAD*c->anglexyz)+view->panx;
+	c->y=c->r*sin(DEG2RAD*c->anglexy)*sin(DEG2RAD*c->anglexyz)+view->pany;
+	c->z=c->r*cos(DEG2RAD*c->anglexyz);
+}
+
+
+
 int delete_camera_from_viewport(ViewInfo * view,viewport_camera* c)
 {
     int ind = 0;
@@ -42,6 +53,7 @@ int delete_camera_from_viewport(ViewInfo * view,viewport_camera* c)
 		view->cameras =
 			realloc(view->cameras, sizeof(viewport_camera*) * view->camera_count);
 		viewport_update_camera_indexes(view);
+		view->active_camera--;
 		return 1;
     }
     return 0;
@@ -76,9 +88,18 @@ void menu_click_add_camera(void *p)
 	viewport_camera*	c;
 	/*add test cameras*/
 	c=add_camera_to_viewport(view);
-	c->targetx=view->panx;c->targety=view->pany;c->targetz=0;
-	c->x=view->panx;c->y=view->pany;c->z=view->zoom*-1;
-		attach_camera_widget(view);
+	c->targetx=view->panx;
+	c->targety=view->pany;
+	c->targetz=view->panz;
+	c->camera_vectorx=0;
+	c->camera_vectory=1;
+	c->camera_vectorz=0;
+
+	c->anglexy=90;
+	c->anglexyz=0;
+	c->r=view->zoom*-1;
+	set_camera_x_y(c);
+	attach_camera_widget(view);
 
 
 }
@@ -228,6 +249,19 @@ int show_camera_settings(viewport_camera* c)
 				  c->targetz);
 		
 
+	gtk_spin_button_set_value((GtkSpinButton *)
+				  glade_xml_get_widget(xml,"dlgcameraspinbutton7"),
+				  c->camera_vectorx*360.0);
+	gtk_spin_button_set_value((GtkSpinButton *)
+				  glade_xml_get_widget(xml,"dlgcameraspinbutton8"),
+				  c->camera_vectory*360.0);
+	gtk_spin_button_set_value((GtkSpinButton *)
+				  glade_xml_get_widget(xml,"dlgcameraspinbutton9"),
+				  c->camera_vectorz*360.0);
+
+
+
+
 
 	gtk_widget_hide(glade_xml_get_widget(xml, "dlgCamera"));
     gtk_widget_show(glade_xml_get_widget(xml, "dlgCamera"));
@@ -253,6 +287,15 @@ int save_camera_settings(viewport_camera* c)
 					  glade_xml_get_widget(xml,"dlgcameraspinbutton5"     ));
 	c->targetz =	(float) gtk_spin_button_get_value((GtkSpinButton *)
 					  glade_xml_get_widget(xml,"dlgcameraspinbutton6"     ));
+
+	c->camera_vectorx =	(float) gtk_spin_button_get_value((GtkSpinButton *)
+					  glade_xml_get_widget(xml,"dlgcameraspinbutton7"     ))/360;
+	c->camera_vectory =	(float) gtk_spin_button_get_value((GtkSpinButton *)
+					  glade_xml_get_widget(xml,"dlgcameraspinbutton8"     ))/360;
+	c->camera_vectorz =	(float) gtk_spin_button_get_value((GtkSpinButton *)
+					  glade_xml_get_widget(xml,"dlgcameraspinbutton9"     ))/360;
+
+
 	return 1;
 
 }

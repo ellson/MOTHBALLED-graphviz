@@ -25,6 +25,7 @@
 #include "glmenu.h"
 #include "selection.h"
 #include "glcompset.h"
+#include "viewportcamera.h"
 static float begin_x = 0.0;
 static float begin_y = 0.0;
 static float dx = 0.0;
@@ -359,10 +360,19 @@ static gboolean motion_notify_event(GtkWidget * widget,
     if ((event->state & GDK_BUTTON1_MASK)
 	&& (view->mouse.mouse_mode == MM_PAN))
 	{
-		gldx=GetOGLDistance(dx)/view->zoom*-1;
-		gldy=GetOGLDistance(dy)/view->zoom*-1;
-		view->panx=view->panx-gldx;
-		view->pany=view->pany+gldy;
+			gldx=GetOGLDistance(dx)/view->zoom*-1;
+			gldy=GetOGLDistance(dy)/view->zoom*-1;
+		if(view->active_camera ==-1)
+		{
+			view->panx=view->panx-gldx;
+			view->pany=view->pany+gldy;
+		}
+		else
+		{
+			view->cameras[view->active_camera]->anglexyz+=gldy;
+			view->cameras[view->active_camera]->anglexy+=gldx;
+			set_camera_x_y(view->cameras[view->active_camera]);
+		}
 		redraw = TRUE;
 	}
     /*zooming */

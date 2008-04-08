@@ -223,10 +223,10 @@ there i go, turn the page
 	atoi(get_attribute_value
 	     ("defaultfisheyemagnifierdistort", view, g));
 
-#if 0
-FIXME: I don't think an openGL function can be called before it
-       is initialized.
+//FIXME: I don't think an openGL function can be called before it
+  //     is initialized.
     glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
+#if 0
 #endif
 }
 

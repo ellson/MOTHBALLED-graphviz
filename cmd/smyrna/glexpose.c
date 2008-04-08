@@ -40,13 +40,20 @@ int glupdatecamera(ViewInfo * view)
 	{
 		gluLookAt(view->cameras[view->active_camera]->x,view->cameras[view->active_camera]->y,view->cameras[view->active_camera]->z,
 		view->cameras[view->active_camera]->targetx,view->cameras[view->active_camera]->targety,view->cameras[view->active_camera]->targetz,
-					  0.0, 1.0, 0.0);
+		view->cameras[view->active_camera]->camera_vectorx,
+		view->cameras[view->active_camera]->camera_vectory,
+		view->cameras[view->active_camera]->camera_vectorz);
 	}
 	GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
 		 &(view->clipZ1));
     GetOGLPosRef(view->w - 1, 1, &(view->clipX2), &(view->clipY2),
 		 &(view->clipZ2));
-	glScalef(1/view->zoom*-1,1/view->zoom*-1,1/view->zoom*-1);
+	if (view->active_camera==-1)
+	{
+		glScalef(1/view->zoom*-1,1/view->zoom*-1,1/view->zoom*-1);
+	}
+	else
+		glScalef(1/view->cameras[view->active_camera]->r,1/view->cameras[view->active_camera]->r,1/view->cameras[view->active_camera]->r);
 	return 1;
 }
 

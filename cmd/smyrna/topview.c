@@ -30,6 +30,8 @@
 
 static float dx = 0.0;
 static float dy = 0.0;
+static float dz = 0.0;
+
 void cleartopview(topview * t)
 {
     /*clear nodes */
@@ -109,6 +111,8 @@ void preparetopview(Agraph_t * g, topview * t)
 	t->Nodes[ind].z = c;
 	t->Nodes[ind].distorted_x = a;
 	t->Nodes[ind].distorted_y = b;
+	t->Nodes[ind].distorted_z = c;
+
 	t->Nodes[ind].zoom_factor = 1;
 	t->Nodes[ind].degree = agdegree(g, v, 1, 1);
 	t->Nodes[ind].node_alpha =
@@ -193,7 +197,7 @@ void preparetopview(Agraph_t * g, topview * t)
     t->topviewmenu = glcreate_gl_topview_menu();
 	attach_camera_widget(view);
     load_host_buttons(t, g, t->topviewmenu);
-    prepare_topological_fisheye(t);
+    //prepare_topological_fisheye(t);
 }
 
 void drawTopViewGraph(Agraph_t * g)
@@ -201,14 +205,14 @@ void drawTopViewGraph(Agraph_t * g)
 //      DWORD t1,t2;
     topview_node *v;
     topview_edge *e;
-    float ddx, ddy;
-    float dddx, dddy;
+    float ddx, ddy,ddz;
+    float dddx, dddy,dddz;
     int ind = 0;
-    if (view->zoom > NODE_ZOOM_LIMIT) {
-	glPointSize(15 / view->zoom * -1);
+	if (view->zoom > NODE_ZOOM_LIMIT) {
+//	glPointSize(15 / view->zoom * -1);
 		//draw nodes
 	set_topview_options();
-	if (view->zoom < NODE_CIRCLE_LIMIT)
+//	if (view->zoom < NODE_CIRCLE_LIMIT)
 	    glBegin(GL_POINTS);
 
 	//drawing labels
@@ -247,6 +251,7 @@ void drawTopViewGraph(Agraph_t * g)
 					  view->selectedNodeColor.A);
 				ddx = dx;	
 				ddy = dy;
+				ddz= dz;
 			} 
 			else	//get the color from node
 		    {
@@ -256,22 +261,23 @@ void drawTopViewGraph(Agraph_t * g)
 			//                              glColor4f (log((double)v->degree+0.5),v->Color.G,v->Color.B,);
 				ddx = 0;
 				ddy = 0;
+				ddz=0;
 			}
 
 		    if (v->distorted_x != v->x)
 			zdepth = (float) Z_FORWARD_PLANE;
 		    else
 			zdepth = (float) Z_BACK_PLANE;
-		    if (view->zoom < NODE_CIRCLE_LIMIT)
+//		    if (view->zoom < NODE_CIRCLE_LIMIT)
 				glVertex3f(v->distorted_x - ddx,
-				   v->distorted_y - ddy, zdepth);
-		    else
+				v->distorted_y - ddy, v->distorted_z-ddz);
+/*		    else
 			drawCircle(v->distorted_x - ddx,
 				   v->distorted_y - ddy,
-				   v->node_alpha * v->zoom_factor, zdepth);
+				   v->node_alpha * v->zoom_factor, v->distorted_z);*/
 		}
 	}
-	if (view->zoom < NODE_CIRCLE_LIMIT)
+//	if (view->zoom < NODE_CIRCLE_LIMIT)
 	    glEnd();
 
 
@@ -281,7 +287,7 @@ void drawTopViewGraph(Agraph_t * g)
     glBegin(GL_LINES);
     set_topview_options();
     for (ind = 0; ind < view->Topview->Edgecount; ind++) {
-	if (((view->Topview->Edges[ind].x1/view->zoom*-1  > view->clipX1)
+/*	if (((view->Topview->Edges[ind].x1/view->zoom*-1  > view->clipX1)
 	     && (view->Topview->Edges[ind].x1/view->zoom*-1  < view->clipX2)
 	     && (view->Topview->Edges[ind].y1/view->zoom*-1  > view->clipY1)
 	     && (view->Topview->Edges[ind].y1/view->zoom*-1  < view->clipY2))
@@ -290,7 +296,7 @@ void drawTopViewGraph(Agraph_t * g)
 		&& (view->Topview->Edges[ind].y2/view->zoom*-1  > view->clipY1)
 		&& (view->Topview->Edges[ind].y2/view->zoom*-1  < view->clipY2))
 		||   (view->active_camera>=0)
-	    )
+	    )*/
 		if(1)
 
 	{
@@ -314,22 +320,12 @@ void drawTopViewGraph(Agraph_t * g)
 		dddy = 0;
 	    }
 
-	    //zdepth
-	    if (e->Node1->distorted_x != e->Node1->x)
-		zdepth1 = (float) Z_FORWARD_PLANE;
-	    else
-		zdepth1 = (float) Z_BACK_PLANE;
-	    if (e->Node2->distorted_x != e->Node2->x)
-		zdepth2 = (float) Z_FORWARD_PLANE;
-	    else
-		zdepth2 = (float) Z_BACK_PLANE;
-
-
 	    if (get_color_from_edge(e)) {
+
 		glVertex3f(e->Node1->distorted_x - ddx,
-			   e->Node1->distorted_y - ddy, zdepth1);
+			e->Node1->distorted_y - ddy, e->Node1->distorted_z-ddz);
 		glVertex3f(e->Node2->distorted_x - dddx,
-			   e->Node2->distorted_y - dddy, zdepth2);
+			e->Node2->distorted_y - dddy, e->Node2->distorted_z-ddz);
 	    }
 	}
     }
