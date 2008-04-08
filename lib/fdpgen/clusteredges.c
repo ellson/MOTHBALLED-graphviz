@@ -102,13 +102,12 @@ static void resetObjlist(objlist * l)
 /* makeClustObs:
  * Create an obstacle corresponding to a cluster's bbox.
  */
-static Ppoly_t *makeClustObs(graph_t * g, double SEP)
+static Ppoly_t *makeClustObs(graph_t * g, expand_t* pm)
 {
     Ppoly_t *obs = NEW(Ppoly_t);
     box bb = GD_bb(g);
     boxf newbb;
     Ppoint_t ctr;
-    double delta = SEP - 1.0;
 
     obs->pn = 4;
     obs->ps = N_NEW(4, Ppoint_t);
@@ -116,10 +115,20 @@ static Ppoly_t *makeClustObs(graph_t * g, double SEP)
     ctr.x = (bb.UR.x + bb.LL.x) / 2.0;
     ctr.y = (bb.UR.y + bb.LL.y) / 2.0;
 
-    newbb.UR.x = SEP * bb.UR.x - delta * ctr.x;
-    newbb.UR.y = SEP * bb.UR.y - delta * ctr.y;
-    newbb.LL.x = SEP * bb.LL.x - delta * ctr.x;
-    newbb.LL.y = SEP * bb.LL.y - delta * ctr.y;
+    if (pm->doAdd) {
+	newbb.UR.x = bb.UR.x + pm->x;
+	newbb.UR.y = bb.UR.y + pm->y;
+	newbb.LL.x = bb.LL.x - pm->x;
+	newbb.LL.y = bb.LL.y - pm->y;
+    }
+    else {
+	double deltax = pm->x - 1.0;
+	double deltay = pm->y - 1.0;
+	newbb.UR.x = pm->x * bb.UR.x - deltax * ctr.x;
+	newbb.UR.y = pm->y * bb.UR.y - deltay * ctr.y;
+	newbb.LL.x = pm->x * bb.LL.x - deltax * ctr.x;
+	newbb.LL.y = pm->y * bb.LL.y - deltay * ctr.y;
+    }
 
     /* CW order */
     obs->ps[0].x = newbb.LL.x;
@@ -141,7 +150,7 @@ static Ppoly_t *makeClustObs(graph_t * g, double SEP)
  * Return the list.
  */
 static void
-addGraphObjs(objlist * l, graph_t * g, void *tex, void *hex, double SEP)
+addGraphObjs(objlist * l, graph_t * g, void *tex, void *hex, expand_t* pm)
 {
     node_t *n;
     graph_t *sg;
@@ -150,13 +159,13 @@ addGraphObjs(objlist * l, graph_t * g, void *tex, void *hex, double SEP)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if ((PARENT(n) == g) && (n != tex) && (n != hex)
 	    && !IS_CLUST_NODE(n)) {
-	    addObj(l, makeObstacle(n, SEP));
+	    addObj(l, makeObstacle(n, pm));
 	}
     }
     for (i = 1; i <= GD_n_cluster(g); i++) {
 	sg = GD_clust(g)[i];
 	if ((sg != tex) && (sg != hex)) {
-	    addObj(l, makeClustObs(sg, SEP));
+	    addObj(l, makeClustObs(sg, pm));
 	}
     }
 }
@@ -169,13 +178,13 @@ addGraphObjs(objlist * l, graph_t * g, void *tex, void *hex, double SEP)
  */
 static void
 raiseLevel(objlist * l, int maxlvl, void *ex, int minlvl, graph_t ** gp,
-	   double SEP)
+	   expand_t* pm)
 {
     graph_t *g = *gp;
     int i;
 
     for (i = maxlvl; i > minlvl; i--) {
-	addGraphObjs(l, g, ex, NULL, SEP);
+	addGraphObjs(l, g, ex, NULL, pm);
 	ex = g;
 	g = GPARENT(g);
     }
@@ -189,7 +198,7 @@ raiseLevel(objlist * l, int maxlvl, void *ex, int minlvl, graph_t ** gp,
  * Return the list.
  * Assume e is not a loop.
  */
-static objlist *objectList(edge_t * ep, double SEP)
+static objlist *objectList(edge_t * ep, expand_t* pm)
 {
     node_t *h = ep->head;
     node_t *t = ep->tail;
@@ -216,25 +225,25 @@ static objlist *objectList(edge_t * ep, double SEP)
     hlevel = LEVEL(hg);
     tlevel = LEVEL(tg);
     if (hlevel > tlevel) {
-	raiseLevel(list, hlevel, hex, tlevel, &hg, SEP);
+	raiseLevel(list, hlevel, hex, tlevel, &hg, pm);
 	hex = hg;
 	hg = GPARENT(hg);
     } else if (tlevel > hlevel) {
-	raiseLevel(list, tlevel, tex, hlevel, &tg, SEP);
+	raiseLevel(list, tlevel, tex, hlevel, &tg, pm);
 	tex = tg;
 	tg = GPARENT(tg);
     }
 
     /* hg and tg always have the same level */
     while (hg != tg) {
-	addGraphObjs(list, hg, NULL, hex, SEP);
-	addGraphObjs(list, tg, tex, NULL, SEP);
+	addGraphObjs(list, hg, NULL, hex, pm);
+	addGraphObjs(list, tg, tex, NULL, pm);
 	hex = hg;
 	hg = GPARENT(hg);
 	tex = tg;
 	tg = GPARENT(tg);
     }
-    addGraphObjs(list, tg, tex, hex, SEP);
+    addGraphObjs(list, tg, tex, hex, pm);
 
     return list;
 }
@@ -246,7 +255,7 @@ static objlist *objectList(edge_t * ep, double SEP)
  * Returns 0 on success. Failure indicates the obstacle configuration
  * for some edge had overlaps.
  */
-int compoundEdges(graph_t * g, double SEP, int edgetype)
+int compoundEdges(graph_t * g, expand_t* pm, int edgetype)
 {
     node_t *n;
     node_t *head;
@@ -267,7 +276,7 @@ int compoundEdges(graph_t * g, double SEP, int edgetype)
 		}
 		makeSelfArcs(P, e, GD_nodesep(g));
 	    } else if (ED_count(e)) {
-		objl = objectList(e, SEP);
+		objl = objectList(e, pm);
 		if (Plegal_arrangement(objl->obs, objl->cnt))
 		    vconfig = Pobsopen(objl->obs, objl->cnt);
 		else {
