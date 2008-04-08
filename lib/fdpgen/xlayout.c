@@ -44,8 +44,8 @@ Increase less between tries
 
 #define DFLT_overlap   "9:portho"    /* default overlap value */
 
-#define WD2(n) ((ND_width(n))*X_fact)
-#define HT2(n) ((ND_height(n))*X_fact)
+#define WD2(n) (X_marg.doAdd ? (ND_width(n)/2.0 + X_marg.x): ND_width(n)*X_marg.x/2.0)
+#define HT2(n) (X_marg.doAdd ? (ND_height(n)/2.0 + X_marg.y): ND_height(n)*X_marg.y/2.0)
 
 static xparams xParams = {
     60,				/* numIters */
@@ -55,7 +55,7 @@ static xparams xParams = {
     0				/* loopcnt */
 };
 static double K2;
-static double X_fact;
+static expand_t X_marg;
 static double X_nonov;
 static double X_ov;
 
@@ -458,10 +458,12 @@ static int x_layout(graph_t * g, xparams * pxpms, int tries)
     int nedges = agnedges(g);
     double K;
     xparams xpms;
-    double marg;
 
-    marg = expFactor (g);
-    X_fact = marg*0.5;
+    X_marg = sepFactor (g);
+    if (X_marg.doAdd) {
+	X_marg.x = PS2INCH(X_marg.x); /* sepFactor is in points */
+	X_marg.y = PS2INCH(X_marg.y);
+    }
     ov = cntOverlaps(g);
     if (ov == 0)
 	return 0;
