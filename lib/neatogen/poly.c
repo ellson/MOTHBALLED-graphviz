@@ -22,8 +22,8 @@
 #include <string.h>
 #include <math.h>
 #include "poly.h"
+#include "geom.h"
 #include "mem.h"
-
 
 #define BOX 1
 #define ISBOX(p) ((p)->kind & BOX)
@@ -115,15 +115,15 @@ static void inflatePts(Point * verts, int cnt, double margin)
     inflate(prev, cur, next, margin);
 }
 #else
-static void inflatePts(Point * verts, int cnt, double margin)
+static void inflatePts(Point * verts, int cnt, float xmargin, float ymargin)
 {
     int i;
     Point *cur;
 
     cur = &verts[0];
     for (i = 0; i < cnt; i++) {
-	cur->x *= margin;
-	cur->y *= margin;
+	cur->x *= xmargin;
+	cur->y *= ymargin;
 	cur++;
     }
 }
@@ -143,6 +143,14 @@ static int isBox(Point * verts, int cnt)
 		(verts[0].y == verts[3].y) && (verts[1].y == verts[2].y));
 }
 
+static Point makeScaledTransPoint(int x, int y, float dx, float dy)
+{
+    Point rv;
+    rv.x = PS2INCH(x) + dx;
+    rv.y = PS2INCH(y) + dy;
+    return rv;
+}
+
 static Point makeScaledPoint(int x, int y)
 {
     Point rv;
@@ -151,7 +159,7 @@ static Point makeScaledPoint(int x, int y)
     return rv;
 }
 
-static Point *genRound(Agnode_t * n, int *sidep)
+static Point *genRound(Agnode_t * n, int *sidep, float xm, float ym)
 {
     int sides = 0;
     Point *verts;
@@ -165,17 +173,106 @@ static Point *genRound(Agnode_t * n, int *sidep)
     verts = N_GNEW(sides, Point);
     for (i = 0; i < sides; i++) {
 	verts[i].x =
-	    ND_width(n) / 2.0 * cos(i / (double) sides * M_PI * 2.0);
+	    (ND_width(n) / 2.0 + xm) * cos(i / (double) sides * M_PI * 2.0);
 	verts[i].y =
-	    ND_height(n) / 2.0 * sin(i / (double) sides * M_PI * 2.0);
+	    (ND_height(n) / 2.0 + ym) * sin(i / (double) sides * M_PI * 2.0);
     }
     *sidep = sides;
     return verts;
 }
 
 #define PUTPT(P,X,Y) ((P).x=(X),(P).y=(Y))
+#define LEN(x,y) sqrt((x)*(x)+(y)*(y))
 
-void makePoly(Poly * pp, Agnode_t * n, double margin)
+void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
+{
+    int i;
+    int sides;
+    Point *verts;
+    polygon_t *poly;
+    box b;
+
+    if (ND_clust(n)) {
+	Point b;
+	sides = 4;
+	b.x = ND_width(n) / 2.0 + (xmargin);
+	b.y = ND_height(n) / 2.0 + (ymargin);
+	pp->kind = BOX;
+	verts = N_GNEW(sides, Point);
+	PUTPT(verts[0], b.x, b.y);
+	PUTPT(verts[1], -b.x, b.y);
+	PUTPT(verts[2], -b.x, -b.y);
+	PUTPT(verts[3], b.x, -b.y);
+    } else
+	switch (shapeOf(n)) {
+	case SH_POLY:
+	    poly = (polygon_t *) ND_shape_info(n);
+	    sides = poly->sides;
+
+	    if (streq(ND_shape(n)->name, "box"))
+		pp->kind = BOX;
+	    else if (streq(ND_shape(n)->name, "polygon")
+		     && isBox(verts, sides))
+		pp->kind = BOX;
+	    else if ((poly->sides < 3) && poly->regular)
+		pp->kind = CIRCLE;
+	    else
+		pp->kind = 0;
+
+	    if (sides >= 3) {	/* real polygon */
+		verts = N_GNEW(sides, Point);
+		if (pp->kind == BOX) {
+			/* To do an additive margin, we rely on knowing that
+			 * the vertices are CCW starting from the UR
+			 */
+		    verts[0].x = PS2INCH(poly->vertices[0].x) + xmargin;
+		    verts[0].y = PS2INCH(poly->vertices[0].y) + ymargin;
+		    verts[1].x = PS2INCH(poly->vertices[1].x) - xmargin;
+		    verts[1].y = PS2INCH(poly->vertices[1].y) + ymargin;
+		    verts[2].x = PS2INCH(poly->vertices[2].x) - xmargin;
+		    verts[2].y = PS2INCH(poly->vertices[2].y) - ymargin;
+		    verts[3].x = PS2INCH(poly->vertices[3].x) + xmargin;
+		    verts[3].y = PS2INCH(poly->vertices[3].y) - ymargin;
+		}
+		else for (i = 0; i < sides; i++) {
+                    double h = LEN(poly->vertices[i].x,poly->vertices[i].y);
+		    verts[i].x = poly->vertices[i].x * (1.0 + xmargin/h);
+		    verts[i].y = poly->vertices[i].y * (1.0 + ymargin/h);
+		    verts[i].x = PS2INCH(verts[i].x);
+		    verts[i].y = PS2INCH(verts[i].y);
+		}
+	    } else
+		verts = genRound(n, &sides, xmargin, ymargin);
+	    break;
+	case SH_RECORD:
+	    sides = 4;
+	    verts = N_GNEW(sides, Point);
+	    b = ((field_t *) ND_shape_info(n))->b;
+	    verts[0] = makeScaledTransPoint(b.LL.x, b.LL.y, -xmargin, -ymargin);
+	    verts[1] = makeScaledTransPoint(b.UR.x, b.LL.y, xmargin, -ymargin);
+	    verts[2] = makeScaledTransPoint(b.UR.x, b.UR.y, xmargin, ymargin);
+	    verts[3] = makeScaledTransPoint(b.LL.x, b.UR.y, -xmargin, ymargin);
+	    pp->kind = BOX;
+	    break;
+	case SH_POINT:
+	    pp->kind = CIRCLE;
+	    verts = genRound(n, &sides, xmargin, ymargin);
+	    break;
+	default:
+	    agerr(AGERR, "makeAddPoly: unknown shape type %s\n",
+		  ND_shape(n)->name);
+	    exit(1);
+	}
+
+    pp->verts = verts;
+    pp->nverts = sides;
+    bbox(verts, sides, &pp->origin, &pp->corner);
+
+    if (sides > maxcnt)
+	maxcnt = sides;
+}
+
+void makePoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 {
     int i;
     int sides;
@@ -206,7 +303,7 @@ void makePoly(Poly * pp, Agnode_t * n, double margin)
 		    verts[i].y = PS2INCH(poly->vertices[i].y);
 		}
 	    } else
-		verts = genRound(n, &sides);
+		verts = genRound(n, &sides, 0, 0);
 
 	    if (streq(ND_shape(n)->name, "box"))
 		pp->kind = BOX;
@@ -231,7 +328,7 @@ void makePoly(Poly * pp, Agnode_t * n, double margin)
 	    break;
 	case SH_POINT:
 	    pp->kind = CIRCLE;
-	    verts = genRound(n, &sides);
+	    verts = genRound(n, &sides, 0, 0);
 	    break;
 	default:
 	    agerr(AGERR, "makePoly: unknown shape type %s\n",
@@ -243,8 +340,8 @@ void makePoly(Poly * pp, Agnode_t * n, double margin)
     if (margin != 0.0)
 	inflatePts(verts, sides, margin);
 #else
-    if (margin != 1.0)
-	inflatePts(verts, sides, margin);
+    if ((xmargin != 1.0) || (ymargin != 1.0))
+	inflatePts(verts, sides, xmargin, ymargin);
 #endif
 
     pp->verts = verts;
