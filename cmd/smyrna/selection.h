@@ -53,5 +53,6 @@ extern int deselect_all_nodes(Agraph_t * g);
 extern int deselect_all_edges(Agraph_t * g);
 extern int deselect_all_graphs(Agraph_t * g);
 extern int deselect_all(Agraph_t * g);
+int point_within_sphere_with_coords(float x0, float y0, float z0, float r,float x, float y,float z);
 
 #endif
