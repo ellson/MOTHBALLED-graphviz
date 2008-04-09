@@ -69,30 +69,20 @@ void preparetopview(Agraph_t * g, topview * t)
     }
     d_attr2 = agget(g, "DataAttribute2");
 
-    t->Edges = NULL;
-    t->Nodes = NULL;
     /*initialize node and edge array */
-    t->Edges = malloc(sizeof(topview_edge) * agnedges(g));
-    if (!t->Edges) {
-	printf("memory allocation problem\n");
-	exit(1);
-    }
+    t->Edges = N_GNEW(agnedges(g), topview_edge);
 
-    t->Nodes = malloc(sizeof(topview_node) * agnnodes(g));
-    if (!t->Nodes) {
-	printf("memory allocation problem\n");
-	exit(1);
-    }
+    t->Nodes = N_GNEW(agnnodes(g), topview_node);
 
     printf("# of edges :%i\n", agnnodes(g));
     printf("# of edges :%i\n", agnedges(g));
 
-    /*malloc topviewdata */
-    t->TopviewData = malloc(sizeof(topviewdata));
+    /* malloc topviewdata */
+    t->TopviewData = NEW(topviewdata);
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	//set node TV reference
-	((custom_object_data *) AGDATA(v))->TVRef = ind;	//view->Topview reference
+	OD_TVRef(v) = ind;   //view->Topview reference
 	strcpy(buf, agget(v, "pos"));
 	if (strlen(buf)) {
 	    a = (float) atof(strtok(buf, ","));
@@ -187,13 +177,9 @@ void preparetopview(Agraph_t * g, topview * t)
 	//set node TV reference
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
 	    t->Edges[ind2].Node1 =
-		&t->
-		Nodes[((custom_object_data *)
-		       AGDATA(t->Edges[ind2].Tnode))->TVRef];
+		&t->Nodes[OD_TVRef(t->Edges[ind2].Tnode)];
 	    t->Edges[ind2].Node2 =
-		&t->
-		Nodes[((custom_object_data *)
-		       AGDATA(t->Edges[ind2].Hnode))->TVRef];
+		&t->Nodes[OD_TVRef(t->Edges[ind2].Hnode)];
 	    ind2++;
 
 	}
@@ -237,12 +223,11 @@ void drawTopViewGraph(Agraph_t * g)
 	}
 	for (ind = 0; ind < view->Topview->Nodecount; ind++)
 	{
-
-	    if ((view->Topview->Nodes[ind].x/view->zoom*-1 > view->clipX1)
-		&& (view->Topview->Nodes[ind].x/view->zoom*-1 < view->clipX2)
-		&& (view->Topview->Nodes[ind].y/view->zoom*-1 > view->clipY1)
-		&& (view->Topview->Nodes[ind].y/view->zoom*-1 < view->clipY2) || (view->active_camera>=0))
-		{
+	    if (((-view->Topview->Nodes[ind].x/view->zoom > view->clipX1)
+		&& (-view->Topview->Nodes[ind].x/view->zoom < view->clipX2)
+		&& (-view->Topview->Nodes[ind].y/view->zoom > view->clipY1)
+		&& (-view->Topview->Nodes[ind].y/view->zoom < view->clipY2)) 
+		|| (view->active_camera>=0)) {
 			float zdepth;
 			v = &view->Topview->Nodes[ind];
 		    if (!node_visible(v->Node))
@@ -252,9 +237,7 @@ void drawTopViewGraph(Agraph_t * g)
 		    //UPDATE view->Topview data from cgraph
 		    if (v->update_required)
 			update_topview_node_from_cgraph(v);
-		    if (((custom_object_data *) AGDATA(v->Node))->
-			Selected == 1)
-			{
+		    if (OD_Selected(v->Node) == 1) {
 				glColor4f(view->selectedNodeColor.R,
 					  view->selectedNodeColor.G,
 					  view->selectedNodeColor.B,
@@ -313,8 +296,7 @@ void drawTopViewGraph(Agraph_t * g)
 	    float zdepth1, zdepth2;
 	    e = &view->Topview->Edges[ind];
 	    select_topview_edge(e);
-	    if (((custom_object_data *) AGDATA(e->Node1->Node))->Selected == 1)	//tail is selected
-	    {
+	    if (OD_Selected(e->Node1->Node) == 1) { //tail is selected
 		ddx = dx;
 		ddy = dy;
 		ddz=0;
@@ -323,8 +305,7 @@ void drawTopViewGraph(Agraph_t * g)
 		ddy = 0;
 		ddz=0;
 	    }
-	    if (((custom_object_data *) AGDATA(e->Node2->Node))->Selected == 1)	//head
-	    {
+	    if (OD_Selected(e->Node2->Node) == 1) { //head
 		dddx = dx;
 		dddy = dy;
 		dddz=0;
@@ -351,9 +332,7 @@ void drawTopViewGraph(Agraph_t * g)
 	glexpose();
 	view->SignalBlock = 0;
     }
-
 }
-
 
 int select_topview_node(topview_node * n)
 {
@@ -365,12 +344,14 @@ int select_topview_node(topview_node * n)
 
 	switch (view->Selection.Type) {
 	case 0:
-
-	    if (((custom_object_data *) AGDATA(n->Node))->Selected == 0) {
-		((custom_object_data *) AGDATA(n->Node))->Selected = 1;
+/* FIX
+ * Why is Selected being set to 1 in both cases?
+ */
+	    if (OD_Selected(n->Node) == 0) {
+		OD_Selected(n->Node) = 1;
 		select_object(view->g[view->activeGraph], n->Node);
 	    } else {
-		((custom_object_data *) AGDATA(n->Node))->Selected = 1;
+		OD_Selected(n->Node) = 1;
 		deselect_object(view->g[view->activeGraph], n->Node);
 	    }
 	    break;
@@ -399,13 +380,16 @@ int select_topview_edge(topview_edge * e)
     r = (lineintersects(e->x1, e->y1, e->x2, e->y2));
     if (r >= 0) {
 
+/* FIX
+ * Why is Selected being set to 1 in both cases?
+ */
 	switch (view->Selection.Type) {
 	case 0:
-	    if (((custom_object_data *) AGDATA(e->Edge))->Selected == 0) {
-		((custom_object_data *) AGDATA(e->Edge))->Selected = 1;
+	    if (OD_Selected(e->Edge) == 0) {
+		OD_Selected(e->Edge) = 1;
 		select_object(view->g[view->activeGraph], e->Edge);
 	    } else {
-		((custom_object_data *) AGDATA(e->Edge))->Selected = 1;
+		OD_Selected(e->Edge) = 1;
 		deselect_object(view->g[view->activeGraph], e->Edge);
 	    }
 	    break;
@@ -495,7 +479,7 @@ int draw_topview_label(topview_node * v, float zdepth)
 						       (double) 0.5) *
 						   (double) 7);
 	fs = fs * v->zoom_factor;
-	if (((custom_object_data *) AGDATA(v->Node))->Selected == 1) {
+	if (OD_Selected(v->Node) == 1) {
 	    ddx = dx;
 	    ddy = dy;
 	}
@@ -582,22 +566,17 @@ int get_color_from_edge(topview_edge * e)
 	return_value = 1;
 
 
-	/*if both head and tail nodes are selected use selection color for edges*/
-	if ((((custom_object_data *) AGDATA(e->Node1->Node))->Selected == 1)
-	&& (((custom_object_data *) AGDATA(e->Node2->Node))->Selected == 1)
-	) {
-		glColor4f(view->selectedEdgeColor.R, view->selectedEdgeColor.G,
-		  view->selectedEdgeColor.B, view->selectedEdgeColor.A);
-		return return_value;
+    /*if both head and tail nodes are selected use selection color for edges*/
+    if ((OD_Selected(e->Node1->Node)) && (OD_Selected(e->Node2->Node))) {
+	glColor4f(view->selectedEdgeColor.R, view->selectedEdgeColor.G,
+	    view->selectedEdgeColor.B, view->selectedEdgeColor.A);
+	return return_value;
     }
-	/*if both head and tail nodes are highlighted use edge highlight color */
+    /*if both head and tail nodes are highlighted use edge highlight color */
 
-	if ((((custom_object_data *) AGDATA(e->Node1->Node))->Highlighted == 1)
-	&&
-	(((custom_object_data *) AGDATA(e->Node2->Node))->Highlighted == 1)
-	) {
-		glColor4f(view->highlightedEdgeColor.R,view->highlightedEdgeColor.G,view->highlightedEdgeColor.B,view->highlightedEdgeColor.A);
-		return return_value;
+    if ((OD_Highlighted(e->Node1->Node)) && (OD_Highlighted(e->Node2->Node))) {
+	glColor4f(view->highlightedEdgeColor.R,view->highlightedEdgeColor.G,view->highlightedEdgeColor.B,view->highlightedEdgeColor.A);
+	return return_value;
     }
     /*edge maybe in a group and group may be selected, then use groups's color example:ATT hosts*/
     if ((e->Node1->GroupIndex >= 0) || (e->Node2->GroupIndex >= 0)) {
@@ -641,8 +620,7 @@ int get_color_from_edge(topview_edge * e)
 
 int node_visible(Agnode_t * n)
 {
-    return ((custom_object_data *) AGDATA(n))->Visible;
-
+    return OD_Visible(n);
 }
 
 int move_TVnodes()
@@ -651,7 +629,7 @@ int move_TVnodes()
     int ind = 0;
     for (ind = 0; ind < view->Topview->Nodecount; ind++) {
 	v = &view->Topview->Nodes[ind];
-	if (((custom_object_data *) AGDATA(v->Node))->Selected == 1) {
+	if (OD_Selected(v->Node)) {
 	    v->x = v->x - dx;
 	    v->y = v->y - dy;
 	}
@@ -688,9 +666,9 @@ int load_host_buttons(Agraph_t * g, glCompSet * s)
 
 //      Graph [hostbtncaption1="AT&T",hostbtnregex1="*.ATT*",hostbtncolorR1="1",hostbtncolorG1="0",hostbtncolorB1="0",hostbtncolorA1="1"];
 
-    hostregex = malloc(sizeof(char **) * btncount);
-    gtkhostbtn = malloc(sizeof(GtkButton *) * btncount);
-    gtkhostcolor = malloc(sizeof(GtkColorButton *) * btncount);
+    hostregex = N_GNEW(btncount, char **);
+    gtkhostbtn = N_GNEW(btncount, GtkButton*);
+    gtkhostcolor = N_GNEW(btncount, GtkColorButton*);
     gtkhostbtncount = btncount;
     if (btncount > 0) {
 	p = glCompPanelNew(25, 75, 165, 400);
@@ -1063,7 +1041,7 @@ static char* smyrna_icon_fisheye;
 glCompSet *glcreate_gl_topview_menu()
 {
 
-    glCompSet *s = malloc(sizeof(glCompSet));
+    glCompSet *s = NEW(glCompSet);
     glCompPanel *p;
     glCompButton *b;
     glCompLabel *l;
@@ -1262,7 +1240,7 @@ void prepare_topological_fisheye(topview * t)
     double *y_coords = N_NEW(t->Nodecount,double);  // initial y coordinates
     focus_t *fs;
     int ne;
-    int i, ind;
+    int i;
     int closest_fine_node;
     int cur_level = 0;
     hierparms_t parms;

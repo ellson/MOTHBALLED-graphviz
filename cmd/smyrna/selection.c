@@ -17,6 +17,7 @@
 #include "selection.h"
 #include "viewport.h"
 #include "geomprocs.h"
+#include "memory.h"
 
 static int rectintersects(float x, float y, float W, float H)
 {
@@ -339,8 +340,11 @@ static int point_within_polygon(xdot_op * op)
     int i, j, c = 0;
     int npol = op->u.polygon.cnt;
     float x, y;
+#if 0
+// FIX
     op->u.polygon.pts[i].y;
     op->u.polygon.pts[i].x;
+#endif
     x = view->Selection.X + SINGLE_SELECTION_WIDTH / 2;
     y = view->Selection.Y + SINGLE_SELECTION_WIDTH / 2;
 
@@ -369,23 +373,16 @@ static int select_graph(Agraph_t * g, Agraph_t * G)
 {
     int ind = 0;
     //check if in the list
-    for (ind = 0;
-	 ind < ((custom_graph_data *) AGDATA(g))->selectedGraphsCount;
-	 ind++) {
-	if (((custom_graph_data *) AGDATA(g))->selectedGraphs[ind] == G)
+    for (ind = 0; ind < GD_selectedGraphsCount(g); ind++) {
+	if (GD_selectedGraphs(g)[ind] == G)
 	    return 0;
     }
     //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    ((custom_graph_data *) AGDATA(g))->selectedGraphs =
-	realloc(((custom_graph_data *) AGDATA(g))->selectedGraphs,
-		sizeof(Agnode_t *) *
-		(((custom_graph_data *) AGDATA(g))->selectedGraphsCount +
-		 1));
-    ((custom_graph_data *) AGDATA(g))->
-	selectedGraphs[((custom_graph_data *) AGDATA(g))->
-		       selectedGraphsCount] = G;
-    ((custom_graph_data *) AGDATA(g))->selectedGraphsCount++;
-    ((custom_object_data *) AGDATA(G))->Selected = 1;
+    GD_selectedGraphs(g) = RALLOC(GD_selectedGraphsCount(g)+1,
+		GD_selectedGraphs(g), Agraph_t*);
+    GD_selectedGraphs(g)[GD_selectedGraphsCount(g)] = G;
+    GD_selectedGraphsCount(g)++;
+    OD_Selected(G) = 1;
     return 1;
 }
 
@@ -393,23 +390,16 @@ int select_node(Agraph_t * g, Agnode_t * N)
 {
     int ind = 0;
     //check if in the list
-    for (ind = 0;
-	 ind < ((custom_graph_data *) AGDATA(g))->selectedNodesCount;
-	 ind++) {
-	if (((custom_graph_data *) AGDATA(g))->selectedNodes[ind] == N)
+    for (ind = 0; ind < GD_selectedNodesCount(g); ind++) {
+	if (GD_selectedNodes(g)[ind] == N)
 	    return 0;
     }
     //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    ((custom_graph_data *) AGDATA(g))->selectedNodes =
-	realloc(((custom_graph_data *) AGDATA(g))->selectedNodes,
-		sizeof(Agnode_t *) *
-		(((custom_graph_data *) AGDATA(g))->selectedNodesCount +
-		 1));
-    ((custom_graph_data *) AGDATA(g))->
-	selectedNodes[((custom_graph_data *) AGDATA(g))->
-		      selectedNodesCount] = N;
-    ((custom_graph_data *) AGDATA(g))->selectedNodesCount++;
-    ((custom_object_data *) AGDATA(N))->Selected = 1;
+    GD_selectedNodes(g) =
+	RALLOC(GD_selectedNodesCount(g)+2,GD_selectedNodes(g), Agnode_t*);
+    GD_selectedNodes(g)[GD_selectedNodesCount(g)] = N;
+    GD_selectedNodesCount(g)++;
+    OD_Selected(N) = 1;
     return 1;
 }
 
@@ -417,23 +407,16 @@ int select_edge(Agraph_t * g, Agedge_t * E)
 {
     int ind = 0;
     //check if in the list
-    for (ind = 0;
-	 ind < ((custom_graph_data *) AGDATA(g))->selectedEdgesCount;
-	 ind++) {
-	if (((custom_graph_data *) AGDATA(g))->selectedEdges[ind] == E)
+    for (ind = 0; ind < GD_selectedEdgesCount(g); ind++) {
+	if (GD_selectedEdges(g)[ind] == E)
 	    return 0;
     }
     //for single selections i think realloc is ok, for mass selections i ll figure out something else
-    ((custom_graph_data *) AGDATA(g))->selectedEdges =
-	realloc(((custom_graph_data *) AGDATA(g))->selectedEdges,
-		sizeof(Agnode_t *) *
-		(((custom_graph_data *) AGDATA(g))->selectedEdgesCount +
-		 1));
-    ((custom_graph_data *) AGDATA(g))->
-	selectedEdges[((custom_graph_data *) AGDATA(g))->
-		      selectedEdgesCount] = E;
-    ((custom_graph_data *) AGDATA(g))->selectedEdgesCount++;
-    ((custom_object_data *) AGDATA(E))->Selected = 1;
+    GD_selectedEdges(g) =
+	RALLOC(GD_selectedEdgesCount(g)+1,GD_selectedEdges(g), Agedge_t*);
+    GD_selectedEdges(g)[GD_selectedEdgesCount(g)] = E;
+    GD_selectedEdgesCount(g)++;
+    OD_Selected(E) = 1;
     return 1;
 
 }
@@ -460,25 +443,19 @@ int deselect_node(Agraph_t * g, Agnode_t * N)
     int ind = 0;
     int valid = 0;
     //check if in the list
-    for (ind = 0;
-	 ind < ((custom_graph_data *) AGDATA(g))->selectedNodesCount;
-	 ind++) {
+    for (ind = 0; ind < GD_selectedNodesCount(g); ind++) {
 	if (valid)
-	    ((custom_graph_data *) AGDATA(g))->selectedNodes[ind - 1] =
-		((custom_graph_data *) AGDATA(g))->selectedNodes[ind];
-	if (((custom_graph_data *) AGDATA(g))->selectedNodes[ind] == N)
+	    GD_selectedNodes(g)[ind - 1] = GD_selectedNodes(g)[ind];
+	if (GD_selectedNodes(g)[ind] == N)
 	    valid = 1;
     }
     //for single selections i think realloc is ok, for mass selections i ll figure out something else
     if (valid) {
-	((custom_graph_data *) AGDATA(g))->selectedNodes =
-	    realloc(((custom_graph_data *) AGDATA(g))->selectedNodes,
-		    sizeof(Agnode_t *) *
-		    (((custom_graph_data *) AGDATA(g))->
-		     selectedNodesCount - 1));
-	((custom_graph_data *) AGDATA(g))->selectedNodesCount--;
-	((custom_object_data *) AGDATA(N))->Selected = 0;
-	((custom_object_data *) AGDATA(N))->selectionflag = 0;
+	GD_selectedNodes(g) =
+	    RALLOC(GD_selectedNodesCount(g)-1,GD_selectedNodes(g), Agnode_t*);
+	GD_selectedNodesCount(g)--;
+	OD_Selected(N) = 0;
+	OD_SelFlag(N) = 0;
     }
     return 1;
 
@@ -489,25 +466,19 @@ int deselect_edge(Agraph_t * g, Agedge_t * E)
     int ind = 0;
     int valid = 0;
     //check if in the list
-    for (ind = 0;
-	 ind < ((custom_graph_data *) AGDATA(g))->selectedEdgesCount;
-	 ind++) {
+    for (ind = 0; ind < GD_selectedEdgesCount(g); ind++) {
 	if (valid)
-	    ((custom_graph_data *) AGDATA(g))->selectedEdges[ind - 1] =
-		((custom_graph_data *) AGDATA(g))->selectedEdges[ind];
-	if (((custom_graph_data *) AGDATA(g))->selectedEdges[ind] == E)
+	    GD_selectedEdges(g)[ind-1] = GD_selectedEdges(g)[ind];
+	if (GD_selectedEdges(g)[ind] == E)
 	    valid = 1;
     }
     //for single selections i think realloc is ok, for mass selections i ll figure out something else
     if (valid) {
-	((custom_graph_data *) AGDATA(g))->selectedEdges =
-	    realloc(((custom_graph_data *) AGDATA(g))->selectedEdges,
-		    sizeof(Agnode_t *) *
-		    (((custom_graph_data *) AGDATA(g))->
-		     selectedEdgesCount - 1));
-	((custom_graph_data *) AGDATA(g))->selectedEdgesCount--;
-	((custom_object_data *) AGDATA(E))->Selected = 0;
-	((custom_object_data *) AGDATA(E))->selectionflag = 0;
+	GD_selectedEdges(g) =
+	    RALLOC(GD_selectedEdgesCount(g)-1,GD_selectedEdges(g), Agedge_t*);
+	GD_selectedEdgesCount(g)--;
+	OD_Selected(E) = 0;
+	OD_SelFlag(E) = 0;
 
     }
     return 1;
@@ -517,26 +488,19 @@ static int deselect_graph(Agraph_t * g, Agraph_t * G)
     int ind = 0;
     int valid = 0;
     //check if in the list
-    for (ind = 0;
-	 ind < ((custom_graph_data *) AGDATA(g))->selectedGraphsCount;
-	 ind++) {
+    for (ind = 0; ind < GD_selectedGraphsCount(g); ind++) {
 	if (valid)
-	    ((custom_graph_data *) AGDATA(g))->selectedGraphs[ind - 1] =
-		((custom_graph_data *) AGDATA(g))->selectedGraphs[ind];
-	if (((custom_graph_data *) AGDATA(g))->selectedGraphs[ind] == G)
+	    GD_selectedGraphs(g)[ind-1] = GD_selectedGraphs(g)[ind];
+	if (GD_selectedGraphs(g)[ind] == G)
 	    valid = 1;
     }
     //for single selections i think realloc is ok, for mass selections i ll figure out something else
     if (valid) {
-	((custom_graph_data *) AGDATA(g))->selectedGraphs =
-	    realloc(((custom_graph_data *) AGDATA(g))->selectedGraphs,
-		    sizeof(Agnode_t *) *
-		    (((custom_graph_data *) AGDATA(g))->
-		     selectedGraphsCount - 1));
-	((custom_graph_data *) AGDATA(g))->selectedGraphsCount--;
-	((custom_object_data *) AGDATA(G))->Selected = 0;
-	((custom_object_data *) AGDATA(G))->selectionflag = 0;
-
+	GD_selectedGraphs(g) =
+	    RALLOC(GD_selectedGraphsCount(g)-1,GD_selectedGraphs(g), Agraph_t*);
+	GD_selectedGraphsCount(g)--;
+	OD_Selected(G) = 0;
+	OD_SelFlag(G) = 0;
     }
     return 1;
 }
@@ -738,8 +702,10 @@ int SelectBeziers(sdot_op * op)
 	}
 	break;
     case 1:
-//              if ( ((custom_object_data*)AGDATA(((xdot*)(op->parentxdot))->obj))->Selected==1)
-//                      return 0;
+#if 0
+        if (OD_Selected(((xdot*)(op->parentxdot))->obj) == 1)
+               return 0;
+#endif
 	if ((OD_SelFlag(op->obj) != -1) && spline_in_rect((xdot_op *) op)) {
 	    OD_Preselected(op->obj) = 1;
 //          select_object (view->g[view->activeGraph],((xdot*)(op->parentxdot))->obj);
