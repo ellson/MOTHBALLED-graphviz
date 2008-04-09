@@ -38,11 +38,17 @@ int glupdatecamera(ViewInfo * view)
 	/*toggle to active camera*/
 	else
 	{
-		gluLookAt(view->cameras[view->active_camera]->x,view->cameras[view->active_camera]->y,view->cameras[view->active_camera]->z,
+		/*gluLookAt(view->cameras[view->active_camera]->x,view->cameras[view->active_camera]->y,view->cameras[view->active_camera]->z,
 		view->cameras[view->active_camera]->targetx,view->cameras[view->active_camera]->targety,view->cameras[view->active_camera]->targetz,
 		view->cameras[view->active_camera]->camera_vectorx,
 		view->cameras[view->active_camera]->camera_vectory,
-		view->cameras[view->active_camera]->camera_vectorz);
+		view->cameras[view->active_camera]->camera_vectorz);*/
+		gluLookAt(view->panx, view->pany, view->zoom * -1, view->panx,
+			view->pany, 0.0, 0.0, 1.0, 0.0);
+			glRotatef(view->cameras[view->active_camera]->angley,1,0,0);
+			glRotatef(view->cameras[view->active_camera]->anglex,0,1,0);
+
+
 	}
 	GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
 		 &(view->clipZ1));

@@ -91,14 +91,20 @@ void menu_click_add_camera(void *p)
 	c->targetx=view->panx;
 	c->targety=view->pany;
 	c->targetz=view->panz;
+	c->x=view->panx;
+	c->y=view->pany;
+	c->z=view->zoom;
 	c->camera_vectorx=0;
 	c->camera_vectory=1;
 	c->camera_vectorz=0;
 
 	c->anglexy=90;
 	c->anglexyz=0;
+	c->anglex=0;
+	c->angley=0;
+
 	c->r=view->zoom*-1;
-	set_camera_x_y(c);
+//	set_camera_x_y(c);
 	attach_camera_widget(view);
 
 

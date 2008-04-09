@@ -144,6 +144,10 @@ typedef struct _viewport_camera{
 	float anglexy;
 	float anglexyz;
 
+	float anglex;
+	float angley;
+
+
 	float camera_vectorx;
 	float camera_vectory;
 	float camera_vectorz;

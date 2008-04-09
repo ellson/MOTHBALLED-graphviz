@@ -369,9 +369,9 @@ static gboolean motion_notify_event(GtkWidget * widget,
 		}
 		else
 		{
-			view->cameras[view->active_camera]->anglexyz+=gldy;
-			view->cameras[view->active_camera]->anglexy+=gldx;
-			set_camera_x_y(view->cameras[view->active_camera]);
+			view->cameras[view->active_camera]->angley-=dy/5;
+			view->cameras[view->active_camera]->anglex-=dx/5;
+//			set_camera_x_y(view->cameras[view->active_camera]);
 		}
 		redraw = TRUE;
 	}
