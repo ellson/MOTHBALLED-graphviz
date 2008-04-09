@@ -9,7 +9,7 @@ graph template {
     gridcolor = "#6033d8"
     gridcoloralpha = "1"
     gridsize = "10"
-    gridvisible = "10
+    gridvisible = "1"
     highlightededgecolor = "#c41b50"
     highlightededgecoloralpha = "1"
     highlightednodecolor = "#d1cd24" 
