@@ -23,13 +23,9 @@
 #include "viewport.h"
 #include "topview.h"
 #include "selection.h"
-
-
-
+#include "memory.h"
 
 //Menu Items 
-
-
 
 void new_graph_clicked(GtkWidget * widget, gpointer user_data)
 {
@@ -38,7 +34,6 @@ void new_graph_clicked(GtkWidget * widget, gpointer user_data)
 
 void open_graph_clicked(GtkWidget * widget, gpointer user_data)
 {
-
 
 }
 void save_graph_clicked(GtkWidget * widget, gpointer user_data)
@@ -189,8 +184,8 @@ void on_newNode(GtkWidget * button, gpointer user_data)
 {
     int *a;
     int *b;
-    a = (int *) malloc(sizeof(int));
-    b = (int *) malloc(sizeof(int));
+    a = NEW(int);
+    b = NEW(int);
 }
 
 
@@ -270,8 +265,7 @@ void frmObjectBtnOK_clicked(GtkWidget * widget, gpointer user_data)
 {
     //call function to update object values
     update_object_properties(frmObjectTypeIndex, frmObjectg);
-    if (((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	TopView == 0)
+    if (GD_TopView(view->g[view->activeGraph]) == 0)
 	do_graph_layout(view->g[view->activeGraph], 0, 1);
     else {
 	set_update_required(view->Topview);
