@@ -575,6 +575,7 @@ static void draw_circle(float originX, float originY, float radius)
 
 }
 
+static GLUquadric* fisheyesphere;
 void draw_fisheye_magnifier(ViewInfo * view)
 {
     if ((view->mouse.mouse_mode == 21) && (view->mouse.mouse_down)) {
@@ -592,7 +593,15 @@ void draw_fisheye_magnifier(ViewInfo * view)
 	}
 	if (((view->fmg.x != mg_x) || (view->fmg.y != mg_y))&&(view->active_camera>-1)) {
 		fisheye_spherical(mg_x, mg_y,0.00,view->Topview);
-	    draw_circle(mg_x, mg_y, a);
+
+
+		if(!fisheyesphere)
+			fisheyesphere=gluNewQuadric();
+		gluQuadricDrawStyle ( fisheyesphere, GLU_LINE );
+		glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,0.05);
+		glTranslatef(mg_x,mg_y,0);
+		gluSphere(fisheyesphere,a,30,30);
+		glTranslatef(-mg_x,-mg_y,0);
 	}
 
 

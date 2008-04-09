@@ -54,6 +54,7 @@ void preparetopview(Agraph_t * g, topview * t)
     Agsym_t *sym;
     int ind, ind2, data_type_count;	//number of columns for custom view->Topview data ,IP ,HOST, etc
     char buf[256];
+	RGBColor color;
     ind = 0;
     ind2 = 0;
     gtk_widget_hide(glade_xml_get_widget(xml, "layout6"));	//hide top panel
@@ -104,8 +105,17 @@ void preparetopview(Agraph_t * g, topview * t)
 	}
 	/*initialize group index, -1 means no group */
 	t->Nodes[ind].GroupIndex = -1;
-	randomize_color(&(t->Nodes[ind].Color), 2);
 	t->Nodes[ind].Node = v;
+	if (agget(t->Nodes[ind].Node,"color"))
+	{
+		color=GetRGBColor(agget(t->Nodes[ind].Node,"color"));
+		t->Nodes[ind].Color.R=color.R;
+		t->Nodes[ind].Color.G=color.G;
+		t->Nodes[ind].Color.B=color.B;
+		t->Nodes[ind].Color.A=color.A;
+	}
+	else
+		randomize_color(&(t->Nodes[ind].Color), 2);
 	t->Nodes[ind].x = a;
 	t->Nodes[ind].y = b;
 	t->Nodes[ind].z = c;
@@ -572,34 +582,35 @@ int get_color_from_edge(topview_edge * e)
 	return_value = 1;
 
 
-    if ((((custom_object_data *) AGDATA(e->Node1->Node))->Selected == 1)
+	/*if both head and tail nodes are selected use selection color for edges*/
+	if ((((custom_object_data *) AGDATA(e->Node1->Node))->Selected == 1)
 	&& (((custom_object_data *) AGDATA(e->Node2->Node))->Selected == 1)
 	) {
-//              glColor4f(0,0,1,1);
-	glColor4f(view->selectedNodeColor.R, view->selectedNodeColor.G,
-		  view->selectedNodeColor.B, view->selectedNodeColor.A);
-	return return_value;
+		glColor4f(view->selectedEdgeColor.R, view->selectedEdgeColor.G,
+		  view->selectedEdgeColor.B, view->selectedEdgeColor.A);
+		return return_value;
     }
-    if ((((custom_object_data *) AGDATA(e->Node1->Node))->Highlighted == 1)
+	/*if both head and tail nodes are highlighted use edge highlight color */
+
+	if ((((custom_object_data *) AGDATA(e->Node1->Node))->Highlighted == 1)
 	&&
 	(((custom_object_data *) AGDATA(e->Node2->Node))->Highlighted == 1)
 	) {
-	glColor4f(0, 0, 1, 1);
-	return return_value;
+		glColor4f(view->highlightedEdgeColor.R,view->highlightedEdgeColor.G,view->highlightedEdgeColor.B,view->highlightedEdgeColor.A);
+		return return_value;
     }
-    color_string = agget(e->Node1->Node, "fillcolor");
-    //group colors
+    /*edge maybe in a group and group may be selected, then use groups's color example:ATT hosts*/
     if ((e->Node1->GroupIndex >= 0) || (e->Node2->GroupIndex >= 0)) {
-	if (view->Topview->TopviewData->hostactive[e->Node1->GroupIndex] ==
+		if (view->Topview->TopviewData->hostactive[e->Node1->GroupIndex] ==
 	    1) {
-	    gtk_color_button_get_color(view->Topview->TopviewData->
+				gtk_color_button_get_color(view->Topview->TopviewData->
 				       gtkhostcolor[e->Node1->GroupIndex],
 				       &color);
-	    glColor4f((GLfloat) color.red / (GLfloat) 65535.0,
-		      (GLfloat) color.green / (GLfloat) 65535.0,
-		      (GLfloat) color.blue / (GLfloat) 65535.0,
-		      (GLfloat) 1);
-	    return return_value;
+				glColor4f((GLfloat) color.red / (GLfloat) 65535.0,
+				(GLfloat) color.green / (GLfloat) 65535.0,
+				(GLfloat) color.blue / (GLfloat) 65535.0,
+				(GLfloat) 1);
+			return return_value;
 	} else {
 	    if (view->Topview->TopviewData->
 		hostactive[e->Node2->GroupIndex] == 1) {
@@ -617,7 +628,8 @@ int get_color_from_edge(topview_edge * e)
 
     }
 
-
+	/*get edge's color attribute*/
+	color_string = agget(e->Edge, "color");
     if (color_string) {
 	c = GetRGBColor(color_string);
 	glColor4f(c.R, c.G, c.B, Alpha);
