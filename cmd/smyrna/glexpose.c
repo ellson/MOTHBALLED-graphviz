@@ -133,8 +133,7 @@ void glexpose_grid(ViewInfo * view)
 int glexpose_drawgraph(ViewInfo * view)
 {
     if (view->activeGraph > -1) {
-	if (((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	    TopView) {
+	if (GD_TopView(view->g[view->activeGraph])) {
 	    drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
 	    glCompSetDraw(view->Topview->topviewmenu);
 	} else

@@ -319,8 +319,7 @@ static gboolean button_release_event(GtkWidget * widget,
 	    expose_event(view->drawing_area, NULL, NULL);
 	}
 	if (view->mouse.mouse_mode == MM_MOVE) {
-	    if (((custom_graph_data *)
-		 AGDATA(view->g[view->activeGraph]))->TopView == 0)
+	    if (GD_TopView(view->g[view->activeGraph]) == 0)
 		move_nodes(view->g[view->activeGraph]);
 	    else
 		move_TVnodes();
