@@ -131,8 +131,7 @@ static void relocate_spline(sdot_op * sop, int param)
 	e = sop->obj;
 	tn = agtail(e);
 	hn = aghead(e);
-	if ((((custom_object_data *) AGDATA(hn))->Selected == 1)
-	    && (((custom_object_data *) AGDATA(tn))->Selected == 0)) {
+	if ((OD_Selected(hn) == 1) && (OD_Selected(tn) == 0)) {
 	    set_options(sop, 1);
 	    for (i = 1; i < op->u.bezier.cnt - 1; i = i + 1) {
 		if ((dx != 0) || (dy != 0)) {
@@ -153,8 +152,7 @@ static void relocate_spline(sdot_op * sop, int param)
 		    op->u.bezier.pts[op->u.bezier.cnt - 1].y - (int) dy;
 	    }
 	}
-	if ((((custom_object_data *) AGDATA(hn))->Selected == 0)
-	    && (((custom_object_data *) AGDATA(tn))->Selected == 1)) {
+	else if ((OD_Selected(hn) == 0) && (OD_Selected(tn) == 1)) {
 	    set_options(sop, 1);
 	    for (i = op->u.bezier.cnt - 1; i > 0; i = i - 1) {
 		if ((dx != 0) || (dy != 0)) {
@@ -173,9 +171,7 @@ static void relocate_spline(sdot_op * sop, int param)
 		op->u.bezier.pts[0].y = op->u.bezier.pts[0].y - (int) dy;
 	    }
 	}
-
-	if ((((custom_object_data *) AGDATA(hn))->Selected == 1)
-	    && (((custom_object_data *) AGDATA(tn))->Selected == 1)) {
+	else if ((OD_Selected(hn) == 1) && (OD_Selected(tn) == 1)) {
 	    set_options(sop, 1);
 	    for (i = 0; i < op->u.bezier.cnt; i = i + 1) {
 		if ((dx != 0) || (dy != 0)) {
@@ -187,10 +183,8 @@ static void relocate_spline(sdot_op * sop, int param)
 	    }
 	}
     }
-
-
-
 }
+
 static void DrawBeziers(xdot_op * op, int param)
 {
     //SEND ALL CONTROL POINTS IN 3D ARRAYS
@@ -249,8 +243,7 @@ load_raw_texture(char *file_name, int width, int height, int depth,
     //Line 11 allocates the correct number of bytes for the size and depth of the image.  Remember, our image depth will usually be 3 -- one 'channel' each for red, green and blue values.   
     //Lines 13-18 check if the memory was allocated correctly and quit the program if there was a problem. 
 
-    raw_bitmap =
-	(GLubyte *) malloc(width * height * depth * (sizeof(GLubyte)));
+    raw_bitmap = N_GNEW(width * height * depth, GLubyte);
 
     if (raw_bitmap == NULL) {
 	printf("Cannot allocate memory for texture\n");
@@ -638,9 +631,9 @@ static void drawXdot(xdot * xDot, int param, void *p)
 	op->obj = p;
 	op->op.drawfunc(&(op->op), param);
     }
-    if (((custom_object_data *) AGDATA(p))->Preselected == 1)
+    if (OD_Preselected(p) == 1)
 	select_object(view->g[view->activeGraph], p);
-    ((custom_object_data *) AGDATA(p))->Preselected = 0;
+    OD_Preselected(p) = 0;
 }
 
 static void drawXdotwithattr(void *p, char *attr, int param)
@@ -670,9 +663,8 @@ void drawGraph(Agraph_t * g)
     int param = 0;
 
     for (s = agfstsubg(g); s; s = agnxtsubg(s)) {
-
-	((custom_object_data *) AGDATA(s))->selectionflag = 0;
-	if (((custom_object_data *) AGDATA(s))->Selected == 1)
+	OD_SelFlag(s) = 0;
+	if (OD_Selected(s) == 1)
 	    param = 1;
 	else
 	    param = 0;
@@ -680,16 +672,16 @@ void drawGraph(Agraph_t * g)
     }
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	if (((custom_object_data *) AGDATA(v))->Selected == 1)
+	if (OD_Selected(v) == 1)
 	    param = 1;
 	else
 	    param = 0;
-	((custom_object_data *) AGDATA(v))->selectionflag = 0;
+	OD_SelFlag(v) = 0;
 	drawXdotwithattr(v, "_draw_", param);
 	drawXdotwithattr(v, "_ldraw_", param);
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
-	    ((custom_object_data *) AGDATA(e))->selectionflag = 0;
-	    if (((custom_object_data *) AGDATA(e))->Selected == 1)
+	    OD_SelFlag(e) = 0;
+	    if (OD_Selected(e) == 1)
 		param = 1;
 	    else
 		param = 0;
