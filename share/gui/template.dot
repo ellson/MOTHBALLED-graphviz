@@ -2,14 +2,14 @@ graph template {
     bgcolor = "#ffffff"
     bordercolor = "#38eb29"
     bordercoloralpha = "1"
-    bordervisible = "1"
+    bordervisible = "0"
     defaultfontname="Arial 16"
     /* defaultfontname = "1" */
     defaultfontsize = "52"
     gridcolor = "#6033d8"
     gridcoloralpha = "1"
     gridsize = "10"
-    gridvisible = "1"
+    gridvisible = "10
     highlightededgecolor = "#c41b50"
     highlightededgecoloralpha = "1"
     highlightednodecolor = "#d1cd24" 

@@ -700,6 +700,7 @@ topview</property>
               <widget class="GtkMenuItem" id="menuitem5">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">_Graph</property>
+                <property name="use_underline">True</property>
                 <child>
                   <widget class="GtkMenu" id="menu4">
                     <property name="visible">True</property>
