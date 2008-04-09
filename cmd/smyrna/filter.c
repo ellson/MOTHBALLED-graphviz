@@ -15,6 +15,7 @@
 **********************************************************/
 
 #include "filter.h"
+#include "memory.h"
 
 int clear_filter(tv_filter * f)
 {
@@ -33,8 +34,7 @@ int init_filters(tv_filters * filters)
 int add_filter_to_filters(tv_filters * filters, tv_filter * filter)
 {
     filters->filters =
-	realloc(filters->filters,
-		sizeof(tv_filter *) * (filters->filter_count + 1));
+	RALLOC(filters->filter_count + 1, filters->filters, tv_filter*);
     filters->filters[filters->filter_count] = filter;
     filters->filter_count++;
     return 1;
