@@ -20,10 +20,13 @@
 #else
 #include "regex.h"
 #endif
+
+#include <memory.h>
+
 btree_node *new_node(char *attribute, char *regex, float min, float max)
 {
     btree_node *n;
-    n = malloc(sizeof(btree_node));
+    n = GNEW(btree_node);
     n->child_count = 0;
     n->childs = 0;
     n->rank = 0;
@@ -39,9 +42,8 @@ btree_node *new_node(char *attribute, char *regex, float min, float max)
 int insert_node(btree_node * parent_n, btree_node * n)
 {
     parent_n->child_count++;
-    parent_n->childs =
-	realloc(parent_n->childs,
-		parent_n->child_count * sizeof(btree_node *));
+    parent_n->childs = RALLOC(parent_n->child_count, parent_n->childs,
+		btree_node *);
     parent_n->childs[parent_n->child_count - 1] = n;
     n->rank = parent_n->rank + 1;
     n->parent = parent_n;
@@ -65,22 +67,21 @@ int delete_node_recursive(btree_node * n)
 
 int delete_node(btree_node * n)
 {
+    btree_node* parent = n->parent;
     int i = 0;
     int child_found = 0;
     //rmeove from parent's child list
-    if (n->parent) {
-	n->parent->child_count--;
-	for (i = 0; i < n->parent->child_count; i++) {
-	    if (n->parent->childs[i] == n) {
+    if (parent) {
+	parent->child_count--;
+	for (i = 0; i < parent->child_count; i++) {
+	    if (parent->childs[i] == n) {
 		child_found = 1;
 	    }
 	    if (child_found)
-		n->parent->childs[i] = n->parent->childs[i + 1];
+		parent->childs[i] = parent->childs[i + 1];
 	}
     }
-    n->parent->childs =
-	realloc(n->parent->childs,
-		sizeof(btree_node *) * n->parent->child_count);
+    parent->childs = RALLOC(parent->child_count,parent->childs, btree_node *);
     delete_node_recursive(n);
     return 1;
 }
@@ -248,11 +249,11 @@ int evaluate_filter_atom(char *string, btree_node * Nodes[], char *op)
     while (*c_cursor != '\0') {
 	if (kp_open) {
 	    if ((*c_cursor == ',') || ((*c_cursor == ']') && (!qt_open))) {
-		attrs = realloc(attrs, (attrs_count + 1) * sizeof(char *));
+		attrs = RALLOC(attrs_count + 1, attrs, char*);
 		attrs[attrs_count] = strdup(buff_attr);
 		attrs_count++;
 		values =
-		    realloc(values, (values_count + 1) * sizeof(char *));
+		    RALLOC(values_count + 1, values, char*);
 		values[values_count] = strdup(buff_value);
 		values_count++;
 		buff_attr[0] = '\0';
