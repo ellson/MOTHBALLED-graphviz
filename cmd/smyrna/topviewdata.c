@@ -14,17 +14,17 @@
 **********************************************************/
 
 #include "topviewdata.h"
-
+#include <memory.h>
 
 int prepare_nodes_for_groups(topview * t, topviewdata * td, int groupindex)
 {
     GdkColor color;
-    int i = 0;
+    int i;
     int count = 0;
     tv_node tvn;
     gtk_color_button_get_color(td->gtkhostcolor[0], &color);
 
-    for (i; i < t->Nodecount; i++) {
+    for (i = 0; i < t->Nodecount; i++) {
 	tvn.index = i;
 	if (validate_group_node(&tvn, td->hostregex[groupindex])) {
 	    count++;
@@ -68,10 +68,9 @@ int load_host_buttons(topview * t, Agraph_t * g, glCompSet * s)
 
 //      Graph [hostbtncaption1="AT&T",hostbtnregex1="*.ATT*",hostbtncolorR1="1",hostbtncolorG1="0",hostbtncolorB1="0",hostbtncolorA1="1"];
 
-    t->TopviewData->hostregex = malloc(sizeof(char **) * btncount);
-    t->TopviewData->gtkhostbtn = malloc(sizeof(GtkButton *) * btncount);
-    t->TopviewData->gtkhostcolor =
-	malloc(sizeof(GtkColorButton *) * btncount);
+    t->TopviewData->hostregex = N_GNEW(btncount, char *);
+    t->TopviewData->gtkhostbtn = N_GNEW(btncount, GtkButton *);
+    t->TopviewData->gtkhostcolor = N_GNEW(btncount, GtkColorButton *);
     t->TopviewData->gtkhostbtncount = btncount;
     if (btncount > 0) {
 	p = glCompPanelNew(25, 75, 165, 400);
@@ -112,8 +111,7 @@ int load_host_buttons(topview * t, Agraph_t * g, glCompSet * s)
 	b->data = i;
 	glCompSetAddButton(s, b);
 
-	t->TopviewData->gtkhostbtn[i] =
-	    (GtkButton *)
+	t->TopviewData->gtkhostbtn[i] = (GtkButton *)
 	    gtk_button_new_with_label(agget(g, hostbtncaption));
 	g_signal_connect((gpointer) t->TopviewData->gtkhostbtn[i],
 			 "clicked", G_CALLBACK(host_button_clicked_Slot),

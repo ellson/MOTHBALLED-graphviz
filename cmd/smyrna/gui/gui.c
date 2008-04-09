@@ -14,11 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-
-
-
 #include <stdio.h>
-
 #include "compat.h"
 #include <stdlib.h>
 #include "gui.h"
@@ -27,6 +23,7 @@
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdk.h>
 #include "viewport.h"
+#include "memory.h"
 
 static char guibuffer[255];	//general purpose buffer
 
@@ -186,28 +183,22 @@ void load_graph_properties(Agraph_t * graph)
     //dlgOpenGraph , GtkDialog
     gtk_entry_set_text((GtkEntry *)
 		       glade_xml_get_widget(xml, "entryGraphName"),
-		       ((custom_graph_data *) AGDATA(graph))->GraphName);
+		       GD_GraphName(graph));
     gtk_entry_set_text((GtkEntry *)
 		       glade_xml_get_widget(xml, "entryGraphFileName"),
-		       ((custom_graph_data *) AGDATA(graph))->
-		       GraphFileName);
-
+		       GD_GraphFileName(graph));
     gtk_combo_box_set_active((GtkComboBox *)
 			     glade_xml_get_widget(xml, "cbLayout"),
-			     ((custom_graph_data *) AGDATA(graph))->
-			     Engine);
+			    GD_Engine(graph));
     gtk_toggle_button_set_active((GtkToggleButton *)
 				 glade_xml_get_widget(xml, "chkVisible"),
-				 ((custom_graph_data *) AGDATA(graph))->
-				 AlwaysShow);
+				 GD_AlwaysShow(graph));
     gtk_toggle_button_set_active((GtkToggleButton *)
 				 glade_xml_get_widget(xml, "chkLocked"),
-				 ((custom_graph_data *) AGDATA(graph))->
-				 Locked);
+				 GD_Locked(graph));
     gtk_toggle_button_set_active((GtkToggleButton *)
 				 glade_xml_get_widget(xml, "chkTopView"),
-				 ((custom_graph_data *) AGDATA(graph))->
-				 TopView);
+				 GD_TopView(graph));
 }
 
 int update_graph_properties(Agraph_t * graph)	//updates graph from gui
@@ -219,10 +210,9 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
     for (id = 0; id < view->graphCount; id++) {
 	if (graph != view->g[id]) {
 	    if (strcasecmp
-		(gtk_entry_get_text
-		 ((GtkEntry *)
+		(gtk_entry_get_text ((GtkEntry *)
 		  glade_xml_get_widget(xml, "entryGraphName")),
-		 ((custom_graph_data *) AGDATA(view->g[id]))->GraphName) ==
+		 GD_GraphName(view->g[id])) ==
 		0) {
 
 		Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
@@ -243,7 +233,7 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
     if (strcasecmp
 	(gtk_entry_get_text
 	 ((GtkEntry *) glade_xml_get_widget(xml, "entryGraphFileName")),
-	 ((custom_graph_data *) AGDATA(graph))->GraphFileName) != 0) {
+	 GD_GraphFileName(graph)) != 0) {
 
 
 	if ((file =
@@ -289,34 +279,31 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 
     //if it comes so far graph deserves new values
 
-
-
-    ((custom_graph_data *) AGDATA(graph))->GraphName =
+    GD_GraphName(graph) =
 	(char *) gtk_entry_get_text((GtkEntry *)
 				    glade_xml_get_widget(xml,
 							 "entryGraphName"));
-    ((custom_graph_data *) AGDATA(graph))->GraphFileName =
+    GD_GraphFileName(graph) =
 	(char *) gtk_entry_get_text((GtkEntry *)
 				    glade_xml_get_widget(xml,
 							 "entryGraphFileName"));
 
-    ((custom_graph_data *) AGDATA(graph))->AlwaysShow =
+    GD_AlwaysShow(graph) =
 	gtk_toggle_button_get_active((GtkToggleButton *)
 				     glade_xml_get_widget(xml,
 							  "chkVisible"));
-    ((custom_graph_data *) AGDATA(graph))->Locked =
+    GD_Locked(graph) =
 	gtk_toggle_button_get_active((GtkToggleButton *)
 				     glade_xml_get_widget(xml,
 							  "chkLocked"));
-    ((custom_graph_data *) AGDATA(graph))->TopView =
+    GD_TopView(graph) =
 	gtk_toggle_button_get_active((GtkToggleButton *)
 				     glade_xml_get_widget(xml,
 							  "chkTopView"));
 
 
     //check if the engine has been changed, if so do new layout
-    if (((custom_graph_data *) AGDATA(graph))->Engine !=
-	gtk_combo_box_get_active((GtkComboBox *)
+    if (GD_Engine(graph) != gtk_combo_box_get_active((GtkComboBox *)
 				 glade_xml_get_widget(xml, "cbLayout"))) {
 	Dlg =
 	    (GtkMessageDialog *) gtk_message_dialog_new(NULL,
@@ -365,13 +352,13 @@ int load_object_properties(int typeIndex, Agraph_t * g)	//load  from object to g
     switch (typeIndex)		//typeindex 0 means new object
     {
     case 1:			//graph  sub graph (cluster)
-	obj = ((custom_graph_data *) AGDATA(g))->selectedGraphs[0];
+	obj = GD_selectedGraphs(g)[0];
 	break;
     case 2:			//Node
-	obj = ((custom_graph_data *) AGDATA(g))->selectedNodes[0];
+	obj = GD_selectedNodes(g)[0];
 	break;
     case 3:			//Edge
-	obj = ((custom_graph_data *) AGDATA(g))->selectedEdges[0];
+	obj = GD_selectedEdges(g)[0];
 	break;
     }
     for (widgetcounter = 0; widgetcounter < MAXIMUM_WIDGET_COUNT;
@@ -477,10 +464,10 @@ int load_object_properties(int typeIndex, Agraph_t * g)	//load  from object to g
 
 
     //first part, common attributes
-    sprintf(buf, "%i", ((custom_object_data *) AGDATA(obj))->ID);
+    sprintf(buf, "%i", OD_ID(obj));
     gtk_entry_set_text((GtkEntry *)
 		       glade_xml_get_widget(xml, "objEntryName"),
-		       ((custom_object_data *) AGDATA(obj))->ObjName);
+		       OD_ObjName(obj));
     gtk_entry_set_text((GtkEntry *)
 		       glade_xml_get_widget(xml, "objEntryLabel"),
 		       agnameof(obj));
@@ -488,27 +475,19 @@ int load_object_properties(int typeIndex, Agraph_t * g)	//load  from object to g
     gtk_toggle_button_set_active((GtkToggleButton *)
 				 glade_xml_get_widget(xml,
 						      "frmObjectchkVisible"),
-				 ((custom_object_data *) AGDATA(obj))->
-				 Visible);
+				 OD_Visible(obj));
     gtk_toggle_button_set_active((GtkToggleButton *)
 				 glade_xml_get_widget(xml,
 						      "frmObjectchkLocked"),
-				 ((custom_object_data *) AGDATA(obj))->
-				 Locked);
+				 OD_Locked(obj));
     gtk_toggle_button_set_active((GtkToggleButton *)
 				 glade_xml_get_widget(xml,
 						      "frmObjectchkHighlighted"),
-				 ((custom_object_data *) AGDATA(obj))->
-				 Highlighted);
+				 OD_Highlighted(obj));
     //get the position info // show only one item is selected
-    if (((((custom_graph_data *) AGDATA(g))->selectedNodesCount == 1)
-	 && (typeIndex == 2))
-	|| ((((custom_graph_data *) AGDATA(g))->selectedEdgesCount == 1)
-	    && (typeIndex == 3))
-	|| ((((custom_graph_data *) AGDATA(g))->selectedGraphsCount == 1)
-	    && (typeIndex == 3))
-
-	) {
+    if (((GD_selectedNodesCount(g) == 1) && (typeIndex == 2))
+	|| ((GD_selectedEdgesCount(g) == 1) && (typeIndex == 3))
+	|| ((GD_selectedGraphsCount(g) == 1) && (typeIndex == 3))) {
 	sprintf(line, "%s", agget(obj, "pos"));
 	a = (float) atof(strtok(line, ","));
 	b = (float) atof(strtok(NULL, ","));
@@ -620,11 +599,8 @@ void change_selected_graph_attributes(Agraph_t * g, char *attrname,
     int ind = 0;
     agattr(g, AGRAPH, attrname, "");
 
-    for (ind = 0;
-	 ind < ((custom_graph_data *) AGDATA(g))->selectedGraphsCount;
-	 ind++) {
-	agset(((custom_graph_data *) AGDATA(g))->selectedGraphs[ind],
-	      attrname, attrvalue);
+    for (ind = 0; ind < GD_selectedGraphsCount(g); ind++) {
+	agset(GD_selectedGraphs(g)[ind], attrname, attrvalue);
     }
 
 
@@ -634,11 +610,9 @@ void change_selected_node_attributes(Agraph_t * g, char *attrname,
 {
     int ind = 0;
     agattr(g, AGNODE, attrname, "");
-    for (ind = 0;
-	 ind < ((custom_graph_data *) AGDATA(g))->selectedNodesCount;
-	 ind++) {
-	agset(((custom_graph_data *) AGDATA(g))->selectedNodes[ind],
-	      attrname, attrvalue);
+
+    for (ind = 0; ind < GD_selectedNodesCount(g); ind++) {
+	agset(GD_selectedNodes(g)[ind], attrname, attrvalue);
     }
 }
 void change_selected_edge_attributes(Agraph_t * g, char *attrname,
@@ -646,11 +620,9 @@ void change_selected_edge_attributes(Agraph_t * g, char *attrname,
 {
     int ind = 0;
     agattr(g, AGEDGE, attrname, "");
-    for (ind = 0;
-	 ind < ((custom_graph_data *) AGDATA(g))->selectedEdgesCount;
-	 ind++) {
-	agset(((custom_graph_data *) AGDATA(g))->selectedEdges[ind],
-	      attrname, attrvalue);
+
+    for (ind = 0; ind < GD_selectedEdgesCount(g); ind++) {
+	agset(GD_selectedEdges(g)[ind], attrname, attrvalue);
 
     }
 }
@@ -730,9 +702,8 @@ void load_attributes()
 		    break;
 		default:
 		    attr[attrcount].ComboValues =
-			realloc(attr[attrcount].ComboValues,
-				sizeof(char **) *
-				attr[attrcount].ComboValuesCount);
+			RALLOC(attr[attrcount].ComboValuesCount, 
+				attr[attrcount].ComboValues, char*);
 		    attr[attrcount].ComboValues[attr[attrcount].
 						ComboValuesCount] =
 			strdup(ss);
@@ -745,3 +716,4 @@ void load_attributes()
 	}
     }
 }
+

@@ -61,10 +61,9 @@ static char *get_attribute_value(char *attr, ViewInfo * view, Agraph_t * g)
 {
     char *buf;
     buf = agget(g, attr);
-    if ((!buf) || (strcmp(buf, "") == 0))
+    if ((!buf) || (*buf == '\0'))
 	buf = agget(view->default_attributes, attr);
     return buf;
-
 }
 
 void
@@ -337,7 +336,7 @@ void init_viewport(ViewInfo * view)
     view->Selection.SelectionColor.B = 1;
     view->Selection.SelectionColor.A = 1;
     view->Selection.Anti = 0;
-    view->Topview = malloc(sizeof(topview));
+    view->Topview = GNEW(topview);
     view->Topview->topviewmenu = '\0';
 	view->cameras='\0';;
 	view->camera_count=0;
@@ -352,54 +351,48 @@ void init_viewport(ViewInfo * view)
  */
 static void load_graph_params(Agraph_t * graph)
 {
+    char* s;
     //file may or may have not gl edit attributes
     //first defaults are set in loading function
     //here file is checked for previously saved gledit attributes
-    if (agget(graph, "GraphName"))	//Graph Name
+    if ((s == agget(graph, "GraphName")))	//Graph Name
     {
-	((custom_graph_data *) AGDATA(graph))->GraphName =
-	    (char *) malloc((strlen(agget(graph, "GraphName")) + 1) *
-			    sizeof(char));
-	strcpy(((custom_graph_data *) AGDATA(graph))->GraphName,
-	       agget(graph, "GraphName"));
+	GD_GraphName(graph) = N_GNEW(strlen(s)+1,char);
+	strcpy(GD_GraphName(graph), s);
     }
-    if (agget(graph, "AlwaysShow"))	//Graph Name
-	((custom_graph_data *) AGDATA(graph))->AlwaysShow =
-	    atoi(agget(graph, "AlwaysShow"));
+    if ((s = agget(graph, "AlwaysShow")))
+	GD_AlwaysShow(graph) = atoi(s);
     else
-	((custom_graph_data *) AGDATA(graph))->AlwaysShow = 0;
+	GD_AlwaysShow(graph) = 0;
 
-    if (agget(graph, "TopView"))	//Graph Name
-	((custom_graph_data *) AGDATA(graph))->TopView =
-	    atoi(agget(graph, "TopView"));
+    if ((s = agget(graph, "TopView")))
+	GD_TopView(graph) = atoi(s);
     else
-	((custom_graph_data *) AGDATA(graph))->TopView = 0;
-    if (agget(graph, "Locked"))	//Graph Name
-	((custom_graph_data *) AGDATA(graph))->Locked =
-	    atoi(agget(graph, "Locked"));
+	GD_TopView(graph) = 0;
+    if ((s = agget(graph, "Locked")))
+	GD_Locked(graph) = atoi(s);
     else
-	((custom_graph_data *) AGDATA(graph))->Locked = 0;
-    if (agget(graph, "Engine"))	//Graph Name
-	((custom_graph_data *) AGDATA(graph))->Engine =
-	    atoi(agget(graph, "Engine"));
+	GD_Locked(graph) = 0;
+    if ((s = agget(graph, "Engine")))
+	GD_Engine(graph) = atoi(s);
     else
-	((custom_graph_data *) AGDATA(graph))->Engine = 0;	//DOT
+	GD_Engine(graph) = 0;
 
-    ((custom_graph_data *) AGDATA(graph))->Modified = 0;	//not modified yet
-    ((custom_graph_data *) AGDATA(graph))->selectedEdges = '\0';
-    ((custom_graph_data *) AGDATA(graph))->selectedNodes = '\0';
-    ((custom_graph_data *) AGDATA(graph))->selectedGraphs = '\0';
+    GD_Modified(graph) = 0;	//not modified yet
+    GD_selectedEdges(graph) = NULL;
+    GD_selectedNodes(graph) = NULL;
+    GD_selectedGraphs(graph) = NULL;
 
-    ((custom_graph_data *) AGDATA(graph))->selectedNodesCount = 0;
-    ((custom_graph_data *) AGDATA(graph))->selectedEdgesCount = 0;
-    ((custom_graph_data *) AGDATA(graph))->selectedGraphsCount = 0;
+    GD_selectedNodesCount(graph) = 0;
+    GD_selectedEdgesCount(graph) = 0;
+    GD_selectedGraphsCount(graph) = 0;
 
-
-
-/*		if(agget((void*)g, "xdotversion"))	//xdot exists
-			((custom_graph_data*)AGDATA(g))->view->Topview=0; //need to check xdot version attribute
-		else		//we dont know if it is view->Topview or simply a graph with no xdot, for testing i ll use view->Topview
-			((custom_graph_data*)AGDATA(g))->view->Topview=1;  */
+#if 0
+    if((s = agget(graph, "xdotversion")))
+	((custom_graph_data*)AGDATA(g))->view->Topview=0; //need to check xdot version attribute
+    else	//we dont know if it is view->Topview or simply a graph with no xdot, for testing i ll use view->Topview
+	((custom_graph_data*)AGDATA(g))->view->Topview=1;
+#endif
 
 }
 
@@ -436,21 +429,16 @@ static int attach_object_custom_data_to_graph(Agraph_t * graph)
 static void update_graph_params(Agraph_t * graph)
 {
     char tempString[100];
-    agattr(graph, AGRAPH, "GraphFileName",
-	   ((custom_graph_data *) (AGDATA(graph)))->GraphFileName);
-    agattr(graph, AGRAPH, "GraphName",
-	   ((custom_graph_data *) (AGDATA(graph)))->GraphName);
-    sprintf(tempString, "%i",
-	    ((custom_graph_data *) (AGDATA(graph)))->AlwaysShow);
+
+    agattr(graph, AGRAPH, "GraphFileName", GD_GraphFileName(graph));
+    agattr(graph, AGRAPH, "GraphName", GD_GraphName(graph));
+    sprintf(tempString, "%i", GD_AlwaysShow(graph));
     agattr(graph, AGRAPH, "AlwaysShow", tempString);
-    sprintf(tempString, "%i",
-	    ((custom_graph_data *) (AGDATA(graph)))->TopView);
+    sprintf(tempString, "%i", GD_TopView(graph));
     agattr(graph, AGRAPH, "TopView", tempString);
-    sprintf(tempString, "%i",
-	    ((custom_graph_data *) (AGDATA(graph)))->Locked);
+    sprintf(tempString, "%i", GD_Locked(graph));
     agattr(graph, AGRAPH, "Locked", tempString);
-    sprintf(tempString, "%i",
-	    ((custom_graph_data *) (AGDATA(graph)))->Engine);
+    sprintf(tempString, "%i", GD_Engine(graph));
     agattr(graph, AGRAPH, "Engine", tempString);
 
 }
@@ -732,9 +720,7 @@ void refreshControls(ViewInfo * v)
     widget = get_SelectGraph();
     //load graph names to combobox
     for (i = 0; i < v->graphCount; i++) {
-	gtk_combo_box_append_text(widget,
-				  ((custom_graph_data
-				    *) (AGDATA(v->g[i])))->GraphFileName);
+	gtk_combo_box_append_text(widget, GD_GraphFileName(v->g[i]));
     }
     view->SignalBlock = 1;	//HACK
     gtk_combo_box_set_active(widget, view->activeGraph);
@@ -749,36 +735,24 @@ void refreshControls(ViewInfo * v)
     Color_Widget_bg("gray", glade_xml_get_widget(xml, "btnFdp"));
 
 
-    switch (((custom_graph_data *) (AGDATA(view->g[view->activeGraph])))->
-	    Engine) {
-    case 0:
+    switch (GD_Engine(view->g[view->activeGraph])) {
+    case GVK_DOT :
 	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnDot"));
 	break;
-
-    case 1:
+    case GVK_NEATO :
 	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnNeato"));
 	break;
-
-    case 2:
+    case GVK_TWOPI :
 	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnTwopi"));
 	break;
-
-    case 3:
+    case GVK_CIRCO :
 	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnCirco"));
 	break;
-
-    case 4:
+    case GVK_FDP :
 	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnFdp"));
 	break;
-
-
     }
     glexpose();
-
-
-
-
-
 }
 
 /* save_graph_with_file_name:
@@ -790,21 +764,20 @@ static int save_graph_with_file_name(Agraph_t * graph, char *fileName)
     update_graph_params(graph);
     if (fileName)
 	output_file = fopen(fileName, "w");
+    else if (GD_GraphFileName(graph))
+	output_file = fopen(GD_GraphFileName(graph), "w");
     else {
-	if (((custom_graph_data *) (AGDATA(graph)))->GraphFileName)
-	    output_file =
-		fopen(((custom_graph_data *) (AGDATA(graph)))->
-		      GraphFileName, "w");
-	else {
-	    g_print("there is no file name to save! Programmer error\n");
-	    return 0;
-	}
+	g_print("there is no file name to save! Programmer error\n");
+	return 0;
     }
+
     if (output_file == NULL) {
 	g_print("Cannot create file \n");
 	return 0;
-    } else if (agwrite(graph, (void *) output_file)) {
-	g_print("%s sucessfully saved \n", fileName);
+    } 
+
+    if (agwrite(graph, (void *) output_file)) {
+	g_print("%s successfully saved \n", fileName);
 	return 1;
     }
     return 0;
@@ -818,14 +791,10 @@ int save_graph()
     //check if there is an active graph
     if (view->activeGraph > -1) {
 	//check if active graph has a file name
-	if (((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	    GraphFileName) {
-	    return save_graph_with_file_name(view->g[view->activeGraph],
-					     ((custom_graph_data *)
-					      AGDATA(view->
-						     g[view->
-						       activeGraph]))->
-					     GraphFileName);
+	if (GD_GraphFileName(view->g[view->activeGraph])) {
+	    return save_graph_with_file_name(
+			view->g[view->activeGraph],
+			GD_GraphFileName(view->g[view-> activeGraph]));
 	} else
 	    return save_as_graph();
     }
@@ -967,17 +936,17 @@ static int init_object_custom_data(Agraph_t * graph, void *obj)
 {
     agdelrec(graph, "custom_object_data");
     agbindrec(obj, "custom_object_data", sizeof(custom_object_data), TRUE);
-    ((custom_object_data *) AGDATA(obj))->ID = 0;
-    ((custom_object_data *) AGDATA(obj))->ObjName = NULL;
-    ((custom_object_data *) AGDATA(obj))->ObjType = AGTYPE(obj);
-    ((custom_object_data *) AGDATA(obj))->Layer = -1;
-    ((custom_object_data *) AGDATA(obj))->Visible = 1;
-    ((custom_object_data *) AGDATA(obj))->Locked = 0;
-    ((custom_object_data *) AGDATA(obj))->Highlighted = 0;
-    ((custom_object_data *) AGDATA(obj))->NumDataCount = 0;
-    ((custom_object_data *) AGDATA(obj))->NumData = NULL;
-    ((custom_object_data *) AGDATA(obj))->StrDataCount = 0;
-    ((custom_object_data *) AGDATA(obj))->StrData = NULL;
+    OD_ID(obj) = 0;
+    OD_ObjName(obj) = NULL;
+    OD_ObjType(obj) = AGTYPE(obj);
+    OD_Layer(obj) = -1;
+    OD_Visible(obj) = 1;
+    OD_Locked(obj) = 0;
+    OD_Highlighted(obj) = 0;
+    OD_NumDataCount(obj) = 0;
+    OD_NumData(obj) = NULL;
+    OD_StrDataCount(obj) = 0;
+    OD_StrData(obj) = NULL;
     return 1;
 }
 
@@ -986,12 +955,10 @@ static int clear_string_data_from_object_custom_data(void *obj)
 {
     if (obj != NULL) {
 	int ind = 0;
-	for (ind = 0;
-	     ind < ((custom_object_data *) AGDATA(obj))->StrDataCount;
-	     ind++) {
-	    free(((custom_object_data *) AGDATA(obj))->StrData[ind]);
+	for (ind = 0; ind < OD_StrDataCount(obj); ind++) {
+	    free(OD_StrData(obj)[ind]);
 	}
-	free(((custom_object_data *) AGDATA(obj))->StrData);
+	free(OD_StrData(obj);
 	return 1;
     }
     return 0;
@@ -1003,7 +970,7 @@ static int clear_string_data_from_object_custom_data(void *obj)
 static int clear_numeric_data_from_object_custom_data(void *obj)
 {
     if (obj != NULL) {
-	free(((custom_object_data *) AGDATA(obj))->NumData);
+	free(OD_NumData(obj);
 	return 1;
     }
     return 0;
@@ -1018,18 +985,10 @@ static int clear_object_custom_data(void *obj)
 static int add_string_data_to_object_custom_data(void *obj, char *data)
 {
     if ((obj != NULL) && (data != NULL)) {
-	((custom_object_data *) AGDATA(obj))->StrData =
-	    realloc(((custom_object_data *) AGDATA(obj))->StrData,
-		    sizeof(char *) *
-		    (((custom_object_data *) AGDATA(obj))->StrDataCount +
-		     1));
-	((custom_object_data *) AGDATA(obj))->
-	    StrData[((custom_object_data *) AGDATA(obj))->StrDataCount] =
-	    malloc((strlen(data) + 1) * sizeof(char));
-	strcpy(((custom_object_data *) AGDATA(obj))->
-	       StrData[((custom_object_data *) AGDATA(obj))->StrDataCount],
-	       data);
-	((custom_object_data *) AGDATA(obj))->StrDataCount++;
+	OD_StrData(obj) = RALLOC(OD_StrDataCount(obj)+1,OD_StrData(obj), char*);
+	OD_StrData(obj)[OD_StrDataCount(obj)] = N_GNEW((strlen(data)+1), char);
+	strcpy(OD_StrData(obj)[OD_StrDataCount(obj)], data);
+	OD_StrDataCount(obj)++;
 	return 1;
     }
     return 0;
@@ -1038,15 +997,9 @@ static int add_string_data_to_object_custom_data(void *obj, char *data)
 int add_numeric_data_to_object_custom_data(void *obj, float data)
 {
     if (obj != NULL) {
-	((custom_object_data *) AGDATA(obj))->NumData =
-	    realloc(((custom_object_data *) AGDATA(obj))->StrData,
-		    sizeof(char *) *
-		    (((custom_object_data *) AGDATA(obj))->NumDataCount +
-		     1));
-	((custom_object_data *) AGDATA(obj))->
-	    NumData[((custom_object_data *) AGDATA(obj))->NumDataCount] =
-	    data;
-	((custom_object_data *) AGDATA(obj))->NumDataCount++;
+	OD_NumData(obj) = RALLOC(OD_NumDataCount(obj)+1,OD_NumData(obj), char*);
+	OD_NumData(obj)[OD_NumDataCount(obj)] = data;
+	OD_NumDataCount(obj)++;
 	return 1;
     }
     return 0;
@@ -1152,12 +1105,8 @@ static char *offset_spline(xdot * x, float dx, float dy, float headx,
 	case xd_filled_bezier:
 	case xd_unfilled_bezier:
 	case xd_polyline:
-	    if (((custom_object_data *) AGDATA((headn)->obj))->Selected ==
-		1)
-		&&((custom_object_data *) AGDATA((tailn)->obj))->
-		    Selected == 1)) {
+	    if (OD_Selected((headn)->obj) && OD_Selected((tailn)->obj)) {
 		for (j = 0; j < x->ops[i].u.polygon.cnt; j++) {
-
 		    x->ops[i].u.polygon.pts[j].x =
 			x->ops[i].u.polygon.pts[j].x + dx;
 		    x->ops[i].u.polygon.pts[j].y =
@@ -1165,7 +1114,7 @@ static char *offset_spline(xdot * x, float dx, float dy, float headx,
 		    x->ops[i].u.polygon.pts[j].z =
 			x->ops[i].u.polygon.pts[j].z + dz;
 		}
-		}
+	    }
 	    break;
 	}
     }
@@ -1186,12 +1135,9 @@ void move_nodes(Agraph_t * g)
     dx = view->GLx - view->GLx2;
     dy = view->GLy - view->GLy2;
 
-    if (((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	TopView == 0) {
-	for (i = 0;
-	     i < ((custom_graph_data *) AGDATA(g))->selectedNodesCount;
-	     i++) {
-	    obj = ((custom_graph_data *) AGDATA(g))->selectedNodes[i];
+    if (GD_TopView(view->g[view->activeGraph]) == 0) {
+	for (i = 0; i < GD_selectedNodesCount(g); i++) {
+	    obj = GD_selectedNodes(g)[i];
 	    bf = parseXDot(agget(obj, "_draw_"));
 	    agset(obj, "_draw_",
 		  move_xdot(obj, bf, (int) dx, (int) dy, 0));

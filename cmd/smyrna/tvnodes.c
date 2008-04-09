@@ -19,6 +19,8 @@
 #include "btree.h"
 #include "viewport.h"
 #include "selection.h"
+#include "memory.h"
+
 tv_nodes TV_Nodes;
 static char buf[255];
 int MP_Flag = 0;
@@ -42,7 +44,7 @@ static
 tv_filter *create_tv_filter()
 {
     tv_filter *f;
-    f = (tv_filter *) malloc(sizeof(tv_filter));
+    f = NEW(tv_filter);
     clear_tv_filter(f);
     return f;
 }
@@ -105,8 +107,7 @@ int reverse_selection()
 {
     int i = 0;
     for (i; i < view->Topview->Nodecount; i++) {
-	if (((custom_object_data *) AGDATA(view->Topview->Nodes[i].Node))->
-	    Selected)
+	if (OD_Selected(view->Topview->Nodes[i].Node))
 	    deselect_node(view->g[view->activeGraph],
 			  view->Topview->Nodes[i].Node);
 	else
@@ -114,8 +115,7 @@ int reverse_selection()
 			view->Topview->Nodes[i].Node);
     }
     for (i = 0; i < view->Topview->Edgecount; i++) {
-	if (((custom_object_data *) AGDATA(view->Topview->Edges[i].Edge))->
-	    Selected)
+	if (OD_Selected(view->Topview->Edges[i].Edge))
 	    deselect_edge(view->g[view->activeGraph],
 			  view->Topview->Edges[i].Edge);
 	else
@@ -182,23 +182,20 @@ int validate_node(tv_node * TV_Node)
 	    valid = evaluate_expresions(TV_Node, n);
 	//if show only highlighted 
 	if (TV_Nodes.filter.highlighted >= 0) {
-	    if (((custom_object_data *)
-		 AGDATA(view->Topview->Nodes[TV_Node->index].Node))->
-		Highlighted != TV_Nodes.filter.highlighted)
+	    if (OD_Highlighted(view->Topview->Nodes[TV_Node->index].Node)
+		!= TV_Nodes.filter.highlighted)
 		valid = 0;
 	}
 	//if show only visibles
 	if (TV_Nodes.filter.visible >= 0) {
-	    if (((custom_object_data *)
-		 AGDATA(view->Topview->Nodes[TV_Node->index].Node))->
-		Visible != TV_Nodes.filter.visible)
+	    if (OD_Visible(view->Topview->Nodes[TV_Node->index].Node)
+		 != TV_Nodes.filter.visible)
 		valid = 0;
 	}
 	//if show only selected
 	if (TV_Nodes.filter.selected >= 0) {
-	    if (((custom_object_data *)
-		 AGDATA(view->Topview->Nodes[TV_Node->index].Node))->
-		Selected != TV_Nodes.filter.selected)
+	    if (OD_Selected(view->Topview->Nodes[TV_Node->index].Node)
+		!= TV_Nodes.filter.selected)
 		valid = 0;
 	}
 	return valid;
@@ -227,10 +224,7 @@ static int update_node_gui_objects(tv_node * TV_Node)
     }
     gtk_widget_show((GtkWidget *) TV_Node->chkSelected);
     gtk_toggle_button_set_active((GtkToggleButton *) TV_Node->chkSelected,
-				 ((custom_object_data *)
-				  AGDATA(view->Topview->
-					 Nodes[TV_Node->index].Node))->
-				 Selected);
+	OD_Selected(view->Topview-> Nodes[TV_Node->index].Node));
 
     //Id Label
     if (!TV_Node->IDLabel) {
@@ -251,10 +245,7 @@ static int update_node_gui_objects(tv_node * TV_Node)
 
     gtk_widget_show((GtkWidget *) TV_Node->chkVisible);
     gtk_toggle_button_set_active((GtkToggleButton *) TV_Node->chkVisible,
-				 ((custom_object_data *)
-				  AGDATA(view->Topview->
-					 Nodes[TV_Node->index].Node))->
-				 Visible);
+	OD_Visible(view->Topview->Nodes[TV_Node->index].Node));
     //highlighted
     if (!TV_Node->chkHighlighted) {
 	TV_Node->chkHighlighted =
@@ -263,12 +254,8 @@ static int update_node_gui_objects(tv_node * TV_Node)
 		       LOCATION_X_CHKHIGHLIGHTED, TV_Nodes.Y);
     }
     gtk_widget_show((GtkWidget *) TV_Node->chkHighlighted);
-    gtk_toggle_button_set_active((GtkToggleButton *) TV_Node->
-				 chkHighlighted,
-				 ((custom_object_data *)
-				  AGDATA(view->Topview->
-					 Nodes[TV_Node->index].Node))->
-				 Highlighted);
+    gtk_toggle_button_set_active((GtkToggleButton*)TV_Node-> chkHighlighted,
+	OD_Highlighted(view->Topview->Nodes[TV_Node->index].Node));
 
 
     //DATA 1
@@ -426,18 +413,15 @@ int reset_page_History()
 	}*/
     TV_Nodes.page_history_count = 0;
     TV_Nodes.page_history =
-	realloc(TV_Nodes.page_history,
-		sizeof(int) * TV_Nodes.page_history_count);
+	RALLOC(TV_Nodes.page_history_count, TV_Nodes.page_history, int);
     return 1;
-
-
 }
+
 static int push_to_page_history(int index)
 {
     TV_Nodes.page_history_count++;
     TV_Nodes.page_history =
-	realloc(TV_Nodes.page_history,
-		sizeof(int) * TV_Nodes.page_history_count);
+	RALLOC(TV_Nodes.page_history_count, TV_Nodes.page_history, int);
     TV_Nodes.page_history[TV_Nodes.page_history_count - 1] = index;
     return 1;
 }
@@ -451,8 +435,7 @@ static int pop_from_page_history()
 	    TV_Nodes.page_history[TV_Nodes.page_history_count - 1];
 	TV_Nodes.page_history_count--;
 	TV_Nodes.page_history =
-	    realloc(TV_Nodes.page_history,
-		    sizeof(int) * TV_Nodes.page_history_count);
+	    RALLOC(TV_Nodes.page_history_count, TV_Nodes.page_history, int);
 	return return_value;
     }
     return 0;
@@ -496,7 +479,7 @@ int prepare_page_history()
 {
     GtkLabel *lblTVPage;
     GtkSpinButton *spn;
-    int i = 0;
+    int i;
     int count = 0;
     tv_node tvn;
     TV_Nodes.pagecount = 0;
@@ -504,7 +487,7 @@ int prepare_page_history()
     reset_page_History();
     push_to_page_history(0);
 
-    for (i; i < view->Topview->Nodecount; i++) {
+    for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (validate_node(&tvn)) {
 	    count++;
@@ -532,7 +515,7 @@ int prepare_page_history()
 
 int update_TV_data_from_gui()
 {
-    int i = 0;
+    int i;
     int index = 0;
     char *data_attr1;
     char *data_attr2;
@@ -540,56 +523,37 @@ int update_TV_data_from_gui()
     data_attr1 = agget(view->g[view->activeGraph], "DataAttribute1");
     data_attr2 = agget(view->g[view->activeGraph], "DataAttribute2");
 
-    for (i; i < TV_Nodes.recordperpage; i++) {
+    for (i = 0; i < TV_Nodes.recordperpage; i++) {
 	index = TV_Nodes.TV_Node[i].index;
 	if (index < view->Topview->Nodecount) {
 	    // apply if selected
 	    if (gtk_toggle_button_get_active
 		((GtkToggleButton *) TV_Nodes.TV_Node[i].chkSelected)) {
-		if (!
-		    ((custom_object_data *)
-		     AGDATA(view->Topview->Nodes[index].Node))->Selected)
+		if (!OD_Selected(view->Topview->Nodes[index].Node))
 		    select_node(view->g[view->activeGraph],
 				view->Topview->Nodes[index].Node);
 	    } else {
-		if (((custom_object_data *)
-		     AGDATA(view->Topview->Nodes[index].Node))->Selected)
+		if (OD_Selected(view->Topview->Nodes[index].Node))
 		    deselect_node(view->g[view->activeGraph],
 				  view->Topview->Nodes[index].Node);
 	    }
 	    // apply if Visible
 	    if (gtk_toggle_button_get_active
 		((GtkToggleButton *) TV_Nodes.TV_Node[i].chkVisible)) {
-		if (!
-		    ((custom_object_data *)
-		     AGDATA(view->Topview->Nodes[index].Node))->Visible)
-		    ((custom_object_data *)
-		     AGDATA(view->Topview->Nodes[index].Node))->Visible =
- 1;
+		if (!OD_Visible(view->Topview->Nodes[index].Node))
+		     OD_Visible(view->Topview->Nodes[index].Node) = 1;
 	    } else {
-		if (((custom_object_data *)
-		     AGDATA(view->Topview->Nodes[index].Node))->Visible)
-		    ((custom_object_data *)
-		     AGDATA(view->Topview->Nodes[index].Node))->Visible =
- 0;
+		if (OD_Visible(view->Topview->Nodes[index].Node))
+		     OD_Visible(view->Topview->Nodes[index].Node) = 0;
 	    }
 	    // apply if Highlighted
 	    if (gtk_toggle_button_get_active
 		((GtkToggleButton *) TV_Nodes.TV_Node[i].chkHighlighted)) {
-		if (!
-		    ((custom_object_data *)
-		     AGDATA(view->Topview->Nodes[index].Node))->
-		    Highlighted)
-		    ((custom_object_data *)
-		     AGDATA(view->Topview->Nodes[index].Node))->
- Highlighted = 1;
+		if (!OD_Highlighted(view->Topview->Nodes[index].Node))
+		     OD_Highlighted(view->Topview->Nodes[index].Node) = 1;
 	    } else {
-		if (((custom_object_data *)
-		     AGDATA(view->Topview->Nodes[index].Node))->
-		    Highlighted)
-		    ((custom_object_data *)
-		     AGDATA(view->Topview->Nodes[index].Node))->
- Highlighted = 0;
+		if (OD_Highlighted(view->Topview->Nodes[index].Node))
+		     OD_Highlighted(view->Topview->Nodes[index].Node) = 0;
 	    }
 	    //Data1 
 	    agset((void *) view->Topview->Nodes[index].Node, data_attr1,
@@ -671,8 +635,8 @@ int tv_select_all()
 {
 
     tv_node tvn;
-    int i = 0;
-    for (i; i < view->Topview->Nodecount; i++) {
+    int i;
+    for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (validate_node(&tvn)) {
 	    select_node(view->g[view->activeGraph],
@@ -688,8 +652,8 @@ int tv_unselect_all()
 {
 
     tv_node tvn;
-    int i = 0;
-    for (i; i < view->Topview->Nodecount; i++) {
+    int i;
+    for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (validate_node(&tvn)) {
 	    deselect_node(view->g[view->activeGraph],
@@ -704,12 +668,11 @@ int tv_unselect_all()
 int tv_highligh_all()
 {
     tv_node tvn;
-    int i = 0;
-    for (i; i < view->Topview->Nodecount; i++) {
+    int i;
+    for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (validate_node(&tvn)) {
-	    ((custom_object_data *) AGDATA(view->Topview->Nodes[i].Node))->
-		Highlighted = 1;
+	    OD_Highlighted(view->Topview->Nodes[i].Node) = 1;
 	}
     }
     apply_filter_from_gui();
@@ -721,12 +684,11 @@ int tv_highligh_all()
 int tv_unhighligh_all()
 {
     tv_node tvn;
-    int i = 0;
-    for (i; i < view->Topview->Nodecount; i++) {
+    int i;
+    for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (validate_node(&tvn)) {
-	    ((custom_object_data *) AGDATA(view->Topview->Nodes[i].Node))->
-		Highlighted = 0;
+	    OD_Highlighted(view->Topview->Nodes[i].Node) = 0;
 	}
     }
     apply_filter_from_gui();
@@ -737,12 +699,11 @@ int tv_unhighligh_all()
 int tv_show_all()
 {
     tv_node tvn;
-    int i = 0;
-    for (i; i < view->Topview->Nodecount; i++) {
+    int i;
+    for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (validate_node(&tvn)) {
-	    ((custom_object_data *) AGDATA(view->Topview->Nodes[i].Node))->
-		Visible = 1;
+	    OD_Visible(view->Topview->Nodes[i].Node) = 1;
 	}
     }
     apply_filter_from_gui();
@@ -755,12 +716,11 @@ int tv_show_all()
 int tv_hide_all()
 {
     tv_node tvn;
-    int i = 0;
-    for (i; i < view->Topview->Nodecount; i++) {
+    int i;
+    for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (validate_node(&tvn)) {
-	    ((custom_object_data *) AGDATA(view->Topview->Nodes[i].Node))->
-		Visible = 0;
+	    OD_Visible(view->Topview->Nodes[i].Node) = 0;
 	}
     }
     apply_filter_from_gui();

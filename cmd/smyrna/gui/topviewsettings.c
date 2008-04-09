@@ -15,9 +15,9 @@
 
 #include "topviewsettings.h"
 #include "gui.h"
-#include "color.h"
-
-
+#include "colorprocs.h"
+#include "viewport.h"
+#include "memory.h"
 
 void on_settingsOKBtn_clicked(GtkWidget * widget, gpointer user_data)
 {
@@ -61,7 +61,7 @@ static int get_color_button_widget_to_attribute(char *attribute,
 						Agraph_t * g)
 {
     GdkColor color;
-    char *buf = malloc(256);
+    char *buf = N_GNEW(256,char);
     gtk_color_button_get_color((GtkColorButton *)
 			       glade_xml_get_widget(xml, widget_name),
 			       &color);

@@ -180,7 +180,7 @@ vtx_data *makeGraph(topview * tv, int *nedges)
 	    vp = (tp == np ? hp : tp);
 	    ne++;
 	    i_nedges++;
-	    *edges++ = ((custom_object_data *) AGDATA(vp))->TVRef;
+	    *edges++ = OD_TVRef(vp);
 	}
 
 	graph[i].nedges = i_nedges;

@@ -223,9 +223,20 @@ typedef struct _custom_graph_data {
     int selectedEdgesCount;
 } custom_graph_data;
 
-#define GD_Engine(g) (((custom_graph_data*)AGDATA(g))->Engine)
-#define GD_GraphFileName(g) (((custom_graph_data*)AGDATA(g))->GraphFileName)
-#define GD_Modified(g) (((custom_graph_data*)AGDATA(g))->Modified)
+#define GD_data(g) ((custom_graph_data*)AGDATA(g))
+#define GD_TopView(g) (GD_data(g)->TopView)
+#define GD_Engine(g) (GD_data(g)->Engine)
+#define GD_GraphFileName(g) (GD_data(g)->GraphFileName)
+#define GD_GraphName(g) (GD_data(g)->GraphName)
+#define GD_AlwaysShow(g) (GD_data(g)->AlwaysShow)
+#define GD_Locked(g) (GD_data(g)->Locked)
+#define GD_Modified(g) (GD_data(g)->Modified)
+#define GD_selectedGraphs(g) (GD_data(g)->selectedGraphs)
+#define GD_selectedGraphsCount(g) (GD_data(g)->selectedGraphsCount)
+#define GD_selectedNodesCount(g) (GD_data(g)->selectedNodesCount)
+#define GD_selectedNodes(g) (GD_data(g)->selectedNodes)
+#define GD_selectedEdgesCount(g) (GD_data(g)->selectedEdgesCount)
+#define GD_selectedEdges(g) (GD_data(g)->selectedEdges)
 
 typedef enum { GEpixels, GEinches, GEmm } GEunit;
 
@@ -251,10 +262,21 @@ typedef struct _custom_object_data	//has to be attached to every Node, Edge, Gra
 
 } custom_object_data;
 
-#define OD_id(p) (((custom_object_data*)AGDATA(p))->TVRef)
+#define OD_ID(p) (((custom_object_data*)AGDATA(p))->ID)
+#define OD_ObjName(p) (((custom_object_data*)AGDATA(p))->ObjName)
+#define OD_ObjType(p) (((custom_object_data*)AGDATA(p))->ObjType)
+#define OD_Layer(p) (((custom_object_data*)AGDATA(p))->Layer)
+#define OD_Visible(p) (((custom_object_data*)AGDATA(p))->Visible)
+#define OD_Locked(p) (((custom_object_data*)AGDATA(p))->Locked)
+#define OD_Highlighted(p) (((custom_object_data*)AGDATA(p))->Highlighted)
+#define OD_NumDataCount(p) (((custom_object_data*)AGDATA(p))->NumDataCount)
+#define OD_NumData(p) (((custom_object_data*)AGDATA(p))->NumData)
+#define OD_StrDataCount(p) (((custom_object_data*)AGDATA(p))->StrDataCount)
+#define OD_StrData(p) (((custom_object_data*)AGDATA(p))->StrData)
 #define OD_Selected(p) (((custom_object_data*)AGDATA(p))->Selected)
 #define OD_Preselected(p) (((custom_object_data*)AGDATA(p))->Preselected)
 #define OD_SelFlag(p) (((custom_object_data*)AGDATA(p))->selectionflag)
+#define OD_TVRef(p) (((custom_object_data*)AGDATA(p))->TVRef)
 
 typedef struct _selection {
     int Active;			//0 there is no selection need to be applied

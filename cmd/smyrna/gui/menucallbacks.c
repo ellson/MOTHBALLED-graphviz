@@ -74,18 +74,16 @@ void mQuitSlot(GtkWidget * widget, gpointer user_data)
 {
     //1 check all graphs 1 by 1 to see any unsaved
     int respond;
-    int gIndex = 0;
+    int gIndex;
 #ifdef UNUSED
     int active_graph = view->activeGraph;	//stores the active graph in case quit aborted
 #endif
-    for (gIndex; gIndex < view->graphCount; gIndex++) {
+    for (gIndex = 0; gIndex < view->graphCount; gIndex++) {
 	view->activeGraph = gIndex;
-	if (((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	    Modified) {
+	if (GD_Modified(view->g[view->activeGraph])) {
 	    sprintf(buf,
 		    "graph %s has been modified \n , would you like to save it before quitting the the program?",
-		    ((custom_graph_data *)
-		     AGDATA(view->g[view->activeGraph]))->GraphName);
+		     GD_GraphName(view->g[view->activeGraph]));
 	    Dlg =
 		(GtkMessageDialog *) gtk_message_dialog_new(NULL,
 							    GTK_DIALOG_MODAL,
@@ -198,8 +196,7 @@ void mGraphPropertiesSlot(GtkWidget * widget, gpointer user_data)
 }
 void mClusterPropertiesSlot(GtkWidget * widget, gpointer user_data)
 {
-    if (((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	selectedGraphsCount > 0) {
+    if (GD_selectedGraphsCount(view->g[view->activeGraph]) > 0) {
 	gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 	gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
 	load_object_properties(1, view->g[view->activeGraph]);
@@ -216,8 +213,7 @@ void mClusterPropertiesSlot(GtkWidget * widget, gpointer user_data)
 }
 void mNodePropertiesSlot(GtkWidget * widget, gpointer user_data)
 {
-    if (((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	selectedNodesCount > 0) {
+    if (GD_selectedNodesCount(view->g[view->activeGraph]) > 0) {
 	gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 	gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
 	load_object_properties(2, view->g[view->activeGraph]);
@@ -234,8 +230,7 @@ void mNodePropertiesSlot(GtkWidget * widget, gpointer user_data)
 }
 void mEdgePropertiesSlot(GtkWidget * widget, gpointer user_data)
 {
-    if (((custom_graph_data *) AGDATA(view->g[view->activeGraph]))->
-	selectedEdgesCount > 0) {
+    if (GD_selectedEdgesCount(view->g[view->activeGraph]) > 0) {
 	gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 	gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
 	load_object_properties(3, view->g[view->activeGraph]);
