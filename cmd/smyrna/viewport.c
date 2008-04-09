@@ -225,8 +225,8 @@ there i go, turn the page
 
 //FIXME: I don't think an openGL function can be called before it
   //     is initialized.
+#ifdef _WIN32
     glClearColor(view->bgColor.R, view->bgColor.G, view->bgColor.B, view->bgColor.A);	//background color
-#if 0
 #endif
 }
 
