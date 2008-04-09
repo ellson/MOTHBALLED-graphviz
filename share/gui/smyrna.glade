@@ -11,7 +11,7 @@
     <property name="default_width">470</property>
     <property name="default_height">808</property>
     <property name="deletable">False</property>
-    <child>
+     <child>
       <widget class="GtkNotebook" id="notebook1">
         <property name="visible">True</property>
         <child>
