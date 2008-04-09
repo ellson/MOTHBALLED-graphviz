@@ -1209,11 +1209,12 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
             }
 #endif /* MOSEK */
 	    margin = sepFactor (g);
+ 	    /* Multiply by 2 since opt.gap is the gap size, not the margin */
 	    if (margin.doAdd) {
-		opt.gap.x = PS2INCH(margin.x);
-		opt.gap.y = PS2INCH(margin.y);
+		opt.gap.x = 2.0*PS2INCH(margin.x);
+		opt.gap.y = 2.0*PS2INCH(margin.y);
 	    }
-            else opt.gap.x = opt.gap.y = PS2INCH(DFLT_MARGIN);
+            else opt.gap.x = opt.gap.y = 2.0*PS2INCH(DFLT_MARGIN);
 	    if(Verbose)
 		fprintf(stderr,"gap=%f,%f\n",opt.gap.x,opt.gap.y);
             for (i=0, v = agfstnode(g); v; v = agnxtnode(g, v),i++) {
