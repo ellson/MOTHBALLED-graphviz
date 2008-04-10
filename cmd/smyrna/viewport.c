@@ -355,7 +355,7 @@ static void load_graph_params(Agraph_t * graph)
     //file may or may have not gl edit attributes
     //first defaults are set in loading function
     //here file is checked for previously saved gledit attributes
-    if ((s == agget(graph, "GraphName")))	//Graph Name
+    if ((s = agget(graph, "GraphName")))	//Graph Name
     {
 	GD_GraphName(graph) = N_GNEW(strlen(s)+1,char);
 	strcpy(GD_GraphName(graph), s);
