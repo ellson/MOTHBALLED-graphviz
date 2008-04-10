@@ -76,6 +76,8 @@
 #define NODE_CIRCLE_LIMIT	-7.3
 
 typedef enum { nodshapedot,nodeshapecircle} node_shape;
+typedef enum { leftmousebutton,rightmousebutton,thirdmousebutton} clicked_mouse_button;
+
 
 typedef struct {
     float R;
@@ -180,8 +182,13 @@ enum {
 typedef struct _mouse_attr {
     int mouse_down;
     int mouse_mode;
-    int mouse_X;
-    int mouse_Y;
+    float mouse_X;
+    float mouse_Y;
+	float begin_x;
+	float begin_y;
+	float dx;
+	float dy;
+	clicked_mouse_button button;
 } mouse_attr;
 
 

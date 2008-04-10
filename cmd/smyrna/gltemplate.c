@@ -22,6 +22,7 @@
 #include "gltemplate.h"
 #include "glutils.h"
 #include "glexpose.h"
+#include "glmotion.h"
 #include "glmenu.h"
 #include "selection.h"
 #include "glcompset.h"
@@ -251,14 +252,16 @@ static gboolean button_press_event(GtkWidget * widget,
     begin_x = (float) event->x;
     begin_y = (float) event->y;
 
+    if (event->button == 3)	//right click
+		view->mouse.button = rightmousebutton;
 
 
     if (event->button == 1)	//left click
     {
 		view->prevpanx = view->panx;
 		view->prevpany = view->pany;
-
 		view->mouse.mouse_down = 1;
+		view->mouse.button = leftmousebutton;
 	if (GetOGLPosRef
 	    ((int) begin_x, (int) begin_y, &(view->GLx), &(view->GLy),
 	     &(view->GLz))) {
@@ -355,24 +358,23 @@ static gboolean motion_notify_event(GtkWidget * widget,
 	gboolean redraw = FALSE;
     dx = x - begin_x;
     dy = y - begin_y;
-    /*panning */
+
+	view->mouse.dx=dx;
+	view->mouse.dy=dy;
+
+	/*panning */
     if ((event->state & GDK_BUTTON1_MASK)
 	&& (view->mouse.mouse_mode == MM_PAN))
 	{
-			gldx=GetOGLDistance(dx)/view->zoom*-1;
-			gldy=GetOGLDistance(dy)/view->zoom*-1;
-		if(view->active_camera ==-1)
-		{
-			view->panx=view->panx-gldx;
-			view->pany=view->pany+gldy;
-		}
-		else
-		{
+		if(glmotion_main(view,event,widget))
+				redraw = TRUE;
+	}
+	/*rotating, only in 3d view */
+    if ((view->active_camera >=0)&&(view->mouse.button==rightmousebutton) )
+	{
 			view->cameras[view->active_camera]->angley-=dy/5;
 			view->cameras[view->active_camera]->anglex-=dx/5;
-//			set_camera_x_y(view->cameras[view->active_camera]);
-		}
-		redraw = TRUE;
+				redraw = TRUE;
 	}
     /*zooming */
     if ((event->state & GDK_BUTTON1_MASK)
@@ -547,8 +549,11 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 				 glconfig, NULL, TRUE, GDK_GL_RGBA_TYPE);
 
     gtk_widget_add_events(view->drawing_area,
-			  GDK_BUTTON1_MOTION_MASK |
+//  GDK_BUTTON_MOTION_MASK	= 1 << 4,
+			GDK_BUTTON_MOTION_MASK |
+			GDK_BUTTON1_MOTION_MASK |
 			  GDK_BUTTON2_MOTION_MASK |
+				GDK_BUTTON3_MOTION_MASK |
 			  GDK_BUTTON_PRESS_MASK |
 			  GDK_BUTTON_RELEASE_MASK |
 			  GDK_VISIBILITY_NOTIFY_MASK);
@@ -574,12 +579,12 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 
     /* Popup menu. */
 
-    menu = create_popup_menu(view->drawing_area);
+ /*   menu = create_popup_menu(view->drawing_area);
 
     /* Signal handler */
-    g_signal_connect_swapped(G_OBJECT(view->drawing_area),
+  /*  g_signal_connect_swapped(G_OBJECT(view->drawing_area),
 			     "button_press_event",
 			     G_CALLBACK(button_press_event_popup_menu),
-			     menu);
+			     menu);*/
 
 }
