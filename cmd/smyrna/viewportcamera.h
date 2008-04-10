@@ -1,7 +1,24 @@
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
+
 #ifndef VIEWPORTCAMERA_H
 #define VIEWPORTCAMERA_H
+
 #include "smyrnadefs.h"
 #include "glcompset.h"
+
 viewport_camera* add_camera_to_viewport(ViewInfo * view);
 void set_camera_x_y(viewport_camera* c);
 int delete_camera_from_viewport(ViewInfo * view,viewport_camera* c);
