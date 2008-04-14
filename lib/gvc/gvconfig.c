@@ -273,9 +273,9 @@ char * gvconfig_libdir(void)
     FILE *f;
 
     if (!libdir) {
-#ifdef WIN32
         libdir=getenv("GVBINDIR");
 	if (!libdir) {
+#ifdef WIN32
 	    int r;
 	    char* s;
 	    HMODULE hm = GetModuleHandle (NULL);
@@ -295,35 +295,35 @@ char * gvconfig_libdir(void)
 	    }
 	    *s = '\0';
 	    libdir = line;
-	}
 #else
-        /* this only works on linux, other systems will get GVLIBDIR only */
-	libdir = GVLIBDIR;
-        f = fopen ("/proc/self/maps", "r");
-        if (f) {
-            while (!feof (f)) {
-	        if (!fgets (line, sizeof (line), f))
-	            continue;
-	        if (!strstr (line, " r-xp "))
-	            continue;
-		path = strchr (line, '/');
-		if (!path)
-		    continue;
-		tmp = strstr (path, "/libgvc.");
-		if (tmp) {
-		    *tmp = 0;
-		    /* Check for real /lib dir. Don't accept pre-install /.libs */
-		    if (strcmp(strrchr(path,'/'), "/.libs") == 0)
+	    /* this only works on linux, other systems will get GVLIBDIR only */
+	    libdir = GVLIBDIR;
+	    f = fopen ("/proc/self/maps", "r");
+	    if (f) {
+		while (!feof (f)) {
+		    if (!fgets (line, sizeof (line), f))
 			continue;
-		    strcpy(line, path);  /* use line buffer for result */
-		    strcat(line, "/graphviz");  /* plugins are in "graphviz" subdirectory */
-		    libdir = line;
-		    break;
-	        }
-            }
-            fclose (f);
-        }
+		    if (!strstr (line, " r-xp "))
+			continue;
+		    path = strchr (line, '/');
+		    if (!path)
+		        continue;
+		    tmp = strstr (path, "/libgvc.");
+		    if (tmp) {
+			*tmp = 0;
+			/* Check for real /lib dir. Don't accept pre-install /.libs */
+			if (strcmp(strrchr(path,'/'), "/.libs") == 0)
+			    continue;
+			strcpy(line, path);  /* use line buffer for result */
+			strcat(line, "/graphviz");  /* plugins are in "graphviz" subdirectory */
+			libdir = line;
+			break;
+		    }
+		}
+		fclose (f);
+	    }
 #endif
+	}
     }
     return libdir;
 }
