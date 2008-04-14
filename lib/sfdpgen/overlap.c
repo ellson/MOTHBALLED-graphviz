@@ -7,7 +7,7 @@
 #include "red_black_tree.h"
 #include <time.h>
 
-static void ideal_distance_avoid_overlap(int dim, SparseMatrix A, real *x, real *width, real *ideal_distance, real *tmax){
+static void ideal_distance_avoid_overlap(int dim, SparseMatrix A, real *x, real *width, real *ideal_distance, real *tmax, real *tmin){
   /*  if (x1>x2 && y1 > y2) we want either x1 + t (x1-x2) - x2 > (width1+width2), or y1 + t (y1-y2) - y2 > (height1+height2),
       hence t = MAX(expandmin, MIN(expandmax, (width1+width2)/(x1-x2) - 1, (height1+height2)/(y1-y2) - 1)), and
       new ideal distance = (1+t) old_distance. t can be negative sometimes.
@@ -16,9 +16,10 @@ static void ideal_distance_avoid_overlap(int dim, SparseMatrix A, real *x, real 
   int i, j, jj;
   int *ia = A->ia, *ja = A->ja;
   real dist, dx, dy, wx, wy, t;
-  real expandmax = 1.5, expandmin = 1;
+  real expandmax = 1.5, expandmin;
 
   *tmax = 0;
+  *tmin = 1.e10;
   assert(SparseMatrix_is_symmetric(A, FALSE));
   for (i = 0; i < A->m; i++){
     for (j = ia[i]; j < ia[i+1]; j++){
@@ -42,6 +43,7 @@ static void ideal_distance_avoid_overlap(int dim, SparseMatrix A, real *x, real 
 	}
 	if (t > 1) t = MAX(t, 1.001);/* no point in things like t = 1.00000001 as this slow down convergence */
 	*tmax = MAX(*tmax, t);
+	*tmin = MIN(*tmin, t);
 	t = MIN(expandmax, t);
 	t = MAX(expandmin, t);
 	if (t > 1) {
@@ -227,7 +229,7 @@ static SparseMatrix get_overlap_graph(int dim, int n, real *x, real *width){
 
 
 OverlapSmoother OverlapSmoother_new(SparseMatrix A, int dim, real lambda0, real *x, real *width, int include_original_graph, int neighborhood_only, 
-				    real *max_overlap){
+				    real *max_overlap, real *min_overlap){
   OverlapSmoother sm;
   int i, j, k, m = A->m, *iw, *jw, *id, *jd, jdiag;
   SparseMatrix B;
@@ -273,7 +275,7 @@ OverlapSmoother OverlapSmoother_new(SparseMatrix A, int dim, real lambda0, real 
 
   assert((sm->Lwd)->type == MATRIX_TYPE_REAL);
   
-  ideal_distance_avoid_overlap(dim, sm->Lwd, x, width, (real*) (sm->Lwd->a), max_overlap);
+  ideal_distance_avoid_overlap(dim, sm->Lwd, x, width, (real*) (sm->Lwd->a), max_overlap, min_overlap);
 
   /* no overlap at all! */
   if (*max_overlap < 1){
@@ -384,7 +386,7 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
   OverlapSmoother sm;
   int include_original_graph = 0, i;
   real avg_label_size;
-  real max_overlap = 0;
+  real max_overlap = 0, min_overlap = 999;
   int neighborhood_only = TRUE;
  
 #ifdef TIME
@@ -422,8 +424,8 @@ void remove_overlap(int dim, SparseMatrix A, real *x, real *label_sizes, int ntr
   for (i = 0; i < ntry; i++){
     if (Verbose) print_bounding_box(A->m, dim, x);
     sm = OverlapSmoother_new(A, dim, lambda, x, label_sizes, include_original_graph, neighborhood_only,
-			     &max_overlap); 
-    if (Verbose) fprintf(stderr, "overlap removal neighbors only?= %d iter -- %d, overlap factor = %g\n", neighborhood_only, i, max_overlap - 1);
+			     &max_overlap, &min_overlap); 
+    if (Verbose) fprintf(stderr, "overlap removal neighbors only?= %d iter -- %d, overlap factor = %g underlap factor = %g\n", neighborhood_only, i, max_overlap - 1, min_overlap);
     if (max_overlap <= 1){
       OverlapSmoother_delete(sm);
       if (neighborhood_only == FALSE){
