@@ -1,0 +1,49 @@
+PROG =	dot2coord
+
+SRCS =	dot2coord.c SparseMatrix.c general.c DotIO.c 
+
+OBJS =	dot2coord.o SparseMatrix.o general.o DotIO.o
+
+
+LIBS =	-lm
+#GVIZ_BUILD_PATH = ..
+GVIZ_BUILD_PATH = /home/yifanhu/GraphViz/graphviz2/build
+#GVIZ_BUILD_PATH = /Users/yifanhu/graphviz2/built
+
+LIBS = -L$(GVIZ_BUILD_PATH)/lib -lgraph -lcdt -lm
+
+
+CC = cc
+#CFLAGS = -g -Wall -DDEBUG -DDEBUG_PRINT
+#CFLAGS = -O3 -Wall -DDEBUG_PRINT
+CFLAGS = -g -DHAVE_DOT -I$(GVIZ_BUILD_PATH)/include/graphviz/ -Wall -DDEBUG_PRINT -DTIME
+CFLAGS = -g -pg -DHAVE_DOT -I$(GVIZ_BUILD_PATH)/include/graphviz/ -Wall -DDEBUG_PRINT -DTIME
+CFLAGS = -O3 -DHAVE_DOT  -I$(GVIZ_BUILD_PATH)/include/graphviz/ -Wall -DDEBUG_PRINT -DTIME
+#CFLAGS = -O3 -Wall 
+#CFLAGS = -pg -g -Wall -DDEBUG_PRINT
+FC = f77
+FFLAGS = -O
+F90 = f90
+F90FLAGS = -O
+LDFLAGS = -g
+LDFLAGS = $(CFLAGS)
+
+
+all: $(PROG)
+
+$(PROG): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+
+clean:
+	rm -f $(PROG) $(OBJS) *.mod
+
+.SUFFIXES: $(SUFFIXES) .f90
+
+.f90.o:
+	$(F90) $(F90FLAGS) -c $<
+
+dot2coord.o: SparseMatrix.h
+SparseMatrix.o: SparseMatrix.h general.h
+general.o: general.h
+
+
