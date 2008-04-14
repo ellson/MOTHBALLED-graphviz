@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
   char *infile;
 
   SparseMatrix B = NULL;
-  int dim = 2, n = 0, i, *ia, *ja, j, k, nz;
+  int dim = 2, n = 0, i, *ia, *ja, j, k, nz = 0;
   real *x, *y, mean, dev, ratio, *z, r, theta, p, q, xx;
 
   FILE *fp;
@@ -135,15 +135,14 @@ int main(int argc, char *argv[])
   fclose(fp);
 
 
-
   infile = argv[2];
   fp = fopen(infile,"r");
   y = MALLOC(sizeof(real)*n*2);
+  nz = 0;
   for (i = 0; i < n; i++){
-    fscanf(fp,"%lf %lf\n",&(y[2*i]), &(y[2*i+1]));
+    if (fscanf(fp,"%lf %lf\n",&(y[2*i]), &(y[2*i+1])) != 2) goto ERROR;
   }
   fclose(fp);
-
 
   B = call_tri(n, 2, x);
 
@@ -175,11 +174,13 @@ int main(int argc, char *argv[])
   ratio = boundingbox_area(n, y);
   /*/MAX(boundingbox_area(n, x), 0.001);*/
 
-  printf("mean = %f std = %f disimilarity = %f area = %f badness = %f displacement = %f\n",
-	 mean, dev, dev/mean, ratio, (dev/mean+1)*ratio, dispacement(n, x, y, &r, &theta, &p, &q));
-  printf("theta = %f scaling = %f, shift = {%f, %f}\n",theta, 1/r, p, q);
+
+  fprintf(stderr, "mean = %f std = %f disimilarity = %f area = %f badness = %f displacement = %f\n",
+	  mean, dev, dev/mean, ratio, (dev/mean+1)*ratio, dispacement(n, x, y, &r, &theta, &p, &q));
+  fprintf(stderr, "theta = %f scaling = %f, shift = {%f, %f}\n",theta, 1/r, p, q);
 
 
+  printf("%.2f %.2f %.2f\n",dev/mean, dispacement(n, x, y, &r, &theta, &p, &q),ratio/1000000.);
 
   SparseMatrix_delete(B);
   FREE(x);
@@ -187,6 +188,10 @@ int main(int argc, char *argv[])
   FREE(z);
 
 
+  return 0;
+
+ ERROR:
+  printf("- - -\n");
   return 0;
 }
 
