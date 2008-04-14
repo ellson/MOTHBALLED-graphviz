@@ -1065,14 +1065,15 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
                     p = N_NEW(nump, pointf);
                     p[0].x = coord.x;
                     p[0].y = coord.y;
-		    /* ... but vertices contains LL cornet of bb */
-                    p[1].x = coord.x - vertices[peripheries - 1].x;
-                    p[1].y = coord.y - vertices[peripheries - 1].y;
+		    /* even vertices contain LL corner of bb */
+		    /* odd vertices contain UR corner of bb */
+                    p[1].x = coord.x + vertices[2*peripheries - 1].x;
+                    p[1].y = coord.y + vertices[2*peripheries - 1].y;
                 }
                 else { /* ellipse is treated as polygon */
                     obj->url_map_shape= MAP_POLYGON;
-                    p = pEllipse((double)(vertices[peripheries - 1].x),
-                                 (double)(vertices[peripheries - 1].y), nump);
+                    p = pEllipse((double)(vertices[2*peripheries - 1].x),
+                                 (double)(vertices[2*peripheries - 1].y), nump);
                     for (i = 0; i < nump; i++) {
                         p[i].x += coord.x;
                         p[i].y += coord.y;
