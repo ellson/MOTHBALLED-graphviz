@@ -16,7 +16,7 @@ static void ideal_distance_avoid_overlap(int dim, SparseMatrix A, real *x, real 
   int i, j, jj;
   int *ia = A->ia, *ja = A->ja;
   real dist, dx, dy, wx, wy, t;
-  real expandmax = 1.5, expandmin;
+  real expandmax = 1.5, expandmin = 1;
 
   *tmax = 0;
   *tmin = 1.e10;
