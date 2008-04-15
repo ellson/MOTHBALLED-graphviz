@@ -193,7 +193,7 @@ void preparetopview(Agraph_t * g, topview * t)
     t->topviewmenu = glcreate_gl_topview_menu();
 	attach_camera_widget(view);
     load_host_buttons(t, g, t->topviewmenu);
-    /* prepare_topological_fisheye(t); */
+    prepare_topological_fisheye(t);
 }
 
 void drawTopViewGraph(Agraph_t * g)
@@ -1286,8 +1286,17 @@ void prepare_topological_fisheye(topview * t)
 
 		for (e=1;e < gg[v].nedges;e++) {
 		    double x,y;
-		    find_physical_coords(hp,level,gg[v].edges[e], &x, &y);
-		    fprintf (stderr, "(%f,%f) -- (%f,%f)\n", x0, y0, x, y);
+		    if (gg[e].active_level == level) {
+			if (v < e) {
+			    x = gg[3].physical_x_coord;
+			    y = gg[3].physical_y_coord;
+			    fprintf (stderr, "(%f,%f) -- (%f,%f)\n", x0, y0, x, y);
+			}
+		    }
+		    else if (gg[e].active_level > level) {
+			find_physical_coords(hp,level,gg[v].edges[e], &x, &y);
+			fprintf (stderr, "(%f,%f) -- (%f,%f)\n", x0, y0, x, y);
+		    }
 		}
 	    }
 	}
