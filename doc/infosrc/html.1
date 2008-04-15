@@ -1,0 +1,48 @@
+<H2><A NAME=html>HTML-Like Labels</A></H2>
+
+<B>NOTE:</B><EM>This feature is only available on versions of Graphviz
+that are newer than mid-November 2003. In particular, it is not part
+of release 1.10.</EM>
+<P>
+If the value of a label attribute
+(<A HREF=attrs.html#d:label><TT>label</TT></A> for nodes, edges, clusters, and
+graphs, and the
+<A HREF=attrs.html#d:headlabel><TT>headlabel</TT></A> and
+<A HREF=attrs.html#d:taillabel><TT>taillabel</TT></A>
+attributes of an edge) is given as an
+<A HREF=lang.html#html>HTML string</A>, 
+that is, delimited by <TT>&lt;...&gt;</TT>
+rather than <TT>&quot;...&quot;</TT>,
+the label is interpreted as
+an HTML description. At their simplest, such labels
+can describe multiple lines of variously aligned text as provided by ordinary 
+<A HREF=attrs.html#k:escString>string labels</A>. More generally, the
+label can specify a table similar to those provided by HTML,
+with different graphical attributes at each level.
+<P>
+<B>NOTE:</B> The features and syntax supported by these labels are
+modeled on HTML. However, there are many aspects that are relevant
+to Graphviz labels that are not in HTML and, conversely, HTML allows
+various constructs which are meaningless in Graphviz. We will generally
+refer to these labels as "HTML labels" rather than the cumbersome
+"HTML-like labels" but the reader is warned that these are not really
+HTML. The grammar below describes precisely what Graphviz will accept.
+<P>
+Although HTML labels are not, strictly speaking, a shape, they can be
+viewed as a generalization of the record shapes described above. 
+In particular, if a node has set its 
+<A HREF=attrs.html#k:shape><TT>shape</TT></A>
+attribute to <TT>plaintext</TT>, the HTML label will be the node's
+shape. On the other hand, if the node has any other shape (except 
+<TT>point</TT>), the HTML label will be embedded within the node the
+same way an ordinary label would be.
+<P>
+The following is an abstract grammar for HTML labels.
+Terminals, corresponding to elements, are shown in bold font,
+and nonterminals in italics.
+Square brackets [ and ] enclose optional items.
+Vertical bars | separate alternatives.
+Note that, as in HTML, element and attribute names are case-insensitive.
+(cf. sections 3.2.1 and 3.2.2 of the 
+<A HREF="http://www.w3.org/TR/html401>HTML 4.01 specification</A>).
+<TABLE>
