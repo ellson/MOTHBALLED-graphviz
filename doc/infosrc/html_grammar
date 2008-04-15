@@ -1,0 +1,8 @@
+label    =  text | table
+text     = textitem | text textitem
+textitem = string | T_&lt;BR/&gt; | T_&lt;FONT&gt; text T_&lt;/FONT&gt;
+table =  [ T_&lt;FONT&gt; ] T_&lt;TABLE&gt; rows T_&lt;/TABLE&gt; [ T_&lt;/FONT&gt; ]
+rows = row | rows row
+row = T_&lt;TR&gt; cells T_&lt;/TR&gt;
+cells = cell | cells cell
+cell = T_&lt;TD&gt; label T_&lt;/TD&gt; | T_&lt;TD&gt; T_&lt;IMG/&gt; T_&lt;/TD&gt;
