@@ -235,6 +235,7 @@ Hierarchy *makeHier(int nn, int ne, vtx_data * graph, double *x_coords,
     ex_vtx_data *geom_graph;
     int ngeom_edges;
     Hierarchy *hp;
+    int i;
 
     delaunay = UG_graph(x_coords, y_coords, nn, 0);
 
@@ -249,6 +250,11 @@ Hierarchy *makeHier(int nn, int ne, vtx_data * graph, double *x_coords,
     free(geom_graph);
 
     init_active_level(hp, 0);
+    geom_graph = hp->geom_graphs[0];
+    for (i = 0; i < hp->nvtxs[0]; i++) {
+	geom_graph[i].physical_x_coord = (float) x_coords[i];
+	geom_graph[i].physical_y_coord = (float) y_coords[i];
+    }
 
     return hp;
 }
