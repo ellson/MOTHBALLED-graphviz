@@ -193,7 +193,7 @@ void preparetopview(Agraph_t * g, topview * t)
     t->topviewmenu = glcreate_gl_topview_menu();
 	attach_camera_widget(view);
     load_host_buttons(t, g, t->topviewmenu);
-    prepare_topological_fisheye(t);
+    /* prepare_topological_fisheye(t); */
 }
 
 void drawTopViewGraph(Agraph_t * g)
@@ -205,7 +205,7 @@ void drawTopViewGraph(Agraph_t * g)
     float dddx, dddy,dddz;
     int ind = 0;
 	if (view->zoom > NODE_ZOOM_LIMIT) {
-//	glPointSize(15 / view->zoom * -1);
+	glPointSize(2);
 		//draw nodes
 	set_topview_options();
 //	if (view->zoom < NODE_CIRCLE_LIMIT)
@@ -248,9 +248,9 @@ void drawTopViewGraph(Agraph_t * g)
 			} 
 			else	//get the color from node
 		    {
-				glColor4f(v->Color.R, v->Color.G, v->Color.B,
-				  v->node_alpha);
-			//                                      glColor4f(1,0,0,v->node_alpha);
+			//	glColor4f(v->Color.R, v->Color.G, v->Color.B,
+			//	  v->node_alpha);
+			                                      glColor4f(1,0,0,1);
 			//                              glColor4f (log((double)v->degree+0.5),v->Color.G,v->Color.B,);
 				ddx = 0;
 				ddy = 0;
@@ -1242,8 +1242,11 @@ void prepare_topological_fisheye(topview * t)
     int ne;
     int i;
     int closest_fine_node;
-    int cur_level = 0;
+    int level, v, e, cur_level = 0;
     hierparms_t parms;
+    Hierarchy* hp;
+    int nactive, nactiveEdge;
+
     topview_node* np;
     vtx_data *graph = makeGraph(t, &ne);
 
@@ -1251,26 +1254,43 @@ void prepare_topological_fisheye(topview * t)
 	x_coords[i] = np->x; 
 	y_coords[i] = np->y; 
     }
-    t->h = makeHier(t->Nodecount, ne, graph, x_coords, y_coords);
+    hp = t->h = makeHier(t->Nodecount, ne, graph, x_coords, y_coords);
     freeGraph(graph);
     free (x_coords);
     free (y_coords);
     fs = initFocus(t->Nodecount);	// create focus set
 
-    find_closest_active_node(t->h, 50.0, 50.0, &closest_fine_node);
+    find_closest_active_node(hp, 329.0, 19.0, &closest_fine_node);
     fs->num_foci = 1;
     fs->foci_nodes[0] = closest_fine_node;
     fs->x_foci[0] =
-	t->h->geom_graphs[cur_level][closest_fine_node].x_coord;
+	hp->geom_graphs[cur_level][closest_fine_node].x_coord;
     fs->y_foci[0] =
-	t->h->geom_graphs[cur_level][closest_fine_node].y_coord;
+	hp->geom_graphs[cur_level][closest_fine_node].y_coord;
 
-    set_active_levels(t->h, fs->foci_nodes, fs->num_foci);
+    set_active_levels(hp, fs->foci_nodes, fs->num_foci);
 
     parms.rescale = NoRescale;
-    positionAllItems(t->h, fs, &parms);
-	printf ("n levels:%i \n",t->h->nlevels);
+    positionAllItems(hp, fs, &parms);
+    
+    nactive = nactiveEdge = 0;
+    fprintf (stderr, "\n");
+    for (level=0;level < hp->nlevels;level++) {
+	for (v=0;v < hp->nvtxs[level]; v++) {
+	    ex_vtx_data* gg = hp->geom_graphs[level];
+	    if(gg[v].active_level==level) {
+		double x0 = gg[v].physical_x_coord;
+		double y0 = gg[v].physical_y_coord;
+    		fprintf (stderr, "Active: level %d node %d\n", level, v);
+		nactive++;
 
-	for (i=0;i < t->h->
-
+		for (e=1;e < gg[v].nedges;e++) {
+		    double x,y;
+		    find_physical_coords(hp,level,gg[v].edges[e], &x, &y);
+		    fprintf (stderr, "(%f,%f) -- (%f,%f)\n", x0, y0, x, y);
+		}
+	    }
+	}
+    }
+    fprintf (stderr, "No. active nodes %d\n==\n", nactive);
 }
