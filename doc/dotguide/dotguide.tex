@@ -1281,7 +1281,8 @@ describes this output. An alternate format is {\tt plain-ext}, which
 provides port names on the head and tail nodes of edges.
 \item[{\tt png}] PNG (Portable Network Graphics) output.
 \item[{\tt ps}] PostScript (EPSF) output.
-\item[{\tt ps2}] PostScript (EPSF) output with PDF annotations. This output can be distilled into PDF, such as for pdflatex. (Use ps2pdf; epstopdf doesn't handle \verb"%%BoundingBox: (atend)".)
+\item[{\tt ps2}] PostScript (EPSF) output with PDF annotations. This output should be distilled into PDF, such as for pdflatex, before being included in 
+a document. (Use ps2pdf; epstopdf doesn't handle \verb"%%BoundingBox: (atend)".)
 \item[{\tt svg}] SVG output. The alternate form {\tt svgz} produces
 compressed SVG.
 \item[{\tt vrml}] VRML output.
