@@ -1261,6 +1261,7 @@ void prepare_topological_fisheye(topview * t)
     int   cur_level = 0;
     hierparms_t parms;
     Hierarchy* hp;
+    ex_vtx_data* gg;
 
     topview_node* np;
     vtx_data *graph = makeGraph(t, &ne);
@@ -1274,8 +1275,10 @@ void prepare_topological_fisheye(topview * t)
     free (x_coords);
     free (y_coords);
     fs = initFocus(t->Nodecount);	// create focus set
+    gg = hp->geom_graphs[0];
 
-    find_closest_active_node(hp, 329.0, 19.0, &closest_fine_node);
+    find_closest_active_node(hp, 737.0, 1063.0, &closest_fine_node);
+/* fprintf (stderr, "Closest node [%d] %s\n", closest_fine_node, agnameof(t->Nodes[closest_fine_node].Node)); */
     fs->num_foci = 1;
     fs->foci_nodes[0] = closest_fine_node;
     fs->x_foci[0] =
@@ -1284,50 +1287,45 @@ void prepare_topological_fisheye(topview * t)
 	hp->geom_graphs[cur_level][closest_fine_node].y_coord;
 
     set_active_levels(hp, fs->foci_nodes, fs->num_foci);
+count_active_nodes(hp);
 
     parms.rescale = NoRescale;
     positionAllItems(hp, fs, &parms);
-    
 }
-void drawtopologicalfisheye(topview * t)
-{
-    double *x_coords = N_NEW(t->Nodecount,double);  // initial x coordinates
-    double *y_coords = N_NEW(t->Nodecount,double);  // initial y coordinates
-    int level, v, e, cur_level = 0;
-    Hierarchy* hp;
-    int nactive, nactiveEdge;
-	hp=t->h;
 
-	nactive = nactiveEdge = 0;
-    fprintf (stderr, "\n");
+void drawtopologicalfisheye(topview* t)
+{
+    int level, v, i, n;
+    Hierarchy* hp = t->h;
+
+    glBegin(GL_LINES);
     for (level=0;level < hp->nlevels;level++) {
 	for (v=0;v < hp->nvtxs[level]; v++) {
 	    ex_vtx_data* gg = hp->geom_graphs[level];
+	    vtx_data* g = hp->graphs[level];
 	    if(gg[v].active_level==level) {
 		double x0 = gg[v].physical_x_coord;
 		double y0 = gg[v].physical_y_coord;
-		nactive++;
 
-	    glBegin(GL_LINES);
-
-		for (e=1;e < gg[v].nedges;e++) {
+		for (i=1;i < g[v].nedges;i++) {
 		    double x,y;
-		    if (gg[e].active_level == level) {
-			if (v < e) {
-			    x = gg[3].physical_x_coord;
-			    y = gg[3].physical_y_coord;
+		    n = g[v].edges[i];
+		    if (gg[n].active_level == level) {
+			if (v < n) {
+			    x = gg[n].physical_x_coord;
+			    y = gg[n].physical_y_coord;
+			    glVertex3f((GLfloat)x0,(GLfloat)y0,(GLfloat)0);
+			    glVertex3f((GLfloat)x,(GLfloat)y,(GLfloat)0);
 			}
 		    }
-		    else if (gg[e].active_level > level) {
-			find_physical_coords(hp,level,gg[v].edges[e], &x, &y);
-						glVertex3f((GLfloat)x0,(GLfloat)y0,(GLfloat)0);
-						glVertex3f((GLfloat)x,(GLfloat)y,(GLfloat)0);
-
+		    else if (gg[n].active_level > level) {
+			find_physical_coords(hp, level, n, &x, &y);
+			glVertex3f((GLfloat)x0,(GLfloat)y0,(GLfloat)0);
+			glVertex3f((GLfloat)x,(GLfloat)y,(GLfloat)0);
 		    }
 		}
 	    }
 	}
     }
-	glEnd();
-
+    glEnd();
 }
