@@ -208,6 +208,9 @@ void drawTopViewGraph(Agraph_t * g)
 	glPointSize(2);
 		//draw nodes
 	set_topview_options();
+	drawtopologicalfisheye(view->Topview);
+	return;	
+	
 //	if (view->zoom < NODE_CIRCLE_LIMIT)
 	    glBegin(GL_POINTS);
 
@@ -293,7 +296,6 @@ void drawTopViewGraph(Agraph_t * g)
 		if(1)
 
 	{
-	    float zdepth1, zdepth2;
 	    e = &view->Topview->Edges[ind];
 	    select_topview_edge(e);
 	    if (OD_Selected(e->Node1->Node) == 1) { //tail is selected
@@ -1242,10 +1244,9 @@ void prepare_topological_fisheye(topview * t)
     int ne;
     int i;
     int closest_fine_node;
-    int level, v, e, cur_level = 0;
+    int   cur_level = 0;
     hierparms_t parms;
     Hierarchy* hp;
-    int nactive, nactiveEdge;
 
     topview_node* np;
     vtx_data *graph = makeGraph(t, &ne);
@@ -1253,7 +1254,7 @@ void prepare_topological_fisheye(topview * t)
     for (i = 0, np = t->Nodes; i < t->Nodecount; i++, np++) {
 	x_coords[i] = np->x; 
 	y_coords[i] = np->y; 
-    }
+	}
     hp = t->h = makeHier(t->Nodecount, ne, graph, x_coords, y_coords);
     freeGraph(graph);
     free (x_coords);
@@ -1273,7 +1274,17 @@ void prepare_topological_fisheye(topview * t)
     parms.rescale = NoRescale;
     positionAllItems(hp, fs, &parms);
     
-    nactive = nactiveEdge = 0;
+}
+void drawtopologicalfisheye(topview * t)
+{
+    double *x_coords = N_NEW(t->Nodecount,double);  // initial x coordinates
+    double *y_coords = N_NEW(t->Nodecount,double);  // initial y coordinates
+    int level, v, e, cur_level = 0;
+    Hierarchy* hp;
+    int nactive, nactiveEdge;
+	hp=t->h;
+
+	nactive = nactiveEdge = 0;
     fprintf (stderr, "\n");
     for (level=0;level < hp->nlevels;level++) {
 	for (v=0;v < hp->nvtxs[level]; v++) {
@@ -1281,8 +1292,9 @@ void prepare_topological_fisheye(topview * t)
 	    if(gg[v].active_level==level) {
 		double x0 = gg[v].physical_x_coord;
 		double y0 = gg[v].physical_y_coord;
-    		fprintf (stderr, "Active: level %d node %d\n", level, v);
 		nactive++;
+
+	    glBegin(GL_LINES);
 
 		for (e=1;e < gg[v].nedges;e++) {
 		    double x,y;
@@ -1290,16 +1302,18 @@ void prepare_topological_fisheye(topview * t)
 			if (v < e) {
 			    x = gg[3].physical_x_coord;
 			    y = gg[3].physical_y_coord;
-			    fprintf (stderr, "(%f,%f) -- (%f,%f)\n", x0, y0, x, y);
 			}
 		    }
 		    else if (gg[e].active_level > level) {
 			find_physical_coords(hp,level,gg[v].edges[e], &x, &y);
-			fprintf (stderr, "(%f,%f) -- (%f,%f)\n", x0, y0, x, y);
+						glVertex3f((GLfloat)x0,(GLfloat)y0,(GLfloat)0);
+						glVertex3f((GLfloat)x,(GLfloat)y,(GLfloat)0);
+
 		    }
 		}
 	    }
 	}
     }
-    fprintf (stderr, "No. active nodes %d\n==\n", nactive);
+	glEnd();
+
 }
