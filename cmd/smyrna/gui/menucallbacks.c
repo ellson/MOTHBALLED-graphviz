@@ -46,9 +46,10 @@ void mOpenSlot(GtkWidget * widget, gpointer user_data)
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 	char *filename;
 	filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+
 	add_graph_to_viewport_from_file(filename);
 	g_free(filename);
-    }
+	}
 
     gtk_widget_destroy(dialog);
     gtk_widget_destroy((GtkWidget *) filter);

@@ -22,7 +22,7 @@
 #define	SMYRNA_ATTRS "c:/Projects/graphviz2/share/gui/attrs.txt"
 #endif
 #ifdef _WIN32
-#define SMYRNA_GLADE "c:\\Projects\\ATT\\GTK\\gtktopview\\lib\\GUI\\smyrna.glade"
+#define SMYRNA_GLADE "c:\\Projects\\graphviz2\\share\\gui\\smyrna.glade"
 #define GTKTOPVIEW_ATTRS "c:\\Projects\\ATT\\GTK\\GTKTest2\\attrs.txt"
 #define DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE	"C:\\GTK\\2.0\\bin\\attr_template.dot"
 // #else
@@ -171,6 +171,7 @@ typedef struct {
     topviewdata *TopviewData;
     void *customptr;
     Hierarchy *h;
+	int is_top_fisheye;	//1 draw hierarchy 0 draw regular topview
 } topview;
 
 enum {

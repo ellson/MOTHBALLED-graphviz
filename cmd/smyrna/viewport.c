@@ -1198,3 +1198,17 @@ int setGdkColor(GdkColor * c, char *color) {
 void glexpose() {
     expose_event(view->drawing_area, NULL, NULL);
 }
+void please_wait()
+{
+    gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
+    gtk_widget_show(glade_xml_get_widget(xml, "frmWait"));
+    gtk_window_set_keep_above((GtkWindow *)
+			      glade_xml_get_widget(xml,
+						   "frmWait"), 1);
+
+}
+void please_dont_wait()
+{
+    gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
+}
+

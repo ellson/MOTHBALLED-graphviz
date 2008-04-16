@@ -193,7 +193,8 @@ void preparetopview(Agraph_t * g, topview * t)
     t->topviewmenu = glcreate_gl_topview_menu();
 	attach_camera_widget(view);
     load_host_buttons(t, g, t->topviewmenu);
-    prepare_topological_fisheye(t);
+	t->h='\0';
+	t->is_top_fisheye=0;
 }
 
 void drawTopViewGraph(Agraph_t * g)
@@ -205,11 +206,10 @@ void drawTopViewGraph(Agraph_t * g)
     float dddx, dddy,dddz;
     int ind = 0;
 	if (view->zoom > NODE_ZOOM_LIMIT) {
-	glPointSize(2);
+	glPointSize(1);
 		//draw nodes
 	set_topview_options();
-	drawtopologicalfisheye(view->Topview);
-	return;	
+	
 	
 //	if (view->zoom < NODE_CIRCLE_LIMIT)
 	    glBegin(GL_POINTS);
@@ -251,10 +251,8 @@ void drawTopViewGraph(Agraph_t * g)
 			} 
 			else	//get the color from node
 		    {
-			//	glColor4f(v->Color.R, v->Color.G, v->Color.B,
-			//	  v->node_alpha);
-			                                      glColor4f(1,0,0,1);
-			//                              glColor4f (log((double)v->degree+0.5),v->Color.G,v->Color.B,);
+				glColor4f(v->Color.R, v->Color.G, v->Color.B,
+				  v->node_alpha);
 				ddx = 0;
 				ddy = 0;
 				ddz=0;
@@ -283,7 +281,7 @@ void drawTopViewGraph(Agraph_t * g)
     glBegin(GL_LINES);
     set_topview_options();
     for (ind = 0; ind < view->Topview->Edgecount; ind++) {
-/*	if (((view->Topview->Edges[ind].x1/view->zoom*-1  > view->clipX1)
+	if (((view->Topview->Edges[ind].x1/view->zoom*-1  > view->clipX1)
 	     && (view->Topview->Edges[ind].x1/view->zoom*-1  < view->clipX2)
 	     && (view->Topview->Edges[ind].y1/view->zoom*-1  > view->clipY1)
 	     && (view->Topview->Edges[ind].y1/view->zoom*-1  < view->clipY2))
@@ -292,7 +290,7 @@ void drawTopViewGraph(Agraph_t * g)
 		&& (view->Topview->Edges[ind].y2/view->zoom*-1  > view->clipY1)
 		&& (view->Topview->Edges[ind].y2/view->zoom*-1  < view->clipY2))
 		||   (view->active_camera>=0)
-	    )*/
+	    )
 		if(1)
 
 	{
@@ -1021,7 +1019,20 @@ void menu_click_3d_view(void *p)
     }
  
 }
-
+void menu_switch_to_normal_mode(void* p)
+{
+	view->Topview->is_top_fisheye=0;
+}
+void menu_switch_to_fisheye(void* p)
+{
+	if (!view->Topview->h) 
+	{
+		please_wait();
+		prepare_topological_fisheye(view->Topview);
+		please_dont_wait();
+	}
+	view->Topview->is_top_fisheye=1;
+}
 
 
 #ifdef _WIN32
@@ -1120,7 +1131,9 @@ glCompSet *glcreate_gl_topview_menu()
     b->customptr = view;
     b->panel = p;
     b->groupid = 2;
-    glCompSetAddButton(s, b);
+    b->callbackfunc = menu_switch_to_normal_mode;
+
+	glCompSetAddButton(s, b);
     //view mode fisheye button
     b = glCompButtonNew(85, 7, 75, 25, "FISHEYE", '\0', 0, 0);
     b->color.R = 0;
@@ -1129,6 +1142,7 @@ glCompSet *glcreate_gl_topview_menu()
     b->customptr = view;
     b->panel = p;
     b->groupid = 2;
+    b->callbackfunc = menu_switch_to_fisheye;
     glCompSetAddButton(s, b);
     //pan button
     b = glCompButtonNew(5, 120, 72, 72, "adasasds", SMYRNA_ICON_PAN, 72,
