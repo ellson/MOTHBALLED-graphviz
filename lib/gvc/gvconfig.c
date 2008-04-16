@@ -248,14 +248,9 @@ static void gvconfig_write_library_config(GVC_t *gvc, char *path, gvplugin_libra
     for (apis = library->apis; (types = apis->types); apis++) {
         fprintf(f, "\t%s {\n", gvplugin_api_name(apis->api));
 	for (i = 0; types[i].type; i++) {
-#if 0
-/* this was a good idea, but fails because we need a config to load
- * by plugin name, and were still generating the config.
- */
 	    /* verify that dependencies are available */
             if (! (gvplugin_load(gvc, apis->api, types[i].type)))
 		fprintf(f, "#FAILS");
-#endif
 	    fprintf(f, "\t\t%s %d\n", types[i].type, types[i].quality);
 	}
 	fputs ("\t}\n", f);
@@ -408,6 +403,15 @@ static void config_rescan(GVC_t *gvc, char *config_path)
 		library = gvplugin_library_load(gvc, globbuf.gl_pathv[i]);
 		if (library) {
 		    gvconfig_plugin_install_from_library(gvc, globbuf.gl_pathv[i], library);
+		}
+	    }
+	}
+	/* rescan with all libs loaded to check cross dependencies */
+	for (i = 0; i < globbuf.gl_pathc; i++) {
+	    re_status = regexec(&re, globbuf.gl_pathv[i], (size_t) 0, NULL, 0);
+	    if (re_status == 0) {
+		library = gvplugin_library_load(gvc, globbuf.gl_pathv[i]);
+		if (library) {
 		    path = strrchr(globbuf.gl_pathv[i],DIRSEP[0]);
 		    if (path)
 			path++;
@@ -492,8 +496,8 @@ void gvconfig(GVC_t * gvc, boolean rescan)
         libdir = gvconfig_libdir();
         rc = stat(libdir, &libdir_st);
         if (rc == -1) {
-    	/* if we fail to stat it then it probably doesn't exist so just fail silently */
-    	return;
+    	    /* if we fail to stat it then it probably doesn't exist so just fail silently */
+	    return;
         }
     
         if (! gvc->config_path) {
@@ -504,42 +508,43 @@ void gvconfig(GVC_t * gvc, boolean rescan)
         }
     	
         if (rescan) {
-    	config_rescan(gvc, gvc->config_path);
-    	gvc->config_found = TRUE;
-    	return;
+    	    config_rescan(gvc, gvc->config_path);
+    	    gvc->config_found = TRUE;
+    	    return;
         }
     
         /* load in the cached plugin library data */
     
         rc = stat(gvc->config_path, &config_st);
         if (rc == -1) {
-    	/* silently return without setting gvc->config_found = TRUE */
-    	return;
+    	    /* silently return without setting gvc->config_found = TRUE */
+    	    return;
         }
         else if (config_st.st_size > MAX_SZ_CONFIG) {
-    	agerr(AGERR,"%s is bigger than I can handle.\n", gvc->config_path);
+    	    agerr(AGERR,"%s is bigger than I can handle.\n", gvc->config_path);
         }
         else {
-    	f = fopen(gvc->config_path,"r");
-    	if (!f) {
-    	    agerr (AGERR,"failed to open %s for read.\n", gvc->config_path);
-    	}
-    	else {
-    	    config_text = gmalloc(config_st.st_size + 1);
-    	    sz = fread(config_text, 1, config_st.st_size, f);
-    	    if (sz == 0) {
-    		agerr(AGERR,"%s is zero sized, or other read error.\n", gvc->config_path);
-    		free(config_text);
+    	    f = fopen(gvc->config_path,"r");
+    	    if (!f) {
+    	        agerr (AGERR,"failed to open %s for read.\n", gvc->config_path);
     	    }
     	    else {
-    	        gvc->config_found = TRUE;
-    	        config_text[sz] = '\0';  /* make input into a null terminated string */
-    	        rc = gvconfig_plugin_install_from_config(gvc, config_text);
-    		/* NB. config_text not freed because we retain char* into it */
+    	        config_text = gmalloc(config_st.st_size + 1);
+    	        sz = fread(config_text, 1, config_st.st_size, f);
+    	        if (sz == 0) {
+    		    agerr(AGERR,"%s is zero sized, or other read error.\n", gvc->config_path);
+    		    free(config_text);
+    	        }
+    	        else {
+    	            gvc->config_found = TRUE;
+    	            config_text[sz] = '\0';  /* make input into a null terminated string */
+    	            rc = gvconfig_plugin_install_from_config(gvc, config_text);
+    		    /* NB. config_text not freed because we retain char* into it */
+    	        }
     	    }
-    	}
-    	if (f)
-    	    fclose(f);
+    	    if (f) {
+    	        fclose(f);
+	    }
         }
     }
 #endif
