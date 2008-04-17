@@ -2623,13 +2623,9 @@ static boxf bezier_bb(bezier bz)
     boxf bbf;
 
     assert(bz.size > 0);
+    assert(bz.size % 3 == 1);
     bb.LL = bb.UR = bz.list[0];
     for (i = 1; i < bz.size;) {
-	p=bz.list[i];
-        EXPANDBP(bb,p);
-	i++;
-	if ( i >= bz.size)
-	    break;
 	/* take mid-point between two control points for bb calculation */
 	p1=bz.list[i];
 	i++;
@@ -2638,6 +2634,10 @@ static boxf bezier_bb(bezier bz)
 	p.x = ( p1.x + p2.x ) / 2;
 	p.y = ( p1.y + p2.y ) / 2;
         EXPANDBP(bb,p);
+
+	p=bz.list[i];
+        EXPANDBP(bb,p);
+	i++;
     }
     B2BF(bb, bbf);
     return bbf;
@@ -2711,10 +2711,10 @@ static void init_bb_node(graph_t *g, node_t *n)
 
 static void init_bb(graph_t *g)
 {
-        node_t *n;
+    node_t *n;
 
-	    for (n = agfstnode(g); n; n = agnxtnode(g, n))
-		        init_bb_node(g, n);
+    for (n = agfstnode(g); n; n = agnxtnode(g, n))
+        init_bb_node(g, n);
 }
 
 extern gvevent_key_binding_t gvevent_key_binding[];
