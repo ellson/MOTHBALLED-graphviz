@@ -766,3 +766,17 @@ RGBColor GetRGBColor(char *color)
     }
     return c;
 }
+void drawEllipse(float xradius, float yradius,int angle1,int angle2)
+{
+	int i;
+	glBegin(GL_LINE_STRIP);
+
+   for (i=angle1; i<=angle2; i++)
+   {
+      //convert degrees into radians
+      float degInRad = i*DEG2RAD;
+      glVertex2f(cos(degInRad)*xradius,sin(degInRad)*yradius);
+   }
+ 
+   glEnd();
+}

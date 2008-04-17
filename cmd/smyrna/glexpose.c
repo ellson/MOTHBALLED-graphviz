@@ -18,6 +18,7 @@
 #include "topview.h"
 #include "glutils.h"
 #include "topview.h"
+
 /*
 	refreshes camera settings using view parameters such as pan zoom etc
 	if a camera is selected viewport is switched to 3D
@@ -48,6 +49,8 @@ int glupdatecamera(ViewInfo * view)
 //			glTranslatef(view->cameras[view->active_camera]->targetx/pow(view->cameras[view->active_camera]->r,0.125),view->cameras[view->active_camera]->targety/pow(view->cameras[view->active_camera]->r,0.125),0);
 			glRotatef(view->cameras[view->active_camera]->angley,1,0,0);
 			glRotatef(view->cameras[view->active_camera]->anglex,0,1,0);
+			glRotatef(view->cameras[view->active_camera]->anglez,0,0,1);
+
 	}
 	GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),
 		 &(view->clipZ1));
@@ -83,6 +86,7 @@ int glexpose_main(ViewInfo * view)
     glexpose_drawgraph(view);
     draw_selection_box(view);
     drawBorders(view);
+	drawRotatingTools();
 	/*DEBUG*/
 /*	if (view->mouse.mouse_mode == MM_PAN)
 	{
@@ -150,3 +154,59 @@ int glexpose_drawgraph(ViewInfo * view)
     }
     return 0;
 }
+
+void drawRotatingTools()
+{
+	float x,y,z;
+	float x1,y1,z1;
+	float x2,y2,z2;
+	float R1,R2;
+	if ((view->mouse.mouse_mode == MM_ROTATE) && (view->active_camera >=0))
+	{
+		R1=25;
+		R2=200;
+		glCompDrawBegin();
+		GetOGLPosRef(1, view->h - 5, &x1, &y1,&z1);
+		GetOGLPosRef(view->w - 1, 1, &x2,&y2,&z2);
+		x=(x2-x1)/2.0;
+		y=(y2-y1)/2.0;
+		glTranslatef(x,y,0);
+		if ((view->mouse.rotate_axis==MOUSE_ROTATE_X) || (view->mouse.rotate_axis==MOUSE_ROTATE_XY))
+		{
+			glLineWidth(2);
+			glColor4f(0,1,0,0.5);
+		}
+		else
+		{
+			glLineWidth(1);
+			glColor4f(1,0,0,0.5);
+		}
+		drawEllipse(R1,R2,90,270);
+		if ((view->mouse.rotate_axis==MOUSE_ROTATE_Y) || (view->mouse.rotate_axis==MOUSE_ROTATE_XY))
+		{
+			glLineWidth(2);
+			glColor4f(0,1,0,0.5);
+		}
+		else
+		{
+			glLineWidth(1);
+			glColor4f(1,0,0,0.5);
+		}
+		drawEllipse(R2, R1,0,180);
+		if (view->mouse.rotate_axis==MOUSE_ROTATE_Z)
+		{
+			glLineWidth(2);
+			glColor4f(0,1,0,0.5);
+		}
+		else
+		{
+			glLineWidth(1);
+			glColor4f(1,0,0,0.5);
+		}
+
+		drawEllipse(R2, R2,0,360);
+		glCompDrawEnd();
+	}
+
+}
+

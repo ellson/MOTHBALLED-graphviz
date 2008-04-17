@@ -1033,6 +1033,26 @@ void menu_switch_to_fisheye(void* p)
 	}
 	view->Topview->is_top_fisheye=1;
 }
+void menu_click_rotate(void* p)
+{
+    view->mouse.mouse_mode = MM_ROTATE;
+}
+void menu_click_rotate_x(void* p)
+{
+	view->mouse.rotate_axis=MOUSE_ROTATE_X;
+}
+void menu_click_rotate_y(void* p)
+{
+	view->mouse.rotate_axis=MOUSE_ROTATE_Y;
+}
+void menu_click_rotate_xy(void* p)
+{
+	view->mouse.rotate_axis=MOUSE_ROTATE_XY;
+}
+void menu_click_rotate_z(void* p)
+{
+	view->mouse.rotate_axis=MOUSE_ROTATE_Z;
+}
 
 
 #ifdef _WIN32
@@ -1041,6 +1061,7 @@ void menu_switch_to_fisheye(void* p)
 #define SMYRNA_ICON_ZOOMPLUS "c:/zoomplus.raw"
 #define SMYRNA_ICON_ZOOMMINUS "c:/zoomminus.raw"
 #define SMYRNA_ICON_FISHEYE "c:/fisheye.raw"
+#define SMYRNA_ICON_ROTATE "c:/rotate.raw"
 #endif
 
 static char* smyrna_icon_pan;
@@ -1119,7 +1140,7 @@ glCompSet *glcreate_gl_topview_menu()
 
 
     //control panel
-    p = glCompPanelNew(25, 75, 165, 200);
+    p = glCompPanelNew(25, 75, 165, 277);
     p->data = 1;		//control panel
     glCompSetAddPanel(s, p);
 
@@ -1144,7 +1165,43 @@ glCompSet *glcreate_gl_topview_menu()
     b->groupid = 2;
     b->callbackfunc = menu_switch_to_fisheye;
     glCompSetAddButton(s, b);
-    //pan button
+
+    //rotate
+    b = glCompButtonNew(5, 197, 72, 72, "", SMYRNA_ICON_ROTATE,
+			72, 72);
+    b->groupid = 3;
+    b->customptr = view;
+    b->panel = p;
+    b->callbackfunc = menu_click_rotate;
+    glCompSetAddButton(s, b);
+	
+    b = glCompButtonNew(80, 251, 40, 20, "X", '\0', 0, 0);
+    b->customptr = view;
+    b->panel = p;
+    b->groupid = 1;
+    b->callbackfunc = menu_click_rotate_x;
+    glCompSetAddButton(s, b);
+    b = glCompButtonNew(125, 251, 40, 20, "Y", '\0', 0, 0);
+    b->customptr = view;
+    b->panel = p;
+    b->groupid = 1;
+    b->callbackfunc = menu_click_rotate_y;
+    glCompSetAddButton(s, b);
+    b = glCompButtonNew(80, 231, 40, 20, "XY", '\0', 0, 0);
+    b->customptr = view;
+    b->panel = p;
+    b->groupid = 1;
+    b->callbackfunc = menu_click_rotate_xy;
+    glCompSetAddButton(s, b);
+    b = glCompButtonNew(125, 231, 40, 20, "Z", '\0', 0, 0);
+    b->customptr = view;
+    b->panel = p;
+    b->groupid = 1;
+    b->callbackfunc = menu_click_rotate_z;
+    glCompSetAddButton(s, b);
+
+
+	//pan button
     b = glCompButtonNew(5, 120, 72, 72, "adasasds", SMYRNA_ICON_PAN, 72,
 			72);
     b->groupid = 3;

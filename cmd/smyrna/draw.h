@@ -42,5 +42,6 @@ extern int randomize_color(RGBColor * c, int brightness);
 extern void drawCircle(float x, float y, float radius, float zdepth);
 extern RGBColor GetRGBColor(char *color);
 extern void drawBorders(ViewInfo * view);
+void drawEllipse(float xradius, float yradius,int angle1,int angle2);
 
 #endif
