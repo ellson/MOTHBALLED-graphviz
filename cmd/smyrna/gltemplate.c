@@ -370,10 +370,9 @@ static gboolean motion_notify_event(GtkWidget * widget,
 				redraw = TRUE;
 	}
 	/*rotating, only in 3d view */
-    if ((view->active_camera >=0)&&(view->mouse.button==rightmousebutton) )
+    if ((view->active_camera >=0)&&(view->mouse.mouse_mode==MM_ROTATE)&& (event->state & GDK_BUTTON1_MASK) )
 	{
-			view->cameras[view->active_camera]->angley-=dy/5;
-			view->cameras[view->active_camera]->anglex-=dx/5;
+		if(glmotion_main(view,event,widget))
 				redraw = TRUE;
 	}
     /*zooming */

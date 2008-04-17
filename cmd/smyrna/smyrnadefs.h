@@ -77,6 +77,7 @@
 
 typedef enum { nodshapedot,nodeshapecircle} node_shape;
 typedef enum { leftmousebutton,rightmousebutton,thirdmousebutton} clicked_mouse_button;
+typedef enum { MOUSE_ROTATE_X,MOUSE_ROTATE_Y,MOUSE_ROTATE_XY,MOUSE_ROTATE_Z} mouse_rotate_axis;
 
 
 typedef struct {
@@ -148,6 +149,7 @@ typedef struct _viewport_camera{
 
 	float anglex;
 	float angley;
+	float anglez;
 
 
 	float camera_vectorx;
@@ -179,7 +181,8 @@ enum {
     COL_FILENAME,
     NUM_COLS
 };
-//atributes
+
+
 typedef struct _mouse_attr {
     int mouse_down;
     int mouse_mode;
@@ -189,6 +192,7 @@ typedef struct _mouse_attr {
 	float begin_y;
 	float dx;
 	float dy;
+	mouse_rotate_axis rotate_axis;	
 	clicked_mouse_button button;
 } mouse_attr;
 

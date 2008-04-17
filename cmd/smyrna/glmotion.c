@@ -17,10 +17,10 @@ int glmotion_main(ViewInfo * v,GdkEventMotion * event,GtkWidget * widget)
     if ((event->state & GDK_BUTTON1_MASK)&& (v->mouse.mouse_mode == MM_PAN))
 		glmotion_pan(v);
 
-	return 1;
 	/*rotating, only in 3d v */
-    if ((v->active_camera >=0)&&(v->mouse.button==rightmousebutton))
+    if ((v->active_camera >=0)&&(v->mouse.mouse_mode == MM_ROTATE))
 		glmotion_rotate(v);
+	return 1;
 
 	/*zooming */
     if ((event->state & GDK_BUTTON1_MASK)&& (v->mouse.mouse_mode == MM_ZOOM))
@@ -128,7 +128,23 @@ int glmotion_adjust_pan(ViewInfo* v,float panx,float pany)
 }
 int glmotion_rotate(ViewInfo * v)
 {
-	v->cameras[v->active_camera]->angley-=v->mouse.dy/5;
-	v->cameras[v->active_camera]->anglex-=v->mouse.dx/5;
+	if(v->mouse.rotate_axis==MOUSE_ROTATE_XY)
+	{
+		v->cameras[v->active_camera]->angley-=v->mouse.dy/5;
+		v->cameras[v->active_camera]->anglex-=v->mouse.dx/5;
+	}
+	if(v->mouse.rotate_axis==MOUSE_ROTATE_X)
+	{
+		v->cameras[v->active_camera]->anglex-=v->mouse.dx/5;
+	}
+	if(v->mouse.rotate_axis==MOUSE_ROTATE_Y)
+	{
+		v->cameras[v->active_camera]->angley-=v->mouse.dy/5;
+	}
+	if(v->mouse.rotate_axis==MOUSE_ROTATE_Z)
+	{
+		v->cameras[v->active_camera]->anglez-=v->mouse.dx/5;
+	}
+
 	return 1;
 }
