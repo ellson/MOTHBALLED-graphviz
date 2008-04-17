@@ -1249,7 +1249,9 @@ static int countActiveNodes(Hierarchy * hierarchy, int node, int level)
     int cnt, other;
 
     if (graph[node].active_level == level) {	// node is active
+#ifdef DEBUG
 fprintf (stderr, "(%d,%d) (%f,%f)\n", level,node,graph[node].x_coord,graph[node].y_coord);
+#endif
 	return 1;
     } 
     cnt = countActiveNodes(hierarchy, hierarchy->cv2v[level][2*node], level-1);
