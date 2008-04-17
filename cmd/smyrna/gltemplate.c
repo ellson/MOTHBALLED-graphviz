@@ -380,11 +380,17 @@ static gboolean motion_notify_event(GtkWidget * widget,
     if ((event->state & GDK_BUTTON1_MASK)
 	&& (view->mouse.mouse_mode == MM_ZOOM)) {
 	float x;
-	float real_zoom;
+	float real_zoom,old_zoom;
 	if(view->active_camera==-1)
+	{
+		old_zoom=view->zoom;
 		real_zoom=view->zoom + dx / 10 * (view->zoom * -1 / 20);
+	}
 	else
+	{
+		old_zoom=view->cameras[view->active_camera]->r;
 		real_zoom=(view->cameras[view->active_camera]->r + dx / 10 * (view->cameras[view->active_camera]->r  / 20))*-1;
+	}
 
 	if (real_zoom > MAX_ZOOM)
 		real_zoom = (float) MAX_ZOOM;
@@ -395,9 +401,11 @@ static gboolean motion_notify_event(GtkWidget * widget,
 		view->zoom = real_zoom;
 	else{
 		view->cameras[view->active_camera]->r=real_zoom*-1;
-		set_camera_x_y(view->cameras[view->active_camera]);
-	}
 
+	//pan adjsutment
+	}
+	view->panx=old_zoom*view->panx/real_zoom;
+	view->pany=old_zoom*view->pany/real_zoom;
 
 	/*set label to new zoom value */
 	x = ((float) 100.0 - (float) 1.0) * (view->zoom -
