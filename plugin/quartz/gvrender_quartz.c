@@ -25,42 +25,11 @@
 #include "gvplugin_render.h"
 #include "graph.h"
 
-#include <ApplicationServices/ApplicationServices.h>
-
-typedef enum {
-	FORMAT_BMP,
-	FORMAT_EXR,
-	FORMAT_GIF,
-	FORMAT_JPEG,
-	FORMAT_JPEG2000,
-	FORMAT_PDF,
-	FORMAT_PICT,
-	FORMAT_PNG,
-	FORMAT_PSD,
-	FORMAT_SGI,
-	FORMAT_TIFF,
-	FORMAT_TGA
-} format_type;
+#include "gvplugin_quartz.h"
 
 static const int BYTE_ALIGN = 15;			/* align to 16 bytes */
 static const int BITS_PER_COMPONENT = 8;	/* bits per color component */
 static const int BYTES_PER_PIXEL = 4;		/* bytes per pixel */
-
-/* Uniform Type Identifiers corresponding to each format_type */
-static CFStringRef format_uti [] = {
-	CFSTR("com.microsoft.bmp"),
-	CFSTR("com.ilm.openexr-image"),
-	CFSTR("com.compuserve.gif"),
-	CFSTR("public.jpeg"),
-	CFSTR("public.jpeg-2000"),
-	CFSTR("com.adobe.pdf"),
-	CFSTR("com.apple.pict"),
-	CFSTR("public.png"),
-	CFSTR("com.adobe.photoshop-image"),
-	CFSTR("com.sgi.sgi-image"),
-	CFSTR("public.tiff"),
-	CFSTR("com.truevision.tga-image")
-};
 
 extern size_t gvdevice_write(GVJ_t *job, const unsigned char *s, unsigned int len);
 

@@ -15,16 +15,33 @@
 **********************************************************/
 
 #include "gvplugin.h"
+#include "gvplugin_quartz.h"
 
 extern gvplugin_installed_t gvrender_quartz_types;
 // extern gvplugin_installed_t gvtextlayout_quartz_types;
-// extern gvplugin_installed_t gvloadimage_quartz_types;
+extern gvplugin_installed_t gvloadimage_quartz_types;
 extern gvplugin_installed_t gvdevice_quartz_types;
+
+/* Uniform Type Identifiers corresponding to each format_type */
+CFStringRef format_uti [] = {
+	CFSTR("com.microsoft.bmp"),
+	CFSTR("com.ilm.openexr-image"),
+	CFSTR("com.compuserve.gif"),
+	CFSTR("public.jpeg"),
+	CFSTR("public.jpeg-2000"),
+	CFSTR("com.adobe.pdf"),
+	CFSTR("com.apple.pict"),
+	CFSTR("public.png"),
+	CFSTR("com.adobe.photoshop-image"),
+	CFSTR("com.sgi.sgi-image"),
+	CFSTR("public.tiff"),
+	CFSTR("com.truevision.tga-image")
+};
 
 static gvplugin_api_t apis[] = {
     {API_render, &gvrender_quartz_types},
   //  {API_textlayout, &gvtextlayout_quartz_types},
-  //  {API_loadimage, &gvloadimage_quartz_types},
+	{API_loadimage, &gvloadimage_quartz_types},
     {API_device, &gvdevice_quartz_types},
     {(api_t)0, 0},
 };
