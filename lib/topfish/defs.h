@@ -23,7 +23,9 @@ typedef struct {
 	int nedges;
 	int *edges;
 	float *ewgts;
+#ifdef STYLES
 	Style *styles;
+#endif
 #if 0
 	float *edists; // notice, this is a directed dist reflecting the direction of the edge
 #endif

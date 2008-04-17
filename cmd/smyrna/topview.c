@@ -206,7 +206,7 @@ void drawTopViewGraph(Agraph_t * g)
     float dddx, dddy,dddz;
     int ind = 0;
 	if (view->zoom > NODE_ZOOM_LIMIT) {
-	glPointSize(1);
+	glPointSize(3);
 		//draw nodes
 	set_topview_options();
 	
@@ -1069,6 +1069,7 @@ static char* smyrna_icon_zoom;
 static char* smyrna_icon_zoomplus;
 static char* smyrna_icon_zoomminus;
 static char* smyrna_icon_fisheye;
+static char* smyrna_icon_rotate;
 
 #define SET_PATH(var,sfx,dflt) if (!(var=smyrnaPath(sfx))) var = dflt
 
@@ -1086,6 +1087,7 @@ glCompSet *glcreate_gl_topview_menu()
 	SET_PATH(smyrna_icon_zoomplus,"icons/zoomplus.raw",SMYRNA_ICON_ZOOMPLUS);
 	SET_PATH(smyrna_icon_zoomminus,"icons/zoomminus.raw",SMYRNA_ICON_ZOOMMINUS);
 	SET_PATH(smyrna_icon_fisheye,"icons/fisheye.raw",SMYRNA_ICON_FISHEYE);
+	SET_PATH(smyrna_icon_rotate,"icons/rotate.raw",SMYRNA_ICON_ROTATE);
     }
 
     s->panelcount = 0;
@@ -1334,7 +1336,10 @@ void prepare_topological_fisheye(topview * t)
     fs = initFocus(t->Nodecount);	// create focus set
     gg = hp->geom_graphs[0];
 
-    find_closest_active_node(hp, 737.0, 1063.0, &closest_fine_node);
+/*
+    find_closest_active_node(hp, 465.966318,438.649967, &closest_fine_node);
+*/
+    closest_fine_node = 0;
 /* fprintf (stderr, "Closest node [%d] %s\n", closest_fine_node, agnameof(t->Nodes[closest_fine_node].Node)); */
     fs->num_foci = 1;
     fs->foci_nodes[0] = closest_fine_node;
@@ -1344,10 +1349,10 @@ void prepare_topological_fisheye(topview * t)
 	hp->geom_graphs[cur_level][closest_fine_node].y_coord;
 
     set_active_levels(hp, fs->foci_nodes, fs->num_foci);
-count_active_nodes(hp);
 
     parms.rescale = NoRescale;
     positionAllItems(hp, fs, &parms);
+/* fprintf (stderr, "No. of active nodes = %d\n", count_active_nodes(hp)); */
 }
 
 void drawtopologicalfisheye(topview* t)

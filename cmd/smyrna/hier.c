@@ -156,6 +156,7 @@ vtx_data *makeGraph(topview * tv, int *nedges)
     int nv = tv->Nodecount;
     vtx_data *graph = N_NEW(nv, vtx_data);
     int *edges = N_NEW(2 * ne + nv, int);  /* reserve space for self loops */
+    float *ewgts = N_NEW(2 * ne + nv, float);
     Agnode_t *np;
     Agedge_t *ep;
     Agraph_t *g = NULL;
@@ -164,8 +165,10 @@ vtx_data *makeGraph(topview * tv, int *nedges)
     ne = 0;
     for (i = 0; i < nv; i++) {
 	graph[i].edges = edges++;	/* reserve space for the self loop */
-	graph[i].ewgts = NULL;
+	graph[i].ewgts = ewgts++;
+#ifdef STYLES
 	graph[i].styles = NULL;
+#endif
 	i_nedges = 1;		/* one for the self */
 
 	np = tv->Nodes[i].Node;
@@ -181,15 +184,18 @@ vtx_data *makeGraph(topview * tv, int *nedges)
 	    ne++;
 	    i_nedges++;
 	    *edges++ = OD_TVRef(vp);
+	    *ewgts++ = 1;
 	}
 
 	graph[i].nedges = i_nedges;
 	graph[i].edges[0] = i;
+	graph[i].ewgts[0] = 1 - i_nedges;
     }
     ne /= 2;			/* each edge counted twice */
     *nedges = ne;
     return graph;
 }
+
 #ifdef DEBUG
 static void
 dumpG (int nn, vtx_data * graph)
@@ -205,15 +211,6 @@ dumpG (int nn, vtx_data * graph)
 }
 
 static void
-dumpHier (Hierarchy* hier)
-{
-    int i;
-
-    for (i = 0; i < hier->nlevels; i++)
-        fprintf (stderr, "[%d] %d %d \n", i, hier->nvtxs[i], hier->nedges[i]);
-}
-
-static void
 dumpEG (int nn, ex_vtx_data * graph)
 {
     int i, j;
@@ -226,6 +223,21 @@ dumpEG (int nn, ex_vtx_data * graph)
         graph++;
     }
 }
+
+static void
+dumpHier (Hierarchy* hier)
+{
+    int i;
+
+    for (i = 0; i < hier->nlevels; i++) {
+        fprintf (stderr, "level [%d] %d %d \n", i, hier->nvtxs[i], hier->nedges[i]);
+        fprintf (stderr, "graph\n");
+        dumpG (hier->nvtxs[i], hier->graphs[0]);
+        fprintf (stderr, "geom_graph\n");
+        dumpEG (hier->nvtxs[i], hier->geom_graphs[0]);
+    }
+}
+
 #endif
 
 Hierarchy *makeHier(int nn, int ne, vtx_data * graph, double *x_coords,
@@ -256,6 +268,7 @@ Hierarchy *makeHier(int nn, int ne, vtx_data * graph, double *x_coords,
 	geom_graph[i].physical_y_coord = (float) y_coords[i];
     }
 
+/* dumpHier (hp); */
     return hp;
 }
 

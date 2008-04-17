@@ -11,6 +11,7 @@ AM_CPPFLAGS = \
 	-DSMYRNA_ICON_ZOOMPLUS=\""$(icondir)/zoomplus.raw"\" \
 	-DSMYRNA_ICON_ZOOMMINUS=\""$(icondir)/zoomminus.raw"\" \
 	-DSMYRNA_ICON_FISHEYE=\""$(icondir)/fisheye.raw"\" \
+	-DSMYRNA_ICON_ROTATE=\""$(icondir)/rotate.raw"\" \
         -I$(top_srcdir) \
         -I$(top_srcdir)/lib/cgraph \
         -I$(top_srcdir)/lib/cdt \
