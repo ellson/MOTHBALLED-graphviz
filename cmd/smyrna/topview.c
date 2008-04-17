@@ -1317,7 +1317,7 @@ void drawtopologicalfisheye(topview* t)
 			    glVertex3f((GLfloat)x0,(GLfloat)y0,(GLfloat)0);
 			    glVertex3f((GLfloat)x,(GLfloat)y,(GLfloat)0);
 			}
-		    }
+			}
 		    else if (gg[n].active_level > level) {
 			find_physical_coords(hp, level, n, &x, &y);
 			glVertex3f((GLfloat)x0,(GLfloat)y0,(GLfloat)0);
