@@ -26,5 +26,8 @@ int GetFixedOGLPos(int x, int y, float kts, GLfloat * X, GLfloat * Y,
 		   GLfloat * Z);
 int GetOGLPosRef(int x, int y, float *X, float *Y, float *Z);
 float GetOGLDistance(int l);
+int GetFixedOGLPoslocal(int x, int y, float kts, GLfloat * X, GLfloat * Y,
+		   GLfloat * Z);
+
 
 #endif
