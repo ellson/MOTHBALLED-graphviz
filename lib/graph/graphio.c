@@ -197,6 +197,16 @@ agcanonical(char *str)
     return agstrcanon(str, getoutputbuffer(str));
 }
 
+/* agcanon:
+ * Safe version of agstrcanon but using only double quotes.
+ * Any string can be used, but there is no check for html strings.
+ */
+char*
+agcanon(char *str)
+{
+    return _agstrcanon(str, getoutputbuffer(str));
+}
+
 static void write_dict(Agdict_t * dict, FILE * fp)
 {
     int i, cnt = 0;
