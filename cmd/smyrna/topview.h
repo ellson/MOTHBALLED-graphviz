@@ -45,8 +45,4 @@ _BB void on_host_alpha_change(GtkWidget * widget, gpointer user_data);
 /* double dist(double x1, double y1, double x2, double y2); */
 /* double G(double x); */
 glCompSet *glcreate_gl_topview_menu();
-void fisheye_polar(double x_focus, double y_focus, topview * t);
-void fisheye_spherical(double x_focus, double y_focus,double z_focus, topview * t);
-void prepare_topological_fisheye(topview * t);
-void drawtopologicalfisheye(topview * t);
 #endif
