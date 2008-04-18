@@ -197,6 +197,10 @@ void prepare_topological_fisheye(topview * t)
     set_active_levels(hp, fs->foci_nodes, fs->num_foci);
 
     parms.rescale = NoRescale;
+/*	parms.width=view->bdxRight-view->bdxLeft;
+	parms.height=view->bdyTop-view->bdyBottom;
+	parms.margin=0;
+	parms.graphSize=100;*/
     positionAllItems(hp, fs, &parms);
 /* fprintf (stderr, "No. of active nodes = %d\n", count_active_nodes(hp)); */
 }

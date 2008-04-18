@@ -130,20 +130,21 @@ int glmotion_rotate(ViewInfo * v)
 {
 	if(v->mouse.rotate_axis==MOUSE_ROTATE_XY)
 	{
-		v->cameras[v->active_camera]->angley-=v->mouse.dy/5;
-		v->cameras[v->active_camera]->anglex-=v->mouse.dx/5;
-	}
-	if(v->mouse.rotate_axis==MOUSE_ROTATE_X)
-	{
-		v->cameras[v->active_camera]->anglex-=v->mouse.dx/5;
+		v->cameras[v->active_camera]->angley-=v->mouse.dy/7;
+		v->cameras[v->active_camera]->anglex-=v->mouse.dx/7;
 	}
 	if(v->mouse.rotate_axis==MOUSE_ROTATE_Y)
 	{
-		v->cameras[v->active_camera]->angley-=v->mouse.dy/5;
+		v->cameras[v->active_camera]->anglex-=v->mouse.dx/7;
+	}
+	if(v->mouse.rotate_axis==MOUSE_ROTATE_X)
+	{
+		v->cameras[v->active_camera]->angley-=v->mouse.dy/7;
 	}
 	if(v->mouse.rotate_axis==MOUSE_ROTATE_Z)
 	{
-		v->cameras[v->active_camera]->anglez-=v->mouse.dx/5;
+		v->cameras[v->active_camera]->anglez-=v->mouse.dx/7;
+		v->cameras[v->active_camera]->anglez-=v->mouse.dy/7;
 	}
 
 	return 1;
