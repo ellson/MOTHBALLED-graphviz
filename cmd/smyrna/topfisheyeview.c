@@ -206,7 +206,26 @@ void drawtopologicalfisheye(topview* t)
     int level, v, i, n;
     Hierarchy* hp = t->h;
 
-    glBegin(GL_LINES);
+	glPointSize(3);
+	glBegin(GL_POINTS);
+    for (level=0;level < hp->nlevels;level++) {
+	for (v=0;v < hp->nvtxs[level]; v++) {
+	    ex_vtx_data* gg = hp->geom_graphs[level];
+	    vtx_data* g = hp->graphs[level];
+	    if(gg[v].active_level==level) {
+		double x0 = gg[v].physical_x_coord;
+		double y0 = gg[v].physical_y_coord;
+		glColor3f((GLfloat)(hp->nlevels-level)/(GLfloat)hp->nlevels,(GLfloat)level/(GLfloat)hp->nlevels,0);
+		glVertex3f((GLfloat)x0,(GLfloat)y0,(GLfloat)0);
+	    }
+	}
+    }
+    glEnd();
+
+	
+	
+	
+	glBegin(GL_LINES);
     for (level=0;level < hp->nlevels;level++) {
 	for (v=0;v < hp->nvtxs[level]; v++) {
 	    ex_vtx_data* gg = hp->geom_graphs[level];
@@ -217,8 +236,9 @@ void drawtopologicalfisheye(topview* t)
 
 		for (i=1;i < g[v].nedges;i++) {
 		    double x,y;
-		    n = g[v].edges[i];
-		    if (gg[n].active_level == level) {
+			n = g[v].edges[i];
+			glColor3f((GLfloat)(hp->nlevels-level)/(GLfloat)hp->nlevels,(GLfloat)level/(GLfloat)hp->nlevels,0);
+			if (gg[n].active_level == level) {
 			if (v < n) {
 			    x = gg[n].physical_x_coord;
 			    y = gg[n].physical_y_coord;
@@ -236,4 +256,56 @@ void drawtopologicalfisheye(topview* t)
 	}
     }
     glEnd();
+}
+void changetopologicalfisheyefocus(topview* t,float* x,float* y,float* z,int num_foci)
+{
+/*  In loop,
+    update fs.
+      For example, if user clicks mouse at (p.x,p.y) to pick a single new focus,
+        int closest_fine_node;
+        find_closest_active_node(hierarchy, p.x, p.y, &closest_fine_node);
+        fs->num_foci = 1;
+        fs->foci_nodes[0] = closest_fine_node;
+        fs->x_foci[0] = 
+hierarchy->geom_graphs[cur_level][closest_fine_node].x_coord;
+        fs->y_foci[0] = 
+hierarchy->geom_graphs[cur_level][closest_fine_node].y_coord;
+
+    set_active_levels(hierarchy, fs->foci_nodes, fs->num_foci);
+    positionAllItems(hierarchy, fs, parms)*/
+
+	focus_t *fs;
+    int ne;
+    int i;
+    int closest_fine_node;
+    int   cur_level = 0;
+    hierparms_t parms;
+    Hierarchy* hp;
+
+//    ex_vtx_data* gg;
+
+    topview_node* np;
+	printf ("c(%f,%f)  z:%f\n",x[0],y[0],view->zoom);
+
+	hp = t->h;
+    fs = initFocus(t->Nodecount);	// create focus set
+//    gg = hp->geom_graphs[0];
+
+
+	fs->num_foci = num_foci;
+	for (i=0;i < num_foci;i++)
+	{
+	    find_closest_active_node(hp, x[i],y[i], &closest_fine_node);
+		fs->foci_nodes[i] = closest_fine_node;
+		fs->x_foci[i] =
+		hp->geom_graphs[cur_level][closest_fine_node].x_coord;
+		fs->y_foci[i] =
+		hp->geom_graphs[cur_level][closest_fine_node].y_coord;
+	}
+
+
+	
+	set_active_levels(hp, fs->foci_nodes, fs->num_foci);
+    parms.rescale = NoRescale;
+    positionAllItems(hp, fs, &parms);
 }

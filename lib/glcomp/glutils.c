@@ -14,6 +14,7 @@
 **********************************************************/
 
 #include "glutils.h"
+#include "glexpose.h"
 
 /* at given depth value, tranforms 2d Window location to 3d gl coords*/
 int GetFixedOGLPos(int x, int y, float kts, GLfloat * X, GLfloat * Y,
@@ -137,3 +138,59 @@ float GetOGLDistance(int l)
     return ((float) (posXX - posX));
 
 }
+int GetFixedOGLPoslocal(int x, int y, float kts, GLfloat * X, GLfloat * Y,
+		   GLfloat * Z)
+{
+    GLdouble wwinX;
+    GLdouble wwinY;
+    GLdouble wwinZ;
+
+    GLint viewport[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    GLfloat winX, winY;
+    GLdouble posX, posY, posZ;
+	
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+    glGetDoublev(GL_PROJECTION_MATRIX, projection);
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+	glBegin(GL_POINTS);
+    glVertex3f(10.00, 10.00, 0.00);
+    glEnd();
+
+	gluProject(10.0, 10.0, 1.00, modelview, projection, viewport, &wwinX,
+	       &wwinY, &wwinZ);
+
+    winX = (float) x;
+    winY = (float) viewport[3] - (float) y;
+    gluUnProject(winX, winY, wwinZ, modelview, projection, viewport, &posX,
+		 &posY, &posZ);
+	*X = (GLfloat) posX;
+    *Y = (GLfloat) posY;
+    *Z = (GLfloat) posZ;
+
+    return 1;
+
+}
+
+int glreversecamera(ViewInfo * view)
+{
+
+	glLoadIdentity();
+	if (view->active_camera==-1)
+	{
+		gluLookAt(view->panx, view->pany, 20, view->panx,
+			view->pany, 0.0, 0.0, 1.0, 0.0);
+		glScalef(1*view->zoom*-1,1*view->zoom*-1,1*view->zoom*-1);
+	}
+	else
+	{
+		glScalef(1*view->cameras[view->active_camera]->r,1*view->cameras[view->active_camera]->r,1*view->cameras[view->active_camera]->r);
+
+	}
+
+	return 1;
+}
+
+

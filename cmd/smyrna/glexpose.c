@@ -31,7 +31,7 @@ int glupdatecamera(ViewInfo * view)
 	glLoadIdentity();
 	if (view->active_camera==-1)
 	{
-		gluLookAt(view->panx, view->pany, view->zoom * -1, view->panx,
+		gluLookAt(view->panx, view->pany, 20, view->panx,
 			view->pany, 0.0, 0.0, 1.0, 0.0);
 	}
 
@@ -44,12 +44,12 @@ int glupdatecamera(ViewInfo * view)
 		view->cameras[view->active_camera]->camera_vectorx,
 		view->cameras[view->active_camera]->camera_vectory,
 		view->cameras[view->active_camera]->camera_vectorz);*/
-		gluLookAt(view->cameras[view->active_camera]->targetx, view->cameras[view->active_camera]->targety, view->cameras[view->active_camera]->r, view->cameras[view->active_camera]->targetx,
+		gluLookAt(view->cameras[view->active_camera]->targetx, view->cameras[view->active_camera]->targety, -20, view->cameras[view->active_camera]->targetx,
 		view->cameras[view->active_camera]->targety, 0.0, 0.0, 1.0, 0.0);
 //			glTranslatef(view->cameras[view->active_camera]->targetx/pow(view->cameras[view->active_camera]->r,0.125),view->cameras[view->active_camera]->targety/pow(view->cameras[view->active_camera]->r,0.125),0);
-			glRotatef(view->cameras[view->active_camera]->angley,1,0,0);
+/*			glRotatef(view->cameras[view->active_camera]->angley,1,0,0);
 			glRotatef(view->cameras[view->active_camera]->anglex,0,1,0);
-			glRotatef(view->cameras[view->active_camera]->anglez,0,0,1);
+			glRotatef(view->cameras[view->active_camera]->anglez,0,0,1);*/
 
 	}
 	GetOGLPosRef(1, view->h - 5, &(view->clipX1), &(view->clipY1),

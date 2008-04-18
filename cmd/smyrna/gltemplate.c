@@ -290,50 +290,64 @@ static gboolean button_release_event(GtkWidget * widget,
 				     GdkEventButton * event, gpointer data)
 {
     if (event->button == 1)	//left click release
-    {
-	if (glCompSetRelease
-	    (view->Topview->topviewmenu, (int) event->x_root,
-	     (int) event->y_root))
-	    expose_event(view->drawing_area, NULL, NULL);
-
-	view->mouse.mouse_down = 0;
-	if ((view->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
-	    || (view->mouse.mouse_mode == MM_RECTANGULAR_X_SELECT)) {
-	    if (view->GLx <= view->GLx2)
-		view->Selection.X = view->GLx;
-	    else
-		view->Selection.X = view->GLx2;
-	    if (view->GLy <= view->GLy2)
-		view->Selection.Y = view->GLy;
-	    else
-		view->Selection.Y = view->GLy2;
-
-	    view->Selection.W = view->GLx2 - view->GLx;
-	    if (view->Selection.W < 0)
-		view->Selection.W = view->Selection.W * -1;
-	    view->Selection.H = view->GLy2 - view->GLy;
-	    if (view->Selection.H < 0)
-		view->Selection.H = view->Selection.H * -1;
-	    if (view->mouse.mouse_mode == 4)
-		view->Selection.Type = 1;
-	    else
-		view->Selection.Type = 2;
-	    view->Selection.Active = 1;
-	    expose_event(view->drawing_area, NULL, NULL);
-	}
-	if (view->mouse.mouse_mode == MM_MOVE) {
-	    if (GD_TopView(view->g[view->activeGraph]) == 0)
-		move_nodes(view->g[view->activeGraph]);
-	    else
-		move_TVnodes();
-	}
-
-	if ((view->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER) || (view->mouse.mouse_mode == MM_MAGNIFIER))	//fisheye mag mouse release, stop distortion
 	{
-	    originate_distorded_coordinates(view->Topview);
-	    expose_event(view->drawing_area, NULL, NULL);
+		if (glCompSetRelease
+			(view->Topview->topviewmenu, (int) event->x_root,
+				(int) event->y_root))
+		{
+			expose_event(view->drawing_area, NULL, NULL);
+			return 0;
+		}
+		view->mouse.mouse_down = 0;
+		if ((view->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
+		    || (view->mouse.mouse_mode == MM_RECTANGULAR_X_SELECT))
+		{
+			if (view->GLx <= view->GLx2)
+				view->Selection.X = view->GLx;
+			else
+				view->Selection.X = view->GLx2;
+			if (view->GLy <= view->GLy2)
+				view->Selection.Y = view->GLy;
+			else
+				view->Selection.Y = view->GLy2;
+		    view->Selection.W = view->GLx2 - view->GLx;
+		    if (view->Selection.W < 0)
+				view->Selection.W = view->Selection.W * -1;
+			view->Selection.H = view->GLy2 - view->GLy;
+			if (view->Selection.H < 0)
+				view->Selection.H = view->Selection.H * -1;
+			if (view->mouse.mouse_mode == 4)
+				view->Selection.Type = 1;
+			else
+				view->Selection.Type = 2;
+			view->Selection.Active = 1;
+			expose_event(view->drawing_area, NULL, NULL);
+		}
+		if (view->mouse.mouse_mode == MM_MOVE)
+		{
+			if (GD_TopView(view->g[view->activeGraph]) == 0)
+				move_nodes(view->g[view->activeGraph]);
+			else
+				move_TVnodes();
+		}
+
+		if ((view->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER) || (view->mouse.mouse_mode == MM_MAGNIFIER))	//fisheye mag mouse release, stop distortion
+		{
+			originate_distorded_coordinates(view->Topview);
+			expose_event(view->drawing_area, NULL, NULL);
+		}
 	}
-    }
+    if (event->button == 3)	//right click
+	{
+		if (view->Topview->is_top_fisheye)
+		{
+			GetFixedOGLPoslocal((int) event->x, (int) event->y, view->GLDepth, &(view->GLx2),
+		       &(view->GLy2), &(view->GLz2));
+			changetopologicalfisheyefocus(view->Topview,&view->GLx2,&view->GLy2,0,1);
+			expose_event(view->drawing_area, NULL, NULL);
+		}
+	}
+
     dx = 0.0;
     dy = 0.0;
     return FALSE;

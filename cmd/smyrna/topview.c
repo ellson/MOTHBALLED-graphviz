@@ -543,8 +543,11 @@ void set_boundries(topview * t)
     view->bdyTop = top;
     view->bdxRight = right;
     view->bdyBottom = bottom;
-    view->bdzTop = 0;
+
+	view->bdzTop = 0;
     view->bdzBottom = 0;
+
+	printf("graph borders:(%f,%f) (%f,%f)\n",view->bdxLeft,view->bdyBottom,view->bdxRight,view->bdyTop);
 }
 
 
