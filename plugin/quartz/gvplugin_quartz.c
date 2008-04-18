@@ -24,6 +24,7 @@ extern gvplugin_installed_t gvdevice_quartz_types;
 
 /* Uniform Type Identifiers corresponding to each format_type */
 CFStringRef format_uti [] = {
+	NULL,
 	CFSTR("com.microsoft.bmp"),
 	CFSTR("com.ilm.openexr-image"),
 	CFSTR("com.compuserve.gif"),
