@@ -1371,7 +1371,7 @@ htmlEntity (char** s)
     return n;
 }
 
-/* substitute html entities like: &#123; and: &amp; for the UTF8 equivalents */
+/* substitute html entities like: &#123; and: &amp; with the UTF8 equivalents */
 char* htmlEntityUTF8 (char* s)
 {
     char*  ns;
