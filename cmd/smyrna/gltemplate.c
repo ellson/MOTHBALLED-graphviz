@@ -296,7 +296,6 @@ static gboolean button_release_event(GtkWidget * widget,
 				(int) event->y_root))
 		{
 			expose_event(view->drawing_area, NULL, NULL);
-			return 0;
 		}
 		view->mouse.mouse_down = 0;
 		if ((view->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
