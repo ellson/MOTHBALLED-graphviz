@@ -46,10 +46,10 @@ static void writenodeandport(FILE * fp, node_t * node, char *port)
 {
     char *name;
     if (IS_CLUST_NODE(node))
-	name = strchr(node->name, ':') + 1;
+	name = agcanon (strchr(node->name, ':') + 1);
     else
-	name = node->name;
-    fprintf(fp, "%s", agcanonical(name));	/* slimey i know */
+	name = agcanonical (node->name);
+    fprintf(fp, "%s", name);	/* slimey i know */
     if (port && *port)
 	fprintf(fp, ":%s", agcanonical(port));
 }
@@ -81,13 +81,9 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 	fprintf(f, "node %s ", agcanonical(n->name));
 	printptf(f, ND_coord_i(n));
 	if (ND_label(n)->html)   /* if html, get original text */
-	    lbl = agxget(n, N_label->index);
+	    lbl = agcanonical (agxget(n, N_label->index));
 	else
-	    lbl = ND_label(n)->text;
-	if (lbl)
-	    lbl = agcanonical(lbl);
-	else
-	    lbl = "\"\"";
+	    lbl = agcanon(ND_label(n)->text);
 	fprintf(f, " %.3f %.3f %s %s %s %s %s\n",
 		ND_width(n), ND_height(n), lbl,
 		late_nnstring(n, N_style, "solid"),

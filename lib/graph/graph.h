@@ -136,6 +136,7 @@ extern "C" {
 #endif
     extern char *agstrcanon(char *, char *);
     extern char *agcanonical(char *);
+    extern char *agcanon(char *);
     extern int aghtmlstr(char *s);
     extern char *agget(void *, char *);
     extern char *agxget(void *, int);
