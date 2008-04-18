@@ -24,6 +24,7 @@
 #include "gvplugin_device.h"
 #include "gvplugin_render.h"
 #include "graph.h"
+#include "gvplugin_gdiplus.h"
 
 #include <windows.h>
 #include "GdiPlus.h"
@@ -36,18 +37,9 @@ extern "C" size_t gvdevice_write(GVJ_t *job, const unsigned char *s, unsigned in
 using namespace std;
 using namespace Gdiplus;
 
-typedef enum {
-	FORMAT_BMP,
-	FORMAT_EMF,
-	FORMAT_EMFPLUS,
-	FORMAT_GIF,
-	FORMAT_JPEG,
-	FORMAT_PNG,
-	FORMAT_TIFF
-} format_type;
-
 /* class id corresponding to each format_type */
 static GUID format_id [] = {
+	GUID_NULL,
 	ImageFormatBMP,
 	ImageFormatEMF,
 	ImageFormatEMF,
@@ -220,6 +212,7 @@ static auto_ptr<Font> find_font(char *fontname, double fontsize)
 		(LPARAM)&found_font,
 		0) == 0) {
 		found_font.lfHeight = (LONG)-fontsize;
+		found_font.lfWidth = 0;
 		return auto_ptr<Font>(new Font(reference.hdc, &found_font));
 	}
 	else
@@ -230,9 +223,11 @@ static void gdiplusgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
 {
 	/* convert incoming UTF8 string to wide chars */
 	/* NOTE: conversion is 1 or more UTF8 chars to 1 wide char */
-	vector<WCHAR> wide_str(strlen(para->str) + 1);
-	int wide_count = MultiByteToWideChar(CP_UTF8, 0, para->str, -1, &wide_str.front(), wide_str.size());
+	int wide_count = MultiByteToWideChar(CP_UTF8, 0, para->str, -1, NULL, 0);
 	if (wide_count > 1) {
+		vector<WCHAR> wide_str(wide_count);
+		MultiByteToWideChar(CP_UTF8, 0, para->str, -1, &wide_str.front(), wide_count);
+		
 		/* adjust text position */
 		switch (para->just) {
 		case 'r':

@@ -5,7 +5,7 @@
 *      This software is part of the graphviz package      *
 *                http://www.graphviz.org/                 *
 *                                                         *
-*            Copyright (c) 1994-2008 AT&T Corp.           *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
 *                and is licensed under the                *
 *            Common Public License, Version 1.0           *
 *                      by AT&T Corp.                      *
@@ -14,19 +14,18 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include "gvplugin.h"
+#ifndef GVPLUGIN_GDIPLUS_H
+#define GVPLUGIN_GDIPLUS_H
 
-extern gvplugin_installed_t gvrender_gdiplus_types;
-// extern gvplugin_installed_t gvtextlayout_gdiplus_types;
-extern gvplugin_installed_t gvloadimage_gdiplus_types;
-extern gvplugin_installed_t gvdevice_gdiplus_types;
+typedef enum {
+	FORMAT_NONE,
+	FORMAT_BMP,
+	FORMAT_EMF,
+	FORMAT_EMFPLUS,
+	FORMAT_GIF,
+	FORMAT_JPEG,
+	FORMAT_PNG,
+	FORMAT_TIFF
+} format_type;
 
-static gvplugin_api_t apis[] = {
-    {API_render, &gvrender_gdiplus_types},
-  //  {API_textlayout, &gvtextlayout_gdiplus_types},
-	{API_loadimage, &gvloadimage_gdiplus_types},
-    {API_device, &gvdevice_gdiplus_types},
-    {(api_t)0, 0},
-};
-
-gvplugin_library_t gvplugin_gdiplus_LTX_library = { "gdiplus", apis };
+#endif
