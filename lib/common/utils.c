@@ -1747,3 +1747,41 @@ int strncasecmp(const char *s1, const char *s2, unsigned int n)
 }
 
 #endif				/* HAVE_STRNCASECMP */
+
+static void gv_free_splines(edge_t * e)
+{
+    int i;
+    if (ED_spl(e)) {
+        for (i = 0; i < ED_spl(e)->size; i++)
+            free(ED_spl(e)->list[i].list);
+        free(ED_spl(e)->list);
+        free(ED_spl(e));
+    }
+    ED_spl(e) = NULL;
+}
+
+void gv_cleanup_edge(edge_t * e)
+{
+    gv_free_splines(e);
+    free_label(ED_label(e));
+    memset(&(e->u), 0, sizeof(Agedgeinfo_t));
+}
+
+void gv_cleanup_node(node_t * n)
+{
+    if (ND_pos(n)) free(ND_pos(n));
+    if (ND_shape(n))
+        ND_shape(n)->fns->freefn(n);
+    free_label(ND_label(n));
+    memset(&(n->u), 0, sizeof(Agnodeinfo_t));
+}
+
+void gv_nodesize(node_t * n, boolean flip)
+{
+    int w;
+
+    w = ND_xsize(n) = POINTS(ND_width(n));
+    ND_lw_i(n) = ND_rw_i(n) = w / 2;
+    ND_ht_i(n) = ND_ysize(n) = POINTS(ND_height(n));
+}
+

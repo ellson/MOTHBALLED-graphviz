@@ -38,7 +38,7 @@ static void circular_init_node(node_t * n)
 {
     common_init_node(n);
 
-    neato_nodesize(n, GD_flip(n->graph));
+    gv_nodesize(n, GD_flip(n->graph));
     ND_pos(n) = N_NEW(GD_ndim(n->graph), double);
 }
 
@@ -303,34 +303,6 @@ void circo_layout(Agraph_t * g)
     dotneato_postprocess(g);
 }
 
-static void circular_cleanup_node(node_t * n)
-{
-    free(ND_pos(n));
-    if (ND_shape(n))
-	ND_shape(n)->fns->freefn(n);
-    free_label(ND_label(n));
-    memset(&(n->u), 0, sizeof(Agnodeinfo_t));
-}
-
-static void circular_free_splines(edge_t * e)
-{
-    int i;
-    if (ED_spl(e)) {
-	for (i = 0; i < ED_spl(e)->size; i++)
-	    free(ED_spl(e)->list[i].list);
-	free(ED_spl(e)->list);
-	free(ED_spl(e));
-    }
-    ED_spl(e) = NULL;
-}
-
-static void circular_cleanup_edge(edge_t * e)
-{
-    circular_free_splines(e);
-    free_label(ED_label(e));
-    memset(&(e->u), 0, sizeof(Agedgeinfo_t));
-}
-
 void circo_cleanup(graph_t * g)
 {
     node_t *n;
@@ -344,9 +316,9 @@ void circo_cleanup(graph_t * g)
 
     for (; n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    circular_cleanup_edge(e);
+	    gv_cleanup_edge(e);
 	}
-	circular_cleanup_node(n);
+	gv_cleanup_node(n);
     }
     free(GD_neato_nlist(g));
     if (g != g->root) memset(&(g->u), 0, sizeof(Agraphinfo_t));
