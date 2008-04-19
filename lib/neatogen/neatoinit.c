@@ -43,20 +43,11 @@ static int Pack;		/* If >= 0, layout components separately and pack together
 				 */
 static char *cc_pfx = "_neato_cc";
 
-void neato_nodesize(node_t * n, boolean flip)
-{
-    int w;
-
-    w = ND_xsize(n) = POINTS(ND_width(n));
-    ND_lw_i(n) = ND_rw_i(n) = w / 2;
-    ND_ht_i(n) = ND_ysize(n) = POINTS(ND_height(n));
-}
-
 void neato_init_node(node_t * n)
 {
     common_init_node(n);
     ND_pos(n) = N_NEW(GD_ndim(n->graph), double);
-    neato_nodesize(n, GD_flip(n->graph));
+    gv_nodesize(n, GD_flip(n->graph));
 }
 
 void neato_init_edge(edge_t * e)
@@ -144,36 +135,7 @@ void neato_init_node_edge(graph_t * g)
     }
 }
 
-void neato_cleanup_node(node_t * n)
-{
-    if (ND_shape(n)) {
-	ND_shape(n)->fns->freefn(n);
-    }
-    free(ND_pos(n));
-    free_label(ND_label(n));
-    memset(&(n->u), 0, sizeof(Agnodeinfo_t));
-}
-
-void neato_free_splines(edge_t * e)
-{
-    int i;
-    if (ED_spl(e)) {
-	for (i = 0; i < ED_spl(e)->size; i++)
-	    free(ED_spl(e)->list[i].list);
-	free(ED_spl(e)->list);
-	free(ED_spl(e));
-    }
-    ED_spl(e) = NULL;
-}
-
-void neato_cleanup_edge(edge_t * e)
-{
-    neato_free_splines(e);
-    free_label(ED_label(e));
-    memset(&(e->u), 0, sizeof(Agedgeinfo_t));
-}
-
-void neato_cleanup_graph(graph_t * g)
+static void neato_cleanup_graph(graph_t * g)
 {
     if (Nop || (Pack < 0))
 	free_scan_graph(g);
@@ -187,9 +149,9 @@ void neato_cleanup(graph_t * g)
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    neato_cleanup_edge(e);
+	    gv_cleanup_edge(e);
 	}
-	neato_cleanup_node(n);
+	gv_cleanup_node(n);
     }
     neato_cleanup_graph(g);
 }

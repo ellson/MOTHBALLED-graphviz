@@ -110,34 +110,6 @@ void fdp_init_node_edge(graph_t * g)
 
 }
 
-static void fdp_cleanup_node(node_t * n)
-{
-    free(ND_pos(n));
-    if (ND_shape(n))
-	ND_shape(n)->fns->freefn(n);
-    free_label(ND_label(n));
-    memset(&(n->u), 0, sizeof(Agnodeinfo_t));
-}
-
-static void fdp_free_splines(edge_t * e)
-{
-    int i;
-    if (ED_spl(e)) {
-	for (i = 0; i < ED_spl(e)->size; i++)
-	    free(ED_spl(e)->list[i].list);
-	free(ED_spl(e)->list);
-	free(ED_spl(e));
-    }
-    ED_spl(e) = NULL;
-}
-
-static void fdp_cleanup_edge(edge_t * e)
-{
-    fdp_free_splines(e);
-    free_label(ED_label(e));
-    memset(&(e->u), 0, sizeof(Agedgeinfo_t));
-}
-
 static void cleanup_subgs(graph_t * g)
 {
     graph_t *mg;
@@ -175,9 +147,9 @@ void fdp_cleanup(graph_t * g)
     free(ND_alg(n));
     for (; n; n = agnxtnode(g, n)) {
 	for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-	    fdp_cleanup_edge(e);
+	    gv_cleanup_edge(e);
 	}
-	fdp_cleanup_node(n);
+	gv_cleanup_node(n);
     }
     fdp_cleanup_graph(g);
 }

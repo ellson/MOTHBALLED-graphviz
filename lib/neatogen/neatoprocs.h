@@ -50,9 +50,6 @@ extern "C" {
     extern int init_nop(graph_t * g, int);
     extern void neato_nodesize(node_t * n, boolean flip);
     extern void neato_cleanup(graph_t * g);
-    extern void neato_cleanup_edge(edge_t * e);
-    extern void neato_cleanup_graph(graph_t * g);
-    extern void neato_cleanup_node(node_t * n);
     extern node_t *neato_dequeue(void);
     extern void neato_enqueue(node_t *);
     extern void neato_free_splines(edge_t * e);
