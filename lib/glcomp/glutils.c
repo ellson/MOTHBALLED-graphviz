@@ -14,7 +14,7 @@
 **********************************************************/
 
 #include "glutils.h"
-#include "glexpose.h"
+/* #include "glexpose.h" */
 
 /* at given depth value, tranforms 2d Window location to 3d gl coords*/
 int GetFixedOGLPos(int x, int y, float kts, GLfloat * X, GLfloat * Y,
@@ -174,6 +174,7 @@ int GetFixedOGLPoslocal(int x, int y, float kts, GLfloat * X, GLfloat * Y,
 
 }
 
+#if 0
 int glreversecamera(ViewInfo * view)
 {
 
@@ -193,4 +194,5 @@ int glreversecamera(ViewInfo * view)
 	return 1;
 }
 
+#endif
 
