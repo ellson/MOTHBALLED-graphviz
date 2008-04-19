@@ -344,7 +344,12 @@ void init_viewport(ViewInfo * view)
     view->Topview->parms.level.coarsening_rate = 2.5;
     view->Topview->parms.hier.dist2_limit = 1;
     view->Topview->parms.hier.min_nvtxs = 20;
-    view->Topview->parms.repos.rescale = NoRescale;
+    view->Topview->parms.repos.rescale = Polar;
+    view->Topview->parms.repos.width = view->bdxRight-view->bdxLeft;
+    view->Topview->parms.repos.height = view->bdyTop-view->bdyBottom;
+    view->Topview->parms.repos.margin = 0;
+    view->Topview->parms.repos.graphSize = 100;
+    view->Topview->parms.repos.distortion = 1.0;
 
     view->Topview->topviewmenu = '\0';
 	view->cameras='\0';;

@@ -217,7 +217,6 @@ void prepare_topological_fisheye(topview* t)
     Hierarchy *hp;
     ex_vtx_data *gg;
     topview_node *np;
-    reposition_t parms;
 
     vtx_data *graph = makeGraph(t, &ne);
 
@@ -242,14 +241,7 @@ void prepare_topological_fisheye(topview* t)
 
     set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->parms.level));
 
-    parms.rescale = Polar;
-    parms.width=view->bdxRight-view->bdxLeft;
-    parms.height=view->bdyTop-view->bdyBottom;
-    parms.margin=0;
-    parms.graphSize=100;
-    parms.distortion=1.0;
-    positionAllItems(hp, fs, &parms);
-    /* positionAllItems(hp, fs, &(t->parms.repos)); */
+    positionAllItems(hp, fs, &(t->parms.repos));
 /* fprintf (stderr, "No. of active nodes = %d\n", count_active_nodes(hp)); */
 
 }
