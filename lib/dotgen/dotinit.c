@@ -95,27 +95,6 @@ dot_cleanup_node(node_t * n)
     memset(&(n->u), 0, sizeof(Agnodeinfo_t));
 }
 
-static void 
-dot_free_splines(edge_t * e)
-{
-    int i;
-    if (ED_spl(e)) {
-	for (i = 0; i < ED_spl(e)->size; i++)
-	    free(ED_spl(e)->list[i].list);
-	free(ED_spl(e)->list);
-	free(ED_spl(e));
-    }
-    ED_spl(e) = NULL;
-}
-
-static void 
-dot_cleanup_edge(edge_t * e)
-{
-    dot_free_splines(e);
-    free_label(ED_label(e));
-    memset(&(e->u), 0, sizeof(Agedgeinfo_t));
-}
-
 static void free_virtual_edge_list(node_t * n)
 {
     edge_t *e;
@@ -179,7 +158,7 @@ void dot_cleanup(graph_t * g)
     free_virtual_node_list(GD_nlist(g));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    dot_cleanup_edge(e);
+	    gv_cleanup_edge(e);
 	}
 	dot_cleanup_node(n);
     }
