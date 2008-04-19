@@ -13,37 +13,9 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-
-#include <assert.h>
+#include "smyrnadefs.h"
 #include "hier.h"
 #include "memory.h"
-
-/* To use:
-  double* x_coords; // initial x coordinates
-  double* y_coords; // initial y coordinates
-  focus_t* fs;
-  int ne;
-  vtx_data* graph = makeGraph (topview*, &ne);
-  hierarchy = makeHier(topview->NodeCount, ne, graph, x_coords, y_coords);
-  freeGraph (graph);
-  fs = initFocus (topview->Nodecount); // create focus set
-
-  In loop, 
-    update fs.
-      For example, if user clicks mouse at (p.x,p.y) to pick a single new focus,
-        int closest_fine_node;
-        find_closest_active_node(hierarchy, p.x, p.y, &closest_fine_node);
-        fs->num_foci = 1;
-        fs->foci_nodes[0] = closest_fine_node;
-        fs->x_foci[0] = hierarchy->geom_graphs[cur_level][closest_fine_node].x_coord; 
-        fs->y_foci[0] = hierarchy->geom_graphs[cur_level][closest_fine_node].y_coord;
-      
-    set_active_levels(hierarchy, fs->foci_nodes, fs->num_foci);
-    positionAllItems(hierarchy, fs, parms)
-
-  When done:
-    release (hierarchy);
-*/
 
 /* scale_coords:
  */
@@ -93,7 +65,7 @@ scale_coords(double *x_coords, double *y_coords, int n,
     }
 }
 
-void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms)
+void positionAllItems(Hierarchy * hp, focus_t * fs, reposition_t* parms)
 {
     int i;
     int interval = 20;
@@ -104,6 +76,7 @@ void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms)
     double width = parms->width;
     double height = parms->height;
     double margin = parms->margin;
+    double distortion = parms->distortion;
 
     /* get all logical coordinates of active nodes */
     for (i = 0; i < hp->nvtxs[max_level]; i++) {
@@ -125,11 +98,11 @@ void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms)
 	case Polar:
 	    rescale_layout_polar(x_coords, y_coords, fs->x_foci,
 				 fs->y_foci, fs->num_foci, counter,
-				 interval, width, height, margin);
+				 interval, width, height, margin, distortion);
 	    break;
 	case Rectilinear:
 	    rescale_layout(x_coords, y_coords, counter, interval,
-			   width, height, margin);
+			   width, height, margin, distortion);
 	    break;
 	case Scale:
 	    scale_coords(x_coords, y_coords, counter, width, height, margin);
@@ -147,53 +120,6 @@ void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms)
 
     free(x_coords);
     free(y_coords);
-}
-
-vtx_data *makeGraph(topview * tv, int *nedges)
-{
-    int i;
-    int ne = tv->Edgecount;	/* upper bound */
-    int nv = tv->Nodecount;
-    vtx_data *graph = N_NEW(nv, vtx_data);
-    int *edges = N_NEW(2 * ne + nv, int);  /* reserve space for self loops */
-    float *ewgts = N_NEW(2 * ne + nv, float);
-    Agnode_t *np;
-    Agedge_t *ep;
-    Agraph_t *g = NULL;
-    int i_nedges;
-
-    ne = 0;
-    for (i = 0; i < nv; i++) {
-	graph[i].edges = edges++;	/* reserve space for the self loop */
-	graph[i].ewgts = ewgts++;
-#ifdef STYLES
-	graph[i].styles = NULL;
-#endif
-	i_nedges = 1;		/* one for the self */
-
-	np = tv->Nodes[i].Node;
-	if (!g)
-	    g = agraphof(np);
-	for (ep = agfstedge(g, np); ep; ep = agnxtedge(g, ep, np)) {
-	    Agnode_t *vp;
-	    Agnode_t *tp = agtail(ep);
-	    Agnode_t *hp = aghead(ep);
-	    assert(hp != tp);
-	    /* FIX: handle multiedges */
-	    vp = (tp == np ? hp : tp);
-	    ne++;
-	    i_nedges++;
-	    *edges++ = OD_TVRef(vp);
-	    *ewgts++ = 1;
-	}
-
-	graph[i].nedges = i_nedges;
-	graph[i].edges[0] = i;
-	graph[i].ewgts[0] = 1 - i_nedges;
-    }
-    ne /= 2;			/* each edge counted twice */
-    *nedges = ne;
-    return graph;
 }
 
 #ifdef DEBUG
@@ -241,7 +167,7 @@ dumpHier (Hierarchy* hier)
 #endif
 
 Hierarchy *makeHier(int nn, int ne, vtx_data * graph, double *x_coords,
-		    double *y_coords)
+		    double *y_coords, hierparms_t* parms)
 {
     vtx_data *delaunay;
     ex_vtx_data *geom_graph;
@@ -257,7 +183,7 @@ Hierarchy *makeHier(int nn, int ne, vtx_data * graph, double *x_coords,
     free(delaunay[0].edges);
     free(delaunay);
 
-    hp = create_hierarchy(graph, nn, ne, geom_graph, ngeom_edges, 20);
+    hp = create_hierarchy(graph, nn, ne, geom_graph, ngeom_edges, parms);
     free(geom_graph[0].edges);
     free(geom_graph);
 
@@ -280,4 +206,12 @@ focus_t *initFocus(int ncnt)
     fs->x_foci = N_NEW(ncnt, double);
     fs->y_foci = N_NEW(ncnt, double);
     return fs;
+}
+
+void freeFocus(focus_t* fs)
+{
+    free (fs->foci_nodes);
+    free (fs->x_foci);
+    free (fs->y_foci);
+    free (fs);
 }

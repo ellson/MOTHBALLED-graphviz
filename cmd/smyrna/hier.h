@@ -17,7 +17,7 @@
 #define HIER_H
 
 #include "hierarchy.h"
-#include "topview.h"
+
 typedef struct {
     int num_foci;
     int *foci_nodes;  /* Nodes in real graph */ 
@@ -39,17 +39,20 @@ typedef struct {
 typedef enum {NoRescale, Scale, Polar, Rectilinear} RescaleType;
 
 typedef struct {
+/* First 5 must be set i rescale = Polar or Rectilinear */
     int width;      /* viewport width */
     int height;     /* viewport height */
     int margin;     /* viewport margin */
-    int graphSize;  /* viewport scale : 0 -- 100 */
+    int graphSize;  /* 0 -- 100: percent to shrink w x h */
+    double distortion;  /* default of 1.0 */  
     RescaleType rescale;
-} hierparms_t;
+} reposition_t;
 
-void positionAllItems(Hierarchy * hp, focus_t * fs, hierparms_t * parms);
-vtx_data *makeGraph(topview * tv, int *nedges);
+void positionAllItems(Hierarchy * hp, focus_t * fs, reposition_t* parms);
 Hierarchy *makeHier(int nnodes, int nedges, vtx_data *, double *,
-		    double *);
+		    double*, hierparms_t *);
+
 focus_t *initFocus(int ncnt);
+void freeFocus(focus_t* fs);
 
 #endif

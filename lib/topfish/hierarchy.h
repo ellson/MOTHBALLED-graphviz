@@ -34,7 +34,6 @@ typedef struct {
     float physical_y_coord;	
 } ex_vtx_data;
 
-
 typedef struct {
     int nlevels;
     vtx_data ** graphs;
@@ -52,11 +51,24 @@ typedef struct {
     int maxNodeIndex;
 } Hierarchy;
 
+typedef struct {
+    int num_fine_nodes; /* 50 */
+    double coarsening_rate; /* 2.5 */
+} levelparms_t;
+
+typedef struct {
+    // if dist2_limit true, don't contract nodes of distance larger than 2
+    // if false then also distance 3 is possible
+    int dist2_limit; /* TRUE */
+    int min_nvtxs;   /* 20 */
+} hierparms_t;
+
 void release(Hierarchy*);
+
 Hierarchy* create_hierarchy(vtx_data * graph, int nvtxs, int nedges, 
-    ex_vtx_data* geom_graph, int ngeom_edges, int min_nvtxs);
+    ex_vtx_data* geom_graph, int ngeom_edges, hierparms_t*);
 	
-void set_active_levels(Hierarchy*, int*, int);
+void set_active_levels(Hierarchy*, int*, int, levelparms_t*);
 double find_closest_active_node(Hierarchy*, double x, double y, int*);
 
 int extract_active_logical_coords(Hierarchy * hierarchy, int node, int level, 
@@ -78,10 +90,10 @@ vtx_data *UG_graph(double *x, double *y, int n, int accurate_computation);
 // layout distortion:
 void rescale_layout(double *x_coords, double *y_coords,
     int n, int interval, double width, double height,
-    double margin);
+    double margin, double distortion);
 void rescale_layout_polar(double * x_coords, double * y_coords, 
-    double * x_foci, double * y_foci, int num_foci,
-    int n, int interval, double width, double height, double margin);
+    double * x_foci, double * y_foci, int num_foci, int n, int interval, 
+    double width, double height, double margin, double distortion);
 
 void find_physical_coords(Hierarchy*, int, int, double *x, double *y);
 int find_active_ancestor(Hierarchy*, int, int);

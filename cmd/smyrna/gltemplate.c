@@ -19,6 +19,7 @@
 #include "gui.h"
 #include "viewport.h"
 #include "topview.h"
+#include "topfisheyeview.h"
 #include "gltemplate.h"
 #include "glutils.h"
 #include "glexpose.h"
@@ -128,7 +129,7 @@ static void realize(GtkWidget * widget, gpointer data)
     GLfloat lmodel_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
     GLfloat local_view[] = { 0.0 };
 
-    char* smyrna_font;
+    char *smyrna_font;
 
 #ifdef WIN32
 #define SMYRNA_FONT "c:/arial.tga"
@@ -136,11 +137,11 @@ static void realize(GtkWidget * widget, gpointer data)
 // using -DSMYRNA_FONT from Makefile.am and configure.ac
 #endif
 
-    if ((smyrna_font = smyrnaPath ("gui/arial.tga"))) {
+    if ((smyrna_font = smyrnaPath("gui/arial.tga"))) {
 	g_print("loading font....%i\n", fontLoad(smyrna_font));
-	free (smyrna_font);
-    }
-    else g_print("loading font....%i\n", fontLoad(SMYRNA_FONT));
+	free(smyrna_font);
+    } else
+	g_print("loading font....%i\n", fontLoad(SMYRNA_FONT));
 
   /*** OpenGL BEGIN ***/
     if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))
@@ -196,10 +197,13 @@ static gboolean configure_event(GtkWidget * widget,
     glLoadIdentity();
     if (view->w > view->h) {
 	aspect = (float) view->w / (float) view->h;
-	glOrtho(-aspect * GL_VIEWPORT_FACTOR, aspect * GL_VIEWPORT_FACTOR, GL_VIEWPORT_FACTOR*-1, GL_VIEWPORT_FACTOR, -1500, 1500);
+	glOrtho(-aspect * GL_VIEWPORT_FACTOR, aspect * GL_VIEWPORT_FACTOR,
+		GL_VIEWPORT_FACTOR * -1, GL_VIEWPORT_FACTOR, -1500, 1500);
     } else {
 	aspect = (float) view->h / (float) view->w;
-	glOrtho(GL_VIEWPORT_FACTOR*-1, GL_VIEWPORT_FACTOR, -aspect * GL_VIEWPORT_FACTOR, aspect * GL_VIEWPORT_FACTOR, -1500, 1500);
+	glOrtho(GL_VIEWPORT_FACTOR * -1, GL_VIEWPORT_FACTOR,
+		-aspect * GL_VIEWPORT_FACTOR, aspect * GL_VIEWPORT_FACTOR,
+		-1500, 1500);
     }
 
     glMatrixMode(GL_MODELVIEW);
@@ -253,15 +257,15 @@ static gboolean button_press_event(GtkWidget * widget,
     begin_y = (float) event->y;
 
     if (event->button == 3)	//right click
-		view->mouse.button = rightmousebutton;
+	view->mouse.button = rightmousebutton;
 
 
     if (event->button == 1)	//left click
     {
-		view->prevpanx = view->panx;
-		view->prevpany = view->pany;
-		view->mouse.mouse_down = 1;
-		view->mouse.button = leftmousebutton;
+	view->prevpanx = view->panx;
+	view->prevpany = view->pany;
+	view->mouse.mouse_down = 1;
+	view->mouse.button = leftmousebutton;
 	if (GetOGLPosRef
 	    ((int) begin_x, (int) begin_y, &(view->GLx), &(view->GLy),
 	     &(view->GLz))) {
@@ -290,62 +294,60 @@ static gboolean button_release_event(GtkWidget * widget,
 				     GdkEventButton * event, gpointer data)
 {
     if (event->button == 1)	//left click release
-	{
-		if (glCompSetRelease
-			(view->Topview->topviewmenu, (int) event->x_root,
-				(int) event->y_root))
-		{
-			expose_event(view->drawing_area, NULL, NULL);
-		}
-		view->mouse.mouse_down = 0;
-		if ((view->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
-		    || (view->mouse.mouse_mode == MM_RECTANGULAR_X_SELECT))
-		{
-			if (view->GLx <= view->GLx2)
-				view->Selection.X = view->GLx;
-			else
-				view->Selection.X = view->GLx2;
-			if (view->GLy <= view->GLy2)
-				view->Selection.Y = view->GLy;
-			else
-				view->Selection.Y = view->GLy2;
-		    view->Selection.W = view->GLx2 - view->GLx;
-		    if (view->Selection.W < 0)
-				view->Selection.W = view->Selection.W * -1;
-			view->Selection.H = view->GLy2 - view->GLy;
-			if (view->Selection.H < 0)
-				view->Selection.H = view->Selection.H * -1;
-			if (view->mouse.mouse_mode == 4)
-				view->Selection.Type = 1;
-			else
-				view->Selection.Type = 2;
-			view->Selection.Active = 1;
-			expose_event(view->drawing_area, NULL, NULL);
-		}
-		if (view->mouse.mouse_mode == MM_MOVE)
-		{
-			if (GD_TopView(view->g[view->activeGraph]) == 0)
-				move_nodes(view->g[view->activeGraph]);
-			else
-				move_TVnodes();
-		}
+    {
+	if (glCompSetRelease
+	    (view->Topview->topviewmenu, (int) event->x_root,
+	     (int) event->y_root)) {
+	    expose_event(view->drawing_area, NULL, NULL);
+	}
+	view->mouse.mouse_down = 0;
+	if ((view->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
+	    || (view->mouse.mouse_mode == MM_RECTANGULAR_X_SELECT)) {
+	    if (view->GLx <= view->GLx2)
+		view->Selection.X = view->GLx;
+	    else
+		view->Selection.X = view->GLx2;
+	    if (view->GLy <= view->GLy2)
+		view->Selection.Y = view->GLy;
+	    else
+		view->Selection.Y = view->GLy2;
+	    view->Selection.W = view->GLx2 - view->GLx;
+	    if (view->Selection.W < 0)
+		view->Selection.W = view->Selection.W * -1;
+	    view->Selection.H = view->GLy2 - view->GLy;
+	    if (view->Selection.H < 0)
+		view->Selection.H = view->Selection.H * -1;
+	    if (view->mouse.mouse_mode == 4)
+		view->Selection.Type = 1;
+	    else
+		view->Selection.Type = 2;
+	    view->Selection.Active = 1;
+	    expose_event(view->drawing_area, NULL, NULL);
+	}
+	if (view->mouse.mouse_mode == MM_MOVE) {
+	    if (GD_TopView(view->g[view->activeGraph]) == 0)
+		move_nodes(view->g[view->activeGraph]);
+	    else
+		move_TVnodes();
+	}
 
-		if ((view->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER) || (view->mouse.mouse_mode == MM_MAGNIFIER))	//fisheye mag mouse release, stop distortion
-		{
-			originate_distorded_coordinates(view->Topview);
-			expose_event(view->drawing_area, NULL, NULL);
-		}
-	}
-    if (event->button == 3)	//right click
+	if ((view->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER) || (view->mouse.mouse_mode == MM_MAGNIFIER))	//fisheye mag mouse release, stop distortion
 	{
-		if (view->Topview->is_top_fisheye)
-		{
-			GetFixedOGLPoslocal((int) event->x, (int) event->y, view->GLDepth, &(view->GLx2),
-		       &(view->GLy2), &(view->GLz2));
-			changetopologicalfisheyefocus(view->Topview,&view->GLx2,&view->GLy2,0,1);
-			expose_event(view->drawing_area, NULL, NULL);
-		}
+	    originate_distorded_coordinates(view->Topview);
+	    expose_event(view->drawing_area, NULL, NULL);
 	}
+    }
+    if (event->button == 3)	//right click
+    {
+	if (view->Topview->is_top_fisheye) {
+	    GetFixedOGLPoslocal((int) event->x, (int) event->y,
+				view->GLDepth, &(view->GLx2),
+				&(view->GLy2), &(view->GLz2));
+	    changetopfishfocus(view->Topview, &view->GLx2, &view->GLy2, 0,
+			       1);
+	    expose_event(view->drawing_area, NULL, NULL);
+	}
+    }
 
     dx = 0.0;
     dy = 0.0;
@@ -367,57 +369,56 @@ static gboolean motion_notify_event(GtkWidget * widget,
     char buf[50];
 
 
-	float gldx,gldy;
-	gboolean redraw = FALSE;
+    float gldx, gldy;
+    gboolean redraw = FALSE;
     dx = x - begin_x;
     dy = y - begin_y;
 
-	view->mouse.dx=dx;
-	view->mouse.dy=dy;
+    view->mouse.dx = dx;
+    view->mouse.dy = dy;
 
-	/*panning */
+    /*panning */
     if ((event->state & GDK_BUTTON1_MASK)
-	&& (view->mouse.mouse_mode == MM_PAN))
-	{
-		if(glmotion_main(view,event,widget))
-				redraw = TRUE;
-	}
-	/*rotating, only in 3d view */
-    if ((view->active_camera >=0)&&(view->mouse.mouse_mode==MM_ROTATE)&& (event->state & GDK_BUTTON1_MASK) )
-	{
-		if(glmotion_main(view,event,widget))
-				redraw = TRUE;
-	}
+	&& (view->mouse.mouse_mode == MM_PAN)) {
+	if (glmotion_main(view, event, widget))
+	    redraw = TRUE;
+    }
+    /*rotating, only in 3d view */
+    if ((view->active_camera >= 0) && (view->mouse.mouse_mode == MM_ROTATE)
+	&& (event->state & GDK_BUTTON1_MASK)) {
+	if (glmotion_main(view, event, widget))
+	    redraw = TRUE;
+    }
     /*zooming */
     if ((event->state & GDK_BUTTON1_MASK)
 	&& (view->mouse.mouse_mode == MM_ZOOM)) {
 	float x;
-	float real_zoom,old_zoom;
-	if(view->active_camera==-1)
-	{
-		old_zoom=view->zoom;
-		real_zoom=view->zoom + dx / 10 * (view->zoom * -1 / 20);
-	}
-	else
-	{
-		old_zoom=view->cameras[view->active_camera]->r;
-		real_zoom=(view->cameras[view->active_camera]->r + dx / 10 * (view->cameras[view->active_camera]->r  / 20))*-1;
+	float real_zoom, old_zoom;
+	if (view->active_camera == -1) {
+	    old_zoom = view->zoom;
+	    real_zoom = view->zoom + dx / 10 * (view->zoom * -1 / 20);
+	} else {
+	    old_zoom = view->cameras[view->active_camera]->r;
+	    real_zoom =
+		(view->cameras[view->active_camera]->r +
+		 dx / 10 * (view->cameras[view->active_camera]->r / 20)) *
+		-1;
 	}
 
 	if (real_zoom > MAX_ZOOM)
-		real_zoom = (float) MAX_ZOOM;
+	    real_zoom = (float) MAX_ZOOM;
 	if (real_zoom < MIN_ZOOM)
 	    real_zoom = (float) MIN_ZOOM;
 
-	if(view->active_camera==-1)
-		view->zoom = real_zoom;
-	else{
-		view->cameras[view->active_camera]->r=real_zoom*-1;
+	if (view->active_camera == -1)
+	    view->zoom = real_zoom;
+	else {
+	    view->cameras[view->active_camera]->r = real_zoom * -1;
 
-	//pan adjsutment
+	    //pan adjsutment
 	}
-	view->panx=old_zoom*view->panx/real_zoom;
-	view->pany=old_zoom*view->pany/real_zoom;
+	view->panx = old_zoom * view->panx / real_zoom;
+	view->pany = old_zoom * view->pany / real_zoom;
 
 	/*set label to new zoom value */
 	x = ((float) 100.0 - (float) 1.0) * (view->zoom -
@@ -569,11 +570,11 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 				 glconfig, NULL, TRUE, GDK_GL_RGBA_TYPE);
 
     gtk_widget_add_events(view->drawing_area,
-//  GDK_BUTTON_MOTION_MASK	= 1 << 4,
-			GDK_BUTTON_MOTION_MASK |
-			GDK_BUTTON1_MOTION_MASK |
+//  GDK_BUTTON_MOTION_MASK      = 1 << 4,
+			  GDK_BUTTON_MOTION_MASK |
+			  GDK_BUTTON1_MOTION_MASK |
 			  GDK_BUTTON2_MOTION_MASK |
-				GDK_BUTTON3_MOTION_MASK |
+			  GDK_BUTTON3_MOTION_MASK |
 			  GDK_BUTTON_PRESS_MASK |
 			  GDK_BUTTON_RELEASE_MASK |
 			  GDK_VISIBILITY_NOTIFY_MASK);
@@ -599,12 +600,14 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 
     /* Popup menu. */
 
- /*   menu = create_popup_menu(view->drawing_area);
+#if 0
+    menu = create_popup_menu(view->drawing_area);
 
     /* Signal handler */
-  /*  g_signal_connect_swapped(G_OBJECT(view->drawing_area),
+    g_signal_connect_swapped(G_OBJECT(view->drawing_area),
 			     "button_press_event",
 			     G_CALLBACK(button_press_event_popup_menu),
-			     menu);*/
+			     menu);
+#endif
 
 }

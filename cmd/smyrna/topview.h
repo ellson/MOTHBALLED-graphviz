@@ -17,7 +17,6 @@
 #ifndef TOPVIEW_H
 #define TOPVIEW_H
 
-
 #include "smyrnadefs.h"
 #ifdef	WIN32			//this is needed on WIN32 to get libglade see the callback
 #define _BB  __declspec(dllexport)

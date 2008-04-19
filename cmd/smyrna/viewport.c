@@ -337,6 +337,15 @@ void init_viewport(ViewInfo * view)
     view->Selection.SelectionColor.A = 1;
     view->Selection.Anti = 0;
     view->Topview = GNEW(topview);
+    view->Topview->fs = 0;
+
+    /* init topfish parameters */
+    view->Topview->parms.level.num_fine_nodes = 50;
+    view->Topview->parms.level.coarsening_rate = 2.5;
+    view->Topview->parms.hier.dist2_limit = 1;
+    view->Topview->parms.hier.min_nvtxs = 20;
+    view->Topview->parms.repos.rescale = NoRescale;
+
     view->Topview->topviewmenu = '\0';
 	view->cameras='\0';;
 	view->camera_count=0;

@@ -32,10 +32,6 @@
 #include "hierarchy.h"
 
 static int cur_level = 0;
-static int num_fine_nodes = 50;
-static double coarsening_rate = 2.5;
-static int dist2_limit = 1;	// don't contract nodes of distance larger than 2
-			    // if 'false' then also distance 3 is possible
 
 /////////////////////////
 // Some utilities for  //
@@ -147,7 +143,8 @@ static int
 maxmatch(vtx_data * graph,	/* array of vtx data for graph */
 	ex_vtx_data * geom_graph,	/* array of vtx data for graph */
 	int nvtxs,	/* number of vertices in graph */
-	int *mflag	/* flag indicating vtx selected or not */
+	int *mflag,	/* flag indicating vtx selected or not */
+	int dist2_limit
     )
 /* 
     Compute a matching of the nodes set. 
@@ -682,7 +679,8 @@ coarsen_match (
     int *cnedges,	/* number of edges in coarsened graph */
     int *cgeom_nedges,	/* number of edges in coarsened geom_graph */
     int **v2cvp,	/* reference from vertices to coarse vertices */
-    int **cv2vp	/* reference from vertices to coarse vertices */
+    int **cv2vp,	/* reference from vertices to coarse vertices */
+    int dist2_limit
 )
 
 /*
@@ -701,7 +699,7 @@ coarsen_match (
     mflag = N_NEW(nvtxs, int);
 
     /* Find a maximal matching in the graphs */
-    nmerged = maxmatch(graph, geom_graph, nvtxs, mflag);
+    nmerged = maxmatch(graph, geom_graph, nvtxs, mflag, dist2_limit);
 
     /* Now construct coarser graph by contracting along matching edges. */
     /* Pairs of values in mflag array indicate matched vertices. */
@@ -836,7 +834,7 @@ static ex_vtx_data *cpExGraph(ex_vtx_data * graph, int n, int nedges)
 
 Hierarchy *create_hierarchy(vtx_data * graph, int nvtxs, int nedges,
 			    ex_vtx_data * geom_graph, int ngeom_edges,
-			    int min_nvtxs)
+			    hierparms_t* parms)
 {
     int cur_level;
     Hierarchy *hierarchy = NEW(Hierarchy);
@@ -844,6 +842,7 @@ Hierarchy *create_hierarchy(vtx_data * graph, int nvtxs, int nedges,
     ex_vtx_data *geom_graph_level;
     int nodeIndex = 0;
     int i, j;
+    int min_nvtxs = parms->min_nvtxs;
     int nlevels = MAX(5, 10 * (int) log((float) (nvtxs / min_nvtxs)));	// just an estimate
 
     hierarchy->graphs = N_NEW(nlevels, vtx_data *);
@@ -882,7 +881,8 @@ Hierarchy *create_hierarchy(vtx_data * graph, int nvtxs, int nedges,
 	     &hierarchy->geom_graphs[cur_level + 1],
 	     &hierarchy->nvtxs[cur_level + 1],
 	     &hierarchy->nedges[cur_level + 1], &cngeom_edges,
-	     &hierarchy->v2cv[cur_level], &hierarchy->cv2v[cur_level + 1]);
+	     &hierarchy->v2cv[cur_level], &hierarchy->cv2v[cur_level + 1],
+             parms->dist2_limit);
     }
 
     hierarchy->nlevels = cur_level + 1;
@@ -920,7 +920,8 @@ dist_from_foci(ex_vtx_data * graph, int node, int *foci, int num_foci)
  * If the active level equals the node's level then the node is currently shown
  */
 void
-set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci)
+set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci,
+    levelparms_t* parms)
 {
     int n, i;
     int *nodes;
@@ -954,13 +955,13 @@ set_active_levels(Hierarchy * hierarchy, int *foci_nodes, int num_foci)
      * factor: 'coarsening_rate'
      */
     level = min_level;
-    group_size = num_fine_nodes * num_foci;
+    group_size = parms->num_fine_nodes * num_foci;
     thresh = group_size;
     for (i = 0; i < n; i++) {
 	vtx = nodes[i];
 	if (i > thresh && level < hierarchy->nlevels - 1) {
 	    level++;
-	    group_size = (int) (group_size * coarsening_rate);
+	    group_size = (int) (group_size * parms->coarsening_rate);
 	    thresh += group_size;
 	}
 	graph[vtx].active_level = level;

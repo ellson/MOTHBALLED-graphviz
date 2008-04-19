@@ -41,7 +41,7 @@
 #include <GL/glu.h>
 #include <gtk/gtkgl.h>
 #include "glcompset.h"
-#include "hierarchy.h"
+#include "hier.h"
 
 #define IS_TEST_MODE_ON							0
 #define	DEFAULT_MAGNIFIER_WIDTH					300
@@ -78,7 +78,6 @@
 typedef enum { nodshapedot,nodeshapecircle} node_shape;
 typedef enum { leftmousebutton,rightmousebutton,thirdmousebutton} clicked_mouse_button;
 typedef enum { MOUSE_ROTATE_X,MOUSE_ROTATE_Y,MOUSE_ROTATE_XY,MOUSE_ROTATE_Z} mouse_rotate_axis;
-
 
 typedef struct {
     float R;
@@ -161,8 +160,6 @@ typedef struct _viewport_camera{
 	cam_t type; //
 } viewport_camera;
 
-
-
 typedef struct {
     topview_node *Nodes;
     topview_edge *Edges;
@@ -173,7 +170,13 @@ typedef struct {
     topviewdata *TopviewData;
     void *customptr;
     Hierarchy *h;
-	int is_top_fisheye;	//1 draw hierarchy 0 draw regular topview
+    int is_top_fisheye;	//1 draw hierarchy 0 draw regular topview
+    focus_t* fs;
+    struct {
+	reposition_t repos;
+	levelparms_t level;
+	hierparms_t hier;
+    } parms;
 } topview;
 
 enum {
