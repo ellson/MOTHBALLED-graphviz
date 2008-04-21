@@ -11,9 +11,11 @@ Entry points:
     call setEdgeType (g, ...);
 
        - For each node, call common_init_node and gv_nodesize.
-    If the algorithm will use spline_edges() to route the edges, the
+
+         If the algorithm will use spline_edges() to route the edges, the
     node coordinates need to be stored in ND_pos, so this should be
-    allocated here.
+    allocated here. This, and the two calls mentioned above, are all
+    handled by a call to neato_init_node().
 
        - For each edge, call common_init_edge
 
