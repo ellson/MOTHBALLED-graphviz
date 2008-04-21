@@ -1748,7 +1748,7 @@ int strncasecmp(const char *s1, const char *s2, unsigned int n)
 
 #endif				/* HAVE_STRNCASECMP */
 
-static void gv_free_splines(edge_t * e)
+void gv_free_splines(edge_t * e)
 {
     int i;
     if (ED_spl(e)) {
