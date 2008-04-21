@@ -51,6 +51,7 @@ extern "C" {
     extern void neato_cleanup(graph_t * g);
     extern node_t *neato_dequeue(void);
     extern void neato_enqueue(node_t *);
+    extern void neato_init_node(node_t * n);
     extern void neato_layout(Agraph_t * g);
     extern void neatoLayout(Agraph_t *mg, Agraph_t * g, int layoutMode, int layoutModel);
     extern int Plegal_arrangement(Ppoly_t ** polys, int n_polys);

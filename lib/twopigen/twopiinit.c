@@ -25,14 +25,6 @@
 #include    "pack.h"
 #include    "neatoprocs.h"
 
-static void twopi_init_node(node_t * n)
-{
-    common_init_node(n);
-
-    gv_nodesize(n, GD_flip(n->graph));
-    ND_pos(n) = ALLOC(GD_ndim(n->graph), 0, double);
-}
-
 static void twopi_init_edge(edge_t * e)
 {
     common_init_edge(e);
@@ -51,7 +43,7 @@ static void twopi_init_node_edge(graph_t * g)
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_alg(n) = alg + i;
 	GD_neato_nlist(g)[i++] = n;
-	twopi_init_node(n);
+	neato_init_node(n);
     }
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
