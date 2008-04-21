@@ -43,7 +43,7 @@ static int Pack;		/* If >= 0, layout components separately and pack together
 				 */
 static char *cc_pfx = "_neato_cc";
 
-static void neato_init_node(node_t * n)
+void neato_init_node(node_t * n)
 {
     common_init_node(n);
     ND_pos(n) = N_NEW(GD_ndim(n->graph), double);
