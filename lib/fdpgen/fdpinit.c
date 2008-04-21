@@ -65,13 +65,6 @@ static void initialPositions(graph_t * g)
     }
 }
 
-static void fdp_initNode(node_t * n)
-{
-    common_init_node(n);
-    ND_pos(n) = N_NEW(GD_ndim(n->graph), double);
-    gv_nodesize(n, GD_flip(n->graph));
-}
-
 /* init_edge:
  */
 static void init_edge(edge_t * e, attrsym_t * E_len)
@@ -96,7 +89,7 @@ void fdp_init_node_edge(graph_t * g)
     GD_neato_nlist(g) = N_NEW(nn + 1, node_t *);
 
     for (i = 0, n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	fdp_initNode (n);
+	neato_init_node (n);
 	ND_alg(n) = alg + i;
 	GD_neato_nlist(g)[i] = n;
 	ND_id(n) = i++;
