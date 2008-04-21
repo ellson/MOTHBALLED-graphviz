@@ -43,14 +43,14 @@ static int Pack;		/* If >= 0, layout components separately and pack together
 				 */
 static char *cc_pfx = "_neato_cc";
 
-void neato_init_node(node_t * n)
+static void neato_init_node(node_t * n)
 {
     common_init_node(n);
     ND_pos(n) = N_NEW(GD_ndim(n->graph), double);
     gv_nodesize(n, GD_flip(n->graph));
 }
 
-void neato_init_edge(edge_t * e)
+static void neato_init_edge(edge_t * e)
 {
     common_init_edge(e);
 
@@ -115,7 +115,7 @@ int user_pos(attrsym_t * posptr, attrsym_t * pinptr, node_t * np, int nG)
     return FALSE;
 }
 
-void neato_init_node_edge(graph_t * g)
+static void neato_init_node_edge(graph_t * g)
 {
     node_t *n;
     edge_t *e;
@@ -311,7 +311,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	npts = numFields((unsigned char *) pos);	/* count potential points */
 	n = npts;
 	if ((n < 4) || (n % 3 != 1)) {
-	    neato_free_splines(e);
+	    gv_free_splines(e);
 	    return 0;
 	}
 	ps = ALLOC(n, 0, point);
@@ -320,7 +320,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	    i = sscanf(pos, "%lf,%lf%n", &x, &y, &nc);
 	    if (i < 2) {
 		free(ps);
-		neato_free_splines(e);
+		neato_gvsplines(e);
 		return 0;
 	    }
 	    pos = pos + nc;
@@ -638,7 +638,7 @@ int init_nop(Agraph_t * g, int adjust)
     return 0;
 }
 
-void neato_init_graphn(Agraph_t * g, int dfltdim)
+static void neato_init_graphn(Agraph_t * g, int dfltdim)
 {
     setEdgeType (g, ET_LINE);
     GD_ndim(g->root) = late_int(g, agfindattr(g, "dim"), dfltdim, 2);
@@ -646,7 +646,7 @@ void neato_init_graphn(Agraph_t * g, int dfltdim)
     neato_init_node_edge(g);
 }
 
-void neato_init_graph(Agraph_t * g)
+static void neato_init_graph(Agraph_t * g)
 {
     neato_init_graphn(g, 2);
 }

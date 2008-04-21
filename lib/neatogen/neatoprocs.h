@@ -48,18 +48,11 @@ extern "C" {
     extern void make_spring(graph_t *, Agnode_t *, Agnode_t *, double);
     extern void move_node(graph_t *, int, Agnode_t *);
     extern int init_nop(graph_t * g, int);
-    extern void neato_nodesize(node_t * n, boolean flip);
     extern void neato_cleanup(graph_t * g);
     extern node_t *neato_dequeue(void);
     extern void neato_enqueue(node_t *);
-    extern void neato_free_splines(edge_t * e);
-    extern void neato_init_node_edge(Agraph_t *);
-    extern void neato_init_edge(Agedge_t *);
-    extern void neato_init_node(Agnode_t *);
     extern void neato_layout(Agraph_t * g);
     extern void neatoLayout(Agraph_t *mg, Agraph_t * g, int layoutMode, int layoutModel);
-    extern void neato_init_graph(graph_t * g);
-    extern void neato_init_graphn(graph_t * g, int);
     extern int Plegal_arrangement(Ppoly_t ** polys, int n_polys);
     extern void randompos(Agnode_t *, int);
     extern void s1(graph_t *, node_t *);
