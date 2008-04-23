@@ -271,7 +271,7 @@ if `echo ${CFLAGS} | $GREP ffast-math >/dev/null`; then
 fi
 
 dnl -----------------------------------
-dnl Check for various typedefs and provide substitutes if they don't exist.
+dnl Check for various typedefs and provide substitutes if they do not exist.
                                                                                 
 AC_C_CONST
 AC_TYPE_MODE_T
