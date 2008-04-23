@@ -2274,6 +2274,14 @@ if test "x$HAVE_GTKGL" != "x1"; then
 	with_smyrna=no
 	AC_MSG_WARN(SMYRNA requires GTKGL)
 fi
+if test "x$HAVE_GTKGLEXT" != "x1"; then
+	with_smyrna=no
+	AC_MSG_WARN(SMYRNA requires GTKGLEXT)
+fi
+if test "x$HAVE_GLADE" != "x1"; then
+	with_smyrna=no
+	AC_MSG_WARN(SMYRNA requires GLADE)
+fi
 
 if test "x$with_smyrna" = "xyes"; then
 	AC_DEFINE_UNQUOTED(SMYRNA,1,[Define if you want SMYRNA])
