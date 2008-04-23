@@ -245,7 +245,7 @@ static pointf diapt(point p)
 
 static void dia_grstyle(context_t * cp)
 {
-    if (cp->pencolor != DEFAULT_COLOR) {
+    if (strcmp(cp->pencolor, DEFAULT_COLOR)) {
 	dia_fputs("      <dia:attribute name=\"border_color\">\n");
 	dia_printf("        <dia:color val=\"%s\"/>\n",
 		   dia_resolve_color(cp->pencolor));
