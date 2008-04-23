@@ -115,8 +115,8 @@ void preparetopview(Agraph_t * g, topview * t)
 
 	t->Nodes[ind].zoom_factor = 1;
 	t->Nodes[ind].degree = agdegree(g, v, 1, 1);
-	t->Nodes[ind].node_alpha =
-	    (float) log((double) t->Nodes[ind].degree + (double) 0.3);
+	t->Nodes[ind].node_alpha = 1;
+	//    (float) log((double) t->Nodes[ind].degree + (double) 0.3);
 	if (d_attr1) {
 	    if (sym)
 		str = agxget(v, sym);
@@ -911,6 +911,8 @@ void menu_click_3d_view(void *p)
 void menu_switch_to_normal_mode(void* p)
 {
 	view->Topview->is_top_fisheye=0;
+	g_timer_stop(view->timer); 
+
 }
 void menu_switch_to_fisheye(void* p)
 {
@@ -918,6 +920,8 @@ void menu_switch_to_fisheye(void* p)
 	{
 		please_wait();
 		prepare_topological_fisheye(view->Topview);
+		view->Topview->animate=1;
+		g_timer_start(view->timer); 
 		please_dont_wait();
 	}
 	view->Topview->is_top_fisheye=1;
