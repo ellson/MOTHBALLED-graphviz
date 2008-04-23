@@ -376,14 +376,20 @@ void mUnselectAllClustersSlot(GtkWidget * widget, gpointer user_data)
 
 void mSingleSelectSlot(GtkWidget * widget, gpointer user_data)
 {
+	view->mouse.mouse_mode=MM_SINGLE_SELECT;
+
 }
 
 void mSelectAreaSlot(GtkWidget * widget, gpointer user_data)
 {
+	view->mouse.mouse_mode=MM_RECTANGULAR_SELECT;
+
 }
 
 void mSelectAreaXSlot(GtkWidget * widget, gpointer user_data)
 {
+	view->mouse.mouse_mode=MM_RECTANGULAR_X_SELECT;
+
 
 }
 

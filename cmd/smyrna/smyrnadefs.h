@@ -177,6 +177,7 @@ typedef struct {
 	levelparms_t level;
 	hierparms_t hier;
     } parms;
+	int animate;
 } topview;
 
 enum {
@@ -434,6 +435,12 @@ typedef struct _ViewInfo
 	/*Topview data structure, refer topview.h for more info*/
 	topview* Topview;
 	Agraph_t* default_attributes;
+	/*timer for animations*/
+	GTimer* timer;
+	int active_frame;
+	int total_frames;
+	int frame_length;
+
 }ViewInfo;
 
 extern ViewInfo *view;

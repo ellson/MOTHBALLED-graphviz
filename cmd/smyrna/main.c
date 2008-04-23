@@ -105,10 +105,10 @@ int main(int argc, char *argv[])
     glconfig = configure_gl();
     gladewidget = glade_xml_get_widget(xml, "vbox2");
     create_window(glconfig, gladewidget);
-    /*first arg is used as file name */
+	/*first arg is used as file name */
     if (argc > 1)
 	add_graph_to_viewport_from_file(argv[1]);
-    gtk_main();
+	gtk_main();
 
 
 #ifdef G_OS_WIN32

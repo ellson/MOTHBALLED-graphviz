@@ -220,7 +220,8 @@ void prepare_topological_fisheye(topview* t)
 
     vtx_data *graph = makeGraph(t, &ne);
 
-    for (i = 0, np = t->Nodes; i < t->Nodecount; i++, np++) {
+	t->animate=0;	//turn the animation off
+	for (i = 0, np = t->Nodes; i < t->Nodecount; i++, np++) {
 	x_coords[i] = np->x;
 	y_coords[i] = np->y;
     }
@@ -257,9 +258,9 @@ void drawtopologicalfisheye(topview * t)
 	for (v = 0; v < hp->nvtxs[level]; v++) {
 	    ex_vtx_data *gg = hp->geom_graphs[level];
 	    if (gg[v].active_level == level) {
-		double x0 = gg[v].physical_x_coord;
-		double y0 = gg[v].physical_y_coord;
-		glColor3f((GLfloat) (hp->nlevels - level) /
+			double x0,y0;
+			get_temp_coords(t,level,v,&x0,&y0);
+			glColor3f((GLfloat) (hp->nlevels - level) /
 			  (GLfloat) hp->nlevels,
 			  (GLfloat) level / (GLfloat) hp->nlevels, 0);
 		glVertex3f((GLfloat) x0, (GLfloat) y0, (GLfloat) 0);
@@ -274,8 +275,8 @@ void drawtopologicalfisheye(topview * t)
 	    ex_vtx_data *gg = hp->geom_graphs[level];
 	    vtx_data *g = hp->graphs[level];
 	    if (gg[v].active_level == level) {
-		double x0 = gg[v].physical_x_coord;
-		double y0 = gg[v].physical_y_coord;
+			double x0,y0;
+			get_temp_coords(t,level,v,&x0,&y0);
 
 		for (i = 1; i < g[v].nedges; i++) {
 		    double x, y;
@@ -285,9 +286,11 @@ void drawtopologicalfisheye(topview * t)
 			      (GLfloat) level / (GLfloat) hp->nlevels, 0);
 		    if (gg[n].active_level == level) {
 			if (v < n) {
-			    x = gg[n].physical_x_coord;
-			    y = gg[n].physical_y_coord;
-			    glVertex3f((GLfloat) x0, (GLfloat) y0,
+			    /*x = gg[n].physical_x_coord;
+			    y = gg[n].physical_y_coord;*/
+				get_temp_coords(t,level,n,&x,&y);
+
+				glVertex3f((GLfloat) x0, (GLfloat) y0,
 				       (GLfloat) 0);
 			    glVertex3f((GLfloat) x, (GLfloat) y,
 				       (GLfloat) 0);
@@ -326,7 +329,8 @@ void changetopfishfocus(topview * t, float *x, float *y,
     int cur_level = 0;
     Hierarchy *hp = t->h;
 
-    fs->num_foci = num_foci;
+	refresh_old_values(t);
+	fs->num_foci = num_foci;
     for (i = 0; i < num_foci; i++) {
 	find_closest_active_node(hp, x[i], y[i], &closest_fine_node);
 	fs->foci_nodes[i] = closest_fine_node;
@@ -338,5 +342,119 @@ void changetopfishfocus(topview * t, float *x, float *y,
 
     set_active_levels(hp, fs->foci_nodes, fs->num_foci, &(t->parms.level));
     positionAllItems(hp, fs, &(t->parms.repos));
+	if(t->animate)
+	{
+		view->active_frame=0;
+		g_timer_start(view->timer); 
+	}
+
 }
+void refresh_old_values(topview* t)
+{
+    int level, v,i,n;
+    Hierarchy *hp = t->h;
+	t->animate=0;
+    for (level = 0; level < hp->nlevels; level++) {
+	for (v = 0; v < hp->nvtxs[level]; v++) {
+	    ex_vtx_data *gg = hp->geom_graphs[level];
+	    vtx_data *g = hp->graphs[level];
+	    if (gg[v].active_level == level) {
+			double x0,y0;
+			get_temp_coords(t,level,v,&x0,&y0);
+			gg[v].old_physical_x_coord=gg[v].physical_x_coord;
+			gg[v].old_physical_y_coord=gg[v].physical_y_coord;
+			gg[v].old_active_level=gg[v].active_level;
+		if (gg[v].active_level > level)
+		{
+			find_physical_coords(hp, level, v, &x0, &y0);
+			gg[v].old_physical_x_coord=x0;
+			gg[v].old_physical_y_coord=y0;
+			gg[v].old_active_level=gg[v].active_level;
+
+		}
+
+/*		for (i = 1; i < g[v].nedges; i++) {
+		    double x, y;
+		    n = g[v].edges[i];
+		    glColor3f((GLfloat) (hp->nlevels - level) /
+			      (GLfloat) hp->nlevels,
+			      (GLfloat) level / (GLfloat) hp->nlevels, 0);
+		    if (gg[n].active_level == level) {
+			if (v < n) {
+				get_temp_coords(t,level,n,&x,&y);
+				gg[n].old_physical_x_coord=x;
+				gg[n].old_physical_y_coord=y;
+				gg[n].old_active_level=gg[n].active_level;
+	
+			}
+		    } else if (gg[n].active_level > level) {
+				find_physical_coords(hp, level, n, &x, &y);
+				gg[n].old_physical_x_coord=x;
+				gg[n].old_physical_y_coord=y;
+				gg[n].old_active_level=gg[n].active_level;
+			}
+		}*/
+	    }
+	}
+    }
+	t->animate=1;
+
+}
+void get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y)
+{
+    Hierarchy *hp = t->h;
+	ex_vtx_data *gg = hp->geom_graphs[level];
+	vtx_data *g = hp->graphs[level];
+	/*TEMP*/t->animate=0;/*TEMP*/
+	if (!t->animate)	
+	{
+		*coord_x=(double)gg[v].physical_x_coord;
+		*coord_y=(double)gg[v].physical_y_coord;
+	}
+	else
+	{
+
+			double x0,y0;	
+			get_active_frame(t);
+			find_old_physical_coords(t->h,level,v,&x0,&y0);
+			get_interpolated_coords(x0,y0,(double)gg[v].physical_x_coord,(double)gg[v].physical_y_coord,view->active_frame,view->total_frames,coord_x,coord_y);
+			return 1;
+	}
+}
+void get_interpolated_coords(double x0,double y0,double x1,double y1,int fr,int total_fr, double* x,double* y)
+{
+	*x=(x1-x0)/(double)total_fr*(double)(fr+1);
+	*y=(y1-y0)/(double)total_fr*(double)(fr+1);
+}
+int get_active_frame(topview* t)
+{
+	gulong microseconds;
+	gdouble seconds;
+	int fr;
+	seconds=g_timer_elapsed(view->timer,&microseconds);
+	fr=(int)(seconds/((double)view->frame_length/(double)1000));
+	if (fr<view->total_frames)
+	{
+
+		if (fr==view->active_frame)
+			return 0;
+		else
+		{
+			view->active_frame=fr;
+			return 1;
+		}
+	}
+	else
+	{
+		g_timer_stop(view->timer); 
+		return 0;
+	}
+
+/*	return view->
+	view->active_frame=0;
+	view->total_frames=0;
+	view->frame_length=5000;*/
+}
+
+
 
