@@ -23,8 +23,9 @@
 #define LOCATION_X_IDLABEL 45
 #define LOCATION_X_CHKVISIBLE 139
 #define LOCATION_X_CHKHIGHLIGHTED 202
-#define LOCATION_X_DATA1 276
-#define LOCATION_X_DATA2 600
+#define LOCATION_X_NAME  276
+#define LOCATION_X_DATA1 356
+#define LOCATION_X_DATA2 561
 
 typedef struct token_info {
     int op_index;		// has to 
@@ -67,6 +68,7 @@ typedef struct _tv_node {
     GtkCheckButton *chkVisible;
     GtkCheckButton *chkHighlighted;
     GtkLabel *IDLabel;
+    GtkEntry *Name;
     GtkEntry *Data1;
     GtkEntry *Data2;
     int valid;
@@ -101,27 +103,27 @@ extern tv_nodes TV_Nodes;
 
 
 
-extern void execute_tv_nodes();
-extern int set_filter(tv_filter * TV_Filter, char *MinData1,
+void execute_tv_nodes();
+int set_filter(tv_filter * TV_Filter, char *MinData1,
 		      char *MaxData1, char *MinData2, char *MaxData2,
 		      char *Filter_String, int selected, int visible,
 		      int highlighted);
-extern int tv_nodes_goto_page(int page);
-extern int tv_nodes_next_page();
-extern int tv_nodes_prior_page();
-extern int tv_nodes_last_page();
-extern int tv_nodes_first_page();
+int tv_nodes_goto_page(int page);
+int tv_nodes_next_page();
+int tv_nodes_prior_page();
+int tv_nodes_last_page();
+int tv_nodes_first_page();
 
-extern int reset_page_History();
-extern int prepare_page_history();
-extern int update_TV_data_from_gui();
-extern int apply_filter_from_gui();
-extern int tv_select_all();
-extern int tv_unselect_all();
-extern int tv_highligh_all();
-extern int tv_unhighligh_all();
-extern int tv_show_all();
-extern int tv_hide_all();
-
-
+int reset_page_History();
+int prepare_page_history();
+int create_save_subgraph_from_filter(char* filename);
+int update_TV_data_from_gui();
+int apply_filter_from_gui();
+int tv_select_all();
+int tv_unselect_all();
+int tv_highligh_all();
+int tv_unhighligh_all();
+int tv_show_all();
+int tv_hide_all();
+int tv_save_as();
 #endif

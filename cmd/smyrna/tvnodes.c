@@ -77,6 +77,7 @@ void init_tv_nodes(tv_nodes * TV_Nodes)
 	TV_Nodes->TV_Node[i].chkHighlighted = NULL;
 	TV_Nodes->TV_Node[i].chkSelected = NULL;
 	TV_Nodes->TV_Node[i].chkVisible = NULL;
+	TV_Nodes->TV_Node[i].Name = NULL;
 	TV_Nodes->TV_Node[i].Data1 = NULL;
 	TV_Nodes->TV_Node[i].Data2 = NULL;
 	TV_Nodes->TV_Node[i].IDLabel = NULL;
@@ -173,10 +174,13 @@ int validate_node(tv_node * TV_Node)
 	if (data_attr2 && TV_Nodes.filter.max_data2
 	    && agget(view->Topview->Nodes[TV_Node->index].Node,
 		     data_attr2)) {
-	    if (agget
-		(view->Topview->Nodes[TV_Node->index].Node, data_attr2),
-		TV_Nodes.filter.min_data2)
+
+	    if (strcmp
+		(agget
+		 (view->Topview->Nodes[TV_Node->index].Node, data_attr2),
+		 TV_Nodes.filter.min_data2))
 		valid = 0;
+			 
 	}
 	if (strlen(TV_Nodes.filter.filter_string) > 0)
 	    valid = evaluate_expresions(TV_Node, n);
@@ -258,12 +262,23 @@ static int update_node_gui_objects(tv_node * TV_Node)
 	OD_Highlighted(view->Topview->Nodes[TV_Node->index].Node));
 
 
-    //DATA 1
+    //NAME
+    if (!TV_Node->Name) {
+	TV_Node->Name = (GtkEntry *) gtk_entry_new();
+	gtk_layout_put(layout, (GtkWidget *) TV_Node->Name,
+		       LOCATION_X_NAME, TV_Nodes.Y);
+	gtk_widget_set_size_request((GtkWidget *) TV_Node->Name, 75, 23);
+
+    }
+	gtk_entry_set_text(TV_Node->Name,
+			agnameof(view->Topview->Nodes[TV_Node->index].Node));
+    gtk_widget_show((GtkWidget *) TV_Node->Name);
+	//DATA 1
     if (!TV_Node->Data1) {
 	TV_Node->Data1 = (GtkEntry *) gtk_entry_new();
 	gtk_layout_put(layout, (GtkWidget *) TV_Node->Data1,
 		       LOCATION_X_DATA1, TV_Nodes.Y);
-	gtk_widget_set_size_request((GtkWidget *) TV_Node->Data1, 300, 23);
+	gtk_widget_set_size_request((GtkWidget *) TV_Node->Data1, 200, 23);
 
     }
     if (data_attr1) {
@@ -279,7 +294,7 @@ static int update_node_gui_objects(tv_node * TV_Node)
 	TV_Node->Data2 = (GtkEntry *) gtk_entry_new();
 	gtk_layout_put(layout, (GtkWidget *) TV_Node->Data2,
 		       LOCATION_X_DATA2, TV_Nodes.Y);
-	gtk_widget_set_size_request((GtkWidget *) TV_Node->Data2, 300, 23);
+	gtk_widget_set_size_request((GtkWidget *) TV_Node->Data2, 200, 23);
     }
     if (data_attr2) {
 	gtk_entry_set_text(TV_Node->Data2,
@@ -318,6 +333,7 @@ static int hide_data_widgets()
 			    chkHighlighted);
 	    gtk_widget_hide((GtkWidget *) TV_Nodes.TV_Node[i].chkSelected);
 	    gtk_widget_hide((GtkWidget *) TV_Nodes.TV_Node[i].chkVisible);
+	    gtk_widget_hide((GtkWidget *) TV_Nodes.TV_Node[i].Name);
 	    gtk_widget_hide((GtkWidget *) TV_Nodes.TV_Node[i].Data1);
 	    gtk_widget_hide((GtkWidget *) TV_Nodes.TV_Node[i].Data2);
 	    gtk_widget_hide((GtkWidget *) TV_Nodes.TV_Node[i].IDLabel);
@@ -486,8 +502,7 @@ int prepare_page_history()
     TV_Nodes.activepage = -1;
     reset_page_History();
     push_to_page_history(0);
-
-    for (i = 0; i < view->Topview->Nodecount; i++) {
+	for (i = 0; i < view->Topview->Nodecount; i++) {
 	tvn.index = i;
 	if (validate_node(&tvn)) {
 	    count++;
@@ -510,6 +525,45 @@ int prepare_page_history()
     gtk_label_set_text(lblTVPage, buf);
     set_data_attributes();
     return 1;
+
+}
+/*
+	call this function to create a subgraph from filtered nodes and maybe edges
+*/
+
+int create_save_subgraph_from_filter(char* filename)
+{
+
+	int i=0;
+	Agraph_t* subg = agsubg (view->g[view->activeGraph], "temp", 1);
+	FILE* outputfile;
+	for (i = 0; i < view->Topview->Nodecount; i++)
+	{
+		if (view->Topview->Nodes[i].valid==1)	
+		{
+			agsubnode (subg, view->Topview->Nodes[i].Node, 1);
+		}
+	}
+
+    if ((outputfile = fopen(filename, "w")))
+	{
+		if(agwrite (subg, outputfile))
+		{
+			agdelsubg (view->g[view->activeGraph], subg);
+			return 1;
+		}
+		else
+		{
+			agdelsubg (view->g[view->activeGraph], subg);
+			return 0;
+		}
+	}
+	else
+	{
+		agdelsubg (view->g[view->activeGraph], subg);
+		return 0;
+	}
+
 
 }
 
@@ -727,4 +781,32 @@ int tv_hide_all()
     return 1;
 
 
+}
+int tv_save_as()
+{
+	GtkWidget *dialog;
+	dialog = gtk_file_chooser_dialog_new("Save File",
+					     NULL,
+					     GTK_FILE_CHOOSER_ACTION_SAVE,
+					     GTK_STOCK_CANCEL,
+					     GTK_RESPONSE_CANCEL,
+					     GTK_STOCK_SAVE,
+					     GTK_RESPONSE_ACCEPT, NULL);
+	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER
+						       (dialog), TRUE);
+	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
+	    char *filename;
+	    filename =
+		gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+		
+		create_save_subgraph_from_filter(filename);
+	    g_free(filename);
+	    gtk_widget_destroy(dialog);
+
+	    return 1;
+	} else {
+	    gtk_widget_destroy(dialog);
+	    return 0;
+	}
+	return 0;
 }
