@@ -153,7 +153,7 @@ array set LANGS {
 		}
 		SYNOPSIS {
 			{#!/usr/bin/lua}
-			{lib=loadlib('/usr/lib/graphviz/lua/libgv_lua.so','Gv_Init')}
+			{lib=loadlib('@LIB_DIR@/graphviz/lua/libgv_lua.so','Gv_Init')}
 			{assert(lib)()}
 		}
 		USAGE {
@@ -234,7 +234,6 @@ array set LANGS {
 		}
 		SYNOPSIS {
 			{#!/usr/bin/perl}
-			{use lib "/usr/lib/graphviz/perl"}
 			{use gv;}
 		}
 		USAGE {
@@ -275,8 +274,11 @@ array set LANGS {
 			gv:: (  {, }   {);}
 		}
 		SYNOPSIS {
-			{dl("libgv_php.so");}
+			{#!/usr/bin/php}
+			{<?}
 			{include("gv.php")}
+			{...}
+			{?>}
 		}
 		USAGE {
 		}
@@ -318,7 +320,6 @@ array set LANGS {
 		SYNOPSIS {
 			{#!/usr/bin/python}
 			{import sys}
-			{sys.path.append('/usr/lib/graphviz/python')}
 			{import gv}
 		}
 		USAGE {
@@ -379,8 +380,6 @@ array set LANGS {
 			Gv.  (  {, }   {);}
 		}
 		SYNOPSIS {
-			{export RUBYLIB=/usr/lib/graphviz/ruby}
-			{}
 			{#!/usr/bin/ruby}
 			{require 'gv'}
 		}
@@ -423,10 +422,10 @@ array set LANGS {
 		}
 		SYNOPSIS {
 			{#!/usr/bin/tclsh}
-			{load /usr/lib/graphviz/tcl/gv.so}
+			{package require gv}
 		}
 		USAGE {
-			{Requires tcl7.6 or later.}
+			{Requires tcl8.3 or later.}
 		}
 	}
 }
