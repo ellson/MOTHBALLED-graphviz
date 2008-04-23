@@ -54,6 +54,6 @@ _BB void cgbTVHighlighted_toggled_cb(GtkWidget * widget,
 _BB void btnTVShowAll_clicked_cb(GtkWidget * widget, gpointer user_data);
 _BB void btnTVHideAll_clicked_cb(GtkWidget * widget, gpointer user_data);
 
-
+_BB void btnTVSaveAs_clicked_cb(GtkWidget * widget, gpointer user_data);
 
 #endif
