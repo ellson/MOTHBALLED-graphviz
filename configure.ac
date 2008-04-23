@@ -9,21 +9,22 @@ AC_INIT(graphviz, 2.19)
 dnl ===========================================================================
 
 # libtool shared library version for main libs (cdt, graph, gvc)
+#Make m4 grok these VARIABLES
+m4_pattern_allow([^LT_(CURRENT|REVISION|AGE)$])
 
 # Increment if the interface has additions, changes, removals.
-#LT_CURRENT=4
+LT_CURRENT=4
 
 # Increment any time the source changes; set to
 # 0 if you increment CURRENT
-#LT_REVISION=0
+LT_REVISION=0
 
 # Increment if any interfaces have been added; set to 0
 # if any interfaces have been removed. removal has
 # precedence over adding, so set to 0 if both happened.
-#LT_AGE=0
+LT_AGE=0
 
-#VERSION_INFO="$LT_CURRENT:$LT_REVISION:$LT_AGE"
-VERSION_INFO="4:0:0"
+VERSION_INFO="$LT_CURRENT:$LT_REVISION:$LT_AGE"
 AC_SUBST(VERSION_INFO)
 dnl ===========================================================================
 
