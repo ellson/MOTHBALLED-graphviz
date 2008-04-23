@@ -621,6 +621,7 @@ if test "x$enable_lua" = "xyes" ; then
 
     LUA_INCLUDES=""
     LUA_LIBS=""
+    LUA_INSTALL_DIR=""
 
     if test -n "$lua_inc"; then
        CFLAGS="$CFLAGS -I$lua_inc"
@@ -642,6 +643,7 @@ if test "x$enable_lua" = "xyes" ; then
 		    LUA_VERSION=`$PKGCONFIG --modversion lua$l`
                     LUA_INCLUDES="$LUA_CFLAGS "`$PKGCONFIG --cflags lua$l`
                     LUA_LIBS="$LUA_LFLAGS "`$PKGCONFIG --libs lua$l`
+		    LUA_INSTALL_DIR="/usr/lib$LIBPOSTFIX/lua/5.1"
 
 		    pkgconfig_lualib_found=`$PKGCONFIG --exists lualib$l 2>/dev/null`
 		    if test  "x$?" = "x0"; then
@@ -663,6 +665,7 @@ if test "x$enable_lua" = "xyes" ; then
             LUA_INCLUDES=`$LUACONFIG --include`
             LUA_LIBS=`$LUACONFIG --libs`
 	    LUA_VERSION="5.0.x"
+	    LUA_INSTALL_DIR="/usr/lib$LIBPOSTFIX/lua/5.0"
         fi
     fi
 
@@ -728,6 +731,7 @@ if test "x$enable_lua" = "xyes" ; then
     : # needed because if AC_SUBST is expanded to nothing, syntax error
     AC_SUBST(LUA_INCLUDES)
     AC_SUBST(LUA_LIBS)
+    AC_SUBST(LUA_INSTALL_DIR)
     # Not needed for Graphviz: AC_DEFINE(PLUGIN_LUA)
 fi
 
@@ -828,8 +832,8 @@ PHP_INSTALL_DATADIR="/usr/share/php"
 PHP_LIBS=
 save_CPPFLAGS=$CPPFLAGS
 CPPFLAGS="$CPPFLAGS $PHP_INCLUDES"
-AC_CHECK_HEADER(zend.h,,[
-  AC_MSG_WARN([Unable to find header zend.h. The PHP packages will not be built])
+AC_CHECK_HEADER(php.h,,[
+  AC_MSG_WARN([Unable to find header php.h. The PHP packages will not be built])
   PHP=
   ])
 CPPFLAGS=$save_CPPFLAGS

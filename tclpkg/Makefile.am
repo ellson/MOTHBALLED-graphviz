@@ -34,6 +34,16 @@ pkgIndex.tcl: @TCL_PKGINDEX@ @TCL_PKGINDEX_GD@ @TCL_PKGINDEX_SWIG@ @TK_PKGINDEX@
 #    ./configure --prefix=$HOME/graphviz; make; make install
 # without root priviledges.
 install-data-hook:
+if WITH_LUA
+	-mkdir -p $(DESTDIR)@LUA_INSTALL_DIR@;
+	if test -w $(DESTDIR)@LUA_INSTALL_DIR@; then \
+		(cd $(DESTDIR)@LUA_INSTALL_DIR@; \
+			$(LN_S) -f $(pkgluadir)/libgv_lua.so gv.so;) \
+	else \
+		echo "Warning: @LUA_INSTALL_DIR@ is not writable."; \
+		echo "Skipping system installation of lua binding."; \
+	fi
+endif
 if WITH_PERL
 	-mkdir -p $(DESTDIR)@PERL_INSTALL_DIR@;
 	if test -w $(DESTDIR)@PERL_INSTALL_DIR@; then \
@@ -133,7 +143,7 @@ uninstall-hook:
 	rm -rf $(DESTDIR)$(pkgguiledir);
 	rm -rf $(DESTDIR)$(pkgiodir);
 	rm -rf $(DESTDIR)$(pkgjavadir);
-	rm -rf $(DESTDIR)$(pkgluadir);
+	rm -rf $(DESTDIR)$(pkgluadir) $(DESTDIR)@LUA_INSTALL_DIR@/gv.so;
 	rm -rf $(DESTDIR)$(pkgocamldir);
 	rm -rf $(DESTDIR)$(pkgperldir) $(DESTDIR)@PERL_INSTALL_DIR@/gv.so $(DESTDIR)@PERL_INSTALL_DIR@/gv.pm;
 	rm -rf $(DESTDIR)$(pkgphpdir) $(DESTDIR)@PHP_INSTALL_DIR@/gv.so $(DESTDIR)@PHP_INSTALL_DATADIR@/gv.php;
