@@ -35,6 +35,7 @@ void refreshControls(ViewInfo * v);
 
 void move_node(void *n, float dx, float dy);
 void glexpose();
+int gl_main_expose();
 void move_nodes(Agraph_t * g);
 void please_wait();
 void please_dont_wait();
