@@ -1491,6 +1491,22 @@ find_physical_coords(Hierarchy * hierarchy, int level, int node, double *x,
     *x = hierarchy->geom_graphs[level][node].physical_x_coord;
     *y = hierarchy->geom_graphs[level][node].physical_y_coord;
 }
+/* find_old_physical_coords:
+ * find the 'old_physical_coords' of the old active-ancestor of 'node'
+ */
+void
+find_old_physical_coords(Hierarchy * hierarchy, int level, int node, double *x,
+		     double *y)
+{
+    int active_level = hierarchy->geom_graphs[level][node].old_active_level;
+    while (active_level > level) {
+	node = hierarchy->v2cv[level][node];
+	level++;
+    }
+
+    *x = hierarchy->geom_graphs[level][node].old_physical_x_coord;
+    *y = hierarchy->geom_graphs[level][node].old_physical_y_coord;
+}
 
 /* find_active_ancestor:
  * find the 'ancestorIndex' of the active-ancestor of 'node'

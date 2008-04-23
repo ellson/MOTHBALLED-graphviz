@@ -32,6 +32,12 @@ typedef struct {
     // position of node in physical (device) coordinate system
     float physical_x_coord;
     float physical_y_coord;	
+	//previous coords and active level (for animation)
+    float old_physical_x_coord;
+    float old_physical_y_coord;	
+	int old_active_level;
+
+
 } ex_vtx_data;
 
 typedef struct {
@@ -96,9 +102,13 @@ void rescale_layout_polar(double * x_coords, double * y_coords,
     double width, double height, double margin, double distortion);
 
 void find_physical_coords(Hierarchy*, int, int, double *x, double *y);
+void find_old_physical_coords(Hierarchy * hierarchy, int level, int node, double *x,double *y);
+
+
 int find_active_ancestor(Hierarchy*, int, int);
 int locateByIndex(Hierarchy*, int, int*);
 int findGlobalIndexesOfActiveNeighbors(Hierarchy*, int, int**);
+
 
 void freeGraph(vtx_data * graph);
 
