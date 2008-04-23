@@ -95,7 +95,7 @@ void satisfyVPSC(VPSC* vpsc) {
 		vpsc->satisfy();
 	} catch(const char *e) {
 		std::cerr << e << std::endl;
-		exit(1);
+		std::exit(1);
 	}
 }
 int getSplitCnt(IncVPSC *vpsc) {
