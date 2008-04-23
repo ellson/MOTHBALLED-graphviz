@@ -44,14 +44,14 @@ viewport_camera *add_camera_to_viewport(ViewInfo * view)
 
 void set_camera_x_y(viewport_camera * c)
 {
-    c->x =
+/*    c->x =
 	c->r * cos((float) DEG2RAD * c->anglexy) * sin((float) DEG2RAD *
 						       c->anglexyz) +
 	view->panx;
     c->y =
 	c->r * sin(DEG2RAD * c->anglexy) * sin(DEG2RAD * c->anglexyz) +
 	view->pany;
-    c->z = c->r * cos(DEG2RAD * c->anglexyz);
+    c->z = c->r * cos(DEG2RAD * c->anglexyz);*/
 }
 
 int delete_camera_from_viewport(ViewInfo * view, viewport_camera * c)
@@ -221,12 +221,12 @@ void attach_camera_widget(ViewInfo * view)
 
     for (ind = 0; ind < view->camera_count; ind++) {
 	y = p->height - ((GLfloat) PANEL_PADDING +
-			 ind * ((GLfloat) CAMERA_BUTTON_HEIGHT +
+			 (GLfloat)ind * ((GLfloat) CAMERA_BUTTON_HEIGHT +
 				(GLfloat) PANEL_PADDING)) -
-	    CAMERA_BUTTON_HEIGHT;
+	    (GLfloat)CAMERA_BUTTON_HEIGHT;
 	x = PANEL_PADDING;
 	sprintf(buf, "CAM%i", ind + 1);
-	b = glCompButtonNew(x, y, (GLfloat) CAMERA_BUTTON_WIDTH,
+	b = glCompButtonNew((GLfloat)x, (GLfloat)y, (GLfloat) CAMERA_BUTTON_WIDTH,
 			    (GLfloat) CAMERA_BUTTON_HEIGHT, buf, '\0', 0,
 			    0);
 	b->panel = p;
@@ -237,7 +237,7 @@ void attach_camera_widget(ViewInfo * view)
 	b->callbackfunc = menu_click_camera_select;
 
 	x = PANEL_PADDING * 2 + CAMERA_BUTTON_WIDTH;
-	b = glCompButtonNew(x, y, (GLfloat) CAMERA_BUTTON_WIDTH,
+	b = glCompButtonNew((GLfloat)x,(GLfloat) y, (GLfloat) CAMERA_BUTTON_WIDTH,
 			    (GLfloat) CAMERA_BUTTON_HEIGHT, "Remove", '\0',
 			    0, 0);
 	b->panel = p;
