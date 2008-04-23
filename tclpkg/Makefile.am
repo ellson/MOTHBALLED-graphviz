@@ -142,7 +142,7 @@ uninstall-hook:
 	rm -rf $(DESTDIR)$(pkgpython24dir) $(DESTDIR)@PYTHON24_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
 	rm -rf $(DESTDIR)$(pkgpython25dir) $(DESTDIR)@PYTHON25_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
 	rm -rf $(DESTDIR)$(pkgRdir);
-	rm -rf $(DESTDIR)$(pkgrubydir);
+	rm -rf $(DESTDIR)$(pkgrubydir) $(DESTDIR)@RUBY_INSTALL_DIR@/gv.so;
 	rm -rf $(DESTDIR)$(pkgtcldir) $(DESTDIR)@TCL_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@;
 
 EXTRA_DIST = Makefile.old mkpkgindex.sh
