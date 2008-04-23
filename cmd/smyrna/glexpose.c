@@ -18,6 +18,8 @@
 #include "topview.h"
 #include "glutils.h"
 #include "topview.h"
+#include "topfisheyeview.h"
+
 
 /*
 	refreshes camera settings using view parameters such as pan zoom etc
@@ -157,7 +159,7 @@ int glexpose_drawgraph(ViewInfo * view)
 
 void drawRotatingTools()
 {
-	float x,y,z;
+	float x,y;
 	float x1,y1,z1;
 	float x2,y2,z2;
 	float R1,R2;
@@ -168,8 +170,8 @@ void drawRotatingTools()
 		glCompDrawBegin();
 		GetOGLPosRef(1, view->h - 5, &x1, &y1,&z1);
 		GetOGLPosRef(view->w - 1, 1, &x2,&y2,&z2);
-		x=(x2-x1)/2.0;
-		y=(y2-y1)/2.0;
+		x=(x2-x1)/(float)2.0;
+		y=(y2-y1)/(float)2.0;
 		glTranslatef(x,y,0);
 		if ((view->mouse.rotate_axis==MOUSE_ROTATE_X) || (view->mouse.rotate_axis==MOUSE_ROTATE_XY))
 		{

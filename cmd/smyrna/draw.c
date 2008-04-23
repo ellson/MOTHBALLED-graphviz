@@ -27,6 +27,7 @@ XDOT DRAWING FUNCTIONS, maybe need to move them somewhere else
 #include "selection.h"
 #include "xdot.h"
 #include "viewport.h"
+#include "topfisheyeview.h"
 
 //delta values
 static float dx = 0.0;
@@ -509,7 +510,7 @@ void draw_magnifier(ViewInfo * view)
 	//converting screen pixel distaances to GL distances
 	view->mg.GLwidth = GetOGLDistance(view->mg.width) / (float) 2.0;
 	view->mg.GLheight = GetOGLDistance(view->mg.height) / (float) 2.0;
-	GetOGLPosRef(view->mouse.mouse_X, view->mouse.mouse_Y, &mg_x, &mg_y, &mg_z);	//retrieving mouse coords as GL coordinates
+	GetOGLPosRef((int)view->mouse.mouse_X, (int)view->mouse.mouse_Y, &mg_x, &mg_y, &mg_z);	//retrieving mouse coords as GL coordinates
 	view->mg.x = mg_x;
 	view->mg.y = mg_y;
 	glLineWidth(4);
@@ -576,7 +577,7 @@ void draw_fisheye_magnifier(ViewInfo * view)
 	GLfloat mg_x, mg_y, mg_z;
 	a = GetOGLDistance((int) view->fmg.constantR);
 	view->fmg.R = (int) a;
-	GetOGLPosRef(view->mouse.mouse_X, view->mouse.mouse_Y, &mg_x,
+	GetOGLPosRef((int)view->mouse.mouse_X, (int)view->mouse.mouse_Y, &mg_x,
 		     &mg_y, &mg_z);
 	glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,
 		  (GLfloat) 1);
@@ -591,7 +592,7 @@ void draw_fisheye_magnifier(ViewInfo * view)
 		if(!fisheyesphere)
 			fisheyesphere=gluNewQuadric();
 		gluQuadricDrawStyle ( fisheyesphere, GLU_LINE );
-		glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,0.05);
+		glColor4f((GLfloat) 0.3, (GLfloat) 0.1, (GLfloat) 0.8,(GLfloat)0.05);
 		glTranslatef(mg_x,mg_y,0);
 		gluSphere(fisheyesphere,a,30,30);
 		glTranslatef(-mg_x,-mg_y,0);
@@ -774,8 +775,8 @@ void drawEllipse(float xradius, float yradius,int angle1,int angle2)
    for (i=angle1; i<=angle2; i++)
    {
       //convert degrees into radians
-      float degInRad = i*DEG2RAD;
-      glVertex2f(cos(degInRad)*xradius,sin(degInRad)*yradius);
+      float degInRad = (float)i*(float)DEG2RAD;
+      glVertex2f((GLfloat)(cos(degInRad)*xradius),(GLfloat)(sin(degInRad)*yradius));
    }
  
    glEnd();

@@ -369,7 +369,6 @@ static gboolean motion_notify_event(GtkWidget * widget,
     char buf[50];
 
 
-    float gldx, gldy;
     gboolean redraw = FALSE;
     dx = x - begin_x;
     dy = y - begin_y;
@@ -446,8 +445,8 @@ static gboolean motion_notify_event(GtkWidget * widget,
     if ((event->state & GDK_BUTTON1_MASK)
 	&& ((view->mouse.mouse_mode == MM_MAGNIFIER)
 	    || (view->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER))) {
-	view->mouse.mouse_X = (int) x;
-	view->mouse.mouse_Y = (int) y;
+	view->mouse.mouse_X = x;
+	view->mouse.mouse_Y = y;
 	redraw = TRUE;
     }
 
@@ -550,7 +549,6 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
 {
     gint major, minor;
 
-    GtkWidget *menu;
     /*
      * Query OpenGL extension version.
      */

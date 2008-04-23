@@ -86,15 +86,15 @@ int glmotion_pan(ViewInfo * v)
 		float gldx,gldy;
 		if(v->active_camera ==-1)
 		{
-			gldx=GetOGLDistance(v->mouse.dx)/v->zoom*-1;
-			gldy=GetOGLDistance(v->mouse.dy)/v->zoom*-1;
+			gldx=GetOGLDistance((int)v->mouse.dx)/v->zoom*-1;
+			gldy=GetOGLDistance((int)v->mouse.dy)/v->zoom*-1;
 			v->panx=v->panx-gldx;
 			v->pany=v->pany+gldy;
 		}
 		else
 		{
-			gldx=GetOGLDistance(v->mouse.dx)/v->cameras[v->active_camera]->r;
-			gldy=GetOGLDistance(v->mouse.dy)/v->cameras[v->active_camera]->r;
+			gldx=GetOGLDistance((int)v->mouse.dx)/v->cameras[v->active_camera]->r;
+			gldy=GetOGLDistance((int)v->mouse.dy)/v->cameras[v->active_camera]->r;
 			v->cameras[v->active_camera]->x-=gldx;
 			v->cameras[v->active_camera]->y-=gldy;
 			v->cameras[v->active_camera]->targetx-=gldx;
@@ -102,21 +102,22 @@ int glmotion_pan(ViewInfo * v)
 		}
 
 		redraw = TRUE;
+		return 1;
 }
 int glmotion_adjust_pan(ViewInfo* v,float panx,float pany)
 {
 		float gldx,gldy;
 		if(v->active_camera ==-1)
 		{
-			gldx=GetOGLDistance(panx)/v->zoom*-1;
-			gldy=GetOGLDistance(pany)/v->zoom*-1;
+			gldx=GetOGLDistance((int)panx)/v->zoom*-1;
+			gldy=GetOGLDistance((int)pany)/v->zoom*-1;
 			v->panx=v->panx-gldx;
 			v->pany=v->pany+gldy;
 		}
 		else
 		{
-			gldx=GetOGLDistance(panx)/v->cameras[v->active_camera]->r;
-			gldy=GetOGLDistance(pany)/v->cameras[v->active_camera]->r;
+			gldx=GetOGLDistance((int)panx)/v->cameras[v->active_camera]->r;
+			gldy=GetOGLDistance((int)pany)/v->cameras[v->active_camera]->r;
 			v->cameras[v->active_camera]->x-=gldx;
 			v->cameras[v->active_camera]->y-=gldy;
 			v->cameras[v->active_camera]->targetx-=gldx;
@@ -124,6 +125,8 @@ int glmotion_adjust_pan(ViewInfo* v,float panx,float pany)
 		}
 
 		redraw = TRUE;
+		return 1;
+
 
 }
 int glmotion_rotate(ViewInfo * v)

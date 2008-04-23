@@ -351,7 +351,7 @@ void changetopfishfocus(topview * t, float *x, float *y,
 }
 void refresh_old_values(topview* t)
 {
-    int level, v,i,n;
+    int level, v;
     Hierarchy *hp = t->h;
 	t->animate=0;
     for (level = 0; level < hp->nlevels; level++) {
@@ -367,8 +367,8 @@ void refresh_old_values(topview* t)
 		if (gg[v].active_level > level)
 		{
 			find_physical_coords(hp, level, v, &x0, &y0);
-			gg[v].old_physical_x_coord=x0;
-			gg[v].old_physical_y_coord=y0;
+			gg[v].old_physical_x_coord=(float)x0;
+			gg[v].old_physical_y_coord=(float)y0;
 			gg[v].old_active_level=gg[v].active_level;
 
 		}
@@ -418,7 +418,6 @@ void get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y)
 			get_active_frame(t);
 			find_old_physical_coords(t->h,level,v,&x0,&y0);
 			get_interpolated_coords(x0,y0,(double)gg[v].physical_x_coord,(double)gg[v].physical_y_coord,view->active_frame,view->total_frames,coord_x,coord_y);
-			return 1;
 	}
 }
 void get_interpolated_coords(double x0,double y0,double x1,double y1,int fr,int total_fr, double* x,double* y)
