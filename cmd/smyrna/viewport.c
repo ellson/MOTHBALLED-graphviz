@@ -350,8 +350,15 @@ void init_viewport(ViewInfo * view)
     view->Topview->parms.repos.margin = 0;
     view->Topview->parms.repos.graphSize = 100;
     view->Topview->parms.repos.distortion = 1.0;
-
-    view->Topview->topviewmenu = '\0';
+	/*create timer*/
+	view->timer=g_timer_new();
+	g_timer_stop(view->timer); 
+	view->active_frame=0;
+	view->total_frames=50;
+	view->frame_length=100;
+	/*add a call back to the main()*/
+	g_timeout_add_full(G_PRIORITY_DEFAULT,100,gl_main_expose,NULL,NULL);
+	view->Topview->topviewmenu = '\0';
 	view->cameras='\0';;
 	view->camera_count=0;
 	view->active_camera=-1;
@@ -1212,6 +1219,12 @@ int setGdkColor(GdkColor * c, char *color) {
 void glexpose() {
     expose_event(view->drawing_area, NULL, NULL);
 }
+int gl_main_expose() {
+	if(view->Topview->animate==1)
+		expose_event(view->drawing_area, NULL, NULL);
+	return 1;
+}
+
 void please_wait()
 {
     gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));
