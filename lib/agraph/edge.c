@@ -149,28 +149,29 @@ static Agedge_t *agfindedge_by_id(Agnode_t * t, Agnode_t * h,
 
 void agedgesetop(Agraph_t * g, Agedge_t * e, int ins)
 {
-    Dtlink_t **seq_set, **id_set;
+    union {
+	Dtlink_t **dtlink;
+	Agedge_t **agedge;
+    } seq_set;
+    Dtlink_t **id_set;
     Agnode_t *n;		/* node where <e> is referenced */
-    Agedge_t **tmp;		
 
     if (AGTYPE(e) == AGOUTEDGE) {
 	n = AGOUT2IN(e)->node;
-	tmp = &(n->out); /* avoiding - "dereferencing type-punned pointer will break strict-aliasing rules" */
-	seq_set = (Dtlink_t **)tmp;
+	seq_set.agedge = &(n->out);
 	id_set = &(n->outid);
     } else {
 	n = AGIN2OUT(e)->node;
-	tmp = &(n->in);  
-	seq_set = (Dtlink_t **)tmp;
+	seq_set.agedge = &(n->in);
 	id_set = &(n->inid);
     }
 
-    dtrestore(g->e_seq, *seq_set);
+    dtrestore(g->e_seq, *seq_set.dtlink);
     if (ins)
 	dtinsert(g->e_seq, e);
     else
 	dtdelete(g->e_seq, e);
-    *seq_set = dtextract(g->e_seq);
+    *seq_set.dtlink = dtextract(g->e_seq);
 
     dtrestore(g->e_id, *id_set);
     if (ins)

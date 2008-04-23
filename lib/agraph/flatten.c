@@ -26,13 +26,17 @@ void agflatten_elist(Dict_t * d, Dtlink_t ** lptr)
 
 void agflatten_edges(Agraph_t * g, Agnode_t * n)
 {
-    Agedge_t **tmp;
 
-    tmp = &(n->out); /* avoiding - "dereferencing type-punned pointer will break strict-aliasing rules" */
+    union {
+    	Dtlink_t **dtlink;
+    	Agedge_t **agedge;
+	} out, in;
 
-    agflatten_elist(g->e_seq, (Dtlink_t **) tmp);
-    tmp = &(n->in);
-    agflatten_elist(g->e_seq, (Dtlink_t **) tmp);
+    out.agedge = & (n->out);
+    in.agedge = & (n->in);
+    agflatten_elist(g->e_seq, out.dtlink);
+    agflatten_elist(g->e_seq, in.dtlink);
+
 }
 
 void agflatten(Agraph_t * g, int flag)
