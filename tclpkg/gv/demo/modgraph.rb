@@ -4,7 +4,7 @@
 
 # author: John Ellson <ellson@research.att.com>
 
-require 'gv.so'
+require 'gv'
 
 G = Gv.digraph("G")
 N = Gv.protonode(G)
