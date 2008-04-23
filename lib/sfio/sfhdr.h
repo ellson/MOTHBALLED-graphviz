@@ -493,7 +493,7 @@ extern "C" {
 	    if((lv = localeconv())) \
 	    { if(lv->decimal_point && lv->decimal_point[0]) \
 	    	*(decimal) = lv->decimal_point[0]; \
-	      if(thousand && lv->thousands_sep && lv->thousands_sep[0]) \
+	      if(thousand != NULL && lv->thousands_sep && lv->thousands_sep[0]) \
 	    	*(thousand) = lv->thousands_sep[0]; \
 	    } \
 	  } \
