@@ -1605,55 +1605,6 @@ AC_SUBST(Z_INCLUDES)
 AC_SUBST(Z_LIBS)
 
 dnl -----------------------------------
-dnl SMYRNA 
-
-AC_ARG_WITH(smyrna,
-  [AC_HELP_STRING([--with-smyrna=no], [SMYRNA large graph viewer])],
-  [], [with_smyrna=no])
-
-if test "x$with_smyrna" = "xyes"; then
-	AC_DEFINE_UNQUOTED(SMYRNA,1,[Define if you want SMYRNA])
-else
-	AC_MSG_WARN(Optional SMYRNA is disabled)
-fi
-AM_CONDITIONAL(WITH_SMYRNA, [test "x$with_smyrna" = "xyes"])
-
-dnl -----------------------------------
-dnl DIGCOLA 
-
-AC_ARG_WITH(digcola,
-  [AC_HELP_STRING([--with-digcola=yes], [DIGCOLA features in neato layout engine])],
-  [], [with_digcola=yes])
-
-if test "x$with_digcola" = "xyes"; then
-	AC_DEFINE_UNQUOTED(DIGCOLA,1,[Define if you want DIGCOLA])
-else
-	AC_MSG_WARN(Optional DIGCOLA is disabled)
-fi
-
-dnl -----------------------------------
-dnl IPSEPCOLA   /* disabled by default due to C++ issues on some platforms */
-AC_ARG_WITH(ipsepcola,
-  [AC_HELP_STRING([--with-ipsepcola=no],
-	[IPSEPCOLA features in neato layout engine])],
-  [], [with_ipsepcola=no])
-
-### unless digcola was not enabled since ipsecola depends on it
-if test "x$with_digcola" = "xno"; then
-	AC_MSG_WARN(Optional IPSEPCOLA is disabled - depends on DIGCOLA)
-	with_ipsepcola=no
-fi
-
-if test "x$with_ipsepcola" = "xyes"; then
-	AC_DEFINE_UNQUOTED(IPSEPCOLA,1,[Define if you want IPSEPCOLA])
-	IPSEPCOLA_INCLUDES='-I$(top_srcdir)/lib/vpsc'
-	IPSEPCOLA_LIBS='$(top_builddir)/lib/vpsc/libvpsc_C.la -lstdc++'
-AC_SUBST(IPSEPCOLA_INCLUDES)
-AC_SUBST(IPSEPCOLA_LIBS)
-fi
-AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$with_ipsepcola" = "xyes"])
-
-dnl -----------------------------------
 dnl INCLUDES and LIBS for SVG
                                                                                 
 AC_ARG_WITH(rsvg,
@@ -2303,6 +2254,67 @@ AC_SUBST(TCL_PKGINDEX)
 AC_SUBST(TCL_PKGINDEX_GD)
 AC_SUBST(TCL_PKGINDEX_SWIG)
 AC_SUBST(TK_PKGINDEX)
+
+dnl -----------------------------------
+dnl SMYRNA 
+
+AC_ARG_WITH(smyrna,
+  [AC_HELP_STRING([--with-smyrna=no], [SMYRNA large graph viewer])],
+  [], [with_smyrna=no])
+
+if test "x$HAVE_GTK" != "x1"; then
+	with_smyrna=no
+	AC_MSG_WARN(SMYRNA requires GTK)
+fi
+if test "x$HAVE_GTKGL" != "x1"; then
+	with_smyrna=no
+	AC_MSG_WARN(SMYRNA requires GTKGL)
+fi
+
+if test "x$with_smyrna" = "xyes"; then
+	AC_DEFINE_UNQUOTED(SMYRNA,1,[Define if you want SMYRNA])
+	AC_MSG_RESULT(Optional SMYRNA is enabled)
+else
+	AC_MSG_WARN(Optional SMYRNA is disabled)
+fi
+AM_CONDITIONAL(WITH_SMYRNA, [test "x$with_smyrna" = "xyes"])
+
+dnl -----------------------------------
+dnl DIGCOLA 
+
+AC_ARG_WITH(digcola,
+  [AC_HELP_STRING([--with-digcola=yes], [DIGCOLA features in neato layout engine])],
+  [], [with_digcola=yes])
+
+if test "x$with_digcola" = "xyes"; then
+	AC_DEFINE_UNQUOTED(DIGCOLA,1,[Define if you want DIGCOLA])
+	AC_MSG_RESULT(Optional DIGCOLA is enabled)
+else
+	AC_MSG_WARN(Optional DIGCOLA is disabled)
+fi
+
+dnl -----------------------------------
+dnl IPSEPCOLA   /* disabled by default due to C++ issues on some platforms */
+AC_ARG_WITH(ipsepcola,
+  [AC_HELP_STRING([--with-ipsepcola=no],
+	[IPSEPCOLA features in neato layout engine])],
+  [], [with_ipsepcola=no])
+
+### unless digcola was not enabled since ipsecola depends on it
+if test "x$with_digcola" = "xno"; then
+	AC_MSG_WARN(Optional IPSEPCOLA is disabled - depends on DIGCOLA)
+	with_ipsepcola=no
+fi
+
+if test "x$with_ipsepcola" = "xyes"; then
+	AC_DEFINE_UNQUOTED(IPSEPCOLA,1,[Define if you want IPSEPCOLA])
+	AC_MSG_RESULT(Optional IPSEPCOLA is enabled)
+	IPSEPCOLA_INCLUDES='-I$(top_srcdir)/lib/vpsc'
+	IPSEPCOLA_LIBS='$(top_builddir)/lib/vpsc/libvpsc_C.la -lstdc++'
+AC_SUBST(IPSEPCOLA_INCLUDES)
+AC_SUBST(IPSEPCOLA_LIBS)
+fi
+AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$with_ipsepcola" = "xyes"])
 
 # -----------------------------------
 # Special checks
