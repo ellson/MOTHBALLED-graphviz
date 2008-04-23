@@ -4,7 +4,7 @@
 # $2 = Name of extension
 # $3 = Version of extension
 
-lib=`sed -n "/library_names/s/^[^']*'\([^ ']*\).*$/\1/p" $1`
+lib=`sed -n "/dlname/s/^[^']*'\([^ ']*\).*$/\1/p" $1`
 if [ -z "$lib" ]
 then
     libBaseName=`basename $1 .la`
