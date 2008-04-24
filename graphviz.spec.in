@@ -99,6 +99,47 @@ BuildRequires: gd gd-devel perl-devel php-devel
 %endif
 %endif
 
+#-- AT&T-internal Red Hat Enterprise Linux specific Build Requirements --------------------
+%if 0%{?att_rhel}
+%define TCL 1
+%if %att_rhel < 4
+BuildRequires:  XFree86-devel
+# This just indicates the requirement for tcl.h, tk.h, but doesn't identify
+# where to get them from. In RH9 and earlier they were in the tcl, tk,
+# base packages which are always BR'd anyway (above).
+BuildRequires:  /usr/include/tcl.h /usr/include/tk.h
+%endif
+%if %att_rhel >= 3
+%define IPSEPCOLA 1
+BuildRequires: fontconfig-devel tcl-devel tk-devel 
+%endif
+%if %att_rhel == 4
+BuildRequires: xorg-x11-devel
+%endif
+%if %att_rhel >= 4
+# PERL is available earlier, but a suitable SWIG isn't
+%define PERL 1
+%define RUBY 1
+%define GUILE 1
+%define PYTHON 1
+BuildRequires: perl ruby-devel guile-devel python-devel
+%endif
+%if %att_rhel >= 5
+%define JAVA 1
+%define PANGOCAIRO 1
+%define RSVG 1
+BuildRequires: libtool-ltdl libtool-ltdl-devel libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel
+BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel gtk2-devel libgnomeui-devel
+BuildRequires: librsvg2-devel
+%endif
+%if %att_rhel >= 6
+%define PHP 1
+%define MYLIBGD 1
+%define GDK_PIXBUF 1
+BuildRequires: gd gd-devel perl-devel php-devel
+%endif
+%endif
+
 #-- Fedora specific Build Requirements --------------------------------------
 %if 0%{?fedora}
 %define PERL 1
@@ -152,6 +193,65 @@ BuildRequires: R-devel swig >= 1.3.33
 #
 # <percent>define SMYRNA 1
 # BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
+# <percent>define GLITZ 1
+# BuildRequires: glitz-devel
+%endif
+%if %fedora >= 9
+#define MING 1
+#BuildRequires: ming ming-devel
+%endif
+%endif
+
+#-- AT&T-internal Fedora specific Build Requirements --------------------------------------
+%if 0%{?att_fedora}
+%define PERL 1
+%define TCL 1
+BuildRequires: fontconfig-devel tcl-devel tk-devel 
+%if %att_fedora < 3
+BuildRequires: XFree86-devel
+%endif
+%if %att_fedora == 3
+BuildRequires: xorg-x11-devel
+%endif
+%if %att_fedora == 4
+BuildRequires: xorg-x11-devel
+%endif
+%if %att_fedora >= 3
+%define IPSEPCOLA 1
+%endif
+%if %att_fedora >= 4
+%define RUBY 1
+%define GUILE 1
+%define PYTHON 1
+BuildRequires: libtool-ltdl libtool-ltdl-devel ruby ruby-devel guile-devel python-devel
+%endif
+%if %att_fedora >= 5
+%define PHP 1
+%define JAVA 1
+BuildRequires: libXaw-devel libSM-devel libICE-devel libXpm-devel libXt-devel libXmu-devel libXext-devel libX11-devel java-devel php-devel
+%ifnarch ppc64
+%define SHARP 1
+%define OCAML 1
+BuildRequires: mono-core ocaml
+%endif
+%endif
+%if %att_fedora >= 6
+%define LUA 1
+%define PANGOCAIRO 1
+%define RSVG 1
+BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel libgnomeui-devel
+BuildRequires: librsvg2-devel
+%endif
+%if %att_fedora >= 7
+%define DEVIL 1
+%define GDK_PIXBUF 1
+BuildRequires: gd gd-devel perl-devel DevIL-devel
+%endif
+%if %att_fedora >= 8
+%define R_LANG 1
+BuildRequires: R-devel swig >= 1.3.33
+%define SMYRNA 1
+BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
 # <percent>define GLITZ 1
 # BuildRequires: glitz-devel
 %endif
