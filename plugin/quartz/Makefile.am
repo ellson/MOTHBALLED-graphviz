@@ -10,6 +10,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/cdt \
 	$(QUARTZ_CFLAGS)
 
+noinst_HEADERS = gvplugin_quartz.h
+
 if WITH_QUARTZ
 noinst_LTLIBRARIES = libgvplugin_quartz_C.la
 if WITH_WIN32
