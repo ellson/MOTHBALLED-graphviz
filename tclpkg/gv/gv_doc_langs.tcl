@@ -153,8 +153,7 @@ array set LANGS {
 		}
 		SYNOPSIS {
 			{#!/usr/bin/lua}
-			{lib=loadlib('@LIB_DIR@/graphviz/lua/libgv_lua.so','Gv_Init')}
-			{assert(lib)()}
+			{require('gv')
 		}
 		USAGE {
 		}
