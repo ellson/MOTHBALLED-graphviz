@@ -153,7 +153,7 @@ array set LANGS {
 		}
 		SYNOPSIS {
 			{#!/usr/bin/lua}
-			{require('gv')
+			{require('gv')}
 		}
 		USAGE {
 		}
