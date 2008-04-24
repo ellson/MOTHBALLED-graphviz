@@ -702,9 +702,13 @@ int main(int argc, char *argv[])
 		(state->target) && !agnnodes(state->target))
 		agdelete(state->curgraph, state->target);
 
-	    /* output graph, if necessary */
-	    if (state->outgraph && agnnodes(state->outgraph))
-		agwrite(state->outgraph, options.outFile);
+	    /* output graph, if necessary
+             * For this, the outgraph must be defined, and either
+             * be non-empty or the -c option was used.
+             */
+	    if (state->outgraph && 
+		(agnnodes(state->outgraph) || (options.compflags & SRCOUT)))
+		    agwrite(state->outgraph, options.outFile);
 
 	    chkClose(state->curgraph);
 	    state->target = 0;
