@@ -43,7 +43,13 @@ BuildRequires: zlib-devel libpng-devel libjpeg-devel expat-devel
 BuildRequires: /bin/ksh bison m4 flex swig tk tcl >= 8.3 freetype-devel >= 2
 
 #-- Red Hat Linux specific Build Requirements -------------------------------
+
 %if 0%{?rhl}
+# ***NB***
+#
+#  This spec file no longer works for redhat[789].   The rpmbuild
+#  on those systems is just too old and broken!
+#
 %define TCL 1
 BuildRequires: XFree86-devel
 # This just indicates the requirement for tcl.h, tk.h, but doesn't identify
