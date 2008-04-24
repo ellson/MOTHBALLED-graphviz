@@ -352,6 +352,7 @@ Lua extension for graphviz.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/lua
 %{_libdir}/graphviz/lua/*
+%{_libdir}/lua*/*
 %{_datadir}/graphviz/demo/*.lua*
 %{_mandir}/mann/gv_lua.n*
 %endif
