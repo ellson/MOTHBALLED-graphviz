@@ -138,22 +138,33 @@ if WITH_TCL
 	fi
 endif
 
+# removal of installs into @xxx_INSTALL_DIR@ fail if root
+#     has installed a system copy
 uninstall-hook:
 	rm -rf $(DESTDIR)$(pkgsharpdir);
 	rm -rf $(DESTDIR)$(pkgguiledir);
 	rm -rf $(DESTDIR)$(pkgiodir);
 	rm -rf $(DESTDIR)$(pkgjavadir);
-	rm -rf $(DESTDIR)$(pkgluadir) $(DESTDIR)@LUA_INSTALL_DIR@/gv.so;
+	rm -rf $(DESTDIR)$(pkgluadir);
+	-rm -rf $(DESTDIR)@LUA_INSTALL_DIR@/gv.so;
 	rm -rf $(DESTDIR)$(pkgocamldir);
-	rm -rf $(DESTDIR)$(pkgperldir) $(DESTDIR)@PERL_INSTALL_DIR@/gv.so $(DESTDIR)@PERL_INSTALL_DIR@/gv.pm;
-	rm -rf $(DESTDIR)$(pkgphpdir) $(DESTDIR)@PHP_INSTALL_DIR@/gv.so $(DESTDIR)@PHP_INSTALL_DATADIR@/gv.php;
-	rm -rf $(DESTDIR)$(pkgpythondir) $(DESTDIR)@PYTHON_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
-	rm -rf $(DESTDIR)$(pkgpython23dir) $(DESTDIR)@PYTHON23_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
-	rm -rf $(DESTDIR)$(pkgpython24dir) $(DESTDIR)@PYTHON24_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
-	rm -rf $(DESTDIR)$(pkgpython25dir) $(DESTDIR)@PYTHON25_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
+	rm -rf $(DESTDIR)$(pkgperldir);
+	-rm -rf $(DESTDIR)@PERL_INSTALL_DIR@/gv.so $(DESTDIR)@PERL_INSTALL_DIR@/gv.pm;
+	rm -rf $(DESTDIR)$(pkgphpdir);
+	-rm -rf $(DESTDIR)@PHP_INSTALL_DIR@/gv.so $(DESTDIR)@PHP_INSTALL_DATADIR@/gv.php;
+	rm -rf $(DESTDIR)$(pkgpythondir);
+	-rm -rf $(DESTDIR)@PYTHON_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
+	rm -rf $(DESTDIR)$(pkgpython23dir);
+	-rm -rf $(DESTDIR)@PYTHON23_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
+	rm -rf $(DESTDIR)$(pkgpython24dir);
+	-rm -rf $(DESTDIR)@PYTHON24_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
+	rm -rf $(DESTDIR)$(pkgpython25dir);
+	-rm -rf $(DESTDIR)@PYTHON25_INSTALL_DIR@/_gv.so $(DESTDIR)@PYTHON_INSTALL_DIR@/gv.py;
 	rm -rf $(DESTDIR)$(pkgRdir);
-	rm -rf $(DESTDIR)$(pkgrubydir) $(DESTDIR)@RUBY_INSTALL_DIR@/gv.so;
-	rm -rf $(DESTDIR)$(pkgtcldir) $(DESTDIR)@TCL_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@;
+	rm -rf $(DESTDIR)$(pkgrubydir);
+	-rm -rf $(DESTDIR)@RUBY_INSTALL_DIR@/gv.so;
+	rm -rf $(DESTDIR)$(pkgtcldir);
+	-rm -rf $(DESTDIR)@TCL_INSTALL_DIR@/@PACKAGE_NAME@-@PACKAGE_VERSION@;
 
 EXTRA_DIST = Makefile.old mkpkgindex.sh
 
