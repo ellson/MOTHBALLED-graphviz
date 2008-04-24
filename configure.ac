@@ -643,7 +643,7 @@ if test "x$enable_lua" = "xyes" ; then
 		    LUA_VERSION=`$PKGCONFIG --modversion lua$l`
                     LUA_INCLUDES="$LUA_CFLAGS "`$PKGCONFIG --cflags lua$l`
                     LUA_LIBS="$LUA_LFLAGS "`$PKGCONFIG --libs lua$l`
-		    LUA_INSTALL_DIR="/usr/lib$LIBPOSTFIX/lua/5.1"
+		    LUA_INSTALL_DIR="/usr/lib$LIBPOSTFIX/lua/`$PKGCONFIG --variable=V lua`"
 
 		    pkgconfig_lualib_found=`$PKGCONFIG --exists lualib$l 2>/dev/null`
 		    if test  "x$?" = "x0"; then
