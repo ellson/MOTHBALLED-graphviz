@@ -1,4 +1,4 @@
-.TH GVPR 1 "1 November 2005"
+.TH GVPR 1 "24 April 2008"
 .SH NAME
 gvpr \- graph pattern scanning and processing language
 .br
@@ -921,13 +921,20 @@ Computes the degrees of nodes with edges.
 .B GPRPATH
 Colon\(hyseparated list of directories to be searched to find
 the file specified by the \-f option.
-.SH BUGS
+.SH BUGS AND WARNINGS
 When the program is given as a command line argument, the usual
 shell interpretation takes place, which may affect some of the
 special names in \fBgvpr\fP. To avoid this, it is best to wrap the
 program in single quotes.
 .PP
-The constants \fBTV_flat\fP, \fBTV_dfs\fP, \fBTV_fwd\fP, and \fBTV_rev\fP
+As of 24 April 2008, \fBgvpr\fP switched to using a new, underlying
+graph library, which uses the simpler model that there is only one
+copy of a node, not one copy for each subgraph logically containing
+it. This means that iterators such as \Inxtnode\P cannot traverse
+a subgraph using just a node argument. For this reason, subgraph
+traversal requires new functions ending in "_sg", which also take
+a subgraph argument. The versions without that suffix will always
+traverse the root graph.
 .PP
 There is a single global scope, except for formal function parameters,
 and even these can interfere with the type system. Also, the 
