@@ -11,7 +11,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/sfio \
 	-I$(top_srcdir)/lib/ast \
 	-I$(top_srcdir)/lib/ingraphs \
-	-I$(top_srcdir)/lib/agraph \
+	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt
 
 bin_PROGRAMS = gvpr
@@ -19,6 +19,7 @@ noinst_PROGRAMS = mkdefs
 noinst_HEADERS = actions.h compile.h gprstate.h parse.h queue.h
 man_MANS = gvpr.1
 pdf_DATA = gvpr.pdf
+AM_CFLAGS = -DUSE_CGRAPH
 
 gvpr_SOURCES = actions.c compile.c gvpr.c gprstate.c parse.c queue.c
 
@@ -27,7 +28,7 @@ gvpr_LDADD = \
 	$(top_builddir)/lib/sfio/libsfio_C.la \
         $(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/expr/libexpr_C.la \
-	$(top_builddir)/lib/agraph/libagraph.la @MATH_LIBS@
+	$(top_builddir)/lib/cgraph/libcgraph.la @MATH_LIBS@
 
 gvpr_DEPENDENCIES = \
        $(top_builddir)/lib/ast/libast_C.la
