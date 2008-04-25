@@ -641,7 +641,7 @@ void load_attributes()
 #if WIN32
 	smyrna_attrs = SMYRNA_ATTRS;
 #else
-	smyrna_attrs = smyrnaPath ("gui/attrs.txt");
+	smyrna_attrs = smyrnaPath ("attrs.txt");
 #endif
     }
 
