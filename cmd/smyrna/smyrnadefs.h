@@ -132,6 +132,7 @@ typedef struct {
     int update_required;
 } topview_edge;
 
+
 typedef enum { CAM_PERSPECTIVE,CAM_ORTHO} cam_t;
 
 typedef struct _viewport_camera{
@@ -160,6 +161,7 @@ typedef struct _viewport_camera{
 	cam_t type; //
 } viewport_camera;
 
+
 typedef struct {
     topview_node *Nodes;
     topview_edge *Edges;
@@ -178,6 +180,9 @@ typedef struct {
 	hierparms_t hier;
     } parms;
 	int animate;
+	topview_node** picked_nodes;
+	int picked_node_count;
+
 } topview;
 
 enum {
@@ -190,6 +195,7 @@ enum {
 typedef struct _mouse_attr {
     int mouse_down;
     int mouse_mode;
+	int pick;
     float mouse_X;
     float mouse_Y;
 	float begin_x;

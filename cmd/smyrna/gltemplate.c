@@ -132,7 +132,7 @@ static void realize(GtkWidget * widget, gpointer data)
     static char *smyrna_font;
 
 #ifdef WIN32
-    smyrna_font = "c:/arial.tga"
+    smyrna_font = "c:/arial.tga";
 #else
     smyrna_font = smyrnaPath("arial.tga");
 #endif
@@ -290,11 +290,10 @@ static gboolean button_release_event(GtkWidget * widget,
 {
     if (event->button == 1)	//left click release
     {
-	if (glCompSetRelease
+		if (glCompSetRelease
 	    (view->Topview->topviewmenu, (int) event->x_root,
-	     (int) event->y_root)) {
-	    expose_event(view->drawing_area, NULL, NULL);
-	}
+	     (int) event->y_root))		{
+			 expose_event(view->drawing_area, NULL, NULL);	}
 	view->mouse.mouse_down = 0;
 	if ((view->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
 	    || (view->mouse.mouse_mode == MM_RECTANGULAR_X_SELECT)) {
@@ -331,9 +330,16 @@ static gboolean button_release_event(GtkWidget * widget,
 	    originate_distorded_coordinates(view->Topview);
 	    expose_event(view->drawing_area, NULL, NULL);
 	}
-    }
+	if (view->mouse.mouse_mode==MM_PAN)
+		{
+			view->mouse.pick=1;
+			expose_event(view->drawing_area, NULL, NULL);
+
+		}
+
+	}
     if (event->button == 3)	//right click
-    {
+	{
 	if (view->Topview->is_top_fisheye) {
 	    GetFixedOGLPoslocal((int) event->x, (int) event->y,
 				view->GLDepth, &(view->GLx2),
@@ -371,7 +377,10 @@ static gboolean motion_notify_event(GtkWidget * widget,
     view->mouse.dx = dx;
     view->mouse.dy = dy;
 
-    /*panning */
+	view->mouse.mouse_X = x;
+	view->mouse.mouse_Y = y;
+
+	/*panning */
     if ((event->state & GDK_BUTTON1_MASK)
 	&& (view->mouse.mouse_mode == MM_PAN)) {
 	if (glmotion_main(view, event, widget))
@@ -385,43 +394,11 @@ static gboolean motion_notify_event(GtkWidget * widget,
     }
     /*zooming */
     if ((event->state & GDK_BUTTON1_MASK)
-	&& (view->mouse.mouse_mode == MM_ZOOM)) {
-	float x;
-	float real_zoom, old_zoom;
-	if (view->active_camera == -1) {
-	    old_zoom = view->zoom;
-	    real_zoom = view->zoom + dx / 10 * (view->zoom * -1 / 20);
-	} else {
-	    old_zoom = view->cameras[view->active_camera]->r;
-	    real_zoom =
-		(view->cameras[view->active_camera]->r +
-		 dx / 10 * (view->cameras[view->active_camera]->r / 20)) *
-		-1;
+	&& (view->mouse.mouse_mode == MM_ZOOM))
+	{
+		if (glmotion_main(view, event, widget))
+		    redraw = TRUE;
 	}
-
-	if (real_zoom > MAX_ZOOM)
-	    real_zoom = (float) MAX_ZOOM;
-	if (real_zoom < MIN_ZOOM)
-	    real_zoom = (float) MIN_ZOOM;
-
-	if (view->active_camera == -1)
-	    view->zoom = real_zoom;
-	else {
-	    view->cameras[view->active_camera]->r = real_zoom * -1;
-
-	    //pan adjsutment
-	}
-	view->panx = old_zoom * view->panx / real_zoom;
-	view->pany = old_zoom * view->pany / real_zoom;
-
-	/*set label to new zoom value */
-	x = ((float) 100.0 - (float) 1.0) * (view->zoom -
-					     (float) MIN_ZOOM) /
-	    ((float) MAX_ZOOM - (float) MIN_ZOOM) + (float) 1.0;
-	sprintf(buf, "%i", (int) x);
-	glCompLabelSetText((glCompLabel *) view->Topview->customptr, buf);
-	redraw = TRUE;
-    }
 
     /*selection rect */
     if ((event->state & GDK_BUTTON1_MASK)
@@ -565,9 +542,7 @@ void create_window(GdkGLConfig * glconfig, GtkWidget * vbox)
     gtk_widget_add_events(view->drawing_area,
 //  GDK_BUTTON_MOTION_MASK      = 1 << 4,
 			  GDK_BUTTON_MOTION_MASK |
-			  GDK_BUTTON1_MOTION_MASK |
-			  GDK_BUTTON2_MOTION_MASK |
-			  GDK_BUTTON3_MOTION_MASK |
+			   GDK_POINTER_MOTION_MASK|
 			  GDK_BUTTON_PRESS_MASK |
 			  GDK_BUTTON_RELEASE_MASK |
 			  GDK_VISIBILITY_NOTIFY_MASK);

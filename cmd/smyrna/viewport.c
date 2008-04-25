@@ -328,6 +328,7 @@ void init_viewport(ViewInfo * view)
     view->fmg.constantR = DEFAULT_FISHEYE_MAGNIFIER_RADIUS;
     view->fmg.active = 0;
     view->mouse.mouse_down = 0;
+	view->mouse.pick=0;
     view->activeGraph = -1;
     view->SignalBlock = 0;
     view->Selection.Active = 0;
