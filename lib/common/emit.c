@@ -783,7 +783,8 @@ void emit_background(GVJ_t * job, graph_t *g)
 
     gvrender_set_fillcolor(job, str);
     gvrender_set_pencolor(job, str);
-    gvrender_box(job, job->clip, TRUE);	/* filled */
+    if (!(job->flags & GVRENDER_NO_BG))
+        gvrender_box(job, job->clip, TRUE);	/* filled */
 }
 
 static void setup_page(GVJ_t * job, graph_t * g)
