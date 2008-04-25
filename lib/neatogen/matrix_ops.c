@@ -16,15 +16,16 @@
 
 
 #include "matrix_ops.h"
+#include "memory.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 
 static double p_iteration_threshold = 1e-3;
 
-boolean
+int
 power_iteration(double **square_mat, int n, int neigs, double **eigs,
-		double *evals, boolean initialize)
+		double *evals, int initialize)
 {
     /* compute the 'neigs' top eigenvectors of 'square_mat' using power iteration */
 
@@ -684,10 +685,11 @@ void set_vector_val(int n, double val, double *result)
 }
 
 /* inline */
-void set_vector_valf(int n, float val, float * result) {
+void set_vector_valf(int n, float val, float* result)
+{
     int i;
-    for (i=0; i<n; i++)
-        result[i]=val;
+    for (i = 0; i < n; i++)
+	result[i] = val;
 }
 
 /* inline */

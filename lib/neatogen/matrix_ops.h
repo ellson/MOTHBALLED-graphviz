@@ -23,7 +23,7 @@ extern "C" {
 #ifndef _MATRIX_OPS_H_
 #define _MATRIX_OPS_H_
 
-#include "defs.h"
+#include "sparsegraph.h"
 
     extern void cpvec(double *, int, int, double *);
     extern double dot(double *, int, int, double *);
@@ -65,8 +65,7 @@ extern "C" {
 				 double ***CC);
     extern void mult_sparse_dense_mat_transpose(vtx_data *, double **, int,
 						int, float ***);
-    extern boolean power_iteration(double **, int, int, double **, double *,
-				boolean);
+    extern int power_iteration(double **, int, int, double **, double *, int);
 
 
 /*****************************
