@@ -777,6 +777,7 @@ static adjust_data adjustMode[] = {
     {AM_COMPRESS, "compress", "compress"},
     {AM_VPSC, "vpsc", "vpsc"},
     {AM_IPSEP, "ipsep", "ipsep"},
+    {AM_FDP, "fdp", "fdp"},
     {AM_NONE, 0, 0}
 };
 
