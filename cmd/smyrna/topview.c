@@ -971,12 +971,12 @@ glCompSet *glcreate_gl_topview_menu()
 	smyrna_icon_fisheye = "c:/fisheye.raw"
 	smyrna_icon_rotate = "c:/rotate.raw"
 #else
-	smyrna_icon_pan = smyrnaPath("icons/pan.raw");
-	smyrna_icon_zoom = smyrnaPath("icons/zoom.raw");
-	smyrna_icon_zoomplus = smyrnaPath("icons/zoomplus.raw");
-	smyrna_icon_zoomminus = smyrnaPath("icons/zoomminus.raw");
-	smyrna_icon_fisheye = smyrnaPath("icons/fisheye.raw");
-	smyrna_icon_rotate = smyrnaPath("icons/rotate.raw");
+	smyrna_icon_pan = smyrnaPath("pan.raw");
+	smyrna_icon_zoom = smyrnaPath("zoom.raw");
+	smyrna_icon_zoomplus = smyrnaPath("zoomplus.raw");
+	smyrna_icon_zoomminus = smyrnaPath("zoomminus.raw");
+	smyrna_icon_fisheye = smyrnaPath("fisheye.raw");
+	smyrna_icon_rotate = smyrnaPath("rotate.raw");
 #endif
     }
 

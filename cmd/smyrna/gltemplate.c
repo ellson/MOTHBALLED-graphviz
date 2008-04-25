@@ -129,15 +129,14 @@ static void realize(GtkWidget * widget, gpointer data)
     GLfloat lmodel_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
     GLfloat local_view[] = { 0.0 };
 
-    char *smyrna_font;
+    static char *smyrna_font;
 
 #ifdef WIN32
     smyrna_font = "c:/arial.tga"
 #else
-    smyrna_font = smyrnaPath("gui/arial.tga");
+    smyrna_font = smyrnaPath("arial.tga");
 #endif
     g_print("loading font....%i\n", fontLoad(smyrna_font));
-    free(smyrna_font);
 
   /*** OpenGL BEGIN ***/
     if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))

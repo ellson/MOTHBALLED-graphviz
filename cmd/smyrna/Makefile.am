@@ -1,8 +1,5 @@
-guidir = $(pkgdatadir)/gui
-icondir = $(pkgdatadir)/icons
-
 AM_CPPFLAGS = \
-	-DSMYRNA_PATH=\""$(pkgdatadir)"\" \
+	-DSMYRNA_PATH=\""$(pkgdatadir)/smyrna"\" \
         -I$(top_srcdir) \
         -I$(top_srcdir)/lib/cgraph \
         -I$(top_srcdir)/lib/cdt \
