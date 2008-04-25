@@ -2,7 +2,7 @@
 # ## Process this file with automake to produce Makefile.in
 #
 
-guidir = $(pkgdatadir)/gui
+guidir = $(pkgdatadir)/smyrna
 gui = smyrna.glade attrs.txt arial.tga template.dot
 
 if WITH_SMYRNA
