@@ -43,5 +43,5 @@ extern void drawCircle(float x, float y, float radius, float zdepth);
 extern RGBColor GetRGBColor(char *color);
 extern void drawBorders(ViewInfo * view);
 void drawEllipse(float xradius, float yradius,int angle1,int angle2);
-
+int draw_node_hintbox(GLfloat x,GLfloat y,GLfloat fs,GLfloat pad,GLfloat z,GLfloat kts,GLfloat z_offset);
 #endif

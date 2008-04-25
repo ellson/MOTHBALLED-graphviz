@@ -20,35 +20,35 @@ int glmotion_main(ViewInfo * v,GdkEventMotion * event,GtkWidget * widget)
 	/*rotating, only in 3d v */
     if ((v->active_camera >=0)&&(v->mouse.mouse_mode == MM_ROTATE))
 		glmotion_rotate(v);
-	return 1;
 
 	/*zooming */
     if ((event->state & GDK_BUTTON1_MASK)&& (v->mouse.mouse_mode == MM_ZOOM))
 		glmotion_zoom(v);
-
+	return 1;
 
 	/*selection rect */
     if ((event->state & GDK_BUTTON1_MASK)
 	&& ((v->mouse.mouse_mode == MM_RECTANGULAR_SELECT)
 	    || (v->mouse.mouse_mode == 5)))
 	{
-			GetFixedOGLPos((int) v->mouse.mouse_X, (int) v->mouse.mouse_Y, v->GLDepth, &(v->GLx2),
+			GetFixedOGLPos((int) event->x, (int)event->y, v->GLDepth, &(v->GLx2),
 		       &(v->GLy2), &(v->GLz2));
 		redraw = TRUE;
     }
     if ((event->state & GDK_BUTTON1_MASK)
 	&& (v->mouse.mouse_mode == MM_MOVE)) {
-	GetFixedOGLPos((int) v->mouse.mouse_X, (int) v->mouse.mouse_Y, v->GLDepth, &(v->GLx2),
+	GetFixedOGLPos((int)event->x, (int) event->y, v->GLDepth, &(v->GLx2),
 		       &(v->GLy2), &(v->GLz2));
 	redraw = TRUE;
     }
-/*    if ((event->state & GDK_BUTTON1_MASK)
+    if ((event->state & GDK_BUTTON1_MASK)
 	&& ((v->mouse.mouse_mode == MM_MAGNIFIER)
-	    || (v->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER))) {
-	v->mouse.mouse_X = (int) x;
-	v->mouse.mouse_Y = (int) y;
-	redraw = TRUE;
-    }*/
+	    || (v->mouse.mouse_mode == MM_FISHEYE_MAGNIFIER)))
+	{
+		v->mouse.mouse_X = (int)event->x;
+		v->mouse.mouse_Y = (int) event->y;
+		redraw = TRUE;
+    }
 
     if (redraw)
 	gdk_window_invalidate_rect(widget->window, &widget->allocation,
@@ -58,13 +58,64 @@ int glmotion_main(ViewInfo * v,GdkEventMotion * event,GtkWidget * widget)
 }
 int glmotion_zoom(ViewInfo * v)
 {
+
+
+
+/*		if (view->active_camera == -1) {
+			old_zoom = view->zoom;
+			real_zoom = view->zoom + dx / 10 * (view->zoom * -1 / 20);
+		}
+		else
+		{
+			old_zoom = view->cameras[view->active_camera]->r;
+			real_zoom =
+			(view->cameras[view->active_camera]->r +
+			dx / 10 * (view->cameras[view->active_camera]->r / 20)) *
+			-1;
+		}
+
+		if (real_zoom > MAX_ZOOM)
+		    real_zoom = (float) MAX_ZOOM;
+		if (real_zoom < MIN_ZOOM)
+			real_zoom = (float) MIN_ZOOM;
+
+		if (view->active_camera == -1)
+		    view->zoom = real_zoom;
+		else {
+			view->cameras[view->active_camera]->r = real_zoom * -1;
+
+			}
+		view->panx = old_zoom * view->panx / real_zoom;
+		view->pany = old_zoom * view->pany / real_zoom;
+
+		x = ((float) 100.0 - (float) 1.0) * (view->zoom -
+					     (float) MIN_ZOOM) /
+			((float) MAX_ZOOM - (float) MIN_ZOOM) + (float) 1.0;
+		sprintf(buf, "%i", (int) x);
+		glCompLabelSetText((glCompLabel *) view->Topview->customptr, buf);
+		redraw = TRUE;*/
+
+
+
+
+
+
+
 	char buf[256];
 
-	float real_zoom,xx;
-	if(v->active_camera==-1)
-		real_zoom=v->zoom + v->mouse.dx / 10 * (v->zoom * -1 / 20);
+	float real_zoom,old_zoom,xx;
+	if (view->active_camera == -1) {
+			old_zoom = view->zoom;
+			real_zoom = view->zoom + view->mouse.dx / 10 * (view->zoom * -1 / 20);
+	}
 	else
-		real_zoom=(v->cameras[v->active_camera]->r + v->mouse.dx / 10 * (v->cameras[v->active_camera]->r  / 20))*-1;
+	{
+		old_zoom = view->cameras[view->active_camera]->r;
+		real_zoom =
+			(view->cameras[view->active_camera]->r +
+			view->mouse.dx / 10 * (view->cameras[view->active_camera]->r / 20)) *
+			-1;
+	}
 
 	if (real_zoom > MAX_ZOOM)
 		real_zoom = (float) MAX_ZOOM;
@@ -74,6 +125,10 @@ int glmotion_zoom(ViewInfo * v)
 		v->zoom = real_zoom;
 	else
 		v->cameras[v->active_camera]->r=real_zoom*-1;
+	/*adjust pan values*/
+	view->panx = old_zoom * view->panx / real_zoom;
+	view->pany = old_zoom * view->pany / real_zoom;
+
 	/*set label to new zoom value */
 	xx = ((float) 100.0 - (float) 1.0) * (v->zoom -
 		     (float) MIN_ZOOM) / ((float) MAX_ZOOM - (float) MIN_ZOOM) + (float) 1.0;
