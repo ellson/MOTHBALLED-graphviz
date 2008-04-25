@@ -2271,16 +2271,16 @@ if test "x$HAVE_GTK" != "x1"; then
 	AC_MSG_WARN(SMYRNA requires GTK)
 fi
 if test "x$HAVE_GTKGL" != "x1"; then
-	with_smyrna=no
-	AC_MSG_WARN(SMYRNA requires GTKGL)
+#	with_smyrna=no
+	AC_MSG_WARN(SMYRNA requires GTKGL on Linux, but not on Mac)
 fi
 if test "x$HAVE_GTKGLEXT" != "x1"; then
-	with_smyrna=no
-	AC_MSG_WARN(SMYRNA requires GTKGLEXT)
+#	with_smyrna=no
+	AC_MSG_WARN(SMYRNA requires GTKGLEXT on Linux)
 fi
 if test "x$HAVE_GLADE" != "x1"; then
-	with_smyrna=no
-	AC_MSG_WARN(SMYRNA requires GLADE)
+#	with_smyrna=no
+	AC_MSG_WARN(SMYRNA requires GLADE on Linux)
 fi
 
 if test "x$with_smyrna" = "xyes"; then
