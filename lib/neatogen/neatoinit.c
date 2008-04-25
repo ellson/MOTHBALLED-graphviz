@@ -724,7 +724,7 @@ static int checkEdge(PointMap * pm, edge_t * ep, int idx)
  * dfs for breaking cycles in vtxdata
  */
 static void
-dfsCycle (vtx_data* graph, int i,int mode)
+dfsCycle (vtx_data* graph, int i,int mode, node_t* nodes[])
 {
     node_t *np, *hp;
     int j, e, f;
@@ -733,20 +733,20 @@ dfsCycle (vtx_data* graph, int i,int mode)
      */
     double x = (mode==MODE_IPSEP?-1.0:1.0);
 
-    np = graph[i].np;
+    np = nodes[i];
     ND_mark(np) = TRUE;
     ND_onstack(np) = TRUE;
     for (e = 1; e < graph[i].nedges; e++) {
 	if (graph[i].edists[e] == 1.0) continue;  /* in edge */
 	j = graph[i].edges[e];
-	hp = graph[j].np;
+	hp = nodes[j];
 	if (ND_onstack(hp)) {  /* back edge: reverse it */
             graph[i].edists[e] = x;
             for (f = 1; (f < graph[j].nedges) &&(graph[j].edges[f] != i); f++) ;
             assert (f < graph[j].nedges);
             graph[j].edists[f] = -1.0;
         }
-	else if (ND_mark(hp) == FALSE) dfsCycle(graph, j, mode);
+	else if (ND_mark(hp) == FALSE) dfsCycle(graph, j, mode, nodes);
 
     }
     ND_onstack(np) = FALSE;
@@ -756,19 +756,19 @@ dfsCycle (vtx_data* graph, int i,int mode)
  * Do a dfs of the vtx_data, looking for cycles, reversing edges.
  */
 static void
-acyclic (vtx_data* graph, int nv, int mode)
+acyclic (vtx_data* graph, int nv, int mode, node_t* nodes[])
 {
     int i;
     node_t* np;
 
     for (i = 0; i < nv; i++) {
-	np = graph[i].np;
+	np = nodes[i];
 	ND_mark(np) = FALSE;
 	ND_onstack(np) = FALSE;
     }
     for (i = 0; i < nv; i++) {
-	if (ND_mark(graph[i].np)) continue;
-	dfsCycle (graph, i, mode);	
+	if (ND_mark(nodes[i])) continue;
+	dfsCycle (graph, i, mode, nodes);	
     }
 
 }
@@ -792,9 +792,10 @@ acyclic (vtx_data* graph, int nv, int mode)
  * the graph is acyclic.
  *
  */
-static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int model)
+static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int model, node_t*** nodedata)
 {
     vtx_data *graph;
+    node_t** nodes;
     int ne = agnedges(g);	/* upper bound */
     int *edges;
     float *ewgts = NULL;
@@ -824,6 +825,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
 	haveDir = FALSE;
 
     graph = N_GNEW(nv, vtx_data);
+    nodes = N_GNEW(nv, node_t*);
     edges = N_GNEW(2 * ne + nv, int);	/* reserve space for self loops */
     if (haveLen || haveDir)
 	ewgts = N_GNEW(2 * ne + nv, float);
@@ -840,7 +842,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
 	int j = 1;		/* index of neighbors */
 	clearPM(ps);
 	assert(ND_id(np) == i);
-	graph[i].np = np;
+	nodes[i] = np;
 	graph[i].edges = edges++;	/* reserve space for the self loop */
 	if (haveLen || haveDir)
 	    graph[i].ewgts = ewgts++;
@@ -906,7 +908,7 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
 #ifdef DIGCOLA
     if (haveDir) {
     /* Make graph acyclic */
-	acyclic (graph, nv, mode);
+	acyclic (graph, nv, mode, nodes);
     }
 #endif
 
@@ -936,6 +938,10 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
     }
 
     *nedges = ne;
+    if (nodedata)
+	*nodedata = nodes;
+    else
+	free (nodes);
     freePM(ps);
     return graph;
 }
@@ -1098,6 +1104,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     int i;
     node_t *v;
     vtx_data *gp;
+    node_t** nodes;
     expand_t margin;
 
     int init;
@@ -1114,7 +1121,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
 	fprintf(stderr, "convert graph: ");
 	start_timer();
     }
-    gp = makeGraphData(g, nv, &ne, mode, model);
+    gp = makeGraphData(g, nv, &ne, mode, model, &nodes);
 
     if (Verbose) {
 	fprintf(stderr, "%d nodes %.2f sec\n", nv, elapsed_sec());
@@ -1124,7 +1131,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     if (mode != MODE_MAJOR) {
         double lgap = late_double(g, agfindattr(g, "levelsgap"), 0.0, -MAXDOUBLE);
         if (mode == MODE_HIER) {        
-            stress_majorization_with_hierarchy(gp, nv, ne, coords, Ndim,
+            stress_majorization_with_hierarchy(gp, nv, ne, coords, nodes, Ndim,
                        (init == INIT_SELF), model, MaxIter, lgap);
         } 
 #ifdef IPSEPCOLA
@@ -1184,14 +1191,14 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
                 nsize[i].y = ND_height(v);
             }
 
-            stress_majorization_cola(gp, nv, ne, coords, Ndim, model, MaxIter, &opt);
+            stress_majorization_cola(gp, nv, ne, coords, nodes, Ndim, model, MaxIter, &opt);
 	    freeClusterData(cs);
         }
 #endif
     }
     else
 #endif
-	stress_majorization_kD_mkernel(gp, nv, ne, coords, Ndim,
+	stress_majorization_kD_mkernel(gp, nv, ne, coords, nodes, Ndim,
 				   (init == INIT_SELF), model, MaxIter);
 
     /* store positions back in nodes */
@@ -1205,6 +1212,7 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     freeGraphData(gp);
     free(coords[0]);
     free(coords);
+    free(nodes);
 }
 
 static void subset_model(Agraph_t * G, int nG)
@@ -1213,7 +1221,7 @@ static void subset_model(Agraph_t * G, int nG)
     DistType **Dij;
     vtx_data *gp;
 
-    gp = makeGraphData(G, nG, &ne, MODE_KK, MODEL_SUBSET);
+    gp = makeGraphData(G, nG, &ne, MODE_KK, MODEL_SUBSET, NULL);
     Dij = compute_apsp_artifical_weights(gp, nG);
     for (i = 0; i < nG; i++) {
 	for (j = 0; j < nG; j++) {
