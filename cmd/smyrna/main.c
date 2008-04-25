@@ -41,7 +41,7 @@ gchar *package_data_dir;
 #endif
 gchar *package_locale_dir;
 static char* smyrnaDir;
-static char* smyrnaGlade;
+char* smyrnaGlade;
 
 char*
 smyrnaPath (char* suffix)
