@@ -304,8 +304,7 @@ fi
 %exclude %{_libdir}/graphviz/*fdb
 %endif
 %if 0%{?SMYRNA}
-%{_datadir}/graphviz/gui
-%{_datadir}/graphviz/icons
+%{_datadir}/graphviz/smyrna
 %{_datadir}/graphviz/examples
 %endif
 

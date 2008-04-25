@@ -238,7 +238,7 @@ void init_viewport(ViewInfo * view)
 #ifdef _WIN32
     template_file = DEFAULT_ATTRIBUTES_TEMPLATE_DOT_FILE;
 #else
-    template_file = smyrnaPath ("gui/template.dot");
+    template_file = smyrnaPath ("template.dot");
 #endif
     input_file = fopen(template_file, "r");
     if (!input_file) {

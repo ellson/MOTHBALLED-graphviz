@@ -41,7 +41,7 @@ gchar *package_data_dir;
 #endif
 gchar *package_locale_dir;
 static char* smyrnaDir;
-char* smyrnaGlade;
+static char* smyrnaGlade;
 
 char*
 smyrnaPath (char* suffix)
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 #ifdef _WIN32
 	smyrnaGlade = SMYRNA_GLADE;
 #else
-	smyrnaGlade = smyrnaPath ("gui/smyrna.glade");
+	smyrnaGlade = smyrnaPath ("smyrna.glade");
 #endif
     }
     xml = glade_xml_new(smyrnaGlade, NULL, NULL);
