@@ -59,6 +59,7 @@ int stress_majorization_cola(
     int n,              /* Number of nodes */
     int nedges_graph,	/* Number of edges */
     double **d_coords,	/* Coordinates of nodes (output layout)  */
+    node_t **nodes,	/* Original nodes */
     int dim,            /* Dimemsionality of layout */
     int model,	        /* difference model */
     int maxi,	        /* max iterations */
@@ -103,7 +104,7 @@ int stress_majorization_cola(
     float maxEdgeLen = 0;
     double max = 1;
 
-    initLayout(graph, n, dim, d_coords);
+    initLayout(graph, n, dim, d_coords, nodes);
     if (n == 1)
 	return 0;
 
