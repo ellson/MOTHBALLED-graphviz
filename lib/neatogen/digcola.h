@@ -28,7 +28,7 @@ extern double compute_hierarchy(vtx_data*, int, double, double,
                                 double*, int**, int**, int*); 
 extern void IMDS_given_dim(vtx_data*, int, double*, double*, double);
 extern int stress_majorization_with_hierarchy(vtx_data*, int, int, double**, 
-                                              int, int, int, int, double);
+                                              node_t**, int, int, int, int, double);
 #ifdef IPSEPCOLA
 typedef struct ipsep_options {
     int diredges;       /* 1=generate directed edge constraints */
@@ -47,7 +47,7 @@ typedef struct ipsep_options {
 } ipsep_options;
 
  /* stress majorization, for Constraint Layout */
-extern int stress_majorization_cola(vtx_data*, int, int, double**, int, int, int, ipsep_options*);
+extern int stress_majorization_cola(vtx_data*, int, int, double**, node_t**, int, int, int, ipsep_options*);
 #endif
 #endif
 #endif
