@@ -1783,7 +1783,7 @@ PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.7.0],
         [HAVE_GTK=1
         AC_DEFINE_UNQUOTED(HAVE_GTK,1,
                 [Define if you have the gtk+ library])],
-        [AC_MSG_WARN(gtk+ library not available. desktop features will not be built)])
+        [AC_MSG_WARN(gtk+ library not available.)])
 fi
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
@@ -1801,7 +1801,7 @@ PKG_CHECK_MODULES(GTKGL, [gtkgl-2.0],
         [HAVE_GTKGL=1
         AC_DEFINE_UNQUOTED(HAVE_GTKGL,1,
                 [Define if you have the gtkgl library])],
-        [AC_MSG_WARN(gtkgl library not available. desktop features will not be built)])
+        [AC_MSG_WARN(gtkgl library not available.)])
 fi
 AC_SUBST(GTKGL_CFLAGS)
 AC_SUBST(GTKGL_LIBS)
@@ -1819,11 +1819,29 @@ PKG_CHECK_MODULES(GTKGLEXT, [gtkglext-1.0],
         [HAVE_GTKGLEXT=1
         AC_DEFINE_UNQUOTED(HAVE_GTKGLEXT,1,
                 [Define if you have the gtkglext library])],
-        [AC_MSG_WARN(gtkglext library not available. desktop features will not be built)])
+        [AC_MSG_WARN(gtkglext library not available.)])
 fi
 AC_SUBST(GTKGLEXT_CFLAGS)
 AC_SUBST(GTKGLEXT_LIBS)
 AM_CONDITIONAL(WITH_GTKGLEXT, [test "x$HAVE_GTKGLEXT" != "x"])
+
+dnl -----------------------------------
+dnl INCLUDES and LIBS for GTS.
+
+AC_ARG_WITH(gts,
+  [AC_HELP_STRING([--with-gts=yes], [gts library])],
+  [], [with_gts=yes])
+
+if test "x$with_gts" = "xyes"; then
+PKG_CHECK_MODULES(GTS, [gts],
+        [HAVE_GTS=1
+        AC_DEFINE_UNQUOTED(HAVE_GTS,1,
+                [Define if you have the gts library])],
+        [AC_MSG_WARN(gts library not available.)])
+fi
+AC_SUBST(GTS_CFLAGS)
+AC_SUBST(GTS_LIBS)
+AM_CONDITIONAL(WITH_GTS, [test "x$HAVE_GTS" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GLADE.
@@ -2270,10 +2288,6 @@ if test "x$HAVE_GTK" != "x1"; then
 	with_smyrna=no
 	AC_MSG_WARN(SMYRNA requires GTK)
 fi
-#if test "x$HAVE_GTKGL" != "x1"; then
-#	with_smyrna=no
-#	AC_MSG_WARN(SMYRNA requires GTKGL on Linux, but not on Mac)
-#fi
 if test "x$HAVE_GTKGLEXT" != "x1"; then
 	with_smyrna=no
 	AC_MSG_WARN(SMYRNA requires GTKGLEXT)
@@ -2281,6 +2295,10 @@ fi
 if test "x$HAVE_GLADE" != "x1"; then
 	with_smyrna=no
 	AC_MSG_WARN(SMYRNA requires GLADE)
+fi
+if test "x$HAVE_GTS" != "x1"; then
+	with_smyrna=no
+	AC_MSG_WARN(SMYRNA requires GTS)
 fi
 
 if test "x$with_smyrna" = "xyes"; then

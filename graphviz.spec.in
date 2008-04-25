@@ -192,7 +192,7 @@ BuildRequires: R-devel swig >= 1.3.33
 # packaging is ok, but code is not ready for distribution
 #
 # <percent>define SMYRNA 1
-# BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
+# BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel gts-devel
 # <percent>define GLITZ 1
 # BuildRequires: glitz-devel
 %endif
@@ -251,7 +251,7 @@ BuildRequires: gd gd-devel perl-devel DevIL-devel
 %define R_LANG 1
 BuildRequires: R-devel swig >= 1.3.33
 %define SMYRNA 1
-BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel
+BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel gts-devel
 # <percent>define GLITZ 1
 # BuildRequires: glitz-devel
 %endif

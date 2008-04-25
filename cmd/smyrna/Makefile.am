@@ -9,7 +9,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/topfish \
         -I$(top_srcdir)/lib/common \
         -I$(top_srcdir)/cmd/smyrna/gui \
-	$(GTK_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS)
+	$(GTK_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) $(GTS_CFLAGS)
 
 if WITH_SMYRNA
 noinst_HEADERS = btree.h draw.h filter.h glexpose.h glmotion.h gltemplate.h \
@@ -35,4 +35,4 @@ smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/glcomp/libglcomp_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
-		$(GTK_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS)
+		$(GTK_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS)
