@@ -16,6 +16,9 @@
 
 #include <stdio.h>
 #include <cghdr.h>
+#if WIN32
+#include <io.h>
+#endif
 
 /* experimental ICONV code - probably should be removed - JCE */
 #undef HAVE_ICONV
