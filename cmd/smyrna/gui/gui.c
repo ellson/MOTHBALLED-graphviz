@@ -638,8 +638,11 @@ void load_attributes()
     static char* smyrna_attrs;
 
     if (!smyrna_attrs) {
-	if (!(smyrna_attrs = smyrnaPath ("gui/attrs.txt")))
-	    smyrna_attrs = SMYRNA_ATTRS;
+#if WIN32
+	smyrna_attrs = SMYRNA_ATTRS;
+#else
+	smyrna_attrs = smyrnaPath ("gui/attrs.txt");
+#endif
     }
 
     //loads attributes from a text file

@@ -132,16 +132,12 @@ static void realize(GtkWidget * widget, gpointer data)
     char *smyrna_font;
 
 #ifdef WIN32
-#define SMYRNA_FONT "c:/arial.tga"
-// #else
-// using -DSMYRNA_FONT from Makefile.am and configure.ac
+    smyrna_font = "c:/arial.tga"
+#else
+    smyrna_font = smyrnaPath("gui/arial.tga");
 #endif
-
-    if ((smyrna_font = smyrnaPath("gui/arial.tga"))) {
-	g_print("loading font....%i\n", fontLoad(smyrna_font));
-	free(smyrna_font);
-    } else
-	g_print("loading font....%i\n", fontLoad(SMYRNA_FONT));
+    g_print("loading font....%i\n", fontLoad(smyrna_font));
+    free(smyrna_font);
 
   /*** OpenGL BEGIN ***/
     if (!gdk_gl_drawable_gl_begin(gldrawable, glcontext))

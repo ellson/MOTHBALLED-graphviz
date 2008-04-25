@@ -91,8 +91,12 @@ int main(int argc, char *argv[])
 #ifdef _WIN32
 #define GTKTOPVIEW_ICONSDIR "C:\\Projects\\ATT\\GTK\\GTKTest2\\GUI\\images\\"
 #endif
-    if (!(smyrnaGlade = smyrnaPath ("gui/smyrna.glade"))) {
+    if (!(smyrnaGlade)) {
+#ifdef _WIN32
 	smyrnaGlade = SMYRNA_GLADE;
+#else
+	smyrnaGlade = smyrnaPath ("gui/smyrna.glade");
+#endif
     }
     xml = glade_xml_new(smyrnaGlade, NULL, NULL);
     gladewidget = glade_xml_get_widget(xml, "frmMain");
