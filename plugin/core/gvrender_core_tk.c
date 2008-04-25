@@ -233,7 +233,7 @@ tkgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     tkgen_print_color(job, obj->pencolor);
     gvdevice_fputs(job, " -width ");
     gvdevice_printnum(job, obj->penwidth);
-    gvdevice_fputs(job, " -smooth true");
+    gvdevice_fputs(job, " -smooth bezier");
     gvdevice_fputs(job, " -state disabled");
     tkgen_print_tags(job, NOHIGHLIGHT);
     gvdevice_fputs(job, "\n");
@@ -308,7 +308,7 @@ gvrender_features_t render_features_tk = {
     4.,                         /* default pad - graph units */
     NULL, 			/* knowncolors */
     0,				/* sizeof knowncolors */
-    RGBA_BYTE,			/* color_type */
+    COLOR_STRING,		/* color_type */
 };
 
 gvdevice_features_t device_features_tk = {
