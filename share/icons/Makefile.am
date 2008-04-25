@@ -8,7 +8,7 @@ icons = add_edge.png AntiselectRect.png AntiselectRectX.png cursor.png \
 	fit_to_screen.png hourglass.png magifier_zoom_out.png magnifier.png \
 	magnifier_zoom_in.png move.png new_delete.png new_node.png \
 	newzoom.png pan.png select.png selectx.png zoom_in.png \
-	zoom_out.png zoom.png hourglass.png \
+	zoom_out.png zoom.png \
 	fisheye.raw ok.raw ok2.raw ok3.raw pan.raw zoom.raw \
 	zoomminus.raw zoomplus.raw rotate.raw
 
