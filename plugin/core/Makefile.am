@@ -20,11 +20,12 @@ endif
 libgvplugin_core_C_la_SOURCES = \
 	gvplugin_core.c \
 	gvrender_core_dot.c \
-	gvrender_core_ps.c \
 	gvrender_core_fig.c \
-	gvrender_core_svg.c \
-	gvrender_core_vml.c \
 	gvrender_core_map.c \
+	gvrender_core_ps.c \
+	gvrender_core_svg.c \
+	gvrender_core_tk.c \
+	gvrender_core_vml.c \
 	gvloadimage_core.c
 
 libgvplugin_core_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
