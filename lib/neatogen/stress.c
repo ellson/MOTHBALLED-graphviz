@@ -204,7 +204,7 @@ compute_stress1(double **coords, dist_data * distances, int dim, int n)
  * Return true if some node is fixed.
  */
 int
-initLayout(vtx_data * graph, int n, int dim, double **coords)
+initLayout(vtx_data * graph, int n, int dim, double **coords, node_t** nodes)
 {
     node_t *np;
     double *xp;
@@ -216,7 +216,7 @@ initLayout(vtx_data * graph, int n, int dim, double **coords)
     xp = coords[0];
     yp = coords[1];
     for (i = 0; i < n; i++) {
-	np = graph[i].np;
+	np = nodes[i];
 	if (hasPos(np)) {
 	    pt = ND_pos(np);
 	    *xp++ = *pt++;
@@ -302,6 +302,7 @@ int stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse representa
 			   int n,	/* Number of nodes */
 			   int nedges_graph,	/* Number of edges */
 			   double **coords,	/* coordinates of nodes(output layout)  */
+			   node_t **nodes,	/* original nodes  */
 			   int dim,	/* dimemsionality of layout */
 			   int smart_ini,	/* smart initialization */
 			   int reweight_graph,	/* difference model */
@@ -352,7 +353,7 @@ int stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse representa
 					       neighborhood_radius_subspace,
 					       num_pivots_stress);
     } else {
-	initLayout(graph, n, dim, coords);
+	initLayout(graph, n, dim, coords, nodes);
     }
 
 	/*************************************************
@@ -551,6 +552,7 @@ int sparse_stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse rep
 				  int n,	/* Number of nodes */
 				  int nedges_graph,	/* Number of edges */
 				  double **coords,	/* coordinates of nodes (output layout)  */
+				  node_t **nodes,	/* original nodes  */
 				  int dim,	/* dimemsionality of layout */
 				  int smart_ini,	/* smart initialization */
 				  int reweight_graph,	/* difference model */
@@ -611,7 +613,7 @@ int sparse_stress_majorization_kD(vtx_data * graph,	/* Input graph in sparse rep
 					       reweight_graph, 50,
 					       dist_bound, num_centers);
     } else {
-	initLayout(graph, n, dim, coords);
+	initLayout(graph, n, dim, coords, nodes);
     }
 
 	/*************************************************
@@ -1470,6 +1472,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 				   int n,	/* Number of nodes */
 				   int nedges_graph,	/* Number of edges */
 				   double **d_coords,	/* coordinates of nodes (output layout) */
+				   node_t **nodes,	/* original nodes */
 				   int dim,	/* dimemsionality of layout */
 				   int smart_ini,	/* smart initialization */
 				   int model,	/* model */
@@ -1581,7 +1584,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 	    orthog1(n, d_coords[i]);
 	}
     } else {
-	havePinned = initLayout(graph, n, dim, d_coords);
+	havePinned = initLayout(graph, n, dim, d_coords, nodes);
     }
     if (Verbose) fprintf(stderr, ": %.2f sec", elapsed_sec());
     if (n == 1) return 0;
@@ -1796,7 +1799,7 @@ int stress_majorization_kD_mkernel(vtx_data * graph,	/* Input graph in sparse re
 		conjugate_gradient_mkernel(lap2, tmp_coords, b[k], n,
 					   conj_tol, n);
 		for (i = 0; i < n; i++) {
-		    np = graph[i].np;
+		    np = nodes[i];
 		    if (!isFixed(np))
 			coords[k][i] = tmp_coords[i];
 		}

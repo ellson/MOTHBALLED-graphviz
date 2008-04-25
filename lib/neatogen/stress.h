@@ -50,6 +50,7 @@ extern "C" {
 					      int n,	/* Number of nodes */
 					      int nedges_graph,	/* Number of edges */
 					      double **coords,	/* coordinates of nodes (output layout)  */
+					      node_t **nodes,	/* original nodes  */
 					      int dim,	/* dimemsionality of layout */
 					      int smart_ini,	/* smart initialization */
 					      int model,	/* model */
@@ -59,7 +60,7 @@ extern "C" {
 extern float *compute_apsp_packed(vtx_data * graph, int n);
 extern float *compute_apsp_artifical_weights_packed(vtx_data * graph, int n);
 extern float* circuitModel(vtx_data * graph, int nG);
-extern int initLayout(vtx_data * graph, int n, int dim, double **coords);
+extern int initLayout(vtx_data * graph, int n, int dim, double **coords, node_t** nodes);
 
 #endif
 
