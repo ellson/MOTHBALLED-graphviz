@@ -51,7 +51,7 @@ static void tkgen_print_color(GVJ_t * job, gvcolor_t color)
 	break;
     case RGBA_BYTE:
 	if (color.u.rgba[3] == 0) /* transparent */
-	    gvdevice_fputs(job, "none");
+	    gvdevice_fputs(job, "\"\"");
 	else
 	    gvdevice_printf(job, "#%02x%02x%02x",
 		color.u.rgba[0], color.u.rgba[1], color.u.rgba[2]);
@@ -64,14 +64,14 @@ static void tkgen_print_color(GVJ_t * job, gvcolor_t color)
 static void tkgen_print_tags(GVJ_t *job, int tag)
 {
     char *ObjType;
-    unsigned int ObjHandle;
+    unsigned int ObjId;
     obj_state_t *obj = job->obj;
 
     switch (obj->emit_state) {
     case EMIT_NDRAW:
     case EMIT_NLABEL:
 	ObjType = "node";
-        ObjHandle = obj->u.n->handle;
+        ObjId = obj->u.n->id;
 	break;
     case EMIT_EDRAW:
     case EMIT_TDRAW:
@@ -80,33 +80,36 @@ static void tkgen_print_tags(GVJ_t *job, int tag)
     case EMIT_TLABEL:
     case EMIT_HLABEL:
 	ObjType = "edge";
-        ObjHandle = obj->u.e->handle;
+        ObjId = obj->u.e->id;
 	break;
     case EMIT_GDRAW:
-    case EMIT_CDRAW:
     case EMIT_GLABEL:
-    case EMIT_CLABEL:
 	ObjType = "graph";
-        ObjHandle = obj->u.g->handle;
+	ObjId = -1;  /* hack! */
+	break;
+    case EMIT_CDRAW:
+    case EMIT_CLABEL:
+	ObjType = "cluster";
+	ObjId = obj->u.sg->meta_node->id;
 	break;
     default:
 	assert (0);
 	break;
     }
-    gvdevice_printf(job, " -tags %d%s%ld", tag, ObjType, ObjHandle);
+    gvdevice_printf(job, " -tags {id%ld %s%s}", ObjId, ObjType, (tag?" highlight":""));
 }
 
 
+#if 0
 static void tkgen_grstyle(GVJ_t * job, int filled)
 {
-#if 0
     obj_state_t *obj = job->obj;
 
-    gvdevice_fputs(job, " style=\"fill:");
+    gvdevice_fputs(job, " -fill ");
     if (filled)
 	tkgen_print_color(job, obj->fillcolor);
     else
-	gvdevice_fputs(job, "none");
+	gvdevice_fputs(job, "white");
     gvdevice_fputs(job, ";stroke:");
     tkgen_print_color(job, obj->pencolor);
     if (obj->penwidth != PENWIDTH_NORMAL)
@@ -117,8 +120,8 @@ static void tkgen_grstyle(GVJ_t * job, int filled)
 	gvdevice_printf(job, ";stroke-dasharray:%s", sdotarray);
     }
     gvdevice_fputs(job, ";\"");
-#endif
 }
+#endif
 
 static void tkgen_comment(GVJ_t * job, char *str)
 {
@@ -156,8 +159,9 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     obj_state_t *obj = job->obj;
 
-    gvdevice_fputs(job, "$c create text");
-    gvdevice_printf(job, " %d %d", ROUND(p.x), ROUND(p.y));
+    gvdevice_fputs(job, "$c create text ");
+    p.y -= para->fontsize * 0.5; /* cl correction */
+    gvdevice_printpointf(job, p);
     gvdevice_fputs(job, " -text {");
     gvdevice_fputs(job, para->str);
     gvdevice_fputs(job, "}");
@@ -184,37 +188,71 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 
 static void tkgen_ellipse(GVJ_t * job, pointf * A, int filled)
 {
+    obj_state_t *obj = job->obj;
+    pointf r;
+
+//    if (cstk[SP].pen != P_NONE) {
+        /* A[] contains 2 points: the center and top right corner. */
+	r.x = A[1].x - A[0].x;
+	r.y = A[1].y - A[0].y;
+        A[0].x -= r.x;
+        A[0].y -= r.y;
+        gvdevice_fputs(job, "$c create oval ");
+        gvdevice_printpointflist(job, A, 2);
+        gvdevice_fputs(job, " -fill ");
+        if (filled)
+	    tkgen_print_color(job, obj->fillcolor);
+        else  /* tk ovals default to no fill, some fill
+                 is necessary else "canvas find overlapping" doesn't
+                 work as expected, use white instead */
+	    gvdevice_fputs(job, "white");
+        gvdevice_fputs(job, " -width ");
+        gvdevice_printnum(job, obj->penwidth);
+        gvdevice_fputs(job, " -outline ");
+	tkgen_print_color(job, obj->pencolor);
 #if 0
-    /* A[] contains 2 points: the center and corner. */
-    gvdevice_fputs(job, "<ellipse");
-    tkgen_grstyle(job, filled);
-    gvdevice_printf(job, " cx=\"%g\" cy=\"%g\"", A[0].x, -A[0].y);
-    gvdevice_printf(job, " rx=\"%g\" ry=\"%g\"",
-	    A[1].x - A[0].x, A[1].y - A[0].y);
-    gvdevice_fputs(job, "/>\n");
+        if (cstk[SP].pen == P_DOTTED)
+            tkgen_append_attribute("-dash", "2");
+        if (cstk[SP].pen == P_DASHED)
+            tkgen_append_attribute("-dash", "5");
 #endif
+        tkgen_print_tags(job, HIGHLIGHT);
+        gvdevice_fputs(job, "\n");
+//    }
 }
 
 static void
 tkgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	      int arrow_at_end, int filled)
 {
-#if 0
-    gvdevice_fputs(job, "<path");
-    tkgen_grstyle(job, filled);
-    gvdevice_fputs(job, " d=\"");
-    tkgen_bzptarray(job, A, n);
-    gvdevice_fputs(job, "\"/>\n");
-#endif
+    obj_state_t *obj = job->obj;
+
+    gvdevice_fputs(job, "$c create line ");
+    gvdevice_printpointflist(job, A, n);
+    gvdevice_fputs(job, " -fill ");
+    tkgen_print_color(job, obj->pencolor);
+    gvdevice_fputs(job, " -width ");
+    gvdevice_printnum(job, obj->penwidth);
+    gvdevice_fputs(job, " -smooth true");
+    gvdevice_fputs(job, " -state disabled");
+    tkgen_print_tags(job, NOHIGHLIGHT);
+    gvdevice_fputs(job, "\n");
 }
 
 static void tkgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
-    int i;
+    obj_state_t *obj = job->obj;
 
-    gvdevice_fputs(job, "$c create polygon");
-    for (i = 0; i < n; i++)
-	gvdevice_printf(job, " %d %d", ROUND(A[i].x), ROUND(-A[i].y));
+    gvdevice_fputs(job, "$c create polygon ");
+    gvdevice_printpointflist(job, A, n);
+    if (filled) {
+        gvdevice_fputs(job, " -fill ");
+	tkgen_print_color(job, obj->fillcolor);
+    }
+    gvdevice_fputs(job, " -outline ");
+    tkgen_print_color(job, obj->pencolor);
+    gvdevice_fputs(job, " -width ");
+    gvdevice_printnum(job, obj->penwidth);
     gvdevice_fputs(job, " -state disabled");
     tkgen_print_tags(job, NOHIGHLIGHT);
     gvdevice_fputs(job, "\n");
@@ -222,62 +260,16 @@ static void tkgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
 static void tkgen_polyline(GVJ_t * job, pointf * A, int n)
 {
-#if 0
-    int i;
+    obj_state_t *obj = job->obj;
 
-    gvdevice_fputs(job, "<polyline");
-    tkgen_grstyle(job, 0);
-    gvdevice_fputs(job, " points=\"");
-    for (i = 0; i < n; i++)
-	gvdevice_printf(job, "%g,%g ", A[i].x, -A[i].y);
-    gvdevice_fputs(job, "\"/>\n");
-#endif
+    gvdevice_fputs(job, "$c create line ");
+    gvdevice_printpointflist(job, A, n);
+    gvdevice_fputs(job, " -fill ");
+    tkgen_print_color(job, obj->pencolor);
+    gvdevice_fputs(job, " -state disabled");
+    tkgen_print_tags(job, NOHIGHLIGHT);
+    gvdevice_fputs(job, "\n");
 }
-
-/* color names from http://www.w3.org/TR/SVG/types.html */
-/* NB.  List must be LANG_C sorted */
-static char *tkgen_knowncolors[] = {
-    "aliceblue", "antiquewhite", "aqua", "aquamarine", "azure",
-    "beige", "bisque", "black", "blanchedalmond", "blue",
-    "blueviolet", "brown", "burlywood",
-    "cadetblue", "chartreuse", "chocolate", "coral",
-    "cornflowerblue", "cornsilk", "crimson", "cyan",
-    "darkblue", "darkcyan", "darkgoldenrod", "darkgray",
-    "darkgreen", "darkgrey", "darkkhaki", "darkmagenta",
-    "darkolivegreen", "darkorange", "darkorchid", "darkred",
-    "darksalmon", "darkseagreen", "darkslateblue", "darkslategray",
-    "darkslategrey", "darkturquoise", "darkviolet", "deeppink",
-    "deepskyblue", "dimgray", "dimgrey", "dodgerblue",
-    "firebrick", "floralwhite", "forestgreen", "fuchsia",
-    "gainsboro", "ghostwhite", "gold", "goldenrod", "gray",
-    "green", "greenyellow", "grey",
-    "honeydew", "hotpink", "indianred",
-    "indigo", "ivory", "khaki",
-    "lavender", "lavenderblush", "lawngreen", "lemonchiffon",
-    "lightblue", "lightcoral", "lightcyan", "lightgoldenrodyellow",
-    "lightgray", "lightgreen", "lightgrey", "lightpink",
-    "lightsalmon", "lightseagreen", "lightskyblue",
-    "lightslategray", "lightslategrey", "lightsteelblue",
-    "lightyellow", "lime", "limegreen", "linen",
-    "magenta", "maroon", "mediumaquamarine", "mediumblue",
-    "mediumorchid", "mediumpurple", "mediumseagreen",
-    "mediumslateblue", "mediumspringgreen", "mediumturquoise",
-    "mediumvioletred", "midnightblue", "mintcream",
-    "mistyrose", "moccasin",
-    "navajowhite", "navy", "oldlace",
-    "olive", "olivedrab", "orange", "orangered", "orchid",
-    "palegoldenrod", "palegreen", "paleturquoise",
-    "palevioletred", "papayawhip", "peachpuff", "peru", "pink",
-    "plum", "powderblue", "purple",
-    "red", "rosybrown", "royalblue",
-    "saddlebrown", "salmon", "sandybrown", "seagreen", "seashell",
-    "sienna", "silver", "skyblue", "slateblue", "slategray",
-    "slategrey", "snow", "springgreen", "steelblue",
-    "tan", "teal", "thistle", "tomato", "turquoise",
-    "violet",
-    "wheat", "white", "whitesmoke",
-    "yellow", "yellowgreen"
-};
 
 gvrender_engine_t tkgen_engine = {
     tkgen_begin_job,
@@ -311,10 +303,11 @@ gvrender_engine_t tkgen_engine = {
 };
 
 gvrender_features_t render_features_tk = {
-    GVRENDER_Y_GOES_DOWN,       /* flags */
+    GVRENDER_Y_GOES_DOWN
+	| GVRENDER_NO_BG, /* flags */
     4.,                         /* default pad - graph units */
-    tkgen_knowncolors,		/* knowncolors */
-    sizeof(tkgen_knowncolors) / sizeof(char *),	/* sizeof knowncolors */
+    NULL, 			/* knowncolors */
+    0,				/* sizeof knowncolors */
     RGBA_BYTE,			/* color_type */
 };
 
@@ -322,7 +315,7 @@ gvdevice_features_t device_features_tk = {
     0,				/* flags */
     {0.,0.},			/* default margin - points */
     {0.,0.},                    /* default page width, height - points */
-    {72.,72.},			/* default dpi */
+    {96.,96.},			/* default dpi */
 };
 
 gvplugin_installed_t gvrender_tk_types[] = {
