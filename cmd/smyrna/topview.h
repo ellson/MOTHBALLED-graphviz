@@ -44,4 +44,7 @@ _BB void on_host_alpha_change(GtkWidget * widget, gpointer user_data);
 /* double dist(double x1, double y1, double x2, double y2); */
 /* double G(double x); */
 glCompSet *glcreate_gl_topview_menu();
+int pick_node(topview_node* n);
+int draw_node_hint_boxes();
+
 #endif

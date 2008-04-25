@@ -781,3 +781,52 @@ void drawEllipse(float xradius, float yradius,int angle1,int angle2)
  
    glEnd();
 }
+int draw_node_hintbox_gl_polygon(GLfloat x,GLfloat y,GLfloat fs,GLfloat pad,GLfloat z,GLfloat kts)
+{
+	kts=kts*1.25;
+	glBegin(GL_POLYGON);
+	glVertex3f(x-(fs/3)-fs , y+fs ,z);
+	glVertex3f(x-(fs/3)-fs ,y+2*fs+2*pad,z);
+	glVertex3f(x-(fs/3)-fs+fs*kts+2*pad,y+2*fs+2*pad,z);
+	glVertex3f(x-(fs/3)-fs+fs*kts+2*pad,y+fs,z);
+	glVertex3f(x-(fs/3)-fs , y+fs ,z);
+	glEnd();
+
+	glBegin(GL_POLYGON);
+	glVertex3f(x,y,z);
+	glVertex3f(x-(fs/3) , y+fs ,z);
+	glVertex3f(x+fs/3,y+fs,z);
+	glVertex3f(x,y,z);
+	glEnd();
+	return 1;
+
+}
+int draw_node_hintbox_gl_line(GLfloat x,GLfloat y,GLfloat fs,GLfloat pad,GLfloat z,GLfloat kts)
+{
+	kts=kts*1.25;
+	glBegin(GL_LINE_STRIP);
+	glVertex3f(x,y,z);
+	glVertex3f(x-(fs/3) , y+fs ,z);
+	glVertex3f(x-(fs/3)-fs , y+fs ,z);
+	glVertex3f(x-(fs/3)-fs ,y+2*fs+2*pad,z);
+	glVertex3f(x-(fs/3)-fs+fs*kts+2*pad,y+2*fs+2*pad,z);
+	glVertex3f(x-(fs/3)-fs+fs*kts+2*pad,y+fs,z);
+	glVertex3f(x+fs/3,y+fs,z);
+	glVertex3f(x,y,z);
+	glEnd();
+	return 1;
+
+}
+
+
+int draw_node_hintbox(GLfloat x,GLfloat y,GLfloat fs,GLfloat pad,GLfloat z,GLfloat kts,GLfloat z_offset)
+{
+	
+	glColor3f(1,1,0);
+		draw_node_hintbox_gl_polygon(x,y,fs,pad,z+(GLfloat)z_offset/100,kts);
+	glColor3f(0,0,1);
+		draw_node_hintbox_gl_line(x,y,fs,pad,z+(GLfloat)0.001+(GLfloat)z_offset/100,kts);
+	return 1;
+
+}
+

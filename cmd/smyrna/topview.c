@@ -195,6 +195,8 @@ void preparetopview(Agraph_t * g, topview * t)
     load_host_buttons(t, g, t->topviewmenu);
 	t->h='\0';
 	t->is_top_fisheye=0;
+	t->picked_node_count=0;
+	t->picked_nodes='\0';
 }
 
 void drawTopViewGraph(Agraph_t * g)
@@ -276,6 +278,8 @@ void drawTopViewGraph(Agraph_t * g)
 
 
     }
+	//draw picked node names;
+	draw_node_hint_boxes();
     //draw edges
 //      glLineWidth(5/view->zoom*-1);
     glBegin(GL_LINES);
@@ -333,11 +337,106 @@ void drawTopViewGraph(Agraph_t * g)
 	view->SignalBlock = 0;
     }
 }
+int is_node_picked(topview_node* n)
+{
+    int ind = 0;
+    int found = 0;
+	for (;ind < view->Topview->picked_node_count;ind ++)
+	{
+		if((view->Topview->picked_nodes[ind]==n)&& (!found))
+			return 1;
+	}
+	return 0;
+}
+
+int remove_from_pick_list(topview_node* n)
+{
+    int ind = 0;
+    int found = 0;
+	for (;ind < view->Topview->picked_node_count;ind ++)
+	{
+		if((view->Topview->picked_nodes[ind]==n)&& (!found))
+			found=1;
+		if((found) && (ind <( view->Topview->picked_node_count-1)))
+		{
+			view->Topview->picked_nodes[ind]=view->Topview->picked_nodes[ind+1];
+		}
+	}
+	if(found)
+	{
+		view->Topview->picked_node_count--;
+		view->Topview->picked_nodes=realloc(view->Topview->picked_nodes,sizeof(topview_node*)*view->Topview->picked_node_count);
+		return 1;
+	}
+	return 0;
+}
+int add_to_pick_list(topview_node* n)
+{
+		view->Topview->picked_node_count++;
+		view->Topview->picked_nodes=realloc(view->Topview->picked_nodes,sizeof(topview_node*)*view->Topview->picked_node_count);
+		view->Topview->picked_nodes[view->Topview->picked_node_count-1]=n;
+		return 1;
+
+}
+
+int pick_node(topview_node* n)
+{
+	static closest_dif=3;
+	float a,b;
+	a=ABS(n->distorted_x-view->GLx);
+	b=ABS(n->distorted_y-view->GLy);
+	a=pow((a*a+b*b),0.5);
+	if( a < closest_dif)
+	{
+		if(!is_node_picked(n))
+		{
+			if(add_to_pick_list(n))
+			{
+				printf ("node picked ,name:%s\n",agnameof(n->Node));
+				return 1;
+			}
+			return 0;
+		}
+		else
+		{
+			if(remove_from_pick_list(n))
+			{
+				printf ("node has been unpicked ,name:%s\n",agnameof(n->Node));
+				return 1;
+			}
+			return 0;
+		}
+	}
+	return 0;
+
+}
+int draw_node_hint_boxes()
+{
+	int ind;
+	int fs=12;
+	for (ind=0;ind < view->Topview->picked_node_count;ind++)
+	{
+		draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,view->Topview->picked_nodes[ind]->distorted_y,fs,1,1,(int)(strlen(agnameof(view->Topview->picked_nodes[ind]->Node))/2),ind);
+		fontSize(fs);
+		fontColorA(0,0,1,1);
+		fontDrawString(view->Topview->picked_nodes[ind]->distorted_x-fs/3+1-fs,view->Topview->picked_nodes[ind]->distorted_y+fs+1,
+			agnameof(view->Topview->picked_nodes[ind]->Node),fs*strlen(agnameof(view->Topview->picked_nodes[ind]->Node))/2);
+	}
+}
+
 
 int select_topview_node(topview_node * n)
 {
     if (!view->Selection.Active)
-	return 0;
+	{
+		//implement hint box here
+		if (view->mouse.pick)
+		{
+				if(pick_node(n))
+					view->mouse.pick=0;
+		}
+		return 0;
+	}
     if (is_point_in_rectangle
 	(n->x, n->y, view->Selection.X, view->Selection.Y,
 	 view->Selection.W, view->Selection.H)) {
@@ -371,6 +470,8 @@ int select_topview_node(topview_node * n)
     }
     return 1;
 }
+
+
 
 int select_topview_edge(topview_edge * e)
 {
@@ -964,12 +1065,12 @@ glCompSet *glcreate_gl_topview_menu()
 
     if (!smyrna_icon_pan) {
 #ifdef _WIN32
-	smyrna_icon_pan = "c:/pan.raw"
-	smyrna_icon_zoom = "c:/zoom.raw"
-	smyrna_icon_zoomplus = "c:/zoomplus.raw"
-	smyrna_icon_zoomminus = "c:/zoomminus.raw"
-	smyrna_icon_fisheye = "c:/fisheye.raw"
-	smyrna_icon_rotate = "c:/rotate.raw"
+	smyrna_icon_pan = "c:/pan.raw";
+	smyrna_icon_zoom = "c:/zoom.raw";
+	smyrna_icon_zoomplus = "c:/zoomplus.raw";
+	smyrna_icon_zoomminus = "c:/zoomminus.raw";
+	smyrna_icon_fisheye = "c:/fisheye.raw";
+	smyrna_icon_rotate = "c:/rotate.raw";
 #else
 	smyrna_icon_pan = smyrnaPath("pan.raw");
 	smyrna_icon_zoom = smyrnaPath("zoom.raw");
