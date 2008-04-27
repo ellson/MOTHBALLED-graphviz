@@ -22,8 +22,8 @@ proc gv_doc_commands {} {
 	set t [read $f [file size $fn]]
 	close $f
 
-	regsub -all {.*%inline %\{} $t {} t
-	regsub -all {%\}} $t {} t
+	regsub {.*?%\{} $t {} t
+	regsub {%\}.*} $t {} t
 	regsub -all {extern} $t {} t
 
 	set res {}
@@ -42,6 +42,9 @@ proc gv_doc_commands {} {
 			continue
 		}
 		if {[regsub -- {//} $rec {} c]} {
+			continue
+		}
+		if {[regsub -- {#} $rec {} c]} {
 			continue
 		}
 		set i 0

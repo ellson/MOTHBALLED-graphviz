@@ -6,8 +6,10 @@ array set LANGS {
                 	Agedge_t* SWIGTYPE_p_Agedge_t
                 	Agsym_t* SWIGTYPE_p_Agsym_t
                 	char* string
+                	char** outdata
                 	FILE* SWIGTYPE_p_FILE
                 	bool bool
+			int int
                 	void {}
 		}
 		SYNTAX {
@@ -36,6 +38,7 @@ array set LANGS {
 			{char* filename} filename
 			{char* engine} engine
 			{char* string} string
+			{char** outdata} outdata
 			{char* format} format
 			{FILE* f} channel
 			{void** data} data_handle
@@ -44,8 +47,10 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			char** outdata
 			FILE* channel
 			bool bool
+			int int
                 	void** data_handle
 			void {}
 		}
@@ -76,6 +81,7 @@ array set LANGS {
 			{char* filename} filename
 			{char* engine} engine
 			{char* string} string
+			{char** outdata} outdata
 			{char* format} format
 			{FILE* f} channel
 			{void** data} data_handle
@@ -84,8 +90,10 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			char** outdata
 			FILE* channel
 			bool bool
+			int int
 			void** data_handle
 			void {}
 		}
@@ -104,8 +112,10 @@ array set LANGS {
 			Agedge_t* SWIGTYPE_p_Agedge_t
 			Agsym_t* SWIGTYPE_p_Agsym_t
 			char* string
+			char** outdata
 			FILE* SWIGTYPE_p_FILE
 			bool bool
+			int int
 			void {}
 		}
 		SYNTAX {
@@ -135,6 +145,7 @@ array set LANGS {
 			{char* filename} filename
 			{char* engine} engine
 			{char* string} string
+			{char** outdata} outdata
 			{char* format} format
 			{FILE* f} channel
 			{void** data} data_handle
@@ -143,8 +154,10 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			char** outdata
 			FILE* channel
 			bool bool
+			int int
 			void** data_handle
 			void {}
 		}
@@ -176,6 +189,7 @@ array set LANGS {
 			{char* filename} filename
 			{char* engine} engine
 			{char* string} string
+			{char** outdata} outdata
 			{char* format} format
 			{FILE* f} channel
 			{void** data} data_handle
@@ -184,8 +198,10 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			char** outdata
 			FILE* channel
 			bool bool
+			int int
 			void** data_handle
 			void {}
 		}
@@ -215,6 +231,7 @@ array set LANGS {
 			{char* filename} filename
 			{char* engine} engine
 			{char* string} string
+			{char** outdata} outdata
 			{char* format} format
 			{FILE* f} channel
 			{void** data} data_handle
@@ -223,8 +240,10 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			char** outdata
 			FILE* channel
 			bool bool
+			int int
 			void** data_handle
 			void {}
 		}
@@ -256,6 +275,7 @@ array set LANGS {
 			{char* filename} filename
 			{char* engine} engine
 			{char* string} string
+			{char** outdata} outdata
 			{char* format} format
 			{FILE* f} channel
 			{void** data} data_handle
@@ -264,8 +284,10 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			char** outdata
 			FILE* channel
 			bool bool
+			int int
 			void** data_handle
 			void {}
 		}
@@ -300,6 +322,7 @@ array set LANGS {
 			{char* filename} filename
 			{char* engine} engine
 			{char* string} string
+			{char** outdata} outdata
 			{char* format} format
 			{FILE* f} channel
 			{void** data} data_handle
@@ -308,8 +331,10 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			char** outdata
 			FILE* channel
 			bool bool
+			int int
 			void** data_handle
 			void {}
 		}
@@ -331,8 +356,10 @@ array set LANGS {
 			Agedge_t* SWIGTYPE_p_Agedge_t
 			Agsym_t* SWIGTYPE_p_Agsym_t
 			char* string
+			char** outdata
 			FILE* SWIGTYPE_p_FILE
 			bool bool
+			int int
 			void {}
 		}
 		SYNTAX {
@@ -362,6 +389,7 @@ array set LANGS {
 			{char* filename} filename
 			{char* engine} engine
 			{char* string} string
+			{char** outdata} outdata
 			{char* format} format
 			{FILE* f} channel
 			{void** data} data_handle
@@ -370,8 +398,10 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			char** outdata
 			FILE* channel
 			bool bool
+			int int
 			void** data_handle
 			void {}
 		}
@@ -403,6 +433,7 @@ array set LANGS {
 			{char* filename} <filename>
 			{char* engine} <engine>
 			{char* string} <string>
+			{char** outdata} <outdata>
 			{char* format} <format>
 			{FILE* f} <channel>
 			{void** data} <data_handle>
@@ -411,8 +442,10 @@ array set LANGS {
 			Agedge_t* <edge_handle>
 			Agsym_t* <attr_handle>
 			char* <string>
+			char** <outdata>
 			FILE* <channel>
 			bool <boolean_string>
+			int <integer_string>
 			void** <data_handle>
 			void {}
 		}
