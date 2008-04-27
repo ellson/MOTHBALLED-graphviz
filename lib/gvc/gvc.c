@@ -189,7 +189,7 @@ int gvRenderData(GVC_t *gvc, graph_t *g, char *format, char **result, unsigned i
     gvdevice_finalize(job);
 
     *result = job->output_data;
-	*length = job->output_data_position;
+    *length = job->output_data_position;
     gvjobs_delete(gvc);
 
     return 0;
