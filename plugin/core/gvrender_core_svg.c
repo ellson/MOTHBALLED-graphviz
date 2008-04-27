@@ -47,7 +47,7 @@ extern char *xml_string(char *str);
 extern char *xml_url_string(char *str);
 
 /* SVG dash array */
-static char *sdarray = "5,2";
+static char *sdasharray = "5,2";
 /* SVG dot array */
 static char *sdotarray = "1,5";
 
@@ -98,7 +98,7 @@ static void svg_grstyle(GVJ_t * job, int filled)
     if (obj->penwidth != PENWIDTH_NORMAL)
 	gvdevice_printf(job, ";stroke-width:%g", obj->penwidth);
     if (obj->pen == PEN_DASHED) {
-	gvdevice_printf(job, ";stroke-dasharray:%s", sdarray);
+	gvdevice_printf(job, ";stroke-dasharray:%s", sdasharray);
     } else if (obj->pen == PEN_DOTTED) {
 	gvdevice_printf(job, ";stroke-dasharray:%s", sdotarray);
     }

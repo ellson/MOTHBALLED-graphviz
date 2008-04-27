@@ -32,10 +32,6 @@
 #include "graph.h"
 #include "types.h"		/* need the SVG font name schemes */
 
-/* highlight flag */
-#define HIGHLIGHT 1
-#define NOHIGHLIGHT 0
-
 typedef enum { FORMAT_TK, } format_type;
 
 static char *tkgen_string(char *s)
@@ -61,7 +57,7 @@ static void tkgen_print_color(GVJ_t * job, gvcolor_t color)
     }
 }
 
-static void tkgen_print_tags(GVJ_t *job, int tag)
+static void tkgen_print_tags(GVJ_t *job)
 {
     char *ObjType;
     unsigned int ObjId;
@@ -69,59 +65,47 @@ static void tkgen_print_tags(GVJ_t *job, int tag)
 
     switch (obj->emit_state) {
     case EMIT_NDRAW:
-    case EMIT_NLABEL:
 	ObjType = "node";
+        ObjId = obj->u.n->id;
+	break;
+    case EMIT_NLABEL:
+	ObjType = "node label";
         ObjId = obj->u.n->id;
 	break;
     case EMIT_EDRAW:
     case EMIT_TDRAW:
     case EMIT_HDRAW:
-    case EMIT_ELABEL:
-    case EMIT_TLABEL:
-    case EMIT_HLABEL:
 	ObjType = "edge";
         ObjId = obj->u.e->id;
 	break;
+    case EMIT_ELABEL:
+    case EMIT_TLABEL:
+    case EMIT_HLABEL:
+	ObjType = "edge label";
+        ObjId = obj->u.e->id;
+	break;
     case EMIT_GDRAW:
-    case EMIT_GLABEL:
 	ObjType = "graph";
 	ObjId = -1;  /* hack! */
 	break;
+    case EMIT_GLABEL:
+	ObjType = "graph label";
+	ObjId = -1;  /* hack! */
+	break;
     case EMIT_CDRAW:
-    case EMIT_CLABEL:
 	ObjType = "cluster";
+	ObjId = obj->u.sg->meta_node->id;
+	break;
+    case EMIT_CLABEL:
+	ObjType = "cluster label";
 	ObjId = obj->u.sg->meta_node->id;
 	break;
     default:
 	assert (0);
 	break;
     }
-    gvdevice_printf(job, " -tags {id%ld %s%s}", ObjId, ObjType, (tag?" highlight":""));
+    gvdevice_printf(job, " -tags {id%ld %s}", ObjId, ObjType);
 }
-
-
-#if 0
-static void tkgen_grstyle(GVJ_t * job, int filled)
-{
-    obj_state_t *obj = job->obj;
-
-    gvdevice_fputs(job, " -fill ");
-    if (filled)
-	tkgen_print_color(job, obj->fillcolor);
-    else
-	gvdevice_fputs(job, "white");
-    gvdevice_fputs(job, ";stroke:");
-    tkgen_print_color(job, obj->pencolor);
-    if (obj->penwidth != PENWIDTH_NORMAL)
-	gvdevice_printf(job, ";stroke-width:%g", obj->penwidth);
-    if (obj->pen == PEN_DASHED) {
-	gvdevice_printf(job, ";stroke-dasharray:%s", sdarray);
-    } else if (obj->pen == PEN_DOTTED) {
-	gvdevice_printf(job, ";stroke-dasharray:%s", sdotarray);
-    }
-    gvdevice_fputs(job, ";\"");
-}
-#endif
 
 static void tkgen_comment(GVJ_t * job, char *str)
 {
@@ -159,31 +143,33 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     obj_state_t *obj = job->obj;
 
-    gvdevice_fputs(job, "$c create text ");
-    p.y -= para->fontsize * 0.5; /* cl correction */
-    gvdevice_printpointf(job, p);
-    gvdevice_fputs(job, " -text {");
-    gvdevice_fputs(job, para->str);
-    gvdevice_fputs(job, "}");
-    gvdevice_fputs(job, " -fill ");
-    tkgen_print_color(job, obj->pencolor);
-    gvdevice_fputs(job, " -font {");
-    gvdevice_fputs(job, para->fontname);
-    gvdevice_printf(job, " %g}", para->fontsize);
-    switch (para->just) {
-    case 'l':
-        gvdevice_fputs(job, " -anchor w");
-        break;
-    case 'r':
-        gvdevice_fputs(job, " -anchor e");
-        break;
-    default:
-    case 'n':
-        break;
+    if (obj->pen != PEN_NONE) {
+        gvdevice_fputs(job, "$c create text ");
+        p.y -= para->fontsize * 0.5; /* cl correction */
+        gvdevice_printpointf(job, p);
+        gvdevice_fputs(job, " -text {");
+        gvdevice_fputs(job, para->str);
+        gvdevice_fputs(job, "}");
+        gvdevice_fputs(job, " -fill ");
+        tkgen_print_color(job, obj->pencolor);
+        gvdevice_fputs(job, " -font {");
+        gvdevice_fputs(job, para->fontname);
+        gvdevice_printf(job, " %g}", para->fontsize);
+        switch (para->just) {
+        case 'l':
+            gvdevice_fputs(job, " -anchor w");
+            break;
+        case 'r':
+            gvdevice_fputs(job, " -anchor e");
+            break;
+        default:
+        case 'n':
+            break;
+        }
+        gvdevice_fputs(job, " -state disabled");
+        tkgen_print_tags(job);
+        gvdevice_fputs(job, "\n");
     }
-    gvdevice_fputs(job, " -state disabled");
-    tkgen_print_tags(job, NOHIGHLIGHT);
-    gvdevice_fputs(job, "\n");
 }
 
 static void tkgen_ellipse(GVJ_t * job, pointf * A, int filled)
@@ -191,17 +177,17 @@ static void tkgen_ellipse(GVJ_t * job, pointf * A, int filled)
     obj_state_t *obj = job->obj;
     pointf r;
 
-//    if (cstk[SP].pen != P_NONE) {
-        /* A[] contains 2 points: the center and top right corner. */
-	r.x = A[1].x - A[0].x;
-	r.y = A[1].y - A[0].y;
+    if (obj->pen != PEN_NONE) {
+    /* A[] contains 2 points: the center and top right corner. */
+        r.x = A[1].x - A[0].x;
+        r.y = A[1].y - A[0].y;
         A[0].x -= r.x;
         A[0].y -= r.y;
         gvdevice_fputs(job, "$c create oval ");
         gvdevice_printpointflist(job, A, 2);
         gvdevice_fputs(job, " -fill ");
         if (filled)
-	    tkgen_print_color(job, obj->fillcolor);
+            tkgen_print_color(job, obj->fillcolor);
         else  /* tk ovals default to no fill, some fill
                  is necessary else "canvas find overlapping" doesn't
                  work as expected, use white instead */
@@ -210,15 +196,13 @@ static void tkgen_ellipse(GVJ_t * job, pointf * A, int filled)
         gvdevice_printnum(job, obj->penwidth);
         gvdevice_fputs(job, " -outline ");
 	tkgen_print_color(job, obj->pencolor);
-#if 0
-        if (cstk[SP].pen == P_DOTTED)
-            tkgen_append_attribute("-dash", "2");
-        if (cstk[SP].pen == P_DASHED)
-            tkgen_append_attribute("-dash", "5");
-#endif
-        tkgen_print_tags(job, HIGHLIGHT);
+        if (obj->pen == PEN_DASHED)
+	    gvdevice_fputs(job, " -dash 5");
+        if (obj->pen == PEN_DOTTED)
+	    gvdevice_fputs(job, " -dash 2");
+        tkgen_print_tags(job);
         gvdevice_fputs(job, "\n");
-//    }
+    }
 }
 
 static void
@@ -227,48 +211,66 @@ tkgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 {
     obj_state_t *obj = job->obj;
 
-    gvdevice_fputs(job, "$c create line ");
-    gvdevice_printpointflist(job, A, n);
-    gvdevice_fputs(job, " -fill ");
-    tkgen_print_color(job, obj->pencolor);
-    gvdevice_fputs(job, " -width ");
-    gvdevice_printnum(job, obj->penwidth);
-    gvdevice_fputs(job, " -smooth bezier");
-    gvdevice_fputs(job, " -state disabled");
-    tkgen_print_tags(job, NOHIGHLIGHT);
-    gvdevice_fputs(job, "\n");
+    if (obj->pen != PEN_NONE) {
+        gvdevice_fputs(job, "$c create line ");
+        gvdevice_printpointflist(job, A, n);
+        gvdevice_fputs(job, " -fill ");
+        tkgen_print_color(job, obj->pencolor);
+        gvdevice_fputs(job, " -width ");
+        gvdevice_printnum(job, obj->penwidth);
+        if (obj->pen == PEN_DASHED)
+	    gvdevice_fputs(job, " -dash 5");
+        if (obj->pen == PEN_DOTTED)
+	    gvdevice_fputs(job, " -dash 2");
+        gvdevice_fputs(job, " -smooth bezier");
+        gvdevice_fputs(job, " -state disabled");
+        tkgen_print_tags(job);
+        gvdevice_fputs(job, "\n");
+    }
 }
 
 static void tkgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
     obj_state_t *obj = job->obj;
 
-    gvdevice_fputs(job, "$c create polygon ");
-    gvdevice_printpointflist(job, A, n);
-    if (filled) {
-        gvdevice_fputs(job, " -fill ");
-	tkgen_print_color(job, obj->fillcolor);
+    if (obj->pen != PEN_NONE) {
+        gvdevice_fputs(job, "$c create polygon ");
+        gvdevice_printpointflist(job, A, n);
+        if (filled) {
+            gvdevice_fputs(job, " -fill ");
+	    tkgen_print_color(job, obj->fillcolor);
+        }
+        gvdevice_fputs(job, " -width ");
+        gvdevice_printnum(job, obj->penwidth);
+        gvdevice_fputs(job, " -outline ");
+	tkgen_print_color(job, obj->pencolor);
+        if (obj->pen == PEN_DASHED)
+	    gvdevice_fputs(job, " -dash 5");
+        if (obj->pen == PEN_DOTTED)
+	    gvdevice_fputs(job, " -dash 2");
+        gvdevice_fputs(job, " -state disabled");
+        tkgen_print_tags(job);
+        gvdevice_fputs(job, "\n");
     }
-    gvdevice_fputs(job, " -outline ");
-    tkgen_print_color(job, obj->pencolor);
-    gvdevice_fputs(job, " -width ");
-    gvdevice_printnum(job, obj->penwidth);
-    gvdevice_fputs(job, " -state disabled");
-    tkgen_print_tags(job, NOHIGHLIGHT);
-    gvdevice_fputs(job, "\n");
 }
 
 static void tkgen_polyline(GVJ_t * job, pointf * A, int n)
 {
     obj_state_t *obj = job->obj;
 
-    gvdevice_fputs(job, "$c create line ");
-    gvdevice_printpointflist(job, A, n);
-    gvdevice_fputs(job, " -fill ");
-    tkgen_print_color(job, obj->pencolor);
-    gvdevice_fputs(job, " -state disabled");
-    tkgen_print_tags(job, NOHIGHLIGHT);
-    gvdevice_fputs(job, "\n");
+    if (obj->pen != PEN_NONE) {
+        gvdevice_fputs(job, "$c create line ");
+        gvdevice_printpointflist(job, A, n);
+        gvdevice_fputs(job, " -fill ");
+        tkgen_print_color(job, obj->pencolor);
+        if (obj->pen == PEN_DASHED)
+	    gvdevice_fputs(job, " -dash 5");
+        if (obj->pen == PEN_DOTTED)
+	    gvdevice_fputs(job, " -dash 2");
+        gvdevice_fputs(job, " -state disabled");
+        tkgen_print_tags(job);
+        gvdevice_fputs(job, "\n");
+    }
 }
 
 gvrender_engine_t tkgen_engine = {

@@ -61,8 +61,9 @@ size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 #endif
     }
     else if (job->output_data) {
-	if (len > job->output_data_allocated - job->output_data_position) {
-	    job->output_data_allocated = (job->output_data_position + len + PAGE_ALIGN) & ~PAGE_ALIGN;
+	if (len > job->output_data_allocated - (job->output_data_position + 1)) {
+	    /* ensure enough allocation for string = null terminator */
+	    job->output_data_allocated = (job->output_data_position + len + 1 + PAGE_ALIGN) & ~PAGE_ALIGN;
 	    job->output_data = realloc(job->output_data, job->output_data_allocated);
 	    if (!job->output_data) {
 		fprintf(stderr, "failure realloc'ing for result string\n");
@@ -71,6 +72,7 @@ size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 	}
 	memcpy(job->output_data + job->output_data_position, s, len);
         job->output_data_position += len;
+	job->output_data[job->output_data_position] = '\0'; /* keep null termnated */
 	return len;
     }
     else
