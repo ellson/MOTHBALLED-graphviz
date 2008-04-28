@@ -860,6 +860,9 @@ removeOverlapAs(graph_t * G, char* flag)
 	    ret = scAdjust(G, -1);
 	    break;
 #ifdef IPSEPCOLA
+        case AM_IPSEP:
+            return 0;   /* handled during layout */
+            break;
 	case AM_VPSC:
 	    ret = vpscAdjust(G);
 	    break;
