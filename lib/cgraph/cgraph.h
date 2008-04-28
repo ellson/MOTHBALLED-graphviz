@@ -181,11 +181,16 @@ struct Agdisc_s {		/* user's discipline */
 };
 
 	/* default resource disciplines */
+#if !defined(_BLD_cgraph) && defined(GVDLL)
+#define extern  __declspec(dllimport)
+#endif
+
 extern Agmemdisc_t AgMemDisc;
 extern Agiddisc_t AgIdDisc;
 extern Agiodisc_t AgIoDisc;
 
 extern Agdisc_t AgDefaultDisc;
+#undef extern
 
 struct Agdstate_s {
     void *mem;
@@ -238,10 +243,10 @@ struct Agraph_s {
 
 #if _PACKAGE_ast
 /* fine control of object callbacks */
-#   if defined(_BLD_agraph) && defined(__EXPORT__)
+#   if defined(_BLD_cgraph) && defined(__EXPORT__)
 #	define extern  __EXPORT__
 #   endif
-#   if !defined(_BLD_agraph) && defined(__IMPORT__)
+#   if !defined(_BLD_cgraph) && defined(__IMPORT__)
 #	define extern  __IMPORT__
 #   endif
 #endif
@@ -398,13 +403,18 @@ extern int agerrors(void);
 #define HEADPORT_ID		"headport"
 
 #if _PACKAGE_ast
-#   if !defined(_BLD_agraph) && defined(__IMPORT__)
+#   if !defined(_BLD_cgraph) && defined(__IMPORT__)
 #	define extern  __IMPORT__
 #   endif
+#endif
+#if !defined(_BLD_cgraph) && defined(GVDLL)
+#define extern  __declspec(dllimport)
 #endif
 
 extern Agdesc_t Agdirected, Agstrictdirected, Agundirected,
     Agstrictundirected;
+
+#undef extern
 
 /* fast graphs */
 void agflatten(Agraph_t * g, int flag);

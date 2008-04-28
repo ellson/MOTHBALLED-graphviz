@@ -16,18 +16,19 @@
 
 #ifndef ATT_GRAPHPVT_H
 #define ATT_GRAPHPVT_H 1
+#define _BLD_cgraph 1
 
 #ifndef EXTERN
 #define EXTERN extern
 #endif
 
-#include <cgraph.h>
-
-#include	 	<ctype.h>
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#include <cgraph.h>
+
+#include	 	<ctype.h>
 
 #ifdef HAVE_AST
 #include		<ast.h>
