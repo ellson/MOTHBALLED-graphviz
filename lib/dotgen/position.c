@@ -878,19 +878,24 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 	LL.x = INT_MAX;
 	UR.x = -INT_MAX;
 	for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	    if (GD_rank(g)[r].n == 0)
+	    int rnkn = GD_rank(g)[r].n;
+	    if (rnkn == 0)
 		continue;
 	    if ((v = GD_rank(g)[r].v[0]) == NULL)
 		continue;
+	    for (c = 1; (ND_node_type(v) != NORMAL) && c < rnkn; c++)
+		v = GD_rank(g)[r].v[c];
 	    if (ND_node_type(v) == NORMAL) {
 		x = ND_coord_i(v).x - ND_lw_i(v);
 		LL.x = MIN(LL.x, x);
 	    }
-	    v = GD_rank(g)[r].v[GD_rank(g)[r].n - 1];
-	    if (ND_node_type(v) == NORMAL) {
-		x = ND_coord_i(v).x + ND_rw_i(v);
-		UR.x = MAX(UR.x, x);
-	    }
+	    else continue;
+		/* At this point, we know the rank contains a NORMAL node */
+	    v = GD_rank(g)[r].v[rnkn - 1];
+	    for (c = rnkn-2; ND_node_type(v) != NORMAL; c--)
+		v = GD_rank(g)[r].v[c];
+	    x = ND_coord_i(v).x + ND_rw_i(v);
+	    UR.x = MAX(UR.x, x);
 	}
 	offset = CL_OFFSET;
 	for (c = 1; c <= GD_n_cluster(g); c++) {
