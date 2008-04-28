@@ -143,7 +143,10 @@ constrained_majorization_vpsc(CMajEnvVPSC * e, float *b, float *place,
 	    }
 	    denominator += r * d[i];
 	}
-	beta = numerator / denominator;
+	if (denominator != 0.0)
+	    beta = numerator / denominator;
+	else
+	    beta = 1.0;
 
 	for (i = 0; i < n; i++) {
 	    /* beta > 1.0 takes us back outside the feasible region
