@@ -16,6 +16,17 @@
 #include "topviewdata.h"
 #include <memory.h>
 
+static int validate_group_node(tv_node * TV_Node, char *regex_string)
+{
+    btree_node *n = 0;
+//              n=tree_from_filter_string("([IP=\"^10.*\",min=\"0\",max=\"0\"])");
+    int valid = 0;
+    n = tree_from_filter_string(regex_string);
+    valid = evaluate_expresions(TV_Node, n);
+//      delete_node(n); 
+    return valid;
+}
+
 int prepare_nodes_for_groups(topview * t, topviewdata * td, int groupindex)
 {
     GdkColor color;

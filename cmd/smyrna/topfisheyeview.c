@@ -147,12 +147,12 @@ void fisheye_spherical(double x_focus, double y_focus, double z_focus,
     }
 }
 
-static vtx_data *makeGraph(topview * tv, int *nedges)
+static v_data *makeGraph(topview * tv, int *nedges)
 {
     int i;
     int ne = tv->Edgecount;	/* upper bound */
     int nv = tv->Nodecount;
-    vtx_data *graph = N_NEW(nv, vtx_data);
+    v_data *graph = N_NEW(nv, v_data);
     int *edges = N_NEW(2 * ne + nv, int);  /* reserve space for self loops */
     float *ewgts = N_NEW(2 * ne + nv, float);
     Agnode_t *np;
@@ -200,7 +200,7 @@ static vtx_data *makeGraph(topview * tv, int *nedges)
  * double* y_coords; // initial y coordinates
  * focus_t* fs;
  * int ne;
- * vtx_data* graph = makeGraph (topview*, &ne);
+ * v_data* graph = makeGraph (topview*, &ne);
  * hierarchy = makeHier(topview->NodeCount, ne, graph, x_coords, y_coords);
  * freeGraph (graph);
  * fs = initFocus (topview->Nodecount); // create focus set
@@ -218,7 +218,7 @@ void prepare_topological_fisheye(topview* t)
     ex_vtx_data *gg;
     topview_node *np;
 
-    vtx_data *graph = makeGraph(t, &ne);
+    v_data *graph = makeGraph(t, &ne);
 
 	t->animate=0;	//turn the animation off
 	for (i = 0, np = t->Nodes; i < t->Nodecount; i++, np++) {
@@ -273,7 +273,7 @@ void drawtopologicalfisheye(topview * t)
     for (level = 0; level < hp->nlevels; level++) {
 	for (v = 0; v < hp->nvtxs[level]; v++) {
 	    ex_vtx_data *gg = hp->geom_graphs[level];
-	    vtx_data *g = hp->graphs[level];
+	    v_data *g = hp->graphs[level];
 	    if (gg[v].active_level == level) {
 			double x0,y0;
 			get_temp_coords(t,level,v,&x0,&y0);
@@ -357,7 +357,7 @@ void refresh_old_values(topview* t)
     for (level = 0; level < hp->nlevels; level++) {
 	for (v = 0; v < hp->nvtxs[level]; v++) {
 	    ex_vtx_data *gg = hp->geom_graphs[level];
-	    vtx_data *g = hp->graphs[level];
+	    v_data *g = hp->graphs[level];
 	    if (gg[v].active_level == level) {
 			double x0,y0;
 			get_temp_coords(t,level,v,&x0,&y0);
@@ -404,7 +404,7 @@ void get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y)
 {
     Hierarchy *hp = t->h;
 	ex_vtx_data *gg = hp->geom_graphs[level];
-	vtx_data *g = hp->graphs[level];
+	v_data *g = hp->graphs[level];
 	/*TEMP*/t->animate=0;/*TEMP*/
 	if (!t->animate)	
 	{
