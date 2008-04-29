@@ -111,7 +111,13 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 	  topologicalfisheyecoloredges = "1",
 	  topologicalfisheyelabelfocus = "1",
 	  topologicalfisheyefinestcolor = "red",
-	  topologicalfisheyecoarsestcolor = "green"];
+	  topologicalfisheyecoarsestcolor = "green",
+	  drawnodes="1",
+	  drawedges="1"]
+	;
+
+	  
+
 
     border color
 #endif
@@ -221,6 +227,16 @@ there i go, turn the page
     view->fmg.fisheye_distortion_fac =
 	atoi(get_attribute_value
 	     ("defaultfisheyemagnifierdistort", view, g));
+	view->drawnodes=
+		atoi(get_attribute_value
+		     ("drawnodes", view, g));
+	view->drawedges=
+		atoi(get_attribute_value
+		     ("drawedges", view, g));
+	view->drawlabels=
+		atoi(get_attribute_value
+		     ("drawlabels", view, g));
+
 
 //FIXME: I don't think an openGL function can be called before it
   //     is initialized.

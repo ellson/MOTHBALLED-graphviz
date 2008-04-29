@@ -46,6 +46,7 @@ static void indent(Agraph_t * g, iochan_t * ofile)
 	ioput(g, ofile, "\t");
 }
 
+#ifndef WIN32
 #ifndef HAVE_STRCASECMP
 
 #include <string.h>
@@ -62,7 +63,7 @@ int strcasecmp(const char *s1, const char *s2)
     return tolower(*(unsigned char *) s1) - tolower(*(unsigned char *) s2);
 }
 #endif
-
+#endif
 /* _agstrcanon:
  * Canonicalize ordinary strings. 
  * Assumes buf is large enough to hold output.

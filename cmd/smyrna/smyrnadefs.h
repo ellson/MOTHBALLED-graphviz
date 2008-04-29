@@ -446,6 +446,10 @@ typedef struct _ViewInfo
 	int active_frame;
 	int total_frames;
 	int frame_length;
+	/*lately added*/
+	int drawnodes;
+	int drawedges;
+	int drawlabels;
 
 }ViewInfo;
 

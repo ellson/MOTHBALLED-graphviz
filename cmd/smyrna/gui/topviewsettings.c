@@ -167,7 +167,12 @@ int load_settings_from_graph(Agraph_t * g)
     set_checkbox_widget("gridvisible", "settingsChkBox3");
     set_checkbox_widget("randomizenodecolors", "settingsChkBox4");
     set_checkbox_widget("randomizeedgecolors", "settingsChkBox5");
-    set_checkbox_widget("usermode", "settingsChkBox10");
+
+	set_checkbox_widget("drawnodes", "settingsChkBox5-1");
+	set_checkbox_widget("drawedges", "settingsChkBox5-2");
+	set_checkbox_widget("drawlabels", "settingsChkBox5-3");
+
+	set_checkbox_widget("usermode", "settingsChkBox10");
     set_checkbox_widget("nodesizewithdegree", "settingsChkBox11");
     set_checkbox_widget("antialiasing", "settingsChkBox12");
 
@@ -254,27 +259,6 @@ int update_graph_from_settings(Agraph_t * g)
     get_color_button_widget_to_attribute("selectededgecolor",
 					 "settingsColorBtn9", g);
 
-    /*
-       defaultmagnifierwidth="300",
-       defaultmagnifierheight="200",
-       defaultmagnifierkts="5",
-       defaultfisheyemagnifierradius="250"
-       defaultfisheyemagnifierdistort="5",
-
-       topologicalfisheyefinenodes="50",
-       topologicalfisheyecoarseningfactor="2.5",
-       topologicalfisheyedistortionfactor="1",
-
-       topologicalfisheyedist2limit="1",
-       topologicalfisheyeanimate="1",
-       topologicalfisheyelabelfinenodes="1",
-       topologicalfisheyecolornodes="1",
-       topologicalfisheyecoloredges="1",
-       topologicalfisheyelabelfocus="1",
-
-       topologicalfisheyefinestcolor="red",
-       topologicalfisheyecoarsestcolor="green" */
-
     get_color_button_widget_to_attribute("topologicalfisheyefinestcolor",
 					 "settingsColorBtn10", g);
     get_color_button_widget_to_attribute("topologicalfisheyecoarsestcolor",
@@ -287,7 +271,16 @@ int update_graph_from_settings(Agraph_t * g)
 				     "settingsChkBox4", g);
     get_checkbox_widget_to_attribute("randomizeedgecolors",
 				     "settingsChkBox5", g);
-    get_checkbox_widget_to_attribute("usermode", "settingsChkBox10", g);
+
+    get_checkbox_widget_to_attribute("drawnodes",
+				     "settingsChkBox5-1", g);
+    get_checkbox_widget_to_attribute("drawedges",
+				     "settingsChkBox5-2", g);
+    get_checkbox_widget_to_attribute("drawlabels",
+				     "settingsChkBox5-3", g);
+	
+	
+	get_checkbox_widget_to_attribute("usermode", "settingsChkBox10", g);
     get_checkbox_widget_to_attribute("nodesizewithdegree",
 				     "settingsChkBox11", g);
     get_checkbox_widget_to_attribute("antialiasing", "settingsChkBox12",

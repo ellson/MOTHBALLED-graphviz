@@ -199,93 +199,85 @@ void preparetopview(Agraph_t * g, topview * t)
 	t->picked_nodes='\0';
 }
 
-void drawTopViewGraph(Agraph_t * g)
+int drawtopviewnodes(Agraph_t * g)
 {
-//      DWORD t1,t2;
     topview_node *v;
+    float ddx, ddy,ddz;
+    int ind = 0;
+	float dotsize=0;
+	if (view->zoom > NODE_ZOOM_LIMIT)
+	{
+		dotsize=5/view->zoom*-1;
+		if(dotsize > 1)
+			glPointSize(dotsize);
+		else
+			glPointSize(1);
+
+
+		//draw nodes
+		set_topview_options();
+	    glBegin(GL_POINTS);
+		for (ind = 0; ((ind < view->Topview->Nodecount) && (view->drawnodes)); ind++)
+		{
+			if (((-view->Topview->Nodes[ind].x/view->zoom > view->clipX1)
+			&& (-view->Topview->Nodes[ind].x/view->zoom < view->clipX2)
+			&& (-view->Topview->Nodes[ind].y/view->zoom > view->clipY1)
+			&& (-view->Topview->Nodes[ind].y/view->zoom < view->clipY2)) 
+			|| (view->active_camera>=0))
+			{
+				float zdepth;
+				v = &view->Topview->Nodes[ind];
+				if (!node_visible(v->Node))
+					break;
+
+			    select_topview_node(v);
+			    //UPDATE view->Topview data from cgraph
+			    if (v->update_required)
+					update_topview_node_from_cgraph(v);
+				if (OD_Selected(v->Node) == 1)
+				{
+					glColor4f(view->selectedNodeColor.R,
+						  view->selectedNodeColor.G,
+						view->selectedNodeColor.B,
+						view->selectedNodeColor.A);
+					ddx = dx;	
+					ddy = dy;
+					ddz= dz;
+				} 
+				else	//get the color from node
+			    {
+					glColor4f(v->Color.R, v->Color.G, v->Color.B,
+					  v->node_alpha);
+					ddx = 0;
+					ddy = 0;
+					ddz=0;
+				}
+
+				if (v->distorted_x != v->x)
+					zdepth = (float) Z_FORWARD_PLANE;
+				else
+					zdepth = (float) Z_BACK_PLANE;
+				glVertex3f(v->distorted_x - ddx,
+						v->distorted_y - ddy, v->distorted_z-ddz);
+			}
+		}
+	    glEnd();
+	}
+	return 1;
+
+}
+int drawtopviewedges(Agraph_t * g)
+{
     topview_edge *e;
     float ddx, ddy,ddz;
     float dddx, dddy,dddz;
     int ind = 0;
-	if (view->zoom > NODE_ZOOM_LIMIT) {
-	glPointSize(3);
-		//draw nodes
-	set_topview_options();
-	
-	
-//	if (view->zoom < NODE_CIRCLE_LIMIT)
-	    glBegin(GL_POINTS);
 
-	//drawing labels
-	for (ind = 0; ind < view->Topview->Nodecount; ind++) {
-
-	    v = &view->Topview->Nodes[ind];
-	    if (!node_visible(v->Node))
-		break;
-
-	    draw_topview_label(v, 1);
-
-	}
-	for (ind = 0; ind < view->Topview->Nodecount; ind++)
-	{
-	    if (((-view->Topview->Nodes[ind].x/view->zoom > view->clipX1)
-		&& (-view->Topview->Nodes[ind].x/view->zoom < view->clipX2)
-		&& (-view->Topview->Nodes[ind].y/view->zoom > view->clipY1)
-		&& (-view->Topview->Nodes[ind].y/view->zoom < view->clipY2)) 
-		|| (view->active_camera>=0)) {
-			float zdepth;
-			v = &view->Topview->Nodes[ind];
-		    if (!node_visible(v->Node))
-			break;
-
-		    select_topview_node(v);
-		    //UPDATE view->Topview data from cgraph
-		    if (v->update_required)
-			update_topview_node_from_cgraph(v);
-		    if (OD_Selected(v->Node) == 1) {
-				glColor4f(view->selectedNodeColor.R,
-					  view->selectedNodeColor.G,
-					  view->selectedNodeColor.B,
-					  view->selectedNodeColor.A);
-				ddx = dx;	
-				ddy = dy;
-				ddz= dz;
-			} 
-			else	//get the color from node
-		    {
-				glColor4f(v->Color.R, v->Color.G, v->Color.B,
-				  v->node_alpha);
-				ddx = 0;
-				ddy = 0;
-				ddz=0;
-			}
-
-		    if (v->distorted_x != v->x)
-			zdepth = (float) Z_FORWARD_PLANE;
-		    else
-			zdepth = (float) Z_BACK_PLANE;
-//		    if (view->zoom < NODE_CIRCLE_LIMIT)
-				glVertex3f(v->distorted_x - ddx,
-				v->distorted_y - ddy, v->distorted_z-ddz);
-/*		    else
-			drawCircle(v->distorted_x - ddx,
-				   v->distorted_y - ddy,
-				   v->node_alpha * v->zoom_factor, v->distorted_z);*/
-		}
-	}
-//	if (view->zoom < NODE_CIRCLE_LIMIT)
-	    glEnd();
-
-
-    }
-	//draw picked node names;
-	draw_node_hint_boxes();
-    //draw edges
-//      glLineWidth(5/view->zoom*-1);
-    glBegin(GL_LINES);
+	glBegin(GL_LINES);
     set_topview_options();
-    for (ind = 0; ind < view->Topview->Edgecount; ind++) {
-	if (((view->Topview->Edges[ind].x1/view->zoom*-1  > view->clipX1)
+	for (ind = 0; ((ind < view->Topview->Edgecount)&& view->drawedges); ind++)
+	{
+		if (((view->Topview->Edges[ind].x1/view->zoom*-1  > view->clipX1)
 	     && (view->Topview->Edges[ind].x1/view->zoom*-1  < view->clipX2)
 	     && (view->Topview->Edges[ind].y1/view->zoom*-1  > view->clipY1)
 	     && (view->Topview->Edges[ind].y1/view->zoom*-1  < view->clipY2))
@@ -293,48 +285,81 @@ void drawTopViewGraph(Agraph_t * g)
 		&& (view->Topview->Edges[ind].x2/view->zoom*-1  < view->clipX2)
 		&& (view->Topview->Edges[ind].y2/view->zoom*-1  > view->clipY1)
 		&& (view->Topview->Edges[ind].y2/view->zoom*-1  < view->clipY2))
-		||   (view->active_camera>=0)
-	    )
-		if(1)
-
-	{
-	    e = &view->Topview->Edges[ind];
-	    select_topview_edge(e);
-	    if (OD_Selected(e->Node1->Node) == 1) { //tail is selected
-		ddx = dx;
-		ddy = dy;
-		ddz=0;
-	    } else {
-		ddx = 0;
-		ddy = 0;
-		ddz=0;
-	    }
-	    if (OD_Selected(e->Node2->Node) == 1) { //head
-		dddx = dx;
-		dddy = dy;
-		dddz=0;
-	    } else {
-		dddx = 0;
-		dddy = 0;
-		dddz=0;
-	    }
-
-	    if (get_color_from_edge(e)) {
-
-		glVertex3f(e->Node1->distorted_x - ddx,
-			e->Node1->distorted_y - ddy, e->Node1->distorted_z-ddz);
-		glVertex3f(e->Node2->distorted_x - dddx,
-			e->Node2->distorted_y - dddy, e->Node2->distorted_z-ddz);
-	    }
-	}
+		||   (view->active_camera>=0)	    )
+		{
+		    e = &view->Topview->Edges[ind];
+		    select_topview_edge(e);
+		    if (OD_Selected(e->Node1->Node) == 1)
+			{ //tail is selected
+				ddx = dx;
+				ddy = dy;
+				ddz=0;
+			}
+			else 
+			{
+				ddx = 0;
+				ddy = 0;
+				ddz=0;
+			}
+			if (OD_Selected(e->Node2->Node) == 1) 
+			{ //head
+				dddx = dx;
+				dddy = dy;
+				dddz=0;
+			} 
+			else 
+			{
+				dddx = 0;
+				dddy = 0;
+				dddz=0;
+			}
+			if (get_color_from_edge(e))
+			{
+				glVertex3f(e->Node1->distorted_x - ddx,
+					e->Node1->distorted_y - ddy, e->Node1->distorted_z-ddz);
+				glVertex3f(e->Node2->distorted_x - dddx,
+					e->Node2->distorted_y - dddy, e->Node2->distorted_z-ddz);
+			}
+		}
     }
     glEnd();
-    if ((view->Selection.Active > 0) && (!view->SignalBlock)) {
-	view->Selection.Active = 0;
-	drawTopViewGraph(g);
-	view->SignalBlock = 1;
-	glexpose();
-	view->SignalBlock = 0;
+
+
+}
+int drawtopviewlabels(Agraph_t * g)
+{
+		//drawing labels
+    int ind = 0;
+	if(view->drawlabels)
+	{
+	    topview_node *v;
+		for (ind = 0; ind < view->Topview->Nodecount; ind++)
+		{
+				v = &view->Topview->Nodes[ind];
+				if (!node_visible(v->Node))
+				break;
+				draw_topview_label(v, 1);
+		}
+		return 1;
+	}
+		return 0;
+
+}
+
+
+void drawTopViewGraph(Agraph_t * g)
+{
+	drawtopviewnodes(g);
+	drawtopviewlabels(g);
+	draw_node_hint_boxes();
+	drawtopviewedges(g);
+	if ((view->Selection.Active > 0) && (!view->SignalBlock))
+	{
+		view->Selection.Active = 0;
+		drawTopViewGraph(g);
+		view->SignalBlock = 1;
+		glexpose();
+		view->SignalBlock = 0;
     }
 }
 int is_node_picked(topview_node* n)
@@ -385,7 +410,7 @@ int pick_node(topview_node* n)
 	float a,b;
 	a=ABS(n->distorted_x-view->GLx);
 	b=ABS(n->distorted_y-view->GLy);
-	a=pow((a*a+b*b),0.5);
+	a=(float)pow((a*a+b*b),(float)0.5);
 	if( a < closest_dif)
 	{
 		if(!is_node_picked(n))
@@ -416,12 +441,13 @@ int draw_node_hint_boxes()
 	int fs=12;
 	for (ind=0;ind < view->Topview->picked_node_count;ind++)
 	{
-		draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,view->Topview->picked_nodes[ind]->distorted_y,fs,1,1,(int)(strlen(agnameof(view->Topview->picked_nodes[ind]->Node))/2),ind);
+		draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,view->Topview->picked_nodes[ind]->distorted_y,(GLfloat)fs,(GLfloat)1,(GLfloat)1,(GLfloat)(strlen(agnameof(view->Topview->picked_nodes[ind]->Node))/2),(GLfloat)ind);
 		fontSize(fs);
 		fontColorA(0,0,1,1);
-		fontDrawString(view->Topview->picked_nodes[ind]->distorted_x-fs/3+1-fs,view->Topview->picked_nodes[ind]->distorted_y+fs+1,
+		fontDrawString((int)(view->Topview->picked_nodes[ind]->distorted_x-fs/3+1-fs),(int)(view->Topview->picked_nodes[ind]->distorted_y+fs+1),
 			agnameof(view->Topview->picked_nodes[ind]->Node),fs*strlen(agnameof(view->Topview->picked_nodes[ind]->Node))/2);
 	}
+	return 1;
 }
 
 

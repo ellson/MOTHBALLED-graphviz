@@ -26,6 +26,9 @@
 
 void cleartopview(topview * t);
 void preparetopview(Agraph_t * g, topview * t);
+int drawtopviewnodes(Agraph_t * g);
+int drawtopviewedges(Agraph_t * g);
+int drawtopviewlabels(Agraph_t * g);
 void drawTopViewGraph(Agraph_t * g);
 int select_topview_node(topview_node * n);
 int select_topview_edge(topview_edge * e);
