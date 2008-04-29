@@ -8,6 +8,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/glcomp \
         -I$(top_srcdir)/lib/topfish \
         -I$(top_srcdir)/lib/common \
+        -I$(top_srcdir)/lib/neatogen \
         -I$(top_srcdir)/cmd/smyrna/gui \
 	$(GTK_CFLAGS) $(GTKGLEXT_CFLAGS) $(GLADE_CFLAGS) $(FREETYPE2_CFLAGS) $(FONTCONFIG_CFLAGS) $(GTS_CFLAGS)
 
@@ -35,4 +36,5 @@ smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/glcomp/libglcomp_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
+		$(top_builddir)/lib/neatogen/libneatogen_C.la \
 		$(GTK_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS)

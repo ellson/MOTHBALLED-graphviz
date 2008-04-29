@@ -26,28 +26,10 @@
 
 void cleartopview(topview * t);
 void preparetopview(Agraph_t * g, topview * t);
-int drawtopviewnodes(Agraph_t * g);
-int drawtopviewedges(Agraph_t * g);
-int drawtopviewlabels(Agraph_t * g);
 void drawTopViewGraph(Agraph_t * g);
-int select_topview_node(topview_node * n);
-int select_topview_edge(topview_edge * e);
-int update_topview_node_from_cgraph(topview_node * Node);
-int update_topview_edge_from_cgraph(topview_edge * Edge);
 int set_update_required(topview * t);
-int draw_topview_label(topview_node * v, float zdepth);
-void set_topview_options();
-void set_boundries(topview * t);
-int get_color_from_edge(topview_edge * e);
-int node_visible(Agnode_t * n);
 int move_TVnodes();
 void local_zoom(topview * t);
 void originate_distorded_coordinates(topview * t);
-_BB void on_host_alpha_change(GtkWidget * widget, gpointer user_data);
-/* double dist(double x1, double y1, double x2, double y2); */
-/* double G(double x); */
-glCompSet *glcreate_gl_topview_menu();
-int pick_node(topview_node* n);
-int draw_node_hint_boxes();
 
 #endif
