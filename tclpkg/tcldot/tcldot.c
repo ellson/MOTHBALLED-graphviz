@@ -574,7 +574,7 @@ static void tcldot_layout(GVC_t *gvc, Agraph_t * g, char *engine)
 	    rc = gvlayout_select(gvc, "neato");
 	}
 	else {
-	    rc = gvlayout_select(gvc, tolower(engine));
+	    rc = gvlayout_select(gvc, engine);
 	}
 	if (rc == NO_SUPPORT)
 	    rc = gvlayout_select(gvc, "dot");
