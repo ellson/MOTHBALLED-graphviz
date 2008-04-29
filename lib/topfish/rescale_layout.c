@@ -33,11 +33,12 @@
 #include <math.h>
 #include <time.h>
 #include "matrix_ops.h"
-#include "hierarchy.h"
+/* #include "hierarchy.h" */
+#include "delaunay.h"
 #include "memory.h"
 #include "arith.h"
 
-static double *compute_densities(vtx_data * graph, int n, double *x,
+static double *compute_densities(v_data * graph, int n, double *x,
 				 double *y)
 {
 // compute density of every node by calculating the average edge length in a 2-D layout
@@ -58,7 +59,7 @@ static double *compute_densities(vtx_data * graph, int n, double *x,
     return densities;
 }
 
-static double *recompute_densities(vtx_data * graph, int n, double *x,
+static double *recompute_densities(v_data * graph, int n, double *x,
 				   double *densities)
 {
 // compute density of every node by calculating the average edge length in a 1-D layout
@@ -193,7 +194,7 @@ void quicksort_place(double *place, int *ordering, int first, int last)
 }
 
 static void
-rescaleLayout(vtx_data * graph, int n, double *x_coords, double *y_coords,
+rescaleLayout(v_data * graph, int n, double *x_coords, double *y_coords,
 	      int interval, double distortion)
 {
     // Rectlinear distortion - auxilliary function
@@ -253,7 +254,7 @@ rescale_layout(double *x_coords, double *y_coords,
     int i;
     double minX, maxX, minY, maxY;
     double aspect_ratio;
-    vtx_data *graph;
+    v_data *graph;
     double scaleX;
     double scale_ratio;
 
@@ -325,7 +326,7 @@ rescale_layout(double *x_coords, double *y_coords,
 #define DIST(x1,y1,x2,y2) (sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)))
 
 static void
-rescale_layout_polarFocus(vtx_data * graph, int n,
+rescale_layout_polarFocus(v_data * graph, int n,
 	  double *x_coords, double *y_coords,
 	  double x_focus, double y_focus, int interval, double distortion)
 {
@@ -406,7 +407,7 @@ rescale_layout_polar(double *x_coords, double *y_coords,
     int i;
     double minX, maxX, minY, maxY;
     double aspect_ratio;
-    vtx_data *graph;
+    v_data *graph;
     double scaleX;
     double scale_ratio;
 
