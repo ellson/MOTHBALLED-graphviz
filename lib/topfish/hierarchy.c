@@ -39,7 +39,7 @@ static int cur_level = 0;
 /////////////////////////
 
 static double
-unweighted_common_fraction(vtx_data * graph, int v, int u, float *v_vector)
+unweighted_common_fraction(v_data * graph, int v, int u, float *v_vector)
 {
 // returns: |N(v) & N(u)| / |N(v) or N(u)|
 // v_vector[i]>0 <==> i is neighbor of v or is v itself
@@ -63,7 +63,7 @@ unweighted_common_fraction(vtx_data * graph, int v, int u, float *v_vector)
 					      num_shared_neighbors);
 }
 
-static float fill_neighbors_vec(vtx_data * graph, int vtx, float *vtx_vec)
+static float fill_neighbors_vec(v_data * graph, int vtx, float *vtx_vec)
 {
     float sum_weights = 0;
     int j;
@@ -80,7 +80,7 @@ static float fill_neighbors_vec(vtx_data * graph, int vtx, float *vtx_vec)
 }
 
 static void
-fill_neighbors_vec_unweighted(vtx_data * graph, int vtx, float *vtx_vec)
+fill_neighbors_vec_unweighted(v_data * graph, int vtx, float *vtx_vec)
 {
     // a node is a neighbor of itself!
     int j;
@@ -89,7 +89,7 @@ fill_neighbors_vec_unweighted(vtx_data * graph, int vtx, float *vtx_vec)
     }
 }
 
-static void empty_neighbors_vec(vtx_data * graph, int vtx, float *vtx_vec)
+static void empty_neighbors_vec(v_data * graph, int vtx, float *vtx_vec)
 {
     int j;
     for (j = 0; j < graph[vtx].nedges; j++) {
@@ -98,7 +98,7 @@ static void empty_neighbors_vec(vtx_data * graph, int vtx, float *vtx_vec)
 }
 
 
-static int dist3(vtx_data * graph, int node1, int node2)
+static int dist3(v_data * graph, int node1, int node2)
 {
 // succeeds if the graph theoretic distance between the nodes is no more than 3
     int i, j, k;
@@ -140,7 +140,7 @@ static double ddist(ex_vtx_data * geom_graph, int v, int u)
 extern void quicksort_place(double *, int *, int first, int last);
 
 static int 
-maxmatch(vtx_data * graph,	/* array of vtx data for graph */
+maxmatch(v_data * graph,	/* array of vtx data for graph */
 	ex_vtx_data * geom_graph,	/* array of vtx data for graph */
 	int nvtxs,	/* number of vertices in graph */
 	int *mflag,	/* flag indicating vtx selected or not */
@@ -356,10 +356,10 @@ static void makev2cv(int *mflag, /* flag indicating vtx selected or not */
     }
 }
 
-static int make_coarse_graph(vtx_data * graph,	/* array of vtx data for graph */
+static int make_coarse_graph(v_data * graph,	/* array of vtx data for graph */
 			     int nvtxs,	/* number of vertices in graph */
 			     int nedges,	/* number of edges in graph */
-			     vtx_data ** cgp,	/* coarsened version of graph */
+			     v_data ** cgp,	/* coarsened version of graph */
 			     int cnvtxs,	/* number of vtxs in coarsened graph */
 			     int *v2cv,	/* mapping from vtxs to coarsened vtxs */
 			     int *cv2v	/* mapping from coarsened vtxs to vtxs */
@@ -369,7 +369,7 @@ static int make_coarse_graph(vtx_data * graph,	/* array of vtx data for graph */
 {
     int i, j, cv, v, neighbor, cv_nedges;
     int cnedges = 0;		/* number of edges in coarsened graph */
-    vtx_data *cgraph;		/* coarsened version of graph */
+    v_data *cgraph;		/* coarsened version of graph */
     int *index = N_NEW(cnvtxs, int);
     float intra_weight;
     /* An upper bound on the number of coarse graph edges. */
@@ -386,7 +386,7 @@ static int make_coarse_graph(vtx_data * graph,	/* array of vtx data for graph */
     }
 
     /* Now allocate space for the new graph.  Overeallocate and realloc later. */
-    cgraph = N_NEW(cnvtxs, vtx_data);
+    cgraph = N_NEW(cnvtxs, v_data);
     edges = N_NEW(2 * maxCnedges + cnvtxs, int);
     eweights = N_NEW(2 * maxCnedges + cnvtxs, float);
 #ifdef STYLES
@@ -668,12 +668,12 @@ make_coarse_ex_graph (
 
 static void 
 coarsen_match (
-    vtx_data * graph,	/* graph to be matched */
+    v_data * graph,	/* graph to be matched */
     ex_vtx_data* geom_graph, /* another graph (with coords) on the same nodes */
     int nvtxs,	/* number of vertices in graph */
     int nedges,	/* number of edges in graph */
     int geom_nedges,	/* number of edges in geom_graph */
-    vtx_data ** cgraph,	/* coarsened version of graph */
+    v_data ** cgraph,	/* coarsened version of graph */
     ex_vtx_data ** cgeom_graph,	/* coarsened version of geom_graph */
     int *cnp,	/* number of vtxs in coarsened graph */
     int *cnedges,	/* number of edges in coarsened graph */
@@ -726,18 +726,13 @@ coarsen_match (
  */
 void release(Hierarchy * hierarchy)
 {
-    vtx_data *graph;
+    v_data *graph;
     ex_vtx_data *ex_graph;
     int i;
     for (i = 0; i < hierarchy->nlevels; i++) {
 	graph = hierarchy->graphs[i];
 	ex_graph = hierarchy->geom_graphs[i];
-	free(graph[0].edges);
-	free(graph[0].ewgts);
-#ifdef STYLES
-	free(graph[0].styles);
-#endif
-	free(graph);
+	freeGraph (graph);
 	free(ex_graph[0].edges);
 	free(ex_graph);
 	if (i < hierarchy->nlevels - 1) {
@@ -756,9 +751,9 @@ void release(Hierarchy * hierarchy)
     free(hierarchy->v2cv);
 }
 
-static vtx_data *cpGraph(vtx_data * graph, int n, int nedges)
+static v_data *cpGraph(v_data * graph, int n, int nedges)
 {
-    vtx_data *cpGraph;
+    v_data *cpGraph;
     int *edges;
     float *ewgts = NULL;
 #ifdef STYLES
@@ -769,7 +764,7 @@ static vtx_data *cpGraph(vtx_data * graph, int n, int nedges)
     if (graph == NULL || n == 0) {
 	return NULL;
     }
-    cpGraph = N_NEW(n, vtx_data);
+    cpGraph = N_NEW(n, v_data);
     edges = N_NEW(2 * nedges + n, int);
     if (graph[0].ewgts != NULL) {
 	ewgts = N_NEW(2 * nedges + n, float);
@@ -832,7 +827,7 @@ static ex_vtx_data *cpExGraph(ex_vtx_data * graph, int n, int nedges)
     return cpGraph;
 }
 
-Hierarchy *create_hierarchy(vtx_data * graph, int nvtxs, int nedges,
+Hierarchy *create_hierarchy(v_data * graph, int nvtxs, int nedges,
 			    ex_vtx_data * geom_graph, int ngeom_edges,
 			    hierparms_t* parms)
 {
@@ -845,7 +840,7 @@ Hierarchy *create_hierarchy(vtx_data * graph, int nvtxs, int nedges,
     int min_nvtxs = parms->min_nvtxs;
     int nlevels = MAX(5, 10 * (int) log((float) (nvtxs / min_nvtxs)));	// just an estimate
 
-    hierarchy->graphs = N_NEW(nlevels, vtx_data *);
+    hierarchy->graphs = N_NEW(nlevels, v_data *);
     hierarchy->geom_graphs = N_NEW(nlevels, ex_vtx_data *);
     hierarchy->nvtxs = N_NEW(nlevels, int);
     hierarchy->nedges = N_NEW(nlevels, int);
@@ -863,7 +858,7 @@ Hierarchy *create_hierarchy(vtx_data * graph, int nvtxs, int nedges,
 	if (cur_level == nlevels - 1) {	// we have to allocate more space
 	    nlevels *= 2;
 	    hierarchy->graphs =
-		RALLOC(nlevels, hierarchy->graphs, vtx_data *);
+		RALLOC(nlevels, hierarchy->graphs, v_data *);
 	    hierarchy->geom_graphs =
 		RALLOC(nlevels, hierarchy->geom_graphs, ex_vtx_data *);
 	    hierarchy->nvtxs = RALLOC(nlevels, hierarchy->nvtxs, int);
@@ -1127,7 +1122,7 @@ int find_random_descendant(Hierarchy * hierarchy, int node, int level,
 #endif
 
 int
-init_ex_graph(vtx_data * graph1, vtx_data * graph2, int n,
+init_ex_graph(v_data * graph1, v_data * graph2, int n,
 	      double *x_coords, double *y_coords, ex_vtx_data ** gp)
 {
     // build ex_graph from the union of edges in 'graph1' and 'graph2'
@@ -1316,8 +1311,7 @@ isActiveAncestorOfNeighbors(Hierarchy * hierarchy, int node, int level,
 			    int activeAncestorIdx)
 {
     int i,	active_level ;
-
-	vtx_data neighborsInLevel;
+    v_data neighborsInLevel;
     int neighbor, neighborLevel;
     assert(hierarchy);
     neighborsInLevel = hierarchy->graphs[level][node];
@@ -1355,7 +1349,7 @@ findGlobalIndexesOfActiveNeighbors(Hierarchy * hierarchy, int index,
     int *neighbors;
     int i, j;
     int level, node,active_level,found;
-    vtx_data neighborsInLevel;
+    v_data neighborsInLevel;
     int nAllocNeighbors;
     int *stack;			// 4*hierarchy->nlevels should be enough for the DFS scan
     int stackHeight;
@@ -1525,21 +1519,6 @@ find_active_ancestor(Hierarchy * hierarchy, int level, int node)
 	return hierarchy->geom_graphs[level][node].globalIndex;
     else
 	return -1;
-}
-
-void freeGraph(vtx_data * graph)
-{
-    if (!graph) {
-	if (graph[0].edges != NULL)
-	    free(graph[0].edges);
-	if (graph[0].ewgts != NULL)
-	    free(graph[0].ewgts);
-#ifdef STYLES
-	if (graph[0].styles != NULL)
-	    free(graph[0].styles);
-#endif
-	free(graph);
-    }
 }
 
 void init_active_level(Hierarchy* hierarchy, int level) 

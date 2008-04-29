@@ -16,7 +16,7 @@
 #ifndef _HIERARCHY_H_
 #define _HIERARCHY_H_
 
-#include "defs.h"
+#include "sparsegraph.h"
 
 typedef struct {
     int nedges;       // degree, including self-loop
@@ -42,7 +42,7 @@ typedef struct {
 
 typedef struct {
     int nlevels;
-    vtx_data ** graphs;
+    v_data ** graphs;
     ex_vtx_data ** geom_graphs;
     int * nvtxs;
     int * nedges;
@@ -71,7 +71,7 @@ typedef struct {
 
 void release(Hierarchy*);
 
-Hierarchy* create_hierarchy(vtx_data * graph, int nvtxs, int nedges, 
+Hierarchy* create_hierarchy(v_data * graph, int nvtxs, int nedges, 
     ex_vtx_data* geom_graph, int ngeom_edges, hierparms_t*);
 	
 void set_active_levels(Hierarchy*, int*, int, levelparms_t*);
@@ -86,12 +86,8 @@ int count_active_nodes(Hierarchy *);
 void init_active_level(Hierarchy* hierarchy, int level);
 
 // creating a geometric graph:
-int init_ex_graph(vtx_data * graph1, vtx_data * graph2, int n,
+int init_ex_graph(v_data * graph1, v_data * graph2, int n,
    double *x_coords, double *y_coords, ex_vtx_data ** gp);
-
-vtx_data *delaunay_triangulation(double *x, double *y, int n);
-
-vtx_data *UG_graph(double *x, double *y, int n, int accurate_computation);
 
 // layout distortion:
 void rescale_layout(double *x_coords, double *y_coords,
@@ -108,8 +104,5 @@ void find_old_physical_coords(Hierarchy * hierarchy, int level, int node, double
 int find_active_ancestor(Hierarchy*, int, int);
 int locateByIndex(Hierarchy*, int, int*);
 int findGlobalIndexesOfActiveNeighbors(Hierarchy*, int, int**);
-
-
-void freeGraph(vtx_data * graph);
 
 #endif
