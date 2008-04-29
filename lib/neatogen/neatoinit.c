@@ -946,25 +946,6 @@ static vtx_data *makeGraphData(graph_t * g, int nv, int *nedges, int mode, int m
     return graph;
 }
 
-static void freeGraphData(vtx_data * graph)
-{
-    if (graph != NULL) {
-	if (graph[0].edges != NULL)
-	    free(graph[0].edges);
-	if (graph[0].ewgts != NULL)
-	    free(graph[0].ewgts);
-#ifdef UNIMPLEMENTED
-	if (graph[0].elens != NULL)
-	    free(graph[0].elens);
-#endif
-#ifdef USE_STYLES
-	if (graph[0].styles != NULL)
-	    free(graph[0].styles);
-#endif
-	free(graph);
-    }
-}
-
 static void initRegular(graph_t * G, int nG)
 {
     double a, da;
