@@ -20,6 +20,10 @@ extern "C" {
 #ifndef SPARSEGRAPH_H
 #define SPARSEGRAPH_H
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #ifdef __cplusplus
     enum Style { regular, invisible };
     struct vtx_data {
@@ -65,9 +69,6 @@ extern "C" {
 	    return x == other.x && y == other.y;
     }};
 #else
-#undef inline
-#define inline
-#define NOTUSED(var)      (void) var
 
 #ifdef USE_STYLES
     typedef enum { regular, invisible } Style;
@@ -76,10 +77,13 @@ extern "C" {
 	int nedges;		/* no. of neighbors, including self */
 	int *edges;		/* edges[0..(nedges-1)] are neighbors; edges[0] is self */
 	float *ewgts;		/* preferred edge lengths */
+    } v_data; 
+
+    typedef struct {
+	int nedges;		/* no. of neighbors, including self */
+	int *edges;		/* edges[0..(nedges-1)] are neighbors; edges[0] is self */
+	float *ewgts;		/* preferred edge lengths */
 	float *eweights;	/* edge weights */
-#if 0
-	node_t *np;		/* original node */
-#endif
 #ifdef USE_STYLES
 	Style *styles;
 #endif
@@ -90,12 +94,8 @@ extern "C" {
 
     typedef int DistType;	/* must be signed!! */
 
-#ifdef UNUSED
-    typedef struct {
-	double x;
-	double y;
-    } Point;
-#endif
+extern void freeGraphData(vtx_data * graph);
+extern void freeGraph(v_data * graph);
 
 #endif
 
