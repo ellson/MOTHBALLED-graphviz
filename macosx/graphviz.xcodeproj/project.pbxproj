@@ -354,6 +354,8 @@
 				ARCHS = (
 					ppc,
 					i386,
+					ppc64,
+					x86_64,
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
