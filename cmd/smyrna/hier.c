@@ -15,6 +15,7 @@
 
 #include "smyrnadefs.h"
 #include "hier.h"
+#include "delaunay.h"
 #include "memory.h"
 
 /* scale_coords:
@@ -124,7 +125,7 @@ void positionAllItems(Hierarchy * hp, focus_t * fs, reposition_t* parms)
 
 #ifdef DEBUG
 static void
-dumpG (int nn, vtx_data * graph)
+dumpG (int nn, v_data * graph)
 {
     int i, j;
     for (i=0; i < nn; i++) {
@@ -166,10 +167,10 @@ dumpHier (Hierarchy* hier)
 
 #endif
 
-Hierarchy *makeHier(int nn, int ne, vtx_data * graph, double *x_coords,
+Hierarchy *makeHier(int nn, int ne, v_data * graph, double *x_coords,
 		    double *y_coords, hierparms_t* parms)
 {
-    vtx_data *delaunay;
+    v_data *delaunay;
     ex_vtx_data *geom_graph;
     int ngeom_edges;
     Hierarchy *hp;

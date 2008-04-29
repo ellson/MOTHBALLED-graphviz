@@ -49,7 +49,7 @@ typedef struct {
 } reposition_t;
 
 void positionAllItems(Hierarchy * hp, focus_t * fs, reposition_t* parms);
-Hierarchy *makeHier(int nnodes, int nedges, vtx_data *, double *,
+Hierarchy *makeHier(int nnodes, int nedges, v_data *, double *,
 		    double*, hierparms_t *);
 
 focus_t *initFocus(int ncnt);
