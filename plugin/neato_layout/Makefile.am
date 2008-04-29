@@ -25,6 +25,7 @@ libgvplugin_neato_layout_C_la_LIBADD = \
 	$(top_builddir)/lib/neatogen/libneatogen_C.la \
 	$(top_builddir)/lib/twopigen/libtwopigen_C.la \
 	$(top_builddir)/lib/fdpgen/libfdpgen_C.la \
+	$(top_builddir)/lib/sfdpgen/libsfdpgen_C.la \
 	$(top_builddir)/lib/circogen/libcircogen_C.la
 
 libgvplugin_neato_layout_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
@@ -33,7 +34,8 @@ libgvplugin_neato_layout_la_LIBADD = $(libgvplugin_neato_layout_C_la_LIBADD) \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-	$(top_builddir)/lib/pathplan/libpathplan.la @IPSEPCOLA_LIBS@ @MATH_LIBS@
+	$(top_builddir)/lib/pathplan/libpathplan.la \
+	$(GTS_LIBS) @IPSEPCOLA_LIBS@ @MATH_LIBS@
 	
 if WITH_WIN32
 libgvplugin_neato_layout_la_LDFLAGS += -no-undefined
