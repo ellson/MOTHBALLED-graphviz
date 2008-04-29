@@ -30,6 +30,9 @@
 #include "heap.h"
 #include "hedges.h"
 #include "digcola.h"
+#ifdef HAVE_GTS
+#include "sfdp.h"
+#endif
 #ifdef IPSEPCOLA
 #include <csolve_VPSC.h>
 #include "quad_prog_vpsc.h"
@@ -859,6 +862,11 @@ removeOverlapAs(graph_t * G, char* flag)
 	case AM_COMPRESS:
 	    ret = scAdjust(G, -1);
 	    break;
+#ifdef HAVE_GTS
+	case AM_FDP:
+	    ret = fdpAdjust(G);
+	    break;
+#endif
 #ifdef IPSEPCOLA
         case AM_IPSEP:
             return 0;   /* handled during layout */
