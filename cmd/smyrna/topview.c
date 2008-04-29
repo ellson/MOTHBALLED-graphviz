@@ -32,6 +32,18 @@ static float dx = 0.0;
 static float dy = 0.0;
 static float dz = 0.0;
 
+   /* Forward declarations */
+static glCompSet *glcreate_gl_topview_menu();
+static void set_boundaries(topview * t);
+static void set_topview_options();
+static int draw_topview_label(topview_node * v, float zdepth);
+static int node_visible(Agnode_t * n);
+static int select_topview_node(topview_node * n);
+static int select_topview_edge(topview_edge * e);
+static int update_topview_node_from_cgraph(topview_node * Node);
+static int get_color_from_edge(topview_edge * e);
+static int draw_node_hint_boxes();
+
 void cleartopview(topview * t)
 {
     /*clear nodes */
@@ -54,7 +66,7 @@ void preparetopview(Agraph_t * g, topview * t)
     Agsym_t *sym;
     int ind, ind2, data_type_count;	//number of columns for custom view->Topview data ,IP ,HOST, etc
     char buf[256];
-	RGBColor color;
+    RGBColor color;
     ind = 0;
     ind2 = 0;
     gtk_widget_hide(glade_xml_get_widget(xml, "layout6"));	//hide top panel
@@ -82,7 +94,7 @@ void preparetopview(Agraph_t * g, topview * t)
 
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	//set node TV reference
-	OD_TVRef(v) = ind;   //view->Topview reference
+	OD_TVRef(v) = ind;	//view->Topview reference
 	strcpy(buf, agget(v, "pos"));
 	if (strlen(buf)) {
 	    a = (float) atof(strtok(buf, ","));
@@ -96,16 +108,14 @@ void preparetopview(Agraph_t * g, topview * t)
 	/*initialize group index, -1 means no group */
 	t->Nodes[ind].GroupIndex = -1;
 	t->Nodes[ind].Node = v;
-	if (agget(t->Nodes[ind].Node,"color"))
-	{
-		color=GetRGBColor(agget(t->Nodes[ind].Node,"color"));
-		t->Nodes[ind].Color.R=color.R;
-		t->Nodes[ind].Color.G=color.G;
-		t->Nodes[ind].Color.B=color.B;
-		t->Nodes[ind].Color.A=color.A;
-	}
-	else
-		randomize_color(&(t->Nodes[ind].Color), 2);
+	if (agget(t->Nodes[ind].Node, "color")) {
+	    color = GetRGBColor(agget(t->Nodes[ind].Node, "color"));
+	    t->Nodes[ind].Color.R = color.R;
+	    t->Nodes[ind].Color.G = color.G;
+	    t->Nodes[ind].Color.B = color.B;
+	    t->Nodes[ind].Color.A = color.A;
+	} else
+	    randomize_color(&(t->Nodes[ind].Color), 2);
 	t->Nodes[ind].x = a;
 	t->Nodes[ind].y = b;
 	t->Nodes[ind].z = c;
@@ -123,17 +133,15 @@ void preparetopview(Agraph_t * g, topview * t)
 	    else
 		str = agnameof(v);
 	    t->Nodes[ind].Label = strdup(str);
-	}
-	else
-		t->Nodes[ind].Label ='\0';
+	} else
+	    t->Nodes[ind].Label = '\0';
 	if (d_attr2) {
 	    str = agget(v, d_attr2);
 	    if (str) {
 		t->Nodes[ind].Label2 = strdup(str);
 	    }
-	}
-	else
-		t->Nodes[ind].Label2 ='\0';
+	} else
+	    t->Nodes[ind].Label2 = '\0';
 
 	for (e = agfstout(g, v); e; e = agnxtout(g, e)) {
 	    t->Edges[ind2].Hnode = aghead(e);
@@ -188,281 +196,293 @@ void preparetopview(Agraph_t * g, topview * t)
     t->Nodecount = ind;
     t->Edgecount = ind2;
     view->fmg.fisheye_distortion_fac = 5;	//need to be hooked to a widget
-    set_boundries(t);
+    set_boundaries(t);
     set_update_required(t);
     t->topviewmenu = glcreate_gl_topview_menu();
-	attach_camera_widget(view);
+    attach_camera_widget(view);
     load_host_buttons(t, g, t->topviewmenu);
-	t->h='\0';
-	t->is_top_fisheye=0;
-	t->picked_node_count=0;
-	t->picked_nodes='\0';
+    t->h = '\0';
+    t->is_top_fisheye = 0;
+    t->picked_node_count = 0;
+    t->picked_nodes = '\0';
 }
 
-int drawtopviewnodes(Agraph_t * g)
+static int drawtopviewnodes(Agraph_t * g)
 {
     topview_node *v;
-    float ddx, ddy,ddz;
+    float ddx, ddy, ddz;
     int ind = 0;
-	float dotsize=0;
-	if (view->zoom > NODE_ZOOM_LIMIT)
-	{
-		dotsize=5/view->zoom*-1;
-		if(dotsize > 1)
-			glPointSize(dotsize);
-		else
-			glPointSize(1);
+    float dotsize = 0;
+    if (view->zoom > NODE_ZOOM_LIMIT) {
+	dotsize = 5 / view->zoom * -1;
+	if (dotsize > 1)
+	    glPointSize(dotsize);
+	else
+	    glPointSize(1);
 
 
-		//draw nodes
-		set_topview_options();
-	    glBegin(GL_POINTS);
-		for (ind = 0; ((ind < view->Topview->Nodecount) && (view->drawnodes)); ind++)
+	//draw nodes
+	set_topview_options();
+	glBegin(GL_POINTS);
+	for (ind = 0;
+	     ((ind < view->Topview->Nodecount) && (view->drawnodes));
+	     ind++) {
+	    if (((-view->Topview->Nodes[ind].x / view->zoom > view->clipX1)
+		 && (-view->Topview->Nodes[ind].x / view->zoom <
+		     view->clipX2)
+		 && (-view->Topview->Nodes[ind].y / view->zoom >
+		     view->clipY1)
+		 && (-view->Topview->Nodes[ind].y / view->zoom <
+		     view->clipY2))
+		|| (view->active_camera >= 0)) {
+		float zdepth;
+		v = &view->Topview->Nodes[ind];
+		if (!node_visible(v->Node))
+		    break;
+
+		select_topview_node(v);
+		//UPDATE view->Topview data from cgraph
+		if (v->update_required)
+		    update_topview_node_from_cgraph(v);
+		if (OD_Selected(v->Node) == 1) {
+		    glColor4f(view->selectedNodeColor.R,
+			      view->selectedNodeColor.G,
+			      view->selectedNodeColor.B,
+			      view->selectedNodeColor.A);
+		    ddx = dx;
+		    ddy = dy;
+		    ddz = dz;
+		} else		//get the color from node
 		{
-			if (((-view->Topview->Nodes[ind].x/view->zoom > view->clipX1)
-			&& (-view->Topview->Nodes[ind].x/view->zoom < view->clipX2)
-			&& (-view->Topview->Nodes[ind].y/view->zoom > view->clipY1)
-			&& (-view->Topview->Nodes[ind].y/view->zoom < view->clipY2)) 
-			|| (view->active_camera>=0))
-			{
-				float zdepth;
-				v = &view->Topview->Nodes[ind];
-				if (!node_visible(v->Node))
-					break;
-
-			    select_topview_node(v);
-			    //UPDATE view->Topview data from cgraph
-			    if (v->update_required)
-					update_topview_node_from_cgraph(v);
-				if (OD_Selected(v->Node) == 1)
-				{
-					glColor4f(view->selectedNodeColor.R,
-						  view->selectedNodeColor.G,
-						view->selectedNodeColor.B,
-						view->selectedNodeColor.A);
-					ddx = dx;	
-					ddy = dy;
-					ddz= dz;
-				} 
-				else	//get the color from node
-			    {
-					glColor4f(v->Color.R, v->Color.G, v->Color.B,
-					  v->node_alpha);
-					ddx = 0;
-					ddy = 0;
-					ddz=0;
-				}
-
-				if (v->distorted_x != v->x)
-					zdepth = (float) Z_FORWARD_PLANE;
-				else
-					zdepth = (float) Z_BACK_PLANE;
-				glVertex3f(v->distorted_x - ddx,
-						v->distorted_y - ddy, v->distorted_z-ddz);
-			}
+		    glColor4f(v->Color.R, v->Color.G, v->Color.B,
+			      v->node_alpha);
+		    ddx = 0;
+		    ddy = 0;
+		    ddz = 0;
 		}
-	    glEnd();
+
+		if (v->distorted_x != v->x)
+		    zdepth = (float) Z_FORWARD_PLANE;
+		else
+		    zdepth = (float) Z_BACK_PLANE;
+		glVertex3f(v->distorted_x - ddx,
+			   v->distorted_y - ddy, v->distorted_z - ddz);
+	    }
 	}
-	return 1;
+	glEnd();
+    }
+    return 1;
 
 }
-int drawtopviewedges(Agraph_t * g)
+
+static void drawtopviewedges(Agraph_t * g)
 {
     topview_edge *e;
-    float ddx, ddy,ddz;
-    float dddx, dddy,dddz;
+    float ddx, ddy, ddz;
+    float dddx, dddy, dddz;
     int ind = 0;
 
-	glBegin(GL_LINES);
+    glBegin(GL_LINES);
     set_topview_options();
-	for (ind = 0; ((ind < view->Topview->Edgecount)&& view->drawedges); ind++)
-	{
-		if (((view->Topview->Edges[ind].x1/view->zoom*-1  > view->clipX1)
-	     && (view->Topview->Edges[ind].x1/view->zoom*-1  < view->clipX2)
-	     && (view->Topview->Edges[ind].y1/view->zoom*-1  > view->clipY1)
-	     && (view->Topview->Edges[ind].y1/view->zoom*-1  < view->clipY2))
-	    || ((view->Topview->Edges[ind].x2/view->zoom*-1  > view->clipX1)
-		&& (view->Topview->Edges[ind].x2/view->zoom*-1  < view->clipX2)
-		&& (view->Topview->Edges[ind].y2/view->zoom*-1  > view->clipY1)
-		&& (view->Topview->Edges[ind].y2/view->zoom*-1  < view->clipY2))
-		||   (view->active_camera>=0)	    )
-		{
-		    e = &view->Topview->Edges[ind];
-		    select_topview_edge(e);
-		    if (OD_Selected(e->Node1->Node) == 1)
-			{ //tail is selected
-				ddx = dx;
-				ddy = dy;
-				ddz=0;
-			}
-			else 
-			{
-				ddx = 0;
-				ddy = 0;
-				ddz=0;
-			}
-			if (OD_Selected(e->Node2->Node) == 1) 
-			{ //head
-				dddx = dx;
-				dddy = dy;
-				dddz=0;
-			} 
-			else 
-			{
-				dddx = 0;
-				dddy = 0;
-				dddz=0;
-			}
-			if (get_color_from_edge(e))
-			{
-				glVertex3f(e->Node1->distorted_x - ddx,
-					e->Node1->distorted_y - ddy, e->Node1->distorted_z-ddz);
-				glVertex3f(e->Node2->distorted_x - dddx,
-					e->Node2->distorted_y - dddy, e->Node2->distorted_z-ddz);
-			}
-		}
+    for (ind = 0; ((ind < view->Topview->Edgecount) && view->drawedges);
+	 ind++) {
+	if (((view->Topview->Edges[ind].x1 / view->zoom * -1 >
+	      view->clipX1)
+	     && (view->Topview->Edges[ind].x1 / view->zoom * -1 <
+		 view->clipX2)
+	     && (view->Topview->Edges[ind].y1 / view->zoom * -1 >
+		 view->clipY1)
+	     && (view->Topview->Edges[ind].y1 / view->zoom * -1 <
+		 view->clipY2))
+	    ||
+	    ((view->Topview->Edges[ind].x2 / view->zoom * -1 >
+	      view->clipX1)
+	     && (view->Topview->Edges[ind].x2 / view->zoom * -1 <
+		 view->clipX2)
+	     && (view->Topview->Edges[ind].y2 / view->zoom * -1 >
+		 view->clipY1)
+	     && (view->Topview->Edges[ind].y2 / view->zoom * -1 <
+		 view->clipY2))
+	    || (view->active_camera >= 0)) {
+	    e = &view->Topview->Edges[ind];
+	    select_topview_edge(e);
+	    if (OD_Selected(e->Node1->Node) == 1) {	//tail is selected
+		ddx = dx;
+		ddy = dy;
+		ddz = 0;
+	    } else {
+		ddx = 0;
+		ddy = 0;
+		ddz = 0;
+	    }
+	    if (OD_Selected(e->Node2->Node) == 1) {	//head
+		dddx = dx;
+		dddy = dy;
+		dddz = 0;
+	    } else {
+		dddx = 0;
+		dddy = 0;
+		dddz = 0;
+	    }
+	    if (get_color_from_edge(e)) {
+		glVertex3f(e->Node1->distorted_x - ddx,
+			   e->Node1->distorted_y - ddy,
+			   e->Node1->distorted_z - ddz);
+		glVertex3f(e->Node2->distorted_x - dddx,
+			   e->Node2->distorted_y - dddy,
+			   e->Node2->distorted_z - ddz);
+	    }
+	}
     }
     glEnd();
 
 
 }
-int drawtopviewlabels(Agraph_t * g)
+
+static int drawtopviewlabels(Agraph_t * g)
 {
-		//drawing labels
+    //drawing labels
     int ind = 0;
-	if(view->drawlabels)
-	{
-	    topview_node *v;
-		for (ind = 0; ind < view->Topview->Nodecount; ind++)
-		{
-				v = &view->Topview->Nodes[ind];
-				if (!node_visible(v->Node))
-				break;
-				draw_topview_label(v, 1);
-		}
-		return 1;
+    if (view->drawlabels) {
+	topview_node *v;
+	for (ind = 0; ind < view->Topview->Nodecount; ind++) {
+	    v = &view->Topview->Nodes[ind];
+	    if (!node_visible(v->Node))
+		break;
+	    draw_topview_label(v, 1);
 	}
-		return 0;
+	return 1;
+    }
+    return 0;
 
 }
 
 
 void drawTopViewGraph(Agraph_t * g)
 {
-	drawtopviewnodes(g);
-	drawtopviewlabels(g);
-	draw_node_hint_boxes();
-	drawtopviewedges(g);
-	if ((view->Selection.Active > 0) && (!view->SignalBlock))
-	{
-		view->Selection.Active = 0;
-		drawTopViewGraph(g);
-		view->SignalBlock = 1;
-		glexpose();
-		view->SignalBlock = 0;
+    drawtopviewnodes(g);
+    drawtopviewlabels(g);
+    draw_node_hint_boxes();
+    drawtopviewedges(g);
+    if ((view->Selection.Active > 0) && (!view->SignalBlock)) {
+	view->Selection.Active = 0;
+	drawTopViewGraph(g);
+	view->SignalBlock = 1;
+	glexpose();
+	view->SignalBlock = 0;
     }
 }
-int is_node_picked(topview_node* n)
+
+static int is_node_picked(topview_node * n)
 {
     int ind = 0;
     int found = 0;
-	for (;ind < view->Topview->picked_node_count;ind ++)
-	{
-		if((view->Topview->picked_nodes[ind]==n)&& (!found))
-			return 1;
-	}
-	return 0;
+    for (; ind < view->Topview->picked_node_count; ind++) {
+	if ((view->Topview->picked_nodes[ind] == n) && (!found))
+	    return 1;
+    }
+    return 0;
 }
 
-int remove_from_pick_list(topview_node* n)
+static int remove_from_pick_list(topview_node * n)
 {
     int ind = 0;
     int found = 0;
-	for (;ind < view->Topview->picked_node_count;ind ++)
-	{
-		if((view->Topview->picked_nodes[ind]==n)&& (!found))
-			found=1;
-		if((found) && (ind <( view->Topview->picked_node_count-1)))
-		{
-			view->Topview->picked_nodes[ind]=view->Topview->picked_nodes[ind+1];
-		}
+    for (; ind < view->Topview->picked_node_count; ind++) {
+	if ((view->Topview->picked_nodes[ind] == n) && (!found))
+	    found = 1;
+	if ((found) && (ind < (view->Topview->picked_node_count - 1))) {
+	    view->Topview->picked_nodes[ind] =
+		view->Topview->picked_nodes[ind + 1];
 	}
-	if(found)
-	{
-		view->Topview->picked_node_count--;
-		view->Topview->picked_nodes=realloc(view->Topview->picked_nodes,sizeof(topview_node*)*view->Topview->picked_node_count);
-		return 1;
-	}
-	return 0;
-}
-int add_to_pick_list(topview_node* n)
-{
-		view->Topview->picked_node_count++;
-		view->Topview->picked_nodes=realloc(view->Topview->picked_nodes,sizeof(topview_node*)*view->Topview->picked_node_count);
-		view->Topview->picked_nodes[view->Topview->picked_node_count-1]=n;
-		return 1;
-
-}
-
-int pick_node(topview_node* n)
-{
-	static closest_dif=3;
-	float a,b;
-	a=ABS(n->distorted_x-view->GLx);
-	b=ABS(n->distorted_y-view->GLy);
-	a=(float)pow((a*a+b*b),(float)0.5);
-	if( a < closest_dif)
-	{
-		if(!is_node_picked(n))
-		{
-			if(add_to_pick_list(n))
-			{
-				printf ("node picked ,name:%s\n",agnameof(n->Node));
-				return 1;
-			}
-			return 0;
-		}
-		else
-		{
-			if(remove_from_pick_list(n))
-			{
-				printf ("node has been unpicked ,name:%s\n",agnameof(n->Node));
-				return 1;
-			}
-			return 0;
-		}
-	}
-	return 0;
-
-}
-int draw_node_hint_boxes()
-{
-	int ind;
-	int fs=12;
-	for (ind=0;ind < view->Topview->picked_node_count;ind++)
-	{
-		draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,view->Topview->picked_nodes[ind]->distorted_y,(GLfloat)fs,(GLfloat)1,(GLfloat)1,(GLfloat)(strlen(agnameof(view->Topview->picked_nodes[ind]->Node))/2),(GLfloat)ind);
-		fontSize(fs);
-		fontColorA(0,0,1,1);
-		fontDrawString((int)(view->Topview->picked_nodes[ind]->distorted_x-fs/3+1-fs),(int)(view->Topview->picked_nodes[ind]->distorted_y+fs+1),
-			agnameof(view->Topview->picked_nodes[ind]->Node),fs*strlen(agnameof(view->Topview->picked_nodes[ind]->Node))/2);
-	}
+    }
+    if (found) {
+	view->Topview->picked_node_count--;
+	view->Topview->picked_nodes =
+	    realloc(view->Topview->picked_nodes,
+		    sizeof(topview_node *) *
+		    view->Topview->picked_node_count);
 	return 1;
+    }
+    return 0;
+}
+
+static int add_to_pick_list(topview_node * n)
+{
+    view->Topview->picked_node_count++;
+    view->Topview->picked_nodes =
+	realloc(view->Topview->picked_nodes,
+		sizeof(topview_node *) * view->Topview->picked_node_count);
+    view->Topview->picked_nodes[view->Topview->picked_node_count - 1] = n;
+    return 1;
+
+}
+
+static int pick_node(topview_node * n)
+{
+    static int closest_dif = 3;
+    float a, b;
+    a = ABS(n->distorted_x - view->GLx);
+    b = ABS(n->distorted_y - view->GLy);
+    a = (float) pow((a * a + b * b), (float) 0.5);
+    if (a < closest_dif) {
+	if (!is_node_picked(n)) {
+	    if (add_to_pick_list(n)) {
+		printf("node picked ,name:%s\n", agnameof(n->Node));
+		return 1;
+	    }
+	    return 0;
+	} else {
+	    if (remove_from_pick_list(n)) {
+		printf("node has been unpicked ,name:%s\n",
+		       agnameof(n->Node));
+		return 1;
+	    }
+	    return 0;
+	}
+    }
+    return 0;
+
+}
+static int draw_node_hint_boxes()
+{
+    int ind;
+    int fs = 12;
+    for (ind = 0; ind < view->Topview->picked_node_count; ind++) {
+	draw_node_hintbox(view->Topview->picked_nodes[ind]->distorted_x,
+			  view->Topview->picked_nodes[ind]->distorted_y,
+			  (GLfloat) fs, (GLfloat) 1, (GLfloat) 1,
+			  (GLfloat) (strlen
+				     (agnameof
+				      (view->Topview->picked_nodes[ind]->
+				       Node)) / 2), (GLfloat) ind);
+	fontSize(fs);
+	fontColorA(0, 0, 1, 1);
+	fontDrawString((int)
+		       (view->Topview->picked_nodes[ind]->distorted_x -
+			fs / 3 + 1 - fs),
+		       (int) (view->Topview->picked_nodes[ind]->
+			      distorted_y + fs + 1),
+		       agnameof(view->Topview->picked_nodes[ind]->Node),
+		       fs *
+		       strlen(agnameof
+			      (view->Topview->picked_nodes[ind]->Node)) /
+		       2);
+    }
+    return 1;
 }
 
 
-int select_topview_node(topview_node * n)
+static int select_topview_node(topview_node * n)
 {
-    if (!view->Selection.Active)
-	{
-		//implement hint box here
-		if (view->mouse.pick)
-		{
-				if(pick_node(n))
-					view->mouse.pick=0;
-		}
-		return 0;
+    if (!view->Selection.Active) {
+	//implement hint box here
+	if (view->mouse.pick) {
+	    if (pick_node(n))
+		view->mouse.pick = 0;
 	}
+	return 0;
+    }
     if (is_point_in_rectangle
 	(n->x, n->y, view->Selection.X, view->Selection.Y,
 	 view->Selection.W, view->Selection.H)) {
@@ -499,7 +519,7 @@ int select_topview_node(topview_node * n)
 
 
 
-int select_topview_edge(topview_edge * e)
+static int select_topview_edge(topview_edge * e)
 {
     int r = 0;
     if (!view->Selection.Active)
@@ -527,7 +547,7 @@ int select_topview_edge(topview_edge * e)
 
 }
 
-int update_topview_node_from_cgraph(topview_node * Node)
+static int update_topview_node_from_cgraph(topview_node * Node)
 {
     //for now just color, maybe i need more later
     char *buf;
@@ -547,6 +567,7 @@ int update_topview_node_from_cgraph(topview_node * Node)
     return 1;
 }
 
+#if 0
 int update_topview_edge_from_cgraph(topview_edge * Edge)
 {
     //for now just color , maybe i need more later
@@ -565,6 +586,7 @@ int update_topview_edge_from_cgraph(topview_edge * Edge)
     Edge->update_required = 0;
     return 1;
 }
+#endif
 
 
 
@@ -585,7 +607,7 @@ int set_update_required(topview * t)
 
 }
 
-int draw_topview_label(topview_node * v, float zdepth)
+static int draw_topview_label(topview_node * v, float zdepth)
 {
 
     float fs = 0;
@@ -595,9 +617,10 @@ int draw_topview_label(topview_node * v, float zdepth)
 	return 0;
     if ((view->zoom * -1 / v->degree / v->zoom_factor) > 2)
 	return 0;
-    if ((v->distorted_x/view->zoom*-1  > view->clipX1) && (v->distorted_x/view->zoom*-1  < view->clipX2)
-	&& (v->distorted_y/view->zoom*-1  > view->clipY1)
-	&& (v->distorted_y/view->zoom*-1  < view->clipY2)) {
+    if ((v->distorted_x / view->zoom * -1 > view->clipX1)
+	&& (v->distorted_x / view->zoom * -1 < view->clipX2)
+	&& (v->distorted_y / view->zoom * -1 > view->clipY1)
+	&& (v->distorted_y / view->zoom * -1 < view->clipY2)) {
 
 	fs = (v->degree ==
 	      1) ? (float) (log((double) v->degree +
@@ -632,7 +655,7 @@ int draw_topview_label(topview_node * v, float zdepth)
 
 
 
-void set_topview_options()
+static void set_topview_options()
 {
 
     if ((view->mouse.mouse_mode == 10) && (view->mouse.mouse_down == 1))	//selected, if there is move move it, experimental
@@ -647,7 +670,7 @@ void set_topview_options()
 }
 
 /*refreshes limits of the graph call it when node locations are changed*/
-void set_boundries(topview * t)
+static void set_boundaries(topview * t)
 {
 
     int ind = 0;
@@ -671,15 +694,14 @@ void set_boundries(topview * t)
     view->bdxRight = right;
     view->bdyBottom = bottom;
 
-	view->bdzTop = 0;
+    view->bdzTop = 0;
     view->bdzBottom = 0;
 
-	printf("graph borders:(%f,%f) (%f,%f)\n",view->bdxLeft,view->bdyBottom,view->bdxRight,view->bdyTop);
+    printf("graph borders:(%f,%f) (%f,%f)\n", view->bdxLeft,
+	   view->bdyBottom, view->bdxRight, view->bdyTop);
 }
 
-
-
-int get_color_from_edge(topview_edge * e)
+static int get_color_from_edge(topview_edge * e)
 {
     RGBColor c;
     GdkColor color;
@@ -696,30 +718,34 @@ int get_color_from_edge(topview_edge * e)
 	return_value = 1;
 
 
-    /*if both head and tail nodes are selected use selection color for edges*/
+    /*if both head and tail nodes are selected use selection color for edges */
     if ((OD_Selected(e->Node1->Node)) && (OD_Selected(e->Node2->Node))) {
 	glColor4f(view->selectedEdgeColor.R, view->selectedEdgeColor.G,
-	    view->selectedEdgeColor.B, view->selectedEdgeColor.A);
+		  view->selectedEdgeColor.B, view->selectedEdgeColor.A);
 	return return_value;
     }
     /*if both head and tail nodes are highlighted use edge highlight color */
 
-    if ((OD_Highlighted(e->Node1->Node)) && (OD_Highlighted(e->Node2->Node))) {
-	glColor4f(view->highlightedEdgeColor.R,view->highlightedEdgeColor.G,view->highlightedEdgeColor.B,view->highlightedEdgeColor.A);
+    if ((OD_Highlighted(e->Node1->Node))
+	&& (OD_Highlighted(e->Node2->Node))) {
+	glColor4f(view->highlightedEdgeColor.R,
+		  view->highlightedEdgeColor.G,
+		  view->highlightedEdgeColor.B,
+		  view->highlightedEdgeColor.A);
 	return return_value;
     }
-    /*edge maybe in a group and group may be selected, then use groups's color example:ATT hosts*/
+    /*edge maybe in a group and group may be selected, then use groups's color example:ATT hosts */
     if ((e->Node1->GroupIndex >= 0) || (e->Node2->GroupIndex >= 0)) {
-		if (view->Topview->TopviewData->hostactive[e->Node1->GroupIndex] ==
+	if (view->Topview->TopviewData->hostactive[e->Node1->GroupIndex] ==
 	    1) {
-				gtk_color_button_get_color(view->Topview->TopviewData->
+	    gtk_color_button_get_color(view->Topview->TopviewData->
 				       gtkhostcolor[e->Node1->GroupIndex],
 				       &color);
-				glColor4f((GLfloat) color.red / (GLfloat) 65535.0,
-				(GLfloat) color.green / (GLfloat) 65535.0,
-				(GLfloat) color.blue / (GLfloat) 65535.0,
-				(GLfloat) 1);
-			return return_value;
+	    glColor4f((GLfloat) color.red / (GLfloat) 65535.0,
+		      (GLfloat) color.green / (GLfloat) 65535.0,
+		      (GLfloat) color.blue / (GLfloat) 65535.0,
+		      (GLfloat) 1);
+	    return return_value;
 	} else {
 	    if (view->Topview->TopviewData->
 		hostactive[e->Node2->GroupIndex] == 1) {
@@ -737,8 +763,8 @@ int get_color_from_edge(topview_edge * e)
 
     }
 
-	/*get edge's color attribute*/
-	color_string = agget(e->Edge, "color");
+    /*get edge's color attribute */
+    color_string = agget(e->Edge, "color");
     if (color_string) {
 	c = GetRGBColor(color_string);
 	glColor4f(c.R, c.G, c.B, Alpha);
@@ -748,7 +774,7 @@ int get_color_from_edge(topview_edge * e)
     return return_value;
 }
 
-int node_visible(Agnode_t * n)
+static int node_visible(Agnode_t * n)
 {
     return OD_Visible(n);
 }
@@ -797,8 +823,8 @@ int load_host_buttons(Agraph_t * g, glCompSet * s)
 //      Graph [hostbtncaption1="AT&T",hostbtnregex1="*.ATT*",hostbtncolorR1="1",hostbtncolorG1="0",hostbtncolorB1="0",hostbtncolorA1="1"];
 
     hostregex = N_GNEW(btncount, char **);
-    gtkhostbtn = N_GNEW(btncount, GtkButton*);
-    gtkhostcolor = N_GNEW(btncount, GtkColorButton*);
+    gtkhostbtn = N_GNEW(btncount, GtkButton *);
+    gtkhostcolor = N_GNEW(btncount, GtkColorButton *);
     gtkhostbtncount = btncount;
     if (btncount > 0) {
 	p = glCompPanelNew(25, 75, 165, 400);
@@ -865,27 +891,12 @@ int load_host_buttons(Agraph_t * g, glCompSet * s)
 	prepare_nodes_for_groups(i);
     }
 }
-#endif
 
-
-
-int validate_group_node(tv_node * TV_Node, char *regex_string)
-{
-    btree_node *n = 0;
-//              n=tree_from_filter_string("([IP=\"^10.*\",min=\"0\",max=\"0\"])");
-    int valid = 0;
-    n = tree_from_filter_string(regex_string);
-    valid = evaluate_expresions(TV_Node, n);
-//      delete_node(n); 
-    return valid;
-}
-
-
-
-void on_host_alpha_change(GtkWidget * widget, gpointer user_data)
+static void on_host_alpha_change(GtkWidget * widget, gpointer user_data)
 {
     glexpose();
 }
+#endif
 
 void local_zoom(topview * t)
 {
@@ -941,10 +952,13 @@ void originate_distorded_coordinates(topview * t)
     }
 }
 
+#if 0
 void test_callback()
 {
 }
-void menu_click_control(void *p)
+#endif
+
+static void menu_click_control(void *p)
 {
     glCompSet *s;
     int ind = 0;
@@ -958,7 +972,8 @@ void menu_click_control(void *p)
 	}
     }
 }
-void menu_click_data(void *p)
+
+static void menu_click_data(void *p)
 {
     glCompSet *s;
     int ind = 0;
@@ -972,7 +987,8 @@ void menu_click_data(void *p)
 	}
     }
 }
-void menu_click_hide(void *p)
+
+static void menu_click_hide(void *p)
 {
     glCompSet *s;
     int ind = 0;
@@ -982,29 +998,34 @@ void menu_click_hide(void *p)
 	    glCompPanelHide(s->panels[ind]);	//hide all panels
     }
 }
-void menu_click_pan(void *p)
+
+static void menu_click_pan(void *p)
 {
     view->mouse.mouse_mode = MM_PAN;
 
 }
-void menu_click_zoom(void *p)
+
+static void menu_click_zoom(void *p)
 {
     view->mouse.mouse_mode = MM_ZOOM;
 
 }
-void menu_click_fisheye_magnifier(void *p)
+
+static void menu_click_fisheye_magnifier(void *p)
 {
     view->mouse.mouse_mode = MM_FISHEYE_MAGNIFIER;
 
 }
-void menu_click_zoom_minus(void *p)
+
+static void menu_click_zoom_minus(void *p)
 {
     if ((view->zoom - ZOOM_STEP) > MIN_ZOOM)
 	view->zoom = view->zoom - ZOOM_STEP;
     else
 	view->zoom = MIN_ZOOM;
 }
-void menu_click_zoom_plus(void *p)
+
+static void menu_click_zoom_plus(void *p)
 {
     if ((view->zoom + ZOOM_STEP) < MAX_ZOOM)
 	view->zoom = view->zoom + ZOOM_STEP;
@@ -1012,7 +1033,9 @@ void menu_click_zoom_plus(void *p)
 	view->zoom = (float) MAX_ZOOM;
 
 }
-void menu_click_alpha_plus(void *p)
+
+#ifdef UNUSED
+static void menu_click_alpha_plus(void *p)
 {
     if ((view->zoom + ZOOM_STEP) < MAX_ZOOM)
 	view->zoom = view->zoom + ZOOM_STEP;
@@ -1020,7 +1043,9 @@ void menu_click_alpha_plus(void *p)
 	view->zoom = (float) MAX_ZOOM;
 
 }
-void menu_click_3d_view(void *p)
+#endif
+
+static void menu_click_3d_view(void *p)
 {
     glCompSet *s;
     int ind = 0;
@@ -1033,55 +1058,61 @@ void menu_click_3d_view(void *p)
 	    glCompPanelShow(s->panels[ind]);
 	}
     }
- 
-}
-void menu_switch_to_normal_mode(void* p)
-{
-	view->Topview->is_top_fisheye=0;
-	g_timer_stop(view->timer); 
 
 }
-void menu_switch_to_fisheye(void* p)
+
+static void menu_switch_to_normal_mode(void *p)
 {
-	if (!view->Topview->h) 
-	{
-		please_wait();
-		prepare_topological_fisheye(view->Topview);
-		view->Topview->animate=1;
-		g_timer_start(view->timer); 
-		please_dont_wait();
-	}
-	view->Topview->is_top_fisheye=1;
+    view->Topview->is_top_fisheye = 0;
+    g_timer_stop(view->timer);
+
 }
-void menu_click_rotate(void* p)
+
+static void menu_switch_to_fisheye(void *p)
+{
+    if (!view->Topview->h) {
+	please_wait();
+	prepare_topological_fisheye(view->Topview);
+	view->Topview->animate = 1;
+	g_timer_start(view->timer);
+	please_dont_wait();
+    }
+    view->Topview->is_top_fisheye = 1;
+}
+
+static void menu_click_rotate(void *p)
 {
     view->mouse.mouse_mode = MM_ROTATE;
 }
-void menu_click_rotate_x(void* p)
+
+static void menu_click_rotate_x(void *p)
 {
-	view->mouse.rotate_axis=MOUSE_ROTATE_X;
-}
-void menu_click_rotate_y(void* p)
-{
-	view->mouse.rotate_axis=MOUSE_ROTATE_Y;
-}
-void menu_click_rotate_xy(void* p)
-{
-	view->mouse.rotate_axis=MOUSE_ROTATE_XY;
-}
-void menu_click_rotate_z(void* p)
-{
-	view->mouse.rotate_axis=MOUSE_ROTATE_Z;
+    view->mouse.rotate_axis = MOUSE_ROTATE_X;
 }
 
-static char* smyrna_icon_pan;
-static char* smyrna_icon_zoom;
-static char* smyrna_icon_zoomplus;
-static char* smyrna_icon_zoomminus;
-static char* smyrna_icon_fisheye;
-static char* smyrna_icon_rotate;
+static void menu_click_rotate_y(void *p)
+{
+    view->mouse.rotate_axis = MOUSE_ROTATE_Y;
+}
 
-glCompSet *glcreate_gl_topview_menu()
+static void menu_click_rotate_xy(void *p)
+{
+    view->mouse.rotate_axis = MOUSE_ROTATE_XY;
+}
+
+static void menu_click_rotate_z(void *p)
+{
+    view->mouse.rotate_axis = MOUSE_ROTATE_Z;
+}
+
+static char *smyrna_icon_pan;
+static char *smyrna_icon_zoom;
+static char *smyrna_icon_zoomplus;
+static char *smyrna_icon_zoomminus;
+static char *smyrna_icon_fisheye;
+static char *smyrna_icon_rotate;
+
+static glCompSet *glcreate_gl_topview_menu()
 {
 
     glCompSet *s = NEW(glCompSet);
@@ -1173,7 +1204,7 @@ glCompSet *glcreate_gl_topview_menu()
     b->groupid = 2;
     b->callbackfunc = menu_switch_to_normal_mode;
 
-	glCompSetAddButton(s, b);
+    glCompSetAddButton(s, b);
     //view mode fisheye button
     b = glCompButtonNew(85, 7, 75, 25, "FISHEYE", '\0', 0, 0);
     b->color.R = 0;
@@ -1186,14 +1217,13 @@ glCompSet *glcreate_gl_topview_menu()
     glCompSetAddButton(s, b);
 
     //rotate
-    b = glCompButtonNew(5, 197, 72, 72, "", smyrna_icon_rotate,
-			72, 72);
+    b = glCompButtonNew(5, 197, 72, 72, "", smyrna_icon_rotate, 72, 72);
     b->groupid = 3;
     b->customptr = view;
     b->panel = p;
     b->callbackfunc = menu_click_rotate;
     glCompSetAddButton(s, b);
-	
+
     b = glCompButtonNew(80, 251, 40, 20, "X", '\0', 0, 0);
     b->customptr = view;
     b->panel = p;
@@ -1220,7 +1250,7 @@ glCompSet *glcreate_gl_topview_menu()
     glCompSetAddButton(s, b);
 
 
-	//pan button
+    //pan button
     b = glCompButtonNew(5, 120, 72, 72, "adasasds", smyrna_icon_pan, 72,
 			72);
     b->groupid = 3;
@@ -1299,4 +1329,3 @@ glCompSet *glcreate_gl_topview_menu()
     return s;
 
 }
-
