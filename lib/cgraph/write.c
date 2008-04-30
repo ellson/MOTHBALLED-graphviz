@@ -21,12 +21,6 @@
 #define EMPTY(s)		((s == 0) || (s)[0] == '\0')
 #define MAX(a,b)     ((a)>(b)?(a):(b))
 
-#ifdef WIN32
-extern int strcasecmp(const char *s1, const char *s2);
-extern int strncasecmp(const char *s1, const char *s2, unsigned int n);
-#endif
-
-
 typedef void iochan_t;
 
 static void ioput(Agraph_t * g, iochan_t * ofile, char *str)
@@ -46,12 +40,11 @@ static void indent(Agraph_t * g, iochan_t * ofile)
 	ioput(g, ofile, "\t");
 }
 
-#ifndef WIN32
 #ifndef HAVE_STRCASECMP
 
 #include <string.h>
 
-int strcasecmp(const char *s1, const char *s2)
+static int strcasecmp(const char *s1, const char *s2)
 {
     while ((*s1 != '\0')
 	   && (tolower(*(unsigned char *) s1) ==
@@ -63,7 +56,7 @@ int strcasecmp(const char *s1, const char *s2)
     return tolower(*(unsigned char *) s1) - tolower(*(unsigned char *) s2);
 }
 #endif
-#endif
+
 /* _agstrcanon:
  * Canonicalize ordinary strings. 
  * Assumes buf is large enough to hold output.
