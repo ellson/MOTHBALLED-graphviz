@@ -2638,3 +2638,38 @@ AC_CONFIG_FILES(Makefile
 	)
 
 AC_OUTPUT
+
+dnl ===========================================================================
+
+echo ""
+echo "graphviz-$VERSION will be compiled with the following:"
+echo "features:"
+echo "  smyrna:        $with_smyrna"
+echo "  ipsepcola:     $with_ipsepcola"
+echo "  sfdp:          $with_sfdp"
+#echo ""
+#echo "plugin libraries:"
+#echo "  dot_layout:    Yes (always built in)"
+#echo "  neato_layout:  Yes (always built in)"
+#echo "  core:          Yes (always built in)"
+#echo "  devil:         $with_pango"
+#echo "  gd:            $with_gd"
+#echo "  gdiplus:       $with_gdiplus"
+#echo "  gdk_pixbuf:    $with_gdk_pixbuf"
+#echo "  glitz:         $with_glitz"
+#echo "  gtk:           $with_gtk"
+#echo "  pango/cairo:   $with_pango"
+#echo "  ming:          $with_ming"
+#echo "  xlib:          $with_xlib"
+#echo ""
+#echo "language bindings:"
+#echo "  sharp (C#):    $enable_sharp"
+#echo "  guile:         $enable_guile"
+#echo "  java:          $enable_java"
+#echo "  lua:           $enable_lua"
+#echo "  perl:          $enable_perl"
+#echo "  php:           $enable_php"
+#echo "  python:        $enable_python"
+#echo "  R:             $enable_r"
+#echo "  ruby:          $enable_ruby"
+#echo "  tcl:           $enable_tcl"
