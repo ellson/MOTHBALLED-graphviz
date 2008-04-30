@@ -341,10 +341,12 @@ int *delaunay_tri(double *x, double *y, int n, int* pnedges)
 v_data *delaunay_triangulation(double *x, double *y, int n)
 {
     fprintf(stderr, "Graphviz built without triangulation library\n");
+    return 0;
 }
 int *delaunay_tri(double *x, double *y, int n, int* nedges)
 {
     fprintf(stderr, "Graphviz built without triangulation library\n");
+    return 0;
 }
 #endif
 
