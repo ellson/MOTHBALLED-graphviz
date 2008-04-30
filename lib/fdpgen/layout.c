@@ -1090,12 +1090,12 @@ fdpSplines (graph_t * g)
 	    if (trySplines)
 		Nop = 2;
 	}
-	if (trySplines || (et == ET_SPLINE)) {
+	if (trySplines || (et != ET_COMPOUND)) {
 	    if (HAS_CLUST_EDGE(g)) {
 		agerr(AGWARN,
 		      "splines and cluster edges not supported - using line segments\n");
 	    } else {
-		spline_edges1(g, ET_SPLINE);
+		spline_edges1(g, et);
 	    }
 	}
     }
