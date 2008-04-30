@@ -72,7 +72,7 @@ static RsvgHandle* gvloadimage_rsvg_load(GVJ_t * job, usershape_t *us)
 
     if (!rsvgh) { /* read file into cache */
 	if (!gvusershape_file_access(us))
-	    return;
+	    return NULL;
         switch (us->type) {
             case FT_SVG:
 
