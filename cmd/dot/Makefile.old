@@ -10,7 +10,7 @@ INCS =  -I$(LOC_LIB)/gvc -I$(LOC_LIB)/common -I$(ROOT) -I$(LOC_LIB)/cdt \
         -I$(LOC_LIB)/pathplan -I$(LOC_LIB)/gd -I$(LOC_LIB)/graph
 
 ALLINCS = -I$(LOC_LIB)/dotgen -I$(LOC_LIB)/neatogen -I$(LOC_LIB)/twopigen \
-          -I$(LOC_LIB)/circogen -I$(LOC_LIB)/fdpgen $(INCS)
+          -I$(LOC_LIB)/circogen -I$(LOC_LIB)/fdpgen -I$(LOC_LIB)/sfdpgen $(INCS)
 
 DEFINES = -DHAVE_CONFIG_H -DBUILTINS
 
@@ -34,6 +34,7 @@ LIBS = -L$(LOC_LIB)/gvc -lgvc_dot_builtins $(PLUGS) \
        -L$(LOC_LIB)/dotgen -ldotgen \
        -L$(LOC_LIB)/circogen -lcircogen \
        -L$(LOC_LIB)/fdpgen -lfdpgen \
+       -L$(LOC_LIB)/sfdpgen -lsfdpgen \
        -L$(LOC_LIB)/twopigen -ltwopigen \
        -L$(LOC_LIB)/pack -lpack \
        -L$(LOC_LIB)/common -lcommon \
@@ -43,6 +44,7 @@ DOTLIBS = $(LOC_LIB)/common/libcommon.a \
           $(LOC_LIB)/dotgen/libdotgen.a \
           $(LOC_LIB)/neatogen/libneatogen.a \
           $(LOC_LIB)/fdpgen/libfdpgen.a \
+          $(LOC_LIB)/sfdpgen/libsfdpgen.a \
           $(LOC_LIB)/gvc/libgvc_dot_builtins.a \
           $(LOC_LIB)/vpsc/libvpsc.a \
           $(LOC_LIB)/twopigen/libtwopigen.a \
