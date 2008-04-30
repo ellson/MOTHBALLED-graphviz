@@ -868,9 +868,9 @@ removeOverlapAs(graph_t * G, char* flag)
 	    break;
 #endif
 #ifdef IPSEPCOLA
-        case AM_IPSEP:
-            return 0;   /* handled during layout */
-            break;
+	case AM_IPSEP:
+	    return 0;   /* handled during layout */
+	    break;
 	case AM_VPSC:
 	    ret = vpscAdjust(G);
 	    break;
@@ -900,7 +900,7 @@ removeOverlapAs(graph_t * G, char* flag)
     freeNodes();
     free(sites);
     sites = 0;
-/* fprintf (stderr, "old scale %.4f sec\n", elapsed_sec()); */
+/* fprintf (stderr, "%s %.4f sec\n", am->attrib, elapsed_sec()); */
 
     return ret;
 }
