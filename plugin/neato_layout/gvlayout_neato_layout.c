@@ -74,10 +74,12 @@ gvlayout_engine_t fdpgen_engine = {
     fdp_cleanup,
 };
 
+#ifdef SFDP
 gvlayout_engine_t sfdpgen_engine = {
     sfdp_layout,
     sfdp_cleanup,
 };
+#endif
 
 gvlayout_engine_t twopigen_engine = {
     twopi_layout,
@@ -106,7 +108,9 @@ gvlayout_features_t neatogen_features = {
 gvplugin_installed_t gvlayout_neato_types[] = {
     {LAYOUT_NEATO, "neato", 0, &neatogen_engine, &neatogen_features},
     {LAYOUT_FDP, "fdp", 0, &fdpgen_engine, &neatogen_features},
+#ifdef SFDP
     {LAYOUT_SFDP, "sfdp", 0, &sfdpgen_engine, &neatogen_features},
+#endif
     {LAYOUT_TWOPI, "twopi", 0, &twopigen_engine, &neatogen_features},
     {LAYOUT_CIRCO, "circo", 0, &circogen_engine, &neatogen_features},
     {LAYOUT_NOP1, "nop", 0, &nop1gen_engine, &neatogen_features},
