@@ -30,7 +30,7 @@
 #include "heap.h"
 #include "hedges.h"
 #include "digcola.h"
-#ifdef HAVE_GTS
+#if (HAVE_GTS && SFDP)
 #include "sfdp.h"
 #endif
 #ifdef IPSEPCOLA
@@ -862,7 +862,7 @@ removeOverlapAs(graph_t * G, char* flag)
 	case AM_COMPRESS:
 	    ret = scAdjust(G, -1);
 	    break;
-#ifdef HAVE_GTS
+#if (HAVE_GTS && SFDP)
 	case AM_FDP:
 	    ret = fdpAdjust(G);
 	    break;

@@ -2278,6 +2278,21 @@ AC_SUBST(TCL_PKGINDEX_SWIG)
 AC_SUBST(TK_PKGINDEX)
 
 dnl -----------------------------------
+dnl SFDP
+ 
+AC_ARG_WITH(sfdp,
+  [AC_HELP_STRING([--with-sfdp=no], [sfdp layout engine])],
+  [], [with_sfdp=no])
+
+if test "x$with_sfdp" = "xyes"; then
+	AC_DEFINE_UNQUOTED(SFDP,1,[Define if you want SFDP])
+	AC_MSG_RESULT(Optional SFDP is enabled)
+else
+	AC_MSG_WARN(Optional SFDP is disabled)
+fi
+AM_CONDITIONAL(WITH_SFDP, [test "x$with_sfdp" = "xyes"])
+
+dnl -----------------------------------
 dnl SMYRNA 
 
 AC_ARG_WITH(smyrna,
