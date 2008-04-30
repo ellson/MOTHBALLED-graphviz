@@ -9,6 +9,7 @@ INCS =  -I. -I$(ROOT) \
         -I../vpsc \
         -I../gvc \
         -I../cdt \
+        -I../sfdpgen \
         -I../pathplan \
 		-I../gd \
 		-I../graph
@@ -26,6 +27,7 @@ POBJS = quad_prog_vpsc.o constrained_majorization_ipsep.o mosek_quad_solve.o
 OBJS = adjust.o circuit.o edges.o find_ints.o geometry.o heap.o hedges.o \
        info.o neatoinit.o intersect.o legal.o lu.o matinv.o memory.o poly.o \
        printvis.o site.o solve.o neatosplines.o stuff.o voronoi.o \
+       delaunay.o \
        $(NOBJS) $(POBJS) constraint.o
 
 libneatogen.a : $(OBJS)
