@@ -1,13 +1,36 @@
-enum {SOLVE_METHOD_CG};
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
 
 
-typedef struct Operator_struct *Operator;
+#ifndef SPARSE_SOLVER_H
+#define SPARSE_SOLVER_H
+
+#include "SparseMatrix.h"
+
+enum { SOLVE_METHOD_CG };
+
+typedef struct Operator_struct Operator;
+
+typedef real *(*op_apply_fn) (Operator * o, real * in, real * out);
 
 struct Operator_struct {
-  void *data;
-  real* (*Operator_apply)(Operator o, real *in, real *out);
+    void *data;
+    op_apply_fn Operator_apply;
 };
 
-real conjugate_gradient(Operator A, Operator precon, int n, real *x0, real *rhs, real tol, int maxit, int *flag);
+real SparseMatrix_solve(SparseMatrix * A, int dim, real * x0, real * rhs,
+			real tol, int maxit, int method, int *flag);
 
-real SparseMatrix_solve(SparseMatrix A, int dim, real *x0, real *rhs, real tol, int maxit, int method, int *flag);
+#endif
