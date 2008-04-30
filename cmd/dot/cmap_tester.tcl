@@ -23,6 +23,12 @@ if {[file exists $fn.gif]} {
 	set image_type gif
 } elseif {[file exists $fn.png]} {
 	set image_type png
+} elseif {[file exists [lindex $argv 0].png]} {
+	set fn [lindex $argv 0]
+	set image_type png
+} elseif {[file exists [lindex $argv 0].gif]} {
+	set fn [lindex $argv 0]
+	set image_type gif
 } else {
 	puts stderr "image file $fn.gif or $fn.png does not exist."
 	exit
