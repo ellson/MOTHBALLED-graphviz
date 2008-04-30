@@ -459,142 +459,187 @@ dnl check for SWIG - needed for script-language bindings
 AC_ARG_ENABLE(swig,
   [AC_HELP_STRING([--enable-swig=yes], [swig-generated language bindings])],
   [],[enable_swig=yes])
-if test "x$enable_swig" = "xyes"; then
-AC_CHECK_PROG(SWIG,swig,swig)
-if test "x$SWIG" != "x"; then
-  SWIG_VERSION=`$SWIG -version 2>&1 | $GREP Version | cut -d ' ' -f 3`
-  SWIG_VERSION_MAJOR=`echo $SWIG_VERSION | cut -d '.' -f 1`
-  SWIG_VERSION_MINOR=`echo $SWIG_VERSION | cut -d '.' -f 2`
-  if test $SWIG_VERSION_MAJOR -lt 2; then
-    if test $SWIG_VERSION_MAJOR -lt 1; then
+
+if test "x$enable_swig" != "xyes"; then
+  use_swig="No (disabled)"
+else
+  AC_CHECK_PROG(SWIG,swig,swig)
+  if test "x$SWIG" = "x"; then
+    use_swig="No (swig not available)"
+  else
+    SWIG_VERSION=`$SWIG -version 2>&1 | $GREP Version | cut -d ' ' -f 3`
+    SWIG_VERSION_MAJOR=`echo $SWIG_VERSION | cut -d '.' -f 1`
+    SWIG_VERSION_MINOR=`echo $SWIG_VERSION | cut -d '.' -f 2`
+    if test $SWIG_VERSION_MAJOR -lt 2; then
+      if test $SWIG_VERSION_MAJOR -lt 1; then
 	SWIG=
-    else
-      if test $SWIG_VERSION_MINOR -lt 3; then
-	SWIG=
+      else
+        if test $SWIG_VERSION_MINOR -lt 3; then
+	  SWIG=
+        fi
       fi
     fi
-  fi
-  if test "x$SWIG" = "x"; then
-    AC_MSG_WARN([The version of swig is too old. The language bindings will not be built])
-  fi
+    if test "x$SWIG" = "x"; then
+      AC_MSG_WARN([The version of swig is too old.])
+      use_swig="No (swig too old)"
+    else
+      use_swig="Yes"
+    fi
 fi
-AC_SUBST(SWIG_VERSION)
 fi
 AM_CONDITIONAL(WITH_SWIG, [test "x$SWIG" != "x"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for C#
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(sharp,
   [AC_HELP_STRING([--enable-sharp=yes], [C# language bindings])],
   [],[enable_sharp=yes])
-if test "x$enable_sharp" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-csharp *- Generate'` = 0; then
-	SHARP=
-	AC_MSG_WARN([swig does not support -csharp. The SHARP packages will not be built])
+
+if test "x$enable_sharp" != "xyes"; then
+  use_sharp="No (disabled)"
 else
-AC_CHECK_PROG(SHARP,mcs,mcs)
-SHARP_INCLUDES=
-SHARP_LIBS=
-AC_SUBST(SHARP_INCLUDES)
-AC_SUBST(SHARP_LIBS)
+  if test "x$use_swig" != "xYes"; then
+    use_sharp="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-csharp *- Generate'` = 0; then
+      use_sharp="No (swig does not support -csharp option)"
+    else
+      AC_CHECK_PROG(MCS,mcs,mcs)
+      if test "x$MCS" = "x"; then
+        use_sharp="No (mcs not available)"
+      else
+        use_sharp="Yes"
+        SHARP_INCLUDES=
+        SHARP_LIBS=
+        AC_SUBST(SHARP_INCLUDES)
+        AC_SUBST(SHARP_LIBS)
+      fi
+    fi
+  fi
 fi
-fi
-fi
-AM_CONDITIONAL(WITH_SHARP, [test "x$SHARP" != "x"])
+AM_CONDITIONAL(WITH_SHARP, [test "x$use_sharp" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GUILE
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(guile,
   [AC_HELP_STRING([--enable-guile=yes], [guile language bindings])],
   [],[enable_guile=yes])
-if test "x$enable_guile" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-guile *- Generate'` = 0; then
-	GUILE=
-	AC_MSG_WARN([swig does not support -guile. The GUILE packages will not be built])
+
+if test "x$enable_guile" != "xyes"; then
+  use_guile="No (disabled)"
 else
-AC_CHECK_PROG(GUILE,guile,guile)
-if test "x$GUILE" != "x"; then
-  GUILE_VERSION=`$GUILE --version | head -1 | cut -d ' ' -f 2`
-  GUILE_VERSION_MAJOR=`echo $GUILE_VERSION | cut -d '.' -f 1`
-  GUILE_VERSION_MINOR=`echo $GUILE_VERSION | cut -d '.' -f 2`
-  if test $GUILE_VERSION_MAJOR -lt 2; then
-    if test $GUILE_VERSION_MAJOR -lt 1; then
-      GUILE=
+  if test "x$use_swig" != "xYes"; then
+    use_guile="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-guile *- Generate'` = 0; then
+      use_guile="No (swig does not support -guile option)"
     else
-      if test $GUILE_VERSION_MINOR -lt 4; then
-	GUILE=
+      AC_CHECK_PROG(GUILE,guile,guile)
+      if test "x$GUILE" = "x"; then
+        use_guile="No (guile not available)"
+      else
+        GUILE_VERSION=`$GUILE --version | head -1 | cut -d ' ' -f 2`
+        GUILE_VERSION_MAJOR=`echo $GUILE_VERSION | cut -d '.' -f 1`
+        GUILE_VERSION_MINOR=`echo $GUILE_VERSION | cut -d '.' -f 2`
+        if test $GUILE_VERSION_MAJOR -lt 2; then
+          if test $GUILE_VERSION_MAJOR -lt 1; then
+            GUILE=
+          else
+            if test $GUILE_VERSION_MINOR -lt 4; then
+	      GUILE=
+            fi
+          fi
+        fi
+        if test "x$GUILE" = "x"; then
+	  use_guile="No (guile is too old)"
+        else
+          GUILE_INCLUDES=
+          GUILE_LIBS=
+          AC_CHECK_HEADER(libguile.h,,[
+            use_guile="No (guile header missing)"
+            GUILE=
+          ])
+          if test "x$GUILE" != "x"; then
+	    use_guile="Yes"
+            AC_SUBST(GUILE_INCLUDES)
+            AC_SUBST(GUILE_LIBS)
+          fi
+        fi
       fi
     fi
   fi
-  if test "x$GUILE" = "x"; then
-    AC_MSG_WARN([The version of guile is too old. The guile language binding will not be built])
-  else
-    GUILE_INCLUDES=
-    GUILE_LIBS=
-    AC_CHECK_HEADER(libguile.h,,[
-    AC_MSG_WARN([Unable to find header libguile.h. The Guile packages will not be built])
-      GUILE=
-    ])
-    AC_SUBST(GUILE_INCLUDES)
-    AC_SUBST(GUILE_LIBS)
-  fi
 fi
-fi
-fi
-fi
-AM_CONDITIONAL(WITH_GUILE, [test "x$GUILE" != "x"])
+AM_CONDITIONAL(WITH_GUILE, [test "x$use_guile" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for IO   (disbled until supported by swig)
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(io,
   [AC_HELP_STRING([--enable-io=no], [io language bindings])],
   [], [enable_io=no])
-if test "x$enable_io" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-io *- Generate'` = 0; then
-	IO=
-	AC_MSG_WARN([swig does not support -io. The IO packages will not be built])
+
+if test "x$enable_io" != "xyes"; then
+  use_io="No (disabled)"
 else
-AC_CHECK_PROG(IO,io,io)
-IO_INCLUDES=
-IO_LIBS=
-AC_SUBST(IO_INCLUDES)
-AC_SUBST(IO_LIBS)
+  if test "x$use_swig" != "xYes"; then
+    use_io="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-io *- Generate'` = 0; then
+      use_io="No (swig does not support -io option)"
+    else
+      AC_CHECK_PROG(IO,io,io)
+      if test "x$IO" = "x"; then
+        use_io="No (io not available)"
+      else
+        use_io="Yes"
+        IO_INCLUDES=
+        IO_LIBS=
+        AC_SUBST(IO_INCLUDES)
+        AC_SUBST(IO_LIBS)
+      fi
+    fi
+  fi
 fi
-fi
-fi
-AM_CONDITIONAL(WITH_IO, [test "x$IO" != "x"])
+AM_CONDITIONAL(WITH_IO, [test "x$use_io" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for JAVA
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(java,
   [AC_HELP_STRING([--enable-java=yes], [java language bindings])],
   [], [enable_java=yes])
-if test "x$enable_java" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-java *- Generate'` = 0; then
-	JAVA=
-	AC_MSG_WARN([swig does not support -java. The JAVA packages will not be built])
+
+if test "x$enable_java" != "xyes"; then
+  use_java="No (disabled)"
 else
-AC_CHECK_PROG(JAVA,java,java)
-JAVA_INCLUDES=
-JAVA_LIBS=
-AC_CHECK_HEADER(jni.h,,[
-  AC_MSG_WARN([Unable to find header jni.h. The JAVA packages will not be built])
-  JAVA=
-  ])
-AC_SUBST(JAVA_INCLUDES)
-AC_SUBST(JAVA_LIBS)
+  if test "x$use_swig" != "xYes"; then
+    use_java="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-java *- Generate'` = 0; then
+      use_java="No (swig does not support -java option)"
+    else
+      AC_CHECK_PROG(JAVA,java,java)
+      if test "x$JAVA" = "x"; then
+        use_java="No (java not available)"
+      else
+        JAVA_INCLUDES=
+        JAVA_LIBS=
+        AC_CHECK_HEADER(jni.h,,[
+            use_java="No (missing header)"
+  	    JAVA=
+        ])
+        if test "x$JAVA" != "x"; then
+          use_java="Yes"
+	  AC_SUBST(JAVA_INCLUDES)
+          AC_SUBST(JAVA_LIBS)
+        fi
+      fi
+    fi
+  fi
 fi
-fi
-fi
-AM_CONDITIONAL(WITH_JAVA, [test "x$JAVA" != "x"])
+AM_CONDITIONAL(WITH_JAVA, [test "x$use_java" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for LUA
@@ -2284,13 +2329,13 @@ AC_ARG_WITH(sfdp,
   [AC_HELP_STRING([--with-sfdp=no], [sfdp layout engine])],
   [], [with_sfdp=no])
 
-if test "x$with_sfdp" = "xyes"; then
-	AC_DEFINE_UNQUOTED(SFDP,1,[Define if you want SFDP])
-	AC_MSG_RESULT(Optional SFDP is enabled)
+if test "x$with_sfdp" != "xyes"; then
+  use_sfdp="No (disabled)"
 else
-	AC_MSG_WARN(Optional SFDP is disabled)
+  use_sfdp="Yes"
+  AC_DEFINE_UNQUOTED(SFDP,1,[Define if you want SFDP])
 fi
-AM_CONDITIONAL(WITH_SFDP, [test "x$with_sfdp" = "xyes"])
+AM_CONDITIONAL(WITH_SFDP, [test "x$use_sfdp" = "xYes"])
 
 dnl -----------------------------------
 dnl SMYRNA 
@@ -2299,30 +2344,33 @@ AC_ARG_WITH(smyrna,
   [AC_HELP_STRING([--with-smyrna=no], [SMYRNA large graph viewer])],
   [], [with_smyrna=no])
 
-if test "x$HAVE_GTK" != "x1"; then
-	with_smyrna=no
-	AC_MSG_WARN(SMYRNA requires GTK)
-fi
-if test "x$HAVE_GTKGLEXT" != "x1"; then
-	with_smyrna=no
-	AC_MSG_WARN(SMYRNA requires GTKGLEXT)
-fi
-if test "x$HAVE_GLADE" != "x1"; then
-	with_smyrna=no
-	AC_MSG_WARN(SMYRNA requires GLADE)
-fi
-if test "x$HAVE_GTS" != "x1"; then
-	with_smyrna=no
-	AC_MSG_WARN(SMYRNA requires GTS)
-fi
-
-if test "x$with_smyrna" = "xyes"; then
-	AC_DEFINE_UNQUOTED(SMYRNA,1,[Define if you want SMYRNA])
-	AC_MSG_RESULT(Optional SMYRNA is enabled)
+if test "x$with_smyrna" != "xyes"; then
+  use_smyrna="No (disabled)"
 else
-	AC_MSG_WARN(Optional SMYRNA is disabled)
+  if test "x$HAVE_GTK" != "x1"; then
+     AC_MSG_WARN(SMYRNA requires GTK)
+     requires=" gtk+"
+  fi
+  if test "x$HAVE_GTKGLEXT" != "x1"; then
+     AC_MSG_WARN(SMYRNA requires GTKGLEXT)
+     requires="$requires gtkglext"
+  fi
+  if test "x$HAVE_GTKGLEXT" != "x1"; then
+     AC_MSG_WARN(SMYRNA requires GLADE)
+     requires="$requires glade"
+  fi
+  if test "x$HAVE_GTS" != "x1"; then
+     AC_MSG_WARN(SMYRNA requires GTS)
+     requires="$requires gts"
+  fi
+  if test "x$requires" != "x"; then
+     use_smyrna="No (requires:$requires)"
+  else
+     use_smyrna="Yes"
+     AC_DEFINE_UNQUOTED(SMYRNA,1,[Define if you want SMYRNA])
+  fi
 fi
-AM_CONDITIONAL(WITH_SMYRNA, [test "x$with_smyrna" = "xyes"])
+AM_CONDITIONAL(WITH_SMYRNA, [test "x$use_smyrna" = "xYes"])
 
 dnl -----------------------------------
 dnl DIGCOLA 
@@ -2331,35 +2379,34 @@ AC_ARG_WITH(digcola,
   [AC_HELP_STRING([--with-digcola=yes], [DIGCOLA features in neato layout engine])],
   [], [with_digcola=yes])
 
-if test "x$with_digcola" = "xyes"; then
-	AC_DEFINE_UNQUOTED(DIGCOLA,1,[Define if you want DIGCOLA])
-	AC_MSG_RESULT(Optional DIGCOLA is enabled)
+if test "x$with_digcola" != "xyes"; then
+  use_digcola="No (disabled)"
 else
-	AC_MSG_WARN(Optional DIGCOLA is disabled)
+  use_digcola="Yes"
+  AC_DEFINE_UNQUOTED(DIGCOLA,1,[Define if you want DIGCOLA])
 fi
 
 dnl -----------------------------------
 dnl IPSEPCOLA   /* disabled by default due to C++ issues on some platforms */
 AC_ARG_WITH(ipsepcola,
-  [AC_HELP_STRING([--with-ipsepcola=no],
-	[IPSEPCOLA features in neato layout engine])],
+  [AC_HELP_STRING([--with-ipsepcola=no], [IPSEPCOLA features in neato layout engine])],
   [], [with_ipsepcola=no])
 
-### unless digcola was not enabled since ipsecola depends on it
-if test "x$with_digcola" = "xno"; then
-	AC_MSG_WARN(Optional IPSEPCOLA is disabled - depends on DIGCOLA)
-	with_ipsepcola=no
+if test "x$with_ipsepcola" != "xyes"; then
+  use_ipsepcola="No (disabled)"
+else
+  if test "x$use_digcola" != "xYes"; then
+    use_ipsepcola="No (requires: digcola)"
+  else
+    use_ipsepcola="Yes"
+    AC_DEFINE_UNQUOTED(IPSEPCOLA,1,[Define if you want IPSEPCOLA])
+    IPSEPCOLA_INCLUDES='-I$(top_srcdir)/lib/vpsc'
+    IPSEPCOLA_LIBS='$(top_builddir)/lib/vpsc/libvpsc_C.la -lstdc++'
+    AC_SUBST(IPSEPCOLA_INCLUDES)
+    AC_SUBST(IPSEPCOLA_LIBS)
+  fi
 fi
-
-if test "x$with_ipsepcola" = "xyes"; then
-	AC_DEFINE_UNQUOTED(IPSEPCOLA,1,[Define if you want IPSEPCOLA])
-	AC_MSG_RESULT(Optional IPSEPCOLA is enabled)
-	IPSEPCOLA_INCLUDES='-I$(top_srcdir)/lib/vpsc'
-	IPSEPCOLA_LIBS='$(top_builddir)/lib/vpsc/libvpsc_C.la -lstdc++'
-AC_SUBST(IPSEPCOLA_INCLUDES)
-AC_SUBST(IPSEPCOLA_LIBS)
-fi
-AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$with_ipsepcola" = "xyes"])
+AM_CONDITIONAL(WITH_IPSEPCOLA, [test "x$use_ipsepcola" = "xYes"])
 
 # -----------------------------------
 # Special checks
@@ -2644,32 +2691,36 @@ dnl ===========================================================================
 echo ""
 echo "graphviz-$VERSION will be compiled with the following:"
 echo "features:"
-echo "  smyrna:        $with_smyrna"
-echo "  ipsepcola:     $with_ipsepcola"
-echo "  sfdp:          $with_sfdp"
-#echo ""
-#echo "plugin libraries:"
-#echo "  dot_layout:    Yes (always built in)"
-#echo "  neato_layout:  Yes (always built in)"
-#echo "  core:          Yes (always built in)"
-#echo "  devil:         $with_pango"
-#echo "  gd:            $with_gd"
-#echo "  gdiplus:       $with_gdiplus"
-#echo "  gdk_pixbuf:    $with_gdk_pixbuf"
-#echo "  glitz:         $with_glitz"
-#echo "  gtk:           $with_gtk"
-#echo "  pango/cairo:   $with_pango"
-#echo "  ming:          $with_ming"
-#echo "  xlib:          $with_xlib"
-#echo ""
-#echo "language bindings:"
-#echo "  sharp (C#):    $enable_sharp"
-#echo "  guile:         $enable_guile"
-#echo "  java:          $enable_java"
-#echo "  lua:           $enable_lua"
-#echo "  perl:          $enable_perl"
-#echo "  php:           $enable_php"
-#echo "  python:        $enable_python"
-#echo "  R:             $enable_r"
-#echo "  ruby:          $enable_ruby"
-#echo "  tcl:           $enable_tcl"
+echo "  smyrna:        $use_smyrna"
+echo "  digcola:       $use_digcola"
+echo "  ipsepcola:     $use_ipsepcola"
+echo "  sfdp:          $use_sfdp"
+echo ""
+echo "plugin libraries:"
+echo "  dot_layout:    Yes (always built in)"
+echo "  neato_layout:  Yes (always built in)"
+echo "  core:          Yes (always built in)"
+#echo "  devil:         $use_pango"
+#echo "  gd:            $use_gd"
+#echo "  gdiplus:       $use_gdiplus"
+#echo "  gdk_pixbuf:    $use_gdk_pixbuf"
+#echo "  glitz:         $use_glitz"
+#echo "  gtk:           $use_gtk"
+#echo "  pango/cairo:   $use_pango"
+#echo "  ming:          $use_ming"
+#echo "  xlib:          $use_xlib"
+echo "   (unfinished status for: devil,gd,gdiplus,gdk_pixbuf,glitz,gtk,pango/cairo,ming,xlib)"
+echo ""
+echo "language bindings:"
+echo "  sharp (C#):    $use_sharp"
+echo "  guile:         $use_guile"
+echo "  io:            $use_io"
+echo "  java:          $use_java"
+#echo "  lua:           $use_lua"
+#echo "  perl:          $use_perl"
+#echo "  php:           $use_php"
+#echo "  python:        $use_python"
+#echo "  R:             $use_r"
+#echo "  ruby:          $use_ruby"
+#echo "  tcl:           $use_tcl"
+echo "   (unfinished status for: lua,perl,python,R,ruby,tcl)"
