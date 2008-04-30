@@ -246,6 +246,12 @@ cat{
 /* Default DPI. */
 #define DEFAULT_DPI 96
  
+/* Define if you want SFDP. */
+#define SFDP 1
+ 
+/* Define if you want to use the triangle library. */
+#define HAVE_TRIANGLE 1
+ 
 #define VERSION "VVVV"
 
 /* Define if you have the pango library with cairo support */
