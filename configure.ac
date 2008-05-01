@@ -2511,7 +2511,7 @@ AC_ARG_WITH(sfdp,
   [], [with_sfdp=no])
 
 if test "x$with_sfdp" != "xyes"; then
-  use_sfdp="No (disabled by default- experimental)"
+  use_sfdp="No (disabled by default - experimental)"
 else
   use_sfdp="Yes"
   AC_DEFINE_UNQUOTED(SFDP,1,[Define if you want SFDP])
