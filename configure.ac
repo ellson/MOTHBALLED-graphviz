@@ -644,146 +644,142 @@ AM_CONDITIONAL(WITH_JAVA, [test "x$use_java" = "xYes"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for LUA
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(lua,
   [AC_HELP_STRING([--enable-lua=yes], [lua language bindings])],
   [], [enable_lua=yes])
-if test "x$enable_lua" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-lua *- Generate'` = 0; then
-	LUA=
-	AC_MSG_WARN([swig does not support -lua. The LUA packages will not be built])
-	enable_lua=no
-fi
-fi
-fi
 
-if test "x$enable_lua" = "xyes" ; then
-    ac_save_CPPFLAGS="$CPPFLAGS"
-    ac_save_CFLAGS="$CFLAGS"
-    ac_save_LDFLAGS="$LDFLAGS"
-
-    AC_CHECK_PROG(LUA,lua,lua)
-
-    LUA_INCLUDES=""
-    LUA_LIBS=""
-    LUA_INSTALL_DIR=""
-
-    if test -n "$lua_inc"; then
-       CFLAGS="$CFLAGS -I$lua_inc"
-       CPPFLAGS="$CPPFLAGS -I$lua_inc"
-    fi
-    if test -n "$lua_lib"; then
-       LDFLAGS="$LDFLAGS -L$lua_lib"
-    fi
-
-    if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
-        PKGCONFIG=""
-        AC_CHECK_PROGS(PKGCONFIG, pkg-config)
-        if test "x$PKGCONFIG" != "x"; then
-	    AC_MSG_CHECKING(for Lua headers and libraries with pkg-config)
+if test "x$enable_lua" != "xyes"; then
+  use_lua="No (disabled)"
+else
+  if test "x$use_swig" != "xYes"; then
+    use_lua="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-lua *- Generate'` = 0; then
+      use_lua="No (swig does not support -lua option)"
+    else
+      AC_CHECK_PROG(LUA,lua,lua)
+      if test "x$LUA" = "x"; then
+        use_lua="No (lua not available)"
+      else
+        ac_save_CPPFLAGS="$CPPFLAGS"
+        ac_save_CFLAGS="$CFLAGS"
+        ac_save_LDFLAGS="$LDFLAGS"
+    
+        AC_CHECK_PROG(LUA,lua,lua)
+    
+        LUA_INCLUDES=""
+        LUA_LIBS=""
+        LUA_INSTALL_DIR=""
+    
+        if test -n "$lua_inc"; then
+           CFLAGS="$CFLAGS -I$lua_inc"
+           CPPFLAGS="$CPPFLAGS -I$lua_inc"
+        fi
+        if test -n "$lua_lib"; then
+           LDFLAGS="$LDFLAGS -L$lua_lib"
+        fi
+    
+        if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
+            PKGCONFIG=""
+            AC_CHECK_PROGS(PKGCONFIG, pkg-config)
+            if test "x$PKGCONFIG" != "x"; then
+	        AC_MSG_CHECKING(for Lua headers and libraries with pkg-config)
+	        echo
+	        for l in "$lua_suffix" "" "51" "5.1" "50" "5.0" ; do
+	            pkgconfig_lua_found=`$PKGCONFIG --exists lua$l 2>/dev/null`
+	            if test "x$?" = "x0" ; then
+		        LUA_VERSION=`$PKGCONFIG --modversion lua$l`
+                        LUA_INCLUDES="$LUA_CFLAGS "`$PKGCONFIG --cflags lua$l`
+                        LUA_LIBS="$LUA_LFLAGS "`$PKGCONFIG --libs lua$l`
+		        LUA_INSTALL_DIR="/usr/lib$LIBPOSTFIX/lua/`$PKGCONFIG --variable=V lua`"
+    
+		        pkgconfig_lualib_found=`$PKGCONFIG --exists lualib$l 2>/dev/null`
+		        if test  "x$?" = "x0"; then
+		           LUA_INCLUDES="$LUA_CFLAGS "`$PKGCONFIG --cflags lualib$l`
+		           LUA_LIBS="$LUA_LFLAGS "`$PKGCONFIG --libs lualib$l`
+		        fi
+                        break
+                    fi
+                done
+            fi
+        fi
+    
+        if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
+            LUACONFIG=""
+            AC_CHECK_PROGS(LUACONFIG, lua-config lua-config51 lua-config5.1 lua-config50 lua-config5.0)
+            if test "x$LUACONFIG" != "x" ; then
+                AC_MSG_CHECKING(for Lua headers and libraries with lua-config)
+	        echo
+                LUA_INCLUDES=`$LUACONFIG --include`
+                LUA_LIBS=`$LUACONFIG --libs`
+	        LUA_VERSION="5.0.x"
+	        LUA_INSTALL_DIR="/usr/lib$LIBPOSTFIX/lua/5.0"
+            fi
+        fi
+    
+        if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
+            AC_MSG_CHECKING(for Lua headers and libraries)
 	    echo
-	    for l in "$lua_suffix" "" "51" "5.1" "50" "5.0" ; do
-	        pkgconfig_lua_found=`$PKGCONFIG --exists lua$l 2>/dev/null`
-	        if test "x$?" = "x0" ; then
-		    LUA_VERSION=`$PKGCONFIG --modversion lua$l`
-                    LUA_INCLUDES="$LUA_CFLAGS "`$PKGCONFIG --cflags lua$l`
-                    LUA_LIBS="$LUA_LFLAGS "`$PKGCONFIG --libs lua$l`
-		    LUA_INSTALL_DIR="/usr/lib$LIBPOSTFIX/lua/`$PKGCONFIG --variable=V lua`"
-
-		    pkgconfig_lualib_found=`$PKGCONFIG --exists lualib$l 2>/dev/null`
-		    if test  "x$?" = "x0"; then
-		       LUA_INCLUDES="$LUA_CFLAGS "`$PKGCONFIG --cflags lualib$l`
-		       LUA_LIBS="$LUA_LFLAGS "`$PKGCONFIG --libs lualib$l`
+            AC_CHECK_HEADER(lua.h,ac_found_lua_header="yes",ac_found_lua_header="no")
+            AC_CHECK_HEADER(lualib.h,ac_found_liblua_header="yes",ac_found_liblua_header="no")
+            if test "x$ac_found_lua_header" = "xyes" -a "x$ac_found_liblua_header" = "xyes"; then
+                LUA_INCLUDES="$CFLAGS"
+            fi
+            for l in "$lua_suffix" "" "51" "5.1" "50" "5.0" ; do
+                AC_CHECK_LIB(lua$l,lua_call,ac_found_lua_lib="yes",ac_found_lua_lib="no")
+                if test "x$ac_found_lua_lib" = "xyes" ; then
+	            LUA_VERSION=">=5.1.0"
+    
+	            LUA_LIBS="$LDFLAGS -llua$l -lm"
+    
+		    ac2_save_LDFLAGS="$LDFLAGS"
+		    LDFLAGS="$LDFLAGS -llua$l -lm"
+    
+		    if echo "$host_os" | grep "^linux" 1>/dev/null 2>&1 ; then
+		       LDFLAGS="$LDFLAGS -ldl"
 		    fi
-                    break
-                fi
+    
+		    AC_CHECK_LIB(lualib$l,luaL_openlib,ac_found_liblua_lib="yes",ac_found_liblua_lib="no")
+		    if test "x$ac_found_liblua_lib" = "xyes" ; then
+		       LUA_VERSION="5.0.x"
+    
+		       LUA_LIBS="$LUA_LFLAGS -llualib$l"
+    
+		       if echo "$host_os" | grep "^linux" 1>/dev/null 2>&1 ; then
+		          LUA_LIBS="$LUA_LFLAGS -ldl"
+		       fi
+		    fi
+    
+		    LDFLAGS="$ac2_save_LDFLAGS"
+		    break
+	        fi
             done
         fi
-    fi
-
-    if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
-        LUACONFIG=""
-        AC_CHECK_PROGS(LUACONFIG, lua-config lua-config51 lua-config5.1 lua-config50 lua-config5.0)
-        if test "x$LUACONFIG" != "x" ; then
-            AC_MSG_CHECKING(for Lua headers and libraries with lua-config)
-	    echo
-            LUA_INCLUDES=`$LUACONFIG --include`
-            LUA_LIBS=`$LUACONFIG --libs`
-	    LUA_VERSION="5.0.x"
-	    LUA_INSTALL_DIR="/usr/lib$LIBPOSTFIX/lua/5.0"
-        fi
-    fi
-
-    if test "x$LUA_INCLUDES" = "x" -o "x$LUA_LIBS" = "x" ; then
-        AC_MSG_CHECKING(for Lua headers and libraries)
-	echo
-        AC_CHECK_HEADER(lua.h,ac_found_lua_header="yes",ac_found_lua_header="no")
-        AC_CHECK_HEADER(lualib.h,ac_found_liblua_header="yes",ac_found_liblua_header="no")
-        if test "x$ac_found_lua_header" = "xyes" -a "x$ac_found_liblua_header" = "xyes"; then
-            LUA_INCLUDES="$CFLAGS"
-        fi
-        for l in "$lua_suffix" "" "51" "5.1" "50" "5.0" ; do
-            AC_CHECK_LIB(lua$l,lua_call,ac_found_lua_lib="yes",ac_found_lua_lib="no")
-            if test "x$ac_found_lua_lib" = "xyes" ; then
-	        LUA_VERSION=">=5.1.0"
-
-	        LUA_LIBS="$LDFLAGS -llua$l -lm"
-
-		ac2_save_LDFLAGS="$LDFLAGS"
-		LDFLAGS="$LDFLAGS -llua$l -lm"
-
-		if echo "$host_os" | grep "^linux" 1>/dev/null 2>&1 ; then
-		   LDFLAGS="$LDFLAGS -ldl"
-		fi
-
-		AC_CHECK_LIB(lualib$l,luaL_openlib,ac_found_liblua_lib="yes",ac_found_liblua_lib="no")
-		if test "x$ac_found_liblua_lib" = "xyes" ; then
-		   LUA_VERSION="5.0.x"
-
-		   LUA_LIBS="$LUA_LFLAGS -llualib$l"
-
-		   if echo "$host_os" | grep "^linux" 1>/dev/null 2>&1 ; then
-		      LUA_LIBS="$LUA_LFLAGS -ldl"
-		   fi
-		fi
-
-		LDFLAGS="$ac2_save_LDFLAGS"
-		break
-	    fi
-        done
-    fi
-
-    AC_MSG_CHECKING(for Lua compiling and linking)
-    LUA_TEST=`LT=luatest.c ; echo "#include <lua.h>" > $LT;  echo "#include <lualib.h>" >> $LT; echo "int main() { luaopen_base((lua_State *)lua_open()); return 0; }" >> $LT ; $CC -Wall $LT -o $LT.out $LUA_INCLUDES $LUA_LIBS $CFLAGS $LDFLAGS 1>/dev/null 2>&1 ; echo $?; rm -f $LT $LT.out 1>/dev/null 2>&1`
-    if test "x$LUA_TEST" != "x0" ; then
-        AC_MSG_RESULT(no)
-        AC_MSG_WARN([
+    
+        AC_MSG_CHECKING(for Lua compiling and linking)
+        LUA_TEST=`LT=luatest.c ; echo "#include <lua.h>" > $LT;  echo "#include <lualib.h>" >> $LT; echo "int main() { luaopen_base((lua_State *)lua_open()); return 0; }" >> $LT ; $CC -Wall $LT -o $LT.out $LUA_INCLUDES $LUA_LIBS $CFLAGS $LDFLAGS 1>/dev/null 2>&1 ; echo $?; rm -f $LT $LT.out 1>/dev/null 2>&1`
+        if test "x$LUA_TEST" != "x0" ; then
+          AC_MSG_RESULT(no)
+          AC_MSG_WARN([
 *** Lua (>=5.0) headers and/or libraries could not be found in your system.
 *** Try to install liblua, liblualib and liblua-dev with your software package manager.
 *** Graphviz will be built without Lua support.])
-        enable_lua="no"
-        not_found="$not_found lua"
-    else
-        AC_MSG_RESULT(yes)
+          use_lua="No ($not_found lua)"
+        else
+	  use_lua="Yes"
+          AC_SUBST(LUA_INCLUDES)
+          AC_SUBST(LUA_LIBS)
+          AC_SUBST(LUA_INSTALL_DIR)
+          # Not needed for Graphviz: AC_DEFINE(PLUGIN_LUA)
+        fi
+        CFLAGS="$ac_save_CFLAGS"
+        CPPFLAGS="$ac_save_CPPFLAGS"
+        LDFLAGS="$ac_save_LDFLAGS"
+      fi
     fi
-
-    CFLAGS="$ac_save_CFLAGS"
-    CPPFLAGS="$ac_save_CPPFLAGS"
-    LDFLAGS="$ac_save_LDFLAGS"
+  fi
 fi
-
-if test "x$enable_lua" = "xyes" ; then
-    : # needed because if AC_SUBST is expanded to nothing, syntax error
-    AC_SUBST(LUA_INCLUDES)
-    AC_SUBST(LUA_LIBS)
-    AC_SUBST(LUA_INSTALL_DIR)
-    # Not needed for Graphviz: AC_DEFINE(PLUGIN_LUA)
-fi
-
-# --->8--- weechat --->8---
-
-#echo "WE HAVE HERE: $enable_lua" > "/tmp/IAMAFOOL"
-AM_CONDITIONAL(WITH_LUA, [test "x$enable_lua" = "xyes"])
+AM_CONDITIONAL(WITH_LUA, [test "x$use_lua" = "xYes"])
 
 
 dnl -----------------------------------
@@ -820,351 +816,424 @@ AM_CONDITIONAL(WITH_OCAMLOPT, [test "x$OCAML_OPT" != "x"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PERL
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(perl,
   [AC_HELP_STRING([--enable-perl=yes], [perl language bindings])],
   [], [enable_perl=yes])
-if test "x$enable_perl" = "xyes"; then
-AC_CHECK_PROG(PERL,perl,perl)
-if test -n "$PERL" && $PERL -e 'exit !($] <= 5.004)' > /dev/null 2>&1 ; then
-	PERL=
-	AC_MSG_WARN([perl is too old. The PERL packages will not be built])
+
+if test "x$enable_perl" != "xyes"; then
+  use_perl="No (disabled)"
+else
+  if test "x$use_swig" != "xYes"; then
+    use_perl="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-perl *- Generate'` = 0; then
+      use_perl="No (swig does not support -perl option)"
+    else
+      AC_CHECK_PROG(PERL,perl,perl)
+      if test "x$PERL" = "x"; then
+        use_perl="No (perl not available)"
+      else
+        if test $PERL -e 'exit !($] <= 5.004)' > /dev/null 2>&1 ; then
+	  use_perl="No (perl is too old)"
+	  PERL=
+	else
+          PERL_ARCHLIB=`$PERL -e 'use Config; print $Config{archlib};'`
+          PERL_INCLUDES=-I$PERL_ARCHLIB/CORE
+          PERL_LIBS="-L$PERL_ARCHLIB/CORE -lperl"
+	  PERL_INSTALL_DIR="`$PERL -e 'use Config; print $Config{vendorarch};'`"
+	  save_CPPFLAGS=$CPPFLAGS
+	  CPPFLAGS="$CPPFLAGS $PERL_INCLUDES"
+          AC_CHECK_HEADER(EXTERN.h,,[
+            use_perl="No (missing header)"
+  	    PERL=
+          ])
+	  CPPFLAGS=$save_CPPFLAGS
+	fi
+        if test "x$PERL" != "x"; then
+          use_perl="Yes"
+	  AC_SUBST(PERL_INCLUDES)
+          AC_SUBST(PERL_LIBS)
+	  AC_SUBST(PERL_INSTALL_DIR)
+        fi
+      fi
+    fi
+  fi
 fi
-if test `$SWIG -help 2>&1 | $GREP -c '\-perl *- Generate'` = 0; then
-	PERL=
-	AC_MSG_WARN([swig does not support -perl. The PERL packages will not be built])
-fi
-if test "x$PERL" != "x"; then
-  PERL_ARCHLIB=`$PERL -e 'use Config; print $Config{archlib};'`
-  PERL_INCLUDES=-I$PERL_ARCHLIB/CORE
-  PERL_LIBS="-L$PERL_ARCHLIB/CORE -lperl"
-  PERL_INSTALL_DIR="`$PERL -e 'use Config; print $Config{vendorarch};'`"
-  save_CPPFLAGS=$CPPFLAGS
-  CPPFLAGS="$CPPFLAGS $PERL_INCLUDES"
-  AC_CHECK_HEADER(EXTERN.h,,[
-    AC_MSG_WARN([Unable to find header EXTERN.h. The PERL packages will not be built])
-    PERL=
-    ])
-  CPPFLAGS=$save_CPPFLAGS
-fi
-AC_SUBST(PERL_INCLUDES)
-AC_SUBST(PERL_LIBS)
-AC_SUBST(PERL_INSTALL_DIR)
-fi
-fi
-AM_CONDITIONAL(WITH_PERL, [test "x$PERL" != "x"])
+AM_CONDITIONAL(WITH_PERL, [test "x$use_perl" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PHP
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(php,
   [AC_HELP_STRING([--enable-php=yes], [php language bindings])],
   [], [enable_php=yes])
-if test "x$enable_php" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-php5[[ ]]*- Generate'` = 0; then
-	PHP=
-	AC_MSG_WARN([swig does not support -php5. The PHP packages will not be built])
+
+if test "x$enable_php" != "xyes"; then
+  use_php="No (disabled)"
 else
-AC_CHECK_PROG(PHP,php,php)
-if test -d /usr/include/php5; then
-PHP_INCLUDES="-I/usr/include/php5 -I/usr/include/php5/main -I/usr/include/php5/Zend -I/usr/include/php5/TSRM"
-else
-PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
+  if test "x$use_swig" != "xYes"; then
+    use_php="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-php5 *- Generate'` = 0; then
+      use_php="No (swig does not support -php5 option)"
+    else
+      AC_CHECK_PROG(PHP,php,php)
+      if test "x$PHP" = "x"; then
+        use_php="No (php not available)"
+      else
+        if test -d /usr/include/php5; then
+          PHP_INCLUDES="-I/usr/include/php5 -I/usr/include/php5/main -I/usr/include/php5/Zend -I/usr/include/php5/TSRM"
+        else
+          PHP_INCLUDES="-I/usr/include/php -I/usr/include/php/main -I/usr/include/php/Zend -I/usr/include/php/TSRM"
+        fi
+        PHP_INSTALL_DIR="/usr/lib${LIBPOSTFIX}/php/modules"
+        PHP_INSTALL_DATADIR="/usr/share/php"
+        PHP_LIBS=
+        save_CPPFLAGS=$CPPFLAGS
+        CPPFLAGS="$CPPFLAGS $PHP_INCLUDES"
+        AC_CHECK_HEADER(php.h,,[
+          use_php="No (missing header)"
+          PHP=
+        ])
+        CPPFLAGS=$save_CPPFLAGS
+	if test "x$PHP" != "x"; then
+	  use_php="Yes"
+          AC_SUBST(PHP_INSTALL_DATADIR)
+          AC_SUBST(PHP_INSTALL_DIR)
+          AC_SUBST(PHP_INCLUDES)
+          AC_SUBST(PHP_LIBS)
+        fi
+      fi
+    fi
+  fi
 fi
-PHP_INSTALL_DIR="/usr/lib${LIBPOSTFIX}/php/modules"
-PHP_INSTALL_DATADIR="/usr/share/php"
-PHP_LIBS=
-save_CPPFLAGS=$CPPFLAGS
-CPPFLAGS="$CPPFLAGS $PHP_INCLUDES"
-AC_CHECK_HEADER(php.h,,[
-  AC_MSG_WARN([Unable to find header php.h. The PHP packages will not be built])
-  PHP=
-  ])
-CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(PHP_INSTALL_DATADIR)
-AC_SUBST(PHP_INSTALL_DIR)
-AC_SUBST(PHP_INCLUDES)
-AC_SUBST(PHP_LIBS)
-fi
-fi
-fi
-AM_CONDITIONAL(WITH_PHP, [test "x$PHP" != "x"])
+AM_CONDITIONAL(WITH_PHP, [test "x$use_php" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(python,
   [AC_HELP_STRING([--enable-python=yes], [python language bindings])],
   [], [enable_python=yes])
-if test "x$enable_python" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
-	PYTHON=
-	AC_MSG_WARN([swig does not support -python. The PYTHON packages will not be built])
+
+if test "x$enable_python" != "xyes"; then
+  use_python="No (disabled)"
 else
-AC_CHECK_PROG(PYTHON,python,python)
-if test "x$PYTHON" != "x"; then
-  PYTHON_VERSION=`$PYTHON -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
-  if test "x$PYTHON_VERSION" = "x"; then
-    PYTHON=
+  if test "x$use_swig" != "xYes"; then
+    use_python="No (swig not available)"
   else
-    PYTHON_VERSION_MAJOR=`echo $PYTHON_VERSION | cut -d '.' -f 1`
-    PYTHON_VERSION_MINOR=`echo $PYTHON_VERSION | cut -d '.' -f 2`
-    PYTHON_VERSION_SHORT=$PYTHON_VERSION_MAJOR.$PYTHON_VERSION_MINOR
-    if test $PYTHON_VERSION_MAJOR -lt 3; then
-      if test $PYTHON_VERSION_MAJOR -lt 2; then
-	PYTHON=
+    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+      use_python="No (swig does not support -python option)"
+    else
+      AC_CHECK_PROG(PYTHON,python,python)
+      if test "x$PYTHON" = "x"; then
+        use_python="No (python not available)"
       else
-        if test $PYTHON_VERSION_MINOR -lt 3; then
-	  PYTHON=
+        PYTHON_VERSION=`$PYTHON -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        if test "x$PYTHON_VERSION" = "x"; then
+          PYTHON=
+        else
+          PYTHON_VERSION_MAJOR=`echo $PYTHON_VERSION | cut -d '.' -f 1`
+          PYTHON_VERSION_MINOR=`echo $PYTHON_VERSION | cut -d '.' -f 2`
+          PYTHON_VERSION_SHORT=$PYTHON_VERSION_MAJOR.$PYTHON_VERSION_MINOR
+          if test $PYTHON_VERSION_MAJOR -lt 3; then
+            if test $PYTHON_VERSION_MAJOR -lt 2; then
+	      PYTHON=
+            else
+              if test $PYTHON_VERSION_MINOR -lt 3; then
+	        PYTHON=
+              fi
+            fi
+          fi
+        fi
+      fi
+      if test "x$PYTHON" = "x"; then
+	use_python="No (python is too old)"
+      else
+        PYTHON_PREFIX=`$PYTHON -c "import sys; print sys.prefix"`
+        PYTHON_INCLUDES=-I$PYTHON_PREFIX/include/python$PYTHON_VERSION_SHORT
+        PYTHON_LIBS="-L$PYTHON_PREFIX/lib$LIBPOSTFIX/python$PYTHON_VERSION_SHORT/config"
+        PYTHON_INSTALL_DIR="`$PYTHON $srcdir/config/config_python.py archsitelib`"
+        save_CPPFLAGS=$CPPFLAGS
+        CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
+        AC_CHECK_HEADER(Python.h,,[
+          use_python="No (missing header)"
+          PYTHON=
+        ])
+        CPPFLAGS=$save_CPPFLAGS
+	if test "x$PYTHON" != "x"; then
+	  use_python="Yes"
+          AC_SUBST(PYTHON_INSTALL_DIR)
+          AC_SUBST(PYTHON_INCLUDES)
+          AC_SUBST(PYTHON_LIBS)
         fi
       fi
     fi
   fi
-  if test "x$PYTHON" = "x"; then
-      AC_MSG_WARN([Can't use Python version $PYTHON_VERSION  The Python packages will not be built])
-  else
-    PYTHON_PREFIX=`$PYTHON -c "import sys; print sys.prefix"`
-    PYTHON_INCLUDES=-I$PYTHON_PREFIX/include/python$PYTHON_VERSION_SHORT
-    PYTHON_LIBS="-L$PYTHON_PREFIX/lib$LIBPOSTFIX/python$PYTHON_VERSION_SHORT/config"
-    PYTHON_INSTALL_DIR="`$PYTHON $srcdir/config/config_python.py archsitelib`"
-    save_CPPFLAGS=$CPPFLAGS
-    CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
-    AC_CHECK_HEADER(Python.h,,[
-      AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
-      PYTHON=
-      ])
-    CPPFLAGS=$save_CPPFLAGS
-  fi
 fi
-AC_SUBST(PYTHON_INCLUDES)
-AC_SUBST(PYTHON_LIBS)
-AC_SUBST(PYTHON_INSTALL_DIR)
-fi
-fi
-fi
-AM_CONDITIONAL(WITH_PYTHON, [test "x$PYTHON" != "x"])
+AM_CONDITIONAL(WITH_PYTHON, [test "x$use_python" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON23
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(python23,
   [AC_HELP_STRING([--enable-python23=no], [python23 language bindings])],
   [], [enable_python23=no])
-if test "x$enable_python23" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
-	PYTHON23=
-	AC_MSG_WARN([swig does not support -python. The PYTHON23 packages will not be built])
+
+if test "x$enable_python23" != "xyes"; then
+  use_python23="No (disabled)"
 else
-AC_CHECK_PROG(PYTHON23,python2.3,python2.3)
-if test "x$PYTHON23" != "x"; then
-  PYTHON23_VERSION=`$PYTHON23 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
-  if test "x$PYTHON23_VERSION" = "x"; then
-    PYTHON23=
+  if test "x$use_swig" != "xYes"; then
+    use_python23="No (swig not available)"
   else
-    PYTHON23_VERSION_MAJOR=`echo $PYTHON23_VERSION | cut -d '.' -f 1`
-    PYTHON23_VERSION_MINOR=`echo $PYTHON23_VERSION | cut -d '.' -f 2`
-    PYTHON23_VERSION_SHORT=$PYTHON23_VERSION_MAJOR.$PYTHON23_VERSION_MINOR
-    if test $PYTHON23_VERSION_MAJOR -lt 3; then
-      if test $PYTHON23_VERSION_MAJOR -lt 2; then
-	PYTHON23=
+    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+      use_python23="No (swig does not support -python option)"
+    else
+      AC_CHECK_PROG(PYTHON23,python2.3,python2.3)
+      if test "x$PYTHON23" = "x"; then
+        use_python23="No (python23 not available)"
       else
-        if test $PYTHON23_VERSION_MINOR -lt 3; then
-	  PYTHON23=
+        PYTHON23_VERSION=`$PYTHON23 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        if test "x$PYTHON23_VERSION" = "x"; then
+          PYTHON23=
+        else
+          PYTHON23_VERSION_MAJOR=`echo $PYTHON23_VERSION | cut -d '.' -f 1`
+          PYTHON23_VERSION_MINOR=`echo $PYTHON23_VERSION | cut -d '.' -f 2`
+          PYTHON23_VERSION_SHORT=$PYTHON23_VERSION_MAJOR.$PYTHON23_VERSION_MINOR
+          if test $PYTHON23_VERSION_MAJOR -lt 3; then
+            if test $PYTHON23_VERSION_MAJOR -lt 2; then
+	      PYTHON23=
+            else
+              if test $PYTHON23_VERSION_MINOR -lt 3; then
+	        PYTHON23=
+              fi
+            fi
+          fi
+        fi
+      fi
+      if test "x$PYTHON23" = "x"; then
+	use_python23="No (python2.3 is too old)"
+      else
+        PYTHON23_PREFIX=`$PYTHON23 -c "import sys; print sys.prefix"`
+        PYTHON23_INCLUDES=-I$PYTHON23_PREFIX/include/python$PYTHON23_VERSION_SHORT
+        PYTHON23_LIBS="-L$PYTHON23_PREFIX/lib$LIBPOSTFIX/python$PYTHON23_VERSION_SHORT/config"
+        PYTHON23_INSTALL_DIR="`$PYTHON23 $srcdir/config/config_python.py archsitelib`"
+        save_CPPFLAGS=$CPPFLAGS
+        CPPFLAGS="$CPPFLAGS $PYTHON23_INCLUDES"
+        AC_CHECK_HEADER(Python.h,,[
+          use_python23="No (missing header)"
+          PYTHON23=
+        ])
+        CPPFLAGS=$save_CPPFLAGS
+	if test "x$PYTHON23" != "x"; then
+	  use_python23="Yes"
+          AC_SUBST(PYTHON23_INSTALL_DIR)
+          AC_SUBST(PYTHON23_INCLUDES)
+          AC_SUBST(PYTHON23_LIBS)
         fi
       fi
     fi
   fi
-  if test "x$PYTHON23" = "x"; then
-      AC_MSG_WARN([Can't use Python version $PYTHON23_VERSION  The Python packages will not be built])
-  else
-    PYTHON23_PREFIX=`$PYTHON23 -c "import sys; print sys.prefix"`
-    PYTHON23_INCLUDES=-I$PYTHON23_PREFIX/include/python$PYTHON23_VERSION_SHORT
-    PYTHON23_LIBS="-L$PYTHON23_PREFIX/lib$LIBPOSTFIX"
-    PYTHON23_INSTALL_DIR="`$PYTHON23 $srcdir/config/config_python.py archsitelib`"
-    save_CPPFLAGS=$CPPFLAGS
-    CPPFLAGS="$CPPFLAGS $PYTHON23_INCLUDES"
-    AC_CHECK_HEADER(Python.h,,[
-      AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
-      PYTHON23=
-      ])
-    CPPFLAGS=$save_CPPFLAGS
-  fi
 fi
-AC_SUBST(PYTHON23_INCLUDES)
-AC_SUBST(PYTHON23_LIBS)
-AC_SUBST(PYTHON23_INSTALL_DIR)
-fi
-fi
-fi
-AM_CONDITIONAL(WITH_PYTHON23, [test "x$PYTHON23" != "x"])
+AM_CONDITIONAL(WITH_PYTHON23, [test "x$use_python23" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON24
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(python24,
   [AC_HELP_STRING([--enable-python24=no], [python24 language bindings])],
   [], [enable_python24=no])
-if test "x$enable_python24" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
-	PYTHON24=
-	AC_MSG_WARN([swig does not support -python. The PYTHON24 packages will not be built])
+
+if test "x$enable_python24" != "xyes"; then
+  use_python24="No (disabled)"
 else
-AC_CHECK_PROG(PYTHON24,python2.4,python2.4)
-if test "x$PYTHON24" != "x"; then
-  PYTHON24_VERSION=`$PYTHON24 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
-  if test "x$PYTHON24_VERSION" = "x"; then
-    PYTHON24=
+  if test "x$use_swig" != "xYes"; then
+    use_python24="No (swig not available)"
   else
-    PYTHON24_VERSION_MAJOR=`echo $PYTHON24_VERSION | cut -d '.' -f 1`
-    PYTHON24_VERSION_MINOR=`echo $PYTHON24_VERSION | cut -d '.' -f 2`
-    PYTHON24_VERSION_SHORT=$PYTHON24_VERSION_MAJOR.$PYTHON24_VERSION_MINOR
-    if test $PYTHON24_VERSION_MAJOR -lt 3; then
-      if test $PYTHON24_VERSION_MAJOR -lt 2; then
-	PYTHON24=
+    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+      use_python24="No (swig does not support -python option)"
+    else
+      AC_CHECK_PROG(PYTHON24,python2.4,python2.4)
+      if test "x$PYTHON24" = "x"; then
+        use_python24="No (python24 not available)"
       else
-        if test $PYTHON24_VERSION_MINOR -lt 3; then
-	  PYTHON24=
+        PYTHON24_VERSION=`$PYTHON24 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        if test "x$PYTHON24_VERSION" = "x"; then
+          PYTHON24=
+        else
+          PYTHON24_VERSION_MAJOR=`echo $PYTHON24_VERSION | cut -d '.' -f 1`
+          PYTHON24_VERSION_MINOR=`echo $PYTHON24_VERSION | cut -d '.' -f 2`
+          PYTHON24_VERSION_SHORT=$PYTHON24_VERSION_MAJOR.$PYTHON24_VERSION_MINOR
+          if test $PYTHON24_VERSION_MAJOR -lt 3; then
+            if test $PYTHON24_VERSION_MAJOR -lt 2; then
+	      PYTHON24=
+            else
+              if test $PYTHON24_VERSION_MINOR -lt 4; then
+	        PYTHON24=
+              fi
+            fi
+          fi
+        fi
+      fi
+      if test "x$PYTHON24" = "x"; then
+	use_python24="No (python2.4 is too old)"
+      else
+        PYTHON24_PREFIX=`$PYTHON24 -c "import sys; print sys.prefix"`
+        PYTHON24_INCLUDES=-I$PYTHON24_PREFIX/include/python$PYTHON24_VERSION_SHORT
+        PYTHON24_LIBS="-L$PYTHON24_PREFIX/lib$LIBPOSTFIX/python$PYTHON24_VERSION_SHORT/config"
+        PYTHON24_INSTALL_DIR="`$PYTHON24 $srcdir/config/config_python.py archsitelib`"
+        save_CPPFLAGS=$CPPFLAGS
+        CPPFLAGS="$CPPFLAGS $PYTHON24_INCLUDES"
+        AC_CHECK_HEADER(Python.h,,[
+          use_python24="No (missing header)"
+          PYTHON24=
+        ])
+        CPPFLAGS=$save_CPPFLAGS
+	if test "x$PYTHON24" != "x"; then
+	  use_python24="Yes"
+          AC_SUBST(PYTHON24_INSTALL_DIR)
+          AC_SUBST(PYTHON24_INCLUDES)
+          AC_SUBST(PYTHON24_LIBS)
         fi
       fi
     fi
   fi
-  if test "x$PYTHON24" = "x"; then
-      AC_MSG_WARN([Can't use Python version $PYTHON24_VERSION  The Python packages will not be built])
-  else
-    PYTHON24_PREFIX=`$PYTHON24 -c "import sys; print sys.prefix"`
-    PYTHON24_INCLUDES=-I$PYTHON24_PREFIX/include/python$PYTHON24_VERSION_SHORT
-    PYTHON24_LIBS="-L$PYTHON24_PREFIX/lib$LIBPOSTFIX"
-    PYTHON24_INSTALL_DIR="`$PYTHON24 $srcdir/config/config_python.py archsitelib`"
-    save_CPPFLAGS=$CPPFLAGS
-    CPPFLAGS="$CPPFLAGS $PYTHON24_INCLUDES"
-    AC_CHECK_HEADER(Python.h,,[
-      AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
-      PYTHON24=
-      ])
-    CPPFLAGS=$save_CPPFLAGS
-  fi
 fi
-AC_SUBST(PYTHON24_INCLUDES)
-AC_SUBST(PYTHON24_LIBS)
-AC_SUBST(PYTHON24_INSTALL_DIR)
-fi
-fi
-fi
-AM_CONDITIONAL(WITH_PYTHON24, [test "x$PYTHON24" != "x"])
+AM_CONDITIONAL(WITH_PYTHON24, [test "x$use_python24" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PYTHON25
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(python25,
   [AC_HELP_STRING([--enable-python25=no], [python25 language bindings])],
   [], [enable_python25=no])
-if test "x$enable_python25" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
-	PYTHON25=
-	AC_MSG_WARN([swig does not support -python. The PYTHON25 packages will not be built])
+
+if test "x$enable_python25" != "xyes"; then
+  use_python25="No (disabled)"
 else
-AC_CHECK_PROG(PYTHON25,python2.5,python2.5)
-if test "x$PYTHON25" != "x"; then
-  PYTHON25_VERSION=`$PYTHON25 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
-  if test "x$PYTHON25_VERSION" = "x"; then
-    PYTHON25=
+  if test "x$use_swig" != "xYes"; then
+    use_python25="No (swig not available)"
   else
-    PYTHON25_VERSION_MAJOR=`echo $PYTHON25_VERSION | cut -d '.' -f 1`
-    PYTHON25_VERSION_MINOR=`echo $PYTHON25_VERSION | cut -d '.' -f 2`
-    PYTHON25_VERSION_SHORT=$PYTHON25_VERSION_MAJOR.$PYTHON25_VERSION_MINOR
-    if test $PYTHON25_VERSION_MAJOR -lt 3; then
-      if test $PYTHON25_VERSION_MAJOR -lt 2; then
-	PYTHON25=
+    if test `$SWIG -help 2>&1 | $GREP -c '\-python *- Generate'` = 0; then
+      use_python25="No (swig does not support -python option)"
+    else
+      AC_CHECK_PROG(PYTHON25,python2.5,python2.5)
+      if test "x$PYTHON25" = "x"; then
+        use_python25="No (python25 not available)"
       else
-        if test $PYTHON25_VERSION_MINOR -lt 3; then
-	  PYTHON25=
+        PYTHON25_VERSION=`$PYTHON25 -V 2>&1 | $GREP Python | cut -d ' ' -f 2`
+        if test "x$PYTHON25_VERSION" = "x"; then
+          PYTHON25=
+        else
+          PYTHON25_VERSION_MAJOR=`echo $PYTHON25_VERSION | cut -d '.' -f 1`
+          PYTHON25_VERSION_MINOR=`echo $PYTHON25_VERSION | cut -d '.' -f 2`
+          PYTHON25_VERSION_SHORT=$PYTHON25_VERSION_MAJOR.$PYTHON25_VERSION_MINOR
+          if test $PYTHON25_VERSION_MAJOR -lt 3; then
+            if test $PYTHON25_VERSION_MAJOR -lt 2; then
+	      PYTHON25=
+            else
+              if test $PYTHON25_VERSION_MINOR -lt 5; then
+	        PYTHON25=
+              fi
+            fi
+          fi
+        fi
+      fi
+      if test "x$PYTHON25" = "x"; then
+	use_python25="No (python2.5 is too old)"
+      else
+        PYTHON25_PREFIX=`$PYTHON25 -c "import sys; print sys.prefix"`
+        PYTHON25_INCLUDES=-I$PYTHON25_PREFIX/include/python$PYTHON25_VERSION_SHORT
+        PYTHON25_LIBS="-L$PYTHON25_PREFIX/lib$LIBPOSTFIX/python$PYTHON25_VERSION_SHORT/config"
+        PYTHON25_INSTALL_DIR="`$PYTHON25 $srcdir/config/config_python.py archsitelib`"
+        save_CPPFLAGS=$CPPFLAGS
+        CPPFLAGS="$CPPFLAGS $PYTHON25_INCLUDES"
+        AC_CHECK_HEADER(Python.h,,[
+          use_python25="No (missing header)"
+          PYTHON25=
+        ])
+        CPPFLAGS=$save_CPPFLAGS
+	if test "x$PYTHON25" != "x"; then
+	  use_python25="Yes"
+          AC_SUBST(PYTHON25_INSTALL_DIR)
+          AC_SUBST(PYTHON25_INCLUDES)
+          AC_SUBST(PYTHON25_LIBS)
         fi
       fi
     fi
   fi
-  if test "x$PYTHON25" = "x"; then
-      AC_MSG_WARN([Can't use Python version $PYTHON25_VERSION  The Python packages will not be built])
-  else
-    PYTHON25_PREFIX=`$PYTHON25 -c "import sys; print sys.prefix"`
-    PYTHON25_INCLUDES=-I$PYTHON25_PREFIX/include/python$PYTHON25_VERSION_SHORT
-    PYTHON25_LIBS="-L$PYTHON25_PREFIX/lib$LIBPOSTFIX"
-    PYTHON25_INSTALL_DIR="`$PYTHON25 $srcdir/config/config_python.py archsitelib`"
-    save_CPPFLAGS=$CPPFLAGS
-    CPPFLAGS="$CPPFLAGS $PYTHON25_INCLUDES"
-    AC_CHECK_HEADER(Python.h,,[
-      AC_MSG_WARN([Unable to find header Python.h. The Python packages will not be built])
-      PYTHON25=
-      ])
-    CPPFLAGS=$save_CPPFLAGS
-  fi
 fi
-AC_SUBST(PYTHON25_INCLUDES)
-AC_SUBST(PYTHON25_LIBS)
-AC_SUBST(PYTHON25_INSTALL_DIR)
-fi
-fi
-fi
-AM_CONDITIONAL(WITH_PYTHON25, [test "x$PYTHON25" != "x"])
+AM_CONDITIONAL(WITH_PYTHON25, [test "x$use_python25" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for R
 
-R=
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(r,
   [AC_HELP_STRING([--enable-r=yes], [R language bindings])],
   [], [enable_r=yes])
-if test "x$enable_r" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-r *- Generate'` = 0; then
-	AC_MSG_WARN([swig does not support -r. The R packages will not be built])
+
+if test "x$enable_r" != "xyes"; then
+  use_r="No (disabled)"
 else
-PKG_CHECK_MODULES(R, [libR],
-        [R=1],
-        [AC_MSG_WARN(R library not available.)])
+  if test "x$use_swig" != "xYes"; then
+    use_r="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-r *- Generate'` = 0; then
+      use_r="No (swig does not support -r option)"
+    else
+      PKG_CHECK_MODULES(R, [libR],[
+	use_r="Yes"
+	AC_SUBST(R_CFLAGS)
+	AC_SUBST(R_LIBS)
+      ],[
+	use_r="No (R not available)"
+      ])
+    fi
+  fi
 fi
-fi
-fi
-AC_SUBST(R_CFLAGS)
-AC_SUBST(R_LIBS)
-AM_CONDITIONAL(WITH_R, [test "x$R" != "x"])
+AM_CONDITIONAL(WITH_R, [test "x$use_r" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for RUBY
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(ruby,
   [AC_HELP_STRING([--enable-ruby=yes], [ruby language bindings])],
   [], [enable_ruby=yes])
-if test "x$enable_ruby" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-ruby *- Generate'` = 0; then
-	RUBY=
-	AC_MSG_WARN([swig does not support -ruby. The RUBY packages will not be built])
+
+if test "x$enable_ruby" != "xyes"; then
+  use_ruby="No (disabled)"
 else
-AC_CHECK_PROG(RUBY,ruby,ruby)
-if test "x$RUBY" != "x"; then
-  RUBY_INCLUDES="-I`$RUBY $srcdir/config/config_ruby.rb INCLUDES`"
-  RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb lib` `$RUBY -rrbconfig -e \"puts Config::CONFIG[['LIBRUBYARG_SHARED']]\"`"
-  RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb archsitelib`"
-  save_CPPFLAGS=$CPPFLAGS
-  CPPFLAGS="$CPPFLAGS $RUBY_INCLUDES"
-  AC_CHECK_HEADER(ruby.h,,[
-    AC_MSG_WARN([Unable to find header ruby.h. The Ruby packages will not be built])
-    RUBY=
-    ])
-  CPPFLAGS=$save_CPPFLAGS
+  if test "x$use_swig" != "xYes"; then
+    use_ruby="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-ruby *- Generate'` = 0; then
+      use_ruby="No (swig does not support -ruby option)"
+    else
+      AC_CHECK_PROG(RUBY,ruby,ruby)
+      if test "x$RUBY" = "x"; then
+	use_ruby="No (ruby not available)"
+      else
+        RUBY_INCLUDES="-I`$RUBY $srcdir/config/config_ruby.rb INCLUDES`"
+        RUBY_LIBS="-L`$RUBY $srcdir/config/config_ruby.rb lib` `$RUBY -rrbconfig -e \"puts Config::CONFIG[['LIBRUBYARG_SHARED']]\"`"
+        RUBY_INSTALL_DIR="`$RUBY $srcdir/config/config_ruby.rb archsitelib`"
+        save_CPPFLAGS=$CPPFLAGS
+        CPPFLAGS="$CPPFLAGS $RUBY_INCLUDES"
+        AC_CHECK_HEADER(ruby.h,,[
+          use_python25="No (missing header)"
+          RUBY=
+        ])
+        CPPFLAGS=$save_CPPFLAGS
+      fi
+      if test "x$RUBY" != "x"; then
+	use_ruby="Yes"
+        AC_SUBST(RUBY_INCLUDES)
+        AC_SUBST(RUBY_LIBS)
+        AC_SUBST(RUBY_INSTALL_DIR)
+      fi
+    fi
+  fi
 fi
-AC_SUBST(RUBY_INCLUDES)
-AC_SUBST(RUBY_LIBS)
-AC_SUBST(RUBY_INSTALL_DIR)
-fi
-fi
-fi
-AM_CONDITIONAL(WITH_RUBY, [test "x$RUBY" != "x"])
+AM_CONDITIONAL(WITH_RUBY, [test "x$use_ruby" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for TCL
@@ -1172,104 +1241,104 @@ dnl INCLUDES and LIBS for TCL
 AC_ARG_ENABLE(tcl,
   [AC_HELP_STRING([--enable-tcl=yes], [tcl language bindings])],
   [], [enable_tcl=yes])
-if test "x$enable_tcl" = "xyes"; then
-# start by assuming we have it
-HAVE_TCL=1 
+
+if test "x$enable_tcl" != "xyes"; then
+  use_tcl="No (disabled)"
 else
-HAVE_TCL=0
+  # start by assuming we have it
+  use_tcl="Yes" 
 fi
 
-if test "$HAVE_TCL" = "1"; then
-AC_ARG_WITH(tclsh,
+if test "x$use_tcl" = "xYes"; then
+  AC_ARG_WITH(tclsh,
     [AC_HELP_STRING([--with-tcl=PROG], [use a specific tclsh])],
     TCLSH=$withval,)
 
-if test "x$TCLSH" = "x"; then
+  if test "x$TCLSH" = "x"; then
     AC_PATH_PROG(TCLSH,tclsh)
     if test "x$TCLSH" = "x"; then
-        AC_PATH_PROG(TCLSH,tclsh8.5)
+      AC_PATH_PROG(TCLSH,tclsh8.5)
+      if test "x$TCLSH" = "x"; then
+        AC_PATH_PROG(TCLSH,tclsh8.4)
         if test "x$TCLSH" = "x"; then
-            AC_PATH_PROG(TCLSH,tclsh8.4)
-            if test "x$TCLSH" = "x"; then
-                AC_PATH_PROG(TCLSH,tclsh8.3)
-            fi
-	fi
+          AC_PATH_PROG(TCLSH,tclsh8.3)
+        fi
+      fi
     fi
     if test "x$TCLSH" = "x"; then
-        AC_MSG_WARN([Unable to find a tclsh. The Tcl packages will not be built])
-        HAVE_TCL=0
+      AC_MSG_WARN([Unable to find a tclsh. The Tcl packages will not be built])
+      use_tcl="No (tclsh unavailable)"
     fi
+  fi
 fi
+
+if test "$use_tcl" = "xYes"; then
+  TCL_VERSION_FOUND=`echo 'puts [[info tclversion]]' | $TCLSH`
+
+  # can't assume ksh on all architectures
+  # TCLSH_EXEC_PREFIX=${TCLSH%%/bin/tclsh.*}
+  # so use sed instead
+  TCLSH_EXEC_PREFIX=`echo $TCLSH|sed -e 's%/bin/tclsh.*$%%'`
+
+  if test -f ${TCLSH_EXEC_PREFIX}/include/tcl${TCL_VERSION_FOUND}/tcl.h; then
+    TCL_INCLUDES="-I${TCLSH_EXEC_PREFIX}/include/tcl${TCL_VERSION_FOUND} -I${TCLSH_EXEC_PREFIX}/include/tcl${TCL_VERSION_FOUND}/generic"
+  else
+    if test "x${TCLSH_EXEC_PREFIX}" != "x/usr" -a -f ${TCLSH_EXEC_PREFIX}/include/tcl.h; then
+      TCL_INCLUDES=-I${TCLSH_EXEC_PREFIX}/include
+    fi
+  fi
+  if test "x$TCL_INCLUDES" != "x" ; then
+    AC_MSG_RESULT([using tcl headers from $TCL_INCLUDES])
+  fi
+  AC_SUBST(TCL_INCLUDES)
+  save_CPPFLAGS=$CPPFLAGS
+  CPPFLAGS="$CPPFLAGS $TCL_INCLUDES"
+  AC_CHECK_HEADER(tcl.h,,[
+    AC_MSG_WARN([Unable to find header tcl.h. The Tcl packages will not be built])
+    use_tcl="No (missing header)"
+  ])
+  CPPFLAGS=$save_CPPFLAGS
 fi
 
-if test "$HAVE_TCL" = "1"; then
-    TCL_VERSION_FOUND=`echo 'puts [[info tclversion]]' | $TCLSH`
-
-    # can't assume ksh on all architectures
-    # TCLSH_EXEC_PREFIX=${TCLSH%%/bin/tclsh.*}
-    # so use sed instead
-    TCLSH_EXEC_PREFIX=`echo $TCLSH|sed -e 's%/bin/tclsh.*$%%'`
-
-    if test -f ${TCLSH_EXEC_PREFIX}/include/tcl${TCL_VERSION_FOUND}/tcl.h; then
-        TCL_INCLUDES="-I${TCLSH_EXEC_PREFIX}/include/tcl${TCL_VERSION_FOUND} -I${TCLSH_EXEC_PREFIX}/include/tcl${TCL_VERSION_FOUND}/generic"
+if test "$use_tcl" = "xYes"; then
+  # Some systems don't have Tcl.  Don't build
+  # the Tcl products if we don't have the library.
+  if test -f ${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}/tclConfig.sh; then
+    TCLCONFIG=${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}/tclConfig.sh
+  else
+    if test -f ${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tclConfig.sh; then
+      TCLCONFIG=${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tclConfig.sh
     else
-        if test "x${TCLSH_EXEC_PREFIX}" != "x/usr" -a -f ${TCLSH_EXEC_PREFIX}/include/tcl.h; then
-            TCL_INCLUDES=-I${TCLSH_EXEC_PREFIX}/include
-        fi
+      if test -f ${TCLSH_EXEC_PREFIX}/lib/tclConfig.sh; then
+        TCLCONFIG=${TCLSH_EXEC_PREFIX}/lib/tclConfig.sh
+      fi
     fi
-    if test "x$TCL_INCLUDES" != "x" ; then
-        AC_MSG_RESULT([using tcl headers from $TCL_INCLUDES])
-    fi
-    AC_SUBST(TCL_INCLUDES)
-    save_CPPFLAGS=$CPPFLAGS
-    CPPFLAGS="$CPPFLAGS $TCL_INCLUDES"
-    AC_CHECK_HEADER(tcl.h,,[
-        AC_MSG_WARN([Unable to find header tcl.h. The Tcl packages will not be built])
-        HAVE_TCL=0])
-    CPPFLAGS=$save_CPPFLAGS
+  fi
+  if test "x$TCLCONFIG" != "x"; then
+    AC_MSG_RESULT([using $TCLCONFIG])
+    file=${TCLCONFIG}
+      . $file
+  else
+    AC_MSG_WARN([Unable to find tclConfig.sh. The Tcl packages will not be built])
+    use_tcl="No (missing tclConfig.sh)"
+  fi
+  TCL_INSTALL_DIR="${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}"
 fi
 
-if test "$HAVE_TCL" = "1"; then
-    # Some systems don't have Tcl.  Don't build
-    # the Tcl products if we don't have the library.
-    if test -f ${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}/tclConfig.sh; then
-        TCLCONFIG=${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}/tclConfig.sh
-    else
-        if test -f ${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tclConfig.sh; then
-            TCLCONFIG=${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tclConfig.sh
-        else
-            if test -f ${TCLSH_EXEC_PREFIX}/lib/tclConfig.sh; then
-                TCLCONFIG=${TCLSH_EXEC_PREFIX}/lib/tclConfig.sh
-            fi
-        fi
-    fi
-    if test "x$TCLCONFIG" != "x"; then
-        AC_MSG_RESULT([using $TCLCONFIG])
-        file=${TCLCONFIG}
-            . $file
-    else
-        AC_MSG_WARN([Unable to find tclConfig.sh. The Tcl packages will not be built])
-        HAVE_TCL=0
-    fi
-    TCL_INSTALL_DIR="${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}"
+if test "$use_tcl" = "xYes"; then
+  # TCL STUBS support is required
+  if test "x${TCL_SUPPORTS_STUBS}" = "x1"; then
+    TCL_CFLAGS="${TCL_CFLAGS} -DUSE_TCL_STUBS"
+  else
+    AC_MSG_WARN([Tcl does not have STUBs support, perhaps it is too old?  The Tcl packages will not be built])
+    use_tcl="No (no STUBs support)"
+  fi
 fi
 
-if test "$HAVE_TCL" = "1"; then
-    # TCL STUBS support is required
-    if test "x${TCL_SUPPORTS_STUBS}" != "x1"; then
-        AC_MSG_WARN([Tcl does not have STUBs support, perhaps it is too old?  The Tcl packages will not be built])
-        HAVE_TCL=0
-    fi
-fi
-
-AC_SUBST(HAVE_TCL)
 AC_SUBST(TCL_INSTALL_DIR)
 
-AM_CONDITIONAL(WITH_TCL, [test "x${HAVE_TCL}" = "x1"])
+AM_CONDITIONAL(WITH_TCL, [test "x$use_tcl" = "xYes"])
 
-if test "x${TCL_SUPPORTS_STUBS}" = "x1"; then
-    TCL_CFLAGS="${TCL_CFLAGS} -DUSE_TCL_STUBS"
-fi
 #AC_SUBST(TCLSH_EXEC_PREFIX)
 AC_SUBST(TCL_VERSION)
 AC_SUBST(TCL_MAJOR_VERSION)
@@ -1327,13 +1396,14 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for TK
 
 # start by assuming we have it, if we have tcl
-if test "$HAVE_TCL" = "0"; then
+if test "x$use_tcl" = "xYes"; then
+    use_tk="Yes"
+else
     AC_MSG_WARN([No Tcl. The Tk packages will not be built either])
+    use_tk="No (no tcl)"
 fi
 
-HAVE_TK=$HAVE_TCL
-                                                                                
-if test "$HAVE_TK" = "1"; then
+if test "x$use_tk" = "xYes"; then
     AC_ARG_WITH(wish,
         [AC_HELP_STRING([--with-wish=PROG], [use a specific wish])],
         WISH=$withval,)
@@ -1351,11 +1421,11 @@ if test "$HAVE_TK" = "1"; then
     fi
     if test "x$WISH" = "x"; then
         AC_MSG_WARN([Unable to find a wish. The Tk packages will not be built])
-        HAVE_TK=0
+        use_tk="No (wish not found)"
     fi
 fi
 
-if test "$HAVE_TK" = "1"; then
+if test "x$use_tk" = "xYes"; then
     #TK_VERSION_FOUND=`echo 'puts [[info tkversion]]' | $WISH`
     #
     # No such var as tkversion.  Use tclversion instead.
@@ -1381,12 +1451,12 @@ if test "$HAVE_TK" = "1"; then
     CPPFLAGS="$CPPFLAGS $TCL_INCLUDES $TK_INCLUDES $X_CFLAGS"
     AC_CHECK_HEADER(tk.h,,[
         AC_MSG_WARN([Unable to find header tk.h. The Tk packages will not be built])
-        HAVE_TK=0])
+        use_tk="No (missing header)"])
     AC_CHECK_HEADERS(tk.h tkInt.h)
     CPPFLAGS=$save_CPPFLAGS
 fi
 
-if test "$HAVE_TK" = "1"; then
+if test "x$use_tk" = "xYes"; then
     # Some systems don't have Tcl.  Don't build
     # Some systems have Tcl, but not Tk.  Don't build
     # the Tk products if we don't have the library.
@@ -1407,17 +1477,16 @@ if test "$HAVE_TK" = "1"; then
         . $file
     else
         AC_MSG_WARN([Unable to find tkConfig.sh. The Tk packages will not be built])
-        HAVE_TK=0
+        use_tk="No (missing tkConfig.sh)"
     fi
 fi
                                                                                 
-if test "$HAVE_TK" = "1"; then
+if test "x$use_tk" = "xYes"; then
     TK_SUBDIRS="tkstubs tkspline"
 else
     TK_SUBDIRS=""
 fi
-AC_SUBST(HAVE_TK)
-AM_CONDITIONAL(WITH_TK, [test "x${HAVE_TK}" = "x1"])
+AM_CONDITIONAL(WITH_TK, [test "x$use_tk" = "xYes"])
 
 # NB. No TK_SUPPORTS_STUBS set by tkConfig.sh
 if test "${TCL_SUPPORTS_STUBS}" = "1"; then
@@ -2717,11 +2786,13 @@ echo "  sharp (C#):    $use_sharp"
 echo "  guile:         $use_guile"
 echo "  io:            $use_io"
 echo "  java:          $use_java"
-#echo "  lua:           $use_lua"
-#echo "  perl:          $use_perl"
-#echo "  php:           $use_php"
-#echo "  python:        $use_python"
-#echo "  R:             $use_r"
-#echo "  ruby:          $use_ruby"
-#echo "  tcl:           $use_tcl"
-echo "   (unfinished status for: lua,perl,python,R,ruby,tcl)"
+echo "  lua:           $use_lua"
+echo "  perl:          $use_perl"
+echo "  php:           $use_php"
+echo "  python:        $use_python"
+echo "  python23:      $use_python23"
+echo "  python24:      $use_python24"
+echo "  python25:      $use_python25"
+echo "  R:             $use_r"
+echo "  ruby:          $use_ruby"
+echo "  tcl:           $use_tcl"
