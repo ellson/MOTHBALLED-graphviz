@@ -1902,7 +1902,7 @@ AC_ARG_WITH(fontconfig,
 if test "x$with_fontconfig" != "xyes"; then
   use_fontconfig="No (disabled)"
 else
-  PKG_CHECK_MODULES(FONTCONFIG, [fontconfig],
+  PKG_CHECK_MODULES(FONTCONFIG, [fontconfig],[
     use_fontconfig="Yes"
   ],[
     AC_MSG_WARN(pkg-config did not find a fontconfig.pc.  Looking for fontconfig-config.)
@@ -2870,16 +2870,54 @@ AC_OUTPUT
 
 dnl ===========================================================================
 
+if test "x$use_tcl" != "xYes"; then
+  use_tcldot="No (tcl not available)"
+  use_gdtclft="No (tcl not available)"
+  use_tclpathplan="No (tcl not available)"
+  use_gv_tcl="No (tcl not available)"
+else
+  use_tcldot="Yes"
+  use_tclpathplan="Yes"
+  if test "x$use_swig" != "xYes"; then
+    use_gv_tcl="No (swig not available)"
+  else
+    use_gv_tcl="Yes"
+  fi
+  if test "x$use_gd" != "xYes"; then
+    use_gdtclft="No (gd not available)"
+  else
+    use_gdtclft="Yes"
+  fi
+fi
+
+if test "x$use_tk" != "xYes"; then
+  use_tkspline="No (tk not available)"
+else
+  use_tkspline="Yes"
+fi
+
+echo ""
+echo "----------------------------------------------------------------"
 echo ""
 echo "graphviz-$VERSION will be compiled with the following:"
-echo "features:"
-echo "  smyrna:        $use_smyrna"
+echo ""
+echo "options:"
 echo "  digcola:       $use_digcola"
 echo "  ipsepcola:     $use_ipsepcola"
 echo "  sfdp:          $use_sfdp"
 echo "  codegens:      $use_codegens"
 echo "  fontconfig:    $use_fontconfig"
 echo "  freetype:      $use_freetype"
+echo ""
+echo "commands:"
+echo "  dot:           Yes (always enabled)"
+echo "  neato:         Yes (always enabled)"
+echo "  fdp:           Yes (always enabled)"
+echo "  circo:         Yes (always enabled)"
+echo "  twopi:         Yes (always enabled)"
+echo "  lefty:         Yes (always enabled)"
+echo "  gvpr:          Yes (always enabled)"
+echo "  smyrna:        $use_smyrna"
 echo ""
 echo "plugin libraries:"
 echo "  dot_layout:    Yes (always enabled)"
@@ -2897,19 +2935,25 @@ echo "  quartz:        $use_quartz"
 echo "  rsvg:          $use_rsvg"
 echo "  xlib:          $use_xlib"
 echo ""
-echo "language bindings:"
-echo "  sharp (C#):    $use_sharp"
-echo "  guile:         $use_guile"
-echo "  io:            $use_io"
-echo "  java:          $use_java"
-echo "  lua:           $use_lua"
-echo "  ocaml:         $use_ocaml"
-echo "  perl:          $use_perl"
-echo "  php:           $use_php"
-echo "  python:        $use_python"
-echo "  python23:      $use_python23"
-echo "  python24:      $use_python24"
-echo "  python25:      $use_python25"
-echo "  R:             $use_r"
-echo "  ruby:          $use_ruby"
-echo "  tcl:           $use_tcl"
+echo "language extensions:"
+echo "  gv_sharp:      $use_sharp"
+echo "  gv_guile:      $use_guile"
+echo "  gv_io:         $use_io"
+echo "  gv_java:       $use_java"
+echo "  gv_lua:        $use_lua"
+echo "  gv_ocaml:      $use_ocaml"
+echo "  gv_perl:       $use_perl"
+echo "  gv_php:        $use_php"
+echo "  gv_python:     $use_python"
+echo "  gv_python23:   $use_python23"
+echo "  gv_python24:   $use_python24"
+echo "  gv_python25:   $use_python25"
+echo "  gv_R:          $use_r"
+echo "  gv_ruby:       $use_ruby"
+echo "  gv_tcl:        $use_gv_tcl"
+echo ""
+echo "  tcldot:        $use_tcldot"
+echo "  tclpathplan:   $use_tclpathplan"
+echo "  gctclft:       $use_gdtclft"
+echo "  tkspline:      $use_tkspline"
+
