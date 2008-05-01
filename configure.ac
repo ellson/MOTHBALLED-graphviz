@@ -1244,12 +1244,9 @@ AC_ARG_ENABLE(tcl,
 
 if test "x$enable_tcl" != "xyes"; then
   use_tcl="No (disabled)"
-else
-  # start by assuming we have it
-  use_tcl="Yes" 
 fi
 
-if test "x$use_tcl" = "xYes"; then
+if test "x$use_tcl" = "x"; then
   AC_ARG_WITH(tclsh,
     [AC_HELP_STRING([--with-tcl=PROG], [use a specific tclsh])],
     TCLSH=$withval,)
@@ -1272,7 +1269,7 @@ if test "x$use_tcl" = "xYes"; then
   fi
 fi
 
-if test "$use_tcl" = "xYes"; then
+if test "x$use_tcl" = "x"; then
   TCL_VERSION_FOUND=`echo 'puts [[info tclversion]]' | $TCLSH`
 
   # can't assume ksh on all architectures
@@ -1300,7 +1297,7 @@ if test "$use_tcl" = "xYes"; then
   CPPFLAGS=$save_CPPFLAGS
 fi
 
-if test "$use_tcl" = "xYes"; then
+if test "x$use_tcl" = "x"; then
   # Some systems don't have Tcl.  Don't build
   # the Tcl products if we don't have the library.
   if test -f ${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}/tclConfig.sh; then
@@ -1325,9 +1322,10 @@ if test "$use_tcl" = "xYes"; then
   TCL_INSTALL_DIR="${TCLSH_EXEC_PREFIX}/lib${LIBPOSTFIX}/tcl${TCL_VERSION_FOUND}"
 fi
 
-if test "$use_tcl" = "xYes"; then
+if test "x$use_tcl" = "x"; then
   # TCL STUBS support is required
   if test "x${TCL_SUPPORTS_STUBS}" = "x1"; then
+    use_tcl="Yes"
     TCL_CFLAGS="${TCL_CFLAGS} -DUSE_TCL_STUBS"
   else
     AC_MSG_WARN([Tcl does not have STUBs support, perhaps it is too old?  The Tcl packages will not be built])
@@ -1395,15 +1393,12 @@ AC_SUBST(TCL_STUB_LIB_SPEC)
 dnl -----------------------------------
 dnl INCLUDES and LIBS for TK
 
-# start by assuming we have it, if we have tcl
-if test "x$use_tcl" = "xYes"; then
-    use_tk="Yes"
-else
+if test "x$use_tcl" != "xYes"; then
     AC_MSG_WARN([No Tcl. The Tk packages will not be built either])
     use_tk="No (no tcl)"
 fi
 
-if test "x$use_tk" = "xYes"; then
+if test "x$use_tk" = "x"; then
     AC_ARG_WITH(wish,
         [AC_HELP_STRING([--with-wish=PROG], [use a specific wish])],
         WISH=$withval,)
@@ -1425,7 +1420,7 @@ if test "x$use_tk" = "xYes"; then
     fi
 fi
 
-if test "x$use_tk" = "xYes"; then
+if test "x$use_tk" = "x"; then
     #TK_VERSION_FOUND=`echo 'puts [[info tkversion]]' | $WISH`
     #
     # No such var as tkversion.  Use tclversion instead.
@@ -1456,7 +1451,7 @@ if test "x$use_tk" = "xYes"; then
     CPPFLAGS=$save_CPPFLAGS
 fi
 
-if test "x$use_tk" = "xYes"; then
+if test "x$use_tk" = "x"; then
     # Some systems don't have Tcl.  Don't build
     # Some systems have Tcl, but not Tk.  Don't build
     # the Tk products if we don't have the library.
@@ -1481,7 +1476,8 @@ if test "x$use_tk" = "xYes"; then
     fi
 fi
                                                                                 
-if test "x$use_tk" = "xYes"; then
+if test "x$use_tk" = "x"; then
+    use_tk="Yes"
     TK_SUBDIRS="tkstubs tkspline"
 else
     TK_SUBDIRS=""
@@ -1598,39 +1594,43 @@ dnl INCLUDES and LIBS for DEVIL
 AC_ARG_WITH(devil,
   [AC_HELP_STRING([--with-devil=yes], [DevIL plugin])],
   [],[with_devil=yes])
-AC_ARG_WITH(devilincludedir,
-  [AC_HELP_STRING([--with-devilincludedir=DIR], [use DevIL includes from DIR])],
-  [DEVIL_INCLUDES="-I$withval"])
-AC_ARG_WITH(devillibdir,
-  [AC_HELP_STRING([--with-devillibdir=DIR], [use DevIL libraries from DIR])],
-  [DEVIL_LIBS="-L$withval"])
 
-if test "x$with_devil" = "xyes"; then
+if test "x$with_devil" != "xyes"; then
+  use_devil="No (disabled)"
+else
+
+  AC_ARG_WITH(devilincludedir,
+    [AC_HELP_STRING([--with-devilincludedir=DIR], [use DevIL includes from DIR])],
+    [DEVIL_INCLUDES="-I$withval"])
+  AC_ARG_WITH(devillibdir,
+    [AC_HELP_STRING([--with-devillibdir=DIR], [use DevIL libraries from DIR])],
+    [DEVIL_LIBS="-L$withval"])
+
   save_CPPFLAGS=$CPPFLAGS
   save_LDFLAGS=$LDFLAGS
   CPPFLAGS="$CPPFLAGS $DEVIL_INCLUDES"
   LDFLAGS="$LDFLAGS $DEVIL_LIBS"
   AC_CHECK_HEADERS([IL/il.h],
     [],
-    [with_devil=no
+    [use_devil="No (missing header)"
      AC_MSG_WARN(Optional DevIL library not available - missing headers)],
     [])
   AC_CHECK_LIB(IL,main,
     [DEVIL_LIBS="$DEVIL_LIBS -lIL -lILU"],
-    [with_devil=no
+    [use_devil="No (missing library)"
      AC_MSG_WARN(Optional DevIL library not available)],
     [])
   LDFLAGS=$save_LDFLAGS
   CPPFLAGS=$save_CPPFLAGS
 fi
-
-if test "x$with_devil" = "xyes"; then
-     AC_DEFINE_UNQUOTED(HAVE_DEVIL,1,[Define if you have the DevIL library])
+if test "x$use_devil" = "x"; then
+ AC_DEFINE_UNQUOTED(HAVE_DEVIL,1,
+    [Define if you have the DevIL library])
+ AC_SUBST(DEVIL_INCLUDES)
+ AC_SUBST(DEVIL_LIBS)
 fi
-AC_SUBST(HAVE_DEVIL)
-AC_SUBST(DEVIL_INCLUDES)
-AC_SUBST(DEVIL_LIBS)
-AM_CONDITIONAL(WITH_DEVIL, [test "x$with_devil" = "xyes"])
+
+AM_CONDITIONAL(WITH_DEVIL, [test "x$use_devil" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for XPM
@@ -1729,16 +1729,20 @@ AC_ARG_WITH(rsvg,
   [AC_HELP_STRING([--with-rsvg=yes], [rsvg library])],
   [], [with_rsvg=yes])
 
-if test "x$with_rsvg" = "xyes"; then
-PKG_CHECK_MODULES(RSVG, [librsvg-2.0],
-	[HAVE_RSVG=1
-	AC_DEFINE_UNQUOTED(HAVE_RSVG,1,
-		[Define if you have the rsvg library])],
-	[AC_MSG_WARN(rsvg library not available)])
-AC_SUBST(RSVG_CFLAGS)
-AC_SUBST(RSVG_LIBS)
+if test "x$with_rsvg" != "xyes"; then
+  use_rsvg="No (disabled)"
+else
+  PKG_CHECK_MODULES(RSVG, [librsvg-2.0],[
+    use_rsvg="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_RSVG,1,
+      [Define if you have the rsvg library])
+    AC_SUBST(RSVG_CFLAGS)
+    AC_SUBST(RSVG_LIBS)
+  ],[
+    use_rsvg="No (rsvg library not available)"
+  ])
 fi
-AM_CONDITIONAL(WITH_RSVG, [test "x$HAVE_RSVG" != "x"])
+AM_CONDITIONAL(WITH_RSVG, [test "x$use_rsvg" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PANGO, CAIRO et.al.
@@ -1747,20 +1751,24 @@ AC_ARG_WITH(pangocairo,
   [AC_HELP_STRING([--with-pangocairo=yes], [pangocairo library])],
   [], [with_pangocairo=yes])
 
-if test "x$with_pangocairo" = "xyes"; then
-# require at least the version available on centos5 (fc6 has 1.14.10)
-PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.14.9],
-	[HAVE_PANGOCAIRO=1
-	AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
-		[Define if you have the pango library with cairo support])],
-	[AC_MSG_WARN(pangocairo library not available)])
-AC_SUBST(PANGOCAIRO_CFLAGS)
-AC_SUBST(PANGOCAIRO_LIBS)
+if test "x$with_pangocairo" != "xyes"; then
+  use_pangocairo="No (disabled)"
+else
+  # require at least the version available on centos5 (fc6 has 1.14.10)
+  PKG_CHECK_MODULES(PANGOCAIRO, [pangocairo >= 1.14.9],[
+    use_pangocairo="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_PANGOCAIRO,1,
+      [Define if you have the pangocairo library])
+    AC_SUBST(PANGOCAIRO_CFLAGS)
+    AC_SUBST(PANGOCAIRO_LIBS)
+  ],[
+    use_pangocairo="No (pangocairo library not available)"
+  ])
 fi
-AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$HAVE_PANGOCAIRO" != "x"])
+AM_CONDITIONAL(WITH_PANGOCAIRO, [test "x$use_pangocairo" = "xYes"])
 
 # see if pango uses a fontconfig/freetype2 backend
-if test "x$HAVE_PANGOCAIRO" != "x"; then
+if test "x$use_pangocairo" = "xYes"; then
     save_LIBS=$LIBS
     LIBS="$LIBS $PANGOCAIRO_LIBS"
     AC_CHECK_FUNCS([pango_fc_font_lock_face pango_fc_font_unlock_face])
@@ -1774,16 +1782,20 @@ AC_ARG_WITH(glitz,
   [AC_HELP_STRING([--with-glitz=no], [glitz library])],
   [], [with_glitz=no])
 
-if test "x$with_glitz" = "xyes"; then
-PKG_CHECK_MODULES(GLITZ, [glitz],
-	[HAVE_GLITZ=1
-	AC_DEFINE_UNQUOTED(HAVE_GLITZ,1,
-		[Define if you have the glitz library with cairo support])],
-	[AC_MSG_WARN(glitz library not available)])
-AC_SUBST(GLITZ_CFLAGS)
-AC_SUBST(GLITZ_LIBS)
+if test "x$with_glitz" != "xyes"; then
+  use_glitz="No (disabled)"
+else
+  PKG_CHECK_MODULES(GLITZ, [glitz],[
+    use_glitz="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_GLITZ,1,
+      [Define if you have the glitz library])
+    AC_SUBST(GLITZ_CFLAGS)
+    AC_SUBST(GLITZ_LIBS)
+  ],[
+    use_glitz="No (glitz library not available)"
+  ])
 fi
-AM_CONDITIONAL(WITH_GLITZ, [test "x$HAVE_GLITZ" != "x"])
+AM_CONDITIONAL(WITH_GLITZ, [test "x$use_glitz" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for FREETYPE2
@@ -1874,16 +1886,20 @@ AC_ARG_WITH(gdk-pixbuf,
   [AC_HELP_STRING([--with-gdk-pixbuf=yes], [gdk-pixbuf library])],
   [], [with_gdk_pixbuf=yes])
 
-if test "x$with_gdk_pixbuf" = "xyes"; then
-PKG_CHECK_MODULES(GDK_PIXBUF, [gdk-pixbuf-2.0],
-        [HAVE_GDK_PIXBUF=1
-        AC_DEFINE_UNQUOTED(HAVE_GDK_PIXBUF,1,
-                [Define if you have the gdk-pixbuf library])],
-        [AC_MSG_WARN(gdk-pixbuf library not available.)])
+if test "x$with_gdk_pixbuf" != "xyes"; then
+  use_gdk_pixbuf="No (disabled)"
+else
+  PKG_CHECK_MODULES(GDK_PIXBUF, [gdk-pixbuf-2.0],[
+    use_gdk_pixbuf="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_GDK_PIXBUF,1,
+      [Define if you have the gdk_pixbuf library])
+    AC_SUBST(GDK_PIXBUF_CFLAGS)
+    AC_SUBST(GDK_PIXBUF_LIBS)
+  ],[
+    use_gdk_pixbuf="No (gdk_pixbuf library not available)"
+  ])
 fi
-AC_SUBST(GDK_PIXBUF_CFLAGS)
-AC_SUBST(GDK_PIXBUF_LIBS)
-AM_CONDITIONAL(WITH_GDK_PIXBUF, [test "x$HAVE_GDK_PIXBUF" != "x"])
+AM_CONDITIONAL(WITH_GDK_PIXBUF, [test "x$use_gdk_pixbuf" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GTK.
@@ -1892,16 +1908,20 @@ AC_ARG_WITH(gtk,
   [AC_HELP_STRING([--with-gtk=yes], [gtk+ library])],
   [], [with_gtk=yes])
 
-if test "x$with_gtk" = "xyes"; then
-PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.7.0],
-        [HAVE_GTK=1
-        AC_DEFINE_UNQUOTED(HAVE_GTK,1,
-                [Define if you have the gtk+ library])],
-        [AC_MSG_WARN(gtk+ library not available.)])
+if test "x$with_gtk" != "xyes"; then
+  use_gtk="No (disabled)"
+else
+  PKG_CHECK_MODULES(GTK, [gtk+-2.0 >= 2.7.0],[
+    use_gtk="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_GTK,1,
+      [Define if you have the gtk library])
+    AC_SUBST(GTK_CFLAGS)
+    AC_SUBST(GTK_LIBS)
+  ],[
+    use_gtk="No (gtk library not available)"
+  ])
 fi
-AC_SUBST(GTK_CFLAGS)
-AC_SUBST(GTK_LIBS)
-AM_CONDITIONAL(WITH_GTK, [test "x$HAVE_GTK" != "x"])
+AM_CONDITIONAL(WITH_GTK, [test "x$use_gtk" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GTKGL.
@@ -1910,16 +1930,20 @@ AC_ARG_WITH(gtkgl,
   [AC_HELP_STRING([--with-gtkgl=yes], [gtkgl library])],
   [], [with_gtkgl=yes])
 
-if test "x$with_gtkgl" = "xyes"; then
-PKG_CHECK_MODULES(GTKGL, [gtkgl-2.0],
-        [HAVE_GTKGL=1
-        AC_DEFINE_UNQUOTED(HAVE_GTKGL,1,
-                [Define if you have the gtkgl library])],
-        [AC_MSG_WARN(gtkgl library not available.)])
+if test "x$with_gtkgl" != "xyes"; then
+  use_gtkgl="No (disabled)"
+else
+  PKG_CHECK_MODULES(GTKGL, [gtkgl-2.0],[
+    use_gtkgl="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_GTKGL,1,
+      [Define if you have the gtkgl library])
+    AC_SUBST(GTKGL_CFLAGS)
+    AC_SUBST(GTKGL_LIBS)
+  ],[
+    use_gtkgl="No (gtkgl library not available)"
+  ])
 fi
-AC_SUBST(GTKGL_CFLAGS)
-AC_SUBST(GTKGL_LIBS)
-AM_CONDITIONAL(WITH_GTKGL, [test "x$HAVE_GTKGL" != "x"])
+AM_CONDITIONAL(WITH_GTKGL, [test "x$use_gtkgl" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GTKGLEXT.
@@ -1928,16 +1952,20 @@ AC_ARG_WITH(gtkglext,
   [AC_HELP_STRING([--with-gtkglext=yes], [gtkglext library])],
   [], [with_gtkglext=yes])
 
-if test "x$with_gtkglext" = "xyes"; then
-PKG_CHECK_MODULES(GTKGLEXT, [gtkglext-1.0],
-        [HAVE_GTKGLEXT=1
-        AC_DEFINE_UNQUOTED(HAVE_GTKGLEXT,1,
-                [Define if you have the gtkglext library])],
-        [AC_MSG_WARN(gtkglext library not available.)])
+if test "x$with_gtkglext" != "xyes"; then
+  use_gtkglext="No (disabled)"
+else
+  PKG_CHECK_MODULES(GTKGLEXT, [gtkglext-1.0],[
+    use_gtkglext="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_GTKGLEXT,1,
+      [Define if you have the gtkglext library])
+    AC_SUBST(GTKGLEXT_CFLAGS)
+    AC_SUBST(GTKGLEXT_LIBS)
+  ],[
+    use_gtkglext="No (gtkglext library not available)"
+  ])
 fi
-AC_SUBST(GTKGLEXT_CFLAGS)
-AC_SUBST(GTKGLEXT_LIBS)
-AM_CONDITIONAL(WITH_GTKGLEXT, [test "x$HAVE_GTKGLEXT" != "x"])
+AM_CONDITIONAL(WITH_GTKGLEXT, [test "x$use_gtkglext" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GTS.
@@ -1946,16 +1974,20 @@ AC_ARG_WITH(gts,
   [AC_HELP_STRING([--with-gts=yes], [gts library])],
   [], [with_gts=yes])
 
-if test "x$with_gts" = "xyes"; then
-PKG_CHECK_MODULES(GTS, [gts],
-        [HAVE_GTS=1
-        AC_DEFINE_UNQUOTED(HAVE_GTS,1,
-                [Define if you have the gts library])],
-        [AC_MSG_WARN(gts library not available.)])
+if test "x$with_gts" != "xyes"; then
+  use_gts="No (disabled)"
+else
+  PKG_CHECK_MODULES(GTS, [gts],[
+    use_gts="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_GTS,1,
+      [Define if you have the gts library])
+    AC_SUBST(GTS_CFLAGS)
+    AC_SUBST(GTS_LIBS)
+  ],[
+    use_gts="No (gts library not available)"
+  ])
 fi
-AC_SUBST(GTS_CFLAGS)
-AC_SUBST(GTS_LIBS)
-AM_CONDITIONAL(WITH_GTS, [test "x$HAVE_GTS" != "x"])
+AM_CONDITIONAL(WITH_GTS, [test "x$use_gts" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GLADE.
@@ -1964,17 +1996,20 @@ AC_ARG_WITH(glade,
   [AC_HELP_STRING([--with-glade=yes], [glade library])],
   [], [with_glade=yes])
 
-if test "x$with_glade" = "xyes"; then
-PKG_CHECK_MODULES(GLADE, [libglade-2.0],
-        [HAVE_GLADE=1
-        AC_DEFINE_UNQUOTED(HAVE_GLADE,1,
-                [Define if you have the glade library])],
-        [AC_MSG_WARN(glade library not available. desktop features will not be built)])
+if test "x$with_glade" != "xyes"; then
+  use_glade="No (disabled)"
+else
+  PKG_CHECK_MODULES(GLADE, [libglade-2.0],[
+    use_glade="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_GLADE,1,
+      [Define if you have the glade library])
+    AC_SUBST(GLADE_CFLAGS)
+    AC_SUBST(GLADE_LIBS)
+  ],[
+    use_glade="No (glade library not available)"
+  ])
 fi
-AC_SUBST(GLADE_CFLAGS)
-AC_SUBST(GLADE_LIBS)
-AM_CONDITIONAL(WITH_GLADE, [test "x$HAVE_GLADE" != "x"])
-
+AM_CONDITIONAL(WITH_GLADE, [test "x$use_glade" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GNOMEUI.
@@ -1983,16 +2018,20 @@ AC_ARG_WITH(gnomeui,
   [AC_HELP_STRING([--with-gnomeui=yes], [gnomeui library])],
   [], [with_gnomeui=yes])
 
-if test "x$with_gnomeui" = "xyes"; then
-PKG_CHECK_MODULES(GNOMEUI, [libgnomeui-2.0],
-        [HAVE_GNOMEUI=1
-        AC_DEFINE_UNQUOTED(HAVE_GNOMEUI,1,
-                [Define if you have the gnomeui library])],
-        [AC_MSG_WARN(gnomeui library not available. using alternate code for firefox interaction)])
+if test "x$with_gnomeui" != "xyes"; then
+  use_gnomeui="No (disabled)"
+else
+  PKG_CHECK_MODULES(GNOMEUI, [libgnomeui-2.0],[
+    use_gnomeui="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_GNOMEUI,1,
+      [Define if you have the gnomeui library])
+    AC_SUBST(GNOMEUI_CFLAGS)
+    AC_SUBST(GNOMEUI_LIBS)
+  ],[
+    use_gnomeui="No (gnomeui library not available)"
+  ])
 fi
-AC_SUBST(GNOMEUI_CFLAGS)
-AC_SUBST(GNOMEUI_LIBS)
-AM_CONDITIONAL(WITH_GNOMEUI, [test "x$HAVE_GNOMEUI" != "x"])
+AM_CONDITIONAL(WITH_GNOMEUI, [test "x$use_gnomeui" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GETTEXT.
@@ -2011,16 +2050,20 @@ AC_ARG_WITH(ming,
   [AC_HELP_STRING([--with-ming=yes], [ming library (plugin for -Tswf)])],
   [], [with_ming=yes])
 
-if test "x$with_ming" = "xyes"; then
-PKG_CHECK_MODULES(MING, [libming >= 0.4],
-	[HAVE_MING=1
-	AC_DEFINE_UNQUOTED(HAVE_MING,1,
-		[Define if you have the ming library for SWF support])],
-	[AC_MSG_WARN(ming library not available)])
+if test "x$with_ming" != "xyes"; then
+  use_ming="No (disabled)"
+else
+  PKG_CHECK_MODULES(MING, [libming >= 0.4],[
+    use_ming="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_MING,1,
+      [Define if you have the ming library for SWF support])
+    AC_SUBST(MING_CFLAGS)
+    AC_SUBST(MING_LIBS)
+  ],[
+    use_ming="No (ming library not available)"
+  ])
 fi
-AC_SUBST(MING_CFLAGS)
-AC_SUBST(MING_LIBS)
-AM_CONDITIONAL(WITH_MING, [test "x$HAVE_MING" != "x"])
+AM_CONDITIONAL(WITH_MING, [test "x$use_min" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for QUARTZ 
@@ -2767,19 +2810,21 @@ echo "  ipsepcola:     $use_ipsepcola"
 echo "  sfdp:          $use_sfdp"
 echo ""
 echo "plugin libraries:"
-echo "  dot_layout:    Yes (always built in)"
-echo "  neato_layout:  Yes (always built in)"
-echo "  core:          Yes (always built in)"
-#echo "  devil:         $use_pango"
+echo "  dot_layout:    Yes (always enabled)"
+echo "  neato_layout:  Yes (always enabled)"
+echo "  core:          Yes (always enabled)"
+echo "  devil:         $use_devil"
 #echo "  gd:            $use_gd"
 #echo "  gdiplus:       $use_gdiplus"
-#echo "  gdk_pixbuf:    $use_gdk_pixbuf"
-#echo "  glitz:         $use_glitz"
-#echo "  gtk:           $use_gtk"
-#echo "  pango/cairo:   $use_pango"
-#echo "  ming:          $use_ming"
+echo "  gdk_pixbuf:    $use_gdk_pixbuf"
+echo "  glitz:         $use_glitz"
+echo "  gtk:           $use_gtk"
+echo "  pangocairo:    $use_pangocairo"
+echo "  ming:          $use_ming"
+#echo "  quartz:        $use_quartz"
+echo "  rsvg:          $use_rsvg"
 #echo "  xlib:          $use_xlib"
-echo "   (unfinished status for: devil,gd,gdiplus,gdk_pixbuf,glitz,gtk,pango/cairo,ming,xlib)"
+echo "   (unfinished status for: gd,gdiplus,quartz,xlib)"
 echo ""
 echo "language bindings:"
 echo "  sharp (C#):    $use_sharp"
