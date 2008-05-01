@@ -1832,7 +1832,7 @@ AC_ARG_WITH(glitz,
   [], [with_glitz=no])
 
 if test "x$with_glitz" != "xyes"; then
-  use_glitz="No (disabled - incomplete)"
+  use_glitz="No (disabled by default - incomplete)"
 else
   PKG_CHECK_MODULES(GLITZ, [glitz],[
     use_glitz="Yes"
@@ -2511,7 +2511,7 @@ AC_ARG_WITH(sfdp,
   [], [with_sfdp=no])
 
 if test "x$with_sfdp" != "xyes"; then
-  use_sfdp="No (disabled - experimental)"
+  use_sfdp="No (disabled by default- experimental)"
 else
   use_sfdp="Yes"
   AC_DEFINE_UNQUOTED(SFDP,1,[Define if you want SFDP])
@@ -2526,7 +2526,7 @@ AC_ARG_WITH(smyrna,
   [], [with_smyrna=no])
 
 if test "x$with_smyrna" != "xyes"; then
-  use_smyrna="No (disabled - experimental)"
+  use_smyrna="No (disabled by default - experimental)"
 else
   if test "x$HAVE_GTK" != "x1"; then
      AC_MSG_WARN(SMYRNA requires GTK)
