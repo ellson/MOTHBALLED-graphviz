@@ -459,16 +459,17 @@ if test "x$with_efence" = "xyes"; then
 fi
 
 dnl -----------------------------------
-dnl Don't compile X programs (and emit a warning message)
-dnl if X isn't available.
 dnl Checks for X header files.
 
 AC_PATH_XTRA
-if test "x$no_x" = xyes; then
+if test "x$no_x" = "xyes"; then
+  use_xlib="No (disabled or unavailable)"
   AC_MSG_WARN([X11 not available.])
   X_SUBDIRS=""
+else
+  use_xlib="Yes"
 fi
-AM_CONDITIONAL(WITH_X, [test "x$no_x" != "xyes"])
+AM_CONDITIONAL(WITH_X, [test "x$use_xlib" = "xYes"])
 
 dnl -----------------------------------
 dnl check for SWIG - needed for script-language bindings
@@ -1651,10 +1652,11 @@ else
   CPPFLAGS=$save_CPPFLAGS
 fi
 if test "x$use_devil" = "x"; then
- AC_DEFINE_UNQUOTED(HAVE_DEVIL,1,
+  use_devil="Yes"
+  AC_DEFINE_UNQUOTED(HAVE_DEVIL,1,
     [Define if you have the DevIL library])
- AC_SUBST(DEVIL_INCLUDES)
- AC_SUBST(DEVIL_LIBS)
+  AC_SUBST(DEVIL_INCLUDES)
+  AC_SUBST(DEVIL_LIBS)
 fi
 
 AM_CONDITIONAL(WITH_DEVIL, [test "x$use_devil" = "xYes"])
@@ -1831,13 +1833,18 @@ AC_ARG_WITH(freetype2,
   [AC_HELP_STRING([--with-freetype2=yes], [freetype2 library])],
   [], [with_freetype2=yes])
 
-if test "x$with_freetype2" = "xyes"; then
-PKG_CHECK_MODULES(FREETYPE2, [freetype2],
-	  [HAVE_FREETYPE2=1],
-	  [AC_MSG_WARN(pkg-config did not find a freetype2.pc.  Looking for freetype-config.)])
+if test "x$with_freetype2" != "xyes"; then
+  use_freetype="No (disabled)"
+else
+  PKG_CHECK_MODULES(FREETYPE2, [freetype2],[
+    use_freetype="Yes"
+  ],[
+    AC_MSG_WARN(pkg-config did not find a freetype2.pc.  Looking for freetype-config.)
+  ])
+fi
 
 # pkgconfig for freetype2 did not exist in redhat[78]
-if test "x$HAVE_FREETYPE2" != "x1"; then
+if test "x$use_freetype" = "x"; then
     if test "x$FREETYPE_DIR" = "xyes"; then
 	AC_PATH_PROG(FREETYPE_CONFIG,freetype-config)
     else
@@ -1851,19 +1858,19 @@ if test "x$HAVE_FREETYPE2" != "x1"; then
 	    FREETYPE2_CFLAGS=`$FREETYPE_CONFIG --cflags`
 	fi
 	FREETYPE2_LIBS=`$FREETYPE_CONFIG --libs`
-	HAVE_FREETYPE2=1
+	use_freetype="Yes"
+    else
+        AC_MSG_WARN(freetype library not available)
+	use_freetype="No (missing freetype-config)"
     fi
 fi
 
-if test "x$HAVE_FREETYPE2" != "x"; then
-	AC_DEFINE_UNQUOTED(HAVE_FREETYPE2,1,[Define if you have the freetype2 library])
-else
-	AC_MSG_WARN(freetype2 library not available)
+if test "x$use_freetype" = "xYes"; then
+  AC_DEFINE_UNQUOTED(HAVE_FREETYPE2,1,[Define if you have the freetype2 library])
+  AC_SUBST(FREETYPE2_CFLAGS)
+  AC_SUBST(FREETYPE2_LIBS)
 fi
-fi
-AC_SUBST(FREETYPE2_CFLAGS)
-AC_SUBST(FREETYPE2_LIBS)
-AM_CONDITIONAL(WITH_FREETYPE2, [test "x$HAVE_FREETYPE2" != "x"])
+AM_CONDITIONAL(WITH_FREETYPE2, [test "x$ue_freetype" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for FONTCONFIG
@@ -1872,13 +1879,18 @@ AC_ARG_WITH(fontconfig,
   [AC_HELP_STRING([--with-fontconfig=yes], [use fontconfig library])],
   [], [with_fontconfig=yes])
 
-if test "x$with_fontconfig" = "xyes"; then
-PKG_CHECK_MODULES(FONTCONFIG, [fontconfig],
-	  [HAVE_FONTCONFIG=1],
-	  [AC_MSG_WARN(pkg-config did not find a fontconfig.pc.  Looking for fontconfig-config.)])
+if test "x$with_fontconfig" != "xyes"; then
+  use_fontconfig="No (disabled)"
+else
+  PKG_CHECK_MODULES(FONTCONFIG, [fontconfig],
+    use_fontconfig="Yes"
+  ],[
+    AC_MSG_WARN(pkg-config did not find a fontconfig.pc.  Looking for fontconfig-config.)
+  ])
+fi
 
 # just in case pkgconfig for fontconfig does not exist
-if test "x$HAVE_FONTCONFIG" != "x1"; then
+if test "x$use_fontconfig" = "x"; then
     if test "x$FONTCONFIG_DIR" = "xyes"; then
 	AC_PATH_PROG(FONTCONFIG_CONFIG,fontconfig-config)
     else
@@ -1892,19 +1904,19 @@ if test "x$HAVE_FONTCONFIG" != "x1"; then
 	    FONTCONFIG_CFLAGS=`$FONTCONFIG_CONFIG --cflags`
 	fi
 	FONTCONFIG_LIBS=`$FONTCONFIG_CONFIG --libs`
-	HAVE_FONTCONFIG=1
+	use_fontconfig="Yes"
+    else
+	use_fontconfig="No (missing fontconfig-config)"
+        AC_MSG_WARN(fontconfig library not available)
     fi
 fi
 
-if test "x$HAVE_FONTCONFIG" != "x"; then
-	AC_DEFINE_UNQUOTED(HAVE_FONTCONFIG,1,[Define if you have the fontconfig library])
-else
-	AC_MSG_WARN(fontconfig library not available)
+if test "x$use_fontconfig" = "Yes"; then
+  AC_DEFINE_UNQUOTED(HAVE_FONTCONFIG,1,[Define if you have the fontconfig library])
+  AC_SUBST(FONTCONFIG_CFLAGS)
+  AC_SUBST(FONTCONFIG_LIBS)
 fi
-fi
-AC_SUBST(FONTCONFIG_CFLAGS)
-AC_SUBST(FONTCONFIG_LIBS)
-AM_CONDITIONAL(WITH_FONTCONFIG, [test "x$HAVE_FONTCONFIG" != "x"])
+AM_CONDITIONAL(WITH_FONTCONFIG, [test "x$use_fontconfig" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GDK_PIXBUF.
@@ -2099,19 +2111,21 @@ AC_ARG_WITH(quartz,
   [AC_HELP_STRING([--with-quartz=no], [Quartz framework (Mac OS X)])],
   [], [with_quartz=no])
 
-if test "x$with_quartz" = "xyes"; then
-
-if test -d "/System/Library/Frameworks/ApplicationServices.framework"; then
-HAVE_QUARTZ=1
-AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,[Define if you have the Quartz framework for Mac OS X])
-QUARTZ_CFLAGS=''
-QUARTZ_LIBS='-framework ApplicationServices'
+if test "x$with_quartz" != "xyes"; then
+  use_quartz="No (disabled)"
+else
+  if test -d "/System/Library/Frameworks/ApplicationServices.framework"; then
+    use_quartz="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_QUARTZ,1,[Define if you have the Quartz framework for Mac OS X])
+    QUARTZ_CFLAGS=''
+    QUARTZ_LIBS='-framework ApplicationServices'
+    AC_SUBST(QUARTZ_CFLAGS)
+    AC_SUBST(QUARTZ_LIBS)
+  else
+    use_quartz="No (missing ApplicationServices.framework)"
+  fi
 fi
-
-fi
-AC_SUBST(QUARTZ_CFLAGS)
-AC_SUBST(QUARTZ_LIBS)
-AM_CONDITIONAL(WITH_QUARTZ, [test "x$HAVE_QUARTZ" != "x"])
+AM_CONDITIONAL(WITH_QUARTZ, [test "x$use_quartz" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for PLATFORMSDK
@@ -2841,17 +2855,16 @@ echo "  dot_layout:    Yes (always enabled)"
 echo "  neato_layout:  Yes (always enabled)"
 echo "  core:          Yes (always enabled)"
 echo "  devil:         $use_devil"
-#echo "  gd:            $use_gd"
-#echo "  gdiplus:       $use_gdiplus"
+echo "  gd:            $use_gd"
+echo "  gdiplus:       $use_gdiplus"
 echo "  gdk_pixbuf:    $use_gdk_pixbuf"
 echo "  glitz:         $use_glitz"
 echo "  gtk:           $use_gtk"
 echo "  pangocairo:    $use_pangocairo"
 echo "  ming:          $use_ming"
-#echo "  quartz:        $use_quartz"
+echo "  quartz:        $use_quartz"
 echo "  rsvg:          $use_rsvg"
-#echo "  xlib:          $use_xlib"
-echo "   (unfinished status for: gd,gdiplus,quartz,xlib)"
+echo "  xlib:          $use_xlib"
 echo ""
 echo "language bindings:"
 echo "  sharp (C#):    $use_sharp"
