@@ -802,32 +802,42 @@ AM_CONDITIONAL(WITH_LUA, [test "x$use_lua" = "xYes"])
 dnl -----------------------------------
 dnl INCLUDES and LIBS for OCAML
 
-if test "x$SWIG" != "x"; then
 AC_ARG_ENABLE(ocaml,
   [AC_HELP_STRING([--enable-ocaml=yes], [ocaml language bindings])],
   [], [enable_ocaml=yes])
-if test "x$enable_ocaml" = "xyes"; then
-if test `$SWIG -help 2>&1 | $GREP -c '\-ocaml *- Generate'` = 0; then
-	OCAML=
-	AC_MSG_WARN([swig does not support -ocaml. The OCAML packages will not be built])
+
+if test "x$enable_ocaml" != "xyes"; then
+  use_ocaml="No (disabled)"
 else
-AC_CHECK_PROG(OCAML,ocaml,ocaml)
-AC_CHECK_PROG(OCAML_OPT,ocamlopt,ocamlopt)
-OCAML_INCLUDES=-I/usr/lib$LIBPOSTFIX/ocaml
-OCAML_LIBS=-L/usr/lib$LIBPOSTFIX/ocaml
-save_CPPFLAGS=$CPPFLAGS
-CPPFLAGS="$CPPFLAGS $OCAML_INCLUDES"
-AC_CHECK_HEADER(caml/mlvalues.h,,[
-  AC_MSG_WARN([Unable to find header caml/mlvalues.h. The OCAML packages will not be built])
-  OCAML=
-  ])
-CPPFLAGS=$save_CPPFLAGS
-AC_SUBST(OCAML_INCLUDES)
-AC_SUBST(OCAML_LIBS)
+  if test "x$use_swig" != "xYes"; then
+    use_ocaml="No (swig not available)"
+  else
+    if test `$SWIG -help 2>&1 | $GREP -c '\-ocaml *- Generate'` = 0; then
+      use_ocaml="No (swig does not support -ocaml option)"
+    else
+      AC_CHECK_PROG(OCAML,ocaml,ocaml)
+      if test "x$OCAML" = "x"; then
+        use_ocaml="No (ocaml not available)"
+      else
+        AC_CHECK_PROG(OCAML_OPT,ocamlopt,ocamlopt)
+        OCAML_INCLUDES=-I/usr/lib$LIBPOSTFIX/ocaml
+        OCAML_LIBS=-L/usr/lib$LIBPOSTFIX/ocaml
+        save_CPPFLAGS=$CPPFLAGS
+        CPPFLAGS="$CPPFLAGS $OCAML_INCLUDES"
+        AC_CHECK_HEADER(caml/mlvalues.h,[
+	  use_ocaml="Yes"
+          AC_SUBST(OCAML_INCLUDES)
+          AC_SUBST(OCAML_LIBS)
+	],[
+	  use_ocaml="No (missing header)"
+          AC_MSG_WARN([Unable to find header caml/mlvalues.h. The OCAML packages will not be built])
+        ])
+        CPPFLAGS=$save_CPPFLAGS
+      fi
+    fi
+  fi
 fi
-fi
-fi
-AM_CONDITIONAL(WITH_OCAML, [test "x$OCAML" != "x"])
+AM_CONDITIONAL(WITH_OCAML, [test "x$use_ocaml" = "xYes"])
 AM_CONDITIONAL(WITH_OCAMLOPT, [test "x$OCAML_OPT" != "x"])
 
 dnl -----------------------------------
@@ -2849,6 +2859,7 @@ echo "  guile:         $use_guile"
 echo "  io:            $use_io"
 echo "  java:          $use_java"
 echo "  lua:           $use_lua"
+echo "  ocaml:         $use_ocaml"
 echo "  perl:          $use_perl"
 echo "  php:           $use_php"
 echo "  python:        $use_python"
