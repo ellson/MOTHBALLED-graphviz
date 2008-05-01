@@ -1,0 +1,50 @@
+diff -ru pixman-0.10.0/config.h.in pixman-0.10.0.patched/config.h.in
+--- pixman-0.10.0/config.h.in	2008-03-27 23:04:20.000000000 +0900
++++ pixman-0.10.0.patched/config.h.in	2008-04-25 09:48:00.000000000 +0800
+@@ -69,3 +69,27 @@
+ /* Define to 1 if your processor stores words with the most significant byte
+    first (like Motorola and SPARC, unlike Intel and VAX). */
+ #undef WORDS_BIGENDIAN
++
++/* Deal with multiple architecture compiles on Mac OS X */
++#ifdef __APPLE_CC__
++#ifdef __BIG_ENDIAN__
++#define WORDS_BIGENDIAN 1
++#else
++#undef WORDS_BIGENDIAN
++#endif
++#ifdef __MMX__
++#define USE_MMX
++#else
++#undef USE_MMX
++#endif
++#ifdef __SSE__
++#define USE_SSE
++#else
++#undef USE_SSE
++#endif
++#ifdef __SSE2__
++#define USE_SSE2
++#else
++#undef USE_SSE2
++#endif
++#endif
+diff -ru pixman-0.10.0/pixman/pixman-pict.c pixman-0.10.0.patched/pixman/pixman-pict.c
+--- pixman-0.10.0/pixman/pixman-pict.c	2008-03-27 19:58:20.000000000 +0900
++++ pixman-0.10.0.patched/pixman/pixman-pict.c	2008-04-25 00:05:08.000000000 +0800
+@@ -35,6 +35,15 @@
+ #include "pixman-mmx.h"
+ #include "pixman-sse.h"
+ 
++#ifdef __APPLE_CC__
++#ifdef USE_MMX
++#include "pixman-mmx.c"
++#endif
++#ifdef USE_SSE2
++#include "pixman-sse.c"
++#endif
++#endif
++
+ #define FbFullMask(n)   ((n) == 32 ? (uint32_t)-1 : ((((uint32_t) 1) << n) - 1))
+ 
+ #undef READ
