@@ -954,6 +954,10 @@ For the purposes of looking up and creating edges, we translate ""
 to be (char*)0, since this latter value is
 necessary in order to look up any edge with a matching head and tail.
 .PP
+Related to this, strings converted to integers act like char pointers,
+getting the value 0 or 1 depending on whether the string consists
+solely of zeroes or not. Thus, the ((int)"2") evaluates to 1.
+.PP
 The language inherits the usual C problems such as dangling references
 and the confusion between '=' and '=='.
 .SH AUTHOR
