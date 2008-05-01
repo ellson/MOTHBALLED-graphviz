@@ -1,0 +1,54 @@
+# tools
+
+MAKE=make
+PACKAGEMAKER=/Developer/Applications/Utilities/PackageMaker.app/Contents/MacOS/PackageMaker
+XCODEBUILD=xcodebuild
+
+# local
+
+LOCAL=/usr/local
+LOCAL_LIB=$(LOCAL)/lib
+
+# base
+
+GV_DIR=../..
+
+#
+# graphviz
+#
+
+graphviz-@VERSION@.pkg: usr/local/lib/$(GVC) Release/Graphviz.app
+	@echo
+	@echo PACKAGING GRAPHVIZ...
+	@echo
+	$(PACKAGEMAKER) --doc ../graphviz.pmdoc --out $@
+
+usr/local/lib/$(GVC): $(GV_DIR)/lib/gvc/$(GVC)
+	@echo
+	@echo INSTALLING GRAPHVIZ...
+	@echo
+	$(MAKE) DESTDIR=$(PWD)/$(BUILD_DIR) -C $(GV_DIR) install-strip
+	
+Release/Graphviz.app: $(GV_DIR)/lib/gvc/$(GVC)
+	@echo
+	@echo BUILDING GRAPHVIZ GUI...
+	@echo
+	$(XCODEBUILD) -project ../graphviz.xcodeproj -configuration Release
+
+$(GV_DIR)/lib/gvc/$(GVC): $(GV_DIR)/Makefile
+	@echo
+	@echo MAKING GRAPHVIZ...
+	@echo
+	if [[ -e $@ ]]; then $(MAKE) -C $(GV_DIR) clean; fi && \
+	$(MAKE) -C $(GV_DIR)/tclpkg/tkstubs && \
+	$(MAKE) -C $(GV_DIR)/tclpkg/tclstubs && \
+	$(MAKE) -C $(GV_DIR)/tclpkg/tkspline CFLAGS="-arch ppc -arch i386" LDFLAGS="-arch ppc -arch i386" && \
+	$(MAKE) -C $(GV_DIR)
+	
+$(GV_DIR)/Makefile: $(GV_DIR)/configure
+	@echo
+	@echo CONFIGURING GRAPHVIZ...
+	@echo
+	cd $(GV_DIR) && ./configure --disable-dependency-tracking --enable-ltdl-install=yes --with-ipsepcola --with-quartz CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64 -lpixman-1" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+
+
