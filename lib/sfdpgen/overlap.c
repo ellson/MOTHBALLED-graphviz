@@ -24,7 +24,7 @@
 
 #define MACHINEACC 1.0e-16
 
-static void ideal_distance_avoid_overlap(int dim, SparseMatrix * A,
+static void ideal_distance_avoid_overlap(int dim, SparseMatrix  A,
 					 real * x, real * width,
 					 real * ideal_distance,
 					 real * tmax, real * tmin)
@@ -146,13 +146,13 @@ void InfoDest(void *a)
     ;
 }
 
-static SparseMatrix *get_overlap_graph(int dim, int n, real * x,
+static SparseMatrix get_overlap_graph(int dim, int n, real * x,
 				       real * width)
 {
     scan_point *scanpointsx, *scanpointsy;
     int i, k, neighbor;
-    SparseMatrix *A = NULL;
-    SparseMatrix *B = NULL;
+    SparseMatrix A = NULL;
+    SparseMatrix B = NULL;
     rb_red_blk_node *newNode, *newNode0;
     rb_red_blk_tree *treey;
     real one = 1;
@@ -267,22 +267,23 @@ static SparseMatrix *get_overlap_graph(int dim, int n, real * x,
 
 /* ============================== label overlap smoother ==================*/
 
+#define OverlapSmoother_s StressMajorizationSmoother_s
 
-OverlapSmoother *OverlapSmoother_new(SparseMatrix * A, int dim,
+OverlapSmoother OverlapSmoother_new(SparseMatrix  A, int dim,
 				     real lambda0, real * x, real * width,
 				     int include_original_graph,
 				     int neighborhood_only,
 				     real * max_overlap,
 				     real * min_overlap)
 {
-    OverlapSmoother *sm;
+    OverlapSmoother sm;
     int i, j, k, m = A->m, *iw, *jw, *id, *jd, jdiag;
-    SparseMatrix *B;
+    SparseMatrix B;
     real *lambda, *d, *w, diag_d, diag_w, dist;
 
     assert((!A) || SparseMatrix_is_symmetric(A, FALSE));
 
-    sm = GNEW(OverlapSmoother);
+    sm = GNEW(struct OverlapSmoother_s);
     lambda = sm->lambda = N_GNEW(m, real);
     for (i = 0; i < m; i++)
 	sm->lambda[i] = lambda0;
@@ -290,8 +291,8 @@ OverlapSmoother *OverlapSmoother_new(SparseMatrix * A, int dim,
     B = call_tri(m, dim, x);
 
     if (!neighborhood_only) {
-	SparseMatrix *C;
-	SparseMatrix *D;
+	SparseMatrix C;
+	SparseMatrix D;
 	C = get_overlap_graph(dim, A->m, x, width);
 	D = SparseMatrix_add(B, C);
 	SparseMatrix_delete(B);
@@ -378,14 +379,14 @@ OverlapSmoother *OverlapSmoother_new(SparseMatrix * A, int dim,
     return sm;
 }
 
-void OverlapSmoother_delete(OverlapSmoother * sm)
+void OverlapSmoother_delete(OverlapSmoother  sm)
 {
 
     StressMajorizationSmoother_delete(sm);
 
 }
 
-void OverlapSmoother_smooth(OverlapSmoother * sm, int dim, real * x)
+void OverlapSmoother_smooth(OverlapSmoother  sm, int dim, real * x)
 {
     int maxit_sm = 1;		/* only using 1 iteration of stress majorization 
 				   is found to give better results and save time! */
@@ -402,7 +403,7 @@ void OverlapSmoother_smooth(OverlapSmoother * sm, int dim, real * x)
 
 /*================================= end OverlapSmoother =============*/
 
-static void scale_to_edge_length(int dim, SparseMatrix * A, real * x,
+static void scale_to_edge_length(int dim, SparseMatrix  A, real * x,
 				 real avg_label_size)
 {
     real dist;
@@ -448,11 +449,11 @@ static void print_bounding_box(int n, int dim, real * x)
     free(xmax);
 }
 
-int remove_overlap(int dim, SparseMatrix * A, real * x,
+int remove_overlap(int dim, SparseMatrix  A, real * x,
 		    real * label_sizes, int ntry)
 {
     real lambda = 0.00;
-    OverlapSmoother *sm;
+    OverlapSmoother sm;
     int include_original_graph = 0, i;
     real avg_label_size;
     real max_overlap = 0, min_overlap = 999;

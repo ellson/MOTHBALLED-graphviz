@@ -19,11 +19,11 @@
 #include "assert.h"
 #include "arith.h"
 
-Multilevel_control *Multilevel_control_new()
+Multilevel_control Multilevel_control_new()
 {
-    Multilevel_control *ctrl;
+    Multilevel_control ctrl;
 
-    ctrl = GNEW(Multilevel_control);
+    ctrl = GNEW(struct Multilevel_control_s);
     ctrl->minsize = 4;
     ctrl->min_coarsen_factor = 0.75;
     ctrl->maxlevel = 1 << 30;
@@ -34,18 +34,18 @@ Multilevel_control *Multilevel_control_new()
     return ctrl;
 }
 
-void Multilevel_control_delete(Multilevel_control * ctrl)
+void Multilevel_control_delete(Multilevel_control ctrl)
 {
     free(ctrl);
 }
 
-static Multilevel *Multilevel_init(SparseMatrix * A, real * node_weights)
+static Multilevel Multilevel_init(SparseMatrix  A, real * node_weights)
 {
-    Multilevel *grid;
+    Multilevel grid;
     if (!A)
 	return NULL;
     assert(A->m == A->n);
-    grid = GNEW(Multilevel);
+    grid = GNEW(struct Multilevel_s);
     grid->level = 0;
     grid->n = A->n;
     grid->A = A;
@@ -58,7 +58,7 @@ static Multilevel *Multilevel_init(SparseMatrix * A, real * node_weights)
     return grid;
 }
 
-void Multilevel_delete(Multilevel * grid)
+void Multilevel_delete(Multilevel  grid)
 {
     if (!grid)
 	return;
@@ -106,7 +106,7 @@ static int *random_permutation(int n)
     return p;
 }
 
-static void maximal_independent_vertex_set(SparseMatrix * A, int randomize,
+static void maximal_independent_vertex_set(SparseMatrix  A, int randomize,
 					   int **vset, int *nvset,
 					   int *nzc)
 {
@@ -156,7 +156,7 @@ static void maximal_independent_vertex_set(SparseMatrix * A, int randomize,
 }
 
 
-static void maximal_independent_edge_set(SparseMatrix * A, int randomize,
+static void maximal_independent_edge_set(SparseMatrix  A, int randomize,
 					 int **matching, int *nmatch)
 {
     int i, ii, j, *ia, *ja, m, n, *p = NULL;
@@ -202,15 +202,9 @@ static void maximal_independent_edge_set(SparseMatrix * A, int randomize,
     }
 }
 
-
-
-static void maximal_independent_edge_set_heavest_edge_pernode(SparseMatrix
-							      * A,
-							      int
-							      randomize,
-							      int
-							      **matching,
-							      int *nmatch)
+static void 
+maximal_independent_edge_set_heavest_edge_pernode(SparseMatrix A,
+	int randomize, int **matching, int *nmatch)
 {
     int i, ii, j, *ia, *ja, m, n, *p = NULL;
     real *a, amax = 0;
@@ -297,16 +291,12 @@ static void maximal_independent_edge_set_heavest_edge_pernode(SparseMatrix
 #define node_degree(i) (ia[(i)+1] - ia[(i)])
 
 static void
-maximal_independent_edge_set_heavest_edge_pernode_leaves_first(SparseMatrix
-							       * A,
-							       int
-							       randomize,
-							       int
-							       **cluster,
-							       int
-							       **clusterp,
-							       int
-							       *ncluster)
+maximal_independent_edge_set_heavest_edge_pernode_leaves_first(
+	SparseMatrix A,
+	int randomize,
+	int **cluster,
+	int **clusterp,
+	int *ncluster)
 {
     int i, ii, j, *ia, *ja, m, n, *p = NULL, q;
     real *a, amax = 0;
@@ -497,7 +487,7 @@ maximal_independent_edge_set_heavest_edge_pernode_leaves_first(SparseMatrix
 
 static void
 maximal_independent_edge_set_heavest_edge_pernode_supernodes_first
-(SparseMatrix * A, int randomize, int **cluster, int **clusterp, int *ncluster)
+(SparseMatrix  A, int randomize, int **cluster, int **clusterp, int *ncluster)
 {
     int i, ii, j, *ia, *ja, m, n, *p = NULL;
     real *a, amax = 0;
@@ -651,7 +641,7 @@ static int scomp(const void *s1, const void *s2)
 
 static void
 maximal_independent_edge_set_heavest_cluster_pernode_leaves_first
-(SparseMatrix * A, int csize, int randomize, int **cluster, int **clusterp,
+(SparseMatrix  A, int csize, int randomize, int **cluster, int **clusterp,
 int *ncluster)
 {
     int i, ii, j, *ia, *ja, m, n, *p = NULL, q, iv, ncmax;
@@ -755,7 +745,7 @@ int *ncluster)
     free(matched);
 }
 static void
-maximal_independent_edge_set_heavest_edge_pernode_scaled(SparseMatrix * A,
+maximal_independent_edge_set_heavest_edge_pernode_scaled(SparseMatrix  A,
 							 int randomize,
 							 int **matching,
 							 int *nmatch)
@@ -850,16 +840,16 @@ maximal_independent_edge_set_heavest_edge_pernode_scaled(SparseMatrix * A,
     }
 }
 
-static void Multilevel_coarsen(SparseMatrix * A, SparseMatrix * *cA,
+static void Multilevel_coarsen(SparseMatrix  A, SparseMatrix  *cA,
 			       real * node_wgt, real ** cnode_wgt,
-			       SparseMatrix * *P, SparseMatrix * *R,
-			       Multilevel_control * ctrl,
+			       SparseMatrix  *P, SparseMatrix  *R,
+			       Multilevel_control ctrl,
 			       int *coarsen_scheme_used)
 {
     int *matching = NULL, nmatch, nc, nzc, n, i;
     int *irn = NULL, *jcn = NULL, *ia = NULL, *ja = NULL;
     real *val = NULL;
-    SparseMatrix *B = NULL;
+    SparseMatrix B = NULL;
     int *vset = NULL, nvset, ncov, j;
     int *cluster, *clusterp, ncluster;
 
@@ -1131,13 +1121,13 @@ void print_padding(int n)
     for (i = 0; i < n; i++)
 	fputs(" ", stderr);
 }
-static Multilevel *Multilevel_establish(Multilevel * grid,
-					Multilevel_control * ctrl)
+static Multilevel Multilevel_establish(Multilevel  grid,
+					Multilevel_control ctrl)
 {
-    Multilevel *cgrid;
+    Multilevel cgrid;
     int coarsen_scheme_used;
     real *cnode_weights = NULL;
-    SparseMatrix *P, *R, *A, *cA;
+    SparseMatrix P, R, A, cA;
 
 #ifdef DEBUG_PRINT
     if (Verbose) {
@@ -1176,11 +1166,11 @@ static Multilevel *Multilevel_establish(Multilevel * grid,
 
 }
 
-Multilevel *Multilevel_new(SparseMatrix * A0, real * node_weights,
-			   Multilevel_control * ctrl)
+Multilevel Multilevel_new(SparseMatrix  A0, real * node_weights,
+			   Multilevel_control ctrl)
 {
-    Multilevel *grid;
-    SparseMatrix *A = A0;
+    Multilevel grid;
+    SparseMatrix A = A0;
 
     if (!SparseMatrix_is_symmetric(A, FALSE)
 	|| A->type != MATRIX_TYPE_REAL) {
@@ -1194,7 +1184,7 @@ Multilevel *Multilevel_new(SparseMatrix * A0, real * node_weights,
 }
 
 
-Multilevel *Multilevel_get_coarsest(Multilevel * grid)
+Multilevel Multilevel_get_coarsest(Multilevel  grid)
 {
     while (grid->next) {
 	grid = grid->next;

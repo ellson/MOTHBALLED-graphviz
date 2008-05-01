@@ -21,16 +21,16 @@
 
 enum { SOLVE_METHOD_CG };
 
-typedef struct Operator_struct Operator;
+typedef struct Operator_s* Operator;
 
-typedef real *(*op_apply_fn) (Operator * o, real * in, real * out);
+typedef real *(*op_apply_fn) (Operator o, real * in, real * out);
 
-struct Operator_struct {
+struct Operator_s {
     void *data;
     op_apply_fn Operator_apply;
 };
 
-real SparseMatrix_solve(SparseMatrix * A, int dim, real * x0, real * rhs,
+real SparseMatrix_solve(SparseMatrix A, int dim, real * x0, real * rhs,
 			real tol, int maxit, int method, int *flag);
 
 #endif

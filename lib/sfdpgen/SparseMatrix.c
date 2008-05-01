@@ -48,20 +48,20 @@ static size_t size_of_matrix_type(int type)
     return size;
 }
 
-SparseMatrix *SparseMatrix_make_undirected(SparseMatrix * A)
+SparseMatrix SparseMatrix_make_undirected(SparseMatrix  A)
 {
     /* make it strictly low diag only, and set flag to undirected */
-    SparseMatrix *B;
+    SparseMatrix B;
     B = SparseMatrix_symmetrize(A, FALSE);
     SparseMatrix_set_undirected(B);
     return SparseMatrix_remove_upper(B);
 }
 
-SparseMatrix *SparseMatrix_transpose(SparseMatrix * A)
+SparseMatrix SparseMatrix_transpose(SparseMatrix  A)
 {
     int *ia = A->ia, *ja = A->ja, *ib, *jb, nz = A->nz, m = A->m, n =
 	A->n, type = A->type, format = A->format;
-    SparseMatrix *B;
+    SparseMatrix B;
     int i, j;
 
     if (!A)
@@ -144,10 +144,10 @@ SparseMatrix *SparseMatrix_transpose(SparseMatrix * A)
     return B;
 }
 
-SparseMatrix *SparseMatrix_symmetrize(SparseMatrix * A,
+SparseMatrix SparseMatrix_symmetrize(SparseMatrix  A,
 				      int pattern_symmetric_only)
 {
-    SparseMatrix *B;
+    SparseMatrix B;
     if (SparseMatrix_is_symmetric(A, pattern_symmetric_only))
 	return SparseMatrix_copy(A);
     B = SparseMatrix_transpose(A);
@@ -160,11 +160,11 @@ SparseMatrix *SparseMatrix_symmetrize(SparseMatrix * A,
     return A;
 }
 
-int SparseMatrix_is_symmetric(SparseMatrix * A,
+int SparseMatrix_is_symmetric(SparseMatrix  A,
 			      int test_pattern_symmetry_only)
 {
     /* assume no repeated entries! */
-    SparseMatrix *B;
+    SparseMatrix B;
     int *ia, *ja, *ib, *jb, type, m;
     int *mask;
     int res = FALSE;
@@ -300,11 +300,11 @@ int SparseMatrix_is_symmetric(SparseMatrix * A,
     return res;
 }
 
-static SparseMatrix *SparseMatrix_init(int m, int n, int type, int format)
+static SparseMatrix SparseMatrix_init(int m, int n, int type, int format)
 {
-    SparseMatrix *A;
+    SparseMatrix A;
 
-    A = GNEW(SparseMatrix);
+    A = GNEW(struct SparseMatrix_s);
     A->m = m;
     A->n = n;
     A->nz = 0;
@@ -331,7 +331,7 @@ static SparseMatrix *SparseMatrix_init(int m, int n, int type, int format)
     return A;
 }
 
-static SparseMatrix *SparseMatrix_alloc(SparseMatrix * A, int nz)
+static SparseMatrix SparseMatrix_alloc(SparseMatrix  A, int nz)
 {
     int type = A->type, format = A->format;
 
@@ -354,7 +354,7 @@ static SparseMatrix *SparseMatrix_alloc(SparseMatrix * A, int nz)
     return A;
 }
 
-static SparseMatrix *SparseMatrix_realloc(SparseMatrix * A, int nz)
+static SparseMatrix SparseMatrix_realloc(SparseMatrix  A, int nz)
 {
     int type = A->type, format = A->format;
     switch (format) {
@@ -386,11 +386,11 @@ static SparseMatrix *SparseMatrix_realloc(SparseMatrix * A, int nz)
     return A;
 }
 
-SparseMatrix *SparseMatrix_new(int m, int n, int nz, int type, int format)
+SparseMatrix SparseMatrix_new(int m, int n, int nz, int type, int format)
 {
     /* return a sparse matrix skeleton with row dimension m and storage nz. If nz == 0, 
        only row pointers are allocated */
-    SparseMatrix *A;
+    SparseMatrix A;
 
     A = SparseMatrix_init(m, n, type, format);
     if (nz > 0)
@@ -399,7 +399,7 @@ SparseMatrix *SparseMatrix_new(int m, int n, int nz, int type, int format)
 
 }
 
-void SparseMatrix_delete(SparseMatrix * A)
+void SparseMatrix_delete(SparseMatrix  A)
 {
     /* return a sparse matrix skeleton with row dimension m and storage nz. If nz == 0, 
        only row pointers are allocated */
@@ -413,7 +413,7 @@ void SparseMatrix_delete(SparseMatrix * A)
 	free(A->a);
     free(A);
 }
-void SparseMatrix_print_csr(char *c, SparseMatrix * A)
+void SparseMatrix_print_csr(char *c, SparseMatrix  A)
 {
     int *ia, *ja;
     real *a;
@@ -479,7 +479,7 @@ void SparseMatrix_print_csr(char *c, SparseMatrix * A)
 
 
 
-void SparseMatrix_print_coord(char *c, SparseMatrix * A)
+void SparseMatrix_print_coord(char *c, SparseMatrix  A)
 {
     int *ia, *ja;
     real *a;
@@ -539,7 +539,7 @@ void SparseMatrix_print_coord(char *c, SparseMatrix * A)
 
 
 
-void SparseMatrix_print(char *c, SparseMatrix * A)
+void SparseMatrix_print(char *c, SparseMatrix  A)
 {
     switch (A->format) {
     case FORMAT_CSR:
@@ -561,7 +561,7 @@ void SparseMatrix_print(char *c, SparseMatrix * A)
 
 
 
-static void SparseMatrix_export_csr(FILE * f, SparseMatrix * A)
+static void SparseMatrix_export_csr(FILE * f, SparseMatrix  A)
 {
     int *ia, *ja;
     real *a;
@@ -613,7 +613,7 @@ static void SparseMatrix_export_csr(FILE * f, SparseMatrix * A)
 
 }
 
-void SparseMatrix_export_binary(char *name, SparseMatrix * A, int *flag)
+void SparseMatrix_export_binary(char *name, SparseMatrix  A, int *flag)
 {
     FILE *f;
 
@@ -642,9 +642,9 @@ void SparseMatrix_export_binary(char *name, SparseMatrix * A, int *flag)
 
 }
 
-SparseMatrix *SparseMatrix_import_binary(char *name)
+SparseMatrix SparseMatrix_import_binary(char *name)
 {
-    SparseMatrix *A = NULL;
+    SparseMatrix A = NULL;
     int m, n, nz, nzmax, type, format, property;
     FILE *f;
 
@@ -676,7 +676,7 @@ SparseMatrix *SparseMatrix_import_binary(char *name)
     return A;
 }
 
-static void SparseMatrix_export_coord(FILE * f, SparseMatrix * A)
+static void SparseMatrix_export_coord(FILE * f, SparseMatrix  A)
 {
     int *ia, *ja;
     real *a;
@@ -721,7 +721,7 @@ static void SparseMatrix_export_coord(FILE * f, SparseMatrix * A)
 
 
 
-void SparseMatrix_export(FILE * f, SparseMatrix * A)
+void SparseMatrix_export(FILE * f, SparseMatrix  A)
 {
 
     switch (A->format) {
@@ -741,7 +741,7 @@ void SparseMatrix_export(FILE * f, SparseMatrix * A)
 }
 
 
-SparseMatrix *SparseMatrix_from_coordinate_format(SparseMatrix * A)
+SparseMatrix SparseMatrix_from_coordinate_format(SparseMatrix  A)
 {
     /* convert a sparse matrix in coordinate form to one in compressed row form. */
     int *irn, *jcn;
@@ -759,7 +759,7 @@ SparseMatrix *SparseMatrix_from_coordinate_format(SparseMatrix * A)
 
 }
 
-SparseMatrix *SparseMatrix_from_coordinate_arrays(int nz, int m, int n,
+SparseMatrix SparseMatrix_from_coordinate_arrays(int nz, int m, int n,
 						  int *irn, int *jcn,
 						  void *val0, int type)
 {
@@ -771,7 +771,7 @@ SparseMatrix *SparseMatrix_from_coordinate_arrays(int nz, int m, int n,
        type: matrix type
      */
 
-    SparseMatrix *A = NULL;
+    SparseMatrix A = NULL;
     int *ia, *ja;
     real *a, *val;
     int *ai, *vali;
@@ -884,10 +884,10 @@ SparseMatrix *SparseMatrix_from_coordinate_arrays(int nz, int m, int n,
 }
 
 
-SparseMatrix *SparseMatrix_add(SparseMatrix * A, SparseMatrix * B)
+SparseMatrix SparseMatrix_add(SparseMatrix  A, SparseMatrix  B)
 {
     int m, n;
-    SparseMatrix *C = NULL;
+    SparseMatrix C = NULL;
     int *mask = NULL;
     int *ia = A->ia, *ja = A->ja, *ib = B->ia, *jb = B->ja, *ic, *jc;
     int i, j, nz, nzmax;
@@ -1040,7 +1040,7 @@ static void dense_transpose(real * v, int m, int n)
 }
 
 
-static void SparseMatrix_multiply_dense1(SparseMatrix * A, real * v,
+static void SparseMatrix_multiply_dense1(SparseMatrix  A, real * v,
 					 real ** res, int dim,
 					 int transposed,
 					 int res_transposed)
@@ -1092,7 +1092,7 @@ static void SparseMatrix_multiply_dense1(SparseMatrix * A, real * v,
 
 }
 
-static void SparseMatrix_multiply_dense2(SparseMatrix * A, real * v,
+static void SparseMatrix_multiply_dense2(SparseMatrix  A, real * v,
 					 real ** res, int dim,
 					 int transposed,
 					 int res_transposed)
@@ -1136,7 +1136,7 @@ static void SparseMatrix_multiply_dense2(SparseMatrix * A, real * v,
 
 
 
-void SparseMatrix_multiply_dense(SparseMatrix * A, int ATransposed,
+void SparseMatrix_multiply_dense(SparseMatrix  A, int ATransposed,
 				 real * v, int vTransposed, real ** res,
 				 int res_transposed, int dim)
 {
@@ -1166,7 +1166,7 @@ void SparseMatrix_multiply_dense(SparseMatrix * A, int ATransposed,
 
 
 
-void SparseMatrix_multiply_vector(SparseMatrix * A, real * v, real ** res,
+void SparseMatrix_multiply_vector(SparseMatrix  A, real * v, real ** res,
 				  int transposed)
 {
     /* A v or A^T v. Real only for now. */
@@ -1232,7 +1232,7 @@ void SparseMatrix_multiply_vector(SparseMatrix * A, real * v, real ** res,
 
 
 
-SparseMatrix *SparseMatrix_scaled_by_vector(SparseMatrix * A, real * v,
+SparseMatrix SparseMatrix_scaled_by_vector(SparseMatrix  A, real * v,
 					    int apply_to_row)
 {
     /* A SCALED BY VECOTR V IN ROW/COLUMN. Real only for now. */
@@ -1266,7 +1266,7 @@ SparseMatrix *SparseMatrix_scaled_by_vector(SparseMatrix * A, real * v,
 
 }
 
-SparseMatrix *SparseMatrix_multiply_by_scaler(SparseMatrix * A, real s)
+SparseMatrix SparseMatrix_multiply_by_scaler(SparseMatrix  A, real s)
 {
     /* A scaled by a number */
     int i, j, *ia, m;
@@ -1294,10 +1294,10 @@ SparseMatrix *SparseMatrix_multiply_by_scaler(SparseMatrix * A, real s)
 }
 
 
-SparseMatrix *SparseMatrix_multiply(SparseMatrix * A, SparseMatrix * B)
+SparseMatrix SparseMatrix_multiply(SparseMatrix  A, SparseMatrix  B)
 {
     int m, n;
-    SparseMatrix *C = NULL;
+    SparseMatrix C = NULL;
     int *mask = NULL;
     int *ia = A->ia, *ja = A->ja, *ib = B->ia, *jb = B->ja, *ic, *jc;
     int i, j, k, jj, type, nz;
@@ -1460,7 +1460,7 @@ SparseMatrix *SparseMatrix_multiply(SparseMatrix * A, SparseMatrix * B)
 
 }
 
-SparseMatrix *SparseMatrix_sum_repeat_entries(SparseMatrix * A)
+SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix  A)
 {
     /* sum repeated entries in the same row, i.e., {1,1}->1, {1,1}->2 becomes {1,1}->3 */
     int *ia = A->ia, *ja = A->ja, type = A->type, n = A->n;
@@ -1566,7 +1566,7 @@ SparseMatrix *SparseMatrix_sum_repeat_entries(SparseMatrix * A)
     return A;
 }
 
-SparseMatrix *SparseMatrix_coordinate_form_add_entries(SparseMatrix * A,
+SparseMatrix SparseMatrix_coordinate_form_add_entries(SparseMatrix  A,
 						       int nentries,
 						       int *irn, int *jcn,
 						       void *val)
@@ -1597,7 +1597,7 @@ SparseMatrix *SparseMatrix_coordinate_form_add_entries(SparseMatrix * A,
 }
 
 
-SparseMatrix *SparseMatrix_remove_diagonal(SparseMatrix * A)
+SparseMatrix SparseMatrix_remove_diagonal(SparseMatrix  A)
 {
     int i, j, *ia, *ja, nz, sta;
 
@@ -1679,7 +1679,7 @@ SparseMatrix *SparseMatrix_remove_diagonal(SparseMatrix * A)
 }
 
 
-SparseMatrix *SparseMatrix_remove_upper(SparseMatrix * A)
+SparseMatrix SparseMatrix_remove_upper(SparseMatrix  A)
 {				/* remove diag and upper diag */
     int i, j, *ia, *ja, nz, sta;
 
@@ -1767,7 +1767,7 @@ SparseMatrix *SparseMatrix_remove_upper(SparseMatrix * A)
 
 
 
-SparseMatrix *SparseMatrix_divide_row_by_degree(SparseMatrix * A)
+SparseMatrix SparseMatrix_divide_row_by_degree(SparseMatrix  A)
 {
     int i, j, *ia, *ja;
     real deg;
@@ -1819,12 +1819,12 @@ SparseMatrix *SparseMatrix_divide_row_by_degree(SparseMatrix * A)
 
 
 SparseMatrix
-    *SparseMatrix_get_real_adjacency_matrix_symmetrized(SparseMatrix * A)
+SparseMatrix_get_real_adjacency_matrix_symmetrized(SparseMatrix  A)
 {
     /* symmetric, all entries to 1, diaginal removed */
     int i, *ia, *ja, nz, m, n;
     real *a;
-    SparseMatrix *B;
+    SparseMatrix B;
 
     if (!A)
 	return A;
@@ -1857,7 +1857,7 @@ SparseMatrix
 
 
 
-SparseMatrix *SparseMatrix_normalize_to_rowsum1(SparseMatrix * A)
+SparseMatrix SparseMatrix_normalize_to_rowsum1(SparseMatrix  A)
 {
     int i, j;
     real sum, *a;
@@ -1888,7 +1888,7 @@ SparseMatrix *SparseMatrix_normalize_to_rowsum1(SparseMatrix * A)
 
 
 
-SparseMatrix *SparseMatrix_normalize_by_row(SparseMatrix * A)
+SparseMatrix SparseMatrix_normalize_by_row(SparseMatrix  A)
 {
     int i, j;
     real max, *a;
@@ -1918,7 +1918,7 @@ SparseMatrix *SparseMatrix_normalize_by_row(SparseMatrix * A)
 }
 
 
-SparseMatrix *SparseMatrix_apply_fun(SparseMatrix * A,
+SparseMatrix SparseMatrix_apply_fun(SparseMatrix  A,
 				     double (*fun) (double x))
 {
     int i, j;
@@ -1943,7 +1943,7 @@ SparseMatrix *SparseMatrix_apply_fun(SparseMatrix * A,
 }
 
 
-SparseMatrix *SparseMatrix_crop(SparseMatrix * A, real epsilon)
+SparseMatrix SparseMatrix_crop(SparseMatrix  A, real epsilon)
 {
     int i, j, *ia, *ja, nz, sta;
 
@@ -2016,9 +2016,9 @@ SparseMatrix *SparseMatrix_crop(SparseMatrix * A, real epsilon)
     return A;
 }
 
-SparseMatrix *SparseMatrix_copy(SparseMatrix * A)
+SparseMatrix SparseMatrix_copy(SparseMatrix  A)
 {
-    SparseMatrix *B;
+    SparseMatrix B;
     if (!A)
 	return A;
     B = SparseMatrix_new(A->m, A->n, A->nz, A->type, A->format);
@@ -2031,7 +2031,7 @@ SparseMatrix *SparseMatrix_copy(SparseMatrix * A)
     return B;
 }
 
-int SparseMatrix_has_diagonal(SparseMatrix * A)
+int SparseMatrix_has_diagonal(SparseMatrix  A)
 {
 
     int i, j, m = A->m, *ia = A->ia, *ja = A->ja;
@@ -2045,7 +2045,7 @@ int SparseMatrix_has_diagonal(SparseMatrix * A)
     return FALSE;
 }
 
-void SparseMatrix_level_sets(SparseMatrix * A, int root, int *nlevel,
+void SparseMatrix_level_sets(SparseMatrix  A, int root, int *nlevel,
 			     int **levelset_ptr, int **levelset,
 			     int **mask, int reinitialize_mask)
 {
@@ -2099,11 +2099,11 @@ void SparseMatrix_level_sets(SparseMatrix * A, int root, int *nlevel,
 	    (*mask)[(*levelset)[i]] = UNMASKED;
 }
 
-void SparseMatrix_weakly_connected_components(SparseMatrix * A0,
+void SparseMatrix_weakly_connected_components(SparseMatrix  A0,
 					      int *ncomp, int **comps,
 					      int **comps_ptr)
 {
-    SparseMatrix *A = A0;
+    SparseMatrix A = A0;
     int *levelset_ptr = NULL, *levelset = NULL, *mask = NULL, nlevel;
     int m = A->m, i, nn;
 
@@ -2133,12 +2133,12 @@ void SparseMatrix_weakly_connected_components(SparseMatrix * A0,
     free(mask);
 }
 
-int SparseMatrix_pseudo_diameter(SparseMatrix * A0, int root,
+int SparseMatrix_pseudo_diameter(SparseMatrix  A0, int root,
 				 int aggressive, int *end1, int *end2,
 				 int *connectedQ)
 {
     /* assume unit edge length, unsymmetric matrix ill be symmetrized */
-    SparseMatrix *A = A0;
+    SparseMatrix A = A0;
     int m = A->m, i;
     int nlevel;
     int *levelset_ptr = NULL, *levelset = NULL, *mask = NULL;
@@ -2193,18 +2193,18 @@ int SparseMatrix_pseudo_diameter(SparseMatrix * A0, int root,
     return nlevel0;
 }
 
-int SparseMatrix_pseudo_diameter_only(SparseMatrix * A)
+int SparseMatrix_pseudo_diameter_only(SparseMatrix  A)
 {
     int end1, end2, connectedQ;
     return SparseMatrix_pseudo_diameter(A, 0, FALSE, &end1, &end2,
 					&connectedQ);
 }
 
-int SparseMatrix_connectedQ(SparseMatrix * A0)
+int SparseMatrix_connectedQ(SparseMatrix  A0)
 {
     int root = 0, nlevel, *levelset_ptr = NULL, *levelset = NULL, *mask =
 	NULL, connected;
-    SparseMatrix *A = A0;
+    SparseMatrix A = A0;
 
     if (!SparseMatrix_is_symmetric(A, TRUE)) {
 	A = SparseMatrix_symmetrize(A, TRUE);
@@ -2224,7 +2224,7 @@ int SparseMatrix_connectedQ(SparseMatrix * A0)
 }
 
 
-void SparseMatrix_decompose_to_supervariables(SparseMatrix * A,
+void SparseMatrix_decompose_to_supervariables(SparseMatrix  A,
 					      int *ncluster, int **cluster,
 					      int **clusterp)
 {

@@ -54,26 +54,26 @@ static real vector_product(int n, real *x, real *y){
   return res;
 }
 
-real *Operator_matmul_apply(Operator * o, real * x, real * y)
+real *Operator_matmul_apply(Operator o, real * x, real * y)
 {
-    SparseMatrix *A = (SparseMatrix *) o->data;
+    SparseMatrix A = (SparseMatrix) o->data;
     SparseMatrix_multiply_vector(A, x, &y, FALSE);
     return y;
 }
 
-Operator *Operator_matmul_new(SparseMatrix * A)
+Operator Operator_matmul_new(SparseMatrix A)
 {
-    Operator *o = GNEW(Operator);
+    Operator o = GNEW(struct Operator_s);
     o->data = (void *) A;
     o->Operator_apply = Operator_matmul_apply;
     return o;
 }
 
-void Operator_matmul_delete(Operator * o)
+void Operator_matmul_delete(Operator o)
 {
 }
 
-real *Operator_diag_precon_apply(Operator * o, real * x, real * y)
+real *Operator_diag_precon_apply(Operator o, real * x, real * y)
 {
     int i, m;
     real *diag = (real *) o->data;
@@ -84,9 +84,9 @@ real *Operator_diag_precon_apply(Operator * o, real * x, real * y)
     return y;
 }
 
-Operator *Operator_diag_precon_new(SparseMatrix * A)
+Operator Operator_diag_precon_new(SparseMatrix A)
 {
-    Operator *o;
+    Operator o;
     real *diag;
     int i, j, m = A->m, *ia = A->ia, *ja = A->ja;
     real *a = (real *) A->a;
@@ -95,7 +95,7 @@ Operator *Operator_diag_precon_new(SparseMatrix * A)
 
     assert(a);
 
-    o = GNEW(Operator);
+    o = GNEW(struct Operator_s);
     o->data = N_GNEW(A->m + 1, real);
     diag = (real *) o->data;
 
@@ -114,12 +114,12 @@ Operator *Operator_diag_precon_new(SparseMatrix * A)
     return o;
 }
 
-void Operator_diag_precon_delete(Operator * o)
+void Operator_diag_precon_delete(Operator  o)
 {
     free(o->data);
 }
 
-static real conjugate_gradient(Operator * A, Operator * precon, int n, real * x,
+static real conjugate_gradient(Operator  A, Operator  precon, int n, real * x,
 			real * rhs, real tol, int maxit, int *flag)
 {
     real *z, *r, *p, *q, res = 10 * tol, alpha;
@@ -185,11 +185,11 @@ static real conjugate_gradient(Operator * A, Operator * precon, int n, real * x,
     return res;
 }
 
-real SparseMatrix_solve(SparseMatrix * A, int dim, real * x0, real * rhs,
+real SparseMatrix_solve(SparseMatrix A, int dim, real * x0, real * rhs,
 			real tol, int maxit, int method, int *flag)
 {
-    Operator *Ax;
-    Operator *precond;
+    Operator Ax;
+    Operator precond;
     real *x, *b, res = 0;
     int n = A->m, k, i;
 

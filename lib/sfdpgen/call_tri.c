@@ -22,12 +22,12 @@
 #include "memory.h"
 #include "delaunay.h"
 
-SparseMatrix *call_tri(int n, int dim, real * x)
+SparseMatrix call_tri(int n, int dim, real * x)
 {
     real one = 1;
     int i, ii, jj;
-    SparseMatrix *A;
-    SparseMatrix *B;
+    SparseMatrix A;
+    SparseMatrix B;
     int* edgelist = NULL;
     real* xv = N_GNEW(n, real);
     real* yv = N_GNEW(n, real);
@@ -68,13 +68,13 @@ SparseMatrix *call_tri(int n, int dim, real * x)
     return B;
 }
 
-SparseMatrix *call_tri2(int n, int dim, real * xx)
+SparseMatrix call_tri2(int n, int dim, real * xx)
 {
     real *x, *y;
     v_data *delaunay;
     int i, j;
-    SparseMatrix *A;
-    SparseMatrix *B;
+    SparseMatrix A;
+    SparseMatrix B;
     real one = 1;
     x = N_GNEW(n, real);
     y = N_GNEW(n, real);

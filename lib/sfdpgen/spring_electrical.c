@@ -29,10 +29,10 @@
 
 #define drand() (rand()/(real) RAND_MAX)
 
-spring_electrical_control *spring_electrical_control_new()
+spring_electrical_control spring_electrical_control_new()
 {
-    spring_electrical_control *ctrl;
-    ctrl = GNEW(spring_electrical_control);
+    spring_electrical_control ctrl;
+    ctrl = GNEW(struct spring_electrical_control_s);
     ctrl->p = AUTOP;		/*a negativve number default to -1. repulsive force = dist^p */
     ctrl->random_start = TRUE;	/* whether to apply SE from a random layout, or from exisiting layout */
     ctrl->K = -1;		/* the natural distance. If K < 0, K will be set to the average distance of an edge */
@@ -55,7 +55,7 @@ spring_electrical_control *spring_electrical_control_new()
     return ctrl;
 }
 
-void spring_electrical_control_delete(spring_electrical_control * ctrl)
+void spring_electrical_control_delete(spring_electrical_control  ctrl)
 {
     free(ctrl);
 }
@@ -128,7 +128,7 @@ static int oned_optimizer_get(oned_optimizer * opt)
 }
 
 
-real average_edge_length(SparseMatrix * A, int dim, real * coord)
+real average_edge_length(SparseMatrix A, int dim, real * coord)
 {
     real dist = 0, d;
     int *ia = A->ia, *ja = A->ja, i, j, k;
@@ -175,7 +175,7 @@ real distance(real * x, int dim, int i, int j)
 }
 
 #ifdef ENERGY
-static real spring_electrical_energy(int dim, SparseMatrix * A, real * x,
+static real spring_electrical_energy(int dim, SparseMatrix A, real * x,
 				     real p, real CRK, real KP)
 {
     /* 1. Grad[||x-y||^k,x] = k||x-y||^(k-1)*0.5*(x-y)/||x-y|| = k/2*||x-y||^(k-2) (x-y) 
@@ -216,7 +216,7 @@ static real spring_electrical_energy(int dim, SparseMatrix * A, real * x,
 
 #endif
 
-void export_embedding(FILE * fp, int dim, SparseMatrix * A, real * x,
+void export_embedding(FILE * fp, int dim, SparseMatrix A, real * x,
 		      real * width)
 {
     int i, j, k, *ia = A->ia, *ja = A->ja;
@@ -388,7 +388,7 @@ static void set_leaves(real * x, int dim, real dist, real ang, int i,
     x[dim * j + 1] = sin(ang) * dist + x[dim * i + 1];
 }
 
-static void beautify_leaves(int dim, SparseMatrix * A, real * x)
+static void beautify_leaves(int dim, SparseMatrix A, real * x)
 {
     int m = A->m, i, j, *ia = A->ia, *ja = A->ja, k;
     int *checked, p;
@@ -472,16 +472,16 @@ static void beautify_leaves(int dim, SparseMatrix * A, real * x)
     free(leaves);
 }
 
-void spring_electrical_spring_embedding(int dim, SparseMatrix * A0,
-					SparseMatrix * D,
-					spring_electrical_control * ctrl,
+void spring_electrical_spring_embedding(int dim, SparseMatrix A0,
+					SparseMatrix D,
+					spring_electrical_control  ctrl,
 					real * node_weights, real * x,
 					int *flag)
 {
     /* x is a point to a 1D array, x[i*dim+j] gives the coordinate of the i-th node at dimension j. Same as the spring-electrical except we also 
        introduce force due to spring length
      */
-    SparseMatrix *A = A0;
+    SparseMatrix A = A0;
     int m, n;
     int i, j, k;
     real p = ctrl->p, K = ctrl->K, C = ctrl->C, CRK, tol =
@@ -494,7 +494,7 @@ void spring_electrical_spring_embedding(int dim, SparseMatrix * A0,
     real *f = NULL, dist, F, Fnorm = 0, Fnorm0;
     int iter = 0;
     int adaptive_cooling = ctrl->adaptive_cooling;
-    QuadTree *qt = NULL;
+    QuadTree qt = NULL;
     int USE_QT = FALSE;
     int nsuper = 0, nsupermax = 10;
     real *center = NULL, *supernode_wgts = NULL, *distances =
@@ -747,12 +747,12 @@ void spring_electrical_spring_embedding(int dim, SparseMatrix * A0,
 
 }
 
-int spring_electrical_embedding(int dim, SparseMatrix * A0,
-				 spring_electrical_control * ctrl,
+int spring_electrical_embedding(int dim, SparseMatrix A0,
+				 spring_electrical_control  ctrl,
 				 real * node_weights, real * x)
 {
     /* x is a point to a 1D array, x[i*dim+j] gives the coordinate of the i-th node at dimension j.  */
-    SparseMatrix *A = A0;
+    SparseMatrix A = A0;
     int m, n;
     int i, j, k;
     real p = ctrl->p, K = ctrl->K, C = ctrl->C, CRK, tol =
@@ -763,7 +763,7 @@ int spring_electrical_embedding(int dim, SparseMatrix * A0,
     real *f = NULL, dist, F, Fnorm = 0, Fnorm0;
     int iter = 0;
     int adaptive_cooling = ctrl->adaptive_cooling;
-    QuadTree *qt = NULL;
+    QuadTree qt = NULL;
     int USE_QT = FALSE;
     int nsuper = 0, nsupermax = 10;
     real *center = NULL, *supernode_wgts = NULL, *distances =
@@ -1079,7 +1079,7 @@ void print_matrix(real * x, int n, int dim)
 }
 
 
-static void interpolate(int dim, SparseMatrix * A, real * x)
+static void interpolate(int dim, SparseMatrix A, real * x)
 {
     int i, j, k, *ia = A->ia, *ja = A->ja, nz;
     real alpha = 0.5, beta, *y;
@@ -1107,8 +1107,8 @@ static void interpolate(int dim, SparseMatrix * A, real * x)
     free(y);
 }
 
-static void prolongate(int dim, SparseMatrix * A, SparseMatrix * P,
-		       SparseMatrix * R, real * x, real * y,
+static void prolongate(int dim, SparseMatrix A, SparseMatrix P,
+		       SparseMatrix R, real * x, real * y,
 		       int coarsen_scheme_used, real delta)
 {
     int nc, *ia, *ja, i, j, k;
@@ -1133,7 +1133,7 @@ static void prolongate(int dim, SparseMatrix * A, SparseMatrix * P,
 
 
 
-int power_law_graph(SparseMatrix * A)
+int power_law_graph(SparseMatrix A)
 {
     int *mask, m, max = 0, i, *ia = A->ia, *ja = A->ja, j, deg;
     int res = FALSE;
@@ -1221,17 +1221,17 @@ void pcp_rotate(int n, int dim, real * x)
 }
 
 
-int multilevel_spring_electrical_embedding(int dim, SparseMatrix * A0,
-					    spring_electrical_control *
+int multilevel_spring_electrical_embedding(int dim, SparseMatrix A0,
+					    spring_electrical_control 
 					    ctrl, real * node_weights,
 					    real * label_sizes, real * x)
 {
-    Multilevel_control *mctrl = NULL;
+    Multilevel_control mctrl = NULL;
     int n, plg, coarsen_scheme_used;
-    SparseMatrix *A = A0;
-    SparseMatrix *P = NULL;
-    Multilevel *grid;
-    Multilevel *grid0;
+    SparseMatrix A = A0;
+    SparseMatrix P = NULL;
+    Multilevel grid;
+    Multilevel grid0;
     real *xc = NULL, *xf = NULL;
     int flag = 0;
 #ifdef DEBUG

@@ -16,19 +16,19 @@
 #include "LinkedList.h"
 #include "memory.h"
 
-SingleLinkedList *SingleLinkedList_new(void *data)
+SingleLinkedList SingleLinkedList_new(void *data)
 {
-    SingleLinkedList *head;
-    head = GNEW(SingleLinkedList);
+    SingleLinkedList head;
+    head = GNEW(struct SingleLinkedList_s);
     head->data = data;
     head->next = NULL;
     return head;
 }
 
-void SingleLinkedList_delete(SingleLinkedList * head,
+void SingleLinkedList_delete(SingleLinkedList  head,
 			     void (*linklist_deallocator) (void *))
 {
-    SingleLinkedList *next;
+    SingleLinkedList next;
 
     if (!head)
 	return;
@@ -44,20 +44,20 @@ void SingleLinkedList_delete(SingleLinkedList * head,
 }
 
 
-SingleLinkedList *SingleLinkedList_prepend(SingleLinkedList * l,
+SingleLinkedList SingleLinkedList_prepend(SingleLinkedList  l,
 					   void *data)
 {
-    SingleLinkedList *head = SingleLinkedList_new(data);
+    SingleLinkedList head = SingleLinkedList_new(data);
     head->next = l;
     return head;
 }
 
-void *SingleLinkedList_get_data(SingleLinkedList * l)
+void *SingleLinkedList_get_data(SingleLinkedList  l)
 {
     return l->data;
 }
 
-SingleLinkedList *SingleLinkedList_get_next(SingleLinkedList * l)
+SingleLinkedList SingleLinkedList_get_next(SingleLinkedList  l)
 {
     return l->next;
 }

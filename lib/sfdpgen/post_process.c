@@ -27,11 +27,11 @@
 
 #define node_degree(i) (ia[(i)+1] - ia[(i)])
 
-SparseMatrix *ideal_distance_matrix(SparseMatrix * A, int dim, real * x)
+SparseMatrix ideal_distance_matrix(SparseMatrix  A, int dim, real * x)
 {
     /* find the ideal distance between edges, either 1, or |N[i] \Union N[j]| - |N[i] \Intersection N[j]|
      */
-    SparseMatrix *D;
+    SparseMatrix D;
     int *ia, *ja, i, j, k, l, nz;
     real *d;
     int *mask = NULL;
@@ -104,26 +104,26 @@ SparseMatrix *ideal_distance_matrix(SparseMatrix * A, int dim, real * x)
     return D;
 }
 
-StressMajorizationSmoother *StressMajorizationSmoother_new(SparseMatrix *
+StressMajorizationSmoother StressMajorizationSmoother_new(SparseMatrix 
 							   A, int dim,
 							   real lambda0,
 							   real * x,
 							   int
 							   ideal_dist_scheme)
 {
-    StressMajorizationSmoother *sm;
+    StressMajorizationSmoother sm;
     int i, j, k, l, m = A->m, *ia = A->ia, *ja = A->ja, *iw, *jw, *id, *jd;
     int *mask, nz;
     real *d, *w, *lambda;
     real *avg_dist, diag_d, diag_w, *dd, dist, s = 0, stop = 0, sbot = 0;
-    SparseMatrix *ID;
+    SparseMatrix ID;
 
     assert(SparseMatrix_is_symmetric(A, FALSE));
 
     ID = ideal_distance_matrix(A, dim, x);
     dd = (real *) ID->a;
 
-    sm = GNEW(StressMajorizationSmoother);
+    sm = GNEW(struct StressMajorizationSmoother_s);
     lambda = sm->lambda = N_GNEW(m, real);
     for (i = 0; i < m; i++)
 	sm->lambda[i] = lambda0;
@@ -318,12 +318,12 @@ static real total_distance(int m, int dim, real * x, real * y)
 
 
 
-void StressMajorizationSmoother_smooth(StressMajorizationSmoother * sm,
+void StressMajorizationSmoother_smooth(StressMajorizationSmoother  sm,
 				       int dim, real * x, int maxit_sm)
 {
-    SparseMatrix *Lw = sm->Lw;
-    SparseMatrix *Lwd = sm->Lwd;
-    SparseMatrix *Lwdd = NULL;
+    SparseMatrix Lw = sm->Lw;
+    SparseMatrix Lwd = sm->Lwd;
+    SparseMatrix Lwdd = NULL;
     int i, j, m, *id, *jd, idiag, flag = 0, iter = 0;
     real *dd, *d, *y = NULL, *x0 = NULL, diag, diff = 1, tol =
 	0.001, *lambda = sm->lambda, maxit, res;
@@ -399,7 +399,7 @@ void StressMajorizationSmoother_smooth(StressMajorizationSmoother * sm,
 	free(y);
 }
 
-void StressMajorizationSmoother_delete(StressMajorizationSmoother * sm)
+void StressMajorizationSmoother_delete(StressMajorizationSmoother  sm)
 {
     if (!sm)
 	return;
@@ -412,14 +412,16 @@ void StressMajorizationSmoother_delete(StressMajorizationSmoother * sm)
 }
 
 
-TriangleSmoother *TriangleSmoother_new(SparseMatrix * A, int dim,
+#define TriangleSmoother_s StressMajorizationSmoother_s
+
+TriangleSmoother TriangleSmoother_new(SparseMatrix  A, int dim,
 				       real lambda0, real * x,
 				       int use_triangularization)
 {
-    TriangleSmoother *sm;
+    TriangleSmoother sm;
     int i, j, k, m = A->m, *ia = A->ia, *ja =
 	A->ja, *iw, *jw, *id, *jd, jdiag, nz;
-    SparseMatrix *B;
+    SparseMatrix B;
     real *avg_dist, *lambda, *d, *w, diag_d, diag_w, dist;
     real s = 0, stop = 0, sbot = 0;
 
@@ -440,7 +442,7 @@ TriangleSmoother *TriangleSmoother_new(SparseMatrix * A, int dim,
 	avg_dist[i] /= nz;
     }
 
-    sm = GNEW(TriangleSmoother);
+    sm = GNEW(struct TriangleSmoother_s);
     lambda = sm->lambda = N_GNEW(m, real);
     for (i = 0; i < m; i++)
 	sm->lambda[i] = lambda0;
@@ -521,14 +523,14 @@ TriangleSmoother *TriangleSmoother_new(SparseMatrix * A, int dim,
     return sm;
 }
 
-void TriangleSmoother_delete(TriangleSmoother * sm)
+void TriangleSmoother_delete(TriangleSmoother  sm)
 {
 
     StressMajorizationSmoother_delete(sm);
 
 }
 
-void TriangleSmoother_smooth(TriangleSmoother * sm, int dim, real * x)
+void TriangleSmoother_smooth(TriangleSmoother  sm, int dim, real * x)
 {
 
     StressMajorizationSmoother_smooth(sm, dim, x, 50);
@@ -538,23 +540,23 @@ void TriangleSmoother_smooth(TriangleSmoother * sm, int dim, real * x)
 
 
 /* ================================ spring and spring-electrical based smoother ================ */
-SpringSmoother *SpringSmoother_new(SparseMatrix * A, int dim,
-				   spring_electrical_control * ctrl,
+SpringSmoother SpringSmoother_new(SparseMatrix  A, int dim,
+				   spring_electrical_control ctrl,
 				   real * x)
 {
-    SpringSmoother *sm;
+    SpringSmoother sm;
     int i, j, k, l, m = A->m, *ia = A->ia, *ja = A->ja, *id, *jd;
     int *mask, nz;
     real *d, *dd;
     real *avg_dist;
-    SparseMatrix *ID = NULL;
+    SparseMatrix ID = NULL;
 
     assert(SparseMatrix_is_symmetric(A, FALSE));
 
     ID = ideal_distance_matrix(A, dim, x);
     dd = (real *) ID->a;
 
-    sm = GNEW(SpringSmoother);
+    sm = GNEW(struct SpringSmoother_s);
     mask = N_GNEW(m, int);
 
     avg_dist = N_GNEW(m, real);
@@ -654,7 +656,7 @@ SpringSmoother *SpringSmoother_new(SparseMatrix * A, int dim,
 }
 
 
-void SpringSmoother_delete(SpringSmoother * sm)
+void SpringSmoother_delete(SpringSmoother  sm)
 {
     if (!sm)
 	return;
@@ -667,7 +669,7 @@ void SpringSmoother_delete(SpringSmoother * sm)
 
 
 
-void SpringSmoother_smooth(SpringSmoother * sm, SparseMatrix * A,
+void SpringSmoother_smooth(SpringSmoother  sm, SparseMatrix  A,
 			   real * node_weights, int dim, real * x)
 {
     int flag = 0;
@@ -680,8 +682,8 @@ void SpringSmoother_smooth(SpringSmoother * sm, SparseMatrix * A,
 
 /*=============================== end of spring and spring-electrical based smoother =========== */
 
-int post_process_smoothing(int dim, SparseMatrix * A,
-			    spring_electrical_control * ctrl,
+int post_process_smoothing(int dim, SparseMatrix  A,
+			    spring_electrical_control ctrl,
 			    real * node_weights, real * x)
 {
 #ifdef DEBUG
@@ -693,7 +695,7 @@ int post_process_smoothing(int dim, SparseMatrix * A,
     switch (ctrl->smoothing) {
     case SMOOTHING_RNG:
     case SMOOTHING_TRIANGLE:{
-	    TriangleSmoother *sm;
+	    TriangleSmoother sm;
 
 	    if (ctrl->smoothing == SMOOTHING_RNG) {
 		sm = TriangleSmoother_new(A, dim, 0, x, FALSE);
@@ -708,7 +710,7 @@ int post_process_smoothing(int dim, SparseMatrix * A,
     case SMOOTHING_STRESS_MAJORIZATION_POWER_DIST:
     case SMOOTHING_STRESS_MAJORIZATION_AVG_DIST:
 	{
-	    StressMajorizationSmoother *sm;
+	    StressMajorizationSmoother sm;
 	    int k, dist_scheme = IDEAL_AVG_DIST;
 
 	    if (ctrl->smoothing ==
@@ -731,7 +733,7 @@ int post_process_smoothing(int dim, SparseMatrix * A,
 	    break;
 	}
     case SMOOTHING_SPRING:{
-	    SpringSmoother *sm;
+	    SpringSmoother sm;
 	    int k;
 
 	    for (k = 0; k < 1; k++) {

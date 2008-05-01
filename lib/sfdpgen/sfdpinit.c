@@ -117,9 +117,9 @@ static real *getSizes(Agraph_t * g, pointf pad)
  * Assumes g is connected and simple, i.e., we can have a->b and b->a
  * but not a->b and a->b
  */
-static SparseMatrix *makeMatrix(Agraph_t * g, int dim)
+static SparseMatrix makeMatrix(Agraph_t * g, int dim)
 {
-    SparseMatrix *A = 0;
+    SparseMatrix A = 0;
     Agnode_t *n;
     Agedge_t *e;
     Agsym_t *sym;
@@ -173,7 +173,7 @@ static SparseMatrix *makeMatrix(Agraph_t * g, int dim)
 int
 fdpAdjust (graph_t* g)
 {
-    SparseMatrix *A = makeMatrix(g, Ndim);
+    SparseMatrix A = makeMatrix(g, Ndim);
     real *sizes;
     real *pos = N_NEW(Ndim * agnnodes(g), real);
     Agnode_t *n;
@@ -213,7 +213,7 @@ fdpAdjust (graph_t* g)
     return flag;
 }
 
-static void sfdpLayout(graph_t * g, spring_electrical_control * ctrl,
+static void sfdpLayout(graph_t * g, spring_electrical_control ctrl,
 		       pointf pad)
 {
     real *sizes;
@@ -221,7 +221,7 @@ static void sfdpLayout(graph_t * g, spring_electrical_control * ctrl,
     Agnode_t *n;
     int flag, i;
 
-    SparseMatrix *A = makeMatrix(g, Ndim);
+    SparseMatrix A = makeMatrix(g, Ndim);
     if (ctrl->overlap)
 	sizes = getSizes(g, pad);
     else
@@ -295,7 +295,7 @@ late_smooth (graph_t* g, Agsym_t* sym, smooth_t dflt)
  *   ctrl->use_node_weights
  */
 static void
-tuneControl (graph_t* g, spring_electrical_control* ctrl)
+tuneControl (graph_t* g, spring_electrical_control ctrl)
 {
     ctrl->p = -1.0*late_double(g, agfindattr(g, "K"), -AUTOP, 0.0);
     ctrl->multilevels = late_int(g, agfindattr(g, "maxiter"), INT_MAX, 0);
@@ -313,7 +313,7 @@ void sfdp_layout(graph_t * g)
 	int i;
 	expand_t sep;
 	pointf pad;
-	spring_electrical_control *ctrl = spring_electrical_control_new();
+	spring_electrical_control ctrl = spring_electrical_control_new();
 
 	tuneControl (g, ctrl);
 

@@ -87,14 +87,14 @@ int check_or_realloc_arrays(int dim, int nsuper, int nsupermax,
     return nsupermax;
 }
 
-void QuadTree_get_supernodes_internal(QuadTree * qt, real bh, real * point,
+void QuadTree_get_supernodes_internal(QuadTree  qt, real bh, real * point,
 				      int nodeid, int *nsuper,
 				      int *nsupermax, real ** center,
 				      real ** supernode_wgts,
 				      real ** distances, real * counts,
 				      int *flag)
 {
-    SingleLinkedList *l;
+    SingleLinkedList l;
     real *coord, dist;
     int dim = qt->dim, i;
 
@@ -144,7 +144,7 @@ void QuadTree_get_supernodes_internal(QuadTree * qt, real bh, real * point,
 
 }
 
-void QuadTree_get_supernodes(QuadTree * qt, real bh, real * point,
+void QuadTree_get_supernodes(QuadTree  qt, real bh, real * point,
 			     int nodeid, int *nsuper, int *nsupermax,
 			     real ** center, real ** supernode_wgts,
 			     real ** distances, double *counts, int *flag)
@@ -171,7 +171,7 @@ void QuadTree_get_supernodes(QuadTree * qt, real bh, real * point,
 
 
 
-QuadTree *QuadTree_new_from_point_list(int dim, int n, int max_level,
+QuadTree QuadTree_new_from_point_list(int dim, int n, int max_level,
 				       real * coord, real * weight)
 {
     /* form a new QuadTree data structure from a list of coordinates of n points
@@ -179,7 +179,7 @@ QuadTree *QuadTree_new_from_point_list(int dim, int n, int max_level,
        weight: node weight of lentgth n. If NULL, unit weight assumed.
      */
     real *xmin, *xmax, *center, width;
-    QuadTree *qt = NULL;
+    QuadTree qt = NULL;
     int i, k;
 
     xmin = N_GNEW(dim, real);
@@ -225,11 +225,11 @@ QuadTree *QuadTree_new_from_point_list(int dim, int n, int max_level,
     return qt;
 }
 
-QuadTree *QuadTree_new(int dim, real * center, real width, int max_level)
+QuadTree QuadTree_new(int dim, real * center, real width, int max_level)
 {
-    QuadTree *q;
+    QuadTree q;
     int i;
-    q = GNEW(QuadTree);
+    q = GNEW(struct QuadTree_s);
     q->dim = dim;
     q->n = 0;
     q->center = N_GNEW(dim, real);
@@ -245,7 +245,7 @@ QuadTree *QuadTree_new(int dim, real * center, real width, int max_level)
     return q;
 }
 
-void QuadTree_delete(QuadTree * q)
+void QuadTree_delete(QuadTree  q)
 {
     int i, dim = q->dim;
     if (!q)
@@ -281,7 +281,7 @@ static int QuadTree_get_quadrant(int dim, real * center, real * coord)
     return d;
 }
 
-static QuadTree *QuadTree_add_internal(QuadTree * q, real * coord,
+static QuadTree QuadTree_add_internal(QuadTree  q, real * coord,
 				       real weight, int id, int level)
 {
     int i, dim = q->dim, ii, k;
@@ -313,7 +313,7 @@ static QuadTree *QuadTree_add_internal(QuadTree * q, real * coord,
 	    q->average[i] =
 		((q->average[i]) * q->n + coord[i]) / (q->n + 1);
 	if (!q->qts) {
-	    q->qts = N_GNEW(1 << dim, QuadTree *);
+	    q->qts = N_GNEW(1 << dim, QuadTree );
 	    for (i = 0; i < 1 << dim; i++) {
 		width = (q->width) / 2;
 		q->qts[i] =
@@ -375,7 +375,7 @@ static QuadTree *QuadTree_add_internal(QuadTree * q, real * coord,
 }
 
 
-QuadTree *QuadTree_add(QuadTree * q, real * coord, real weight, int id)
+QuadTree QuadTree_add(QuadTree  q, real * coord, real weight, int id)
 {
     if (!q)
 	return q;
@@ -458,11 +458,11 @@ static void draw_polygon(FILE * fp, int dim, real * center, real width)
 
 
 }
-static void QuadTree_print_internal(FILE * fp, QuadTree * q, int level)
+static void QuadTree_print_internal(FILE * fp, QuadTree  q, int level)
 {
     /* dump a quad tree in Mathematica format. */
-    SingleLinkedList *l;
-    SingleLinkedList *l0;
+    SingleLinkedList l;
+    SingleLinkedList l0;
     real *coord;
     int i, dim = q->dim;
 
@@ -498,7 +498,7 @@ static void QuadTree_print_internal(FILE * fp, QuadTree * q, int level)
 
 }
 
-void QuadTree_print(FILE * fp, QuadTree * q)
+void QuadTree_print(FILE * fp, QuadTree  q)
 {
     if (!fp)
 	return;

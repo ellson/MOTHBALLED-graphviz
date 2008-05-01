@@ -18,18 +18,20 @@
 
 #include "SparseMatrix.h"
 
-typedef struct Multilevel_s {
+struct Multilevel_s {
     int level;			/* 0, 1, ... */
     int n;
-    SparseMatrix *A;
-    SparseMatrix *P;
-    SparseMatrix *R;
+    SparseMatrix A;
+    SparseMatrix P;
+    SparseMatrix R;
     real *node_weights;
     struct Multilevel_s *next;
     struct Multilevel_s *prev;
     int delete_top_level_A;
     int coarsen_scheme_used;	/* to get from previous level to here */
-} Multilevel;
+};
+
+typedef struct Multilevel_s* Multilevel;
 
 enum { MAX_IND_VTX_SET_0 = -100, MAX_IND_VTX_SET_U =
 	-1, MAX_IND_VTX_SET_C = 0 };
@@ -46,25 +48,26 @@ enum { EDGE_BASED_STA, COARSEN_INDEPENDENT_EDGE_SET,
 	VERTEX_BASED_STO, COARSEN_HYBRID };
 
 
-typedef struct {
+struct Multilevel_control_s {
     int minsize;
     real min_coarsen_factor;
     int maxlevel;
     int randomize;
     int coarsen_scheme;
-} Multilevel_control;
+};
 
+typedef struct Multilevel_control_s* Multilevel_control;
 
-Multilevel_control *Multilevel_control_new();
+Multilevel_control Multilevel_control_new();
 
-void Multilevel_control_delete(Multilevel_control * ctrl);
+void Multilevel_control_delete(Multilevel_control ctrl);
 
-void Multilevel_delete(Multilevel * grid);
+void Multilevel_delete(Multilevel grid);
 
-Multilevel *Multilevel_new(SparseMatrix * A, real * node_weights,
-			   Multilevel_control * ctrl);
+Multilevel Multilevel_new(SparseMatrix A, real * node_weights,
+			   Multilevel_control ctrl);
 
-Multilevel *Multilevel_get_coarsest(Multilevel * grid);
+Multilevel Multilevel_get_coarsest(Multilevel grid);
 
 void print_padding(int n);
 
