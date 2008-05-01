@@ -21,8 +21,22 @@ pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h \
 	dot_builtins.c demand_loading.c no_demand_loading.c
 noinst_HEADERS = gvcint.h gvcproc.h
 noinst_LTLIBRARIES = libgvc_C.la
-lib_LTLIBRARIES = libgvc.la libgvc_builtins.la
-pkgconfig_DATA = libgvc.pc libgvc_builtins.pc
+lib_LTLIBRARIES = libgvc.la
+pkgconfig_DATA = libgvc.pc
+
+# if using plugins, don't bother installing libgvc_builtins
+if ENABLE_SHARED
+if ENABLE_LTDL
+noinst_LTLIBRARIES += libgvc_builtins.la
+else
+lib_LTLIBRARIES += libgvc_builtins.la
+pkgconfig_DATA += libgvc_builtins.pc
+endif
+else
+lib_LTLIBRARIES += libgvc_builtins.la
+pkgconfig_DATA += libgvc_builtins.pc
+endif
+
 man_MANS = gvc.3
 pdf_DATA = gvc.pdf
 
