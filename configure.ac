@@ -459,10 +459,14 @@ dnl old codegens
 AC_ARG_WITH(codegens,
   [AC_HELP_STRING([--with-codegens=yes], [use old codegens])],
   [],[with_codegens=yes])
+
 if test "x$with_codegens" = "xyes"; then
+  use_codegens="Yes"
   AC_DEFINE(WITH_CODEGENS,1,[Define if you want the old codegens])
+else
+  use_codegens="No (disabled)"
 fi
-AM_CONDITIONAL(WITH_CODEGENS, [test "x$with_codegens" = "xyes"])
+AM_CONDITIONAL(WITH_CODEGENS, [test "x$use_codegens" = "xYes"])
 
 dnl -----------------------------------
 dnl ElectricFence support for debugging
@@ -615,7 +619,7 @@ AC_ARG_ENABLE(io,
   [], [enable_io=no])
 
 if test "x$enable_io" != "xyes"; then
-  use_io="No (disabled)"
+  use_io="No (disabled by default - no swig support yet)"
 else
   if test "x$use_swig" != "xYes"; then
     use_io="No (swig not available)"
@@ -1025,7 +1029,7 @@ AC_ARG_ENABLE(python23,
   [], [enable_python23=no])
 
 if test "x$enable_python23" != "xyes"; then
-  use_python23="No (disabled)"
+  use_python23="No (disabled by default - for multiversion installs)"
 else
   if test "x$use_swig" != "xYes"; then
     use_python23="No (swig not available)"
@@ -1089,7 +1093,7 @@ AC_ARG_ENABLE(python24,
   [], [enable_python24=no])
 
 if test "x$enable_python24" != "xyes"; then
-  use_python24="No (disabled)"
+  use_python24="No (disabled by default - for multiversion installs)"
 else
   if test "x$use_swig" != "xYes"; then
     use_python24="No (swig not available)"
@@ -1153,7 +1157,7 @@ AC_ARG_ENABLE(python25,
   [], [enable_python25=no])
 
 if test "x$enable_python25" != "xyes"; then
-  use_python25="No (disabled)"
+  use_python25="No (disabled by default - for multiversion installs)"
 else
   if test "x$use_swig" != "xYes"; then
     use_python25="No (swig not available)"
@@ -1768,7 +1772,7 @@ AC_SUBST(Z_INCLUDES)
 AC_SUBST(Z_LIBS)
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for SVG
+dnl INCLUDES and LIBS for RSVG
                                                                                 
 AC_ARG_WITH(rsvg,
   [AC_HELP_STRING([--with-rsvg=yes], [rsvg library])],
@@ -1828,7 +1832,7 @@ AC_ARG_WITH(glitz,
   [], [with_glitz=no])
 
 if test "x$with_glitz" != "xyes"; then
-  use_glitz="No (disabled)"
+  use_glitz="No (disabled - incomplete)"
 else
   PKG_CHECK_MODULES(GLITZ, [glitz],[
     use_glitz="Yes"
@@ -2102,11 +2106,11 @@ dnl -----------------------------------
 dnl INCLUDES and LIBS for MING (SWF renderer)
 
 AC_ARG_WITH(ming,
-  [AC_HELP_STRING([--with-ming=yes], [ming library (plugin for -Tswf)])],
-  [], [with_ming=yes])
+  [AC_HELP_STRING([--with-ming=no], [ming library (plugin for -Tswf)])],
+  [], [with_ming=no])
 
 if test "x$with_ming" != "xyes"; then
-  use_ming="No (disabled)"
+  use_ming="No (disabled by default - incomplete)"
 else
   PKG_CHECK_MODULES(MING, [libming >= 0.4],[
     use_ming="Yes"
@@ -2128,7 +2132,7 @@ AC_ARG_WITH(quartz,
   [], [with_quartz=no])
 
 if test "x$with_quartz" != "xyes"; then
-  use_quartz="No (disabled)"
+  use_quartz="No (disabled by default - Mac only)"
 else
   if test -d "/System/Library/Frameworks/ApplicationServices.framework"; then
     use_quartz="Yes"
@@ -2165,23 +2169,24 @@ AC_ARG_WITH(gdiplus,
   [AC_HELP_STRING([--with-gdiplus=no], [GDI+ framework (Windows)])],
   [], [with_gdiplus=no])
 
-if test "x$with_gdiplus" = "xyes"; then
-
-if test -f "$PLATFORMSDKINCLUDE\GdiPlus.h" -a -f "$PLATFORMSDKLIB\GdiPlus.lib"; then
-HAVE_GDIPLUS=1
-AC_DEFINE_UNQUOTED(HAVE_GDIPLUS,1,[Define if you have the GDI+ framework for Windows])
-GDIPLUS_HEADS=`cd "$PLATFORMSDKINCLUDE" && echo GdiPlus*.h`
-GDIPLUS_CFLAGS=''
-GDIPLUS_LIBS=''
+if test "x$with_gdiplus" != "xyes"; then
+  use_gdiplus="No (disabled by default - Windows only)"
 else
-AC_MSG_WARN(--with-gdiplus requires valid --with-platformsdkincludedir and --with-platformsdklibdir.)
+  if test -f "$PLATFORMSDKINCLUDE\GdiPlus.h" -a -f "$PLATFORMSDKLIB\GdiPlus.lib"; then
+    use_gdiplus="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_GDIPLUS,1,[Define if you have the GDI+ framework for Windows])
+    GDIPLUS_HEADS=`cd "$PLATFORMSDKINCLUDE" && echo GdiPlus*.h`
+    GDIPLUS_CFLAGS=''
+    GDIPLUS_LIBS=''
+    AC_SUBST(GDIPLUS_HEADS)
+    AC_SUBST(GDIPLUS_CFLAGS)
+    AC_SUBST(GDIPLUS_LIBS)
+  else
+    use_gdiplus="No (missing headers)"
+    AC_MSG_WARN(--with-gdiplus requires valid --with-platformsdkincludedir and --with-platformsdklibdir.)
+  fi
 fi
-
-fi
-AC_SUBST(GDIPLUS_HEADS)
-AC_SUBST(GDIPLUS_CFLAGS)
-AC_SUBST(GDIPLUS_LIBS)
-AM_CONDITIONAL(WITH_GDIPLUS, [test "x$HAVE_GDIPLUS" != "x"])
+AM_CONDITIONAL(WITH_GDIPLUS, [test "x$use_gdiplus" = "xYes"])
 
 dnl -----------------------------------
 dnl INCLUDES and LIBS for GD
@@ -2192,17 +2197,20 @@ AC_ARG_WITH(libgd,
 
 AC_ARG_WITH(mylibgd,
   [AC_HELP_STRING([--with-mylibgd=no],
-	[use internal gd library in preference to any installed libgd])],
+    [use internal gd library in preference to any installed libgd])],
   [], [with_mylibgd=no])
 
 if test "x$with_mylibgd" = "xyes"; then
-	with_libgd=yes
+  with_libgd=yes
 fi
 
-if test "x$with_libgd" = "xyes"; then
-if test "x$with_mylibgd" = "xno"; then
-    AC_PATH_PROG(GDLIB_CONFIG,gdlib-config)
-    if test -n "$GDLIB_CONFIG"; then
+if test "x$with_libgd" != "xyes"; then
+  use_gd="No (disabled)"
+else
+  if test "x$with_libgd" = "xyes"; then
+    if test "x$with_mylibgd" = "xno"; then
+      AC_PATH_PROG(GDLIB_CONFIG,gdlib-config)
+      if test -n "$GDLIB_CONFIG"; then
         GD_INCLUDES=`$GDLIB_CONFIG --includes`
         GD_LDFLAGS=`$GDLIB_CONFIG --ldflags`
         GD_LIBS=`$GDLIB_CONFIG --libs`
@@ -2258,64 +2266,68 @@ if test "x$with_mylibgd" = "xno"; then
         if test "x$with_mylibgd" = "xyes"; then
             AC_MSG_WARN(GD library version < $REQ_GD_MAJORVERSION.$REQ_GD_MINORVERSION.$REQ_GD_REVISION)
         fi
-    else
+      else
         with_mylibgd=yes
         AC_MSG_WARN(No gdlib-config found.)
+      fi
     fi
-fi
-fi
+  fi
 
-if test "x$with_mylibgd" = "xno"; then
-if test "x$with_libgd" = "xyes"; then
-# see if we can use the external gd lib
-    save_CPPFLAGS=$CPPFLAGS
-    save_LDFLAGS=$LDFLAGS
-    AC_ARG_WITH(gdincludedir,
-      [AC_HELP_STRING([--with-gdincludedir=DIR], [use GD includes from DIR])],
-      GD_INCLUDES="-I$withval")
-    CPPFLAGS="$CPPFLAGS $GD_INCLUDES"
-    AC_ARG_WITH(gdlibdir,
-      [AC_HELP_STRING([--with-gdlibdir=DIR], [use GD libraries from DIR])],
-      [GD_LDFLAGS="-L$withval"])
-    LDFLAGS="$LDFLAGS $GD_LDFLAGS"
-    AC_CHECK_HEADER(gd.h,
-    AC_CHECK_LIB(gd,main,
-        [GD_LIBS="$GD_LDFLAGS -lgd $GD_LIBS"
-            AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if you have the GD library])],
-        AC_MSG_WARN(Optional GD library not available), $GD_LIBS),
-	    AC_MSG_WARN(Optional GD library not available - no gd.h))
-    LDFLAGS=$save_LDFLAGS
-    CPPFLAGS=$save_CPPFLAGS
-fi
-else
+  if test "x$with_mylibgd" = "xno"; then
+    if test "x$with_libgd" = "xyes"; then
+    # see if we can use the external gd lib
+      save_CPPFLAGS=$CPPFLAGS
+      save_LDFLAGS=$LDFLAGS
+      AC_ARG_WITH(gdincludedir,
+        [AC_HELP_STRING([--with-gdincludedir=DIR], [use GD includes from DIR])],
+        GD_INCLUDES="-I$withval")
+      CPPFLAGS="$CPPFLAGS $GD_INCLUDES"
+      AC_ARG_WITH(gdlibdir,
+        [AC_HELP_STRING([--with-gdlibdir=DIR], [use GD libraries from DIR])],
+        [GD_LDFLAGS="-L$withval"])
+      LDFLAGS="$LDFLAGS $GD_LDFLAGS"
+      AC_CHECK_HEADER(gd.h,,[
+        AC_MSG_WARN(Optional GD library not available - no gd.h)
+        use_gd="No (gd headers not found)"
+      ])
+      if test "x$use_gd" = "x"; then
+        AC_CHECK_LIB(gd,main,[
+	  GD_LIBS="$GD_LDFLAGS -lgd $GD_LIBS"
+          AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if you have the GD library])
+	  use_gd="Yes"
+        ],[
+          AC_MSG_WARN(Optional GD library not available)
+          use_gd="No (gd library found)"
+        ], $GD_LIBS)
+      fi
+      LDFLAGS=$save_LDFLAGS
+      CPPFLAGS=$save_CPPFLAGS
+    fi
+  else
     # using the internal libgd
+    use_gd="Yes"
     AC_MSG_WARN(Using internal libgd source.)
     AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library has the GD_GIF feature])
     AC_DEFINE_UNQUOTED(HAVE_LIBGD,1,[Define if either internal or external GD library is availabel])
     GD_INCLUDES='-I$(top_srcdir)/lib/gd'
     GD_LIBS='$(top_builddir)/lib/gd/libgvgd.la'
+  fi
+  AC_SUBST(GD_INCLUDES)
+  AC_SUBST(GD_LIBS)
 fi
-AC_SUBST(GD_INCLUDES)
-AC_SUBST(GD_LIBS)
 AM_CONDITIONAL(WITH_LIBGD, [test "x$with_libgd" = "xyes"])
 AM_CONDITIONAL(WITH_MYLIBGD, [test "x$with_mylibgd" = "xyes"])
 
 dnl ----------------------------------
-dnl INCLUDES and LIBS for FREETYPE2 (only with mylibgd)
+dnl INCLUDES and LIBS for FREETYPE2 and FONTCONFIG (only with mylibgd)
 
 if test "x$with_mylibgd" = "xyes"; then
-if test "x$HAVE_FREETYPE2" != "x"; then
-AC_DEFINE_UNQUOTED(HAVE_GD_FREETYPE,1,[Define if the GD library has the GD_FREETYPE feature])
-fi
-fi
-
-dnl ----------------------------------
-dnl INCLUDES and LIBS for FONTCONFIG (only with mylibgd)
-
-if test "x$with_mylibgd" = "xyes"; then
-if test "x$HAVE_FONTCONFIG" != "x"; then
-AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library has the GD_FONTCONFIG feature])
-fi
+  if test "x$use_freetype" = "xYes"; then
+    AC_DEFINE_UNQUOTED(HAVE_GD_FREETYPE,1,[Define if the GD library has the GD_FREETYPE feature])
+  fi
+  if test "x$use_fontconfig" = "xYes"; then
+    AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library has the GD_FONTCONFIG feature])
+  fi
 fi
 
 dnl -----------------------------------
@@ -2499,7 +2511,7 @@ AC_ARG_WITH(sfdp,
   [], [with_sfdp=no])
 
 if test "x$with_sfdp" != "xyes"; then
-  use_sfdp="No (disabled)"
+  use_sfdp="No (disabled - experimental)"
 else
   use_sfdp="Yes"
   AC_DEFINE_UNQUOTED(SFDP,1,[Define if you want SFDP])
@@ -2514,7 +2526,7 @@ AC_ARG_WITH(smyrna,
   [], [with_smyrna=no])
 
 if test "x$with_smyrna" != "xyes"; then
-  use_smyrna="No (disabled)"
+  use_smyrna="No (disabled - experimental)"
 else
   if test "x$HAVE_GTK" != "x1"; then
      AC_MSG_WARN(SMYRNA requires GTK)
@@ -2562,7 +2574,7 @@ AC_ARG_WITH(ipsepcola,
   [], [with_ipsepcola=no])
 
 if test "x$with_ipsepcola" != "xyes"; then
-  use_ipsepcola="No (disabled)"
+  use_ipsepcola="No (disabled by default - C++ portability issues)"
 else
   if test "x$use_digcola" != "xYes"; then
     use_ipsepcola="No (requires: digcola)"
@@ -2865,6 +2877,9 @@ echo "  smyrna:        $use_smyrna"
 echo "  digcola:       $use_digcola"
 echo "  ipsepcola:     $use_ipsepcola"
 echo "  sfdp:          $use_sfdp"
+echo "  codegens:      $use_codegens"
+echo "  fontconfig:    $use_fontconfig"
+echo "  freetype:      $use_freetype"
 echo ""
 echo "plugin libraries:"
 echo "  dot_layout:    Yes (always enabled)"
