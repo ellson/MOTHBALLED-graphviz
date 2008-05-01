@@ -3,8 +3,25 @@
 # Process this file with autoconf to produce a configure script
 AC_PREREQ([2.61])
 
-# Package name and version number, (as distinct from shared library version)
-AC_INIT(graphviz, 2.19)
+dnl graphviz package version number, (as distinct from shared library version)
+dnl For the minor number: odd => unstable series
+dnl                       even => stable series
+dnl For the micro number: 0 => in-progress development (from cvs)
+dnl                       timestamp => tar-file snapshot or release
+m4_define(graphviz_version_major, 2)
+m4_define(graphviz_version_minor, 19)
+m4_define(graphviz_version_micro, 0)
+
+AC_INIT([graphviz],
+      graphviz_version_major.graphviz_version_minor.graphviz_version_micro,
+      [http://www.graphviz.org/])
+
+GRAPHVIZ_VERSION_MAJOR=graphviz_version_major()
+GRAPHVIZ_VERSION_MINOR=graphviz_version_minor()
+GRAPHVIZ_VERSION_MICRO=graphviz_version_micro()
+AC_SUBST(GRAPHVIZ_VERSION_MAJOR)
+AC_SUBST(GRAPHVIZ_VERSION_MINOR)
+AC_SUBST(GRAPHVIZ_VERSION_MICRO)
 
 dnl ===========================================================================
 
