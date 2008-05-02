@@ -2528,19 +2528,19 @@ AC_ARG_WITH(smyrna,
 if test "x$with_smyrna" != "xyes"; then
   use_smyrna="No (disabled by default - experimental)"
 else
-  if test "x$HAVE_GTK" != "x1"; then
+  if test "x$use_gtk" != "xYes"; then
      AC_MSG_WARN(SMYRNA requires GTK)
      requires=" gtk+"
   fi
-  if test "x$HAVE_GTKGLEXT" != "x1"; then
+  if test "x$use_gtkglext" != "xYes"; then
      AC_MSG_WARN(SMYRNA requires GTKGLEXT)
      requires="$requires gtkglext"
   fi
-  if test "x$HAVE_GTKGLEXT" != "x1"; then
+  if test "x$use_glade" != "xYes"; then
      AC_MSG_WARN(SMYRNA requires GLADE)
      requires="$requires glade"
   fi
-  if test "x$HAVE_GTS" != "x1"; then
+  if test "x$use_gts" != "xYes"; then
      AC_MSG_WARN(SMYRNA requires GTS)
      requires="$requires gts"
   fi
