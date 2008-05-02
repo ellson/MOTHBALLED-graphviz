@@ -34,7 +34,7 @@
 #include "sfdp.h"
 #endif
 #ifdef IPSEPCOLA
-#include <csolve_VPSC.h>
+#include "csolve_VPSC.h"
 #include "quad_prog_vpsc.h"
 #endif
 
