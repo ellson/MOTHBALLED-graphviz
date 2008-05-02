@@ -239,6 +239,9 @@ BuildRequires: mono-core ocaml
 %define LUA 1
 %define PANGOCAIRO 1
 %define RSVG 1
+%define SMYRNA 1
+%define SFDP 1
+BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel gts-devel
 BuildRequires: cairo-devel >= 1.1.10 pango-devel gmp-devel lua-devel gtk2-devel libgnomeui-devel
 BuildRequires: librsvg2-devel
 %endif
@@ -250,9 +253,6 @@ BuildRequires: gd gd-devel perl-devel DevIL-devel
 %if %att_fedora >= 8
 %define R_LANG 1
 BuildRequires: R-devel swig >= 1.3.33
-%define SMYRNA 1
-BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel gts-devel
-%define SFDP 1
 # <percent>define GLITZ 1
 # BuildRequires: glitz-devel
 %endif
