@@ -13,7 +13,7 @@ AM_CPPFLAGS = \
 
 noinst_HEADERS = SparseMatrix.h sfdpinternal.h spring_electrical.h \
 	LinkedList.h overlap.h red_black_tree.h sparse_solve.h post_process.h \
-	QuadTree.h call_tri.h Multilevel.h
+	QuadTree.h call_tri.h Multilevel.h sfdp.h
 
 if WITH_SFDP
 noinst_LTLIBRARIES = libsfdpgen_C.la
