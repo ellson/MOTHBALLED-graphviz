@@ -31,14 +31,14 @@ GLIB=libglib-2.0.la
 PANGO=libpango-1.0.la
 
 # directories
-
-PKGCONFIG_DIR=$(basename $(basename $(notdir $(PKGCONFIG_URL))))
-GD_DIR=$(basename $(basename $(notdir $(GD_URL))))
-PIXMAN_DIR=$(basename $(basename $(notdir $(PIXMAN_URL))))
-CAIRO_DIR=$(basename $(basename $(notdir $(CAIRO_URL))))
-GETTEXT_DIR=$(basename $(basename $(notdir $(GETTEXT_URL))))
-GLIB_DIR=$(basename $(basename $(notdir $(GLIB_URL))))
-PANGO_DIR=$(basename $(basename $(notdir $(PANGO_URL))))
+dirname=$(basename $(basename $(notdir $(1))))
+PKGCONFIG_DIR=$(call dirname, $(PKGCONFIG_URL))
+GD_DIR=$(call dirname, $(GD_URL))
+PIXMAN_DIR=$(call dirname, $(PIXMAN_URL))
+CAIRO_DIR=$(call dirname, $(CAIRO_URL))
+GETTEXT_DIR=$(call dirname, $(GETTEXT_URL))
+GLIB_DIR=$(call dirname, $(GLIB_URL))
+PANGO_DIR=$(call dirname, $(PANGO_URL))
 
 #
 # target

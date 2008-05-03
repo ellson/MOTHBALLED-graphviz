@@ -12,6 +12,7 @@ LOCAL_LIB=$(LOCAL)/lib
 # base
 
 GV_DIR=../..
+GVC=libgvc.la
 
 #
 # graphviz
@@ -27,7 +28,7 @@ usr/local/lib/$(GVC): $(GV_DIR)/lib/gvc/$(GVC)
 	@echo
 	@echo INSTALLING GRAPHVIZ...
 	@echo
-	$(MAKE) DESTDIR=$(PWD)/$(BUILD_DIR) -C $(GV_DIR) install-strip
+	$(MAKE) DESTDIR=$(CURDIR) -C $(GV_DIR) install-strip
 	
 Release/Graphviz.app: $(GV_DIR)/lib/gvc/$(GVC)
 	@echo
@@ -49,6 +50,6 @@ $(GV_DIR)/Makefile: $(GV_DIR)/configure
 	@echo
 	@echo CONFIGURING GRAPHVIZ...
 	@echo
-	cd $(GV_DIR) && ./configure --disable-dependency-tracking --enable-ltdl-install=yes --with-ipsepcola --with-quartz CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64 -lpixman-1" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+	cd $(GV_DIR) && ./configure --disable-dependency-tracking --with-ipsepcola --with-quartz CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" CXXFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
 
 
