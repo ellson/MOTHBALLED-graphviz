@@ -409,23 +409,7 @@ if test "x$enable_ltdl" != "xno"; then
   AC_DEFINE(ENABLE_LTDL,1,[Define if you want on-demand plugin loading])
   AC_CONFIG_SUBDIRS(libltdl)
   AC_LIBTOOL_DLOPEN
-  case "${host_os}" in
-    *uwin* )
-      AC_LIBLTDL_CONVENIENCE
-	;;
-    *cygwin* )
-      AC_LIBLTDL_CONVENIENCE
-	;;
-    *mingw32* )
-      AC_LIBLTDL_CONVENIENCE
-	;;
-    *darwin* )
-      AC_LIBLTDL_CONVENIENCE
-	;;
-    * )
-      AC_LIBLTDL_INSTALLABLE
-	;;
-  esac
+  AC_LIBLTDL_INSTALLABLE
 fi
 AM_CONDITIONAL(ENABLE_LTDL, [test "x$enable_ltdl" != "xno"])
 AC_SUBST(INCLTDL)
