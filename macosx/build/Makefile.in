@@ -50,6 +50,7 @@ $(GV_DIR)/Makefile: $(GV_DIR)/configure
 	@echo
 	@echo CONFIGURING GRAPHVIZ...
 	@echo
-	cd $(GV_DIR) && ./configure --disable-dependency-tracking --with-ipsepcola --with-quartz CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" CXXFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+	cd $(GV_DIR) && /configure --disable-dependency-tracking --with-ipsepcola --with-quartz CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" CXXFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64 -Wl,-dead_strip -Wl,-dead_strip_dylibs"
+
 
 

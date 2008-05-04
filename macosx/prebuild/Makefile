@@ -94,7 +94,7 @@ $(PANGO_DIR)/Makefile: $(LOCAL_LIB)/$(CAIRO) $(LOCAL_LIB)/$(GLIB) | $(LOCAL_BIN)
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
-	cd $(PANGO_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no --with-included_modules=yes CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" LIBS="/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation /System/Library/Frameworks/CoreServices.framework/CoreServices /System/Library/Frameworks/ApplicationServices.framework/ApplicationServices" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+	cd $(PANGO_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no --with-included_modules=yes CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" LIBS="/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation /System/Library/Frameworks/CoreServices.framework/CoreServices /System/Library/Frameworks/ApplicationServices.framework/ApplicationServices" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
 
 $(PANGO_DIR)/configure: | $(PANGO_DIR).tar.gz
 	@echo
@@ -147,26 +147,26 @@ $(GLIB_DIR)/Makefile: $(LOCAL_LIB)/$(INTL) | $(LOCAL_BIN)/$(PKGCONFIG) $(GLIB_DI
 	PATH=gobject:$$PATH && \
 	cp darwin.cache darwinian.cache && \
 	echo --- PPC PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-arch ppc" LDFLAGS="-arch ppc" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc" LDFLAGS="-arch ppc" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
 	cp config.h config.ppc.h && \
 	cp glibconfig.h glibconfig.ppc.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- I386 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=i686-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-arch i386" LDFLAGS="-arch i386" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=i686-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch i386" LDFLAGS="-arch i386" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
 	cp config.h config.i386.h && \
 	cp glibconfig.h glibconfig.i386.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- PPC64 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-arch ppc64" LDFLAGS="-arch ppc64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc64" LDFLAGS="-arch ppc64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
 	cp config.h config.ppc64.h && \
 	cp glibconfig.h glibconfig.ppc64.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- X86_64 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=x86_64-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-arch x86_64" LDFLAGS="-arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=x86_64-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch x86_64" LDFLAGS="-arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
 	cp config.h config.x86_64.h && \
 	cp glibconfig.h glibconfig.x86_64.h && \
 	echo --- UNIVERSAL BINARY PASS --- && \
-	./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
+	./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
 	rm config.h && \
 	echo "#if defined(__ppc__)" >>config.h && \
 	cat config.ppc.h >>config.h && \
@@ -223,7 +223,7 @@ $(GETTEXT_DIR)/Makefile: | $(GETTEXT_DIR)/configure
 	@echo
 	@echo CONFIGURING GETTEXT...
 	@echo
-	cd $(GETTEXT_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64"
+	cd $(GETTEXT_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64"
 	
 $(GETTEXT_DIR)/configure: | $(GETTEXT_DIR).tar.gz
 	@echo
@@ -258,7 +258,7 @@ $(CAIRO_DIR)/Makefile: $(LOCAL_LIB)/$(PIXMAN) | $(LOCAL_BIN)/$(PKGCONFIG) $(CAIR
 	@echo
 	@echo CONFIGURING CAIRO...
 	@echo
-	cd $(CAIRO_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+	cd $(CAIRO_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
 	
 $(CAIRO_DIR)/configure: | $(CAIRO_DIR).tar.gz
 	@echo
@@ -328,7 +328,7 @@ $(GD_DIR)/Makefile: | $(GD_DIR)/configure
 	@echo
 	@echo CONFIGURING GD...
 	@echo
-	cd $(GD_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64"
+	cd $(GD_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64"
 	
 $(GD_DIR)/configure: | $(GD_DIR).tar.gz
 	@echo
@@ -363,7 +363,7 @@ $(PKGCONFIG_DIR)/Makefile: | $(PKGCONFIG_DIR)/configure
 	@echo
 	@echo CONFIGURING PKGCONFIG...
 	@echo
-	cd $(PKGCONFIG_DIR) && ./configure --disable-dependency-tracking CFLAGS="-arch ppc -arch i386" LDFLAGS="-arch ppc -arch i386"
+	cd $(PKGCONFIG_DIR) && ./configure --disable-dependency-tracking CFLAGS="-O2 -arch ppc -arch i386" LDFLAGS="-arch ppc -arch i386"
 	
 $(PKGCONFIG_DIR)/configure: | $(PKGCONFIG_DIR).tar.gz
 	@echo
