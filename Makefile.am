@@ -44,7 +44,7 @@ rpm: dist
 	
 .PHONY: pkg
 pkg: dist
-	./macbuild --prep=graphviz-@VERSION@.tar.gz
+	tar xzf graphviz-@VERSION@.tar.gz && make -C graphviz-@VERSION@/macosx/build && mv graphviz-@VERSION@/macosx/build/graphviz-*.pkg .
 
 
 DISTCLEANFILES = config.cache builddate.h ast_common.h FEATURE/* graphviz-@VERSION@*
