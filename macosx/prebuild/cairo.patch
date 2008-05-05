@@ -29,14 +29,14 @@ diff -ru cairo-1.6.4/src/cairo-quartz.h cairo-1.6.4.patched/src/cairo-quartz.h
  
  #endif /* CAIRO_HAS_QUARTZ_FONT */
  
-diff -ru cairo-1.6.4/src/cairo.pc.in cairo-1.6.4.patched/src/cairo.pc.in
 --- cairo-1.6.4/src/cairo.pc.in	2007-04-28 01:02:34.000000000 +0800
-+++ cairo-1.6.4.patched/src/cairo.pc.in	2008-05-03 18:37:16.000000000 +0800
-@@ -8,6 +8,6 @@
++++ cairo-1.6.4.patched/src/cairo.pc.in	2008-05-05 17:21:57.000000000 +0800
+@@ -7,7 +7,7 @@
+ Description: Multi-platform 2D graphics library
  Version: @VERSION@
  
- @PKGCONFIG_REQUIRES@: @CAIRO_REQUIRES@
--Libs: -L${libdir} -lcairo
-+Libs: -L${libdir} -lcairo -lpixman-1
+-@PKGCONFIG_REQUIRES@: @CAIRO_REQUIRES@
++Requires: @CAIRO_REQUIRES@
+ Libs: -L${libdir} -lcairo
  Libs.private: @CAIRO_NONPKGCONFIG_LIBS@
  Cflags: -I${includedir}/cairo
