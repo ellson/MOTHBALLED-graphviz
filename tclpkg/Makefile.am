@@ -131,7 +131,7 @@ if WITH_TCL
 	-mkdir -p $(DESTDIR)@TCL_INSTALL_DIR@;
 	if test -w $(DESTDIR)@TCL_INSTALL_DIR@/; then \
 		(cd $(DESTDIR)@TCL_INSTALL_DIR@; \
-			$(LN_S) -f $(pkgtcldir) @PACKAGE_NAME@-@PACKAGE_VERSION@;) \
+			$(LN_S) -f $(pkgtcldir) @PACKAGE_NAME@;) \
 	else \
 		echo "Warning: @TCL_INSTALL_DIR@ is not writable."; \
 		echo "Skipping system installation of tcl bindings."; \
