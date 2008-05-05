@@ -28,6 +28,17 @@ html = tcldot.html
 noinst_HEADERS = tcldot.h
 if WITH_TCL
 pkgtcl_LTLIBRARIES = libtcldot.la libtcldot_builtin.la
+# if using plugins, don't bother installing libtcldot_builtin
+if ENABLE_SHARED
+if ENABLE_LTDL
+noinst_LTLIBRARIES = libtcldot_builtin.la
+else
+pkgtcl_LTLIBRARIES += libtcldot_builtin.la
+endif
+else
+pkgtcl_LTLIBRARIES += libtcldot_builtin.la
+endif
+
 man_MANS = $(man)
 pdf_DATA = $(pdf)
 html_DATA = $(html)
