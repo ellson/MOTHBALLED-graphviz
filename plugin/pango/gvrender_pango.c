@@ -82,6 +82,7 @@ static void cairogen_begin_page(GVJ_t * job)
 {
     cairo_t *cr = NULL;
     cairo_surface_t *surface;
+    cairo_status_t status;
 
     if (job->context) 
 	cr = (cairo_t *) job->context;
@@ -115,6 +116,26 @@ static void cairogen_begin_page(GVJ_t * job)
                         ROUND(job->width * job->height * 4 / 1024.));
 	    break;
         }
+	status = cairo_surface_status(surface);
+        if (status != CAIRO_STATUS_SUCCESS)  {
+		fprintf(stderr, "%s: failure to create cairo surface: %s\n",
+			job->common->cmdname,
+			cairo_status_to_string(status));
+		cairo_surface_destroy (surface);
+		job->context = NULL;
+		return;
+	}
+	if (job->width >= 32768 || job->height >= 32768) {
+		if (job->width >= 32768)
+		    fprintf(stderr, "%s: width (%d >= 32768) is too large.\n",
+			job->common->cmdname, job->width);
+		if (job->height >= 32768)
+		    fprintf(stderr, "%s: height (%d >= 32768) is too large.\n",
+			job->common->cmdname, job->height);
+		cairo_surface_destroy (surface);
+		job->context = NULL;
+		return;
+	}
         cr = cairo_create(surface);
         cairo_surface_destroy (surface);
         job->context = (void *) cr;
