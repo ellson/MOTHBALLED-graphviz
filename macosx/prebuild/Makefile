@@ -43,6 +43,12 @@ PANGO_DIR=$(call dirname, $(PANGO_URL))
 #
 # target
 #
+# --disable-dependency-tracking since this is one-off build
+# --enable-static=yes since this builds static libraries
+# --enable-shared=no since this doesn't build dynamic libraries
+# -O2 to optimize code for speed and performance
+# -arch to build 32-bit/64-bit Universal Binaries
+# pkgconfig to look for X11 libraries too
 
 install: $(LOCAL_LIB)/$(PANGO) $(LOCAL_LIB)/$(GD)
 
@@ -76,6 +82,8 @@ distclean:
 #
 # pango
 #
+# --with-included-modules=yes to embed pango modules within pango itself
+# link also to CoreFoundation and CoreServices because of gettext dependency
 
 $(LOCAL_LIB)/$(PANGO): $(PANGO_DIR)/pango/$(PANGO)
 	@echo
@@ -94,7 +102,7 @@ $(PANGO_DIR)/Makefile: $(LOCAL_LIB)/$(CAIRO) $(LOCAL_LIB)/$(GLIB) | $(LOCAL_BIN)
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
-	cd $(PANGO_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no --with-included_modules=yes CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" LIBS="/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation /System/Library/Frameworks/CoreServices.framework/CoreServices /System/Library/Frameworks/ApplicationServices.framework/ApplicationServices" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+	cd $(PANGO_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no --with-included-modules=yes CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" LIBS="/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation /System/Library/Frameworks/CoreServices.framework/CoreServices" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
 
 $(PANGO_DIR)/configure: | $(PANGO_DIR).tar.gz
 	@echo
@@ -111,6 +119,10 @@ $(PANGO_DIR).tar.gz:
 #
 # glib
 #
+# patch to fix libiconv_open absent in 64-bit
+# run configure + make once to create glib-genmarshal for cross-building support
+# run configure once for each architecture, capturing config.h and glibconfig.h
+# run configure again for Universal Binary, recomposing config.h and glibconfig.h from captured versions
 
 $(LOCAL_LIB)/$(GLIB): $(GLIB_DIR)/glib/$(GLIB)
 	@echo
@@ -205,6 +217,7 @@ $(GLIB_DIR).tar.gz:
 #
 # gettext
 #
+# doesn't use pkgconfig
 
 $(LOCAL_LIB)/$(INTL): $(GETTEXT_DIR)/gettext-runtime/intl/$(INTL)
 	@echo
@@ -240,6 +253,8 @@ $(GETTEXT_DIR).tar.gz:
 #
 # cairo
 #
+# patch to fence missing ATSUI API in 64-bit
+# patch to require pixman-1 in linking
 
 $(LOCAL_LIB)/$(CAIRO): $(CAIRO_DIR)/src/$(CAIRO)
 	@echo
@@ -275,6 +290,8 @@ $(CAIRO_DIR).tar.gz:
 #
 # pixman
 #
+# patch to detect endianness, MMX, SSE and SSE2 during Universal Binary build
+# omit -O2 since it bombs Apple gcc
 
 $(LOCAL_LIB)/$(PIXMAN): $(PIXMAN_DIR)/pixman/$(PIXMAN)
 	@echo
@@ -310,6 +327,7 @@ $(PIXMAN_DIR).tar.gz:
 #
 # gd
 #
+# doesn't use pkgconfig
 
 $(LOCAL_LIB)/$(GD): $(GD_DIR)/$(GD)
 	@echo
@@ -345,6 +363,7 @@ $(GD_DIR).tar.gz:
 #
 # pkgconfig
 #
+# only needed during build, don't need Universal Binary
 
 $(LOCAL_BIN)/$(PKGCONFIG): $(PKGCONFIG_DIR)/$(PKGCONFIG)
 	@echo
@@ -363,7 +382,7 @@ $(PKGCONFIG_DIR)/Makefile: | $(PKGCONFIG_DIR)/configure
 	@echo
 	@echo CONFIGURING PKGCONFIG...
 	@echo
-	cd $(PKGCONFIG_DIR) && ./configure --disable-dependency-tracking CFLAGS="-O2 -arch ppc -arch i386" LDFLAGS="-arch ppc -arch i386"
+	cd $(PKGCONFIG_DIR) && ./configure --disable-dependency-tracking
 	
 $(PKGCONFIG_DIR)/configure: | $(PKGCONFIG_DIR).tar.gz
 	@echo
