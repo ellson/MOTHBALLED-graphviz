@@ -102,7 +102,7 @@ $(PANGO_DIR)/Makefile: $(LOCAL_LIB)/$(CAIRO) $(LOCAL_LIB)/$(GLIB) | $(LOCAL_BIN)
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
-	cd $(PANGO_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no --with-included-modules=yes CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" LIBS="/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation /System/Library/Frameworks/CoreServices.framework/CoreServices" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+	cd $(PANGO_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no --with-included-modules=yes CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" LIBS="-framework CoreFoundation -framework CoreServices" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
 
 $(PANGO_DIR)/configure: | $(PANGO_DIR).tar.gz
 	@echo
