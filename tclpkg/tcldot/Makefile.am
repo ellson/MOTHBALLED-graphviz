@@ -27,8 +27,7 @@ html = tcldot.html
 
 noinst_HEADERS = tcldot.h
 if WITH_TCL
-pkgtcl_LTLIBRARIES = libtcldot.la
-noinst_LTLIBRARIES = libtcldot_builtin.la
+pkgtcl_LTLIBRARIES = libtcldot.la libtcldot_builtin.la
 
 man_MANS = $(man)
 pdf_DATA = $(pdf)
