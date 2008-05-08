@@ -6,7 +6,8 @@ TAR=tar
 
 # local
 
-LOCAL=/usr/local
+LOCAL=$(CURDIR)/usr/local
+LOCAL_INCLUDE=$(LOCAL)/include
 LOCAL_LIB=$(LOCAL)/lib
 LOCAL_BIN=$(LOCAL)/bin
 
@@ -43,6 +44,7 @@ PANGO_DIR=$(call dirname, $(PANGO_URL))
 #
 # target
 #
+# --prefix to dump results into usr/local not /usr/local
 # --disable-dependency-tracking since this is one-off build
 # --enable-static=yes since this builds static libraries
 # --enable-shared=no since this doesn't build dynamic libraries
@@ -50,34 +52,37 @@ PANGO_DIR=$(call dirname, $(PANGO_URL))
 # -arch to build 32-bit/64-bit Universal Binaries
 # pkgconfig to look for X11 libraries too
 
+BASE_CONFIG=--prefix=$(LOCAL) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(LOCAL_BIN)/pkg-config" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+FLAG_CONFIG=CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" 
+
 install: $(LOCAL_LIB)/$(PANGO) $(LOCAL_LIB)/$(GD)
 
 uninstall:
-	sudo $(MAKE) -C $(PANGO_DIR) uninstall
-	sudo $(MAKE) -C $(GLIB_DIR) uninstall
-	sudo $(MAKE) -C $(GETTEXT_DIR) uninstall
-	sudo $(MAKE) -C $(CAIRO_DIR) uninstall
-	sudo $(MAKE) -C $(PIXMAN_DIR) uninstall
-	sudo $(MAKE) -C $(GD_DIR) uninstall
-	sudo $(MAKE) -C $(PKGCONFIG_DIR) uninstall
+	$(MAKE) -C $(PANGO_DIR) uninstall
+	$(MAKE) -C $(GLIB_DIR) uninstall
+	$(MAKE) -C $(GETTEXT_DIR) uninstall
+	$(MAKE) -C $(CAIRO_DIR) uninstall
+	$(MAKE) -C $(PIXMAN_DIR) uninstall
+	$(MAKE) -C $(GD_DIR) uninstall
+	$(MAKE) -C $(PKGCONFIG_DIR) uninstall
 	
 clean:
-	sudo $(MAKE) -C $(PANGO_DIR) clean
-	sudo $(MAKE) -C $(GLIB_DIR) clean
-	sudo $(MAKE) -C $(GETTEXT_DIR) clean
-	sudo $(MAKE) -C $(CAIRO_DIR) clean
-	sudo $(MAKE) -C $(PIXMAN_DIR) clean
-	sudo $(MAKE) -C $(GD_DIR) clean
-	sudo $(MAKE) -C $(PKGCONFIG_DIR) clean
+	$(MAKE) -C $(PANGO_DIR) clean
+	$(MAKE) -C $(GLIB_DIR) clean
+	$(MAKE) -C $(GETTEXT_DIR) clean
+	$(MAKE) -C $(CAIRO_DIR) clean
+	$(MAKE) -C $(PIXMAN_DIR) clean
+	$(MAKE) -C $(GD_DIR) clean
+	$(MAKE) -C $(PKGCONFIG_DIR) clean
 	
 distclean:
-	sudo $(MAKE) -C $(PANGO_DIR) distclean
-	sudo $(MAKE) -C $(GLIB_DIR) distclean
-	sudo $(MAKE) -C $(GETTEXT_DIR) distclean
-	sudo $(MAKE) -C $(CAIRO_DIR) distclean
-	sudo $(MAKE) -C $(PIXMAN_DIR) distclean
-	sudo $(MAKE) -C $(GD_DIR) distclean
-	sudo $(MAKE) -C $(PKGCONFIG_DIR) distclean
+	$(MAKE) -C $(PANGO_DIR) distclean
+	$(MAKE) -C $(GLIB_DIR) distclean
+	$(MAKE) -C $(GETTEXT_DIR) distclean
+	$(MAKE) -C $(CAIRO_DIR) distclean
+	$(MAKE) -C $(PIXMAN_DIR) distclean
+	$(MAKE) -C $(GD_DIR) distclean
+	$(MAKE) -C $(PKGCONFIG_DIR) distclean
 
 #
 # pango
@@ -89,20 +94,20 @@ $(LOCAL_LIB)/$(PANGO): $(PANGO_DIR)/pango/$(PANGO)
 	@echo
 	@echo INSTALLING PANGO...
 	@echo
-	sudo $(MAKE) -C $(PANGO_DIR) install
+	$(MAKE) -C $(PANGO_DIR) install
 
 $(PANGO_DIR)/pango/$(PANGO): $(PANGO_DIR)/Makefile
 	@echo
 	@echo MAKING PANGO...
 	@echo
 	if [[ -e $@ ]]; then $(MAKE) -C $(PANGO_DIR) clean; fi && \
-	$(MAKE) -C $(PANGO_DIR)
+	PATH=$(PATH):$(LOCAL_BIN) $(MAKE) -C $(PANGO_DIR)
 	
 $(PANGO_DIR)/Makefile: $(LOCAL_LIB)/$(CAIRO) $(LOCAL_LIB)/$(GLIB) | $(LOCAL_BIN)/$(PKGCONFIG) $(PANGO_DIR)/configure
 	@echo
 	@echo CONFIGURING PANGO...
 	@echo
-	cd $(PANGO_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no --with-included-modules=yes CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" LIBS="-framework CoreFoundation -framework CoreServices" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+	cd $(PANGO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG) --with-included-modules=yes LIBS="-framework CoreFoundation -framework CoreServices"
 
 $(PANGO_DIR)/configure: | $(PANGO_DIR).tar.gz
 	@echo
@@ -128,7 +133,7 @@ $(LOCAL_LIB)/$(GLIB): $(GLIB_DIR)/glib/$(GLIB)
 	@echo
 	@echo INSTALLING GLIB...
 	@echo
-	sudo $(MAKE) -C $(GLIB_DIR) install
+	$(MAKE) -C $(GLIB_DIR) install
 	
 $(GLIB_DIR)/glib/$(GLIB): $(GLIB_DIR)/Makefile
 	@echo
@@ -152,33 +157,33 @@ $(GLIB_DIR)/Makefile: $(LOCAL_LIB)/$(INTL) | $(LOCAL_BIN)/$(PKGCONFIG) $(GLIB_DI
 	echo "ac_cv_func_posix_getgrgid_r=yes" >>darwin.cache && \
 	echo "ac_cv_func_vsnprintf_c99=yes" >>darwin.cache && \
 	echo "ac_cv_func_printf_unix98=yes" >>darwin.cache && \
+	PATH=$(LOCAL_BIN):gobject:$$PATH && \
 	echo --- GLIB-GENMARSHAL PASS --- && \
-	./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
+	./configure $(BASE_CONFIG) CFLAGS="-I$(LOCAL_INCLUDE)" LDFLAGS="-L$(LOCAL_LIB)" && \
 	$(MAKE) -C glib && \
 	$(MAKE) -C gobject glib-genmarshal && \
-	PATH=gobject:$$PATH && \
 	cp darwin.cache darwinian.cache && \
 	echo --- PPC PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc" LDFLAGS="-arch ppc" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -I$(LOCAL_INCLUDE)" LDFLAGS="-arch ppc -L$(LOCAL_LIB)" && \
 	cp config.h config.ppc.h && \
 	cp glibconfig.h glibconfig.ppc.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- I386 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=i686-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch i386" LDFLAGS="-arch i386" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=i686-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch i386 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch i386 -L$(LOCAL_LIB)" && \
 	cp config.h config.i386.h && \
 	cp glibconfig.h glibconfig.i386.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- PPC64 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc64" LDFLAGS="-arch ppc64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=powerpc-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch ppc64 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch ppc64 -L$(LOCAL_LIB)" && \
 	cp config.h config.ppc64.h && \
 	cp glibconfig.h glibconfig.ppc64.h && \
 	cp darwin.cache darwinian.cache && \
 	echo --- X86_64 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=x86_64-apple-darwin$$OSREL --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch x86_64" LDFLAGS="-arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
+	./configure --cache-file=darwinian.cache --build=$$BUILD --host=x86_64-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch x86_64 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch x86_64 -L$(LOCAL_LIB)" && \
 	cp config.h config.x86_64.h && \
 	cp glibconfig.h glibconfig.x86_64.h && \
 	echo --- UNIVERSAL BINARY PASS --- && \
-	./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig" && \
+	./configure $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64 -L$(LOCAL_LIB)" && \
 	rm config.h && \
 	echo "#if defined(__ppc__)" >>config.h && \
 	cat config.ppc.h >>config.h && \
@@ -217,13 +222,12 @@ $(GLIB_DIR).tar.gz:
 #
 # gettext
 #
-# doesn't use pkgconfig
 
 $(LOCAL_LIB)/$(INTL): $(GETTEXT_DIR)/gettext-runtime/intl/$(INTL)
 	@echo
 	@echo INSTALLING GETTEXT...
 	@echo
-	sudo $(MAKE) -C $(GETTEXT_DIR) install
+	$(MAKE) -C $(GETTEXT_DIR) install
 	
 $(GETTEXT_DIR)/gettext-runtime/intl/$(INTL): $(GETTEXT_DIR)/Makefile
 	@echo
@@ -236,7 +240,7 @@ $(GETTEXT_DIR)/Makefile: | $(GETTEXT_DIR)/configure
 	@echo
 	@echo CONFIGURING GETTEXT...
 	@echo
-	cd $(GETTEXT_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64"
+	cd $(GETTEXT_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
 	
 $(GETTEXT_DIR)/configure: | $(GETTEXT_DIR).tar.gz
 	@echo
@@ -260,7 +264,7 @@ $(LOCAL_LIB)/$(CAIRO): $(CAIRO_DIR)/src/$(CAIRO)
 	@echo
 	@echo INSTALLING CAIRO...
 	@echo
-	sudo $(MAKE) -C $(CAIRO_DIR) install
+	$(MAKE) -C $(CAIRO_DIR) install
 	
 $(CAIRO_DIR)/src/$(CAIRO): $(CAIRO_DIR)/Makefile
 	@echo
@@ -273,7 +277,7 @@ $(CAIRO_DIR)/Makefile: $(LOCAL_LIB)/$(PIXMAN) | $(LOCAL_BIN)/$(PKGCONFIG) $(CAIR
 	@echo
 	@echo CONFIGURING CAIRO...
 	@echo
-	cd $(CAIRO_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+	cd $(CAIRO_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
 	
 $(CAIRO_DIR)/configure: | $(CAIRO_DIR).tar.gz
 	@echo
@@ -297,7 +301,7 @@ $(LOCAL_LIB)/$(PIXMAN): $(PIXMAN_DIR)/pixman/$(PIXMAN)
 	@echo
 	@echo INSTALLING PIXMAN...
 	@echo
-	sudo $(MAKE) -C $(PIXMAN_DIR) install
+	$(MAKE) -C $(PIXMAN_DIR) install
 	
 $(PIXMAN_DIR)/pixman/$(PIXMAN): $(PIXMAN_DIR)/Makefile
 	@echo
@@ -310,7 +314,7 @@ $(PIXMAN_DIR)/Makefile: | $(LOCAL_BIN)/$(PKGCONFIG) $(PIXMAN_DIR)/configure
 	@echo
 	@echo CONFIGURING PIXMAN...
 	@echo
-	cd $(PIXMAN_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
+	cd $(PIXMAN_DIR) && ./configure $(BASE_CONFIG) CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64"
 	
 $(PIXMAN_DIR)/configure: | $(PIXMAN_DIR).tar.gz
 	@echo
@@ -327,13 +331,12 @@ $(PIXMAN_DIR).tar.gz:
 #
 # gd
 #
-# doesn't use pkgconfig
 
 $(LOCAL_LIB)/$(GD): $(GD_DIR)/$(GD)
 	@echo
 	@echo INSTALLING GD...
 	@echo
-	sudo $(MAKE) -C $(GD_DIR) install
+	$(MAKE) -C $(GD_DIR) install
 	
 $(GD_DIR)/$(GD): $(GD_DIR)/Makefile
 	@echo
@@ -346,7 +349,7 @@ $(GD_DIR)/Makefile: | $(GD_DIR)/configure
 	@echo
 	@echo CONFIGURING GD...
 	@echo
-	cd $(GD_DIR) && ./configure --disable-dependency-tracking --enable-static=yes --enable-shared=no CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64"
+	cd $(GD_DIR) && ./configure $(BASE_CONFIG) $(FLAG_CONFIG)
 	
 $(GD_DIR)/configure: | $(GD_DIR).tar.gz
 	@echo
@@ -369,7 +372,7 @@ $(LOCAL_BIN)/$(PKGCONFIG): $(PKGCONFIG_DIR)/$(PKGCONFIG)
 	@echo
 	@echo INSTALLING PKGCONFIG...
 	@echo
-	sudo $(MAKE) -C $(PKGCONFIG_DIR) install
+	$(MAKE) -C $(PKGCONFIG_DIR) install
 	
 $(PKGCONFIG_DIR)/$(PKGCONFIG): $(PKGCONFIG_DIR)/Makefile
 	@echo
@@ -382,7 +385,7 @@ $(PKGCONFIG_DIR)/Makefile: | $(PKGCONFIG_DIR)/configure
 	@echo
 	@echo CONFIGURING PKGCONFIG...
 	@echo
-	cd $(PKGCONFIG_DIR) && ./configure --disable-dependency-tracking
+	cd $(PKGCONFIG_DIR) && ./configure --prefix=$(LOCAL) --disable-dependency-tracking
 	
 $(PKGCONFIG_DIR)/configure: | $(PKGCONFIG_DIR).tar.gz
 	@echo

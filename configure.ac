@@ -2788,7 +2788,6 @@ AC_CONFIG_FILES(Makefile
 	lib/topfish/Makefile
 	lib/glcomp/Makefile
 	macosx/Info.plist
-	macosx/build/Makefile
 	macosx/graphviz.pmdoc/01local.xml
 	macosx/graphviz.pmdoc/02graphviz.xml
 	windows/graphviz.wxs
