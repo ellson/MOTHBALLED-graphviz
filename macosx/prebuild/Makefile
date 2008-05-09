@@ -53,7 +53,7 @@ PANGO_DIR=$(call dirname, $(PANGO_URL))
 # pkgconfig to look for X11 libraries too
 
 BASE_CONFIG=--prefix=$(LOCAL) --disable-dependency-tracking --enable-static=yes --enable-shared=no PKG_CONFIG="$(LOCAL_BIN)/pkg-config" PKG_CONFIG_PATH="/usr/X11/lib/pkgconfig"
-FLAG_CONFIG=CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" 
+FLAG_CONFIG=CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64" LDFLAGS="-arch ppc -arch i386 -arch ppc64" 
 
 install: $(LOCAL_LIB)/$(PANGO) $(LOCAL_LIB)/$(GD)
 
@@ -178,12 +178,8 @@ $(GLIB_DIR)/Makefile: $(LOCAL_LIB)/$(INTL) | $(LOCAL_BIN)/$(PKGCONFIG) $(GLIB_DI
 	cp config.h config.ppc64.h && \
 	cp glibconfig.h glibconfig.ppc64.h && \
 	cp darwin.cache darwinian.cache && \
-	echo --- X86_64 PASS --- && \
-	./configure --cache-file=darwinian.cache --build=$$BUILD --host=x86_64-apple-darwin$$OSREL $(BASE_CONFIG) CFLAGS="-O2 -arch x86_64 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch x86_64 -L$(LOCAL_LIB)" && \
-	cp config.h config.x86_64.h && \
-	cp glibconfig.h glibconfig.x86_64.h && \
 	echo --- UNIVERSAL BINARY PASS --- && \
-	./configure $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -arch x86_64 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64 -L$(LOCAL_LIB)" && \
+	./configure $(BASE_CONFIG) CFLAGS="-O2 -arch ppc -arch i386 -arch ppc64 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -L$(LOCAL_LIB)" && \
 	rm config.h && \
 	echo "#if defined(__ppc__)" >>config.h && \
 	cat config.ppc.h >>config.h && \
@@ -191,8 +187,6 @@ $(GLIB_DIR)/Makefile: $(LOCAL_LIB)/$(INTL) | $(LOCAL_BIN)/$(PKGCONFIG) $(GLIB_DI
 	cat config.i386.h >>config.h && \
 	echo "#elif defined(__ppc64__)" >>config.h && \
 	cat config.ppc64.h >>config.h && \
-	echo "#elif defined(__x86_64__)" >>config.h && \
-	cat config.x86_64.h >>config.h && \
 	echo "#endif" >>config.h && \
 	rm glibconfig.h && \
 	echo "#if defined(__ppc__)" >>glibconfig.h && \
@@ -201,8 +195,6 @@ $(GLIB_DIR)/Makefile: $(LOCAL_LIB)/$(INTL) | $(LOCAL_BIN)/$(PKGCONFIG) $(GLIB_DI
 	cat glibconfig.i386.h >>glibconfig.h && \
 	echo "#elif defined(__ppc64__)" >>glibconfig.h && \
 	cat glibconfig.ppc64.h >>glibconfig.h && \
-	echo "#elif defined(__x86_64__)" >>glibconfig.h && \
-	cat glibconfig.x86_64.h >>glibconfig.h && \
 	echo "#endif" >>glibconfig.h && \
 	touch stamp-gc-h && \
 	$(MAKE) clean
@@ -314,7 +306,7 @@ $(PIXMAN_DIR)/Makefile: | $(LOCAL_BIN)/$(PKGCONFIG) $(PIXMAN_DIR)/configure
 	@echo
 	@echo CONFIGURING PIXMAN...
 	@echo
-	cd $(PIXMAN_DIR) && ./configure $(BASE_CONFIG) CFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64" LDFLAGS="-arch ppc -arch i386 -arch ppc64 -arch x86_64"
+	cd $(PIXMAN_DIR) && ./configure $(BASE_CONFIG) CFLAGS="-arch ppc -arch i386 -arch ppc64" LDFLAGS="-arch ppc -arch i386 -arch ppc64"
 	
 $(PIXMAN_DIR)/configure: | $(PIXMAN_DIR).tar.gz
 	@echo
