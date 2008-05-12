@@ -119,7 +119,7 @@ case "${host_os}" in
   *mingw32* )
 	MINGW32=yes
 	DEFAULT_FONTPATH="C:/WINDOWS/FONTS;C:/WINNT/Fonts;C:/winnt/fonts"
-	PATHSEPARATOR=";"
+	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
 	;;
   *darwin* )
