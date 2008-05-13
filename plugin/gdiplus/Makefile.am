@@ -41,6 +41,9 @@ libgvplugin_gdiplus_la_LDFLAGS += -no-undefined
 endif
 
 # object code is dependent on all the local GDI+ headers
+
+gvloadimage_gdiplus.lo : $(GDIPLUS_HEADS)
+
 gvrender_gdiplus.lo : $(GDIPLUS_HEADS)
 
 # patched GDI+ headers are dependent on the patches
