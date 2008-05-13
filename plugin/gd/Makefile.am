@@ -45,7 +45,7 @@ endif
 
 if WITH_WIN32
 libgvplugin_gd_la_LDFLAGS += -no-undefined
-libgvplugin_gd_la_LIBADD += $(top_builddir)/lib/graph/libgraph.la
+libgvplugin_gd_la_LIBADD += $(top_builddir)/lib/graph/libgraph.la $(top_builddir)/lib/pathplan/libpathplan.la
 endif
 
 EXTRA_DIST = Makefile.old
