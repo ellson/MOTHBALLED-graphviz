@@ -36,7 +36,7 @@
 	<key>CFBundleSignature</key>
 	<string>GRVZ</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.17</string>
+	<string>@GRAPHVIZ_VERSION_MAJOR@.@GRAPHVIZ_VERSION_MINOR@</string>
 	<key>CFBundleVersion</key>
 	<string>@VERSION@</string>
 	<key>NSMainNibFile</key>
