@@ -110,6 +110,7 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
     gdFTStringExtra strex;
     double fontsize;
 
+    strex.fontpath = NULL;
     strex.flags = gdFTEX_RETURNFONTPATHNAME | gdFTEX_RESOLUTION;
     strex.hdpi = strex.vdpi = POINTS_PER_INCH;
 
@@ -156,6 +157,8 @@ static boolean gd_textlayout(textpara_t * para, char **fontpath)
 
 	if (fontpath)
 	    *fontpath = strex.fontpath;
+	else
+	    free (strex.fontpath); /* strup'ed in libgd */
 
 	if (para->str && para->str[0]) {
 	    /* can't use brect on some archtectures if strlen 0 */
