@@ -26,7 +26,9 @@
 #endif
 
 #include <limits.h>
+#ifdef HAVE_VALUES_H
 #include <values.h>
+#endif
 #include <math.h>
 
 #ifdef __cplusplus
