@@ -273,7 +273,7 @@ char * gvconfig_libdir(void)
 #ifdef WIN32
 	    int r;
 	    char* s;
-	    HMODULE hm = GetModuleHandle (NULL);
+	    HMODULE hm = GetModuleHandle ("gvc");
 	    if (!hm) {
 		agerr(AGERR,"failed to get handle for executable.\n");
 		return 0;
