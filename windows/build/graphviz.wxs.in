@@ -46,7 +46,7 @@
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="ProgramFilesFolder">
 				<Directory Id="ApplicationProgramFilesFolder" Name="Graphviz">
-					<!-- bin, include, lib and share are referenced by the directories in the heated wxs -->
+					<!-- bin, etc, include, lib and share are referenced by the directories in the heated wxs -->
 					<Directory Id="bin" Name="bin">
 						<!-- need to remove the config file when uninstalling -->
 						<Component Id="config" Guid="DAD3E382-59B2-429A-9292-0C28A12783C3">
@@ -54,16 +54,17 @@
 						</Component>
 						<!-- viewer application sourced from graphviz.csproj build directory, include shortcuts in the start menu and desktop -->
 						<Component Id="Graphviz.exe" Guid="25FE550B-3D8B-435B-AB35-553D2628171D">
-							<File Id="Graphviz.exe" Name="Graphviz.exe" KeyPath="yes" Source="build\x86\Release\Graphviz.exe">
+							<File Id="Graphviz.exe" Name="Graphviz.exe" KeyPath="yes" Source="x86\Release\Graphviz.exe">
 								<Shortcut Id="ApplicationProgramMenu" Name="Graphviz" Directory="ApplicationProgramMenuFolder" Advertise="yes" />
 								<Shortcut Id="ApplicationDesktop" Name="Graphviz" Directory="DesktopFolder" Advertise="yes" />
 							</File>
 							<RemoveFolder Id="ApplicationProgramMenuFolder" Directory="ApplicationProgramMenuFolder" On="uninstall" />
 						</Component>
 						<Component Id="attributes.xml" Guid="7740171C-8A24-4720-9168-87575F6EF963">
-							<File Id="attributes.xml" Name="attributes.xml" KeyPath="yes" Source="..\doc\schema\attributes.xml" />
+							<File Id="attributes.xml" Name="attributes.xml" KeyPath="yes" Source="..\..\doc\schema\attributes.xml" />
 						</Component>
 					</Directory>
+					<Directory Id="etc" Name="etc" />
 					<Directory Id="include" Name="include" />
 					<Directory Id="lib" Name="lib" />
 					<Directory Id="share" Name="share" />
@@ -77,6 +78,7 @@
 
 		<Feature Id="cli" Title="Command Line Tools and Libraries" Level="1">
 			<!-- refer to component groups in the heated wxs -->
+			<ComponentGroupRef Id="etc" />
 			<ComponentGroupRef Id="bin" />
 			<ComponentGroupRef Id="include" />
 			<ComponentGroupRef Id="lib" />

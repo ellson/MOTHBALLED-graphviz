@@ -2790,7 +2790,7 @@ AC_CONFIG_FILES(Makefile
 	macosx/Info.plist
 	macosx/graphviz.pmdoc/01local.xml
 	macosx/graphviz.pmdoc/02graphviz.xml
-	windows/graphviz.wxs
+	windows/build/graphviz.wxs
 	windows/Properties/AssemblyInfo.cs
 	plugin/Makefile
 	plugin/core/Makefile
