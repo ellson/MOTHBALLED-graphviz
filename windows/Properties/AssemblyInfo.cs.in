@@ -45,5 +45,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-[assembly: AssemblyVersion("@VERSION@")]
-[assembly: AssemblyFileVersion("@VERSION@")]
+[assembly: AssemblyVersion("@GRAPHVIZ_VERSION_MAJOR@.@GRAPHVIZ_VERSION_MINOR@.@GRAPHVIZ_VERSION_BUILD@.@GRAPHVIZ_VERSION_REVISION@")]
+[assembly: AssemblyFileVersion("@GRAPHVIZ_VERSION_MAJOR@.@GRAPHVIZ_VERSION_MINOR@.@GRAPHVIZ_VERSION_BUILD@.@GRAPHVIZ_VERSION_REVISION@")]
