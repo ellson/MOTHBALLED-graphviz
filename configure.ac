@@ -23,6 +23,20 @@ AC_SUBST(GRAPHVIZ_VERSION_MAJOR)
 AC_SUBST(GRAPHVIZ_VERSION_MINOR)
 AC_SUBST(GRAPHVIZ_VERSION_MICRO)
 
+# Windows version numbers
+# For the build number: months since Jan 2000, day of month from the timestamp
+# For the revision number: hour, minute from the timestamp
+
+if test $GRAPHVIZ_VERSION_MICRO = "0"; then
+	GRAPHVIZ_VERSION_BUILD=0
+	GRAPHVIZ_VERSION_REVISION=0
+else
+	GRAPHVIZ_VERSION_BUILD=`expr \( ${GRAPHVIZ_VERSION_MICRO:0:4} - 2000 \) \* 12 + ${GRAPHVIZ_VERSION_MICRO:4:2}`${GRAPHVIZ_VERSION_MICRO:6:2}
+	GRAPHVIZ_VERSION_REVISION=${GRAPHVIZ_VERSION_MICRO:9:4}
+fi
+AC_SUBST(GRAPHVIZ_VERSION_BUILD)
+AC_SUBST(GRAPHVIZ_VERSION_REVISION)
+
 dnl ===========================================================================
 
 # libtool shared library version for main libs (cdt, graph, gvc)
