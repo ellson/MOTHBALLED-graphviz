@@ -21,7 +21,7 @@ DOT=dot
 # graphviz
 #
 
-graphviz.pkg: usr/local/bin/$(DOT) Release/Graphviz.app
+graphviz.pkg: usr/local/bin/$(DOT) Release/Graphviz.app postinstall
 	@echo
 	@echo PACKAGING GRAPHVIZ...
 	@echo
@@ -31,7 +31,7 @@ usr/local/bin/$(DOT): $(GV_DIR)/cmd/dot/.libs/$(DOT)
 	@echo
 	@echo INSTALLING GRAPHVIZ...
 	@echo
-	$(MAKE) DESTDIR=$(CURDIR) -C $(GV_DIR) install-strip && \
+	$(MAKE) DESTDIR=$(CURDIR) -C $(GV_DIR) install-strip
 	rm -rf usr/local/lib/graphviz/tcl/libtcldot_builtin.*
 	
 Release/Graphviz.app: ../*.m ../*.h $(GV_DIR)/cmd/dot/.libs/$(DOT)
@@ -40,14 +40,18 @@ Release/Graphviz.app: ../*.m ../*.h $(GV_DIR)/cmd/dot/.libs/$(DOT)
 	@echo
 	"$(XCODEBUILD)" -project ../graphviz.xcodeproj -configuration Release
 
+postinstall:
+	echo "/usr/local/bin/dot -c" >$@
+	make -n -C ../../tclpkg install-data-hook >>$@
+
 $(GV_DIR)/cmd/dot/.libs/$(DOT): $(GV_DIR)/Makefile
 	@echo
 	@echo MAKING GRAPHVIZ...
 	@echo
-	if [[ -e $@ ]]; then $(MAKE) -C $(GV_DIR) clean; fi && \
-	$(MAKE) -C $(GV_DIR)/tclpkg/tkstubs && \
-	$(MAKE) -C $(GV_DIR)/tclpkg/tclstubs && \
-	$(MAKE) -C $(GV_DIR)/tclpkg/tkspline CFLAGS="-O2 -arch ppc -arch i386 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch ppc -arch i386 -L$(LOCAL_LIB) -Wl,-dead_strip -Wl,-dead_strip_dylibs" && \
+	if [[ -e $@ ]]; then $(MAKE) -C $(GV_DIR) clean; fi
+	$(MAKE) -C $(GV_DIR)/tclpkg/tkstubs
+	$(MAKE) -C $(GV_DIR)/tclpkg/tclstubs
+	$(MAKE) -C $(GV_DIR)/tclpkg/tkspline CFLAGS="-O2 -arch ppc -arch i386 -I$(LOCAL_INCLUDE)" LDFLAGS="-arch ppc -arch i386 -L$(LOCAL_LIB) -Wl,-dead_strip -Wl,-dead_strip_dylibs"
 	$(MAKE) -C $(GV_DIR)
 	
 $(GV_DIR)/Makefile: $(GV_DIR)/configure

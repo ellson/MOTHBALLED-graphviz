@@ -1,5 +1,0 @@
-#!/bin/sh
-
-# PackageMaker post install script
-
-$2/bin/dot -c
