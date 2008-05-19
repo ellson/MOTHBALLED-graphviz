@@ -32,11 +32,10 @@ EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 	Makefile.old Config.mk.old configure.old INSTALL.old \
 	Makeargs config.h.old compat_getopt.h iffe config.iffe \
 	m4/README m4/iconv.m4 m4/lib-ld.m4 m4/lib-link.m4 m4/lib-prefix.m4 \
-	graphviz.7 Doxyfile.in Doxyfile \
-	makearch features awk windows \
+	graphviz.7 Doxyfile.in Doxyfile makearch features awk \
 	config/config_perl.pl config/config_python.py \
 	config/config_ruby.rb config/config_tcl.tcl dot.demo \
-	macosx winbuild
+	macosx windows
 
 .PHONY: rpm
 rpm: dist
