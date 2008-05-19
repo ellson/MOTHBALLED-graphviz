@@ -663,16 +663,20 @@ else
 	case "${host_os}" in
 	  *darwin* )
             JAVA_INCLUDES="/System/Library/Frameworks/JavaVM.framework/Headers"
-	  ;;
+	    JAVA_LIBS=
+	    ;;
 	  *)
             JAVA_INCLUDES=
-	  ;;
+	    JAVA_LIBS=
+	    ;;
         esac
-        JAVA_LIBS=
+	save_CPPFLAGS=$CPPFLAGS
+        CPPFLAGS="$CPPFLAGS $JAVA_INCLUDES"
         AC_CHECK_HEADER(jni.h,,[
             use_java="No (missing header)"
   	    JAVA=
         ])
+        CPPFLAGS="$save_CPPFLAGS"
         if test "x$JAVA" != "x"; then
           use_java="Yes"
 	  AC_SUBST(JAVA_INCLUDES)
