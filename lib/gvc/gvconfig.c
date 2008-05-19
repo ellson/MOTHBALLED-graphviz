@@ -273,12 +273,13 @@ char * gvconfig_libdir(void)
 #ifdef WIN32
 	    int r;
 	    char* s;
-	    HMODULE hm = GetModuleHandle ("gvc");
-	    if (!hm) {
+		
+		MEMORY_BASIC_INFORMATION mbi;
+		if (VirtualQuery (&gvconfig_libdir, &mbi, sizeof(mbi)) == 0) {
 		agerr(AGERR,"failed to get handle for executable.\n");
 		return 0;
 	    }
-	    r = GetModuleFileName (hm, line, BSZ);
+	    r = GetModuleFileName ((HMODULE)mbi.AllocationBase, line, BSZ);
 	    if (!r || (r == BSZ)) {
 		agerr(AGERR,"failed to get path for executable.\n");
 		return 0;
