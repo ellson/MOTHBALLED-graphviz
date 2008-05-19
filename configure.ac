@@ -662,7 +662,8 @@ else
       else
 	case "${host_os}" in
 	  *darwin* )
-            JAVA_INCLUDES=/System/Library/Frameworks/JavaVM.framework/Headers
+            JAVA_INCLUDES="/System/Library/Frameworks/JavaVM.framework/Headers"
+	  ;;
 	  *)
             JAVA_INCLUDES=
 	  ;;
