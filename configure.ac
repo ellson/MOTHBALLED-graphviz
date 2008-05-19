@@ -660,7 +660,13 @@ else
       if test "x$JAVA" = "x"; then
         use_java="No (java not available)"
       else
-        JAVA_INCLUDES=
+	case "${host_os}" in
+	  *darwin* )
+            JAVA_INCLUDES=/System/Library/Frameworks/JavaVM.framework/Headers
+	  *)
+            JAVA_INCLUDES=
+	  ;;
+        esac
         JAVA_LIBS=
         AC_CHECK_HEADER(jni.h,,[
             use_java="No (missing header)"
