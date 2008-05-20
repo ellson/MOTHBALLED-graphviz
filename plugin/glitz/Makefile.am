@@ -32,3 +32,7 @@ libgvplugin_glitz_la_LIBADD = @PANGOCAIRO_LIBS@ @GLITZ_LIBS@
 if WITH_WIN32
 libgvplugin_glitz_la_LDFLAGS += -no-undefined
 endif
+
+if WITH_DARWIN
+libgvplugin_glitz_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_glitz_LTX_library
+endif

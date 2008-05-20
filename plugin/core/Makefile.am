@@ -39,5 +39,9 @@ libgvplugin_core_la_LDFLAGS += -no-undefined
 libgvplugin_core_la_LIBADD += $(top_builddir)/lib/graph/libgraph.la
 endif
 
+if WITH_DARWIN
+libgvplugin_core_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_core_LTX_library
+endif
+
 EXTRA_DIST = Makefile.old
 

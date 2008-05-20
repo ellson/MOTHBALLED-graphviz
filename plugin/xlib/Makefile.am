@@ -32,3 +32,7 @@ libgvplugin_xlib_la_LIBADD = @PANGOCAIRO_LIBS@ @X_LIBS@ -lX11 @SOCKET_LIBS@ @MAT
 if WITH_WIN32
 libgvplugin_xlib_la_LDFLAGS += -no-undefined
 endif
+
+if WITH_DARWIN
+libgvplugin_xlib_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_xlib_LTX_library
+endif

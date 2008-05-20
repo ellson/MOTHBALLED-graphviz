@@ -40,6 +40,10 @@ if WITH_WIN32
 libgvplugin_gdiplus_la_LDFLAGS += -no-undefined
 endif
 
+if WITH_DARWIN
+libgvplugin_gdiplus_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_gdiplus_LTX_library
+endif
+
 # object code is dependent on all the local GDI+ headers
 
 gvloadimage_gdiplus.lo : $(GDIPLUS_HEADS)

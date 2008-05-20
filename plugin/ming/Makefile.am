@@ -32,4 +32,8 @@ if WITH_WIN32
 libgvplugin_ming_la_LDFLAGS += -no-undefined
 endif
 
+if WITH_DARWIN
+libgvplugin_ming_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_ming_LTX_library
+endif
+
 EXTRA_DIST = Makefile.old Bitstream_Vera_Sans.fdb Bitstream_Vera_Serif.fdb

@@ -45,4 +45,8 @@ libgvplugin_neato_layout_la_LDFLAGS += -no-undefined
 libgvplugin_neato_layout_la_LIBADD += $(top_builddir)/lib/graph/libgraph.la $(top_builddir)/lib/cdt/libcdt.la
 endif
 
+if WITH_DARWIN
+libgvplugin_neato_layout_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_neato_layout_LTX_library
+endif
+
 EXTRA_DIST = Makefile.old

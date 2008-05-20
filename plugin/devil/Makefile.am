@@ -31,5 +31,9 @@ if WITH_WIN32
 libgvplugin_devil_la_LDFLAGS += -no-undefined
 endif
 
+if WITH_DARWIN
+libgvplugin_devil_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_devil_LTX_library
+endif
+
 EXTRA_DIST = Makefile.old
 

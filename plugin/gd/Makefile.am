@@ -48,5 +48,9 @@ libgvplugin_gd_la_LDFLAGS += -no-undefined
 libgvplugin_gd_la_LIBADD += $(top_builddir)/lib/graph/libgraph.la $(top_builddir)/lib/pathplan/libpathplan.la
 endif
 
+if WITH_DARWIN
+libgvplugin_gd_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_gd_LTX_library
+endif
+
 EXTRA_DIST = Makefile.old
 

@@ -33,3 +33,7 @@ libgvplugin_quartz_la_LIBADD = @QUARTZ_LIBS@
 if WITH_WIN32
 libgvplugin_quartz_la_LDFLAGS += -no-undefined
 endif
+
+if WITH_DARWIN
+libgvplugin_quartz_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_quartz_LTX_library
+endif
