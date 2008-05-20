@@ -1,4 +1,4 @@
-.lf 1 spline.n
+.lf 1 tkspline.n
 .lf 1 man.macros
 '\" The definitions below are for supplemental macros used in Tcl/Tk
 '\" manual entries.
@@ -234,8 +234,8 @@ Database Class:	\\fB\\$3\\fR
 .de UL
 \\$1\l'|0\(ul'\\$2
 ..
-.lf 2 spline.n
-.TH spline n 8.0 Tk "Tk Spline \- An additional smoothing method for canvas items "
+.lf 2 tkspline.n
+.TH tkspline n 8.0 Tk "Tk Spline \- An additional smoothing method for canvas items "
 .BS
 '\" Note:  do not modify the .SH NAME line immediately below!
 .SH NAME
