@@ -79,8 +79,9 @@ AC_SUBST(GVPLUGIN_VERSION_INFO)
 dnl ===========================================================================
 
 
-AC_CONFIG_SRCDIR(configure.ac)
-AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_SRCDIR([configure.ac])
+AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_MACRO_DIR([m4])
 
 dnl -----------------------------------
 dnl Checks for system type
