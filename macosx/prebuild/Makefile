@@ -238,7 +238,7 @@ $(GETTEXT_DIR)/configure: | $(GETTEXT_DIR).tar.gz
 	@echo
 	@echo UNTARRING GETTEXT...
 	@echo
-	$(TAR) xzf $|
+	$(TAR) xzf $| && patch -p0 <gettext.patch
 	
 $(GETTEXT_DIR).tar.gz:
 	@echo
