@@ -22,6 +22,7 @@ endif
 endif
 
 libgvplugin_quartz_C_la_SOURCES = \
+	gvdevice_quartz.c \
 	gvloadimage_quartz.c \
 	gvplugin_quartz.c \
 	gvrender_quartz.c
