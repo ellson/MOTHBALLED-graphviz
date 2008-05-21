@@ -611,8 +611,10 @@ int init_nop(Agraph_t * g, int adjust)
     if (adjust && Nop == 1)
 	adjustNodes(g);
 
-    /* If g does not have a good "bb" attribute, compute it. */
-    if (!chkBB(g, G_bb))
+    /* If g does not have a good "bb" attribute or we adjusted the nodes, 
+     * compute it. 
+     */
+    if (!chkBB(g, G_bb) || (adjust && Nop == 1))
 	compute_bb(g);
 
     /* At this point, all bounding boxes should be correctly defined.
