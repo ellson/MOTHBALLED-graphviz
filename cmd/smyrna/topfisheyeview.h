@@ -26,7 +26,7 @@ void drawtopologicalfisheye(topview * t);
 void changetopfishfocus(topview * t, float *x, float *y,
 				   float *z, int num_foci);
 void refresh_old_values(topview* t);
-void get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y);
+int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y,float *R,float *G,float *B);
 void get_interpolated_coords(double x0,double y0,double x1,double y1,int fr,int total_fr, double* x,double* y);
 int get_active_frame(topview* t);
 #endif
