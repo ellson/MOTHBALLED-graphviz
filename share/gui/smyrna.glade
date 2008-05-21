@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.0.2 on Tue Apr 29 10:36:37 2008 by arif@DT-ARIF-->
+<!--Generated with glade3 3.0.2 on Tue Apr 29 12:02:33 2008 by arif@DT-ARIF-->
 <glade-interface>
   <widget class="GtkWindow" id="frmObject">
     <property name="width_request">470</property>
@@ -2776,9 +2776,9 @@ topview</property>
                 <child>
                   <widget class="GtkTable" id="table4">
                     <property name="width_request">340</property>
-                    <property name="height_request">336</property>
+                    <property name="height_request">383</property>
                     <property name="visible">True</property>
-                    <property name="n_rows">11</property>
+                    <property name="n_rows">13</property>
                     <property name="n_columns">3</property>
                     <child>
                       <placeholder/>
@@ -2806,6 +2806,43 @@ topview</property>
                     </child>
                     <child>
                       <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <placeholder/>
+                    </child>
+                    <child>
+                      <widget class="GtkCheckButton" id="settingsChkBox5-3">
+                        <property name="visible">True</property>
+                        <property name="draw_indicator">True</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">2</property>
+                        <property name="right_attach">3</property>
+                        <property name="top_attach">11</property>
+                        <property name="bottom_attach">12</property>
+                        <property name="x_options">GTK_EXPAND</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="label83">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="xpad">5</property>
+                        <property name="label" translatable="yes">Draw Labels</property>
+                      </widget>
+                      <packing>
+                        <property name="top_attach">11</property>
+                        <property name="bottom_attach">12</property>
+                      </packing>
                     </child>
                     <child>
                       <widget class="GtkColorButton" id="settingsColorBtn9">
@@ -3098,7 +3135,7 @@ topview</property>
                   </widget>
                   <packing>
                     <property name="x">6</property>
-                    <property name="y">36</property>
+                    <property name="y">29</property>
                   </packing>
                 </child>
                 <child>
@@ -3158,7 +3195,7 @@ topview</property>
               <widget class="GtkLabel" id="label46">
                 <property name="width_request">60</property>
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Colors</property>
+                <property name="label" translatable="yes">General</property>
               </widget>
               <packing>
                 <property name="type">tab</property>
