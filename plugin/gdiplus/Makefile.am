@@ -40,7 +40,7 @@ if WITH_WIN32
 libgvplugin_gdiplus_la_LDFLAGS += -no-undefined
 endif
 
-if WITH_DARWIN
+if WITH_DARWIN9
 libgvplugin_gdiplus_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_gdiplus_LTX_library
 endif
 
