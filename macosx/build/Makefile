@@ -21,11 +21,11 @@ DOT=dot
 # graphviz
 #
 
-graphviz.pkg: usr/local/bin/$(DOT) Release/Graphviz.app postinstall
+graphviz.pkg: graphviz.pmdoc usr/local/bin/$(DOT) Release/Graphviz.app postinstall
 	@echo
 	@echo PACKAGING GRAPHVIZ...
 	@echo
-	"$(PACKAGEMAKER)" --doc ../graphviz.pmdoc --out $@
+	"$(PACKAGEMAKER)" --doc graphviz.pmdoc --out $@
 
 usr/local/bin/$(DOT): $(GV_DIR)/cmd/dot/.libs/$(DOT)
 	@echo
