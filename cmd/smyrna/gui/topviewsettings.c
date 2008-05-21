@@ -280,6 +280,7 @@ int update_graph_from_settings(Agraph_t * g)
 				     "settingsChkBox5-3", g);
 	
 	
+	
 	get_checkbox_widget_to_attribute("usermode", "settingsChkBox10", g);
     get_checkbox_widget_to_attribute("nodesizewithdegree",
 				     "settingsChkBox11", g);

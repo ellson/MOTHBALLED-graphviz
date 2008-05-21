@@ -367,7 +367,6 @@ static gboolean motion_notify_event(GtkWidget * widget,
     /* float h = (float)widget->allocation.height; */
     float x = (float) event->x;
     float y = (float) event->y;
-    char buf[50];
 
 
     gboolean redraw = FALSE;

@@ -783,16 +783,18 @@ void drawEllipse(float xradius, float yradius,int angle1,int angle2)
 }
 int draw_node_hintbox_gl_polygon(GLfloat x,GLfloat y,GLfloat fs,GLfloat pad,GLfloat z,GLfloat kts)
 {
-	kts=kts*1.25;
-	glBegin(GL_POLYGON);
-	glVertex3f(x-(fs/3)-fs , y+fs ,z);
-	glVertex3f(x-(fs/3)-fs ,y+2*fs+2*pad,z);
-	glVertex3f(x-(fs/3)-fs+fs*kts+2*pad,y+2*fs+2*pad,z);
-	glVertex3f(x-(fs/3)-fs+fs*kts+2*pad,y+fs,z);
-	glVertex3f(x-(fs/3)-fs , y+fs ,z);
+	float w;
+	kts=kts*(GLfloat)1.15;
+	w=fs*kts+2*pad;
+	glBegin(GL_POLYGON);	//big rectangle
+	glVertex3f(x-w/(GLfloat)2.0 , y+fs ,z);
+	glVertex3f(x-w/(GLfloat)2.0 ,y+2*fs+2*pad,z);
+	glVertex3f(x+w/(GLfloat)2.0,y+2*fs+2*pad,z);
+	glVertex3f(x+w/(GLfloat)2.0,y+fs,z);
+	glVertex3f(x-w/(GLfloat)2.0 , y+fs ,z);
 	glEnd();
 
-	glBegin(GL_POLYGON);
+	glBegin(GL_POLYGON);	//litle triangle
 	glVertex3f(x,y,z);
 	glVertex3f(x-(fs/3) , y+fs ,z);
 	glVertex3f(x+fs/3,y+fs,z);
@@ -803,15 +805,18 @@ int draw_node_hintbox_gl_polygon(GLfloat x,GLfloat y,GLfloat fs,GLfloat pad,GLfl
 }
 int draw_node_hintbox_gl_line(GLfloat x,GLfloat y,GLfloat fs,GLfloat pad,GLfloat z,GLfloat kts)
 {
-	kts=kts*1.25;
+	float w;
+	kts=kts*(GLfloat)1.15;
+	w=fs*kts+(GLfloat)2*pad;
+
 	glBegin(GL_LINE_STRIP);
 	glVertex3f(x,y,z);
-	glVertex3f(x-(fs/3) , y+fs ,z);
-	glVertex3f(x-(fs/3)-fs , y+fs ,z);
-	glVertex3f(x-(fs/3)-fs ,y+2*fs+2*pad,z);
-	glVertex3f(x-(fs/3)-fs+fs*kts+2*pad,y+2*fs+2*pad,z);
-	glVertex3f(x-(fs/3)-fs+fs*kts+2*pad,y+fs,z);
-	glVertex3f(x+fs/3,y+fs,z);
+	glVertex3f(x-(fs/(GLfloat)3) , y+fs ,z);
+	glVertex3f(x-w/(GLfloat)2.0 , y+fs ,z);
+	glVertex3f(x-w/(GLfloat)2.0 ,y+2*fs+2*pad,z);
+	glVertex3f(x+w/(GLfloat)2.0,y+2*fs+2*pad,z);
+	glVertex3f(x+w/(GLfloat)2.0,y+fs,z);
+	glVertex3f(x+fs/(GLfloat)3,y+fs,z);
 	glVertex3f(x,y,z);
 	glEnd();
 	return 1;

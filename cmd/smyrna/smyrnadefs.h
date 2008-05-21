@@ -64,7 +64,7 @@
 
 #define MAX_ZOOM	-0.000033
 #define MIN_ZOOM	-1500.00000
-#define ZOOM_STEP	5
+#define ZOOM_STEP	0.5
 #define DEG2RAD  G_PI/180
 
 #define UNHIGHLIGHTED_ALPHA	0.3
