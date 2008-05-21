@@ -1520,6 +1520,20 @@ find_active_ancestor(Hierarchy * hierarchy, int level, int node)
     else
 	return -1;
 }
+int
+find_old_active_ancestor(Hierarchy * hierarchy, int level, int node)
+{
+    int active_level = hierarchy->geom_graphs[level][node].old_active_level;
+    while (active_level > level) {
+	node = hierarchy->v2cv[level][node];
+	level++;
+    }
+
+    if (active_level == level) 
+	return hierarchy->geom_graphs[level][node].globalIndex;
+    else
+	return -1;
+}
 
 void init_active_level(Hierarchy* hierarchy, int level) 
 {
