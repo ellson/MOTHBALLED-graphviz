@@ -1119,6 +1119,7 @@ static glCompSet *glcreate_gl_topview_menu()
     glCompPanel *p;
     glCompButton *b;
     glCompLabel *l;
+	GtkRequisition requisition;
 
     if (!smyrna_icon_pan) {
 #ifdef _WIN32
@@ -1303,29 +1304,14 @@ static glCompSet *glcreate_gl_topview_menu()
 
     glCompPanelHide(p);
 
-/*	//Data Panel
-	p=glCompPanelNew(25,75,165,400);
-	p->data=2;		//data panel
-	glCompSetAddPanel(s,p);
-	//alpha plus button
-	b=glCompButtonNew(75,3,36,36,"",smyrna_icon_zoomplus,36,36);
-	b->groupid=0;
-	b->panel=p;
-	b->callbackfunc=menu_click_alpha_plus;
-	glCompSetAddButton(s,b);
-	//alpha minus button
-	b=glCompButtonNew(113,3,36,36,"",smyrna_icon_zoomminus,36,36);
-	b->groupid=0;
-	b->panel=p;
-	b->callbackfunc=menu_click_alpha_plus;
-	glCompSetAddButton(s,b);
 
-	l=glCompLabelNew(5,8,18,"ALPHA");
-	l->panel=p;
-	l->fontsizefactor=0.4;
-	glCompSetAddLabel(s,l);*/
+	
+	//3d Controls Panel
+  /*  p = glCompPanelNew(25,view->h,wid_w,wid_h);
+    p->data = 1;		
+    glCompSetAddPanel(s, p);*/
+	
 
-
-    return s;
+	return s;
 
 }
