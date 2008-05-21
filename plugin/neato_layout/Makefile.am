@@ -45,7 +45,7 @@ libgvplugin_neato_layout_la_LDFLAGS += -no-undefined
 libgvplugin_neato_layout_la_LIBADD += $(top_builddir)/lib/graph/libgraph.la $(top_builddir)/lib/cdt/libcdt.la
 endif
 
-if WITH_DARWIN
+if WITH_DARWIN9
 libgvplugin_neato_layout_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_neato_layout_LTX_library -Wl,-exported_symbol,_neato_init_node -Wl,-exported_symbol,_init_nop -Wl,-exported_symbol,_user_pos
 endif
 
