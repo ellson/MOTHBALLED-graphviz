@@ -202,6 +202,7 @@ $(GLIB_DIR).tar.gz:
 # gettext
 #
 # actually tries to run code linked to iconv.dll, so we need to copy it over first
+# patch to correct uninitialized _nl_msg_cat_cntr
 
 $(LOCAL_LIB)/$(INTL): $(GETTEXT_DIR)/gettext-runtime/intl/$(INTL)
 	@echo
@@ -226,7 +227,7 @@ $(GETTEXT_DIR)/configure: | $(GETTEXT_DIR).tar.gz
 	@echo
 	@echo UNTARRING GETTEXT...
 	@echo
-	$(TAR) xzf $|
+	$(TAR) xzf $| && patch -p0 <gettext.patch
 	
 $(GETTEXT_DIR).tar.gz:
 	@echo
