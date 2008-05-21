@@ -27,22 +27,6 @@
 
 #include "gvplugin_quartz.h"
 
-static const int BYTE_ALIGN = 15;			/* align to 16 bytes */
-static const int BITS_PER_COMPONENT = 8;	/* bits per color component */
-static const int BYTES_PER_PIXEL = 4;		/* bytes per pixel */
-
-extern size_t gvdevice_write(GVJ_t *job, const unsigned char *s, unsigned int len);
-
-static size_t device_data_consumer_put_bytes (void *info, const void *buffer, size_t count)
-{
-	return gvdevice_write((GVJ_t *)info, (const unsigned char*)buffer, count);
-}
-
-static CGDataConsumerCallbacks device_data_consumer_callbacks = {
-	device_data_consumer_put_bytes,
-	NULL
-};
-
 static void quartzgen_begin_job(GVJ_t *job)
 {
 	if (!job->external_context)
@@ -72,6 +56,8 @@ static void quartzgen_end_job(GVJ_t *job)
 				CGImageDestinationFinalize(image_destination);
 				
 				/* clean up */
+				if (image_destination)
+					CFRelease(image_destination);
 				CGImageRelease(image);
 				CGDataConsumerRelease(data_consumer);
 			}
@@ -136,10 +122,13 @@ static void quartzgen_begin_page(GVJ_t *job)
 					job->height,												/* height in pixels */
 					BITS_PER_COMPONENT,											/* bits per component */
 					(job->width * BYTES_PER_PIXEL + BYTE_ALIGN) & ~BYTE_ALIGN,	/* bytes per row: align to 16 byte boundary */
-					color_space,												/* color space: SRGB */
+					color_space,												/* color space: sRGB */
 					kCGImageAlphaPremultipliedFirst								/* bitmap info: premul ARGB has best support in OS X */
 				);
 				job->imagedata = CGBitmapContextGetData((CGContextRef)job->context);
+				
+				/* clean up */
+				CGColorSpaceRelease(color_space);
 			}
 			break;
 		}
