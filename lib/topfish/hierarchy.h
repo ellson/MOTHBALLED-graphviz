@@ -102,6 +102,7 @@ void find_old_physical_coords(Hierarchy * hierarchy, int level, int node, double
 
 
 int find_active_ancestor(Hierarchy*, int, int);
+find_old_active_ancestor(Hierarchy * hierarchy, int level, int node);
 int locateByIndex(Hierarchy*, int, int*);
 int findGlobalIndexesOfActiveNeighbors(Hierarchy*, int, int**);
 
