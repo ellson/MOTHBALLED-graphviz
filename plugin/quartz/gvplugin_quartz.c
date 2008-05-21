@@ -21,6 +21,7 @@ extern gvplugin_installed_t gvrender_quartz_types;
 // extern gvplugin_installed_t gvtextlayout_quartz_types;
 extern gvplugin_installed_t gvloadimage_quartz_types;
 extern gvplugin_installed_t gvdevice_quartz_types;
+extern gvplugin_installed_t gvdevice_quartz_types_for_cairo;
 
 /* Uniform Type Identifiers corresponding to each format_type */
 CFStringRef format_uti [] = {
@@ -39,11 +40,26 @@ CFStringRef format_uti [] = {
 	CFSTR("com.truevision.tga-image")
 };
 
+/* data consumer backed by the gvdevice */
+
+extern size_t gvdevice_write(GVJ_t *job, const unsigned char *s, unsigned int len);
+
+static size_t device_data_consumer_put_bytes (void *info, const void *buffer, size_t count)
+{
+	return gvdevice_write((GVJ_t *)info, (const unsigned char*)buffer, count);
+}
+
+CGDataConsumerCallbacks device_data_consumer_callbacks = {
+	device_data_consumer_put_bytes,
+	NULL
+};
+
 static gvplugin_api_t apis[] = {
     {API_render, &gvrender_quartz_types},
   //  {API_textlayout, &gvtextlayout_quartz_types},
 	{API_loadimage, &gvloadimage_quartz_types},
     {API_device, &gvdevice_quartz_types},
+    {API_device, &gvdevice_quartz_types_for_cairo},
     {(api_t)0, 0},
 };
 
