@@ -114,7 +114,7 @@ esac
 UWIN=no
 CYGWIN=no
 MINGW32=no
-DARWIN=no
+DARWIN9=no
 case "${host_os}" in
   *uwin* )
 	UWIN=yes
@@ -137,8 +137,14 @@ case "${host_os}" in
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
 	;;
+  *darwin9* )
+	DARWIN9=yes
+	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
+	PATHSEPARATOR=":"
+        NO_POSTSCRIPT_ALIAS=1
+	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
+	;;
   *darwin* )
-	DARWIN=yes
 	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
@@ -152,12 +158,12 @@ case "${host_os}" in
 esac
 AC_SUBST(CYGWIN)
 AC_SUBST(MINGW32)
-AC_SUBST(DARWIN)
+AC_SUBST(DARWIN9)
 AC_DEFINE_UNQUOTED(DEFAULT_FONTPATH,"$DEFAULT_FONTPATH",[Path to TrueType fonts.])
 AC_DEFINE_UNQUOTED(PATHSEPARATOR,"$PATHSEPARATOR",[Path separator character.])
 AC_DEFINE_UNQUOTED(NO_POSTSCRIPT_ALIAS,$NO_POSTSCRIPT_ALIAS,[Postscript fontnames.])
 AM_CONDITIONAL(WITH_WIN32, [test "x$UWIN" = "xyes" -o "x$CYGWIN" = "xyes" -o "x$MINGW32" = "xyes"])
-AM_CONDITIONAL(WITH_DARWIN, [test "x$DARWIN" = "xyes"])
+AM_CONDITIONAL(WITH_DARWIN9, [test "x$DARWIN9" = "xyes"])
 
 DEFAULT_DPI=96
 AC_DEFINE_UNQUOTED(DEFAULT_DPI,$DEFAULT_DPI,Default DPI.)
