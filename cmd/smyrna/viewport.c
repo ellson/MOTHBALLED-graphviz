@@ -368,8 +368,8 @@ void init_viewport(ViewInfo * view)
 	view->timer=g_timer_new();
 	g_timer_stop(view->timer); 
 	view->active_frame=0;
-	view->total_frames=50;
-	view->frame_length=100;
+	view->total_frames=75;
+	view->frame_length=25;
 	/*add a call back to the main()*/
 	g_timeout_add_full(G_PRIORITY_DEFAULT,100,gl_main_expose,NULL,NULL);
 	view->Topview->topviewmenu = '\0';
