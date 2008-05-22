@@ -878,7 +878,7 @@ removeOverlapAs(graph_t * G, char* flag)
 	default:		/* to silence warnings */
 	    break;
 	}
-/* fprintf (stderr, "%s %.4f sec\n", am->attrib, elapsed_sec()); */
+/* fprintf (stderr, "%s %.4f sec\n", am->print, elapsed_sec()); */
 	return ret;
     }
 
@@ -900,7 +900,7 @@ removeOverlapAs(graph_t * G, char* flag)
     freeNodes();
     free(sites);
     sites = 0;
-/* fprintf (stderr, "%s %.4f sec\n", am->attrib, elapsed_sec()); */
+/* fprintf (stderr, "%s %.4f sec\n", am->print, elapsed_sec()); */
 
     return ret;
 }
