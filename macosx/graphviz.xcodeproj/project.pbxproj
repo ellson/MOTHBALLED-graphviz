@@ -304,7 +304,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = graphviz_prefix.pch;
-				HEADER_SEARCH_PATHS = build/usr/local/include;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
@@ -313,6 +312,7 @@
 					../lib/gvc/.libs,
 				);
 				PRODUCT_NAME = Graphviz;
+				USER_HEADER_SEARCH_PATHS = "../lib/common ../lib/cdt ../lib/pathplan ../lib/graph ../lib/gvc";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -354,7 +354,6 @@
 				ARCHS = (
 					ppc,
 					i386,
-					ppc64,
 				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
