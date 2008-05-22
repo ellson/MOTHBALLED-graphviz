@@ -54,6 +54,11 @@
 - (void)awakeFromNib
 {
 	[self graphDidChange:nil];
+	
+	/* if window is not at standard size, make it standard size */
+	NSWindow *window = [self window];
+	if (![window isZoomed])
+		[window zoom:self];
 }
 
 - (void)graphDidChange:(NSNotification*)notification
@@ -62,6 +67,43 @@
 	[documentView setDocument:[[[PDFDocument alloc] initWithData:[_graph renderWithFormat:@"pdf:quartz"]] autorelease]];
 }
 
+- (NSRect)windowWillUseStandardFrame:(NSWindow *)window defaultFrame:(NSRect)defaultFrame
+{
+	/* standard size for zooming is whatever will fit the content exactly */
+	NSRect currentFrame = [window frame];
+	NSRect standardFrame = [window frameRectForContentRect:[[documentView documentView] bounds]];
+	standardFrame.origin.x = currentFrame.origin.x;
+	standardFrame.origin.y = currentFrame.origin.y + currentFrame.size.height - standardFrame.size.height;
+	return standardFrame;
+}
+
+- (IBAction)actualSizeView:(id)sender
+{
+	[documentView setScaleFactor:1.0];
+}
+
+- (IBAction)zoomInView:(id)sender
+{
+	[documentView zoomIn:sender];
+}
+
+- (IBAction)zoomOutView:(id)sender
+{
+	[documentView zoomOut:sender];
+}
+
+- (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem
+{
+	/* validate toolbar or menu items */
+	if ([anItem action] == @selector(actualSizeView:))
+		return YES;
+	else if ([anItem action] == @selector(zoomInView:))
+		return [documentView canZoomIn];
+	else if ([anItem action] == @selector(zoomOutView:))
+		return [documentView canZoomOut];
+	else
+		return NO;
+}
 - (void)dealloc
 {
 	if (_graph) {

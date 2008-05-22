@@ -10,6 +10,10 @@
 		8D15AC2F0486D014006FF6A4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165FFE840EACC02AAC07 /* InfoPlist.strings */; };
 		8D15AC310486D014006FF6A4 /* GVDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4ACFDCFA73011CA2CEA /* GVDocument.m */; settings = {ATTRIBUTES = (); }; };
 		8D15AC320486D014006FF6A4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A37F4B0FDCFA73011CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
+		D826490D0DE58739009D6A44 /* ActualSizeToolbarImage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = D82649090DE58739009D6A44 /* ActualSizeToolbarImage.tiff */; };
+		D826490E0DE58739009D6A44 /* InspectorToolbarImage.tif in Resources */ = {isa = PBXBuildFile; fileRef = D826490A0DE58739009D6A44 /* InspectorToolbarImage.tif */; };
+		D826490F0DE58739009D6A44 /* ZoomInToolbarImage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = D826490B0DE58739009D6A44 /* ZoomInToolbarImage.tiff */; };
+		D82649100DE58739009D6A44 /* ZoomOutToolbarImage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = D826490C0DE58739009D6A44 /* ZoomOutToolbarImage.tiff */; };
 		D86382D70D57118400D27D07 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = D86382D30D57118400D27D07 /* Document.xib */; };
 		D86382D80D57118400D27D07 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = D86382D50D57118400D27D07 /* MainMenu.xib */; };
 		D86CBB7D0D5AE541000FB42B /* GVGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = D86CBB7C0D5AE541000FB42B /* GVGraph.m */; };
@@ -46,6 +50,10 @@
 		32DBCF750370BD2300C91783 /* graphviz_prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graphviz_prefix.pch; sourceTree = "<group>"; };
 		8D15AC360486D014006FF6A4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D15AC370486D014006FF6A4 /* Graphviz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Graphviz.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D82649090DE58739009D6A44 /* ActualSizeToolbarImage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ActualSizeToolbarImage.tiff; sourceTree = "<group>"; };
+		D826490A0DE58739009D6A44 /* InspectorToolbarImage.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = InspectorToolbarImage.tif; sourceTree = "<group>"; };
+		D826490B0DE58739009D6A44 /* ZoomInToolbarImage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ZoomInToolbarImage.tiff; sourceTree = "<group>"; };
+		D826490C0DE58739009D6A44 /* ZoomOutToolbarImage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ZoomOutToolbarImage.tiff; sourceTree = "<group>"; };
 		D86382D40D57118400D27D07 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Document.xib; sourceTree = "<group>"; };
 		D86382D60D57118400D27D07 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		D86CBB7B0D5AE541000FB42B /* GVGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GVGraph.h; sourceTree = "<group>"; };
@@ -150,6 +158,10 @@
 		2A37F4B8FDCFA73011CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D82649090DE58739009D6A44 /* ActualSizeToolbarImage.tiff */,
+				D826490A0DE58739009D6A44 /* InspectorToolbarImage.tif */,
+				D826490B0DE58739009D6A44 /* ZoomInToolbarImage.tiff */,
+				D826490C0DE58739009D6A44 /* ZoomOutToolbarImage.tiff */,
 				D8798B080D5D2ECD00CCC6E3 /* arguments.xml */,
 				D8798B090D5D2ECD00CCC6E3 /* attributes.xml */,
 				D87989F30D5D287600CCC6E3 /* Attributes.xib */,
@@ -234,6 +246,10 @@
 				D8C09DB90D60427200134D03 /* NodeAttributes.png in Resources */,
 				D8C09DBA0D60427200134D03 /* GraphAttributes.png in Resources */,
 				D8C09DBB0D60427200134D03 /* EdgeAttributes.png in Resources */,
+				D826490D0DE58739009D6A44 /* ActualSizeToolbarImage.tiff in Resources */,
+				D826490E0DE58739009D6A44 /* InspectorToolbarImage.tif in Resources */,
+				D826490F0DE58739009D6A44 /* ZoomInToolbarImage.tiff in Resources */,
+				D82649100DE58739009D6A44 /* ZoomOutToolbarImage.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

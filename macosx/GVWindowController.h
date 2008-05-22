@@ -20,7 +20,7 @@
 
 @class GVGraph;
 
-@interface GVWindowController : NSWindowController
+@interface GVWindowController : NSWindowController <NSUserInterfaceValidations>
 {
 	IBOutlet PDFView *documentView;
 	
@@ -34,6 +34,13 @@
 - (void)awakeFromNib;
 
 - (void)graphDidChange:(NSNotification*)notification;
+- (NSRect)windowWillUseStandardFrame:(NSWindow *)window defaultFrame:(NSRect)defaultFrame;
+
+- (IBAction)actualSizeView:(id)sender;
+- (IBAction)zoomInView:(id)sender;
+- (IBAction)zoomOutView:(id)sender;
+
+- (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem;
 
 - (void)dealloc;
 @end
