@@ -96,42 +96,36 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    if (psfnt)
 		strcat(buf, "(ps) ");
 #ifdef HAVE_PANGO_FC_FONT_LOCK_FACE
-	    if (strcmp(fontclass, "PangoCairoFcFont") == 0)
-#else
-	    if (false)
-#endif
-	    {
+	    if (strcmp(fontclass, "PangoCairoFcFont") == 0) {
 	        FT_Face face;
 	        PangoFcFont *fcfont;
 	        FT_Stream stream;
 	        FT_StreamDesc streamdesc;
 	        fcfont = PANGO_FC_FONT(font);
-	        if (fcfont) {
-	            face = pango_fc_font_lock_face(fcfont);
-	            if (face) {
-		        strcat(buf, "\"");
-		        strcat(buf, face->family_name);
-		        strcat(buf, ", ");
-		        strcat(buf, face->style_name);
-		        strcat(buf, "\" ");
+	        face = pango_fc_font_lock_face(fcfont);
+	        if (face) {
+		    strcat(buf, "\"");
+		    strcat(buf, face->family_name);
+		    strcat(buf, ", ");
+		    strcat(buf, face->style_name);
+		    strcat(buf, "\" ");
     
-		        stream = face->stream;
-		        if (stream) {
-			    streamdesc = stream->pathname;
-			    if (streamdesc.pointer)
-			        strcat(buf, (char*)streamdesc.pointer);
-		            else
-			        strcat(buf, "*no pathname available*");
-		        }
+		    stream = face->stream;
+		    if (stream) {
+			streamdesc = stream->pathname;
+			if (streamdesc.pointer)
+			    strcat(buf, (char*)streamdesc.pointer);
 		        else
-			    strcat(buf, "*no stream available*");
+			    strcat(buf, "*no pathname available*");
 		    }
-	            pango_fc_font_unlock_face(fcfont);
-	        }
-	        else
-	            strcat(buf, "*not using fontconfig*");
+		    else
+			strcat(buf, "*no stream available*");
+		}
+	        pango_fc_font_unlock_face(fcfont);
 	    }
-	    else {
+	    else
+#endif
+	    {
     		PangoFontDescription *tdesc;
 		char *tfont;
 		
