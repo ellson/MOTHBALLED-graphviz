@@ -432,7 +432,13 @@ if test "x$enable_ltdl" != "xno"; then
   AC_DEFINE(ENABLE_LTDL,1,[Define if you want on-demand plugin loading])
   AC_CONFIG_SUBDIRS(libltdl)
   AC_LIBTOOL_DLOPEN
-  AC_LIBLTDL_INSTALLABLE
+  
+  if test "x$DARWIN9" = "xyes"; then
+     AC_LIBLTDL_CONVENIENCE
+     LIBLTDL="$LIBLTDL -Wl,-unexported_symbol,_lt_*"
+  else
+     AC_LIBLTDL_INSTALLABLE
+  fi
 fi
 AM_CONDITIONAL(ENABLE_LTDL, [test "x$enable_ltdl" != "xno"])
 AC_SUBST(INCLTDL)
