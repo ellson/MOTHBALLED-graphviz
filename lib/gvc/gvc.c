@@ -199,3 +199,8 @@ char **gvcInfo(GVC_t* gvc) { return gvc->common.info; }
 char *gvcUsername(GVC_t* gvc) { return gvc->common.user; }
 char *gvcVersion(GVC_t* gvc) { return gvc->common.info[1]; }
 char *gvcBuildDate(GVC_t* gvc) { return gvc->common.info[2]; }
+
+gvplugin_available_t *gvFirstPlugin(GVC_t *gvc, api_t api) { return gvc->apis[api]; }
+gvplugin_available_t *gvNextPlugin(gvplugin_available_t *plugin) { return plugin->next; }
+char *gvPluginType(gvplugin_available_t *plugin) { return plugin->typestr; }
+

@@ -40,8 +40,6 @@ extern "C" {
         char *type;
     } gvplugin_active_textlayout_t;
 
-    typedef struct gvplugin_available_s gvplugin_available_t;
-
     struct gvplugin_available_s {
 	gvplugin_available_t *next;       /* next plugin in linked list, or NULL */
 	char *typestr;		 /* type string, e.g. "png" or "ps" */
