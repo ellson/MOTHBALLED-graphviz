@@ -59,7 +59,7 @@ endif
 libtcldot_la_LIBADD += @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
 endif
 
-libtcldot_la_LIBADD += @LIBGEN_LIBS@ @LIBLTDL@ @ICONV_LIBS@ @MATH_LIBS@
+libtcldot_la_LIBADD += @LIBGEN_LIBS@ @ICONV_LIBS@ @MATH_LIBS@
 
 libtcldot_builtin_la_SOURCES = \
 	tcldot.c $(CODEGENS) $(GDTCLFT) \
@@ -92,7 +92,7 @@ endif
 libtcldot_builtin_la_LIBADD += @FONTCONFIG_LIBS@ @FREETYPE2_LIBS@ @JPEG_LIBS@ @PNG_LIBS@ @Z_LIBS@
 endif
 
-libtcldot_builtin_la_LIBADD += @ICONV_LIBS@ @EXPAT_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+libtcldot_builtin_la_LIBADD += @ICONV_LIBS@ @EXPAT_LIBS@ @LIBGEN_LIBS@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 
 if WITH_TCL
 all-local: pkgIndex.tcl
