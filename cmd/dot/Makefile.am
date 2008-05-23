@@ -78,7 +78,7 @@ dot_static_LDADD = \
 	$(top_builddir)/lib/pathplan/libpathplan_C.la \
 	$(top_builddir)/lib/graph/libgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
-       	@ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+       	@ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 
 dot_builtins_SOURCES = dot.c $(top_srcdir)/lib/gvc/dot_builtins.c $(top_srcdir)/lib/gvc/no_demand_loading.c
 dot_builtins_LDADD = \
@@ -89,7 +89,7 @@ dot_builtins_LDADD = \
 	$(top_builddir)/lib/pathplan/libpathplan.la \
 	$(top_builddir)/lib/graph/libgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la \
-       	@ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @LIBLTDL@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
+       	@ICONV_LIBS@ @EXPAT_LIBS@ @Z_LIBS@ @LIBGEN_LIBS@ @SOCKET_LIBS@ @IPSEPCOLA_LIBS@ @MATH_LIBS@
 
 if WITH_LIBGD
 if WITH_MYLIBGD
