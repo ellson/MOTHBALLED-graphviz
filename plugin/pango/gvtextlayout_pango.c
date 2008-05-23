@@ -87,13 +87,19 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 
         if (fontpath) {  /* -v support */
 	    PangoFont *font;
+	    const char *fontclass;
 
             font = pango_font_map_load_font(fontmap, context, desc);
+	    fontclass = G_OBJECT_CLASS_NAME(G_OBJECT_GET_CLASS(font));
 
 	    buf[0] = '\0';
 	    if (psfnt)
 		strcat(buf, "(ps) ");
 #ifdef HAVE_PANGO_FC_FONT_LOCK_FACE
+	    if (strcmp(fontclass, "PangoCairoFcFont") == 0)
+#else
+	    if (false)
+#endif
 	    {
 	        FT_Face face;
 	        PangoFcFont *fcfont;
@@ -125,8 +131,7 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	        else
 	            strcat(buf, "*not using fontconfig*");
 	    }
-#else
-	    {
+	    else {
     		PangoFontDescription *tdesc;
 		char *tfont;
 		
@@ -137,7 +142,6 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	        strcat(buf, "\" ");
 	        g_free(tfont);
 	    }
-#endif
             *fontpath = buf;
         }
     }
