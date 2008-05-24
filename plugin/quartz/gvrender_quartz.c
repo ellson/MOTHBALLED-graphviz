@@ -178,6 +178,8 @@ static void quartzgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
 {
 	CGContextRef context = (CGContextRef)job->context;
 	
+	CFStringRef str = CFStringCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)para->str, strlen(para->str), kCFStringEncodingUTF8, FALSE, kCFAllocatorNull);
+	if (str) {
 	/* set up the Core Text line */
 	CFStringRef attribute_keys[] = {
 		kCTFontAttributeName,
@@ -195,24 +197,23 @@ static void quartzgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
 		sizeof(attribute_values) / sizeof(attribute_values[0]),
 		&kCFTypeDictionaryKeyCallBacks,
 		&kCFTypeDictionaryValueCallBacks);
-	CFStringRef str = CFStringCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)para->str, strlen(para->str), kCFStringEncodingUTF8, FALSE, kCFAllocatorNull);
 	CFAttributedStringRef attributed_str = CFAttributedStringCreate(kCFAllocatorDefault, str, attributes);
 	CTLineRef line = CTLineCreateWithAttributedString(attributed_str);
 	
 	/* adjust text position */
 	switch (para->just) {
-    case 'r':
-        p.x -= para->width;
-        break;
-    case 'l':
-        p.x -= 0.0;
-        break;
-    case 'n':
-    default:
-        p.x -= para->width / 2.0;
-        break;
-    }
-    p.y += para->yoffset_centerline;
+		case 'r':
+			p.x -= para->width;
+			break;
+		case 'l':
+			p.x -= 0.0;
+			break;
+		case 'n':
+		default:
+			p.x -= para->width / 2.0;
+			break;
+		}
+		p.y += para->yoffset_centerline;
 	
 	/* draw it */
 	CGContextSetTextPosition(context, p.x, p.y);
@@ -227,6 +228,8 @@ static void quartzgen_textpara(GVJ_t *job, pointf p, textpara_t *para)
 	for (i = 0; i < sizeof(attribute_values) / sizeof(attribute_values[0]); ++i)
 		CFRelease(attribute_values[i]);
 	CFRelease(fontname);
+	}
+
 }
 
 static void quartzgen_path(GVJ_t *job, int filled)
