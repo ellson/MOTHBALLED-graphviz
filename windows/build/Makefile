@@ -110,4 +110,4 @@ $(GV_DIR)/Makefile: $(GV_DIR)/configure
 	@echo
 	@echo CONFIGURING GRAPHVIZ...
 	@echo
-	cd $(GV_DIR) && ./configure --enable-swig=no --enable-tcl=no --without-x --with-ipsepcola --with-gdiplus --with-platformsdkincludedir="$(PLATFORMSDK)\Include" --with-platformsdklibdir="$(PLATFORMSDK)\Lib" CFLAGS="-O2 -mms-bitfields -I$(LOCAL_INCLUDE)" CXXFLAGS="-O2 -mms-bitfields -I$(LOCAL_INCLUDE)" LDFLAGS="-L$(LOCAL_LIB)" GDLIB_CONFIG="$(LOCAL_BIN)/gdlib-config.exe" LEX="$(LOCAL_BIN)/flex.exe" PKG_CONFIG="$(LOCAL_BIN)/pkg-config.exe" YACC="$(LOCAL_BIN)/yacc.exe"
+	cd $(GV_DIR) && ./configure --enable-swig=no --enable-tcl=no --without-x --with-ipsepcola --with-gdiplus --with-platformsdkincludedir="$(PLATFORMSDK)\Include" --with-platformsdklibdir="$(PLATFORMSDK)\Lib" CFLAGS="-O2 -mms-bitfields -I$(LOCAL_INCLUDE)" CXXFLAGS="-O2 -mms-bitfields -I$(LOCAL_INCLUDE)" LDFLAGS="-L$(LOCAL_LIB)" GDLIB_CONFIG="$(LOCAL_BIN)/gdlib-config.exe" LEX="$(LOCAL_BIN)/flex.exe" PKG_CONFIG="$(LOCAL_BIN)/pkg-config.exe" PKG_CONFIG_PATH="$(LOCAL_LIB)/pkgconfig" YACC="$(LOCAL_BIN)/yacc.exe"
