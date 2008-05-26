@@ -22,6 +22,73 @@ extern double PSinputscale;
 
 static GVC_t *_graphContext = nil;
 
+@interface GVGraphPluginEnumerator : NSEnumerator
+{
+	gvplugin_available_t *_plugin;
+	NSMutableSet *_distinctPlugins;
+}
+
+- (id)initWithAPI:(api_t)api;
+- (NSArray *)allObjects;
+- (id)nextObject;
+- (void)dealloc;
+
+@end
+
+@implementation GVGraphPluginEnumerator
+
+- (id)initWithAPI:(api_t)api
+{
+	if (self = [super init]) {
+		_plugin = gvFirstPlugin(_graphContext, api);
+		_distinctPlugins = [[NSMutableSet alloc] init];
+	}
+	return self;
+}
+
+- (NSArray *)allObjects
+{
+	NSMutableArray *allPlugins = [NSMutableArray array];
+	for (; _plugin; _plugin = gvNextPlugin(_plugin)) {
+		/* get the type */
+		char *pluginType = gvPluginType(_plugin);
+		NSString *nextPlugin = [[[NSString alloc] initWithBytesNoCopy:pluginType length:strlen(pluginType) encoding:NSUTF8StringEncoding freeWhenDone:NO] autorelease];
+		
+		/* if distinct, add to the list */
+		if (![_distinctPlugins containsObject:nextPlugin]) {
+			[_distinctPlugins addObject:nextPlugin];
+			[allPlugins addObject:nextPlugin];
+		}
+	}
+	return allPlugins;
+}
+
+- (id)nextObject
+{
+	NSString *nextPlugin = nil;
+	BOOL plugging = YES;
+	for (; plugging && _plugin; _plugin = gvNextPlugin(_plugin)) {
+		/* get the type */
+		char *pluginType = gvPluginType(_plugin);
+		nextPlugin = [[[NSString alloc] initWithBytesNoCopy:pluginType length:strlen(pluginType) encoding:NSUTF8StringEncoding freeWhenDone:NO] autorelease];
+		
+		/* if distinct, stop plugging away */
+		if (![_distinctPlugins containsObject:nextPlugin]) {
+			[_distinctPlugins addObject:nextPlugin];
+			plugging = NO;
+		}
+	}
+	
+	return nextPlugin;
+}
+
+- (void)dealloc
+{
+	[_distinctPlugins release];
+	[super dealloc];
+}
+@end
+
 @implementation GVGraph
 
 @synthesize graph = _graph;
@@ -35,7 +102,12 @@ static GVC_t *_graphContext = nil;
 	_graphContext = gvContext();
 }
 
-- (id)initWithURL:(NSURL*)URL error:(NSError**)outError
++ (NSEnumerator *)devices
+{
+	return [[[GVGraphPluginEnumerator alloc] initWithAPI:API_device] autorelease];
+}
+
+- (id)initWithURL:(NSURL *)URL error:(NSError **)outError
 {
 	if (self = [super init]) {
 		if ([URL isFileURL]) {
@@ -76,7 +148,7 @@ static GVC_t *_graphContext = nil;
 	return self;
 }
 
-- (BOOL)writeToURL:(NSURL*)URL error:(NSError**)outError
+- (BOOL)writeToURL:(NSURL *)URL error:(NSError **)outError
 {
 	if ([URL isFileURL]) {
 		/* open a FILE* on the file URL */
@@ -127,7 +199,7 @@ static GVC_t *_graphContext = nil;
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"GVGraphDidChange" object:self];
 }
 
-- (NSData*)renderWithFormat:(NSString*)format
+- (NSData*)renderWithFormat:(NSString *)format
 {
 	char *renderedData = NULL;
 	unsigned int renderedLength = 0;
@@ -137,7 +209,7 @@ static GVC_t *_graphContext = nil;
 
 }
 
-- (void)renderWithFormat:(NSString*)format toURL:(NSURL*)URL
+- (void)renderWithFormat:(NSString *)format toURL:(NSURL *)URL
 {
 	if ([URL isFileURL]) {
 		if (gvRenderFilename(_graphContext, _graph, (char*)[format UTF8String], (char*)[[URL path] UTF8String]) != 0)

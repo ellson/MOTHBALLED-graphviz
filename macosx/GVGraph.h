@@ -39,14 +39,15 @@
 @property(readonly) GVGraphDefaultAttributes *defaultEdgeAttributes;
 
 + (void)initialize;
++ (NSEnumerator *)devices;
 
-- (id)initWithURL:(NSURL*)URL error:(NSError**)outError;
+- (id)initWithURL:(NSURL *)URL error:(NSError **)outError;
 
-- (NSData*)renderWithFormat:(NSString*)format;
-- (void)renderWithFormat:(NSString*)format toURL:(NSURL*)URL;
+- (NSData *)renderWithFormat:(NSString *)format;
+- (void)renderWithFormat:(NSString*)format toURL:(NSURL *)URL;
 - (void)noteChanged:(BOOL)relayout;
 
-- (BOOL)writeToURL:(NSURL*)URL error:(NSError**)outError;
+- (BOOL)writeToURL:(NSURL *)URL error:(NSError **)outError;
 
 - (void)dealloc;
 
