@@ -14,6 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
+#import "GVExportViewController.h"
 #import "GVDocument.h"
 #import "GVGraph.h"
 #import "GVWindowController.h"
@@ -25,6 +26,7 @@
 - (id)init
 {
 	if (self = [super init]) {
+		_exporter = nil;
 		_graph = nil;
 	}
     return self;
@@ -49,8 +51,23 @@
 	[self addWindowController: [[[GVWindowController alloc] init] autorelease]];
 }
 
+- (IBAction)exportDocument:(id)sender
+{
+	if (!_exporter) {
+		_exporter = [[GVExportViewController alloc] init];
+		[_exporter setFilename:[[[self fileURL] path] stringByDeletingPathExtension]];
+	}
+	[_exporter beginSheetModalForWindow:[self windowForSheet] modalDelegate:self didEndSelector:@selector(exporterDidEnd:)];
+}
+
+- (void)exporterDidEnd:(GVExportViewController *)exporter
+{
+	[_graph renderWithFormat:[exporter device] toURL:[NSURL fileURLWithPath:[exporter filename]]];
+}
+
 - (void)dealloc
 {
+	[_exporter release];
 	[_graph release];
 	[super dealloc];
 }

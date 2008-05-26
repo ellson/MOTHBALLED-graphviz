@@ -17,10 +17,12 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+@class GVExportViewController;
 @class GVGraph;
 
 @interface GVDocument : NSDocument
 {
+	GVExportViewController *_exporter;
 	GVGraph *_graph;
 }
 
@@ -32,6 +34,9 @@
 - (BOOL)writeToURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError;
 
 - (void)makeWindowControllers;
+
+- (IBAction)exportDocument:(id)sender;
+- (void)exporterDidEnd:(GVExportViewController *)exporter;
 
 - (void)dealloc;
 
