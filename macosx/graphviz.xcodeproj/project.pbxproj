@@ -14,6 +14,8 @@
 		D826490E0DE58739009D6A44 /* InspectorToolbarImage.tif in Resources */ = {isa = PBXBuildFile; fileRef = D826490A0DE58739009D6A44 /* InspectorToolbarImage.tif */; };
 		D826490F0DE58739009D6A44 /* ZoomInToolbarImage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = D826490B0DE58739009D6A44 /* ZoomInToolbarImage.tiff */; };
 		D82649100DE58739009D6A44 /* ZoomOutToolbarImage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = D826490C0DE58739009D6A44 /* ZoomOutToolbarImage.tiff */; };
+		D8264B0A0DE8111F009D6A44 /* GVExportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8264B090DE8111F009D6A44 /* GVExportViewController.m */; };
+		D8264B0D0DE81133009D6A44 /* Export.xib in Resources */ = {isa = PBXBuildFile; fileRef = D8264B0B0DE81133009D6A44 /* Export.xib */; };
 		D86382D70D57118400D27D07 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = D86382D30D57118400D27D07 /* Document.xib */; };
 		D86382D80D57118400D27D07 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = D86382D50D57118400D27D07 /* MainMenu.xib */; };
 		D86CBB7D0D5AE541000FB42B /* GVGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = D86CBB7C0D5AE541000FB42B /* GVGraph.m */; };
@@ -54,6 +56,9 @@
 		D826490A0DE58739009D6A44 /* InspectorToolbarImage.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = InspectorToolbarImage.tif; sourceTree = "<group>"; };
 		D826490B0DE58739009D6A44 /* ZoomInToolbarImage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ZoomInToolbarImage.tiff; sourceTree = "<group>"; };
 		D826490C0DE58739009D6A44 /* ZoomOutToolbarImage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ZoomOutToolbarImage.tiff; sourceTree = "<group>"; };
+		D8264B080DE8111F009D6A44 /* GVExportViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GVExportViewController.h; sourceTree = "<group>"; };
+		D8264B090DE8111F009D6A44 /* GVExportViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GVExportViewController.m; sourceTree = "<group>"; };
+		D8264B0C0DE81133009D6A44 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Export.xib; sourceTree = "<group>"; };
 		D86382D40D57118400D27D07 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Document.xib; sourceTree = "<group>"; };
 		D86382D60D57118400D27D07 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		D86CBB7B0D5AE541000FB42B /* GVGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GVGraph.h; sourceTree = "<group>"; };
@@ -134,6 +139,8 @@
 				D8798BDE0D5D5BD700CCC6E3 /* GVAttributeSchema.m */,
 				2A37F4AEFDCFA73011CA2CEA /* GVDocument.h */,
 				2A37F4ACFDCFA73011CA2CEA /* GVDocument.m */,
+				D8264B080DE8111F009D6A44 /* GVExportViewController.h */,
+				D8264B090DE8111F009D6A44 /* GVExportViewController.m */,
 				D86CBB7B0D5AE541000FB42B /* GVGraph.h */,
 				D86CBB7C0D5AE541000FB42B /* GVGraph.m */,
 				D8C09DEB0D6067BE00134D03 /* GVGraphArguments.h */,
@@ -166,6 +173,7 @@
 				D8798B090D5D2ECD00CCC6E3 /* attributes.xml */,
 				D87989F30D5D287600CCC6E3 /* Attributes.xib */,
 				D86382D30D57118400D27D07 /* Document.xib */,
+				D8264B0B0DE81133009D6A44 /* Export.xib */,
 				D86382D50D57118400D27D07 /* MainMenu.xib */,
 				D88584180D54866C00D35701 /* Graph.icns */,
 				D88584190D54866C00D35701 /* Graphviz.icns */,
@@ -250,6 +258,7 @@
 				D826490E0DE58739009D6A44 /* InspectorToolbarImage.tif in Resources */,
 				D826490F0DE58739009D6A44 /* ZoomInToolbarImage.tiff in Resources */,
 				D82649100DE58739009D6A44 /* ZoomOutToolbarImage.tiff in Resources */,
+				D8264B0D0DE81133009D6A44 /* Export.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,6 +278,7 @@
 				D87989F20D5D283300CCC6E3 /* GVAttributeInspectorController.m in Sources */,
 				D8798BDF0D5D5BD700CCC6E3 /* GVAttributeSchema.m in Sources */,
 				D8C09DED0D6067BE00134D03 /* GVGraphArguments.m in Sources */,
+				D8264B0A0DE8111F009D6A44 /* GVExportViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +291,14 @@
 				089C1660FE840EACC02AAC07 /* English */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		D8264B0B0DE81133009D6A44 /* Export.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D8264B0C0DE81133009D6A44 /* English */,
+			);
+			name = Export.xib;
 			sourceTree = "<group>";
 		};
 		D86382D30D57118400D27D07 /* Document.xib */ = {
