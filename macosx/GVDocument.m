@@ -55,6 +55,24 @@
 	[self addWindowController: [[[GVWindowController alloc] init] autorelease]];
 }
 
+- (void)setPrintInfo:(NSPrintInfo *)printInfo
+{
+	/* after Page Setup is run, change the page size and margins of the graph to fit the page setup parameters */
+	[super setPrintInfo:printInfo];
+	NSSize paperSize = [printInfo paperSize];
+	NSRect imageablePageBounds = [printInfo imageablePageBounds];
+	double scalingFactor = 72.0 * [[[printInfo dictionary] objectForKey:NSPrintScalingFactor] doubleValue];
+	
+	[_graph.graphAttributes setObject:[NSString stringWithFormat:@"%f,%f",
+		paperSize.width / scalingFactor,
+		paperSize.height / scalingFactor]
+		forKey:@"page"];
+	[_graph.graphAttributes setObject:[NSString stringWithFormat:@"%f,%f",
+		fmax(imageablePageBounds.origin.x, paperSize.width - imageablePageBounds.size.width - imageablePageBounds.origin.x) / scalingFactor,
+		fmax(imageablePageBounds.origin.y, paperSize.height - imageablePageBounds.size.height - imageablePageBounds.origin.y) / scalingFactor]
+		forKey:@"margin"];
+}
+
 - (IBAction)exportDocument:(id)sender
 {
 	if (!_exporter) {

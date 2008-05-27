@@ -35,6 +35,8 @@
 
 - (void)makeWindowControllers;
 
+- (void)setPrintInfo:(NSPrintInfo *)printInfo;
+
 - (IBAction)exportDocument:(id)sender;
 - (void)exporterDidEnd:(GVExportViewController *)exporter;
 
