@@ -17,6 +17,7 @@
 		D8264B0A0DE8111F009D6A44 /* GVExportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8264B090DE8111F009D6A44 /* GVExportViewController.m */; };
 		D8264B0D0DE81133009D6A44 /* Export.xib in Resources */ = {isa = PBXBuildFile; fileRef = D8264B0B0DE81133009D6A44 /* Export.xib */; };
 		D85D2EBC0DEAB83C00A69D07 /* GVFileNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = D85D2EBB0DEAB83C00A69D07 /* GVFileNotificationCenter.m */; };
+		D85D33870DEC599F00A69D07 /* ZoomToFitToolbarImage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = D85D33860DEC599F00A69D07 /* ZoomToFitToolbarImage.tiff */; };
 		D86382D70D57118400D27D07 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = D86382D30D57118400D27D07 /* Document.xib */; };
 		D86382D80D57118400D27D07 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = D86382D50D57118400D27D07 /* MainMenu.xib */; };
 		D86CBB7D0D5AE541000FB42B /* GVGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = D86CBB7C0D5AE541000FB42B /* GVGraph.m */; };
@@ -62,6 +63,7 @@
 		D8264B0C0DE81133009D6A44 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Export.xib; sourceTree = "<group>"; };
 		D85D2EBA0DEAB83C00A69D07 /* GVFileNotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GVFileNotificationCenter.h; sourceTree = "<group>"; };
 		D85D2EBB0DEAB83C00A69D07 /* GVFileNotificationCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GVFileNotificationCenter.m; sourceTree = "<group>"; };
+		D85D33860DEC599F00A69D07 /* ZoomToFitToolbarImage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = ZoomToFitToolbarImage.tiff; sourceTree = "<group>"; };
 		D86382D40D57118400D27D07 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Document.xib; sourceTree = "<group>"; };
 		D86382D60D57118400D27D07 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		D86CBB7B0D5AE541000FB42B /* GVGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GVGraph.h; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 				D826490A0DE58739009D6A44 /* InspectorToolbarImage.tif */,
 				D826490B0DE58739009D6A44 /* ZoomInToolbarImage.tiff */,
 				D826490C0DE58739009D6A44 /* ZoomOutToolbarImage.tiff */,
+				D85D33860DEC599F00A69D07 /* ZoomToFitToolbarImage.tiff */,
 				D8798B080D5D2ECD00CCC6E3 /* arguments.xml */,
 				D8798B090D5D2ECD00CCC6E3 /* attributes.xml */,
 				D87989F30D5D287600CCC6E3 /* Attributes.xib */,
@@ -264,6 +267,7 @@
 				D826490F0DE58739009D6A44 /* ZoomInToolbarImage.tiff in Resources */,
 				D82649100DE58739009D6A44 /* ZoomOutToolbarImage.tiff in Resources */,
 				D8264B0D0DE81133009D6A44 /* Export.xib in Resources */,
+				D85D33870DEC599F00A69D07 /* ZoomToFitToolbarImage.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
