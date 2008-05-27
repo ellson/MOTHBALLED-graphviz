@@ -16,6 +16,7 @@
 
 #import "GVAttributeInspectorController.h"
 #import "GVAttributeSchema.h"
+#import "GVDocument.h"
 #import "GVGraph.h"
 #import "GVWindowController.h"
 
@@ -26,7 +27,7 @@
 	if (self = [super initWithWindowNibName: @"Attributes"]) {
 		_allSchemas = nil;
 		_allAttributes = [[NSMutableDictionary alloc] init];
-		_inspectedGraph = nil;
+		_inspectedDocument = nil;
 		_otherChangedGraph = YES;
 	}
 	return self;
@@ -58,39 +59,41 @@
 - (void)graphWindowDidBecomeMain:(NSNotification *)notification
 {
 	NSWindow* mainWindow = notification ? [notification object] : [NSApp mainWindow];
-	NSWindowController* mainWindowController = [mainWindow windowController];
-	if ([mainWindowController respondsToSelector:@selector(graph)]) {
-		GVGraph *newGraph = [(GVWindowController *)mainWindowController graph];
+	GVDocument* mainWindowDocument = [[mainWindow windowController] document];
 		
-		if (_inspectedGraph != newGraph) {
-			/* retain the inspected graph and start observing any changes from it */
+	/* update and observe referenced document */
 			NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-			if (_inspectedGraph) {
-				[defaultCenter removeObserver:self name:@"GVGraphDidChange" object:_inspectedGraph];
-				[_inspectedGraph release];
-			}
-			if (_inspectedGraph = [newGraph retain]) {
-				[_allAttributes setObject:newGraph.graphAttributes forKey:[graphToolbarItem itemIdentifier]];
-				[_allAttributes setObject:newGraph.defaultNodeAttributes forKey:[nodeDefaultToolbarItem itemIdentifier]];
-				[_allAttributes setObject:newGraph.defaultEdgeAttributes forKey:[edgeDefaultToolbarItem itemIdentifier]];
-				[defaultCenter addObserver:self selector:@selector(graphDidChange:) name:@"GVGraphDidChange" object:newGraph];
-			}
-			else
-				[_allAttributes removeAllObjects];
-				
+	if (_inspectedDocument)
+		[defaultCenter removeObserver:self name:@"GVGraphDocumentDidChange" object:_inspectedDocument];
+	_inspectedDocument = mainWindowDocument;
+	[defaultCenter addObserver:self selector:@selector(graphDocumentDidChange:) name:@"GVGraphDocumentDidChange" object:mainWindowDocument];
+
+	[self reloadAttributes];
 		
 			/* update the UI */
 			[[self window] setTitle:[NSString stringWithFormat:@"%@ Attributes", [mainWindow title]]];
 			[attributeTable reloadData];
-		}
+}
+
+- (void)graphDocumentDidChange:(NSNotification *)notification
+{
+	/* if we didn't instigate the change, update the UI */
+	if (_otherChangedGraph) {
+		[self reloadAttributes];
+		[attributeTable reloadData];
 	}
 }
 
-- (void)graphDidChange:(NSNotification *)notification
+- (void)reloadAttributes
 {
-	/* if we didn't instigate the change, update the UI */
-	if (_otherChangedGraph)
-		[attributeTable reloadData];
+	/* reload the attributes from the inspected document's graph */
+	[_allAttributes removeAllObjects];
+	if ([_inspectedDocument respondsToSelector:@selector(graph)]) {
+		GVGraph *graph = [_inspectedDocument graph];
+		[_allAttributes setObject:graph.graphAttributes forKey:[graphToolbarItem itemIdentifier]];
+		[_allAttributes setObject:graph.defaultNodeAttributes forKey:[nodeDefaultToolbarItem itemIdentifier]];
+		[_allAttributes setObject:graph.defaultEdgeAttributes forKey:[edgeDefaultToolbarItem itemIdentifier]];
+	}
 }
 
 - (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar
@@ -149,7 +152,7 @@
 			NSString *attributeName = [[[_allSchemas objectForKey:selectedComponentIdentifier] objectAtIndex:rowIndex] name];
 			
 			/* set or remove the key-value on the selected attributes */
-			/* NOTE: to avoid needlessly reloading the table in graphDidChange:, we fence this change with _otherChangedGraph = NO */
+			/* NOTE: to avoid needlessly reloading the table in graphDocumentDidChange:, we fence this change with _otherChangedGraph = NO */
 			_otherChangedGraph = NO;
 			@try {
 				[[_allAttributes objectForKey:selectedComponentIdentifier] setValue:anObject forKey:attributeName];
@@ -164,10 +167,9 @@
 
 - (void)dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSWindowDidBecomeMainNotification object:nil];
 	[_allSchemas release];
 	[_allAttributes release];
-	
-	[_inspectedGraph release];
 	
 	[super dealloc];
 }

@@ -18,7 +18,7 @@
 #import <AppKit/AppKit.h>
 #import <WebKit/WebKit.h>
 
-@class GVGraph;
+@class GVDocument;
 
 @interface GVAttributeInspectorController : NSWindowController {
 	IBOutlet NSToolbar *componentToolbar;
@@ -32,7 +32,7 @@
 	NSDictionary *_allSchemas;
 	NSMutableDictionary *_allAttributes;
 	
-	GVGraph *_inspectedGraph;
+	GVDocument *_inspectedDocument;
 	BOOL _otherChangedGraph;
 }
 
@@ -43,7 +43,8 @@
 /* notifications */
 - (IBAction)toolbarItemDidSelect:(id)sender;
 - (void)graphWindowDidBecomeMain:(NSNotification *)notification;
-- (void)graphDidChange:(NSNotification *)notification;
+- (void)graphDocumentDidChange:(NSNotification *)notification;
+- (void)reloadAttributes;
 
 /* toolbar delegate methods */
 - (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar;
