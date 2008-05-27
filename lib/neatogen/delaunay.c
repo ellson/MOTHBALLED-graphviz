@@ -25,9 +25,6 @@
 #include "memory.h"
 #include "logic.h"
 
-#if WIN32
-	#define HAVE_TRIANGLE	1
-#endif
 #if HAVE_TRIANGLE
 #define TRILIBRARY
 #include "triangle.c"
