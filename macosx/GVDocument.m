@@ -14,8 +14,9 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#import "GVExportViewController.h"
 #import "GVDocument.h"
+#import "GVExportViewController.h"
+#import "GVFileNotificationCenter.h"
 #import "GVGraph.h"
 #import "GVWindowController.h"
 
@@ -37,6 +38,9 @@
 	[_graph release];
 	_graph = [[GVGraph alloc] initWithURL:absoluteURL error:outError];
 	[_graph.arguments setValue:@"dot" forKey:@"layout"];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(graphDidChange:) name:@"GVGraphDidChange" object:_graph];
+	[[GVFileNotificationCenter defaultCenter] addObserver:self selector:@selector(fileDidChange:) path:[absoluteURL path]];
 	
 	return _graph != nil;
 }
@@ -65,8 +69,30 @@
 	[_graph renderWithFormat:[exporter device] toURL:[NSURL fileURLWithPath:[exporter filename]]];
 }
 
+- (void)fileDidChange:(NSString *)path
+{
+	NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
+	[defaultCenter removeObserver:self name:@"GVGraphDidChange" object:_graph];
+	
+	/* reparse the graph fresh from the file */
+	[_graph release];
+	_graph = [[GVGraph alloc] initWithURL:[self fileURL] error:nil];
+	[_graph.arguments setValue:@"dot" forKey:@"layout"];
+	[defaultCenter addObserver:self selector:@selector(graphDidChange:) name:@"GVGraphDidChange" object:_graph];
+	
+	[defaultCenter postNotificationName:@"GVGraphDocumentDidChange" object:self];
+}
+
+- (void)graphDidChange:(NSNotification *)notification
+{
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"GVGraphDocumentDidChange" object:self];
+}
+
 - (void)dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"GVGraphDidChange" object:_graph];
+	[[GVFileNotificationCenter defaultCenter] removeObserver:self path:[[self fileURL] path]];
+
 	[_exporter release];
 	[_graph release];
 	[super dealloc];

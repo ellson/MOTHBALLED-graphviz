@@ -38,6 +38,9 @@
 - (IBAction)exportDocument:(id)sender;
 - (void)exporterDidEnd:(GVExportViewController *)exporter;
 
+- (void)fileDidChange:(NSString *)path;
+- (void)graphDidChange:(NSNotification *)notification;
+
 - (void)dealloc;
 
 @end
