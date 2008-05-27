@@ -81,6 +81,12 @@
 	[documentView zoomOut:sender];
 }
 
+- (IBAction)zoomToFitView:(id)sender
+{
+	[documentView setAutoScales:YES];
+	[documentView setAutoScales:NO];
+}
+
 - (IBAction)printGraphDocument:(id)sender
 {
 	[documentView printWithInfo:[[self document] printInfo] autoRotate:NO];
@@ -95,6 +101,8 @@
 		return [documentView canZoomIn];
 	else if ([anItem action] == @selector(zoomOutView:))
 		return [documentView canZoomOut];
+	else if ([anItem action] == @selector(zoomToFitView:))
+		return YES;
 	else if ([anItem action] == @selector(printGraphDocument:))
 		return YES;
 	else

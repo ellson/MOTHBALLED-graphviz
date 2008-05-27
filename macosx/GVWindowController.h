@@ -33,6 +33,7 @@
 - (IBAction)actualSizeView:(id)sender;
 - (IBAction)zoomInView:(id)sender;
 - (IBAction)zoomOutView:(id)sender;
+- (IBAction)zoomToFitView:(id)sender;
 
 - (IBAction)printGraphDocument:(id)sender;
 
