@@ -81,6 +81,11 @@
 	[documentView zoomOut:sender];
 }
 
+- (IBAction)printGraphDocument:(id)sender
+{
+	[documentView printWithInfo:[[self document] printInfo] autoRotate:NO];
+}
+
 - (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem
 {
 	/* validate toolbar or menu items */
@@ -90,6 +95,8 @@
 		return [documentView canZoomIn];
 	else if ([anItem action] == @selector(zoomOutView:))
 		return [documentView canZoomOut];
+	else if ([anItem action] == @selector(printGraphDocument:))
+		return YES;
 	else
 		return NO;
 }

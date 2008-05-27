@@ -34,6 +34,8 @@
 - (IBAction)zoomInView:(id)sender;
 - (IBAction)zoomOutView:(id)sender;
 
+- (IBAction)printGraphDocument:(id)sender;
+
 - (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem;
 
 - (void)dealloc;
