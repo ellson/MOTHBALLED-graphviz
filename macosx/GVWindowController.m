@@ -20,40 +20,27 @@
 
 @implementation GVWindowController
 
-@synthesize graph = _graph;
-
 - (id)init
 {
 	if (self = [super initWithWindowNibName: @"Document"])
-		_graph = nil;
+		;
 	return self;
 }
 
 - (void)setDocument: (NSDocument *)document
 {
-	if ([document respondsToSelector:@selector(graph)]) {
-		GVGraph *newGraph = [(GVDocument *)document graph];
-		if (_graph != newGraph) {
-			/* retain the new document graph and start observing any changes from it */
 			NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
-			if (_graph) {
-				[defaultCenter removeObserver:self name:@"GVGraphDidChange" object:_graph];
-				[_graph release];
-			}
-			_graph = nil;
-			if (newGraph) {
-				_graph = [newGraph retain];
-				[defaultCenter addObserver:self selector:@selector(graphDidChange:) name:@"GVGraphDidChange" object:newGraph];
-			}
-		}
-	}
 	
+	GVDocument *oldDocument = [self document];
+	if (oldDocument)
+		[defaultCenter removeObserver:self name:@"GVGraphDocumentDidChange" object:oldDocument];
 	[super setDocument:document];
+	[defaultCenter addObserver:self selector:@selector(graphDocumentDidChange:) name:@"GVGraphDocumentDidChange" object:document];
 }
 
 - (void)awakeFromNib
 {
-	[self graphDidChange:nil];
+	[self graphDocumentDidChange:nil];
 	
 	/* if window is not at standard size, make it standard size */
 	NSWindow *window = [self window];
@@ -61,10 +48,12 @@
 		[window zoom:self];
 }
 
-- (void)graphDidChange:(NSNotification*)notification
+- (void)graphDocumentDidChange:(NSNotification*)notification
 {
 	/* whenever the graph changes, rerender its PDF and display that */
-	[documentView setDocument:[[[PDFDocument alloc] initWithData:[_graph renderWithFormat:@"pdf:quartz"]] autorelease]];
+	GVDocument *document = [self document];
+	if ([document respondsToSelector:@selector(graph)])
+		[documentView setDocument:[[[PDFDocument alloc] initWithData:[[document graph] renderWithFormat:@"pdf:quartz"]] autorelease]];
 }
 
 - (NSRect)windowWillUseStandardFrame:(NSWindow *)window defaultFrame:(NSRect)defaultFrame
@@ -106,11 +95,7 @@
 }
 - (void)dealloc
 {
-	if (_graph) {
-		[[NSNotificationCenter defaultCenter] removeObserver:self name:@"GVGraphDidChange" object:_graph];
-		[_graph release];
-	}
-
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"GVGraphDocumentDidChange" object:[self document]];
 	[super dealloc];
 }
 

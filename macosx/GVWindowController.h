@@ -18,22 +18,16 @@
 #import <AppKit/AppKit.h>
 #import <Quartz/Quartz.h>
 
-@class GVGraph;
-
 @interface GVWindowController : NSWindowController <NSUserInterfaceValidations>
 {
 	IBOutlet PDFView *documentView;
-	
-	GVGraph *_graph;
 }
-
-@property(readonly) GVGraph *graph;
 
 - (id)init;
 - (void)setDocument: (NSDocument *)document;
 - (void)awakeFromNib;
 
-- (void)graphDidChange:(NSNotification*)notification;
+- (void)graphDocumentDidChange:(NSNotification*)notification;
 - (NSRect)windowWillUseStandardFrame:(NSWindow *)window defaultFrame:(NSRect)defaultFrame;
 
 - (IBAction)actualSizeView:(id)sender;
