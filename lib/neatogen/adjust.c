@@ -876,6 +876,8 @@ removeOverlapAs(graph_t * G, char* flag)
 	    break;
 #endif
 	default:		/* to silence warnings */
+	    if ((am->mode != AM_VOR) && (am->mode != AM_SCALE))
+		agerr(AGWARN, "Unhandled adjust option %s\n", am->print);
 	    break;
 	}
 /* fprintf (stderr, "%s %.4f sec\n", am->print, elapsed_sec()); */
