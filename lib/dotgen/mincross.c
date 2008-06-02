@@ -398,9 +398,11 @@ transpose(graph_t * g, int reverse)
 	    if (GD_rank(g)[r].candidate)
 		delta += transpose_step(g, r, reverse);
 #endif
-	for (r = GD_minrank(g); r <= GD_maxrank(g); r++)
-	    if (GD_rank(g)[r].candidate)
+	for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+	    if (GD_rank(g)[r].candidate) {
 		delta += transpose_step(g, r, reverse);
+	    }
+	}
 	/*} while (delta > ncross(g)*(1.0 - Convergence)); */
     } while (delta >= 1);
 }
@@ -702,11 +704,35 @@ static void init_mincross(graph_t * g)
     GlobalMaxRank = GD_maxrank(g);
 }
 
+void flat_rev(Agraph_t *g, Agedge_t *e) 
+{
+    int j;
+    Agedge_t *rev;
+
+    for (j = 0; (rev = ND_flat_out(e->head).list[j]); j++)
+	if (rev->head == e->tail)
+	    break;
+    if (rev) {
+	merge_oneway(e, rev);
+	if (ED_to_virt(e) == 0)
+	    ED_to_virt(e) = rev;
+	if ((ED_edge_type(rev) == FLATORDER)
+	    && (ED_to_orig(rev) == 0))
+	    ED_to_orig(rev) = e;
+	elist_append(e, ND_other(e->tail));
+    } else {
+	rev = new_virtual_edge(e->head, e->tail, e);
+	ED_edge_type(rev) = REVERSED;
+	ED_label(rev) = ED_label(e);
+	flat_edge(g, rev);
+    }
+}
+
 static void flat_search(graph_t * g, node_t * v)
 {
-    int i, j;
+    int i;
     boolean hascl;
-    edge_t *e, *rev;
+    edge_t *e;
     adjmatrix_t *M = GD_rank(g)[ND_rank(v)].flat;
 
     ND_mark(v) = TRUE;
@@ -727,23 +753,7 @@ static void flat_search(graph_t * g, node_t * v)
 		i--;
 		if (ED_edge_type(e) == FLATORDER)
 		    continue;
-		for (j = 0; (rev = ND_flat_out(e->head).list[j]); j++)
-		    if (rev->head == e->tail)
-			break;
-		if (rev) {
-		    merge_oneway(e, rev);
-		    if (ED_to_virt(e) == 0)
-			ED_to_virt(e) = rev;
-		    if ((ED_edge_type(rev) == FLATORDER)
-			&& (ED_to_orig(rev) == 0))
-			ED_to_orig(rev) = e;
-		    elist_append(e, ND_other(e->tail));
-		} else {
-		    rev = new_virtual_edge(e->head, e->tail, e);
-		    ED_edge_type(rev) = REVERSED;
-		    ED_label(rev) = ED_label(e);
-		    flat_edge(g, rev);
-		}
+		flat_rev(g,e);
 	    } else {
 		assert(flatindex(e->head) < M->nrows);
 		assert(flatindex(e->tail) < M->ncols);
@@ -879,147 +889,165 @@ void build_ranks(graph_t * g, int pass)
     }
 #endif
 
-    for (i = GD_minrank(g); i <= GD_maxrank(g); i++)
-	GD_rank(g)[i].n = 0;
+for (i = GD_minrank(g); i <= GD_maxrank(g); i++)
+    GD_rank(g)[i].n = 0;
 
-    for (n = GD_nlist(g); n; n = ND_next(n)) {
-	otheredges = ((pass == 0) ? ND_in(n).list : ND_out(n).list);
-	if (otheredges[0] != NULL)
-	    continue;
-	if (MARK(n) == FALSE) {
-	    MARK(n) = TRUE;
-	    enqueue(q, n);
-	    while ((n0 = dequeue(q))) {
-		if (ND_ranktype(n0) != CLUSTER) {
-		    install_in_rank(g, n0);
-		    enqueue_neighbors(q, n0, pass);
-		} else {
-		    install_cluster(g, n0, pass, q);
-		}
+for (n = GD_nlist(g); n; n = ND_next(n)) {
+    otheredges = ((pass == 0) ? ND_in(n).list : ND_out(n).list);
+    if (otheredges[0] != NULL)
+	continue;
+    if (MARK(n) == FALSE) {
+	MARK(n) = TRUE;
+	enqueue(q, n);
+	while ((n0 = dequeue(q))) {
+	    if (ND_ranktype(n0) != CLUSTER) {
+		install_in_rank(g, n0);
+		enqueue_neighbors(q, n0, pass);
+	    } else {
+		install_cluster(g, n0, pass, q);
 	    }
 	}
     }
-    if (dequeue(q))
-	agerr(AGERR, "surprise\n");
-    for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
-	GD_rank(Root)[i].valid = FALSE;
-	if (GD_flip(g) && (GD_rank(g)[i].n > 0)) {
-	    int n, ndiv2;
-	    node_t **vlist = GD_rank(g)[i].v;
-	    n = GD_rank(g)[i].n - 1;
-	    ndiv2 = n / 2;
-	    for (j = 0; j <= ndiv2; j++)
-		exchange(vlist[j], vlist[n - j]);
-	}
+}
+if (dequeue(q))
+    agerr(AGERR, "surprise\n");
+for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
+    GD_rank(Root)[i].valid = FALSE;
+    if (GD_flip(g) && (GD_rank(g)[i].n > 0)) {
+	int n, ndiv2;
+	node_t **vlist = GD_rank(g)[i].v;
+	n = GD_rank(g)[i].n - 1;
+	ndiv2 = n / 2;
+	for (j = 0; j <= ndiv2; j++)
+	    exchange(vlist[j], vlist[n - j]);
     }
+}
 
-    if ((g == g->root) && ncross(g) > 0)
-	transpose(g, FALSE);
-    free_queue(q);
+if ((g == g->root) && ncross(g) > 0)
+    transpose(g, FALSE);
+free_queue(q);
 }
 
 void enqueue_neighbors(nodequeue * q, node_t * n0, int pass)
 {
-    int i;
-    edge_t *e;
+int i;
+edge_t *e;
 
-    if (pass == 0) {
-	for (i = 0; i < ND_out(n0).size; i++) {
-	    e = ND_out(n0).list[i];
-	    if ((MARK(e->head)) == FALSE) {
-		MARK(e->head) = TRUE;
-		enqueue(q, e->head);
-	    }
+if (pass == 0) {
+    for (i = 0; i < ND_out(n0).size; i++) {
+	e = ND_out(n0).list[i];
+	if ((MARK(e->head)) == FALSE) {
+	    MARK(e->head) = TRUE;
+	    enqueue(q, e->head);
 	}
-    } else {
-	for (i = 0; i < ND_in(n0).size; i++) {
-	    e = ND_in(n0).list[i];
-	    if ((MARK(e->tail)) == FALSE) {
-		MARK(e->tail) = TRUE;
-		enqueue(q, e->tail);
-	    }
+    }
+} else {
+    for (i = 0; i < ND_in(n0).size; i++) {
+	e = ND_in(n0).list[i];
+	if ((MARK(e->tail)) == FALSE) {
+	    MARK(e->tail) = TRUE;
+	    enqueue(q, e->tail);
 	}
     }
 }
+}
 
 /* construct nodes reachable from 'here' in post-order.
- * This is the same as doing a topological sort in reverse order.
- */
-static int postorder(graph_t * g, node_t * v, node_t ** list)
+* This is the same as doing a topological sort in reverse order.
+*/
+static int postorder(graph_t * g, node_t * v, node_t ** list, int r)
 {
-    edge_t *e;
-    int i, cnt = 0;
+edge_t *e;
+int i, cnt = 0;
 
-    MARK(v) = TRUE;
-    if (ND_flat_out(v).size > 0) {
-	for (i = 0; (e = ND_flat_out(v).list[i]); i++) {
-	    if ((ND_node_type(e->head) == NORMAL) &
-		(NOT(agcontains(g, e->head))))
-		continue;
-	    if (ND_clust(e->head) != ND_clust(e->tail))
-		continue;
+MARK(v) = TRUE;
+if (ND_flat_out(v).size > 0) {
+    for (i = 0; (e = ND_flat_out(v).list[i]); i++) {
+	if (ED_weight(e) == 0) continue;
+	if ((ND_node_type(e->head) == NORMAL) &
+	    (NOT(agcontains(g, e->head))))
+	    continue;
+	if (ND_clust(e->head) != ND_clust(e->tail))
+	    continue;
 
-	    if (MARK(e->head) == FALSE)
-		cnt += postorder(g, e->head, list + cnt);
-	}
+	if (MARK(e->head) == FALSE)
+	    cnt += postorder(g, e->head, list + cnt, r);
     }
-    list[cnt++] = v;
-    return cnt;
+}
+assert(ND_rank(v) == r);
+list[cnt++] = v;
+return cnt;
 }
 
 static void flat_reorder(graph_t * g)
 {
-    int i, j, r, pos, n_search, local_in_cnt, local_out_cnt;
-    node_t *v, **left, **right, *t;
-    node_t **temprank = NULL;
-    edge_t *flat_e;
+int i, j, r, pos, n_search, local_in_cnt, local_out_cnt;
+node_t *v, **left, **right, *t;
+node_t **temprank = NULL;
+edge_t *flat_e, *e;
 
-    if (GD_has_flat_edges(g) == FALSE)
-	return;
-    for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
-	for (i = 0; i < GD_rank(g)[r].n; i++)
-	    MARK(GD_rank(g)[r].v[i]) = FALSE;
-	temprank = ALLOC(i + 1, temprank, node_t *);
-	pos = 0;
-	for (i = 0; i < GD_rank(g)[r].n; i++) {
-	    v = GD_rank(g)[r].v[i];
+if (GD_has_flat_edges(g) == FALSE)
+    return;
+for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
+    for (i = 0; i < GD_rank(g)[r].n; i++)
+	MARK(GD_rank(g)[r].v[i]) = FALSE;
+    temprank = ALLOC(i + 1, temprank, node_t *);
+    pos = 0;
+    for (i = 0; i < GD_rank(g)[r].n; i++) {
+	v = GD_rank(g)[r].v[i];
 
-	    local_in_cnt = local_out_cnt = 0;
-	    for (j = 0; j < ND_flat_in(v).size; j++) {
-		flat_e = ND_flat_in(v).list[j];
-		if (inside_cluster(g, flat_e->tail))
-		    local_in_cnt++;
-	    }
-	    for (j = 0; j < ND_flat_out(v).size; j++) {
-		flat_e = ND_flat_out(v).list[j];
-		if (inside_cluster(g, flat_e->head))
-		    local_out_cnt++;
-	    }
-	    if ((local_in_cnt == 0) && (local_out_cnt == 0))
-		temprank[pos++] = v;
-	    else {
-		if ((MARK(v) == FALSE) && (local_in_cnt == 0)) {
-		    left = temprank + pos;
-		    n_search = postorder(g, v, left);
-		    if (GD_flip(g) == FALSE) {
-			right = left + n_search - 1;
-			while (left < right) {
-			    t = *left;
-			    *left = *right;
-			    *right = t;
-			    left++;
-			    right--;
-			}
+	local_in_cnt = local_out_cnt = 0;
+	for (j = 0; j < ND_flat_in(v).size; j++) {
+	    flat_e = ND_flat_in(v).list[j];
+	    if ((ED_weight(flat_e) > 0) && (inside_cluster(g, flat_e->tail)))
+		local_in_cnt++;
+	}
+	for (j = 0; j < ND_flat_out(v).size; j++) {
+	    flat_e = ND_flat_out(v).list[j];
+	    if ((ED_weight(flat_e) > 0) && (inside_cluster(g, flat_e->head)))
+		local_out_cnt++;
+	}
+	if ((local_in_cnt == 0) && (local_out_cnt == 0))
+	    temprank[pos++] = v;
+	else {
+	    if ((MARK(v) == FALSE) && (local_in_cnt == 0)) {
+		left = temprank + pos;
+		n_search = postorder(g, v, left, r);
+		if (GD_flip(g) == FALSE) {
+		    right = left + n_search - 1;
+		    while (left < right) {
+			t = *left;
+			*left = *right;
+			*right = t;
+			left++;
+			right--;
 		    }
-		    pos += n_search;
 		}
+		pos += n_search;
 	    }
 	}
-	if (pos)
+    }
+    if (pos) {
+	for (i = 0; i < GD_rank(g)[r].n; i++) {
+		    v = GD_rank(g)[r].v[i] = temprank[i];
+		    ND_order(v) = i + (GD_rank(g)[r].v - GD_rank(Root)[r].v);
+	}
+    
+	    /* nonconstraint flat edges must be made LR */
 	    for (i = 0; i < GD_rank(g)[r].n; i++) {
-		v = GD_rank(g)[r].v[i] = temprank[i];
-		ND_order(v) = i + (GD_rank(g)[r].v - GD_rank(Root)[r].v);
+	    	v = GD_rank(g)[r].v[i];
+	    	if (ND_flat_out(v).list) {
+				for (j = 0; (e = ND_flat_out(v).list[j]); j++) {
+					if (ND_order(e->head) < ND_order(e->tail)) {
+						/*assert(ED_weight(e) == 0);*/
+						delete_flat_edge(e);
+						j--;
+						flat_rev(g,e);
+					}
+				}
+			}
 	    }
+	}
 	/* else do no harm! */
 	GD_rank(Root)[r].valid = FALSE;
     }
@@ -1399,8 +1427,10 @@ void check_order(void)
 
     for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	assert(GD_rank(g)[r].v[GD_rank(g)[r].n] == NULL);
-	for (i = 0; v = GD_rank(g)[r].v[i]; i++)
+	for (i = 0; v = GD_rank(g)[r].v[i]; i++) {
+	    assert(ND_rank(v) == r);
 	    assert(ND_order(v) == i);
+	}
     }
 }
 #endif
