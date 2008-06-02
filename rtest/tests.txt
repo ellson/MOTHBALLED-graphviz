@@ -8,7 +8,7 @@
 #     layout_alg output_format additional_flags
 #  
 # For example, the test
-#   shapes
+#   Shapes
 #   shapes.dot
 #   dot ps
 #   neato png "-Gsize=3,3 -Ncolor=red"
@@ -261,3 +261,7 @@ cairo
 dot ps:cairo 
 dot png:cairo 
 dot svg:cairo 
+
+flatedge
+=
+dot dot
