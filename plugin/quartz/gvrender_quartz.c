@@ -27,6 +27,9 @@
 
 #include "gvplugin_quartz.h"
 
+static CGFloat dashed[] = {6.0};
+static CGFloat dotted[] = {2.0, 6.0};
+
 static void quartzgen_begin_job(GVJ_t *job)
 {
 	if (!job->external_context)
@@ -240,6 +243,27 @@ static void quartzgen_path(GVJ_t *job, int filled)
 	if (filled)
 		CGContextSetRGBFillColor(context, job->obj->fillcolor.u.RGBA [0], job->obj->fillcolor.u.RGBA [1], job->obj->fillcolor.u.RGBA [2], job->obj->fillcolor.u.RGBA [3]);
 	CGContextSetRGBStrokeColor(context, job->obj->pencolor.u.RGBA [0], job->obj->pencolor.u.RGBA [1], job->obj->pencolor.u.RGBA [2], job->obj->pencolor.u.RGBA [3]);
+	
+	/* set up line style */
+	const CGFloat *segments;
+	size_t segment_count;
+	switch (job->obj->pen) {
+	case PEN_DASHED:
+		segments = dashed;
+		segment_count = sizeof(dashed)/sizeof(CGFloat);
+		break;
+	case PEN_DOTTED:
+		segments = dotted;
+		segment_count = sizeof(dotted)/sizeof(CGFloat);
+		break;
+	default:
+		segments = NULL;
+		segment_count = 0;
+		break;
+	}
+	CGContextSetLineDash(context, 0.0, segments, segment_count);
+
+	/* set up line width */
 	CGContextSetLineWidth(context, job->obj->penwidth); // *job->scale.x);
 	
 	/* draw the path */
