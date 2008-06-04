@@ -126,3 +126,16 @@ to layout_type in that file.
 
 Changes need to be made to any applications, such as gvedit, that
 statically know about layout algorithms.
+
+==================
+
+Software configuration - automake
+
+1. In lib/xxxgen, provide a Makefile.am (based on a simple example
+3. In lib/Makefile.am, add xxxgen to SUBDIRS
+2. In configure.ac, add lib/xxxgen/Makefile to AC_CONFIG_FILES.
+like lib/fdpgen/Makefile.am)
+4. In lib/plugin/neato_layout/Makefile.am, insert
+	$(top_builddir)/lib/xxxgen/libxxxgen_C.la 
+	in libgvplugin_neato_layout_C_la_LIBADD
+5. Remember to run autogen.sh because on its own configure can guess wrong.
