@@ -150,6 +150,13 @@ variables should be set when the command is run, for example,<BR>
 <CODE>
 SERVER_NAME=xxx GV_FILE_PATH="images/" dot -Tpng -o x.png x.dot
 </CODE>
+<DT><A NAME=d:GVBINDIR><STRONG>GVBINDIR</STRONG></A>
+<DD>
+Indicates which directory contains the Graphviz config file and
+plug-in libraries. If it is defined, the value overrides any other
+mechanism for finding this directory. If Graphviz is properly installed,
+it should not be needed, though it can be useful for relocation on
+platforms not running Linux or Windows.
 </DL>
 </BODY>
 </HTML>
