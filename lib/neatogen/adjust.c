@@ -30,7 +30,7 @@
 #include "heap.h"
 #include "hedges.h"
 #include "digcola.h"
-#if ((HAVE_GTS || HAVE_TRIANGLE) && SFDP)
+#if ((defined(HAVE_GTS) || defined(HAVE_TRIANGLE)) && defined(SFDP))
 #include "sfdp.h"
 #endif
 #ifdef IPSEPCOLA

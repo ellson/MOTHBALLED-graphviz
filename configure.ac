@@ -2503,6 +2503,15 @@ fi
 fi
 AC_SUBST(TKINT_INCLUDES)
 
+# ------------------------------------
+# triangle.[ch]
+
+if test -f "lib/sfdpgen/triangle.c"; then
+if test -f "lib/sfdpgen/triangle.h"; then
+    AC_DEFINE_UNQUOTED(HAVE_TRIANGLE,1,[Define if triangle.[ch] are available.])
+fi
+fi
+
 # ----------------------------------
 # tcl/tk pkgIndex.tcl generation
 
