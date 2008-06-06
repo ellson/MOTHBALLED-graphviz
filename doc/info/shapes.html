@@ -398,6 +398,7 @@ Attribute values must appear in double quotes.
   CELLBORDER="<I>value</I>"
   CELLPADDING="<I>value</I>"
   CELLSPACING="<I>value</I>"
+  COLOR="<I>color</I>"
   FIXEDSIZE="FALSE|TRUE"
   HEIGHT="<I>value</I>"
   HREF="<I>value</I>"
@@ -418,6 +419,7 @@ Attribute values must appear in double quotes.
   CELLPADDING="<I>value</I>"
   CELLSPACING="<I>value</I>"
   COLSPAN="<I>value</I>"
+  COLOR="<I>color</I>"
   FIXEDSIZE="FALSE|TRUE"
   HEIGHT="<I>value</I>"
   HREF="<I>value</I>"
@@ -521,6 +523,18 @@ The maximum value is 255.
 specifies the space, in points, between cells in a table and between
 a cell and the table's border.  The default is 2.
 The maximum value is 127.
+</BLOCKQUOTE>
+
+<B><I><FONT SIZE=-1>COLOR="color"</FONT></I></B>
+<BLOCKQUOTE>
+sets the color of the border within the scope of
+&lt;TABLE&gt;...&lt;/TABLE&gt;,
+or &lt;TD&gt;...&lt;/TD&gt;.
+This color can be 
+overridden by a <B><I>COLOR</I></B> attribute in descendents.
+By default, the color is determined by the
+<A HREF="attrs.html#:color">color</A> attribute of
+the corresponding node, edge or graph.
 </BLOCKQUOTE>
 
 <B><I><FONT SIZE=-1>COLOR="color"</FONT></I></B>
