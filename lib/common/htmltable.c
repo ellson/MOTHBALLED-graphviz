@@ -578,6 +578,7 @@ void free_html_data(htmldata_t * dp)
     free(dp->target);
     free(dp->title);
     free(dp->bgcolor);
+    free(dp->pencolor);
 }
 
 void free_html_text(htmltxt_t* t)
@@ -1764,7 +1765,7 @@ int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
 
     if (lbl->kind == HTML_TBL) {
 	if (! lbl->u.tbl->data.pencolor)
-	    lbl->u.tbl->data.pencolor = getPenColor(obj);
+	    lbl->u.tbl->data.pencolor = strdup(getPenColor(obj));
 	rv |= size_html_tbl(g, lbl->u.tbl, NULL, &env);
 	wd2 = (lbl->u.tbl->data.box.UR.x + 1) / 2;
 	ht2 = (lbl->u.tbl->data.box.UR.y + 1) / 2;
