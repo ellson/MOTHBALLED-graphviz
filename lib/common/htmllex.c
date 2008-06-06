@@ -114,6 +114,12 @@ static int bgcolorfn(htmldata_t * p, char *v)
     return 0;
 }
 
+static int pencolorfn(htmldata_t * p, char *v)
+{
+    p->pencolor = strdup(v);
+    return 0;
+}
+
 static int hreffn(htmldata_t * p, char *v)
 {
     p->href = strdup(v);
@@ -330,7 +336,7 @@ static int colspanfn(htmlcell_t * p, char *v)
     return 0;
 }
 
-static int colorfn(htmlfont_t * p, char *v)
+static int fontcolorfn(htmlfont_t * p, char *v)
 {
     p->color = strdup(v);
     return 0;
@@ -389,6 +395,7 @@ static attr_item tbl_items[] = {
     {"cellborder", (attrFn) cellborderfn},
     {"cellpadding", (attrFn) cellpaddingfn},
     {"cellspacing", (attrFn) cellspacingfn},
+    {"color", (attrFn) pencolorfn},
     {"fixedsize", (attrFn) fixedsizefn},
     {"height", (attrFn) heightfn},
     {"href", (attrFn) hreffn},
@@ -407,6 +414,7 @@ static attr_item cell_items[] = {
     {"border", (attrFn) borderfn},
     {"cellpadding", (attrFn) cellpaddingfn},
     {"cellspacing", (attrFn) cellspacingfn},
+    {"color", (attrFn) pencolorfn},
     {"colspan", (attrFn) colspanfn},
     {"fixedsize", (attrFn) fixedsizefn},
     {"height", (attrFn) heightfn},
@@ -421,7 +429,7 @@ static attr_item cell_items[] = {
 };
 
 static attr_item font_items[] = {
-    {"color", (attrFn) colorfn},
+    {"color", (attrFn) fontcolorfn},
     {"face", (attrFn) facefn},
     {"point-size", (attrFn) ptsizefn},
 };
