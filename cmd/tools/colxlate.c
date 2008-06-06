@@ -75,9 +75,11 @@ char *colorxlate(char *str, char *buf)
 {
     static hsbcolor_t *last;
     unsigned char canon[128];
-    char *p;
+    char *p, *cp = NULL;
     hsbcolor_t fake;
 
+    if ((cp = strstr(str, ":"))) /* consider only 1st element of colorlists */
+	*cp = '\0';
     if ((last == NULL) || (last->name[0] != str[0])
 	|| (strcmp(last->name, str))) {
 	fake.name = (char *) canoncolor(str, canon);
@@ -97,6 +99,8 @@ char *colorxlate(char *str, char *buf)
     } else
 	sprintf(buf, "%.3f %.3f %.3f", ((double) last->h) / 255,
 		((double) last->s) / 255, ((double) last->b) / 255);
+    if (cp)  /* restore colorlists */
+	cp = ":";
     return buf;
 }
 #else
