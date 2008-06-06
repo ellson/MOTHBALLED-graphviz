@@ -694,7 +694,10 @@ void gvrender_set_fillcolor(GVJ_t * job, char *name)
 {
     gvrender_engine_t *gvre = job->render.engine;
     gvcolor_t *color = &(job->obj->fillcolor);
+    char *cp = NULL;
 
+    if ((cp = strstr(name, ":"))) /* if its a color list, then use only first */
+	*cp = '\0';
     if (gvre) {
 	gvrender_resolve_color(job->render.features, name, color);
 	if (gvre->resolve_color)
@@ -708,6 +711,8 @@ void gvrender_set_fillcolor(GVJ_t * job, char *name)
 	    cg->set_fillcolor(name);
     }
 #endif
+    if (cp)
+	*cp = ':';
 }
 
 void gvrender_set_style(GVJ_t * job, char **s)
