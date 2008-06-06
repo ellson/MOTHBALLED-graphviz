@@ -1763,7 +1763,8 @@ int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
     }
 
     if (lbl->kind == HTML_TBL) {
-	lbl->u.tbl->data.pencolor = getPenColor(obj);
+	if (! lbl->u.tbl->data.pencolor)
+	    lbl->u.tbl->data.pencolor = getPenColor(obj);
 	rv |= size_html_tbl(g, lbl->u.tbl, NULL, &env);
 	wd2 = (lbl->u.tbl->data.box.UR.x + 1) / 2;
 	ht2 = (lbl->u.tbl->data.box.UR.y + 1) / 2;
