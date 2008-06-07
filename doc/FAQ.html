@@ -1,9 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
-<HTML><HEAD><TITLE>Graphviz FAQ 2006-07-27</TITLE>
+<HTML><HEAD><TITLE>Graphviz FAQ 2008-06-06</TITLE>
 <META HTTP-EQUIV="content-type" CONTENT="text/html; charset=utf-8">
 </HEAD><BODY>
-<H1>Graphviz FAQ 2006-07-27</H1>
+<H1>Graphviz FAQ 2008-06-06</H1>
 
 <A HREF="mailto:gviz-bugs@research.att.com">The Graphviz Project</A>
 <p>
@@ -158,7 +158,11 @@ digraph G {
 <B>Q. How can I generate graph layouts in PDF?</B>
 </A>
 <P>
-First, create Postscript output, then use an external converter from
+Recent versions of graphviz with the CairoPango based drivers
+can generate PDF directly with the <tt>-Tpdf</tt> command line option.
+This this first.
+<P>
+Otherwise, create Postscript output, then use an external converter from
 Postscript to PDF.
 For example,<BR>
 <tt>dot -Tps | epsf2pdf -o file.pdf</tt><br>
@@ -321,10 +325,9 @@ Pixelglow Graphviz hasn't been updated in a long time, maybe mid 2004.)
 On the Linux bleeding edge, Graphviz has an optional plugin to use
 the <A HREF="http://www.cairographics.org">cairo</A> back end,
 which has antialiased, path-based graphics.  If you want this,
-you must install cairo, which is not part of Graphviz.  Cairo can be
-built from source, and binary RPMs for Fedora Core 5 (test 2) are available.
-Then you need to install the optional <A HREF="http://www.graphviz.org/pub/graphviz/CURRENT/">graphviz-cairo</A> plugin.  (n.b. we tried
-cairo-1.0.2-1.fc4.remi for FC4 - it has errors.)
+you must install cairo, which is not part of Graphviz.  Cairo is
+available in recent versions of Fedora linux, or it can be built
+from source.
 <P>
 <A name=Q9 HREF=#Q9>
 <B>Q9</A>. I can only get 11x17 output.</B>
@@ -984,7 +987,7 @@ sodipodi is faster but both make sharp images - isn't that the
 beauty of path-based graphics?
 <P>
 <A name=Q39>
-<B>Q. libexpat is reported as containing a virus or as a security hole.
+<B>Q39. libexpat is reported as containing a virus or as a security hole.
 Is this a real problem?</B>
 </A>
 <P>
@@ -994,7 +997,6 @@ See <A HREF="http://www.pcreview.co.uk/forums/thread-1689630.php">http://www.pcr
 <P>
 <A name=Q40 HREF=#Q40>
 <B>Q40</A>. What is the coordinate transformation between the graph bb and a .png image?</B>
-
 <OL>
 <LI>
 The bb is expanded by 4 graph-units in all directions (pad) to allow for finite line widths.
@@ -1025,6 +1027,40 @@ coordinates in graph-units, and composite transformation data consisting
 of: scaling, rotation, and translation.  (used by svg, cairo, ps, renderers)
 <LI>
 coordinates pre-transformed into device units. 
-<LI>
+</UL>
+<P>
+<A name=Q41 HREF=#Q41>
+<B>Q41</A>. File associations are broken in Mac OSX.  Clicking on a <tt>dot</tt> file doesn't open Graphviz.</B>
+<p>
+The immediate fix is to rebuild the Launch Services database like this:
+<p>
+1. 	Trash all other versions of Graphviz.app on your system, except for the just installed one. You can use either of these command lines to find it:
+<p>
+<pre>locate Graphviz.app</pre>
+<p>
+or
+<p>
+<pre>find / -name "Graphviz.app"</pre>
+<p>
+2.	Run the following command line:
+<p>
+<pre>/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -kill -r / </pre>
+<p>
+or
+<p>
+<pre>/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -kill -r /Applications</pre>
+<p>
+which deletes the Launch Services database and rebuilds it from existing apps. You may need to sudo to do this.
+<p>
+3.	Verify that the Graphviz.app can now open .dot files and Microsoft Word can still open its own .dot files.
+<p>
+One artifact of this will be that Microsoft .dot files may appear with the Graphviz document icon. Unfortunately there doesn't seem any a priori way of getting the system to determine whether an arbitrary .dot file belongs to Word or Graphviz -- you can choose which application to open with by right-clicking or control-clicking on the document icon and choosing the app.
+<p>
+As for why the Launch Services database doesn't automatically register Graphviz,
+we're not entirely sure but suspect this only happens if both conditions
+hold true:
+<p>
+A.	The user had installed Microsoft Word.<br>
+B.	There is also another version of Graphviz.app present in the system. (Possibly the previous version 1.13 released by Pixelglow Software)<br>
 </BODY>
 </HTML>
