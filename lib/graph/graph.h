@@ -204,6 +204,7 @@ extern "C" {
     extern void agwarningf(char *fmt, ...);
 
     extern char *agstrdup(char *);
+    extern char *agstrdup_html(char *s);
     extern void agstrfree(char *);
 
     typedef enum { AGNODE = 1, AGEDGE, AGGRAPH } agobjkind_t;

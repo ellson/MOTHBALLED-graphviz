@@ -173,7 +173,6 @@ extern "C" {
     int agparse(void);
     void agpopproto(Agraph_t *);
     void agpushproto(Agraph_t *);
-    char *agstrdup_html(char *s);
     int agtoken(char *);
     int aglinenumber(void);
     void agwredge(Agraph_t *, FILE *, Agedge_t *, int);
