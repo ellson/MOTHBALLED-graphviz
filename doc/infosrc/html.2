@@ -28,6 +28,7 @@ Attribute values must appear in double quotes.
   CELLBORDER="<I>value</I>"
   CELLPADDING="<I>value</I>"
   CELLSPACING="<I>value</I>"
+  COLOR="<I>color</I>"
   FIXEDSIZE="FALSE|TRUE"
   HEIGHT="<I>value</I>"
   HREF="<I>value</I>"
@@ -47,6 +48,7 @@ Attribute values must appear in double quotes.
   BORDER="<I>value</I>"
   CELLPADDING="<I>value</I>"
   CELLSPACING="<I>value</I>"
+  COLOR="<I>color</I>"
   COLSPAN="<I>value</I>"
   FIXEDSIZE="FALSE|TRUE"
   HEIGHT="<I>value</I>"
@@ -156,11 +158,17 @@ The maximum value is 127.
 <B><I><FONT SIZE=-1>COLOR="color"</FONT></I></B>
 <BLOCKQUOTE>
 sets the color of the font within the scope of
-&lt;FONT&gt;...&lt;/FONT&gt;.
+&lt;FONT&gt;...&lt;/FONT&gt;, or the border color
+of the table or cell within the scope of
+&lt;TABLE&gt;...&lt;/TABLE&gt;,
+or &lt;TD&gt;...&lt;/TD&gt;.
 This color can be 
 overridden by a <B><I>COLOR</I></B> attribute in descendents.
 By default, the font color is determined by the
 <A HREF="attrs.html#:fontcolor">fontcolor</A> attribute of
+the corresponding node, edge or graph, and the border color
+is determined by the
+<A HREF="attrs.html#:color">color</A> attribute of
 the corresponding node, edge or graph.
 </BLOCKQUOTE>
 
@@ -214,7 +222,7 @@ sets the size of the font, in points, used within the scope of
 &lt;FONT&gt;...&lt;/FONT&gt;.
 This can be 
 overridden by a <B><I>POINT-SIZE</I></B> attribute in descendents.
-By default, the font name is determined by the
+By default, the font size is determined by the
 <A HREF="attrs.html#:fontsize">fontsize</A> attribute of the corresponding
 node, edge or graph.
 </BLOCKQUOTE>
