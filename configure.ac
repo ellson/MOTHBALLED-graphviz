@@ -2587,6 +2587,21 @@ fi
 AM_CONDITIONAL(WITH_SMYRNA, [test "x$use_smyrna" = "xYes"])
 
 dnl -----------------------------------
+dnl CGRAPH 
+
+AC_ARG_WITH(cgraph,
+  [AC_HELP_STRING([--with-cgraph=yes], [Use CGRAPH library])],
+  [], [with_cgraph=yes])
+
+if test "x$with_cgraph" != "xyes"; then
+  use_cgraph="No"
+else
+  use_cgraph="Yes"
+  AC_DEFINE_UNQUOTED(USE_CGRAPH,1,[Define if you want CGRAPH])
+fi
+AM_CONDITIONAL(WITH_CGRAPH, [test "x$use_cgraph" = "xYes"])
+
+dnl -----------------------------------
 dnl DIGCOLA 
 
 AC_ARG_WITH(digcola,
@@ -2934,6 +2949,7 @@ echo ""
 echo "graphviz-$VERSION will be compiled with the following:"
 echo ""
 echo "options:"
+echo "  cgraph:        $use_cgraph"
 echo "  digcola:       $use_digcola"
 echo "  ipsepcola:     $use_ipsepcola"
 echo "  sfdp:          $use_sfdp"
