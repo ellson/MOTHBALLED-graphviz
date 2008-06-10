@@ -1,9 +1,18 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+if WITH_CGRAPH
+   GRAPH_LIBS=$(top_builddir)/lib/cgraph/libcgraph.la
+   AGRAPH_LIBS=$(top_builddir)/lib/cgraph/libcgraph.la
+else
+   GRAPH_LIBS=$(top_builddir)/lib/graph/libgraph.la
+   AGRAPH_LIBS=$(top_builddir)/lib/agraph/libagraph.la
+endif
+
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
-        -I$(top_srcdir)/lib/graph \
+	-I$(top_srcdir)/lib/cgraph \
+	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/agraph \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/pathplan \
@@ -39,62 +48,62 @@ gxl2dot_SOURCES = cvtgxl.c dot2gxl.c gxl2dot.c
 
 gxl2dot_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/agraph/libagraph.la @EXPAT_LIBS@ \
-	$(top_builddir)/lib/graph/libgraph.la
+	$(AGRAPH_LIBS) @EXPAT_LIBS@ \
+	$(GRAPH_LIBS)
 
 sccmap_SOURCES = sccmap.c
 
 sccmap_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/agraph/libagraph.la
+	$(AGRAPH_LIBS)
 
 ccomps_SOURCES = ccomps.c
 
 ccomps_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/graph/libgraph.la
+	$(GRAPH_LIBS)
 
 tred_SOURCES = tred.c
 
 tred_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/graph/libgraph.la
+	$(GRAPH_LIBS)
 
 unflatten_SOURCES = unflatten.c
 
 unflatten_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/agraph/libagraph.la
+	$(AGRAPH_LIBS)
 
 acyclic_SOURCES = acyclic.c
 
 acyclic_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/graph/libgraph.la
+	$(GRAPH_LIBS)
 
 nop_SOURCES = nop.c
 
 nop_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/graph/libgraph.la
+	$(GRAPH_LIBS)
 
 gvcolor_SOURCES = gvcolor.c colxlate.c colortbl.h
 
 gvcolor_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/graph/libgraph.la
+	$(GRAPH_LIBS)
 
 bcomps_SOURCES = bcomps.c
 
 bcomps_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/graph/libgraph.la
+	$(GRAPH_LIBS)
 
 gc_SOURCES = gc.c
 
 gc_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/graph/libgraph.la
+	$(GRAPH_LIBS)
 
 gvpack_SOURCES = gvpack.c gvpack_builtins.c
 
@@ -107,7 +116,7 @@ dijkstra_SOURCES = dijkstra.c
 
 dijkstra_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/agraph/libagraph.la
+	$(AGRAPH_LIBS)
 
 .1.pdf:
 	-groff -Tps -man $< | ps2pdf - - >$@
