@@ -534,7 +534,7 @@ double ptToLine2 (pointf a, pointf b, pointf p)
 
 #define SMALL 0.0000000001
 
-static pointf
+pointf
 subPt (pointf a, pointf b)
 {
     pointf c;
@@ -544,7 +544,7 @@ subPt (pointf a, pointf b)
     return c;
 }
 
-static pointf
+pointf
 perp (pointf a)
 {
     pointf c;
@@ -560,7 +560,7 @@ dot (pointf a, pointf b)
     return (a.x*b.x + a.y*b.y);
 }
 
-static pointf
+pointf
 scale (double c, pointf a)
 {
     pointf b;

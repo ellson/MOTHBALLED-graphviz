@@ -23,9 +23,13 @@ extern "C" {
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+#ifdef HAVE_POINTF_S
+    typedef pointf Point;
+#else
     typedef struct Point {
 	double x, y;
     } Point;
+#endif
 
     extern Point origin;
 
@@ -37,7 +41,7 @@ extern "C" {
 
     extern void geominit(void);
     extern double dist_2(Point *, Point *);	/* Distance squared between two points */
-    extern void subPt(Point * a, Point b, Point c);
+    extern void subpt(Point * a, Point b, Point c);
     extern void addPt(Point * a, Point b, Point c);
     extern double area_2(Point a, Point b, Point c);
     extern int leftOf(Point a, Point b, Point c);

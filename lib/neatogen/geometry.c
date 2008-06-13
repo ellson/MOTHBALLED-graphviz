@@ -45,7 +45,7 @@ double dist_2(Point * pp, Point * qp)
     return (dx * dx + dy * dy);
 }
 
-void subPt(Point * a, Point b, Point c)
+void subpt(Point * a, Point b, Point c)
 {
     a->x = b.x - c.x;
     a->y = b.y - c.y;

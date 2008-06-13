@@ -384,8 +384,8 @@ static int edgesIntersect(Point * P, Point * Q, int n, int m)
 	a1 = (a + n - 1) % n;
 	b1 = (b + m - 1) % m;
 
-	subPt(&A, P[a], P[a1]);
-	subPt(&B, Q[b], Q[b1]);
+	subpt(&A, P[a], P[a1]);
+	subpt(&B, Q[b], Q[b1]);
 
 	cross = area_2(origin, A, B);
 	bHA = leftOf(P[a1], P[a], Q[b]);
