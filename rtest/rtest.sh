@@ -9,6 +9,18 @@
 # on architecture, etc. Maintain common ones in REFDIR.
 #  Report differences with shared version and with new output.
 
+# bsh, linux-ksh filter
+bar=1;echo foo | read bar<<- \!         
+2
+!
+if ((bar==1))
+then
+  echo "Graphviz test suite requires ksh93"
+  exit 1
+fi
+# csh, ksh88 filter
+(( 1.5 == 1 )) && { echo "Graphviz test suite requires ksh93"; exit 1; } 
+
 TESTFILE=tests.txt     # Test specifications
 GRAPHDIR=graphs        # Directory of input graphs and data
 OUTDIR=ndata           # Directory for test output
