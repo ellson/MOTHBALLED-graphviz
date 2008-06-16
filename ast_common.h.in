@@ -211,4 +211,8 @@ typedef int ssize_t;
 #define MAXINT INT_MAX
 #endif
 
+#ifndef R_OK
+#define R_OK 4
+#endif
+
 #endif /*AST_COMMON_H*/
