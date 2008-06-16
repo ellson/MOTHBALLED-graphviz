@@ -26,6 +26,8 @@
 #endif
 #ifdef HAVE_UNISTD_H
 #include	<unistd.h>
+#else
+#include	<compat_unistd.h>
 #endif
 #include <gprstate.h>
 #ifdef USE_CGRAPH
