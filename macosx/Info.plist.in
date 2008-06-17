@@ -7,16 +7,20 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>dot</string>
+			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>Graph.icns</string>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/x-graphviz</string>
+			</array>
 			<key>CFBundleTypeName</key>
 			<string>GVDocumentTypeGraph</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>com.att.graphviz.dot</string>
-			</array>
 			<key>NSDocumentClass</key>
 			<string>GVDocument</string>
 		</dict>
