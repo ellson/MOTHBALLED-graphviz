@@ -1764,7 +1764,7 @@ int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
     }
 
     if (lbl->kind == HTML_TBL) {
-	if (! lbl->u.tbl->data.pencolor)
+	if (! lbl->u.tbl->data.pencolor && getPenColor(obj))
 	    lbl->u.tbl->data.pencolor = strdup(getPenColor(obj));
 	rv |= size_html_tbl(g, lbl->u.tbl, NULL, &env);
 	wd2 = (lbl->u.tbl->data.box.UR.x + 1) / 2;
