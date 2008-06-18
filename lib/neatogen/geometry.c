@@ -51,7 +51,7 @@ void subpt(Point * a, Point b, Point c)
     a->y = b.y - c.y;
 }
 
-void addPt(Point * c, Point a, Point b)
+void addpt(Point * c, Point a, Point b)
 {
     c->x = a.x + b.x;
     c->y = a.y + b.y;

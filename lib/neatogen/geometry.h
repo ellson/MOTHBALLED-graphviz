@@ -42,7 +42,7 @@ extern "C" {
     extern void geominit(void);
     extern double dist_2(Point *, Point *);	/* Distance squared between two points */
     extern void subpt(Point * a, Point b, Point c);
-    extern void addPt(Point * a, Point b, Point c);
+    extern void addpt(Point * a, Point b, Point c);
     extern double area_2(Point a, Point b, Point c);
     extern int leftOf(Point a, Point b, Point c);
     extern int intersection(Point a, Point b, Point c, Point d, Point * p);
