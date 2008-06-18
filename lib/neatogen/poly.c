@@ -502,10 +502,10 @@ int polyOverlap(Point p, Poly * pp, Point q, Poly * qp)
     Point oq, cq;
 
     /* translate bounding boxes */
-    addPt(&op, p, pp->origin);
-    addPt(&cp, p, pp->corner);
-    addPt(&oq, q, qp->origin);
-    addPt(&cq, q, qp->corner);
+    addpt(&op, p, pp->origin);
+    addpt(&cp, p, pp->corner);
+    addpt(&oq, q, qp->origin);
+    addpt(&cq, q, qp->corner);
 
     /* If bounding boxes don't overlap, done */
     if (!pintersect(op, cp, oq, cq))
