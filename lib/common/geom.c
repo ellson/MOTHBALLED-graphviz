@@ -535,6 +535,16 @@ double ptToLine2 (pointf a, pointf b, pointf p)
 #define SMALL 0.0000000001
 
 pointf
+addPt (pointf a, pointf b)
+{
+    pointf c;
+
+    c.x = a.x+b.x;
+    c.y = a.y+b.y;
+    return c;
+}
+
+pointf
 subPt (pointf a, pointf b)
 {
     pointf c;

@@ -75,6 +75,7 @@ extern void rect2poly(pointf *p);
 extern pointf scale(double c, pointf v);
 extern pointf perp(pointf v);
 extern pointf subPt(pointf v, pointf w);
+extern pointf addPt(pointf v, pointf w);
 
 extern int seg_intersect (pointf a, pointf b, pointf c, pointf d, pointf* x);
 #ifdef __cplusplus
