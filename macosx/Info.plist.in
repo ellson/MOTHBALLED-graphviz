@@ -6,6 +6,7 @@
 	<string>English</string>
 	<key>CFBundleDocumentTypes</key>
 	<array>
+		<!-- support older .dot extension -->
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
@@ -13,14 +14,25 @@
 			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>Graph.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>text/x-graphviz</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>GVDocumentTypeGraph</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>NSDocumentClass</key>
+			<string>GVDocument</string>
+		</dict>
+		<!-- support newer .gv extension -->
+		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string>Graph.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>GVDocumentTypeGraph</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.att.graphviz.graph</string>
+			</array>
 			<key>NSDocumentClass</key>
 			<string>GVDocument</string>
 		</dict>
@@ -39,6 +51,7 @@
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
 	<string>GRVZ</string>
+	<!-- use configure-generated version numbers -->
 	<key>CFBundleShortVersionString</key>
 	<string>@GRAPHVIZ_VERSION_MAJOR@.@GRAPHVIZ_VERSION_MINOR@</string>
 	<key>CFBundleVersion</key>
@@ -60,12 +73,12 @@
 			<key>UTTypeIconFile</key>
 			<string>Graph.icns</string>
 			<key>UTTypeIdentifier</key>
-			<string>com.att.graphviz.dot</string>
+			<string>com.att.graphviz.graph</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
-					<string>dot</string>
+					<string>gv</string>
 				</array>
 				<key>public.mime-type</key>
 				<array>
