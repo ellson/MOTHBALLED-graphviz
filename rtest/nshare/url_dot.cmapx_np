@@ -2,8 +2,8 @@
 <area shape="rect" href="http://www.graphviz.org/doc/info/lang.html" title="lang" alt="" coords="288,5,363,53"/>
 <area shape="rect" href="http://www.graphviz.org/doc/info/colors.html" title="&lt;TABLE&gt;" alt="" coords="33,163,97,197"/>
 <area shape="rect" href="http://www.graphviz.org/doc/info/output.html" title="&lt;TABLE&gt;" alt="" coords="5,148,125,212"/>
-<area shape="rect" href="lang&#45;&gt;colors" title="self" alt="" coords="288,36,296,44"/>
-<area shape="rect" href="lang&#45;&gt;colors" title="self" alt="" coords="87,147,95,155"/>
+<area shape="rect" href="lang-&gt;colors" title="self" alt="" coords="288,36,296,44"/>
+<area shape="rect" href="lang-&gt;colors" title="self" alt="" coords="87,147,95,155"/>
 <area shape="rect" href="http://www.graphviz.org/doc/info/command.html" title="command" alt="" coords="259,156,392,204"/>
 <area shape="rect" href="http://www.graphviz.org/doc/info/shapes.html" alt="" coords="321,49,329,57"/>
 <area shape="rect" href="http://www.graphviz.org/doc/info/shapes.html" alt="" coords="321,152,329,160"/>

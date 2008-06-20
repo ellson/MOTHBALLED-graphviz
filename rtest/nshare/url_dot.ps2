@@ -1,5 +1,5 @@
-%!PS-Adobe-2.0
-%%Creator: Graphviz version 2.17 (Mon Mar 10 18:55:03 UTC 2008)
+%!PS-Adobe-3.0 EPSF-3.0
+%%Creator: Graphviz version 2.19.0 (Fri Jun 20 21:16:04 UTC 2008)
 %%For: (ellson) John Ellson
 %%Title: G
 %%Pages: (atend)
@@ -189,7 +189,7 @@ gsave
 36 36 521 198 boxprim clip newpath
 1 1 set_scale 0 rotate 40 40 translate
 [ /CropBox [36 36 557 234] /PAGES pdfmark
-[ /Rect [ -4 -4 536 716 ]
+[ /Rect [ -4 -4 517 194 ]
   /Border [ 0 0 0 ]
   /Action << /Subtype /URI /URI (http://www.graphviz.org/doc/info/output.html) >>
   /Subtype /Link
