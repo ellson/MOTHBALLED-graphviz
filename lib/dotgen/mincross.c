@@ -567,7 +567,8 @@ static void cleanup2(graph_t * g, int nc)
 	    ND_order(v) = i;
 	    if (ND_flat_out(v).list) {
 		for (j = 0; (e = ND_flat_out(v).list[j]); j++)
-		    if (ED_edge_type(e) == FLATORDER) {
+		    if ((ED_edge_type(e) == FLATORDER) ||
+		        (ED_edge_type(e) == REVERSED)) {
 			delete_flat_edge(e);
 			free(e);
 			j--;
