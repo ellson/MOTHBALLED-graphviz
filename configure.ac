@@ -9,7 +9,7 @@ dnl                       even => stable series
 dnl For the micro number: 0 => in-progress development (from cvs)
 dnl                       timestamp => tar-file snapshot or release
 m4_define(graphviz_version_major, 2)
-m4_define(graphviz_version_minor, 20)
+m4_define(graphviz_version_minor, 21)
 m4_define(graphviz_version_micro, 0)
 
 AC_INIT([graphviz],
