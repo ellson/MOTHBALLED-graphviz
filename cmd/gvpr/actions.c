@@ -106,7 +106,7 @@ void nodeInduce(Agraph_t * selected)
 	return;
 #ifdef USE_CGRAPH
     for (n = agfstnode(selected); n; n = agnxtnode(selected, n)) {
-	for (e = agfstout(selected, n); e; e = agnxtout(selected, e)) {
+	for (e = agfstout(base, n); e; e = agnxtout(base, e)) {
 #else
     for (n = agfstnode(selected); n; n = agnxtnode(n)) {
 	for (e = agfstout(agsubnode(base, n, FALSE)); e; e = agnxtout(e)) {
