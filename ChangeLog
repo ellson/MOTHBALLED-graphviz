@@ -1,3 +1,14 @@
+June 20, 2008
+	- Release 2.20
+	- Preparing for Release 2.20
+	- Fixed bugs: 1315, 1317, 1324, 1336, 1343, 1364
+	- Add new "folder" shape for nodes.
+	- Migration of gvpr tools to libcgraph.   
+	- New output format -Teps  (encapsulated postscript)
+	- Various NetBSD and SuSE fixes incorporated
+	- ./configure now provides a summary
+	- RPM specfile updates for fedora-10 (no more string comparisons)
+	- Add MacOS support (Glen Low)
 March 10, 2008
 	- Release 2.18
 	- Fixed bugs: 1249, 1255, 1256, 1268, 1276, 1289, 1295, 1300, 
