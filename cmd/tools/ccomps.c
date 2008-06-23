@@ -439,6 +439,7 @@ static Agraph_t *deriveGraph(Agraph_t * g)
     for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
 	if (!strncmp(agnameof(subg), "cluster", 7)) {
 	    dn = agnode(dg, agnameof(subg), 1);
+	    agbindrec (dn, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
 	    ND_ptr(dn) = (Agobj_t*)subg;
 	    for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
 		ND_ptr(n) = (Agobj_t*)dn;
@@ -450,6 +451,7 @@ static Agraph_t *deriveGraph(Agraph_t * g)
 	if (ND_dn(n))
 	    continue;
 	dn = agnode(dg, agnameof(n), 1);
+	agbindrec (dn, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
 	ND_ptr(dn) = (Agobj_t*)n;
 	ND_ptr(n) = (Agobj_t*)dn;
     }
@@ -582,6 +584,7 @@ static int processClusters(Agraph_t * g)
 #ifdef USE_CGRAPH
 	dout = agsubg(dg, name, 1);
 	out = agsubg(g, name, 1);
+	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
 #else
 	dout = agsubg(dg, name);
 	out = agsubg(g, name);
@@ -616,6 +619,7 @@ static int processClusters(Agraph_t * g)
 #ifdef USE_CGRAPH
 	dout = agsubg(dg, name, 1);
 	out = agsubg(g, name, 1);
+	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
 #else
 	dout = agsubg(dg, name);
 	out = agsubg(g, name);
@@ -701,6 +705,7 @@ static int process(Agraph_t * g)
 	sprintf(name, PFX1, agnameof(g));
 #ifdef USE_CGRAPH
 	out = agsubg(g, name, 1);
+	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
 #else
 	out = agsubg(g, name);
 #endif
@@ -727,6 +732,7 @@ static int process(Agraph_t * g)
 	sprintf(name, "%s_component_%ld", agnameof(g), c_cnt);
 #ifdef USE_CGRAPH
 	out = agsubg(g, name, 1);
+	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
 #else
 	out = agsubg(g, name);
 #endif
