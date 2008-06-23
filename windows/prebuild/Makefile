@@ -542,7 +542,7 @@ $(ICONV_DIR)/src/Makefile: | $(LOCAL_BIN)/$(UNZIP_BIN) $(ICONV_DIR).zip
 	@echo
 	$(LOCAL_BIN)/$(UNZIP_BIN) $(ICONV_DIR).zip && patch -p0 <iconv.patch
 	
-$(ICONV_DIR).tar.gz:
+$(ICONV_DIR).zip:
 	@echo
 	@echo TRANSFERRING ICONV...
 	@echo
@@ -624,7 +624,7 @@ $(UNZIP_BIN_EXE):
 	@echo
 	@echo TRANSFERRING ZIP BIN...
 	@echo
-	$(WGET) $(ZIP_BIN_URL) || rm -f $(UNZIP_BIN_EXE)
+	$(WGET) $(UNZIP_BIN_URL) || rm -f $(UNZIP_BIN_EXE)
 	
 #
 # phony
