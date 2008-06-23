@@ -1,3 +1,6 @@
+June 23, 2008
+	- Release 2.20.1
+	- Fix bug in ccomps related to conversion to cgraph
 June 20, 2008
 	- Release 2.20
 	- Preparing for Release 2.20
