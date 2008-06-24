@@ -272,7 +272,7 @@ void drawtopologicalfisheye2(topview * t)
 		for (v = 0; v < hp->nvtxs[level]; v++)
 		{
 			{
-				ex_vtx_data *gg = hp->geom_graphs[level];
+				/* ex_vtx_data *gg = hp->geom_graphs[level]; */
 					double x0,y0;
 					if(get_temp_coords(t,level,v,&x0,&y0,&R,&G,&B))
 					{
@@ -332,7 +332,7 @@ int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y,f
 {
     Hierarchy *hp = t->h;
 	ex_vtx_data *gg = hp->geom_graphs[level];
-	v_data *g = hp->graphs[level];
+	/* v_data *g = hp->graphs[level]; */
 	int OAL,AL;
 	OAL=gg[v].old_active_level;
 	AL=gg[v].active_level;
@@ -533,8 +533,8 @@ void refresh_old_values(topview* t)
 		for (v = 0; v < hp->nvtxs[level]; v++)
 		{
 		    ex_vtx_data *gg = hp->geom_graphs[level];
-		    v_data *g = hp->graphs[level];
-			double x0,y0;
+		    /* v_data *g = hp->graphs[level]; */
+			/* double x0,y0; */
 			gg[v].old_physical_x_coord=gg[v].physical_x_coord;
 			gg[v].old_physical_y_coord=gg[v].physical_y_coord;
 			gg[v].old_active_level=gg[v].active_level;

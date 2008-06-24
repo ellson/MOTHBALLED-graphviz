@@ -14,6 +14,7 @@
 **********************************************************/
 
 #include "topviewdata.h"
+#include "btree.h"
 #include <memory.h>
 
 static int validate_group_node(tv_node * TV_Node, char *regex_string)

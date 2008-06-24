@@ -214,7 +214,7 @@ static int drawtopviewnodes(Agraph_t * g)
     int ind = 0;
     float dotsize = 0;
     if (view->zoom > NODE_ZOOM_LIMIT) {
-	dotsize = 5 / view->zoom * -1;
+	dotsize = 50 / view->zoom * -1;
 	if (dotsize > 1)
 	    glPointSize(dotsize);
 	else
@@ -1119,7 +1119,7 @@ static glCompSet *glcreate_gl_topview_menu()
     glCompPanel *p;
     glCompButton *b;
     glCompLabel *l;
-	GtkRequisition requisition;
+	/* GtkRequisition requisition; */
 
     if (!smyrna_icon_pan) {
 #ifdef _WIN32
