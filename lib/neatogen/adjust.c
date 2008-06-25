@@ -978,13 +978,13 @@ sepFactor(graph_t* g)
 	pmargin.doAdd = 1;
     }
     if (Verbose)
-	fprintf (stderr, "Node separation: add %d (%f,%f)\n",
+	fprintf (stderr, "Node separation: add=%d (%f,%f)\n",
 	    pmargin.doAdd, pmargin.x, pmargin.y);
     return pmargin;
 }
 
 /* esepFactor:
- * This value should be independent of the sep value used to expand
+ * This value should be smaller than the sep value used to expand
  * nodes during adjustment. If not, when the adjustment pass produces
  * a fairly tight layout, the spline code will find that some nodes
  * still overlap.
@@ -996,12 +996,15 @@ esepFactor(graph_t* g)
     char*  marg;
 
     if ((marg = agget(g, "esep")) && parseFactor(marg, &pmargin, 1.0)) {
-	return pmargin;
     }
-    if ((marg = agget(g, "sep")) && parseFactor(marg, &pmargin, 1.0/SEPFACT)) {
-	return pmargin;
+    else if ((marg = agget(g, "sep")) && parseFactor(marg, &pmargin, 1.0/SEPFACT)) {
     }
-    pmargin.x = pmargin.y = SEPFACT*DFLT_MARGIN;
-    pmargin.doAdd = 1;
+    else {
+	pmargin.x = pmargin.y = SEPFACT*DFLT_MARGIN;
+	pmargin.doAdd = 1;
+    }
+    if (Verbose)
+	fprintf (stderr, "Edge separation: add=%d (%f,%f)\n",
+	    pmargin.doAdd, pmargin.x, pmargin.y);
     return pmargin;
 }
