@@ -62,6 +62,7 @@ extern "C" {
     } htmltxt_t;
 #endif
 	
+	/* atomic unit of text emitted using a single htmlfont_t */
     typedef struct {
 	char *str;
 	char *xshow;
@@ -72,6 +73,7 @@ extern "C" {
 	double size, yoffset_layout, yoffset_centerline;
     } textitem_t;
 	
+	/* line of textitems_t */
     typedef struct {
 	textitem_t *items;
 	short nitems;

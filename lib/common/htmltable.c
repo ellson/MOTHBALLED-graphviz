@@ -115,7 +115,6 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 {
     int i,j;
     double tmp, center_x, left_x, right_x, fsize_;
-    double offset;
     char *fname_ , *fcolor_;
     textpara_t tl;
     pointf p_ = {0.0, 0.0};
@@ -134,25 +133,22 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 
     gvrender_begin_context(job);
     for(i=0; i<nparas; i++) {
+	/* set p.x to leftmost point where the line of text begins */
 	switch (paras[i].just) {
 	case 'l':
-	    p_.x = left_x;
 	    p.x = left_x;
 	    break;
 	case 'r':
-	    p_.x = right_x;
-	    p.x = right_x;		
+	    p.x = right_x - paras[i].size;
 	    break;
 	default:
 	case 'n':
-	    p_.x = center_x;
-	    p.x = center_x;
+	    p.x = center_x - paras[i].size/2.0;
 	    break;
 	}
 	p_.y -= paras[i].lfsize;  /* move to current base line */
 
 	ti = paras[i].items;
-	offset = 0.0;
 	for(j=0; j<paras[i].nitems; j++) {
 	    if (ti->font && (ti->font->size > 0))
 		fsize_ = ti->font->size;
@@ -177,13 +173,18 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	    tl.yoffset_centerline = ti->yoffset_centerline;
 	    tl.postscript_alias = ti->postscript_alias;
 	    tl.layout = ti->layout;
-	    tl.width = paras[i].size;
+	    tl.width = ti->size;
 	    tl.height = paras[i].lfsize;
-	    tl.just = paras[i].just;
 
+	    tl.just = 'l';
+	    p_.x = p.x;
+#if 0
+/* or */
+	    tl.just = 'c';
+	    p_.x = p.x + (ti->size/2.0);
+#endif
 	    gvrender_textpara(job, p_, &tl);
-	    offset += ti->size;
-	    p_.x = p.x + offset;
+	    p.x += ti->size;
             ti++;
 	}
     }
