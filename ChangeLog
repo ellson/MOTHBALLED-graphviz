@@ -1,8 +1,11 @@
+June 25, 2008
+	- Release 2.20.2
+	- Fix bug in HTML-like labels 
 June 23, 2008
 	- Release 2.20.1
 	- Fix bug in ccomps related to conversion to cgraph
 June 20, 2008
-	- Release 2.20
+	- Release 2.20.0
 	- Preparing for Release 2.20
 	- Fixed bugs: 1315, 1317, 1324, 1336, 1343, 1364
 	- Add new "folder" shape for nodes.
