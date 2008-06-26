@@ -47,6 +47,7 @@ extern "C" {
     extern void cat_libfile(FILE *of, char **arglib, char **stdlib);
     extern void cat_preamble(GVJ_t *job, char **arglib);
 
+    extern boolean mapbool(char *);
     extern int maptoken(char *, char **, int *);
 
     extern int test_toggle(void);

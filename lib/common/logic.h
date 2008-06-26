@@ -57,7 +57,6 @@ typedef unsigned char bool;
 #define NIL(type) ((type)0)
 #endif
 
-    extern unsigned char mapbool(char *);
 #ifdef __cplusplus
 }
 #endif

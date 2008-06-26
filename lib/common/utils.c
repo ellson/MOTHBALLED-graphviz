@@ -451,7 +451,7 @@ int maptoken(char *p, char **name, int *val)
     return val[i];
 }
 
-unsigned char mapbool(char *p)
+boolean mapbool(char *p)
 {
     if (p == NULL)
 	return FALSE;
