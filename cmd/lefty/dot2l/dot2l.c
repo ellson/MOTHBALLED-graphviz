@@ -487,8 +487,8 @@ static void writeattr (int ioi, Tobj to, char *buf) {
         case T_STRING:
             *s2++ = '"', htmlflag = FALSE;
             if (
-                *(s3 = Tgetstring (tkvi.kvp->vo)) == '>' &&
-                s3[strlen (s3) - 1] == '<'
+                *(s3 = Tgetstring (tkvi.kvp->vo)) == '<' &&
+                s3[strlen (s3) - 1] == '>'
             )
                 *(s2 - 1) = '<', s3++, htmlflag = TRUE;
             for ( ; *s3; s3++)
