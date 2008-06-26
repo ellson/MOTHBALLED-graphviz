@@ -310,6 +310,7 @@ parseXDotF (char* s, drawfunc_t fns[], int sz)
     ops = (char*)gmalloc(XDBSIZE*sz);
 
     x->cnt = 0;
+    x->sz = sz;
     while ((s = parseOp (&op, s, fns))) {
 	if (x->cnt == bufsz) {
 	    bufsz += XDBSIZE;
@@ -324,7 +325,6 @@ parseXDotF (char* s, drawfunc_t fns[], int sz)
 	free (x);
 	x = 0;
     }
-    free (x);
     return x;
 }
 
@@ -474,8 +474,11 @@ static void
 _printXDot (xdot* x, pf print, void* info)
 {
     int i;
+    xdot_op* op;
+    char* base = (char*)(x->ops);
     for (i = 0; i < x->cnt; i++) {
-	printXDot_Op (x->ops+i, print, info);
+        op = (xdot_op*)(base + i*x->sz);
+	printXDot_Op (op, print, info);
 	if (i < x->cnt-1) print (" ", info);
     }
 }
@@ -614,8 +617,13 @@ void
 freeXDot (xdot* x)
 {
     int i;
-    for (i = 0; i < x->cnt; i++) freeXOpData (x->ops+i);
-    free (x->ops);
+    xdot_op* op;
+    char* base = (char*)(x->ops);
+    for (i = 0; i < x->cnt; i++) {
+        op = (xdot_op*)(base + i*x->sz);
+	freeXOpData (op);
+    }
+    free (base);
     free (x);
 }
 

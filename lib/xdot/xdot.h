@@ -92,6 +92,7 @@ struct _xdot_op {
 
 typedef struct {
     int cnt;
+    int sz;
     xdot_op* ops;
 } xdot;
 
