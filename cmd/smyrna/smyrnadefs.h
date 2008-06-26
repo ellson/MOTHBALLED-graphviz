@@ -86,11 +86,13 @@ typedef struct {
     float A;			//Alpha
 } RGBColor;
 
+#define MAX_BTN_CNT 50
+
 typedef struct {
     GtkButton **gtkhostbtn;
     int gtkhostbtncount;
     GtkColorButton **gtkhostcolor;
-    int hostactive[50];		//temporary static, convert to dynamic,realloc
+    int hostactive[MAX_BTN_CNT];  //temporary static, convert to dynamic,realloc
     char **hostregex;
 } topviewdata;
 typedef struct {
@@ -206,20 +208,41 @@ typedef struct _mouse_attr {
 	clicked_mouse_button button;
 } mouse_attr;
 
+typedef enum { 
+    VT_NONE,
+    VT_XDOT,
+    VT_TOPVIEW,
+    VT_TOPFISH,
+} viewtype_t;
+
+typedef enum { 
+    GVE_NONE = -1, 
+    GVE_GRAPH,
+    GVE_CLUSTER,
+    GVE_NODE,
+    GVE_EDGE   /* keep last */
+} gve_element;
+
+typedef enum { 
+    GVK_NONE = -1, 
+    GVK_DOT,
+    GVK_NEATO,
+    GVK_TWOPI,
+    GVK_CIRCO,
+    GVK_FDP   /* keep last */
+} gvk_layout;
 
 typedef struct _attribute {
     char Type;
     char *Name;
     char *Default;
-    char ApplyTo[4];
-    char Engine[5];
+    char ApplyTo[GVE_EDGE+1];
+    char Engine[GVK_FDP+1];
     char **ComboValues;
     int ComboValuesCount;
     GtkWidget *attrWidget;
 
 } attribute;
-
-typedef enum { GVK_DOT,GVK_NEATO,GVK_TWOPI,GVK_CIRCO,GVK_FDP } gvk_layout;
 
 //bind this to cgraph g
 typedef struct _custom_graph_data {
@@ -450,8 +473,9 @@ typedef struct _ViewInfo
 	int drawnodes;
 	int drawedges;
 	int drawlabels;
-
-}ViewInfo;
+	viewtype_t dfltViewType;
+	gvk_layout dfltEngine;
+} ViewInfo;
 
 extern ViewInfo *view;
 extern GtkMessageDialog *Dlg;
@@ -461,5 +485,8 @@ extern char* smyrnaGlade;
 
 extern void glexpose();
 
+extern char* layout2s (gvk_layout gvkl);
+extern gvk_layout s2layout (char* s);
+extern char* element2s (gve_element);
 
 #endif

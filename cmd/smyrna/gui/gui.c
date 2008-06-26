@@ -25,7 +25,7 @@
 #include "viewport.h"
 #include "memory.h"
 
-static char guibuffer[255];	//general purpose buffer
+static char guibuffer[BUFSIZ];	//general purpose buffer
 
 #ifdef WIN32
 extern int strcasecmp(const char *s1, const char *s2);
@@ -325,13 +325,12 @@ int update_graph_properties(Agraph_t * graph)	//updates graph from gui
 
 
 
-int load_object_properties(int typeIndex, Agraph_t * g)	//load  from object to gui;
+int load_object_properties(gve_element typeIndex, Agraph_t * g)	//load  from object to gui;
 {
-    //typeindex 0:graph 1:cluster 2:Node  3:Edge
     //load attr from first selected object
     GtkLayout *layout;
     GdkColor color;
-    char buf[100];
+    char buf[BUFSIZ];
     /* int ind=0; */
     int Y = 45;
     int X = 90;
@@ -341,7 +340,7 @@ int load_object_properties(int typeIndex, Agraph_t * g)	//load  from object to g
     int OriginalY = 45;
     int widget_per_page = 21;
     void *obj;
-    char line[128];
+    char line[BUFSIZ];
     float a, b;
     layout = (GtkLayout *) glade_xml_get_widget(xml, "layout4");
     frmObjectTypeIndex = typeIndex;
@@ -351,14 +350,16 @@ int load_object_properties(int typeIndex, Agraph_t * g)	//load  from object to g
     //according to object type (typeIndex) set the reference object
     switch (typeIndex)		//typeindex 0 means new object
     {
-    case 1:			//graph  sub graph (cluster)
+    case GVE_CLUSTER:			//graph  sub graph (cluster)
 	obj = GD_selectedGraphs(g)[0];
 	break;
-    case 2:			//Node
+    case GVE_NODE:			//Node
 	obj = GD_selectedNodes(g)[0];
 	break;
-    case 3:			//Edge
+    case GVE_EDGE:			//Edge
 	obj = GD_selectedEdges(g)[0];
+	break;
+    default :
 	break;
     }
     for (widgetcounter = 0; widgetcounter < MAXIMUM_WIDGET_COUNT;
@@ -485,9 +486,9 @@ int load_object_properties(int typeIndex, Agraph_t * g)	//load  from object to g
 						      "frmObjectchkHighlighted"),
 				 OD_Highlighted(obj));
     //get the position info // show only one item is selected
-    if (((GD_selectedNodesCount(g) == 1) && (typeIndex == 2))
-	|| ((GD_selectedEdgesCount(g) == 1) && (typeIndex == 3))
-	|| ((GD_selectedGraphsCount(g) == 1) && (typeIndex == 3))) {
+    if (((GD_selectedNodesCount(g) == 1) && (typeIndex == GVE_NODE))
+	|| ((GD_selectedEdgesCount(g) == 1) && (typeIndex == GVE_EDGE))
+	|| ((GD_selectedGraphsCount(g) == 1) && (typeIndex == GVE_EDGE))) {
 	sprintf(line, "%s", agget(obj, "pos"));
 	a = (float) atof(strtok(line, ","));
 	b = (float) atof(strtok(NULL, ","));
@@ -520,23 +521,25 @@ int load_object_properties(int typeIndex, Agraph_t * g)	//load  from object to g
 	gtk_widget_hide(glade_xml_get_widget(xml, "frmObjectPosLabelZ"));
 	switch (typeIndex)	//typeindex 0 means new object
 	{
-	case 1:		//graph  sub graph (cluster)
+	case GVE_CLUSTER:		//graph  sub graph (cluster)
 	    gtk_label_set_text((GtkLabel *)
 			       glade_xml_get_widget(xml,
 						    "frmObjectPosLabelX"),
-			       "Changes that you make will be applied to all selected Clusters1");
+			       "Changes that you make will be applied to all selected clusters");
 	    break;
-	case 2:		//Node
+	case GVE_NODE:		//Node
 	    gtk_label_set_text((GtkLabel *)
 			       glade_xml_get_widget(xml,
 						    "frmObjectPosLabelX"),
-			       "Changes that you make will be applied to all selected Nodes!");
+			       "Changes that you make will be applied to all selected nodes!");
 	    break;
-	case 3:		//Edge
+	case GVE_EDGE:		//Edge
 	    gtk_label_set_text((GtkLabel *)
 			       glade_xml_get_widget(xml,
 						    "frmObjectPosLabelX"),
-			       "Changes that you make will be applied to all selected Edges!");
+			       "Changes that you make will be applied to all selected edges!");
+	    break;
+	default :
 	    break;
 	}
     }
@@ -550,17 +553,17 @@ void update_object_properties(int typeIndex, Agraph_t * g)	//updates objects fro
 	if (attr_widgets_modified[ind] == 1) {
 	    switch (typeIndex)	//typeindex 0 means new object
 	    {
-	    case 1:		//graph  sub graph (cluster)
+	    case GVE_CLUSTER:		//graph  sub graph (cluster)
 		change_selected_graph_attributes(g, attr[ind].Name,
 						 get_attribute_string_value_from_widget
 						 (&attr[ind]));
 		break;
-	    case 2:		//Node
+	    case GVE_NODE:		//Node
 		change_selected_node_attributes(g, attr[ind].Name,
 						get_attribute_string_value_from_widget
 						(&attr[ind]));
 		break;
-	    case 3:		//Edge
+	    case GVE_EDGE:		//Edge
 		change_selected_edge_attributes(g, attr[ind].Name,
 						get_attribute_string_value_from_widget
 						(&attr[ind]));
@@ -630,7 +633,7 @@ void change_selected_edge_attributes(Agraph_t * g, char *attrname,
 void load_attributes()
 {
     FILE *file;
-    char line[255];
+    char line[BUFSIZ];
     char *ss;
     char *pch;
     int ind = 0;
@@ -668,18 +671,18 @@ void load_attributes()
 		    break;
 		case 3:
 		    if (strstr(ss, "ANY_ELEMENT")) {
-			attr[attrcount].ApplyTo[0] = 1;
-			attr[attrcount].ApplyTo[1] = 1;
-			attr[attrcount].ApplyTo[2] = 1;
-			attr[attrcount].ApplyTo[3] = 1;
+			attr[attrcount].ApplyTo[GVE_GRAPH] = 1;
+			attr[attrcount].ApplyTo[GVE_CLUSTER] = 1;
+			attr[attrcount].ApplyTo[GVE_NODE] = 1;
+			attr[attrcount].ApplyTo[GVE_EDGE] = 1;
 		    } else {
-			attr[attrcount].ApplyTo[0] =
+			attr[attrcount].ApplyTo[GVE_GRAPH] =
 			    strstr(ss, "GRAPH") ? 1 : 0;
-			attr[attrcount].ApplyTo[1] =
+			attr[attrcount].ApplyTo[GVE_CLUSTER] =
 			    strstr(ss, "CLUSTER") ? 1 : 0;
-			attr[attrcount].ApplyTo[2] =
+			attr[attrcount].ApplyTo[GVE_NODE] =
 			    strstr(ss, "NODE") ? 1 : 0;
-			attr[attrcount].ApplyTo[3] =
+			attr[attrcount].ApplyTo[GVE_EDGE] =
 			    strstr(ss, "EDGE") ? 1 : 0;
 		    }
 		    break;

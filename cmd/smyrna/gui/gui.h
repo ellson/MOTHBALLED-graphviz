@@ -39,10 +39,8 @@ extern GtkWidget *statusbar1;
 extern GladeXML *xml;		//global libglade vars
 extern GtkWidget *gladewidget;
 
-//1 subgraph 2 node 3 edge
-extern int frmObjectTypeIndex;
+extern gve_element frmObjectTypeIndex;
 extern Agraph_t *frmObjectg;
-
 
 extern GtkComboBox *cbSelectGraph;	//combo at top left
 

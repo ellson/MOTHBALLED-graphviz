@@ -42,6 +42,17 @@ ViewInfo *view;
 GtkMessageDialog *Dlg;
 int respond;
 
+static int mapbool(char *p)
+{
+    if (p == NULL)
+	return FALSE;
+    if (!strcasecmp(p, "false"))
+	return FALSE;
+    if (!strcasecmp(p, "true"))
+	return TRUE;
+    return atoi(p);
+}
+
 void clear_viewport(ViewInfo * view)
 {
     int ind = 0;
@@ -378,6 +389,8 @@ void init_viewport(ViewInfo * view)
 	view->active_camera=-1;
 
     set_viewport_settings_from_template(view, view->default_attributes);
+    view->dfltViewType = VT_NONE;
+    view->dfltEngine = GVK_NONE;
 }
 
 
@@ -400,18 +413,35 @@ static void load_graph_params(Agraph_t * graph)
     else
 	GD_AlwaysShow(graph) = 0;
 
-    if ((s = agget(graph, "TopView")))
-	GD_TopView(graph) = atoi(s);
+    if (view->dfltViewType != VT_NONE) {
+	switch (view->dfltViewType) {
+	case VT_TOPVIEW :
+	case VT_TOPFISH :
+	    GD_TopView(graph) = 1;
+	    break;
+	case VT_XDOT :
+	default :
+	    GD_TopView(graph) = 0;
+	    break;
+	}
+    }
+    else if ((s = agget(graph, "TopView")))
+	GD_TopView(graph) = mapbool(s);
     else
 	GD_TopView(graph) = 0;
     if ((s = agget(graph, "Locked")))
 	GD_Locked(graph) = atoi(s);
     else
 	GD_Locked(graph) = 0;
-    if ((s = agget(graph, "Engine")))
-	GD_Engine(graph) = atoi(s);
-    else
-	GD_Engine(graph) = 0;
+
+    GD_Engine(graph) = GVK_NONE;
+    if (view->dfltEngine != GVK_NONE) {
+	GD_Engine(graph) = view->dfltEngine;
+    }
+    else if ((s = agget(graph, "Engine")))
+	GD_Engine(graph) = s2layout(s);
+    if (GD_Engine(graph) == GVK_NONE)
+	GD_Engine(graph) = GVK_DOT;
 
     GD_Modified(graph) = 0;	//not modified yet
     GD_selectedEdges(graph) = NULL;
@@ -460,6 +490,7 @@ static int attach_object_custom_data_to_graph(Agraph_t * graph)
 
 /* update_graph_params:
  * adds gledit params
+ * assumes custom_graph_data has been attached to the graph.
  */
 static void update_graph_params(Agraph_t * graph)
 {
@@ -473,9 +504,7 @@ static void update_graph_params(Agraph_t * graph)
     agattr(graph, AGRAPH, "TopView", tempString);
     sprintf(tempString, "%i", GD_Locked(graph));
     agattr(graph, AGRAPH, "Locked", tempString);
-    sprintf(tempString, "%i", GD_Engine(graph));
-    agattr(graph, AGRAPH, "Engine", tempString);
-
+    agattr(graph, AGRAPH, "Engine", layout2s(GD_Engine(graph)));
 }
 
 /* clear_object_xdot:
@@ -558,8 +587,14 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
     char* fix;
     char* alg;
     char* path;
+    /* The accesses below and in update_graph_params are only valid if 
+     * custom_graph_data has been attached to the graph.
+     */
+    int haveData = (aggetrec(graph, "custom_graph_data", TRUE) != 0);
+    gvk_layout engine;
 
-    update_graph_params(graph);
+    if (haveData)
+	update_graph_params(graph);
     if (!(dotfile = tempnam(0,"_dot"))) return 0;
     if (!(xdotfile = tempnam(0,"_xdot"))) {
 	free (dotfile);
@@ -580,8 +615,18 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
 	alg = " -Kneato";
     }
     else {
+	char* s;
 	fix = "";
-	switch (GD_Engine(graph)) {
+	engine = GVK_NONE;
+        if (haveData && (GD_Engine(graph) != GVK_NONE))
+	    engine = GD_Engine(graph);
+	else if (view->dfltEngine != GVK_NONE)
+	    engine = view->dfltEngine;
+	else if ((s = agget(graph, "Engine")))
+	    engine = s2layout(s);
+	if (engine == GVK_NONE)
+	    engine = GVK_DOT;
+	switch (engine) {
 	case GVK_DOT :
 	    alg = " -Kdot";
 	    break;
@@ -598,9 +643,7 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
 	    alg = " -Kfdp";
 	    break;
 	default :
-	    unlink (dotfile);
-	    free (dotfile);
-	    return 0;
+	    /* can't happen */
 	    break;
 	}
     } 
@@ -631,15 +674,28 @@ static char* create_xdot_for_graph(Agraph_t * graph, int keeppos)
     else return xdotfile;
 }
 
-static int mapbool(char *p)
+/*
+ */
+static Agraph_t*
+layoutGraph (Agraph_t *oldg, int keeppos, int closeold)
 {
-    if (p == NULL)
-        return 0;
-    if (!strcasecmp(p, "false"))
-        return 0;
-    if (!strcasecmp(p, "true"))
-        return 1;
-    return atoi(p);
+    FILE *input_file;
+    char *infile;
+    Agraph_t* newg;
+
+    if (!(infile = create_xdot_for_graph(oldg, keeppos))) return 0;
+    while (!(input_file = fopen(infile, "r"))) {	//HACK!!!!
+//               g_print("Cannot open xdot  error %si\n",strerror(errno));
+
+    }
+    if (closeold)
+	agclose (oldg);
+    newg = agread(input_file, NIL(Agdisc_t *));
+    g_print ("xdot is being loaded\n");
+    fclose (input_file);
+    unlink (infile);  // Remove temp file
+    free (infile);    // Free storage for temp file name
+    return newg;
 }
 
 /* loadGraph:
@@ -649,7 +705,6 @@ static Agraph_t *loadGraph(char *filename)
 {
     Agraph_t *g;
     FILE *input_file;
-    char *infile;
     if (!(input_file = fopen(filename, "r"))) {
 	g_print("Cannot open %s\n", filename);
 	return 0;
@@ -660,22 +715,16 @@ static Agraph_t *loadGraph(char *filename)
 	return 0;
     }
 
-	/* If xdot is not available in g and TopView is false,
-         * run layout with -Txdot
+	/* If no position info, run layout with -Txdot
          */
-    if ((!agget(g, "xdotversion")) && !mapbool (agget(g, "TopView"))) {
-	if (!(infile = create_xdot_for_graph(g, 0))) return 0;
-
-	while (!(input_file = fopen(infile, "r"))) {	//HACK!!!!
-//                   g_print("Cannot open xdot  error %si\n",strerror(errno));
-
-	}
-	agclose (g);
-	g = agread(input_file, NIL(Agdisc_t *));
-	g_print ("xdot is being loaded\n");
-	fclose (input_file);
-	unlink (infile);  // Remove temp file
-	free (infile);    // Free storage for temp file name
+    if (!agattr(g, AGNODE, "pos", NULL)) {
+	g = layoutGraph (g, 0, 1);
+	if (!g) return 0;
+    }
+	/* If position info but not xdot, set Topview mode
+         */
+    else if (!agattr(g, AGRAPH, "xdotversion", 0)) {
+	agattr(g, AGRAPH, "TopView", "1");
     }
 
     attach_object_custom_data_to_graph(g);
@@ -771,6 +820,8 @@ void refreshControls(ViewInfo * v)
 
 
     switch (GD_Engine(view->g[view->activeGraph])) {
+    case GVK_NONE :
+	break;
     case GVK_DOT :
 	Color_Widget_bg("red", glade_xml_get_widget(xml, "btnDot"));
 	break;
@@ -887,22 +938,11 @@ int do_graph_layout(Agraph_t * graph, int Engine, int keeppos)
     int cnt;
     mydata *p;
 #endif
-    FILE *input_file;
-    char* infile;
     Agraph_t* oldg = view->g[view->activeGraph];
     Agraph_t* newg;
 
     GD_Engine(oldg) = Engine;
-    create_xdot_for_graph(oldg, keeppos);
-    if (!(infile = create_xdot_for_graph(oldg, keeppos))) return 0;
-    while (!(input_file = fopen(infile, "r"))) {	//HACK!!!!
-	/* g_print("Cannot open xdot  error %si\n",strerror(errno)); */
-    }
-
-    newg = agread(input_file, NIL(Agdisc_t *));
-    fclose (input_file);
-    unlink (infile);
-    free (infile);
+    newg = layoutGraph (oldg, keeppos, 0);
 
     if (!newg) return 0;
 	//attaching rec for graph fields
@@ -923,44 +963,7 @@ int do_graph_layout(Agraph_t * graph, int Engine, int keeppos)
     return 1;
 }
 
-#if 0
-void listg(Agraph_t * g)
-{
-    Agnode_t *v;
-    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
-	fprintf(stderr, "%s\n", agnameof(v));
-    }
-}
-
-Agraph_t *loadGraph(char *filename)
-{
-    Agraph_t *g;
-//      mydata *p;
-    FILE *input_file;
-    input_file = fopen(filename, "r");
-    if (input_file == NULL)
-	g_print("Cannot open %s\n", filename);
-    else if ((g = agread(input_file, NIL(Agdisc_t *)))) {
-	attach_object_custom_data_to_graph(g);
-	load_graph_params(g);
-
-	if ((!agget(g, "xdotversion"))
-	    && ((agget(g, "TopView") == "0")
-		|| !agget(g, "TopView")
-	    )
-
-		)
-	{
-	    create_xdot_for_graph(g, 0);
-	    fclose(input_file);
-#ifdef _WIN32
-	    input_file = fopen("c:/__tempfile.xdot", "r");
-#else
-	    input_file = fopen("/tmp/__tempfile.xdot", "r");
-#endif
-
-#endif
-		/*
+/*
  * Object Custom Data Functions
  */
 
@@ -984,62 +987,6 @@ static int init_object_custom_data(Agraph_t * graph, void *obj)
     OD_StrData(obj) = NULL;
     return 1;
 }
-
-#if 0
-static int clear_string_data_from_object_custom_data(void *obj)
-{
-    if (obj != NULL) {
-	int ind = 0;
-	for (ind = 0; ind < OD_StrDataCount(obj); ind++) {
-	    free(OD_StrData(obj)[ind]);
-	}
-	free(OD_StrData(obj);
-	return 1;
-    }
-    return 0;
-}
-
-/* clear_object_custom_data:
- * frees memory allocated for cutom object data
- */
-static int clear_numeric_data_from_object_custom_data(void *obj)
-{
-    if (obj != NULL) {
-	free(OD_NumData(obj);
-	return 1;
-    }
-    return 0;
-}
-
-static int clear_object_custom_data(void *obj)
-{
-    return ((clear_string_data_from_object_custom_data(obj))
-	    || (clear_numeric_data_from_object_custom_data(obj)));
-}
-
-static int add_string_data_to_object_custom_data(void *obj, char *data)
-{
-    if ((obj != NULL) && (data != NULL)) {
-	OD_StrData(obj) = RALLOC(OD_StrDataCount(obj)+1,OD_StrData(obj), char*);
-	OD_StrData(obj)[OD_StrDataCount(obj)] = N_GNEW((strlen(data)+1), char);
-	strcpy(OD_StrData(obj)[OD_StrDataCount(obj)], data);
-	OD_StrDataCount(obj)++;
-	return 1;
-    }
-    return 0;
-}
-
-int add_numeric_data_to_object_custom_data(void *obj, float data)
-{
-    if (obj != NULL) {
-	OD_NumData(obj) = RALLOC(OD_NumDataCount(obj)+1,OD_NumData(obj), char*);
-	OD_NumData(obj)[OD_NumDataCount(obj)] = data;
-	OD_NumDataCount(obj)++;
-	return 1;
-    }
-    return 0;
-}
-#endif
 
 /* move_node:
  */ 

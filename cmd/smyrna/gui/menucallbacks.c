@@ -195,63 +195,42 @@ void mGraphPropertiesSlot(GtkWidget * widget, gpointer user_data)
 	gtk_widget_hide(glade_xml_get_widget(xml, "dlgOpenGraph"));
     }
 }
-void mClusterPropertiesSlot(GtkWidget * widget, gpointer user_data)
+static void mPropertiesSlot(int count, gve_element element)
 {
-    if (GD_selectedGraphsCount(view->g[view->activeGraph]) > 0) {
+    if (count > 0) {
 	gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
 	gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
-	load_object_properties(1, view->g[view->activeGraph]);
+	load_object_properties(element, view->g[view->activeGraph]);
     } else {
+	char buf[BUFSIZ];
+	sprintf (buf, "You need to select some %ss first!",element2s(element)); 
 	Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
 							  GTK_DIALOG_MODAL,
 							  GTK_MESSAGE_QUESTION,
 							  GTK_BUTTONS_OK,
-							  "You need to select some clusters first!");
+							  buf);
 	respond = gtk_dialog_run((GtkDialog *) Dlg);
 	gtk_widget_hide((GtkWidget *) Dlg);
 
     }
+}
+void mClusterPropertiesSlot(GtkWidget * widget, gpointer user_data)
+{
+    mPropertiesSlot (GD_selectedGraphsCount(view->g[view->activeGraph]),GVE_CLUSTER);
 }
 void mNodePropertiesSlot(GtkWidget * widget, gpointer user_data)
 {
-    if (GD_selectedNodesCount(view->g[view->activeGraph]) > 0) {
-	gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
-	gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
-	load_object_properties(2, view->g[view->activeGraph]);
-    } else {
-	Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-							  GTK_DIALOG_MODAL,
-							  GTK_MESSAGE_QUESTION,
-							  GTK_BUTTONS_OK,
-							  "You need to select some nodes first!");
-	respond = gtk_dialog_run((GtkDialog *) Dlg);
-	gtk_widget_hide((GtkWidget *) Dlg);
-
-    }
+    mPropertiesSlot (GD_selectedNodesCount(view->g[view->activeGraph]), GVE_NODE);
 }
 void mEdgePropertiesSlot(GtkWidget * widget, gpointer user_data)
 {
-    if (GD_selectedEdgesCount(view->g[view->activeGraph]) > 0) {
-	gtk_widget_hide(glade_xml_get_widget(xml, "frmObject"));
-	gtk_widget_show(glade_xml_get_widget(xml, "frmObject"));
-	load_object_properties(3, view->g[view->activeGraph]);
-    } else {
-	Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-							  GTK_DIALOG_MODAL,
-							  GTK_MESSAGE_QUESTION,
-							  GTK_BUTTONS_OK,
-							  "You need to select some Edges first!");
-	respond = gtk_dialog_run((GtkDialog *) Dlg);
-	gtk_widget_hide((GtkWidget *) Dlg);
-    }
-
+    mPropertiesSlot (GD_selectedEdgesCount(view->g[view->activeGraph]), GVE_EDGE);
 }
-
 
 void mShowCodeSlot(GtkWidget * widget, gpointer user_data)
 {
 }
-void mDotSlot(GtkWidget * widget, gpointer user_data)
+static mSlot (GtkWidget * widget, gpointer user_data, gvk_layout layout, int doCursor)
 {
     GdkCursor *cursor;
     GdkWindow *w;
@@ -263,8 +242,10 @@ void mDotSlot(GtkWidget * widget, gpointer user_data)
 
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], GVK_DOT, 0);
+	do_graph_layout(view->g[view->activeGraph], layout, 0);
     gtk_object_destroy((GtkObject *) Dlg);
+
+    if (!doCursor) return;
 
     cursor = gdk_cursor_new(GDK_HAND2);
     w = (GdkWindow *) glade_xml_get_widget(xml, "frmMain");
@@ -273,61 +254,29 @@ void mDotSlot(GtkWidget * widget, gpointer user_data)
     gdk_cursor_destroy(cursor);
 }
 
+void mDotSlot(GtkWidget * widget, gpointer user_data)
+{
+    mSlot (widget, user_data, GVK_DOT, 1);
+}
+
 void mNeatoSlot(GtkWidget * widget, gpointer user_data)
 {
-    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-						      GTK_DIALOG_MODAL,
-						      GTK_MESSAGE_QUESTION,
-						      GTK_BUTTONS_YES_NO,
-						      "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
-    respond = gtk_dialog_run((GtkDialog *) Dlg);
-    if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], GVK_NEATO, 0);
-    gtk_object_destroy((GtkObject *) Dlg);
+    mSlot (widget, user_data, GVK_NEATO, 0);
 }
 
 void mTwopiSlot(GtkWidget * widget, gpointer user_data)
 {
-    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-						      GTK_DIALOG_MODAL,
-						      GTK_MESSAGE_QUESTION,
-						      GTK_BUTTONS_YES_NO,
-						      "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
-
-    respond = gtk_dialog_run((GtkDialog *) Dlg);
-    if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], GVK_TWOPI, 0);
-    gtk_object_destroy((GtkObject *) Dlg);
-
+    mSlot (widget, user_data, GVK_TWOPI, 0);
 }
 
 void mCircoSlot(GtkWidget * widget, gpointer user_data)
 {
-    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-						      GTK_DIALOG_MODAL,
-						      GTK_MESSAGE_QUESTION,
-						      GTK_BUTTONS_YES_NO,
-						      "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
-
-    respond = gtk_dialog_run((GtkDialog *) Dlg);
-    if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], GVK_CIRCO, 0);
-    gtk_object_destroy((GtkObject *) Dlg);
+    mSlot (widget, user_data, GVK_CIRCO, 0);
 }
 
 void mFdpSlot(GtkWidget * widget, gpointer user_data)
 {
-
-    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-						      GTK_DIALOG_MODAL,
-						      GTK_MESSAGE_QUESTION,
-						      GTK_BUTTONS_YES_NO,
-						      "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
-
-    respond = gtk_dialog_run((GtkDialog *) Dlg);
-    if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], GVK_FDP, 0);
-    gtk_object_destroy((GtkObject *) Dlg);
+    mSlot (widget, user_data, GVK_FDP, 0);
 }
 
 //select

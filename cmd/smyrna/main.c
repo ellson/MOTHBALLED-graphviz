@@ -35,6 +35,12 @@
 #include "libintl.h"
 #endif
 
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#else
+#include "compat_getopt.h"
+#endif
+
 #ifdef G_OS_WIN32
 gchar *package_prefix;
 gchar *package_data_dir;
@@ -53,9 +59,55 @@ smyrnaPath (char* suffix)
     return buf;
 }
 
+static char *useString = "Usage: smyrn [-txv?] [-K<engine>] <file>\n\
+  -n         - use TopView mode\n\
+  -e         - use XDOT mode\n\
+  -K<engine> - layout graph using <engine>\n\
+  -v         - verbose\n\
+  -?         - print usage\n";
+
+static void usage(int v)
+{
+    printf(useString);
+    exit(v);
+}
+
+static char*
+parseArgs (int argc, char *argv[], ViewInfo* view)
+{
+    unsigned int c;
+
+    while ((c = getopt(argc, argv, ":K:txv?")) != -1) {
+	switch (c) {
+	case 't':
+	    view->dfltViewType = VT_TOPVIEW; 
+	    break;
+	case 'x':
+	    view->dfltViewType = VT_XDOT; 
+	    break;
+	case 'K':
+	    view->dfltEngine = s2layout (optarg);
+	    break;
+	case '?':
+	    if (optopt == '?')
+		usage(0);
+	    else
+		fprintf(stderr, "smyrna: option -%c unrecognized - ignored\n",
+			optopt);
+	    break;
+	}
+    }
+
+    if (optind < argc)
+	 return argv[optind];
+    else
+	return NULL;
+}
+
 int main(int argc, char *argv[])
 {
     GdkGLConfig *glconfig;
+    char* initFileName;
 
     smyrnaDir = getenv ("SMYRNA_PATH");
 #ifndef _WIN32
@@ -87,6 +139,7 @@ int main(int argc, char *argv[])
 
     gtk_set_locale();
     gtk_init(&argc, &argv);
+    initFileName = parseArgs (argc, argv, view);
 
 #ifdef _WIN32
 #define GTKTOPVIEW_ICONSDIR "C:\\Projects\\ATT\\GTK\\GTKTest2\\GUI\\images\\"
@@ -109,10 +162,10 @@ int main(int argc, char *argv[])
     glconfig = configure_gl();
     gladewidget = glade_xml_get_widget(xml, "vbox2");
     create_window(glconfig, gladewidget);
-	/*first arg is used as file name */
-    if (argc > 1)
-	add_graph_to_viewport_from_file(argv[1]);
-	gtk_main();
+
+    if (initFileName)
+	add_graph_to_viewport_from_file(initFileName);
+    gtk_main();
 
 
 #ifdef G_OS_WIN32

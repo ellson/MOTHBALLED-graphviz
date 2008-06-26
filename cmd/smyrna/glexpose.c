@@ -141,23 +141,19 @@ void glexpose_grid(ViewInfo * view)
 */
 int glexpose_drawgraph(ViewInfo * view)
 {
-    if (view->activeGraph > -1) 
-	{
-		if (GD_TopView(view->g[view->activeGraph])) {
-		if(!view->Topview->is_top_fisheye)
-			drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
-		else
-		{
-//				drawtopologicalfisheye(view->Topview);
-				drawtopologicalfisheye2(view->Topview);
-
-
-		}
-		glCompSetDraw(view->Topview->topviewmenu);
-		}
-		else
-			drawGraph(view->g[view->activeGraph]);	//xdot based drawing functions
-		return 1;
+    if (view->activeGraph > -1) {
+	if (GD_TopView(view->g[view->activeGraph])) {
+	    if(!view->Topview->is_top_fisheye)
+		drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
+	    else {
+//		drawtopologicalfisheye(view->Topview);
+		drawtopologicalfisheye2(view->Topview);
+	    }
+	    glCompSetDraw(view->Topview->topviewmenu);
+	}
+	else
+	    drawGraph(view->g[view->activeGraph]);  //xdot based drawing functions
+	return 1;
     }
     return 0;
 }

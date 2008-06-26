@@ -74,7 +74,7 @@ void remove_graph_clicked(GtkWidget * widget, gpointer user_data)
 }
 
 
-void btn_dot_clicked(GtkWidget * widget, gpointer user_data)
+static void btn_clicked(GtkWidget * widget, gvk_layout layout)
 {
     GdkCursor *cursor;
     GdkWindow *w;
@@ -86,91 +86,50 @@ void btn_dot_clicked(GtkWidget * widget, gpointer user_data)
 
     respond = gtk_dialog_run((GtkDialog *) Dlg);
     if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], GVK_DOT, 0);
+	do_graph_layout(view->g[view->activeGraph], layout, 0);
     gtk_object_destroy((GtkObject *) Dlg);
 
-    cursor = gdk_cursor_new(GDK_HAND2);
-    w = (GdkWindow *) glade_xml_get_widget(xml, "frmMain");
+    if (layout == GVK_DOT) {
+	cursor = gdk_cursor_new(GDK_HAND2);
+	w = (GdkWindow *) glade_xml_get_widget(xml, "frmMain");
 //      gdk_window_set_cursor(w, cursor);
-    gdk_window_set_cursor((GTK_WIDGET(view->drawing_area)->window),
+	gdk_window_set_cursor((GTK_WIDGET(view->drawing_area)->window),
 			  cursor);
 //      gdk_window_set_title((GTK_WIDGET(widget)->window),"adasdasdasdassada");
-    gdk_cursor_destroy(cursor);
-
-
-
+	gdk_cursor_destroy(cursor);
+    }
+    else if (layout == GVK_NEATO) {
+	gtk_button_set_image(GTK_BUTTON
+		 (glade_xml_get_widget(xml, "btn_neato")),
+		 gtk_image_new_from_file("c:\fonts.png"));
+    }
+}
+void btn_dot_clicked(GtkWidget * widget, gpointer user_data)
+{
+    btn_clicked (widget, GVK_DOT);
 }
 
 void btn_neato_clicked(GtkWidget * widget, gpointer user_data)
 {
-    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-						      GTK_DIALOG_MODAL,
-						      GTK_MESSAGE_QUESTION,
-						      GTK_BUTTONS_YES_NO,
-						      "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
-
-    respond = gtk_dialog_run((GtkDialog *) Dlg);
-    if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], GVK_NEATO, 0);
-    gtk_object_destroy((GtkObject *) Dlg);
-    gtk_button_set_image(GTK_BUTTON
-			 (glade_xml_get_widget(xml, "btn_neato")),
-			 gtk_image_new_from_file("c:\fonts.png"));
-
+    btn_clicked (widget, GVK_NEATO);
 }
 
 void btn_twopi_clicked(GtkWidget * widget, gpointer user_data)
 {
-    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-						      GTK_DIALOG_MODAL,
-						      GTK_MESSAGE_QUESTION,
-						      GTK_BUTTONS_YES_NO,
-						      "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
-
-    respond = gtk_dialog_run((GtkDialog *) Dlg);
-    if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], GVK_TWOPI, 0);
-    gtk_object_destroy((GtkObject *) Dlg);
-
+    btn_clicked (widget, GVK_TWOPI);
 }
 
 void btn_circo_clicked(GtkWidget * widget, gpointer user_data)
 {
-    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-						      GTK_DIALOG_MODAL,
-						      GTK_MESSAGE_QUESTION,
-						      GTK_BUTTONS_YES_NO,
-						      "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
-
-    respond = gtk_dialog_run((GtkDialog *) Dlg);
-    if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], GVK_CIRCO, 0);
-    gtk_object_destroy((GtkObject *) Dlg);
+    btn_clicked (widget, GVK_CIRCO);
 }
 
 void btn_fdp_clicked(GtkWidget * widget, gpointer user_data)
 {
-
-    Dlg = (GtkMessageDialog *) gtk_message_dialog_new(NULL,
-						      GTK_DIALOG_MODAL,
-						      GTK_MESSAGE_QUESTION,
-						      GTK_BUTTONS_YES_NO,
-						      "This will change the graph layout\n all your position changes will be lost\n Are you sure?");
-
-    respond = gtk_dialog_run((GtkDialog *) Dlg);
-    if (respond == GTK_RESPONSE_YES)
-	do_graph_layout(view->g[view->activeGraph], GVK_FDP, 0);
-    gtk_object_destroy((GtkObject *) Dlg);
-
-
+    btn_clicked (widget, GVK_FDP);
 }
 
-
-
-
-
 //test call back function delete later
-
 
 #ifdef UNUSED
 static void callback(GtkWidget * widget, gpointer data)

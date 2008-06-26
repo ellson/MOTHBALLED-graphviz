@@ -202,7 +202,11 @@ void preparetopview(Agraph_t * g, topview * t)
     attach_camera_widget(view);
     load_host_buttons(t, g, t->topviewmenu);
     t->h = '\0';
-    t->is_top_fisheye = 0;
+    if (view->dfltViewType == VT_TOPFISH)
+	t->is_top_fisheye = 1;
+    else
+	t->is_top_fisheye = 0;
+
     t->picked_node_count = 0;
     t->picked_nodes = '\0';
 }
@@ -1315,3 +1319,83 @@ static glCompSet *glcreate_gl_topview_menu()
 	return s;
 
 }
+
+#define strcaseeq(a,b)     (*(a)==*(b)&&!strcasecmp(a,b))
+
+gvk_layout 
+s2layout (char* s)
+{
+    if (!s) return GVK_NONE;
+
+    if (strcaseeq(s, "dot"))
+	return GVK_DOT;
+    else if (strcaseeq(s, "neato"))
+	return GVK_NEATO;
+    else if (strcaseeq(s, "twopi"))
+	return GVK_TWOPI;
+    else if (strcaseeq(s, "circo"))
+	return GVK_CIRCO;
+    else if (strcaseeq(s, "fdp"))
+	return GVK_FDP;
+    else
+	return GVK_NONE;
+
+}
+
+char* 
+layout2s (gvk_layout gvkl)
+{
+    char* s;
+    switch (gvkl) {
+    case GVK_NONE :
+	s = "";
+	break;
+    case GVK_DOT :
+	s = "dot";
+	break;
+    case GVK_NEATO :
+	s = "neato";
+	break;
+    case GVK_TWOPI :
+	s = "twopi";
+	break;
+    case GVK_CIRCO :
+	s = "circo";
+	break;
+    case GVK_FDP :
+	s = "fdp";
+	break;
+    default :
+	s = "";
+	break;
+    }
+    return s;
+}
+
+char* 
+element2s (gve_element el)
+{
+    char* s;
+    switch (el) {
+    case GVE_NONE :
+	s = "";
+	break;
+    case GVE_GRAPH :
+	s = "graph";
+	break;
+    case GVE_CLUSTER :
+	s = "cluster";
+	break;
+    case GVE_NODE :
+	s = "node";
+	break;
+    case GVE_EDGE :
+	s = "edge";
+	break;
+    default :
+	s = "";
+	break;
+    }
+    return s;
+}
+
