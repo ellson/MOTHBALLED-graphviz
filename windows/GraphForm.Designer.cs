@@ -63,8 +63,20 @@ namespace Graphviz
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+			this.mainToolStrip = new System.Windows.Forms.ToolStrip();
+			this.attributesToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+			this.zoomOutToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.actualSizeToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.zoomInToolStripButton = new System.Windows.Forms.ToolStripButton();
+			this.actualSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+			this.zoomInToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.zoomOutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.zoomToFitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.graphControl = new Graphviz.ScrollableImageControl();
 			this.mainMenuStrip.SuspendLayout();
+			this.mainToolStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mainMenuStrip
@@ -78,7 +90,7 @@ namespace Graphviz
             this.helpToolStripMenuItem});
 			this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
 			this.mainMenuStrip.Name = "mainMenuStrip";
-			this.mainMenuStrip.Size = new System.Drawing.Size(292, 24);
+			this.mainMenuStrip.Size = new System.Drawing.Size(592, 24);
 			this.mainMenuStrip.TabIndex = 0;
 			// 
 			// fileToolStripMenuItem
@@ -104,7 +116,7 @@ namespace Graphviz
 			this.newToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
 			this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-			this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.newToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.newToolStripMenuItem.Text = "&New";
 			// 
 			// openToolStripMenuItem
@@ -113,13 +125,13 @@ namespace Graphviz
 			this.openToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.openToolStripMenuItem.Text = "&Open";
 			// 
 			// toolStripSeparator
 			// 
 			this.toolStripSeparator.Name = "toolStripSeparator";
-			this.toolStripSeparator.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator.Size = new System.Drawing.Size(148, 6);
 			// 
 			// saveToolStripMenuItem
 			// 
@@ -127,19 +139,19 @@ namespace Graphviz
 			this.saveToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			// 
 			// saveAsToolStripMenuItem
 			// 
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.saveAsToolStripMenuItem.Text = "Save &As";
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(148, 6);
 			// 
 			// printToolStripMenuItem
 			// 
@@ -147,7 +159,7 @@ namespace Graphviz
 			this.printToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.printToolStripMenuItem.Name = "printToolStripMenuItem";
 			this.printToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-			this.printToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.printToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.printToolStripMenuItem.Text = "&Print";
 			// 
 			// printPreviewToolStripMenuItem
@@ -155,18 +167,18 @@ namespace Graphviz
 			this.printPreviewToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("printPreviewToolStripMenuItem.Image")));
 			this.printPreviewToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.printPreviewToolStripMenuItem.Name = "printPreviewToolStripMenuItem";
-			this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.printPreviewToolStripMenuItem.Text = "Print Pre&view";
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(148, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			// 
 			// editToolStripMenuItem
@@ -244,7 +256,12 @@ namespace Graphviz
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.showAttributesToolStripMenuItem});
+            this.showAttributesToolStripMenuItem,
+            this.toolStripSeparator7,
+            this.actualSizeToolStripMenuItem,
+            this.zoomToFitToolStripMenuItem,
+            this.zoomInToolStripMenuItem,
+            this.zoomOutToolStripMenuItem});
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
 			this.toolStripMenuItem1.Size = new System.Drawing.Size(41, 20);
 			this.toolStripMenuItem1.Text = "&View";
@@ -255,6 +272,7 @@ namespace Graphviz
 			this.showAttributesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
 			this.showAttributesToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
 			this.showAttributesToolStripMenuItem.Text = "Show &Attributes";
+			this.showAttributesToolStripMenuItem.Click += new System.EventHandler(this.ShowAttributes_Click);
 			// 
 			// toolsToolStripMenuItem
 			// 
@@ -324,15 +342,104 @@ namespace Graphviz
 			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.aboutToolStripMenuItem.Text = "&About...";
 			// 
+			// mainToolStrip
+			// 
+			this.mainToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.attributesToolStripButton,
+            this.toolStripSeparator6,
+            this.zoomOutToolStripButton,
+            this.actualSizeToolStripButton,
+            this.zoomInToolStripButton});
+			this.mainToolStrip.Location = new System.Drawing.Point(0, 24);
+			this.mainToolStrip.Name = "mainToolStrip";
+			this.mainToolStrip.Size = new System.Drawing.Size(592, 25);
+			this.mainToolStrip.TabIndex = 2;
+			this.mainToolStrip.Text = "toolStrip1";
+			// 
+			// attributesToolStripButton
+			// 
+			this.attributesToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("attributesToolStripButton.Image")));
+			this.attributesToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.attributesToolStripButton.Name = "attributesToolStripButton";
+			this.attributesToolStripButton.Size = new System.Drawing.Size(75, 22);
+			this.attributesToolStripButton.Text = "Attributes";
+			this.attributesToolStripButton.Click += new System.EventHandler(this.ShowAttributes_Click);
+			// 
+			// toolStripSeparator6
+			// 
+			this.toolStripSeparator6.Name = "toolStripSeparator6";
+			this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+			// 
+			// zoomOutToolStripButton
+			// 
+			this.zoomOutToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomOutToolStripButton.Image")));
+			this.zoomOutToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.zoomOutToolStripButton.Name = "zoomOutToolStripButton";
+			this.zoomOutToolStripButton.Size = new System.Drawing.Size(74, 22);
+			this.zoomOutToolStripButton.Text = "Zoom Out";
+			this.zoomOutToolStripButton.Click += new System.EventHandler(this.ZoomOut_Click);
+			// 
+			// actualSizeToolStripButton
+			// 
+			this.actualSizeToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("actualSizeToolStripButton.Image")));
+			this.actualSizeToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.actualSizeToolStripButton.Name = "actualSizeToolStripButton";
+			this.actualSizeToolStripButton.Size = new System.Drawing.Size(79, 22);
+			this.actualSizeToolStripButton.Text = "Actual Size";
+			this.actualSizeToolStripButton.Click += new System.EventHandler(this.ActualSize_Click);
+			// 
+			// zoomInToolStripButton
+			// 
+			this.zoomInToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomInToolStripButton.Image")));
+			this.zoomInToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.zoomInToolStripButton.Name = "zoomInToolStripButton";
+			this.zoomInToolStripButton.Size = new System.Drawing.Size(66, 22);
+			this.zoomInToolStripButton.Text = "Zoom In";
+			this.zoomInToolStripButton.Click += new System.EventHandler(this.ZoomIn_Click);
+			// 
+			// actualSizeToolStripMenuItem
+			// 
+			this.actualSizeToolStripMenuItem.Name = "actualSizeToolStripMenuItem";
+			this.actualSizeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.actualSizeToolStripMenuItem.Text = "Actual Size";
+			this.actualSizeToolStripMenuItem.Click += new System.EventHandler(this.ActualSize_Click);
+			// 
+			// toolStripSeparator7
+			// 
+			this.toolStripSeparator7.Name = "toolStripSeparator7";
+			this.toolStripSeparator7.Size = new System.Drawing.Size(195, 6);
+			// 
+			// zoomInToolStripMenuItem
+			// 
+			this.zoomInToolStripMenuItem.Name = "zoomInToolStripMenuItem";
+			this.zoomInToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.zoomInToolStripMenuItem.Text = "Zoom In";
+			this.zoomInToolStripMenuItem.Click += new System.EventHandler(this.ZoomIn_Click);
+			// 
+			// zoomOutToolStripMenuItem
+			// 
+			this.zoomOutToolStripMenuItem.Name = "zoomOutToolStripMenuItem";
+			this.zoomOutToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.zoomOutToolStripMenuItem.Text = "Zoom Out";
+			this.zoomOutToolStripMenuItem.Click += new System.EventHandler(this.ZoomOut_Click);
+			// 
+			// zoomToFitToolStripMenuItem
+			// 
+			this.zoomToFitToolStripMenuItem.Name = "zoomToFitToolStripMenuItem";
+			this.zoomToFitToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+			this.zoomToFitToolStripMenuItem.Text = "Zoom To Fit";
+			this.zoomToFitToolStripMenuItem.Click += new System.EventHandler(this.ZoomToFit_Click);
+			// 
 			// graphControl
 			// 
 			this.graphControl.AutoScroll = true;
-			this.graphControl.AutoScrollMinSize = new System.Drawing.Size(292, 242);
+			this.graphControl.AutoScrollMinSize = new System.Drawing.Size(592, 342);
 			this.graphControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.graphControl.Image = null;
-			this.graphControl.Location = new System.Drawing.Point(0, 24);
+			this.graphControl.Location = new System.Drawing.Point(0, 49);
 			this.graphControl.Name = "graphControl";
-			this.graphControl.Size = new System.Drawing.Size(292, 242);
+			this.graphControl.Size = new System.Drawing.Size(592, 317);
 			this.graphControl.TabIndex = 1;
 			this.graphControl.Zoom = 1F;
 			// 
@@ -340,13 +447,16 @@ namespace Graphviz
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(292, 266);
+			this.ClientSize = new System.Drawing.Size(592, 366);
 			this.Controls.Add(this.graphControl);
+			this.Controls.Add(this.mainToolStrip);
 			this.Controls.Add(this.mainMenuStrip);
 			this.MainMenuStrip = this.mainMenuStrip;
 			this.Name = "GraphForm";
 			this.mainMenuStrip.ResumeLayout(false);
 			this.mainMenuStrip.PerformLayout();
+			this.mainToolStrip.ResumeLayout(false);
+			this.mainToolStrip.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -389,6 +499,17 @@ namespace Graphviz
 		private ScrollableImageControl graphControl;
 		private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem showAttributesToolStripMenuItem;
+		private System.Windows.Forms.ToolStrip mainToolStrip;
+		private System.Windows.Forms.ToolStripButton attributesToolStripButton;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+		private System.Windows.Forms.ToolStripButton zoomOutToolStripButton;
+		private System.Windows.Forms.ToolStripButton actualSizeToolStripButton;
+		private System.Windows.Forms.ToolStripButton zoomInToolStripButton;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+		private System.Windows.Forms.ToolStripMenuItem actualSizeToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem zoomInToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem zoomOutToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem zoomToFitToolStripMenuItem;
 	}
 }
 

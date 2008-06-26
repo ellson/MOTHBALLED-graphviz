@@ -61,14 +61,34 @@ namespace Graphviz
 			get { return openToolStripMenuItem; }
 		}
 
-		ToolStripMenuItem FormController.IMenus.ShowAttributesMenuItem
-		{
-			get { return showAttributesToolStripMenuItem; }
-		}
-
 		ToolStripMenuItem FormController.IMenus.WindowMenuItem
 		{
 			get { return windowToolStripMenuItem; }
+		}
+		
+		private void ShowAttributes_Click(object sender, EventArgs eventArgs)
+		{
+			AttributeInspectorForm.Instance.Show();
+		}
+
+		private void ZoomToFit_Click(object sender, EventArgs eventArgs)
+		{
+			graphControl.ZoomToFit();
+		}
+		
+		private void ActualSize_Click(object sender, EventArgs eventArgs)
+		{
+			graphControl.ActualSize();
+		}
+		
+		private void ZoomIn_Click(object sender, EventArgs eventArgs)
+		{
+			graphControl.ZoomIn();
+		}
+
+		private void ZoomOut_Click(object sender, EventArgs eventArgs)
+		{
+			graphControl.ZoomOut();
 		}
 		
 		private readonly Graph _graph;

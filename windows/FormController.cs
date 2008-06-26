@@ -36,11 +36,6 @@ namespace Graphviz
 				get;
 			}
 
-			ToolStripMenuItem ShowAttributesMenuItem
-			{
-				get;
-			}
-
 			ToolStripMenuItem WindowMenuItem
 			{
 				get;
@@ -92,12 +87,6 @@ namespace Graphviz
 							string[] filesToOpen = FilesToOpen();
 							if (filesToOpen != null)
 								OpenFiles(filesToOpen);
-						};
-
-						/* attribute menu shows the attribute inspector */
-						documentFormMenus.ShowAttributesMenuItem.Click += delegate(object sender, EventArgs eventArgs)
-						{
-							AttributeInspectorForm.Instance.Show();
 						};
 
 						/* window menu shows a list of all forms, select one to activate it */
