@@ -409,7 +409,7 @@ extern "C" {
 
 #ifndef S_ISFIFO
 #	ifdef S_IFIFO
-#		define S_ISFIFO(m)	(((m)&S_IFIFO) == S_IFIFO)
+#		define S_ISFIFO(m)	(((m)&S_IFMT) == S_IFIFO)
 #	else
 #		define S_ISFIFO(m)	(0)
 #	endif
