@@ -65,6 +65,28 @@ namespace Graphviz
 			_zoom = 1.0f;
 			_lastScroll = new Point(0, 0);
 		}
+		
+		public void ActualSize()
+		{
+			Zoom = 1.0f;
+		}
+		
+		public void ZoomToFit()
+		{
+			Size imageSize = Image.Size;
+			Size controlSize = Size;
+			Zoom = Math.Min((float)controlSize.Width / (float)imageSize.Width, (float)controlSize.Height / (float)imageSize.Height);
+		}
+		
+		public void ZoomIn()
+		{
+			Zoom *= _squareRootOfTwo;
+		}
+		
+		public void ZoomOut()
+		{
+			Zoom /= _squareRootOfTwo;
+		}
 
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
@@ -126,6 +148,7 @@ namespace Graphviz
 			Invalidate();
 		}
 		
+		private readonly float _squareRootOfTwo = (float)Math.Sqrt(2.0);
 		private Image _image;
 		private float _zoom;
 		private Point _lastScroll;
