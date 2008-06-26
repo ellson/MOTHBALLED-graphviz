@@ -787,7 +787,7 @@ topview</property>
                             <child>
                               <widget class="GtkMenuItem" id="mDotLayout">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">Dot</property>
+                                <property name="label" translatable="yes">dot</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="mDorSlot"/>
                               </widget>
@@ -795,7 +795,7 @@ topview</property>
                             <child>
                               <widget class="GtkMenuItem" id="mNeatoLayout">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">Neato</property>
+                                <property name="label" translatable="yes">neato</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="mNeatoSlot"/>
                               </widget>
@@ -803,7 +803,7 @@ topview</property>
                             <child>
                               <widget class="GtkMenuItem" id="mTwopiLayout">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">Twopi</property>
+                                <property name="label" translatable="yes">twopi</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="mTwopiSlot"/>
                               </widget>
@@ -811,7 +811,7 @@ topview</property>
                             <child>
                               <widget class="GtkMenuItem" id="mCircoLayout">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">Circo</property>
+                                <property name="label" translatable="yes">circo</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="mCircoSlot"/>
                               </widget>
@@ -819,7 +819,7 @@ topview</property>
                             <child>
                               <widget class="GtkMenuItem" id="mFdpLayout">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes">Fdp</property>
+                                <property name="label" translatable="yes">fdp</property>
                                 <property name="use_underline">True</property>
                                 <signal name="activate" handler="mFdpSlot"/>
                               </widget>
@@ -970,7 +970,7 @@ topview</property>
                 <property name="width_request">80</property>
                 <property name="height_request">26</property>
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Open Graph</property>
+                <property name="label" translatable="yes">Open graph</property>
                 <signal name="clicked" handler="mOpenSlot" object="btnOpenGraph"/>
               </widget>
               <packing>
@@ -983,7 +983,7 @@ topview</property>
                 <property name="width_request">80</property>
                 <property name="height_request">26</property>
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Save Graph</property>
+                <property name="label" translatable="yes">Save graph</property>
                 <signal name="clicked" handler="mSaveSlot" object="btnSaveGraph"/>
               </widget>
               <packing>
@@ -996,7 +996,7 @@ topview</property>
                 <property name="width_request">96</property>
                 <property name="height_request">26</property>
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Remove Graph</property>
+                <property name="label" translatable="yes">Remove graph</property>
                 <signal name="clicked" handler="mDeleteSlot" object="btnRemoveGraph"/>
               </widget>
               <packing>
@@ -1009,7 +1009,7 @@ topview</property>
                 <property name="width_request">80</property>
                 <property name="height_request">26</property>
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">New Graph</property>
+                <property name="label" translatable="yes">New graph</property>
                 <signal name="clicked" handler="mNewSlot" object="btnNewGraph"/>
               </widget>
               <packing>
@@ -1066,7 +1066,7 @@ topview</property>
                 <property name="width_request">60</property>
                 <property name="height_request">26</property>
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Circo</property>
+                <property name="label" translatable="yes">circo</property>
                 <signal name="clicked" handler="mCircoSlot" object="btnCirro"/>
               </widget>
               <packing>
@@ -1093,7 +1093,7 @@ topview</property>
                 <property name="width_request">62</property>
                 <property name="height_request">26</property>
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Neato</property>
+                <property name="label" translatable="yes">neato</property>
                 <property name="relief">GTK_RELIEF_HALF</property>
                 <property name="yalign">0.54000002145767212</property>
                 <property name="image_position">GTK_POS_BOTTOM</property>
