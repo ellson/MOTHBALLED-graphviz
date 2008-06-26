@@ -19,6 +19,7 @@
 #include "htmltable.h"
 #include "entities.h"
 #include "ps.h"
+#include "logic.h"
 
 #ifndef WIN32
 #include <unistd.h>
@@ -450,7 +451,7 @@ int maptoken(char *p, char **name, int *val)
     return val[i];
 }
 
-boolean mapbool(char *p)
+unsigned char mapbool(char *p)
 {
     if (p == NULL)
 	return FALSE;

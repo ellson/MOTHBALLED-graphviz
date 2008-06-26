@@ -16,6 +16,7 @@
 
 #include <ctype.h>
 #include "render.h"
+#include "logic.h"
 #include "htmltable.h"
 
 static char *usageFmt =

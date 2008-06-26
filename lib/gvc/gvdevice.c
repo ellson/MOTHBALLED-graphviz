@@ -42,12 +42,12 @@
 #include <zlib.h>
 #endif
 
-#include "logic.h"
 #include "const.h"
 #include "gvplugin_device.h"
 #include "gvcjob.h"
 #include "gvcint.h"
 #include "gvcproc.h"
+#include "logic.h"
 
 static const int PAGE_ALIGN = 4095;		/* align to a 4K boundary (less one), typical for Linux, Mac OS X and Windows memory allocation */
 

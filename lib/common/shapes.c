@@ -15,6 +15,7 @@
 **********************************************************/
 
 #include "render.h"
+#include "logic.h"
 #include "htmltable.h"
 #include <limits.h>
 

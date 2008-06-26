@@ -25,13 +25,17 @@ extern "C" {
 #include <stdbool.h>
 #endif
 
+#ifndef NOT
 #define NOT(v) (!(v))
+#endif
 
+#if 0
 /* HAVE_BOOL only tested the CC compiler, we know C++ must define bool */
 #if ! defined HAVE_BOOL && ! defined __cplusplus
 typedef unsigned char bool;
 #define false 0
 #define true NOT(false)
+#endif
 #endif
 
 #ifndef FALSE
@@ -53,6 +57,7 @@ typedef unsigned char bool;
 #define NIL(type) ((type)0)
 #endif
 
+    extern unsigned char mapbool(char *);
 #ifdef __cplusplus
 }
 #endif
