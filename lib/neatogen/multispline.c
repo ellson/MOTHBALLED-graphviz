@@ -666,9 +666,8 @@ void freeRouter(router_t * rtr)
     free(rtr);
 }
 
-#include <psdbg.c>
-#define DEBUG
 #ifdef DEBUG
+#include <psdbg.c>
 static void
 prTriGraph (router_t* rtr, int n)
 {
@@ -717,7 +716,6 @@ router_t *mkRouter(Ppoly_t** obsp, int npoly)
     int *obsi = N_NEW(npoly + 1, int);
     int i, j, ix = 4, six = 0;
 
-  /* psInit(); */
     bb = bbox(obsp, npoly, &npts);
     npts += 4;			/* 4 points of bounding box */
     pts = N_GNEW(npts, pointf);	/* all points are stored in pts */
@@ -738,12 +736,10 @@ router_t *mkRouter(Ppoly_t** obsp, int npoly)
 	    segs[six++] = 0;
     }
 
-/* psColor("0.8 0.8 0.8"); */
     /* store obstacles in CW order and generate constraint segments */
     for (i = 0; i < npoly; i++) {
 	obsi[i] = ix;
         obs = *obsp++;
-/* psPolyf (obs); */
 	for (j = 1; j <= obs->pn; j++) {
 	    segs[six++] = ix;
 	    if (j < obs->pn)
@@ -777,13 +773,6 @@ router_t *mkRouter(Ppoly_t** obsp, int npoly)
     rtr->tn = sf->nfaces;
     rtr->tg = mkTriGraph(sf, maxv, pts);
 
-/*
-psColor("0 0 0");
-for (i = 0; i < rtr->tn; i++) {
-  psTri(pts[rtr->tris[3*i]], pts[rtr->tris[3*i+1]],pts[rtr->tris[3*i+2]]);
-}
-psOut(stderr);
-*/
     freeSurface(sf);
     return rtr;
 }
@@ -894,15 +883,6 @@ genroute(tripoly_t * trip, int s, int t, edge_t * e, int doPolyline)
     eps[1].x = trip->poly.ps[t].x, eps[1].y = trip->poly.ps[t].y;
     Pshortestpath(&(trip->poly), eps, &pl);
 
-/*
-if (_cnt == 2) {
-  psInit();
-  psPoly (&(trip->poly));
-  psColor("1 0 0");
-  psPolyline(&pl);
-}
-*/
-
     if (pl.pn == 2) {
 	makeStraightEdge(head->graph, e, doPolyline);
 	return 0;
@@ -949,7 +929,6 @@ if (_cnt == 2) {
 	for (j = 1; j < pl.pn - 1; j++) {
 	    poly.ps[pn - j] = cpts[j - 1][i + 1];
 	}
-/* if (_cnt == 2) psPoly(&poly); */
 	Pshortestpath(&poly, eps, &mmpl);
 
 	if (doPolyline) {
@@ -967,7 +946,6 @@ if (_cnt == 2) {
 
 	e = ED_to_virt(e);
     }
-/* if (_cnt == 2) psOut(stderr); */
 
     for (i = 0; i < pl.pn - 2; i++)
 	free(cpts[i]);
@@ -1355,12 +1333,9 @@ int makeMultiSpline(edge_t* e, router_t * rtr, int doPolyline)
     PQVTYPE *vals;
     int ret;
 
-_cnt++;
-
 	/* Add endpoints to triangle graph */
     addEndpoint(rtr, t_p, t, t_id, ED_tail_port(e).side);
     addEndpoint(rtr, h_p, h, h_id, ED_head_port(e).side);
-/* if (_cnt == 1) prTriGraph (rtr, rtr->tn+2); */
 
 	/* Initialize priority queue */
     PQgen(&pq.pq, rtr->tn + 2, -1);
