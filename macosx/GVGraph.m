@@ -37,9 +37,7 @@ static GVC_t *_graphContext = nil;
 
 + (NSArray *)pluginsWithAPI:(api_t)api
 {
-	/* need to filter out repeated plugins i.e. plugins that have the same format + render but different package */
-	NSMutableSet *distinctPlugins = [NSMutableSet set];
-	NSMutableArray *plugins = [NSMutableArray array];
+	NSMutableSet *plugins = [NSMutableSet set];
 	
 	/* go through each non-empty plugin in the list, ignoring the package part */
 	char *pluginList = gvplugin_list(_graphContext, api, ":");
@@ -50,17 +48,13 @@ static GVC_t *_graphContext = nil;
 			char *lastColon = strrchr(nextPlugin, ':');
 			if (lastColon) {
 				*lastColon = '\0';
-				NSString *plugin = [NSString stringWithCString:nextPlugin encoding:NSUTF8StringEncoding];
-				if (![distinctPlugins containsObject:plugin]) {
-					[plugins addObject:plugin];
-					[distinctPlugins addObject:plugin];
-				}
+				[plugins addObject:[NSString stringWithCString:nextPlugin encoding:NSUTF8StringEncoding]];
 			}
 		}
 	}
 	free(pluginList);
 
-	return plugins;
+	return [[plugins allObjects] sortedArrayUsingSelector:@selector(compare:)];
 }
 
 - (id)initWithURL:(NSURL *)URL error:(NSError **)outError
