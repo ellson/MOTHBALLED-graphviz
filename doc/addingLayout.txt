@@ -114,15 +114,62 @@ gvlayout_engine_t xxxgen_engine = {
     xxx_cleanup,
 };
 
-and line
+and the line
 
     {LAYOUT_XXX, "xxx", 0, &xxxgen_engine, &neatogen_features},
 
-to gvlayout_neato_types and new emum
+to gvlayout_neato_types and a new emum
 
     LAYOUT_XXX
 
 to layout_type in that file.
+
+The above allows the new layout to piggyback on top of the neato
+plugin, but requires rebuilding the plugin. In general, a user
+can (and probably should) build a layout plugin totally separately. 
+
+To do this, after writing xxx_layout and xxx_cleanup, it is necessary to:
+
+  - add the types and data structures
+
+typedef enum { LAYOUT_XXX } layout_type;
+
+static gvlayout_features_t xxxgen_features = {
+    0
+};
+gvlayout_engine_t xxxgen_engine = {
+    xxx_layout,
+    xxx_cleanup,
+};
+static gvplugin_installed_t gvlayout_xxx_types[] = {
+    {LAYOUT_XXX, "xxx", 0, &xxxgen_engine, &xxxgen_features},
+    {0, NULL, 0, NULL, NULL}
+};
+static gvplugin_api_t apis[] = {
+    {API_layout, &gvlayout_xxx_types},
+    {(api_t)0, 0},
+};
+gvplugin_library_t gvplugin_xxx_layout_LTX_library = { "xxx_layout", apis };
+
+  - combine all of this into a dynamic library whose name contains the 
+  string "gvplugin_" and install the library in the same directory as the 
+  other Graphviz plugins. For example, on Linux systems, the dot layout 
+  plugin is in the library libgvplugin_dot_layout.so.
+
+  - run
+      dot -C
+  to regenerate the config file.
+
+NOTES:
+  - Additional layouts can be added as extra lines in gvlayout_xxx_types.
+  - Obviously, most of the names and strings can be arbitrary. One
+  constraint is that external identifier for the gvplugin_library_t
+  type must end in "_LTX_library". In addition, the string "xxx" in
+  each entry of gvlayout_xxx_types is the name used to identify the
+  layout algorithm, so needs to be distinct from any other layout name.
+  - The features of a layout algorithm are currently limited to a 
+  flag of bits, and the only flag supported is LAYOUT_USES_RANKDIR,
+  which enables the layout to the rankdir attribute.
 
 Changes need to be made to any applications, such as gvedit, that
 statically know about layout algorithms.
