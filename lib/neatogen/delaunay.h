@@ -18,10 +18,22 @@
 
 #include "sparsegraph.h"
 
+typedef struct {
+    int  nedges; /* no. of edges in triangulation */
+    int* edges;  /* 2*nsegs indices of points */
+    int  nfaces; /* no. of faces in triangulation */
+    int* faces;  /* 3*nfaces indices of points */ 
+    int* neigh;  /* 3*nfaces indices of neighbor triangles */ 
+} surface_t;
+
 v_data *delaunay_triangulation(double *x, double *y, int n);
 
 int *delaunay_tri (double *x, double *y, int n, int* nedges);
 
 v_data *UG_graph(double *x, double *y, int n, int accurate_computation);
+
+surface_t* mkSurface (double *x, double *y, int n, int* segs, int nsegs);
+
+void freeSurface (surface_t* s);
 
 #endif

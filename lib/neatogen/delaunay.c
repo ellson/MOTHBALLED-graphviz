@@ -15,6 +15,7 @@
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
+#include "neato.h"   /* For agerr() */
 #endif
 
 #include <stdio.h>
@@ -28,6 +29,7 @@
 #ifdef HAVE_TRIANGLE
 #define TRILIBRARY
 #include "triangle.c"
+#include "assert.h"
 
 // maybe it should be replaced by RNG - relative neigborhood graph, or by GG - gabriel graph
 int* 
@@ -120,6 +122,19 @@ v_data *delaunay_triangulation(double *x, double *y, int n)
     return delaunay;
 }
 
+surface_t* 
+mkSurface (double *x, double *y, int n, int* segs, int nsegs)
+{
+    agerr (AGERR, "mkSurface not yet implemented using Triangle library\n");
+    assert (0);
+    return 0;
+}
+void 
+freeSurface (surface_t* s)
+{
+    agerr (AGERR, "freeSurface not yet implemented using Triangle library\n");
+    assert (0);
+}
 #elif HAVE_GTS
 #include <gts.h>
 
@@ -127,14 +142,16 @@ static gboolean triangle_is_hole(GtsTriangle * t)
 {
     GtsEdge *e1, *e2, *e3;
     GtsVertex *v1, *v2, *v3;
+    gboolean ret;
 
     gts_triangle_vertices_edges(t, NULL, &v1, &v2, &v3, &e1, &e2, &e3);
 
     if ((GTS_IS_CONSTRAINT(e1) && GTS_SEGMENT(e1)->v1 != v1) ||
 	(GTS_IS_CONSTRAINT(e2) && GTS_SEGMENT(e2)->v1 != v2) ||
 	(GTS_IS_CONSTRAINT(e3) && GTS_SEGMENT(e3)->v1 != v3))
-	return TRUE;
-    return FALSE;
+	ret = TRUE;
+    else ret = FALSE;
+    return ret;
 }
 
 static guint delaunay_remove_holes(GtsSurface * surface)
@@ -143,6 +160,11 @@ static guint delaunay_remove_holes(GtsSurface * surface)
 				    (GtsFunc) triangle_is_hole, NULL);
 }
 
+/* Derived classes for vertices and faces so we can assign integer ids
+ * to make it easier to identify them. In particular, this allows the
+ * segments and faces to refer to vertices using the order in which
+ * they were passed in. 
+ */
 typedef struct {
     GtsVertex v;
     int idx;
@@ -173,24 +195,64 @@ static GVertexClass *g_vertex_class(void)
     return klass;
 }
 
-static GtsSurface *tri(double *x, double *y, int npt, int *segs, int nsegs)
+typedef struct {
+    GtsFace v;
+    int idx;
+} GFace;
+
+typedef struct {
+    GtsFaceClass parent_class;
+} GFaceClass;
+
+static GFaceClass *g_face_class(void)
+{
+    static GFaceClass *klass = NULL;
+
+    if (klass == NULL) {
+	GtsObjectClassInfo face_info = {
+	    "GFace",
+	    sizeof(GFace),
+	    sizeof(GFaceClass),
+	    (GtsObjectClassInitFunc) NULL,
+	    (GtsObjectInitFunc) NULL,
+	    (GtsArgSetFunc) NULL,
+	    (GtsArgGetFunc) NULL
+	};
+	klass = gts_object_class_new(GTS_OBJECT_CLASS(gts_face_class()),
+				     &face_info);
+    }
+
+    return klass;
+}
+
+/* tri:
+ */
+static GtsSurface*
+tri(double *x, double *y, int npt, int *segs, int nsegs)
 {
     int i;
-    GtsSurface *surface = gts_surface_new(gts_surface_class(),
-					  gts_face_class(),
-					  gts_edge_class(),
-					  gts_vertex_class());
+    GtsSurface *surface;
     GVertex **vertices = N_GNEW(npt, GVertex *);
-    GtsEdge *c;
+    GtsEdge **edges = N_GNEW(nsegs, GtsEdge*);
     GSList *list = NULL;
     GtsVertex *v1, *v2, *v3;
     GtsTriangle *t;
     GtsVertexClass *vcl = (GtsVertexClass *) g_vertex_class();
+    GtsEdgeClass *ecl = GTS_EDGE_CLASS (gts_constraint_class ());
 
     for (i = 0; i < npt; i++) {
 	GVertex *p = (GVertex *) gts_vertex_new(vcl, x[i], y[i], 0);
 	p->idx = i;
 	vertices[i] = p;
+    }
+    /* N.B. Edges need to be created here, presumably before the
+     * the vertices are added to the face. In particular, they cannot
+     * be added created and added vi gts_delaunay_add_constraint() below.
+     */
+    for (i = 0; i < nsegs; i++) {
+	edges[i] = gts_edge_new(ecl,
+		 (GtsVertex *) (vertices[ segs[ 2 * i]]),
+		 (GtsVertex *) (vertices[ segs[ 2 * i + 1]]));
     }
 
     for (i = 0; i < npt; i++)
@@ -200,23 +262,28 @@ static GtsSurface *tri(double *x, double *y, int npt, int *segs, int nsegs)
 
     gts_triangle_vertices(t, &v1, &v2, &v3);
 
+    surface = gts_surface_new(gts_surface_class(),
+				  (GtsFaceClass *) g_face_class(),
+				  gts_edge_class(),
+				  gts_vertex_class());
     gts_surface_add_face(surface, gts_face_new(gts_face_class(),
 					       t->e1, t->e2, t->e3));
 
     for (i = 0; i < npt; i++) {
 	GtsVertex *v1 = (GtsVertex *) vertices[i];
 	GtsVertex *v = gts_delaunay_add_vertex(surface, v1, NULL);
+
+	/* if v != NULL, it is a previously added pt with the same
+	 * coordinates as v1, in which case we replace v1 with v
+	 */
 	if (v) {
-	    fprintf(stderr, "Error adding point %d\n", i);
-	    exit(1);
+	    /* agerr (AGWARN, "Duplicate point %d %d\n", i, ((GVertex*)v)->idx); */
+	    gts_vertex_replace (v1, v);
 	}
     }
 
     for (i = 0; i < nsegs; i++) {
-	c = gts_edge_new(GTS_EDGE_CLASS(gts_constraint_class()),
-			 (GtsVertex *) (vertices[2 * i]),
-			 (GtsVertex *) (vertices[2 * i + 1]));
-	gts_delaunay_add_constraint(surface, GTS_CONSTRAINT(c));
+	gts_delaunay_add_constraint(surface,GTS_CONSTRAINT(edges[i]));
     }
 
     /* destroy enclosing triangle */
@@ -229,6 +296,7 @@ static GtsSurface *tri(double *x, double *y, int npt, int *segs, int nsegs)
     if (nsegs)
 	delaunay_remove_holes(surface);
 
+    free (edges);
     free(vertices);
     return surface;
 }
@@ -337,16 +405,124 @@ int *delaunay_tri(double *x, double *y, int n, int* pnedges)
 
     return edges;
 }
+
+static void cntFace (GFace* fp, int* ip)
+{
+    fp->idx = *ip;
+    *ip += 1;
+}
+
+typedef struct {
+    GtsSurface* s;
+    int* faces;
+    int* neigh;
+} fstate;
+
+typedef struct {
+    int nneigh;
+    int* neigh;
+} ninfo;
+
+static void addNeighbor (GFace* f, ninfo* es)
+{
+    es->neigh[es->nneigh] = f->idx;
+    es->nneigh++;
+}
+
+static void addFace (GFace* f, fstate* es)
+{
+    int i, myid = f->idx;
+    int* ip = es->faces + 3*myid;
+    int* neigh = es->neigh + 3*myid;
+    ninfo ni;
+    GtsVertex *v1, *v2, *v3;
+
+    gts_triangle_vertices (&f->v.triangle, &v1, &v2, &v3);
+    *ip++ = ((GVertex*)(v1))->idx;
+    *ip++ = ((GVertex*)(v2))->idx;
+    *ip++ = ((GVertex*)(v3))->idx;
+
+    ni.nneigh = 0;
+    ni.neigh = neigh;
+    gts_face_foreach_neighbor ((GtsFace*)f, 0, (GtsFunc) addNeighbor, &ni);
+    for (i = ni.nneigh; i < 3; i++)
+	neigh[i] = -1;
+}
+
+surface_t* 
+mkSurface (double *x, double *y, int n, int* segs, int nsegs)
+{
+    GtsSurface* s = tri(x, y, n, segs, nsegs);
+    estats stats;
+    estate state;
+    fstate statf;
+    surface_t* sf;
+    int nfaces = 0;
+    int* faces; 
+    int* neigh; 
+
+    if (!s) return NULL;
+
+    sf = GNEW(surface_t);
+    stats.n = 0;
+    stats.delaunay = NULL;
+    edgeStats (s, &stats);
+    nsegs = stats.n;
+    segs = N_GNEW(2 * nsegs, int);
+
+    state.n = 0;
+    state.edges = segs;
+    gts_surface_foreach_edge (s, (GtsFunc) addEdge, &state);
+
+    gts_surface_foreach_face (s, (GtsFunc) cntFace, &nfaces);
+
+    faces = N_GNEW(3 * nfaces, int);
+    neigh = N_GNEW(3 * nfaces, int);
+
+    statf.faces = faces;
+    statf.neigh = neigh;
+    gts_surface_foreach_face (s, (GtsFunc) addFace, &statf);
+
+    sf->nedges = nsegs;
+    sf->edges = segs;
+    sf->nfaces = nfaces;
+    sf->faces = faces;
+    sf->neigh = neigh;
+
+    gts_object_destroy (GTS_OBJECT (s));
+
+    return sf;
+}
+
+void 
+freeSurface (surface_t* s)
+{
+    free (s->edges);
+    free (s->faces);
+    free (s->neigh);
+}
 #else
+static char* err = "Graphviz built without any triangulation library\n";
 v_data *delaunay_triangulation(double *x, double *y, int n)
 {
-    fprintf(stderr, "Graphviz built without triangulation library\n");
+    agerr(AGERR, "delaunay_triangulation: %s\n", err);
     return 0;
 }
 int *delaunay_tri(double *x, double *y, int n, int* nedges)
 {
-    fprintf(stderr, "Graphviz built without triangulation library\n");
+    agerr(AGERR, "delaunay_tri: %s\n", err);
     return 0;
+}
+surface_t* 
+mkSurface (double *x, double *y, int n, int* segs, int nsegs)
+{
+    agerr(AGERR, "mkSurface: %s\n", err);
+    return 0;
+}
+void 
+freeSurface (surface_t* s)
+{
+    agerr (AGERR, "freeSurface: %s\n", err);
 }
 #endif
 
