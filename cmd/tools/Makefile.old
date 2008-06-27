@@ -12,23 +12,26 @@ LOC_PLUG=$(ROOT)/plugin
 LOC_INCDIR=$(LOC_LIB)/include
 LOC_LIBDIR=$(LOC_LIB)/lib
 
-DEFINES = -DHAVE_CONFIG_H
+DEFINES = -DHAVE_CONFIG_H -DUSE_CGRAPH
 
-INCS =  -I. -I$(ROOT) -I$(LOC_LIB)/agraph -I$(LOC_LIB)/graph \
+INCS =  -I. -I$(ROOT) -I$(LOC_LIB)/cgraph \
+        -I$(LOC_LIB)/ingraphs -I$(LOC_LIB)/cdt
+PINCS =  -I. -I$(ROOT) -I$(LOC_LIB)/graph \
         -I$(LOC_LIB)/ingraphs -I$(LOC_LIB)/cdt
 DNINCS = -I$(LOC_LIB)/pack -I$(LOC_LIB)/neatogen  \
          -I$(LOC_LIB)/gvc \
          -I$(LOC_LIB)/pathplan \
          -I$(LOC_LIB)/common -I$(LOC_LIB)
 
-LIBS =  -L$(LOC_LIB)/graph -lgraph -L$(LOC_LIB)/cdt -lcdt
+LIBS =  -L$(LOC_LIB)/cgraph -lcgraph -L$(LOC_LIB)/cdt -lcdt
+PLIBS =  -L$(LOC_LIB)/graph -lgraph -L$(LOC_LIB)/cdt -lcdt
 PLUGS = -L$(LOC_PLUG)/neato_layout -lgvplugin_neato_layout \
 	-L$(LOC_PLUG)/dot_layout -lgvplugin_dot_layout \
 	-L$(LOC_PLUG)/core -lgvplugin_core \
 	-L$(LOC_PLUG)/gd -lgvplugin_gd \
 	-L$(LOC_PLUG)/pango -lgvplugin_pango
 
-DNLIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
+GVLIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
         -L$(LOC_LIB)/common -lcommon \
         -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
         -L$(LOC_LIB)/neatogen -lneatogen \
@@ -36,16 +39,21 @@ DNLIBS = -L$(LOC_LIB)/gvc -lgvc $(PLUGS) \
         -L$(LOC_LIB)/dotgen -ldotgen \
         -L$(LOC_LIB)/circogen -lcircogen \
         -L$(LOC_LIB)/fdpgen -lfdpgen \
+        -L$(LOC_LIB)/sfdpgen -lsfdpgen \
         -L$(LOC_LIB)/twopigen -ltwopigen \
         -L$(LOC_LIB)/pack -lpack \
         -L$(LOC_LIB)/common -lcommon \
         -L$(LOC_LIB)/pathplan -lpathplan \
-        -L$(LOC_LIB)/gd -lgd \
+        -L$(LOC_LIB)/gd -lgd
+DNLIBS = $(GVLIBS) \
          $(LIBS) \
+         $(EXTLIB_LIB) $(EXPAT_LIB) $(LTDL_LIB) -lm
+PDNLIBS = $(GVLIBS) \
+         $(PLIBS) \
          $(EXTLIB_LIB) $(EXPAT_LIB) $(LTDL_LIB) -lm
 INGLIB = -L$(LOC_LIB)/ingraphs -lingraphs
 
-ALIBS = -L$(LOC_LIB)/agraph -lagraph -L$(LOC_LIB)/cdt -lcdt
+ALIBS = -L$(LOC_LIB)/cgraph -lcgraph -L$(LOC_LIB)/cdt -lcdt
 
 ACYCLICOBJS = acyclic.o
 NOPOBJS = nop.o
@@ -62,10 +70,10 @@ MANS = acyclic.1 gvcolor.1 nop.1 tred.1 ccomps.1 gc.1 sccmap.1 \
 	unflatten.1 gxl2dot.1 dot2gxl.1 gvpack.1 bcomps.1
 
 gvpack : $(GVPOBJS)
-	$(CPP) $(LDFLAGS) $(GVPOBJS) $(INGLIB) $(DNLIBS) -o $@
+	$(CPP) $(LDFLAGS) $(GVPOBJS) $(INGLIB) $(PDNLIBS) -o $@
 
 gvpack.o : gvpack.c
-	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) gvpack.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(PINCS) gvpack.c
 
 gvpack_builtins.o : gvpack_builtins.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) gvpack_builtins.c
@@ -77,7 +85,7 @@ dijkstra.o : dijkstra.c
 	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) dijkstra.c
 
 gxl2dot : $(GXLOBJS)
-	$(CSLD) $(LDFLAGS) $(GXLOBJS) $(INGLIB) $(ALIBS) -L$(LOC_LIB)/graph -lgraph $(EXPAT_LIB) -o $@
+	$(CSLD) $(LDFLAGS) $(GXLOBJS) $(INGLIB) $(ALIBS) $(EXPAT_LIB) -o $@
 
 dot2gxl : gxl2dot
 	$(RM) -f $@
