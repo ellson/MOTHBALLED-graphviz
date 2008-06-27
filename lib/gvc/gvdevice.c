@@ -130,7 +130,7 @@ static unsigned char * gvprintnum (int *len, double number)
     static unsigned char tmpbuf[sizeof(maxnegnumstr)];   /* buffer big enough for worst case */
     unsigned char *result = tmpbuf+sizeof(maxnegnumstr); /* init result to end of tmpbuf */
     long int N;
-    bool showzeros, negative;
+    boolean showzeros, negative;
     int digit, i;
 
     /*
@@ -163,7 +163,7 @@ static unsigned char * gvprintnum (int *len, double number)
 #ifdef TERMINATED_NUMBER_STRING
     *--result = '\0';			/* terminate the result string */
 #endif
-    showzeros = false;			/* don't print trailing zeros */
+    showzeros = FALSE;			/* don't print trailing zeros */
     for (i = DECPLACES; N || i > 0; i--) {  /* non zero remainder,
 						or still in fractional part */
         digit = N % 10;			/* next least-significant digit */
@@ -171,12 +171,12 @@ static unsigned char * gvprintnum (int *len, double number)
         if (digit || showzeros) {	/* if digit is non-zero,
 						or if we are printing zeros */
             *--result = digit | '0';	/* convert digit to ascii */
-            showzeros = true;		/* from now on we must print zeros */
+            showzeros = TRUE;		/* from now on we must print zeros */
         }
         if (i == 1) {			/* if completed fractional part */
             if (showzeros)		/* if there was a non-zero fraction */
                 *--result = '.';	/* print decimal point */
-            showzeros = true;		/* print all digits in int part */
+            showzeros = TRUE;		/* print all digits in int part */
         }
     }
     if (negative)			/* print "-" if needed */

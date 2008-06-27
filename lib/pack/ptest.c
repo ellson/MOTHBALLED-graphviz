@@ -208,7 +208,7 @@ static void initPos(Agraph_t * g)
     }
 }
 
-static void ptest_nodesize(node_t * n, bool flip)
+static void ptest_nodesize(node_t * n, boolean flip)
 {
     int w;
 

@@ -147,7 +147,7 @@ static void svg_size (usershape_t *us)
     char u[10];
     char *token;
     char line[200];
-    bool wFlag = false, hFlag = false;
+    boolean wFlag = FALSE, hFlag = FALSE;
 
     fseek(us->f, -strlen(line), SEEK_CUR);
     while (fgets(line, sizeof(line), us->f) != NULL && (!wFlag || !hFlag)) {
@@ -155,13 +155,13 @@ static void svg_size (usershape_t *us)
         while (token != NULL && token[strlen(token)-1] != '>') {
 	    if (sscanf(token, "width=\"%lf%2s\"", &n, u) == 2) {
 	        w = svg_units_convert(n, u);
-	        wFlag = true;
+	        wFlag = TRUE;
 		if (hFlag)
 		    break;
 	    }
 	    if (sscanf(token, "height=\"%lf%2s\"", &n, u) == 2) {
 	        h = svg_units_convert(n, u);
-	        hFlag = true;
+	        hFlag = TRUE;
                 if (wFlag)
 		    break;
 	    }
@@ -366,7 +366,7 @@ boolean gvusershape_file_access(usershape_t *us)
 		return false;
 	    }
 	    if (usershape_files_open_cnt >= MAX_USERSHAPE_FILES_OPEN)
-		us->nocache = true;
+		us->nocache = TRUE;
 	    else
 	        usershape_files_open_cnt++;
 	}
