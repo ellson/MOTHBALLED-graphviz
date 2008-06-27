@@ -12,7 +12,7 @@ CCFLAGS = -g
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = apply.o attr.o edge.o agerror.o flatten.o \
+OBJS = apply.o attr.o agxbuf.o edge.o agerror.o flatten.o \
 	grammar.o graph.o id.o imap.o io.o mem.o \
 	node.o obj.o pend.o rec.o refstr.o scan.o \
 	subg.o utils.o write.o
