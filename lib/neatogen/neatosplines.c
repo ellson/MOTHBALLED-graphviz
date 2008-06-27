@@ -23,9 +23,11 @@
 #include "adjust.h"
 #include "pathplan.h"
 #include "vispath.h"
+#include "multispline.h"
 #ifndef HAVE_DRAND48
 extern double drand48(void);
 #endif
+
 
 #define P2PF(p, pf) (pf.x = p.x, pf.y = p.y)
 #define PF2P(pf, p) (p.x = ROUND (pf.x), p.y = ROUND (pf.y))
@@ -194,7 +196,7 @@ polylineMidpoint (splines* spl, point* pp, point* pq)
  * significantly from rp and rq, but if the spline is degenerate (e.g.,
  * the nodes overlap), we use rp and rq.
  */
-static void addEdgeLabels(edge_t * e, point rp, point rq)
+void addEdgeLabels(edge_t * e, point rp, point rq)
 {
     int et = EDGE_TYPE (e->head->graph->root);
     point p, q;
@@ -406,7 +408,12 @@ void makeSelfArcs(path * P, edge_t * e, int stepx)
     }
 }
 
-static void makeStraightEdge(graph_t * g, edge_t * e)
+/* makeStraightEdge:
+ *
+ * FIX: handle ports on boundary?
+ */
+void 
+makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
 {
     point dumb[4];
     node_t *n = e->tail;
@@ -466,7 +473,25 @@ static void makeStraightEdge(graph_t * g, edge_t * e)
 		dumber[3 - j] = dumb[j];
 	    }
 	}
-	clip_and_install(e0, e0->head, dumber, 4, &sinfo);
+	if (doPolyline) {
+	    Ppoint_t pts[4];
+	    Ppolyline_t spl, line;
+	    point* ispline;
+
+	    line.pn = 4;
+	    line.ps = pts;
+	    for (i=0; i < 4; i++)
+		P2PF (dumber[i], pts[i]);
+	    make_polyline (line, &spl);
+	    ispline = N_GNEW(spl.pn, point);
+	    for (i=0; i < spl.pn; i++)
+		PF2P (spl.ps[i], ispline[i]);
+	    clip_and_install(e0, e0->head, ispline, spl.pn, &sinfo);
+	    free(ispline);
+	}
+	else
+	    clip_and_install(e0, e0->head, dumber, 4, &sinfo);
+
 	addEdgeLabels(e0, p, q);
 	e0 = ED_to_virt(e0);
 	dumb[1].x += del.x;
@@ -739,6 +764,9 @@ void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
     addEdgeLabels(e, p1, q1);
 }
 
+  /* True if either head or tail has a port on its boundary */
+#define BOUNDARY_PORT(e) ((ED_tail_port(e).side)||(ED_head_port(e).side))
+
 /* _spline_edges:
  * Basic default routine for creating edges.
  * If splines are requested, we construct the obstacles.
@@ -752,15 +780,17 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 {
     node_t *n;
     edge_t *e;
+    edge_t *e0;
     Ppoly_t **obs = 0;
     Ppoly_t *obp;
-    int i = 0, npoly;
+    int cnt, i = 0, npoly;
     vconfig_t *vconfig = 0;
     path *P = NULL;
     int useEdges = (Nop > 1);
 #ifdef ORTHO
     extern void orthoEdges (Agraph_t* g, int useLbls, splineInfo* sinfo);
 #endif
+    router_t* rtr = 0;
 
     /* build configuration */
     if (edgetype != ET_LINE) {
@@ -811,29 +841,58 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     /* spline-drawing pass */
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+/* fprintf (stderr, "%s -- %s %d\n", e->tail->name, e->head->name, ED_count(e)); */
 	    node_t *head = e->head;
 	    if (useEdges && ED_spl(e)) {
 		addEdgeLabels(e,
 			      add_points(ND_coord_i(n), ED_tail_port(e).p),
 			      add_points(ND_coord_i(head),
 					 ED_head_port(e).p));
-	    } else if (n == head) {    /* self arc */
-		if (ED_count(e) == 0) continue;   /* only do representative */
+	    } 
+	    else if (ED_count(e) == 0) continue;  /* only do representative */
+	    else if (n == head) {    /* self arc */
 		if (!P) {
 		    P = NEW(path);
 		    P->boxes = N_NEW(agnnodes(g) + 20 * 2 * 9, box);
 		}
 		makeSelfArcs(P, e, GD_nodesep(g));
-	    } else if (vconfig) {
-		if (edgetype == ET_SPLINE)
-		    makeSpline(e, obs, npoly, TRUE);
-		else
-		    makePolyline(e);
-	    } else if (ED_count(e)) {
-		makeStraightEdge(g, e);
+	    } else if (vconfig) { /* ET_SPLINE or ET_POLYLINE */
+#ifdef HAVE_GTS
+		if ((ED_count(e) > 1) || BOUNDARY_PORT(e)) {
+		    int fail = 0;
+		    if ((ED_path(e).pn == 2) && !BOUNDARY_PORT(e))
+			     /* if a straight line can connect the ends */
+			makeStraightEdge(g, e, edgetype == ET_PLINE);
+		    else { 
+			if (!rtr) rtr = mkRouter (obs, npoly);
+			fail = makeMultiSpline(e, rtr, edgetype == ET_PLINE);
+		    } 
+		    if (!fail) continue;
+		}
+		/* We can probably remove this branch and just use
+		 * makeMultiSpline. It can also catch the makeStraightEdge
+		 * case. We could then eliminate all of the vconfig stuff.
+		 */
+#endif
+		cnt = ED_count(e);
+		e0 = e;
+		for (i = 0; i < cnt; i++) {
+		    if (edgetype == ET_SPLINE)
+			makeSpline(e0, obs, npoly, TRUE);
+		    else
+			makePolyline(e0);
+		    e0 = ED_to_virt(e0);
+		}
+	    } else {
+		makeStraightEdge(g, e, 0);
 	    }
 	}
     }
+
+#ifdef HAVE_GTS
+    if (rtr)
+	freeRouter (rtr);
+#endif
 
     if (vconfig)
 	Pobsclose (vconfig);

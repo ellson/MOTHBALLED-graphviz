@@ -22,6 +22,7 @@ extern "C" {
 #endif
 #include <adjust.h>
 
+    extern void addEdgeLabels(edge_t * e, point rp, point rq);
     extern int allow_edits(int);
     extern void avoid_cycling(graph_t *, Agnode_t *, double *);
     extern int checkStart(graph_t * G, int nG, int);
@@ -43,6 +44,7 @@ extern "C" {
     extern void jitter3d(Agnode_t *, int);
     extern void jitter_d(Agnode_t *, int, int);
     extern Ppoly_t *makeObstacle(node_t * n, expand_t* );
+    extern void makeStraightEdge(graph_t * g, edge_t * e, int doPolyline);
     extern void makeSelfArcs(path * P, edge_t * e, int stepx);
     extern void makeSpline(edge_t *, Ppoly_t **, int, boolean);
     extern void make_spring(graph_t *, Agnode_t *, Agnode_t *, double);
