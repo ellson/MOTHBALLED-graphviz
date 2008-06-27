@@ -39,10 +39,10 @@ typedef unsigned char bool;
 #endif
 
 #ifndef FALSE
-#define	FALSE false
+#define	FALSE (0)
 #endif
 #ifndef TRUE
-#define TRUE true
+#define TRUE (!FALSE)
 #endif
 
 #ifndef NOTUSED
