@@ -22,73 +22,6 @@ extern double PSinputscale;
 
 static GVC_t *_graphContext = nil;
 
-@interface GVGraphPluginEnumerator : NSEnumerator
-{
-	gvplugin_available_t *_plugin;
-	NSMutableSet *_distinctPlugins;
-}
-
-- (id)initWithAPI:(api_t)api;
-- (NSArray *)allObjects;
-- (id)nextObject;
-- (void)dealloc;
-
-@end
-
-@implementation GVGraphPluginEnumerator
-
-- (id)initWithAPI:(api_t)api
-{
-	if (self = [super init]) {
-		_plugin = gvFirstPlugin(_graphContext, api);
-		_distinctPlugins = [[NSMutableSet alloc] init];
-	}
-	return self;
-}
-
-- (NSArray *)allObjects
-{
-	NSMutableArray *allPlugins = [NSMutableArray array];
-	for (; _plugin; _plugin = gvNextPlugin(_plugin)) {
-		/* get the type */
-		char *pluginType = gvPluginType(_plugin);
-		NSString *nextPlugin = [[[NSString alloc] initWithBytesNoCopy:pluginType length:strlen(pluginType) encoding:NSUTF8StringEncoding freeWhenDone:NO] autorelease];
-		
-		/* if distinct, add to the list */
-		if (![_distinctPlugins containsObject:nextPlugin]) {
-			[_distinctPlugins addObject:nextPlugin];
-			[allPlugins addObject:nextPlugin];
-		}
-	}
-	return allPlugins;
-}
-
-- (id)nextObject
-{
-	NSString *nextPlugin = nil;
-	BOOL plugging = YES;
-	for (; plugging && _plugin; _plugin = gvNextPlugin(_plugin)) {
-		/* get the type */
-		char *pluginType = gvPluginType(_plugin);
-		nextPlugin = [[[NSString alloc] initWithBytesNoCopy:pluginType length:strlen(pluginType) encoding:NSUTF8StringEncoding freeWhenDone:NO] autorelease];
-		
-		/* if distinct, stop plugging away */
-		if (![_distinctPlugins containsObject:nextPlugin]) {
-			[_distinctPlugins addObject:nextPlugin];
-			plugging = NO;
-		}
-	}
-	
-	return nextPlugin;
-}
-
-- (void)dealloc
-{
-	[_distinctPlugins release];
-	[super dealloc];
-}
-@end
-
 @implementation GVGraph
 
 @synthesize graph = _graph;
@@ -102,9 +35,32 @@ static GVC_t *_graphContext = nil;
 	_graphContext = gvContext();
 }
 
-+ (NSEnumerator *)devices
++ (NSArray *)pluginsWithAPI:(api_t)api
 {
-	return [[[GVGraphPluginEnumerator alloc] initWithAPI:API_device] autorelease];
+	/* need to filter out repeated plugins i.e. plugins that have the same format + render but different package */
+	NSMutableSet *distinctPlugins = [NSMutableSet set];
+	NSMutableArray *plugins = [NSMutableArray array];
+	
+	/* go through each non-empty plugin in the list, ignoring the package part */
+	char *pluginList = gvplugin_list(_graphContext, api, ":");
+	char *restOfPlugins;
+	char *nextPlugin;
+	for (restOfPlugins = pluginList; nextPlugin = strsep(&restOfPlugins, " ");) {
+		if (*nextPlugin) {
+			char *lastColon = strrchr(nextPlugin, ':');
+			if (lastColon) {
+				*lastColon = '\0';
+				NSString *plugin = [NSString stringWithCString:nextPlugin encoding:NSUTF8StringEncoding];
+				if (![distinctPlugins containsObject:plugin]) {
+					[plugins addObject:plugin];
+					[distinctPlugins addObject:plugin];
+				}
+			}
+		}
+	}
+	free(pluginList);
+
+	return plugins;
 }
 
 - (id)initWithURL:(NSURL *)URL error:(NSError **)outError

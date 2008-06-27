@@ -30,6 +30,7 @@
 extern GVC_t *gvNEWcontext(char **info, char *user);
 extern char *gvUsername(void);
 extern int gvRenderJobs (GVC_t * gvc, graph_t * g);
+extern char *gvplugin_list(GVC_t * gvc, api_t api, char *str);
 
 static char *LibInfo[] = {
     "libgvc",		/* Program */
@@ -199,8 +200,3 @@ char **gvcInfo(GVC_t* gvc) { return gvc->common.info; }
 char *gvcUsername(GVC_t* gvc) { return gvc->common.user; }
 char *gvcVersion(GVC_t* gvc) { return gvc->common.info[1]; }
 char *gvcBuildDate(GVC_t* gvc) { return gvc->common.info[2]; }
-
-gvplugin_available_t *gvFirstPlugin(GVC_t *gvc, api_t api) { return gvc->apis[api]; }
-gvplugin_available_t *gvNextPlugin(gvplugin_available_t *plugin) { return plugin->next; }
-char *gvPluginType(gvplugin_available_t *plugin) { return plugin->typestr; }
-

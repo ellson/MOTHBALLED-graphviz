@@ -31,9 +31,7 @@ NSMutableArray *_formatRenders = nil;
 		
 		NSString *lastFormat = nil;
 		NSMutableArray *lastRenders = nil;
-		for (NSString *device in [GVGraph devices]) {
-			NSLog (@"%@", device);
-			
+		for (NSString *device in [GVGraph pluginsWithAPI:API_device]) {
 			NSArray *deviceComponents = [device componentsSeparatedByString:@":"];
 			NSUInteger componentCount = [deviceComponents count];
 			
