@@ -15,8 +15,11 @@
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
-#include "neato.h"   /* For agerr() */
 #endif
+
+ /* until we can include cgraph.h or something else */
+typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
+extern int agerr(agerrlevel_t level, char *fmt, ...);
 
 #include <stdio.h>
 #include <stdlib.h>
