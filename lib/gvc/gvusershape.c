@@ -363,7 +363,7 @@ boolean gvusershape_file_access(usershape_t *us)
 #endif
 	    if (us->f == NULL) {
 		agerr(AGWARN, "%s while opening %s\n", strerror(errno), fn);
-		return false;
+		return FALSE;
 	    }
 	    if (usershape_files_open_cnt >= MAX_USERSHAPE_FILES_OPEN)
 		us->nocache = TRUE;
@@ -371,7 +371,7 @@ boolean gvusershape_file_access(usershape_t *us)
 	        usershape_files_open_cnt++;
 	}
     }
-    return true;
+    return TRUE;
 }
 
 void gvusershape_file_release(usershape_t *us)
