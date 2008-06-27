@@ -60,7 +60,7 @@ NSMutableArray *_formatRenders = nil;
 		_render = nil;
 		for (NSDictionary *formatRender in _formatRenders)
 			if ([[formatRender objectForKey:@"format"] isEqualToString:@"pdf"]) {
-				_formatRender = formatRender;
+				_formatRender = [formatRender retain];
 				if ([[formatRender objectForKey:@"renders"] containsObject:@"quartz"])
 					_render = @"quartz";
 				break;
