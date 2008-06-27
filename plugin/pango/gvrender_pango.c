@@ -78,6 +78,9 @@ writer (void *closure, const unsigned char *data, unsigned int length)
     return CAIRO_STATUS_WRITE_ERROR;
 }
 
+#define CAIRO_XMAX 32767
+#define CAIRO_YMAX 32767
+
 static void cairogen_begin_page(GVJ_t * job)
 {
     cairo_t *cr = NULL;
@@ -107,13 +110,25 @@ static void cairogen_begin_page(GVJ_t * job)
         case FORMAT_CAIRO:
         case FORMAT_PNG:
         default:
+	    if (job->width >= CAIRO_XMAX || job->height >= CAIRO_YMAX) {
+		double scale = MIN((double)CAIRO_XMAX / job->width,
+			(double)CAIRO_YMAX / job->height);
+		job->width *= scale;
+		job->height *= scale;
+		job->scale.x *= scale;
+		job->scale.y *= scale;
+                fprintf(stderr,
+                        "%s: graph is too large for bitmap. Scaling by %g to fit\n", 
+                        job->common->cmdname, scale);
+	    }
 	    surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
 			job->width, job->height);
             if (job->common->verbose)
                 fprintf(stderr,
-                        "%s: allocating a %dK cairo image surface\n",
+                        "%s: allocating a %dK cairo image surface (%d x %d pixels)\n",
                         job->common->cmdname,
-                        ROUND(job->width * job->height * 4 / 1024.));
+			ROUND(job->width * job->height * 4 / 1024.),
+			job->width, job->height);
 	    break;
         }
 	status = cairo_surface_status(surface);
@@ -121,17 +136,6 @@ static void cairogen_begin_page(GVJ_t * job)
 		fprintf(stderr, "%s: failure to create cairo surface: %s\n",
 			job->common->cmdname,
 			cairo_status_to_string(status));
-		cairo_surface_destroy (surface);
-		job->context = NULL;
-		return;
-	}
-	if (job->width >= 32768 || job->height >= 32768) {
-		if (job->width >= 32768)
-		    fprintf(stderr, "%s: width (%d >= 32768) is too large.\n",
-			job->common->cmdname, job->width);
-		if (job->height >= 32768)
-		    fprintf(stderr, "%s: height (%d >= 32768) is too large.\n",
-			job->common->cmdname, job->height);
 		cairo_surface_destroy (surface);
 		job->context = NULL;
 		return;

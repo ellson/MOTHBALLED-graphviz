@@ -74,6 +74,9 @@ static void gdgen_resolve_color(GVJ_t * job, gvcolor_t * color)
 
 static int white, black, transparent, basecolor;
 
+#define GD_XMAX 32767
+#define GD_YMAX 32767
+
 static void gdgen_begin_page(GVJ_t * job)
 {
     char *bgcolor_str = NULL, *truecolor_str = NULL;
@@ -101,18 +104,31 @@ static void gdgen_begin_page(GVJ_t * job)
 	    fprintf(stderr, "%s: using existing GD image\n", job->common->cmdname);
 	im = (gdImagePtr) (job->context);
     } else {
+        if (job->width >= GD_XMAX || job->height >= GD_YMAX) {
+	    double scale = MIN((double)GD_XMAX / job->width,
+		(double)GD_YMAX / job->height);
+	    job->width *= scale;
+	    job->height *= scale;
+	    job->zoom *= scale;
+	    fprintf(stderr,
+		"%s: graph is too large for bitmap. Scaling by %g to fit\n",
+		job->common->cmdname, scale);
+	}
 	if (truecolor_p) {
 	    if (job->common->verbose)
 		fprintf(stderr,
-			"%s: allocating a %dK TrueColor GD image\n",
+			"%s: allocating a %dK TrueColor GD image (%d x %d pixels)\n",
 			job->common->cmdname,
-			ROUND(job->width * job->height * 4 / 1024.));
+			ROUND(job->width * job->height * 4 / 1024.),
+			job->width, job->height);
 	    im = gdImageCreateTrueColor(job->width, job->height);
 	} else {
 	    if (job->common->verbose)
 		fprintf(stderr,
-			"%s: allocating a %dK PaletteColor GD image\n",
-			job->common->cmdname, ROUND(job->width * job->height / 1024.));
+			"%s: allocating a %dK PaletteColor GD image (%d x %d pixels)\n",
+			job->common->cmdname,
+			ROUND(job->width * job->height / 1024.),
+			job->width, job->height);
 	    im = gdImageCreate(job->width, job->height);
 	}
         job->context = (void *) im;
