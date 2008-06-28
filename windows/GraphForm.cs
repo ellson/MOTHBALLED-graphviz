@@ -15,10 +15,12 @@
 **********************************************************/
 
 using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Graphviz
 {
@@ -42,6 +44,24 @@ namespace Graphviz
 				graphControl.Image = new Metafile(stream);
 			};
 			_graph.Arguments["layout"] = "dot";
+			
+			/* set up export dialog with initial file and filters from the graph devices */
+			StringBuilder exportFilter = new StringBuilder();
+			int filterIndex = 0;
+			for (int deviceIndex = 0; deviceIndex < _devices.Count; ++deviceIndex)
+			{
+				if (deviceIndex > 0)
+					exportFilter.Append("|");
+					
+				string device = _devices[deviceIndex];
+				exportFilter.Append(String.Format("{0} (*.{1})|*.{1}", device.ToUpper(), device));
+				
+				if (filterIndex == 0 && device == "emfplus")
+					filterIndex = deviceIndex;
+			}
+			exportFileDialog.FileName = Path.GetFileNameWithoutExtension(fileName);
+			exportFileDialog.Filter = exportFilter.ToString();
+			exportFileDialog.FilterIndex = filterIndex + 1;
 		}
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
@@ -90,7 +110,19 @@ namespace Graphviz
 		{
 			graphControl.ZoomOut();
 		}
+
+		private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			/* pose the export dialog and then render the graph with the selected file and format */
+			if (exportFileDialog.ShowDialog(this) == DialogResult.OK)
+			{
+				int filterIndex = exportFileDialog.FilterIndex - 1;
+				if (filterIndex >= 0 && filterIndex < _devices.Count)
+					_graph.Render(_devices[filterIndex], exportFileDialog.FileName);
+			}
+		}
 		
+		private static readonly IList<string> _devices = Graph.GetPlugins(Graph.API.Device, false);
 		private readonly Graph _graph;
 
 	}
