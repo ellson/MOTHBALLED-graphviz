@@ -24,11 +24,35 @@ namespace Graphviz
 {
 	public class Graph : IDisposable
 	{
+		public enum API
+		{
+			Render = 0,
+			Layout = 1,
+			TextLayout = 2,
+			Device = 3,
+			LoadImage = 4
+		}
+		
 		public class Exception : ApplicationException
 		{
 			public Exception(string message): base(message)
 			{
 			}
+		}
+
+		public static IList<string> GetPlugins(API api, bool showFullPath)
+		{
+			SortedList<string, string> plugins = new SortedList<string, string>();
+			IntPtr pluginList = gvplugin_list(_context, api, showFullPath ? ":" : "");
+			foreach (string nextPlugin in Marshal.PtrToStringAnsi(pluginList).Split(new char[]{' '}, StringSplitOptions.RemoveEmptyEntries))
+			{
+				int lastColon = nextPlugin.LastIndexOf(':');
+				string plugin = nextPlugin.Substring(0, lastColon == -1 ? nextPlugin.Length : lastColon);
+				plugins[plugin] = plugin;
+			}
+			
+			free(pluginList);
+			return plugins.Keys;
 		}
 		
 		public event EventHandler Changed;
@@ -89,6 +113,12 @@ namespace Graphviz
 					throw new Exception("bad render");
 				return new RenderStream(result, length);
 			}
+		}
+		
+		public void Render(string format, string filename)
+		{
+			if (gvRenderFilename(_context, _graph, format, filename) != 0)
+				throw new Exception("bad render");
 		}
 		
 		public void NoteChanged(bool relayout)
@@ -158,6 +188,9 @@ namespace Graphviz
 		private static extern int gvLayout(IntPtr context, IntPtr graph, string engine);
 
 		[DllImport("libgvc-4.dll")]
+		private static extern IntPtr gvplugin_list(IntPtr context, API api, string str);
+
+		[DllImport("libgvc-4.dll")]
 		private static extern int gvRenderFilename(IntPtr context, IntPtr graph, string format, string filename);
 		
 		[DllImport("libgvc-4.dll")]
@@ -171,6 +204,9 @@ namespace Graphviz
 
 		[DllImport("msvcrt.dll", SetLastError = true)]
 		private static extern unsafe void free(byte* pointer);
+
+		[DllImport("msvcrt.dll", SetLastError = true)]
+		private static extern void free(IntPtr pointer);
 
 		private static readonly IntPtr _context = gvContext();
 		
