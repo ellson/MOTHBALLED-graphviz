@@ -4,7 +4,7 @@ dijkstra \- single-source distance filter
 .SH SYNOPSIS
 .B dijkstra
 [
-.B \-a?
+.B \-ap?
 ]
 [ 
 .I sourcenode file
@@ -20,6 +20,11 @@ attribute, and the default is 1.  The
 .I dist
 attribute of every node is set to its distance from
 .I sourcenode.
+If the \fB-p\fP flag is used, the
+.I prev
+attribute of each node reachable from
+.I sourcenode
+is set to the name of the previous node on a shortest path.
 The graph attribute
 .I maxdist
 is set to the maximum 
