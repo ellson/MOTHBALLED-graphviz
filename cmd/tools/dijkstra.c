@@ -44,11 +44,13 @@ static char **Nodes;
 static int setall = 0;		/* if false, don't set dist attribute for
 				 * nodes in different components.
 				 */
+static int doPath = 0;		/* if 1, record shortest paths */
 static Agsym_t *len_sym;
 
 typedef struct nodedata_s {
     Agrec_t hdr;
     double dist;		/* always positive for scanned nodes */
+    Agnode_t* prev;
 } nodedata_t;
 
 typedef struct edgedata_s {
@@ -86,6 +88,8 @@ static void setdist(Agnode_t * n, double dist)
 #else
 #define getdist(n) (((nodedata_t*)((n)->base.data))->dist)
 #define setdist(n,d) (((nodedata_t*)((n)->base.data))->dist = (d))
+#define getprev(n) (((nodedata_t*)((n)->base.data))->prev)
+#define setprev(n,p) (((nodedata_t*)((n)->base.data))->prev = (p))
 #endif
 
 static int cmpf(Dt_t * d, void *key1, void *key2, Dtdisc_t * disc)
@@ -130,10 +134,12 @@ static void update(Dict_t * Q, Agnode_t * dest, Agnode_t * src, double len)
 
     if (oldlen == 0) {		/* first time to see dest */
 	setdist(dest, newlen);
+	if (doPath) setprev(dest, src);
 	dtinsert(Q, dest);
     } else if (newlen < oldlen) {
 	dtdelete(Q, dest);
 	setdist(dest, newlen);
+	if (doPath) setprev(dest, src);
 	dtinsert(Q, dest);
     }
 }
@@ -148,13 +154,17 @@ static void pre(Agraph_t * g)
 static void post(Agraph_t * g)
 {
     Agnode_t *v;
+    Agnode_t *prev;
     char buf[256];
     char dflt[256];
     Agsym_t *sym;
+    Agsym_t *psym;
     double dist, oldmax;
     double maxdist = 0.0;	/* maximum "finite" distance */
 
     sym = agattr(g, AGNODE, "dist", "");
+    if (doPath)
+	psym = agattr(g, AGNODE, "prev", "");
 
     if (setall)
 	sprintf(dflt, "%.3lf", HUGE);
@@ -169,6 +179,8 @@ static void post(Agraph_t * g)
 	    dist--;
 	    sprintf(buf, "%.3lf", dist);
 	    agxset(v, sym, buf);
+	    if (doPath && (prev = getprev(v)))
+		agxset(v, psym, agnameof(prev));
 	    if (maxdist < dist)
 		maxdist = dist;
 	} else if (setall)
@@ -219,6 +231,7 @@ void dijkstra(Dict_t * Q, Agraph_t * G, Agnode_t * n)
 static char *useString =
     "Usage: dijkstra [-a?] <node> [<file> <node> <file>]\n\
   -a - for nodes in a different component, set dist very large\n\
+  -p - attach shortest path info\n\
   -? - print usage\n\
 If no files are specified, stdin is used\n";
 
@@ -233,10 +246,13 @@ static void init(int argc, char *argv[])
     int i, j, c;
 
     CmdName = argv[0];
-    while ((c = getopt(argc, argv, ":a?")) != -1) {
+    while ((c = getopt(argc, argv, ":ap?")) != -1) {
 	switch (c) {
 	case 'a':
 	    setall = 1;
+	    break;
+	case 'p':
+	    doPath = 1;
 	    break;
 	case '?':
 	    if (optopt == '?')
