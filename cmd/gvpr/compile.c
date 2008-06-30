@@ -440,7 +440,6 @@ static char *getArg(int n, Gpr_t * state)
 static int
 setDfltAttr (Agraph_t *gp, char* k, char* name, char* value)
 {
-    Agsym_t* sym;
     int kind;
 
     switch (*k) {
@@ -458,10 +457,6 @@ setDfltAttr (Agraph_t *gp, char* k, char* name, char* value)
 	return 1;
 	break;
     }
-    sym = agattr(gp, kind, name, 0);
-    if (!sym)
-	sym = agattr(gp, kind, name, "");
-
     agattr(gp, kind, name, value);
     return 0;
 }
