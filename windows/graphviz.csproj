@@ -42,6 +42,7 @@
     <Compile Include="AttributeInspectorForm.Designer.cs">
       <DependentUpon>AttributeInspectorForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PathWatcher.cs" />
     <Compile Include="StandardValuesTypeConverter.cs" />
     <Compile Include="GraphPropertyDescriptor.cs" />
     <Compile Include="FormController.cs" />

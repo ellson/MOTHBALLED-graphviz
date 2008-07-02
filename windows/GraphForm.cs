@@ -15,6 +15,7 @@
 **********************************************************/
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -26,6 +27,8 @@ namespace Graphviz
 {
 	public partial class GraphForm : Form, FormController.IMenus
 	{
+		public event EventHandler Changed;
+		
 		public Graph Graph
 		{
 			get { return _graph; }
@@ -40,11 +43,38 @@ namespace Graphviz
 			/* whenever graph changes, rerender and display the graph */
 			_graph.Changed += delegate(object sender, EventArgs e)
 		{
-			using (Stream stream = _graph.Render("emfplus:gdiplus"))
-				graphControl.Image = new Metafile(stream);
+				RenderGraph();
 			};
 			_graph.Arguments["layout"] = "dot";
 			
+			_watcher = new PathWatcher(fileName);
+			_watcher.SynchronizingObject = this;
+			_watcher.Changed += delegate(object sender, CancelEventArgs eventArgs)
+			{
+				try
+				{
+					/* replace old graph with new and rerender */
+					Graph newGraph = new Graph(((PathWatcher)sender).Watched);
+					if (newGraph != null)
+					{
+						((IDisposable)_graph).Dispose();
+						_graph = newGraph;
+						_graph.Arguments["layout"] = "dot";
+						RenderGraph();
+						
+						if (Changed != null)
+							Changed(this, EventArgs.Empty);
+					}
+				}
+				catch (Win32Exception exception)
+				{
+					/* if another process is holding on to the graph, try opening again later */
+					if (exception.NativeErrorCode == 32)
+						eventArgs.Cancel = false;
+				}
+			};
+			_watcher.Start();
+		
 			/* set up export dialog with initial file and filters from the graph devices */
 			StringBuilder exportFilter = new StringBuilder();
 			int filterIndex = 0;
@@ -71,6 +101,12 @@ namespace Graphviz
 			base.OnFormClosed(e);
 		}
 
+		private void RenderGraph()
+		{
+			using (Stream stream = _graph.Render("emfplus:gdiplus"))
+				graphControl.Image = new Metafile(stream);
+		}
+		
 		ToolStripMenuItem FormController.IMenus.ExitMenuItem
 		{
 			get { return exitToolStripMenuItem; }
@@ -123,7 +159,7 @@ namespace Graphviz
 		}
 		
 		private static readonly IList<string> _devices = Graph.GetPlugins(Graph.API.Device, false);
-		private readonly Graph _graph;
-
+		private Graph _graph;
+		private readonly PathWatcher _watcher;
 	}
 }

@@ -50,21 +50,32 @@ namespace Graphviz
 			attributePropertyGrid.PropertyTabs.AddTabType(typeof(NodePropertyTab), PropertyTabScope.Static);
 			attributePropertyGrid.PropertyTabs.AddTabType(typeof(EdgePropertyTab), PropertyTabScope.Static);
 			 
+			_inspected = null;
+			_inspectMainForm = delegate(object sender, EventArgs e)
+			{
+				/* if the main form has a graph, monitor its changes and show its properties */
+				GraphForm graphForm = FormController.Instance.MainForm as GraphForm;
+				if (graphForm != null)
+				{
+					if (_inspected != null)
+						_inspected.Changed -= _inspectMainForm;
+					_inspected = graphForm;
+					_inspected.Changed += _inspectMainForm;
+					
+					Text = "Attributes of " + graphForm.Text;
+					attributePropertyGrid.SelectedObject = graphForm.Graph;
+				}
+			};
+			
 			/* inspect the graph when the handle has been created */
 			/* NOTE: if we set the SelectedObject BEFORE the handle has been created, this damages the property tabs, a Microsoft bug */
 			if (attributePropertyGrid.IsHandleCreated)
-				InspectMainForm();
+				_inspectMainForm(this, EventArgs.Empty);
 			else
-				attributePropertyGrid.HandleCreated += delegate(object sender, EventArgs e)
-				{
-					InspectMainForm();
-				};
+				attributePropertyGrid.HandleCreated += _inspectMainForm;
 			
 			/* inspect the graph when the main form changes */
-			FormController.Instance.MainFormChanged += delegate(object sender, EventArgs e)
-			{
-				InspectMainForm();
-			};
+			FormController.Instance.MainFormChanged += _inspectMainForm;
 		}
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
@@ -95,17 +106,6 @@ namespace Graphviz
 			}
 		}
 
-		private void InspectMainForm()
-		{
-			/* if the main form has a graph, show its properties */
-			GraphForm graphForm = FormController.Instance.MainForm as GraphForm;
-			if (graphForm != null)
-			{
-				Text = "Attributes of " + graphForm.Text;
-				attributePropertyGrid.SelectedObject = graphForm.Graph;
-			}
-		}
-		
 		private static PropertyDescriptorCollection GetComponentProperties(XPathNavigator schema, string component)
 		{
 			PropertyDescriptorCollection properties = new PropertyDescriptorCollection(new PropertyDescriptor[0]);
@@ -189,5 +189,8 @@ namespace Graphviz
 		private static PropertyDescriptorCollection _graphProperties;
 		private static PropertyDescriptorCollection _nodeProperties;
 		private static PropertyDescriptorCollection _edgeProperties;
+		
+		private GraphForm _inspected;
+		private EventHandler _inspectMainForm;
 	}
 }
