@@ -55,8 +55,6 @@ namespace Graphviz
 				{
 					/* replace old graph with new and rerender */
 					Graph newGraph = new Graph(((PathWatcher)sender).Watched);
-					if (newGraph != null)
-					{
 						((IDisposable)_graph).Dispose();
 						_graph = newGraph;
 						_graph.Arguments["layout"] = "dot";
@@ -65,7 +63,6 @@ namespace Graphviz
 						if (Changed != null)
 							Changed(this, EventArgs.Empty);
 					}
-				}
 				catch (Win32Exception exception)
 				{
 					/* if another process is holding on to the graph, try opening again later */
