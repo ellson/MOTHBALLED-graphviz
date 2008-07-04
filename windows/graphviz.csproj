@@ -91,6 +91,7 @@
     <Compile Include="ScrollableImageControl.Designer.cs">
       <DependentUpon>ScrollableImageControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="TileableImagePrinter.cs" />
     <Compile Include="UTF8Marshaler.cs" />
   </ItemGroup>
   <ItemGroup>
