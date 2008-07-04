@@ -44,25 +44,7 @@ namespace Graphviz
 			_lastChange = DateTime.MinValue;
 			_checker = new Timer(delegate(object state)
 			{
-				_synchronizingObject.BeginInvoke((ThreadStart)delegate()
-				{
-					if (Changed != null)
-					{
-						/* debounce file watch changes: if last write time hadn't actually changed, don't bother notifying */
-						DateTime thisChange = File.GetLastWriteTimeUtc(_watched);
-						if (_lastChange != thisChange)
-						{
-							/* if any registered delegate didn't cancel the event, ask checker to check it again after a while */
-							CancelEventArgs eventArgs = new CancelEventArgs(true);
-							Changed(this, eventArgs);
-							if (eventArgs.Cancel)
-								_lastChange = thisChange;
-							else
-								_checker.Change(RECHECK_DELAY, Timeout.Infinite);
-						}
-					}
-				},
-				new object[0]);
+				CheckPath();
 			});
 
 			_watcher = new FileSystemWatcher(Path.GetDirectoryName(watched), Path.GetFileName(watched));
@@ -70,18 +52,18 @@ namespace Graphviz
 			_watcher.Changed += delegate(object sender, FileSystemEventArgs eventArgs)
 			{
 				/* check now */
-				_checker.Change(0, Timeout.Infinite);
+				CheckPath();
 			};
 			_watcher.Created += delegate(object sender, FileSystemEventArgs eventArgs)
 			{
 				/* check now */
-				_checker.Change(0, Timeout.Infinite);
+				CheckPath();
 			};
 			_watcher.Renamed += delegate(object sender, RenamedEventArgs eventArgs)
 			{
 				/* if file got changed to our name, check now */
 				if (eventArgs.Name == _watcher.Filter)
-					_checker.Change(0, Timeout.Infinite);
+					CheckPath();
 			};
 		}
 		
@@ -95,6 +77,30 @@ namespace Graphviz
 			_checker.Dispose();
 		}
 		
+		private void CheckPath()
+		{
+			/* schedule a check for the path on the synchronizing object, usually a window */
+			_synchronizingObject.BeginInvoke((ThreadStart)delegate()
+			{
+				if (Changed != null)
+				{
+					/* debounce file watch changes: if last write time hadn't actually changed, don't bother notifying */
+					/* NOTE: we only mutate _lastChange via this synchronized code, so there should be no race condition */
+					DateTime thisChange = File.GetLastWriteTimeUtc(_watched);
+					if (_lastChange != thisChange)
+					{
+						/* if any registered delegate didn't cancel the event, ask checker to check it again after a while */
+						CancelEventArgs eventArgs = new CancelEventArgs(true);
+						Changed(this, eventArgs);
+						if (eventArgs.Cancel)
+							_lastChange = thisChange;
+						else
+							_checker.Change(RECHECK_DELAY, Timeout.Infinite);
+					}
+				}
+			}, new object[0]);
+		
+		}
 		private const int RECHECK_DELAY = 100;
 		
 		private readonly string _watched;
