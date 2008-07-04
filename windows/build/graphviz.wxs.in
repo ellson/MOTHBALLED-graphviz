@@ -58,6 +58,15 @@
 								<Shortcut Id="ApplicationProgramMenu" Name="Graphviz" Directory="ApplicationProgramMenuFolder" Advertise="yes" />
 								<Shortcut Id="ApplicationDesktop" Name="Graphviz" Directory="DesktopFolder" Advertise="yes" />
 							</File>
+							<!-- register file associations so that graphs can open from the desktop -->
+							<ProgId Id="Graphviz.Graph" Description="Graphviz Graph">
+								<Extension Id="gv" ContentType="text/x-graphviz">
+									<Verb Id="opengv" Argument="&quot;%1&quot;" Command="Open" TargetFile="Graphviz.exe" />
+								</Extension>
+								<Extension Id="dot">
+									<Verb Id="opendot" Argument="&quot;%1&quot;" Command="Open" TargetFile="Graphviz.exe" />
+								</Extension>
+							</ProgId>
 							<RemoveFolder Id="ApplicationProgramMenuFolder" Directory="ApplicationProgramMenuFolder" On="uninstall" />
 						</Component>
 						<Component Id="attributes.xml" Guid="7740171C-8A24-4720-9168-87575F6EF963">
