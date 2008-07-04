@@ -21,6 +21,13 @@
 		<Property Id="ARPHELPLINK" Value="http://www.graphviz.org/" />
 		<Property Id="ARPURLUPDATEINFO" Value="http://www.graphviz.org/Download_windows.php" />
 
+		<Condition Message="Windows XP, Windows Server 2003 or later is required.">
+			<![CDATA[VersionNT >= 501]]>
+		</Condition>
+		<Condition Message=".NET Framework 2.0 or later is required.">
+			<![CDATA[MsiNetAssemblySupport >= "2.0.50727"]]>
+		</Condition>	
+		
 		<UIRef Id="WixUI_Mondo" />
 
 		<Media Id="1" Cabinet="graphviz.cab" EmbedCab="yes" />
