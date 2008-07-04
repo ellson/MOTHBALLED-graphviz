@@ -61,10 +61,12 @@
 							<!-- register file associations so that graphs can open from the desktop -->
 							<ProgId Id="Graphviz.Graph" Description="Graphviz Graph">
 								<Extension Id="gv" ContentType="text/x-graphviz">
-									<Verb Id="opengv" Argument="&quot;%1&quot;" Command="Open" TargetFile="Graphviz.exe" />
+									<Verb Id="open" Argument="&quot;%1&quot;" Command="Open" TargetFile="Graphviz.exe" />
 								</Extension>
+							</ProgId>
+							<ProgId Id="Graphviz.Dot" Description="Graphviz Graph">
 								<Extension Id="dot">
-									<Verb Id="opendot" Argument="&quot;%1&quot;" Command="Open" TargetFile="Graphviz.exe" />
+									<Verb Id="open" Argument="&quot;%1&quot;" Command="Open" TargetFile="Graphviz.exe" />
 								</Extension>
 							</ProgId>
 							<RemoveFolder Id="ApplicationProgramMenuFolder" Directory="ApplicationProgramMenuFolder" On="uninstall" />
