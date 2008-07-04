@@ -18,6 +18,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing.Printing;
 using System.IO;
 using System.Windows.Forms;
 using System.Collections.Generic;
@@ -89,6 +90,8 @@ namespace Graphviz
 			exportFileDialog.FileName = Path.GetFileNameWithoutExtension(fileName);
 			exportFileDialog.Filter = exportFilter.ToString();
 			exportFileDialog.FilterIndex = filterIndex + 1;
+			
+			printDocument.DocumentName = Path.GetFileName(fileName);
 		}
 
 		protected override void OnFormClosed(FormClosedEventArgs e)
@@ -153,6 +156,27 @@ namespace Graphviz
 				if (filterIndex >= 0 && filterIndex < _devices.Count)
 					_graph.Render(_devices[filterIndex], exportFileDialog.FileName);
 			}
+		}
+		
+		private void pageSetupToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			pageSetupDialog.ShowDialog(this);
+		}
+
+		private void printToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (printDialog.ShowDialog(this) == DialogResult.OK)
+				printDocument.Print();
+		}
+
+		private void printPreviewToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			printPreviewDialog.ShowDialog(this);
+		}
+
+		private void printDocument_BeginPrint(object sender, PrintEventArgs e)
+		{
+			new TileableImagePrinter((PrintDocument)sender, graphControl.Image);
 		}
 		
 		private static readonly IList<string> _devices = Graph.GetPlugins(Graph.API.Device, false);
