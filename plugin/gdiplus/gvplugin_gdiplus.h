@@ -17,6 +17,9 @@
 #ifndef GVPLUGIN_GDIPLUS_H
 #define GVPLUGIN_GDIPLUS_H
 
+#include <Windows.h>
+#include <GdiPlus.h>
+
 typedef enum {
 	FORMAT_NONE,
 	FORMAT_BMP,
@@ -27,5 +30,17 @@ typedef enum {
 	FORMAT_PNG,
 	FORMAT_TIFF
 } format_type;
+
+struct GraphicsContext
+{
+	ULONG_PTR token;
+	
+	GraphicsContext();
+	~GraphicsContext();
+};
+
+static const int BYTES_PER_PIXEL = 4;		/* bytes per pixel */
+
+extern void SaveBitmapToStream(Gdiplus::Bitmap &bitmap, IStream *stream, int format);
 
 #endif

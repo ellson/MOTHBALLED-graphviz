@@ -26,9 +26,6 @@
 #include "graph.h"
 #include "gvplugin_gdiplus.h"
 
-#include <windows.h>
-#include "GdiPlus.h"
-
 #include <memory>
 #include <vector>
 
@@ -37,27 +34,15 @@ extern "C" size_t gvdevice_write(GVJ_t *job, const unsigned char *s, unsigned in
 using namespace std;
 using namespace Gdiplus;
 
-/* class id corresponding to each format_type */
-static GUID format_id [] = {
-	GUID_NULL,
-	ImageFormatBMP,
-	ImageFormatEMF,
-	ImageFormatEMF,
-	ImageFormatGIF,
-	ImageFormatJPEG,
-	ImageFormatPNG,
-	ImageFormatTIFF
-};
-
 /* Graphics for internal use, so that we can record image etc. for subsequent retrieval off the job struct */
 struct ImageGraphics: public Graphics
 {
-	ULONG_PTR token;
+	GraphicsContext *context;
 	Image *image;
 	IStream *stream;
 	
-	ImageGraphics(ULONG_PTR startupToken, Image *newImage, IStream *newStream):
-		Graphics(newImage), token(startupToken), image(newImage), stream(newStream)
+	ImageGraphics(GraphicsContext *newContext, Image *newImage, IStream *newStream):
+		Graphics(newImage), context(newContext), image(newImage), stream(newStream)
 	{
 	}
 };
@@ -92,7 +77,7 @@ static void gdiplusgen_end_job(GVJ_t *job)
 		
 		/* flush and delete the graphics */
 		ImageGraphics *imageGraphics = static_cast<ImageGraphics *>(context);
-		ULONG_PTR startupToken = imageGraphics->token;
+		GraphicsContext *graphicsContext = imageGraphics->context;
 		Image *image = imageGraphics->image;
 		IStream *stream = imageGraphics->stream;
 		delete imageGraphics;
@@ -102,20 +87,7 @@ static void gdiplusgen_end_job(GVJ_t *job)
 			case FORMAT_EMFPLUS:
 				break;
 			default:
-				/* search the encoders for one that matches our device id, then save the bitmap there */
-				Bitmap *bitmap = static_cast<Bitmap *>(image);
-				GUID formatId = format_id[job->device.id];
-				UINT encoderNum;
-				UINT encoderSize;
-				GetImageEncodersSize(&encoderNum, &encoderSize);
-				vector<char> codec_buffer(encoderSize);
-				ImageCodecInfo *codecs = (ImageCodecInfo *)&codec_buffer.front();
-				GetImageEncoders(encoderNum, encoderSize, codecs);
-				for (UINT i = 0; i < encoderNum; ++i)
-					if (memcmp(&(format_id[job->device.id]), &codecs[i].FormatID, sizeof(GUID)) == 0) {
-						bitmap->Save(stream, &codecs[i].Clsid, NULL);
-						break;
-					}
+				SaveBitmapToStream(*static_cast<Bitmap *>(image), stream, job->device.id);
 				break;
 		}
 		
@@ -131,7 +103,7 @@ static void gdiplusgen_end_job(GVJ_t *job)
 		GlobalFree(buffer);
 			
 		/* since this is an internal job, shut down GDI+ */
-		GdiplusShutdown(startupToken);
+		delete graphicsContext;
 	}
 }
 
@@ -139,9 +111,7 @@ static void gdiplusgen_begin_page(GVJ_t *job)
 {
 	if (!job->external_context && !job->context) {
 		/* since this is an internal job, start up GDI+ */
-		ULONG_PTR startupToken;
-		GdiplusStartupInput startupInput;
-		GdiplusStartup(&startupToken, &startupInput, NULL);
+		GraphicsContext *context = new GraphicsContext();
 		
 		/* allocate memory and attach stream to it */
 		HGLOBAL buffer = GlobalAlloc(GMEM_MOVEABLE, 0);
@@ -168,7 +138,7 @@ static void gdiplusgen_begin_page(GVJ_t *job)
 			break;
 		}
 		
-		job->context = new ImageGraphics(startupToken, image, stream);
+		job->context = new ImageGraphics(context, image, stream);
 	}
 	
 	/* start graphics state */

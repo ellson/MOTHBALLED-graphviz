@@ -26,6 +26,7 @@ noinst_HEADERS = FileStream.h gvplugin_gdiplus.h
 nodist_libgvplugin_gdiplus_C_la_SOURCES = GdiPlus*.h
 libgvplugin_gdiplus_C_la_SOURCES = \
 	FileStream.cpp \
+	gvdevice_gdiplus.cpp \
 	gvloadimage_gdiplus.cpp \
 	gvplugin_gdiplus.cpp \
 	gvrender_gdiplus.cpp
@@ -45,6 +46,8 @@ libgvplugin_gdiplus_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_gdiplus_LTX_lib
 endif
 
 # object code is dependent on all the local GDI+ headers
+
+gvdevice_gdiplus.lo : $(GDIPLUS_HEADS)
 
 gvloadimage_gdiplus.lo : $(GDIPLUS_HEADS)
 
