@@ -23,7 +23,7 @@ void fisheye_spherical(double x_focus, double y_focus, double z_focus,
 		       topview * t);
 void prepare_topological_fisheye(topview*);
 void drawtopologicalfisheye(topview * t);
-void drawtopologicalfisheye2(topview * t);
+int drawtopologicalfisheye2(topview * t);
 void changetopfishfocus(topview * t, float *x, float *y,
 				   float *z, int num_foci);
 void refresh_old_values(topview* t);

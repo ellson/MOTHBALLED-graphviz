@@ -210,6 +210,77 @@ void preparetopview(Agraph_t * g, topview * t)
     t->picked_node_count = 0;
     t->picked_nodes = '\0';
 }
+/*
+	this function calculates and sets node size(opengl dots, they are squares not a dots
+	if anybody has any problem with dot size please just modify this function
+	active_camera=-1 means view is in 2D mode,0 and above means there is a 3D camera active.
+	I use different params for both situations since they are viewed differently..
+	If node shape is other than opengl dots, '#r' is replaced with the calculated value
+*/
+/*
+	Notes about xdot:
+	I am planning to combine small graphs , for that purpose if there is an xdot string attached the either node or 
+	edge and if a node's draw_xdot attribute is set , xdot is drawn for the object
+	example node:
+    A[draw_xdot="1",_draw_="S 6 -filled c 7 -#741818 C 7 -#741818 P 5 125 528 96 543 67 528 67 505 125 505 ", _ldraw_="F 14.000000 11 -Times-Roman c 7 -#eaeb2a T 96 516 0 22 3 -S24"]
+
+	smyrna draws a house instead of a dot.
+*/
+
+static float set_gl_dot_size(topview * t)
+{
+	float dotsize;
+	if (view->active_camera==-1)
+		dotsize = GL_DOTSIZE_CONSTANT / view->zoom;
+	else
+		dotsize = GL_DOTSIZE_CONSTANT / view->cameras[view->active_camera]->r*-1;
+
+	dotsize=dotsize * DOT_SIZE_CORRECTION_FAC;
+	if (dotsize <=1)
+		dotsize=1;
+	glPointSize(dotsize);
+	return dotsize;
+
+}
+
+static int begintopviewnodes(Agraph_t* g)
+{
+	switch (view->defaultnodeshape)
+	{
+	case 0:
+		set_gl_dot_size(view->Topview);		
+		glBegin(GL_POINTS);
+		break;
+	case 1:
+		set_gl_dot_size(view->Topview);		
+		break;
+	default:
+		set_gl_dot_size(view->Topview);		
+		glBegin(GL_POINTS);
+
+	};
+	return 1;
+}
+
+static int endtopviewnodes(Agraph_t* g)
+{
+	switch (view->defaultnodeshape)
+	{
+	case 0:
+		glEnd();
+		break;
+	case 1:
+		break;
+	default:
+		glEnd();
+		break;
+
+	};
+	return 1;
+}
+
+
+
 
 static int drawtopviewnodes(Agraph_t * g)
 {
@@ -217,20 +288,14 @@ static int drawtopviewnodes(Agraph_t * g)
     float ddx, ddy, ddz;
     int ind = 0;
     float dotsize = 0;
-    if (view->zoom > NODE_ZOOM_LIMIT) {
-	dotsize = 50 / view->zoom * -1;
-	if (dotsize > 1)
-	    glPointSize(dotsize);
-	else
-	    glPointSize(1);
+	dotsize=set_gl_dot_size(view->Topview);		//sets the size of the gl points
 
-
-	//draw nodes
 	set_topview_options();
-	glBegin(GL_POINTS);
+	begintopviewnodes(g);
 	for (ind = 0;
 	     ((ind < view->Topview->Nodecount) && (view->drawnodes));
-	     ind++) {
+	     ind++) 
+	{
 	    if (((-view->Topview->Nodes[ind].x / view->zoom > view->clipX1)
 		 && (-view->Topview->Nodes[ind].x / view->zoom <
 		     view->clipX2)
@@ -259,7 +324,7 @@ static int drawtopviewnodes(Agraph_t * g)
 		} else		//get the color from node
 		{
 		    glColor4f(v->Color.R, v->Color.G, v->Color.B,
-			      v->node_alpha);
+				v->node_alpha*view->defaultnodealpha);
 		    ddx = 0;
 		    ddy = 0;
 		    ddz = 0;
@@ -269,12 +334,21 @@ static int drawtopviewnodes(Agraph_t * g)
 		    zdepth = (float) Z_FORWARD_PLANE;
 		else
 		    zdepth = (float) Z_BACK_PLANE;
-		glVertex3f(v->distorted_x - ddx,
-			   v->distorted_y - ddy, v->distorted_z - ddz);
+
+			if ((view->defaultnodeshape==0) || dotsize == 1)
+			{
+				glVertex3f(v->distorted_x - ddx,
+				v->distorted_y - ddy, v->distorted_z - ddz);
+			}
+			else if (view->defaultnodeshape==1)
+			{
+				draw_sphere(v->distorted_x - ddx,
+				v->distorted_y - ddy, v->distorted_z - ddz,0.25);
+
+			}
 	    }
 	}
-	glEnd();
-    }
+	endtopviewnodes(g);
     return 1;
 
 }
@@ -629,9 +703,9 @@ static int draw_topview_label(topview_node * v, float zdepth)
 	fs = (v->degree ==
 	      1) ? (float) (log((double) v->degree +
 				1) *
-			    (double) 7) : (float) (log((double) v->degree +
+			    (double) 3) : (float) (log((double) v->degree +
 						       (double) 0.5) *
-						   (double) 7);
+						   (double) 3);
 	fs = fs * v->zoom_factor;
 	if (OD_Selected(v->Node) == 1) {
 	    ddx = dx;
@@ -713,7 +787,7 @@ static int get_color_from_edge(topview_edge * e)
     int return_value = 0;
     float Alpha = 0;
     GtkHScale *AlphaScale =
-	(GtkHScale *) glade_xml_get_widget(xml, "frmHostAlphaScale");
+	(GtkHScale *) glade_xml_get_widget(xml, "settingsscale2");
     Alpha = (float) gtk_range_get_value((GtkRange *) AlphaScale);
 
     //check visibility;
@@ -1109,6 +1183,35 @@ static void menu_click_rotate_z(void *p)
     view->mouse.rotate_axis = MOUSE_ROTATE_Z;
 }
 
+static void menu_click_center(void *p)
+{
+	if (view->active_camera == -1)	/*2D mode*/
+	{	
+		view->panx=0;
+		view->pany=0;
+		view->panz=0;
+		view->zoom=-20;
+	}
+	else	/*there is active camera , adjust it to look at the center*/
+	{
+		view->cameras[view->active_camera]->targetx=0;
+		view->cameras[view->active_camera]->targety=0;
+		view->cameras[view->active_camera]->r=20;
+
+	}
+}
+
+/*1) 3D select or identify.
+2) Should 3D nodes have a size? (Strange behavior: some 3D views have large node sizes. Why the difference?)
+3) Sanity button - if I get lost in 3D, reset the viewpoint so that I have a good view of the graph
+4) Additional selection options when selecting nodes - at present, we do union - nice to have intersection, subtraction
+5) User control of alpha, so I can fade out the edges.
+
+I'll see if I can track down the color bug.*/
+
+
+
+
 static char *smyrna_icon_pan;
 static char *smyrna_icon_zoom;
 static char *smyrna_icon_zoomplus;
@@ -1246,13 +1349,27 @@ static glCompSet *glcreate_gl_topview_menu()
     b->panel = p;
     b->groupid = 1;
     b->callbackfunc = menu_click_rotate_xy;
-    glCompSetAddButton(s, b);
+
+	glCompSetAddButton(s, b);
     b = glCompButtonNew(125, 231, 40, 20, "Z", '\0', 0, 0);
     b->customptr = view;
     b->panel = p;
     b->groupid = 1;
     b->callbackfunc = menu_click_rotate_z;
     glCompSetAddButton(s, b);
+
+	//sanity button to center the drawing and fit it in the screen
+    b = glCompButtonNew(80, 201, 90, 20, "center", '\0', 0, 0);
+    b->customptr = view;
+    b->panel = p;
+    b->groupid = 0;
+    b->callbackfunc = menu_click_center;
+	b->color.R=0;
+	b->color.G=1;
+	b->color.B=0;
+    glCompSetAddButton(s, b);
+
+
 
 
     //pan button

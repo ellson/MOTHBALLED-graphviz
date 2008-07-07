@@ -75,6 +75,12 @@
 #define NODE_ZOOM_LIMIT	-25.3
 #define NODE_CIRCLE_LIMIT	-7.3
 
+#define GL_DOTSIZE_CONSTANT -5
+
+
+#define SPHERE_SLICE_COUNT 6
+#define DOT_SIZE_CORRECTION_FAC 0.3
+
 typedef enum { nodshapedot,nodeshapecircle} node_shape;
 typedef enum { leftmousebutton,rightmousebutton,thirdmousebutton} clicked_mouse_button;
 typedef enum { MOUSE_ROTATE_X,MOUSE_ROTATE_Y,MOUSE_ROTATE_XY,MOUSE_ROTATE_Z} mouse_rotate_axis;
@@ -381,6 +387,12 @@ typedef struct _ViewInfo
 	RGBColor selectedNodeColor;
 	/*selected edge color*/
 	RGBColor selectedEdgeColor;
+	/*default node alpha*/
+	float defaultnodealpha;
+	/*default edge alpha*/
+	float defaultedgealpha;
+	/*default node shape*/
+	int defaultnodeshape;
 
 	/*default line width*/
 	float LineWidth;

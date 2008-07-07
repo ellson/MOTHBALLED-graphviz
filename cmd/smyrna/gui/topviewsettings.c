@@ -139,27 +139,110 @@ static int get_spinbtn_widget_to_attribute(char *attribute,
     agattr(g, AGRAPH, attribute, buf);
     return 1;
 }
+static int get_scalebtn_widget_to_attribute(char *attribute,
+			   char *widget_name, Agraph_t * g)
+{
+    float value;
+    char buf[25];
+    value =
+	(float) gtk_range_get_value((GtkRange *)
+					  glade_xml_get_widget(xml,
+							       widget_name));
+	sprintf(buf, "%f", value);
+    //      agattr(
+    agattr(g, AGRAPH, attribute, buf);
+    return 1;
+}
+
+static int set_scalebtn_widget_to_attribute(char *attribute, char *widget_name)
+{
+    char *buf;
+    float value;
+    buf = agget(view->g[view->activeGraph], attribute);
+    if ((!buf) || (strcmp(buf, "") == 0))
+	buf = agget(view->default_attributes, attribute);
+    if (buf) {
+	value = (float) atof(buf);
+	gtk_range_set_value((GtkSpinButton *)
+				  glade_xml_get_widget(xml, widget_name),
+				  value);
+	return 1;
+    }
+    return 0;
+}
+static int set_combobox_widget(char *attribute,char *widget_name)
+{
+    char *buf;
+    float value;
+    buf = agget(view->g[view->activeGraph], attribute);
+
+    if ((!buf) || (strcmp(buf, "") == 0))
+	buf = agget(view->default_attributes, attribute);
+    if (buf)
+	 {
+		gtk_combo_box_set_active(
+				(GtkComboBox *)  glade_xml_get_widget(xml,widget_name),
+				(int)value);
+
+	    return 1;
+	}
+
+    return 0;
+}
+static int get_combobox_widget_to_attribute(char *attribute, char *widget_name, Agraph_t * g)
+{
+    char buf[25];
+    float value;
+
+    value=
+	gtk_combo_box_get_active((GtkComboBox *)
+					  glade_xml_get_widget(xml,
+						       widget_name));
+
+    sprintf(buf, "%f", value);
+    agattr(g, AGRAPH, attribute, buf);
+    return 1;
+
+
+}
+
+
+
+/*
+Q-What are these set and get functions ?
+A-These are functions to set and get data from GTK widgets based on what object they are
+User click on setting windows, all window parameters are updated from current graph,
+default values are stored in a template graph ""
+
+*/
+
+
+
 
 
 int load_settings_from_graph(Agraph_t * g)
 {
-    char *buf;
-
-    set_color_button_widget("bgcolor", "settingsColorBtn1");
+	char *buf;	/*local buffer*/
+	
+	
+	
+	
+	
+	set_color_button_widget("bgcolor", "settingsColorBtn1");
     set_color_button_widget("bordercolor", "settingsColorBtn2");
     set_color_button_widget("gridcolor", "settingsColorBtn3");
     set_color_button_widget("highlightednodecolor", "settingsColorBtn6");
     set_color_button_widget("highlightededgecolor", "settingsColorBtn7");
     set_color_button_widget("selectednodecolor", "settingsColorBtn8");
     set_color_button_widget("selectededgecolor", "settingsColorBtn9");
-    get_color_button_widget_to_attribute("topologicaltopviewfinestcolor",
+    set_color_button_widget("topologicaltopviewfinestcolor",
 					 "settingsColorBtn9", g);
-    get_color_button_widget_to_attribute("topologicaltopviewcoarsestcolor",
+    set_color_button_widget("topologicaltopviewcoarsestcolor",
 					 "settingsColorBtn9", g);
 
     set_color_button_widget("topologicaltopviewfinestcolor",
 			    "settingsColorBtn10");
-    set_color_button_widget("topologicaltopviewcoarsestcolor",
+    set_color_button_widget("topologicaltopviewcoarsestcolor   ",
 			    "settingsColorBtn11");
 
 
@@ -188,7 +271,16 @@ int load_settings_from_graph(Agraph_t * g)
     set_checkbox_widget("topologicalfisheyelabelfocus",
 			"settingsChkBox18");
 
-    set_spinbtn_widget("defaultmagnifierwidth", "settingsspinbutton1");
+    set_checkbox_widget("defaultnodeshapegl",
+			"settingsChkBox10_1");
+    set_checkbox_widget("defaultnodeshapespherical",
+			"settingsChkBox10_2");
+    set_checkbox_widget("defaultnodeshaperectangular",
+			"settingsChkBox10_3");
+
+	
+	
+	set_spinbtn_widget("defaultmagnifierwidth", "settingsspinbutton1");
     set_spinbtn_widget("defaultmagnifierheight", "settingsspinbutton2");
     set_spinbtn_widget("defaultmagnifierkts", "settingsspinbutton3");
     set_spinbtn_widget("defaultfisheyemagnifierradius",
@@ -201,9 +293,14 @@ int load_settings_from_graph(Agraph_t * g)
 		       "settingsspinbutton7");
     set_spinbtn_widget("topologicalfisheyedistortionfactor",
 		       "settingsspinbutton8");
+	
+	/*alpha values,1 for nodes 1 for edges*/
 
 
-    /*font selection box */
+	set_scalebtn_widget_to_attribute("defaultnodealpha", "settingsscale1");	/*node alpha*/
+	set_scalebtn_widget_to_attribute("defaultedgealpha", "settingsscale2"); /*edge alpha*/
+
+	/*font selection box */
     buf = agget(view->g[view->activeGraph], "defaultfontname");
     if (!buf)
 	buf = agget(view->default_attributes, "defaultfontname");
@@ -220,7 +317,7 @@ int load_settings_from_graph(Agraph_t * g)
 	/*select the right item in combo box */
 	gtk_combo_box_set_active((GtkComboBox *)
 				 glade_xml_get_widget(xml,
-						      "settingsFontSelection"),
+						      "settingscombobox1"),
 				 atoi(buf));
     }
     return 1;
@@ -282,7 +379,10 @@ int update_graph_from_settings(Agraph_t * g)
 	
 	
 	get_checkbox_widget_to_attribute("usermode", "settingsChkBox10", g);
-    get_checkbox_widget_to_attribute("nodesizewithdegree",
+
+
+
+	get_checkbox_widget_to_attribute("nodesizewithdegree",
 				     "settingsChkBox11", g);
     get_checkbox_widget_to_attribute("antialiasing", "settingsChkBox12",
 				     g);
@@ -316,8 +416,14 @@ int update_graph_from_settings(Agraph_t * g)
 				    "settingsspinbutton7", g);
     get_spinbtn_widget_to_attribute("topologicalfisheyedistortionfactor",
 				    "settingsspinbutton8", g);
+	/*added later*/
+	get_scalebtn_widget_to_attribute("defaultnodealpha",
+				    "settingsscale1", g);
+	get_scalebtn_widget_to_attribute("defaultedgealpha",
+				    "settingsscale2", g);
 
-    return 1;
+	get_combobox_widget_to_attribute("defaultnodeshape","settingscombobox1", g)	;
+	return 1;
 }
 
 int show_settings_form()

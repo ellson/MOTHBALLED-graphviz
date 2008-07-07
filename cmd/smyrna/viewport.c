@@ -156,7 +156,10 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 				  get_attribute_value("gridsize", view,
 						      g));
 
-    view->gridVisible = atoi(get_attribute_value("gridvisible", view, g));
+	view->defaultnodeshape=atoi(buf=get_attribute_value("defaultnodeshape", view,g));
+
+	
+	view->gridVisible = atoi(get_attribute_value("gridvisible", view, g));
 
     //mouse mode=pan
 
@@ -205,6 +208,14 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
     view->highlightedEdgeColor.A =
 	(float)
 	atof(get_attribute_value("highlightededgecoloralpha", view, g));
+	view->defaultnodealpha =
+	(float)
+	atof(get_attribute_value("defaultnodealpha", view, g));
+
+	view->defaultedgealpha =
+	(float)
+	atof(get_attribute_value("defaultedgealpha", view, g));
+
 
 
 /*
@@ -1186,6 +1197,11 @@ int gl_main_expose() {
 	return 1;
 }
 
+
+/*following code does not do what i like it to do*/
+/*I liked to have a please wait window on the screen all i got was the outer borders of the window
+GTK requires a custom widget expose function 
+*/
 void please_wait()
 {
     gtk_widget_hide(glade_xml_get_widget(xml, "frmWait"));

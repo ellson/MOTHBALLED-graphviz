@@ -123,7 +123,7 @@ static void realize(GtkWidget * widget, gpointer data)
 
     /*smyrna does not use any ligthting affects but can be turned on for more effects in the future */
     GLfloat ambient[] = { 0.0, 0.0, 0.0, 1.0 };
-    GLfloat diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat diffuse[] = { 0.5, 0.5, 0.5, 1.0 };
     GLfloat position[] = { 0.0, 3.0, 3.0, 0.0 };
 
     GLfloat lmodel_ambient[] = { 0.2f, 0.2f, 0.2f, 1.0f };
@@ -153,7 +153,7 @@ static void realize(GtkWidget * widget, gpointer data)
 
     glFrontFace(GL_CW);
 // glEnable (GL_LIGHTING);
-//  glEnable (GL_LIGHT0);
+// glEnable (GL_LIGHT0);
 //  glEnable (GL_AUTO_NORMAL);
 //  glEnable (GL_NORMALIZE);
     glEnable(GL_DEPTH_TEST);

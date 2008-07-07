@@ -835,3 +835,15 @@ int draw_node_hintbox(GLfloat x,GLfloat y,GLfloat fs,GLfloat pad,GLfloat z,GLflo
 
 }
 
+static GLUquadric* sphere;
+void draw_sphere(float x,float y,float z,float r)
+{
+	if(!sphere)
+			fisheyesphere=gluNewQuadric();
+	gluQuadricDrawStyle ( fisheyesphere, GLU_FILL );
+	glTranslatef(x,y,z);
+	gluSphere(fisheyesphere,r,SPHERE_SLICE_COUNT,SPHERE_SLICE_COUNT);
+	glTranslatef(-x,-y,-z);
+}
+
+
