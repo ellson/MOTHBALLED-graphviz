@@ -517,13 +517,15 @@ Agraph_t *nextsupg(Agraph_t *g, Agraph_t *sg)
 Agedge_t *firstout(Agraph_t *g)
 {
     Agnode_t *n;
+    Agedge_t *e;
 
     if (!g)
         return NULL;
-    n = agfstnode(g);
-    if (!n)
-        return NULL;
-    return agfstout(g, n);
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	e = agfstout(g, n);
+	if (e) return e;
+    }
+    return NULL;
 }
 
 Agedge_t *nextout(Agraph_t *g, Agedge_t *e)
@@ -536,23 +538,20 @@ Agedge_t *nextout(Agraph_t *g, Agedge_t *e)
     ne = agnxtout(g, e);
     if (ne)
         return (ne);
-    n = agnxtnode(g, e->tail);
-    if (!n)
-        return NULL;
-    return agfstout(g, n);
+    for (n = agnxtnode(g, e->tail); n; n = agnxtnode(g, n)) {
+	ne = agfstout(g, n);
+	if (ne) return ne;
+    }
+    return NULL;
 }
 
 Agedge_t *firstedge(Agraph_t *g)
 {
-    if (!g)
-        return NULL;
     return firstout(g);
 } 
 
 Agedge_t *nextedge(Agraph_t *g, Agedge_t *e)
 {
-    if (!g || !e)
-        return NULL;
     return nextout(g, e);
 } 
 
