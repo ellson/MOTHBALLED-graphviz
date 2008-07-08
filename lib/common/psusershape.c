@@ -130,27 +130,38 @@ void epsf_free(node_t * n)
 #ifdef FILTER_EPSF
 /* this removes EPSF DSC comments that, when nested in another
  * document, cause errors in Ghostview and other Postscript
- * processors (although legal according to the Adobe EPSF spec).                 */
+ * processors (although legal according to the Adobe EPSF spec).
+ *
+ * N.B. PostScript lines can end with \n, \r or \r\n.
+ */
 void epsf_emit_body(usershape_t *us, FILE *of)
 {
-	char *p;
-	p = us->data;
-	while (*p) {
-		/* skip %%EOF lines */
-		if ((p[0] == '%') && (p[1] == '%')
-			&& (!strncasecmp(&p[2], "EOF", 3)
-			|| !strncasecmp(&p[2], "BEGIN", 5)
-			|| !strncasecmp(&p[2], "END", 3)
-			|| !strncasecmp(&p[2], "TRAILER", 7)
-		)) {
-			/* check for *p since last line might not end in '\n' */
-			while (*p && (*p++ != '\n'));
-			continue;
-		}
-		do {
-			fputc(*p, of);
-		} while (*p++ != '\n');
+    char *p;
+    char c;
+    p = us->data;
+    while (*p) {
+	/* skip %%EOF lines */
+	if ((p[0] == '%') && (p[1] == '%')
+		&& (!strncasecmp(&p[2], "EOF", 3)
+		|| !strncasecmp(&p[2], "BEGIN", 5)
+		|| !strncasecmp(&p[2], "END", 3)
+		|| !strncasecmp(&p[2], "TRAILER", 7)
+	)) {
+	    /* check for *p since last line might not end in '\n' */
+	    while ((c = *p) && (c != '\r') && (c != '\n')) p++;
+	    if ((*p == '\r') && (*(p+1) == '\n')) p += 2;
+	    else if (*p) p++;
+	    continue;
 	}
+	/* output line */
+	while ((c = *p) && (c != '\r') && (c != '\n')) {
+	    fputc(c, of);
+	    p++;
+	}
+	if ((*p == '\r') && (*(p+1) == '\n')) p += 2;
+	else if (*p) p++;
+	fputc('\n', of);
+    }
 }
 #else
 void epsf_emit_body(usershape_t *us, FILE *of)

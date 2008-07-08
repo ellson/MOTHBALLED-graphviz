@@ -291,12 +291,24 @@ static void ps_size (usershape_t *us)
     char line[BUFSIZ];
     boolean saw_bb;
     int lx, ly, ux, uy;
+    char* linep;
+    char* s;
 
     us->dpi = POINTS_PER_INCH;
     fseek(us->f, 0, SEEK_SET);
     saw_bb = FALSE;
     while (fgets(line, sizeof(line), us->f)) {
-        if (sscanf (line, "%%%%BoundingBox: %d %d %d %d", &lx, &ly, &ux, &uy) == 4) {
+	/* PostScript accepts \r as EOL, so using fgets () and looking for a
+	 * bounding box comment at the beginning doesn't work in this case. 
+	 * As a heuristic, we first search for a bounding box comment in line.
+	 * This obviously fails if not all of the numbers make it into the
+	 * current buffer. This shouldn't be a problem, as the comment is
+	 * typically near the beginning, and so should be read within the first
+	 * BUFSIZ bytes (even on Windows where this is 512).
+	 */
+	if (!(linep = strstr (line, "%%BoundingBox:")))
+	    continue;
+        if (sscanf (linep, "%%%%BoundingBox: %d %d %d %d", &lx, &ly, &ux, &uy) == 4) {
             saw_bb = TRUE;
 	    break;
         }
