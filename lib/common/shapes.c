@@ -792,7 +792,7 @@ static void poly_init(node_t * n)
 	    }
 	}
     }
-    else  if ((sfile = agget(n, "image"))) {
+    else  if ((sfile = agget(n, "image")) && (*sfile != '\0')) {
 	imagesize = gvusershape_size(n->graph, sfile);
 	if ((imagesize.x == -1) && (imagesize.y == -1)) {
             agerr(AGWARN,
