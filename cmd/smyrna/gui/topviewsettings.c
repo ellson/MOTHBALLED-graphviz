@@ -236,9 +236,9 @@ int load_settings_from_graph(Agraph_t * g)
     set_color_button_widget("selectednodecolor", "settingsColorBtn8");
     set_color_button_widget("selectededgecolor", "settingsColorBtn9");
     set_color_button_widget("topologicaltopviewfinestcolor",
-					 "settingsColorBtn9", g);
+					 "settingsColorBtn9");
     set_color_button_widget("topologicaltopviewcoarsestcolor",
-					 "settingsColorBtn9", g);
+					 "settingsColorBtn9");
 
     set_color_button_widget("topologicaltopviewfinestcolor",
 			    "settingsColorBtn10");
