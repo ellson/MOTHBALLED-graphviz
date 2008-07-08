@@ -1,10 +1,10 @@
 <html>
 <head>
-<title>Graphviz todo list 3-July-2008</title>
+<title>Graphviz todo list 8-July-2008</title>
 </head>
 <body bgcolor=#ffffff>
 
-<h1>Graphviz todo list 3-July-2008</h1>
+<h1>Graphviz todo list 8-July-2008</h1>
 <P>
 The 4 categories give a rough time as to when a task should be done, 
 and reflect an assessment of the task's ease multiplied by its importance. 
@@ -26,14 +26,17 @@ SCN - Update dot/neatoguide
 <H2>Category 1</H2>
 <pre>
 SCN - Lightweight edge labels in dot
+SCN - Treemaps
 JCE - Extend attribute set for line styles
+JCE - Allow arrowheads in the middle of edges
+JCE - Support single, uniform font descriptors &#224; la pango
 ERG - Variable port depending on layout
 ERG - Better aspect ratio in dot
 ERG - New text labels with font elements &lt;B&gt;, &lt;I&gt;, &lt;TT&gt;, etc. (support via fontconfig or egregious hacks)
 ERG - New orthogonal routing code
 AB  - Create Graph editor for Topview/Graphviz with OpenGL and GTK. (smyrna - in process) (Deprecate use of lefty)
 YH/ERG - Clusters in sfdp
-YH/ERG - Fixed nodes ins sfdp
+YH/ERG - Fixed nodes in sfdp
 </pre>
 <hr align=left width=66>
 <H2>Category 2</H2>
@@ -46,12 +49,12 @@ SCN/AB - New dot core:
    - symmetrize layouts
   - Ulrik's improvements with network simplex
 JCE - Shapes
-      - new parallelogram shape where angle is fixed for varying text
-      - SVG grammar or other grammar to specify node and arrow shapes
-			- user-defined nodes in all code generators
-ERG - Orthogonal layouts.
+	- SVG grammar or other grammar to specify node and arrow shapes
+	- user-defined nodes in all code generators
 YH/ERG - additional graph packing strategies
 ? - Filters for GraphML, Matrix Market and Chaco formats.
+? - Library for bundled edges (Given two sets of nodes, with positions, 
+forming a bipartite graph, return splines to bundle the edges together)
 </pre>
 <hr align=left width=66>
 <H2>Category 3</H2>
@@ -66,6 +69,8 @@ Edge routing with just two vnodes per edge (after Kaufmann)
 Graph language improvements
   local name spaces
   subclassing
+Shapes - new parallelogram shape where angle is fixed for varying text
+Orthogonal layouts.
 </pre>
 <H2>General R&D directions</H2>
 <pre>
