@@ -228,6 +228,24 @@ static GFaceClass *g_face_class(void)
     return klass;
 }
 
+/* destroy:
+ * Destroy each edge using v, then destroy v
+ */
+static void
+destroy (GtsVertex* v)
+{
+    GSList * i;
+
+    i = v->segments;
+    while (i) {
+	GSList * next = i->next;
+	gts_object_destroy (i->data);
+	i = next;
+    }
+    g_assert (vertex->segments == NULL);
+    gts_object_destroy(GTS_OBJECT(v));
+}
+
 /* tri:
  */
 static GtsSurface*
@@ -291,9 +309,16 @@ tri(double *x, double *y, int npt, int *segs, int nsegs)
 
     /* destroy enclosing triangle */
     gts_allow_floating_vertices = TRUE;
+    gts_allow_floating_edges = TRUE;
+/*
     gts_object_destroy(GTS_OBJECT(v1));
     gts_object_destroy(GTS_OBJECT(v2));
     gts_object_destroy(GTS_OBJECT(v3));
+*/
+    destroy(v1);
+    destroy(v2);
+    destroy(v3);
+    gts_allow_floating_edges = FALSE;
     gts_allow_floating_vertices = FALSE;
 
     if (nsegs)
