@@ -242,7 +242,7 @@ destroy (GtsVertex* v)
 	gts_object_destroy (i->data);
 	i = next;
     }
-    g_assert (vertex->segments == NULL);
+    g_assert (v->segments == NULL);
     gts_object_destroy(GTS_OBJECT(v));
 }
 
