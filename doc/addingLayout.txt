@@ -178,11 +178,23 @@ statically know about layout algorithms.
 
 Software configuration - automake
 
+If you want to integrate your code into the Graphviz software
+and use its build system, follow the instructions below. 
+You can certainly build and install your plugin using your own
+build software.
+
+0. Put your software in lib/xxxgen, and added the hooks describe above
+into gvlayout_neato_layout.c
 1. In lib/xxxgen, provide a Makefile.am (based on a simple example
+like lib/fdpgen/Makefile.am)
 3. In lib/Makefile.am, add xxxgen to SUBDIRS
 2. In configure.ac, add lib/xxxgen/Makefile to AC_CONFIG_FILES.
-like lib/fdpgen/Makefile.am)
 4. In lib/plugin/neato_layout/Makefile.am, insert
 	$(top_builddir)/lib/xxxgen/libxxxgen_C.la 
 	in libgvplugin_neato_layout_C_la_LIBADD
 5. Remember to run autogen.sh because on its own configure can guess wrong.
+
+This also assumes you have a good version of the various automake tools
+on your system.
+
+
