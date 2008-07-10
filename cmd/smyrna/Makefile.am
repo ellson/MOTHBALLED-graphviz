@@ -4,6 +4,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/cgraph \
         -I$(top_srcdir)/lib/cdt \
         -I$(top_srcdir)/lib/glcomp \
+        -I$(top_srcdir)/lib/utilities \
         -I$(top_srcdir)/lib/xdot \
         -I$(top_srcdir)/lib/glcomp \
         -I$(top_srcdir)/lib/topfish \
@@ -37,4 +38,4 @@ smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
 		$(top_builddir)/lib/neatogen/libneatogen_C.la \
-		$(GTK_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS)
+		$(GTK_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS) $(EXTRA_SMYRNA_LDFLAGS)

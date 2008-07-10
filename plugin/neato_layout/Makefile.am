@@ -24,6 +24,7 @@ libgvplugin_neato_layout_C_la_SOURCES = \
 libgvplugin_neato_layout_C_la_LIBADD = \
 	$(top_builddir)/lib/neatogen/libneatogen_C.la \
 	$(top_builddir)/lib/twopigen/libtwopigen_C.la \
+	$(top_builddir)/lib/patchwork/libpatchwork_C.la \
 	$(top_builddir)/lib/fdpgen/libfdpgen_C.la \
 	$(top_builddir)/lib/circogen/libcircogen_C.la
 

@@ -143,6 +143,11 @@ case "${host_os}" in
 	PATHSEPARATOR=":"
         NO_POSTSCRIPT_ALIAS=1
 	AC_DEFINE_UNQUOTED(DARWIN_DYLIB,"$DARWIN_DYLIB",[Define for Darwin-style shared library names.])
+	case "${host_os}" in
+	*darwin9.4* )
+		EXTRA_SMYRNA_LDFLAGS="-dylib_file /System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib"
+		;;
+	esac
 	;;
   *darwin* )
 	DEFAULT_FONTPATH="~/Library/Fonts:/Library/Fonts:/Network/Library/Fonts:/System/Library/Fonts"
@@ -159,6 +164,7 @@ esac
 AC_SUBST(CYGWIN)
 AC_SUBST(MINGW32)
 AC_SUBST(DARWIN9)
+AC_SUBST(EXTRA_SMYRNA_LDFLAGS)
 AC_DEFINE_UNQUOTED(DEFAULT_FONTPATH,"$DEFAULT_FONTPATH",[Path to TrueType fonts.])
 AC_DEFINE_UNQUOTED(PATHSEPARATOR,"$PATHSEPARATOR",[Path separator character.])
 AC_DEFINE_UNQUOTED(NO_POSTSCRIPT_ALIAS,$NO_POSTSCRIPT_ALIAS,[Postscript fontnames.])
@@ -2839,6 +2845,7 @@ AC_CONFIG_FILES(Makefile
 	lib/sfdpgen/Makefile
 	lib/circogen/Makefile
 	lib/twopigen/Makefile
+	lib/patchwork/Makefile
 	lib/pack/Makefile
 	lib/expr/Makefile
 	lib/expr/libexpr.pc

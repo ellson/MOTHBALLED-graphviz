@@ -38,6 +38,7 @@ typedef enum { LAYOUT_NEATO,
 		LAYOUT_CIRCO,
 		LAYOUT_NOP1,
 		LAYOUT_NOP2,
+		LAYOUT_PATCHWORK,
 	} layout_type;
 
 extern void neato_layout(graph_t * g);
@@ -45,12 +46,14 @@ extern void fdp_layout(graph_t * g);
 extern void sfdp_layout(graph_t * g);
 extern void twopi_layout(graph_t * g);
 extern void circo_layout(graph_t * g);
+extern void patchwork_layout(graph_t * g);
 
 extern void neato_cleanup(graph_t * g);
 extern void fdp_cleanup(graph_t * g);
 extern void sfdp_cleanup(graph_t * g);
 extern void twopi_cleanup(graph_t * g);
 extern void circo_cleanup(graph_t * g);
+extern void patchwork_cleanup(graph_t * g);
 
 static void nop1_layout(graph_t * g)
 {
@@ -91,6 +94,11 @@ gvlayout_engine_t circogen_engine = {
     circo_cleanup,
 };
 
+gvlayout_engine_t patchwork_engine = {
+	patchwork_layout,
+	patchwork_cleanup,
+};
+
 gvlayout_engine_t nop1gen_engine = {
     nop1_layout,
     neato_cleanup,
@@ -113,6 +121,7 @@ gvplugin_installed_t gvlayout_neato_types[] = {
 #endif
     {LAYOUT_TWOPI, "twopi", 0, &twopigen_engine, &neatogen_features},
     {LAYOUT_CIRCO, "circo", 0, &circogen_engine, &neatogen_features},
+    {LAYOUT_PATCHWORK, "patchwork", 0, &patchwork_engine, &neatogen_features},
     {LAYOUT_NOP1, "nop", 0, &nop1gen_engine, &neatogen_features},
     {LAYOUT_NOP1, "nop1", 0, &nop1gen_engine, &neatogen_features},
     {LAYOUT_NOP1, "nop2", 0, &nop2gen_engine, &neatogen_features},
