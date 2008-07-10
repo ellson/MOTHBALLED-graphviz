@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "render.h"
 
+extern void patchwork_init_graph(graph_t * g);
+
 typedef struct rect_t {pointf ll; pointf ur;} rect_t;
 typedef struct treenode_t {
 	double area;
