@@ -80,9 +80,14 @@ namespace Graphviz
 
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
+			if (e.CloseReason == CloseReason.UserClosing)
+			{
 			/* instead of closing, we hide ourselves */
 			Hide();
 			e.Cancel = true;
+		}
+			else
+				_instance = null;
 		}
 		
 		private class GraphPropertyTab : ExternalPropertyTab
