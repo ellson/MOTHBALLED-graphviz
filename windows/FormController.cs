@@ -89,7 +89,7 @@ namespace Graphviz
 								OpenFiles(filesToOpen);
 						};
 
-						/* window menu shows a list of all forms, select one to activate it */
+						/* window menu shows a list of all document forms, select one to activate it */
 						documentFormMenus.WindowMenuItem.DropDownOpening += delegate(object sender, EventArgs eventArgs)
 						{
 							ToolStripMenuItem windowMenuItem = sender as ToolStripMenuItem;
@@ -97,7 +97,7 @@ namespace Graphviz
 							{
 								windowMenuItem.DropDownItems.Clear();
 								int i = 0;
-								foreach (Form form in Application.OpenForms)
+								foreach (Form form in _documentForms.Values)
 								{
 									Form innerForm = form;
 									ToolStripMenuItem formMenuItem = new ToolStripMenuItem(string.Format("{0} {1}", ++i, form.Text));
@@ -140,10 +140,10 @@ namespace Graphviz
 		private FormController()
 		{
 			_openFileDialog = new OpenFileDialog();
-			_openFileDialog.Filter = "Graphviz graphs (*.dot)|*.dot|All files (*.*)|*.*";
+			_openFileDialog.Filter = "Graphviz graphs (*.dot;*.gv)|*.dot;*.gv|All files (*.*)|*.*";
 			_openFileDialog.Multiselect = true;
 			
-			_documentForms = new Dictionary<string, Form>();
+			_documentForms = new SortedDictionary<string, Form>();
 			_mainForm = null;
 		}
 
@@ -154,7 +154,7 @@ namespace Graphviz
 
 		private static FormController _instance = new FormController();
 		private readonly OpenFileDialog _openFileDialog;
-		private readonly Dictionary<string, Form> _documentForms;
+		private readonly SortedDictionary<string, Form> _documentForms;
 		private Form _mainForm;
 	}
 }
