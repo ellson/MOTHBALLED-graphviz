@@ -1,14 +1,15 @@
 use Config;
 
-$archlib = $Config{archlib};
-
-print $archlib, "\n";
-
-# if sys.argv[1] == "archlib":
-#     print sysconfig.get_python_lib(1,1)
-# elif sys.argv[1] == "lib":
-#     print sysconfig.get_python_lib(0,1)
-# elif sys.argv[1] == "archsitelib":
-#     print sysconfig.get_python_lib(1,0)
-# elif sys.argv[1] == "sitelib":
-#     print sysconfig.get_python_lib(0,0)
+if ($ARGV[0] eq "PERL_LIBS") {
+	$archlib = $Config{archlib};
+	$libperl = $Config{libperl};
+	$libperl =~ s/lib([^\.]+).*/$1/;
+	print "-L$archlib/CORE -l$libperl";
+}
+if ($ARGV[0] eq "PERL_INCLUDES") {
+	$archlib = $Config{archlib};
+	print "-I$archlib/CORE";
+}
+if ($ARGV[0] eq "PERL_INSTALL_DIR") {
+	print "$Config{vendorarch}"
+}
