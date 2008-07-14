@@ -915,10 +915,9 @@ else
 	  use_perl="No (perl is too old)"
 	  PERL=
 	else
-          PERL_ARCHLIB=`$PERL -e 'use Config; print $Config{archlib};'`
-          PERL_INCLUDES=-I$PERL_ARCHLIB/CORE
-          PERL_LIBS="-L$PERL_ARCHLIB/CORE -lperl"
-	  PERL_INSTALL_DIR="`$PERL -e 'use Config; print $Config{vendorarch};'`"
+          PERL_INCLUDES="`$PERL $srcdir/config/config_perl.pl PERL_INCLUDES`"
+          PERL_LIBS="`$PERL $srcdir/config/config_perl.pl PERL_LIBS`"
+          PERL_INSTALL_DIR="`$PERL $srcdir/config/config_perl.pl PERL_INSTALL_DIR`"
 	  save_CPPFLAGS=$CPPFLAGS
 	  CPPFLAGS="$CPPFLAGS $PERL_INCLUDES"
           AC_CHECK_HEADER(EXTERN.h,,[
