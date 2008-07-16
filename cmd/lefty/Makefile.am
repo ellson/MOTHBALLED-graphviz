@@ -96,7 +96,7 @@ endif
 endif
 
 .1.pdf:
-	-groff -Tps -man $< | ps2pdf - - >$@
+	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
 
 EXTRA_DIST = $(lefty_DATA) $(man) $(pdf) \
 	colors.txt Makefile.old aix_mods cs2l/*

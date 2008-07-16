@@ -25,7 +25,7 @@ lneato: ${top_srcdir}/cmd/lneato/lneato.sh
 endif
 
 .1.pdf:
-	-groff -Tps -man $< | ps2pdf - - >$@
+	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
 
 EXTRA_DIST = $(man) $(pdf) lneato.bsh lneato.ksh lneato.sh \
 	Makefile.old mswin32 
