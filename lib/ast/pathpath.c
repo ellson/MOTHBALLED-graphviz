@@ -44,7 +44,7 @@
 #ifdef WIN32
 #define environ _environ
 #else
-#ifdef HAVE__NSGETENVIRON
+#if defined(HAVE_CRT_EXTERNS_H) && defined(HAVE__NSGETENVIRON)
 #define environ (*_NSGetEnviron())
 #else
 extern char **environ;
