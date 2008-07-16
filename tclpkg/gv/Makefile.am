@@ -326,7 +326,7 @@ $(man): gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
 	$(TCLSH) $(srcdir)/gv_doc_writer.tcl "$(srcdir)"
 
 .n.pdf:
-	-groff -Tps -man $< | ps2pdf - - >$@
+	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
 
 install-data-hook:
 if WITH_LUA

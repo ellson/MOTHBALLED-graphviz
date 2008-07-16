@@ -42,7 +42,7 @@ grammar.h: y.output
 	@SED@ "s/yy/aag/g" < y.tab.h > grammar.h
 
 .3.pdf:
-	-groff -Tps -man $< | ps2pdf - - >$@
+	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old cmpnd.c dotdge.c \
 	main.c tester.c README grammar.c grammar.h scan.c \

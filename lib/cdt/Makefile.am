@@ -23,7 +23,7 @@ libcdt_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
 libcdt_la_SOURCES = $(libcdt_C_la_SOURCES)
 
 .3.pdf:
-	-groff -Tps -man $< | ps2pdf - - >$@
+	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old features
 

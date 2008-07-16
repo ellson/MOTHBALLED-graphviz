@@ -21,7 +21,7 @@ libpathplan_la_SOURCES = $(libpathplan_C_la_SOURCES)
 libpathplan_la_LIBADD = @MATH_LIBS@
 
 .3.pdf:
-	-groff -Tps -man $< | ps2pdf - - >$@
+	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old path.lefty
 

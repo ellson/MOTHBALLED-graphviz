@@ -65,7 +65,7 @@ exop.h: exparse.h
 	echo "};" >> exop.h
 
 .3.pdf:
-	-groff -Tps -man $< | ps2pdf - - >$@
+	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) RELEASE \
 	Makefile.nmake Makefile.orig Makefile.old \

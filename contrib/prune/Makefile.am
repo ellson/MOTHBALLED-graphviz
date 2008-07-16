@@ -21,7 +21,7 @@ prune_LDADD = $(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/lib/cdt/libcdt.la
 
 .1.pdf:
-	-groff -Tps -man $< | ps2pdf - - >$@
+	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old Makefile.orig README test.dot
 

@@ -237,6 +237,9 @@ AC_PROG_LN_S
 AC_CHECK_PROG(SED,sed,sed,false)
 AC_CHECK_PROG(GREP,grep,grep,false)
 AC_CHECK_PROG(SORT,sort,sort,false)
+AC_CHECK_PROG(GRODD,groff,groff,false)
+AC_CHECK_PROG(PS2PDF,ps2pdf,ps2pdf,false)
+AC_CHECK_PROG(PS2PDF,pstopdf,pstopdf,false)
 PKG_PROG_PKG_CONFIG
 
 # are we building for windows?

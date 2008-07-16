@@ -66,7 +66,7 @@ libgvc_builtins_la_SOURCES = $(libgvc_C_la_SOURCES)
 libgvc_builtins_la_LIBADD = $(libgvc_la_LIBADD)
 
 .3.pdf:
-	-groff -Tps -man $< | ps2pdf - - > $@
+	- @GROFF@ -Tps -man $< | @PS2PDF@ - - > $@
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old regex_win32.h regex_win32.c
 
