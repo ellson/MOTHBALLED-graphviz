@@ -566,6 +566,27 @@ static int init_graph(graph_t * g)
     return feasible;
 }
 
+/* graphSize:
+ * Compute no. of nodes and edges in the graph
+ */
+static void
+graphSize (graph_t * g, int* nn, int* ne)
+{
+    int i, nnodes, nedges;
+    node_t *n;
+    edge_t *e;
+   
+    nnodes = nedges = 0;
+    for (n = GD_nlist(g); n; n = ND_next(n)) {
+	nnodes++;
+	for (i = 0; (e = ND_out(n).list[i]); i++) {
+	    nedges++;
+	}
+    }
+    *nn = nnodes;
+    *ne = nedges;
+}
+
 /* rank:
  * Apply network simplex to rank the nodes in a graph.
  * Uses ED_minlen as the internode constraint: if a->b with minlen=ml,
@@ -587,8 +608,13 @@ int rank(graph_t * g, int balance, int maxiter)
 #ifdef DEBUG
     check_cycles(g);
 #endif
-    if (Verbose)
+    if (Verbose) {
+	int nn, ne;
+	graphSize (g, &nn, &ne);
+	fprintf(stderr, "%s %d nodes %d edges maxiter=%d balance=%d\n", ns,
+	    nn, ne, maxiter, balance);
 	start_timer();
+    }
     feasible = init_graph(g);
     if (!feasible)
 	init_rank();
