@@ -993,7 +993,7 @@ coordinates of the vertices of the node's polygon, in inches.
 If the node is an ellipse or circle, the
 <A HREF=#d:samplepoints>samplepoints</A> attribute affects
 the output.
-:viewport:G:viewPort:""; ps,map,cmap,bitmap
+:viewport:G:viewPort:"";
 Clipping window on final drawing.
 :voro_margin:G:double:0.05:0.0; notdot
 Factor to scale up drawing to allow margin for expansion in
