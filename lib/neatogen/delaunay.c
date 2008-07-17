@@ -29,116 +29,7 @@ extern int agerr(agerrlevel_t level, char *fmt, ...);
 #include "memory.h"
 #include "logic.h"
 
-#ifdef HAVE_TRIANGLE
-#define TRILIBRARY
-#include "triangle.c"
-#include "assert.h"
-
-// maybe it should be replaced by RNG - relative neigborhood graph, or by GG - gabriel graph
-int* 
-delaunay_tri (double *x, double *y, int n, int* nedges)
-{
-    triangulateio in, out;
-    int i;
-
-    in.pointlist = N_GNEW(2 * n, REAL);
-    for (i = 0; i < n; i++) {
-	in.pointlist[2 * i] = x[i];
-	in.pointlist[2 * i + 1] = y[i];
-    }
-
-    in.pointattributelist = NULL;
-    in.pointmarkerlist = NULL;
-    in.numberofpoints = n;
-    in.numberofpointattributes = 0;
-    in.trianglearealist = NULL;
-    in.triangleattributelist = NULL;
-    in.numberoftriangleattributes = 0;
-    in.neighborlist = NULL;
-    in.segmentlist = NULL;
-    in.segmentmarkerlist = NULL;
-    in.holelist = NULL;
-    in.numberofholes = 0;
-    in.regionlist = NULL;
-    in.edgelist = NULL;
-    in.edgemarkerlist = NULL;
-    in.normlist = NULL;
-
-    out.pointattributelist = NULL;
-    out.pointmarkerlist = NULL;
-    out.numberofpoints = n;
-    out.numberofpointattributes = 0;
-    out.trianglearealist = NULL;
-    out.triangleattributelist = NULL;
-    out.numberoftriangleattributes = 0;
-    out.neighborlist = NULL;
-    out.segmentlist = NULL;
-    out.segmentmarkerlist = NULL;
-    out.holelist = NULL;
-    out.numberofholes = 0;
-    out.regionlist = NULL;
-    out.edgelist = NULL;
-    out.edgemarkerlist = NULL;
-    out.normlist = NULL;
-
-    triangulate("zQNEeB", &in, &out, NULL);
-
-    *nedges = out.numberofedges;
-    free(in.pointlist);
-    return out.edgelist;
-}
-
-v_data *delaunay_triangulation(double *x, double *y, int n)
-{
-    v_data *delaunay;
-    int nedges;
-    int *edges;
-    int source, dest;
-    int* edgelist = delaunay_tri (x, y, n, &nedges);
-    int i;
-
-    delaunay = N_GNEW(n, v_data);
-    edges = N_GNEW(2 * nedges + n, int);
-
-    for (i = 0; i < n; i++) {
-	delaunay[i].ewgts = NULL;
-	delaunay[i].nedges = 1;
-    }
-
-    for (i = 0; i < 2 * nedges; i++)
-	delaunay[edgelist[i]].nedges++;
-
-    for (i = 0; i < n; i++) {
-	delaunay[i].edges = edges;
-	edges += delaunay[i].nedges;
-	delaunay[i].edges[0] = i;
-	delaunay[i].nedges = 1;
-    }
-    for (i = 0; i < nedges; i++) {
-	source = edgelist[2 * i];
-	dest = edgelist[2 * i + 1];
-	delaunay[source].edges[delaunay[source].nedges++] = dest;
-	delaunay[dest].edges[delaunay[dest].nedges++] = source;
-    }
-
-    free(edgelist);
-    return delaunay;
-}
-
-surface_t* 
-mkSurface (double *x, double *y, int n, int* segs, int nsegs)
-{
-    agerr (AGERR, "mkSurface not yet implemented using Triangle library\n");
-    assert (0);
-    return 0;
-}
-void 
-freeSurface (surface_t* s)
-{
-    agerr (AGERR, "freeSurface not yet implemented using Triangle library\n");
-    assert (0);
-}
-#elif HAVE_GTS
+#if HAVE_GTS
 #include <gts.h>
 
 static gboolean triangle_is_hole(GtsTriangle * t)
@@ -528,6 +419,115 @@ freeSurface (surface_t* s)
     free (s->edges);
     free (s->faces);
     free (s->neigh);
+}
+#elif HAVE_TRIANGLE
+#define TRILIBRARY
+#include "triangle.c"
+#include "assert.h"
+
+// maybe it should be replaced by RNG - relative neigborhood graph, or by GG - gabriel graph
+int* 
+delaunay_tri (double *x, double *y, int n, int* nedges)
+{
+    triangulateio in, out;
+    int i;
+
+    in.pointlist = N_GNEW(2 * n, REAL);
+    for (i = 0; i < n; i++) {
+	in.pointlist[2 * i] = x[i];
+	in.pointlist[2 * i + 1] = y[i];
+    }
+
+    in.pointattributelist = NULL;
+    in.pointmarkerlist = NULL;
+    in.numberofpoints = n;
+    in.numberofpointattributes = 0;
+    in.trianglearealist = NULL;
+    in.triangleattributelist = NULL;
+    in.numberoftriangleattributes = 0;
+    in.neighborlist = NULL;
+    in.segmentlist = NULL;
+    in.segmentmarkerlist = NULL;
+    in.holelist = NULL;
+    in.numberofholes = 0;
+    in.regionlist = NULL;
+    in.edgelist = NULL;
+    in.edgemarkerlist = NULL;
+    in.normlist = NULL;
+
+    out.pointattributelist = NULL;
+    out.pointmarkerlist = NULL;
+    out.numberofpoints = n;
+    out.numberofpointattributes = 0;
+    out.trianglearealist = NULL;
+    out.triangleattributelist = NULL;
+    out.numberoftriangleattributes = 0;
+    out.neighborlist = NULL;
+    out.segmentlist = NULL;
+    out.segmentmarkerlist = NULL;
+    out.holelist = NULL;
+    out.numberofholes = 0;
+    out.regionlist = NULL;
+    out.edgelist = NULL;
+    out.edgemarkerlist = NULL;
+    out.normlist = NULL;
+
+    triangulate("zQNEeB", &in, &out, NULL);
+
+    *nedges = out.numberofedges;
+    free(in.pointlist);
+    return out.edgelist;
+}
+
+v_data *delaunay_triangulation(double *x, double *y, int n)
+{
+    v_data *delaunay;
+    int nedges;
+    int *edges;
+    int source, dest;
+    int* edgelist = delaunay_tri (x, y, n, &nedges);
+    int i;
+
+    delaunay = N_GNEW(n, v_data);
+    edges = N_GNEW(2 * nedges + n, int);
+
+    for (i = 0; i < n; i++) {
+	delaunay[i].ewgts = NULL;
+	delaunay[i].nedges = 1;
+    }
+
+    for (i = 0; i < 2 * nedges; i++)
+	delaunay[edgelist[i]].nedges++;
+
+    for (i = 0; i < n; i++) {
+	delaunay[i].edges = edges;
+	edges += delaunay[i].nedges;
+	delaunay[i].edges[0] = i;
+	delaunay[i].nedges = 1;
+    }
+    for (i = 0; i < nedges; i++) {
+	source = edgelist[2 * i];
+	dest = edgelist[2 * i + 1];
+	delaunay[source].edges[delaunay[source].nedges++] = dest;
+	delaunay[dest].edges[delaunay[dest].nedges++] = source;
+    }
+
+    free(edgelist);
+    return delaunay;
+}
+
+surface_t* 
+mkSurface (double *x, double *y, int n, int* segs, int nsegs)
+{
+    agerr (AGERR, "mkSurface not yet implemented using Triangle library\n");
+    assert (0);
+    return 0;
+}
+void 
+freeSurface (surface_t* s)
+{
+    agerr (AGERR, "freeSurface not yet implemented using Triangle library\n");
+    assert (0);
 }
 #else
 static char* err = "Graphviz built without any triangulation library\n";
