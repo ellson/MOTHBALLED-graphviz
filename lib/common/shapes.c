@@ -702,7 +702,7 @@ static void poly_init(node_t * n)
     double angle, sinx, cosx, xmax, ymax, scalex, scaley;
     double width, height, marginx, marginy;
     int regular, peripheries, sides;
-    int i, j, outp, labelloc;
+    int i, j, isBox, outp, labelloc;
     polygon_t *poly = NEW(polygon_t);
 
     regular = ND_shape(n)->polygon->regular;
@@ -826,12 +826,15 @@ static void poly_init(node_t * n)
     else
 	labelloc = 0;
 
-    if (sides == 4 && (ROUND(orientation) % 90) == 0
-	       && distortion == 0. && skew == 0.) {
+    isBox = (sides == 4 && (ROUND(orientation) % 90) == 0
+	       && distortion == 0. && skew == 0.);
+    if (isBox) {
 	/* for regular boxes the fit should be exact */
     } else {
-	/* for all other shapes, compute the inner ellipse
-	   and then pad for that  */
+	/* for all other shapes, compute a smallest ellipse
+         * containing bb centered on the origin, and then pad for that.
+         * We assume the ellipse is defined by a scaling up of bb.
+         */
 	temp = bb.y * SQRT2;
 	/* if there is height to spare and the label is centered vertically */
 	if (height > temp && labelloc == 0) {
@@ -877,11 +880,24 @@ static void poly_init(node_t * n)
 	bb.x = bb.y = MAX(bb.x, bb.y);
     }
 
-    /* adjust text horizontal justification */
+    /* adjust text horizontal justification 
+     * If ND_label(n)->d.x is set, it specifies how far from the
+     * center are the x positions for left or right justification.
+     * For simple boxes, this is just half bb.x; 
+     * for other shapes, we calculate where the rectangle dimen
+     * when shifted to the right, first touches the ellipse enclosed in bb.
+     * In both cases, we also subtract the horizontal margin about the text.
+     */
     if (!mapbool(late_string(n, N_nojustify, "false"))) {
-        temp = bb.x - min_bb.x;
+	if (isBox)
+            temp = bb.x;
+	else
+            temp = bb.x*sqrt(1.0 - SQR(dimen.y)/SQR(bb.y));
+	temp = (temp - (dimen.x - ND_label(n)->dimen.x))/2.0;
+#if 0
         if (dimen.x < imagesize.x)
  	    temp += imagesize.x - dimen.x;
+#endif
 	if (temp > 0) 
 	    ND_label(n)->d.x = temp;
     }
