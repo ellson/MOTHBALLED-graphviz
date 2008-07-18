@@ -13,7 +13,7 @@
 				<string>dot</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>Graph.icns</string>
+			<string>GraphDot.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>GVDocumentTypeGraph</string>
 			<key>CFBundleTypeRole</key>
@@ -24,7 +24,7 @@
 		<!-- support newer .gv extension -->
 		<dict>
 			<key>CFBundleTypeIconFile</key>
-			<string>Graph.icns</string>
+			<string>GraphGv.icns</string>
 			<key>CFBundleTypeName</key>
 			<string>GVDocumentTypeGraph</string>
 			<key>CFBundleTypeRole</key>
@@ -71,7 +71,7 @@
 				<string>public.text</string>
 			</array>
 			<key>UTTypeIconFile</key>
-			<string>Graph.icns</string>
+			<string>GraphGv.icns</string>
 			<key>UTTypeIdentifier</key>
 			<string>com.att.graphviz.graph</string>
 			<key>UTTypeTagSpecification</key>
