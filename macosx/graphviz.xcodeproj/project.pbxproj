@@ -30,7 +30,6 @@
 		D8798B0A0D5D2ECD00CCC6E3 /* arguments.xml in Resources */ = {isa = PBXBuildFile; fileRef = D8798B080D5D2ECD00CCC6E3 /* arguments.xml */; };
 		D8798B0B0D5D2ECD00CCC6E3 /* attributes.xml in Resources */ = {isa = PBXBuildFile; fileRef = D8798B090D5D2ECD00CCC6E3 /* attributes.xml */; };
 		D8798BDF0D5D5BD700CCC6E3 /* GVAttributeSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = D8798BDE0D5D5BD700CCC6E3 /* GVAttributeSchema.m */; };
-		D885841A0D54866C00D35701 /* Graph.icns in Resources */ = {isa = PBXBuildFile; fileRef = D88584180D54866C00D35701 /* Graph.icns */; };
 		D885841B0D54866C00D35701 /* Graphviz.icns in Resources */ = {isa = PBXBuildFile; fileRef = D88584190D54866C00D35701 /* Graphviz.icns */; };
 		D88585CD0D56D2B700D35701 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A37F4C4FDCFA73011CA2CEA /* AppKit.framework */; };
 		D88585CE0D56D2B700D35701 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A37F4C5FDCFA73011CA2CEA /* Foundation.framework */; };
@@ -38,6 +37,8 @@
 		D88585FA0D56D3FB00D35701 /* libgvc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D88585F90D56D3FB00D35701 /* libgvc.dylib */; };
 		D885863D0D56DC2C00D35701 /* GVWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = D885863C0D56DC2C00D35701 /* GVWindowController.m */; };
 		D88586500D56EE6000D35701 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D885864F0D56EE6000D35701 /* Quartz.framework */; };
+		D8969EA80E30DF93002D1876 /* GraphDot.icns in Resources */ = {isa = PBXBuildFile; fileRef = D8969EA60E30DF93002D1876 /* GraphDot.icns */; };
+		D8969EA90E30DF93002D1876 /* GraphGv.icns in Resources */ = {isa = PBXBuildFile; fileRef = D8969EA70E30DF93002D1876 /* GraphGv.icns */; };
 		D8C09DB90D60427200134D03 /* NodeAttributes.png in Resources */ = {isa = PBXBuildFile; fileRef = D8C09DB60D60427200134D03 /* NodeAttributes.png */; };
 		D8C09DBA0D60427200134D03 /* GraphAttributes.png in Resources */ = {isa = PBXBuildFile; fileRef = D8C09DB70D60427200134D03 /* GraphAttributes.png */; };
 		D8C09DBB0D60427200134D03 /* EdgeAttributes.png in Resources */ = {isa = PBXBuildFile; fileRef = D8C09DB80D60427200134D03 /* EdgeAttributes.png */; };
@@ -81,13 +82,17 @@
 		D8798B090D5D2ECD00CCC6E3 /* attributes.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = attributes.xml; path = ../doc/schema/attributes.xml; sourceTree = SOURCE_ROOT; };
 		D8798BDD0D5D5BD700CCC6E3 /* GVAttributeSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GVAttributeSchema.h; sourceTree = "<group>"; };
 		D8798BDE0D5D5BD700CCC6E3 /* GVAttributeSchema.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GVAttributeSchema.m; sourceTree = "<group>"; };
-		D88584180D54866C00D35701 /* Graph.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Graph.icns; sourceTree = "<group>"; };
 		D88584190D54866C00D35701 /* Graphviz.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Graphviz.icns; sourceTree = "<group>"; };
 		D88585F70D56D3D700D35701 /* libgraph.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgraph.dylib; path = ../lib/graph/.libs/libgraph.dylib; sourceTree = SOURCE_ROOT; };
 		D88585F90D56D3FB00D35701 /* libgvc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgvc.dylib; path = ../lib/gvc/.libs/libgvc.dylib; sourceTree = SOURCE_ROOT; };
 		D885863B0D56DC2C00D35701 /* GVWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GVWindowController.h; sourceTree = "<group>"; };
 		D885863C0D56DC2C00D35701 /* GVWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GVWindowController.m; sourceTree = "<group>"; };
 		D885864F0D56EE6000D35701 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = /System/Library/Frameworks/Quartz.framework; sourceTree = "<absolute>"; };
+		D8969EA60E30DF93002D1876 /* GraphDot.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = GraphDot.icns; sourceTree = "<group>"; };
+		D8969EA70E30DF93002D1876 /* GraphGv.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = GraphGv.icns; sourceTree = "<group>"; };
+		D8969EB50E30E12B002D1876 /* Graph.ai */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Graph.ai; sourceTree = "<group>"; };
+		D8969EB60E30E12B002D1876 /* Graphviz.ai */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Graphviz.ai; sourceTree = "<group>"; };
+		D8969EB70E30E12B002D1876 /* Graphviz.psd */ = {isa = PBXFileReference; lastKnownFileType = file; path = Graphviz.psd; sourceTree = "<group>"; };
 		D8C09DB60D60427200134D03 /* NodeAttributes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NodeAttributes.png; sourceTree = "<group>"; };
 		D8C09DB70D60427200134D03 /* GraphAttributes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GraphAttributes.png; sourceTree = "<group>"; };
 		D8C09DB80D60427200134D03 /* EdgeAttributes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EdgeAttributes.png; sourceTree = "<group>"; };
@@ -126,6 +131,7 @@
 			children = (
 				2A37F4ABFDCFA73011CA2CEA /* Classes */,
 				2A37F4AFFDCFA73011CA2CEA /* Other Sources */,
+				D8969EB40E30E111002D1876 /* Graphics */,
 				2A37F4B8FDCFA73011CA2CEA /* Resources */,
 				2A37F4C3FDCFA73011CA2CEA /* Frameworks and Libraries */,
 				19C28FB0FE9D524F11CA2CBB /* Products */,
@@ -183,8 +189,9 @@
 				D86382D30D57118400D27D07 /* Document.xib */,
 				D8264B0B0DE81133009D6A44 /* Export.xib */,
 				D86382D50D57118400D27D07 /* MainMenu.xib */,
-				D88584180D54866C00D35701 /* Graph.icns */,
 				D88584190D54866C00D35701 /* Graphviz.icns */,
+				D8969EA60E30DF93002D1876 /* GraphDot.icns */,
+				D8969EA70E30DF93002D1876 /* GraphGv.icns */,
 				D8C09DB80D60427200134D03 /* EdgeAttributes.png */,
 				D8C09DB70D60427200134D03 /* GraphAttributes.png */,
 				D8C09DB60D60427200134D03 /* NodeAttributes.png */,
@@ -206,6 +213,16 @@
 				D8798A500D5D2E1C00CCC6E3 /* WebKit.framework */,
 			);
 			name = "Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		D8969EB40E30E111002D1876 /* Graphics */ = {
+			isa = PBXGroup;
+			children = (
+				D8969EB50E30E12B002D1876 /* Graph.ai */,
+				D8969EB60E30E12B002D1876 /* Graphviz.ai */,
+				D8969EB70E30E12B002D1876 /* Graphviz.psd */,
+			);
+			name = Graphics;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -255,8 +272,9 @@
 				D8798B0B0D5D2ECD00CCC6E3 /* attributes.xml in Resources */,
 				D86382D70D57118400D27D07 /* Document.xib in Resources */,
 				D86382D80D57118400D27D07 /* MainMenu.xib in Resources */,
-				D885841A0D54866C00D35701 /* Graph.icns in Resources */,
 				D885841B0D54866C00D35701 /* Graphviz.icns in Resources */,
+				D8969EA80E30DF93002D1876 /* GraphDot.icns in Resources */,
+				D8969EA90E30DF93002D1876 /* GraphGv.icns in Resources */,
 				8D15AC2F0486D014006FF6A4 /* InfoPlist.strings in Resources */,
 				D87989F50D5D287600CCC6E3 /* Attributes.xib in Resources */,
 				D8C09DB90D60427200134D03 /* NodeAttributes.png in Resources */,
