@@ -128,9 +128,6 @@ namespace Graphviz
 							Application.Exit();
 					};
 
-					/* window title is the filename portion */
-					foundForm.Text = Path.GetFileName(fileName);
-					
 					foundForm.Show();
 				}
 			}

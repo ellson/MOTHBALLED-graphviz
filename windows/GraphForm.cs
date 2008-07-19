@@ -38,7 +38,13 @@ namespace Graphviz
 		public GraphForm(string fileName)
 		{
 			InitializeComponent();
+
+			/* window title is the filename portion */
+			Text = Path.GetFileName(fileName);
 		
+			/* associated icon is eventually sourced by the desktop from this executable's embedded Win32 resources */
+			Icon = Icon.ExtractAssociatedIcon(fileName);
+
 			_graph = new Graph(fileName);
 		
 			/* whenever graph changes, rerender and display the graph */
