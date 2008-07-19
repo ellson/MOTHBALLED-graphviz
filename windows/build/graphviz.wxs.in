@@ -62,16 +62,15 @@
 						<!-- viewer application sourced from graphviz.csproj build directory, include shortcuts in the start menu and desktop -->
 						<Component Id="Graphviz.exe" Guid="25FE550B-3D8B-435B-AB35-553D2628171D">
 							<File Id="Graphviz.exe" Name="Graphviz.exe" KeyPath="yes" Source="x86\Release\Graphviz.exe">
-								<Shortcut Id="ApplicationProgramMenu" Name="Graphviz" Directory="ApplicationProgramMenuFolder" Advertise="yes" />
-								<Shortcut Id="ApplicationDesktop" Name="Graphviz" Directory="DesktopFolder" Advertise="yes" />
+								<Shortcut Id="ApplicationProgramMenu" Name="Graphviz" Directory="ApplicationProgramMenuFolder" Icon="Graphviz.ico" Advertise="yes" />
+								<Shortcut Id="ApplicationDesktop" Name="Graphviz" Directory="DesktopFolder" Icon="Graphviz.ico" Advertise="yes" />
 							</File>
-							<!-- register file associations so that graphs can open from the desktop -->
-							<ProgId Id="Graphviz.Graph" Description="Graphviz Graph">
+							<ProgId Id="Graphviz.Graph" Description="Graphviz Graph" Icon="Graphviz.exe" IconIndex="2">
 								<Extension Id="gv" ContentType="text/x-graphviz">
 									<Verb Id="open" Argument="&quot;%1&quot;" Command="Open" TargetFile="Graphviz.exe" />
 								</Extension>
 							</ProgId>
-							<ProgId Id="Graphviz.Dot" Description="Graphviz Graph">
+							<ProgId Id="Graphviz.Dot" Description="Graphviz Graph" Icon="Graphviz.exe" IconIndex="1">
 								<Extension Id="dot">
 									<Verb Id="open" Argument="&quot;%1&quot;" Command="Open" TargetFile="Graphviz.exe" />
 								</Extension>
@@ -94,6 +93,9 @@
 			<Directory Id="DesktopFolder" />
 		</Directory>
 
+		<!-- icon for advertised shortcut, doesn't actually appear in installed file system -->
+		<Icon Id="Graphviz.ico" SourceFile="Graphviz.ico" />
+		
 		<Feature Id="cli" Title="Command Line Tools and Libraries" Level="1">
 			<!-- refer to component groups in the heated wxs -->
 			<ComponentGroupRef Id="etc" />

@@ -9,6 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Graphviz</RootNamespace>
     <AssemblyName>Graphviz</AssemblyName>
+    <Win32Resource>Graphviz.res</Win32Resource>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -101,6 +102,7 @@
     <None Include="Resources\EdgeAttributes.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Graphviz.res" />
     <None Include="Resources\GraphAttributes.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
