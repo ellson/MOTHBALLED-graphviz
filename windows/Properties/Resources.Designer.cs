@@ -60,6 +60,13 @@ namespace Graphviz.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap ActualSize {
+            get {
+                object obj = ResourceManager.GetObject("ActualSize", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap EdgeAttributes {
             get {
                 object obj = ResourceManager.GetObject("EdgeAttributes", resourceCulture);
@@ -74,9 +81,30 @@ namespace Graphviz.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Information {
+            get {
+                object obj = ResourceManager.GetObject("Information", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap NodeAttributes {
             get {
                 object obj = ResourceManager.GetObject("NodeAttributes", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap ZoomIn {
+            get {
+                object obj = ResourceManager.GetObject("ZoomIn", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap ZoomOut {
+            get {
+                object obj = ResourceManager.GetObject("ZoomOut", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

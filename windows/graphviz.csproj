@@ -105,6 +105,18 @@
     <None Include="Graphviz.res" />
     <None Include="Resources\GraphAttributes.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ZoomOut.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ActualSize.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ZoomIn.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Information.bmp" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
