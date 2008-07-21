@@ -382,7 +382,7 @@ namespace Graphviz
 			// 
 			// attributesToolStripButton
 			// 
-			this.attributesToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("attributesToolStripButton.Image")));
+			this.attributesToolStripButton.Image = global::Graphviz.Properties.Resources.Information;
 			this.attributesToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.attributesToolStripButton.Name = "attributesToolStripButton";
 			this.attributesToolStripButton.Size = new System.Drawing.Size(75, 22);
@@ -396,7 +396,7 @@ namespace Graphviz
 			// 
 			// zoomOutToolStripButton
 			// 
-			this.zoomOutToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomOutToolStripButton.Image")));
+			this.zoomOutToolStripButton.Image = global::Graphviz.Properties.Resources.ZoomOut;
 			this.zoomOutToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.zoomOutToolStripButton.Name = "zoomOutToolStripButton";
 			this.zoomOutToolStripButton.Size = new System.Drawing.Size(74, 22);
@@ -405,7 +405,7 @@ namespace Graphviz
 			// 
 			// actualSizeToolStripButton
 			// 
-			this.actualSizeToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("actualSizeToolStripButton.Image")));
+			this.actualSizeToolStripButton.Image = global::Graphviz.Properties.Resources.ActualSize;
 			this.actualSizeToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.actualSizeToolStripButton.Name = "actualSizeToolStripButton";
 			this.actualSizeToolStripButton.Size = new System.Drawing.Size(79, 22);
@@ -414,7 +414,7 @@ namespace Graphviz
 			// 
 			// zoomInToolStripButton
 			// 
-			this.zoomInToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("zoomInToolStripButton.Image")));
+			this.zoomInToolStripButton.Image = global::Graphviz.Properties.Resources.ZoomIn;
 			this.zoomInToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.zoomInToolStripButton.Name = "zoomInToolStripButton";
 			this.zoomInToolStripButton.Size = new System.Drawing.Size(66, 22);
