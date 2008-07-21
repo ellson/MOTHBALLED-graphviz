@@ -779,7 +779,7 @@ static int process(Agraph_t * g)
     if (verbose)
 	fprintf(stderr, "       %7d nodes %7d edges %7ld components %s\n",
 		agnnodes(g), agnedges(g), c_cnt, agnameof(g));
-    return (c_cnt ? 1 : 0);
+    return (c_cnt > 1);
 }
 
 #ifdef USE_CGRAPH
