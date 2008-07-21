@@ -258,6 +258,7 @@ namespace Graphviz
 			// 
 			// showAttributesToolStripMenuItem
 			// 
+			this.showAttributesToolStripMenuItem.Image = global::Graphviz.Properties.Resources.Information;
 			this.showAttributesToolStripMenuItem.Name = "showAttributesToolStripMenuItem";
 			this.showAttributesToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
 			this.showAttributesToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
@@ -271,6 +272,7 @@ namespace Graphviz
 			// 
 			// actualSizeToolStripMenuItem
 			// 
+			this.actualSizeToolStripMenuItem.Image = global::Graphviz.Properties.Resources.ActualSize;
 			this.actualSizeToolStripMenuItem.Name = "actualSizeToolStripMenuItem";
 			this.actualSizeToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
 			this.actualSizeToolStripMenuItem.Text = "Actual Size";
@@ -285,6 +287,7 @@ namespace Graphviz
 			// 
 			// zoomInToolStripMenuItem
 			// 
+			this.zoomInToolStripMenuItem.Image = global::Graphviz.Properties.Resources.ZoomIn;
 			this.zoomInToolStripMenuItem.Name = "zoomInToolStripMenuItem";
 			this.zoomInToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
 			this.zoomInToolStripMenuItem.Text = "Zoom In";
@@ -292,6 +295,7 @@ namespace Graphviz
 			// 
 			// zoomOutToolStripMenuItem
 			// 
+			this.zoomOutToolStripMenuItem.Image = global::Graphviz.Properties.Resources.ZoomOut;
 			this.zoomOutToolStripMenuItem.Name = "zoomOutToolStripMenuItem";
 			this.zoomOutToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
 			this.zoomOutToolStripMenuItem.Text = "Zoom Out";
