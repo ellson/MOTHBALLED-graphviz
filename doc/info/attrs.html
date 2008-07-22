@@ -129,6 +129,8 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">1+(avg. len)*sqrt(|V|)</TD><TD>epsilon</TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:dim HREF=#d:dim>dim</A>
 </TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">2</TD><TD>2</TD><TD>fdp, neato only</TD> </TR>
+ <TR><TD><A NAME=a:dimen HREF=#d:dimen>dimen</A>
+</TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">2</TD><TD>2</TD><TD>fdp, neato only</TD> </TR>
  <TR><TD><A NAME=a:dir HREF=#d:dir>dir</A>
 </TD><TD>E</TD><TD><A HREF=#k:dirType>dirType</A>
 </TD><TD ALIGN="CENTER">forward(directed)<BR>none(undirected)</TD><TD></TD><TD></TD> </TR>
@@ -608,6 +610,14 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:dim HREF=#a:dim><STRONG>dim</STRONG></A>
 <DD>  Set the number of dimensions used for the layout. The maximum value
   allowed is 10.
+
+<DT><A NAME=d:dimen HREF=#a:dimen><STRONG>dimen</STRONG></A>
+<DD>  Set the number of dimensions used for rendering. 
+  The maximum value allowed is 10.
+  If both <TT>dimen</TT> and <TT>dim</TT> are set, the latter specifies
+  the dimension used for layout, and the former for rendering.
+  If only <TT>dimen</TT> is set, this is used for both layout and rendering
+  dimensions.
 
 <DT><A NAME=d:dir HREF=#a:dir><STRONG>dir</STRONG></A>
 <DD>  Set edge type for drawing arrowheads. This indicates which ends of the
@@ -1546,7 +1556,11 @@ This field indicates which graph component uses the attribute.
   value given to <B>width</B> will be the final value.
 
 <DT><A NAME=d:z HREF=#a:z><STRONG>z</STRONG></A>
-<DD>  Provides z coordinate value for 3D layouts and displays. If the
+<DD>  <B>Deprecated:</B>Use <A HREF=#d:pos><B>pos</B></A> attribute, along
+  with <A HREF=#d:dimen><B>dimen</B></A> and/or <A HREF=#d:dim><B>dim</B></A>
+  to specify dimensions.
+  <P>
+  Provides z coordinate value for 3D layouts and displays. If the
   graph has <A HREF=#d:dim><B>dim</B></A> set to 3 (or more),
   neato will use a node's <B>z</B> value
   for the z coordinate of its initial position if
