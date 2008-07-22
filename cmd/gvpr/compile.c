@@ -306,6 +306,36 @@ setattr (Agobj_t *objp, char* name, char* val)
     return agxset(objp, gsym, val);
 }
 
+/* kindToStr:
+ */
+static char*
+kindToStr (int kind)
+{
+    char* s;
+
+    switch (kind) {
+    case AGRAPH :
+	s = "graph";
+	break;
+    case AGNODE :
+	s = "node";
+	break;
+    default :
+	s = "edge";
+	break;
+    }
+    return s;
+}
+
+/* kindOf:
+ * Return string rep of object's kind
+ */
+static char*
+kindOf (Agobj_t* objp)
+{
+    return (kindToStr (agobjkind (objp)));
+}
+
 /* lookup:
  * Apply symbol to get field value of objp
  * Assume objp != NULL
@@ -418,8 +448,14 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    return -1;
 	    break;
 	}
-    } else
-	v->string = agget(objp, sym->name);
+    } else {
+	Agsym_t *gsym = agattrsym(objp, sym->name);
+	if (!gsym) {
+	    gsym = agattr(agroot(agraphof(objp)), AGTYPE(objp), sym->name, "");
+	    error(ERROR_WARNING, "Using value of uninitialized attribute \"%s\" of %s \"%s\"", sym->name, kindOf (objp), agnameof(objp));
+	}
+	v->string = agxget(objp, gsym);
+    }
 
     return 0;
 }
@@ -461,13 +497,13 @@ setDfltAttr (Agraph_t *gp, char* k, char* name, char* value)
     return 0;
 }
 
-/* getDfltAttr:
+/* toKind:
+ * Map string to object kind
  */
-static char*
-getDfltAttr (Agraph_t *gp, char* k, char* name)
+static int
+toKind (char* k)
 {
     int      kind;
-    Agsym_t* sym;
 
     switch (*k) {
     case 'G' :
@@ -480,13 +516,24 @@ getDfltAttr (Agraph_t *gp, char* k, char* name)
 	kind = AGNODE;
 	break;
     default :
-	error(ERROR_WARNING, "Unknown kind \"%s\" passed to getDflt()", k);
-	return 0;
+	error(ERROR_FATAL, "Unknown kind \"%s\" passed to getDflt()", k);
 	break;
     }
-    sym = agattr (gp, kind, name, 0);
-    if (sym) return sym->defval; 
-    else return 0;
+    return kind;
+}
+
+/* getDfltAttr:
+ */
+static char*
+getDfltAttr (Agraph_t *gp, char* k, char* name)
+{
+    int kind = toKind (k);
+    Agsym_t* sym = agattr (gp, kind, name, 0);
+    if (!sym) {
+	sym = agattr(gp, kind, name, "");
+	error(ERROR_WARNING, "Uninitialized %s attribute \"%s\" in getDflt", kindToStr (kind), name);
+    }
+    return sym->defval; 
 }
 
 /* getval:
@@ -715,8 +762,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_kindof:
 	    objp = INT2PTR(Agobj_t *, args[0].integer);
 	    if (!objp) {
-		error(ERROR_WARNING, "NULL object passed to kindOf()");
-		v.string = 0;
+		error(ERROR_FATAL, "NULL object passed to kindOf()");
 	    } else switch (AGTYPE(objp)) {
 		case AGRAPH :
 		    v.string = "G";
@@ -1186,18 +1232,26 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_log:
 	    v.floating = log(args[0].floating);
 	    break;
+	case F_hasattr:
 	case F_get:
 	    objp = INT2PTR(Agobj_t *, args[0].integer);
+	    char* name = args[1].string;
 	    if (!objp) {
-		error(ERROR_WARNING, "NULL object passed to aget()");
-		v.string = 0;
-	    } else {
-		char* name = args[1].string;
-		if (name) v.string = agget(objp, name);
+		error(ERROR_FATAL, "NULL object passed to aget()/hasAttr()");
+	    } else if (!name) {
+		error(ERROR_FATAL, "NULL name passed to aget()/hasAttr()");
+	    }
+	    else {
+	        Agsym_t *gsym = agattrsym(objp, name);
+		if (sym->index == F_hasattr)
+		    v.integer = (gsym != NULL);
 		else {
-		    error(ERROR_WARNING, "NULL name passed to aget()");
-		    v.string = 0;
-		}
+		    if (!gsym) {
+	    		gsym = agattr(agroot(agraphof(objp)), AGTYPE(objp), name, "");
+	    		error(ERROR_WARNING, "Using value of uninitialized attribute \"%s\" of %s \"%s\" in aget()", name, kindOf (objp), agnameof(objp));
+		    }
+		    v.string = agxget(objp, gsym);
+        	}
             }
 	    break;
 	case F_set:
@@ -1247,25 +1301,26 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		v.integer = 0;
 	    }
 	    break;
+	case F_isattr:
 	case F_dget:
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    if (gp) {
 		char* kind = args[1].string;
 		char* name = args[2].string;
 		if (!name) {
-		    error(ERROR_WARNING, "NULL name passed to getDflt()");
-		    v.string = 0;
+		    error(ERROR_FATAL,"NULL name passed to getDflt()/isAttr()");
 		}
 		else if (!kind) {
-		    error(ERROR_WARNING, "NULL kind passed to getDflt()");
-		    v.string = 0;
+		    error(ERROR_FATAL,"NULL kind passed to getDflt()/isAttr()");
 		}
+		else if (sym->index == F_isattr) {
+		    v.integer = (agattr(gp, toKind (kind), name, 0) != NULL);
+        	}
 		else {
 		    v.string = getDfltAttr(gp, kind, name);
         	}
 	    } else {
-		error(ERROR_WARNING, "NULL graph passed to node()");
-		v.string = 0;
+		error(ERROR_FATAL, "NULL graph passed to getDflt()/isAttr()");
 	    }
 	    break;
 	case F_canon:

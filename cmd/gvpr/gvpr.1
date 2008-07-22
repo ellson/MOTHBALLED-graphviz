@@ -500,11 +500,23 @@ any attribute values \fItgt\fP may initially have.
 \fBinduce\fP(\fIg\fP : \fBgraph_t\fP) : \fBvoid\fP
 extends \fIg\fP to its node\(hyinduced subgraph extension in its root graph.
 .TP
+\fBhasAttr\fP(\fIsrc\fP : \fBobj_t\fP, \fIname\fP : \fBstring\fP) : \fBint\fP
+returns non-zero if object \fIsrc\fP has an attribute whose name is
+\fIname\fP. It returns 0 otherwise.
+.TP
+\fBisAttr\fP(\fIg\fP : \fBgraph_t\fP, \fIkind\fP : \fBstring\fP, \fIname\fP : \fBstring\fP) : \fBint\fP
+returns non-zero if an attribute \fIname\fP has been defined in \fIg\fP
+for objects of the given \fIkind\fP. For nodes, edges, and graphs, \fIkind\fP
+should be "N", "E", and "G", respectively.
+It returns 0 otherwise.
+.TP
 \fBaget\fP(\fIsrc\fP : \fBobj_t\fP, \fIname\fP : \fBstring\fP) : \fBstring\fP
 returns the value of attribute \fIname\fP in object \fIsrc\fP. This is
 useful for those cases when \fIname\fP conflicts with one of the keywords
 such as "head" or "root".
-Returns \fBNULL\fP on failure or if the attribute is not defined.
+If the attribute has not been declared in the graph, the function will
+initialize it with a default value of "". To avoid this, one should use
+the \fBhasAttr\fP or \fBisAttr\fP function to check that the attribute exists.
 .TP
 \fBaset\fP(\fIsrc\fP : \fBobj_t\fP, \fIname\fP : \fBstring\fP, \fIvalue\fP : \fBstring\fP) : \fBint\fP
 sets the value of attribute \fIname\fP in object \fIsrc\fP to \fIvalue\fP.
@@ -514,14 +526,16 @@ Returns 0 on success, non\(hyzero on failure. See \fBaget\fP above.
 returns the default value of attribute \fIname\fP in objects in \fIg\fP of
 the given \fIkind\fP. For nodes, edges, and graphs, \fIkind\fP
 should be "N", "E", and "G", respectively.
-Returns \fBNULL\fP on failure or if the attribute is not defined.
+If the attribute has not been declared in the graph, the function will
+initialize it with a default value of "". To avoid this, one should use
+the \fBisAttr\fP function to check that the attribute exists.
 .TP
 \fBsetDflt\fP(\fIg\fP : \fBgraph_t\fP, \fIkind\fP : \fBstring\fP, \fIname\fP : \fBstring\fP, \fIvalue\fP : \fBstring\fP) : \fBint\fP
 sets the default value of attribute \fIname\fP to \fIvalue\fP in 
 objects in \fIg\fP of
 the given \fIkind\fP. For nodes, edges, and graphs, \fIkind\fP
 should be "N", "E", and "G", respectively.
-Returns 0 on success, non\(hyzero on failure. See \fBsetDflt\fP above.
+Returns 0 on success, non\(hyzero on failure. See \fBgetDflt\fP above.
 .TP
 \fBcompOf\fP(\fIg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBgraph_t\fP
 returns the connected component of the graph \fIg\fP containing node \fIn\fP,
@@ -769,7 +783,7 @@ The default value is \fBNULL\fP for each input graph.
 \fB$tvtype\fP : \fBtvtype_t\fP
 indicates how \fBgvpr\fP traverses a graph. At present, it can only take
 one of six values: \fBTV_flat\fP, \fBTV_dfs\fP, \fBTV_fwd\fP,
-\fBTV_ref\fP, \fBTV_bfs\fP, \fBTV_ne\fP, and \fBTV_en\fP. 
+\fBTV_rev\fP, \fBTV_bfs\fP, \fBTV_ne\fP, and \fBTV_en\fP. 
 \fBTV_flat\fP is the default.
 The meaning of these values is discussed below.
 .TP
