@@ -1619,9 +1619,13 @@ static Extype_t eval(Expr_t * ex, register Exnode_t * expr, void *env)
 				       data.operand.right->data.variable.
 				       symbol : (Exid_t *) 0, 0,
 				       ex->disc)) {
-		tmp.data.constant.value.integer = strToL(v.string, &e);
-		if (*e)
-		    tmp.data.constant.value.integer = *v.string != 0;
+		if (v.string) {
+		    tmp.data.constant.value.integer = strToL(v.string, &e);
+		    if (*e)
+			tmp.data.constant.value.integer = *v.string != 0;
+		}
+		else
+		    tmp.data.constant.value.integer = 0;
 	    }
 	    tmp.type = INTEGER;
 	    return tmp.data.constant.value;
