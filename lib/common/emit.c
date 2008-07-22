@@ -1000,7 +1000,11 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     obj->emit_state = EMIT_NDRAW;
 
     if (flags & GVRENDER_DOES_Z) {
-        obj->z = late_double(n, N_z, 0.0, -MAXFLOAT);
+        /* obj->z = late_double(n, N_z, 0.0, -MAXFLOAT); */
+	if (GD_odim(n->graph) >=3)
+            obj->z = POINTS(ND_pos(n)[2]);
+	else
+            obj->z = 0.0;
     }
     initObjMapData (job, ND_label(n), n);
     if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
@@ -1490,8 +1494,14 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     }
 
     if (flags & GVRENDER_DOES_Z) {
-        obj->tail_z= late_double(e->tail, N_z, 0.0, -1000.0);
-        obj->head_z= late_double(e->head, N_z, 0.0, -MAXFLOAT);
+        /* obj->tail_z = late_double(e->tail, N_z, 0.0, -1000.0); */
+        /* obj->head_z = late_double(e->head, N_z, 0.0, -MAXFLOAT); */
+	if (GD_odim(e->tail->graph) >=3) {
+            obj->tail_z = POINTS(ND_pos(e->tail)[2]);
+            obj->head_z = POINTS(ND_pos(e->head)[2]);
+	} else {
+            obj->tail_z = obj->head_z = 0.0;
+	}
     }
 
     if (flags & GVRENDER_DOES_LABELS) {

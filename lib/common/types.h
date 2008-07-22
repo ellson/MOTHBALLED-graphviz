@@ -341,7 +341,8 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	node_t **neato_nlist;
 	int move;
 	double **dist, **spring, **sum_t, ***t;
-	int ndim;
+	unsigned short ndim;
+	unsigned short odim;
 #endif
 #ifndef NEATO_ONLY
 	/* to have subgraphs */
@@ -416,6 +417,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_n_cluster(g) (g)->u.n_cluster
 #define GD_n_nodes(g) (g)->u.n_nodes
 #define GD_ndim(g) (g)->u.ndim
+#define GD_odim(g) (g)->u.odim
 #define GD_neato_nlist(g) (g)->u.neato_nlist
 #define GD_nlist(g) (g)->u.nlist
 #define GD_nodesep(g) (g)->u.nodesep

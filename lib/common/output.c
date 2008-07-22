@@ -172,6 +172,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     node_t *n;
     edge_t *e;
     point pt;
+    int dim3 = (GD_odim(g) >= 3);
 
     e_arrows = s_arrows = 0;
     setYInvert(g);
@@ -197,7 +198,11 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     }
     safe_dcl(g, g, "bb", "", agraphattr);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	sprintf(buf, "%d,%d", ND_coord_i(n).x, YDIR(ND_coord_i(n).y));
+	if (dim3) {
+	    sprintf(buf, "%d,%d,%d", ND_coord_i(n).x, YDIR(ND_coord_i(n).y), POINTS(ND_pos(n)[2]));
+	} else {
+	    sprintf(buf, "%d,%d", ND_coord_i(n).x, YDIR(ND_coord_i(n).y));
+	}
 	agset(n, "pos", buf);
 	sprintf(buf, "%.2f", PS2INCH(ND_ht_i(n)));
 	agxset(n, N_height->index, buf);

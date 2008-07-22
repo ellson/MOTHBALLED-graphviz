@@ -640,17 +640,16 @@ int init_nop(Agraph_t * g, int adjust)
     return 0;
 }
 
-static void neato_init_graphn(Agraph_t * g, int dfltdim)
+static void neato_init_graph (Agraph_t * g)
 {
-    setEdgeType (g, ET_LINE);
-    GD_ndim(g->root) = late_int(g, agfindattr(g, "dim"), dfltdim, 2);
-    Ndim = GD_ndim(g->root) = MIN(GD_ndim(g->root), MAXDIM);
-    neato_init_node_edge(g);
-}
+    int outdim;
 
-static void neato_init_graph(Agraph_t * g)
-{
-    neato_init_graphn(g, 2);
+    setEdgeType (g, ET_LINE);
+    outdim = late_int(g, agfindattr(g, "dimen"), 2, 2);
+    GD_ndim(g->root) = late_int(g, agfindattr(g, "dim"), outdim, 2);
+    Ndim = GD_ndim(g->root) = MIN(GD_ndim(g->root), MAXDIM);
+    GD_odim(g->root) = MIN(outdim, Ndim);
+    neato_init_node_edge(g);
 }
 
 static int neatoModel(graph_t * g)
