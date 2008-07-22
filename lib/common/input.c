@@ -165,7 +165,7 @@ static void use_library(GVC_t *gvc, char *name)
     gvc->common.lib = Lib;
 }
 
-
+extern char *gvplugin_list(GVC_t * gvc, api_t api, char *str);
 
 void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
