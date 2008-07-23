@@ -376,7 +376,7 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 			int sides, int style)
 {
     pointf *B, C[4], *D, p0, p1;
-    double d, dx, dy, t;
+    double rbconst, d, dx, dy, t;
     int i, seg, mode;
 
     if (style & DIAGONALS)
@@ -387,6 +387,11 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	mode = ROUNDED;
     B = N_NEW(4 * sides + 4, pointf);
     i = 0;
+    /* rbconst is distance offset from a corner of the polygon.
+     * It should be the same for every corner, and also never
+     * bigger than one-third the length of a side.
+     */
+    rbconst = RBCONST;
     for (seg = 0; seg < sides; seg++) {
 	p0 = AF[seg];
 	if (seg < sides - 1)
@@ -396,8 +401,18 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	dx = p1.x - p0.x;
 	dy = p1.y - p0.y;
 	d = sqrt(dx * dx + dy * dy);
-	/*t = ((mode == ROUNDED)? RBCONST / d : .5); */
-	t = RBCONST / d;
+	rbconst = MIN(rbconst, d/3.0);
+    }
+    for (seg = 0; seg < sides; seg++) {
+	p0 = AF[seg];
+	if (seg < sides - 1)
+	    p1 = AF[seg + 1];
+	else
+	    p1 = AF[0];
+	dx = p1.x - p0.x;
+	dy = p1.y - p0.y;
+	d = sqrt(dx * dx + dy * dy);
+	t = rbconst / d;
 	if (style & (BOX3D | COMPONENT))
 		t /= 3;
 	else if (style & DOGEAR)
