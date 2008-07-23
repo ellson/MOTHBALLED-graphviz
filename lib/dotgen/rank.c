@@ -266,7 +266,7 @@ collapse_cluster(graph_t * g, graph_t * subg)
 
 /* Execute union commands for "same rank" subgraphs and clusters. */
 static void 
-collapse_sets(graph_t * g)
+collapse_sets(graph_t *rg, graph_t *g)
 {
     int c;
     graph_t *mg, *subg;
@@ -281,10 +281,11 @@ collapse_sets(graph_t * g)
 	c = rank_set_class(subg);
 	if (c) {
 	    if ((c == CLUSTER) && CL_type == LOCAL)
-		collapse_cluster(g, subg);
+		collapse_cluster(rg, subg);
 	    else
-		collapse_rankset(g, subg, c);
+		collapse_rankset(rg, subg, c);
 	}
+	else collapse_sets(rg,subg);
 
 	/* mark nodes with ordered edges so their leaves are not collapsed */
 	if (agget(subg, "ordering"))
@@ -465,7 +466,7 @@ void dot_rank(graph_t * g)
     attrsym_t* N_level;
 #endif
     edgelabel_ranks(g);
-    collapse_sets(g);
+    collapse_sets(g,g);
     /*collapse_leaves(g); */
     class1(g);
     p = minmax_edges(g);
