@@ -1989,11 +1989,10 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 {
     GVC_t *gvc = job->gvc;
     pointf UR, size, sz;
-    char *str;
     double X, Y, Z, x, y;
     int rv;
     Agnode_t *n;
-    char *nodename = NULL;
+    char *str, *nodename = NULL, *junk = NULL;
 
 //    assert((gvc->bb.LL.x == 0) && (gvc->bb.LL.y == 0));
     P2PF(gvc->bb.UR, UR);
@@ -2030,6 +2029,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     /* user can override */
     if ((str = agget(g, "viewport"))) {
         nodename = malloc(strlen(str)+1);
+        junk = malloc(strlen(str)+1);
 	rv = sscanf(str, "%lf,%lf,%lf,\'%[^\']\'", &X, &Y, &Z, nodename);
 	if (rv == 4) {
 	    n = agfindnode(g->root, nodename);
@@ -2039,9 +2039,20 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	    }
 	}
 	else {
-	    rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
+	    rv = sscanf(str, "%lf,%lf,%lf,%[^,]%s", &X, &Y, &Z, nodename, junk);
+	    if (rv == 4) {
+                n = agfindnode(g->root, nodename);
+                if (n) {
+                    x = ND_coord_i(n).x;
+                    y = ND_coord_i(n).y;
+		}
+	    }
+	    else {
+	        rv = sscanf(str, "%lf,%lf,%lf,%lf,%lf", &X, &Y, &Z, &x, &y);
+	    }
         }
 	free (nodename);
+	free (junk);
     }
     /* rv is ignored since args retain previous values if not scanned */
 
