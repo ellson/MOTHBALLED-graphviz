@@ -224,22 +224,6 @@ bezier *new_spline(edge_t * e, int sz)
     return rv;
 }
 
-/* update_bb:
- * Update the bounding box of g based on the addition of
- * point p.
- */
-void update_bb(graph_t * g, point pt)
-{
-    if (pt.x > GD_bb(g).UR.x)
-	GD_bb(g).UR.x = pt.x;
-    if (pt.y > GD_bb(g).UR.y)
-	GD_bb(g).UR.y = pt.y;
-    if (pt.x < GD_bb(g).LL.x)
-	GD_bb(g).LL.x = pt.x;
-    if (pt.y < GD_bb(g).LL.y)
-	GD_bb(g).LL.y = pt.y;
-}
-
 /* clip_and_install:
  * Given a raw spline (pn control points in ps), representing
  * a path from edge fe->tail ending in node hn, clip the ends to
@@ -256,8 +240,8 @@ clip_and_install(edge_t * fe, node_t * hn, point * ps, int pn,
     int start, end, i, clipTail, clipHead;
     graph_t *g;
     edge_t *orig;
-    box* tbox;
-    box* hbox;
+    box *tbox, *hbox;
+    boxf bb;
     inside_t inside_context;
 
     tn = fe->tail;
@@ -319,22 +303,24 @@ clip_and_install(edge_t * fe, node_t * hn, point * ps, int pn,
 	if (ps[end].x != ps[end + 3].x || ps[end].y != ps[end + 3].y)
 	    break;
     arrow_clip(fe, hn, ps, &start, &end, newspl, info);
+    B2BF(GD_bb(g), bb);
     for (i = start; i < end + 4; ) {
-	point pt, pt1, pt2;
-	pt = newspl->list[i - start] = ps[i];
+	pointf cp[4];
+	newspl->list[i - start] = ps[i];
+	P2PF(ps[i], cp[0]);
 	i++;
-	update_bb(g, pt);
-	if ( i >= end + 4) 
+	if ( i >= end + 4)
 	    break;
-	/* take the mid-point between the two control points in bb calculation */
-	pt1 = newspl->list[i - start] = ps[i];
+	newspl->list[i - start] = ps[i];
+	P2PF(ps[i], cp[1]);
 	i++;
-	pt2 = newspl->list[i - start] = ps[i];
+	newspl->list[i - start] = ps[i];
+	P2PF(ps[i], cp[2]);
 	i++;
-	pt.x = ( pt1.x + pt2.x ) / 2;
-	pt.y = ( pt1.y + pt2.y ) / 2;
-	update_bb(g, pt);
+	P2PF(ps[i], cp[3]);
+	update_bb_bz(&bb, cp);
     }
+    BF2B(bb, GD_bb(g));
     newspl->size = end - start + 4;
 }
 

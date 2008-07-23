@@ -56,7 +56,6 @@ extern "C" {
     extern int common_init_edge(edge_t * e);
 
     extern void updateBB(graph_t * g, textlabel_t * lp);
-    extern void update_bb(graph_t * g, point p);
     extern void compute_bb(Agraph_t *);
     extern boolean overlap_node(node_t *n, boxf b);
     extern boolean overlap_label(textlabel_t *lp, boxf b);

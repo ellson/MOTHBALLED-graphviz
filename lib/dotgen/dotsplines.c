@@ -836,6 +836,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
     int     i, j, midx, midy, leftx, rightx;
     point   del;
     edge_t* hvye = NULL;
+    boxf bb;
 
     g = e0->tail->graph;
     tn = e0->tail, hn = e0->head;
@@ -936,22 +937,26 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
 	    bz->eflag = auxbz->eflag;
 	    bz->ep = transform(auxbz->ep, del, 0);
 	}
+	B2BF(GD_bb(g), bb);
 	for (j = 0; j <  auxbz->size; ) {
-	    point pt, pt1, pt2;
+	    point pt;
+	    pointf cp[4];
 	    pt = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
+	    P2PF(pt,cp[0]);
 	    j++;
-	    update_bb(g, pt);
 	    if ( j >= auxbz->size ) 
 		break;
-	    /* take the mid-point between the two control points in bb calculation */
-	    pt1 = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
+	    pt = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
+	    P2PF(pt,cp[1]);
 	    j++;
-	    pt2 = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
+	    pt = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
+	    P2PF(pt,cp[2]);
 	    j++;
-	    pt.x = ( pt1.x + pt2.x ) / 2;
-	    pt.y = ( pt1.y + pt2.y ) / 2;
-	    update_bb(g, pt);
+	    pt = transform(auxbz->list[j], del, GD_flip(g));
+	    P2PF(pt,cp[3]);
+	    update_bb_bz(&bb, cp);
         }
+	BF2B(bb, GD_bb(g));
 	if (ED_label(e)) {
 	    ED_label(e)->p = transform(ED_label(auxe)->p, del, GD_flip(g));
 	    updateBB(g, ED_label(e));
