@@ -38,4 +38,5 @@ smyrna_LDADD = $(top_builddir)/lib/cgraph/libcgraph_C.la \
 		$(top_builddir)/lib/topfish/libtopfish_C.la \
 		$(top_builddir)/lib/common/libcommon_C.la \
 		$(top_builddir)/lib/neatogen/libneatogen_C.la \
-		$(GTK_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS) $(EXTRA_SMYRNA_LDFLAGS)
+		$(GTK_LIBS) $(GTKGLEXT_LIBS) $(GLADE_LIBS) $(EXPAT_LIBS) $(GTS_LIBS) \
+		$(EXTRA_SMYRNA_LDFLAGS)
