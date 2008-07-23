@@ -845,7 +845,7 @@ static void poly_init(node_t * n)
 	    bb.x *= SQRT2;
 	    bb.y = temp;
 	}
-#if 0
+#if 1
 	if (sides > 2) {
 	    temp = cos(M_PI / sides);
 	    bb.x /= temp;
