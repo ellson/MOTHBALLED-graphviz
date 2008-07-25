@@ -540,7 +540,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
 	obs->ps = N_NEW(sides, Ppoint_t);
 	/* assuming polys are in CCW order, and pathplan needs CW */
 	for (j = 0; j < sides; j++) {
-	    double xmargin, ymargin;
+	    double xmargin = 0.0, ymargin = 0.0;
 	    if (poly->sides >= 3) {
 		if (pmargin->doAdd) {
 		    if (poly->sides == 4) {
