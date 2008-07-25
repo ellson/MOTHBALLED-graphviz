@@ -5,9 +5,9 @@ exec wish "$0" ${1+"$@"}
 package require Tkspline
 package require Tcldot
 
-# doted - dot graph editor - John Ellson (ellson@graphviz.org)
+# doted - dot/gv graph editor - John Ellson (ellson@graphviz.org)
 #
-# Usage: doted <file.dot>
+# Usage: doted <file.gv>
 #
 # doted displays the graph described in the input file and allows
 # the user to add/delete nodes/edges, to modify their attributes,
@@ -131,7 +131,7 @@ proc loadFileByNameDontAsk {c name} {
 		warning "Unable to open file: $fileName"
 	}
 	if {[catch {dotread $f} g]} {
-		warning "Invalid dot file: $fileName"
+		warning "Invalid .gv file: $fileName"
 		close $f
 	}
 	close $f
@@ -163,11 +163,12 @@ proc loadFile {c} {
 	global fileName
 
 	set types {
+		{{GV Graph Files} {.gv}}
 		{{DOT Graph Files} {.dot}}
 		{{All Files} *}
 	}
 	set fn [tk_getOpenFile \
-		-defaultextension .dot \
+		-defaultextension .gv \
 		-filetypes $types \
 		-initialfile $fileName]
 	if {[string length $fn]} {
@@ -199,7 +200,7 @@ proc saveFileByNameDontAsk {name type} {
 	if {[catch {open $name w} f]} {
 		warning "Unable to open file for write:\n$name; return"
 	}
-	if {$type == "dot"} {
+	if {$type == "gv"} {
 		set type canon
 		set fileName $name
 		set modified 0
@@ -217,13 +218,14 @@ proc saveFileAs {type} {
 	set dot {{{DOT Graph Files} {.dot}} {{All Files} *}}
 	set fig {{{FIG Image Files} {.fig}} {{All Files} *}}
 	set gif {{{GIF Image Files} {.gif}} {{All Files} *}}
+	set gv  {{{DOT Graph Files} {.gv}} {{All Files} *}}
 	set hpgl {{{HPGL Image Files} {.hpgl}} {{All Files} *}}
 	set jpg {{{JPG Image Files} {.jpg}} {{All Files} *}}
 	set mif {{{MIF Image Files} {.mif}} {{All Files} *}}
 	set pcl {{{PCL Image Files} {.pcl}} {{All Files} *}}
 	set png {{{PNG Image Files} {.png}} {{All Files} *}}
 	set ps {{{PostScript Files} {.ps}} {{All Files} *}}
-	set svg {{{SVG Image Files} {.png}} {{All Files} *}}
+	set svg {{{SVG Image Files} {.svg}} {{All Files} *}}
 
 	set fn [tk_getSaveFile \
 		-defaultextension .$type \
@@ -633,9 +635,9 @@ menu .m.file.m
 .m.file.m add command -label "New - undirected" -underline 6 \
 	-command "newGraph $c graph"
 .m.file.m add command -label "Save" -underline 0 \
-	-command "saveFile dot"
+	-command "saveFile gv"
 .m.file.m add command -label "Save As ..." -underline 5 \
-	-command "saveFileAs dot"
+	-command "saveFileAs gv"
 .m.file.m add separator
 .m.file.m add cascade -label "Export" -underline 1 \
 	-menu .m.file.m.export
