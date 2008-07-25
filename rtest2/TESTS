@@ -1,6 +1,6 @@
 shape none
 	graph G {a [label="" shape=none]}
-	dot -Tdot
+	dot -Tgv
 	dot -Txdot
 	dot -Tpng
 	dot -Tsvg

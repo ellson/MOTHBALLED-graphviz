@@ -66,10 +66,10 @@ while {![eof $f]} {
     regexp {\-T([a-z0-9]+)} $rec . format
     incr subtestnum
     set id [format %03d.%03d $testnum $subtestnum]
-    set src $graphdir/$id.dot
+    set src $graphdir/$id.gv
     set ref $referencedir/$id.$format
     set res $resultdir/$id.$format
-    set testf [open $graphdir/$id.dot w]
+    set testf [open $graphdir/$id.gv w]
     puts $testf "// $id: $name"
     puts $testf "// $command"
     puts $testf $graph
