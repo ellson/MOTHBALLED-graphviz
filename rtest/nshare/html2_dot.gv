@@ -1,0 +1,40 @@
+digraph G {
+	graph [rankdir=LR];
+	node [label="\N", shape=plaintext];
+	graph [bb="0,0,458,253"];
+	{
+		graph [rank=same,
+			bb=""];
+		b [label=<
+<TABLE BGCOLOR="bisque">
+  <TR><TD COLSPAN="3">elephant</TD> 
+      <TD ROWSPAN="2" BGCOLOR="chartreuse" 
+          VALIGN="bottom" ALIGN="right">two</TD> </TR>
+  <TR><TD COLSPAN="2" ROWSPAN="2">
+        <TABLE BGCOLOR="grey">
+          <TR> <TD>corn</TD> </TR> 
+          <TR> <TD BGCOLOR="yellow">c</TD> </TR> 
+          <TR> <TD>f</TD> </TR> 
+        </TABLE> </TD>
+      <TD BGCOLOR="white">penguin</TD> 
+  </TR> 
+  <TR> <TD COLSPAN="2" BORDER="4" ALIGN="right" PORT="there">4</TD> </TR>
+</TABLE>>, shape=ellipse, style=filled, pos="352,80", width="2.94", height="2.24"];
+		c [label=<long line 1<BR/>line 2<BR ALIGN="LEFT"/>line 3<BR ALIGN="RIGHT"/>>, pos="352,207", width="1.08", height="0.81"];
+	}
+	a [label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+  <TR><TD ROWSPAN="3" BGCOLOR="yellow">class</TD></TR>
+  <TR><TD PORT="here" BGCOLOR="lightblue">qualifier</TD></TR>
+</TABLE>>, pos="53,50", width="1.47", height="0.58"];
+	d [shape=triangle, pos="53,207", width="0.75", height="0.50"];
+	a:here -> b:there [arrowtail=diamond, pos="s,98,49 e,336,49 110,49 166,49 265,49 326,49"];
+	c -> b;
+	d -> c [label=<
+<TABLE>
+  <TR><TD BGCOLOR="red" WIDTH="10"> </TD>
+      <TD>Edge labels<BR/>also</TD>
+      <TD BGCOLOR="blue" WIDTH="10"> </TD>
+  </TR>
+</TABLE>>, pos="e,313,207 71,207 117,207 235,207 303,207", lp="176,230"];
+}

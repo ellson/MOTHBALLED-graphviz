@@ -1,0 +1,16 @@
+digraph {
+	node [label="\N"];
+	graph [bb="0,0,530,126"];
+	tcp [pos="60,108", width="0.75", height="0.50"];
+	kernel_linux [pos="60,18", width="1.67", height="0.50"];
+	usmStats [pos="184,18", width="1.28", height="0.50"];
+	"usmStats-5.5" [pos="329,18", width="1.75", height="0.50"];
+	snmpv3mibs [pos="329,108", width="1.67", height="0.50"];
+	snmpEngine [pos="470,18", width="1.67", height="0.50"];
+	tcp -> kernel_linux [label=linux, pos="e,60,36 60,90 60,77 60,61 60,46", lp="74,63"];
+	usmStats -> "usmStats-5.5" [color=red, constraint=false, pos="e,281,6 222,8 238,5 255,4 271,5"];
+	"usmStats-5.5" -> usmStats [color=red, constraint=false, pos="e,222,28 281,30 265,32 249,32 232,30"];
+	snmpv3mibs -> snmpEngine [pos="e,444,35 355,92 377,78 411,56 435,41"];
+	snmpv3mibs -> "usmStats-5.5" [pos="e,329,36 329,90 329,77 329,61 329,46"];
+	snmpv3mibs -> usmStats [style=dashed, pos="e,209,33 303,92 279,77 243,55 218,39"];
+}
