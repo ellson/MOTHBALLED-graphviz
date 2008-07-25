@@ -3,57 +3,57 @@
 
 ########### next target #################
 set(directed_SRCS
-	KW91.dot
-	Latin1.dot
-	NaN.dot
-	abstract.dot
-	alf.dot
-	arrows.dot
-	awilliams.dot
-	clust.dot
-	clust1.dot
-	clust2.dot
-	clust3.dot
-	clust4.dot
-	clust5.dot
-	crazy.dot
-	ctext.dot
-	dfa.dot
-	fig6.dot
-	fsm.dot
-	grammar.dot
-	hashtable.dot
-	honda-tokoro.dot
-	jcctree.dot
-	jsort.dot
-	ldbxtried.dot
-	longflat.dot
-	mike.dot
-	nhg.dot
-	oldarrows.dot
-	pgram.dot
-	pm2way.dot
-	pmpipe.dot
-	polypoly.dot
-	proc3d.dot
-	record2.dot
-	records.dot
-	rowe.dot
-	sdh.dot
-	shells.dot
-	states.dot
-	structs.dot
-	table.dot
-	train11.dot
-	trapeziumlr.dot
-	tree.dot
-	triedds.dot
-	try.dot
-	unix.dot
-	unix2.dot
-	viewfile.dot
-	world.dot
-	switch.dot
+	KW91.gv
+	Latin1.gv
+	NaN.gv
+	abstract.gv
+	alf.gv
+	arrows.gv
+	awilliams.gv
+	clust.gv
+	clust1.gv
+	clust2.gv
+	clust3.gv
+	clust4.gv
+	clust5.gv
+	crazy.gv
+	ctext.gv
+	dfa.gv
+	fig6.gv
+	fsm.gv
+	grammar.gv
+	hashtable.gv
+	honda-tokoro.gv
+	jcctree.gv
+	jsort.gv
+	ldbxtried.gv
+	longflat.gv
+	mike.gv
+	nhg.gv
+	oldarrows.gv
+	pgram.gv
+	pm2way.gv
+	pmpipe.gv
+	polypoly.gv
+	proc3d.gv
+	record2.gv
+	records.gv
+	rowe.gv
+	sdh.gv
+	shells.gv
+	states.gv
+	structs.gv
+	table.gv
+	train11.gv
+	trapeziumlr.gv
+	tree.gv
+	triedds.gv
+	try.gv
+	unix.gv
+	unix2.gv
+	viewfile.gv
+	world.gv
+	switch.gv
 )
 
 ########### install files ###############
@@ -67,15 +67,15 @@ INSTALL_FILES( FILES ${directed_SRCS} )
 ## $Id$ $Revision$
 ### Process this file with automake to produce Makefile.in
 #
-#GRAPHS = KW91.dot Latin1.dot NaN.dot abstract.dot alf.dot arrows.dot \
-#	awilliams.dot clust.dot clust1.dot clust2.dot clust3.dot clust4.dot \
-#	clust5.dot crazy.dot ctext.dot dfa.dot fig6.dot fsm.dot \
-#	grammar.dot hashtable.dot honda-tokoro.dot jcctree.dot jsort.dot \
-#	ldbxtried.dot longflat.dot mike.dot nhg.dot oldarrows.dot \
-#	pgram.dot pm2way.dot pmpipe.dot polypoly.dot proc3d.dot \
-#	record2.dot records.dot rowe.dot sdh.dot shells.dot states.dot \
-#	structs.dot table.dot train11.dot trapeziumlr.dot tree.dot triedds.dot \
-#	try.dot unix.dot unix2.dot viewfile.dot world.dot switch.dot
+#GRAPHS = KW91.gv Latin1.gv NaN.gv abstract.gv alf.gv arrows.gv \
+#	awilliams.gv clust.gv clust1.gv clust2.gv clust3.gv clust4.gv \
+#	clust5.gv crazy.gv ctext.gv dfa.gv fig6.gv fsm.gv \
+#	grammar.gv hashtable.gv honda-tokoro.gv jcctree.gv jsort.gv \
+#	ldbxtried.gv longflat.gv mike.gv nhg.gv oldarrows.gv \
+#	pgram.gv pm2way.gv pmpipe.gv polypoly.gv proc3d.gv \
+#	record2.gv records.gv rowe.gv sdh.gv shells.gv states.gv \
+#	structs.gv table.gv train11.gv trapeziumlr.gv tree.gv triedds.gv \
+#	try.gv unix.gv unix2.gv viewfile.gv world.gv switch.gv
 #
 #graphdir = $(pkgdatadir)/graphs
 #directeddir = $(graphdir)/directed
@@ -83,7 +83,7 @@ INSTALL_FILES( FILES ${directed_SRCS} )
 #
 #EXTRA_DIST = $(GRAPHS)
 #
-#CLEANFILES = core *.dot.* *.png .xvpics/* 
+#CLEANFILES = core *.gv.* *.png .xvpics/* 
 #
 #test:
 #	for i in $(GRAPHS); do \
@@ -93,7 +93,7 @@ INSTALL_FILES( FILES ${directed_SRCS} )
 #			-Tcmap -o$$i.cmap \
 #			-Tcmapx -o$$i.cmapx \
 #			-Tdia -o$$i.dia \
-#			-Tdot -o$$i.dot \
+#			-Tgv -o$$i.gv \
 #			-Tfig -o$$i.fig \
 #			-Tgd -o$$i.gd \
 #			-Tgd2 -o$$i.gd2 \
@@ -138,7 +138,7 @@ INSTALL_FILES( FILES ${directed_SRCS} )
 #
 #dot:
 #	for i in $(GRAPHS); do echo "dot $$i"; \
-#		$(top_builddir)/cmd/dot/dot -Tdot -o$$i.dot $(top_srcdir)/graphs/directed/$$i; done
+#		$(top_builddir)/cmd/dot/dot -Tgv -o$$i.gv $(top_srcdir)/graphs/directed/$$i; done
 #
 #fig:
 #	for i in $(GRAPHS); do echo "dot $$i"; \
