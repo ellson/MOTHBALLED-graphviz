@@ -1,7 +1,7 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-GRAPHS = ER.dot ngk10_4.dot process.dot Heawood.dot Petersen.dot
+GRAPHS = ER.gv ngk10_4.gv process.gv Heawood.gv Petersen.gv
 
 graphdir = $(pkgdatadir)/graphs
 undirecteddir = $(graphdir)/undirected
@@ -9,11 +9,11 @@ undirected_DATA = $(GRAPHS)
 
 EXTRA_DIST = $(GRAPHS)
 
-CLEANFILES = core *.dot.* *.png .xvpics/* 
+CLEANFILES = core *.gv.* *.png .xvpics/* 
 
 test:
 	$(top_builddir)/cmd/dot/dot -Kneato -Tcanon -Tcmap -Tcmapx \
-                -Tdia -Tdot -Tfig -Tgd -Tgd2 -Tgif -Thpgl \
+                -Tdia -Tgv -Tfig -Tgd -Tgd2 -Tgif -Thpgl \
                 -Tismap -Timap -Tjpg -Tmif -Tmp -Tpcl -Tpdf -Tpic \
                 -Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:cairo -Tsvg \
                 -Tsvg:cairo -Tsvgz -Tvrml -Twbmp -Tvtx -Txdot \
@@ -26,7 +26,7 @@ test:
 #			-Tcmap -o$$i.cmap \
 #			-Tcmapx -o$$i.cmapx \
 #			-Tdia -o$$i.dia \
-#			-Tdot -o$$i.dot \
+#			-Tgv -o$$i.gv \
 #			-Tfig -o$$i.fig \
 #			-Tgd -o$$i.gd \
 #			-Tgd2 -o$$i.gd2 \
@@ -71,7 +71,7 @@ dia:
 
 dot:
 	for i in $(GRAPHS); do echo "neato $$i"; \
-		$(top_builddir)/cmd/dot/dot -Kneato -Tdot -o$$i.dot $(top_srcdir)/graphs/undirected/$$i; done
+		$(top_builddir)/cmd/dot/dot -Kneato -Tgv -o$$i.gv $(top_srcdir)/graphs/undirected/$$i; done
 
 fig:
 	for i in $(GRAPHS); do echo "neato $$i"; \
