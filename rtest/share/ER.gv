@@ -1,0 +1,39 @@
+graph ER {
+	node [label="\N", shape=box];
+	graph [label="\n\nEntity Relation Diagram\ndrawn by NEATO",
+		fontsize=20,
+		lp="152,52",
+		bb="0,0,305,690"];
+	{
+		graph [label="",
+			fontsize="",
+			lp="",
+			bb=""];
+		node [label=name,
+			shape=ellipse];
+		name0 [pos="205,672", width="0.78", height="0.50"];
+		name1 [pos="111,316", width="0.78", height="0.50"];
+		name2 [pos="28,128", width="0.78", height="0.50"];
+	}
+	course [pos="241,598", width="0.75", height="0.50"];
+	institute [pos="187,410", width="0.86", height="0.50"];
+	student [pos="184,222", width="0.78", height="0.50"];
+	code [shape=ellipse, pos="278,672", width="0.75", height="0.50"];
+	grade [shape=ellipse, pos="103,128", width="0.81", height="0.50"];
+	number [shape=ellipse, pos="184,128", width="0.94", height="0.50"];
+	"C-I" [shape=diamond, style=filled, color=lightgrey, pos="196,504", width="0.89", height="0.67"];
+	"S-C" [shape=diamond, style=filled, color=lightgrey, pos="270,128", width="0.94", height="0.67"];
+	"S-I" [shape=diamond, style=filled, color=lightgrey, pos="187,316", width="0.83", height="0.67"];
+	name0 -- course [pos="214,654 219,643 227,628 232,616"];
+	code -- course [pos="269,655 263,643 256,628 250,616"];
+	course -- "C-I" [label=n, len="1.00", pos="232,580 224,563 212,539 204,522", lp="229,554"];
+	"C-I" -- institute [label=1, len="1.00", pos="194,481 192,465 190,443 189,428", lp="197,454"];
+	institute -- name1 [pos="172,392 158,375 137,349 124,332"];
+	institute -- "S-I" [label=1, len="1.00", pos="187,392 187,377 187,356 187,340", lp="191,366"];
+	"S-I" -- student [label=n, len="1.00", pos="186,292 185,276 185,255 184,240", lp="191,266"];
+	student -- grade [pos="168,204 153,187 131,161 117,144"];
+	student -- name2 [pos="156,206 132,192 96,171 65,152 60,148 54,144 48,141"];
+	student -- number [pos="184,204 184,188 184,163 184,146"];
+	student -- "S-C" [label=m, len="1.00", pos="201,204 217,186 242,159 257,143", lp="237,178"];
+	"S-C" -- course [label=n, len="1.00", pos="270,152 269,171 269,198 269,222 269,504 269,504 269,504 269,531 258,561 250,580", lp="273,366"];
+}
