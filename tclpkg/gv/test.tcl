@@ -23,7 +23,7 @@ gv::rm $g
 set g [gv::readstring "digraph G {a->b}"]
 gv::rm $g
 
-set g [gv::read hello.dot]
+set g [gv::read hello.gv]
 for {set n [gv::firstnode $g]} {[gv::ok $n]} {set n [gv::nextnode $g $n]} {
     puts [gv::nameof $n]
     for {set a [gv::firstattr $n]} {[gv::ok $a]} {set a [gv::nextattr $n $a]} {
