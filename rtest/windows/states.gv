@@ -1,0 +1,14 @@
+digraph states {
+	graph [size="3,2", rankdir=LR];
+	node [label="\N", shape=ellipse];
+	graph [bb="0,0,474,134"];
+	empty [label=Empty, pos="32,41", width="0.89", height="0.50"];
+	stolen [label=Stolen, pos="179,64", width="0.86", height="0.50"];
+	waiting [label=Waiting, pos="315,116", width="0.97", height="0.50"];
+	full [label=Full, pos="447,64", width="0.75", height="0.50"];
+	empty -> full [label=return, pos="e,420,60 64,39 88,38 120,37 148,37 176,36 183,35 210,37 281,41 364,52 410,59", lp="245,47"];
+	empty -> stolen [label=dispatch, wt=28, pos="e,149,59 63,46 85,49 115,54 139,58", lp="106,63"];
+	stolen -> full [label=return, pos="e,420,64 210,64 260,64 357,64 410,64", lp="315,72"];
+	stolen -> waiting [label=touch, pos="e,287,105 205,74 225,82 254,93 278,101", lp="245,102"];
+	waiting -> full [label=return, pos="e,424,73 343,105 364,97 392,86 415,77", lp="385,102"];
+}
