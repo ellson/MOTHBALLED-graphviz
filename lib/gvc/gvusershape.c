@@ -292,7 +292,6 @@ static void ps_size (usershape_t *us)
     boolean saw_bb;
     int lx, ly, ux, uy;
     char* linep;
-    char* s;
 
     us->dpi = POINTS_PER_INCH;
     fseek(us->f, 0, SEEK_SET);
