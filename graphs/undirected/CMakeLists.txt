@@ -4,11 +4,11 @@
 ########### next target #################
 
 set(undirected_SRCS
-	ER.dot
-	ngk10_4.dot
-	process.dot
-	Heawood.dot
-	Petersen.dot
+	ER.gv
+	ngk10_4.gv
+	process.gv
+	Heawood.gv
+	Petersen.gv
 )
 ########### install files ###############
 
@@ -21,7 +21,7 @@ INSTALL_FILES( FILES ${undirected_SRCS} )
 ## $Id$ $Revision$
 ### Process this file with automake to produce Makefile.in
 #
-#GRAPHS = ER.dot ngk10_4.dot process.dot Heawood.dot Petersen.dot
+#GRAPHS = ER.gv ngk10_4.gv process.gv Heawood.gv Petersen.gv
 #
 #graphdir = $(pkgdatadir)/graphs
 #undirecteddir = $(graphdir)/undirected
@@ -29,7 +29,7 @@ INSTALL_FILES( FILES ${undirected_SRCS} )
 #
 #EXTRA_DIST = $(GRAPHS)
 #
-#CLEANFILES = core *.dot.* *.png .xvpics/* 
+#CLEANFILES = core *.gv.* *.png .xvpics/* 
 #
 #test:
 #	for i in $(GRAPHS); do \
@@ -39,7 +39,7 @@ INSTALL_FILES( FILES ${undirected_SRCS} )
 #			-Tcmap -o$$i.cmap \
 #			-Tcmapx -o$$i.cmapx \
 #			-Tdia -o$$i.dia \
-#			-Tdot -o$$i.dot \
+#			-Tgv -o$$i.gv \
 #			-Tfig -o$$i.fig \
 #			-Tgd -o$$i.gd \
 #			-Tgd2 -o$$i.gd2 \
@@ -84,7 +84,7 @@ INSTALL_FILES( FILES ${undirected_SRCS} )
 #
 #dot:
 #	for i in $(GRAPHS); do echo "neato $$i"; \
-#		$(top_builddir)/cmd/dot/dot -Kneato -Tdot -o$$i.dot $(top_srcdir)/graphs/undirected/$$i; done
+#		$(top_builddir)/cmd/dot/dot -Kneato -Tgv -o$$i.gv $(top_srcdir)/graphs/undirected/$$i; done
 #
 #fig:
 #	for i in $(GRAPHS); do echo "neato $$i"; \
