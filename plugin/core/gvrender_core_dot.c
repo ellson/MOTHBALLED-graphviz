@@ -511,6 +511,7 @@ gvplugin_installed_t gvrender_dot_types[] = {
 
 gvplugin_installed_t gvdevice_dot_types[] = {
     {FORMAT_DOT, "dot:dot", 1, NULL, &device_features_dot},
+    {FORMAT_DOT, "gv:dot", 1, NULL, &device_features_dot},
     {FORMAT_CANON, "canon:dot", 1, NULL, &device_features_canon},
     {FORMAT_PLAIN, "plain:dot", 1, NULL, &device_features_dot},
     {FORMAT_PLAIN_EXT, "plain-ext:dot", 1, NULL, &device_features_dot},
