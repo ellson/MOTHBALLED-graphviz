@@ -1,0 +1,141 @@
+digraph g {
+	graph [fontname=Courier, fontsize=24, ranksep="1.0", size="10,7.5", orientation=land, style="setlinewidth(8)", page="8.5,11", center=true];
+	node [label="\N", shape=box, width="0.5"];
+	graph [bb="0,0,2088,756"];
+	subgraph cluster_0 {
+		graph [label=gryphon,
+			lp="256,428",
+			bb="53,130,459,446"];
+		22342 [label="22342\nksh", width="0.69", pname=ksh, kind=proc, pos="409,382", height="0.56"];
+		22343 [label="22343\ngcc", width="0.69", pname=gcc, kind=proc, pos="392,270", height="0.56"];
+		22346 [label="22346\ncpp", width="0.69", pname=cpp, kind=proc, pos="426,158", height="0.56"];
+		22347 [label="22347\ncc1", width="0.69", pname=cc1, kind=proc, pos="290,158", height="0.56"];
+		22351 [label="22351\nas", width="0.69", pname=as, kind=proc, pos="358,158", height="0.56"];
+		22344 [label="22344\nksh", width="0.72", pname=ksh, kind=proc, pos="264,382", height="0.56"];
+		22345 [label="22345\ngcc", width="0.69", pname=gcc, kind=proc, pos="188,270", height="0.56"];
+		22348 [label="22348\ncpp", width="0.69", pname=cpp, kind=proc, pos="154,158", height="0.56"];
+		22350 [label="22350\ncc1", width="0.69", pname=cc1, kind=proc, pos="222,158", height="0.56"];
+		22357 [label="22357\nas", width="0.69", pname=as, kind=proc, pos="86,158", height="0.56"];
+		22342 -> 22343 [pos="e,395,290 406,362 403,345 399,320 396,300"];
+		22344 -> 22345 [pos="e,202,290 250,362 239,345 221,319 208,299"];
+		22343 -> 22346 [pos="e,420,178 398,250 403,233 411,208 417,188"];
+		22343 -> 22347 [pos="e,308,178 374,250 357,232 333,206 315,185"];
+		22345 -> 22348 [pos="e,160,178 182,250 177,233 169,208 163,188"];
+		22345 -> 22350 [pos="e,216,178 194,250 199,233 207,208 213,188"];
+		22343 -> 22351 [pos="e,364,178 386,250 381,233 373,208 367,188"];
+		22345 -> 22357 [pos="e,104,178 170,250 153,232 129,206 111,185"];
+	}
+	subgraph cluster_1 {
+		graph [label=toucan,
+			lp="696,428",
+			bb="493,130,899,446"];
+		22349 [label="22349\nksh", width="0.69", pname=ksh, kind=proc, pos="849,382", height="0.56"];
+		22352 [label="22352\ngcc", width="0.69", pname=gcc, kind=proc, pos="832,270", height="0.56"];
+		22356 [label="22356\ncpp", width="0.69", pname=cpp, kind=proc, pos="866,158", height="0.56"];
+		22361 [label="22361\ncc1", width="0.69", pname=cc1, kind=proc, pos="730,158", height="0.56"];
+		22369 [label="22369\nas", width="0.69", pname=as, kind=proc, pos="798,158", height="0.56"];
+		22353 [label="22353\nksh", width="0.69", pname=ksh, kind=proc, pos="688,382", height="0.56"];
+		22355 [label="22355\ngcc", width="0.69", pname=gcc, kind=proc, pos="628,270", height="0.56"];
+		22360 [label="22360\ncpp", width="0.69", pname=cpp, kind=proc, pos="594,158", height="0.56"];
+		22365 [label="22365\ncc1", width="0.69", pname=cc1, kind=proc, pos="662,158", height="0.56"];
+		22374 [label="22374\nas", width="0.69", pname=as, kind=proc, pos="526,158", height="0.56"];
+		22349 -> 22352 [pos="e,835,290 846,362 843,345 839,320 836,300"];
+		22353 -> 22355 [pos="e,639,290 677,362 668,345 654,319 644,299"];
+		22352 -> 22356 [pos="e,860,178 838,250 843,233 851,208 857,188"];
+		22355 -> 22360 [pos="e,600,178 622,250 617,233 609,208 603,188"];
+		22352 -> 22361 [pos="e,748,178 814,250 797,232 773,206 755,185"];
+		22355 -> 22365 [pos="e,656,178 634,250 639,233 647,208 653,188"];
+		22352 -> 22369 [pos="e,804,178 826,250 821,233 813,208 807,188"];
+		22355 -> 22374 [pos="e,544,178 610,250 593,232 569,206 551,185"];
+	}
+	subgraph cluster_2 {
+		graph [label=parker,
+			lp="999,428",
+			bb="934,130,1063,446"];
+		22354 [label="22354\nksh", width="0.69", pname=ksh, kind=proc, pos="998,382", height="0.56"];
+		22359 [label="22359\ngcc", width="0.69", pname=gcc, kind=proc, pos="1014,270", height="0.56"];
+		22375 [label="22375\nas", width="0.69", pname=as, kind=proc, pos="1022,158", height="0.56"];
+		22354 -> 22359 [pos="e,1011,290 1001,362 1004,345 1007,320 1010,300"];
+		22359 -> 22375 [pos="e,1021,178 1015,250 1017,233 1018,208 1020,188"];
+	}
+	subgraph cluster_3 {
+		graph [label=condor,
+			lp="1226,428",
+			bb="1125,130,1327,446"];
+		22358 [label="22358\nksh", width="0.69", pname=ksh, kind=proc, pos="1175,382", height="0.56"];
+		22362 [label="22362\ngcc", width="0.69", pname=gcc, kind=proc, pos="1209,270", height="0.56"];
+		22367 [label="22367\ncpp", width="0.69", pname=cpp, kind=proc, pos="1294,158", height="0.56"];
+		22373 [label="22373\ncc1", width="0.69", pname=cc1, kind=proc, pos="1158,158", height="0.56"];
+		22378 [label="22378\nas", width="0.69", pname=as, kind=proc, pos="1226,158", height="0.56"];
+		22358 -> 22362 [pos="e,1203,290 1181,362 1186,345 1194,320 1200,300"];
+		22362 -> 22367 [pos="e,1279,178 1224,250 1238,232 1258,206 1273,186"];
+		22362 -> 22373 [pos="e,1167,178 1200,250 1192,233 1180,208 1171,187"];
+		22362 -> 22378 [pos="e,1223,178 1212,250 1215,233 1219,208 1222,188"];
+	}
+	subgraph cluster_4 {
+		graph [label=kite,
+			lp="1467,428",
+			bb="1366,130,1568,446"];
+		22363 [label="22363\nksh", width="0.69", pname=ksh, kind=proc, pos="1416,382", height="0.56"];
+		22366 [label="22366\ngcc", width="0.69", pname=gcc, kind=proc, pos="1450,270", height="0.56"];
+		22371 [label="22371\ncpp", width="0.69", pname=cpp, kind=proc, pos="1535,158", height="0.56"];
+		22376 [label="22376\ncc1", width="0.69", pname=cc1, kind=proc, pos="1399,158", height="0.56"];
+		22380 [label="22380\nas", width="0.69", pname=as, kind=proc, pos="1467,158", height="0.56"];
+		22363 -> 22366 [pos="e,1444,290 1422,362 1427,345 1435,320 1441,300"];
+		22366 -> 22371 [pos="e,1520,178 1465,250 1479,232 1499,206 1514,186"];
+		22366 -> 22376 [pos="e,1408,178 1441,250 1433,233 1421,208 1412,187"];
+		22366 -> 22380 [pos="e,1464,178 1453,250 1456,233 1460,208 1463,188"];
+	}
+	subgraph cluster_5 {
+		graph [label=coot,
+			lp="1795,428",
+			bb="1694,130,1896,446"];
+		22368 [label="22368\nksh", width="0.69", pname=ksh, kind=proc, pos="1744,382", height="0.56"];
+		22372 [label="22372\ngcc", width="0.69", pname=gcc, kind=proc, pos="1778,270", height="0.56"];
+		22377 [label="22377\ncpp", width="0.69", pname=cpp, kind=proc, pos="1863,158", height="0.56"];
+		22379 [label="22379\ncc1", width="0.69", pname=cc1, kind=proc, pos="1727,158", height="0.56"];
+		22381 [label="22381\nas", width="0.69", pname=as, kind=proc, pos="1795,158", height="0.56"];
+		22368 -> 22372 [pos="e,1772,290 1750,362 1755,345 1763,320 1769,300"];
+		22372 -> 22377 [pos="e,1848,178 1793,250 1807,232 1827,206 1842,186"];
+		22372 -> 22379 [pos="e,1736,178 1769,250 1761,233 1749,208 1740,187"];
+		22372 -> 22381 [pos="e,1792,178 1781,250 1784,233 1788,208 1791,188"];
+	}
+	{
+		graph [rank=same,
+			bb=""];
+		22337 [label="22337\nksh", width="0.69", pname=ksh, kind=proc, pos="923,503", height="0.56"];
+		"93642-32246" [label="93642-32246\n/home/ek/work/src/lefty/lex.c", shape=ellipse, width="2.75", kind=file, fname="/home/ek/work/src/lefty/lex.c", pos="1227,503", height="0.79"];
+		22337 -> "93642-32246" [style=invis, minlen=10, pos="e,1128,503 948,503 1005,503 1061,503 1118,503"];
+	}
+	22316 [label="22316\nksh", width="0.69", pname=ksh, kind=proc, pos="1075,736", height="0.56"];
+	22324 [label="22324\nnmake", width="0.75", pname=nmake, kind=proc, pos="1075,624", height="0.56"];
+	"93736-32246" [label="93736-32246\n/home/ek/work/src/lefty/lefty.c", shape=ellipse, width="2.86", kind=file, fname="/home/ek/work/src/lefty/lefty.c", pos="347,37", height="0.79"];
+	"93627-32246" [label="93627-32246\n/home/ek/work/src/lefty/gfxview.c", shape=ellipse, width="3.14", kind=file, fname="/home/ek/work/src/lefty/gfxview.c", pos="113,37", height="0.79"];
+	"93645-32246" [label="93645-32246\n/home/ek/work/src/lefty/txtview.c", shape=ellipse, width="3.08", kind=file, fname="/home/ek/work/src/lefty/txtview.c", pos="821,37", height="0.79"];
+	"93638-32246" [label="93638-32246\n/home/ek/work/src/lefty/internal.c", shape=ellipse, width="3.11", kind=file, fname="/home/ek/work/src/lefty/internal.c", pos="580,37", height="0.79"];
+	"88860-32246" [label="88860-32246\n/home/ek/dev/src/lefty/stringify.c", shape=ellipse, width="3.06", kind=file, fname="/home/ek/dev/src/lefty/stringify.c", pos="1308,37", height="0.79"];
+	"93626-32246" [label="93626-32246\n/home/ek/work/src/lefty/exec.c", shape=ellipse, width="2.86", kind=file, fname="/home/ek/work/src/lefty/exec.c", pos="1755,37", height="0.79"];
+	"93643-32246" [label="93643-32246\n/home/ek/work/src/lefty/parse.c", shape=ellipse, width="2.94", kind=file, fname="/home/ek/work/src/lefty/parse.c", pos="1982,37", height="0.79"];
+	"37592-32246" [label="37592-32246\n/home/ek/dev/src/lefty/exec.h", shape=ellipse, width="2.75", kind=file, fname="/home/ek/dev/src/lefty/exec.h", pos="1535,37", height="0.79"];
+	"135504-32246" [label="135504-32246\n/home/ek/work/sun4/lefty/display.o", shape=ellipse, width="3.19", kind=file, fname="/home/ek/work/sun4/lefty/display.o", pos="1065,37", height="0.79"];
+	22316 -> 22324 [pos="e,1075,644 1075,716 1075,699 1075,674 1075,654"];
+	22324 -> 22337 [pos="e,948,523 1050,604 1024,583 984,551 956,529"];
+	22337 -> 22342 [pos="e,428,402 898,501 817,496 564,478 489,446 469,437 451,422 436,409"];
+	22337 -> 22344 [pos="e,290,401 898,502 804,497 475,478 375,446 348,437 320,421 298,407"];
+	22346 -> "93736-32246" [pos="e,366,65 413,138 402,120 385,95 371,74"];
+	22337 -> 22349 [pos="e,862,402 911,483 899,463 880,433 867,411"];
+	22348 -> "93627-32246" [pos="e,122,65 147,138 141,121 133,96 125,74"];
+	22337 -> 22353 [pos="e,713,395 898,490 856,468 770,424 722,400"];
+	22337 -> 22354 [pos="e,985,402 936,483 948,463 967,433 980,411"];
+	22337 -> 22358 [pos="e,1150,399 948,494 977,484 1027,466 1067,446 1093,433 1120,417 1141,404"];
+	22356 -> "93645-32246" [pos="e,832,65 858,138 852,121 843,96 835,74"];
+	22337 -> 22363 [pos="e,1396,402 948,499 985,493 1058,482 1119,474 1214,460 1244,481 1331,446 1352,437 1373,422 1388,409"];
+	22360 -> "93638-32246" [pos="e,583,66 592,138 590,121 587,96 584,76"];
+	22337 -> 22368 [pos="e,1719,394 948,499 985,492 1058,480 1119,474 1320,452 1375,487 1572,446 1621,435 1675,413 1709,398"];
+	22324 -> "93642-32246" [pos="e,1193,530 1100,604 1124,585 1158,558 1185,536"];
+	22367 -> "88860-32246" [pos="e,1305,66 1296,138 1298,121 1301,96 1304,76"];
+	22371 -> "93626-32246" [pos="e,1708,63 1560,144 1594,125 1654,92 1699,68"];
+	22377 -> "93643-32246" [pos="e,1955,65 1883,138 1901,120 1927,93 1948,72"];
+	22371 -> "37592-32246" [pos="e,1535,66 1535,138 1535,121 1535,97 1535,76"];
+	22375 -> "135504-32246" [pos="e,1055,65 1029,138 1035,121 1044,96 1052,74"];
+}
