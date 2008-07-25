@@ -5,6 +5,6 @@
 .xvpics
 Makefile
 Makefile.in
-*.dot.*
+*.gv.*
 node*.png
 CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
