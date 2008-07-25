@@ -4,7 +4,7 @@ package require Tcldot
 
 # doted - dot graph editor - John Ellson (ellson@graphviz.org)
 #
-# Usage: doted <file.dot>
+# Usage: doted <file.gv>
 #
 # doted displays the graph described in the input file and allows
 # the user to add/delete nodes/edges, to modify their attributes,
@@ -159,7 +159,7 @@ proc loadFileByNameDontAsk {w c name} {
 		return
 	}
 	if {[catch {dotread $f} g]} {
-		warning "Invalid dot file: $fileName"
+		warning "Invalid .gv file: $fileName"
 		close $f
 		return
 	}
@@ -195,7 +195,7 @@ proc loadFile {c} {
 	label $w.d.label -text "Directory:"
 	frame $w.d.l
 	listbox $w.d.l.list -width 30 -height 10 -yscrollcommand "$w.d.l.scroll set"
-	bind $w.d.l.list <Double-1> "loadDirectory_list $w dot %x %y; break"
+	bind $w.d.l.list <Double-1> "loadDirectory_list $w gv %x %y; break"
 	bind $w.d.l.list <1> "update_entry $w.d %x %y"
 	scrollbar $w.d.l.scroll -command "$w.d.l.list yview"
 	pack $w.d.l.list $w.d.l.scroll -side left -fill y -expand 1
@@ -203,7 +203,7 @@ proc loadFile {c} {
 	entry $w.d.entry -width 30
 	frame $w.d.space2 -height 3m -width 20
 	button $w.d.cancel -text Cancel -command "destroy $w"
-	bind $w.d.entry <Return> "loadDirectory_entry $w dot"
+	bind $w.d.entry <Return> "loadDirectory_entry $w gv"
 	pack $w.d.label $w.d.l $w.d.space1 $w.d.entry $w.d.space2 -side top -anchor w
 	pack $w.d.cancel -side top
 
@@ -227,7 +227,7 @@ proc loadFile {c} {
 
 	pack $w.d $w.space $w.f -side left -fill y -expand true
 
-	loadDirectory $w dot
+	loadDirectory $w gv
 	$w.f.entry insert end [file tail $fileName]
 }
 
@@ -255,7 +255,7 @@ proc saveFileByNameDontAsk {w name type} {
 	if {[catch {open $name w} f]} {
 		warning "Unable to open file for write:\n$name; return"
 	}
-	if {$type == "dot"} {
+	if {$type == "gv"} {
 		set type canon
 		set fileName $name
 		set modified 0
@@ -629,9 +629,9 @@ menu .m.file.m
 .m.file.m add command -label "New" -underline 0 \
 	-command "newGraph $c"
 .m.file.m add command -label "Save" -underline 0 \
-	-command "saveFile dot"
+	-command "saveFile gv"
 .m.file.m add command -label "Save As ..." -underline 5 \
-	-command "saveFileAs dot"
+	-command "saveFileAs gv"
 .m.file.m add separator
 .m.file.m add cascade -label "Export" -underline 1 \
 	-menu .m.file.m.export

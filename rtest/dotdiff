@@ -5,7 +5,7 @@ package require Tcldot
 set cmd [file tail $argv0]
 
 if {$argc < 2} {
-	puts "Usage: $cmd <dotfile1> <dotfile2>"
+	puts "Usage: $cmd <gvfile1> <gvfile2>"
 	exit
 }
 if {$argc > 2} {
