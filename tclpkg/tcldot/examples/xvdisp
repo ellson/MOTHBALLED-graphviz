@@ -4,17 +4,17 @@ exec tclsh "$0" ${1+"$@"}
 
 package require Tcldot
 
-# xvdisp - display a dot file using xv - John Ellson <ellson@graphviz.org>
+# xvdisp - display a .gv file using xv - John Ellson <ellson@graphviz.org>
 #
-# Usage: xvdisp <file.dot>
+# Usage: xvdisp <file.gv>
 #
 
 if {[llength $argv] == 0} {
-    puts "No dot file specified. Assuming demo."
-    set argv "data/poly.dot"
+    puts "No .gv file specified. Assuming demo."
+    set argv "data/poly.gv"
 }
 if {[llength $argv] > 1} {puts "Too many args."; exit}
-if {[catch {open $argv r} f]} {puts "unable to open dot file"; exit}
+if {[catch {open $argv r} f]} {puts "unable to open .gv file"; exit}
 set g [dotread $f]
 close $f
 

@@ -5,17 +5,17 @@ exec tclsh "$0" ${1+"$@"}
 package require Tkspline
 package require Tcldot
 
-# psdisp - display a dot file using ghostview - John.Ellson@att.com 
+# psdisp - display a .gv graph file using ghostview - John.Ellson@att.com 
 #
-# Usage: psdisp <file.dot>
+# Usage: psdisp <file.gv>
 #
 
 if {[llength $argv] == 0} {
-    puts "No dot file specified. Assuming demo."
-    set argv "data/poly.dot"
+    puts "No .gv file specified. Assuming demo."
+    set argv "data/poly.gv"
 }
 if {[llength $argv] > 1} {puts "Too many args."; exit}
-if {[catch {open $argv r} f]} {puts "unable to open dot file"; exit}
+if {[catch {open $argv r} f]} {puts "unable to open .gv file"; exit}
 set g [dotread $f]
 close $f
 

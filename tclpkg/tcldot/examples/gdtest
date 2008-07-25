@@ -6,19 +6,19 @@ package require Tcldot
 
 set GDSCALE [expr 96.0/72.0]
 
-# gdtest - display a dot file as a png using xv - ellson@graphviz.org 
+# gdtest - display a .gv file as a png using xv - ellson@graphviz.org 
 #
-# Usage: gdtest <file.dot>
+# Usage: gdtest <file.gv>
 #
 # This script demonstrates the use of additional gd commands 
 
-# find a dot file
+# find a .gv file
 if {[llength $argv] == 0} {
-    puts "No dot file specified. Assuming demo."
-    set argv "data/poly.dot"
+    puts "No .gv file specified. Assuming demo."
+    set argv "data/poly.gv"
 }
 if {[llength $argv] > 1} {puts "Too many args."; exit}
-if {[catch {open $argv r} f]} {puts "unable to open dot file"; exit}
+if {[catch {open $argv r} f]} {puts "unable to open .gv file"; exit}
 set g [dotread $f]
 close $f
 

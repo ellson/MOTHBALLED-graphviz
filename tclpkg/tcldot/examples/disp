@@ -5,9 +5,9 @@ exec wish "$0" ${1+"$@"}
 package require Tkspline
 package require Tcldot
 
-# disp - display a dot file - John.Ellson@att.com 
+# disp - display a .gv file - John.Ellson@att.com 
 #
-# Usage: disp <file.dot>
+# Usage: disp <file.gv>
 #
 # disp displays the graph in a canvas widget.  Clicking on a node, edge,
 #   or the background will list the attributes of that object to stdout.
@@ -45,7 +45,7 @@ proc select {c} {
     }
 }
 
-# load a dot file and render the graph to a canvas widget
+# load a .gv file and render the graph to a canvas widget
 proc load {c} {
     upvar #0 g g argc argc argv argv saveFill saveFill
 
@@ -54,11 +54,11 @@ proc load {c} {
     $c delete all
 
     if {$argc == 0} {
-	puts "No dot file specified. Assuming poly.dot demo."
-	set argv "data/poly.dot"
+	puts "No .gv file specified. Assuming poly.gv demo."
+	set argv "data/poly.gv"
     }
     if {[llength $argv] > 1} {puts "Too many args."; exit}
-    if {[catch {open $argv r} f]} {puts "unable to open dot file"; exit}
+    if {[catch {open $argv r} f]} {puts "unable to open .gv file"; exit}
     set g [dotread $f]
     close $f
     

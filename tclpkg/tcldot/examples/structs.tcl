@@ -6,7 +6,7 @@ package require Tkspline
 package require Tcldot
 
 ######################################################################
-# first lets see what it looks like from a dot-syntax input:
+# first lets see what it looks like from a gv-syntax input:
 set s {
 	digraph structs {
 	node [shape=record];
