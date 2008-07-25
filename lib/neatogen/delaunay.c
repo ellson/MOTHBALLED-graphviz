@@ -429,7 +429,7 @@ freeSurface (surface_t* s)
 int* 
 delaunay_tri (double *x, double *y, int n, int* nedges)
 {
-    triangulateio in, out;
+    struct triangulateio in, out;
     int i;
 
     in.pointlist = N_GNEW(2 * n, REAL);
