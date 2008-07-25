@@ -41,7 +41,7 @@ typeset -A TESTTYPES
 typeset ALG[10]
 typeset FMT[10]
 typeset FLAGS[10]
-TMPINFILE=tmp$$.dot
+TMPINFILE=tmp$$.gv
 TMPFILE1=tmpnew$$
 TMPFILE2=tmpref$$
 
@@ -217,13 +217,13 @@ function doTest
   fi
   case $GRAPH in
     = )
-      INFILE=$GRAPHDIR/$TESTNAME.dot
+      INFILE=$GRAPHDIR/$TESTNAME.gv
       ;;
     graph* | digraph* )
       INFILE=$TMPINFILE
       echo "$GRAPH" > $INFILE
       ;;
-    *.dot )
+    *.gv )
       INFILE=$GRAPHDIR/$GRAPH
       ;;
     * )
