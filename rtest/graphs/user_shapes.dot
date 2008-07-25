@@ -1,5 +1,0 @@
-digraph G {
-  n [label="", shapefile="jcr.gif"]
-  x [width=3, height=3, label="", shapefile="jcr.gif"]
-  m -> n -> x
-}
