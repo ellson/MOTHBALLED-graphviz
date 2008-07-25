@@ -553,6 +553,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
     Agnode_t *np;
     Agnode_t *hp;
     Agedge_t *ep;
+    char* name;
 
     assert(sym->lex != CONSTANT);
     if (elt == EX_CALL) {
@@ -1235,7 +1236,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_hasattr:
 	case F_get:
 	    objp = INT2PTR(Agobj_t *, args[0].integer);
-	    char* name = args[1].string;
+	    name = args[1].string;
 	    if (!objp) {
 		error(ERROR_FATAL, "NULL object passed to aget()/hasAttr()");
 	    } else if (!name) {
