@@ -2,22 +2,22 @@
 # Tests are separated by blank or comment lines.
 # Tests have the following syntax:
 #  testname
-#  Test input (one-line graph or name of dot file or =)
-#    In the last case, the input file is taken as testname.dot
+#  Test input (one-line graph or name of .gv file or =)
+#    In the last case, the input file is taken as testname.gv
 #  One or more subtests of the form: 
 #     layout_alg output_format additional_flags
 #  
 # For example, the test
 #   Shapes
-#   shapes.dot
+#   shapes.gv
 #   dot ps
 #   neato png "-Gsize=3,3 -Ncolor=red"
-# specifies the "shapes" test, using shapes.dot as input, and
+# specifies the "shapes" test, using shapes.gv as input, and
 # run "dot -Tps" and "neato -Tpng -Gsize=3,3 -Ncolor=red" on the input.
 
 shapes
 =
-dot dot
+dot gv
 dot ps
 
 crazy
@@ -27,7 +27,7 @@ dot ps
 
 arrows
 =
-dot dot
+dot gv
 dot ps
 
 arrowsize
@@ -52,17 +52,17 @@ dot png
 
 record
 = 
-dot dot 
+dot gv 
 dot ps 
 
 html 
 = 
-dot dot 
+dot gv 
 dot ps 
 
 html2 
 = 
-dot dot 
+dot gv 
 dot ps
 
 pslib
@@ -88,7 +88,7 @@ dot png
 
 compound
 =
-dot dot
+dot gv
 
 dir
 =
@@ -128,7 +128,7 @@ neato ps -Gmode=hier
 neato ps -Gmode=hier -Glevelsgap=1
 
 model
-mode.dot
+mode.gv
 neato ps -Gmodel=circuit
 neato ps -Gmodel=subset
 
@@ -143,22 +143,22 @@ dot ps:cairo
 # bug
 ordering
 =
-dot dot -Gordering=in 
-dot dot -Gordering=out 
+dot gv -Gordering=in 
+dot gv -Gordering=out 
 
 overlap
 =
-neato dot -Goverlap=false
-neato dot -Goverlap=scale
+neato gv -Goverlap=false
+neato gv -Goverlap=scale
 
 pack
 =
-neato dot
-neato dot -Gpack=20
-neato dot -Gpackmode=graph
+neato gv
+neato gv -Gpack=20
+neato gv -Gpackmode=graph
 
 page
-mode.dot
+mode.gv
 neato ps -Gpage=8.5,11
 neato ps -Gpage=8.5,11 -Gpagedir=TL
 neato ps -Gpage=8.5,11 -Gpagedir=TR
@@ -175,20 +175,20 @@ dot png
 
 ports
 =
-dot dot
+dot gv
 
 rotate
-crazy.dot
+crazy.gv
 dot png -Glandscape
 dot ps -Glandscape
 dot png -Grotate=90
 dot ps -Grotate=90
 
 rankdir
-crazy.dot
-dot dot -Grankdir=LR
-dot dot -Grankdir=BT
-dot dot -Grankdir=RL
+crazy.gv
+dot gv -Grankdir=LR
+dot gv -Grankdir=BT
+dot gv -Grankdir=RL
 
 url
 =
@@ -210,31 +210,31 @@ neato ps -Gviewport=300,300,2,200,620 -n2
 
 rowcolsep
 =
-dot dot -Gnodesep=0.5
-dot dot -Granksep=1.5
+dot gv -Gnodesep=0.5
+dot gv -Granksep=1.5
 
 size
-mode.dot
+mode.gv
 neato ps -Gsize=5,5
 neato png -Gsize=5,5
 
 # size with !
 size_ex
-root.dot
+root.gv
 dot ps -Gsize=6,6!
 dot png -Gsize=6,6!
 
 dotsplines
-size.dot
-dot dot -Gsplines=line
-dot dot -Gsplines=polyline
-#dot dot -Gsplines=ortho
+size.gv
+dot gv -Gsplines=line
+dot gv -Gsplines=polyline
+#dot gv -Gsplines=ortho
 
 neatosplines
-overlap.dot
-neato dot -Goverlap=false -Gsplines=splines
-neato dot -Goverlap=false -Gsplines=polyline
-#neato dot -Goverlap=false -Gsplines=ortho
+overlap.gv
+neato gv -Goverlap=false -Gsplines=splines
+neato gv -Goverlap=false -Gsplines=polyline
+#neato gv -Goverlap=false -Gsplines=ortho
 
 style
 =
@@ -244,17 +244,17 @@ dot png
 # edge clipping
 edgeclip
 =
-dot dot
+dot gv
 
 # edge weight
 weight
 =
-dot dot
+dot gv
 
 root
 =
-twopi dot
-circo dot
+twopi gv
+circo gv
 
 cairo
 =
@@ -264,8 +264,8 @@ dot svg:cairo
 
 flatedge
 =
-dot dot
+dot gv
 
 nestedclust
 =
-dot dot
+dot gv
