@@ -1,4 +1,0 @@
-digraph G {
-  center=true
-  a -> { b c}
-}

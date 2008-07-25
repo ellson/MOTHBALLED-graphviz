@@ -1,5 +1,0 @@
-digraph test {
-    gvds_array0 [label="{<port1>1}|{<port2>2}|{<port3>3}", shape="record"];
-    "gvds_array0":port2 -> gvds_array0;
-}
-

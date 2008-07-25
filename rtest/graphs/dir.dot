@@ -1,8 +1,0 @@
-digraph G {
-
-   a -> b 
-   a -> c [dir=forward]
-   a -> d [dir=back]
-   a -> e [dir=both]
-   a -> f [dir=none]
-}

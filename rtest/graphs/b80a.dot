@@ -1,6 +1,0 @@
-digraph G {
-  ranksep=equally;
-  c [height=2.0];
-  a -> b;
-  c -> b;
-}

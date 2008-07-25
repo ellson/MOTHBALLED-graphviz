@@ -1,6 +1,0 @@
-digraph G {
-  subgraph cluster0 {
-    a->{c b};
-    label = "cluster0";
-  }
-}

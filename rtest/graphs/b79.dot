@@ -1,5 +1,0 @@
-digraph G {
-  size="2,2";
-  rankdir=LR;
-  T -> H [arrowhead=dot,arrowsize=2.2];
-}
