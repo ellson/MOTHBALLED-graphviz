@@ -66,7 +66,7 @@
 								<Shortcut Id="ApplicationDesktop" Name="Graphviz" Directory="DesktopFolder" Icon="Graphviz.ico" Advertise="yes" />
 							</File>
 							<ProgId Id="Graphviz.Graph" Description="Graphviz Graph" Icon="Graphviz.exe" IconIndex="2">
-								<Extension Id="gv" ContentType="text/x-graphviz">
+								<Extension Id="gv" ContentType="text/vnd.graphviz">
 									<Verb Id="open" Argument="&quot;%1&quot;" Command="Open" TargetFile="Graphviz.exe" />
 								</Extension>
 							</ProgId>
