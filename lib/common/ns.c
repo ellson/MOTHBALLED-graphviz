@@ -761,6 +761,7 @@ static int dfs_range(node_t * v, edge_t * par, int low)
     return lim + 1;
 }
 
+#define DEBUG
 #ifdef DEBUG
 void tchk(void)
 {
@@ -775,11 +776,11 @@ void tchk(void)
 	for (i = 0; (e = ND_tree_out(n).list[i]); i++) {
 	    e_cnt++;
 	    if (SLACK(e) > 0)
-		printf("not a tight tree %x", e);
+		fprintf(stderr, "not a tight tree %x", e);
 	}
     }
     if ((n_cnt != Tree_node.size) || (e_cnt != Tree_edge.size))
-	printf("something missing\n");
+	fprintf(stderr, "something missing\n");
 }
 
 void check_cutvalues(void)
@@ -831,7 +832,7 @@ void checktree(void)
 	if (i != ND_tree_in(v).size)
 	    abort();
     }
-    printf("%d %d %d\n", Tree_edge.size, n, m);
+    fprintf(stderr, "%d %d %d\n", Tree_edge.size, n, m);
 }
 
 void check_fast_node(node_t * n)
