@@ -80,12 +80,17 @@ void fdp_init_node_edge(graph_t * g)
     attrsym_t *E_len;
     node_t *n;
     edge_t *e;
-    int nn = agnnodes(g);
+    int nn;
     int i;
-    ndata* alg = N_NEW(nn, ndata);
+    ndata* alg;
 
     processClusterEdges(g);
 
+    /* Get node count after processClusterEdges(), as this function may
+     * add new nodes.
+     */
+    nn = agnnodes(g);
+    alg = N_NEW(nn, ndata);
     GD_neato_nlist(g) = N_NEW(nn + 1, node_t *);
 
     for (i = 0, n = agfstnode(g); n; n = agnxtnode(g, n)) {
