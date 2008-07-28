@@ -2127,16 +2127,6 @@ fi
 AM_CONDITIONAL(WITH_GNOMEUI, [test "x$use_gnomeui" = "xYes"])
 
 dnl -----------------------------------
-dnl INCLUDES and LIBS for GETTEXT.
-
-GETTEXT_PACKAGE=glade-2.0
-AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package.])
-
-ALL_LINGUAS=""
-AM_GLIB_GNU_GETTEXT
-
-dnl -----------------------------------
 dnl INCLUDES and LIBS for MING (SWF renderer)
 
 AC_ARG_WITH(ming,
