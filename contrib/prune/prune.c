@@ -30,10 +30,14 @@
 #include "compat_getopt.h"
 #endif
 
-#include <agraph.h>
-#include <ingraphs.h>
+#ifdef USE_CGRAPH
+#include "cgraph.h"
+#else
+#include "agraph.h"
+#endif
+#include "ingraphs.h"
 
-#include <generic_list.h>
+#include "generic_list.h"
 
 /* structure to hold an attribute specified on the commandline */
 typedef struct strattr_s {
@@ -172,6 +176,18 @@ int main(int argc, char **argv)
 	    } else {
 		MARK(node);	/* Avoid cycles */
 		/* Iterate over all outgoing edges */
+#ifdef USE_CGRAPH
+		for (edge = agfstout(graph, node); edge; edge = nexte) {
+		    nexte = agnxtout(graph, edge);
+		    if (aghead(edge) != node) {	/* non-loop edges */
+			if (verbose == 1)
+			    fprintf(stderr, "Processing descendant: %s\n",
+				    agnameof(aghead(edge)));
+			remove_child(graph, aghead(edge));
+			agdelete(graph, edge);
+		    }
+		}
+#else
 		for (edge = agfstout(node); edge; edge = nexte) {
 		    nexte = agnxtout(edge);
 		    if (aghead(edge) != node) {	/* non-loop edges */
@@ -182,6 +198,7 @@ int main(int argc, char **argv)
 			agdelete(graph, edge);
 		    }
 		}
+#endif
 		UNMARK(node);	/* Unmark so that it can be removed in later passes */
 
 		/* Change attribute (e.g. border style) to show that node has been pruneed */
@@ -219,13 +236,32 @@ void remove_child(Agraph_t * graph, Agnode_t * node)
     MARK(node);
 
     /* Skip nodes with more than one parent */
+#ifdef USE_CGRAPH
+    edge = agfstin(graph, node);
+    if (edge && (agnxtin(graph, edge) != NULL)) {
+#else
     edge = agfstin(node);
     if (edge && (agnxtin(edge) != NULL)) {
+#endif
 	UNMARK(node);
 	return;
     }
 
     /* recursively remove children */
+#ifdef USE_CGRAPH
+    for (edge = agfstout(graph, node); edge; edge = nexte) {
+	nexte = agnxtout(graph, edge);
+	if (aghead(edge) != node) {
+	    if (verbose)
+		fprintf(stderr, "Processing descendant: %s\n",
+			agnameof(aghead(edge)));
+	    remove_child(graph, aghead(edge));
+	    agdeledge(graph, edge);
+	}
+    }
+
+    agdelnode(graph, node);
+#else
     for (edge = agfstout(node); edge; edge = nexte) {
 	nexte = agnxtout(edge);
 	if (aghead(edge) != node) {
@@ -238,6 +274,7 @@ void remove_child(Agraph_t * graph, Agnode_t * node)
     }
 
     agdelnode(node);
+#endif
     return;
 }
 

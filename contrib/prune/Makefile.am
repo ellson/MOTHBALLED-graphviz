@@ -3,10 +3,11 @@
 
 pdfdir = $(pkgdatadir)/doc/pdf
 
+AM_CFLAGS = -DUSE_CGRAPH
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
         -I$(top_srcdir)/lib/ingraphs \
-	-I$(top_srcdir)/lib/agraph \
+	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/cdt
 
 bin_PROGRAMS = prune
@@ -17,7 +18,7 @@ pdf_DATA = prune.pdf
 prune_SOURCES = generic_list.c prune.c
 
 prune_LDADD = $(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(top_builddir)/lib/agraph/libagraph.la \
+	$(top_builddir)/lib/cgraph/libcgraph.la \
 	$(top_builddir)/lib/cdt/libcdt.la
 
 .1.pdf:
