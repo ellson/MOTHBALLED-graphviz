@@ -8,6 +8,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/lib/cdt
 
+if WITH_CGRAPH
+else
 pkginclude_HEADERS = agraph.h
 noinst_HEADERS = aghdr.h malloc.h vmstub.h grammar.h
 noinst_LTLIBRARIES = libagraph_C.la
@@ -15,6 +17,7 @@ lib_LTLIBRARIES = libagraph.la
 pkgconfig_DATA = libagraph.pc
 man_MANS = agraph.3
 pdf_DATA = agraph.pdf
+endif
 
 libagraph_C_la_SOURCES = agerror.c apply.c attr.c \
 	edge.c flatten.c grammar.y graph.c id.c imap.c io.c \
