@@ -2836,6 +2836,7 @@ AC_CONFIG_FILES(Makefile
 	lib/dotgen/Makefile
 	lib/neatogen/Makefile
 	lib/fdpgen/Makefile
+	lib/sparse/Makefile
 	lib/sfdpgen/Makefile
 	lib/circogen/Makefile
 	lib/twopigen/Makefile

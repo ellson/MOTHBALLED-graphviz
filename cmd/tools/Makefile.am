@@ -18,6 +18,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/pack \
 	-I$(top_srcdir)/lib/neatogen \
+	-I$(top_srcdir)/lib/sparse \
 	-I$(top_srcdir)/lib/gvc \
 	-I$(top_srcdir)/lib/common \
 	-I$(top_srcdir)/lib/ingraphs @EXPAT_INCLUDES@
@@ -26,7 +27,7 @@ pdfdir = $(pkgdatadir)/doc/pdf
 
 noinst_HEADERS = colortbl.h convert.h
 bin_PROGRAMS = gc gvcolor gxl2dot acyclic nop ccomps sccmap tred \
-	unflatten gvpack dijkstra bcomps
+	unflatten gvpack dijkstra bcomps mm2gv
 man_MANS = gc.1 gvcolor.1 gxl2dot.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
 	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1
 pdf_DATA = gc.pdf gvcolor.pdf gxl2dot.pdf acyclic.pdf nop.pdf ccomps.pdf \
@@ -110,6 +111,14 @@ gvpack_SOURCES = gvpack.c gvpack_builtins.c
 gvpack_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
+
+mm2gv_SOURCES = mm2gv.c matrix_market.c mmio.c
+
+mm2gv_LDADD = \
+	$(top_builddir)/lib/gvc/libgvc.la \
+	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+	$(top_builddir)/lib/sparse/libsparse_C.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
 
 dijkstra_SOURCES = dijkstra.c
