@@ -1965,7 +1965,7 @@ if test "x$use_fontconfig" = "x"; then
     fi
 fi
 
-if test "x$use_fontconfig" = "Yes"; then
+if test "x$use_fontconfig" = "xYes"; then
   AC_DEFINE_UNQUOTED(HAVE_FONTCONFIG,1,[Define if you have the fontconfig library])
   AC_SUBST(FONTCONFIG_CFLAGS)
   AC_SUBST(FONTCONFIG_LIBS)
