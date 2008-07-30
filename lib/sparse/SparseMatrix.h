@@ -18,6 +18,7 @@
 #define test_flag(a, flag) ((a)&(flag))
 #define clear_flag(a, flag) ((a) &=(~(flag)))
 
+#include <stdio.h>
 typedef double real;
 
 #define SYMMETRY_EPSILON 0.0000001
