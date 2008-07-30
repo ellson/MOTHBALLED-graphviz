@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
-#include "mmio.h"
 #include "SparseMatrix.h"
+#include "mmio.h"
 #include "matrix_market.h"
 #define MALLOC malloc
 #define FREE free
