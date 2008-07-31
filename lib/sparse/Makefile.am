@@ -2,12 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 
 AM_CPPFLAGS = \
-        -I$(top_srcdir) \
-        -I$(top_srcdir)/lib/cdt \
-        -I$(top_srcdir)/lib/graph \
-        -I$(top_srcdir)/lib/pathplan \
-        -I$(top_srcdir)/lib/gvc \
-	-I$(top_srcdir)/lib/common 
+        -I$(top_srcdir)
 
 noinst_HEADERS = SparseMatrix.h
 noinst_LTLIBRARIES = libsparse_C.la
