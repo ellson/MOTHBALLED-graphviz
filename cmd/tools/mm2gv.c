@@ -260,7 +260,6 @@ makeDotGraph (SparseMatrix A, char *name, int dim, real *x, int with_color, int 
   } else {
     g = agopen ("G", Agdirected, (Agdisc_t *) 0);
   }
-  aginit (g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
   sprintf (buf, "%f", 1.0);
 
   label_string = strcpy(label_string, name);
@@ -282,6 +281,7 @@ makeDotGraph (SparseMatrix A, char *name, int dim, real *x, int with_color, int 
   for (i = 0; i < A->m; i++) {
     sprintf (buf, "%d", i);
     n = agnode (g, buf, 1);
+    agbindrec (n, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
     ND_id(n) = i;
     arr[i] = n;
   }
