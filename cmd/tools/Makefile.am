@@ -29,9 +29,10 @@ noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h
 bin_PROGRAMS = gc gvcolor gxl2dot acyclic nop ccomps sccmap tred \
 	unflatten gvpack dijkstra bcomps mm2gv
 man_MANS = gc.1 gvcolor.1 gxl2dot.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
-	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1
+	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1 mm2gv.1
 pdf_DATA = gc.pdf gvcolor.pdf gxl2dot.pdf acyclic.pdf nop.pdf ccomps.pdf \
-	sccmap.pdf tred.pdf unflatten.pdf gvpack.pdf dijkstra.pdf bcomps.pdf
+	sccmap.pdf tred.pdf unflatten.pdf gvpack.pdf dijkstra.pdf bcomps.pdf \
+	mm2gv.pdf
 
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); rm -f dot2gxl.1; $(LN_S) gxl2dot.1 dot2gxl.1;)
