@@ -25,7 +25,7 @@ AM_CPPFLAGS = \
 
 pdfdir = $(pkgdatadir)/doc/pdf
 
-noinst_HEADERS = colortbl.h convert.h
+noinst_HEADERS = colortbl.h convert.h mmio.h
 bin_PROGRAMS = gc gvcolor gxl2dot acyclic nop ccomps sccmap tred \
 	unflatten gvpack dijkstra bcomps mm2gv
 man_MANS = gc.1 gvcolor.1 gxl2dot.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
@@ -113,7 +113,7 @@ gvpack_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
 
-mm2gv_SOURCES = mm2gv.c matrix_market.c mmio.c
+mm2gv_SOURCES = mm2gv.c matrix_market.c mmio.c mmio.h
 
 mm2gv_LDADD = \
 	$(top_builddir)/lib/gvc/libgvc.la \
