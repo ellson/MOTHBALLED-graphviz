@@ -1,0 +1,40 @@
+.TH MM2GV 1 "31 July 2008"
+.SH NAME
+mm2gv \- Matrix Market-DOT converters
+.SH SYNOPSIS
+.B mm2gv
+[
+.B \-u?
+]
+[ 
+.I file
+]
+.br
+.SH DESCRIPTION
+.B mm2gv
+converts a sparse matrix of the Matrix Market format to a graph in the GV (formerly DOT) format. 
+.SH OPTIONS
+The following options are supported:
+.TP
+.B \-u
+If specified, the graph is assumed to be undirected. By default the graph generated is directed. 
+.TP
+.SH OPERANDS
+The following operand is supported:
+.TP 8
+.I file
+Name of the file in MatrixMarket format.
+If no
+.I file
+operand is specified,
+the standard input will be used.
+.SH RETURN CODES
+Return \fB0\fP
+if there were no problems during conversion;
+and non-zero if any error occurred.
+.SH "LIMITATIONS"
+Currently the matrix entry values are not used.
+.SH AUTHORS
+Yifan Hu <yifanhu@research.att.com>
+.SH ADDITIONAL INFO
+See http://math.nist.gov/MatrixMarket/ for description of the format and http://www.cise.ufl.edu/research/sparse/matrices/ for a large collection of sparse matrices in this format.
