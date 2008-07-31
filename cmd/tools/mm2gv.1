@@ -6,6 +6,9 @@ mm2gv \- Matrix Market-DOT converters
 [
 .B \-u?
 ]
+[
+.BI -o outfile
+]
 [ 
 .I file
 ]
@@ -18,6 +21,10 @@ The following options are supported:
 .TP
 .B \-u
 If specified, the graph is assumed to be undirected. By default the graph generated is directed. 
+.TP
+.BI \-o "outfile"
+Prints output to the file \fIoutfile\fP. If not given, \fBmm2gv\fP
+uses stdout.
 .TP
 .SH OPERANDS
 The following operand is supported:
