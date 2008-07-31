@@ -1,3 +1,18 @@
+/* $Id$Revision:  */
+/* vim:set shiftwidth=4 ts=8: */
+
+/**********************************************************
+*      This software is part of the graphviz package      *
+*                http://www.graphviz.org/                 *
+*                                                         *
+*            Copyright (c) 1994-2004 AT&T Corp.           *
+*                and is licensed under the                *
+*            Common Public License, Version 1.0           *
+*                      by AT&T Corp.                      *
+*                                                         *
+*        Information and Software Systems Research        *
+*              AT&T Research, Florham Park NJ             *
+**********************************************************/
 /* 
 *   Matrix Market I/O library for ANSI C
 *
@@ -17,13 +32,13 @@ typedef char MM_typecode[4];
 
 char *mm_typecode_to_str(MM_typecode matcode);
 
-int mm_read_banner(FILE *f, MM_typecode *matcode);
-int mm_read_mtx_crd_size(FILE *f, int *M, int *N, int *nz);
-int mm_read_mtx_array_size(FILE *f, int *M, int *N);
+int mm_read_banner(FILE * f, MM_typecode * matcode);
+int mm_read_mtx_crd_size(FILE * f, int *M, int *N, int *nz);
+int mm_read_mtx_array_size(FILE * f, int *M, int *N);
 
-int mm_write_banner(FILE *f, MM_typecode matcode);
-int mm_write_mtx_crd_size(FILE *f, int M, int N, int nz);
-int mm_write_mtx_array_size(FILE *f, int M, int N);
+int mm_write_banner(FILE * f, MM_typecode matcode);
+int mm_write_mtx_crd_size(FILE * f, int M, int N, int nz);
+int mm_write_mtx_array_size(FILE * f, int M, int N);
 
 
 /********************* MM_typecode query fucntions ***************************/
@@ -45,7 +60,7 @@ int mm_write_mtx_array_size(FILE *f, int M, int N);
 #define mm_is_skew(typecode)	((typecode)[3]=='K')
 #define mm_is_hermitian(typecode)((typecode)[3]=='H')
 
-int mm_is_valid(MM_typecode matcode);		/* too complex for a macro */
+int mm_is_valid(MM_typecode matcode);	/* too complex for a macro */
 
 
 /********************* MM_typecode modify fucntions ***************************/
@@ -104,7 +119,7 @@ int mm_is_valid(MM_typecode matcode);		/* too complex for a macro */
 #define MM_MTX_STR		"matrix"
 #define MM_ARRAY_STR	"array"
 #define MM_DENSE_STR	"array"
-#define MM_COORDINATE_STR "coordinate" 
+#define MM_COORDINATE_STR "coordinate"
 #define MM_SPARSE_STR	"coordinate"
 #define MM_COMPLEX_STR	"complex"
 #define MM_REAL_STR		"real"
@@ -119,14 +134,15 @@ int mm_is_valid(MM_typecode matcode);		/* too complex for a macro */
 /*  high level routines */
 
 int mm_write_mtx_crd(char fname[], int M, int N, int nz, int I[], int J[],
-		 double val[], MM_typecode matcode);
-int mm_read_mtx_crd_data(FILE *f, int M, int N, int nz, int I[], int J[],
-		double val[], MM_typecode matcode);
-int mm_read_mtx_crd_entry(FILE *f, int *I, int *J, double *realpart, double *img,
-			MM_typecode matcode);
+		     double val[], MM_typecode matcode);
+int mm_read_mtx_crd_data(FILE * f, int M, int N, int nz, int I[], int J[],
+			 double val[], MM_typecode matcode);
+int mm_read_mtx_crd_entry(FILE * f, int *I, int *J, double *realpart,
+			  double *img, MM_typecode matcode);
 
-int mm_read_unsymmetric_sparse(const char *fname, int *M_, int *N_, int *nz_,
-                double **val_, int **I_, int **J_);
+int mm_read_unsymmetric_sparse(const char *fname, int *M_, int *N_,
+			       int *nz_, double **val_, int **I_,
+			       int **J_);
 
 
 
