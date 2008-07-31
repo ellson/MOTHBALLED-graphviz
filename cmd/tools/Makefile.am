@@ -117,10 +117,9 @@ gvpack_LDADD = \
 mm2gv_SOURCES = mm2gv.c matrix_market.c matrix_market.h mmio.c mmio.h 
 
 mm2gv_LDADD = \
-	$(top_builddir)/lib/gvc/libgvc.la \
-	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
+    $(top_builddir)/lib/common/libcommon_C.la \
 	$(top_builddir)/lib/sparse/libsparse_C.la \
-	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
+	$(GRAPH_LIBS)
 
 dijkstra_SOURCES = dijkstra.c
 
