@@ -1366,7 +1366,6 @@ int makeMultiSpline(edge_t* e, router_t * rtr, int doPolyline)
     return ret;
 }
 #else
-static int _cnt;
 static boolean spline_merge(node_t * n)
 {
     return FALSE;
