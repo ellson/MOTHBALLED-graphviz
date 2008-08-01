@@ -25,7 +25,15 @@
 #include "types.h"
 #include "logic.h"
 #include "memory.h"
-#include "graph.h"
+
+#define WITH_CGRAPH 1
+#ifdef WITH_CGRAPH
+#include <cgraph.h>
+#else
+#include <graph.h>
+#endif
+#undef WITH_CGRAPH
+
 #include "agxbuf.h"
 #include "utils.h"
 

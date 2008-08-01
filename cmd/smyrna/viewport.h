@@ -21,7 +21,7 @@
 #include "smyrnadefs.h"
 #include <gtk/gtk.h>
 #include "xdot.h"
-#include "cgraph.h"
+#include "agraph.h"
 
 void init_viewport(ViewInfo * view);
 void set_viewport_settings_from_template(ViewInfo * view, Agraph_t *);

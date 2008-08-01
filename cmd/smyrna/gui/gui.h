@@ -23,7 +23,7 @@
 #include <gtk/gtkgl.h>
 #include <glade/glade.h>
 #include "callbacks.h"
-#include "cgraph.h"
+#include "agraph.h"
 
 
 

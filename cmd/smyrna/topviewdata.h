@@ -17,7 +17,7 @@
 #define TOPVIEWDATA_H
 
 #include <gtk/gtk.h>
-#include "cgraph.h"
+#include "agraph.h"
 #include "smyrnadefs.h"
 #include "tvnodes.h"
 

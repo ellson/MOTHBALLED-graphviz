@@ -27,6 +27,7 @@
 #include "assert.h"
 #include "hier.h"
 
+int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y,float *R,float *G,float *B);
 static double dist(double x1, double y1, double x2, double y2)
 {
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
@@ -221,12 +222,13 @@ void prepare_topological_fisheye(topview* t)
     v_data *graph = makeGraph(t, &ne);
 
 //	t->animate=1;	//turn the animation on
-	for (i = 0, np = t->Nodes; i < t->Nodecount; i++, np++) {
-	x_coords[i] = np->x;
-	y_coords[i] = np->y;
+	for (i = 0, np = t->Nodes; i < t->Nodecount; i++, np++)
+	{
+		x_coords[i] = np->x;
+		y_coords[i] = np->y;
     }
     hp = t->h = 
-	makeHier(t->Nodecount, ne, graph, x_coords, y_coords, &(t->parms.hier));
+		makeHier(t->Nodecount, ne, graph, x_coords, y_coords, &(t->parms.hier));
     freeGraph(graph);
     free(x_coords);
     free(y_coords);
@@ -254,7 +256,7 @@ void prepare_topological_fisheye(topview* t)
 	draws all level 0 nodes and edges, during animation
 */
 
-int drawtopologicalfisheye2(topview * t)
+void drawtopologicalfisheye2(topview * t)
 {
     int level, v, i, n;
     Hierarchy *hp = t->h;
@@ -272,13 +274,11 @@ int drawtopologicalfisheye2(topview * t)
 		for (v = 0; v < hp->nvtxs[level]; v++)
 		{
 			{
-				/* ex_vtx_data *gg = hp->geom_graphs[level]; */
+				ex_vtx_data *gg = hp->geom_graphs[level];
 					double x0,y0;
 					if(get_temp_coords(t,level,v,&x0,&y0,&R,&G,&B))
 					{
 						glColor3f((GLfloat)R,(GLfloat)G,(GLfloat)B);
-//						glColor3f((GLfloat) (hp->nlevels - level) /(GLfloat) hp->nlevels,(GLfloat) level / (GLfloat) hp->nlevels, 0);
-
 						glVertex3f((GLfloat) x0, (GLfloat) y0, (GLfloat) 0);
 					}
 			}
@@ -290,7 +290,6 @@ int drawtopologicalfisheye2(topview * t)
 
 
 	//draw edges
-	glLineWidth(2);
 	glBegin(GL_LINES);
     for (level = 0; level < hp->nlevels; level++)
 	{
@@ -304,20 +303,17 @@ int drawtopologicalfisheye2(topview * t)
 					for (i = 1; i < g[v].nedges; i++) 
 					{
 						double x, y;
-						float RR,GG,BB;
-						RR=0;GG=0;BB=0;
 						n = g[v].edges[i];
-
-						if(get_temp_coords(t,level,n,&x,&y,&RR,&GG,&BB))
+						if(get_temp_coords(t,level,n,&x,&y,&R,&G,&B))
 						{
 								if (((x0==0)||(x==0) || (y0==0) || (y==0)) &&(debug_mode))
 								{
+									/*printf ("(%f,%f)->(%f,%f)\n",x0,y0,x,y);*/
 								}
 								else
 								{
 									glColor3f((GLfloat)R,(GLfloat)G,(GLfloat)B);
-//									glColor3f(0,1,0);
-
+//									glColor3f((GLfloat) (hp->nlevels - level) /	(GLfloat) hp->nlevels,(GLfloat) level / (GLfloat) hp->nlevels, 0);
 									glVertex3f((GLfloat) x0, (GLfloat) y0,(GLfloat) 0);
 									glVertex3f((GLfloat) x, (GLfloat) y,(GLfloat) 0);
 								}
@@ -331,27 +327,25 @@ int drawtopologicalfisheye2(topview * t)
 			
 		}
     }
-    glEnd(); 
-	return 1;
+    glEnd();
 
 }
 int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y,float *R,float *G,float *B)
 {
-    Hierarchy *hp = t->h;
+	static int recorded =0;
+	Hierarchy *hp = t->h;
 	ex_vtx_data *gg = hp->geom_graphs[level];
-	/* v_data *g = hp->graphs[level]; */
+	v_data *g = hp->graphs[level];
 	int OAL,AL;
-	double x0,y0,x1,y1;	
-	float R0,R1,G0,G1,B0,B1;
-
 	OAL=gg[v].old_active_level;
 	AL=gg[v].active_level;
 	/*if ((OAL > level) && (AL>level))
 		return 0;*/
+	
 	if ((OAL < level) && (AL<level))
 		return 0;
 
-	/*if (!t->animate)
+	if (!t->animate)
 	{
 		if (AL == level)
 		{
@@ -363,16 +357,14 @@ int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y,f
 			return 0;
 	}
 	else
-	{*/
+	{
 
+		double x0,y0,x1,y1;	
 		x0=0;
 		y0=0;
 		x1=0;
 		y1=0;
-		R0=1;R1=0;
-		G0=0;G1=1;
-		B0=0;B1=0;
-	
+
 		get_active_frame(t);
 		if ((OAL == level) && (AL==level))
 		{
@@ -380,9 +372,8 @@ int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y,f
 			y0=(double)gg[v].old_physical_y_coord;
 			x1=(double)gg[v].physical_x_coord;
 			y1=(double)gg[v].physical_y_coord;
-			R0=1;R1=1;
-			G0=0;G1=0;
-			B0=0;B1=0;
+			*G=0;
+			*R=1;
 
 		}
 		if ((OAL == level) && (AL>level))
@@ -391,9 +382,8 @@ int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y,f
 			y0=(double)gg[v].old_physical_y_coord;
 			find_physical_coords(t->h,level,v,&x1,&y1);
 			*G=view->active_frame/view->total_frames;
-			R0=1;R1=0;
-			G0=0;G1=1;
-			B0=0;B1=0;
+				*R=0;
+
 
 		}
 		if ((OAL > level) && (AL==level))
@@ -403,103 +393,35 @@ int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y,f
 			y1=(double)gg[v].physical_y_coord;
 			*R=view->active_frame/view->total_frames;
 			*G=1/(view->active_frame/view->total_frames+0.0000001);
-			R0=1;R1=1;
-			G0=0;G1=0;
-			B0=0;B1=0;
-
 
 		}
 		if ((OAL > level) && (AL>level))
 		{
 			find_old_physical_coords(t->h,level,v,&x0,&y0);
 			find_physical_coords(t->h,level,v,&x1,&y1);
-			R0=0;R1=0;
-			G0=1;G1=1;
-			B0=0;B1=0;
+			*G=1;
+			*R=0;
 
 		}
-		*R=R0+(R1-R0)/(double)view->total_frames*(double)(view->active_frame+1);
-		*G=	G0+(G1-G0)/(double)view->total_frames*(double)(view->active_frame+1);
-		*B=	B0+(B1-B0)/(double)view->total_frames*(double)(view->active_frame+1);
 
 		get_interpolated_coords(x0,y0,x1,y1,view->active_frame,view->total_frames,coord_x,coord_y);
-		
-	//}
-	return 1;
-}
-
-
-
-
-void drawtopologicalfisheye(topview * t)
-{
-    int level, v, i, n;
-	float R,G,B;    
-	Hierarchy *hp = t->h;
-
-	//draw only nodes and super nodes
-	glPointSize(5);
-    glBegin(GL_POINTS);
-    for (level = 0; level < hp->nlevels; level++)
-	{
-		for (v = 0; v < hp->nvtxs[level]; v++)
+		if (recorded < 100)
 		{
-		    ex_vtx_data *gg = hp->geom_graphs[level];
-		    if (gg[v].active_level == level)	
-			{
-				double x0,y0;
-				t->animate=0;
-				get_temp_coords(t,level,v,&x0,&y0,&R,&G,&B);
-				glColor3f((GLfloat) (hp->nlevels - level) /
-					(GLfloat) hp->nlevels,
-					(GLfloat) level / (GLfloat) hp->nlevels, 0);
-				glVertex3f((GLfloat) x0, (GLfloat) y0, (GLfloat) 0);
-				t->animate=1;
-			}
+			printf ("OAL  AL  (x0,y0)-(x1,y1) current \n");
+			printf ("%i   %i  (%f,%f)-(%f,%f) (%f,%f)\n",OAL,AL,x0,y0,x1,y1,coord_x,coord_y);
+			recorded ++;
 		}
+
+
+		return 1;
 	}
-    glEnd();
-
-	//draw edges
-	glBegin(GL_LINES);
-    for (level = 0; level < hp->nlevels; level++)
-	{
-		for (v = 0; v < hp->nvtxs[level]; v++) 
-		{
-			ex_vtx_data *gg = hp->geom_graphs[level];
-			v_data *g = hp->graphs[level];
-			if (gg[v].active_level == level) 
-			{
-				double x0,y0;
-				get_temp_coords(t,level,v,&x0,&y0,&R,&G,&B);
-				for (i = 1; i < g[v].nedges; i++) 
-				{
-					double x, y;
-					n = g[v].edges[i];
-					glColor3f((GLfloat) (hp->nlevels - level) /
-						(GLfloat) hp->nlevels,
-						(GLfloat) level / (GLfloat) hp->nlevels, 0);
-				    if (gg[n].active_level == level)
-					{
-						if (v < n)
-						{
-							get_temp_coords(t,level,n,&x,&y,&R,&G,&B);
-							glVertex3f((GLfloat) x0, (GLfloat) y0,(GLfloat) 0);
-							glVertex3f((GLfloat) x, (GLfloat) y,(GLfloat) 0);
-						}
-					}
-					else if (gg[n].active_level > level) 
-					{
-						find_physical_coords(hp, level, n, &x, &y);
-						glVertex3f((GLfloat) x0, (GLfloat) y0,(GLfloat) 0);
-						glVertex3f((GLfloat) x, (GLfloat) y, (GLfloat) 0);
-					}
-				}
-			}
-		}
-    }
-    glEnd();
+	return 0;
 }
+
+
+
+
+`2
 /*  In loop,
  *  update fs.
  *    For example, if user clicks mouse at (p.x,p.y) to pick a single new focus,
@@ -555,8 +477,8 @@ void refresh_old_values(topview* t)
 		for (v = 0; v < hp->nvtxs[level]; v++)
 		{
 		    ex_vtx_data *gg = hp->geom_graphs[level];
-		    /* v_data *g = hp->graphs[level]; */
-			/* double x0,y0; */
+		    v_data *g = hp->graphs[level];
+			double x0,y0;
 			gg[v].old_physical_x_coord=gg[v].physical_x_coord;
 			gg[v].old_physical_y_coord=gg[v].physical_y_coord;
 			gg[v].old_active_level=gg[v].active_level;
@@ -566,18 +488,8 @@ void refresh_old_values(topview* t)
 }
 void get_interpolated_coords(double x0,double y0,double x1,double y1,int fr,int total_fr, double* x,double* y)
 {
-	if (view->Topview->animate)
-	{
-		*x=x0+(x1-x0)/(double)total_fr*(double)(fr+1);
-		*y=	y0+(y1-y0)/(double)total_fr*(double)(fr+1);
-	}
-	else
-	{
-		*x=x1;
-		*y=	y1;
-	}
-
-
+	*x=x0+(x1-x0)/(double)total_fr*(double)(fr+1);
+	*y=	y0+(y1-y0)/(double)total_fr*(double)(fr+1);
 }
 int get_active_frame(topview* t)
 {
@@ -600,7 +512,7 @@ int get_active_frame(topview* t)
 	else
 	{
 		g_timer_stop(view->timer); 
-		view->Topview->animate=0;
+//		view->Topview->animate=0;
 		return 0;
 	}
 

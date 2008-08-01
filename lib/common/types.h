@@ -45,9 +45,16 @@ extern "C" {
     typedef int (*bsearch_cmpf) (const void *, const void *);
 
     typedef struct Agraph_t graph_t;
-    typedef struct Agnode_t node_t;
+
+#ifdef WITH_CGRAPH
+	typedef struct Agnode_s node_t;
+    typedef struct Agedge_s edge_t;
+#else
+	typedef struct Agnode_t node_t;
     typedef struct Agedge_t edge_t;
-    typedef struct Agsym_t attrsym_t;
+#endif
+
+	typedef struct Agsym_t attrsym_t;
 
     typedef struct htmllabel_t htmllabel_t;
 
@@ -379,21 +386,44 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
     } Agraphinfo_t;
 
+#ifdef WITH_CGRAPH
+#include <cgraph.h>
+#define GD_drawing(g) (((Agraphinfo_t*)AGDATA(g))->drawing)
+#define GD_bb(g) (((Agraphinfo_t*)AGDATA(g))->bb)
+#define GD_gvc(g) (((Agraphinfo_t*)AGDATA(g))->gvc)
+#define GD_cleanup(g) (((Agraphinfo_t*)AGDATA(g))->cleanup)
+#define ND_id(n) (((Agnodeinfo_t*)AGDATA(n))->id)
+#define ED_dist(e) (((Agedgeinfo_t*)AGDATA(e))->dist)
+#define GD_dist(g) (((Agraphinfo_t*)AGDATA(e))->dist)
+#define ND_alg(n) (((Agnodeinfo_t*)AGDATA(n))->alg)
+#define ED_weight(e) (((Agedgeinfo_t*)AGDATA(e))->weight)
+//#define ED_weight(e) (e)->u.weight
+#else
+#include <graph.h>
+#endif
+
+
+
+
+
+
+
+
 #define GD_alg(g) (g)->u.alg
-#define GD_bb(g) (g)->u.bb
+//#define GD_bb(g) (g)->u.bb
 #define GD_border(g) (g)->u.border
 #define GD_cl_cnt(g) (g)->u.cl_cnt
-#define GD_cleanup(g) (g)->u.cleanup
+//#define GD_cleanup(g) (g)->u.cleanup
 #define GD_clust(g) (g)->u.clust
 #define GD_cluster_was_collapsed(g) (g)->u.cluster_was_collapsed
 #define GD_comp(g) (g)->u.comp
-#define GD_dist(g) (g)->u.dist
-#define GD_drawing(g) (g)->u.drawing
+//#define GD_dist(g) (g)->u.dist
+//#define GD_drawing(g) (g)->u.drawing
 #define GD_exact_ranksep(g) (g)->u.exact_ranksep
 #define GD_expanded(g) (g)->u.expanded
 #define GD_flags(g) (g)->u.flags
 #define GD_gui_state(g) (g)->u.gui_state
-#define GD_gvc(g) (g)->u.gvc
+//#define GD_gvc(g) (g)->u.gvc
 #define GD_charset(g) (g)->u.charset
 #define GD_has_labels(g) (g)->u.has_labels
 #define GD_has_images(g) (g)->u.has_images
@@ -487,7 +517,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
 #define ND_UF_parent(n) (n)->u.UF_parent
 #define ND_UF_size(n) (n)->u.UF_size
-#define ND_alg(n) (n)->u.alg
+//#define ND_alg(n) (n)->u.alg
 #define ND_bb(n) (n)->u.bb
 #define ND_clust(n) (n)->u.clust
 #define ND_coord_i(n) (n)->u.coord
@@ -500,7 +530,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_height(n) (n)->u.height
 #define ND_hops(n) (n)->u.hops
 #define ND_ht_i(n) (n)->u.ht
-#define ND_id(n) (n)->u.id
+//#define ND_id(n) (n)->u.id
 #define ND_in(n) (n)->u.in
 #define ND_inleaf(n) (n)->u.inleaf
 #define ND_label(n) (n)->u.label
@@ -572,7 +602,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ED_conc_opp_flag(e) (e)->u.conc_opp_flag
 #define ED_count(e) (e)->u.count
 #define ED_cutvalue(e) (e)->u.cutvalue
-#define ED_dist(e) (e)->u.dist
+//#define ED_dist(e) (e)->u.dist
 #define ED_edge_type(e) (e)->u.edge_type
 #define ED_adjacent(e) (e)->u.adjacent
 #define ED_factor(e) (e)->u.factor
@@ -590,7 +620,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ED_to_orig(e) (e)->u.to_orig
 #define ED_to_virt(e) (e)->u.to_virt
 #define ED_tree_index(e) (e)->u.tree_index
-#define ED_weight(e) (e)->u.weight
+//#define ED_weight(e) (e)->u.weight
 #define ED_xpenalty(e) (e)->u.xpenalty
 
     typedef struct {

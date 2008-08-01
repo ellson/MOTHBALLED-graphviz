@@ -157,6 +157,8 @@ set_viewport_settings_from_template(ViewInfo * view, Agraph_t * g)
 						      g));
 
 	view->defaultnodeshape=atoi(buf=get_attribute_value("defaultnodeshape", view,g));
+	view->Selection.PickingType=atoi(buf=get_attribute_value("defaultselectionmethod", view,g));
+
 
 	
 	view->gridVisible = atoi(get_attribute_value("gridvisible", view, g));

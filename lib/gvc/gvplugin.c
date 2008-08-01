@@ -25,7 +25,13 @@
 
 #include        "memory.h"
 #include        "types.h"
-#include        "graph.h"
+
+#ifdef WITH_CGRAPH
+#include <cgraph.h>
+#else
+#include <graph.h>
+#endif
+
 #include        "gvplugin.h"
 #include        "gvcjob.h"
 #include        "gvcint.h"

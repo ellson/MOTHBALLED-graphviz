@@ -36,7 +36,7 @@
 #endif
 
 #include <gtk/gtk.h>
-#include "cgraph.h"
+#include "agraph.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <gtk/gtkgl.h>
@@ -332,7 +332,8 @@ typedef struct _custom_object_data	//has to be attached to every Node, Edge, Gra
 typedef struct _selection {
     int Active;			//0 there is no selection need to be applied
     char Type;			//0     single selection , 1 rectangle , 2 rectangleX 
-    float X, Y, W, H;		//selection boundries
+	int PickingType;	//0 normal, union,2 subtract 3 intersection
+	float X, Y, W, H;		//selection boundries
     int Anti;			//subtract selections if 1
     int AlreadySelected;	//for single selections to avoid selecting more than one object
     RGBColor SelectionColor;

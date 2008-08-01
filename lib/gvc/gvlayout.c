@@ -26,7 +26,13 @@
 #include "const.h"
 #include "gvplugin_layout.h"
 #include "gvcint.h"
-#include "graph.h"
+
+#ifdef WITH_CGRAPH
+#include <cgraph.h>
+#else
+#include <graph.h>
+#endif
+
 #include "gvcproc.h"
 
 extern void graph_init(graph_t *g, boolean use_rankdir);
@@ -62,9 +68,9 @@ int gvLayoutJobs(GVC_t * gvc, graph_t * g)
 	return -1;
 
     GD_gvc(g) = gvc;
-    if (g != g->root) GD_gvc(g->root) = gvc;
+    if (g != agroot(g)) GD_gvc(agroot(g)) = gvc;
     graph_init(g, gvc->layout.features->flags & LAYOUT_USES_RANKDIR);
-    GD_drawing(g->root) = GD_drawing(g);
+    GD_drawing(agroot(g)) = GD_drawing(g);
     if (gvle && gvle->layout) {
 	gvle->layout(g);
 	if (gvle->cleanup)
@@ -90,7 +96,7 @@ int gvFreeLayout(GVC_t * gvc, graph_t * g)
     if (GD_drawing(g)) {
 	graph_cleanup(g);
 	GD_drawing(g) = NULL;
-	GD_drawing(g->root) = NULL;
+	GD_drawing(agroot(g)) = NULL;
     }
     return 0;
 }

@@ -570,14 +570,25 @@ static int select_topview_node(topview_node * n)
 /* FIX
  * Why is Selected being set to 1 in both cases?
  */
-	    if (OD_Selected(n->Node) == 0) {
-		OD_Selected(n->Node) = 1;
-		select_object(view->g[view->activeGraph], n->Node);
+	    if (OD_Selected(n->Node) == 0)
+		{
+			OD_Selected(n->Node) = 1;
+			select_object(view->g[view->activeGraph], n->Node);
 	    } else {
-		OD_Selected(n->Node) = 1;
-		deselect_object(view->g[view->activeGraph], n->Node);
+			OD_Selected(n->Node) = 1;
+			deselect_object(view->g[view->activeGraph], n->Node);
 	    }
 	    break;
+
+/*
+	int Active;			//0 there is no selection need to be applied
+    char Type;			//0     single selection , 1 rectangle , 2 rectangleX 
+    float X, Y, W, H;		//selection boundries
+    int Anti;			//subtract selections if 1
+    int AlreadySelected;	//for single selections to avoid selecting more than one object
+    RGBColor SelectionColor;
+*/
+
 
 	case 1:
 	case 2:

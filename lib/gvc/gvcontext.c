@@ -27,7 +27,13 @@
 #endif
 
 #include	"types.h"
-#include	"graph.h"
+/*This code block should be replaced with only one onclude to cgraph*/
+#ifdef WITH_CGRAPH
+#include <cgraph.h>
+#else
+#include <graph.h>
+#endif
+/********************/
 #include        "gvplugin.h"
 #include        "gvcjob.h"
 #include        "gvcint.h"

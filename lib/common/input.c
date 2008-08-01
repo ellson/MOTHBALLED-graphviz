@@ -545,6 +545,10 @@ static void setRatio(graph_t * g)
     }
 }
 
+/*
+	cgraph requires 
+
+*/
 void graph_init(graph_t * g, boolean use_rankdir)
 {
     char *p;

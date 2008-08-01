@@ -313,13 +313,30 @@ int load_settings_from_graph(Agraph_t * g)
     buf = agget(view->g[view->activeGraph], "defaultnodeshape");
     if (!buf)
 	buf = agget(view->default_attributes, "defaultnodeshape");
-    if (buf) {
-	/*select the right item in combo box */
-	gtk_combo_box_set_active((GtkComboBox *)
+    if (buf)
+	{
+		/*select the right item in combo box */
+		gtk_combo_box_set_active((GtkComboBox *)
 				 glade_xml_get_widget(xml,
 						      "settingscombobox1"),
 				 atoi(buf));
-    }
+
+	}
+
+    /*Node Shape Combo, 0:opengl dots, 1:circle ,2:box */
+    buf = agget(view->g[view->activeGraph], "defaultselectionmethod");
+    if (!buf)
+	buf = agget(view->default_attributes, "defaultselectionmethod");
+    if (buf)
+	{
+		/*select the right item in combo box */
+		gtk_combo_box_set_active((GtkComboBox *)
+				 glade_xml_get_widget(xml,
+						      "settingscombobox1"),
+				 atoi(buf));
+
+	}
+	
     return 1;
 }
 
@@ -423,6 +440,7 @@ int update_graph_from_settings(Agraph_t * g)
 				    "settingsscale2", g);
 
 	get_combobox_widget_to_attribute("defaultnodeshape","settingscombobox1", g)	;
+	get_combobox_widget_to_attribute("defaultselectionmethod","settingscombobox2", g)	;
 	return 1;
 }
 
