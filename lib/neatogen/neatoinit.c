@@ -2438,7 +2438,11 @@ majorization(graph_t *mg, graph_t * g, int nv, int mode, int model, int dim, int
     node_t *v;
     vtx_data *gp;
     node_t** nodes;
+#ifdef DIGCOLA
+#ifdef IPSEPCOLA
     expand_t margin;
+#endif
+#endif
 
     int init;
 
