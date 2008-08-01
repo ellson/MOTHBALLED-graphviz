@@ -39,6 +39,7 @@
 
 #if defined(_WIN32)
 #pragma warning(disable: 4018 4101)
+typedef unsigned char boolean;
 #endif
 
 /* AIX requires this to be the first thing in the file. */
@@ -1417,7 +1418,6 @@ typedef struct
   set_regs_matched_done = 0;                                            \
   DEBUG_STATEMENT (nfailure_points_popped++);                           \
 } /* POP_FAILURE_POINT */
-
 
 
 /* Structure for per-register (a.k.a. per-group) information.
