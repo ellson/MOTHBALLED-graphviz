@@ -23,9 +23,6 @@
 #include <string.h>
 #include "gvplugin_textlayout.h"
 
-typedef enum { AGWARN, AGERR, AGMAX, AGPREV } agerrlevel_t;
-extern int agerr(agerrlevel_t level, char *fmt, ...);
-
 #ifdef HAVE_LIBGD
 #include "gd.h"
 
