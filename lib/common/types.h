@@ -388,7 +388,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
 #ifdef WITH_CGRAPH
 
-#include <cgraph.h>
 #define GD_drawing(g) (((Agraphinfo_t*)AGDATA(g))->drawing)
 #define GD_bb(g) (((Agraphinfo_t*)AGDATA(g))->bb)
 #define GD_gvc(g) (((Agraphinfo_t*)AGDATA(g))->gvc)
@@ -401,7 +400,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
 #else
 
-#include <graph.h>
 #define GD_bb(g) (g)->u.bb
 #define GD_cleanup(g) (g)->u.cleanup
 #define GD_dist(g) (g)->u.dist

@@ -21,7 +21,9 @@
  * Return 1 if successful; 0 otherwise (e.g., graph is disconnected).
  */
 #include	"neato.h"
+#ifdef WITH_CGRAPH
 #include "cgraph.h"
+#endif
 
 int solveCircuit(int nG, double **Gm, double **Gm_inv)
 {

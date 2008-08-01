@@ -23,9 +23,9 @@
 #include "gvplugin_layout.h"
 
 #ifdef WITH_CGRAPH
-#include <cgraph.h>
+#include "cgraph.h"
 #else
-#include <graph.h>
+#include "graph.h"
 #endif
 
 #include "gvcint.h"

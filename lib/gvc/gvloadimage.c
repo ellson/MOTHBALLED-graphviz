@@ -32,13 +32,11 @@
 #include "gvcproc.h"
 
 /* for agerr() */
-#define WITH_CGRAPH 1
 #ifdef WITH_CGRAPH
-#include <cgraph.h>
+#include "cgraph.h"
 #else
-#include <graph.h>
+#include "graph.h"
 #endif
-#undef WITH_CGRAPH
 
 static int gvloadimage_select(GVJ_t * job, char *str)
 {

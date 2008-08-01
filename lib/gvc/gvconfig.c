@@ -54,9 +54,9 @@ static int glob (char*, int, int (*errfunc)(const char *, int), glob_t*);
 #include        "types.h"
 /*This code block should be replaced with only one onclude to cgraph*/
 #ifdef WITH_CGRAPH
-#include <cgraph.h>
+#include "cgraph.h"
 #else
-#include <graph.h>
+#include "graph.h"
 #endif
 /********************/
 

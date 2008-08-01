@@ -50,9 +50,9 @@ extern "C" {
 #include "geomprocs.h"		/* must follow geom.h (in types.h) */
 #include "agxbuf.h"
 #ifdef WITH_CGRAPH
-#include <cgraph.h>
+#include "cgraph.h"
 #else
-#include <graph.h>
+#include "graph.h"
 #endif
 #include "utils.h"		/* must follow types.h and agxbuf.h */
 #include "gvplugin.h"		/* must follow gvcext.h (in types.h) */

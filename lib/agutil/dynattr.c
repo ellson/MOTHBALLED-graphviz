@@ -14,13 +14,11 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#define WITH_CGRAPH 1
 #ifdef WITH_CGRAPH
 #include <cgraph.h>
 #else
 #include <agraph.h>
 #endif
-#undef WITH_CGRAPH
 
 #include <agutil.h>
 #include <stdlib.h>

@@ -26,7 +26,7 @@
 #include "config.h"
 #endif
 
-#include <agraph.h>
+#include <cgraph.h>
 
 #include	 	<ctype.h>
 
