@@ -230,6 +230,14 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	gen(cc, x);
 	sfprintf(cc->ccdisc->text, ");\n");
 	return;
+    case FUNCTION:
+	gen(cc, x);
+	sfprintf(cc->ccdisc->text, "(");
+	if ((y = expr->data.operand.right)) {
+	    gen(cc, y);
+	}
+	sfprintf(cc->ccdisc->text, ")");
+	return;
     case RAND:
 	sfprintf(cc->ccdisc->text, "rand();\n");
 	return;
@@ -485,6 +493,16 @@ static void gen(Excc_t * cc, register Exnode_t * expr)
 	sfprintf(cc->ccdisc->text, "strtoll(");
 	gen(cc, x);
 	sfprintf(cc->ccdisc->text, ",(char**)0,0)");
+	return;
+     case X2I:
+	sfprintf(cc->ccdisc->text, "X2I(");
+	gen(cc, x);
+	sfprintf(cc->ccdisc->text, ")");
+	return;
+     case X2X:
+	sfprintf(cc->ccdisc->text, "X2X(");
+	gen(cc, x);
+	sfprintf(cc->ccdisc->text, ")");
 	return;
     }
     y = expr->data.operand.right;

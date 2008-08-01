@@ -71,6 +71,10 @@ static void trace(Expr_t * ex, int lev, char *op, int c)
 	s = " DEC ";
 	t = "--";
 	break;
+    case FUNCTION:
+	s = " FUNCTION ";
+	t = exlval.id->name;
+	break;
     case DECLARE:
 	s = " DECLARE ";
 	t = exlval.id->name;
