@@ -243,6 +243,7 @@ static node_t *newNode(graph_t * g)
 }
 #endif
 
+#ifdef WITH_CGRAPH
 /* mkNConstraintG:
  * Similar to mkConstraintG, except it doesn't enforce orthogonal
  * ordering. If there is overlap, as defined by intersect, the
@@ -251,6 +252,80 @@ static node_t *newNode(graph_t * g)
  * corresponds to a real edge, we increase the weight in an attempt
  * to keep the resulting shift short. 
  */
+
+static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
+			      intersectfn intersect, distfn dist)
+{
+    nitem *p;
+    nitem *nxp;
+    graph_t *cg = agopen("cg", Agstrictdirected,NIL(Agdisc_t *));
+    node_t *n;
+    edge_t *e;
+    node_t *lastn = NULL;
+
+    for (p = (nitem *) dtflatten(list); p;
+	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
+	n = agnode(cg, agname(p->np),1);	/* FIX */
+	ND_alg(n) = p;
+	p->cnode = n;
+	alloc_elist(0, ND_in(n));
+	alloc_elist(0, ND_out(n));
+	if (lastn) {
+	    ND_next(lastn) = n;
+	    lastn = n;
+	} else {
+	    lastn = GD_nlist(cg) = n;
+	}
+    }
+    for (p = (nitem *) dtflatten(list); p;
+	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
+	for (nxp = (nitem *) dtlink(link, (Dtlink_t *) p); nxp;
+	     nxp = (nitem *) dtlink(list, (Dtlink_t *) nxp)) {
+	    e = NULL;
+	    if (intersect(p, nxp)) {
+	        double delta = dist(&p->bb, &nxp->bb);
+	        e = agedge(cg, p->cnode, nxp->cnode,NULL,1);
+		assert (delta <= 0xFFFF);
+		ED_minlen(e) = delta;
+		ED_weight(e) = 1;
+	    }
+	    if (e && agfindedge(g,p->np, nxp->np)) {
+		ED_weight(e) = 100;
+            }
+#if 0
+	    if (agfindedge(g,p->np, nxp->np)) {
+		if (e == NULL)
+	            e = agedge(cg, p->cnode, nxp->cnode);
+		ED_weight(e) = 100;
+                /* If minlen < SCALE, the nodes can't conflict or there's
+                 * an overlap but it will be removed in the orthogonal pass.
+                 * So we just keep the node's basically where they are.
+                 */
+		if (SCALE > ED_minlen(e))
+		    ED_minlen(e) = SCALE;
+	    }
+#endif
+	}
+    }
+   
+    for (p = (nitem *) dtflatten(list); p;
+	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
+	n = p->cnode;
+	for (e = agfstout(cg,n); e; e = agnxtout(cg,e)) {
+	    elist_append(e, ND_out(n));
+	    elist_append(e, ND_in(aghead(e)));
+	}
+    }
+
+    /* We could remove redundant constraints here. However, the cost of doing 
+     * this may be a good deal more than the time saved in network simplex. 
+     * Also, if the graph is changed, the ND_in and ND_out data has to be 
+     * updated.
+     */
+    return cg;
+}
+#else
+
 static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
 			      intersectfn intersect, distfn dist)
 {
@@ -322,8 +397,157 @@ static graph_t *mkNConstraintG(graph_t * g, Dt_t * list,
      */
     return cg;
 }
+#endif
+
+#ifdef WITH_CGRAPH
+
 /* mkConstraintG:
  */
+static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
+			      intersectfn intersect, distfn dist)
+{
+    nitem *p;
+    nitem *nxt = NULL;
+    nitem *nxp;
+    graph_t *cg = agopen("cg", Agstrictdirected,NIL(Agdisc_t *));
+    graph_t *vg;
+    node_t *prev = NULL;
+    node_t *root = NULL;
+    node_t *n = NULL;
+    edge_t *e;
+    int lcnt, cnt;
+    int oldval = -INT_MAX;
+#ifdef OLD
+    double root_val;
+#endif
+    node_t *lastn = NULL;
+
+    /* count distinct nodes */
+    cnt = 0;
+    for (p = (nitem *) dtflatten(list); p;
+	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
+	if (oldval != p->val) {
+	    oldval = p->val;
+	    cnt++;
+	}
+    }
+
+    /* construct basic chain to enforce left to right order */
+    oldval = -INT_MAX;
+    lcnt = 0;
+    for (p = (nitem *) dtflatten(list); p;
+	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
+	if (oldval != p->val) {
+	    oldval = p->val;
+	    /* n = newNode (cg); */
+	    n = agnode(cg, agname(p->np),1);	/* FIX */
+	    ND_alg(n) = p;
+	    if (root) {
+		ND_next(lastn) = n;
+		lastn = n;
+	    } else {
+		root = n;
+#ifdef OLD
+		root_val = p->val;
+#endif
+		lastn = GD_nlist(cg) = n;
+	    }
+	    alloc_elist(lcnt, ND_in(n));
+	    if (prev) {
+		if (prev == root)
+		    alloc_elist(2 * (cnt - 1), ND_out(prev));
+		else
+		    alloc_elist(cnt - lcnt - 1, ND_out(prev));
+		e = agedge(cg, prev, n,NULL,1);
+		ED_minlen(e) = SCALE;
+		ED_weight(e) = 1;
+		elist_append(e, ND_out(prev));
+		elist_append(e, ND_in(n));
+	    }
+	    lcnt++;
+	    prev = n;
+	}
+	p->cnode = n;
+    }
+    alloc_elist(0, ND_out(prev));
+
+    /* add immediate right neighbor constraints
+     * Construct visibility graph, then perform transitive reduction.
+     * Remaining outedges are immediate right neighbors.
+     * FIX: Incremental algorithm to construct trans. reduction?
+     */
+    vg = agopen("vg", Agstrictdirected,NIL(Agdisc_t *));
+    for (p = (nitem *) dtflatten(list); p;
+	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
+	n = agnode(vg, agname(p->np),NULL,1);
+	p->vnode = n;
+	ND_alg(n) = p;
+    }
+    oldval = -INT_MAX;
+    for (p = (nitem *) dtflatten(list); p;
+	 p = (nitem *) dtlink(list, (Dtlink_t *) p)) {
+	if (oldval != p->val) {	/* new pos: reset nxt */
+	    oldval = p->val;
+	    for (nxt = (nitem *) dtlink(link, (Dtlink_t *) p); nxt;
+		 nxt = (nitem *) dtlink(list, (Dtlink_t *) nxt)) {
+		if (nxt->val != oldval)
+		    break;
+	    }
+	    if (!nxt)
+		break;
+	}
+	for (nxp = nxt; nxp;
+	     nxp = (nitem *) dtlink(list, (Dtlink_t *) nxp)) {
+	    if (intersect(p, nxp))
+		agedge(vg, p->vnode, nxp->vnode,NULL,1);
+	}
+    }
+
+    /* Remove redundant constraints here. However, the cost of doing this
+     * may be a good deal more than the time saved in network simplex. Also,
+     * if the graph is changed, the ND_in and ND_out data has to be updated.
+     */
+    mapGraphs(vg, cg, dist);
+    agclose(vg);
+
+    /* add dummy constraints for absolute values and initial positions */
+#ifdef OLD
+    for (n = agfstnode(cg); n; n = agnxtnode(cg, n)) {
+	node_t *vn;		/* slack node for absolute value */
+	node_t *an;		/* node representing original position */
+
+	p = (nitem *) ND_alg(n);
+	if ((n == root) || (!p))
+	    continue;
+	vn = newNode(cg);
+	ND_next(lastn) = vn;
+	lastn = vn;
+	alloc_elist(0, ND_out(vn));
+	alloc_elist(2, ND_in(vn));
+	an = newNode(cg);
+	ND_next(lastn) = an;
+	lastn = an;
+	alloc_elist(1, ND_in(an));
+	alloc_elist(1, ND_out(an));
+
+	e = agedge(cg, root, an);
+	ED_minlen(e) = p->val - root_val;
+	elist_append(e, ND_out(root));
+	elist_append(e, ND_in(an));
+
+	e = agedge(cg, an, vn);
+	elist_append(e, ND_out(an));
+	elist_append(e, ND_in(vn));
+
+	e = agedge(cg, n, vn);
+	elist_append(e, ND_out(n));
+	elist_append(e, ND_in(vn));
+    }
+#endif
+
+    return cg;
+}
+#else
 static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 			      intersectfn intersect, distfn dist)
 {
@@ -468,6 +692,10 @@ static graph_t *mkConstraintG(graph_t * g, Dt_t * list,
 
     return cg;
 }
+
+
+
+#endif
 
 static void closeGraph(graph_t * cg)
 {

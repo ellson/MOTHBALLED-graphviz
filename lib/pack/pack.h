@@ -24,7 +24,11 @@ extern "C" {
 #endif
 
 #include "types.h"
+#ifdef WITH_CGRAPH
+#include "cgraph.h"
+#else
 #include "graph.h"
+#endif
 
 /* Type indicating granularity and method 
  *  l_undef  - unspecified

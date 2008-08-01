@@ -25,8 +25,12 @@ extern "C" {
 
 #include "voronoi.h"
 #include "poly.h"
-#include "graph.h"
 
+#ifdef WITH_CGRAPH
+#include "cgraph.h"
+#else
+#include "graph.h"
+#endif
     typedef struct ptitem {	/* Point list */
 	struct ptitem *next;
 	Point p;

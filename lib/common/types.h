@@ -386,94 +386,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
     } Agraphinfo_t;
 
-#ifdef WITH_CGRAPH
-
-#define GD_drawing(g) (((Agraphinfo_t*)AGDATA(g))->drawing)
-#define GD_bb(g) (((Agraphinfo_t*)AGDATA(g))->bb)
-#define GD_gvc(g) (((Agraphinfo_t*)AGDATA(g))->gvc)
-#define GD_cleanup(g) (((Agraphinfo_t*)AGDATA(g))->cleanup)
-#define ND_id(n) (((Agnodeinfo_t*)AGDATA(n))->id)
-#define ED_dist(e) (((Agedgeinfo_t*)AGDATA(e))->dist)
-#define GD_dist(g) (((Agraphinfo_t*)AGDATA(e))->dist)
-#define ND_alg(n) (((Agnodeinfo_t*)AGDATA(n))->alg)
-#define ED_weight(e) (((Agedgeinfo_t*)AGDATA(e))->weight)
-
-#else
-
-#define GD_bb(g) (g)->u.bb
-#define GD_cleanup(g) (g)->u.cleanup
-#define GD_dist(g) (g)->u.dist
-#define GD_drawing(g) (g)->u.drawing
-#define GD_gvc(g) (g)->u.gvc
-#define ND_alg(n) (n)->u.alg
-#define ND_id(n) (n)->u.id
-#define ED_dist(e) (e)->u.dist
-#define ED_weight(e) (e)->u.weight
-
-#endif
-
-
-
-
-
-
-
-
-#define GD_alg(g) (g)->u.alg
-//#define GD_bb(g) (g)->u.bb
-#define GD_border(g) (g)->u.border
-#define GD_cl_cnt(g) (g)->u.cl_cnt
-//#define GD_cleanup(g) (g)->u.cleanup
-#define GD_clust(g) (g)->u.clust
-#define GD_cluster_was_collapsed(g) (g)->u.cluster_was_collapsed
-#define GD_comp(g) (g)->u.comp
-//#define GD_dist(g) (g)->u.dist
-//#define GD_drawing(g) (g)->u.drawing
-#define GD_exact_ranksep(g) (g)->u.exact_ranksep
-#define GD_expanded(g) (g)->u.expanded
-#define GD_flags(g) (g)->u.flags
-#define GD_gui_state(g) (g)->u.gui_state
-//#define GD_gvc(g) (g)->u.gvc
-#define GD_charset(g) (g)->u.charset
-#define GD_has_labels(g) (g)->u.has_labels
-#define GD_has_images(g) (g)->u.has_images
-#define GD_has_flat_edges(g) (g)->u.has_flat_edges
-#define GD_ht1(g) (g)->u.ht1
-#define GD_ht2(g) (g)->u.ht2
-#define GD_inleaf(g) (g)->u.inleaf
-#define GD_installed(g) (g)->u.installed
-#define GD_label(g) (g)->u.label
-#define GD_leader(g) (g)->u.leader
-#define GD_rankdir(g) ((g)->u.rankdir & 0x3)
-#define GD_flip(g) (GD_rankdir(g) & 1)
-#define GD_realrankdir(g) ((g)->u.rankdir >> 2)
-#define GD_realflip(g) (GD_realrankdir(g) & 1)
-#define GD_ln(g) (g)->u.ln
-#define GD_maxrank(g) (g)->u.maxrank
-#define GD_maxset(g) (g)->u.maxset
-#define GD_minrank(g) (g)->u.minrank
-#define GD_minset(g) (g)->u.minset
-#define GD_move(g) (g)->u.move
-#define GD_n_cluster(g) (g)->u.n_cluster
-#define GD_n_nodes(g) (g)->u.n_nodes
-#define GD_ndim(g) (g)->u.ndim
-#define GD_odim(g) (g)->u.odim
-#define GD_neato_nlist(g) (g)->u.neato_nlist
-#define GD_nlist(g) (g)->u.nlist
-#define GD_nodesep(g) (g)->u.nodesep
-#define GD_outleaf(g) (g)->u.outleaf
-#define GD_rank(g) (g)->u.rank
-#define GD_rankleader(g) (g)->u.rankleader
-#define GD_ranksep(g) (g)->u.ranksep
-#define GD_rn(g) (g)->u.rn
-#define GD_set_type(g) (g)->u.set_type
-#define GD_label_pos(g) (g)->u.label_pos
-#define GD_showboxes(g) (g)->u.showboxes
-#define GD_fontnames(g) (g)->u.fontnames
-#define GD_spring(g) (g)->u.spring
-#define GD_sum_t(g) (g)->u.sum_t
-#define GD_t(g) (g)->u.t
-
     typedef struct Agnodeinfo_t {
 	shape_desc *shape;
 	void *shape_info;
@@ -524,61 +436,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #endif
 
     } Agnodeinfo_t;
-
-#define ND_UF_parent(n) (n)->u.UF_parent
-#define ND_UF_size(n) (n)->u.UF_size
-//#define ND_alg(n) (n)->u.alg
-#define ND_bb(n) (n)->u.bb
-#define ND_clust(n) (n)->u.clust
-#define ND_coord_i(n) (n)->u.coord
-#define ND_dist(n) (n)->u.dist
-#define ND_flat_in(n) (n)->u.flat_in
-#define ND_flat_out(n) (n)->u.flat_out
-#define ND_gui_state(n) (n)->u.gui_state
-#define ND_has_port(n) (n)->u.has_port
-#define ND_heapindex(n) (n)->u.heapindex
-#define ND_height(n) (n)->u.height
-#define ND_hops(n) (n)->u.hops
-#define ND_ht_i(n) (n)->u.ht
-//#define ND_id(n) (n)->u.id
-#define ND_in(n) (n)->u.in
-#define ND_inleaf(n) (n)->u.inleaf
-#define ND_label(n) (n)->u.label
-#define ND_lim(n) (n)->u.lim
-#define ND_low(n) (n)->u.low
-#define ND_lw_i(n) (n)->u.lw
-#define ND_mark(n) (n)->u.mark
-#define ND_mval(n) (n)->u.mval
-#define ND_n_cluster(n) (n)->u.n_cluster
-#define ND_next(n) (n)->u.next
-#define ND_node_type(n) (n)->u.node_type
-#define ND_onstack(n) (n)->u.onstack
-#define ND_order(n) (n)->u.order
-#define ND_other(n) (n)->u.other
-#define ND_out(n) (n)->u.out
-#define ND_outleaf(n) (n)->u.outleaf
-#define ND_par(n) (n)->u.par
-#define ND_pinned(n) (n)->u.pinned
-#define ND_pos(n) (n)->u.pos
-#define ND_prev(n) (n)->u.prev
-#define ND_priority(n) (n)->u.priority
-#define ND_rank(n) (n)->u.rank
-#define ND_ranktype(n) (n)->u.ranktype
-#define ND_rw_i(n) (n)->u.rw
-#define ND_save_in(n) (n)->u.save_in
-#define ND_save_out(n) (n)->u.save_out
-#define ND_shape(n) (n)->u.shape
-#define ND_shape_info(n) (n)->u.shape_info
-#define ND_showboxes(n) (n)->u.showboxes
-#define ND_state(n) (n)->u.state
-#define ND_clustnode(n) (n)->u.clustnode
-#define ND_tree_in(n) (n)->u.tree_in
-#define ND_tree_out(n) (n)->u.tree_out
-#define ND_weight_class(n) (n)->u.weight_class
-#define ND_width(n) (n)->u.width
-#define ND_xsize(n) (n)->u.xsize
-#define ND_ysize(n) (n)->u.ysize
-
     typedef struct Agedgeinfo_t {
 	splines *spl;
 	port tail_port, head_port;	/* might be used someday */
@@ -608,30 +465,6 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
     } Agedgeinfo_t;
 
-#define ED_alg(e) (e)->u.alg
-#define ED_conc_opp_flag(e) (e)->u.conc_opp_flag
-#define ED_count(e) (e)->u.count
-#define ED_cutvalue(e) (e)->u.cutvalue
-//#define ED_dist(e) (e)->u.dist
-#define ED_edge_type(e) (e)->u.edge_type
-#define ED_adjacent(e) (e)->u.adjacent
-#define ED_factor(e) (e)->u.factor
-#define ED_gui_state(e) (e)->u.gui_state
-#define ED_head_label(e) (e)->u.head_label
-#define ED_head_port(e) (e)->u.head_port
-#define ED_label(e) (e)->u.label
-#define ED_label_ontop(e) (e)->u.label_ontop
-#define ED_minlen(e) (e)->u.minlen
-#define ED_path(e) (e)->u.path
-#define ED_showboxes(e) (e)->u.showboxes
-#define ED_spl(e) (e)->u.spl
-#define ED_tail_label(e) (e)->u.tail_label
-#define ED_tail_port(e) (e)->u.tail_port
-#define ED_to_orig(e) (e)->u.to_orig
-#define ED_to_virt(e) (e)->u.to_virt
-#define ED_tree_index(e) (e)->u.tree_index
-//#define ED_weight(e) (e)->u.weight
-#define ED_xpenalty(e) (e)->u.xpenalty
 
     typedef struct {
         int useGrid;            /* use grid for speed up */
@@ -647,6 +480,287 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
     typedef struct {
 	int flags;
     } gvlayout_features_t;
+
+#ifdef WITH_CGRAPH
+
+	#include <cgraph.h>
+	#define GD_drawing(g) (((Agraphinfo_t*)AGDATA(g))->drawing)
+	#define GD_bb(g) (((Agraphinfo_t*)AGDATA(g))->bb)
+	#define GD_gvc(g) (((Agraphinfo_t*)AGDATA(g))->gvc)
+	#define GD_cleanup(g) (((Agraphinfo_t*)AGDATA(g))->cleanup)
+	#define GD_dist(g) (((Agraphinfo_t*)AGDATA(e))->dist)
+	#define GD_alg(g) (((Agraphinfo_t*)AGDATA(g))->alg)
+	#define GD_border(g) (((Agraphinfo_t*)AGDATA(g))->border)
+	#define GD_cl_cnt(g) (((Agraphinfo_t*)AGDATA(g))->cl_nt)
+	#define GD_clust(g) (((Agraphinfo_t*)AGDATA(g))->clust)
+	#define GD_cluster_was_collapsed(g) (((Agraphinfo_t*)AGDATA(g))->cluster_was_collapsed)
+	#define GD_comp(g) (((Agraphinfo_t*)AGDATA(g))->comp)
+	#define GD_exact_ranksep(g) ((((Agraphinfo_t*)AGDATA(g))->exact_ranksep)
+	#define GD_expanded(g) (((Agraphinfo_t*)AGDATA(g))->expanded)
+	#define GD_flags(g) (((Agraphinfo_t*)AGDATA(g))->flags)
+	#define GD_gui_state(g) (((Agraphinfo_t*)AGDATA(g))->gui_state)
+	#define GD_charset(g) (((Agraphinfo_t*)AGDATA(g))->charset)
+	#define GD_has_labels(g) (((Agraphinfo_t*)AGDATA(g))->has_labels)
+	#define GD_has_images(g) (((Agraphinfo_t*)AGDATA(g))->has_images)
+	#define GD_has_flat_edges(g) ((((Agraphinfo_t*)AGDATA(g))->has_flat_edges)
+	#define GD_ht1(g) ((((Agraphinfo_t*)AGDATA(g))->ht1)
+	#define GD_ht2(g) (((Agraphinfo_t*)AGDATA(g))->ht2)
+	#define GD_inleaf(g) (((Agraphinfo_t*)AGDATA(g))->inleaf)
+	#define GD_installed(g) (((Agraphinfo_t*)AGDATA(g))->installed)
+	#define GD_label(g) (((Agraphinfo_t*)AGDATA(g))->label)
+	#define GD_leader(g) (((Agraphinfo_t*)AGDATA(g))->leader)
+	#define GD_rankdir(g) ((((Agraphinfo_t*)AGDATA(g))->rankdir) & 0x3)
+	#define GD_flip(g) (GD_rankdir(g) & 1)
+	#define GD_realrankdir(g) ((((Agraphinfo_t*)AGDATA(g))->.rankdir) >> 2)
+	#define GD_realflip(g) (GD_realrankdir(g) & 1)
+	#define GD_ln(g) (((Agraphinfo_t*)AGDATA(g))->ln)
+	#define GD_maxrank(g) (((Agraphinfo_t*)AGDATA(g))->maxrank)
+	#define GD_maxset(g) (((Agraphinfo_t*)AGDATA(g))->maxset)
+	#define GD_minrank(g) (((Agraphinfo_t*)AGDATA(g))->minrank)
+	#define GD_minset(g) (((Agraphinfo_t*)AGDATA(g))->minset)
+	#define GD_move(g) (((Agraphinfo_t*)AGDATA(g))->move)
+	#define GD_n_cluster(g) (((Agraphinfo_t*)AGDATA(g))->n_cluster)
+	#define GD_n_nodes(g) (((Agraphinfo_t*)AGDATA(g))->n_nodes)
+	#define GD_ndim(g) (((Agraphinfo_t*)AGDATA(g))->ndim)
+	#define GD_odim(g) (((Agraphinfo_t*)AGDATA(g))->odim)
+	#define GD_neato_nlist(g) (((Agraphinfo_t*)AGDATA(g))->neato_nlist)
+	#define GD_nlist(g) (((Agraphinfo_t*)AGDATA(g))->nlist)
+	#define GD_nodesep(g) (((Agraphinfo_t*)AGDATA(g))->nodesep)
+	#define GD_outleaf(g) (((Agraphinfo_t*)AGDATA(g))->outleaf)
+	#define GD_rank(g) (((Agraphinfo_t*)AGDATA(g))->rank)
+	#define GD_rankleader(g) (((Agraphinfo_t*)AGDATA(g))->rankleader)
+	#define GD_ranksep(g) (((Agraphinfo_t*)AGDATA(g))->ranksep)
+	#define GD_rn(g) (((Agraphinfo_t*)AGDATA(g))->rn)
+	#define GD_set_type(g) (((Agraphinfo_t*)AGDATA(g))->set_type)
+	#define GD_label_pos(g) (((Agraphinfo_t*)AGDATA(g))->label_pos)
+	#define GD_showboxes(g) (((Agraphinfo_t*)AGDATA(g))->showboxes)
+	#define GD_fontnames(g) (((Agraphinfo_t*)AGDATA(g))->fontnames)
+	#define GD_spring(g) (((Agraphinfo_t*)AGDATA(g))->spring)
+	#define GD_sum_t(g) (((Agraphinfo_t*)AGDATA(g))->sum_t)
+	#define GD_t(g) (((Agraphinfo_t*)AGDATA(g))->t)
+
+
+	#define ND_id(n) (((Agnodeinfo_t*)AGDATA(n))->id)
+	#define ND_alg(n) (((Agnodeinfo_t*)AGDATA(n))->alg)
+	#define ND_UF_parent(n) (((Agnodeinfo_t*)AGDATA(n))->UF_parent)
+	#define ND_UF_size(n) (((Agnodeinfo_t*)AGDATA(n))->UF_size)
+	#define ND_bb(n) (((Agnodeinfo_t*)AGDATA(n))->bb)
+	#define ND_clust(n) (((Agnodeinfo_t*)AGDATA(n))->clust)
+	#define ND_coord_i(n) (((Agnodeinfo_t*)AGDATA(n))->coord)
+	#define ND_dist(n) (((Agnodeinfo_t*)AGDATA(n))->dist)
+	#define ND_flat_in(n) (((Agnodeinfo_t*)AGDATA(n))->flat_in)
+	#define ND_flat_out(n) (((Agnodeinfo_t*)AGDATA(n))->flat_out)
+	#define ND_gui_state(n) (((Agnodeinfo_t*)AGDATA(n))->gui_state)
+	#define ND_has_port(n) (((Agnodeinfo_t*)AGDATA(n))->has_port)
+	#define ND_heapindex(n) (((Agnodeinfo_t*)AGDATA(n))->heapindex)
+	#define ND_height(n) (((Agnodeinfo_t*)AGDATA(n))->height)
+	#define ND_hops(n) (((Agnodeinfo_t*)AGDATA(n))->hops)
+	#define ND_ht_i(n) (((Agnodeinfo_t*)AGDATA(n))->ht)
+	#define ND_in(n) (((Agnodeinfo_t*)AGDATA(n))->in)
+	#define ND_inleaf(n) (((Agnodeinfo_t*)AGDATA(n))->inleaf)
+	#define ND_label(n) (((Agnodeinfo_t*)AGDATA(n))->label)
+	#define ND_lim(n) (((Agnodeinfo_t*)AGDATA(n))->lim)
+	#define ND_low(n) (((Agnodeinfo_t*)AGDATA(n))->low)
+	#define ND_lw_i(n) (((Agnodeinfo_t*)AGDATA(n))->lw)
+	#define ND_mark(n) (((Agnodeinfo_t*)AGDATA(n))->mark)
+	#define ND_mval(n) (((Agnodeinfo_t*)AGDATA(n))->mval)
+	#define ND_n_cluster(n) (((Agnodeinfo_t*)AGDATA(n))->n_cluster)
+	#define ND_next(n) (((Agnodeinfo_t*)AGDATA(n))->next)
+	#define ND_node_type(n) (((Agnodeinfo_t*)AGDATA(n))->node_type)
+	#define ND_onstack(n) (((Agnodeinfo_t*)AGDATA(n))->onstack)
+	#define ND_order(n) (((Agnodeinfo_t*)AGDATA(n))->order)
+	#define ND_other(n) (((Agnodeinfo_t*)AGDATA(n))->other)
+	#define ND_out(n) (((Agnodeinfo_t*)AGDATA(n))->out)
+	#define ND_outleaf(n) (((Agnodeinfo_t*)AGDATA(n))->outleaf)
+	#define ND_par(n) (((Agnodeinfo_t*)AGDATA(n))->par)
+	#define ND_pinned(n) (((Agnodeinfo_t*)AGDATA(n))->pinned)
+	#define ND_pos(n) (((Agnodeinfo_t*)AGDATA(n))->pos)
+	#define ND_prev(n) (((Agnodeinfo_t*)AGDATA(n))->prev)
+	#define ND_priority(n) (((Agnodeinfo_t*)AGDATA(n))->priority)
+	#define ND_rank(n) (((Agnodeinfo_t*)AGDATA(n))->rank)
+	#define ND_ranktype(n) (((Agnodeinfo_t*)AGDATA(n))->ranktype)
+	#define ND_rw_i(n) (((Agnodeinfo_t*)AGDATA(n))->rw)
+	#define ND_save_in(n) (((Agnodeinfo_t*)AGDATA(n))->save_in)
+	#define ND_save_out(n) (((Agnodeinfo_t*)AGDATA(n))->save_out)
+	#define ND_shape(n) (((Agnodeinfo_t*)AGDATA(n))->shape)
+	#define ND_shape_info(n) (((Agnodeinfo_t*)AGDATA(n))->shape_info)
+	#define ND_showboxes(n) (((Agnodeinfo_t*)AGDATA(n))->showboxes)
+	#define ND_state(n) (((Agnodeinfo_t*)AGDATA(n))->state)
+	#define ND_clustnode(n) (((Agnodeinfo_t*)AGDATA(n))->clustnode)
+	#define ND_tree_in(n) (((Agnodeinfo_t*)AGDATA(n))->tree_in)
+	#define ND_tree_out(n) (((Agnodeinfo_t*)AGDATA(n))->tree_out)
+	#define ND_weight_class(n) (((Agnodeinfo_t*)AGDATA(n))->weight_class)
+	#define ND_width(n) (((Agnodeinfo_t*)AGDATA(n))->width)
+	#define ND_xsize(n) (((Agnodeinfo_t*)AGDATA(n))->xsize)
+	#define ND_ysize(n) (((Agnodeinfo_t*)AGDATA(n))->ysize)
+
+
+	#define ED_alg(e) (((Agedgeinfo_t*)AGDATA(e))->alg)
+	#define ED_conc_opp_flag(e) (((Agedgeinfo_t*)AGDATA(e))->conc_opp_flag)
+	#define ED_count(e) (((Agedgeinfo_t*)AGDATA(e))->count)
+	#define ED_cutvalue(e) (((Agedgeinfo_t*)AGDATA(e))->cutvalue)
+	#define ED_edge_type(e) (((Agedgeinfo_t*)AGDATA(e))->edge_type)
+	#define ED_adjacent(e) (((Agedgeinfo_t*)AGDATA(e))->adjacent)
+	#define ED_factor(e) (((Agedgeinfo_t*)AGDATA(e))->factor)
+	#define ED_gui_state(e) (((Agedgeinfo_t*)AGDATA(e))->gui_state)
+	#define ED_head_label(e) (((Agedgeinfo_t*)AGDATA(e))->head_label)
+	#define ED_head_port(e) (((Agedgeinfo_t*)AGDATA(e))->head_port)
+	#define ED_label(e) (((Agedgeinfo_t*)AGDATA(e))->label)
+	#define ED_label_ontop(e) (((Agedgeinfo_t*)AGDATA(e))->label_ontop)
+	#define ED_minlen(e) (((Agedgeinfo_t*)AGDATA(e))->minlen)
+	#define ED_path(e) (((Agedgeinfo_t*)AGDATA(e))->path)
+	#define ED_showboxes(e) (((Agedgeinfo_t*)AGDATA(e))->showboxes)
+	#define ED_spl(e) (((Agedgeinfo_t*)AGDATA(e))->spl)
+	#define ED_tail_label(e) (((Agedgeinfo_t*)AGDATA(e))->tail_label)
+	#define ED_tail_port(e) (((Agedgeinfo_t*)AGDATA(e))->tail_port)
+	#define ED_to_orig(e) (((Agedgeinfo_t*)AGDATA(e))->to_orig)
+	#define ED_to_virt(e) (((Agedgeinfo_t*)AGDATA(e))->to_virt)
+	#define ED_tree_index(e) (((Agedgeinfo_t*)AGDATA(e))->tree_index)
+	#define ED_xpenalty(e) (((Agedgeinfo_t*)AGDATA(e))->xpenalty)
+	#define ED_dist(e) (((Agedgeinfo_t*)AGDATA(e))->dist)
+	#define ED_weight(e) (((Agedgeinfo_t*)AGDATA(e))->weight)
+#else
+	#include <graph.h>
+	#define GD_bb(g) (g)->u.bb
+	#define GD_cleanup(g) (g)->u.cleanup
+	#define GD_dist(g) (g)->u.dist
+	#define GD_drawing(g) (g)->u.drawing
+	#define GD_gvc(g) (g)->u.gvc
+	#define GD_alg(g) (g)->u.alg
+	#define GD_bb(g) (g)->u.bb
+	#define GD_border(g) (g)->u.border
+	#define GD_cl_cnt(g) (g)->u.cl_cnt
+	#define GD_cleanup(g) (g)->u.cleanup
+	#define GD_clust(g) (g)->u.clust
+	#define GD_cluster_was_collapsed(g) (g)->u.cluster_was_collapsed
+	#define GD_comp(g) (g)->u.comp
+	#define GD_dist(g) (g)->u.dist
+	#define GD_drawing(g) (g)->u.drawing
+	#define GD_exact_ranksep(g) (g)->u.exact_ranksep
+	#define GD_expanded(g) (g)->u.expanded
+	#define GD_flags(g) (g)->u.flags
+	#define GD_gui_state(g) (g)->u.gui_state
+	#define GD_gvc(g) (g)->u.gvc
+	#define GD_charset(g) (g)->u.charset
+	#define GD_has_labels(g) (g)->u.has_labels
+	#define GD_has_images(g) (g)->u.has_images
+	#define GD_has_flat_edges(g) (g)->u.has_flat_edges
+	#define GD_ht1(g) (g)->u.ht1
+	#define GD_ht2(g) (g)->u.ht2
+	#define GD_inleaf(g) (g)->u.inleaf
+	#define GD_installed(g) (g)->u.installed
+	#define GD_label(g) (g)->u.label
+	#define GD_leader(g) (g)->u.leader
+	#define GD_rankdir(g) ((g)->u.rankdir & 0x3)
+	#define GD_flip(g) (GD_rankdir(g) & 1)
+	#define GD_realrankdir(g) ((g)->u.rankdir >> 2)
+	#define GD_realflip(g) (GD_realrankdir(g) & 1)
+	#define GD_ln(g) (g)->u.ln
+	#define GD_maxrank(g) (g)->u.maxrank
+	#define GD_maxset(g) (g)->u.maxset
+	#define GD_minrank(g) (g)->u.minrank
+	#define GD_minset(g) (g)->u.minset
+	#define GD_move(g) (g)->u.move
+	#define GD_n_cluster(g) (g)->u.n_cluster
+	#define GD_n_nodes(g) (g)->u.n_nodes
+	#define GD_ndim(g) (g)->u.ndim
+	#define GD_odim(g) (g)->u.odim
+	#define GD_neato_nlist(g) (g)->u.neato_nlist
+	#define GD_nlist(g) (g)->u.nlist
+	#define GD_nodesep(g) (g)->u.nodesep
+	#define GD_outleaf(g) (g)->u.outleaf
+	#define GD_rank(g) (g)->u.rank
+	#define GD_rankleader(g) (g)->u.rankleader
+	#define GD_ranksep(g) (g)->u.ranksep
+	#define GD_rn(g) (g)->u.rn
+	#define GD_set_type(g) (g)->u.set_type
+	#define GD_label_pos(g) (g)->u.label_pos
+	#define GD_showboxes(g) (g)->u.showboxes
+	#define GD_fontnames(g) (g)->u.fontnames
+	#define GD_spring(g) (g)->u.spring
+	#define GD_sum_t(g) (g)->u.sum_t
+	#define GD_t(g) (g)->u.t
+
+	#define ND_UF_parent(n) (n)->u.UF_parent
+	#define ND_UF_size(n) (n)->u.UF_size
+	#define ND_alg(n) (n)->u.alg
+	#define ND_bb(n) (n)->u.bb
+	#define ND_clust(n) (n)->u.clust
+	#define ND_coord_i(n) (n)->u.coord
+	#define ND_dist(n) (n)->u.dist
+	#define ND_flat_in(n) (n)->u.flat_in
+	#define ND_flat_out(n) (n)->u.flat_out
+	#define ND_gui_state(n) (n)->u.gui_state
+	#define ND_has_port(n) (n)->u.has_port
+	#define ND_heapindex(n) (n)->u.heapindex
+	#define ND_height(n) (n)->u.height
+	#define ND_hops(n) (n)->u.hops
+	#define ND_ht_i(n) (n)->u.ht
+	#define ND_id(n) (n)->u.id
+	#define ND_in(n) (n)->u.in
+	#define ND_inleaf(n) (n)->u.inleaf
+	#define ND_label(n) (n)->u.label
+	#define ND_lim(n) (n)->u.lim
+	#define ND_low(n) (n)->u.low
+	#define ND_lw_i(n) (n)->u.lw
+	#define ND_mark(n) (n)->u.mark
+	#define ND_mval(n) (n)->u.mval
+	#define ND_n_cluster(n) (n)->u.n_cluster
+	#define ND_next(n) (n)->u.next
+	#define ND_node_type(n) (n)->u.node_type
+	#define ND_onstack(n) (n)->u.onstack
+	#define ND_order(n) (n)->u.order
+	#define ND_other(n) (n)->u.other
+	#define ND_out(n) (n)->u.out
+	#define ND_outleaf(n) (n)->u.outleaf
+	#define ND_par(n) (n)->u.par
+	#define ND_pinned(n) (n)->u.pinned
+	#define ND_pos(n) (n)->u.pos
+	#define ND_prev(n) (n)->u.prev
+	#define ND_priority(n) (n)->u.priority
+	#define ND_rank(n) (n)->u.rank
+	#define ND_ranktype(n) (n)->u.ranktype
+	#define ND_rw_i(n) (n)->u.rw
+	#define ND_save_in(n) (n)->u.save_in
+	#define ND_save_out(n) (n)->u.save_out
+	#define ND_shape(n) (n)->u.shape
+	#define ND_shape_info(n) (n)->u.shape_info
+	#define ND_showboxes(n) (n)->u.showboxes
+	#define ND_state(n) (n)->u.state
+	#define ND_clustnode(n) (n)->u.clustnode
+	#define ND_tree_in(n) (n)->u.tree_in
+	#define ND_tree_out(n) (n)->u.tree_out
+	#define ND_weight_class(n) (n)->u.weight_class
+	#define ND_width(n) (n)->u.width
+	#define ND_xsize(n) (n)->u.xsize
+	#define ND_ysize(n) (n)->u.ysize
+
+	#define ED_alg(e) (e)->u.alg
+	#define ED_conc_opp_flag(e) (e)->u.conc_opp_flag
+	#define ED_count(e) (e)->u.count
+	#define ED_cutvalue(e) (e)->u.cutvalue
+	#define ED_dist(e) (e)->u.dist
+	#define ED_edge_type(e) (e)->u.edge_type
+	#define ED_adjacent(e) (e)->u.adjacent
+	#define ED_factor(e) (e)->u.factor
+	#define ED_gui_state(e) (e)->u.gui_state
+	#define ED_head_label(e) (e)->u.head_label
+	#define ED_head_port(e) (e)->u.head_port
+	#define ED_label(e) (e)->u.label
+	#define ED_label_ontop(e) (e)->u.label_ontop
+	#define ED_minlen(e) (e)->u.minlen
+	#define ED_path(e) (e)->u.path
+	#define ED_showboxes(e) (e)->u.showboxes
+	#define ED_spl(e) (e)->u.spl
+	#define ED_tail_label(e) (e)->u.tail_label
+	#define ED_tail_port(e) (e)->u.tail_port
+	#define ED_to_orig(e) (e)->u.to_orig
+	#define ED_to_virt(e) (e)->u.to_virt
+	#define ED_tree_index(e) (e)->u.tree_index
+	#define ED_weight(e) (e)->u.weight
+	#define ED_xpenalty(e) (e)->u.xpenalty
+#endif
+
 
 #ifdef __cplusplus
 }
