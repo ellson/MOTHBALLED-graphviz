@@ -580,6 +580,7 @@ static void SparseMatrix_export_csr(FILE *f, SparseMatrix A){
 
 void SparseMatrix_export_binary(char *name, SparseMatrix A, int *flag){
   FILE *f;
+  int rc;
 
   *flag = 0;
   f = fopen(name, "wb");
@@ -587,22 +588,28 @@ void SparseMatrix_export_binary(char *name, SparseMatrix A, int *flag){
     *flag = 1;
     return;
   }
-  fwrite(&(A->m), sizeof(int), 1, f);
-  fwrite(&(A->n), sizeof(int), 1, f);
-  fwrite(&(A->nz), sizeof(int), 1, f);
-  fwrite(&(A->nzmax), sizeof(int), 1, f);
-  fwrite(&(A->type), sizeof(int), 1, f);
-  fwrite(&(A->format), sizeof(int), 1, f);
-  fwrite(&(A->property), sizeof(int), 1, f);
+  rc = fwrite(&(A->m), sizeof(int), 1, f);
+  rc += fwrite(&(A->n), sizeof(int), 1, f);
+  rc += fwrite(&(A->nz), sizeof(int), 1, f);
+  rc += fwrite(&(A->nzmax), sizeof(int), 1, f);
+  rc += fwrite(&(A->type), sizeof(int), 1, f);
+  rc += fwrite(&(A->format), sizeof(int), 1, f);
+  rc += fwrite(&(A->property), sizeof(int), 1, f);
+  if (rc != 7) return;
   if (A->format == FORMAT_COORD){
-    fwrite(A->ia, sizeof(int), A->nz, f);
+    rc = fwrite(A->ia, sizeof(int), A->nz, f);
+    if (rc != A->nz) return;
   } else {
-    fwrite(A->ia, sizeof(int), A->m + 1, f);
+    rc = fwrite(A->ia, sizeof(int), A->m + 1, f);
+    if (rc != A->m + 1) return;
   }
-  fwrite(A->ja, sizeof(int), A->nz, f);
-  if (size_of_matrix_type(A->type) > 0) fwrite(A->a, size_of_matrix_type(A->type), A->nz, f);
+  rc = fwrite(A->ja, sizeof(int), A->nz, f);
+  if (rc != A->nz) return;
+  if (size_of_matrix_type(A->type) > 0) {
+    rc = fwrite(A->a, size_of_matrix_type(A->type), A->nz, f);
+    if (rc != A->nz) return;
+  }
   fclose(f);
-
 }
 
 SparseMatrix SparseMatrix_import_binary(char *name){
