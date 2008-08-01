@@ -626,13 +626,17 @@ SparseMatrix SparseMatrix_import_binary(char *name){
   A->property = property;
 
   if (format == FORMAT_COORD){
-    fread(A->ia, sizeof(int), A->nz, f);
+    rc = fread(A->ia, sizeof(int), A->nz, f);
+    if (rc != A->nz) return NULL;
   } else {
-    fread(A->ia, sizeof(int), A->m + 1, f);
+    rc = fread(A->ia, sizeof(int), A->m + 1, f);
+    if (rc != A->m + 1) return NULL;
   }
-  fread(A->ja, sizeof(int), A->nz, f);
+  rc = fread(A->ja, sizeof(int), A->nz, f);
+  if (rc != A->nz) return NULL;
   if (size_of_matrix_type(A->type) > 0) {
-    fread(A->a, size_of_matrix_type(A->type), A->nz, f);
+    rc = fread(A->a, size_of_matrix_type(A->type), A->nz, f);
+    if (rc != size_of_matrix_type(A->type)) return NULL;
   }
   fclose(f);
   return A;
