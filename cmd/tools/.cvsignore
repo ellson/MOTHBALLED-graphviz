@@ -9,11 +9,11 @@ bcomps
 ccomps
 dijkstra
 gvcolor
-dot2gxl
-dot2gxl.1
+gv2gxl
+gv2gxl.1
 gc
 gvpack
-gxl2dot
+gxl2gv
 mm2gv
 nop
 sccmap

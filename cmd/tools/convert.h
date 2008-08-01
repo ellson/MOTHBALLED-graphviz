@@ -37,9 +37,9 @@ extern "C" {
 #endif
 #include <string.h>
 
-    extern void dot_to_gxl(Agraph_t *, FILE *);
+    extern void gv_to_gxl(Agraph_t *, FILE *);
 #ifdef HAVE_LIBEXPAT
-    extern Agraph_t *gxl_to_dot(FILE *);
+    extern Agraph_t *gxl_to_gv(FILE *);
 #endif
 
 #endif

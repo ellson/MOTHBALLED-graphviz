@@ -26,29 +26,33 @@ AM_CPPFLAGS = \
 pdfdir = $(pkgdatadir)/doc/pdf
 
 noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h
-bin_PROGRAMS = gc gvcolor gxl2dot acyclic nop ccomps sccmap tred \
+bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
 	unflatten gvpack dijkstra bcomps mm2gv
-man_MANS = gc.1 gvcolor.1 gxl2dot.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
+man_MANS = gc.1 gvcolor.1 gxl2gv.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
 	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1 mm2gv.1
-pdf_DATA = gc.pdf gvcolor.pdf gxl2dot.pdf acyclic.pdf nop.pdf ccomps.pdf \
+pdf_DATA = gc.pdf gvcolor.pdf gxl2gv.pdf acyclic.pdf nop.pdf ccomps.pdf \
 	sccmap.pdf tred.pdf unflatten.pdf gvpack.pdf dijkstra.pdf bcomps.pdf \
 	mm2gv.pdf
 
 install-data-hook:
-	(cd $(DESTDIR)$(man1dir); rm -f dot2gxl.1; $(LN_S) gxl2dot.1 dot2gxl.1;)
-	(cd $(DESTDIR)$(pdfdir); rm -f dot2gxl.pdf; $(LN_S) gxl2dot.pdf dot2gxl.pdf;)
+	(cd $(DESTDIR)$(man1dir); rm -f gv2gxl.1; $(LN_S) gxl2gv.1 gv2gxl.1;)
+	(cd $(DESTDIR)$(pdfdir); rm -f gv2gxl.pdf; $(LN_S) gxl2gv.pdf gv2gxl.pdf;)
 
 install-exec-hook:
-	(cd $(DESTDIR)$(bindir); rm -f dot2gxl$(EXEEXT); $(LN_S) gxl2dot$(EXEEXT) dot2gxl$(EXEEXT);)
+	(cd $(DESTDIR)$(bindir); rm -f gv2gxl$(EXEEXT); $(LN_S) gxl2gv$(EXEEXT) gv2gxl$(EXEEXT);)
+	(cd $(DESTDIR)$(bindir); rm -f dot2gxl$(EXEEXT); $(LN_S) gxl2gv$(EXEEXT) dot2gxl$(EXEEXT);)
+	(cd $(DESTDIR)$(bindir); rm -f gxl2dot$(EXEEXT); $(LN_S) gxl2gv$(EXEEXT) gxl2dot$(EXEEXT);)
 
 uninstall-hook:
-	(cd $(DESTDIR)$(man1dir); rm -f dot2gxl.1;)
-	(cd $(DESTDIR)$(pdfdir); rm -f dot2gxl.pdf;)
+	(cd $(DESTDIR)$(man1dir); rm -f gv2gxl.1;)
+	(cd $(DESTDIR)$(pdfdir); rm -f gv2gxl.pdf;)
+	(cd $(DESTDIR)$(bindir); rm -f gv2gxl$(EXEEXT);)
 	(cd $(DESTDIR)$(bindir); rm -f dot2gxl$(EXEEXT);)
+	(cd $(DESTDIR)$(bindir); rm -f gxl2dot$(EXEEXT);)
 
-gxl2dot_SOURCES = cvtgxl.c dot2gxl.c gxl2dot.c
+gxl2gv_SOURCES = cvtgxl.c gv2gxl.c gxl2gv.c
 
-gxl2dot_LDADD = \
+gxl2gv_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(AGRAPH_LIBS) @EXPAT_LIBS@ \
 	$(GRAPH_LIBS)
@@ -114,7 +118,7 @@ gvpack_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout.la
 
-mm2gv_SOURCES = mm2gv.c matrix_market.c matrix_market.h mmio.c mmio.h 
+mm2gv_SOURCES = mm2gv.c matrix_market.c mmio.c
 
 mm2gv_LDADD = \
     $(top_builddir)/lib/common/libcommon_C.la \

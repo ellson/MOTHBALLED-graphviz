@@ -29,7 +29,7 @@
 
 #include <ingraphs.h>
 
-typedef enum { Unset, ToDot, ToGXL } mode;
+typedef enum { Unset, ToGV, ToGXL } mode;
 
 static FILE *outFile;
 static char *CmdName;
@@ -83,7 +83,7 @@ static FILE *openFile(char *name, char *mode)
 
 static const char *use = "Usage: %s [-gd?] [-o<file>] [<graphs>]\n\
  -g        : convert to GXL\n\
- -d        : convert to dot\n\
+ -d        : convert to GV\n\
  -o<file>  : output to <file> (stdout)\n\
  -?        : usage\n";
 
@@ -113,10 +113,12 @@ static void checkInput(void)
     if (!ep)
 	return;
     ep++;
-    if (strcmp(ep, "dot") == 0)
+    if (strcmp(ep, "gv") == 0)
+	act = ToGXL;
+    else if (strcmp(ep, "dot") == 0)
 	act = ToGXL;
     else if (strcmp(ep, "gxl") == 0)
-	act = ToDot;
+	act = ToGV;
 }
 
 static void setAction(void)
@@ -128,7 +130,7 @@ static void setAction(void)
 	break;
     case 'g':
     case 'G':
-	act = ToDot;
+	act = ToGV;
 	break;
     default:
 	if (Files)
@@ -150,7 +152,7 @@ static void initargs(int argc, char **argv)
     while ((c = getopt(argc, argv, ":gdo:?")) != -1) {
 	switch (c) {
 	case 'd':
-	    act = ToDot;
+	    act = ToGV;
 	    break;
 	case 'g':
 	    act = ToGXL;
@@ -199,14 +201,14 @@ int main(int argc, char **argv)
 	    if (prev)
 		agclose(prev);
 	    prev = G;
-	    dot_to_gxl(G, outFile);
+	    gv_to_gxl(G, outFile);
 	    fflush(outFile);
 	}
     } else {
 #ifdef HAVE_LIBEXPAT
 	FILE *inFile;
 	while ((inFile = getFile())) {
-	    while ((G = gxl_to_dot(inFile))) {
+	    while ((G = gxl_to_gv(inFile))) {
 		if (prev)
 		    agclose(prev);
 		prev = G;
@@ -215,7 +217,7 @@ int main(int argc, char **argv)
 	    }
 	}
 #else
-	fputs("cvtgxl: not configured for conversion from GXL to DOT\n",
+	fputs("cvtgxl: not configured for conversion from GXL to GV\n",
 	      stderr);
 	exit(1);
 
