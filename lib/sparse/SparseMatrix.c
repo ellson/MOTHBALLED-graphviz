@@ -13,14 +13,16 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 #include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <assert.h>
+
 #include "SparseMatrix.h"
 
 #include "logic.h"
-#include "math.h"
-#include "string.h"
 #include "memory.h"
 #include "arith.h"
-#include "assert.h"
+
 #define MALLOC gmalloc
 #define REALLOC grealloc
 #define FREE free
@@ -605,19 +607,20 @@ void SparseMatrix_export_binary(char *name, SparseMatrix A, int *flag){
 
 SparseMatrix SparseMatrix_import_binary(char *name){
   SparseMatrix A = NULL;
-  int m, n, nz, nzmax, type, format, property;
+  int m, n, nz, nzmax, type, format, property, rc;
   FILE *f;
 
   f = fopen(name, "rb");
 
   if (!f) return NULL;
-  fread(&m, sizeof(int), 1, f);
-  fread(&n, sizeof(int), 1, f);
-  fread(&nz, sizeof(int), 1, f);
-  fread(&nzmax, sizeof(int), 1, f);
-  fread(&type, sizeof(int), 1, f);
-  fread(&format, sizeof(int), 1, f);
-  fread(&property, sizeof(int), 1, f);
+  rc = fread(&m, sizeof(int), 1, f);
+  rc += fread(&n, sizeof(int), 1, f);
+  rc += fread(&nz, sizeof(int), 1, f);
+  rc += fread(&nzmax, sizeof(int), 1, f);
+  rc += fread(&type, sizeof(int), 1, f);
+  rc += fread(&format, sizeof(int), 1, f);
+  rc += fread(&property, sizeof(int), 1, f);
+  if (rc != 7) return NULL;
   A = SparseMatrix_new(m, n, nz, type, format);
   A->nz = nz;
   A->property = property;
