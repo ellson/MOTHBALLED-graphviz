@@ -431,6 +431,7 @@ extern "C" {
 								       type));
 			}
 		    }
+		    if (sym && (sym->lex == FUNCTION)) xref = NiL;
 		}
 		x = exnewnode(p, t2t, 0, type, x, xref);
 	    } else
