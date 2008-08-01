@@ -387,6 +387,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
     } Agraphinfo_t;
 
 #ifdef WITH_CGRAPH
+
 #include <cgraph.h>
 #define GD_drawing(g) (((Agraphinfo_t*)AGDATA(g))->drawing)
 #define GD_bb(g) (((Agraphinfo_t*)AGDATA(g))->bb)
@@ -397,9 +398,20 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define GD_dist(g) (((Agraphinfo_t*)AGDATA(e))->dist)
 #define ND_alg(n) (((Agnodeinfo_t*)AGDATA(n))->alg)
 #define ED_weight(e) (((Agedgeinfo_t*)AGDATA(e))->weight)
-//#define ED_weight(e) (e)->u.weight
+
 #else
+
 #include <graph.h>
+#define GD_bb(g) (g)->u.bb
+#define GD_cleanup(g) (g)->u.cleanup
+#define GD_dist(g) (g)->u.dist
+#define GD_drawing(g) (g)->u.drawing
+#define GD_gvc(g) (g)->u.gvc
+#define ND_alg(n) (n)->u.alg
+#define ND_id(n) (n)->u.id
+#define ED_dist(e) (e)->u.dist
+#define ED_weight(e) (e)->u.weight
+
 #endif
 
 
