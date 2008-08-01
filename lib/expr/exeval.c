@@ -1298,7 +1298,7 @@ static Extype_t eval(Expr_t * ex, register Exnode_t * expr, void *env)
     v = eval(ex, x, env);
     if ((x = expr->data.operand.right)) {
 	r = eval(ex, x, env);
-	if (!BUILTIN(x->type)) {
+	if (!BUILTIN(x->type) && expr->binary) {
 	    tmp = *expr->data.operand.left;
 	    tmp.data.constant.value = v;
 	    rtmp = *x;
