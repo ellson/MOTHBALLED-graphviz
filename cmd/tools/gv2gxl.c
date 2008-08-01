@@ -646,7 +646,7 @@ static void writePort(Agedge_t * e, FILE * gxlFile, char *name)
     char *val;
 
     val = agget(e, name);
-    if (val[0]) {
+    if (val && val[0]) {
 	tabover(gxlFile);
 	fprintf(gxlFile, "\t<attr name=\"%s\">\n", name);
 	tabover(gxlFile);

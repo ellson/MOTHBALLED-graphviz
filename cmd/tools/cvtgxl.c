@@ -19,15 +19,15 @@
  * Written by Emden R. Gansner and Krishnam Pericherla 
  */
 
-#include <convert.h>
-
+#include <ctype.h>
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #else
 #include "compat_getopt.h"
 #endif
 
-#include <ingraphs.h>
+#include "convert.h"
+#include "ingraphs.h"
 
 typedef enum { Unset, ToGV, ToGXL } mode;
 
@@ -123,20 +123,16 @@ static void checkInput(void)
 
 static void setAction(void)
 {
-    switch (*CmdName) {
-    case 'd':
-    case 'D':
+    if (tolower(CmdName[0]) == 'd') 
 	act = ToGXL;
-	break;
-    case 'g':
-    case 'G':
-	act = ToGV;
-	break;
-    default:
-	if (Files)
-	    checkInput();
-	break;
+    else if (tolower(CmdName[0]) == 'g') {
+	if (tolower(CmdName[1]) == 'v')
+	    act = ToGXL;
+	else
+	    act = ToGV;
     }
+    else if (Files)
+	checkInput();
 
     if (act == Unset) {
 	fprintf(stderr, "Cannot determine conversion type\n");
