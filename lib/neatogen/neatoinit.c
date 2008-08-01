@@ -122,10 +122,15 @@ static void neato_init_node_edge(graph_t * g)
     int nG = agnnodes(g);
     attrsym_t *N_pin;
 
-    N_pos = agfindattr(g->proto->n, "pos");
-    N_pin = agfindattr(g->proto->n, "pin");
+//    N_pos = agfindattr(g->proto->n, "pos");
+//    N_pin = agfindattr(g->proto->n, "pin");
 
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+    N_pos = agattr(g,AGNODE,"pos", (char*)0);
+    N_pos = agattr(g,AGNODE,"pin", (char*)0);
+
+
+	
+	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	neato_init_node(n);
 	user_pos(N_pos, N_pin, n, nG);	/* set user position if given */
     }
@@ -138,8 +143,9 @@ static void neato_init_node_edge(graph_t * g)
 static void neato_cleanup_graph(graph_t * g)
 {
     if (Nop || (Pack < 0))
-	free_scan_graph(g);
-    if (g != agroot(g)) memset(&(g->u), 0, sizeof(Agraphinfo_t));
+	free_scan_graph(g);//<<== PAY ATTENTION TO THIS FUNCTION TO AVOID LEAKS
+    if (g != agroot(g))
+		agclean(g, AGRAPH,"Agraphinfo_t");	//USE atached struct names as record names while both creating or deleting a record!!!
 }
 
 void neato_cleanup(graph_t * g)
@@ -284,8 +290,8 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
     int more = 1;
     int stype, etype;
 
-    pos = agxget(e, E_pos->index);
-    if (*pos == '\0')
+    pos = agxget(e, E_pos);
+	if (*pos == '\0')
 	return 0;
 
     arrow_flags(e, &stype, &etype);
@@ -381,7 +387,7 @@ static pos_edge nop_init_edges(Agraph_t * g)
     node_t *n;
     edge_t *e;
     int nedges = 0;
-    attrsym_t *E_pos = agfindattr(g->proto->e, "pos");
+	attrsym_t *E_pos=agattr(g,AGEDGE,"pos",(char*)0);
 
     if (!E_pos || (Nop < 2))
 	return NoEdges;
@@ -413,7 +419,7 @@ static int chkBB(Agraph_t * g, attrsym_t * G_bb)
     char *s;
     box bb;
 
-    s = agxget(g, G_bb->index);
+    s = agxget(g, G_bb);
     if (sscanf(s, BS, &bb.LL.x, &bb.LL.y, &bb.UR.x, &bb.UR.y) == 4) {
 	if (bb.LL.y > bb.UR.y) {
 	/* If the LL.y coordinate is bigger than the UR.y coordinate,
@@ -450,11 +456,12 @@ dfs(node_t * mn, Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
     graph_t *subg;
 
     subg = agusergraph(mn);
-    if (!strncmp(subg->name, "cluster", 7) && chkBB(subg, G_bb)) {
+    if (!strncmp(agname(subg), "cluster", 7) && chkBB(subg, G_bb)) {
 	add_cluster(g, subg);
 	nop_init_graphs(subg, G_lp, G_bb);
     } else {
-	graph_t *mg = g->meta_node->graph;
+	graph_t *mg = agsubgraph()g->meta_node->graph;
+	*agsubg(g, char *name, int create?ag);
 	edge_t *me;
 	for (me = agfstout(mg, mn); me; me = agnxtout(mg, me)) {
 	    dfs(me->head, g, G_lp, G_bb);
