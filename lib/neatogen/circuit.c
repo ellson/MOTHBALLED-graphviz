@@ -21,6 +21,7 @@
  * Return 1 if successful; 0 otherwise (e.g., graph is disconnected).
  */
 #include	"neato.h"
+#include "cgraph.h"
 
 int solveCircuit(int nG, double **Gm, double **Gm_inv)
 {
@@ -43,7 +44,46 @@ int solveCircuit(int nG, double **Gm, double **Gm_inv)
 
 int circuit_model(graph_t * g, int nG)
 {
-    double **Gm;
+
+#ifdef WITH_CGRAPH
+	double **Gm;
+    double **Gm_inv;
+    int rv, i, j;
+    node_t *v;
+    edge_t *e;
+	
+    Gm = new_array(nG, nG, 0.0);
+    Gm_inv = new_array(nG, nG, 0.0);
+
+    /* set non-diagonal entries */
+    for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
+	for (e = agfstedge(g, v); e; e = agnxtedge(g, e, v)) {
+
+		
+		i = ND_id(agtail(e));
+	    j = ND_id(aghead(e));
+	    if (i == j)
+		continue;
+	    /* conductance is 1/resistance */
+	    Gm[i][j] = Gm[j][i] = -1.0 / ED_dist(e);	/* negate */
+	}
+    }
+
+    rv = solveCircuit(nG, Gm, Gm_inv);
+
+    if (rv)
+	for (i = 0; i < nG; i++) {
+	    for (j = 0; j < nG; j++) {
+		GD_dist(g)[i][j] =
+		    Gm_inv[i][i] + Gm_inv[j][j] - 2.0 * Gm_inv[i][j];
+	    }
+	}
+    free_array(Gm);
+    free_array(Gm_inv);
+    return rv;
+
+#else	
+	double **Gm;
     double **Gm_inv;
     int rv, i, j;
     node_t *v;
@@ -76,4 +116,5 @@ int circuit_model(graph_t * g, int nG)
     free_array(Gm);
     free_array(Gm_inv);
     return rv;
+#endif
 }

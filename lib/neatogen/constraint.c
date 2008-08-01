@@ -127,7 +127,37 @@ static int intersectX(nitem * p, nitem * q)
  */
 static void mapGraphs(graph_t * g, graph_t * cg, distfn dist)
 {
-    node_t *n;
+#ifdef WITH_CGRAPH
+	node_t *n;
+    edge_t *e;
+    edge_t *ce;
+    node_t *t;
+    node_t *h;
+    nitem *tp;
+    nitem *hp;
+    int delta;
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	tp = (nitem *) ND_alg(n);
+	t = tp->cnode;
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    hp = (nitem *) ND_alg(aghead(e));
+	    delta = dist(&tp->bb, &hp->bb);
+	    h = hp->cnode;
+	    ce = agedge(cg, t, h,NULL,0);
+	    ED_weight(ce) = 1;
+	    if (ED_minlen(ce) < delta) {
+		if (ED_minlen(ce) == 0.0) {
+		    elist_append(ce, ND_out(t));
+		    elist_append(ce, ND_in(h));
+		}
+		ED_minlen(ce) = delta;
+	    }
+	}
+    }
+}
+#else
+	node_t *n;
     edge_t *e;
     edge_t *ce;
     node_t *t;
@@ -155,6 +185,7 @@ static void mapGraphs(graph_t * g, graph_t * cg, distfn dist)
 	}
     }
 }
+#endif
 
 #ifdef DEBUG
 static int
