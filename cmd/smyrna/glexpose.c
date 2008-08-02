@@ -146,7 +146,7 @@ int glexpose_drawgraph(ViewInfo * view)
 	    if(!view->Topview->is_top_fisheye)
 		drawTopViewGraph(view->g[view->activeGraph]);	//view->Topview style dots and straight lines
 	    else {
-			drawtopologicalfisheye(view->Topview);
+			drawtopologicalfisheye2(view->Topview);
 	    }
 	    glCompSetDraw(view->Topview->topviewmenu);
 	}

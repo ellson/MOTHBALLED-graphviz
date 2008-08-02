@@ -419,9 +419,6 @@ int get_temp_coords(topview* t,int level,int v,double* coord_x,double* coord_y,f
 }
 
 
-
-
-`2
 /*  In loop,
  *  update fs.
  *    For example, if user clicks mouse at (p.x,p.y) to pick a single new focus,

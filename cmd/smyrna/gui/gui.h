@@ -23,11 +23,7 @@
 #include <gtk/gtkgl.h>
 #include <glade/glade.h>
 #include "callbacks.h"
-#include "agraph.h"
-
-
-
-
+#include "cgraph.h"
 
 
 #define MAXIMUM_WIDGET_COUNT	97
