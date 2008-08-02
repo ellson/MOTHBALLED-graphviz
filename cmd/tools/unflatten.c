@@ -30,13 +30,13 @@
 #include	<unistd.h>
 #endif
 #ifdef USE_CGRAPH
-#include    <cgraph.h>
+#include    "cgraph.h"
 #define degreeOf(n,I,O) (agdegree(n->root, n, I, O)) 
 #else
-#include    <agraph.h>
+#include    "agraph.h"
 #define degreeOf(n,I,O) (agdegree(n, I, O)) 
 #endif
-#include    <ingraphs.h>
+#include    "ingraphs.h"
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>

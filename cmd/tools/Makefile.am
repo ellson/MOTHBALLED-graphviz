@@ -1,19 +1,17 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
+CGRAPH_LIBS=$(top_builddir)/lib/cgraph/libcgraph.la
 if WITH_CGRAPH
-   GRAPH_LIBS=$(top_builddir)/lib/cgraph/libcgraph.la
-   AGRAPH_LIBS=$(top_builddir)/lib/cgraph/libcgraph.la
+   GRAPH_LIBS=$(CGRAPH_LIBS)
 else
    GRAPH_LIBS=$(top_builddir)/lib/graph/libgraph.la
-   AGRAPH_LIBS=$(top_builddir)/lib/agraph/libagraph.la
 endif
 
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/cgraph \
 	-I$(top_srcdir)/lib/graph \
-	-I$(top_srcdir)/lib/agraph \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/pathplan \
 	-I$(top_srcdir)/lib/pack \
@@ -54,14 +52,15 @@ gxl2gv_SOURCES = cvtgxl.c gv2gxl.c gxl2gv.c
 
 gxl2gv_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(AGRAPH_LIBS) @EXPAT_LIBS@ \
+	$(CGRAPH_LIBS) @EXPAT_LIBS@ \
 	$(GRAPH_LIBS)
 
 sccmap_SOURCES = sccmap.c
 
 sccmap_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(AGRAPH_LIBS)
+	$(CGRAPH_LIBS) @EXPAT_LIBS@ \
+	$(GRAPH_LIBS)
 
 ccomps_SOURCES = ccomps.c
 
@@ -79,7 +78,7 @@ unflatten_SOURCES = unflatten.c
 
 unflatten_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(AGRAPH_LIBS)
+	$(CGRAPH_LIBS)
 
 acyclic_SOURCES = acyclic.c
 
@@ -129,7 +128,7 @@ dijkstra_SOURCES = dijkstra.c
 
 dijkstra_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(AGRAPH_LIBS)
+	$(CGRAPH_LIBS)
 
 .1.pdf:
 	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
