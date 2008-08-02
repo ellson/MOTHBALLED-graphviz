@@ -123,7 +123,7 @@ mm2gv_SOURCES = mm2gv.c matrix_market.c mmio.c
 mm2gv_LDADD = \
     $(top_builddir)/lib/common/libcommon_C.la \
 	$(top_builddir)/lib/sparse/libsparse_C.la \
-	$(GRAPH_LIBS)
+	$(GRAPH_LIBS) $(MATH_LIBS)
 
 dijkstra_SOURCES = dijkstra.c
 
