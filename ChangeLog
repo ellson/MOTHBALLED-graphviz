@@ -1,3 +1,10 @@
+August 2, 2008
+	- drop libagraph from distribution - part of migration to libcgraph
+	- rename file format from .dot to .gv to avoid conflict with Word templates
+	- registered MIME type:  text/vnd.graphviz
+	- new command: mm2gv   (matrix-market to gv graph file conversion)
+	- rename commands:	dot2gxl -> gv2gxl
+				gxl2dot -> gxl2gv
 June 25, 2008
 	- Release 2.20.2
 	- Fix bug in HTML-like labels 
