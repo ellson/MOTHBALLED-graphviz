@@ -36,10 +36,10 @@
 #endif
 
 #include <gtk/gtk.h>
-#include "agraph.h"
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <gtk/gtkgl.h>
+#include "cgraph.h"
 #include "glcompset.h"
 #include "hier.h"
 
