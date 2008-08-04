@@ -36,7 +36,7 @@ static char *CmdName;
 static char **Files;
 static mode act = Unset;
 
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
 static FILE *getFile(void)
 {
     FILE *rv = NULL;
@@ -201,7 +201,7 @@ int main(int argc, char **argv)
 	    fflush(outFile);
 	}
     } else {
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
 	FILE *inFile;
 	while ((inFile = getFile())) {
 	    while ((G = gxl_to_gv(inFile))) {
