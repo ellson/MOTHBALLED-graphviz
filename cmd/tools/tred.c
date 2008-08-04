@@ -102,7 +102,11 @@ static int dfs(Agnode_t * n, Agedge_t * link, int warn)
 			agnameof(agtail(e)), agnameof(aghead(e)));
 	    }
 	} else
+#ifdef USE_CGRAPH
 	    warn = dfs(aghead(e), AGOUT2IN(e), warn);
+#else
+	    warn = dfs(aghead(e), e, warn);
+#endif
     }
 
     MARK(n) = 0;
