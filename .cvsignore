@@ -1,38 +1,35 @@
-*.la
-*.lo
-.deps
-.libs
-po
-graphviz*.tar.gz
-Makefile
-Makefile.in
-Doxyfile
-doxygen
-COPYING
-FEATURE
-INSTALL
-aclocal.m4
-ast_common.h
-autom4te-2.53.cache
-autom4te.cache
-builddate.h
-config.cache
-config.guess
-config.h
-config.h.in
-config.log
-config.status
-config.sub
-configure
-depcomp
-graphviz.spec
-install-sh
-libtool
-ltmain.sh
-missing
-mkinstalldirs
-pkgIndex.tcl
-stamp-h1
-ylwrap
-CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
-cmake_uninstall.cmake
+*.la *.lo.deps.libs
+    po
+    graphviz *.tar.gz
+    Makefile
+    Makefile.in
+    Doxyfile
+    doxygen
+    COPYING
+    FEATURE
+    INSTALL
+    aclocal.m4
+    ast_common.h
+    autom4te - 2.53.cache
+    autom4te.cache
+    builddate.h
+    config.cache
+    config.guess
+    config.h
+    config.h.in
+    config.log
+    config.status
+    config.sub
+    configure
+    depcomp
+    graphviz.spec
+    install - sh
+    libtool
+    ltmain.sh
+    missing
+    mkinstalldirs
+    pkgIndex.tcl
+    stamp - h1
+    ylwrap
+    CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
+    cmake_uninstall.cmake

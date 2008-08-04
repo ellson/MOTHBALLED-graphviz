@@ -1,187 +1,172 @@
-*.lo
-*.la
-*.pc
-*.pdf
-*Makefile.in
-*Makefile
-COPYING
-Doxyfile
-FEATURE/sfio
-FEATURE/vmalloc
-INSTALL
-aclocal.m4
-ast_common.h
-autom4te.cache/*
-cmd/dot/dot
-cmd/dot/dot_static
-cmd/dotty/dotty
-cmd/gvpr/gdefs.h
-cmd/gvpr/gvpr
-cmd/gvpr/mkdefs
-cmd/lefty/dotparse.c
-cmd/lefty/dotparse.h
-cmd/lefty/dot2l/dotparse.c
-cmd/lefty/dot2l/dotparse.h
-cmd/lefty/dot2l/y.output
-cmd/lefty/dot2l/y.tab.c
-cmd/lefty/dot2l/y.tab.h
-cmd/lefty/lefty
-cmd/lneato/lneato
-cmd/tools/acyclic
-cmd/tools/bcomps
-cmd/tools/ccomps
-cmd/tools/dijkstra
-cmd/tools/dot2gxl
-cmd/tools/dot2gxl.1
-cmd/tools/gc
-cmd/tools/gvcolor
-cmd/tools/gvpack
-cmd/tools/gxl2dot
-cmd/tools/nop
-cmd/tools/sccmap
-cmd/tools/tred
-cmd/tools/unflatten
-config.h
-config.h.in
-config.log
-config.status
-config/config.guess
-config/config.rpath
-config/config.sub
-config/depcomp
-config/install-sh
-config/ltmain.sh
-config/ltmain.sh.orig
-config/missing
-configure
-contrib/prune/prune
-contrib/diffimg/diffimg
-dot.demo/demo
-dot.demo/dot
-dot.demo/simple
-doxygen/*
-graphviz-*/*
-graphviz-*.tar.gz
-graphviz.spec
-graphs/*directed/*.canon
-graphs/*directed/*.cmap
-graphs/*directed/*.cmapx
-graphs/*directed/*.dia
-graphs/*directed/*.dot.dot
-graphs/*directed/*.fig
-graphs/*directed/*.gd
-graphs/*directed/*.gd2
-graphs/*directed/*.gif
-graphs/*directed/*.hpgl
-graphs/*directed/*.imap
-graphs/*directed/*.ismap
-graphs/*directed/*.jpg
-graphs/*directed/*.mif
-graphs/*directed/*.mp
-graphs/*directed/*.pcl
-graphs/*directed/*.plain
-graphs/*directed/*.plain-ext
-graphs/*directed/*.pic
-graphs/*directed/*.png
-graphs/*directed/*.ps
-graphs/*directed/*.ps2
-graphs/*directed/*.svg
-graphs/*directed/*.svgz
-graphs/*directed/*.vrml
-graphs/*directed/*.vtx
-graphs/*directed/*.wbmp
-graphs/*directed/*.xdot
-lib/agraph/grammar.c
-lib/agraph/grammar.h
-lib/agraph/scan.c
-lib/agraph/y.output
-lib/agraph/y.tab.c
-lib/agraph/y.tab.h
-lib/common/color_lib
-lib/common/colortbl.h
-lib/common/gvc.c
-lib/common/htmlparse.c
-lib/common/htmlparse.h
-lib/common/y.output
-lib/common/y.tab.c
-lib/common/y.tab.h
-lib/expr/exop.h
-lib/expr/exparse.c
-lib/expr/exparse.h
-lib/expr/y.output
-lib/expr/y.tab.c
-lib/expr/y.tab.h
-lib/gd/annotate
-lib/gd/circletexttest
-lib/gd/fontconfigtest
-lib/gd/fontsizetest
-lib/gd/fontwheeltest
-lib/gd/gd.html
-lib/gd/gd2copypal
-lib/gd/gd2time
-lib/gd/gd2togif
-lib/gd/gd2topng
-lib/gd/gdcmpgif
-lib/gd/gddemo
-lib/gd/gdparttopng
-lib/gd/gdtest
-lib/gd/gdtestft
-lib/gd/gdtopng
-lib/gd/gifanimtest
-lib/gd/giftogd2
-lib/gd/pngtogd
-lib/gd/pngtogd2
-lib/gd/testac
-lib/gd/testtr
-lib/gd/webpng
-lib/graph/parser.c
-lib/graph/parser.h
-lib/graph/y.output
-lib/graph/y.tab.c
-lib/graph/y.tab.h
-lib/include/*
-lib/sfio/FEATURE/sfio
-lib/vmalloc/FEATURE/vmalloc
-libltdl/*
-libtool
-stamp-h1
-tclpkg/gdtclft/pkgIndex.tcl
-tclpkg/gv/SWIGTYPE_p_Agedge_t.cs
-tclpkg/gv/SWIGTYPE_p_Agnode_t.cs
-tclpkg/gv/SWIGTYPE_p_Agraph_t.cs
-tclpkg/gv/SWIGTYPE_p_Agsym_t.cs
-tclpkg/gv/SWIGTYPE_p_FILE.cs
-tclpkg/gv/SWIGTYPE_p_p_void.cs
-tclpkg/gv/SWIGTYPE_p_Agedge_t.java
-tclpkg/gv/SWIGTYPE_p_Agnode_t.java
-tclpkg/gv/SWIGTYPE_p_Agraph_t.java
-tclpkg/gv/SWIGTYPE_p_Agsym_t.java
-tclpkg/gv/SWIGTYPE_p_FILE.java
-tclpkg/gv/SWIGTYPE_p_p_void.java
-tclpkg/gv/gv.cs
-tclpkg/gv/gv.java
-tclpkg/gv/gv.ml
-tclpkg/gv/gv.mli
-tclpkg/gv/gv.php
-tclpkg/gv/gv.pm
-tclpkg/gv/gv.py
-tclpkg/gv/gv.pyc
-tclpkg/gv/gvJNI.java
-tclpkg/gv/gvPINVOKE.cs
-tclpkg/gv/gv_csharp.cpp
-tclpkg/gv/gv_guile.cpp
-tclpkg/gv/gv_java.cpp
-tclpkg/gv/gv_lua.cpp
-tclpkg/gv/gv_ocaml.cpp
-tclpkg/gv/gv_perl.cpp
-tclpkg/gv/gv_php.cpp
-tclpkg/gv/gv_python.cpp
-tclpkg/gv/gv_ruby.cpp
-tclpkg/gv/gv_tcl.cpp
-tclpkg/gv/php_gv.h
-tclpkg/gv/pkgIndex.tcl
-tclpkg/gv/test_*
-tclpkg/pkgIndex.tcl
-tclpkg/tcldot/pkgIndex.tcl
-tclpkg/tclpathplan/pkgIndex.tcl
-tclpkg/tkspline/pkgIndex.tcl
+*.lo *.la *.pc *.pdf * Makefile.in * Makefile COPYING Doxyfile FEATURE / sfio FEATURE / vmalloc INSTALL aclocal.m4 ast_common.h autom4te.cache	/*
+																		   cmd/dot/dot
+																		   cmd/dot/dot_static
+																		   cmd/dotty/dotty
+																		   cmd/gvpr/gdefs.h
+																		   cmd/gvpr/gvpr
+																		   cmd/gvpr/mkdefs
+																		   cmd/lefty/dotparse.c
+																		   cmd/lefty/dotparse.h
+																		   cmd/lefty/dot2l/dotparse.c
+																		   cmd/lefty/dot2l/dotparse.h
+																		   cmd/lefty/dot2l/y.output
+																		   cmd/lefty/dot2l/y.tab.c
+																		   cmd/lefty/dot2l/y.tab.h
+																		   cmd/lefty/lefty
+																		   cmd/lneato/lneato
+																		   cmd/tools/acyclic
+																		   cmd/tools/bcomps
+																		   cmd/tools/ccomps
+																		   cmd/tools/dijkstra
+																		   cmd/tools/dot2gxl
+																		   cmd/tools/dot2gxl.1
+																		   cmd/tools/gc
+																		   cmd/tools/gvcolor
+																		   cmd/tools/gvpack
+																		   cmd/tools/gxl2dot
+																		   cmd/tools/nop
+																		   cmd/tools/sccmap
+																		   cmd/tools/tred
+																		   cmd/tools/unflatten
+																		   config.h
+																		   config.h.in
+																		   config.log
+																		   config.status
+																		   config/config.guess
+																		   config/config.rpath
+																		   config/config.sub
+																		   config/depcomp
+																		   config/install-sh
+																		   config/ltmain.sh
+																		   config/ltmain.sh.orig
+																		   config/missing
+																		   configure
+																		   contrib/prune/prune
+																		   contrib/diffimg/diffimg
+																		   dot.demo/demo
+																		   dot.demo/dot
+																		   dot.demo/simple
+																		   doxygen/*
+																		   graphviz- */  *
+    graphviz - *.tar.gz graphviz.spec graphs	/*directed/*.canon
+						   graphs/*directed/*.cmap
+						   graphs/*directed/*.cmapx
+						   graphs/*directed/*.dia
+						   graphs/*directed/*.dot.dot
+						   graphs/*directed/*.fig
+						   graphs/*directed/*.gd
+						   graphs/*directed/*.gd2
+						   graphs/*directed/*.gif
+						   graphs/*directed/*.hpgl
+						   graphs/*directed/*.imap
+						   graphs/*directed/*.ismap
+						   graphs/*directed/*.jpg
+						   graphs/*directed/*.mif
+						   graphs/*directed/*.mp
+						   graphs/*directed/*.pcl
+						   graphs/*directed/*.plain
+						   graphs/*directed/*.plain-ext
+						   graphs/*directed/*.pic
+						   graphs/*directed/*.png
+						   graphs/*directed/*.ps
+						   graphs/*directed/*.ps2
+						   graphs/*directed/*.svg
+						   graphs/*directed/*.svgz
+						   graphs/*directed/*.vrml
+						   graphs/*directed/*.vtx
+						   graphs/*directed/*.wbmp
+						   graphs/*directed/*.xdot
+						   lib/agraph/grammar.c
+						   lib/agraph/grammar.h
+						   lib/agraph/scan.c
+						   lib/agraph/y.output
+						   lib/agraph/y.tab.c
+						   lib/agraph/y.tab.h
+						   lib/common/color_lib
+						   lib/common/colortbl.h
+						   lib/common/gvc.c
+						   lib/common/htmlparse.c
+						   lib/common/htmlparse.h
+						   lib/common/y.output
+						   lib/common/y.tab.c
+						   lib/common/y.tab.h
+						   lib/expr/exop.h
+						   lib/expr/exparse.c
+						   lib/expr/exparse.h
+						   lib/expr/y.output
+						   lib/expr/y.tab.c
+						   lib/expr/y.tab.h
+						   lib/gd/annotate
+						   lib/gd/circletexttest
+						   lib/gd/fontconfigtest
+						   lib/gd/fontsizetest
+						   lib/gd/fontwheeltest
+						   lib/gd/gd.html
+						   lib/gd/gd2copypal
+						   lib/gd/gd2time
+						   lib/gd/gd2togif
+						   lib/gd/gd2topng
+						   lib/gd/gdcmpgif
+						   lib/gd/gddemo
+						   lib/gd/gdparttopng
+						   lib/gd/gdtest
+						   lib/gd/gdtestft
+						   lib/gd/gdtopng
+						   lib/gd/gifanimtest
+						   lib/gd/giftogd2
+						   lib/gd/pngtogd
+						   lib/gd/pngtogd2
+						   lib/gd/testac
+						   lib/gd/testtr
+						   lib/gd/webpng
+						   lib/graph/parser.c
+						   lib/graph/parser.h
+						   lib/graph/y.output
+						   lib/graph/y.tab.c
+						   lib/graph/y.tab.h
+						   lib/include/*
+						   lib/sfio/FEATURE/sfio
+						   lib/vmalloc/FEATURE/vmalloc
+						   libltdl/*
+						   libtool
+						   stamp-h1
+						   tclpkg/gdtclft/pkgIndex.tcl
+						   tclpkg/gv/SWIGTYPE_p_Agedge_t.cs
+						   tclpkg/gv/SWIGTYPE_p_Agnode_t.cs
+						   tclpkg/gv/SWIGTYPE_p_Agraph_t.cs
+						   tclpkg/gv/SWIGTYPE_p_Agsym_t.cs
+						   tclpkg/gv/SWIGTYPE_p_FILE.cs
+						   tclpkg/gv/SWIGTYPE_p_p_void.cs
+						   tclpkg/gv/SWIGTYPE_p_Agedge_t.java
+						   tclpkg/gv/SWIGTYPE_p_Agnode_t.java
+						   tclpkg/gv/SWIGTYPE_p_Agraph_t.java
+						   tclpkg/gv/SWIGTYPE_p_Agsym_t.java
+						   tclpkg/gv/SWIGTYPE_p_FILE.java
+						   tclpkg/gv/SWIGTYPE_p_p_void.java
+						   tclpkg/gv/gv.cs
+						   tclpkg/gv/gv.java
+						   tclpkg/gv/gv.ml
+						   tclpkg/gv/gv.mli
+						   tclpkg/gv/gv.php
+						   tclpkg/gv/gv.pm
+						   tclpkg/gv/gv.py
+						   tclpkg/gv/gv.pyc
+						   tclpkg/gv/gvJNI.java
+						   tclpkg/gv/gvPINVOKE.cs
+						   tclpkg/gv/gv_csharp.cpp
+						   tclpkg/gv/gv_guile.cpp
+						   tclpkg/gv/gv_java.cpp
+						   tclpkg/gv/gv_lua.cpp
+						   tclpkg/gv/gv_ocaml.cpp
+						   tclpkg/gv/gv_perl.cpp
+						   tclpkg/gv/gv_php.cpp
+						   tclpkg/gv/gv_python.cpp
+						   tclpkg/gv/gv_ruby.cpp
+						   tclpkg/gv/gv_tcl.cpp
+						   tclpkg/gv/php_gv.h
+						   tclpkg/gv/pkgIndex.tcl
+						   tclpkg/gv/test_*
+						   tclpkg/pkgIndex.tcl
+						   tclpkg/tcldot/pkgIndex.tcl
+						   tclpkg/tclpathplan/pkgIndex.tcl
+						   tclpkg/tkspline/pkgIndex.tcl
