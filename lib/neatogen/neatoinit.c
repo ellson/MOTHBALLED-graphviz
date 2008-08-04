@@ -453,43 +453,19 @@ static void nop_init_graphs(Agraph_t *, attrsym_t *, attrsym_t *);
 static void
 dfs(node_t * mn, Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
 {
-/*  graph_t *subg;
+    graph_t *subg;
 
     subg = agusergraph(mn);
-    if (!strncmp(subg->name, "cluster", 7) && chkBB(subg, G_bb))
-	{
-		add_cluster(g, subg);
-		nop_init_graphs(subg, G_lp, G_bb);
-    } 
-	else
-	{
-		graph_t *mg = g->meta_node->graph;
-		edge_t *me;
-		for (me = agfstout(mg, mn); me; me = agnxtout(mg, me)) 
-		{
-			dfs(me->head, g, G_lp, G_bb);
-		}
-    }*/
-
-	
-	
-	
-	graph_t *subg;
-    subg = agusergraph(mn);
-    if (!strncmp(agname(subg), "cluster", 7) && chkBB(subg, G_bb)) 
-	{
-		add_cluster(g, subg);
-		nop_init_graphs(subg, G_lp, G_bb);
-    }
-	else
-	{
-		graph_t *mg = agsub()g->meta_node->graph;
-		*agsubg(g, char *name, int create?ag);
-		edge_t *me;
-		for (me = agfstout(mg, mn); me; me = agnxtout(mg, me)) 
-		{
-				dfs(me->head, g, G_lp, G_bb);
-		}
+    if (!strncmp(agname(subg), "cluster", 7) && chkBB(subg, G_bb)) {
+	add_cluster(g, subg);
+	nop_init_graphs(subg, G_lp, G_bb);
+    } else {
+	graph_t *mg = agsubgraph()g->meta_node->graph;
+	*agsubg(g, char *name, int create?ag);
+	edge_t *me;
+	for (me = agfstout(mg, mn); me; me = agnxtout(mg, me)) {
+	    dfs(me->head, g, G_lp, G_bb);
+	}
     }
 }
 
