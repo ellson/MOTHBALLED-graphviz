@@ -98,11 +98,11 @@ static int dfs(Agnode_t * n, Agedge_t * link, int warn)
 #else
 			g->name);
 #endif
-		fprintf(stderr, "cycle involves edge %s -> %s",
+		fprintf(stderr, "cycle involves edge %s -> %s\n",
 			agnameof(agtail(e)), agnameof(aghead(e)));
 	    }
 	} else
-	    warn = dfs(aghead(e), e, warn);
+	    warn = dfs(aghead(e), AGOUT2IN(e), warn);
     }
 
     MARK(n) = 0;
