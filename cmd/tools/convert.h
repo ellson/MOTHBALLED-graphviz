@@ -38,7 +38,7 @@ extern "C" {
 #include <string.h>
 
     extern void gv_to_gxl(Agraph_t *, FILE *);
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
     extern Agraph_t *gxl_to_gv(FILE *);
 #endif
 
