@@ -21,7 +21,7 @@
 #include "htmllex.h"
 #include <ctype.h>
 
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
 #include <expat.h>
 #endif
 
@@ -30,7 +30,7 @@
 #endif
 
 typedef struct {
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
     XML_Parser parser;
 #endif
     char* ptr;			/* input source */
@@ -72,7 +72,7 @@ void htmlerror(const char *msg)
     error_context();
 }
 
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
 /* lexerror:
  * called by lexer when unknown <..> is found.
  */
@@ -607,7 +607,7 @@ static void characterData(void *user, const char *s, int length)
 
 int initHTMLlexer(char *src, agxbuf * xb, int charset)
 {
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
     state.xb = xb;
     agxbinit (&state.lb, SMALLBUF, NULL);
     state.ptr = src;
@@ -636,7 +636,7 @@ int initHTMLlexer(char *src, agxbuf * xb, int charset)
 
 int clearHTMLlexer()
 {
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
     int rv = state.warn | state.error;
     XML_ParserFree(state.parser);
     agxbfree (&state.lb);
@@ -646,7 +646,7 @@ int clearHTMLlexer()
 #endif
 }
 
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
 /* eatComment:
  * Given first character after open comment, eat characters
  * upto comment close, returning pointer to closing > if it exists,
@@ -715,7 +715,7 @@ static char *findNext(char *s, agxbuf* xb)
 
 int htmllineno()
 {
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
     return XML_GetCurrentLineNumber(state.parser);
 #else
     return 0;
@@ -791,7 +791,7 @@ static void printTok(int tok)
 
 int htmllex()
 {
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
     static char *begin_html = "<HTML>";
     static char *end_html = "</HTML>";
 
