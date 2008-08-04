@@ -488,7 +488,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	#define GD_bb(g) (((Agraphinfo_t*)AGDATA(g))->bb)
 	#define GD_gvc(g) (((Agraphinfo_t*)AGDATA(g))->gvc)
 	#define GD_cleanup(g) (((Agraphinfo_t*)AGDATA(g))->cleanup)
-	#define GD_dist(g) (((Agraphinfo_t*)AGDATA(e))->dist)
+	#define GD_dist(g) (((Agraphinfo_t*)AGDATA(g))->dist)
 	#define GD_alg(g) (((Agraphinfo_t*)AGDATA(g))->alg)
 	#define GD_border(g) (((Agraphinfo_t*)AGDATA(g))->border)
 	#define GD_cl_cnt(g) (((Agraphinfo_t*)AGDATA(g))->cl_nt)
