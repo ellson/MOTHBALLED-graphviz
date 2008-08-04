@@ -66,9 +66,9 @@
 #endif
 
 /* FIXME - need proper config test for these */
-#define _typ_size_t     1       /* size_t is a type */
-#define _typ_ssize_t    1       /* ssize_t is a type */
-#define _typ_long_double        1       /* long double is a type */
+#define _typ_size_t     1	/* size_t is a type */
+#define _typ_ssize_t    1	/* ssize_t is a type */
+#define _typ_long_double        1	/* long double is a type */
 #define _proto_stdc 1		/* Standard-C prototypes ok  */
 /* */
 
@@ -121,7 +121,7 @@
 #else
 #define Void_t          char
 #endif
-#endif /*Void_t*/
+#endif				/*Void_t */
 
 /* dynamic linked library external scope handling */
 #undef extern
@@ -185,17 +185,17 @@ typedef int ssize_t;
 /* */
 
 #ifndef va_listref
-#define va_listref(p) (p)       /* pass va_list to varargs function */
-#define va_listval(p) (p)       /* retrieve va_list from va_arg(ap,va_listarg) */
-#define va_listarg va_list      /* va_arg() va_list type */
+#define va_listref(p) (p)	/* pass va_list to varargs function */
+#define va_listval(p) (p)	/* retrieve va_list from va_arg(ap,va_listarg) */
+#define va_listarg va_list	/* va_arg() va_list type */
 #ifndef va_copy
-#define va_copy(to,fr) ((to)=(fr))      /* copy va_list fr -> to */
+#define va_copy(to,fr) ((to)=(fr))	/* copy va_list fr -> to */
 #endif
 #undef  _ast_va_list
 #ifdef  va_start
 #define _ast_va_list va_list
 #else
-#define _ast_va_list void*      /* va_list that avoids #include */
+#define _ast_va_list void*	/* va_list that avoids #include */
 #endif
 #endif
 
@@ -211,4 +211,4 @@ typedef int ssize_t;
 #define MAXINT INT_MAX
 #endif
 
-#endif /*AST_COMMON_H*/
+#endif				/*AST_COMMON_H */
