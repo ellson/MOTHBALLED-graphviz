@@ -20,7 +20,7 @@
 #include    "aghdr.h"
 #endif
 #include    "agxbuf.h"
-#ifdef HAVE_LIBEXPAT
+#ifdef HAVE_EXPAT
 #include    <expat.h>
 #include    <ctype.h>
 
