@@ -92,6 +92,12 @@ int agerrors(void)
     return AG.syntax_errors;
 }
 
+static int
+_is_number_char(char c)
+{
+    return (isdigit(c) || c == '.' || c == '-');
+}
+
 /* _agstrcanon:
  * Canonicalize an ordinary string if necessary.
  */
@@ -110,7 +116,7 @@ _agstrcanon (char* arg, char* buf)
 	return "\"\"";
     *p++ = '\"';
     uc = *(unsigned char *) s++;
-    maybe_num = (isdigit(uc) || (uc == '.'));
+    maybe_num = _is_number_char(uc);
     while (uc) {
 	if (uc == '\"') {
 	    *p++ = '\\';
@@ -118,20 +124,19 @@ _agstrcanon (char* arg, char* buf)
 	} else {
 	    if (!ISALNUM(uc))
 		has_special = TRUE;
-	    else if (maybe_num && (!isdigit(uc) && (uc != '.')))
+	    else if (maybe_num && !_is_number_char(uc))
 		has_special = TRUE;
 	}
 	*p++ = (char) uc;
 	uc = *(unsigned char *) s++;
 	cnt++;
-        if (backslash_pending && !((isdigit(p[-1]) || (p[-1] == '.') || isalpha(p[-1])) && (isdigit(uc) || (uc == '.') || isalpha(uc)))) {
+        if (uc && backslash_pending && !((_is_number_char(p[-1]) || isalpha(p[-1])) && (_is_number_char(uc) || isalpha(uc)))) {
             *p++ = '\\';
             *p++ = '\n';
             has_special = TRUE;
             backslash_pending = FALSE;
-        }
-	if (cnt % SMALLBUF == 0) {
-            if (!((isdigit(p[-1]) || (p[-1] == '.') || isalpha(p[-1])) && (isdigit(uc) || (uc == '.') || isalpha(uc)))) {
+        } else if (uc && cnt % SMALLBUF == 0) {
+            if (!((_is_number_char(p[-1]) || isalpha(p[-1])) && (_is_number_char(uc) || isalpha(uc)))) {
 	        *p++ = '\\';
     	        *p++ = '\n';
 	        has_special = TRUE;
