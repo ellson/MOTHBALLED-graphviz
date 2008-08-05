@@ -2159,10 +2159,11 @@ static void record_init(node_t * n)
 	sz.y = MAX(info->size.y, sz.y);
     }
     resize_reclbl(info, sz, mapbool(late_string(n, N_nojustify, "false")));
-    ul = pointof(-sz.x / 2, sz.y / 2);
+    ul = pointof(-sz.x / 2, sz.y / 2);          /* suspected to introduce ronding error - see Kluge below */
     pos_reclbl(info, ul, sides);
     ND_width(n) = PS2INCH(info->size.x);
-    ND_height(n) = PS2INCH(info->size.y);
+    ND_height(n) = PS2INCH(info->size.y + 1);   /* Kluge!!  +1 to fix rounding diff between layout and rendering 
+							otherwise we can get -1 coords in output */
     ND_shape_info(n) = (void *) info;
 }
 
