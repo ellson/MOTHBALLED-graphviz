@@ -104,6 +104,7 @@ _agstrcanon (char* arg, char* buf)
     int cnt = 0;
     int has_special = FALSE;
     int maybe_num;
+    int backslash_pending = FALSE;
 
     if (ISEMPTYSTR(arg))
 	return "\"\"";
@@ -123,10 +124,20 @@ _agstrcanon (char* arg, char* buf)
 	*p++ = (char) uc;
 	uc = *(unsigned char *) s++;
 	cnt++;
+        if (backslash_pending && !((isdigit(p[-1]) || (p[-1] == '.') || isalpha(p[-1])) && (isdigit(uc) || (uc == '.') || isalpha(uc)))) {
+            *p++ = '\\';
+            *p++ = '\n';
+            has_special = TRUE;
+            backslash_pending = FALSE;
+        }
 	if (cnt % SMALLBUF == 0) {
-	    *p++ = '\\';
-	    *p++ = '\n';
-	    has_special = TRUE;
+            if (!((isdigit(p[-1]) || (p[-1] == '.') || isalpha(p[-1])) && (isdigit(uc) || (uc == '.') || isalpha(uc)))) {
+	        *p++ = '\\';
+    	        *p++ = '\n';
+	        has_special = TRUE;
+            } else {
+                backslash_pending = TRUE;
+            }
 	}
     }
     *p++ = '\"';
@@ -263,7 +274,7 @@ static void writeattr(FILE * fp, int *npp, char *name, char *val)
 {
     fprintf(fp, ++(*npp) > 1 ? ", " : " [");
     fprintf(fp, "%s=", agcanonical(name));
-    fprintf(fp, "%s", agcanonical(val));
+    fprintf(fp, "%s ", agcanonical(val));
 }
 
 void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
