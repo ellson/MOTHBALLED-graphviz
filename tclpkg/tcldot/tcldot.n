@@ -451,7 +451,7 @@ of this operation using the same rules for selecting the layout engine
 as for the layout command.
 
 .TP
-\fIgraphHandle\fR \fBrender\fR \fI?canvas ?dot|neato??\fR
+\fIgraphHandle\fR \fBrender\fR \fI?canvas ?dot|neato|circo|twopi|fdp|nop??\fR
 
 If no \fIcanvas\fR argument is provided then \fBrender\fR
 returns a string of commands which, when evaluated, will render the

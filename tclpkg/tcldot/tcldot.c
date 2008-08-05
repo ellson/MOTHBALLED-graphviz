@@ -21,9 +21,12 @@
 #include "builddate.h"
 #include "render.h"
 #include "gvc.h"
-#include "tcl.h"
+#include <tcl.h>
 #include "tclhandle.h"
-#include "tcldot.h"
+
+#ifndef CONST84
+#define CONST84
+#endif
 
 char *Info[] = {
     "tcldot",			/* Program */
@@ -51,14 +54,7 @@ extern void *GDHandleTable;
 extern int Gdtclft_Init(Tcl_Interp *);
 #endif
 
-#ifdef WITH_CODEGENS
-extern codegen_t TK_CodeGen;
-static codegen_info_t cg[] = { {&TK_CodeGen, "tk", TK},
-				{NULL, NULL, 0}, };
-#endif
-
 static void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
-static tkgendata_t tkgendata;
 
 static void reset_layout(GVC_t *gvc, Agraph_t * sg)
 {
@@ -1065,10 +1061,12 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	return TCL_OK;
 
     } else if ((c == 'r') && (strncmp(argv[1], "render", length) == 0)) {
+	char *canvas;
+
 	if (argc < 3) {
-	    tkgendata.canvas = "$c";
+	    canvas = "$c";
 	} else {
-	    tkgendata.canvas = argv[2];
+	    canvas = argv[2];
 #if 0				/* not implemented */
 	    if (argc < 4) {
 		tkgendata.eval = FALSE;
@@ -1082,8 +1080,6 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 #endif
 	}
-	tkgendata.interp = interp;
-
         rc = gvjobs_output_langname(gvc, "tk");
 	if (rc == NO_SUPPORT) {
 	    Tcl_AppendResult(interp, " Format: \"tk\" not recognized.\n",
@@ -1092,7 +1088,8 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 	job = gvc->job;
 
-	job->context = (void *)(&tkgendata);
+	job->imagedata = canvas;
+	job->context = (void *)interp;
 	job->external_context = TRUE;
 
 	/* make sure that layout is done */
@@ -1640,9 +1637,6 @@ __EXPORT__
 int Tcldot_Init(Tcl_Interp * interp)
 {
     GVC_t *gvc;
-#ifdef WITH_CODEGENS
-    codegen_info_t *p;
-#endif
 
 #ifdef USE_TCL_STUBS
     if (Tcl_InitStubs(interp, TCL_VERSION, 0) == NULL) {
@@ -1670,12 +1664,6 @@ int Tcldot_Init(Tcl_Interp * interp)
 
     /* configure for available plugins and codegens */
     gvconfig(gvc, FALSE);
-#ifdef WITH_CODEGENS
-    /* additional codegens */
-    for (p = cg; p->name; ++p)
-        gvplugin_install(gvc, API_render, p->name, 0, "cg", NULL,
-                         (gvplugin_installed_t *) p);
-#endif
 
 #ifndef TCLOBJ
     Tcl_CreateCommand(interp, "dotnew", dotnew,

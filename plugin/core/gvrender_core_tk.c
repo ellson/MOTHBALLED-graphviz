@@ -107,6 +107,14 @@ static void tkgen_print_tags(GVJ_t *job)
     gvdevice_printf(job, " -tags {id%ld %s}", ObjId, ObjType);
 }
 
+static void tkgen_canvas(GVJ_t * job)
+{
+   if (job->external_context) 
+	gvdevice_fputs(job, job->imagedata);
+   else
+	gvdevice_fputs(job, "$c");
+}
+
 static void tkgen_comment(GVJ_t * job, char *str)
 {
     gvdevice_fputs(job, "# ");
@@ -144,7 +152,8 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     obj_state_t *obj = job->obj;
 
     if (obj->pen != PEN_NONE) {
-        gvdevice_fputs(job, "$c create text ");
+        tkgen_canvas(job);
+        gvdevice_fputs(job, " create text ");
         p.y -= para->fontsize * 0.5; /* cl correction */
         gvdevice_printpointf(job, p);
         gvdevice_fputs(job, " -text {");
@@ -183,7 +192,8 @@ static void tkgen_ellipse(GVJ_t * job, pointf * A, int filled)
         r.y = A[1].y - A[0].y;
         A[0].x -= r.x;
         A[0].y -= r.y;
-        gvdevice_fputs(job, "$c create oval ");
+        tkgen_canvas(job);
+        gvdevice_fputs(job, " create oval ");
         gvdevice_printpointflist(job, A, 2);
         gvdevice_fputs(job, " -fill ");
         if (filled)
@@ -212,7 +222,8 @@ tkgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     obj_state_t *obj = job->obj;
 
     if (obj->pen != PEN_NONE) {
-        gvdevice_fputs(job, "$c create line ");
+        tkgen_canvas(job);
+        gvdevice_fputs(job, " create line ");
         gvdevice_printpointflist(job, A, n);
         gvdevice_fputs(job, " -fill ");
         tkgen_print_color(job, obj->pencolor);
@@ -234,7 +245,8 @@ static void tkgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     obj_state_t *obj = job->obj;
 
     if (obj->pen != PEN_NONE) {
-        gvdevice_fputs(job, "$c create polygon ");
+        tkgen_canvas(job);
+        gvdevice_fputs(job, " create polygon ");
         gvdevice_printpointflist(job, A, n);
         if (filled) {
             gvdevice_fputs(job, " -fill ");
@@ -259,7 +271,8 @@ static void tkgen_polyline(GVJ_t * job, pointf * A, int n)
     obj_state_t *obj = job->obj;
 
     if (obj->pen != PEN_NONE) {
-        gvdevice_fputs(job, "$c create line ");
+        tkgen_canvas(job);
+        gvdevice_fputs(job, " create line ");
         gvdevice_printpointflist(job, A, n);
         gvdevice_fputs(job, " -fill ");
         tkgen_print_color(job, obj->pencolor);

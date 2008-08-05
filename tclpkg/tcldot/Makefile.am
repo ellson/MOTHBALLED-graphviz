@@ -25,17 +25,12 @@ man = tcldot.n
 pdf = tcldot.pdf
 html = tcldot.html
 
-noinst_HEADERS = tcldot.h
 if WITH_TCL
 pkgtcl_LTLIBRARIES = libtcldot.la libtcldot_builtin.la
 
 man_MANS = $(man)
 pdf_DATA = $(pdf)
 html_DATA = $(html)
-endif
-
-if WITH_CODEGENS
-CODEGENS = tkgen.c
 endif
 
 if WITH_LIBGD
