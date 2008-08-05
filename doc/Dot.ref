@@ -117,6 +117,7 @@ Attributes
  headlabel       E       string      ""
  headport        E       portPos     center
  height          N       double      0.5               0.02
+ K               G       double      1.0               0.0       sfdp only
 
  label           ENGC    string      ""
                                      "\N" (nodes)
@@ -133,6 +134,7 @@ Attributes
  layer           EN      layerRange  ""
  layers          G       layerList   ""
  len             E       double      1.0                         neato only
+ levels          G       int         MAXINT            0         sfdp only
  lhead           E       string      ""                          dot only
  lp              EGC     point                                   write-only
  ltail           E       string      ""                          dot only
@@ -151,7 +153,7 @@ Attributes
  orientation     N       double      0.0               360.0
  orientation     G       string      ""
 
- overlap         G       string      ""                          neato only
+ overlap         G       string      ""                          neato/sfdp only
                          bool
  page            G       pointf
  pagedir         G       pagedir     BL
@@ -160,6 +162,7 @@ Attributes
 
  pos             EN      point
                          splineType
+ quadtree        G       string      ""                          sfdp only
  quantum         G       double      0.0               0.0
  rank            S       rankType                                dot only
  rankdir         G       rankdir     TB                          dot only
@@ -168,6 +171,7 @@ Attributes
  rects           N       rect                                    write-only
  regular         N       bool        false
  remincross      G       bool        false                       dot only
+ repulsiveforce  G       double      1                 0.0       sfdp only
  rotate          G       int         0
  samehead        E       string      ""                          dot only
  sametail        E       string      ""                          dot only
@@ -180,6 +184,7 @@ Attributes
  sides           N       int         4                 0
  size            G       pointf
  skew            N       double      0.0               -100.0
+ smoothing       G       string      ""                          sfdp only
  splines         G       bool        false                       neato only
 
  start           G       string      ""                          neato only
@@ -314,6 +319,7 @@ headport
      then clipped at the node boundary.
 height
      Height of node, in inches.
+K    constant used in the Fruchterman-Reingold force directed model.
 label
      Text label attached to objects. The escape sequences "\n", "\l" and
      "\r" divide the label into lines, centered, left-justified and
@@ -352,6 +358,8 @@ layers
      the page How to use drawing layers (overlays).
 len
      Preferred edge length, in inches.
+levels
+     Number of levels allowed in the multilevel scheme. Default is MAXINT.
 lhead
      Logical head of an edge. When compound is true, if lhead is defined and
      is the name of a cluster containing the real head, the edge is clipped
@@ -424,6 +432,8 @@ pos
 quantum
      If quantum > 0.0, node label dimensions will be rounded to integral
      multiples of the quantum.
+quadtree
+     Quadtree scheme to use. Values are "normal", "fast" or "none".
 rank
      Rank constraints on the nodes in a subgraph. If rank="same", all nodes
      are placed on the same rank. If rank="min", all nodes are placed on the
@@ -472,6 +482,10 @@ rects
      Rectangles for fields of records, in points.
 regular
      If true, force polygon to be regular.
+repulsiveforce
+     The power of repulsive force used in an extended Fruchterman-Reingold 
+     force directed model. Default is 1. Values larger than 1 tend to reduce 
+     the warping effect at the expensive of less clustering.
 remincross
      If true and there are multiple clusters, run cross minimization a
      second time.
@@ -513,6 +527,10 @@ size
 skew
      Skew factor for shape=polygon. Positive values skew top of polygon to
      right; negative to left.
+smoothing
+     A post processing step to smooth out uneven distribution of nodes. Possible
+     values are "none" (default), "avg_dist", "graph_dist", "power_dist", "rng", 
+     "spring" and "triangle".
 splines
      If true, draw edges as splines. This requires non-overlapping nodes
      (cf. overlap).
