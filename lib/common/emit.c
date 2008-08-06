@@ -850,7 +850,7 @@ static void setup_page(GVJ_t * job, graph_t * g)
     job->pageOffset.x = - job->pageSize.x * pagesArrayElem.x;
     job->pageOffset.y = - job->pageSize.y * pagesArrayElem.y;
 #endif
-    job->clip.LL.x = job->focus.x + job->pageSize.x * (pagesArrayElem.x - pagesArraySize.x / 2.) - 1;
+    job->clip.LL.x = job->focus.x + job->pageSize.x * (pagesArrayElem.x - pagesArraySize.x / 2.);
     job->clip.LL.y = job->focus.y + job->pageSize.y * (pagesArrayElem.y - pagesArraySize.y / 2.) - 1;
     job->clip.UR.x = job->clip.LL.x + job->pageSize.x + 1;
     job->clip.UR.y = job->clip.LL.y + job->pageSize.y + 1;
