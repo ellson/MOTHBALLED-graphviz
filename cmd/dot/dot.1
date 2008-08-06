@@ -9,6 +9,8 @@ twopi \- filter for radial layouts of graphs
 circo \- filter for circular layout of graphs
 .br
 fdp \- filter for drawing undirected graphs
+.br
+sfdp \- filter for drawing large undirected graphs
 .SH SYNOPSIS
 \fBdot\fR
 [\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
@@ -48,6 +50,15 @@ fdp \- filter for drawing undirected graphs
 [files]
 .br
 \fBfdp\fR
+[\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
+[\fB\-T\fIlang\fR]
+[\fB\-l \fIlibfile\fR]
+[\fB\-o \fIoutfile\fR]
+[\fB\-v\fR]
+[\fB\-V\fR]
+[files]
+.br
+\fBsfdp\fR
 [\fB\-\fR(\fBG\fR|\fBN\fR|\fBE\fR)\fIname=value\fR]
 [\fB\-T\fIlang\fR]
 [\fB\-l \fIlibfile\fR]
@@ -105,6 +116,11 @@ non\(hytrivial component found in the search from the root component.
 draws undirected graphs using a ``spring'' model. It relies on a
 force\(hydirected approach in the spirit of Fruchterman and Reingold
 (cf. Software\(hyPractice & Experience 21(11), 1991, pp. 1129\(hy1164).
+.PP
+.I sfdp
+also draws undirected graphs using the ``spring'' model described
+above, but it uses a multi-scale approach to produce layouts
+of large graphs in a reasonably short time.
 .SH OUTPUT FORMATS
 Dot uses an extensible plugin mechanism for its output renderers,
 so to see what output formats your installation of dot supports
