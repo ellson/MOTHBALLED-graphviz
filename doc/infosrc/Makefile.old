@@ -71,7 +71,7 @@ record2.gif : record.dot
 	dot -Tgif -Grankdir=LR -o $@ $<
 
 sdlshapes.jpg : sdlshapes.dot
-	dot -Grankdir=LR -Tps -lsdl.ps sdlshapes.dot > sdlshapes.ps
+	dot -Tps -lsdl.ps sdlshapes.dot > sdlshapes.ps
 	ps_to_jpg.sh sdlshapes.ps sdlshapes.jpg
 
 attrs.html : attrs.1 attrs types mkattrs.sh mktypes.sh
