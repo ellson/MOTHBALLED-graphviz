@@ -433,7 +433,9 @@ quantum
      If quantum > 0.0, node label dimensions will be rounded to integral
      multiples of the quantum.
 quadtree
-     Quadtree scheme to use. Values are "normal", "fast" or "none".
+     Quadtree scheme to use. Values are "normal" (default), "fast" or "none". 
+     "fast" gives about 2-4 overall speedup compared with "normal", though 
+     layout quality can suffer a little. 
 rank
      Rank constraints on the nodes in a subgraph. If rank="same", all nodes
      are placed on the same rank. If rank="min", all nodes are placed on the
