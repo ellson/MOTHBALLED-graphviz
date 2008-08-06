@@ -1,5 +1,7 @@
 digraph test
 {
+    ranksep=0.25 
+    rankdir=LR 
     edge [style=invis]
     node [peripheries=0]
 
