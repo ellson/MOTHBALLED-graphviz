@@ -79,7 +79,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:Damping HREF=#d:Damping>Damping</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.99</TD><TD>0.0</TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:K HREF=#d:K>K</A>
-</TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER">0.3</TD><TD>0</TD><TD>fdp only</TD> </TR>
+</TD><TD>GC</TD><TD>double</TD><TD ALIGN="CENTER">0.3</TD><TD>0</TD><TD>sfdp, fdp only</TD> </TR>
  <TR><TD><A NAME=a:URL HREF=#d:URL>URL</A>
 </TD><TD>ENGC</TD><TD><A HREF=#k:lblString>lblString</A>
 </TD><TD ALIGN="CENTER">&#60;none&#62;</TD><TD></TD><TD>svg, postscript, map only</TD> </TR>
@@ -128,9 +128,9 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:defaultdist HREF=#d:defaultdist>defaultdist</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">1+(avg. len)*sqrt(|V|)</TD><TD>epsilon</TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:dim HREF=#d:dim>dim</A>
-</TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">2</TD><TD>2</TD><TD>fdp, neato only</TD> </TR>
+</TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">2</TD><TD>2</TD><TD>sfdp, fdp, neato only</TD> </TR>
  <TR><TD><A NAME=a:dimen HREF=#d:dimen>dimen</A>
-</TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">2</TD><TD>2</TD><TD>fdp, neato only</TD> </TR>
+</TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">2</TD><TD>2</TD><TD>sfdp, fdp, neato only</TD> </TR>
  <TR><TD><A NAME=a:dir HREF=#d:dir>dir</A>
 </TD><TD>E</TD><TD><A HREF=#k:dirType>dirType</A>
 </TD><TD ALIGN="CENTER">forward(directed)<BR>none(undirected)</TD><TD></TD><TD></TD> </TR>
@@ -256,6 +256,8 @@ This field indicates which graph component uses the attribute.
 </TD><TD>G</TD><TD>string</TD><TD ALIGN="CENTER">" :\t"</TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:len HREF=#d:len>len</A>
 </TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">1.0(neato)<BR>0.3(fdp)</TD><TD></TD><TD>fdp, neato only</TD> </TR>
+ <TR><TD><A NAME=a:levels HREF=#d:levels>levels</A>
+</TD><TD>G</TD><TD>int</TD><TD ALIGN="CENTER">MAXINT</TD><TD>0.0</TD><TD>sfdp only</TD> </TR>
  <TR><TD><A NAME=a:levelsgap HREF=#d:levelsgap>levelsgap</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD></TD><TD>neato only</TD> </TR>
  <TR><TD><A NAME=a:lhead HREF=#d:lhead>lhead</A>
@@ -335,6 +337,10 @@ This field indicates which graph component uses the attribute.
 </TD><TD>EN</TD><TD><A HREF=#k:point>point</A>
 <BR><A HREF=#k:splineType>splineType</A>
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:quadtree HREF=#d:quadtree>quadtree</A>
+</TD><TD>G</TD><TD><A HREF=#k:quadType>quadType</A>
+<BR><A HREF=#k:bool>bool</A>
+</TD><TD ALIGN="CENTER">"normal"</TD><TD></TD><TD>sfdp only</TD> </TR>
  <TR><TD><A NAME=a:quantum HREF=#d:quantum>quantum</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>0.0</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:rank HREF=#d:rank>rank</A>
@@ -356,6 +362,8 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:remincross HREF=#d:remincross>remincross</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>dot only</TD> </TR>
+ <TR><TD><A NAME=a:repulsiveforce HREF=#d:repulsiveforce>repulsiveforce</A>
+</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0.0</TD><TD>sfdp only</TD> </TR>
  <TR><TD><A NAME=a:resolution HREF=#d:resolution>resolution</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">96.0<BR>0.0</TD><TD></TD><TD>svg, bitmap output only</TD> </TR>
  <TR><TD><A NAME=a:root HREF=#d:root>root</A>
@@ -388,6 +396,9 @@ This field indicates which graph component uses the attribute.
 </TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
  <TR><TD><A NAME=a:skew HREF=#d:skew>skew</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.0</TD><TD>-100.0</TD><TD></TD> </TR>
+ <TR><TD><A NAME=a:smoothing HREF=#d:smoothing>smoothing</A>
+</TD><TD>G</TD><TD><A HREF=#k:smoothType>smoothType</A>
+</TD><TD ALIGN="CENTER">"none"</TD><TD></TD><TD>sfdp only</TD> </TR>
  <TR><TD><A NAME=a:splines HREF=#d:splines>splines</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 <BR>string</TD><TD ALIGN="CENTER"></TD><TD></TD><TD></TD> </TR>
@@ -438,7 +449,7 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:voro_margin HREF=#d:voro_margin>voro_margin</A>
 </TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">0.05</TD><TD>0.0</TD><TD>not dot</TD> </TR>
  <TR><TD><A NAME=a:weight HREF=#d:weight>weight</A>
-</TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0(dot)<BR>1(neato)</TD><TD></TD> </TR>
+</TD><TD>E</TD><TD>double</TD><TD ALIGN="CENTER">1.0</TD><TD>0(dot)<BR>1(neato,fdp,sfdp)</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:width HREF=#d:width>width</A>
 </TD><TD>N</TD><TD>double</TD><TD ALIGN="CENTER">0.75</TD><TD>0.01</TD><TD></TD> </TR>
  <TR><TD><A NAME=a:z HREF=#d:z>z</A>
@@ -954,6 +965,9 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:len HREF=#a:len><STRONG>len</STRONG></A>
 <DD>  Preferred edge length, in inches.
 
+<DT><A NAME=d:levels HREF=#a:levels><STRONG>levels</STRONG></A>
+<DD>  Number of levels allowed in the multilevel scheme.
+
 <DT><A NAME=d:levelsgap HREF=#a:levelsgap><STRONG>levelsgap</STRONG></A>
 <DD>  Specifies strictness of level constraints in neato
   when <TT><A HREF=#d:mode>mode</A>="ipsep" or "hier"</TT>.
@@ -1237,8 +1251,8 @@ This field indicates which graph component uses the attribute.
   For nodes, the position indicates the center of the node.
   On output, the coordinates are in <A HREF=#points>points</A>.
   <P>
-  In neato and fdp, pos can be used to set the initial position of a node.
-  By default, the coordinates are assumed to be in inches. However, the
+  In neato, fdp and sfdp, pos can be used to set the initial position of a node.
+  By default, the coordinates are assumed to be in points. However, the
   <A HREF=command.html#d:s>-s</A> command line flag can be used to specify
   different units.
   <P>
@@ -1247,6 +1261,14 @@ This field indicates which graph component uses the attribute.
   programs, and are therefore in points. Thus, <TT>neato -n</TT> can accept
   input correctly without requiring a <TT>-s</TT> flag and, in fact,
   ignores any such flag.
+
+<DT><A NAME=d:quadtree HREF=#a:quadtree><STRONG>quadtree</STRONG></A>
+<DD>  Quadtree scheme to use.
+  <P>
+  A TRUE bool value corresponds to "normal";
+  a FALSE bool value corresponds to "none".
+  As a slight exception to the normal interpretation of bool,
+  a value of "2" corresponds to "fast".
 
 <DT><A NAME=d:quantum HREF=#a:quantum><STRONG>quantum</STRONG></A>
 <DD>  If <B>quantum</B> > 0.0, node label dimensions
@@ -1327,6 +1349,11 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:remincross HREF=#a:remincross><STRONG>remincross</STRONG></A>
 <DD>  If true and there are multiple clusters, run cross
   minimization a second time.
+
+<DT><A NAME=d:repulsiveforce HREF=#a:repulsiveforce><STRONG>repulsiveforce</STRONG></A>
+<DD>  The power of the repulsive force used in an extended Fruchterman-Reingold 
+  force directed model. Values larger than 1 tend to reduce 
+  the warping effect at the expense of less clustering.
 
 <DT><A NAME=d:resolution HREF=#a:resolution><STRONG>resolution</STRONG></A>
 <DD>  This is a synonym for the <A HREF=#d:dpi>dpi</A> attribute.
@@ -1427,6 +1454,10 @@ This field indicates which graph component uses the attribute.
 <DT><A NAME=d:skew HREF=#a:skew><STRONG>skew</STRONG></A>
 <DD>  Skew factor for <A HREF=#d:shape><B>shape</B></A>=polygon. Positive values
   skew top of polygon to right; negative to left.
+
+<DT><A NAME=d:smoothing HREF=#a:smoothing><STRONG>smoothing</STRONG></A>
+<DD>  Specifies a post-processing step used to smooth out an uneven distribution 
+  of nodes.
 
 <DT><A NAME=d:splines HREF=#a:splines><STRONG>splines</STRONG></A>
 <DD>  Controls how, and if, edges are represented. If true, edges are drawn as
@@ -1543,9 +1574,7 @@ This field indicates which graph component uses the attribute.
 
 <DT><A NAME=d:weight HREF=#a:weight><STRONG>weight</STRONG></A>
 <DD>  Weight of edge. In dot, the heavier the weight, the shorter,
-  straighter and more vertical the edge is. In neato, the heavier the
-  weight, the more neato will try to place the end points so that the
-  length of the edge is <A HREF=#d:len>len</A>.
+  straighter and more vertical the edge is.
 
 <DT><A NAME=d:width HREF=#a:width><STRONG>width</STRONG></A>
 <DD>  Width of node, in inches. This is taken as the initial, minimum width
@@ -1812,6 +1841,12 @@ the given types.
   At present, in this case, there is no way to specify that the compass
   point should be used.
 
+<DT><A NAME=k:quadType><STRONG>quadType</STRONG></A>
+<DD>"normal", "fast", "none". 
+  <P>
+  Using "fast" gives about a 2-4 times overall speedup compared with "normal", 
+  though layout quality can suffer a little. 
+
 <DT><A NAME=k:rankType><STRONG>rankType</STRONG></A>
 <DD>"same", "min", "source", "max", "sink"
 
@@ -1832,6 +1867,10 @@ the given types.
   <A HREF=shapes.html#polygon>polygon-based</A>,
   <A HREF=shapes.html#record>record-based</A> and
   <A HREF=shapes.html#epsf>user-defined</A>.
+
+<DT><A NAME=k:smoothType><STRONG>smoothType</STRONG></A>
+<DD>Values are "none", "avg_dist", "graph_dist", "power_dist", "rng", 
+  "spring" and "triangle".
 
 <DT><A NAME=k:splineType><STRONG>splineType</STRONG></A>
 <DD>spline ( ';' spline )*<BR>
