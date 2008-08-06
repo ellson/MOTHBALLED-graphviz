@@ -95,6 +95,9 @@ static boolean pango_textlayout(textpara_t * para, char **fontpath)
 	    buf[0] = '\0';
 	    if (psfnt)
 		strcat(buf, "(ps) ");
+	    strcat(buf, "(");
+	    strcat(buf, fontclass);
+	    strcat(buf, ") ");
 #ifdef HAVE_PANGO_FC_FONT_LOCK_FACE
 	    if (strcmp(fontclass, "PangoCairoFcFont") == 0) {
 	        FT_Face face;
