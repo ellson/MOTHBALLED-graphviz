@@ -17,6 +17,9 @@
 # The files listed after each give the main data files used to
 # generate the page.
 
+INSTALL = cp
+INSTALL_DIR = ../info
+
 XGIF = forward.gif back.gif both.gif nohead.gif
 
 MGIF = constraint.gif record.gif html1.gif html2.gif fill.gif round.gif \
@@ -52,7 +55,7 @@ GIF = $(SGIF) $(AGIF) $(MGIF) $(A2GIF)
 DOTS = html2.dot html3.dot html4.dot
 HTML = attrs.html colors.html command.html lang.html output.html shapes.html \
        arrows.html
-INSTALL_FILES = $(HTML) $(DOTS) $(SGIF) $(AGIF) $(A2GIF) $(MGIF) $(XGIF) $(MPNG)
+INSTALL_FILES = $(HTML) $(DOTS) $(SGIF) $(AGIF) $(A2GIF) $(MGIF) $(XGIF) $(MJPG)
 
 .SUFFIXES: .gif .dot
 
@@ -62,7 +65,7 @@ INSTALL_FILES = $(HTML) $(DOTS) $(SGIF) $(AGIF) $(A2GIF) $(MGIF) $(XGIF) $(MPNG)
 all : $(HTML) $(GIF)
 
 install : all
-	$(INSTALL) $(INSTALL_FILES)
+	$(INSTALL) $(INSTALL_FILES) $(INSTALL_DIR)
 
 record2.gif : record.dot
 	dot -Tgif -Grankdir=LR -o $@ $<
@@ -102,7 +105,7 @@ shapes : shapelist mkshapes.sh
 	mkshapes.sh
 	touch shapes
  
-shapes.html : shapes shapes.1 mkshhtml.sh shapes.2 html.html shapes.3 record.gif sdlshapes.png record2.gif
+shapes.html : shapes shapes.1 mkshhtml.sh shapes.2 html.html shapes.3 record.gif record2.gif sdlshapes.jpg
 	cat shapes.1 > shapes.html
 	mkshhtml.sh >> shapes.html
 	cat shapes.2 >> shapes.html
@@ -143,7 +146,7 @@ clean :
 
 distclean : clean
 	rm -f attrs.html colors.html output.html shapes.html lang.html arrows.html
-	rm -f $(A2GIF) $(AGIF) $(SGIF) $(MPNG) $(MGIF) shapes
+	rm -f $(A2GIF) $(AGIF) $(SGIF) $(MJPG) $(MGIF) shapes
 	(for s in $$(cat shapelist); do rm -f $$s.gif; done)
 
 EXTRA_DIST = $(XGIF) mklang.y mkarrows.sh mkattrs.sh mkshapes.sh \

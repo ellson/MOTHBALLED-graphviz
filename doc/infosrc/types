@@ -220,6 +220,11 @@ the port. Thus, if node <TT>A</TT> has a port <TT>w</TT>, then
 <TT>headport=w</TT> will refer to the port and not the compass point.
 At present, in this case, there is no way to specify that the compass
 point should be used.
+:quadType
+"normal", "fast", "none". 
+<P>
+Using "fast" gives about a 2-4 times overall speedup compared with "normal", 
+though layout quality can suffer a little. 
 :rankdir
 "TB", "LR", "BT", "RL", corresponding to directed graphs drawn
 from top to bottom, from left to right, from bottom to top, and from
@@ -243,6 +248,9 @@ If a spline has points p<SUB>1</SUB> p<SUB>2</SUB> p<SUB>3</SUB> ... p<SUB>n</SU
 "%d,%d,%d,%d"  The rect llx,lly,urx,ury gives the coordinates, in
  points, of the lower-left corner (llx,lly) and the upper-right corner
  (urx,ury).
+:smoothType
+Values are "none", "avg_dist", "graph_dist", "power_dist", "rng", 
+"spring" and "triangle".
 :style
 styleItem ( ',' styleItem )*<BR>
 <TABLE>

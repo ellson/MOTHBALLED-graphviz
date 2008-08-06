@@ -26,7 +26,7 @@
 #  the notes field, if present, consists of a comma-separated list of:
 #    
 #   bitmap cmap map ps svg - attribute limited to specified output formats
-#   dot neato twopi circo fdp - attribute limited to specified layouts
+#   dot neato twopi circo fdp sfdp - attribute limited to specified layouts
 #   notdot - attribute use in all layouts but dot
 #   write - attribute is write-only
 #   obsolete - attribute is obsolete
@@ -184,10 +184,10 @@ Only applicable if <A HREF=#d:pack>pack</A>=false.
 :decorate:E:bool:false;
 If true, attach edge label to edge by a 2-segment
 polyline, underlining the label, then going to the closest point of spline.
-:dim:G:int:2:2; neato,fdp
+:dim:G:int:2:2; neato,fdp,sfdp
 Set the number of dimensions used for the layout. The maximum value
 allowed is 10.
-:dimen:G:int:2:2; neato,fdp
+:dimen:G:int:2:2; neato,fdp,sfdp
 Set the number of dimensions used for rendering. 
 The maximum value allowed is 10.
 If both <TT>dimen</TT> and <TT>dim</TT> are set, the latter specifies
@@ -392,7 +392,7 @@ corresponding dimension of the node, that dimension of the
 image is scaled down to fit the node. As with the case of
 expansion, if  <TT>imagescale=true</TT>, width and height are
 scaled uniformly.
-:K:GC:double:0.3:0;  fdp
+:K:GC:double:0.3:0;  fdp,sfdp
 Spring constant used in virtual physical model. It roughly corresponds
 to an ideal edge length (in inches), in that increasing K tends to
 increase the distance between nodes.
@@ -487,6 +487,8 @@ Specifies the separator characters used to split the
 <A HREF=#d:layers>layers </A>attribute into a list of layer names.
 :len:E:double:1.0(neato)/0.3(fdp); neato,fdp
 Preferred edge length, in inches.
+:levels:G:int:MAXINT:0.0;  sfdp
+Number of levels allowed in the multilevel scheme.
 :levelsgap:G:double:0.0;  neato
 Specifies strictness of level constraints in neato
 when <TT><A HREF=#d:mode>mode</A>="ipsep" or "hier"</TT>.
@@ -739,8 +741,8 @@ Position of node, or spline control points.
 For nodes, the position indicates the center of the node.
 On output, the coordinates are in <A HREF=#points>points</A>.
 <P>
-In neato and fdp, pos can be used to set the initial position of a node.
-By default, the coordinates are assumed to be in inches. However, the
+In neato, fdp and sfdp, pos can be used to set the initial position of a node.
+By default, the coordinates are assumed to be in points. However, the
 <A HREF=command.html#d:s>-s</A> command line flag can be used to specify
 different units.
 <P>
@@ -749,6 +751,13 @@ neato, it is assumed the positions have been set by one of the layout
 programs, and are therefore in points. Thus, <TT>neato -n</TT> can accept
 input correctly without requiring a <TT>-s</TT> flag and, in fact,
 ignores any such flag.
+:quadtree:G:quadType/bool:"normal";  sfdp
+Quadtree scheme to use.
+<P>
+A TRUE bool value corresponds to "normal";
+a FALSE bool value corresponds to "none".
+As a slight exception to the normal interpretation of bool,
+a value of "2" corresponds to "fast".
 :quantum:G:double:0.0:0.0;
 If <B>quantum</B> > 0.0, node label dimensions
 will be rounded to integral multiples of the quantum.
@@ -821,6 +830,10 @@ If true, force polygon to be regular.
 :remincross:G:bool:false;  dot
 If true and there are multiple clusters, run cross
 minimization a second time.
+:repulsiveforce:G:double:1.0:0.0;  sfdp
+The power of the repulsive force used in an extended Fruchterman-Reingold 
+force directed model. Values larger than 1 tend to reduce 
+the warping effect at the expense of less clustering.
 :resolution:G:double:96.0/0.0;  bitmap,svg
 This is a synonym for the <A HREF=#d:dpi>dpi</A> attribute.
 :root:GN:string/bool:""(graphs)/false(nodes);  twopi,circo
@@ -907,6 +920,9 @@ Note that there is some interaction between the <B>size</B> and
 :skew:N:double:0.0:-100.0;
 Skew factor for <A HREF=#d:shape><B>shape</B></A>=polygon. Positive values
 skew top of polygon to right; negative to left.
+:smoothing:G:smoothType:"none";  sfdp
+Specifies a post-processing step used to smooth out an uneven distribution 
+of nodes.
 :splines:G:bool/string;
 Controls how, and if, edges are represented. If true, edges are drawn as
 splines routed around nodes; if false, edges are drawn as line segments.
@@ -1009,11 +1025,9 @@ Voronoi technique. dim' = (1+2*margin)*dim.
 #  Obsolete, replaced by sep
 #w:E:double:1.0; neato
 #  Redundant definition of weight in neato, cf. bug 9.
-:weight:E:double:1.0:0(dot)/1(neato);
+:weight:E:double:1.0:0(dot)/1(neato,fdp,sfdp);
 Weight of edge. In dot, the heavier the weight, the shorter,
-straighter and more vertical the edge is. In neato, the heavier the
-weight, the more neato will try to place the end points so that the
-length of the edge is <A HREF=#d:len>len</A>.
+straighter and more vertical the edge is.
 :width:N:double:0.75:0.01;
 Width of node, in inches. This is taken as the initial, minimum width
 of the node. If <A HREF=#d:fixedsize><B>fixedsize</B></A> is true, this
