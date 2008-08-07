@@ -18,19 +18,12 @@
 #include "config.h"
 #endif
 
-#ifdef USE_CGRAPH
-#include <cgraph.h>
-#else
-typedef char Agnodeinfo_t;
-typedef char Agedgeinfo_t;
-typedef char Agraphinfo_t;
-#include <graph.h>
-#endif
-#include <ingraphs.h>
+#include "cgraph.h"
+#include "ingraphs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H
-#include	<unistd.h>
+#include <unistd.h>
 #endif
 
 #ifdef HAVE_GETOPT_H
@@ -80,11 +73,7 @@ static void init(int argc, char *argv[])
 
 static Agraph_t *gread(FILE * fp)
 {
-#ifdef USE_CGRAPH
     return agread(fp, (Agdisc_t *) 0);
-#else
-    return agread(fp);
-#endif
 }
 
 int main(int argc, char **argv)
@@ -93,9 +82,6 @@ int main(int argc, char **argv)
     ingraph_state ig;
 
     init(argc, argv);
-#ifndef USE_CGRAPH
-    aginit ();
-#endif
     newIngraph(&ig, Files, gread);
 
     while ((g = nextGraph(&ig)) != 0) {
