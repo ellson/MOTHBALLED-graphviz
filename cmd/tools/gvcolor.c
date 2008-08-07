@@ -27,8 +27,7 @@
 /* if NC changes, a bunch of scanf calls below are in trouble */
 #define	NC	3		/* size of HSB color vector */
 
-#ifdef USE_CGRAPH
-#include <cgraph.h>
+#include "cgraph.h"
 #include <stdlib.h>
 typedef struct Agnodeinfo_t {
     Agrec_t h;
@@ -39,30 +38,10 @@ typedef struct Agnodeinfo_t {
 #define ND_relrank(n) (((Agnodeinfo_t*)((n)->base.data))->relrank)
 #define ND_x(n) (((Agnodeinfo_t*)((n)->base.data))->x)
 
-#else
-typedef struct Agnodeinfo_t {
-    double relrank;		/* coordinate of its rank, smaller means lower rank */
-    double x[NC];		/* color vector */
-} Agnodeinfo_t;
-
-typedef struct Agedgeinfo_t {
-    char for_ansi_C;
-} Agedgeinfo_t;
-typedef struct Agraphinfo_t {
-    char for_ansi_C;
-} Agraphinfo_t;
-
-#define ND_relrank(n) (n)->u.relrank
-#define ND_x(n) (n)->u.x
-#define aghead(e) ((e)->head)
-#define agtail(e) ((e)->tail)
-
-#include <graph.h>
-#endif
-#include <ingraphs.h>
+#include "ingraphs.h"
 #include <stdio.h>
 #ifdef HAVE_UNISTD_H
-#include	<unistd.h>
+#include <unistd.h>
 #endif
 
 #ifdef HAVE_GETOPT_H
@@ -144,23 +123,14 @@ static void color(Agraph_t * g)
     double x, y, maxrank = 0.0;
     double sum[NC], d, lowsat, highsat;
 
-#ifdef USE_CGRAPH
     if (agattr(g, AGNODE, "pos", 0) == NULL) {
-#else
-    if (agfindattr(g->proto->n, "pos") == NULL) {
-#endif
 	fprintf(stderr,
 		"graph must be run through 'dot' before 'gvcolor'\n");
 	exit(1);
     }
-#ifdef USE_CGRAPH
     aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
     if (agattr(g, AGNODE, "style", 0) == NULL)
 	agattr(g, AGNODE, "style", "filled");
-#else
-    if (agfindattr(g->proto->n, "style") == NULL)
-	agnodeattr(g, "style", "filled");
-#endif
     if ((p = agget(g, "Defcolor")))
 	setcolor(p, Defcolor);
 
@@ -265,12 +235,10 @@ static void color(Agraph_t * g)
     }
 }
 
-#ifdef USE_CGRAPH
 static Agraph_t *gread(FILE * fp)
 {
     return agread(fp, (Agdisc_t *) 0);
 }
-#endif
 
 int main(int argc, char **argv)
 {
@@ -278,12 +246,7 @@ int main(int argc, char **argv)
     ingraph_state ig;
 
     init(argc, argv);
-#ifdef USE_CGRAPH
     newIngraph(&ig, Files, gread);
-#else
-    newIngraph(&ig, Files, agread);
-    aginit();
-#endif
 
     while ((g = nextGraph(&ig)) != 0) {
 	color(g);
