@@ -21,11 +21,7 @@ extern "C" {
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#ifdef USE_CGRAPH
-#include <cgraph.h>
-#else
-#include <agraph.h>
-#endif
+#include "cgraph.h"
 
     typedef Dt_t queue;
 
