@@ -2,6 +2,8 @@ cairo-*
 gd-*
 gettext-*
 glib-*
+libiconv-*
+libpng-*
 pango-*
 pixman-*
 pkg-config-*
