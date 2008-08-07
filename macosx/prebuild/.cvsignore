@@ -1,0 +1,8 @@
+cairo-*
+gd-*
+gettext-*
+glib-*
+pango-*
+pixman-*
+pkg-config-*
+usr
