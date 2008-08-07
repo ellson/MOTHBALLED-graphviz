@@ -21,14 +21,10 @@ extern "C" {
 #ifndef GPRSTATE_H
 #define GPRSTATE_H
 
-#include <sfio.h>
-#ifdef USE_CGRAPH
-#include <cgraph.h>
-#else
-#include <agraph.h>
-#endif
-#include <ast.h>
-#include <vmalloc.h>
+#include "sfio.h"
+#include "cgraph.h"
+#include "ast.h"
+#include "vmalloc.h"
 
     typedef enum { TV_flat, TV_bfs, TV_dfs, TV_fwd, TV_rev, TV_ne,
 	    TV_en } trav_type;

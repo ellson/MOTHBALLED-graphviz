@@ -32,16 +32,12 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include <compile.h>
+#include "compile.h"
 #include <assert.h>
-#ifdef USE_CGRAPH
-#include <cgraph.h>
-#else
-#include <agraph.h>
-#endif
+#include "cgraph.h"
 #include <error.h>
 #include <actions.h>
-#include <sfstr.h>
+#include "sfstr.h"
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
@@ -366,11 +362,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    break;
 	case M_indegree:
 	    if (AGTYPE(objp) == AGNODE)
-#ifdef USE_CGRAPH
 		v->integer = agdegree(state->curgraph, (Agnode_t *) objp, 1, 0);
-#else
-		v->integer = agdegree((Agnode_t *) objp, 1, 0);
-#endif
 	    else {
 		error(ERROR_FATAL, "indegree of non-node");
 		return -1;
@@ -378,11 +370,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    break;
 	case M_outdegree:
 	    if (AGTYPE(objp) == AGNODE)
-#ifdef USE_CGRAPH
 		v->integer = agdegree(state->curgraph, (Agnode_t *) objp, 0, 1);
-#else
-		v->integer = agdegree((Agnode_t *) objp, 0, 1);
-#endif
 	    else {
 		error(ERROR_FATAL, "outdegree of non-node");
 		return -1;
@@ -390,11 +378,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    break;
 	case M_degree:
 	    if (AGTYPE(objp) == AGNODE)
-#ifdef USE_CGRAPH
 		v->integer = agdegree(state->curgraph, (Agnode_t *) objp, 1, 1);
-#else
-		v->integer = agdegree((Agnode_t *) objp, 1, 1);
-#endif
 	    else {
 		error(ERROR_FATAL, "degree of non-node");
 		return -1;
@@ -635,11 +619,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_nxtnode:
 	    np = INT2PTR(Agnode_t *, args[0].integer);
 	    if (np) {
-#ifdef USE_CGRAPH
 		np = agnxtnode(state->curgraph, np);
-#else
-		np = agnxtnode(np);
-#endif
 		v.integer = PTR2INT(np);
 	    } else {
 		error(ERROR_WARNING, "NULL node passed to nxtnode()");
@@ -647,7 +627,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    }
 	    break;
 	case F_nxtnodesg:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
@@ -659,9 +638,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL node passed to nxtnode_sg()");
 		v.integer = 0;
 	    }
-#else
-		error(ERROR_FATAL, "nxtnode_sg currently unsupported");
-#endif
 	    break;
 	case F_isnode:
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
@@ -673,7 +649,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    }
 	    break;
 	case F_issubnode:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
@@ -684,12 +659,8 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL node passed to isSubnode()");
 		v.integer = 0;
 	    }
-#else
-		error(ERROR_FATAL, "isSubnode currently unsupported");
-#endif
 	    break;
 	case F_indegree:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
@@ -700,12 +671,8 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL node passed to indegreeOf()");
 		v.integer = 0;
 	    }
-#else
-		error(ERROR_FATAL, "indegreeOf currently unsupported");
-#endif
 	    break;
 	case F_outdegree:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
@@ -716,12 +683,8 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL node passed to outdegreeOf()");
 		v.integer = 0;
 	    }
-#else
-		error(ERROR_FATAL, "outdegreeOf currently unsupported");
-#endif
 	    break;
 	case F_degree:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
@@ -732,9 +695,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL node passed to degreeOf()");
 		v.integer = 0;
 	    }
-#else
-		error(ERROR_FATAL, "degreeOf currently unsupported");
-#endif
 	    break;
 	case F_isin:
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
@@ -795,7 +755,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    }
 	    break;
 	case F_edgesg:
-#ifdef USE_CGRAPH
 	    key = args[3].string;
 	    if (*key == '\0')
 		key = 0;
@@ -812,9 +771,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		ep = openEdge(gp, np, hp, key);
 		v.integer = PTR2INT(ep);
 	    }
-#else
-		error(ERROR_FATAL, "edge_sg currently unsupported");
-#endif
 	    break;
 	case F_addedge:
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
@@ -844,7 +800,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		v.integer = PTR2INT(isEdge(state->curgraph, np, hp, key));
 	    break;
 	case F_isedgesg:
-#ifdef USE_CGRAPH
 	    key = args[3].string;
 	    if (*key == '\0')
 		key = 0;
@@ -861,12 +816,8 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		v.integer = 0;
 	    } else
 		v.integer = PTR2INT(isEdge(gp, np, hp, key));
-#else
-		error(ERROR_FATAL, "isEdge_sg currently unsupported");
-#endif
 	    break;
 	case F_issubedge:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    ep = INT2PTR(Agedge_t *, args[1].integer);
 	    if (!gp)
@@ -877,18 +828,11 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL edge passed to isSubedge()");
 		v.integer = 0;
 	    }
-#else
-		error(ERROR_FATAL, "isSubedge currently unsupported");
-#endif
 	    break;
 	case F_fstout:
 	    np = INT2PTR(Agnode_t *, args[0].integer);
 	    if (np) {
-#ifdef USE_CGRAPH
 		ep = agfstout(state->curgraph, np);
-#else
-		ep = agfstout(np);
-#endif
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL node passed to fstout()");
@@ -896,7 +840,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    }
 	    break;
 	case F_fstoutsg:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
@@ -908,18 +851,11 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL node passed to fstout_sg()");
 		v.integer = 0;
 	    }
-#else
-		error(ERROR_FATAL, "fstout_sg currently unsupported");
-#endif
 	    break;
 	case F_nxtout:
 	    ep = INT2PTR(Agedge_t *, args[0].integer);
 	    if (ep) {
-#ifdef USE_CGRAPH
 		ep = agnxtout(state->curgraph, ep);
-#else
-		ep = agnxtout(ep);
-#endif
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL edge passed to nxtout()");
@@ -927,7 +863,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    }
 	    break;
 	case F_nxtoutsg:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    ep = INT2PTR(Agedge_t *, args[1].integer);
 	    if (!gp)
@@ -939,18 +874,11 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL edge passed to nxtout_sg()");
 		v.integer = 0;
 	    }
-#else
-		error(ERROR_FATAL, "nxtout_sg currently unsupported");
-#endif
 	    break;
 	case F_fstin:
 	    np = INT2PTR(Agnode_t *, args[0].integer);
 	    if (np) {
-#ifdef USE_CGRAPH
 		ep = agfstin(state->curgraph, np);
-#else
-		ep = agfstin(np);
-#endif
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL node passed to fstin()");
@@ -958,7 +886,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    }
 	    break;
 	case F_fstinsg:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
@@ -970,18 +897,11 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL node passed to fstin_sg()");
 		v.integer = 0;
 	    }
-#else
-		error(ERROR_FATAL, "fstin_sg currently unsupported");
-#endif
 	    break;
 	case F_nxtin:
 	    ep = INT2PTR(Agedge_t *, args[0].integer);
 	    if (ep) {
-#ifdef USE_CGRAPH
 		ep = agnxtin(state->curgraph, ep);
-#else
-		ep = agnxtin(ep);
-#endif
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL edge passed to nxtin()");
@@ -989,7 +909,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    }
 	    break;
 	case F_nxtinsg:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    ep = INT2PTR(Agedge_t *, args[1].integer);
 	    if (!gp)
@@ -1001,18 +920,11 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL edge passed to nxtin_sg()");
 		v.integer = 0;
 	    }
-#else
-		error(ERROR_FATAL, "nxtin_sg currently unsupported");
-#endif
 	    break;
 	case F_fstedge:
 	    np = INT2PTR(Agnode_t *, args[0].integer);
 	    if (np) {
-#ifdef USE_CGRAPH
 		ep = agfstedge(state->curgraph, np);
-#else
-		ep = agfstedge(np);
-#endif
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL node passed to fstedge()");
@@ -1020,7 +932,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    }
 	    break;
 	case F_fstedgesg:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
@@ -1032,9 +943,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL node passed to fstedge_sg()");
 		v.integer = 0;
 	    }
-#else
-		error(ERROR_FATAL, "fstedge_sg currently unsupported");
-#endif
 	    break;
 	case F_nxtedge:
 	    ep = INT2PTR(Agedge_t *, args[0].integer);
@@ -1046,16 +954,11 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL node passed to nxtedge()");
 		v.integer = 0;
 	    } else {
-#ifdef USE_CGRAPH
 		ep = agnxtedge(state->curgraph, ep, np);
-#else
-		ep = agnxtedge(ep, np);
-#endif
 		v.integer = PTR2INT(ep);
 	    }
 	    break;
 	case F_nxtedgesg:
-#ifdef USE_CGRAPH
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    ep = INT2PTR(Agedge_t *, args[1].integer);
 	    np = INT2PTR(Agnode_t *, args[2].integer);
@@ -1071,9 +974,6 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		ep = agnxtedge(gp, ep, np);
 		v.integer = PTR2INT(ep);
 	    }
-#else
-		error(ERROR_FATAL, "nxtedge_sg currently unsupported");
-#endif
 	    break;
 	case F_copy:
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
@@ -2342,18 +2242,12 @@ Agedge_t *openEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key)
     root = sameG(t, h, "openEdge", "tail and head node");
     if (!root)
 	return 0;
-#ifdef USE_CGRAPH
     if (g && (root != agroot(g)))
 	return 0;
     else
 	g = root;
 
     ep = agedge(g, t, h, key, 1);
-#else
-    t = (Agnode_t *) agrebind(root, OBJ(t));
-    h = (Agnode_t *) agrebind(root, OBJ(h));
-    ep = agedge(t, h, key, 1);
-#endif
     if (ep && !aggetrec(ep, UDATA, 0))
 	agbindrec(ep, UDATA, sizeof(edata), 0);
     return ep;

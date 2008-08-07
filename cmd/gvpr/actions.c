@@ -22,8 +22,8 @@
 #include <actions.h>
 #include <error.h>
 #include <ast.h>
-#include <compile.h>
-#include <sfstr.h>
+#include "compile.h"
+#include "sfstr.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -104,13 +104,8 @@ void nodeInduce(Agraph_t * selected)
     base = agroot(selected);
     if (base == selected)
 	return;
-#ifdef USE_CGRAPH
     for (n = agfstnode(selected); n; n = agnxtnode(selected, n)) {
 	for (e = agfstout(base, n); e; e = agnxtout(base, e)) {
-#else
-    for (n = agfstnode(selected); n; n = agnxtnode(n)) {
-	for (e = agfstout(agsubnode(base, n, FALSE)); e; e = agnxtout(e)) {
-#endif
 	    if (agsubnode(selected, aghead(e), FALSE))
 		agsubedge(selected, e, TRUE);
 	}
@@ -205,34 +200,18 @@ static Agraph_t *cloneSubg(Agraph_t * tgt, Agraph_t * g)
     ng = (Agraph_t *) (copy(tgt, OBJ(g)));
     if (!ng)
 	return 0;
-#ifdef USE_CGRAPH
     for (t = agfstnode(g); t; t = agnxtnode(g, t)) {
-#else
-    for (t = agfstnode(g); t; t = agnxtnode(t)) {
-#endif
 	newt = agnode(tgt, agnameof(t), 0);
 	if (!newt)
 	    error(ERROR_PANIC, "node %s not found in cloned graph %s",
 		  agnameof(t), agnameof(tgt));
 	agsubnode(ng, newt, 1);
     }
-#ifdef USE_CGRAPH
     for (t = agfstnode(g); t; t = agnxtnode(g, t)) {
-#else
-    for (t = agfstnode(g); t; t = agnxtnode(t)) {
-#endif
 	newt = agnode(tgt, agnameof(t), 0);
-#ifdef USE_CGRAPH
 	for (e = agfstout(g, t); e; e = agnxtout(g, e)) {
-#else
-	for (e = agfstout(t); e; e = agnxtout(e)) {
-#endif
 	    newh = agnode(tgt, agnameof(aghead(e)), 0);
-#ifdef USE_CGRAPH
 	    newe = agedge(tgt, newt, newh, agnameof(e), 0);
-#else
-	    newe = agedge(newt, newh, agnameof(e), 0);
-#endif
 	    if (!newe)
 		error(ERROR_PANIC,
 		      "edge (%s,%s)[%s] not found in cloned graph %s",
@@ -259,23 +238,14 @@ static void cloneGraph(Agraph_t * tgt, Agraph_t * src)
     Agnode_t *t;
     Agraph_t *sg;
 
-#ifdef USE_CGRAPH
     for (t = agfstnode(src); t; t = agnxtnode(src, t)) {
-#else
-    for (t = agfstnode(src); t; t = agnxtnode(t)) {
-#endif
 	if (!copy(tgt, OBJ(t))) {
 	    error(ERROR_FATAL, "error cloning node %s from graph %s",
 		  agnameof(t), agnameof(src));
 	}
     }
-#ifdef USE_CGRAPH
     for (t = agfstnode(src); t; t = agnxtnode(src, t)) {
 	for (e = agfstout(src, t); e; e = agnxtout(src, e)) {
-#else
-    for (t = agfstnode(src); t; t = agnxtnode(t)) {
-	for (e = agfstout(t); e; e = agnxtout(e)) {
-#endif
 	    if (!copy(tgt, OBJ(e))) {
 		error(ERROR_FATAL,
 		      "error cloning edge (%s,%s)[%s] from graph %s",
@@ -353,11 +323,7 @@ static void cc_dfs(Agraph_t* g, Agraph_t * comp, Agnode_t * n)
 
     CCMARK(n);
     agidnode(comp, AGID(n), 1);
-#ifdef USE_CGRAPH
     for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
-#else
-    for (e = agfstedge(n); e; e = agnxtedge(e, n)) {
-#endif
 	if (agtail(e) == n)
 	    other = aghead(e);
 	else
@@ -379,11 +345,7 @@ Agraph_t *compOf(Agraph_t * g, Agnode_t * n)
 
     if (!(n = agidnode(g, AGID(n), 0)))
 	return 0;		/* n not in g */
-#ifdef USE_CGRAPH
     for (np = agfstnode(g); np; np = agnxtnode(g, np))
-#else
-    for (np = agfstnode(g); np; np = agnxtnode(np))
-#endif
 	CCUNMARK(np);
 
     sprintf(name, "_cc_%d", id++);
@@ -401,7 +363,6 @@ Agedge_t *isEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key)
 {
     Agraph_t *root;
 
-#ifdef USE_CGRAPH
     root = sameG(t, h, "isEdge", "tail and head node");
     if (!root)
 	return 0;
@@ -411,14 +372,6 @@ Agedge_t *isEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key)
 	g = root;
 
     return agedge(g, t, h, key, 0);
-#else
-    if ((root = sameG(t, h, "isEdge", "tail and head node"))) {
-	t = (Agnode_t *) agrebind(root, OBJ(t));
-	h = (Agnode_t *) agrebind(root, OBJ(h));
-	return agedge(t, h, key, 0);
-    } else
-	return 0;
-#endif
 }
 
 /* isIn:
@@ -520,9 +473,6 @@ int deleteObj(Agraph_t * g, Agobj_t * obj)
     /* node or edge */
     if (!g)
 	g = agroot(agraphof(obj));
-#ifndef USE_CGRAPH
-    obj = agrebind(g, obj);
-#endif
     if (obj)
 	return agdelete(g, obj);
     else

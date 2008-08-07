@@ -25,20 +25,16 @@
 #include "config.h"
 #endif
 #ifdef HAVE_UNISTD_H
-#include	<unistd.h>
+#include <unistd.h>
 #else
-#include	<compat_unistd.h>
+#include "compat_unistd.h"
 #endif
-#include <gprstate.h>
-#ifdef USE_CGRAPH
-#include <cgraph.h>
-#else
-#include <agraph.h>
-#endif
-#include <ingraphs.h>
-#include <compile.h>
-#include <queue.h>
-#include <sfstr.h>
+#include "gprstate.h"
+#include "cgraph.h"
+#include "ingraphs.h"
+#include "compile.h"
+#include "queue.h"
+#include "sfstr.h"
 #include <error.h>
 #include <string.h>
 #include <ctype.h>
@@ -377,11 +373,7 @@ static Agnode_t *nextNode(Gpr_t * state, nodestream * nodes)
     if (state->tvroot != nodes->oldroot) {
 	np = nodes->oldroot = state->tvroot;
     } else if (nodes->prev) {
-#ifdef USE_CGRAPH
 	np = nodes->prev = agnxtnode(state->curgraph, nodes->prev);
-#else
-	np = nodes->prev = agnxtnode(nodes->prev);
-#endif
     } else {
 	np = nodes->prev = agfstnode(state->curgraph);
     }
@@ -394,13 +386,8 @@ static Agnode_t *nextNode(Gpr_t * state, nodestream * nodes)
 #define PUSH(x)  (((x)->iu.integer)|=2)
 #define POP(x)  (((x)->iu.integer)&=(~2))
 
-#ifdef USE_CGRAPH
 typedef Agedge_t *(*fstedgefn_t) (Agraph_t*, Agnode_t *);
 typedef Agedge_t *(*nxttedgefn_t) (Agraph_t*, Agedge_t *, Agnode_t *);
-#else
-typedef Agedge_t *(*fstedgefn_t) (Agnode_t *);
-typedef Agedge_t *(*nxttedgefn_t) (Agedge_t *, Agnode_t *);
-#endif
 
 typedef struct {
     fstedgefn_t fstedge;
@@ -418,9 +405,7 @@ static void travBFS(Gpr_t * state, comp_prog * xprog)
     ndata *nd;
     Agnode_t *n;
     Agedge_t *cure;
-#ifdef USE_CGRAPH
     Agraph_t* g = state->curgraph;
-#endif
 
     q = mkQueue();
     nodes.oldroot = 0;
@@ -436,11 +421,7 @@ static void travBFS(Gpr_t * state, comp_prog * xprog)
 	    MARK(nd);
  	    POP(nd);
 	    evalNode(state, xprog, n);
-#ifdef USE_CGRAPH
 	    for (cure = agfstedge(g, n); cure; cure = agnxtedge(g, cure, n)) {
-#else
-	    for (cure = agfstedge(n); cure; cure = agnxtedge(cure, n)) {
-#endif
 		nd = nData(cure->node);
 		if (MARKED(nd)) continue;
 		evalEdge(state, xprog, cure);
@@ -483,17 +464,10 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 	evalNode(state, xprog, n);
 	more = 1;
 	while (more) {
-#ifdef USE_CGRAPH
 	    if (cure)
 		cure = fns->nxtedge(state->curgraph, cure, curn);
 	    else
 		cure = fns->fstedge(state->curgraph, curn);
-#else
-	    if (cure)
-		cure = fns->nxtedge(cure, curn);
-	    else
-		cure = fns->fstedge(curn);
-#endif
 	    if (cure) {
 		if (entry == agopp(cure))
 		    continue;
@@ -529,12 +503,8 @@ static void travDFS(Gpr_t * state, comp_prog * xprog, trav_fns * fns)
 static void travNodes(Gpr_t * state, comp_prog * xprog)
 {
     Agnode_t *n;
-#ifdef USE_CGRAPH
     Agraph_t* g = state->curgraph;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-#else
-    for (n = agfstnode(state->curgraph); n; n = agnxtnode(n)) {
-#endif
 	evalNode(state, xprog, n);
     }
 }
@@ -543,14 +513,9 @@ static void travEdges(Gpr_t * state, comp_prog * xprog)
 {
     Agnode_t *n;
     Agedge_t *e;
-#ifdef USE_CGRAPH
     Agraph_t* g = state->curgraph;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-#else
-    for (n = agfstnode(state->curgraph); n; n = agnxtnode(n)) {
-	for (e = agfstout(n); e; e = agnxtout(e)) {
-#endif
 	    evalEdge(state, xprog, e);
 	}
     }
@@ -560,19 +525,11 @@ static void travFlat(Gpr_t * state, comp_prog * xprog)
 {
     Agnode_t *n;
     Agedge_t *e;
-#ifdef USE_CGRAPH
     Agraph_t* g = state->curgraph;
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-#else
-    for (n = agfstnode(state->curgraph); n; n = agnxtnode(n)) {
-#endif
 	evalNode(state, xprog, n);
 	if (xprog->n_estmts > 0) {
-#ifdef USE_CGRAPH
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-#else
-	    for (e = agfstout(n); e; e = agnxtout(e)) {
-#endif
 		evalEdge(state, xprog, e);
 	    }
 	}

@@ -21,12 +21,8 @@ extern "C" {
 #ifndef ACTIONS_H
 #define ACTIONS_H
 
-#ifdef USE_CGRAPH
-#include <cgraph.h>
-#else
-#include <agraph.h>
-#endif
-#include <expr.h>
+#include "cgraph.h"
+#include "expr.h"
 
     extern void nodeInduce(Agraph_t * selected);
     extern Agobj_t *clone(Agraph_t * g, Agobj_t * obj);
