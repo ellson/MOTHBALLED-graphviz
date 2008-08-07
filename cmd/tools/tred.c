@@ -29,8 +29,7 @@
 #include "config.h"
 #endif
 
-#ifdef USE_CGRAPH
-#include <cgraph.h>
+#include "cgraph.h"
 #include <stdlib.h>
 
 typedef struct {
@@ -39,23 +38,11 @@ typedef struct {
 } Agnodeinfo_t;
 
 #define agrootof(n) ((n)->root)
-#else
-typedef struct {
-    int mark;
-} Agnodeinfo_t;
-typedef char Agedgeinfo_t;
-typedef char Agraphinfo_t;
 
-#include <graph.h>
-#define agnameof(n) ((n)->name)
-#define aghead(e) ((e)->head)
-#define agtail(e) ((e)->tail)
-#define agrootof(n) ((n)->graph)
-#endif
 #ifdef HAVE_UNISTD_H
-#include	<unistd.h>
+#include <unistd.h>
 #endif
-#include <ingraphs.h>
+#include "ingraphs.h"
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
@@ -65,11 +52,7 @@ typedef char Agraphinfo_t;
 
 char **Files;
 char *CmdName;
-#ifdef USE_CGRAPH
 #define MARK(n)  (((Agnodeinfo_t*)(n->base.data))->mark)
-#else
-#define MARK(n)     ((n)->u.mark)
-#endif
 
 static int dfs(Agnode_t * n, Agedge_t * link, int warn)
 {
@@ -93,20 +76,12 @@ static int dfs(Agnode_t * n, Agedge_t * link, int warn)
 		warn++;
 		fprintf(stderr,
 			"warning: %s has cycle(s), transitive reduction not unique\n",
-#ifdef USE_CGRAPH
 			agnameof(g));
-#else
-			g->name);
-#endif
 		fprintf(stderr, "cycle involves edge %s -> %s\n",
 			agnameof(agtail(e)), agnameof(aghead(e)));
 	    }
 	} else
-#ifdef USE_CGRAPH
 	    warn = dfs(aghead(e), AGOUT2IN(e), warn);
-#else
-	    warn = dfs(aghead(e), e, warn);
-#endif
     }
 
     MARK(n) = 0;
@@ -127,9 +102,6 @@ static void init(int argc, char *argv[])
 {
     int c;
 
-#ifndef USE_CGRAPH
-    aginit();
-#endif
     CmdName = argv[0];
     while ((c = getopt(argc, argv, ":?")) != -1) {
 	switch (c) {
@@ -154,9 +126,7 @@ static void process(Agraph_t * g)
     Agnode_t *n;
     int warn = 0;
 
-#ifdef USE_CGRAPH
     aginit(g, AGNODE, "info", sizeof(Agnodeinfo_t), TRUE);
-#endif
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	warn = dfs(n, 0, warn);
     }
@@ -164,12 +134,10 @@ static void process(Agraph_t * g)
     fflush(stdout);
 }
 
-#ifdef USE_CGRAPH
 static Agraph_t *gread(FILE * fp)
 {
     return agread(fp, (Agdisc_t *) 0);
 }
-#endif
 
 int main(int argc, char **argv)
 {
@@ -177,18 +145,10 @@ int main(int argc, char **argv)
     ingraph_state ig;
 
     init(argc, argv);
-#ifdef USE_CGRAPH
     newIngraph(&ig, Files, gread);
-#else
-    newIngraph(&ig, Files, agread);
-#endif
 
     while ((g = nextGraph(&ig)) != 0) {
-#ifdef USE_CGRAPH
 	if (agisdirected(g))
-#else
-	if (AG_IS_DIRECTED(g))
-#endif
 	    process(g);
 	agclose(g);
     }
