@@ -1,13 +1,6 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-CGRAPH_LIBS=$(top_builddir)/lib/cgraph/libcgraph.la
-if WITH_CGRAPH
-   GRAPH_LIBS=$(CGRAPH_LIBS)
-else
-   GRAPH_LIBS=$(top_builddir)/lib/graph/libgraph.la
-endif
-
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
 	-I$(top_srcdir)/lib/cgraph \
@@ -52,63 +45,61 @@ gxl2gv_SOURCES = cvtgxl.c gv2gxl.c gxl2gv.c
 
 gxl2gv_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(CGRAPH_LIBS) @EXPAT_LIBS@ \
-	$(GRAPH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la @EXPAT_LIBS@ 
 
 sccmap_SOURCES = sccmap.c
 
 sccmap_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(CGRAPH_LIBS) @EXPAT_LIBS@ \
-	$(GRAPH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la @EXPAT_LIBS@ 
 
 ccomps_SOURCES = ccomps.c
 
 ccomps_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(GRAPH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la
 
 tred_SOURCES = tred.c
 
 tred_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(GRAPH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la
 
 unflatten_SOURCES = unflatten.c
 
 unflatten_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(CGRAPH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la
 
 acyclic_SOURCES = acyclic.c
 
 acyclic_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(GRAPH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la
 
 nop_SOURCES = nop.c
 
 nop_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(GRAPH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la
 
 gvcolor_SOURCES = gvcolor.c colxlate.c colortbl.h
 
 gvcolor_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(GRAPH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la
 
 bcomps_SOURCES = bcomps.c
 
 bcomps_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(GRAPH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la
 
 gc_SOURCES = gc.c
 
 gc_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(GRAPH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la
 
 gvpack_SOURCES = gvpack.c gvpack_builtins.c
 
@@ -122,13 +113,13 @@ mm2gv_SOURCES = mm2gv.c matrix_market.c mmio.c
 mm2gv_LDADD = \
     $(top_builddir)/lib/common/libcommon_C.la \
 	$(top_builddir)/lib/sparse/libsparse_C.la \
-	$(GRAPH_LIBS) @MATH_LIBS@
+	$(top_builddir)/lib/cgraph/libcgraph.la @MATH_LIBS@
 
 dijkstra_SOURCES = dijkstra.c
 
 dijkstra_LDADD = \
 	$(top_builddir)/lib/ingraphs/libingraphs_C.la \
-	$(CGRAPH_LIBS)
+	$(top_builddir)/lib/cgraph/libcgraph.la
 
 .1.pdf:
 	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@

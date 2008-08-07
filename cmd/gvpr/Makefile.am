@@ -19,7 +19,6 @@ noinst_PROGRAMS = mkdefs
 noinst_HEADERS = actions.h compile.h gprstate.h parse.h queue.h
 man_MANS = gvpr.1
 pdf_DATA = gvpr.pdf
-AM_CFLAGS = -DUSE_CGRAPH
 
 gvpr_SOURCES = actions.c compile.c gvpr.c gprstate.c parse.c queue.c
 
