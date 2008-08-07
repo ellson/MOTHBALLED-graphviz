@@ -30,12 +30,11 @@
 #endif
 
 #include <assert.h>
-#include <gvc.h>
-#include <render.h>
-#include <neatoprocs.h>
-#include <ingraphs.h>
-#include <pack.h>
-#include <assert.h>
+#include "gvc.h"
+#include "render.h"
+#include "neatoprocs.h"
+#include "ingraphs.h"
+#include "pack.h"
 
 #include "builddate.h"
 

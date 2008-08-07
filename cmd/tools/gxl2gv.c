@@ -15,10 +15,7 @@
 **********************************************************/
 
 
-#include    <convert.h>
-#ifndef USE_CGRAPH
-#include    "aghdr.h"
-#endif
+#include    "convert.h"
 #include    "agxbuf.h"
 #ifdef HAVE_EXPAT
 #include    <expat.h>
@@ -245,11 +242,7 @@ static Agedge_t *bind_edge(const char *tail, const char *head)
 
     tailNode = agnode(G, (char *) tail, 1);
     headNode = agnode(G, (char *) head, 1);
-#ifdef USE_CGRAPH
     E = agedge(G, tailNode, headNode, key, 1);
-#else
-    E = agedge(tailNode, headNode, key, 1);
-#endif
     return E;
 }
 
