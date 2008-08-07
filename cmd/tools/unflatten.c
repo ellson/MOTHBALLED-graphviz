@@ -27,15 +27,10 @@
 #include    <stdlib.h>
 #include    <string.h>
 #ifdef HAVE_UNISTD_H
-#include	<unistd.h>
+#include <unistd.h>
 #endif
-#ifdef USE_CGRAPH
 #include    "cgraph.h"
 #define degreeOf(n,I,O) (agdegree(n->root, n, I, O)) 
-#else
-#include    "agraph.h"
-#define degreeOf(n,I,O) (agdegree(n, I, O)) 
-#endif
 #include    "ingraphs.h"
 
 #ifdef HAVE_GETOPT_H
@@ -87,21 +82,13 @@ static void transform(Agraph_t * g)
     m_ix = bindedgeattr(g, "minlen");
     s_ix = bindedgeattr(g, "style");
 
-#ifdef USE_CGRAPH
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-#else
-    for (n = agfstnode(g); n; n = agnxtnode(n)) {
-#endif
 	d = degreeOf(n, TRUE, TRUE);
 	if (d == 0) {
 	    if (ChainLimit < 1)
 		continue;
 	    if (ChainNode) {
-#ifdef USE_CGRAPH
 		e = agedge(g, ChainNode, n, "", TRUE);
-#else
-		e = agedge(ChainNode, n, "", TRUE);
-#endif
 		agxset(e, s_ix, "invis");
 		ChainSize++;
 		if (ChainSize < ChainLimit)
@@ -116,11 +103,7 @@ static void transform(Agraph_t * g)
 	    if (MaxMinlen < 1)
 		continue;
 	    cnt = 0;
-#ifdef USE_CGRAPH
 	    for (e = agfstin(g, n); e; e = agnxtin(g, e)) {
-#else
-	    for (e = agfstin(n); e; e = agnxtin(e)) {
-#endif
 		if (isleaf(agtail(e))) {
 		    str = agxget(e, m_ix);
 		    if (str[0] == 0) {
@@ -131,11 +114,7 @@ static void transform(Agraph_t * g)
 	    }
 
 	    cnt = 0;
-#ifdef USE_CGRAPH
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-#else
-	    for (e = agfstout(n); e; e = agnxtout(e)) {
-#endif
 		if (isleaf(e->node) || (Do_fans && ischainnode(e->node))) {
 		    str = agxget(e, m_ix);
 		    if (str[0] == 0)
