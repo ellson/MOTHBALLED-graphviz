@@ -32,14 +32,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef HAVE_UNISTD_H
-#include	<unistd.h>
+#include <unistd.h>
 #endif
-#ifdef USE_CGRAPH
-#include <cgraph.h>
-#else
-#include <agraph.h>
-#endif
-#include <ingraphs.h>
+#include "cgraph.h"
+#include "ingraphs.h"
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
@@ -148,7 +144,6 @@ int Verbose;
 char *CmdName;
 char **Files;
 
-#ifdef USE_CGRAPH
 static void nodeInduce(Agraph_t * g, Agraph_t* map)
 {
     Agnode_t *n;
@@ -170,26 +165,6 @@ static void nodeInduce(Agraph_t * g, Agraph_t* map)
 	}
     }
 }
-#else
-static void nodeInduce(Agraph_t * g)
-{
-    Agnode_t *n, *rootn;
-    Agedge_t *e;
-
-    for (n = agfstnode(g); n; n = agnxtnode(n)) {
-	rootn = agsubnode(agroot(g), n, FALSE);
-	for (e = agfstout(rootn); e; e = agnxtout(e)) {
-	    if (agsubnode(g, aghead(e), FALSE))
-		agsubedge(g, e, TRUE);
-	    else {
-		if (getscc(aghead(e)) && getscc(agtail(e)))
-		    agedge(getrep(getscc(agtail(e))),
-			   getrep(getscc(aghead(e))), NIL(char *), TRUE);
-	    }
-	}
-    }
-}
-#endif
 
 static int visit(Agnode_t * n, Agraph_t * map, Stack * sp, sccstate * st)
 {
@@ -202,11 +177,7 @@ static int visit(Agnode_t * n, Agraph_t * map, Stack * sp, sccstate * st)
     setval(n, min);
     push(sp, n);
 
-#ifdef USE_CGRAPH
     for (e = agfstout(n->root, n); e; e = agnxtout(n->root, e)) {
-#else
-    for (e = agfstout(n); e; e = agnxtout(e)) {
-#endif
 	t = aghead(e);
 	if (getval(t) == 0)
 	    m = visit(t, map, sp, st);
@@ -234,11 +205,7 @@ static int visit(Agnode_t * n, Agraph_t * map, Stack * sp, sccstate * st)
 		setscc(t, subg);
 		st->N_nodes_in_nontriv_SCC++;
 	    } while (t != n);
-#ifdef USE_CGRAPH
 	    nodeInduce(subg, map);
-#else
-	    nodeInduce(subg);
-#endif
 	    if (!Silent)
 		agwrite(subg, stdout);
 	}
@@ -252,11 +219,7 @@ static int label(Agnode_t * n, int nodecnt, int *edgecnt)
 
     setval(n, 1);
     nodecnt++;
-#ifdef USE_CGRAPH
     for (e = agfstedge(n->root, n); e; e = agnxtedge(n->root, e, n)) {
-#else
-    for (e = agfstedge(n); e; e = agnxtedge(e, n)) {
-#endif
 	(*edgecnt) += 1;
 	if (e->node == n)
 	    e = agopp(e);
@@ -277,11 +240,7 @@ countComponents(Agraph_t * g, int *max_degree, float *nontree_frac)
     int n_nodes;
     Agnode_t *n;
 
-#ifdef USE_CGRAPH
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-#else
-    for (n = agfstnode(g); n; n = agnxtnode(n)) {
-#endif
 	if (!getval(n)) {
 	    nc++;
 	    n_edges = 0;
@@ -292,13 +251,8 @@ countComponents(Agraph_t * g, int *max_degree, float *nontree_frac)
     }
     if (max_degree) {
 	int maxd = 0;
-#ifdef USE_CGRAPH
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    deg = agdegree(g, n, TRUE, TRUE);
-#else
-	for (n = agfstnode(g); n; n = agnxtnode(n)) {
-	    deg = agdegree(n, TRUE, TRUE);
-#endif
 	    if (maxd < deg)
 		maxd = deg;
 	    setval(n, 0);
@@ -334,11 +288,7 @@ static void process(Agraph_t * G)
 
     initStack(&stack, agnnodes(G) + 1);
     map = agopen("scc_map", Agdirected, (Agdisc_t *) 0);
-#ifdef USE_CGRAPH
     for (n = agfstnode(G); n; n = agnxtnode(G, n))
-#else
-    for (n = agfstnode(G); n; n = agnxtnode(n))
-#endif
 	if (getval(n) == 0)
 	    visit(n, map, &stack, &state);
     freeStack(&stack);
