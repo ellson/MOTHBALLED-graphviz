@@ -33,9 +33,8 @@
 #include "compat_getopt.h"
 #endif
 
-#ifdef USE_CGRAPH
 #include <stdlib.h>
-#include <cgraph.h>
+#include "cgraph.h"
 
 typedef struct {
     Agrec_t h;
@@ -59,34 +58,8 @@ typedef struct {
 #define N(n)  (((Agnodeinfo_t*)(n->base.data))->val)
 #define NEXT(e)  (((Agedgeinfo_t*)(e->base.data))->next)
 #define NEXTBLK(g)  (((Agraphinfo_t*)(g->base.data))->next)
-#else
-typedef struct {
-    struct Agraph_t *next;
-} Agraphinfo_t;
 
-typedef struct {
-    struct Agedge_t *next;
-} Agedgeinfo_t;
-
-typedef struct {
-    int low;
-    int val;
-    int isCut;
-} Agnodeinfo_t;
-
-#include <graph.h>
-
-#define Low(n) ((n)->u.low)
-#define Cut(n) ((n)->u.isCut)
-#define N(n) ((n)->u.val)
-#define NEXT(e) ((e)->u.next)
-#define NEXTBLK(g) ((g)->u.next)
-
-#define aghead(e) ((e)->head)
-#define agtail(e) ((e)->tail)
-#define agnameof(g) ((g)->name)
-#endif
-#include <ingraphs.h>
+#include "ingraphs.h"
 
 #define min(a,b) ((a) < (b) ? (a) :  (b))
 
@@ -203,12 +176,8 @@ static Agraph_t *mkBlock(Agraph_t * g, bcstate * stp)
     Agraph_t *sg;
 
     stp->nComp++;
-#ifdef USE_CGRAPH
     sg = agsubg(g, blockName(agnameof(g), stp->nComp), 1);
     agbindrec(sg, "info", sizeof(Agraphinfo_t), TRUE);
-#else
-    sg = agsubg(g, blockName(g->name, stp->nComp));
-#endif
     NEXTBLK(sg) = stp->blks;
     stp->blks = sg;
     return sg;
@@ -238,13 +207,8 @@ dfs(Agraph_t * g, Agnode_t * u, bcstate * stp, Agnode_t * parent)
 		sg = mkBlock(g, stp);
 		do {
 		    ep = pop(&stp->stk);
-#ifdef USE_CGRAPH
 		    agsubnode(sg, aghead(ep), 1);
 		    agsubnode(sg, agtail(ep), 1);
-#else
-		    aginsert(sg, ep->head);
-		    aginsert(sg, ep->tail);
-#endif
 		} while (ep != e);
 	    }
 	} else if (parent != v) {
@@ -262,13 +226,8 @@ static void nodeInduce(Agraph_t * g, Agraph_t * eg)
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(eg, n); e; e = agnxtout(eg, e)) {
-#ifdef USE_CGRAPH
 	    if (agsubnode(g, aghead(e), 0)) {
 		agsubedge(g, e, 1);
-#else
-	    if (agcontains(g, e->head)) {
-		aginsert(g, e);
-#endif
 	    }
 	}
     }
@@ -280,20 +239,11 @@ static void addCutPts(Agraph_t * tree, Agraph_t * blk)
     Agnode_t *bn;
     Agnode_t *cn;
 
-#ifdef USE_CGRAPH
     bn = agnode(tree, agnameof(blk), 1);
-#else
-    bn = agnode(tree, agnameof(blk));
-#endif
     for (n = agfstnode(blk); n; n = agnxtnode(blk, n)) {
 	if (Cut(n)) {
-#ifdef USE_CGRAPH
 	    cn = agnode(tree, agnameof(n), 1);
 	    agedge(tree, bn, cn, 0, 1);
-#else
-	    cn = agnode(tree, n->name);
-	    agedge(tree, bn, cn);
-#endif
 	}
     }
 }
@@ -306,11 +256,9 @@ static int process(Agraph_t * g, int gcnt)
     Agraph_t *tree;
     int bcnt;
 
-#ifdef USE_CGRAPH
     aginit(g, AGNODE, "info", sizeof(Agnodeinfo_t), TRUE);
     aginit(g, AGEDGE, "info", sizeof(Agedgeinfo_t), TRUE);
     aginit(g, AGRAPH, "info", sizeof(Agraphinfo_t), TRUE);
-#endif
 
     state.count = 0;
     state.nComp = 0;
@@ -332,11 +280,7 @@ static int process(Agraph_t * g, int gcnt)
     } else
 	gwrite(g, gcnt, 0);
     if (doTree) {
-#ifdef USE_CGRAPH
 	tree = agopen("blkcut_tree", Agstrictundirected, 0);
-#else
-	tree = agopen("blkcut_tree", AGFLAG_STRICT);
-#endif
 	for (blk = state.blks; blk; blk = NEXTBLK(blk))
 	    addCutPts(tree, blk);
 	gwrite(tree, gcnt, -1);
@@ -396,9 +340,6 @@ static void init(int argc, char *argv[])
 {
     int c;
 
-#ifndef USE_CGRAPH
-    aginit();
-#endif
     while ((c = getopt(argc, argv, ":o:xstv?")) != -1) {
 	switch (c) {
 	case 'o':
@@ -434,12 +375,10 @@ static void init(int argc, char *argv[])
 	Files = argv;
 }
 
-#ifdef USE_CGRAPH
 static Agraph_t *gread(FILE * fp)
 {
   return agread(fp, (Agdisc_t *) 0);
 }
-#endif
 
 int main(int argc, char *argv[])
 {
@@ -449,11 +388,7 @@ int main(int argc, char *argv[])
     int gcnt = 0;
 
     init(argc, argv);
-#ifdef USE_CGRAPH
     newIngraph(&ig, Files, gread);
-#else
-    newIngraph(&ig, Files, agread);
-#endif
 
     while ((g = nextGraph(&ig)) != 0) {
 	r |= process(g, gcnt);

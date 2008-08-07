@@ -25,12 +25,12 @@
 #endif
 
 #ifdef HAVE_UNISTD_H
-#include	<unistd.h>
+#include <unistd.h>
 #endif
 #include <stdio.h>
-#ifdef USE_CGRAPH
+
 #include <stdlib.h>
-#include <cgraph.h>
+#include "cgraph.h"
 typedef struct {
     Agrec_t h;
     int mark;
@@ -40,22 +40,6 @@ typedef struct {
 #define ND_mark(n) (((Agnodeinfo_t*)((n)->base.data))->mark)
 #define ND_onstack(n) (((Agnodeinfo_t*)((n)->base.data))->onstack)
 #define graphName(g) (agnameof(g))
-#else
-typedef char Agraphinfo_t;
-typedef char Agedgeinfo_t;
-typedef struct {
-    int mark;
-    int onstack;
-} Agnodeinfo_t;
-
-#define ND_mark(n) (n)->u.mark
-#define ND_onstack(n) (n)->u.onstack
-#define aghead(e) ((e)->head)
-#define agtail(e) ((e)->tail)
-#define graphName(g) ((g)->name)
-
-#include <graph.h>
-#endif
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
@@ -77,7 +61,6 @@ static char *cmd;
  */
 static void addRevEdge(Agraph_t * g, Agedge_t * e)
 {
-#ifdef USE_CGRAPH
     Agsym_t* sym;
     Agedge_t* f = agedge (g, aghead(e), agtail(e), agnameof(e), 1);
 
@@ -87,26 +70,6 @@ static void addRevEdge(Agraph_t * g, Agedge_t * e)
     if (sym) agsafeset (f, HEADPORT_ID, agxget (e, sym), "");
     sym = agattr (g, AGEDGE, HEADPORT_ID, 0);
     if (sym) agsafeset (f, TAILPORT_ID, agxget (e, sym), "");
-#else
-    Agedge_t *reve;
-    char *tmps;
-    char **attrs;
-    extern char *agstrdup(char *);
-
-    attrs = g->proto->e->attr;
-    g->proto->e->attr = e->attr;
-    tmps = e->attr[0];
-    e->attr[0] = "";
-    reve = agedge(g, e->head, e->tail);
-    e->attr[0] = tmps;
-    g->proto->e->attr = attrs;
-
-    /* copy key attribute, and reverse head and tail port attributes */
-    reve->attr[0] = agstrdup(tmps);
-    tmps = reve->attr[1];
-    reve->attr[1] = reve->attr[2];
-    reve->attr[2] = tmps;
-#endif
 }
 
 static int dfs(Agraph_t * g, Agnode_t * t, int hasCycle)
@@ -123,7 +86,6 @@ static int dfs(Agraph_t * g, Agnode_t * t, int hasCycle)
 	    continue;
 	h = aghead(e);
 	if (ND_onstack(h)) {
-#ifdef USE_CGRAPH
 	    if (agisstrict(g)) {
 		if (agedge(g, h, t, 0, 0) == 0)
 		    addRevEdge(g, e);
@@ -132,13 +94,6 @@ static int dfs(Agraph_t * g, Agnode_t * t, int hasCycle)
 		if (!key || (agedge(g, h, t, key, 0) == 0))
 		    addRevEdge(g, e);
 	    }
-#else
-	    if (AG_IS_STRICT(g)) {
-		if (agfindedge(g, h, t) == 0)
-		    addRevEdge(g, e);
-	    } else
-		addRevEdge(g, e);
-#endif
 	    agdelete(g, e);
 	    hasCycle = 1;
 	} else if (ND_mark(h) == 0)
@@ -183,9 +138,6 @@ static void init(int argc, char *argv[])
     int c;
 
     cmd = argv[0];
-#ifndef USE_CGRAPH
-    aginit();
-#endif
 
     while ((c = getopt(argc, argv, ":vno:?")) != -1)
 	switch (c) {
@@ -230,14 +182,9 @@ int main(int argc, char *argv[])
 
     init(argc, argv);
 
-#ifdef USE_CGRAPH
     if ((g = agread(inFile,  (Agdisc_t *) 0)) != 0) {
 	if (agisdirected (g)) {
 	    aginit(g, AGNODE, "info", sizeof(Agnodeinfo_t), TRUE);
-#else
-    if ((g = agread(inFile)) != 0) {
-	if (AG_IS_DIRECTED(g)) {
-#endif
 	    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 		if (ND_mark(n) == 0)
 		    rv |= dfs(g, n, 0);
