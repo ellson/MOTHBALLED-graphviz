@@ -26,9 +26,8 @@
 
 #include <ctype.h>
 
-#ifdef USE_CGRAPH
 #include <stdlib.h>
-#include <cgraph.h>
+#include "cgraph.h"
 
 typedef struct {
     Agrec_t h;
@@ -47,27 +46,6 @@ typedef struct {
 #define ND_dn(n)  ((Agnode_t*)ND_ptr(n))
 #define ND_clust(n)  ((Agraph_t*)ND_ptr(n))
 #define agfindnode(G,N) (agnode(G, N, 0))
-#else
-typedef struct {
-    char cc_subg;
-} Agraphinfo_t;
-typedef struct {
-    char mark;
-    union {
-	struct Agnode_t *dn;
-	struct Agraph_t *clust;
-    } ptr;
-} Agnodeinfo_t;
-typedef char Agedgeinfo_t;
-
-#define GD_cc_subg(g) (g)->u.cc_subg
-#define ND_mark(n) (n)->u.mark
-#define ND_ptr(n) (n)->u.ptr
-#include <graph.h>
-#define agnameof(x) (agobjkind(x) == AGNODE ? ((Agnode_t*)(x))->name : ((Agraph_t*)(x))->name)
-#define agtail(e) ((e)->tail)
-#define aghead(e) ((e)->head)
-#endif
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
@@ -76,10 +54,10 @@ typedef char Agedgeinfo_t;
 #endif
 
 #ifdef HAVE_UNISTD_H
-#include	<unistd.h>
+#include <unistd.h>
 #endif
 #include <string.h>
-#include <ingraphs.h>
+#include "ingraphs.h"
 
   /* internals of libgraph */
 #define TAG_NODE            1
@@ -148,9 +126,6 @@ static void init(int argc, char *argv[])
 {
     int c;
 
-#ifndef USE_CGRAPH
-    aginit();
-#endif
     while ((c = getopt(argc, argv, ":o:xCX:nsv?")) != -1) {
 	switch (c) {
 	case 'o':
@@ -210,11 +185,7 @@ static int dfs(Agraph_t * g, Agnode_t * n, Agraph_t * out, int cnt)
 
     ND_mark(n) = 1;
     cnt++;
-#ifdef USE_CGRAPH
     agsubnode(out, n, 1);
-#else
-    aginsert(out, n);
-#endif
     for (e = agfstedge(g, n); e; e = agnxtedge(g, e, n)) {
 	if ((other = agtail(e)) == n)
 	    other = aghead(e);
@@ -236,13 +207,8 @@ static int nodeInduce(Agraph_t * g, Agraph_t * eg)
 
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	for (e = agfstout(eg, n); e; e = agnxtout(eg, e)) {
-#ifdef USE_CGRAPH
 	    if (agsubnode(g, aghead(e), 0)) {
 		agsubedge(g, e, 1);
-#else
-	    if (agcontains(g, aghead(e))) {
-		aginsert(g, e);
-#endif
 		e_cnt++;
 	    }
 	}
@@ -331,27 +297,15 @@ static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, char *pfx,
 	    if (proj == 0) {
 		name = getBuf(strlen(agnameof(subg)) + pfxlen + 2);
 		sprintf(name, "%s_%s", agnameof(subg), pfx);
-#ifdef USE_CGRAPH
 		proj = agsubg(g, name, 1);
-#else
-		proj = agsubg(g, name);
-#endif
 	    }
-#ifdef USE_CGRAPH
 	    agsubnode(proj, m, 1);
-#else
-	    aginsert(proj, m);
-#endif
 	}
     }
     if (!proj && inCluster) {
 	name = getBuf(strlen(agnameof(subg)) + pfxlen + 2);
 	sprintf(name, "%s_%s", agnameof(subg), pfx);
-#ifdef USE_CGRAPH
 	proj = agsubg(g, name, 1);
-#else
-	proj = agsubg(g, name);
-#endif
     }
     if (proj) {
 	nodeInduce(proj, subg);
@@ -365,7 +319,6 @@ static Agraph_t *projectG(Agraph_t * subg, Agraph_t * g, char *pfx,
  * Project subgraphs of root graph on subgraph.
  * If non-empty, add to subgraph.
  */
-#ifdef USE_CGRAPH
 static void
 subgInduce(Agraph_t * root, Agraph_t * g, char *pfx, int pfxlen,
 	   int inCluster)
@@ -390,33 +343,6 @@ subGInduce(Agraph_t* g, Agraph_t * out)
 {
     subgInduce(g, out, agnameof(out), strlen(agnameof(out)), 0);
 }
-#else
-static void
-subgInduce(Agraph_t * root, Agraph_t * g, char *pfx, int pfxlen,
-	   int inCluster)
-{
-    Agraph_t *mg;
-    Agedge_t *me;
-    Agnode_t *mn;
-    Agraph_t *subg;
-    Agraph_t *proj;
-    int in_cluster;
-
-/* fprintf (stderr, "subgInduce %s inCluster %d\n", root->name, inCluster); */
-    mg = root->meta_node->graph;
-    for (me = agfstout(mg, root->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
-	subg = agusergraph(mn);
-	if (GD_cc_subg(subg))
-	    continue;
-	if ((proj = projectG(subg, g, pfx, pfxlen, inCluster))) {
-	    in_cluster = inCluster || (useClusters && isCluster(subg));
-	    subgInduce(subg, proj, pfx, pfxlen, in_cluster);
-	}
-    }
-}
-
-#endif
 
 #define PFX1 "%s_cc"
 #define PFX2 "%s_cc_%ld"
@@ -426,7 +352,6 @@ subgInduce(Agraph_t * root, Agraph_t * g, char *pfx, int pfxlen,
  * top-level nodes and there is an edge in dg if there is an edge in g
  * between any nodes in the respective clusters.
  */
-#ifdef USE_CGRAPH
 static Agraph_t *deriveGraph(Agraph_t * g)
 {
     Agraph_t *dg;
@@ -473,58 +398,6 @@ static Agraph_t *deriveGraph(Agraph_t * g)
 
     return dg;
 }
-#else
-static Agraph_t *deriveGraph(Agraph_t * g)
-{
-    Agraph_t *mg;
-    Agedge_t *me;
-    Agnode_t *mn;
-    Agraph_t *dg;
-    Agnode_t *dn;
-    Agnode_t *n;
-    Agraph_t *subg;
-
-    dg = agopen("dg", AGRAPHSTRICT);
-
-    mg = g->meta_node->graph;
-    for (me = agfstout(mg, g->meta_node); me; me = agnxtout(mg, me)) {
-	mn = me->head;
-	subg = agusergraph(mn);
-	if (!strncmp(subg->name, "cluster", 7)) {
-	    dn = agnode(dg, subg->name);
-	    ND_ptr(dn).clust = subg;
-	    for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
-		ND_ptr(n).dn = dn;
-	    }
-	}
-    }
-
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	if (ND_ptr(n).dn)
-	    continue;
-	dn = agnode(dg, agnameof(n));
-	ND_ptr(dn).clust = (Agraph_t *) n;
-	ND_ptr(n).dn = dn;
-    }
-
-    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	Agedge_t *e;
-	Agnode_t *hd;
-	Agnode_t *tl = ND_ptr(n).dn;
-	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
-	    hd = ND_ptr(aghead(e)).dn;
-	    if (hd == tl)
-		continue;
-	    if (hd > tl)
-		agedge(dg, tl, hd);
-	    else
-		agedge(dg, hd, tl);
-	}
-    }
-
-    return dg;
-}
-#endif
 
 /* unionNodes:
  * Add all nodes in cluster nodes of dg to g
@@ -536,7 +409,6 @@ static void unionNodes(Agraph_t * dg, Agraph_t * g)
     Agraph_t *clust;
 
     for (dn = agfstnode(dg); dn; dn = agnxtnode(dg, dn)) {
-#ifdef USE_CGRAPH
 	if (AGTYPE(ND_ptr(dn)) == AGNODE) {
 	    agsubnode(g, ND_dn(dn), 1);
 	} else {
@@ -544,16 +416,6 @@ static void unionNodes(Agraph_t * dg, Agraph_t * g)
 	    for (n = agfstnode(clust); n; n = agnxtnode(clust, n))
 		agsubnode(g, n, 1);
 	}
-#else
-	clust = ND_ptr(dn).clust;
-	if (clust->tag == TAG_NODE) {
-	    n = (Agnode_t *) clust;
-	    aginsert(g, n);
-	} else {
-	    for (n = agfstnode(clust); n; n = agnxtnode(clust, n))
-		aginsert(g, n);
-	}
-#endif
     }
 }
 
@@ -581,29 +443,16 @@ static int processClusters(Agraph_t * g)
 	}
 	name = getBuf(sizeof(PFX1) + strlen(agnameof(g)));
 	sprintf(name, PFX1, agnameof(g));
-#ifdef USE_CGRAPH
 	dout = agsubg(dg, name, 1);
 	out = agsubg(g, name, 1);
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
-#else
-	dout = agsubg(dg, name);
-	out = agsubg(g, name);
-#endif
 	GD_cc_subg(out) = 1;
-#ifdef USE_CGRAPH
 	dn = ND_dn(n);
-#else
-	dn = ND_ptr(n).dn;
-#endif
 	n_cnt = dfs(dg, dn, dout, 0);
 	unionNodes(dout, out);
 	e_cnt = nodeInduce(out, out->root);
 	if (doAll)
-#ifdef USE_CGRAPH
 	    subGInduce(g, out);
-#else
-	    subgInduce(g, out, out->name, strlen(out->name), 0);
-#endif
 	gwrite(out);
 	if (verbose)
 	    fprintf(stderr, " %7ld nodes %7ld edges\n", n_cnt, e_cnt);
@@ -616,34 +465,21 @@ static int processClusters(Agraph_t * g)
 	    continue;
 	name = getBuf(sizeof(PFX2) + strlen(agnameof(g)) + 32);
 	sprintf(name, "%s_component_%ld", agnameof(g), c_cnt);
-#ifdef USE_CGRAPH
 	dout = agsubg(dg, name, 1);
 	out = agsubg(g, name, 1);
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
-#else
-	dout = agsubg(dg, name);
-	out = agsubg(g, name);
-#endif
 	GD_cc_subg(out) = 1;
 	n_cnt = dfs(dg, dn, dout, 0);
 	unionNodes(dout, out);
 	e_cnt = nodeInduce(out, out->root);
 	if (printMode == EXTERNAL) {
 	    if (doAll)
-#ifdef USE_CGRAPH
 		subGInduce(g, out);
-#else
-		subgInduce(g, out, out->name, strlen(out->name), 0);
-#endif
 	    gwrite(out);
 	} else if (printMode == EXTRACT) {
 	    if (x_index == c_cnt) {
 		if (doAll)
-#ifdef USE_CGRAPH
 		    subGInduce(g, out);
-#else
-		    subgInduce(g, out, out->name, strlen(out->name), 0);
-#endif
 		gwrite(out);
 		return 0;
 	    }
@@ -685,10 +521,8 @@ static int process(Agraph_t * g)
     Agraph_t *out;
     Agnode_t *n;
 
-#ifdef USE_CGRAPH
     aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
     aginit(g, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
-#endif
 
     if (useClusters)
 	return processClusters(g);
@@ -703,21 +537,13 @@ static int process(Agraph_t * g)
 	}
 	name = getBuf(sizeof(PFX1) + strlen(agnameof(g)));
 	sprintf(name, PFX1, agnameof(g));
-#ifdef USE_CGRAPH
 	out = agsubg(g, name, 1);
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
-#else
-	out = agsubg(g, name);
-#endif
 	GD_cc_subg(out) = 1;
 	n_cnt = dfs(g, n, out, 0);
 	e_cnt = nodeInduce(out, out->root);
 	if (doAll)
-#ifdef USE_CGRAPH
 	    subGInduce(g, out);
-#else
-	    subgInduce(g, out, out->name, strlen(out->name), 0);
-#endif
 	gwrite(out);
 	if (verbose)
 	    fprintf(stderr, " %7ld nodes %7ld edges\n", n_cnt, e_cnt);
@@ -730,31 +556,19 @@ static int process(Agraph_t * g)
 	    continue;
 	name = getBuf(sizeof(PFX2) + strlen(agnameof(g)) + 32);
 	sprintf(name, "%s_component_%ld", agnameof(g), c_cnt);
-#ifdef USE_CGRAPH
 	out = agsubg(g, name, 1);
 	aginit(out, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
-#else
-	out = agsubg(g, name);
-#endif
 	GD_cc_subg(out) = 1;
 	n_cnt = dfs(g, n, out, 0);
 	e_cnt = nodeInduce(out, out->root);
 	if (printMode == EXTERNAL) {
 	    if (doAll)
-#ifdef USE_CGRAPH
 		subGInduce(g, out);
-#else
-		subgInduce(g, out, out->name, strlen(out->name), 0);
-#endif
 	    gwrite(out);
 	} else if (printMode == EXTRACT) {
 	    if (x_index == c_cnt) {
 		if (doAll)
-#ifdef USE_CGRAPH
 		    subGInduce(g, out);
-#else
-		    subgInduce(g, out, out->name, strlen(out->name), 0);
-#endif
 		gwrite(out);
 		return 0;
 	    }
@@ -782,12 +596,10 @@ static int process(Agraph_t * g)
     return (c_cnt > 1);
 }
 
-#ifdef USE_CGRAPH
 static Agraph_t *gread(FILE * fp)
 {
     return agread(fp, (Agdisc_t *) 0);
 }
-#endif
 
 int main(int argc, char *argv[])
 {
@@ -796,11 +608,7 @@ int main(int argc, char *argv[])
     int r = 0;
 
     init(argc, argv);
-#ifdef USE_CGRAPH
     newIngraph(&ig, Files, gread);
-#else
-    newIngraph(&ig, Files, agread);
-#endif
 
     while ((g = nextGraph(&ig)) != 0) {
 	r += process(g);
