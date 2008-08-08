@@ -340,13 +340,15 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	}
 	stretch = pA->stretch;
 
-        gvdevice_printf(job, "font-family:%s,sans-serif;", family);
+        gvdevice_printf(job, "font-family:%s", family);
+	if (pA->svg_font_family) gvdevice_printf(job, ",%s", pA->svg_font_family);
+        gvdevice_fputs(job, ";");
         if (weight) gvdevice_printf(job, "font-weight:%s;", weight);
         if (stretch) gvdevice_printf(job, "font-stretch:%s;", stretch);
         if (style) gvdevice_printf(job, "font-style:%s;", style);
     }
     else
-	gvdevice_printf(job, "font-family:%s,sans-serif;", para->fontname);
+	gvdevice_printf(job, "font-family:%s;", para->fontname);
     gvdevice_printf(job, "font-size:%.2f;", para->fontsize);
     switch (obj->pencolor.type) {
     case COLOR_STRING:
