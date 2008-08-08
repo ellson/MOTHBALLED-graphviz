@@ -170,7 +170,7 @@ static void svg_begin_graph(GVJ_t * job)
     }
     gvdevice_printf(job, " Pages: %d -->\n", job->pagesArraySize.x * job->pagesArraySize.y);
 
-    gvdevice_printf(job, "<svg width=\"%dpt\" height=\"%dpt\"\n",
+    gvdevice_printf(job, "<svg width=\"%dpx\" height=\"%dpx\"\n",
 	job->width, job->height);
     gvdevice_printf(job, " viewBox=\"%.2f %.2f %.2f %.2f\"",
         job->canvasBox.LL.x, job->canvasBox.LL.y,
@@ -347,7 +347,7 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
     }
     else
 	gvdevice_printf(job, "font-family:%s;", para->fontname);
-    gvdevice_printf(job, "font-size:%.2f;", para->fontsize);
+    gvdevice_printf(job, "font-size:%.2fpx;", para->fontsize);
     switch (obj->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(obj->pencolor.u.string, "black"))
