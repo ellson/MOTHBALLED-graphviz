@@ -88,21 +88,21 @@ static void svg_grstyle(GVJ_t * job, int filled)
 {
     obj_state_t *obj = job->obj;
 
-    gvdevice_fputs(job, " style=\"fill:");
+    gvdevice_fputs(job, " fill=\"");
     if (filled)
 	svg_print_color(job, obj->fillcolor);
     else
 	gvdevice_fputs(job, "none");
-    gvdevice_fputs(job, ";stroke:");
+    gvdevice_fputs(job, "\" stroke=\"");
     svg_print_color(job, obj->pencolor);
     if (obj->penwidth != PENWIDTH_NORMAL)
-	gvdevice_printf(job, ";stroke-width:%g", obj->penwidth);
+	gvdevice_printf(job, "\" stroke-width=\"%g", obj->penwidth);
     if (obj->pen == PEN_DASHED) {
-	gvdevice_printf(job, ";stroke-dasharray:%s", sdasharray);
+	gvdevice_printf(job, "\" stroke-dasharray=\"%s", sdasharray);
     } else if (obj->pen == PEN_DOTTED) {
-	gvdevice_printf(job, ";stroke-dasharray:%s", sdotarray);
+	gvdevice_printf(job, "\" stroke-dasharray=\"%s", sdotarray);
     }
-    gvdevice_fputs(job, ";\"");
+    gvdevice_fputs(job, "\"");
 }
 
 static void svg_comment(GVJ_t * job, char *str)
@@ -316,7 +316,6 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
     }
     p.y += para->yoffset_centerline;
     gvdevice_printf(job, " x=\"%g\" y=\"%g\"", p.x, -p.y);
-    gvdevice_fputs(job, " style=\"");
     pA = para->postscript_alias;
     if (pA) {
 	char *family=NULL, *weight=NULL, *stretch=NULL, *style=NULL;
@@ -340,29 +339,29 @@ static void svg_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	}
 	stretch = pA->stretch;
 
-        gvdevice_printf(job, "font-family:%s", family);
+        gvdevice_printf(job, " font-family=\"%s", family);
 	if (pA->svg_font_family) gvdevice_printf(job, ",%s", pA->svg_font_family);
-        gvdevice_fputs(job, ";");
-        if (weight) gvdevice_printf(job, "font-weight:%s;", weight);
-        if (stretch) gvdevice_printf(job, "font-stretch:%s;", stretch);
-        if (style) gvdevice_printf(job, "font-style:%s;", style);
+        gvdevice_fputs(job, "\"");
+        if (weight) gvdevice_printf(job, " font-weight=\"%s\"", weight);
+        if (stretch) gvdevice_printf(job, " font-stretch=\"%s\"", stretch);
+        if (style) gvdevice_printf(job, " font-style=\"%s\"", style);
     }
     else
-	gvdevice_printf(job, "font-family:%s;", para->fontname);
-    gvdevice_printf(job, "font-size:%.2f;", para->fontsize);
+	gvdevice_printf(job, " font-family=\"%s\"", para->fontname);
+    gvdevice_printf(job, " font-size=\"%.2f\"", para->fontsize);
     switch (obj->pencolor.type) {
     case COLOR_STRING:
 	if (strcasecmp(obj->pencolor.u.string, "black"))
-	    gvdevice_printf(job, "fill:%s;", obj->pencolor.u.string);
+	    gvdevice_printf(job, " fill=\"%s\"", obj->pencolor.u.string);
 	break;
     case RGBA_BYTE:
-	gvdevice_printf(job, "fill:#%02x%02x%02x;",
+	gvdevice_printf(job, " fill=\"#%02x%02x%02x\"",
 		obj->pencolor.u.rgba[0], obj->pencolor.u.rgba[1], obj->pencolor.u.rgba[2]);
 	break;
     default:
 	assert(0);		/* internal error */
     }
-    gvdevice_fputs(job, "\">");
+    gvdevice_fputs(job, ">");
     gvdevice_fputs(job, xml_string(para->str));
     gvdevice_fputs(job, "</text>\n");
 }
