@@ -180,7 +180,7 @@ AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 AM_CONFIG_HEADER(config.h)
 
 # put BUILDDATE in its own file so that only targets that use it get rebuilt
-echo "#define BUILDDATE \"`date -u`\"" > builddate.h
+echo "#define BUILDDATE \"`date -u '+%a %b %d %T %Z %Y'`\"" > builddate.h
 
 # only update ast_common.h (for GNU builds) from master if changed
 if ! `cmp -s $srcdir/ast_common.h.in ast_common.h`; then
