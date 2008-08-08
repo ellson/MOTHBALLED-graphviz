@@ -178,12 +178,18 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     /* establish Gvfilepath, if any */
     Gvfilepath = getenv("GV_FILE_PATH");
 
+    gvc->common.cmdname = dotneato_basename(argv[0]);
+    if (gvc->common.verbose) {
+        fprintf(stderr, "%s - %s version %s (%s)\n",
+	    gvc->common.cmdname, gvc->common.info[0],
+	    gvc->common.info[1], gvc->common.info[2]);
+    }
+
     /* configure for available plugins and codegens */
     gvconfig(gvc, gvc->common.config);
     if (gvc->common.config)
 	exit (0);
 
-    gvc->common.cmdname = dotneato_basename(argv[0]);
     i = gvlayout_select(gvc, gvc->common.cmdname);
     if (i == NO_SUPPORT)
 	gvlayout_select(gvc, "dot");
