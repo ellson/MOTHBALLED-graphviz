@@ -695,7 +695,8 @@ void flat_rev(Agraph_t * g, Agedge_t * e)
     int j;
     Agedge_t *rev;
 
-    for (j = 0; (rev = ND_flat_out(e->head).list[j]); j++)
+    if (!ND_flat_out(e->head).list) rev = NULL;
+    else for (j = 0; (rev = ND_flat_out(e->head).list[j]); j++)
 	if (rev->head == e->tail)
 	    break;
     if (rev) {
