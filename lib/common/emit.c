@@ -139,11 +139,18 @@ initObjMapData (GVJ_t* job, textlabel_t *lab, void* gobj)
     initMapData (job, lbl, url, tooltip, target, gobj);
 }
 
+#ifdef SPLINESF
+static void map_point(GVJ_t *job, pointf pf)
+#else
 static void map_point(GVJ_t *job, point P)
+#endif
 {
     obj_state_t *obj = job->obj;
     int flags = job->flags;
-    pointf *p, pf;
+    pointf *p;
+#ifndef SPLINESF
+    pointf pf;
+#endif
 
     if (flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS)) {
 	if (flags & GVRENDER_DOES_MAP_RECTANGLE) {
@@ -156,7 +163,9 @@ static void map_point(GVJ_t *job, point P)
 	}
 	free(obj->url_map_p);
 	obj->url_map_p = p = N_NEW(obj->url_map_n, pointf);
+#ifndef SPLINESF
 	P2PF(P,pf);
+#endif
 	P2RECT(pf, p, FUZZ, FUZZ);
 	if (! (flags & GVRENDER_DOES_TRANSFORM))
 	    gvrender_ptf_A(job, p, p, 2);
@@ -389,16 +398,16 @@ static void map_bspline_poly(pointf **pbs_p, int **pbs_n, int *pbs_poly_n, int n
  */
 static segitem_t* approx_bezier (pointf *cp, segitem_t* lp)
 {
-    pointf sub_curves[8];
+    pointf left[4], right[4];
 
     if (check_control_points(cp)) {
         if (FIRST_SEG (lp)) INIT_SEG (cp[0], lp);
         lp = appendSeg (cp[3], lp);
     }
     else {
-        Bezier (cp, 3, 0.5, sub_curves, sub_curves+4);
-        lp = approx_bezier (sub_curves, lp);
-        lp = approx_bezier (sub_curves+4, lp);
+        Bezier (cp, 3, 0.5, left, right);
+        lp = approx_bezier (left, lp);
+        lp = approx_bezier (right, lp);
     }
     return lp;
 }
@@ -479,15 +488,18 @@ static void map_output_bspline (pointf **pbs, int **pbs_n, int *pbs_poly_n, bezi
     segitem_t* segprev;
     segitem_t* segnext;
     int nc, j, k, cnt;
-    pointf pts[4];
-    pointf pt1[50], pt2[50];
+    pointf pts[4], pt1[50], pt2[50];
 
     MARK_FIRST_SEG(segl);
     nc = (bp->size - 1)/3; /* nc is number of bezier curves */
     for (j = 0; j < nc; j++) {
         for (k = 0; k < 4; k++) {
+#ifdef SPLINESF
+            pts[k] = bp->list[3*j + k];
+#else
             pts[k].x = (double)bp->list[3*j + k].x;
             pts[k].y = (double)bp->list[3*j + k].y;
+#endif
         }
         segp = approx_bezier (pts, segp);
     }
@@ -1296,16 +1308,35 @@ static char* default_pencolor(char *pencolor, char *deflt)
     return buf;
 }
 
+#ifndef SPLINESF
+    typedef struct bezierf {
+        pointf *list;
+        int size;
+        int sflag, eflag;
+        pointf sp, ep;
+    } bezierf;
+
+    typedef struct splinesf {
+        bezierf *list;
+        int size;
+        boxf bb;
+    } splinesf;
+#endif
+
 static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 {
     int i, j, cnum, numc = 0;
     char *color, *pencolor, *fillcolor;
     char *headcolor, *tailcolor, *lastcolor;
     char *colors = NULL;
-    bezier bz = { 0, 0, 0, 0 };
-    bezierf bzf;
+    bezier bz;
+#ifdef SPLINESF
+    splines offspl, tmpspl;
+#else
+    pointf *cp;
     splinesf offspl, tmpspl;
-    pointf pf0, pf1, pf2 = { 0, 0 }, pf3, *offlist, *tmplist;
+#endif
+    pointf pf0, pf1, pf2 = { 0, 0 }, pf3, *offlist, *tmplist, pf, uf;
     double arrowsize, numc2;
     char* p;
 
@@ -1357,22 +1388,33 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	    for (i = 0; i < offspl.size; i++) {
 		bz = ED_spl(e)->list[i];
 		tmpspl.list[i].size = offspl.list[i].size = bz.size;
-		offlist = offspl.list[i].list =
-		    malloc(sizeof(pointf) * bz.size);
-		tmplist = tmpspl.list[i].list =
-		    malloc(sizeof(pointf) * bz.size);
+		offlist = offspl.list[i].list = malloc(sizeof(pointf) * bz.size);
+		tmplist = tmpspl.list[i].list = malloc(sizeof(pointf) * bz.size);
+#ifdef SPLINESF
+		pf3 = bz.list[0];
+#else
 		P2PF(bz.list[0], pf3);
+#endif
 		for (j = 0; j < bz.size - 1; j += 3) {
 		    pf0 = pf3;
+#ifdef SPLINESF
+		    pf1 = bz.list[j + 1];
+#else
 		    P2PF(bz.list[j + 1], pf1);
+#endif
 		    /* calculate perpendicular vectors for each bezier point */
 		    if (j == 0)	/* first segment, no previous pf2 */
 			offlist[j] = computeoffset_p(pf0, pf1, SEP);
 		    else	/* i.e. pf2 is available from previous segment */
 			offlist[j] = computeoffset_p(pf2, pf1, SEP);
 
+#ifdef SPLINESF
+		    pf2 = bzf.list[j + 2];
+		    pf3 = bzf.list[j + 3];
+#else
 		    P2PF(bz.list[j + 2], pf2);
 		    P2PF(bz.list[j + 3], pf3);
+#endif
 		    offlist[j + 1] = offlist[j + 2] =
 			computeoffset_qr(pf0, pf1, pf2, pf3, SEP);
 		    /* initialize tmpspl to outermost position */
@@ -1424,8 +1466,15 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		        gvrender_set_fillcolor(job, color);
 		    }
 		}
+#ifdef SPLINESF
 		arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0],
 			arrowsize, job->obj->penwidth, bz.sflag);
+#else
+		P2PF(bz.sp, pf);
+		P2PF(bz.list[0], uf);
+		arrow_gen(job, EMIT_TDRAW, pf, uf, 
+			arrowsize, job->obj->penwidth, bz.sflag);
+#endif
 	    }
 	    if (bz.eflag) {
 		if (color != headcolor) {
@@ -1435,8 +1484,15 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		        gvrender_set_fillcolor(job, color);
 		    }
 		}
+#ifdef SPLINESF
 		arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
 			arrowsize, job->obj->penwidth, bz.eflag);
+#else
+		P2PF(bz.ep, pf);
+		P2PF(bz.list[bz.size - 1], uf);
+		arrow_gen(job, EMIT_HDRAW, pf, uf,
+			arrowsize, job->obj->penwidth, bz.eflag);
+#endif
 	    }
 	    free(colors);
 	    for (i = 0; i < offspl.size; i++) {
@@ -1457,24 +1513,46 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 	    }
 	    for (i = 0; i < ED_spl(e)->size; i++) {
 		bz = ED_spl(e)->list[i];
-		/* convert points to pointf for gvrender api */
-		bzf.size = bz.size;
-		bzf.list = malloc(sizeof(pointf) * bzf.size);
-		for (j = 0; j < bz.size; j++)
-		    P2PF(bz.list[j], bzf.list[j]);
+#ifdef SPLINESF
 		if (job->flags & GVRENDER_DOES_ARROWS) {
-		    gvrender_beziercurve(job, bzf.list, bz.size, bz.sflag,
+		    gvrender_beziercurve(job, bz.list, bz.size, bz.sflag,
+					 bzf.eflag, FALSE);
+		} else {
+		    gvrender_beziercurve(job, bz.list, bz.size, FALSE,
+					 FALSE, FALSE);
+#else
+		/* convert points to pointf for gvrender api */
+		cp = malloc(sizeof(pointf) * bz.size);
+		for (j = 0; j < bz.size; j++)
+		    P2PF(bz.list[j], cp[j]);
+		if (job->flags & GVRENDER_DOES_ARROWS) {
+		    gvrender_beziercurve(job, cp, bz.size, bz.sflag,
 					 bz.eflag, FALSE);
 		} else {
-		    gvrender_beziercurve(job, bzf.list, bz.size, FALSE,
+		    gvrender_beziercurve(job, cp, bz.size, FALSE,
 					 FALSE, FALSE);
+#endif
 		    if (bz.sflag) {
-			arrow_gen(job, EMIT_TDRAW, bz.sp, bz.list[0],
+#ifdef SPLINESF
+			arrow_gen(job, EMIT_TDRAW, bzf.sp, bzf.list[0],
+				arrowsize, job->obj->penwidth, bzf.sflag);
+#else
+			P2PF(bz.sp, pf);
+			P2PF(bz.list[0], uf);
+			arrow_gen(job, EMIT_TDRAW, pf, uf,
 				arrowsize, job->obj->penwidth, bz.sflag);
+#endif
 		    }
 		    if (bz.eflag) {
+#ifdef SPLINESF
 			arrow_gen(job, EMIT_HDRAW, bz.ep, bz.list[bz.size - 1],
 				arrowsize, job->obj->penwidth, bz.eflag);
+#else
+			P2PF(bz.ep, pf);
+			P2PF(bz.list[bz.size - 1], uf);
+			arrow_gen(job, EMIT_HDRAW, pf, uf,
+				arrowsize, job->obj->penwidth, bz.eflag);
+#endif
 		    }
                     /* arrow_gen resets the job style 
                      * If we have more splines to do, restore the old one.
@@ -1482,7 +1560,9 @@ static void emit_edge_graphics(GVJ_t * job, edge_t * e, char** styles)
 		    if ((ED_spl(e)->size>1) && (bz.sflag||bz.eflag) && styles) 
 			gvrender_set_style(job, styles);
 		}
-		free(bzf.list);
+#ifndef SPLINESF
+		free(cp);
+#endif
 	    }
 	}
     }
@@ -1704,8 +1784,11 @@ emit_edge_label(GVJ_t* job, textlabel_t* lbl, int lkind, int explicit,
  * If the url is non-NULL or the tooltip was explicit, we set
  * a hot spot around point p.
  */
-static void
-nodeIntersect (GVJ_t * job, point p, 
+#ifdef SPLINESF
+static void nodeIntersect (GVJ_t * job, pointf p, 
+#else
+static void nodeIntersect (GVJ_t * job, point p, 
+#endif
     boolean explicit_iurl, char* iurl,
     boolean explicit_itooltip, char* itooltip,
     boolean explicit_itarget, char* itarget)
@@ -1767,7 +1850,11 @@ static void emit_end_edge(GVJ_t * job)
     obj->url_map_p = NULL;
 
     if (ED_spl(e)) {
+#ifdef SPLINESF
+	pointf p;
+#else
 	point p;
+#endif
 	bezier bz;
 
 	/* process intersection with tail node */
@@ -2708,7 +2795,9 @@ static void init_splines_bb(splines *spl)
     int i;
     bezier bz;
     boxf bb, b;
+#ifndef SPLINESF
     pointf p, u;
+#endif
 
     assert(spl->size > 0);
     bz = spl->list[0];
@@ -2720,15 +2809,23 @@ static void init_splines_bb(splines *spl)
             EXPANDBB(bb, b);
         }
         if (bz.sflag) {
+#ifdef SPLINESF
+            b = arrow_bb(bz.sp, bz.list[0], 1, bz.sflag);
+#else
             P2PF(bz.sp, p);
             P2PF(bz.list[0], u);
             b = arrow_bb(p, u, 1, bz.sflag);
+#endif
             EXPANDBB(bb, b);
         }
         if (bz.eflag) {
+#ifdef SPLINESF
+            b = arrow_bb(bz.ep, bz.list[bz.size - 1], 1, bz.eflag);
+#else
             P2PF(bz.ep, p);
             P2PF(bz.list[bz.size - 1], u);
             b = arrow_bb(p, u, 1, bz.eflag);
+#endif
             EXPANDBB(bb, b);
         }
     }

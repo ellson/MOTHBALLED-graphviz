@@ -23,10 +23,17 @@
 int Y_off;           /* ymin + ymax */
 double YF_off;       /* Y_off in inches */
 
-static void printptf(FILE * f, point pt)
+static void printpt(FILE * f, point pt)
 {
     fprintf(f, " %.3f %.3f", PS2INCH(pt.x), PS2INCH(YDIR(pt.y)));
 }
+
+#ifdef SPLINESF
+static void printptf(FILE * f, pointf pt)
+{
+    fprintf(f, " %.3f %.3f", PS2INCH(pt.x), PS2INCH(YDIR(pt.y)));
+}
+#endif
 
 /* setYInvert:
  * Set parameters used to flip coordinate system (y=0 at top).
@@ -79,7 +86,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 	if (IS_CLUST_NODE(n))
 	    continue;
 	fprintf(f, "node %s ", agcanonical(n->name));
-	printptf(f, ND_coord_i(n));
+	printpt(f, ND_coord_i(n));
 	if (ND_label(n)->html)   /* if html, get original text */
 	    lbl = agcanonical (agxget(n, N_label->index));
 	else
@@ -112,12 +119,16 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 		for (i = 0; i < ED_spl(e)->size; i++) {
 		    bz = ED_spl(e)->list[i];
 		    for (j = 0; j < bz.size; j++)
+#ifdef SPLINESF
 			printptf(f, bz.list[j]);
+#else
+			printpt(f, bz.list[j]);
+#endif
 		}
 	    }
 	    if (ED_label(e)) {
 		fprintf(f, " %s", agcanon(ED_label(e)->text));
-		printptf(f, ED_label(e)->p);
+		printpt(f, ED_label(e)->p);
 	    }
 	    fprintf(f, " %s %s\n", late_nnstring(e, E_style, "solid"),
 		    late_nnstring(e, E_color, DEFAULT_COLOR));
@@ -172,6 +183,9 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     node_t *n;
     edge_t *e;
     point pt;
+#ifdef SPLINESF
+    point ptf;
+#endif
     int dim3 = (GD_odim(g) >= 3);
 
     e_arrows = s_arrows = 0;
@@ -257,23 +271,40 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 			agxbputc(&xb, ';');
 		    if (ED_spl(e)->list[i].sflag) {
 			s_arrows = 1;
+#ifdef SPLINESF
+			sprintf(buf, "s,%.3f,%.3f ",
+				ED_spl(e)->list[i].sp.x,
+				YFDIR(ED_spl(e)->list[i].sp.y));
+#else
 			sprintf(buf, "s,%d,%d ",
 				ED_spl(e)->list[i].sp.x,
 				YDIR(ED_spl(e)->list[i].sp.y));
+#endif
 			agxbput(&xb, buf);
 		    }
 		    if (ED_spl(e)->list[i].eflag) {
 			e_arrows = 1;
+#ifdef SPLINESF
+			sprintf(buf, "e,%.3f,%.3f ",
+				ED_spl(e)->list[i].ep.x,
+				YFDIR(ED_spl(e)->list[i].ep.y));
+#else
 			sprintf(buf, "e,%d,%d ",
 				ED_spl(e)->list[i].ep.x,
 				YDIR(ED_spl(e)->list[i].ep.y));
+#endif
 			agxbput(&xb, buf);
 		    }
 		    for (j = 0; j < ED_spl(e)->list[i].size; j++) {
 			if (j > 0)
 			    agxbputc(&xb, ' ');
+#ifdef SPLINESF
+			ptf = ED_spl(e)->list[i].list[j];
+			sprintf(buf, "%.3f,%.3f", ptf.x, YFDIR(ptf.y));
+#else
 			pt = ED_spl(e)->list[i].list[j];
 			sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
+#endif
 			agxbput(&xb, buf);
 		    }
 		}

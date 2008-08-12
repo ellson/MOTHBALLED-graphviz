@@ -106,6 +106,20 @@ extern "C" {
 	void *data;
     } path;
 
+#ifdef SPLINESF
+    typedef struct bezier {
+	pointf *list;
+	int size;
+	int sflag, eflag;
+	pointf sp, ep;
+    } bezier;
+
+    typedef struct splines {
+	bezier *list;
+	int size;
+	boxf bb;
+    } splines;
+#else
     typedef struct bezier {
 	point *list;
 	int size;
@@ -118,19 +132,7 @@ extern "C" {
 	int size;
 	boxf bb;
     } splines;
-
-/* fp variants */
-    typedef struct bezierf {
-	pointf *list;
-	int size;
-	int sflag, eflag;
-	pointf sp, ep;
-    } bezierf;
-
-    typedef struct splinesf {
-	bezierf *list;
-	int size;
-    } splinesf;
+#endif
 
     typedef struct textlabel_t {
 	char *text, *fontname, *fontcolor;

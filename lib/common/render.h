@@ -70,7 +70,7 @@ extern "C" {
     extern void add_box(path *, box);
     extern void arrow_flags(Agedge_t * e, int *sflag, int *eflag);
     extern boxf arrow_bb(pointf p, pointf u, double arrowsize, int flag);
-    extern void arrow_gen(GVJ_t * job, emit_state_t emit_state, point p, point u,
+    extern void arrow_gen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u,
 			  double arrowsize, double penwidth, int flag);
     extern double arrow_length(edge_t * e, int flag);
     extern int arrowEndClip(edge_t*, point*, int, int , bezier*, int eflag);
