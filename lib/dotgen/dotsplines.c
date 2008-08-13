@@ -21,6 +21,10 @@
 
 #include "dot.h"
 
+#ifdef ORTHO
+#include <ortho.h>
+#endif
+
 #define	NSUB	9		/* number of subdivisions, re-aiming splines */
 #define	CHUNK	128		/* in building list of edges */
 
@@ -241,6 +245,12 @@ static void _dot_splines(graph_t * g, int normalize)
     int et = EDGE_TYPE(g->root);
 
     if (et == ET_NONE) return; 
+#ifdef ORTHO
+    if (et == ET_ORTHO) {
+	orthoEdges (g, 0, &sinfo);
+	goto finish;
+    } 
+#endif
 
     mark_lowclusters(g);
     routesplinesinit();
@@ -409,6 +419,9 @@ static void _dot_splines(graph_t * g, int normalize)
     if (normalize)
 	edge_normalize(g);
 
+#ifdef ORTHO
+finish :
+#endif
     /* vladimir: place port labels */
     /* FIX: head and tail labels are not part of cluster bbox */
     if (E_headlabel || E_taillabel) {
@@ -432,11 +445,17 @@ static void _dot_splines(graph_t * g, int normalize)
     }
     /* end vladimir */
 
-    free(edges);
-    free(P->boxes);
-    free(P);
-    free(sd.Rank_box);
-    routesplinesterm();
+#ifdef ORTHO
+    if (et != ET_ORTHO) {
+#endif
+	free(edges);
+	free(P->boxes);
+	free(P);
+	free(sd.Rank_box);
+	routesplinesterm();
+#ifdef ORTHO
+    } 
+#endif
     State = GVSPLINES;
 }
 
@@ -797,7 +816,7 @@ makeSimpleFlat (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, int et
 	    points[pointn++] = pointof((2 * hp.x + tp.x) / 3, dy);
 	    points[pointn++] = hp;
 	}
-	else {
+	else {   /* ET_PLINE */
 	    points[pointn++] = tp;
 	    points[pointn++] = tp;
 	    points[pointn++] = pointof((2 * tp.x + hp.x) / 3, dy);
