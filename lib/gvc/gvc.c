@@ -48,10 +48,7 @@ GVC_t *gvContext(void)
 {
     GVC_t *gvc;
 
-//	void aginit(Agraph_t * g, int kind, char *rec_name, int rec_size, int move_to_front);    
-//#define aginit()			aginitlib(sizeof(Agraph_t),sizeof(Agnode_t),sizeof(Agedge_t))	
-//void aginit(Agraph_t * g, int kind, char *rec_name, int rec_size, int move_to_front);    
-//	aginit();
+    aginit();
     agnodeattr(NULL, "label", NODENAME_ESC);
     gvc = gvNEWcontext(LibInfo, gvUsername());
     gvconfig(gvc, FALSE); /* configure for available plugins and codegens */
@@ -81,7 +78,7 @@ int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
  * doesn't yet include margins, scaling or page sizes because
  * those depend on the renderer being used. */
 	
-	if (GD_drawing(g)->landscape)
+    if (GD_drawing(g)->landscape)
         sprintf(buf, "%d %d %d %d",
                 ROUND(GD_bb(g).LL.y), ROUND(GD_bb(g).LL.x),
                 ROUND(GD_bb(g).UR.y), ROUND(GD_bb(g).UR.x));
