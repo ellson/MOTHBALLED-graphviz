@@ -5,7 +5,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
         -I$(top_srcdir)/lib/common \
         -I$(top_srcdir)/lib/gvc \
-        -I$(top_srcdir)/lib/ortho \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
 	-I$(top_srcdir)/lib/pathplan
