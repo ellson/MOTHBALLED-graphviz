@@ -173,7 +173,7 @@ void free_label(textlabel_t * p)
 void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 {
     obj_state_t *obj = job->obj;
-    double center_x;
+    double halfwidth_x, center_x, left_x, right_x;
     int i;
     pointf p;
     emit_state_t old_emit_state;
@@ -193,7 +193,12 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     p.x = lp->p.x;
     p.y = lp->p.y;
 
+    /* dimensions of box for label, no padding, adjusted for resizing */
+    halfwidth_x = (lp->dimen.x + lp->d.x) / 2.0;
+
     center_x = p.x;
+    left_x = center_x - halfwidth_x;
+    right_x = center_x + halfwidth_x;
 
     /* position for first para */
     p.y += (lp->dimen.y + lp->d.y) / 2.0 - lp->fontsize;
@@ -205,10 +210,10 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     for (i = 0; i < lp->u.txt.nparas; i++) {
 	switch (lp->u.txt.para[i].just) {
 	case 'l':
-	    p.x = center_x - lp->d.x;
+	    p.x = left_x;
 	    break;
 	case 'r':
-	    p.x = center_x + lp->d.x;
+	    p.x = right_x;
 	    break;
 	default:
 	case 'n':
