@@ -67,7 +67,11 @@ int gvrender_select(GVJ_t * job, char *str)
 
     gvplugin_load(gvc, API_device, str);
 
-    job->flags = 0;
+    /* When job is created, it is zeroed out.
+     * Some flags, such as OUTPUT_NOT_REQUIRED, may already be set,
+     * so don't reset.
+     */
+    /* job->flags = 0; */
     plugin = gvc->api[API_device];
     if (plugin) {
 #ifdef WITH_CODEGENS
