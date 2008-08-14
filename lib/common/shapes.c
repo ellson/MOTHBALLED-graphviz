@@ -1327,6 +1327,7 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
     int rv = 0;
     double theta = 0.0;
     boolean constrain = FALSE;
+    boolean dyna = FALSE;
     int side = 0;
     boolean clip = TRUE;
     boolean defined;
@@ -1433,13 +1434,20 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 		break;
 	    }
 	    break;
+	case '_':
+	    dyna = TRUE;
+	    side = sides;
+	    break;
+	case 'c':
+	    break;
 	default:
 	    rv = 1;
 	    break;
 	}
     }
     p = cwrotatep(p, 90*GD_rankdir(n->graph));
-    pp->side = invflip_side(side, GD_rankdir(n->graph));
+    if (dyna) pp->side = side;
+    else pp->side = invflip_side(side, GD_rankdir(n->graph));
     pp->bp = bp;
     pp->p = p;
     pp->theta = invflip_angle(theta, GD_rankdir(n->graph));
@@ -1454,6 +1462,7 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
     pp->constrained = constrain;
     pp->defined = defined;
     pp->clip = clip;
+    pp->dyna = dyna;
     return rv;
 }
 
@@ -1466,6 +1475,8 @@ static port poly_port(node_t * n, char *portname, char *compass)
     if (portname[0] == '\0')
 	return Center;
 
+    if (compass == NULL)
+	compass = "_";
     sides = BOTTOM | RIGHT | TOP | LEFT; 
     if ((ND_label(n)->html) && (bp = html_port(n, portname, &sides))) {
 	if (compassPort(n, bp, &rv, compass, sides, NULL)) {
@@ -2214,6 +2225,8 @@ static port record_port(node_t * n, char *portname, char *compass)
     if (portname[0] == '\0')
 	return Center;
     sides = BOTTOM | RIGHT | TOP | LEFT; 
+    if (compass == NULL)
+	compass = "_";
     f = (field_t *) ND_shape_info(n);
     if ((subf = map_rec_port(f, portname))) {
 	if (compassPort(n, &subf->b, &rv, compass, subf->sides, NULL)) {
@@ -2467,3 +2480,109 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
         gvrender_end_anchor(job);
     }
 }
+
+static char* side_port[] = {"s", "e", "n", "w"};
+
+static point
+cvtPt (point p, int rankdir)
+{
+    point q;
+
+    switch (rankdir) {
+    case RANKDIR_TB :
+	q = p;
+	break;
+    case RANKDIR_BT :
+	q.x = p.x;
+	q.y = -p.y;
+	break;
+    case RANKDIR_LR :
+	q.y = p.x;
+	q.x = -p.y;
+	break;
+    case RANKDIR_RL :
+	q.y = p.x;
+	q.x = p.y;
+	break;
+    }
+    return q;
+}
+
+static char* closestSide (node_t*  n, node_t* other, port* oldport)
+{
+    box b;
+    int rkd = GD_rankdir(n->graph->root);
+    point p, pt = cvtPt (ND_coord_i(n), rkd);
+    point opt = cvtPt (ND_coord_i(other), rkd);
+    int sides = oldport->side;
+    char* rv = NULL;
+    int i, d, mind;
+
+    if (sides == 0) return rv;  /* use center */
+
+    if (oldport->bp) {
+	b = *oldport->bp;
+    } else {
+	if (GD_flip(n->graph)) {
+	    b.UR.x = ND_ht_i(n) / 2;
+	    b.LL.x = -b.UR.x;
+	    b.UR.y = ND_lw_i(n);
+	    b.LL.y = -b.UR.y;
+	} else {
+	    b.UR.y = ND_ht_i(n) / 2;
+	    b.LL.y = -b.UR.y;
+	    b.UR.x = ND_lw_i(n);
+	    b.LL.x = -b.UR.x;
+	}
+    }
+    
+    for (i = 0; i < 4; i++) {
+	if ((sides & (1<<i)) == 0) continue;
+	switch (i) {
+	case 0 :
+	    p.y = b.LL.y;
+	    p.x = (b.LL.x + b.UR.x)/2;
+	    break;
+	case 1 :
+	    p.x = b.UR.x;
+	    p.y = (b.LL.y + b.UR.y)/2;
+	    break;
+	case 2 :
+	    p.y = b.UR.y;
+	    p.x = (b.LL.x + b.UR.x)/2;
+	    break;
+	case 3 :
+	    p.x = b.LL.x;
+	    p.y = (b.LL.y + b.UR.y)/2;
+	    break;
+	}
+	p.x  += pt.x;
+	p.y  += pt.y;
+	d = DIST2(p, opt);
+	if (!rv || (d < mind)) {
+	    mind = d;
+	    rv = side_port[i];
+	}
+    }
+    return rv;
+}
+
+static port resolvePort(node_t*  n, node_t* other, port* oldport)
+{
+    port rv;
+    char* compass = closestSide (n, other, oldport);  
+
+    compassPort(n, oldport->bp, &rv, compass, oldport->side, NULL);
+
+    return rv;
+}
+
+void
+resolvePorts (edge_t* e)
+{
+    if (ED_tail_port(e).dyna) 
+	ED_tail_port(e) = resolvePort(e->tail, e->head, &ED_tail_port(e));
+    if (ED_head_port(e).dyna) 
+	ED_head_port(e) = resolvePort(e->head, e->tail, &ED_head_port(e));
+}
+

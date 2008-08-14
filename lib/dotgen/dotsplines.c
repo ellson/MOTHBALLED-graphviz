@@ -322,6 +322,9 @@ static void _dot_splines(graph_t * g, int normalize)
 	}
     }
 
+    for (i = 0; i < n_edges; i++)
+	resolvePorts (edges[i]);
+
     /* Sort so that equivalent edges are contiguous. 
      * Equivalence should basically mean that 2 edges have the
      * same set {(tailnode,tailport),(headnode,headport)}, or

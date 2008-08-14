@@ -28,6 +28,9 @@
 extern double drand48(void);
 #endif
 
+#ifdef ORTHO
+#include <ortho.h>
+#endif
 
 #define P2PF(p, pf) (pf.x = p.x, pf.y = p.y)
 #define PF2P(pf, p) (p.x = ROUND (pf.x), p.y = ROUND (pf.y))
@@ -786,9 +789,6 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     vconfig_t *vconfig = 0;
     path *P = NULL;
     int useEdges = (Nop > 1);
-#ifdef ORTHO
-    extern void orthoEdges (Agraph_t* g, int useLbls, splineInfo* sinfo);
-#endif
     router_t* rtr = 0;
 
     /* build configuration */
@@ -1946,9 +1946,6 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
     vconfig_t *vconfig = 0;
     path *P = NULL;
     int useEdges = (Nop > 1);
-#ifdef ORTHO
-    extern void orthoEdges (Agraph_t* g, int useLbls, splineInfo* sinfo);
-#endif
     router_t* rtr = 0;
 
     /* build configuration */
@@ -2090,6 +2087,12 @@ splineEdges(graph_t * g, int (*edgefn) (graph_t *, expand_t*, int),
     Dt_t *map;
 
     margin = esepFactor (g);
+
+    for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
+	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
+	    resolvePorts (e);
+	}
+    }
 
     /* find equivalent edges */
     map = dtopen(&edgeItemDisc, Dtoset);
