@@ -65,7 +65,6 @@ extern "C" {
 	/* atomic unit of text emitted using a single htmlfont_t */
     typedef struct {
 	char *str;
-	char *xshow;
 	PostscriptAlias *postscript_alias;
 	void *layout;
 	void (*free_layout) (void *layout);
