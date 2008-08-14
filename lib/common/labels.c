@@ -194,7 +194,7 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     p.y = lp->p.y;
 
     /* dimensions of box for label, no padding, adjusted for resizing */
-    halfwidth_x = (lp->dimen.x + lp->d.x) / 2.0;
+    halfwidth_x = MAX(lp->d.x, (lp->dimen.x / 2.0));
 
     center_x = p.x;
     left_x = center_x - halfwidth_x;
