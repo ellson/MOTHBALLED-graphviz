@@ -197,14 +197,17 @@ If the first form is used, the corresponding node must either have
 having the given <I>portname</I>,
 or have an <A HREF=shapes.html#html>HTML-like label</A>, one of
 whose components has a <TT>PORT</TT> attribute set to <I>portname</I>.
-In this case, the edge is aimed for the center of the corresponding
-field.
 <P>
 If a compass point is used, it must have the form
-<TT>"n","ne","e","se","s","sw","w","nw"</TT>. This modifies the edge
+<TT>"n","ne","e","se","s","sw","w","nw","c","_"</TT>. This modifies the edge
 placement to aim for the corresponding compass point on the port or,
 in the second form where no <I>portname</I> is supplied, on the node
-itself.
+itself. The compass point "c" specifies the center of the node or port.
+The compass point "_" specifies that an appropriate side of the port
+adjacent to the exterior of the node should be used, if such exists.
+Otherwise, the center is used.
+If no compass point is used with a portname, the default value is "_".
+<P>
 <P>
 This attribute can be attached to an edge using the
 <A HREF=#k:headport>headport</A> and
