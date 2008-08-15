@@ -40,7 +40,7 @@ extern "C" {
 	void *layout;
 	void (*free_layout) (void *layout);   /* FIXME - this is ugly */
 	double fontsize, width, height, yoffset_layout, yoffset_centerline;
-	char just;
+	char just;	/* 'l' 'n' 'r' */
     } textpara_t;
 
 #ifdef __cplusplus
