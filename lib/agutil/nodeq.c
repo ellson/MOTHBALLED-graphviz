@@ -14,13 +14,7 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-
-#ifdef WITH_CGRAPH
-#include <cgraph.h>
-#else
 #include <agraph.h>
-#endif
-
 #include <agutil.h>
 
 /* node Nqueue maintenance */
