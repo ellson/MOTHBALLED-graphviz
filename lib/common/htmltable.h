@@ -84,11 +84,11 @@ extern "C" {
     typedef struct {
 	htextpara_t *paras;
 	short nparas;
-	box box;
+	boxf box;
     } htmltxt_t;
 
     typedef struct {
-	box box;
+	boxf box;
 	char *src;
 	char *scale;
     } htmlimg_t;
@@ -107,7 +107,7 @@ extern "C" {
 	unsigned short flags;
 	unsigned short width;
 	unsigned short height;
-	box box;		/* its geometric placement in points */
+	boxf box;		/* its geometric placement in points */
     } htmldata_t;
 
 #define HTML_UNSET 0
@@ -180,7 +180,7 @@ extern "C" {
     extern void free_html_text(htmltxt_t *);
     extern void free_html_font(htmlfont_t*);
 
-    extern box *html_port(node_t * n, char *pname, int* sides);
+    extern boxf *html_port(node_t * n, char *pname, int* sides);
     extern int html_path(node_t * n, port* p, int side, box * rv, int *k);
     extern int html_inside(node_t * n, pointf p, edge_t * e);
 

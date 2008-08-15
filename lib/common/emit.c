@@ -174,7 +174,7 @@ static void map_point(GVJ_t *job, point P)
     }
 }
 
-void emit_map_rect(GVJ_t *job, point LL, point UR)
+void emit_map_rect(GVJ_t *job, boxf b)
 {
     obj_state_t *obj = job->obj;
     int flags = job->flags;
@@ -191,8 +191,8 @@ void emit_map_rect(GVJ_t *job, point LL, point UR)
 	}
 	free(obj->url_map_p);
 	obj->url_map_p = p = N_NEW(obj->url_map_n, pointf);
-	P2PF(LL,p[0]);
-	P2PF(UR,p[1]);
+	p[0] = b.LL;
+	p[1] = b.UR;
 	if (! (flags & GVRENDER_DOES_TRANSFORM))
 	    gvrender_ptf_A(job, p, p, 2);
 	if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
@@ -217,7 +217,7 @@ static void map_label(GVJ_t *job, textlabel_t *lab)
 	}
 	free(obj->url_map_p);
 	obj->url_map_p = p = N_NEW(obj->url_map_n, pointf);
-	P2RECT(lab->p, p, lab->dimen.x / 2., lab->dimen.y / 2.);
+	P2RECT(lab->pos, p, lab->dimen.x / 2., lab->dimen.y / 2.);
 	if (! (flags & GVRENDER_DOES_TRANSFORM))
 	    gvrender_ptf_A(job, p, p, 2);
 	if (! (flags & GVRENDER_DOES_MAP_RECTANGLE))
@@ -1256,7 +1256,6 @@ static pointf computeoffset_qr(pointf p, pointf q, pointf r, pointf s,
 static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
 {
     pointf sz, AF[3];
-    point p;
     unsigned char *s;
 
     for (s = (unsigned char *) (lp->text); *s; s++) {
@@ -1267,10 +1266,9 @@ static void emit_attachment(GVJ_t * job, textlabel_t * lp, splines * spl)
 	return;
 
     sz = lp->dimen;
-    AF[0] = pointfof((double)(lp->p.x) + sz.x / 2., (double)(lp->p.y) - sz.y / 2.);
+    AF[0] = pointfof(lp->pos.x + sz.x / 2., lp->pos.y - sz.y / 2.);
     AF[1] = pointfof(AF[0].x - sz.x, AF[0].y);
-    p = dotneato_closest(spl, lp->p);
-    P2PF(p,AF[2]);
+    AF[2] = dotneato_closest(spl, lp->pos);
     /* Don't use edge style to draw attachment */
     gvrender_set_style(job, job->gvc->defaultlinestyle);
     /* Use font color to draw attachment
@@ -2303,7 +2301,6 @@ static void emit_page(GVJ_t * job, graph_t * g)
     obj_state_t *obj = job->obj;
     int nump = 0, flags = job->flags;
     textlabel_t *lab;
-    point p1, p2;
     pointf *p = NULL;
 
     setColorScheme (agget (g, "colorscheme"));
@@ -2342,9 +2339,7 @@ static void emit_page(GVJ_t * job, graph_t * g)
 	 * or end_page of renderer.
 	 */
     if (!(flags & EMIT_CLUSTERS_LAST) && (obj->url || obj->explicit_tooltip)) {
-	PF2P(job->clip.LL, p1);
-	PF2P(job->clip.UR, p2);
-	emit_map_rect(job, p1, p2);
+	emit_map_rect(job, job->clip);
 	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
     }
     if (job->numLayers == 1)
@@ -2520,6 +2515,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	sg = GD_clust(g)[c];
 	if (clust_in_layer(job, sg) == FALSE)
 	    continue;
+	B2BF(GD_bb(sg), BF);
 	/* when mapping, detect events on clusters after sub_clusters */
 	if (flags & EMIT_CLUSTERS_LAST)
 	    emit_clusters(job, sg, flags);
@@ -2529,7 +2525,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	setColorScheme (agget (sg, "colorscheme"));
 	gvrender_begin_context(job);
 	if (doAnchor && !(flags & EMIT_CLUSTERS_LAST)) {
-	    emit_map_rect(job, GD_bb(sg).LL, GD_bb(sg).UR);
+	    emit_map_rect(job, BF);
 	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	}
 	filled = FALSE;
@@ -2581,7 +2577,6 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
             gvrender_set_penwidth(job, penwidth);
 	}
 
-        B2BF(GD_bb(sg), BF);
 	if (istyle & ROUNDED) {
 	    if (late_int(sg, G_peripheries, 1, 0) || filled) {
 		AF[0] = BF.LL;
@@ -2609,7 +2604,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 
 	if (doAnchor) {
 	    if (flags & EMIT_CLUSTERS_LAST) {
-		emit_map_rect(job, GD_bb(sg).LL, GD_bb(sg).UR);
+		emit_map_rect(job, BF);
 		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	    }
 	    gvrender_end_anchor(job);

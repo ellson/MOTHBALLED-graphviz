@@ -81,7 +81,6 @@ static void place_flip_graph_label(graph_t * g);
     closepath stroke\n\
 } def\n"
 
-#ifdef SPLINESF
 static pointf map_pointf(pointf p)
 {
     p = ccwrotatepf(p, Rankdir*90);
@@ -89,7 +88,6 @@ static pointf map_pointf(pointf p)
     p.y -= (double)Offset.y;
     return p;
 }
-#endif
 
 static point map_point(point p)
 {
@@ -129,12 +127,12 @@ static void map_edge(edge_t * e)
 #endif
     }
     if (ED_label(e))
-	ED_label(e)->p = map_point(ED_label(e)->p);
+	ED_label(e)->pos = map_pointf(ED_label(e)->pos);
     /* vladimir */
     if (ED_head_label(e))
-	ED_head_label(e)->p = map_point(ED_head_label(e)->p);
+	ED_head_label(e)->pos = map_pointf(ED_head_label(e)->pos);
     if (ED_tail_label(e))
-	ED_tail_label(e)->p = map_point(ED_tail_label(e)->p);
+	ED_tail_label(e)->pos = map_pointf(ED_tail_label(e)->pos);
 }
 
 void translate_bb(graph_t * g, int rankdir)
@@ -152,7 +150,7 @@ void translate_bb(graph_t * g, int rankdir)
     }
     GD_bb(g) = new_bb;
     if (GD_label(g)) {
-	GD_label(g)->p = map_point(GD_label(g)->p);
+	GD_label(g)->pos = map_pointf(GD_label(g)->pos);
     }
     for (c = 1; c <= GD_n_cluster(g); c++)
 	translate_bb(GD_clust(g)[c], rankdir);
@@ -229,7 +227,7 @@ static void place_root_label(graph_t * g, point d)
 	p.y = GD_bb(g).LL.y + d.y / 2;
     }
 
-    GD_label(g)->p = p;
+    P2PF(p, GD_label(g)->pos);
     GD_label(g)->set = TRUE;
 }
 
@@ -401,7 +399,7 @@ static void place_flip_graph_label(graph_t * g)
 #endif
 	}
 
-	GD_label(g)->p = p;
+	P2PF(p, GD_label(g)->pos);
 	GD_label(g)->set = TRUE;
     }
 
@@ -465,7 +463,7 @@ void place_graph_label(graph_t * g)
 		GD_bb(g->root).LL.x = minx;
 #endif
 	}
-	GD_label(g)->p = p;
+	P2PF(p, GD_label(g)->pos);
 	GD_label(g)->set = TRUE;
     }
 

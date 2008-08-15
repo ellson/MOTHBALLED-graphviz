@@ -60,6 +60,7 @@ extern int box_contains(box, box);
 extern int boxf_contains(boxf, boxf);
 
 extern box flip_rec_box(box b, point p);
+extern boxf flip_rec_boxf(boxf b, pointf p);
 
 extern double ptToLine2 (pointf l1, pointf l2, pointf p);
 

@@ -102,6 +102,7 @@ static pointf label_size(graph_t * g, textlabel_t * lp)
 	storeline(g, lp, line, 'n');
     }
 
+    lp->space = lp->dimen;
     return lp->dimen;
 }
 
@@ -173,7 +174,6 @@ void free_label(textlabel_t * p)
 void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 {
     obj_state_t *obj = job->obj;
-    double halfwidth_x, center_x, left_x, right_x;
     int i;
     pointf p;
     emit_state_t old_emit_state;
@@ -190,34 +190,34 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
     if (lp->u.txt.nparas < 1)
 	return;
 
-    p.x = lp->p.x;
-    p.y = lp->p.y;
-
-    /* dimensions of box for label, no padding, adjusted for resizing */
-    halfwidth_x = MAX(lp->d.x, (lp->dimen.x / 2.0));
-
-    center_x = p.x;
-    left_x = center_x - halfwidth_x;
-    right_x = center_x + halfwidth_x;
-
-    /* position for first para */
-    p.y += (lp->dimen.y + lp->d.y) / 2.0 - lp->fontsize;
-
     gvrender_begin_context(job);
     gvrender_set_pencolor(job, lp->fontcolor);
     gvrender_set_font(job, lp->fontname, lp->fontsize);
 
+    /* position for first para */
+    switch (lp->valign) {
+	case 't':
+    	    p.y = lp->pos.y + lp->space.y / 2.0 - lp->fontsize;
+	    break;
+	case 'b':
+    	    p.y = lp->pos.y - lp->space.y / 2.0 + lp->dimen.y - lp->fontsize;
+	    break;
+	case 'c':
+	default:	
+    	    p.y = lp->pos.y + lp->dimen.y / 2.0 - lp->fontsize;
+	    break;
+    }
     for (i = 0; i < lp->u.txt.nparas; i++) {
 	switch (lp->u.txt.para[i].just) {
 	case 'l':
-	    p.x = left_x;
+	    p.x = lp->pos.x - lp->space.x / 2.0;
 	    break;
 	case 'r':
-	    p.x = right_x;
+	    p.x = lp->pos.x + lp->space.x / 2.0;
 	    break;
 	default:
 	case 'n':
-	    p.x = center_x;
+	    p.x = lp->pos.x;
 	    break;
 	}
 	gvrender_textpara(job, p, &(lp->u.txt.para[i]));

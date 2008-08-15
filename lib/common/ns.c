@@ -776,7 +776,7 @@ void tchk(void)
 	for (i = 0; (e = ND_tree_out(n).list[i]); i++) {
 	    e_cnt++;
 	    if (SLACK(e) > 0)
-		fprintf(stderr, "not a tight tree %x", e);
+		fprintf(stderr, "not a tight tree %lx", (unsigned long int)e);
 	}
     }
     if ((n_cnt != Tree_node.size) || (e_cnt != Tree_edge.size))
@@ -857,15 +857,22 @@ static node_t *checkdfs(node_t * n)
     for (i = 0; (e = ND_out(n).list[i]); i++) {
 	w = e->head;
 	if (ND_onstack(w)) {
-	    fprintf(stderr, "cycle: last edge %x %s(%x) %s(%x)\n",
-		e,n->name,n,w->name,w);
+	    fprintf(stderr, "cycle: last edge %lx %s(%lx) %s(%lx)\n",
+		(unsigned long int)e,
+		n->name,
+		(unsigned long int)n,
+		w->name,
+		(unsigned long int)w);
 	    return w;
 	}
 	else {
 	    if (ND_mark(w) == FALSE) {
 		x = checkdfs(w);
 		if (x) {
-		    fprintf(stderr,"unwind %x %s(%x)\n",e,n->name,n);
+		    fprintf(stderr,"unwind %lx %s(%lx)\n",
+			(unsigned long int)e,
+			n->name,
+			(unsigned long int)n);
 		    if (x != n) return x;
 		    fprintf(stderr,"unwound to root\n");
 		    fflush(stderr);

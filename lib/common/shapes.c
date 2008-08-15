@@ -717,7 +717,7 @@ static void poly_init(node_t * n)
     double angle, sinx, cosx, xmax, ymax, scalex, scaley;
     double width, height, marginx, marginy;
     int regular, peripheries, sides;
-    int i, j, isBox, outp, labelloc;
+    int i, j, isBox, outp;
     polygon_t *poly = NEW(polygon_t);
 
     regular = ND_shape(n)->polygon->regular;
@@ -761,6 +761,7 @@ static void poly_init(node_t * n)
     dimen = ND_label(n)->dimen;
 
     /* minimal whitespace around label */
+// FIXME - is this an FP safe test?
     if ((dimen.x > 0.0) || (dimen.y > 0.0)) {
 	/* padding */
 	if ((p = agget(n, "margin"))) {
@@ -834,12 +835,10 @@ static void poly_init(node_t * n)
 
     /* extra sizing depends on if label is centered vertically */
     p = agget(n, "labelloc");
-    if (p && p[0] == 't')
-	labelloc = +1;
-    else if (p && p[0] == 'b')
-	labelloc = -1;
-    else
-	labelloc = 0;
+    if (p && (p[0] == 't' || p[0] == 'b'))
+    	ND_label(n)->valign = p[0];
+    else 
+    	ND_label(n)->valign = 'c';
 
     isBox = (sides == 4 && (ROUND(orientation) % 90) == 0
 	       && distortion == 0. && skew == 0.);
@@ -852,7 +851,7 @@ static void poly_init(node_t * n)
          */
 	temp = bb.y * SQRT2;
 	/* if there is height to spare and the label is centered vertically */
-	if (height > temp && labelloc == 0) {
+	if (height > temp && ND_label(n)->valign == 'c') {
 	    bb.x *= sqrt(1. / (1. - SQR(bb.y / height)));
 	    bb.y = height;
 	}
@@ -895,40 +894,21 @@ static void poly_init(node_t * n)
 	bb.x = bb.y = MAX(bb.x, bb.y);
     }
 
-    /* adjust text horizontal justification 
-     * If ND_label(n)->d.x is set, it specifies how far from the
-     * center are the x positions for left or right justification.
-     * For simple boxes, this is just half bb.x; 
-     * for other shapes, we calculate where the rectangle dimen
-     * when shifted to the right, first touches the ellipse enclosed in bb.
-     * In both cases, we also subtract the horizontal margin about the text.
-     */
+    /* Compute space available for label.  Provides the justification borders */
     if (!mapbool(late_string(n, N_nojustify, "false"))) {
 	if (isBox)
             temp = bb.x;
 	else
             temp = bb.x*sqrt(1.0 - SQR(dimen.y)/SQR(bb.y));
-	temp = (temp - (dimen.x - ND_label(n)->dimen.x))/2.0;
-#if 0
-        if (dimen.x < imagesize.x)
- 	    temp += imagesize.x - dimen.x;
-#endif
-	if (temp > 0) 
-	    ND_label(n)->d.x = temp;
+	ND_label(n)->space.x = temp;
     }
+    else
+	ND_label(n)->space.x = dimen.x;
 
-    /* adjust text vertical location */
     temp = bb.y - min_bb.y;
     if (dimen.y < imagesize.y)
 	temp += imagesize.y - dimen.y;
-    if (temp > 0) {
-        if (labelloc < 0)
-	    ND_label(n)->d.y = -temp;
-	else if (labelloc > 0)
-	    ND_label(n)->d.y = temp;
-	else
-	    ND_label(n)->d.y = 0;
-    }
+    ND_label(n)->space.y = dimen.y + temp;
 
     outp = peripheries;
     if (peripheries < 1)
@@ -1088,14 +1068,14 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
 
     int i, i1, j, s;
     pointf P, Q, R;
-    box *bp = inside_context->s.bp;
+    boxf *bp = inside_context->s.bp;
     node_t *n = inside_context->s.n;
 
     P = ccwrotatepf(p, 90*GD_rankdir(n->graph));
 
     /* Quick test if port rectangle is target */
     if (bp) {
-	box bbox = *bp;
+	boxf bbox = *bp;
 	return INSIDE(P, bbox);
     }
 
@@ -1280,10 +1260,9 @@ static double invflip_angle (double angle, int rankdir)
  * return it.
  * Assumes ictxt and ictxt->n are non-NULL.
  */
-static point 
+static pointf 
 compassPoint(inside_t* ictxt, double y, double x)
 {
-    point  p;
     pointf curve[4];  /* bezier control points for a straight line */
     node_t* n = ictxt->s.n;
 
@@ -1298,10 +1277,7 @@ compassPoint(inside_t* ictxt, double y, double x)
 
     bezier_clip(ictxt, ND_shape(n)->fns->insidefn, curve, 1);
 
-    p.x = ROUND(curve[0].x);
-    p.y = ROUND(curve[0].y);
-
-    return p;
+    return curve[0];
 }
 
 /* compassPort:
@@ -1320,10 +1296,10 @@ compassPoint(inside_t* ictxt, double y, double x)
  * symmetric, left-right symmetric, and convex.
  */
 static int 
-compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ictxt)
+compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* ictxt)
 {
-    box b;
-    point p, ctr;
+    boxf b;
+    pointf p, ctr;
     int rv = 0;
     double theta = 0.0;
     boolean constrain = FALSE;
@@ -1334,17 +1310,17 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 
     if (bp) {
 	b = *bp;
-	p = pointof((b.LL.x + b.UR.x) / 2, (b.LL.y + b.UR.y) / 2);
+	p = pointfof((b.LL.x + b.UR.x) / 2, (b.LL.y + b.UR.y) / 2);
 	defined = TRUE;
     } else {
-	p.x = p.y = 0;
+	p.x = p.y = 0.;
 	if (GD_flip(n->graph)) {
-	    b.UR.x = ND_ht_i(n) / 2;
+	    b.UR.x = ND_ht_i(n) / 2.;
 	    b.LL.x = -b.UR.x;
 	    b.UR.y = ND_lw_i(n);
 	    b.LL.y = -b.UR.y;
 	} else {
-	    b.UR.y = ND_ht_i(n) / 2;
+	    b.UR.y = ND_ht_i(n) / 2.;
 	    b.LL.y = -b.UR.y;
 	    b.UR.x = ND_lw_i(n);
 	    b.LL.x = -b.UR.x;
@@ -1445,11 +1421,11 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 	    break;
 	}
     }
-    p = cwrotatep(p, 90*GD_rankdir(n->graph));
+    p = cwrotatepf(p, 90*GD_rankdir(n->graph));
     if (dyna) pp->side = side;
     else pp->side = invflip_side(side, GD_rankdir(n->graph));
     pp->bp = bp;
-    pp->p = p;
+    PF2P(p, pp->p);
     pp->theta = invflip_angle(theta, GD_rankdir(n->graph));
     if ((p.x == 0) && (p.y == 0))
 	pp->order = MC_SCALE/2;
@@ -1469,7 +1445,7 @@ compassPort(node_t* n, box* bp, port* pp, char* compass, int sides, inside_t* ic
 static port poly_port(node_t * n, char *portname, char *compass)
 {
     port rv;
-    box *bp;
+    boxf *bp;
     int  sides;    /* bitmap of which sides the port lies along */
 
     if (portname[0] == '\0')
@@ -1530,7 +1506,9 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	AF = ALLOC(A_size, AF, pointf);
     }
 
-    ND_label(n)->p = ND_coord_i(n);
+    /* nominal label position in the center of the node */
+    P2PF(ND_coord_i(n), ND_label(n)->pos);
+
     xsize = (double)(ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n));
     ysize = (double)ND_ht_i(n) / POINTS(ND_height(n));
 
@@ -2030,7 +2008,8 @@ static void resize_reclbl(field_t * f, point sz, int nojustify_p)
 {
     int i, amt;
     double inc;
-    point d, newsz;
+    pointf d;
+    point newsz;
     field_t *sf;
 
     /* adjust field */
@@ -2038,18 +2017,19 @@ static void resize_reclbl(field_t * f, point sz, int nojustify_p)
     d.y = sz.y - f->size.y;
     f->size = sz;
 
-    /* adjust text */
+    /* adjust text area */
     if (f->lp && !nojustify_p) {
-	P2PF(d, f->lp->d);
+	f->lp->space.x += d.x;
+	f->lp->space.y += d.y;
     }
 
     /* adjust children */
     if (f->n_flds) {
 
 	if (f->LR)
-	    inc = (double) d.x / f->n_flds;
+	    inc = d.x / f->n_flds;
 	else
-	    inc = (double) d.y / f->n_flds;
+	    inc = d.y / f->n_flds;
 	for (i = 0; i < f->n_flds; i++) {
 	    sf = f->fld[i];
 	    amt = ((int) ((i + 1) * inc)) - ((int) (i * inc));
@@ -2072,8 +2052,8 @@ static void pos_reclbl(field_t * f, point ul, int sides)
     int i, last, mask;
 
     f->sides = sides;
-    f->b.LL = pointof(ul.x, ul.y - f->size.y);
-    f->b.UR = pointof(ul.x + f->size.x, ul.y);
+    f->b.LL = pointfof(ul.x, ul.y - f->size.y);
+    f->b.UR = pointfof(ul.x + f->size.x, ul.y);
     last = f->n_flds - 1;
     for (i = 0; i <= last; i++) {
 	if (sides) {
@@ -2234,7 +2214,8 @@ static port record_port(node_t * n, char *portname, char *compass)
 	      "node %s, port %s, unrecognized compass point '%s' - ignored\n",
 	      n->name, portname, compass);
 	}
-    } else if (compassPort(n, &f->b, &rv, portname, sides, NULL)) {
+    }
+    else if (compassPort(n, &f->b, &rv, portname, sides, NULL)) {
 	unrecognized(n, portname);
     }
 
@@ -2250,9 +2231,9 @@ record_inside(inside_t * inside_context, pointf p)
 {
 
     field_t *fld0;
-    box *bp = inside_context->s.bp;
+    boxf *bp = inside_context->s.bp;
     node_t *n = inside_context->s.n;
-    box bbox;
+    boxf bbox;
 
     /* convert point to node coordinate system */
     p = ccwrotatepf(p, 90*GD_rankdir(n->graph));
@@ -2275,6 +2256,7 @@ static int record_path(node_t* n, port* prt, int side, box rv[], int *kptr)
     int i, ls, rs;
     point p;
     field_t *info;
+    box B;
 
     if (!prt->defined) return 0;
     p = prt->p;
@@ -2291,10 +2273,11 @@ static int record_path(node_t* n, port* prt, int side, box rv[], int *kptr)
 	if (BETWEEN(ls, p.x, rs)) {
 	    /* FIXME: I don't understand this code */
 	    if (GD_flip(n->graph)) {
-		rv[0] = flip_rec_box(info->fld[i]->b, ND_coord_i(n));
+		BF2B(info->fld[i]->b, B);
+		rv[0] = flip_rec_box(B, ND_coord_i(n));
 	    } else {
 		rv[0].LL.x = ND_coord_i(n).x + ls;
-		rv[0].LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2;
+		rv[0].LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
 		rv[0].UR.x = ND_coord_i(n).x + rs;
 	    }
 	    rv[0].UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2;
@@ -2308,13 +2291,12 @@ static int record_path(node_t* n, port* prt, int side, box rv[], int *kptr)
 static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
 {
     int i;
-    double cx, cy;
     pointf AF[2], coord;
 
     if (f->lp) {
-	cx = (f->b.LL.x + f->b.UR.x) / 2.0 + ND_coord_i(n).x;
-	cy = (f->b.LL.y + f->b.UR.y) / 2.0 + ND_coord_i(n).y;
-	f->lp->p = pointof((int) cx, (int) cy);
+	coord.x = (f->b.LL.x + f->b.UR.x) / 2.0 + ND_coord_i(n).x;
+	coord.y = (f->b.LL.y + f->b.UR.y) / 2.0 + ND_coord_i(n).y;
+	f->lp->pos = coord;
 	emit_label(job, EMIT_NLABEL, f->lp);
         pencolor(job, n);
     }
@@ -2470,7 +2452,7 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
 		"%d %d translate newpath user_shape_%d\n",
 		ND_coord_i(n).x + desc->offset.x,
 		ND_coord_i(n).y + desc->offset.y, desc->macro_id);
-    ND_label(n)->p = ND_coord_i(n);
+    P2PF(ND_coord_i(n), ND_label(n)->pos);
     gvrender_end_context(job);
 
     emit_label(job, EMIT_NLABEL, ND_label(n));
@@ -2486,7 +2468,7 @@ static char* side_port[] = {"s", "e", "n", "w"};
 static point
 cvtPt (point p, int rankdir)
 {
-    point q;
+    point q = {0, 0};
 
     switch (rankdir) {
     case RANKDIR_TB :
@@ -2510,13 +2492,14 @@ cvtPt (point p, int rankdir)
 
 static char* closestSide (node_t*  n, node_t* other, port* oldport)
 {
-    box b;
+    boxf b;
     int rkd = GD_rankdir(n->graph->root);
-    point p, pt = cvtPt (ND_coord_i(n), rkd);
+    point p = {0, 0};
+    point pt = cvtPt (ND_coord_i(n), rkd);
     point opt = cvtPt (ND_coord_i(other), rkd);
     int sides = oldport->side;
     char* rv = NULL;
-    int i, d, mind;
+    int i, d, mind = 0;
 
     if (sides == 0) return rv;  /* use center */
 

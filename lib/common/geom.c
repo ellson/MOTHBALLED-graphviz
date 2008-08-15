@@ -519,6 +519,22 @@ box flip_rec_box(box b, point p)
     return rv;
 }
 
+boxf flip_rec_boxf(boxf b, pointf p)
+{
+    boxf rv;
+    /* flip box */
+    rv.UR.x = b.UR.y;
+    rv.UR.y = b.UR.x;
+    rv.LL.x = b.LL.y;
+    rv.LL.y = b.LL.x;
+    /* move box */
+    rv.LL.x += p.x;
+    rv.LL.y += p.y;
+    rv.UR.x += p.x;
+    rv.UR.y += p.y;
+    return rv;
+}
+
 /* ptToLine2:
  * Return distance from point p to line a-b squared.
  */

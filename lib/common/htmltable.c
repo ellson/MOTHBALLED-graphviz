@@ -44,7 +44,7 @@
 #define DEFAULT_CELLSPACING  2
 
 typedef struct {
-    point p;
+    pointf pos;
     htmlfont_t finfo;
     void *obj;
     graph_t *g;
@@ -111,10 +111,10 @@ static void popFontInfo(htmlenv_t * env, htmlfont_t * savp)
 
 static void 
 emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
-         double halfwidth_x, char* fname, double fsize, char* fcolor, box b)
+         double halfwidth_x, char* fname, double fsize, char* fcolor, boxf b)
 {
     int i,j;
-    double tmp, center_x, left_x, right_x, fsize_;
+    double center_x, left_x, right_x, fsize_;
     char *fname_ , *fcolor_;
     textpara_t tl;
     pointf p_ = {0.0, 0.0};
@@ -127,9 +127,7 @@ emit_htextparas(GVJ_t* job, int nparas, htextpara_t* paras, pointf p,
 	/* Initial p is in center of text block; set initial baseline
  	 * to top of text block.
 	 */
-    p_.y = p.y + (double)(b.UR.y-b.LL.y)/2.0;
-    tmp = ROUND(p_.y);  /* align with integer points */
-    p_.y = (double)tmp;
+    p_.y = p.y + (b.UR.y-b.LL.y)/2.0;
 
     gvrender_begin_context(job);
     for(i=0; i<nparas; i++) {
@@ -210,8 +208,8 @@ emit_html_txt(GVJ_t* job, htmltxt_t* tp, htmlenv_t* env)
     fcolor = env->finfo.color;
 
     halfwidth_x = ((double) (tp->box.UR.x - tp->box.LL.x)) / 2.0;
-    p.x = env->p.x + ((double) (tp->box.UR.x + tp->box.LL.x)) / 2.0;
-    p.y = env->p.y + ((double) (tp->box.UR.y + tp->box.LL.y)) / 2.0;
+    p.x = env->pos.x + ((double) (tp->box.UR.x + tp->box.LL.x)) / 2.0;
+    p.y = env->pos.y + ((double) (tp->box.UR.y + tp->box.LL.y)) / 2.0;
 
     emit_htextparas(job, tp->nparas, tp->paras, p, halfwidth_x, fname,
 		    fsize, fcolor, tp->box);
@@ -237,10 +235,9 @@ static void doSide(GVJ_t * job, pointf p, double wd, double ht)
  * from x to x+border will all pixels from x to x+border, and thus have
  * width border+1.
  */
-static void doBorder(GVJ_t * job, char *color, int border, box B)
+static void doBorder(GVJ_t * job, char *color, int border, boxf BF)
 {
     pointf pt;
-    boxf BF;
     double wd, ht;
 
     gvrender_begin_context(job);
@@ -250,7 +247,6 @@ static void doBorder(GVJ_t * job, char *color, int border, box B)
     gvrender_set_fillcolor(job, color);
     gvrender_set_pencolor(job, color);
 
-    B2BF(B, BF);
     if (border == 1) {
 	gvrender_box(job, BF, 0);
     } else {
@@ -270,13 +266,10 @@ static void doBorder(GVJ_t * job, char *color, int border, box B)
     gvrender_end_context(job);
 }
 
-static void doFill(GVJ_t * job, char *color, box B)
+static void doFill(GVJ_t * job, char *color, boxf BF)
 {
-    boxf BF;
-
     gvrender_set_fillcolor(job, color);
     gvrender_set_pencolor(job, color);
-    B2BF(B, BF);
     gvrender_box(job, BF, 1);
 }
 
@@ -292,7 +285,7 @@ static void doFill(GVJ_t * job, char *color, box B)
  * for nodes, edges, etc. ?
  */
 static int
-initAnchor (GVJ_t* job, htmldata_t* data, box pts, htmlmap_data_t* save,
+initAnchor (GVJ_t* job, htmldata_t* data, boxf b, htmlmap_data_t* save,
     int closePrev)
 {
     obj_state_t *obj = job->obj;
@@ -308,7 +301,7 @@ initAnchor (GVJ_t* job, htmldata_t* data, box pts, htmlmap_data_t* save,
 	if (closePrev && (save->url || save->explicit_tooltip))
 	    gvrender_end_anchor(job);
 	if (obj->url || obj->explicit_tooltip) {
-	    emit_map_rect(job, pts.LL, pts.UR);
+	    emit_map_rect(job, b);
 	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	}
     }
@@ -350,10 +343,10 @@ static void emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env);
 static void
 emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
 {
-    box pts = tbl->data.box;
-    point p = env->p;
+    boxf pts = tbl->data.box;
+    pointf pos = env->pos;
     htmlcell_t **cells = tbl->u.n.cells;
-    htmlfont_t savef;
+    static htmlfont_t savef;
     htmlmap_data_t saved;
     int anchor; /* if true, we need to undo anchor settings. */
     int doAnchor = (tbl->data.href || tbl->data.target);
@@ -361,10 +354,10 @@ emit_html_tbl(GVJ_t * job, htmltbl_t * tbl, htmlenv_t * env)
     if (tbl->font)
 	pushFontInfo(env, tbl->font, &savef);
 
-    pts.LL.x += p.x;
-    pts.UR.x += p.x;
-    pts.LL.y += p.y;
-    pts.UR.y += p.y;
+    pts.LL.x += pos.x;
+    pts.UR.x += pos.x;
+    pts.LL.y += pos.y;
+    pts.UR.y += pos.y;
 
     if (doAnchor && !(job->flags & EMIT_CLUSTERS_LAST))
 	anchor = initAnchor(job, &tbl->data, pts, &saved, 1);
@@ -403,16 +396,16 @@ static void
 emit_html_img(GVJ_t * job, htmlimg_t * cp, htmlenv_t * env)
 {
     pointf A[4];
-    box bb = cp->box;
+    boxf bb = cp->box;
     char* scale;
 
-    bb.LL.x += env->p.x;
-    bb.LL.y += env->p.y;
-    bb.UR.x += env->p.x;
-    bb.UR.y += env->p.y;
+    bb.LL.x += env->pos.x;
+    bb.LL.y += env->pos.y;
+    bb.UR.x += env->pos.x;
+    bb.UR.y += env->pos.y;
 
-    P2PF(bb.UR, A[0]);
-    P2PF(bb.LL, A[2]);
+    A[0] = bb.UR;
+    A[2] = bb.LL;
     A[1].x = A[2].x;
     A[1].y = A[0].y;
     A[3].x = A[0].x;
@@ -429,14 +422,14 @@ static void
 emit_html_cell(GVJ_t * job, htmlcell_t * cp, htmlenv_t * env)
 {
     htmlmap_data_t saved;
-    box pts = cp->data.box;
-    point p = env->p;
+    boxf pts = cp->data.box;
+    pointf pos = env->pos;
     int inAnchor, doAnchor = (cp->data.href || cp->data.target);
 
-    pts.LL.x += p.x;
-    pts.UR.x += p.x;
-    pts.LL.y += p.y;
-    pts.UR.y += p.y;
+    pts.LL.x += pos.x;
+    pts.UR.x += pos.x;
+    pts.LL.y += pos.y;
+    pts.UR.y += pos.y;
 
     if (doAnchor && !(job->flags & EMIT_CLUSTERS_LAST))
 	inAnchor = initAnchor(job, &cp->data, pts, &saved, 1);
@@ -533,7 +526,7 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
     htmlenv_t env;
 
     allocObj (job);
-    env.p = tp->p;
+    env.pos = tp->pos;
     env.finfo.color = tp->fontcolor;
     env.finfo.name = tp->fontname;
     env.finfo.size = tp->fontsize;
@@ -709,11 +702,11 @@ portToTbl(htmltbl_t* tp, char* id)
  * If successful, return pointer to port's box.
  * Else return NULL.
  */
-box *html_port(node_t * n, char *pname, int* sides)
+boxf *html_port(node_t * n, char *pname, int* sides)
 {
     htmldata_t*   tp; 
     htmllabel_t* lbl = ND_label(n)->u.html;
-    box*         rv = NULL;
+    boxf*         rv = NULL;
 
     if (lbl->kind == HTML_TEXT)
 	return NULL;
@@ -872,7 +865,7 @@ static int size_html_img(htmlimg_t * img, htmlenv_t * env)
 	GD_has_images(env->g) = TRUE;
     }
 
-    img->box = b;
+    B2BF(b, img->box);
     return rv;
 }
 
@@ -882,7 +875,7 @@ static int
 size_html_cell(graph_t *g, htmlcell_t * cp, htmltbl_t * parent, htmlenv_t * env)
 {
     int rv;
-    point sz, child_sz;
+    pointf sz, child_sz;
     int margin;
 
     cp->parent = parent;
@@ -1276,14 +1269,14 @@ void sizeArray(htmltbl_t * tbl)
     closeGraphs(rowg, colg);
 }
 
-static void pos_html_tbl(htmltbl_t *, box, int);  /* forward declaration */
+static void pos_html_tbl(htmltbl_t *, boxf, int);  /* forward declaration */
 
 /* pos_html_img:
  * Place image in cell
  * storing allowed space handed by parent cell.
  * How this space is used is handled in emit_html_img.
  */
-static void pos_html_img(htmlimg_t * cp, box pos)
+static void pos_html_img(htmlimg_t * cp, boxf pos)
 {
     cp->box = pos;
 }
@@ -1304,11 +1297,11 @@ pos_html_txt(htmltxt_t* ftxt, char c)
 
 /* pos_html_cell:
  */
-static void pos_html_cell(htmlcell_t * cp, box pos, int sides)
+static void pos_html_cell(htmlcell_t * cp, boxf pos, int sides)
 {
-    int delx, dely;
-    point oldsz;
-    box cbox;
+    double delx, dely;
+    pointf oldsz;
+    boxf cbox;
 
     if (!cp->data.pencolor)
 	cp->data.pencolor = cp->parent->data.pencolor;
@@ -1426,13 +1419,13 @@ static void pos_html_cell(htmlcell_t * cp, box pos, int sides)
  * attribute indicating which external sides of the node
  * are accessible to the table.
  */
-static void pos_html_tbl(htmltbl_t * tbl, box pos, int sides)
+static void pos_html_tbl(htmltbl_t * tbl, boxf pos, int sides)
 {
-    int x, y, delx, dely;
-    int i, plus, extra, oldsz;
+    double x, y, delx, dely, extra, oldsz;
+    int i, plus;
     htmlcell_t **cells = tbl->u.n.cells;
     htmlcell_t *cp;
-    box cbox;
+    boxf cbox;
 
     if (tbl->u.n.parent && !tbl->data.pencolor)
 	tbl->data.pencolor = tbl->u.n.parent->data.pencolor;
@@ -1483,7 +1476,7 @@ static void pos_html_tbl(htmltbl_t * tbl, box pos, int sides)
     /* change sizes to start positions and distribute extra space */
     x = pos.LL.x + tbl->data.border + tbl->data.space;
     extra = delx / (tbl->cc);
-    plus = delx - extra * (tbl->cc);
+    plus = ROUND(delx - extra * (tbl->cc));
     for (i = 0; i <= tbl->cc; i++) {
 	delx = tbl->widths[i] + extra + (i < plus ? 1 : 0);
 	tbl->widths[i] = x;
@@ -1491,7 +1484,7 @@ static void pos_html_tbl(htmltbl_t * tbl, box pos, int sides)
     }
     y = pos.UR.y - tbl->data.border - tbl->data.space;
     extra = dely / (tbl->rc);
-    plus = dely - extra * (tbl->rc);
+    plus = ROUND(dely - extra * (tbl->rc));
     for (i = 0; i <= tbl->rc; i++) {
 	dely = tbl->heights[i] + extra + (i < plus ? 1 : 0);
 	tbl->heights[i] = y;
@@ -1526,7 +1519,7 @@ size_html_tbl(graph_t *g, htmltbl_t * tbl, htmlcell_t * parent, htmlenv_t * env)
 {
     int i, wd, ht;
     int rv = 0;
-    htmlfont_t savef;
+    static htmlfont_t savef;
 
     if (tbl->font)
 	pushFontInfo(env, tbl->font, &savef);
@@ -1731,8 +1724,8 @@ static char *getPenColor(void *obj)
 int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
 {
     int rv;
-    int wd2, ht2;
-    box box;
+    double wd2, ht2;
+    boxf box;
     htmllabel_t *lbl;
     htmlenv_t env;
 
@@ -1770,7 +1763,7 @@ int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
 	rv |= size_html_tbl(g, lbl->u.tbl, NULL, &env);
 	wd2 = (lbl->u.tbl->data.box.UR.x + 1) / 2;
 	ht2 = (lbl->u.tbl->data.box.UR.y + 1) / 2;
-	box = boxof(-wd2, -ht2, wd2, ht2);
+	box = boxfof(-wd2, -ht2, wd2, ht2);
 	pos_html_tbl(lbl->u.tbl, box, BOTTOM | RIGHT | TOP | LEFT);
 	lp->dimen.x = box.UR.x - box.LL.x;
 	lp->dimen.y = box.UR.y - box.LL.y;
@@ -1778,7 +1771,7 @@ int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
 	rv |= size_html_txt(g, lbl->u.txt, &env);
 	wd2 = (lbl->u.txt->box.UR.x + 1) / 2;
 	ht2 = (lbl->u.txt->box.UR.y + 1) / 2;
-	box = boxof(-wd2, -ht2, wd2, ht2);
+	box = boxfof(-wd2, -ht2, wd2, ht2);
 	lbl->u.txt->box = box;
 	lp->dimen.x = box.UR.x - box.LL.x;
 	lp->dimen.y = box.UR.y - box.LL.y;

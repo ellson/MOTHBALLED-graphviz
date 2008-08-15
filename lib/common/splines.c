@@ -240,8 +240,7 @@ clip_and_install(edge_t * fe, node_t * hn, point * ps, int pn,
     int start, end, i, clipTail, clipHead;
     graph_t *g;
     edge_t *orig;
-    box *tbox, *hbox;
-    boxf bb;
+    boxf *tbox, *hbox, bb;
     inside_t inside_context;
 
     tn = fe->tail;
@@ -1001,8 +1000,8 @@ selfBottom (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
     	    width = ED_label(e)->dimen.x;
     	    height = ED_label(e)->dimen.y;
     	}
-    	ED_label(e)->p.y = ND_coord_i(n).y - dy - height / 2.0;
-    	ED_label(e)->p.x = ND_coord_i(n).x;
+    	ED_label(e)->pos.y = ND_coord_i(n).y - dy - height / 2.0;
+    	ED_label(e)->pos.x = ND_coord_i(n).x;
     	ED_label(e)->set = TRUE;
     	if (height > stepy)
     	    dy += height - stepy;
@@ -1069,8 +1068,8 @@ selfTop (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
 		width = ED_label(e)->dimen.x;
 		height = ED_label(e)->dimen.y;
 	    }
-	    ED_label(e)->p.y = ND_coord_i(n).y + dy + height / 2.0;
-	    ED_label(e)->p.x = ND_coord_i(n).x;
+	    ED_label(e)->pos.y = ND_coord_i(n).y + dy + height / 2.0;
+	    ED_label(e)->pos.x = ND_coord_i(n).x;
 	    ED_label(e)->set = TRUE;
 	    if (height > stepy)
 		dy += height - stepy;
@@ -1137,8 +1136,8 @@ selfRight (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
 		width = ED_label(e)->dimen.x;
 		height = ED_label(e)->dimen.y;
 	    }
-	    ED_label(e)->p.x = ND_coord_i(n).x + dx + width / 2.0;
-	    ED_label(e)->p.y = ND_coord_i(n).y;
+	    ED_label(e)->pos.x = ND_coord_i(n).x + dx + width / 2.0;
+	    ED_label(e)->pos.y = ND_coord_i(n).y;
 	    ED_label(e)->set = TRUE;
 	    if (width > stepx)
 		dx += width - stepx;
@@ -1205,8 +1204,8 @@ selfLeft (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
     	    width = ED_label(e)->dimen.x;
     	    height = ED_label(e)->dimen.y;
     	}
-    	ED_label(e)->p.x = ND_coord_i(n).x - dx - width / 2.0;
-    	ED_label(e)->p.y = ND_coord_i(n).y;
+    	ED_label(e)->pos.x = ND_coord_i(n).x - dx - width / 2.0;
+    	ED_label(e)->pos.y = ND_coord_i(n).y;
     	ED_label(e)->set = TRUE;
     	if (width > stepx)
     	    dx += width - stepx;
@@ -1399,8 +1398,8 @@ void place_portlabel(edge_t * e, boolean head_p)
     angle = atan2(pf.y - p.y, pf.x - p.x) +
 	RADIANS(late_double(e, E_labelangle, PORT_LABEL_ANGLE, -180.0));
     dist = PORT_LABEL_DISTANCE * late_double(e, E_labeldistance, 1.0, 0.0);
-    l->p.x = p.x + ROUND(dist * cos(angle));
-    l->p.y = p.y + ROUND(dist * sin(angle));
+    l->pos.x = p.x + dist * cos(angle);
+    l->pos.y = p.y + dist * sin(angle);
     l->set = TRUE;
 }
 

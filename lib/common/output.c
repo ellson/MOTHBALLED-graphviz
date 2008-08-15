@@ -25,15 +25,13 @@ double YF_off;       /* Y_off in inches */
 
 static void printpt(FILE * f, point pt)
 {
-    fprintf(f, " %.3f %.3f", PS2INCH(pt.x), PS2INCH(YDIR(pt.y)));
+    fprintf(f, " %.3g %.3g", PS2INCH(pt.x), PS2INCH(YDIR(pt.y)));
 }
 
-#ifdef SPLINESF
 static void printptf(FILE * f, pointf pt)
 {
-    fprintf(f, " %.3f %.3f", PS2INCH(pt.x), PS2INCH(YDIR(pt.y)));
+    fprintf(f, " %.3g %.3g", PS2INCH(pt.x), PS2INCH(YDIR(pt.y)));
 }
-#endif
 
 /* setYInvert:
  * Set parameters used to flip coordinate system (y=0 at top).
@@ -81,7 +79,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 //    setup_graph(job, g);
     setYInvert(g);
     pt = GD_bb(g).UR;
-    fprintf(f, "graph %.3f %.3f %.3f\n", job->zoom, PS2INCH(pt.x), PS2INCH(pt.y));
+    fprintf(f, "graph %.3g %.3g %.3g\n", job->zoom, PS2INCH(pt.x), PS2INCH(pt.y));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n))
 	    continue;
@@ -91,7 +89,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 	    lbl = agcanonical (agxget(n, N_label->index));
 	else
 	    lbl = agcanon(ND_label(n)->text);
-	fprintf(f, " %.3f %.3f %s %s %s %s %s\n",
+	fprintf(f, " %.3g %.3g %s %s %s %s %s\n",
 		ND_width(n), ND_height(n), lbl,
 		late_nnstring(n, N_style, "solid"),
 		ND_shape(n)->name,
@@ -128,7 +126,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 	    }
 	    if (ED_label(e)) {
 		fprintf(f, " %s", agcanon(ED_label(e)->text));
-		printpt(f, ED_label(e)->p);
+		printptf(f, ED_label(e)->pos);
 	    }
 	    fprintf(f, " %s %s\n", late_nnstring(e, E_style, "solid"),
 		    late_nnstring(e, E_color, DEFAULT_COLOR));
@@ -143,11 +141,11 @@ static void set_record_rects(node_t * n, field_t * f, agxbuf * xb)
     char buf[BUFSIZ];
 
     if (f->n_flds == 0) {
-	sprintf(buf, "%d,%d,%d,%d ",
-		f->b.LL.x + ND_coord_i(n).x,
-		YDIR(f->b.LL.y + ND_coord_i(n).y),
-		f->b.UR.x + ND_coord_i(n).x,
-		YDIR(f->b.UR.y + ND_coord_i(n).y));
+	sprintf(buf, "%.3g,%.3g,%.3g,%.3g ",
+		f->b.LL.x + (double)(ND_coord_i(n).x),
+		YFDIR(f->b.LL.y + (double)(ND_coord_i(n).y)),
+		f->b.UR.x + (double)(ND_coord_i(n).x),
+		YFDIR(f->b.UR.y + (double)(ND_coord_i(n).y)));
 	agxbput(xb, buf);
     }
     for (i = 0; i < f->n_flds; i++)
@@ -158,14 +156,14 @@ static void rec_attach_bb(graph_t * g)
 {
     int c;
     char buf[BUFSIZ];
-    point pt;
+    pointf pt;
 
     sprintf(buf, "%d,%d,%d,%d", GD_bb(g).LL.x, YDIR(GD_bb(g).LL.y),
 	    GD_bb(g).UR.x, YDIR(GD_bb(g).UR.y));
     agset(g, "bb", buf);
     if (GD_label(g) && GD_label(g)->text[0]) {
-	pt = GD_label(g)->p;
-	sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
+	pt = GD_label(g)->pos;
+	sprintf(buf, "%.3g,%.3g", pt.x, YFDIR(pt.y));
 	agset(g, "lp", buf);
     }
     for (c = 1; c <= GD_n_cluster(g); c++)
@@ -183,9 +181,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     node_t *n;
     edge_t *e;
     point pt;
-#ifdef SPLINESF
-    point ptf;
-#endif
+    pointf ptf;
     int dim3 = (GD_odim(g) >= 3);
 
     e_arrows = s_arrows = 0;
@@ -205,8 +201,8 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     if (GD_label(g)) {
 	safe_dcl(g, g, "lp", "", agraphattr);
 	if (GD_label(g)->text[0]) {
-	    pt = GD_label(g)->p;
-	    sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
+	    ptf = GD_label(g)->pos;
+	    sprintf(buf, "%.3g,%.3g", ptf.x, YFDIR(ptf.y));
 	    agset(g, "lp", buf);
 	}
     }
@@ -245,11 +241,11 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 		    if (i > 0)
 			agxbputc(&xb, ' ');
 		    if (poly->sides >= 3)
-			sprintf(buf, "%.3f %.3f",
+			sprintf(buf, "%.3g %.3g",
 				PS2INCH(poly->vertices[i].x),
 				YFDIR(PS2INCH(poly->vertices[i].y)));
 		    else
-			sprintf(buf, "%.3f %.3f",
+			sprintf(buf, "%.3g %.3g",
 				ND_width(n) / 2.0 * cos(i /
 							(double) sides *
 							M_PI * 2.0),
@@ -272,7 +268,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 		    if (ED_spl(e)->list[i].sflag) {
 			s_arrows = 1;
 #ifdef SPLINESF
-			sprintf(buf, "s,%.3f,%.3f ",
+			sprintf(buf, "s,%.3g,%.3g ",
 				ED_spl(e)->list[i].sp.x,
 				YFDIR(ED_spl(e)->list[i].sp.y));
 #else
@@ -285,7 +281,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 		    if (ED_spl(e)->list[i].eflag) {
 			e_arrows = 1;
 #ifdef SPLINESF
-			sprintf(buf, "e,%.3f,%.3f ",
+			sprintf(buf, "e,%.3g,%.3g ",
 				ED_spl(e)->list[i].ep.x,
 				YFDIR(ED_spl(e)->list[i].ep.y));
 #else
@@ -300,7 +296,7 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 			    agxbputc(&xb, ' ');
 #ifdef SPLINESF
 			ptf = ED_spl(e)->list[i].list[j];
-			sprintf(buf, "%.3f,%.3f", ptf.x, YFDIR(ptf.y));
+			sprintf(buf, "%.3g,%.3g", ptf.x, YFDIR(ptf.y));
 #else
 			pt = ED_spl(e)->list[i].list[j];
 			sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
@@ -310,18 +306,18 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 		}
 		agset(e, "pos", agxbuse(&xb));
 		if (ED_label(e)) {
-		    pt = ED_label(e)->p;
-		    sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
+		    ptf = ED_label(e)->pos;
+		    sprintf(buf, "%.3g,%.3g", ptf.x, YFDIR(ptf.y));
 		    agset(e, "lp", buf);
 		}
 		if (ED_head_label(e)) {
-		    pt = ED_head_label(e)->p;
-		    sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
+		    ptf = ED_head_label(e)->pos;
+		    sprintf(buf, "%.3g,%.3g", ptf.x, YFDIR(ptf.y));
 		    agset(e, "head_lp", buf);
 		}
 		if (ED_tail_label(e)) {
-		    pt = ED_tail_label(e)->p;
-		    sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
+		    ptf = ED_tail_label(e)->pos;
+		    sprintf(buf, "%.3g,%.3g", ptf.x, YDIR(ptf.y));
 		    agset(e, "tail_lp", buf);
 		}
 	    }
