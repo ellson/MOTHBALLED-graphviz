@@ -18,11 +18,7 @@
 #define			GVC_H
 
 #include "types.h"
-#ifdef WITH_CGRAPH
-#include "cgraph.h"
-#else
 #include "graph.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {

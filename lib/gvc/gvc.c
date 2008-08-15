@@ -13,20 +13,14 @@
 *        Information and Software Systems Research        *
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "builddate.h"
 #include "types.h"
-/*This code block should be replaced with only one onclude to cgraph*/
-#ifdef WITH_CGRAPH
-#include "cgraph.h"
-#else
 #include "graph.h"
-#endif
-/********************/
-
 #include "const.h"
 #include "gvplugin.h"
 #include "gvcjob.h"
@@ -77,7 +71,6 @@ int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
 /* set bb attribute for basic layout.
  * doesn't yet include margins, scaling or page sizes because
  * those depend on the renderer being used. */
-	
     if (GD_drawing(g)->landscape)
         sprintf(buf, "%d %d %d %d",
                 ROUND(GD_bb(g).LL.y), ROUND(GD_bb(g).LL.x),
@@ -96,14 +89,8 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
 {
     int rc;
     GVJ_t *job;
-#ifdef WITH_CGRAPH
-	g=agroot(g);
-#else
-	g = g->root;
-#endif
 
-
-
+    g = g->root;
 
     /* create a job for the required format */
     rc = gvjobs_output_langname(gvc, format);
@@ -137,11 +124,7 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
     int rc;
     GVJ_t *job;
 
-#ifdef WITH_CGRAPH
-	g=agroot(g);
-#else
-	g = g->root;
-#endif
+    g = g->root;
 
     /* create a job for the required format */
     rc = gvjobs_output_langname(gvc, format);
@@ -173,11 +156,7 @@ int gvRenderData(GVC_t *gvc, graph_t *g, char *format, char **result, unsigned i
     int rc;
     GVJ_t *job;
 
-#ifdef WITH_CGRAPH
-	g=agroot(g);
-#else
-	g = g->root;
-#endif
+    g = g->root;
 
     /* create a job for the required format */
     rc = gvjobs_output_langname(gvc, format);

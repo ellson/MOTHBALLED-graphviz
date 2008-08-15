@@ -21,13 +21,7 @@
 #include <string.h>
 
 #include "gvplugin_layout.h"
-
-#ifdef WITH_CGRAPH
-#include "cgraph.h"
-#else
 #include "graph.h"
-#endif
-
 #include "gvcint.h"
 #include "gvcproc.h"
 
@@ -58,91 +52,39 @@ static char *s_key = "key";
 static void gv_graph_state(GVJ_t *job, graph_t *g)
 {
     int i, j;
-    Agsym_t *a=NULL;
+    Agsym_t *a;
     gv_argvlist_t *list;
-	list = &(job->selected_obj_type_name);
+
+    list = &(job->selected_obj_type_name);
     j = 0;
-
-	
-#ifdef WITH_CGRAPH
-	if (g == agroot(g)) {
-#else
-	if (g == g->root) {
-#endif
-
-#ifdef WITH_CGRAPH
-	if (AGTYPE(g) && agisdirected(g)) 
-#else
+    if (g == g->root) {
 	if (g->kind && AGFLAG_DIRECTED) 
-#endif
-
-
-		gv_argvlist_set_item(list, j++, s_digraph);
+            gv_argvlist_set_item(list, j++, s_digraph);
 	else
             gv_argvlist_set_item(list, j++, s_graph);
     }
     else {
         gv_argvlist_set_item(list, j++, s_subgraph);
     }
-
-#ifdef WITH_CGRAPH
-	gv_argvlist_set_item(list, j++, agname(g));
-#else
-	gv_argvlist_set_item(list, j++, g->name);
-#endif
-	
+    gv_argvlist_set_item(list, j++, g->name);
     list->argc = j;
 
     list = &(job->selected_obj_attributes);
-	
-
-#ifdef WITH_CGRAPH
-	j=0;
-	while (a = agnxtattr(g, AGRAPH, a)) {
-        gv_argvlist_set_item(list, j++, a->name);
-        gv_argvlist_set_item(list, j++, a->defval);  /* For graphs, defval and the graph's value are the same */
-        gv_argvlist_set_item(list, j++, (char*)GVATTR_STRING);
-    }
-#else
-	for (i = 0, j = 0; i < dtsize(g->univ->globattr->dict); i++) {
+    for (i = 0, j = 0; i < dtsize(g->univ->globattr->dict); i++) {
         a = g->univ->globattr->list[i];
         gv_argvlist_set_item(list, j++, a->name);
         gv_argvlist_set_item(list, j++, agxget(g, a->index));
         gv_argvlist_set_item(list, j++, (char*)GVATTR_STRING);
     }
-#endif
+    list->argc = j;
 
-	list->argc = j;
-
-
-#ifdef WITH_CGRAPH
-	a = agfindattr(agroot(g), s_href);
-    if (!a)
-	a = agfindattr(agroot(g), s_URL);
-
-#else
-	a = agfindattr(g->root, s_href);
+    a = agfindattr(g->root, s_href);
     if (!a)
 	a = agfindattr(g->root, s_URL);
-#endif
-	
-	
     if (a)
-
-#ifdef WITH_CGRAPH
-		job->selected_href = strdup_and_subst_obj(agxget(g, a), (void*)g);
-#else
-		job->selected_href = strdup_and_subst_obj(agxget(g, a->index), (void*)g);
-#endif
-		
-		
+	job->selected_href = strdup_and_subst_obj(agxget(g, a->index), (void*)g);
 }
 
-/*
- * Summary   :      
- * Parameters: *GVJ_s,*Agnode_s 
- * Return    : no return value
- */
 static void gv_node_state(GVJ_t *job, node_t *n)
 {
     int i, j;
@@ -153,31 +95,9 @@ static void gv_node_state(GVJ_t *job, node_t *n)
     list = &(job->selected_obj_type_name);
     j = 0;
     gv_argvlist_set_item(list, j++, s_node);
-
-#ifdef WITH_CGRAPH
-	gv_argvlist_set_item(list, j++, agnameof(n));
-    list->argc = j;
-    list = &(job->selected_obj_attributes);
-
-	g= agroot(agraphof(n));
-	j=0;
-	while (a = agnxtattr(g, AGNODE, a)) {
-        gv_argvlist_set_item(list, j++, a->name);
-        gv_argvlist_set_item(list, j++, a->defval);  /* For graphs, defval and the graph's value are the same */
-        gv_argvlist_set_item(list, j++, (char*)GVATTR_STRING);
-    }
+    gv_argvlist_set_item(list, j++, n->name);
     list->argc = j;
 
-	/*ASK ERG!!!!!!!!!!!!!!!!!!!!!!
-	/*Agproto_t *proto;
-	a = agfindattr(agraphof(n)->proto->n, s_href);
-    if (!a)
-        a = agfindattr(n->graph->proto->n, s_URL);
-    if (a)
-	job->selected_href = strdup_and_subst_obj(agxget(n, a), (void*)n);*/
-#else
-	gv_argvlist_set_item(list, j++, n->name);
-    list->argc = j;
     list = &(job->selected_obj_attributes);
     g = n -> graph -> root;
     for (i = 0, j = 0; i < dtsize(g->univ->nodeattr->dict); i++) {
@@ -192,15 +112,11 @@ static void gv_node_state(GVJ_t *job, node_t *n)
         a = agfindattr(n->graph->proto->n, s_URL);
     if (a)
 	job->selected_href = strdup_and_subst_obj(agxget(n, a->index), (void*)n);
-
-#endif
-
 }
 
 static void gv_edge_state(GVJ_t *job, edge_t *e)
 {
-#ifdef WITH_CGRAPH
-	int i, j;
+    int i, j;
     Agsym_t *a;
     Agraph_t *g;
     gv_argvlist_t *nlist, *alist;
@@ -251,60 +167,6 @@ static void gv_edge_state(GVJ_t *job, edge_t *e)
 	a = agfindattr(e->head->graph->proto->e, s_URL);
     if (a)
 	job->selected_href = strdup_and_subst_obj(agxget(e, a->index), (void*)e);
-
-#else
-	int i, j;
-    Agsym_t *a;
-    Agraph_t *g;
-    gv_argvlist_t *nlist, *alist;
-
-    nlist = &(job->selected_obj_type_name);
-
-    /* only tail, head, and key are strictly identifying properties,
-     * but we commonly alse use edge kind (e.g. "->") and tailport,headport
-     * in edge names */
-    j = 0;
-    gv_argvlist_set_item(nlist, j++, s_edge);
-    gv_argvlist_set_item(nlist, j++, e->tail->name);
-    j++; /* skip tailport slot for now */
-    gv_argvlist_set_item(nlist, j++, (e->tail->graph->kind && AGFLAG_DIRECTED)?"->":"--");
-    gv_argvlist_set_item(nlist, j++, e->head->name);
-    j++; /* skip headport slot for now */
-    j++; /* skip key slot for now */
-    nlist->argc = j;
-
-    alist = &(job->selected_obj_attributes);
-    g = e -> head -> graph -> root;
-    for (i = 0, j = 0; i < dtsize(g->univ->edgeattr->dict); i++) {
-        a = g->univ->edgeattr->list[i];
-
-	/* tailport and headport can be shown as part of the name, but they
-	 * are not identifying properties of the edge so we 
-	 * also list them as modifyable attributes. */
-        if (strcmp(a->name,s_tailport) == 0)
-	    gv_argvlist_set_item(nlist, 2, agxget(e, a->index));
-	else if (strcmp(a->name,s_headport) == 0)
-	    gv_argvlist_set_item(nlist, 5, agxget(e, a->index));
-
-	/* key is strictly an identifying property to distinguish multiple
-	 * edges between the same node pair.   Its non-writable, so
-	 * no need to list it as an attribute as well. */
-	else if (strcmp(a->name,s_key) == 0) {
-	    gv_argvlist_set_item(nlist, 6, agxget(e, a->index));
-	    continue;
-	}
-
-        gv_argvlist_set_item(alist, j++, a->name);
-        gv_argvlist_set_item(alist, j++, agxget(e, a->index));
-    }
-    alist->argc = j;
-
-    a = agfindattr(e->head->graph->proto->e, s_href);
-    if (!a)
-	a = agfindattr(e->head->graph->proto->e, s_URL);
-    if (a)
-	job->selected_href = strdup_and_subst_obj(agxget(e, a->index), (void*)e);
-#endif
 }
 
 static void gvevent_refresh(GVJ_t * job)
