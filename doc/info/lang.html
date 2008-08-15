@@ -105,14 +105,15 @@ Vertical bars | separate alternatives.
 <TR>
   <TD ALIGN=RIGHT><I>compass_pt</I></TD>
   <TD ALIGN=LEFT>:</TD>
-  <TD ALIGN=LEFT>(<B>n</B> | <B>ne</B> | <B>e</B> | <B>se</B> | <B>s</B> | <B>sw</B> | <B>w</B> | <B>nw</B>)</TD>
+  <TD ALIGN=LEFT>(<B>n</B> | <B>ne</B> | <B>e</B> | <B>se</B> | <B>s</B> | <B>sw</B> | <B>w</B> | <B>nw</B> | <B>c</B> | <B>_</B>)</TD>
 </TR>
 </TABLE>
 <P>
 The keywords <B>node</B>, <B>edge</B>, <B>graph</B>, <B>digraph</B>,
 <B>subgraph</B>, and <B>strict</B> are case-independent.
 Note also that the allowed compass point values are not keywords, so
-these strings can be used elsewhere as ordinary identifiers.
+these strings can be used elsewhere as ordinary identifiers and, conversely,
+the parser will actually accept any identifier.
 <P>
 An <I>ID</I> is one of the following: 
 <MENU>
