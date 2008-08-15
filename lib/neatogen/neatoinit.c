@@ -176,13 +176,10 @@ static int numFields(unsigned char *pos)
 static void set_elabel(edge_t * e, textlabel_t * l, char *name)
 {
     double x, y;
-    point pt;
     char *lp;
     lp = agget(e, name);
     if (lp && (sscanf(lp, "%lf,%lf", &x, &y) == 2)) {
-	pt.x = (int) (x);
-	pt.y = (int) (y);
-	l->p = pt;
+	l->pos = pointfof(x, y);
 	l->set = TRUE;
     }
 }
@@ -473,13 +470,13 @@ nop_init_graphs(Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
     graph_t *mg;
     edge_t *me;
     char *s;
-    point p;
+    double x, y;
 
     if (GD_label(g) && G_lp) {
 	s = agxget(g, G_lp->index);
-	if (sscanf(s, "%d,%d", &p.x, &p.y) == 2) {
+	if (sscanf(s, "%lf,%lf", &x, &y) == 2) {
+	    GD_label(g)->pos = pointfof(x, y);
 	    GD_label(g)->set = TRUE;
-	    GD_label(g)->p = p;
 	}
     }
 
@@ -521,16 +518,16 @@ static void translateE(edge_t * e, point offset)
     }
 
     if (ED_label(e) && ED_label(e)->set) {
-	ED_label(e)->p.x -= offset.x;
-	ED_label(e)->p.y -= offset.y;
+	ED_label(e)->pos.x -= offset.x;
+	ED_label(e)->pos.y -= offset.y;
     }
     if (ED_head_label(e) && ED_head_label(e)->set) {
-	ED_head_label(e)->p.x -= offset.x;
-	ED_head_label(e)->p.y -= offset.y;
+	ED_head_label(e)->pos.x -= offset.x;
+	ED_head_label(e)->pos.y -= offset.y;
     }
     if (ED_tail_label(e) && ED_tail_label(e)->set) {
-	ED_tail_label(e)->p.x -= offset.x;
-	ED_tail_label(e)->p.y -= offset.y;
+	ED_tail_label(e)->pos.x -= offset.x;
+	ED_tail_label(e)->pos.y -= offset.y;
     }
 }
 
@@ -546,8 +543,8 @@ static void translateG(Agraph_t * g, point offset)
     GD_bb(g).LL.y -= offset.y;
 
     if (GD_label(g) && GD_label(g)->set) {
-	GD_label(g)->p.x -= offset.x;
-	GD_label(g)->p.y -= offset.y;
+	GD_label(g)->pos.x -= offset.x;
+	GD_label(g)->pos.y -= offset.y;
     }
 
     for (i = 1; i <= GD_n_cluster(g); i++)

@@ -72,7 +72,7 @@ extern "C" {
     extern char* scanEntity (char* t, agxbuf* xb);
 
     extern pointf Bezier(pointf *, int, double, pointf *, pointf *);
-    extern point dotneato_closest(splines * spl, point p);
+    extern pointf dotneato_closest(splines * spl, pointf p);
     extern point neato_closest(splines * spl, point p);
     extern point spline_at_y(splines * spl, int y);
 

@@ -151,7 +151,7 @@ static Point makeScaledTransPoint(int x, int y, float dx, float dy)
     return rv;
 }
 
-static Point makeScaledPoint(int x, int y)
+static Point makeScaledPoint(double x, double y)
 {
     Point rv;
     rv.x = PS2INCH(x);
@@ -190,13 +190,13 @@ void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
     int sides;
     Point *verts;
     polygon_t *poly;
-    box b;
+    boxf b;
 
     if (ND_clust(n)) {
 	Point b;
 	sides = 4;
-	b.x = ND_width(n) / 2.0 + (xmargin);
-	b.y = ND_height(n) / 2.0 + (ymargin);
+	b.x = ND_width(n) / 2.0 + xmargin;
+	b.y = ND_height(n) / 2.0 + ymargin;
 	pp->kind = BOX;
 	verts = N_GNEW(sides, Point);
 	PUTPT(verts[0], b.x, b.y);
@@ -278,7 +278,7 @@ void makePoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
     int sides;
     Point *verts;
     polygon_t *poly;
-    box b;
+    boxf b;
 
     if (ND_clust(n)) {
 	Point b;

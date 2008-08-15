@@ -60,14 +60,14 @@ extern "C" {
 	} a;
 	struct {
 	    node_t* n;
-	    box*    bp;
+	    boxf*    bp;
 	} s;
     } inside_t;
 
     typedef struct port {	/* internal edge endpoint specification */
 	point p;		/* aiming point relative to node center */
 	double theta;		/* slope in radians */
-	box *bp;		/* if not null, points to bbox of 
+	boxf *bp;		/* if not null, points to bbox of 
 				 * rectangular area that is port target
 				 */
 	boolean	defined;        /* if true, edge has port info at this end */
@@ -133,9 +133,11 @@ extern "C" {
     typedef struct textlabel_t {
 	char *text, *fontname, *fontcolor;
 	double fontsize;
-	pointf dimen;
-	point p;
-	pointf d;		/* delta from resizing */
+	pointf dimen; /* the diagonal size of the label (estimated by layout) */
+	pointf space; /* the diagonal size of the space for the label */
+		      /*   the rendered label is aligned in this box */
+		      /*   space does not include pad or margin */
+	pointf pos;   /* the center of the space for the label */
 	union {
 	    struct {
 		textpara_t *para;
@@ -143,8 +145,9 @@ extern "C" {
 	    } txt;
 	    htmllabel_t *html;
 	} u;
-	boolean set;		/* true if position is set */
-	boolean html;		/* true if html label */
+	char valign;  /* 't' 'c' 'b' */
+	boolean set;  /* true if position is set */
+	boolean html; /* true if html label */
     } textlabel_t;
 
     typedef struct polygon_t {	/* mutable shape information for a node */
@@ -293,7 +296,7 @@ extern "C" {
 /* for "record" shapes */
     typedef struct field_t {
 	point size;		/* its dimension */
-	box b;			/* its placement in node's coordinates */
+	boxf b;			/* its placement in node's coordinates */
 	int n_flds;
 	textlabel_t *lp;	/* n_flds == 0 */
 	struct field_t **fld;	/* n_flds > 0 */

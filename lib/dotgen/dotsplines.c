@@ -280,7 +280,7 @@ static void _dot_splines(graph_t * g, int normalize)
 	    if (ND_alg(n)) {
 		edge_t* fe = (edge_t*)ND_alg(n);
 		assert (ED_label(fe));
-		ED_label(fe)->p = ND_coord_i(n);
+		P2PF(ND_coord_i(n), ED_label(fe)->pos);
 	    }
 	    if ((ND_node_type(n) != NORMAL) &&
 		(sinfo.splineMerge(n) == FALSE))
@@ -486,8 +486,8 @@ place_vnlabel(node_t * n)
 	 e = ED_to_orig(e));
     dimen = ED_label(e)->dimen;
     width = GD_flip(n->graph) ? dimen.y : dimen.x;
-    ED_label(e)->p.x = ND_coord_i(n).x + width / 2.0;
-    ED_label(e)->p.y = ND_coord_i(n).y;
+    ED_label(e)->pos.x = ND_coord_i(n).x + width / 2.0;
+    ED_label(e)->pos.y = ND_coord_i(n).y;
 }
 
 static void 
@@ -980,7 +980,10 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
         }
 	BF2B(bb, GD_bb(g));
 	if (ED_label(e)) {
-	    ED_label(e)->p = transform(ED_label(auxe)->p, del, GD_flip(g));
+	    point pt;
+	    PF2P(ED_label(auxe)->pos, pt);
+	    pt = transform(pt, del, GD_flip(g));
+	    P2PF(pt, ED_label(e)->pos);
 	    updateBB(g, ED_label(e));
 	}
     }
@@ -1048,13 +1051,13 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e, int et)
 
     for (f = ED_to_virt(e); ED_to_virt(f); f = ED_to_virt(f));
     ln = f->tail;
-    ED_label(e)->p = ND_coord_i(ln);
+    P2PF(ND_coord_i(ln), ED_label(e)->pos);
 
     if (et == ET_LINE) {
 	point startp, endp, lp;
 	startp = add_points(ND_coord_i(tn), ED_tail_port(e).p);
 	endp = add_points(ND_coord_i(hn), ED_head_port(e).p);
-	lp = ED_label(e)->p;
+        PF2P(ED_label(e)->pos, lp);
 	lp.y -= (ED_label(e)->dimen.y)/2.0;
 	points[1] = points[0] = startp;
 	points[2] = points[3] = points[4] = lp;
@@ -1343,7 +1346,7 @@ makeLineEdge(edge_t* fe, point* points, node_t** hp)
 	    height = dimen.y;
 	}
 
-	lp = ED_label(e)->p;
+	PF2P(ED_label(e)->pos, lp);
 	if (leftOf (endp,startp,lp)) {
 	    lp.x += width/2.0;
 	    lp.y -= height/2.0;

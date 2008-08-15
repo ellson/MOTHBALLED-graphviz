@@ -146,13 +146,12 @@ static void endPoints(splines * spl, point * p, point * q)
  * Find midpoint of polyline.
  * pp and pq are set to the endpoints of the line segment containing it.
  */
-static point
+static pointf
 polylineMidpoint (splines* spl, point* pp, point* pq)
 {
     bezier bz;
     int i, j, k;
     double d, dist = 0;
-    point m;
     pointf pf, qf, mf;
 
     for (i = 0; i < spl->size; i++) {
@@ -175,15 +174,14 @@ polylineMidpoint (splines* spl, point* pp, point* pq)
 		*pq = bz.list[k];
 		mf.x = ((qf.x*dist) + (pf.x*(d-dist)))/d; 
 		mf.y = ((qf.y*dist) + (pf.y*(d-dist)))/d; 
-		PF2P(mf, m);
-		return m;
+		return mf;
 	    }
 	    else
 		dist -= d;
 	}
     }
     assert (FALSE);   /* should never get here */
-    return m;
+    return mf;
 }
 
 #define LEFTOF(a,b,c) (((a.y - b.y)*(c.x - b.x) - (c.y - b.y)*(a.x - b.x)) > 0)
@@ -203,9 +201,8 @@ void addEdgeLabels(edge_t * e, point rp, point rq)
 {
     int et = EDGE_TYPE (e->head->graph->root);
     point p, q;
-    point d;			/* midpoint of segment p-q */
+    pointf d;			/* midpoint of segment p-q */
     point ld;
-    point sp;
     point del;
     pointf spf;
     double f, ht, wd, dist2;
@@ -216,25 +213,23 @@ void addEdgeLabels(edge_t * e, point rp, point rq)
 	if ((p.x == q.x) && (p.y == q.y)) { /* degenerate spline */
 	    p = rp;
 	    q = rq;
-	    sp = p;
+	    P2PF(p, spf);
 	}
 	else if (et == ET_SPLINE) {
-	    d.x = (q.x + p.x) / 2;
-	    d.y = (p.y + q.y) / 2;
-	    sp = dotneato_closest(ED_spl(e), d);
+	    d.x = (q.x + p.x) / 2.;
+	    d.y = (p.y + q.y) / 2.;
+	    spf = dotneato_closest(ED_spl(e), d);
 	}
 	else {   /* ET_PLINE or ET_LINE */
-	    sp = polylineMidpoint (ED_spl(e), &p, &q);
+	    spf = polylineMidpoint (ED_spl(e), &p, &q);
 	}
 	del.x = q.x - p.x;
 	del.y = q.y - p.y;
 	dist2 = del.x*del.x + del.y*del.y;
 	ht = (ED_label(e)->dimen.y + 2)/2.0;
-	spf.x = sp.x;
-	spf.y = sp.y;
 	if (dist2) {
 	    wd = (MIN(ED_label(e)->dimen.x + 2, MAXLABELWD))/2.0;
-	    leftOf = LEFTOF(p, q, sp);
+	    leftOf = LEFTOF(p, q, spf);
 	    if ((leftOf && (del.y >= 0)) || (!leftOf && (del.y < 0))) {
 		if (del.x*del.y >= 0)
 		    ht *= -1;
@@ -253,8 +248,8 @@ void addEdgeLabels(edge_t * e, point rp, point rq)
 	    ld.y = -ht;
 	}
 
-	ED_label(e)->p.x = spf.x + ld.x;
-	ED_label(e)->p.y = spf.y + ld.y;
+	ED_label(e)->pos.x = spf.x + ld.x;
+	ED_label(e)->pos.y = spf.y + ld.y;
 	ED_label(e)->set = TRUE;
 	updateBB(e->tail->graph, ED_label(e));
     }
@@ -523,7 +518,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
     double adj = 0.0;
     int j, sides;
     pointf polyp;
-    box b;
+    boxf b;
     point pt;
     field_t *fld;
     epsf_t *desc;
@@ -1068,16 +1063,16 @@ static void scaleEdge(edge_t * e, double xf, double yf)
     }
 
     if (ED_label(e) && ED_label(e)->set) {
-	ED_label(e)->p.x *= xf;
-	ED_label(e)->p.y *= yf;
+	ED_label(e)->pos.x *= xf;
+	ED_label(e)->pos.y *= yf;
     }
     if (ED_head_label(e) && ED_head_label(e)->set) {
-	ED_head_label(e)->p.x += delh.x;
-	ED_head_label(e)->p.y += delh.y;
+	ED_head_label(e)->pos.x += delh.x;
+	ED_head_label(e)->pos.y += delh.y;
     }
     if (ED_tail_label(e) && ED_tail_label(e)->set) {
-	ED_tail_label(e)->p.x += delt.x;
-	ED_tail_label(e)->p.y += delt.y;
+	ED_tail_label(e)->pos.x += delt.x;
+	ED_tail_label(e)->pos.y += delt.y;
     }
 }
 
@@ -1094,8 +1089,8 @@ static void scaleBB(graph_t * g, double xf, double yf)
     GD_bb(g).LL.y *= yf;
 
     if (GD_label(g) && GD_label(g)->set) {
-	GD_label(g)->p.x *= xf;
-	GD_label(g)->p.y *= yf;
+	GD_label(g)->pos.x *= xf;
+	GD_label(g)->pos.y *= yf;
     }
 
     for (i = 1; i <= GD_n_cluster(g); i++)

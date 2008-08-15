@@ -20,10 +20,10 @@
  * K. Freivalds et al., GD0'01, LNCS 2265, pp. 378-391.
  */
 
-#include <render.h>
-#include <pack.h>
-#include <pointset.h>
 #include <math.h>
+#include "render.h"
+#include "pack.h"
+#include "pointset.h"
 
 #define C 100			/* Max. avg. polyomino size */
 
@@ -681,11 +681,11 @@ static void shiftEdge(Agedge_t * e, int dx, int dy)
     bezier bz;
 
     if (ED_label(e))
-	MOVEPT(ED_label(e)->p);
+	MOVEPT(ED_label(e)->pos);
     if (ED_head_label(e))
-	MOVEPT(ED_head_label(e)->p);
+	MOVEPT(ED_head_label(e)->pos);
     if (ED_tail_label(e))
-	MOVEPT(ED_tail_label(e)->p);
+	MOVEPT(ED_tail_label(e)->pos);
 
     if (ED_spl(e) == NULL)
 	return;
@@ -716,7 +716,7 @@ static void shiftGraph(Agraph_t * g, int dx, int dy)
     GD_bb(g) = bb;
 
     if (GD_label(g))
-	MOVEPT(GD_label(g)->p);
+	MOVEPT(GD_label(g)->pos);
 
     for (i = 1; i <= GD_n_cluster(g); i++) {
 	subg = GD_clust(g)[i];

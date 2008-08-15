@@ -462,18 +462,16 @@ boolean mapbool(char *p)
     return atoi(p);
 }
 
-point dotneato_closest(splines * spl, point p)
+pointf dotneato_closest(splines * spl, pointf pt)
 {
     int i, j, k, besti, bestj;
     double bestdist2, d2, dlow2, dhigh2; /* squares of distances */
     double low, high, t;
-    pointf c[4], pt2, pt;
-    point rv;
+    pointf c[4], pt2;
     bezier bz;
 
     besti = bestj = -1;
     bestdist2 = 1e+38;
-    P2PF(p, pt);
     for (i = 0; i < spl->size; i++) {
 	bz = spl->list[i];
 	for (j = 0; j < bz.size; j++) {
@@ -517,8 +515,7 @@ point dotneato_closest(splines * spl, point p)
 	    dlow2 = DIST2(pt2, pt);
 	}
     } while (1);
-    PF2P(pt2, rv);
-    return rv;
+    return pt2;
 }
 
 point spline_at_y(splines * spl, int y)
@@ -808,29 +805,29 @@ int common_init_edge(edge_t * e)
 
 /* addLabelBB:
  */
-static box addLabelBB(box bb, textlabel_t * lp, boolean flipxy)
+static boxf addLabelBB(boxf bb, textlabel_t * lp, boolean flipxy)
 {
-    int width, height;
-    point p = lp->p;
-    int min, max;
+    double width, height;
+    pointf p = lp->pos;
+    double min, max;
 
     if (flipxy) {
-	height = ROUND(lp->dimen.x);
-	width = ROUND(lp->dimen.y);
+	height = lp->dimen.x;
+	width = lp->dimen.y;
     }
     else {
-	width = ROUND(lp->dimen.x);
-	height = ROUND(lp->dimen.y);
+	width = lp->dimen.x;
+	height = lp->dimen.y;
     }
-    min = p.x - width / 2;
-    max = p.x + width / 2;
+    min = p.x - width / 2.;
+    max = p.x + width / 2.;
     if (min < bb.LL.x)
 	bb.LL.x = min;
     if (max > bb.UR.x)
 	bb.UR.x = max;
 
-    min = p.y - height / 2;
-    max = p.y + height / 2;
+    min = p.y - height / 2.;
+    max = p.y + height / 2.;
     if (min < bb.LL.y)
 	bb.LL.y = min;
     if (max > bb.UR.y)
@@ -845,7 +842,12 @@ static box addLabelBB(box bb, textlabel_t * lp, boolean flipxy)
  */
 void updateBB(graph_t * g, textlabel_t * lp)
 {
-    GD_bb(g) = addLabelBB(GD_bb(g), lp, GD_flip(g));
+    boxf BF;
+    box B = GD_bb(g);
+
+    B2BF(B,BF);
+    BF = addLabelBB(BF, lp, GD_flip(g));
+    BF2B(BF, GD_bb(g));
 }
 
 /* compute_bb:
@@ -858,6 +860,10 @@ void compute_bb(graph_t * g)
     node_t *n;
     edge_t *e;
     box b, bb;
+    boxf BF;
+#ifdef SPLINESF
+    pointf ptf;
+#endif
     point pt, s2;
     int i, j;
 
@@ -876,12 +882,20 @@ void compute_bb(graph_t * g)
 		continue;
 	    for (i = 0; i < ED_spl(e)->size; i++) {
 		for (j = 0; j < ED_spl(e)->list[i].size; j++) {
+#ifdef SPLINESF
+		    ptf = ED_spl(e)->list[i].list[j];
+		    PF2P(ptf, pt);
+#else
 		    pt = ED_spl(e)->list[i].list[j];
+#endif
 		    EXPANDBP(bb,pt);
 		}
 	    }
-	    if (ED_label(e) && ED_label(e)->set)
-		bb = addLabelBB(bb, ED_label(e), GD_flip(g));
+	    if (ED_label(e) && ED_label(e)->set) {
+		B2BF(bb,BF);
+		BF = addLabelBB(BF, ED_label(e), GD_flip(g));
+		BF2B(BF,bb);
+	    }
 	}
     }
 
@@ -1545,10 +1559,10 @@ boolean overlap_label(textlabel_t *lp, boxf b)
 
     sx = lp->dimen.x / 2.;
     sy = lp->dimen.y / 2.;
-    bb.LL.x = lp->p.x - sx;
-    bb.UR.x = lp->p.x + sx;
-    bb.LL.y = lp->p.y - sy;
-    bb.UR.y = lp->p.y + sy;
+    bb.LL.x = lp->pos.x - sx;
+    bb.UR.x = lp->pos.x + sx;
+    bb.LL.y = lp->pos.y - sy;
+    bb.UR.y = lp->pos.y + sy;
     return OVERLAP(b, bb);
 }
 
