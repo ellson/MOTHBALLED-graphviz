@@ -421,7 +421,7 @@ static int chkBB(Agraph_t * g, attrsym_t * G_bb)
 	    bb.LL.y = bb.UR.y;
 	    bb.UR.y = tmp;
 	}
-	GD_bb(g) = bb;
+	B2BF(bb, GD_bb(g));
 	return 1;
     } else
 	return 0;
@@ -536,11 +536,13 @@ static void translateE(edge_t * e, point offset)
 static void translateG(Agraph_t * g, point offset)
 {
     int i;
+    pointf Offset;
 
-    GD_bb(g).UR.x -= offset.x;
-    GD_bb(g).UR.y -= offset.y;
-    GD_bb(g).LL.x -= offset.x;
-    GD_bb(g).LL.y -= offset.y;
+    P2PF(offset, Offset);
+    GD_bb(g).UR.x -= Offset.x;
+    GD_bb(g).UR.y -= Offset.y;
+    GD_bb(g).LL.x -= Offset.x;
+    GD_bb(g).LL.y -= Offset.y;
 
     if (GD_label(g) && GD_label(g)->set) {
 	GD_label(g)->pos.x -= offset.x;
@@ -558,8 +560,11 @@ static void translate(Agraph_t * g, pos_edge posEdges)
     node_t *n;
     edge_t *e;
     pointf offset;
+    point ll;
 
-    offset = cvt2ptf(GD_bb(g).LL);
+    PF2P(GD_bb(g).LL, ll);
+
+    offset = cvt2ptf(ll);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_pos(n)[0] -= offset.x;
 	ND_pos(n)[1] -= offset.y;
@@ -568,10 +573,10 @@ static void translate(Agraph_t * g, pos_edge posEdges)
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    for (e = agfstout(g, n); e; e = agnxtout(g, e))
 		if (ED_spl(e))
-		    translateE(e, GD_bb(g).LL);
+		    translateE(e, ll);
 	}
     }
-    translateG(g, GD_bb(g).LL);
+    translateG(g, ll);
 }
 
 /* init_nop:
@@ -617,7 +622,7 @@ int init_nop(Agraph_t * g, int adjust)
     /* At this point, all bounding boxes should be correctly defined.
      * If necessary, we translate the graph to the origin.
      */
-    if (adjust && (GD_bb(g).LL.x || GD_bb(g).LL.y))
+    if (adjust && (ROUND(abs(GD_bb(g).LL.x)) || ROUND(abs(GD_bb(g).LL.y))))
 	translate(g, posEdges);
 
     if (!adjust) {

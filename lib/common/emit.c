@@ -1985,7 +1985,7 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
             gvc->pagedir = p;
 
     /* bounding box */
-    B2BF(GD_bb(g),gvc->bb);
+    gvc->bb = GD_bb(g);
 
     /* clusters have peripheries */
     G_peripheries = agfindattr(g, "peripheries");
@@ -2500,7 +2500,6 @@ static void emit_end_cluster(GVJ_t * job, Agraph_t * g)
 void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 {
     int c, istyle, filled;
-    boxf BF;
     pointf AF[4];
     char *color, *fillcolor, *pencolor, **style, *s;
     graph_t *sg;
@@ -2515,7 +2514,6 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	sg = GD_clust(g)[c];
 	if (clust_in_layer(job, sg) == FALSE)
 	    continue;
-	B2BF(GD_bb(sg), BF);
 	/* when mapping, detect events on clusters after sub_clusters */
 	if (flags & EMIT_CLUSTERS_LAST)
 	    emit_clusters(job, sg, flags);
@@ -2525,7 +2523,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 	setColorScheme (agget (sg, "colorscheme"));
 	gvrender_begin_context(job);
 	if (doAnchor && !(flags & EMIT_CLUSTERS_LAST)) {
-	    emit_map_rect(job, BF);
+	    emit_map_rect(job, GD_bb(sg));
 	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	}
 	filled = FALSE;
@@ -2579,8 +2577,8 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 
 	if (istyle & ROUNDED) {
 	    if (late_int(sg, G_peripheries, 1, 0) || filled) {
-		AF[0] = BF.LL;
-		AF[2] = BF.UR;
+		AF[0] = GD_bb(sg).LL;
+		AF[2] = GD_bb(sg).UR;
 		AF[1].x = AF[2].x;
 		AF[1].y = AF[0].y;
 		AF[3].x = AF[0].x;
@@ -2592,11 +2590,11 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
     	    gvrender_set_pencolor(job, pencolor);
 	    gvrender_set_fillcolor(job, fillcolor);
 	    if (late_int(sg, G_peripheries, 1, 0))
-		gvrender_box(job, BF, filled);
+		gvrender_box(job, GD_bb(sg), filled);
 	    else if (filled) { 
 		if (fillcolor && fillcolor != pencolor)
 		    gvrender_set_pencolor(job, fillcolor);
-		gvrender_box(job, BF, filled);
+		gvrender_box(job, GD_bb(sg), filled);
 	    }
 	}
 	if ((lab = GD_label(sg)))
@@ -2604,7 +2602,7 @@ void emit_clusters(GVJ_t * job, Agraph_t * g, int flags)
 
 	if (doAnchor) {
 	    if (flags & EMIT_CLUSTERS_LAST) {
-		emit_map_rect(job, BF);
+		emit_map_rect(job, GD_bb(sg));
 		gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
 	    }
 	    gvrender_end_anchor(job);

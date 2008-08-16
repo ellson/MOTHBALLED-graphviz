@@ -20,23 +20,23 @@
 
 static int Rankdir;
 static boolean Flip;
-static point Offset;
+static pointf Offset;
 
 static void place_flip_graph_label(graph_t * g);
 
 #define M1 \
 "/pathbox {\n\
-    /Y exch %d sub def\n\
-    /X exch %d sub def\n\
-    /y exch %d sub def\n\
-    /x exch %d sub def\n\
+    /Y exch %.3g sub def\n\
+    /X exch %.3g sub def\n\
+    /y exch %.3g sub def\n\
+    /x exch %.3g sub def\n\
     newpath x y moveto\n\
     X y lineto\n\
     X Y lineto\n\
     x Y lineto\n\
     closepath stroke\n \
 } def\n\
-/dbgstart { gsave %d %d translate } def\n\
+/dbgstart { gsave %.3g %.3g translate } def\n\
 /arrowlength 10 def\n\
 /arrowwidth arrowlength 2 div def\n\
 /arrowhead {\n\
@@ -68,12 +68,13 @@ static void place_flip_graph_label(graph_t * g);
     X Y moveto\n\
     x y makearrow\n\
 } def\n"
+
 #define M2 \
 "/pathbox {\n\
-    /X exch neg %d sub def\n\
-    /Y exch %d sub def\n\
-    /x exch neg %d sub def\n\
-    /y exch %d sub def\n\
+    /X exch neg %.3g sub def\n\
+    /Y exch %.3g sub def\n\
+    /x exch neg %.3g sub def\n\
+    /y exch %.3g sub def\n\
     newpath x y moveto\n\
     X y lineto\n\
     X Y lineto\n\
@@ -138,15 +139,15 @@ static void map_edge(edge_t * e)
 void translate_bb(graph_t * g, int rankdir)
 {
     int c;
-    box bb, new_bb;
+    boxf bb, new_bb;
 
     bb = GD_bb(g);
     if (rankdir == RANKDIR_LR || rankdir == RANKDIR_BT) {
-	new_bb.LL = map_point(pointof(bb.LL.x, bb.UR.y));
-	new_bb.UR = map_point(pointof(bb.UR.x, bb.LL.y));
+	new_bb.LL = map_pointf(pointfof(bb.LL.x, bb.UR.y));
+	new_bb.UR = map_pointf(pointfof(bb.UR.x, bb.LL.y));
     } else {
-	new_bb.LL = map_point(pointof(bb.LL.x, bb.LL.y));
-	new_bb.UR = map_point(pointof(bb.UR.x, bb.UR.y));
+	new_bb.LL = map_pointf(pointfof(bb.LL.x, bb.LL.y));
+	new_bb.UR = map_pointf(pointfof(bb.UR.x, bb.UR.y));
     }
     GD_bb(g) = new_bb;
     if (GD_label(g)) {
@@ -209,9 +210,9 @@ static void translate_drawing(graph_t * g)
  * flipped drawing has been transposed, so we don't have
  * to worry about switching x and y.
  */
-static void place_root_label(graph_t * g, point d)
+static void place_root_label(graph_t * g, pointf d)
 {
-    point p;
+    pointf p;
 
     if (GD_label_pos(g) & LABEL_AT_RIGHT) {
 	p.x = GD_bb(g).UR.x - d.x / 2;
@@ -227,7 +228,7 @@ static void place_root_label(graph_t * g, point d)
 	p.y = GD_bb(g).LL.y + d.y / 2;
     }
 
-    P2PF(p, GD_label(g)->pos);
+    GD_label(g)->pos = p;
     GD_label(g)->set = TRUE;
 }
 
@@ -240,9 +241,8 @@ static void place_root_label(graph_t * g, point d)
  */
 void dotneato_postprocess(Agraph_t * g)
 {
-    int diff;
-    pointf dimen;
-    point d = { 0, 0 };
+    double diff;
+    pointf dimen = {0., 0.};
 
     Rankdir = GD_rankdir(g);
     Flip = GD_flip(g);
@@ -254,36 +254,35 @@ void dotneato_postprocess(Agraph_t * g)
     if (GD_label(g) && !GD_label(g)->set) {
 	dimen = GD_label(g)->dimen;
 	PAD(dimen);
-	PF2P(dimen, d);
 	if (Flip) {
 	    if (GD_label_pos(g) & LABEL_AT_TOP) {
-		GD_bb(g).UR.x += d.y;
+		GD_bb(g).UR.x += dimen.y;
 	    } else {
-		GD_bb(g).LL.x -= d.y;
+		GD_bb(g).LL.x -= dimen.y;
 	    }
 
-	    if (d.x > GD_bb(g).UR.y - GD_bb(g).LL.y) {
-		diff = d.x - (GD_bb(g).UR.y - GD_bb(g).LL.y);
-		diff = diff / 2;
+	    if (dimen.x > (GD_bb(g).UR.y - GD_bb(g).LL.y)) {
+		diff = dimen.x - (GD_bb(g).UR.y - GD_bb(g).LL.y);
+		diff = diff / 2.;
 		GD_bb(g).LL.y -= diff;
 		GD_bb(g).UR.y += diff;
 	    }
 	} else {
 	    if (GD_label_pos(g) & LABEL_AT_TOP) {
 		if (Rankdir == RANKDIR_TB)
-		    GD_bb(g).UR.y += d.y;
+		    GD_bb(g).UR.y += dimen.y;
 		else
-		    GD_bb(g).LL.y -= d.y;
+		    GD_bb(g).LL.y -= dimen.y;
 	    } else {
 		if (Rankdir == RANKDIR_TB)
-		    GD_bb(g).LL.y -= d.y;
+		    GD_bb(g).LL.y -= dimen.y;
 		else
-		    GD_bb(g).UR.y += d.y;
+		    GD_bb(g).UR.y += dimen.y;
 	    }
 
-	    if (d.x > GD_bb(g).UR.x - GD_bb(g).LL.x) {
-		diff = d.x - (GD_bb(g).UR.x - GD_bb(g).LL.x);
-		diff = diff / 2;
+	    if (dimen.x > (GD_bb(g).UR.x - GD_bb(g).LL.x)) {
+		diff = dimen.x - (GD_bb(g).UR.x - GD_bb(g).LL.x);
+		diff = diff / 2.;
 		GD_bb(g).LL.x -= diff;
 		GD_bb(g).UR.x += diff;
 	    }
@@ -294,18 +293,18 @@ void dotneato_postprocess(Agraph_t * g)
 	Offset = GD_bb(g).LL;
 	break;
     case RANKDIR_LR:
-	Offset = pointof(-GD_bb(g).UR.y, GD_bb(g).LL.x);
+	Offset = pointfof(-GD_bb(g).UR.y, GD_bb(g).LL.x);
 	break;
     case RANKDIR_BT:
-	Offset = pointof(GD_bb(g).LL.x, -GD_bb(g).UR.y);
+	Offset = pointfof(GD_bb(g).LL.x, -GD_bb(g).UR.y);
 	break;
     case RANKDIR_RL:
-	Offset = pointof(GD_bb(g).LL.y, GD_bb(g).LL.x);
+	Offset = pointfof(GD_bb(g).LL.y, GD_bb(g).LL.x);
 	break;
     }
     translate_drawing(g);
     if (GD_label(g) && !GD_label(g)->set)
-	place_root_label(g, d);
+	place_root_label(g, dimen);
 
     if (Show_boxes) {
 	char buf[BUFSIZ];
@@ -348,58 +347,26 @@ void osize_label(textlabel_t * label, int *b, int *t, int *l, int *r)
 static void place_flip_graph_label(graph_t * g)
 {
     int c;
-    point p, d;
-#ifdef OLD
-    int maxx, minx;
-    int maxy, miny;
-    pointf dimen;
-#endif
+    pointf p, d;
 
     if ((g != g->root) && (GD_label(g)) && !GD_label(g)->set) {
 
 	if (GD_label_pos(g) & LABEL_AT_TOP) {
-	    d = GD_border(g)[RIGHT_IX];
+	    P2PF(GD_border(g)[RIGHT_IX], d);
 	    p.x = GD_bb(g).UR.x - d.x / 2;
-#ifdef OLD
-	    maxx = GD_bb(g).UR.x + d.y;
-	    GD_bb(g).UR.x = maxx;
-	    if (GD_bb(g->root).UR.x < maxx)
-		GD_bb(g->root).UR.x = maxx;
-#endif
 	} else {
-	    d = GD_border(g)[LEFT_IX];
+	    P2PF(GD_border(g)[LEFT_IX], d);
 	    p.x = GD_bb(g).LL.x + d.x / 2;
-#ifdef OLD
-	    minx = GD_bb(g).LL.x - d.y;
-	    GD_bb(g).LL.x = minx;
-	    if (GD_bb(g->root).LL.x > minx)
-		GD_bb(g->root).LL.x = minx;
-#endif
 	}
 
 	if (GD_label_pos(g) & LABEL_AT_RIGHT) {
 	    p.y = GD_bb(g).LL.y + d.y / 2;
-#ifdef OLD
-	    maxy = p.y + d.x / 2;
-	    if (GD_bb(g->root).UR.y < maxy)
-		GD_bb(g->root).UR.y = maxy;
-#endif
 	} else if (GD_label_pos(g) & LABEL_AT_LEFT) {
 	    p.y = GD_bb(g).UR.y - d.y / 2;
-#ifdef OLD
-	    miny = p.y - d.x / 2;
-	    if (GD_bb(g->root).LL.y > miny)
-		GD_bb(g->root).LL.y = miny;
-#endif
 	} else {
 	    p.y = (GD_bb(g).LL.y + GD_bb(g).UR.y) / 2;
-#ifdef OLD
-	    maxy = p.y + d.x / 2;
-	    miny = p.y - d.x / 2;
-#endif
 	}
-
-	P2PF(p, GD_label(g)->pos);
+	GD_label(g)->pos = p;
 	GD_label(g)->set = TRUE;
     }
 
@@ -416,54 +383,25 @@ static void place_flip_graph_label(graph_t * g)
 void place_graph_label(graph_t * g)
 {
     int c;
-#ifdef OLD
-    int minx, maxx;
-#endif
-    point p, d;
+    pointf p, d;
 
     if ((g != g->root) && (GD_label(g)) && !GD_label(g)->set) {
 	if (GD_label_pos(g) & LABEL_AT_TOP) {
-	    d = GD_border(g)[TOP_IX];
+	    P2PF(GD_border(g)[TOP_IX], d);
 	    p.y = GD_bb(g).UR.y - d.y / 2;
 	} else {
-	    d = GD_border(g)[BOTTOM_IX];
+	    P2PF(GD_border(g)[BOTTOM_IX], d);
 	    p.y = GD_bb(g).LL.y + d.y / 2;
 	}
 
 	if (GD_label_pos(g) & LABEL_AT_RIGHT) {
 	    p.x = GD_bb(g).UR.x - d.x / 2;
-#ifdef OLD
-	    minx = p.x - d.x / 2;
-	    if (GD_bb(g).LL.x > minx)
-		GD_bb(g).LL.x = minx;
-	    if (GD_bb(g->root).LL.x > minx)
-		GD_bb(g->root).LL.x = minx;
-#endif
 	} else if (GD_label_pos(g) & LABEL_AT_LEFT) {
 	    p.x = GD_bb(g).LL.x + d.x / 2;
-#ifdef OLD
-	    maxx = p.x + d.x / 2;
-	    if (GD_bb(g).UR.x < maxx)
-		GD_bb(g).UR.x = maxx;
-	    if (GD_bb(g->root).UR.x < maxx)
-		GD_bb(g->root).UR.x = maxx;
-#endif
 	} else {
 	    p.x = (GD_bb(g).LL.x + GD_bb(g).UR.x) / 2;
-#ifdef OLD
-	    maxx = p.x + d.x / 2;
-	    minx = p.x - d.x / 2;
-	    if (GD_bb(g).UR.x < maxx)
-		GD_bb(g).UR.x = maxx;
-	    if (GD_bb(g).LL.x > minx)
-		GD_bb(g).LL.x = minx;
-	    if (GD_bb(g->root).UR.x < maxx)
-		GD_bb(g->root).UR.x = maxx;
-	    if (GD_bb(g->root).LL.x > minx)
-		GD_bb(g->root).LL.x = minx;
-#endif
 	}
-	P2PF(p, GD_label(g)->pos);
+	GD_label(g)->pos = p;
 	GD_label(g)->set = TRUE;
     }
 

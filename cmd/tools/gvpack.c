@@ -712,9 +712,9 @@ static Agraph_t **readGraphs(int *cp, GVC_t* gvc)
  * Compute the bounding box containing the graphs.
  * We can just use the bounding boxes of the graphs.
  */
-box compBB(Agraph_t ** gs, int cnt)
+boxf compBB(Agraph_t ** gs, int cnt)
 {
-    box bb, bb2;
+    boxf bb, bb2;
     int i;
 
     bb = GD_bb(gs[0]);
@@ -767,7 +767,6 @@ int main(int argc, char *argv[])
     Agraph_t *g;
     int cnt;
     pack_info pinfo;
-    box bb;
     GVC_t * gvc;
 
     init(argc, argv);
@@ -794,8 +793,7 @@ int main(int argc, char *argv[])
 
     /* compute new top-level bb and set */
     if (DOPACK) {
-	bb = compBB(gs, cnt);
-	GD_bb(g) = bb;
+	GD_bb(g) = compBB(gs, cnt);
 	dotneato_postprocess(g);
 	attach_attrs(g);
     }

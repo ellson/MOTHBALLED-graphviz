@@ -331,7 +331,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	/* to generate code */
 	layout_t *drawing;
 	textlabel_t *label;	/* if the cluster has a title */
-	box bb;			/* bounding box */
+	boxf bb;			/* bounding box */
 	point border[4];	/* sizes of margins for graph labels */
 	unsigned char gui_state; /* Graph state for GUI ops */
 	unsigned char has_labels;

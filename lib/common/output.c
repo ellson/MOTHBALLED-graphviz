@@ -42,7 +42,7 @@ static void printptf(FILE * f, pointf pt)
 static void setYInvert(graph_t * g)
 {
     if (Y_invert) {
-	Y_off = GD_bb(g).UR.y + GD_bb(g).LL.y;
+	Y_off = ROUND(GD_bb(g).UR.y + GD_bb(g).LL.y);
 	YF_off = PS2INCH(Y_off);
     }
 }
@@ -73,7 +73,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
     node_t *n;
     edge_t *e;
     bezier bz;
-    point pt;
+    pointf pt;
     char *lbl;
 
 //    setup_graph(job, g);
@@ -158,8 +158,8 @@ static void rec_attach_bb(graph_t * g)
     char buf[BUFSIZ];
     pointf pt;
 
-    sprintf(buf, "%d,%d,%d,%d", GD_bb(g).LL.x, YDIR(GD_bb(g).LL.y),
-	    GD_bb(g).UR.x, YDIR(GD_bb(g).UR.y));
+    sprintf(buf, "%.3g,%.3g,%.3g,%.3g", GD_bb(g).LL.x, YFDIR(GD_bb(g).LL.y),
+	    GD_bb(g).UR.x, YFDIR(GD_bb(g).UR.y));
     agset(g, "bb", buf);
     if (GD_label(g) && GD_label(g)->text[0]) {
 	pt = GD_label(g)->pos;

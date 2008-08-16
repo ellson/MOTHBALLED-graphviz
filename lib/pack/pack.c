@@ -219,9 +219,10 @@ genBox(Agraph_t * g, ginfo * info, int ssize, int margin, point center)
     PointSet *ps;
     int W, H;
     point UR, LL;
-    box bb = GD_bb(g);
+    box bb;
     int x, y;
 
+    BF2B(GD_bb(g), bb);
     ps = newPS();
 
     LL.x = center.x - margin;
@@ -288,8 +289,8 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 	eg = g;
 
     ps = newPS();
-    dx = center.x - GD_bb(g).LL.x;
-    dy = center.y - GD_bb(g).LL.y;
+    dx = center.x - ROUND(GD_bb(g).LL.x);
+    dy = center.y - ROUND(GD_bb(g).LL.y);
 
     if (pinfo->mode == l_clust) {
 	int i;
@@ -305,7 +306,7 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 	/* do bbox of top clusters */
 	for (i = 1; i <= GD_n_cluster(g); i++) {
 	    subg = GD_clust(g)[i];
-	    bb = GD_bb(subg);
+	    BF2B(GD_bb(subg), bb);
 	    if ((bb.UR.x > bb.LL.x) && (bb.UR.y > bb.LL.y)) {
 		MOVEPT(bb.LL);
 		MOVEPT(bb.UR);
@@ -386,8 +387,8 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
     info->graph = g;
     info->cells = pointsOf(ps);
     info->nc = sizeOf(ps);
-    W = GRID(GD_bb(g).UR.x - GD_bb(g).LL.x + 2 * margin, ssize);
-    H = GRID(GD_bb(g).UR.y - GD_bb(g).LL.y + 2 * margin, ssize);
+    W = GRID(ROUND(GD_bb(g).UR.x - GD_bb(g).LL.x) + 2 * margin, ssize);
+    H = GRID(ROUND(GD_bb(g).UR.y - GD_bb(g).LL.y) + 2 * margin, ssize);
     info->perim = W + H;
 
     if (Verbose > 2) {
@@ -425,7 +426,7 @@ fits(int x, int y, ginfo * info, PointSet * ps, point * place, int step)
 	cells++;
     }
 
-    LL = GD_bb(info->graph).LL;
+    PF2P(GD_bb(info->graph).LL, LL);
     place->x = step * x - LL.x;
     place->y = step * y - LL.y;
 
@@ -484,16 +485,16 @@ placeGraph(int i, ginfo * info, PointSet * ps, point * place, int step,
 
     if (i == 0) {
 	Agraph_t *g = info->graph;
-	W = GRID(GD_bb(g).UR.x - GD_bb(g).LL.x + 2 * margin, step);
-	H = GRID(GD_bb(g).UR.y - GD_bb(g).LL.y + 2 * margin, step);
+	W = GRID(ROUND(GD_bb(g).UR.x - GD_bb(g).LL.x) + 2 * margin, step);
+	H = GRID(ROUND(GD_bb(g).UR.y - GD_bb(g).LL.y) + 2 * margin, step);
 	if (fits(-W / 2, -H / 2, info, ps, place, step))
 	    return;
     }
 
     if (fits(0, 0, info, ps, place, step))
 	return;
-    W = GD_bb(info->graph).UR.x - GD_bb(info->graph).LL.x;
-    H = GD_bb(info->graph).UR.y - GD_bb(info->graph).LL.y;
+    W = ROUND(GD_bb(info->graph).UR.x - GD_bb(info->graph).LL.x);
+    H = ROUND(GD_bb(info->graph).UR.y - GD_bb(info->graph).LL.y);
     if (W >= H) {
 	for (bnd = 1;; bnd++) {
 	    x = 0;
@@ -581,7 +582,7 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
     int i;
     boolean *fixed = pinfo->fixed;
     int fixed_cnt = 0;
-    box fixed_bb = { {0, 0}, {0, 0} };
+    box bb, fixed_bb = { {0, 0}, {0, 0} };
     point center;
 
     if (ng <= 0)
@@ -593,18 +594,18 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
 	Agraph_t *g = gs[i];
 	compute_bb(g);
 	if (fixed && fixed[i]) {
+	    BF2B(GD_bb(g), bb);
 	    if (fixed_cnt) {
-		box bb = GD_bb(g);
 		fixed_bb.LL.x = MIN(bb.LL.x, fixed_bb.LL.x);
 		fixed_bb.LL.y = MIN(bb.LL.y, fixed_bb.LL.y);
 		fixed_bb.UR.x = MAX(bb.UR.x, fixed_bb.UR.x);
 		fixed_bb.UR.y = MAX(bb.UR.y, fixed_bb.UR.y);
 	    } else
-		fixed_bb = GD_bb(g);
+		fixed_bb = bb;
 	    fixed_cnt++;
 	}
 	if (Verbose > 2) {
-	    fprintf(stderr, "bb[%s] %d %d %d %d\n", g->name, GD_bb(g).LL.x,
+	    fprintf(stderr, "bb[%s] %.3g %.3g %.3g %.3g\n", g->name, GD_bb(g).LL.x,
 		    GD_bb(g).LL.y, GD_bb(g).UR.x, GD_bb(g).UR.y);
 	}
     }
@@ -706,9 +707,10 @@ static void shiftEdge(Agedge_t * e, int dx, int dy)
 static void shiftGraph(Agraph_t * g, int dx, int dy)
 {
     graph_t *subg;
-    box bb = GD_bb(g);
+    boxf bb = GD_bb(g);
     int i;
 
+    bb = GD_bb(g);
     bb.LL.x += dx;
     bb.UR.x += dx;
     bb.LL.y += dy;
@@ -827,7 +829,7 @@ packSubgraphs(int ng, Agraph_t ** gs, Agraph_t * root, pack_info * info)
     ret = packGraphs(ng, gs, root, info);
     if (ret == 0) {
 	int i, j;
-	box bb;
+	boxf bb;
 	graph_t* g;
 
 	compute_bb(root);

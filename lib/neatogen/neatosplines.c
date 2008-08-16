@@ -1003,9 +1003,11 @@ void spline_edges(graph_t * g)
 {
     node_t *n;
     pointf offset;
+    point ll;
 
+    P2PF(GD_bb(g).LL, ll);
     compute_bb(g);
-    offset = cvt2ptf(GD_bb(g).LL);
+    offset = cvt2ptf(ll);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_pos(n)[0] -= offset.x;
 	ND_pos(n)[1] -= offset.y;
@@ -1110,10 +1112,10 @@ static void _neato_set_aspect(graph_t * g)
     /* compute_bb(g); */
     if (GD_drawing(g)->ratio_kind) {
 	/* normalize */
-	assert(GD_bb(g).LL.x == 0);
-	assert(GD_bb(g).LL.y == 0);
+	assert(ROUND(GD_bb(g).LL.x) == 0);
+	assert(ROUND(GD_bb(g).LL.y) == 0);
 	if (GD_flip(g)) {
-	    int t = GD_bb(g).UR.x;
+	    double t = GD_bb(g).UR.x;
 	    GD_bb(g).UR.x = GD_bb(g).UR.y;
 	    GD_bb(g).UR.y = t;
 	}
@@ -1121,8 +1123,8 @@ static void _neato_set_aspect(graph_t * g)
 	    /* fill is weird because both X and Y can stretch */
 	    if (GD_drawing(g)->size.x <= 0)
 		return;
-	    xf = (double) GD_drawing(g)->size.x / (double) GD_bb(g).UR.x;
-	    yf = (double) GD_drawing(g)->size.y / (double) GD_bb(g).UR.y;
+	    xf = (double) GD_drawing(g)->size.x / GD_bb(g).UR.x;
+	    yf = (double) GD_drawing(g)->size.y / GD_bb(g).UR.y;
 	    /* handle case where one or more dimensions is too big */
 	    if ((xf < 1.0) || (yf < 1.0)) {
 		if (xf < yf) {
@@ -1136,8 +1138,8 @@ static void _neato_set_aspect(graph_t * g)
 	} else if (GD_drawing(g)->ratio_kind == R_EXPAND) {
 	    if (GD_drawing(g)->size.x <= 0)
 		return;
-	    xf = (double) GD_drawing(g)->size.x / (double) GD_bb(g).UR.x;
-	    yf = (double) GD_drawing(g)->size.y / (double) GD_bb(g).UR.y;
+	    xf = (double) GD_drawing(g)->size.x / GD_bb(g).UR.x;
+	    yf = (double) GD_drawing(g)->size.y / GD_bb(g).UR.y;
 	    if ((xf > 1.0) && (yf > 1.0)) {
 		double scale = MIN(xf, yf);
 		xf = yf = scale;
@@ -1145,7 +1147,7 @@ static void _neato_set_aspect(graph_t * g)
 		return;
 	} else if (GD_drawing(g)->ratio_kind == R_VALUE) {
 	    desired = GD_drawing(g)->ratio;
-	    actual = ((double) GD_bb(g).UR.y) / ((double) GD_bb(g).UR.x);
+	    actual = (GD_bb(g).UR.y) / (GD_bb(g).UR.x);
 	    if (actual < desired) {
 		yf = desired / actual;
 		xf = 1.0;

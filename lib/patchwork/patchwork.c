@@ -203,7 +203,7 @@ void patchwork_layout(Agraph_t *g)
 	printer(&root);
 	walker(&root);
 	compute_bb(g);
-	fprintf(stderr,"bb %d %d %d %d\n",
+	fprintf(stderr,"bb %.3g %.3g %.3g %.3g\n",
 		GD_bb(g).LL.x, GD_bb(g).LL.y, GD_bb(g).UR.x, GD_bb(g).UR.y);
 	dotneato_postprocess(g);
 }

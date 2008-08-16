@@ -872,11 +872,11 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 {
     int r, c, x, offset;
     node_t *v;
-    point LL, UR;
+    pointf LL, UR;
 
     if (g == g->root) {
-	LL.x = INT_MAX;
-	UR.x = -INT_MAX;
+	LL.x = (double)(INT_MAX);
+	UR.x = (double)(-INT_MAX);
 	for (r = GD_minrank(g); r <= GD_maxrank(g); r++) {
 	    int rnkn = GD_rank(g)[r].n;
 	    if (rnkn == 0)
@@ -886,7 +886,7 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 	    for (c = 1; (ND_node_type(v) != NORMAL) && c < rnkn; c++)
 		v = GD_rank(g)[r].v[c];
 	    if (ND_node_type(v) == NORMAL) {
-		x = ND_coord_i(v).x - ND_lw_i(v);
+		x = (double)(ND_coord_i(v).x - ND_lw_i(v));
 		LL.x = MIN(LL.x, x);
 	    }
 	    else continue;
@@ -894,22 +894,22 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 	    v = GD_rank(g)[r].v[rnkn - 1];
 	    for (c = rnkn-2; ND_node_type(v) != NORMAL; c--)
 		v = GD_rank(g)[r].v[c];
-	    x = ND_coord_i(v).x + ND_rw_i(v);
+	    x = (double)(ND_coord_i(v).x + ND_rw_i(v));
 	    UR.x = MAX(UR.x, x);
 	}
 	offset = CL_OFFSET;
 	for (c = 1; c <= GD_n_cluster(g); c++) {
-	    x = GD_clust(g)[c]->u.bb.LL.x - offset;
+	    x = (double)(GD_clust(g)[c]->u.bb.LL.x - offset);
 	    LL.x = MIN(LL.x, x);
-	    x = GD_clust(g)[c]->u.bb.UR.x + offset;
+	    x = (double)(GD_clust(g)[c]->u.bb.UR.x + offset);
 	    UR.x = MAX(UR.x, x);
 	}
     } else {
-	LL.x = ND_rank(GD_ln(g));
-	UR.x = ND_rank(GD_rn(g));
+	LL.x = (double)(ND_rank(GD_ln(g)));
+	UR.x = (double)(ND_rank(GD_rn(g)));
     }
-    LL.y = ND_rank(root)[GD_maxrank(g)].v[0]->u.coord.y - GD_ht1(g);
-    UR.y = ND_rank(root)[GD_minrank(g)].v[0]->u.coord.y + GD_ht2(g);
+    LL.y = (double)(ND_rank(root)[GD_maxrank(g)].v[0]->u.coord.y - GD_ht1(g));
+    UR.y = (double)(ND_rank(root)[GD_minrank(g)].v[0]->u.coord.y + GD_ht2(g));
     GD_bb(g).LL = LL;
     GD_bb(g).UR = UR;
 }

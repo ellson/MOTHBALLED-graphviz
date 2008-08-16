@@ -761,8 +761,7 @@ static void poly_init(node_t * n)
     dimen = ND_label(n)->dimen;
 
     /* minimal whitespace around label */
-// FIXME - is this an FP safe test?
-    if ((dimen.x > 0.0) || (dimen.y > 0.0)) {
+    if (ROUND(abs(dimen.x)) || ROUND(abs(dimen.y))) {
 	/* padding */
 	if ((p = agget(n, "margin"))) {
 	    i = sscanf(p, "%lf,%lf", &marginx, &marginy);

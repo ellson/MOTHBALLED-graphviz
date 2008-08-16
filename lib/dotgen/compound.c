@@ -20,6 +20,8 @@
 
 #include	"dot.h"
 
+#define P2PF(p, pf) (pf.x = p.x, pf.y = p.y)
+#define PF2P(pf, p) (p.x = ROUND (pf.x), p.y = ROUND (pf.y))
 
 /* midPt:
  * Return midpoint between two given points.
@@ -46,16 +48,18 @@ static char *p2s(point p, char *buf)
  * the box bp. Assume cp is outside the box, and pp is
  * on or in the box. 
  */
-static point boxIntersect(point pp, point cp, box * bp)
+static point boxIntersect(point pp, point cp, boxf * bp)
 {
     point ipp;
     double ppx = pp.x;
     double ppy = pp.y;
     double cpx = cp.x;
     double cpy = cp.y;
-    point ll = bp->LL;
-    point ur = bp->UR;
+    point ll;
+    point ur;
 
+    PF2P(bp->LL, ll);
+    PF2P(bp->UR, ur);
     if (cp.x < ll.x) {
 	ipp.x = ll.x;
 	ipp.y = pp.y + (int) ((ipp.x - ppx) * (ppy - cpy) / (ppx - cpx));
@@ -97,10 +101,10 @@ static point boxIntersect(point pp, point cp, box * bp)
 /* inBox:
  * Returns true if p is on or in box bb
  */
-static int inBox(point p, box * bb)
+static int inBox(point p, boxf * bb)
 {
-    return ((p.x >= bb->LL.x) && (p.x <= bb->UR.x) &&
-	    (p.y >= bb->LL.y) && (p.y <= bb->UR.y));
+    return (((double)p.x >= bb->LL.x) && ((double)p.x <= bb->UR.x) &&
+	    ((double)p.y >= bb->LL.y) && ((double)p.y <= bb->UR.y));
 }
 
 /* getCluster:
@@ -187,7 +191,7 @@ static int countHorzCross(pointf * pts, int ycoord)
  */
 static double
 findVertical(pointf * pts, double tmin, double tmax,
-	     int xcoord, int ymin, int ymax)
+	     double xcoord, double ymin, double ymax)
 {
     pointf Left[4];
     pointf Right[4];
@@ -198,7 +202,7 @@ findVertical(pointf * pts, double tmin, double tmax,
 	return -1.0;
 
     /* if 1 crossing and on the line x = xcoord */
-    if ((no_cross == 1) && (ROUND(pts[3].x) == xcoord)) {
+    if ((no_cross == 1) && (ROUND(pts[3].x) == ROUND(xcoord))) {
 	if ((ymin <= pts[3].y) && (pts[3].y <= ymax)) {
 	    return tmax;
 	} else
@@ -225,7 +229,7 @@ findVertical(pointf * pts, double tmin, double tmax,
  */
 static double
 findHorizontal(pointf * pts, double tmin, double tmax,
-	       int ycoord, int xmin, int xmax)
+	       double ycoord, double xmin, double xmax)
 {
     pointf Left[4];
     pointf Right[4];
@@ -236,7 +240,7 @@ findHorizontal(pointf * pts, double tmin, double tmax,
 	return -1.0;
 
     /* if 1 crossing and on the line y = ycoord */
-    if ((no_cross == 1) && (ROUND(pts[3].y) == ycoord)) {
+    if ((no_cross == 1) && (ROUND(pts[3].y) == ROUND(ycoord))) {
 	if ((xmin <= pts[3].x) && (pts[3].x <= xmax)) {
 	    return tmax;
 	} else
@@ -251,11 +255,7 @@ findHorizontal(pointf * pts, double tmin, double tmax,
 	return t;
     return findHorizontal(Right, (tmin + tmax) / 2.0, tmax, ycoord, xmin,
 			  xmax);
-
 }
-
-#define P2PF(p, pf) (pf.x = p.x, pf.y = p.y)
-#define PF2P(pf, p) (p.x = ROUND (pf.x), p.y = ROUND (pf.y))
 
 /* splineIntersect:
  * Given four spline control points and a box,
@@ -265,7 +265,7 @@ findHorizontal(pointf * pts, double tmin, double tmax,
  * with ipts[3] being on the box, and 1 is returned. Otherwise, ipts
  * is left unchanged and 0 is returned.
  */
-static int splineIntersect(point * ipts, box * bb)
+static int splineIntersect(point * ipts, boxf * bb)
 {
     double tmin = 2.0;
     double t;
@@ -309,7 +309,6 @@ static int splineIntersect(point * ipts, box * bb)
 	return 1;
     } else
 	return 0;
-
 }
 
 /* makeCompoundEdge:
@@ -328,7 +327,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     int starti = 0, endi = 0;	/* index of first and last control point */
     node_t *head;
     node_t *tail;
-    box *bb;
+    boxf *bb;
     int i, j;
     int size;
     point pts[4];
@@ -504,7 +503,6 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     free(bez->list);
     free(bez);
     ED_spl(e)->list = nbez;
-
 }
 
 /* dot_compoundEdges:

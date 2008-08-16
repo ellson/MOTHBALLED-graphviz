@@ -44,14 +44,14 @@
 #include <values.h>
 #endif
 #endif
-#include <tlayout.h>
-#include <neatoprocs.h>
-#include <adjust.h>
-#include <comp.h>
-#include <pack.h>
 #include <assert.h>
-#include <clusteredges.h>
-#include <dbg.h>
+#include "tlayout.h"
+#include "neatoprocs.h"
+#include "adjust.h"
+#include "comp.h"
+#include "pack.h"
+#include "clusteredges.h"
+#include "dbg.h"
 
 typedef struct {
     graph_t*  rootg;  /* logical root; graph passed in to fdp_layout */
@@ -92,7 +92,7 @@ finalCC(graph_t * g, int c_cnt, graph_t ** cc, point * pts, graph_t * rg,
     /* compute graph bounding box in points */
     if (c_cnt) {
 	cg = *cp++;
-	bb = GD_bb(cg);
+	BF2B(GD_bb(cg), bb);
 	if (c_cnt > 1) {
 	    pt = *pp++;
 	    bb.LL.x += pt.x;
@@ -100,7 +100,7 @@ finalCC(graph_t * g, int c_cnt, graph_t ** cc, point * pts, graph_t * rg,
 	    bb.UR.x += pt.x;
 	    bb.UR.y += pt.y;
 	    while ((cg = *cp++)) {
-		b = GD_bb(cg);
+		BF2B(GD_bb(cg), b);
 		pt = *pp++;
 		b.LL.x += pt.x;
 		b.LL.y += pt.y;
@@ -978,8 +978,11 @@ setClustNodes(graph_t* root)
 static void setBB(graph_t * g)
 {
     int i;
-    GD_bb(g).LL = cvt2pt(BB(g).LL);
-    GD_bb(g).UR = cvt2pt(BB(g).UR);
+    box bb;
+
+    bb.LL = cvt2pt(BB(g).LL);
+    bb.UR = cvt2pt(BB(g).UR);
+    B2BF(bb, GD_bb(g));
     for (i = 1; i <= GD_n_cluster(g); i++) {
 	setBB(GD_clust(g)[i]);
     }

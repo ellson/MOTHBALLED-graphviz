@@ -240,7 +240,7 @@ clip_and_install(edge_t * fe, node_t * hn, point * ps, int pn,
     int start, end, i, clipTail, clipHead;
     graph_t *g;
     edge_t *orig;
-    boxf *tbox, *hbox, bb;
+    boxf *tbox, *hbox;
     inside_t inside_context;
 
     tn = fe->tail;
@@ -302,7 +302,6 @@ clip_and_install(edge_t * fe, node_t * hn, point * ps, int pn,
 	if (ps[end].x != ps[end + 3].x || ps[end].y != ps[end + 3].y)
 	    break;
     arrow_clip(fe, hn, ps, &start, &end, newspl, info);
-    B2BF(GD_bb(g), bb);
     for (i = start; i < end + 4; ) {
 	pointf cp[4];
 	newspl->list[i - start] = ps[i];
@@ -317,9 +316,8 @@ clip_and_install(edge_t * fe, node_t * hn, point * ps, int pn,
 	P2PF(ps[i], cp[2]);
 	i++;
 	P2PF(ps[i], cp[3]);
-	update_bb_bz(&bb, cp);
+	update_bb_bz(&GD_bb(g), cp);
     }
-    BF2B(bb, GD_bb(g));
     newspl->size = end - start + 4;
 }
 

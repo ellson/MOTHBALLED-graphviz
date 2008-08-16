@@ -842,12 +842,7 @@ static boxf addLabelBB(boxf bb, textlabel_t * lp, boolean flipxy)
  */
 void updateBB(graph_t * g, textlabel_t * lp)
 {
-    boxf BF;
-    box B = GD_bb(g);
-
-    B2BF(B,BF);
-    BF = addLabelBB(BF, lp, GD_flip(g));
-    BF2B(BF, GD_bb(g));
+    GD_bb(g) = addLabelBB(GD_bb(g), lp, GD_flip(g));
 }
 
 /* compute_bb:
@@ -859,22 +854,22 @@ void compute_bb(graph_t * g)
 {
     node_t *n;
     edge_t *e;
-    box b, bb;
+    boxf b, bb;
     boxf BF;
-#ifdef SPLINESF
-    pointf ptf;
+    pointf ptf, s2;
+#ifndef SPLINESF
+    point pt;
 #endif
-    point pt, s2;
     int i, j;
 
-    bb.LL = pointof(INT_MAX, INT_MAX);
-    bb.UR = pointof(-INT_MAX, -INT_MAX);
+    bb.LL = pointfof(INT_MAX, INT_MAX);
+    bb.UR = pointfof(-INT_MAX, -INT_MAX);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	pt = coord(n);
-	s2.x = ND_xsize(n) / 2 + 1;
-	s2.y = ND_ysize(n) / 2 + 1;
-	b.LL = sub_points(pt, s2);
-	b.UR = add_points(pt, s2);
+	P2PF(coord(n), ptf);
+	s2.x = ND_xsize(n) / 2. + 1;
+	s2.y = ND_ysize(n) / 2. + 1;
+	b.LL = sub_pointfs(ptf, s2);
+	b.UR = add_pointfs(ptf, s2);
 
 	EXPANDBB(bb,b);
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {
@@ -884,23 +879,22 @@ void compute_bb(graph_t * g)
 		for (j = 0; j < ED_spl(e)->list[i].size; j++) {
 #ifdef SPLINESF
 		    ptf = ED_spl(e)->list[i].list[j];
-		    PF2P(ptf, pt);
 #else
 		    pt = ED_spl(e)->list[i].list[j];
+		    P2PF(pt, ptf);
 #endif
-		    EXPANDBP(bb,pt);
+		    EXPANDBP(bb,ptf);
 		}
 	    }
 	    if (ED_label(e) && ED_label(e)->set) {
-		B2BF(bb,BF);
-		BF = addLabelBB(BF, ED_label(e), GD_flip(g));
-		BF2B(BF,bb);
+		bb = addLabelBB(bb, ED_label(e), GD_flip(g));
 	    }
 	}
     }
 
     for (i = 1; i <= GD_n_cluster(g); i++) {
-	EXPANDBB(bb,GD_clust(g)[i]->u.bb);
+	B2BF(GD_clust(g)[i]->u.bb, BF);
+	EXPANDBB(bb,BF);
     }
 
     GD_bb(g) = bb;

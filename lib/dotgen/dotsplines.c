@@ -858,7 +858,6 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
     int     i, j, midx, midy, leftx, rightx;
     point   del;
     edge_t* hvye = NULL;
-    boxf bb;
 
     g = e0->tail->graph;
     tn = e0->tail, hn = e0->head;
@@ -959,7 +958,6 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
 	    bz->eflag = auxbz->eflag;
 	    bz->ep = transform(auxbz->ep, del, 0);
 	}
-	B2BF(GD_bb(g), bb);
 	for (j = 0; j <  auxbz->size; ) {
 	    point pt;
 	    pointf cp[4];
@@ -976,9 +974,8 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
 	    j++;
 	    pt = transform(auxbz->list[j], del, GD_flip(g));
 	    P2PF(pt,cp[3]);
-	    update_bb_bz(&bb, cp);
+	    update_bb_bz(&GD_bb(g), cp);
         }
-	BF2B(bb, GD_bb(g));
 	if (ED_label(e)) {
 	    point pt;
 	    PF2P(ED_label(auxe)->pos, pt);
@@ -2236,8 +2233,8 @@ point closest(splines * spl, point p)
 
 static int cl_vninside(graph_t * cl, node_t * n)
 {
-    return (BETWEEN(GD_bb(cl).LL.x, ND_coord_i(n).x, GD_bb(cl).UR.x) &&
-	    BETWEEN(GD_bb(cl).LL.y, ND_coord_i(n).y, GD_bb(cl).UR.y));
+    return (BETWEEN(GD_bb(cl).LL.x, (double)(ND_coord_i(n).x), GD_bb(cl).UR.x) &&
+	    BETWEEN(GD_bb(cl).LL.y, (double)(ND_coord_i(n).y), GD_bb(cl).UR.y));
 }
 
 /* returns the cluster of (adj) that interferes with n,
@@ -2286,7 +2283,7 @@ node_t *n, *adj;
 
 static box maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
 {
-    int nb, b;
+    double b, nb;
     graph_t *g = vn->graph, *left_cl, *right_cl;
     node_t *left, *right;
     box rv;
@@ -2294,43 +2291,43 @@ static box maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
     left_cl = right_cl = NULL;
 
     /* give this node all the available space up to its neighbors */
-    b = ND_coord_i(vn).x - ND_lw_i(vn) - FUDGE;
+    b = (double)(ND_coord_i(vn).x - ND_lw_i(vn) - FUDGE);
     if ((left = neighbor(vn, ie, oe, -1))) {
 	if ((left_cl = cl_bound(vn, left)))
-	    nb = GD_bb(left_cl).UR.x + sp->Splinesep;
+	    nb = GD_bb(left_cl).UR.x + (double)(sp->Splinesep);
 	else {
-	    nb = ND_coord_i(left).x + ND_mval(left);
+	    nb = (double)(ND_coord_i(left).x + ND_mval(left));
 	    if (ND_node_type(left) == NORMAL)
-		nb += GD_nodesep(g) / 2;
+		nb += GD_nodesep(g) / 2.;
 	    else
-		nb += sp->Splinesep;
+		nb += (double)(sp->Splinesep);
 	}
 	if (nb < b)
 	    b = nb;
-	rv.LL.x = b;
+	rv.LL.x = ROUND(b);
     } else
-	rv.LL.x = MIN(b, sp->LeftBound);
+	rv.LL.x = MIN(ROUND(b), sp->Splinesep);
 
     /* we have to leave room for our own label! */
     if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn)))
-	b = ND_coord_i(vn).x + 10;
+	b = (double)(ND_coord_i(vn).x + 10);
     else
-	b = ND_coord_i(vn).x + ND_rw_i(vn) + FUDGE;
+	b = (double)(ND_coord_i(vn).x + ND_rw_i(vn) + FUDGE);
     if ((right = neighbor(vn, ie, oe, 1))) {
 	if ((right_cl = cl_bound(vn, right)))
-	    nb = GD_bb(right_cl).LL.x - sp->Splinesep;
+	    nb = GD_bb(right_cl).LL.x - (double)(sp->Splinesep);
 	else {
 	    nb = ND_coord_i(right).x - ND_lw_i(right);
 	    if (ND_node_type(right) == NORMAL)
-		nb -= GD_nodesep(g) / 2;
+		nb -= GD_nodesep(g) / 2.;
 	    else
-		nb -= sp->Splinesep;
+		nb -= (double)(sp->Splinesep);
 	}
 	if (nb > b)
 	    b = nb;
-	rv.UR.x = b;
+	rv.UR.x = ROUND(b);
     } else
-	rv.UR.x = MAX(b, sp->RightBound);
+	rv.UR.x = MAX(ROUND(b), sp->RightBound);
 
     if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn)))
 	rv.UR.x -= ND_rw_i(vn);
