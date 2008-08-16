@@ -208,6 +208,14 @@ void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 	case SH_POLY:
 	    poly = (polygon_t *) ND_shape_info(n);
 	    sides = poly->sides;
+	    if (sides >= 3) {	/* real polygon */
+		verts = N_GNEW(sides, Point);
+		for (i = 0; i < sides; i++) {
+		    verts[i].x = PS2INCH(poly->vertices[i].x);
+		    verts[i].y = PS2INCH(poly->vertices[i].y);
+		}
+	    } else
+		verts = genRound(n, &sides, 0, 0);
 
 	    if (streq(ND_shape(n)->name, "box"))
 		pp->kind = BOX;
