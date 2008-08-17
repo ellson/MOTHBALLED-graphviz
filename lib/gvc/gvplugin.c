@@ -345,7 +345,7 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 
 /* string buffer management
 	- FIXME - must have 20 solutions for this same thing */
-static const char *append_buf(char sep, char *str, boolean new)
+static char *append_buf(char sep, char *str, boolean new)
 {
     static char *buf;
     static int bufsz, pos;
