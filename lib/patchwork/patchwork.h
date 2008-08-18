@@ -28,7 +28,7 @@ extern "C" {
 	int subtreeSize;
 	int nChildren;
 	int nStepsToCenter;
-	node_t *parent;
+	graph_t *parent;
 	double span;
 	double theta;
     } rdata;

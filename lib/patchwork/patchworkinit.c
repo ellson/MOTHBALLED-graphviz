@@ -104,9 +104,9 @@ mkClusters (graph_t * g, clist_t* pclist, graph_t* parent)
 static void patchwork_init_node(node_t * n)
 {
     agset(n,"shape","box");
-    common_init_node(n);
-    gv_nodesize(n, GD_flip(n->graph));
-    ND_pos(n) = ALLOC(GD_ndim(n->graph), 0, double);
+    /* common_init_node(n); */
+    /* gv_nodesize(n, GD_flip(n->graph)); */
+    /* ND_pos(n) = ALLOC(GD_ndim(n->graph), 0, double); */
 }
 
 static void patchwork_init_edge(edge_t * e)
@@ -138,11 +138,11 @@ static void patchwork_init_node_edge(graph_t * g)
 
 void patchwork_init_graph(graph_t * g)
 {
-	agnodeattr(g,"shape","box");
+    N_shape = agnodeattr(g,"shape","box");
     setEdgeType (g, ET_LINE);
     /* GD_ndim(g) = late_int(g,agfindattr(g,"dim"),2,2); */
     Ndim = GD_ndim(g) = 2;	/* The algorithm only makes sense in 2D */
-	mkClusters(g, NULL, g);
+    mkClusters(g, NULL, g);
     patchwork_init_node_edge(g);
 }
 

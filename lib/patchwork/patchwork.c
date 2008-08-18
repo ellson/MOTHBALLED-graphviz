@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <patchwork.h>
 #include "render.h"
 
 extern void patchwork_init_graph(graph_t * g);
 
-typedef struct rect_t {pointf ll; pointf ur;} rect_t;
+typedef boxf rect_t;
+
 typedef struct treenode_t {
 	double area;
 	rect_t	r;
@@ -19,9 +21,7 @@ typedef struct treenode_t {
 static treenode_t *newtreenode(treenode_t **first, treenode_t **prev)
 {
 	treenode_t *p;
-	p = malloc(sizeof(treenode_t));
-	p->leftchild = p->rightsib = 0;
-	p->area = 0.0;
+	p = NEW(treenode_t);
 	if (!*first) *first = p;
 	if (*prev) (*prev)->rightsib = p;
 	*prev = p;
@@ -42,19 +42,21 @@ static treenode_t *treebuilder(Agraph_t *g)
 		subg = GD_clust(g)[i];
 		if (agnnodes(subg) == 0) continue;
 		p = newtreenode(&first,&prev);
-		p->kind = AGRAPH;
+		p->kind = AGGRAPH;
 		p->u.subg = subg;
 		p->leftchild = treebuilder(subg);
 	}
 
 	for (n = agfstnode(g); n; n = agnxtnode(g,n)) {
 		char *val;
+		if (SPARENT(n)) continue;
 		p = newtreenode(&first,&prev);
 		val = agget(n,"area");
 		if (val) p->area = atof(val);
 		if (p->area <= 0.0) p->area = 1.0;
 		p->kind = AGNODE;
 		p->u.n = n;
+		SPARENT(n) = g;
 	}
 	return first;
 }
@@ -81,35 +83,35 @@ static void layouter(treenode_t *tree, int dir, rect_t r)
 	treenode_t	*p;
 
 	tree->r = r;
-	if (dir == BT) delta = (r.ur.y - r.ll.y) / tree->area;
-	else if (dir == LR) delta = (r.ur.x - r.ll.x) / tree->area;
+	if (dir == BT) delta = (r.UR.y - r.LL.y) / tree->area;
+	else if (dir == LR) delta = (r.UR.x - r.LL.x) / tree->area;
 	else abort();
-	ref = r.ll;
+	ref = r.LL;
 	for (p = tree->leftchild; p; p = p->rightsib) {
-		r0.ll = ref;
+		r0.LL = ref;
 		if (dir == BT) {
-			r0.ur.x = r.ur.x;
-			r0.ur.y = ref.y + p->area * delta;
+			r0.UR.x = r.UR.x;
+			r0.UR.y = ref.y + p->area * delta;
 		}
 		else {
-			r0.ur.x = ref.x + p->area * delta;
-			r0.ur.y = r.ur.y;
+			r0.UR.x = ref.x + p->area * delta;
+			r0.UR.y = r.UR.y;
 		}
 		layouter(p,(dir == BT? LR : BT),r0);
-		if (dir == BT) ref.y = r0.ur.y;
-		else ref.x = r0.ur.x;
+		if (dir == BT) ref.y = r0.UR.y;
+		else ref.x = r0.UR.x;
 	}
 }
 
 /* squarified layout */
-static double aspect(rect_t r) { return (r.ur.y - r.ll.y)/(r.ur.x - r.ll.x); }
+static double aspect(rect_t r) { return (r.UR.y - r.LL.y)/(r.UR.x - r.LL.x); }
 
 static void sqlayouter(treenode_t *list, int dir, rect_t r, double total)
 {
 	double frac = list->area / total;
 	rect_t s = r;
-	if (dir == BT) s.ur.y = s.ll.y +  frac * (r.ur.y - r.ll.y);
-	else s.ur.x = s.ll.x + frac * (r.ur.x - r.ll.x);
+	if (dir == BT) s.UR.y = s.LL.y +  frac * (r.UR.y - r.LL.y);
+	else s.UR.x = s.LL.x + frac * (r.UR.x - r.LL.x);
 	list->r = s;
 
 	if (list->leftchild) {
@@ -119,8 +121,8 @@ static void sqlayouter(treenode_t *list, int dir, rect_t r, double total)
 
 	if (list->rightsib) {
 		total = total - list->area;
-		if (dir == BT) r.ll.y = s.ur.y;
-		else r.ll.x = s.ur.x;
+		if (dir == BT) r.LL.y = s.UR.y;
+		else r.LL.x = s.UR.x;
 		if (aspect(r) > 1) sqlayouter(list->rightsib, BT, r, total);
 		else sqlayouter(list->rightsib, LR, r, total);
 	}
@@ -133,10 +135,10 @@ static void printer(treenode_t *tree)
 
 	if (onetime) { fprintf(stderr,"%%!PS\n"); onetime=0;}
 	fprintf(stderr,"newpath %.3lf %.3lf moveto %.3lf %.3lf lineto %.3lf %.3lf lineto %.3lf %.3lf lineto closepath \n",
-		tree->r.ll.x,tree->r.ll.y,
-		tree->r.ur.x,tree->r.ll.y,
-		tree->r.ur.x,tree->r.ur.y,
-		tree->r.ll.x,tree->r.ur.y);
+		tree->r.LL.x,tree->r.LL.y,
+		tree->r.UR.x,tree->r.LL.y,
+		tree->r.UR.x,tree->r.UR.y,
+		tree->r.LL.x,tree->r.UR.y);
 	if (tree->leftchild) {
 		fprintf(stderr,"stroke \n");
 		for (p = tree->leftchild; p; p = p->rightsib) printer(p);
@@ -146,32 +148,55 @@ static void printer(treenode_t *tree)
 	}
 }
 
-static void walker(treenode_t *tree)
+static void finishNode (node_t* n)
+{
+    char* str = strdup_and_subst_obj(NODENAME_ESC, (void*)n);
+    ND_shape(n) = bind_shape("box", n);
+    ND_label(n) = make_label(n->graph, LT_NONE, str,
+		late_double(n, N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE),
+		late_nnstring(n, N_fontname, DEFAULT_FONTNAME),
+		late_nnstring(n, N_fontcolor, DEFAULT_COLOR));
+    ND_shape(n)->fns->initfn(n);
+}
+
+static rect_t walker(treenode_t *tree)
 {
 	treenode_t	*p;
 	Agnode_t	*n;
 	point		center;
+    rect_t      r, rr;
 
 	switch(tree->kind) {
+		case AGGRAPH:
 		case AGRAPH:
 			break;
 		case AGNODE:
-			center.x = (tree->r.ur.x + tree->r.ll.x) / 2.0;
-			center.y = (tree->r.ur.y + tree->r.ll.y) / 2.0;
+			rr = tree->r;
+			center.x = (tree->r.UR.x + tree->r.LL.x) / 2.0;
+			center.y = (tree->r.UR.y + tree->r.LL.y) / 2.0;
 
 			n = tree->u.n;
 			ND_coord_i(n) = center;
-			ND_height(n) = PS2INCH(tree->r.ur.y - tree->r.ll.y);
-			ND_width(n) = PS2INCH(tree->r.ur.x - tree->r.ll.x);
+			ND_height(n) = PS2INCH(tree->r.UR.y - tree->r.LL.y);
+			ND_width(n) = PS2INCH(tree->r.UR.x - tree->r.LL.x);
 			gv_nodesize(n,GD_flip(n->graph));
+			finishNode (n);
 			/*fprintf(stderr,"%s coord %d %d ht %d width %d\n",
 				n->name, ND_coord_i(n).x, ND_coord_i(n).y, ND_ht_i(n),
 				ND_rw_i(n)+ND_lw_i(n));*/
 			break;
 		default: abort();
 	}
-	if (tree->leftchild)
-		for (p = tree->leftchild; p; p = p->rightsib) walker(p);
+	if ((p = tree->leftchild)) {
+		rr = walker (p);
+		p = p->rightsib;
+		for (; p; p = p->rightsib) {
+			r = walker(p);
+			EXPANDBB(rr,r);
+		}
+		GD_bb(tree->u.subg) = rr;
+	}
+    return rr;
 }
 
 #ifdef PWDRIVER
@@ -198,12 +223,13 @@ void patchwork_layout(Agraph_t *g)
 	rect_t r = {{0.0, 0.0}, {100.0, 100.0}};
 	patchwork_init_graph(g);
 	root.leftchild = treebuilder(g);
+	root.u.subg = g;
 	sizeit(&root);
 	sqlayouter(&root,LR,r,root.area);
-	printer(&root);
+	/* printer(&root); */
 	walker(&root);
-	compute_bb(g);
-	fprintf(stderr,"bb %.3g %.3g %.3g %.3g\n",
-		GD_bb(g).LL.x, GD_bb(g).LL.y, GD_bb(g).UR.x, GD_bb(g).UR.y);
+	/* compute_bb(g); */
+	/* fprintf(stderr,"bb %d %d %d %d\n", */
+		/* GD_bb(g).LL.x, GD_bb(g).LL.y, GD_bb(g).UR.x, GD_bb(g).UR.y); */
 	dotneato_postprocess(g);
 }
