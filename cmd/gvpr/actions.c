@@ -127,6 +127,7 @@ int copyAttr(Agobj_t * src, Agobj_t * tgt)
     Agsym_t *tsym = 0;
     int skind = AGTYPE(src);
     int tkind = AGTYPE(tgt);
+    char* val;
 
     srcg = agraphof(src);
     tgtg = agraphof(tgt);
@@ -134,7 +135,14 @@ int copyAttr(Agobj_t * src, Agobj_t * tgt)
 	tsym = agattrsym(tgt, sym->name);
 	if (!tsym)
 	    tsym = agattr(tgtg, tkind, sym->name, "");
-	agxset(tgt, tsym, agxget(src, sym));
+	val = agxget(src, sym);
+	if (aghtmlstr (val)) {
+	    val = agstrdup_html (tgtg, val);
+	    agxset(tgt, tsym, val);
+	    agstrfree (tgtg, val);
+	}
+	else
+	    agxset(tgt, tsym, val);
     }
     return 0;
 }
