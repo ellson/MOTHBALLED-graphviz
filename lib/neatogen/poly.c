@@ -208,7 +208,6 @@ void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 	case SH_POLY:
 	    poly = (polygon_t *) ND_shape_info(n);
 	    sides = poly->sides;
-#if 0
 	    if (sides >= 3) {	/* real polygon */
 		verts = N_GNEW(sides, Point);
 		for (i = 0; i < sides; i++) {
@@ -217,7 +216,6 @@ void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 		}
 	    } else
 		verts = genRound(n, &sides, 0, 0);
-#endif
 
 	    if (streq(ND_shape(n)->name, "box"))
 		pp->kind = BOX;
@@ -230,19 +228,18 @@ void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 		pp->kind = 0;
 
 	    if (sides >= 3) {	/* real polygon */
-		verts = N_GNEW(sides, Point);
 		if (pp->kind == BOX) {
 			/* To do an additive margin, we rely on knowing that
 			 * the vertices are CCW starting from the UR
 			 */
-		    verts[0].x = PS2INCH(poly->vertices[0].x) + xmargin;
-		    verts[0].y = PS2INCH(poly->vertices[0].y) + ymargin;
-		    verts[1].x = PS2INCH(poly->vertices[1].x) - xmargin;
-		    verts[1].y = PS2INCH(poly->vertices[1].y) + ymargin;
-		    verts[2].x = PS2INCH(poly->vertices[2].x) - xmargin;
-		    verts[2].y = PS2INCH(poly->vertices[2].y) - ymargin;
-		    verts[3].x = PS2INCH(poly->vertices[3].x) + xmargin;
-		    verts[3].y = PS2INCH(poly->vertices[3].y) - ymargin;
+		    verts[0].x += xmargin;
+		    verts[0].y += ymargin;
+		    verts[1].x -= xmargin;
+		    verts[1].y += ymargin;
+		    verts[2].x -= xmargin;
+		    verts[2].y -= ymargin;
+		    verts[3].x += xmargin;
+		    verts[3].y -= ymargin;
 		}
 		else {
 		    for (i = 0; i < sides; i++) {
@@ -254,14 +251,10 @@ void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 		        verts[i].y = PS2INCH(verts[i].y);
 fprintf(stderr, "vert=%g,%g h=%g margin=%g,%g\n",
 	verts[i].x, verts[i].y, h, xmargin, ymargin);
-#else
-		        verts[i].x = PS2INCH(poly->vertices[i].x);
-		        verts[i].y = PS2INCH(poly->vertices[i].y);
 #endif
 		    }
 		}
-	    } else
-		verts = genRound(n, &sides, xmargin, ymargin);
+	    }
 	    break;
 	case SH_RECORD:
 	    sides = 4;
