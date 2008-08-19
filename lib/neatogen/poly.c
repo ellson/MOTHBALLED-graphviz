@@ -212,7 +212,7 @@ void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 	    if (streq(ND_shape(n)->name, "box"))
 		pp->kind = BOX;
 	    else if (streq(ND_shape(n)->name, "polygon")
-		     && isBox(verts, sides))
+		     && isBox(poly->vertices, sides))
 		pp->kind = BOX;
 	    else if ((poly->sides < 3) && poly->regular)
 		pp->kind = CIRCLE;
