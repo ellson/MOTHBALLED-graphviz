@@ -220,6 +220,7 @@ void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 		pp->kind = 0;
 
 	    if (sides >= 3) {	/* real polygon */
+		verts = N_GNEW(sides, Point);
 		if (pp->kind == BOX) {
 			/* To do an additive margin, we rely on knowing that
 			 * the vertices are CCW starting from the UR
@@ -237,6 +238,7 @@ void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 		else {
 		    for (i = 0; i < sides; i++) {
                         double h = LEN(poly->vertices[i].x,poly->vertices[i].y);
+fprintf(stderr,"v=%g,%g h=%g\n", poly->vertices[i].x, poly->vertices[i].y, h);
 		        verts[i].x = poly->vertices[i].x * (1.0 + xmargin/h);
 		        verts[i].y = poly->vertices[i].y * (1.0 + ymargin/h);
 		        verts[i].x = PS2INCH(verts[i].x);

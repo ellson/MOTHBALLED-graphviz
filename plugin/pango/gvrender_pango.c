@@ -149,11 +149,8 @@ static void cairogen_begin_page(GVJ_t * job)
     cairo_rotate(cr, -job->rotation * M_PI / 180.);
     cairo_translate(cr, job->translation.x, -job->translation.y);
 
-    cairo_rectangle(cr,
-	    job->clip.LL.x,
-	    - job->clip.LL.y,
-	    job->clip.UR.x - job->clip.LL.x,
-	    - (job->clip.UR.y - job->clip.LL.y));
+    cairo_rectangle(cr, job->clip.LL.x, - job->clip.LL.y,
+	    job->clip.UR.x - job->clip.LL.x, - (job->clip.UR.y - job->clip.LL.y));
     cairo_clip(cr);
 }
 

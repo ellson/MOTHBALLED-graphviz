@@ -33,11 +33,12 @@
  * e.g., CELLGRID=n, which sets CELLBORDER=0 and has the border drawing
  * handled correctly by the table.
  */
+
+#include <assert.h>
 #include "render.h"
 #include "htmltable.h"
 #include "agxbuf.h"
 #include "pointset.h"
-#include <assert.h>
 
 #define DEFAULT_BORDER    1
 #define DEFAULT_CELLPADDING  2
@@ -532,7 +533,7 @@ emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t * tp)
     env.finfo.size = tp->fontsize;
     env.finfo.size = tp->fontsize;
     env.imgscale = agget (job->obj->u.n, "imagescale");
-    if ((env.imgscale == NULL) || (*env.imgscale == '\0'))
+    if ((env.imgscale == NULL) || (env.imgscale[0] == '\0'))
 	env.imgscale = "false";
     if (lp->kind == HTML_TBL) {
 	htmltbl_t *tbl = lp->u.tbl;
@@ -1721,13 +1722,15 @@ static char *getPenColor(void *obj)
 /* make_html_label:
  * Return non-zero if problem parsing HTML. In this case, use object name.
  */
-int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
+int make_html_label(void *obj, textlabel_t * lp)
 {
     int rv;
     double wd2, ht2;
     boxf box;
+    graph_t *g;
     htmllabel_t *lbl;
     htmlenv_t env;
+    char *s;
 
     env.obj = obj;
     switch (agobjkind(obj)) {
@@ -1741,6 +1744,8 @@ int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
 	env.g = ((Agedge_t *) obj)->head->graph;
 	break;
     }
+    g = env.g->root;
+
     env.finfo.size = lp->fontsize;
     env.finfo.name = lp->fontname;
     env.finfo.color = lp->fontcolor;
@@ -1752,7 +1757,17 @@ int make_html_label(graph_t *g, textlabel_t * lp, void *obj)
 	agxbinit(&xb, SMALLBUF, buf);
 	lp->html = FALSE;
 	lp->text = strdup(nameOf(obj, &xb));
-	size_label(env.g, lp);
+	switch (lp->charset) {
+	case CHAR_LATIN1:
+	    s = latin1ToUTF8(lp->text);
+	    break;
+	default: /* UTF8 */
+	    s = htmlEntityUTF8(lp->text);
+	    break;
+	}
+	free(lp->text);
+	lp->text = s;
+	make_simple_label(g, lp);
 	agxbfree(&xb);
 	return rv;
     }

@@ -507,7 +507,7 @@ static void pos_clusters(graph_t * g)
 static void compress_graph(graph_t * g)
 {
     double x;
-    point p;
+    pointf p;
 
     if (GD_drawing(g)->ratio_kind != R_COMPRESS)
 	return;
@@ -1220,19 +1220,19 @@ static void contain_nodes(graph_t * g)
 static boolean idealsize(graph_t * g, double minallowed)
 {
     double xf, yf, f, R;
-    point b, relpage, margin;
+    pointf b, relpage, margin;
 
     /* try for one page */
     relpage = GD_drawing(g)->page;
-    if (relpage.x == 0)
+    if (relpage.x < 0.001 || relpage.y < 0.001)
 	return FALSE;		/* no page was specified */
     margin = GD_drawing(g)->margin;
-    relpage = sub_points(relpage, margin);
-    relpage = sub_points(relpage, margin);
+    relpage = sub_pointfs(relpage, margin);
+    relpage = sub_pointfs(relpage, margin);
     b.x = GD_bb(g).UR.x;
     b.y = GD_bb(g).UR.y;
-    xf = (double) relpage.x / b.x;
-    yf = (double) relpage.y / b.y;
+    xf = relpage.x / b.x;
+    yf = relpage.y / b.y;
     if ((xf >= 1.0) && (yf >= 1.0))
 	return FALSE;		/* fits on one page */
 

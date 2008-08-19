@@ -43,16 +43,15 @@ static void storeline(graph_t *g, textlabel_t *lp, char *line, char terminator)
     lp->dimen.y += size.y;
 }
 
-/* compiles <str> into a label <lp> and returns its bounding box size.  */
-static pointf label_size(graph_t * g, textlabel_t * lp)
+/* compiles <str> into a label <lp> */
+void make_simple_label(graph_t * g, textlabel_t * lp)
 {
     char c, *p, *line, *lineptr, *str = lp->text;
     unsigned char byte = 0x00;
-    int charset = GD_charset(g);
 
     lp->dimen.x = lp->dimen.y = 0.0;
     if (*str == '\0')
-	return lp->dimen;
+	return;
 
     line = lineptr = NULL;
     p = str;
@@ -65,7 +64,7 @@ static pointf label_size(graph_t * g, textlabel_t * lp)
          * the second in 0x40-0x7e or 0xa1-0xfe. We assume that the input
          * is well-formed, but check that we don't go past the ending '\0'.
          */
-	if ((charset == CHAR_BIG5) && 0xA1 <= byte && byte <= 0xFE) {
+	if ((lp->charset == CHAR_BIG5) && 0xA1 <= byte && byte <= 0xFE) {
 	    *lineptr++ = c;
 	    c = *p++;
 	    *lineptr++ = c;
@@ -103,47 +102,77 @@ static pointf label_size(graph_t * g, textlabel_t * lp)
     }
 
     lp->space = lp->dimen;
-    return lp->dimen;
-}
-
-/* size_label:
- * Process label text for size and line breaks.
- */ 
-void
-size_label (graph_t* g, textlabel_t* rv)
-{
-    char *s;
-
-    switch (GD_charset(g->root)) {
-    case CHAR_LATIN1:
-	s = latin1ToUTF8(rv->text);
-	break;
-    default: /* UTF8 */
-	s = htmlEntityUTF8(rv->text);
-	break;
-    }
-    free(rv->text);
-    rv->text = s;
-    label_size(g, rv);
 }
 
 /* make_label:
  * Assume str is freshly allocated for this instance, so it
  * can be freed in free_label.
  */
-textlabel_t *make_label(graph_t *g, int kind, char *str, double fontsize,
-			char *fontname, char *fontcolor)
+textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *fontname, char *fontcolor)
 {
     textlabel_t *rv = NEW(textlabel_t);
+    graph_t *g = NULL, *sg = NULL;
+    node_t *n = NULL;
+    edge_t *e = NULL;
+        char *s;
 
-    rv->text = str;
+    switch (agobjkind(obj)) {
+    case AGGRAPH:
+        sg = (graph_t*)obj;
+	g = sg->root;
+	break;
+    case AGNODE:
+        n = (node_t*)obj;
+	g = n->graph->root;
+	break;
+    case AGEDGE:
+        e = (edge_t*)obj;
+	g = e->head->graph->root;
+	break;
+    }
     rv->fontname = fontname;
     rv->fontcolor = fontcolor;
     rv->fontsize = fontsize;
-    if (kind & LT_HTML)
+    rv->charset = GD_charset(g);
+    if (kind & LT_RECD) {
+	rv->text = strdup(str);
+        if (kind & LT_HTML) {
+	    rv->html = TRUE;
+	}
+    }
+    else if (kind == LT_HTML) {
+	rv->text = strdup(str);
 	rv->html = TRUE;
-    if (kind == LT_NONE)
-	size_label(g, rv);
+	if (make_html_label(obj, rv)) {
+	    switch (agobjkind(obj)) {
+	    case AGGRAPH:
+	        agerr(AGPREV, "in label of graph %s\n",sg->name);
+		break;
+	    case AGNODE:
+	        agerr(AGPREV, "in label of node %s\n", n->name);
+		break;
+	    case AGEDGE:
+		agerr(AGPREV, "in label of edge %s %s %s\n",
+		        e->tail->name, AG_IS_DIRECTED(g)?"->":"--", e->head->name);
+		break;
+	    }
+	}
+    }
+    else {
+        assert(kind == LT_NONE);
+	rv->text = strdup_and_subst_obj(str, obj);
+        switch (rv->charset) {
+	case CHAR_LATIN1:
+	    s = latin1ToUTF8(rv->text);
+	    break;
+	default: /* UTF8 */
+	    s = htmlEntityUTF8(rv->text);
+	    break;
+	}
+        free(rv->text);
+        rv->text = s;
+	make_simple_label(g, rv);
+    }
     return rv;
 }
 

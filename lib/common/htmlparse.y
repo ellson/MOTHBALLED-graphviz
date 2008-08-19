@@ -30,9 +30,6 @@ typedef struct sfont_t {
 static struct {
   htmllabel_t* lbl;       /* Generated label */
   htmltbl_t*   tblstack;  /* Stack of tables maintained during parsing */
-#ifdef OLD
-  Dt_t*        paras;     /* Dictionary for paras of text */
-#endif
   Dt_t*        fitemList; /* Dictionary for font text items */
   Dt_t*        fparaList; 
   agxbuf*      str;       /* Buffer for text */
@@ -116,14 +113,6 @@ static Dtdisc_t cellDisc = {
     NIL(Dtevent_f)
 };
 
-#ifdef OLD
-typedef struct {
-  Dtlink_t      link;
-  const char*   s;          /* para of text */
-  char          c;          /* alignment of text */
-} sitem;
-#endif
-
 typedef struct {
     Dtlink_t    link;
     textitem_t  ti;
@@ -133,14 +122,6 @@ typedef struct {
     Dtlink_t     link;
     htextpara_t  lp;
 } fpara;
-
-#ifdef OLD
-static void
-free_sitem(Dt_t* d, sitem* p,Dtdisc_t* ds)
-{
-  free (p);
-}
-#endif
 
 static void 
 free_fitem(Dt_t* d, fitem* p, Dtdisc_t* ds)
@@ -170,20 +151,6 @@ free_fpara(Dt_t* d, fpara* p, Dtdisc_t* ds)
     free (p);
 }
 
-#ifdef OLD
-static Dtdisc_t strDisc = {
-    offsetof(sitem,s),
-    sizeof(char*),
-    offsetof(sitem,link),
-    NIL(Dtmake_f),
-    (Dtfree_f)free_sitem,
-    NIL(Dtcompar_f),
-    NIL(Dthash_f),
-    NIL(Dtmemory_f),
-    NIL(Dtevent_f)
-};
-#endif
-
 static Dtdisc_t fstrDisc = {
     0,
     0,
@@ -208,17 +175,6 @@ static Dtdisc_t fparaDisc = {
     NIL(Dtmemory_f),
     NIL(Dtevent_f)
 };
-
-#ifdef OLD
-static void
-appendStrList(const char* p,int v)
-{
-  sitem*  sp = NEW(sitem);
-  sp->s = strdup(p);
-  sp->c = v;
-  dtinsert (HTMLstate.paras, sp);
-}
-#endif
 
 /* dupFont:
  */
@@ -270,50 +226,6 @@ appendFLineList (int v)
 
     dtinsert(HTMLstate.fparaList, ln);
 }
-
-#ifdef OLD
-/* mkText:
- * Construct htmltxt_t from list of paras in HTMLstate.paras.
- * lastl is a last, odd para with no <BR>, so we use n by default.
- */
-static htmltxt_t*
-mkText (const char* lastl)
-{
-  int         cnt;
-  textpara_t* lp;
-  sitem*      sp;
-  Dt_t*       paras = HTMLstate.paras;
-  htmltxt_t* tp = NEW(htmltxt_t);
-
-  if (paras)
-    cnt = dtsize (paras);
-  else
-    cnt = 0;
-  if (lastl) cnt++;
-
-  tp->nparas = cnt;
-  tp->para = N_NEW(cnt+1,textpara_t);
-
-  lp = tp->para;
-  if (paras) {
-    sp = (sitem*)dtflatten(paras);
-    for (; sp; sp = (sitem*)dtlink(paras,(Dtlink_t*)sp)) {
-      lp->str = (char*)(sp->s);
-      lp->xshow = NULL;
-      lp->just = sp->c;
-      lp++;
-    }
-  }
-  if (lastl) {
-    lp->str = strdup(lastl);
-    lp->just = '\0';
-  }
-
-  if (paras) dtclear (paras);
-
-  return tp;
-}
-#endif
 
 static htmltxt_t*
 mkText(void)
@@ -375,46 +287,6 @@ static void setCell (htmlcell_t* cp, void* obj, int kind)
   else
     cp->child.u.tbl = (htmltbl_t*)obj;
 }
-
-#ifdef OLD
-/* setFont:
- * Copy in font attributes. fp has the new attributes.
- * curf corresponds to the current font info of the object.
- * From the parser, we are moving out from the object. Since
- * the inmost value is the one used, we only use a new value
- * if the attribute has not already been assigned.
- */
-static htmlfont_t* setFont (htmlfont_t* fp, htmlfont_t*  curf)
-{
-  if (curf) {
-    if (curf->size < 0.0) curf->size = fp->size;
-    if (!curf->color) curf->color = fp->color;
-    else if (fp->color) free (fp->color);
-    if (!curf->name) curf->name = fp->name;
-    else if (fp->name) free (fp->name);
-    free (fp);
-    return curf;
-  }
-  else
-    return fp;
-}
-
-/* fontText:
- * Attach font information to text.
- */
-static void fontText (htmlfont_t* fp, htmltxt_t* cp)
-{
-  cp->font = setFont (fp, cp->font);
-}
-
-/* fontTable:
- * Attach font information to table.
- */
-static void fontTable (htmlfont_t* fp, htmltbl_t* cp)
-{
-  cp->font = setFont (fp, cp->font);
-}
-#endif
 
 /* mkLabel:
  * Create label, given body and type.
@@ -640,16 +512,6 @@ image  : T_img T_end_img { $$ = $1; }
        ;
 
 %%
-
-#ifdef OLD
-htmllabel_t*
-simpleHTML (char* txt)
-{
-  htmltxt_t*   tobj = mkText (txt);
-  htmllabel_t* l = mkLabel(tobj,HTML_TEXT);
-  return l;
-}
-#endif
 
 /* parseHTML:
  * Return parsed label or NULL if failure.

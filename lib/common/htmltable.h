@@ -53,14 +53,6 @@ extern "C" {
      * NOTE: As required, the str field in para is utf-8.
      * This translation is done when libexpat scans the input.
      */
-#ifdef OLD
-    typedef struct {
-	textpara_t *para;
-	short nparas;
-	box box;
-	htmlfont_t *font;	/* font info */
-    } htmltxt_t;
-#endif
 	
 	/* atomic unit of text emitted using a single htmlfont_t */
     typedef struct {
@@ -172,7 +164,7 @@ extern "C" {
 	
     extern htmllabel_t *parseHTML(char *, int *, int);
 
-    extern int make_html_label(graph_t *g, textlabel_t * lp, void *obj);
+    extern int make_html_label(void *obj, textlabel_t * lp);
     extern void emit_html_label(GVJ_t * job, htmllabel_t * lp, textlabel_t *);
 
     extern void free_html_label(htmllabel_t *, int);

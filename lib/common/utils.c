@@ -610,49 +610,24 @@ int test_toggle()
 void common_init_node(node_t * n)
 {
     char *str;
-    int lbl_kind = LT_NONE;
-    graph_t *sg = n->graph;
 
     ND_width(n) =
 	late_double(n, N_width, DEFAULT_NODEWIDTH, MIN_NODEWIDTH);
     ND_height(n) =
 	late_double(n, N_height, DEFAULT_NODEHEIGHT, MIN_NODEHEIGHT);
-    if (N_label == NULL)
-	str = NODENAME_ESC;
-    else {
-	str = agxget(n, N_label->index);
-	if (aghtmlstr(str)) lbl_kind = LT_HTML;
-    }
-    if (lbl_kind)
-	str = strdup(str);
-    else
-	str = strdup_and_subst_obj(str, (void*)n);
     ND_shape(n) =
 	bind_shape(late_nnstring(n, N_shape, DEFAULT_NODESHAPE), n);
-    if (shapeOf(n) == SH_RECORD) 
-	lbl_kind |= LT_RECD;
-    ND_label(n) = make_label(sg->root, lbl_kind, str,
+    if (N_label == NULL)
+	str = NODENAME_ESC;
+    else 
+	str = agxget(n, N_label->index);
+    ND_label(n) = make_label((void*)n, str,
+	        ((aghtmlstr(str) ? LT_HTML : LT_NONE) | ( (shapeOf(n) == SH_RECORD) ? LT_RECD : LT_NONE)),
 		late_double(n, N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE),
 		late_nnstring(n, N_fontname, DEFAULT_FONTNAME),
 		late_nnstring(n, N_fontcolor, DEFAULT_COLOR));
-    if (lbl_kind == LT_HTML) {
-	if (make_html_label(sg->root, ND_label(n), n))
-	    agerr(AGPREV, "in label of node %s\n", n->name);
-    }
     ND_showboxes(n) = late_int(n, N_showboxes, 0, 0);
     ND_shape(n)->fns->initfn(n);
-}
-
-static void edgeError(edge_t * e, char *msg)
-{
-    char *edgeop;
-
-    if (AG_IS_DIRECTED(e->tail->graph))
-	edgeop = "->";
-    else
-	edgeop = "--";
-    agerr(AGPREV, "for %s of edge %s %s %s\n",
-	  msg, e->tail->name, edgeop, e->head->name);
 }
 
 struct fontinfo {
@@ -663,8 +638,7 @@ struct fontinfo {
 
 static void initFontEdgeAttr(edge_t * e, struct fontinfo *fi)
 {
-    fi->fontsize =
-	late_double(e, E_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
+    fi->fontsize = late_double(e, E_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE);
     fi->fontname = late_nnstring(e, E_fontname, DEFAULT_FONTNAME);
     fi->fontcolor = late_nnstring(e, E_fontcolor, DEFAULT_COLOR);
 }
@@ -673,10 +647,8 @@ static void
 initFontLabelEdgeAttr(edge_t * e, struct fontinfo *fi,
 		      struct fontinfo *lfi)
 {
-    if (!fi->fontname)
-	initFontEdgeAttr(e, fi);
-    lfi->fontsize =
-	late_double(e, E_labelfontsize, fi->fontsize, MIN_FONTSIZE);
+    if (!fi->fontname) initFontEdgeAttr(e, fi);
+    lfi->fontsize = late_double(e, E_labelfontsize, fi->fontsize, MIN_FONTSIZE);
     lfi->fontname = late_nnstring(e, E_labelfontname, fi->fontname);
     lfi->fontcolor = late_nnstring(e, E_labelfontcolor, fi->fontcolor);
 }
@@ -720,30 +692,19 @@ chkPort (port (*pf)(node_t*, char*, char*), node_t* n, char* s)
 /* return true if edge has label */
 int common_init_edge(edge_t * e)
 {
-    char *s;
+    char *str;
     int r = 0;
     struct fontinfo fi;
     struct fontinfo lfi;
     graph_t *sg = e->tail->graph;
-    int lbl_kind;
 
     fi.fontname = NULL;
     lfi.fontname = NULL;
-    if (E_label && (s = agxget(e, E_label->index)) && (s[0])) {
+    if (E_label && (str = agxget(e, E_label->index)) && (str[0])) {
 	r = 1;
-	if (aghtmlstr(s)) lbl_kind = LT_HTML;
-        else lbl_kind = LT_NONE;
-	if (lbl_kind)
-	    s = strdup(s);
-	else
-	    s = strdup_and_subst_obj(s, (void*)e);
 	initFontEdgeAttr(e, &fi);
-	ED_label(e) = make_label(sg->root, lbl_kind, s,
+	ED_label(e) = make_label((void*)e, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
 				fi.fontsize, fi.fontname, fi.fontcolor);
-	if (lbl_kind == LT_HTML) {
-	    if (make_html_label(sg->root, ED_label(e), e) == 1)
-		edgeError(e, "label");
-	}
 	GD_has_labels(sg) |= EDGE_LABEL;
 	ED_label_ontop(e) =
 	    mapbool(late_string(e, E_label_float, "false"));
@@ -751,52 +712,32 @@ int common_init_edge(edge_t * e)
 
 
     /* vladimir */
-    if (E_headlabel && (s = agxget(e, E_headlabel->index)) && (s[0])) {
-	if (aghtmlstr(s)) lbl_kind = LT_HTML;
-        else lbl_kind = LT_NONE;
-	if (lbl_kind)
-	    s = strdup(s);
-	else
-	    s = strdup_and_subst_obj(s, (void*)e);
+    if (E_headlabel && (str = agxget(e, E_headlabel->index)) && (str[0])) {
 	initFontLabelEdgeAttr(e, &fi, &lfi);
-	ED_head_label(e) = make_label(sg->root, lbl_kind, s,
+	ED_head_label(e) = make_label((void*)e, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
 				lfi.fontsize, lfi.fontname, lfi.fontcolor);
-	if (lbl_kind) {
-	    if (make_html_label(sg->root, ED_head_label(e), e) == 1)
-		edgeError(e, "head label");
-	}
 	GD_has_labels(sg) |= HEAD_LABEL;
     }
-    if (E_taillabel && (s = agxget(e, E_taillabel->index)) && (s[0])) {
-	if (aghtmlstr(s)) lbl_kind = LT_HTML;
-        else lbl_kind = LT_NONE;
-	if (lbl_kind)
-	    s = strdup(s);
-	else
-	    s = strdup_and_subst_obj(s, (void*)e);
+    if (E_taillabel && (str = agxget(e, E_taillabel->index)) && (str[0])) {
 	if (!lfi.fontname)
 	    initFontLabelEdgeAttr(e, &fi, &lfi);
-	ED_tail_label(e) = make_label(sg->root, lbl_kind, s,
+	ED_tail_label(e) = make_label((void*)e, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
 				lfi.fontsize, lfi.fontname, lfi.fontcolor);
-	if (lbl_kind) {
-	    if (make_html_label(sg->root, ED_tail_label(e), e) == 1)
-		edgeError(e, "tail label");
-	}
 	GD_has_labels(sg) |= TAIL_LABEL;
     }
     /* end vladimir */
 
     /* We still accept ports beginning with colons but this is deprecated */
-    s = agget(e, TAIL_ID);
-    if (s[0])
+    str = agget(e, TAIL_ID);
+    if (str[0])
 	ND_has_port(e->tail) = TRUE;
-    ED_tail_port(e) = chkPort (ND_shape(e->tail)->fns->portfn,e->tail, s);
+    ED_tail_port(e) = chkPort (ND_shape(e->tail)->fns->portfn,e->tail, str);
     if (noClip(e, E_tailclip))
 	ED_tail_port(e).clip = FALSE;
-    s = agget(e, HEAD_ID);
-    if (s[0])
+    str = agget(e, HEAD_ID);
+    if (str[0])
 	ND_has_port(e->head) = TRUE;
-    ED_head_port(e) = chkPort(ND_shape(e->head)->fns->portfn,e->head, s);
+    ED_head_port(e) = chkPort(ND_shape(e->head)->fns->portfn,e->head, str);
     if (noClip(e, E_headclip))
 	ED_head_port(e).clip = FALSE;
 

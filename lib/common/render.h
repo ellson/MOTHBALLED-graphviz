@@ -124,10 +124,8 @@ extern "C" {
     extern char *xml_url_string(char *s);
     extern void makeSelfEdge(path *, edge_t **, int, int, int, int,
 			     splineInfo *);
-    extern textlabel_t *make_label(graph_t *g, int html, char *str,
-				   double fontsize, char *fontname, char *fontcolor);
+    extern textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *fontname, char *fontcolor);
     extern bezier *new_spline(edge_t * e, int sz);
-    extern void osize_label(textlabel_t *, int *, int *, int *, int *);
     extern char **parse_style(char *s);
     extern void place_graph_label(Agraph_t *);
     extern void place_portlabel(edge_t * e, boolean head_p);
@@ -145,7 +143,7 @@ extern "C" {
     extern void setup_graph(GVC_t * gvc, graph_t * g);
     extern shape_kind shapeOf(node_t *);
     extern void shape_clip(node_t * n, point curve[4]);
-    extern void size_label (graph_t* g, textlabel_t* rv);
+    extern void make_simple_label (graph_t* g, textlabel_t* rv);
     extern void start_timer(void);
     extern pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize);
     extern void translate_bb(Agraph_t *, int);

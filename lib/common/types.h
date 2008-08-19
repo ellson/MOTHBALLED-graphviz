@@ -132,6 +132,7 @@ extern "C" {
 
     typedef struct textlabel_t {
 	char *text, *fontname, *fontcolor;
+	int charset;
 	double fontsize;
 	pointf dimen; /* the diagonal size of the label (estimated by layout) */
 	pointf space; /* the diagonal size of the space for the label */
@@ -284,9 +285,9 @@ extern "C" {
 	double scale;
 	double ratio;		/* set only if ratio_kind == R_VALUE */
 	double dpi;
-	point margin;
-	point page;
-	point  size;
+	pointf margin;
+	pointf page;
+	pointf size;
 	boolean filled;
 	boolean landscape;
 	boolean centered;

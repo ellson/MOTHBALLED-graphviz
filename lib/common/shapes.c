@@ -1820,7 +1820,6 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
     char *tsp, *psp, *hstsp, *hspsp, *sp;
     char port[SMALLBUF];
     int maxf, cnt, mode, wflag, ishardspace, fi;
-    graph_t *sg = n->graph;
     textlabel_t *lbl = ND_label(n);
 
     fp = NULL;
@@ -1892,16 +1891,10 @@ parse_reclbl(node_t * n, int LR, int flag, char *text)
 		    tsp - 1 != hstsp && *(tsp - 1) == ' ')
 		    tsp--;
 		*tsp = '\000';
-		fp->lp =
-		    make_label(sg->root, (lbl->html ? LT_HTML : LT_NONE), 
-			strdup(text),
+		fp->lp = make_label((void *)n, strdup(text), (lbl->html ? LT_HTML : LT_NONE),
 			lbl->fontsize,
 			lbl->fontname,
 			lbl->fontcolor);
-		if (lbl->html) {
-		    if (make_html_label(sg->root, fp->lp, n))
-			agerr(AGPREV, "in label of node %s\n", n->name);
-		}
 		fp->LR = TRUE;
 		hstsp = tsp = text;
 	    }

@@ -348,11 +348,11 @@ void global_def(char *dcl,
     sym->fixed = 1;
 }
 
-/* getdoubles2pt:
- * converts a graph attribute to a point.
+/* getdoubles2ptf:
+ * converts a graph attribute to floating graph units (POINTS).
  * Returns true if the attribute ends in '!'.
  */
-static boolean getdoubles2pt(graph_t * g, char *name, point * result)
+static boolean getdoubles2ptf(graph_t * g, char *name, pointf * result)
 {
     char *p;
     int i;
@@ -633,8 +633,8 @@ void graph_init(graph_t * g, boolean use_rankdir)
 
     setRatio(g);
     GD_drawing(g)->filled =
-	getdoubles2pt(g, "size", &(GD_drawing(g)->size));
-    getdoubles2pt(g, "page", &(GD_drawing(g)->page));
+	getdoubles2ptf(g, "size", &(GD_drawing(g)->size));
+    getdoubles2ptf(g, "page", &(GD_drawing(g)->page));
 
     GD_drawing(g)->centered = mapbool(agget(g, "center"));
 
@@ -762,34 +762,20 @@ charsetToStr (int c)
  */
 void do_graph_label(graph_t * sg)
 {
-    char *p, *pos, *just;
+    char *str, *pos, *just;
     int pos_ix;
 
     /* it would be nice to allow multiple graph labels in the future */
-    if ((p = agget(sg, "label"))) {
+    if ((str = agget(sg, "label"))) {
 	char pos_flag;
-	int lbl_kind = LT_NONE;
 	point dpt;
 	pointf dimen;
 
-	if (aghtmlstr(p)) lbl_kind = LT_HTML;
 	GD_has_labels(sg->root) |= GRAPH_LABEL;
-        if (lbl_kind) p = strdup (p);
-	else p = strdup_and_subst_obj(p, (void*)sg);
-	GD_label(sg) = make_label(sg->root, lbl_kind, p,
-				  late_double(sg,
-					      agfindattr(sg, "fontsize"),
-					      DEFAULT_FONTSIZE, MIN_FONTSIZE),
-				  late_nnstring(sg,
-						agfindattr(sg, "fontname"),
-						DEFAULT_FONTNAME),
-				  late_nnstring(sg,
-						agfindattr(sg, "fontcolor"),
-						DEFAULT_COLOR));
-	if (lbl_kind) {
-	    if (make_html_label(sg->root, GD_label(sg), sg) == 1)
-		agerr(AGPREV, "in label of graph %s\n", sg->name);
-	}
+	GD_label(sg) = make_label((void*)sg, str, (aghtmlstr(str) ? LT_HTML : LT_NONE),
+		late_double(sg, agfindattr(sg, "fontsize"), DEFAULT_FONTSIZE, MIN_FONTSIZE),
+		late_nnstring(sg, agfindattr(sg, "fontname"), DEFAULT_FONTNAME),
+		late_nnstring(sg, agfindattr(sg, "fontcolor"), DEFAULT_COLOR));
 
 	/* set label position */
 	pos = agget(sg, "labelloc");

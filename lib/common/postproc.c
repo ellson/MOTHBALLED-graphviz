@@ -317,30 +317,6 @@ void dotneato_postprocess(Agraph_t * g)
     }
 }
 
-#if 0
-void osize_label(textlabel_t * label, int *b, int *t, int *l, int *r)
-{
-    point pt, sz2;
-    pointf dimen;
-
-    dimen = label->dimen;
-    PAD(dimen);
-    sz2 = cvt2pt(label->dimen);
-    sz2.x /= 2;
-    sz2.y /= 2;
-    pt = add_points(label->p, sz2);
-    if (*r < pt.x)
-	*r = pt.x;
-    if (*t < pt.y)
-	*t = pt.y;
-    pt = sub_points(label->p, sz2);
-    if (*l > pt.x)
-	*l = pt.x;
-    if (*b > pt.y)
-	*b = pt.y;
-}
-#endif
-
 /* place_flip_graph_label:
  * Put cluster labels recursively in the flip case.
  */

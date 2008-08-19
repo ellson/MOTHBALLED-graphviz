@@ -716,6 +716,7 @@ static void init_job_pagination(GVJ_t * job, graph_t *g)
     }
 
     /* initial window size */
+//fprintf(stderr,"page=%g,%g dpi=%g,%g zoom=%g\n", pageSize.x, pageSize.y, job->dpi.x, job->dpi.y, job->zoom);
     job->width = ROUND((pageSize.x + 2*margin.x) * job->dpi.x / POINTS_PER_INCH);
     job->height = ROUND((pageSize.y + 2*margin.y) * job->dpi.y / POINTS_PER_INCH);
 
@@ -1969,8 +1970,8 @@ static void init_gvc(GVC_t * gvc, graph_t * g)
 
     /* pagesize */
     gvc->graph_sets_pageSize = FALSE;
-    P2PF(GD_drawing(g)->page, gvc->pageSize);
-    if ((GD_drawing(g)->page.x > 0) && (GD_drawing(g)->page.y > 0))
+    gvc->pageSize = GD_drawing(g)->page;
+    if ((GD_drawing(g)->page.x > 0.001) && (GD_drawing(g)->page.y > 0.001))
         gvc->graph_sets_pageSize = TRUE;
 
     /* rotation */
@@ -2079,9 +2080,7 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     Agnode_t *n;
     char *str, *nodename = NULL, *junk = NULL;
 
-//    assert((gvc->bb.LL.x == 0) && (gvc->bb.LL.y == 0));
-    P2PF(gvc->bb.UR, UR);
-
+    UR = gvc->bb.UR;
     job->bb.LL.x = -job->pad.x;           /* job->bb is bb of graph and padding - graph units */
     job->bb.LL.y = -job->pad.y;
     job->bb.UR.x = UR.x + job->pad.x;
@@ -2094,8 +2093,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
     /* start with "natural" size of layout */
 
     Z = 1.0;
-    if (GD_drawing(g)->size.x > 0) {	/* graph size was given by user... */
-	P2PF(GD_drawing(g)->size, size);
+    if (GD_drawing(g)->size.x > 0.001 && GD_drawing(g)->size.y > 0.001) { /* graph size was given by user... */
+	size = GD_drawing(g)->size;
 	if ((size.x < sz.x) || (size.y < sz.y) /* drawing is too big (in either axi) ... */
 	    || ((GD_drawing(g)->filled) /* or ratio=filled requested and ... */
 		&& (size.x > sz.x) && (size.y > sz.y))) /* drawing is too small (in both axis) ... */
