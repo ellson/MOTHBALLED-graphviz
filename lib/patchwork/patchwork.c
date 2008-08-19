@@ -152,7 +152,7 @@ static void finishNode (node_t* n)
 {
     char* str = strdup_and_subst_obj(NODENAME_ESC, (void*)n);
     ND_shape(n) = bind_shape("box", n);
-    ND_label(n) = make_label(n->graph, LT_NONE, str,
+    ND_label(n) = make_label((void*)n, str, LT_NONE,
 		late_double(n, N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE),
 		late_nnstring(n, N_fontname, DEFAULT_FONTNAME),
 		late_nnstring(n, N_fontcolor, DEFAULT_COLOR));
