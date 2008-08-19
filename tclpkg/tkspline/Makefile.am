@@ -14,7 +14,7 @@ AM_CPPFLAGS = \
 	-I@TK_SRC_DIR@/generic \
 	-I@TCL_SRC_DIR@/generic \
 	@TCL_INCLUDES@ @TCLINT_INCLUDES@ \
-	@TK_INCLUDES@ @TKINT_INCLUDES@ -I$(top_srcdir)/tclpkg/tkstubs
+	@TK_INCLUDES@ @TKINT_INCLUDES@ -I$(top_srcdir)/lib/tkstubs
 
 AM_CFLAGS = @X_CFLAGS@ @TCL_CFLAGS@  @TK_CFLAGS@ @TK_DEFS@ \
 	-UPACKAGE_NAME -UPACKAGE_STRING -UPACKAGE_TARNAME -UPACKAGE_VERSION
@@ -28,8 +28,8 @@ endif
 libtkspline_la_LDFLAGS = -no-undefined 
 libtkspline_la_SOURCES = tkspline.c
 libtkspline_la_LIBADD = \
-	$(top_builddir)/tclpkg/tkstubs/libtkstubs_C.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la @TK_LIB_SPEC@
+	$(top_builddir)/lib/tkstubs/libtkstubs_C.la \
+	$(top_builddir)/lib/tclstubs/libtclstubs_C.la @TK_LIB_SPEC@
 
 if WITH_TK
 all-local: pkgIndex.tcl

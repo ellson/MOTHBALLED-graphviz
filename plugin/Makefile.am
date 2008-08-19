@@ -1,6 +1,6 @@
 # $Id$ $Revision$
 ## Process this file with automake to produce Makefile.in
 
-SUBDIRS = core gd pango dot_layout neato_layout xlib gtk ming devil gdk_pixbuf rsvg quartz gdiplus glitz
+SUBDIRS = core devil gd gdk_pixbuf gdiplus glitz gtk ming pango quartz rsvg tcl xlib dot_layout neato_layout
 
 EXTRA_DIST = Makefile.old

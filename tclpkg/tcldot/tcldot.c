@@ -1080,9 +1080,9 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 #endif
 	}
-        rc = gvjobs_output_langname(gvc, "tk");
+        rc = gvjobs_output_langname(gvc, "tcl_string:tk");
 	if (rc == NO_SUPPORT) {
-	    Tcl_AppendResult(interp, " Format: \"tk\" not recognized.\n",
+	    Tcl_AppendResult(interp, " Format: \"tcl_string:tk\" not recognized.\n",
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
@@ -1091,6 +1091,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	job->imagedata = canvas;
 	job->context = (void *)interp;
 	job->external_context = TRUE;
+	job->output_file = stdout;
 
 	/* make sure that layout is done */
 	g = g->root;

@@ -22,7 +22,7 @@ if WITH_TCL
 pkgindex_DATA = pkgIndex.tcl
 endif
 
-SUBDIRS = tclstubs tkstubs tclhandle gdtclft tcldot tclpathplan tkspline gv
+SUBDIRS = tclhandle gdtclft tcldot tclpathplan tkspline gv
 
 pkgIndex.tcl: @TCL_PKGINDEX@ @TCL_PKGINDEX_GD@ @TCL_PKGINDEX_SWIG@ @TK_PKGINDEX@
 	echo "# end" >end

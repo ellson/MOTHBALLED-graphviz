@@ -21,7 +21,7 @@ libtclplan_la_SOURCES = find_ints.c intersect.c makecw.c tclpathplan.c wrapper.c
 libtclplan_la_LDFLAGS = -no-undefined
 libtclplan_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
-	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
+	$(top_builddir)/lib/tclstubs/libtclstubs_C.la \
 	$(top_builddir)/lib/pathplan/libpathplan.la
 
 if WITH_TCL

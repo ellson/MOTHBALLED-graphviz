@@ -191,7 +191,7 @@ pkgtcldir = $(pkglibdir)/tcl
 TCL_data = 
 nodist_libgv_tcl_la_SOURCES = gv_tcl.cpp $(TCL_data)
 libgv_tcl_la_SOURCES = $(BASESOURCES) gv_dummy_init.cpp
-libgv_tcl_la_LIBADD = $(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la $(BASELIBS) $(TCL_LIBS)
+libgv_tcl_la_LIBADD = $(top_builddir)/lib/tclstubs/libtclstubs_C.la $(BASELIBS) $(TCL_LIBS)
 libgv_tcl_la_LDFLAGS = -module -avoid-version
 libgv_tcl_la_CPPFLAGS = $(AM_CPPFLAGS) $(TCL_INCLUDES)
 $(TCL_data): gv_tcl.cpp

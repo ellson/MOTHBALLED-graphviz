@@ -1409,6 +1409,8 @@ if test "x$use_tcl" = "x"; then
   if test "x${TCL_SUPPORTS_STUBS}" = "x1"; then
     use_tcl="Yes"
     TCL_CFLAGS="${TCL_CFLAGS} -DUSE_TCL_STUBS"
+    AC_DEFINE_UNQUOTED(HAVE_TCL,1,
+	[Define if you have the tcl library])
   else
     AC_MSG_WARN([Tcl does not have STUBs support, perhaps it is too old?  The Tcl packages will not be built])
     use_tcl="No (no STUBs support)"
@@ -2866,6 +2868,8 @@ AC_CONFIG_FILES(Makefile
 	lib/xdot/Makefile
 	lib/topfish/Makefile
 	lib/glcomp/Makefile
+	lib/tclstubs/Makefile
+	lib/tkstubs/Makefile
 	macosx/Info.plist
 	macosx/build/graphviz.pmdoc/01local.xml
 	macosx/build/graphviz.pmdoc/02graphviz.xml
@@ -2874,18 +2878,19 @@ AC_CONFIG_FILES(Makefile
 	plugin/Makefile
 	plugin/core/Makefile
 	plugin/devil/Makefile
-	plugin/gdk_pixbuf/Makefile
-	plugin/rsvg/Makefile
 	plugin/gd/Makefile
-	plugin/pango/Makefile
-	plugin/ming/Makefile
-	plugin/quartz/Makefile
+	plugin/gdk_pixbuf/Makefile
 	plugin/gdiplus/Makefile
 	plugin/glitz/Makefile
+	plugin/gtk/Makefile
+	plugin/ming/Makefile
+	plugin/pango/Makefile
+	plugin/quartz/Makefile
+	plugin/rsvg/Makefile
+	plugin/tcl/Makefile
+	plugin/xlib/Makefile
 	plugin/dot_layout/Makefile
 	plugin/neato_layout/Makefile
-	plugin/xlib/Makefile
-	plugin/gtk/Makefile
 	cmd/Makefile
 	cmd/dot/Makefile
 	cmd/tools/Makefile
@@ -2904,8 +2909,6 @@ AC_CONFIG_FILES(Makefile
         cmd/dotty/Makefile
         cmd/smyrna/Makefile
 	tclpkg/Makefile
-	tclpkg/tclstubs/Makefile
-	tclpkg/tkstubs/Makefile
 	tclpkg/tclhandle/Makefile
 	tclpkg/gdtclft/Makefile
 	tclpkg/gdtclft/demo/Makefile
@@ -2993,10 +2996,11 @@ echo "  gdiplus:       $use_gdiplus"
 echo "  gdk_pixbuf:    $use_gdk_pixbuf"
 echo "  glitz:         $use_glitz"
 echo "  gtk:           $use_gtk"
-echo "  pangocairo:    $use_pangocairo"
 echo "  ming:          $use_ming"
+echo "  pangocairo:    $use_pangocairo"
 echo "  quartz:        $use_quartz"
 echo "  rsvg:          $use_rsvg"
+echo "  tcl:           $use_tcl"
 echo "  xlib:          $use_xlib"
 echo ""
 echo "language extensions:"

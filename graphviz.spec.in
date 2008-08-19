@@ -310,6 +310,7 @@ fi
 %{_datadir}/graphviz/smyrna
 %{_datadir}/graphviz/examples
 %endif
+%exclude %{_libdir}/graphviz/libgvplugin_tcl.*
 
 #-- graphviz-gd rpm --------------------------------------------------
 %package gd
@@ -590,6 +591,7 @@ Various tcl packages (extensions) for the graphviz tools.
 %defattr(-,root,root,-)
 %dir %{_libdir}/graphviz/tcl
 %{_libdir}/graphviz/tcl/*
+%{_libdir}/graphviz/libgvplugin_tcl.*
 %{_libdir}/tcl*/*
 %{_datadir}/graphviz/demo/*.tcl*
 %{_datadir}/graphviz/demo/*_data
@@ -598,6 +600,13 @@ Various tcl packages (extensions) for the graphviz tools.
 %{_mandir}/mann/*tcl*.n*
 %{_mandir}/mann/tkspline.n*
 %endif
+
+# run "dot -c" to generate plugin config in %{_libdir}/graphviz/config
+%post tcl
+LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c
+
+%postun tcl
+[ -x $RPM_INSTALL_PREFIX0/bin/dot ] && LD_LIBRARY_PATH=$RPM_INSTALL_PREFIX0/%{_lib} $RPM_INSTALL_PREFIX0/bin/dot -c || :
 
 #-- graphviz-devel rpm --------------------------------------------
 %package devel
