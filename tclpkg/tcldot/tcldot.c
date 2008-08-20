@@ -1080,9 +1080,9 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 #endif
 	}
-        rc = gvjobs_output_langname(gvc, "tcl_string:tk");
+        rc = gvjobs_output_langname(gvc, "tk");
 	if (rc == NO_SUPPORT) {
-	    Tcl_AppendResult(interp, " Format: \"tcl_string:tk\" not recognized.\n",
+	    Tcl_AppendResult(interp, " Format: \"tk\" not recognized.\n",
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
@@ -1632,6 +1632,11 @@ static int dotstring(ClientData clientData, Tcl_Interp * interp,
     return (tcldot_fixup(interp, gvc, g));
 }
 
+static size_t Tcldot_writer(const char *s, int len)
+{
+    return fwrite(s, sizeof(char), len, stdout);
+}
+
 #if defined(_BLD_tcldot) && defined(_DLL)
 __EXPORT__
 #endif
@@ -1665,6 +1670,9 @@ int Tcldot_Init(Tcl_Interp * interp)
 
     /* configure for available plugins and codegens */
     gvconfig(gvc, FALSE);
+
+    /* set up tcl writer function */
+    gvc->write_fn = Tcldot_writer;
 
 #ifndef TCLOBJ
     Tcl_CreateCommand(interp, "dotnew", dotnew,

@@ -41,7 +41,7 @@ libtcldot_la_SOURCES = tcldot.c $(CODEGENS) $(GDTCLFT)
 libtcldot_la_LDFLAGS = -no-undefined 
 
 libtcldot_la_LIBADD = $(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
-	$(top_builddir)/lib/tclstubs/libtclstubs_C.la \
+	$(top_builddir)/tclpkg/tclstubs/libtclstubs_C.la \
 	$(top_builddir)/lib/gvc/libgvc.la 
 
 # GDTCLFT requires gd libs to be builtin
