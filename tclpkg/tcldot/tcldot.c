@@ -56,6 +56,17 @@ extern int Gdtclft_Init(Tcl_Interp *);
 
 static void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
 
+static size_t Tcldot_string_writer(GVJ_t *job, const char *s, int len)
+{
+    Tcl_AppendResult((Tcl_Interp*)(job->context), s, (char *) NULL);
+    return len;
+}
+
+static size_t Tcldot_channel_writer(GVJ_t *job, const char *s, int len)
+{
+    return Tcl_Write((Tcl_Channel)(job->output_file), s, len);
+}
+
 static void reset_layout(GVC_t *gvc, Agraph_t * sg)
 {
     Agraph_t *g = sg->root;
@@ -615,7 +626,6 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
     char c, buf[256], **argv2;
     int i, j, length, argc2, rc;
     unsigned long id;
-    ClientData outfp;
     GVC_t *gvc = (GVC_t *) clientData;
     GVJ_t *job = gvc->job;
 
@@ -1086,8 +1096,9 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
                                      (char *) 0);
 	    return TCL_ERROR;
 	}
-	job = gvc->job;
 
+        gvc->write_fn = Tcldot_string_writer;
+	job = gvc->job;
 	job->imagedata = canvas;
 	job->context = (void *)interp;
 	job->external_context = TRUE;
@@ -1265,14 +1276,33 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 		"\". Use one of:", s, (char *)NULL);
 	    return TCL_ERROR;
 	}
+
+	gvc->write_fn = Tcldot_channel_writer;
 	job = gvc->job;
 
 	/* populate new job struct with output language and output file data */
 	job->output_lang = gvrender_select(job, job->output_langname);
 
-	if (Tcl_GetOpenFile (interp, argv[2], 1, 1, &outfp) != TCL_OK)
-	    return TCL_ERROR;
-	job->output_file = (FILE *)outfp;
+//	if (Tcl_GetOpenFile (interp, argv[2], 1, 1, &outfp) != TCL_OK)
+//	    return TCL_ERROR;
+//	job->output_file = (FILE *)outfp;
+	
+	{
+	    Tcl_Channel chan;
+	    int mode;
+
+	    chan = Tcl_GetChannel(interp, argv[2], &mode);
+
+	    if (!chan) {
+	        Tcl_AppendResult(interp, "Channel not open: \"", argv[2], (char *)NULL);
+	        return TCL_ERROR;
+	    }
+	    if (!(mode & TCL_WRITABLE)) {
+	        Tcl_AppendResult(interp, "Channel not writable: \"", argv[2], (char *)NULL);
+	        return TCL_ERROR;
+	    }
+	    job->output_file = (FILE *)chan;
+	}
 	job->output_filename = NULL;
 
 	/* make sure that layout is done  - unless canonical output */
@@ -1284,7 +1314,7 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 	gvRenderJobs(gvc, g);
 	gvrender_end_job(job);
 	gvdevice_finalize(job);
-	fflush(job->output_file);
+//	fflush(job->output_file);
 	gvjobs_delete(gvc);
 	return TCL_OK;
 
@@ -1632,12 +1662,6 @@ static int dotstring(ClientData clientData, Tcl_Interp * interp,
     return (tcldot_fixup(interp, gvc, g));
 }
 
-static size_t Tcldot_writer(GVJ_t *job, const char *s, int len)
-{
-    Tcl_AppendResult((Tcl_Interp*)(job->context), s, (char *) NULL);
-    return len;
-}
-
 #if defined(_BLD_tcldot) && defined(_DLL)
 __EXPORT__
 #endif
@@ -1671,9 +1695,6 @@ int Tcldot_Init(Tcl_Interp * interp)
 
     /* configure for available plugins and codegens */
     gvconfig(gvc, FALSE);
-
-    /* set up tcl writer function */
-    gvc->write_fn = Tcldot_writer;
 
 #ifndef TCLOBJ
     Tcl_CreateCommand(interp, "dotnew", dotnew,
