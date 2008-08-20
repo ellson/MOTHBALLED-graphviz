@@ -1595,9 +1595,9 @@ void indent(int i)
 	fprintf(stderr, "  ");
 }
 
-void printBox(box b)
+void printBox(boxf b)
 {
-    fprintf(stderr, "(%d,%d)(%d,%d)", b.LL.x, b.LL.y, b.UR.x, b.UR.y);
+    fprintf(stderr, "(%f,%f)(%f,%f)", b.LL.x, b.LL.y, b.UR.x, b.UR.y);
 }
 
 void printImage(htmlimg_t *ip, int ind)
