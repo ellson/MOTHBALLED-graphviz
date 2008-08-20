@@ -2868,8 +2868,6 @@ AC_CONFIG_FILES(Makefile
 	lib/xdot/Makefile
 	lib/topfish/Makefile
 	lib/glcomp/Makefile
-	lib/tclstubs/Makefile
-	lib/tkstubs/Makefile
 	macosx/Info.plist
 	macosx/build/graphviz.pmdoc/01local.xml
 	macosx/build/graphviz.pmdoc/02graphviz.xml
@@ -2887,7 +2885,6 @@ AC_CONFIG_FILES(Makefile
 	plugin/pango/Makefile
 	plugin/quartz/Makefile
 	plugin/rsvg/Makefile
-	plugin/tcl/Makefile
 	plugin/xlib/Makefile
 	plugin/dot_layout/Makefile
 	plugin/neato_layout/Makefile
@@ -2909,6 +2906,8 @@ AC_CONFIG_FILES(Makefile
         cmd/dotty/Makefile
         cmd/smyrna/Makefile
 	tclpkg/Makefile
+	tclpkg/tclstubs/Makefile
+	tclpkg/tkstubs/Makefile
 	tclpkg/tclhandle/Makefile
 	tclpkg/gdtclft/Makefile
 	tclpkg/gdtclft/demo/Makefile
