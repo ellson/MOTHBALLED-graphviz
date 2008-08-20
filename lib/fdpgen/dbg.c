@@ -52,7 +52,7 @@ void prIndent(void)
 static void dumpBB(graph_t * g)
 {
     boxf bb;
-    box b;
+    boxf b;
 
     bb = BB(g);
     b = GD_bb(g);
@@ -60,7 +60,7 @@ static void dumpBB(graph_t * g)
     fprintf(stderr, "  LL (%f,%f)  UR (%f,%f)\n", bb.LL.x, bb.LL.y,
 	    bb.UR.x, bb.UR.y);
     prIndent();
-    fprintf(stderr, "  LL (%d,%d)  UR (%d,%d)\n", b.LL.x, b.LL.y,
+    fprintf(stderr, "  LL (%f,%f)  UR (%f,%f)\n", b.LL.x, b.LL.y,
 	    b.UR.x, b.UR.y);
 }
 
