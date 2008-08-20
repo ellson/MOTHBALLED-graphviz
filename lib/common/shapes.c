@@ -21,7 +21,7 @@
 #define RBCONST 12
 #define RBCURVE .5
 
-static port Center = { {0, 0}, -1, 0, 0, 0, 1, 0, 0 };
+static port Center = { {0, 0}, -1, 0, 0, 0, 1, 0, 0, 0 };
 
 #define ATTR_SET(a,n) ((a) && (*(agxget(n,a->index)) != '\0'))
   /* Default point size = 0.05 inches or 3.6 points */
@@ -2083,9 +2083,9 @@ static void indent(int l)
 	fputs("  ", stderr);
 }
 
-static void prbox(box b)
+static void prbox(boxf b)
 {
-    fprintf(stderr, "((%d,%d),(%d,%d))\n", b.LL.x, b.LL.y, b.UR.x, b.UR.y);
+    fprintf(stderr, "((%f,%f),(%f,%f))\n", b.LL.x, b.LL.y, b.UR.x, b.UR.y);
 }
 
 static void dumpL(field_t * info, int level)
@@ -2542,7 +2542,8 @@ static char* closestSide (node_t*  n, node_t* other, port* oldport)
     return rv;
 }
 
-static port resolvePort(node_t*  n, node_t* other, port* oldport)
+port 
+resolvePort(node_t*  n, node_t* other, port* oldport)
 {
     port rv;
     char* compass = closestSide (n, other, oldport);  

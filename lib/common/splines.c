@@ -390,6 +390,8 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 
     n = e->tail;
 
+    if (ED_tail_port(e).dyna)
+	ED_tail_port(e) = resolvePort(e->tail, e->head, &ED_tail_port(e));
     if (ND_shape(n))
 	pboxfn = ND_shape(n)->fns->pboxfn;
     else
@@ -580,6 +582,8 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 
     n = e->head;
 
+    if (ED_head_port(e).dyna) 
+	ED_head_port(e) = resolvePort(e->head, e->tail, &ED_head_port(e));
     if (ND_shape(n))
 	pboxfn = ND_shape(n)->fns->pboxfn;
     else

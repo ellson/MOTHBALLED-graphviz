@@ -133,6 +133,7 @@ extern "C" {
     extern void pop_obj_state(GVJ_t *job);
     extern obj_state_t* push_obj_state(GVJ_t *job);
     extern int rank(graph_t * g, int balance, int maxiter);
+    extern port resolvePort(node_t*  n, node_t* other, port* oldport);
     extern void resolvePorts (edge_t* e);
     extern void round_corners(GVJ_t*, char*, char*, pointf*, int, int);
     extern void routesplinesinit(void);

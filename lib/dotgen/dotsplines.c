@@ -322,9 +322,6 @@ static void _dot_splines(graph_t * g, int normalize)
 	}
     }
 
-    for (i = 0; i < n_edges; i++)
-	resolvePorts (getmainedge(edges[i]));
-
     /* Sort so that equivalent edges are contiguous. 
      * Equivalence should basically mean that 2 edges have the
      * same set {(tailnode,tailport),(headnode,headport)}, or
@@ -2306,7 +2303,7 @@ static box maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
 	    b = nb;
 	rv.LL.x = ROUND(b);
     } else
-	rv.LL.x = MIN(ROUND(b), sp->Splinesep);
+	rv.LL.x = MIN(ROUND(b), sp->LeftBound);
 
     /* we have to leave room for our own label! */
     if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn)))
