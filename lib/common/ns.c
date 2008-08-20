@@ -761,7 +761,6 @@ static int dfs_range(node_t * v, edge_t * par, int low)
     return lim + 1;
 }
 
-#define DEBUG
 #ifdef DEBUG
 void tchk(void)
 {
