@@ -1,4 +1,4 @@
-all:	libcommon.a
+all:	libsparse.a
 ROOT=../..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
@@ -6,6 +6,7 @@ include $(ROOT)/makearch/$(ARCH)
 INCS =  -I. \
         -I$(ROOT) \
         -I../cdt \
+        -I../common \
 	-I../gvc 
 
 DEFINES = -DHAVE_CONFIG_H

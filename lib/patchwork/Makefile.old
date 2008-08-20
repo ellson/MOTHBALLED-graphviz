@@ -1,4 +1,4 @@
-all:	libtwopigen.a
+all:	libpatchwork.a
 ROOT=../..
 include $(ROOT)/Config.mk
 include $(ROOT)/makearch/$(ARCH)
@@ -15,23 +15,23 @@ INCS =	-I. -I$(ROOT) \
 
 DEFINES = -DHAVE_CONFIG_H
 
-OBJS = twopiinit.o circle.o 
+OBJS = patchworkinit.o patchwork.o 
 
-HFILES = circle.h 
+HFILES = patchwork.h 
 
-libtwopigen.a : $(OBJS)
-	$(RM) libtwopigen.a
-	$(AR) cr libtwopigen.a $(OBJS)
-	$(RANLIB) libtwopigen.a
+libpatchwork.a : $(OBJS)
+	$(RM) libpatchwork.a
+	$(AR) cr libpatchwork.a $(OBJS)
+	$(RANLIB) libpatchwork.a
 
 $(OBJS) : $(HFILES) ../common/types.h
 
-install: libtwopigen.a
+install: libpatchwork.a
 	$(MKPATH) $(LIBDIR)
-	$(INSTALL) libtwopigen.a $(LIBDIR)
+	$(INSTALL) libpatchwork.a $(LIBDIR)
 
 clean:
 	$(RM) *.o core
 
 distclean: clean
-	$(RM) *.a twopi lib*.so.*
+	$(RM) *.a lib*.so.*
