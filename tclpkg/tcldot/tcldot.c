@@ -1632,9 +1632,10 @@ static int dotstring(ClientData clientData, Tcl_Interp * interp,
     return (tcldot_fixup(interp, gvc, g));
 }
 
-static size_t Tcldot_writer(const char *s, int len)
+static size_t Tcldot_writer(GVJ_t *job, const char *s, int len)
 {
-    return fwrite(s, sizeof(char), len, stdout);
+    Tcl_AppendResult((Tcl_Interp*)(job->context), s, (char *) NULL);
+    return len;
 }
 
 #if defined(_BLD_tcldot) && defined(_DLL)

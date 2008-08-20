@@ -54,7 +54,7 @@ static const int PAGE_ALIGN = 4095;		/* align to a 4K boundary (less one), typic
 size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 {
     if (job->gvc->write_fn && job->output_file == stdout)   /* externally provided write dicipline */
-	return (job->gvc->write_fn)((char*)s, len);
+	return (job->gvc->write_fn)(job, (char*)s, len);
     if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
 	return gzwrite((gzFile *) (job->output_file), s, len);
