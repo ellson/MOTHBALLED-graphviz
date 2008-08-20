@@ -66,7 +66,6 @@ libtcldot_builtin_la_LIBADD = \
 	$(top_builddir)/tclpkg/tclhandle/libtclhandle_C.la \
 	$(top_builddir)/plugin/dot_layout/libgvplugin_dot_layout_C.la \
 	$(top_builddir)/plugin/neato_layout/libgvplugin_neato_layout_C.la \
-	$(top_builddir)/plugin/tcl/libgvplugin_tcl_C.la \
 	$(top_builddir)/lib/gvc/libgvc_C.la \
 	$(top_builddir)/lib/graph/libgraph_C.la \
 	$(top_builddir)/lib/cdt/libcdt_C.la \
