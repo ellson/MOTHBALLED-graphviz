@@ -7,6 +7,12 @@ linkedman = neato.1 twopi.1 fdp.1 circo.1
 linkedpdf = neato.pdf twopi.pdf fdp.pdf circo.pdf
 linkedprogram = neato$(EXEEXT) twopi$(EXEEXT) fdp$(EXEEXT) circo$(EXEEXT)
 
+if WITH_SFDP
+linkedman += sfdp.1
+linkedpdf += sfdp.pdf
+linkedprogram += sfdp$(EXEEXT)
+endif
+
 AM_CPPFLAGS = \
         -I$(top_srcdir)/lib/common \
         -I$(top_srcdir)/lib/gvc \
