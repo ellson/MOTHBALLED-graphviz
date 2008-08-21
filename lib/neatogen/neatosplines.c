@@ -1003,11 +1003,10 @@ void spline_edges(graph_t * g)
 {
     node_t *n;
     pointf offset;
-    point ll;
 
-    P2PF(GD_bb(g).LL, ll);
     compute_bb(g);
-    offset = cvt2ptf(ll);
+    offset.x = PS2INCH(GD_bb(g).LL.x);
+    offset.y = PS2INCH(GD_bb(g).LL.y);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_pos(n)[0] -= offset.x;
 	ND_pos(n)[1] -= offset.y;
