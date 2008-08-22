@@ -23,6 +23,9 @@ AC_SUBST(GRAPHVIZ_VERSION_MAJOR)
 AC_SUBST(GRAPHVIZ_VERSION_MINOR)
 AC_SUBST(GRAPHVIZ_VERSION_MICRO)
 
+GRAPHVIZ_COLLECTION=development
+AC_SUBST(GRAPHVIZ_COLLECTION)
+
 dnl ===========================================================================
 
 # libtool shared library version for main libs (cdt, graph, gvc)

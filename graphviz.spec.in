@@ -17,7 +17,7 @@ Release: %{?release}
 Group:   Applications/Multimedia
 License: CPL
 URL:     http://www.graphviz.org/
-Source0: http://www.graphviz.org/pub/graphviz/ARCHIVE/graphviz-@VERSION@.tar.gz
+Source0: http://www.graphviz.org/pub/graphviz/@GRAPHVIZ_COLLECTION@/SOURCES/graphviz-@VERSION@.tar.gz
 
 # graphviz is relocatable - Caution: this feature is used in AT&T,
 #   but probably will not be supported in Redhat/Fedora/Centos distros
