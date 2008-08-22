@@ -2823,6 +2823,7 @@ rm -f conftest*
 AC_CONFIG_FILES(Makefile
 	doc/Makefile
 	doc/info/Makefile
+	doc/schema/Makefile
 	contrib/Makefile
 	contrib/prune/Makefile
 	contrib/diffimg/Makefile

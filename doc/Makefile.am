@@ -2,7 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 
 # SUBDIRS = dot neato lefty dotty info
-SUBDIRS = info
+SUBDIRS = info schema
 
 pdf = dotguide.pdf dottyguide.pdf leftyguide.pdf neatoguide.pdf
 html = build.html FAQ.html index.html winbuild.html pspdf.png
@@ -16,4 +16,4 @@ pdf_DATA = $(pdf)
 html_DATA = $(html)
 txt_DATA = $(txt)
 
-EXTRA_DIST = $(txt) $(pdf) $(html) schema/*.xml schema/*.xslt
+EXTRA_DIST = $(txt) $(pdf) $(html)

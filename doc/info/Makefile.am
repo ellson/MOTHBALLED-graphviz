@@ -4,7 +4,7 @@
 htmldir = $(pkgdatadir)/doc/html/info
 
 html_DATA = attrs.html colors.html command.html grammar.html \
-  index.html lang.html output.html shapes.html \
+  index.html lang.html output.html shapes.html arrows.html \
   Mcircle.gif Mdiamond.gif Msquare.gif a_box.gif a_crow.gif a_diamond.gif \
   a_dot.gif a_ediamond.gif a_empty.gif a_forward.gif a_halfopen.gif \
   a_inv.gif a_invdot.gif a_invempty.gif a_invodot.gif a_lteeoldiamond.gif \
@@ -23,7 +23,7 @@ html_DATA = attrs.html colors.html command.html grammar.html \
   html1.gif html2.gif html3.gif html4.gif invhouse.gif invtrapezium.gif \
   invtriangle.gif mrecord.gif nohead.gif none.gif note.gif octagon.gif \
   parallelogram.gif pentagon.gif plaintext.gif point.gif polygon.gif \
-  record.gif rect.gif rectangle.gif round.gif septagon.gif tab.gif \
-  trapezium.gif triangle.gif tripleoctagon.gif
+  record.gif record2.gif rect.gif rectangle.gif round.gif septagon.gif tab.gif \
+  trapezium.gif triangle.gif tripleoctagon.gif sdlshapes.jpg
 
 EXTRA_DIST = $(html_DATA)
