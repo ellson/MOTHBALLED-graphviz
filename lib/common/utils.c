@@ -803,6 +803,12 @@ void compute_bb(graph_t * g)
 #endif
     int i, j;
 
+    if ((agnnodes(g) == 0) && (GD_n_cluster(g) ==0)) {
+	bb.LL = pointfof(0, 0);
+	bb.UR = pointfof(0, 0);
+	return;
+    }
+
     bb.LL = pointfof(INT_MAX, INT_MAX);
     bb.UR = pointfof(-INT_MAX, -INT_MAX);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
