@@ -14,29 +14,29 @@
 *              AT&T Research, Florham Park NJ             *
 **********************************************************/
 
-#include <php.h>
+#include <tcl.h>
 #include "gvc.h"
 #include "gvplugin.h"
 #include "gvcjob.h"
 #include "gvcint.h"
 
-static size_t gv_string_writer (GVJ_t *job, const char *s, int len)
+static size_t gv_string_writer(GVJ_t *job, const char *s, int len)
 {
-    return PHPWRITE(s, len);
+    Tcl_AppendResult((Tcl_Interp*)(job->context), s, (char *) NULL);
+    return len;
 }
 
-static size_t gv_channel_writer (GVJ_t *job, const char *s, int len)
+static size_t gv_channel_writer(GVJ_t *job, const char *s, int len)
 {
-    return PHPWRITE(s, len);
+    return Tcl_Write((Tcl_Channel)(job->output_file), s, len);
 }
 
 void gv_string_writer_init(GVC_t *gvc)
 {
-        gvc->write_fn = gv_string_writer;
+    gvc->write_fn = gv_string_writer;
 }
 
 void gv_channel_writer_init(GVC_t *gvc)
 {
-        gvc->write_fn = gv_channel_writer;
+    gvc->write_fn = gv_channel_writer;
 }
-

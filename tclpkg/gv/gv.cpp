@@ -17,14 +17,15 @@
 #include <string.h>
 #include "gvc.h"
 
-extern void gv_binding_init(GVC_t *gvc);
+extern void gv_string_writer_init(GVC_t *gvc);
+extern void gv_channel_writer_init(GVC_t *gvc);
+
 static char emptystring[] = {'\0'};
 
 static GVC_t *gvc;
 
 static void gv_init(void) {
     gvc = gvContext();
-    gv_binding_init(gvc);
 }
 
 Agraph_t *graph(char *name)
@@ -860,17 +861,6 @@ bool render(Agraph_t *g)
     return true;
 }
 
-// render to a filename
-bool render(Agraph_t *g, char *format, char *filename)
-{
-    int err;
-
-    if (!g)
-        return false;
-    err = gvRenderFilename(gvc, g, format, filename);
-    return (! err);
-}
-
 // render to stdout
 bool render(Agraph_t *g, char *format)
 {
@@ -878,6 +868,7 @@ bool render(Agraph_t *g, char *format)
 
     if (!g)
         return false;
+    gv_channel_writer_init(gvc);
     err = gvRender(gvc, g, format, stdout);
     return (! err);
 }
@@ -889,19 +880,43 @@ bool render(Agraph_t *g, char *format, FILE *f)
 
     if (!g)
         return false;
+    gv_channel_writer_init(gvc);
     err = gvRender(gvc, g, format, f);
     return (! err);
 }
 
- // render to a data string
+// render to string result, using binding-dependent gv_string_writer()
+void renderresult(Agraph_t *g, char *format)
+{
+    int err;
+
+    if (!g)
+        return;
+    gv_string_writer_init(gvc);
+    err = gvRender(gvc, g, format, stdout); /* FIXME - stdout used as flag only */
+}
+
+// render to a filename --deprecated (not very portable)
+bool render(Agraph_t *g, char *format, char *filename)
+{
+    int err;
+
+    if (!g)
+        return false;
+    err = gvRenderFilename(gvc, g, format, filename);
+    return (! err);
+}
+
+
+// render to a malloc'ed data string, to be free'd by caller. --deprecated (too easy to leak memory)
 char* renderdata(Agraph_t *g, char *format)
 {
     int err;
     char *data;
     unsigned int length;
- 
+
     if (!g)
-        return NULL;
+	return NULL;
     err = gvRenderData(gvc, g, format, &data, &length);
     if (err)
 	return NULL;

@@ -185,12 +185,17 @@ extern bool layout(Agraph_t *g, char *engine);
 /** Render */
 /*** Render a layout into attributes of the graph */
 extern bool render(Agraph_t *g); 
-
-/*** Render a layout in a specific format */
+/*** Render a layout to stdout */
 extern bool render(Agraph_t *g, char *format);
-extern bool render(Agraph_t *g, char *format, char *filename);
+/*** Render to an open file or channel */
 extern bool render(Agraph_t *g, char *format, FILE *f);
+/*** Render to a string result */
+extern void renderresult(Agraph_t *g, char *format);
+/*** Render a layout to an unopened file by name */
+extern bool render(Agraph_t *g, char *format, char *filename);
 
+/*** Render a layout to a malloc'ed string, to be free'd by the caller */
+/*** (deprecated - too easy to leak memory) */
 extern char* renderdata(Agraph_t *g, char *format);
 
 
@@ -358,12 +363,17 @@ extern bool layout(Agraph_t *g, char *engine);
 /** Render */
 /*** Render a layout into attributes of the graph */
 extern bool render(Agraph_t *g); 
-
-/*** Render a layout in a specific format */
+/*** Render a layout to stdout */
 extern bool render(Agraph_t *g, char *format);
-extern bool render(Agraph_t *g, char *format, char *filename);
+/*** Render to an open file or channel */
 extern bool render(Agraph_t *g, char *format, FILE *f);
+/*** Render to a string result */
+extern void renderresult(Agraph_t *g, char *format);
+/*** Render a layout to an unopened file by name */
+extern bool render(Agraph_t *g, char *format, char *filename);
 
+/*** Render a layout to a malloc'ed string, to be free'd by the caller */
+/*** (deprecated - too easy to leak memory) */
 extern char* renderdata(Agraph_t *g, char *format);
 
 
