@@ -24,6 +24,9 @@
 #include "config.h"
 #endif
 
+/* experimenting with in-memory compression so as to write compressed files to channels and strings */
+// #define IN_MEM_COMPRESSION
+
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,14 +56,44 @@ static const int PAGE_ALIGN = 4095;		/* align to a 4K boundary (less one), typic
 
 size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 {
-    if (job->gvc->write_fn && job->output_file == stdout)   /* externally provided write dicipline */
+#ifdef IN_MEM_COMPRESSION
+    if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
+#ifdef HAVE_LIBZ
+        static unsigned char *dest;
+        static unsigned int destAllocated;
+        unsigned long int destLen;
+
+	destLen = compressBound(len);
+	if (destAllocated < destLen) {
+	    dest = realloc(dest, len+100);
+	    if (! dest) {
+		fprintf(stderr, "memory allocation failure\n");
+		return 0;
+	    }
+	}
+
+	if (compress (dest, &destLen, s, len) != Z_OK) {
+	    fprintf(stderr, "failure compressing output string\n");
+	    return 0;
+	}
+
+	len = destLen;
+	s = dest;
+#endif
+    }
+#endif
+
+    if (job->gvc->write_fn)   /* externally provided write dicipline */
 	return (job->gvc->write_fn)(job, (char*)s, len);
+#ifndef IN_MEM_COMPRESSION
     if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
 	return gzwrite((gzFile *) (job->output_file), s, len);
 #endif
     }
-    else if (job->output_data) {
+    else
+#endif
+    if (job->output_data) {
 	if (len > job->output_data_allocated - (job->output_data_position + 1)) {
 	    /* ensure enough allocation for string = null terminator */
 	    job->output_data_allocated = (job->output_data_position + len + 1 + PAGE_ALIGN) & ~PAGE_ALIGN;
@@ -325,6 +358,7 @@ void gvdevice_initialize(GVJ_t * job)
 #endif
 #endif
 
+#ifndef IN_MEM_COMPRESSION
         if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #if HAVE_LIBZ
 	    int fd;
@@ -341,6 +375,31 @@ void gvdevice_initialize(GVJ_t * job)
 	    exit(1);
 #endif
         }
+#endif
+    }
+}
+
+static void gvdevice_flush(GVJ_t * job)
+{
+    if (job->output_file
+      && ! job->external_context
+      && ! job->gvc->write_fn
+      && job->output_lang != TK
+      && ! (job->flags & GVDEVICE_COMPRESSED_FORMAT)) {
+	fflush(job->output_file);
+    }
+}
+
+static void gvdevice_close(GVJ_t * job)
+{
+    if (job->output_filename
+      && job->output_file != stdout 
+      && ! job->external_context) {
+        if (job->output_file) {
+            fclose(job->output_file);
+            job->output_file = NULL;
+        }
+	job->output_filename = NULL;
     }
 }
 
@@ -350,11 +409,7 @@ void gvdevice_format(GVJ_t * job)
 
     if (gvde && gvde->format)
 	gvde->format(job);
-    if (job->output_file
-      && ! job->external_context
-      && job->output_lang != TK
-      && ! (job->flags & GVDEVICE_COMPRESSED_FORMAT))
-	fflush(job->output_file);
+    gvdevice_flush(job);
 }
 
 void gvdevice_finalize(GVJ_t * job)
@@ -379,6 +434,7 @@ void gvdevice_finalize(GVJ_t * job)
 
     if (! finalized_p) {
         /* if the device has no finalization then it uses file output */
+#ifndef IN_MEM_COMPRESSION
 	if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
 	    gzclose((gzFile *) (job->output_file));
@@ -388,14 +444,8 @@ void gvdevice_finalize(GVJ_t * job)
 	    exit(1);
 #endif
 	}
-	if (job->output_filename
-	  && job->output_file != stdout 
-	  && ! job->external_context) {
-	    if (job->output_file) {
-	        fclose(job->output_file);
-	        job->output_file = NULL;
-	    }
-            job->output_filename = NULL;
-	}
+#endif
+	gvdevice_flush(job);
+	gvdevice_close(job);
     }
 }
