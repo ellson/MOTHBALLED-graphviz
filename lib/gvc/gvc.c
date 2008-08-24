@@ -112,7 +112,6 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
     gvRenderJobs(gvc, g);
     gvrender_end_job(job);
     gvdevice_finalize(job);
-    fflush(job->output_file);
     gvjobs_delete(gvc);
 
     return 0;
@@ -144,7 +143,6 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
     gvRenderJobs(gvc, g);
     gvrender_end_job(job);
     gvdevice_finalize(job);
-    fflush(job->output_file);
     gvjobs_delete(gvc);
 
     return 0;
