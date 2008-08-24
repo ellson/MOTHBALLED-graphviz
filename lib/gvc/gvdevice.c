@@ -43,6 +43,14 @@
 
 #ifdef HAVE_LIBZ
 #include <zlib.h>
+
+#ifdef IN_MEM_COMPRESSION
+#ifndef OS_CODE
+#  define OS_CODE  0x03  /* assume Unix */
+#endif
+static unsigned char z_file_header[] =
+   {0x1f, 0x8b, /*magic*/ Z_DEFLATED, 0 /*flags*/, 0,0,0,0 /*time*/, 0 /*xflags*/, OS_CODE};
+#endif
 #endif
 
 #include "const.h"
@@ -358,8 +366,12 @@ void gvdevice_initialize(GVJ_t * job)
 #endif
 #endif
 
-#ifndef IN_MEM_COMPRESSION
         if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
+#ifdef IN_MEM_COMPRESSION
+	    job->flags ^= GVDEVICE_COMPRESSED_FORMAT; /* don't complress header!!! */
+	    gvdevice_write(job, z_file_header, sizeof(z_file_header));
+	    job->flags ^= GVDEVICE_COMPRESSED_FORMAT;
+#else
 #if HAVE_LIBZ
 	    int fd;
 
@@ -374,8 +386,8 @@ void gvdevice_initialize(GVJ_t * job)
 	    (job->common->errorfn) ("No libz support.\n");
 	    exit(1);
 #endif
-        }
 #endif
+        }
     }
 }
 
