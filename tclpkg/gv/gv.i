@@ -15,8 +15,27 @@
 **********************************************************/
 
 %module gv
-%{
 
+#ifdef SWIGTCL
+// A typemap telling SWIG to ignore an argument for input
+// However, we still need to pass a pointer to the C function
+%typemap(in,numinputs=0) char *outdata (Tcl_Obj *o) {
+     o = Tcl_NewStringObj(NULL, -1);
+     $1 = (char*)o;
+}
+// A typemap defining how to return an argument by appending it to the result
+%typemap(argout) char *outdata {
+     Tcl_ListObjAppendElement(interp,$result,(Tcl_Obj*)$1);
+}
+
+// A typemap telling SWIG to map char *channelname to Tcl_Channel *chan
+%typemap(in) char *channelname (int mode) {
+    $1 = (char*)Tcl_GetChannel(interp, Tcl_GetString($input), &mode);
+// FIXME - need to error if chan is NULL or mode not TCL_WRITABLE
+}
+#endif
+
+%{
 /* some language headers (e.g. php.h, ruby.h) leave these defined */
 #undef PACKAGE_BUGREPORT
 #undef PACKAGE_STRING
@@ -38,7 +57,7 @@ extern Agraph_t *strictdigraph(char *name);
 /*** New graph from a dot-syntax string or file */
 extern Agraph_t *readstring(char *string);
 extern Agraph_t *read(char *filename);
-extern Agraph_t *read(FILE *f);	
+extern Agraph_t *read(FILE *f);
 /*** Add new subgraph to existing graph */
 extern Agraph_t *graph(Agraph_t *g, char *name);
 
@@ -187,16 +206,19 @@ extern bool layout(Agraph_t *g, char *engine);
 extern bool render(Agraph_t *g); 
 /*** Render a layout to stdout */
 extern bool render(Agraph_t *g, char *format);
-/*** Render to an open file or channel */
-extern bool render(Agraph_t *g, char *format, FILE *f);
-/*** Render to a string result */
-extern void renderresult(Agraph_t *g, char *format);
+/*** Render to an open file */
+extern bool render(Agraph_t *g, char *format, FILE *fout);
 /*** Render a layout to an unopened file by name */
 extern bool render(Agraph_t *g, char *format, char *filename);
-
+/*** Render to an open channel */
+extern bool renderchannel(Agraph_t *g, char *format, char *channelname);
+/*** Render to a string result */
+extern void renderresult(Agraph_t *g, char *format, char *outdata);
+#if 0
 /*** Render a layout to a malloc'ed string, to be free'd by the caller */
 /*** (deprecated - too easy to leak memory) */
 extern char* renderdata(Agraph_t *g, char *format);
+#endif
 
 
 /*** Writing graph back to file */
@@ -216,7 +238,7 @@ extern Agraph_t *strictdigraph(char *name);
 /*** New graph from a dot-syntax string or file */
 extern Agraph_t *readstring(char *string);
 extern Agraph_t *read(char *filename);
-extern Agraph_t *read(FILE *f);	
+extern Agraph_t *read(FILE *f);
 /*** Add new subgraph to existing graph */
 extern Agraph_t *graph(Agraph_t *g, char *name);
 
@@ -365,34 +387,23 @@ extern bool layout(Agraph_t *g, char *engine);
 extern bool render(Agraph_t *g); 
 /*** Render a layout to stdout */
 extern bool render(Agraph_t *g, char *format);
-/*** Render to an open file or channel */
-extern bool render(Agraph_t *g, char *format, FILE *f);
-/*** Render to a string result */
-extern void renderresult(Agraph_t *g, char *format);
+/*** Render to an open file */
+extern bool render(Agraph_t *g, char *format, FILE *fout);
 /*** Render a layout to an unopened file by name */
 extern bool render(Agraph_t *g, char *format, char *filename);
-
+/*** Render to an open channel */
+extern bool renderchannel(Agraph_t *g, char *format, char *channelname);
+/*** Render to a string result */
+extern void renderresult(Agraph_t *g, char *format, char *outdata);
+#if 0
 /*** Render a layout to a malloc'ed string, to be free'd by the caller */
 /*** (deprecated - too easy to leak memory) */
 extern char* renderdata(Agraph_t *g, char *format);
+#endif
 
 
 /*** Writing graph back to file */
 extern bool write(Agraph_t *g, char *filename);
 extern bool write(Agraph_t *g, FILE *f);
-
-
-#ifdef SWIGTCL
-// A typemap telling SWIG to ignore an argument for input
-// However, we still need to pass a pointer to the C function
-%typemap(in,numinputs=0) char *outdata (char *temp) {
-     $1 = &temp;
-}
-// A typemap defining how to return an argument by appending it to the result
-%typemap(argout) char *outdata {
-     Tcl_Obj *o = Tcl_NewStringObj($1);
-     Tcl_ListObjAppendElement(interp,$result,o);
-}
-#endif
 
 %}

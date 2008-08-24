@@ -17,8 +17,10 @@
 #include <string.h>
 #include "gvc.h"
 
+extern "C" {
 extern void gv_string_writer_init(GVC_t *gvc);
 extern void gv_channel_writer_init(GVC_t *gvc);
+}
 
 static char emptystring[] = {'\0'};
 
@@ -868,35 +870,34 @@ bool render(Agraph_t *g, char *format)
 
     if (!g)
         return false;
-    gv_channel_writer_init(gvc);
     err = gvRender(gvc, g, format, stdout);
     return (! err);
 }
 
-// render to a FILE
+// render to an open FILE
 bool render(Agraph_t *g, char *format, FILE *f)
 {
     int err;
 
     if (!g)
         return false;
-    gv_channel_writer_init(gvc);
     err = gvRender(gvc, g, format, f);
     return (! err);
 }
 
-// render to string result, using binding-dependent gv_string_writer()
-void renderresult(Agraph_t *g, char *format)
+// render to an open channel  
+bool renderchannel(Agraph_t *g, char *format, char *channelname)
 {
     int err;
 
     if (!g)
-        return;
-    gv_string_writer_init(gvc);
-    err = gvRender(gvc, g, format, stdout); /* FIXME - stdout used as flag only */
+        return false;
+    gv_channel_writer_init(gvc);
+    err = gvRender(gvc, g, format, (FILE*)channelname);
+    return (! err);
 }
 
-// render to a filename --deprecated (not very portable)
+// render to a filename 
 bool render(Agraph_t *g, char *format, char *filename)
 {
     int err;
@@ -907,8 +908,18 @@ bool render(Agraph_t *g, char *format, char *filename)
     return (! err);
 }
 
+// render to string result, using binding-dependent gv_string_writer()
+void renderresult(Agraph_t *g, char *format, char *outdata)
+{
+    int err;
 
-// render to a malloc'ed data string, to be free'd by caller. --deprecated (too easy to leak memory)
+    if (!g)
+        return;
+    gv_string_writer_init(gvc);
+    err = gvRender(gvc, g, format, (FILE*)outdata);
+}
+
+// render to a malloc'ed data string, to be free'd by caller.
 char* renderdata(Agraph_t *g, char *format)
 {
     int err;
