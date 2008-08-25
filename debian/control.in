@@ -5,8 +5,6 @@ Maintainer: John Ellson <ellson@graphviz.org>
 XSBC-Original-Maintainer: Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>
 Standards-Version: @VERSION@
 Build-Depends: Build-Depends: tk8.5-dev, tcl8.5-dev, debhelper (>= 5), libfreetype6-dev, zlib1g-dev, libjpeg62-dev, libpng12-dev, libxaw7-dev, bison, flex, autotools-dev, pdksh, libexpat1-dev, libfontconfig1-dev, libltdl3-dev, swig, libperl-dev, libgd2-noxpm-dev (>= 2.0.35), quilt (>= 0.40), groff-base, ghostscript, liblualib50-dev, ruby, ruby1.8-dev, php5-dev, php5-cli, ocaml-nox, python-dev, python-minimal, libcairo2-dev, libpango1.0-dev, guile-1.8-dev, d-shlibs, python-support
-Vcs-Git: git://git.debian.org/git/collab-maint/graphviz.git
-Vcs-Browser: http://git.debian.org/?p=collab-maint/graphviz.git
 Homepage: http://www.graphviz.org/
 
 Package: graphviz
@@ -73,7 +71,7 @@ Package: libgv-perl
 Architecture: any
 Section: perl
 Depends: ${perl:Depends}, ${shlibs:Depends}
-Conflicts: graphviz (<< 2.12-1)
+Conflicts: graphviz (<< @VERSION@-1)
 Description: Perl bindings for graphviz
  Graphviz is a set of graph drawing tools. See the description of the graphviz
  package for a full description.
@@ -115,12 +113,12 @@ Package: libgv-tcl
 Architecture: any
 Section: interpreters
 Depends: ${shlibs:Depends}
-Conflicts: graphviz (<< 2.12-1)
+Conflicts: graphviz (<< @VERSION@-1)
 Description: Tcl bindings for graphviz
  Graphviz is a set of graph drawing tools. See the description of the graphviz
  package for a full description.
  .
- This package contains the Tcl (8.4) bindings.
+ This package contains the Tcl (8.5) bindings.
 
 Package: libgraphviz4
 Architecture: any
@@ -137,7 +135,7 @@ Architecture: any
 Section: libdevel
 Depends: libgraphviz4 (= ${binary:Version}), ${devlibs:Depends}
 Suggests: ocaml-base-nox-${F:OCamlABI}, ocaml-findlib
-Conflicts: graphviz-dev (<< 2.12-1), libgraphviz3-dev, libgraphviz4-dev (<< 2.16-3)
+Conflicts: graphviz-dev (<< @VERSION@), libgraphviz3-dev, libgraphviz4-dev (<< 2.16-3)
 Replaces: libgraphviz3-dev, libgraphviz4-dev (<< 2.16-3)
 Provides: graphviz-dev
 Description: graphviz libs and headers against which to build applications
@@ -154,7 +152,7 @@ Description: graphviz libs and headers against which to build applications
 Package: graphviz-doc
 Architecture: all
 Section: doc
-Conflicts: graphviz (<< 2.12-1)
+Conflicts: graphviz (<< @VERSION@-1)
 Suggests: graphviz
 Description: additional documentation for graphviz
  Graphviz is a set of graph drawing tools. See the description of the graphviz

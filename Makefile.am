@@ -35,11 +35,15 @@ EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 	graphviz.7 Doxyfile.in Doxyfile makearch features awk \
 	config/config_perl.pl config/config_python.py \
 	config/config_ruby.rb config/config_tcl.tcl dot.demo \
-	macosx windows
+	macosx windows debian
 
 .PHONY: rpm
 rpm: dist
 	rpmbuild -ta graphviz-@VERSION@.tar.gz
+	
+.PHONY: deb
+deb: dist
+	true
 	
 .PHONY: pkg
 pkg: dist

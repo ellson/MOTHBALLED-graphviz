@@ -10,6 +10,7 @@ dnl For the micro number: 0 => in-progress development (from cvs)
 dnl                       timestamp => tar-file snapshot or release
 m4_define(graphviz_version_major, 2)
 m4_define(graphviz_version_minor, 21)
+#NB: the next line gets changed to a date/time string for development releases
 m4_define(graphviz_version_micro, 0)
 
 AC_INIT([graphviz],
@@ -23,8 +24,12 @@ AC_SUBST(GRAPHVIZ_VERSION_MAJOR)
 AC_SUBST(GRAPHVIZ_VERSION_MINOR)
 AC_SUBST(GRAPHVIZ_VERSION_MICRO)
 
+#NB: "development" on the next line gets changed to "stable" when building a release
 GRAPHVIZ_COLLECTION=development
+
+GRAPHVIZ_SOURCES=graphviz/$GRAPHVIZ_COLLECTION/SOURCES
 AC_SUBST(GRAPHVIZ_COLLECTION)
+AC_SUBST(GRAPHVIZ_SOURCES)
 
 dnl ===========================================================================
 
@@ -2931,6 +2936,7 @@ AC_CONFIG_FILES(Makefile
 	share/icons/Makefile
 	share/gui/Makefile
 	graphviz.spec
+	debian/control
 	Doxyfile
 	)
 
