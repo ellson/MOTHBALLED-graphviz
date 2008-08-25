@@ -1,0 +1,57 @@
+graphviz for Debian
+-------------------
+
+	From version 1.10 forward, a couple of tools have been renamed:
+	  gpr      is now  gvpr
+	  colorize is now  gvcolor
+
+	This was done by the graphviz team to avoid conflicts with other
+	packages which were using the former names.
+
+
+   SPECIAL for graphviz-2.8-2: this package include the tcl and perl
+   language support.  In the next upload these will be split out into
+   many binary packages one for each language extension.
+
+
+   The demo files are in /usr/share/doc/graphviz/examples
+
+   The contrib files are in /usr/share/doc/graphviz/examples/contrib
+
+   There are a number of {name}.README|README files in the examples
+   directory-tree they contain useful info.
+
+
+   NOTE: files that were executable are not marked as executable in
+	the examples directory.  Simply copy the files needed and mark
+	the copy(ies) as exectable.
+
+   NOTE: the msttcorefonts package is suggested so that you have
+	access to the TrueType fonts should you need them. If you don't
+	need them or have a different source for them, ignore this suggestion.
+
+   NOTE: the gsfonts package is suggested in case you are running without
+	X installed.  This package is normally already installed with X but
+	when using graphviz without X then we need this package for the
+	default fonts.
+
+   There is now a graphviz-dev package for those of you who wish to
+	build apps which use graphviz routines.
+
+   There is much new .html and .pdf documentation.  This has now been
+	moved to the graphviz-doc package. Please install it if you want
+	these docs.  There is doc-base info for the major documents installed
+	by the graphviz-doc package.  The new entries (for the HTML stuff)
+	can be found in [dhelp|dwww] Apps/Graphics section.
+
+
+ -- Stephen M Moraco <stephen@debian.org>  Sun,  9 Apr 2006 12:51:49 -0600
+
+
+    A new manpage (graphviz.7) has been added so that one could find easily all
+    graphviz-related binaries and their role. It will be forwarded upstream, so
+    that every other manpage will reference in its `SEE ALSO' section. Thanks
+    again to Joachim Berdal Haga <jbh@lupus.ig3.net> for having proposed such a
+    list.
+
+ -- Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>, Wed, 26 Dec 2007 19:58:49 +0100

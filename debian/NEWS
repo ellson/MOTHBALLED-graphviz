@@ -1,0 +1,32 @@
+graphviz (2.16-1) unstable; urgency=low
+
+  * As of 2.12-5 (and 2.16-1), the bindings should be mostly OK. The python
+    one still has to be worked on to support all available python versions and
+    that is still on the TODO list (see debian/TODO in the source package, or
+    graphviz's TODO.Debian).
+  * The diffimg binary isn't shipped since I don't really see how it belongs
+    to the graphviz package. Nevertheless, if you feel you need it and it
+    would be useful to you, just report a bug, and I'll include it.
+
+ -- Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>  Mon, 12 Nov 2007 20:58:44 +0100
+
+graphviz (2.12-4) unstable; urgency=low
+
+  * Several bindings have been added with this upload (guile, lua, ocaml,
+    php5, python, ruby). Besides the working ones (guile, perl, php, python,
+    ruby, tcl), the status of the others is:
+     - lua  : segfaults at loading.
+     - ocaml: not tested, due to the lack of documentation for this one
+              (no synopsis).
+  * Any hint on how to test/debug/fix them is very welcome. They are shipped
+    anyway in order to avoid too many NEW rounds, and to give users a chance
+    to help the maintainer. ;-)
+  * Binding manpages are available as gv_$lang.3, with appropriate information
+    to use them under debian.
+  * Java and C# bindings (#360970 and #360977) are not planned at the moment,
+    given the restrictions on the architectures on which they are available.
+    Anyway, any tested patch is welcome to add them.
+  * More information about outstanding work is available in the TODO.Debian
+    file.
+
+ -- Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>  Thu, 09 Aug 2007 16:26:11 +0200
