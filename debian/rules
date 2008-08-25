@@ -25,7 +25,7 @@ LUA_PACKAGE       = $(CURDIR)/debian/libgv-lua
 
 DEV_PACKAGE       = $(CURDIR)/debian/libgraphviz-dev
 
-PYTHON_VERSION    = $(shell pyversions -d)
+PYTHON_VERSIONS   = $(shell pyversions -s)
 PYTHON_PACKAGE    = $(CURDIR)/debian/libgv-python
 
 RUBY_VERSION      = 1.8
@@ -56,11 +56,13 @@ configure-stamp:
 	--without-gnomeui \
 	--without-gtk \
 	--without-ipsepcola \
+	--without-rsvg \
 	--enable-guile \
 	--enable-lua \
 	--enable-ocaml \
 	--enable-php \
-	--enable-python \
+	--enable-python24 \
+	--enable-python25 \
 	--enable-ruby \
 	--enable-tcl \
 	--disable-java \
@@ -76,6 +78,15 @@ build-stamp:
 	$(MAKE)
 	touch build-stamp
 
+	# Build the manpage from SONAME-independent perlpod
+	sed -e 's/##SONAME##/$(SONAME)/g' \
+		debian/libgraphviz-config-update.pod.in > \
+		debian/libgraphviz$(SONAME)-config-update.pod
+	pod2man --center "GRAPHVIZ CONFIGURATION MANAGEMENT" \
+		--release $(UPSTREAM_VERSION) \
+		debian/libgraphviz$(SONAME)-config-update.pod \
+		debian/libgraphviz$(SONAME)-config-update.1
+
 clean: clean-patched unpatch
 clean-patched:
 	dh_testdir
@@ -84,7 +95,13 @@ clean-patched:
 
 	# Clean up if a build already happened
 	[ ! -f Makefile ] || $(MAKE) distclean
-	dh_clean $(CONFIG_SCRIPTS)
+
+	# Clean up intermediate and generated manpages
+	rm -f debian/libgraphviz$(SONAME)-config-update.pod
+	rm -f debian/libgraphviz$(SONAME)-config-update.1
+
+	dh_clean $(CONFIG_SCRIPTS) \
+		tclpkg/gv/gv.R tclpkg/gv/php_gv.h
 
 install: build
 	dh_testdir
@@ -95,8 +112,8 @@ install: build
 	# Install the package into debian/tmp
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 
-	# Don't install diffimg, see NEWS.Debian
-	rm $(CURDIR)/debian/tmp/usr/bin/diffimg
+	# Remove .la files
+	find -name '*.la' -delete
 
 	# Install lintian overrides
 	install -d $(CURDIR)/debian/tmp/usr/share/lintian/overrides
@@ -156,10 +173,17 @@ install: build
 	rm -rf $(OCAML_PACKAGE)/usr/lib/graphviz
 
 	# Some additional work for libgv-python
-	install -d $(PYTHON_PACKAGE)/usr/lib/$(PYTHON_VERSION)/site-packages
-	mv $(PYTHON_PACKAGE)/usr/lib/graphviz/python/*.so \
-		$(PYTHON_PACKAGE)/usr/lib/graphviz/python/*.py \
-		$(PYTHON_PACKAGE)/usr/lib/$(PYTHON_VERSION)/site-packages
+	# Note the sed call because of python{24,25} instead of python{2.4,2.5}
+	# Note gv.py isn't really duplicated, it's just installed in a location
+	# where python-support will find it. Both being identical, python-support
+	# will just do the right thing.
+	for i in $(PYTHON_VERSIONS); do \
+		install -d $(PYTHON_PACKAGE)/usr/lib/$$i/site-packages ; \
+		cp $(PYTHON_PACKAGE)/usr/lib/graphviz/python/gv.py \
+			$(PYTHON_PACKAGE)/usr/lib/$$i/site-packages ; \
+		mv $(PYTHON_PACKAGE)/usr/lib/graphviz/$$(echo $$i|sed -e 's/\.//')/*.so \
+			$(PYTHON_PACKAGE)/usr/lib/$$i/site-packages ; \
+	done
 	rm -rf $(PYTHON_PACKAGE)/usr/lib/graphviz
 
 	# Debian-specific manpage
@@ -215,7 +239,7 @@ binary-arch: build install
 	dh_strip -a
 	dh_compress -a
 	dh_fixperms -a
-	dh_makeshlibs -plibgraphviz$(SONAME) -V
+	dh_makeshlibs -plibgraphviz$(SONAME) -V 'libgraphviz4 (>= 2.18)'
 	dh_installdeb -a
 	dh_shlibdeps -a -L libgraphviz$(SONAME) $(CURDIR)/debian/libgraphviz$(SONAME)/usr/lib
 	dh_gencontrol -a -- -VF:OCamlABI="$(OCAMLABI)"
