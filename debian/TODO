@@ -1,0 +1,35 @@
+TODO for graphviz
+-----------------
+
+  * Check whether we should ship *.la files. According to libpkg-guide, we
+    could replace them with pkgconfig only, but let's not make too many changes
+    at the same time. Remaining .la files are in libgraphvizN-dev and libgv-tcl.
+  * Sort out what's needed/wanted in the contrib directory and in examples.
+  * Check the dependencies for all bindings, e.g. libgv-guile doesn't seem to
+    depend on any guile package.
+  * The handling of the libgv-php5 package could be better. An idea would be to
+    have a debian/libgv-php5.install.in file, which would be preprocessed, so
+    that the appropriate path is computed at build-time (using the output of
+    the “php-config5 --extension-dir” command).
+  * That should really be done for all languages needing extra work,
+    see debian/rules.
+  * Think about putting the configuration file into /var, see the discussion
+    with Alexander on the 10th of August.
+  * Check the .0.0.0 stuff for the Tcl parts. Should it be using “-module
+    -avoid-version” too? A Tcl/Tk policy is being worked on.
+  * Improve the python bindings: the goal is to have them built for each
+    available python version. An update of the long description of the
+    libgv-python package will then be needed. An option is to use
+    “make PYTHON_INCLUDES=-I/usr/include/python2.5” but it would be cleaner to
+    handle the files directly in the Makefile, so as to ensure autotools stuff
+    does the whole job.
+  * Eventually cherry-pick php fixes from CVS, as suggested by John Ellson in
+    <47446D5F.10803@research.att.com>.
+  * Stop using -lstdc++ and use CXX (not trivial actually).
+  * Adjust --build and --host options to ./configure so as to support cross-
+    compilation correctly.
+  * The Conflicts between libgv-perl and older graphviz might go away since the
+    location of perl files was adapted to follow the perl policy. To be checked
+    with piuparts.
+
+ -- Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>  Wed, 09 Jan 2008 03:18:46 +0100
