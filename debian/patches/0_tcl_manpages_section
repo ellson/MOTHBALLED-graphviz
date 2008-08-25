@@ -1,0 +1,33 @@
+Index: graphviz.git/tclpkg/gdtclft/gdtclft.n
+===================================================================
+--- graphviz.git.orig/tclpkg/gdtclft/gdtclft.n	2007-10-28 03:09:09.000000000 +0100
++++ graphviz.git/tclpkg/gdtclft/gdtclft.n	2007-10-28 03:09:13.000000000 +0100
+@@ -1,4 +1,4 @@
+-.TH gdtclft n 8.0 "Tcl-Extensions"
++.TH gdtclft 3 8.0 "Tcl-Extensions"
+ .HS gdtclft tcl
+ .BS
+ .SH NAME
+Index: graphviz.git/tclpkg/tcldot/tcldot.n
+===================================================================
+--- graphviz.git.orig/tclpkg/tcldot/tcldot.n	2007-10-28 03:09:30.000000000 +0100
++++ graphviz.git/tclpkg/tcldot/tcldot.n	2007-10-28 03:09:35.000000000 +0100
+@@ -1,4 +1,4 @@
+-.TH TCLDOT n "02 December 1996"
++.TH TCLDOT 3 "02 December 1996"
+ 
+ .SH NAME
+ 
+Index: graphviz.git/tclpkg/tkspline/tkspline.n
+===================================================================
+--- graphviz.git.orig/tclpkg/tkspline/tkspline.n	2007-10-28 03:08:05.000000000 +0100
++++ graphviz.git/tclpkg/tkspline/tkspline.n	2007-10-28 03:08:25.000000000 +0100
+@@ -235,7 +235,7 @@
+ \\$1\l'|0\(ul'\\$2
+ ..
+ .lf 2 spline.n
+-.TH spline n 8.0 Tk "Tk Spline \- An additional smoothing method for canvas items "
++.TH spline 3 8.0 Tk "Tk Spline \- An additional smoothing method for canvas items "
+ .BS
+ '\" Note:  do not modify the .SH NAME line immediately below!
+ .SH NAME

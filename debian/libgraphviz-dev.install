@@ -1,8 +1,6 @@
 usr/include/graphviz
 usr/lib/pkgconfig
-usr/lib/*.la
 usr/lib/*.so
-usr/lib/graphviz/*.la
 usr/lib/graphviz/*.so
 
 # usr/share/man/man3/*  w/o  gv_*.3 (bindings)

@@ -1,5 +1,4 @@
-usr/lib/graphviz/tcl
-usr/lib/graphviz/pkgIndex.tcl
+usr/lib/graphviz/tcl          usr/lib/tcltk/graphviz
 usr/share/man/man3/gv_tcl.3
 usr/share/man/man3/gdtclft.3
 usr/share/man/man3/tkspline.3

@@ -1,0 +1,6 @@
+0_versioned_plugin_config_file
+0_bindings_documentation
+0_tcl_manpages_section
+1_disable_lumping_all_include_directories
+0_autoreconf_run
+#0_libtool_linking_reorder_workaround
