@@ -3,6 +3,7 @@ This package was originally debianized by Stephen M Moraco <stephen@debian.org>
 
 It was downloaded from http://www.graphviz.org/
 
+
 Upstream Authors:
 
    John Ellson, Lucent (TCL/tk and codegen extensions)
@@ -15,7 +16,13 @@ Upstream Authors:
    David Dobkin (spline-o-matic)
    Vladimir Alexiev (codegen improvements)
 
+
 Copyright:
+
+   Copyright 1994-2007 AT&T Corp.
+
+
+License:
                   Common Public License Version 1.0
 
 THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS COMMON PUBLIC
@@ -233,7 +240,7 @@ any resulting litigation.
 
 
 The Debian packaging was started by Stephen M Moraco <stephen@debian.org> and
-then was taken over in late 2006 by Cyril Brulebois, placing its work under the
+then was taken over in late 2006 by Cyril Brulebois, placing his work under the
 same terms as graphviz itself.
- (C) 2006-2008, Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>
+ © 2006-2008, Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>
 
