@@ -1,0 +1,5 @@
+# That's not true, there's only one: 4
+libgraphviz4: several-sonames-in-same-package libagraph.so.4 libcdt.so.4 libcgraph.so.4 libgraph.so.4 libgvc.so.4 libgvc_builtins.so.4 libpathplan.so.4
+
+# We have several shared objects...
+libgraphviz4: package-name-doesnt-match-sonames libagraph4 libcdt4 libcgraph4 libgraph4 libgvc4 libgvc-builtins4 libpathplan4
