@@ -4,7 +4,7 @@
 # SUBDIRS = dot neato lefty dotty info
 SUBDIRS = info schema
 
-pdf = dotguide.pdf dottyguide.pdf leftyguide.pdf neatoguide.pdf
+pdf = dotguide.pdf dottyguide.pdf leftyguide.pdf neatoguide.pdf libguide/libguide.pdf
 html = build.html FAQ.html index.html winbuild.html pspdf.png
 txt = Dot.ref latex_suggestions.txt fontfaq.txt addingLayout.txt
 
@@ -16,4 +16,4 @@ pdf_DATA = $(pdf)
 html_DATA = $(html)
 txt_DATA = $(txt)
 
-EXTRA_DIST = $(txt) $(pdf) $(html)
+EXTRA_DIST = $(txt) $(pdf) $(html) schema/*.xml schema/*.xslt libguide/libguide.pdf
