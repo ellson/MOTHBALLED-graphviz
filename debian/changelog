@@ -1,3 +1,133 @@
+graphviz (2.18-1ubuntu2) intrepid; urgency=low
+
+  * Build against the newer guile 1.8 instead of the older 1.6.
+    (See LP #232428)
+
+ -- Martin Pitt <martin.pitt@ubuntu.com>  Wed, 06 Aug 2008 12:18:57 +0200
+
+graphviz (2.18-1ubuntu1) intrepid; urgency=low
+
+  * Merge from debian unstable, remaining changes:
+    - Build depend on liblualib50-dev instead of liblua5.1-0-dev.
+    - Drop libttf-dev (libttf-dev is in universe) (LP: #174749).
+    - Replace gs-common with ghostscript.
+    - Build-depend on python-dev instead of python2.4-dev or python2.5-dev.
+    - Mention the correct python version for the python bindings in the
+      package description.
+
+ -- Bryce Harrington <bryce@ubuntu.com>  Thu, 19 Jun 2008 20:23:23 -0700
+
+graphviz (2.18-1) unstable; urgency=low
+
+  * New upstream release:
+     - Move from Tcl/Tk 8.4 to 8.5.
+     - Now build python2.4 and python2.5 modules.
+  * debian/control:
+     - Replace tcl8.4-dev and tk8.4-dev with tcl8.5-dev and tk8.5-dev in
+       Build-Depends accordingly.
+     - Update the version in the long description of libgv-tcl.
+     - Add python2.5-dev to Build-Depends.
+     - Mention both versions in the long description of libgv-python.
+     - Drop libttf-dev from Build-Depends since that's a deprecated
+       package, replaced by libfreetype6-dev (which is already there),
+       thanks to Moritz Muehlenhoff for the notice (Closes: #473487).
+  * debian/libgv-tcl.install:
+     - Delete the entry about pkgIndex.tcl since it's now shipped under
+       the tcl directory.
+  * debian/libgv-python/install:
+     - Add “usr/lib/graphviz/python{24,25}”, later rearranged through
+       debian/rules.
+  * debian/pyversions:
+     - Add it, containing “2.4,2.5”.
+  * debian/rules:
+     - Pass an extra flag to configure: “--without-rsvg” to avoid an extra
+       plugin to be built, which would pull many other dependencies. A new
+       binary package might be introduced later, with both gtk and rsvg
+       plugins.
+     - Bump shlibs, new symbols.
+     - Use “pyversions -s” rather than “pyversions -d”.
+     - Use “--enable-python{24,25}” instead of just “--enable-python”.
+     - Install both python modules under appropriate site-packages
+       directories.
+     - Duplicate gv.py in both directories, then taken care of by
+       python-support.
+     - Get rid of tclpkg/gv/gv.R and tclpkg/gv/php_gv.h through dh_clean
+       to keep the diff clean.
+  * Drop workaround for FTBFS with gcc-4.3, fixed upstream:
+     - 2_workaround_ftbfs_with_gcc-4.3.
+  * Backport fix from CVS, preventing all include directories from being
+    lumped together, does causing python2.5 to be misbuilt (using
+    python2.4 includes).
+     - Add 1_disable_lumping_all_include_directories: Actual fix.
+     - Add 0_autoreconf_run: Needed since a Makefile.am is touched.
+     - Disable 0_libtool_linking_reorder_workaround: no longer applies
+       because of the autoreconf run.
+
+ -- Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>  Sat, 12 Apr 2008 02:11:00 +0200
+
+graphviz (2.16.1-3) unstable; urgency=low
+
+  * Add workaround for FTBFS with gcc-4.3 (Closes: #466810):
+     - 2_workaround_ftbfs_with_gcc-4.3.
+  * Update doc-base section: from “Apps/Graphics” to “Graphics”.
+
+ -- Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>  Wed, 26 Mar 2008 00:43:57 +0100
+
+graphviz (2.16.1-2) unstable; urgency=low
+
+  * Improved debian/copyright:
+     - Distinguish between copyright and license.
+     - Add copyright years and copyright holder (AT&T Corp.).
+     - Use “Copyright” and “©” instead of “(C)”.
+
+ -- Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>  Tue, 26 Feb 2008 14:33:24 +0100
+
+graphviz (2.16.1-1) experimental; urgency=low
+
+  * New upstream release:
+     - Fixes regressions in dotty (Closes: #461530).
+  * Replaced “-V” with “-V 'libgraphviz4 (>= 2.16)'” in the dh_makeshlibs
+    call since no shlibs bump is required for this new upstream release.
+  * Dropped patch (merged upstream):
+     - 2_ocaml_tweak.
+     - 0_autoreconf_run (it was only needed because of 2_ocaml_tweak).
+  * Refreshed patches:
+     - 0_versioned_plugin_config_file.
+     - 0_bindings_documentation.
+  * Moved sections, resolving override disparities:
+     - libgv-python: from interpreters to python.
+     - graphviz-dev: from graphics to devel.
+  * Now ship diffimg since it actually looks useful to at least someone,
+    thanks to David Liontooth for having requested it (Closes: #460595).
+    Done by reverting the diffimg deletion in “install” target.
+  * Adapted Tcl bindings: moved to a subdirectory of /usr/lib/tcltk to
+    comply with the Tcl/Tk policy.
+  * Adapted the manpage accordingly: in the “load” call, adjusted the
+    path to the shared object.
+  * Dropped NEWS.Debian since its content wasn't really what one would
+    expect when stumbling upon it, thanks to Steve Langasek for the
+    original comment.
+  * Refreshed README.Debian:
+     - Dropped the note about gpr->gvpr and colorize->gvcolor renames.
+       That was done long ago (graphviz 1.10).
+     - Dropped notices about: bindings, -dev, and -doc packages.
+     - Updated pointers to examples and contrib files (Closes: #459955).
+     - Added a note about diffimg now being shipped (see above).
+     - Kept notes about the suggested packages mostly as-is, they need an
+       update.
+     - Refreshed entry about graphviz.7 (included upstream).
+     - Included former NEWS.Debian's item about C# and Java bindings.
+  * Improved handling of libgraphvizN-config-update:
+     - Build it from perlpod: debian/libgraphviz-config-update.pod.in
+       (and delete generated files in the “clean” target).
+     - Use a placeholder to refresh the SONAME automatically.
+     - Dropped debian/libgraphviz4-config-update.1 accordingly.
+  * No longer ship any .la file. Remaining ones were shipped through
+    libgraphviz-dev and libgv-tcl. Reverse dependencies can still be built
+    from sources without any troubles, so this deletion sounds safe.
+
+ -- Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>  Thu, 21 Feb 2008 23:25:37 +0100
+
 graphviz (2.16-3ubuntu2) hardy; urgency=low
 
   * Build depend on liblualib50-dev instead of liblua50-dev.
@@ -923,5 +1053,4 @@ graphviz (1.5-1) unstable; urgency=low
   * Initial Release.  
 
  -- Stephen M. Moraco <stephen@col.hp.com>  Fri, 31 Dec 1999 15:37:17 -0700
-
 
