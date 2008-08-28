@@ -121,6 +121,7 @@ the tail and head nodes, respectively.
 The name of an edge is the string formed from the name of the
 tail node, the appropriate edge operator ("--" or "->") and the name of the
 head node.
+In all cases, the substring "\\L" is replaced by the object's label attribute.
 <P>
 In addition, if the associated attribute is
 <A HREF=#a:label>label</A>,
