@@ -262,20 +262,31 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 char *strdup_and_subst_obj(char *str, void *obj)
 {
     char c, *s, *p, *t, *newstr;
-    char *g_str = "\\G", *n_str = "\\N", *e_str = "\\E", *h_str = "\\H", *t_str = "\\T";
-    int g_len = 2, n_len = 2, e_len = 2, h_len = 2, t_len = 2, newlen = 0;
+    char *g_str = "\\G", *n_str = "\\N", *e_str = "\\E", *h_str = "\\H", *t_str = "\\T", *l_str = "\\L";
+    int g_len = 2, n_len = 2, e_len = 2, h_len = 2, t_len = 2, l_len, newlen = 0;
+    textlabel_t *tl;
 
     /* prepare substitution strings */
     switch (agobjkind(obj)) {
 	case AGGRAPH:
 	    g_str = ((graph_t *)obj)->name;
 	    g_len = strlen(g_str);
+	    tl = GD_label((graph_t *)obj);
+	    if (tl) {
+		l_str = tl->text;
+	    	if (str) l_len = strlen(l_str);
+	    }
 	    break;
 	case AGNODE:
 	    g_str = ((node_t *)obj)->graph->name;
 	    g_len = strlen(g_str);
 	    n_str = ((node_t *)obj)->name;
 	    n_len = strlen(n_str);
+	    tl = ND_label((node_t *)obj);
+	    if (tl) {
+		l_str = tl->text;
+	    	if (str) l_len = strlen(l_str);
+	    }
 	    break;
 	case AGEDGE:
 	    g_str = ((edge_t *)obj)->tail->graph->root->name;
@@ -284,6 +295,11 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    t_len = strlen(t_str);
 	    h_str = ((edge_t *)obj)->head->name;
 	    h_len = strlen(h_str);
+	    tl = ED_label((edge_t *)obj);
+	    if (tl) {
+		l_str = tl->text;
+	    	if (str) l_len = strlen(l_str);
+	    }
 	    if (((edge_t *)obj)->tail->graph->root->kind & AGFLAG_DIRECTED)
 		e_str = "->";
 	    else
@@ -313,6 +329,9 @@ char *strdup_and_subst_obj(char *str, void *obj)
 		newlen += h_len;
 		break;
 	    case 'T':
+		newlen += t_len;
+		break; 
+	    case 'L':
 		newlen += t_len;
 		break; 
 	    default:  /* leave other escape sequences unmodified, e.g. \n \l \r */
@@ -345,6 +364,9 @@ char *strdup_and_subst_obj(char *str, void *obj)
 		break;
 	    case 'H':
 		for (t = h_str; (*p = *t++); p++);
+		break;
+	    case 'L':
+		for (t = l_str; (*p = *t++); p++);
 		break;
 	    default:  /* leave other escape sequences unmodified, e.g. \n \l \r */
 		*p++ = '\\';

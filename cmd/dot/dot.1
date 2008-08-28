@@ -336,6 +336,7 @@ EPSF file to be automatically loaded for the node shape.
 \fBlabel=\fItext\fR where \fItext\fP may include escaped newlines
 \\\|n, \\\|l, or \\\|r for center, left, and right justified lines.
 The string '\\N' value will be replaced by the node name.
+The string '\\G' value will be replaced by the graph name.
 Record labels may contain recursive box lists delimited by { | }.
 Port identifiers in labels are set off by angle brackets < >.
 In the graph file, use colon (such as, \fBnode0:port28\fR).
@@ -400,8 +401,9 @@ This attribute is ignored by \fIbuiltin_polygons\fR.
 .PP
 \fBhref=\fI"url"\fR sets the url for the node in imagemap, PostScript and SVG
 files.
-The substring '\\N' is substituted in the same manner as
+The substrings '\\N' and '\\G' are substituted in the same manner as
 for the node label attribute.
+Additionally the substring '\\L' is substituted with the node label string.
 .PP
 \fBURL=\fI"url"\fR ("URL" is a synonym for "href".)
 .PP
@@ -412,15 +414,17 @@ for the URL.  Setting it to "_graphviz" will open a new window if it doesn't
 already exist, or reuse it if it does.
 If the target string is empty, the default,
 then no target attribute is included in the output.
-The substring '\\N' is substituted in the same manner as
+The substrings '\\N' and '\\G' are substituted in the same manner as
 for the node label attribute.
+Additionally the substring '\\L' is substituted with the node label string.
 .PP
 \fBtooltip=\fI"tooltip"\fR is a tooltip string for client\(hyside imagemaps
 and SVG, effective when nodes have a URL.  The tooltip string defaults to be the
 same as the label string, but this attribute permits nodes without
 labels to still have tooltips thus permitting denser graphs.
-The substring '\\N' is substituted in the same manner as
+The substrings '\\N' and '\\G' are substituted in the same manner as
 for the node label attribute.
+Additionally the substring '\\L' is substituted with the node label string.
 
 .PP
 \fB(circo\(hyspecific attributes)\fR
@@ -448,6 +452,7 @@ edges are ignored for ordering nodes.
 If the substring '\\T' is found in a label it will be replaced by the tail_node name.
 If the substring '\\H' is found in a label it will be replaced by the head_node name.
 If the substring '\\E' value is found in a label it will be replaced by: tail_node_name\->head_node_name
+If the substring '\\G' is found in a label it will be replaced by the graph name.
 or by: tail_node_name\-\-head_node_name for undirected graphs.
 .PP
 \fBfontsize=\fIn\fR sets the label type size to \fIn\fP points.
@@ -469,8 +474,9 @@ parallel edges, one edge for each color.
 .PP
 \fBhref=\fI"url"\fR sets the url for the node in imagemap, PostScript and SVG
 files.
-The substrings '\\T', '\\H', and '\\E' are substituted in the same manner as
+The substrings '\\T', '\\H', '\\E' and '\\G' are substituted in the same manner as
 for the edge label attribute.
+Additionally the substring '\\L' is substituted with the edge label string.
 .PP
 \fBURL=\fI"url"\fR ("URL" is a synonym for "href".)
 .PP
@@ -478,14 +484,16 @@ for the edge label attribute.
 and SVG, effective when edges have a URL.
 If the target string is empty, the default,
 then no target attribute is included in the output.
-The substrings '\\T', '\\H', and '\\E' are substituted in the same manner as
+The substrings '\\T', '\\H', '\\E' and '\\G' are substituted in the same manner as
 for the edge label attribute.
+Additionally the substring '\\L' is substituted with the edge label string.
 .PP
 \fBtooltip=\fI"tooltip"\fR is a tooltip string for client\(hyside imagemaps
 effective when edges have a URL.  The tooltip string defaults to be the
 same as the edge label string. 
-The substrings '\\T', '\\H', and '\\E' are substituted in the same manner as
+The substrings '\\T', '\\H', '\\E' and '\\G' are substituted in the same manner as
 for the edge label attribute.
+Additionally the substring '\\L' is substituted with the edge label string.
 .PP
 \fBarrowhead,arrowtail=none, normal, inv, dot, odot, invdot, invodot,
 tee, empty, invempty, open, halfopen, diamond, odiamond, box, obox, crow\fP.
@@ -496,12 +504,14 @@ inv_length=6,inv_width=7,dot_radius=2)
 \fBheadlabel,taillabel=string\fP for port labels.
 \fBlabelfontcolor\fP,\fBlabelfontname\fP,\fBlabelfontsize\fP
 for head and tail labels.
-The substrings '\\T', '\\H', and '\\E' are substituted in the same manner as
+The substrings '\\T', '\\H', '\\E' and '\\G' are substituted in the same manner as
 for the edge label attribute.
+Additionally the substring '\\L' is substituted with the edge label string.
 .PP
 \fBheadhref=\fI"url"\fR sets the url for the head port in imagemap, PostScript and SVG files.
-The substrings '\\T', '\\H', and '\\E' are substituted in the same manner as
+The substrings '\\T', '\\H', '\\E' and '\\G' are substituted in the same manner as
 for the edge label attribute.
+Additionally the substring '\\L' is substituted with the edge label string.
 .PP
 \fBheadURL=\fI"url"\fR ("headURL" is a synonym for "headhref".)
 .PP
@@ -510,18 +520,21 @@ and SVG, effective when edge heads have a URL.
 The headtarget string is used to determine which window of the browser is used
 for the URL.  If the headtarget string is empty, the default,
 then headtarget defaults to the same value as target for the edge.
-The substrings '\\T', '\\H', and '\\E' are substituted in the same manner as
+The substrings '\\T', '\\H', '\\E' and '\\G' are substituted in the same manner as
 for the edge label attribute.
+Additionally the substring '\\L' is substituted with the edge label string.
 .PP
 \fBheadtooltip=\fI"tooltip"\fR is a tooltip string for client\(hyside imagemaps
 effective when head ports have a URL.  The tooltip string defaults to be the
 same as the headlabel string. 
 The substrings '\\T', '\\H', and '\\E' are substituted in the same manner as
 for the edge label attribute.
+Additionally the substring '\\L' is substituted with the edge label string.
 .PP
 \fBtailhref=\fI"url"\fR sets the url for the tail port in imagemap, PostScript and SVG files.
-The substrings '\\T', '\\H', and '\\E' are substituted in the same manner as
+The substrings '\\T', '\\H', '\\E' and '\\G' are substituted in the same manner as
 for the edge label attribute.
+Additionally the substring '\\L' is substituted with the edge label string.
 .PP
 \fBtailURL=\fI"url"\fR ("tailURL" is a synonym for "tailhref".)
 .PP
@@ -530,14 +543,16 @@ and SVG, effective when edge tails have a URL.
 The tailtarget string is used to determine which window of the browser is used
 for the URL.  If the tailtarget string is empty, the default,
 then tailtarget defaults to the same value as target for the edge.
-The substrings '\\T', '\\H', and '\\E' are substituted in the same manner as
+The substrings '\\T', '\\H', '\\E' and '\\G' are substituted in the same manner as
 for the edge label attribute.
+Additionally the substring '\\L' is substituted with the edge label string.
 .PP
 \fBtailtooltip=\fI"tooltip"\fR is a tooltip string for client\(hyside imagemaps
 effective when tail ports have a URL.  The tooltip string defaults to be the
 same as the taillabel string. 
-The substrings '\\T', '\\H', and '\\E' are substituted in the same manner as
+The substrings '\\T', '\\H', '\\E' and '\\G' are substituted in the same manner as
 for the edge label attribute.
+Additionally the substring '\\L' is substituted with the edge label string.
 .PP
 \fBlabeldistance\fP and \fPport_label_distance\fP set distance; also
 \fBlabelangle\fP (in degrees CCW)
@@ -549,7 +564,7 @@ same port, using the average landing point.
 .PP
 \fBconstraint=false\fP causes an edge to be ignored for rank assignment.
 .PP
-\fBlayer=\fIid\fR or \fIid:id\fR or "all" sets the edgess active layers.
+\fBlayer=\fIid\fR or \fIid:id\fR or "all" sets the edge's active layers.
 The empty string means no layers (invisible).
 
 .PP
