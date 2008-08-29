@@ -26,8 +26,8 @@ dotty: $(top_srcdir)/cmd/dotty/dotty.sh
 	chmod +x dotty
 endif
 
-dotty.1.pdf: dotty.1
-	- @GROFF@ -Tps -man dotty.1 | @PS2PDF@ - - >dotty.1.pdf
+dotty.1.pdf: $(srcdir)/dotty.1
+	- @GROFF@ -Tps -man $(srcdir)/dotty.1 | @PS2PDF@ - - >dotty.1.pdf
 
 EXTRA_DIST = $(lefty_DATA) $(man) $(pdf) \
 	dotty.bsh dotty.ksh dotty.sh \

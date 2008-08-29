@@ -65,8 +65,8 @@ uninstall-hook:
 	(cd $(DESTDIR)$(bindir); for i in $(linkedprogram); do rm -f $$i; done;)
 	(cd $(DESTDIR)$(libdir); rm -f config;)
 
-dot.1.pdf: dot.1
-	- @GROFF@ -Tps -man dot.1 | @PS2PDF@ - - >dot.1.pdf
+dot.1.pdf: $(srcdir)/dot.1
+	- @GROFF@ -Tps -man $(srcdir)/dot.1 | @PS2PDF@ - - >dot.1.pdf
 
 # This automagic technique for building the list of builtins requires that the
 # symbols be in the binary image, but libtool makes it difficult

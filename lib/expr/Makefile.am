@@ -64,8 +64,8 @@ exop.h: exparse.h
 	$(SED) -e '1,/MINTOKEN/d' -e '/^[ 	]*#[ 	]*define[ 	][ 	]*[A-Z]/!d' -e 's/^[ 	]*#[ 	]*define[ 	]*\([A-Z0-9_]*\).*/	"\1",/' < exparse.h >> exop.h
 	echo "};" >> exop.h
 
-expr.3.pdf: expr.3
-	- @GROFF@ -Tps -man expr.3 | @PS2PDF@ - - >expr.3.pdf
+expr.3.pdf: $(srcdir)/expr.3
+	- @GROFF@ -Tps -man $(srcdir)/expr.3 | @PS2PDF@ - - >expr.3.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) RELEASE \
 	Makefile.nmake Makefile.orig Makefile.old \

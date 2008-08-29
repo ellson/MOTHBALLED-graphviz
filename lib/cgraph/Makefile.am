@@ -40,8 +40,8 @@ grammar.c: y.output
 grammar.h: y.output
 	@SED@ "s/yy/aag/g" < y.tab.h > grammar.h
 
-cgraph.3.pdf: cgraph.3
-	- @GROFF@ -Tps -man cgraph.3 | @PS2PDF@ - - >cgraph.3.pdf
+cgraph.3.pdf: $(srcdir)/cgraph.3
+	- @GROFF@ -Tps -man $(srcdir)/cgraph.3 | @PS2PDF@ - - >cgraph.3.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old cmpnd.c \
 	main.c tester.c grammar.c grammar.h scan.c \

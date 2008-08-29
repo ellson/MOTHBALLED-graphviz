@@ -39,8 +39,8 @@ mkdefs_SOURCES = mkdefs.c
 gdefs.h: $(top_srcdir)/cmd/gvpr/gprdata mkdefs
 	./mkdefs gdefs.h < $(top_srcdir)/cmd/gvpr/gprdata
 
-gvpr.1.pdf: gvpr.1
-	- @GROFF@ -Tps -man gvpr.1 | @PS2PDF@ - - >gvpr.1.pdf
+gvpr.1.pdf: $(srcdir)/gvpr.1
+	- @GROFF@ -Tps -man $(srcdir)/gvpr.1 | @PS2PDF@ - - >gvpr.1.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) lib Makefile.old gprdata mkdefs.c gdefs.h
 

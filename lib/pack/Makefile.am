@@ -24,8 +24,8 @@ noinst_LTLIBRARIES = libpack_C.la
 
 libpack_C_la_SOURCES = ccomps.c pack.c
 
-pack.3.pdf: pack.3
-	- @GROFF@ -Tps -man pack.3 | @PS2PDF@ - - >pack.3.pdf
+pack.3.pdf: $(srcdir)/pack.3
+	- @GROFF@ -Tps -man $(srcdir)/pack.3 | @PS2PDF@ - - >pack.3.pdf
 
 #EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old ptest.c
 

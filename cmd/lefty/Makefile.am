@@ -95,8 +95,8 @@ lefty.res : ws/mswin32/lefty.rc
 endif
 endif
 
-lefty.1.pdf: lefty.1
-	- @GROFF@ -Tps -man lefty.1 | @PS2PDF@ - - >lefty.1.pdf
+lefty.1.pdf: $(srcdir)/lefty.1
+	- @GROFF@ -Tps -man $(srcdir)/lefty.1 | @PS2PDF@ - - >lefty.1.pdf
 
 EXTRA_DIST = $(lefty_DATA) $(man) $(pdf) \
 	colors.txt Makefile.old aix_mods cs2l/*

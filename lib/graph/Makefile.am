@@ -39,8 +39,8 @@ y.output: $(top_srcdir)/lib/graph/parser.y
 # trie.c : trie_input
 #       triegen  < trie_input > trie.c
 
-graph.3.pdf: graph.3
-	- @GROFF@ -Tps -man graph.3 | @PS2PDF@ - - > graph.3.pdf
+graph.3.pdf: $(srcdir)/graph.3
+	- @GROFF@ -Tps -man $(srcdir)/graph.3 | @PS2PDF@ - - > graph.3.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) triefa.cP \
 	Makefile.old parser.c parser.h \
