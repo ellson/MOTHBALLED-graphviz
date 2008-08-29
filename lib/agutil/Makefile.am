@@ -3,7 +3,7 @@
 
 AM_CPPFLAGS = \
         -I$(top_srcdir) \
-        -I$(top_srcdir)/lib/agraph \
+        -I$(top_srcdir)/lib/cgraph \
         -I$(top_srcdir)/lib/cdt
 
 if WITH_CGRAPH
