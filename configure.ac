@@ -2847,8 +2847,6 @@ AC_CONFIG_FILES(Makefile
 	lib/cdt/libcdt.pc
 	lib/graph/Makefile
 	lib/graph/libgraph.pc
-	lib/agraph/Makefile
-	lib/agraph/libagraph.pc
 	lib/cgraph/Makefile
 	lib/cgraph/libcgraph.pc
 	lib/agutil/Makefile
