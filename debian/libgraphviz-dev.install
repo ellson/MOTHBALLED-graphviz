@@ -6,6 +6,6 @@ usr/lib/graphviz/*.so
 # usr/share/man/man3/*  w/o  gv_*.3 (bindings)
 usr/share/man/man3/cdt.3
 usr/share/man/man3/graph.3
-usr/share/man/man3/agraph.3
+usr/share/man/man3/cgraph.3
 usr/share/man/man3/pathplan.3
 usr/share/man/man3/gvc.3
