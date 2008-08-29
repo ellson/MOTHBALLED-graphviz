@@ -18,7 +18,7 @@ noinst_LTLIBRARIES = libexpr_C.la
 ### expr.h includes ast.h and vmalloc.h which we don't install
 #lib_LTLIBRARIES = libexpr.la
 #man_MANS = expr.3
-#pdf_DATA = expr.pdf
+#pdf_DATA = expr.3.pdf
 #pkgconfig_DATA = libexpr.pc
 
 #### -no-undefined breaks Mac OS/X builds.
@@ -64,8 +64,8 @@ exop.h: exparse.h
 	$(SED) -e '1,/MINTOKEN/d' -e '/^[ 	]*#[ 	]*define[ 	][ 	]*[A-Z]/!d' -e 's/^[ 	]*#[ 	]*define[ 	]*\([A-Z0-9_]*\).*/	"\1",/' < exparse.h >> exop.h
 	echo "};" >> exop.h
 
-.3.pdf:
-	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
+expr.3.pdf: expr.3
+	- @GROFF@ -Tps -man expr.3 | @PS2PDF@ - - >expr.3.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) RELEASE \
 	Makefile.nmake Makefile.orig Makefile.old \

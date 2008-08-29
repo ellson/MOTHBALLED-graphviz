@@ -4,12 +4,12 @@
 pdfdir = $(pkgdatadir)/doc/pdf
 
 linkedman = neato.1 twopi.1 fdp.1 circo.1
-linkedpdf = neato.pdf twopi.pdf fdp.pdf circo.pdf
+linkedpdf = neato.1.pdf twopi.1.pdf fdp.1.pdf circo.1.pdf
 linkedprogram = neato$(EXEEXT) twopi$(EXEEXT) fdp$(EXEEXT) circo$(EXEEXT)
 
 if WITH_SFDP
 linkedman += sfdp.1
-linkedpdf += sfdp.pdf
+linkedpdf += sfdp.1.pdf
 linkedprogram += sfdp$(EXEEXT)
 endif
 
@@ -44,14 +44,14 @@ endif
 
 
 man_MANS = dot.1 
-pdf_DATA = dot.pdf
+pdf_DATA = dot.1.pdf
 
 dot_SOURCES = dot.c
 dot_LDADD = $(top_builddir)/lib/gvc/libgvc.la
 
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); for i in $(linkedman); do rm -f $$i; $(LN_S) dot.1 $$i; done;)
-	(cd $(DESTDIR)$(pdfdir); for i in $(linkedpdf); do rm -f $$i; $(LN_S) dot.pdf $$i; done;)
+	(cd $(DESTDIR)$(pdfdir); for i in $(linkedpdf); do rm -f $$i; $(LN_S) dot.1.pdf $$i; done;)
 
 # create "neato", "fdp" etc as soflinks to "dot"
 # run "dot -c", if possible, to create plugin config
@@ -65,8 +65,8 @@ uninstall-hook:
 	(cd $(DESTDIR)$(bindir); for i in $(linkedprogram); do rm -f $$i; done;)
 	(cd $(DESTDIR)$(libdir); rm -f config;)
 
-dot.pdf: $(top_srcdir)/cmd/dot/dot.1
-	- @GROFF@ -Tps -man $(top_srcdir)/cmd/dot/dot.1 | @PS2PDF@ - - >$@
+dot.1.pdf: dot.1
+	- @GROFF@ -Tps -man dot.1 | @PS2PDF@ - - >dot.1.pdf
 
 # This automagic technique for building the list of builtins requires that the
 # symbols be in the binary image, but libtool makes it difficult
@@ -112,6 +112,6 @@ dot_static_LDADD += $(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a @PA
 dot_builtins_LDADD += $(top_builddir)/plugin/pango/libgvplugin_pango.la @PANGOCAIRO_LIBS@
 endif
 
-EXTRA_DIST = Makefile.old dot.1 dot.pdf
+EXTRA_DIST = Makefile.old dot.1 dot.1.pdf
 
-DISTCLEANFILES = dot.pdf
+DISTCLEANFILES = dot.1.pdf

@@ -38,7 +38,7 @@ pkgconfig_DATA += libgvc_builtins.pc
 endif
 
 man_MANS = gvc.3
-pdf_DATA = gvc.pdf
+pdf_DATA = gvc.3.pdf
 
 libgvc_C_la_SOURCES = gvrender.c gvlayout.c gvdevice.c gvloadimage.c \
 	gvcontext.c gvjobs.c gvevent.c gvplugin.c gvconfig.c \
@@ -65,8 +65,8 @@ libgvc_builtins_la_LDFLAGS = -version-info @VERSION_INFO@
 libgvc_builtins_la_SOURCES = $(libgvc_C_la_SOURCES)
 libgvc_builtins_la_LIBADD = $(libgvc_la_LIBADD)
 
-.3.pdf:
-	- @GROFF@ -Tps -man $< | @PS2PDF@ - - > $@
+gvc.3.pdf: gvc.3
+	- @GROFF@ -Tps -man gvc.3 | @PS2PDF@ - - > gvc.3.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old regex_win32.h regex_win32.c
 

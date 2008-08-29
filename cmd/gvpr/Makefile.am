@@ -18,7 +18,7 @@ bin_PROGRAMS = gvpr
 noinst_PROGRAMS = mkdefs
 noinst_HEADERS = actions.h compile.h gprstate.h parse.h queue.h
 man_MANS = gvpr.1
-pdf_DATA = gvpr.pdf
+pdf_DATA = gvpr.1.pdf
 
 gvpr_SOURCES = actions.c compile.c gvpr.c gprstate.c parse.c queue.c
 
@@ -39,8 +39,8 @@ mkdefs_SOURCES = mkdefs.c
 gdefs.h: $(top_srcdir)/cmd/gvpr/gprdata mkdefs
 	./mkdefs gdefs.h < $(top_srcdir)/cmd/gvpr/gprdata
 
-.1.pdf:
-	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
+gvpr.1.pdf: gvpr.1
+	- @GROFF@ -Tps -man gvpr.1 | @PS2PDF@ - - >gvpr.1.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) lib Makefile.old gprdata mkdefs.c gdefs.h
 

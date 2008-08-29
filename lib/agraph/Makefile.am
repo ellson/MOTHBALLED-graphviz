@@ -16,7 +16,7 @@ noinst_LTLIBRARIES = libagraph_C.la
 lib_LTLIBRARIES = libagraph.la
 pkgconfig_DATA = libagraph.pc
 man_MANS = agraph.3
-pdf_DATA = agraph.pdf
+pdf_DATA = agraph.3.pdf
 endif
 
 libagraph_C_la_SOURCES = agerror.c apply.c attr.c \
@@ -44,8 +44,8 @@ grammar.c: y.output
 grammar.h: y.output
 	@SED@ "s/yy/aag/g" < y.tab.h > grammar.h
 
-.3.pdf:
-	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
+agraph.3.pdf: agraph.3
+	- @GROFF@ -Tps -man agraph.3 | @PS2PDF@ - - >agraph.3.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old cmpnd.c dotdge.c \
 	main.c tester.c README grammar.c grammar.h scan.c \

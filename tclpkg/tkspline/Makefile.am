@@ -7,7 +7,7 @@ pkgtcldir = $(pkglibdir)/tcl
 pdfdir = $(pkgdatadir)/doc/pdf
 
 man = tkspline.3tk
-pdf = tkspline.pdf
+pdf = tkspline.3tk.pdf
 
 # If all else fails there is a local copy of tkInt.h in tkstubs/
 AM_CPPFLAGS = \
@@ -38,8 +38,8 @@ pkgIndex.tcl: libtkspline.la
 	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libtkspline.la Tkspline $(VERSION)
 endif
 
-.3tk.pdf:
-	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
+tkspline.3tk.pdf:
+	- @GROFF@ -Tps -man tkspline.3tk | @PS2PDF@ - - >tkspline.3tk.pdf
 
 EXTRA_DIST = $(man) $(pdf) dllEntry.c
 

@@ -201,111 +201,111 @@ gv_tcl.cpp: gv.i
 pkginclude_DATA = gv.i gv.cpp
 pkglib_LTLIBRARIES = 
 man_MANS =
-#pdf_DATA = 
+pdf_DATA = 
 DEVTSTS =
 if WITH_SWIG
 if WITH_SHARP
 pkgsharp_DATA = $(SHARP_data)
 man_MANS += gv.3sharp
-#pdf_DATA += gv.sharp.pdf
+pdf_DATA += gv.3sharp.pdf
 pkgsharp_LTLIBRARIES = libgv_sharp.la
 DEVTSTS += test_sharp
 endif
 if WITH_GUILE
 pkgguile_DATA = $(GUILE_data)
 man_MANS += gv.3guile
-#pdf_DATA += gv.3guile.pdf
+pdf_DATA += gv.3guile.pdf
 pkgguile_LTLIBRARIES = libgv_guile.la
 DEVTSTS += test_guile
 endif
 if WITH_IO
 pkgio_DATA = $(IO_data)
 man_MANS += gv.3io
-#pdf_DATA += gv.3io.pdf
+pdf_DATA += gv.3io.pdf
 pkgio_LTLIBRARIES = libgv_io.la
 DEVTSTS += test_io
 endif
 if WITH_JAVA
 pkgjava_DATA = $(JAVA_data)
 man_MANS += gv.3java
-#pdf_DATA += gv.3java.pdf
+pdf_DATA += gv.3java.pdf
 pkgjava_LTLIBRARIES = libgv_java.la
 DEVTSTS += test_java
 endif
 if WITH_LUA
 pkglua_DATA = $(LUA_data)
 man_MANS += gv.3lua
-#pdf_DATA += gv.3lua.pdf
+pdf_DATA += gv.3lua.pdf
 pkglua_LTLIBRARIES = libgv_lua.la
 DEVTSTS += test_lua
 endif
 if WITH_OCAML
 pkgocaml_DATA = $(OCAML_data)
 man_MANS += gv.3ocaml
-#pdf_DATA += gv.3ocaml.pdf
+pdf_DATA += gv.3ocaml.pdf
 pkgocaml_LTLIBRARIES = libgv_ocaml.la
 DEVTSTS += test_ocaml
 endif
 if WITH_PERL
 pkgperl_DATA = $(PERL_data)
 man_MANS += gv.3perl
-#pdf_DATA += gv.3perl.pdf
+pdf_DATA += gv.3perl.pdf
 pkgperl_LTLIBRARIES = libgv_perl.la
 DEVTSTS += test_perl
 endif
 if WITH_PHP
 pkgphp_DATA = $(PHP_data)
 man_MANS += gv.3php
-#pdf_DATA += gv.3php.pdf
+pdf_DATA += gv.3php.pdf
 pkgphp_LTLIBRARIES = libgv_php.la
 DEVTSTS += test_php
 endif
 if WITH_PYTHON
 pkgpython_DATA = $(PYTHON_data)
 man_MANS += gv.3python
-#pdf_DATA += gv.3python.pdf
+pdf_DATA += gv.3python.pdf
 pkgpython_LTLIBRARIES = libgv_python.la
 DEVTSTS += test_python
 endif
 if WITH_PYTHON23
 pkgpython23_DATA = $(PYTHON23_data)
 man_MANS += gv.3python
-#pdf_DATA += gv.3python.pdf
+pdf_DATA += gv.3python.pdf
 pkgpython23_LTLIBRARIES = libgv_python23.la
 #DEVTSTS += test_python23
 endif
 if WITH_PYTHON24
 pkgpython24_DATA = $(PYTHON24_data)
 man_MANS += gv.3python
-#pdf_DATA += gv.3python.pdf
+pdf_DATA += gv.3python.pdf
 pkgpython24_LTLIBRARIES = libgv_python24.la
 #DEVTSTS += test_python24
 endif
 if WITH_PYTHON25
 pkgpython25_DATA = $(PYTHON25_data)
 man_MANS += gv.3python
-#pdf_DATA += gv.3python.pdf
+pdf_DATA += gv.3python.pdf
 pkgpython25_LTLIBRARIES = libgv_python25.la
 #DEVTSTS += test_python25
 endif
 if WITH_R
 pkgR_DATA = $(R_data)
 man_MANS += gv.3r
-#pdf_DATA += gv.3r.pdf
+pdf_DATA += gv.3r.pdf
 pkgR_LTLIBRARIES = libgv_R.la
 DEVTSTS += test_R
 endif
 if WITH_RUBY
 pkgruby_DATA = $(RUBY_data)
 man_MANS += gv.3ruby
-#pdf_DATA += gv.3ruby.pdf
+pdf_DATA += gv.3ruby.pdf
 pkgruby_LTLIBRARIES = libgv_ruby.la
 DEVTSTS += test_ruby
 endif
 if WITH_TCL
 pkgtcl_DATA = $(TCL_data)
 man_MANS += gv.3tcl
-#pdf_DATA += gv.3tcl.pdf
+pdf_DATA += gv.3tcl.pdf
 pkgtcl_LTLIBRARIES = libgv_tcl.la
 DEVTSTS += test_tcl
 
@@ -319,14 +319,49 @@ endif
 man = gv.3sharp gv.3guile gv.3io gv.3java gv.3lua gv.3ocaml \
 	gv.3perl gv.3php gv.3python gv.3r gv.3ruby gv.3tcl
 
-#pdf = gv.3sharp.pdf gv.3guile.pdf gv.3io.pdf gv.3java.pdf gv.3lua.pdf gv.3ocaml.pdf \
-#	gv.3perl.pdf gv.3php.pdf gv.3python.pdf gv.3r.pdf gv.3ruby.pdf gv.3tcl.pdf
+pdf = gv.3sharp.pdf gv.3guile.pdf gv.3io.pdf gv.3java.pdf gv.3lua.pdf \
+      gv.3ocaml.pdf gv.3perl.pdf gv.3php.pdf gv.3python.pdf gv.3r.pdf \
+      gv.3ruby.pdf gv.3tcl.pdf
+
 
 $(man): gv.i gv_doc_writer.tcl gv_doc_template.tcl gv_doc_langs.tcl
 	$(TCLSH) $(srcdir)/gv_doc_writer.tcl "$(srcdir)"
 
-.n.pdf:
-	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
+gv.3sharp.pdf: gv.3sharp
+	- @GROFF@ -Tps -man gv.3sharp | @PS2PDF@ - - >gv.3sharp.pdf
+
+gv.3guile.pdf: gv.3guile
+	- @GROFF@ -Tps -man gv.3guile | @PS2PDF@ - - >gv.3guile.pdf
+
+gv.3io.pdf: gv.3io
+	- @GROFF@ -Tps -man gv.3io | @PS2PDF@ - - >gv.3io.pdf
+
+gv.3java.pdf: gv.3java
+	- @GROFF@ -Tps -man gv.3java | @PS2PDF@ - - >gv.3java.pdf
+
+gv.3lua.pdf: gv.3lua
+	- @GROFF@ -Tps -man gv.3lua | @PS2PDF@ - - >gv.3lua.pdf
+
+gv.3ocaml.pdf: gv.3ocaml
+	- @GROFF@ -Tps -man gv.3ocaml | @PS2PDF@ - - >gv.3ocaml.pdf
+
+gv.3perl.pdf: gv.3perl
+	- @GROFF@ -Tps -man gv.3perl | @PS2PDF@ - - >gv.3perl.pdf
+
+gv.3php.pdf: gv.3php
+	- @GROFF@ -Tps -man gv.3php | @PS2PDF@ - - >gv.3php.pdf
+
+gv.3python.pdf: gv.3python
+	- @GROFF@ -Tps -man gv.3python | @PS2PDF@ - - >gv.3python.pdf
+
+gv.3r.pdf: gv.3r
+	- @GROFF@ -Tps -man gv.3r | @PS2PDF@ - - >gv.3r.pdf
+
+gv.3ruby.pdf: gv.3ruby
+	- @GROFF@ -Tps -man gv.3ruby | @PS2PDF@ - - >gv.3ruby.pdf
+
+gv.3tcl.pdf: gv.3tcl
+	- @GROFF@ -Tps -man gv.3tcl | @PS2PDF@ - - >gv.3tcl.pdf
 
 install-data-hook:
 if WITH_LUA

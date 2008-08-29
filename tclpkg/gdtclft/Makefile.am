@@ -16,7 +16,7 @@ LIBS = @LIBS@ -lc
 AM_CFLAGS = @TCL_CFLAGS@
 
 man = gdtclft.3tcl
-pdf = gdtclft.pdf
+pdf = gdtclft.3tcl.pdf
 
 if WITH_LIBGD
 if WITH_TCL
@@ -55,8 +55,8 @@ test:
 endif
 endif
 
-.3tcl.pdf:
-	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
+gdtclft.3tcl.pdf: gdtclft.3tcl
+	- @GROFF@ -Tps -man gdtclft.3tcl | @PS2PDF@ - - >gdtclft.3tcl.pdf
 
 EXTRA_DIST = $(man) $(pdf) Makefile.old
 

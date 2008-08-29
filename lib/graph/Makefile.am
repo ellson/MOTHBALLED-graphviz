@@ -14,7 +14,7 @@ noinst_LTLIBRARIES = libgraph_C.la
 lib_LTLIBRARIES = libgraph.la
 pkgconfig_DATA = libgraph.pc
 man_MANS = graph.3
-pdf_DATA = graph.pdf
+pdf_DATA = graph.3.pdf
 
 libgraph_C_la_SOURCES = \
 	attribs.c agxbuf.c edge.c graph.c graphio.c lexer.c \
@@ -39,8 +39,8 @@ y.output: $(top_srcdir)/lib/graph/parser.y
 # trie.c : trie_input
 #       triegen  < trie_input > trie.c
 
-.3.pdf:
-	- @GROFF@ -Tps -man $< | @PS2PDF@ - - > $@
+graph.3.pdf: graph.3
+	- @GROFF@ -Tps -man graph.3 | @PS2PDF@ - - > graph.3.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) triefa.cP \
 	Makefile.old parser.c parser.h \

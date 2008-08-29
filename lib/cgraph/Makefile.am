@@ -14,7 +14,7 @@ noinst_LTLIBRARIES = libcgraph_C.la
 lib_LTLIBRARIES = libcgraph.la
 pkgconfig_DATA = libcgraph.pc
 man_MANS = cgraph.3
-pdf_DATA = cgraph.pdf
+pdf_DATA = cgraph.3.pdf
 
 libcgraph_C_la_SOURCES = agerror.c agxbuf.c apply.c attr.c edge.c \
 	flatten.c graph.c grammar.y id.c imap.c io.c mem.c node.c \
@@ -40,8 +40,8 @@ grammar.c: y.output
 grammar.h: y.output
 	@SED@ "s/yy/aag/g" < y.tab.h > grammar.h
 
-.3.pdf:
-	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
+cgraph.3.pdf: cgraph.3
+	- @GROFF@ -Tps -man cgraph.3 | @PS2PDF@ - - >cgraph.3.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old cmpnd.c \
 	main.c tester.c grammar.c grammar.h scan.c \

@@ -2,7 +2,7 @@
 ## Process this file with automake to produce Makefile.in
 
 man = dotty.1
-pdf = dotty.pdf
+pdf = dotty.1.pdf
 
 leftydir = $(pkgdatadir)/lefty
 pdfdir = $(pkgdatadir)/doc/pdf
@@ -26,8 +26,8 @@ dotty: $(top_srcdir)/cmd/dotty/dotty.sh
 	chmod +x dotty
 endif
 
-.1.pdf:
-	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
+dotty.1.pdf: dotty.1
+	- @GROFF@ -Tps -man dotty.1 | @PS2PDF@ - - >dotty.1.pdf
 
 EXTRA_DIST = $(lefty_DATA) $(man) $(pdf) \
 	dotty.bsh dotty.ksh dotty.sh \

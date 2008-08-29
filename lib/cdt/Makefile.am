@@ -12,7 +12,7 @@ noinst_HEADERS = dthdr.h $(top_builddir)/ast_common.h
 noinst_LTLIBRARIES = libcdt_C.la
 lib_LTLIBRARIES = libcdt.la
 man_MANS = cdt.3
-pdf_DATA = cdt.pdf
+pdf_DATA = cdt.3.pdf
 pkgconfig_DATA = libcdt.pc
 
 libcdt_C_la_SOURCES = dtclose.c dtdisc.c dtextract.c dtflatten.c \
@@ -22,8 +22,8 @@ libcdt_C_la_SOURCES = dtclose.c dtdisc.c dtextract.c dtflatten.c \
 libcdt_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
 libcdt_la_SOURCES = $(libcdt_C_la_SOURCES)
 
-.3.pdf:
-	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
+cdt.3.pdf: cdt.3
+	- @GROFF@ -Tps -man cdt.3 | @PS2PDF@ - - >cdt.3.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old features
 
