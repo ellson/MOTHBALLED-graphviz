@@ -2849,7 +2849,6 @@ AC_CONFIG_FILES(Makefile
 	lib/graph/libgraph.pc
 	lib/cgraph/Makefile
 	lib/cgraph/libcgraph.pc
-	lib/agutil/Makefile
 	lib/gd/Makefile
 	lib/pathplan/Makefile
 	lib/pathplan/libpathplan.pc
