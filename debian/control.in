@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: John Ellson <ellson@graphviz.org>
 XSBC-Original-Maintainer: Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>
 Standards-Version: @VERSION@
-Build-Depends: Build-Depends: tk8.5-dev, tcl8.5-dev, debhelper (>= 5), libfreetype6-dev, zlib1g-dev, libjpeg62-dev, libpng12-dev, libxaw7-dev, bison, flex, autotools-dev, pdksh, libexpat1-dev, libfontconfig1-dev, libltdl3-dev, swig, libperl-dev, libgd2-noxpm-dev (>= 2.0.35), quilt (>= 0.40), groff-base, ghostscript, liblualib50-dev, ruby, ruby1.8-dev, php5-dev, php5-cli, ocaml-nox, python-dev, python-minimal, libcairo2-dev, libpango1.0-dev, guile-1.8-dev, d-shlibs, python-support
+Build-Depends: Build-Depends: tk8.5-dev, tcl8.5-dev, debhelper (>= 5), libfreetype6-dev, zlib1g-dev, libjpeg62-dev, libpng12-dev, libxaw7-dev, bison, flex, autotools-dev, pdksh, libexpat1-dev, libfontconfig1-dev, libltdl3-dev, swig, libperl-dev, libgd2-noxpm-dev (>= 2.0.35), quilt (>= 0.40), groff-base, ghostscript, liblualib50-dev, ruby, ruby1.8-dev, php5-dev, php5-cli, ocaml-nox, python-dev, python-minimal, libcairo2-dev, libpango1.0-dev, guile-1.8-dev, d-shlibs, python-support, librsvg2-dev, libgdk-pixbuf-dev, libdevil-dev
 Homepage: http://www.graphviz.org/
 
 Package: graphviz
@@ -135,8 +135,8 @@ Architecture: any
 Section: libdevel
 Depends: libgraphviz4 (= ${binary:Version}), ${devlibs:Depends}
 Suggests: ocaml-base-nox-${F:OCamlABI}, ocaml-findlib
-Conflicts: graphviz-dev (<< @VERSION@), libgraphviz3-dev, libgraphviz4-dev (<< 2.16-3)
-Replaces: libgraphviz3-dev, libgraphviz4-dev (<< 2.16-3)
+Conflicts: graphviz-dev (<< @VERSION@-1), libgraphviz3-dev, libgraphviz4-dev (<< @VERSION@)
+Replaces: libgraphviz3-dev, libgraphviz4-dev (<< @VERSION@)
 Provides: graphviz-dev
 Description: graphviz libs and headers against which to build applications
  Graphviz is a set of graph drawing tools. See the description of the graphviz
