@@ -55,8 +55,8 @@ test:
 endif
 endif
 
-gdtclft.3tcl.pdf: gdtclft.3tcl
-	- @GROFF@ -Tps -man gdtclft.3tcl | @PS2PDF@ - - >gdtclft.3tcl.pdf
+gdtclft.3tcl.pdf: $(srcdir)/gdtclft.3tcl
+	- @GROFF@ -Tps -man $(srcdir)/gdtclft.3tcl | @PS2PDF@ - - >gdtclft.3tcl.pdf
 
 EXTRA_DIST = $(man) $(pdf) Makefile.old
 
