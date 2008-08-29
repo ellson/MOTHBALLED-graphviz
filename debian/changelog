@@ -1,3 +1,24 @@
+graphviz (2.21.0) hardy; urgency=low
+
+  * Adapted for upstream nightly builds by applying graphviz_2.18-1ubuntu2.diff.gz
+    to CVS sources and adding the debian/ subtree to CVS.
+
+  * Removed all debian/patches/[0123]* and emptied debian/patches/series
+    since upstream should never need patches.
+	- 0_tcl_manpages_section : applied upstream
+	- 0_autoreconf_run : not needed
+	- 1_disable_lumping_all_include_directories : applied upstream
+	- 0_libtool_linking_reorder_workaround : not needed - previously disabled
+	- 0_bindings_documentation : applied upstream
+	- 0_versioned_plugin_config_file : applied upstream
+   
+  * Enabled "--with-rsvg" to provide support for node images in svg format.
+  * Enabled "--with-devil" to provide support for additional output formats.
+  * Enabled "--with-gdk-pixbuf" to provide support for additional output formats.
+  * Enabled "--with-ipsepcola" (was only disabled because of concern about C++ portability)
+
+ -- John Ellson <ellson@research.att.com> Fri, 29 Aug 2008 09:55:33 -0400
+
 graphviz (2.18-1ubuntu2) intrepid; urgency=low
 
   * Build against the newer guile 1.8 instead of the older 1.6.

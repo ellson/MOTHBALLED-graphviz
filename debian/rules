@@ -52,21 +52,26 @@ configure-stamp:
 	--disable-static \
 	--with-pangocairo \
 	--with-x \
-	--without-gdk-pixbuf \
+	--with-gdk-pixbuf \
 	--without-gnomeui \
 	--without-gtk \
-	--without-ipsepcola \
-	--without-rsvg \
+	--with-ipsepcola \
+	--with-rsvg \
+	--with-devil \
+	--disable-sharp \
 	--enable-guile \
+	--disable-java \
+	--disable-io \
 	--enable-lua \
 	--enable-ocaml \
 	--enable-php \
-	--enable-python24 \
+	--disable-python \
+	--disable-python23 \
+	--disable-python24 \
 	--enable-python25 \
+	--disable-r \
 	--enable-ruby \
 	--enable-tcl \
-	--disable-java \
-	--disable-sharp \
 	LDFLAGS="-Wl,--as-needed"
 	touch configure-stamp
 
@@ -120,25 +125,15 @@ install: build
 	install -m 644 $(CURDIR)/debian/libgraphviz$(SONAME).lintian-overrides \
 		$(CURDIR)/debian/tmp/usr/share/lintian/overrides/libgraphviz$(SONAME)
 
-	# Rename manpages: s/.n$/.3/
-	for i in $(CURDIR)/debian/tmp/usr/share/man/mann/*.n ; do \
-		mv $$i $${i%%.n}.3; \
-	done
-
-	# Move manpages
-	install -d $(CURDIR)/debian/tmp/usr/share/man/man3
-	find $(CURDIR)/debian/tmp/usr/share/man/mann -name '*.3' \
-		-exec mv {} $(CURDIR)/debian/tmp/usr/share/man/man3 ';'
-
 	# Compute the dependencies of the -dev package
 	# NOTE: It is important to do that before splitting the files into
 	# their respective packages, otherwise the symlinks are broken
-	d-devlibdeps \
-		--override s/libpathplan$(SONAME)-dev// \
-		--override s/libgraph$(SONAME)-dev//    \
-		--override s/libcdt$(SONAME)-dev//      \
-		$(CURDIR)/debian/libgraphviz-dev.substvars \
-		$(CURDIR)/debian/tmp/usr/lib/*.so
+#	d-devlibdeps \
+#		--override s/libpathplan$(SONAME)-dev// \
+#		--override s/libgraph$(SONAME)-dev//    \
+#		--override s/libcdt$(SONAME)-dev//      \
+#		$(CURDIR)/debian/libgraphviz-dev.substvars \
+#		$(CURDIR)/debian/tmp/usr/lib/*.so
 
 	# Move from debian/tmp to the appropriate packages, rename one binary
 	dh_install --sourcedir=debian/tmp --list-missing
