@@ -6,7 +6,7 @@ SUBDIRS = demo
 pkgtcldir = $(pkglibdir)/tcl
 pdfdir = $(pkgdatadir)/doc/pdf
 
-man = tkspline.n
+man = tkspline.3tk
 pdf = tkspline.pdf
 
 # If all else fails there is a local copy of tkInt.h in tkstubs/
@@ -38,7 +38,7 @@ pkgIndex.tcl: libtkspline.la
 	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libtkspline.la Tkspline $(VERSION)
 endif
 
-.n.pdf:
+.3tk.pdf:
 	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
 
 EXTRA_DIST = $(man) $(pdf) dllEntry.c
