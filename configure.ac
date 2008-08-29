@@ -1344,13 +1344,13 @@ if test "x$use_tcl" = "x"; then
     TCLSH=$withval,)
 
   if test "x$TCLSH" = "x"; then
-    AC_PATH_PROG(TCLSH,tclsh)
+    AC_PATH_PROG(TCLSH,tclsh8.5)
     if test "x$TCLSH" = "x"; then
-      AC_PATH_PROG(TCLSH,tclsh8.5)
+      AC_PATH_PROG(TCLSH,tclsh8.4)
       if test "x$TCLSH" = "x"; then
-        AC_PATH_PROG(TCLSH,tclsh8.4)
+        AC_PATH_PROG(TCLSH,tclsh8.3)
         if test "x$TCLSH" = "x"; then
-          AC_PATH_PROG(TCLSH,tclsh8.3)
+          AC_PATH_PROG(TCLSH,tclsh)
         fi
       fi
     fi
