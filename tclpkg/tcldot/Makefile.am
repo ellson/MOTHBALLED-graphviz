@@ -21,7 +21,7 @@ LIBS =  @LIBS@ -lc
 
 AM_CFLAGS = @TCL_CFLAGS@
 
-man = tcldot.n
+man = tcldot.3tcl
 pdf = tcldot.pdf
 html = tcldot.html
 
@@ -94,7 +94,7 @@ pkgIndex.tcl: libtcldot.la
 	sh $(top_srcdir)/tclpkg/mkpkgindex.sh libtcldot.la Tcldot $(VERSION)
 endif
 
-.n.pdf:
+.3tcl.pdf:
 	- @GROFF@ -Tps -man $< | @PS2PDF@ - - >$@
 
 EXTRA_DIST = $(man) $(pdf) $(html) README README.Tkspline Makefile.old
