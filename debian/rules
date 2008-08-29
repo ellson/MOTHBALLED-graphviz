@@ -65,9 +65,9 @@ configure-stamp:
 	--enable-lua \
 	--enable-ocaml \
 	--enable-php \
-	--disable-python \
+	--enable-python \
 	--disable-python23 \
-	--disable-python24 \
+	--enable-python24 \
 	--enable-python25 \
 	--disable-r \
 	--enable-ruby \
@@ -83,14 +83,14 @@ build-stamp:
 	$(MAKE)
 	touch build-stamp
 
-	# Build the manpage from SONAME-independent perlpod
-	sed -e 's/##SONAME##/$(SONAME)/g' \
-		debian/libgraphviz-config-update.pod.in > \
-		debian/libgraphviz$(SONAME)-config-update.pod
-	pod2man --center "GRAPHVIZ CONFIGURATION MANAGEMENT" \
-		--release $(UPSTREAM_VERSION) \
-		debian/libgraphviz$(SONAME)-config-update.pod \
-		debian/libgraphviz$(SONAME)-config-update.1
+#	# Build the manpage from SONAME-independent perlpod
+#	sed -e 's/##SONAME##/$(SONAME)/g' \
+#		debian/libgraphviz-config-update.pod.in > \
+#		debian/libgraphviz$(SONAME)-config-update.pod
+#	pod2man --center "GRAPHVIZ CONFIGURATION MANAGEMENT" \
+#		--release $(UPSTREAM_VERSION) \
+#		debian/libgraphviz$(SONAME)-config-update.pod \
+#		debian/libgraphviz$(SONAME)-config-update.1
 
 clean: clean-patched unpatch
 clean-patched:
@@ -101,9 +101,9 @@ clean-patched:
 	# Clean up if a build already happened
 	[ ! -f Makefile ] || $(MAKE) distclean
 
-	# Clean up intermediate and generated manpages
-	rm -f debian/libgraphviz$(SONAME)-config-update.pod
-	rm -f debian/libgraphviz$(SONAME)-config-update.1
+#	# Clean up intermediate and generated manpages
+#	rm -f debian/libgraphviz$(SONAME)-config-update.pod
+#	rm -f debian/libgraphviz$(SONAME)-config-update.1
 
 	dh_clean $(CONFIG_SCRIPTS) \
 		tclpkg/gv/gv.R tclpkg/gv/php_gv.h
