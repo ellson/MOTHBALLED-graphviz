@@ -6,8 +6,8 @@ Makefile
 Makefile.in
 pkgIndex.tcl
 *.pdf
+*.3*
 gv_*.cpp
-gv_*.n
 SWIGTYPE_p_*
 gv.cs
 gv.java
