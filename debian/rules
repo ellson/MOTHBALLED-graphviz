@@ -58,6 +58,7 @@ configure-stamp:
 	--with-ipsepcola \
 	--with-rsvg \
 	--with-devil \
+	--with-gts \
 	--disable-sharp \
 	--enable-guile \
 	--disable-java \
@@ -130,8 +131,10 @@ install: build
 	# their respective packages, otherwise the symlinks are broken
 	d-devlibdeps \
 		--override s/libpathplan$(SONAME)-dev// \
+		--override s/libcgraph$(SONAME)-dev//   \
 		--override s/libgraph$(SONAME)-dev//    \
 		--override s/libcdt$(SONAME)-dev//      \
+		--override s/libgts-0.7-5-dev/libgts-dev/ \
 		$(CURDIR)/debian/libgraphviz-dev.substvars \
 		$(CURDIR)/debian/tmp/usr/lib/*.so
 
