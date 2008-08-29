@@ -182,8 +182,8 @@ install: build
 	rm -rf $(PYTHON_PACKAGE)/usr/lib/graphviz
 
 	# Debian-specific manpage
-	dh_installman -plibgraphviz$(SONAME)      \
-		$(CURDIR)/debian/libgraphviz$(SONAME)-config-update.1
+#	dh_installman -plibgraphviz$(SONAME)      \
+#		$(CURDIR)/debian/libgraphviz$(SONAME)-config-update.1
 
 	# Some additional work for libgv-ruby
 	install -d $(RUBY_PACKAGE)/usr/lib/ruby/$(RUBY_VERSION)
