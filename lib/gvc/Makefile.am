@@ -11,7 +11,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/graph \
 	-I$(top_srcdir)/lib/cdt \
 	$(INCLTDL) -I$(top_srcdir)/libltdl \
-	-DGVLIBDIR=\"$(pkglibdir)\"
+	-DGVLIBDIR=\"$(pkglibdir)\" -DGVPLUGIN_CONFIG_FILE=\"$(GVPLUGIN_CONFIG_FILE)\"
 
 LIBS = $(LIBLTDL) $(SOCKET_LIBS) $(Z_LIBS) $(MATH_LIBS)
 

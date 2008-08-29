@@ -474,7 +474,7 @@ void gvconfig(GVC_t * gvc, boolean rescan)
     FILE *f = NULL;
     char *config_text = NULL;
     char *libdir;
-    char *config_file_name = "config";
+    char *config_file_name = GVPLUGIN_CONFIG_FILE;
 
 #define MAX_SZ_CONFIG 100000
 #endif

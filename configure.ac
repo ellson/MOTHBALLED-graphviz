@@ -67,7 +67,9 @@ GVPLUGIN_REVISION=0
 # precedence over adding, so set to 0 if both happened.
 GVPLUGIN_AGE=0
 
+GVPLUGIN_CONFIG_FILE="config$GVPLUGIN_CURRENT"
 GVPLUGIN_VERSION_INFO="$GVPLUGIN_CURRENT:$GVPLUGIN_REVISION:$GVPLUGIN_AGE"
+AC_SUBST(GVPLUGIN_CONFIG_FILE)
 AC_SUBST(GVPLUGIN_VERSION_INFO)
 
 dnl ===========================================================================
