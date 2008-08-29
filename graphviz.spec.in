@@ -613,7 +613,6 @@ This package contains development files for graphviz.
 %{_includedir}/graphviz
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
-%{_mandir}/man3/*.3
 %{_mandir}/man3/*.3.*
 %exclude %{_libdir}/graphviz/libgvplugin*
 %exclude %{_libdir}/graphviz/*.so
