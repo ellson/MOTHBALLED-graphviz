@@ -164,7 +164,7 @@ dijkstra.1.pdf: $(srcdir)/dijkstra.1
 gvgen_SOURCES = gvgen.c graph_generator.c
 
 gvgen_LDADD = \
-	$(top_builddir)/lib/cgraph/libcgraph.la
+	$(top_builddir)/lib/cgraph/libcgraph.la @MATH_LIBS@
 
 gvgen.1.pdf: $(srcdir)/gvgen.1
 	- @GROFF@ -Tps -man $(srcdir)/gvgen.1 | @PS2PDF@ - - >gvgen.1.pdf
