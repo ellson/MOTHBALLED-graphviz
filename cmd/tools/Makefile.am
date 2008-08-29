@@ -16,15 +16,15 @@ AM_CPPFLAGS = \
 
 pdfdir = $(pkgdatadir)/doc/pdf
 
-noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h
+noinst_HEADERS = colortbl.h convert.h mmio.h matrix_market.h graph_generator.h
 bin_PROGRAMS = gc gvcolor gxl2gv acyclic nop ccomps sccmap tred \
-	unflatten gvpack dijkstra bcomps mm2gv
+	unflatten gvpack dijkstra bcomps mm2gv gvgen
 man_MANS = gc.1 gvcolor.1 gxl2gv.1 acyclic.1 nop.1 ccomps.1 sccmap.1 \
-	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1 mm2gv.1
+	tred.1 unflatten.1 gvpack.1 dijkstra.1 bcomps.1 mm2gv.1 gvgen.1
 pdf_DATA = gc.1.pdf gvcolor.1.pdf gxl2gv.1.pdf acyclic.1.pdf \
 	   nop.1.pdf ccomps.1.pdf sccmap.1.pdf tred.1.pdf \
 	   unflatten.1.pdf gvpack.1.pdf dijkstra.1.pdf \
-	   bcomps.1.pdf mm2gv.1.pdf
+	   bcomps.1.pdf mm2gv.1.pdf gvgen.1.pdf
 
 install-data-hook:
 	(cd $(DESTDIR)$(man1dir); rm -f gv2gxl.1; $(LN_S) gxl2gv.1 gv2gxl.1;)
@@ -160,6 +160,14 @@ dijkstra_LDADD = \
 
 dijkstra.1.pdf: $(srcdir)/dijkstra.1
 	- @GROFF@ -Tps -man $(srcdir)/dijkstra.1 | @PS2PDF@ - - >dijkstra.1.pdf
+
+gvgen_SOURCES = gvgen.c graph_generator.c
+
+gvgen_LDADD = \
+	$(top_builddir)/lib/cgraph/libcgraph.la
+
+gvgen.1.pdf: $(srcdir)/gvgen.1
+	- @GROFF@ -Tps -man $(srcdir)/gvgen.1 | @PS2PDF@ - - >gvgen.1.pdf
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old
 

@@ -1,0 +1,130 @@
+.TH GC 1 "27 March 2008"
+.SH NAME
+gvgen \- generate graphs
+.SH SYNOPSIS
+.B gvgen
+[
+.B \-d?
+]
+[
+.BI -c n
+]
+[
+.BI -C x,y
+]
+[
+.BI -g [\fBf\fP]x,y
+]
+[
+.BI -G [\fBf\fP]x,y
+]
+[
+.BI -h n
+]
+[
+.BI -k n
+]
+[
+.BI -p n
+]
+[
+.BI -s n
+]
+[
+.BI -S n
+]
+[
+.BI -t n
+]
+[
+.BI -T x,y
+]
+[
+.BI -w n
+]
+[
+.BI -o outfile
+]
+.SH DESCRIPTION
+.B gvgen
+generates a variety of simple, regularly-structured abstract
+graphs.
+.SH OPTIONS
+The following options are supported:
+.TP
+.BI \-c " n"
+Generate a cycle with \fIn\fP vertices and edges.
+.TP
+.BI \-C " x,y"
+Generate an \fIx\fP by \fIy\fP cylinder.
+This will have \fIx*y\fP vertices and 
+\fI2*x*y - y\fP edges.
+.TP
+.BI \-g " [\fBf\fP]x,y"
+Generate an \fIx\fP by \fIy\fP grid.
+If \fBf\fP is given, the grid is folded, with an edge
+attaching each pair of opposing corner vertices.
+This will have \fIx*y\fP vertices and 
+\fI2*x*y - y - x\fP edges if unfolded and
+\fI2*x*y - y - x + 2\fP edges if folded.
+.TP
+.BI \-G " [\fBf\fP]x,y"
+Generate an \fIx\fP by \fIy\fP partial grid.
+If \fBf\fP is given, the grid is folded, with an edge
+attaching each pair of opposing corner vertices.
+This will have \fIx*y\fP vertices.
+.TP
+.BI \-h " n"
+Generate a hypercube of degree \fIn\fP.
+This will have \fI2^n\fP vertices and \fIn*2^(n-1)\fP edges.
+.TP
+.BI \-k " n"
+Generate a complete graph on \fIn\fP vertices with 
+\fIn*(n-1)/2\fP edges.
+.TP
+.BI \-p " n"
+Generate a path on \fIn\fP vertices.
+This will have \fIn-1\fP edges.
+.TP
+.BI \-s " n"
+Generate a star on \fIn\fP vertices.
+This will have \fIn-1\fP edges.
+.TP
+.BI \-S " n"
+Generate a Sierpinski graph of order \fIn\fP.
+This will have \fI3*(3^(n-1) - 1)/2\fP vertices and
+\fI3^n\fP edges.
+.TP
+.BI \-t " n"
+Generate a binary tree of height \fIn\fP.
+This will have \fI2^n-1\fP vertices and
+\fI2^n-2\fP edges.
+.TP
+.BI \-T " x,y"
+Generate an \fIx\fP by \fIy\fP torus.
+This will have \fIx*y\fP vertices and
+\fI2*x*y\fP edges.
+.TP
+.BI \-w " n"
+Generate a path on \fIn\fP vertices.
+This will have \fIn-1\fP edges.
+.TP
+.BI \-o " outfile"
+If specified, the generated graph is written into the file
+.I outfile.
+Otherwise, the graph is written to standard out.
+.TP
+.B \-d
+Make the generated graph directed.
+.TP
+.B \-?
+Print usage information.
+.SH "EXIT STATUS"
+.B gvgen
+exits with 0 on successful completion, 
+and exits with 1 if given an ill-formed or incorrect flag,
+or if the specified output file could not be opened.
+.SH AUTHOR
+Emden R. Gansner <erg@research.att.com>
+.SH "SEE ALSO"
+gc(1), acyclic(1), gvpr(1), gvcolor(1), ccomps(1), sccmap(1), tred(1), libgraph(3)

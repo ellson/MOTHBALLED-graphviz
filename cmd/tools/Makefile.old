@@ -1,5 +1,5 @@
 ALL_BIN = gc gvcolor acyclic nop ccomps sccmap tred unflatten gxl2dot \
-          dot2gxl dijkstra gvpack bcomps
+          dot2gxl dijkstra gvpack bcomps mm2gv gvgen 
 ALL = $(ALL_BIN) dot2gxl.1
 
 all : $(ALL)
@@ -66,10 +66,17 @@ SCCOBJS = sccmap.o
 GXLOBJS = cvtgxl.o   dot2gxl.o  gxl2dot.o
 GVPOBJS = gvpack.o gvpack_builtins.o
 MMGVOBJS = mm2gv.o matrix_market.o mmio.o
+GVGENOBJS = gvgen.o graph_generator.o
 
 BCCOBJS = bcomps.o
 MANS = acyclic.1 gvcolor.1 nop.1 tred.1 ccomps.1 gc.1 sccmap.1 \
 	unflatten.1 gxl2dot.1 dot2gxl.1 gvpack.1 bcomps.1
+
+gvgen : gvgen.o
+	$(CSLD) $(LDFLAGS) gvgen.o $(ALIBS) -o $@
+
+gvgen.o : gvgen.c
+	$(CC) -c $(CCFLAGS) $(DEFINES) $(DNINCS) $(INCS) gvgen.c
 
 mm2gv : $(GVPOBJS)
 	$(CPP) $(LDFLAGS) $(MMGVOBJS) $(INGLIB) $(PDNLIBS) -o $@
