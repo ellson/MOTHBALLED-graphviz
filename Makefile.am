@@ -43,7 +43,9 @@ rpm: dist
 	
 .PHONY: deb
 deb: dist
-	true
+	rm -rf graphviz-@VERSION@
+	zcat graphviz-@VERSION@.tar.gz | tar xf -
+	(cd graphviz-@VERSION@; fakeroot make -f debian/rules binary)
 	
 .PHONY: pkg
 pkg: dist
