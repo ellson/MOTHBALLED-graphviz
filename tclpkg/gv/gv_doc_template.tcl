@@ -1,4 +1,4 @@
-.TH GV_[string toupper $lang] N \"[clock format [clock seconds] -format "%d %B %Y"]\"
+.TH gv 3[string tolower $lang] \"[clock format [clock seconds] -format "%d %B %Y"]\"
 
 .SH NAME
 
