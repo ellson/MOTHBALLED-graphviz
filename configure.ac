@@ -1488,11 +1488,11 @@ if test "x$use_tk" = "x"; then
         [AC_HELP_STRING([--with-wish=PROG], [use a specific wish])],
         WISH=$withval,)
     if test "x$WISH" = "x"; then
-        AC_PATH_PROGS(TCLSH,[wish8.5 wish8.4 wish8.3 wish])
+        AC_PATH_PROGS(WISH,[wish8.5 wish8.4 wish8.3 wish])
         if test "x$WISH" = "x"; then
             AC_MSG_WARN([Unable to find a wish. The Tk packages will not be built])
             use_tk="No (wish not found)"
-    fi
+        fi
     fi
 fi
 
