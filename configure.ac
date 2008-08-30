@@ -1044,7 +1044,7 @@ else
       else
         PYTHON_PREFIX=`$PYTHON -c "import sys; print sys.prefix"`
         PYTHON_INCLUDES=-I$PYTHON_PREFIX/include/python$PYTHON_VERSION_SHORT
-        PYTHON_LIBS="-L$PYTHON_PREFIX/lib$LIBPOSTFIX/python$PYTHON_VERSION_SHORT/config"
+        PYTHON_LIBS="-lpython$PYTHON_VERSION_SHORT"
         PYTHON_INSTALL_DIR="`$PYTHON $srcdir/config/config_python.py archsitelib`"
         save_CPPFLAGS=$CPPFLAGS
         CPPFLAGS="$CPPFLAGS $PYTHON_INCLUDES"
@@ -1108,7 +1108,7 @@ else
       else
         PYTHON23_PREFIX=`$PYTHON23 -c "import sys; print sys.prefix"`
         PYTHON23_INCLUDES=-I$PYTHON23_PREFIX/include/python$PYTHON23_VERSION_SHORT
-        PYTHON23_LIBS="-L$PYTHON23_PREFIX/lib$LIBPOSTFIX/python$PYTHON23_VERSION_SHORT/config"
+        PYTHON23_LIBS="-lpython$PYTHON_VERSION_SHORT"
         PYTHON23_INSTALL_DIR="`$PYTHON23 $srcdir/config/config_python.py archsitelib`"
         save_CPPFLAGS=$CPPFLAGS
         CPPFLAGS="$CPPFLAGS $PYTHON23_INCLUDES"
@@ -1172,7 +1172,7 @@ else
       else
         PYTHON24_PREFIX=`$PYTHON24 -c "import sys; print sys.prefix"`
         PYTHON24_INCLUDES=-I$PYTHON24_PREFIX/include/python$PYTHON24_VERSION_SHORT
-        PYTHON24_LIBS="-L$PYTHON24_PREFIX/lib$LIBPOSTFIX/python$PYTHON24_VERSION_SHORT/config"
+        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
         PYTHON24_INSTALL_DIR="`$PYTHON24 $srcdir/config/config_python.py archsitelib`"
         save_CPPFLAGS=$CPPFLAGS
         CPPFLAGS="$CPPFLAGS $PYTHON24_INCLUDES"
@@ -1236,7 +1236,7 @@ else
       else
         PYTHON25_PREFIX=`$PYTHON25 -c "import sys; print sys.prefix"`
         PYTHON25_INCLUDES=-I$PYTHON25_PREFIX/include/python$PYTHON25_VERSION_SHORT
-        PYTHON25_LIBS="-L$PYTHON25_PREFIX/lib$LIBPOSTFIX/python$PYTHON25_VERSION_SHORT/config"
+        PYTHON24_LIBS="-lpython$PYTHON_VERSION_SHORT"
         PYTHON25_INSTALL_DIR="`$PYTHON25 $srcdir/config/config_python.py archsitelib`"
         save_CPPFLAGS=$CPPFLAGS
         CPPFLAGS="$CPPFLAGS $PYTHON25_INCLUDES"
@@ -1492,7 +1492,7 @@ if test "x$use_tk" = "x"; then
         if test "x$WISH" = "x"; then
             AC_MSG_WARN([Unable to find a wish. The Tk packages will not be built])
             use_tk="No (wish not found)"
-        fi
+    fi
     fi
 fi
 
