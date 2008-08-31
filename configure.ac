@@ -2918,6 +2918,7 @@ AC_CONFIG_FILES(Makefile
 	share/gui/Makefile
 	graphviz.spec
 	debian/control
+	debian/changelog
 	Doxyfile
 	)
 
