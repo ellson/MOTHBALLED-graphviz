@@ -154,22 +154,38 @@ static char* dotneato_basename (char* path)
     return ret;
 }
 
-static void use_library(GVC_t *gvc, char *name)
+static void use_library(GVC_t *gvc, const char *name)
 {
     static int cnt = 0;
     if (name) {
-	Lib = ALLOC(cnt + 2, Lib, char *);
+	Lib = ALLOC(cnt + 2, Lib, const char *);
 	Lib[cnt++] = name;
 	Lib[cnt] = NULL;
     }
     gvc->common.lib = Lib;
 }
 
-extern char *gvplugin_list(GVC_t * gvc, api_t api, char *str);
+extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
+
+void global_def(const char *dcl,
+		attrsym_t * ((*dclfun) (Agraph_t *, char *, char *)))
+{
+    char *p;
+    const char *rhs = "true";
+
+    attrsym_t *sym;
+    if ((p = strchr(dcl, '='))) {
+	*p++ = '\0';
+	rhs = p;
+    }
+    sym = dclfun(NULL, dcl, rhs);
+    sym->fixed = 1;
+}
 
 void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
 {
-    char *rest, c, *val;
+    char c;
+    const char *rest, *val;
     int i, v, nfiles;
 
     /* establish if we are running in a CGI environment */
@@ -333,19 +349,6 @@ void dotneato_args_initialize(GVC_t * gvc, int argc, char **argv)
     /* set persistent attributes here (if not already set from command line options) */
     if (!(agfindattr(agprotograph()->proto->n, "label")))
 	agnodeattr(NULL, "label", NODENAME_ESC);
-}
-
-void global_def(char *dcl,
-		attrsym_t * ((*dclfun) (Agraph_t *, char *, char *)))
-{
-    char *p, *rhs = "true";
-    attrsym_t *sym;
-    if ((p = strchr(dcl, '='))) {
-	*p++ = '\0';
-	rhs = p;
-    }
-    sym = dclfun(NULL, dcl, rhs);
-    sym->fixed = 1;
 }
 
 /* getdoubles2ptf:

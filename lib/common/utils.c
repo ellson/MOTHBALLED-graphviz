@@ -294,7 +294,7 @@ char *gvUsername(void)
  * Return pointer to line, 
  * or 0 on EOF
  */
-static char *Fgets(FILE * fp)
+char *Fgets(FILE * fp)
 {
     static int bsize = 0;
     static char *buf;
@@ -335,7 +335,7 @@ static char *Fgets(FILE * fp)
  * equivalent.
  * Returns NULL if the argument is trivial.
  */
-char *safefile(char *filename)
+char *safefile(const char *filename)
 {
     static boolean onetime = TRUE;
     static char *safefilename = NULL;
@@ -388,50 +388,6 @@ char *safefile(char *filename)
     }
     /* else, not in server, use original filename without modification. */
     return filename;
-}
-
-/* cat_libfile:
- * Write library files onto the given file pointer.
- * arglib is an NULL-terminated array of char*
- * Each non-trivial entry should be the name of a file to be included.
- * stdlib is an NULL-terminated array of char*
- * Each of these is a line of a standard library to be included.
- * If any item in arglib is the empty string, the stdlib is not used.
- * The stdlib is printed first, if used, followed by the user libraries.
- * We check that for web-safe file usage.
- */
-void cat_libfile(FILE * ofp, char **arglib, char **stdlib)
-{
-    FILE *fp;
-    char *p, **s, *bp;
-    int i;
-    boolean use_stdlib = TRUE;
-
-    /* check for empty string to turn off stdlib */
-    if (arglib) {
-	for (i = 0; use_stdlib && ((p = arglib[i])); i++) {
-	    if (*p == '\0')
-		use_stdlib = FALSE;
-	}
-    }
-    if (use_stdlib)
-	for (s = stdlib; *s; s++) {
-	    fputs(*s, ofp);
-	    fputc('\n', ofp);
-	}
-    if (arglib) {
-	for (i = 0; (p = arglib[i]) != 0; i++) {
-	    if (*p == '\0')
-		continue;	/* ignore empty string */
-	    p = safefile(p);	/* make sure filename is okay */
-	    if ((fp = fopen(p, "r"))) {
-		while ((bp = Fgets(fp)))
-		    fputs(bp, ofp);
-		fputc('\n', ofp); /* append a newline just in case */
-	    } else
-		agerr(AGWARN, "can't open library file %s\n", p);
-	}
-    }
 }
 
 int maptoken(char *p, char **name, int *val)

@@ -258,9 +258,9 @@ size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
     return gvdevice_write_no_z (job, s, len);
 }
 
-void gvdevice_fputs(GVJ_t * job, char *s)
+void gvdevice_fputs(GVJ_t * job, const char *s)
 {
-    gvdevice_write (job, (unsigned char*)s, strlen(s));
+    gvdevice_write (job, (const unsigned char*)s, strlen(s));
 }
 
 static void gvdevice_flush(GVJ_t * job)

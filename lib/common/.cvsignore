@@ -10,7 +10,6 @@ brewer_lib
 colortbl.h
 htmlparse.[ch]
 ps_font_equiv.h
-ps.h
 y.output
 y.tab.[ch]
 CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake

@@ -43,9 +43,8 @@ extern "C" {
     extern void UF_singleton(Agnode_t *);
     extern void UF_setname(Agnode_t *, Agnode_t *);
 
-    extern char *safefile(char *shapefilename);
-    extern void cat_libfile(FILE *of, char **arglib, char **stdlib);
-    extern void cat_preamble(GVJ_t *job, char **arglib);
+    extern char *Fgets(FILE * fp);
+    extern char *safefile(const char *filename);
 
     extern boolean mapbool(char *);
     extern int maptoken(char *, char **, int *);

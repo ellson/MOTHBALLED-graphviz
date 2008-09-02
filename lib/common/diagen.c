@@ -290,7 +290,7 @@ static void dia_comment(char *str)
 }
 
 static void
-dia_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
+dia_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user,
 	      char *info[], point pages)
 {
 #if HAVE_LIBZ

@@ -49,7 +49,7 @@ static int sizeA;
 #endif
 /* end hack */
 
-int gvrender_select(GVJ_t * job, char *str)
+int gvrender_select(GVJ_t * job, const char *str)
 {
     GVC_t *gvc = job->gvc;
     gvplugin_available_t *plugin;

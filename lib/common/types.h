@@ -205,7 +205,7 @@ extern "C" {
 
     struct codegen_s {
 	void (*reset) (void);
-	void (*begin_job) (FILE * ofp, graph_t * g, char **lib, char *user,
+	void (*begin_job) (FILE * ofp, graph_t * g, const char **lib, char *user,
 			   char *info[], point pages);
 	void (*end_job) (void);
 	void (*begin_graph) (GVC_t * gvc, graph_t * g, box bb, point pb);

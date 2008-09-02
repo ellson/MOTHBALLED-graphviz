@@ -28,8 +28,8 @@ extern "C" {
 	int verbose;
 	boolean config, auto_outfile_names;
         void (*errorfn) (char *fmt, ...);
-	char **show_boxes; /* emit code for correct box coordinates */
-	char **lib; 
+	const char **show_boxes; /* emit code for correct box coordinates */
+	const char **lib; 
 
 	/* rendering state */
 	int viewNum;     /* current view - 1 based count of views,

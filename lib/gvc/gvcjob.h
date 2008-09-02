@@ -159,11 +159,11 @@ extern "C" {
         void (*button_press) (GVJ_t * job, int button, pointf pointer);
         void (*button_release) (GVJ_t * job, int button, pointf pointer);
         void (*motion) (GVJ_t * job, pointf pointer);
-        void (*modify) (GVJ_t * job, char *name, char *value);
+        void (*modify) (GVJ_t * job, const char *name, const char *value);
         void (*del) (GVJ_t * job);  /* can't use "delete" 'cos C++ stole it */
-        void (*read) (GVJ_t * job, char *filename, char *layout);
-        void (*layout) (GVJ_t * job, char *layout);
-        void (*render) (GVJ_t * job, char *format, char *filename);
+        void (*read) (GVJ_t * job, const char *filename, const char *layout);
+        void (*layout) (GVJ_t * job, const char *layout);
+        void (*render) (GVJ_t * job, const char *format, const char *filename);
     } gvdevice_callbacks_t;
 
     typedef int (*gvevent_key_callback_t) (GVJ_t * job);
@@ -274,15 +274,15 @@ extern "C" {
 	char *input_filename;
 	int graph_index;
 
-	char *layout_type;
+	const char *layout_type;
 
-	char *output_filename;
+	const char *output_filename;
 	FILE *output_file;
 	char *output_data;
 	unsigned int output_data_allocated;
 	unsigned int output_data_position;
 
-	char *output_langname;
+	const char *output_langname;
 	int output_lang;
 
 	gvplugin_active_render_t render;

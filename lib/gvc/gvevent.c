@@ -29,8 +29,8 @@ extern char *strdup_and_subst_obj(char *str, void * n);
 extern void emit_graph(GVJ_t * job, graph_t * g);
 extern boolean overlap_edge(edge_t *e, boxf b);
 extern boolean overlap_node(node_t *n, boxf b);
-extern int gvLayout(GVC_t *gvc, graph_t *g, char *engine);
-extern int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename);
+extern int gvLayout(GVC_t *gvc, graph_t *g, const char *engine);
+extern int gvRenderFilename(GVC_t *gvc, graph_t *g, const char *format, const char *filename);
 extern void graph_cleanup(graph_t *g);
 
 #define PANFACTOR 10
@@ -561,7 +561,7 @@ static int toggle_fit_cb(GVJ_t * job)
     return 0;
 }
 
-static void gvevent_modify (GVJ_t * job, char *name, char *value)
+static void gvevent_modify (GVJ_t * job, const char *name, const char *value)
 {
     /* FIXME */
 }
@@ -571,7 +571,7 @@ static void gvevent_delete (GVJ_t * job)
     /* FIXME */
 }
 
-static void gvevent_read (GVJ_t * job, char *filename, char *layout)
+static void gvevent_read (GVJ_t * job, const char *filename, const char *layout)
 {
     FILE *f;
     GVC_t *gvc;
@@ -607,12 +607,12 @@ static void gvevent_read (GVJ_t * job, char *filename, char *layout)
     job->needs_refresh = 1;
 }
 
-static void gvevent_layout (GVJ_t * job, char *layout)
+static void gvevent_layout (GVJ_t * job, const char *layout)
 {
     gvLayout(job->gvc, job->gvc->g, layout);
 }
 
-static void gvevent_render (GVJ_t * job, char *format, char *filename)
+static void gvevent_render (GVJ_t * job, const char *format, const char *filename)
 {
     gvRenderFilename(job->gvc, job->gvc->g, format, filename);
 }

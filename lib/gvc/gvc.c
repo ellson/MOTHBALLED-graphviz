@@ -30,7 +30,7 @@
 extern GVC_t *gvNEWcontext(char **info, char *user);
 extern char *gvUsername(void);
 extern int gvRenderJobs (GVC_t * gvc, graph_t * g);
-extern char *gvplugin_list(GVC_t * gvc, api_t api, char *str);
+extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 
 static char *LibInfo[] = {
     "libgvc",		/* Program */
@@ -54,7 +54,7 @@ GVC_t *gvContext(void)
  * does the layout and sets the graph's bbox.
  * Return 0 on success.
  */
-int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
+int gvLayout(GVC_t *gvc, graph_t *g, const char *engine)
 {
     char buf[256];
     int rc;
@@ -85,7 +85,7 @@ int gvLayout(GVC_t *gvc, graph_t *g, char *engine)
 }
 
 /* Render layout in a specified format to an open FILE */
-int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
+int gvRender(GVC_t *gvc, graph_t *g, const char *format, FILE *out)
 {
     int rc;
     GVJ_t *job;
@@ -118,7 +118,7 @@ int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out)
 }
 
 /* Render layout in a specified format to an open FILE */
-int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
+int gvRenderFilename(GVC_t *gvc, graph_t *g, const char *format, const char *filename)
 {
     int rc;
     GVJ_t *job;
@@ -149,7 +149,7 @@ int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename)
 }
 
 /* Render layout in a specified format to a malloc'ed string */
-int gvRenderData(GVC_t *gvc, graph_t *g, char *format, char **result, unsigned int *length)
+int gvRenderData(GVC_t *gvc, graph_t *g, const char *format, char **result, unsigned int *length)
 {
     int rc;
     GVJ_t *job;

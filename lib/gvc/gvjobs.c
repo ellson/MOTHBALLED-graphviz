@@ -47,7 +47,7 @@ static GVJ_t *output_langname_job;
  */
 
 /* -o switches */
-void gvjobs_output_filename(GVC_t * gvc, char *name)
+void gvjobs_output_filename(GVC_t * gvc, const char *name)
 {
     if (!gvc->jobs) {
 	output_filename_job = gvc->job = gvc->jobs = zmalloc(sizeof(GVJ_t));
@@ -66,7 +66,7 @@ void gvjobs_output_filename(GVC_t * gvc, char *name)
 }
 
 /* -T switches */
-boolean gvjobs_output_langname(GVC_t * gvc, char *name)
+boolean gvjobs_output_langname(GVC_t * gvc, const char *name)
 {
     if (!gvc->jobs) {
 	output_langname_job = gvc->job = gvc->jobs = zmalloc(sizeof(GVJ_t));

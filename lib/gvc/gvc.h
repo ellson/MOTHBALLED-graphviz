@@ -75,7 +75,7 @@ extern int gvParseArgs(GVC_t *gvc, int argc, char **argv);
 extern graph_t *gvNextInputGraph(GVC_t *gvc);
 
 /* Compute a layout using a specified engine */
-extern int gvLayout(GVC_t *gvc, graph_t *g, char *engine);
+extern int gvLayout(GVC_t *gvc, graph_t *g, const char *engine);
 
 /* Compute a layout using layout engine from command line args */
 extern int gvLayoutJobs(GVC_t *gvc, graph_t *g);
@@ -88,13 +88,13 @@ extern char *agstrdup_html(char *s);
 extern int aghtmlstr(char *s);
 
 /* Render layout in a specified format to an open FILE */
-extern int gvRender(GVC_t *gvc, graph_t *g, char *format, FILE *out);
+extern int gvRender(GVC_t *gvc, graph_t *g, const char *format, FILE *out);
 
 /* Render layout in a specified format to an open FILE */
-extern int gvRenderFilename(GVC_t *gvc, graph_t *g, char *format, char *filename);
+extern int gvRenderFilename(GVC_t *gvc, graph_t *g, const char *format, const char *filename);
 
 /* Render layout in a specified format to a malloc'ed string */
-extern int gvRenderData(GVC_t *gvc, graph_t *g, char *format, char **result, unsigned int *length);
+extern int gvRenderData(GVC_t *gvc, graph_t *g, const char *format, char **result, unsigned int *length);
 
 /* Render layout according to -T and -o options found by gvParseArgs */
 extern int gvRenderJobs(GVC_t *gvc, graph_t *g);

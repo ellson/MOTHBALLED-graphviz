@@ -367,7 +367,7 @@ static char *append_buf(char sep, const char *str, boolean new)
 }
 
 /* assemble a string list of available plugins */
-char *gvplugin_list(GVC_t * gvc, api_t api, char *str)
+char *gvplugin_list(GVC_t * gvc, api_t api, const char *str)
 {
     gvplugin_available_t **pnext, **plugin;
     char *buf = NULL;

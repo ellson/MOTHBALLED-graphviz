@@ -158,7 +158,7 @@ static void pic_reset(void)
     onetime = TRUE;
 }
 
-static void pic_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
+static void pic_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user,
 			  char *info[], point pages)
 {
     /* U_lib = lib; */

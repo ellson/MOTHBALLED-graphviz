@@ -2395,7 +2395,7 @@ static shape_desc *user_shape(char *name)
 shape_desc *bind_shape(char *name, node_t * np)
 {
     shape_desc *ptr, *rv = NULL;
-    char *str;
+    const char *str;
 
     str = safefile(agget(np, "shapefile"));
     /* If shapefile is defined and not epsf, set shape = custom */

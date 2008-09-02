@@ -44,8 +44,8 @@ extern "C" {
 
 /* job */
 
-    extern void gvjobs_output_filename(GVC_t * gvc, char *name);
-    extern boolean gvjobs_output_langname(GVC_t * gvc, char *name);
+    extern void gvjobs_output_filename(GVC_t * gvc, const char *name);
+    extern boolean gvjobs_output_langname(GVC_t * gvc, const char *name);
     extern GVJ_t *gvjobs_first(GVC_t * gvc);
     extern GVJ_t *gvjobs_next(GVC_t * gvc);
     extern void gvjobs_delete(GVC_t * gvc);
@@ -68,7 +68,7 @@ extern "C" {
 
 /* device */
     extern size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len);
-    extern void gvdevice_fputs(GVJ_t * job, char *s);
+    extern void gvdevice_fputs(GVJ_t * job, const char *s);
     extern void gvdevice_printf(GVJ_t * job, const char *format, ...);
 
     extern void gvdevice_initialize(GVJ_t * job);
@@ -86,7 +86,7 @@ extern "C" {
 
     extern void gvrender_begin_job(GVJ_t * job);
     extern void gvrender_end_job(GVJ_t * job);
-    extern int gvrender_select(GVJ_t * job, char *lang);
+    extern int gvrender_select(GVJ_t * job, const char *lang);
     extern int gvrender_features(GVJ_t * job);
     extern void gvrender_begin_graph(GVJ_t * job, graph_t * g);
     extern void gvrender_end_graph(GVJ_t * job);
@@ -127,7 +127,7 @@ extern "C" {
 
 /* layout */
 
-    extern int gvlayout_select(GVC_t * gvc, char *str);
+    extern int gvlayout_select(GVC_t * gvc, const char *str);
     extern int gvFreeLayout(GVC_t * gvc, graph_t * g);
     extern int gvLayoutJobs(GVC_t * gvc, graph_t * g);
 

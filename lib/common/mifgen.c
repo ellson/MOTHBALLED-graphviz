@@ -148,7 +148,7 @@ static void mif_comment(char *str)
 }
 
 static void
-mif_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
+mif_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user,
 	      char *info[], point pages)
 {
     /* Pages = pages; */

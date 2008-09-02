@@ -358,7 +358,7 @@ usershape_t *gvusershape_find(char *name)
 boolean gvusershape_file_access(usershape_t *us)
 {
     static int usershape_files_open_cnt;
-    char *fn;
+    const char *fn;
 
     assert(us);
     assert(us->name);

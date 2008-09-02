@@ -397,7 +397,7 @@ static void hpgl_reset(void)
 }
 
 static void
-hpgl_begin_job(FILE * ofp, graph_t * g, char **lib, char *user,
+hpgl_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user,
 	       char *info[], point pages)
 {
     /* Pages = pages; */

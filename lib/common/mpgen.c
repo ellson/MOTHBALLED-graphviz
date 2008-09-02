@@ -33,7 +33,7 @@
 /* static	box		PB; */
 static int onetime = TRUE;
 
-static char	**U_lib;
+static const char	**U_lib;
 
 typedef struct grcontext_t {
     char *color, *font;
@@ -49,8 +49,52 @@ static void mp_reset(void)
     onetime = TRUE;
 }
 
+/* cat_libfile:
+ * Write library files onto the given file pointer.
+ * arglib is an NULL-terminated array of char*
+ * Each non-trivial entry should be the name of a file to be included.
+ * stdlib is an NULL-terminated array of char*
+ * Each of these is a line of a standard library to be included.
+ * If any item in arglib is the empty string, the stdlib is not used.
+ * The stdlib is printed first, if used, followed by the user libraries.
+ * We check that for web-safe file usage.
+ */
+static void cat_libfile(FILE * ofp, const char **arglib, const char **stdlib)
+{
+    FILE *fp;
+    const char **s, *bp, *p;
+    int i;
+    boolean use_stdlib = TRUE;
+
+    /* check for empty string to turn off stdlib */
+    if (arglib) {
+	for (i = 0; use_stdlib && ((p = arglib[i])); i++) {
+	    if (*p == '\0')
+		use_stdlib = FALSE;
+	}
+    }
+    if (use_stdlib)
+	for (s = stdlib; *s; s++) {
+	    fputs(*s, ofp);
+	    fputc('\n', ofp);
+	}
+    if (arglib) {
+	for (i = 0; (p = arglib[i]) != 0; i++) {
+	    if (*p == '\0')
+		continue;	/* ignore empty string */
+	    p = safefile(p);	/* make sure filename is okay */
+	    if ((fp = fopen(p, "r"))) {
+		while ((bp = Fgets(fp)))
+		    fputs(bp, ofp);
+		fputc('\n', ofp); /* append a newline just in case */
+	    } else
+		agerr(AGWARN, "can't open library file %s\n", p);
+	}
+    }
+}
+
 static void
-mp_begin_job(FILE * ofp, graph_t * g, char **lib, char *user, char *info[],
+mp_begin_job(FILE * ofp, graph_t * g, const char **lib, char *user, char *info[],
 	     point pages)
 {
     /* pages and libraries not here (yet?) */
@@ -83,7 +127,7 @@ static void mp_comment(char *str)
 static void mp_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
 {
     /* PB = bb; */
-    static char *mp_lib[] = {0};
+    static const char *mp_lib[] = {0};
     if (onetime) {
 	fprintf(Output_file, "%% BoundingBox: %d %d %d %d\n",
 		bb.LL.x, bb.LL.y, bb.UR.x + 1, bb.UR.y + 1);
