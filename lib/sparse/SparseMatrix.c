@@ -1610,6 +1610,7 @@ SparseMatrix SparseMatrix_sum_repeat_entries(SparseMatrix A, int what_to_sum){
 SparseMatrix SparseMatrix_coordinate_form_add_entries(SparseMatrix A, int nentries, int *irn, int *jcn, void *val){
   int nz, type = A->type, nzmax, i;
   
+  assert(A);
   assert(A->format == FORMAT_COORD);
   if (nentries <= 0) return A;
   nz = A->nz;
