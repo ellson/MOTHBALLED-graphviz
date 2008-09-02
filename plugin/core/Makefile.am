@@ -34,6 +34,11 @@ libgvplugin_core_la_LIBADD = $(top_builddir)/lib/gvc/libgvc.la \
 				$(top_builddir)/lib/graph/libgraph.la \
 				$(top_builddir)/lib/cdt/libcdt.la
 
+gvrender_core_ps.o gvrender_core_ps.lo: ps.h
+
+ps.h : $(srcdir)/ps.txt
+	$(AWK) -f $(top_srcdir)/awk/stringize.awk $(srcdir)/ps.txt > ps.h
+
 if WITH_WIN32
 libgvplugin_core_la_LDFLAGS += -no-undefined
 libgvplugin_core_la_LIBADD += $(top_builddir)/lib/graph/libgraph.la
@@ -43,5 +48,7 @@ if WITH_DARWIN9
 libgvplugin_core_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_core_LTX_library
 endif
 
-EXTRA_DIST = Makefile.old
+EXTRA_DIST = ps.h Makefile.old
+
+DISTCLEANFILES = ps.h
 

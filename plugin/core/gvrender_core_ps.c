@@ -25,6 +25,7 @@
 #include "graph.h"
 #include "agxbuf.h"
 #include "utils.h"
+#include "ps.h"
 
 /* for CHAR_LATIN1  */
 #include "const.h"
@@ -88,7 +89,7 @@ static void psgen_begin_graph(GVJ_t * job)
 	}
         gvdevice_fputs(job, "%%EndComments\nsave\n");
         /* include shape library */
-        cat_preamble(job, job->common->lib);
+        cat_libfile(job->output_file, job->common->lib, ps_txt);
 	/* include epsf */
         epsf_define(job->output_file);
         if (job->common->show_boxes) {

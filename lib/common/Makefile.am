@@ -39,11 +39,6 @@ ps_font_equiv.h: $(srcdir)/ps_font_equiv.txt $(srcdir)/fontmap.cfg $(srcdir)/ps_
 	cp ps_fontmap.txt ps_font_equiv.h
 	./mksvgfonts.pl fontmap.cfg ps_font_equiv.txt | LC_ALL=C $(SORT) >>ps_font_equiv.h
 
-utils.o utils.lo : ps.h
-
-ps.h : $(srcdir)/ps.txt
-	$(AWK) -f $(top_srcdir)/awk/stringize.awk $(srcdir)/ps.txt > ps.h
-
 colxlate.o colxlate.lo : colortbl.h
 
 colortbl.h : color_lib
@@ -68,10 +63,10 @@ htmlparse.c: y.output
 htmlparse.h: y.output
 	@SED@ "s/yy/html/g" < y.tab.h > htmlparse.h
 
-DISTCLEANFILES = brewer_lib color_lib colortbl.h ps_font_equiv.h ps.h \
+DISTCLEANFILES = brewer_lib color_lib colortbl.h ps_font_equiv.h \
 	y.output y.tab.[ch] htmlparse.[ch]
 
-EXTRA_DIST = Makefile.old README.imap chars.tcl ps.h ps_font_equiv.h \
+EXTRA_DIST = Makefile.old README.imap chars.tcl ps_font_equiv.h \
 	strcasecmp.c strncasecmp.c htmlparse.c htmlparse.h \
 	y.tab.c y.tab.h y.output entities.html entities.tcl \
 	brewer_colors brewer_lib color_names color_lib colortbl.h
