@@ -6,6 +6,7 @@ array set LANGS {
                 	Agedge_t* SWIGTYPE_p_Agedge_t
                 	Agsym_t* SWIGTYPE_p_Agsym_t
                 	char* string
+                	{const char*} string
                 	char** outdata
                 	FILE* SWIGTYPE_p_FILE
                 	bool bool
@@ -35,7 +36,7 @@ array set LANGS {
 			{char* hname} head_name
 			{char* attr} attr_name
 			{char* val} attr_value
-			{char* filename} filename
+			{const char* filename} filename
 			{char* engine} engine
 			{char* string} string
 			{char** outdata} outdata
@@ -47,6 +48,7 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			{const char*} string
 			char** outdata
 			FILE* channel
 			bool bool
@@ -78,7 +80,7 @@ array set LANGS {
 			{char* hname} head_name
 			{char* attr} attr_name
 			{char* val} attr_value
-			{char* filename} filename
+			{const char* filename} filename
 			{char* engine} engine
 			{char* string} string
 			{char** outdata} outdata
@@ -90,6 +92,7 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			{const char*} string
 			char** outdata
 			FILE* channel
 			bool bool
@@ -112,6 +115,7 @@ array set LANGS {
 			Agedge_t* SWIGTYPE_p_Agedge_t
 			Agsym_t* SWIGTYPE_p_Agsym_t
 			char* string
+			{const char*} string
 			char** outdata
 			FILE* SWIGTYPE_p_FILE
 			bool bool
@@ -142,7 +146,7 @@ array set LANGS {
 			{char* hname} head_name
 			{char* attr} attr_name
 			{char* val} attr_value
-			{char* filename} filename
+			{const char* filename} filename
 			{char* engine} engine
 			{char* string} string
 			{char** outdata} outdata
@@ -154,6 +158,7 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			{const char*} string
 			char** outdata
 			FILE* channel
 			bool bool
@@ -186,7 +191,7 @@ array set LANGS {
 			{char* hname} head_name
 			{char* attr} attr_name
 			{char* val} attr_value
-			{char* filename} filename
+			{const char* filename} filename
 			{char* engine} engine
 			{char* string} string
 			{char** outdata} outdata
@@ -198,6 +203,7 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			{const char*} string
 			char** outdata
 			FILE* channel
 			bool bool
@@ -228,7 +234,7 @@ array set LANGS {
 			{char* hname} head_name
 			{char* attr} attr_name
 			{char* val} attr_value
-			{char* filename} filename
+			{const char* filename} filename
 			{char* engine} engine
 			{char* string} string
 			{char** outdata} outdata
@@ -240,6 +246,7 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			{const char*} string
 			char** outdata
 			FILE* channel
 			bool bool
@@ -272,7 +279,7 @@ array set LANGS {
 			{char* hname} head_name
 			{char* attr} attr_name
 			{char* val} attr_value
-			{char* filename} filename
+			{const char* filename} filename
 			{char* engine} engine
 			{char* string} string
 			{char** outdata} outdata
@@ -284,6 +291,7 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			{const char*} string
 			char** outdata
 			FILE* channel
 			bool bool
@@ -319,7 +327,7 @@ array set LANGS {
 			{char* hname} head_name
 			{char* attr} attr_name
 			{char* val} attr_value
-			{char* filename} filename
+			{const char* filename} filename
 			{char* engine} engine
 			{char* string} string
 			{char** outdata} outdata
@@ -331,6 +339,7 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			{const char*} string
 			char** outdata
 			FILE* channel
 			bool bool
@@ -356,6 +365,7 @@ array set LANGS {
 			Agedge_t* SWIGTYPE_p_Agedge_t
 			Agsym_t* SWIGTYPE_p_Agsym_t
 			char* string
+			{const char*} string
 			char** outdata
 			FILE* SWIGTYPE_p_FILE
 			bool bool
@@ -386,7 +396,7 @@ array set LANGS {
 			{char* hname} head_name
 			{char* attr} attr_name
 			{char* val} attr_value
-			{char* filename} filename
+			{const char* filename} filename
 			{char* engine} engine
 			{char* string} string
 			{char** outdata} outdata
@@ -398,6 +408,7 @@ array set LANGS {
 			Agedge_t* edge_handle
 			Agsym_t* attribute_handle
 			char* string
+			{const char*} string
 			char** outdata
 			FILE* channel
 			bool bool
@@ -430,7 +441,7 @@ array set LANGS {
 			{char* hname} <head_name>
 			{char* attr} <attr_name>
 			{char* val} <attr_value>
-			{char* filename} <filename>
+			{const char* filename} <filename>
 			{char* engine} <engine>
 			{char* string} <string>
 			{char** outdata} <outdata>
@@ -442,6 +453,7 @@ array set LANGS {
 			Agedge_t* <edge_handle>
 			Agsym_t* <attr_handle>
 			char* <string>
+			{const char*} <string>
 			char** <outdata>
 			FILE* <channel>
 			bool <boolean_string>

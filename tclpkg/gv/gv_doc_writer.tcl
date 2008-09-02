@@ -52,7 +52,8 @@ proc gv_doc_commands {} {
 		foreach type_name [split $rec "(,"] {
 			set type_name [string trim $type_name]
 			regsub -all {[ \t]+(\**)} $type_name {\1 } type_name
-			foreach {type name} $type_name {break}
+			set type [lrange $type_name 0 end-1]
+			set name [lindex $type_name end]
 			if {! $i} {
 				set func $name
 				set functype $type
