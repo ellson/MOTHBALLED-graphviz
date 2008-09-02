@@ -104,7 +104,7 @@ static char *gdirname(char *pathname)
     return pathname;
 }
 
-static char *nodefilename(char *filename, node_t * n, char *buf)
+static char *nodefilename(const char *filename, node_t * n, char *buf)
 {
     static char *dir;
     static char disposable[1024];
@@ -119,7 +119,7 @@ static char *nodefilename(char *filename, node_t * n, char *buf)
     return buf;
 }
 
-static FILE *nodefile(char *filename, node_t * n)
+static FILE *nodefile(const char *filename, node_t * n)
 {
     FILE *rv;
     char buf[1024];

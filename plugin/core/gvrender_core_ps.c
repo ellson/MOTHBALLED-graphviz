@@ -45,6 +45,50 @@ typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
 static int isLatin1;
 static char setupLatin1;
 
+/* cat_libfile:
+ * Write library files onto the given file pointer.
+ * arglib is an NULL-terminated array of char*
+ * Each non-trivial entry should be the name of a file to be included.
+ * stdlib is an NULL-terminated array of char*
+ * Each of these is a line of a standard library to be included.
+ * If any item in arglib is the empty string, the stdlib is not used.
+ * The stdlib is printed first, if used, followed by the user libraries.
+ * We check that for web-safe file usage.
+ */
+static void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib)
+{
+    FILE *fp;
+    const char **s, *bp, *p;
+    int i;
+    boolean use_stdlib = TRUE;
+
+    /* check for empty string to turn off stdlib */
+    if (arglib) {
+	for (i = 0; use_stdlib && ((p = arglib[i])); i++) {
+	    if (*p == '\0')
+		use_stdlib = FALSE;
+	}
+    }
+    if (use_stdlib)
+	for (s = stdlib; *s; s++) {
+	    gvdevice_fputs(job, *s);
+	    gvdevice_fputs(job, "\n");
+	}
+    if (arglib) {
+	for (i = 0; (p = arglib[i]) != 0; i++) {
+	    if (*p == '\0')
+		continue;	/* ignore empty string */
+	    p = safefile(p);	/* make sure filename is okay */
+	    if ((fp = fopen(p, "r"))) {
+		while ((bp = Fgets(fp)))
+		    gvdevice_fputs(job, bp);
+		gvdevice_fputs(job, "\n"); /* append a newline just in case */
+	    } else
+		agerr(AGWARN, "can't open library file %s\n", p);
+	}
+    }
+}
+
 static void psgen_begin_job(GVJ_t * job)
 {
     gvdevice_fputs(job, "%!PS-Adobe-3.0 EPSF-3.0\n");
@@ -89,14 +133,14 @@ static void psgen_begin_graph(GVJ_t * job)
 	}
         gvdevice_fputs(job, "%%EndComments\nsave\n");
         /* include shape library */
-        cat_libfile(job->output_file, job->common->lib, ps_txt);
+        cat_libfile(job, job->common->lib, ps_txt);
 	/* include epsf */
         epsf_define(job->output_file);
         if (job->common->show_boxes) {
-            char* args[2];
+            const char* args[2];
             args[0] = job->common->show_boxes[0];
             args[1] = NULL;
-            cat_libfile(job->output_file, NULL, args);
+            cat_libfile(job, NULL, args);
         }
     }
     isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
@@ -160,7 +204,7 @@ static void psgen_end_page(GVJ_t * job)
 {
     if (job->common->show_boxes) {
 	gvdevice_fputs(job, "0 0 0 edgecolor\n");
-	cat_libfile(job->output_file, NULL, job->common->show_boxes + 1);
+	cat_libfile(job, NULL, job->common->show_boxes + 1);
     }
     /* the showpage is really a no-op, but at least one PS processor
      * out there needs to see this literal token.  endpage does the real work.

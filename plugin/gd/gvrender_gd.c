@@ -45,7 +45,6 @@ typedef enum {
 } format_type;
 
 extern boolean mapbool(char *);
-extern char *safefile(char *shapefilename);
 extern pointf Bezier(pointf * V, int degree, double t, pointf * Left, pointf * Right);
 
 #define BEZIERSUBDIVISION 10
