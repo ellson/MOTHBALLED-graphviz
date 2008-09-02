@@ -1866,6 +1866,28 @@ if test "x$use_pangocairo" = "xYes"; then
 fi
 
 dnl -----------------------------------
+dnl INCLUDES and LIBS for LASI
+                                                                                
+AC_ARG_WITH(lasi,
+  [AC_HELP_STRING([--with-lasi=no], [lasi library])],
+  [], [with_lasi=no])
+
+if test "x$with_lasi" != "xyes"; then
+  use_lasi="No (disabled by default - incomplete)"
+else
+  PKG_CHECK_MODULES(LASI, [lasi],[
+    use_lasi="Yes"
+    AC_DEFINE_UNQUOTED(HAVE_LASI,1,
+      [Define if you have the lasi library])
+    AC_SUBST(LASI_CFLAGS)
+    AC_SUBST(LASI_LIBS)
+  ],[
+    use_lasi="No (lasi library not available)"
+  ])
+fi
+AM_CONDITIONAL(WITH_LASI, [test "x$use_lasi" = "xYes"])
+
+dnl -----------------------------------
 dnl INCLUDES and LIBS for GLITZ
                                                                                 
 AC_ARG_WITH(glitz,
@@ -2871,6 +2893,7 @@ AC_CONFIG_FILES(Makefile
 	plugin/gdiplus/Makefile
 	plugin/glitz/Makefile
 	plugin/gtk/Makefile
+	plugin/lasi/Makefile
 	plugin/ming/Makefile
 	plugin/pango/Makefile
 	plugin/quartz/Makefile
@@ -2987,6 +3010,7 @@ echo "  gdiplus:       $use_gdiplus"
 echo "  gdk_pixbuf:    $use_gdk_pixbuf"
 echo "  glitz:         $use_glitz"
 echo "  gtk:           $use_gtk"
+echo "  lasi:          $use_lasi"
 echo "  ming:          $use_ming"
 echo "  pangocairo:    $use_pangocairo"
 echo "  quartz:        $use_quartz"
