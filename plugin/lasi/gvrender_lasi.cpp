@@ -384,8 +384,8 @@ static void lasi_ellipse(GVJ_t * job, pointf * A, int filled)
         doc.osBody() << "ellipse_path fill" << endl;
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
-//        ps_set_pen_style(job);
-//        ps_set_color(job, &(job->obj->pencolor));
+//	ps_set_pen_style(job);
+//	ps_set_color(job, &(job->obj->pencolor));
 //	gvdevice_printpointflist(job, AA, 2);
 //	gvdevice_fputs(job, " ellipse_path stroke\n");
         lasi_printpointflist(job, A, 2);
@@ -393,7 +393,6 @@ static void lasi_ellipse(GVJ_t * job, pointf * A, int filled)
     }
 }
 
-#if 0
 static void
 lasi_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	     int arrow_at_end, int filled)
@@ -401,27 +400,39 @@ lasi_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     int j;
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
-	ps_set_color(job, &(job->obj->fillcolor));
-	gvdevice_fputs(job, "newpath ");
-	gvdevice_printpointf(job, A[0]);
-	gvdevice_fputs(job, " moveto\n");
+//	ps_set_color(job, &(job->obj->fillcolor));
+//	gvdevice_fputs(job, "newpath ");
+//	gvdevice_printpointf(job, A[0]);
+//	gvdevice_fputs(job, " moveto\n");
+	doc.osBody() << "newpath ";
+	lasi_printpointf(job, A[0]);
+	doc.osBody() << "moveto" << endl;
 	for (j = 1; j < n; j += 3) {
-	    gvdevice_printpointflist(job, &A[j], 3);
-	    gvdevice_fputs(job, " curveto\n");
+//	    gvdevice_printpointflist(job, &A[j], 3);
+//	    gvdevice_fputs(job, " curveto\n");
+	    lasi_printpointflist(job, &A[j], 3);
+	    doc.osBody() << "curveto" << endl;
 	}
-	gvdevice_fputs(job, "closepath fill\n");
+//	gvdevice_fputs(job, "closepath fill\n");
+	doc.osBody() << "closepath fill" << endl;
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
-        ps_set_pen_style(job);
-        ps_set_color(job, &(job->obj->pencolor));
-	gvdevice_fputs(job, "newpath ");
-	gvdevice_printpointf(job, A[0]);
-	gvdevice_fputs(job, " moveto\n");
+//	ps_set_pen_style(job);
+//	ps_set_color(job, &(job->obj->pencolor));
+//	gvdevice_fputs(job, "newpath ");
+//	gvdevice_printpointf(job, A[0]);
+//	gvdevice_fputs(job, " moveto\n");
+	doc.osBody() << "newpath ";
+	lasi_printpointf(job, A[0]);
+	doc.osBody() << "moveto" << endl;
 	for (j = 1; j < n; j += 3) {
-	    gvdevice_printpointflist(job, &A[j], 3);
-	    gvdevice_fputs(job, " curveto\n");
+//	    gvdevice_printpointflist(job, &A[j], 3);
+//	    gvdevice_fputs(job, " curveto\n");
+	    lasi_printpointflist(job, &A[j], 3);
+	    doc.osBody() << "curveto" << endl;
 	}
-        gvdevice_fputs(job, "stroke\n");
+//	gvdevice_fputs(job, "stroke\n");
+	doc.osBody() << "stroke" << endl;
     }
 }
 
@@ -430,27 +441,39 @@ static void lasi_polygon(GVJ_t * job, pointf * A, int n, int filled)
     int j;
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
-	ps_set_color(job, &(job->obj->fillcolor));
-	gvdevice_fputs(job, "newpath ");
-	gvdevice_printpointf(job, A[0]);
-	gvdevice_fputs(job, " moveto\n");
+//	ps_set_color(job, &(job->obj->fillcolor));
+//	gvdevice_fputs(job, "newpath ");
+//	gvdevice_printpointf(job, A[0]);
+//	gvdevice_fputs(job, " moveto\n");
+	doc.osBody() << "newpath ";
+	lasi_printpointf(job, A[0]);
+	doc.osBody() << "moveto" << endl;
 	for (j = 1; j < n; j++) {
-	    gvdevice_printpointf(job, A[j]);
-	    gvdevice_fputs(job, " lineto\n");
+//	    gvdevice_printpointf(job, A[j]);
+//	    gvdevice_fputs(job, " lineto\n");
+	    lasi_printpointf(job, A[j]);
+	    doc.osBody() << "lineto" << endl;
         }
-	gvdevice_fputs(job, "closepath fill\n");
+//	gvdevice_fputs(job, "closepath fill\n");
+	doc.osBody() << "closepath fill" << endl;
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
-        ps_set_pen_style(job);
-        ps_set_color(job, &(job->obj->pencolor));
-	gvdevice_fputs(job, "newpath ");
-	gvdevice_printpointf(job, A[0]);
-	gvdevice_fputs(job, " moveto\n");
+//	ps_set_pen_style(job);
+//	ps_set_color(job, &(job->obj->pencolor));
+//	gvdevice_fputs(job, "newpath ");
+//	gvdevice_printpointf(job, A[0]);
+//	gvdevice_fputs(job, " moveto\n");
+	doc.osBody() << "newpath ";
+	lasi_printpointf(job, A[0]);
+	doc.osBody() << "moveto" << endl;
         for (j = 1; j < n; j++) {
-	    gvdevice_printpointf(job, A[j]);
-	    gvdevice_fputs(job, " lineto\n");
+//	    gvdevice_printpointf(job, A[j]);
+//	    gvdevice_fputs(job, " lineto\n");
+	    lasi_printpointf(job, A[j]);
+	    doc.osBody() << "lineto" << endl;
 	}
-        gvdevice_fputs(job, "closepath stroke\n");
+//	gvdevice_fputs(job, "closepath stroke\n");
+	doc.osBody() << "closepath stroke" << endl;
     }
 }
 
@@ -459,26 +482,34 @@ static void lasi_polyline(GVJ_t * job, pointf * A, int n)
     int j;
 
     if (job->obj->pencolor.u.HSVA[3] > .5) {
-        ps_set_pen_style(job);
-        ps_set_color(job, &(job->obj->pencolor));
-	gvdevice_fputs(job, "newpath ");
-	gvdevice_printpointf(job, A[0]);
-	gvdevice_fputs(job, " moveto\n");
+//	ps_set_pen_style(job);
+//	ps_set_color(job, &(job->obj->pencolor));
+//	gvdevice_fputs(job, "newpath ");
+//	gvdevice_printpointf(job, A[0]);
+//	gvdevice_fputs(job, " moveto\n");
+	doc.osBody() << "newpath ";
+	lasi_printpointf(job, A[0]);
+	doc.osBody() << "moveto" << endl;
         for (j = 1; j < n; j++) {
-	    gvdevice_printpointf(job, A[j]);
-	    gvdevice_fputs(job, " lineto\n");
+//	    gvdevice_printpointf(job, A[j]);
+//	    gvdevice_fputs(job, " lineto\n");
+	    lasi_printpointf(job, A[j]);
+	    doc.osBody() << "lineto" << endl;
 	}
-        gvdevice_fputs(job, "stroke\n");
+//	gvdevice_fputs(job, "stroke\n");
+	doc.osBody() << "stroke" << endl;
     }
 }
 
 static void lasi_comment(GVJ_t * job, char *str)
 {
-    gvdevice_fputs(job, "% ");
-    gvdevice_fputs(job, str);
-    gvdevice_fputs(job, "\n");
+//    gvdevice_fputs(job, "% ");
+//    gvdevice_fputs(job, str);
+//    gvdevice_fputs(job, "\n");
+    doc.osBody() << "% " << str << endl;
 }
 
+#if 0
 static void lasi_library_shape(GVJ_t * job, char *name, pointf * A, int n, int filled)
 {
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
@@ -522,13 +553,13 @@ static gvrender_engine_t lasi_engine = {
 0,//    lasi_end_edge,
 0,//    lasi_begin_anchor,
     0,				/* lasi_end_anchor */
-	lasi_textpara,
+    lasi_textpara,
     0,				/* lasi_resolve_color */
-0,//    lasi_ellipse,
-0,//    lasi_polygon,
-0,//    lasi_bezier,
-0,//    lasi_polyline,
-0,//    lasi_comment,
+    lasi_ellipse,
+    lasi_polygon,
+    lasi_bezier,
+    lasi_polyline,
+    lasi_comment,
 0,//    lasi_library_shape,
 };
 
