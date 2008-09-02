@@ -162,7 +162,8 @@ static char *token(int *nest, char **tokens)
 
 static int gvconfig_plugin_install_from_config(GVC_t * gvc, char *s)
 {
-    char *path, *packagename, *api, *type;
+    char *path, *packagename, *api;
+    const char *type;
     api_t gv_api;
     int quality, rc;
     int nest = 0;

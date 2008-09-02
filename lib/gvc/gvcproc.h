@@ -34,9 +34,9 @@ extern "C" {
 /* plugins */
 
     extern boolean gvplugin_install(GVC_t * gvc, api_t api,
-		    char *typestr, int quality, char *packagename, char *path,
+		    const char *typestr, int quality, char *packagename, char *path,
 		    gvplugin_installed_t * typeptr);
-    extern gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *type);
+    extern gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *type);
     extern gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path);
     extern api_t gvplugin_api(char *str);
     extern char * gvplugin_api_name(api_t api);
@@ -59,7 +59,7 @@ extern "C" {
     extern boolean gvtextlayout(GVC_t *gvc, textpara_t *para, char **fontpath);
 
 /* loadimage */
-    extern void gvloadimage(GVJ_t *job, usershape_t *us, boxf b, boolean filled, char *target);
+    extern void gvloadimage(GVJ_t *job, usershape_t *us, boxf b, boolean filled, const char *target);
     
 /* usershapes */
     extern point gvusershape_size_dpi(usershape_t *us, pointf dpi);

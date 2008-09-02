@@ -18,55 +18,46 @@
 #include "config.h"
 #endif
 
-#include <stdlib.h>
-#include <string.h>
+#include <iostream>
+#include <fstream>
+#include <stdexcept>
+#include <LASi.h>
+
 
 #include "gvplugin_render.h"
-#include "graph.h"
-#include "agxbuf.h"
-#include "utils.h"
+// #include "graph.h"
+// #include "agxbuf.h"
+// #include "utils.h"
 
-/* for CHAR_LATIN1  */
-#include "const.h"
-
-/*
- *     J$: added `pdfmark' URL embedding.  PostScript rendered from
- *         dot files with URL attributes will get active PDF links
- *         from Adobe's Distiller.
- */
-#define PDFMAX  14400           /*  Maximum size of PDF page  */
-
-extern void epsf_define(FILE * of);
-extern char *ps_string(char *ins, int latin);
+using namespace LASi;
+using namespace std;
 
 typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
 
-static int isLatin1;
-static char setupLatin1;
-
-static void psgen_begin_job(GVJ_t * job)
+static void lasi_begin_job(GVJ_t * job)
 {
-    gvdevice_fputs(job, "%!PS-Adobe-3.0 EPSF-3.0\n");
-    gvdevice_printf(job, "%%%%Creator: %s version %s (%s)\n",
-	    job->common->info[0], job->common->info[1], job->common->info[2]);
-    gvdevice_printf(job, "%%%%For: %s\n", job->common->user);
+//    gvdevice_fputs(job, "%!PS-Adobe-3.0 EPSF-3.0\n");
+//    gvdevice_printf(job, "%%%%Creator: %s version %s (%s)\n",
+//	    job->common->info[0], job->common->info[1], job->common->info[2]);
+//    gvdevice_printf(job, "%%%%For: %s\n", job->common->user);
 }
 
-static void psgen_end_job(GVJ_t * job)
+static void lasi_end_job(GVJ_t * job)
 {
-    gvdevice_fputs(job, "%%Trailer\n");
-    if (job->render.id != FORMAT_EPS)
-        gvdevice_printf(job, "%%%%Pages: %d\n", job->common->viewNum);
-    if (job->common->show_boxes == NULL)
-        if (job->render.id != FORMAT_EPS)
-	    gvdevice_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
-	        job->boundingBox.LL.x, job->boundingBox.LL.y,
-	        job->boundingBox.UR.x, job->boundingBox.UR.y);
-    gvdevice_fputs(job, "end\nrestore\n");
-    gvdevice_fputs(job, "%%EOF\n");
+//    gvdevice_fputs(job, "%%Trailer\n");
+//    if (job->render.id != FORMAT_EPS)
+//        gvdevice_printf(job, "%%%%Pages: %d\n", job->common->viewNum);
+//    if (job->common->show_boxes == NULL)
+//        if (job->render.id != FORMAT_EPS)
+//	    gvdevice_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
+//	        job->boundingBox.LL.x, job->boundingBox.LL.y,
+//	        job->boundingBox.UR.x, job->boundingBox.UR.y);
+//    gvdevice_fputs(job, "end\nrestore\n");
+//    gvdevice_fputs(job, "%%EOF\n");
 }
 
-static void psgen_begin_graph(GVJ_t * job)
+#if 0
+static void lasi_begin_graph(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
@@ -115,12 +106,12 @@ static void psgen_begin_graph(GVJ_t * job)
 		"/PUT pdfmark\n", obj->url);
 }
 
-static void psgen_begin_layer(GVJ_t * job, char *layername, int layerNum, int numLayers)
+static void lasi_begin_layer(GVJ_t * job, char *layername, int layerNum, int numLayers)
 {
     gvdevice_printf(job, "%d %d setlayer\n", layerNum, numLayers);
 }
 
-static void psgen_begin_page(GVJ_t * job)
+static void lasi_begin_page(GVJ_t * job)
 {
     box pbr = job->pageBoundingBox;
 
@@ -155,7 +146,7 @@ static void psgen_begin_page(GVJ_t * job)
     }
 }
 
-static void psgen_end_page(GVJ_t * job)
+static void lasi_end_page(GVJ_t * job)
 {
     if (job->common->show_boxes) {
 	gvdevice_fputs(job, "0 0 0 edgecolor\n");
@@ -169,7 +160,7 @@ static void psgen_end_page(GVJ_t * job)
     gvdevice_printf(job, "%%%%EndPage: %d\n", job->common->viewNum);
 }
 
-static void psgen_begin_cluster(GVJ_t * job)
+static void lasi_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
@@ -178,33 +169,33 @@ static void psgen_begin_cluster(GVJ_t * job)
     gvdevice_fputs(job, "gsave\n");
 }
 
-static void psgen_end_cluster(GVJ_t * job)
+static void lasi_end_cluster(GVJ_t * job)
 {
     gvdevice_fputs(job, "grestore\n");
 }
 
-static void psgen_begin_node(GVJ_t * job)
+static void lasi_begin_node(GVJ_t * job)
 {
     gvdevice_fputs(job, "gsave\n");
 }
 
-static void psgen_end_node(GVJ_t * job)
+static void lasi_end_node(GVJ_t * job)
 {
     gvdevice_fputs(job, "grestore\n");
 }
 
 static void
-psgen_begin_edge(GVJ_t * job)
+lasi_begin_edge(GVJ_t * job)
 {
     gvdevice_fputs(job, "gsave\n");
 }
 
-static void psgen_end_edge(GVJ_t * job)
+static void lasi_end_edge(GVJ_t * job)
 {
     gvdevice_fputs(job, "grestore\n");
 }
 
-static void psgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *target)
+static void lasi_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *target)
 {
     obj_state_t *obj = job->obj;
 
@@ -272,7 +263,7 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
     }
 }
 
-static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
+static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     char *str;
 
@@ -302,7 +293,7 @@ static void psgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
     gvdevice_printf(job, " %s alignedtext\n", str);
 }
 
-static void psgen_ellipse(GVJ_t * job, pointf * A, int filled)
+static void lasi_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     /* A[] contains 2 points: the center and corner. */
     pointf AA[2];
@@ -325,7 +316,7 @@ static void psgen_ellipse(GVJ_t * job, pointf * A, int filled)
 }
 
 static void
-psgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
+lasi_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	     int arrow_at_end, int filled)
 {
     int j;
@@ -355,7 +346,7 @@ psgen_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     }
 }
 
-static void psgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
+static void lasi_polygon(GVJ_t * job, pointf * A, int n, int filled)
 {
     int j;
 
@@ -384,7 +375,7 @@ static void psgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
     }
 }
 
-static void psgen_polyline(GVJ_t * job, pointf * A, int n)
+static void lasi_polyline(GVJ_t * job, pointf * A, int n)
 {
     int j;
 
@@ -402,14 +393,14 @@ static void psgen_polyline(GVJ_t * job, pointf * A, int n)
     }
 }
 
-static void psgen_comment(GVJ_t * job, char *str)
+static void lasi_comment(GVJ_t * job, char *str)
 {
     gvdevice_fputs(job, "% ");
     gvdevice_fputs(job, str);
     gvdevice_fputs(job, "\n");
 }
 
-static void psgen_library_shape(GVJ_t * job, char *name, pointf * A, int n, int filled)
+static void lasi_library_shape(GVJ_t * job, char *name, pointf * A, int n, int filled)
 {
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
 	ps_set_color(job, &(job->obj->fillcolor));
@@ -429,39 +420,40 @@ static void psgen_library_shape(GVJ_t * job, char *name, pointf * A, int n, int 
         gvdevice_printf(job, " ]  %d false %s\n", n, name);
     }
 }
+#endif
 
-static gvrender_engine_t psgen_engine = {
-    psgen_begin_job,
-    psgen_end_job,
-    psgen_begin_graph,
-    0,				/* psgen_end_graph */
-    psgen_begin_layer,
-    0,				/* psgen_end_layer */
-    psgen_begin_page,
-    psgen_end_page,
-    psgen_begin_cluster,
-    psgen_end_cluster,
-    0,				/* psgen_begin_nodes */
-    0,				/* psgen_end_nodes */
-    0,				/* psgen_begin_edges */
-    0,				/* psgen_end_edges */
-    psgen_begin_node,
-    psgen_end_node,
-    psgen_begin_edge,
-    psgen_end_edge,
-    psgen_begin_anchor,
-    0,				/* psgen_end_anchor */
-    psgen_textpara,
-    0,				/* psgen_resolve_color */
-    psgen_ellipse,
-    psgen_polygon,
-    psgen_bezier,
-    psgen_polyline,
-    psgen_comment,
-    psgen_library_shape,
+static gvrender_engine_t lasi_engine = {
+    lasi_begin_job,
+    lasi_end_job,
+0,//    lasi_begin_graph,
+    0,				/* lasi_end_graph */
+0,//    lasi_begin_layer,
+    0,				/* lasi_end_layer */
+0,//    lasi_begin_page,
+0,//    lasi_end_page,
+0,//    lasi_begin_cluster,
+0,//    lasi_end_cluster,
+    0,				/* lasi_begin_nodes */
+    0,				/* lasi_end_nodes */
+    0,				/* lasi_begin_edges */
+    0,				/* lasi_end_edges */
+0,//    lasi_begin_node,
+0,//    lasi_end_node,
+0,//    lasi_begin_edge,
+0,//    lasi_end_edge,
+0,//    lasi_begin_anchor,
+    0,				/* lasi_end_anchor */
+0,//    lasi_textpara,
+    0,				/* lasi_resolve_color */
+0,//    lasi_ellipse,
+0,//    lasi_polygon,
+0,//    lasi_bezier,
+0,//    lasi_polyline,
+0,//    lasi_comment,
+0,//    lasi_library_shape,
 };
 
-static gvrender_features_t render_features_ps = {
+static gvrender_features_t render_features_lasi = {
     GVRENDER_DOES_TRANSFORM
 	| GVRENDER_DOES_MAPS
 	| GVRENDER_NO_BG
@@ -487,14 +479,14 @@ static gvdevice_features_t device_features_eps = {
     {72.,72.},			/* default dpi */
 };
 
-gvplugin_installed_t gvrender_ps_types[] = {
-    {FORMAT_PS, "ps", 1, &psgen_engine, &render_features_ps},
+gvplugin_installed_t gvrender_lasi_types[] = {
+    {FORMAT_PS, "lasi", 1, &lasi_engine, &render_features_lasi},
     {0, NULL, 0, NULL, NULL}
 };
 
-gvplugin_installed_t gvdevice_ps_types[] = {
-    {FORMAT_PS, "ps:ps", 1, NULL, &device_features_ps},
-    {FORMAT_PS2, "ps2:ps", 1, NULL, &device_features_ps},
-    {FORMAT_EPS, "eps:ps", 1, NULL, &device_features_eps},
+gvplugin_installed_t gvdevice_lasi_types[] = {
+    {FORMAT_PS, "ps:lasi", -5, NULL, &device_features_ps},
+    {FORMAT_PS2, "ps2:lasi", -5, NULL, &device_features_ps},
+    {FORMAT_EPS, "eps:lasi", -5, NULL, &device_features_eps},
     {0, NULL, 0, NULL, NULL}
 };

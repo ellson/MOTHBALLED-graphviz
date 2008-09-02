@@ -40,7 +40,7 @@ extern "C" {
 			A renderer-type such as "png" in the cairo package
 			has an id that is different from the "ps" type
 			in the same package */
-	char *type;	/* a string name, such as "png" or "ps" that
+	const char *type;	/* a string name, such as "png" or "ps" that
 			distinguishes different types withing the same
 			api (renderer in this case) */
 	int quality;    /* an arbitrary integer used for ordering plugins of

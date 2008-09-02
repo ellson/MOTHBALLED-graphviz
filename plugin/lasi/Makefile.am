@@ -23,7 +23,7 @@ endif
 
 libgvplugin_lasi_C_la_SOURCES = \
 	gvplugin_lasi.c \
-	gvrender_lasi.c
+	gvrender_lasi.cpp
 
 libgvplugin_lasi_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_lasi_la_SOURCES = $(libgvplugin_lasi_C_la_SOURCES)

@@ -68,7 +68,7 @@ char *gvplugin_api_name(api_t api)
  * last install wins.
  */
 boolean gvplugin_install(GVC_t * gvc, api_t api,
-		 char *typestr, int quality, char *packagename, char *path,
+		 const char *typestr, int quality, char *packagename, char *path,
 		 gvplugin_installed_t * typeptr)
 {
     gvplugin_available_t *plugin, **pnext;
@@ -127,7 +127,7 @@ boolean gvplugin_install(GVC_t * gvc, api_t api,
  * manually changed in the config file.
  */
 static boolean gvplugin_activate(GVC_t * gvc, api_t api,
-		 char *typestr, char *packagename, char *path,
+		 const char *typestr, char *packagename, char *path,
 		 gvplugin_installed_t * typeptr)
 {
     gvplugin_available_t **pnext;
@@ -250,7 +250,7 @@ gvplugin_library_t *gvplugin_library_load(GVC_t *gvc, char *path)
 		png:gd:gd
       
 */
-gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
+gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, const char *str)
 {
     gvplugin_available_t **pnext, *rv;
     gvplugin_library_t *library;
@@ -345,7 +345,7 @@ gvplugin_available_t *gvplugin_load(GVC_t * gvc, api_t api, char *str)
 
 /* string buffer management
 	- FIXME - must have 20 solutions for this same thing */
-static char *append_buf(char sep, char *str, boolean new)
+static char *append_buf(char sep, const char *str, boolean new)
 {
     static char *buf;
     static int bufsz, pos;

@@ -16,9 +16,11 @@
 
 #include "gvplugin.h"
 
+extern gvplugin_installed_t gvdevice_lasi_types;
 extern gvplugin_installed_t gvrender_lasi_types;
 
 static gvplugin_api_t apis[] = {
+    {API_device, &gvdevice_lasi_types},
     {API_render, &gvrender_lasi_types},
     {(api_t)0, 0},
 };

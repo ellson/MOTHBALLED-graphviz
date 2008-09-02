@@ -31,7 +31,7 @@ extern "C" {
         gvlayout_engine_t *engine;
         int id;
         gvlayout_features_t *features;
-        char *type;
+        const char *type;
     } gvplugin_active_layout_t;
 
     typedef struct gvplugin_active_textlayout_s {
@@ -42,7 +42,7 @@ extern "C" {
 
     struct gvplugin_available_s {
 	gvplugin_available_t *next;       /* next plugin in linked list, or NULL */
-	char *typestr;		 /* type string, e.g. "png" or "ps" */
+	const char *typestr;		 /* type string, e.g. "png" or "ps" */
 	int quality;             /* programmer assigned quality
 					ranking within type (+ve or -ve int)
 					- codegens have quality = 0 */

@@ -132,20 +132,20 @@ extern "C" {
         gvdevice_engine_t *engine;
         int id;
         gvdevice_features_t *features;
-        char *type;
+        const char *type;
     } gvplugin_active_device_t;
 
     typedef struct gvplugin_active_render_s {
         gvrender_engine_t *engine;
         int id;
         gvrender_features_t *features;
-        char *type;
+        const char *type;
     } gvplugin_active_render_t;
 
     typedef struct gvplugin_active_loadimage_t {
 	gvloadimage_engine_t *engine;
 	int id;
-	char *type;
+	const char *type;
     } gvplugin_active_loadimage_t;
 
     typedef struct gv_argvlist_s {
