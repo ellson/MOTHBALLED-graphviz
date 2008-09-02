@@ -25,6 +25,7 @@
 
 
 #include "gvplugin_render.h"
+#include "ps.h"
 // #include "graph.h"
 // #include "agxbuf.h"
 // #include "utils.h"
@@ -33,6 +34,20 @@ using namespace LASi;
 using namespace std;
 
 typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
+
+PostscriptDocument doc;
+
+static void lasi_printpointf(GVJ_t * job, pointf p)
+{
+    doc.osBody() << p.x << ' ' << p.y << ' ' ;
+}
+
+static void lasi_printpointflist(GVJ_t * job, pointf A[], int n)
+{
+    for (int i = 0; i < n; i++) {
+	lasi_printpointf(job, A[i]);
+    }
+}
 
 static void lasi_begin_job(GVJ_t * job)
 {
@@ -54,6 +69,16 @@ static void lasi_end_job(GVJ_t * job)
 //	        job->boundingBox.UR.x, job->boundingBox.UR.y);
 //    gvdevice_fputs(job, "end\nrestore\n");
 //    gvdevice_fputs(job, "%%EOF\n");
+
+doc.write(cout);
+
+}
+
+static void lasi_begin_graph(GVJ_t * job)
+{
+    for (int i = 0; ps_txt[i]; i++) {
+        doc.osBody() << ps_txt[i] << endl;
+    }
 }
 
 #if 0
@@ -262,6 +287,7 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 	    color->u.HSVA[0], color->u.HSVA[1], color->u.HSVA[2], objtype);
     }
 }
+#endif
 
 static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
@@ -270,10 +296,11 @@ static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
     if (job->obj->pencolor.u.HSVA[3] < .5)
 	return;  /* skip transparent text */
 
-    ps_set_color(job, &(job->obj->pencolor));
-    gvdevice_printnum(job, para->fontsize);
-    gvdevice_printf(job, " /%s set_font\n", para->fontname);
-    str = ps_string(para->str,isLatin1);
+//    ps_set_color(job, &(job->obj->pencolor));
+//    gvdevice_printnum(job, para->fontsize);
+//    gvdevice_printf(job, " /%s set_font\n", para->fontname);
+    doc.osBody() << setFont(para->fontname) << setFontSize(para->fontsize) << endl;
+//    str = ps_string(para->str,isLatin1);
     switch (para->just) {
     case 'r':
         p.x -= para->width;
@@ -287,10 +314,14 @@ static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
         break;
     }
     p.y += para->yoffset_centerline;
-    gvdevice_printpointf(job, p);
-    gvdevice_fputs(job, " moveto ");
-    gvdevice_printnum(job, para->width);
-    gvdevice_printf(job, " %s alignedtext\n", str);
+//    gvdevice_printpointf(job, p);
+//    gvdevice_fputs(job, " moveto ");
+    lasi_printpointf(job, p);
+    doc.osBody() << "moveto" << endl;
+//    gvdevice_printnum(job, para->width);
+//    gvdevice_printf(job, " %s alignedtext\n", str);
+    doc.osBody() << show(para->str) << endl;
+
 }
 
 static void lasi_ellipse(GVJ_t * job, pointf * A, int filled)
@@ -303,18 +334,23 @@ static void lasi_ellipse(GVJ_t * job, pointf * A, int filled)
     AA[1].y = A[1].y - A[0].y;
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
-	ps_set_color(job, &(job->obj->fillcolor));
-	gvdevice_printpointflist(job, AA, 2);
-	gvdevice_fputs(job, " ellipse_path fill\n");
+//	ps_set_color(job, &(job->obj->fillcolor));
+//	gvdevice_printpointflist(job, AA, 2);
+//	gvdevice_fputs(job, " ellipse_path fill\n");
+        lasi_printpointflist(job, A, 2);
+        doc.osBody() << "ellipse_path fill" << endl;
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
-        ps_set_pen_style(job);
-        ps_set_color(job, &(job->obj->pencolor));
-	gvdevice_printpointflist(job, AA, 2);
-	gvdevice_fputs(job, " ellipse_path stroke\n");
+//        ps_set_pen_style(job);
+//        ps_set_color(job, &(job->obj->pencolor));
+//	gvdevice_printpointflist(job, AA, 2);
+//	gvdevice_fputs(job, " ellipse_path stroke\n");
+        lasi_printpointflist(job, A, 2);
+        doc.osBody() << "ellipse_path stroke" << endl;
     }
 }
 
+#if 0
 static void
 lasi_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 	     int arrow_at_end, int filled)
@@ -425,7 +461,7 @@ static void lasi_library_shape(GVJ_t * job, char *name, pointf * A, int n, int f
 static gvrender_engine_t lasi_engine = {
     lasi_begin_job,
     lasi_end_job,
-0,//    lasi_begin_graph,
+    lasi_begin_graph,
     0,				/* lasi_end_graph */
 0,//    lasi_begin_layer,
     0,				/* lasi_end_layer */
@@ -443,7 +479,7 @@ static gvrender_engine_t lasi_engine = {
 0,//    lasi_end_edge,
 0,//    lasi_begin_anchor,
     0,				/* lasi_end_anchor */
-0,//    lasi_textpara,
+	lasi_textpara,
     0,				/* lasi_resolve_color */
 0,//    lasi_ellipse,
 0,//    lasi_polygon,
