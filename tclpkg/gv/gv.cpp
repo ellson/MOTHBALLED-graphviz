@@ -843,7 +843,7 @@ bool rm(Agedge_t *e)
     return true;
 }
 
-bool layout(Agraph_t *g, char *engine)
+bool layout(Agraph_t *g, const char *engine)
 {
     int err;
 
@@ -886,7 +886,7 @@ bool render(Agraph_t *g, char *format, FILE *f)
 }
 
 // render to an open channel  
-bool renderchannel(Agraph_t *g, char *format, char *channelname)
+bool renderchannel(Agraph_t *g, const char *format, const char *channelname)
 {
     int err;
 
@@ -898,7 +898,7 @@ bool renderchannel(Agraph_t *g, char *format, char *channelname)
 }
 
 // render to a filename 
-bool render(Agraph_t *g, char *format, char *filename)
+bool render(Agraph_t *g, const char *format, const char *filename)
 {
     int err;
 
@@ -909,7 +909,7 @@ bool render(Agraph_t *g, char *format, char *filename)
 }
 
 // render to string result, using binding-dependent gv_string_writer()
-void renderresult(Agraph_t *g, char *format, char *outdata)
+void renderresult(Agraph_t *g, const char *format, char *outdata)
 {
     int err;
 
@@ -920,7 +920,7 @@ void renderresult(Agraph_t *g, char *format, char *outdata)
 }
 
 // render to a malloc'ed data string, to be free'd by caller.
-char* renderdata(Agraph_t *g, char *format)
+char* renderdata(Agraph_t *g, const char *format)
 {
     int err;
     char *data;
@@ -945,7 +945,7 @@ bool write(Agraph_t *g, FILE *f)
     return (! err);
 }
 
-bool write(Agraph_t *g, char *filename)
+bool write(Agraph_t *g, const char *filename)
 {
     FILE *f;
     int err;

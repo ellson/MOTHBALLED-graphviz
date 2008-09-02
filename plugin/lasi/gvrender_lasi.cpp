@@ -26,9 +26,9 @@
 
 #include "gvplugin_render.h"
 #include "ps.h"
-// #include "graph.h"
-// #include "agxbuf.h"
-// #include "utils.h"
+#include "graph.h" /* for agxbuf */
+#include "agxbuf.h"
+#include "utils.h"
 
 using namespace LASi;
 using namespace std;
@@ -36,6 +36,49 @@ using namespace std;
 typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
 
 PostscriptDocument doc;
+
+/* cat_libfile:
+ * Write library files onto the given file pointer.
+ * arglib is an NULL-terminated array of char*
+ * Each non-trivial entry should be the name of a file to be included.
+ * stdlib is an NULL-terminated array of char*
+ * Each of these is a line of a standard library to be included.
+ * If any item in arglib is the empty string, the stdlib is not used.
+ * The stdlib is printed first, if used, followed by the user libraries.
+ * We check that for web-safe file usage.
+ */
+static void cat_libfile(FILE * ofp, const char **arglib, const char **stdlib)
+{
+    FILE *fp;
+    const char **s, *bp, *p;
+    int i;
+    boolean use_stdlib = TRUE;
+
+    /* check for empty string to turn off stdlib */
+    if (arglib) {
+	for (i = 0; use_stdlib && ((p = arglib[i])); i++) {
+	    if (*p == '\0')
+		use_stdlib = FALSE;
+	}
+    }
+    if (use_stdlib)
+	for (s = stdlib; *s; s++) {
+	    doc.osBody() << *s << endl;
+	}
+    if (arglib) {
+	for (i = 0; (p = arglib[i]) != 0; i++) {
+	    if (*p == '\0')
+		continue;	/* ignore empty string */
+	    p = safefile(p);	/* make sure filename is okay */
+	    if ((fp = fopen(p, "r"))) {
+		while ((bp = Fgets(fp)))
+		    doc.osBody() << bp;
+		doc.osBody() << endl; /* append a newline just in case */
+	    } else
+		agerr(AGWARN, "can't open library file %s\n", p);
+	}
+    }
+}
 
 static void lasi_printpointf(GVJ_t * job, pointf p)
 {

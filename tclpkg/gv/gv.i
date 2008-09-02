@@ -28,8 +28,8 @@
      Tcl_ListObjAppendElement(interp,$result,(Tcl_Obj*)$1);
 }
 
-// A typemap telling SWIG to map char *channelname to Tcl_Channel *chan
-%typemap(in) char *channelname (int mode) {
+// A typemap telling SWIG to map const char *channelname to Tcl_Channel *chan
+%typemap(in) const char *channelname (int mode) {
     $1 = (char*)Tcl_GetChannel(interp, Tcl_GetString($input), &mode);
 // FIXME - need to error if chan is NULL or mode not TCL_WRITABLE
 }
@@ -56,7 +56,7 @@ extern Agraph_t *strictgraph(char *name);
 extern Agraph_t *strictdigraph(char *name);
 /*** New graph from a dot-syntax string or file */
 extern Agraph_t *readstring(char *string);
-extern Agraph_t *read(char *filename);
+extern Agraph_t *read(const char *filename);
 extern Agraph_t *read(FILE *f);
 /*** Add new subgraph to existing graph */
 extern Agraph_t *graph(Agraph_t *g, char *name);
@@ -205,24 +205,24 @@ extern bool layout(Agraph_t *g, char *engine);
 /*** Render a layout into attributes of the graph */
 extern bool render(Agraph_t *g); 
 /*** Render a layout to stdout */
-extern bool render(Agraph_t *g, char *format);
+extern bool render(Agraph_t *g, const char *format);
 /*** Render to an open file */
-extern bool render(Agraph_t *g, char *format, FILE *fout);
+extern bool render(Agraph_t *g, const char *format, FILE *fout);
 /*** Render a layout to an unopened file by name */
-extern bool render(Agraph_t *g, char *format, char *filename);
+extern bool render(Agraph_t *g, const char *format, const char *filename);
 /*** Render to an open channel */
-extern bool renderchannel(Agraph_t *g, char *format, char *channelname);
+extern bool renderchannel(Agraph_t *g, const char *format, const char *channelname);
 /*** Render to a string result */
-extern void renderresult(Agraph_t *g, char *format, char *outdata);
+extern void renderresult(Agraph_t *g, const char *format, char *outdata);
 #if 0
 /*** Render a layout to a malloc'ed string, to be free'd by the caller */
 /*** (deprecated - too easy to leak memory) */
-extern char* renderdata(Agraph_t *g, char *format);
+extern char* renderdata(Agraph_t *g, const char *format);
 #endif
 
 
 /*** Writing graph back to file */
-extern bool write(Agraph_t *g, char *filename);
+extern bool write(Agraph_t *g, const char *filename);
 extern bool write(Agraph_t *g, FILE *f);
 
 %}
@@ -237,7 +237,7 @@ extern Agraph_t *strictgraph(char *name);
 extern Agraph_t *strictdigraph(char *name);
 /*** New graph from a dot-syntax string or file */
 extern Agraph_t *readstring(char *string);
-extern Agraph_t *read(char *filename);
+extern Agraph_t *read(const char *filename);
 extern Agraph_t *read(FILE *f);
 /*** Add new subgraph to existing graph */
 extern Agraph_t *graph(Agraph_t *g, char *name);
@@ -386,24 +386,24 @@ extern bool layout(Agraph_t *g, char *engine);
 /*** Render a layout into attributes of the graph */
 extern bool render(Agraph_t *g); 
 /*** Render a layout to stdout */
-extern bool render(Agraph_t *g, char *format);
+extern bool render(Agraph_t *g, const char *format);
 /*** Render to an open file */
-extern bool render(Agraph_t *g, char *format, FILE *fout);
+extern bool render(Agraph_t *g, const char *format, FILE *fout);
 /*** Render a layout to an unopened file by name */
-extern bool render(Agraph_t *g, char *format, char *filename);
+extern bool render(Agraph_t *g, const char *format, const char *filename);
 /*** Render to an open channel */
-extern bool renderchannel(Agraph_t *g, char *format, char *channelname);
+extern bool renderchannel(Agraph_t *g, const char *format, const char *channelname);
 /*** Render to a string result */
-extern void renderresult(Agraph_t *g, char *format, char *outdata);
+extern void renderresult(Agraph_t *g, const char *format, char *outdata);
 #if 0
 /*** Render a layout to a malloc'ed string, to be free'd by the caller */
 /*** (deprecated - too easy to leak memory) */
-extern char* renderdata(Agraph_t *g, char *format);
+extern char* renderdata(Agraph_t *g, const char *format);
 #endif
 
 
 /*** Writing graph back to file */
-extern bool write(Agraph_t *g, char *filename);
+extern bool write(Agraph_t *g, const char *filename);
 extern bool write(Agraph_t *g, FILE *f);
 
 %}
