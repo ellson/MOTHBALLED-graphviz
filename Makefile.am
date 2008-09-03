@@ -40,6 +40,7 @@ EXTRA_DIST = $(txt) $(html) graphviz.spec.in graphviz.spec \
 .PHONY: rpm
 rpm: dist
 	rpmbuild -ta graphviz-@VERSION@.tar.gz
+#	rpmbuild -ta --define "rtest 1" graphviz-@VERSION@.tar.gz
 	
 .PHONY: deb
 deb: dist
