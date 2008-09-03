@@ -102,77 +102,89 @@ static void lasi_begin_job(GVJ_t * job)
 static void lasi_end_job(GVJ_t * job)
 {
 //    gvdevice_fputs(job, "%%Trailer\n");
-//    if (job->render.id != FORMAT_EPS)
-//        gvdevice_printf(job, "%%%%Pages: %d\n", job->common->viewNum);
-//    if (job->common->show_boxes == NULL)
-//        if (job->render.id != FORMAT_EPS)
+    if (job->render.id != FORMAT_EPS)
+//	gvdevice_printf(job, "%%%%Pages: %d\n", job->common->viewNum);
+	doc.osFooter() << "%%Pages: " << job->common->viewNum << endl;
+    if (job->common->show_boxes == NULL)
+        if (job->render.id != FORMAT_EPS)
 //	    gvdevice_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
 //	        job->boundingBox.LL.x, job->boundingBox.LL.y,
 //	        job->boundingBox.UR.x, job->boundingBox.UR.y);
+	    doc.osFooter() << "%%BoundingBox: " << job->pageBoundingBox.LL.x << ' ' \
+						<< job->pageBoundingBox.LL.y << ' ' \
+						<< job->pageBoundingBox.UR.x << ' ' \
+						<< job->pageBoundingBox.UR.y << endl;
 //    gvdevice_fputs(job, "end\nrestore\n");
+    doc.osFooter() << "end" << endl;
+    doc.osFooter() << "restore" << endl;
 //    gvdevice_fputs(job, "%%EOF\n");
 
 doc.write(cout);
-
 }
 
-static void lasi_begin_graph(GVJ_t * job)
-{
-    for (int i = 0; ps_txt[i]; i++) {
-        doc.osBody() << ps_txt[i] << endl;
-    }
-}
-
-#if 0
 static void lasi_begin_graph(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    setupLatin1 = FALSE;
+//    setupLatin1 = FALSE;
 
     if (job->common->viewNum == 0) {
-        gvdevice_printf(job, "%%%%Title: %s\n", obj->u.g->name);
+//	gvdevice_printf(job, "%%%%Title: %s\n", obj->u.g->name);
+	doc.osBody() << "%%Title: " << obj->u.g->name << endl;
     	if (job->render.id != FORMAT_EPS)
-            gvdevice_fputs(job, "%%Pages: (atend)\n");
+//	    gvdevice_fputs(job, "%%Pages: (atend)\n");
+	    doc.osBody() << "%%Pages: (atend)" << endl;
 	else
-	    gvdevice_fputs(job, "%%Pages: 1\n");
+//	    gvdevice_fputs(job, "%%Pages: 1\n");
+	    doc.osBody() << "%%Pages: 1" << endl;
         if (job->common->show_boxes == NULL) {
     	    if (job->render.id != FORMAT_EPS)
-                gvdevice_fputs(job, "%%BoundingBox: (atend)\n");
+//		gvdevice_fputs(job, "%%BoundingBox: (atend)\n");
+		doc.osBody() << "%%BoundingBox: (atend)" << endl;
 	    else
-	        gvdevice_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
-	            job->pageBoundingBox.LL.x, job->pageBoundingBox.LL.y,
-	            job->pageBoundingBox.UR.x, job->pageBoundingBox.UR.y);
+//	        gvdevice_printf(job, "%%%%BoundingBox: %d %d %d %d\n",
+//	            job->pageBoundingBox.LL.x, job->pageBoundingBox.LL.y,
+//	            job->pageBoundingBox.UR.x, job->pageBoundingBox.UR.y);
+		doc.osBody() << "%%BoundingBox: " << job->pageBoundingBox.LL.x << ' ' \
+						  << job->pageBoundingBox.LL.y << ' ' \
+						  << job->pageBoundingBox.UR.x << ' ' \
+						  << job->pageBoundingBox.UR.y << endl;
 	}
-        gvdevice_fputs(job, "%%EndComments\nsave\n");
+//	gvdevice_fputs(job, "%%EndComments\nsave\n");
+	doc.osBody() << "%%EndComments" << endl;
+	doc.osBody() << "save" << endl;
         /* include shape library */
-        cat_preamble(job, job->common->lib);
+//        cat_preamble(job, job->common->lib);
+        cat_libfile(job, job->common->lib, ps_txt);
 	/* include epsf */
-        epsf_define(job->output_file);
+//        epsf_define(job->output_file);
         if (job->common->show_boxes) {
-            char* args[2];
+            const char* args[2];
             args[0] = job->common->show_boxes[0];
             args[1] = NULL;
             cat_libfile(job, NULL, args);
         }
     }
-    isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
-    /* We always setup Latin1. The charset info is always output,
-     * and installing it is cheap. With it installed, we can then
-     * rely on ps_string to convert UTF-8 characters whose encoding
-     * is in the range of Latin-1 into the Latin-1 equivalent and
-     * get the expected PostScript output.
-     */
-    if (!setupLatin1) {
-	gvdevice_fputs(job, "setupLatin1\n");	/* as defined in ps header */
-	setupLatin1 = TRUE;
-    }
+//    isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
+//    /* We always setup Latin1. The charset info is always output,
+//     * and installing it is cheap. With it installed, we can then
+//     * rely on ps_string to convert UTF-8 characters whose encoding
+//     * is in the range of Latin-1 into the Latin-1 equivalent and
+//     * get the expected PostScript output.
+//     */
+//    if (!setupLatin1) {
+//	gvdevice_fputs(job, "setupLatin1\n");	/* as defined in ps header */
+//	setupLatin1 = TRUE;
+//    }
     /*  Set base URL for relative links (for Distiller >= 3.0)  */
-    if (obj->url)
-	gvdevice_printf(job, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
-		"/PUT pdfmark\n", obj->url);
+//    if (obj->url)
+//	gvdevice_printf(job, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
+//		"/PUT pdfmark\n", obj->url);
+//	doc.osBody() << "[ {Catalog} << /URI << /Base (" << obj->url << ") >> >>" << endl;
+//	doc.osBody() << "/PUT pdfmark" << endl;
 }
 
+#if 0
 static void lasi_begin_layer(GVJ_t * job, char *layername, int layerNum, int numLayers)
 {
     gvdevice_printf(job, "%d %d setlayer\n", layerNum, numLayers);
