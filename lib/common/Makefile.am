@@ -29,7 +29,7 @@ libcommon_C_la_SOURCES = arrows.c colxlate.c fontmetrics.c \
 	args.c memory.c globals.c htmllex.c htmlparse.y htmltable.c input.c \
 	pointset.c postproc.c routespl.c splines.c psusershape.c \
 	timing.c labels.c ns.c shapes.c utils.c geom.c \
-	output.c emit.c ps.txt ps_font_equiv.txt ps_fontmap.txt fontmap.cfg \
+	output.c emit.c ps_font_equiv.txt ps_fontmap.txt fontmap.cfg \
 	color_names $(CODEGENS)
 
 fontmetrics.o fontmetrics.lo: ps_font_equiv.h

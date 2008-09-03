@@ -26,7 +26,8 @@ libgvplugin_core_C_la_SOURCES = \
 	gvrender_core_svg.c \
 	gvrender_core_tk.c \
 	gvrender_core_vml.c \
-	gvloadimage_core.c
+	gvloadimage_core.c \
+	ps.txt
 
 libgvplugin_core_la_LDFLAGS = -version-info @GVPLUGIN_VERSION_INFO@
 libgvplugin_core_la_SOURCES = $(libgvplugin_core_C_la_SOURCES)
