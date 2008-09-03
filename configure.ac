@@ -2282,9 +2282,13 @@ else
 	    fi
 	    if test "$f" = "GD_FONTCONFIG"; then
                 AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library supports FONTCONFIG])
+	    else
+	        AC_MSG_WARN(Your libgd was not built with fontconfig support. This may result in problems resolving fonts.)
 	    fi
 	    if test "$f" = "GD_FREETYPE"; then
                 AC_DEFINE_UNQUOTED(HAVE_GD_FREETYPE,1,[Define if the GD library supports FREETYPE])
+	    else
+	        AC_MSG_WARN(Your libgd was not built with freetype support. This may result in problems displaying fonts.)
 	    fi
 	    if test "$f" = "GD_GIF"; then
                 AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library supports GIF])
