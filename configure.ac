@@ -2281,14 +2281,12 @@ else
                 AC_DEFINE_UNQUOTED(HAVE_GD_XPM,1,[Define if the GD library supports XPM])
 	    fi
 	    if test "$f" = "GD_FONTCONFIG"; then
+		HAVE_GD_FONTCONFIG=1
                 AC_DEFINE_UNQUOTED(HAVE_GD_FONTCONFIG,1,[Define if the GD library supports FONTCONFIG])
-	    else
-	        AC_MSG_WARN(Your libgd was not built with fontconfig support. This may result in problems resolving fonts.)
 	    fi
 	    if test "$f" = "GD_FREETYPE"; then
+		HAVE_GD_FREETYPE=1
                 AC_DEFINE_UNQUOTED(HAVE_GD_FREETYPE,1,[Define if the GD library supports FREETYPE])
-	    else
-	        AC_MSG_WARN(Your libgd was not built with freetype support. This may result in problems displaying fonts.)
 	    fi
 	    if test "$f" = "GD_GIF"; then
                 AC_DEFINE_UNQUOTED(HAVE_GD_GIF,1,[Define if the GD library supports GIF])
@@ -2300,6 +2298,13 @@ else
                 AC_DEFINE_UNQUOTED(HAVE_GD_OPENPOLYGON,1,[Define if the GD library supports OPENPOLYGON])
 	    fi
         done
+
+	if test "x$HAVE_GD_FONTCONFIG" = "x"; then
+            AC_MSG_WARN(Your libgd was not built with freetype support. This may result in problems displaying fonts.)
+	fi
+	if test "x$HAVE_GD_FREETYPE" = "x"; then
+	    AC_MSG_WARN(Your libgd was not built with fontconfig support. This may result in problems resolving fonts.)
+        fi
 
         # GD version check >= 2.0.34  else revert to --with-mylibgd
         REQ_GD_MAJORVERSION=2

@@ -698,9 +698,11 @@ cp -a %{buildroot}%{_datadir}/%{name}/doc __doc
 rm -rf %{buildroot}%{_datadir}/%{name}/doc
 
 %clean
-# regression test
+# optional regression test using the products in the build tree
+%if 0%{?rtest}
 cd rtest
 make rtest
+%endif
 # clean up temporary installation
 rm -rf %{buildroot}
 
