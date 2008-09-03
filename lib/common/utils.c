@@ -339,7 +339,7 @@ char *safefile(const char *filename)
 {
     static boolean onetime = TRUE;
     static char *safefilename = NULL;
-    char *str, *p;
+    const char *str, *p;
 
     if (!filename || !filename[0])
 	return NULL;

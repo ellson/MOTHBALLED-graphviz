@@ -26,7 +26,6 @@
 
 #include "gvplugin_render.h"
 #include "ps.h"
-#include "graph.h" /* for agxbuf */
 #include "agxbuf.h"
 #include "utils.h"
 
@@ -47,7 +46,7 @@ PostscriptDocument doc;
  * The stdlib is printed first, if used, followed by the user libraries.
  * We check that for web-safe file usage.
  */
-static void cat_libfile(FILE * ofp, const char **arglib, const char **stdlib)
+static void cat_libfile(GVJ_t *job, const char **arglib, const char **stdlib)
 {
     FILE *fp;
     const char **s, *bp, *p;
@@ -75,7 +74,7 @@ static void cat_libfile(FILE * ofp, const char **arglib, const char **stdlib)
 		    doc.osBody() << bp;
 		doc.osBody() << endl; /* append a newline just in case */
 	    } else
-		agerr(AGWARN, "can't open library file %s\n", p);
+		job->common->errorfn("can't open library file %s\n", p);
 	}
     }
 }
@@ -154,7 +153,7 @@ static void lasi_begin_graph(GVJ_t * job)
             char* args[2];
             args[0] = job->common->show_boxes[0];
             args[1] = NULL;
-            cat_libfile(job->output_file, NULL, args);
+            cat_libfile(job, NULL, args);
         }
     }
     isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
@@ -218,7 +217,7 @@ static void lasi_end_page(GVJ_t * job)
 {
     if (job->common->show_boxes) {
 	gvdevice_fputs(job, "0 0 0 edgecolor\n");
-	cat_libfile(job->output_file, NULL, job->common->show_boxes + 1);
+	cat_libfile(job, NULL, job->common->show_boxes + 1);
     }
     /* the showpage is really a no-op, but at least one PS processor
      * out there needs to see this literal token.  endpage does the real work.
@@ -305,10 +304,11 @@ ps_set_pen_style(GVJ_t *job)
 	gvdevice_printf(job, "%s\n", line);
     }
 }
+#endif
 
 static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 {
-    char *objtype;
+    const char *objtype;
 
     if (color) {
 	switch (job->obj->type) {
@@ -326,11 +326,11 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 		objtype = "sethsb";
 		break;
 	}
-	gvdevice_printf(job, "%.3f %.3f %.3f %scolor\n",
-	    color->u.HSVA[0], color->u.HSVA[1], color->u.HSVA[2], objtype);
+//	gvdevice_printf(job, "%.3f %.3f %.3f %scolor\n",
+//	    color->u.HSVA[0], color->u.HSVA[1], color->u.HSVA[2], objtype);
+	doc.osBody() << color->u.HSVA[0] << ' ' << color->u.HSVA[1] << ' ' << color->u.HSVA[2] << ' ' << objtype << "color" << endl;
     }
 }
-#endif
 
 static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
@@ -339,7 +339,7 @@ static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
     if (job->obj->pencolor.u.HSVA[3] < .5)
 	return;  /* skip transparent text */
 
-//    ps_set_color(job, &(job->obj->pencolor));
+    ps_set_color(job, &(job->obj->pencolor));
 //    gvdevice_printnum(job, para->fontsize);
 //    gvdevice_printf(job, " /%s set_font\n", para->fontname);
     doc.osBody() << setFont(para->fontname) << setFontSize(para->fontsize) << endl;
@@ -377,18 +377,18 @@ static void lasi_ellipse(GVJ_t * job, pointf * A, int filled)
     AA[1].y = A[1].y - A[0].y;
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
-//	ps_set_color(job, &(job->obj->fillcolor));
+	ps_set_color(job, &(job->obj->fillcolor));
 //	gvdevice_printpointflist(job, AA, 2);
 //	gvdevice_fputs(job, " ellipse_path fill\n");
-        lasi_printpointflist(job, A, 2);
+        lasi_printpointflist(job, AA, 2);
         doc.osBody() << "ellipse_path fill" << endl;
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
 //	ps_set_pen_style(job);
-//	ps_set_color(job, &(job->obj->pencolor));
+	ps_set_color(job, &(job->obj->pencolor));
 //	gvdevice_printpointflist(job, AA, 2);
 //	gvdevice_fputs(job, " ellipse_path stroke\n");
-        lasi_printpointflist(job, A, 2);
+        lasi_printpointflist(job, AA, 2);
         doc.osBody() << "ellipse_path stroke" << endl;
     }
 }
@@ -400,7 +400,7 @@ lasi_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     int j;
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
-//	ps_set_color(job, &(job->obj->fillcolor));
+	ps_set_color(job, &(job->obj->fillcolor));
 //	gvdevice_fputs(job, "newpath ");
 //	gvdevice_printpointf(job, A[0]);
 //	gvdevice_fputs(job, " moveto\n");
@@ -418,7 +418,7 @@ lasi_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
 //	ps_set_pen_style(job);
-//	ps_set_color(job, &(job->obj->pencolor));
+	ps_set_color(job, &(job->obj->pencolor));
 //	gvdevice_fputs(job, "newpath ");
 //	gvdevice_printpointf(job, A[0]);
 //	gvdevice_fputs(job, " moveto\n");
@@ -441,7 +441,7 @@ static void lasi_polygon(GVJ_t * job, pointf * A, int n, int filled)
     int j;
 
     if (filled && job->obj->fillcolor.u.HSVA[3] > .5) {
-//	ps_set_color(job, &(job->obj->fillcolor));
+	ps_set_color(job, &(job->obj->fillcolor));
 //	gvdevice_fputs(job, "newpath ");
 //	gvdevice_printpointf(job, A[0]);
 //	gvdevice_fputs(job, " moveto\n");
@@ -459,7 +459,7 @@ static void lasi_polygon(GVJ_t * job, pointf * A, int n, int filled)
     }
     if (job->obj->pencolor.u.HSVA[3] > .5) {
 //	ps_set_pen_style(job);
-//	ps_set_color(job, &(job->obj->pencolor));
+	ps_set_color(job, &(job->obj->pencolor));
 //	gvdevice_fputs(job, "newpath ");
 //	gvdevice_printpointf(job, A[0]);
 //	gvdevice_fputs(job, " moveto\n");
@@ -483,7 +483,7 @@ static void lasi_polyline(GVJ_t * job, pointf * A, int n)
 
     if (job->obj->pencolor.u.HSVA[3] > .5) {
 //	ps_set_pen_style(job);
-//	ps_set_color(job, &(job->obj->pencolor));
+	ps_set_color(job, &(job->obj->pencolor));
 //	gvdevice_fputs(job, "newpath ");
 //	gvdevice_printpointf(job, A[0]);
 //	gvdevice_fputs(job, " moveto\n");
