@@ -141,7 +141,7 @@ static void lasi_end_job(GVJ_t * job)
     doc.osFooter() << "restore" << endl;
 //    gvdevice_fputs(job, "%%EOF\n");
 
-doc.write(cout);
+    doc.write(cout);
 }
 
 static void lasi_begin_graph(GVJ_t * job)
@@ -412,17 +412,29 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     char *str;
+    const char *font;
+    const PangoFontDescription *pango_font;
 
     if (job->obj->pencolor.u.HSVA[3] < .5)
 	return;  /* skip transparent text */
 
+    if (para->layout) {
+	pango_font = pango_layout_get_font_description((PangoLayout*)(para->layout));
+	font = pango_font_description_get_family(pango_font);
+    }
+    else {
+	font = para->postscript_alias->svg_font_family;
+    }
+
 //fprintf(stderr,"font=\"%s\"\n", para->fontname);
 //fprintf(stderr,"ps_font=\"%s\"\n", para->postscript_alias->name);
 //fprintf(stderr,"svg_font=\"%s\"\n", para->postscript_alias->svg_font_family);
+//fprintf(stderr,"pango_font=\"%s\"\n", pango_font_description_get_family(pango_font));
+
     ps_set_color(job, &(job->obj->pencolor));
 //    gvdevice_printnum(job, para->fontsize);
 //    gvdevice_printf(job, " /%s set_font\n", para->fontname);
-    doc.osBody() << setFont(para->postscript_alias->svg_font_family) << setFontSize(para->fontsize) << endl;
+    doc.osBody() << setFont(font) << setFontSize(para->fontsize) << endl;
     switch (para->just) {
     case 'r':
         p.x -= para->width;
