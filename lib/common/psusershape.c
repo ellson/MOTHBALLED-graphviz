@@ -249,7 +249,7 @@ char *ps_string(char *ins, int latin)
 	    break;
 	case NONLATIN :
 	    if (!warned) {
-		agerr (AGWARN, "UTF-8 input uses non-Latin1 characters which cannot be handled in PostScript output");
+		agerr (AGWARN, "UTF-8 input uses non-Latin1 characters which cannot be handled by this PostScript driver\n");
 		warned = 1;
 	    }
 	    base = ins;
