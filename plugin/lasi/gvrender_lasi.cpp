@@ -45,6 +45,7 @@ using namespace std;
 extern "C" {
 	extern void epsf_define(FILE * of);
 	extern char *ps_string(char *ins, int latin);
+	extern size_t gvdevice_write(GVJ_t *job, const unsigned char *s, unsigned int n);
 }
 
 typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
@@ -121,8 +122,25 @@ static void lasi_begin_job(GVJ_t * job)
     doc.osHeader() << "%%For: " << job->common->user << endl;
 }
 
+// ostream wrapper for gvdevice_write
+// Based on idea in: http://www.oneunified.net/blog/OpenSource/Programming/streamoverload.article
+class Gvout : public streambuf {
+private:
+  GVJ_t *thisjob;
+  // write a string s of length n to the current gvdevice
+  int xsputn (char_type* s, streamsize n) {
+    return gvdevice_write(thisjob, (const unsigned char*)s, n);
+  }
+public:
+  Gvout (GVJ_t *job) {
+    thisjob=job;
+  }
+};
+
 static void lasi_end_job(GVJ_t * job)
 {
+    ostream gvout(new Gvout(job));
+
 //    gvdevice_fputs(job, "%%Trailer\n");
     if (job->render.id != FORMAT_EPS)
 //	gvdevice_printf(job, "%%%%Pages: %d\n", job->common->viewNum);
@@ -141,7 +159,8 @@ static void lasi_end_job(GVJ_t * job)
     doc.osFooter() << "restore" << endl;
 //    gvdevice_fputs(job, "%%EOF\n");
 
-    doc.write(cout);
+//    doc.write(cout);
+    doc.write(gvout);
 }
 
 static void lasi_begin_graph(GVJ_t * job)
