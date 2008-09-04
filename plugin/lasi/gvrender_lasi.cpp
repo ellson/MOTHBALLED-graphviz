@@ -44,14 +44,14 @@ using namespace std;
 
 extern "C" {
 	extern void epsf_define(FILE * of);
-	extern char *ps_string(char *ins, int latin);
-	extern size_t gvdevice_write(GVJ_t *job, const unsigned char *s, unsigned int n);
+//	extern char *ps_string(char *ins, int latin);
+	extern size_t gvdevice_write(GVJ_t *job, const char *s, unsigned int n);
 }
 
 typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
 
-static int isLatin1;
-static char setupLatin1;
+//static int isLatin1;
+//static char setupLatin1;
 
 PostscriptDocument doc;
 
@@ -129,7 +129,7 @@ private:
   GVJ_t *thisjob;
   // write a string s of length n to the current gvdevice
   int xsputn (char_type* s, streamsize n) {
-    return gvdevice_write(thisjob, (const unsigned char*)s, n);
+    return gvdevice_write(thisjob, s, n);
   }
 public:
   Gvout (GVJ_t *job) {
@@ -167,7 +167,7 @@ static void lasi_begin_graph(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    setupLatin1 = FALSE;
+//    setupLatin1 = FALSE;
 
     if (job->common->viewNum == 0) {
 //	gvdevice_printf(job, "%%%%Title: %s\n", obj->u.g->name);
@@ -207,18 +207,17 @@ static void lasi_begin_graph(GVJ_t * job)
             cat_libfile(job, NULL, args);
         }
     }
-    isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
+//    isLatin1 = (GD_charset(obj->u.g) == CHAR_LATIN1);
     /* We always setup Latin1. The charset info is always output,
      * and installing it is cheap. With it installed, we can then
      * rely on ps_string to convert UTF-8 characters whose encoding
      * is in the range of Latin-1 into the Latin-1 equivalent and
      * get the expected PostScript output.
      */
-    if (!setupLatin1) {
-// FIXME!!
+//    if (!setupLatin1) {
 //	gvdevice_fputs(job, "setupLatin1\n");	/* as defined in ps header */
 //	setupLatin1 = TRUE;
-    }
+//    }
     /*  Set base URL for relative links (for Distiller >= 3.0)  */
     if (obj->url) {
 //	gvdevice_printf(job, "[ {Catalog} << /URI << /Base (%s) >> >>\n"
@@ -473,9 +472,8 @@ static void lasi_textpara(GVJ_t * job, pointf p, textpara_t * para)
     doc.osBody() << "moveto" << endl;
 //    gvdevice_printnum(job, para->width);
 //    str = ps_string(para->str,isLatin1);
-    str = para->str;
 //    gvdevice_printf(job, " %s alignedtext\n", str);
-    doc.osBody() << show(str) << endl;
+    doc.osBody() << show(para->str) << endl;
 
 }
 

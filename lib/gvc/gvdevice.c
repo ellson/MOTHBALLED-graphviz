@@ -46,11 +46,11 @@
 #ifndef OS_CODE
 #  define OS_CODE  0x03  /* assume Unix */
 #endif
-static unsigned char z_file_header[] =
+static char z_file_header[] =
    {0x1f, 0x8b, /*magic*/ Z_DEFLATED, 0 /*flags*/, 0,0,0,0 /*time*/, 0 /*xflags*/, OS_CODE};
 
 static z_stream z_strm;
-static unsigned char *df;
+static char *df;
 static unsigned int dfallocated;
 static unsigned long int crc;
 #endif
@@ -69,7 +69,7 @@ extern FILE* Output_file;
 
 static const int PAGE_ALIGN = 4095;		/* align to a 4K boundary (less one), typical for Linux, Mac OS X and Windows memory allocation */
 
-static size_t gvdevice_write_no_z (GVJ_t * job, const unsigned char *s, unsigned int len)
+static size_t gvdevice_write_no_z (GVJ_t * job, const char *s, unsigned int len)
 {
     if (job->gvc->write_fn)   /* externally provided write dicipline */
 	return (job->gvc->write_fn)(job, (char*)s, len);
@@ -213,7 +213,7 @@ void gvdevice_initialize(GVJ_t * job)
 #endif
 }
 
-size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
+size_t gvdevice_write (GVJ_t * job, const char *s, unsigned int len)
 {
     if (!len || !s)
 	return 0;
@@ -234,7 +234,7 @@ size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 	    }
 	}
 
-	z->next_in = (unsigned char*)s;
+	z->next_in = s;
 	z->avail_in = len;
 	z->next_out = df;
 	z->avail_out = dfallocated;
@@ -260,7 +260,7 @@ size_t gvdevice_write (GVJ_t * job, const unsigned char *s, unsigned int len)
 
 void gvdevice_fputs(GVJ_t * job, const char *s)
 {
-    gvdevice_write (job, (const unsigned char*)s, strlen(s));
+    gvdevice_write (job, s, strlen(s));
 }
 
 static void gvdevice_flush(GVJ_t * job)
@@ -305,7 +305,7 @@ void gvdevice_finalize(GVJ_t * job)
     if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
 	z_streamp z = &z_strm;
-	unsigned char out[8] = "";
+	char out[8] = "";
 	int ret;
 	int cnt = 0;
 
@@ -336,14 +336,14 @@ void gvdevice_finalize(GVJ_t * job)
 	    (job->common->errorfn) ("deflation end problem %d\n", ret);
 	    exit(1);
 	}
-	out[0] = (unsigned char)(crc);
-	out[1] = (unsigned char)(crc >> 8);
-	out[2] = (unsigned char)(crc >> 16);
-	out[3] = (unsigned char)(crc >> 24);
-	out[4] = (unsigned char)(z->total_in);
-	out[5] = (unsigned char)(z->total_in >> 8);
-	out[6] = (unsigned char)(z->total_in >> 16);
-	out[7] = (unsigned char)(z->total_in >> 24);
+	out[0] = crc;
+	out[1] = crc >> 8;
+	out[2] = crc >> 16;
+	out[3] = crc >> 24;
+	out[4] = z->total_in;
+	out[5] = z->total_in >> 8;
+	out[6] = z->total_in >> 16;
+	out[7] = z->total_in >> 24;
 	gvdevice_write_no_z(job, out, sizeof(out));
 #else
 	(job->common->errorfn) ("No libz support\n");
@@ -393,7 +393,7 @@ void gvdevice_finalize(GVJ_t * job)
  */
 void gvdevice_printf(GVJ_t * job, const char *format, ...)
 {
-    unsigned char buf[BUFSIZ];
+    char buf[BUFSIZ];
     unsigned int len;
     va_list argp;
 
@@ -417,17 +417,17 @@ void gvdevice_printf(GVJ_t * job, const char *format, ...)
 #define DECPLACES_SCALE 100
 
 /* use macro so maxnegnum is stated just once for both double and string versions */
-#define val_str(n, x) static double n = x; static unsigned char n##str[] = #x;
+#define val_str(n, x) static double n = x; static char n##str[] = #x;
 val_str(maxnegnum, -999999999999999.99)
 
 /* we use len and don't need the string to be terminated */
 /* #define TERMINATED_NUMBER_STRING */
 
 /* Note.  Returned string is only good until the next call to gvprintnum */
-static unsigned char * gvprintnum (int *len, double number)
+static char * gvprintnum (int *len, double number)
 {
-    static unsigned char tmpbuf[sizeof(maxnegnumstr)];   /* buffer big enough for worst case */
-    unsigned char *result = tmpbuf+sizeof(maxnegnumstr); /* init result to end of tmpbuf */
+    static char tmpbuf[sizeof(maxnegnumstr)];   /* buffer big enough for worst case */
+    char *result = tmpbuf+sizeof(maxnegnumstr); /* init result to end of tmpbuf */
     long int N;
     boolean showzeros, negative;
     int digit, i;
@@ -455,7 +455,7 @@ static unsigned char * gvprintnum (int *len, double number)
         N = number + 0.5;
     if (N == 0) {			/* special case for exactly 0 */
 	*len = 1;
-	return (unsigned char *)"0";
+	return "0";
     }
     if ((negative = (N < 0)))		/* avoid "-0" by testing rounded int */
         N = -N;				/* make number +ve */
@@ -492,7 +492,7 @@ static unsigned char * gvprintnum (int *len, double number)
 #ifdef GVPRINTNUM_TEST
 int main (int argc, char *argv[])
 {
-    unsigned char *buf;
+    char *buf;
     int len;
 
     double test[] = {
@@ -517,7 +517,7 @@ int main (int argc, char *argv[])
 
 void gvdevice_printnum(GVJ_t * job, double num)
 {
-    unsigned char *buf;
+    char *buf;
     int len;
 
     buf = gvprintnum(&len, num);
@@ -526,12 +526,12 @@ void gvdevice_printnum(GVJ_t * job, double num)
 
 void gvdevice_printpointf(GVJ_t * job, pointf p)
 {
-    unsigned char *buf;
+    char *buf;
     int len;
 
     buf = gvprintnum(&len, p.x);
     gvdevice_write(job, buf, len);
-    gvdevice_write(job, (unsigned char*)" ", 1);
+    gvdevice_write(job, " ", 1);
     buf = gvprintnum(&len, p.y);
     gvdevice_write(job, buf, len);
 } 
@@ -543,7 +543,7 @@ void gvdevice_printpointflist(GVJ_t * job, pointf *p, int n)
     while (TRUE) {
 	gvdevice_printpointf(job, p[i]);
         if (++i >= n) break;
-        gvdevice_write(job, (unsigned char*)" ", 1);
+        gvdevice_write(job, " ", 1);
     }
 } 
 
