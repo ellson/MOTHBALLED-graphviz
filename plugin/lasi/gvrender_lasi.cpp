@@ -124,7 +124,6 @@ static void lasi_end_job(GVJ_t * job)
 {
     // create the new stream to "redirect" cout's output to
     ostringstream output;
-    string str;
 
     // smart class that will swap streambufs and replace them
     // when object goes out of scope.
@@ -164,8 +163,7 @@ static void lasi_end_job(GVJ_t * job)
 //    gvdevice_fputs(job, "%%EOF\n");
 
     doc.write(cout);
-    str =  output.str();
-    gvdevice_fputs(job, str.c_str());
+    gvdevice_fputs(job, output.str().c_str());
 }
 
 static void lasi_begin_graph(GVJ_t * job)

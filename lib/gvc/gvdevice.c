@@ -69,7 +69,7 @@ extern FILE* Output_file;
 
 static const int PAGE_ALIGN = 4095;		/* align to a 4K boundary (less one), typical for Linux, Mac OS X and Windows memory allocation */
 
-static size_t gvdevice_write_no_z (GVJ_t * job, const char *s, unsigned int len)
+static size_t gvdevice_write_no_z (GVJ_t * job, const char *s, size_t len)
 {
     if (job->gvc->write_fn)   /* externally provided write dicipline */
 	return (job->gvc->write_fn)(job, (char*)s, len);
@@ -96,10 +96,10 @@ static size_t gvdevice_write_no_z (GVJ_t * job, const char *s, unsigned int len)
 static void auto_output_filename(GVJ_t *job)
 {
     static char *buf;
-    static int bufsz;
+    static size_t bufsz;
     char gidx[100];  /* large enough for '.' plus any integer */
     char *fn, *p;
-    int len;
+    size_t len;
 
     if (job->graph_index)
         sprintf(gidx, ".%d", job->graph_index + 1);
@@ -213,7 +213,7 @@ void gvdevice_initialize(GVJ_t * job)
 #endif
 }
 
-size_t gvdevice_write (GVJ_t * job, const char *s, unsigned int len)
+size_t gvdevice_write (GVJ_t * job, const char *s, size_t len)
 {
     if (!len || !s)
 	return 0;
@@ -222,7 +222,7 @@ size_t gvdevice_write (GVJ_t * job, const char *s, unsigned int len)
     if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
 	z_streamp z = &z_strm;
-	int ret, dflen;
+	size_t ret, dflen;
 
 	dflen = deflateBound(z, len);
 	if (dfallocated < dflen) {
@@ -394,7 +394,7 @@ void gvdevice_finalize(GVJ_t * job)
 void gvdevice_printf(GVJ_t * job, const char *format, ...)
 {
     char buf[BUFSIZ];
-    unsigned int len;
+    size_t len;
     va_list argp;
 
     va_start(argp, format);
@@ -424,7 +424,7 @@ val_str(maxnegnum, -999999999999999.99)
 /* #define TERMINATED_NUMBER_STRING */
 
 /* Note.  Returned string is only good until the next call to gvprintnum */
-static char * gvprintnum (int *len, double number)
+static char * gvprintnum (size_t *len, double number)
 {
     static char tmpbuf[sizeof(maxnegnumstr)];   /* buffer big enough for worst case */
     char *result = tmpbuf+sizeof(maxnegnumstr); /* init result to end of tmpbuf */
@@ -493,7 +493,7 @@ static char * gvprintnum (int *len, double number)
 int main (int argc, char *argv[])
 {
     char *buf;
-    int len;
+    size_t len;
 
     double test[] = {
 	-maxnegnum*1.1, -maxnegnum*.9,
@@ -518,7 +518,7 @@ int main (int argc, char *argv[])
 void gvdevice_printnum(GVJ_t * job, double num)
 {
     char *buf;
-    int len;
+    size_t len;
 
     buf = gvprintnum(&len, num);
     gvdevice_write(job, buf, len);
@@ -527,7 +527,7 @@ void gvdevice_printnum(GVJ_t * job, double num)
 void gvdevice_printpointf(GVJ_t * job, pointf p)
 {
     char *buf;
-    int len;
+    size_t len;
 
     buf = gvprintnum(&len, p.x);
     gvdevice_write(job, buf, len);

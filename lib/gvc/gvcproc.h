@@ -67,7 +67,7 @@ extern "C" {
     extern usershape_t *gvusershape_find(char *name);
 
 /* device */
-    extern size_t gvdevice_write (GVJ_t * job, const char *s, unsigned int len);
+    extern size_t gvdevice_write (GVJ_t * job, const char *s, size_t len);
     extern void gvdevice_fputs(GVJ_t * job, const char *s);
     extern void gvdevice_printf(GVJ_t * job, const char *format, ...);
 
