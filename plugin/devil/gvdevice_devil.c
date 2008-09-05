@@ -23,7 +23,7 @@
 #include <IL/ilu.h>
 
 static void
-Y_inv ( unsigned int width, unsigned int height, unsigned char *data)
+Y_inv ( unsigned int width, unsigned int height, char *data)
 {
         unsigned int x, y, *a, *b, t;
 
