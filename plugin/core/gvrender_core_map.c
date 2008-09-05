@@ -19,6 +19,7 @@
 #endif
 
 #include "gvplugin_render.h"
+#include "gvplugin_device.h"
 
 /* for g->name */
 #include "graph.h"

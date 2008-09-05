@@ -26,6 +26,7 @@
 #include "const.h"
 
 #include "gvplugin_render.h"
+#include "gvplugin_device.h"
 #include "graph.h"
 
 typedef enum { FORMAT_VML, FORMAT_VMLZ, } format_type;

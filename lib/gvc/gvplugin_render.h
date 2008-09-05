@@ -25,12 +25,6 @@
 extern "C" {
 #endif
 
-extern void gvdevice_fputs(GVJ_t * job, const char *s);
-extern void gvdevice_printf(GVJ_t * job, const char *format, ...);
-extern void gvdevice_printnum(GVJ_t * job, double num);
-extern void gvdevice_printpointf(GVJ_t * job, pointf p);
-extern void gvdevice_printpointflist(GVJ_t * job, pointf *p, int n);
-
     struct gvrender_engine_s {
 	void (*begin_job) (GVJ_t * job);
 	void (*end_job) (GVJ_t * job);

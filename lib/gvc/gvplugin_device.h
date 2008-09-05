@@ -25,6 +25,13 @@
 extern "C" {
 #endif
 
+    extern size_t gvdevice_write (GVJ_t * job, const char *s, size_t len);
+    extern void gvdevice_fputs(GVJ_t * job, const char *s);
+    extern void gvdevice_printf(GVJ_t * job, const char *format, ...);
+    extern void gvdevice_printnum(GVJ_t * job, double num);
+    extern void gvdevice_printpointf(GVJ_t * job, pointf p);
+    extern void gvdevice_printpointflist(GVJ_t * job, pointf *p, int n);
+
     struct gvdevice_engine_s {
 	void (*initialize) (GVJ_t * firstjob);
 	void (*format) (GVJ_t * firstjob);

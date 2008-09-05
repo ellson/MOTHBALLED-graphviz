@@ -29,6 +29,7 @@
 #include "const.h"
 
 #include "gvplugin_render.h"
+#include "gvplugin_device.h"
 
 typedef enum { FORMAT_DIA, } format_type;
 

@@ -29,6 +29,7 @@
 #include "const.h"
 
 #include "gvplugin_render.h"
+#include "gvplugin_device.h"
 #include "gvcint.h"
 #include "graph.h"
 
