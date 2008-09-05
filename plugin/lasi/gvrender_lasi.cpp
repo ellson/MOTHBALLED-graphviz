@@ -25,6 +25,7 @@
 
 
 #include "gvplugin_render.h"
+#include "gvplugin_device.h"
 #include "ps.h"
 #include "agxbuf.h"
 #include "utils.h"

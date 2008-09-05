@@ -15,6 +15,7 @@
 **********************************************************/
 
 #include "gvplugin.h"
+#include "gvplugin_device.h"
 #include "gvplugin_quartz.h"
 
 extern gvplugin_installed_t gvrender_quartz_types;
@@ -42,11 +43,9 @@ CFStringRef format_uti [] = {
 
 /* data consumer backed by the gvdevice */
 
-extern size_t gvdevice_write(GVJ_t *job, const unsigned char *s, unsigned int len);
-
 static size_t device_data_consumer_put_bytes (void *info, const void *buffer, size_t count)
 {
-	return gvdevice_write((GVJ_t *)info, (const unsigned char*)buffer, count);
+	return gvdevice_write((GVJ_t *)info, (const char*)buffer, count);
 }
 
 CGDataConsumerCallbacks device_data_consumer_callbacks = {

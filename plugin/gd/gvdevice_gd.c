@@ -23,17 +23,15 @@
 #ifdef HAVE_LIBGD
 #include "gd.h"
 
-extern size_t gvdevice_write(GVJ_t * job, const unsigned char * s, unsigned int len);
-
 int gvdevice_gd_putBuf (gdIOCtx *context, const void *buffer, int len)
 {
-    return gvdevice_write((GVJ_t *)(context->tell), buffer, (unsigned int)len);
+    return gvdevice_write((GVJ_t *)(context->tell), buffer, len);
 }
 
 /* used by gif output */
 void gvdevice_gd_putC (gdIOCtx *context, int C)
 {
-    unsigned char c = C;
+    char c = C;
 
     gvdevice_write((GVJ_t *)(context->tell), &c, 1);
 }
