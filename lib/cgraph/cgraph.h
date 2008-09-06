@@ -292,7 +292,8 @@ extern Agedge_t *agfstedge(Agraph_t * g, Agnode_t * n);
 extern Agedge_t *agnxtedge(Agraph_t * g, Agedge_t * e, Agnode_t * n);
 
 /* generic */
-extern Agraph_t *agraphof(void *);
+extern Agraph_t *agraphof(void* obj);
+extern Agraph_t *agroot(void* obj);
 extern char *agnameof(void *);
 extern int agrelabel(void *obj, char *name);	/* scary */
 extern int agrelabel_node(Agnode_t * n, char *newname);
@@ -357,7 +358,7 @@ extern int agsafeset(void* obj, char* name, char* value, char* def);
 extern Agraph_t *agsubg(Agraph_t * g, char *name, int cflag);	/* constructor */
 extern Agraph_t *agidsubg(Agraph_t * g, unsigned long id, int cflag);	/* constructor */
 extern Agraph_t *agfstsubg(Agraph_t * g), *agnxtsubg(Agraph_t * subg);
-extern Agraph_t *agparent(Agraph_t * g), *agroot(Agraph_t * g);
+extern Agraph_t *agparent(Agraph_t * g);
 
 /* set cardinality */
 extern int agnnodes(Agraph_t * g), agnedges(Agraph_t * g);
