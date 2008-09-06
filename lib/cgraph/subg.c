@@ -87,11 +87,6 @@ Agraph_t *agparent(Agraph_t * g)
     return g->parent;
 }
 
-Agraph_t *agroot(Agraph_t * g)
-{
-    return g->root;
-}
-
 /* this function is only responsible for deleting the entry
  * in the parent's subg dict.  the rest is done in agclose().
  */
