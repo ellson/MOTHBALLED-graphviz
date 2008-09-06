@@ -362,7 +362,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    break;
 	case M_indegree:
 	    if (AGTYPE(objp) == AGNODE)
-		v->integer = agdegree(state->curgraph, (Agnode_t *) objp, 1, 0);
+		v->integer = agdegree(agroot(objp), (Agnode_t *) objp, 1, 0);
 	    else {
 		error(ERROR_FATAL, "indegree of non-node");
 		return -1;
@@ -370,7 +370,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    break;
 	case M_outdegree:
 	    if (AGTYPE(objp) == AGNODE)
-		v->integer = agdegree(state->curgraph, (Agnode_t *) objp, 0, 1);
+		v->integer = agdegree(agroot(objp), (Agnode_t *) objp, 0, 1);
 	    else {
 		error(ERROR_FATAL, "outdegree of non-node");
 		return -1;
@@ -378,7 +378,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    break;
 	case M_degree:
 	    if (AGTYPE(objp) == AGNODE)
-		v->integer = agdegree(state->curgraph, (Agnode_t *) objp, 1, 1);
+		v->integer = agdegree(agroot(objp), (Agnode_t *) objp, 1, 1);
 	    else {
 		error(ERROR_FATAL, "degree of non-node");
 		return -1;
@@ -388,7 +388,7 @@ static int lookup(Expr_t * pgm, Agobj_t * objp, Exid_t * sym, Extype_t * v,
 	    if (AGTYPE(objp) == AGRAPH)
 		v->integer = PTR2INT(agparent((Agraph_t *) objp));
 	    else {
-		error(ERROR_FATAL, "root of non-graph");
+		error(ERROR_FATAL, "parent of non-graph");
 		return -1;
 	    }
 	    break;
@@ -619,7 +619,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_nxtnode:
 	    np = INT2PTR(Agnode_t *, args[0].integer);
 	    if (np) {
-		np = agnxtnode(state->curgraph, np);
+		np = agnxtnode(agroot(np), np);
 		v.integer = PTR2INT(np);
 	    } else {
 		error(ERROR_WARNING, "NULL node passed to nxtnode()");
@@ -630,7 +630,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (np) {
 		np = agnxtnode(gp, np);
 		v.integer = PTR2INT(np);
@@ -652,7 +652,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (np) {
 		v.integer = PTR2INT(addNode(gp, np, 0));
 	    } else {
@@ -664,7 +664,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (np) {
 		v.integer = agdegree(gp, np, 1, 0);
 	    } else {
@@ -676,7 +676,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (np) {
 		v.integer = agdegree(gp, np, 0, 1);
 	    } else {
@@ -688,7 +688,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (np) {
 		v.integer = agdegree(gp, np, 1, 1);
 	    } else {
@@ -797,7 +797,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL head node passed to isEdge()");
 		v.integer = 0;
 	    } else
-		v.integer = PTR2INT(isEdge(state->curgraph, np, hp, key));
+		v.integer = PTR2INT(isEdge(agroot(np), np, hp, key));
 	    break;
 	case F_isedgesg:
 	    key = args[3].string;
@@ -807,7 +807,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    hp = INT2PTR(Agnode_t *, args[2].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (!np) {
 		error(ERROR_WARNING, "NULL tail node passed to isEdge_sg()");
 		v.integer = 0;
@@ -821,7 +821,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    ep = INT2PTR(Agedge_t *, args[1].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (ep) {
 		v.integer = PTR2INT(addEdge(gp, ep, 0));
 	    } else {
@@ -832,7 +832,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_fstout:
 	    np = INT2PTR(Agnode_t *, args[0].integer);
 	    if (np) {
-		ep = agfstout(state->curgraph, np);
+		ep = agfstout(agroot(np), np);
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL node passed to fstout()");
@@ -843,7 +843,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (np) {
 		ep = agfstout(gp, np);
 		v.integer = PTR2INT(ep);
@@ -855,7 +855,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_nxtout:
 	    ep = INT2PTR(Agedge_t *, args[0].integer);
 	    if (ep) {
-		ep = agnxtout(state->curgraph, ep);
+		ep = agnxtout(agroot(np), ep);
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL edge passed to nxtout()");
@@ -866,7 +866,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    ep = INT2PTR(Agedge_t *, args[1].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (ep) {
 		ep = agnxtout(gp, ep);
 		v.integer = PTR2INT(ep);
@@ -878,7 +878,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_fstin:
 	    np = INT2PTR(Agnode_t *, args[0].integer);
 	    if (np) {
-		ep = agfstin(state->curgraph, np);
+		ep = agfstin(agroot(np), np);
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL node passed to fstin()");
@@ -889,7 +889,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (np) {
 		ep = agfstin(gp, np);
 		v.integer = PTR2INT(ep);
@@ -901,7 +901,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_nxtin:
 	    ep = INT2PTR(Agedge_t *, args[0].integer);
 	    if (ep) {
-		ep = agnxtin(state->curgraph, ep);
+		ep = agnxtin(agroot(np), ep);
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL edge passed to nxtin()");
@@ -912,7 +912,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    ep = INT2PTR(Agedge_t *, args[1].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (ep) {
 		ep = agnxtin(gp, ep);
 		v.integer = PTR2INT(ep);
@@ -924,7 +924,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_fstedge:
 	    np = INT2PTR(Agnode_t *, args[0].integer);
 	    if (np) {
-		ep = agfstedge(state->curgraph, np);
+		ep = agfstedge(agroot(np), np);
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL node passed to fstedge()");
@@ -935,7 +935,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    np = INT2PTR(Agnode_t *, args[1].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (np) {
 		ep = agfstedge(gp, np);
 		v.integer = PTR2INT(ep);
@@ -954,7 +954,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL node passed to nxtedge()");
 		v.integer = 0;
 	    } else {
-		ep = agnxtedge(state->curgraph, ep, np);
+		ep = agnxtedge(agroot(np), ep, np);
 		v.integer = PTR2INT(ep);
 	    }
 	    break;
@@ -963,7 +963,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    ep = INT2PTR(Agedge_t *, args[1].integer);
 	    np = INT2PTR(Agnode_t *, args[2].integer);
 	    if (!gp)
-		gp = state->curgraph;
+		gp = agroot(np);
 	    if (!ep) {
 		error(ERROR_WARNING, "NULL edge passed to nxtedge_sg()");
 		v.integer = 0;
@@ -1362,7 +1362,7 @@ setval(Expr_t * pgm, Exnode_t * x, Exid_t * sym, Exref_t * ref,
 	    break;
 	case V_travroot:
 	    np = INT2PTR(Agnode_t *, v.integer);
-	    if (!np || (agroot(agraphof(np)) == state->curgraph))
+	    if (!np || (agroot(np) == state->curgraph))
 		state->tvroot = np;
 	    else {
 		error(1, "cannot set $tvroot, node %s not in $G : ignored",
