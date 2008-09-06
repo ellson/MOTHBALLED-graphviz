@@ -100,6 +100,8 @@ F_dget      "getDflt"      FUNCTION S|A(1,G)|A(2,S)|A(3,S)
 F_dset      "setDflt"      FUNCTION I|A(1,G)|A(2,S)|A(3,S)|A(4,S)
 F_hasattr   "hasAttr"      FUNCTION I|A(1,O)|A(2,S)
 F_isattr    "isAttr"       FUNCTION I|A(1,G)|A(2,S)|A(3,S)
+F_fstattr   "fstAttr"      FUNCTION S|A(1,G)|A(2,S)
+F_nxtattr   "nxtAttr"      FUNCTION S|A(1,G)|A(2,S)|A(3,S)
 C_flat      "TV_flat"   CONSTANT T_tvtyp
 C_dfs       "TV_dfs"    CONSTANT T_tvtyp
 C_bfs       "TV_bfs"    CONSTANT T_tvtyp

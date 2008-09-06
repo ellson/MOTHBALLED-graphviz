@@ -537,6 +537,22 @@ the given \fIkind\fP. For nodes, edges, and graphs, \fIkind\fP
 should be "N", "E", and "G", respectively.
 Returns 0 on success, non\(hyzero on failure. See \fBgetDflt\fP above.
 .TP
+\fBfstAttr\fP(\fIg\fP : \fBgraph_t\fP, \fIkind\fP : \fBstring\fP) : \fBstring\fP
+returns the name of the first attribute of objects in \fIg\fP of
+the given \fIkind\fP. For nodes, edges, and graphs, \fIkind\fP
+should be "N", "E", and "G", respectively.
+If there are no attributes, the string "" is returned.
+.TP
+\fBnxtAttr\fP(\fIg\fP : \fBgraph_t\fP, \fIkind\fP : \fBstring\fP, \fIname\fP : \fBstring\fP) : \fBstring\fP
+returns the name of the next attribute of objects in \fIg\fP of
+the given \fIkind\fP after the attribute \fIname\fP. 
+The argument \fIname\fP must be the name of an existing attribute; it will
+typically be the return value of an previous call to \fBfstAttr\fP or
+\fBnxtAttr\fP.
+For nodes, edges, and graphs, \fIkind\fP
+should be "N", "E", and "G", respectively.
+If there are no attributes left, the string "" is returned.
+.TP
 \fBcompOf\fP(\fIg\fP : \fBgraph_t\fP, \fIn\fP : \fBnode_t\fP) : \fBgraph_t\fP
 returns the connected component of the graph \fIg\fP containing node \fIn\fP,
 as a subgraph of \fIg\fP. The subgraph only contains the nodes. One can
