@@ -185,7 +185,8 @@ BuildRequires: librsvg2-devel
 %if %fedora >= 7
 %define DEVIL 1
 %define GDK_PIXBUF 1
-BuildRequires: gd gd-devel perl-devel DevIL-devel
+%define LASI 1
+BuildRequires: gd gd-devel perl-devel DevIL-devel lasi-devel
 %endif
 %if %fedora >= 8
 %define R_LANG 1
@@ -249,7 +250,8 @@ BuildRequires: librsvg2-devel
 %define GDK_PIXBUF 1
 %define SMYRNA 1
 %define SFDP 1
-BuildRequires: gd gd-devel perl-devel DevIL-devel
+%define LASI 1
+BuildRequires: gd gd-devel perl-devel DevIL-devel lasi-devel
 BuildRequires: gtkglarea2-devel gtkglext-devel glade3-libgladeui-devel gts-devel
 %endif
 %if %att_fedora >= 8
@@ -677,6 +679,7 @@ CFLAGS="$RPM_OPT_FLAGS" \
 	--enable-tcl%{!?TCL:=no} \
 	--with%{!?DEVIL:out}-devil \
 	--with%{!?IPSEPCOLA:out}-ipsepcola \
+	--with%{!?LASI:out}-lasi \
 	--with%{!?MING:out}-ming \
 	--with%{!?SMYRNA:out}-smyrna \
 	--with%{!?SFDP:out}-sfdp \

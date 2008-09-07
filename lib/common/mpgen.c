@@ -49,7 +49,7 @@ static void mp_reset(void)
     onetime = TRUE;
 }
 
-/* cat_libfile:
+/* mp_cat_libfile:
  * Write library files onto the given file pointer.
  * arglib is an NULL-terminated array of char*
  * Each non-trivial entry should be the name of a file to be included.
@@ -59,7 +59,7 @@ static void mp_reset(void)
  * The stdlib is printed first, if used, followed by the user libraries.
  * We check that for web-safe file usage.
  */
-static void cat_libfile(FILE * ofp, const char **arglib, const char **stdlib)
+static void mp_cat_libfile(FILE * ofp, const char **arglib, const char **stdlib)
 {
     FILE *fp;
     const char **s, *bp, *p;
@@ -131,7 +131,7 @@ static void mp_begin_graph(GVC_t * gvc, graph_t * g, box bb, point pb)
     if (onetime) {
 	fprintf(Output_file, "%% BoundingBox: %d %d %d %d\n",
 		bb.LL.x, bb.LL.y, bb.UR.x + 1, bb.UR.y + 1);
-	        cat_libfile(Output_file,U_lib,mp_lib);
+	        mp_cat_libfile(Output_file,U_lib,mp_lib);
 	onetime = FALSE;
     }
 }

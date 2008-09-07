@@ -105,6 +105,7 @@ extern "C" {
     extern void endpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void epsf_init(node_t * n);
     extern void epsf_free(node_t * n);
+    extern void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib);
     extern shape_desc *find_user_shape(char *);
     extern void free_line(textpara_t *);
     extern void free_label(textlabel_t *);

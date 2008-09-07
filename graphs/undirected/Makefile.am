@@ -15,7 +15,7 @@ test:
 	$(top_builddir)/cmd/dot/dot -Kneato -Tcanon -Tcmap -Tcmapx \
                 -Tdia -Tgv -Tfig -Tgd -Tgd2 -Tgif -Thpgl \
                 -Tismap -Timap -Tjpg -Tmif -Tmp -Tpcl -Tpdf -Tpic \
-                -Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:cairo -Tsvg \
+		-Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:cairo -Tps:lasi -Tsvg \
                 -Tsvg:cairo -Tsvgz -Tvrml -Twbmp -Tvtx -Txdot \
                 -O $(GRAPHS) 
 
@@ -139,7 +139,11 @@ ps:
 
 ps_cairo:
 	for i in $(GRAPHS); do echo "neato $$i"; \
-		$(top_builddir)/cmd/dot/dot -Kneato -Tps:cairo -o$$i.ps $(top_srcdir)/graphs/undirected/$$i; done
+		$(top_builddir)/cmd/dot/dot -Kneato -Tps:cairo -o$$i.cairo.ps $(top_srcdir)/graphs/undirected/$$i; done
+
+ps_lasi:
+	for i in $(GRAPHS); do echo "neato $$i"; \
+		$(top_builddir)/cmd/dot/dot -Kneato -Tps:lasi -o$$i.lasi.ps $(top_srcdir)/graphs/undirected/$$i; done
 
 ps2:
 	for i in $(GRAPHS); do echo "neato $$i"; \

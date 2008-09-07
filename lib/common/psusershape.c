@@ -127,6 +127,51 @@ void epsf_free(node_t * n)
 	free(ND_shape_info(n));
 }
 
+
+/* cat_libfile:
+ * Write library files onto the given file pointer.
+ * arglib is an NULL-terminated array of char*
+ * Each non-trivial entry should be the name of a file to be included.
+ * stdlib is an NULL-terminated array of char*
+ * Each of these is a line of a standard library to be included.
+ * If any item in arglib is the empty string, the stdlib is not used.
+ * The stdlib is printed first, if used, followed by the user libraries.
+ * We check that for web-safe file usage.
+ */
+void cat_libfile(GVJ_t * job, const char **arglib, const char **stdlib)
+{
+    FILE *fp;
+    const char **s, *bp, *p;
+    int i;
+    boolean use_stdlib = TRUE;
+
+    /* check for empty string to turn off stdlib */
+    if (arglib) {
+        for (i = 0; use_stdlib && ((p = arglib[i])); i++) {
+            if (*p == '\0')
+                use_stdlib = FALSE;
+        }
+    }
+    if (use_stdlib)
+        for (s = stdlib; *s; s++) {
+            gvputs(job, *s);
+            gvputs(job, "\n");
+        }
+    if (arglib) {
+        for (i = 0; (p = arglib[i]) != 0; i++) {
+            if (*p == '\0')
+                continue;       /* ignore empty string */
+            p = safefile(p);    /* make sure filename is okay */
+            if ((fp = fopen(p, "r"))) {
+                while ((bp = Fgets(fp)))
+                    gvputs(job, bp);
+                gvputs(job, "\n"); /* append a newline just in case */
+            } else
+                agerr(AGWARN, "can't open library file %s\n", p);
+        }
+    }
+}
+
 #define FILTER_EPSF 1
 #ifdef FILTER_EPSF
 /* this removes EPSF DSC comments that, when nested in another

@@ -92,7 +92,7 @@ extern "C" {
 	void *keycodes;
 
         /* externally provided write() displine */
-	size_t (*write_fn) (GVJ_t *job, const char *s, int len);
+	size_t (*write_fn) (GVJ_t *job, const char *s, size_t len);
 
 /* FIXME - everything below should probably move to GVG_t */
 
