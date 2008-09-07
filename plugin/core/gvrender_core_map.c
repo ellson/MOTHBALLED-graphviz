@@ -20,6 +20,7 @@
 
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
+#include "gvio.h"
 
 /* for g->name */
 #include "graph.h"
@@ -51,18 +52,18 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
         switch (map_shape) {
         case MAP_RECTANGLE:
 	    /* Y_GOES_DOWN so need UL to LR */
-            gvdevice_printf(job, "rect %s %d,%d %d,%d\n", url,
+            gvprintf(job, "rect %s %d,%d %d,%d\n", url,
                 A[0].x, A[1].y, A[1].x, A[0].y);
             break;
         case MAP_CIRCLE:
-            gvdevice_printf(job, "circle %s %d,%d,%d\n", url,
+            gvprintf(job, "circle %s %d,%d,%d\n", url,
                 A[0].x, A[0].y, A[1].x-A[0].x);
             break;
         case MAP_POLYGON:
-            gvdevice_printf(job, "poly %s", url);
+            gvprintf(job, "poly %s", url);
             for (i = 0; i < nump; i++)
-                gvdevice_printf(job, " %d,%d", A[i].x, A[i].y);
-            gvdevice_fputs(job, "\n");
+                gvprintf(job, " %d,%d", A[i].x, A[i].y);
+            gvputs(job, "\n");
             break;
         default:
             assert(0);
@@ -73,7 +74,7 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
         switch (map_shape) {
         case MAP_RECTANGLE:
 	    /* Y_GOES_DOWN so need UL to LR */
-            gvdevice_printf(job, "rectangle (%d,%d) (%d,%d) %s %s\n",
+            gvprintf(job, "rectangle (%d,%d) (%d,%d) %s %s\n",
                 A[0].x, A[1].y, A[1].x, A[0].y, url, tooltip);
 	    break;
         default:
@@ -84,32 +85,32 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
     } else if (job->render.id == FORMAT_CMAP || job->render.id == FORMAT_CMAPX) {
         switch (map_shape) {
         case MAP_CIRCLE:
-            gvdevice_fputs(job, "<area shape=\"circle\"");
+            gvputs(job, "<area shape=\"circle\"");
             break;
         case MAP_RECTANGLE:
-            gvdevice_fputs(job, "<area shape=\"rect\"");
+            gvputs(job, "<area shape=\"rect\"");
             break;
         case MAP_POLYGON:
-            gvdevice_fputs(job, "<area shape=\"poly\"");
+            gvputs(job, "<area shape=\"poly\"");
             break;
         default:
             assert(0);
             break;
         }
         if (url && url[0]) {
-            gvdevice_fputs(job, " href=\"");
-	    gvdevice_fputs(job, xml_url_string(url));
-	    gvdevice_fputs(job, "\"");
+            gvputs(job, " href=\"");
+	    gvputs(job, xml_url_string(url));
+	    gvputs(job, "\"");
 	}
         if (target && target[0]) {
-            gvdevice_fputs(job, " target=\"");
-	    gvdevice_fputs(job, xml_string(target));
-	    gvdevice_fputs(job, "\"");
+            gvputs(job, " target=\"");
+	    gvputs(job, xml_string(target));
+	    gvputs(job, "\"");
 	}
         if (tooltip && tooltip[0]) {
-            gvdevice_fputs(job, " title=\"");
-	    gvdevice_fputs(job, xml_string(tooltip));
-	    gvdevice_fputs(job, "\"");
+            gvputs(job, " title=\"");
+	    gvputs(job, xml_string(tooltip));
+	    gvputs(job, "\"");
 	}
         /*
 	 * alt text is intended for the visually impaired, but such
@@ -121,29 +122,29 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
 	 * that require that there is always an alt string,
 	 * we generate just an empty alt string.
 	 */
-        gvdevice_fputs(job, " alt=\"\"");
+        gvputs(job, " alt=\"\"");
 
-        gvdevice_fputs(job, " coords=\"");
+        gvputs(job, " coords=\"");
         switch (map_shape) {
         case MAP_CIRCLE:
-            gvdevice_printf(job, "%d,%d,%d", A[0].x, A[0].y, A[1].x-A[0].x);
+            gvprintf(job, "%d,%d,%d", A[0].x, A[0].y, A[1].x-A[0].x);
             break;
         case MAP_RECTANGLE:
 	    /* Y_GOES_DOWN so need UL to LR */
-            gvdevice_printf(job, "%d,%d,%d,%d", A[0].x, A[1].y, A[1].x, A[0].y);  
+            gvprintf(job, "%d,%d,%d,%d", A[0].x, A[1].y, A[1].x, A[0].y);  
             break;
         case MAP_POLYGON:
-            gvdevice_printf(job, "%d,%d", A[0].x, A[0].y);
+            gvprintf(job, "%d,%d", A[0].x, A[0].y);
             for (i = 1; i < nump; i++)
-                gvdevice_printf(job, " %d,%d", A[i].x, A[i].y);
+                gvprintf(job, " %d,%d", A[i].x, A[i].y);
             break;
         default:
             break;
         }
         if (job->render.id == FORMAT_CMAPX)
-            gvdevice_fputs(job, "\"/>\n");
+            gvputs(job, "\"/>\n");
 	else
-            gvdevice_fputs(job, "\">\n");
+            gvputs(job, "\">\n");
     }
 }
 
@@ -154,29 +155,29 @@ static void map_begin_page(GVJ_t * job)
 
     switch (job->render.id) {
     case FORMAT_IMAP:
-        gvdevice_fputs(job, "base referer\n");
+        gvputs(job, "base referer\n");
         if (obj->url && obj->url[0]) {
-	    gvdevice_fputs(job, "default ");
-	    gvdevice_fputs(job, xml_string(obj->url));
-	    gvdevice_fputs(job, "\n");
+	    gvputs(job, "default ");
+	    gvputs(job, xml_string(obj->url));
+	    gvputs(job, "\n");
 	}
         break;
     case FORMAT_ISMAP:
         if (obj->url && obj->url[0]) {
-	    gvdevice_fputs(job, "default ");
-	    gvdevice_fputs(job, xml_string(obj->url));
-	    gvdevice_fputs(job, " ");
-	    gvdevice_fputs(job, xml_string(obj->u.g->name));
-	    gvdevice_fputs(job, "\n");
+	    gvputs(job, "default ");
+	    gvputs(job, xml_string(obj->url));
+	    gvputs(job, " ");
+	    gvputs(job, xml_string(obj->u.g->name));
+	    gvputs(job, "\n");
 	}
         break;
     case FORMAT_CMAPX:
 	s = xml_string(obj->u.g->name);
-	gvdevice_fputs(job, "<map id=\"");
-	gvdevice_fputs(job, s);
-	gvdevice_fputs(job, "\" name=\"");
-	gvdevice_fputs(job, s);
-	gvdevice_fputs(job, "\">\n");
+	gvputs(job, "<map id=\"");
+	gvputs(job, s);
+	gvputs(job, "\" name=\"");
+	gvputs(job, s);
+	gvputs(job, "\">\n");
         break;
     default:
 	break;
@@ -195,7 +196,7 @@ static void map_end_page(GVJ_t * job)
     case FORMAT_CMAPX:
 	map_output_shape(job, obj->url_map_shape, obj->url_map_p,obj->url_map_n,
 		                    obj->url, obj->tooltip, obj->target);
-        gvdevice_fputs(job, "</map>\n");
+        gvputs(job, "</map>\n");
 	break;
     default:
 	break;
@@ -207,7 +208,7 @@ static void map_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    gvdevice_printf(job, "%% %s\n", obj->u.sg->name);
+    gvprintf(job, "%% %s\n", obj->u.sg->name);
 
     map_output_shape(job, obj->url_map_shape, obj->url_map_p, obj->url_map_n,
 	        obj->url, obj->tooltip, obj->target);

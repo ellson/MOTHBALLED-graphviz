@@ -26,7 +26,7 @@
 #endif
 
 #include "gvplugin_loadimage.h"
-#include "gvplugin_device.h"
+#include "gvio.h"
 
 /* for n->name */
 #include "graph.h"
@@ -50,19 +50,19 @@ static void core_loadimage_svg(GVJ_t * job, usershape_t *us, boxf b, boolean fil
     assert(us);
     assert(us->name);
 
-    gvdevice_fputs(job, "<image xlink:href=\"");
-    gvdevice_fputs(job, us->name);
+    gvputs(job, "<image xlink:href=\"");
+    gvputs(job, us->name);
     if (job->rotation) {
-        gvdevice_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
+        gvprintf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMidYMid meet\" x=\"%g\" y=\"%g\"",
             b.UR.y - b.LL.y, b.UR.x - b.LL.x, b.LL.x, b.UR.y);
-        gvdevice_printf (job, " transform=\"rotate(%d %g %g)\"",
+        gvprintf (job, " transform=\"rotate(%d %g %g)\"",
             job->rotation, b.LL.x, b.UR.y);
     }
     else {
-        gvdevice_printf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMinYMin meet\" x=\"%g\" y=\"%g\"",
+        gvprintf (job, "\" width=\"%gpx\" height=\"%gpx\" preserveAspectRatio=\"xMinYMin meet\" x=\"%g\" y=\"%g\"",
             b.UR.x - b.LL.x, b.UR.y - b.LL.y, b.LL.x, -b.UR.y);
     }
-    gvdevice_fputs(job, "/>\n");
+    gvputs(job, "/>\n");
 }
 
 static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, boolean filled)
@@ -93,12 +93,12 @@ static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, boolean fi
 
     BF2B(bf, b);
 
-    gvdevice_printf(job, "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n %d %s\n",
+    gvprintf(job, "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n %d %s\n",
             object_code, sub_type, line_style, thickness, pen_color,
             fill_color, depth, pen_style, area_fill, style_val, join_style,
             cap_style, radius, forward_arrow, backward_arrow, npoints,
             flipped, us->name);
-    gvdevice_printf(job," %d %d %d %d %d %d %d %d %d %d\n",
+    gvprintf(job," %d %d %d %d %d %d %d %d %d %d\n",
 	    b.LL.x, b.LL.y,
 	    b.LL.x, b.UR.y,
 	    b.UR.x, b.UR.y,
@@ -120,15 +120,15 @@ static void core_loadimage_vrml(GVJ_t * job, usershape_t *us, boxf b, boolean fi
     n = job->obj->u.n;
     assert(n);
 
-    gvdevice_printf(job, "Shape {\n");
-    gvdevice_printf(job, "  appearance Appearance {\n");
-    gvdevice_printf(job, "    material Material {\n");
-    gvdevice_printf(job, "      ambientIntensity 0.33\n");
-    gvdevice_printf(job, "        diffuseColor 1 1 1\n");
-    gvdevice_printf(job, "    }\n");
-    gvdevice_printf(job, "    texture ImageTexture { url \"%s\" }\n", us->name);
-    gvdevice_printf(job, "  }\n");
-    gvdevice_printf(job, "}\n");
+    gvprintf(job, "Shape {\n");
+    gvprintf(job, "  appearance Appearance {\n");
+    gvprintf(job, "    material Material {\n");
+    gvprintf(job, "      ambientIntensity 0.33\n");
+    gvprintf(job, "        diffuseColor 1 1 1\n");
+    gvprintf(job, "    }\n");
+    gvprintf(job, "    texture ImageTexture { url \"%s\" }\n", us->name);
+    gvprintf(job, "  }\n");
+    gvprintf(job, "}\n");
 }
 
 static void ps_freeimage(usershape_t *us)
@@ -185,13 +185,13 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean fill
     }
 
     if (us->data) {
-        gvdevice_printf(job, "gsave %g %g translate newpath\n",
+        gvprintf(job, "gsave %g %g translate newpath\n",
 		b.LL.x - (double)(us->x), b.LL.y - (double)(us->y));
         if (us->must_inline)
             epsf_emit_body(job, us);
         else
-            gvdevice_printf(job, "user_shape_%d\n", us->macro_id);
-        gvdevice_printf(job, "grestore\n");
+            gvprintf(job, "user_shape_%d\n", us->macro_id);
+        gvprintf(job, "grestore\n");
     }
 }
 
@@ -216,18 +216,18 @@ static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, boolean f
         if (filled) {
 //            ps_begin_context();
 //            ps_set_color(S[SP].fillcolor);
-            gvdevice_printf(job, "[ ");
+            gvprintf(job, "[ ");
             for (i = 0; i < 4; i++)
-                gvdevice_printf(job, "%g %g ", AF[i].x, AF[i].y);
-            gvdevice_printf(job, "%g %g ", AF[0].x, AF[0].y);
-            gvdevice_printf(job, "]  %d true %s\n", 4, us->name);
+                gvprintf(job, "%g %g ", AF[i].x, AF[i].y);
+            gvprintf(job, "%g %g ", AF[0].x, AF[0].y);
+            gvprintf(job, "]  %d true %s\n", 4, us->name);
 //            ps_end_context();
         }
-        gvdevice_printf(job, "[ ");
+        gvprintf(job, "[ ");
         for (i = 0; i < 4; i++)
-            gvdevice_printf(job, "%g %g ", AF[i].x, AF[i].y);
-        gvdevice_printf(job, "%g %g ", AF[0].x, AF[0].y);
-        gvdevice_printf(job, "]  %d false %s\n", 4, us->name);
+            gvprintf(job, "%g %g ", AF[i].x, AF[i].y);
+        gvprintf(job, "%g %g ", AF[0].x, AF[0].y);
+        gvprintf(job, "]  %d false %s\n", 4, us->name);
     }
 }
 

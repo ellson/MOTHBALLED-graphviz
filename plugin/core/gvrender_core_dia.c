@@ -28,6 +28,7 @@
 #include "macros.h"
 #include "const.h"
 
+#include "gvio.h"
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
 
@@ -182,24 +183,24 @@ static pointf dia_pt(pointf p)
 static void dia_style(GVJ_t * job, context_t * cp)
 {
     if (cp->pencolor != DEFAULT_COLOR) {
-	gvdevice_fputs(job, "      <dia:attribute name=\"border_color\">\n");
-	gvdevice_printf(job, "        <dia:color val=\"%s\"/>\n",
+	gvputs(job, "      <dia:attribute name=\"border_color\">\n");
+	gvprintf(job, "        <dia:color val=\"%s\"/>\n",
 		   dia_resolve_color(cp->pencolor));
-	gvdevice_fputs(job, "      </dia:attribute>\n");
+	gvputs(job, "      </dia:attribute>\n");
     }
     if (cp->penwidth != WIDTH_NORMAL) {
-	gvdevice_fputs(job, "      <dia:attribute name=\"line_width\">\n");
-	gvdevice_printf(job, "        <dia:real val=\"%g\"/>\n",
+	gvputs(job, "      <dia:attribute name=\"line_width\">\n");
+	gvprintf(job, "        <dia:real val=\"%g\"/>\n",
 		   Scale * (cp->penwidth));
-	gvdevice_fputs(job, "      </dia:attribute>\n");
+	gvputs(job, "      </dia:attribute>\n");
     }
     if (cp->pen == P_DASHED) {
-	gvdevice_fputs(job, "      <dia:attribute name=\"line_style\">\n");
-	gvdevice_printf(job, "        <dia:real val=\"%d\"/>\n", 1);
-	gvdevice_fputs(job, "      </dia:attribute>\n");
+	gvputs(job, "      <dia:attribute name=\"line_style\">\n");
+	gvprintf(job, "        <dia:real val=\"%d\"/>\n", 1);
+	gvputs(job, "      </dia:attribute>\n");
 #if 0
     } else if (cp->pen == P_DOTTED) {
-	gvdevice_printf(job, "stroke-dasharray:%s;", sdotarray);
+	gvprintf(job, "stroke-dasharray:%s;", sdotarray);
 #endif
     }
 }
@@ -207,28 +208,28 @@ static void dia_style(GVJ_t * job, context_t * cp)
 static void dia_stylefill(GVJ_t * job, context_t * cp, int filled)
 {
     if (filled) {
-	gvdevice_fputs(job, "      <dia:attribute name=\"inner_color\">\n");
-	gvdevice_printf(job, "        <dia:color val=\"%s\"/>\n",
+	gvputs(job, "      <dia:attribute name=\"inner_color\">\n");
+	gvprintf(job, "        <dia:color val=\"%s\"/>\n",
 		   dia_resolve_color(cp->fillcolor));
-	gvdevice_fputs(job, "      </dia:attribute>\n");
+	gvputs(job, "      </dia:attribute>\n");
     } else {
-	gvdevice_fputs(job, "      <dia:attribute name=\"show_background\">\n");
-	gvdevice_printf(job, "        <dia:boolean val=\"%s\"/>\n", "true");
-	gvdevice_fputs(job, "      </dia:attribute>\n");
+	gvputs(job, "      <dia:attribute name=\"show_background\">\n");
+	gvprintf(job, "        <dia:boolean val=\"%s\"/>\n", "true");
+	gvputs(job, "      </dia:attribute>\n");
     }
 }
 
 static void dia_comment(GVJ_t * job, char *str)
 {
-    gvdevice_fputs(job, "<!-- ");
-    gvdevice_fputs(job, xml_string(str));
-    gvdevice_fputs(job, " -->\n");
+    gvputs(job, "<!-- ");
+    gvputs(job, xml_string(str));
+    gvputs(job, " -->\n");
 }
 
 static void
 dia_begin_job(GVJ_t *job)
 {
-    gvdevice_printf(job, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    gvprintf(job, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 }
 
 static void dia_end_job(GVJ_t *job)
@@ -250,103 +251,103 @@ static void dia_begin_graph(GVJ_t * job)
     }
     dia_fputs
 	("<dia:diagram xmlns:dia=\"http://www.lysator.liu.se/~alla/dia/\">\n");
-    gvdevice_fputs(job, "  <dia:diagramdata>\n");
+    gvputs(job, "  <dia:diagramdata>\n");
 
-    gvdevice_fputs(job, "    <dia:attribute name=\"background\">\n");
-    gvdevice_fputs(job, "      <dia:color val=\"#ffffff\"/>\n");
-    gvdevice_fputs(job, "    </dia:attribute>\n");
+    gvputs(job, "    <dia:attribute name=\"background\">\n");
+    gvputs(job, "      <dia:color val=\"#ffffff\"/>\n");
+    gvputs(job, "    </dia:attribute>\n");
 
-    gvdevice_fputs(job, "    <dia:attribute name=\"paper\">\n");
-    gvdevice_fputs(job, "      <dia:composite type=\"paper\">\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"name\">\n");
-    gvdevice_fputs(job, "          <dia:string>#A4#</dia:string>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"tmargin\">\n");
-    gvdevice_fputs(job, "          <dia:real val=\"2.8222\"/>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"bmargin\">\n");
-    gvdevice_fputs(job, "          <dia:real val=\"2.8222\"/>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"lmargin\">\n");
-    gvdevice_fputs(job, "          <dia:real val=\"2.8222\"/>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"rmargin\">\n");
-    gvdevice_fputs(job, "          <dia:real val=\"2.8222\"/>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"is_portrait\">\n");
-    gvdevice_fputs(job, "          <dia:boolean val=\"true\"/>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"scaling\">\n");
-    gvdevice_fputs(job, "          <dia:real val=\"1\"/>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"fitto\">\n");
-    gvdevice_fputs(job, "          <dia:boolean val=\"false\"/>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "      </dia:composite>\n");
-    gvdevice_fputs(job, "    </dia:attribute>\n");
+    gvputs(job, "    <dia:attribute name=\"paper\">\n");
+    gvputs(job, "      <dia:composite type=\"paper\">\n");
+    gvputs(job, "        <dia:attribute name=\"name\">\n");
+    gvputs(job, "          <dia:string>#A4#</dia:string>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "        <dia:attribute name=\"tmargin\">\n");
+    gvputs(job, "          <dia:real val=\"2.8222\"/>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "        <dia:attribute name=\"bmargin\">\n");
+    gvputs(job, "          <dia:real val=\"2.8222\"/>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "        <dia:attribute name=\"lmargin\">\n");
+    gvputs(job, "          <dia:real val=\"2.8222\"/>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "        <dia:attribute name=\"rmargin\">\n");
+    gvputs(job, "          <dia:real val=\"2.8222\"/>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "        <dia:attribute name=\"is_portrait\">\n");
+    gvputs(job, "          <dia:boolean val=\"true\"/>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "        <dia:attribute name=\"scaling\">\n");
+    gvputs(job, "          <dia:real val=\"1\"/>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "        <dia:attribute name=\"fitto\">\n");
+    gvputs(job, "          <dia:boolean val=\"false\"/>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "      </dia:composite>\n");
+    gvputs(job, "    </dia:attribute>\n");
 
-    gvdevice_fputs(job, "    <dia:attribute name=\"grid\">\n");
-    gvdevice_fputs(job, "      <dia:composite type=\"grid\">\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"width_x\">\n");
-    gvdevice_fputs(job, "          <dia:real val=\"1\"/>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"width_y\">\n");
-    gvdevice_fputs(job, "          <dia:real val=\"1\"/>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"visible_x\">\n");
-    gvdevice_fputs(job, "          <dia:int val=\"1\"/>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"visible_y\">\n");
-    gvdevice_fputs(job, "          <dia:int val=\"1\"/>\n");
-    gvdevice_fputs(job, "        </dia:attribute>\n");
-    gvdevice_fputs(job, "      </dia:composite>\n");
-    gvdevice_fputs(job, "    </dia:attribute>\n");
+    gvputs(job, "    <dia:attribute name=\"grid\">\n");
+    gvputs(job, "      <dia:composite type=\"grid\">\n");
+    gvputs(job, "        <dia:attribute name=\"width_x\">\n");
+    gvputs(job, "          <dia:real val=\"1\"/>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "        <dia:attribute name=\"width_y\">\n");
+    gvputs(job, "          <dia:real val=\"1\"/>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "        <dia:attribute name=\"visible_x\">\n");
+    gvputs(job, "          <dia:int val=\"1\"/>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "        <dia:attribute name=\"visible_y\">\n");
+    gvputs(job, "          <dia:int val=\"1\"/>\n");
+    gvputs(job, "        </dia:attribute>\n");
+    gvputs(job, "      </dia:composite>\n");
+    gvputs(job, "    </dia:attribute>\n");
 
-    gvdevice_fputs(job, "    <dia:attribute name=\"guides\">\n");
-    gvdevice_fputs(job, "      <dia:composite type=\"guides\">\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"hguides\"/>\n");
-    gvdevice_fputs(job, "        <dia:attribute name=\"vguides\"/>\n");
-    gvdevice_fputs(job, "      </dia:composite>\n");
-    gvdevice_fputs(job, "    </dia:attribute>\n");
+    gvputs(job, "    <dia:attribute name=\"guides\">\n");
+    gvputs(job, "      <dia:composite type=\"guides\">\n");
+    gvputs(job, "        <dia:attribute name=\"hguides\"/>\n");
+    gvputs(job, "        <dia:attribute name=\"vguides\"/>\n");
+    gvputs(job, "      </dia:composite>\n");
+    gvputs(job, "    </dia:attribute>\n");
 
-    gvdevice_fputs(job, "  </dia:diagramdata>\n");
+    gvputs(job, "  </dia:diagramdata>\n");
 #endif
 }
 
 static void dia_end_graph(GVJ_t * job)
 {
-    gvdevice_printf(job, "</dia:diagram>\n");
+    gvprintf(job, "</dia:diagram>\n");
 }
 
 static void
 dia_begin_page(GVJ_t * job)
 {
-    gvdevice_printf(job, "  <dia:layer name=\"Background\" visible=\"true\">\n");
+    gvprintf(job, "  <dia:layer name=\"Background\" visible=\"true\">\n");
 }
 
 static void dia_end_page(GVJ_t * job)
 {
-    gvdevice_fputs(job, "  </dia:layer>\n");
+    gvputs(job, "  </dia:layer>\n");
 }
 
 static void dia_begin_cluster(GVJ_t * job)
 {
-    gvdevice_printf(job, "<dia:group>\n");
+    gvprintf(job, "<dia:group>\n");
 }
 
 static void dia_end_cluster(GVJ_t * job)
 {
-    gvdevice_printf(job, "</dia:group>\n");
+    gvprintf(job, "</dia:group>\n");
 }
 
 static void dia_begin_node(GVJ_t * job)
 {
-    gvdevice_printf(job, "<dia:group>\n");
+    gvprintf(job, "<dia:group>\n");
 }
 
 static void dia_end_node(GVJ_t * job)
 {
-    gvdevice_printf(job, "</dia:group>\n");
+    gvprintf(job, "</dia:group>\n");
 }
 
 static void dia_begin_edge(GVJ_t * job)
@@ -453,44 +454,44 @@ static void dia_textpara(GVJ_t * job, point p, textpara_t * para)
     }
 
     mp = dia_pt(p);
-    gvdevice_printf(job,
+    gvprintf(job,
 	"    <dia:object type=\"Standard - Text\" version=\"0\" id=\"%s\">\n",
 	 "0");
-    gvdevice_fputs(job, "      <dia:attribute name=\"text\">\n");
-    gvdevice_fputs(job, "        <dia:composite type=\"text\">\n");
-    gvdevice_fputs(job, "          <dia:attribute name=\"string\">\n");
-    gvdevice_fputs(job, "            <dia:string>#");
-    gvdevice_fputs(job, xml_string(para->str));
-    gvdevice_fputs(job, "#</dia:string>\n");
-    gvdevice_fputs(job, "          </dia:attribute>\n");
-    gvdevice_fputs(job, "          <dia:attribute name=\"font\">\n");
-    gvdevice_printf(job, "            <dia:font name=\"%s\"/>\n", cp->fontfam);
-    gvdevice_fputs(job, "          </dia:attribute>\n");
-    gvdevice_fputs(job, "          <dia:attribute name=\"height\">\n");
-    gvdevice_printf(job, "            <dia:real val=\"%g\"/>\n",
+    gvputs(job, "      <dia:attribute name=\"text\">\n");
+    gvputs(job, "        <dia:composite type=\"text\">\n");
+    gvputs(job, "          <dia:attribute name=\"string\">\n");
+    gvputs(job, "            <dia:string>#");
+    gvputs(job, xml_string(para->str));
+    gvputs(job, "#</dia:string>\n");
+    gvputs(job, "          </dia:attribute>\n");
+    gvputs(job, "          <dia:attribute name=\"font\">\n");
+    gvprintf(job, "            <dia:font name=\"%s\"/>\n", cp->fontfam);
+    gvputs(job, "          </dia:attribute>\n");
+    gvputs(job, "          <dia:attribute name=\"height\">\n");
+    gvprintf(job, "            <dia:real val=\"%g\"/>\n",
 	       Scale * (cp->fontsz));
-    gvdevice_fputs(job, "          </dia:attribute>\n");
-    gvdevice_fputs(job, "          <dia:attribute name=\"pos\">\n");
-    gvdevice_printf(job, "            <dia:point val=\"%g,%g\"/>\n", mp.x, mp.y);
-    gvdevice_fputs(job, "          </dia:attribute>\n");
-    gvdevice_fputs(job, "          <dia:attribute name=\"color\">\n");
-    gvdevice_printf(job, "            <dia:color val=\"%s\"/>\n",
+    gvputs(job, "          </dia:attribute>\n");
+    gvputs(job, "          <dia:attribute name=\"pos\">\n");
+    gvprintf(job, "            <dia:point val=\"%g,%g\"/>\n", mp.x, mp.y);
+    gvputs(job, "          </dia:attribute>\n");
+    gvputs(job, "          <dia:attribute name=\"color\">\n");
+    gvprintf(job, "            <dia:color val=\"%s\"/>\n",
 	       dia_resolve_color(cp->pencolor));
-    gvdevice_fputs(job, "          </dia:attribute>\n");
-    gvdevice_fputs(job, "          <dia:attribute name=\"alignment\">\n");
-    gvdevice_printf(job, "            <dia:enum val=\"%d\"/>\n", anchor);
-    gvdevice_fputs(job, "          </dia:attribute>\n");
-    gvdevice_fputs(job, "        </dia:composite>\n");
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "      <dia:attribute name=\"obj_pos\">\n");
-    gvdevice_printf(job, "        <dia:point val=\"%g,%g\"/>\n", mp.x, mp.y);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "      <dia:attribute name=\"obj_bb\">\n");
-    gvdevice_printf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
+    gvputs(job, "          </dia:attribute>\n");
+    gvputs(job, "          <dia:attribute name=\"alignment\">\n");
+    gvprintf(job, "            <dia:enum val=\"%d\"/>\n", anchor);
+    gvputs(job, "          </dia:attribute>\n");
+    gvputs(job, "        </dia:composite>\n");
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      <dia:attribute name=\"obj_pos\">\n");
+    gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", mp.x, mp.y);
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      <dia:attribute name=\"obj_bb\">\n");
+    gvprintf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
 	       mp.x - (Scale * (para->width) / 2.), mp.y - 0.4,
 	       mp.x + (Scale * (para->width) / 2.), mp.y + 0.4);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "    </dia:object>\n");
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "    </dia:object>\n");
 #endif
 }
 
@@ -524,31 +525,31 @@ static void dia_ellipse(GVJ_t * job, pointf *A, int filled)
     rp.x = Scale * rx;
     rp.y = Scale * ry;
 
-    gvdevice_printf(job,
+    gvprintf(job,
 	"    <dia:object type=\"Standard - Ellipse\" version=\"0\" id=\"%d\">\n",
 	 nodeId);
-    gvdevice_fputs(job, "      <dia:attribute name=\"elem_corner\">\n");
-    gvdevice_printf(job, "        <dia:point val=\"%g,%g\"/>\n", cp.x - rp.x,
+    gvputs(job, "      <dia:attribute name=\"elem_corner\">\n");
+    gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", cp.x - rp.x,
 	       cp.y - rp.y);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "      <dia:attribute name=\"elem_width\">\n");
-    gvdevice_printf(job, "        <dia:real val=\"%g\"/>\n", rp.x + rp.x);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "      <dia:attribute name=\"elem_height\">\n");
-    gvdevice_printf(job, "        <dia:real val=\"%g\"/>\n", rp.y + rp.y);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "      <dia:attribute name=\"obj_pos\">\n");
-    gvdevice_printf(job, "        <dia:point val=\"%g,%g\"/>\n", cp.x - rp.x,
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      <dia:attribute name=\"elem_width\">\n");
+    gvprintf(job, "        <dia:real val=\"%g\"/>\n", rp.x + rp.x);
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      <dia:attribute name=\"elem_height\">\n");
+    gvprintf(job, "        <dia:real val=\"%g\"/>\n", rp.y + rp.y);
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      <dia:attribute name=\"obj_pos\">\n");
+    gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", cp.x - rp.x,
 	       cp.y - rp.y);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "      <dia:attribute name=\"obj_bb\">\n");
-    gvdevice_printf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      <dia:attribute name=\"obj_bb\">\n");
+    gvprintf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
 	       cp.x - rp.x - .11, cp.y - rp.y - .11, cp.x + rp.x + .11,
 	       cp.y + rp.y + .11);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      </dia:attribute>\n");
     dia_style(job, &cstk[SP]);
     dia_stylefill(job, &cstk[SP], filled);
-    gvdevice_fputs(job, "    </dia:object>\n");
+    gvputs(job, "    </dia:object>\n");
 #endif
 }
 
@@ -669,10 +670,10 @@ dia_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end, 
 	return;
     }
 
-    gvdevice_printf(job,
+    gvprintf(job,
 	"    <dia:object type=\"Standard - BezierLine\" version=\"0\" id=\"%s\">\n",
 	 "00");
-    gvdevice_fputs(job, "       <dia:attribute name=\"bez_points\">\n");
+    gvputs(job, "       <dia:attribute name=\"bez_points\">\n");
     for (i = 0; i < n; i++) {
 	p = dia_pt(A[i]);
 	if (!i)
@@ -681,17 +682,17 @@ dia_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end, 
 	    llp = p;
 	if (p.x > urp.x || p.y > urp.y)
 	    urp = p;
-	gvdevice_printf(job, "        <dia:point val=\"%g,%g\"/>\n", p.x, p.y);
+	gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", p.x, p.y);
     }
-    gvdevice_fputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      </dia:attribute>\n");
     dia_style(job, &cstk[SP]);
-    gvdevice_fputs(job, "      <dia:attribute name=\"obj_pos\">\n");
-    gvdevice_printf(job, "        <dia:point val=\"%g,%g\"/>\n", firstp.x, firstp.y);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "      <dia:attribute name=\"obj_bb\">\n");
-    gvdevice_printf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
+    gvputs(job, "      <dia:attribute name=\"obj_pos\">\n");
+    gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", firstp.x, firstp.y);
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      <dia:attribute name=\"obj_bb\">\n");
+    gvprintf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
 	       llp.x - .11, llp.y - .11, urp.x + .11, urp.y + .11);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      </dia:attribute>\n");
     if (!Curedge) return;
 
     conn_h = conn_t = -1;
@@ -703,37 +704,37 @@ dia_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end, 
 
     /* arrowheads */
     if (arrow_at_start) {
-	gvdevice_fputs(job, "      <dia:attribute name=\"start_arrow\">\n");
-	gvdevice_fputs(job, "          <dia:enum val=\"3\"/>\n");
-	gvdevice_fputs(job, "      </dia:attribute>\n");
-	gvdevice_fputs(job, "      <dia:attribute name=\"start_arrow_length\">\n");
-	gvdevice_fputs(job, "      	<dia:real val=\"0.8\"/>\n");
-	gvdevice_fputs(job, "      </dia:attribute>\n");
+	gvputs(job, "      <dia:attribute name=\"start_arrow\">\n");
+	gvputs(job, "          <dia:enum val=\"3\"/>\n");
+	gvputs(job, "      </dia:attribute>\n");
+	gvputs(job, "      <dia:attribute name=\"start_arrow_length\">\n");
+	gvputs(job, "      	<dia:real val=\"0.8\"/>\n");
+	gvputs(job, "      </dia:attribute>\n");
 	dia_fputs
 	    ("		 <dia:attribute name=\"start_arrow_width\">\n");
-	gvdevice_fputs(job, "			<dia:real val=\"0.8\"/>\n");
-	gvdevice_fputs(job, "      </dia:attribute>\n");
+	gvputs(job, "			<dia:real val=\"0.8\"/>\n");
+	gvputs(job, "      </dia:attribute>\n");
     }
     if (arrow_at_end) {
-	gvdevice_fputs(job, "      <dia:attribute name=\"end_arrow\">\n");
-	gvdevice_fputs(job, "          <dia:enum val=\"3\"/>\n");
-	gvdevice_fputs(job, "      </dia:attribute>\n");
-	gvdevice_fputs(job, "      <dia:attribute name=\"end_arrow_length\">\n");
-	gvdevice_fputs(job, "      	<dia:real val=\"0.8\"/>\n");
-	gvdevice_fputs(job, "      </dia:attribute>\n");
+	gvputs(job, "      <dia:attribute name=\"end_arrow\">\n");
+	gvputs(job, "          <dia:enum val=\"3\"/>\n");
+	gvputs(job, "      </dia:attribute>\n");
+	gvputs(job, "      <dia:attribute name=\"end_arrow_length\">\n");
+	gvputs(job, "      	<dia:real val=\"0.8\"/>\n");
+	gvputs(job, "      </dia:attribute>\n");
 	dia_fputs
 	    ("		 <dia:attribute name=\"end_arrow_width\">\n");
-	gvdevice_fputs(job, "			<dia:real val=\"0.8\"/>\n");
-	gvdevice_fputs(job, "      </dia:attribute>\n");
+	gvputs(job, "			<dia:real val=\"0.8\"/>\n");
+	gvputs(job, "      </dia:attribute>\n");
     }
 
-    gvdevice_fputs(job, "      <dia:attribute name=\"conn_endpoints\">\n");
-    gvdevice_printf(job, "        <dia:point val=\"%g,%g\"/>\n", dia_pt(A[0]).x,
+    gvputs(job, "      <dia:attribute name=\"conn_endpoints\">\n");
+    gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", dia_pt(A[0]).x,
 	       dia_pt(A[0]).y);
-    gvdevice_printf(job, "        <dia:point val=\"%g,%g\"/>\n", dia_pt(A[n - 1]).x,
+    gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", dia_pt(A[n - 1]).x,
 	       dia_pt(A[n - 1]).y);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "      <dia:connections>\n");
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      <dia:connections>\n");
 
     if ((strcmp(shape_t, "ellipse") == 0)
 	|| (strcmp(shape_t, "circle") == 0)
@@ -766,23 +767,23 @@ dia_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end, 
     }
 
     if (arrow_at_start) {
-	gvdevice_printf(job,
+	gvprintf(job,
 	    "        <dia:connection handle=\"0\" to=\"%d\" connection=\"%d\"/>\n",
 	     head->id, conn_h);
-	gvdevice_printf(job,
+	gvprintf(job,
 	    "        <dia:connection handle=\"%d\" to=\"%d\" connection=\"%d\"/>\n",
 	     (n - 1), tail->id, conn_t);
     } else {
-	gvdevice_printf(job,
+	gvprintf(job,
 	    "        <dia:connection handle=\"0\" to=\"%d\" connection=\"%d\"/>\n",
 	     tail->id, conn_t);
-	gvdevice_printf(job,
+	gvprintf(job,
 	    "        <dia:connection handle=\"%d\" to=\"%d\" connection=\"%d\"/>\n",
 	     (n - 1), head->id, conn_h);
     }
 
-    gvdevice_fputs(job, "      </dia:connections>\n");
-    gvdevice_fputs(job, "    </dia:object>\n");
+    gvputs(job, "      </dia:connections>\n");
+    gvputs(job, "    </dia:object>\n");
 #endif
 }
 
@@ -803,7 +804,7 @@ static void dia_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
     switch (Obj) {
     case NODE:
-	gvdevice_printf(job,
+	gvprintf(job,
 	    "    <dia:object type=\"Standard - Polygon\" version=\"0\" id=\"%d\">\n",
 	     Curnode->id);
 	break;
@@ -811,17 +812,17 @@ static void dia_polygon(GVJ_t * job, pointf * A, int n, int filled)
 	return;
 	break;
     case CLST:
-	gvdevice_printf(job,
+	gvprintf(job,
 	    "    <dia:object type=\"Standard - Polygon\" version=\"0\" id=\"%s\">\n",
 	     Curgraph->name);
 	break;
     default:
-	gvdevice_printf(job,
+	gvprintf(job,
 	    "    <dia:object type=\"Standard - Polygon\" version=\"0\" id=\"%s\">\n",
 	     "polygon");
 	break;
     }
-    gvdevice_fputs(job, "       <dia:attribute name=\"poly_points\">\n");
+    gvputs(job, "       <dia:attribute name=\"poly_points\">\n");
     for (i = 0; i < n; i++) {
 	p = dia_pt(A[i]);
 	if (!i)
@@ -830,19 +831,19 @@ static void dia_polygon(GVJ_t * job, pointf * A, int n, int filled)
 	    llp = p;
 	if (p.x > urp.x || p.y > urp.y)
 	    urp = p;
-	gvdevice_printf(job, "        <dia:point val=\"%g,%g\"/>\n", p.x, p.y);
+	gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", p.x, p.y);
     }
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "      <dia:attribute name=\"obj_pos\">\n");
-    gvdevice_printf(job, "        <dia:point val=\"%g,%g\"/>\n", firstp.x, firstp.y);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "      <dia:attribute name=\"obj_bb\">\n");
-    gvdevice_printf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      <dia:attribute name=\"obj_pos\">\n");
+    gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", firstp.x, firstp.y);
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      <dia:attribute name=\"obj_bb\">\n");
+    gvprintf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
 	       llp.x - .11, llp.y - .11, urp.x + .11, urp.y + .11);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      </dia:attribute>\n");
     dia_style(job, &cstk[SP]);
     dia_stylefill(job, &cstk[SP], filled);
-    gvdevice_fputs(job, "    </dia:object>\n");
+    gvputs(job, "    </dia:object>\n");
 #endif
 }
 
@@ -858,10 +859,10 @@ static void dia_polyline(GVJ_t * job, pointf * A, int n)
 	/* its invisible, don't draw */
 	return;
     }
-    gvdevice_printf(job,
+    gvprintf(job,
 	"    <dia:object type=\"Standard - PolyLine\" version=\"0\" id=\"%s\">\n",
 	 "0");
-    gvdevice_fputs(job, "      <dia:attribute name=\"poly_points\">\n");
+    gvputs(job, "      <dia:attribute name=\"poly_points\">\n");
     for (i = 0; i < n; i++) {
 	p = dia_pt(A[i]);
 	if (!i)
@@ -870,18 +871,18 @@ static void dia_polyline(GVJ_t * job, pointf * A, int n)
 	    llp = p;
 	if (p.x > urp.x || p.y > urp.y)
 	    urp = p;
-	gvdevice_printf(job, "<dia:point val=\"%g,%g\"/>\n", p.x, p.y);
+	gvprintf(job, "<dia:point val=\"%g,%g\"/>\n", p.x, p.y);
     }
-    gvdevice_fputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      </dia:attribute>\n");
     dia_style(job, &cstk[SP]);
-    gvdevice_fputs(job, "      <dia:attribute name=\"obj_pos\">\n");
-    gvdevice_printf(job, "        <dia:point val=\"%g,%g\"/>\n", firstp.x, firstp.y);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "      <dia:attribute name=\"obj_bb\">\n");
-    gvdevice_printf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
+    gvputs(job, "      <dia:attribute name=\"obj_pos\">\n");
+    gvprintf(job, "        <dia:point val=\"%g,%g\"/>\n", firstp.x, firstp.y);
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "      <dia:attribute name=\"obj_bb\">\n");
+    gvprintf(job, "        <dia:rectangle val=\"%g,%g;%g,%g\"/>\n",
 	       llp.x - .11, llp.y - .11, urp.x + .11, urp.y + .11);
-    gvdevice_fputs(job, "      </dia:attribute>\n");
-    gvdevice_fputs(job, "    </dia:object>\n");
+    gvputs(job, "      </dia:attribute>\n");
+    gvputs(job, "    </dia:object>\n");
 #endif
 }
 

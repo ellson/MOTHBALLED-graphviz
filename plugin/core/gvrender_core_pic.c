@@ -26,6 +26,7 @@
 #include "macros.h"
 #include "const.h"
 
+#include "gvio.h"
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
 #include "graph.h"
@@ -147,7 +148,7 @@ static void pic_set_color(GVJ_t *job, char *name)
 
     colorxlate(name, &color, HSVA_DOUBLE);
     /* just v used to set grayscale value */
-    gvdevice_printf(job, "setfillval %f\n", color.u.HSVA[2]);
+    gvprintf(job, "setfillval %f\n", color.u.HSVA[2]);
 }
 
 static void pic_set_style(GVJ_t *job, char **s)
@@ -157,7 +158,7 @@ static void pic_set_style(GVJ_t *job, char **s)
     char buf[BUFSIZ];
 
     buf[0] = '\0';
-    gvdevice_printf(job, "define attrs%d %%", 0);
+    gvprintf(job, "define attrs%d %%", 0);
     while ((p = line = *s++)) {
         while (*p)
             p++;
@@ -171,17 +172,17 @@ static void pic_set_style(GVJ_t *job, char **s)
                         n, Fontscale);
                 skip = 1;
             } else
-                gvdevice_printf(job, " %s", p);
+                gvprintf(job, " %s", p);
             while (*p)
                 p++;
             p++;
         }
         if (!skip)
-            gvdevice_printf(job, " %s", line);
+            gvprintf(job, " %s", line);
         skip = 0;
     }
-    gvdevice_printf(job, " %%\n");
-    gvdevice_printf(job, "%s", buf);
+    gvprintf(job, " %%\n");
+    gvprintf(job, "%s", buf);
 }
 
 static void picptarray(GVJ_t *job, pointf * A, int n, int close)
@@ -191,13 +192,13 @@ static void picptarray(GVJ_t *job, pointf * A, int n, int close)
 
     for (i = 0; i < n; i++) {
 	PF2P(A[i],p);
-        gvdevice_printf(job, " %d %d", p.x, p.y);
+        gvprintf(job, " %d %d", p.x, p.y);
     }
     if (close) {
 	PF2P(A[0],p);
-        gvdevice_printf(job, " %d %d", p.x, p.y);
+        gvprintf(job, " %d %d", p.x, p.y);
     }
-    gvdevice_fputs(job, "\n");
+    gvputs(job, "\n");
 }
 
 static char *pic_string(char *s)
@@ -292,25 +293,25 @@ static void pic_line_style(obj_state_t *obj, int *line_style, double *style_val)
 
 static void pic_comment(GVJ_t *job, char *str)
 {
-    gvdevice_printf(job, "%s %s\n", EscComment, str);
+    gvprintf(job, "%s %s\n", EscComment, str);
 }
 
 static void pic_begin_graph(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    gvdevice_printf(job, "%s Creator: %s version %s (%s)\n",
+    gvprintf(job, "%s Creator: %s version %s (%s)\n",
 	EscComment, job->common->info[0], job->common->info[1], job->common->info[2]);
-    gvdevice_printf(job, "%s For: %s\n", EscComment, job->common->user);
-    gvdevice_printf(job, "%s Title: %s\n", EscComment, obj->u.g->name);
-    gvdevice_printf(job,
+    gvprintf(job, "%s For: %s\n", EscComment, job->common->user);
+    gvprintf(job, "%s Title: %s\n", EscComment, obj->u.g->name);
+    gvprintf(job,
             "%s save point size and font\n.nr .S \\n(.s\n.nr DF \\n(.f\n",
             EscComment);
 }
 
 static void pic_end_graph(GVJ_t * job)
 {
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s restore point size and font\n.ps \\n(.S\n.ft \\n(DF\n",
             EscComment);
 }
@@ -331,8 +332,8 @@ static void pic_begin_page(GVJ_t * job)
         width = height;
         height = temp;
     }
-    gvdevice_printf(job, ".PS %.5f %.5f\n", width, height);
-    gvdevice_printf(job,
+    gvprintf(job, ".PS %.5f %.5f\n", width, height);
+    gvprintf(job,
             "%s to change drawing size, multiply the width and height on the .PS line above and the number on the two lines below (rounded to the nearest integer) by a scale factor\n",
             EscComment);
     if (width > 0.0) {
@@ -341,92 +342,92 @@ static void pic_begin_page(GVJ_t * job)
     } else
         Fontscale = 3.0;
     Fontscale = pow(10.0, Fontscale);   /* a power of 10 times width, between 1000 and 10000 */
-    gvdevice_printf(job, ".nr SF %.0f\nscalethickness = %.0f\n", Fontscale,
+    gvprintf(job, ".nr SF %.0f\nscalethickness = %.0f\n", Fontscale,
             Fontscale);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s don't change anything below this line in this drawing\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s non-fatal run-time pic version determination, version 2\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "boxrad=2.0 %s will be reset to 0.0 by gpic only\n",
             EscComment);
-    gvdevice_printf(job, "scale=1.0 %s required for comparisons\n",
+    gvprintf(job, "scale=1.0 %s required for comparisons\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s boxrad is now 0.0 in gpic, else it remains 2.0\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s dashwid is 0.1 in 10th Edition, 0.05 in DWB 2 and in gpic\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s fillval is 0.3 in 10th Edition (fill 0 means black), 0.5 in gpic (fill 0 means white), undefined in DWB 2\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s fill has no meaning in DWB 2, gpic can use fill or filled, 10th Edition uses fill only\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s DWB 2 doesn't use fill and doesn't define fillval\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s reset works in gpic and 10th edition, but isn't defined in DWB 2\n",
             EscComment);
-    gvdevice_printf(job, "%s DWB 2 compatibility definitions\n",
+    gvprintf(job, "%s DWB 2 compatibility definitions\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "if boxrad > 1.0 && dashwid < 0.075 then X\n\tfillval = 1;\n\tdefine fill Y Y;\n\tdefine solid Y Y;\n\tdefine reset Y scale=1.0 Y;\nX\n");
-    gvdevice_printf(job, "reset %s set to known state\n", EscComment);
-    gvdevice_printf(job, "%s GNU pic vs. 10th Edition d\\(e'tente\n",
+    gvprintf(job, "reset %s set to known state\n", EscComment);
+    gvprintf(job, "%s GNU pic vs. 10th Edition d\\(e'tente\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "if fillval > 0.4 then X\n\tdefine setfillval Y fillval = 1 - Y;\n\tdefine bold Y thickness 2 Y;\n");
-    gvdevice_printf(job,
+    gvprintf(job,
             "\t%s if you use gpic and it barfs on encountering \"solid\",\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "\t%s\tinstall a more recent version of gpic or switch to DWB or 10th Edition pic;\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "\t%s\tsorry, the groff folks changed gpic; send any complaint to them;\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "X else Z\n\tdefine setfillval Y fillval = Y;\n\tdefine bold Y Y;\n\tdefine filled Y fill Y;\nZ\n");
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s arrowhead has no meaning in DWB 2, arrowhead = 7 makes filled arrowheads in gpic and in 10th Edition\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s arrowhead is undefined in DWB 2, initially 1 in gpic, 2 in 10th Edition\n",
             EscComment);
-    gvdevice_printf(job, "arrowhead = 7 %s not used by graphviz\n",
+    gvprintf(job, "arrowhead = 7 %s not used by graphviz\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s GNU pic supports a boxrad variable to draw boxes with rounded corners; DWB and 10th Ed. do not\n",
             EscComment);
-    gvdevice_printf(job, "boxrad = 0 %s no rounded corners in graphviz\n",
+    gvprintf(job, "boxrad = 0 %s no rounded corners in graphviz\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s GNU pic supports a linethick variable to set line thickness; DWB and 10th Ed. do not\n",
             EscComment);
-    gvdevice_printf(job, "linethick = 0; oldlinethick = linethick\n");
-    gvdevice_printf(job,
+    gvprintf(job, "linethick = 0; oldlinethick = linethick\n");
+    gvprintf(job,
             "%s .PS w/o args causes GNU pic to scale drawing to fit 8.5x11 paper; DWB does not\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s maxpsht and maxpswid have no meaning in DWB 2.0, set page boundaries in gpic and in 10th Edition\n",
             EscComment);
-    gvdevice_printf(job,
+    gvprintf(job,
             "%s maxpsht and maxpswid are predefined to 11.0 and 8.5 in gpic\n",
             EscComment);
-    gvdevice_printf(job, "maxpsht = %f\nmaxpswid = %f\n", height, width);
-    gvdevice_printf(job, "Dot: [\n");
-    gvdevice_printf(job,
+    gvprintf(job, "maxpsht = %f\nmaxpswid = %f\n", height, width);
+    gvprintf(job, "Dot: [\n");
+    gvprintf(job,
             "define attrs0 %% %%; define unfilled %% %%; define rounded %% %%; define diagonals %% %%\n");
 }
 
 static void pic_end_page(GVJ_t * job)
 {
-    gvdevice_printf(job,
+    gvprintf(job,
 	"]\n.PE\n");
 }
 
@@ -456,16 +457,16 @@ static void pic_textpara(GVJ_t * job, pointf p, textpara_t * para)
     p.x += para->width / (2.0 * POINTS_PER_INCH);
 
     if (para->fontname && (!(lastname) || strcmp(lastname, para->fontname))) {
-        gvdevice_printf(job, ".ft %s\n", picfontname(para->fontname));
+        gvprintf(job, ".ft %s\n", picfontname(para->fontname));
 	lastname = para->fontname;
     }
     if ((sz = (int)para->fontsize) < 1);
         sz = 1;
     if (sz != lastsize) {
-        gvdevice_printf(job, ".ps %d*\\n(SFu/%.0fu\n", sz, Fontscale);
+        gvprintf(job, ".ps %d*\\n(SFu/%.0fu\n", sz, Fontscale);
 	lastsize = sz;
     }
-    gvdevice_printf(job, "\"%s\" at (%.5f,%.5f);\n",
+    gvprintf(job, "\"%s\" at (%.5f,%.5f);\n",
             pic_string(para->str), p.x, p.y);
 }
 
@@ -473,7 +474,7 @@ static void pic_ellipse(GVJ_t * job, pointf * A, int filled)
 {
     /* A[] contains 2 points: the center and corner. */
 
-    gvdevice_printf(job,
+    gvprintf(job,
 		"ellipse attrs%d %swid %.5f ht %.5f at (%.5f,%.5f);\n", 1,
 		filled ? "fill " : "",
 		PS2INCH(2*(A[1].x - A[0].x)),
@@ -551,7 +552,7 @@ static void pic_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
         }
     }
 
-//    gvdevice_printf(job, "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d\n",
+//    gvprintf(job, "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d\n",
 //            object_code,
 //            sub_type,
 //            line_style,
@@ -563,12 +564,12 @@ static void pic_bezier(GVJ_t * job, pointf * A, int n, int arrow_at_start,
 //            area_fill,
 //            style_val, cap_style, forward_arrow, backward_arrow, count);
 
-    gvdevice_printf(job, " %s\n", buffer);      /* print points */
+    gvprintf(job, " %s\n", buffer);      /* print points */
     free(buffer);
     for (i = 0; i < count; i++) {
-        gvdevice_printf(job, " %d", i % (count - 1) ? 1 : 0);   /* -1 on all */
+        gvprintf(job, " %d", i % (count - 1) ? 1 : 0);   /* -1 on all */
     }
-    gvdevice_fputs(job, "\n");
+    gvputs(job, "\n");
 }
 
 static void pic_polygon(GVJ_t * job, pointf * A, int n, int filled)
@@ -593,7 +594,7 @@ static void pic_polygon(GVJ_t * job, pointf * A, int n, int filled)
 
     pic_line_style(obj, &line_style, &style_val);
 
-//    gvdevice_printf(job,
+//    gvprintf(job,
 //            "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n",
 //            object_code, sub_type, line_style, thickness, pen_color,
 //            fill_color, depth, pen_style, area_fill, style_val, join_style,
@@ -623,7 +624,7 @@ static void pic_polyline(GVJ_t * job, pointf * A, int n)
 
     pic_line_style(obj, &line_style, &style_val);
 
-//    gvdevice_printf(job,
+//    gvprintf(job,
 //            "%d %d %d %d %d %d %d %d %d %.1f %d %d %d %d %d %d\n",
 //            object_code, sub_type, line_style, thickness, pen_color,
 //            fill_color, depth, pen_style, area_fill, style_val, join_style,
