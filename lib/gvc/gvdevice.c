@@ -258,9 +258,24 @@ size_t gvdevice_write (GVJ_t * job, const char *s, size_t len)
     return gvdevice_write_no_z (job, s, len);
 }
 
-void gvdevice_fputs(GVJ_t * job, const char *s)
+int gvdevice_fputs(GVJ_t * job, const char *s)
 {
-    gvdevice_write (job, s, strlen(s));
+    size_t len = strlen(s);
+
+    if (gvdevice_write (job, s, len) != len) {
+	return EOF;
+    }
+    return +1;
+}
+
+int gvdevice_fputc(GVJ_t * job, int c)
+{
+    const char cc = c;
+
+    if (gvdevice_write (job, &cc, 1) != 1) {
+	return EOF;
+    }
+    return c;
 }
 
 static void gvdevice_flush(GVJ_t * job)

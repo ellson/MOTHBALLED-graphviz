@@ -67,17 +67,20 @@ extern "C" {
     extern usershape_t *gvusershape_find(char *name);
 
 /* device */
-    extern size_t gvdevice_write (GVJ_t * job, const char *s, size_t len);
-    extern void gvdevice_fputs(GVJ_t * job, const char *s);
-    extern void gvdevice_printf(GVJ_t * job, const char *format, ...);
-
     extern void gvdevice_initialize(GVJ_t * job);
     extern void gvdevice_format(GVJ_t * job);
     extern void gvdevice_finalize(GVJ_t * job);
 
+#if 0
+    extern size_t gvdevice_write (GVJ_t * job, const char *s, size_t len);
+    extern int gvdevice_fputc(GVJ_t * job, int c);
+    extern int gvdevice_fputs(GVJ_t * job, const char *s);
+    extern void gvdevice_printf(GVJ_t * job, const char *format, ...);
+
     extern void gvdevice_printnum(GVJ_t * job, double num);
     extern void gvdevice_printpointf(GVJ_t * job, pointf p);
     extern void gvdevice_printpointflist(GVJ_t * job, pointf *p, int n);
+#endif
 
 /* render */
 

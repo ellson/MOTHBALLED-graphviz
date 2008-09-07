@@ -20,6 +20,7 @@
 
 #include <sys/stat.h>
 #include "render.h"
+#include "gvplugin_device.h"
 
 static int N_EPSF_files;
 static Dict_t *EPSF_contents;
@@ -134,7 +135,7 @@ void epsf_free(node_t * n)
  *
  * N.B. PostScript lines can end with \n, \r or \r\n.
  */
-void epsf_emit_body(usershape_t *us, FILE *of)
+void epsf_emit_body(GVJ_t *job, usershape_t *us)
 {
     char *p;
     char c;
@@ -155,53 +156,35 @@ void epsf_emit_body(usershape_t *us, FILE *of)
 	}
 	/* output line */
 	while ((c = *p) && (c != '\r') && (c != '\n')) {
-	    fputc(c, of);
+	    gvdevice_fputc(job, c);
 	    p++;
 	}
 	if ((*p == '\r') && (*(p+1) == '\n')) p += 2;
 	else if (*p) p++;
-	fputc('\n', of);
+	gvdevice_fputc(job, '\n');
     }
 }
 #else
-void epsf_emit_body(usershape_t *us, FILE *of)
+void epsf_emit_body(GVJ_t *job, usershape_t *us)
 {
-	if (fputs(us->data, of) == EOF) {
-	    perror("epsf_define()->fputs");
-	    exit(EXIT_FAILURE);
-	}
+	gvdevice_fputs(job, us->data);
 }
 #endif
 
-void epsf_define(FILE * of)
+void epsf_define(GVJ_t *job)
 {
     usershape_t *us;
 
     if (!EPSF_contents)
 	return;
-    for (us = dtfirst(EPSF_contents); us;
-	 us = dtnext(EPSF_contents, us)) {
-	 if (us->must_inline) continue;
-	fprintf(of, "/user_shape_%d {\n", us->macro_id);
-
-	if (fputs("%%BeginDocument:\n", of) == EOF) {
-	    perror("epsf_define()->fputs");
-	    exit(EXIT_FAILURE);
-	}
-	epsf_emit_body(us,of);
-
-	if (fputs("%%EndDocument\n", of) == EOF) {
-	    perror("epsf_define()->fputs");
-	    exit(EXIT_FAILURE);
-	}
-
-	if (fputs("} bind def\n", of) == EOF) {
-	    perror("epsf_define()->fputs");
-	    exit(EXIT_FAILURE);
-	}
-#if 0
-	fprintf(of, "} bind def\n");
-#endif
+    for (us = dtfirst(EPSF_contents); us; us = dtnext(EPSF_contents, us)) {
+	if (us->must_inline)
+	    continue;
+	gvdevice_printf(job, "/user_shape_%d {\n", us->macro_id);
+	gvdevice_fputs(job, "%%BeginDocument:\n");
+	epsf_emit_body(job, us);
+	gvdevice_fputs(job, "%%EndDocument\n");
+	gvdevice_fputs(job, "} bind def\n");
     }
 }
 

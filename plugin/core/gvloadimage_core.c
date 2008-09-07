@@ -26,12 +26,13 @@
 #endif
 
 #include "gvplugin_loadimage.h"
+#include "gvplugin_device.h"
 
 /* for n->name */
 #include "graph.h"
 
 extern void core_loadimage_xdot(GVJ_t*, usershape_t*, boxf, boolean);
-extern void epsf_emit_body(usershape_t *us, FILE *of);
+extern void epsf_emit_body(GVJ_t *job, usershape_t *us);
 extern shape_desc *find_user_shape(char *name);
 
 typedef enum {
@@ -107,32 +108,27 @@ static void core_loadimage_fig(GVJ_t * job, usershape_t *us, boxf bf, boolean fi
 
 static void core_loadimage_vrml(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
-    FILE *out;
     obj_state_t *obj;
     node_t *n;
 
     assert(job);
-
-    out = job->output_file;
     obj = job->obj;
-    assert(out);
     assert(obj);
-
     assert(us);
     assert(us->name);
 
     n = job->obj->u.n;
     assert(n);
 
-    fprintf(out, "Shape {\n");
-    fprintf(out, "  appearance Appearance {\n");
-    fprintf(out, "    material Material {\n");
-    fprintf(out, "      ambientIntensity 0.33\n");
-    fprintf(out, "        diffuseColor 1 1 1\n");
-    fprintf(out, "    }\n");
-    fprintf(out, "    texture ImageTexture { url \"%s\" }\n", us->name);
-    fprintf(out, "  }\n");
-    fprintf(out, "}\n");
+    gvdevice_printf(job, "Shape {\n");
+    gvdevice_printf(job, "  appearance Appearance {\n");
+    gvdevice_printf(job, "    material Material {\n");
+    gvdevice_printf(job, "      ambientIntensity 0.33\n");
+    gvdevice_printf(job, "        diffuseColor 1 1 1\n");
+    gvdevice_printf(job, "    }\n");
+    gvdevice_printf(job, "    texture ImageTexture { url \"%s\" }\n", us->name);
+    gvdevice_printf(job, "  }\n");
+    gvdevice_printf(job, "}\n");
 }
 
 static void ps_freeimage(usershape_t *us)
@@ -147,14 +143,9 @@ static void ps_freeimage(usershape_t *us)
 /* usershape described by a postscript file */
 static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
-    FILE *out;
-
     assert(job);
     assert(us);
     assert(us->name);
-
-    out = job->output_file;
-    assert(out);
 
     if (us->data) {
         if (us->datafree != ps_freeimage) {
@@ -194,13 +185,13 @@ static void core_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean fill
     }
 
     if (us->data) {
-        fprintf(out, "gsave %g %g translate newpath\n",
+        gvdevice_printf(job, "gsave %g %g translate newpath\n",
 		b.LL.x - (double)(us->x), b.LL.y - (double)(us->y));
         if (us->must_inline)
-            epsf_emit_body(us, out);
+            epsf_emit_body(job, us);
         else
-            fprintf(out, "user_shape_%d\n", us->macro_id);
-        fprintf(out, "grestore\n");
+            gvdevice_printf(job, "user_shape_%d\n", us->macro_id);
+        gvdevice_printf(job, "grestore\n");
     }
 }
 
@@ -209,15 +200,11 @@ static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, boolean f
 {
     int i;
     pointf AF[4];
-    FILE *out;
     shape_desc *shape;
 
     assert(job);
     assert(us);
     assert(us->name);
-
-    out = job->output_file;
-    assert(out);
 
     if ((shape = (shape_desc*)us->data)) {
 	AF[0] = b.LL;
@@ -229,18 +216,18 @@ static void core_loadimage_pslib(GVJ_t * job, usershape_t *us, boxf b, boolean f
         if (filled) {
 //            ps_begin_context();
 //            ps_set_color(S[SP].fillcolor);
-            fprintf(out, "[ ");
+            gvdevice_printf(job, "[ ");
             for (i = 0; i < 4; i++)
-                fprintf(out, "%g %g ", AF[i].x, AF[i].y);
-            fprintf(out, "%g %g ", AF[0].x, AF[0].y);
-            fprintf(out, "]  %d true %s\n", 4, us->name);
+                gvdevice_printf(job, "%g %g ", AF[i].x, AF[i].y);
+            gvdevice_printf(job, "%g %g ", AF[0].x, AF[0].y);
+            gvdevice_printf(job, "]  %d true %s\n", 4, us->name);
 //            ps_end_context();
         }
-        fprintf(out, "[ ");
+        gvdevice_printf(job, "[ ");
         for (i = 0; i < 4; i++)
-            fprintf(out, "%g %g ", AF[i].x, AF[i].y);
-        fprintf(out, "%g %g ", AF[0].x, AF[0].y);
-        fprintf(out, "]  %d false %s\n", 4, us->name);
+            gvdevice_printf(job, "%g %g ", AF[i].x, AF[i].y);
+        gvdevice_printf(job, "%g %g ", AF[0].x, AF[0].y);
+        gvdevice_printf(job, "]  %d false %s\n", 4, us->name);
     }
 }
 

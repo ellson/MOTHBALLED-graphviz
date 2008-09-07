@@ -38,7 +38,7 @@
  */
 #define PDFMAX  14400           /*  Maximum size of PDF page  */
 
-extern void epsf_define(FILE * of);
+extern void epsf_define(GVJ_t * job);
 extern char *ps_string(char *ins, int latin);
 
 typedef enum { FORMAT_PS, FORMAT_PS2, FORMAT_EPS } format_type;
@@ -136,7 +136,7 @@ static void psgen_begin_graph(GVJ_t * job)
         /* include shape library */
         cat_libfile(job, job->common->lib, ps_txt);
 	/* include epsf */
-        epsf_define(job->output_file);
+        epsf_define(job);
         if (job->common->show_boxes) {
             const char* args[2];
             args[0] = job->common->show_boxes[0];
