@@ -7,7 +7,7 @@ GRAPHS = KW91.gv Latin1.gv NaN.gv abstract.gv alf.gv arrows.gv \
 	grammar.gv hashtable.gv honda-tokoro.gv jcctree.gv jsort.gv \
 	ldbxtried.gv longflat.gv mike.gv nhg.gv oldarrows.gv \
 	pgram.gv pm2way.gv pmpipe.gv polypoly.gv proc3d.gv \
-	record2.gv records.gv rowe.gv sdh.gv shells.gv states.gv \
+	record2.gv records.gv rowe.gv russian.gv sdh.gv shells.gv states.gv \
 	structs.gv table.gv train11.gv trapeziumlr.gv tree.gv triedds.gv \
 	try.gv unix.gv unix2.gv viewfile.gv world.gv switch.gv
 
@@ -23,7 +23,7 @@ test:
 	$(top_builddir)/cmd/dot/dot -Tcanon -Tcmap -Tcmapx \
 		-Tdia -Tgv -Tfig -Tgif -Thpgl \
 		-Tismap -Timap -Tjpg -Tmif -Tmp -Tpcl -Tpdf -Tpic \
-		-Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:cairo -Tsvg \
+		-Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:cairo -Tps:lasi -Tsvg \
 		-Tsvg:cairo -Tsvgz -Tvrml -Tvtx -Txdot \
 		-O $(GRAPHS) 
 
@@ -152,9 +152,13 @@ ps_gd:
 	for i in $(GRAPHS); do echo "dot $$i"; \
 		$(top_builddir)/cmd/dot/dot -Tps:gd -o$$i.gd.ps $(top_srcdir)/graphs/directed/$$i; done
 
-ps_pango:
+ps_cairo:
 	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/cmd/dot/dot -Tps:pango -o$$i.pango.ps $(top_srcdir)/graphs/directed/$$i; done
+		$(top_builddir)/cmd/dot/dot -Tps:cairo -o$$i.cairo.ps $(top_srcdir)/graphs/directed/$$i; done
+
+ps_lasi:
+	for i in $(GRAPHS); do echo "dot $$i"; \
+		$(top_builddir)/cmd/dot/dot -Tps:lasi -o$$i.lasi.ps $(top_srcdir)/graphs/directed/$$i; done
 
 ps2:
 	for i in $(GRAPHS); do echo "dot $$i"; \
