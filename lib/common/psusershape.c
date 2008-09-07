@@ -20,7 +20,7 @@
 
 #include <sys/stat.h>
 #include "render.h"
-#include "gvplugin_device.h"
+#include "gvio.h"
 
 static int N_EPSF_files;
 static Dict_t *EPSF_contents;
@@ -156,18 +156,18 @@ void epsf_emit_body(GVJ_t *job, usershape_t *us)
 	}
 	/* output line */
 	while ((c = *p) && (c != '\r') && (c != '\n')) {
-	    gvdevice_fputc(job, c);
+	    gvputc(job, c);
 	    p++;
 	}
 	if ((*p == '\r') && (*(p+1) == '\n')) p += 2;
 	else if (*p) p++;
-	gvdevice_fputc(job, '\n');
+	gvputc(job, '\n');
     }
 }
 #else
 void epsf_emit_body(GVJ_t *job, usershape_t *us)
 {
-	gvdevice_fputs(job, us->data);
+	gvputs(job, us->data);
 }
 #endif
 
@@ -180,11 +180,11 @@ void epsf_define(GVJ_t *job)
     for (us = dtfirst(EPSF_contents); us; us = dtnext(EPSF_contents, us)) {
 	if (us->must_inline)
 	    continue;
-	gvdevice_printf(job, "/user_shape_%d {\n", us->macro_id);
-	gvdevice_fputs(job, "%%BeginDocument:\n");
+	gvprintf(job, "/user_shape_%d {\n", us->macro_id);
+	gvputs(job, "%%BeginDocument:\n");
 	epsf_emit_body(job, us);
-	gvdevice_fputs(job, "%%EndDocument\n");
-	gvdevice_fputs(job, "} bind def\n");
+	gvputs(job, "%%EndDocument\n");
+	gvputs(job, "} bind def\n");
     }
 }
 

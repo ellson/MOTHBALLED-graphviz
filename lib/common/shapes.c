@@ -28,7 +28,7 @@ static port Center = { {0, 0}, -1, 0, 0, 0, 1, 0, 0, 0 };
 #define DEF_POINT 0.05
   /* Minimum point size = 0.0003 inches or 0.02 points
    * This will make the radius 0.01 points, which is the smallest
-   * non-zero number output by gvprintnum in gvdevice.c
+   * non-zero number output by gvprintdouble in gvdevice.c
    */
 #define MIN_POINT 0.0003
   /* extra null character needed to avoid style emitter from thinking

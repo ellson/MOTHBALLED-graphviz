@@ -19,7 +19,7 @@ pkginclude_HEADERS = gvc.h gvcext.h gvplugin.h gvcjob.h \
 	gvcommon.h gvplugin_render.h gvplugin_layout.h \
 	gvplugin_textlayout.h gvplugin_device.h gvplugin_loadimage.h \
 	dot_builtins.c demand_loading.c no_demand_loading.c
-noinst_HEADERS = gvcint.h gvcproc.h
+noinst_HEADERS = gvcint.h gvcproc.h gvio.h
 noinst_LTLIBRARIES = libgvc_C.la
 lib_LTLIBRARIES = libgvc.la
 pkgconfig_DATA = libgvc.pc

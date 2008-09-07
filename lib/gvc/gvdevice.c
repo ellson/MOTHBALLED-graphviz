@@ -62,6 +62,7 @@ static unsigned long int crc;
 #include "gvcint.h"
 #include "gvcproc.h"
 #include "logic.h"
+#include "gvio.h"
 
 #ifdef WITH_CODEGENS
 extern FILE* Output_file;
@@ -69,7 +70,7 @@ extern FILE* Output_file;
 
 static const int PAGE_ALIGN = 4095;		/* align to a 4K boundary (less one), typical for Linux, Mac OS X and Windows memory allocation */
 
-static size_t gvdevice_write_no_z (GVJ_t * job, const char *s, size_t len)
+static size_t gvwrite_no_z (GVJ_t * job, const char *s, size_t len)
 {
     if (job->gvc->write_fn)   /* externally provided write dicipline */
 	return (job->gvc->write_fn)(job, (char*)s, len);
@@ -204,7 +205,7 @@ void gvdevice_initialize(GVJ_t * job)
 	    (job->common->errorfn) ("Error initializing for deflation\n");
 	    exit(1);
 	}
-	gvdevice_write_no_z(job, z_file_header, sizeof(z_file_header));
+	gvwrite_no_z(job, z_file_header, sizeof(z_file_header));
 #else
 	(job->common->errorfn) ("No libz support.\n");
 	exit(1);
@@ -213,7 +214,7 @@ void gvdevice_initialize(GVJ_t * job)
 #endif
 }
 
-size_t gvdevice_write (GVJ_t * job, const char *s, size_t len)
+size_t gvwrite (GVJ_t * job, const char *s, size_t len)
 {
     if (!len || !s)
 	return 0;
@@ -255,24 +256,24 @@ size_t gvdevice_write (GVJ_t * job, const char *s, size_t len)
 #endif
     }
 #endif
-    return gvdevice_write_no_z (job, s, len);
+    return gvwrite_no_z (job, s, len);
 }
 
-int gvdevice_fputs(GVJ_t * job, const char *s)
+int gvputs(GVJ_t * job, const char *s)
 {
     size_t len = strlen(s);
 
-    if (gvdevice_write (job, s, len) != len) {
+    if (gvwrite (job, s, len) != len) {
 	return EOF;
     }
     return +1;
 }
 
-int gvdevice_fputc(GVJ_t * job, int c)
+int gvputc(GVJ_t * job, int c)
 {
     const char cc = c;
 
-    if (gvdevice_write (job, &cc, 1) != 1) {
+    if (gvwrite (job, &cc, 1) != 1) {
 	return EOF;
     }
     return c;
@@ -331,7 +332,7 @@ void gvdevice_finalize(GVJ_t * job)
 
 #if 1
 	while ((ret = deflate (z, Z_FINISH)) == Z_OK && (cnt++ <= 100)) {
-	    gvdevice_write_no_z(job, df, z->next_out - df);
+	    gvwrite_no_z(job, df, z->next_out - df);
 	    z->next_in = out;
 	    z->avail_in = 0;
 	    z->next_out = df;
@@ -344,7 +345,7 @@ void gvdevice_finalize(GVJ_t * job)
             (job->common->errorfn) ("deflation finish problem %d cnt=%d\n", ret, cnt);
 	    exit(1);
 	}
-	gvdevice_write_no_z(job, df, z->next_out - df);
+	gvwrite_no_z(job, df, z->next_out - df);
 
 	ret = deflateEnd(z);
 	if (ret != Z_OK) {
@@ -359,7 +360,7 @@ void gvdevice_finalize(GVJ_t * job)
 	out[5] = z->total_in >> 8;
 	out[6] = z->total_in >> 16;
 	out[7] = z->total_in >> 24;
-	gvdevice_write_no_z(job, out, sizeof(out));
+	gvwrite_no_z(job, out, sizeof(out));
 #else
 	(job->common->errorfn) ("No libz support\n");
 	exit(1);
@@ -399,14 +400,14 @@ void gvdevice_finalize(GVJ_t * job)
 	gvdevice_close(job);
     }
 }
-/* gvdevice_printf:
+/* gvprintf:
  * Note that this function is unsafe due to the fixed buffer size.
  * It should only be used when the caller is sure the input will not
  * overflow the buffer. In particular, it should be avoided for
  * input coming from users. Also, if vsnprintf is available, the
  * code should check for return values to use it safely.
  */
-void gvdevice_printf(GVJ_t * job, const char *format, ...)
+void gvprintf(GVJ_t * job, const char *format, ...)
 {
     char buf[BUFSIZ];
     size_t len;
@@ -420,7 +421,7 @@ void gvdevice_printf(GVJ_t * job, const char *format, ...)
 #endif
     va_end(argp);
 
-    gvdevice_write(job, buf, len);
+    gvwrite(job, buf, len);
 }
 
 
@@ -530,35 +531,35 @@ int main (int argc, char *argv[])
 }
 #endif
 
-void gvdevice_printnum(GVJ_t * job, double num)
+void gvprintdouble(GVJ_t * job, double num)
 {
     char *buf;
     size_t len;
 
     buf = gvprintnum(&len, num);
-    gvdevice_write(job, buf, len);
+    gvwrite(job, buf, len);
 } 
 
-void gvdevice_printpointf(GVJ_t * job, pointf p)
+void gvprintpointf(GVJ_t * job, pointf p)
 {
     char *buf;
     size_t len;
 
     buf = gvprintnum(&len, p.x);
-    gvdevice_write(job, buf, len);
-    gvdevice_write(job, " ", 1);
+    gvwrite(job, buf, len);
+    gvwrite(job, " ", 1);
     buf = gvprintnum(&len, p.y);
-    gvdevice_write(job, buf, len);
+    gvwrite(job, buf, len);
 } 
 
-void gvdevice_printpointflist(GVJ_t * job, pointf *p, int n)
+void gvprintpointflist(GVJ_t * job, pointf *p, int n)
 {
     int i = 0;
 
     while (TRUE) {
-	gvdevice_printpointf(job, p[i]);
+	gvprintpointf(job, p[i]);
         if (++i >= n) break;
-        gvdevice_write(job, " ", 1);
+        gvwrite(job, " ", 1);
     }
 } 
 
