@@ -15,6 +15,7 @@
 **********************************************************/
 
 #include "gvplugin.h"
+#include "gvio.h"
 #include "gvplugin_device.h"
 #include "gvplugin_quartz.h"
 
@@ -45,7 +46,7 @@ CFStringRef format_uti [] = {
 
 static size_t device_data_consumer_put_bytes (void *info, const void *buffer, size_t count)
 {
-	return gvdevice_write((GVJ_t *)info, (const char*)buffer, count);
+	return gvwrite((GVJ_t *)info, (const char*)buffer, count);
 }
 
 CGDataConsumerCallbacks device_data_consumer_callbacks = {

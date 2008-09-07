@@ -27,6 +27,7 @@
 
 #include "gvplugin_render.h"
 #include "gvplugin_device.h"
+#include "gvio.h"
 
 #ifdef HAVE_PANGOCAIRO
 #include <pango/pangocairo.h>
@@ -71,7 +72,7 @@ static void cairogen_set_color(cairo_t * cr, gvcolor_t * color)
 static cairo_status_t
 writer (void *closure, const unsigned char *data, unsigned int length)
 {
-    if (length == gvdevice_write((GVJ_t *)closure, (const char*)data, length))
+    if (length == gvwrite((GVJ_t *)closure, (const char*)data, length))
 	return CAIRO_STATUS_SUCCESS;
     return CAIRO_STATUS_WRITE_ERROR;
 }
