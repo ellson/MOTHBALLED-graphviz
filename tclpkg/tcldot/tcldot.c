@@ -56,13 +56,13 @@ extern int Gdtclft_Init(Tcl_Interp *);
 
 static void *graphTblPtr, *nodeTblPtr, *edgeTblPtr;
 
-static size_t Tcldot_string_writer(GVJ_t *job, const char *s, int len)
+static size_t Tcldot_string_writer(GVJ_t *job, const char *s, size_t len)
 {
     Tcl_AppendResult((Tcl_Interp*)(job->context), s, (char *) NULL);
     return len;
 }
 
-static size_t Tcldot_channel_writer(GVJ_t *job, const char *s, int len)
+static size_t Tcldot_channel_writer(GVJ_t *job, const char *s, size_t len)
 {
     return Tcl_Write((Tcl_Channel)(job->output_file), s, len);
 }
