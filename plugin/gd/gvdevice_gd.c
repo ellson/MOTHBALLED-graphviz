@@ -19,13 +19,14 @@
 #endif
 
 #include "gvplugin_device.h"
+#include "gvio.h"
 
 #ifdef HAVE_LIBGD
 #include "gd.h"
 
 int gvdevice_gd_putBuf (gdIOCtx *context, const void *buffer, int len)
 {
-    return gvdevice_write((GVJ_t *)(context->tell), buffer, len);
+    return gvwrite((GVJ_t *)(context->tell), buffer, len);
 }
 
 /* used by gif output */
@@ -33,7 +34,7 @@ void gvdevice_gd_putC (gdIOCtx *context, int C)
 {
     char c = C;
 
-    gvdevice_write((GVJ_t *)(context->tell), &c, 1);
+    gvwrite((GVJ_t *)(context->tell), &c, 1);
 }
 
 #ifdef HAVE_PANGOCAIRO

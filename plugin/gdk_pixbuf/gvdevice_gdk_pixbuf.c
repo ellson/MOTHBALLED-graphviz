@@ -19,6 +19,7 @@
 #endif
 
 #include "gvplugin_device.h"
+#include "gvio.h"
 #ifdef HAVE_PANGOCAIRO
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
@@ -63,7 +64,7 @@ argb2rgba ( unsigned int width, unsigned int height, char *data)
 static gboolean
 writer ( const gchar *buf, gsize count, GError **error, gpointer data)
 {
-    if (count == gvdevice_write((GVJ_t *)data, buf, count))
+    if (count == gvwrite((GVJ_t *)data, buf, count))
         return TRUE;
     return FALSE;
 }
