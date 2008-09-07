@@ -20,13 +20,13 @@
 #include "gvcjob.h"
 #include "gvcint.h"
 
-static size_t gv_string_writer(GVJ_t *job, const char *s, int len)
+static size_t gv_string_writer(GVJ_t *job, const char *s, size_t len)
 {
     Tcl_AppendToObj((Tcl_Obj*)(job->output_file), s, len);
     return len;
 }
 
-static size_t gv_channel_writer(GVJ_t *job, const char *s, int len)
+static size_t gv_channel_writer(GVJ_t *job, const char *s, size_t len)
 {
     return Tcl_Write((Tcl_Channel)(job->output_file), s, len);
 }
