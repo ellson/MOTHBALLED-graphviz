@@ -382,23 +382,6 @@ Agedge_t *isEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key)
     return agedge(g, t, h, key, 0);
 }
 
-/* isIn:
- * Return 1 if object objp is in subgraph gp.
- */
-int isIn(Agraph_t * gp, Agobj_t * objp)
-{
-    if (!sameG(gp, objp, "isIn", 0))
-	return 0;
-    switch (AGTYPE(objp)) {
-    case AGRAPH:
-	return (agparent((Agraph_t *) objp) == gp);
-    case AGNODE:
-	return (agidnode(gp, AGID(objp), 0) != 0);
-    default:
-	return (agsubedge(gp, (Agedge_t *) objp, 0) != 0);
-    }
-}
-
 /* addNode:
  * Insert node n into subgraph g.
  * Return image of n
