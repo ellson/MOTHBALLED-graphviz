@@ -23,7 +23,7 @@
 #endif
 
 /* experimenting with in-memory deflation so as to write compressed files to channels and strings */
-//  #define IN_MEM_COMPRESSION
+#define IN_MEM_COMPRESSION
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -50,7 +50,7 @@ static char z_file_header[] =
    {0x1f, 0x8b, /*magic*/ Z_DEFLATED, 0 /*flags*/, 0,0,0,0 /*time*/, 0 /*xflags*/, OS_CODE};
 
 static z_stream z_strm;
-static char *df;
+static unsigned char *df;
 static unsigned int dfallocated;
 static unsigned long int crc;
 #endif
@@ -235,7 +235,7 @@ size_t gvwrite (GVJ_t * job, const char *s, size_t len)
 	    }
 	}
 
-	z->next_in = s;
+	z->next_in = (unsigned char*)s;
 	z->avail_in = len;
 	z->next_out = df;
 	z->avail_out = dfallocated;
@@ -244,9 +244,9 @@ size_t gvwrite (GVJ_t * job, const char *s, size_t len)
             (job->common->errorfn) ("deflation problem %d\n", ret);
 	    exit(1);
 	}
-	crc = crc32(crc, s, len);
+	crc = crc32(crc, (unsigned char*)s, len);
 	len = z->next_out - df;
-	s = df;
+	s = (char*)df;
 #endif
     }
 #else
@@ -321,7 +321,7 @@ void gvdevice_finalize(GVJ_t * job)
     if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
 	z_streamp z = &z_strm;
-	char out[8] = "";
+	unsigned char out[8] = "";
 	int ret;
 	int cnt = 0;
 
@@ -329,23 +329,12 @@ void gvdevice_finalize(GVJ_t * job)
 	z->avail_in = 0;
 	z->next_out = df;
 	z->avail_out = dfallocated;
-
-#if 1
-	while ((ret = deflate (z, Z_FINISH)) == Z_OK && (cnt++ <= 100)) {
-	    gvwrite_no_z(job, df, z->next_out - df);
-	    z->next_in = out;
-	    z->avail_in = 0;
-	    z->next_out = df;
-	    z->avail_out = dfallocated;
-	}
-#else
 	ret = deflate (z, Z_FINISH);
-#endif
 	if (ret != Z_STREAM_END && ret != Z_OK) {
             (job->common->errorfn) ("deflation finish problem %d cnt=%d\n", ret, cnt);
 	    exit(1);
 	}
-	gvwrite_no_z(job, df, z->next_out - df);
+	gvwrite_no_z(job, (char*)df, z->next_out - df);
 
 	ret = deflateEnd(z);
 	if (ret != Z_OK) {
@@ -360,7 +349,7 @@ void gvdevice_finalize(GVJ_t * job)
 	out[5] = z->total_in >> 8;
 	out[6] = z->total_in >> 16;
 	out[7] = z->total_in >> 24;
-	gvwrite_no_z(job, out, sizeof(out));
+	gvwrite_no_z(job, (char*)out, sizeof(out));
 #else
 	(job->common->errorfn) ("No libz support\n");
 	exit(1);

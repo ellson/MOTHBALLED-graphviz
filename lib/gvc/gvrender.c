@@ -174,7 +174,6 @@ void gvrender_end_job(GVJ_t * job)
     }
 #endif
     job->gvc->common.lib = NULL;    /* FIXME - minimally this doesn't belong here */
-    gvdevice_finalize(job);
 }
 
 /* font modifiers */
