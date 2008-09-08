@@ -294,6 +294,7 @@ extern Agedge_t *agnxtedge(Agraph_t * g, Agedge_t * e, Agnode_t * n);
 /* generic */
 extern Agraph_t *agraphof(void* obj);
 extern Agraph_t *agroot(void* obj);
+extern int agcontains(Agraph_t *, void *);
 extern char *agnameof(void *);
 extern int agrelabel(void *obj, char *name);	/* scary */
 extern int agrelabel_node(Agnode_t * n, char *newname);

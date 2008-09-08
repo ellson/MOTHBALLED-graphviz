@@ -109,6 +109,8 @@ void		agfree(Agraph_t *g, void *ptr);
 .SS "GENERIC OBJECTS"
 .P0
 Agraph_t	*agraphof(void*);
+Agraph_t	*agroot(void*);
+int			agcontains(Agraph_t*, void*);
 char		*agnameof(void*);
 void		agdelete(Agraph_t *g, void *obj);
 Agrec_t		*AGDATA(void *obj);
