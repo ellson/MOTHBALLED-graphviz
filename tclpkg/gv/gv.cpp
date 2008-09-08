@@ -72,7 +72,7 @@ Agraph_t *read(FILE *f)
     return agread(f);
 }
 
-Agraph_t *read(char *filename)
+Agraph_t *read(const char *filename)
 {
     FILE *f;
     Agraph_t *g;
@@ -864,7 +864,7 @@ bool render(Agraph_t *g)
 }
 
 // render to stdout
-bool render(Agraph_t *g, char *format)
+bool render(Agraph_t *g, const char *format)
 {
     int err;
 
@@ -875,7 +875,7 @@ bool render(Agraph_t *g, char *format)
 }
 
 // render to an open FILE
-bool render(Agraph_t *g, char *format, FILE *f)
+bool render(Agraph_t *g, const char *format, FILE *f)
 {
     int err;
 
