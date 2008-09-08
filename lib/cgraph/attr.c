@@ -475,18 +475,18 @@ static void init_all_attrs(Agraph_t * g)
  */
 int agcopyattr(void *oldobj, void *newobj)
 {
-	Agraph_t *g;
+    Agraph_t *g;
     Agsym_t *sym;
     Agsym_t *newsym;
-	int		r = 1;
+    int		r = 1;
 
-	g = agraphof(oldobj);
+    g = agraphof(oldobj);
     if (AGTYPE(oldobj) != AGTYPE(newobj)) return 1;
-	sym = 0;
-	while ((sym = agnxtattr(g, AGTYPE(oldobj), sym))) {
-        newsym = agattrsym(newobj,sym->name);
-        if (!newsym) return 1;
-        r = agxset(newobj, newsym, agxget(oldobj, sym));
+    sym = 0;
+    while ((sym = agnxtattr(g, AGTYPE(oldobj), sym))) {
+	newsym = agattrsym(newobj,sym->name);
+	if (!newsym) return 1;
+	r = agxset(newobj, newsym, agxget(oldobj, sym));
     }
     return r;
 }
