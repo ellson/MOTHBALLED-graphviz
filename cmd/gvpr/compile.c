@@ -730,7 +730,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 		error(ERROR_WARNING, "NULL object passed to isIn()");
 		v.integer = 0;
 	    } else
-		v.integer = isIn(gp, objp);
+		v.integer = agcontains (gp, objp);
 	    break;
 	case F_compof:
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
