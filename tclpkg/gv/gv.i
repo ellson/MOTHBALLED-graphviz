@@ -199,7 +199,7 @@ extern bool rm(Agedge_t *e);
 
 /** Layout */
 /*** Annotate a graph with layout attributes and values using a specific layout engine */
-extern bool layout(Agraph_t *g, char *engine);
+extern bool layout(Agraph_t *g, const char *engine);
 
 /** Render */
 /*** Render a layout into attributes of the graph */
@@ -380,7 +380,7 @@ extern bool rm(Agedge_t *e);
 
 /** Layout */
 /*** Annotate a graph with layout attributes and values using a specific layout engine */
-extern bool layout(Agraph_t *g, char *engine);
+extern bool layout(Agraph_t *g, const char *engine);
 
 /** Render */
 /*** Render a layout into attributes of the graph */
