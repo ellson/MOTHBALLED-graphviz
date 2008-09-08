@@ -111,7 +111,6 @@ int gvRender(GVC_t *gvc, graph_t *g, const char *format, FILE *out)
 	job->flags |= OUTPUT_NOT_REQUIRED;
     gvRenderJobs(gvc, g);
     gvrender_end_job(job);
-    gvdevice_finalize(job);
     gvjobs_delete(gvc);
 
     return 0;
@@ -185,7 +184,6 @@ int gvRenderData(GVC_t *gvc, graph_t *g, const char *format, char **result, unsi
 
     gvRenderJobs(gvc, g);
     gvrender_end_job(job);
-    gvdevice_finalize(job);
 
     *result = job->output_data;
     *length = job->output_data_position;
