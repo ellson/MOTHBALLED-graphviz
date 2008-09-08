@@ -15,9 +15,9 @@
 **********************************************************/
 
 #include "gvplugin.h"
-#include "gvio.h"
 #include "gvplugin_device.h"
 #include "gvplugin_quartz.h"
+#include "gvio.h"
 
 extern gvplugin_installed_t gvrender_quartz_types;
 // extern gvplugin_installed_t gvtextlayout_quartz_types;
