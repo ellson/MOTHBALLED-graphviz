@@ -47,11 +47,22 @@ static void setYInvert(graph_t * g)
     }
 }
 
+/* canon:
+ * Canonicalize a string which may not have been allocated using agstrdup.
+ */
+static char* canon (char* s)
+{
+    char* ns = agstrdup (s);
+    char* cs = agcanonical (ns);
+    agstrfree (ns);
+    return cs;
+}
+
 static void writenodeandport(FILE * fp, node_t * node, char *port)
 {
     char *name;
     if (IS_CLUST_NODE(node))
-	name = agcanon (strchr(node->name, ':') + 1);
+	name = canon (strchr(node->name, ':') + 1);
     else
 	name = agcanonical (node->name);
     fprintf(fp, "%s", name);	/* slimey i know */
@@ -88,7 +99,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 	if (ND_label(n)->html)   /* if html, get original text */
 	    lbl = agcanonical (agxget(n, N_label->index));
 	else
-	    lbl = agcanon(ND_label(n)->text);
+	    lbl = canon(ND_label(n)->text);
 	fprintf(f, " %.3g %.3g %s %s %s %s %s\n",
 		ND_width(n), ND_height(n), lbl,
 		late_nnstring(n, N_style, "solid"),
@@ -125,7 +136,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 		}
 	    }
 	    if (ED_label(e)) {
-		fprintf(f, " %s", agcanon(ED_label(e)->text));
+		fprintf(f, " %s", canon(ED_label(e)->text));
 		printptf(f, ED_label(e)->pos);
 	    }
 	    fprintf(f, " %s %s\n", late_nnstring(e, E_style, "solid"),
