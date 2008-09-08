@@ -33,7 +33,6 @@ extern "C" {
     extern int lockGraph(Agraph_t * g, int);
     extern Agraph_t *compOf(Agraph_t * g, Agnode_t * n);
     extern Agedge_t *isEdge(Agraph_t* g, Agnode_t * t, Agnode_t * h, char *key);
-    extern int isIn(Agraph_t * gp, Agobj_t *);
     extern Agnode_t *addNode(Agraph_t * g, Agnode_t * n, int doAdd);
     extern Agedge_t *addEdge(Agraph_t * g, Agedge_t * e, int doAdd);
     extern Agraph_t *sameG(void *p1, void *p2, char *fn, char *msg);
