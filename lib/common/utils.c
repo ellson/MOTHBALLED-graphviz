@@ -468,15 +468,14 @@ pointf dotneato_closest(splines * spl, pointf pt)
     return pt2;
 }
 
-point spline_at_y(splines * spl, int y)
+pointf spline_at_y(splines * spl, double y)
 {
     int i, j;
     double low, high, d, t;
-    pointf c[4], pt2;
-    point pt;
+    pointf c[4], p;
     static bezier bz;
 
-/* this caching seems to prevent pt.x from getting set from bz.list[0].x
+/* this caching seems to prevent p.x from getting set from bz.list[0].x
 	- optimizer problem ? */
 
 #if 0
@@ -494,9 +493,9 @@ point spline_at_y(splines * spl, int y)
     }
 #endif
     if (y > bz.list[0].y)
-	pt = bz.list[0];
+	p = bz.list[0];
     else if (y < bz.list[bz.size - 1].y)
-	pt = bz.list[bz.size - 1];
+	p = bz.list[bz.size - 1];
     else {
 	for (i = 0; i < bz.size; i += 3) {
 	    for (j = 0; j < 3; j++) {
@@ -520,8 +519,8 @@ point spline_at_y(splines * spl, int y)
 	high = 1.0;
 	do {
 	    t = (low + high) / 2.0;
-	    pt2 = Bezier(c, 3, t, NULL, NULL);
-	    d = pt2.y - y;
+	    p = Bezier(c, 3, t, NULL, NULL);
+	    d = p.y - y;
 	    if (ABS(d) <= 1)
 		break;
 	    if (d < 0)
@@ -529,14 +528,12 @@ point spline_at_y(splines * spl, int y)
 	    else
 		low = t;
 	} while (1);
-	pt.x = pt2.x;
-	pt.y = pt2.y;
     }
-    pt.y = y;
-    return pt;
+    p.y = y;
+    return p;
 }
 
-point neato_closest(splines * spl, point p)
+pointf neato_closest(splines * spl, pointf p)
 {
 /* this is a stub so that we can share a common emit.c between dot and neato */
 
@@ -748,9 +745,6 @@ void compute_bb(graph_t * g)
     boxf b, bb;
     boxf BF;
     pointf ptf, s2;
-#ifndef SPLINESF
-    point pt;
-#endif
     int i, j;
 
     if ((agnnodes(g) == 0) && (GD_n_cluster(g) ==0)) {
@@ -774,12 +768,7 @@ void compute_bb(graph_t * g)
 		continue;
 	    for (i = 0; i < ED_spl(e)->size; i++) {
 		for (j = 0; j < ED_spl(e)->list[i].size; j++) {
-#ifdef SPLINESF
 		    ptf = ED_spl(e)->list[i].list[j];
-#else
-		    pt = ED_spl(e)->list[i].list[j];
-		    P2PF(pt, ptf);
-#endif
 		    EXPANDBP(bb,ptf);
 		}
 	    }
@@ -1472,15 +1461,12 @@ static boolean overlap_arrow(pointf p, pointf u, double scale, int flag, boxf b)
 static boolean overlap_bezier(bezier bz, boxf b)
 {
     int i;
-    point pp;
     pointf p, u;
 
     assert(bz.size);
-    pp = bz.list[0];
-    P2PF(pp, u);
+    u = bz.list[0];
     for (i = 1; i < bz.size; i++) {
-	pp = bz.list[i];
-	P2PF(pp, p);
+	p = bz.list[i];
 	if (lineToBox(p, u, b) != -1)
 	    return TRUE;
 	u = p;
@@ -1488,15 +1474,11 @@ static boolean overlap_bezier(bezier bz, boxf b)
 
     /* check arrows */
     if (bz.sflag) {
-	P2PF(bz.sp, p);
-	P2PF(bz.list[0], u);
-	if (overlap_arrow(p, u, 1, bz.sflag, b))
+	if (overlap_arrow(bz.sp, bz.list[0], 1, bz.sflag, b))
 	    return TRUE;
     }
     if (bz.eflag) {
-	P2PF(bz.ep, p);
-	P2PF(bz.list[bz.size - 1], u);
-	if (overlap_arrow(p, u, 1, bz.eflag, b))
+	if (overlap_arrow(bz.ep, bz.list[bz.size - 1], 1, bz.eflag, b))
 	    return TRUE;
     }
     return FALSE;

@@ -61,7 +61,7 @@ static void showPoints(point ps[], int pn)
  */
 static void
 arrow_clip(edge_t * fe, node_t * hn,
-	   point * ps, int *startp, int *endp,
+	   pointf * ps, int *startp, int *endp,
 	   bezier * spl, splineInfo * info)
 {
     edge_t *e;
@@ -151,7 +151,7 @@ void bezier_clip(inside_t * inside_context,
  * See note on shape_clip.
  */
 static void
-shape_clip0(inside_t * inside_context, node_t * n, point curve[4],
+shape_clip0(inside_t * inside_context, node_t * n, pointf curve[4],
 	    boolean left_inside)
 {
     int i, save_real_size;
@@ -167,8 +167,8 @@ shape_clip0(inside_t * inside_context, node_t * n, point curve[4],
 		left_inside);
 
     for (i = 0; i < 4; i++) {
-	curve[i].x = ROUND(c[i].x + ND_coord_i(n).x);
-	curve[i].y = ROUND(c[i].y + ND_coord_i(n).y);
+	curve[i].x = c[i].x + ND_coord_i(n).x;
+	curve[i].y = c[i].y + ND_coord_i(n).y;
     }
     ND_rw_i(n) = save_real_size;
 }
@@ -185,7 +185,7 @@ shape_clip0(inside_t * inside_context, node_t * n, point curve[4],
  * The edge e is used to provide a port box. If NULL, the spline is
  * clipped to the node shape.
  */
-void shape_clip(node_t * n, point curve[4])
+void shape_clip(node_t * n, pointf curve[4])
 {
     int save_real_size;
     boolean left_inside;
@@ -218,7 +218,7 @@ bezier *new_spline(edge_t * e, int sz)
 	ED_spl(e) = NEW(splines);
     ED_spl(e)->list = ALLOC(ED_spl(e)->size + 1, ED_spl(e)->list, bezier);
     rv = &(ED_spl(e)->list[ED_spl(e)->size++]);
-    rv->list = N_NEW(sz, point);
+    rv->list = N_NEW(sz, pointf);
     rv->size = sz;
     rv->sflag = rv->eflag = FALSE;
     return rv;
@@ -231,7 +231,7 @@ bezier *new_spline(edge_t * e, int sz)
  * edge.
  */
 void
-clip_and_install(edge_t * fe, node_t * hn, point * ps, int pn,
+clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
 		 splineInfo * info)
 {
     pointf p2;
@@ -397,7 +397,9 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     else
 	pboxfn = NULL;
     P->start.p = add_points(ND_coord_i(n), ED_tail_port(e).p);
+#ifdef P_TANGENTS
     P->ulpp = P->urpp = P->llpp = P->lrpp = NULL;
+#endif
     if (merge) {
 	/*P->start.theta = - M_PI / 2; */
 	P->start.theta = conc_slope(e->tail);
@@ -952,35 +954,33 @@ completeselfpath(path * P, pathend_t * tendp, pathend_t * hendp,
 #endif
 
 static void
-selfBottom (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
+selfBottom (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
           splineInfo* sinfo) 
 {
-    int hy, ty, sgn;
-    point tp, hp;
+    pointf tp, hp, np;
     node_t *n;
     edge_t *e;
-    int i, stepx, dx, dy;
-    double width, height; 
-    point points[1000];
+    int i, sgn;
+    double hy, ty, stepx, dx, dy, width, height; 
+    pointf points[1000];
     int pointn;
-    point np;
 
     e = edges[ind];
     n = e->tail;
 
-    stepx = (sizex / 2) / cnt;
-    stepx = MAX(stepx,2);
+    stepx = (sizex / 2.) / cnt;
+    stepx = MAX(stepx,2.);
     pointn = 0;
-    np = ND_coord_i(n);
-    tp = ED_tail_port(e).p;
+    P2PF(ND_coord_i(n), np);
+    P2PF(ED_tail_port(e).p, tp);
     tp.x += np.x;
     tp.y += np.y;
-    hp = ED_head_port(e).p;
+    P2PF(ED_head_port(e).p, hp);
     hp.x += np.x;
     hp.y += np.y;
     if (tp.x >= hp.x) sgn = 1;
     else sgn = -1;
-    dy = ND_ht_i(n)/2, dx = 0;
+    dy = ND_ht_i(n)/2., dx = 0.;
     ty = MIN(dy, 3*(tp.y + dy - np.y));
     hy = MIN(dy, 3*(hp.y + dy - np.y));
     for (i = 0; i < cnt; i++) {
@@ -988,11 +988,11 @@ selfBottom (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
         dy += stepy, ty += stepy, hy += stepy, dx += sgn*stepx;
         pointn = 0;
         points[pointn++] = tp;
-        points[pointn++] = pointof(tp.x + dx, tp.y - ty / 3);
-        points[pointn++] = pointof(tp.x + dx, np.y - dy);
-        points[pointn++] = pointof((tp.x+hp.x)/2, np.y - dy);
-        points[pointn++] = pointof(hp.x - dx, np.y - dy);
-        points[pointn++] = pointof(hp.x - dx, hp.y - hy / 3);
+        points[pointn++] = pointfof(tp.x + dx, tp.y - ty / 3);
+        points[pointn++] = pointfof(tp.x + dx, np.y - dy);
+        points[pointn++] = pointfof((tp.x+hp.x)/2, np.y - dy);
+        points[pointn++] = pointfof(hp.x - dx, np.y - dy);
+        points[pointn++] = pointfof(hp.x - dx, hp.y - hy / 3);
         points[pointn++] = hp;
         if (ED_label(e)) {
     	if (GD_flip(e->tail->graph)) {
@@ -1020,35 +1020,33 @@ selfBottom (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
 
 
 static void
-selfTop (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
+selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
            splineInfo* sinfo) 
 {
-    int hy, ty, sgn;
-    point tp, hp;
+    int i, sgn;
+    double hy, ty,  stepx, dx, dy, width, height; 
+    pointf tp, hp, np;
     node_t *n;
     edge_t *e;
-    int i, stepx, dx, dy;
-    double width, height; 
-    point points[1000];
+    pointf points[1000];
     int pointn;
-    point np;
 
     e = edges[ind];
     n = e->tail;
 
-    stepx = (sizex / 2) / cnt;
-    stepx = MAX(stepx, 2);
+    stepx = (sizex / 2.) / cnt;
+    stepx = MAX(stepx, 2.);
     pointn = 0;
-    np = ND_coord_i(n);
-    tp  = ED_tail_port(e).p;
+    P2PF(ND_coord_i(n), np);
+    P2PF(ED_tail_port(e).p, tp);
     tp.x += np.x;
     tp.y += np.y;
-    hp  = ED_head_port(e).p;
+    P2PF(ED_head_port(e).p, hp);
     hp.x += np.x;
     hp.y += np.y;
     if (tp.x >= hp.x) sgn = 1;
     else sgn = -1;
-    dy = ND_ht_i(n)/2, dx = 0;
+    dy = ND_ht_i(n)/2., dx = 0.;
     ty = MIN(dy, 3*(np.y + dy - tp.y));
     hy = MIN(dy, 3*(np.y + dy - hp.y));
     for (i = 0; i < cnt; i++) {
@@ -1056,11 +1054,11 @@ selfTop (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
         dy += stepy, ty += stepy, hy += stepy, dx += sgn*stepx;
         pointn = 0;
         points[pointn++] = tp;
-        points[pointn++] = pointof(tp.x + dx, tp.y + ty / 3);
-        points[pointn++] = pointof(tp.x + dx, np.y + dy);
-        points[pointn++] = pointof((tp.x+hp.x)/2, np.y + dy);
-        points[pointn++] = pointof(hp.x - dx, np.y + dy);
-        points[pointn++] = pointof(hp.x - dx, hp.y + hy / 3);
+        points[pointn++] = pointfof(tp.x + dx, tp.y + ty / 3);
+        points[pointn++] = pointfof(tp.x + dx, np.y + dy);
+        points[pointn++] = pointfof((tp.x+hp.x)/2, np.y + dy);
+        points[pointn++] = pointfof(hp.x - dx, np.y + dy);
+        points[pointn++] = pointfof(hp.x - dx, hp.y + hy / 3);
         points[pointn++] = hp;
         if (ED_label(e)) {
 	    if (GD_flip(e->tail->graph)) {
@@ -1088,30 +1086,28 @@ selfTop (edge_t* edges[], int ind, int cnt, int sizex, int stepy,
 }
 
 static void
-selfRight (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
+selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
            splineInfo* sinfo) 
 {
-    int hx, tx, sgn;
-    point tp, hp;
+    int i, sgn;
+    double hx, tx, stepy, dx, dy, width, height; 
+    pointf tp, hp, np;
     node_t *n;
     edge_t *e;
-    int i, stepy, dx, dy;
-    double width, height; 
-    point points[1000];
+    pointf points[1000];
     int pointn;
-    point np;
 
     e = edges[ind];
     n = e->tail;
 
-    stepy = (sizey / 2) / cnt;
-    stepy = MAX(stepy, 2);
+    stepy = (sizey / 2.) / cnt;
+    stepy = MAX(stepy, 2.);
     pointn = 0;
-    np = ND_coord_i(n);
-    tp  = ED_tail_port(e).p;
+    P2PF(ND_coord_i(n), np);
+    P2PF(ED_tail_port(e).p, tp);
     tp.x += np.x;
     tp.y += np.y;
-    hp  = ED_head_port(e).p;
+    P2PF(ED_head_port(e).p, hp);
     hp.x += np.x;
     hp.y += np.y;
     if (tp.y >= hp.y) sgn = 1;
@@ -1124,11 +1120,11 @@ selfRight (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
         dx += stepx, tx += stepx, hx += stepx, dy += sgn*stepy;
         pointn = 0;
         points[pointn++] = tp;
-        points[pointn++] = pointof(tp.x + tx / 3, tp.y + dy);
-        points[pointn++] = pointof(np.x + dx, tp.y + dy);
-        points[pointn++] = pointof(np.x + dx, (tp.y+hp.y)/2);
-        points[pointn++] = pointof(np.x + dx, hp.y - dy);
-        points[pointn++] = pointof(hp.x + hx / 3, hp.y - dy);
+        points[pointn++] = pointfof(tp.x + tx / 3, tp.y + dy);
+        points[pointn++] = pointfof(np.x + dx, tp.y + dy);
+        points[pointn++] = pointfof(np.x + dx, (tp.y+hp.y)/2);
+        points[pointn++] = pointfof(np.x + dx, hp.y - dy);
+        points[pointn++] = pointfof(hp.x + hx / 3, hp.y - dy);
         points[pointn++] = hp;
         if (ED_label(e)) {
 	    if (GD_flip(e->tail->graph)) {
@@ -1156,35 +1152,33 @@ selfRight (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
 }
 
 static void
-selfLeft (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
+selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
           splineInfo* sinfo) 
 {
-    int hx, tx, sgn;
-    point tp, hp;
+    int i, sgn;
+    double hx, tx, stepy, dx, dy, width, height; 
+    pointf tp, hp, np;
     node_t *n;
     edge_t *e;
-    int i, stepy, dx, dy;
-    double width, height; 
-    point points[1000];
+    pointf points[1000];
     int pointn;
-    point np;
 
     e = edges[ind];
     n = e->tail;
 
-    stepy = (sizey / 2) / cnt;
-    stepy = MAX(stepy,2);
+    stepy = (sizey / 2.) / cnt;
+    stepy = MAX(stepy,2.);
     pointn = 0;
-    np = ND_coord_i(n);
-    tp = ED_tail_port(e).p;
+    P2PF(ND_coord_i(n), np);
+    P2PF(ED_tail_port(e).p, tp);
     tp.x += np.x;
     tp.y += np.y;
-    hp = ED_head_port(e).p;
+    P2PF(ED_head_port(e).p, hp);
     hp.x += np.x;
     hp.y += np.y;
     if (tp.y >= hp.y) sgn = 1;
     else sgn = -1;
-    dx = ND_lw_i(n), dy = 0;
+    dx = ND_lw_i(n), dy = 0.;
     tx = MIN(dx, 3*(tp.x + dx - np.x));
     hx = MIN(dx, 3*(hp.x + dx - np.x));
     for (i = 0; i < cnt; i++) {
@@ -1192,11 +1186,11 @@ selfLeft (edge_t* edges[], int ind, int cnt, int stepx, int sizey,
         dx += stepx, tx += stepx, hx += stepx, dy += sgn*stepy;
         pointn = 0;
         points[pointn++] = tp;
-        points[pointn++] = pointof(tp.x - tx / 3, tp.y + dy);
-        points[pointn++] = pointof(np.x - dx, tp.y + dy);
-        points[pointn++] = pointof(np.x - dx, (tp.y+hp.y)/2);
-        points[pointn++] = pointof(np.x - dx, hp.y - dy);
-        points[pointn++] = pointof(hp.x - hx / 3, hp.y - dy);
+        points[pointn++] = pointfof(tp.x - tx / 3, tp.y + dy);
+        points[pointn++] = pointfof(np.x - dx, tp.y + dy);
+        points[pointn++] = pointfof(np.x - dx, (tp.y+hp.y)/2);
+        points[pointn++] = pointfof(np.x - dx, hp.y - dy);
+        points[pointn++] = pointfof(hp.x - hx / 3, hp.y - dy);
         points[pointn++] = hp;
         if (ED_label(e)) {
     	if (GD_flip(e->tail->graph)) {
@@ -1259,19 +1253,10 @@ selfRightSpace (edge_t* e)
  * Perhaps for self-edges, the label should be centered.
  */
 void
-makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, int sizex,
-	     int sizey, splineInfo * sinfo)
+makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, double sizex,
+	     double sizey, splineInfo * sinfo)
 {
     edge_t *e;
-#ifdef OLD
-    node_t *n;
-    point *ps, np;
-    pathend_t tend, hend;
-    int i, j, maxx, stepy, dx, dy, tside, hside, dir, pn;
-    double width, height;
-    point points[1000];
-    int pointn;
-#endif
 
     e = edges[ind];
 
@@ -1308,51 +1293,6 @@ makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt, int sizex,
     }
 
     else assert(0);
-
-#ifdef OLD
-    tend.nb =
-	boxof(ND_coord_i(n).x - ND_lw_i(n),
-	      ND_coord_i(n).y - ND_ht_i(n) / 2,
-	      ND_coord_i(n).x + ND_rw_i(n),
-	      ND_coord_i(n).y + ND_ht_i(n) / 2);
-    hend.nb = tend.nb;
-    stepy = stepx / 2;
-    dx = 0, dy = 0;
-    for (i = 0; i < cnt; i++) {
-	e = edges[ind++];
-	dx += stepx, dy += stepy;
-
-	/* tail setup */
-	beginpath(P, e, SELFEDGE, &tend, sinfo->splineMerge(e->tail));
-
-	/* head setup */
-	endpath(P, e, SELFEDGE, &hend, sinfo->splineMerge(e->head));
-
-	chooseselfsides(&tend, &hend, &tside, &hside, &dir);
-	completeselfpath(P, &tend, &hend, tside, hside, dir,
-			 dx, dy, stepx, stepx);
-
-	ps = routesplines(P, &pn);
-	if (pn == 0)
-	    return;		/* will result in a lost edge */
-	if (ED_label(e)) {
-	    /* FIXME: labels only right for BOTTOM -> TOP edges */
-	    for (j = 0, maxx = ND_coord_i(n).x; j < P->nbox; j++)
-		if (P->boxes[j].UR.x > maxx)
-		    maxx = P->boxes[j].UR.x;
-	    if (GD_flip(e->tail->graph))
-		width = ED_label(e)->dimen.y;
-	    else
-		width = ED_label(e)->dimen.x;
-	    ED_label(e)->p.x = maxx + width / 2.0;
-	    ED_label(e)->p.y = ND_coord_i(n).y;
-	    ED_label(e)->set = TRUE;
-	    if (width > stepx)
-		dx += width - stepx;
-	}
-	clip_and_install(e, e->head, ps, pn, sinfo);
-    }
-#endif
 }
 
 /* vladimir */
@@ -1366,8 +1306,7 @@ void place_portlabel(edge_t * e, boolean head_p)
     splines *spl;
     bezier *bez;
     double dist, angle;
-    point p;
-    pointf c[4], pf;
+    pointf c[4], pe, pf;
     int i;
 
     if (ED_edge_type(e) == IGNORED)
@@ -1377,31 +1316,31 @@ void place_portlabel(edge_t * e, boolean head_p)
     if (!head_p) {
 	bez = &spl->list[0];
 	if (bez->sflag) {
-	    p = bez->sp;
-	    P2PF(bez->list[0], pf);
+	    pe = bez->sp;
+	    pf = bez->list[0];
 	} else {
-	    p = bez->list[0];
+	    pe = bez->list[0];
 	    for (i = 0; i < 4; i++)
-		P2PF(bez->list[i], c[i]);
+		c[i] = bez->list[i];
 	    pf = Bezier(c, 3, 0.1, NULL, NULL);
 	}
     } else {
 	bez = &spl->list[spl->size - 1];
 	if (bez->eflag) {
-	    p = bez->ep;
-	    P2PF(bez->list[bez->size - 1], pf);
+	    pe = bez->ep;
+	    pf = bez->list[bez->size - 1];
 	} else {
-	    p = bez->list[bez->size - 1];
+	    pe = bez->list[bez->size - 1];
 	    for (i = 0; i < 4; i++)
-		P2PF(bez->list[bez->size - 4 + i], c[i]);
+		c[i] = bez->list[bez->size - 4 + i];
 	    pf = Bezier(c, 3, 0.9, NULL, NULL);
 	}
     }
-    angle = atan2(pf.y - p.y, pf.x - p.x) +
+    angle = atan2(pf.y - pe.y, pf.x - pe.x) +
 	RADIANS(late_double(e, E_labelangle, PORT_LABEL_ANGLE, -180.0));
     dist = PORT_LABEL_DISTANCE * late_double(e, E_labeldistance, 1.0, 0.0);
-    l->pos.x = p.x + dist * cos(angle);
-    l->pos.y = p.y + dist * sin(angle);
+    l->pos.x = pe.x + dist * cos(angle);
+    l->pos.y = pe.y + dist * sin(angle);
     l->set = TRUE;
 }
 

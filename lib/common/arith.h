@@ -50,6 +50,8 @@ extern "C" {
 #endif
 #define ABS(a)		((a) >= 0 ? (a) : -(a))
 
+#define SGN(a)		(((a)<0)? -1 : 1)
+
 #ifndef INT_MAX
 #define	INT_MAX		((int)(~(unsigned)0 >> 1))
 #endif

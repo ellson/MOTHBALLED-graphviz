@@ -96,13 +96,15 @@ extern "C" {
 
     typedef struct path {	/* internal specification for an edge spline */
 	port start, end;
-	point *ulpp, *urpp, *llpp, *lrpp;	/* tangents of near splines */
+#ifdef P_TANGENTS
+/* FIXME not used by anything */
+	pointf *ulpp, *urpp, *llpp, *lrpp;	/* tangents of near splines */
+#endif
 	int nbox;		/* number of subdivisions */
 	box *boxes;		/* rectangular regions of subdivision */
 	void *data;
     } path;
 
-#ifdef SPLINESF
     typedef struct bezier {
 	pointf *list;
 	int size;
@@ -115,20 +117,6 @@ extern "C" {
 	int size;
 	boxf bb;
     } splines;
-#else
-    typedef struct bezier {
-	point *list;
-	int size;
-	int sflag, eflag;
-	point sp, ep;
-    } bezier;
-
-    typedef struct splines {
-	bezier *list;
-	int size;
-	boxf bb;
-    } splines;
-#endif
 
     typedef struct textlabel_t {
 	char *text, *fontname, *fontcolor;

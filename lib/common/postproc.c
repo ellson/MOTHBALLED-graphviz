@@ -111,21 +111,12 @@ static void map_edge(edge_t * e)
     }
     for (j = 0; j < ED_spl(e)->size; j++) {
 	bz = ED_spl(e)->list[j];
-#ifdef SPLINESF
 	for (k = 0; k < bz.size; k++)
 	    bz.list[k] = map_pointf(bz.list[k]);
 	if (bz.sflag)
 	    ED_spl(e)->list[j].sp = map_pointf(ED_spl(e)->list[j].sp);
 	if (bz.eflag)
 	    ED_spl(e)->list[j].ep = map_pointf(ED_spl(e)->list[j].ep);
-#else
-	for (k = 0; k < bz.size; k++)
-	    bz.list[k] = map_point(bz.list[k]);
-	if (bz.sflag)
-	    ED_spl(e)->list[j].sp = map_point(ED_spl(e)->list[j].sp);
-	if (bz.eflag)
-	    ED_spl(e)->list[j].ep = map_point(ED_spl(e)->list[j].ep);
-#endif
     }
     if (ED_label(e))
 	ED_label(e)->pos = map_pointf(ED_label(e)->pos);

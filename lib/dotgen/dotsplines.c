@@ -108,7 +108,7 @@ static void recover_slack(Agedge_t *, path *);
 static void resize_vn(Agnode_t *, int, int, int);
 static void setflags(Agedge_t *, int, int, int);
 static int straight_len(Agnode_t *);
-static Agedge_t *straight_path(Agedge_t *, int, point *, int *);
+static Agedge_t *straight_path(Agedge_t *, int, pointf *, int *);
 static Agedge_t *top_bound(Agedge_t *, int);
 
 #define GROWEDGES (edges = ALLOC (n_edges + CHUNK, edges, edge_t*))
@@ -162,13 +162,13 @@ int portcmp(port p0, port p1)
  */
 static void swap_bezier(bezier * old, bezier * new)
 {
-    point *list;
-    point *lp;
-    point *olp;
+    pointf *list;
+    pointf *lp;
+    pointf *olp;
     int i, sz;
 
     sz = old->size;
-    list = N_GNEW(sz, point);
+    list = N_GNEW(sz, pointf);
     lp = list;
     olp = old->list + (sz - 1);
     for (i = 0; i < sz; i++) {	/* reverse list of points */
@@ -782,18 +782,18 @@ cloneEdge (graph_t* g, node_t* tn, node_t* hn, edge_t* orig)
     return e;
 }
 
-/* transform:
+/* transformf:
  * Rotate, if necessary, then translate points.
  */
-static point
-transform (point p, point del, int flip)
+static pointf
+transformf (pointf p, pointf del, int flip)
 {
     if (flip) {
-	int i = p.x;
+	double i = p.x;
 	p.x = p.y;
 	p.y = -i;
     }
-    return add_points(p, del);
+    return add_pointfs(p, del);
 }
 
 /* makeSimpleFlat:
@@ -802,29 +802,39 @@ static void
 makeSimpleFlat (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, int et)
 {
     edge_t* e = edges[ind];
-    point points[10];
-    int i, pointn, stepy = (cnt > 1) ? ND_ht_i(tn) / (cnt - 1) : 0;
-    point tp = add_points(ND_coord_i(tn), ED_tail_port(e).p);
-    point hp = add_points(ND_coord_i(hn), ED_head_port(e).p);
-    int dy = tp.y - ((cnt > 1) ? ND_ht_i(tn) / 2 : 0);
+    pointf points[10], np, ep, tp, hp;
+    int i, pointn;
+    double stepy, dy;
+
+    P2PF(ND_coord_i(tn), np);
+    P2PF(ED_tail_port(e).p, ep);
+    tp = add_pointfs(np, ep);
+
+    P2PF(ND_coord_i(hn), np);
+    P2PF(ED_head_port(e).p, ep);
+    hp = add_pointfs(np, ep);
+
+    stepy = (cnt > 1) ? ND_ht_i(tn) / (double)(cnt - 1) : 0.;
+    dy = tp.y - ((cnt > 1) ? ND_ht_i(tn) / 2. : 0.);
+
     for (i = 0; i < cnt; i++) {
 	e = edges[ind + i];
 	pointn = 0;
 	if ((et == ET_SPLINE) || (et == ET_LINE)) {
 	    points[pointn++] = tp;
-	    points[pointn++] = pointof((2 * tp.x + hp.x) / 3, dy);
-	    points[pointn++] = pointof((2 * hp.x + tp.x) / 3, dy);
+	    points[pointn++] = pointfof((2 * tp.x + hp.x) / 3, dy);
+	    points[pointn++] = pointfof((2 * hp.x + tp.x) / 3, dy);
 	    points[pointn++] = hp;
 	}
 	else {   /* ET_PLINE */
 	    points[pointn++] = tp;
 	    points[pointn++] = tp;
-	    points[pointn++] = pointof((2 * tp.x + hp.x) / 3, dy);
-	    points[pointn++] = pointof((2 * tp.x + hp.x) / 3, dy);
-	    points[pointn++] = pointof((2 * tp.x + hp.x) / 3, dy);
-	    points[pointn++] = pointof((2 * hp.x + tp.x) / 3, dy);
-	    points[pointn++] = pointof((2 * hp.x + tp.x) / 3, dy);
-	    points[pointn++] = pointof((2 * hp.x + tp.x) / 3, dy);
+	    points[pointn++] = pointfof((2 * tp.x + hp.x) / 3, dy);
+	    points[pointn++] = pointfof((2 * tp.x + hp.x) / 3, dy);
+	    points[pointn++] = pointfof((2 * tp.x + hp.x) / 3, dy);
+	    points[pointn++] = pointfof((2 * hp.x + tp.x) / 3, dy);
+	    points[pointn++] = pointfof((2 * hp.x + tp.x) / 3, dy);
+	    points[pointn++] = pointfof((2 * hp.x + tp.x) / 3, dy);
 	    points[pointn++] = hp;
 	    points[pointn++] = hp;
 	}
@@ -853,7 +863,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
     node_t *auxt, *auxh;
     edge_t* auxe;
     int     i, j, midx, midy, leftx, rightx;
-    point   del;
+    pointf   del;
     edge_t* hvye = NULL;
 
     g = e0->tail->graph;
@@ -945,39 +955,31 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
 	bz = new_spline(e, auxbz->size);
 	if (GD_flip(g)) {
 	    bz->sflag = auxbz->eflag;
-	    bz->sp = transform(auxbz->ep, del, 1);
+	    bz->sp = transformf(auxbz->ep, del, 1);
 	    bz->eflag = auxbz->sflag;
-	    bz->ep = transform(auxbz->sp, del, 1);
+	    bz->ep = transformf(auxbz->sp, del, 1);
 	}
 	else {
 	    bz->sflag = auxbz->sflag;
-	    bz->sp = transform(auxbz->sp, del, 0);
+	    bz->sp = transformf(auxbz->sp, del, 0);
 	    bz->eflag = auxbz->eflag;
-	    bz->ep = transform(auxbz->ep, del, 0);
+	    bz->ep = transformf(auxbz->ep, del, 0);
 	}
 	for (j = 0; j <  auxbz->size; ) {
-	    point pt;
 	    pointf cp[4];
-	    pt = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
-	    P2PF(pt,cp[0]);
+	    cp[0] = bz->list[j] = transformf(auxbz->list[j], del, GD_flip(g));
 	    j++;
 	    if ( j >= auxbz->size ) 
 		break;
-	    pt = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
-	    P2PF(pt,cp[1]);
+	    cp[1] = bz->list[j] = transformf(auxbz->list[j], del, GD_flip(g));
 	    j++;
-	    pt = bz->list[j] = transform(auxbz->list[j], del, GD_flip(g));
-	    P2PF(pt,cp[2]);
+	    cp[2] = bz->list[j] = transformf(auxbz->list[j], del, GD_flip(g));
 	    j++;
-	    pt = transform(auxbz->list[j], del, GD_flip(g));
-	    P2PF(pt,cp[3]);
+	    cp[3] = transformf(auxbz->list[j], del, GD_flip(g));
 	    update_bb_bz(&GD_bb(g), cp);
         }
 	if (ED_label(e)) {
-	    point pt;
-	    PF2P(ED_label(auxe)->pos, pt);
-	    pt = transform(pt, del, GD_flip(g));
-	    P2PF(pt, ED_label(e)->pos);
+	    ED_label(e)->pos = transformf(ED_label(auxe)->pos, del, GD_flip(g));
 	    updateBB(g, ED_label(e));
 	}
     }
@@ -1032,12 +1034,12 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e, int et)
 {
     graph_t *g;
     node_t *tn, *hn, *ln;
-    point *ps;
+    pointf *ps;
     pathend_t tend, hend;
-    box lb;
+    boxf lb;
     int boxn, i, pn, ydelta;
     edge_t *f;
-    point points[7];
+    pointf points[7];
 
     g = e->tail->graph;
     tn = e->tail;
@@ -1048,10 +1050,17 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e, int et)
     P2PF(ND_coord_i(ln), ED_label(e)->pos);
 
     if (et == ET_LINE) {
-	point startp, endp, lp;
-	startp = add_points(ND_coord_i(tn), ED_tail_port(e).p);
-	endp = add_points(ND_coord_i(hn), ED_head_port(e).p);
-        PF2P(ED_label(e)->pos, lp);
+	pointf np, ep, startp, endp, lp;
+
+        P2PF(ND_coord_i(tn), np);
+	P2PF(ED_tail_port(e).p, ep);
+	startp = add_pointfs(np, ep);
+
+        P2PF(ND_coord_i(hn), np);
+	P2PF(ED_head_port(e).p, ep);
+	endp = add_pointfs(np, ep);
+
+        lp = ED_label(e)->pos;
 	lp.y -= (ED_label(e)->dimen.y)/2.0;
 	points[1] = points[0] = startp;
 	points[2] = points[3] = points[4] = lp;
@@ -1065,8 +1074,8 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e, int et)
 	lb.UR.y = ND_coord_i(ln).y + ND_ht_i(ln)/2;
 	ydelta = ND_coord_i(ln).y - GD_rank(g)[ND_rank(tn)].ht1 -
 		ND_coord_i(tn).y + GD_rank(g)[ND_rank(tn)].ht2;
-	ydelta /= 6;
-	lb.LL.y = lb.UR.y - MAX(5,ydelta); 
+	ydelta /= 6.;
+	lb.LL.y = lb.UR.y - MAX(5.,ydelta); 
 
 	boxn = 0;
 	makeFlatEnd (sp, P, tn, e, &tend, TRUE);
@@ -1109,7 +1118,7 @@ make_flat_bottom_edges(spline_info_t* sp, path * P, edge_t ** edges, int
     int j, i, stepx, stepy, vspace, r;
     rank_t* nextr;
     int pn;
-    point *ps;
+    pointf *ps;
     pathend_t tend, hend;
     graph_t* g;
 
@@ -1183,7 +1192,7 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
     edge_t fwdedge, *e;
     int j, i, stepx, stepy, vspace, r;
     int tside, hside, pn;
-    point *ps;
+    pointf *ps;
     pathend_t tend, hend;
     graph_t* g;
 
@@ -1276,7 +1285,7 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
  * Return true if p3 is to left of ray p1->p2
  */
 static int
-leftOf (point p1, point p2, point p3)
+leftOf (pointf p1, pointf p2, pointf p3)
 {
     int d;
 
@@ -1301,13 +1310,13 @@ leftOf (point p1, point p2, point p3)
  * multiple edges better.
  */
 static int 
-makeLineEdge(edge_t* fe, point* points, node_t** hp)
+makeLineEdge(edge_t* fe, pointf* points, node_t** hp)
 {
     int delr, pn;
     node_t* hn;
     node_t* tn;
     edge_t* e = fe;
-    point startp, endp, lp;
+    pointf np, ep, startp, endp, lp;
     pointf dimen;
     double width, height;
 
@@ -1320,13 +1329,21 @@ makeLineEdge(edge_t* fe, point* points, node_t** hp)
 	return 0;
     if (fe->tail == e->tail) {
 	*hp = hn;
-	startp = add_points(ND_coord_i(tn), ED_tail_port(e).p);
-	endp = add_points(ND_coord_i(hn), ED_head_port(e).p);
+	P2PF(ND_coord_i(tn), np);
+	P2PF(ED_tail_port(e).p, ep);
+	startp = add_pointfs(np, ep);
+	P2PF(ND_coord_i(hn), np);
+	P2PF(ED_head_port(e).p, ep);
+	endp = add_pointfs(np, ep);
     }
     else {
  	*hp = tn; 
-	startp = add_points(ND_coord_i(hn), ED_head_port(e).p);
-	endp = add_points(ND_coord_i(tn), ED_tail_port(e).p);
+	P2PF(ND_coord_i(hn), np);
+	P2PF(ED_head_port(e).p, ep);
+	startp = add_pointfs(np, ep);
+	P2PF(ND_coord_i(tn), np);
+	P2PF(ED_tail_port(e).p, ep);
+	endp = add_pointfs(np, ep);
     }
 
     if (ED_label(e)) {
@@ -1340,7 +1357,7 @@ makeLineEdge(edge_t* fe, point* points, node_t** hp)
 	    height = dimen.y;
 	}
 
-	PF2P(ED_label(e)->pos, lp);
+	lp = ED_label(e)->pos, lp;
 	if (leftOf (endp,startp,lp)) {
 	    lp.x += width/2.0;
 	    lp.y -= height/2.0;
@@ -1372,11 +1389,11 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
     graph_t *g;
     node_t *tn, *hn;
     edge_t fwdedgea, fwdedgeb, fwdedge, *e, *fe, *le, *segfirst;
-    point *ps;
+    pointf *ps;
     pathend_t tend, hend;
     box b;
     int boxn, sl, si, smode, i, j, dx, pn, hackflag, longedge;
-    point points[1000], points2[1000];
+    pointf pointfs[1000], pointfs2[1000];
     int pointn;
 
     sl = 0;
@@ -1413,7 +1430,7 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 
     /* compute the spline points for the edge */
 
-    if ((et == ET_LINE) && (pointn = makeLineEdge (fe, points, &hn))) {
+    if ((et == ET_LINE) && (pointn = makeLineEdge (fe, pointfs, &hn))) {
     }
     else {
 	int splines = et == ET_SPLINE;
@@ -1468,9 +1485,10 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	    }
 	    if (pn == 0)
 	        return;
-	    for (i = 0; i < pn; i++)
-	        points[pointn++] = ps[i];
-	    e = straight_path(ND_out(hn).list[0], sl, points, &pointn);
+	    for (i = 0; i < pn; i++) {
+		pointfs[pointn++] = ps[i];
+	    }
+	    e = straight_path(ND_out(hn).list[0], sl, pointfs, &pointn);
 	    recover_slack(segfirst, P);
 	    segfirst = e;
 	    tn = e->tail;
@@ -1510,8 +1528,9 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
         }
 	if (pn == 0)
 	    return;
-	for (i = 0; i < pn; i++)
-	    points[pointn++] = ps[i];
+	for (i = 0; i < pn; i++) {
+	    pointfs[pointn++] = ps[i];
+	}
 	recover_slack(segfirst, P);
 	hn = hackflag ? fwdedgeb.head : e->head;
     }
@@ -1519,15 +1538,15 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
     /* make copies of the spline points, one per multi-edge */
 
     if (cnt == 1) {
-	clip_and_install(fe, hn, points, pointn, &sinfo);
+	clip_and_install(fe, hn, pointfs, pointn, &sinfo);
 	return;
     }
     dx = sp->Multisep * (cnt - 1) / 2;
     for (i = 1; i < pointn - 1; i++)
-	points[i].x -= dx;
+	pointfs[i].x -= dx;
     for (i = 0; i < pointn; i++)
-	points2[i] = points[i];
-    clip_and_install(fe, hn, points2, pointn, &sinfo);
+	pointfs2[i] = pointfs[i];
+    clip_and_install(fe, hn, pointfs2, pointn, &sinfo);
     for (j = 1; j < cnt; j++) {
 	e = edges[ind + j];
 	if (ED_tree_index(e) & BWDEDGE) {
@@ -1535,10 +1554,10 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
 	    e = &fwdedge;
 	}
 	for (i = 1; i < pointn - 1; i++)
-	    points[i].x += sp->Multisep;
+	    pointfs[i].x += sp->Multisep;
 	for (i = 0; i < pointn; i++)
-	    points2[i] = points[i];
-	clip_and_install(e, e->head, points2, pointn, &sinfo);
+	    pointfs2[i] = pointfs[i];
+	clip_and_install(e, e->head, pointfs2, pointn, &sinfo);
     }
 }
 
@@ -1743,7 +1762,7 @@ completeregularpath(path * P, edge_t * first, edge_t * last,
     edge_t *uleft, *uright, *lleft, *lright;
     int i, fb, lb;
     splines *spl;
-    point *pp;
+    pointf *pp;
     int pn;
 
     fb = lb = -1;
@@ -1752,12 +1771,16 @@ completeregularpath(path * P, edge_t * first, edge_t * last,
     if (uleft) {
 	spl = getsplinepoints(uleft);
 	pp = spl->list[0].list, pn = spl->list[0].size;
+#ifdef P_TANGENTS
 	P->ulpp = &pp[0];
+#endif
     }
     if (uright) {
 	spl = getsplinepoints(uright);
 	pp = spl->list[0].list, pn = spl->list[0].size;
+#ifdef P_TANGENTS
 	P->urpp = &pp[0];
+#endif
     }
     lleft = lright = NULL;
     lleft = bot_bound(last, -1), lright = bot_bound(last, 1);
@@ -1765,13 +1788,17 @@ completeregularpath(path * P, edge_t * first, edge_t * last,
 	spl = getsplinepoints(lleft);
 	pp = spl->list[spl->size - 1].list, pn =
 	    spl->list[spl->size - 1].size;
+#ifdef P_TANGENTS
 	P->llpp = &pp[pn - 1];
+#endif
     }
     if (lright) {
 	spl = getsplinepoints(lright);
 	pp = spl->list[spl->size - 1].list, pn =
 	    spl->list[spl->size - 1].size;
+#ifdef P_TANGENTS
 	P->lrpp = &pp[pn - 1];
+#endif
     }
     for (i = 0; i < tendp->boxn; i++)
 	add_box(P, tendp->boxes[i]);
@@ -2076,7 +2103,7 @@ static int straight_len(node_t * n)
     return cnt;
 }
 
-static edge_t *straight_path(edge_t * e, int cnt, point * plist, int *np)
+static edge_t *straight_path(edge_t * e, int cnt, pointf * plist, int *np)
 {
     int n = *np;
     edge_t *f = e;
@@ -2085,7 +2112,8 @@ static edge_t *straight_path(edge_t * e, int cnt, point * plist, int *np)
 	f = ND_out(f->head).list[0];
     plist[(*np)++] = plist[n - 1];
     plist[(*np)++] = plist[n - 1];
-    plist[(*np)] = ND_coord_i(f->tail);	/* will be overwritten by next spline */
+    P2PF(ND_coord_i(f->tail), plist[(*np)]); /* will be overwritten by next spline */
+
     return f;
 }
 

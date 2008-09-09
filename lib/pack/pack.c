@@ -30,7 +30,6 @@
 #define MOVEPT(p) ((p).x += dx, (p).y += dy)
 #define GRID(x,s) (((x) + ((s)-1)) / (s))
 #define CELL(p,s) ((p).x = (p).x/(s), (p).y = ((p).y/(s)))
-#define SGN(a)    (((a)<0)? -1 : 1)
 
 typedef struct {
     Agraph_t *graph;		/* related graph */
@@ -101,12 +100,12 @@ static int cmpf(const void *X, const void *Y)
  * Bresenham's algorithm, from Graphics Gems I, pp. 99-100.
  */
 /* static  */
-void fillLine(point p, point q, PointSet * ps)
+void fillLine(pointf p, pointf q, PointSet * ps)
 {
-    int x1 = p.x;
-    int y1 = p.y;
-    int x2 = q.x;
-    int y2 = q.y;
+    int x1 = ROUND(p.x);
+    int y1 = ROUND(p.y);
+    int x2 = ROUND(q.x);
+    int y2 = ROUND(q.y);
     int d, x, y, ax, ay, sx, sy, dx, dy;
 
     dx = x2 - x1;
@@ -119,34 +118,34 @@ void fillLine(point p, point q, PointSet * ps)
 /* fprintf (stderr, "fillLine %d %d - %d %d\n", x1,y1,x2,y2); */
     x = x1;
     y = y1;
-    if (ax > ay) {		/* x dominant */
-	d = ay - (ax >> 1);
-	for (;;) {
+    if (ax > ay) {              /* x dominant */
+        d = ay - (ax >> 1);
+        for (;;) {
 /* fprintf (stderr, "  addPS %d %d\n", x,y); */
-	    addPS(ps, x, y);
-	    if (x == x2)
-		return;
-	    if (d >= 0) {
-		y += sy;
-		d -= ax;
-	    }
-	    x += sx;
-	    d += ay;
-	}
-    } else {			/* y dominant */
-	d = ax - (ay >> 1);
-	for (;;) {
+            addPS(ps, x, y);
+            if (x == x2)
+                return;
+            if (d >= 0) {
+                y += sy;
+                d -= ax;
+            }
+            x += sx;
+            d += ay;
+        }
+    } else {                    /* y dominant */
+        d = ax - (ay >> 1);
+        for (;;) {
 /* fprintf (stderr, "  addPS %d %d\n", x,y); */
-	    addPS(ps, x, y);
-	    if (y == y2)
-		return;
-	    if (d >= 0) {
-		x += sx;
-		d -= ay;
-	    }
-	    y += sy;
-	    d += ax;
-	}
+            addPS(ps, x, y);
+            if (y == y2)
+                return;
+            if (d >= 0) {
+                x += sx;
+                d -= ay;
+            }
+            y += sy;
+            d += ax;
+        }
     }
 }
 
@@ -155,18 +154,20 @@ void fillLine(point p, point q, PointSet * ps)
  * beginning and the end point at the end.
  */
 static void
-fillEdge(Agedge_t * e, point pt, PointSet * ps, int dx, int dy,
+fillEdge(Agedge_t * e, point p, PointSet * ps, int dx, int dy,
 	 int ssize, int doS)
 {
     int j, k;
     bezier bz;
-    point hpt;
+    pointf pt, hpt;
     Agnode_t *h;
+
+    P2PF(p, pt);
 
     /* If doS is false or the edge has not splines, use line segment */
     if (!doS || !ED_spl(e)) {
 	h = e->head;
-	hpt = coord(h);
+        P2PF(coord(h), hpt);
 	MOVEPT(hpt);
 	CELL(hpt, ssize);
 	fillLine(pt, hpt, ps);

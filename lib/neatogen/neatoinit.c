@@ -271,12 +271,11 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 {
     char *pos;
     int i, n, npts, nc;
-    point *ps = 0;
-    point *pp;
+    pointf *ps = 0;
+    pointf *pp;
     double x, y;
     int sflag = 0, eflag = 0;
-    point sp = { 0, 0 }, ep = {
-    0, 0};
+    pointf sp = { 0, 0 }, ep = { 0, 0};
     bezier *newspl;
     int more = 1;
     int stype, etype;
@@ -292,8 +291,8 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	if (i == 2) {
 	    sflag = 1;
 	    pos = pos + nc;
-	    sp.x = (int) (x);
-	    sp.y = (int) (y);
+	    sp.x = x;
+	    sp.y = y;
 	}
 
 	/* check for e head */
@@ -301,8 +300,8 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	if (i == 2) {
 	    eflag = 1;
 	    pos = pos + nc;
-	    ep.x = (int) (x);
-	    ep.y = (int) (y);
+	    ep.x = x;
+	    ep.y = y;
 	}
 
 	npts = numFields((unsigned char *) pos);	/* count potential points */
@@ -311,7 +310,7 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 	    gv_free_splines(e);
 	    return 0;
 	}
-	ps = ALLOC(n, 0, point);
+	ps = ALLOC(n, 0, pointf);
 	pp = ps;
 	while (n) {
 	    i = sscanf(pos, "%lf,%lf%n", &x, &y, &nc);
@@ -321,8 +320,8 @@ static int user_spline(attrsym_t * E_pos, edge_t * e)
 		return 0;
 	    }
 	    pos = pos + nc;
-	    pp->x = (int) (x);
-	    pp->y = (int) (y);
+	    pp->x = x;
+	    pp->y = y;
 	    pp++;
 	    n--;
 	}
@@ -495,7 +494,7 @@ nop_init_graphs(Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
 static void translateE(edge_t * e, point offset)
 {
     int i, j;
-    point *pt;
+    pointf *pt;
     bezier *bez;
 
     bez = ED_spl(e)->list;

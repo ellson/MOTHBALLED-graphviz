@@ -785,28 +785,28 @@ static void
 finishEdge (edge_t* e, Ppoly_t spl, int flip, pointf p, pointf q)
 {
     int j;
-    point *ispline = N_GNEW(spl.pn, point);
+    pointf *spline = N_GNEW(spl.pn, pointf);
     point p1, q1;
 
 
     if (flip) {
 	for (j = 0; j < spl.pn; j++) {
-	    PF2P (spl.ps[j], ispline[spl.pn - 1 - j]);
+	    spline[spl.pn - 1 - j] = spl.ps[j];
 	}
 	PF2P(q, p1);
 	PF2P(p, q1);
     }
     else {
 	for (j = 0; j < spl.pn; j++) {
-	    PF2P (spl.ps[j], ispline[j]);
+	    spline[j] = spl.ps[j];
 	}
 	PF2P(p, p1);
 	PF2P(q, q1);
     }
     if (Verbose > 1)
 	fprintf(stderr, "spline %s %s\n", e->tail->name, e->head->name);
-    clip_and_install(e, e->head, ispline, spl.pn, &sinfo);
-    free(ispline);
+    clip_and_install(e, e->head, spline, spl.pn, &sinfo);
+    free(spline);
 
     addEdgeLabels(e, p1, q1);
 }

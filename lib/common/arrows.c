@@ -231,7 +231,7 @@ static boolean inside(inside_t * inside_context, pointf p)
     return DIST2(p, inside_context->a.p[0]) <= inside_context->a.r[0];
 }
 
-int arrowEndClip(edge_t* e, point * ps, int startp,
+int arrowEndClip(edge_t* e, pointf * ps, int startp,
 		 int endp, bezier * spl, int eflag)
 {
     inside_t inside_context;
@@ -260,7 +260,7 @@ int arrowEndClip(edge_t* e, point * ps, int startp,
     return endp;
 }
 
-int arrowStartClip(edge_t* e, point * ps, int startp,
+int arrowStartClip(edge_t* e, pointf * ps, int startp,
 		   int endp, bezier * spl, int sflag)
 {
     inside_t inside_context;

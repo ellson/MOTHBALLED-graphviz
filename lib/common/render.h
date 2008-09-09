@@ -69,8 +69,8 @@ extern "C" {
     extern void arrow_gen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u,
 			  double arrowsize, double penwidth, int flag);
     extern double arrow_length(edge_t * e, int flag);
-    extern int arrowEndClip(edge_t*, point*, int, int , bezier*, int eflag);
-    extern int arrowStartClip(edge_t*, point* ps, int, int, bezier*, int sflag);
+    extern int arrowEndClip(edge_t*, pointf*, int, int , bezier*, int eflag);
+    extern int arrowStartClip(edge_t*, pointf* ps, int, int, bezier*, int sflag);
     extern void attach_attrs(Agraph_t *);
     extern void beginpath(path *, Agedge_t *, int, pathend_t *, boolean);
     extern void bezier_clip(inside_t * inside_context,
@@ -78,8 +78,8 @@ extern "C" {
 						pointf p), pointf * sp,
 			    boolean left_inside);
     extern shape_desc *bind_shape(char *name, node_t *);
-    extern void clip_and_install(edge_t *, node_t *, point *, int,
-				 splineInfo *);
+    extern void clip_and_install(edge_t * fe, node_t * hn,
+	pointf * ps, int pn, splineInfo * info);
     extern char* charsetToStr (int c);
     extern point coord(node_t * n);
     extern void do_graph_label(graph_t * sg);
@@ -121,8 +121,8 @@ extern "C" {
     extern char *strdup_and_subst_obj(char *str, void *obj);
     extern char *xml_string(char *s);
     extern char *xml_url_string(char *s);
-    extern void makeSelfEdge(path *, edge_t **, int, int, int, int,
-			     splineInfo *);
+    extern void makeSelfEdge(path * P, edge_t * edges[], int ind, int cnt,
+	double sizex, double sizey, splineInfo * sinfo);
     extern textlabel_t *make_label(void *obj, char *str, int kind, double fontsize, char *fontname, char *fontcolor);
     extern bezier *new_spline(edge_t * e, int sz);
     extern char **parse_style(char *s);
@@ -136,13 +136,13 @@ extern "C" {
     extern void resolvePorts (edge_t* e);
     extern void round_corners(GVJ_t*, char*, char*, pointf*, int, int);
     extern void routesplinesinit(void);
-    extern point *routesplines(path *, int *);
+    extern pointf *routesplines(path *, int *);
     extern void routesplinesterm(void);
-    extern point *routepolylines(path* pp, int* npoints);
+    extern pointf *routepolylines(path* pp, int* npoints);
     extern int selfRightSpace (edge_t* e);
     extern void setup_graph(GVC_t * gvc, graph_t * g);
     extern shape_kind shapeOf(node_t *);
-    extern void shape_clip(node_t * n, point curve[4]);
+    extern void shape_clip(node_t * n, pointf curve[4]);
     extern void make_simple_label (graph_t* g, textlabel_t* rv);
     extern void start_timer(void);
     extern pointf textsize(graph_t *g, textpara_t * para, char *fontname, double fontsize);

@@ -23,24 +23,24 @@
 #define P2PF(p, pf) (pf.x = p.x, pf.y = p.y)
 #define PF2P(pf, p) (p.x = ROUND (pf.x), p.y = ROUND (pf.y))
 
-/* midPt:
+/* midPtf:
  * Return midpoint between two given points.
  */
-static point midPt(point p, point q)
+static pointf midPtf(pointf p, pointf q)
 {
-    point v;
+    pointf v;
 
-    v.x = (p.x + q.x) / 2;
-    v.y = (p.y + q.y) / 2;
+    v.x = (p.x + q.x) / 2.;
+    v.y = (p.y + q.y) / 2.;
     return v;
 }
 
-/* p2s:
- * Convert a point to its string representation.
+/* pf2s:
+ * Convert a pointf to its string representation.
  */
-static char *p2s(point p, char *buf)
+static char *pf2s(pointf p, char *buf)
 {
-    sprintf(buf, "(%d,%d)", p.x, p.y);
+    sprintf(buf, "(%.3g,%.3g)", p.x, p.y);
     return buf;
 }
 
@@ -48,18 +48,18 @@ static char *p2s(point p, char *buf)
  * the box bp. Assume cp is outside the box, and pp is
  * on or in the box. 
  */
-static point boxIntersect(point pp, point cp, boxf * bp)
+static pointf boxIntersectf(pointf pp, pointf cp, boxf * bp)
 {
-    point ipp;
+    pointf ipp;
     double ppx = pp.x;
     double ppy = pp.y;
     double cpx = cp.x;
     double cpy = cp.y;
-    point ll;
-    point ur;
+    pointf ll;
+    pointf ur;
 
-    PF2P(bp->LL, ll);
-    PF2P(bp->UR, ur);
+    ll = bp->LL;
+    ur = bp->UR;
     if (cp.x < ll.x) {
 	ipp.x = ll.x;
 	ipp.y = pp.y + (int) ((ipp.x - ppx) * (ppy - cpy) / (ppx - cpx));
@@ -90,9 +90,9 @@ static point boxIntersect(point pp, point cp, boxf * bp)
 	char ppbuf[100], cpbuf[100], llbuf[100], urbuf[100];
 
 	agerr(AGERR,
-	      "segment [%s,%s] does not intersect box ll=%s,ur=%s\n",
-	      p2s(pp, ppbuf), p2s(cp, cpbuf), p2s(ll, llbuf), p2s(ur,
-								  urbuf));
+		"segment [%s,%s] does not intersect box ll=%s,ur=%s\n",
+		pf2s(pp, ppbuf), pf2s(cp, cpbuf),
+		pf2s(ll, llbuf), pf2s(ur, urbuf));
 	assert(0);
     }
     return ipp;
@@ -105,6 +105,15 @@ static int inBox(point p, boxf * bb)
 {
     return (((double)p.x >= bb->LL.x) && ((double)p.x <= bb->UR.x) &&
 	    ((double)p.y >= bb->LL.y) && ((double)p.y <= bb->UR.y));
+}
+
+/* inBoxf:
+ * Returns true if p is on or in box bb
+ */
+static int inBoxf(pointf p, boxf * bb)
+{
+    return ((p.x >= bb->LL.x) && (p.x <= bb->UR.x) &&
+	    (p.y >= bb->LL.y) && (p.y <= bb->UR.y));
 }
 
 /* getCluster:
@@ -130,7 +139,6 @@ static graph_t *getCluster(graph_t * g, char *cluster_name)
  * as when the last point is on the line. It certainly doesn't work
  * for use; see bug 145. We need to use ZSGN instead.
  */
-#define SGN(a,b)          (((a)<(b)) ? -1 : 1)
 #define ZSGN(a,b)         (((a)<(b)) ? -1 : (a)>(b) ? 1 : 0)
 
 /* countVertCross:
@@ -257,25 +265,23 @@ findHorizontal(pointf * pts, double tmin, double tmax,
 			  xmax);
 }
 
-/* splineIntersect:
+/* splineIntersectf:
  * Given four spline control points and a box,
  * find the shortest portion of the spline from
- * ipts[0] to the intersection with the box, if any.
- * If an intersection is found, the four points are stored in ipts[0..3]
- * with ipts[3] being on the box, and 1 is returned. Otherwise, ipts
+ * pts[0] to the intersection with the box, if any.
+ * If an intersection is found, the four points are stored in pts[0..3]
+ * with pts[3] being on the box, and 1 is returned. Otherwise, pts
  * is left unchanged and 0 is returned.
  */
-static int splineIntersect(point * ipts, boxf * bb)
+static int splineIntersectf(pointf * pts, boxf * bb)
 {
     double tmin = 2.0;
     double t;
-    pointf pts[4];
     pointf origpts[4];
     int i;
 
     for (i = 0; i < 4; i++) {
-	P2PF(ipts[i], origpts[i]);
-	pts[i] = origpts[i];
+	origpts[i] = pts[i];
     }
 
     t = findVertical(pts, 0.0, 1.0, bb->LL.x, bb->LL.y, bb->UR.y);
@@ -303,9 +309,6 @@ static int splineIntersect(point * ipts, boxf * bb)
     }
 
     if (tmin < 2.0) {
-	for (i = 0; i < 4; i++) {
-	    PF2P(pts[i], ipts[i]);
-	}
 	return 1;
     } else
 	return 0;
@@ -330,8 +333,8 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     boxf *bb;
     int i, j;
     int size;
-    point pts[4];
-    point p;
+    pointf pts[4];
+    pointf p;
     int fixed;
 
     /* find head and tail target clusters, if defined */
@@ -379,33 +382,32 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 	     * where the segment between the first control point and arrow head 
 	     * crosses box.
 	     */
-	    if (inBox(bez->list[0], bb)) {
+	    if (inBoxf(bez->list[0], bb)) {
 		if (inBox(ND_coord_i(tail), bb)) {
 		    agerr(AGWARN,
 			  "%s -> %s: tail is inside head cluster %s\n",
 			  e->tail->name, e->head->name, agget(e, "lhead"));
 		} else {
 		    assert(bez->sflag);	/* must be arrowhead on tail */
-		    p = boxIntersect(bez->list[0], bez->sp, bb);
+		    p = boxIntersectf(bez->list[0], bez->sp, bb);
 		    bez->list[3] = p;
-		    bez->list[1] = midPt(p, bez->sp);
-		    bez->list[0] = midPt(bez->list[1], bez->sp);
-		    bez->list[2] = midPt(bez->list[1], p);
+		    bez->list[1] = midPtf(p, bez->sp);
+		    bez->list[0] = midPtf(bez->list[1], bez->sp);
+		    bez->list[2] = midPtf(bez->list[1], p);
 		    if (bez->eflag)
-			endi =
-			    arrowEndClip(e, bez->list,
+			endi = arrowEndClip(e, bez->list,
 					 starti, 0, nbez, bez->eflag);
 		    endi += 3;
 		    fixed = 1;
 		}
 	    } else {
 		for (endi = 0; endi < size - 1; endi += 3) {
-		    if (splineIntersect(&(bez->list[endi]), bb))
+		    if (splineIntersectf(&(bez->list[endi]), bb))
 			break;
 		}
 		if (endi == size - 1) {	/* no intersection */
 		    assert(bez->eflag);
-		    nbez->ep = boxIntersect(bez->ep, bez->list[endi], bb);
+		    nbez->ep = boxIntersectf(bez->ep, bez->list[endi], bb);
 		} else {
 		    if (bez->eflag)
 			endi =
@@ -440,33 +442,29 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 	     * where the segment between the last control point and the 
 	     * arrow head crosses box.
 	     */
-	    if (inBox(bez->list[endi], bb)) {
+	    if (inBoxf(bez->list[endi], bb)) {
 		if (inBox(ND_coord_i(head), bb)) {
 		    agerr(AGWARN,
 			  "%s -> %s: head is inside tail cluster %s\n",
 			  e->tail->name, e->head->name, agget(e, "ltail"));
 		} else {
 		    assert(bez->eflag);	/* must be arrowhead on head */
-		    p = boxIntersect(bez->list[endi], nbez->ep, bb);
+		    p = boxIntersectf(bez->list[endi], nbez->ep, bb);
 		    starti = endi - 3;
 		    bez->list[starti] = p;
-		    bez->list[starti + 2] = midPt(p, nbez->ep);
-		    bez->list[starti + 3] =
-			midPt(bez->list[starti + 2], nbez->ep);
-		    bez->list[starti + 1] =
-			midPt(bez->list[starti + 2], p);
+		    bez->list[starti + 2] = midPtf(p, nbez->ep);
+		    bez->list[starti + 3] = midPtf(bez->list[starti + 2], nbez->ep);
+		    bez->list[starti + 1] = midPtf(bez->list[starti + 2], p);
 		    if (bez->sflag)
-			starti =
-			    arrowStartClip(e, bez->list,
-					   starti, endi - 3, nbez,
-					   bez->sflag);
+			starti = arrowStartClip(e, bez->list, starti,
+				endi - 3, nbez, bez->sflag);
 		    fixed = 1;
 		}
 	    } else {
 		for (starti = endi; starti > 0; starti -= 3) {
 		    for (i = 0; i < 4; i++)
 			pts[i] = bez->list[starti - i];
-		    if (splineIntersect(pts, bb)) {
+		    if (splineIntersectf(pts, bb)) {
 			for (i = 0; i < 4; i++)
 			    bez->list[starti - i] = pts[i];
 			break;
@@ -475,14 +473,12 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 		if (starti == 0) {
 		    assert(bez->sflag);
 		    nbez->sp =
-			boxIntersect(bez->sp, bez->list[starti], bb);
+			boxIntersectf(bez->sp, bez->list[starti], bb);
 		} else {
 		    starti -= 3;
 		    if (bez->sflag)
-			starti =
-			    arrowStartClip(e, bez->list,
-					   starti, endi - 3, nbez,
-					   bez->sflag);
+			starti = arrowStartClip(e, bez->list, starti,
+				endi - 3, nbez, bez->sflag);
 		}
 		fixed = 1;
 	    }
@@ -497,7 +493,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     /* complete Bezier, free garbage and attach new Bezier to edge 
      */
     nbez->size = endi - starti + 1;
-    nbez->list = N_GNEW(nbez->size, point);
+    nbez->list = N_GNEW(nbez->size, pointf);
     for (i = 0, j = starti; i < nbez->size; i++, j++)
 	nbez->list[i] = bez->list[j];
     free(bez->list);

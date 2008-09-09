@@ -126,20 +126,24 @@ static void makePortLabels(edge_t * e)
  * Extract the actual end points of the spline, where
  * they touch the node.
  */
-static void endPoints(splines * spl, point * p, point * q)
+static void endPoints(splines * spl, pointf * p, pointf * q)
 {
     bezier bz;
 
     bz = spl->list[0];
-    if (bz.sflag)
+    if (bz.sflag) {
 	*p = bz.sp;
-    else
+    }
+    else {
 	*p = bz.list[0];
+    }
     bz = spl->list[spl->size - 1];
-    if (bz.eflag)
+    if (bz.eflag) {
 	*q = bz.ep;
-    else
+    }
+    else {
 	*q = bz.list[bz.size - 1];
+    }
 }
 
 /* polylineMidpoint;
@@ -147,7 +151,7 @@ static void endPoints(splines * spl, point * p, point * q)
  * pp and pq are set to the endpoints of the line segment containing it.
  */
 static pointf
-polylineMidpoint (splines* spl, point* pp, point* pq)
+polylineMidpoint (splines* spl, pointf* pp, pointf* pq)
 {
     bezier bz;
     int i, j, k;
@@ -157,21 +161,21 @@ polylineMidpoint (splines* spl, point* pp, point* pq)
     for (i = 0; i < spl->size; i++) {
 	bz = spl->list[i];
 	for (j = 0, k=3; k < bz.size; j+=3,k+=3) {
-	    P2PF (bz.list[j],pf);
-	    P2PF (bz.list[k],qf);
-	    dist += DIST(pf,qf);
+	    pf = bz.list[j];
+	    qf = bz.list[k];
+	    dist += DIST(pf, qf);
 	}
     }
     dist /= 2;
     for (i = 0; i < spl->size; i++) {
 	bz = spl->list[i];
 	for (j = 0, k=3; k < bz.size; j+=3,k+=3) {
-	    P2PF (bz.list[j],pf);
-	    P2PF (bz.list[k],qf);
+	    pf = bz.list[j];
+	    qf = bz.list[k];
 	    d = DIST(pf,qf);
 	    if (d >= dist) {
-		*pp = bz.list[j];
-		*pq = bz.list[k];
+		*pp = pf;
+		*pq = qf;
 		mf.x = ((qf.x*dist) + (pf.x*(d-dist)))/d; 
 		mf.y = ((qf.y*dist) + (pf.y*(d-dist)))/d; 
 		return mf;
@@ -200,7 +204,7 @@ polylineMidpoint (splines* spl, point* pp, point* pq)
 void addEdgeLabels(edge_t * e, point rp, point rq)
 {
     int et = EDGE_TYPE (e->head->graph->root);
-    point p, q;
+    pointf p, q;
     pointf d;			/* midpoint of segment p-q */
     point ld;
     point del;
@@ -211,9 +215,9 @@ void addEdgeLabels(edge_t * e, point rp, point rq)
     if (ED_label(e) && !ED_label(e)->set) {
 	endPoints(ED_spl(e), &p, &q);
 	if ((p.x == q.x) && (p.y == q.y)) { /* degenerate spline */
-	    p = rp;
-	    q = rq;
-	    P2PF(p, spf);
+	    P2PF(rp, p);
+	    P2PF(rq, q);
+	    spf = p;
 	}
 	else if (et == ET_SPLINE) {
 	    d.x = (q.x + p.x) / 2.;
@@ -413,25 +417,31 @@ void makeSelfArcs(path * P, edge_t * e, int stepx)
 void 
 makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
 {
-    point dumb[4];
+    pointf dumb[4];
     node_t *n = e->tail;
     node_t *head = e->head;
     int e_cnt = ED_count(e);
     pointf perp;
-    point del;
+    point del, P, Q;
     edge_t *e0;
     int i, j, xstep, dx;
     double l_perp;
-    point dumber[4];
-    point p, q;
+    pointf dumber[4];
+    pointf p, q, np, ep;
 
-    p = dumb[1] = dumb[0] = add_points(ND_coord_i(n), ED_tail_port(e).p);
-    q = dumb[2] = dumb[3] =
-	add_points(ND_coord_i(head), ED_head_port(e).p);
+    P2PF(ND_coord_i(n), np);
+    P2PF(ED_tail_port(e).p, ep);
+    p = dumb[1] = dumb[0] = add_pointfs(np, ep);
+
+    P2PF(ND_coord_i(head), np);
+    P2PF(ED_head_port(e).p, ep);
+    q = dumb[2] = dumb[3] = add_pointfs(np, ep);
 
     if (e_cnt == 1) {
 	clip_and_install(e, e->head, dumb, 4, &sinfo);
-	addEdgeLabels(e, p, q);
+        PF2P(p, P);
+        PF2P(q, Q);
+	addEdgeLabels(e, P, Q);
 	return;
     }
 
@@ -474,23 +484,21 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
 	if (doPolyline) {
 	    Ppoint_t pts[4];
 	    Ppolyline_t spl, line;
-	    point* ispline;
 
 	    line.pn = 4;
 	    line.ps = pts;
-	    for (i=0; i < 4; i++)
-		P2PF (dumber[i], pts[i]);
+	    for (i=0; i < 4; i++) {
+		pts[i] = dumber[i];
+	    }
 	    make_polyline (line, &spl);
-	    ispline = N_GNEW(spl.pn, point);
-	    for (i=0; i < spl.pn; i++)
-		PF2P (spl.ps[i], ispline[i]);
-	    clip_and_install(e0, e0->head, ispline, spl.pn, &sinfo);
-	    free(ispline);
+	    clip_and_install(e0, e0->head, spl.ps, spl.pn, &sinfo);
 	}
 	else
 	    clip_and_install(e0, e0->head, dumber, 4, &sinfo);
 
-	addEdgeLabels(e0, p, q);
+        PF2P(p, P);
+        PF2P(q, Q);
+	addEdgeLabels(e0, P, Q);
 	e0 = ED_to_virt(e0);
 	dumb[1].x += del.x;
 	dumb[1].y += del.y;
@@ -684,24 +692,16 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
 static void
 makePolyline(edge_t * e)
 {
-    int i;
     Ppolyline_t spl, line = ED_path(e);
-    point* ispline;
     point p1, q1;
     Ppoint_t p0, q0;
 
     p0 = line.ps[0];
     q0 = line.ps[line.pn - 1];
     make_polyline (line, &spl);
-    ispline = N_GNEW(spl.pn, point);
-    for (i=0; i < spl.pn; i++) {
-	PF2P (spl.ps[i], ispline[i]);
-    }
-
     if (Verbose > 1)
 	fprintf(stderr, "polyline %s %s\n", e->tail->name, e->head->name);
-    clip_and_install(e, e->head, ispline, spl.pn, &sinfo);
-    free(ispline);
+    clip_and_install(e, e->head, spl.ps, spl.pn, &sinfo);
     PF2P(p0, p1);
     PF2P(q0, q1);
     addEdgeLabels(e, p1, q1);
@@ -724,7 +724,6 @@ void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
     int i, n_barriers;
     int pp, qp;
     Ppoint_t p, q;
-    point *ispline;
     Pedge_t *barriers;
     point p1, q1;
 
@@ -747,15 +746,9 @@ void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
     Proutespline(barriers, n_barriers, line, slopes, &spline);
 
     /* north why did you ever use int coords */
-    ispline = N_GNEW(spline.pn, point);
-    for (i = 0; i < spline.pn; i++) {
-	ispline[i].x = ROUND(spline.ps[i].x);
-	ispline[i].y = ROUND(spline.ps[i].y);
-    }
     if (Verbose > 1)
 	fprintf(stderr, "spline %s %s\n", e->tail->name, e->head->name);
-    clip_and_install(e, e->head, ispline, spline.pn, &sinfo);
-    free(ispline);
+    clip_and_install(e, e->head, spline.ps, spline.pn, &sinfo);
     free(barriers);
     PF2P(p, p1);
     PF2P(q, q1);
@@ -1025,9 +1018,9 @@ void spline_edges(graph_t * g)
 static void scaleEdge(edge_t * e, double xf, double yf)
 {
     int i, j;
-    point *pt;
+    pointf *pt;
     bezier *bez;
-    point   delh, delt;
+    pointf delh, delt;
 
     delh.x = POINTS(ND_pos(e->head)[0] * (xf - 1.0));
     delh.y = POINTS(ND_pos(e->head)[1] * (yf - 1.0));

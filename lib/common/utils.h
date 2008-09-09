@@ -72,8 +72,8 @@ extern "C" {
 
     extern pointf Bezier(pointf *, int, double, pointf *, pointf *);
     extern pointf dotneato_closest(splines * spl, pointf p);
-    extern point neato_closest(splines * spl, point p);
-    extern point spline_at_y(splines * spl, int y);
+    extern pointf neato_closest(splines * spl, pointf p);
+    extern pointf spline_at_y(splines * spl, double y);
 
     extern void setEdgeType (graph_t* g, int dflt);
 #ifdef __cplusplus

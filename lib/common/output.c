@@ -128,11 +128,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 		for (i = 0; i < ED_spl(e)->size; i++) {
 		    bz = ED_spl(e)->list[i];
 		    for (j = 0; j < bz.size; j++)
-#ifdef SPLINESF
 			printptf(f, bz.list[j]);
-#else
-			printpt(f, bz.list[j]);
-#endif
 		}
 	    }
 	    if (ED_label(e)) {
@@ -191,7 +187,6 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     agxbuf xb;
     node_t *n;
     edge_t *e;
-    point pt;
     pointf ptf;
     int dim3 = (GD_odim(g) >= 3);
 
@@ -278,40 +273,23 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 			agxbputc(&xb, ';');
 		    if (ED_spl(e)->list[i].sflag) {
 			s_arrows = 1;
-#ifdef SPLINESF
 			sprintf(buf, "s,%.3g,%.3g ",
 				ED_spl(e)->list[i].sp.x,
 				YFDIR(ED_spl(e)->list[i].sp.y));
-#else
-			sprintf(buf, "s,%d,%d ",
-				ED_spl(e)->list[i].sp.x,
-				YDIR(ED_spl(e)->list[i].sp.y));
-#endif
 			agxbput(&xb, buf);
 		    }
 		    if (ED_spl(e)->list[i].eflag) {
 			e_arrows = 1;
-#ifdef SPLINESF
 			sprintf(buf, "e,%.3g,%.3g ",
 				ED_spl(e)->list[i].ep.x,
 				YFDIR(ED_spl(e)->list[i].ep.y));
-#else
-			sprintf(buf, "e,%d,%d ",
-				ED_spl(e)->list[i].ep.x,
-				YDIR(ED_spl(e)->list[i].ep.y));
-#endif
 			agxbput(&xb, buf);
 		    }
 		    for (j = 0; j < ED_spl(e)->list[i].size; j++) {
 			if (j > 0)
 			    agxbputc(&xb, ' ');
-#ifdef SPLINESF
 			ptf = ED_spl(e)->list[i].list[j];
 			sprintf(buf, "%.3g,%.3g", ptf.x, YFDIR(ptf.y));
-#else
-			pt = ED_spl(e)->list[i].list[j];
-			sprintf(buf, "%d,%d", pt.x, YDIR(pt.y));
-#endif
 			agxbput(&xb, buf);
 		    }
 		}

@@ -142,15 +142,15 @@ static void sameport(node_t * u, elist * l, double arr_len)
     x2 = x * r + ND_coord_i(u).x;
     y2 = y * r + ND_coord_i(u).y;
     {				/* now move (x1,y1) to the node boundary */
-	point curve[4];		/* bezier control points for a straight line */
-	curve[0].x = ROUND(x1);
-	curve[0].y = ROUND(y1);
-	curve[1].x = ROUND((2 * x1 + x2) / 3);
-	curve[1].y = ROUND((2 * y1 + y2) / 3);
-	curve[2].x = ROUND((2 * x2 + x1) / 3);
-	curve[2].y = ROUND((2 * y2 + y1) / 3);
-	curve[3].x = ROUND(x2);
-	curve[3].y = ROUND(y2);
+	pointf curve[4];		/* bezier control points for a straight line */
+	curve[0].x = x1;
+	curve[0].y = y1;
+	curve[1].x = (2 * x1 + x2) / 3;
+	curve[1].y = (2 * y1 + y2) / 3;
+	curve[2].x = (2 * x2 + x1) / 3;
+	curve[2].y = (2 * y2 + y1) / 3;
+	curve[3].x = x2;
+	curve[3].y = y2;
 
 	shape_clip(u, curve);
 	x1 = curve[0].x - ND_coord_i(u).x;

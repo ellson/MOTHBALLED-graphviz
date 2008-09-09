@@ -35,7 +35,7 @@ static int nedges, nboxes; /* total no. of edges and boxes used in routing */
 
 static int routeinit;
 /* static data used across multiple edges */
-static point *ps;             /* final spline points */
+static pointf *ps;             /* final spline points */
 static int maxpn;             /* size of ps[] */
 static Ppoint_t *polypoints;  /* vertices of polygon defined by boxes */
 static int polypointn;        /* size of polypoints[] */
@@ -86,6 +86,17 @@ static void psprintpoint(point p)
 	    p.x, p.y, p.x, p.y);
     fprintf(stderr, "/Times-Roman findfont 4 scalefont setfont\n");
     fprintf(stderr, "%d %d moveto (\\(%d,%d\\)) show\n", p.x + 5, p.y + 5,
+	    p.x, p.y);
+    fprintf(stderr, "grestore\n");
+}
+static void psprintpointf(pointf p)
+{
+    fprintf(stderr, "gsave\n");
+    fprintf(stderr,
+	    "newpath %.3g %.3g moveto %.3g %.3g 2 0 360 arc closepath fill stroke\n",
+	    p.x, p.y, p.x, p.y);
+    fprintf(stderr, "/Times-Roman findfont 4 scalefont setfont\n");
+    fprintf(stderr, "%.3g %.3g moveto (\\(%.3g,%.3g\\)) show\n", p.x + 5, p.y + 5,
 	    p.x, p.y);
     fprintf(stderr, "grestore\n");
 }
@@ -242,7 +253,7 @@ routesplinesinit()
     }
     maxbn = BINC;
 #endif
-    if (!(ps = N_GNEW(PINC, point))) {
+    if (!(ps = N_GNEW(PINC, pointf))) {
 	agerr(AGERR, "cannot allocate ps\n");
 	abort();
     }
@@ -276,7 +287,7 @@ void routesplinesterm()
 		nedges, nboxes, elapsed_sec());
 }
 
-static point *_routesplines(path * pp, int *npoints, int polyline)
+static pointf *_routesplines(path * pp, int *npoints, int polyline)
 {
     Ppoly_t poly;
     Ppolyline_t pl, spl;
@@ -510,18 +521,17 @@ static point *_routesplines(path * pp, int *npoints, int polyline)
 	boxes[bi].UR.x = INT_MIN;
     }
     for (splinepi = 0; splinepi < spl.pn; splinepi++) {
-	ps[splinepi].x = spl.ps[splinepi].x;
-	ps[splinepi].y = spl.ps[splinepi].y;
+	P2PF(spl.ps[splinepi], ps[splinepi]);
     }
 REDO:
     for (splinepi = 0; splinepi + 3 < spl.pn; splinepi += 3) {
 	int num_div = delta * boxn;
 	for (si = 0; si <= num_div; si++) {
 	    t = si / ((double)num_div);
-	    sp[0] = ps[splinepi];
-	    sp[1] = ps[splinepi + 1];
-	    sp[2] = ps[splinepi + 2];
-	    sp[3] = ps[splinepi + 3];
+	    PF2P(ps[splinepi], sp[0]);
+	    PF2P(ps[splinepi + 1], sp[1]);
+	    PF2P(ps[splinepi + 2], sp[2]);
+	    PF2P(ps[splinepi + 3], sp[3]);
 	    sp[0].x = sp[0].x + t * (sp[1].x - sp[0].x);
 	    sp[0].y = sp[0].y + t * (sp[1].y - sp[0].y);
 	    sp[1].x = sp[1].x + t * (sp[2].x - sp[1].x);
@@ -569,12 +579,12 @@ REDO:
     return ps;
 }
 
-point *routesplines(path * pp, int *npoints)
+pointf *routesplines(path * pp, int *npoints)
 {
     return _routesplines (pp, npoints, 0);
 }
 
-point *routepolylines(path * pp, int *npoints)
+pointf *routepolylines(path * pp, int *npoints)
 {
     return _routesplines (pp, npoints, 1);
 }
@@ -762,7 +772,7 @@ static void mkspacep(int size)
 {
     if (size > maxpn) {
 	int newmax = maxpn + (size / PINC + 1) * PINC;
-	ps = RALLOC(newmax, ps, point);
+	ps = RALLOC(newmax, ps, pointf);
 	maxpn = newmax;
     }
 }
