@@ -283,9 +283,7 @@ static void gvdevice_flush(GVJ_t * job)
 {
     if (job->output_file
       && ! job->external_context
-      && ! job->gvc->write_fn
-      && job->output_lang != TK
-      && ! (job->flags & GVDEVICE_COMPRESSED_FORMAT)) {
+      && ! job->gvc->write_fn) {
 	fflush(job->output_file);
     }
 }
@@ -329,8 +327,12 @@ void gvdevice_finalize(GVJ_t * job)
 	z->avail_in = 0;
 	z->next_out = df;
 	z->avail_out = dfallocated;
-	ret = deflate (z, Z_FINISH);
-	if (ret != Z_STREAM_END && ret != Z_OK) {
+	while ((ret = deflate (z, Z_FINISH)) == Z_OK && (cnt++ <= 100)) {
+	    gvwrite_no_z(job, (char*)df, z->next_out - df);
+	    z->next_out = df;
+	    z->avail_out = dfallocated;
+	}
+	if (ret != Z_STREAM_END) {
             (job->common->errorfn) ("deflation finish problem %d cnt=%d\n", ret, cnt);
 	    exit(1);
 	}
