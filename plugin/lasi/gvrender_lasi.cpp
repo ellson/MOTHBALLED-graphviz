@@ -333,7 +333,7 @@ static void ps_set_color(GVJ_t *job, gvcolor_t *color)
 		objtype = "sethsb";
 		break;
 	}
-	gvprintf(job, "%.3f %.3f %.3f %scolor\n",
+	gvprintf(job, "%.3g %.3g %.3g %scolor\n",
 	    color->u.HSVA[0], color->u.HSVA[1], color->u.HSVA[2], objtype);
     }
 }
