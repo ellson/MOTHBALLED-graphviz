@@ -294,9 +294,9 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
 	shape_clip0(&inside_context, hn, &ps[end], FALSE);
     } else
 	end = pn - 4;
-    for (; start < pn - 4; start += 3)
-	if (ps[start].x != ps[start + 3].x
-	    || ps[start].y != ps[start + 3].y)
+    /* FIXME - fp equality tests */
+    for (; start < pn - 4; start += 3) 
+	if (ps[start].x != ps[start + 3].x || ps[start].y != ps[start + 3].y)
 	    break;
     for (; end > 0; end -= 3)
 	if (ps[end].x != ps[end + 3].x || ps[end].y != ps[end + 3].y)
@@ -305,17 +305,17 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
     for (i = start; i < end + 4; ) {
 	pointf cp[4];
 	newspl->list[i - start] = ps[i];
-	P2PF(ps[i], cp[0]);
+	cp[0] = ps[i];
 	i++;
 	if ( i >= end + 4)
 	    break;
 	newspl->list[i - start] = ps[i];
-	P2PF(ps[i], cp[1]);
+	cp[1] = ps[i];
 	i++;
 	newspl->list[i - start] = ps[i];
-	P2PF(ps[i], cp[2]);
+	cp[2] = ps[i];
 	i++;
-	P2PF(ps[i], cp[3]);
+	cp[3] = ps[i];
 	update_bb_bz(&GD_bb(g), cp);
     }
     newspl->size = end - start + 4;
