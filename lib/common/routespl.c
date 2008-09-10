@@ -42,7 +42,7 @@ static int polypointn;        /* size of polypoints[] */
 static Pedge_t *edges;        /* polygon edges passed to Proutespline */
 static int edgen;             /* size of edges[] */
 
-static void checkpath(int, box*, path*);
+static void checkpath(int, boxf*, path*);
 static void mkspacep(int size);
 static void printpath(path * pp);
 #ifdef OBSOLETE
@@ -298,7 +298,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     point sp[4];
     int pi, bi, si;
     double t;
-    box *boxes;
+    boxf *boxes;
     int boxn;
     edge_t* realedge;
     int flip;
@@ -611,9 +611,9 @@ static int overlap(int i0, int i1, int j0, int j1)
  * fixing all the bugs, at least try to engineer around them!
  * in postmodern CS, we could call this "self-healing code."
  */
-static void checkpath(int boxn, box* boxes, path* thepath)
+static void checkpath(int boxn, boxf* boxes, path* thepath)
 {
-    box *ba, *bb;
+    boxf *ba, *bb;
     int bi, i, errs, l, r, d, u;
     int xoverlap, yoverlap;
 
@@ -945,9 +945,9 @@ static void printpath(path * pp)
 #endif
     fprintf(stderr, "%d boxes:\n", pp->nbox);
     for (bi = 0; bi < pp->nbox; bi++)
-	fprintf(stderr, "%d (%d, %d), (%d, %d)\n", bi, pp->boxes[bi].LL.x,
-		pp->boxes[bi].LL.y, pp->boxes[bi].UR.x,
-		pp->boxes[bi].UR.y);
+	fprintf(stderr, "%d (%.3g, %.3g), (%.3g, %.3g)\n", bi,
+		pp->boxes[bi].LL.x, pp->boxes[bi].LL.y,
+	       	pp->boxes[bi].UR.x, pp->boxes[bi].UR.y);
     fprintf(stderr, "start port: (%d, %d), tangent angle: %.3f, %s\n",
 	    pp->start.p.x, pp->start.p.y, pp->start.theta,
 	    pp->start.constrained ? "constrained" : "not constrained");

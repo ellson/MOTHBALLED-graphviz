@@ -42,14 +42,14 @@ static void poly_init(node_t * n);
 static void poly_free(node_t * n);
 static port poly_port(node_t * n, char *portname, char *);
 static boolean poly_inside(inside_t * inside_context, pointf p);
-static int poly_path(node_t* n, port* p, int side, box rv[], int *kptr);
+static int poly_path(node_t* n, port* p, int side, boxf rv[], int *kptr);
 static void poly_gencode(GVJ_t * job, node_t * n);
 
 static void record_init(node_t * n);
 static void record_free(node_t * n);
 static port record_port(node_t * n, char *portname, char *);
 static boolean record_inside(inside_t * inside_context, pointf p);
-static int record_path(node_t* n, port* p, int side, box rv[], int *kptr);
+static int record_path(node_t* n, port* p, int side, boxf rv[], int *kptr);
 static void record_gencode(GVJ_t * job, node_t * n);
 
 static void point_init(node_t * n);
@@ -119,7 +119,7 @@ static polygon_t p_Mcircle =
  *			assumed convex.
  *			the point is relative to the node center.  the edge
  *			is passed in case the port affects spline clipping.
- * int		SHAPE_path(node *n, edge_t *e, int pt, box path[], int *nbox)
+ * int		SHAPE_path(node *n, edge_t *e, int pt, boxf path[], int *nbox)
  *			create a path for the port of e that touches n,
  *			return side
  * void		SHAPE_gencode(GVJ_t *job, node_t *n)
@@ -1153,7 +1153,7 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
  * side gives preferred side of bounding box for last node.
  * Return actual side. Returning 0 indicates nothing done.
  */
-static int poly_path(node_t* n, port* p, int side, box rv[], int *kptr)
+static int poly_path(node_t* n, port* p, int side, boxf rv[], int *kptr)
 {
     side = 0;
 
@@ -2085,7 +2085,7 @@ static void indent(int l)
 
 static void prbox(boxf b)
 {
-    fprintf(stderr, "((%f,%f),(%f,%f))\n", b.LL.x, b.LL.y, b.UR.x, b.UR.y);
+    fprintf(stderr, "((%.3g,%.3g),(%.3g,%.3g))\n", b.LL.x, b.LL.y, b.UR.x, b.UR.y);
 }
 
 static void dumpL(field_t * info, int level)
@@ -2243,15 +2243,14 @@ record_inside(inside_t * inside_context, pointf p)
  * Generate box path from port to border.
  * See poly_path for constraints.
  */
-static int record_path(node_t* n, port* prt, int side, box rv[], int *kptr)
+static int record_path(node_t* n, port* prt, int side, boxf rv[], int *kptr)
 {
     int i, ls, rs;
-    point p;
+    pointf p, np;
     field_t *info;
-    box B;
 
     if (!prt->defined) return 0;
-    p = prt->p;
+    P2PF(prt->p, p);
     info = (field_t *) ND_shape_info(n);
 
     for (i = 0; i < info->n_flds; i++) {
@@ -2265,8 +2264,8 @@ static int record_path(node_t* n, port* prt, int side, box rv[], int *kptr)
 	if (BETWEEN(ls, p.x, rs)) {
 	    /* FIXME: I don't understand this code */
 	    if (GD_flip(n->graph)) {
-		BF2B(info->fld[i]->b, B);
-		rv[0] = flip_rec_box(B, ND_coord_i(n));
+		P2PF(ND_coord_i(n), np);
+		rv[0] = flip_rec_boxf(info->fld[i]->b, np);
 	    } else {
 		rv[0].LL.x = ND_coord_i(n).x + ls;
 		rv[0].LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;

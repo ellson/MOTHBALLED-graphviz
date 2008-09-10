@@ -273,7 +273,7 @@ int compoundEdges(graph_t * g, expand_t* pm, int edgetype)
 	    if ((n == head) && ED_count(e)) {	/* self arc */
 		if (!P) {
 		    P = NEW(path);
-		    P->boxes = N_NEW(agnnodes(g) + 20 * 2 * 9, box);
+		    P->boxes = N_NEW(agnnodes(g) + 20 * 2 * 9, boxf);
 		}
 		makeSelfArcs(P, e, GD_nodesep(g));
 	    } else if (ED_count(e)) {

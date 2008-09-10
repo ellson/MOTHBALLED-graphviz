@@ -841,7 +841,7 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 	    else if (n == head) {    /* self arc */
 		if (!P) {
 		    P = NEW(path);
-		    P->boxes = N_NEW(agnnodes(g) + 20 * 2 * 9, box);
+		    P->boxes = N_NEW(agnnodes(g) + 20 * 2 * 9, boxf);
 		}
 		makeSelfArcs(P, e, GD_nodesep(g));
 	    } else if (vconfig) { /* ET_SPLINE or ET_POLYLINE */

@@ -87,21 +87,17 @@ extern "C" {
     } splineInfo;
 
     typedef struct pathend_t {
-	box nb;			/* the node box */
+	boxf nb;			/* the node box */
 	point np;		/* node port */
 	int sidemask;
 	int boxn;
-	box boxes[20];
+	boxf boxes[20];
     } pathend_t;
 
     typedef struct path {	/* internal specification for an edge spline */
 	port start, end;
-#ifdef P_TANGENTS
-/* FIXME not used by anything */
-	pointf *ulpp, *urpp, *llpp, *lrpp;	/* tangents of near splines */
-#endif
 	int nbox;		/* number of subdivisions */
-	box *boxes;		/* rectangular regions of subdivision */
+	boxf *boxes;		/* rectangular regions of subdivision */
 	void *data;
     } path;
 
@@ -175,7 +171,7 @@ extern "C" {
 	void (*freefn) (node_t *);	/* frees  shape from node u.shape_info structure */
 	 port(*portfn) (node_t *, char *, char *);	/* finds aiming point and slope of port */
 	 boolean(*insidefn) (inside_t * inside_context, pointf);	/* clips incident gvc->e spline on shape of gvc->n */
-	int (*pboxfn)(node_t* n, port* p, int side, box rv[], int *kptr); /* finds box path to reach port */
+	int (*pboxfn)(node_t* n, port* p, int side, boxf rv[], int *kptr); /* finds box path to reach port */
 	void (*codefn) (GVJ_t * job, node_t * n);	/* emits graphics code for node */
     } shape_functions;
 

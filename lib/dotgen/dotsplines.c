@@ -51,59 +51,29 @@
 }
 
 #define P2PF(p, pf) (pf.x = p.x, pf.y = p.y)
-
-#ifdef OBSOLETE
-static int flatsidemap[16][6] = {
-    {BOTTOM, BOTTOM, BOTTOM, CCW, CCW, FALSE},
-    {TOP,    TOP,    TOP,    CW,  CW,  FALSE},
-    {RIGHT,  LEFT,   BOTTOM, CW,  CW,  TRUE},
-    {BOTTOM, TOP,    RIGHT,  CCW, CW,  TRUE},
-    {TOP,    BOTTOM, RIGHT,  CW,  CCW, TRUE},
-    {RIGHT,  TOP,    RIGHT,  CCW, CW,  TRUE},
-    {RIGHT,  BOTTOM, RIGHT,  CW,  CCW, TRUE},
-    {TOP,    LEFT,   TOP,    CW,  CCW, TRUE},
-    {BOTTOM, LEFT,   BOTTOM, CCW, CW,  TRUE},
-    {RIGHT,  RIGHT,  BOTTOM, CW,  CCW, TRUE},
-    {LEFT,   LEFT,   BOTTOM, CCW, CW,  TRUE},
-    {LEFT,   BOTTOM, BOTTOM, CCW, CCW, FALSE},
-    {TOP,    RIGHT,  TOP,    CW,  CW,  FALSE},
-    {LEFT,   TOP,    TOP,    CW,  CW,  FALSE},
-    {BOTTOM, RIGHT,  BOTTOM, CCW, CCW, FALSE},
-    {LEFT,   RIGHT,  BOTTOM, CCW, CCW, FALSE},
-};
-#endif
-
 #define AVG(a, b) ((a + b) / 2)
 
-static box boxes[1000];
+static boxf boxes[1000];
 typedef struct {
     int LeftBound, RightBound, Splinesep, Multisep;
-    box* Rank_box;
+    boxf* Rank_box;
 } spline_info_t;
 
 static void adjustregularpath(path *, int, int);
 static Agedge_t *bot_bound(Agedge_t *, int);
 static boolean pathscross(Agnode_t *, Agnode_t *, Agedge_t *, Agedge_t *);
-#ifdef OBSOLETE
-static void chooseflatsides(pathend_t *, pathend_t *, int *, int *, int *,
-			    int *, int *, int *);
-static void completeflatpath(path *, pathend_t *, pathend_t *,
-			     box *, box *, int, int);
-static box makeflatend(box, int, int, box);
-static box makeflatcomponent(box, box, int, int, int, int, int);
-#endif
 static Agraph_t *cl_bound(Agnode_t *, Agnode_t *);
 static int cl_vninside(Agraph_t *, Agnode_t *);
 static void completeregularpath(path *, Agedge_t *, Agedge_t *,
-				pathend_t *, pathend_t *, box *, int, int);
+				pathend_t *, pathend_t *, boxf *, int, int);
 static int edgecmp(Agedge_t **, Agedge_t **);
 static void make_flat_edge(spline_info_t*, path *, Agedge_t **, int, int, int);
 static void make_regular_edge(spline_info_t*, path *, Agedge_t **, int, int, int);
-static box makeregularend(box, int, int);
-static box maximal_bbox(spline_info_t*, Agnode_t *, Agedge_t *, Agedge_t *);
+static boxf makeregularend(boxf, int, int);
+static boxf maximal_bbox(spline_info_t*, Agnode_t *, Agedge_t *, Agedge_t *);
 static Agnode_t *neighbor(Agnode_t *, Agedge_t *, Agedge_t *, int);
 static void place_vnlabel(Agnode_t *);
-static box rank_box(spline_info_t* sp, Agraph_t *, int);
+static boxf rank_box(spline_info_t* sp, Agraph_t *, int);
 static void recover_slack(Agedge_t *, path *);
 static void resize_vn(Agnode_t *, int, int, int);
 static void setflags(Agedge_t *, int, int, int);
@@ -332,8 +302,8 @@ static void _dot_splines(graph_t * g, int normalize)
 	  (qsort_cmpf) edgecmp);
 
     /* FIXME: just how many boxes can there be? */
-    P->boxes = N_NEW(n_nodes + 20 * 2 * NSUB, box);
-    sd.Rank_box = N_NEW(i, box);
+    P->boxes = N_NEW(n_nodes + 20 * 2 * NSUB, boxf);
+    sd.Rank_box = N_NEW(i, boxf);
 
     if (et == ET_LINE) {
     /* place regular edge labels */
@@ -577,92 +547,6 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
     return (e0->id - e1->id);
 }
 
-#if 0
-/* fledgecmp:
- * Sort edges by mid y value of ports.
- * If this is the same, and all y values are the same,
- * check if one segment lies within the other.
- */
-static int 
-fledgecmp(edge_t** ptr0, edge_t** ptr1)
-{
-    edge_t *e0, *e1;
-    point tp0, tp1, hp0, hp1;
-    int y0, y1;
-
-    e0 = *ptr0;
-    e1 = *ptr1;
-    tp0 = ED_tail_port(e0).p;
-    hp0 = ED_head_port(e0).p;
-    tp1 = ED_tail_port(e1).p;
-    hp1 = ED_head_port(e1).p;
-    y0 = (tp0.y + hp0.y)/2;
-    y1 = (tp1.y + hp1.y)/2;
-    if (y0 != y1) return (y0-y1);
-    if ((tp0.y == hp0.y) && (tp1.y == hp1.y)) {
-	if ((tp0.x <= tp1.x) && (hp0.x >= hp1.x)) {
-	    if (tp0.y <= 0) return -1;
-	    else return 1;
-	}
-	else if ((tp0.x >= tp1.x) && (hp0.x <= hp1.x)) {
-	    if (tp0.y <= 0) return 1;
-	    else return -1;
-	}
-    }
-    return (e0->id - e1->id);
-
-}
-
-#define LABEL_SPACE 8
-
-/* setFlatAdjPos:
- * Create middle boxes for routing using ordered list of edges going from
- * bottom to top.
- * Also, set label positions.
- */
-static void
-setFlatAdjPos (edge_t** edges, int n_edges, int flip, box* boxes, edge_t* e0)
-{
-    int r, i, x, boxw, availht;
-    edge_t* e;
-    double  y, wd, ht, totalht = 0;
-    textlabel_t* lbl;
-    node_t *tn, *hn;
-    graph_t* g;
-
-assert(0);
-    tn = e0->tail, hn = e0->head;
-    g = tn->graph;
-    x = (ND_coord_i(tn).x + ND_coord_i(hn).x)/2;
-    y = ND_coord_i(tn).y;
-    r = ND_rank(tn);
-    availht = GD_rank(g)[r].ht2 + GD_rank(g)[r].ht1 + GD_ranksep(g);
-    boxw = (ND_coord_i(hn).x - ND_coord_i(tn).x - ND_rw_i(tn) - ND_lw_i(hn))/3;
-    for (i = 0; i < n_edges; i++) {
-	if (!((lbl = ED_label(e)))) continue;
-	if (flip) {
-	    ht = lbl->dimen.x;
-	    wd = lbl->dimen.y;
-	}
-	else {
-	    ht = lbl->dimen.y; 
-	    wd = lbl->dimen.x; 
-	}
-	totalht += ht;
-        boxw = MAX(boxw, wd);
-    }
-    for (i = 0; i < n_edges; i++) {
-	e = edges[i];
-	lbl = ED_label(e);
-	if (GD_flip(g)) ht = lbl->dimen.x;
-	else ht = lbl->dimen.y; 
-	lbl->p.x = x;
-	lbl->p.y = ROUND(y - ht/2);
-	y -= ht + LABEL_SPACE;
-    }
-}
-#endif
- 
 /* cloneGraph:
  */
 static struct {
@@ -993,7 +877,7 @@ static void
 makeFlatEnd (spline_info_t* sp, path* P, node_t* n, edge_t* e, pathend_t* endp,
              boolean isBegin)
 {
-    box b;
+    boxf b;
     graph_t* g = n->graph;
 
     b = endp->nb = maximal_bbox(sp, n, NULL, e);
@@ -1012,7 +896,7 @@ static void
 makeBottomFlatEnd (spline_info_t* sp, path* P, node_t* n, edge_t* e, 
 	pathend_t* endp, boolean isBegin)
 {
-    box b;
+    boxf b;
     graph_t* g = n->graph;
 
     b = endp->nb = maximal_bbox(sp, n, NULL, e);
@@ -1141,7 +1025,7 @@ make_flat_bottom_edges(spline_info_t* sp, path * P, edge_t ** edges, int
 
     for (i = 0; i < cnt; i++) {
 	int boxn;
-	box b;
+	boxf b;
 	e = edges[ind + i];
 	boxn = 0;
 
@@ -1246,7 +1130,7 @@ make_flat_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt, i
 
     for (i = 0; i < cnt; i++) {
 	int boxn;
-	box b;
+	boxf b;
 	e = edges[ind + i];
 	boxn = 0;
 
@@ -1391,7 +1275,7 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
     edge_t fwdedgea, fwdedgeb, fwdedge, *e, *fe, *le, *segfirst;
     pointf *ps;
     pathend_t tend, hend;
-    box b;
+    boxf b;
     int boxn, sl, si, smode, i, j, dx, pn, hackflag, longedge;
     pointf pointfs[1000], pointfs2[1000];
     int pointn;
@@ -1561,202 +1445,13 @@ make_regular_edge(spline_info_t* sp, path * P, edge_t ** edges, int ind, int cnt
     }
 }
 
-/* flat edges */
-
-#ifdef OBSOLETE
-static void 
-chooseflatsides(pathend_t* tendp, pathend_t *hendp,
-                int* tsidep, int* hsidep, int* msidep, int* tdirp, 
-                int* hdirp, int* crossp)
-{
-    int i;
-
-    for (i = 0; i < 16; i++)
-	if ((flatsidemap[i][0] & tendp->sidemask) &&
-	    (flatsidemap[i][1] & hendp->sidemask))
-	    break;
-    if (i == 16)
-	abort();
-    *tsidep = flatsidemap[i][0], *hsidep = flatsidemap[i][1];
-    *msidep = flatsidemap[i][2];
-    *tdirp = flatsidemap[i][3], *hdirp = flatsidemap[i][4];
-    *crossp = flatsidemap[i][5];
-}
-
-static void
-completeflatpath(path * P,
-		 pathend_t * tendp, pathend_t * hendp,
-		 int tside, int hside, int mside, int tdir, int hdir,
-		 box * arg_lb, box * arg_rb, int w, int h)
-{
-    int i, side, boxn;
-    box boxes[8];
-    box tb, hb;
-    box lb, rb;
-    lb = *arg_lb;
-    rb = *arg_rb;
-
-    tb = makeflatend(tendp->boxes[tendp->boxn - 1], tside, tdir, lb);
-    hb = makeflatend(hendp->boxes[hendp->boxn - 1], hside, OTHERDIR(hdir),
-		     rb);
-
-    boxn = 0;
-    for (side = tside;; side = NEXTSIDE(side, tdir)) {
-	boxes[boxn++] = makeflatcomponent(lb, rb, side,
-					  (side == mside) ? 0 : -1, tdir,
-					  w, h);
-	if (side == mside)
-	    break;
-    }
-    if (mside == RIGHT)
-	mside = LEFT;
-    if (mside != hside) {
-	for (side = NEXTSIDE(mside, hdir);; side = NEXTSIDE(side, hdir)) {
-	    boxes[boxn++] = makeflatcomponent(lb, rb, side, 1, hdir, w, h);
-	    if (side == hside)
-		break;
-	}
-    }
-
-    for (i = 0; i < tendp->boxn; i++)
-	add_box(P, tendp->boxes[i]);
-    if (tb.LL.x != tb.UR.x && tb.LL.y != tb.UR.y)
-	add_box(P, tb);
-    for (i = 0; i < boxn; i++)
-	add_box(P, boxes[i]);
-    if (hb.LL.x != hb.UR.x && hb.LL.y != hb.UR.y)
-	add_box(P, hb);
-    for (i = hendp->boxn - 1; i >= 0; i--)
-	add_box(P, hendp->boxes[i]);
-}
-
-static box 
-makeflatend(box b, int side, int dir, box bb)
-{
-    box eb = { {0, 0}, {0, 0} };
-
-    switch (side) {
-    case BOTTOM:
-	eb = boxof(b.LL.x, bb.LL.y, b.UR.x, b.LL.y);
-	if (dir == CCW)
-	    eb.UR.x += (bb.UR.x - b.UR.x) / 2;
-	else
-	    eb.LL.x -= (b.LL.x - bb.LL.x) / 2;
-	break;
-    case RIGHT:
-	eb = boxof(b.UR.x, b.LL.y, bb.UR.x, b.UR.y);
-	if (dir == CCW)
-	    eb.UR.y += (bb.UR.y - b.UR.y) / 2;
-	else
-	    eb.LL.y -= (b.LL.y - bb.LL.y) / 2;
-	break;
-    case TOP:
-	eb = boxof(b.LL.x, b.UR.y, b.UR.x, bb.UR.y);
-	if (dir == CCW)
-	    eb.LL.x -= (b.LL.x - bb.LL.x) / 2;
-	else
-	    eb.UR.x += (bb.UR.x - b.UR.x) / 2;
-	break;
-    case LEFT:
-	eb = boxof(bb.LL.x, b.LL.y, b.LL.x, b.UR.y);
-	if (dir == CCW)
-	    eb.LL.y -= (bb.UR.y - b.UR.y) / 2;
-	else
-	    eb.UR.y += (b.LL.y - bb.LL.y) / 2;
-	break;
-    }
-    return eb;
-}
-
-static box makeflatcomponent(lb, rb, side, mode, dir, w, h)
-box lb, rb;
-int side, mode, dir, w, h;
-{
-    box b = { {0, 0}, {0, 0} };
-
-    /* mode == -1 means use left box, 1 means use right box
-       and 0 means use mostly the left box */
-
-    switch (side) {
-    case BOTTOM:
-	b.LL.x = lb.LL.x - w, b.UR.x = rb.UR.x + w;
-	if (mode <= 0)
-	    b.LL.y = lb.LL.y - h, b.UR.y = lb.LL.y;
-	else
-	    b.LL.y = rb.LL.y - h, b.UR.y = rb.LL.y;
-	break;
-    case RIGHT:
-	if (mode == -1) {
-	    b.LL.x = lb.UR.x, b.UR.x = lb.UR.x + w;
-	    b.LL.y = lb.LL.y, b.UR.y = lb.UR.y;
-	} else if (mode == 0) {
-	    b.LL.x = lb.UR.x, b.UR.x = lb.UR.x + w;
-	    if (dir == CCW)
-		b.LL.y = lb.LL.y, b.UR.y = rb.UR.y;
-	    else
-		b.LL.y = rb.LL.y, b.UR.y = lb.UR.y;
-	} else {
-	    b.LL.x = rb.UR.x, b.UR.x = rb.UR.x + w;
-	    b.LL.y = rb.LL.y, b.UR.y = rb.UR.y;
-	}
-	break;
-    case TOP:
-	b.LL.x = lb.LL.x - w, b.UR.x = rb.UR.x + w;
-	if (mode <= 0)
-	    b.LL.y = lb.UR.y, b.UR.y = lb.UR.y + h;
-	else
-	    b.LL.y = rb.UR.y, b.UR.y = rb.UR.y + h;
-	break;
-    case LEFT:
-	if (mode == -1) {
-	    b.LL.x = lb.LL.x - w, b.UR.x = lb.LL.x;
-	    b.LL.y = lb.LL.y, b.UR.y = lb.UR.y;
-	} else if (mode == 0) {
-	    b.LL.x = lb.LL.x - w, b.UR.x = lb.LL.x;
-	    if (dir == CCW)
-		b.LL.y = lb.LL.y, b.UR.y = rb.UR.y;
-	    else
-		b.LL.y = rb.LL.y, b.UR.y = lb.UR.y;
-	} else {
-	    b.LL.x = rb.LL.x - w, b.UR.x = rb.LL.x;
-	    b.LL.y = rb.LL.y, b.UR.y = rb.UR.y;
-	}
-	break;
-    }
-    return b;
-}
-static void
-completeflatpath(path* P, pathend_t* tendp, pathend_t* hendp,
-		 box* lbp, box* rbp, int w, int h)
-{
-    int i;
-    box wbox;
-    box tb, hb;
-    box lb, rb;
-    lb = *lbp;
-    rb = *rbp;
-
-    tb = makeflatend(tendp->boxes[tendp->boxn - 1], TOP, CW, lb);
-    hb = makeflatend(hendp->boxes[hendp->boxn - 1], TOP, CCW, rb);
-
-    wbox = makeflatcomponent(lb, rb, TOP, 0, CW, w, h);
-
-    for (i = 0; i < tendp->boxn; i++)
-	add_box(P, tendp->boxes[i]);
-    add_box(P, tb);
-    add_box(P, wbox);
-    for (i = hendp->boxn - 1; i >= 0; i--)
-	add_box(P, hendp->boxes[i]);
-}
-#endif
-
 /* regular edges */
 
 #define DONT_WANT_ANY_ENDPOINT_PATH_REFINEMENT
 #ifdef DONT_WANT_ANY_ENDPOINT_PATH_REFINEMENT
 static void
 completeregularpath(path * P, edge_t * first, edge_t * last,
-		    pathend_t * tendp, pathend_t * hendp, box * boxes,
+		    pathend_t * tendp, pathend_t * hendp, boxf * boxes,
 		    int boxn, int flag)
 {
     edge_t *uleft, *uright, *lleft, *lright;
@@ -1770,35 +1465,25 @@ completeregularpath(path * P, edge_t * first, edge_t * last,
     uleft = top_bound(first, -1), uright = top_bound(first, 1);
     if (uleft) {
 	spl = getsplinepoints(uleft);
-	pp = spl->list[0].list, pn = spl->list[0].size;
-#ifdef P_TANGENTS
-	P->ulpp = &pp[0];
-#endif
+	pp = spl->list[0].list;
+       	pn = spl->list[0].size;
     }
     if (uright) {
 	spl = getsplinepoints(uright);
-	pp = spl->list[0].list, pn = spl->list[0].size;
-#ifdef P_TANGENTS
-	P->urpp = &pp[0];
-#endif
+	pp = spl->list[0].list;
+       	pn = spl->list[0].size;
     }
     lleft = lright = NULL;
     lleft = bot_bound(last, -1), lright = bot_bound(last, 1);
     if (lleft) {
 	spl = getsplinepoints(lleft);
-	pp = spl->list[spl->size - 1].list, pn =
-	    spl->list[spl->size - 1].size;
-#ifdef P_TANGENTS
-	P->llpp = &pp[pn - 1];
-#endif
+	pp = spl->list[spl->size - 1].list;
+       	pn = spl->list[spl->size - 1].size;
     }
     if (lright) {
 	spl = getsplinepoints(lright);
-	pp = spl->list[spl->size - 1].list, pn =
-	    spl->list[spl->size - 1].size;
-#ifdef P_TANGENTS
-	P->lrpp = &pp[pn - 1];
-#endif
+	pp = spl->list[spl->size - 1].list;
+       	pn = spl->list[spl->size - 1].size;
     }
     for (i = 0; i < tendp->boxn; i++)
 	add_box(P, tendp->boxes[i]);
@@ -1812,17 +1497,17 @@ completeregularpath(path * P, edge_t * first, edge_t * last,
 }
 #else
 void refineregularends(edge_t * left, edge_t * right, pathend_t * endp,
-		       int dir, box b, box * boxes, int *boxnp);
+		       int dir, boxf b, boxf * boxes, int *boxnp);
 
 /* box subdivision is obsolete, I think... ek */
 static void
 completeregularpath(path * P, edge_t * first, edge_t * last,
-		    pathend_t * tendp, pathend_t * hendp, box * boxes,
+		    pathend_t * tendp, pathend_t * hendp, boxf * boxes,
 		    int boxn, int flag)
 {
     edge_t *uleft, *uright, *lleft, *lright;
-    box uboxes[NSUB], lboxes[NSUB];
-    box b;
+    boxf uboxes[NSUB], lboxes[NSUB];
+    boxf b;
     int uboxn, lboxn, i, y, fb, lb;
 
     fb = lb = -1;
@@ -1884,15 +1569,15 @@ completeregularpath(path * P, edge_t * first, edge_t * last,
  * nodes in a given rank can differ in height.
  * for now, regular edges always go from top to bottom 
  */
-static box makeregularend(box b, int side, int y)
+static boxf makeregularend(boxf b, int side, int y)
 {
-    box newb;
+    boxf newb;
     switch (side) {
     case BOTTOM:
-	newb = boxof(b.LL.x, y, b.UR.x, b.LL.y);
+	newb = boxfof(b.LL.x, y, b.UR.x, b.LL.y);
 	break;
     case TOP:
-	newb = boxof(b.LL.x, b.UR.y, b.UR.x, y);
+	newb = boxfof(b.LL.x, b.UR.y, b.UR.x, y);
 	break;
     }
     return newb;
@@ -2016,7 +1701,7 @@ int *boxnp;
  */
 static void adjustregularpath(path * P, int fb, int lb)
 {
-    box *bp1, *bp2;
+    boxf *bp1, *bp2;
     int i, x;
 
     for (i = fb-1; i < lb+1; i++) {
@@ -2046,26 +1731,12 @@ static void adjustregularpath(path * P, int fb, int lb)
 	    if (bp1->UR.x - MINW < bp2->LL.x)
 		bp1->UR.x = bp2->LL.x + MINW;
 	} 
-#ifdef OLD
-	else {
-	    if (bp1->LL.x + MINW > bp2->UR.x) {
-		x = (bp1->LL.x + bp2->UR.x) / 2;
-		bp1->LL.x = x - HALFMINW;
-		bp2->UR.x = x + HALFMINW;
-	    }
-	    if (bp1->UR.x - MINW < bp2->LL.x) {
-		x = (bp1->UR.x + bp2->LL.x) / 2;
-		bp1->UR.x = x + HALFMINW;
-		bp2->LL.x = x - HALFMINW;
-	    }
-	}
-#endif
     }
 }
 
-static box rank_box(spline_info_t* sp, graph_t * g, int r)
+static boxf rank_box(spline_info_t* sp, graph_t * g, int r)
 {
-    box b;
+    boxf b;
     node_t /* *right0, *right1, */  * left0, *left1;
 
     b = sp->Rank_box[r];
@@ -2306,12 +1977,12 @@ node_t *n, *adj;
  */
 #define FUDGE 4
 
-static box maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
+static boxf maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
 {
     double b, nb;
     graph_t *g = vn->graph, *left_cl, *right_cl;
     node_t *left, *right;
-    box rv;
+    boxf rv;
 
     left_cl = right_cl = NULL;
 

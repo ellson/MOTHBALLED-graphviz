@@ -31,7 +31,7 @@ static int debugleveln(edge_t* e, int i)
 	    ND_showboxes(e->tail) == i);
 }
 
-static void showPoints(point ps[], int pn)
+static void showPoints(pointf ps[], int pn)
 {
     char buf[BUFSIZ];
     int newcnt = Show_cnt + pn + 3;
@@ -42,7 +42,7 @@ static void showPoints(point ps[], int pn)
     Show_boxes[li++] = strdup ("%% self list");
     Show_boxes[li++] = strdup ("dbgstart");
     for (bi = 0; bi < pn; bi++) {
-	sprintf(buf, "%d %d point", ps[bi].x, ps[bi].y);
+	sprintf(buf, "%.3g %.3g point", ps[bi].x, ps[bi].y);
 	Show_boxes[li++] = strdup (buf);
     }
     Show_boxes[li++] = strdup ("grestore");
@@ -343,7 +343,7 @@ conc_slope(node_t* n)
     return ((m_in + m_out) / 2.0);
 }
 
-void add_box(path * P, box b)
+void add_box(path * P, boxf b)
 {
     if (b.LL.x < b.UR.x && b.LL.y < b.UR.y)
 	P->boxes[P->nbox++] = b;
@@ -386,7 +386,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 {
     int side, mask;
     node_t *n;
-    int (*pboxfn) (node_t*, port*, int, box*, int*);
+    int (*pboxfn) (node_t*, port*, int, boxf*, int*);
 
     n = e->tail;
 
@@ -397,9 +397,6 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     else
 	pboxfn = NULL;
     P->start.p = add_points(ND_coord_i(n), ED_tail_port(e).p);
-#ifdef P_TANGENTS
-    P->ulpp = P->urpp = P->llpp = P->lrpp = NULL;
-#endif
     if (merge) {
 	/*P->start.theta = - M_PI / 2; */
 	P->start.theta = conc_slope(e->tail);
@@ -416,7 +413,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     endp->np = P->start.p;
     if ((et == REGULAREDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_tail_port(e).side))) {
 	edge_t* orig;
-	box b0, b = endp->nb;
+	boxf b0, b = endp->nb;
 	if (side & TOP) {
 	    endp->sidemask = TOP;
 	    if (P->start.p.x < ND_coord_i(n).x) { /* go left */
@@ -481,7 +478,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	return;
     }
     if ((et == FLATEDGE) && ((side = ED_tail_port(e).side))) {
-	box b0, b = endp->nb;
+	boxf b0, b = endp->nb;
 	edge_t* orig;
 	if (side & TOP) {
 	    b.LL.y = MIN(b.LL.y,P->end.p.y);
@@ -580,7 +577,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 {
     int side, mask;
     node_t *n;
-    int (*pboxfn) (node_t* n, port*, int, box*, int*);
+    int (*pboxfn) (node_t* n, port*, int, boxf*, int*);
 
     n = e->head;
 
@@ -606,7 +603,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     endp->np = P->end.p;
     if ((et == REGULAREDGE) && (ND_node_type(n) == NORMAL) && ((side = ED_head_port(e).side))) {
 	edge_t* orig;
-	box b0, b = endp->nb;
+	boxf b0, b = endp->nb;
 	if (side & TOP) {
 	    endp->sidemask = TOP;
 	    b.LL.y = MIN(b.LL.y,P->end.p.y);
@@ -674,7 +671,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 
     if ((et == FLATEDGE) && ((side = ED_head_port(e).side))) {
 	edge_t* orig;
-	box b0, b = endp->nb;
+	boxf b0, b = endp->nb;
 	switch (side) {
 	case LEFT:
 	    b.UR.x = P->end.p.x;
@@ -769,193 +766,8 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
     }
 }
 
-#ifdef OLD
-/* self edges */
-#define ANYW  0			/* could go either way */
-
-static int selfsidemap[16][3] = {
-    {BOTTOM, BOTTOM, ANYW},
-    {TOP, TOP, ANYW},
-    {RIGHT, RIGHT, ANYW},
-    {LEFT, LEFT, ANYW},
-    {BOTTOM, LEFT, CCW},
-    {LEFT, BOTTOM, CW},
-    {TOP, RIGHT, CW},
-    {RIGHT, TOP, CCW},
-    {TOP, LEFT, CCW},
-    {LEFT, TOP, CW},
-    {BOTTOM, RIGHT, CCW},
-    {RIGHT, BOTTOM, CW},
-    {BOTTOM, TOP, CCW},
-    {TOP, BOTTOM, CW},
-    {LEFT, RIGHT, CCW},
-    {RIGHT, LEFT, CW},
-};
-
-static void
-chooseselfsides(pathend_t * tendp, pathend_t * hendp,
-		int *tsidep, int *hsidep, int *dirp)
-{
-    int i;
-
-    for (i = 0; i < 16; i++)
-	if ((selfsidemap[i][0] & tendp->sidemask) &&
-	    (selfsidemap[i][1] & hendp->sidemask))
-	    break;
-    if (i == 16)
-	abort();
-    *tsidep = selfsidemap[i][0], *hsidep = selfsidemap[i][1];
-    *dirp = selfsidemap[i][2];
-    if (*dirp == ANYW) {	/* ANYW can appear when tside == hside */
-	switch (*tsidep) {
-	case BOTTOM:
-	    *dirp = (tendp->np.x < hendp->np.x) ? CCW : CW;
-	    break;
-	case RIGHT:
-	    *dirp = (tendp->np.y < hendp->np.y) ? CCW : CW;
-	    break;
-	case TOP:
-	    *dirp = (tendp->np.x > hendp->np.x) ? CCW : CW;
-	    break;
-	case LEFT:
-	    *dirp = (tendp->np.y > hendp->np.y) ? CCW : CW;
-	    break;
-	}
-    }
-}
-
-static box makeselfend(box b, int side, int dir, int dx, int dy)
-{
-    box eb = { {0, 0}, {0, 0} };
-
-    switch (side) {
-    case BOTTOM:
-	eb = boxof(b.LL.x, b.LL.y - dy, b.UR.x, b.LL.y);
-	(dir == CCW) ? (eb.UR.x += dx / 2) : (eb.LL.x -= dx / 2);
-	break;
-    case RIGHT:
-	eb = boxof(b.UR.x, b.LL.y, b.UR.x + dx, b.UR.y);
-	(dir == CCW) ? (eb.UR.y += dy / 2) : (eb.LL.y -= dy / 2);
-	break;
-    case TOP:
-	eb = boxof(b.LL.x, b.UR.y, b.UR.x, b.UR.y + dy);
-	(dir == CCW) ? (eb.LL.x -= dx / 2) : (eb.UR.x += dx / 2);
-	break;
-    case LEFT:
-	eb = boxof(b.LL.x - dx, b.LL.y, b.LL.x, b.UR.y);
-	(dir == CCW) ? (eb.LL.y -= dy / 2) : (eb.UR.y += dy / 2);
-	break;
-    }
-    return eb;
-}
-
-static box
-makeselfcomponent(box nb, int side, int dx, int dy, int w, int h)
-{
-    box b = { {0, 0}, {0, 0} };
-
-    switch (side) {
-    case BOTTOM:
-	b.LL.x = nb.LL.x - dx - w, b.LL.y = nb.LL.y - dy - h;
-	b.UR.x = nb.UR.x + dx + w, b.UR.y = b.LL.y + h;
-	break;
-    case RIGHT:
-	b.LL.x = nb.UR.x + dx, b.LL.y = nb.LL.y - dy;
-	b.UR.x = b.LL.x + w, b.UR.y = nb.UR.y + dy;
-	break;
-    case TOP:
-	b.LL.x = nb.LL.x - dx - w, b.LL.y = nb.UR.y + dy;
-	b.UR.x = nb.UR.x + dx + w, b.UR.y = b.LL.y + h;
-	break;
-    case LEFT:
-	b.LL.x = nb.LL.x - dx - w, b.LL.y = nb.LL.y - dy;
-	b.UR.x = b.LL.x + w, b.UR.y = nb.UR.y + dy;
-	break;
-    }
-    return b;
-}
-
-static void
-adjustselfends(box * tbp, box * hbp, point p, int side, int dir)
-{
-    switch (side) {
-    case BOTTOM:
-	if (dir == CCW) {
-	    tbp->LL.x -= (tbp->UR.x - p.x), tbp->UR.x = p.x;
-	    hbp->UR.x += (p.x - hbp->LL.x), hbp->LL.x = p.x;
-	} else {
-	    tbp->UR.x -= (tbp->LL.x - p.x), tbp->LL.x = p.x;
-	    hbp->LL.x += (p.x - hbp->UR.x), hbp->UR.x = p.x;
-	}
-	break;
-    case RIGHT:
-	if (dir == CCW) {
-	    tbp->LL.y -= (tbp->UR.y - p.y), tbp->UR.y = p.y;
-	    hbp->UR.y += (p.y - hbp->LL.y), hbp->LL.y = p.y;
-	} else {
-	    tbp->UR.y -= (tbp->LL.y - p.y), tbp->LL.y = p.y;
-	    hbp->LL.y += (p.y - hbp->UR.y), hbp->UR.y = p.y;
-	}
-	break;
-    case TOP:
-	if (dir == CW) {
-	    tbp->LL.x -= (tbp->UR.x - p.x), tbp->UR.x = p.x;
-	    hbp->UR.x += (p.x - hbp->LL.x), hbp->LL.x = p.x;
-	} else {
-	    tbp->UR.x -= (tbp->LL.x - p.x), tbp->LL.x = p.x;
-	    hbp->LL.x += (p.x - hbp->UR.x), hbp->UR.x = p.x;
-	}
-	break;
-    case LEFT:
-	if (dir == CW) {
-	    tbp->LL.y -= (tbp->UR.y - p.y), tbp->UR.y = p.y;
-	    hbp->UR.y += (p.y - hbp->LL.y), hbp->LL.y = p.y;
-	} else {
-	    tbp->UR.y -= (tbp->LL.y - p.y), tbp->LL.y = p.y;
-	    hbp->LL.y += (p.y - hbp->UR.y), hbp->UR.y = p.y;
-	}
-	break;
-    }
-}
-
-static void
-completeselfpath(path * P, pathend_t * tendp, pathend_t * hendp,
-		 int tside, int hside, int dir, int dx, int dy, int w,
-		 int h)
-{
-    int i, side;
-    box boxes[4];		/* can't have more than 6 boxes */
-    box tb, hb;
-    int boxn;
-
-    tb = makeselfend(tendp->boxes[tendp->boxn - 1], tside, dir, dx, dy);
-    hb = makeselfend(hendp->boxes[hendp->boxn - 1],
-		     hside, OTHERDIR(dir), dx, dy);
-
-    if (tside == hside && tendp->np.x == hendp->np.x &&
-	tendp->np.y == hendp->np.y)
-	adjustselfends(&tb, &hb, tendp->np, tside, dir);
-
-    boxn = 0;
-    for (side = tside;; side = NEXTSIDE(side, dir)) {
-	boxes[boxn++] = makeselfcomponent(tendp->nb, side, dx, dy, w, h);
-	if (side == hside)
-	    break;
-    }
-    for (i = 0; i < tendp->boxn; i++)
-	add_box(P, tendp->boxes[i]);
-    add_box(P, tb);
-    for (i = 0; i < boxn; i++)
-	add_box(P, boxes[i]);
-    add_box(P, hb);
-    for (i = hendp->boxn - 1; i >= 0; i--)
-	add_box(P, hendp->boxes[i]);
-}
-#endif
-
-static void
-selfBottom (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
-          splineInfo* sinfo) 
+static void selfBottom (edge_t* edges[], int ind, int cnt,
+	double sizex, double stepy, splineInfo* sinfo) 
 {
     pointf tp, hp, np;
     node_t *n;
