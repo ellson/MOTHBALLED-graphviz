@@ -734,13 +734,13 @@ boxf *html_port(node_t * n, char *pname, int* sides)
  * At present, unimplemented, since the label may be inside a
  * non-box node and we need to figure out what this means.
  */
-int html_path(node_t * n, port* p, int side, box * rv, int *k)
+int html_path(node_t * n, port* p, int side, boxf * rv, int *k)
 {
 #ifdef UNIMPL
     point p;
     tbl_t *info;
     tbl_t *t;
-    box b;
+    boxf b;
     int i;
 
     info = (tbl_t *) ND_shape_info(n);
