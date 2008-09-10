@@ -186,13 +186,14 @@ static void write_canonstr(Agraph_t * g, iochan_t * ofile, char *str)
 }
 
 static void write_dict(Agraph_t * g, iochan_t * ofile, char *name,
-		       Dict_t * dict)
+		       Dict_t * dict, int top)
 {
     int cnt = 0;
     Dict_t *view;
     Agsym_t *sym, *psym;
 
-    view = dtview(dict, NIL(Dict_t *));
+    if (!top) view = dtview(dict, NIL(Dict_t *));
+    else view = 0;
     for (sym = (Agsym_t *) dtfirst(dict); sym;
 	 sym = (Agsym_t *) dtnext(dict, sym)) {
 	if (EMPTY(sym->defval)) {	/* try to skip empty str (default) */
@@ -227,13 +228,13 @@ static void write_dict(Agraph_t * g, iochan_t * ofile, char *name,
     dtview(dict, view);		/* restore previous view */
 }
 
-static void write_dicts(Agraph_t * g, iochan_t * ofile)
+static void write_dicts(Agraph_t * g, iochan_t * ofile, int top)
 {
     Agdatadict_t *def;
     if ((def = agdatadict(g))) {
-	write_dict(g, ofile, "graph", def->dict.g);
-	write_dict(g, ofile, "node", def->dict.n);
-	write_dict(g, ofile, "edge", def->dict.e);
+	write_dict(g, ofile, "graph", def->dict.g, top);
+	write_dict(g, ofile, "node", def->dict.n, top);
+	write_dict(g, ofile, "edge", def->dict.e, top);
     }
 }
 
@@ -274,7 +275,7 @@ static void write_hdr(Agraph_t * g, iochan_t * ofile, int top)
     ioput(g, ofile, sep);
     ioput(g, ofile, "{\n");
     Level++;
-    write_dicts(g, ofile);
+    write_dicts(g, ofile, top);
 	AGATTRWF(g) = TRUE;
 }
 
