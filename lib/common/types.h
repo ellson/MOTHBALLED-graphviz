@@ -65,7 +65,7 @@ extern "C" {
     } inside_t;
 
     typedef struct port {	/* internal edge endpoint specification */
-	point p;		/* aiming point relative to node center */
+	pointf p;		/* aiming point relative to node center */
 	double theta;		/* slope in radians */
 	boxf *bp;		/* if not null, points to bbox of 
 				 * rectangular area that is port target
@@ -88,7 +88,7 @@ extern "C" {
 
     typedef struct pathend_t {
 	boxf nb;			/* the node box */
-	point np;		/* node port */
+	pointf np;		/* node port */
 	int sidemask;
 	int boxn;
 	boxf boxes[20];

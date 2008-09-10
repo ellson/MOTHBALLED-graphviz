@@ -22,7 +22,7 @@ extern "C" {
 #endif
 #include <adjust.h>
 
-    extern void addEdgeLabels(edge_t * e, point rp, point rq);
+    extern void addEdgeLabels(edge_t * e, pointf rp, pointf rq);
     extern int allow_edits(int);
     extern void avoid_cycling(graph_t *, Agnode_t *, double *);
     extern int checkStart(graph_t * G, int nG, int);

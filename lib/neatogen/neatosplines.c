@@ -201,7 +201,7 @@ polylineMidpoint (splines* spl, pointf* pp, pointf* pq)
  * significantly from rp and rq, but if the spline is degenerate (e.g.,
  * the nodes overlap), we use rp and rq.
  */
-void addEdgeLabels(edge_t * e, point rp, point rq)
+void addEdgeLabels(edge_t * e, pointf rp, pointf rq)
 {
     int et = EDGE_TYPE (e->head->graph->root);
     pointf p, q;
@@ -214,9 +214,10 @@ void addEdgeLabels(edge_t * e, point rp, point rq)
 
     if (ED_label(e) && !ED_label(e)->set) {
 	endPoints(ED_spl(e), &p, &q);
+// FIXME - fp equality test
 	if ((p.x == q.x) && (p.y == q.y)) { /* degenerate spline */
-	    P2PF(rp, p);
-	    P2PF(rq, q);
+	    p = rp;
+	    q = rq;
 	    spf = p;
 	}
 	else if (et == ET_SPLINE) {
@@ -262,9 +263,9 @@ void addEdgeLabels(edge_t * e, point rp, point rq)
 
 typedef struct {
     node_t *n1;
-    point p1;
+    pointf p1;
     node_t *n2;
-    point p2;
+    pointf p2;
 } edgeinfo;
 typedef struct {
     Dtlink_t link;
@@ -349,8 +350,8 @@ static edge_t *equivEdge(Dt_t * map, edge_t * e)
 	test.n1 = e->head;
 	test.p1 = ED_head_port(e).p;
     } else {
-	point hp = ED_head_port(e).p;
-	point tp = ED_tail_port(e).p;
+	pointf hp = ED_head_port(e).p;
+	pointf tp = ED_tail_port(e).p;
 	if (tp.x < hp.x) {
 	    test.p1 = tp;
 	    test.p2 = hp;
@@ -422,7 +423,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
     node_t *head = e->head;
     int e_cnt = ED_count(e);
     pointf perp;
-    point del, P, Q;
+    pointf del;
     edge_t *e0;
     int i, j, xstep, dx;
     double l_perp;
@@ -439,15 +440,14 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
 
     if (e_cnt == 1) {
 	clip_and_install(e, e->head, dumb, 4, &sinfo);
-        PF2P(p, P);
-        PF2P(q, Q);
-	addEdgeLabels(e, P, Q);
+	addEdgeLabels(e, p, q);
 	return;
     }
 
     e0 = e;
     perp.x = dumb[0].y - dumb[3].y;
     perp.y = dumb[3].x - dumb[0].x;
+// FIXME - fp equality test
     if ((perp.x == 0) && (perp.y == 0)) { 
 	/* degenerate case */
 	dumb[1] = dumb[0];
@@ -496,9 +496,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
 	else
 	    clip_and_install(e0, e0->head, dumber, 4, &sinfo);
 
-        PF2P(p, P);
-        PF2P(q, Q);
-	addEdgeLabels(e0, P, Q);
+	addEdgeLabels(e0, p, q);
 	e0 = ED_to_virt(e0);
 	dumb[1].x += del.x;
 	dumb[1].y += del.y;
@@ -662,12 +660,12 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
     Ppolyline_t line;
     int pp, qp;
     Ppoint_t p, q;
-    point p1, q1;
+    pointf tp, hp;
 
-    p1 = add_points(ND_coord_i(e->tail), ED_tail_port(e).p);
-    q1 = add_points(ND_coord_i(e->head), ED_head_port(e).p);
-    P2PF(p1, p);
-    P2PF(q1, q);
+    P2PF(ND_coord_i(e->tail), tp);
+    p = add_pointfs(tp, ED_tail_port(e).p);
+    P2PF(ND_coord_i(e->head), hp);
+    q = add_pointfs(hp, ED_head_port(e).p);
 
     /* determine the polygons (if any) that contain the endpoints */
     pp = qp = POLYID_NONE;
@@ -693,7 +691,6 @@ static void
 makePolyline(edge_t * e)
 {
     Ppolyline_t spl, line = ED_path(e);
-    point p1, q1;
     Ppoint_t p0, q0;
 
     p0 = line.ps[0];
@@ -702,9 +699,7 @@ makePolyline(edge_t * e)
     if (Verbose > 1)
 	fprintf(stderr, "polyline %s %s\n", e->tail->name, e->head->name);
     clip_and_install(e, e->head, spl.ps, spl.pn, &sinfo);
-    PF2P(p0, p1);
-    PF2P(q0, q1);
-    addEdgeLabels(e, p1, q1);
+    addEdgeLabels(e, p0, q0);
 }
 
 /* makeSpline:
@@ -725,7 +720,6 @@ void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
     int pp, qp;
     Ppoint_t p, q;
     Pedge_t *barriers;
-    point p1, q1;
 
     line = ED_path(e);
     p = line.ps[0];
@@ -750,9 +744,7 @@ void makeSpline(edge_t * e, Ppoly_t ** obs, int npoly, boolean chkPts)
 	fprintf(stderr, "spline %s %s\n", e->tail->name, e->head->name);
     clip_and_install(e, e->head, spline.ps, spline.pn, &sinfo);
     free(barriers);
-    PF2P(p, p1);
-    PF2P(q, q1);
-    addEdgeLabels(e, p1, q1);
+    addEdgeLabels(e, p, q);
 }
 
   /* True if either head or tail has a port on its boundary */
@@ -832,10 +824,12 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 /* fprintf (stderr, "%s -- %s %d\n", e->tail->name, e->head->name, ED_count(e)); */
 	    node_t *head = e->head;
 	    if (useEdges && ED_spl(e)) {
+		pointf np, hp;
+		P2PF(ND_coord_i(n), np);
+		P2PF(ND_coord_i(head), hp);
 		addEdgeLabels(e,
-			      add_points(ND_coord_i(n), ED_tail_port(e).p),
-			      add_points(ND_coord_i(head),
-					 ED_head_port(e).p));
+			      add_pointfs(np, ED_tail_port(e).p),
+			      add_pointfs(hp, ED_head_port(e).p));
 	    } 
 	    else if (ED_count(e) == 0) continue;  /* only do representative */
 	    else if (n == head) {    /* self arc */

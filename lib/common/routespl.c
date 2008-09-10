@@ -948,10 +948,10 @@ static void printpath(path * pp)
 	fprintf(stderr, "%d (%.3g, %.3g), (%.3g, %.3g)\n", bi,
 		pp->boxes[bi].LL.x, pp->boxes[bi].LL.y,
 	       	pp->boxes[bi].UR.x, pp->boxes[bi].UR.y);
-    fprintf(stderr, "start port: (%d, %d), tangent angle: %.3f, %s\n",
+    fprintf(stderr, "start port: (%.3g, %.3g), tangent angle: %.3g, %s\n",
 	    pp->start.p.x, pp->start.p.y, pp->start.theta,
 	    pp->start.constrained ? "constrained" : "not constrained");
-    fprintf(stderr, "end port: (%d, %d), tangent angle: %.3f, %s\n",
+    fprintf(stderr, "end port: (%.3g, %.3g), tangent angle: %.3g, %s\n",
 	    pp->end.p.x, pp->end.p.y, pp->end.theta,
 	    pp->end.constrained ? "constrained" : "not constrained");
 }
