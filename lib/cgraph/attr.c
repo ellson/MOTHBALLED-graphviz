@@ -141,15 +141,14 @@ static int topdictsize(Agobj_t * obj)
     return dtsize(agdictof(agroot(agraphof(obj)), AGTYPE(obj)));
 }
 
-static Agrec_t *agmakeattrs(void *obj)
+static Agrec_t *agmakeattrs(Agraph_t *g, void *obj)
 {
     int sz;
     Agattr_t *rec;
     Agsym_t *sym;
-    Agraph_t *g;
     Dict_t *datadict;
 
-    g = agraphof(obj);
+    /*g = agraphof(obj);*/
     rec = agbindrec(obj, AgDataRecName, sizeof(Agattr_t), FALSE);
     datadict = agdictof(g, AGTYPE(obj));
     if (rec->dict == NIL(Dict_t *)) {
@@ -304,10 +303,12 @@ void agraphattr_init(Agraph_t * g)
 {
     /* Agdatadict_t *dd; */
     /* Agrec_t                      *attr; */
+    Agraph_t	*context;
 
     g->desc.has_attrs = 1;
     /* dd = */ agmakedatadict(g);
-    /* attr = */ agmakeattrs(g);
+    if (!(context = agparent(g))) context = g;
+    /* attr = */ agmakeattrs(context,g);
 }
 
 void agraphattr_delete(Agraph_t * g)
@@ -329,13 +330,13 @@ void agraphattr_delete(Agraph_t * g)
     }
 }
 
-void agnodeattr_init(Agnode_t * n)
+void agnodeattr_init(Agraph_t *g, Agnode_t * n)
 {
     Agattr_t *data;
 
     data = agattrrec(n);
     if ((!data) || (!data->dict))
-	(void) agmakeattrs(n);
+	(void) agmakeattrs(g,n);
 }
 
 void agnodeattr_delete(Agnode_t * n)
@@ -348,13 +349,13 @@ void agnodeattr_delete(Agnode_t * n)
     }
 }
 
-void agedgeattr_init(Agedge_t * e)
+void agedgeattr_init(Agraph_t *g, Agedge_t * e)
 {
     Agattr_t *data;
 
     data = agattrrec(e);
     if ((!data) || (!data->dict))
-	(void) agmakeattrs(e);
+	(void) agmakeattrs(g,e);
 }
 
 void agedgeattr_delete(Agedge_t * e)
@@ -461,9 +462,9 @@ static void init_all_attrs(Agraph_t * g)
     agapply(root, (Agobj_t *) root, (agobjfn_t) agraphattr_init,
 	    NIL(Agdisc_t *), TRUE);
     for (n = agfstnode(root); n; n = agnxtnode(root, n)) {
-	agnodeattr_init(n);
+	agnodeattr_init(g,n);
 	for (e = agfstout(root, n); e; e = agnxtout(root, e)) {
-	    agedgeattr_init(e);
+	    agedgeattr_init(g,e);
 	}
     }
 }

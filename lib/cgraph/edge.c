@@ -208,7 +208,7 @@ static Agedge_t *newedge(Agraph_t * g, Agnode_t * t, Agnode_t * h,
     installedge(g, out);
     if (g->desc.has_attrs) {
 	(void) agbindrec(out, AgDataRecName, sizeof(Agattr_t), FALSE);
-	agedgeattr_init(out);
+	agedgeattr_init(g, out);
     }
     agmethod_init(g, out);
     return out;

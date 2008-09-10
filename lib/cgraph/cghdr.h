@@ -133,9 +133,9 @@ Agattr_t *agattrrec(void *obj);
 
 void agraphattr_init(Agraph_t * g);
 void agraphattr_delete(Agraph_t * g);
-void agnodeattr_init(Agnode_t * n);
+void agnodeattr_init(Agraph_t *g, Agnode_t * n);
 void agnodeattr_delete(Agnode_t * n);
-void agedgeattr_init(Agedge_t * e);
+void agedgeattr_init(Agraph_t *g, Agedge_t * e);
 void agedgeattr_delete(Agedge_t * e);
 
 	/* parsing and lexing graph files */

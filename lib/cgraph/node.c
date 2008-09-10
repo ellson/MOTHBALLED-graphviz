@@ -108,7 +108,7 @@ static void installnodetoroot(Agraph_t * g, Agnode_t * n)
 static void initnode(Agraph_t * g, Agnode_t * n)
 {
     if (agroot(g)->desc.has_attrs)
-	agnodeattr_init(n);
+	agnodeattr_init(g,n);
     agmethod_init(g, n);
 }
 
