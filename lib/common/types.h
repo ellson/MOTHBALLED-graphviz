@@ -280,7 +280,7 @@ extern "C" {
 
 /* for "record" shapes */
     typedef struct field_t {
-	point size;		/* its dimension */
+	pointf size;		/* its dimension */
 	boxf b;			/* its placement in node's coordinates */
 	int n_flds;
 	textlabel_t *lp;	/* n_flds == 0 */

@@ -742,9 +742,7 @@ static void
 dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
     int i, conn_h, conn_t;
-    pointf p, firstp = { 0, 0 }, llp = {
-    0, 0}, urp = {
-    0, 0};
+    pointf p, firstp = { 0, 0 }, llp = { 0, 0}, urp = { 0, 0};
     node_t *head, *tail;
     char *shape_t;
     pointf cp_h, cp_t;
@@ -820,6 +818,7 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
         dia_fputs("      </dia:attribute>\n");
         dia_fputs("      <dia:connections>\n");
     
+/* FIXME !!! - What is this crap!   It should just user the arrow vector. */
         if ((strcmp(shape_t, "ellipse") == 0)
 	    || (strcmp(shape_t, "circle") == 0)
 	    || (strcmp(shape_t, "doublecircle") == 0)) {
@@ -828,6 +827,7 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 	        conn_h = ellipse_connection(cp_h, diapt(A[n - 1]));
 	    else
 	        conn_h = ellipse_connection(cp_h, diapt(A[0]));
+        } else if (strcmp(shape_t, "record") == 0) { 
         } else {
 	    if (AG_IS_DIRECTED(Rootgraph))
 	        conn_h = box_connection(head, diapt(A[n - 1]));
@@ -843,6 +843,7 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 	        conn_t = ellipse_connection(cp_t, diapt(A[0]));
 	    else
 	        conn_t = ellipse_connection(cp_t, diapt(A[n - 1]));
+        } else if (strcmp(shape_t, "record") == 0) {
         } else {
 	    if (AG_IS_DIRECTED(Rootgraph))
 	        conn_t = box_connection(tail, diapt(A[0]));

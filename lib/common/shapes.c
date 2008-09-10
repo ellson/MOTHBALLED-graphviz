@@ -1951,12 +1951,12 @@ dotext :
     return rv;
 }
 
-static point size_reclbl(node_t * n, field_t * f)
+static pointf size_reclbl(node_t * n, field_t * f)
 {
     int i;
     char *p;
     double marginx, marginy;
-    point d, d0;
+    pointf d, d0;
     pointf dimen;
 
     if (f->lp) {
@@ -1978,7 +1978,7 @@ static point size_reclbl(node_t * n, field_t * f)
 	    } else
 		PAD(dimen);
 	}
-	PF2P(dimen, d);
+	d = dimen;
     } else {
 	d.x = d.y = 0;
 	for (i = 0; i < f->n_flds; i++) {
@@ -1996,12 +1996,12 @@ static point size_reclbl(node_t * n, field_t * f)
     return d;
 }
 
-static void resize_reclbl(field_t * f, point sz, int nojustify_p)
+static void resize_reclbl(field_t * f, pointf sz, int nojustify_p)
 {
     int i, amt;
     double inc;
     pointf d;
-    point newsz;
+    pointf newsz;
     field_t *sf;
 
     /* adjust field */
@@ -2026,9 +2026,9 @@ static void resize_reclbl(field_t * f, point sz, int nojustify_p)
 	    sf = f->fld[i];
 	    amt = ((int) ((i + 1) * inc)) - ((int) (i * inc));
 	    if (f->LR)
-		newsz = pointof(sf->size.x + amt, sz.y);
+		newsz = pointfof(sf->size.x + amt, sz.y);
 	    else
-		newsz = pointof(sz.x, sf->size.y + amt);
+		newsz = pointfof(sz.x, sf->size.y + amt);
 	    resize_reclbl(sf, newsz, nojustify_p);
 	}
     }
@@ -2039,7 +2039,7 @@ static void resize_reclbl(field_t * f, point sz, int nojustify_p)
  * the sides attribute, which indicates which sides of the
  * record are accessible to the field.
  */
-static void pos_reclbl(field_t * f, point ul, int sides)
+static void pos_reclbl(field_t * f, pointf ul, int sides)
 {
     int i, last, mask;
 
@@ -2110,7 +2110,7 @@ static void dumpL(field_t * info, int level)
 static void record_init(node_t * n)
 {
     field_t *info;
-    point ul, sz;
+    pointf ul, sz;
     int flip, len;
     char *textbuf;		/* temp buffer for storing labels */
     int sides = BOTTOM | RIGHT | TOP | LEFT; 
@@ -2142,7 +2142,7 @@ static void record_init(node_t * n)
 	sz.y = MAX(info->size.y, sz.y);
     }
     resize_reclbl(info, sz, mapbool(late_string(n, N_nojustify, "false")));
-    ul = pointof(-sz.x / 2, sz.y / 2);          /* suspected to introduce ronding error - see Kluge below */
+    ul = pointfof(-sz.x / 2., sz.y / 2.);          /* FIXME - is this still true:    suspected to introduce ronding error - see Kluge below */
     pos_reclbl(info, ul, sides);
     ND_width(n) = PS2INCH(info->size.x);
     ND_height(n) = PS2INCH(info->size.y + 1);   /* Kluge!!  +1 to fix rounding diff between layout and rendering 
