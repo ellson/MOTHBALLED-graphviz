@@ -1807,6 +1807,8 @@ AC_CHECK_HEADER(zlib.h,
 		AC_DEFINE_UNQUOTED(HAVE_LIBZ,1,[Define if you have the Z library])],
 			AC_MSG_WARN(Optional z library not available))],
 	AC_MSG_WARN(Optional z library not available - no zlib.h))
+	LDFLAGS="$LDFLAGS $Z_LIBS"
+        AC_CHECK_FUNCS(deflateBound)
 LDFLAGS=$save_LDFLAGS
 CPPFLAGS=$save_CPPFLAGS
 AC_SUBST(Z_INCLUDES)

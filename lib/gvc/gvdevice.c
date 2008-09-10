@@ -225,7 +225,12 @@ size_t gvwrite (GVJ_t * job, const char *s, size_t len)
 	z_streamp z = &z_strm;
 	size_t ret, dflen;
 
+#ifdef HAVE_DEFLATEBOUND
 	dflen = deflateBound(z, len);
+#else
+	/* deflateBound() is not available in older libz, e.g. from centos3 */
+	dflen = 2 * len  + dfallocated - z->avail_out;
+#endif
 	if (dfallocated < dflen) {
 	    dfallocated = (dflen + 1 + PAGE_ALIGN) & ~PAGE_ALIGN;
 	    df = realloc(df, dfallocated);
