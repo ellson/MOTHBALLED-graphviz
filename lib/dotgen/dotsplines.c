@@ -686,17 +686,15 @@ static void
 makeSimpleFlat (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, int et)
 {
     edge_t* e = edges[ind];
-    pointf points[10], np, ep, tp, hp;
+    pointf points[10], np, tp, hp;
     int i, pointn;
     double stepy, dy;
 
     P2PF(ND_coord_i(tn), np);
-    P2PF(ED_tail_port(e).p, ep);
-    tp = add_pointfs(np, ep);
+    tp = add_pointfs(np, ED_tail_port(e).p);
 
     P2PF(ND_coord_i(hn), np);
-    P2PF(ED_head_port(e).p, ep);
-    hp = add_pointfs(np, ep);
+    hp = add_pointfs(np, ED_head_port(e).p);
 
     stepy = (cnt > 1) ? ND_ht_i(tn) / (double)(cnt - 1) : 0.;
     dy = tp.y - ((cnt > 1) ? ND_ht_i(tn) / 2. : 0.);
@@ -934,15 +932,13 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e, int et)
     P2PF(ND_coord_i(ln), ED_label(e)->pos);
 
     if (et == ET_LINE) {
-	pointf np, ep, startp, endp, lp;
+	pointf np, startp, endp, lp;
 
         P2PF(ND_coord_i(tn), np);
-	P2PF(ED_tail_port(e).p, ep);
-	startp = add_pointfs(np, ep);
+	startp = add_pointfs(np, ED_tail_port(e).p);
 
         P2PF(ND_coord_i(hn), np);
-	P2PF(ED_head_port(e).p, ep);
-	endp = add_pointfs(np, ep);
+	endp = add_pointfs(np, ED_head_port(e).p);
 
         lp = ED_label(e)->pos;
 	lp.y -= (ED_label(e)->dimen.y)/2.0;
@@ -1200,7 +1196,7 @@ makeLineEdge(edge_t* fe, pointf* points, node_t** hp)
     node_t* hn;
     node_t* tn;
     edge_t* e = fe;
-    pointf np, ep, startp, endp, lp;
+    pointf np, startp, endp, lp;
     pointf dimen;
     double width, height;
 
@@ -1214,20 +1210,16 @@ makeLineEdge(edge_t* fe, pointf* points, node_t** hp)
     if (fe->tail == e->tail) {
 	*hp = hn;
 	P2PF(ND_coord_i(tn), np);
-	P2PF(ED_tail_port(e).p, ep);
-	startp = add_pointfs(np, ep);
+	startp = add_pointfs(np, ED_tail_port(e).p);
 	P2PF(ND_coord_i(hn), np);
-	P2PF(ED_head_port(e).p, ep);
-	endp = add_pointfs(np, ep);
+	endp = add_pointfs(np, ED_head_port(e).p);
     }
     else {
  	*hp = tn; 
 	P2PF(ND_coord_i(hn), np);
-	P2PF(ED_head_port(e).p, ep);
-	startp = add_pointfs(np, ep);
+	startp = add_pointfs(np, ED_head_port(e).p);
 	P2PF(ND_coord_i(tn), np);
-	P2PF(ED_tail_port(e).p, ep);
-	endp = add_pointfs(np, ep);
+	endp = add_pointfs(np, ED_tail_port(e).p);
     }
 
     if (ED_label(e)) {
@@ -1866,6 +1858,9 @@ static edge_t *bot_bound(edge_t * e, int side)
     return ans;
 }
 
+#if 0
+/* not used */
+
 point closest(splines * spl, point p)
 {
     int i, j, k, besti, bestj;
@@ -1924,6 +1919,7 @@ point closest(splines * spl, point p)
     PF2P(pt2, rv);
     return rv;
 }
+#endif
 
 /* common routines */
 

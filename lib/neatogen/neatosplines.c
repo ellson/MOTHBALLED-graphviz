@@ -428,15 +428,13 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
     int i, j, xstep, dx;
     double l_perp;
     pointf dumber[4];
-    pointf p, q, np, ep;
+    pointf p, q, np;
 
     P2PF(ND_coord_i(n), np);
-    P2PF(ED_tail_port(e).p, ep);
-    p = dumb[1] = dumb[0] = add_pointfs(np, ep);
+    p = dumb[1] = dumb[0] = add_pointfs(np, ED_tail_port(e).p);
 
     P2PF(ND_coord_i(head), np);
-    P2PF(ED_head_port(e).p, ep);
-    q = dumb[2] = dumb[3] = add_pointfs(np, ep);
+    q = dumb[2] = dumb[3] = add_pointfs(np, ED_head_port(e).p);
 
     if (e_cnt == 1) {
 	clip_and_install(e, e->head, dumb, 4, &sinfo);
