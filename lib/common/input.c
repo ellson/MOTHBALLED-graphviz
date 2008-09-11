@@ -771,7 +771,6 @@ void do_graph_label(graph_t * sg)
     /* it would be nice to allow multiple graph labels in the future */
     if ((str = agget(sg, "label"))) {
 	char pos_flag;
-	point dpt;
 	pointf dimen;
 
 	GD_has_labels(sg->root) |= GRAPH_LABEL;
@@ -809,21 +808,20 @@ void do_graph_label(graph_t * sg)
 	 */
 	dimen = GD_label(sg)->dimen;
 	PAD(dimen);
-	PF2P(dimen, dpt);
 	if (!GD_flip(sg->root)) {
 	    if (GD_label_pos(sg) & LABEL_AT_TOP)
 		pos_ix = TOP_IX;
 	    else
 		pos_ix = BOTTOM_IX;
-	    GD_border(sg)[pos_ix] = dpt;
+	    GD_border(sg)[pos_ix] = dimen;
 	} else {
 	    /* when rotated, the labels will be restored to TOP or BOTTOM  */
 	    if (GD_label_pos(sg) & LABEL_AT_TOP)
 		pos_ix = RIGHT_IX;
 	    else
 		pos_ix = LEFT_IX;
-	    GD_border(sg)[pos_ix].x = dpt.y;
-	    GD_border(sg)[pos_ix].y = dpt.x;
+	    GD_border(sg)[pos_ix].x = dimen.y;
+	    GD_border(sg)[pos_ix].y = dimen.x;
 	}
     }
 }
