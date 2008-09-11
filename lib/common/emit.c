@@ -1027,7 +1027,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
     int sides, peripheries, i, j, filled = 0, rect = 0, shape, nump = 0;
     polygon_t *poly = NULL;
     pointf *vertices, ldimen, *p = NULL;
-    point coord;
+    pointf coord;
     char *s;
 
     obj = push_obj_state(job);
@@ -1049,7 +1049,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
         /* checking shape of node */
         shape = shapeOf(n);
         /* node coordinate */
-        coord = ND_coord_i(n);
+        coord = ND_coord(n);
         /* checking if filled style has been set for node */
         filled = ifFilled(n);
 
@@ -2017,8 +2017,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	if (rv == 4) {
 	    n = agfindnode(g->root, nodename);
 	    if (n) {
-		x = ND_coord_i(n).x;
-		y = ND_coord_i(n).y;
+		x = ND_coord(n).x;
+		y = ND_coord(n).y;
 	    }
 	}
 	else {
@@ -2026,8 +2026,8 @@ static void init_job_viewport(GVJ_t * job, graph_t * g)
 	    if (rv == 4) {
                 n = agfindnode(g->root, nodename);
                 if (n) {
-                    x = ND_coord_i(n).x;
-                    y = ND_coord_i(n).y;
+                    x = ND_coord(n).x;
+                    y = ND_coord(n).y;
 		}
 	    }
 	    else {
@@ -2723,10 +2723,10 @@ static void init_bb_node(graph_t *g, node_t *n)
 {
     edge_t *e;
 
-    ND_bb(n).LL.x = ND_coord_i(n).x - ND_lw_i(n);
-    ND_bb(n).LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
-    ND_bb(n).UR.x = ND_coord_i(n).x + ND_rw_i(n);
-    ND_bb(n).UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2.;
+    ND_bb(n).LL.x = ND_coord(n).x - ND_lw_i(n);
+    ND_bb(n).LL.y = ND_coord(n).y - ND_ht_i(n) / 2.;
+    ND_bb(n).UR.x = ND_coord(n).x + ND_rw_i(n);
+    ND_bb(n).UR.y = ND_coord(n).y + ND_ht_i(n) / 2.;
 
     for (e = agfstout(g, n); e; e = agnxtout(g, e))
         init_bb_edge(e);

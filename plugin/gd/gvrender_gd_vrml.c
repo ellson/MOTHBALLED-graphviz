@@ -136,11 +136,11 @@ static pointf vrml_node_point(GVJ_t *job, node_t *n, pointf p)
 
     /* make rv relative to PNG canvas */
     if (job->rotation) {
-	rv.x = ( (p.y - job->pad.y) - ND_coord_i(n).y + ND_lw_i(n)     ) * Scale + NODE_PAD;
-	rv.y = (-(p.x - job->pad.x) + ND_coord_i(n).x + ND_ht_i(n) / 2.) * Scale + NODE_PAD;
+	rv.x = ( (p.y - job->pad.y) - ND_coord(n).y + ND_lw_i(n)     ) * Scale + NODE_PAD;
+	rv.y = (-(p.x - job->pad.x) + ND_coord(n).x + ND_ht_i(n) / 2.) * Scale + NODE_PAD;
     } else {
-	rv.x = ( (p.x - job->pad.x) - ND_coord_i(n).x + ND_lw_i(n)     ) * Scale + NODE_PAD;
-	rv.y = (-(p.y - job->pad.y) + ND_coord_i(n).y + ND_ht_i(n) / 2.) * Scale + NODE_PAD;
+	rv.x = ( (p.x - job->pad.x) - ND_coord(n).x + ND_lw_i(n)     ) * Scale + NODE_PAD;
+	rv.y = (-(p.y - job->pad.y) + ND_coord(n).y + ND_ht_i(n) / 2.) * Scale + NODE_PAD;
     }
     return rv;
 }
@@ -292,8 +292,8 @@ static void vrml_begin_edge(GVJ_t *job)
 static void
 finishSegment (FILE *out, edge_t *e)
 {
-    point p0 = ND_coord_i(e->tail);
-    point p1 = ND_coord_i(e->head);
+    pointf p0 = ND_coord(e->tail);
+    pointf p1 = ND_coord(e->head);
     double o_x, o_y, o_z;
     double x, y, y0, z, theta;
 
@@ -429,7 +429,7 @@ straight (pointf * A, int n)
 }
 
 static void
-doSegment (GVJ_t *job, pointf* A, point p0, double z0, point p1, double z1)
+doSegment (GVJ_t *job, pointf* A, pointf p0, double z0, pointf p1, double z1)
 {
     FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
@@ -477,7 +477,7 @@ vrml_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end,
     assert(e);
 
     if (straight(A,n)) {
-	doSegment (job, A, ND_coord_i(e->tail),Fstz,ND_coord_i(e->head),Sndz);
+	doSegment (job, A, ND_coord(e->tail),Fstz,ND_coord(e->head),Sndz);
 	return;
     }
 
@@ -522,7 +522,6 @@ static void doArrowhead (GVJ_t *job, pointf * A)
     edge_t *e = obj->u.e;
     double rad, ht, y;
     pointf p0;      /* center of triangle base */
-    point  tp,hp;
 
     p0.x = (A[0].x + A[2].x)/2.0;
     p0.y = (A[0].y + A[2].y)/2.0;
@@ -531,10 +530,8 @@ static void doArrowhead (GVJ_t *job, pointf * A)
 
     y = (CylHt + ht)/2.0;
 
-    tp = ND_coord_i(e->tail);
-    hp = ND_coord_i(e->head);
     fprintf(out, "Transform {\n");
-    if (DIST2(A[1], tp) < DIST2(A[1], hp)) {
+    if (DIST2(A[1], ND_coord(e->tail)) < DIST2(A[1], ND_coord(e->head))) {
 	TailHt = ht;
 	fprintf(out, "  translation 0 %.3f 0\n", -y);
 	fprintf(out, "  rotation 0 0 1 %.3f\n", M_PI);
@@ -611,16 +608,16 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	fprintf(out, "  geometry Extrusion {\n");
 	fprintf(out, "    crossSection [");
 	for (i = 0; i < np; i++) {
-	    p.x = A[i].x - ND_coord_i(n).x;
-	    p.y = A[i].y - ND_coord_i(n).y;
+	    p.x = A[i].x - ND_coord(n).x;
+	    p.y = A[i].y - ND_coord(n).y;
 	    fprintf(out, " %.3f %.3f,", p.x, p.y);
 	}
-	p.x = A[0].x - ND_coord_i(n).x;
-	p.y = A[0].y - ND_coord_i(n).y;
+	p.x = A[0].x - ND_coord(n).x;
+	p.y = A[0].y - ND_coord(n).y;
 	fprintf(out, " %.3f %.3f ]\n", p.x, p.y);
-	fprintf(out, "    spine [ %d %d %.3f, %d %d %.3f ]\n",
-		ND_coord_i(n).x, ND_coord_i(n).y, z - .01,
-		ND_coord_i(n).x, ND_coord_i(n).y, z + .01);
+	fprintf(out, "    spine [ %.3g %.3g %.3g, %.3g %.3g %.3g ]\n",
+		ND_coord(n).x, ND_coord(n).y, z - .01,
+		ND_coord(n).x, ND_coord(n).y, z + .01);
 	fprintf(out, "  }\n");
 	fprintf(out, "}\n");
 	break;
@@ -652,7 +649,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 		  (A[0].x + A[2].x) / 2.0 - A[1].x) + M_PI / 2.0;
 
 	/* this is gruesome, but how else can we get z coord */
-	if (DIST2(p, ND_coord_i(e->tail)) < DIST2(p, ND_coord_i(e->head)))
+	if (DIST2(p, ND_coord(e->tail)) < DIST2(p, ND_coord(e->head)))
 	    z = obj->tail_z;
 	else
 	    z = obj->head_z;
@@ -783,7 +780,7 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
     case EDGE_OBJTYPE:
 	e = obj->u.e;
 	/* this is gruesome, but how else can we get z coord */
-	if (DIST2(A[0], ND_coord_i(e->tail)) < DIST2(A[0], ND_coord_i(e->head)))
+	if (DIST2(A[0], ND_coord(e->tail)) < DIST2(A[0], ND_coord(e->head)))
 	    z = obj->tail_z;
 	else
 	    z = obj->head_z;

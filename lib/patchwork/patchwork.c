@@ -163,7 +163,7 @@ static rect_t walker(treenode_t *tree)
 {
 	treenode_t	*p;
 	Agnode_t	*n;
-	point		center;
+	pointf		center;
     rect_t      r, rr;
 
 	switch(tree->kind) {
@@ -176,13 +176,13 @@ static rect_t walker(treenode_t *tree)
 			center.y = (tree->r.UR.y + tree->r.LL.y) / 2.0;
 
 			n = tree->u.n;
-			ND_coord_i(n) = center;
+			ND_coord(n) = center;
 			ND_height(n) = PS2INCH(tree->r.UR.y - tree->r.LL.y);
 			ND_width(n) = PS2INCH(tree->r.UR.x - tree->r.LL.x);
 			gv_nodesize(n,GD_flip(n->graph));
 			finishNode (n);
-			/*fprintf(stderr,"%s coord %d %d ht %d width %d\n",
-				n->name, ND_coord_i(n).x, ND_coord_i(n).y, ND_ht_i(n),
+			/*fprintf(stderr,"%s coord %.3g %.3g ht %d width %d\n",
+				n->name, ND_coord(n).x, ND_coord(n).y, ND_ht_i(n),
 				ND_rw_i(n)+ND_lw_i(n));*/
 			break;
 		default: abort();

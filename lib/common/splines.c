@@ -159,16 +159,16 @@ shape_clip0(inside_t * inside_context, node_t * n, pointf curve[4],
 
     save_real_size = ND_rw_i(n);
     for (i = 0; i < 4; i++) {
-	c[i].x = curve[i].x - ND_coord_i(n).x;
-	c[i].y = curve[i].y - ND_coord_i(n).y;
+	c[i].x = curve[i].x - ND_coord(n).x;
+	c[i].y = curve[i].y - ND_coord(n).y;
     }
 
     bezier_clip(inside_context, ND_shape(n)->fns->insidefn, c,
 		left_inside);
 
     for (i = 0; i < 4; i++) {
-	curve[i].x = c[i].x + ND_coord_i(n).x;
-	curve[i].y = c[i].y + ND_coord_i(n).y;
+	curve[i].x = c[i].x + ND_coord(n).x;
+	curve[i].y = c[i].y + ND_coord(n).y;
     }
     ND_rw_i(n) = save_real_size;
 }
@@ -198,8 +198,8 @@ void shape_clip(node_t * n, pointf curve[4])
     inside_context.s.n = n;
     inside_context.s.bp = NULL;
     save_real_size = ND_rw_i(n);
-    c.x = curve[0].x - ND_coord_i(n).x;
-    c.y = curve[0].y - ND_coord_i(n).y;
+    c.x = curve[0].x - ND_coord(n).x;
+    c.y = curve[0].y - ND_coord(n).y;
     left_inside = ND_shape(n)->fns->insidefn(&inside_context, c);
     ND_rw_i(n) = save_real_size;
     shape_clip0(&inside_context, n, curve, left_inside);
@@ -274,8 +274,8 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
 	inside_context.s.n = tn;
 	inside_context.s.bp = tbox;
 	for (start = 0; start < pn - 4; start += 3) {
-	    p2.x = ps[start + 3].x - ND_coord_i(tn).x;
-	    p2.y = ps[start + 3].y - ND_coord_i(tn).y;
+	    p2.x = ps[start + 3].x - ND_coord(tn).x;
+	    p2.y = ps[start + 3].y - ND_coord(tn).y;
 	    if (ND_shape(tn)->fns->insidefn(&inside_context, p2) == FALSE)
 		break;
 	}
@@ -286,8 +286,8 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
 	inside_context.s.n = hn;
 	inside_context.s.bp = hbox;
 	for (end = pn - 4; end > 0; end -= 3) {
-	    p2.x = ps[end].x - ND_coord_i(hn).x;
-	    p2.y = ps[end].y - ND_coord_i(hn).y;
+	    p2.x = ps[end].x - ND_coord(hn).x;
+	    p2.y = ps[end].y - ND_coord(hn).y;
 	    if (ND_shape(hn)->fns->insidefn(&inside_context, p2) == FALSE)
 		break;
 	}
@@ -331,14 +331,14 @@ conc_slope(node_t* n)
 
     s_in = s_out = 0.0;
     for (cnt_in = 0; (e = ND_in(n).list[cnt_in]); cnt_in++)
-	s_in += ND_coord_i(e->tail).x;
+	s_in += ND_coord(e->tail).x;
     for (cnt_out = 0; (e = ND_out(n).list[cnt_out]); cnt_out++)
-	s_out += ND_coord_i(e->head).x;
-    p.x = ND_coord_i(n).x - (s_in / cnt_in);
-    p.y = ND_coord_i(n).y - ND_coord_i(ND_in(n).list[0]->tail).y;
+	s_out += ND_coord(e->head).x;
+    p.x = ND_coord(n).x - (s_in / cnt_in);
+    p.y = ND_coord(n).y - ND_coord(ND_in(n).list[0]->tail).y;
     m_in = atan2(p.y, p.x);
-    p.x = (s_out / cnt_out) - ND_coord_i(n).x;
-    p.y = ND_coord_i(ND_out(n).list[0]->head).y - ND_coord_i(n).y;
+    p.x = (s_out / cnt_out) - ND_coord(n).x;
+    p.y = ND_coord(ND_out(n).list[0]->head).y - ND_coord(n).y;
     m_out = atan2(p.y, p.x);
     return ((m_in + m_out) / 2.0);
 }
@@ -386,7 +386,6 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 {
     int side, mask;
     node_t *n;
-    pointf np;
     int (*pboxfn) (node_t*, port*, int, boxf*, int*);
 
     n = e->tail;
@@ -397,8 +396,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	pboxfn = ND_shape(n)->fns->pboxfn;
     else
 	pboxfn = NULL;
-    P2PF(ND_coord_i(n), np);
-    P->start.p = add_pointfs(np, ED_tail_port(e).p);
+    P->start.p = add_pointfs(ND_coord(n), ED_tail_port(e).p);
     if (merge) {
 	/*P->start.theta = - M_PI / 2; */
 	P->start.theta = conc_slope(e->tail);
@@ -418,15 +416,15 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	boxf b0, b = endp->nb;
 	if (side & TOP) {
 	    endp->sidemask = TOP;
-	    if (P->start.p.x < ND_coord_i(n).x) { /* go left */
+	    if (P->start.p.x < ND_coord(n).x) { /* go left */
 		b0.LL.x = b.LL.x - 1;
-		/* b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2; */
+		/* b0.LL.y = ND_coord(n).y + ND_ht_i(n)/2; */
 		b0.LL.y = P->start.p.y;
 		b0.UR.x = b.UR.x;
-		b0.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2 + GD_ranksep(n->graph)/2;
-		b.UR.x = ND_coord_i(n).x - ND_lw_i(n) - (FUDGE-2);
+		b0.UR.y = ND_coord(n).y + ND_ht_i(n)/2 + GD_ranksep(n->graph)/2;
+		b.UR.x = ND_coord(n).x - ND_lw_i(n) - (FUDGE-2);
 		b.UR.y = b0.LL.y;
-		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.LL.y = ND_coord(n).y - ND_ht_i(n)/2;
 		b.LL.x -= 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -434,12 +432,12 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    else {
 		b0.LL.x = b.LL.x;
 		b0.LL.y = P->start.p.y;
-		/* b0.LL.y = ND_coord_i(n).y + ND_ht_i(n)/2; */
+		/* b0.LL.y = ND_coord(n).y + ND_ht_i(n)/2; */
 		b0.UR.x = b.UR.x+1;
-		b0.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2 + GD_ranksep(n->graph)/2;
-		b.LL.x = ND_coord_i(n).x + ND_rw_i(n) + (FUDGE-2);
+		b0.UR.y = ND_coord(n).y + ND_ht_i(n)/2 + GD_ranksep(n->graph)/2;
+		b.LL.x = ND_coord(n).x + ND_rw_i(n) + (FUDGE-2);
 		b.UR.y = b0.LL.y;
-		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.LL.y = ND_coord(n).y - ND_ht_i(n)/2;
 		b.UR.x += 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -457,7 +455,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else if (side & LEFT) {
 	    endp->sidemask = LEFT;
 	    b.UR.x = P->start.p.x;
-	    b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+	    b.LL.y = ND_coord(n).y - ND_ht_i(n)/2;
 	    b.UR.y = P->start.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
@@ -466,7 +464,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else {
 	    endp->sidemask = RIGHT;
 	    b.LL.x = P->start.p.x;
-	    b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+	    b.LL.y = ND_coord(n).y - ND_ht_i(n)/2;
 	    b.UR.y = P->start.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
@@ -489,13 +487,13 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	}
 	else if (side & BOTTOM) {
 	    if (endp->sidemask == TOP) {
-		b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b0.UR.y = ND_coord(n).y - ND_ht_i(n)/2;
 		b0.UR.x = b.UR.x+1;
 		b0.LL.x = P->start.p.x;
 		b0.LL.y = b0.UR.y - GD_ranksep(n->graph)/2;
-		b.LL.x = ND_coord_i(n).x + ND_rw_i(n) + (FUDGE-2);
+		b.LL.x = ND_coord(n).x + ND_rw_i(n) + (FUDGE-2);
 		b.LL.y = b0.UR.y;
-		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.UR.y = ND_coord(n).y + ND_ht_i(n)/2;
 		b.UR.x += 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -510,11 +508,11 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else if (side & LEFT) {
 	    b.UR.x = P->start.p.x+1;
 	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.UR.y = ND_coord(n).y + ND_ht_i(n)/2;
 		b.LL.y = P->start.p.y-1;
 	    }
 	    else {
-		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.LL.y = ND_coord(n).y - ND_ht_i(n)/2;
 		b.UR.y = P->start.p.y+1;
 	    }
 	    endp->boxes[0] = b;
@@ -523,11 +521,11 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else {
 	    b.LL.x = P->start.p.x;
 	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.UR.y = ND_coord(n).y + ND_ht_i(n)/2;
 		b.LL.y = P->start.p.y;
 	    }
 	    else {
-		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.LL.y = ND_coord(n).y - ND_ht_i(n)/2;
 		b.UR.y = P->start.p.y+1;
 	    }
 	    endp->boxes[0] = b;
@@ -579,7 +577,6 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 {
     int side, mask;
     node_t *n;
-    pointf np;
     int (*pboxfn) (node_t* n, port*, int, boxf*, int*);
 
     n = e->head;
@@ -590,8 +587,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	pboxfn = ND_shape(n)->fns->pboxfn;
     else
 	pboxfn = NULL;
-    P2PF(ND_coord_i(n), np);
-    P->end.p = add_pointfs(np, ED_head_port(e).p);
+    P->end.p = add_pointfs(ND_coord(n), ED_head_port(e).p);
     if (merge) {
 	/*P->end.theta = M_PI / 2; */
 	P->end.theta = conc_slope(e->head) + M_PI;
@@ -617,15 +613,15 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	}
 	else if (side & BOTTOM) {
 	    endp->sidemask = BOTTOM;
-	    if (P->end.p.x < ND_coord_i(n).x) { /* go left */
+	    if (P->end.p.x < ND_coord(n).x) { /* go left */
 		b0.LL.x = b.LL.x-1;
-		/* b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2; */
+		/* b0.UR.y = ND_coord(n).y - ND_ht_i(n)/2; */
 		b0.UR.y = P->end.p.y;
 		b0.UR.x = b.UR.x;
-		b0.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2 - GD_ranksep(n->graph)/2;
-		b.UR.x = ND_coord_i(n).x - ND_lw_i(n) - (FUDGE-2);
+		b0.LL.y = ND_coord(n).y - ND_ht_i(n)/2 - GD_ranksep(n->graph)/2;
+		b.UR.x = ND_coord(n).x - ND_lw_i(n) - (FUDGE-2);
 		b.LL.y = b0.UR.y;
-		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.UR.y = ND_coord(n).y + ND_ht_i(n)/2;
 		b.LL.x -= 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -633,12 +629,12 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	    else {
 		b0.LL.x = b.LL.x;
 		b0.UR.y = P->end.p.y;
-		/* b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2; */
+		/* b0.UR.y = ND_coord(n).y - ND_ht_i(n)/2; */
 		b0.UR.x = b.UR.x+1;
-		b0.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2 - GD_ranksep(n->graph)/2;
-		b.LL.x = ND_coord_i(n).x + ND_rw_i(n) + (FUDGE-2);
+		b0.LL.y = ND_coord(n).y - ND_ht_i(n)/2 - GD_ranksep(n->graph)/2;
+		b.LL.x = ND_coord(n).x + ND_rw_i(n) + (FUDGE-2);
 		b.LL.y = b0.UR.y;
-		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.UR.y = ND_coord(n).y + ND_ht_i(n)/2;
 		b.UR.x += 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -649,7 +645,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else if (side & LEFT) {
 	    endp->sidemask = LEFT;
 	    b.UR.x = P->end.p.x;
-	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+	    b.UR.y = ND_coord(n).y + ND_ht_i(n)/2;
 	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
@@ -658,7 +654,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	else {
 	    endp->sidemask = RIGHT;
 	    b.LL.x = P->end.p.x;
-	    b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+	    b.UR.y = ND_coord(n).y + ND_ht_i(n)/2;
 	    b.LL.y = P->end.p.y;
 	    endp->boxes[0] = b;
 	    endp->boxn = 1;
@@ -680,11 +676,11 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	case LEFT:
 	    b.UR.x = P->end.p.x;
 	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.UR.y = ND_coord(n).y + ND_ht_i(n)/2;
 		b.LL.y = P->end.p.y;
 	    }
 	    else {
-		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.LL.y = ND_coord(n).y - ND_ht_i(n)/2;
 		b.UR.y = P->end.p.y;
 	    }
 	    endp->boxes[0] = b;
@@ -693,11 +689,11 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	case RIGHT:
 	    b.LL.x = P->end.p.x-1;
 	    if (endp->sidemask == TOP) {
-		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.UR.y = ND_coord(n).y + ND_ht_i(n)/2;
 		b.LL.y = P->end.p.y-1;
 	    }
 	    else {
-		b.LL.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b.LL.y = ND_coord(n).y - ND_ht_i(n)/2;
 		b.UR.y = P->end.p.y;
 	    }
 	    endp->boxes[0] = b;
@@ -711,12 +707,12 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	case BOTTOM:
 	    if (endp->sidemask == TOP) {
 		b0.LL.x = b.LL.x-1;
-		b0.UR.y = ND_coord_i(n).y - ND_ht_i(n)/2;
+		b0.UR.y = ND_coord(n).y - ND_ht_i(n)/2;
 		b0.UR.x = P->end.p.x;
 		b0.LL.y = b0.UR.y - GD_ranksep(n->graph)/2;
-		b.UR.x = ND_coord_i(n).x - ND_lw_i(n) - 2;
+		b.UR.x = ND_coord(n).x - ND_lw_i(n) - 2;
 		b.LL.y = b0.UR.y;
-		b.UR.y = ND_coord_i(n).y + ND_ht_i(n)/2;
+		b.UR.y = ND_coord(n).y + ND_ht_i(n)/2;
 		b.LL.x -= 1;
 		endp->boxes[0] = b0;
 		endp->boxes[1] = b;
@@ -787,7 +783,7 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
     stepx = (sizex / 2.) / cnt;
     stepx = MAX(stepx,2.);
     pointn = 0;
-    P2PF(ND_coord_i(n), np);
+    np = ND_coord(n);
     tp = ED_tail_port(e).p;
     tp.x += np.x;
     tp.y += np.y;
@@ -818,8 +814,8 @@ static void selfBottom (edge_t* edges[], int ind, int cnt,
     	    width = ED_label(e)->dimen.x;
     	    height = ED_label(e)->dimen.y;
     	}
-    	ED_label(e)->pos.y = ND_coord_i(n).y - dy - height / 2.0;
-    	ED_label(e)->pos.x = ND_coord_i(n).x;
+    	ED_label(e)->pos.y = ND_coord(n).y - dy - height / 2.0;
+    	ED_label(e)->pos.x = ND_coord(n).x;
     	ED_label(e)->set = TRUE;
     	if (height > stepy)
     	    dy += height - stepy;
@@ -853,7 +849,7 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
     stepx = (sizex / 2.) / cnt;
     stepx = MAX(stepx, 2.);
     pointn = 0;
-    P2PF(ND_coord_i(n), np);
+    np = ND_coord(n);
     tp = ED_tail_port(e).p;
     tp.x += np.x;
     tp.y += np.y;
@@ -884,8 +880,8 @@ selfTop (edge_t* edges[], int ind, int cnt, double sizex, double stepy,
 		width = ED_label(e)->dimen.x;
 		height = ED_label(e)->dimen.y;
 	    }
-	    ED_label(e)->pos.y = ND_coord_i(n).y + dy + height / 2.0;
-	    ED_label(e)->pos.x = ND_coord_i(n).x;
+	    ED_label(e)->pos.y = ND_coord(n).y + dy + height / 2.0;
+	    ED_label(e)->pos.x = ND_coord(n).x;
 	    ED_label(e)->set = TRUE;
 	    if (height > stepy)
 		dy += height - stepy;
@@ -919,7 +915,7 @@ selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     stepy = (sizey / 2.) / cnt;
     stepy = MAX(stepy, 2.);
     pointn = 0;
-    P2PF(ND_coord_i(n), np);
+    np = ND_coord(n);
     tp = ED_tail_port(e).p;
     tp.x += np.x;
     tp.y += np.y;
@@ -950,8 +946,8 @@ selfRight (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
 		width = ED_label(e)->dimen.x;
 		height = ED_label(e)->dimen.y;
 	    }
-	    ED_label(e)->pos.x = ND_coord_i(n).x + dx + width / 2.0;
-	    ED_label(e)->pos.y = ND_coord_i(n).y;
+	    ED_label(e)->pos.x = ND_coord(n).x + dx + width / 2.0;
+	    ED_label(e)->pos.y = ND_coord(n).y;
 	    ED_label(e)->set = TRUE;
 	    if (width > stepx)
 		dx += width - stepx;
@@ -985,7 +981,7 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     stepy = (sizey / 2.) / cnt;
     stepy = MAX(stepy,2.);
     pointn = 0;
-    P2PF(ND_coord_i(n), np);
+    np = ND_coord(n);
     tp = ED_tail_port(e).p;
     tp.x += np.x;
     tp.y += np.y;
@@ -1016,8 +1012,8 @@ selfLeft (edge_t* edges[], int ind, int cnt, double stepx, double sizey,
     	    width = ED_label(e)->dimen.x;
     	    height = ED_label(e)->dimen.y;
     	}
-    	ED_label(e)->pos.x = ND_coord_i(n).x - dx - width / 2.0;
-    	ED_label(e)->pos.y = ND_coord_i(n).y;
+    	ED_label(e)->pos.x = ND_coord(n).x - dx - width / 2.0;
+    	ED_label(e)->pos.y = ND_coord(n).y;
     	ED_label(e)->set = TRUE;
     	if (width > stepx)
     	    dx += width - stepx;

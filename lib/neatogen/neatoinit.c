@@ -628,8 +628,8 @@ int init_nop(Agraph_t * g, int adjust)
 	node_t *n;
 	State = GVSPLINES;
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    ND_coord_i(n).x = POINTS(ND_pos(n)[0]);
-	    ND_coord_i(n).y = POINTS(ND_pos(n)[1]);
+	    ND_coord(n).x = POINTS(ND_pos(n)[0]);
+	    ND_coord(n).y = POINTS(ND_pos(n)[1]);
 	}
     }
     else if (posEdges != AllEdges)

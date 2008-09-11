@@ -82,17 +82,9 @@ static void place_flip_graph_label(graph_t * g);
     closepath stroke\n\
 } def\n"
 
-static pointf map_pointf(pointf p)
+static pointf map_point(pointf p)
 {
     p = ccwrotatepf(p, Rankdir*90);
-    p.x -= (double)Offset.x;
-    p.y -= (double)Offset.y;
-    return p;
-}
-
-static point map_point(point p)
-{
-    p = ccwrotatep(p, Rankdir*90);
     p.x -= Offset.x;
     p.y -= Offset.y;
     return p;
@@ -112,19 +104,19 @@ static void map_edge(edge_t * e)
     for (j = 0; j < ED_spl(e)->size; j++) {
 	bz = ED_spl(e)->list[j];
 	for (k = 0; k < bz.size; k++)
-	    bz.list[k] = map_pointf(bz.list[k]);
+	    bz.list[k] = map_point(bz.list[k]);
 	if (bz.sflag)
-	    ED_spl(e)->list[j].sp = map_pointf(ED_spl(e)->list[j].sp);
+	    ED_spl(e)->list[j].sp = map_point(ED_spl(e)->list[j].sp);
 	if (bz.eflag)
-	    ED_spl(e)->list[j].ep = map_pointf(ED_spl(e)->list[j].ep);
+	    ED_spl(e)->list[j].ep = map_point(ED_spl(e)->list[j].ep);
     }
     if (ED_label(e))
-	ED_label(e)->pos = map_pointf(ED_label(e)->pos);
+	ED_label(e)->pos = map_point(ED_label(e)->pos);
     /* vladimir */
     if (ED_head_label(e))
-	ED_head_label(e)->pos = map_pointf(ED_head_label(e)->pos);
+	ED_head_label(e)->pos = map_point(ED_head_label(e)->pos);
     if (ED_tail_label(e))
-	ED_tail_label(e)->pos = map_pointf(ED_tail_label(e)->pos);
+	ED_tail_label(e)->pos = map_point(ED_tail_label(e)->pos);
 }
 
 void translate_bb(graph_t * g, int rankdir)
@@ -134,15 +126,15 @@ void translate_bb(graph_t * g, int rankdir)
 
     bb = GD_bb(g);
     if (rankdir == RANKDIR_LR || rankdir == RANKDIR_BT) {
-	new_bb.LL = map_pointf(pointfof(bb.LL.x, bb.UR.y));
-	new_bb.UR = map_pointf(pointfof(bb.UR.x, bb.LL.y));
+	new_bb.LL = map_point(pointfof(bb.LL.x, bb.UR.y));
+	new_bb.UR = map_point(pointfof(bb.UR.x, bb.LL.y));
     } else {
-	new_bb.LL = map_pointf(pointfof(bb.LL.x, bb.LL.y));
-	new_bb.UR = map_pointf(pointfof(bb.UR.x, bb.UR.y));
+	new_bb.LL = map_point(pointfof(bb.LL.x, bb.LL.y));
+	new_bb.UR = map_point(pointfof(bb.UR.x, bb.UR.y));
     }
     GD_bb(g) = new_bb;
     if (GD_label(g)) {
-	GD_label(g)->pos = map_pointf(GD_label(g)->pos);
+	GD_label(g)->pos = map_point(GD_label(g)->pos);
     }
     for (c = 1; c <= GD_n_cluster(g); c++)
 	translate_bb(GD_clust(g)[c], rankdir);
@@ -185,7 +177,7 @@ static void translate_drawing(graph_t * g)
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	if (Rankdir) dot_nodesize(v, FALSE);
 	if (shift) {
-	    ND_coord_i(v) = map_point(ND_coord_i(v));
+	    ND_coord(v) = map_point(ND_coord(v));
 	    if (State == GVSPLINES)
 		for (e = agfstout(g, v); e; e = agnxtout(g, e))
 		    map_edge(e);

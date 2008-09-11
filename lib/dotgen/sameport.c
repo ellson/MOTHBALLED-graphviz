@@ -125,8 +125,8 @@ static void sameport(node_t * u, elist * l, double arr_len)
 	    v = e->tail;
 	else
 	    v = e->head;
-	x1 = ND_coord_i(v).x - ND_coord_i(u).x;
-	y1 = ND_coord_i(v).y - ND_coord_i(u).y;
+	x1 = ND_coord(v).x - ND_coord(u).x;
+	y1 = ND_coord(v).y - ND_coord(u).y;
 	r = hypot(x1, y1);
 	x += x1 / r;
 	y += y1 / r;
@@ -136,11 +136,11 @@ static void sameport(node_t * u, elist * l, double arr_len)
     y /= r;
 
     /* (x1,y1),(x2,y2) is a segment that must cross the node boundary */
-    x1 = ND_coord_i(u).x;
-    y1 = ND_coord_i(u).y;	/* center of node */
+    x1 = ND_coord(u).x;
+    y1 = ND_coord(u).y;	/* center of node */
     r = MAX(ND_lw_i(u) + ND_rw_i(u), ND_ht_i(u) + GD_ranksep(u->graph));	/* far away */
-    x2 = x * r + ND_coord_i(u).x;
-    y2 = y * r + ND_coord_i(u).y;
+    x2 = x * r + ND_coord(u).x;
+    y2 = y * r + ND_coord(u).y;
     {				/* now move (x1,y1) to the node boundary */
 	pointf curve[4];		/* bezier control points for a straight line */
 	curve[0].x = x1;
@@ -153,8 +153,8 @@ static void sameport(node_t * u, elist * l, double arr_len)
 	curve[3].y = y2;
 
 	shape_clip(u, curve);
-	x1 = curve[0].x - ND_coord_i(u).x;
-	y1 = curve[0].y - ND_coord_i(u).y;
+	x1 = curve[0].x - ND_coord(u).x;
+	y1 = curve[0].y - ND_coord(u).y;
     }
 
     /* compute PORT on the boundary */

@@ -88,7 +88,7 @@ make_barriers(Ppoly_t ** poly, int npoly, int pp, int qp,
 
 /* genPt:
  */
-static Ppoint_t genPt(double x, double y, point c)
+static Ppoint_t genPt(double x, double y, pointf c)
 {
     Ppoint_t p;
 
@@ -100,7 +100,7 @@ static Ppoint_t genPt(double x, double y, point c)
 
 /* recPt:
  */
-static Ppoint_t recPt(double x, double y, point c, expand_t* m)
+static Ppoint_t recPt(double x, double y, pointf c, expand_t* m)
 {
     Ppoint_t p;
 
@@ -428,14 +428,10 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
     int i, j, xstep, dx;
     double l_perp;
     pointf dumber[4];
-    pointf p, q, np;
+    pointf p, q;
 
-    P2PF(ND_coord_i(n), np);
-    p = dumb[1] = dumb[0] = add_pointfs(np, ED_tail_port(e).p);
-
-    P2PF(ND_coord_i(head), np);
-    q = dumb[2] = dumb[3] = add_pointfs(np, ED_head_port(e).p);
-
+    p = dumb[1] = dumb[0] = add_pointfs(ND_coord(n), ED_tail_port(e).p);
+    q = dumb[2] = dumb[3] = add_pointfs(ND_coord(head), ED_head_port(e).p);
     if (e_cnt == 1) {
 	clip_and_install(e, e->head, dumb, 4, &sinfo);
 	addEdgeLabels(e, p, q);
@@ -523,7 +519,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
     int j, sides;
     pointf polyp;
     boxf b;
-    point pt;
+    pointf pt;
     field_t *fld;
     epsf_t *desc;
 
@@ -590,8 +586,8 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
 		    polyp.y = pmargin->y * s * ND_ht_i(n) / 2.0;
 		}
 	    }
-	    obs->ps[sides - j - 1].x = polyp.x + ND_coord_i(n).x;
-	    obs->ps[sides - j - 1].y = polyp.y + ND_coord_i(n).y;
+	    obs->ps[sides - j - 1].x = polyp.x + ND_coord(n).x;
+	    obs->ps[sides - j - 1].y = polyp.y + ND_coord(n).y;
 	}
 	break;
     case SH_RECORD:
@@ -601,7 +597,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
 	obs->pn = 4;
 	obs->ps = N_NEW(4, Ppoint_t);
 	/* CW order */
-	pt = ND_coord_i(n);
+	pt = ND_coord(n);
 	if (pmargin->doAdd) {
 	    obs->ps[0] = genPt(b.LL.x-pmargin->x, b.LL.y-pmargin->y, pt);
 	    obs->ps[1] = genPt(b.LL.x-pmargin->x, b.UR.y+pmargin->y, pt);
@@ -621,7 +617,7 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
 	obs->pn = 4;
 	obs->ps = N_NEW(4, Ppoint_t);
 	/* CW order */
-	pt = ND_coord_i(n);
+	pt = ND_coord(n);
 	if (pmargin->doAdd) {
 	    obs->ps[0] = genPt(-ND_lw_i(n)-pmargin->x, -ND_ht_i(n)-pmargin->y,pt);
 	    obs->ps[1] = genPt(-ND_lw_i(n)-pmargin->x, ND_ht_i(n)+pmargin->y,pt);
@@ -658,12 +654,9 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
     Ppolyline_t line;
     int pp, qp;
     Ppoint_t p, q;
-    pointf tp, hp;
 
-    P2PF(ND_coord_i(e->tail), tp);
-    p = add_pointfs(tp, ED_tail_port(e).p);
-    P2PF(ND_coord_i(e->head), hp);
-    q = add_pointfs(hp, ED_head_port(e).p);
+    p = add_pointfs(ND_coord(e->tail), ED_tail_port(e).p);
+    q = add_pointfs(ND_coord(e->head), ED_head_port(e).p);
 
     /* determine the polygons (if any) that contain the endpoints */
     pp = qp = POLYID_NONE;
@@ -822,12 +815,9 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 /* fprintf (stderr, "%s -- %s %d\n", e->tail->name, e->head->name, ED_count(e)); */
 	    node_t *head = e->head;
 	    if (useEdges && ED_spl(e)) {
-		pointf np, hp;
-		P2PF(ND_coord_i(n), np);
-		P2PF(ND_coord_i(head), hp);
 		addEdgeLabels(e,
-			      add_pointfs(np, ED_tail_port(e).p),
-			      add_pointfs(hp, ED_head_port(e).p));
+			      add_pointfs(ND_coord(n), ED_tail_port(e).p),
+			      add_pointfs(ND_coord(head), ED_head_port(e).p));
 	    } 
 	    else if (ED_count(e) == 0) continue;  /* only do representative */
 	    else if (n == head) {    /* self arc */
@@ -1169,7 +1159,7 @@ static void _neato_set_aspect(graph_t * g)
 /* neato_set_aspect:
  * Sets aspect ratio if necessary; real work done in _neato_set_aspect;
  * This also copies the internal layout coordinates (ND_pos) to the 
- * external ones (ND_coord_i).
+ * external ones (ND_coord).
  */
 void neato_set_aspect(graph_t * g)
 {
@@ -1177,8 +1167,8 @@ void neato_set_aspect(graph_t * g)
 
     _neato_set_aspect(g);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	ND_coord_i(n).x = POINTS(ND_pos(n)[0]);
-	ND_coord_i(n).y = POINTS(ND_pos(n)[1]);
+	ND_coord(n).x = POINTS(ND_pos(n)[0]);
+	ND_coord(n).y = POINTS(ND_pos(n)[1]);
     }
 }
 

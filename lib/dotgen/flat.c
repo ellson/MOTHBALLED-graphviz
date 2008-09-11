@@ -152,10 +152,10 @@ flat_node(edge_t * e)
     place = flat_limits(g, e);
     /* grab ypos = LL.y of label box before make_vn_slot() */
     if ((n = GD_rank(g)[r - 1].v[0]))
-	ypos = ND_coord_i(n).y - GD_rank(g)[r - 1].ht1;
+	ypos = ND_coord(n).y - GD_rank(g)[r - 1].ht1;
     else {
 	n = GD_rank(g)[r].v[0];
-	ypos = ND_coord_i(n).y + GD_rank(g)[r].ht2 + GD_ranksep(g);
+	ypos = ND_coord(n).y + GD_rank(g)[r].ht2 + GD_ranksep(g);
     }
     vn = make_vn_slot(g, r - 1, place);
     dimen = ED_label(e)->dimen;
@@ -168,7 +168,7 @@ flat_node(edge_t * e)
     h2 = ND_ht_i(vn) / 2;
     ND_lw_i(vn) = ND_rw_i(vn) = dimen.x / 2;
     ND_label(vn) = ED_label(e);
-    ND_coord_i(vn).y = ypos + h2;
+    ND_coord(vn).y = ypos + h2;
     ve = virtual_edge(vn, e->tail, e);	/* was NULL? */
     ED_tail_port(ve).p.x = -ND_lw_i(vn);
     ED_head_port(ve).p.x = ND_rw_i(e->tail);

@@ -781,7 +781,7 @@ shiftGraphs(int ng, Agraph_t ** gs, point * pp, Agraph_t * root,
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	    ND_pos(n)[0] += fx;
 	    ND_pos(n)[1] += fy;
-	    MOVEPT(ND_coord_i(n));
+	    MOVEPT(ND_coord(n));
 	    if (doSplines) {
 		for (e = agfstout(eg, n); e; e = agnxtout(eg, e))
 		    shiftEdge(e, dx, dy);

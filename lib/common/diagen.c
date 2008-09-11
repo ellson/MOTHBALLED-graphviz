@@ -243,6 +243,20 @@ static pointf diapt(point p)
     return rv;
 }
 
+static pointf diaptf(pointf p)
+{
+    pointf rv;
+
+    if (Rot == 0) {
+	rv.x = PB.LL.x + p.x * Scale + Offset.x;
+	rv.y = PB.UR.y - 1 - p.y * Scale - Offset.y;
+    } else {
+	rv.x = PB.UR.x - 1 - p.y * Scale - Offset.x;
+	rv.y = PB.UR.y - 1 - p.x * Scale - Offset.y;
+    }
+    return rv;
+}
+
 static void dia_grstyle(context_t * cp)
 {
     if (strcmp(cp->pencolor, DEFAULT_COLOR)) {
@@ -677,7 +691,7 @@ int box_connection(node_t * n, pointf p)
     double xsize, ysize, mindist2 = 0.0, dist2;
     polygon_t *poly;
     pointf P, *vertices;
-    static point *A;
+    static pointf *A;
     static int A_size;
 
     poly = (polygon_t *) ND_shape_info(n);
@@ -687,30 +701,27 @@ int box_connection(node_t * n, pointf p)
 
     if (A_size < sides) {
 	A_size = sides + 5;
-	A = ALLOC(A_size, A, point);
+	A = ALLOC(A_size, A, pointf);
     }
 
-    xsize = ((ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n))) * 16.0;
-    ysize = ((ND_ht_i(n)) / POINTS(ND_height(n))) * 16.0;
+    xsize = (ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n));
+    ysize = (ND_ht_i(n)) / POINTS(ND_height(n));
 
     for (j = 0; j < peripheries; j++) {
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i + j * sides];
-/* simple rounding produces random results around .5 
- * this trick should clip off the random part. 
- * (note xsize/ysize prescaled by 16.0 above) */
-	    A[i].x = ROUND(P.x * xsize) / 16;
-	    A[i].y = ROUND(P.y * ysize) / 16;
+	    A[i].x = P.x * xsize;
+	    A[i].y = P.y * ysize;
 	    if (sides > 2) {
-		A[i].x += ND_coord_i(n).x;
-		A[i].y += ND_coord_i(n).y;
+		A[i].x += ND_coord(n).x;
+		A[i].y += ND_coord(n).y;
 	    }
 	}
     }
 
     z = 0;
     while (z < i) {
-	dist2 = DIST2(p, diapt(A[z]));
+	dist2 = DIST2(p, diaptf(A[z]));
 	if (z == 0) {
 	    mindist2 = dist2;
 	    conn = 0;
@@ -724,8 +735,8 @@ int box_connection(node_t * n, pointf p)
 
     z = 0;
     while (z < i) {
-	P.x = (diapt(A[z]).x + diapt(A[z + 1]).x) / 2;
-	P.y = (diapt(A[z]).y + diapt(A[z + 1]).y) / 2;
+	P.x = (diaptf(A[z]).x + diaptf(A[z + 1]).x) / 2;
+	P.y = (diaptf(A[z]).y + diaptf(A[z + 1]).y) / 2;
 	dist2 = DIST2(p, P);
 	if (dist2 < mindist2) {
 	    mindist2 = dist2;
@@ -811,10 +822,10 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
         }
     
         dia_fputs("      <dia:attribute name=\"conn_endpoints\">\n");
-        dia_printf("        <dia:point val=\"%g,%g\"/>\n", diapt(A[0]).x,
-	           diapt(A[0]).y);
-        dia_printf("        <dia:point val=\"%g,%g\"/>\n", diapt(A[n - 1]).x,
-	           diapt(A[n - 1]).y);
+        dia_printf("        <dia:point val=\"%g,%g\"/>\n",
+		diapt(A[0]).x, diapt(A[0]).y);
+        dia_printf("        <dia:point val=\"%g,%g\"/>\n",
+		diapt(A[n - 1]).x, diapt(A[n - 1]).y);
         dia_fputs("      </dia:attribute>\n");
         dia_fputs("      <dia:connections>\n");
     
@@ -822,7 +833,7 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
         if ((strcmp(shape_t, "ellipse") == 0)
 	    || (strcmp(shape_t, "circle") == 0)
 	    || (strcmp(shape_t, "doublecircle") == 0)) {
-	    cp_h = diapt(ND_coord_i(head));
+	    cp_h = diaptf(ND_coord(head));
 	    if (AG_IS_DIRECTED(Rootgraph))
 	        conn_h = ellipse_connection(cp_h, diapt(A[n - 1]));
 	    else
@@ -838,7 +849,7 @@ dia_bezier(point * A, int n, int arrow_at_start, int arrow_at_end, int filled)
         if ((strcmp(shape_t, "ellipse") == 0)
 	    || (strcmp(shape_t, "circle") == 0)
 	    || (strcmp(shape_t, "doublecircle") == 0)) {
-	    cp_t = diapt(ND_coord_i(tail));
+	    cp_t = diaptf(ND_coord(tail));
 	    if (AG_IS_DIRECTED(Rootgraph))
 	        conn_t = ellipse_connection(cp_t, diapt(A[0]));
 	    else

@@ -23,11 +23,6 @@
 int Y_off;           /* ymin + ymax */
 double YF_off;       /* Y_off in inches */
 
-static void printpt(FILE * f, point pt)
-{
-    fprintf(f, " %.3g %.3g", PS2INCH(pt.x), PS2INCH(YDIR(pt.y)));
-}
-
 static void printptf(FILE * f, pointf pt)
 {
     fprintf(f, " %.3g %.3g", PS2INCH(pt.x), PS2INCH(YDIR(pt.y)));
@@ -95,7 +90,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 	if (IS_CLUST_NODE(n))
 	    continue;
 	fprintf(f, "node %s ", agcanonical(n->name));
-	printpt(f, ND_coord_i(n));
+	printptf(f, ND_coord(n));
 	if (ND_label(n)->html)   /* if html, get original text */
 	    lbl = agcanonical (agxget(n, N_label->index));
 	else
@@ -149,10 +144,10 @@ static void set_record_rects(node_t * n, field_t * f, agxbuf * xb)
 
     if (f->n_flds == 0) {
 	sprintf(buf, "%.3g,%.3g,%.3g,%.3g ",
-		f->b.LL.x + (double)(ND_coord_i(n).x),
-		YFDIR(f->b.LL.y + (double)(ND_coord_i(n).y)),
-		f->b.UR.x + (double)(ND_coord_i(n).x),
-		YFDIR(f->b.UR.y + (double)(ND_coord_i(n).y)));
+		f->b.LL.x + ND_coord(n).x,
+		YFDIR(f->b.LL.y + ND_coord(n).y),
+		f->b.UR.x + ND_coord(n).x,
+		YFDIR(f->b.UR.y + ND_coord(n).y));
 	agxbput(xb, buf);
     }
     for (i = 0; i < f->n_flds; i++)
@@ -215,14 +210,14 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
     safe_dcl(g, g, "bb", "", agraphattr);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (dim3) {
-	    sprintf(buf, "%d,%d,%d", ND_coord_i(n).x, YDIR(ND_coord_i(n).y), POINTS(ND_pos(n)[2]));
+	    sprintf(buf, "%.3g,%.3g,%d", ND_coord(n).x, YDIR(ND_coord(n).y), POINTS(ND_pos(n)[2]));
 	} else {
-	    sprintf(buf, "%d,%d", ND_coord_i(n).x, YDIR(ND_coord_i(n).y));
+	    sprintf(buf, "%.3g,%.3g", ND_coord(n).x, YDIR(ND_coord(n).y));
 	}
 	agset(n, "pos", buf);
-	sprintf(buf, "%.2f", PS2INCH(ND_ht_i(n)));
+	sprintf(buf, "%.3g", PS2INCH(ND_ht_i(n)));
 	agxset(n, N_height->index, buf);
-	sprintf(buf, "%.2f", PS2INCH(ND_lw_i(n) + ND_rw_i(n)));
+	sprintf(buf, "%.3g", PS2INCH(ND_lw_i(n) + ND_rw_i(n)));
 	agxset(n, N_width->index, buf);
 	if (strcmp(ND_shape(n)->name, "record") == 0) {
 	    set_record_rects(n, ND_shape_info(n), &xb);

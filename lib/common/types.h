@@ -430,7 +430,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
     typedef struct Agnodeinfo_t {
 	shape_desc *shape;
 	void *shape_info;
-	point coord;
+	pointf coord;
 	double width, height;
 	boxf bb;
 	int ht, lw, rw;
@@ -483,7 +483,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_alg(n) (n)->u.alg
 #define ND_bb(n) (n)->u.bb
 #define ND_clust(n) (n)->u.clust
-#define ND_coord_i(n) (n)->u.coord
+#define ND_coord(n) (n)->u.coord
 #define ND_dist(n) (n)->u.dist
 #define ND_flat_in(n) (n)->u.flat_in
 #define ND_flat_out(n) (n)->u.flat_out

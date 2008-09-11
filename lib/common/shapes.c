@@ -347,15 +347,14 @@ static int stylenode(GVJ_t * job, node_t * n)
 static void Mcircle_hack(GVJ_t * job, node_t * n)
 {
     double x, y;
-    pointf AF[2], p, coord;
+    pointf AF[2], p;
 
     y = .7500;
     x = .6614;			/* x^2 + y^2 = 1.0 */
     p.y = y * ND_ht_i(n) / 2.0;
     p.x = ND_rw_i(n) * x;	/* assume node is symmetric */
 
-    P2PF(ND_coord_i(n), coord);
-    AF[0] = add_pointfs(p, coord);
+    AF[0] = add_pointfs(p, ND_coord(n));
     AF[1].y = AF[0].y;
     AF[1].x = AF[0].x - 2 * p.x;
     gvrender_polyline(job, AF, 2);
@@ -1506,7 +1505,7 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     }
 
     /* nominal label position in the center of the node */
-    P2PF(ND_coord_i(n), ND_label(n)->pos);
+    ND_label(n)->pos = ND_coord(n);
 
     xsize = (double)(ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n));
     ysize = (double)ND_ht_i(n) / POINTS(ND_height(n));
@@ -1574,8 +1573,8 @@ static void poly_gencode(GVJ_t * job, node_t * n)
 	/* get coords of innermost periphery */
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i];
-	    AF[i].x = P.x * xsize + (double)ND_coord_i(n).x;
-	    AF[i].y = P.y * ysize + (double)ND_coord_i(n).y;
+	    AF[i].x = P.x * xsize + ND_coord(n).x;
+	    AF[i].y = P.y * ysize + ND_coord(n).y;
 	}
 	/* lay down fill first */
 	if (filled && pfilled) {
@@ -1597,8 +1596,8 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     for (j = 0; j < peripheries; j++) {
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i + j * sides];
-	    AF[i].x = P.x * xsize + (double)ND_coord_i(n).x;
-	    AF[i].y = P.y * ysize + (double)ND_coord_i(n).y;
+	    AF[i].x = P.x * xsize + ND_coord(n).x;
+	    AF[i].y = P.y * ysize + ND_coord(n).y;
 	}
 	if (sides <= 2) {
 	    gvrender_ellipse(job, AF, sides, filled);
@@ -1786,8 +1785,8 @@ static void point_gencode(GVJ_t * job, node_t * n)
     for (j = 0; j < peripheries; j++) {
 	for (i = 0; i < sides; i++) {
 	    P = vertices[i + j * sides];
-	    AF[i].x = P.x + (double)ND_coord_i(n).x;
-	    AF[i].y = P.y + (double)ND_coord_i(n).y;
+	    AF[i].x = P.x + ND_coord(n).x;
+	    AF[i].y = P.y + ND_coord(n).y;
 	}
 	gvrender_ellipse(job, AF, sides, filled);
 	/* fill innermost periphery only */
@@ -2246,7 +2245,7 @@ record_inside(inside_t * inside_context, pointf p)
 static int record_path(node_t* n, port* prt, int side, boxf rv[], int *kptr)
 {
     int i, ls, rs;
-    pointf p, np;
+    pointf p;
     field_t *info;
 
     if (!prt->defined) return 0;
@@ -2264,14 +2263,13 @@ static int record_path(node_t* n, port* prt, int side, boxf rv[], int *kptr)
 	if (BETWEEN(ls, p.x, rs)) {
 	    /* FIXME: I don't understand this code */
 	    if (GD_flip(n->graph)) {
-		P2PF(ND_coord_i(n), np);
-		rv[0] = flip_rec_boxf(info->fld[i]->b, np);
+		rv[0] = flip_rec_boxf(info->fld[i]->b, ND_coord(n));
 	    } else {
-		rv[0].LL.x = ND_coord_i(n).x + ls;
-		rv[0].LL.y = ND_coord_i(n).y - ND_ht_i(n) / 2.;
-		rv[0].UR.x = ND_coord_i(n).x + rs;
+		rv[0].LL.x = ND_coord(n).x + ls;
+		rv[0].LL.y = ND_coord(n).y - (ND_ht_i(n) / 2);
+		rv[0].UR.x = ND_coord(n).x + rs;
 	    }
-	    rv[0].UR.y = ND_coord_i(n).y + ND_ht_i(n) / 2;
+	    rv[0].UR.y = ND_coord(n).y + (ND_ht_i(n) / 2);
 	    *kptr = 1;
 	    break;
 	}
@@ -2285,8 +2283,8 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
     pointf AF[2], coord;
 
     if (f->lp) {
-	coord.x = (f->b.LL.x + f->b.UR.x) / 2.0 + ND_coord_i(n).x;
-	coord.y = (f->b.LL.y + f->b.UR.y) / 2.0 + ND_coord_i(n).y;
+	coord.x = (f->b.LL.x + f->b.UR.x) / 2. + ND_coord(n).x;
+	coord.y = (f->b.LL.y + f->b.UR.y) / 2. + ND_coord(n).y;
 	f->lp->pos = coord;
 	emit_label(job, EMIT_NLABEL, f->lp);
         pencolor(job, n);
@@ -2295,15 +2293,15 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
     for (i = 0; i < f->n_flds; i++) {
 	if (i > 0) {
 	    if (f->LR) {
-		P2PF(f->fld[i]->b.LL, AF[0]);
+		AF[0] = f->fld[i]->b.LL;
 		AF[1].x = AF[0].x;
-		AF[1].y = (double)(f->fld[i]->b.UR.y);
+		AF[1].y = f->fld[i]->b.UR.y;
 	    } else {
-		P2PF(f->fld[i]->b.UR, AF[1]);
-		AF[0].x = (double)(f->fld[i]->b.LL.x);
+		AF[1] = f->fld[i]->b.UR;
+		AF[0].x = f->fld[i]->b.LL.x;
 		AF[0].y = AF[1].y;
 	    }
-	    P2PF(ND_coord_i(n), coord);
+	    coord = ND_coord(n);
 	    AF[0] = add_pointfs(AF[0], coord);
 	    AF[1] = add_pointfs(AF[1], coord);
 	    gvrender_polyline(job, AF, 2);
@@ -2322,11 +2320,11 @@ static void record_gencode(GVJ_t * job, node_t * n)
     int doMap = (obj->url || obj->explicit_tooltip);
 
     f = (field_t *) ND_shape_info(n);
-    B2BF(f->b, BF);
-    BF.LL.x += (double)(ND_coord_i(n).x);
-    BF.LL.y += (double)(ND_coord_i(n).y);
-    BF.UR.x += (double)(ND_coord_i(n).x);
-    BF.UR.y += (double)(ND_coord_i(n).y);
+    BF = f->b;
+    BF.LL.x += ND_coord(n).x;
+    BF.LL.y += ND_coord(n).y;
+    BF.UR.x += ND_coord(n).x;
+    BF.UR.y += ND_coord(n).y;
     
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
         gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
@@ -2440,10 +2438,10 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
     gvrender_begin_context(job);
     if (desc)
 	fprintf(job->output_file,
-		"%d %d translate newpath user_shape_%d\n",
-		ND_coord_i(n).x + desc->offset.x,
-		ND_coord_i(n).y + desc->offset.y, desc->macro_id);
-    P2PF(ND_coord_i(n), ND_label(n)->pos);
+		"%.3g %.3g translate newpath user_shape_%d\n",
+		ND_coord(n).x + desc->offset.x,
+		ND_coord(n).y + desc->offset.y, desc->macro_id);
+    ND_label(n)->pos = ND_coord(n);
     gvrender_end_context(job);
 
     emit_label(job, EMIT_NLABEL, ND_label(n));
@@ -2457,9 +2455,10 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
 static char* side_port[] = {"s", "e", "n", "w"};
 
 static point
-cvtPt (point p, int rankdir)
+cvtPt (pointf p, int rankdir)
 {
-    point q = {0, 0};
+    pointf q = {0, 0};
+    point Q;
 
     switch (rankdir) {
     case RANKDIR_TB :
@@ -2478,7 +2477,8 @@ cvtPt (point p, int rankdir)
 	q.x = p.y;
 	break;
     }
-    return q;
+    PF2P(q, Q);
+    return Q;
 }
 
 static char* closestSide (node_t*  n, node_t* other, port* oldport)
@@ -2486,8 +2486,8 @@ static char* closestSide (node_t*  n, node_t* other, port* oldport)
     boxf b;
     int rkd = GD_rankdir(n->graph->root);
     point p = {0, 0};
-    point pt = cvtPt (ND_coord_i(n), rkd);
-    point opt = cvtPt (ND_coord_i(other), rkd);
+    point pt = cvtPt (ND_coord(n), rkd);
+    point opt = cvtPt (ND_coord(other), rkd);
     int sides = oldport->side;
     char* rv = NULL;
     int i, d, mind = 0;

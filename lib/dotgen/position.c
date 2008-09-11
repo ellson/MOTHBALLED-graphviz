@@ -16,7 +16,7 @@
 
 
 /*
- * position(g): set ND_coord_i(n) (x and y) for all nodes n of g, using GD_rank(g).
+ * position(g): set ND_coord(n) (x and y) for all nodes n of g, using GD_rank(g).
  * (the graph may be modified by merging certain edges with a common endpoint.)
  * the coordinates are computed by constructing and ranking an auxiliary graph.
  * then leaf nodes are inserted in the fast graph.  cluster boundary nodes are
@@ -574,7 +574,7 @@ set_xcoords(graph_t * g)
     for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
 	for (j = 0; j < rank[i].n; j++) {
 	    v = rank[i].v[j];
-	    ND_coord_i(v).x = ND_rank(v);
+	    ND_coord(v).x = ND_rank(v);
 	    ND_rank(v) = i;
 	}
     }
@@ -711,8 +711,7 @@ static void adjustRanks(graph_t * g, int equal)
 	lht = MAX(GD_border(g)[LEFT_IX].y, GD_border(g)[RIGHT_IX].y);
 	maxr = GD_maxrank(g);
 	minr = GD_minrank(g);
-	rht =
-	    ND_coord_i(rank[minr].v[0]).y - ND_coord_i(rank[maxr].v[0]).y;
+	rht = ND_coord(rank[minr].v[0]).y - ND_coord(rank[maxr].v[0]).y;
 	delta = lht - (rht + ht1 + ht2);
 	if (delta > 0) {
 	    if (equal)
@@ -857,7 +856,7 @@ static void set_ycoords(graph_t * g)
 
     /* copy ycoord assignment from leftmost nodes to others */
     for (n = GD_nlist(g); n; n = ND_next(n))
-	ND_coord_i(n).y = rank[ND_rank(n)].v[0]->u.coord.y;
+	ND_coord(n).y = rank[ND_rank(n)].v[0]->u.coord.y;
 }
 
 /* dot_compute_bb:
@@ -886,7 +885,7 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 	    for (c = 1; (ND_node_type(v) != NORMAL) && c < rnkn; c++)
 		v = GD_rank(g)[r].v[c];
 	    if (ND_node_type(v) == NORMAL) {
-		x = (double)(ND_coord_i(v).x - ND_lw_i(v));
+		x = ND_coord(v).x - ND_lw_i(v);
 		LL.x = MIN(LL.x, x);
 	    }
 	    else continue;
@@ -894,7 +893,7 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 	    v = GD_rank(g)[r].v[rnkn - 1];
 	    for (c = rnkn-2; ND_node_type(v) != NORMAL; c--)
 		v = GD_rank(g)[r].v[c];
-	    x = (double)(ND_coord_i(v).x + ND_rw_i(v));
+	    x = ND_coord(v).x + ND_rw_i(v);
 	    UR.x = MAX(UR.x, x);
 	}
 	offset = CL_OFFSET;
@@ -1014,8 +1013,8 @@ static void set_aspect(graph_t * g)
 		yf = t;
 	    }
 	    for (n = GD_nlist(g); n; n = ND_next(n)) {
-		ND_coord_i(n).x = ND_coord_i(n).x * xf;
-		ND_coord_i(n).y = ND_coord_i(n).y * yf;
+		ND_coord(n).x = ROUND(ND_coord(n).x * xf);
+		ND_coord(n).y = ROUND(ND_coord(n).y * yf);
 	    }
 	    scale_bb(g, g, xf, yf);
 	}
@@ -1025,10 +1024,9 @@ static void set_aspect(graph_t * g)
 static point resize_leaf(node_t * leaf, point lbound)
 {
     dot_nodesize(leaf, GD_flip(leaf->graph));
-    ND_coord_i(leaf).y = lbound.y;
-    ND_coord_i(leaf).x = lbound.x + ND_lw_i(leaf);
-    lbound.x =
-	lbound.x + ND_lw_i(leaf) + ND_rw_i(leaf) + GD_nodesep(leaf->graph);
+    ND_coord(leaf).y = lbound.y;
+    ND_coord(leaf).x = lbound.x + ND_lw_i(leaf);
+    lbound.x = lbound.x + ND_lw_i(leaf) + ND_rw_i(leaf) + GD_nodesep(leaf->graph);
     return lbound;
 }
 
@@ -1083,8 +1081,8 @@ static void do_leaves(graph_t * g, node_t * leader)
 
     if (ND_UF_size(leader) <= 1)
 	return;
-    lbound.x = ND_coord_i(leader).x - ND_lw_i(leader);
-    lbound.y = ND_coord_i(leader).y;
+    lbound.x = ND_coord(leader).x - ND_lw_i(leader);
+    lbound.y = ND_coord(leader).y;
     lbound = resize_leaf(leader, lbound);
     if (ND_out(leader).size > 0) {	/* in-edge leaves */
 	n = ND_out(leader).list[0]->head;

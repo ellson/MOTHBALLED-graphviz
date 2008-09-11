@@ -373,7 +373,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     fixed = 0;
     if (lh) {
 	bb = &(GD_bb(lh));
-	if (!inBox(ND_coord_i(head), bb)) {
+	if (!inBoxf(ND_coord(head), bb)) {
 	    agerr(AGWARN, "%s -> %s: head not inside head cluster %s\n",
 		  e->tail->name, e->head->name, agget(e, "lhead"));
 	} else {
@@ -383,7 +383,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 	     * crosses box.
 	     */
 	    if (inBoxf(bez->list[0], bb)) {
-		if (inBox(ND_coord_i(tail), bb)) {
+		if (inBoxf(ND_coord(tail), bb)) {
 		    agerr(AGWARN,
 			  "%s -> %s: tail is inside head cluster %s\n",
 			  e->tail->name, e->head->name, agget(e, "lhead"));
@@ -433,7 +433,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
     fixed = 0;
     if (lt) {
 	bb = &(GD_bb(lt));
-	if (!inBox(ND_coord_i(tail), bb)) {
+	if (!inBoxf(ND_coord(tail), bb)) {
 	    agerr(AGWARN, "%s -> %s: tail not inside tail cluster %s\n",
 		  e->tail->name, head->name, agget(e, "ltail"));
 	} else {
@@ -443,7 +443,7 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 	     * arrow head crosses box.
 	     */
 	    if (inBoxf(bez->list[endi], bb)) {
-		if (inBox(ND_coord_i(head), bb)) {
+		if (inBoxf(ND_coord(head), bb)) {
 		    agerr(AGWARN,
 			  "%s -> %s: head is inside tail cluster %s\n",
 			  e->tail->name, e->head->name, agget(e, "ltail"));

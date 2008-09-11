@@ -298,8 +298,8 @@ static void cloneEdge(Agedge_t * old, Agedge_t * new)
 static void cloneNode(Agnode_t * old, Agnode_t * new)
 {
     cloneAttrs(old, new);
-    ND_coord_i(new).x = POINTS(ND_pos(old)[0]);
-    ND_coord_i(new).y = POINTS(ND_pos(old)[1]);
+    ND_coord(new).x = POINTS(ND_pos(old)[0]);
+    ND_coord(new).y = POINTS(ND_pos(old)[1]);
     ND_height(new) = ND_height(old);
     ND_ht_i(new) = ND_ht_i(old);
     ND_width(new) = ND_width(old);

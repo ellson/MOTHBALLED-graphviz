@@ -45,9 +45,6 @@ static int edgen;             /* size of edges[] */
 static void checkpath(int, boxf*, path*);
 static void mkspacep(int size);
 static void printpath(path * pp);
-#ifdef OBSOLETE
-static int append(path * path, int bi, point p0, point p1, int);
-#endif
 #ifdef DEBUG
 static void printboxes(int boxn, box* boxes)
 {
@@ -223,21 +220,6 @@ static int debugleveln(edge_t* realedge, int i)
 }
 #endif  /* DEBUG */
 
-#ifdef OBSOLETE
-static point mkpt(int x, int y)
-{
-    point rv;
-    rv.x = x;
-    rv.y = y;
-    return rv;
-}
-
-static int pteq(point p, point q)
-{
-    return ((p.x == q.x) && (p.y == q.y));
-}
-#endif
-
 /* routesplinesinit:
  * Data initialized once until matching call to routeplineterm
  * Allows recursive calls to dot
@@ -246,13 +228,6 @@ void
 routesplinesinit()
 {
     if (++routeinit > 1) return;
-#ifdef UNUSED
-    if (!(bs = N_GNEW(BINC, box))) {
-	agerr(AGERR, "cannot allocate bs\n");
-	abort();
-    }
-    maxbn = BINC;
-#endif
     if (!(ps = N_GNEW(PINC, pointf))) {
 	agerr(AGERR, "cannot allocate ps\n");
 	abort();
@@ -295,7 +270,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     Ppoint_t eps[2];
     Pvector_t evs[2];
     int edgei, prev, next;
-    point sp[4];
+    pointf sp[4];
     int pi, bi, si;
     double t;
     boxf *boxes;
@@ -340,7 +315,7 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
     if ((boxn > 1) && (boxes[0].LL.y > boxes[1].LL.y)) {
         flip = 1;
 	for (bi = 0; bi < boxn; bi++) {
-	    int v = boxes[bi].UR.y;
+	    double v = boxes[bi].UR.y;
 	    boxes[bi].UR.y = -1*boxes[bi].LL.y;
 	    boxes[bi].LL.y = -v;
 	}
@@ -422,40 +397,9 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 		polypoints[pi++].y = boxes[bi].LL.y;
 	    }
 	}
-    } 
+    }
     else {
-#ifdef OBSOLETE
-	/* new, more generalized approach for self-edges.  We do not
-	   assume any monotonicity about the box path, only that it
-	   is simply connected.  We build up the constraint poly by
-	   walking the box path from one end to the other and back
-	   in the recursive function append(). A better approach to all
-	   of this might be to dispense with the box paths altogether
-	   and just compute the constraint poly directly, but this
-	   needs to be done as part of a more thorough overhaul. */
-	point p0, p1;
-	box b0, b1;
-	b0 = pp->boxes[0];
-	b1 = pp->boxes[1];
-	/* determine 'starting' segment (side of b0) for box path search */
-	if (b0.UR.x == b1.LL.x) {
-	    p0 = b0.LL;
-	    p1 = mkpt(b0.LL.x, b0.UR.y);
-	} else if (b0.LL.y == b1.UR.y) {
-	    p0 = mkpt(b0.LL.x, b0.UR.y);
-	    p1 = b0.UR;
-	} else if (b0.LL.x == b1.UR.x) {
-	    p0 = b0.UR;
-	    p1 = mkpt(b0.UR.x, b0.LL.y);
-	} else if (b0.UR.y == b1.LL.y) {
-	    p0 = mkpt(b0.UR.x, b0.LL.y);
-	    p1 = b0.LL;
-	} else
-	    abort();
-	pi = append(pp, 0, p0, p1, 0);
-#else
 	abort();
-#endif
     }
 
     if (flip) {
@@ -521,17 +465,17 @@ static pointf *_routesplines(path * pp, int *npoints, int polyline)
 	boxes[bi].UR.x = INT_MIN;
     }
     for (splinepi = 0; splinepi < spl.pn; splinepi++) {
-	P2PF(spl.ps[splinepi], ps[splinepi]);
+	ps[splinepi] = spl.ps[splinepi];
     }
 REDO:
     for (splinepi = 0; splinepi + 3 < spl.pn; splinepi += 3) {
 	int num_div = delta * boxn;
 	for (si = 0; si <= num_div; si++) {
 	    t = si / ((double)num_div);
-	    PF2P(ps[splinepi], sp[0]);
-	    PF2P(ps[splinepi + 1], sp[1]);
-	    PF2P(ps[splinepi + 2], sp[2]);
-	    PF2P(ps[splinepi + 3], sp[3]);
+	    sp[0] = ps[splinepi];
+	    sp[1] = ps[splinepi + 1];
+	    sp[2] = ps[splinepi + 2];
+	    sp[3] = ps[splinepi + 3];
 	    sp[0].x = sp[0].x + t * (sp[1].x - sp[0].x);
 	    sp[0].y = sp[0].y + t * (sp[1].y - sp[0].y);
 	    sp[1].x = sp[1].x + t * (sp[2].x - sp[1].x);
@@ -559,7 +503,7 @@ REDO:
      * Therefore, we make the sample finer until all boxes have
      * valid values. cf. bug 456. Would making sp[] pointfs help?
      */
-    for (bi = 0; bi < boxn; bi++) {
+    for (bi = 0; bi < boxn; bi++) {  /* FIXME - fp equality tests */
 	if ((boxes[bi].LL.x == INT_MAX) || (boxes[bi].UR.x == INT_MIN)) {
 	    delta *= 2;
 	    goto REDO;
@@ -621,9 +565,9 @@ static void checkpath(int boxn, boxf* boxes, path* thepath)
     /* remove degenerate boxes. */
     i = 0;
     for (bi = 0; bi < boxn; bi++) {
-	if (boxes[bi].LL.y == boxes[bi].UR.y)
+	if (ABS(boxes[bi].LL.y - boxes[bi].UR.y) < .01)
 	    continue;
-	if (boxes[bi].LL.x == boxes[bi].UR.x)
+	if (ABS(boxes[bi].LL.x - boxes[bi].UR.x) < .01)
 	    continue;
 	if (i != bi)
 	    boxes[i] = boxes[bi];
@@ -776,162 +720,6 @@ static void mkspacep(int size)
 	maxpn = newmax;
     }
 }
-
-#ifdef OBSOLETE
-/* new code to create poly from box list
- * given that we entered the box b on segment p0,p1 (p0==p1 allowed) 
- * then add successive points to the constraint poly
- */
-
-#define BOXLEFT 0
-#define BOXTOP 1
-#define BOXRIGHT 2
-#define BOXBOTTOM 3
-static box B;
-
-static int sideofB(point p, box B)
-{
-    if (p.x == B.LL.x)
-	return BOXLEFT;
-    if (p.y == B.UR.y)
-	return BOXTOP;
-    if (p.x == B.UR.x)
-	return BOXRIGHT;
-    if (p.y == B.LL.y)
-	return BOXBOTTOM;
-    abort();
-    return 0;
-}
-
-static int appendpt(point p, int polysz)
-{
-    polypoints[polysz].x = p.x;
-    polypoints[polysz].y = p.y;
-    return (polysz+1);
-}
-
-static int cmpf(const void *pp0, const void *pp1)
-{
-    point p0, p1;
-    int s0, s1;
-
-    p0 = *(point *) pp0;
-    p1 = *(point *) pp1;
-    s0 = sideofB(p0, B);
-    s1 = sideofB(p1, B);
-
-    if (s0 != s1)
-	return s1 - s0;
-    switch (s0) {
-    case BOXLEFT:
-	return p1.y - p0.y;
-    case BOXTOP:
-	return p1.x - p0.x;
-    case BOXRIGHT:
-	return p0.y - p1.y;
-    case BOXBOTTOM:
-	return p0.x - p1.x;
-    default:
-	abort();
-    }
-    return 0;			/* not reached */
-}
-
-/* append:
- */
-static int 
-append(path * path, int bi, point p0, point p1, int polysz)
-{
-    point v[8];		/* worst case 4 corners + 2 segs * 2 points each */
-    point w[8];
-    box b = path->boxes[bi];
-    box bb;
-    int i, i0, npw, delta;
-    point q0 = { 0, 0 }, q1 = { 0, 0}, r;
-    int pn;
-
-    /* v = 4 corners of b, p0 and p1 */
-    pn = 0;
-    v[pn++] = b.LL;
-    v[pn++] = mkpt(b.UR.x, b.LL.y);
-    v[pn++] = b.UR;
-    v[pn++] = mkpt(b.LL.x, b.UR.y);
-    v[pn++] = p0;
-    v[pn++] = p1;
-
-    if (bi + 1 < path->nbox) {
-	bb = path->boxes[bi + 1];
-	/* determine points q0,q1 where b and bb touch and append to v */
-	if (b.UR.x == bb.LL.x) {
-	    q0.x = q1.x = b.UR.x;
-	    q0.y = MIN(b.UR.y, bb.UR.y);
-	    q1.y = MAX(b.LL.y, bb.LL.y);
-	} else if (b.LL.x == bb.UR.x) {
-	    q0.x = q1.x = b.LL.x;
-	    q0.y = MIN(b.UR.y, bb.UR.y);
-	    q1.y = MAX(b.LL.y, bb.LL.y);
-	} else if (b.UR.y == bb.LL.y) {
-	    q0.y = q1.y = b.UR.y;
-	    q0.x = MIN(b.UR.x, bb.UR.x);
-	    q1.x = MAX(b.LL.x, bb.LL.x);
-	} else if (b.LL.y == bb.UR.y) {
-	    q0.y = q1.y = b.LL.y;
-	    q0.x = MIN(b.UR.x, bb.UR.x);
-	    q1.x = MAX(b.LL.x, bb.LL.x);
-	} else
-	    abort();
-	v[pn++] = q0;
-	v[pn++] = q1;
-    }
-
-    /* sort v so that the cyclic order is p0, all other points, p1  */
-    B = b;
-    qsort(v, pn, sizeof(v[0]), cmpf);
-
-    /* eliminate duplicates and record i0 = index of p0 in w */
-    w[0] = v[0];
-    npw = 1;
-    i0 = -1;
-    for (i = 0; i < pn; i++) {
-	if (pteq(w[npw - 1], p0))
-	    i0 = npw - 1;
-	if (!pteq(v[i], w[npw - 1]))
-	    w[npw++] = v[i];
-    }
-
-    i = i0;
-    if (bi == 0)
-	polysz = appendpt(p0, polysz);
-    if (pteq(p1, w[(i0 + 1) % npw]))
-	delta = -1;
-    else if (pteq(p1, w[(i0 - 1 + npw) % npw]))
-	delta = 1;
-    else
-	abort();
-    do {
-	i = (i + delta + npw) % npw;	/* go to the next point in order */
-	r = w[i];		/* call it r */
-
-	/* append r to current poly, except p0 and p1 are special cases */
-	if ((bi == 0) || (!pteq(r, p0) && !pteq(r, p1)))
-	    polysz = appendpt(r, polysz);
-	if (pteq(r, p1))
-	    break;
-	if (bi + 1 < path->nbox) {	/* recur when we hit the next box */
-	    if (pteq(r, q0)) {
-		polysz = append(path, bi + 1, q0, q1, polysz);
-		polysz = appendpt(q1, polysz);	/* assumes q1 != p0 and p1 */
-		i += delta;	/* skip q1 */
-	    } else if (pteq(r, q1)) {
-		polysz = append(path, bi + 1, q1, q0, polysz);
-		polysz = appendpt(q0, polysz);
-		i += delta;
-	    }
-	}
-    } while (i != i0);
-    return polysz;
-}
-#endif
 
 static void printpath(path * pp)
 {

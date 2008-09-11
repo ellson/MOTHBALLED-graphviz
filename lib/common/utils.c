@@ -1420,7 +1420,7 @@ boolean overlap_node(node_t *n, boxf b)
     if (! OVERLAP(b, bb))
         return FALSE;
 
-    P2PF(ND_coord_i(n),p);
+    p = ND_coord(n);
 
 /*  FIXME - need to do something better about CLOSEENOUGH */
     p.x -= (b.UR.x + b.LL.x) / 2.;
