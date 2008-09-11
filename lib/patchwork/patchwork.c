@@ -182,8 +182,8 @@ static rect_t walker(treenode_t *tree)
 			gv_nodesize(n,GD_flip(n->graph));
 			finishNode (n);
 			/*fprintf(stderr,"%s coord %.3g %.3g ht %d width %d\n",
-				n->name, ND_coord(n).x, ND_coord(n).y, ND_ht_i(n),
-				ND_rw_i(n)+ND_lw_i(n));*/
+				n->name, ND_coord(n).x, ND_coord(n).y, ND_ht(n),
+				ND_rw(n)+ND_lw(n));*/
 			break;
 		default: abort();
 	}

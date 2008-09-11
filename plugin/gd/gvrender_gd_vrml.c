@@ -136,11 +136,11 @@ static pointf vrml_node_point(GVJ_t *job, node_t *n, pointf p)
 
     /* make rv relative to PNG canvas */
     if (job->rotation) {
-	rv.x = ( (p.y - job->pad.y) - ND_coord(n).y + ND_lw_i(n)     ) * Scale + NODE_PAD;
-	rv.y = (-(p.x - job->pad.x) + ND_coord(n).x + ND_ht_i(n) / 2.) * Scale + NODE_PAD;
+	rv.x = ( (p.y - job->pad.y) - ND_coord(n).y + ND_lw(n)     ) * Scale + NODE_PAD;
+	rv.y = (-(p.x - job->pad.x) + ND_coord(n).x + ND_ht(n) / 2.) * Scale + NODE_PAD;
     } else {
-	rv.x = ( (p.x - job->pad.x) - ND_coord(n).x + ND_lw_i(n)     ) * Scale + NODE_PAD;
-	rv.y = (-(p.y - job->pad.y) + ND_coord(n).y + ND_ht_i(n) / 2.) * Scale + NODE_PAD;
+	rv.x = ( (p.x - job->pad.x) - ND_coord(n).x + ND_lw(n)     ) * Scale + NODE_PAD;
+	rv.y = (-(p.y - job->pad.y) + ND_coord(n).y + ND_ht(n) / 2.) * Scale + NODE_PAD;
     }
     return rv;
 }
@@ -256,8 +256,8 @@ static void vrml_begin_node(GVJ_t *job)
     if (shapeOf(n) != SH_POINT) {
 	PNGfile = nodefile(job->output_filename, n);
 
-	width  = (ND_lw_i(n) + ND_rw_i(n)) * Scale + 2 * NODE_PAD;
-	height = (ND_ht_i(n)             ) * Scale + 2 * NODE_PAD;
+	width  = (ND_lw(n) + ND_rw(n)) * Scale + 2 * NODE_PAD;
+	height = (ND_ht(n)           ) * Scale + 2 * NODE_PAD;
 	im = gdImageCreate(width, height);
 
 	/* make background transparent */

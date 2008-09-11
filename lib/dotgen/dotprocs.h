@@ -51,7 +51,7 @@ extern "C" {
     extern void install_in_rank(Agraph_t *, Agnode_t *);
     extern int is_cluster(Agraph_t *);
     extern void dot_compoundEdges(Agraph_t *);
-    extern Agedge_t *make_aux_edge(Agnode_t *, Agnode_t *, int, int);
+    extern Agedge_t *make_aux_edge(Agnode_t *, Agnode_t *, double, int);
     extern void mark_clusters(Agraph_t *);
     extern void mark_lowclusters(Agraph_t *);
     extern int mergeable(edge_t * e, edge_t * f);

@@ -243,8 +243,8 @@ node_t *virtual_node(graph_t * g)
     n->name = "virtual";
     n->graph = g;
     ND_node_type(n) = VIRTUAL;
-    ND_lw_i(n) = ND_rw_i(n) = 1;
-    ND_ht_i(n) = 1;
+    ND_lw(n) = ND_rw(n) = 1;
+    ND_ht(n) = 1;
     ND_UF_size(n) = 1;
     alloc_elist(4, ND_in(n));
     alloc_elist(4, ND_out(n));

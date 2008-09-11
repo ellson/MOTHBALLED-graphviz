@@ -351,8 +351,8 @@ static void Mcircle_hack(GVJ_t * job, node_t * n)
 
     y = .7500;
     x = .6614;			/* x^2 + y^2 = 1.0 */
-    p.y = y * ND_ht_i(n) / 2.0;
-    p.x = ND_rw_i(n) * x;	/* assume node is symmetric */
+    p.y = y * ND_ht(n) / 2.0;
+    p.x = ND_rw(n) * x;	/* assume node is symmetric */
 
     AF[0] = add_pointfs(p, ND_coord(n));
     AF[1].y = AF[0].y;
@@ -1084,11 +1084,11 @@ static boolean poly_inside(inside_t * inside_context, pointf p)
 
 	/* get point and node size adjusted for rankdir=LR */
 	if (GD_flip(n->graph)) {
-	    ysize = ND_lw_i(n) + ND_rw_i(n);
-	    xsize = ND_ht_i(n);
+	    ysize = ND_lw(n) + ND_rw(n);
+	    xsize = ND_ht(n);
 	} else {
-	    xsize = ND_lw_i(n) + ND_rw_i(n);
-	    ysize = ND_ht_i(n);
+	    xsize = ND_lw(n) + ND_rw(n);
+	    ysize = ND_ht(n);
 	}
 
 	/* scale */
@@ -1313,14 +1313,14 @@ compassPort(node_t* n, boxf* bp, port* pp, char* compass, int sides, inside_t* i
     } else {
 	p.x = p.y = 0.;
 	if (GD_flip(n->graph)) {
-	    b.UR.x = ND_ht_i(n) / 2.;
+	    b.UR.x = ND_ht(n) / 2.;
 	    b.LL.x = -b.UR.x;
-	    b.UR.y = ND_lw_i(n);
+	    b.UR.y = ND_lw(n);
 	    b.LL.y = -b.UR.y;
 	} else {
-	    b.UR.y = ND_ht_i(n) / 2.;
+	    b.UR.y = ND_ht(n) / 2.;
 	    b.LL.y = -b.UR.y;
-	    b.UR.x = ND_lw_i(n);
+	    b.UR.x = ND_lw(n);
 	    b.LL.x = -b.UR.x;
 	}
 	defined = FALSE;
@@ -1507,8 +1507,8 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     /* nominal label position in the center of the node */
     ND_label(n)->pos = ND_coord(n);
 
-    xsize = (double)(ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n));
-    ysize = (double)ND_ht_i(n) / POINTS(ND_height(n));
+    xsize = (ND_lw(n) + ND_rw(n)) / POINTS(ND_width(n));
+    ysize = ND_ht(n) / POINTS(ND_height(n));
 
     style = stylenode(job, n);
 
@@ -2266,10 +2266,10 @@ static int record_path(node_t* n, port* prt, int side, boxf rv[], int *kptr)
 		rv[0] = flip_rec_boxf(info->fld[i]->b, ND_coord(n));
 	    } else {
 		rv[0].LL.x = ND_coord(n).x + ls;
-		rv[0].LL.y = ND_coord(n).y - (ND_ht_i(n) / 2);
+		rv[0].LL.y = ND_coord(n).y - (ND_ht(n) / 2);
 		rv[0].UR.x = ND_coord(n).x + rs;
 	    }
-	    rv[0].UR.y = ND_coord(n).y + (ND_ht_i(n) / 2);
+	    rv[0].UR.y = ND_coord(n).y + (ND_ht(n) / 2);
 	    *kptr = 1;
 	    break;
 	}
@@ -2418,9 +2418,8 @@ static boolean epsf_inside(inside_t * inside_context, pointf p)
     node_t *n = inside_context->s.n;
 
     P = ccwrotatepf(p, 90*GD_rankdir(n->graph));
-    x2 = ND_ht_i(n) / 2;
-    return ((P.y >= -x2) && (P.y <= x2) && (P.x >= -ND_lw_i(n))
-	    && (P.x <= ND_rw_i(n)));
+    x2 = ND_ht(n) / 2;
+    return ((P.y >= -x2) && (P.y <= x2) && (P.x >= -ND_lw(n)) && (P.x <= ND_rw(n)));
 }
 
 static void epsf_gencode(GVJ_t * job, node_t * n)
@@ -2498,14 +2497,14 @@ static char* closestSide (node_t*  n, node_t* other, port* oldport)
 	b = *oldport->bp;
     } else {
 	if (GD_flip(n->graph)) {
-	    b.UR.x = ND_ht_i(n) / 2;
+	    b.UR.x = ND_ht(n) / 2;
 	    b.LL.x = -b.UR.x;
-	    b.UR.y = ND_lw_i(n);
+	    b.UR.y = ND_lw(n);
 	    b.LL.y = -b.UR.y;
 	} else {
-	    b.UR.y = ND_ht_i(n) / 2;
+	    b.UR.y = ND_ht(n) / 2;
 	    b.LL.y = -b.UR.y;
-	    b.UR.x = ND_lw_i(n);
+	    b.UR.x = ND_lw(n);
 	    b.LL.x = -b.UR.x;
 	}
     }

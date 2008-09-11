@@ -58,7 +58,7 @@ dumpNS (graph_t * g)
 #endif
 
 static void
-largeMinlen (int l)
+largeMinlen (double l)
 {
     agerr (AGERR, "Edge length %d larger than maximum %u allowed.\nCheck for overwide node(s).\n", l, USHRT_MAX); 
     exit (1);
@@ -170,7 +170,7 @@ static int canreach(node_t * u, node_t * v)
     return go(u, v);
 }
 
-edge_t *make_aux_edge(node_t * u, node_t * v, int len, int wt)
+edge_t *make_aux_edge(node_t * u, node_t * v, double len, int wt)
 {
     edge_t *e;
 
@@ -179,7 +179,7 @@ edge_t *make_aux_edge(node_t * u, node_t * v, int len, int wt)
     e->head = v;
     if (len > USHRT_MAX)
 	largeMinlen (len);
-    ED_minlen(e) = len;
+    ED_minlen(e) = ROUND(len);
     ED_weight(e) = wt;
     fast_edge(e);
     return e;
@@ -210,7 +210,8 @@ make_LR_constraints(graph_t * g)
     int i, j, k;
     int sw;			/* self width */
     int m0, m1;
-    int width, sep[2];
+    double width;
+    int sep[2];
     int nodesep;      /* separation between nodes on same rank */
     edge_t *e, *e0, *e1, *ff;
     node_t *u, *v, *t0, *h0;
@@ -226,12 +227,12 @@ make_LR_constraints(graph_t * g)
     }
     /* make edges to constrain left-to-right ordering */
     for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
-	int last;
+	double last;
 	last = rank[i].v[0]->u.rank = 0;
 	nodesep = sep[i & 1];
 	for (j = 0; j < rank[i].n; j++) {
 	    u = rank[i].v[j];
-	    ND_mval(u) = ND_rw_i(u);	/* keep it somewhere safe */
+	    ND_mval(u) = ND_rw(u);	/* keep it somewhere safe */
 	    if (ND_other(u).size > 0) {	/* compute self size */
 		/* FIX: dot assumes all self-edges go to the right. This
                  * is no longer true, though makeSelfEdge still attempts to
@@ -247,11 +248,11 @@ make_LR_constraints(graph_t * g)
 			sw += selfRightSpace (e);
 		    }
 		}
-		ND_rw_i(u) += sw;	/* increment to include self edges */
+		ND_rw(u) += sw;	/* increment to include self edges */
 	    }
 	    v = rank[i].v[j + 1];
 	    if (v) {
-		width = ND_rw_i(u) + ND_lw_i(v) + nodesep;
+		width = ND_rw(u) + ND_lw(v) + nodesep;
 		e0 = make_aux_edge(u, v, width, 0);
 		last = (ND_rank(v) = last + width);
 	    }
@@ -266,13 +267,13 @@ make_LR_constraints(graph_t * g)
 		    e1 = ff;
 		}
 		m0 = (ED_minlen(e) * GD_nodesep(g)) / 2;
-		m1 = m0 + ND_rw_i(e0->head) + ND_lw_i(e0->tail);
+		m1 = m0 + ND_rw(e0->head) + ND_lw(e0->tail);
 		/* these guards are needed because the flat edges
 		 * work very poorly with cluster layout */
 		if (canreach(e0->tail, e0->head) == FALSE)
 		    make_aux_edge(e0->head, e0->tail, m1,
 			ED_weight(e));
-		m1 = m0 + ND_rw_i(e1->tail) + ND_lw_i(e1->head);
+		m1 = m0 + ND_rw(e1->tail) + ND_lw(e1->head);
 		if (canreach(e1->head, e1->tail) == FALSE)
 		    make_aux_edge(e1->tail, e1->head, m1,
 			ED_weight(e));
@@ -289,7 +290,7 @@ make_LR_constraints(graph_t * g)
 		    h0 = e->tail;
 		}
 
-		width = ND_rw_i(t0) + ND_lw_i(h0);
+		width = ND_rw(t0) + ND_lw(h0);
 		m0 = ED_minlen(e) * GD_nodesep(g) + width;
 
 		if ((e0 = find_fast_edge(t0, h0))) {
@@ -341,7 +342,7 @@ static void make_edge_pairs(graph_t * g)
 		    && (i == ND_save_out(n).size / 2 - 1)) {
 		    node_t *u = ND_save_out(n).list[i]->head;
 		    node_t *v = ND_save_out(n).list[i + 1]->head;
-		    int width = ND_rw_i(u) + ND_lw_i(v) + GD_nodesep(g);
+		    double width = ND_rw(u) + ND_lw(v) + GD_nodesep(g);
 		    m0 = width / 2 - 1;
 		}
 #endif
@@ -409,7 +410,7 @@ static void keepout_othernodes(graph_t * g)
 	    u = GD_rank(g->root)[r].v[i];
 	    /* can't use "is_a_vnode_of" because elists are swapped */
 	    if ((ND_node_type(u) == NORMAL) || vnode_not_related_to(g, u)) {
-		make_aux_edge(u, GD_ln(g), CL_OFFSET + ND_rw_i(u), 0);
+		make_aux_edge(u, GD_ln(g), CL_OFFSET + ND_rw(u), 0);
 		break;
 	    }
 	}
@@ -417,7 +418,7 @@ static void keepout_othernodes(graph_t * g)
 	     i++) {
 	    u = ND_rank(g->root)[r].v[i];
 	    if ((ND_node_type(u) == NORMAL) || vnode_not_related_to(g, u)) {
-		make_aux_edge(GD_rn(g), u, CL_OFFSET + ND_lw_i(u), 0);
+		make_aux_edge(GD_rn(g), u, CL_OFFSET + ND_lw(u), 0);
 		break;
 	    }
 	}
@@ -793,7 +794,7 @@ static void set_ycoords(graph_t * g)
 	    n = rank[r].v[i];
 
 	    /* assumes symmetry, ht1 = ht2 */
-	    ht2 = (ND_ht_i(n) + 1) / 2;
+	    ht2 = (ROUND(ND_ht(n)) + 1) / 2;
 
 
 	    /* have to look for high self-edge labels, too */
@@ -885,7 +886,7 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 	    for (c = 1; (ND_node_type(v) != NORMAL) && c < rnkn; c++)
 		v = GD_rank(g)[r].v[c];
 	    if (ND_node_type(v) == NORMAL) {
-		x = ND_coord(v).x - ND_lw_i(v);
+		x = ND_coord(v).x - ND_lw(v);
 		LL.x = MIN(LL.x, x);
 	    }
 	    else continue;
@@ -893,7 +894,7 @@ static void dot_compute_bb(graph_t * g, graph_t * root)
 	    v = GD_rank(g)[r].v[rnkn - 1];
 	    for (c = rnkn-2; ND_node_type(v) != NORMAL; c--)
 		v = GD_rank(g)[r].v[c];
-	    x = ND_coord(v).x + ND_rw_i(v);
+	    x = ND_coord(v).x + ND_rw(v);
 	    UR.x = MAX(UR.x, x);
 	}
 	offset = CL_OFFSET;
@@ -1025,8 +1026,8 @@ static point resize_leaf(node_t * leaf, point lbound)
 {
     dot_nodesize(leaf, GD_flip(leaf->graph));
     ND_coord(leaf).y = lbound.y;
-    ND_coord(leaf).x = lbound.x + ND_lw_i(leaf);
-    lbound.x = lbound.x + ND_lw_i(leaf) + ND_rw_i(leaf) + GD_nodesep(leaf->graph);
+    ND_coord(leaf).x = lbound.x + ND_lw(leaf);
+    lbound.x = lbound.x + ND_lw(leaf) + ND_rw(leaf) + GD_nodesep(leaf->graph);
     return lbound;
 }
 
@@ -1081,7 +1082,7 @@ static void do_leaves(graph_t * g, node_t * leader)
 
     if (ND_UF_size(leader) <= 1)
 	return;
-    lbound.x = ND_coord(leader).x - ND_lw_i(leader);
+    lbound.x = ND_coord(leader).x - ND_lw(leader);
     lbound.y = ND_coord(leader).y;
     lbound = resize_leaf(leader, lbound);
     if (ND_out(leader).size > 0) {	/* in-edge leaves */
@@ -1203,11 +1204,10 @@ static void contain_nodes(graph_t * g)
 	    continue;
 	}
 	make_aux_edge(ln, v,
-		      ND_lw_i(v) + CL_OFFSET + GD_border(g)[LEFT_IX].x, 0);
+		      ND_lw(v) + CL_OFFSET + GD_border(g)[LEFT_IX].x, 0);
 	v = GD_rank(g)[r].v[GD_rank(g)[r].n - 1];
 	make_aux_edge(v, rn,
-		      ND_rw_i(v) + CL_OFFSET + GD_border(g)[RIGHT_IX].x,
-		      0);
+		      ND_rw(v) + CL_OFFSET + GD_border(g)[RIGHT_IX].x, 0);
     }
 }
 

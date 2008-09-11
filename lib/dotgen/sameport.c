@@ -138,7 +138,7 @@ static void sameport(node_t * u, elist * l, double arr_len)
     /* (x1,y1),(x2,y2) is a segment that must cross the node boundary */
     x1 = ND_coord(u).x;
     y1 = ND_coord(u).y;	/* center of node */
-    r = MAX(ND_lw_i(u) + ND_rw_i(u), ND_ht_i(u) + GD_ranksep(u->graph));	/* far away */
+    r = MAX(ND_lw(u) + ND_rw(u), ND_ht(u) + GD_ranksep(u->graph));	/* far away */
     x2 = x * r + ND_coord(u).x;
     y2 = y * r + ND_coord(u).y;
     {				/* now move (x1,y1) to the node boundary */
@@ -162,7 +162,7 @@ static void sameport(node_t * u, elist * l, double arr_len)
     prt.p.y = ROUND(y1);
     prt.bp = 0;
     prt.order =
-	(MC_SCALE * (ND_lw_i(u) + prt.p.x)) / (ND_lw_i(u) + ND_rw_i(u));
+	(MC_SCALE * (ND_lw(u) + prt.p.x)) / (ND_lw(u) + ND_rw(u));
     prt.constrained = FALSE;
     prt.defined = TRUE;
     prt.clip = FALSE;

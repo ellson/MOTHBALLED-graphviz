@@ -28,14 +28,14 @@ label_vnode(graph_t * g, edge_t * orig)
     dimen = ED_label(orig)->dimen;
     v = virtual_node(g);
     ND_label(v) = ED_label(orig);
-    ND_lw_i(v) = GD_nodesep(v->graph->root);
+    ND_lw(v) = GD_nodesep(v->graph->root);
     if (!ED_label_ontop(orig)) {
 	if (GD_flip(g->root)) {
-	    ND_ht_i(v) = dimen.x;
-	    ND_rw_i(v) = dimen.y;
+	    ND_ht(v) = dimen.x;
+	    ND_rw(v) = dimen.y;
 	} else {
-	    ND_ht_i(v) = dimen.y;
-	    ND_rw_i(v) = dimen.x;
+	    ND_ht(v) = dimen.y;
+	    ND_rw(v) = dimen.x;
 	}
     }
     return v;
@@ -45,8 +45,8 @@ static void
 incr_width(graph_t * g, node_t * v)
 {
     int width = GD_nodesep(g) / 2;
-    ND_lw_i(v) += width;
-    ND_rw_i(v) += width;
+    ND_lw(v) += width;
+    ND_rw(v) += width;
 }
 
 static node_t*

@@ -431,9 +431,9 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 	shape_desc *shape;
 	void *shape_info;
 	pointf coord;
-	double width, height;
+	double width, height;  /* inches */
 	boxf bb;
-	int ht, lw, rw;
+	double ht, lw, rw;
 	textlabel_t *label;
 	void *alg;
 	char state;
@@ -492,14 +492,14 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_heapindex(n) (n)->u.heapindex
 #define ND_height(n) (n)->u.height
 #define ND_hops(n) (n)->u.hops
-#define ND_ht_i(n) (n)->u.ht
+#define ND_ht(n) (n)->u.ht
 #define ND_id(n) (n)->u.id
 #define ND_in(n) (n)->u.in
 #define ND_inleaf(n) (n)->u.inleaf
 #define ND_label(n) (n)->u.label
 #define ND_lim(n) (n)->u.lim
 #define ND_low(n) (n)->u.low
-#define ND_lw_i(n) (n)->u.lw
+#define ND_lw(n) (n)->u.lw
 #define ND_mark(n) (n)->u.mark
 #define ND_mval(n) (n)->u.mval
 #define ND_n_cluster(n) (n)->u.n_cluster
@@ -517,7 +517,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 #define ND_priority(n) (n)->u.priority
 #define ND_rank(n) (n)->u.rank
 #define ND_ranktype(n) (n)->u.ranktype
-#define ND_rw_i(n) (n)->u.rw
+#define ND_rw(n) (n)->u.rw
 #define ND_save_in(n) (n)->u.save_in
 #define ND_save_out(n) (n)->u.save_out
 #define ND_shape(n) (n)->u.shape

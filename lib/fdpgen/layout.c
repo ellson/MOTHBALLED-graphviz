@@ -808,17 +808,17 @@ setClustNodes(graph_t* root)
 	ND_width(n) = w;
 	ND_height(n) = h;
 	ND_xsize(n) = POINTS(w);
-	ND_lw_i(n) = ND_rw_i(n) = w2;
-	ND_ht_i(n) = ND_ysize(n) = h_i;
+	ND_lw(n) = ND_rw(n) = w2;
+	ND_ht(n) = ND_ysize(n) = h_i;
 
 	vertices = ((polygon_t *) ND_shape_info(n))->vertices;
-	vertices[0].x = ND_rw_i(n);
+	vertices[0].x = ND_rw(n);
 	vertices[0].y = h2;
-	vertices[1].x = -ND_lw_i(n);
+	vertices[1].x = -ND_lw(n);
 	vertices[1].y = h2;
-	vertices[2].x = -ND_lw_i(n);
+	vertices[2].x = -ND_lw(n);
 	vertices[2].y = -h2;
-	vertices[3].x = ND_rw_i(n);
+	vertices[3].x = ND_rw(n);
 	vertices[3].y = -h2;
     }
 }

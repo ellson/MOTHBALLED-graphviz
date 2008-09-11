@@ -605,8 +605,8 @@ int box_connection(node_t * n, pointf p)
 	A = malloc(A_size*sizeof(pointf));
     }
 
-    xsize = ((ND_lw_i(n) + ND_rw_i(n)) / POINTS(ND_width(n))) * 16.0;
-    ysize = ((ND_ht_i(n)) / POINTS(ND_height(n))) * 16.0;
+    xsize = ((ND_lw(n) + ND_rw(n)) / POINTS(ND_width(n))) * 16.0;
+    ysize = ((ND_ht(n)) / POINTS(ND_height(n))) * 16.0;
 
     for (j = 0; j < peripheries; j++) {
 	for (i = 0; i < sides; i++) {

@@ -164,18 +164,18 @@ flat_node(edge_t * e)
 	dimen.x = dimen.y;
 	dimen.y = f;
     }
-    ND_ht_i(vn) = dimen.y;
-    h2 = ND_ht_i(vn) / 2;
-    ND_lw_i(vn) = ND_rw_i(vn) = dimen.x / 2;
+    ND_ht(vn) = dimen.y;
+    h2 = ND_ht(vn) / 2;
+    ND_lw(vn) = ND_rw(vn) = dimen.x / 2;
     ND_label(vn) = ED_label(e);
     ND_coord(vn).y = ypos + h2;
     ve = virtual_edge(vn, e->tail, e);	/* was NULL? */
-    ED_tail_port(ve).p.x = -ND_lw_i(vn);
-    ED_head_port(ve).p.x = ND_rw_i(e->tail);
+    ED_tail_port(ve).p.x = -ND_lw(vn);
+    ED_head_port(ve).p.x = ND_rw(e->tail);
     ED_edge_type(ve) = FLATORDER;
     ve = virtual_edge(vn, e->head, e);
-    ED_tail_port(ve).p.x = ND_rw_i(vn);
-    ED_head_port(ve).p.x = ND_lw_i(e->head);
+    ED_tail_port(ve).p.x = ND_rw(vn);
+    ED_head_port(ve).p.x = ND_lw(e->head);
     ED_edge_type(ve) = FLATORDER;
     /* another assumed symmetry of ht1/ht2 of a label node */
     if (GD_rank(g)[r - 1].ht1 < h2)

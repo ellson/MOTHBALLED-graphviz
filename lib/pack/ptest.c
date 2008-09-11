@@ -213,8 +213,8 @@ static void ptest_nodesize(node_t * n, boolean flip)
     int w;
 
     w = ND_xsize(n) = POINTS(ND_width(n));
-    ND_lw_i(n) = ND_rw_i(n) = w / 2;
-    ND_ht_i(n) = ND_ysize(n) = POINTS(ND_height(n));
+    ND_lw(n) = ND_rw(n) = w / 2;
+    ND_ht(n) = ND_ysize(n) = POINTS(ND_height(n));
 }
 
 

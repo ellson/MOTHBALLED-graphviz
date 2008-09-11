@@ -1152,10 +1152,10 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
             obj->url_map_shape = MAP_RECTANGLE;
             nump = 2;
             p = N_NEW(nump, pointf);
-            p[0].x = coord.x - ND_lw_i(n);
-            p[0].y = coord.y - (ND_ht_i(n) / 2);
-            p[1].x = coord.x + ND_rw_i(n);
-            p[1].y = coord.y + (ND_ht_i(n) / 2);
+            p[0].x = coord.x - ND_lw(n);
+            p[0].y = coord.y - (ND_ht(n) / 2);
+            p[1].x = coord.x + ND_rw(n);
+            p[1].y = coord.y + (ND_ht(n) / 2);
         }
         if (! (flags & GVRENDER_DOES_TRANSFORM))
             gvrender_ptf_A(job, p, p, nump);
@@ -2723,10 +2723,10 @@ static void init_bb_node(graph_t *g, node_t *n)
 {
     edge_t *e;
 
-    ND_bb(n).LL.x = ND_coord(n).x - ND_lw_i(n);
-    ND_bb(n).LL.y = ND_coord(n).y - ND_ht_i(n) / 2.;
-    ND_bb(n).UR.x = ND_coord(n).x + ND_rw_i(n);
-    ND_bb(n).UR.y = ND_coord(n).y + ND_ht_i(n) / 2.;
+    ND_bb(n).LL.x = ND_coord(n).x - ND_lw(n);
+    ND_bb(n).LL.y = ND_coord(n).y - ND_ht(n) / 2.;
+    ND_bb(n).UR.x = ND_coord(n).x + ND_rw(n);
+    ND_bb(n).UR.y = ND_coord(n).y + ND_ht(n) / 2.;
 
     for (e = agfstout(g, n); e; e = agnxtout(g, e))
         init_bb_edge(e);

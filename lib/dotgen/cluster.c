@@ -66,8 +66,8 @@ clone_vn(graph_t * g, node_t * vn)
     r = ND_rank(vn);
     make_slots(g, r, ND_order(vn), 2);
     rv = virtual_node(g);
-    ND_lw_i(rv) = ND_lw_i(vn);
-    ND_rw_i(rv) = ND_rw_i(vn);
+    ND_lw(rv) = ND_lw(vn);
+    ND_rw(rv) = ND_rw(vn);
     ND_rank(rv) = ND_rank(vn);
     ND_order(rv) = ND_order(vn) + 1;
     GD_rank(g)[r].v[ND_order(rv)] = rv;

@@ -301,10 +301,10 @@ static void cloneNode(Agnode_t * old, Agnode_t * new)
     ND_coord(new).x = POINTS(ND_pos(old)[0]);
     ND_coord(new).y = POINTS(ND_pos(old)[1]);
     ND_height(new) = ND_height(old);
-    ND_ht_i(new) = ND_ht_i(old);
+    ND_ht(new) = ND_ht(old);
     ND_width(new) = ND_width(old);
-    ND_lw_i(new) = ND_lw_i(old);
-    ND_rw_i(new) = ND_rw_i(old);
+    ND_lw(new) = ND_lw(old);
+    ND_rw(new) = ND_rw(old);
     ND_shape(new) = ND_shape(old);
     ND_shape_info(new) = ND_shape_info(old);
 }

@@ -215,9 +215,9 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	    sprintf(buf, "%.3g,%.3g", ND_coord(n).x, YDIR(ND_coord(n).y));
 	}
 	agset(n, "pos", buf);
-	sprintf(buf, "%.3g", PS2INCH(ND_ht_i(n)));
+	sprintf(buf, "%.3g", PS2INCH(ND_ht(n)));
 	agxset(n, N_height->index, buf);
-	sprintf(buf, "%.3g", PS2INCH(ND_lw_i(n) + ND_rw_i(n)));
+	sprintf(buf, "%.3g", PS2INCH(ND_lw(n) + ND_rw(n)));
 	agxset(n, N_width->index, buf);
 	if (strcmp(ND_shape(n)->name, "record") == 0) {
 	    set_record_rects(n, ND_shape_info(n), &xb);

@@ -578,12 +578,12 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
 		c = cos(2.0 * M_PI * j / sides + adj);
 		s = sin(2.0 * M_PI * j / sides + adj);
 		if (pmargin->doAdd) {
-		    polyp.x =  c*(ND_lw_i(n)+ND_rw_i(n)+pmargin->x) / 2.0;
-		    polyp.y =  s*(ND_ht_i(n)+pmargin->y) / 2.0;
+		    polyp.x =  c*(ND_lw(n)+ND_rw(n)+pmargin->x) / 2.0;
+		    polyp.y =  s*(ND_ht(n)+pmargin->y) / 2.0;
 		}
 		else {
-		    polyp.x = pmargin->x * c * (ND_lw_i(n) + ND_rw_i(n)) / 2.0;
-		    polyp.y = pmargin->y * s * ND_ht_i(n) / 2.0;
+		    polyp.x = pmargin->x * c * (ND_lw(n) + ND_rw(n)) / 2.0;
+		    polyp.y = pmargin->y * s * ND_ht(n) / 2.0;
 		}
 	    }
 	    obs->ps[sides - j - 1].x = polyp.x + ND_coord(n).x;
@@ -619,16 +619,16 @@ Ppoly_t *makeObstacle(node_t * n, expand_t* pmargin)
 	/* CW order */
 	pt = ND_coord(n);
 	if (pmargin->doAdd) {
-	    obs->ps[0] = genPt(-ND_lw_i(n)-pmargin->x, -ND_ht_i(n)-pmargin->y,pt);
-	    obs->ps[1] = genPt(-ND_lw_i(n)-pmargin->x, ND_ht_i(n)+pmargin->y,pt);
-	    obs->ps[2] = genPt(ND_rw_i(n)+pmargin->x, ND_ht_i(n)+pmargin->y,pt);
-	    obs->ps[3] = genPt(ND_rw_i(n)+pmargin->x, -ND_ht_i(n)-pmargin->y,pt);
+	    obs->ps[0] = genPt(-ND_lw(n)-pmargin->x, -ND_ht(n)-pmargin->y,pt);
+	    obs->ps[1] = genPt(-ND_lw(n)-pmargin->x, ND_ht(n)+pmargin->y,pt);
+	    obs->ps[2] = genPt(ND_rw(n)+pmargin->x, ND_ht(n)+pmargin->y,pt);
+	    obs->ps[3] = genPt(ND_rw(n)+pmargin->x, -ND_ht(n)-pmargin->y,pt);
 	}
 	else {
-	    obs->ps[0] = recPt(-ND_lw_i(n), -ND_ht_i(n), pt, pmargin);
-	    obs->ps[1] = recPt(-ND_lw_i(n), ND_ht_i(n), pt, pmargin);
-	    obs->ps[2] = recPt(ND_rw_i(n), ND_ht_i(n), pt, pmargin);
-	    obs->ps[3] = recPt(ND_rw_i(n), -ND_ht_i(n), pt, pmargin);
+	    obs->ps[0] = recPt(-ND_lw(n), -ND_ht(n), pt, pmargin);
+	    obs->ps[1] = recPt(-ND_lw(n), ND_ht(n), pt, pmargin);
+	    obs->ps[2] = recPt(ND_rw(n), ND_ht(n), pt, pmargin);
+	    obs->ps[3] = recPt(ND_rw(n), -ND_ht(n), pt, pmargin);
 	}
 	break;
     default:

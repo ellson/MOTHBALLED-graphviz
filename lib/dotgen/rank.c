@@ -499,9 +499,9 @@ merge_leaves(graph_t * g, node_t * cur, node_t * new)
 	rv = new;
     else {
 	rv = UF_union(cur, new);
-	ND_ht_i(rv) = MAX(ND_ht_i(cur), ND_ht_i(new));
-	ND_lw_i(rv) = ND_lw_i(cur) + ND_lw_i(new) + GD_nodesep(g) / 2;
-	ND_rw_i(rv) = ND_rw_i(cur) + ND_rw_i(new) + GD_nodesep(g) / 2;
+	ND_ht(rv) = MAX(ND_ht(cur), ND_ht(new));
+	ND_lw(rv) = ND_lw(cur) + ND_lw(new) + GD_nodesep(g) / 2;
+	ND_rw(rv) = ND_rw(cur) + ND_rw(new) + GD_nodesep(g) / 2;
     }
     return rv;
 }

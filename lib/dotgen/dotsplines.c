@@ -235,9 +235,9 @@ static void _dot_splines(graph_t * g, int normalize)
     for (i = GD_minrank(g); i <= GD_maxrank(g); i++) {
 	n_nodes += GD_rank(g)[i].n;
 	if ((n = GD_rank(g)[i].v[0]))
-	    sd.LeftBound = MIN(sd.LeftBound, (ND_coord(n).x - ND_lw_i(n)));
+	    sd.LeftBound = MIN(sd.LeftBound, (ND_coord(n).x - ND_lw(n)));
 	if (GD_rank(g)[i].n && (n = GD_rank(g)[i].v[GD_rank(g)[i].n - 1]))
-	    sd.RightBound = MAX(sd.RightBound, (ND_coord(n).x + ND_rw_i(n)));
+	    sd.RightBound = MAX(sd.RightBound, (ND_coord(n).x + ND_rw(n)));
 	sd.LeftBound -= MINW;
 	sd.RightBound += MINW;
 
@@ -277,8 +277,8 @@ static void _dot_splines(graph_t * g, int normalize)
                  * the original value here. 
                  */
 		if (ND_node_type(n) == NORMAL) {
-		    int tmp = ND_rw_i(n);
-		    ND_rw_i(n) = ND_mval(n);
+		    double tmp = ND_rw(n);
+		    ND_rw(n) = ND_mval(n);
 		    ND_mval(n) = tmp;
 		}
 		for (k = 0; (e = ND_other(n).list[k]); k++) {
@@ -351,7 +351,7 @@ static void _dot_splines(graph_t * g, int normalize)
 		if (r > 0)
 		    sizey = ND_coord(GD_rank(g)[r-1].v[0]).y - ND_coord(n).y;
 		else
-		    sizey = ND_ht_i(n);
+		    sizey = ND_ht(n);
 	    }
 	    else if (r == GD_minrank(g)) {
 		sizey = ND_coord(n).y - ND_coord(GD_rank(g)[r+1].v[0]).y;
@@ -692,8 +692,8 @@ makeSimpleFlat (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, int et
     tp = add_pointfs(ND_coord(tn), ED_tail_port(e).p);
     hp = add_pointfs(ND_coord(hn), ED_head_port(e).p);
 
-    stepy = (cnt > 1) ? ND_ht_i(tn) / (double)(cnt - 1) : 0.;
-    dy = tp.y - ((cnt > 1) ? ND_ht_i(tn) / 2. : 0.);
+    stepy = (cnt > 1) ? ND_ht(tn) / (double)(cnt - 1) : 0.;
+    dy = tp.y - ((cnt > 1) ? ND_ht(tn) / 2. : 0.);
 
     for (i = 0; i < cnt; i++) {
 	e = edges[ind + i];
@@ -796,7 +796,7 @@ make_flat_adj_edges(path* P, edge_t** edges, int ind, int cnt, edge_t* e0,
     dot_position(auxg);
     
     /* reposition */
-    midx = (ND_coord(tn).x - ND_rw_i(tn) + ND_coord(hn).x + ND_lw_i(hn))/2;
+    midx = (ND_coord(tn).x - ND_rw(tn) + ND_coord(hn).x + ND_lw(hn))/2;
     midy = (ND_coord(auxt).x + ND_coord(auxh).x)/2;
     for (n = GD_nlist(auxg); n; n = ND_next(n)) {
 	if (n == auxt) {
@@ -942,9 +942,9 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e, int et)
 	pn = 7;
     }
     else {
-	lb.LL.x = ND_coord(ln).x - ND_lw_i(ln);
-	lb.UR.x = ND_coord(ln).x + ND_rw_i(ln);
-	lb.UR.y = ND_coord(ln).y + ND_ht_i(ln)/2;
+	lb.LL.x = ND_coord(ln).x - ND_lw(ln);
+	lb.UR.x = ND_coord(ln).x + ND_rw(ln);
+	lb.UR.y = ND_coord(ln).y + ND_ht(ln)/2;
 	ydelta = ND_coord(ln).y - GD_rank(g)[ND_rank(tn)].ht1 -
 		ND_coord(tn).y + GD_rank(g)[ND_rank(tn)].ht2;
 	ydelta /= 6.;
@@ -1786,7 +1786,7 @@ static void recover_slack(edge_t * e, path * p)
 	    continue;
 	if (ND_label(vn))
 	    resize_vn(vn, p->boxes[b].LL.x, p->boxes[b].UR.x,
-		      p->boxes[b].UR.x + ND_rw_i(vn));
+		      p->boxes[b].UR.x + ND_rw(vn));
 	else
 	    resize_vn(vn, p->boxes[b].LL.x, (p->boxes[b].LL.x +
 					     p->boxes[b].UR.x) / 2,
@@ -1799,7 +1799,7 @@ node_t *vn;
 int lx, cx, rx;
 {
     ND_coord(vn).x = cx;
-    ND_lw_i(vn) = cx - lx, ND_rw_i(vn) = rx - cx;
+    ND_lw(vn) = cx - lx, ND_rw(vn) = rx - cx;
 }
 
 /* side > 0 means right. side < 0 means left */
@@ -1909,7 +1909,7 @@ static boxf maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
     left_cl = right_cl = NULL;
 
     /* give this node all the available space up to its neighbors */
-    b = (double)(ND_coord(vn).x - ND_lw_i(vn) - FUDGE);
+    b = (double)(ND_coord(vn).x - ND_lw(vn) - FUDGE);
     if ((left = neighbor(vn, ie, oe, -1))) {
 	if ((left_cl = cl_bound(vn, left)))
 	    nb = GD_bb(left_cl).UR.x + (double)(sp->Splinesep);
@@ -1930,12 +1930,12 @@ static boxf maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
     if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn)))
 	b = (double)(ND_coord(vn).x + 10);
     else
-	b = (double)(ND_coord(vn).x + ND_rw_i(vn) + FUDGE);
+	b = (double)(ND_coord(vn).x + ND_rw(vn) + FUDGE);
     if ((right = neighbor(vn, ie, oe, 1))) {
 	if ((right_cl = cl_bound(vn, right)))
 	    nb = GD_bb(right_cl).LL.x - (double)(sp->Splinesep);
 	else {
-	    nb = ND_coord(right).x - ND_lw_i(right);
+	    nb = ND_coord(right).x - ND_lw(right);
 	    if (ND_node_type(right) == NORMAL)
 		nb -= GD_nodesep(g) / 2.;
 	    else
@@ -1948,7 +1948,7 @@ static boxf maximal_bbox(spline_info_t* sp, node_t* vn, edge_t* ie, edge_t* oe)
 	rv.UR.x = MAX(ROUND(b), sp->RightBound);
 
     if ((ND_node_type(vn) == VIRTUAL) && (ND_label(vn)))
-	rv.UR.x -= ND_rw_i(vn);
+	rv.UR.x -= ND_rw(vn);
 
     rv.LL.y = ND_coord(vn).y - GD_rank(g)[ND_rank(vn)].ht1;
     rv.UR.y = ND_coord(vn).y + GD_rank(g)[ND_rank(vn)].ht2;
