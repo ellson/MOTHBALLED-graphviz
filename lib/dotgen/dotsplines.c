@@ -50,8 +50,6 @@
 	ED_to_orig(newp) = old; \
 }
 
-#define AVG(a, b) ((a + b) / 2)
-
 static boxf boxes[1000];
 typedef struct {
     int LeftBound, RightBound, Splinesep, Multisep;
@@ -517,6 +515,8 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
 	return (v0 - v1);
     v0 = ND_coord(le0->tail).x - ND_coord(le0->head).x, v0 = ABS(v0);
     v1 = ND_coord(le1->tail).x - ND_coord(le1->head).x, v1 = ABS(v1);
+
+/* FIXME - fp equality test */
     if (v0 != v1)
 	return (v0 - v1);
     /* This provides a cheap test for edges having the same set of endpoints.
@@ -676,7 +676,7 @@ transformf (pointf p, pointf del, int flip)
 	p.x = p.y;
 	p.y = -i;
     }
-    return add_pointfs(p, del);
+    return add_pointf(p, del);
 }
 
 /* makeSimpleFlat:
@@ -689,8 +689,8 @@ makeSimpleFlat (node_t* tn, node_t* hn, edge_t** edges, int ind, int cnt, int et
     int i, pointn;
     double stepy, dy;
 
-    tp = add_pointfs(ND_coord(tn), ED_tail_port(e).p);
-    hp = add_pointfs(ND_coord(hn), ED_head_port(e).p);
+    tp = add_pointf(ND_coord(tn), ED_tail_port(e).p);
+    hp = add_pointf(ND_coord(hn), ED_head_port(e).p);
 
     stepy = (cnt > 1) ? ND_ht(tn) / (double)(cnt - 1) : 0.;
     dy = tp.y - ((cnt > 1) ? ND_ht(tn) / 2. : 0.);
@@ -930,8 +930,8 @@ make_flat_labeled_edge(spline_info_t* sp, path* P, edge_t* e, int et)
     if (et == ET_LINE) {
 	pointf startp, endp, lp;
 
-	startp = add_pointfs(ND_coord(tn), ED_tail_port(e).p);
-	endp = add_pointfs(ND_coord(hn), ED_head_port(e).p);
+	startp = add_pointf(ND_coord(tn), ED_tail_port(e).p);
+	endp = add_pointf(ND_coord(hn), ED_head_port(e).p);
 
         lp = ED_label(e)->pos;
 	lp.y -= (ED_label(e)->dimen.y)/2.0;
@@ -1202,13 +1202,13 @@ makeLineEdge(edge_t* fe, pointf* points, node_t** hp)
 	return 0;
     if (fe->tail == e->tail) {
 	*hp = hn;
-	startp = add_pointfs(ND_coord(tn), ED_tail_port(e).p);
-	endp = add_pointfs(ND_coord(hn), ED_head_port(e).p);
+	startp = add_pointf(ND_coord(tn), ED_tail_port(e).p);
+	endp = add_pointf(ND_coord(hn), ED_head_port(e).p);
     }
     else {
  	*hp = tn; 
-	startp = add_pointfs(ND_coord(hn), ED_head_port(e).p);
-	endp = add_pointfs(ND_coord(tn), ED_tail_port(e).p);
+	startp = add_pointf(ND_coord(hn), ED_head_port(e).p);
+	endp = add_pointf(ND_coord(tn), ED_tail_port(e).p);
     }
 
     if (ED_label(e)) {

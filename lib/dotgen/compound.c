@@ -20,21 +20,6 @@
 
 #include	"dot.h"
 
-#define P2PF(p, pf) (pf.x = p.x, pf.y = p.y)
-#define PF2P(pf, p) (p.x = ROUND (pf.x), p.y = ROUND (pf.y))
-
-/* midPtf:
- * Return midpoint between two given points.
- */
-static pointf midPtf(pointf p, pointf q)
-{
-    pointf v;
-
-    v.x = (p.x + q.x) / 2.;
-    v.y = (p.y + q.y) / 2.;
-    return v;
-}
-
 /* pf2s:
  * Convert a pointf to its string representation.
  */
@@ -98,22 +83,12 @@ static pointf boxIntersectf(pointf pp, pointf cp, boxf * bp)
     return ipp;
 }
 
-/* inBox:
- * Returns true if p is on or in box bb
- */
-static int inBox(point p, boxf * bb)
-{
-    return (((double)p.x >= bb->LL.x) && ((double)p.x <= bb->UR.x) &&
-	    ((double)p.y >= bb->LL.y) && ((double)p.y <= bb->UR.y));
-}
-
 /* inBoxf:
  * Returns true if p is on or in box bb
  */
 static int inBoxf(pointf p, boxf * bb)
 {
-    return ((p.x >= bb->LL.x) && (p.x <= bb->UR.x) &&
-	    (p.y >= bb->LL.y) && (p.y <= bb->UR.y));
+    return INSIDE(p, *bb);
 }
 
 /* getCluster:
@@ -136,57 +111,54 @@ static graph_t *getCluster(graph_t * g, char *cluster_name)
 /* The following functions are derived from pp. 411-415 (pp. 791-795)
  * of Graphics Gems. In the code there, they use a SGN function to
  * count crossings. This doesn't seem to handle certain special cases,
- * as when the last point is on the line. It certainly doesn't work
- * for use; see bug 145. We need to use ZSGN instead.
+ * as when the last point is on the line. It certainly didn't work
+ * for us when we used int values; see bug 145. We needed to use CMP instead.
+ *
+ * Possibly unnecessary with double values, but harmless.
  */
-#define ZSGN(a,b)         (((a)<(b)) ? -1 : (a)>(b) ? 1 : 0)
 
 /* countVertCross:
  * Return the number of times the Bezier control polygon crosses
  * the vertical line x = xcoord.
  */
-static int countVertCross(pointf * pts, int xcoord)
+static int countVertCross(pointf * pts, double xcoord)
 {
     int i;
     int sign, old_sign;
     int num_crossings = 0;
 
-    sign = old_sign = ZSGN(pts[0].x, xcoord);
+    sign = CMP(pts[0].x, xcoord);
     if (sign == 0)
 	num_crossings++;
     for (i = 1; i <= 3; i++) {
-	sign = ZSGN(pts[i].x, xcoord);
+	old_sign = sign;
+	sign = CMP(pts[i].x, xcoord);
 	if ((sign != old_sign) && (old_sign != 0))
 	    num_crossings++;
-	old_sign = sign;
     }
-
     return num_crossings;
-
 }
 
 /* countHorzCross:
  * Return the number of times the Bezier control polygon crosses
  * the horizontal line y = ycoord.
  */
-static int countHorzCross(pointf * pts, int ycoord)
+static int countHorzCross(pointf * pts, double ycoord)
 {
     int i;
     int sign, old_sign;
     int num_crossings = 0;
 
-    sign = old_sign = ZSGN(pts[0].y, ycoord);
+    sign = CMP(pts[0].y, ycoord);
     if (sign == 0)
 	num_crossings++;
     for (i = 1; i <= 3; i++) {
-	sign = ZSGN(pts[i].y, ycoord);
+	old_sign = sign;
+	sign = CMP(pts[i].y, ycoord);
 	if ((sign != old_sign) && (old_sign != 0))
 	    num_crossings++;
-	old_sign = sign;
     }
-
     return num_crossings;
-
 }
 
 /* findVertical:
@@ -209,7 +181,7 @@ findVertical(pointf * pts, double tmin, double tmax,
     if (no_cross == 0)
 	return -1.0;
 
-    /* if 1 crossing and on the line x = xcoord */
+    /* if 1 crossing and on the line x == xcoord (within 1 point) */
     if ((no_cross == 1) && (ROUND(pts[3].x) == ROUND(xcoord))) {
 	if ((ymin <= pts[3].y) && (pts[3].y <= ymax)) {
 	    return tmax;
@@ -247,7 +219,7 @@ findHorizontal(pointf * pts, double tmin, double tmax,
     if (no_cross == 0)
 	return -1.0;
 
-    /* if 1 crossing and on the line y = ycoord */
+    /* if 1 crossing and on the line y == ycoord (within 1 point) */
     if ((no_cross == 1) && (ROUND(pts[3].y) == ROUND(ycoord))) {
 	if ((xmin <= pts[3].x) && (pts[3].x <= xmax)) {
 	    return tmax;
@@ -391,9 +363,9 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 		    assert(bez->sflag);	/* must be arrowhead on tail */
 		    p = boxIntersectf(bez->list[0], bez->sp, bb);
 		    bez->list[3] = p;
-		    bez->list[1] = midPtf(p, bez->sp);
-		    bez->list[0] = midPtf(bez->list[1], bez->sp);
-		    bez->list[2] = midPtf(bez->list[1], p);
+		    bez->list[1] = mid_pointf(p, bez->sp);
+		    bez->list[0] = mid_pointf(bez->list[1], bez->sp);
+		    bez->list[2] = mid_pointf(bez->list[1], p);
 		    if (bez->eflag)
 			endi = arrowEndClip(e, bez->list,
 					 starti, 0, nbez, bez->eflag);
@@ -452,9 +424,9 @@ static void makeCompoundEdge(graph_t * g, edge_t * e)
 		    p = boxIntersectf(bez->list[endi], nbez->ep, bb);
 		    starti = endi - 3;
 		    bez->list[starti] = p;
-		    bez->list[starti + 2] = midPtf(p, nbez->ep);
-		    bez->list[starti + 3] = midPtf(bez->list[starti + 2], nbez->ep);
-		    bez->list[starti + 1] = midPtf(bez->list[starti + 2], p);
+		    bez->list[starti + 2] = mid_pointf(p, nbez->ep);
+		    bez->list[starti + 3] = mid_pointf(bez->list[starti + 2], nbez->ep);
+		    bez->list[starti + 1] = mid_pointf(bez->list[starti + 2], p);
 		    if (bez->sflag)
 			starti = arrowStartClip(e, bez->list, starti,
 				endi - 3, nbez, bez->sflag);

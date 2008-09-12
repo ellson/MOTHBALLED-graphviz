@@ -32,11 +32,16 @@ extern pointf pointfof(double, double);
 extern pointf cvt2ptf(point);
 extern point cvt2pt(pointf);
 
-extern point add_points(point, point);
-extern pointf add_pointfs(pointf, pointf);
+extern point add_point(point, point);
+extern pointf add_pointf(pointf, pointf);
 
-extern point sub_points(point, point);
-extern pointf sub_pointfs(pointf, pointf);
+extern point sub_point(point, point);
+extern pointf sub_pointf(pointf, pointf);
+
+extern point mid_point(point, point);
+extern pointf mid_pointf(pointf, pointf);
+
+extern pointf interpolate(double, pointf, pointf);
 
 extern point exch_xy(point p);
 extern pointf exch_xyf(pointf p);

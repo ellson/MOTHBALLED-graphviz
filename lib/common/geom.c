@@ -110,31 +110,53 @@ boxf mkboxf(pointf p0, pointf p1)
     return rv;
 }
 
-point add_points(point p0, point p1)
+point add_point(point p0, point p1)
 {
     p0.x += p1.x;
     p0.y += p1.y;
     return p0;
 }
 
-point sub_points(point p0, point p1)
+point sub_point(point p0, point p1)
 {
     p0.x -= p1.x;
     p0.y -= p1.y;
     return p0;
 }
 
-pointf add_pointfs(pointf p0, pointf p1)
+pointf add_pointf(pointf p0, pointf p1)
 {
     p0.x += p1.x;
     p0.y += p1.y;
     return p0;
 }
 
-pointf sub_pointfs(pointf p0, pointf p1)
+pointf sub_pointf(pointf p0, pointf p1)
 {
     p0.x -= p1.x;
     p0.y -= p1.y;
+    return p0;
+}
+
+point mid_point(point p0, point p1)
+{
+    /* for +ve coord values, this rounds towards p0 */
+    p0.x = (p0.x + p1.x) / 2;
+    p0.y = (p0.y + p1.y) / 2;
+    return p0;
+}
+
+pointf mid_pointf(pointf p0, pointf p1)
+{
+    p0.x = (p0.x + p1.x) / 2.;
+    p0.y = (p0.y + p1.y) / 2.;
+    return p0;
+}
+
+pointf interpolate(double t, pointf p0, pointf p1)
+{
+    p0.x += t * (p1.x - p0.x);
+    p0.y += t * (p1.y - p0.y);
     return p0;
 }
 

@@ -354,21 +354,13 @@ static void Mcircle_hack(GVJ_t * job, node_t * n)
     p.y = y * ND_ht(n) / 2.0;
     p.x = ND_rw(n) * x;	/* assume node is symmetric */
 
-    AF[0] = add_pointfs(p, ND_coord(n));
+    AF[0] = add_pointf(p, ND_coord(n));
     AF[1].y = AF[0].y;
     AF[1].x = AF[0].x - 2 * p.x;
     gvrender_polyline(job, AF, 2);
     AF[0].y -= 2 * p.y;
     AF[1].y = AF[0].y;
     gvrender_polyline(job, AF, 2);
-}
-
-static pointf interpolate(double t, pointf p0, pointf p1)
-{
-    pointf rv;
-    rv.x = p0.x + t * (p1.x - p0.x);
-    rv.y = p0.y + t * (p1.y - p0.y);
-    return rv;
 }
 
 void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF, 
@@ -2302,8 +2294,8 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
 		AF[0].y = AF[1].y;
 	    }
 	    coord = ND_coord(n);
-	    AF[0] = add_pointfs(AF[0], coord);
-	    AF[1] = add_pointfs(AF[1], coord);
+	    AF[0] = add_pointf(AF[0], coord);
+	    AF[1] = add_pointf(AF[1], coord);
 	    gvrender_polyline(job, AF, 2);
 	}
 	gen_fields(job, n, f->fld[i]);

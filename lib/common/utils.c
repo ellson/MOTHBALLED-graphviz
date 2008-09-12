@@ -759,8 +759,8 @@ void compute_bb(graph_t * g)
 	P2PF(coord(n), ptf);
 	s2.x = ND_xsize(n) / 2. + 1;
 	s2.y = ND_ysize(n) / 2. + 1;
-	b.LL = sub_pointfs(ptf, s2);
-	b.UR = add_pointfs(ptf, s2);
+	b.LL = sub_pointf(ptf, s2);
+	b.UR = add_pointf(ptf, s2);
 
 	EXPANDBB(bb,b);
 	for (e = agfstout(g, n); e; e = agnxtout(g, e)) {

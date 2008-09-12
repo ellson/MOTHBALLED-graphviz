@@ -430,8 +430,8 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
     pointf dumber[4];
     pointf p, q;
 
-    p = dumb[1] = dumb[0] = add_pointfs(ND_coord(n), ED_tail_port(e).p);
-    q = dumb[2] = dumb[3] = add_pointfs(ND_coord(head), ED_head_port(e).p);
+    p = dumb[1] = dumb[0] = add_pointf(ND_coord(n), ED_tail_port(e).p);
+    q = dumb[2] = dumb[3] = add_pointf(ND_coord(head), ED_head_port(e).p);
     if (e_cnt == 1) {
 	clip_and_install(e, e->head, dumb, 4, &sinfo);
 	addEdgeLabels(e, p, q);
@@ -655,8 +655,8 @@ getPath(edge_t * e, vconfig_t * vconfig, int chkPts, Ppoly_t ** obs,
     int pp, qp;
     Ppoint_t p, q;
 
-    p = add_pointfs(ND_coord(e->tail), ED_tail_port(e).p);
-    q = add_pointfs(ND_coord(e->head), ED_head_port(e).p);
+    p = add_pointf(ND_coord(e->tail), ED_tail_port(e).p);
+    q = add_pointf(ND_coord(e->head), ED_head_port(e).p);
 
     /* determine the polygons (if any) that contain the endpoints */
     pp = qp = POLYID_NONE;
@@ -816,8 +816,8 @@ static int _spline_edges(graph_t * g, expand_t* pmargin, int edgetype)
 	    node_t *head = e->head;
 	    if (useEdges && ED_spl(e)) {
 		addEdgeLabels(e,
-			      add_pointfs(ND_coord(n), ED_tail_port(e).p),
-			      add_pointfs(ND_coord(head), ED_head_port(e).p));
+			      add_pointf(ND_coord(n), ED_tail_port(e).p),
+			      add_pointf(ND_coord(head), ED_head_port(e).p));
 	    } 
 	    else if (ED_count(e) == 0) continue;  /* only do representative */
 	    else if (n == head) {    /* self arc */

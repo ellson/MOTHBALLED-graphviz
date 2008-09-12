@@ -770,13 +770,13 @@ static boolean validpage(GVJ_t *job)
 
 static void nextpage(GVJ_t *job)
 {
-    job->pagesArrayElem = add_points(job->pagesArrayElem, job->pagesArrayMinor);
+    job->pagesArrayElem = add_point(job->pagesArrayElem, job->pagesArrayMinor);
     if (validpage(job) == FALSE) {
 	if (job->pagesArrayMajor.y)
 	    job->pagesArrayElem.x = job->pagesArrayFirst.x;
 	else
 	    job->pagesArrayElem.y = job->pagesArrayFirst.y;
-	job->pagesArrayElem = add_points(job->pagesArrayElem, job->pagesArrayMajor);
+	job->pagesArrayElem = add_point(job->pagesArrayElem, job->pagesArrayMajor);
     }
 }
 

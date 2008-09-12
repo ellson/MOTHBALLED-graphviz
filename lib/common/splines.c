@@ -396,7 +396,7 @@ beginpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	pboxfn = ND_shape(n)->fns->pboxfn;
     else
 	pboxfn = NULL;
-    P->start.p = add_pointfs(ND_coord(n), ED_tail_port(e).p);
+    P->start.p = add_pointf(ND_coord(n), ED_tail_port(e).p);
     if (merge) {
 	/*P->start.theta = - M_PI / 2; */
 	P->start.theta = conc_slope(e->tail);
@@ -587,7 +587,7 @@ void endpath(path * P, edge_t * e, int et, pathend_t * endp, boolean merge)
 	pboxfn = ND_shape(n)->fns->pboxfn;
     else
 	pboxfn = NULL;
-    P->end.p = add_pointfs(ND_coord(n), ED_head_port(e).p);
+    P->end.p = add_pointf(ND_coord(n), ED_head_port(e).p);
     if (merge) {
 	/*P->end.theta = M_PI / 2; */
 	P->end.theta = conc_slope(e->head) + M_PI;

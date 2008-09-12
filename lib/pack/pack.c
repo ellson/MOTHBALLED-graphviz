@@ -335,8 +335,8 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 	    if (!ND_clust(n)) {	/* n is not in a top-level cluster */
 		s2.x = margin + ND_xsize(n) / 2;
 		s2.y = margin + ND_ysize(n) / 2;
-		LL = sub_points(pt, s2);
-		UR = add_points(pt, s2);
+		LL = sub_point(pt, s2);
+		UR = add_point(pt, s2);
 		CELL(LL, ssize);
 		CELL(UR, ssize);
 
@@ -370,8 +370,8 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 	    MOVEPT(pt);
 	    s2.x = margin + ND_xsize(n) / 2;
 	    s2.y = margin + ND_ysize(n) / 2;
-	    LL = sub_points(pt, s2);
-	    UR = add_points(pt, s2);
+	    LL = sub_point(pt, s2);
+	    UR = add_point(pt, s2);
 	    CELL(LL, ssize);
 	    CELL(UR, ssize);
 

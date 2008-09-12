@@ -1225,8 +1225,8 @@ static boolean idealsize(graph_t * g, double minallowed)
     if (relpage.x < 0.001 || relpage.y < 0.001)
 	return FALSE;		/* no page was specified */
     margin = GD_drawing(g)->margin;
-    relpage = sub_pointfs(relpage, margin);
-    relpage = sub_pointfs(relpage, margin);
+    relpage = sub_pointf(relpage, margin);
+    relpage = sub_pointf(relpage, margin);
     b.x = GD_bb(g).UR.x;
     b.y = GD_bb(g).UR.y;
     xf = relpage.x / b.x;
