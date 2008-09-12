@@ -785,7 +785,6 @@ finishEdge (edge_t* e, Ppoly_t spl, int flip, pointf p, pointf q)
     addEdgeLabels(e, p1, q1);
 }
 
-#define LEN(x,y) sqrt((x)*(x)+(y)*(y))
 #define EQPT(p,q) (((p).x==(q).x)&&((p).y==(q).y))
 
 /* tweakEnd:

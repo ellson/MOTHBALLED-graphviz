@@ -499,8 +499,6 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
     }
 }
 
-#define LEN(x,y) sqrt((x)*(x)+(y)*(y))
-
 /* makeObstacle:
  * Given a node, return an obstacle reflecting the
  * node's geometry. pmargin specifies how much space to allow

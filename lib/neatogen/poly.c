@@ -182,7 +182,6 @@ static Point *genRound(Agnode_t * n, int *sidep, float xm, float ym)
 }
 
 #define PUTPT(P,X,Y) ((P).x=(X),(P).y=(Y))
-#define LEN(x,y) sqrt((x)*(x)+(y)*(y))
 
 void makeAddPoly(Poly * pp, Agnode_t * n, float xmargin, float ymargin)
 {

@@ -54,8 +54,11 @@ typedef struct { pointf LL, UR; } boxf;
 /* clip box b0 to fit box b1 */
 #define CLIPBB(b0, b1) (b0.LL.x = MAX(b0.LL.x, b1.LL.x), b0.LL.y = MAX(b0.LL.y, b1.LL.y), b0.UR.x = MIN(b0.UR.x, b1.UR.x), b0.UR.y = MIN(b0.UR.y, b1.UR.y))
 
-#define DIST2(p1,p2) (SQR((p1.x) - (p2.x))) + (SQR((p1.y) - (p2.y)))
-#define DIST(p1,p2) (sqrt(DIST2((p1),(p2))))
+#define LEN2(a,b) (SQR(a) + SQR(b))
+#define LEN(a,b) (sqrt(LEN2((a),(b))))
+
+#define DIST2(p,q) (SQR((p.x) - (q.x))) + (SQR((p.y) - (q.y)))
+#define DIST(p,q) (sqrt(DIST2((p),(q))))
 
 #define POINTS_PER_INCH	72
 #define POINTS_PER_PC ((double)POINTS_PER_INCH / 6)
