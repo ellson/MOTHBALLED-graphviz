@@ -152,34 +152,46 @@ static void tkgen_begin_graph(GVJ_t * job)
 static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 {
     obj_state_t *obj = job->obj;
+    const char *font;
+    int size;
 
     if (obj->pen != PEN_NONE) {
-        tkgen_canvas(job);
-        gvputs(job, " create text ");
-        p.y -= para->fontsize * 0.5; /* cl correction */
-        gvprintpointf(job, p);
-        gvputs(job, " -text {");
-        gvputs(job, para->str);
-        gvputs(job, "}");
-        gvputs(job, " -fill ");
-        tkgen_print_color(job, obj->pencolor);
-        gvputs(job, " -font {");
-        gvputs(job, para->fontname);
-        gvprintf(job, " %g}", para->fontsize);
-        switch (para->just) {
-        case 'l':
-            gvputs(job, " -anchor w");
-            break;
-        case 'r':
-            gvputs(job, " -anchor e");
-            break;
-        default:
-        case 'n':
-            break;
+	/* determine font size */
+	/* round fontsize down, better too small than too big */
+	size = (int)(para->fontsize * job->zoom);
+	/* don't even bother if fontsize < 1 point */
+	if (size)  {
+            tkgen_canvas(job);
+            gvputs(job, " create text ");
+            p.y -= size * 0.5; /* cl correction */
+            gvprintpointf(job, p);
+            gvputs(job, " -text {");
+            gvputs(job, para->str);
+            gvputs(job, "}");
+            gvputs(job, " -fill ");
+            tkgen_print_color(job, obj->pencolor);
+            gvputs(job, " -font {");
+	    /* tk doesn't like PostScript font names like "Times-Roman" */
+	    /*    so use svg fallback names like "Serif" */
+	    font = para->postscript_alias->svg_font_family;
+            gvputs(job, font);
+	    /* use -ve fontsize to indicate pixels  - see "man n font" */
+            gvprintf(job, " -%d}", size);
+            switch (para->just) {
+            case 'l':
+                gvputs(job, " -anchor w");
+                break;
+            case 'r':
+                gvputs(job, " -anchor e");
+                break;
+            default:
+            case 'n':
+                break;
+            }
+            gvputs(job, " -state disabled");
+            tkgen_print_tags(job);
+            gvputs(job, "\n");
         }
-        gvputs(job, " -state disabled");
-        tkgen_print_tags(job);
-        gvputs(job, "\n");
     }
 }
 
@@ -250,10 +262,13 @@ static void tkgen_polygon(GVJ_t * job, pointf * A, int n, int filled)
         tkgen_canvas(job);
         gvputs(job, " create polygon ");
         gvprintpointflist(job, A, n);
+        gvputs(job, " -fill ");
         if (filled) {
-            gvputs(job, " -fill ");
 	    tkgen_print_color(job, obj->fillcolor);
         }
+	else {
+	    gvputs(job, "white");
+	}
         gvputs(job, " -width ");
         gvprintdouble(job, obj->penwidth);
         gvputs(job, " -outline ");
