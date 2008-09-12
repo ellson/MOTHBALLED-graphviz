@@ -20,37 +20,43 @@
 #include "geom.h"
 #include "geomprocs.h"
 
-point pointof(int x, int y)
+inline point pointof(int x, int y)
 {
-    point rv;
-    rv.x = x, rv.y = y;
-    return rv;
+    point r;
+
+    r.x = x;
+    r.y = y;
+    return r;
 }
 
-pointf pointfof(double x, double y)
+inline pointf pointfof(double x, double y)
 {
-    pointf rv;
-    rv.x = x, rv.y = y;
-    return rv;
+    pointf r;
+
+    r.x = x;
+    r.y = y;
+    return r;
 }
 
-point cvt2pt(pointf p)
+inline point cvt2pt(pointf p)
 {
-    point rv;
-    rv.x = POINTS(p.x);
-    rv.y = POINTS(p.y);
-    return rv;
+    point r;
+
+    r.x = POINTS(p.x);
+    r.y = POINTS(p.y);
+    return r;
 }
 
-pointf cvt2ptf(point p)
+inline pointf cvt2ptf(point p)
 {
-    pointf rv;
-    rv.x = PS2INCH(p.x);
-    rv.y = PS2INCH(p.y);
-    return rv;
+    pointf r;
+
+    r.x = PS2INCH(p.x);
+    r.y = PS2INCH(p.y);
+    return r;
 }
 
-box boxof(int llx, int lly, int urx, int ury)
+inline box boxof(int llx, int lly, int urx, int ury)
 {
     box b;
 
@@ -59,7 +65,7 @@ box boxof(int llx, int lly, int urx, int ury)
     return b;
 }
 
-boxf boxfof(double llx, double lly, double urx, double ury)
+inline boxf boxfof(double llx, double lly, double urx, double ury)
 {
     boxf b;
 
@@ -68,117 +74,131 @@ boxf boxfof(double llx, double lly, double urx, double ury)
     return b;
 }
 
-box mkbox(point p0, point p1)
+box mkbox(point p, point q)
 {
-    box rv;
+    box r;
 
-    if (p0.x < p1.x) {
-	rv.LL.x = p0.x;
-	rv.UR.x = p1.x;
+    if (p.x < q.x) {
+	r.LL.x = p.x;
+	r.UR.x = q.x;
     } else {
-	rv.LL.x = p1.x;
-	rv.UR.x = p0.x;
+	r.LL.x = q.x;
+	r.UR.x = p.x;
     }
-    if (p0.y < p1.y) {
-	rv.LL.y = p0.y;
-	rv.UR.y = p1.y;
+    if (p.y < q.y) {
+	r.LL.y = p.y;
+	r.UR.y = q.y;
     } else {
-	rv.LL.y = p1.y;
-	rv.UR.y = p0.y;
+	r.LL.y = q.y;
+	r.UR.y = p.y;
     }
-    return rv;
+    return r;
 }
 
-boxf mkboxf(pointf p0, pointf p1)
+boxf mkboxf(pointf p, pointf q)
 {
-    boxf rv;
+    boxf r;
 
-    if (p0.x < p1.x) {
-	rv.LL.x = p0.x;
-	rv.UR.x = p1.x;
+    if (p.x < q.x) {
+	r.LL.x = p.x;
+	r.UR.x = q.x;
     } else {
-	rv.LL.x = p1.x;
-	rv.UR.x = p0.x;
+	r.LL.x = q.x;
+	r.UR.x = p.x;
     }
-    if (p0.y < p1.y) {
-	rv.LL.y = p0.y;
-	rv.UR.y = p1.y;
+    if (p.y < q.y) {
+	r.LL.y = p.y;
+	r.UR.y = q.y;
     } else {
-	rv.LL.y = p1.y;
-	rv.UR.y = p0.y;
+	r.LL.y = q.y;
+	r.UR.y = p.y;
     }
-    return rv;
+    return r;
 }
 
-point add_point(point p0, point p1)
+inline point add_point(point p, point q)
 {
-    p0.x += p1.x;
-    p0.y += p1.y;
-    return p0;
+    point r;
+
+    r.x = p.x + q.x;
+    r.y = p.y + q.y;
+    return r;
 }
 
-point sub_point(point p0, point p1)
+inline pointf add_pointf(pointf p, pointf q)
 {
-    p0.x -= p1.x;
-    p0.y -= p1.y;
-    return p0;
+    pointf r;
+
+    r.x = p.x + q.x;
+    r.y = p.y + q.y;
+    return r;
 }
 
-pointf add_pointf(pointf p0, pointf p1)
+inline point sub_point(point p, point q)
 {
-    p0.x += p1.x;
-    p0.y += p1.y;
-    return p0;
+    point r;
+
+    r.x = p.x - q.x;
+    r.y = p.y - q.y;
+    return r;
 }
 
-pointf sub_pointf(pointf p0, pointf p1)
+inline pointf sub_pointf(pointf p, pointf q)
 {
-    p0.x -= p1.x;
-    p0.y -= p1.y;
-    return p0;
+    pointf r;
+
+    r.x = p.x - q.x;
+    r.y = p.y - q.y;
+    return r;
 }
 
-point mid_point(point p0, point p1)
+/* for +ve coord values, this rounds towards p */
+inline point mid_point(point p, point q)
 {
-    /* for +ve coord values, this rounds towards p0 */
-    p0.x = (p0.x + p1.x) / 2;
-    p0.y = (p0.y + p1.y) / 2;
-    return p0;
+    point r;
+
+    r.x = (p.x + q.x) / 2;
+    r.y = (p.y + q.y) / 2;
+    return r;
 }
 
-pointf mid_pointf(pointf p0, pointf p1)
+inline pointf mid_pointf(pointf p, pointf q)
 {
-    p0.x = (p0.x + p1.x) / 2.;
-    p0.y = (p0.y + p1.y) / 2.;
-    return p0;
+    pointf r;
+
+    r.x = (p.x + q.x) / 2.;
+    r.y = (p.y + q.y) / 2.;
+    return r;
 }
 
-pointf interpolate(double t, pointf p0, pointf p1)
+inline pointf interpolate(double t, pointf p, pointf q)
 {
-    p0.x += t * (p1.x - p0.x);
-    p0.y += t * (p1.y - p0.y);
-    return p0;
+    pointf r; 
+
+    r.x = p.x + t * (q.x - p.x);
+    r.y = p.y + t * (q.y - p.y);
+    return r;
 }
 
-point exch_xy(point p)
+inline point exch_xy(point p)
 {
-    int t;
-    t = p.x;
-    p.x = p.y;
-    p.y = t;
-    return p;
+    point r;
+
+    r.x = p.y;
+    r.y = p.x;
+    return r;
 }
 
-pointf exch_xyf(pointf p)
+inline pointf exch_xyf(pointf p)
 {
-    double t;
-    t = p.x;
-    p.x = p.y;
-    p.y = t;
-    return p;
+    pointf r;
+
+    r.x = p.y;
+    r.y = p.x;
+    return r;
 }
 
-box box_bb(box b0, box b1)
+inline box box_bb(box b0, box b1)
 {
     box b;
 
@@ -190,7 +210,7 @@ box box_bb(box b0, box b1)
     return b;
 }
 
-boxf boxf_bb(boxf b0, boxf b1)
+inline boxf boxf_bb(boxf b0, boxf b1)
 {
     boxf b;
 
@@ -202,7 +222,7 @@ boxf boxf_bb(boxf b0, boxf b1)
     return b;
 }
 
-box box_intersect(box b0, box b1)
+inline box box_intersect(box b0, box b1)
 {
     box b;
 
@@ -214,7 +234,7 @@ box box_intersect(box b0, box b1)
     return b;
 }
 
-boxf boxf_intersect(boxf b0, boxf b1)
+inline boxf boxf_intersect(boxf b0, boxf b1)
 {
     boxf b;
 
@@ -226,22 +246,22 @@ boxf boxf_intersect(boxf b0, boxf b1)
     return b;
 }
 
-int box_overlap(box b0, box b1)
+inline int box_overlap(box b0, box b1)
 {
     return OVERLAP(b0, b1);
 }
 
-int boxf_overlap(boxf b0, boxf b1)
+inline int boxf_overlap(boxf b0, boxf b1)
 {
     return OVERLAP(b0, b1);
 }
 
-int box_contains(box b0, box b1)
+inline int box_contains(box b0, box b1)
 {
     return CONTAINS(b0, b1);
 }
 
-int boxf_contains(boxf b0, boxf b1)
+inline int boxf_contains(boxf b0, boxf b1)
 {
     return CONTAINS(b0, b1);
 }
@@ -255,7 +275,7 @@ int boxf_contains(boxf b0, boxf b1)
  *      outside, or overlapping a given rectangular area.
  *
  * Results:
- *      -1 is returned if the line given by p1 and p2
+ *      -1 is returned if the line given by p and q
  *      is entirely outside the rectangle given by b.
  * 	0 is returned if the polygon overlaps the rectangle, and
  *	1 is returned if the polygon is entirely inside the rectangle.
@@ -268,7 +288,7 @@ int boxf_contains(boxf b0, boxf b1)
 
 /* This code steals liberally from algorithms in tk/generic/tkTrig.c -- jce */
 
-int lineToBox(pointf p1, pointf p2, boxf b)
+int lineToBox(pointf p, pointf q, boxf b)
 {
     int inside1, inside2;
 
@@ -277,10 +297,10 @@ int lineToBox(pointf p1, pointf p2, boxf b)
      * are inside the rectangle or not.
      */
 
-    inside1 = (p1.x >= b.LL.x) && (p1.x <= b.UR.x)
-            && (p1.y >= b.LL.y) && (p1.y <= b.UR.y);
-    inside2 = (p2.x >= b.LL.x) && (p2.x <= b.UR.x)
-            && (p2.y >= b.LL.y) && (p2.y <= b.UR.y);
+    inside1 = (p.x >= b.LL.x) && (p.x <= b.UR.x)
+            && (p.y >= b.LL.y) && (p.y <= b.UR.y);
+    inside2 = (q.x >= b.LL.x) && (q.x <= b.UR.x)
+            && (q.y >= b.LL.y) && (q.y <= b.UR.y);
     if (inside1 != inside2) {
         return 0;
     }
@@ -295,23 +315,23 @@ int lineToBox(pointf p1, pointf p2, boxf b)
      * separately.
      */
 
-    if (p1.x == p2.x) {
+    if (p.x == q.x) {
         /*
          * Vertical line.
          */
 
-        if (((p1.y >= b.LL.y) ^ (p2.y >= b.LL.y))
-                && (p1.x >= b.LL.x)
-                && (p1.x <= b.UR.x)) {
+        if (((p.y >= b.LL.y) ^ (q.y >= b.LL.y))
+                && (p.x >= b.LL.x)
+                && (p.x <= b.UR.x)) {
             return 0;
         }
-    } else if (p1.y == p2.y) {
+    } else if (p.y == q.y) {
         /*
          * Horizontal line.
          */
-        if (((p1.x >= b.LL.x) ^ (p2.x >= b.LL.x))
-                && (p1.y >= b.LL.y)
-                && (p1.y <= b.UR.y)) {
+        if (((p.x >= b.LL.x) ^ (q.x >= b.LL.x))
+                && (p.y >= b.LL.y)
+                && (p.y <= b.UR.y)) {
             return 0;
         }
     } else {
@@ -323,18 +343,18 @@ int lineToBox(pointf p1, pointf p2, boxf b)
          * sides of the rectangle: left, right, bottom, top.
          */
 
-        m = (p2.y - p1.y)/(p2.x - p1.x);
-        if (p1.x < p2.x) {
-            low = p1.x;  high = p2.x;
+        m = (q.y - p.y)/(q.x - p.x);
+        if (p.x < q.x) {
+            low = p.x;  high = q.x;
         } else {
-            low = p2.x; high = p1.x;
+            low = q.x; high = p.x;
         }
 
         /*
          * Left edge.
          */
 
-        y = p1.y + (b.LL.x - p1.x)*m;
+        y = p.y + (b.LL.x - p.x)*m;
         if ((b.LL.x >= low) && (b.LL.x <= high)
                 && (y >= b.LL.y) && (y <= b.UR.y)) {
             return 0;
@@ -354,12 +374,12 @@ int lineToBox(pointf p1, pointf p2, boxf b)
          * Bottom edge.
          */
 
-        if (p1.y < p2.y) {
-            low = p1.y;  high = p2.y;
+        if (p.y < q.y) {
+            low = p.y;  high = q.y;
         } else {
-            low = p2.y; high = p1.y;
+            low = q.y; high = p.y;
         }
-        x = p1.x + (b.LL.y - p1.y)/m;
+        x = p.x + (b.LL.y - p.y)/m;
         if ((x >= b.LL.x) && (x <= b.UR.x)
                 && (b.LL.y >= low) && (b.LL.y <= high)) {
             return 0;
@@ -378,7 +398,7 @@ int lineToBox(pointf p1, pointf p2, boxf b)
     return -1;
 }
 
-void rect2poly(pointf *p)
+inline void rect2poly(pointf *p)
 {
     p[3].x = p[2].x = p[1].x;
     p[2].y = p[1].y;
@@ -525,37 +545,39 @@ pointf ccwrotatepf(pointf p, int ccwrot)
     return p;
 }
 
-box flip_rec_box(box b, point p)
+inline box flip_rec_box(box b, point p)
 {
-    box rv;
+    box r;
     /* flip box */
-    rv.UR.x = b.UR.y;
-    rv.UR.y = b.UR.x;
-    rv.LL.x = b.LL.y;
-    rv.LL.y = b.LL.x;
+    r.UR.x = b.UR.y;
+    r.UR.y = b.UR.x;
+    r.LL.x = b.LL.y;
+    r.LL.y = b.LL.x;
     /* move box */
-    rv.LL.x += p.x;
-    rv.LL.y += p.y;
-    rv.UR.x += p.x;
-    rv.UR.y += p.y;
-    return rv;
+    r.LL.x += p.x;
+    r.LL.y += p.y;
+    r.UR.x += p.x;
+    r.UR.y += p.y;
+    return r;
 }
 
-boxf flip_rec_boxf(boxf b, pointf p)
+inline boxf flip_rec_boxf(boxf b, pointf p)
 {
-    boxf rv;
+    boxf r;
     /* flip box */
-    rv.UR.x = b.UR.y;
-    rv.UR.y = b.UR.x;
-    rv.LL.x = b.LL.y;
-    rv.LL.y = b.LL.x;
+    r.UR.x = b.UR.y;
+    r.UR.y = b.UR.x;
+    r.LL.x = b.LL.y;
+    r.LL.y = b.LL.x;
     /* move box */
-    rv.LL.x += p.x;
-    rv.LL.y += p.y;
-    rv.UR.x += p.x;
-    rv.UR.y += p.y;
-    return rv;
+    r.LL.x += p.x;
+    r.LL.y += p.y;
+    r.UR.x += p.x;
+    r.UR.y += p.y;
+    return r;
 }
+
+#define SMALL 0.0000000001
 
 /* ptToLine2:
  * Return distance from point p to line a-b squared.
@@ -566,75 +588,46 @@ double ptToLine2 (pointf a, pointf b, pointf p)
   double dy = b.y-a.y;
   double a2 = (p.y-a.y)*dx - (p.x-a.x)*dy;
   a2 *= a2;   /* square - ensures that it is positive */
-  if (a2 < .00001) return 0.;  /* avoid 0/0 problems */
+  if (a2 < SMALL) return 0.;  /* avoid 0/0 problems */
   return a2 / (dx*dx + dy*dy);
 }
 
-#define SMALL 0.0000000001
-
-pointf
-addPt (pointf a, pointf b)
+inline pointf perp (pointf p)
 {
-    pointf c;
+    pointf r;
 
-    c.x = a.x+b.x;
-    c.y = a.y+b.y;
-    return c;
+    r.x = -p.y;
+    r.y = p.x;
+    return r;
 }
 
-pointf
-subPt (pointf a, pointf b)
+#define dot(v,w) (v.x*w.x+v.y*w.y)
+
+inline pointf scale (double c, pointf p)
 {
-    pointf c;
+    pointf r;
 
-    c.x = a.x-b.x;
-    c.y = a.y-b.y;
-    return c;
-}
-
-pointf
-perp (pointf a)
-{
-    pointf c;
-
-    c.x = -a.y;
-    c.y = a.x;
-    return c;
-}
-
-static double
-dot (pointf a, pointf b)
-{
-    return (a.x*b.x + a.y*b.y);
-}
-
-pointf
-scale (double c, pointf a)
-{
-    pointf b;
-
-    b.x = c*a.x;
-    b.y = c*a.y;
-    return b;
+    r.x = c * p.x;
+    r.y = c * p.y;
+    return r;
 }
 
 /* intersect:
  * Computes intersection of lines a-b and c-d, returning intersection
- * point in *x.
+ * point in *p.
  * Returns 0 if no intersection (lines parallel), 1 otherwise.
  */
-int
-seg_intersect (pointf a, pointf b, pointf c, pointf d, pointf* x)
+int seg_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p)
 {
-    pointf mv = subPt (b,a);
-    pointf lv = subPt (d,c);
+    pointf mv = sub_pointf(b,a);
+    pointf lv = sub_pointf(d,c);
     pointf ln = perp (lv);
     double lc = -dot(ln,c);
     double dt = dot(ln,mv);
 
     if (fabs(dt) < SMALL) return 0;
 
-    *x = subPt(a,scale((dot(ln,a)+lc)/dt,mv));
+    *p = sub_pointf(a,scale((dot(ln,a)+lc)/dt,mv));
     return 1;
 }
 

@@ -252,30 +252,6 @@ static double bisect(pointf pp, pointf cp, pointf np)
     return (theta + phi) / 2.0;
 }
 
-#define dot(v,w) (v.x*w.x+v.y*w.y)
-#define SMALL 0.0000000001
-
-/* lintersect:
- * Compute the intersection of segments (a,b) and (c,d).
- * Store the point in p.
- * Return 1 on success, 0 on failure.
- */
-static int
-lintersect(pointf a, pointf b, pointf c, pointf d, pointf * p)
-{
-    pointf mu = a;
-    pointf mv = subPt(b, a);
-    pointf lu = c;
-    pointf lv = subPt(d, c);
-    pointf ln = perp(lv);
-    double lc = -(dot(ln, lu));
-    double dd = dot(ln, mv);
-    if (fabs(dd) < SMALL)
-	return 0;
-    *p = subPt(mu, scale((dot(ln, mu) + lc) / dd, mv));
-    return 1;
-}
-
 /* raySeg:
  * Check if ray v->w intersects segment a--b.
  */
@@ -297,11 +273,10 @@ static int raySeg(pointf v, pointf w, pointf a, pointf b)
  * Return 1 on success, 0 on failure
  */
 static int
-raySegIntersect(pointf v, pointf w, pointf a, pointf b,
-		pointf * p)
+raySegIntersect(pointf v, pointf w, pointf a, pointf b, pointf * p)
 {
     if (raySeg(v, w, a, b))
-	return lintersect(v, w, a, b, p);
+	return seg_intersect(v, w, a, b, p);
     else
 	return 0;
 }
@@ -993,36 +968,36 @@ static void addEndpoint(router_t * rtr, pointf p, node_t* v, int v_id, int sides
 
     switch (sides) {
     case TOP :
-	v0 = addPt (p, northwest);
-	v1 = addPt (p, northeast);
+	v0 = add_pointf (p, northwest);
+	v1 = add_pointf (p, northeast);
 	break;
     case TOP|RIGHT :
-	v0 = addPt (p, north);
-	v1 = addPt (p, east);
+	v0 = add_pointf (p, north);
+	v1 = add_pointf (p, east);
 	break;
     case RIGHT :
-	v0 = addPt (p, northeast);
-	v1 = addPt (p, southeast);
+	v0 = add_pointf (p, northeast);
+	v1 = add_pointf (p, southeast);
 	break;
     case BOTTOM|RIGHT :
-	v0 = addPt (p, east);
-	v1 = addPt (p, south);
+	v0 = add_pointf (p, east);
+	v1 = add_pointf (p, south);
 	break;
     case BOTTOM :
-	v0 = addPt (p, southeast);
-	v1 = addPt (p, southwest);
+	v0 = add_pointf (p, southeast);
+	v1 = add_pointf (p, southwest);
 	break;
     case BOTTOM|LEFT :
-	v0 = addPt (p, south);
-	v1 = addPt (p, west);
+	v0 = add_pointf (p, south);
+	v1 = add_pointf (p, west);
 	break;
     case LEFT :
-	v0 = addPt (p, southwest);
-	v1 = addPt (p, northwest);
+	v0 = add_pointf (p, southwest);
+	v1 = add_pointf (p, northwest);
 	break;
     case TOP|LEFT :
-	v0 = addPt (p, west);
-	v1 = addPt (p, north);
+	v0 = add_pointf (p, west);
+	v1 = add_pointf (p, north);
 	break;
     case 0 :
 	break;

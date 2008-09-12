@@ -26,22 +26,22 @@ extern "C" {
 
 #include <geom.h>
 
-extern point pointof(int, int);
-extern pointf pointfof(double, double);
+extern point pointof(int a, int b);
+extern pointf pointfof(double a, double b);
 
-extern pointf cvt2ptf(point);
-extern point cvt2pt(pointf);
+extern pointf cvt2ptf(point p);
+extern point cvt2pt(pointf p);
 
-extern point add_point(point, point);
-extern pointf add_pointf(pointf, pointf);
+extern point add_point(point p, point q);
+extern pointf add_pointf(pointf p, pointf q);
 
-extern point sub_point(point, point);
-extern pointf sub_pointf(pointf, pointf);
+extern point sub_point(point p, point q);
+extern pointf sub_pointf(pointf p, pointf q);
 
-extern point mid_point(point, point);
-extern pointf mid_pointf(pointf, pointf);
+extern point mid_point(point p, point q);
+extern pointf mid_pointf(pointf p, pointf q);
 
-extern pointf interpolate(double, pointf, pointf);
+extern pointf interpolate(double t, pointf p, pointf q);
 
 extern point exch_xy(point p);
 extern pointf exch_xyf(pointf p);
@@ -49,20 +49,20 @@ extern pointf exch_xyf(pointf p);
 extern box boxof(int llx, int lly, int urx, int ury);
 extern boxf boxfof(double llx, double lly, double urx, double ury);
 
-extern box mkbox(point, point);
-extern boxf mkboxf(pointf, pointf);
+extern box mkbox(point p, point q);
+extern boxf mkboxf(pointf p, pointf q);
 
-extern box box_bb(box, box);
-extern boxf boxf_bb(boxf, boxf);
+extern box box_bb(box b0, box b1);
+extern boxf boxf_bb(boxf b0, boxf b1);
 
-extern box box_intersect(box, box);
-extern boxf boxf_intersect(boxf, boxf);
+extern box box_intersect(box b0, box b1);
+extern boxf boxf_intersect(boxf b0, boxf b1);
 
-extern int box_overlap(box, box);
-extern int boxf_overlap(boxf, boxf);
+extern int box_overlap(box b0, box b1);
+extern int boxf_overlap(boxf b0, boxf b1);
 
-extern int box_contains(box, box);
-extern int boxf_contains(boxf, boxf);
+extern int box_contains(box b0, box b1);
+extern int boxf_contains(boxf b0, boxf b1);
 
 extern box flip_rec_box(box b, point p);
 extern boxf flip_rec_boxf(boxf b, pointf p);
@@ -83,7 +83,7 @@ extern pointf perp(pointf v);
 extern pointf subPt(pointf v, pointf w);
 extern pointf addPt(pointf v, pointf w);
 
-extern int seg_intersect (pointf a, pointf b, pointf c, pointf d, pointf* x);
+extern int seg_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p);
 #ifdef __cplusplus
 }
 #endif
