@@ -50,7 +50,9 @@ extern "C" {
 #endif
 #define ABS(a)		((a) >= 0 ? (a) : -(a))
 
+#define AVG(a,b)	((a + b) / 2)
 #define SGN(a)		(((a)<0)? -1 : 1)
+#define CMP(a,b)	(((a)<(b)) ? -1 : (((a)>(b)) ? 1 : 0))
 
 #ifndef INT_MAX
 #define	INT_MAX		((int)(~(unsigned)0 >> 1))
