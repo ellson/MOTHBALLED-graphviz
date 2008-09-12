@@ -845,7 +845,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    ep = INT2PTR(Agedge_t *, args[1].integer);
 	    if (!gp)
-		gp = agroot(np);
+		gp = agroot(ep);
 	    if (ep) {
 		v.integer = PTR2INT(addEdge(gp, ep, 0));
 	    } else {
