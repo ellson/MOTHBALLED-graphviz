@@ -2,7 +2,8 @@
 
 # display the kernel module dependencies
 
-# author: John Ellson <ellson@research.att.com>
+#author: Patricio Ros <patricioros.dev@gmail.com>
+# based on: modgraph.tcl by  John Ellson <ellson@research.att.com>
 
 require 'gv'
 
@@ -20,23 +21,14 @@ Gv.setv(N, 'fontsize', '8')
 Gv.setv(N, 'fontname', 'helvetica')
 Gv.setv(E, 'arrowsize', '.4')
 
-f = File.open('/proc/modules', mode="r")
-while ! f.eof do
-	rec = f.gets()
-
-#FIXME - complete translation to ruby
-
-#    for mod, usedbylist in string.gfind(rec, "([_%w]+) %w+ %w+ ([-,_%w]+)") do
-#       n = gv.node(G, mod)
-#       for usedby in string.gfind(usedbylist, "([-_%w]+)") do
-#          if (usedby ~= '-') and (usedby ~= '') then
-#             gv.edge(n, gv.node(G, usedby))
-#          end
-#       end
-#    end
-
-end	
-f.close
+File.readlines("/proc/modules").each do |rec|
+  fields = rec.split(' ') 
+  n = Gv.node(G, fields[0])
+  fields[3].split(',').find_all {|i| not ['-',' '].include? i}.each do |usedby|
+     Gv.edge(n, Gv.node(G, usedby))
+  end
+end
 
 Gv.layout(G, 'dot')
 Gv.render(G, 'xlib')
+
