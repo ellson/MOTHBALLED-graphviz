@@ -26,8 +26,6 @@
 
 #include	"blockpath.h"
 
-#define		LEN(x,y) (sqrt((x)*(x) + (y)*(y)))
-
 /* getRotation:
  * The function determines how much the block should be rotated
  * for best positioning with parent, assuming its center is at x and y
@@ -56,12 +54,12 @@
 static double
 getRotation(block_t * sn, Agraph_t * g, double x, double y, double theta)
 {
-    double mindist;
+    double mindist2;
     Agraph_t *subg;
     /* Agedge_t* e; */
     Agnode_t *n, *closest_node, *neighbor;
     nodelist_t *list;
-    double len, newX, newY;
+    double len2, newX, newY;
     int count;
 
     subg = sn->sub_graph;
@@ -100,7 +98,7 @@ getRotation(block_t * sn, Agraph_t * g, double x, double y, double theta)
 #endif
     newX = ND_pos(neighbor)[0] + x;
     newY = ND_pos(neighbor)[1] + y;
-    mindist = LEN(newX, newY);
+    mindist2 = LEN2(newX, newY);    /* save sqrts by using sqr of dist to find min */
     closest_node = neighbor;
 
     for (n = agfstnode(subg); n; n = agnxtnode(subg, n)) {
@@ -110,9 +108,9 @@ getRotation(block_t * sn, Agraph_t * g, double x, double y, double theta)
 	newX = ND_pos(n)[0] + x;
 	newY = ND_pos(n)[1] + y;
 
-	len = LEN(newX, newY);
-	if (len < mindist) {
-	    mindist = len;
+	len2 = LEN2(newX, newY);
+	if (len2 < mindist2) {
+	    mindist2 = len2;
 	    closest_node = n;
 	}
     }
