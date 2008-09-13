@@ -879,7 +879,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_nxtout:
 	    ep = INT2PTR(Agedge_t *, args[0].integer);
 	    if (ep) {
-		ep = agnxtout(agroot(np), ep);
+		ep = agnxtout(agroot(ep), ep);
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL edge passed to nxtout()");
@@ -890,7 +890,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    ep = INT2PTR(Agedge_t *, args[1].integer);
 	    if (!gp)
-		gp = agroot(np);
+		gp = agroot(ep);
 	    if (ep) {
 		ep = agnxtout(gp, ep);
 		v.integer = PTR2INT(ep);
@@ -925,7 +925,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	case F_nxtin:
 	    ep = INT2PTR(Agedge_t *, args[0].integer);
 	    if (ep) {
-		ep = agnxtin(agroot(np), ep);
+		ep = agnxtin(agroot(ep), ep);
 		v.integer = PTR2INT(ep);
 	    } else {
 		error(ERROR_WARNING, "NULL edge passed to nxtin()");
@@ -936,7 +936,7 @@ getval(Expr_t * pgm, Exnode_t * node, Exid_t * sym, Exref_t * ref,
 	    gp = INT2PTR(Agraph_t *, args[0].integer);
 	    ep = INT2PTR(Agedge_t *, args[1].integer);
 	    if (!gp)
-		gp = agroot(np);
+		gp = agroot(ep);
 	    if (ep) {
 		ep = agnxtin(gp, ep);
 		v.integer = PTR2INT(ep);
