@@ -291,12 +291,26 @@ static void init_window(GVJ_t *job, Display *dpy, int scr)
     unsigned long attributemask = 0;
     char *name;
     window_t *window;
+    int w, h;
+    double zoom_to_fit;
 
     window = (window_t *)malloc(sizeof(window_t));
     if (window == NULL) {
 	fprintf(stderr, "Failed to malloc window_t\n");
 	return;
     }
+
+    w = 480;    /* FIXME - w,h should be set by a --geometry commandline option */
+    h = 325;
+    
+    zoom_to_fit = MIN((double) w / (double) job->width,
+			(double) h / (double) job->height);
+    if (zoom_to_fit < 1.0) /* don't make bigger */
+	job->zoom *= zoom_to_fit;
+
+    job->width  = w;    /* use window geometry */
+    job->height = h;
+
     job->window = (void *)window;
     job->fit_mode = 0;
     job->needs_refresh = 1;
