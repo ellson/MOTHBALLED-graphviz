@@ -848,10 +848,19 @@ static void setup_page(GVJ_t * job, graph_t * g)
     job->pageOffset.x = - job->pageSize.x * pagesArrayElem.x;
     job->pageOffset.y = - job->pageSize.y * pagesArrayElem.y;
 #endif
-    job->clip.LL.x = job->focus.x + job->pageSize.x * (pagesArrayElem.x - pagesArraySize.x / 2.);
-    job->clip.LL.y = job->focus.y + job->pageSize.y * (pagesArrayElem.y - pagesArraySize.y / 2.) - 1;
-    job->clip.UR.x = job->clip.LL.x + job->pageSize.x + 1;
-    job->clip.UR.y = job->clip.LL.y + job->pageSize.y + 1;
+
+    if (job->flags & GVDEVICE_EVENTS) {
+        job->clip.LL.x = job->focus.x - job->view.x / 2.;
+        job->clip.LL.y = job->focus.y - job->view.y / 2.;
+        job->clip.UR.x = job->focus.x + job->view.x / 2.;
+        job->clip.UR.y = job->focus.y + job->view.y / 2.;
+    }
+    else {
+        job->clip.LL.x = job->focus.x + job->pageSize.x * (pagesArrayElem.x - pagesArraySize.x / 2.);
+        job->clip.LL.y = job->focus.y + job->pageSize.y * (pagesArrayElem.y - pagesArraySize.y / 2.) - 1;
+        job->clip.UR.x = job->clip.LL.x + job->pageSize.x + 1;
+        job->clip.UR.y = job->clip.LL.y + job->pageSize.y + 1;
+    }
 
     /* CAUTION - job->translation was difficult to get right. */
     /* Test with and without assymetric margins, e.g: -Gmargin="1,0" */
@@ -2267,13 +2276,17 @@ void emit_graph(GVJ_t * job, graph_t * g)
 
     /* compute current view in graph units */
     if (job->rotation) {
-	job->view.y = job->width / job->scale.x;
-	job->view.x = job->height / job->scale.y;
+	job->view.y = job->width / job->scale.y;
+	job->view.x = job->height / job->scale.x;
     }
     else {
 	job->view.x = job->width / job->scale.x;
 	job->view.y = job->height / job->scale.y;
     }
+#if 0
+fprintf(stderr,"focus=%g,%g view=%g,%g\n",
+	job->focus.x, job->focus.y, job->view.x, job->view.y);
+#endif
 
     s = late_string(g, agfindattr(g, "comment"), "");
     gvrender_comment(job, s);

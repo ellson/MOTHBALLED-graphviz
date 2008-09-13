@@ -410,15 +410,15 @@ static void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
 /* FIXME - should code window 0,0 point as feature with Y_GOES_DOWN */
         job->fit_mode = 0;
         if (job->rotation) {
-            job->focus.x -= (pointer.y - job->height)
+            job->focus.x -= (pointer.y - job->height / 2.)
                     * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
-            job->focus.y += (pointer.x)
+            job->focus.y += (pointer.x - job->width / 2.)
                     * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
         }
         else {
-            job->focus.x += (pointer.x)
+            job->focus.x += (pointer.x - job->width / 2.)
                     * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
-            job->focus.y += (pointer.y - job->height)
+            job->focus.y += (pointer.y - job->height / 2.)
                     * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
         }
         job->zoom *= ZOOMFACTOR;
@@ -428,15 +428,15 @@ static void gvevent_button_press(GVJ_t * job, int button, pointf pointer)
         job->fit_mode = 0;
         job->zoom /= ZOOMFACTOR;
         if (job->rotation) {
-            job->focus.x += (pointer.y - job->height)
+            job->focus.x += (pointer.y - job->height / 2.)
                     * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
-            job->focus.y -= (pointer.x)
+            job->focus.y -= (pointer.x - job->width / 2.)
                     * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
         }
         else {
-            job->focus.x -= (pointer.x)
+            job->focus.x -= (pointer.x - job->width / 2.)
                     * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.x);
-            job->focus.y -= (pointer.y - job->height)
+            job->focus.y -= (pointer.y - job->height / 2.)
                     * (ZOOMFACTOR - 1.) / (job->zoom * job->devscale.y);
         }
         job->needs_refresh = 1;
