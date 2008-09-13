@@ -32,9 +32,6 @@ extern double drand48(void);
 #include <ortho.h>
 #endif
 
-#define P2PF(p, pf) (pf.x = p.x, pf.y = p.y)
-#define PF2P(pf, p) (p.x = ROUND (pf.x), p.y = ROUND (pf.y))
-
 extern void printvis(vconfig_t * cp);
 extern int in_poly(Ppoly_t argpoly, Ppoint_t q);
 
@@ -214,8 +211,7 @@ void addEdgeLabels(edge_t * e, pointf rp, pointf rq)
 
     if (ED_label(e) && !ED_label(e)->set) {
 	endPoints(ED_spl(e), &p, &q);
-// FIXME - fp equality test
-	if ((p.x == q.x) && (p.y == q.y)) { /* degenerate spline */
+        if (APPROXEQPT(p, q, MILLIPOINT)) { /* degenerate spline */
 	    p = rp;
 	    q = rq;
 	    spf = p;
@@ -439,10 +435,7 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
     }
 
     e0 = e;
-    perp.x = dumb[0].y - dumb[3].y;
-    perp.y = dumb[3].x - dumb[0].x;
-// FIXME - fp equality test
-    if ((perp.x == 0) && (perp.y == 0)) { 
+    if (APPROXEQPT(dumb[0], dumb[3], MILLIPOINT)) {
 	/* degenerate case */
 	dumb[1] = dumb[0];
 	dumb[2] = dumb[3];
@@ -450,7 +443,9 @@ makeStraightEdge(graph_t * g, edge_t * e, int doPolyline)
 	del.y = 0;
     }
     else {
-	l_perp = sqrt(perp.x * perp.x + perp.y * perp.y);
+        perp.x = dumb[0].y - dumb[3].y;
+        perp.y = dumb[3].x - dumb[0].x;
+	l_perp = LEN(perp.x, perp.y);
 	xstep = GD_nodesep(g);
 	dx = xstep * (e_cnt - 1) / 2;
 	dumb[1].x = dumb[0].x + (dx * perp.x) / l_perp;

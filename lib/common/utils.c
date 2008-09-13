@@ -1412,19 +1412,14 @@ utf8ToLatin1 (char* s)
 
 boolean overlap_node(node_t *n, boxf b)
 {
-    boxf bb;
     inside_t ictxt;
     pointf p;
 
-    bb = ND_bb(n);
-    if (! OVERLAP(b, bb))
+    if (! OVERLAP(b, ND_bb(n)))
         return FALSE;
 
-    p = ND_coord(n);
-
 /*  FIXME - need to do something better about CLOSEENOUGH */
-    p.x -= (b.UR.x + b.LL.x) / 2.;
-    p.y -= (b.UR.y + b.LL.y) / 2.;
+    p = sub_pointf(ND_coord(n), mid_pointf(b.UR, b.LL));
 
     ictxt.s.n = n;
     ictxt.s.bp = NULL;
@@ -1434,24 +1429,19 @@ boolean overlap_node(node_t *n, boxf b)
 
 boolean overlap_label(textlabel_t *lp, boxf b)
 {
-    double sx, sy;
+    pointf s;
     boxf bb;
 
-    sx = lp->dimen.x / 2.;
-    sy = lp->dimen.y / 2.;
-    bb.LL.x = lp->pos.x - sx;
-    bb.UR.x = lp->pos.x + sx;
-    bb.LL.y = lp->pos.y - sy;
-    bb.UR.y = lp->pos.y + sy;
+    s.x = lp->dimen.x / 2.;
+    s.y = lp->dimen.y / 2.;
+    bb.LL = sub_pointf(lp->pos, s);
+    bb.UR = add_pointf(lp->pos, s);
     return OVERLAP(b, bb);
 }
 
 static boolean overlap_arrow(pointf p, pointf u, double scale, int flag, boxf b)
 {
-    boxf bb;
-
-    bb = arrow_bb(p, u, scale, flag);
-    if (OVERLAP(b, bb)) {
+    if (OVERLAP(b, arrow_bb(p, u, scale, flag))) {
 	/* FIXME - check inside arrow shape */
 	return TRUE;
     }

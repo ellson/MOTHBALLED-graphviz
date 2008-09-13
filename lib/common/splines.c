@@ -294,12 +294,11 @@ clip_and_install(edge_t * fe, node_t * hn, pointf * ps, int pn,
 	shape_clip0(&inside_context, hn, &ps[end], FALSE);
     } else
 	end = pn - 4;
-    /* FIXME - fp equality tests */
     for (; start < pn - 4; start += 3) 
-	if (ps[start].x != ps[start + 3].x || ps[start].y != ps[start + 3].y)
+	if (! APPROXEQPT(ps[start], ps[start + 3], MILLIPOINT))
 	    break;
     for (; end > 0; end -= 3)
-	if (ps[end].x != ps[end + 3].x || ps[end].y != ps[end + 3].y)
+	if (! APPROXEQPT(ps[end], ps[end + 3], MILLIPOINT))
 	    break;
     arrow_clip(fe, hn, ps, &start, &end, newspl, info);
     for (i = start; i < end + 4; ) {

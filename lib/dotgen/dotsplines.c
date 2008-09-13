@@ -500,6 +500,7 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
 {
     edge_t fwdedgea, fwdedgeb, *e0, *e1, *ea, *eb, *le0, *le1;
     int et0, et1, v0, v1, rv;
+    double t0, t1;
 
     e0 = (edge_t *) * ptr0;
     e1 = (edge_t *) * ptr1;
@@ -507,22 +508,28 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
     et1 = ED_tree_index(e1) & EDGETYPEMASK;
     if (et0 != et1)
 	return (et1 - et0);
+
     le0 = getmainedge(e0);
     le1 = getmainedge(e1);
-    v0 = ND_rank(le0->tail) - ND_rank(le0->head), v0 = ABS(v0);
-    v1 = ND_rank(le1->tail) - ND_rank(le1->head), v1 = ABS(v1);
-    if (v0 != v1)
-	return (v0 - v1);
-    v0 = ND_coord(le0->tail).x - ND_coord(le0->head).x, v0 = ABS(v0);
-    v1 = ND_coord(le1->tail).x - ND_coord(le1->head).x, v1 = ABS(v1);
 
-/* FIXME - fp equality test */
+    t0 = ND_rank(le0->tail) - ND_rank(le0->head);
+    t1 = ND_rank(le1->tail) - ND_rank(le1->head);
+    v0 = ABS((int)t0);   /* ugly, but explicit as to how we avoid equality tests on fp numbers */
+    v1 = ABS((int)t1);
     if (v0 != v1)
 	return (v0 - v1);
-    /* This provides a cheap test for edges having the same set of endpoints.
-     */
+
+    t0 = ND_coord(le0->tail).x - ND_coord(le0->head).x;
+    t1 = ND_coord(le1->tail).x - ND_coord(le1->head).x;
+    v0 = ABS((int)t0);
+    v1 = ABS((int)t1);
+    if (v0 != v1)
+	return (v0 - v1);
+
+    /* This provides a cheap test for edges having the same set of endpoints.  */
     if (le0->id != le1->id)
 	return (le0->id - le1->id);
+
     ea = (ED_tail_port(e0).defined || ED_head_port(e0).defined) ? e0 : le0;
     if (ED_tree_index(ea) & BWDEDGE) {
 	MAKEFWDEDGE(&fwdedgea, ea);
@@ -537,12 +544,15 @@ static int edgecmp(edge_t** ptr0, edge_t** ptr1)
 	return rv;
     if ((rv = portcmp(ED_head_port(ea), ED_head_port(eb))))
 	return rv;
-    v0 = ED_tree_index(e0) & GRAPHTYPEMASK;
-    v1 = ED_tree_index(e1) & GRAPHTYPEMASK;
-    if (v0 != v1)
-	return (v0 - v1);
+
+    et0 = ED_tree_index(e0) & GRAPHTYPEMASK;
+    et1 = ED_tree_index(e1) & GRAPHTYPEMASK;
+    if (et0 != et1)
+	return (et0 - et1);
+
     if (et0 == FLATEDGE && ED_label(e0) != ED_label(e1))
 	return (int) (ED_label(e0) - ED_label(e1));
+
     return (e0->id - e1->id);
 }
 

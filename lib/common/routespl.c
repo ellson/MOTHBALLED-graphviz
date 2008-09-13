@@ -471,7 +471,7 @@ REDO:
     for (splinepi = 0; splinepi + 3 < spl.pn; splinepi += 3) {
 	int num_div = delta * boxn;
 	for (si = 0; si <= num_div; si++) {
-	    t = si / ((double)num_div);
+	    t = si / (double)num_div;
 	    sp[0] = ps[splinepi];
 	    sp[1] = ps[splinepi + 1];
 	    sp[2] = ps[splinepi + 2];
@@ -503,7 +503,9 @@ REDO:
      * Therefore, we make the sample finer until all boxes have
      * valid values. cf. bug 456. Would making sp[] pointfs help?
      */
-    for (bi = 0; bi < boxn; bi++) {  /* FIXME - fp equality tests */
+    for (bi = 0; bi < boxn; bi++) {
+	/* these fp equality tests are used only to detect if the
+	 * values have been changed since initialization - ok */
 	if ((boxes[bi].LL.x == INT_MAX) || (boxes[bi].UR.x == INT_MIN)) {
 	    delta *= 2;
 	    goto REDO;
