@@ -4,6 +4,6 @@
 .libs
 Makefile
 Makefile.in
-dot dot_static dot_builtins
+dot dot_static dot_builtins vimdot
 *.pdf
 CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
