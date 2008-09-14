@@ -18,6 +18,7 @@ lib_LTLIBRARIES = libgvplugin_xlib.la
 else
 pkglib_LTLIBRARIES = libgvplugin_xlib.la
 endif
+bin_SCRIPTS = vimdot
 endif
 endif
 
@@ -36,3 +37,12 @@ endif
 if WITH_DARWIN9
 libgvplugin_xlib_la_LDFLAGS += -Wl,-exported_symbol,_gvplugin_xlib_LTX_library
 endif
+
+vimdot: $(top_srcdir)/plugin/xlib/vimdot.sh
+	cp $(top_srcdir)/plugin/xlib/vimdot.sh vimdot
+	chmod +x vimdot
+
+EXTRA_DIST = vimdot.sh
+
+DISTCLEANFILES = vimdot
+
