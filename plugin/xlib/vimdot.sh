@@ -2,9 +2,18 @@
 
 # Written by: John Ellson <ellson@research.att.com>
 
-if test -z $1; then f=noname.dot; else f=$1; fi
-if ! test -f $f; then cat >$f <<EOF
-digraph noname {
+if test -z $1; then
+	f=noname.dot
+else
+	f=$1
+fi
+if ! test -f $f; then
+	if ! test -w .; then
+		echo "error: directory `pwd` is not writable"
+		exit
+	fi
+	cat >$f <<EOF
+digraph G {
 	graph [layout=dot rankdir=LR]
 
 // This is just an example for you to use as a template.
@@ -19,9 +28,12 @@ digraph noname {
 }
 EOF
 fi
-if ! test -w $f; then echo "warning: $f is not writable";fi
+if ! test -w $f; then
+	echo "error: $f is not writable"
+	exit
+fi
 
 # dot -Txlib watches the file $f for changes using inotify()
 dot -Txlib $f &
-# open an editor in the file (could be any editor)
+# open an editor on the file $f (could be any editor)
 gvim $f &
