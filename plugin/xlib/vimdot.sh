@@ -11,6 +11,9 @@ digraph noname {
 // Edit as you like. Whenever you save a legal graph
 // the layout in the graphviz window will be updated.
 
+	vim [href="http://www.vim.org/"]
+	dot [href="http://www.graphviz.org"]
+	vimdot [href="file:///usr/bin/vimdot"]
 	{vim dot} -> vimdot
 }
 EOF
