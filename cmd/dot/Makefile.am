@@ -23,10 +23,10 @@ AM_CPPFLAGS = \
 if ENABLE_SHARED
 if ENABLE_LTDL
 if ENABLE_STATIC
-bin_PROGRAMS = dot dot_static vimdot
+bin_PROGRAMS = dot dot_static
 else
 noinst_PROGRAMS = dot_builtins
-bin_PROGRAMS = dot vimdot
+bin_PROGRAMS = dot
 endif
 else
 if ENABLE_STATIC
@@ -41,11 +41,6 @@ if ENABLE_STATIC
 bin_PROGRAMS = dot_static
 endif
 endif
-
-
-vimdot: $(top_srcdir)/cmd/dot/vimdot.sh
-	cp $(top_srcdir)/cmd/dot/vimdot.sh vimdot
-	chmod +x vimdot
 
 man_MANS = dot.1 
 pdf_DATA = dot.1.pdf
@@ -116,6 +111,6 @@ dot_static_LDADD += $(top_builddir)/plugin/pango/.libs/libgvplugin_pango_C.a @PA
 dot_builtins_LDADD += $(top_builddir)/plugin/pango/libgvplugin_pango.la @PANGOCAIRO_LIBS@
 endif
 
-EXTRA_DIST = Makefile.old dot.1 dot.1.pdf vimdot.sh
+EXTRA_DIST = Makefile.old dot.1 dot.1.pdf
 
-DISTCLEANFILES = dot.1.pdf vimdot
+DISTCLEANFILES = dot.1.pdf
