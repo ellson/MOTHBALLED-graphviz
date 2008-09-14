@@ -6,3 +6,4 @@ Makefile
 Makefile.in
 CMakeFiles
 *.cmake
+vimdot
