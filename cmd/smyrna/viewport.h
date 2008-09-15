@@ -33,7 +33,7 @@ int save_as_graph();
 int do_graph_layout(Agraph_t * graph, int Engine, int keeppos);
 void refreshControls(ViewInfo * v);
 
-void move_node(void *n, float dx, float dy);
+void movenode(void *n, float dx, float dy);
 void glexpose();
 int gl_main_expose();
 void move_nodes(Agraph_t * g);

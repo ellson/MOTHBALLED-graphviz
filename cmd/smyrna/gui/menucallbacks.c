@@ -156,14 +156,15 @@ void mShowHostSelectionSlot(GtkWidget * widget, gpointer user_data)
 
 }
 
-void mMenuZoom(GtkWidget * widget, gpointer user_data)
-{
-    view->mouse.mouse_mode = MM_ZOOM;
-}
-
 void mMenuPan(GtkWidget * widget, gpointer user_data)
 {
-    view->mouse.mouse_mode = MM_PAN;
+	view->mouse.mouse_mode = MM_PAN;
+
+}
+void mMenuZoom(GtkWidget * widget, gpointer user_data)
+{
+	view->mouse.mouse_mode = MM_ZOOM;
+
 }
 
 

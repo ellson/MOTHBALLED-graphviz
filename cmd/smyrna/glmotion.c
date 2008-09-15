@@ -133,7 +133,8 @@ int glmotion_zoom(ViewInfo * v)
 	xx = ((float) 100.0 - (float) 1.0) * (v->zoom -
 		     (float) MIN_ZOOM) / ((float) MAX_ZOOM - (float) MIN_ZOOM) + (float) 1.0;
 	sprintf(buf, "%i", (int) xx);
-	glCompLabelSetText((glCompLabel *) v->Topview->customptr, buf);
+/*	if (v->Topview->customptr)
+		glCompLabelSetText((glCompLabel *) v->Topview->customptr, buf);*/
 	return 1;
 }
 int glmotion_pan(ViewInfo * v)

@@ -763,7 +763,8 @@ static Agraph_t *loadGraph(char *filename)
 	}
     }
 #endif
-    preparetopview(g, view->Topview);
+	if(strcasecmp(agget(g, "TopView"),"1")==0)
+		preparetopview(g, view->Topview);
     return g;
 }
 
@@ -1003,7 +1004,7 @@ static int init_object_custom_data(Agraph_t * graph, void *obj)
 
 /* move_node:
  */ 
-void move_node(void *obj, float dx, float dy)
+void movenode(void *obj, float dx, float dy)
 {
     char buf[512];
     double x, y;
@@ -1013,7 +1014,7 @@ void move_node(void *obj, float dx, float dy)
 	sscanf (agxget (obj, pos), "%lf,%lf", &x, &y);
 	sprintf (buf, "%lf,%lf", x - dx, y - dy);
 	agxset(obj, pos, buf);
-    }
+	}
 }
 
 static char *move_xdot(void *obj, xdot * x, int dx, int dy, int dz)
@@ -1129,7 +1130,7 @@ void move_nodes(Agraph_t * g)
 	    agset(obj, "_ldraw_",
 		  move_xdot(obj, bf, (int) dx, (int) dy, 0));
 	    free(bf);
-	    move_node(obj, dx, dy);
+	    movenode(obj, dx, dy);
 	    //iterate edges
 	    /*for (e = agfstout(g,obj) ; e ; e = agnxtout (g,e))
 	       {

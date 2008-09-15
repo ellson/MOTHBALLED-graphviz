@@ -38,6 +38,10 @@ _BB void mTopviewSettingsSlot(GtkWidget * widget, gpointer user_data);
 //view
 _BB void mShowToolBoxSlot(GtkWidget * widget, gpointer user_data);
 _BB void mShowHostSelectionSlot(GtkWidget * widget, gpointer user_data);
+_BB void mMenuPan(GtkWidget * widget, gpointer user_data);
+_BB void mMenuZoom(GtkWidget * widget, gpointer user_data);
+
+
 //Graph
 _BB void mNodeListSlot(GtkWidget * widget, gpointer user_data);
 _BB void mNewNodeSlot(GtkWidget * widget, gpointer user_data);
