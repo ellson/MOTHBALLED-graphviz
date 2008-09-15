@@ -41,7 +41,7 @@ extern pointf sub_pointf(pointf p, pointf q);
 extern point mid_point(point p, point q);
 extern pointf mid_pointf(pointf p, pointf q);
 
-extern pointf interpolate(double t, pointf p, pointf q);
+extern pointf interpolate_pointf(double t, pointf p, pointf q);
 
 extern point exch_xy(point p);
 extern pointf exch_xyf(pointf p);

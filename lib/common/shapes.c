@@ -411,11 +411,11 @@ void round_corners(GVJ_t * job, char* fillc, char* penc, pointf * AF,
 	if (mode != ROUNDED)
 	    B[i++] = p0;
 	if (mode == ROUNDED)
-	    B[i++] = interpolate(RBCURVE * t, p0, p1);
-	B[i++] = interpolate(t, p0, p1);
-	B[i++] = interpolate(1.0 - t, p0, p1);
+	    B[i++] = interpolate_pointf(RBCURVE * t, p0, p1);
+	B[i++] = interpolate_pointf(t, p0, p1);
+	B[i++] = interpolate_pointf(1.0 - t, p0, p1);
 	if (mode == ROUNDED)
-	    B[i++] = interpolate(1.0 - RBCURVE * t, p0, p1);
+	    B[i++] = interpolate_pointf(1.0 - RBCURVE * t, p0, p1);
     }
     B[i++] = B[0];
     B[i++] = B[1];

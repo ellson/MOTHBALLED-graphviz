@@ -171,7 +171,7 @@ inline pointf mid_pointf(pointf p, pointf q)
     return r;
 }
 
-inline pointf interpolate(double t, pointf p, pointf q)
+inline pointf interpolate_pointf(double t, pointf p, pointf q)
 {
     pointf r; 
 
