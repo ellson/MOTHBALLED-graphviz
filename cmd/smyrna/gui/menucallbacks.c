@@ -156,6 +156,16 @@ void mShowHostSelectionSlot(GtkWidget * widget, gpointer user_data)
 
 }
 
+void mMenuZoom(GtkWidget * widget, gpointer user_data)
+{
+    view->mouse.mouse_mode = MM_ZOOM;
+}
+
+void mMenuPan(GtkWidget * widget, gpointer user_data)
+{
+    view->mouse.mouse_mode = MM_PAN;
+}
+
 
 //Graph
 void mNodeListSlot(GtkWidget * widget, gpointer user_data)
