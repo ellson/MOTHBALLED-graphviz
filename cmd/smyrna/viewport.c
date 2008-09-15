@@ -1006,25 +1006,13 @@ static int init_object_custom_data(Agraph_t * graph, void *obj)
 void move_node(void *obj, float dx, float dy)
 {
     char buf[512];
-    char buf2[512];
-    char *pch;
-    int a = 0;
-    int i = 0;
-    if ((agget(obj, "pos")) && (AGTYPE(obj) == AGNODE)) {
-	//tokenize 
-	strcpy(buf, agget(obj, "pos"));
+    double x, y;
+    Agsym_t* pos;
 
-	pch = strtok(buf, ",");
-	while (pch != NULL) {
-	    if (i == 0)
-		a = sprintf(buf2 + a, "%i,", atoi(pch) - (int) dx);
-	    else
-		a = sprintf(buf2 + a, "%i,", atoi(pch) - (int) dy);
-	    pch = strtok(NULL, ",");
-	    i++;
-	}
-	buf2[strlen(buf2) - 1] = '\0';
-	agset(obj, "pos", buf2);
+    if ((AGTYPE(obj) == AGNODE) && (pos = agattrsym (obj, "pos"))) {
+	sscanf (agxget (obj, pos), "%lf,%lf", &x, &y);
+	sprintf (buf, "%lf,%lf", x - dx, y - dy);
+	agxset(obj, pos, buf);
     }
 }
 
