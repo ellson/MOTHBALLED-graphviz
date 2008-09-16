@@ -564,10 +564,7 @@ void common_init_node(node_t * n)
 	late_double(n, N_height, DEFAULT_NODEHEIGHT, MIN_NODEHEIGHT);
     ND_shape(n) =
 	bind_shape(late_nnstring(n, N_shape, DEFAULT_NODESHAPE), n);
-    if (N_label == NULL)
-	str = NODENAME_ESC;
-    else 
-	str = agxget(n, N_label->index);
+    str = agxget(n, N_label->index);
     ND_label(n) = make_label((void*)n, str,
 	        ((aghtmlstr(str) ? LT_HTML : LT_NONE) | ( (shapeOf(n) == SH_RECORD) ? LT_RECD : LT_NONE)),
 		late_double(n, N_fontsize, DEFAULT_FONTSIZE, MIN_FONTSIZE),
