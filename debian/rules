@@ -60,6 +60,8 @@ configure-stamp:
 	--with-rsvg \
 	--with-devil \
 	--with-gts \
+	--without-sfdp \
+	--without-smyrna \
 	--disable-sharp \
 	--enable-guile \
 	--disable-java \
