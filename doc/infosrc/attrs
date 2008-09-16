@@ -485,6 +485,17 @@ see the page <A HREF="http://www.graphviz.org/Documentation/html/layers/">How to
 :layersep:G:string:" :\\\\t";
 Specifies the separator characters used to split the
 <A HREF=#d:layers>layers </A>attribute into a list of layer names.
+:layout:G:string:"";
+Specifies the name of the layout algorithm to use, such as "dot"
+or "neato". Normally, graphs should be kept independent of a type of
+layout. In some cases, however, it can be convenient to embed the type
+of layout desired within the graph. For example, a graph containing
+position information from a layout might want to record what the
+associated layout algorithm was.
+<P>
+This attribute takes precedence over 
+the <A HREF=command.html#minusK>-K flag</A> 
+or the actual command name used.
 :len:E:double:1.0(neato)/0.3(fdp); neato,fdp
 Preferred edge length, in inches.
 :levels:G:int:MAXINT:0.0;  sfdp
