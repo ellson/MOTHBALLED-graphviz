@@ -489,7 +489,10 @@ REDO:
 	    sp[0].x = sp[0].x + t * (sp[1].x - sp[0].x);
 	    sp[0].y = sp[0].y + t * (sp[1].y - sp[0].y);
 	    for (bi = 0; bi < boxn; bi++) {
-		if (sp[0].y <= boxes[bi].UR.y && sp[0].y >= boxes[bi].LL.y) {
+/* this tested ok on 64bit machines, but on 32bit we need this FUDGE
+ *     or graphs/directed/records.gv fails */
+#define FUDGE .0001
+		if (sp[0].y <= boxes[bi].UR.y+FUDGE && sp[0].y >= boxes[bi].LL.y-FUDGE) {
 		    if (boxes[bi].LL.x > sp[0].x)
 			boxes[bi].LL.x = sp[0].x;
 		    if (boxes[bi].UR.x < sp[0].x)
