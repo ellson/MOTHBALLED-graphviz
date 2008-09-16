@@ -55,6 +55,9 @@ configure-stamp:
 	--with-gdk-pixbuf \
 	--without-gnomeui \
 	--without-gtk \
+	--without-gtkgl \
+	--without-gtkglext \
+	--without-glade \
 	--with-ipsepcola \
 	--with-lasi \
 	--with-rsvg \
