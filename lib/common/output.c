@@ -247,11 +247,8 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 				YFDIR(PS2INCH(poly->vertices[i].y)));
 		    else
 			sprintf(buf, "%.3g %.3g",
-				ND_width(n) / 2.0 * cos(i /
-							(double) sides *
-							M_PI * 2.0),
-				YFDIR(ND_height(n) / 2.0 *
-				   sin(i / (double) sides * M_PI * 2.0)));
+				ND_width(n) / 2.0 * cos(i / (double) sides * M_PI * 2.0),
+				YFDIR(ND_height(n) / 2.0 * sin(i / (double) sides * M_PI * 2.0)));
 		    agxbput(&xb, buf);
 		}
 		agxset(n, N_vertices->index, agxbuse(&xb));

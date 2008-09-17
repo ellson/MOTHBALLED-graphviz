@@ -1014,8 +1014,8 @@ static void set_aspect(graph_t * g)
 		yf = t;
 	    }
 	    for (n = GD_nlist(g); n; n = ND_next(n)) {
-		ND_coord(n).x *= xf;
-		ND_coord(n).y *= yf;
+		ND_coord(n).x = ROUND(ND_coord(n).x * xf);
+		ND_coord(n).y = ROUND(ND_coord(n).y * yf);
 	    }
 	    scale_bb(g, g, xf, yf);
 	}
