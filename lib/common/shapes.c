@@ -2275,13 +2275,12 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
     pointf AF[2], coord;
 
     if (f->lp) {
-	coord.x = (f->b.LL.x + f->b.UR.x) / 2. + ND_coord(n).x;
-	coord.y = (f->b.LL.y + f->b.UR.y) / 2. + ND_coord(n).y;
-	f->lp->pos = coord;
+	f->lp->pos = add_pointf(mid_pointf(f->b.LL, f->b.UR), ND_coord(n));
 	emit_label(job, EMIT_NLABEL, f->lp);
         pencolor(job, n);
     }
 
+    coord = ND_coord(n);
     for (i = 0; i < f->n_flds; i++) {
 	if (i > 0) {
 	    if (f->LR) {
@@ -2293,7 +2292,6 @@ static void gen_fields(GVJ_t * job, node_t * n, field_t * f)
 		AF[0].x = f->fld[i]->b.LL.x;
 		AF[0].y = AF[1].y;
 	    }
-	    coord = ND_coord(n);
 	    AF[0] = add_pointf(AF[0], coord);
 	    AF[1] = add_pointf(AF[1], coord);
 	    gvrender_polyline(job, AF, 2);
