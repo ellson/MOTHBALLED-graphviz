@@ -20,7 +20,7 @@ Vertical bars | separate alternatives.
 <TR>
   <TD ALIGN=RIGHT><I>arrowname</I></TD>
   <TD ALIGN=LEFT>:</TD>
-  <TD ALIGN=LEFT><I>aname</I> [ <I>aname</I> ]</TD>
+  <TD ALIGN=LEFT><I>aname</I> [ <I>aname</I> [ <I>aname</I> [ <I>aname</I> ] ] ]</TD>
 </TR>
 <TR>
   <TD ALIGN=RIGHT><I>aname</I></TD>
@@ -128,7 +128,7 @@ As an example, the arrow shape <TT>lteeoldiamond</TT> is parsed as
 <IMG SRC="a_lteeoldiamond.gif">
 </CENTER>
 Note that the first arrow shape specified occurs closest to the node.
-The second arrow shape, if provided, occurs further from the node.
+Subsequent arrow shapes, if specified, occur further from the node.
 <P>
 Not all syntactically legal combinations of modifiers are meaningful
 or semantically valid.
@@ -156,7 +156,7 @@ The following table indicates which modifiers are allowed with which shapes.
 <P>
 This yields 36 different arrow shapes. The optional second shape
 can independently be any of the 36, but since <TT>nonenone</TT> 
-is redundant, there are 36 * 35 = 1260 different combinations.
+is redundant, there are 36 * 35 * 35 * 35 = 1,543,500 different combinations.
 <P>
 The following display contains the 36 combinations possible with a single
 arrow shape. The node attached to the arrow is not drawn but would appear
