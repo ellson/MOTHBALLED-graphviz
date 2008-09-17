@@ -48,15 +48,6 @@ static void warn(char *s)
     agerr(AGWARN, "%s%s\n", picgen_msghdr, s);
 }
 
-#undef	MAX
-#ifndef	MAX
-# define	MAX(a,b)	(((a)>(b))? (a) : (b))
-#endif
-#undef	MIN
-#ifndef	MIN
-# define	MIN(a,b)	(((a)<(b))? (a) : (b))
-#endif
-
 /* There are a couple of ways to generate output: 
     1. generate for whatever size is given by the bounding box
        - the drawing at its "natural" size might not fit on a physical page
@@ -77,6 +68,16 @@ static void warn(char *s)
          ~ pic variants likely to cause trouble
   The first approach is used here.
 */
+
+static pointf cvt2ptf(point p)
+{
+    pointf r;
+
+    r.x = PS2INCH(p.x);
+    r.y = PS2INCH(p.y);
+    return r;
+}
+
 
 /* troff font mapping */
 typedef struct {
@@ -426,11 +427,8 @@ static void pic_textpara(point p, textpara_t * para)
 	break;
     }
     pf = cvt2ptf(p);
-#ifdef NOTDEF
-    /* Why on earth would we want this? SCN  11/29/2001 */
-    pf.y -= fontsz / (5.0 * POINTS_PER_INCH);
-#endif
-    /* Why on earth would we do this either. But it works. SCN 2/26/2002 */
+    /* Why on earth would we do this. But it works. SCN 2/26/2002 */
+    /* adjust text baseline for quirks of the renderer */
     pf.y += fontsz / (3.0 * POINTS_PER_INCH);
     pf.x += para->width / (2.0 * POINTS_PER_INCH);
     if (!(S[SP].size)) {	/* size was never set in this or hierarchically higher context */

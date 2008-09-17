@@ -2241,7 +2241,7 @@ static int record_path(node_t* n, port* prt, int side, boxf rv[], int *kptr)
     field_t *info;
 
     if (!prt->defined) return 0;
-    P2PF(prt->p, p);
+    p = prt->p;
     info = (field_t *) ND_shape_info(n);
 
     for (i = 0; i < info->n_flds; i++) {

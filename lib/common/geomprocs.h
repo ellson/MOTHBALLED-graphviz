@@ -29,9 +29,6 @@ extern "C" {
 extern point pointof(int a, int b);
 extern pointf pointfof(double a, double b);
 
-extern pointf cvt2ptf(point p);
-extern point cvt2pt(pointf p);
-
 extern point add_point(point p, point q);
 extern pointf add_pointf(pointf p, pointf q);
 

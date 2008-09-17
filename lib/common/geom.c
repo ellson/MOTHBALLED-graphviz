@@ -38,24 +38,6 @@ inline pointf pointfof(double x, double y)
     return r;
 }
 
-inline point cvt2pt(pointf p)
-{
-    point r;
-
-    r.x = POINTS(p.x);
-    r.y = POINTS(p.y);
-    return r;
-}
-
-inline pointf cvt2ptf(point p)
-{
-    pointf r;
-
-    r.x = PS2INCH(p.x);
-    r.y = PS2INCH(p.y);
-    return r;
-}
-
 inline box boxof(int llx, int lly, int urx, int ury)
 {
     box b;

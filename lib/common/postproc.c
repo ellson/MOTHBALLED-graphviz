@@ -311,10 +311,10 @@ static void place_flip_graph_label(graph_t * g)
     if ((g != g->root) && (GD_label(g)) && !GD_label(g)->set) {
 
 	if (GD_label_pos(g) & LABEL_AT_TOP) {
-	    P2PF(GD_border(g)[RIGHT_IX], d);
+	    d = GD_border(g)[RIGHT_IX];
 	    p.x = GD_bb(g).UR.x - d.x / 2;
 	} else {
-	    P2PF(GD_border(g)[LEFT_IX], d);
+	    d = GD_border(g)[LEFT_IX];
 	    p.x = GD_bb(g).LL.x + d.x / 2;
 	}
 
@@ -346,10 +346,10 @@ void place_graph_label(graph_t * g)
 
     if ((g != g->root) && (GD_label(g)) && !GD_label(g)->set) {
 	if (GD_label_pos(g) & LABEL_AT_TOP) {
-	    P2PF(GD_border(g)[TOP_IX], d);
+	    d = GD_border(g)[TOP_IX];
 	    p.y = GD_bb(g).UR.y - d.y / 2;
 	} else {
-	    P2PF(GD_border(g)[BOTTOM_IX], d);
+	    d = GD_border(g)[BOTTOM_IX];
 	    p.y = GD_bb(g).LL.y + d.y / 2;
 	}
 

@@ -182,12 +182,13 @@ void UF_setname(node_t * u, node_t * v)
     ND_UF_size(v) += ND_UF_size(u);
 }
 
-point coord(node_t * n)
+pointf coord(node_t * n)
 {
-    pointf pf;
-    pf.x = ND_pos(n)[0];
-    pf.y = ND_pos(n)[1];
-    return cvt2pt(pf);
+    pointf r;
+
+    r.x = POINTS_PER_INCH * ND_pos(n)[0];
+    r.y = POINTS_PER_INCH * ND_pos(n)[1];
+    return r;
 }
 
 /* from Glassner's Graphics Gems */
@@ -753,7 +754,7 @@ void compute_bb(graph_t * g)
     bb.LL = pointfof(INT_MAX, INT_MAX);
     bb.UR = pointfof(-INT_MAX, -INT_MAX);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	P2PF(coord(n), ptf);
+	ptf = coord(n);
 	s2.x = ND_xsize(n) / 2. + 1;
 	s2.y = ND_ysize(n) / 2. + 1;
 	b.LL = sub_pointf(ptf, s2);

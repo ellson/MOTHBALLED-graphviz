@@ -161,7 +161,8 @@ finalCC(graph_t * g, int c_cnt, graph_t ** cc, point * pts, graph_t * rg,
 	    } else {
 		p = pt;
 	    }
-	    del = cvt2ptf(p);
+	    del.x = PS2INCH(p.x);
+	    del.y = PS2INCH(p.y);
 	    for (n = agfstnode(cg); n; n = agnxtnode(cg, n)) {
 		ND_pos(n)[0] += del.x;
 		ND_pos(n)[1] += del.y;
@@ -169,8 +170,10 @@ finalCC(graph_t * g, int c_cnt, graph_t ** cc, point * pts, graph_t * rg,
 	}
     }
 
-    bbf.LL = cvt2ptf(bb.LL);
-    bbf.UR = cvt2ptf(bb.UR);
+    bbf.LL.x = PS2INCH(bb.LL.x);
+    bbf.LL.y = PS2INCH(bb.LL.y);
+    bbf.UR.x = PS2INCH(bb.UR.x);
+    bbf.UR.y = PS2INCH(bb.UR.y);
     BB(g) = bbf;
 
 }
@@ -884,13 +887,14 @@ setClustNodes(graph_t* root)
 	fdp_tLayout(cg, &xpms);
 	for (n = agfstnode(cg); n; n = agnxtnode(cg, n)) {
 	    if (ND_clust(n)) {
-		point pt;
+		pointf pt;
 		sg = expandCluster(n, cg);	/* attach ports to sg */
 		layout(sg, infop);
 		/* bb.LL == origin */
 		ND_width(n) = BB(sg).UR.x;
 		ND_height(n) = BB(sg).UR.y;
-		pt = cvt2pt(BB(sg).UR);
+		pt.x = POINTS_PER_INCH * BB(sg).UR.x;
+		pt.y = POINTS_PER_INCH * BB(sg).UR.y;
 		ND_xsize(n) = pt.x;
 		ND_ysize(n) = pt.y;
 	    } else if (IS_PORT(n))
@@ -978,11 +982,13 @@ setClustNodes(graph_t* root)
 static void setBB(graph_t * g)
 {
     int i;
-    box bb;
+    boxf bb;
 
-    bb.LL = cvt2pt(BB(g).LL);
-    bb.UR = cvt2pt(BB(g).UR);
-    B2BF(bb, GD_bb(g));
+    bb.LL.x = POINTS_PER_INCH * BB(g).LL.x;
+    bb.LL.y = POINTS_PER_INCH * BB(g).LL.y;
+    bb.UR.x = POINTS_PER_INCH * BB(g).UR.x;
+    bb.UR.y = POINTS_PER_INCH * BB(g).UR.y;
+    GD_bb(g) = bb;
     for (i = 1; i <= GD_n_cluster(g); i++) {
 	setBB(GD_clust(g)[i]);
     }

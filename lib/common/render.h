@@ -81,7 +81,7 @@ extern "C" {
     extern void clip_and_install(edge_t * fe, node_t * hn,
 	pointf * ps, int pn, splineInfo * info);
     extern char* charsetToStr (int c);
-    extern point coord(node_t * n);
+    extern pointf coord(node_t * n);
     extern void do_graph_label(graph_t * sg);
     extern void graph_init(graph_t * g, boolean use_rankdir);
     extern void graph_cleanup(graph_t * g);

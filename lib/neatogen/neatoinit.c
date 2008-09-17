@@ -491,7 +491,7 @@ nop_init_graphs(Agraph_t * g, attrsym_t * G_lp, attrsym_t * G_bb)
  * Translate edge by offset.
  * Assume ED_spl(e) != NULL
  */
-static void translateE(edge_t * e, point offset)
+static void translateE(edge_t * e, pointf offset)
 {
     int i, j;
     pointf *pt;
@@ -532,16 +532,14 @@ static void translateE(edge_t * e, point offset)
 
 /* translateG:
  */
-static void translateG(Agraph_t * g, point offset)
+static void translateG(Agraph_t * g, pointf offset)
 {
     int i;
-    pointf Offset;
 
-    P2PF(offset, Offset);
-    GD_bb(g).UR.x -= Offset.x;
-    GD_bb(g).UR.y -= Offset.y;
-    GD_bb(g).LL.x -= Offset.x;
-    GD_bb(g).LL.y -= Offset.y;
+    GD_bb(g).UR.x -= offset.x;
+    GD_bb(g).UR.y -= offset.y;
+    GD_bb(g).LL.x -= offset.x;
+    GD_bb(g).LL.y -= offset.y;
 
     if (GD_label(g) && GD_label(g)->set) {
 	GD_label(g)->pos.x -= offset.x;
@@ -559,11 +557,12 @@ static void translate(Agraph_t * g, pos_edge posEdges)
     node_t *n;
     edge_t *e;
     pointf offset;
-    point ll;
+    pointf ll;
 
-    PF2P(GD_bb(g).LL, ll);
+    ll = GD_bb(g).LL;
 
-    offset = cvt2ptf(ll);
+    offset.x = PS2INCH(ll.x);
+    offset.y = PS2INCH(ll.y);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	ND_pos(n)[0] -= offset.x;
 	ND_pos(n)[1] -= offset.y;

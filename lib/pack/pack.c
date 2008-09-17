@@ -167,7 +167,7 @@ fillEdge(Agedge_t * e, point p, PointSet * ps, int dx, int dy,
     /* If doS is false or the edge has not splines, use line segment */
     if (!doS || !ED_spl(e)) {
 	h = e->head;
-        P2PF(coord(h), hpt);
+	hpt = coord(h);
 	MOVEPT(hpt);
 	CELL(hpt, ssize);
 	fillLine(pt, hpt, ps);
@@ -274,6 +274,7 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
     int W, H;
     point LL, UR;
     point pt, s2;
+    pointf ptf;
     Agraph_t *eg;		/* graph containing edges */
     Agnode_t *n;
     Agedge_t *e;
@@ -330,7 +331,8 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 
 	/* now do remaining nodes and edges */
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    pt = coord(n);
+	    ptf = coord(n);
+	    PF2P(ptf, pt);
 	    MOVEPT(pt);
 	    if (!ND_clust(n)) {	/* n is not in a top-level cluster */
 		s2.x = margin + ND_xsize(n) / 2;
@@ -366,7 +368,8 @@ genPoly(Agraph_t * root, Agraph_t * g, ginfo * info,
 
     } else
 	for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
-	    pt = coord(n);
+	    ptf = coord(n);
+	    PF2P(ptf, pt);
 	    MOVEPT(pt);
 	    s2.x = margin + ND_xsize(n) / 2;
 	    s2.y = margin + ND_ysize(n) / 2;
