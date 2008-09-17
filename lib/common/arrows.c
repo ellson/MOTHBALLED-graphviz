@@ -22,7 +22,13 @@
 /* standard arrow length in points */
 #define ARROW_LENGTH 10.
 
-/* arrow types */
+#define NUMB_OF_ARROW_HEADS  4
+/* each arrow in 8 bits.  Room for NUMB_OF_ARROW_HEADS arrows in 32 bit int. */
+
+#define BITS_PER_ARROW 8
+
+#define BITS_PER_ARROW_TYPE 3
+/* arrow types (in BITS_PER_ARROW_TYPE bits) */
 #define ARR_TYPE_NONE	  (ARR_NONE)
 #define ARR_TYPE_NORM	  1
 #define ARR_TYPE_CROW	  2
@@ -30,12 +36,14 @@
 #define ARR_TYPE_BOX	  4
 #define ARR_TYPE_DIAMOND  5
 #define ARR_TYPE_DOT      6
+/* Spare:  #define ARR_TYPE_xxx      7 */
 
-/* arrow mods */
-#define ARR_MOD_OPEN      (1<<8)
-#define ARR_MOD_INV       (1<<9)
-#define ARR_MOD_LEFT      (1<<10)
-#define ARR_MOD_RIGHT     (1<<11)
+/* arrow mods (in (BITS_PER_ARROW - BITS_PER_ARROW_TYPE) bits) */
+#define ARR_MOD_OPEN      (1<<(BITS_PER_ARROW_TYPE+0))
+#define ARR_MOD_INV       (1<<(BITS_PER_ARROW_TYPE+1))
+#define ARR_MOD_LEFT      (1<<(BITS_PER_ARROW_TYPE+2))
+#define ARR_MOD_RIGHT     (1<<(BITS_PER_ARROW_TYPE+3))
+/* Spare:  #define ARR_MOD_xxx       (1<<(BITS_PER_ARROW_TYPE+4))  */
 
 typedef struct arrowdir_t {
     char *dir;
@@ -120,8 +128,7 @@ static arrowtype_t Arrowtypes[] = {
     {ARR_TYPE_NONE, 0.0, NULL}
 };
 
-static char *arrow_match_name_frag(char *name, arrowname_t * arrownames,
-				   int *flag)
+static char *arrow_match_name_frag(char *name, arrowname_t * arrownames, int *flag)
 {
     arrowname_t *arrowname;
     int namelen = 0;
@@ -151,7 +158,7 @@ static char *arrow_match_shape(char *name, int *flag)
 	} while (next != rest);
 	rest = arrow_match_name_frag(rest, Arrownames, &f);
     }
-    if (f && !(f & ((1 << 8) - 1)))
+    if (f && !(f & ((1 << BITS_PER_ARROW_TYPE) - 1)))
 	f |= ARR_TYPE_NORM;
     *flag |= f;
     return rest;
@@ -159,12 +166,15 @@ static char *arrow_match_shape(char *name, int *flag)
 
 static void arrow_match_name(char *name, int *flag)
 {
-    char *rest;
-    int f1 = ARR_TYPE_NONE, f2 = ARR_TYPE_NONE;
+    char *rest = name;
+    int i, f;
 
-    rest = arrow_match_shape(name, &f1);
-    rest = arrow_match_shape(rest, &f2);
-    *flag = f1 | (f2 << 16);
+    *flag = 0;
+    for (i = 0; *rest != '\0' && i < NUMB_OF_ARROW_HEADS; i++) {
+	f = ARR_TYPE_NONE;
+        rest = arrow_match_shape(rest, &f);
+	*flag |= (f << (i * BITS_PER_ARROW));
+    }
 }
 
 void arrow_flags(Agedge_t * e, int *sflag, int *eflag)
@@ -173,8 +183,7 @@ void arrow_flags(Agedge_t * e, int *sflag, int *eflag)
     arrowdir_t *arrowdir;
 
     *sflag = ARR_TYPE_NONE;
-    *eflag =
-	AG_IS_DIRECTED(e->tail->graph) ? ARR_TYPE_NORM : ARR_TYPE_NONE;
+    *eflag = AG_IS_DIRECTED(e->tail->graph) ? ARR_TYPE_NORM : ARR_TYPE_NONE;
     if (E_dir && ((attr = agxget(e, E_dir->index)))[0]) {
 	for (arrowdir = Arrowdirs; arrowdir->dir; arrowdir++) {
 	    if (streq(attr, arrowdir->dir)) {
@@ -203,22 +212,17 @@ double arrow_length(edge_t * e, int flag)
 {
     arrowtype_t *arrowtype;
     double lenfact = 0.0;
-    int f;
+    int f, i;
 
-    /* we don't simply index with flag because arrowtypes are not necessarily sorted */
-    f = flag & ((1 << 8) - 1);
-    for (arrowtype = Arrowtypes; arrowtype->gen; arrowtype++) {
-	if (f == arrowtype->type) {
-	    lenfact += arrowtype->lenfact;
-	    break;
-	}
-    }
-    f = (flag >> 16) & ((1 << 8) - 1);
-    for (arrowtype = Arrowtypes; arrowtype->gen; arrowtype++) {
-	if (f == arrowtype->type) {
-	    lenfact += arrowtype->lenfact;
-	    break;
-	}
+    for (i = 0; i < NUMB_OF_ARROW_HEADS; i++) {
+        /* we don't simply index with flag because arrowtypes are not necessarily sorted */
+        f = (flag >> (i * BITS_PER_ARROW)) & ((1 << BITS_PER_ARROW_TYPE) - 1);
+        for (arrowtype = Arrowtypes; arrowtype->gen; arrowtype++) {
+	    if (f == arrowtype->type) {
+	        lenfact += arrowtype->lenfact;
+	        break;
+	    }
+        }
     }
     /* The original was missing the factor E_arrowsz, but I believe it
        should be here for correct arrow clipping */
@@ -244,19 +248,19 @@ int arrowEndClip(edge_t* e, pointf * ps, int startp,
     if (endp > startp && DIST2(ps[endp], ps[endp + 3]) < elen2) {
 	endp -= 3;
     }
-    P2PF(ps[endp], sp[3]);
-    P2PF(ps[endp + 1], sp[2]);
-    P2PF(ps[endp + 2], sp[1]);
-    P2PF(spl->ep, sp[0]);	/* ensure endpoint starts inside */
+    sp[3] = ps[endp];
+    sp[2] = ps[endp + 1];
+    sp[1] = ps[endp + 2];
+    sp[0] = spl->ep;	/* ensure endpoint starts inside */
 
     inside_context.a.p = &sp[0];
     inside_context.a.r = &elen2;
     bezier_clip(&inside_context, inside, sp, TRUE);
 
-    PF2P(sp[3], ps[endp]);
-    PF2P(sp[2], ps[endp + 1]);
-    PF2P(sp[1], ps[endp + 2]);
-    PF2P(sp[0], ps[endp + 3]);
+    ps[endp] = sp[3];
+    ps[endp + 1] = sp[2];
+    ps[endp + 2] = sp[1];
+    ps[endp + 3] = sp[0];
     return endp;
 }
 
@@ -273,19 +277,19 @@ int arrowStartClip(edge_t* e, pointf * ps, int startp,
     if (endp > startp && DIST2(ps[startp], ps[startp + 3]) < slen2) {
 	startp += 3;
     }
-    P2PF(ps[startp + 3], sp[0]);
-    P2PF(ps[startp + 2], sp[1]);
-    P2PF(ps[startp + 1], sp[2]);
-    P2PF(spl->sp, sp[3]);	/* ensure endpoint starts inside */
+    sp[0] = ps[startp + 3];
+    sp[1] = ps[startp + 2];
+    sp[2] = ps[startp + 1];
+    sp[3] = spl->sp;	/* ensure endpoint starts inside */
 
     inside_context.a.p = &sp[3];
     inside_context.a.r = &slen2;
     bezier_clip(&inside_context, inside, sp, FALSE);
 
-    PF2P(sp[3], ps[startp]);
-    PF2P(sp[2], ps[startp + 1]);
-    PF2P(sp[1], ps[startp + 2]);
-    PF2P(sp[0], ps[startp + 3]);
+    ps[startp] = sp[3];
+    ps[startp + 1] = sp[2];
+    ps[startp + 2] = sp[1];
+    ps[startp + 3] = sp[0];
     return startp;
 }
 
@@ -491,7 +495,7 @@ static pointf arrow_gen_type(GVJ_t * job, pointf p, pointf u, double arrowsize, 
     int f;
     arrowtype_t *arrowtype;
 
-    f = flag & ((1 << 8) - 1);
+    f = flag & ((1 << BITS_PER_ARROW_TYPE) - 1);
     for (arrowtype = Arrowtypes; arrowtype->type; arrowtype++) {
 	if (f == arrowtype->type) {
 	    u.x *= arrowtype->lenfact * arrowsize;
@@ -547,7 +551,7 @@ void arrow_gen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, double 
 {
     obj_state_t *obj = job->obj;
     double s;
-    int f;
+    int i, f;
     emit_state_t old_emit_state;
 
     old_emit_state = obj->emit_state;
@@ -568,14 +572,13 @@ void arrow_gen(GVJ_t * job, emit_state_t emit_state, pointf p, pointf u, double 
     u.x *= s;
     u.y *= s;
 
-    /* arrow head closest to node */
-    f = flag & ((1 << 16) - 1);
-    p = arrow_gen_type(job, p, u, arrowsize, penwidth, f);
-
-    /* arrow head furthest from node */
-    /*   start where first one ended */
-    f = (flag >> 16) & ((1 << 16) - 1);
-    arrow_gen_type(job, p, u, arrowsize, penwidth, f);
+    /* the first arrow head - closest to node */
+    for (i = 0; i < NUMB_OF_ARROW_HEADS; i++) {
+        f = (flag >> (i * BITS_PER_ARROW)) & ((1 << BITS_PER_ARROW) - 1);
+	if (f == ARR_TYPE_NONE)
+	    break;
+        p = arrow_gen_type(job, p, u, arrowsize, penwidth, f);
+    }
 
     gvrender_end_context(job);
 
