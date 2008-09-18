@@ -213,6 +213,7 @@ extern "C" {
 	char *headlabel; 
 
 	char *url;              /* if GVRENDER_DOES_MAPS */
+	char *id;
 	char *labelurl;
 	char *tailurl;
 	char *headurl; 

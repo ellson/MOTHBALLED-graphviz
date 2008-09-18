@@ -158,7 +158,7 @@ static void quartzgen_end_page(GVJ_t *job)
 	CGContextEndPage(context);
 }
 
-static void quartzgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *target)
+static void quartzgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *target, char *id)
 {
     pointf *url_map = job->obj->url_map_p;
 	if (url && url_map) {

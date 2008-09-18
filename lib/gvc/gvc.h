@@ -67,9 +67,6 @@ extern char *gvcVersion(GVC_t*);
 extern char *gvcBuildDate(GVC_t*);
 extern char *gvcUsername(GVC_t*);
 
-/* get plugins associated with a graphviz context */
-extern char *gvplugin_list(GVC_t * gvc, api_t api, char *str);
-
 /* parse command line args - minimally argv[0] sets layout engine */
 extern int gvParseArgs(GVC_t *gvc, int argc, char **argv);
 extern graph_t *gvNextInputGraph(GVC_t *gvc);

@@ -30,7 +30,6 @@
 extern GVC_t *gvNEWcontext(char **info, char *user);
 extern char *gvUsername(void);
 extern int gvRenderJobs (GVC_t * gvc, graph_t * g);
-extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 
 static char *LibInfo[] = {
     "libgvc",		/* Program */

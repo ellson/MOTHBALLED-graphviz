@@ -45,8 +45,8 @@ extern "C" {
 	void (*end_node) (GVJ_t * job);
 	void (*begin_edge) (GVJ_t * job);
 	void (*end_edge) (GVJ_t * job);
-	void (*begin_anchor) (GVJ_t * job, char *href, char *tooltip,
-			      char *target);
+	void (*begin_anchor) (GVJ_t * job,
+		char *href, char *tooltip, char *target, char *id);
 	void (*end_anchor) (GVJ_t * job);
 	void (*textpara) (GVJ_t * job, pointf p, textpara_t * str);
 	void (*resolve_color) (GVJ_t * job, gvcolor_t * color);

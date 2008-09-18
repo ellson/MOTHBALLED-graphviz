@@ -281,9 +281,11 @@ static void svg_end_edge(GVJ_t * job)
 }
 
 static void
-svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
+svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target, char *id)
 {
     gvputs(job, "<a");
+    if (id && id[0])
+	gvprintf(job, " xlink:id=\"%s\"", xml_url_string(id));
     if (href && href[0])
 	gvprintf(job, " xlink:href=\"%s\"", xml_url_string(href));
     if (tooltip && tooltip[0])

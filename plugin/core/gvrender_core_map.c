@@ -31,7 +31,7 @@ extern char *xml_url_string(char *str);
 typedef enum { FORMAT_IMAP, FORMAT_ISMAP, FORMAT_CMAP, FORMAT_CMAPX, } format_type;
 
 static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, int nump,
-                char* url, char *tooltip, char *target)
+                char* url, char *tooltip, char *target, char *id)
 {
     int i;
 
@@ -97,6 +97,11 @@ static void map_output_shape (GVJ_t *job, map_shape_t map_shape, pointf * AF, in
             assert(0);
             break;
         }
+        if (id && id[0]) {
+            gvputs(job, " id=\"");
+	    gvputs(job, xml_url_string(id));
+	    gvputs(job, "\"");
+	}
         if (url && url[0]) {
             gvputs(job, " href=\"");
 	    gvputs(job, xml_url_string(url));
@@ -190,12 +195,14 @@ static void map_end_page(GVJ_t * job)
 
     switch (job->render.id) {
     case FORMAT_CMAP:
-	map_output_shape(job, obj->url_map_shape, obj->url_map_p,obj->url_map_n,
-		                    obj->url, obj->tooltip, obj->target);
+	map_output_shape(job, obj->url_map_shape,
+		obj->url_map_p,obj->url_map_n,
+		obj->url, obj->tooltip, obj->target, obj->id);
 	break;
     case FORMAT_CMAPX:
-	map_output_shape(job, obj->url_map_shape, obj->url_map_p,obj->url_map_n,
-		                    obj->url, obj->tooltip, obj->target);
+	map_output_shape(job, obj->url_map_shape,
+		obj->url_map_p,obj->url_map_n,
+		obj->url, obj->tooltip, obj->target, obj->id);
         gvputs(job, "</map>\n");
 	break;
     default:
@@ -247,12 +254,13 @@ map_begin_edge(GVJ_t * job)
 }
 #endif
 
-static void map_begin_anchor(GVJ_t * job, char *url, char *tooltip, char *target)
+static void map_begin_anchor(GVJ_t * job, char *url, char *tooltip, char *target, char *id)
 {
     obj_state_t *obj = job->obj;
 
-    map_output_shape(job, obj->url_map_shape, obj->url_map_p, obj->url_map_n, 
-		url, tooltip, target);
+    map_output_shape(job, obj->url_map_shape,
+		obj->url_map_p, obj->url_map_n, 
+		url, tooltip, target, id);
 }
 
 static gvrender_engine_t map_engine = {

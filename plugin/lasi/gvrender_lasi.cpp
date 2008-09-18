@@ -270,7 +270,7 @@ static void lasi_end_edge(GVJ_t * job)
     gvputs(job, "grestore\n");
 }
 
-static void lasi_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *target)
+static void lasi_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *target, char *id)
 {
     obj_state_t *obj = job->obj;
 

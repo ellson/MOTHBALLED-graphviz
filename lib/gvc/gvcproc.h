@@ -41,6 +41,7 @@ extern "C" {
     extern api_t gvplugin_api(char *str);
     extern char * gvplugin_api_name(api_t api);
     extern void gvplugin_write_status(GVC_t * gvc);
+    extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
 
 /* job */
 
@@ -98,8 +99,8 @@ extern "C" {
     extern void gvrender_end_edge(GVJ_t * job);
     extern void gvrender_begin_context(GVJ_t * job);
     extern void gvrender_end_context(GVJ_t * job);
-    extern void gvrender_begin_anchor(GVJ_t * job, char *href,
-			char *tooltip, char *target);
+    extern void gvrender_begin_anchor(GVJ_t * job,
+		char *href, char *tooltip, char *target, char *id);
     extern void gvrender_end_anchor(GVJ_t * job);
     extern void gvrender_set_font(GVJ_t * job, char *fontname,
 			double fontsize);

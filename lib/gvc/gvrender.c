@@ -590,13 +590,13 @@ void gvrender_end_context(GVJ_t * job)
 #endif
 }
 
-void gvrender_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target)
+void gvrender_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target, char *id)
 {
     gvrender_engine_t *gvre = job->render.engine;
 
     if (gvre) {
 	if (gvre->begin_anchor)
-	    gvre->begin_anchor(job, href, tooltip, target);
+	    gvre->begin_anchor(job, href, tooltip, target, id);
     }
 #ifdef WITH_CODEGENS
     else {

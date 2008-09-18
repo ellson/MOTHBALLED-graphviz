@@ -165,8 +165,6 @@ static void use_library(GVC_t *gvc, const char *name)
     gvc->common.lib = Lib;
 }
 
-extern char *gvplugin_list(GVC_t * gvc, api_t api, const char *str);
-
 void global_def(const char *dcl,
 		attrsym_t * ((*dclfun) (Agraph_t *, char *, char *)))
 {

@@ -207,7 +207,7 @@ static void psgen_end_edge(GVJ_t * job)
     gvputs(job, "grestore\n");
 }
 
-static void psgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *target)
+static void psgen_begin_anchor(GVJ_t *job, char *url, char *tooltip, char *target, char *id)
 {
     obj_state_t *obj = job->obj;
 

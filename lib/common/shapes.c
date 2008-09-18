@@ -1485,7 +1485,8 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     int doMap = (obj->url || obj->explicit_tooltip);
 
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
-	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	gvrender_begin_anchor(job,
+		obj->url, obj->tooltip, obj->target, obj->id);
 
     poly = (polygon_t *) ND_shape_info(n);
     vertices = poly->vertices;
@@ -1608,7 +1609,8 @@ static void poly_gencode(GVJ_t * job, node_t * n)
     emit_label(job, EMIT_NLABEL, ND_label(n));
     if (doMap) {
 	if (job->flags & EMIT_CLUSTERS_LAST)
-	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	    gvrender_begin_anchor(job,
+		obj->url, obj->tooltip, obj->target, obj->id);
         gvrender_end_anchor(job);
     }
 }
@@ -1719,7 +1721,8 @@ static void point_gencode(GVJ_t * job, node_t * n)
     int doMap = (obj->url || obj->explicit_tooltip);
 
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
-	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	gvrender_begin_anchor(job,
+		obj->url, obj->tooltip, obj->target, obj->id);
 
     poly = (polygon_t *) ND_shape_info(n);
     vertices = poly->vertices;
@@ -1787,7 +1790,8 @@ static void point_gencode(GVJ_t * job, node_t * n)
 
     if (doMap) {
 	if (job->flags & EMIT_CLUSTERS_LAST)
-	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	    gvrender_begin_anchor(job,
+		obj->url, obj->tooltip, obj->target, obj->id);
         gvrender_end_anchor(job);
     }
 }
@@ -2317,7 +2321,8 @@ static void record_gencode(GVJ_t * job, node_t * n)
     BF.UR.y += ND_coord(n).y;
     
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
-        gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+        gvrender_begin_anchor(job,
+		obj->url, obj->tooltip, obj->target, obj->id);
     style = stylenode(job, n);
     pencolor(job, n);
     if (style & FILLED)
@@ -2340,7 +2345,8 @@ static void record_gencode(GVJ_t * job, node_t * n)
 
     if (doMap) {
 	if (job->flags & EMIT_CLUSTERS_LAST)
-            gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+            gvrender_begin_anchor(job,
+		obj->url, obj->tooltip, obj->target, obj->id);
         gvrender_end_anchor(job);
     }
 }
@@ -2423,7 +2429,8 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
 	return;
 
     if (doMap && !(job->flags & EMIT_CLUSTERS_LAST))
-	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	gvrender_begin_anchor(job,
+		obj->url, obj->tooltip, obj->target, obj->id);
     gvrender_begin_context(job);
     if (desc)
 	fprintf(job->output_file,
@@ -2436,7 +2443,8 @@ static void epsf_gencode(GVJ_t * job, node_t * n)
     emit_label(job, EMIT_NLABEL, ND_label(n));
     if (doMap) {
 	if (job->flags & EMIT_CLUSTERS_LAST)
-	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	    gvrender_begin_anchor(job,
+		obj->url, obj->tooltip, obj->target, obj->id);
         gvrender_end_anchor(job);
     }
 }

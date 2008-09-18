@@ -296,14 +296,15 @@ initAnchor (GVJ_t* job, htmldata_t* data, boxf b, htmlmap_data_t* save,
     save->tooltip = obj->tooltip;
     save->target = obj->target;
     save->explicit_tooltip = obj->explicit_tooltip;
-    changed = initMapData (job, NULL, data->href, data->title, data->target, obj->u.g);
+    changed = initMapData (job, NULL, data->href, data->title, data->target, "\\N", obj->u.g);
 
     if (changed) {
 	if (closePrev && (save->url || save->explicit_tooltip))
 	    gvrender_end_anchor(job);
 	if (obj->url || obj->explicit_tooltip) {
 	    emit_map_rect(job, b);
-	    gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	    gvrender_begin_anchor(job,
+		obj->url, obj->tooltip, obj->target, obj->id);
 	}
     }
     return changed;
@@ -335,7 +336,8 @@ endAnchor (GVJ_t* job, htmlmap_data_t* save, int openPrev)
     RESET(target);
     obj->explicit_tooltip = save->explicit_tooltip;
     if (openPrev && (obj->url || obj->explicit_tooltip))
-	gvrender_begin_anchor(job, obj->url, obj->tooltip, obj->target);
+	gvrender_begin_anchor(job,
+		obj->url, obj->tooltip, obj->target, obj->id);
 }
 
 /* forward declaration */
