@@ -181,7 +181,7 @@ static rect_t walker(treenode_t *tree)
 			ND_width(n) = PS2INCH(tree->r.UR.x - tree->r.LL.x);
 			gv_nodesize(n,GD_flip(n->graph));
 			finishNode (n);
-			/*fprintf(stderr,"%s coord %.3g %.3g ht %d width %d\n",
+			/*fprintf(stderr,"%s coord %.5g %.5g ht %d width %d\n",
 				n->name, ND_coord(n).x, ND_coord(n).y, ND_ht(n),
 				ND_rw(n)+ND_lw(n));*/
 			break;

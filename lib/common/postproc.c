@@ -26,17 +26,17 @@ static void place_flip_graph_label(graph_t * g);
 
 #define M1 \
 "/pathbox {\n\
-    /Y exch %.3g sub def\n\
-    /X exch %.3g sub def\n\
-    /y exch %.3g sub def\n\
-    /x exch %.3g sub def\n\
+    /Y exch %.5g sub def\n\
+    /X exch %.5g sub def\n\
+    /y exch %.5g sub def\n\
+    /x exch %.5g sub def\n\
     newpath x y moveto\n\
     X y lineto\n\
     X Y lineto\n\
     x Y lineto\n\
     closepath stroke\n \
 } def\n\
-/dbgstart { gsave %.3g %.3g translate } def\n\
+/dbgstart { gsave %.5g %.5g translate } def\n\
 /arrowlength 10 def\n\
 /arrowwidth arrowlength 2 div def\n\
 /arrowhead {\n\
@@ -71,10 +71,10 @@ static void place_flip_graph_label(graph_t * g);
 
 #define M2 \
 "/pathbox {\n\
-    /X exch neg %.3g sub def\n\
-    /Y exch %.3g sub def\n\
-    /x exch neg %.3g sub def\n\
-    /y exch %.3g sub def\n\
+    /X exch neg %.5g sub def\n\
+    /Y exch %.5g sub def\n\
+    /x exch neg %.5g sub def\n\
+    /y exch %.5g sub def\n\
     newpath x y moveto\n\
     X y lineto\n\
     X Y lineto\n\

@@ -25,7 +25,7 @@ double YF_off;       /* Y_off in inches */
 
 static void printptf(FILE * f, pointf pt)
 {
-    fprintf(f, " %.3g %.3g", PS2INCH(pt.x), PS2INCH(YDIR(pt.y)));
+    fprintf(f, " %.5g %.5g", PS2INCH(pt.x), PS2INCH(YDIR(pt.y)));
 }
 
 /* setYInvert:
@@ -85,7 +85,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 //    setup_graph(job, g);
     setYInvert(g);
     pt = GD_bb(g).UR;
-    fprintf(f, "graph %.3g %.3g %.3g\n", job->zoom, PS2INCH(pt.x), PS2INCH(pt.y));
+    fprintf(f, "graph %.5g %.5g %.5g\n", job->zoom, PS2INCH(pt.x), PS2INCH(pt.y));
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (IS_CLUST_NODE(n))
 	    continue;
@@ -95,7 +95,7 @@ void write_plain(GVJ_t * job, graph_t * g, FILE * f, boolean extend)
 	    lbl = agcanonical (agxget(n, N_label->index));
 	else
 	    lbl = canon(ND_label(n)->text);
-	fprintf(f, " %.3g %.3g %s %s %s %s %s\n",
+	fprintf(f, " %.5g %.5g %s %s %s %s %s\n",
 		ND_width(n), ND_height(n), lbl,
 		late_nnstring(n, N_style, "solid"),
 		ND_shape(n)->name,
@@ -143,7 +143,7 @@ static void set_record_rects(node_t * n, field_t * f, agxbuf * xb)
     char buf[BUFSIZ];
 
     if (f->n_flds == 0) {
-	sprintf(buf, "%.3g,%.3g,%.3g,%.3g ",
+	sprintf(buf, "%.5g,%.5g,%.5g,%.5g ",
 		f->b.LL.x + ND_coord(n).x,
 		YFDIR(f->b.LL.y + ND_coord(n).y),
 		f->b.UR.x + ND_coord(n).x,
@@ -160,12 +160,12 @@ static void rec_attach_bb(graph_t * g)
     char buf[BUFSIZ];
     pointf pt;
 
-    sprintf(buf, "%.3g,%.3g,%.3g,%.3g", GD_bb(g).LL.x, YFDIR(GD_bb(g).LL.y),
+    sprintf(buf, "%.5g,%.5g,%.5g,%.5g", GD_bb(g).LL.x, YFDIR(GD_bb(g).LL.y),
 	    GD_bb(g).UR.x, YFDIR(GD_bb(g).UR.y));
     agset(g, "bb", buf);
     if (GD_label(g) && GD_label(g)->text[0]) {
 	pt = GD_label(g)->pos;
-	sprintf(buf, "%.3g,%.3g", pt.x, YFDIR(pt.y));
+	sprintf(buf, "%.5g,%.5g", pt.x, YFDIR(pt.y));
 	agset(g, "lp", buf);
     }
     for (c = 1; c <= GD_n_cluster(g); c++)
@@ -203,21 +203,21 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 	safe_dcl(g, g, "lp", "", agraphattr);
 	if (GD_label(g)->text[0]) {
 	    ptf = GD_label(g)->pos;
-	    sprintf(buf, "%.3g,%.3g", ptf.x, YFDIR(ptf.y));
+	    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
 	    agset(g, "lp", buf);
 	}
     }
     safe_dcl(g, g, "bb", "", agraphattr);
     for (n = agfstnode(g); n; n = agnxtnode(g, n)) {
 	if (dim3) {
-	    sprintf(buf, "%.3g,%.3g,%d", ND_coord(n).x, YDIR(ND_coord(n).y), POINTS(ND_pos(n)[2]));
+	    sprintf(buf, "%.5g,%.5g,%d", ND_coord(n).x, YDIR(ND_coord(n).y), POINTS(ND_pos(n)[2]));
 	} else {
-	    sprintf(buf, "%.3g,%.3g", ND_coord(n).x, YDIR(ND_coord(n).y));
+	    sprintf(buf, "%.5g,%.5g", ND_coord(n).x, YDIR(ND_coord(n).y));
 	}
 	agset(n, "pos", buf);
-	sprintf(buf, "%.3g", PS2INCH(ND_ht(n)));
+	sprintf(buf, "%.5g", PS2INCH(ND_ht(n)));
 	agxset(n, N_height->index, buf);
-	sprintf(buf, "%.3g", PS2INCH(ND_lw(n) + ND_rw(n)));
+	sprintf(buf, "%.5g", PS2INCH(ND_lw(n) + ND_rw(n)));
 	agxset(n, N_width->index, buf);
 	if (strcmp(ND_shape(n)->name, "record") == 0) {
 	    set_record_rects(n, ND_shape_info(n), &xb);
@@ -242,11 +242,11 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 		    if (i > 0)
 			agxbputc(&xb, ' ');
 		    if (poly->sides >= 3)
-			sprintf(buf, "%.3g %.3g",
+			sprintf(buf, "%.5g %.5g",
 				PS2INCH(poly->vertices[i].x),
 				YFDIR(PS2INCH(poly->vertices[i].y)));
 		    else
-			sprintf(buf, "%.3g %.3g",
+			sprintf(buf, "%.5g %.5g",
 				ND_width(n) / 2.0 * cos(i / (double) sides * M_PI * 2.0),
 				YFDIR(ND_height(n) / 2.0 * sin(i / (double) sides * M_PI * 2.0)));
 		    agxbput(&xb, buf);
@@ -265,14 +265,14 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 			agxbputc(&xb, ';');
 		    if (ED_spl(e)->list[i].sflag) {
 			s_arrows = 1;
-			sprintf(buf, "s,%.3g,%.3g ",
+			sprintf(buf, "s,%.5g,%.5g ",
 				ED_spl(e)->list[i].sp.x,
 				YFDIR(ED_spl(e)->list[i].sp.y));
 			agxbput(&xb, buf);
 		    }
 		    if (ED_spl(e)->list[i].eflag) {
 			e_arrows = 1;
-			sprintf(buf, "e,%.3g,%.3g ",
+			sprintf(buf, "e,%.5g,%.5g ",
 				ED_spl(e)->list[i].ep.x,
 				YFDIR(ED_spl(e)->list[i].ep.y));
 			agxbput(&xb, buf);
@@ -281,24 +281,24 @@ void attach_attrs_and_arrows(graph_t* g, int* sp, int* ep)
 			if (j > 0)
 			    agxbputc(&xb, ' ');
 			ptf = ED_spl(e)->list[i].list[j];
-			sprintf(buf, "%.3g,%.3g", ptf.x, YFDIR(ptf.y));
+			sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
 			agxbput(&xb, buf);
 		    }
 		}
 		agset(e, "pos", agxbuse(&xb));
 		if (ED_label(e)) {
 		    ptf = ED_label(e)->pos;
-		    sprintf(buf, "%.3g,%.3g", ptf.x, YFDIR(ptf.y));
+		    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
 		    agset(e, "lp", buf);
 		}
 		if (ED_head_label(e)) {
 		    ptf = ED_head_label(e)->pos;
-		    sprintf(buf, "%.3g,%.3g", ptf.x, YFDIR(ptf.y));
+		    sprintf(buf, "%.5g,%.5g", ptf.x, YFDIR(ptf.y));
 		    agset(e, "head_lp", buf);
 		}
 		if (ED_tail_label(e)) {
 		    ptf = ED_tail_label(e)->pos;
-		    sprintf(buf, "%.3g,%.3g", ptf.x, YDIR(ptf.y));
+		    sprintf(buf, "%.5g,%.5g", ptf.x, YDIR(ptf.y));
 		    agset(e, "tail_lp", buf);
 		}
 	    }

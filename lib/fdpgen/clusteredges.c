@@ -51,7 +51,7 @@ static void dumpObj(Ppoly_t * p)
     Ppoint_t pt;
     for (j = 0; j < p->pn; j++) {
 	pt = p->ps[j];
-	fprintf(stderr, " %.3g %.3g", pt.x, pt.y);
+	fprintf(stderr, " %.5g %.5g", pt.x, pt.y);
     }
     fputs("\n", stderr);
 }

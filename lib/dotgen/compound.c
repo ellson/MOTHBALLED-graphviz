@@ -25,7 +25,7 @@
  */
 static char *pf2s(pointf p, char *buf)
 {
-    sprintf(buf, "(%.3g,%.3g)", p.x, p.y);
+    sprintf(buf, "(%.5g,%.5g)", p.x, p.y);
     return buf;
 }
 

@@ -609,7 +609,7 @@ point *putGraphs(int ng, Agraph_t ** gs, Agraph_t * root,
 	    fixed_cnt++;
 	}
 	if (Verbose > 2) {
-	    fprintf(stderr, "bb[%s] %.3g %.3g %.3g %.3g\n", g->name, GD_bb(g).LL.x,
+	    fprintf(stderr, "bb[%s] %.5g %.5g %.5g %.5g\n", g->name, GD_bb(g).LL.x,
 		    GD_bb(g).LL.y, GD_bb(g).UR.x, GD_bb(g).UR.y);
 	}
     }

@@ -90,10 +90,10 @@ static void psprintpointf(pointf p)
 {
     fprintf(stderr, "gsave\n");
     fprintf(stderr,
-	    "newpath %.3g %.3g moveto %.3g %.3g 2 0 360 arc closepath fill stroke\n",
+	    "newpath %.5g %.5g moveto %.5g %.5g 2 0 360 arc closepath fill stroke\n",
 	    p.x, p.y, p.x, p.y);
     fprintf(stderr, "/Times-Roman findfont 4 scalefont setfont\n");
-    fprintf(stderr, "%.3g %.3g moveto (\\(%.3g,%.3g\\)) show\n", p.x + 5, p.y + 5,
+    fprintf(stderr, "%.5g %.5g moveto (\\(%.5g,%.5g\\)) show\n", p.x + 5, p.y + 5,
 	    p.x, p.y);
     fprintf(stderr, "grestore\n");
 }
@@ -738,13 +738,13 @@ static void printpath(path * pp)
 #endif
     fprintf(stderr, "%d boxes:\n", pp->nbox);
     for (bi = 0; bi < pp->nbox; bi++)
-	fprintf(stderr, "%d (%.3g, %.3g), (%.3g, %.3g)\n", bi,
+	fprintf(stderr, "%d (%.5g, %.5g), (%.5g, %.5g)\n", bi,
 		pp->boxes[bi].LL.x, pp->boxes[bi].LL.y,
 	       	pp->boxes[bi].UR.x, pp->boxes[bi].UR.y);
-    fprintf(stderr, "start port: (%.3g, %.3g), tangent angle: %.3g, %s\n",
+    fprintf(stderr, "start port: (%.5g, %.5g), tangent angle: %.5g, %s\n",
 	    pp->start.p.x, pp->start.p.y, pp->start.theta,
 	    pp->start.constrained ? "constrained" : "not constrained");
-    fprintf(stderr, "end port: (%.3g, %.3g), tangent angle: %.3g, %s\n",
+    fprintf(stderr, "end port: (%.5g, %.5g), tangent angle: %.5g, %s\n",
 	    pp->end.p.x, pp->end.p.y, pp->end.theta,
 	    pp->end.constrained ? "constrained" : "not constrained");
 }

@@ -42,7 +42,7 @@ static void showPoints(pointf ps[], int pn)
     Show_boxes[li++] = strdup ("%% self list");
     Show_boxes[li++] = strdup ("dbgstart");
     for (bi = 0; bi < pn; bi++) {
-	sprintf(buf, "%.3g %.3g point", ps[bi].x, ps[bi].y);
+	sprintf(buf, "%.5g %.5g point", ps[bi].x, ps[bi].y);
 	Show_boxes[li++] = strdup (buf);
     }
     Show_boxes[li++] = strdup ("grestore");

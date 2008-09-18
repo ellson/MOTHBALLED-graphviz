@@ -615,7 +615,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	p.x = A[0].x - ND_coord(n).x;
 	p.y = A[0].y - ND_coord(n).y;
 	fprintf(out, " %.3f %.3f ]\n", p.x, p.y);
-	fprintf(out, "    spine [ %.3g %.3g %.3g, %.3g %.3g %.3g ]\n",
+	fprintf(out, "    spine [ %.5g %.5g %.5g, %.5g %.5g %.5g ]\n",
 		ND_coord(n).x, ND_coord(n).y, z - .01,
 		ND_coord(n).x, ND_coord(n).y, z + .01);
 	fprintf(out, "  }\n");
