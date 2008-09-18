@@ -173,7 +173,10 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
             gvputs(job, " -font {");
 	    /* tk doesn't like PostScript font names like "Times-Roman" */
 	    /*    so use svg fallback names like "Serif" */
-	    font = para->postscript_alias->svg_font_family;
+	    if (para->postscript_alias)
+	        font = para->postscript_alias->svg_font_family;
+	    else
+		font = para->fontname;
             gvputs(job, font);
 	    /* use -ve fontsize to indicate pixels  - see "man n font" */
             gvprintf(job, " -%d}", size);
