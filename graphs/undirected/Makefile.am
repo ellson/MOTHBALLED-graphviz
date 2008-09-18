@@ -69,10 +69,6 @@ dia:
 	for i in $(GRAPHS); do echo "neato $$i"; \
 		$(top_builddir)/cmd/dot/dot -Kneato -Tdia -o$$i.dia $(top_srcdir)/graphs/undirected/$$i; done
 
-dot:
-	for i in $(GRAPHS); do echo "neato $$i"; \
-		$(top_builddir)/cmd/dot/dot -Kneato -Tgv -o$$i.gv $(top_srcdir)/graphs/undirected/$$i; done
-
 fig:
 	for i in $(GRAPHS); do echo "neato $$i"; \
 		$(top_builddir)/cmd/dot/dot -Kneato -Tfig -o$$i.fig $(top_srcdir)/graphs/undirected/$$i; done
@@ -88,6 +84,10 @@ gd2:
 gif:
 	for i in $(GRAPHS); do echo "neato $$i"; \
 		$(top_builddir)/cmd/dot/dot -Kneato -Tgif -o$$i.gif $(top_srcdir)/graphs/undirected/$$i; done
+
+gv dot:
+	for i in $(GRAPHS); do echo "neato $$i"; \
+		$(top_builddir)/cmd/dot/dot -Kneato -Tgv -o$$i.gv $(top_srcdir)/graphs/undirected/$$i; done
 
 hpgl:
 	for i in $(GRAPHS); do echo "neato $$i"; \

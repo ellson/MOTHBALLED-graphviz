@@ -76,10 +76,6 @@ dia:
 	for i in $(GRAPHS); do echo "dot $$i"; \
 		$(top_builddir)/cmd/dot/dot -Tdia -o$$i.dia $(top_srcdir)/graphs/directed/$$i; done
 
-dot:
-	for i in $(GRAPHS); do echo "dot $$i"; \
-		$(top_builddir)/cmd/dot/dot -Tgv -o$$i.gv $(top_srcdir)/graphs/directed/$$i; done
-
 fig:
 	for i in $(GRAPHS); do echo "dot $$i"; \
 		$(top_builddir)/cmd/dot/dot -Tfig -o$$i.fig $(top_srcdir)/graphs/directed/$$i; done
@@ -95,6 +91,10 @@ gd2:
 gif:
 	for i in $(GRAPHS); do echo "dot $$i"; \
 		$(top_builddir)/cmd/dot/dot -Tgif -o$$i.gif $(top_srcdir)/graphs/directed/$$i; done
+
+gv dot:
+	for i in $(GRAPHS); do echo "dot $$i"; \
+		$(top_builddir)/cmd/dot/dot -Tgv -o$$i.gv $(top_srcdir)/graphs/directed/$$i; done
 
 hpgl:
 	for i in $(GRAPHS); do echo "dot $$i"; \
