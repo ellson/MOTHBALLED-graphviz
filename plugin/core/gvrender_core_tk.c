@@ -163,7 +163,7 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
 	if (size)  {
             tkgen_canvas(job);
             gvputs(job, " create text ");
-            p.y -= size * 0.5; /* cl correction */
+            p.y -= size * 0.55; /* cl correction */
             gvprintpointf(job, p);
             gvputs(job, " -text {");
             gvputs(job, para->str);
@@ -172,14 +172,16 @@ static void tkgen_textpara(GVJ_t * job, pointf p, textpara_t * para)
             tkgen_print_color(job, obj->pencolor);
             gvputs(job, " -font {");
 	    /* tk doesn't like PostScript font names like "Times-Roman" */
-	    /*    so use svg fallback names like "Serif" */
+	    /*    so use family names */
 	    if (para->postscript_alias)
-	        font = para->postscript_alias->svg_font_family;
+	        font = para->postscript_alias->family;
 	    else
 		font = para->fontname;
+            gvputs(job, "\"");
             gvputs(job, font);
+            gvputs(job, "\"");
 	    /* use -ve fontsize to indicate pixels  - see "man n font" */
-            gvprintf(job, " -%d}", size);
+            gvprintf(job, " %d}", size);
             switch (para->just) {
             case 'l':
                 gvputs(job, " -anchor w");
