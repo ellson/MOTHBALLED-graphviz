@@ -262,9 +262,15 @@ void emit_label(GVJ_t * job, emit_state_t emit_state, textlabel_t * lp)
 char *strdup_and_subst_obj(char *str, void *obj)
 {
     char c, *s, *p, *t, *newstr;
-    char *g_str = "\\G", *n_str = "\\N", *e_str = "\\E", *h_str = "\\H", *t_str = "\\T", *l_str = "\\L";
-    int g_len = 2, n_len = 2, e_len = 2, h_len = 2, t_len = 2, l_len, newlen = 0;
+    char *tp_str = "", *hp_str = "", *etag_str = "";
+    char *g_str = "\\G", *n_str = "\\N", *e_str = "\\E",
+	*h_str = "\\H", *t_str = "\\T", *l_str = "\\L";
+    int g_len = 2, n_len = 2, e_len = 2,
+	h_len = 2, t_len = 2, l_len = 2,
+	tp_len = 0, hp_len = 0, etag_len = 0;
+    int newlen = 0;
     textlabel_t *tl;
+    port pt;
 
     /* prepare substitution strings */
     switch (agobjkind(obj)) {
@@ -293,7 +299,16 @@ char *strdup_and_subst_obj(char *str, void *obj)
 	    g_len = strlen(g_str);
 	    t_str = ((edge_t *)obj)->tail->name;
 	    t_len = strlen(t_str);
+	    pt = ED_tail_port((edge_t *)obj);
+	    if ((tp_str = pt.name))
+	        tp_len = strlen(tp_str);
 	    h_str = ((edge_t *)obj)->head->name;
+	    h_len = strlen(h_str);
+	    pt = ED_head_port((edge_t *)obj);
+	    if ((hp_str = pt.name))
+		hp_len = strlen(hp_str);
+//	    etag_str = ((edge_t *)obj)->head->name;
+	    etag_len = strlen(etag_str);
 	    h_len = strlen(h_str);
 	    tl = ED_label((edge_t *)obj);
 	    if (tl) {
@@ -304,7 +319,8 @@ char *strdup_and_subst_obj(char *str, void *obj)
 		e_str = "->";
 	    else
 		e_str = "--";
-	    e_len = t_len + 2 + h_len;
+	    e_len = t_len + (tp_len?tp_len+1:0) + 2
+		+ h_len + (hp_len?hp_len+1:0) + (etag_len?etag_len+2:0);
 	    break;
     }
 
@@ -332,7 +348,7 @@ char *strdup_and_subst_obj(char *str, void *obj)
 		newlen += t_len;
 		break; 
 	    case 'L':
-		newlen += t_len;
+		newlen += l_len;
 		break; 
 	    default:  /* leave other escape sequences unmodified, e.g. \n \l \r */
 		newlen += 2;
@@ -356,8 +372,21 @@ char *strdup_and_subst_obj(char *str, void *obj)
 		break;
 	    case 'E':
 		for (t = t_str; (*p = *t++); p++);
+		if (tp_len) {
+		    *p++ = ':';
+		    for (t = tp_str; (*p = *t++); p++);
+		}
 		for (t = e_str; (*p = *t++); p++);
 		for (t = h_str; (*p = *t++); p++);
+		if (hp_len) {
+		    *p++ = ':';
+		    for (t = hp_str; (*p = *t++); p++);
+		}
+		if (etag_len) {
+		    *p++ = '[';
+		    for (t = etag_str; (*p = *t++); p++);
+		    *p++ = ']';
+		}
 		break;
 	    case 'T':
 		for (t = t_str; (*p = *t++); p++);

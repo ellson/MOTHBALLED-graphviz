@@ -628,9 +628,11 @@ chkPort (port (*pf)(node_t*, char*, char*), node_t* n, char* s)
 	*cp = '\0';
 	pt = pf(n, s, cp+1);
 	*cp = ':';
+	pt.name = cp+1;
     }
     else
 	pt = pf(n, s, NULL);
+	pt.name = s;
     return pt;
 }
 

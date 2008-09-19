@@ -79,6 +79,7 @@ extern "C" {
                                  * contains the bitwise OR of the sides (TOP,
                                  * BOTTOM, etc.) it is on. 
                                  */
+	char *name;		/* port name, if it was explicitly given, otherwise NULL */
     } port;
 
     typedef struct {
@@ -534,7 +535,7 @@ typedef enum {NATIVEFONTS,PSFONTS,SVGFONTS} fontname_kind;
 
     typedef struct Agedgeinfo_t {
 	splines *spl;
-	port tail_port, head_port;	/* might be used someday */
+	port tail_port, head_port;
 	textlabel_t *label, *head_label, *tail_label;
 	char edge_type;
 	char adjacent;          /* true for flat edge with adjacent nodes */
