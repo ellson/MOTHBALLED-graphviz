@@ -30,8 +30,7 @@
 <P>
 These are the basic set of backward-compatible arrow shapes. In addition,
 there is a grammar of <A HREF=arrows.html>arrow shapes</A>
-which can be used to describe a collection of 1260 arrow shapes as
-modifications of a primitive set of 9 arrows. The basic arrows shown
+which can be used to describe a collection of 1,544,761 arrow combinations of the 36 varations of the primitive set of 9 arrows. The basic arrows shown
 above contain all of the primitive shapes
 (<TT>box</TT>, <TT>crow</TT>, <TT>diamond</TT>,
 <TT>dot</TT>, <TT>inv</TT>, <TT>none</tt>,

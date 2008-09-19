@@ -3,10 +3,11 @@
 <H2>Notes</H2>
 <OL TYPE="1">
 <LI>
-<A NAME=ID>In certain text-based formats, the output generates
-'id="xxx"' properties for clusters, nodes, edges, and 
-html-cells.
+<A NAME=ID>In the formats: -Tcmap, -Tcmapx, -Tsvg, -Tvml, the output generates
+'id="\\N"' properties for nodes and html-cells, 'id="\\E"' properties for edges, and 'id="\\G"' properties for clusters. Then it applies the usual "\\X" substitutions on these strings.
 
-At the moment the id doesn't distinguish between multiedges in 
+The 'id="xxx"' property is intended to be a predictable string that uniquely identifies the graph object.  This 'id' can be used from Javascript, for example.
+
+At the moment the edge id doesn't distinguish between multiedges in 
 non-strict graphs.
 </OL>
