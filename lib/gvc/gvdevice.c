@@ -22,9 +22,6 @@
 #include "config.h"
 #endif
 
-/* experimenting with in-memory deflation so as to write compressed files to channels and strings */
-#define IN_MEM_COMPRESSION
-
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,7 +39,6 @@
 #ifdef HAVE_LIBZ
 #include <zlib.h>
 
-#ifdef IN_MEM_COMPRESSION
 #ifndef OS_CODE
 #  define OS_CODE  0x03  /* assume Unix */
 #endif
@@ -53,8 +49,7 @@ static z_stream z_strm;
 static unsigned char *df;
 static unsigned int dfallocated;
 static unsigned long int crc;
-#endif
-#endif
+#endif /* HAVE_LIBZ */
 
 #include "const.h"
 #include "gvplugin_device.h"
@@ -166,28 +161,8 @@ void gvdevice_initialize(GVJ_t * job)
             setmode(fileno(job->output_file), O_BINARY);
 #endif
 #endif
-
-#ifndef IN_MEM_COMPRESSION
-        if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
-#if HAVE_LIBZ
-	    int fd;
-
-	    /* open dup so can gzclose independent of FILE close */
-	    fd = dup(fileno(job->output_file));
-	    job->output_file = (FILE *) (gzdopen(fd, "wb"));
-	    if (!job->output_file) {
-		(job->common->errorfn) ("Error initializing deflation on output file\n");
-		exit(1);
-	    }
-#else
-	    (job->common->errorfn) ("No libz support.\n");
-	    exit(1);
-#endif
-        }
-#endif
     }
 
-#ifdef IN_MEM_COMPRESSION
     if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
 	z_stream *z = &z_strm;
@@ -211,15 +186,15 @@ void gvdevice_initialize(GVJ_t * job)
 	exit(1);
 #endif
     }
-#endif
 }
 
 size_t gvwrite (GVJ_t * job, const char *s, size_t len)
 {
+    size_t olen;
+
     if (!len || !s)
 	return 0;
 
-#ifdef IN_MEM_COMPRESSION
     if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
 	z_streamp z = &z_strm;
@@ -240,28 +215,33 @@ size_t gvwrite (GVJ_t * job, const char *s, size_t len)
 	    }
 	}
 
+	crc = crc32(crc, (unsigned char*)s, len);
+
 	z->next_in = (unsigned char*)s;
 	z->avail_in = len;
-	z->next_out = df;
-	z->avail_out = dfallocated;
-	ret=deflate (z, Z_NO_FLUSH);
-	if (ret != Z_OK) {
-            (job->common->errorfn) ("deflation problem %d\n", ret);
-	    exit(1);
+	while (z->avail_in) {
+	    z->next_out = df;
+	    z->avail_out = dfallocated;
+	    ret=deflate (z, Z_NO_FLUSH);
+	    if (ret != Z_OK) {
+                (job->common->errorfn) ("deflation problem %d\n", ret);
+	        exit(1);
+	    }
+
+	    if ((olen = z->next_out - df)) {
+	        if (olen != (gvwrite_no_z (job, (char*)df, olen))) {
+                    (job->common->errorfn) ("gvwrite_no_z problem %d\n", ret);
+	            exit(1);
+	        }
+	    }
 	}
-	crc = crc32(crc, (unsigned char*)s, len);
-	len = z->next_out - df;
-	s = (char*)df;
-#endif
-    }
+
 #else
-    if (!(job->gvc->write_fn) && (job->flags & GVDEVICE_COMPRESSED_FORMAT)) {
-#ifdef HAVE_LIBZ
-	return gzwrite((gzFile *) (job->output_file), s, len);
+	(job->common->errorfn) ("No libz support.\n");
+	exit(1);
 #endif
     }
-#endif
-    return gvwrite_no_z (job, s, len);
+    return len;
 }
 
 int gvputs(GVJ_t * job, const char *s)
@@ -320,7 +300,6 @@ void gvdevice_finalize(GVJ_t * job)
     gvdevice_engine_t *gvde = job->device.engine;
     boolean finalized_p = FALSE;
 
-#ifdef IN_MEM_COMPRESSION
     if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
 	z_streamp z = &z_strm;
@@ -362,7 +341,6 @@ void gvdevice_finalize(GVJ_t * job)
 	exit(1);
 #endif
     }
-#endif
 
     if (gvde) {
 	if (gvde->finalize) {
@@ -381,17 +359,6 @@ void gvdevice_finalize(GVJ_t * job)
 
     if (! finalized_p) {
         /* if the device has no finalization then it uses file output */
-#ifndef IN_MEM_COMPRESSION
-        if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
-#ifdef HAVE_LIBZ
-	    gzclose((gzFile *) (job->output_file));
-	    job->output_file = NULL;
-#else
-	    (job->common->errorfn) ("No libz support\n");
-	    exit(1);
-#endif
-	}
-#endif
 	gvdevice_flush(job);
 	gvdevice_close(job);
     }
