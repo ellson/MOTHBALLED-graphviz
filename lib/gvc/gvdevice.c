@@ -190,7 +190,7 @@ void gvdevice_initialize(GVJ_t * job)
 
 size_t gvwrite (GVJ_t * job, const char *s, size_t len)
 {
-    size_t olen;
+    size_t ret, olen;
 
     if (!len || !s)
 	return 0;
@@ -198,7 +198,7 @@ size_t gvwrite (GVJ_t * job, const char *s, size_t len)
     if (job->flags & GVDEVICE_COMPRESSED_FORMAT) {
 #ifdef HAVE_LIBZ
 	z_streamp z = &z_strm;
-	size_t ret, dflen;
+	size_t dflen;
 
 #ifdef HAVE_DEFLATEBOUND
 	dflen = deflateBound(z, len);
@@ -229,7 +229,8 @@ size_t gvwrite (GVJ_t * job, const char *s, size_t len)
 	    }
 
 	    if ((olen = z->next_out - df)) {
-	        if (olen != (gvwrite_no_z (job, (char*)df, olen))) {
+		ret = gvwrite_no_z (job, (char*)df, olen);
+	        if (ret != olen) {
                     (job->common->errorfn) ("gvwrite_no_z problem %d\n", ret);
 	            exit(1);
 	        }
@@ -240,6 +241,13 @@ size_t gvwrite (GVJ_t * job, const char *s, size_t len)
 	(job->common->errorfn) ("No libz support.\n");
 	exit(1);
 #endif
+    }
+    else { /* uncompressed write */
+	ret = gvwrite_no_z (job, s, len);
+	if (ret != len) {
+	    (job->common->errorfn) ("gvwrite_no_z problem %d\n", len);
+	    exit(1);
+	}
     }
     return len;
 }
