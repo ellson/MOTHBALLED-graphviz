@@ -242,6 +242,8 @@ Version info:
 mostly identical to cmapx, but the latter is well-formed XML amenable
 to processing by XML tools. In particular, the cmapx output is wrapped in
 &lt;map&gt;&lt;/map&gt;.
+<P>
+See <A HREF=#ID>Note</A>.
 
 <DT><A NAME=d:dia HREF=#a:dia><STRONG>dia</STRONG></A>
 <DD>Produces <A HREF="http://www.gnome.org/projects/dia/">Dia</A> output.
@@ -327,6 +329,8 @@ it will be replaced by
 the <A HREF=attrs.html#d:headlabel>headlabel</A>, if defined.
 The analogous result holds for the tailURL and the
 <A HREF=attrs.html#d:taillabel>taillabel</A>.
+<P>
+See <A HREF=#ID>Note</A>.
 
 <DT><A NAME=d:imap_np HREF=#a:imap_np><STRONG>imap_np</STRONG></A>
 ,<DT><A NAME=d:cmapx_np HREF=#a:cmapx_np><STRONG>cmapx_np</STRONG></A>
@@ -488,6 +492,8 @@ as a base, such that relative URLs on nodes are derived from it.
 ,<DT><A NAME=d:svgz HREF=#a:svgz><STRONG>svgz</STRONG></A>
 <DD>Produce <A HREF="http://www.adobe.com/svg/">SVG</A> output,
 the latter in compressed format.
+<P>
+See <A HREF=#ID>Note</A>.
 
 <DT><A NAME=d:tga HREF=#a:tga><STRONG>tga</STRONG></A>
 <DD>Produces <A HREF="http://en.wikipedia.org/wiki/Truevision_TGA">Targa</A> output.
@@ -500,6 +506,8 @@ the latter in compressed format.
 ,<DT><A NAME=d:vmlz HREF=#a:vmlz><STRONG>vmlz</STRONG></A>
 <DD>Produces <A HREF="http://www.w3.org/TR/NOTE-VML">VML</A> output,
 the latter in compressed format.
+<P>
+See <A HREF=#ID>Note</A>.
 
 <DT><A NAME=d:vrml HREF=#a:vrml><STRONG>vrml</STRONG></A>
 <DD>Outputs graphs in the <A HREF="http://www.vrml.org/">VRML</A> format.
@@ -529,3 +537,15 @@ mobile computing.
 <HR>
 </BODY>
 </HTML>
+
+<HR>
+<H2>Notes</H2>
+<OL TYPE="1">
+<LI>
+<A NAME=ID>In certain text-based formats, the output generates
+'id="xxx"' properties for clusters, nodes, edges, and 
+html-cells.
+
+At the moment the id doesn't distinguish between multiedges in 
+non-strict graphs.
+</OL>

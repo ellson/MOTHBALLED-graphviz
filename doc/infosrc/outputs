@@ -69,6 +69,8 @@ Produces map files for client-side image maps. The cmap format is
 mostly identical to cmapx, but the latter is well-formed XML amenable
 to processing by XML tools. In particular, the cmapx output is wrapped in
 &lt;map&gt;&lt;/map&gt;.
+<P>
+See <A HREF=#ID>Note</A>.
 :imap/cmapx:Server-side and client-side imagemaps
 Produces map files for server-side and client-side image maps,
 These can be used in a web page with
@@ -123,6 +125,8 @@ it will be replaced by
 the <A HREF=attrs.html#d:headlabel>headlabel</A>, if defined.
 The analogous result holds for the tailURL and the
 <A HREF=attrs.html#d:taillabel>taillabel</A>.
+<P>
+See <A HREF=#ID>Note</A>.
 :imap_np/cmapx_np:Server-side and client-side imagemaps
 These are identical to the imap and cmapx formats, except they
 rely solely on rectangles as active areas.
@@ -148,6 +152,8 @@ Outputs graphs in the FIG graphics language.
 :svg/svgz:Scalable Vector Graphics
 Produce <A HREF="http://www.adobe.com/svg/">SVG</A> output,
 the latter in compressed format.
+<P>
+See <A HREF=#ID>Note</A>.
 :canon/dot/xdot:DOT
 These formats produce output in the
 <A HREF=lang.html>dot language</A>.
@@ -371,6 +377,8 @@ Produces <A HREF="http://www.libtiff.org/">TIFF</A> output.
 :vml/vmlz: Vector Markup Language (VML)
 Produces <A HREF="http://www.w3.org/TR/NOTE-VML">VML</A> output,
 the latter in compressed format.
+<P>
+See <A HREF=#ID>Note</A>.
 :gtk: GTK canvas
 Creates a <A HREF="http://www.gtk.org/">GTK</A> window and displays the output there.
 :xlib: Xlib canvas
