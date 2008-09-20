@@ -1753,8 +1753,11 @@ static void nodeIntersect (GVJ_t * job, pointf p,
 
     if (url || explicit) {
 	map_point(job, p);
+#if 0
+/* this doesn't work because there is nothing contained in the anchor */
 	gvrender_begin_anchor(job, url, tooltip, target, obj->id);
 	gvrender_end_anchor(job);
+#endif
     }
 }
 
