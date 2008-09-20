@@ -286,13 +286,18 @@ static void svg_end_edge(GVJ_t * job)
 static void
 svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target, char *id)
 {
-    gvputs(job, "<a xlink:type=\"simple\"");
+    gvputs(job, "<a");
+#if 0
+    /* the svg spec implies this can be omitted: http://www.w3.org/TR/SVG/linking.html#Links */
+    gvputs(job, " xlink:type=\"simple\"");
+#endif
     assert (id && id[0]); /* there should always be an id available */
     if (href && href[0])
 	gvprintf(job, " xlink:href=\"%s\"", xml_url_string(href));
 #if 0
-    /* linking to itself, jut so that it can have a link in the anchor, seems wrong.
-     * it changes the behavior in browsers, the link apears in the bottinm information bar */
+    /* linking to itself, just so that it can have a xlink:link in the anchor, seems wrong.
+     * it changes the behavior in browsers, the link apears in the bottom information bar
+     */
     else
 	gvprintf(job, " xlink:href=\"#%s\"", xml_url_string(id));
 #endif
