@@ -1312,7 +1312,6 @@ static int graphcmd(ClientData clientData, Tcl_Interp * interp,
 
 	gvc->common.viewNum = 0;
 	gvRenderJobs(gvc, g);
-	gvrender_end_job(job);
 	gvdevice_finalize(job);
 //	fflush(job->output_file);
 	gvjobs_delete(gvc);
