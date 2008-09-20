@@ -212,23 +212,32 @@ gvplugin_installed_t gvloadimage_gd_types[] = {
     {FORMAT_XBM_GD, "xbm:gd", 1, &engine, NULL},
 #endif
     {FORMAT_GD_PS, "gd:ps", 1, &engine_ps, NULL},
+    {FORMAT_GD_PS, "gd:lasi", 1, &engine_ps, NULL},
     {FORMAT_GD2_PS, "gd2:ps", 1, &engine_ps, NULL},
+    {FORMAT_GD2_PS, "gd2:lasi", 1, &engine_ps, NULL},
 #ifdef HAVE_GD_GIF
     {FORMAT_GIF_PS, "gif:ps", 1, &engine_ps, NULL},
+    {FORMAT_GIF_PS, "gif:lasi", 1, &engine_ps, NULL},
 #endif
 #ifdef HAVE_GD_JPEG
     {FORMAT_JPG_PS, "jpeg:ps", 1, &engine_ps, NULL},
     {FORMAT_JPG_PS, "jpg:ps", 1, &engine_ps, NULL},
     {FORMAT_JPG_PS, "jpe:ps", 1, &engine_ps, NULL},
+    {FORMAT_JPG_PS, "jpeg:lasi", 1, &engine_ps, NULL},
+    {FORMAT_JPG_PS, "jpg:lasi", 1, &engine_ps, NULL},
+    {FORMAT_JPG_PS, "jpe:lasi", 1, &engine_ps, NULL},
 #endif
 #ifdef HAVE_GD_PNG
     {FORMAT_PNG_PS, "png:ps", 1, &engine_ps, NULL},
+    {FORMAT_PNG_PS, "png:lasi", 1, &engine_ps, NULL},
 #endif
 #ifdef HAVE_GD_WBMP
     {FORMAT_WBMP_PS, "wbmp:ps", 1, &engine_ps, NULL},
+    {FORMAT_WBMP_PS, "wbmp:lasi", 1, &engine_ps, NULL},
 #endif
 #ifdef HAVE_GD_XPM
     {FORMAT_XBM_PS, "xbm:ps", 1, &engine_ps, NULL},
+    {FORMAT_XBM_PS, "xbm:lasi", 1, &engine_ps, NULL},
 #endif
 #endif
     {0, NULL, 0, NULL, NULL}

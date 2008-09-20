@@ -40,7 +40,7 @@ reader (void *closure, unsigned char *data, unsigned int length)
 
 static void cairo_freeimage(usershape_t *us)
 {
-    cairo_destroy((cairo_t*)us->data);
+    cairo_surface_destroy((cairo_surface_t*)(us->data));
 }
 
 static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
@@ -56,6 +56,7 @@ static cairo_surface_t* cairo_loadimage(GVJ_t * job, usershape_t *us)
              surface = (cairo_surface_t*)(us->data); /* use cached data */
         else {
              us->datafree(us);        /* free incompatible cache data */
+             us->datafree = NULL;
              us->data = NULL;
         }
     }
@@ -166,6 +167,7 @@ static gvloadimage_engine_t engine_ps = {
 gvplugin_installed_t gvloadimage_pango_types[] = {
 #ifdef HAVE_PANGOCAIRO
     {FORMAT_PNG_CAIRO, "png:cairo", 1, &engine_cairo, NULL},
+    {FORMAT_PNG_PS, "png:lasi", 2, &engine_ps, NULL},
     {FORMAT_PNG_PS, "png:ps", 2, &engine_ps, NULL},
 #endif
     {0, NULL, 0, NULL, NULL}
