@@ -353,6 +353,12 @@ contain the label. Note also that, if the output format is dot, the
 value given to <B>height</B> will be the final value.
 :href:E:lblString:"";  map,ps,svg
 Synonym for <A HREF=#d:URL>URL</A>.
+:id:GNE:lblString:"";  map,ps,svg
+Allows the graph author to provide an id for graph objects which is to be included in the output.
+If no id is provided, then the internal id is used in the outputs, however this value is unpredictable by the graph writer.
+An externally provided id is not used internally.
+If provided, it is the reponsiblity of the provider to keep
+its values sufficiently unique for its intended downstream use.
 :image:N:string:"";
 Gives the name of a file containing an image to be displayed inside
 a node. The image file must be in one of the recognized formats,

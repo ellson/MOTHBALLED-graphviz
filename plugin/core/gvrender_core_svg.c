@@ -211,7 +211,7 @@ static void svg_begin_page(GVJ_t * job)
 
     /* its really just a page of the graph, but its still a graph,
      * and it is the entire graph if we're not currently paging */
-    gvprintf(job, "<g id=\"graph%d\" class=\"graph\"", job->common->viewNum);
+    gvprintf(job, "<g id=\"%s\" class=\"graph\"", obj->id);
     gvprintf(job, " transform=\"scale(%g %g) rotate(%d) translate(%g %g)\">\n",
 	    job->scale.x, job->scale.y, -job->rotation,
 	    job->translation.x, -job->translation.y);
@@ -232,8 +232,7 @@ static void svg_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    gvprintf(job, "<g id=\"cluster%ld\" class=\"cluster\">",
-	    obj->u.sg->meta_node->id);
+    gvprintf(job, "<g id=\"%s\" class=\"cluster\">", obj->id);
     gvputs(job, "<title>");
     gvputs(job, xml_string(obj->u.sg->name));
     gvputs(job, "</title>\n");
@@ -248,7 +247,7 @@ static void svg_begin_node(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    gvprintf(job, "<g id=\"node%ld\" class=\"node\">", obj->u.n->id);
+    gvprintf(job, "<g id=\"%s\" class=\"node\">", obj->id);
     gvputs(job, "<title>");
     gvputs(job, xml_string(obj->u.n->name));
     gvputs(job, "</title>\n");
@@ -265,7 +264,7 @@ svg_begin_edge(GVJ_t * job)
     obj_state_t *obj = job->obj;
     char *edgeop;
 
-    gvprintf(job, "<g id=\"edge%ld\" class=\"edge\">", obj->u.e->id);
+    gvprintf(job, "<g id=\"%s\" class=\"edge\">", obj->id);
     if (obj->u.e->tail->graph->root->kind & AGFLAG_DIRECTED)
 	edgeop = "&#45;&gt;";
     else
@@ -291,8 +290,12 @@ svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target, char *id)
     assert (id && id[0]); /* there should always be an id available */
     if (href && href[0])
 	gvprintf(job, " xlink:href=\"%s\"", xml_url_string(href));
+#if 0
+    /* linking to itself, jut so that it can have a link in the anchor, seems wrong.
+     * it changes the behavior in browsers, the link apears in the bottinm information bar */
     else
 	gvprintf(job, " xlink:href=\"#%s\"", xml_url_string(id));
+#endif
     if (tooltip && tooltip[0])
 	gvprintf(job, " xlink:title=\"%s\"", xml_string(tooltip));
     if (target && target[0])

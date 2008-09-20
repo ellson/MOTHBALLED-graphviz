@@ -105,7 +105,7 @@ initMapData (GVJ_t* job, char* lbl, char* url, char* tooltip, char* target, char
     if ((flags & GVRENDER_DOES_LABELS) && lbl)
         obj->label = lbl;
     if (flags & GVRENDER_DOES_MAPS) {
-        obj->id = strdup_and_subst_obj(id, gobj);
+        obj->id = strdup(id);
 	if (url && url[0]) {
             obj->url = strdup_and_subst_obj(url, gobj);
 	    assigned = 1;
@@ -130,31 +130,24 @@ initMapData (GVJ_t* job, char* lbl, char* url, char* tooltip, char* target, char
 }
 
 static void
-initGraphMapData (GVJ_t* job, textlabel_t *lab, void* gobj)
+initObjMapData (GVJ_t* job, textlabel_t *lab, char *otyp, long int idnum, void* gobj)
 {
     char* lbl;
     char* url = agget(gobj, "href");
     char* tooltip = agget(gobj, "tooltip");
     char* target = agget(gobj, "target");
+    char* id = agget(gobj, "id");
+    char buf[50];
 
     if (lab) lbl = lab->text;
     else lbl = NULL;
-    if (!url || !*url) url = agget(gobj, "URL");
-    initMapData (job, lbl, url, tooltip, target, "\\G", gobj);
-}
-
-static void
-initNodeMapData (GVJ_t* job, textlabel_t *lab, void* gobj)
-{
-    char* lbl;
-    char* url = agget(gobj, "href");
-    char* tooltip = agget(gobj, "tooltip");
-    char* target = agget(gobj, "target");
-
-    if (lab) lbl = lab->text;
-    else lbl = NULL;
-    if (!url || !*url) url = agget(gobj, "URL");
-    initMapData (job, lbl, url, tooltip, target, "\\N", gobj);
+    if (!url || !*url)  /* try URL as an alias for href */
+	url = agget(gobj, "URL");
+    if (!id || !*id) { /* no external id, so use the internal one */
+	sprintf(buf, "%s%ld", otyp, idnum);
+	id = buf;
+    }
+    initMapData (job, lbl, url, tooltip, target, id, gobj);
 }
 
 static void map_point(GVJ_t *job, pointf pf)
@@ -1069,7 +1062,7 @@ static void emit_begin_node(GVJ_t * job, node_t * n)
 	else
             obj->z = 0.0;
     }
-    initNodeMapData (job, ND_label(n), n);
+    initObjMapData (job, ND_label(n), "node", n->id, n);
     if ((flags & (GVRENDER_DOES_MAPS | GVRENDER_DOES_TOOLTIPS))
            && (obj->url || obj->explicit_tooltip)) {
 
@@ -1521,7 +1514,7 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
 {
     obj_state_t *obj;
     int flags = job->flags;
-    char *s;
+    char *s, buf[50];
     textlabel_t *lab = NULL, *tlab = NULL, *hlab = NULL;
     pointf *pbs = NULL;
     int	i, nump, *pbs_n = NULL, pbs_poly_n = 0;
@@ -1566,7 +1559,12 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
     }
 
     if (flags & GVRENDER_DOES_MAPS) {
-	obj->id = strdup_and_subst_obj("\\E", (void*)e);
+        s = agget(e, "id");
+        if (!s || !*s) { /* no external id, so use the internal one */
+	    sprintf(buf,"edge%d", e->id);
+	    s = buf;
+        }
+	obj->id = strdup(s);
         if (((s = agget(e, "href")) && s[0]) || ((s = agget(e, "URL")) && s[0]))
             dflt_url = strdup_and_subst_obj(s, (void*)e);
 	if (((s = agget(e, "edgehref")) && s[0]) || ((s = agget(e, "edgeURL")) && s[0]))
@@ -2214,7 +2212,7 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
     obj->u.g = g;
     obj->emit_state = EMIT_GDRAW;
 
-    initGraphMapData (job, GD_label(g), g);
+    initObjMapData (job, GD_label(g), "graph", job->common->viewNum, g);
 
 #ifdef WITH_CODEGENS
     Obj = NONE;
@@ -2420,7 +2418,7 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     obj->u.sg = sg;
     obj->emit_state = EMIT_CDRAW;
 
-    initGraphMapData (job, GD_label(sg), sg);
+    initObjMapData (job, GD_label(sg), "cluster", sg->meta_node->id, sg);
 
 #ifdef WITH_CODEGENS
     Obj = CLST;
