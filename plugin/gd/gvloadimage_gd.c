@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "gvplugin_loadimage.h"
+#include "gvio.h"
 
 #ifdef HAVE_LIBGD
 #include "gd.h"
@@ -124,59 +125,62 @@ static void gd_loadimage_gd(GVJ_t * job, usershape_t *us, boxf b, boolean filled
 static void gd_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean filled)
 {
     gdImagePtr im = NULL;
-    FILE *out = job->output_file;
     int X, Y, x, y, px;
 
     if ((im = gd_loadimage(job, us))) {
 	X = im->sx;
 	Y = im->sy;
 
-        fprintf(out, "save\n");
+        gvputs(job, "save\n");
 
 	/* define image data as string array (one per raster line) */
-        fprintf(out, "/myctr 0 def\n");
-        fprintf(out, "/myarray [\n");
+        gvputs(job, "/myctr 0 def\n");
+        gvputs(job, "/myarray [\n");
         if (im->trueColor) {
             for (y = 0; y < Y; y++) {
-		fprintf(out, "<");
+		gvputs(job, "<");
                 for (x = 0; x < X; x++) {
                     px = gdImageTrueColorPixel(im, x, y);
-                    fprintf(out, "%02x%02x%02x",
+                    gvprintf(job, "%02x%02x%02x",
                         gdTrueColorGetRed(px),
                         gdTrueColorGetGreen(px),
                         gdTrueColorGetBlue(px));
                 }
-		fprintf(out, ">\n");
+		gvputs(job, ">\n");
             }
 	}
         else {
             for (y = 0; y < Y; y++) {
-		fprintf(out, "<");
+		gvputs(job, "<");
                 for (x = 0; x < X; x++) {
                     px = gdImagePalettePixel(im, x, y);
-                    fprintf(out, "%02x%02x%02x",
+                    gvprintf(job, "%02x%02x%02x",
                         im->red[px],
                         im->green[px],
                         im->blue[px]);
                 }
-		fprintf(out, ">\n");
+		gvputs(job, ">\n");
             }
         }
-	fprintf(out, "] def\n");
-	fprintf(out,"/myproc { myarray myctr get /myctr myctr 1 add def } def\n");
+	gvputs(job, "] def\n");
+	gvputs(job,"/myproc { myarray myctr get /myctr myctr 1 add def } def\n");
 
         /* this sets the position of the image */
-        fprintf(out, "%g %g translate %% lower-left coordinate\n", b.LL.x, b.LL.y);
+        gvprintf(job, "%g %g translate\n",
+		(b.LL.x + (b.UR.x - b.LL.x) * (1. - (job->dpi.x) / 96.) / 2.),
+	        (b.LL.y + (b.UR.y - b.LL.y) * (1. - (job->dpi.y) / 96.) / 2.));
 
         /* this sets the rendered size to fit the box */
-        fprintf(out,"%g %g scale\n", b.UR.x - b.LL.x, b.UR.y - b.LL.y);
+        gvprintf(job,"%g %g scale\n",
+		((b.UR.x - b.LL.x) * (job->dpi.x) / 96.),
+		((b.UR.y - b.LL.y) * (job->dpi.y) / 96.));
     
         /* xsize ysize bits-per-sample [matrix] */
-        fprintf(out, "%d %d 8 [%d 0 0 %d 0 %d]\n", X, Y, X, -Y, Y);
+        gvprintf(job, "%d %d 8 [%d 0 0 %d 0 %d]\n", X, Y, X, -Y, Y);
     
-        fprintf(out, "{myproc} false 3 colorimage\n");
+        gvputs(job, "{myproc} false 3 colorimage\n");
     
-        fprintf(out, "restore\n");
+        gvputs(job, "restore\n");
     }
 }
 

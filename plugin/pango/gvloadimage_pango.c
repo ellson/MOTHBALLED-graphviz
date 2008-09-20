@@ -21,6 +21,7 @@
 #include <stdlib.h>
 
 #include "gvplugin_loadimage.h"
+#include "gvio.h"
 
 #ifdef HAVE_PANGOCAIRO
 #include <cairo.h>
@@ -90,9 +91,12 @@ static void pango_loadimage_cairo(GVJ_t * job, usershape_t *us, boxf b, boolean 
     surface = cairo_loadimage(job, us);
     if (surface) {
         cairo_save(cr);
-        cairo_translate(cr, ROUND(b.LL.x), ROUND(-b.UR.y));
-        cairo_scale(cr, (b.UR.x - b.LL.x) / us->w,
-                        (b.UR.y - b.LL.y) / us->h);
+        cairo_translate(cr,
+		(b.LL.x + (b.UR.x - b.LL.x) * (1. - (job->dpi.x) / 96.) / 2.),
+		(-b.UR.y + (b.UR.y - b.LL.y) * (1. - (job->dpi.y) / 96.) / 2.));
+        cairo_scale(cr,
+		((b.UR.x - b.LL.x) * (job->dpi.x) / (96. * us->w)),
+                ((b.UR.y - b.LL.y) * (job->dpi.y) / (96. * us->h)));
         cairo_set_source_surface (cr, surface, 0, 0);
         cairo_paint (cr);
         cairo_restore(cr);
@@ -103,7 +107,6 @@ static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean fil
 {
     cairo_surface_t *surface; 	/* source surface */
     cairo_format_t format;
-    FILE *out = job->output_file;
     int X, Y, x, y, stride;
     unsigned char *data, *ix, alpha, red, green, blue;
 
@@ -118,14 +121,14 @@ static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean fil
 	stride = cairo_image_surface_get_stride(surface);
 	data = cairo_image_surface_get_data(surface);
 
-        fprintf(out, "save\n");
+        gvputs(job, "save\n");
 
 	/* define image data as string array (one per raster line) */
 	/* see parallel code in gd_loadimage_ps().  FIXME: refactor... */
-        fprintf(out, "/myctr 0 def\n");
-        fprintf(out, "/myarray [\n");
+        gvputs(job, "/myctr 0 def\n");
+        gvputs(job, "/myarray [\n");
         for (y = 0; y < Y; y++) {
-	    fprintf(out, "<");
+	    gvputs(job, "<");
 	    ix = data + y * stride;
             for (x = 0; x < X; x++) {
 		/* FIXME - this code may have endian problems */
@@ -133,25 +136,32 @@ static void pango_loadimage_ps(GVJ_t * job, usershape_t *us, boxf b, boolean fil
 		green = *ix++;
 		red = *ix++;
 		alpha = *ix++;
-                fprintf(out, "%02x%02x%02x", red, green, blue);
+		if (alpha < 0x7f)
+		    gvputs(job, "ffffff");
+		else
+                    gvprintf(job, "%02x%02x%02x", red, green, blue);
             }
-	    fprintf(out, ">\n");
+	    gvputs(job, ">\n");
         }
-	fprintf(out, "] def\n");
-        fprintf(out,"/myproc { myarray myctr get /myctr myctr 1 add def } def\n");
+	gvputs(job, "] def\n");
+        gvputs(job,"/myproc { myarray myctr get /myctr myctr 1 add def } def\n");
 
         /* this sets the position of the image */
-        fprintf(out, "%g %g translate %% lower-left coordinate\n", b.LL.x, b.LL.y);
+        gvprintf(job, "%g %g translate\n",
+		(b.LL.x + (b.UR.x - b.LL.x) * (1. - (job->dpi.x) / 96.) / 2.),
+		(b.LL.y + (b.UR.y - b.LL.y) * (1. - (job->dpi.y) / 96.) / 2.));
 
         /* this sets the rendered size to fit the box */
-        fprintf(out,"%g %g scale\n", b.UR.x - b.LL.x, b.UR.y - b.LL.y);
+        gvprintf(job,"%g %g scale\n",
+		((b.UR.x - b.LL.x) * 72. / 96.),
+		((b.UR.y - b.LL.y) * 72. / 96.));
 
         /* xsize ysize bits-per-sample [matrix] */
-        fprintf(out, "%d %d 8 [%d 0 0 %d 0 %d]\n", X, Y, X, -Y, Y);
+        gvprintf(job, "%d %d 8 [%d 0 0 %d 0 %d]\n", X, Y, X, -Y, Y);
 
-        fprintf(out, "{myproc} false 3 colorimage\n");
+        gvputs(job, "{myproc} false 3 colorimage\n");
 
-        fprintf(out, "restore\n");
+        gvputs(job, "restore\n");
     }
 }
 
