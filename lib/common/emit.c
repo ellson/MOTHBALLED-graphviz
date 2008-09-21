@@ -105,7 +105,7 @@ initMapData (GVJ_t* job, char* lbl, char* url, char* tooltip, char* target, char
     if ((flags & GVRENDER_DOES_LABELS) && lbl)
         obj->label = lbl;
     if (flags & GVRENDER_DOES_MAPS) {
-        obj->id = strdup(id);
+        obj->id = strdup_and_subst_obj(id, gobj);
 	if (url && url[0]) {
             obj->url = strdup_and_subst_obj(url, gobj);
 	    assigned = 1;
@@ -1564,7 +1564,7 @@ static void emit_begin_edge(GVJ_t * job, edge_t * e, char** styles)
 	    sprintf(buf,"edge%d", e->id);
 	    s = buf;
         }
-	obj->id = strdup(s);
+	obj->id = strdup_and_subst_obj(s, (void*)e);
         if (((s = agget(e, "href")) && s[0]) || ((s = agget(e, "URL")) && s[0]))
             dflt_url = strdup_and_subst_obj(s, (void*)e);
 	if (((s = agget(e, "edgehref")) && s[0]) || ((s = agget(e, "edgeURL")) && s[0]))
