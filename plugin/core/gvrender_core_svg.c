@@ -43,6 +43,8 @@
 #include "graph.h"
 #include "types.h"		/* need the SVG font name schemes */
 
+extern char *strdup_and_subst_obj(char *str, void *obj);
+
 typedef enum { FORMAT_SVG, FORMAT_SVGZ, } format_type;
 
 extern char *xml_string(char *str);
@@ -211,7 +213,9 @@ static void svg_begin_page(GVJ_t * job)
 
     /* its really just a page of the graph, but its still a graph,
      * and it is the entire graph if we're not currently paging */
-    gvprintf(job, "<g id=\"%s\" class=\"graph\"", obj->id);
+    gvputs(job, "<g id=\"");
+    gvputs(job, xml_string(obj->id));
+    gvputs(job, "\" class=\"graph\"");
     gvprintf(job, " transform=\"scale(%g %g) rotate(%d) translate(%g %g)\">\n",
 	    job->scale.x, job->scale.y, -job->rotation,
 	    job->translation.x, -job->translation.y);
@@ -232,7 +236,9 @@ static void svg_begin_cluster(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    gvprintf(job, "<g id=\"%s\" class=\"cluster\">", obj->id);
+    gvputs(job, "<g id=\"");
+    gvputs(job, xml_string(obj->id));
+    gvputs(job, "\" class=\"cluster\">");
     gvputs(job, "<title>");
     gvputs(job, xml_string(obj->u.sg->name));
     gvputs(job, "</title>\n");
@@ -247,7 +253,9 @@ static void svg_begin_node(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
 
-    gvprintf(job, "<g id=\"%s\" class=\"node\">", obj->id);
+    gvputs(job, "<g id=\"");
+    gvputs(job, xml_string(obj->id));
+    gvputs(job, "\" class=\"node\">");
     gvputs(job, "<title>");
     gvputs(job, xml_string(obj->u.n->name));
     gvputs(job, "</title>\n");
@@ -262,19 +270,16 @@ static void
 svg_begin_edge(GVJ_t * job)
 {
     obj_state_t *obj = job->obj;
-    char *edgeop;
+    char *ename;
 
-    gvprintf(job, "<g id=\"%s\" class=\"edge\">", obj->id);
-    if (obj->u.e->tail->graph->root->kind & AGFLAG_DIRECTED)
-	edgeop = "&#45;&gt;";
-    else
-	edgeop = "&#45;&#45;";
+    gvputs(job, "<g id=\"");
+    gvputs(job, xml_string(obj->id));
+    gvputs(job, "\" class=\"edge\">");
+    
     gvputs(job, "<title>");
-    gvputs(job, xml_string(obj->u.e->tail->name));
-    gvputs(job, edgeop);
-    /* can't do this in single gvprintf because
-     * xml_string's buffer gets reused. */
-    gvputs(job, xml_string(obj->u.e->head->name));
+    ename = strdup_and_subst_obj("\\E", (void*)(obj->u.e));
+    gvputs(job, xml_string(ename));
+    free(ename);
     gvputs(job, "</title>\n");
 }
 
@@ -291,15 +296,16 @@ svg_begin_anchor(GVJ_t * job, char *href, char *tooltip, char *target, char *id)
     /* the svg spec implies this can be omitted: http://www.w3.org/TR/SVG/linking.html#Links */
     gvputs(job, " xlink:type=\"simple\"");
 #endif
-    assert (id && id[0]); /* there should always be an id available */
     if (href && href[0])
 	gvprintf(job, " xlink:href=\"%s\"", xml_url_string(href));
 #if 0
     /* linking to itself, just so that it can have a xlink:link in the anchor, seems wrong.
      * it changes the behavior in browsers, the link apears in the bottom information bar
      */
-    else
+    else {
+        assert (id && id[0]); /* there should always be an id available */
 	gvprintf(job, " xlink:href=\"#%s\"", xml_url_string(id));
+    }
 #endif
     if (tooltip && tooltip[0])
 	gvprintf(job, " xlink:title=\"%s\"", xml_string(tooltip));
