@@ -45,11 +45,14 @@ colortbl.h : color_lib
 	$(AWK) -f $(top_srcdir)/awk/colortbl.awk color_lib > colortbl.h
 
 # ensure color names are properly sorted for bsearch operation 
-color_lib : brewer_lib $(top_srcdir)/lib/common/color_names
-	cat brewer_lib $(top_srcdir)/lib/common/color_names | LC_ALL=C $(SORT) > color_lib
+color_lib : brewer_lib svgcolor_lib $(top_srcdir)/lib/common/color_names
+	cat brewer_lib svgcolor_lib $(top_srcdir)/lib/common/color_names | LC_ALL=C $(SORT) > color_lib
 
 brewer_lib : $(top_srcdir)/lib/common/brewer_colors  $(top_srcdir)/awk/brewer.awk
 	$(AWK) -f $(top_srcdir)/awk/brewer.awk $(top_srcdir)/lib/common/brewer_colors > brewer_lib
+
+svgcolor_lib : $(top_srcdir)/lib/common/svgcolor_names  $(top_srcdir)/awk/svgcolor.awk
+	 $(AWK) -f $(top_srcdir)/awk/svgcolor.awk $(top_srcdir)/lib/common/svgcolor_names > svgcolor_lib
 
 htmllex.o htmllex.lo: htmllex.c htmllex.h htmlparse.h
 htmlparse.o htmlparse.lo: htmlparse.c htmlparse.h
@@ -71,4 +74,4 @@ DISTCLEANFILES = brewer_lib color_lib colortbl.h ps_font_equiv.h \
 EXTRA_DIST = Makefile.old README.imap chars.tcl ps_font_equiv.h \
 	strcasecmp.c strncasecmp.c htmlparse.c htmlparse.h \
 	y.tab.c y.tab.h y.output entities.html entities.tcl \
-	brewer_colors brewer_lib color_names color_lib colortbl.h
+	brewer_colors brewer_lib svgcolor_names svgcolor_lib color_names color_lib colortbl.h
