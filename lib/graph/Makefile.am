@@ -26,11 +26,13 @@ libgraph_la_LIBADD = $(top_builddir)/lib/cdt/libcdt.la
 
 lexer.o lexer.lo trie.o trie.lo: parser.h
 
-parser.c: y.output
+parser.c: y.tab.c
 	@SED@ "s/yy/ag/g" < y.tab.c > parser.c
 
-parser.h: y.output
+parser.h: y.tab.h
 	@SED@ "s/yy/ag/g" < y.tab.h > parser.h
+
+y.tab.c y.tab.h: y.output
 
 y.output: $(top_srcdir)/lib/graph/parser.y
 	@YACC@ -dv $(top_srcdir)/lib/graph/parser.y

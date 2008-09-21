@@ -26,6 +26,13 @@ test:
 		-Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:cairo -Tps:lasi -Tsvg \
 		-Tsvg:cairo -Tsvgz -Tvrml -Tvtx -Txdot \
 		-O $(GRAPHS) 
+ins_test:
+	dot -Tcanon -Tcmap -Tcmapx \
+		-Tdia -Tgv -Tfig -Tgif -Thpgl \
+		-Tismap -Timap -Tjpg -Tmif -Tmp -Tpcl -Tpdf -Tpic \
+		-Tplain -Tplain-ext -Tpng -Tps -Tps2 -Tps:cairo -Tps:lasi -Tsvg \
+		-Tsvg:cairo -Tsvgz -Tvrml -Tvtx -Txdot \
+		-O $(GRAPHS) 
 
 #	for i in $(GRAPHS); do \
 #		echo "dot $$i"; \
@@ -135,6 +142,10 @@ plain:
 plain-ext:
 	for i in $(GRAPHS); do echo "dot $$i"; \
 		$(top_builddir)/cmd/dot/dot -Tplain-ext -o$$i.plain-ext $(top_srcdir)/graphs/directed/$$i; done
+
+pdf:
+	for i in $(GRAPHS); do echo "dot $$i"; \
+		$(top_builddir)/cmd/dot/dot -Tpdf -o$$i.pdf $(top_srcdir)/graphs/directed/$$i; done
 
 png:
 	for i in $(GRAPHS); do echo "dot $$i"; \

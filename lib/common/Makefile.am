@@ -54,14 +54,16 @@ brewer_lib : $(top_srcdir)/lib/common/brewer_colors  $(top_srcdir)/awk/brewer.aw
 htmllex.o htmllex.lo: htmllex.c htmllex.h htmlparse.h
 htmlparse.o htmlparse.lo: htmlparse.c htmlparse.h
                                                                                 
-y.output: $(top_srcdir)/lib/common/htmlparse.y
-	@YACC@ -dv $(top_srcdir)/lib/common/htmlparse.y
-
-htmlparse.c: y.output
+htmlparse.c: y.tab.c
 	@SED@ "s/yy/html/g" < y.tab.c > htmlparse.c
 
-htmlparse.h: y.output
+htmlparse.h: y.tab.h
 	@SED@ "s/yy/html/g" < y.tab.h > htmlparse.h
+
+y.tab.c y.tab.h: y.output
+
+y.output: $(top_srcdir)/lib/common/htmlparse.y
+	@YACC@ -dv $(top_srcdir)/lib/common/htmlparse.y
 
 DISTCLEANFILES = brewer_lib color_lib colortbl.h ps_font_equiv.h \
 	y.output y.tab.[ch] htmlparse.[ch]

@@ -35,14 +35,16 @@ scan.c: $(top_srcdir)/lib/agraph/scan.l
 	@SED@ "s/yy/aag/g" < @LEX_OUTPUT_ROOT@.c > scan.c
 	rm @LEX_OUTPUT_ROOT@.c
 
-y.output: $(top_srcdir)/lib/agraph/grammar.y
-	@YACC@ -dv $(top_srcdir)/lib/agraph/grammar.y
-
-grammar.c: y.output
+grammar.c: y.tab.c
 	@SED@ "s/yy/aag/g" < y.tab.c > grammar.c
 
-grammar.h: y.output
+grammar.h: y.tab.h
 	@SED@ "s/yy/aag/g" < y.tab.h > grammar.h
+
+y.tab.c y.tab.h: y.output
+
+y.output: $(top_srcdir)/lib/agraph/grammar.y
+	@YACC@ -dv $(top_srcdir)/lib/agraph/grammar.y
 
 agraph.3.pdf: $(srcdir)/agraph.3
 	- @GROFF@ -Tps -man $(srcdir)/agraph.3 | @PS2PDF@ - - >agraph.3.pdf

@@ -42,27 +42,29 @@ libexpr_C_la_LIBADD = \
 $(libexpr_C_la_OBJECTS) $(libexpr_la_OBJECTS): \
 	exparse.h exparse.c exgram.h exop.h
 
-y.output: $(top_srcdir)/lib/expr/exparse.y
-	@YACC@ -dtv $(top_srcdir)/lib/expr/exparse.y
+exop.h: exparse.h
+	echo "static const char* exop[] = {" > exop.h
+	echo "	\"MINTOKEN\"," >> exop.h
+	$(SED) -e '1,/MINTOKEN/d' -e '/^[ 	]*#[ 	]*define[ 	][ 	]*[A-Z]/!d' -e 's/^[ 	]*#[ 	]*define[ 	]*\([A-Z0-9_]*\).*/	"\1",/' < exparse.h >> exop.h
+	echo "};" >> exop.h
 
-exparse.c: y.output 
+exparse.c: y.tab.c 
 	@SED@ "s/yy/ex/g" <y.tab.c | \
 		@SED@ "s/YY/EX/g" | \
 		@SED@ "s/fprintf/sfprintf/g" | \
 		@SED@ "s/FILE/Sfio_t/g" | \
 		@SED@ "s/stderr/sfstderr/g" > exparse.c
 
-exparse.h: y.output
+exparse.h: y.tab.h
 	echo "#ifndef _EXPARSE_H" > exparse.h
 	echo "#define _EXPARSE_H" >> exparse.h
 	@SED@ "s/yy/ex/g" < y.tab.h | @SED@ "s/YY/EX/g" >> exparse.h
 	echo "#endif /* _EXPARSE_H */" >> exparse.h
 
-exop.h: exparse.h
-	echo "static const char* exop[] = {" > exop.h
-	echo "	\"MINTOKEN\"," >> exop.h
-	$(SED) -e '1,/MINTOKEN/d' -e '/^[ 	]*#[ 	]*define[ 	][ 	]*[A-Z]/!d' -e 's/^[ 	]*#[ 	]*define[ 	]*\([A-Z0-9_]*\).*/	"\1",/' < exparse.h >> exop.h
-	echo "};" >> exop.h
+y.tab.c y.tab.h: y.output
+
+y.output: $(top_srcdir)/lib/expr/exparse.y
+	@YACC@ -dtv $(top_srcdir)/lib/expr/exparse.y
 
 expr.3.pdf: $(srcdir)/expr.3
 	- @GROFF@ -Tps -man $(srcdir)/expr.3 | @PS2PDF@ - - >expr.3.pdf
