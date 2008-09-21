@@ -72,12 +72,12 @@ record2.gif : record.dot
 
 sdlshapes.jpg : sdlshapes.dot
 	dot -Tps -lsdl.ps sdlshapes.dot > sdlshapes.ps
-	ps_to_jpg.sh sdlshapes.ps sdlshapes.jpg
+	./ps_to_jpg.sh sdlshapes.ps sdlshapes.jpg
 
 attrs.html : attrs.1 attrs types mkattrs.sh mktypes.sh
 	cat attrs.1 > attrs.html
-	mkattrs.sh < attrs >> attrs.html
-	mktypes.sh < types >> attrs.html
+	./mkattrs.sh < attrs >> attrs.html
+	./mktypes.sh < types >> attrs.html
 
 colors.html : colors.1 colors.n X11 brewer_colors mkcolors.awk brewer.awk
 	mkdir -p colortmp
@@ -90,10 +90,10 @@ colors.html : colors.1 colors.n X11 brewer_colors mkcolors.awk brewer.awk
 
 output.html : output.1 outputs mkoutput.sh
 	cat output.1 > output.html
-	mkoutput.sh < outputs >> output.html
+	./mkoutput.sh < outputs >> output.html
 
 html.html : html.1 html_grammar html.2 html.3 html1.gif html2.gif html3.gif html4.gif mklang
-	mklang html_grammar gramtmp
+	./mklang html_grammar gramtmp
 	cat html.1 > html.html
 	cat gramtmp >> html.html
 	cat html.2 >> html.html
@@ -102,29 +102,29 @@ html.html : html.1 html_grammar html.2 html.3 html1.gif html2.gif html3.gif html
 	rm gramtmp
 
 shapes : shapelist mkshapes.sh
-	mkshapes.sh
+	./mkshapes.sh
 	touch shapes
  
 shapes.html : shapes shapes.1 mkshhtml.sh shapes.2 html.html shapes.3 record.gif record2.gif sdlshapes.jpg
 	cat shapes.1 > shapes.html
-	mkshhtml.sh >> shapes.html
+	./mkshhtml.sh >> shapes.html
 	cat shapes.2 >> shapes.html
 	cat html.html >> shapes.html
 	cat shapes.3 >> shapes.html
 
 lang.html : grammar lang.1 lang.2 mklang
-	mklang grammar gramtmp
+	./mklang grammar gramtmp
 	cat lang.1 > lang.html
 	cat gramtmp >> lang.html
 	cat lang.2 >> lang.html
 	rm gramtmp
 
 arrows.html : arrow_grammar arrows.1 arrows.2 mkarrowtbl.sh mklang
-	mklang arrow_grammar gramtmp
+	./mklang arrow_grammar gramtmp
 	cat arrows.1 > arrows.html
 	cat gramtmp >> arrows.html
 	cat arrows.2 >> arrows.html
-	mkarrowtbl.sh $(A2GIF) >> arrows.html
+	./mkarrowtbl.sh $(A2GIF) >> arrows.html
 	rm gramtmp
 
 mklang : mklang.y
@@ -133,13 +133,13 @@ mklang : mklang.y
 	rm -rf y.tab.c
 
 $(SGIF) : mkshapes.sh shapelist
-	mkshapes.hs
+	./mkshapes.sh
 
 $(AGIF) :
-	mkarrows.sh $@
+	./mkarrows.sh $@
 
 $(A2GIF) :
-	mkarrows.sh -s $@
+	./mkarrows.sh -s $@
 
 clean :
 	rm -f mklang sdlshapes.ps html.html
