@@ -2212,7 +2212,7 @@ static void emit_begin_graph(GVJ_t * job, graph_t * g)
     obj->u.g = g;
     obj->emit_state = EMIT_GDRAW;
 
-    initObjMapData (job, GD_label(g), "graph", job->common->viewNum, g);
+    initObjMapData (job, GD_label(g), "graph", g->meta_node->id, g);
 
 #ifdef WITH_CODEGENS
     Obj = NONE;
@@ -2418,7 +2418,7 @@ static void emit_begin_cluster(GVJ_t * job, Agraph_t * sg)
     obj->u.sg = sg;
     obj->emit_state = EMIT_CDRAW;
 
-    initObjMapData (job, GD_label(sg), "cluster", sg->meta_node->id, sg);
+    initObjMapData (job, GD_label(sg), "graph", sg->meta_node->id, sg);
 
 #ifdef WITH_CODEGENS
     Obj = CLST;
