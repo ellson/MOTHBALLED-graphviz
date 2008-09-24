@@ -25,7 +25,7 @@ do
   echo "}" >&3
   exec 3>&-
 
-  dot -Tgif:gd $s.dot > $s.gif
+  dot -Tgif $s.dot > $s.gif
   rm -f $s.dot
 done
 
