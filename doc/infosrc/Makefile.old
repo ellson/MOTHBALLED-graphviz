@@ -27,6 +27,8 @@ MGIF = constraint.gif record.gif html1.gif html2.gif fill.gif round.gif \
 
 MJPG = sdlshapes.jpg
 
+# MPNG = sdlshapes.png
+
 SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       circle.gif diamond.gif doublecircle.gif \
       doubleoctagon.gif egg.gif ellipse.gif hexagon.gif house.gif \
@@ -55,14 +57,14 @@ GIF = $(SGIF) $(AGIF) $(MGIF) $(A2GIF)
 DOTS = html2.dot html3.dot html4.dot
 HTML = attrs.html colors.html command.html lang.html output.html shapes.html \
        arrows.html
-INSTALL_FILES = $(HTML) $(DOTS) $(SGIF) $(AGIF) $(A2GIF) $(MGIF) $(XGIF) $(MJPG)
+INSTALL_FILES = $(HTML) $(DOTS) $(SGIF) $(AGIF) $(A2GIF) $(MGIF) $(XGIF) $(MJPG) $(MPNG)
 
 .SUFFIXES: .gif .dot
 
 .dot.gif :
-	dot -Tgif:gd -o $@ $<
+	dot -Tgif -o $@ $<
 
-all : $(HTML) $(GIF)
+all : $(HTML) $(GIF) $(MPNG) $(MJPG)
 
 install : all
 	$(INSTALL) $(INSTALL_FILES) $(INSTALL_DIR)
@@ -70,9 +72,17 @@ install : all
 record2.gif : record.dot
 	dot -Tgif -Grankdir=LR -o $@ $<
 
-sdlshapes.jpg : sdlshapes.dot
+sdlshapes.ps : sdlshapes.dot
 	dot -Tps -lsdl.ps sdlshapes.dot > sdlshapes.ps
-	./ps_to_jpg.sh sdlshapes.ps sdlshapes.jpg
+
+sdlshapes.ppm: sdlshapes.ps
+	ps2raster sdlshapes.ps -Tm -A -E800
+
+sdlshapes.jpg : sdlshapes.ppm
+	cat sdlshapes.ppm | pamscale .1 | pnmtojpeg >sdlshapes.jpg
+
+sdlshapes.png : sdlshapes.ps
+	./ps_to_png.sh sdlshapes.ps sdlshapes.png
 
 attrs.html : attrs.1 attrs types mkattrs.sh mktypes.sh
 	cat attrs.1 > attrs.html
@@ -142,7 +152,7 @@ $(A2GIF) :
 	./mkarrows.sh -s $@
 
 clean :
-	rm -f mklang sdlshapes.ps html.html
+	rm -f mklang sdlshapes.ps sdlshapes.ppm html.html
 
 distclean : clean
 	rm -f attrs.html colors.html output.html shapes.html lang.html arrows.html
