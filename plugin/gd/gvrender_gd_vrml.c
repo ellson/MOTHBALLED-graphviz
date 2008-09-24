@@ -25,6 +25,7 @@
 #include <fcntl.h>
 
 #include "gvplugin_render.h"
+#include "gvio.h"
 
 #ifdef HAVE_LIBGD
 #include "gd.h"
@@ -206,22 +207,19 @@ static int set_penstyle(GVJ_t * job, gdImagePtr im, gdImagePtr brush)
 
 static void vrml_begin_page(GVJ_t *job)
 {
-    FILE *out = job->output_file;
-
     Scale = (double) DEFAULT_DPI / POINTS_PER_INCH;
-    fprintf(out, "#VRML V2.0 utf8\n");
+    gvputs(job,   "#VRML V2.0 utf8\n");
 
     Saw_skycolor = FALSE;
     MinZ = MAXDOUBLE;
-    fprintf(out, "Group { children [\n");
-    fprintf(out, "  Transform {\n");
-    fprintf(out, "    scale %.3f %.3f %.3f\n", .0278, .0278, .0278);
-    fprintf(out, "    children [\n");
+    gvputs(job,   "Group { children [\n");
+    gvputs(job,   "  Transform {\n");
+    gvprintf(job, "    scale %.3f %.3f %.3f\n", .0278, .0278, .0278);
+    gvputs(job,   "    children [\n");
 }
 
 static void vrml_end_page(GVJ_t *job)
 {
-    FILE *out = job->output_file;
     double d, z;
     box bb = job->boundingBox;
 
@@ -232,25 +230,24 @@ static void vrml_end_page(GVJ_t *job)
     z = (0.6667*d)/tan(M_PI/8.0) + MinZ;  /* fill 3/4 of view */
 
     if (!Saw_skycolor)
-	fprintf(out, " Background { skyColor 1 1 1 }\n");
-    fprintf(out, "  ] }\n");
-    fprintf(out, "  Viewpoint {position %.3f %.3f %.3f}\n",
+	gvputs(job,   " Background { skyColor 1 1 1 }\n");
+    gvputs(job,   "  ] }\n");
+    gvprintf(job, "  Viewpoint {position %.3f %.3f %.3f}\n",
 	    Scale * (bb.UR.x + bb.LL.x) / 72.,
 	    Scale * (bb.UR.y + bb.LL.y) / 72.,
 	    Scale * 2 * z / 72.);
-    fprintf(out, "] }\n");
+    gvputs(job,   "] }\n");
 }
 
 static void vrml_begin_node(GVJ_t *job)
 {
-    FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
     node_t *n = obj->u.n;
     double z = obj->z;
     int width, height;
     int transparent;
 
-    fprintf(out, "# node %s\n", n->name);
+    gvprintf(job, "# node %s\n", n->name);
     if (z < MinZ)
 	MinZ = z;
     if (shapeOf(n) != SH_POINT) {
@@ -280,17 +277,16 @@ static void vrml_end_node(GVJ_t *job)
 
 static void vrml_begin_edge(GVJ_t *job)
 {
-    FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
     edge_t *e = obj->u.e;
 
     IsSegment = 0;
-    fprintf(out, "# edge %s -> %s\n", e->tail->name, e->head->name);
-    fprintf(out, " Group { children [\n");
+    gvprintf(job, "# edge %s -> %s\n", e->tail->name, e->head->name);
+    gvputs(job,   " Group { children [\n");
 }
 
 static void
-finishSegment (FILE *out, edge_t *e)
+finishSegment (GVJ_t *job, edge_t *e)
 {
     pointf p0 = ND_coord(e->tail);
     pointf p1 = ND_coord(e->head);
@@ -324,18 +320,18 @@ finishSegment (FILE *out, edge_t *e)
 	x = 1;
 
     y0 = (HeadHt-TailHt)/2.0;
-    fprintf(out, "      ]\n");
-    fprintf(out, "      center 0 %.3f 0\n", y0);
-    fprintf(out, "      rotation %.3f 0 %.3f %.3f\n", -z, x, -theta);
-    fprintf(out, "      translation %.3f %.3f %.3f\n", o_x, o_y - y0, o_z);
-    fprintf(out, "    }\n");
+    gvputs(job,   "      ]\n");
+    gvprintf(job, "      center 0 %.3f 0\n", y0);
+    gvprintf(job, "      rotation %.3f 0 %.3f %.3f\n", -z, x, -theta);
+    gvprintf(job, "      translation %.3f %.3f %.3f\n", o_x, o_y - y0, o_z);
+    gvputs(job,   "    }\n");
 }
 
 static void vrml_end_edge(GVJ_t *job)
 {
     if (IsSegment)
-	finishSegment(job->output_file, job->obj->u.e);
-    fprintf(job->output_file, "] }\n");
+	finishSegment(job, job->obj->u.e);
+    gvputs(job,   "] }\n");
 }
 
 extern void gdgen_text(gdImagePtr im, pointf spf, pointf epf, int fontcolor, double fontsize, int fontdpi, double fontangle, char *fontname, char *str);
@@ -431,7 +427,6 @@ straight (pointf * A, int n)
 static void
 doSegment (GVJ_t *job, pointf* A, pointf p0, double z0, pointf p1, double z1)
 {
-    FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
     double d1, d0;
     double delx, dely, delz;
@@ -446,28 +441,27 @@ doSegment (GVJ_t *job, pointf* A, pointf p0, double z0, pointf p1, double z1)
     TailHt = HeadHt = 0;
 
     IsSegment = 1;
-    fprintf(out, "Transform {\n");
-    fprintf(out, "  children [\n");
-    fprintf(out, "    Shape {\n");
-    fprintf(out, "      geometry Cylinder {\n"); 
-    fprintf(out, "        bottom FALSE top FALSE\n"); 
-    fprintf(out, "        height %.3f radius %.3f }\n", CylHt, obj->penwidth);
-    fprintf(out, "      appearance Appearance {\n");
-    fprintf(out, "        material Material {\n");
-    fprintf(out, "          ambientIntensity 0.33\n");
-    fprintf(out, "          diffuseColor %.3f %.3f %.3f\n",
+    gvputs(job,   "Transform {\n");
+    gvputs(job,   "  children [\n");
+    gvputs(job,   "    Shape {\n");
+    gvputs(job,   "      geometry Cylinder {\n"); 
+    gvputs(job,   "        bottom FALSE top FALSE\n"); 
+    gvprintf(job, "        height %.3f radius %.3f }\n", CylHt, obj->penwidth);
+    gvputs(job,   "      appearance Appearance {\n");
+    gvputs(job,   "        material Material {\n");
+    gvputs(job,   "          ambientIntensity 0.33\n");
+    gvprintf(job, "          diffuseColor %.3f %.3f %.3f\n",
 	    obj->pencolor.u.rgba[0] / 255.,
 	    obj->pencolor.u.rgba[1] / 255.,
 	    obj->pencolor.u.rgba[2] / 255.);
-    fprintf(out, "        }\n");
-    fprintf(out, "      }\n");
-    fprintf(out, "    }\n");
+    gvputs(job,   "        }\n");
+    gvputs(job,   "      }\n");
+    gvputs(job,   "    }\n");
 }
 
 static void
 vrml_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end, int filled)
 {
-    FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
     edge_t *e = obj->u.e;
     double fstz = obj->tail_z, sndz = obj->head_z;
@@ -481,8 +475,8 @@ vrml_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end,
 	return;
     }
 
-    fprintf(out, "Shape { geometry Extrusion  {\n");
-    fprintf(out, "  spine [");
+    gvputs(job,   "Shape { geometry Extrusion  {\n");
+    gvputs(job,   "  spine [");
     V[3] = A[0];
     for (i = 0; i + 3 < n; i += 3) {
 	V[0] = V[3];
@@ -490,26 +484,26 @@ vrml_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end,
 	    V[j] = A[i + j];
 	for (step = 0; step <= BEZIERSUBDIVISION; step++) {
 	    p1 = Bezier(V, 3, (double) step / BEZIERSUBDIVISION, NULL, NULL);
-	    fprintf(out, " %.3f %.3f %.3f", p1.x, p1.y,
+	    gvprintf(job, " %.3f %.3f %.3f", p1.x, p1.y,
 		    interpolate_zcoord(job, p1, A[0], fstz, A[n - 1], sndz));
 	}
     }
-    fprintf(out, " ]\n");
-    fprintf(out, "  crossSection [ %.3f %.3f, %.3f %.3f, %.3f %.3f, %.3f %.3f ]\n",
+    gvputs(job,   " ]\n");
+    gvprintf(job, "  crossSection [ %.3f %.3f, %.3f %.3f, %.3f %.3f, %.3f %.3f ]\n",
 	    (obj->penwidth), (obj->penwidth), -(obj->penwidth),
 	    (obj->penwidth), -(obj->penwidth), -(obj->penwidth),
 	    (obj->penwidth), -(obj->penwidth));
-    fprintf(out, "}\n");
-    fprintf(out, " appearance DEF E%d Appearance {\n", e->id);
-    fprintf(out, "   material Material {\n");
-    fprintf(out, "   ambientIntensity 0.33\n");
-    fprintf(out, "   diffuseColor %.3f %.3f %.3f\n",
+    gvputs(job,   "}\n");
+    gvprintf(job, " appearance DEF E%d Appearance {\n", e->id);
+    gvputs(job,   "   material Material {\n");
+    gvputs(job,   "   ambientIntensity 0.33\n");
+    gvprintf(job, "   diffuseColor %.3f %.3f %.3f\n",
 	    obj->pencolor.u.rgba[0] / 255.,
 	    obj->pencolor.u.rgba[1] / 255.,
 	    obj->pencolor.u.rgba[2] / 255.);
-    fprintf(out, "   }\n");
-    fprintf(out, " }\n");
-    fprintf(out, "}\n");
+    gvputs(job,   "   }\n");
+    gvputs(job,   " }\n");
+    gvputs(job,   "}\n");
 }
 
 /* doArrowhead:
@@ -517,7 +511,6 @@ vrml_bezier(GVJ_t *job, pointf * A, int n, int arrow_at_start, int arrow_at_end,
  */
 static void doArrowhead (GVJ_t *job, pointf * A)
 {
-    FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
     edge_t *e = obj->u.e;
     double rad, ht, y;
@@ -530,37 +523,36 @@ static void doArrowhead (GVJ_t *job, pointf * A)
 
     y = (CylHt + ht)/2.0;
 
-    fprintf(out, "Transform {\n");
+    gvputs(job,   "Transform {\n");
     if (DIST2(A[1], ND_coord(e->tail)) < DIST2(A[1], ND_coord(e->head))) {
 	TailHt = ht;
-	fprintf(out, "  translation 0 %.3f 0\n", -y);
-	fprintf(out, "  rotation 0 0 1 %.3f\n", M_PI);
+	gvprintf(job, "  translation 0 %.3f 0\n", -y);
+	gvprintf(job, "  rotation 0 0 1 %.3f\n", M_PI);
     }
     else {
 	HeadHt = ht;
-	fprintf(out, "  translation 0 %.3f 0\n", y);
+	gvprintf(job, "  translation 0 %.3f 0\n", y);
     }
-    fprintf(out, "  children [\n");
-    fprintf(out, "    Shape {\n");
-    fprintf(out, "      geometry Cone {bottomRadius %.3f height %.3f }\n",
+    gvputs(job,   "  children [\n");
+    gvputs(job,   "    Shape {\n");
+    gvprintf(job, "      geometry Cone {bottomRadius %.3f height %.3f }\n",
 	rad, ht);
-    fprintf(out, "      appearance Appearance {\n");
-    fprintf(out, "        material Material {\n");
-    fprintf(out, "          ambientIntensity 0.33\n");
-    fprintf(out, "          diffuseColor %.3f %.3f %.3f\n",
+    gvputs(job,   "      appearance Appearance {\n");
+    gvputs(job,   "        material Material {\n");
+    gvputs(job,   "          ambientIntensity 0.33\n");
+    gvprintf(job, "          diffuseColor %.3f %.3f %.3f\n",
 	    obj->pencolor.u.rgba[0] / 255.,
 	    obj->pencolor.u.rgba[1] / 255.,
 	    obj->pencolor.u.rgba[2] / 255.);
-    fprintf(out, "        }\n");
-    fprintf(out, "      }\n");
-    fprintf(out, "    }\n");
-    fprintf(out, "  ]\n");
-    fprintf(out, "}\n");
+    gvputs(job,   "        }\n");
+    gvputs(job,   "      }\n");
+    gvputs(job,   "    }\n");
+    gvputs(job,   "  ]\n");
+    gvputs(job,   "}\n");
 }
 
 static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 {
-    FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
     node_t *n;
     edge_t *e;
@@ -573,7 +565,7 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 
     switch (obj->type) {
     case ROOTGRAPH_OBJTYPE:
-	fprintf(out, " Background { skyColor %.3f %.3f %.3f }\n",
+	gvprintf(job, " Background { skyColor %.3f %.3f %.3f }\n",
 	    obj->fillcolor.u.rgba[0] / 255.,
 	    obj->fillcolor.u.rgba[1] / 255.,
 	    obj->fillcolor.u.rgba[2] / 255.);
@@ -597,29 +589,29 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	if (brush)
 	    gdImageDestroy(brush);
 
-	fprintf(out, "Shape {\n");
-	fprintf(out, "  appearance Appearance {\n");
-	fprintf(out, "    material Material {\n");
-	fprintf(out, "      ambientIntensity 0.33\n");
-	fprintf(out, "        diffuseColor 1 1 1\n");
-	fprintf(out, "    }\n");
-	fprintf(out, "    texture ImageTexture { url \"node%d.png\" }\n", n->id);
-	fprintf(out, "  }\n");
-	fprintf(out, "  geometry Extrusion {\n");
-	fprintf(out, "    crossSection [");
+	gvputs(job,   "Shape {\n");
+	gvputs(job,   "  appearance Appearance {\n");
+	gvputs(job,   "    material Material {\n");
+	gvputs(job,   "      ambientIntensity 0.33\n");
+	gvputs(job,   "        diffuseColor 1 1 1\n");
+	gvputs(job,   "    }\n");
+	gvprintf(job, "    texture ImageTexture { url \"node%d.png\" }\n", n->id);
+	gvputs(job,   "  }\n");
+	gvputs(job,   "  geometry Extrusion {\n");
+	gvputs(job,   "    crossSection [");
 	for (i = 0; i < np; i++) {
 	    p.x = A[i].x - ND_coord(n).x;
 	    p.y = A[i].y - ND_coord(n).y;
-	    fprintf(out, " %.3f %.3f,", p.x, p.y);
+	    gvprintf(job, " %.3f %.3f,", p.x, p.y);
 	}
 	p.x = A[0].x - ND_coord(n).x;
 	p.y = A[0].y - ND_coord(n).y;
-	fprintf(out, " %.3f %.3f ]\n", p.x, p.y);
-	fprintf(out, "    spine [ %.5g %.5g %.5g, %.5g %.5g %.5g ]\n",
+	gvprintf(job, " %.3f %.3f ]\n", p.x, p.y);
+	gvprintf(job, "    spine [ %.5g %.5g %.5g, %.5g %.5g %.5g ]\n",
 		ND_coord(n).x, ND_coord(n).y, z - .01,
 		ND_coord(n).x, ND_coord(n).y, z + .01);
-	fprintf(out, "  }\n");
-	fprintf(out, "}\n");
+	gvputs(job,   "  }\n");
+	gvputs(job,   "}\n");
 	break;
     case EDGE_OBJTYPE:
 	e = obj->u.e;
@@ -655,21 +647,21 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 	    z = obj->head_z;
 
 	/* FIXME: arrow vector ought to follow z coord of bezier */
-	fprintf(out, "Transform {\n");
-	fprintf(out, "  translation %.3f %.3f %.3f\n", p.x, p.y, z);
-	fprintf(out, "  children [\n");
-	fprintf(out, "    Transform {\n");
-	fprintf(out, "      rotation 0 0 1 %.3f\n", theta);
-	fprintf(out, "      children [\n");
-	fprintf(out, "        Shape {\n");
-	fprintf(out, "          geometry Cone {bottomRadius %.3f height %.3f }\n",
+	gvputs(job,   "Transform {\n");
+	gvprintf(job, "  translation %.3f %.3f %.3f\n", p.x, p.y, z);
+	gvputs(job,   "  children [\n");
+	gvputs(job,   "    Transform {\n");
+	gvprintf(job, "      rotation 0 0 1 %.3f\n", theta);
+	gvputs(job,   "      children [\n");
+	gvputs(job,   "        Shape {\n");
+	gvprintf(job, "          geometry Cone {bottomRadius %.3f height %.3f }\n",
 		obj->penwidth * 2.5, obj->penwidth * 10.0);
-	fprintf(out, "          appearance USE E%d\n", e->id);
-	fprintf(out, "        }\n");
-	fprintf(out, "      ]\n");
-	fprintf(out, "    }\n");
-	fprintf(out, "  ]\n");
-	fprintf(out, "}\n");
+	gvprintf(job, "          appearance USE E%d\n", e->id);
+	gvputs(job,   "        }\n");
+	gvputs(job,   "      ]\n");
+	gvputs(job,   "    }\n");
+	gvputs(job,   "  ]\n");
+	gvputs(job,   "}\n");
 	break;
     }
 }
@@ -680,40 +672,38 @@ static void vrml_polygon(GVJ_t *job, pointf * A, int np, int filled)
 static void 
 doSphere (GVJ_t *job, node_t *n, pointf p, double z, double rx, double ry)
 {
-    FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
 
 //    if (!(strcmp(cstk[SP].fillcolor, "transparent"))) {
 //	return;
 //    }
  
-    fprintf(out, "Transform {\n");
-    fprintf(out, "  translation %.3f %.3f %.3f\n", p.x, p.y, z);
-    fprintf(out, "  scale %.3f %.3f %.3f\n", rx, rx, rx);
-    fprintf(out, "  children [\n");
-    fprintf(out, "    Transform {\n");
-    fprintf(out, "      children [\n");
-    fprintf(out, "        Shape {\n");
-    fprintf(out, "          geometry Sphere { radius 1.0 }\n");
-    fprintf(out, "          appearance Appearance {\n");
-    fprintf(out, "            material Material {\n");
-    fprintf(out, "              ambientIntensity 0.33\n");
-    fprintf(out, "              diffuseColor %.3f %.3f %.3f\n", 
+    gvputs(job,   "Transform {\n");
+    gvprintf(job, "  translation %.3f %.3f %.3f\n", p.x, p.y, z);
+    gvprintf(job, "  scale %.3f %.3f %.3f\n", rx, rx, rx);
+    gvputs(job,   "  children [\n");
+    gvputs(job,   "    Transform {\n");
+    gvputs(job,   "      children [\n");
+    gvputs(job,   "        Shape {\n");
+    gvputs(job,   "          geometry Sphere { radius 1.0 }\n");
+    gvputs(job,   "          appearance Appearance {\n");
+    gvputs(job,   "            material Material {\n");
+    gvputs(job,   "              ambientIntensity 0.33\n");
+    gvprintf(job, "              diffuseColor %.3f %.3f %.3f\n", 
 	    obj->pencolor.u.rgba[0] / 255.,
 	    obj->pencolor.u.rgba[1] / 255.,
 	    obj->pencolor.u.rgba[2] / 255.);
-    fprintf(out, "            }\n");
-    fprintf(out, "          }\n");
-    fprintf(out, "        }\n");
-    fprintf(out, "      ]\n");
-    fprintf(out, "    }\n");
-    fprintf(out, "  ]\n");
-    fprintf(out, "}\n");
+    gvputs(job,   "            }\n");
+    gvputs(job,   "          }\n");
+    gvputs(job,   "        }\n");
+    gvputs(job,   "      ]\n");
+    gvputs(job,   "    }\n");
+    gvputs(job,   "  ]\n");
+    gvputs(job,   "}\n");
 }
 
 static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 {
-    FILE *out = job->output_file;
     obj_state_t *obj = job->obj;
     node_t *n;
     edge_t *e;
@@ -755,27 +745,27 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	if (brush)
 	    gdImageDestroy(brush);
 
-	fprintf(out, "Transform {\n");
-	fprintf(out, "  translation %.3f %.3f %.3f\n", A[0].x, A[0].y, z);
-	fprintf(out, "  scale %.3f %.3f 1\n", rx, ry);
-	fprintf(out, "  children [\n");
-	fprintf(out, "    Transform {\n");
-	fprintf(out, "      rotation 1 0 0   1.57\n");
-	fprintf(out, "      children [\n");
-	fprintf(out, "        Shape {\n");
-	fprintf(out, "          geometry Cylinder { side FALSE }\n");
-	fprintf(out, "          appearance Appearance {\n");
-	fprintf(out, "            material Material {\n");
-	fprintf(out, "              ambientIntensity 0.33\n");
-	fprintf(out, "              diffuseColor 1 1 1\n");
-	fprintf(out, "            }\n");
-	fprintf(out, "            texture ImageTexture { url \"node%d.png\" }\n", n->id);
-	fprintf(out, "          }\n");
-	fprintf(out, "        }\n");
-	fprintf(out, "      ]\n");
-	fprintf(out, "    }\n");
-	fprintf(out, "  ]\n");
-	fprintf(out, "}\n");
+	gvputs(job,   "Transform {\n");
+	gvprintf(job, "  translation %.3f %.3f %.3f\n", A[0].x, A[0].y, z);
+	gvprintf(job, "  scale %.3f %.3f 1\n", rx, ry);
+	gvputs(job,   "  children [\n");
+	gvputs(job,   "    Transform {\n");
+	gvputs(job,   "      rotation 1 0 0   1.57\n");
+	gvputs(job,   "      children [\n");
+	gvputs(job,   "        Shape {\n");
+	gvputs(job,   "          geometry Cylinder { side FALSE }\n");
+	gvputs(job,   "          appearance Appearance {\n");
+	gvputs(job,   "            material Material {\n");
+	gvputs(job,   "              ambientIntensity 0.33\n");
+	gvputs(job,   "              diffuseColor 1 1 1\n");
+	gvputs(job,   "            }\n");
+	gvprintf(job, "            texture ImageTexture { url \"node%d.png\" }\n", n->id);
+	gvputs(job,   "          }\n");
+	gvputs(job,   "        }\n");
+	gvputs(job,   "      ]\n");
+	gvputs(job,   "    }\n");
+	gvputs(job,   "  ]\n");
+	gvputs(job,   "}\n");
 	break;
     case EDGE_OBJTYPE:
 	e = obj->u.e;
@@ -785,20 +775,16 @@ static void vrml_ellipse(GVJ_t * job, pointf * A, int filled)
 	else
 	    z = obj->head_z;
 
-	fprintf(out, "Transform {\n");
-	fprintf(out, "  translation %.3f %.3f %.3f\n", A[0].x, A[0].y, z);
-	fprintf(out, "  children [\n");
-	fprintf(out, "    Shape {\n");
-	fprintf(out, "      geometry Sphere {radius %.3f }\n", (double) rx);
-	fprintf(out, "      appearance USE E%d\n", e->id);
-	fprintf(out, "    }\n");
-	fprintf(out, "  ]\n");
-	fprintf(out, "}\n");
+	gvputs(job,   "Transform {\n");
+	gvprintf(job, "  translation %.3f %.3f %.3f\n", A[0].x, A[0].y, z);
+	gvputs(job,   "  children [\n");
+	gvputs(job,   "    Shape {\n");
+	gvprintf(job, "      geometry Sphere {radius %.3f }\n", (double) rx);
+	gvprintf(job, "      appearance USE E%d\n", e->id);
+	gvputs(job,   "    }\n");
+	gvputs(job,   "  ]\n");
+	gvputs(job,   "}\n");
     }
-}
-
-static void vrml_polyline(GVJ_t *job, pointf * A, int n)
-{
 }
 
 static gvrender_engine_t vrml_engine = {
@@ -827,7 +813,7 @@ static gvrender_engine_t vrml_engine = {
     vrml_ellipse,
     vrml_polygon,
     vrml_bezier,
-    vrml_polyline,
+    0,				/* vrml_polyline  - FIXME */
     0,                          /* vrml_comment */
     0,                          /* vrml_library_shape */
 };
