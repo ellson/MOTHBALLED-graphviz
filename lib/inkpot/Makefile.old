@@ -1,0 +1,12 @@
+CFLAGS = -Wall -g -O0
+
+test: inkpot_scheme.o inkpot_xlate.o test.o
+
+inkpot_scheme.o: inkpot_scheme.c inkpot.h inkpot_structs.h inkpot_tables.h
+
+inkpot_xlate.o: inkpot_xlate.c inkpot.h
+
+test.o: test.c inkpot.h
+
+clean:
+	rm -rf *.o test
