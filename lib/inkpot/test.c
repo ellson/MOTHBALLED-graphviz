@@ -9,7 +9,7 @@ int main (int argc, char *argv[])
     inkpot_status_t rc;
     char *color;
     int i;
-    unsigned int r, g, b, a;
+    unsigned int rgba[4];
 
     rc = inkpot_init(&inkpot);
     if (rc == INKPOT_MALLOC_FAIL) {
@@ -18,12 +18,12 @@ int main (int argc, char *argv[])
     }
 
     if (argc < 3) {
-        rc = inkpot_add(inkpot, "x11");
+        rc = inkpot_activate(inkpot, "x11");
         assert(rc == INKPOT_SUCCESS);
     }
     else {
         for (i = 2; i < argc; i++) {
-            rc = inkpot_add(inkpot, argv[i]);
+            rc = inkpot_activate(inkpot, argv[i]);
             if (rc == INKPOT_SCHEME_UNKNOWN) {
                 fprintf (stderr, "color scheme \"%s\" was not found\n", argv[i]);
             }
@@ -36,27 +36,29 @@ int main (int argc, char *argv[])
         }
     }
 
-    inkpot_print_schemes(inkpot);
+    inkpot_print_schemes(inkpot, stderr);
     
-    inkpot_print_names(inkpot);
+    inkpot_print_names(inkpot, stderr);
 
-    inkpot_print_values(inkpot);
+    inkpot_print_values(inkpot, stderr);
 
     if (argc < 2)
         color = NULL;
     else
         color = argv[1];
 
-    rc = inkpot_find(inkpot, color);
+    rc = inkpot_set(inkpot, color);
     if (rc == INKPOT_SUCCESS) {
-	inkpot_get_rgba(inkpot, &r, &g, &b, &a);
-        fprintf(stderr, "%s %d,%d,%d,%d\n", color, r, g, b, a);
+	inkpot_get_rgba(inkpot, rgba);
+        fprintf(stderr, "%s %d,%d,%d,%d\n",
+		color, rgba[0], rgba[1], rgba[2], rgba[3]);
     }
     else {
-	rc = inkpot_find_default(inkpot);
+	rc = inkpot_set_default(inkpot);
 	assert (rc == INKPOT_SUCCESS);
-	inkpot_get_rgba(inkpot, &r, &g, &b, &a);
-        fprintf(stderr, "%s (not found) %d,%d,%d,%d (default)\n", color, r, g, b, a);
+	inkpot_get_rgba(inkpot, rgba);
+        fprintf(stderr, "%s (not found) %d,%d,%d,%d (default)\n",
+		color, rgba[0], rgba[1], rgba[2], rgba[3]);
     }
 
     return 0;

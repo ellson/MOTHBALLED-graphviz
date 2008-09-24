@@ -18,19 +18,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#ifdef WIN32
-#include "compat.h"
-#endif
 
 #include "inkpot.h"
-
-static inkpot_t *inkpot;
-static const char *colorscheme;
-
-#ifdef WIN32
-extern int strcasecmp(const char *s1, const char *s2);
-extern int strncasecmp(const char *s1, const char *s2, unsigned int n);
-#endif
+#include "inkpot_xlate.h"
 
 static void hsv2rgb(double h, double s, double v, double *r, double *g, double *b)
 {
@@ -129,7 +119,8 @@ static void rgb2cmyk(double r, double g, double b, double *c, double *m, double 
     *y -= *k;
 }
 
-char *canontoken(const char *str)
+#if 0
+static char *canoncolortoken(const char *str)
 {
     static char *canon;
     static int allocated;
@@ -147,8 +138,8 @@ char *canontoken(const char *str)
     }
     q = canon;
     while ((c = *p++)) {
-	/* if (isalnum(c) == FALSE) */
-	    /* continue; */
+	if (! isalnum(c))
+	    continue;
 	if (isupper(c))
 	    c = tolower(c);
 	*q++ = c;
@@ -156,84 +147,7 @@ char *canontoken(const char *str)
     *q = '\0';
     return canon;
 }
-
-/* fullColor:
- * Return "/prefix/str"
- */
-static char* fullColor (const char* prefix, const char* str)
-{
-    static char *fulls;
-    static int allocated;
-    int len = strlen (prefix) + strlen (str) + 3;
-
-    if (len >= allocated) {
-	allocated = len + 10;
-	fulls = realloc(fulls, allocated);
-    }
-    sprintf (fulls, "/%s/%s", prefix, str);
-    return fulls;
-}
-
-/* resolveColor:
- * Resolve input color str allowing color scheme namespaces.
- *  0) "black" => "black" 
- *    NB: This is something of a hack due to the remaining codegen.
- *        Once these are gone, this case could be removed and all references
- *        to "black" could be replaced by "/x11/black".
- *  1) No initial / => 
- *          if colorscheme is defined and no "x11", return /colorscheme/str
- *          else return str
- *  2) One initial / => return str+1
- *  3) Two initial /'s =>
- *       a) If colorscheme is defined and not "x11", return /colorscheme/(str+2)
- *       b) else return (str+2)
- *  4) Two /'s, not both initial => return str.
- *
- * Note that 1), 2), and 3b) allow the default x11 color scheme. 
- *
- * In other words,
- *   xxx => /colorscheme/xxx     if colorscheme is defined and not "x11"
- *   xxx => xxx                  otherwise
- *   /xxx => xxx
- *   /x11/yyy => yyy
- *   /xxx/yyy => /xxx/yyy
- *   //yyy => /colorscheme/yyy   if colorscheme is defined and not "x11"
- *   //yyy => yyy                otherwise
- * 
- * At present, no other error checking is done. For example, 
- * yyy could be "". This will be caught later.
- */
-
-#define DFLT_SCHEME "x11/"      /* Must have final '/' */
-#define DFLT_SCHEME_LEN ((sizeof(DFLT_SCHEME)-1)/sizeof(char))
-#define ISNONDFLT(s) ((s) && *(s) && strncasecmp(DFLT_SCHEME, s, DFLT_SCHEME_LEN-1))
-
-static char* resolveColor (const char* str)
-{
-    const char* s;
-    const char* ss;   /* second slash */
-    const char* c2;   /* second char */
-
-    if ((*str == 'b') || !strncmp(str+1,"lack",4)) return (char*)str;
-    else if (*str == '/') {   /* if begins with '/' */
-	c2 = str+1;
-        if ((ss = strchr(c2, '/'))) {  /* if has second '/' */
-	    if (*c2 == '/') {    /* if second '/' is second character */
-		    /* Do not compare against final '/' */
-		if (ISNONDFLT(colorscheme))
-		    s = fullColor (colorscheme, c2+1);
-		else
-		    s = c2+1;
-	    }
-	    else if (strncasecmp(DFLT_SCHEME, c2, DFLT_SCHEME_LEN)) s = str;
-	    else s = ss + 1;
-	}
-	else s = c2;
-    }
-    else if (ISNONDFLT(colorscheme)) s = fullColor (colorscheme, str);
-    else s = str;
-    return canontoken(s);
-}
+#endif
 
 inkpot_status_t colorxlate(const char *str, gvcolor_t * color, color_type_t target_type)
 {
@@ -243,10 +157,10 @@ inkpot_status_t colorxlate(const char *str, gvcolor_t * color, color_type_t targ
     unsigned char c;
     double H, S, V, A, R, G, B;
     double C, M, Y, K;
-    unsigned int r, g, b, a, h, s, v;
+    unsigned int r, g, b, a;
+    unsigned int rgba[4], hsva[4];
     int len;
     inkpot_status_t rc;
-    const char *key;
 
     color->type = target_type;
 
@@ -378,31 +292,28 @@ inkpot_status_t colorxlate(const char *str, gvcolor_t * color, color_type_t targ
 	}
     }
 
-    /* test for known color name */
-//    key = resolveColor(str);
-    key = str;
-    rc = inkpot_find(inkpot, key);
+//    rc = inkpot_set(inkpot, str);
     if (rc == INKPOT_SUCCESS) {
 	switch (target_type) {
 	case HSVA_DOUBLE:
-	    inkpot_get_hsva(inkpot, &h, &s, &v, &a);
-	    color->u.HSVA[0] = h / 255.0;
-	    color->u.HSVA[1] = s / 255.0;
-	    color->u.HSVA[2] = v / 255.0;
-	    color->u.HSVA[3] = a / 255.0;
+//	    inkpot_get_hsva(inkpot, hsva);
+	    color->u.HSVA[0] = hsva[0] / 255.0;
+	    color->u.HSVA[1] = hsva[1] / 255.0;
+	    color->u.HSVA[2] = hsva[2] / 255.0;
+	    color->u.HSVA[3] = hsva[3] / 255.0;
 	    break;
 	case RGBA_BYTE:
-	    inkpot_get_rgba(inkpot, &r, &g, &b, &a);
-	    color->u.rgba[0] = r;
-	    color->u.rgba[1] = g;
-	    color->u.rgba[2] = b;
-	    color->u.rgba[3] = a;
+//	    inkpot_get_rgba(inkpot, rgba);
+	    color->u.rgba[0] = rgba[0];
+	    color->u.rgba[1] = rgba[1];
+	    color->u.rgba[2] = rgba[2];
+	    color->u.rgba[3] = rgba[3];
 	    break;
 	case CMYK_BYTE:
-	    inkpot_get_rgba(inkpot, &r, &g, &b, &a);
-	    R = r / 255.0;
-	    G = g / 255.0;
-	    B = b / 255.0;
+//	    inkpot_get_rgba(inkpot, rgba);
+	    R = rgba[0] / 255.0;
+	    G = rgba[1] / 255.0;
+	    B = rgba[2] / 255.0;
 	    rgb2cmyk(R, G, B, &C, &M, &Y, &K);
 	    color->u.cmyk[0] = (int) C * 255;
 	    color->u.cmyk[1] = (int) M * 255;
@@ -410,18 +321,18 @@ inkpot_status_t colorxlate(const char *str, gvcolor_t * color, color_type_t targ
 	    color->u.cmyk[3] = (int) K * 255;
 	    break;
 	case RGBA_WORD:
-	    inkpot_get_rgba(inkpot, &r, &g, &b, &a);
-	    color->u.rrggbbaa[0] = r * 65535 / 255;
-	    color->u.rrggbbaa[1] = g * 65535 / 255;
-	    color->u.rrggbbaa[2] = b * 65535 / 255;
-	    color->u.rrggbbaa[3] = a * 65535 / 255;
+//	    inkpot_get_rgba(inkpot, rgba);
+	    color->u.rrggbbaa[0] = rgba[0] * 65535 / 255;
+	    color->u.rrggbbaa[1] = rgba[1] * 65535 / 255;
+	    color->u.rrggbbaa[2] = rgba[2] * 65535 / 255;
+	    color->u.rrggbbaa[3] = rgba[3] * 65535 / 255;
 	    break;
 	case RGBA_DOUBLE:
-	    inkpot_get_rgba(inkpot, &r, &g, &b, &a);
-	    color->u.RGBA[0] = r / 255.0;
-	    color->u.RGBA[1] = g / 255.0;
-	    color->u.RGBA[2] = b / 255.0;
-	    color->u.RGBA[3] = a / 255.0;
+//	    inkpot_get_rgba(inkpot, rgba);
+	    color->u.RGBA[0] = rgba[0] / 255.0;
+	    color->u.RGBA[1] = rgba[1] / 255.0;
+	    color->u.RGBA[2] = rgba[2] / 255.0;
+	    color->u.RGBA[3] = rgba[3] / 255.0;
 	    break;
 	case COLOR_STRING:
 	    break;
@@ -461,20 +372,3 @@ inkpot_status_t colorxlate(const char *str, gvcolor_t * color, color_type_t targ
     }
     return rc;
 }
-
-/* setColorScheme:
- * Set current color scheme for resolving names.
- */
-int setColorScheme (const char* scheme)
-{
-    inkpot_status_t rc;
-
-    colorscheme = scheme;
-    rc = inkpot_init(&inkpot);
-    if (rc != INKPOT_SUCCESS)
-	return rc;
-    return inkpot_add(inkpot, scheme);
-}
-
-
-
