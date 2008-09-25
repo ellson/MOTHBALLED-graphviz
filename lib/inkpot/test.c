@@ -53,6 +53,8 @@ int main (int argc, char *argv[])
     
     inkpot_print_names(inkpot, stderr);
 
+    inkpot_print_names_out(inkpot, stderr);
+
     inkpot_print_values(inkpot, stderr);
 
 

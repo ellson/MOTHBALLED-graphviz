@@ -166,7 +166,7 @@ static inkpot_status_t inkpot_set_name ( inkpot_t *inkpot, const char *color )
     const char *last_color;
     IDX_NAME_ALTS i;
     IDX_NAMES base, top, name_idx = 0;
-    int found;
+    int found=0;
 
     if (inkpot == NULL || ! inkpot->scheme_bits)
         return INKPOT_SCHEME_UNKNOWN;
@@ -522,23 +522,18 @@ static inkpot_status_t inkpot_print_rgba( unsigned char *rgba, FILE *out )
     return INKPOT_SUCCESS;
 }
 
-inkpot_status_t inkpot_print_names( inkpot_t *inkpot, FILE *out )
+static inkpot_status_t inkpot_print_names_schemes( inkpot_t *inkpot, FILE *out, BIT_SCHEMES_NAME scheme_bits, inkpot_scheme_index_t *scheme_index )
 {
     inkpot_name_t *name;
-    inkpot_scheme_index_t *scheme_index;
     IDX_NAMES i;
     IDX_SCHEMES_INDEX j;
-    BIT_SCHEMES_NAME inkpot_scheme_bits, scheme_bits;
     IDX_IXVALUES k, first, last;
     IDX_VALUES v;
 
-    fprintf(out, "names (in):\n");
-    inkpot_scheme_bits = inkpot->scheme_bits;
-    if (inkpot_scheme_bits) {
+    if (scheme_bits) {
         for (i = 0; i < SZT_NAMES; i++) {
             name = &TAB_NAMES[i];
-	    scheme_bits = name->scheme_bits & inkpot_scheme_bits;
-            if (scheme_bits) {
+            if (scheme_bits & name->scheme_bits) {
                 fprintf(out, "%s", &TAB_STRINGS[TAB_NAMES[i].string_idx]);
 		inkpot_print_scheme_names(inkpot, scheme_bits, out);
 		fprintf(out, " ");
@@ -549,9 +544,7 @@ inkpot_status_t inkpot_print_names( inkpot_t *inkpot, FILE *out )
             }
         }
     }
-    scheme_index = inkpot->scheme_index;
     if (scheme_index) {
-
 	first = scheme_index->first_value_idx;
 	j = scheme_index - TAB_SCHEMES_INDEX;
 	if (++j >= SZT_SCHEMES_INDEX)
@@ -574,8 +567,28 @@ inkpot_status_t inkpot_print_names( inkpot_t *inkpot, FILE *out )
     return INKPOT_SUCCESS;
 }
 
-/* Print all values that are members of the currently activated name schemes, with the names in those schemes */
-/*    Does not print the indexes in index schemes that a value may be a member of. */
+inkpot_status_t inkpot_print_names( inkpot_t *inkpot, FILE *out )
+{
+    BIT_SCHEMES_NAME scheme_bits = inkpot->scheme_bits;
+    inkpot_scheme_index_t *scheme_index = inkpot->scheme_index;
+
+    fprintf(out, "names (in):\n");
+    return inkpot_print_names_schemes(inkpot, out, scheme_bits, scheme_index);
+}
+
+inkpot_status_t inkpot_print_names_out( inkpot_t *inkpot, FILE *out )
+{
+    BIT_SCHEMES_NAME scheme_bits = inkpot->out_scheme_bit;
+    inkpot_scheme_index_t *scheme_index = inkpot->out_scheme_index;
+
+    fprintf(out, "names (out):\n");
+    return inkpot_print_names_schemes(inkpot, out, scheme_bits, scheme_index);
+}
+
+/* Print all values that are members of the currently activated
+ * name schemes, with the names in those schemes.
+ * Does not print the indexes in index schemes that a value may
+ * be a member of. */
 inkpot_status_t inkpot_print_values( inkpot_t *inkpot, FILE *out )
 {
     inkpot_value_t *value;
