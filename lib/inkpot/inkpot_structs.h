@@ -88,7 +88,7 @@ typedef struct inkpot_value_s {	/* Numeric color values used by the set
 				 * are numerically sorted by rgb value
 				 * in TAB_VALUES[] */
 
-	unsigned char r, g, b, a; /* rgba */
+	unsigned char rgba[4];	/* rgba */
 
 	IDX_NAMES
 	    toname_idx;		/* An index into TAB_NAMES to the toname
@@ -109,15 +109,16 @@ typedef struct inkpot_noname_value_s {	/* Numeric color values used by the remai
 				 * are numerically sorted by rgba value
 				 * in TAB_NONAME_VALUES[] */
 
-	unsigned char r, g, b, a; /* rgba */
+	unsigned char rgba[4];	/* rgba */
 } inkpot_noname_value_t;
 
 /* typedef struct inkpot_s inkpot_t; */  /* public opaque type in inkpot.h */
 
 struct inkpot_s {		/* The Ink Pot */
 	BIT_SCHEMES_NAME
-	    scheme_bits;	/* One bit per inkpot_scheme_name_t,
+	    scheme_bits,	/* One bit per inkpot_scheme_name_t,
 				 *max 32 schemes */
+	    out_scheme_bit;     /* One scheme only for output. */
 
 	IDX_NAMES
 	    first_name_idx, last_name_idx;  /* The aggregate of the ranges
@@ -136,11 +137,13 @@ struct inkpot_s {		/* The Ink Pot */
 	    default_value_idx; 	/* The index of the inkpot_value_t for the
 				 * default color */
 
-	inkpot_scheme_index_t *scheme_index; /* Pointer to the indexed
-				 * color scheme, or NULL. (Only 1 allowed) */
+	inkpot_scheme_index_t
+	    *scheme_index,	/* Pointer to the indexed
+				 * color scheme, or NULL. (Only 1 at a time) */
+	    *out_scheme_index;	/* Indexed output scheme, or NULL */
 
-	inkpot_value_t *value;	/* The most recently resolved color value. */
 	inkpot_name_t *name;	/* The most recently resolved color name. */
+	unsigned char rgba[4];	/* The most recently resolved color value. */
 };
 
 #endif /* INKPOT_STRUCTS_H */

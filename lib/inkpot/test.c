@@ -8,6 +8,7 @@ int main (int argc, char *argv[])
     inkpot_t *inkpot;
     inkpot_status_t rc;
     char *color;
+    const char *tocolor;
     int i;
     unsigned char rgba[4];
 
@@ -24,15 +25,10 @@ int main (int argc, char *argv[])
     else {
         for (i = 2; i < argc; i++) {
             rc = inkpot_activate(inkpot, argv[i]);
-            if (rc == INKPOT_SCHEME_UNKNOWN) {
+            if (rc == INKPOT_SCHEME_UNKNOWN)
                 fprintf (stderr, "color scheme \"%s\" was not found\n", argv[i]);
-            }
-            else if (rc == INKPOT_MAX_ONE_INDEXED_SCHEME) {
-                fprintf (stderr, "only one indexed color scheme can be used, \"%s\" was ignored\n", argv[i]);
-            }
-            else {
+            else
                 assert(rc == INKPOT_SUCCESS);
-            }
         }
     }
 
@@ -48,10 +44,11 @@ int main (int argc, char *argv[])
         color = argv[1];
 
     rc = inkpot_set(inkpot, color);
-    if (rc == INKPOT_SUCCESS) {
+    if (rc == INKPOT_SUCCESS || rc == INKPOT_COLOR_UNNAMED) {
 	inkpot_get_rgba(inkpot, rgba);
+	inkpot_get(inkpot, "x11", &tocolor);
         fprintf(stderr, "%s %d,%d,%d,%d\n",
-		color, rgba[0], rgba[1], rgba[2], rgba[3]);
+		tocolor, rgba[0], rgba[1], rgba[2], rgba[3]);
     }
     else {
 	rc = inkpot_set_default(inkpot);
