@@ -460,7 +460,7 @@ inkpot_status_t inkpot_print_schemes( inkpot_t *inkpot, FILE *out )
     for (i = 0; i < SZT_SCHEMES_NAME; i++) {
 	found = 0;
         if ((1<<i) & inkpot->scheme_bits) {
-            fprintf (out, "%s", &TAB_STRINGS[TAB_SCHEMES_NAME[i].string_idx]);
+            fprintf (out, "%s (in)", &TAB_STRINGS[TAB_SCHEMES_NAME[i].string_idx]);
             if (i == inkpot->default_scheme_name_idx) 
                 fprintf (out, " (default)");
 	    found++;
@@ -477,7 +477,7 @@ inkpot_status_t inkpot_print_schemes( inkpot_t *inkpot, FILE *out )
     }
     found = 0;
     if (inkpot->scheme_index) {
-        fprintf (out, "%s (indexed)", &TAB_STRINGS[inkpot->scheme_index->string_idx]);
+        fprintf (out, "%s (indexed) (in)", &TAB_STRINGS[inkpot->scheme_index->string_idx]);
 	found++;
     }
     if (inkpot->out_scheme_index) {
@@ -532,7 +532,7 @@ inkpot_status_t inkpot_print_names( inkpot_t *inkpot, FILE *out )
     IDX_IXVALUES k, first, last;
     IDX_VALUES v;
 
-    fprintf(out, "names:\n");
+    fprintf(out, "names (in):\n");
     inkpot_scheme_bits = inkpot->scheme_bits;
     if (inkpot_scheme_bits) {
         for (i = 0; i < SZT_NAMES; i++) {
@@ -543,6 +543,8 @@ inkpot_status_t inkpot_print_names( inkpot_t *inkpot, FILE *out )
 		inkpot_print_scheme_names(inkpot, scheme_bits, out);
 		fprintf(out, " ");
 		inkpot_print_rgba(TAB_VALUES[name->value_idx].rgba, out);
+		if (name->value_idx == inkpot->default_value_idx)
+		    fprintf(out, " (default)");
 		fprintf(out, "\n");
             }
         }

@@ -108,8 +108,7 @@ typedef struct inkpot_noname_value_s {	/* Numeric color values used by the remai
 
 struct inkpot_s {		/* The Ink Pot */
 	BIT_SCHEMES_NAME
-	    scheme_bits,	/* One bit per inkpot_scheme_name_t,
-				 *max 32 schemes */
+	    scheme_bits,	/* One bit per inkpot_scheme_name_t */
 	    out_scheme_bit;     /* One scheme only for output. */
 
 	IDX_SCHEMES_NAME
@@ -122,13 +121,12 @@ struct inkpot_s {		/* The Ink Pot */
 	    value_idx;          /* The current color value. */
 
 	inkpot_scheme_index_t
-	    *scheme_index,	/* Pointer to the indexed color scheme,
-				   or NULL. (Only 1 at a time) */
+	    *scheme_index,	/* Pointer to the indexed color scheme, or NULL. */
 	    *out_scheme_index;	/* Indexed output scheme, or NULL */
 
 	inkpot_name_t
-	    *name,		/* The most recently resolved color name. */
-	    *out_name;		/* The most recently translated color name. */
+	    *name,		/* The current color name, or NULL. */
+	    *out_name;		/* The current translated color name, or NULL. */
 };
 
 #endif /* INKPOT_STRUCTS_H */
