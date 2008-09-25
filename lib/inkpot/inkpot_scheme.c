@@ -100,12 +100,6 @@ inkpot_status_t inkpot_activate ( inkpot_t *inkpot, const char *scheme )
         if (! inkpot->scheme_bits) {
             inkpot->default_scheme_name_idx = idx; /* first scheme is default */
             inkpot->default_value_idx = TAB_NAMES[inkpot_scheme_name->default_name_idx].value_idx;
-            inkpot->first_name_idx = inkpot_scheme_name->first_name_idx;
-            inkpot->last_name_idx = inkpot_scheme_name->last_name_idx;
-        }
-        else {
-                inkpot->first_name_idx = MIN(inkpot->first_name_idx, inkpot_scheme_name->first_name_idx);
-                inkpot->last_name_idx = MAX(inkpot->last_name_idx, inkpot_scheme_name->last_name_idx);
         }
 	if (! (inkpot->scheme_bits & (1 << idx))) {
         	inkpot->scheme_bits |= 1 << idx;
@@ -170,37 +164,45 @@ static inkpot_status_t inkpot_set_name ( inkpot_t *inkpot, const char *color )
 {
     inkpot_name_t *name;
     const char *last_color;
-    IDX_NAMES j;
-    IDX_STRINGS k;
+    IDX_NAME_ALTS i;
+    IDX_NAMES base, top, name_idx = 0;
+    int found;
 
-    if (inkpot == NULL)
+    if (inkpot == NULL || ! inkpot->scheme_bits)
         return INKPOT_SCHEME_UNKNOWN;
     if (color == NULL)
         return INKPOT_COLOR_UNKNOWN;
     if (! inkpot->name  /* if we can't use the last result */
 		|| ! ((last_color = &TAB_STRINGS[inkpot->name->string_idx]))
 		|| ( last_color[0] != color[0] )
-		|| ( strcmp(last_color, color) != 0)) {
-        name = (inkpot_name_t *) bsearch(  /* then do a fresh search */
-            (void*)color, (void*)(&TAB_NAMES[inkpot->first_name_idx]),
-            inkpot->last_name_idx + 1 - inkpot->first_name_idx,
-            sizeof(inkpot_name_t), inkpot_name_cmpf); 
-	if (name == NULL) 
-            return INKPOT_COLOR_UNKNOWN;
+		|| ( strcmp(last_color, color) != 0)) { /* do a fresh search */
+	for (i = 0; i < SZT_NAME_ALTS; ) {
+	    base = TAB_NAME_ALTS[i++];
+	    if (i == SZT_NAME_ALTS)
+		top = SZT_NAMES;
+	    else
+	        top = TAB_NAME_ALTS[i];
+            name = (inkpot_name_t *) bsearch(
+                (void*)color, (void*)(&TAB_NAMES[base]),
+	        top-base, sizeof(inkpot_name_t),
+	        inkpot_name_cmpf); 
+	    if (name == NULL) 
+                return INKPOT_COLOR_UNKNOWN;
 	
-	j = name - TAB_NAMES;
-	k = TAB_NAMES[j].string_idx;
-	while ( j < SZT_NAMES && k == TAB_NAMES[j].string_idx && ! (inkpot->scheme_bits & TAB_NAMES[j].scheme_bits)) {
-	    /* There can be multiple entries for the same
-             * color string with different values. Linearly search
-             * through them for the first one in the requested scheme(s) */
-            j++;
+	    name_idx = name - TAB_NAMES;
+	    if (inkpot->scheme_bits & TAB_NAMES[name_idx].scheme_bits) {
+		found++;
+		break;
+	    }
 	}
-	if (k != TAB_NAMES[j].string_idx || j == SZT_NAMES)
+	if (!found)
 	    return INKPOT_COLOR_UNKNOWN;
-	inkpot->name = &TAB_NAMES[j];  /* cache name resolution */
+	inkpot->name = &TAB_NAMES[name_idx];  /* cache name resolution */
     }
-    inkpot->value_idx = inkpot->name->value_idx;
+    if (inkpot->value_idx != inkpot->name->value_idx) {
+        inkpot->value_idx = inkpot->name->value_idx;
+	inkpot->out_name = NULL;  /* invalidate out cached name */
+    }
     return INKPOT_SUCCESS;
 }
 

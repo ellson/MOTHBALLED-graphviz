@@ -3,6 +3,7 @@ typedef unsigned char BIT_SCHEMES_NAME;
 typedef unsigned char IDX_SCHEMES_NAME;
 typedef unsigned char IDX_SCHEMES_INDEX;
 typedef unsigned char IDX_NAMES;
+typedef unsigned char IDX_NAME_ALTS;
 typedef unsigned char IDX_VALUES;
 typedef unsigned char IDX_TONAMES;
 typedef unsigned char IDX_IXVALUES;
@@ -29,9 +30,9 @@ const char TAB_STRINGS[] = {
 #define SZT_STRINGS sizeof(TAB_STRINGS)/sizeof(TAB_STRINGS[0])
 
 inkpot_scheme_name_t TAB_SCHEMES_NAME[] = { /* schemes of named colors */
-	{  0, 1,  7, 1, },  /* french */
-	{  7, 0, 10, 0, },  /* svg */
-	{ 11, 0, 10, 0, },  /* x11 */
+	{  0, 1, },  /* french */
+	{  7, 0, },  /* svg */
+	{ 11, 0, },  /* x11 */
 };
 #define SZT_SCHEMES_NAME (sizeof(TAB_SCHEMES_NAME)/sizeof(TAB_SCHEMES_NAME[0]))
 
@@ -41,24 +42,30 @@ inkpot_scheme_index_t TAB_SCHEMES_INDEX[] = { /* schemes of indexed colors */
 };
 #define SZT_SCHEMES_INDEX (sizeof(TAB_SCHEMES_INDEX)/sizeof(TAB_SCHEMES_INDEX[0]))
 
-inkpot_name_t TAB_NAMES[] = { /* Must be LC_ALL=C sort'ed by name */
-	{ 15, 0, 0x6,  0, }, /* black */
-	{ 21, 1, 0x1,  1, }, /* bleu */
-	{ 26, 1, 0x6,  2, }, /* blue */
-	{ 31, 2, 0x6,  3, }, /* green */
-	{ 37, 5, 0x1,  7, }, /* jaune */
-	{ 43, 3, 0x6,  5, }, /* red */
-	{ 47, 3, 0x1,  6, }, /* rouge */
-	{ 53, 2, 0x1,  8, }, /* vert */
-	{ 58, 4, 0x2,  4, }, /* yellow (svg) */
-	{ 58, 5, 0x4,  9, }, /* yellow (x11) */
-	{ 65, 6, 0x6, 10, }, /* white */
+inkpot_name_t TAB_NAMES[] = { /* Must be LC_ALL=C sort'ed by name with each alt */
+	{ 15, 0, 0x6, /* black */  0,  /* black */ 	   }, /* 0  */
+	{ 21, 1, 0x1, /* bleu */   1,  /* bleu, blue */    }, /* 1  */
+	{ 26, 1, 0x6, /* blue */   2,			   }, /* 2  */
+	{ 31, 2, 0x6, /* green */  3,  /* green, vert */   }, /* 3  */
+	{ 37, 5, 0x1, /* jaune */  7,			   }, /* 4  */
+	{ 43, 3, 0x6, /* red */    5,  /* red, rouge */    }, /* 5  */
+	{ 47, 3, 0x1, /* rouge */  6,			   }, /* 6  */
+	{ 53, 2, 0x1, /* vert */   10, /* yellow(alt1) */  }, /* 7  */
+	{ 65, 6, 0x6, /* white */  4,  /* jaune, yellow */ }, /* 8  */
+	{ 58, 5, 0x4, /* yellow */ 9,			   }, /* 9  */
+/* alt1 */
+	{ 58, 4, 0x2, /* yellow */ 8,  /* white */	   }, /* 10 */
 };
 #define SZT_NAMES (sizeof(TAB_NAMES)/sizeof(TAB_NAMES[0]))
 
+IDX_NAMES TAB_NAME_ALTS[] = {
+	0, 10,
+};
+#define SZT_NAME_ALTS (sizeof(TAB_NAME_ALTS)/sizeof(TAB_NAME_ALTS[0]))
+
 inkpot_value_t TAB_VALUES[] = { /* Must be LC_ALL=C sort'ed by r,g,b,a */
 	{{0,	0,	0,	255},	0 },  /* black */
-	{{0,	0,	255,	255},	1 },  /* blue, bleu */
+	{{0,	0,	255,	255},	1 },  /* bleu, blue */
 	{{0,	255,	0,	255},	3 },  /* green, vert */
 	{{255,	0,	0,	255},	5 },  /* red, rouge */
 	{{255,	192,	0,	255},	7 },  /* yellow (svg) */

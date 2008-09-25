@@ -22,14 +22,6 @@ typedef struct inkpot_scheme_name_s {
 	     string_idx;        /* The scheme name in TAB_STRINGS.  (e.g. "x11") */
 
 	IDX_NAMES
-	    first_name_idx,
-	    last_name_idx,      /* The range of inkpot_name_t in TAB_NAMES for
-				 * search optimization.  Might help schemes with a few
-				 * alphabetically close names but otherwise these probably
-				 * doesn't buy much since most schemes will have inkpot_name_t
-				 * covering substantially the whole alphabet. Not all the
-				 * inkpot_name_t in the range belong to this scheme  */
-
 	    default_name_idx;	/* The index of the name of the default color
 				 * for this scheme. (Each scheme can have
 				 * a different default.  The default must
@@ -120,26 +112,18 @@ struct inkpot_s {		/* The Ink Pot */
 				 *max 32 schemes */
 	    out_scheme_bit;     /* One scheme only for output. */
 
-	IDX_NAMES
-	    first_name_idx, last_name_idx;  /* The aggregate of the ranges
-				 * of inkpot_name_t from all inkpot_scheme_t
-				 * in the union. This range of of inkpot_name_t
-				 * in TAB_NAMES is for search optimization.
-				 * Might help if just an indexed scheme
-				 * is used. */
-
 	IDX_SCHEMES_NAME
 	    default_scheme_name_idx; /* The index of the scheme which provides
 				 * the default color. It was the first
 				 * scheme added. */
 
-	IDX_VALUES		/* FIXME - what about noname values ? */
+	IDX_VALUES
 	    default_value_idx, 	/* The default color */
 	    value_idx;          /* The current color value. */
 
 	inkpot_scheme_index_t
-	    *scheme_index,	/* Pointer to the indexed
-				 * color scheme, or NULL. (Only 1 at a time) */
+	    *scheme_index,	/* Pointer to the indexed color scheme,
+				   or NULL. (Only 1 at a time) */
 	    *out_scheme_index;	/* Indexed output scheme, or NULL */
 
 	inkpot_name_t

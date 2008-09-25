@@ -59,14 +59,16 @@ int main (int argc, char *argv[])
     rc = inkpot_set(inkpot, color);
     if (rc == INKPOT_SUCCESS || rc == INKPOT_COLOR_NONAME) {
 	inkpot_get_rgba(inkpot, rgba);
-	inkpot_get(inkpot, &tocolor);
+	rc = inkpot_get(inkpot, &tocolor);
 	if (rc == INKPOT_SUCCESS) 
             fprintf(stderr, "%s", tocolor);
 	else if (rc == INKPOT_COLOR_NONAME) 
-            fprintf(stderr, "#%2x%2x%2x%2x", rgba[0], rgba[1], rgba[2], rgba[3]);
+            fprintf(stderr, "#%02x%02x%02x%02x",
+			    rgba[0], rgba[1], rgba[2], rgba[3]);
 	else
 	    assert(0);
-        fprintf(stderr, " %d,%d,%d,%d\n", rgba[0], rgba[1], rgba[2], rgba[3]);
+        fprintf(stderr, " %d,%d,%d,%d\n",
+			rgba[0], rgba[1], rgba[2], rgba[3]);
 
     }
     else if (rc == INKPOT_COLOR_UNKNOWN) {
