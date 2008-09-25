@@ -313,9 +313,9 @@ void agdeledgeimage(Agraph_t * g, Agedge_t * e, void *ignored)
 	del(g->e_id, &sn->in_id, in);
     }
 #ifdef DEBUG
-    for (e = agfstin(h); e; e = agnxtin(e))
+    for (e = agfstin(g,h); e; e = agnxtin(g,e))
 	assert(e != in);
-    for (e = agfstout(t); e; e = agnxtout(e))
+    for (e = agfstout(g,t); e; e = agnxtout(g,e))
 	assert(e != out);
 #endif
 }

@@ -90,6 +90,20 @@ static Agdatadict_t *agmakedatadict(Agraph_t * g)
 	dtview(dd->dict.e, parent_dd->dict.e);
 	dtview(dd->dict.g, parent_dd->dict.g);
     }
+    else {
+	if (ProtoGraph && (g != ProtoGraph)) {
+		/* you can't dtview here for several reasons. the proto
+		graph could change, and it changes the base index for g*/
+	    Agsym_t *sym;	/* this could be written more functionally */
+	    sym = 0;		/* but it's easy to read this way */
+	    while ((sym = agnxtattr(ProtoGraph,AGRAPH,sym)))
+	    	agattr(g,AGRAPH,sym->name,sym->defval);
+	    while ((sym = agnxtattr(ProtoGraph,AGNODE,sym)))
+	    	agattr(g,AGNODE,sym->name,sym->defval);
+	    while ((sym = agnxtattr(ProtoGraph,AGEDGE,sym)))
+	    	agattr(g,AGEDGE,sym->name,sym->defval);
+	}
+    }
     return dd;
 }
 
