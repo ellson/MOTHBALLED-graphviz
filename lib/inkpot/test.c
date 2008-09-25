@@ -9,7 +9,7 @@ int main (int argc, char *argv[])
     inkpot_status_t rc;
     char *color;
     int i;
-    unsigned int rgba[4];
+    unsigned char rgba[4];
 
     rc = inkpot_init(&inkpot);
     if (rc == INKPOT_MALLOC_FAIL) {

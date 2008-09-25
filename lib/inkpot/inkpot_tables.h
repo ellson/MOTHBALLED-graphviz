@@ -37,7 +37,7 @@ inkpot_scheme_name_t TAB_SCHEMES_NAME[] = { /* schemes of named colors */
 
 inkpot_scheme_index_t TAB_SCHEMES_INDEX[] = { /* schemes of indexed colors */
 	{ 71, 0, }, /* xxx */
-	{ 75, 4, }, /* yyy */
+	{ 75, 5, }, /* yyy */
 };
 #define SZT_SCHEMES_INDEX (sizeof(TAB_SCHEMES_INDEX)/sizeof(TAB_SCHEMES_INDEX[0]))
 
@@ -56,19 +56,27 @@ inkpot_name_t TAB_NAMES[] = { /* Must be LC_ALL=C sort'ed by name */
 };
 #define SZT_NAMES (sizeof(TAB_NAMES)/sizeof(TAB_NAMES[0]))
 
-inkpot_value_t TAB_VALUES[] = { /* Must be LC_ALL=C sort'ed by r,g,b */
-	{ 0,	0,	0,	255,	0,0,0,	1, 0,  },  /* black */
-	{ 0,	0,	255,	255,	0,0,0,	1, 1,  },  /* blue, bleu */
-	{ 0,	255,	0,	255,	0,0,0,	1, 3,  },  /* green, vert */
-	{ 255,	0,	0,	255,	0,0,0,	1, 5,  },  /* red, rouge */
-	{ 255,	192,	0,	255,	0,0,0,	1, 7,  },  /* yellow (svg) */
-	{ 255,	255,	0,	255,	0,0,0,	1, 8,  },  /* yellow (x11), jaune */
-	{ 255,	255,	255,	255,	0,0,0,	1, 10, },  /* white */
+inkpot_value_t TAB_VALUES[] = { /* Must be LC_ALL=C sort'ed by r,g,b,a */
+	{ 0,	0,	0,	255,	0,  },  /* black */
+	{ 0,	0,	255,	255,	1,  },  /* blue, bleu */
+	{ 0,	255,	0,	255,	3,  },  /* green, vert */
+	{ 255,	0,	0,	255,	5,  },  /* red, rouge */
+	{ 255,	192,	0,	255,	7,  },  /* yellow (svg) */
+	{ 255,	255,	0,	255,	8,  },  /* yellow (x11), jaune */
+	{ 255,	255,	255,	255,	10, },  /* white */
 }; 
 #define SZT_VALUES (sizeof(TAB_VALUES)/sizeof(TAB_VALUES[0]))
 
+inkpot_noname_value_t TAB_NONAME_VALUES[] = { /* Must be LC_ALL=C sort'ed by r,g,b,a */
+	{ 0,	0,	128,	255 },
+	{ 0,	0,	160,	255 },
+	{ 0,	0,	192,	255 },
+	{ 0,	0,	224,	255 },
+}; 
+#define SZT_NONAME_VALUES (sizeof(TAB_NONAME_VALUES)/sizeof(TAB_NONAME_VALUES[0]))
+
 IDX_VALUES TAB_IXVALUES[] = {
-	1, 2, 3, 4,  /* xxx */
-	0, 6,	     /* yyy */
+	7, 8, 9, 10, 1,  /* xxx */
+	0, 6,	         /* yyy */
 };
 #define SZT_IXVALUES sizeof(TAB_IXVALUES)/sizeof(TAB_IXVALUES[0])

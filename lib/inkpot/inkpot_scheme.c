@@ -226,71 +226,80 @@ inkpot_status_t inkpot_set_default( inkpot_t *inkpot )
     return INKPOT_SUCCESS;
 }
 
-static int inkpot_value_cmpf ( const void *key, const void *base)
+static int inkpot_rgba_cmpf ( const void *key, const void *base)
 {
-    inkpot_value_t *cv_key = (inkpot_value_t*)key;
-    inkpot_value_t *cv_base = (inkpot_value_t*)base;
+    unsigned char *rgba_key = (unsigned char *)key;
+    unsigned char *rgba_base = (unsigned char *)base;
 
-    if (cv_key->r > cv_base->r) return 1;
-    if (cv_key->r < cv_base->r) return -1;
-    if (cv_key->g > cv_base->g) return 1;
-    if (cv_key->g < cv_base->g) return -1;
-    if (cv_key->b > cv_base->b) return 1;
-    if (cv_key->b < cv_base->b) return -1;
-    if (cv_key->a > cv_base->a) return 1;
-    if (cv_key->a < cv_base->a) return -1;
+    if (*rgba_key   > *rgba_base  ) return  1;
+    if (*rgba_key++ < *rgba_base++) return -1;
+    if (*rgba_key   > *rgba_base  ) return  1;
+    if (*rgba_key++ < *rgba_base++) return -1;
+    if (*rgba_key   > *rgba_base  ) return  1;
+    if (*rgba_key++ < *rgba_base++) return -1;
+    if (*rgba_key   > *rgba_base  ) return  1;
+    if (*rgba_key++ < *rgba_base++) return -1;
     return 0;
 }
 
-static int inkpot_set_value ( inkpot_t *inkpot ) 
+inkpot_status_t inkpot_set_rgba ( inkpot_t *inkpot, unsigned char *rgba ) 
 {
-    inkpot_value_t *rc, *value = inkpot->value;
+    inkpot_value_t *value;
     inkpot_name_t *name;
-    inkpot_scheme_index_t *scheme_index;
+    inkpot_noname_value_t *noname_value;
     IDX_VALUES value_idx;
     IDX_NAMES i;
-    IDX_IXVALUES k, first, last;
-    IDX_SCHEMES_INDEX j;
 
-    if (! inkpot->value->is_named) {
-    	rc = (inkpot_value_t *) bsearch(
-            (void*)(value), (void*)TAB_VALUES,
-            SZT_VALUES, sizeof(inkpot_value_t),
-            inkpot_value_cmpf); 
-        if (rc)
-	    inkpot->value->is_named = 1;
-    }
-    if (inkpot->value->is_named) {
+/*
+ * FIXME - implement caching and check here
+ */
+
+    value = (inkpot_value_t *) bsearch(
+        (void*)(rgba), (void*)TAB_VALUES,
+        SZT_VALUES, sizeof(inkpot_value_t),
+        inkpot_rgba_cmpf); 
+
+    if (value) {
+	inkpot->value = value;  /* record value */
+	inkpot->name = NULL;  /* clear name */
 	value_idx = value - TAB_VALUES;
         for (i = value->toname_idx; i < SZT_NAMES; i++) {
             name = &TAB_NAMES[TAB_NAMES[i].toname_idx];
             if (name->value_idx != value_idx)
                 break;
             if (name->scheme_bits & inkpot->scheme_bits) {
-		inkpot->name = name;
-		return INKPOT_SUCCESS;
+		inkpot->name = name;  /* if the name is in the current scheme, then record it */
+		break;
             }
         }
-        scheme_index = inkpot->scheme_index;
-        if (scheme_index) {
-
-	    first = scheme_index->first_value_idx;
-	    j = scheme_index - TAB_SCHEMES_INDEX;
-	    if (++j >= SZT_SCHEMES_INDEX)
-	        last = SZT_IXVALUES;
-	    else
-	        last = TAB_SCHEMES_INDEX[j].first_value_idx;
-
-            for (k = first; k < last; k++) {
-                if (TAB_IXVALUES[k] == value_idx) {
-		    inkpot->name = NULL;
-		    inkpot->index = k - first;
-                    return INKPOT_SUCCESS;
-                }
-            }
-        }
+	return INKPOT_SUCCESS;
     }
-    return INKPOT_COLOR_UNKNOWN;
+
+    noname_value = (inkpot_noname_value_t *) bsearch(
+        (void*)(rgba), (void*)TAB_NONAME_VALUES,
+        SZT_NONAME_VALUES, sizeof(inkpot_noname_value_t),
+        inkpot_rgba_cmpf); 
+
+    if (noname_value) {
+	inkpot->value = value;  /* record value */
+	inkpot->name = NULL;  /* clear name */
+	return INKPOT_SUCCESS;
+    }
+
+#if 0
+    /* need some sort of btree here so that we can insert rgba
+     * values and keep sorted */
+
+    noname_value = (inkpot_noname_value_t *) bsearch(
+        (void*)(rgba), (void*)TAB_DYNAMIC_VALUES,
+        SZT_DYNAMIC_VALUES, sizeof(inkpot_noname_value_t),
+        inkpot_rgba_cmpf); 
+    
+    /* insert value and keep sorted */
+
+#endif
+
+    return INKPOT_SUCCESS;
 }
 
 inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char *scheme, const char **color )
@@ -299,7 +308,7 @@ inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char *scheme, const char **
     return INKPOT_FAIL;
 }
 
-inkpot_status_t inkpot_get_rgba ( inkpot_t *inkpot, unsigned int *rgba )
+inkpot_status_t inkpot_get_rgba ( inkpot_t *inkpot, unsigned char *rgba )
 {
     unsigned char *t = &(inkpot->value->r);
 
@@ -311,19 +320,13 @@ inkpot_status_t inkpot_get_rgba ( inkpot_t *inkpot, unsigned int *rgba )
     return INKPOT_SUCCESS;
 }
 
-inkpot_status_t inkpot_get_hsva ( inkpot_t *inkpot, unsigned int *hsva )
+inkpot_status_t inkpot_get_hsva ( inkpot_t *inkpot, unsigned char *hsva )
 {
-    unsigned char *t = &(inkpot->value->h);
-
-    *hsva++ = *t++;
-    *hsva++ = *t++;
-    *hsva++ = *t;
-    --t; --t, --t; *hsva = *t;
-
-    return INKPOT_SUCCESS;
+    /* FIXME */
+    return INKPOT_FAIL;
 }
 
-inkpot_status_t inkpot_get_cmyk ( inkpot_t *inkpot, unsigned int *cmyk )
+inkpot_status_t inkpot_get_cmyk ( inkpot_t *inkpot, unsigned char *cmyk )
 {
     /* FIXME */
     return INKPOT_FAIL;
@@ -345,12 +348,6 @@ inkpot_status_t inkpot_get_index ( inkpot_t *inkpot, unsigned int *index )
 {
     /* FIXME */
     return INKPOT_FAIL;
-}
-
-
-inkpot_status_t inkpot_xlate(inkpot_t *from_scheme, inkpot_t *to_scheme)
-{
-    return inkpot_set_value(to_scheme);
 }
 
 inkpot_status_t inkpot_print_schemes( inkpot_t *inkpot, FILE *out )
@@ -391,10 +388,12 @@ static inkpot_status_t inkpot_print_scheme_names( inkpot_t *inkpot, int scheme_b
     return INKPOT_SUCCESS;
 }
 
-static inkpot_status_t inkpot_print_rgba( inkpot_value_t *value, FILE *out )
+static inkpot_status_t inkpot_print_rgba( unsigned char *rgba, FILE *out )
 {
-    fprintf (out, "%d,%d,%d,%d",
-	value->r, value->g, value->b, value->a);
+    fprintf (out, "%d,", *rgba++);
+    fprintf (out, "%d,", *rgba++);
+    fprintf (out, "%d,", *rgba++);
+    fprintf (out, "%d", *rgba);
 
     return INKPOT_SUCCESS;
 }
@@ -402,12 +401,13 @@ static inkpot_status_t inkpot_print_rgba( inkpot_value_t *value, FILE *out )
 inkpot_status_t inkpot_print_names( inkpot_t *inkpot, FILE *out )
 {
     inkpot_name_t *name;
-    inkpot_value_t *value;
+    unsigned char *rgba;
     inkpot_scheme_index_t *scheme_index;
     IDX_NAMES i;
     IDX_SCHEMES_INDEX j;
     BIT_SCHEMES_NAME inkpot_scheme_bits, scheme_bits;
     IDX_IXVALUES k, first, last;
+    IDX_VALUES v;
 
     fprintf(out, "names:\n");
     inkpot_scheme_bits = inkpot->scheme_bits;
@@ -416,11 +416,11 @@ inkpot_status_t inkpot_print_names( inkpot_t *inkpot, FILE *out )
             name = &TAB_NAMES[i];
 	    scheme_bits = name->scheme_bits & inkpot_scheme_bits;
             if (scheme_bits) {
-                value = &TAB_VALUES[name->value_idx];
+                rgba = &(TAB_VALUES[name->value_idx].r);
                 fprintf(out, "%s", &TAB_STRINGS[TAB_NAMES[i].string_idx]);
 		inkpot_print_scheme_names(inkpot, scheme_bits, out);
 		fprintf(out, " ");
-		inkpot_print_rgba(value, out);
+		inkpot_print_rgba(rgba, out);
 		fprintf(out, "\n");
             }
         }
@@ -436,9 +436,13 @@ inkpot_status_t inkpot_print_names( inkpot_t *inkpot, FILE *out )
 	    last = TAB_SCHEMES_INDEX[j].first_value_idx;
 
 	for (k = first; k < last; k++) {
-	    value = &TAB_VALUES[TAB_IXVALUES[j]];
+	    v = TAB_IXVALUES[k];
+	    if (v < SZT_VALUES)
+	        rgba = &(TAB_VALUES[v].r);
+	    else
+		rgba = &(TAB_NONAME_VALUES[v - SZT_VALUES].r);
 	    fprintf (out, "%d(%s) ", k - first , &TAB_STRINGS[scheme_index->string_idx]);
-	    inkpot_print_rgba(value, out);
+	    inkpot_print_rgba(rgba, out);
 	    fprintf(out, "\n");
 	}
     }
@@ -447,21 +451,22 @@ inkpot_status_t inkpot_print_names( inkpot_t *inkpot, FILE *out )
     return INKPOT_SUCCESS;
 }
 
+/* Print all values that are members of the currently activated name schemes, with the names in those schemes */
+/*    Does not print the indexes in index schemes that a value may be a member of. */
 inkpot_status_t inkpot_print_values( inkpot_t *inkpot, FILE *out )
 {
     inkpot_value_t *value;
     inkpot_name_t *name;
-    inkpot_scheme_index_t *scheme_index;
     IDX_VALUES i;
     IDX_NAMES t;
     BIT_SCHEMES_NAME scheme_bits;
-    IDX_SCHEMES_INDEX j;
-    IDX_IXVALUES k, first, last;
     int found;
+    unsigned char *rgba;
 
     fprintf(out, "values:\n");
     for (i = 0; i < SZT_VALUES; i++) {
         value = &TAB_VALUES[i];
+        rgba = &(TAB_VALUES[i].r);
         found = 0;
         for (t = value->toname_idx; t < SZT_NAMES; t++) {
             name = &TAB_NAMES[TAB_NAMES[t].toname_idx];
@@ -472,32 +477,9 @@ inkpot_status_t inkpot_print_values( inkpot_t *inkpot, FILE *out )
                 if (found++)
                     fprintf(out, " ");
                 else
-		    inkpot_print_rgba(value, out);
+		    inkpot_print_rgba(rgba, out);
                 fprintf(out, " %s", &TAB_STRINGS[name->string_idx]);
 		inkpot_print_scheme_names(inkpot, scheme_bits, out);
-            }
-        }
-        scheme_index = inkpot->scheme_index;
-        if (scheme_index) {
-
-	    first = scheme_index->first_value_idx;
-	    j = scheme_index - TAB_SCHEMES_INDEX;
-	    if (++j >= SZT_SCHEMES_INDEX)
-	        last = SZT_IXVALUES;
-	    else
-	        last = TAB_SCHEMES_INDEX[j].first_value_idx;
-
-            for (k = first; k < last; k++) {
-                if (TAB_IXVALUES[k] == i) {
-                    if (found++)
-                        fprintf(out, " ");
-                    else {
-			inkpot_print_rgba(value, out);
-                        fprintf(out, " ");
-		    }
-                    fprintf(out, "%d(%s)", k - first, &TAB_STRINGS[scheme_index->string_idx]);
-                    break;
-                }
             }
         }
         if (found)

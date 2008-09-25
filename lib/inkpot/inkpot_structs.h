@@ -88,10 +88,7 @@ typedef struct inkpot_value_s {	/* Numeric color values used by the set
 				 * are numerically sorted by rgb value
 				 * in TAB_VALUES[] */
 
-	unsigned char r, g, b, a, h, s, v; /* rgba and equiv hsva (a is shared) */
-
-	unsigned char is_named; /* 0=unnamed, 1=named
-				 * so that struct can be used for queries */
+	unsigned char r, g, b, a; /* rgba */
 
 	IDX_NAMES
 	    toname_idx;		/* An index into TAB_NAMES to the toname
@@ -105,6 +102,15 @@ typedef struct inkpot_value_s {	/* Numeric color values used by the set
 				 * or until the end of TAB_NAMES is reached.
 				 * (Phew!) */
 } inkpot_value_t;
+
+typedef struct inkpot_noname_value_s {	/* Numeric color values used by the remainder
+				 * of indexes from indexed color schemes
+				 * inkpot_noname_value_t instances are unique and
+				 * are numerically sorted by rgba value
+				 * in TAB_NONAME_VALUES[] */
+
+	unsigned char r, g, b, a; /* rgba */
+} inkpot_noname_value_t;
 
 /* typedef struct inkpot_s inkpot_t; */  /* public opaque type in inkpot.h */
 
@@ -123,10 +129,10 @@ struct inkpot_s {		/* The Ink Pot */
 
 	IDX_SCHEMES_NAME
 	    default_scheme_name_idx; /* The index of the scheme which provides
-				 * the default color. The was the first
+				 * the default color. It was the first
 				 * scheme added. */
 
-	IDX_VALUES
+	IDX_VALUES		/* FIXME - what about noname values ? */
 	    default_value_idx; 	/* The index of the inkpot_value_t for the
 				 * default color */
 
@@ -135,9 +141,6 @@ struct inkpot_s {		/* The Ink Pot */
 
 	inkpot_value_t *value;	/* The most recently resolved color value. */
 	inkpot_name_t *name;	/* The most recently resolved color name. */
-
-	IDX_IXVALUES
-	    index;		/* The most recently resolved color index */
 };
 
 #endif /* INKPOT_STRUCTS_H */
