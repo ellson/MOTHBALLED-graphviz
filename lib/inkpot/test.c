@@ -18,12 +18,29 @@ int main (int argc, char *argv[])
     	return rc;
     }
 
+    if (argc < 2)
+        color = NULL;
+    else
+        color = argv[1];
+
     if (argc < 3) {
+        rc = inkpot_translate(inkpot, "x11");
+        assert(rc == INKPOT_SUCCESS);
+    }
+    else {
+        rc = inkpot_translate(inkpot, argv[2]);
+        if (rc == INKPOT_SCHEME_UNKNOWN)
+            fprintf (stderr, "color scheme \"%s\" was not found\n", argv[i]);
+        else
+            assert(rc == INKPOT_SUCCESS);
+    }
+
+    if (argc < 4) {
         rc = inkpot_activate(inkpot, "x11");
         assert(rc == INKPOT_SUCCESS);
     }
     else {
-        for (i = 2; i < argc; i++) {
+        for (i = 3; i < argc; i++) {
             rc = inkpot_activate(inkpot, argv[i]);
             if (rc == INKPOT_SCHEME_UNKNOWN)
                 fprintf (stderr, "color scheme \"%s\" was not found\n", argv[i]);
@@ -38,25 +55,29 @@ int main (int argc, char *argv[])
 
     inkpot_print_values(inkpot, stderr);
 
-    if (argc < 2)
-        color = NULL;
-    else
-        color = argv[1];
 
     rc = inkpot_set(inkpot, color);
-    if (rc == INKPOT_SUCCESS || rc == INKPOT_COLOR_UNNAMED) {
+    if (rc == INKPOT_SUCCESS || rc == INKPOT_COLOR_NONAME) {
 	inkpot_get_rgba(inkpot, rgba);
-	inkpot_get(inkpot, "x11", &tocolor);
-        fprintf(stderr, "%s %d,%d,%d,%d\n",
-		tocolor, rgba[0], rgba[1], rgba[2], rgba[3]);
+	inkpot_get(inkpot, &tocolor);
+	if (rc == INKPOT_SUCCESS) 
+            fprintf(stderr, "%s", tocolor);
+	else if (rc == INKPOT_COLOR_NONAME) 
+            fprintf(stderr, "#%2x%2x%2x%2x", rgba[0], rgba[1], rgba[2], rgba[3]);
+	else
+	    assert(0);
+        fprintf(stderr, " %d,%d,%d,%d\n", rgba[0], rgba[1], rgba[2], rgba[3]);
+
     }
-    else {
+    else if (rc == INKPOT_COLOR_UNKNOWN) {
 	rc = inkpot_set_default(inkpot);
 	assert (rc == INKPOT_SUCCESS);
 	inkpot_get_rgba(inkpot, rgba);
-        fprintf(stderr, "%s (not found) %d,%d,%d,%d (default)\n",
+        fprintf(stderr, "%s (unknown) %d,%d,%d,%d (default)\n",
 		color, rgba[0], rgba[1], rgba[2], rgba[3]);
     }
+    else
+        assert(0);
 
     return 0;
 }

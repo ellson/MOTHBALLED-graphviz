@@ -134,16 +134,17 @@ struct inkpot_s {		/* The Ink Pot */
 				 * scheme added. */
 
 	IDX_VALUES		/* FIXME - what about noname values ? */
-	    default_value_idx; 	/* The index of the inkpot_value_t for the
-				 * default color */
+	    default_value_idx, 	/* The default color */
+	    value_idx;          /* The current color value. */
 
 	inkpot_scheme_index_t
 	    *scheme_index,	/* Pointer to the indexed
 				 * color scheme, or NULL. (Only 1 at a time) */
 	    *out_scheme_index;	/* Indexed output scheme, or NULL */
 
-	inkpot_name_t *name;	/* The most recently resolved color name. */
-	unsigned char rgba[4];	/* The most recently resolved color value. */
+	inkpot_name_t
+	    *name,		/* The most recently resolved color name. */
+	    *out_name;		/* The most recently translated color name. */
 };
 
 #endif /* INKPOT_STRUCTS_H */
