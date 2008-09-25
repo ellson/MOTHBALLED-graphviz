@@ -96,8 +96,7 @@ static Agdatadict_t *agmakedatadict(Agraph_t * g)
 		graph could change, and it changes the base index for g*/
 	    Agsym_t *sym;	/* this could be written more functionally */
 	    sym = 0;		/* but it's easy to read this way */
-	    while ((sym = agnxtattr(ProtoGraph,AGRAPH,sym)))
-	    	agattr(g,AGRAPH,sym->name,sym->defval);
+	    /* can't do graph attrs here because of some horrific recursion */
 	    while ((sym = agnxtattr(ProtoGraph,AGNODE,sym)))
 	    	agattr(g,AGNODE,sym->name,sym->defval);
 	    while ((sym = agnxtattr(ProtoGraph,AGEDGE,sym)))
@@ -155,6 +154,8 @@ static int topdictsize(Agobj_t * obj)
     return dtsize(agdictof(agroot(agraphof(obj)), AGTYPE(obj)));
 }
 
+/* ha ha good thing we documented this API! */
+/* OK, g can be either the enclosing graph, or ProtoGraph */
 static Agrec_t *agmakeattrs(Agraph_t *g, void *obj)
 {
     int sz;
@@ -171,11 +172,11 @@ static Agrec_t *agmakeattrs(Agraph_t *g, void *obj)
 	sz = topdictsize(obj);
 	if (sz < MINATTR)
 	    sz = MINATTR;
-	rec->str = agalloc(g, sz * sizeof(char *));
+	rec->str = agalloc(agraphof(obj), sz * sizeof(char *));
 	/* doesn't call agxset() so no obj-modified callbacks occur */
 	for (sym = (Agsym_t *) dtfirst(datadict); sym;
 	     sym = (Agsym_t *) dtnext(datadict, sym))
-	    rec->str[sym->id] = agstrdup(g, sym->defval);
+	    rec->str[sym->id] = agstrdup(agraphof(obj), sym->defval);
     } else {
 	assert(rec->dict == datadict);
     }
@@ -321,7 +322,17 @@ void agraphattr_init(Agraph_t * g)
 
     g->desc.has_attrs = 1;
     /* dd = */ agmakedatadict(g);
-    if (!(context = agparent(g))) context = g;
+/*
+    if (ProtoGraph && (g != ProtoGraph)) {
+    	Agsym_t *sym = 0;
+	while ((sym = agnxtattr(ProtoGraph,AGRAPH,sym)))
+	    agattr(g,AGRAPH,sym->name,sym->defval);
+    }
+*/
+    if (!(context = agparent(g))) {
+    	if (ProtoGraph && (g != ProtoGraph)) context = ProtoGraph;
+    	else context = g;
+    }
     /* attr = */ agmakeattrs(context,g);
 }
 
