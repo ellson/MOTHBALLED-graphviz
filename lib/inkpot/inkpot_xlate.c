@@ -22,9 +22,13 @@ void hsva2rgba(double hsva[4], double rgba[4])
     double f, p, q, t, h, s, v;
 
     rgba[3] = hsva[3]; /* copy alpha */
-    h = hsva[0];
-    s = hsva[1];
-    v = hsva[2];
+
+    h = (hsva[0] < 0.0) ? 0.0 : hsva[0];
+    h = (h > 1.0) ? 1.0 : h;
+    s = (hsva[1] < 0.0) ? 0.0 : hsva[1];
+    s = (s > 1.0) ? 1.0 : s;
+    v = (hsva[2] < 0.0) ? 0.0 : hsva[2];
+    v = (v > 1.0) ? 1.0 : v;
 
     if (s <= 0.0) {		/* achromatic */
 	rgba[0] = v;
