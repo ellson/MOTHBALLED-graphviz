@@ -35,12 +35,12 @@ int main (int argc, char *argv[])
     }
 
     if (argc < 4) {
-        rc = inkpot_activate(inkpot, "x11");
+        rc = inkpot_schemes(inkpot, "x11", NULL);
         assert(rc == INKPOT_SUCCESS);
     }
     else {
         for (i = 3; i < argc; i++) {
-            rc = inkpot_activate(inkpot, argv[i]);
+            rc = inkpot_schemes(inkpot, argv[i]);
             if (rc == INKPOT_SCHEME_UNKNOWN)
 	        inkpot_error(inkpot);
             else
@@ -48,16 +48,19 @@ int main (int argc, char *argv[])
         }
     }
 
-    inkpot_print_schemes(inkpot);
+/* ------------- */
+
+    inkpot_debug_schemes(inkpot);
     
-    inkpot_print_names(inkpot);
+    inkpot_debug_names(inkpot);
 
-    inkpot_print_names_out(inkpot);
+    inkpot_debug_names_out(inkpot);
 
-    inkpot_print_values(inkpot);
+    inkpot_debug_values(inkpot);
+
+/* ------------- */
 
     fprintf(stdout, "%s ", color);
-
     rc = inkpot_set(inkpot, color);
     if (rc == INKPOT_COLOR_UNKNOWN) {
         fprintf(stdout, "(unknown) ");
