@@ -321,7 +321,7 @@ shift $((OPTIND-1))
 
 if [[ ! -d "$REFDIR" ]]
 then
-  print -u 2 "Test data directory $REFDIR does not exit"
+  print -u 2 "Test data directory $REFDIR does not exist"
   exit 1
 fi
 
