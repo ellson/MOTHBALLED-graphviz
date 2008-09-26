@@ -256,7 +256,9 @@ Otherwise, if the attribute already exists, its default
 for creating new objects is set to the given value;
 if it does not exist, a new attribute is created with the
 given default, and the default is applied to all pre-existing
-objects of the given kind. \fBagattrsym\fP is a helper function
+objects of the given kind. If \fBg\fP is NIL, the default is
+set for all graphs created subsequently.
+\fBagattrsym\fP is a helper function
 that looks up an attribute for a graph object given as an argument.
 \fBagnxtattr\P permits traversing the list of attributes of
 a given type.  If \fBNIL\fP is passed as an argument it gets
