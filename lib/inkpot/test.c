@@ -64,25 +64,26 @@ int main (int argc, char *argv[])
         }
     }
 
-/* ------------- */
+#if 0
 
     inkpot_debug_schemes(inkpot);
     
     inkpot_debug_names(inkpot);
 
-    inkpot_debug_names_out(inkpot);
+    inkpot_debug_out_names(inkpot);
 
     inkpot_debug_values(inkpot);
 
-/* ------------- */
+#endif
 
-    fprintf(stdout, "%s ", color);
+    fprintf(stdout, "%s ", color); /* ' ' after %s so it doesn't crash on NULL */
     rc = inkpot_set(inkpot, color);
     if (rc == INKPOT_COLOR_UNKNOWN) {
-        fprintf(stdout, "(unknown)\n text: ");
+        fprintf(stdout, "(unknown)");
 	rc = inkpot_set_default(inkpot);
 	assert (rc == INKPOT_SUCCESS);
     }
+    fprintf(stdout, "\n text: ");
 
     rc = inkpot_write(inkpot);
     assert (rc == INKPOT_SUCCESS || rc == INKPOT_COLOR_NONAME);
@@ -102,5 +103,6 @@ int main (int argc, char *argv[])
     fprintf(stdout, " cmyk: %.3f,%.3f,%.3f,%.3f\n",
 		cmyk[0], cmyk[1], cmyk[2], cmyk[3]);
 
+    inkpot_destroy(inkpot);
     return 0;
 }

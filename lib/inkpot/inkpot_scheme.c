@@ -49,13 +49,23 @@ inkpot_t *inkpot_init ( void )
    
     inkpot = malloc(sizeof(inkpot_t));
     if (inkpot) {
+	inkpot->canon = NULL;
+	inkpot->canon_alloc = 0;
+
 	inkpot->disc = inkpot_default_disc;
 	inkpot->out_closure = stdout;
 	inkpot->err_closure = stderr;
+
 	rc = inkpot_clear ( inkpot );
         assert ( rc == INKPOT_SUCCESS );
     }
     return inkpot;
+}
+
+void inkpot_destroy ( inkpot_t *inkpot )
+{
+    free(inkpot->canon);
+    free(inkpot);
 }
 
 inkpot_status_t inkpot_disciplines ( inkpot_t *inkpot, inkpot_disc_t disc, void *out_closure, void *err_closure )
@@ -67,6 +77,7 @@ inkpot_status_t inkpot_disciplines ( inkpot_t *inkpot, inkpot_disc_t disc, void 
     return ((inkpot->status = INKPOT_SUCCESS));
 }
 
+/* FIXME - this needs to work with UTF-8 strings */
 static int string_cmpf (const char *k, const char *b)
 {
     for ( ; *k && *b; k++, b++) {
@@ -414,57 +425,69 @@ inkpot_status_t inkpot_set_hsva ( inkpot_t *inkpot, double hsva[4] )
 
 inkpot_status_t inkpot_set( inkpot_t *inkpot, const char *color )
 {
-    static char *canon;
-    static int allocated;
-    char *q, c;
+    char *q;
     const char *p;
     int len, index;
-    unsigned int rgba;
+    unsigned int rgba, c;
     double hsva[4];
     inkpot_status_t rc = INKPOT_COLOR_UNKNOWN;
 
     if (!color)
         return ((inkpot->status = INKPOT_COLOR_UNKNOWN));
 
-    if (*color == '#') {
-        if (sscanf(color, "#%8x", &rgba))
+    len = strlen(color);
+    if (len >= inkpot->canon_alloc) {
+	inkpot->canon_alloc = len + 1 + 20;
+	inkpot->canon = realloc(inkpot->canon, inkpot->canon_alloc);
+	if (! inkpot->canon)
+            return ((inkpot->status = INKPOT_MALLOC_FAIL));
+    }
+
+    /* canonicalize input string */
+    for (p = color, q = inkpot->canon;
+		(c = *p) && ( c == ' ' || c == '\t' );
+		p++) { }; /* remove leading ws */
+
+    /* change ',' to ' ' */
+    /* FIXME - is this UTF-8 safe ? */
+    while ((c = *p++)) {
+	if (c == ',')
+	    c = ' ';
+	*q++ = c;
+    }
+    *q = '\0';
+
+    if (*inkpot->canon == '#') {
+        if (sscanf(inkpot->canon, "#%8x", &rgba))
 	    rc = inkpot_set_RGBA(inkpot, &rgba);
 
         if (rc != INKPOT_SUCCESS) {
-            if (sscanf(color, "#%6x", &rgba)) {
+            if (sscanf(inkpot->canon, "#%6x", &rgba)) {
 	        rgba = (rgba << SZB_RED) | MAX_RED;
 	        rc = inkpot_set_RGBA(inkpot, &rgba);
             }
    	} 
     }
 
-    if ((rc != INKPOT_SUCCESS) || ((c = *color) == '.') || isdigit(c)) {
-	len = strlen(color);
-	if (len >= allocated) {
-	    allocated = len + 1 + 10;
-	    canon = realloc(canon, allocated);
-	    if (! canon)
-                return ((inkpot->status = INKPOT_MALLOC_FAIL));
-        }
-	p = color;
-        q = canon;
-        while ((c = *p++)) {
-	    if (c == ',')
-		c = ' ';
-	    *q++ = c;
-        }
-        *q = '\0';
+    if ((rc != INKPOT_SUCCESS) || ((c = *inkpot->canon) == '.') || isdigit(c)) {
 	hsva[3] = 1.0;
-        if (sscanf(canon, "%lf%lf%lf%lf", &hsva[0], &hsva[1], &hsva[2], &hsva[3]) >= 3)
+        if (sscanf(inkpot->canon, "%lf%lf%lf%lf", &hsva[0], &hsva[1], &hsva[2], &hsva[3]) >= 3)
 	    rc = inkpot_set_hsva(inkpot, hsva);
     }
 
     if (rc != INKPOT_SUCCESS)
-        if (sscanf(color, "%d", &index) == 1)
+        if (sscanf(inkpot->canon, "%d", &index) == 1)
             rc = inkpot_set_index(inkpot, index);
 
-    if (rc != INKPOT_SUCCESS)
-        rc = inkpot_set_name(inkpot, color);
+    if (rc != INKPOT_SUCCESS) {
+	/* remove embedded ws and convert to lower case*/
+        for (p = q = inkpot->canon;
+		(c = *p) && ! ( c == ' ' || c == '\t' ); p++) {
+	    *q++ = tolower(c);
+	};
+	*q = '\0';
+        rc = inkpot_set_name(inkpot, inkpot->canon);
+    }
 
     return rc;
 }
@@ -528,6 +551,21 @@ static inkpot_status_t inkpot_get_RGBA ( inkpot_t *inkpot, RGBA *rgba )
     return ((inkpot->status = INKPOT_SUCCESS));
 }
 
+inkpot_status_t inkpot_get_rgba_i ( inkpot_t *inkpot, unsigned int rgba[4] )
+{
+    inkpot_status_t rc;
+    RGBA myrgba;
+
+    rc = inkpot_get_RGBA( inkpot, &myrgba );
+    if (rc == INKPOT_SUCCESS) {
+        rgba[3] = myrgba & MSK_RED; myrgba >>= SZB_RED;
+        rgba[2] = myrgba & MSK_RED; myrgba >>= SZB_RED;
+        rgba[1] = myrgba & MSK_RED; myrgba >>= SZB_RED;
+        rgba[0] = myrgba & MSK_RED;
+    }
+    return rc;
+}
+
 inkpot_status_t inkpot_get_rgba ( inkpot_t *inkpot, double rgba[4] )
 {
     inkpot_status_t rc;
@@ -543,6 +581,7 @@ inkpot_status_t inkpot_get_rgba ( inkpot_t *inkpot, double rgba[4] )
     }
     return rc;
 }
+
 inkpot_status_t inkpot_get_hsva ( inkpot_t *inkpot, double hsva[4] )
 {
     inkpot_status_t rc;
@@ -713,7 +752,7 @@ inkpot_status_t inkpot_debug_names( inkpot_t *inkpot )
     return inkpot_debug_names_schemes(inkpot, scheme_bits, scheme_index);
 }
 
-inkpot_status_t inkpot_debug_names_out( inkpot_t *inkpot )
+inkpot_status_t inkpot_debug_out_names( inkpot_t *inkpot )
 {
     MSK_SCHEMES_NAME scheme_bits = inkpot->out_scheme_bit;
     inkpot_scheme_index_t *scheme_index = inkpot->out_scheme_index;

@@ -132,6 +132,9 @@ struct inkpot_s {		/* The Ink Pot */
 	    *name,		/* The current input name, or NULL. */
 	    *out_name;		/* The current output name, or NULL. */
 
+	char *canon;		/* malloc'ed buffer for canonicalizing input color */
+	int canon_alloc;
+
 	inkpot_disc_t disc;     /* writers and closures for out and err */
 	void *out_closure, *err_closure;
 
