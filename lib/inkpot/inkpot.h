@@ -33,17 +33,17 @@ typedef enum {
 /* opaque inkpot struct */
 typedef struct inkpot_s inkpot_t;
 
-/* template for writer functions */
-size_t (*writer) (void *closure, const char *data, size_t length);
+/* writer discipline */
+typedef struct inkpot_disc_s {
+    size_t (*out_writer) (void *out_closure, const char *data, size_t length);
+    size_t (*err_writer) (void *err_closure, const char *data, size_t length);
+} inkpot_disc_t;
 
-/* malloc an inkpot and perform some initialization */
+/* malloc an inkpot. */
 extern inkpot_t *inkpot_init	              ( void );
 
-/* Provide alternate out and err writer functions */
-/* Defaults to internal functions using fwrite() to stdout and stderr */
-/* No need to call these funtions if the defaults suffice. */
-extern inkpot_status_t inkpot_out_writer      ( inkpot_t *inkpot, void *writer, void *closure);
-extern inkpot_status_t inkpot_err_writer      ( inkpot_t *inkpot, void *writer, void *closure);
+/* Discplines default to stdout, stderr.  Use this to provide other writers */
+extern inkpot_status_t inkpot_disciplines     ( inkpot_t *inkpot, inkpot_disc_t disc, void *out_closure, void *err_closure );
 
 /* The list of schemes for color input interpretation, NULL scheme terminates */
 extern inkpot_status_t inkpot_schemes	      ( inkpot_t *inkpot, const char *scheme, ... );

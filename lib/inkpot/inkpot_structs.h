@@ -132,8 +132,7 @@ struct inkpot_s {		/* The Ink Pot */
 	    *name,		/* The current input name, or NULL. */
 	    *out_name;		/* The current output name, or NULL. */
 
-	size_t (*out_writer) (void *closure, const char *s, size_t len);
-	size_t (*err_writer) (void *closure, const char *s, size_t len);
+	inkpot_disc_t disc;     /* writers and closures for out and err */
 	void *out_closure, *err_closure;
 
 	inkpot_status_t status; /* The status after the last operation */

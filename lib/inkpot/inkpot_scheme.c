@@ -25,8 +25,10 @@
 
 static size_t inkpot_writer (void *closure, const char *data, size_t length)
 {
-   return fwrite(data, sizeof(char), length, (FILE *)closure);
+    return fwrite(data, sizeof(char), length, (FILE *)closure);
 }
+
+static inkpot_disc_t inkpot_default_disc = { inkpot_writer, inkpot_writer };
 
 static inkpot_status_t inkpot_clear ( inkpot_t *inkpot )
 {
@@ -45,28 +47,21 @@ inkpot_t *inkpot_init ( void )
    
     inkpot = malloc(sizeof(inkpot_t));
     if (inkpot) {
-	inkpot->out_writer = inkpot_writer;
+	inkpot->disc = inkpot_default_disc;
 	inkpot->out_closure = stdout;
-	inkpot->err_writer = inkpot_writer;
 	inkpot->err_closure = stderr;
-
 	rc = inkpot_clear ( inkpot );
         assert ( rc == INKPOT_SUCCESS );
     }
     return inkpot;
 }
 
-inkpot_status_t inkpot_out_writer ( inkpot_t *inkpot, void *writer, void *closure )
+inkpot_status_t inkpot_disciplines ( inkpot_t *inkpot, inkpot_disc_t disc, void *out_closure, void *err_closure )
 {
-    inkpot->out_writer = writer;
-    inkpot->out_closure = closure;
-    return ((inkpot->status = INKPOT_SUCCESS));
-}
+    inkpot->disc = disc;
+    inkpot->out_closure = out_closure;
+    inkpot->out_closure = out_closure;
 
-inkpot_status_t inkpot_err_writer ( inkpot_t *inkpot, void *writer, void *closure )
-{
-    inkpot->err_writer = writer;
-    inkpot->err_closure = closure;
     return ((inkpot->status = INKPOT_SUCCESS));
 }
 
@@ -517,7 +512,7 @@ inkpot_status_t inkpot_get_index ( inkpot_t *inkpot, unsigned int *index )
 
 static void errputs(inkpot_t *inkpot, const char *s)
 {
-    inkpot->err_writer(inkpot->out_closure, s, strlen(s));
+    inkpot->disc.err_writer(inkpot->err_closure, s, strlen(s));
 }
 
 inkpot_status_t inkpot_debug_schemes( inkpot_t *inkpot )
@@ -709,7 +704,7 @@ inkpot_status_t inkpot_write ( inkpot_t *inkpot )
 
     rc = inkpot_get(inkpot, &color);
     if (rc == INKPOT_SUCCESS)
-	inkpot->out_writer(inkpot->out_closure, color, strlen(color));
+	inkpot->disc.out_writer(inkpot->out_closure, color, strlen(color));
     if (rc == INKPOT_COLOR_NONAME) {
         value_idx = inkpot->value_idx;
         if (value_idx < SZT_VALUES)
@@ -724,7 +719,7 @@ inkpot_status_t inkpot_write ( inkpot_t *inkpot )
 	for (m = 0; m < 4; m++) *p++ = *q++;  
 	sprintf(buf, "#%02x%02x%02x%02x", rgba[0], rgba[1], rgba[2], rgba[3]);
 
-	inkpot->out_writer(inkpot->out_closure, buf, sizeof(buf));
+	inkpot->disc.out_writer(inkpot->out_closure, buf, sizeof(buf));
     }
     return rc;
 }
@@ -748,7 +743,7 @@ inkpot_status_t inkpot_error ( inkpot_t *inkpot )
 	case INKPOT_FAIL:
 	    m = "INKPOT_FAIL\n"; break;
     }
-    inkpot->err_writer(inkpot->err_closure, m, strlen(m));
+    inkpot->disc.err_writer(inkpot->err_closure, m, strlen(m));
 
     return ((inkpot->status = INKPOT_SUCCESS));
 };
