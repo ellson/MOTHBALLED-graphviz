@@ -120,6 +120,10 @@ struct inkpot_s {		/* The Ink Pot */
 	    default_value_idx, 	/* The default color */
 	    value_idx;          /* The current color value. */
 
+	IDX_IXVALUES
+	    index,		/* The index for the current value, if indexed scheme not NULL */
+	    out_index;		/* The index for the current value, if indexed output scheme not NULL */
+
 	inkpot_scheme_index_t
 	    *scheme_index,	/* Indexed input scheme, or NULL. */
 	    *out_scheme_index;	/* Indexed output scheme, or NULL */

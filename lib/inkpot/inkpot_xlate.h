@@ -21,14 +21,6 @@
 extern "C" {
 #endif
 
-#ifndef MIN
-#define MIN(a,b)    ((a)<(b)?(a):(b))
-#endif
-
-#ifndef MAX
-#define MAX(a,b)    ((a)>(b)?(a):(b))
-#endif
-
 /* possible representations of color in gvcolor_t */
 typedef enum { HSVA_DOUBLE, RGBA_BYTE, RGBA_WORD, CMYK_BYTE,
                 RGBA_DOUBLE, COLOR_STRING, COLOR_INDEX } color_type_t;

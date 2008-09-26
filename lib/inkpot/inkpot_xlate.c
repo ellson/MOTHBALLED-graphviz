@@ -22,6 +22,14 @@
 #include "inkpot.h"
 #include "inkpot_xlate.h"
 
+#ifndef MIN
+#define MIN(a,b)    ((a)<(b)?(a):(b))
+#endif
+
+#ifndef MAX
+#define MAX(a,b)    ((a)>(b)?(a):(b))
+#endif
+
 static void hsv2rgb(double h, double s, double v, double *r, double *g, double *b)
 {
     int i;

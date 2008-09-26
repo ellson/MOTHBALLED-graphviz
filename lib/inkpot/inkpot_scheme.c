@@ -22,7 +22,6 @@
 
 #include "inkpot.h"
 #include "inkpot_tables.h"
-#include "inkpot_xlate.h"
 
 static size_t inkpot_writer (void *closure, const char *data, size_t length)
 {
@@ -281,16 +280,24 @@ static inkpot_status_t inkpot_set_index ( inkpot_t *inkpot, int index )
 	last = SZT_IXVALUES;
     else
 	last = TAB_SCHEMES_INDEX[j].first_value_idx;
+    last = last-1-first;
 
     /* clip user-provided index to fit available range */
-    index = MAX(index, 0);
-    index = MIN(index, (last-1-first));
+    index = (index < 0)    ? 0    : index;
+    index = (index > last) ? last : index;
     index += first;
 
     assert(index < SZT_IXVALUES);
-    v = inkpot->value_idx = TAB_IXVALUES[index];
+    v = TAB_IXVALUES[index];
     if (v >= SZT_VALUES)
         assert(v < SZT_VALUES + SZT_NONAME_VALUES);
+
+    if (inkpot->value_idx != v) {
+    	inkpot->value_idx = v;
+    	inkpot->name = NULL;
+    	inkpot->out_name = NULL;
+    }
+
     return ((inkpot->status = INKPOT_SUCCESS));
 }
 
@@ -325,7 +332,7 @@ inkpot_status_t inkpot_set_default( inkpot_t *inkpot )
 {
     if (inkpot->value_idx != inkpot->default_value_idx) {
 	inkpot->value_idx = inkpot->default_value_idx;
-	inkpot->name = NULL;   /* FIXME - should set this */
+	inkpot->name = NULL;
 	inkpot->out_name = NULL;
     }
     return ((inkpot->status = INKPOT_SUCCESS));
