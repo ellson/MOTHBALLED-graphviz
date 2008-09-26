@@ -73,6 +73,29 @@ Dict_t *agdictof(Agraph_t * g, int kind)
     return dict;
 }
 
+Agsym_t *agnewsym(Agraph_t * g, char *name, char *value, int id, int kind)
+{
+    Agsym_t *sym;
+    sym = agalloc(g, sizeof(Agsym_t));
+    sym->kind = kind;
+    sym->name = agstrdup(g, name);
+    sym->defval = agstrdup(g, value);
+    sym->id = id;
+    return sym;
+}
+
+static void agcopydict(Dict_t *src, Dict_t *dest, Agraph_t *g, int kind)
+{
+	Agsym_t *sym,*newsym;
+
+	assert(dtsize(dest) == 0);
+	for (sym = (Agsym_t *) dtfirst(src); sym;
+		sym = (Agsym_t *) dtnext(src, sym)) {
+		newsym = agnewsym(g, sym->name, sym->defval, sym->id, kind);
+		dtinsert(dest, newsym);
+	}
+}
+
 static Agdatadict_t *agmakedatadict(Agraph_t * g)
 {
     Agraph_t *par;
@@ -92,29 +115,15 @@ static Agdatadict_t *agmakedatadict(Agraph_t * g)
     }
     else {
 	if (ProtoGraph && (g != ProtoGraph)) {
-		/* you can't dtview here for several reasons. the proto
-		graph could change, and it changes the base index for g*/
-	    Agsym_t *sym;	/* this could be written more functionally */
-	    sym = 0;		/* but it's easy to read this way */
-	    /* can't do graph attrs here because of some horrific recursion */
-	    while ((sym = agnxtattr(ProtoGraph,AGNODE,sym)))
-	    	agattr(g,AGNODE,sym->name,sym->defval);
-	    while ((sym = agnxtattr(ProtoGraph,AGEDGE,sym)))
-	    	agattr(g,AGEDGE,sym->name,sym->defval);
+	    /* you can't dtview here for several reasons. the proto
+	    graph could change, and the sym indices don't match */
+	    parent_dd = agdatadict(ProtoGraph);
+	    agcopydict(parent_dd->dict.n,dd->dict.n,g,AGNODE);
+	    agcopydict(parent_dd->dict.e,dd->dict.e,g,AGEDGE);
+	    agcopydict(parent_dd->dict.g,dd->dict.g,g,AGRAPH);
 	}
     }
     return dd;
-}
-
-Agsym_t *agnewsym(Agraph_t * g, char *name, char *value, int id, int kind)
-{
-    Agsym_t *sym;
-    sym = agalloc(g, sizeof(Agsym_t));
-    sym->kind = kind;
-    sym->name = agstrdup(g, name);
-    sym->defval = agstrdup(g, value);
-    sym->id = id;
-    return sym;
 }
 
 	/* look up or update a value associated with an object. */
@@ -322,13 +331,6 @@ void agraphattr_init(Agraph_t * g)
 
     g->desc.has_attrs = 1;
     /* dd = */ agmakedatadict(g);
-/*
-    if (ProtoGraph && (g != ProtoGraph)) {
-    	Agsym_t *sym = 0;
-	while ((sym = agnxtattr(ProtoGraph,AGRAPH,sym)))
-	    agattr(g,AGRAPH,sym->name,sym->defval);
-    }
-*/
     if (!(context = agparent(g))) {
     	if (ProtoGraph && (g != ProtoGraph)) context = ProtoGraph;
     	else context = g;
