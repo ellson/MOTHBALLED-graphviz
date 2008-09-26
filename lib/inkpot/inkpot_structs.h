@@ -121,12 +121,17 @@ struct inkpot_s {		/* The Ink Pot */
 	    value_idx;          /* The current color value. */
 
 	inkpot_scheme_index_t
-	    *scheme_index,	/* Pointer to the indexed color scheme, or NULL. */
+	    *scheme_index,	/* Indexed input scheme, or NULL. */
 	    *out_scheme_index;	/* Indexed output scheme, or NULL */
 
 	inkpot_name_t
-	    *name,		/* The current color name, or NULL. */
-	    *out_name;		/* The current translated color name, or NULL. */
+	    *name,		/* The current input name, or NULL. */
+	    *out_name;		/* The current output name, or NULL. */
+
+	size_t (*writer) (void *closure, const char *s, size_t len);
+	void *out_closure, *err_closure;
+
+	inkpot_status_t status; /* The status after the last operation */
 };
 
 #endif /* INKPOT_STRUCTS_H */

@@ -22,17 +22,21 @@ extern "C" {
 #endif
 
 typedef enum {
-	INKPOT_SUCCESS=0,
-	INKPOT_MALLOC_FAIL,
-	INKPOT_COLOR_UNKNOWN,
-	INKPOT_COLOR_NONAME,
-	INKPOT_SCHEME_UNKNOWN,
-	INKPOT_FAIL
+    INKPOT_SUCCESS=0,
+    INKPOT_MALLOC_FAIL,
+    INKPOT_COLOR_UNKNOWN,
+    INKPOT_COLOR_NONAME,
+    INKPOT_SCHEME_UNKNOWN,
+    INKPOT_FAIL
 } inkpot_status_t;
 
 typedef struct inkpot_s inkpot_t;
 
-extern inkpot_status_t inkpot_init	      ( inkpot_t **inkpot );
+size_t (*writer) (void *closure, const char *data, size_t length);
+
+extern inkpot_t *inkpot_init	              ( void );
+extern inkpot_status_t inkpot_writer_fn       ( inkpot_t *inkpot, void *writer, void *out_closure, void *err_closure );
+
 extern inkpot_status_t inkpot_clear	      ( inkpot_t *inkpot );
 extern inkpot_status_t inkpot_activate	      ( inkpot_t *inkpot, const char *scheme );
 extern inkpot_status_t inkpot_translate	      ( inkpot_t *inkpot, const char *scheme );
@@ -40,6 +44,8 @@ extern inkpot_status_t inkpot_translate	      ( inkpot_t *inkpot, const char *sc
 extern inkpot_status_t inkpot_set	      ( inkpot_t *inkpot, const char *color );
 extern inkpot_status_t inkpot_set_default     ( inkpot_t *inkpot );
 extern inkpot_status_t inkpot_set_rgba	      ( inkpot_t *inkpot, unsigned char rgba[4] );
+
+extern inkpot_status_t inkpot_write	      ( inkpot_t *inkpot );
 
 extern inkpot_status_t inkpot_get	      ( inkpot_t *inkpot, const char **color );
 extern inkpot_status_t inkpot_get_rgba	      ( inkpot_t *inkpot, unsigned char *rgba );
@@ -49,10 +55,12 @@ extern inkpot_status_t inkpot_get_RGBA	      ( inkpot_t *inkpot, double *RGBA );
 extern inkpot_status_t inkpot_get_HSVA	      ( inkpot_t *inkpot, double *HSVA );
 extern inkpot_status_t inkpot_get_index	      ( inkpot_t *inkpot, unsigned int *index );
 
-extern inkpot_status_t inkpot_print_schemes   ( inkpot_t *inkpot, FILE *out );
-extern inkpot_status_t inkpot_print_names     ( inkpot_t *inkpot, FILE *out );
-extern inkpot_status_t inkpot_print_names_out ( inkpot_t *inkpot, FILE *out );
-extern inkpot_status_t inkpot_print_values    ( inkpot_t *inkpot, FILE *out );
+extern inkpot_status_t inkpot_print_schemes   ( inkpot_t *inkpot );
+extern inkpot_status_t inkpot_print_names     ( inkpot_t *inkpot );
+extern inkpot_status_t inkpot_print_names_out ( inkpot_t *inkpot );
+extern inkpot_status_t inkpot_print_values    ( inkpot_t *inkpot );
+
+extern inkpot_status_t inkpot_error	      ( inkpot_t *inkpot );
 
 #ifdef __cplusplus
 }

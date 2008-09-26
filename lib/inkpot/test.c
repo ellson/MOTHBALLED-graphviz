@@ -8,14 +8,13 @@ int main (int argc, char *argv[])
     inkpot_t *inkpot;
     inkpot_status_t rc;
     char *color;
-    const char *tocolor;
     int i;
     unsigned char rgba[4];
 
-    rc = inkpot_init(&inkpot);
-    if (rc == INKPOT_MALLOC_FAIL) {
-        fprintf (stderr, "malloc fail\n");
-    	return rc;
+    inkpot = inkpot_init();
+    if (!inkpot) {
+	fprintf(stderr, "failure to initialize inkpot\n");
+    	return 0;
     }
 
     if (argc < 2)
@@ -30,7 +29,7 @@ int main (int argc, char *argv[])
     else {
         rc = inkpot_translate(inkpot, argv[2]);
         if (rc == INKPOT_SCHEME_UNKNOWN)
-            fprintf (stderr, "color scheme \"%s\" was not found\n", argv[i]);
+	    inkpot_error(inkpot);
         else
             assert(rc == INKPOT_SUCCESS);
     }
@@ -43,45 +42,36 @@ int main (int argc, char *argv[])
         for (i = 3; i < argc; i++) {
             rc = inkpot_activate(inkpot, argv[i]);
             if (rc == INKPOT_SCHEME_UNKNOWN)
-                fprintf (stderr, "color scheme \"%s\" was not found\n", argv[i]);
+	        inkpot_error(inkpot);
             else
                 assert(rc == INKPOT_SUCCESS);
         }
     }
 
-    inkpot_print_schemes(inkpot, stderr);
+    inkpot_print_schemes(inkpot);
     
-    inkpot_print_names(inkpot, stderr);
+    inkpot_print_names(inkpot);
 
-    inkpot_print_names_out(inkpot, stderr);
+    inkpot_print_names_out(inkpot);
 
-    inkpot_print_values(inkpot, stderr);
+    inkpot_print_values(inkpot);
 
+    fprintf(stdout, "%s ", color);
 
     rc = inkpot_set(inkpot, color);
-    if (rc == INKPOT_SUCCESS || rc == INKPOT_COLOR_NONAME) {
-	inkpot_get_rgba(inkpot, rgba);
-	rc = inkpot_get(inkpot, &tocolor);
-	if (rc == INKPOT_SUCCESS) 
-            fprintf(stderr, "%s", tocolor);
-	else if (rc == INKPOT_COLOR_NONAME) 
-            fprintf(stderr, "#%02x%02x%02x%02x",
-			    rgba[0], rgba[1], rgba[2], rgba[3]);
-	else
-	    assert(0);
-        fprintf(stderr, " %d,%d,%d,%d\n",
-			rgba[0], rgba[1], rgba[2], rgba[3]);
-
-    }
-    else if (rc == INKPOT_COLOR_UNKNOWN) {
+    if (rc == INKPOT_COLOR_UNKNOWN) {
+        fprintf(stdout, "(unknown) ");
 	rc = inkpot_set_default(inkpot);
 	assert (rc == INKPOT_SUCCESS);
-	inkpot_get_rgba(inkpot, rgba);
-        fprintf(stderr, "%s (unknown) %d,%d,%d,%d (default)\n",
-		color, rgba[0], rgba[1], rgba[2], rgba[3]);
     }
-    else
-        assert(0);
+
+    rc = inkpot_write(inkpot);
+    assert (rc == INKPOT_SUCCESS || rc == INKPOT_COLOR_NONAME);
+
+    rc = inkpot_get_rgba(inkpot, rgba);
+    assert (rc == INKPOT_SUCCESS);
+    fprintf(stdout, " %d,%d,%d,%d\n",
+		rgba[0], rgba[1], rgba[2], rgba[3]);
 
     return 0;
 }
