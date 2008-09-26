@@ -1,18 +1,18 @@
 /* $Id$ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
 
-/**********************************************************
-*      This software is part of the graphviz package      *
-*                http://www.graphviz.org/                 *
-*                                                         *
-*            Copyright (c) 1994-2004 AT&T Corp.           *
-*                and is licensed under the                *
-*            Common Public License, Version 1.0           *
-*                      by AT&T Corp.                      *
-*                                                         *
-*        Information and Software Systems Research        *
-*              AT&T Research, Florham Park NJ             *
-**********************************************************/
+/***********************************************************
+ *      This software is part of the graphviz package      *
+ *                http://www.graphviz.org/                 *
+ *                                                         *
+ *            Copyright (c) 1994-2008 AT&T Corp.           *
+ *                and is licensed under the                *
+ *            Common Public License, Version 1.0           *
+ *                      by AT&T Corp.                      *
+ *                                                         *
+ *        Information and Software Systems Research        *
+ *              AT&T Research, Florham Park NJ             *
+ **********************************************************/
 
 #ifndef INKPOT_H
 #define INKPOT_H
@@ -55,18 +55,16 @@ extern inkpot_status_t inkpot_set	      ( inkpot_t *inkpot, const char *color );
 /* set inkpot color to the default (from the first scheme specified) */
 extern inkpot_status_t inkpot_set_default     ( inkpot_t *inkpot );
 /* set inkpot color by value, which may or may not have a name in the current or any schemes */
-extern inkpot_status_t inkpot_set_rgba	      ( inkpot_t *inkpot, unsigned char rgba[4] );
+extern inkpot_status_t inkpot_set_rgba	      ( inkpot_t *inkpot, double rgba[4] );
 
 /* get inkpot color name in the translation scheme, or for colors without a name in the translated scheme,
  * set NULL and return INKPOT_COLOR_NONAME */
 extern inkpot_status_t inkpot_get	      ( inkpot_t *inkpot, const char **color );
 
 /* get inkpot color value in various formats */
-extern inkpot_status_t inkpot_get_rgba	      ( inkpot_t *inkpot, unsigned char *rgba );
-extern inkpot_status_t inkpot_get_hsva	      ( inkpot_t *inkpot, unsigned char *hsva );
-extern inkpot_status_t inkpot_get_cmyk	      ( inkpot_t *inkpot, unsigned char *cmyk );
-extern inkpot_status_t inkpot_get_RGBA	      ( inkpot_t *inkpot, double *RGBA );
-extern inkpot_status_t inkpot_get_HSVA	      ( inkpot_t *inkpot, double *HSVA );
+extern inkpot_status_t inkpot_get_rgba	      ( inkpot_t *inkpot, double rgba[4] );
+extern inkpot_status_t inkpot_get_hsva	      ( inkpot_t *inkpot, double hsva[4] );
+extern inkpot_status_t inkpot_get_cmyk	      ( inkpot_t *inkpot, double cmyk[4] );
 extern inkpot_status_t inkpot_get_index	      ( inkpot_t *inkpot, unsigned int *index );
 
 /* output the current color to out_writer (default stdout) */

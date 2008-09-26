@@ -1,3 +1,19 @@
+/* $Id$ $Revision$ */
+/* vim:set shiftwidth=4 ts=8: */
+
+/***********************************************************
+ *      This software is part of the graphviz package      *
+ *                http://www.graphviz.org/                 *
+ *                                                         *
+ *            Copyright (c) 1994-2008 AT&T Corp.           *
+ *                and is licensed under the                *
+ *            Common Public License, Version 1.0           *
+ *                      by AT&T Corp.                      *
+ *                                                         *
+ *        Information and Software Systems Research        *
+ *              AT&T Research, Florham Park NJ             *
+ **********************************************************/
+
 #include <stdio.h>
 #include <assert.h>
 
@@ -9,7 +25,7 @@ int main (int argc, char *argv[])
     inkpot_status_t rc;
     char *color;
     int i;
-    unsigned char rgba[4];
+    double rgba[4], hsva[4], cmyk[4];
 
     inkpot = inkpot_init();
     if (!inkpot) {
@@ -63,7 +79,7 @@ int main (int argc, char *argv[])
     fprintf(stdout, "%s ", color);
     rc = inkpot_set(inkpot, color);
     if (rc == INKPOT_COLOR_UNKNOWN) {
-        fprintf(stdout, "(unknown) ");
+        fprintf(stdout, "(unknown)\n text: ");
 	rc = inkpot_set_default(inkpot);
 	assert (rc == INKPOT_SUCCESS);
     }
@@ -73,8 +89,18 @@ int main (int argc, char *argv[])
 
     rc = inkpot_get_rgba(inkpot, rgba);
     assert (rc == INKPOT_SUCCESS);
-    fprintf(stdout, " %d,%d,%d,%d\n",
+    fprintf(stdout, "\n rgba: %.3f,%.3f,%.3f,%.3f\n",
 		rgba[0], rgba[1], rgba[2], rgba[3]);
+
+    rc = inkpot_get_hsva(inkpot, hsva);
+    assert (rc == INKPOT_SUCCESS);
+    fprintf(stdout, " hsva: %.3f,%.3f,%.3f,%.3f\n",
+		hsva[0], hsva[1], hsva[2], hsva[3]);
+
+    rc = inkpot_get_cmyk(inkpot, cmyk);
+    assert (rc == INKPOT_SUCCESS);
+    fprintf(stdout, " cmyk: %.3f,%.3f,%.3f,%.3f\n",
+		cmyk[0], cmyk[1], cmyk[2], cmyk[3]);
 
     return 0;
 }

@@ -1,18 +1,18 @@
 /* $Id$ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
 
-/**********************************************************
-*      This software is part of the graphviz package      *
-*                http://www.graphviz.org/                 *
-*                                                         *
-*            Copyright (c) 1994-2004 AT&T Corp.           *
-*                and is licensed under the                *
-*            Common Public License, Version 1.0           *
-*                      by AT&T Corp.                      *
-*                                                         *
-*        Information and Software Systems Research        *
-*              AT&T Research, Florham Park NJ             *
-**********************************************************/
+/***********************************************************
+ *      This software is part of the graphviz package      *
+ *                http://www.graphviz.org/                 *
+ *                                                         *
+ *            Copyright (c) 1994-2008 AT&T Corp.           *
+ *                and is licensed under the                *
+ *            Common Public License, Version 1.0           *
+ *                      by AT&T Corp.                      *
+ *                                                         *
+ *        Information and Software Systems Research        *
+ *              AT&T Research, Florham Park NJ             *
+ **********************************************************/
 
 #ifndef INKPOT_STRUCTS_H
 #define INKPOT_STRUCTS_H
@@ -59,7 +59,7 @@ typedef struct inkpot_name_s {	/* Color_name used by one or more
 	    value_idx;		/* An index into TAB_VALUE for this
 				 * inkpot_name_t */
 
-	BIT_SCHEMES_NAME
+	MSK_SCHEMES_NAME
 	    scheme_bits;	/* A bit for each inkpot_scheme_name_t
 				 * that includes this inkpot_name_t  */
 
@@ -80,7 +80,7 @@ typedef struct inkpot_value_s {	/* Numeric color values used by the set
 				 * are numerically sorted by rgb value
 				 * in TAB_VALUES[] */
 
-	unsigned char rgba[4];	/* rgba */
+	RGBA rgba;
 
 	IDX_NAMES
 	    toname_idx;		/* An index into TAB_NAMES to the toname
@@ -100,14 +100,14 @@ typedef struct inkpot_noname_value_s {	/* Numeric color values used by the remai
 				 * inkpot_noname_value_t instances are unique and
 				 * are numerically sorted by rgba value
 				 * in TAB_NONAME_VALUES[] */
+	RGBA rgba;
 
-	unsigned char rgba[4];	/* rgba */
 } inkpot_noname_value_t;
 
 /* typedef struct inkpot_s inkpot_t; */  /* public opaque type in inkpot.h */
 
 struct inkpot_s {		/* The Ink Pot */
-	BIT_SCHEMES_NAME
+	MSK_SCHEMES_NAME
 	    scheme_bits,	/* One bit per inkpot_scheme_name_t */
 	    out_scheme_bit;     /* One scheme only for output. */
 

@@ -1,11 +1,11 @@
 /* $Id$ $Revision$ */
 /* vim:set shiftwidth=4 ts=8: */
 
-/**********************************************************
+/***********************************************************
  *      This software is part of the graphviz package      *
  *                http://www.graphviz.org/                 *
  *                                                         *
- *            Copyright (c) 1994-2004 AT&T Corp.           *
+ *            Copyright (c) 1994-2008 AT&T Corp.           *
  *                and is licensed under the                *
  *            Common Public License, Version 1.0           *
  *                      by AT&T Corp.                      *
@@ -22,6 +22,7 @@
 
 #include "inkpot.h"
 #include "inkpot_tables.h"
+#include "inkpot_xlate.h"
 
 static size_t inkpot_writer (void *closure, const char *data, size_t length)
 {
@@ -296,33 +297,6 @@ static inkpot_status_t inkpot_set_index ( inkpot_t *inkpot, int index )
     return ((inkpot->status = INKPOT_SUCCESS));
 }
 
-inkpot_status_t inkpot_set( inkpot_t *inkpot, const char *color )
-{
-    int index, r, g, b, a=255;
-    unsigned char rgba[4];
-    inkpot_status_t rc = INKPOT_COLOR_UNKNOWN;
-
-    if (!color)
-        return ((inkpot->status = INKPOT_COLOR_UNKNOWN));
-
-    if (sscanf(color, "#%2x%2x%2x%2x", &r, &g, &b, &a) >= 3) {
-	rgba[0] = r;
-	rgba[1] = g;
-	rgba[2] = b;
-	rgba[3] = a;
-	rc = inkpot_set_rgba(inkpot, rgba);
-    }
-
-    if (rc != INKPOT_SUCCESS)
-        if (sscanf(color, "%d", &index) == 1)
-            rc = inkpot_set_index(inkpot, index);
-
-    if (rc != INKPOT_SUCCESS)
-        rc = inkpot_set_name(inkpot, color);
-
-    return rc;
-}
-
 inkpot_status_t inkpot_set_default( inkpot_t *inkpot )
 {
     if (inkpot->value_idx != inkpot->default_value_idx) {
@@ -335,21 +309,15 @@ inkpot_status_t inkpot_set_default( inkpot_t *inkpot )
 
 static int inkpot_rgba_cmpf ( const void *key, const void *base)
 {
-    unsigned char *rgba_key = (unsigned char *)key;
-    unsigned char *rgba_base = (unsigned char *)base;
+    RGBA rgba_key = *(RGBA*)key;
+    RGBA rgba_base = *(RGBA*)base;
 
-    if (*rgba_key   > *rgba_base  ) return  1;
-    if (*rgba_key++ < *rgba_base++) return -1;
-    if (*rgba_key   > *rgba_base  ) return  1;
-    if (*rgba_key++ < *rgba_base++) return -1;
-    if (*rgba_key   > *rgba_base  ) return  1;
-    if (*rgba_key++ < *rgba_base++) return -1;
-    if (*rgba_key   > *rgba_base  ) return  1;
-    if (*rgba_key++ < *rgba_base++) return -1;
+    if (rgba_key > rgba_base) return  1;
+    if (rgba_key < rgba_base) return -1;
     return 0;
 }
 
-inkpot_status_t inkpot_set_rgba ( inkpot_t *inkpot, unsigned char *rgba ) 
+static inkpot_status_t inkpot_set_RGBA ( inkpot_t *inkpot, RGBA *rgba ) 
 {
     inkpot_value_t *value;
     inkpot_name_t *name;
@@ -418,6 +386,50 @@ inkpot_status_t inkpot_set_rgba ( inkpot_t *inkpot, unsigned char *rgba )
 #endif
 }
 
+inkpot_status_t inkpot_set( inkpot_t *inkpot, const char *color )
+{
+    int index;
+    unsigned int rgba;
+    inkpot_status_t rc = INKPOT_COLOR_UNKNOWN;
+
+    if (!color)
+        return ((inkpot->status = INKPOT_COLOR_UNKNOWN));
+
+    if (sscanf(color, "#%6x", &rgba)) {
+	rgba = (rgba << SZB_RED) | MAX_RED;
+	rc = inkpot_set_RGBA(inkpot, &rgba);
+    }
+
+    if (rc != INKPOT_SUCCESS)
+        if (sscanf(color, "#%8x", &rgba))
+	    rc = inkpot_set_RGBA(inkpot, &rgba);
+
+    if (rc != INKPOT_SUCCESS)
+        if (sscanf(color, "%d", &index) == 1)
+            rc = inkpot_set_index(inkpot, index);
+
+    if (rc != INKPOT_SUCCESS)
+        rc = inkpot_set_name(inkpot, color);
+
+    return rc;
+}
+
+inkpot_status_t inkpot_set_rgba ( inkpot_t *inkpot, double rgba[4] )
+{
+    unsigned int myrgba = 0, v;
+    int i;
+
+    for (i = 0; i < 4; i++) {
+	myrgba <<= SZB_RED;
+	v = rgba[i];
+	v = (v < 0.0) ? 0.0 : v;
+	v = (v > 1.0) ? 1.0 : v;
+	myrgba |= (int)(v * MAX_RED);
+    }
+
+    return inkpot_set_RGBA ( inkpot, &myrgba );
+}
+
 inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
 {
     inkpot_name_t *out_name;
@@ -463,45 +475,57 @@ inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
     return ((inkpot->status = INKPOT_FAIL));
 }
 
-inkpot_status_t inkpot_get_rgba ( inkpot_t *inkpot, unsigned char *rgba )
+static inkpot_status_t inkpot_get_RGBA ( inkpot_t *inkpot, RGBA *rgba )
 {
     IDX_VALUES value_idx = inkpot->value_idx;
-    unsigned char *p = rgba, *q;
-    int m;
 
     if (value_idx < SZT_VALUES)
-	q = TAB_VALUES[value_idx].rgba;
+	*rgba = TAB_VALUES[value_idx].rgba;
     else {
 	assert (value_idx < SZT_VALUES + SZT_NONAME_VALUES);
-	q = TAB_NONAME_VALUES[value_idx - SZT_VALUES].rgba;
+	*rgba = TAB_NONAME_VALUES[value_idx - SZT_VALUES].rgba;
     }
-    for (m = 0; m < 4; m++) *p++ = *q++;
 
     return ((inkpot->status = INKPOT_SUCCESS));
 }
 
-inkpot_status_t inkpot_get_hsva ( inkpot_t *inkpot, unsigned char *hsva )
+inkpot_status_t inkpot_get_rgba ( inkpot_t *inkpot, double rgba[4] )
 {
-    /* FIXME */
-    return ((inkpot->status = INKPOT_FAIL));
+    inkpot_status_t rc;
+    RGBA myrgba;
+    int i;
+
+    rc = inkpot_get_RGBA( inkpot, &myrgba );
+    if (rc == INKPOT_SUCCESS) {
+	for (i = 3; i >= 0; i--) {
+	    rgba[i] = (myrgba & MSK_RED) / (double)MAX_RED;
+	    myrgba >>= SZB_RED;
+	}
+    }
+    return rc;
+}
+inkpot_status_t inkpot_get_hsva ( inkpot_t *inkpot, double hsva[4] )
+{
+    inkpot_status_t rc;
+    double rgba[4];
+
+    rc = inkpot_get_rgba(inkpot, rgba);
+    if (rc == INKPOT_SUCCESS)
+	rgba2hsva( rgba, hsva );
+ 
+    return rc;
 }
 
-inkpot_status_t inkpot_get_cmyk ( inkpot_t *inkpot, unsigned char *cmyk )
+inkpot_status_t inkpot_get_cmyk ( inkpot_t *inkpot, double cmyk[4] )
 {
-    /* FIXME */
-    return ((inkpot->status = INKPOT_FAIL));
-}
+    inkpot_status_t rc;
+    double rgba[4];
 
-inkpot_status_t inkpot_get_RGBA ( inkpot_t *inkpot, double *RGBA )
-{
-    /* FIXME */
-    return ((inkpot->status = INKPOT_FAIL));
-}
-
-inkpot_status_t inkpot_get_HSVA ( inkpot_t *inkpot, double *HSVA )
-{
-    /* FIXME */
-    return ((inkpot->status = INKPOT_FAIL));
+    rc = inkpot_get_rgba(inkpot, rgba);
+    if (rc == INKPOT_SUCCESS)
+	rgba2cmyk( rgba, cmyk );
+ 
+    return rc;
 }
 
 inkpot_status_t inkpot_get_index ( inkpot_t *inkpot, unsigned int *index )
@@ -578,15 +602,21 @@ static inkpot_status_t inkpot_debug_scheme_names( inkpot_t *inkpot, int scheme_b
     return INKPOT_SUCCESS;
 }
 
-static void inkpot_debug_rgba( inkpot_t *inkpot, unsigned char *rgba )
+static void inkpot_debug_rgba( inkpot_t *inkpot, RGBA rgba )
 {
     char buf[20];
+    unsigned int r, g, b, a;
 
-    sprintf(buf, "%d,%d,%d,%d", rgba[0], rgba[1], rgba[2], rgba[3]);
+    a = rgba & MSK_RED; rgba >>= SZB_RED;
+    b = rgba & MSK_RED; rgba >>= SZB_RED;
+    g = rgba & MSK_RED; rgba >>= SZB_RED;
+    r = rgba & MSK_RED;
+
+    sprintf(buf, "%d,%d,%d,%d", r, g, b, a);
     errputs(inkpot, buf);
 }
 
-static inkpot_status_t inkpot_debug_names_schemes( inkpot_t *inkpot, BIT_SCHEMES_NAME scheme_bits, inkpot_scheme_index_t *scheme_index )
+static inkpot_status_t inkpot_debug_names_schemes( inkpot_t *inkpot, MSK_SCHEMES_NAME scheme_bits, inkpot_scheme_index_t *scheme_index )
 {
     inkpot_name_t *name;
     IDX_NAMES i;
@@ -637,7 +667,7 @@ static inkpot_status_t inkpot_debug_names_schemes( inkpot_t *inkpot, BIT_SCHEMES
 
 inkpot_status_t inkpot_debug_names( inkpot_t *inkpot )
 {
-    BIT_SCHEMES_NAME scheme_bits = inkpot->scheme_bits;
+    MSK_SCHEMES_NAME scheme_bits = inkpot->scheme_bits;
     inkpot_scheme_index_t *scheme_index = inkpot->scheme_index;
 
     errputs(inkpot, "names (in):\n");
@@ -646,7 +676,7 @@ inkpot_status_t inkpot_debug_names( inkpot_t *inkpot )
 
 inkpot_status_t inkpot_debug_names_out( inkpot_t *inkpot )
 {
-    BIT_SCHEMES_NAME scheme_bits = inkpot->out_scheme_bit;
+    MSK_SCHEMES_NAME scheme_bits = inkpot->out_scheme_bit;
     inkpot_scheme_index_t *scheme_index = inkpot->out_scheme_index;
 
     errputs(inkpot, "names (out):\n");
@@ -663,7 +693,7 @@ inkpot_status_t inkpot_debug_values( inkpot_t *inkpot )
     inkpot_name_t *name;
     IDX_VALUES i;
     IDX_NAMES t;
-    BIT_SCHEMES_NAME scheme_bits;
+    MSK_SCHEMES_NAME scheme_bits;
     int found;
 
     errputs(inkpot, "values:\n");
@@ -698,9 +728,8 @@ inkpot_status_t inkpot_write ( inkpot_t *inkpot )
     inkpot_status_t rc;
     const char *color;
     IDX_VALUES value_idx;
-    unsigned char *p, *q, rgba[4];
-    int m;
-    char buf[10] = "#12345678"; /* sets up "#........\0" */
+    RGBA rgba;
+    char buf[10];
 
     rc = inkpot_get(inkpot, &color);
     if (rc == INKPOT_SUCCESS)
@@ -708,17 +737,13 @@ inkpot_status_t inkpot_write ( inkpot_t *inkpot )
     if (rc == INKPOT_COLOR_NONAME) {
         value_idx = inkpot->value_idx;
         if (value_idx < SZT_VALUES)
-	    q = TAB_VALUES[value_idx].rgba;
+	    rgba = TAB_VALUES[value_idx].rgba;
         else {
 	    assert (value_idx < SZT_VALUES + SZT_NONAME_VALUES);
-	    q = TAB_NONAME_VALUES[value_idx - SZT_VALUES].rgba;
+	    rgba = TAB_NONAME_VALUES[value_idx - SZT_VALUES].rgba;
         }
 
-/* FIXME - this is ugly */
-	p = rgba;
-	for (m = 0; m < 4; m++) *p++ = *q++;  
-	sprintf(buf, "#%02x%02x%02x%02x", rgba[0], rgba[1], rgba[2], rgba[3]);
-
+	sprintf(buf, "#%08x", rgba);
 	inkpot->disc.out_writer(inkpot->out_closure, buf, sizeof(buf));
     }
     return rc;

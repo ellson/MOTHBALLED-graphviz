@@ -1,12 +1,32 @@
-typedef unsigned char IDX_STRINGS;
-typedef unsigned char BIT_SCHEMES_NAME;
-typedef unsigned char IDX_SCHEMES_NAME;
-typedef unsigned char IDX_SCHEMES_INDEX;
-typedef unsigned char IDX_NAMES;
-typedef unsigned char IDX_NAME_ALTS;
-typedef unsigned char IDX_VALUES;
-typedef unsigned char IDX_TONAMES;
-typedef unsigned char IDX_IXVALUES;
+/* $Id$ $Revision$ */
+/* vim:set shiftwidth=4 ts=8: */
+
+/***********************************************************
+ *      This software is part of the graphviz package      *
+ *                http://www.graphviz.org/                 *
+ *                                                         *
+ *            Copyright (c) 1994-2008 AT&T Corp.           *
+ *                and is licensed under the                *
+ *            Common Public License, Version 1.0           *
+ *                      by AT&T Corp.                      *
+ *                                                         *
+ *        Information and Software Systems Research        *
+ *              AT&T Research, Florham Park NJ             *
+ **********************************************************/
+
+typedef unsigned int   IDX_STRINGS;
+typedef unsigned short MSK_SCHEMES_NAME;
+typedef unsigned char  IDX_SCHEMES_NAME;
+typedef unsigned char  IDX_SCHEMES_INDEX;
+typedef unsigned int   IDX_NAMES;
+typedef unsigned char  IDX_NAME_ALTS;
+typedef unsigned int   IDX_VALUES;
+typedef unsigned int   IDX_IXVALUES;
+
+typedef unsigned int   RGBA;
+#define SZB_RED 8
+#define MSK_RED 255
+#define MAX_RED 255
 
 #include "inkpot_structs.h"
 
@@ -63,22 +83,22 @@ IDX_NAMES TAB_NAME_ALTS[] = {
 };
 #define SZT_NAME_ALTS (sizeof(TAB_NAME_ALTS)/sizeof(TAB_NAME_ALTS[0]))
 
-inkpot_value_t TAB_VALUES[] = { /* Must be LC_ALL=C sort'ed by r,g,b,a */
-	{{0,	0,	0,	255},	0 },  /* black */
-	{{0,	0,	255,	255},	1 },  /* bleu, blue */
-	{{0,	255,	0,	255},	3 },  /* green, vert */
-	{{255,	0,	0,	255},	5 },  /* red, rouge */
-	{{255,	192,	0,	255},	7 },  /* yellow (svg) */
-	{{255,	255,	0,	255},	8 },  /* yellow (x11), jaune */
-	{{255,	255,	255,	255},	10},  /* white */
+inkpot_value_t TAB_VALUES[] = { /* Must be sort'ed */
+	{ 0x000000ff, 0 },  /* black */
+	{ 0x0000ffff, 1 },  /* bleu, blue */
+	{ 0x00ff00ff, 3 },  /* green, vert */
+	{ 0xff0000ff, 5 },  /* red, rouge */
+	{ 0xffcf00ff, 7 },  /* yellow (svg) */
+	{ 0xffff00ff, 8 },  /* yellow (x11), jaune */
+	{ 0xffffffff, 10},  /* white */
 }; 
 #define SZT_VALUES (sizeof(TAB_VALUES)/sizeof(TAB_VALUES[0]))
 
-inkpot_noname_value_t TAB_NONAME_VALUES[] = { /* Must be LC_ALL=C sort'ed by r,g,b,a */
-	{{0,	0,	128,	255}},
-	{{0,	0,	160,	255}},
-	{{0,	0,	192,	255}},
-	{{0,	0,	224,	255}},
+inkpot_noname_value_t TAB_NONAME_VALUES[] = { /* Must be sort'ed */
+	{ 0x000080ff },
+	{ 0x0000a4ff },
+	{ 0x0000c8ff },
+	{ 0x0000eaff },
 }; 
 #define SZT_NONAME_VALUES (sizeof(TAB_NONAME_VALUES)/sizeof(TAB_NONAME_VALUES[0]))
 
