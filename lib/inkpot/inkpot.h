@@ -56,6 +56,7 @@ extern inkpot_status_t inkpot_set	      ( inkpot_t *inkpot, const char *color );
 extern inkpot_status_t inkpot_set_default     ( inkpot_t *inkpot );
 /* set inkpot color by value, which may or may not have a name in the current or any schemes */
 extern inkpot_status_t inkpot_set_rgba	      ( inkpot_t *inkpot, double rgba[4] );
+extern inkpot_status_t inkpot_set_hsva	      ( inkpot_t *inkpot, double hsva[4] );
 
 /* get inkpot color name in the translation scheme, or for colors without a name in the translated scheme,
  * set NULL and return INKPOT_COLOR_NONAME */

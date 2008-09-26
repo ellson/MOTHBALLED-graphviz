@@ -18,6 +18,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <assert.h>
 
 #include "inkpot.h"
@@ -386,34 +387,6 @@ static inkpot_status_t inkpot_set_RGBA ( inkpot_t *inkpot, RGBA *rgba )
 #endif
 }
 
-inkpot_status_t inkpot_set( inkpot_t *inkpot, const char *color )
-{
-    int index;
-    unsigned int rgba;
-    inkpot_status_t rc = INKPOT_COLOR_UNKNOWN;
-
-    if (!color)
-        return ((inkpot->status = INKPOT_COLOR_UNKNOWN));
-
-    if (sscanf(color, "#%6x", &rgba)) {
-	rgba = (rgba << SZB_RED) | MAX_RED;
-	rc = inkpot_set_RGBA(inkpot, &rgba);
-    }
-
-    if (rc != INKPOT_SUCCESS)
-        if (sscanf(color, "#%8x", &rgba))
-	    rc = inkpot_set_RGBA(inkpot, &rgba);
-
-    if (rc != INKPOT_SUCCESS)
-        if (sscanf(color, "%d", &index) == 1)
-            rc = inkpot_set_index(inkpot, index);
-
-    if (rc != INKPOT_SUCCESS)
-        rc = inkpot_set_name(inkpot, color);
-
-    return rc;
-}
-
 inkpot_status_t inkpot_set_rgba ( inkpot_t *inkpot, double rgba[4] )
 {
     unsigned int myrgba = 0, v;
@@ -428,6 +401,72 @@ inkpot_status_t inkpot_set_rgba ( inkpot_t *inkpot, double rgba[4] )
     }
 
     return inkpot_set_RGBA ( inkpot, &myrgba );
+}
+
+inkpot_status_t inkpot_set_hsva ( inkpot_t *inkpot, double hsva[4] )
+{
+    double rgba[4];
+
+    hsva2rgba( hsva, rgba );
+
+    return inkpot_set_rgba ( inkpot, rgba );
+}
+
+inkpot_status_t inkpot_set( inkpot_t *inkpot, const char *color )
+{
+    static char *canon;
+    static int allocated;
+    char *q, c;
+    const char *p;
+    int len, index;
+    unsigned int rgba;
+    double hsva[4];
+    inkpot_status_t rc = INKPOT_COLOR_UNKNOWN;
+
+    if (!color)
+        return ((inkpot->status = INKPOT_COLOR_UNKNOWN));
+
+    if (*color == '#') {
+        if (sscanf(color, "#%8x", &rgba))
+	    rc = inkpot_set_RGBA(inkpot, &rgba);
+
+        if (rc != INKPOT_SUCCESS) {
+            if (sscanf(color, "#%6x", &rgba)) {
+	        rgba = (rgba << SZB_RED) | MAX_RED;
+	        rc = inkpot_set_RGBA(inkpot, &rgba);
+            }
+   	} 
+    }
+
+    if ((rc != INKPOT_SUCCESS) || ((c = *color) == '.') || isdigit(c)) {
+	len = strlen(color);
+	if (len >= allocated) {
+	    allocated = len + 1 + 10;
+	    canon = realloc(canon, allocated);
+	    if (! canon)
+                return ((inkpot->status = INKPOT_MALLOC_FAIL));
+        }
+	p = color;
+        q = canon;
+        while ((c = *p++)) {
+	    if (c == ',')
+		c = ' ';
+	    *q++ = c;
+        }
+        *q = '\0';
+	hsva[3] = 1.0;
+        if (sscanf(canon, "%lf%lf%lf%lf", &hsva[0], &hsva[1], &hsva[2], &hsva[3]) >= 3)
+	    rc = inkpot_set_hsva(inkpot, hsva);
+    }
+
+    if (rc != INKPOT_SUCCESS)
+        if (sscanf(color, "%d", &index) == 1)
+            rc = inkpot_set_index(inkpot, index);
+
+    if (rc != INKPOT_SUCCESS)
+        rc = inkpot_set_name(inkpot, color);
+
+    return rc;
 }
 
 inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
