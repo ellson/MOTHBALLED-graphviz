@@ -51,7 +51,7 @@ int main (int argc, char *argv[])
     }
 
     if (argc < 4) {
-        rc = inkpot_schemes(inkpot, "x11", NULL);
+        rc = inkpot_schemes(inkpot, "x11");
         assert(rc == INKPOT_SUCCESS);
     }
     else {

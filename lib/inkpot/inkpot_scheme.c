@@ -15,7 +15,6 @@
  **********************************************************/
 
 #include <stdio.h>
-#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -146,10 +145,7 @@ static inkpot_status_t inkpot_scheme ( inkpot_t *inkpot, const char *scheme )
             inkpot->default_scheme_name_idx = idx; /* first scheme is default */
             inkpot->default_value_idx = TAB_NAMES[inkpot_scheme_name->default_name_idx].value_idx;
         }
-	if (! (inkpot->scheme_bits & (1 << idx))) {
-        	inkpot->scheme_bits |= 1 << idx;
-//        	inkpot->name = NULL;     /* clear cached name */   /* FIXME */
-	}
+        inkpot->scheme_bits |= 1 << idx;
         return ((inkpot->status = INKPOT_SUCCESS));
     }
 
@@ -163,31 +159,42 @@ static inkpot_status_t inkpot_scheme ( inkpot_t *inkpot, const char *scheme )
 	     * named schemes are currently active */
 	    inkpot->default_value_idx = TAB_IXVALUES[inkpot_scheme_index->first_value_idx];
 	}
-//	inkpot->name = NULL;     /* clear cached name */   /* FIXME */
     }
     return ((inkpot->status = INKPOT_SUCCESS));
 }
  
-inkpot_status_t inkpot_schemes ( inkpot_t *inkpot, const char *scheme, ... )
+inkpot_status_t inkpot_schemes ( inkpot_t *inkpot, const char *schemes )
 {
     inkpot_status_t rc;
-    va_list argp;
-    const char *s;
+    static char *schemelist;
+    static int schemelist_alloc;
+    const char *q;
+    char *p, *s, c;
+    int len;
 
-    if (scheme == NULL)
+    if (schemes == NULL)
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
 
-    rc = inkpot_clear(inkpot);
-    if (rc != INKPOT_SUCCESS)
-	return rc;
-
-    va_start(argp, scheme);
-    for (s = scheme; s; s = va_arg(argp, const char*)) {
-        rc = inkpot_scheme(inkpot, s);
-        if (rc != INKPOT_SUCCESS)
-	    break;
+    len = strlen(schemes);
+    if (len >= schemelist_alloc) {
+	schemelist_alloc = len + 1 + 10;
+	schemelist = realloc(schemelist, schemelist_alloc);
+	if (! schemelist)
+	    return ((inkpot->status = INKPOT_MALLOC_FAIL));
     }
-    va_end(argp);
+
+    q = schemes;
+    p = schemelist;
+    rc = inkpot_clear(inkpot);
+    for (c = *q; c;) {
+        if (rc != INKPOT_SUCCESS)
+	    return rc;
+        s = p;
+        while ((c = *q++) && c != ' ' && c != '\t' && c != ',') {*p++ = c;}
+	*p++ = '\0';
+	if (*s)
+	    rc = inkpot_scheme(inkpot, s);
+    }
     return rc;
 }
  
@@ -557,7 +564,7 @@ inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
     }
 
     *color = NULL;
-    return ((inkpot->status = INKPOT_FAIL));
+    return ((inkpot->status = INKPOT_COLOR_NONAME));
 }
 
 static inkpot_status_t inkpot_get_RGBA ( inkpot_t *inkpot, RGBA *rgba )
@@ -629,11 +636,14 @@ inkpot_status_t inkpot_get_cmyk ( inkpot_t *inkpot, double cmyk[4] )
     return rc;
 }
 
+#if 0
+/* FIXME - requires palette collection and transformation */
 inkpot_status_t inkpot_get_index ( inkpot_t *inkpot, unsigned int *index )
 {
     /* FIXME */
     return ((inkpot->status = INKPOT_FAIL));
 }
+#endif
 
 static void errputs(inkpot_t *inkpot, const char *s)
 {
@@ -866,8 +876,6 @@ inkpot_status_t inkpot_error ( inkpot_t *inkpot )
 	    m = "INKPOT_COLOR_NONAME\n"; break;
 	case INKPOT_SCHEME_UNKNOWN:
 	    m = "INKPOT_SCHEME_UNKNOWN\n"; break;
-	case INKPOT_FAIL:
-	    m = "INKPOT_FAIL\n"; break;
     }
     inkpot->disc.err_writer(inkpot->err_closure, m, strlen(m));
 

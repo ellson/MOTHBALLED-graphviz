@@ -26,8 +26,7 @@ typedef enum {
     INKPOT_MALLOC_FAIL,
     INKPOT_COLOR_UNKNOWN,
     INKPOT_COLOR_NONAME,
-    INKPOT_SCHEME_UNKNOWN,
-    INKPOT_FAIL
+    INKPOT_SCHEME_UNKNOWN
 } inkpot_status_t;
 
 typedef struct inkpot_s inkpot_t;
@@ -44,7 +43,7 @@ extern void            inkpot_destroy	      ( inkpot_t *inkpot );
 
 extern inkpot_status_t inkpot_disciplines     ( inkpot_t *inkpot, inkpot_disc_t disc, void *out_closure, void *err_closure );
 
-extern inkpot_status_t inkpot_schemes	      ( inkpot_t *inkpot, const char *scheme, ... );
+extern inkpot_status_t inkpot_schemes	      ( inkpot_t *inkpot, const char *schemes );
 extern inkpot_status_t inkpot_translate       ( inkpot_t *inkpot, const char *scheme );
 
 extern inkpot_status_t inkpot_set	      ( inkpot_t *inkpot, const char *color );
