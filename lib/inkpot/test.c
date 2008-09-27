@@ -64,8 +64,7 @@ int main (int argc, char *argv[])
         }
     }
 
-#if 0
-
+#if 1
     inkpot_debug_schemes(inkpot);
     
     inkpot_debug_names(inkpot);
@@ -73,16 +72,12 @@ int main (int argc, char *argv[])
     inkpot_debug_out_names(inkpot);
 
     inkpot_debug_values(inkpot);
-
 #endif
 
     fprintf(stdout, "%s ", color); /* ' ' after %s so it doesn't crash on NULL */
     rc = inkpot_set(inkpot, color);
-    if (rc == INKPOT_COLOR_UNKNOWN) {
+    if (rc == INKPOT_COLOR_UNKNOWN)
         fprintf(stdout, "(unknown)");
-	rc = inkpot_set_default(inkpot);
-	assert (rc == INKPOT_SUCCESS);
-    }
     fprintf(stdout, "\n text: ");
 
     rc = inkpot_write(inkpot);

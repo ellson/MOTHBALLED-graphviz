@@ -47,7 +47,6 @@ extern inkpot_status_t inkpot_schemes	      ( inkpot_t *inkpot, const char *sche
 extern inkpot_status_t inkpot_translate       ( inkpot_t *inkpot, const char *scheme );
 
 extern inkpot_status_t inkpot_set	      ( inkpot_t *inkpot, const char *color );
-extern inkpot_status_t inkpot_set_default     ( inkpot_t *inkpot );
 extern inkpot_status_t inkpot_set_rgba	      ( inkpot_t *inkpot, double rgba[4] );
 extern inkpot_status_t inkpot_set_hsva	      ( inkpot_t *inkpot, double hsva[4] );
 

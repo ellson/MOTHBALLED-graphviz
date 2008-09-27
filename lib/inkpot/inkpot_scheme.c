@@ -141,10 +141,6 @@ static inkpot_status_t inkpot_scheme ( inkpot_t *inkpot, const char *scheme )
     inkpot_scheme_name = inkpot_find_scheme_name(scheme);
     if (inkpot_scheme_name) {
         idx = inkpot_scheme_name - TAB_SCHEMES_NAME;
-        if (! inkpot->scheme_bits) {
-            inkpot->default_scheme_name_idx = idx; /* first scheme is default */
-            inkpot->default_value_idx = TAB_NAMES[inkpot_scheme_name->default_name_idx].value_idx;
-        }
         inkpot->scheme_bits |= 1 << idx;
         return ((inkpot->status = INKPOT_SUCCESS));
     }
@@ -152,14 +148,8 @@ static inkpot_status_t inkpot_scheme ( inkpot_t *inkpot, const char *scheme )
     inkpot_scheme_index = inkpot_find_scheme_index(scheme);
     if (! inkpot_scheme_index)
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
-    if (inkpot->scheme_index != inkpot_scheme_index) {
+    if (inkpot->scheme_index != inkpot_scheme_index)
         inkpot->scheme_index = inkpot_scheme_index;
-	if (! inkpot->scheme_bits ) {
-	    /* Set a default color from an index scheme only if no
-	     * named schemes are currently active */
-	    inkpot->default_value_idx = TAB_IXVALUES[inkpot_scheme_index->first_value_idx];
-	}
-    }
     return ((inkpot->status = INKPOT_SUCCESS));
 }
  
@@ -369,11 +359,6 @@ static inkpot_status_t inkpot_set_index ( inkpot_t *inkpot, int index )
         assert(value_idx < SZT_VALUES + SZT_NONAME_VALUES);
 
     return inkpot_set_out_value(inkpot, value_idx);
-}
-
-inkpot_status_t inkpot_set_default( inkpot_t *inkpot )
-{
-    return inkpot_set_out_value(inkpot, inkpot->default_value_idx);
 }
 
 static int inkpot_rgba_cmpf ( const void *key, const void *base)
@@ -661,8 +646,6 @@ inkpot_status_t inkpot_debug_schemes( inkpot_t *inkpot )
         if ((1<<i) & inkpot->scheme_bits) {
             errputs(inkpot, &TAB_STRINGS[TAB_SCHEMES_NAME[i].string_idx]);
             errputs(inkpot, " (in)");
-            if (i == inkpot->default_scheme_name_idx) 
-                errputs(inkpot, " (default)");
 	    found++;
         }
         if ((1<<i) & inkpot->out_scheme_bit) {
@@ -744,8 +727,6 @@ static inkpot_status_t inkpot_debug_names_schemes( inkpot_t *inkpot, MSK_SCHEMES
 		inkpot_debug_scheme_names(inkpot, scheme_bits);
 		errputs(inkpot, " ");
 		inkpot_debug_rgba(inkpot, TAB_VALUES[name->value_idx].rgba);
-		if (name->value_idx == inkpot->default_value_idx)
-		    errputs(inkpot, " (default)");
 		errputs(inkpot, "\n");
             }
         }

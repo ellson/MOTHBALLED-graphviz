@@ -53,9 +53,9 @@ const char TAB_STRINGS[] = {
 #define SZT_STRINGS sizeof(TAB_STRINGS)/sizeof(TAB_STRINGS[0])
 
 inkpot_scheme_name_t TAB_SCHEMES_NAME[] = { /* schemes of named colors */
-	{  0, 1, },  /* french */
-	{  7, 0, },  /* svg */
-	{ 11, 0, },  /* x11 */
+	{  0, },  /* french */
+	{  7, },  /* svg */
+	{ 11, },  /* x11 */
 };
 #define SZT_SCHEMES_NAME (sizeof(TAB_SCHEMES_NAME)/sizeof(TAB_SCHEMES_NAME[0]))
 

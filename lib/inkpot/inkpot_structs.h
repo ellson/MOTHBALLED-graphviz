@@ -20,12 +20,6 @@
 typedef struct inkpot_scheme_name_s {
 	IDX_STRINGS
 	     string_idx;        /* The scheme name in TAB_STRINGS.  (e.g. "x11") */
-
-	IDX_NAMES
-	    default_name_idx;	/* The index of the name of the default color
-				 * for this scheme. (Each scheme can have
-				 * a different default.  The default must
-				 * be a member of the scheme */
 } inkpot_scheme_name_t;
 
 typedef struct inkpot_scheme_index_s { 
@@ -38,9 +32,6 @@ typedef struct inkpot_scheme_index_s {
 				 * first_value_idx of the next
 				 * inkpot_scheme_index_t in TAB_SCHEMES_INDEX
 				 * or by SZT_SCHEMES_INDEX */
-				
-				/* (The default value for indexed schemes is
-				 * always the color indexed by "0" */
 } inkpot_scheme_index_t;
 
 typedef struct inkpot_name_s {	/* Color_name used by one or more
@@ -120,13 +111,7 @@ struct inkpot_s {		/* The Ink Pot */
 	    scheme_bits,	/* One bit per inkpot_scheme_name_t */
 	    out_scheme_bit;     /* One scheme only for output. */
 
-	IDX_SCHEMES_NAME
-	    default_scheme_name_idx; /* The index of the scheme which provides
-				 * the default color. It was the first
-				 * scheme added. */
-
 	IDX_VALUES
-	    default_value_idx, 	/* The default color */
 	    value_idx;		/* The current color */
 
 	IDX_IXVALUES
