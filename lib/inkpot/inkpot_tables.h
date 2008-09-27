@@ -28,6 +28,9 @@ typedef unsigned int   RGBA;
 #define MSK_RED 255
 #define MAX_RED 255
 
+typedef unsigned int   IDX_MRU_CACHE;
+#define SZT_MRU_CACHE 4
+
 #include "inkpot_structs.h"
 
 const char TAB_STRINGS[] = {

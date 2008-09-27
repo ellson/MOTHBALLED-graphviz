@@ -104,6 +104,15 @@ typedef struct inkpot_noname_value_s {	/* Numeric color values used by the remai
 
 } inkpot_noname_value_t;
 
+typedef struct inkpot_cache_element_s {
+	IDX_MRU_CACHE
+	    next_recently_used_idx;
+	MSK_SCHEMES_NAME
+	    scheme_bits;
+	IDX_NAMES
+	    name_idx;
+} inkpot_cache_element_t;
+
 /* typedef struct inkpot_s inkpot_t; */  /* public opaque type in inkpot.h */
 
 struct inkpot_s {		/* The Ink Pot */
@@ -118,7 +127,7 @@ struct inkpot_s {		/* The Ink Pot */
 
 	IDX_VALUES
 	    default_value_idx, 	/* The default color */
-	    value_idx;          /* The current color value. */
+	    value_idx;		/* The current color */
 
 	IDX_IXVALUES
 	    index,		/* The index for the current value, if indexed scheme not NULL */
@@ -129,11 +138,14 @@ struct inkpot_s {		/* The Ink Pot */
 	    *out_scheme_index;	/* Indexed output scheme, or NULL */
 
 	inkpot_name_t
-	    *name,		/* The current input name, or NULL. */
 	    *out_name;		/* The current output name, or NULL. */
 
-	char *canon;		/* malloc'ed buffer for canonicalizing input color */
+	char *canon;		/* malloc'ed, reused storage for canonicalizing color request strings */
 	int canon_alloc;
+
+	inkpot_cache_element_t cache[SZT_MRU_CACHE];  /* MRU chache of successfull color lookups */
+	IDX_MRU_CACHE
+	    most_recently_used_idx;
 
 	inkpot_disc_t disc;     /* writers and closures for out and err */
 	void *out_closure, *err_closure;
