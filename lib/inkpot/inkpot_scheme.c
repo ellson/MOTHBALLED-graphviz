@@ -295,7 +295,7 @@ static inkpot_status_t inkpot_cache_put ( inkpot_t *inkpot, IDX_NAMES name_idx )
 static inkpot_status_t inkpot_set_name ( inkpot_t *inkpot )
 {
     inkpot_status_t rc;
-    char *color
+    char *color;
     inkpot_name_t *name;
     IDX_NAME_ALTS i;
     IDX_NAMES base, top;
