@@ -292,16 +292,17 @@ static inkpot_status_t inkpot_cache_put ( inkpot_t *inkpot, IDX_NAMES name_idx )
     return ((inkpot->status = INKPOT_SUCCESS));
 }
 
-static inkpot_status_t inkpot_set_name ( inkpot_t *inkpot, const char *color )
+static inkpot_status_t inkpot_set_name ( inkpot_t *inkpot )
 {
     inkpot_status_t rc;
+    char *color
     inkpot_name_t *name;
     IDX_NAME_ALTS i;
     IDX_NAMES base, top;
 
     if (inkpot == NULL || ! inkpot->scheme_bits)
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
-    if (color == NULL)
+    if ((color = inkpot->canon) == NULL)
         return ((inkpot->status = INKPOT_COLOR_UNKNOWN));
 
     rc = inkpot_cache_get(inkpot);
@@ -508,7 +509,7 @@ inkpot_status_t inkpot_set( inkpot_t *inkpot, const char *color )
 	    *q++ = tolower(c);
 	};
 	*q = '\0';
-        rc = inkpot_set_name(inkpot, inkpot->canon);
+        rc = inkpot_set_name(inkpot);
     }
 
     return rc;
