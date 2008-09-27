@@ -31,7 +31,11 @@ typedef unsigned int   RGBA;
 typedef unsigned int   IDX_MRU_CACHE;
 #define SZT_MRU_CACHE 4
 
+#define SZT_SCHEMES_INDEX 2
+
 #include "inkpot_structs.h"
+
+#define SZL_STRINGS 6
 
 const char TAB_STRINGS[] = {
 	"french\0"
@@ -59,11 +63,10 @@ inkpot_scheme_name_t TAB_SCHEMES_NAME[] = { /* schemes of named colors */
 };
 #define SZT_SCHEMES_NAME (sizeof(TAB_SCHEMES_NAME)/sizeof(TAB_SCHEMES_NAME[0]))
 
-inkpot_scheme_index_t TAB_SCHEMES_INDEX[] = { /* schemes of indexed colors */
+inkpot_scheme_index_t TAB_SCHEMES_INDEX[SZT_SCHEMES_INDEX] = { /* schemes of indexed colors */
 	{ 71, 0, }, /* xxx */
 	{ 75, 5, }, /* yyy */
 };
-#define SZT_SCHEMES_INDEX (sizeof(TAB_SCHEMES_INDEX)/sizeof(TAB_SCHEMES_INDEX[0]))
 
 inkpot_name_t TAB_NAMES[] = { /* Must be LC_ALL=C sort'ed by name with each alt */
 	{ 15, 0, 0x6, /* black */  0,  /* black */ 	   }, /* 0  */

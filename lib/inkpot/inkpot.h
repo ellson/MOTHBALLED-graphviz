@@ -41,7 +41,7 @@ typedef struct inkpot_disc_s {
 extern inkpot_t *      inkpot_init	      ( void );
 extern void            inkpot_destroy	      ( inkpot_t *inkpot );
 
-extern inkpot_status_t inkpot_disciplines     ( inkpot_t *inkpot, inkpot_disc_t disc, void *out_closure, void *err_closure );
+extern inkpot_status_t inkpot_disciplines     ( inkpot_t *inkpot, inkpot_disc_t disc, void *out, void *err );
 
 extern inkpot_status_t inkpot_schemes	      ( inkpot_t *inkpot, const char *schemes );
 extern inkpot_status_t inkpot_translate       ( inkpot_t *inkpot, const char *scheme );
@@ -55,7 +55,6 @@ extern inkpot_status_t inkpot_get_rgba_i      ( inkpot_t *inkpot, unsigned int r
 extern inkpot_status_t inkpot_get_rgba	      ( inkpot_t *inkpot, double rgba[4] );
 extern inkpot_status_t inkpot_get_hsva	      ( inkpot_t *inkpot, double hsva[4] );
 extern inkpot_status_t inkpot_get_cmyk	      ( inkpot_t *inkpot, double cmyk[4] );
-extern inkpot_status_t inkpot_get_index	      ( inkpot_t *inkpot, unsigned int *index );
 
 extern inkpot_status_t inkpot_write	      ( inkpot_t *inkpot );
 
@@ -64,7 +63,7 @@ extern inkpot_status_t inkpot_debug_names     ( inkpot_t *inkpot );
 extern inkpot_status_t inkpot_debug_out_names ( inkpot_t *inkpot );
 extern inkpot_status_t inkpot_debug_values    ( inkpot_t *inkpot );
 
-extern inkpot_status_t inkpot_error	      ( inkpot_t *inkpot );
+extern inkpot_status_t inkpot_debug_error     ( inkpot_t *inkpot );
 
 #ifdef __cplusplus
 }

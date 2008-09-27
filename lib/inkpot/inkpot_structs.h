@@ -115,18 +115,24 @@ struct inkpot_s {		/* The Ink Pot */
 	    value_idx;		/* The current color */
 
 	IDX_IXVALUES
-	    index,		/* The index for the current value, if indexed scheme not NULL */
-	    out_index;		/* The index for the current value, if indexed output scheme not NULL */
+	    index,		/* The index for the current value in active_schemes_index */
+	    out_index;		/* The index for the current value in active_out_schemes_index */
 
-	inkpot_scheme_index_t
-	    *scheme_index,	/* Indexed input scheme, or NULL. */
-	    *out_scheme_index;	/* Indexed output scheme, or NULL */
+	IDX_SCHEMES_INDEX
+	    active_schemes,                 /* The number of active index schemes. */
+	    scheme_list[SZT_SCHEMES_INDEX], /* The list of active index schemes. */
+	    active_out_schemes,             /* The number of active index schemes. */
+	    out_scheme_list[1];             /* The list of active index schemes. */
 
 	inkpot_name_t
 	    *out_name;		/* The current output name, or NULL. */
 
 	char *canon;		/* malloc'ed, reused storage for canonicalizing color request strings */
 	int canon_alloc;
+	
+	inkpot_noname_value_t *palette;   /* malloc'ed paletter storage */
+	int palette_alloc;
+	int palette_fill;
 
 	inkpot_cache_element_t cache[SZT_MRU_CACHE];  /* MRU chache of successfull color lookups */
 	IDX_MRU_CACHE

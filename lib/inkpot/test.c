@@ -45,7 +45,7 @@ int main (int argc, char *argv[])
     else {
         rc = inkpot_translate(inkpot, argv[2]);
         if (rc == INKPOT_SCHEME_UNKNOWN)
-	    inkpot_error(inkpot);
+	    inkpot_debug_error(inkpot);
         else
             assert(rc == INKPOT_SUCCESS);
     }
@@ -58,7 +58,7 @@ int main (int argc, char *argv[])
         for (i = 3; i < argc; i++) {
             rc = inkpot_schemes(inkpot, argv[i]);
             if (rc == INKPOT_SCHEME_UNKNOWN)
-	        inkpot_error(inkpot);
+	        inkpot_debug_error(inkpot);
             else
                 assert(rc == INKPOT_SUCCESS);
         }
