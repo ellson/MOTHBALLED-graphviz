@@ -23,20 +23,33 @@ extern "C" {
 
 typedef int BIT_VTYPE;
 
-#define MSK_VTYPE_size       0x01
-#define BIT_VTYPE_size_16    0x00
-#define BIT_VTYPE_size_8     0x01
-
-#define MSK_VTYPE_code       0x0e
-#define BIT_VTYPE_code_rgba  0x00
-#define BIT_VTYPE_code_hsva  0x02
-#define BIT_VTYPE_code_cmyk  0x04
-#define BIT_VTYPE_code_rgb   0x06
-#define BIT_VTYPE_code_hsv   0x08
+typedef enum {
+    VTYPE_rgba = 0,
+    VTYPE_hsva,
+    VTYPE_cmyk,
+    SZT_VTYPE
+} inkpot_value_vtype_t;
 
 typedef struct inkpot_values_s {
-    unsigned long no_palette_value;
-    BIT_VTYPE no_palette_vtype;
+#if 0
+/* FIXME - not sure about all this ... */
+    unsigned long *         named[SZT_VTYPE];
+    unsigned long *       unnamed[SZT_VTYPE];
+    unsigned long *       palette[SZT_VTYPE];
+    size_t          named_64_size[SZT_VTYPE];
+    size_t          named_48_size[SZT_VTYPE];
+    size_t          named_32_size[SZT_VTYPE];
+    size_t          named_24_size[SZT_VTYPE];
+    size_t        unnamed_64_size[SZT_VTYPE];
+    size_t        unnamed_48_size[SZT_VTYPE];
+    size_t        unnamed_32_size[SZT_VTYPE];
+    size_t        unnamed_24_size[SZT_VTYPE];
+    size_t        palette_64_size[SZT_VTYPE];
+    size_t        palette_48_size[SZT_VTYPE];
+    size_t        palette_32_size[SZT_VTYPE];
+    size_t        palette_24_size[SZT_VTYPE];
+    size_t          palette_alloc[SZT_VTYPE];
+#endif
 } inkpot_values_t;
 
 typedef struct inkpot_value_s {

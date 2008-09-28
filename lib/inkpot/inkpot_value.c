@@ -25,8 +25,7 @@
 
 inkpot_status_t inkpot_value_set ( inkpot_values_t *values, inkpot_value_t *value )
 {
-    values->no_palette_value = value->value;
-    values->no_palette_vtype = value->vtype;
+    value->vtype = VTYPE_rgba;  /* FIXME */
     value->index = SZT_VALUES + SZT_NONAME_VALUES;
 
     return INKPOT_SUCCESS;
@@ -34,22 +33,21 @@ inkpot_status_t inkpot_value_set ( inkpot_values_t *values, inkpot_value_t *valu
 
 inkpot_status_t inkpot_value_get ( inkpot_values_t *values, inkpot_value_t *value )
 {
-    IDX_VALUES index;
+    IDX_VALUES index = value->index;
 
     /* FIXME - this routine must check for 8 bit values and properly scale to 16 for the api */
-   
-    index  = value->index;
+
     if (index < SZT_VALUES) {
 	value->value = TAB_VALUES[index];
-	value->vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_rgba;  /* FIXME */
+	value->vtype = VTYPE_rgba;  /* FIXME */
     }
     else if (index - SZT_VALUES < SZT_NONAME_VALUES) {
 	value->value = TAB_NONAME_VALUES[index - SZT_VALUES];
-	value->vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_rgba;  /* FIXME */
+	value->vtype = VTYPE_rgba;  /* FIXME */
     }
     else if (index == SZT_VALUES + SZT_NONAME_VALUES) {
-	value->value = values->no_palette_value;
-	value->vtype = values->no_palette_vtype;
+	value->vtype = VTYPE_rgba;  /* FIXME */
+        return INKPOT_NOPALETTE;
     }
     else
 	return INKPOT_NOSUCH_INDEX;

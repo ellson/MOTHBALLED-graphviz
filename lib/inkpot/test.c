@@ -81,7 +81,7 @@ int main (int argc, char *argv[])
     fprintf(stdout, "\n text: ");
 
     rc = inkpot_write(inkpot);
-    if (rc == INKPOT_COLOR_NONAME || rc == INKPOT_COLOR_NOPALETTE) {
+    if (rc == INKPOT_COLOR_NONAME || rc == INKPOT_NOPALETTE) {
         fprintf(stdout, "#");
         rc = inkpot_write_rgba8(inkpot);
     }

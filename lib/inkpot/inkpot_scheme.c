@@ -36,34 +36,12 @@ static inkpot_disc_t inkpot_default_disc = { inkpot_writer, inkpot_writer };
 
 inkpot_t *inkpot_init ( void )
 {
-    inkpot_t *inkpot;
-    IDX_MRU_CACHE i;
-   
-    inkpot = malloc(sizeof(inkpot_t));
+    inkpot_t *inkpot = malloc(sizeof(inkpot_t));
     if (inkpot) {
-
-	inkpot->values.no_palette_value = 0;
-	inkpot->values.no_palette_vtype = (BIT_VTYPE_size_16 | BIT_VTYPE_code_rgb);
-
-	inkpot->value.index = 0;
-	inkpot->value.value = 0;
-	inkpot->value.vtype = (BIT_VTYPE_size_16 | BIT_VTYPE_code_rgb);
-
-	inkpot->canon = NULL;
-	inkpot->canon_alloc = 0;
-
+	memset(inkpot, 0, sizeof(inkpot_t));
 	inkpot->disc = inkpot_default_disc;
 	inkpot->out_closure = stdout;
 	inkpot->err_closure = stderr;
-
-	inkpot->most_recently_used_idx = 0;
-        for (i = 0; i < SZT_MRU_CACHE; i++)
-	    inkpot->cache[i].next_recently_used_idx = i + 1;
-
-        inkpot->scheme_bits = 0;  /* clear schemes */
-        inkpot->active_schemes = 0;
-        inkpot->active_out_schemes = 0;
-        inkpot->out_name = NULL; 
     }
     return inkpot;
 }
@@ -397,7 +375,7 @@ inkpot_status_t inkpot_set_rgba ( inkpot_t *inkpot, double rgba[4] )
 	v = (v > 1.0) ? 1.0 : v;
 	value.value |= (int)(v * 65535);
     }
-    value.vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_rgba;
+    value.vtype = VTYPE_rgba;
     
     rc = inkpot_value_set ( &inkpot->values, &value );
     if (rc == INKPOT_SUCCESS)
@@ -453,24 +431,24 @@ inkpot_status_t inkpot_set ( inkpot_t *inkpot, const char *color )
     if (*inkpot->canon == '#') {
 	a = 65535;
         if ((len = sscanf(inkpot->canon, "#%4x%4x%4x%4x", &r, &g, &b, &a)) >= 3) {
-	    if (len == 4)
-	        value.vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_rgba;
-	    else
-	        value.vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_rgb;
+	    value.value = (((((((unsigned long)r) << 16)
+			      | (unsigned long)g) << 16)
+			      | (unsigned long)b) << 16)
+		              | (unsigned long)a;
 	}
 	else if (len < 3) {
 	    a = 255;
 	    if ((len = sscanf(inkpot->canon, "#%2x%2x%2x%2x", &r, &g, &b, &a)) >= 3) {
-	        r *= 65535/255; g *= 65535/255; b *= 65535/255; a *= 65535/255;
-	        if (len == 4)
-	            value.vtype = BIT_VTYPE_size_8 | BIT_VTYPE_code_rgba;
-	        else
-	            value.vtype = BIT_VTYPE_size_8 | BIT_VTYPE_code_rgb;
+/*	        r *= 65535/255; g *= 65535/255; b *= 65535/255; a *= 65535/255;   // too ugly */
+	        value.value = (((((((unsigned long)r) << 16)
+			          | (unsigned long)g) << 16)
+			          | (unsigned long)b) << 16)
+		                  | (unsigned long)a;
+		value.value |= value.value << 8;		                  /* not ugly */
    	    } 
 	}
 	if (len >= 3) {
-	    value.value = (((((((unsigned long)r) << 16) | (unsigned long)g) << 16) | (unsigned long)b) << 16) | (unsigned long)a;
-
+	    value.vtype = VTYPE_rgba;
 	    rc = inkpot_value_set ( &inkpot->values, &value );
 	    if (rc ==  INKPOT_SUCCESS)
 	        inkpot->value = value;
@@ -547,6 +525,9 @@ inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
         return ((inkpot->status = INKPOT_SUCCESS));
     }
     
+
+    /* FIXME - most of this should go */
+
     if (inkpot->out_scheme_bit) {
         value_idx = inkpot->value.index;
         if (value_idx < SZT_VALUES) {
@@ -570,7 +551,7 @@ inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
         }
         if (value_idx == SZT_NONAME_VALUES) {
             *color = NULL;
-	    return ((inkpot->status = INKPOT_COLOR_NOPALETTE));
+	    return ((inkpot->status = INKPOT_NOPALETTE));
         }
         assert(0);  /* support for dynamic values to go here */
     }
@@ -930,10 +911,10 @@ inkpot_status_t inkpot_debug_error ( inkpot_t *inkpot )
 	    m = "\nINKPOT_COLOR_UNKNOWN\n"; break;
 	case INKPOT_COLOR_NONAME:
 	    m = "\nINKPOT_COLOR_NONAME\n"; break;
-	case INKPOT_COLOR_NOPALETTE:
-	    m = "\nINKPOT_COLOR_PALETTE\n"; break;
 	case INKPOT_SCHEME_UNKNOWN:
 	    m = "\nINKPOT_SCHEME_UNKNOWN\n"; break;
+	case INKPOT_NOPALETTE:
+	    m = "\nINKPOT_PALETTE\n"; break;
 	case INKPOT_NOSUCH_INDEX:
 	    m = "\nINKPOT_NOSUCH_INDEX\n"; break;
     }
