@@ -95,7 +95,7 @@ struct inkpot_s {		/* The Ink Pot */
 	char *canon;		/* malloc'ed, reused storage for canonicalizing color request strings */
 	int canon_alloc;
 	
-	inkpot_values_t *values;/* The values store */
+	inkpot_values_t values; /* The values store */
 	inkpot_value_t value;	/* The current value of the inkpot */
 
 	inkpot_cache_element_t

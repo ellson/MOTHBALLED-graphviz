@@ -61,3 +61,20 @@ inkpot_name_t TAB_NAMES[SZT_NAMES] = { /* Must be LC_ALL=C sort'ed by name with 
 IDX_NAMES TAB_NAME_ALTS[SZT_NAME_ALTS] = {
 	0, 10,
 };
+
+IDX_TONAMES TAB_TONAMES[SZT_TONAMES] = {
+        0,   /* black */
+	1,   /* bleu, blue */
+	3,   /* green, vert */
+	5,   /* red, rouge */
+	7,   /* yellow (svg) */
+	8,   /* yellow (x11), jaune */
+	10,  /* white */
+};
+
+IDX_VALUES TAB_IXVALUES[SZT_IXVALUES] = {
+        7, 8, 9, 10, 1,  /* xxx */
+	0, 6,            /* yyy */
+};
+
+

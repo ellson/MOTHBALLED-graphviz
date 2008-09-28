@@ -15,36 +15,35 @@
  **********************************************************/
 
 typedef unsigned int   IDX_STRINGS;
+#define SZT_STRINGS 79
+#define SZL_STRINGS 6
+
 typedef unsigned short MSK_SCHEMES_NAME;
 typedef unsigned char  IDX_SCHEMES_NAME;
+#define SZT_SCHEMES_NAME 3
+
 typedef unsigned char  IDX_SCHEMES_INDEX;
+#define SZT_SCHEMES_INDEX 2
+
 typedef unsigned int   IDX_NAMES;
+#define SZT_NAMES 11
+
 typedef unsigned char  IDX_NAME_ALTS;
+#define SZT_NAME_ALTS 2
 
 typedef unsigned int   IDX_MRU_CACHE;
 #define SZT_MRU_CACHE 4
 
-#define SZT_SCHEMES_INDEX 2
-
-#define SZL_STRINGS 6
-
-#define SZT_STRINGS 79
-#define SZT_SCHEMES_NAME 3
-#define SZT_NAMES 11
-#define SZT_NAME_ALTS 2
-
-
-/* for values */
-
-typedef unsigned int   IDX_VALUES;
 typedef unsigned int   IDX_IXVALUES;
+#define SZT_IXVALUES 7
+typedef unsigned int   IDX_TONAMES;
+#define SZT_TONAMES 7
+
 typedef unsigned long  VALUE;
 #define SZB_RED 16
 #define MSK_RED 65535
 #define MAX_RED 65535
 
+typedef unsigned int   IDX_VALUES;
 #define SZT_VALUES 7
 #define SZT_NONAME_VALUES 4
-#define SZT_IXVALUES 7
-
-

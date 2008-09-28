@@ -23,29 +23,6 @@
 #include "inkpot_value.h"
 #include "inkpot_value_table.h"
 
-struct inkpot_values_s {
-    VALUE
-	no_palette_value;
-    BIT_VTYPE 
-	no_palette_vtype;
-};
-
-inkpot_values_t* inkpot_values_init ( void )
-{
-    inkpot_values_t *values;
-   
-    values = (inkpot_values_t*)malloc(sizeof(inkpot_values_t));
-    if (values) {
-
-    }
-    return values;
-}
-
-void inkpot_values_destroy ( inkpot_values_t *values )
-{
-    free(values);
-}
-
 inkpot_status_t inkpot_value_set ( inkpot_values_t *values, inkpot_value_t *value )
 {
     values->no_palette_value = value->value;
@@ -61,11 +38,11 @@ inkpot_status_t inkpot_value_get ( inkpot_values_t *values, inkpot_value_t *valu
    
     index  = value->index;
     if (index < SZT_VALUES) {
-	value->value = TAB_VALUES[index].value;
+	value->value = TAB_VALUES[index];
 	value->vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_VALUE | BIT_VTYPE_alpha_yes;
     }
     else if (index - SZT_VALUES < SZT_NONAME_VALUES) {
-	value->value = TAB_NONAME_VALUES[index - SZT_VALUES].value;
+	value->value = TAB_NONAME_VALUES[index - SZT_VALUES];
 	value->vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_VALUE | BIT_VTYPE_alpha_yes;
     }
     else if (index == SZT_VALUES + SZT_NONAME_VALUES) {
@@ -73,7 +50,19 @@ inkpot_status_t inkpot_value_get ( inkpot_values_t *values, inkpot_value_t *valu
 	value->vtype = values->no_palette_vtype;
     }
     else
-	assert(0);
+	return INKPOT_NOSUCH_INDEX;
 
     return INKPOT_SUCCESS;
+}
+
+inkpot_status_t  inkpot_value_get_first ( inkpot_values_t *values, inkpot_value_t *value )
+{
+    value->index = 0;
+    return inkpot_value_get ( values, value );
+}
+
+inkpot_status_t  inkpot_value_get_next ( inkpot_values_t *values, inkpot_value_t *value )
+{
+    value->index++;
+    return inkpot_value_get ( values, value );
 }

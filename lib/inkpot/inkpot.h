@@ -27,7 +27,8 @@ typedef enum {
     INKPOT_COLOR_UNKNOWN,
     INKPOT_COLOR_NONAME,
     INKPOT_COLOR_NOPALETTE,
-    INKPOT_SCHEME_UNKNOWN
+    INKPOT_SCHEME_UNKNOWN,
+    INKPOT_NOSUCH_INDEX
 } inkpot_status_t;
 
 typedef struct inkpot_s inkpot_t;
