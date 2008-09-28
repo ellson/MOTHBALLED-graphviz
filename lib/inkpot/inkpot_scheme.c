@@ -43,11 +43,11 @@ inkpot_t *inkpot_init ( void )
     if (inkpot) {
 
 	inkpot->values.no_palette_value = 0;
-	inkpot->values.no_palette_vtype = (BIT_VTYPE_size_16 | BIT_VTYPE_code_VALUE | BIT_VTYPE_alpha_yes);
+	inkpot->values.no_palette_vtype = (BIT_VTYPE_size_16 | BIT_VTYPE_code_rgb);
 
 	inkpot->value.index = 0;
 	inkpot->value.value = 0;
-	inkpot->value.vtype = (BIT_VTYPE_size_16 | BIT_VTYPE_code_VALUE | BIT_VTYPE_alpha_yes);
+	inkpot->value.vtype = (BIT_VTYPE_size_16 | BIT_VTYPE_code_rgb);
 
 	inkpot->canon = NULL;
 	inkpot->canon_alloc = 0;
@@ -387,17 +387,17 @@ inkpot_status_t inkpot_set_rgba ( inkpot_t *inkpot, double rgba[4] )
 {
     inkpot_status_t rc;
     inkpot_value_t value;
-    VALUE v;
+    unsigned long v;
     int i;
 
     for (i = 0; i < 4; i++) {
-	value.value <<= SZB_RED;
+	value.value <<= 16;
 	v = rgba[i];
 	v = (v < 0.0) ? 0.0 : v;
 	v = (v > 1.0) ? 1.0 : v;
-	value.value |= (int)(v * MAX_RED);
+	value.value |= (int)(v * 65535);
     }
-    value.vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_VALUE | BIT_VTYPE_alpha_yes;
+    value.vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_rgba;
     
     rc = inkpot_value_set ( &inkpot->values, &value );
     if (rc == INKPOT_SUCCESS)
@@ -453,17 +453,23 @@ inkpot_status_t inkpot_set ( inkpot_t *inkpot, const char *color )
     if (*inkpot->canon == '#') {
 	a = 65535;
         if ((len = sscanf(inkpot->canon, "#%4x%4x%4x%4x", &r, &g, &b, &a)) >= 3) {
-	    r *= MAX_RED/65535; g *= MAX_RED/65535; b *= MAX_RED/65535; a *= MAX_RED/65535;
+	    if (len == 4)
+	        value.vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_rgba;
+	    else
+	        value.vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_rgb;
 	}
-	if (len < 3) {
+	else if (len < 3) {
 	    a = 255;
 	    if ((len = sscanf(inkpot->canon, "#%2x%2x%2x%2x", &r, &g, &b, &a)) >= 3) {
-	        r *= MAX_RED/255; g *= MAX_RED/255; b *= MAX_RED/255; a *= MAX_RED/255;
+	        r *= 65535/255; g *= 65535/255; b *= 65535/255; a *= 65535/255;
+	        if (len == 4)
+	            value.vtype = BIT_VTYPE_size_8 | BIT_VTYPE_code_rgba;
+	        else
+	            value.vtype = BIT_VTYPE_size_8 | BIT_VTYPE_code_rgb;
    	    } 
 	}
 	if (len >= 3) {
-	    value.value = (((((((VALUE)r) << SZB_RED) | (VALUE)g) << SZB_RED) | (VALUE)b) << SZB_RED) | (VALUE)a;
-	    value.vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_VALUE | BIT_VTYPE_alpha_yes;
+	    value.value = (((((((unsigned long)r) << 16) | (unsigned long)g) << 16) | (unsigned long)b) << 16) | (unsigned long)a;
 
 	    rc = inkpot_value_set ( &inkpot->values, &value );
 	    if (rc ==  INKPOT_SUCCESS)
@@ -474,7 +480,7 @@ inkpot_status_t inkpot_set ( inkpot_t *inkpot, const char *color )
     else if (((c = *inkpot->canon) == '.') || isdigit(c)) {
 	hsva[3] = 1.0;
         if (sscanf(inkpot->canon, "%lf%lf%lf%lf", &hsva[0], &hsva[1], &hsva[2], &hsva[3]) >= 3)
-	    rc = inkpot_set_hsva(inkpot, hsva);
+	    rc = inkpot_set_hsva(inkpot, hsva);  /* FIXME */
 	else 
             if (sscanf(inkpot->canon, "%d", &index) == 1)   /* simple indexes */
                 rc = inkpot_set_index(inkpot, index);
@@ -589,8 +595,8 @@ inkpot_status_t inkpot_get_rgba_i ( inkpot_t *inkpot, unsigned short rgba[4] )
     rc = inkpot->status = inkpot_value_get( &inkpot->values, &value );
     if (rc == INKPOT_SUCCESS) {
 	for (i = 3; i >= 0; i--) {
-	    rgba[i] = (value.value & MSK_RED);
-	    value.value >>= SZB_RED;
+	    rgba[i] = (value.value & 65535);
+	    value.value >>= 16;
 	}
     }
     return rc;
@@ -606,8 +612,8 @@ inkpot_status_t inkpot_get_rgba ( inkpot_t *inkpot, double rgba[4] )
     rc = inkpot->status = inkpot_value_get( &inkpot->values, &value );
     if (rc == INKPOT_SUCCESS) {
 	for (i = 3; i >= 0; i--) {
-	    rgba[i] = (value.value & MSK_RED) / (double)MAX_RED;
-	    value.value >>= SZB_RED;
+	    rgba[i] = (value.value & 65535) / (double)65535;
+	    value.value >>= 16;
 	}
     }
     return rc;
@@ -792,8 +798,8 @@ static void inkpot_debug_rgba( inkpot_t *inkpot, VALUE value )
     int i;
 
     for (i = 3; i >= 0; i--) {
-	rgba[i] = (value & MSK_RED);
-	value >>= SZB_RED;
+	rgba[i] = (value & 65535);
+	value >>= 16;
     }
     sprintf(buf, "#%04x%04x%04x%04x", rgba[0], rgba[1], rgba[2], rgba[3]);
     errputs(inkpot, buf);

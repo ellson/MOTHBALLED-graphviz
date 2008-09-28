@@ -28,24 +28,21 @@ typedef int BIT_VTYPE;
 #define BIT_VTYPE_size_8     0x01
 
 #define MSK_VTYPE_code       0x0e
-#define BIT_VTYPE_code_VALUE 0x00
-#define BIT_VTYPE_code_rgba  0x02
-#define BIT_VTYPE_code_hsva  0x04
-#define BIT_VTYPE_code_cmyk  0x06
-
-#define MSK_VTYPE_alpha      0x10
-#define BIT_VTYPE_alpha_yes  0x00
-#define BIT_VTYPE_alpha_no   0x10
+#define BIT_VTYPE_code_rgba  0x00
+#define BIT_VTYPE_code_hsva  0x02
+#define BIT_VTYPE_code_cmyk  0x04
+#define BIT_VTYPE_code_rgb   0x06
+#define BIT_VTYPE_code_hsv   0x08
 
 typedef struct inkpot_values_s {
-    VALUE no_palette_value;
+    unsigned long no_palette_value;
     BIT_VTYPE no_palette_vtype;
 } inkpot_values_t;
 
 typedef struct inkpot_value_s {
-    IDX_VALUES index;		/* write by set,  read by get, write by first, read/write by next */
-    BIT_VTYPE vtype;		/*  read by set, write by get,  read by first,       read by next */
-    VALUE value;		/*  read by set, write by get, write by first,      write by next */
+    IDX_VALUES index;	 /* write by set,  read by get, write by first, read/write by next */
+    BIT_VTYPE  vtype;	 /*  read by set, write by get,  read by first,       read by next */
+    unsigned long value; /*  read by set, write by get, write by first,      write by next */
 } inkpot_value_t;
 
 extern inkpot_status_t  inkpot_value_set       ( inkpot_values_t *values, inkpot_value_t *value );

@@ -39,11 +39,6 @@ typedef unsigned int   IDX_IXVALUES;
 typedef unsigned int   IDX_TONAMES;
 #define SZT_TONAMES 7
 
-typedef unsigned long  VALUE;
-#define SZB_RED 16
-#define MSK_RED 65535
-#define MAX_RED 65535
-
 typedef unsigned int   IDX_VALUES;
 #define SZT_VALUES 7
 #define SZT_NONAME_VALUES 4

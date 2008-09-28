@@ -14,7 +14,7 @@
  *              AT&T Research, Florham Park NJ             *
  **********************************************************/
 
-VALUE TAB_VALUES[SZT_VALUES] = {
+unsigned long TAB_VALUES[SZT_VALUES] = {
     0x000000000000ffff,  /* black */
     0x00000000ffffffff,  /* bleu, blue */
     0x0000ffff0000ffff,  /* green, vert */
@@ -24,7 +24,7 @@ VALUE TAB_VALUES[SZT_VALUES] = {
     0xffffffffffffffff,  /* white */
 }; 
 
-VALUE TAB_NONAME_VALUES[SZT_NONAME_VALUES] = {
+unsigned long TAB_NONAME_VALUES[SZT_NONAME_VALUES] = {
     0x000000008000ffff,
     0x00000000a400ffff,
     0x00000000c800ffff,
