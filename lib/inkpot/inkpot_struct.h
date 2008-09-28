@@ -63,38 +63,6 @@ typedef struct inkpot_name_s {	/* Color_name used by one or more
 				 * get better packing by this merging */
 } inkpot_name_t;
 
-typedef struct inkpot_value_s {	/* Numeric color values used by the set
-				 * of inkpot_name_t and indexes from
-				 * indexed color schemes ( total presumed
-				 * to be less than all possible color values).
-				 * inkpot_value_t instances are unique and
-				 * are numerically sorted by rgb value
-				 * in TAB_VALUES[] */
-
-	VALUE value;
-
-	IDX_NAMES
-	    toname_idx;		/* An index into TAB_NAMES to the toname
-				 * which indexes the first inkpot_name_t
-				 * in TAB_NAMES that maps to this color,
-				 * followed in TAB_NAMES by the toname indexes
-				 * of other inkpot_name_t that also map to
-				 * this inkpot_value_t, until a toname index
-				 * in TAB_NAMES indexes a inkpot_name_t
-				 * that doesn't map to this inkpot_value_t,
-				 * or until the end of TAB_NAMES is reached.
-				 * (Phew!) */
-} inkpot_value_t;
-
-typedef struct inkpot_noname_value_s {	/* Numeric color values used by the remainder
-				 * of indexes from indexed color schemes
-				 * inkpot_noname_value_t instances are unique and
-				 * are numerically sorted by rgba value
-				 * in TAB_NONAME_VALUES[] */
-	VALUE value;
-
-} inkpot_noname_value_t;
-
 typedef struct inkpot_cache_element_s {
 	IDX_MRU_CACHE
 	    next_recently_used_idx;
