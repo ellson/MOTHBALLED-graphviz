@@ -71,7 +71,7 @@ typedef struct inkpot_value_s {	/* Numeric color values used by the set
 				 * are numerically sorted by rgb value
 				 * in TAB_VALUES[] */
 
-	RGBA rgba;
+	VALUE value;
 
 	IDX_NAMES
 	    toname_idx;		/* An index into TAB_NAMES to the toname
@@ -91,7 +91,7 @@ typedef struct inkpot_noname_value_s {	/* Numeric color values used by the remai
 				 * inkpot_noname_value_t instances are unique and
 				 * are numerically sorted by rgba value
 				 * in TAB_NONAME_VALUES[] */
-	RGBA rgba;
+	VALUE value;
 
 } inkpot_noname_value_t;
 
@@ -130,6 +130,9 @@ struct inkpot_s {		/* The Ink Pot */
 	char *canon;		/* malloc'ed, reused storage for canonicalizing color request strings */
 	int canon_alloc;
 	
+	VALUE
+	    no_palette_value;
+
 	inkpot_noname_value_t *palette;   /* malloc'ed paletter storage */
 	int palette_alloc;
 	int palette_fill;

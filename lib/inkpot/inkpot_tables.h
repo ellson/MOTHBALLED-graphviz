@@ -23,10 +23,10 @@ typedef unsigned char  IDX_NAME_ALTS;
 typedef unsigned int   IDX_VALUES;
 typedef unsigned int   IDX_IXVALUES;
 
-typedef unsigned int   RGBA;
-#define SZB_RED 8
-#define MSK_RED 255
-#define MAX_RED 255
+typedef unsigned long  VALUE;
+#define SZB_RED 16
+#define MSK_RED 65535
+#define MAX_RED 65535
 
 typedef unsigned int   IDX_MRU_CACHE;
 #define SZT_MRU_CACHE 4
@@ -90,21 +90,21 @@ IDX_NAMES TAB_NAME_ALTS[] = {
 #define SZT_NAME_ALTS (sizeof(TAB_NAME_ALTS)/sizeof(TAB_NAME_ALTS[0]))
 
 inkpot_value_t TAB_VALUES[] = { /* Must be sort'ed */
-	{ 0x000000ff, 0 },  /* black */
-	{ 0x0000ffff, 1 },  /* bleu, blue */
-	{ 0x00ff00ff, 3 },  /* green, vert */
-	{ 0xff0000ff, 5 },  /* red, rouge */
-	{ 0xffcf00ff, 7 },  /* yellow (svg) */
-	{ 0xffff00ff, 8 },  /* yellow (x11), jaune */
-	{ 0xffffffff, 10},  /* white */
+	{ 0x000000000000ffff, 0 },  /* black */
+	{ 0x00000000ffffffff, 1 },  /* bleu, blue */
+	{ 0x0000ffff0000ffff, 3 },  /* green, vert */
+	{ 0xffff00000000ffff, 5 },  /* red, rouge */
+	{ 0xffffcf000000ffff, 7 },  /* yellow (svg) */
+	{ 0xffffffff0000ffff, 8 },  /* yellow (x11), jaune */
+	{ 0xffffffffffffffff, 10},  /* white */
 }; 
 #define SZT_VALUES (sizeof(TAB_VALUES)/sizeof(TAB_VALUES[0]))
 
 inkpot_noname_value_t TAB_NONAME_VALUES[] = { /* Must be sort'ed */
-	{ 0x000080ff },
-	{ 0x0000a4ff },
-	{ 0x0000c8ff },
-	{ 0x0000eaff },
+	{ 0x000000008000ffff, },
+	{ 0x00000000a400ffff, },
+	{ 0x00000000c800ffff, },
+	{ 0x00000000ea00ffff, },
 }; 
 #define SZT_NONAME_VALUES (sizeof(TAB_NONAME_VALUES)/sizeof(TAB_NONAME_VALUES[0]))
 

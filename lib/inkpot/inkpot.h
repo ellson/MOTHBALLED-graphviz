@@ -26,6 +26,7 @@ typedef enum {
     INKPOT_MALLOC_FAIL,
     INKPOT_COLOR_UNKNOWN,
     INKPOT_COLOR_NONAME,
+    INKPOT_COLOR_NOPALETTE,
     INKPOT_SCHEME_UNKNOWN
 } inkpot_status_t;
 
@@ -47,11 +48,17 @@ extern inkpot_status_t inkpot_schemes	      ( inkpot_t *inkpot, const char *sche
 extern inkpot_status_t inkpot_translate       ( inkpot_t *inkpot, const char *scheme );
 
 extern inkpot_status_t inkpot_set	      ( inkpot_t *inkpot, const char *color );
+extern inkpot_status_t inkpot_set_rgba_i      ( inkpot_t *inkpot, unsigned short rgba[4] );
+extern inkpot_status_t inkpot_set_hsva_i      ( inkpot_t *inkpot, unsigned short hsva[4] );
+extern inkpot_status_t inkpot_set_cmyk_i      ( inkpot_t *inkpot, unsigned short cmyk[4] );
 extern inkpot_status_t inkpot_set_rgba	      ( inkpot_t *inkpot, double rgba[4] );
 extern inkpot_status_t inkpot_set_hsva	      ( inkpot_t *inkpot, double hsva[4] );
+extern inkpot_status_t inkpot_set_cmyk	      ( inkpot_t *inkpot, double cmyk[4] );
 
 extern inkpot_status_t inkpot_get	      ( inkpot_t *inkpot, const char **color );
-extern inkpot_status_t inkpot_get_rgba_i      ( inkpot_t *inkpot, unsigned int rgba[4] );
+extern inkpot_status_t inkpot_get_rgba_i      ( inkpot_t *inkpot, unsigned short rgba[4] );
+extern inkpot_status_t inkpot_get_hsva_i      ( inkpot_t *inkpot, unsigned short hsva[4] );
+extern inkpot_status_t inkpot_get_cmyk_i      ( inkpot_t *inkpot, unsigned short cmyk[4] );
 extern inkpot_status_t inkpot_get_rgba	      ( inkpot_t *inkpot, double rgba[4] );
 extern inkpot_status_t inkpot_get_hsva	      ( inkpot_t *inkpot, double hsva[4] );
 extern inkpot_status_t inkpot_get_cmyk	      ( inkpot_t *inkpot, double cmyk[4] );

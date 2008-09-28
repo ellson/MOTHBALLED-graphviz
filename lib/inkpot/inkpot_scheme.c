@@ -248,7 +248,7 @@ static int inkpot_name_cmpf ( const void *key, const void *base)
     return string_cmpf(k, b);
 }
 
-static inkpot_status_t inkpot_set_value( inkpot_t *inkpot, IDX_VALUES value_idx)
+static inkpot_status_t inkpot_set_value_idx( inkpot_t *inkpot, IDX_VALUES value_idx)
 {
     if (inkpot->value_idx != value_idx) {
 	inkpot->value_idx = value_idx;
@@ -287,7 +287,7 @@ static inkpot_status_t inkpot_cache_get( inkpot_t *inkpot )
 	    inkpot->cache[i].next_recently_used_idx = inkpot->most_recently_used_idx;
 	    inkpot->most_recently_used_idx = i;
 	}
-        return inkpot_set_value(inkpot, TAB_NAMES[cache_name_idx].value_idx);
+        return inkpot_set_value_idx(inkpot, TAB_NAMES[cache_name_idx].value_idx);
     }
     return ((inkpot->status = INKPOT_COLOR_UNKNOWN));
 }
@@ -342,7 +342,7 @@ static inkpot_status_t inkpot_set_name ( inkpot_t *inkpot )
             return ((inkpot->status = INKPOT_COLOR_UNKNOWN));
 	
 	if (inkpot->scheme_bits & name->scheme_bits) {
-	    rc = inkpot_set_value(inkpot, name->value_idx);
+	    rc = inkpot_set_value_idx(inkpot, name->value_idx);
 	    assert(rc == INKPOT_SUCCESS);
 	    return inkpot_cache_put(inkpot, (name - TAB_NAMES) );
 	}
@@ -377,21 +377,29 @@ static inkpot_status_t inkpot_set_index ( inkpot_t *inkpot, int index )
     if (value_idx >= SZT_VALUES)
         assert(value_idx < SZT_VALUES + SZT_NONAME_VALUES);
 
-    return inkpot_set_value(inkpot, value_idx);
+    return inkpot_set_value_idx(inkpot, value_idx);
 }
 
-static int inkpot_rgba_cmpf ( const void *key, const void *base)
+#if 0
+static int inkpot_value_cmpf ( const void *key, const void *base)
 {
-    RGBA rgba_key = *(RGBA*)key;
-    RGBA rgba_base = *(RGBA*)base;
+    VALUE value_key = *(VALUE*)key;
+    VALUE value_base = *(VALUE*)base;
 
-    if (rgba_key > rgba_base) return  1;
-    if (rgba_key < rgba_base) return -1;
+    if (value_key > value_base) return  1;
+    if (value_key < value_base) return -1;
     return 0;
 }
+#endif
 
-static inkpot_status_t inkpot_set_RGBA ( inkpot_t *inkpot, RGBA *rgba ) 
+static inkpot_status_t inkpot_set_value ( inkpot_t *inkpot, VALUE value ) 
 {
+
+    inkpot->no_palette_value = value;
+    inkpot->value_idx = SZT_VALUES + SZT_NONAME_VALUES;  /* indicate presence of no_palette_value */
+
+
+#if 0
     inkpot_value_t *value;
     inkpot_noname_value_t *noname_value;
 
@@ -400,52 +408,50 @@ static inkpot_status_t inkpot_set_RGBA ( inkpot_t *inkpot, RGBA *rgba )
  */
 
     value = (inkpot_value_t *) bsearch(
-        (void*)(rgba), (void*)TAB_VALUES,
+        (void*)(value), (void*)TAB_VALUES,
         SZT_VALUES, sizeof(inkpot_value_t),
-        inkpot_rgba_cmpf); 
+        inkpot_value_cmpf); 
 
     if (value)
-	return inkpot_set_value(inkpot, (value - TAB_VALUES));
+	return inkpot_set_value_idx(inkpot, (value - TAB_VALUES));
 
     noname_value = (inkpot_noname_value_t *) bsearch(
-        (void*)(rgba), (void*)TAB_NONAME_VALUES,
+        (void*)(value), (void*)TAB_NONAME_VALUES,
         SZT_NONAME_VALUES, sizeof(inkpot_noname_value_t),
-        inkpot_rgba_cmpf); 
+        inkpot_value_cmpf); 
 
     if (noname_value)
-        return inkpot_set_value(inkpot, ((noname_value - TAB_NONAME_VALUES) + SZT_VALUES));
+        return inkpot_set_value_idx(inkpot, ((noname_value - TAB_NONAME_VALUES) + SZT_VALUES));
 
     return ((inkpot->status = INKPOT_COLOR_NONAME));
-#if 0
-    /* need some sort of btree here so that we can insert rgba
+    /* need some sort of btree here so that we can insert value
      * values and keep sorted */
 
     noname_value = (inkpot_noname_value_t *) bsearch(
-        (void*)(rgba), (void*)TAB_DYNAMIC_VALUES,
+        (void*)(value), (void*)TAB_DYNAMIC_VALUES,
         SZT_DYNAMIC_VALUES, sizeof(inkpot_noname_value_t),
-        inkpot_rgba_cmpf); 
+        inkpot_value_cmpf); 
     
     /* insert value and keep sorted */
 
-    return INKPOT_SUCCESS;
-
 #endif
+    return ((inkpot->status = INKPOT_SUCCESS));
 }
 
 inkpot_status_t inkpot_set_rgba ( inkpot_t *inkpot, double rgba[4] )
 {
-    unsigned int myrgba = 0, v;
+    VALUE value = 0, v;
     int i;
 
     for (i = 0; i < 4; i++) {
-	myrgba <<= SZB_RED;
+	value <<= SZB_RED;
 	v = rgba[i];
 	v = (v < 0.0) ? 0.0 : v;
 	v = (v > 1.0) ? 1.0 : v;
-	myrgba |= (int)(v * MAX_RED);
+	value |= (int)(v * MAX_RED);
     }
 
-    return inkpot_set_RGBA ( inkpot, &myrgba );
+    return inkpot_set_value ( inkpot, value );
 }
 
 inkpot_status_t inkpot_set_hsva ( inkpot_t *inkpot, double hsva[4] )
@@ -457,12 +463,13 @@ inkpot_status_t inkpot_set_hsva ( inkpot_t *inkpot, double hsva[4] )
     return inkpot_set_rgba ( inkpot, rgba );
 }
 
-inkpot_status_t inkpot_set( inkpot_t *inkpot, const char *color )
+inkpot_status_t inkpot_set ( inkpot_t *inkpot, const char *color )
 {
     char *q;
     const char *p;
-    int len, index;
-    unsigned int rgba, c;
+    int c, len, index;
+    unsigned int r, g, b, a;
+    VALUE value;
     double hsva[4];
     inkpot_status_t rc = INKPOT_COLOR_UNKNOWN;
 
@@ -492,18 +499,23 @@ inkpot_status_t inkpot_set( inkpot_t *inkpot, const char *color )
     *q = '\0';
 
     if (*inkpot->canon == '#') {
-        if (sscanf(inkpot->canon, "#%8x", &rgba))
-	    rc = inkpot_set_RGBA(inkpot, &rgba);
-
-        if (rc != INKPOT_SUCCESS) {
-            if (sscanf(inkpot->canon, "#%6x", &rgba)) {
-	        rgba = (rgba << SZB_RED) | MAX_RED;
-	        rc = inkpot_set_RGBA(inkpot, &rgba);
-            }
-   	} 
+	a = 65535;
+        if ((len = sscanf(inkpot->canon, "#%4x%4x%4x%4x", &r, &g, &b, &a)) >= 3) {
+	    r *= MAX_RED/65535; g *= MAX_RED/65535; b *= MAX_RED/65535; a *= MAX_RED/65535;
+	}
+	if (len < 3) {
+	    a = 255;
+	    if ((len = sscanf(inkpot->canon, "#%2x%2x%2x%2x", &r, &g, &b, &a)) >= 3) {
+	        r *= MAX_RED/255; g *= MAX_RED/255; b *= MAX_RED/255; a *= MAX_RED/255;
+   	    } 
+	}
+	if (len >= 3) {
+	    value = (((((((VALUE)r) << SZB_RED) | (VALUE)g) << SZB_RED) | (VALUE)b) << SZB_RED) | (VALUE)a;
+	    rc = inkpot_set_value(inkpot, value);
+	}
     }
 
-    if ((rc != INKPOT_SUCCESS) || ((c = *inkpot->canon) == '.') || isdigit(c)) {
+    if ((rc != INKPOT_SUCCESS) && (((c = *inkpot->canon) == '.') || isdigit(c))) {
 	hsva[3] = 1.0;
         if (sscanf(inkpot->canon, "%lf%lf%lf%lf", &hsva[0], &hsva[1], &hsva[2], &hsva[3]) >= 3)
 	    rc = inkpot_set_hsva(inkpot, hsva);
@@ -559,6 +571,10 @@ inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
             *color = NULL;
 	    return ((inkpot->status = INKPOT_COLOR_NONAME));
         }
+        if (value_idx == SZT_NONAME_VALUES) {
+            *color = NULL;
+	    return ((inkpot->status = INKPOT_COLOR_NOPALETTE));
+        }
         assert(0);  /* support for dynamic values to go here */
     }
 
@@ -572,31 +588,34 @@ inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
     return ((inkpot->status = INKPOT_COLOR_NONAME));
 }
 
-static inkpot_status_t inkpot_get_RGBA ( inkpot_t *inkpot, RGBA *rgba )
+static inkpot_status_t inkpot_get_value ( inkpot_t *inkpot, VALUE *value )
 {
     IDX_VALUES value_idx = inkpot->value_idx;
 
     if (value_idx < SZT_VALUES)
-	*rgba = TAB_VALUES[value_idx].rgba;
-    else {
-	assert (value_idx < SZT_VALUES + SZT_NONAME_VALUES);
-	*rgba = TAB_NONAME_VALUES[value_idx - SZT_VALUES].rgba;
-    }
+	*value = TAB_VALUES[value_idx].value;
+    else if (value_idx - SZT_VALUES < SZT_NONAME_VALUES)
+	*value = TAB_NONAME_VALUES[value_idx - SZT_VALUES].value;
+    else if (value_idx == SZT_VALUES + SZT_NONAME_VALUES)
+	*value = inkpot->no_palette_value;
+    else
+	assert(0);
 
     return ((inkpot->status = INKPOT_SUCCESS));
 }
 
-inkpot_status_t inkpot_get_rgba_i ( inkpot_t *inkpot, unsigned int rgba[4] )
+inkpot_status_t inkpot_get_rgba_i ( inkpot_t *inkpot, unsigned short rgba[4] )
 {
     inkpot_status_t rc;
-    RGBA myrgba;
+    VALUE value;
+    int i;
 
-    rc = inkpot_get_RGBA( inkpot, &myrgba );
+    rc = inkpot_get_value( inkpot, &value );
     if (rc == INKPOT_SUCCESS) {
-        rgba[3] = myrgba & MSK_RED; myrgba >>= SZB_RED;
-        rgba[2] = myrgba & MSK_RED; myrgba >>= SZB_RED;
-        rgba[1] = myrgba & MSK_RED; myrgba >>= SZB_RED;
-        rgba[0] = myrgba & MSK_RED;
+	for (i = 3; i >= 0; i--) {
+	    rgba[i] = (value & MSK_RED);
+	    value >>= SZB_RED;
+	}
     }
     return rc;
 }
@@ -604,14 +623,14 @@ inkpot_status_t inkpot_get_rgba_i ( inkpot_t *inkpot, unsigned int rgba[4] )
 inkpot_status_t inkpot_get_rgba ( inkpot_t *inkpot, double rgba[4] )
 {
     inkpot_status_t rc;
-    RGBA myrgba;
+    VALUE value;
     int i;
 
-    rc = inkpot_get_RGBA( inkpot, &myrgba );
+    rc = inkpot_get_value( inkpot, &value );
     if (rc == INKPOT_SUCCESS) {
 	for (i = 3; i >= 0; i--) {
-	    rgba[i] = (myrgba & MSK_RED) / (double)MAX_RED;
-	    myrgba >>= SZB_RED;
+	    rgba[i] = (value & MSK_RED) / (double)MAX_RED;
+	    value >>= SZB_RED;
 	}
     }
     return rc;
@@ -702,17 +721,17 @@ static inkpot_status_t inkpot_debug_scheme_names( inkpot_t *inkpot, int scheme_b
     return INKPOT_SUCCESS;
 }
 
-static void inkpot_debug_rgba( inkpot_t *inkpot, RGBA rgba )
+static void inkpot_debug_rgba( inkpot_t *inkpot, VALUE value )
 {
-    char buf[20];
-    unsigned int r, g, b, a;
+    char buf[22];
+    unsigned short rgba[4];
+    int i;
 
-    a = rgba & MSK_RED; rgba >>= SZB_RED;
-    b = rgba & MSK_RED; rgba >>= SZB_RED;
-    g = rgba & MSK_RED; rgba >>= SZB_RED;
-    r = rgba & MSK_RED;
-
-    sprintf(buf, "%d,%d,%d,%d", r, g, b, a);
+    for (i = 3; i >= 0; i--) {
+	rgba[i] = (value & MSK_RED);
+	value >>= SZB_RED;
+    }
+    sprintf(buf, "#%04x%04x%04x%04x", rgba[0], rgba[1], rgba[2], rgba[3]);
     errputs(inkpot, buf);
 }
 
@@ -734,7 +753,7 @@ static inkpot_status_t inkpot_debug_names_schemes( inkpot_t *inkpot, MSK_SCHEMES
                 errputs(inkpot, &TAB_STRINGS[TAB_NAMES[i].string_idx]);
 		inkpot_debug_scheme_names(inkpot, scheme_bits);
 		errputs(inkpot, " ");
-		inkpot_debug_rgba(inkpot, TAB_VALUES[name->value_idx].rgba);
+		inkpot_debug_rgba(inkpot, TAB_VALUES[name->value_idx].value);
 		errputs(inkpot, "\n");
             }
         }
@@ -755,9 +774,9 @@ static inkpot_status_t inkpot_debug_names_schemes( inkpot_t *inkpot, MSK_SCHEMES
 	    errputs(inkpot, &TAB_STRINGS[scheme_index->string_idx]);
 	    errputs(inkpot, ") ");
 	    if (v < SZT_VALUES)
-	        inkpot_debug_rgba(inkpot, TAB_VALUES[v].rgba);
+	        inkpot_debug_rgba(inkpot, TAB_VALUES[v].value);
 	    else
-	        inkpot_debug_rgba(inkpot, TAB_NONAME_VALUES[v - SZT_VALUES].rgba);
+	        inkpot_debug_rgba(inkpot, TAB_NONAME_VALUES[v - SZT_VALUES].value);
 	    errputs(inkpot, "\n");
 	}
     }
@@ -805,7 +824,7 @@ inkpot_status_t inkpot_debug_values( inkpot_t *inkpot )
                 if (found++)
                     errputs(inkpot, " ");
                 else
-		    inkpot_debug_rgba(inkpot, TAB_VALUES[i].rgba);
+		    inkpot_debug_rgba(inkpot, TAB_VALUES[i].value);
                 errputs(inkpot, " ");
                 errputs(inkpot, &TAB_STRINGS[name->string_idx]);
 		inkpot_debug_scheme_names(inkpot, scheme_bits);
@@ -823,24 +842,18 @@ inkpot_status_t inkpot_write ( inkpot_t *inkpot )
 {
     inkpot_status_t rc;
     const char *color;
-    IDX_VALUES value_idx;
-    RGBA rgba;
-    char buf[10];
+    char buf[20];
+    int len;
+    unsigned short rgba[4];
 
     rc = inkpot_get(inkpot, &color);
     if (rc == INKPOT_SUCCESS)
 	inkpot->disc.out_writer(inkpot->out_closure, color, strlen(color));
-    if (rc == INKPOT_COLOR_NONAME) {
-        value_idx = inkpot->value_idx;
-        if (value_idx < SZT_VALUES)
-	    rgba = TAB_VALUES[value_idx].rgba;
-        else {
-	    assert (value_idx < SZT_VALUES + SZT_NONAME_VALUES);
-	    rgba = TAB_NONAME_VALUES[value_idx - SZT_VALUES].rgba;
-        }
-
-	sprintf(buf, "#%08x", rgba);
-	inkpot->disc.out_writer(inkpot->out_closure, buf, sizeof(buf));
+    if (rc == INKPOT_COLOR_NONAME || rc == INKPOT_COLOR_NOPALETTE) {
+	rc = inkpot_get_rgba_i(inkpot, rgba);
+	len = sprintf(buf, "#%04x%04x%04x%04x", rgba[0], rgba[1], rgba[2], rgba[3]);
+	assert(len > 0);
+	inkpot->disc.out_writer(inkpot->out_closure, buf, len);
     }
     return rc;
 }
@@ -859,6 +872,8 @@ inkpot_status_t inkpot_debug_error ( inkpot_t *inkpot )
 	    m = "\nINKPOT_COLOR_UNKNOWN\n"; break;
 	case INKPOT_COLOR_NONAME:
 	    m = "\nINKPOT_COLOR_NONAME\n"; break;
+	case INKPOT_COLOR_NOPALETTE:
+	    m = "\nINKPOT_COLOR_PALETTE\n"; break;
 	case INKPOT_SCHEME_UNKNOWN:
 	    m = "\nINKPOT_SCHEME_UNKNOWN\n"; break;
     }

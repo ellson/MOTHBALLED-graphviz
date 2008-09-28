@@ -64,15 +64,15 @@ int main (int argc, char *argv[])
         }
     }
 
-#if 1
+#if 0
     inkpot_debug_schemes(inkpot);
     
     inkpot_debug_names(inkpot);
 
     inkpot_debug_out_names(inkpot);
 
-    inkpot_debug_values(inkpot);
 #endif
+    inkpot_debug_values(inkpot);
 
     fprintf(stdout, "%s ", color); /* ' ' after %s so it doesn't crash on NULL */
     rc = inkpot_set(inkpot, color);
@@ -81,7 +81,9 @@ int main (int argc, char *argv[])
     fprintf(stdout, "\n text: ");
 
     rc = inkpot_write(inkpot);
-    assert (rc == INKPOT_SUCCESS || rc == INKPOT_COLOR_NONAME);
+    assert (rc == INKPOT_SUCCESS
+	    || rc == INKPOT_COLOR_NONAME
+	    || rc == INKPOT_COLOR_NOPALETTE);
 
     rc = inkpot_get_rgba(inkpot, rgba);
     assert (rc == INKPOT_SUCCESS);
