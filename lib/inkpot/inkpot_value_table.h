@@ -14,7 +14,7 @@
  *              AT&T Research, Florham Park NJ             *
  **********************************************************/
 
-inkpot_value_t TAB_VALUES[SZT_VALUES] = { /* Must be sort'ed */
+inkpot_oldvalue_t TAB_VALUES[SZT_VALUES] = { /* Must be sort'ed */
     { 0x000000000000ffff, 0 },  /* black */
     { 0x00000000ffffffff, 1 },  /* bleu, blue */
     { 0x0000ffff0000ffff, 3 },  /* green, vert */

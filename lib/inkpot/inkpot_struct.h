@@ -79,9 +79,6 @@ struct inkpot_s {		/* The Ink Pot */
 	    scheme_bits,	/* One bit per inkpot_scheme_name_t */
 	    out_scheme_bit;     /* One scheme only for output. */
 
-	IDX_VALUES
-	    value_idx;		/* The current color */
-
 	IDX_IXVALUES
 	    index,		/* The index for the current value in active_schemes_index */
 	    out_index;		/* The index for the current value in active_out_schemes_index */
@@ -98,21 +95,22 @@ struct inkpot_s {		/* The Ink Pot */
 	char *canon;		/* malloc'ed, reused storage for canonicalizing color request strings */
 	int canon_alloc;
 	
-	VALUE
-	    no_palette_value;
+	inkpot_values_t *values;/* The values store */
+	inkpot_value_t value;	/* The current value of the inkpot */
 
-	inkpot_noname_value_t *palette;   /* malloc'ed paletter storage */
-	int palette_alloc;
-	int palette_fill;
-
-	inkpot_cache_element_t cache[SZT_MRU_CACHE];  /* MRU chache of successfull color lookups */
+	inkpot_cache_element_t
+	    cache[SZT_MRU_CACHE];/* MRU chache of successful color lookups */
 	IDX_MRU_CACHE
 	    most_recently_used_idx;
 
-	inkpot_disc_t disc;     /* writers and closures for out and err */
-	void *out_closure, *err_closure;
+	inkpot_disc_t
+	    disc;		/* writers and closures for out and err */
+	void
+	    *out_closure,
+	    *err_closure;
 
-	inkpot_status_t status; /* The status after the last operation */
+	inkpot_status_t
+	    status;		/* The status after the last operation */
 };
 
 #endif /* INKPOT_STRUCTS_H */

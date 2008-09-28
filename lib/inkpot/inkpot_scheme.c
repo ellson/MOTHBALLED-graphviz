@@ -41,11 +41,15 @@ inkpot_t *inkpot_init ( void )
    
     inkpot = malloc(sizeof(inkpot_t));
     if (inkpot) {
+
+	inkpot->values = inkpot_values_init ();
+	if (! inkpot->values) {
+	    free(inkpot);
+	    return NULL;
+	}
+
 	inkpot->canon = NULL;
 	inkpot->canon_alloc = 0;
-
-        inkpot->palette = NULL;
-        inkpot->palette_alloc = 0;
 
 	inkpot->disc = inkpot_default_disc;
 	inkpot->out_closure = stdout;
@@ -65,8 +69,8 @@ inkpot_t *inkpot_init ( void )
 
 void inkpot_destroy ( inkpot_t *inkpot )
 {
+    inkpot_values_destroy ( inkpot->values );
     free(inkpot->canon);
-    free(inkpot->palette);
     free(inkpot);
 }
 
@@ -226,6 +230,7 @@ inkpot_status_t inkpot_translate ( inkpot_t *inkpot, const char *scheme )
     return ((inkpot->status = INKPOT_SUCCESS));
 }
 
+#if 0
 inkpot_status_t inkpot_palette( inkpot_t *inkpot, int size )
 {
     if (inkpot->palette_alloc < size * sizeof(inkpot_noname_value_t)) {
@@ -236,6 +241,7 @@ inkpot_status_t inkpot_palette( inkpot_t *inkpot, int size )
     }
     return ((inkpot->status = INKPOT_SUCCESS));
 }
+#endif
  
 static int inkpot_name_cmpf ( const void *key, const void *base)
 {
@@ -247,8 +253,8 @@ static int inkpot_name_cmpf ( const void *key, const void *base)
 
 static inkpot_status_t inkpot_set_value_idx( inkpot_t *inkpot, IDX_VALUES value_idx)
 {
-    if (inkpot->value_idx != value_idx) {
-	inkpot->value_idx = value_idx;
+    if (inkpot->value.index != value_idx) {
+	inkpot->value.index = value_idx;
 	inkpot->out_name = NULL;  /* value changed so invalidate out_name */
     }
     return ((inkpot->status = INKPOT_SUCCESS));
@@ -379,18 +385,24 @@ static inkpot_status_t inkpot_set_index ( inkpot_t *inkpot, int index )
 
 inkpot_status_t inkpot_set_rgba ( inkpot_t *inkpot, double rgba[4] )
 {
-    VALUE value = 0, v;
+    inkpot_status_t rc;
+    inkpot_value_t value;
+    VALUE v;
     int i;
 
     for (i = 0; i < 4; i++) {
-	value <<= SZB_RED;
+	value.value <<= SZB_RED;
 	v = rgba[i];
 	v = (v < 0.0) ? 0.0 : v;
 	v = (v > 1.0) ? 1.0 : v;
-	value |= (int)(v * MAX_RED);
+	value.value |= (int)(v * MAX_RED);
     }
-
-    return inkpot_set_value ( inkpot, value );
+    value.vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_VALUE | BIT_VTYPE_alpha_yes;
+    
+    rc = inkpot_value_set ( inkpot->values, &value );
+    if (rc == INKPOT_SUCCESS)
+	inkpot->value = value;
+    return (inkpot->status = rc);
 }
 
 inkpot_status_t inkpot_set_hsva ( inkpot_t *inkpot, double hsva[4] )
@@ -411,7 +423,7 @@ inkpot_status_t inkpot_set ( inkpot_t *inkpot, const char *color )
     const char *p;
     int i, c, len, index;
     unsigned int r, g, b, a;
-    VALUE value;
+    inkpot_value_t value;
     double hsva[4];
     inkpot_status_t rc = INKPOT_COLOR_UNKNOWN;
 
@@ -450,8 +462,13 @@ inkpot_status_t inkpot_set ( inkpot_t *inkpot, const char *color )
    	    } 
 	}
 	if (len >= 3) {
-	    value = (((((((VALUE)r) << SZB_RED) | (VALUE)g) << SZB_RED) | (VALUE)b) << SZB_RED) | (VALUE)a;
-	    rc = inkpot_set_value(inkpot, value);
+	    value.value = (((((((VALUE)r) << SZB_RED) | (VALUE)g) << SZB_RED) | (VALUE)b) << SZB_RED) | (VALUE)a;
+	    value.vtype = BIT_VTYPE_size_16 | BIT_VTYPE_code_VALUE | BIT_VTYPE_alpha_yes;
+
+	    rc = inkpot_value_set ( inkpot->values, &value );
+	    if (rc ==  INKPOT_SUCCESS)
+	        inkpot->value = value;
+	    inkpot->status = rc;
 	}
     }
     else if (((c = *inkpot->canon) == '.') || isdigit(c)) {
@@ -525,7 +542,7 @@ inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
     }
     
     if (inkpot->out_scheme_bit) {
-        value_idx = inkpot->value_idx;
+        value_idx = inkpot->value.index;
         if (value_idx < SZT_VALUES) {
             for (t = TAB_VALUES[value_idx].toname_idx; t < SZT_NAMES; t++) {
                 out_name = &TAB_NAMES[TAB_NAMES[t].toname_idx];
@@ -565,14 +582,15 @@ inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
 inkpot_status_t inkpot_get_rgba_i ( inkpot_t *inkpot, unsigned short rgba[4] )
 {
     inkpot_status_t rc;
-    VALUE value;
+    inkpot_value_t value;
     int i;
 
-    rc = inkpot_get_value( inkpot, &value );
+    value = inkpot->value;
+    rc = inkpot->status = inkpot_value_get( inkpot->values, &value );
     if (rc == INKPOT_SUCCESS) {
 	for (i = 3; i >= 0; i--) {
-	    rgba[i] = (value & MSK_RED);
-	    value >>= SZB_RED;
+	    rgba[i] = (value.value & MSK_RED);
+	    value.value >>= SZB_RED;
 	}
     }
     return rc;
@@ -581,14 +599,15 @@ inkpot_status_t inkpot_get_rgba_i ( inkpot_t *inkpot, unsigned short rgba[4] )
 inkpot_status_t inkpot_get_rgba ( inkpot_t *inkpot, double rgba[4] )
 {
     inkpot_status_t rc;
-    VALUE value;
+    inkpot_value_t value;
     int i;
 
-    rc = inkpot_get_value( inkpot, &value );
+    value = inkpot->value;
+    rc = inkpot->status = inkpot_value_get( inkpot->values, &value );
     if (rc == INKPOT_SUCCESS) {
 	for (i = 3; i >= 0; i--) {
-	    rgba[i] = (value & MSK_RED) / (double)MAX_RED;
-	    value >>= SZB_RED;
+	    rgba[i] = (value.value & MSK_RED) / (double)MAX_RED;
+	    value.value >>= SZB_RED;
 	}
     }
     return rc;
@@ -842,6 +861,7 @@ inkpot_status_t inkpot_debug_out_names( inkpot_t *inkpot )
     return inkpot_debug_names_schemes(inkpot, inkpot->out_scheme_bit, 1, inkpot->out_scheme_list);
 }
 
+#if 0
 /* Print all values that are members of the currently listed
  * name schemes, with the names in those schemes.
  * Does not print the indexes in index schemes that a value may
@@ -881,6 +901,7 @@ inkpot_status_t inkpot_debug_values( inkpot_t *inkpot )
 
     return ((inkpot->status = INKPOT_SUCCESS));
 }
+#endif
 
 inkpot_status_t inkpot_debug_error ( inkpot_t *inkpot )
 {
