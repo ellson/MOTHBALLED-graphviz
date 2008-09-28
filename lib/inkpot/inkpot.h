@@ -64,6 +64,10 @@ extern inkpot_status_t inkpot_get_hsva	      ( inkpot_t *inkpot, double hsva[4] 
 extern inkpot_status_t inkpot_get_cmyk	      ( inkpot_t *inkpot, double cmyk[4] );
 
 extern inkpot_status_t inkpot_write	      ( inkpot_t *inkpot );
+extern inkpot_status_t inkpot_write_rgba16    ( inkpot_t *inkpot );
+extern inkpot_status_t inkpot_write_rgb16     ( inkpot_t *inkpot );
+extern inkpot_status_t inkpot_write_rgba8     ( inkpot_t *inkpot );
+extern inkpot_status_t inkpot_write_rgb8      ( inkpot_t *inkpot );
 
 extern inkpot_status_t inkpot_debug_schemes   ( inkpot_t *inkpot );
 extern inkpot_status_t inkpot_debug_names     ( inkpot_t *inkpot );
