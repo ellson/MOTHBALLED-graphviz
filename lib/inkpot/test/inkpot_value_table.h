@@ -14,28 +14,19 @@
  *              AT&T Research, Florham Park NJ             *
  **********************************************************/
 
-typedef unsigned int   IDX_STRINGS;
-#define SZT_STRINGS 79
-#define SZL_STRINGS 6
+unsigned long TAB_VALUES[SZT_VALUES] = {
+    0x000000000000ffff,  /* black */
+    0x00000000ffffffff,  /* bleu, blue */
+    0x0000ffff0000ffff,  /* green, vert */
+    0xffff00000000ffff,  /* red, rouge */
+    0xffffcf000000ffff,  /* yellow (svg) */
+    0xffffffff0000ffff,  /* yellow (x11), jaune */
+    0xffffffffffffffff,  /* white */
+}; 
 
-typedef unsigned short MSK_SCHEMES_NAME;
-typedef unsigned char  IDX_SCHEMES_NAME;
-#define SZT_SCHEMES_NAME 3
-
-typedef unsigned char  IDX_SCHEMES_INDEX;
-#define SZT_SCHEMES_INDEX 2
-
-typedef unsigned int   IDX_NAMES;
-#define SZT_NAMES 11
-
-typedef unsigned char  IDX_NAME_ALTS;
-#define SZT_NAME_ALTS 2
-
-typedef unsigned int   IDX_IXVALUES;
-#define SZT_IXVALUES 7
-typedef unsigned int   IDX_TONAMES;
-#define SZT_TONAMES 7
-
-typedef unsigned int   IDX_VALUES;
-#define SZT_VALUES 7
-#define SZT_NONAME_VALUES 4
+unsigned long TAB_NONAME_VALUES[SZT_NONAME_VALUES] = {
+    0x000000008000ffff,
+    0x00000000a400ffff,
+    0x00000000c800ffff,
+    0x00000000ea00ffff,
+}; 

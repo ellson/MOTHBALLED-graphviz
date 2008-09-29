@@ -76,20 +76,3 @@ IDX_VALUES TAB_IXVALUES[SZT_IXVALUES] = {
         7, 8, 9, 10, 1,  /* xxx */
 	0, 6,            /* yyy */
 };
-
-unsigned long TAB_VALUES[SZT_VALUES] = {
-    0x000000000000ffff,  /* black */
-    0x00000000ffffffff,  /* bleu, blue */
-    0x0000ffff0000ffff,  /* green, vert */
-    0xffff00000000ffff,  /* red, rouge */
-    0xffffcf000000ffff,  /* yellow (svg) */
-    0xffffffff0000ffff,  /* yellow (x11), jaune */
-    0xffffffffffffffff,  /* white */
-}; 
-
-unsigned long TAB_NONAME_VALUES[SZT_NONAME_VALUES] = {
-    0x000000008000ffff,
-    0x00000000a400ffff,
-    0x00000000c800ffff,
-    0x00000000ea00ffff,
-}; 

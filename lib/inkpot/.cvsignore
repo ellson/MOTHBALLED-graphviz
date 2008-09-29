@@ -7,3 +7,7 @@ Makefile
 Makefile.in
 *.pdf
 CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
+inkpot_define.h
+inkpot_scheme_table.h
+inkpot_value_table.h
+*.lib

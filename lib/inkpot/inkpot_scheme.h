@@ -17,6 +17,9 @@
 #ifndef INKPOT_STRUCTS_H
 #define INKPOT_STRUCTS_H
 
+typedef unsigned char IDX_MRU_CACHE;
+#define SZT_MRU_CACHE 4
+
 typedef struct inkpot_scheme_name_s {
 	IDX_STRINGS
 	     string_idx;        /* The scheme name in TAB_STRINGS.  (e.g. "x11") */
