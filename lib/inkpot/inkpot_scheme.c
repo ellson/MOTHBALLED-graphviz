@@ -21,11 +21,12 @@
 #include <assert.h>
 
 #include "inkpot.h"
+
 #include "inkpot_define.h"
 #include "inkpot_value.h"
-#include "inkpot_struct.h"
-#include "inkpot_name_table.h"
+#include "inkpot_scheme.h"
 #include "inkpot_xlate.h"
+#include "inkpot_table.h"
 
 static size_t inkpot_writer (void *closure, const char *data, size_t length)
 {
