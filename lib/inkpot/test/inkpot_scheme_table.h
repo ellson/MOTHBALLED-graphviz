@@ -32,7 +32,7 @@ const char TAB_STRINGS[SZT_STRINGS] = {
 	"yyy\0"
 };
 
-inkpot_scheme_name_t TAB_SCHEMES_NAME[SZT_SCHEMES_NAME] = { /* schemes of named colors */
+inkpot_scheme_name_t TAB_SCHEMES[SZT_SCHEMES] = { /* schemes of named colors */
 	{  0, },  /* french */
 	{  7, },  /* svg */
 	{ 11, },  /* x11 */
@@ -44,25 +44,24 @@ inkpot_scheme_index_t TAB_SCHEMES_INDEX[SZT_SCHEMES_INDEX] = { /* schemes of ind
 };
 
 inkpot_name_t TAB_NAMES[SZT_NAMES] = { /* Must be LC_ALL=C sort'ed by name with each alt */
-	{ 15, 0, 0x6, /* black */  0,  /* black */ 	   }, /* 0  */
-	{ 21, 1, 0x1, /* bleu */   1,  /* bleu, blue */    }, /* 1  */
-	{ 26, 1, 0x6, /* blue */   2,			   }, /* 2  */
-	{ 31, 2, 0x6, /* green */  3,  /* green, vert */   }, /* 3  */
-	{ 37, 5, 0x1, /* jaune */  7,			   }, /* 4  */
-	{ 43, 3, 0x6, /* red */    5,  /* red, rouge */    }, /* 5  */
-	{ 47, 3, 0x1, /* rouge */  6,			   }, /* 6  */
-	{ 53, 2, 0x1, /* vert */   10, /* yellow(alt1) */  }, /* 7  */
-	{ 65, 6, 0x6, /* white */  4,  /* jaune, yellow */ }, /* 8  */
-	{ 58, 5, 0x4, /* yellow */ 9,			   }, /* 9  */
-/* alt1 */
-	{ 58, 4, 0x2, /* yellow */ 8,  /* white */	   }, /* 10 */
+	{ 15, 0, 0x6, }, /* black */
+	{ 21, 1, 0x1, }, /* bleu */
+	{ 26, 1, 0x6, }, /* blue */
+	{ 31, 2, 0x6, }, /* green */
+	{ 37, 5, 0x1, }, /* jaune */
+	{ 43, 3, 0x6, }, /* red */ 
+	{ 47, 3, 0x1, }, /* rouge */
+	{ 53, 2, 0x1, }, /* vert */
+	{ 65, 6, 0x6, }, /* white */
+	{ 58, 0, 0, },   /* yellow */
 };
 
-IDX_NAMES TAB_NAME_ALTS[SZT_NAME_ALTS] = {
-	0, 10,
+inkpot_name_t TAB_ALTS[SZT_ALTS] = {
+	{ 1, 5, 0x4, },  /* yellow (x11) */
+	{ 0, 4, 0x2, },  /* yellow (svg) */
 };
 
-IDX_TONAMES TAB_TONAMES[SZT_TONAMES] = {
+IDX_VALUE_TO TAB_VALUE_TO[SZT_VALUE_TO] = {
         0,   /* black */
 	1,   /* bleu, blue */
 	3,   /* green, vert */
@@ -70,6 +69,16 @@ IDX_TONAMES TAB_TONAMES[SZT_TONAMES] = {
 	7,   /* yellow (svg) */
 	8,   /* yellow (x11), jaune */
 	10,  /* white */
+};
+
+IDX_NAMES TAB_TO_NAMES[SZT_TO_NAMES] = {
+	0,     /* black */
+	1, 2,  /* bleu, blue */
+	3, 7,  /* green, vert */
+	5, 6,  /* red, rouge */
+	9,     /* yellow(alt1) */
+	4, 9,  /* jaune, yellow */
+	8,     /* white */
 };
 
 IDX_VALUES TAB_IXVALUES[SZT_IXVALUES] = {

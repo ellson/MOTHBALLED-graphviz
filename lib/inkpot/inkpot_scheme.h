@@ -53,23 +53,15 @@ typedef struct inkpot_name_s {	/* Color_name used by one or more
 	    value_idx;		/* An index into TAB_VALUE for this
 				 * inkpot_name_t */
 
-	MSK_SCHEMES_NAME
+	MSK_SCHEMES
 	    scheme_bits;	/* A bit for each inkpot_scheme_name_t
 				 * that includes this inkpot_name_t  */
-
-	IDX_NAMES
-	    toname_idx;		/* This is the element of TAB_TONAME that
-				 * indexes an element in TAB_NAME.
-				 * TAB_TONAME is a logically separate table
-				 * from TAB_NAMES, but it happens to be
-				 * exactly the same SZT, so we are trying to
-				 * get better packing by this merging */
 } inkpot_name_t;
 
 typedef struct inkpot_cache_element_s {
 	IDX_MRU_CACHE
 	    next_recently_used_idx;
-	MSK_SCHEMES_NAME
+	MSK_SCHEMES
 	    scheme_bits;
 	IDX_NAMES
 	    name_idx;
@@ -78,7 +70,7 @@ typedef struct inkpot_cache_element_s {
 /* typedef struct inkpot_s inkpot_t; */  /* public opaque type in inkpot.h */
 
 struct inkpot_s {		/* The Ink Pot */
-	MSK_SCHEMES_NAME
+	MSK_SCHEMES
 	    scheme_bits,	/* One bit per inkpot_scheme_name_t */
 	    out_scheme_bit;     /* One scheme only for output. */
 

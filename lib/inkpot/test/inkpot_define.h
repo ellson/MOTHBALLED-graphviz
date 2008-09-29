@@ -18,23 +18,27 @@ typedef unsigned int   IDX_STRINGS;
 #define SZT_STRINGS 79
 #define SZL_STRINGS 6
 
-typedef unsigned short MSK_SCHEMES_NAME;
-typedef unsigned char  IDX_SCHEMES_NAME;
-#define SZT_SCHEMES_NAME 3
+typedef unsigned short MSK_SCHEMES;
+typedef unsigned char  IDX_SCHEMES;
+#define SZT_SCHEMES 3
 
 typedef unsigned char  IDX_SCHEMES_INDEX;
 #define SZT_SCHEMES_INDEX 2
 
 typedef unsigned int   IDX_NAMES;
-#define SZT_NAMES 11
+#define SZT_NAMES 10
 
-typedef unsigned char  IDX_NAME_ALTS;
-#define SZT_NAME_ALTS 2
+typedef unsigned char  IDX_ALTS;
+#define SZT_ALTS 2
 
 typedef unsigned int   IDX_IXVALUES;
 #define SZT_IXVALUES 7
-typedef unsigned int   IDX_TONAMES;
-#define SZT_TONAMES 7
+
+typedef unsigned int   IDX_VALUE_TO;
+#define SZT_VALUE_TO 7
+
+typedef unsigned int   IDX_TO_NAMES;
+#define SZT_TO_NAMES 11
 
 typedef unsigned int   IDX_VALUES;
 #define SZT_VALUES 7

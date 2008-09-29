@@ -1,6 +1,6 @@
 CFLAGS = -Wall -g -O0
 
-all: inkpot_table.h
+try: try.o inkpot_scheme.o inkpot_xlate.o inkpot_value.o
 
 inkpot_scheme.o: inkpot_scheme.c inkpot_scheme.h inkpot.h inkpot_define.h \
 	inkpot_value.c inkpot_xlate.c inkpot_table.h
@@ -18,4 +18,4 @@ x11.lib: data/rgb.txt scripts/rgb_txt_2_x11_lib.tcl
 	scripts/rgb_txt_2_x11_lib.tcl data/rgb.txt
 
 clean:
-	rm -rf *.o test *.lib inkpot_table.h inkpot_define.h
+	rm -rf *.o try *.lib inkpot_table.h inkpot_define.h
