@@ -1,0 +1,16 @@
+*.la
+*.lo
+*.pc
+.deps
+.libs
+Makefile
+Makefile.in
+*.pdf
+CMakeFiles CMakeTmp CMakeFiles CMakeCache.txt cmake_install.cmake
+inkpot.h
+inkpot_scheme.c
+inkpot_scheme.h
+inkpot_value.c
+inkpot_value.h
+inkpot_xlate.h
+test
