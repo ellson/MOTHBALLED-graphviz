@@ -33,19 +33,26 @@ inkpot_status_t inkpot_value_set ( inkpot_values_t *values, inkpot_value_t *valu
 
 inkpot_status_t inkpot_value_get ( inkpot_values_t *values, inkpot_value_t *value )
 {
-    IDX_VALUES index = value->index;
+    IDX_VALUES_24 i;
 
     /* FIXME - this routine must check for 8 bit values and properly scale to 16 for the api */
 
-    if (index < SZT_VALUES) {
-	value->value = TAB_VALUES[index];
+    if (value->index < SZT_VALUES) {
+	i = 3 * value->index;
+
+	value->value  = TAB_VALUES_24[i++] << 16;
+	value->value |= TAB_VALUES_24[i++] << 16;
+	value->value |= TAB_VALUES_24[i] << 16;
+	value->value |= 0xff;
+	value->value |= value->value << 8;
+
 	value->vtype = VTYPE_rgba;  /* FIXME */
     }
-    else if (index - SZT_VALUES < SZT_NONAME_VALUES) {
-	value->value = TAB_NONAME_VALUES[index - SZT_VALUES];
+    else if (value->index - SZT_VALUES < SZT_NONAME_VALUES) {
+	value->value = TAB_NONAME_VALUES[value->index - SZT_VALUES];
 	value->vtype = VTYPE_rgba;  /* FIXME */
     }
-    else if (index == SZT_VALUES + SZT_NONAME_VALUES) {
+    else if (value->index == SZT_VALUES + SZT_NONAME_VALUES) {
 	value->vtype = VTYPE_rgba;  /* FIXME */
         return INKPOT_NOPALETTE;
     }
