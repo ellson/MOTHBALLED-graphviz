@@ -32,36 +32,37 @@ int main (int argc, char *argv[])
 	fprintf(stderr, "failure to initialize inkpot\n");
     	return 0;
     }
-
+ 
+    /* requested color */
     if (argc < 2)
         color = NULL;
     else
         color = argv[1];
 
+    /* requested schemes (comma-separated) */
     if (argc < 3) {
-        rc = inkpot_translate(inkpot, "x11");
+        rc = inkpot_schemes(inkpot, "x11");
         assert(rc == INKPOT_SUCCESS);
     }
     else {
-        rc = inkpot_translate(inkpot, argv[2]);
+        rc = inkpot_schemes(inkpot, argv[2]);
         if (rc == INKPOT_SCHEME_UNKNOWN)
 	    inkpot_debug_error(inkpot);
         else
             assert(rc == INKPOT_SUCCESS);
     }
 
+    /* target scheme */
     if (argc < 4) {
-        rc = inkpot_schemes(inkpot, "x11");
+        rc = inkpot_translate(inkpot, "x11");
         assert(rc == INKPOT_SUCCESS);
     }
     else {
-        for (i = 3; i < argc; i++) {
-            rc = inkpot_schemes(inkpot, argv[i]);
-            if (rc == INKPOT_SCHEME_UNKNOWN)
-	        inkpot_debug_error(inkpot);
-            else
-                assert(rc == INKPOT_SUCCESS);
-        }
+        rc = inkpot_translate(inkpot, argv[3]);
+        if (rc == INKPOT_SCHEME_UNKNOWN)
+	    inkpot_debug_error(inkpot);
+        else
+            assert(rc == INKPOT_SUCCESS);
     }
 
     inkpot_debug_schemes(inkpot);
