@@ -276,7 +276,7 @@ static int
 raySegIntersect(pointf v, pointf w, pointf a, pointf b, pointf * p)
 {
     if (raySeg(v, w, a, b))
-	return seg_intersect(v, w, a, b, p);
+	return line_intersect(v, w, a, b, p);
     else
 	return 0;
 }

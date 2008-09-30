@@ -390,12 +390,12 @@ double ptToLine2 (pointf a, pointf b, pointf p)
 
 #define dot(v,w) (v.x*w.x+v.y*w.y)
 
-/* intersect:
+/* line_intersect:
  * Computes intersection of lines a-b and c-d, returning intersection
  * point in *p.
  * Returns 0 if no intersection (lines parallel), 1 otherwise.
  */
-int seg_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p)
+int line_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p)
 {
     pointf mv = sub_pointf(b,a);
     pointf lv = sub_pointf(d,c);

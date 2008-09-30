@@ -44,7 +44,7 @@ extern pointf cwrotatepf(pointf p, int cwrot);
 
 extern void rect2poly(pointf *p);
 
-extern int seg_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p);
+extern int line_intersect (pointf a, pointf b, pointf c, pointf d, pointf* p);
 
 static inline point pointof(int x, int y)
 {
