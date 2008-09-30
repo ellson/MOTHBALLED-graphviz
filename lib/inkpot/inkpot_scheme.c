@@ -751,28 +751,27 @@ inkpot_status_t inkpot_debug_schemes( inkpot_t *inkpot )
         if ((1<<i) & inkpot->scheme_bits) {
             errputs(inkpot, " ");
             errputs(inkpot, &TAB_STRINGS[TAB_SCHEMES[i].string_idx]);
-            errputs(inkpot, " (in)");
+            errputs(inkpot, "(names) (in)");
 	    found++;
         }
         if ((1<<i) & inkpot->out_scheme_bit) {
 	    if (! found) {
                 errputs(inkpot, " ");
                 errputs(inkpot, &TAB_STRINGS[TAB_SCHEMES[i].string_idx]);
+                errputs(inkpot, "(names)");
 	    }
             errputs(inkpot, " (out)");
         }
-	if (found) 
-            errputs(inkpot, " (names)\n");
     }
     for (j = 0; j < inkpot->active_schemes; j++) {
         errputs(inkpot, " ");
         errputs(inkpot, &TAB_STRINGS[TAB_SCHEMES_INDEX[inkpot->scheme_list[j]].string_idx]);
-        errputs(inkpot, " (in) (index)\n");
+        errputs(inkpot, "(index) (in)\n");
     }
     for (j = 0; j < inkpot->active_out_schemes; j++) {
         errputs(inkpot, " ");
         errputs(inkpot, &TAB_STRINGS[TAB_SCHEMES_INDEX[inkpot->out_scheme_list[j]].string_idx]);
-        errputs(inkpot, " (out) (index)\n");
+        errputs(inkpot, "(index) (out)\n");
     }
     errputs(inkpot, "\n");
 
