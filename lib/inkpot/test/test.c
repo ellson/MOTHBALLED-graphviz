@@ -24,7 +24,6 @@ int main (int argc, char *argv[])
     inkpot_t *inkpot;
     inkpot_status_t rc;
     char *color;
-    int i;
     double rgba[4], hsva[4], cmyk[4];
 
     inkpot = inkpot_init();
