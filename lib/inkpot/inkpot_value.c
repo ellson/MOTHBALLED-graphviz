@@ -49,7 +49,14 @@ inkpot_status_t inkpot_value_get ( inkpot_values_t *values, inkpot_value_t *valu
 	value->vtype = VTYPE_rgba;  /* FIXME */
     }
     else if (value->index - SZT_VALUES < SZT_NONAME_VALUES) {
-	value->value = TAB_NONAME_VALUES[value->index - SZT_VALUES];
+	i = 3 * value->index;
+
+	value->value  = TAB_NONAME_VALUES_24[i++] << 16;
+	value->value |= TAB_NONAME_VALUES_24[i++] << 16;
+	value->value |= TAB_NONAME_VALUES_24[i] << 16;
+	value->value |= 0xff;
+	value->value |= value->value << 8;
+
 	value->vtype = VTYPE_rgba;  /* FIXME */
     }
     else if (value->index == SZT_VALUES + SZT_NONAME_VALUES) {

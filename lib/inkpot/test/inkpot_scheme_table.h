@@ -14,10 +14,7 @@
  *              AT&T Research, Florham Park NJ             *
  **********************************************************/
 
-const char TAB_STRINGS[SZT_STRINGS] = {
-	"french\0"
-	"svg\0"
-	"x11\0" 
+const char TAB_COLOR_STRINGS[SZT_COLOR_STRINGS] = {
 	"black\0"
 	"bleu\0"
 	"blue\0"
@@ -26,8 +23,14 @@ const char TAB_STRINGS[SZT_STRINGS] = {
 	"red\0" 
 	"rouge\0"
 	"vert\0"
-	"yellow\0"
 	"white\0"
+	"yellow\0"
+};
+
+const char TAB_SCHEME_STRINGS[SZT_SCHEME_STRINGS] = {
+	"french\0"
+	"svg\0"
+	"x11\0" 
 	"xxx\0"
 	"yyy\0"
 };
@@ -39,21 +42,21 @@ inkpot_scheme_name_t TAB_SCHEMES[SZT_SCHEMES] = { /* schemes of named colors */
 };
 
 inkpot_scheme_index_t TAB_SCHEMES_INDEX[SZT_SCHEMES_INDEX] = { /* schemes of indexed colors */
-	{ 71, 0, }, /* xxx */
-	{ 75, 5, }, /* yyy */
+	{ 15, 0, }, /* xxx */
+	{ 19, 5, }, /* yyy */
 };
 
 inkpot_name_t TAB_NAMES[SZT_NAMES] = { /* Must be LC_ALL=C sort'ed by name with each alt */
-	{ 15, 0, 0x6, }, /* black */
-	{ 21, 1, 0x1, }, /* bleu */
-	{ 26, 1, 0x6, }, /* blue */
-	{ 31, 2, 0x6, }, /* green */
-	{ 37, 5, 0x1, }, /* jaune */
-	{ 43, 3, 0x6, }, /* red */ 
-	{ 47, 3, 0x1, }, /* rouge */
-	{ 53, 2, 0x1, }, /* vert */
-	{ 65, 6, 0x6, }, /* white */
-	{ 58, 0, 0, },   /* yellow */
+	{ 0,  0, 0x6, }, /* black */
+	{ 6,  1, 0x1, }, /* bleu */
+	{ 11, 1, 0x6, }, /* blue */
+	{ 16, 2, 0x6, }, /* green */
+	{ 22, 5, 0x1, }, /* jaune */
+	{ 28, 3, 0x6, }, /* red */ 
+	{ 32, 3, 0x1, }, /* rouge */
+	{ 38, 2, 0x1, }, /* vert */
+	{ 43, 6, 0x6, }, /* white */
+	{ 50, 0,   0, }, /* yellow (w. alts) */
 };
 
 inkpot_name_t TAB_ALTS[SZT_ALTS] = {

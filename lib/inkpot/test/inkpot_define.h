@@ -14,32 +14,46 @@
  *              AT&T Research, Florham Park NJ             *
  **********************************************************/
 
-typedef unsigned int   IDX_STRINGS;
-#define SZT_STRINGS 79
-#define SZL_STRINGS 6
+#define SZT_COLOR_STRINGS 57
+#define SZL_COLOR_STRINGS 6
+typedef unsigned int   IDX_COLOR_STRINGS;
 
+#define SZT_SCHEME_STRINGS 23
+#define SZL_SCHEME_STRINGS 6
+typedef unsigned int   IDX_SCHEME_STRINGS;
+
+#define SZT_SCHEMES 3
 typedef unsigned short MSK_SCHEMES;
 typedef unsigned char  IDX_SCHEMES;
-#define SZT_SCHEMES 3
 
-typedef unsigned char  IDX_SCHEMES_INDEX;
 #define SZT_SCHEMES_INDEX 2
+typedef unsigned char  IDX_SCHEMES_INDEX;
 
-typedef unsigned int   IDX_NAMES;
 #define SZT_NAMES 10
+typedef unsigned int   IDX_NAMES;
 
-typedef unsigned char  IDX_ALTS;
 #define SZT_ALTS 2
+typedef unsigned char  IDX_ALTS;
 
-typedef unsigned int   IDX_IXVALUES;
 #define SZT_IXVALUES 7
+typedef unsigned int   IDX_IXVALUES;
 
-typedef unsigned int   IDX_VALUE_TO;
 #define SZT_VALUE_TO 7
+typedef unsigned int   IDX_VALUE_TO;
 
-typedef unsigned int   IDX_TO_NAMES;
 #define SZT_TO_NAMES 11
+typedef unsigned int   IDX_TO_NAMES;
 
-typedef unsigned int   IDX_VALUES;
+
 #define SZT_VALUES 7
+typedef unsigned char  IDX_VALUES;
+
+#define SZT_VALUES_64 7
+typedef unsigned char  IDX_VALUES_64;
+
+#define SZT_VALUES_24 21
+typedef unsigned char  IDX_VALUES_24;
+
 #define SZT_NONAME_VALUES 4
+#define SZT_NONAME_VALUES_64 4
+#define SZT_NONAME_VALUES_24 12

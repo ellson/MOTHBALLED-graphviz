@@ -21,12 +21,12 @@ typedef unsigned char IDX_MRU_CACHE;
 #define SZT_MRU_CACHE 4
 
 typedef struct inkpot_scheme_name_s {
-	IDX_STRINGS
+	IDX_SCHEME_STRINGS
 	     string_idx;        /* The scheme name in TAB_STRINGS.  (e.g. "x11") */
 } inkpot_scheme_name_t;
 
 typedef struct inkpot_scheme_index_s { 
-	IDX_STRINGS
+	IDX_SCHEME_STRINGS
 	     string_idx;        /* The indexed scheme name in TAB_STRINGS. 
 				 * e.g "blues7" from Brewer */
 	IDX_IXVALUES
@@ -45,8 +45,8 @@ typedef struct inkpot_name_s {	/* Color_name used by one or more
 				 * inkpot_names_t are alpha sorted in
 				 * TAB_NAMES[] */
 
-	IDX_STRINGS
-	    string_idx;         /* The color name in TAB_STRINGS.
+	IDX_COLOR_STRINGS
+	    string_idx;         /* The color name in TAB_COLOR_STRINGS.
 				 * (e.g. "green") */
 
 	IDX_VALUES
