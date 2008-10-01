@@ -40,26 +40,26 @@ int main (int argc, char *argv[])
 
     /* requested schemes (comma-separated) */
     if (argc < 3) {
-        rc = inkpot_schemes(inkpot, "x11");
+        rc = inkpot_schemes_put(inkpot, "x11");
         assert(rc == INKPOT_SUCCESS);
     }
     else {
-        rc = inkpot_schemes(inkpot, argv[2]);
+        rc = inkpot_schemes_put(inkpot, argv[2]);
         if (rc == INKPOT_SCHEME_UNKNOWN)
-	    inkpot_debug_error(inkpot);
+	    fprintf(stderr, "unknown in scheme(s)\n");
         else
             assert(rc == INKPOT_SUCCESS);
     }
 
     /* target scheme */
     if (argc < 4) {
-        rc = inkpot_translate(inkpot, "x11");
+        rc = inkpot_scheme_get(inkpot, "x11");
         assert(rc == INKPOT_SUCCESS);
     }
     else {
-        rc = inkpot_translate(inkpot, argv[3]);
+        rc = inkpot_scheme_get(inkpot, argv[3]);
         if (rc == INKPOT_SCHEME_UNKNOWN)
-	    inkpot_debug_error(inkpot);
+	    fprintf(stderr, "unknown out scheme\n");
         else
             assert(rc == INKPOT_SUCCESS);
     }
@@ -75,7 +75,7 @@ int main (int argc, char *argv[])
 #endif
 
     fprintf(stdout, "%s ", color); /* ' ' after %s so it doesn't crash on NULL */
-    rc = inkpot_set(inkpot, color);
+    rc = inkpot_put(inkpot, color);
     if (rc == INKPOT_COLOR_UNKNOWN)
         fprintf(stdout, "(unknown)");
     fprintf(stdout, "\n text: ");
