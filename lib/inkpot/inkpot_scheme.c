@@ -140,7 +140,7 @@ static inkpot_status_t inkpot_scheme ( inkpot_t *inkpot, const char *scheme )
  
 inkpot_status_t inkpot_schemes ( inkpot_t *inkpot, const char *schemes )
 {
-    inkpot_status_t rc;
+    inkpot_status_t rc = INKPOT_SUCCESS;
     const char *q;
     char *p, *s, c;
     int len;
@@ -923,7 +923,7 @@ inkpot_status_t inkpot_debug_values( inkpot_t *inkpot )
 
 inkpot_status_t inkpot_debug_error ( inkpot_t *inkpot )
 {
-    const char *m;
+    const char *m = "\nINKPOT_FAIL\n";
 
     assert(inkpot);
     switch (inkpot->status) {
