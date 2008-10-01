@@ -7,47 +7,48 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkginclude_HEADERS = inkpot.h
 lib_LTLIBRARIES = libinkpot.la
 pkgconfig_DATA = libinkpot.pc
+bin_PROGRAMS = inkpot
 
-noinst_PROGRAMS = inkpot
 noinst_HEADERS = inkpot_scheme.h inkpot_xlate.h inkpot_value.h \
 	inkpot_define.h inkpot_value_table.h inkpot_scheme_table.h
 noinst_LTLIBRARIES = libinkpot_C.la
 
-man_MANS = inkpot.3
-pdf_DATA = inkpot.3.pdf
+man_MANS = inkpot.3 inkpot.1
+pdf_DATA = inkpot.3.pdf inkpot.1.pdf
 
 inkpot_SOURCES = inkpot.c
-inkpot_LDADD = $(top_builddir)/lib/inkpot/libinkpot_C.la
+inkpot_LDADD = $(builddir)/libinkpot.la
 
-libinkpot_C_la_SOURCES = inkpot_scheme.c inkpot_value.c inkpot_xlate.c
+libinkpot_la_SOURCES = inkpot_scheme.c inkpot_value.c inkpot_xlate.c
+libinkpot_la_LDFLAGS = -version-info $(VERSION_INFO) -no-undefined
 
-libinkpot_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
-libinkpot_la_SOURCES = $(libgvc_C_la_SOURCES)
+libinkpot_C_la_SOURCES = $(libgvc_la_SOURCES)
 
-inkpot_value_table.h: inkpot_define.h
+inkpot_value_table.h: $(builddir)/inkpot_define.h
 
-inkpot_scheme_table.h: inkpot_define.h
+inkpot_scheme_table.h: $(builddir)/inkpot_define.h
 
-inkpot_define.h: scripts/lib-h.tcl       tk.lib svg.lib x11.lib 
-	scripts/lib-h.tcl tk.lib svg.lib x11.lib
-	rm tk.lib svg.lib x11.lib
+inkpot_define.h: scripts/lib-h.tcl $(builddir)/tk.lib $(builddir)/svg.lib $(builddir)/x11.lib 
+	$(TCLSH) scripts/lib-h.tcl tk.lib svg.lib x11.lib
 
-x11.lib: scripts/rgb.txt-x11.lib.tcl     data/rgb.txt
-	scripts/rgb.txt-x11.lib.tcl data/rgb.txt
+x11.lib: scripts/rgb.txt-x11.lib.tcl data/rgb.txt
+	$(TCLSH) scripts/rgb.txt-x11.lib.tcl data/rgb.txt
 
-svg.lib: scripts/types.html-svg.lib.tcl  data/types.html
-	scripts/types.html-svg.lib.tcl data/types.html
+svg.lib: scripts/types.html-svg.lib.tcl data/types.html
+	$(TCLSH) scripts/types.html-svg.lib.tcl data/types.html
 
-tk.lib: scripts/xcolors.c-tk.lib.tcl     data/xcolors.c
-	scripts/xcolors.c-tk.lib.tcl data/xcolors.c
+tk.lib: scripts/xcolors.c-tk.lib.tcl data/xcolors.c
+	$(TCLSH) scripts/xcolors.c-tk.lib.tcl data/xcolors.c
 
-inkpot.3.pdf: $(srcdir)/inkpot.3
-	- @GROFF@ -Tps -man $(srcdir)/inkpot.3 | @PS2PDF@ - - > inkpot.3.pdf
+inkpot.1.pdf: inkpot.1
+	- $(GROFF) -Tps -man inkpot.1 | $(PS2PDF) - - > inkpot.1.pdf
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old inkpot_define.h \
-	inkpot_value_table.h inkpot_scheme_table.h \
-	tk.lib svg.lib x11.lib
+inkpot.3.pdf: inkpot.3
+	- $(GROFF) -Tps -man inkpot.3 | $(PS2PDF) - - > inkpot.3.pdf
 
-DISTCLEANFILES = $(pdf_DATA) \
+CLEANFILES = tk.lib svg.lib x11.lib \
 	inkpot_define.h inkpot_value_table.h inkpot_scheme_table.h
 
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old
+
+DISTCLEANFILES = $(pdf_DATA)
