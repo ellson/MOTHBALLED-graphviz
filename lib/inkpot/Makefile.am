@@ -13,14 +13,17 @@ inkpot_value_table.h: inkpot_define.h
 
 inkpot_scheme_table.h: inkpot_define.h
 
-inkpot_define.h: scripts/lib_2_h.tcl       svg.lib x11.lib 
-	scripts/lib_2_h.tcl
+inkpot_define.h: scripts/lib-h.tcl       tk.lib svg.lib x11.lib 
+	scripts/lib-h.tcl
 
-x11.lib: scripts/rgb_txt_2_x11_lib.tcl     data/rgb.txt
-	scripts/rgb_txt_2_x11_lib.tcl data/rgb.txt
+x11.lib: scripts/rgb.txt-x11.lib.tcl     data/rgb.txt
+	scripts/rgb.txt-x11.lib.tcl data/rgb.txt
 
-svg.lib: scripts/types_html_t_svg_lib.tcl  data/types.html
-	scripts/types_html_t_svg_lib.tcl data/types.html
+svg.lib: scripts/types.html-svg.lib.tcl  data/types.html
+	scripts/types.html-svg.lib.tcl data/types.html
+
+tk.lib: scripts/xcolors.c-tk.lib.tcl     data/xcolors.c
+	scripts/xcolors.c-tk.lib.tcl data/xcolors.c
 
 clean:
 	rm -rf *.o try *.lib inkpot_value_table.h inkpot_scheme_table.h inkpot_define.h
