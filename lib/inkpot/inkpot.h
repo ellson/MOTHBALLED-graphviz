@@ -33,28 +33,26 @@ typedef enum {
 
 typedef struct inkpot_s inkpot_t;
 
-typedef struct inkpot_disc_s {
-    size_t (*out_writer) (void *out_closure, const char *data, size_t length);
-    size_t (*err_writer) (void *err_closure, const char *data, size_t length);
-} inkpot_disc_t;
-
-
+typedef struct inkpot_write_disc_s {
+    size_t (*writer) (void *closure, const char *data, size_t length);
+} inkpot_write_disc_t;
 
 extern inkpot_t *      inkpot_init	      ( void );
 extern void            inkpot_destroy	      ( inkpot_t *inkpot );
 
-extern inkpot_status_t inkpot_disciplines     ( inkpot_t *inkpot, inkpot_disc_t disc, void *out, void *err );
+extern inkpot_status_t inkpot_write_disc      ( inkpot_t *inkpot, inkpot_write_disc_t disc);
+extern inkpot_status_t inkpot_write_closure   ( inkpot_t *inkpot, void *closure);
 
-extern inkpot_status_t inkpot_schemes	      ( inkpot_t *inkpot, const char *schemes );
-extern inkpot_status_t inkpot_translate       ( inkpot_t *inkpot, const char *scheme );
+extern inkpot_status_t inkpot_schemes_put     ( inkpot_t *inkpot, const char *schemes );
+extern inkpot_status_t inkpot_scheme_get      ( inkpot_t *inkpot, const char *scheme );
 
-extern inkpot_status_t inkpot_set	      ( inkpot_t *inkpot, const char *color );
-extern inkpot_status_t inkpot_set_rgba_i      ( inkpot_t *inkpot, unsigned short rgba[4] );
-extern inkpot_status_t inkpot_set_hsva_i      ( inkpot_t *inkpot, unsigned short hsva[4] );
-extern inkpot_status_t inkpot_set_cmyk_i      ( inkpot_t *inkpot, unsigned short cmyk[4] );
-extern inkpot_status_t inkpot_set_rgba	      ( inkpot_t *inkpot, double rgba[4] );
-extern inkpot_status_t inkpot_set_hsva	      ( inkpot_t *inkpot, double hsva[4] );
-extern inkpot_status_t inkpot_set_cmyk	      ( inkpot_t *inkpot, double cmyk[4] );
+extern inkpot_status_t inkpot_put	      ( inkpot_t *inkpot, const char *color );
+extern inkpot_status_t inkpot_put_rgba_i      ( inkpot_t *inkpot, unsigned short rgba[4] );
+extern inkpot_status_t inkpot_put_hsva_i      ( inkpot_t *inkpot, unsigned short hsva[4] );
+extern inkpot_status_t inkpot_put_cmyk_i      ( inkpot_t *inkpot, unsigned short cmyk[4] );
+extern inkpot_status_t inkpot_put_rgba	      ( inkpot_t *inkpot, double rgba[4] );
+extern inkpot_status_t inkpot_put_hsva	      ( inkpot_t *inkpot, double hsva[4] );
+extern inkpot_status_t inkpot_put_cmyk	      ( inkpot_t *inkpot, double cmyk[4] );
 
 extern inkpot_status_t inkpot_get	      ( inkpot_t *inkpot, const char **color );
 extern inkpot_status_t inkpot_get_rgba_i      ( inkpot_t *inkpot, unsigned short rgba[4] );
@@ -74,8 +72,6 @@ extern inkpot_status_t inkpot_debug_schemes   ( inkpot_t *inkpot );
 extern inkpot_status_t inkpot_debug_names     ( inkpot_t *inkpot );
 extern inkpot_status_t inkpot_debug_out_names ( inkpot_t *inkpot );
 extern inkpot_status_t inkpot_debug_values    ( inkpot_t *inkpot );
-
-extern inkpot_status_t inkpot_debug_error     ( inkpot_t *inkpot );
 
 #ifdef __cplusplus
 }
