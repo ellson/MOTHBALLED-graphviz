@@ -372,15 +372,14 @@ inkpot_status_t inkpot_put_rgba ( inkpot_t *inkpot, double rgba[4] )
 {
     inkpot_status_t rc;
     inkpot_value_t value;
-    unsigned long v;
+    double v;
     int i;
 
     for (i = 0; i < 4; i++) {
-	value.value <<= 16;
 	v = rgba[i];
 	v = (v < 0.0) ? 0.0 : v;
 	v = (v > 1.0) ? 1.0 : v;
-	value.value |= (int)(v * 65535);
+	value.value[i] = (unsigned short)(v * 65535);
     }
     value.vtype = VTYPE_rgba;
     
@@ -438,20 +437,18 @@ inkpot_status_t inkpot_put ( inkpot_t *inkpot, const char *color )
     if (*inkpot->canon == '#') {
 	a = 65535;
         if ((len = sscanf(inkpot->canon, "#%4x%4x%4x%4x", &r, &g, &b, &a)) >= 3) {
-	    value.value = (((((((unsigned long)r) << 16)
-			      | (unsigned long)g) << 16)
-			      | (unsigned long)b) << 16)
-		              | (unsigned long)a;
+	    value.value[0] = r;
+	    value.value[1] = g;
+	    value.value[2] = b;
+	    value.value[3] = a;
 	}
 	else if (len < 3) {
 	    a = 255;
 	    if ((len = sscanf(inkpot->canon, "#%2x%2x%2x%2x", &r, &g, &b, &a)) >= 3) {
-/*	        r *= 65535/255; g *= 65535/255; b *= 65535/255; a *= 65535/255;   // too ugly */
-	        value.value = (((((((unsigned long)r) << 16)
-			          | (unsigned long)g) << 16)
-			          | (unsigned long)b) << 16)
-		                  | (unsigned long)a;
-		value.value |= value.value << 8;		                  /* not ugly */
+	        value.value[0] = r | r << 8;
+	        value.value[1] = g | r << 8;
+	        value.value[2] = b | r << 8;
+	        value.value[3] = a | r << 8;
    	    } 
 	}
 	if (len >= 3) {
@@ -527,7 +524,7 @@ inkpot_status_t inkpot_get ( inkpot_t *inkpot, const char **color )
     IDX_ALTS i;
     IDX_VALUES value_idx;
     int maybe;
-    
+
     /* FIXME - why isn't this checking the current value then the 4 level cache? */
     out_name = inkpot->out_name;
     if (out_name) {  /* if we have a cached name */
@@ -604,9 +601,8 @@ inkpot_status_t inkpot_get_rgba_i ( inkpot_t *inkpot, unsigned short rgba[4] )
     value = inkpot->value;
     rc = inkpot->status = inkpot_value_get( &inkpot->values, &value );
     if (rc == INKPOT_SUCCESS) {
-	for (i = 3; i >= 0; i--) {
-	    rgba[i] = (value.value & 65535);
-	    value.value >>= 16;
+	for (i = 0; i < 4; i++) {
+	    rgba[i] = value.value[i];
 	}
     }
     return rc;
@@ -621,9 +617,8 @@ inkpot_status_t inkpot_get_rgba ( inkpot_t *inkpot, double rgba[4] )
     value = inkpot->value;
     rc = inkpot->status = inkpot_value_get( &inkpot->values, &value );
     if (rc == INKPOT_SUCCESS) {
-	for (i = 3; i >= 0; i--) {
-	    rgba[i] = (value.value & 65535) / (double)65535;
-	    value.value >>= 16;
+	for (i = 0; i < 4; i++) {
+	    rgba[i] = value.value[i] / (double)65535;
 	}
     }
     return rc;
@@ -761,9 +756,12 @@ inkpot_status_t inkpot_debug_schemes( inkpot_t *inkpot )
 	    if (! found) {
                 inkpot_puts(inkpot, " ");
                 inkpot_puts(inkpot, &TAB_SCHEME_STRINGS[TAB_SCHEMES[i].string_idx]);
-                inkpot_puts(inkpot, "(out)");
+	        found++;
 	    }
+            inkpot_puts(inkpot, "(out)");
         }
+	if (found) 
+    	    inkpot_puts(inkpot, "\n");
     }
     for (j = 0; j < inkpot->active_schemes; j++) {
         inkpot_puts(inkpot, " ");

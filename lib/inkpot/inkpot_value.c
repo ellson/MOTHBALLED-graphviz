@@ -34,28 +34,27 @@ inkpot_status_t inkpot_value_set ( inkpot_values_t *values, inkpot_value_t *valu
 inkpot_status_t inkpot_value_get ( inkpot_values_t *values, inkpot_value_t *value )
 {
     IDX_VALUES_24 i;
+    unsigned short v;
 
     /* FIXME - this routine must check for 8 bit values and properly scale to 16 for the api */
 
     if (value->index < SZT_VALUES) {
 	i = 3 * value->index;
 
-	value->value  = TAB_VALUES_24[i++] << 16;
-	value->value |= TAB_VALUES_24[i++] << 16;
-	value->value |= TAB_VALUES_24[i] << 16;
-	value->value |= 0xff;
-	value->value |= value->value << 8;
+	v = TAB_VALUES_24[i++]; value->value[0] = v | v << 8;
+	v = TAB_VALUES_24[i++]; value->value[1] = v | v << 8;
+	v = TAB_VALUES_24[i];   value->value[2] = v | v << 8;
+	                        value->value[3] = 0xffff;
 
 	value->vtype = VTYPE_rgba;  /* FIXME */
     }
     else if (value->index - SZT_VALUES < SZT_NONAME_VALUES) {
 	i = 3 * value->index;
 
-	value->value  = TAB_NONAME_VALUES_24[i++] << 16;
-	value->value |= TAB_NONAME_VALUES_24[i++] << 16;
-	value->value |= TAB_NONAME_VALUES_24[i] << 16;
-	value->value |= 0xff;
-	value->value |= value->value << 8;
+	v = TAB_NONAME_VALUES_24[i++]; value->value[0] = v | v << 8;
+	v = TAB_NONAME_VALUES_24[i++]; value->value[1] = v | v << 8;
+	v = TAB_NONAME_VALUES_24[i];   value->value[2] = v | v << 8;
+	                               value->value[3] = 0xffff;
 
 	value->vtype = VTYPE_rgba;  /* FIXME */
     }
