@@ -1,20 +1,36 @@
-CFLAGS = -Wall -g -O0
+# $Id$ $Revision$
+## Process this file with automake to produce Makefile.in
 
-try: try.o inkpot_scheme.o inkpot_xlate.o inkpot_value.o
+pdfdir = $(pkgdatadir)/doc/pdf
+pkgconfigdir = $(libdir)/pkgconfig
 
-inkpot_scheme.o: inkpot_scheme.c inkpot_scheme.h inkpot.h inkpot_define.h \
-	inkpot_value.c inkpot_xlate.c inkpot_scheme_table.h
+pkginclude_HEADERS = inkpot.h
+lib_LTLIBRARIES = libinkpot.la
+pkgconfig_DATA = libinkpot.pc
 
-inkpot_xlate.o: inkpot_xlate.c inkpot_xlate.h inkpot.h
+noinst_PROGRAMS = inkpot
+noinst_HEADERS = inkpot_scheme.h inkpot_xlate.h inkpot_value.h \
+	inkpot_define.h inkpot_value_table.h inkpot_scheme_table.h
+noinst_LTLIBRARIES = libinkpot_C.la
 
-inkpot_value.o: inkpot_value.c inkpot_value.h inkpot.h inkpot_value_table.h
+man_MANS = inkpot.3
+pdf_DATA = inkpot.3.pdf
+
+inkpot_SOURCES = inkpot.c
+inkpot_LDADD = $(top_builddir)/lib/inkpot/libinkpot_C.la
+
+libinkpot_C_la_SOURCES = inkpot_scheme.c inkpot_value.c inkpot_xlate.c
+
+libinkpot_la_LDFLAGS = -version-info @VERSION_INFO@ -no-undefined
+libinkpot_la_SOURCES = $(libgvc_C_la_SOURCES)
 
 inkpot_value_table.h: inkpot_define.h
 
 inkpot_scheme_table.h: inkpot_define.h
 
 inkpot_define.h: scripts/lib-h.tcl       tk.lib svg.lib x11.lib 
-	scripts/lib-h.tcl
+	scripts/lib-h.tcl tk.lib svg.lib x11.lib
+	rm tk.lib svg.lib x11.lib
 
 x11.lib: scripts/rgb.txt-x11.lib.tcl     data/rgb.txt
 	scripts/rgb.txt-x11.lib.tcl data/rgb.txt
@@ -25,5 +41,13 @@ svg.lib: scripts/types.html-svg.lib.tcl  data/types.html
 tk.lib: scripts/xcolors.c-tk.lib.tcl     data/xcolors.c
 	scripts/xcolors.c-tk.lib.tcl data/xcolors.c
 
-clean:
-	rm -rf *.o try *.lib inkpot_value_table.h inkpot_scheme_table.h inkpot_define.h
+inkpot.3.pdf: $(srcdir)/inkpot.3
+	- @GROFF@ -Tps -man $(srcdir)/inkpot.3 | @PS2PDF@ - - > inkpot.3.pdf
+
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old inkpot_define.h \
+	inkpot_value_table.h inkpot_scheme_table.h \
+	tk.lib svg.lib x11.lib
+
+DISTCLEANFILES = $(pdf_DATA) \
+	inkpot_define.h inkpot_value_table.h inkpot_scheme_table.h
+
