@@ -164,8 +164,8 @@ void dot_nodesize(node_t * n, boolean flip)
 
 /* translate_drawing:
  * Translate and/or rotate nodes, spline points, and bbox info if
- * Offset is non-trivial.
- * Also, if Rankdir, reset ND_lw, ND_rw, and ND_ht to correct value.
+ * necessary. Also, if Rankdir (!= RANKDIR_BT), reset ND_lw, ND_rw, 
+ * and ND_ht to correct value.
  */
 static void translate_drawing(graph_t * g)
 {
@@ -176,15 +176,12 @@ static void translate_drawing(graph_t * g)
     if (!shift && !Rankdir) return;
     for (v = agfstnode(g); v; v = agnxtnode(g, v)) {
 	if (Rankdir) dot_nodesize(v, FALSE);
-	if (shift) {
-	    ND_coord(v) = map_point(ND_coord(v));
-	    if (State == GVSPLINES)
-		for (e = agfstout(g, v); e; e = agnxtout(g, e))
-		    map_edge(e);
-	}
+	ND_coord(v) = map_point(ND_coord(v));
+	if (State == GVSPLINES)
+	    for (e = agfstout(g, v); e; e = agnxtout(g, e))
+		map_edge(e);
     }
-    if (shift)
-	translate_bb(g, GD_rankdir(g));
+    translate_bb(g, GD_rankdir(g));
 }
 
 /* place_root_label:
