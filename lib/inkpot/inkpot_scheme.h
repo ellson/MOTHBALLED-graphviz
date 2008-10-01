@@ -98,11 +98,13 @@ struct inkpot_s {		/* The Ink Pot */
 	IDX_MRU_CACHE
 	    most_recently_used_idx;
 
-	inkpot_disc_t
-	    disc;		/* writers and closures for out and err */
+	inkpot_write_disc_t
+	    write_disc;		/* User changeable function for writing output
+				 *    Defaults to an internal function that writes
+				 *    to FILE* streams */
 	void
-	    *out_closure,
-	    *err_closure;
+	    *write_closure;	/* A parameter to pass to the writer function.
+				 *    Defaults to (FILE*)stdout */
 
 	inkpot_status_t
 	    status;		/* The status after the last operation */
