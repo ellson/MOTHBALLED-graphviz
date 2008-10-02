@@ -672,6 +672,15 @@ ordering is only preserved among nodes related by an edge.
 <P>
 <B>NOTE: </B>The methods "orthoxy" and "orthoyx" are still evolving. The
 semantics of these may change, or these methods may disappear altogether.
+:overlap_scaling:G:double:-4:-1.0e10; sfdp
+When <TT>overlap=sfdp</TT>, the layout is scaled by this factor, thereby
+removing a fair amount of node overlap, and making node overlap removal
+faster and better able to retain the graph's shape.
+<P>
+If <TT>overlap_scaling</TT> is negative, the layout is scaled by
+<TT>-1*overlap_scaling</TT> times the average label size.
+If <TT>overlap_scaling</TT> is positive, the layout is scaled by
+<TT>overlap_scaling</TT>.
 :pack:G:bool/int:false; notdot
 This is true if the value of pack is "true" (case-insensitive) or a
 non-negative integer. If true, each connected component of the graph is

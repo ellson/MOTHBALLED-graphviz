@@ -313,6 +313,8 @@ This field indicates which graph component uses the attribute.
  <TR><TD><A NAME=a:overlap HREF=#d:overlap>overlap</A>
 </TD><TD>G</TD><TD>string<BR><A HREF=#k:bool>bool</A>
 </TD><TD ALIGN="CENTER">true</TD><TD></TD><TD>not dot</TD> </TR>
+ <TR><TD><A NAME=a:overlap_scaling HREF=#d:overlap_scaling>overlap_scaling</A>
+</TD><TD>G</TD><TD>double</TD><TD ALIGN="CENTER">-4</TD><TD>-1.0e10</TD><TD>sfdp only</TD> </TR>
  <TR><TD><A NAME=a:pack HREF=#d:pack>pack</A>
 </TD><TD>G</TD><TD><A HREF=#k:bool>bool</A>
 <BR>int</TD><TD ALIGN="CENTER">false</TD><TD></TD><TD>not dot</TD> </TR>
@@ -1179,6 +1181,16 @@ This field indicates which graph component uses the attribute.
   <P>
   <B>NOTE: </B>The methods "orthoxy" and "orthoyx" are still evolving. The
   semantics of these may change, or these methods may disappear altogether.
+
+<DT><A NAME=d:overlap_scaling HREF=#a:overlap_scaling><STRONG>overlap_scaling</STRONG></A>
+<DD>  When <TT>overlap=sfdp</TT>, the layout is scaled by this factor, thereby
+  removing a fair amount of node overlap, and making node overlap removal
+  faster and better able to retain the graph's shape.
+  <P>
+  If <TT>overlap_scaling</TT> is negative, the layout is scaled by
+  <TT>-1*overlap_scaling</TT> times the average label size.
+  If <TT>overlap_scaling</TT> is positive, the layout is scaled by
+  <TT>overlap_scaling</TT>.
 
 <DT><A NAME=d:pack HREF=#a:pack><STRONG>pack</STRONG></A>
 <DD>  This is true if the value of pack is "true" (case-insensitive) or a
