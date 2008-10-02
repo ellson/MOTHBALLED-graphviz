@@ -97,20 +97,42 @@ static inkpot_scheme_name_t *inkpot_find_scheme_name ( const char *scheme )
 static int inkpot_scheme_index_cmpf ( const void *key, const void *base)
 {
     const char *k = (const char*)key;
-    const char *b = &TAB_SCHEME_STRINGS[((inkpot_scheme_index_t *)base)->string_idx];
+    const char *b = &TAB_SCHEME_STRINGS[((inkpot_scheme_index_t *)base)->scheme_string_idx];
 
     return string_cmpf(k, b);
 }
 
-static inkpot_scheme_index_t *inkpot_find_scheme_index ( const char *scheme )
+static int inkpot_subscheme_index_cmpf ( const void *key, const void *base)
+{
+    const char *k = (const char*)key;
+    const char *b = &TAB_SUBSCHEME_STRINGS[((inkpot_scheme_index_t *)base)->subscheme_string_idx];
+
+    return string_cmpf(k, b);
+}
+
+static inkpot_scheme_index_t *inkpot_find_scheme_index ( const char *scheme)
 {
     if (scheme == NULL)
         return NULL;
+
     return (inkpot_scheme_index_t *) bsearch(
             (void*)scheme, (void*)TAB_SCHEMES_INDEX,
             SZT_SCHEMES_INDEX, sizeof(inkpot_scheme_index_t),
             inkpot_scheme_index_cmpf); 
 }
+
+#if 0
+static inkpot_subscheme_index_t *inkpot_find_subscheme_index ( const char *subscheme )
+{
+    if (subscheme == NULL)
+	return NULL;
+
+    return (inkpot_subscheme_index_t *) bsearch(
+            (void*)subscheme, (void*)TAB_SUBSCHEMES_INDEX,
+            SZT_SUBSCHEMES_INDEX, sizeof(inkpot_subscheme_index_t),
+            inkpot_subscheme_index_cmpf); 
+}
+#endif
 
 static inkpot_status_t inkpot_scheme ( inkpot_t *inkpot, const char *scheme )
 {
@@ -481,9 +503,10 @@ inkpot_status_t inkpot_put ( inkpot_t *inkpot, const char *color )
 	*++q = '\0';
 	for (i=0; i < inkpot->active_schemes; i++) {
 	    j = inkpot->scheme_list[i];
-	    p = &TAB_SCHEME_STRINGS[TAB_SCHEMES_INDEX[j].string_idx];
+	    p = &TAB_SCHEME_STRINGS[TAB_SCHEMES_INDEX[j].scheme_string_idx];
 	    if (*p != *s || strcmp(p, s) != 0) 
 		continue;
+	    /* FIXME - deal with subschemes */
 	    first = TAB_SCHEMES_INDEX[j].first_value_idx;
             if (++j >= SZT_SCHEMES_INDEX)
 	        last = SZT_IXVALUES;
@@ -765,12 +788,12 @@ inkpot_status_t inkpot_debug_schemes( inkpot_t *inkpot )
     }
     for (j = 0; j < inkpot->active_schemes; j++) {
         inkpot_puts(inkpot, " ");
-        inkpot_puts(inkpot, &TAB_SCHEME_STRINGS[TAB_SCHEMES_INDEX[inkpot->scheme_list[j]].string_idx]);
+        inkpot_puts(inkpot, &TAB_SCHEME_STRINGS[TAB_SCHEMES_INDEX[inkpot->scheme_list[j]].scheme_string_idx]);
         inkpot_puts(inkpot, "#(in)");
     }
     for (j = 0; j < inkpot->active_out_schemes; j++) {
         inkpot_puts(inkpot, " ");
-        inkpot_puts(inkpot, &TAB_SCHEME_STRINGS[TAB_SCHEMES_INDEX[inkpot->out_scheme_list[j]].string_idx]);
+        inkpot_puts(inkpot, &TAB_SCHEME_STRINGS[TAB_SCHEMES_INDEX[inkpot->out_scheme_list[j]].scheme_string_idx]);
         inkpot_puts(inkpot, "#(out)");
     }
     inkpot_puts(inkpot, "\n");

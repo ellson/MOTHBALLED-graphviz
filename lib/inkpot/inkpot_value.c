@@ -49,7 +49,7 @@ inkpot_status_t inkpot_value_get ( inkpot_values_t *values, inkpot_value_t *valu
 	value->vtype = VTYPE_rgba;  /* FIXME */
     }
     else if (value->index - SZT_VALUES < SZT_NONAME_VALUES) {
-	i = 3 * value->index;
+	i = 3 * value->index - SZT_VALUES;
 
 	v = TAB_NONAME_VALUES_24[i++]; value->value[0] = v | v << 8;
 	v = TAB_NONAME_VALUES_24[i++]; value->value[1] = v | v << 8;
