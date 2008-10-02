@@ -28,8 +28,12 @@ inkpot_value_table.h: $(builddir)/inkpot_define.h
 
 inkpot_scheme_table.h: $(builddir)/inkpot_define.h
 
-inkpot_define.h: scripts/lib-h.tcl $(builddir)/tk.lib $(builddir)/svg.lib $(builddir)/x11.lib 
-	$(TCLSH) scripts/lib-h.tcl tk.lib svg.lib x11.lib
+inkpot_define.h: scripts/lib-h.tcl \
+			$(builddir)/tk.lib \
+       			$(builddir)/svg.lib \
+			$(builddir)/x11.lib \
+		       	$(builddir)/brewer.lib
+	$(TCLSH) scripts/lib-h.tcl tk.lib svg.lib x11.lib brewer.lib
 
 x11.lib: scripts/rgb.txt-x11.lib.tcl data/rgb.txt
 	$(TCLSH) scripts/rgb.txt-x11.lib.tcl data/rgb.txt
@@ -39,6 +43,9 @@ svg.lib: scripts/types.html-svg.lib.tcl data/types.html
 
 tk.lib: scripts/xcolors.c-tk.lib.tcl data/xcolors.c
 	$(TCLSH) scripts/xcolors.c-tk.lib.tcl data/xcolors.c
+
+brewer.lib: scripts/brewer_colors-brewer.lib.tcl data/brewer_colors
+	$(TCLSH) scripts/brewer_colors-brewer.lib.tcl data/brewer_colors
 
 inkpot.1.pdf: inkpot.1
 	- $(GROFF) -Tps -man inkpot.1 | $(PS2PDF) - - > inkpot.1.pdf
