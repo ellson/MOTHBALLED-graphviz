@@ -53,7 +53,7 @@ inkpot.1.pdf: inkpot.1
 inkpot.3.pdf: inkpot.3
 	- $(GROFF) -Tps -man inkpot.3 | $(PS2PDF) - - > inkpot.3.pdf
 
-CLEANFILES = tk.lib svg.lib x11.lib \
+CLEANFILES = tk.lib svg.lib x11.lib  brewer.lib \
 	inkpot_define.h inkpot_value_table.h inkpot_scheme_table.h
 
 EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old scripts/* data/*

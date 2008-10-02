@@ -20,7 +20,7 @@ inkpot_value_table.h: inkpot_define.h
 inkpot_scheme_table.h: inkpot_define.h
 
 inkpot_define.h: scripts/lib-h.tcl       tk.lib svg.lib x11.lib brewer.lib
-	scripts/lib-h.tcl tk.lib svg.lib x11.lib
+	scripts/lib-h.tcl tk.lib svg.lib x11.lib brewer.lib
 
 x11.lib: scripts/rgb.txt-x11.lib.tcl     data/rgb.txt
 	scripts/rgb.txt-x11.lib.tcl data/rgb.txt
