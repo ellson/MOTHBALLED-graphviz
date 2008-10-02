@@ -279,7 +279,7 @@ static void writeattr(FILE * fp, int *npp, char *name, char *val)
 {
     fprintf(fp, ++(*npp) > 1 ? ", " : " [");
     fprintf(fp, "%s=", agcanonical(name));
-    fprintf(fp, "%s ", agcanonical(val));
+    fprintf(fp, "%s", agcanonical(val));
 }
 
 void agwrnode(Agraph_t * g, FILE * fp, Agnode_t * n, int full, int indent)
