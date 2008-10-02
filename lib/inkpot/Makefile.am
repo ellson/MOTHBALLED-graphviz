@@ -56,6 +56,6 @@ inkpot.3.pdf: inkpot.3
 CLEANFILES = tk.lib svg.lib x11.lib \
 	inkpot_define.h inkpot_value_table.h inkpot_scheme_table.h
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old scripts/* data/*
 
 DISTCLEANFILES = $(pdf_DATA)
