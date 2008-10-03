@@ -402,7 +402,7 @@ static pos_edge nop_init_edges(Agraph_t * g)
  * Scans for a correct bb attribute. If available, sets it
  * in the graph and returns 1.
  */
-#define BS "%d,%d,%d,%d"
+#define BS "%f,%f,%f,%f"
 
 static int chkBB(Agraph_t * g, attrsym_t * G_bb)
 {
