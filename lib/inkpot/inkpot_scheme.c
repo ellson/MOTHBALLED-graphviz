@@ -88,6 +88,7 @@ static inkpot_scheme_name_t *inkpot_find_scheme_name ( const char *scheme )
 {
     if (scheme == NULL)
         return NULL;
+    /* FIXME - split scheme/subscheme/n */
     return (inkpot_scheme_name_t *) bsearch(
             (void*)scheme, (void*)TAB_SCHEMES,
             SZT_SCHEMES, sizeof(inkpot_scheme_name_t),
@@ -363,7 +364,7 @@ static inkpot_status_t inkpot_put_name ( inkpot_t *inkpot )
 static inkpot_status_t inkpot_put_index ( inkpot_t *inkpot, int index )
 {
     IDX_SCHEMES_INDEX j;
-    IDX_IXVALUES first, last;
+    IDX_INDEXES first, last;
     IDX_VALUES value_idx;
 
     if (!inkpot->active_schemes)
@@ -372,7 +373,7 @@ static inkpot_status_t inkpot_put_index ( inkpot_t *inkpot, int index )
     j = inkpot->scheme_list[0];
     first = TAB_SCHEMES_INDEX[j].first_value_idx;
     if (++j >= SZT_SCHEMES_INDEX)
-	last = SZT_IXVALUES;
+	last = SZT_INDEXES;
     else
 	last = TAB_SCHEMES_INDEX[j].first_value_idx;
     last = last-1-first;
@@ -382,8 +383,8 @@ static inkpot_status_t inkpot_put_index ( inkpot_t *inkpot, int index )
     index = (index > last) ? last : index;
     index += first;
 
-    assert(index < SZT_IXVALUES);
-    value_idx = TAB_IXVALUES[index];
+    assert(index < SZT_INDEXES);
+    value_idx = TAB_INDEXES[index];
     if (value_idx >= SZT_VALUES)
         assert(value_idx < SZT_VALUES + SZT_NONAME_VALUES);
 
@@ -424,7 +425,7 @@ inkpot_status_t inkpot_put ( inkpot_t *inkpot, const char *color )
 {
     inkpot_status_t rc = INKPOT_COLOR_UNKNOWN;
     IDX_SCHEMES_INDEX j;
-    IDX_IXVALUES first, last;
+    IDX_INDEXES first, last;
     IDX_VALUES value_idx;
     char *q, *s;
     const char *p;
@@ -509,7 +510,7 @@ inkpot_status_t inkpot_put ( inkpot_t *inkpot, const char *color )
 	    /* FIXME - deal with subschemes */
 	    first = TAB_SCHEMES_INDEX[j].first_value_idx;
             if (++j >= SZT_SCHEMES_INDEX)
-	        last = SZT_IXVALUES;
+	        last = SZT_INDEXES;
 	    else
 		last = TAB_SCHEMES_INDEX[j].first_value_idx;
 	    last = last-1-first;
@@ -519,8 +520,8 @@ inkpot_status_t inkpot_put ( inkpot_t *inkpot, const char *color )
 	    index = (index > last) ? last : index;
 	    index += first;
 
-	    assert(index < SZT_IXVALUES);
-	    value_idx = TAB_IXVALUES[index];
+	    assert(index < SZT_INDEXES);
+	    value_idx = TAB_INDEXES[index];
 	    if (value_idx >= SZT_VALUES)
 		assert(value_idx < SZT_VALUES + SZT_NONAME_VALUES);
 
@@ -842,7 +843,7 @@ static inkpot_status_t inkpot_debug_names_schemes( inkpot_t *inkpot, MSK_SCHEMES
     IDX_NAMES i;
 #if 0
     IDX_SCHEMES_INDEX j;
-    IDX_IXVALUES k, first, last;
+    IDX_INDEXES k, first, last;
     IDX_VALUES v;
     char buf[20];
 #endif
@@ -864,12 +865,12 @@ static inkpot_status_t inkpot_debug_names_schemes( inkpot_t *inkpot, MSK_SCHEMES
 	first = scheme_index->first_value_idx;
 	j = scheme_index - TAB_SCHEMES_INDEX;
 	if (++j >= SZT_SCHEMES_INDEX)
-	    last = SZT_IXVALUES;
+	    last = SZT_INDEXES;
 	else
 	    last = TAB_SCHEMES_INDEX[j].first_value_idx;
     
 	for (k = first; k < last; k++) {
-	    v = TAB_IXVALUES[k];
+	    v = TAB_INDEXES[k];
 	    sprintf(buf, "%d(", k - first);
 	    inkpot_puts(inkpot, buf);
 	    inkpot_puts(inkpot, &TAB_STRINGS[scheme_index->string_idx]);

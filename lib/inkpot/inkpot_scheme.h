@@ -32,9 +32,9 @@ typedef struct inkpot_scheme_index_s {
 	IDX_STRINGS
 	     subscheme_string_idx; /* The subscheme name in TAB_STRINGS. e.g "blues7" */
 
-	IDX_IXVALUES
+	IDX_INDEXES
 	    first_value_idx;	/* The first index to the color values in
-				 * TAB_IXVALUES. Terminated by the
+				 * TAB_INDEXES. Terminated by the
 				 * first_value_idx of the next
 				 * inkpot_scheme_index_t in TAB_SCHEMES_INDEX
 				 * or by SZT_SCHEMES_INDEX */
@@ -77,7 +77,7 @@ struct inkpot_s {		/* The Ink Pot */
 	    scheme_bits,	/* One bit per inkpot_scheme_name_t */
 	    out_scheme_bit;     /* One scheme only for output. */
 
-	IDX_IXVALUES
+	IDX_INDEXES
 	    index,		/* The index for the current value in active_schemes_index */
 	    out_index;		/* The index for the current value in active_out_schemes_index */
 
