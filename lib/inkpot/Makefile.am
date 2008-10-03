@@ -28,24 +28,28 @@ inkpot_value_table.h: $(builddir)/inkpot_define.h
 
 inkpot_scheme_table.h: $(builddir)/inkpot_define.h
 
-inkpot_define.h: scripts/lib-h.tcl \
-			$(builddir)/tk.lib \
-       			$(builddir)/svg.lib \
-			$(builddir)/x11.lib \
-		       	$(builddir)/brewer.lib
-	$(TCLSH) scripts/lib-h.tcl tk.lib svg.lib x11.lib brewer.lib
+inkpot_define.h: inkpot_lib.tcl inkpot_lib_procs.tcl \
+			$(builddir)/inkpot_lib_tk.dat \
+       			$(builddir)/inkpot_lib_svg.dat \
+			$(builddir)/inkpot_lib_x11.dat \
+		       	$(builddir)/inkpot_lib_brewer.dat
+	$(TCLSH) inkpot_lib.tcl \
+			$(builddir)/inkpot_lib_tk.dat \
+			$(builddir)/inkpot_lib_svg.dat \
+			$(builddir)/inkpot_lib_x11.dat \
+			$(builddir)/inkpot_lib_brewer.dat
 
-x11.lib: scripts/rgb.txt-x11.lib.tcl data/rgb.txt
-	$(TCLSH) scripts/rgb.txt-x11.lib.tcl data/rgb.txt
+inkpot_lib_x11.dat: inkpot_lib_x11.tcl data/rgb.txt
+	$(TCLSH) inkpot_lib_x11.tcl data/rgb.txt
 
-svg.lib: scripts/types.html-svg.lib.tcl data/types.html
-	$(TCLSH) scripts/types.html-svg.lib.tcl data/types.html
+inkpot_lib_svg.dat: inkpot_lib_svg.tcl data/types.html
+	$(TCLSH) inkpot_lib_svg.tcl data/types.html
 
-tk.lib: scripts/xcolors.c-tk.lib.tcl data/xcolors.c
-	$(TCLSH) scripts/xcolors.c-tk.lib.tcl data/xcolors.c
+inkpot_lib_tk.dat: inkpot_lib_tk.tcl data/xcolors.c
+	$(TCLSH) inkpot_lib_tk.tcl data/xcolors.c
 
-brewer.lib: scripts/brewer_colors-brewer.lib.tcl data/brewer_colors
-	$(TCLSH) scripts/brewer_colors-brewer.lib.tcl data/brewer_colors
+inkpot_lib_brewer.dat: inkpot_lib_brewer.tcl data/brewer_colors
+	$(TCLSH) inkpot_lib_brewer.tcl data/brewer_colors
 
 inkpot.1.pdf: inkpot.1
 	- $(GROFF) -Tps -man inkpot.1 | $(PS2PDF) - - > inkpot.1.pdf
@@ -53,9 +57,9 @@ inkpot.1.pdf: inkpot.1
 inkpot.3.pdf: inkpot.3
 	- $(GROFF) -Tps -man inkpot.3 | $(PS2PDF) - - > inkpot.3.pdf
 
-CLEANFILES = tk.lib svg.lib x11.lib  brewer.lib
+CLEANFILES = inkpot_lib_*.dat
 
-EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old scripts/* data/* \
+EXTRA_DIST = $(man_MANS) $(pdf_DATA) Makefile.old *.tcl data/* \
 	inkpot_define.h inkpot_value_table.h inkpot_scheme_table.h
 
 DISTCLEANFILES = $(pdf_DATA) \

@@ -19,21 +19,30 @@ inkpot_value_table.h: inkpot_define.h
 
 inkpot_scheme_table.h: inkpot_define.h
 
-inkpot_define.h: scripts/lib-h.tcl       tk.lib svg.lib x11.lib brewer.lib
-	scripts/lib-h.tcl tk.lib svg.lib x11.lib brewer.lib
+inkpot_define.h: inkpot_lib.tcl inkpot_lib_procs.tcl \
+			inkpot_lib_tk.dat \
+       			inkpot_lib_svg.dat \
+			inkpot_lib_x11.dat \
+		       	inkpot_lib_brewer.dat
+	tclsh inkpot_lib.tcl \
+			inkpot_lib_tk.dat \
+			inkpot_lib_svg.dat \
+			inkpot_lib_x11.dat \
+			inkpot_lib_brewer.dat
 
-x11.lib: scripts/rgb.txt-x11.lib.tcl     data/rgb.txt
-	scripts/rgb.txt-x11.lib.tcl data/rgb.txt
+inkpot_lib_x11.dat: inkpot_lib_x11.tcl data/rgb.txt
+	tclsh inkpot_lib_x11.tcl data/rgb.txt
 
-svg.lib: scripts/types.html-svg.lib.tcl  data/types.html
-	scripts/types.html-svg.lib.tcl data/types.html
+inkpot_lib_svg.dat: inkpot_lib_svg.tcl data/types.html
+	tclsh inkpot_lib_svg.tcl data/types.html
 
-tk.lib: scripts/xcolors.c-tk.lib.tcl     data/xcolors.c
-	scripts/xcolors.c-tk.lib.tcl data/xcolors.c
+inkpot_lib_tk.dat: inkpot_lib_tk.tcl data/xcolors.c
+	tclsh inkpot_lib_tk.tcl data/xcolors.c
 
-brewer.lib: scripts/brewer_colors-brewer.lib.tcl data/brewer_colors
-	scripts/brewer_colors-brewer.lib.tcl data/brewer_colors
+inkpot_lib_brewer.dat: inkpot_lib_brewer.tcl data/brewer_colors
+	tclsh inkpot_lib_brewer.tcl data/brewer_colors
 
 clean:
-	rm -rf *.o inkpot tk.lib svg.lib x11.lib brewer.lib \
+	rm -rf *.o inkpot *.dat \
 		inkpot_value_table.h inkpot_scheme_table.h inkpot_define.h
+
