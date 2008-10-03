@@ -963,38 +963,46 @@ static void addEndpoint(router_t * rtr, pointf p, node_t* v, int v_id, int sides
     pointf* pts = rtr->ps;
     int i, t;
     double d;
-    pointf v0, v1;
+    pointf vr, v0, v1;
 
     switch (sides) {
     case TOP :
+	vr = add_pointf (p, north);
 	v0 = add_pointf (p, northwest);
 	v1 = add_pointf (p, northeast);
 	break;
     case TOP|RIGHT :
+	vr = add_pointf (p, northeast);
 	v0 = add_pointf (p, north);
 	v1 = add_pointf (p, east);
 	break;
     case RIGHT :
+	vr = add_pointf (p, east);
 	v0 = add_pointf (p, northeast);
 	v1 = add_pointf (p, southeast);
 	break;
     case BOTTOM|RIGHT :
+	vr = add_pointf (p, southeast);
 	v0 = add_pointf (p, east);
 	v1 = add_pointf (p, south);
 	break;
     case BOTTOM :
+	vr = add_pointf (p, south);
 	v0 = add_pointf (p, southeast);
 	v1 = add_pointf (p, southwest);
 	break;
     case BOTTOM|LEFT :
+	vr = add_pointf (p, southwest);
 	v0 = add_pointf (p, south);
 	v1 = add_pointf (p, west);
 	break;
     case LEFT :
+	vr = add_pointf (p, west);
 	v0 = add_pointf (p, southwest);
 	v1 = add_pointf (p, northwest);
 	break;
     case TOP|LEFT :
+	vr = add_pointf (p, northwest);
 	v0 = add_pointf (p, west);
 	v1 = add_pointf (p, north);
 	break;
@@ -1015,7 +1023,7 @@ static void addEndpoint(router_t * rtr, pointf p, node_t* v, int v_id, int sides
 	else
 	    seg.j = starti;
 	t = findMap(rtr->trimap, seg.i, seg.j);
-	if (sides && !inCone (v0, p, v1, pts[seg.i]) && !inCone (v0, p, v1, pts[seg.j]))
+	if (sides && !inCone (v0, p, v1, pts[seg.i]) && !inCone (v0, p, v1, pts[seg.j]) && !raySeg(p,vr,pts[seg.i],pts[seg.j]))
 	    continue;
 	d = DIST(p, (rtr->tg->nodes + t)->ctr);
 	addTriEdge(rtr->tg, v_id, t, d, seg);
