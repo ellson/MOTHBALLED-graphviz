@@ -402,12 +402,12 @@ static pos_edge nop_init_edges(Agraph_t * g)
  * Scans for a correct bb attribute. If available, sets it
  * in the graph and returns 1.
  */
-#define BS "%f,%f,%f,%f"
+#define BS "%lf,%lf,%lf,%lf"
 
 static int chkBB(Agraph_t * g, attrsym_t * G_bb)
 {
     char *s;
-    box bb;
+    boxf bb;
 
     s = agxget(g, G_bb->index);
     if (sscanf(s, BS, &bb.LL.x, &bb.LL.y, &bb.UR.x, &bb.UR.y) == 4) {
@@ -416,11 +416,11 @@ static int chkBB(Agraph_t * g, attrsym_t * G_bb)
          * we assume the input was produced using -y, so we normalize
 	 * the bb. 
 	 */
-	    int tmp = bb.LL.y;
+	    double tmp = bb.LL.y;
 	    bb.LL.y = bb.UR.y;
 	    bb.UR.y = tmp;
 	}
-	B2BF(bb, GD_bb(g));
+	GD_bb(g) = bb;
 	return 1;
     } else
 	return 0;
