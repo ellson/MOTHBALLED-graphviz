@@ -188,11 +188,11 @@ setInt (int* v, char* arg)
   return 0;
 }
 
-/* setAttr:
+/* setFDPAttr:
  * Actions for fdp specific flags
  */
 static int
-setAttr (char* arg)
+setFDPAttr (char* arg)
 {
   switch (*arg++) {
   case 'g' :
@@ -242,7 +242,7 @@ fdp_extra_args (GVC_t *gvc, int argc, char** argv)
   for (i = 1; i < argc; i++) {
     arg = argv[i];
     if (arg && (*arg == '-') && (*(arg+1) == 'L')) {
-      if (setAttr (arg+2)) dotneato_usage(1);
+      if (setFDPAttr (arg+2)) dotneato_usage(1);
     }
     else {
       cnt++;

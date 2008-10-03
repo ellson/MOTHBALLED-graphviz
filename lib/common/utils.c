@@ -790,7 +790,7 @@ void compute_bb(graph_t * g)
  * Sets object's name attribute to the given value.
  * Creates the attribute if not already set.
  */
-static Agsym_t *setAttr(graph_t * g, void *obj, char *name, char *value,
+Agsym_t *setAttr(graph_t * g, void *obj, char *name, char *value,
 			Agsym_t * ap)
 {
     if (ap == NULL) {
