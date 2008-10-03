@@ -511,6 +511,17 @@ static int processClusters(Agraph_t * g)
     return (c_cnt ? 1 : 0);
 }
 
+static void
+bindGraphinfo (Agraph_t * g)
+{
+    Agraph_t *subg;
+
+    aginit(g, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
+    for (subg = agfstsubg(g); subg; subg = agnxtsubg(subg)) {
+	bindGraphinfo (subg);
+    }
+}
+
 /* process:
  * Return 0 if graph is connected.
  */
@@ -522,7 +533,7 @@ static int process(Agraph_t * g)
     Agnode_t *n;
 
     aginit(g, AGNODE, "nodeinfo", sizeof(Agnodeinfo_t), TRUE);
-    aginit(g, AGRAPH, "graphinfo", sizeof(Agraphinfo_t), TRUE);
+    bindGraphinfo (g);
 
     if (useClusters)
 	return processClusters(g);
