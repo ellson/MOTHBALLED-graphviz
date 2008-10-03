@@ -46,9 +46,9 @@ static void checkpath(int, boxf*, path*);
 static void mkspacep(int size);
 static void printpath(path * pp);
 #ifdef DEBUG
-static void printboxes(int boxn, box* boxes)
+static void printboxes(int boxn, boxf* boxes)
 {
-    point ll, ur;
+    pointf ll, ur;
     int bi;
     char buf[BUFSIZ];
     int newcnt = Show_cnt + boxn;
@@ -56,7 +56,7 @@ static void printboxes(int boxn, box* boxes)
     Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
     for (bi = 0; bi < boxn; bi++) {
 	ll = boxes[bi].LL, ur = boxes[bi].UR;
-	sprintf(buf, "%d %d %d %d pathbox", ll.x, ll.y, ur.x, ur.y);
+	sprintf(buf, "%d %d %d %d pathbox", (int)ll.x, (int)ll.y, (int)ur.x, (int)ur.y);
 	Show_boxes[bi+1+Show_cnt] = strdup (buf);
     }
     Show_cnt = newcnt;
@@ -168,11 +168,11 @@ static void psprintpoly(Ppoly_t p)
     Show_boxes[Show_cnt+1] = NULL;
 }
 
-static void psprintboxes(int boxn, box* boxes)
+static void psprintboxes(int boxn, boxf* boxes)
 {
     char buf[BUFSIZ];
     int newcnt = Show_cnt + 5*boxn + 3;
-    point ll, ur;
+    pointf ll, ur;
     int bi, li;
 
     Show_boxes = ALLOC(newcnt+2,Show_boxes,char*);
@@ -181,13 +181,13 @@ static void psprintboxes(int boxn, box* boxes)
     Show_boxes[li++] = strdup ("gsave 0 1 0 setrgbcolor");
     for (bi = 0; bi < boxn; bi++) {
 	ll = boxes[bi].LL, ur = boxes[bi].UR;
-	sprintf(buf, "newpath\n%d %d moveto", ll.x, ll.y);
+	sprintf(buf, "newpath\n%d %d moveto", (int)ll.x, (int)ll.y);
 	Show_boxes[li++] = strdup (buf);
-	sprintf(buf, "%d %d lineto", ll.x, ur.y);
+	sprintf(buf, "%d %d lineto", (int)ll.x, (int)ur.y);
 	Show_boxes[li++] = strdup (buf);
-	sprintf(buf, "%d %d lineto", ur.x, ur.y);
+	sprintf(buf, "%d %d lineto", (int)ur.x, (int)ur.y);
 	Show_boxes[li++] = strdup (buf);
-	sprintf(buf, "%d %d lineto", ur.x, ll.y);
+	sprintf(buf, "%d %d lineto", (int)ur.x, (int)ll.y);
 	Show_boxes[li++] = strdup (buf);
 	Show_boxes[li++] = strdup ("closepath stroke");
     }
