@@ -27,7 +27,7 @@ MGIF = constraint.gif record.gif html1.gif html2.gif fill.gif round.gif \
 
 MJPG = sdlshapes.jpg
 
-# MPNG = sdlshapes.png
+MPNG = sdlshapes.png
 
 SGIF = Mcircle.gif Mdiamond.gif Msquare.gif box.gif \
       circle.gif diamond.gif doublecircle.gif \
@@ -115,7 +115,7 @@ shapes : shapelist mkshapes.sh
 	./mkshapes.sh
 	touch shapes
  
-shapes.html : shapes shapes.1 mkshhtml.sh shapes.2 html.html shapes.3 record.gif record2.gif sdlshapes.jpg
+shapes.html : shapes shapes.1 mkshhtml.sh shapes.2 html.html shapes.3 record.gif record2.gif sdlshapes.png
 	cat shapes.1 > shapes.html
 	./mkshhtml.sh >> shapes.html
 	cat shapes.2 >> shapes.html
@@ -156,11 +156,12 @@ clean :
 
 distclean : clean
 	rm -f attrs.html colors.html output.html shapes.html lang.html arrows.html
-	rm -f $(A2GIF) $(AGIF) $(SGIF) $(MJPG) $(MGIF) shapes
+	rm -f $(A2GIF) $(AGIF) $(SGIF) $(MJPG) $(MGIF) $(MPNG) shapes
 	(for s in $$(cat shapelist); do rm -f $$s.gif; done)
 
 EXTRA_DIST = $(XGIF) mklang.y mkarrows.sh mkattrs.sh mkshapes.sh \
-             mktypes.sh mkarrowtbl.sh mkoutput.sh mkshhtml.sh ps_to_jpg.sh \
+             mktypes.sh mkarrowtbl.sh mkoutput.sh mkshhtml.sh \
+	     ps_to_jpg.sh ps_to_png.sh \
              arrow_grammar grammar html_grammar shapelist attrs.1 colors.1 \
              brewerlist colors.n output.1 html.1 html.2 html1.dot html.3 \
              shapes.1 shapes.2 shapes.3 lang.1 lang.2 arrows.1 arrows.2 \
