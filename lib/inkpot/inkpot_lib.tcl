@@ -19,6 +19,7 @@ foreach {lib} $argv {
     foreach {scheme coding} $COLORS() {break}
     array unset COLORS {}
     lappend ALL_STRINGS($scheme) scheme
+    set ALL_SCHEMES($scheme) {}
 
     foreach {color} [array names COLORS] {
         set value $COLORS($color)
@@ -33,23 +34,19 @@ foreach {lib} $argv {
         switch [llength $color] {
             1 {
                 lappend ALL_STRINGS($color) color
-		map C V $color $value $scheme
+		map CV $color $value $scheme
             }
             2 {
                 foreach {subscheme index} $color {break}
                 lappend ALL_STRINGS($subscheme) subscheme
-		map I V $index $value [list $scheme $subscheme 0]
-#old
+		map IV $index $value [list $scheme $subscheme 0]
                 lappend ALL_INDEX_SCHEMES([list $scheme $subscheme 0]) $index $value
-                lappend ALL_INDEXES($value) $coding $scheme $subscheme 0 $index
             }
             3 {
                 foreach {subscheme range index} $color {break}
                 lappend ALL_STRINGS($subscheme) subscheme
-		map I V $index $value [list $scheme $subscheme $range]
-#old
+		map IV $index $value [list $scheme $subscheme $range]
                 lappend ALL_INDEX_SCHEMES([list $scheme $subscheme $range]) $index $value
-                lappend ALL_INDEXES($value) $coding $scheme $subscheme $range $index
             }
             default {
                 puts stderr "wrong number of keys in: \"$color\""
@@ -58,29 +55,25 @@ foreach {lib} $argv {
     }
 }
 
+if {1} {
 # crunch the data
-mapc C V
-mapc I V
-
-foreach {v} [map2 I V] {
-    foreach {m} [map2m I V $v] {
-	foreach {index scheme_subscheme_range} $m {
+foreach {v} [map2 IV] {
+    foreach {m1} [map2m1 IV $v] {
+	foreach {index scheme_subscheme_range} $m1 {
 	    foreach {scheme subscheme range} $scheme_subscheme_range {break}
-	    map RI V [list $range $index] $v [list $scheme $subscheme]
+	    map RIV [list $range $index] $v [list $scheme $subscheme]
 	}
     }
 }
-mapc RI V
 
-foreach {v} [map2 RI V] {
-    foreach {m} [map2m RI V $v] {
-	foreach {index scheme_subscheme} $m {
+foreach {v} [map2 RIV] {
+    foreach {m1} [map2m1 RIV $v] {
+	foreach {index scheme_subscheme} $m1 {
             foreach {scheme subscheme} $scheme_subscheme {break}
-	    map SRI V [list $subscheme $range $index] $v $scheme
+	    map SRIV [list $subscheme $range $index] $v $scheme
 	}
     }
 }
-mapc SRI V
 
 foreach {index_scheme} [lsort -ascii [array names ALL_INDEX_SCHEMES]] {
     foreach {index value} $ALL_INDEX_SCHEMES($index_scheme) {
@@ -93,6 +86,7 @@ foreach {index_scheme} [lsort -ascii [array names ALL_INDEX_SCHEMES]] {
     array unset indexes
     unset valueset
 }
+}
 
 #------------------------------------------------- write inkpot_value_table.h
 set f [open inkpot_value_table.h w]
@@ -101,7 +95,7 @@ puts $f $preamble
 # generate TAB_VALUES_24
 set SZT_VALUES 0
 tab_begin $f "unsigned char TAB_VALUES_24\[SZT_VALUES_24\] = {"
-foreach {value} [map2 C V] {
+foreach {value} [map2 CV] {
     tab_begin_block $f $SZT_VALUES
 
     foreach {r g b} $value {break}
@@ -110,14 +104,14 @@ foreach {value} [map2 C V] {
     set ALL_VALUES_coded($value) $SZT_VALUES
     incr SZT_VALUES
     
-    tab_end_block $f [map2m C V $value]
+    tab_end_block $f [map2m1 CV $value]
 }
 tab_end $f "};\n"
 
 # generate NONAME_VALUES_24
 set SZT_NONAME_VALUES 0
 tab_begin $f "unsigned char TAB_NONAME_VALUES_24\[SZT_NONAME_VALUES_24\] = {"
-foreach {value} [map2 I V] {
+foreach {value} [map2 IV] {
     if {! [info exists ALL_VALUES($value)]} {
         tab_begin_block $f $SZT_NONAME_VALUES
     
@@ -127,32 +121,7 @@ foreach {value} [map2 I V] {
         set ALL_VALUES_coded($value) [expr $SZT_NONAME_VALUES + $SZT_VALUES]
         incr SZT_NONAME_VALUES
 
-if {1} {
-        foreach {coding scheme subscheme range index} $ALL_INDEXES($value) {
-            set sri [list $subscheme $range $index]
-            lappend SRI($sri) $scheme
-        }
-        set comment [list]
-        foreach {sri} [lsort -ascii [array names SRI]] {
-            foreach {subscheme range index} $sri {break}
-            foreach {scheme} $SRI($sri) {
-                set schemes($scheme) {}
-            }
-            set schemes_s "\([join [lsort -ascii [array names schemes]] ,]\)"
-            array unset schemes
-            if {$range} {
-                lappend comment "$schemes_s$subscheme$range<$index>"
-            } {
-                lappend comment "$schemes_s$subscheme<$index>"
-            }
-        }
-        unset SRI
-    
-        tab_end_block $f $comment
-}
-
-
-#    	tab_end_block $f [map2m RI V $value]
+    	tab_end_block $f [map2m1 RIV $value]
     }
 }
 tab_end $f "};\n"
@@ -291,50 +260,46 @@ foreach {scheme} [lsort -ascii [array names ALL_SCHEMES]] {
     
     tab_end_block $f $scheme
     
-    set ALL_SCHEMES($scheme) [list $SZT_SCHEMES [expr 1 << $SZT_SCHEMES]]
+    set ALL_SCHEMES_coded($scheme) [list $SZT_SCHEMES [expr 1 << $SZT_SCHEMES]]
     incr SZT_SCHEMES
 }
 tab_end $f "};\n"
 
-    
 # generate TAB_ALTS
 set SZT_ALTS 0
 tab_begin $f "inkpot_name_t TAB_ALTS\[SZT_ALTS\] = {"
-foreach {ms} [map1mas C V] {
+foreach {r_set} [map3 CV] {
+    set scheme_bits 0
+    foreach {scheme} $r_set {
+        foreach {scheme_idx scheme_bit} $ALL_SCHEMES_coded($scheme) {break}
+        set scheme_bits [expr $scheme_bits | $scheme_bit]
+    }
+    set m2s [map3m2 CV $r_set]
     set isneeded 0
-    set cnt [llength $ms]
+    set cnt [llength $m2s]
     switch $cnt {
         0 {
             puts stderr "shouldn't happen - zero alts: $color"
         }
         1 {
-            foreach {m} $ms {break}
-	    foreach {value schemeset} $m {break}
-	    set scheme_bits 0
-            foreach {scheme} $schemeset {
-                foreach {scheme_idx scheme_bit} $ALL_SCHEMES($scheme) {break}
-                set scheme_bits [expr $scheme_bits | $scheme_bit]
-            }
+	    foreach {m2} $m2s {break}
+            foreach {value schemeset} $m2 {break}
             set ALL_ALTSETS_coded($color) "$ALL_VALUES_coded($value),[format {0x%x} $scheme_bits]"
             # don't need entry in TAB_ALTS for this case
         }
         default {
             set first_idx $SZT_ALTS
-	    foreach {m} $ms {
-		foreach {value schemeset} $m {break}
-	        set scheme_bits 0
-                foreach {scheme} $schemeset {
-                    foreach {scheme_idx scheme_bit} $ALL_SCHEMES($scheme) {break}
-                    set scheme_bits [expr $scheme_bits | $scheme_bit]
-                }
+	    foreach {m2} $m2s {
+	        foreach {value schemeset} $m2 {break}
                 tab_begin_block $f $first_idx
                 incr isneeded
                 tab_elem $f "{[incr cnt -1],$ALL_VALUES_coded($value),[format {0x%x} $scheme_bits]},"
                 incr SZT_ALTS
-	    }
-	    foreach {color} $aliases {
-                set ALL_ALTSETS_coded($color) "$first_idx,0"
-            }
+	        set aliases [mapm21 CV $m2]
+    	        foreach {color} $aliases {
+                    set ALL_ALTSETS_coded($color) "$first_idx,0"
+                }
+    	    }
         }
     }
     if {$isneeded} {tab_end_block $f $aliases}
@@ -345,7 +310,7 @@ tab_end $f "};\n"
 # generate TAB_NAMES
 set SZT_NAMES 0
 tab_begin $f "inkpot_name_t TAB_NAMES\[SZT_NAMES\] = {"
-foreach {color} [lsort -ascii [array names ALL_ALTSETS]] {
+foreach {color} [map1 CV] {
     tab_begin_block $f $SZT_NAMES
     
     tab_elem $f "{$ALL_COLOR_STRINGS_coded($color),$ALL_ALTSETS_coded($color)},"
@@ -361,63 +326,36 @@ tab_end $f "};\n"
 # generate TAB_TO_NAMES
 set SZT_TO_NAMES 0
 tab_begin $f "IDX_NAMES TAB_TO_NAMES\[SZT_TO_NAMES\] = {"
-foreach {value} [map2 C V] {
+foreach {m2} [mapm2 CV] {
+    set alias_set [mapm21 CV $m2]
     tab_begin_block $f $SZT_TO_NAMES
-    set m [map2ma C V $value]
-    switch [llength $m] {
+    foreach {value schemeset} $m2 {break}
+    set ALL_TO_NAMES_coded($value) $SZT_TO_NAMES
+    switch [llength $alias_set] {
         0 {
             puts stderr "shouldn't happen - zero maps: $value"
         }
 	default {
             set first_idx $SZT_TO_NAMES
-	    foreach {map} $m {
-		foreach {color schemeset} $map {break}
+	    foreach {color} $alias_set {
         	tab_elem $f $ALL_NAMES_coded($color),
         	lappend comment $color
         	incr SZT_TO_NAMES
     	    }
         }
     }
-    if {$isneeded} {tab_end_block $f \$aliases}
+    if {$isneeded} {tab_end_block $f $alias_set}
 }
 tab_end $f "};\n"
-
-if {0}
-# generate TAB_TO_NAMES
-set SZT_TO_NAMES 0
-tab_begin $f "IDX_NAMES TAB_TO_NAMES\[SZT_TO_NAMES\] = {"
-foreach {value} [lsort -dictionary [array names ALL_VALUES]] {
-    tab_begin_block $f $SZT_TO_NAMES
-
-    set mapset $ALL_MAPSETS($value)
-    set ALL_TO_NAMES_coded($value) $SZT_TO_NAMES
-
-    set comment [list]
-    foreach {color schemeset} $mapset {
-
-        tab_elem $f $ALL_NAMES_coded($color),
-
-        lappend comment $color
-        incr SZT_TO_NAMES
-    }
-
-    tab_end_block $f $comment
-}
-tab_end $f "};\n"
-
-if {$SZT_TO_NAMES != $SZT_NAMES} {
-    puts stderr "That's weird! SZT_TO_NAMES $SZT_TO_NAMES != SZT_NAMES $SZT_NAMES"
-}
 
 
 # generate TAB_VALUE_TO
 set SZT_VALUE_TO 0
 tab_begin $f "IDX_TO_NAMES TAB_VALUE_TO\[SZT_VALUE_TO\] = {"
 # NB - this sort order must match TAB_VALUES
-foreach {value} [lsort -dictionary [array names ALL_VALUES]] {
+foreach {value} [map2 CV] {
     tab_begin_block $f $SZT_VALUE_TO
 
-    set mapset $ALL_MAPSETS($value)
     tab_elem $f $ALL_TO_NAMES_coded($value),
     
     tab_end_block $f $ALL_TO_NAMES_coded($value)
@@ -425,29 +363,8 @@ foreach {value} [lsort -dictionary [array names ALL_VALUES]] {
 }
 tab_end $f "};\n"
     
-if {$SZT_VALUE_TO != $SZT_VALUES} {
-    puts stderr "That's weird! SZT_VALUE_TO $SZT_VALUE_TO != SZT_VALUES $SZT_VALUES"
-}
-
-}
-
 close $f
 
-
-if {1} {
-    puts stderr ""
-    print_first ALL_STRINGS
-    print_first ALL_NAMES_coded
-    print_first ALL_ALTS
-    print_first ALL_VALUES
-    print_first ALL_ALTSETS
-    print_first ALL_MAPSETS
-    print_first ALL_ALTSET_COLORS
-    print_first ALL_MAPSET_VALUES
-    print_first ALL_VALUE_ALTSETS
-    print_first ALL_COLOR_MAPSETS
-    puts stderr ""
-}
 
 #------------------------------------------------- write inkpot_define.h
 set f [open inkpot_define.h w]
