@@ -144,6 +144,16 @@ proc map2 {X Y} {
     upvar MAP_[set X][set Y]_[set Y]2 MAP_Y2
     array names MAP_Y2
 }
+#list all maps from x to y
+proc map1m {X Y} {
+    upvar MAP_[set X][set Y]_2[set Y] MAP_2Y
+    array names MAP_2Y
+}
+#list all maps from y to x
+proc map2m {X Y} {
+    upvar MAP_[set X][set Y]_2[set X] MAP_2X
+    array names MAP_2X
+}
 #list the r_sets for X
 proc map1r {X Y x} {
     upvar MAP_[set X][set Y]_[set X]2 MAP_X2
