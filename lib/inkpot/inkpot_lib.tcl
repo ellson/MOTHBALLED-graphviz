@@ -63,7 +63,7 @@ mapc C V
 mapc I V
 
 foreach {v} [map2 I V] {
-    foreach {m} [map21r I V $v] {
+    foreach {m} [map2m I V $v] {
 	foreach {index scheme_subscheme_range} $m {
 	    foreach {scheme subscheme range} $scheme_subscheme_range {break}
 	    map RI V [list $range $index] $v [list $scheme $subscheme]
@@ -73,7 +73,7 @@ foreach {v} [map2 I V] {
 mapc RI V
 
 foreach {v} [map2 RI V] {
-    foreach {m} [map21r RI V $v] {
+    foreach {m} [map2m RI V $v] {
 	foreach {index scheme_subscheme} $m {
             foreach {scheme subscheme} $scheme_subscheme {break}
 	    map SRI V [list $subscheme $range $index] $v $scheme
@@ -101,7 +101,7 @@ puts $f $preamble
 # generate TAB_VALUES_24
 set SZT_VALUES 0
 tab_begin $f "unsigned char TAB_VALUES_24\[SZT_VALUES_24\] = {"
-foreach {value} [lsort -dictionary [map2 C V]] {
+foreach {value} [map2 C V] {
     tab_begin_block $f $SZT_VALUES
 
     foreach {r g b} $value {break}
@@ -110,14 +110,14 @@ foreach {value} [lsort -dictionary [map2 C V]] {
     set ALL_VALUES_coded($value) $SZT_VALUES
     incr SZT_VALUES
     
-    tab_end_block $f [map21r C V $value]
+    tab_end_block $f [map2m C V $value]
 }
 tab_end $f "};\n"
 
 # generate NONAME_VALUES_24
 set SZT_NONAME_VALUES 0
 tab_begin $f "unsigned char TAB_NONAME_VALUES_24\[SZT_NONAME_VALUES_24\] = {"
-foreach {value} [lsort -dictionary [map2 I V]] {
+foreach {value} [map2 I V] {
     if {! [info exists ALL_VALUES($value)]} {
         tab_begin_block $f $SZT_NONAME_VALUES
     
@@ -152,7 +152,7 @@ if {1} {
 }
 
 
-#    	tab_end_block $f [map21r RI V $value]
+#    	tab_end_block $f [map2m RI V $value]
     }
 }
 tab_end $f "};\n"
@@ -297,25 +297,19 @@ foreach {scheme} [lsort -ascii [array names ALL_SCHEMES]] {
 tab_end $f "};\n"
 
     
-# collect common altsets
-foreach {color} [lsort -ascii [map1 C V]] {
-    lappend ALL_ALTSETS([map1r C V $color]) $color
-}
-
 # generate TAB_ALTS
 set SZT_ALTS 0
 tab_begin $f "inkpot_name_t TAB_ALTS\[SZT_ALTS\] = {"
-foreach {m} [lsort -ascii [array names ALL_ALTSETS]] {
+foreach {ms} [map1mas C V] {
     set isneeded 0
-    set aliases [lsort -ascii $ALL_ALTSETS($m)]
-    set cnt [llength $m]
+    set cnt [llength $ms]
     switch $cnt {
         0 {
             puts stderr "shouldn't happen - zero alts: $color"
         }
         1 {
-            foreach {alt} $m {break}
-	    foreach {value schemeset} $alt {break}
+            foreach {m} $ms {break}
+	    foreach {value schemeset} $m {break}
 	    set scheme_bits 0
             foreach {scheme} $schemeset {
                 foreach {scheme_idx scheme_bit} $ALL_SCHEMES($scheme) {break}
@@ -326,8 +320,8 @@ foreach {m} [lsort -ascii [array names ALL_ALTSETS]] {
         }
         default {
             set first_idx $SZT_ALTS
-	    foreach {alt} $m {
-		foreach {value schemeset} $alt {break}
+	    foreach {m} $ms {
+		foreach {value schemeset} $m {break}
 	        set scheme_bits 0
                 foreach {scheme} $schemeset {
                     foreach {scheme_idx scheme_bit} $ALL_SCHEMES($scheme) {break}
@@ -364,16 +358,12 @@ foreach {color} [lsort -ascii [array names ALL_ALTSETS]] {
 tab_end $f "};\n"
     
 
-# collect common mapsets
-foreach {value} [lsort -ascii [map2 C V]] {
-    lappend ALL_MAPSETS([map2r C V $value]) $value
-}
-
 # generate TAB_TO_NAMES
 set SZT_TO_NAMES 0
 tab_begin $f "IDX_NAMES TAB_TO_NAMES\[SZT_TO_NAMES\] = {"
-foreach {m} [lsort -dictionary [array names ALL_MAPSETS]] {
+foreach {value} [map2 C V] {
     tab_begin_block $f $SZT_TO_NAMES
+    set m [map2ma C V $value]
     switch [llength $m] {
         0 {
             puts stderr "shouldn't happen - zero maps: $value"
@@ -388,7 +378,7 @@ foreach {m} [lsort -dictionary [array names ALL_MAPSETS]] {
     	    }
         }
     }
-    if {$isneeded} {tab_end_block $f $aliases}
+    if {$isneeded} {tab_end_block $f \$aliases}
 }
 tab_end $f "};\n"
 
