@@ -15,9 +15,60 @@
  **********************************************************/
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <getopt.h>
 #include <assert.h>
 
 #include "inkpot.h"
+
+char *Info[] = {
+    "inkpot",                   /* Program */
+    "1","2008"
+#if 0
+    VERSION,                    /* Version */
+    BUILDDATE                   /* Build Date */
+#endif
+};
+
+static const char *usage =
+    ": inkpot [<color>]\n\
+    -f <schemes> - input color scheme, or ',' separated list of schemes\n\
+    -t <scheme>  - output solor scheme\n\
+    -V           - print version info\n\
+    -?           - print usage info\n\
+    If no color is specified, a stdin is processed for color tokens.\n";
+
+static void scanArgs(inkpot_t *inkpot, int argc, char **argv)
+{
+    int c;
+
+    while ((c = getopt(argc, argv, ":?Vf:t:o:")) != -1) {
+	switch (c) {
+	case 'f':
+	    inkpot_schemes_put(inkpot, optarg);
+	    break;
+	case 't':
+	    inkpot_scheme_get(inkpot, optarg);
+	    break;
+	case 'V':
+	    fprintf(stderr, "%s version %s (%s)\n",
+		    Info[0], Info[1], Info[2]);
+	    exit(0);
+	    break;
+	case '?':
+	    fprintf(stderr,"%s\n", usage);
+	    exit(0);
+	    break;
+	case ':':
+	    fprintf (stderr, "missing argument for option -%c\n", optopt);
+	    break;
+	default:
+	    fprintf(stderr,"option -%c unrecognized\n", optopt);
+	}
+    }
+}
+
 
 int main (int argc, char *argv[])
 {
@@ -32,37 +83,16 @@ int main (int argc, char *argv[])
     	return 0;
     }
  
+    inkpot_schemes_put(inkpot, "x11");
+    inkpot_scheme_get(inkpot, "x11");
+
+    scanArgs(inkpot, argc, argv);
+
     /* requested color */
     if (argc < 2)
         color = NULL;
     else
         color = argv[1];
-
-    /* requested schemes (comma-separated) */
-    if (argc < 3) {
-        rc = inkpot_schemes_put(inkpot, "x11");
-        assert(rc == INKPOT_SUCCESS);
-    }
-    else {
-        rc = inkpot_schemes_put(inkpot, argv[2]);
-        if (rc == INKPOT_SCHEME_UNKNOWN)
-	    fprintf(stderr, "unknown in scheme(s)\n");
-        else
-            assert(rc == INKPOT_SUCCESS);
-    }
-
-    /* target scheme */
-    if (argc < 4) {
-        rc = inkpot_scheme_get(inkpot, "x11");
-        assert(rc == INKPOT_SUCCESS);
-    }
-    else {
-        rc = inkpot_scheme_get(inkpot, argv[3]);
-        if (rc == INKPOT_SCHEME_UNKNOWN)
-	    fprintf(stderr, "unknown out scheme\n");
-        else
-            assert(rc == INKPOT_SUCCESS);
-    }
 
     inkpot_debug_schemes(inkpot);
     
