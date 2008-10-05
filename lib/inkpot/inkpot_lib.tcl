@@ -25,9 +25,9 @@ foreach {lib} $argv {
         set value $COLORS($color)
 
         if {[llength $color] == 1
-        && [regexp -- {([a-z]+)([0-9]+)} $color . subscheme index] == 1} {
+        && [regexp -- {([a-z]+)([0-9]+)} $color . icolor index] == 1} {
             unset COLORS($color)
-            set color [list $subscheme $index]
+            set color [list $icolor $index]
             set COLORS($color) $value
         }
 
@@ -37,16 +37,20 @@ foreach {lib} $argv {
 		map CV $color $value $scheme
             }
             2 {
-                foreach {subscheme index} $color {break}
-                lappend ALL_STRINGS($subscheme) subscheme
-		map IV $index $value [list $scheme $subscheme 0]
-                lappend ALL_INDEX_SCHEMES([list $scheme $subscheme 0]) $index $value
+                foreach {icolor index} $color {break}
+                lappend ALL_STRINGS($icolor) icolor
+		map ICV $icolor $value [list $scheme 0 $index]
+#old
+#		map IV $index $value [list $scheme $icolor 0]
+#                lappend ALL_INDEX_SCHEMES([list $scheme $icolor 0]) $index $value
             }
             3 {
-                foreach {subscheme range index} $color {break}
-                lappend ALL_STRINGS($subscheme) subscheme
-		map IV $index $value [list $scheme $subscheme $range]
-                lappend ALL_INDEX_SCHEMES([list $scheme $subscheme $range]) $index $value
+                foreach {icolor range index} $color {break}
+                lappend ALL_STRINGS($icolor) icolor
+		map ICV $icolor $value [list $scheme $range $index]
+#old
+#		map IV $index $value [list $scheme $icolor $range]
+#               lappend ALL_INDEX_SCHEMES([list $scheme $icolor $range]) $index $value
             }
             default {
                 puts stderr "wrong number of keys in: \"$color\""
@@ -55,26 +59,28 @@ foreach {lib} $argv {
     }
 }
 
-if {1} {
+if {0} {
 # crunch the data
 foreach {v} [map2 IV] {
     foreach {m1} [map2m1 IV $v] {
-	foreach {index scheme_subscheme_range} $m1 {
-	    foreach {scheme subscheme range} $scheme_subscheme_range {break}
-	    map RIV [list $range $index] $v [list $scheme $subscheme]
+	foreach {index scheme_icolor_range} $m1 {
+	    foreach {scheme icolor range} $scheme_icolor_range {break}
+	    map RIV [list $range $index] $v [list $scheme $icolor]
 	}
     }
 }
 
 foreach {v} [map2 RIV] {
     foreach {m1} [map2m1 RIV $v] {
-	foreach {index scheme_subscheme} $m1 {
-            foreach {scheme subscheme} $scheme_subscheme {break}
-	    map SRIV [list $subscheme $range $index] $v $scheme
+	foreach {index scheme_icolor} $m1 {
+            foreach {scheme icolor} $scheme_icolor {break}
+	    map SRIV [list $icolor $range $index] $v $scheme
 	}
     }
 }
+}
 
+if {1} {
 foreach {index_scheme} [lsort -ascii [array names ALL_INDEX_SCHEMES]] {
     foreach {index value} $ALL_INDEX_SCHEMES($index_scheme) {
         set indexes($index) $value
@@ -108,6 +114,7 @@ foreach {value} [map2 CV] {
 }
 tab_end $f "};\n"
 
+
 # generate NONAME_VALUES_24
 set SZT_NONAME_VALUES 0
 tab_begin $f "unsigned char TAB_NONAME_VALUES_24\[SZT_NONAME_VALUES_24\] = {"
@@ -135,7 +142,6 @@ puts $f $preamble
 set SZT_STRINGS 0
 set SZL_STRINGS 0
 set SZW_STRINGS 0
-
 tab_begin $f "const char TAB_STRINGS\[SZT_STRINGS\] = {"
 foreach {string} [lsort -ascii [array names ALL_STRINGS]] {
     tab_begin_block $f $SZT_STRINGS
@@ -153,8 +159,8 @@ foreach {string} [lsort -ascii [array names ALL_STRINGS]] {
             scheme {
                 set ALL_SCHEME_STRINGS_coded($string) $SZT_STRINGS
             }
-            subscheme {
-                set ALL_SUBSCHEME_STRINGS_coded($string) $SZT_STRINGS
+            icolor {
+                set ALL_ICOLOR_STRINGS_coded($string) $SZT_STRINGS
             }
             color {
                 set ALL_COLOR_STRINGS_coded($string) $SZT_STRINGS
@@ -186,64 +192,87 @@ foreach {valueset} [lsort [array names ALL_IDXSETS]] {
     set comment [list]
     foreach {index_scheme} $ALL_IDXSETS($valueset) {
         set ALL_INDEX_RANGES_coded($index_scheme) [list $first_idx [expr $SZT_INDEXES - $first_idx]]
-        foreach {scheme subscheme range} $index_scheme {break}
+        foreach {scheme icolor range} $index_scheme {break}
         if {$range} {
-            lappend comment $scheme/$subscheme$range
+            lappend comment $scheme/$icolor$range
         } {
-            lappend comment $scheme/$subscheme
+            lappend comment $scheme/$icolor
         }
     }
     tab_end_block $f $comment
 }
 tab_end $f "};\n"
 
+##########################
+if {0} {
 foreach {index_scheme} [lsort [array names ALL_INDEX_RANGES_coded]] {
-    foreach {scheme subscheme range} $index_scheme {break}
+    foreach {scheme icolor range} $index_scheme {break}
     foreach {first_idx size} $ALL_INDEX_RANGES_coded($index_scheme) {break}
-    lappend ALL_INDEX_SUBSCHEME_map([list $subscheme $first_idx $size]) $scheme
+    lappend ALL_INDEX_ICOLOR_map([list $icolor $first_idx $size]) $scheme
 }
-foreach {subscheme_first_idx_size} [array names ALL_INDEX_SUBSCHEME_map] {
-    foreach {subscheme first_idx size} $subscheme_first_idx_size {break}
-    foreach {scheme} $ALL_INDEX_SUBSCHEME_map($subscheme_first_idx_size) {break}
-    lappend ALL_INDEX_SUBSCHEMES_coded([list $scheme $subscheme]) $first_idx $size
+foreach {icolor_first_idx_size} [array names ALL_INDEX_ICOLOR_map] {
+    foreach {icolor first_idx size} $icolor_first_idx_size {break}
+    foreach {scheme} $ALL_INDEX_ICOLOR_map($icolor_first_idx_size) {break}
+    lappend ALL_INDEX_ICOLORS_coded([list $scheme $icolor]) $first_idx $size
 }
 
 
-# generate TAB_SUBSCHEMES_INDEX
-set SZT_SUBSCHEMES_INDEX 0
-tab_begin $f "inkpot_scheme_index_t TAB_SUBSCHEMES_INDEX\[SZT_SUBSCHEMES_INDEX\] = {"
-foreach {scheme_subscheme} [lsort [array names ALL_INDEX_SUBSCHEMES_coded]] {
-    foreach {scheme subscheme} $scheme_subscheme {break}
+# generate TAB_ICOLORS
+set SZT_ICOLORS 0
+tab_begin $f "inkpot_scheme_index_t TAB_ICOLORS\[SZT_ICOLORS\] = {"
+foreach {scheme_icolor} [lsort [array names ALL_INDEX_ICOLORS_coded]] {
+    foreach {scheme icolor} $scheme_icolor {break}
 
-    tab_begin_block $f $SZT_SUBSCHEMES_INDEX
+    tab_begin_block $f $SZT_ICOLORS
 
-    foreach {first_idx size} $ALL_INDEX_SUBSCHEMES_coded($scheme_subscheme) {break}
-    tab_elem $f "{$ALL_SUBSCHEME_STRINGS_coded($subscheme),$first_idx,$size},"
+    foreach {first_idx size} $ALL_INDEX_ICOLORS_coded($scheme_icolor) {break}
+    tab_elem $f "{$ALL_ICOLOR_STRINGS_coded($icolor),$first_idx,$size},"
 
-    incr SZT_SUBSCHEMES_INDEX
+    incr SZT_ICOLORS
 
-    tab_end_block $f "$scheme/$subscheme<1-$size>"
+    tab_end_block $f "$scheme/$icolor<1-$size>"
 }
 tab_end $f "};\n"
+}
+###########################
+
+
+# generate TAB_ICOLORS
+set SZT_ICOLORS 0
+tab_begin $f "inkpot_scheme_index_t TAB_ICOLORS\[SZT_ICOLORS\] = {"
+foreach {icolor} [map1 ICV] {
+    tab_begin_block $f $SZT_ICOLORS
+
+    #FIXME
+#    tab_elem $f "{$ALL_ICOLOR_STRINGS_coded($icolor),$ALL_ALTSETS_coded($color)},"
+    tab_elem $f "{$ALL_ICOLOR_STRINGS_coded($icolor),0},"
+
+    tab_end_block $f $icolor
+
+    set ALL_ICOLORS_coded($color) $SZT_ICOLORS
+    incr SZT_ICOLORS
+}
+tab_end $f "};\n"
+		    
 
 # generate TAB_SCHEMES_INDEX
 set SZT_SCHEMES_INDEX 0
 tab_begin $f "inkpot_scheme_index_t TAB_SCHEMES_INDEX\[SZT_SCHEMES_INDEX\] = {"
-foreach {scheme_subscheme} [lsort [array names ALL_INDEX_SUBSCHEMES_coded]] {
-    foreach {scheme subscheme} $scheme_subscheme {break}
+foreach {scheme_icolor} [lsort [array names ALL_INDEX_ICOLORS_coded]] {
+    foreach {scheme icolor} $scheme_icolor {break}
 
     tab_begin_block $f $SZT_SCHEMES_INDEX
-    set ALL_INDEX_SCHEMES_coded($scheme) $SZT_SUBSCHEMES_INDEX
+    set ALL_INDEX_SCHEMES_coded($scheme) $SZT_ICOLORS
 
-    foreach {subschemes_idx} $ALL_INDEX_SUBSCHEMES_coded($scheme_subscheme) {
-        tab_elem $f $subschemes_idx,
+    foreach {icolors_idx} $ALL_INDEX_ICOLORS_coded($scheme_icolor) {
+        tab_elem $f $icolors_idx,
         incr SZT_SCHEMES_INDEX
     }
 
     if {$range} {
-        tab_end_block $f $scheme/$subscheme$range
+        tab_end_block $f $scheme/$icolor$range
     } {
-        tab_end_block $f $scheme/$subscheme
+        tab_end_block $f $scheme/$icolor
     }
 }
 tab_end $f "};\n"
@@ -379,7 +408,7 @@ puts $f "\#define SZW_STRINGS $SZW_STRINGS"
 puts $f ""
 foreach {i} {
     STRINGS SCHEMES NAMES ALTS VALUES VALUE_TO TO_NAMES
-    SCHEMES_INDEX SUBSCHEMES_INDEX INDEXES NONAME_VALUES
+    SCHEMES_INDEX ICOLORS INDEXES NONAME_VALUES
     VALUES_24 NONAME_VALUES_24
 } {
     if {[set SZT_$i] < 256} {
