@@ -1,3 +1,4 @@
+#!/usr/bin/tclsh
 
 set comments 1
 set target_line_length 60
@@ -147,7 +148,7 @@ foreach {m2} [lsort -dictionary [mapm2 ICRIV]] {
     foreach {range index value} $RIV {break}
     foreach {m1} [map2m1 ICRIV $RIV] {
 	 foreach {icolor schemes} $m1 {break}
-	 lappend ALL_RANGES([list $schemes $icolor $range]) $m2
+	 lappend ALL_RANGES([list $icolor $range $schemes]) $m2
     }
 }
 
@@ -155,52 +156,63 @@ foreach {m2} [lsort -dictionary [mapm2 ICRIV]] {
 set SZT_INDEXES 0
 set index -1
 tab_begin $f "IDX_VALUES TAB_INDEXES\[SZT_INDEXES\] = {"
-foreach {schemes_icolor_range} [lsort -ascii [array names ALL_RANGES]] {
+foreach {icolor_range_schemes} [lsort -ascii [array names ALL_RANGES]] {
     tab_begin_block $f $SZT_INDEXES
-    set ALL_RANGES_coded($schemes_icolor_range) $SZT_INDEXES
-    foreach {m2} $ALL_RANGES($schemes_icolor_range) {
+    foreach {m2} $ALL_RANGES($icolor_range_schemes) {
 	foreach {RIV schemes} $m2 {break}
 	foreach {range index value} $RIV {break}
         tab_elem $f $ALL_VALUES_coded($value),
         incr SZT_INDEXES
     }
-    tab_end_block $f [map2m1 ICRIV $RIV]
+    set size [llength $ALL_RANGES($icolor_range_schemes)]
+    set ALL_RANGES_coded($icolor_range_schemes) [list $SZT_INDEXES $size]
+    tab_end_block $f "[map2m1 ICRIV $RIV] $size"
 }
 tab_end $f "};\n"
 
 # generate TAB_RANGES
 set SZT_RANGES 0
+set last_icolor ""
 tab_begin $f "inkpot_range_t TAB_RANGES\[SZT_RANGES\] = {"
-foreach {schemes_icolor_range} [lsort -dictionary [array names ALL_INDEX_RANGES_coded]] {
-    tab_begin_block $f $SZT_RANGES
-    set first_idx $ALL_INDEX_RANGES_coded($schemes_icolor_range)
-    set size [llength $ALL_INDEX_RANGES($schemes_icolor_range)]
+foreach {icolor_range_schemes} [lsort -dictionary [array names ALL_RANGES_coded]] {
+    foreach {icolor range schemes} $icolor_range_schemes {break}
+    foreach {first_idx size} $ALL_RANGES_coded($icolor_range_schemes) {break}
+    if {! [string equal $last_icolor $icolor]} {
+	 if {! [string equal $last_icolor ""]} {
+	     tab_end_block $f [list $icolor $schemes $cnt]
+         }
+         tab_begin_block $f $SZT_RANGES
+	 set cnt 0
+	 set last_icolor $icolor
+    }
+    set size [llength $ALL_RANGES($icolor_range_schemes)]
     tab_elem $f "{$size,$first_idx},"
-    set ALL_RANGES_coded($schemes_icolor_range) $SZT_RANGES
     incr SZT_RANGES
-    tab_end_block $f $m1
+    incr cnt
+}
+if {! [string equal $last_icolor $icolor]} {
+    tab_end_block $f [list $icolor $schemes $cnt]
 }
 tab_end $f "};\n"
 
 
 # generate TAB_ICOLORS
 set SZT_ICOLORS 0
+set last_icolor ""
 tab_begin $f "inkpot_scheme_index_t TAB_ICOLORS\[SZT_ICOLORS\] = {"
-foreach {m2} [lsort -dictionary [array names ALL_RANGES_coded]] {
-if {0} {
-    tab_begin_block $f $SZT_ICOLORS
-
-    set icolor_set [mapm21 ICRIV $m2]
-    foreach {icolor} $icolor_set {
-	 tab_elem $f "{$ALL_ICOLOR_STRINGS_coded($icolor),$ALL_RANGES_coded($m2)},"
+foreach {icolor_range_schemes} [lsort -dictionary [array names ALL_RANGES_coded]] {
+    foreach {icolor range schemes} $icolor_range_schemes {break}
+    foreach {first_idx size} $ALL_RANGES_coded($icolor_range_schemes) {break}
+    if {! [string equal $last_icolor $icolor]} {
+	 if {! [string equal $last_icolor ""]} {tab_end_block $f [list $icolor $schemes]}
+         tab_begin_block $f $SZT_ICOLORS
+	 tab_elem $f "{$ALL_ICOLOR_STRINGS_coded($icolor),$first_idx},"
+	 set  last_icolor $icolor
     }
-
-    tab_end_block $f $icolor_set
-
     set ALL_ICOLORS_coded($color) $SZT_ICOLORS
     incr SZT_ICOLORS
 }
-}
+if {! [string equal $last_icolor $icolor]} {tab_end_block $f [list $icolor $schemes]}
 tab_end $f "};\n"
 		    
 
@@ -242,6 +254,7 @@ foreach {scheme} [lsort -ascii [array names ALL_SCHEMES]] {
     incr SZT_SCHEMES
 }
 tab_end $f "};\n"
+
 
 # generate TAB_ALTS
 set SZT_ALTS 0
