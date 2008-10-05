@@ -19,10 +19,12 @@ pdf_DATA = inkpot.3.pdf inkpot.1.pdf
 inkpot_SOURCES = inkpot.c
 inkpot_LDADD = $(builddir)/libinkpot.la
 
-libinkpot_la_SOURCES = inkpot_scheme.c inkpot_value.c inkpot_xlate.c
-libinkpot_la_LDFLAGS = -version-info $(VERSION_INFO) -no-undefined
+libinkpot_C_la_SOURCES = inkpot_scheme.c inkpot_value.c inkpot_xlate.c
+libinkpot_C_la_LIBADD = $(top_builddir)/lib/rbtree/librbtree_C.la
 
-libinkpot_C_la_SOURCES = $(libgvc_la_SOURCES)
+libinkpot_la_SOURCES = $(libinkpot_C_la_SOURCES)
+libinkpot_la_LIBADD = $(libinkpot_C_la_LIBADD)
+libinkpot_la_LDFLAGS = -version-info $(VERSION_INFO) -no-undefined
 
 inkpot_value_table.h: $(builddir)/inkpot_define.h
 
