@@ -25,6 +25,12 @@ typedef struct inkpot_scheme_name_s {
 	     string_idx;        /* The scheme name in TAB_STRINGS.  (e.g. "x11") */
 } inkpot_scheme_name_t;
 
+typedef struct inkpot_range_s {
+        IDX_INDEXES
+	    size,
+	    first_value_idx;
+} inkpot_range_t;
+
 typedef struct inkpot_scheme_index_s { 
 	IDX_STRINGS
 	     scheme_string_idx; /* The indexed scheme name in TAB_STRINGS.  e.g "brewer" */
@@ -32,12 +38,8 @@ typedef struct inkpot_scheme_index_s {
 	IDX_STRINGS
 	     subscheme_string_idx; /* The subscheme name in TAB_STRINGS. e.g "blues7" */
 
-	IDX_INDEXES
-	    first_value_idx;	/* The first index to the color values in
-				 * TAB_INDEXES. Terminated by the
-				 * first_value_idx of the next
-				 * inkpot_scheme_index_t in TAB_SCHEMES_INDEX
-				 * or by SZT_SCHEMES_INDEX */
+	IDX_RANGES
+	    range_idx;
 } inkpot_scheme_index_t;
 
 typedef struct inkpot_name_s {	/* Color_name used by one or more
