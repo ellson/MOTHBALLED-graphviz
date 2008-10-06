@@ -88,7 +88,7 @@ static inkpot_scheme_t *inkpot_find_scheme ( const char *scheme )
 {
     if (scheme == NULL)
         return NULL;
-    /* FIXME - split scheme/subscheme/n */
+
     return (inkpot_scheme_t *) bsearch(
             (void*)scheme, (void*)TAB_SCHEMES,
             SZT_SCHEMES, sizeof(inkpot_scheme_t),
@@ -117,19 +117,18 @@ static inkpot_icolor_t *inkpot_find_icolor ( const char *icolor)
 static inkpot_status_t inkpot_scheme ( inkpot_t *inkpot, const char *scheme )
 {
     inkpot_scheme_t *inkpot_scheme;
-    inkpot_icolor_t *inkpot_icolor;
-    IDX_ICOLORS_t i;
-
-    if (scheme == NULL)
-        return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
 
     inkpot_scheme = inkpot_find_scheme(scheme);
-    if (inkpot_scheme) {
-        inkpot->scheme_bits |= 1 << (inkpot_scheme - TAB_SCHEMES);
-        return ((inkpot->status = INKPOT_SUCCESS));
-    }
+    if (inkpot_scheme == NULL)
+        return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
+
+    inkpot->scheme_bits |= 1 << (inkpot_scheme - TAB_SCHEMES);
+    return ((inkpot->status = INKPOT_SUCCESS));
+}
 
 #if 0
+    IDX_ICOLORS_t i;
+    inkpot_icolor_t *inkpot_icolor;
     inkpot_icolor = inkpot_find_icolor(icolor);
     if (! inkpot_icolor)
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
@@ -141,9 +140,9 @@ static inkpot_status_t inkpot_scheme ( inkpot_t *inkpot, const char *scheme )
     inkpot->scheme_list[i] = (inkpot_icolor - TAB_ICOLORS);
     inkpot->active_schemes++;
     return ((inkpot->status = INKPOT_SUCCESS));
-#endif
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
 }
+#endif
  
 inkpot_status_t inkpot_schemes_put ( inkpot_t *inkpot, const char *schemes )
 {
@@ -185,31 +184,29 @@ inkpot_status_t inkpot_schemes_put ( inkpot_t *inkpot, const char *schemes )
 inkpot_status_t inkpot_scheme_get ( inkpot_t *inkpot, const char *scheme )
 {
     inkpot_scheme_t *inkpot_scheme;
-    inkpot_icolor_t *inkpot_icolor;
     IDX_SCHEMES_t idx;
 
-    if (scheme == NULL)
-        return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
-
     inkpot_scheme = inkpot_find_scheme(scheme);
-    if (inkpot_scheme) {
-        idx = inkpot_scheme - TAB_SCHEMES;
-	if (! (inkpot->out_scheme_bit & (1 << idx))) {
-        	inkpot->out_scheme_bit = 1 << idx;
-		inkpot->active_out_schemes = 0;
-        	inkpot->out_name = NULL;     /* clear cached name */
-	}
-        return ((inkpot->status = INKPOT_SUCCESS));
-    }
+    if (inkpot_scheme == NULL)
+	return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
 
-    inkpot_icolor = inkpot_find_icolor(scheme);   /* FIXME */
+    idx = inkpot_scheme - TAB_SCHEMES;
+    inkpot->out_scheme_bit = 1 << idx;
+
+    return ((inkpot->status = INKPOT_SUCCESS));
+}
+
+
+inkpot_status_t inkpot_icolor_get ( inkpot_t *inkpot, const char *icolor )
+{
+    inkpot_icolor_t *inkpot_icolor;
+    inkpot_icolor = inkpot_find_icolor(icolor);   /* FIXME */
     if (! inkpot_icolor)
         return ((inkpot->status = INKPOT_SCHEME_UNKNOWN));
 
     if (inkpot->active_out_schemes == 0 
 	    || (inkpot->out_scheme_list[0] != (inkpot_icolor - TAB_ICOLORS))) {
 	inkpot->out_scheme_list[0] = (inkpot_icolor - TAB_ICOLORS);
-	inkpot->active_out_schemes = 1;
        	inkpot->out_scheme_bit = 0;
 	inkpot->out_name = NULL;     /* clear cached name */
     }
