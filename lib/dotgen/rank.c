@@ -419,7 +419,9 @@ void expand_ranksets(graph_t * g)
 	     * cluster, and ND_rank(n) = the local rank offset if n is in
 	     * a cluster. */
 	    if (leader != n)
+#ifdef ASPECT
 		if (ND_rank(n) == 0)
+#endif
 		    ND_rank(n) += ND_rank(leader);
 
 	    if (GD_maxrank(g) < ND_rank(n))
@@ -544,8 +546,10 @@ void dot_rank(graph_t * g)
     attrsym_t* N_level;
 #endif
     edgelabel_ranks(g);
+#ifdef ASPECT
     init_UF_size(g);
     initEdgeTypes(g);
+#endif
     collapse_sets(g,g);
     /*collapse_leaves(g); */
     class1(g);
@@ -558,6 +562,10 @@ void dot_rank(graph_t * g)
     if ((N_level = agfindattr(g->proto->n, "level")))
 	setRanks(g, N_level);
     else
+#endif
+#ifdef ASPECT
+#else
+    rank1(g);
 #endif
     expand_ranksets(g);
     cleanup1(g);

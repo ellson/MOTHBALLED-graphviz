@@ -245,13 +245,16 @@ double start, finish, totalCLK;
 void dot_layout(Agraph_t * g)
 {
 
-  start = clock();
-
     setEdgeType (g, ET_SPLINE);
 
+#ifdef ASPECT
+    start = clock();
     nextiter = -1;
+#endif
+
     dot_init_node_edge(g);
 
+#ifdef ASPECT
     printf("Target AR = ");
     scanf("%lf", &targetAR);
 
@@ -260,6 +263,7 @@ void dot_layout(Agraph_t * g)
 
     nPasses++;
 
+#endif
     dot_rank(g);
     packiter += curIterations;
 
@@ -268,6 +272,7 @@ void dot_layout(Agraph_t * g)
 
     dot_position(g);
 
+#ifdef ASPECT
     char response[100];
     finish = clock();
     totalCLK += finish - start;
@@ -285,6 +290,7 @@ void dot_layout(Agraph_t * g)
     start = clock();
 
     } while (nextiter);
+#endif
 
 
     /* dumpRanks (g); */
@@ -294,6 +300,8 @@ void dot_layout(Agraph_t * g)
 	dot_compoundEdges(g);
     dotneato_postprocess(g);
 
+#ifdef ASPECT
     printf("Packing iterations=%d\n# of Passes=%d\n", packiter, nPasses);
     printf("Total time = %0.3lf sec\n\n", totalCLK/CLOCKS_PER_SEC);
+#endif
 }

@@ -1037,6 +1037,7 @@ static void set_aspect(graph_t * g)
 	}
     }
 
+#ifdef ASPECT
     double AR = (GD_bb(g).UR.x - GD_bb(g).LL.x)/(GD_bb(g).UR.y - GD_bb(g).LL.y);
     printf("AR=%0.4lf\t Area= %0.4lf\t", AR, (double)(GD_bb(g).UR.x - GD_bb(g).LL.x)*(GD_bb(g).UR.y - GD_bb(g).LL.y)/10000.0);
     printf("Dummy=%d\n", countDummyNodes(g));
@@ -1051,6 +1052,7 @@ static void set_aspect(graph_t * g)
     }
     else nextiter = 0;
     printf("next#iter=%d\n", nextiter);
+#endif
 }
 
 static point resize_leaf(node_t * leaf, point lbound)
