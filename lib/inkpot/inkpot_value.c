@@ -19,9 +19,9 @@
 #include <assert.h>
 
 #include "inkpot.h"
-#include "inkpot_define.h"
+#include "inkpot_lib_define.h"
 #include "inkpot_value.h"
-#include "inkpot_value_table.h"
+#include "inkpot_libi_value.h"
 
 inkpot_status_t inkpot_value_set ( inkpot_values_t *values, inkpot_value_t *value )
 {

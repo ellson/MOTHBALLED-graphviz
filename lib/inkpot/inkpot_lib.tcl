@@ -4,7 +4,7 @@ set comments 1
 set target_line_length 60
 set indent "  "
 
-set preamble "/*\n * DO NOT EDIT !!\n *\n * The files:\n *\tinkpot_define.h\n *\tinkpot_value_table.h\n *\tinkpot_scheme_table.h\n * are generated as a matched set.\n */\n"
+set preamble "/*\n * DO NOT EDIT !!\n *\n * The files:\n *\tinkpot_lib_define.h\n *\tinkpot_lib_value.h\n *\tinkpot_lib_scheme.h\n * are generated as a matched set.\n */\n"
 
 if {! $argc} {exit}
 
@@ -55,8 +55,8 @@ foreach {lib} $argv {
     }
 }
 
-#------------------------------------------------- write inkpot_value_table.h
-set f [open inkpot_value_table.h w]
+#------------------------------------------------- write inkpot_lib_value.h
+set f [open inkpot_lib_value.h w]
 puts $f $preamble
 
 # generate TAB_VALUES_24
@@ -90,8 +90,8 @@ tab_finalize "};\n"
     
 close $f
 
-#------------------------------------------------- write inkpot_scheme_table.h
-set f [open inkpot_scheme_table.h w]
+#------------------------------------------------- write inkpot_lib_scheme.h
+set f [open inkpot_lib_scheme.h w]
 puts $f $preamble
 
 # generate TAB_STRINGS
@@ -312,8 +312,8 @@ tab_finalize "};\n"
 close $f
 
 
-#------------------------------------------------- write inkpot_define.h
-set f [open inkpot_define.h w]
+#------------------------------------------------- write inkpot_lib_define.h
+set f [open inkpot_lib_define.h w]
 puts $f $preamble
 
 set SZT_VALUES_24 [expr 3*$SZT_VALUES]
