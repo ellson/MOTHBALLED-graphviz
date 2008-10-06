@@ -49,10 +49,13 @@ if {1} {
         if {[info exists COLORS($nam_ixn)]} {
                 foreach {rr gg bb} $COLORS($nam_ixn) {break}
         	if {$r != $rr || $g != $gg || $b != $bb} {
-			puts stderr "\"$nam_ixn\" is not unique and rgb doesn't match: $r $g $b != $rr $gg $bb"
-			puts stderr $rec
+			puts stderr ""
+			puts stderr "\"$nam $ixa\" is not unique and rgb doesn't match: $r $g $b != $rr $gg $bb"
+			puts stderr "In record: [string trim $rec :]"
+			puts stderr "Retaining first value found, discarding second."
+			puts stderr ""
 		} {
-			#                   puts "$nam_ixn is not unique"     
+			#                   puts "$nam ixa is not unique"     
 		}
 	}
 	set COLORS($nam_ixn) [list $r $g $b]

@@ -4,17 +4,18 @@
 pdfdir = $(pkgdatadir)/doc/pdf
 pkgconfigdir = $(libdir)/pkgconfig
 
-#pkginclude_HEADERS = inkpot.h
-#lib_LTLIBRARIES = libinkpot.la
-#pkgconfig_DATA = libinkpot.pc
-#bin_PROGRAMS = inkpot
-#
-#noinst_HEADERS = inkpot_scheme.h inkpot_xlate.h inkpot_value.h \
-#	inkpot_lib_define.h inkpot_lib_value.h inkpot_lib_scheme.h
-#noinst_LTLIBRARIES = libinkpot_C.la
-#
-#man_MANS = inkpot.3 inkpot.1
-#pdf_DATA = inkpot.3.pdf inkpot.1.pdf
+
+pkginclude_HEADERS = inkpot.h
+lib_LTLIBRARIES = libinkpot.la
+pkgconfig_DATA = libinkpot.pc
+bin_PROGRAMS = inkpot
+
+noinst_HEADERS = inkpot_scheme.h inkpot_xlate.h inkpot_value.h \
+	inkpot_lib_define.h inkpot_lib_value.h inkpot_lib_scheme.h
+noinst_LTLIBRARIES = libinkpot_C.la
+
+man_MANS = inkpot.3 inkpot.1
+pdf_DATA = inkpot.3.pdf inkpot.1.pdf
 
 inkpot_SOURCES = inkpot.c
 inkpot_LDADD = $(builddir)/libinkpot.la
@@ -24,11 +25,15 @@ libinkpot_C_la_LIBADD = $(top_builddir)/lib/rbtree/librbtree_C.la
 
 libinkpot_la_SOURCES = $(libinkpot_C_la_SOURCES)
 libinkpot_la_LIBADD = $(libinkpot_C_la_LIBADD)
-libinkpot_la_LDFLAGS = -version-info $(VERSION_INFO) -no-undefined
+libinkpot_la_LDFLAGS = -version-info $(VERSION_INFO) -no-undefined 
 
-inkpot_lib_value.h: $(builddir)/inkpot_lib_define.h
+inkpot_scheme.o inkpot_scheme.lo: inkpot_lib_define.h inkpot_lib_scheme.h 
 
-inkpot_lib_scheme.h: $(builddir)/inkpot_lib_define.h
+inkpot_value.o inkpot_value.lo: inkpot_lib_define.h inkpot_lib_value.h 
+
+inkpot_lib_value.h: inkpot_lib_define.h
+
+inkpot_lib_scheme.h: inkpot_lib_define.h
 
 inkpot_lib_define.h: inkpot_lib.tcl inkpot_lib_procs.tcl \
 			$(builddir)/inkpot_lib_tk.dat \

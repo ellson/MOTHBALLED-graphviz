@@ -212,56 +212,54 @@ foreach {scheme} [lsort -ascii [array names ALL_SCHEMES]] {
 tab_finalize "};\n"
 
 
-if {0} {
-foreach {m2} [lsort -dictionary [mapm2 CV]] {
-    foreach {value schemes} $m2 {break}
-    foreach {m1} [map2m1 CV $value] {
-        lappend ALL_ALIASES(m1) $m2
-    }
+foreach {color} [lsort -ascii [map1 CV]] {
+    set altset [lsort -dictionary [map1m2 CV $color]]
+    lappend ALL_ALTSETS($altset) $color
 }
-}
-
-
+	
 # generate TAB_ALTS
 set SZT_ALTS 0
 tab_initialize $f {set first_idx} {set aliases} \
 	"inkpot_name_t TAB_ALTS\[SZT_ALTS\] = {"
-#foreach {m1} [lsort -ascii [array names ALL_ALIASES]] {
-#    foreach {color schemes} $m1 {break}
-foreach {r_set} [map3 CV] {
-    set scheme_bits 0
-    foreach {scheme} $schemes {
-        foreach {scheme_idx scheme_bit} $ALL_SCHEMES_coded($scheme) {break}
-        set scheme_bits [expr $scheme_bits | $scheme_bit]
-    }
-    set m2s [map3m2 CV $r_set]
-#    set m2s $ALL_ALIASES($m1)
-    set cnt [llength $m2s]
+foreach {altset} [lsort -dictionary [array names ALL_ALTSETS]] {
+    set aliases [lsort -ascii -unique $ALL_ALTSETS($altset)]
+    set cnt [llength $altset]
     switch $cnt {
         0 {
-            puts stderr "shouldn't happen - zero alts: $color"
+            puts stderr "shouldn't happen - has to be at least one alt in an altset"
         }
         1 {
-	    foreach {m2} $m2s {break}
-            foreach {value schemeset} $m2 {break}
-            set ALL_ALTSETS_coded($color) "$ALL_VALUES_coded($value),[format {0x%x} $scheme_bits]"
+	    foreach {value_schemes} $altset {break}
+	    foreach {value schemes} $value_schemes {break}
+	    set scheme_bits 0
+    	    foreach {scheme} $schemes {
+                foreach {scheme_idx scheme_bit} $ALL_SCHEMES_coded($scheme) {break}
+                set scheme_bits [expr $scheme_bits | $scheme_bit]
+            }
+	    foreach {color} $aliases {
+                set ALL_ALTS_coded($color) "$ALL_VALUES_coded($value),[format {0x%x} $scheme_bits]"
+	    }
             # don't need entry in TAB_ALTS for this case
         }
         default {
             set first_idx $SZT_ALTS
-	    foreach {m2} $m2s {
-	        foreach {value schemeset} $m2 {break}
+	    foreach {value_schemes} $altset {
+	        foreach {value schemes} $value_schemes {break}
+	        set scheme_bits 0
+    	        foreach {scheme} $schemes {
+                    foreach {scheme_idx scheme_bit} $ALL_SCHEMES_coded($scheme) {break}
+                    set scheme_bits [expr $scheme_bits | $scheme_bit]
+                }
                 tab_elem "{[incr cnt -1],$ALL_VALUES_coded($value),[format {0x%x} $scheme_bits]},"
                 incr SZT_ALTS
-	        set aliases [mapm21 CV $m2]
     	        foreach {color} $aliases {
-                    set ALL_ALTSETS_coded($color) "$first_idx,0"
+                    set ALL_ALTS_coded($color) "$first_idx,0"
                 }
     	    }
         }
     }
     tab_row
-#}
+}
 tab_finalize "};\n"
 
     
@@ -270,7 +268,7 @@ set SZT_NAMES 0
 tab_initialize $f {set SZT_NAMES} {set color} \
 	"inkpot_name_t TAB_NAMES\[SZT_NAMES\] = {"
 foreach {color} [map1 CV] {
-    tab_elem "{$ALL_COLOR_STRINGS_coded($color),$ALL_ALTSETS_coded($color)},"
+    tab_elem "{$ALL_COLOR_STRINGS_coded($color),$ALL_ALTS_coded($color)},"
     tab_row
     set ALL_NAMES_coded($color) $SZT_NAMES
     incr SZT_NAMES

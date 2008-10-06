@@ -114,13 +114,10 @@ proc print_first {a} {
 # 
 # map1 {M}		: get {x...}
 # map2 {M}		: get {y...}
-# map3 {M}		: get {r...}
 # mapm1 {M}		: get {{x {r...}}...}
 # mapm2 {M} 		: get {{y {r...}}...}
 # map1m2 {M x}		: from x get {y {r...}}
 # map2m1 {M y}		: from y get {x {r...}}
-# map3m1 {M r_set}	: from r_set get {{x {r...}}...}
-# map3m2 {M r_set}	: from r_set get {{y {r...}}...}
 # mapm21 {M m2}		: from m2 get {x...}
 # mapm12 {M m1}		: from m1 get {y...}
 # map12 {M x}		: from x get {y...}
@@ -134,18 +131,10 @@ proc map {M x y r} {
     if {[info exists MAP_m2_1]} {
 	    puts stderr "flushing crunched MAP data for new values"
             upvar #0 MAP_[set M]_m1_2 MAP_m1_2
-            upvar #0 MAP_[set M]_m2_3 MAP_m2_3
-            upvar #0 MAP_[set M]_m1_3 MAP_m1_3
-            upvar #0 MAP_[set M]_3_m1 MAP_3_m1
-            upvar #0 MAP_[set M]_3_m2 MAP_3_m2
             upvar #0 MAP_[set M]_2_m1 MAP_2_m1
             upvar #0 MAP_[set M]_1_m2 MAP_1_m2
 	    array unset MAP_m2_1
 	    array unset MAP_m1_2
-            array unset MAP_m2_3
-            array unset MAP_m1_3
-            array unset MAP_3_m1
-            array unset MAP_3_m2
             array unset MAP_2_m1
             array unset MAP_1_m2
     }
@@ -161,13 +150,10 @@ proc mapc {M map} {
 	        puts stderr "MAP_[set M]_12_3 doesn't exist.  Use the "map" proc to create and populate."	
 	    }
 	}
-        m2_1 - m1_2 - m2_3 - m1_3 {
+        m2_1 - m1_2 {
             upvar #0 MAP_[set M]_12_3 MAP_12_3
             upvar #0 MAP_[set M]_m2_1 MAP_m2_1
             upvar #0 MAP_[set M]_m1_2 MAP_m1_2
-            upvar #0 MAP_[set M]_m2_3 MAP_m2_3
-            upvar #0 MAP_[set M]_m1_3 MAP_m1_3
-            #obtain sorted r_set's and use them as keys to the map
             foreach {xy} [array names MAP_12_3] {
                 foreach {x y} $xy {break}
                 set r_set [lsort -unique $MAP_12_3($xy)]
@@ -175,15 +161,12 @@ proc mapc {M map} {
                 set m2 [list $y $r_set]
                 lappend MAP_m2_1($m2) $x
                 lappend MAP_m1_2($m1) $y
-                lappend MAP_m2_3($m2) $r_set
-                lappend MAP_m1_3($m1) $r_set
             }
         }
         1_m2 {
             upvar #0 MAP_[set M]_m2_1 MAP_m2_1
             upvar #0 MAP_[set M]_1_m2 MAP_1_m2
     	    if {! [info exists MAP_m2_1]} {mapc $M m2_1}
-            #set up for finding m2 from x, and for listing x
             foreach {m2} [lsort [array names MAP_m2_1]] {
                 foreach {x} $MAP_m2_1($m2) {
                     lappend MAP_1_m2($x) $m2
@@ -195,32 +178,9 @@ proc mapc {M map} {
             upvar #0 MAP_[set M]_2_m1 MAP_2_m1
     	    if {! [info exists MAP_m2_1]} {mapc $M m2_1}
     	    if {! [info exists MAP_m1_2]} {mapc $M m1_2}
-            #set up for finding m1 from y, and for listing y
             foreach {m1} [lsort [array names MAP_m1_2]] {
                 foreach {y} $MAP_m1_2($m1) {
                     lappend MAP_2_m1($y) $m1
-                }
-            }
-        }
-        3_m2 {
-            upvar #0 MAP_[set M]_m2_3 MAP_m2_3
-            upvar #0 MAP_[set M]_3_m2 MAP_3_m2
-    	    if {! [info exists MAP_m2_3]} {mapc $M m2_3}
-            #set up for finding m2 from r_sets, and for listing r_sets
-            foreach {m2} [lsort [array names MAP_m2_3]] {
-		foreach {r_set} [lsort -unique $MAP_m2_3($m2)] {
-        	    lappend MAP_3_m2($r_set) $m2
-                }
-            }
-        }
-        3_m1 {
-            upvar #0 MAP_[set M]_m1_3 MAP_m1_3
-            upvar #0 MAP_[set M]_3_m1 MAP_3_m1
-    	    if {! [info exists MAP_m1_3]} {mapc $M m1_3}
-            #set up for finding m1 from r_sets, and for listing r_sets
-            foreach {m1} [lsort [array names MAP_m1_3]] {
-		foreach {r_set} [lsort -unique $MAP_m1_3($m1)] {
-        	    lappend MAP_3_m1($r_set) $m1
                 }
             }
         }
@@ -236,12 +196,6 @@ proc map2 {M} { ;#get {y...}
     upvar #0 MAP_[set M]_2_m1 MAP_2_m1
     if {! [info exists MAP_2_m1]} {mapc $M 2_m1}
     lsort [array names MAP_2_m1]
-}
-proc map3 {M} { ;#get {r...}
-    # the set of r is the same in both MAP_3_m1 and MAP_3_m2, so just use one
-    upvar #0 MAP_[set M]_3_m1 MAP_3_m1
-    if {! [info exists MAP_3_m1]} {mapc $M 3_m1}
-    lsort [array names MAP_3_m1]
 }
 proc mapm1 {M} { ;#get {{x {r...}}...}
     upvar #0 MAP_[set M]_m1_2 MAP_m1_2
@@ -262,16 +216,6 @@ proc map2m1 {M y} { ;#from y get {x {r...}}
     upvar #0 MAP_[set M]_2_m1 MAP_2_m1
     if {! [info exists MAP_2_m1]} {mapc $M 2_m1}
     set MAP_2_m1($y)
-}
-proc map3m1 {M r_set} { ;#from r_set get {{x {r...}}...}
-    upvar #0 MAP_[set M]_3_m1 MAP_3_m1
-    if {! [info exists MAP_3_m1]} {mapc $M 3_m1}
-    set MAP_3_m1($r_set)
-}
-proc map3m2 {M r_set} { ;#from r_set get {{y {r...}}...}
-    upvar #0 MAP_[set M]_3_m2 MAP_3_m2
-    if {! [info exists MAP_3_m2]} {mapc $M 3_m2}
-    set MAP_3_m2($r_set)
 }
 proc mapm21 {M m2} { ;#from m2 get {x...}
     upvar #0 MAP_[set M]_m2_1 MAP_m2_1
@@ -333,25 +277,15 @@ if {0} {  ;# for testing
 	puts ""
 	map_debug CV
 	puts ""
-puts "m1_3 : [array get MAP_CV_m1_3]"
-puts "3_m1 : [array get MAP_CV_3_m1]"
 
 	puts "map1 CV                : [map1 CV]"
 	puts "              expected : black green grey0 lime noir vert"
 	puts "map2 CV                : [map2 CV]"
        	puts "              expected : 0 1 2"
-	puts "map3 CV                : [map3 CV]"
-       	puts "              expected : french svg {svg tk x11} {tk x11}"
 	puts "map1m2 CV green        : [map1m2 CV green]"
 	puts "              expected : {1 {tk x11}} {2 svg}"
 	puts "map2m1 CV 2            : [map2m1 CV 2]"
 	puts "              expected : {green svg}"
-	puts "map3m1 CV {svg tk x11} : [map3m1 CV {svg tk x11}]"
-	puts "              expected : {black {svg tk x11}} {grey0 {svg tk x11}} {lime {svg tk x11}}"
-	puts "map3m2 CV {svg tk x11} : [map3m2 CV {svg tk x11}]"
-       	puts "              expected : {0 {svg tk x11}} {1 {svg tk x11}}"
-	puts "map3m2 CV {svg}        : [map3m2 CV {svg}]"
-       	puts "              expected : {2 {svg}}"
 	puts "map12 CV green         : [map12 CV green]"
 	puts "              expected : 1 2"
 	puts "map21 CV 1             : [map21 CV 1]"
